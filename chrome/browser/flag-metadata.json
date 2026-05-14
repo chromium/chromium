@@ -3663,11 +3663,6 @@
     "expiry_milestone": 139
   },
   {
-    "name": "enable-lens-overlay-straight-to-srp",
-    "owners": [ "nguyenbryan@google.com", "lens-chrome@google.com" ],
-    "expiry_milestone": 145
-  },
-  {
     "name": "enable-lens-overlay-text-selection-context-menu-entrypoint",
     "owners": ["nguyenbryan@google.com", "lens-chrome@google.com"],
     "expiry_milestone": 145
@@ -6286,11 +6281,6 @@
     "name": "lens-search-headers-check-enabled",
     "owners": ["cmyang@google.com", "brandonli@google.com"],
     "expiry_milestone": 150
-  },
-    {
-    "name": "lens-search-zero-state-csb",
-    "owners": ["juanmojica@google.com", "lens-chrome@google.com"],
-    "expiry_milestone": 152
   },
   {
     "name": "lens-single-tap-text-selection-disabled",

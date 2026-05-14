@@ -115,9 +115,6 @@ BASE_DECLARE_FEATURE(kLensOverlayPermissionBubbleAlt);
 COMPONENT_EXPORT(LENS_FEATURES)
 BASE_DECLARE_FEATURE(kLensSearchNotFoundOnPageToast);
 
-// Enables straight to SRP flows are enabled in the Lens overlay.
-COMPONENT_EXPORT(LENS_FEATURES)
-BASE_DECLARE_FEATURE(kLensOverlayStraightToSrp);
 
 // Enables AIM follow ups with the Lens overlay results side panel globally.
 COMPONENT_EXPORT(LENS_FEATURES)
@@ -164,10 +161,6 @@ BASE_DECLARE_FEATURE(kLensAimSuggestions);
 COMPONENT_EXPORT(LENS_FEATURES)
 BASE_DECLARE_FEATURE(kLensAimSuggestionsGradientBackground);
 
-// Enables the zero state contextual searchbox feature which opens the SRP
-// immediately when entering Lens entry points.
-COMPONENT_EXPORT(LENS_FEATURES)
-BASE_DECLARE_FEATURE(kLensSearchZeroStateCsb);
 
 // Enables handling for the video citations feature.
 COMPONENT_EXPORT(LENS_FEATURES)
@@ -1039,13 +1032,6 @@ bool IsLensOverlayPermissionBubbleAltEnabled();
 COMPONENT_EXPORT(LENS_FEATURES)
 extern bool IsLensSearchNotFoundOnPageToastEnabled();
 
-// Whether straight to SRP flows are enabled in the Lens overlay.
-COMPONENT_EXPORT(LENS_FEATURES)
-extern bool IsLensOverlayStraightToSrpEnabled();
-
-// If set, overrides the query text used in the Straight to SRP flow.
-COMPONENT_EXPORT(LENS_FEATURES)
-extern std::string GetStraightToSrpQuery();
 
 // Whether the text selection context menu option should be a Lens overlay
 // entrypoint.
@@ -1067,13 +1053,6 @@ extern bool IsLensOverlayForceEmptyCsbQueryEnabled();
 COMPONENT_EXPORT(LENS_FEATURES)
 extern bool IsLensSidePanelWebviewResultsEnabled();
 
-// Whether to enable zero state contextual suggest in the Lens overlay.
-COMPONENT_EXPORT(LENS_FEATURES)
-extern bool IsLensSearchZeroStateCsbEnabled();
-
-// The query text to use for zero state CSB in the Lens overlay.
-COMPONENT_EXPORT(LENS_FEATURES)
-extern std::string GetZeroStateCsbQuery();
 
 // Whether the feature to enable the special handling for video citations is
 // enabled.

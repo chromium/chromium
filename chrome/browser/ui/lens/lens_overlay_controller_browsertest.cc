@@ -742,7 +742,6 @@ class LensOverlayControllerBrowserTest : public InProcessBrowserTest {
          {lens::features::kLensOverlaySidePanelOpenInNewTab, {}}},
         /*disabled_features=*/{
             contextual_tasks::kContextualTasks,
-            lens::features::kLensSearchZeroStateCsb,
             lens::features::kLensAimSuggestions,
             lens::features::kLensOverlaySuggestionsMigration,
             lens::features::kLensOverlayNonBlockingPrivacyNotice});
@@ -4658,8 +4657,7 @@ class LensOverlayControllerEntrypointsBrowserTest
     //   kAiModeOmniboxEntryPoint.
     feature_list_.InitWithFeaturesAndParameters(
         enabled_features,
-        /*disabled_features=*/{omnibox::kAiModeOmniboxEntryPoint,
-                               lens::features::kLensSearchZeroStateCsb});
+        /*disabled_features=*/{omnibox::kAiModeOmniboxEntryPoint});
   }
 
   void VerifyEntrypoints(bool expected_visible) {
@@ -5200,7 +5198,7 @@ class LensOverlayControllerBrowserFullscreenDisabled
           {
               {"enable-in-fullscreen", "false"},
           }}},
-        {{lens::features::kLensSearchZeroStateCsb}});
+        {});
   }
 };
 
@@ -5307,7 +5305,6 @@ class LensOverlayControllerBrowserPDFTest
     auto disabled = PDFExtensionTestBase::GetDisabledFeatures();
     disabled.emplace_back(lens::features::kLensOverlayContextualSearchbox);
     disabled.emplace_back(lens::features::kLensOverlayKeyboardSelection);
-    disabled.emplace_back(lens::features::kLensSearchZeroStateCsb);
     return disabled;
   }
 
@@ -5559,8 +5556,7 @@ class LensOverlayControllerBrowserPDFContextualizationTest
   }
 
   std::vector<base::test::FeatureRef> GetDisabledFeatures() const override {
-    return {contextual_tasks::kContextualTasks,
-            lens::features::kLensSearchZeroStateCsb};
+    return {contextual_tasks::kContextualTasks};
   }
 
  protected:
@@ -6215,8 +6211,7 @@ class LensOverlayControllerBrowserPDFUpdatedContentFieldsTest
   }
 
   std::vector<base::test::FeatureRef> GetDisabledFeatures() const override {
-    return {contextual_tasks::kContextualTasks,
-            lens::features::kLensSearchZeroStateCsb};
+    return {contextual_tasks::kContextualTasks};
   }
 
  protected:
@@ -6271,8 +6266,7 @@ class LensOverlayControllerBrowserPDFIncreaseLimitTest
   }
 
   std::vector<base::test::FeatureRef> GetDisabledFeatures() const override {
-    return {contextual_tasks::kContextualTasks,
-            lens::features::kLensSearchZeroStateCsb};
+    return {contextual_tasks::kContextualTasks};
   }
 
  protected:
@@ -6339,8 +6333,7 @@ class LensOverlayControllerBrowserWithPixelsTest
     feature_list_.InitWithFeatures(
         /*enabled_features=*/{}, /*disabled_features=*/{
             contextual_tasks::kContextualTasks,
-            lens::features::kLensOverlayVisualSelectionUpdates,
-            lens::features::kLensSearchZeroStateCsb});
+            lens::features::kLensOverlayVisualSelectionUpdates});
   }
 
   bool IsNotEmptyAndNotTransparentBlack(SkBitmap bitmap) {
@@ -7729,8 +7722,7 @@ class LensOverlayControllerIframeBrowserTest
           {{"results-search-url", embedded_test_server()
                                       ->GetURL(kDocumentWithNamedElement)
                                       .spec()}}}},
-        /*disabled_features=*/{contextual_tasks::kContextualTasks,
-                               lens::features::kLensSearchZeroStateCsb});
+        /*disabled_features=*/{contextual_tasks::kContextualTasks});
   }
 };
 
@@ -7854,7 +7846,7 @@ class LensOverlayControllerInnerTextEnabledSmallByteLimitTest
               {"use-apc-as-context", "false"},
               {"file-upload-limit-bytes", "10"},
           }}},
-        /*disabled_features=*/{lens::features::kLensSearchZeroStateCsb});
+        /*disabled_features=*/{});
   }
 };
 
@@ -7942,7 +7934,7 @@ class LensOverlayControllerApcOnlyTest
               {"use-apc-as-context", "true"},
           }},
          {lens::features::kLensSearchProtectedPage, {}}},
-        {lens::features::kLensSearchZeroStateCsb});
+        {});
   }
 };
 
@@ -8088,8 +8080,7 @@ class LensOverlayControllerInnerTextAndApc
               {"use-updated-content-fields", "true"},
           }},
          {lens::features::kLensSearchProtectedPage, {}}},
-        {contextual_tasks::kContextualTasks,
-         lens::features::kLensSearchZeroStateCsb});
+        {contextual_tasks::kContextualTasks});
   }
 };
 
@@ -8337,7 +8328,6 @@ class LensOverlayControllerContextualFeaturesDisabledTest
         /*disabled_features=*/{
             contextual_tasks::kContextualTasks,
             lens::features::kLensOverlayContextualSearchbox,
-            lens::features::kLensSearchZeroStateCsb,
             lens::features::kLensOverlayNonBlockingPrivacyNotice});
   }
 };
@@ -8590,8 +8580,7 @@ class LensOverlayControllerOverlaySearchbox
     feature_list_.InitWithFeatures(
         /*enabled_features=*/{lens::features::kLensOverlay,
                               lens::features::kLensOverlayContextualSearchbox},
-        /*disabled_features=*/{contextual_tasks::kContextualTasks,
-                               lens::features::kLensSearchZeroStateCsb});
+        /*disabled_features=*/{contextual_tasks::kContextualTasks});
   }
 
   void VerifyContextualSearchQueryParameters(const GURL& url_to_process) {
@@ -8823,8 +8812,7 @@ class LensOverlayControllerSideBySideBrowserTest
   void SetupFeatureList() override {
     feature_list_.InitWithFeaturesAndParameters(
         {{lens::features::kLensOverlay, {{"use-blur", "true"}}}},
-        {contextual_tasks::kContextualTasks,
-         lens::features::kLensSearchZeroStateCsb});
+        {contextual_tasks::kContextualTasks});
   }
 
   bool AreAnyRoundedCornersShowing() {
@@ -9271,48 +9259,6 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest, ReshowOverlay) {
       fake_controller->fake_overlay_page_.last_received_screenshot_.isNull());
 }
 
-class LensOverlayControllerZeroStateCsbTest
-    : public LensOverlayControllerBrowserTest {
- protected:
-  void SetupFeatureList() override {
-    feature_list_.InitWithFeaturesAndParameters(
-        {{lens::features::kLensSearchZeroStateCsb, {}}},
-        /*disabled_features=*/{});
-  }
-};
-
-IN_PROC_BROWSER_TEST_F(LensOverlayControllerZeroStateCsbTest,
-                       OpenLensOverlayWithZeroStateCsbQuery) {
-  WaitForPaint();
-
-  // State should start in off.
-  auto* controller = GetLensOverlayController();
-  ASSERT_EQ(controller->state(), State::kOff);
-
-  // Showing UI should change the state to hidden and open the side panel.
-  OpenLensOverlay(LensOverlayInvocationSource::kAppMenu);
-
-  // Expect the Lens Overlay results panel to open.
-  ASSERT_TRUE(
-      base::test::RunUntil([&]() { return IsLensResultsSidePanelShowing(); }));
-  EXPECT_TRUE(content::WaitForLoadStop(
-      GetLensOverlaySidePanelCoordinator()->GetSidePanelWebContents()));
-  // Overlay should stay in off state.
-  ASSERT_EQ(controller->state(), State::kOff);
-
-  auto* fake_query_controller =
-      static_cast<lens::TestLensOverlayQueryController*>(
-          GetLensOverlayQueryController());
-  EXPECT_TRUE(fake_query_controller->last_queried_region());
-  EXPECT_EQ(fake_query_controller->last_queried_region()->box.width(), 1.0);
-  EXPECT_EQ(fake_query_controller->last_queried_region()->box.height(), 1.0);
-  EXPECT_EQ(fake_query_controller->last_queried_region()->box.x(), 0.5);
-  EXPECT_EQ(fake_query_controller->last_queried_region()->box.y(), 0.5);
-  EXPECT_EQ(fake_query_controller->last_queried_region()->rotation, 0.0);
-  EXPECT_EQ(fake_query_controller->last_lens_selection_type(),
-            lens::REGION_SEARCH);
-}
-
 class LensOverlayControllerReinvocationBrowserTest
     : public LensOverlayControllerBrowserTest {
  protected:
@@ -9321,8 +9267,7 @@ class LensOverlayControllerReinvocationBrowserTest
         {lens::features::kLensOverlay,
          lens::features::kLensOverlayContextualSearchbox,
          lens::features::kLensSearchReinvocationAffordance},
-        {contextual_tasks::kContextualTasks,
-         lens::features::kLensSearchZeroStateCsb});
+        {contextual_tasks::kContextualTasks});
   }
 };
 
@@ -9786,7 +9731,7 @@ class LensOverlayControllerContextualTasksBrowserTest
          lens::features::kLensOverlayContextualSearchbox,
          lens::features::kLensSearchReinvocationAffordance,
          contextual_tasks::kContextualTasks},
-        {lens::features::kLensSearchZeroStateCsb});
+        {});
   }
 };
 
