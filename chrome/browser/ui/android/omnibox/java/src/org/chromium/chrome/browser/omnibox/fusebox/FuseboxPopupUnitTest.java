@@ -40,6 +40,7 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.omnibox.R;
+import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.PopupState;
 import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.base.WindowAndroid;
@@ -151,35 +152,35 @@ public class FuseboxPopupUnitTest {
 
     @Test
     public void testSetPopupState_Hidden() {
-        mFuseboxPopup.setPopupState(FuseboxProperties.PopupState.HIDDEN);
-        verify(mDynamicRectProvider).setPopupState(FuseboxProperties.PopupState.HIDDEN);
+        mFuseboxPopup.setPopupState(PopupState.HIDDEN);
+        verify(mDynamicRectProvider).setPopupState(PopupState.HIDDEN);
         verify(mPopupWindow).dismiss();
     }
 
     @Test
     public void testSetPopupState_Floating() {
-        mFuseboxPopup.setPopupState(FuseboxProperties.PopupState.FLOATING);
+        mFuseboxPopup.setPopupState(PopupState.FLOATING);
         Shadows.shadowOf(Looper.getMainLooper()).idle();
-        verify(mDynamicRectProvider).setPopupState(FuseboxProperties.PopupState.FLOATING);
+        verify(mDynamicRectProvider).setPopupState(PopupState.FLOATING);
         verify(mPopupWindow).show();
     }
 
     @Test
     public void testSetPopupState_Bottom() {
-        mFuseboxPopup.setPopupState(FuseboxProperties.PopupState.BOTTOM);
-        verify(mDynamicRectProvider).setPopupState(FuseboxProperties.PopupState.BOTTOM);
+        mFuseboxPopup.setPopupState(PopupState.BOTTOM);
+        verify(mDynamicRectProvider).setPopupState(PopupState.BOTTOM);
         verify(mPopupWindow).show();
     }
 
     @Test
     public void testSetPopupState_Bottom_setsAnimation() {
-        mFuseboxPopup.setPopupState(FuseboxProperties.PopupState.BOTTOM);
+        mFuseboxPopup.setPopupState(PopupState.BOTTOM);
         verify(mPopupWindow).setAnimationStyle(R.style.FuseboxBottomSheetAnimation);
     }
 
     @Test
     public void testSetPopupState_Floating_clearsAnimation() {
-        mFuseboxPopup.setPopupState(FuseboxProperties.PopupState.FLOATING);
+        mFuseboxPopup.setPopupState(PopupState.FLOATING);
         verify(mPopupWindow).setAnimationStyle(0);
     }
 
@@ -234,13 +235,11 @@ public class FuseboxPopupUnitTest {
 
     @Test
     public void testUpdateLayout() {
-        doReturn(100)
-                .when(mDynamicRectProvider)
-                .getPopupWidth(eq(FuseboxProperties.PopupState.FLOATING), any());
+        doReturn(100).when(mDynamicRectProvider).getPopupWidth(eq(PopupState.FLOATING), any());
 
         doReturn(true).when(mPopupWindow).isShowing();
 
-        mFuseboxPopup.setPopupState(FuseboxProperties.PopupState.FLOATING);
+        mFuseboxPopup.setPopupState(PopupState.FLOATING);
 
         Shadows.shadowOf(Looper.getMainLooper()).idle();
 
@@ -261,7 +260,7 @@ public class FuseboxPopupUnitTest {
                 .thenReturn(statusBarsInsets);
 
         doReturn(true).when(mPopupWindow).isShowing();
-        mFuseboxPopup.setPopupState(FuseboxProperties.PopupState.FLOATING);
+        mFuseboxPopup.setPopupState(PopupState.FLOATING);
 
         // First layout update.
         mFuseboxPopup.updateLayout();
@@ -286,7 +285,7 @@ public class FuseboxPopupUnitTest {
                 .thenReturn(statusBarsInsets);
 
         doReturn(true).when(mPopupWindow).isShowing();
-        mFuseboxPopup.setPopupState(FuseboxProperties.PopupState.FLOATING);
+        mFuseboxPopup.setPopupState(PopupState.FLOATING);
 
         // First layout update
         mFuseboxPopup.updateLayout();
@@ -305,7 +304,7 @@ public class FuseboxPopupUnitTest {
                 .thenReturn(navBarInsets);
         doReturn(true).when(mPopupWindow).isShowing();
 
-        mFuseboxPopup.setPopupState(FuseboxProperties.PopupState.BOTTOM);
+        mFuseboxPopup.setPopupState(PopupState.BOTTOM);
         mFuseboxPopup.updateLayout();
 
         assertEquals(50, mFuseboxPopup.mScrollView.getPaddingBottom());
@@ -334,7 +333,7 @@ public class FuseboxPopupUnitTest {
     public void testObserveDynamicRectProvider_callsUpdateLayout() {
         // Mock showing state to allow updateLayout to proceed
         doReturn(true).when(mPopupWindow).isShowing();
-        mFuseboxPopup.setPopupState(FuseboxProperties.PopupState.FLOATING);
+        mFuseboxPopup.setPopupState(PopupState.FLOATING);
 
         // Capture the observer passed to startObserving
         verify(mDynamicRectProvider).startObserving(mRectProviderObserverCaptor.capture());

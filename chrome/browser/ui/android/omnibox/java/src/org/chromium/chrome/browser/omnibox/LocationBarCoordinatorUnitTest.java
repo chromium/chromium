@@ -28,6 +28,7 @@ import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.FuseboxState;
+import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.PopupState;
 import org.chromium.chrome.browser.toolbar.optional_button.OptionalButtonCoordinator;
 import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.PageClassification;
 
@@ -152,5 +153,17 @@ public class LocationBarCoordinatorUnitTest {
         mCoordinator.setMiniOriginMode(false);
         verify(mUrlCoordinator, org.mockito.Mockito.times(2)).setBoundsEllipsisEnabled(true);
         verify(mLocationBarMediator).setMiniOriginMode(false);
+    }
+
+    @Test
+    public void testOnPopupStateChange_ClearsTextSelectionWhenNotHidden() {
+        mCoordinator.onPopupStateChange(PopupState.FLOATING);
+        verify(mUrlCoordinator).clearTextSelection();
+    }
+
+    @Test
+    public void testOnPopupStateChange_DoesNotClearTextSelectionWhenHidden() {
+        mCoordinator.onPopupStateChange(PopupState.HIDDEN);
+        verify(mUrlCoordinator, never()).clearTextSelection();
     }
 }

@@ -33,6 +33,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.FuseboxState;
+import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.PopupState;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxProperties.PopupButtonData;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxProperties.PopupButtonType;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
@@ -613,8 +614,7 @@ class FuseboxViewBinder {
 
         for (View button : view.popup.mAttachmentButtons) {
             @StyleRes int attachmentTextAppearance;
-            if (Integer.valueOf(FuseboxProperties.PopupState.BOTTOM)
-                            .equals(model.get(FuseboxProperties.POPUP_STATE))
+            if (Integer.valueOf(PopupState.BOTTOM).equals(model.get(FuseboxProperties.POPUP_STATE))
                     && view.popup.mAttachmentButtons.contains(button)) {
                 attachmentTextAppearance =
                         OmniboxResourceProvider.getAttachmentButtonTextRes(brandedColorScheme);

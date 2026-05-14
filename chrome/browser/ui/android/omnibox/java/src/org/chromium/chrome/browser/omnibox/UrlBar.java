@@ -304,6 +304,19 @@ public class UrlBar extends AutocompleteEditText {
         mTextChangeListener = null;
     }
 
+    /**
+     * Clears text selection, which also has the side effect of dismissing the Android selection
+     * handles and context menu if showing.
+     */
+    public void clearTextSelection() {
+        if (isFocused()) {
+            int selectionEnd = getSelectionEnd();
+            if (selectionEnd >= 0) {
+                setSelection(selectionEnd);
+            }
+        }
+    }
+
     /** Set the delegate to be used for text context menu actions. */
     public void setTextContextMenuDelegate(UrlBarTextContextMenuDelegate delegate) {
         mTextContextMenuDelegate = delegate;

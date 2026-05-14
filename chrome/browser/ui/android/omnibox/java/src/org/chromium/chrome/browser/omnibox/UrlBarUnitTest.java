@@ -1290,4 +1290,20 @@ public class UrlBarUnitTest {
         // Expect control to be passed to TextView.
         verify(mClipboard, never()).setText(any());
     }
+
+    @Test
+    public void testClearTextSelection() {
+        mUrlBar.setText("test selection");
+        mUrlBar.onFocusChanged(true, 0, null);
+        doReturn(true).when(mUrlBar).isFocused();
+        mUrlBar.setSelection(0, 4);
+        assertEquals(0, mUrlBar.getSelectionStart());
+        assertEquals(4, mUrlBar.getSelectionEnd());
+
+        mUrlBar.clearTextSelection();
+
+        // Selection should be collapsed to the end of the previous selection (4).
+        assertEquals(4, mUrlBar.getSelectionStart());
+        assertEquals(4, mUrlBar.getSelectionEnd());
+    }
 }

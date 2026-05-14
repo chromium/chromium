@@ -84,6 +84,15 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
         int POPOVER = 2;
     }
 
+    @IntDef({PopupState.HIDDEN, PopupState.FLOATING, PopupState.BOTTOM})
+    @Retention(RetentionPolicy.SOURCE)
+    @Target({ElementType.TYPE_USE})
+    public @interface PopupState {
+        int HIDDEN = 0;
+        int FLOATING = 1;
+        int BOTTOM = 2;
+    }
+
     private @Nullable FuseboxViewHolder mViewHolder;
     private @Nullable PropertyModel mModel;
     private final Context mContext;
@@ -100,6 +109,8 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
     private final SettableNonNullObservableSupplier<@FuseboxLayoutMode Integer>
             mFuseboxLayoutModeSupplier =
                     ObservableSuppliers.createNonNull(FuseboxLayoutMode.SEPARATED);
+    private final SettableNonNullObservableSupplier<@PopupState Integer> mPopupStateSupplier =
+            ObservableSuppliers.createNonNull(PopupState.HIDDEN);
     private final SnackbarManager mSnackbarManager;
     private @Nullable ViewportRectProvider mViewportRectProvider;
     private @Nullable FuseboxMetrics mMetrics;
@@ -167,7 +178,7 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
                         // Init with a default, and it will be corrected by the mediator before it
                         // matters.
                         .with(FuseboxProperties.COLOR_SCHEME, BrandedColorScheme.APP_DEFAULT)
-                        .with(FuseboxProperties.POPUP_STATE, FuseboxProperties.PopupState.HIDDEN)
+                        .with(FuseboxProperties.POPUP_STATE, PopupState.HIDDEN)
                         .build();
 
         new AsyncLayoutInflater(mContext)
@@ -250,6 +261,7 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
                         mTabModelSelectorSupplier,
                         mFuseboxStateSupplier,
                         mFuseboxLayoutModeSupplier,
+                        mPopupStateSupplier,
                         mSnackbarManager,
                         Clipboard.getInstance(),
                         mScrimManager,
@@ -464,6 +476,11 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
     /** Registers a callback notified when the layout mode of the fusebox changes. */
     public NonNullObservableSupplier<@FuseboxLayoutMode Integer> getFuseboxLayoutModeSupplier() {
         return mFuseboxLayoutModeSupplier;
+    }
+
+    /** Registers a callback notified when the popup state of the fusebox changes. */
+    public NonNullObservableSupplier<@PopupState Integer> getPopupStateSupplier() {
+        return mPopupStateSupplier;
     }
 
     /** Set callback to be invoked when the popup is dismissed. */

@@ -72,9 +72,9 @@ import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxAttachmentRecyclerViewAdapter.FuseboxAttachmentType;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.FuseboxLayoutMode;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.FuseboxState;
+import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.PopupState;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxMetrics.FuseboxAttachmentButtonType;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxProperties.PopupButtonData;
-import org.chromium.chrome.browser.omnibox.fusebox.FuseboxProperties.PopupState;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteController;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -162,6 +162,8 @@ public class FuseboxMediatorUnitTest {
             ObservableSuppliers.createMonotonic();
     private final SettableNonNullObservableSupplier<List<SuggestedTabInfo>> mSuggestedTabsSupplier =
             ObservableSuppliers.createNonNull(List.of());
+    private final SettableNonNullObservableSupplier<@PopupState Integer> mPopupStateSupplier =
+            ObservableSuppliers.createNonNull(PopupState.HIDDEN);
 
     private final Bitmap mBitmap = Bitmap.createBitmap(100, 100, Bitmap.Config.ARGB_8888);
 
@@ -227,6 +229,7 @@ public class FuseboxMediatorUnitTest {
                         mTabModelSelectorSupplier,
                         mFuseboxStateSupplier,
                         mFuseboxLayoutModeSupplier,
+                        mPopupStateSupplier,
                         mSnackbarManager,
                         mClipboard,
                         mScrimManager,
@@ -536,6 +539,13 @@ public class FuseboxMediatorUnitTest {
         // Show popup.
         runnable.run();
         verify(mKeyboardVisibilityDelegate).hideKeyboard(mViewHolder.parentView);
+    }
+
+    @Test
+    public void onAddButtonClicked_updatesPopupStateSupplier() {
+        assertEquals(PopupState.HIDDEN, mPopupStateSupplier.get().intValue());
+        mModel.get(FuseboxProperties.BUTTON_ADD_CLICKED).run();
+        assertEquals(PopupState.FLOATING, mPopupStateSupplier.get().intValue());
     }
 
     @Test

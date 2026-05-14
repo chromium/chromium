@@ -40,11 +40,11 @@ import org.chromium.chrome.browser.omnibox.fusebox.FuseboxAttachmentModelList.Fu
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxAttachmentRecyclerViewAdapter.FuseboxAttachmentType;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.FuseboxLayoutMode;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.FuseboxState;
+import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.PopupState;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxMetrics.AiModeActivationSource;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxMetrics.FuseboxAttachmentButtonType;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxProperties.PopupButtonData;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxProperties.PopupButtonType;
-import org.chromium.chrome.browser.omnibox.fusebox.FuseboxProperties.PopupState;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileIntentUtils;
@@ -107,6 +107,7 @@ import java.util.function.Supplier;
     private final Snackbar mAttachmentUploadFailedSnackbar;
     private final ScrimManager mScrimManager;
     private final Supplier<@Nullable View> mScrimAnchorViewSupplier;
+    private final SettableNonNullObservableSupplier<@PopupState Integer> mPopupStateSupplier;
 
     private boolean mIsTextWrapping;
     private boolean mHasContextualTasksFocus;
@@ -140,6 +141,7 @@ import java.util.function.Supplier;
             MonotonicObservableSupplier<TabModelSelector> tabModelSelectorSupplier,
             SettableNonNullObservableSupplier<@FuseboxState Integer> fuseboxStateSupplier,
             SettableNonNullObservableSupplier<@FuseboxLayoutMode Integer> fuseboxLayoutModeSupplier,
+            SettableNonNullObservableSupplier<@PopupState Integer> popupStateSupplier,
             SnackbarManager snackbarManager,
             Clipboard clipboard,
             ScrimManager scrimManager,
@@ -152,6 +154,7 @@ import java.util.function.Supplier;
         mViewHolder.popup.addOnDismissListener(this::hidePopup);
         mTabModelSelectorSupplier = tabModelSelectorSupplier;
         mFuseboxStateSupplier = fuseboxStateSupplier;
+        mPopupStateSupplier = popupStateSupplier;
         mSnackbarManager = snackbarManager;
         mClipboard = clipboard;
         mScrimManager = scrimManager;
@@ -504,9 +507,10 @@ import java.util.function.Supplier;
         }
         updateModelForCurrentTab();
         mModel.set(FuseboxProperties.POPUP_ATTACH_CLIPBOARD_VISIBLE, mClipboard.hasImage());
-        mModel.set(
-                FuseboxProperties.POPUP_STATE,
-                shouldShowBottomSheetPopup ? PopupState.BOTTOM : PopupState.FLOATING);
+        @PopupState
+        int targetState = shouldShowBottomSheetPopup ? PopupState.BOTTOM : PopupState.FLOATING;
+        mModel.set(FuseboxProperties.POPUP_STATE, targetState);
+        mPopupStateSupplier.set(targetState);
         if (mScrimManager != null
                 && mModel.get(FuseboxProperties.POPUP_STATE) == PopupState.BOTTOM) {
             View scrimAnchor = mScrimAnchorViewSupplier.get();
@@ -537,6 +541,7 @@ import java.util.function.Supplier;
     private void hidePopup() {
         boolean wasBottomSheet = mModel.get(FuseboxProperties.POPUP_STATE) == PopupState.BOTTOM;
         mModel.set(FuseboxProperties.POPUP_STATE, PopupState.HIDDEN);
+        mPopupStateSupplier.set(PopupState.HIDDEN);
         if (mScrimModel != null) {
             mScrimManager.hideScrim(mScrimModel, /* animate= */ true);
         }

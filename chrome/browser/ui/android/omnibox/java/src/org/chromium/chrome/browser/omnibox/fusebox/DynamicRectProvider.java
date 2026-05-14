@@ -10,7 +10,7 @@ import android.graphics.Rect;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.omnibox.R;
-import org.chromium.chrome.browser.omnibox.fusebox.FuseboxProperties.PopupState;
+import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.PopupState;
 import org.chromium.ui.widget.RectProvider;
 
 /** A {@link RectProvider} that can switch between different delegates. */

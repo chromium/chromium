@@ -218,6 +218,14 @@ public class UrlBarCoordinator
         mUrlBar.setBoundsEllipsisEnabled(enabled);
     }
 
+    /**
+     * Clears text selection, which also has the side effect of dismissing the Android selection
+     * handles and context menu if showing.
+     */
+    public void clearTextSelection() {
+        mUrlBar.clearTextSelection();
+    }
+
     @Override
     public int getSelectionStart() {
         return mUrlBar.getSelectionStart();

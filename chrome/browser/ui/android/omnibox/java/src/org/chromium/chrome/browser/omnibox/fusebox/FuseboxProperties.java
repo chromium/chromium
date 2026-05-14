@@ -12,6 +12,7 @@ import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.FuseboxState;
+import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.PopupState;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.omnibox.AutocompleteRequestType;
 import org.chromium.ui.modelutil.PropertyKey;
@@ -19,10 +20,8 @@ import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 
-import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
 import java.util.List;
 
 /** The properties associated with the Fusebox bar. */
@@ -34,21 +33,6 @@ class FuseboxProperties {
         int ATTACHMENT = 0;
         int TOOL = 1;
         int MODEL = 2;
-    }
-
-    /** The possible states of the Fusebox popup. */
-    @IntDef({PopupState.HIDDEN, PopupState.FLOATING, PopupState.BOTTOM})
-    @Retention(RetentionPolicy.SOURCE)
-    @Target({ElementType.TYPE_USE})
-    public @interface PopupState {
-        /** The popup is hidden. */
-        int HIDDEN = 0;
-
-        /** The popup is floating near the anchor. */
-        int FLOATING = 1;
-
-        /** The popup is anchored at the bottom of the screen. */
-        int BOTTOM = 2;
     }
 
     /** Encapsulates the state for a button in the Fusebox popup. */
