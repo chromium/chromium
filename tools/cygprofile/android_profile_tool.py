@@ -200,17 +200,12 @@ class AndroidProfileTool:
     if out_dir:
       maybe_driver_path = [
           f'--driver-path={os.path.join(out_dir, "clang_x64", "chromedriver")}']
-      wpr_bin_path = os.path.join(constants.DIR_SOURCE_ROOT, 'third_party',
-                                  'webpagereplay', 'cipd', 'bin', 'linux',
-                                  'x86_64', 'wpr')
-      maybe_wpr_bin_path = f',"wpr_go_bin":"{wpr_bin_path}"'
       adb_bin_path = os.path.join(constants.DIR_SOURCE_ROOT, 'third_party',
                                   'android_sdk', 'public', 'platform-tools',
                                   'adb')
       maybe_adb_bin_path = f',"adb_bin":"{adb_bin_path}"'
     else:
       maybe_driver_path = []
-      maybe_wpr_bin_path = ''
       maybe_adb_bin_path = ''
 
     RunCommand([
@@ -223,7 +218,6 @@ class AndroidProfileTool:
         '--splashscreen=skip',
         '--cuj-config=third_party/crossbench/config/team/woa/embedder_cuj_config.hjson',
         '--network={"type":"wpr","path":"tools/perf/page_sets/data/crossbench_android_embedder_000.wprgo"' +
-        maybe_wpr_bin_path +
         ',"skip_deterministic_script_injection":true}',
         '--embedder-process-name=googleapp',
         '--embedder-setup-command-config=clank/android_webview/tools/crossbench_config/agsa_setup_config.hjson',

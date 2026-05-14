@@ -16,9 +16,6 @@ from unittest import mock
 import run_performance_tests
 from run_performance_tests import TelemetryCommandGenerator
 
-# //third_party/catapult/telemetry imports.
-from telemetry.internal.util import binary_manager
-
 # Protected access is allowed for unittests.
 # pylint: disable=protected-access
 
@@ -32,7 +29,6 @@ class TelemetryCommandGeneratorTest(unittest.TestCase):
   def setUp(self):
     fake_args = ['./run_benchmark', '--isolated-script-test-output=output.json']
     self._fake_options = run_performance_tests.parse_arguments(fake_args)
-    mock.patch.object(binary_manager, 'InitDependencyManager').start()
 
   def testStorySelectionBeginEnd(self):
     story_selection_config = json.loads(
@@ -386,27 +382,19 @@ class TelemetryCommandGeneratorTest(unittest.TestCase):
     network_dict = json.loads(crosebench_test.network[0].split('=', 1)[1])
     self.assertDictEqual(network_dict, expected_dict)
 
-  @mock.patch.object(binary_manager, 'FetchPath')
-  def testCrossbenchGetDefaultWpr(self, mock_fetch_path):
-    mock_fetch_path.return_value = 'wpr_go_path'
+  def testCrossbenchGetDefaultWpr(self):
     fake_args = _create_crossbench_args() + ['--wpr=fake.wprgo']
     options = run_performance_tests.parse_arguments(fake_args)
     data_dir = run_performance_tests.PAGE_SETS_DATA
     archive = str(data_dir / 'fake.wprgo')
-    expected_dict = {
-        'type': 'wpr',
-        'path': archive,
-        'wpr_go_bin': 'wpr_go_path'
-    }
+    expected_dict = {'type': 'wpr', 'path': archive}
 
     crosebench_test = run_performance_tests.CrossbenchTest(options, 'dir')
 
     network_dict = json.loads(crosebench_test.network[0].split('=', 1)[1])
     self.assertDictEqual(network_dict, expected_dict)
 
-  @mock.patch.object(binary_manager, 'FetchPath')
-  def testCrossbenchSkipInjectionWpr(self, mock_fetch_path):
-    mock_fetch_path.return_value = 'wpr_go_path'
+  def testCrossbenchSkipInjectionWpr(self):
     fake_args = _create_crossbench_args() + [
         '--wpr=fake.wprgo', '--skip-wpr-script-injection'
     ]
@@ -416,7 +404,6 @@ class TelemetryCommandGeneratorTest(unittest.TestCase):
     expected_dict = {
         'type': 'wpr',
         'path': archive,
-        'wpr_go_bin': 'wpr_go_path',
         'skip_deterministic_script_injection': True
     }
 
@@ -425,27 +412,19 @@ class TelemetryCommandGeneratorTest(unittest.TestCase):
     network_dict = json.loads(crossbench_test.network[0].split('=', 1)[1])
     self.assertDictEqual(network_dict, expected_dict)
 
-  @mock.patch.object(binary_manager, 'FetchPath')
-  def testCrossbenchGetTargetWpr(self, mock_fetch_path):
-    mock_fetch_path.return_value = 'wpr_go_path'
+  def testCrossbenchGetTargetWpr(self):
     fake_args = _create_crossbench_args() + ['--wpr=foo']
     options = run_performance_tests.parse_arguments(fake_args)
     data_dir = run_performance_tests.PAGE_SETS_DATA
     archive = str(data_dir / 'foo')
-    expected_dict = {
-        'type': 'wpr',
-        'path': archive,
-        'wpr_go_bin': 'wpr_go_path'
-    }
+    expected_dict = {'type': 'wpr', 'path': archive}
 
     crosebench_test = run_performance_tests.CrossbenchTest(options, 'dir')
 
     network_dict = json.loads(crosebench_test.network[0].split('=', 1)[1])
     self.assertDictEqual(network_dict, expected_dict)
 
-  @mock.patch.object(binary_manager, 'FetchPath')
-  def testCrossbenchWprCustomPorts(self, mock_fetch_path):
-    mock_fetch_path.return_value = 'wpr_go_path'
+  def testCrossbenchWprCustomPorts(self):
     fake_args = _create_crossbench_args() + [
         '--wpr=fake.wprgo', '--wpr-http-port=8080', '--wpr-https-port=8081'
     ]
@@ -455,7 +434,6 @@ class TelemetryCommandGeneratorTest(unittest.TestCase):
     expected_dict = {
         'type': 'wpr',
         'path': archive,
-        'wpr_go_bin': 'wpr_go_path',
         'http_port': 8080,
         'https_port': 8081
     }

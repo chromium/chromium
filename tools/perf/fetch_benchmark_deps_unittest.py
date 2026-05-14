@@ -10,7 +10,6 @@ import unittest
 import mock  # pylint: disable=import-error
 
 from py_utils import cloud_storage
-from telemetry.internal.util import binary_manager
 from telemetry.wpr import archive_info
 
 from core import path_util
@@ -80,10 +79,7 @@ class FetchBenchmarkDepsUnittest(unittest.TestCase):
             os.path.join(path_util.GetPerfStorySetsDir(), 'media_cases'),
             cloud_storage.PARTNER_BUCKET)
 
-  @mock.patch.object(binary_manager, 'InitDependencyManager')
-  @mock.patch.object(binary_manager, 'FetchBinaryDependencies')
-  def testFetchDepsForCrossbench(self, mock_init_dependency_manager,
-                                 mock_fetch_binary_depdencies):
+  def testFetchDepsForCrossbench(self):
     with mock.patch.object(archive_info.WprArchiveInfo,
                            'DownloadArchivesIfNeeded',
                            autospec=True) as mock_download:
@@ -92,5 +88,3 @@ class FetchBenchmarkDepsUnittest(unittest.TestCase):
       fetch_benchmark_deps.FetchDepsForCrossbench()
 
       self.assertTrue(mock_download.called)
-      self.assertTrue(mock_init_dependency_manager.called)
-      self.assertTrue(mock_fetch_binary_depdencies.called)

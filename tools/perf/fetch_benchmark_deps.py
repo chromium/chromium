@@ -21,8 +21,6 @@ from page_sets import (
 from py_utils import cloud_storage
 
 from telemetry.core import optparse_argparse_migration as oam
-from telemetry.core import platform as platform_module
-from telemetry.internal.util import binary_manager
 
 def _FetchDependenciesIfNeeded(story_set):
   """ Download files needed by a user story set. """
@@ -94,14 +92,6 @@ def FetchDepsForCrossbench():
   ]
   for story_set in cb_story_sets:
     story_set.wpr_archive_info.DownloadArchivesIfNeeded()
-
-  platform = platform_module.GetHostPlatform()
-  binary_manager.InitDependencyManager(None)
-  binary_manager.FetchBinaryDependencies(
-      platform,
-      client_configs=[],
-      fetch_reference_chrome_binary=False,
-      dependency_filter=['wpr_go', 'httparchive_go'])
 
 
 def main(args):

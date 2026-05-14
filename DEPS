@@ -376,11 +376,11 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling catapult
   # and whatever else without interference from each other.
-  'catapult_revision': '0dc3e11dd52088de0a5cbb4495599c181a322d38',
+  'catapult_revision': '1017755089869776a7b863d8b2a83af9af68bfb9',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling CrossBench
   # and whatever else without interference from each other.
-  'crossbench_revision': 'ade2b43c95ec742b09bb5fb4888ccc7338707f93',
+  'crossbench_revision': '02389ea9461b65168ada98b4ada7e6f76add551b',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling CrossBench
   # and whatever else without interference from each other.
@@ -3246,17 +3246,6 @@ deps = {
     'dep_type': 'cipd',
   },
 
-  'src/third_party/webpagereplay/cipd': {
-      'packages' : [
-          {
-              'package': 'infra/tools/wpr/linux_x86_64',
-              'version': 'y28SfbEF6nHSkZ1eHysM1t711zpOCmtk7jUdxZB-QSMC',
-          },
-      ],
-      'condition': 'checkout_android and non_git_source',
-      'dep_type': 'cipd',
-  },
-
   'src/third_party/android_prebuilts/build_tools': {
       'url': Var('android_git') + '/platform/prebuilts/build-tools.git' + '@' + '3fbcdf38727f967badc13f9537bda0b4392c1f74',
       'condition': 'checkout_android_prebuilts_build_tools',
@@ -4483,15 +4472,6 @@ hooks = [
                 'download',
     ],
   },
-  # Download only WPR binary dependencies from Telemetry via conditionals
-  {
-    'name': 'checkout_wpr_binary_dependencies',
-    'condition': 'checkout_chromium_autofill_test_dependencies or checkout_chromium_password_manager_test_dependencies',
-    'pattern': '.',
-    'action': [ 'vpython3',
-                'src/third_party/catapult/telemetry/bin/fetch_wpr_binary_dependencies',
-    ],
-  },
   {
     'name': 'Fetch Android AFDO profile',
     'pattern': '.',
@@ -4927,4 +4907,8 @@ recursedeps = [
   'src/clank',
   'src/components/optimization_guide/internal',
   'src/ios_internal',
+
+  # WebPageReplay ships with a go toolchain in its DEPS that's necessary for
+  # some bots to run it.
+  'src/third_party/webpagereplay'
 ]

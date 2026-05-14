@@ -199,7 +199,6 @@ def clear_remote_profiles(device, device_profiles_dir):
 class CrossbenchArgumentFragments:
     arch: str
     driver_path_arg: list[str]
-    wpr_bin_path_arg_fragment: str
     adb_bin_path_arg_fragment: str
     disable_features: list[str]
 
@@ -209,9 +208,6 @@ def _get_cb_arg_fragments(args: OptionsNamespace) -> CrossbenchArgumentFragments
     driver_path_arg = [
         f'--driver-path={os.path.join(args.builddir, "clang_x64", "chromedriver")}'
     ]
-    wpr_bin_path = os.path.join(_SRC_PATH, 'third_party', 'webpagereplay',
-                                'cipd', 'bin', 'linux', 'x86_64', 'wpr')
-    wpr_bin_path_arg_fragment = f',"wpr_go_bin":"{wpr_bin_path}"'
     adb_bin_path = os.path.join(_SRC_PATH, 'third_party', 'android_sdk',
                                 'public', 'platform-tools', 'adb')
     adb_bin_path_arg_fragment = f',"adb_bin":"{adb_bin_path}"'
@@ -223,7 +219,6 @@ def _get_cb_arg_fragments(args: OptionsNamespace) -> CrossbenchArgumentFragments
     return CrossbenchArgumentFragments(
         arch=arch,
         driver_path_arg=driver_path_arg,
-        wpr_bin_path_arg_fragment=wpr_bin_path_arg_fragment,
         adb_bin_path_arg_fragment=adb_bin_path_arg_fragment,
         disable_features=disable_features
     )
@@ -240,7 +235,7 @@ def launch_agsa(args: OptionsNamespace):
     ] + fragments.driver_path_arg + [
         '--splashscreen=skip',
         '--cuj-config=third_party/crossbench/config/team/woa/embedder_cuj_config.hjson',
-        f'--network={{"type":"wpr","path":"tools/perf/page_sets/data/crossbench_android_embedder_000.wprgo"{fragments.wpr_bin_path_arg_fragment},"skip_deterministic_script_injection":true}}',
+        '--network={"type":"wpr","path":"tools/perf/page_sets/data/crossbench_android_embedder_000.wprgo","skip_deterministic_script_injection":true}',
         '--embedder-process-name=googleapp',
         '--embedder-setup-command-config=clank/android_webview/tools/crossbench_config/agsa_setup_config.hjson',
         f'--disable-features={",".join(fragments.disable_features)}',
@@ -267,7 +262,7 @@ def launch_gma(args: OptionsNamespace):
     ] + fragments.driver_path_arg + [
         '--splashscreen=skip',
         '--cuj-config=third_party/crossbench/config/team/woa/gma_interstitial_cuj_config.hjson',
-        f'--network={{"type":"wpr","path":"tools/perf/page_sets/data/crossbench_android_gma_embedder_000.wprgo"{fragments.wpr_bin_path_arg_fragment},"skip_deterministic_script_injection":true,"http_port":8080,"https_port":8081}}',
+        '--network={"type":"wpr","path":"tools/perf/page_sets/data/crossbench_android_gma_embedder_000.wprgo","skip_deterministic_script_injection":true,"http_port":8080,"https_port":8081}',
         '--android-activity=MainActivity',
         '--android-action=',
         '--embedder-setup-command-config=third_party/crossbench/config/team/woa/gma_device_setup.hjson',

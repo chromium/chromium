@@ -94,7 +94,6 @@ if TELEMETRY_DIR.exists() and (CATAPULT_DIR / 'common').exists():
   from telemetry.internal.browser import browser_finder
   from telemetry.internal.browser import browser_options
   from telemetry.core import util
-  from telemetry.internal.util import binary_manager
 else:
   print('Optional telemetry library not available.')
 
@@ -718,12 +717,6 @@ def copy_map_file_to_out_dir(map_file, isolated_out_dir):
                   os.path.join(isolated_out_dir, 'benchmarks_shard_map.json'))
 
 
-def fetch_binary_path(dependency_name, os_name='linux', arch='x86_64'):
-  if binary_manager.NeedsInit():
-    binary_manager.InitDependencyManager(None)
-  return binary_manager.FetchPath(dependency_name, os_name=os_name, arch=arch)
-
-
 def get_shard_map_settings(bot, benchmark_type, benchmark_name):
   """Get information for a benchmark in shard map.
 
@@ -926,14 +919,10 @@ class CrossbenchTest(object):
 
   def _create_wpr_network(self):
     archive = str(PAGE_SETS_DATA / self.cb_options.wpr)
-    if (wpr_go := fetch_binary_path('wpr_go')) is None:
-      raise ValueError(f'wpr_go not found: {wpr_go}')
-
     return [
         _create_network_json(
             'wpr',
             path=archive,
-            wpr_go_bin=wpr_go,
             skip_injection=self.cb_options.skip_wpr_script_injection,
             http_port=self.cb_options.wpr_http_port,
             https_port=self.cb_options.wpr_https_port)
@@ -1143,7 +1132,6 @@ class CrossbenchTest(object):
 def _create_network_json(config_type,
                          path,
                          url=None,
-                         wpr_go_bin=None,
                          skip_injection=False,
                          http_port=None,
                          https_port=None):
@@ -1151,8 +1139,6 @@ def _create_network_json(config_type,
   network_dict['path'] = path
   if url:
     network_dict['url'] = url
-  if wpr_go_bin:
-    network_dict['wpr_go_bin'] = wpr_go_bin
   if skip_injection:
     network_dict['skip_deterministic_script_injection'] = True
   if http_port:

@@ -844,36 +844,11 @@ bool WebPageReplayServerWrapper::RunWebPageReplayCmd(
   }
 
   base::FilePath web_page_replay_binary_dir = exe_dir.AppendASCII("third_party")
-                                                  .AppendASCII("catapult")
-                                                  .AppendASCII("telemetry")
-                                                  .AppendASCII("telemetry")
-                                                  .AppendASCII("bin");
+                                                  .AppendASCII("webpagereplay")
+                                                  .AppendASCII("scripts");
   options.current_directory = web_page_replay_binary_dir;
-
-#if BUILDFLAG(IS_WIN)
   base::FilePath wpr_executable_binary =
-      base::FilePath(FILE_PATH_LITERAL("win"))
-          .AppendASCII("AMD64")
-          .AppendASCII("wpr.exe");
-#elif BUILDFLAG(IS_MAC)
-  base::FilePath wpr_executable_binary =
-      base::FilePath(FILE_PATH_LITERAL("mac"))
-#if defined(ARCH_CPU_ARM64)
-          .AppendASCII("arm64")
-#elif defined(ARCH_CPU_X86_64)
-          .AppendASCII("x86_64")
-#else
-#error Mac CPU arch is not supported.
-#endif
-          .AppendASCII("wpr");
-#elif BUILDFLAG(IS_POSIX)
-  base::FilePath wpr_executable_binary =
-      base::FilePath(FILE_PATH_LITERAL("linux"))
-          .AppendASCII("x86_64")
-          .AppendASCII("wpr");
-#else
-#error Platform is not supported.
-#endif
+      base::FilePath(FILE_PATH_LITERAL("run_wpr.py"));
   base::CommandLine full_command(
       web_page_replay_binary_dir.Append(wpr_executable_binary));
   full_command.AppendArg(cmd_name());
