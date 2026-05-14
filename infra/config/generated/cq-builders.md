@@ -972,8 +972,8 @@ as required builders.
   This builder is only run when the CL owner is in the group:
   * [`google/chromeos-pa@google.com`](https://chrome-infra-auth.appspot.com/auth/lookup?p=google/chromeos-pa@google.com)
 
-* [chromeos-betty-compile-chrome](https://ci.chromium.org/p/chrome/builders/try/chromeos-betty-compile-chrome) ([definition](https://source.corp.google.com/search?q=+file:/try/.*\.star$+""chromeos-betty-compile-chrome""))
-  * Experiment percentage: 5.0
+* [chromeos-betty-chrome-noop](https://ci.chromium.org/p/chrome/builders/try/chromeos-betty-chrome-noop) ([definition](https://source.corp.google.com/search?q=+file:/try/.*\.star$+""chromeos-betty-chrome-noop""))
+  * Experiment percentage: 50.0
 
 * [linux-perf-trigger](https://ci.chromium.org/p/chrome/builders/try/linux-perf-trigger) ([definition](https://source.corp.google.com/search?q=+file:/try/.*\.star$+""linux-perf-trigger""))
   * Experiment percentage: 100.0
