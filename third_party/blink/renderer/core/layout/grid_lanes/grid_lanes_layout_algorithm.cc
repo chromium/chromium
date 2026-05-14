@@ -304,8 +304,20 @@ LayoutUnit GridLanesLayoutAlgorithm::CalculateItemInlineContribution(
       CreateConstraintSpaceForMeasure(subgridded_item,
                                       /*opt_fixed_inline_size=*/std::nullopt,
                                       /*make_grid_axis_definite=*/true);
+
+  const auto& item_node = grid_lanes_item.node;
+  auto MinMaxSizesFunc = [&](SizeType type) -> MinMaxSizesResult {
+    if (grid_lanes_item.IsSubgrid()) {
+      return To<GridNode>(item_node).ComputeSubgridMinMaxSizes(
+          sizing_subtree.SubgridSizingSubtree(grid_lanes_item),
+          space_for_measure);
+    }
+    return item_node.ComputeMinMaxSizes(item_node.Style().GetWritingMode(),
+                                        type, space_for_measure);
+  };
+
   const MinMaxSizes sizes = ComputeMinAndMaxContentContributionForSelf(
-                                grid_lanes_item.node, space_for_measure)
+                                item_node, space_for_measure, MinMaxSizesFunc)
                                 .sizes;
   return (sizing_constraint == SizingConstraint::kMinContent) ? sizes.min_size
                                                               : sizes.max_size;
@@ -1115,8 +1127,17 @@ void GridLanesLayoutAlgorithm::MeasureVirtualGridLanesItems(
         // Mark the item as dependent on the block size in these cases; if the
         // block size changes, we'll need to re-run min/max calculations to get
         // the correct contribution from this item.
+        auto MinMaxSizesFunc = [&](SizeType type) -> MinMaxSizesResult {
+          if (item_data.IsSubgrid()) {
+            return To<GridNode>(item_node).ComputeSubgridMinMaxSizes(
+                sizing_subtree.SubgridSizingSubtree(item_data), space);
+          }
+          return item_node.ComputeMinMaxSizes(item_style.GetWritingMode(), type,
+                                              space);
+        };
         const MinMaxSizesResult result =
-            ComputeMinAndMaxContentContributionForSelf(item_node, space);
+            ComputeMinAndMaxContentContributionForSelf(item_node, space,
+                                                       MinMaxSizesFunc);
         if (result.depends_on_block_constraints) {
           item_data.is_sizing_dependent_on_block_size = true;
         }
@@ -1155,9 +1176,18 @@ void GridLanesLayoutAlgorithm::MeasureVirtualGridLanesItems(
       // on the tracks the virtual item spans. If a contribution may need to be
       // clamped, `maybe_clamp` will be set to true. See
       // https://drafts.csswg.org/css-grid/#min-size-auto for more details.
-      //
-      // TODO(almaher): pass in `subgrid_minmax_sizes` when we support
-      // subgrid.
+      auto subgrid_minmax_sizes = [&]() -> MinMaxSizesResult {
+        CHECK(item_data.IsSubgrid());
+        const GridSizingSubtree& subgrid_sizing_subtree =
+            sizing_subtree.SubgridSizingSubtree(item_data);
+        if (subgrid_sizing_subtree.LayoutData().IsSubgridWithStandaloneAxis(
+                kForColumns)) {
+          return To<GridNode>(item_node).ComputeSubgridMinMaxSizes(
+              subgrid_sizing_subtree, space);
+        }
+        return MinMaxSizesResult();
+      };
+
       bool maybe_clamp = false;
       LayoutUnit contribution_assuming_tracks =
           CalculateIntrinsicMinimumContribution(
@@ -1165,8 +1195,7 @@ void GridLanesLayoutAlgorithm::MeasureVirtualGridLanesItems(
               /*special_spanning_criteria=*/true,
               [&]() { return min_max_contribution.min_size; },
               [&]() { return min_max_contribution.max_size; },
-              /*subgrid_minmax_sizes=*/[]() { return MinMaxSizesResult(); },
-              space, &item_data, maybe_clamp);
+              subgrid_minmax_sizes, space, &item_data, maybe_clamp);
       // If we assume we are spanning tracks that force us to use the automatic
       // min size, we will never need to clamp the value returned here. As such,
       // `maybe_clamp` should never be true if `special_spanning_criteria` is
@@ -1182,8 +1211,7 @@ void GridLanesLayoutAlgorithm::MeasureVirtualGridLanesItems(
               /*special_spanning_criteria=*/false,
               [&]() { return min_max_contribution.min_size; },
               [&]() { return min_max_contribution.max_size; },
-              /*subgrid_minmax_sizes=*/[]() { return MinMaxSizesResult(); },
-              space, &item_data, maybe_clamp);
+              subgrid_minmax_sizes, space, &item_data, maybe_clamp);
 
       // Add the margin sum to all contribution sizes.
       auto AdjustItemContribution = [&](LayoutUnit& contribution_size) {

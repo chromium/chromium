@@ -727,9 +727,7 @@ LayoutUnit GridLayoutAlgorithm::ContributionSizeForGridItem(
       };
 
       auto subgrid_minmax_sizes = [&]() -> MinMaxSizesResult {
-        if (!grid_item->IsSubgrid()) {
-          return MinMaxSizesResult();
-        }
+        CHECK(grid_item->IsSubgrid());
         const GridSizingSubtree& subgrid_sizing_subtree =
             sizing_subtree.SubgridSizingSubtree(*grid_item);
         if (subgrid_sizing_subtree.LayoutData().IsSubgridWithStandaloneAxis(
