@@ -16,8 +16,6 @@ struct Options {
   bool check_ipc = false;
   bool check_layout_object_methods = false;
   bool check_stack_allocated = false;
-  bool check_ptrs_to_non_string_literals = false;
-  bool check_span_fields = false;
   bool enable_match_profiling = false;
   std::string exclude_fields_file;
 };
