@@ -5,6 +5,15 @@
 import("//build/config/cast.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 
+# New dependencies should use `xml-rs` (potentially via `xml_dom.h`) instead of
+# using a memory-unsafe XML parser.
+expat_visibility = [
+  ":*",
+  "//skia:*",
+  "//third_party/libjingle_xmpp:*",
+  "//third_party/wayland:*",
+]
+
 # On Linux, we implicitly already depend on expat via fontconfig;
 # let's not pull it in twice.
 # Chromecast doesn't ship expat as a system library.
@@ -15,6 +24,7 @@ if (((is_linux && !is_castos) || is_chromeos) && !use_fuzzing_engine) {
   }
 
   group("expat") {
+    visibility = expat_visibility
     public_configs = [ ":expat_config" ]
   }
 } else {
@@ -40,6 +50,7 @@ if (((is_linux && !is_castos) || is_chromeos) && !use_fuzzing_engine) {
   }
 
   static_library("expat") {
+    visibility = expat_visibility
     sources = [
       "src/expat/lib/expat.h",
       "src/expat/lib/xmlparse.c",
