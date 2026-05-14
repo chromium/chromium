@@ -27,6 +27,11 @@ class CSSShapeInterpolationType : public CSSInterpolationType {
   static CORE_EXPORT bool IsShapeNonInterpolableValue(
       const NonInterpolableValue*);
 
+  // Returns true if the shape non-interpolable value contains arc segments,
+  // which produce variable conic weights in the resulting SkPath and cannot
+  // be reliably interpolated on the compositor.
+  static CORE_EXPORT bool HasArcSegments(const NonInterpolableValue*);
+
   static CORE_EXPORT BasicShape* CreateShape(const InterpolableValue&,
                                              const NonInterpolableValue&,
                                              const CSSToLengthConversionData&);

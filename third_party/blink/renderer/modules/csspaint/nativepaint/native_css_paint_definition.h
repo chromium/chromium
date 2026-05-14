@@ -15,6 +15,7 @@ namespace blink {
 class LocalFrame;
 class CSSProperty;
 class Element;
+class TypedInterpolationValue;
 
 // See README.md for how this class fits in to the overall design
 class MODULES_EXPORT NativeCssPaintDefinition : public NativePaintDefinition {
@@ -23,9 +24,10 @@ class MODULES_EXPORT NativeCssPaintDefinition : public NativePaintDefinition {
 
   // Validation function for determining if a value / interpolable_value is
   // supported on the compositor.
-  using ValueFilter = bool (*)(const Element* element,
-                               const CSSValue* value,
-                               const InterpolableValue* interpolable_value);
+  using ValueFilter =
+      bool (*)(const Element* element,
+               const CSSValue* value,
+               const TypedInterpolationValue* interpolation_value);
 
   // Returns an animation for the given property, if it is compositable
   // excepting additional checks in CheckCanStartAnimationOnCompositor. Used
@@ -54,9 +56,10 @@ class MODULES_EXPORT NativeCssPaintDefinition : public NativePaintDefinition {
 
   // Default validator for a keyframe value, which accepts any non-null value
   // as being supported. Replace with a property specific validator as needed.
-  static bool DefaultValueFilter(const Element* element,
-                                 const CSSValue* value,
-                                 const InterpolableValue* interpolable_value);
+  static bool DefaultValueFilter(
+      const Element* element,
+      const CSSValue* value,
+      const TypedInterpolationValue* interpolation_value);
 
   struct BaseKeyframe {
     BaseKeyframe(double offset, std::unique_ptr<gfx::TimingFunction>& tf)

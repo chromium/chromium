@@ -659,6 +659,22 @@ bool CSSShapeInterpolationType::IsShapeNonInterpolableValue(
   return IsA<ShapeNonInterpolableValue>(value);
 }
 
+// TODO(crbug.com/512908979): Remove this bespoke helper when cc clip paths can
+// properly interpolate arcs. static
+bool CSSShapeInterpolationType::HasArcSegments(
+    const NonInterpolableValue* value) {
+  const auto* shape_value = DynamicTo<ShapeNonInterpolableValue>(value);
+  if (!shape_value) {
+    return false;
+  }
+  for (const auto& param : shape_value->GetParams()) {
+    if (param.type == kPathSegArcAbs || param.type == kPathSegArcRel) {
+      return true;
+    }
+  }
+  return false;
+}
+
 // static
 BasicShape* CSSShapeInterpolationType::CreateShape(
     const InterpolableValue& interpolable_value,

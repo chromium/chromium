@@ -31,9 +31,7 @@ bool NativeCssPaintDefinition::CanGetValueFromKeyframe(
     DCHECK(frame->IsTransitionPropertySpecificKeyframe());
     const TransitionKeyframe::PropertySpecificKeyframe* keyframe =
         To<TransitionKeyframe::PropertySpecificKeyframe>(frame);
-    InterpolableValue* value =
-        keyframe->GetValue()->Value().interpolable_value.Get();
-    return filter(element, nullptr, value);
+    return filter(element, nullptr, keyframe->GetValue());
   }
 }
 
@@ -104,8 +102,8 @@ bool NativeCssPaintDefinition::AnimationIsValidForPaintWorklets(
 bool NativeCssPaintDefinition::DefaultValueFilter(
     const Element* element,
     const CSSValue* value,
-    const InterpolableValue* interpolable_value) {
-  return value || interpolable_value;
+    const TypedInterpolationValue* interpolation_value) {
+  return value || interpolation_value;
 }
 
 std::optional<double> NativeCssPaintDefinition::Progress(
