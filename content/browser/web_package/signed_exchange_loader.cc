@@ -7,6 +7,7 @@
 #include <memory>
 #include <optional>
 
+#include "base/check_op.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -367,6 +368,7 @@ void SignedExchangeLoader::NotifyClientOnCompleteIfReady() {
   status.encoded_body_length =
       outer_response_length_info_->decoded_body_length -
       signed_exchange_handler_->GetExchangeHeaderLength();
+  CHECK_GE(status.encoded_body_length, 0);
   status.decoded_body_length = body_data_pipe_adapter_->TransferredBytes();
 
   if (ssl_info_) {
