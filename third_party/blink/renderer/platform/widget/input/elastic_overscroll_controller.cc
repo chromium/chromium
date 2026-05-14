@@ -11,6 +11,7 @@
 #include "base/functional/bind.h"
 #include "build/build_config.h"
 #include "cc/input/input_handler.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/widget/input/elastic_overscroll_controller_bezier.h"
 #include "third_party/blink/renderer/platform/widget/input/elastic_overscroll_controller_exponential.h"
 #include "ui/base/ui_base_features.h"
@@ -117,7 +118,7 @@ void ElasticOverscrollController::ObserveScrollUpdate(
 
   entry.is_in_momentum_phase = has_momentum;
 
-  Overscroll(entry, unused_scroll_delta);
+  Overscroll(entry, unused_scroll_delta, event_delta);
   if (has_momentum &&
       !helper_->StretchAmount(entry.target_scroller_id).IsZero()) {
     EnterStateMomentumAnimated(entry, event_timestamp);
@@ -221,7 +222,8 @@ ElasticOverscrollController::GetEntry(cc::ElementId element_id) {
 
 void ElasticOverscrollController::Overscroll(
     OverscrollEntry& entry,
-    const gfx::Vector2dF& overscroll_delta) {
+    const gfx::Vector2dF& overscroll_delta,
+    const gfx::Vector2dF& event_delta) {
 
   // The effect can be dynamically disabled by setting styles to disallow user
   // scrolling. When disabled, disallow active or momentum overscrolling, but
@@ -238,13 +240,24 @@ void ElasticOverscrollController::Overscroll(
   adjusted_overscroll_delta += entry.pending_overscroll_delta;
   entry.pending_overscroll_delta = gfx::Vector2dF();
 
+  // Use the original event delta to choose the rubber-band axis. A mostly
+  // vertical scroll can leave only its small horizontal component unused on
+  // pages that do not scroll horizontally.
+  const gfx::Vector2dF& delta_for_axis_selection =
+      RuntimeEnabledFeatures::
+              ElasticOverscrollUseEventDeltaForAxisSelectionEnabled()
+          ? event_delta
+          : overscroll_delta;
+
   // TODO (gastonr): Make this prefer the writing mode direction instead.
   // Only allow one direction to overscroll at a time, and slightly prefer
   // scrolling vertically by applying the equal case to delta_y.
-  if (fabsf(overscroll_delta.y()) >= fabsf(overscroll_delta.x()))
+  if (fabsf(delta_for_axis_selection.y()) >=
+      fabsf(delta_for_axis_selection.x())) {
     adjusted_overscroll_delta.set_x(0);
-  else
+  } else {
     adjusted_overscroll_delta.set_y(0);
+  }
 
   if (!kOverscrollNonScrollableDirection) {
     // Check whether each direction is scrollable and 0 out the overscroll if it
