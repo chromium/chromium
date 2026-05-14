@@ -718,13 +718,8 @@ void ThrottlingURLLoader::OnReceiveRedirect(
     for (auto& entry : throttles_) {
       auto* throttle = entry.throttle.get();
       auto weak_ptr = weak_factory_.GetWeakPtr();
-      std::vector<std::string> removed_headers;
-      net::HttpRequestHeaders modified_headers;
-      net::HttpRequestHeaders modified_cors_exempt_headers;
-      net::RedirectInfo redirect_info_copy = redirect_info;
-      throttle->BeforeWillRedirectRequest(
-          &redirect_info_copy, *response_head, &has_pending_restart,
-          &removed_headers, &modified_headers, &modified_cors_exempt_headers);
+      throttle->BeforeWillRedirectRequest(redirect_info, *response_head,
+                                          &has_pending_restart);
 
       if (!weak_ptr)
         return;

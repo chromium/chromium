@@ -184,12 +184,9 @@ class BLINK_COMMON_EXPORT URLLoaderThrottle {
   // Note: restarting with the url reset triggers an internal redirect, which
   // will cause this to be run again. Ensure that this doesn't cause loops.
   virtual void BeforeWillRedirectRequest(
-      net::RedirectInfo* redirect_info,
+      const net::RedirectInfo& redirect_info,
       const network::mojom::URLResponseHead& response_head,
-      RestartWithURLReset* restart_with_url_reset,
-      std::vector<std::string>* to_be_removed_request_headers,
-      net::HttpRequestHeaders* modified_request_headers,
-      net::HttpRequestHeaders* modified_cors_exempt_request_headers);
+      RestartWithURLReset* restart_with_url_reset);
 
   // Called if there is a non-OK net::Error in the completion status.
   virtual void WillOnCompleteWithError(

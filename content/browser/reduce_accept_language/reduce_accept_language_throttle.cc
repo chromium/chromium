@@ -60,12 +60,9 @@ void ReduceAcceptLanguageThrottle::WillStartRequest(
 }
 
 void ReduceAcceptLanguageThrottle::BeforeWillRedirectRequest(
-    net::RedirectInfo* redirect_info,
+    const net::RedirectInfo& redirect_info,
     const network::mojom::URLResponseHead& response_head,
-    RestartWithURLReset* restart_with_url_reset,
-    std::vector<std::string>* to_be_removed_request_headers,
-    net::HttpRequestHeaders* modified_request_headers,
-    net::HttpRequestHeaders* modified_cors_exempt_request_headers) {
+    RestartWithURLReset* restart_with_url_reset) {
   // For redirect case, checking if a redirect response should result in a
   // restart of the last requested URL with a better negotiation language,
   // rather than following the redirect.
@@ -81,7 +78,7 @@ void ReduceAcceptLanguageThrottle::BeforeWillRedirectRequest(
   MaybeRestartWithLanguageNegotiation(response_head, restart_with_url_reset);
   // Update the url with the redirect new url to make sure last_request_url_
   // with be the response_url.
-  last_request_url_ = redirect_info->new_url;
+  last_request_url_ = redirect_info.new_url;
 }
 
 void ReduceAcceptLanguageThrottle::BeforeWillProcessResponse(

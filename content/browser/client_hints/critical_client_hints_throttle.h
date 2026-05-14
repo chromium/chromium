@@ -46,12 +46,9 @@ class CriticalClientHintsThrottle : public blink::URLLoaderThrottle {
       const network::mojom::URLResponseHead& response_head,
       RestartWithURLReset* restart_with_url_reset) override;
   void BeforeWillRedirectRequest(
-      net::RedirectInfo* redirect_info,
+      const net::RedirectInfo& redirect_info,
       const network::mojom::URLResponseHead& response_head,
-      RestartWithURLReset* restart_with_url_reset,
-      std::vector<std::string>* to_be_removed_request_headers,
-      net::HttpRequestHeaders* modified_request_headers,
-      net::HttpRequestHeaders* modified_cors_exempt_request_headers) override;
+      RestartWithURLReset* restart_with_url_reset) override;
 
  private:
   // Contains the logic for whether or not the navigation should restart, and

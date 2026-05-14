@@ -250,12 +250,9 @@ class TestURLLoaderThrottle : public blink::URLLoaderThrottle {
   using BeforeThrottleCallback = base::RepeatingCallback<void(
       URLLoaderThrottle::Delegate* delegate,
       RestartWithURLReset* restart_with_url_reset)>;
-  using BeforeThrottleRedirectCallback = base::OnceCallback<void(
-      blink::URLLoaderThrottle::Delegate* delegate,
-      RestartWithURLReset* restart_with_url_reset,
-      std::vector<std::string>* removed_headers,
-      net::HttpRequestHeaders* modified_headers,
-      net::HttpRequestHeaders* modified_cors_exempt_headers)>;
+  using BeforeThrottleRedirectCallback =
+      base::OnceCallback<void(blink::URLLoaderThrottle::Delegate* delegate,
+                              RestartWithURLReset* restart_with_url_reset)>;
 
   size_t will_start_request_called() const {
     return will_start_request_called_;
@@ -352,17 +349,13 @@ class TestURLLoaderThrottle : public blink::URLLoaderThrottle {
   }
 
   void BeforeWillRedirectRequest(
-      net::RedirectInfo* redirect_info,
+      const net::RedirectInfo& redirect_info,
       const network::mojom::URLResponseHead& response_head,
-      RestartWithURLReset* restart_with_url_reset,
-      std::vector<std::string>* removed_headers,
-      net::HttpRequestHeaders* modified_headers,
-      net::HttpRequestHeaders* modified_cors_exempt_headers) override {
+      RestartWithURLReset* restart_with_url_reset) override {
     before_will_redirect_request_called_++;
     if (before_will_redirect_request_callback_) {
       std::move(before_will_redirect_request_callback_)
-          .Run(delegate_.get(), restart_with_url_reset, removed_headers,
-               modified_headers, modified_cors_exempt_headers);
+          .Run(delegate_.get(), restart_with_url_reset);
     }
   }
 
@@ -715,10 +708,7 @@ TEST_F(ThrottlingURLLoaderTest, CancelBeforeWillRedirect) {
   throttle_->set_before_will_redirect_request_callback(
       base::BindLambdaForTesting(
           [](blink::URLLoaderThrottle::Delegate* delegate,
-             RestartWithURLReset* restart_with_url_reset,
-             std::vector<std::string>* /* removed_headers */,
-             net::HttpRequestHeaders* /* modified_headers */,
-             net::HttpRequestHeaders* /* modified_cors_exempt_headers */) {
+             RestartWithURLReset* restart_with_url_reset) {
             delegate->CancelWithError(net::ERR_ACCESS_DENIED);
           }));
 
@@ -749,12 +739,8 @@ TEST_F(ThrottlingURLLoaderTest, DeleteBeforeWillRedirect) {
   base::RunLoop run_loop;
   throttle_->set_before_will_redirect_request_callback(
       base::BindLambdaForTesting(
-          [this, &run_loop](
-              blink::URLLoaderThrottle::Delegate* delegate,
-              RestartWithURLReset* restart_with_url_reset,
-              std::vector<std::string>* /* removed_headers */,
-              net::HttpRequestHeaders* /* modified_headers */,
-              net::HttpRequestHeaders* /* modified_cors_exempt_headers */) {
+          [this, &run_loop](blink::URLLoaderThrottle::Delegate* delegate,
+                            RestartWithURLReset* restart_with_url_reset) {
             ResetLoader();
             run_loop.Quit();
           }));
@@ -1668,12 +1654,9 @@ TEST_F(ThrottlingURLLoaderTest, RestartWithURLResetBeforeWillRedirectRequest) {
 
   // Restart the request with URL reset when processing
   // BeforeWillRedirectRequest().
-  throttle_->set_before_will_redirect_request_callback(base::BindRepeating(
-      [](blink::URLLoaderThrottle::Delegate* delegate,
-         RestartWithURLReset* restart_with_url_reset,
-         std::vector<std::string>* /* removed_headers */,
-         net::HttpRequestHeaders* /* modified_headers */,
-         net::HttpRequestHeaders* /* modified_cors_exempt_headers */) {
+  throttle_->set_before_will_redirect_request_callback(
+      base::BindRepeating([](blink::URLLoaderThrottle::Delegate* delegate,
+                             RestartWithURLReset* restart_with_url_reset) {
         *restart_with_url_reset = RestartWithURLReset(true);
       }));
 
