@@ -5,9 +5,9 @@
     <meta charset="UTF-8">
     <body>
         <div class="test">
-            <!-- Private use area Ranges: U+E000..U+F8FF, U+F0000..U+FFFFF, U+100000..U+10FFFF -->
-            <div id="pua_test_mono" style="font-family: monospace;">abc&#xE000;&#xE401;&#xE402;&#xE403;&#xF8FF;&#xF0000;&#xFAAAA;&#xFFFFF;&#x100000;&#x10AAAA;&#x10FFFF;</div>
-            <div id="pua_test_serif" style="font-family: serif;">abc&#xE000;&#xE401;&#xE402;&#xE403;&#xF8FF;&#xF0000;&#xFAAAA;&#xFFFFF;&#x100000;&#x10AAAA;&#x10FFFF;</div>
+            <!-- Private use area Ranges: U+E000..U+F8FF, U+F0000..U+FFFFD, U+100000..U+10FFFD -->
+            <div id="pua_test_mono" style="font-family: monospace;">abc&#xE000;&#xE401;&#xE402;&#xE403;&#xF8FF;&#xF0000;&#xFAAAA;&#xFFFFD;&#x100000;&#x10AAAA;&#x10FFFD;</div>
+            <div id="pua_test_serif" style="font-family: serif;">abc&#xE000;&#xE401;&#xE402;&#xE403;&#xF8FF;&#xF0000;&#xFAAAA;&#xFFFFD;&#x100000;&#x10AAAA;&#x10FFFD;</div>
         </div>
     </body>
     </html>

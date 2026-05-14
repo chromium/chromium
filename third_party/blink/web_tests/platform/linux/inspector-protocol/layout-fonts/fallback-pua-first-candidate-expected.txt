@@ -1,9 +1,9 @@
 Test passes if the fallback font selected for the Unicode Private Use Area test text is the priority font.
-abc󰀀󺪪󿿿􀀀􊪪􏿿
+abc󰀀󺪪󿿽􀀀􊪪􏿽
 #pua_test_mono:
 "Cousine" : 14
 
-abc󰀀󺪪󿿿􀀀􊪪􏿿
+abc󰀀󺪪󿿽􀀀􊪪􏿽
 #pua_test_serif:
 "Tinos" : 14
 

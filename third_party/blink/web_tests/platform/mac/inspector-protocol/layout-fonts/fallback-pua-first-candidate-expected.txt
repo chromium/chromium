@@ -1,10 +1,10 @@
 Test passes if the fallback font selected for the Unicode Private Use Area test text is the priority font.
-abc󰀀󺪪󿿿􀀀􊪪􏿿
+abc󰀀󺪪󿿽􀀀􊪪􏿽
 #pua_test_mono:
 "Menlo" : 13,
 "Times" : 1
 
-abc󰀀󺪪󿿿􀀀􊪪􏿿
+abc󰀀󺪪󿿽􀀀􊪪􏿽
 #pua_test_serif:
 "Times" : 14
 
