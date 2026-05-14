@@ -43,10 +43,6 @@
 using OcclusionState =
     AutoPictureInPictureWindowOcclusionHelperBase::OcclusionState;
 
-namespace {
-constexpr base::TimeDelta kTriggerDelay = base::Milliseconds(50);
-}  // namespace
-
 AutoPictureInPictureTabHelper::AutoPictureInPictureTabHelper(
     content::WebContents* web_contents)
     : content::WebContentsObserver(web_contents),
@@ -561,19 +557,6 @@ void AutoPictureInPictureTabHelper::MediaSessionActionsChanged(
 }
 
 void AutoPictureInPictureTabHelper::MaybeEnterAutoPictureInPicture() {
-  if (close_timer_.IsRunning()) {
-    close_timer_.Stop();
-    return;
-  }
-
-  if (is_in_picture_in_picture_ || is_in_auto_picture_in_picture_) {
-    return;
-  }
-
-  if (enter_timer_.IsRunning()) {
-    return;
-  }
-
   if (!IsEligibleForAutoPictureInPicture(
           /*should_record_blocking_metrics=*/true)) {
     if (base::FeatureList::IsEnabled(
@@ -585,19 +568,6 @@ void AutoPictureInPictureTabHelper::MaybeEnterAutoPictureInPicture() {
       return;
     }
     MaybeReportAutoPictureInPictureInfoChanged();
-    return;
-  }
-
-  enter_timer_.Start(
-      FROM_HERE, kTriggerDelay,
-      base::BindOnce(
-          &AutoPictureInPictureTabHelper::PerformEnterAutoPictureInPicture,
-          base::Unretained(this)));
-}
-
-void AutoPictureInPictureTabHelper::PerformEnterAutoPictureInPicture() {
-  if (!IsEligibleForAutoPictureInPicture(
-          /*should_record_blocking_metrics=*/true)) {
     return;
   }
   auto_picture_in_picture_activation_time_ =
@@ -657,36 +627,15 @@ void AutoPictureInPictureTabHelper::StopAndResetAsyncTasks() {
 }
 
 void AutoPictureInPictureTabHelper::MaybeExitAutoPictureInPicture() {
-  if (enter_timer_.IsRunning()) {
-    enter_timer_.Stop();
-    return;
-  }
-
-  if (!is_in_auto_picture_in_picture_) {
-    return;
-  }
-
-  if (close_timer_.IsRunning()) {
-    return;
-  }
-
-  close_timer_.Start(
-      FROM_HERE, kTriggerDelay,
-      base::BindOnce(
-          &AutoPictureInPictureTabHelper::PerformExitAutoPictureInPicture,
-          base::Unretained(this)));
-}
-
-void AutoPictureInPictureTabHelper::PerformExitAutoPictureInPicture() {
-  if (!is_in_auto_picture_in_picture_) {
-    return;
-  }
-
   blocked_due_to_content_setting_ = false;
   MaybeRecordPictureInPictureChanged(false);
   StopAndResetAsyncTasks();
   auto_pip_trigger_reason_ =
       media::PictureInPictureEventsInfo::AutoPipReason::kUnknown;
+
+  if (!is_in_auto_picture_in_picture_) {
+    return;
+  }
   is_in_auto_picture_in_picture_ = false;
 
   PictureInPictureWindowManager::GetInstance()->ExitPictureInPicture();
@@ -733,16 +682,14 @@ bool AutoPictureInPictureTabHelper::IsEligibleForAutoPictureInPicture(
     return false;
   }
 
-  // Do not replace any PiP with autopip, unless the current PiP window is
-  // about to exit.
-  auto* existing_pip_contents =
-      PictureInPictureWindowManager::GetInstance()->GetWebContents();
-  if (existing_pip_contents != nullptr) {
-    auto* existing_helper =
-        AutoPictureInPictureTabHelper::FromWebContents(existing_pip_contents);
-    if (!existing_helper || !existing_helper->IsExitingSoon()) {
-      return false;
-    }
+  // Do not replace any PiP with autopip.  In the special case where the
+  // incoming active tab owns a pip window that will close as a result of the
+  // tab switch, it should have closed already by now.  Either it received a
+  // notification from its tab strip helper, or we notified it, depending on
+  // which one of us was notified by our respective tab strip helper.
+  if (PictureInPictureWindowManager::GetInstance()->GetWebContents() !=
+      nullptr) {
+    return false;
   }
 
   // Since nobody has a pip window, we shouldn't think we do.
@@ -1000,10 +947,6 @@ AutoPictureInPictureTabHelper::GetAutoPipTriggerReason() const {
 
 bool AutoPictureInPictureTabHelper::IsInAutoPictureInPicture() const {
   return is_in_auto_picture_in_picture_;
-}
-
-bool AutoPictureInPictureTabHelper::IsExitingSoon() const {
-  return close_timer_.IsRunning();
 }
 
 bool AutoPictureInPictureTabHelper::AreAutoPictureInPicturePreconditionsMet()

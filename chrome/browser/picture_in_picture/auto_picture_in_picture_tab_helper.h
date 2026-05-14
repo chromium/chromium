@@ -10,7 +10,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
-#include "base/timer/timer.h"
 #include "build/build_config.h"
 #include "chrome/browser/picture_in_picture/auto_picture_in_picture_safe_browsing_checker_client.h"
 #include "chrome/browser/picture_in_picture/auto_picture_in_picture_window_occlusion_helper_base.h"
@@ -113,9 +112,6 @@ class AutoPictureInPictureTabHelper
   // Returns true if the tab is in PiP mode, and PiP was started by auto-pip.
   bool IsInAutoPictureInPicture() const;
 
-  // Returns true if the tab is currently in the process of exiting auto PiP.
-  bool IsExitingSoon() const;
-
   void set_is_in_auto_picture_in_picture_for_testing(bool auto_pip) {
     is_in_auto_picture_in_picture_ = auto_pip;
   }
@@ -183,18 +179,6 @@ class AutoPictureInPictureTabHelper
     auto_pip_trigger_reason_ = auto_pip_trigger_reason;
   }
 
-  void MaybeFireEnterTimerForTesting() {
-    if (enter_timer_.IsRunning()) {
-      enter_timer_.FireNow();
-    }
-  }
-
-  void MaybeFireCloseTimerForTesting() {
-    if (close_timer_.IsRunning()) {
-      close_timer_.FireNow();
-    }
-  }
-
 #if BUILDFLAG(IS_ANDROID)
   // Called from Java when the user dismissed the PiP window either soon after
   // it opened or using the hide button.
@@ -246,9 +230,6 @@ class AutoPictureInPictureTabHelper
 
   void MaybeEnterAutoPictureInPicture();
 
-  // Performs the actual entry into Auto PiP after the `enter_timer_` delay.
-  void PerformEnterAutoPictureInPicture();
-
   // If needed, schedules the asynchronous task to get the URL safety. When
   // async tasks complete there may be a call to
   // `MaybeEnterAutoPictureInPicture`. This method can safely be called multiple
@@ -266,9 +247,6 @@ class AutoPictureInPictureTabHelper
   void StopAndResetAsyncTasks();
 
   void MaybeExitAutoPictureInPicture();
-
-  // Performs the actual exit from Auto PiP after the `close_timer_` delay.
-  void PerformExitAutoPictureInPicture();
 
   void MaybeStartOrStopObservers();
 
@@ -510,14 +488,6 @@ class AutoPictureInPictureTabHelper
   // check. Intended for Android JNI tests only.
   std::optional<bool> is_using_camera_or_microphone_for_testing_ = std::nullopt;
 #endif  // BUILDFLAG(IS_ANDROID)
-
-  // Timer for delayed entry into auto picture-in-picture. This short delay
-  // prevents rapid entry/exit churn when switching tabs.
-  base::OneShotTimer enter_timer_;
-
-  // Timer for delayed exit from auto picture-in-picture. This short delay
-  // prevents rapid entry/exit churn when switching tabs.
-  base::OneShotTimer close_timer_;
 
   // WeakPtrFactory used only for requesting URL safety. This weak ptr factory
   // is invalidated during calls to `StopAndResetAsyncTasks`.
