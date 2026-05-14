@@ -16,4 +16,8 @@ std::unique_ptr<BackendPromoService> CreateBackendPromoService() {
   return std::make_unique<ChromiumBackendPromoService>();
 }
 
+void ShowBackendPromoDebugTools() {
+  // Debug tools are not supported in Chromium build.
+}
+
 }  // namespace ios::provider

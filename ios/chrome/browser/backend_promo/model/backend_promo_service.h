@@ -25,6 +25,9 @@ namespace ios::provider {
 // Creates a new instance of BackendPromoService.
 std::unique_ptr<BackendPromoService> CreateBackendPromoService();
 
+// Shows the backend promo debug tools.
+void ShowBackendPromoDebugTools();
+
 }  // namespace ios::provider
 
 #endif  // IOS_CHROME_BROWSER_BACKEND_PROMO_MODEL_BACKEND_PROMO_SERVICE_H_

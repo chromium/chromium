@@ -47,6 +47,7 @@
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_utils.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin_presenter.h"
+#import "ios/chrome/browser/backend_promo/model/backend_promo_service.h"
 #import "ios/chrome/browser/bubble/ui_bundled/bubble_constants.h"
 #import "ios/chrome/browser/bubble/ui_bundled/bubble_view_controller_presenter.h"
 #import "ios/chrome/browser/commerce/model/push_notification/push_notification_feature.h"
@@ -634,6 +635,11 @@ struct EnhancedSafeBrowsingActivePromoData
     [model addItem:[self buttonCatalogDetailItem]
         toSectionWithIdentifier:SettingsSectionIdentifierDebug];
   }
+
+  if (experimental_flags::ShouldShowBackendPromoDebugTools()) {
+    [model addItem:[self backendPromoDebugToolsItem]
+        toSectionWithIdentifier:SettingsSectionIdentifierDebug];
+  }
 }
 
 - (void)updateSigninSection {
@@ -1138,6 +1144,15 @@ struct EnhancedSafeBrowsingActivePromoData
           accessibilityIdentifier:nil];
 }
 
+- (TableViewDetailIconItem*)backendPromoDebugToolsItem {
+  return [self detailItemWithType:SettingsItemTypeBackendPromoDebugTools
+                             text:@"Backend promo debug tools"
+                       detailText:nil
+                           symbol:DefaultSettingsRootSymbol(kCartSymbol)
+            symbolBackgroundColor:[UIColor colorNamed:kGrey400Color]
+          accessibilityIdentifier:nil];
+}
+
 #pragma mark Item Constructors
 
 - (TableViewDetailIconItem*)detailItemWithType:(NSInteger)type
@@ -1388,6 +1403,9 @@ struct EnhancedSafeBrowsingActivePromoData
       // Sets the "new" IPH badge shown count to max so it's not shown again.
       GetApplicationContext()->GetLocalState()->SetInteger(
           prefs::kBWGSettingsNewBadgeShownCount, INT_MAX);
+      break;
+    case SettingsItemTypeBackendPromoDebugTools:
+      ios::provider::ShowBackendPromoDebugTools();
       break;
     default:
       break;

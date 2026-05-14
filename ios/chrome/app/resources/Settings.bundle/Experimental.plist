@@ -724,6 +724,16 @@
 		</dict>
 		<dict>
 			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>Title</key>
+			<string>Show Backend Promo Debug Tools</string>
+			<key>Key</key>
+			<string>ShowBackendPromoDebugTools</string>
+			<key>DefaultValue</key>
+			<false/>
+		</dict>
+		<dict>
+			<key>Type</key>
 			<string>PSGroupSpecifier</string>
 			<key>Title</key>
 			<string>Enterprise Settings</string>

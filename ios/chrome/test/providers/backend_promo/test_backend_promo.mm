@@ -17,4 +17,8 @@ std::unique_ptr<BackendPromoService> CreateBackendPromoService() {
   return std::make_unique<TestBackendPromoService>();
 }
 
+void ShowBackendPromoDebugTools() {
+  // Do nothing in test.
+}
+
 }  // namespace ios::provider

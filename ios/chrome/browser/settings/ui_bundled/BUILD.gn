@@ -129,6 +129,7 @@ source_set("ui_bundled") {
     "//ios/chrome/browser/autofill/model",
     "//ios/chrome/browser/autofill/ui_bundled/cells",
     "//ios/chrome/browser/autofill/ui_bundled/util",
+    "//ios/chrome/browser/backend_promo/model",
     "//ios/chrome/browser/browsing_data/model",
     "//ios/chrome/browser/bubble/ui_bundled",
     "//ios/chrome/browser/bubble/ui_bundled:constants",

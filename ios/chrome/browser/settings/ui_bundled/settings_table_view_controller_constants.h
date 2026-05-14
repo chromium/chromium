@@ -58,6 +58,7 @@ typedef NS_ENUM(NSInteger, SettingsItemType) {
   SettingsItemTypeTabs,
   SettingsItemTypeESBPromo,
   SettingsItemTypeBWGSettings,
+  SettingsItemTypeBackendPromoDebugTools
 };
 
 // The accessibility identifier of the settings TableView.
