@@ -1409,7 +1409,6 @@ bool Database::BeginTransaction(InternalApiToken) {
     return false;
   }
 
-  bool success = true;
   DCHECK_GE(transaction_nesting_, 0);
   if (!transaction_nesting_) {
     needs_rollback_ = false;
@@ -1420,7 +1419,7 @@ bool Database::BeginTransaction(InternalApiToken) {
     }
   }
   ++transaction_nesting_;
-  return success;
+  return true;
 }
 
 void Database::RollbackTransaction(InternalApiToken) {
