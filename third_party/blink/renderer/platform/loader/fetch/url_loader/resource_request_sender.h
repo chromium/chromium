@@ -179,7 +179,6 @@ class BLINK_PLATFORM_EXPORT ResourceRequestSender {
     // The url, method and referrer of the latest response even in case of
     // redirection.
     KURL response_url;
-    bool has_pending_redirect = false;
     base::TimeTicks local_request_start;
     base::TimeTicks local_response_start;
     base::TimeTicks remote_request_start;
@@ -192,6 +191,11 @@ class BLINK_PLATFORM_EXPORT ResourceRequestSender {
 
     std::unique_ptr<ThrottlingURLLoader> url_loader;
     std::unique_ptr<MojoURLLoaderClient> url_loader_client;
+
+    // The pending redirect information (`has_pending_redirect` and headers)
+    // is set in `ResourceRequestSender::OnFollowRedirectCallback()` and is
+    // used/cleared in `ResourceRequestSender::FollowPendingRedirect()`.
+    bool has_pending_redirect = false;
 
     // The Client Hints headers that need to be removed from a redirect.
     //
