@@ -156,6 +156,7 @@ public class NavigateTest {
     @Test
     @MediumTest
     @Feature({"Navigation", "Main"})
+    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/507111601
     public void testNavigate() throws Exception {
         String url = mTestServer.getURL("/chrome/test/data/android/navigate/simple.html");
         String result = typeInOmniboxAndNavigate(url, "Simple");
@@ -188,6 +189,7 @@ public class NavigateTest {
     @Test
     @MediumTest
     @Feature({"Navigation"})
+    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/507111601
     public void testNavigateLandscape() throws Exception {
         mActivityTestRule
                 .getActivity()
