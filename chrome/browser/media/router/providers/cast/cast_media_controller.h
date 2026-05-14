@@ -86,7 +86,7 @@ class CastMediaController : public mojom::MediaController {
   const raw_ptr<AppActivity> activity_;
   mojom::MediaStatus media_status_;
   std::string session_id_;
-  int media_session_id_;
+  int media_session_id_ = -1;
 
   mojo::ReceiverSet<mojom::MediaController> receivers_;
   mojo::RemoteSet<mojom::MediaStatusObserver> observers_;
