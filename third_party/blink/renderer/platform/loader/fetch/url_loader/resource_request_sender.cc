@@ -342,7 +342,7 @@ void ResourceRequestSender::Freeze(LoaderFreezeMode mode) {
     loading_task_runner_->PostTask(
         FROM_HERE, base::BindOnce(&ResourceRequestSender::MaybeRunPendingTasks,
                                   weak_factory_.GetWeakPtr()));
-    FollowPendingRedirect(request_info_.get());
+    FollowPendingRedirect();
   }
 }
 
@@ -401,22 +401,21 @@ ResourceRequestSender::PendingRequestInfo::PendingRequestInfo(
 
 ResourceRequestSender::PendingRequestInfo::~PendingRequestInfo() = default;
 
-void ResourceRequestSender::FollowPendingRedirect(
-    PendingRequestInfo* request_info) {
-  if (request_info->has_pending_redirect) {
-    request_info->has_pending_redirect = false;
+void ResourceRequestSender::FollowPendingRedirect() {
+  if (request_info_->has_pending_redirect) {
+    request_info_->has_pending_redirect = false;
     // net::URLRequest clears its request_start on redirect, so should we.
-    request_info->local_request_start = base::TimeTicks::Now();
+    request_info_->local_request_start = base::TimeTicks::Now();
     // Redirect URL may not be handled by the network service, so force a
     // restart in case another URLLoaderFactory should handle the URL.
-    if (request_info->redirect_requires_loader_restart) {
-      request_info->modified_headers.Clear();
-      request_info->url_loader->FollowRedirectForcingRestart();
+    if (request_info_->redirect_requires_loader_restart) {
+      request_info_->modified_headers.Clear();
+      request_info_->url_loader->FollowRedirectForcingRestart();
     } else {
-      request_info->url_loader->FollowRedirect(
-          request_info_->removed_headers, request_info->modified_headers,
+      request_info_->url_loader->FollowRedirect(
+          request_info_->removed_headers, request_info_->modified_headers,
           {} /* modified_cors_exempt_headers */);
-      request_info->modified_headers.Clear();
+      request_info_->modified_headers.Clear();
     }
   }
 }
@@ -582,7 +581,7 @@ void ResourceRequestSender::OnFollowRedirectCallback(
   request_info_->modified_headers.MergeFrom(modified_headers);
 
   if (request_info_->freeze_mode == LoaderFreezeMode::kNone) {
-    FollowPendingRedirect(request_info_.get());
+    FollowPendingRedirect();
   }
 }
 

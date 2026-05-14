@@ -224,7 +224,7 @@ class BLINK_PLATFORM_EXPORT ResourceRequestSender {
       net::HttpRequestHeaders modified_headers);
 
   // Follows redirect, if any, for the given request.
-  void FollowPendingRedirect(PendingRequestInfo* request_info);
+  void FollowPendingRedirect();
 
   // Converts remote times in the response head to local times. Returns the
   // converted response start time.
