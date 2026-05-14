@@ -98,6 +98,7 @@ public class WebViewResizingHelperUnitTest {
 
         FrameLayout container = (FrameLayout) mHelper.getResizingContainer();
         assertEquals(1, container.getChildCount());
+        assertEquals(View.GONE, container.getChildAt(0).getVisibility());
     }
 
     @Test

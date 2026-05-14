@@ -86,8 +86,10 @@ public class WebViewResizingHelper {
         if (mThinWebView == null) return;
         mResizingContainer.removeAllViews();
         mResizingContainer.addView(mResizingPlaceholder);
+        mResizingPlaceholder.setVisibility(View.GONE);
         mThinWebView = null;
         mWebContents = null;
+        mIsViewportSizeFixed = false;
     }
 
     /** Sets the ThinWebView which will be resized. */
@@ -175,9 +177,7 @@ public class WebViewResizingHelper {
     }
 
     private void disableResizingMode() {
-        if (mThinWebView == null || mResizingPlaceholder.getVisibility() != View.VISIBLE) {
-            return;
-        }
+        if (mThinWebView == null) return;
 
         View webView = mThinWebView.getView();
 
