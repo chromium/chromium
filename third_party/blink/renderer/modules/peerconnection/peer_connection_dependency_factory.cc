@@ -636,14 +636,17 @@ void ReportUmaEncodeDecodeCapabilities(
     for (const auto& sdp_format : kSdpFormats) {
       bool decode_support =
           webrtc_decoder_factory
-              ->QueryCodecSupport(sdp_format, /*reference_scaling=*/false)
+              ->QueryCodecSupport(sdp_format, /*reference_scaling=*/false,
+                                  /*resolution=*/std::nullopt)
               .is_power_efficient;
 
       EncodeScalabilityMode encode_support =
           EncodeScalabilityMode::NotSupported;
       for (const auto& mode : kScalabilityModes) {
         if (webrtc_encoder_factory
-                ->QueryCodecSupport(sdp_format, mode.scalability_string)
+                ->QueryCodecSupport(
+                    sdp_format, /*scalability_mode=*/mode.scalability_string,
+                    /*resolution=*/std::nullopt)
                 .is_power_efficient) {
           encode_support = mode.scalability_enum;
         } else {
