@@ -16,7 +16,7 @@ BASE_FEATURE(kPersonalContext, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE_PARAM(std::string,
                    kPersonalContextEligibleTiers,
                    &kPersonalContext,
-                   "eligible_tiers",
+                   "personal_context_eligible_tiers",
                    "1,2");
 
 // Controls whether the First Run and onboarding experience for Personal Context
