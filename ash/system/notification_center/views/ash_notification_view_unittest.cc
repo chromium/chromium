@@ -1183,41 +1183,6 @@ TEST_F(AshNotificationViewTest, InlineSettingsAnimationsRecordSmoothness) {
       /*data_point_count=*/2);
 }
 
-TEST_F(AshNotificationViewTest,
-       GroupNotificationSlideOutAnimationRecordSmoothness) {
-  base::HistogramTester histograms;
-
-  message_center::MessageCenter::Get()->RemoveAllNotifications(
-      /*by_user=*/true, message_center::MessageCenter::RemoveType::ALL);
-
-  auto notification = CreateTestNotification();
-
-  notification_center_test_api()->ToggleBubble();
-  auto* notification_view =
-      GetNotificationViewFromMessageCenter(notification->id());
-  MakeNotificationGroupParent(
-      notification_view,
-      2 * message_center_style::kMaxGroupedNotificationsInCollapsedState);
-
-  notification_view->ToggleExpand();
-  EXPECT_TRUE(notification_view->IsExpanded());
-
-  // Enable animations.
-  gfx::ScopedAnimationDurationScaleMode duration(
-      gfx::ScopedAnimationDurationScaleMode::FAST_DURATION);
-
-  auto* child_view = GetFirstGroupedChildNotificationView(notification_view);
-  notification_view->RemoveGroupNotification(child_view->notification_id());
-
-  base::HistogramTester histogram;
-
-  // The child view should slide out before being deleted and the smoothness
-  // should be recorded.
-  CheckSmoothnessRecorded(
-      histograms, child_view,
-      "Ash.Notification.GroupNotification.SlideOut.AnimationSmoothness");
-}
-
 TEST_F(AshNotificationViewTest, RecordExpandButtonClickAction) {
   base::HistogramTester histograms;
   auto notification = CreateTestNotification();

@@ -274,8 +274,7 @@ void SlideOutView(views::View* view,
                   base::OnceClosure on_animation_aborted,
                   int delay_in_ms,
                   int duration_in_ms,
-                  gfx::Tween::Type tween_type,
-                  const std::string& animation_histogram_name) {
+                  gfx::Tween::Type tween_type) {
   // If we are in testing with animation (non zero duration), we shouldn't have
   // delays so that we can properly track when animation is completed in test.
   if (gfx::ScopedAnimationDurationScaleMode::duration_multiplier() ==
@@ -285,11 +284,6 @@ void SlideOutView(views::View* view,
 
   // The view must have a layer to perform animation.
   DCHECK(view->layer());
-
-  ui::AnimationThroughputReporter reporter(
-      view->layer()->GetAnimator(),
-      metrics_util::ForSmoothnessV3(base::BindRepeating(
-          &ReportAnimationSmoothness, animation_histogram_name)));
 
   gfx::Transform transform;
   transform.Translate(gfx::Vector2dF(view->bounds().width(), 0));

@@ -1009,8 +1009,7 @@ void AshNotificationView::RemoveGroupNotification(
         std::move(on_animation_aborted),
         /*delay_in_ms=*/0,
         /*duration_in_ms=*/kSlideOutGroupedNotificationAnimationDurationMs,
-        gfx::Tween::LINEAR,
-        "Ash.Notification.GroupNotification.SlideOut.AnimationSmoothness");
+        gfx::Tween::LINEAR);
   } else {
     std::move(on_notification_slid_out).Run();
   }
