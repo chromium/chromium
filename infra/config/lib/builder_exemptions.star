@@ -939,6 +939,7 @@ mega_cq_excluded_builders = [
     "Libfuzzer Upload Linux32 V8-ARM ASan",
     "Libfuzzer Upload Linux32 V8-ARM ASan Debug",
     "Libfuzzer Upload iOS Catalyst Debug",
+    "Win10 x64 Release (NVIDIA)",  # TODO(irm/i_JU6abnBEHmbg2z8b73P3): Remove.
     # TODO(crbug.com/40282196): Remove the following as trybots are
     # created for them.
     "android-arm64-archive-rel",

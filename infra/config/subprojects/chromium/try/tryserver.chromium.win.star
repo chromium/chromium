@@ -165,7 +165,9 @@ try_.orchestrator_builder(
         "ci/Win x64 Builder",
         "ci/Win10 Tests x64",
         "ci/GPU Win x64 Builder",
-        "ci/Win10 x64 Release (NVIDIA)",
+        # TODO(irm/i_JU6abnBEHmbg2z8b73P3): Can restore when trace/perfetto
+        # test failures are resolved.
+        #"ci/Win10 x64 Release (NVIDIA)",
     ],
     gn_args = gn_args.config(
         configs = [
