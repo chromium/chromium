@@ -61,6 +61,11 @@ constexpr auto kRecordTypeMapping =
          {"accountWork", AutofillProfile::RecordType::kAccountWork},
          {"localOrSyncable", AutofillProfile::RecordType::kLocalOrSyncable},
          {"accountNameEmail", AutofillProfile::RecordType::kAccountNameEmail}});
+constexpr auto kEntityRecordTypeMapping =
+    base::MakeFixedFlatMap<std::string_view, EntityInstance::RecordType>(
+        {{"local", EntityInstance::RecordType::kLocal},
+         {"serverWallet", EntityInstance::RecordType::kServerWallet},
+         {"personalContext", EntityInstance::RecordType::kPersonalContext}});
 constexpr std::string_view kKeyInitialCreatorId = "initial_creator_id";
 
 // Checks if the `profile` is changed by `FinalizeAfterImport()`. See
@@ -91,6 +96,21 @@ std::optional<AutofillProfile::RecordType> GetRecordTypeFromDict(
     }
   }
   LOG(ERROR) << "Invalid " << kKeyRecordType << " value.";
+  return std::nullopt;
+}
+
+std::optional<EntityInstance::RecordType> GetEntityRecordTypeFromDict(
+    const base::DictValue& dict) {
+  if (!dict.contains(kKeyRecordType)) {
+    return EntityInstance::RecordType::kLocal;
+  }
+  if (const std::string* record_type_value = dict.FindString(kKeyRecordType)) {
+    if (auto it = kEntityRecordTypeMapping.find(*record_type_value);
+        it != kEntityRecordTypeMapping.end()) {
+      return it->second;
+    }
+  }
+  LOG(ERROR) << "Invalid " << kKeyRecordType << " value for entity.";
   return std::nullopt;
 }
 
@@ -210,11 +230,17 @@ std::optional<EntityInstance> MakeEntity(const base::DictValue& dict) {
     return std::nullopt;
   }
 
+  std::optional<EntityInstance::RecordType> record_type =
+      GetEntityRecordTypeFromDict(dict);
+  if (!record_type.has_value()) {
+    return std::nullopt;
+  }
+
   return EntityInstance(
       *entity_type, std::move(attributes),
       EntityInstance::EntityId(base::Uuid::GenerateRandomV4()),
       /*nickname=*/"", base::Time::Now(), /*use_count=*/0,
-      /*use_date=*/base::Time(), EntityInstance::RecordType::kLocal,
+      /*use_date=*/base::Time(), *record_type,
       EntityInstance::AreAttributesReadOnly(false),
       /*frecency_override=*/"");
 }

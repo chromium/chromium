@@ -319,6 +319,159 @@ TEST_F(ManualTestingImportTest, LoadEntitiesFromFile_Invalid_AttributeType) {
   EXPECT_FALSE(LoadEntitiesFromFile(file_path).has_value());
 }
 
+// Tests that entity record_type is parsed correctly.
+TEST_F(ManualTestingImportTest, LoadEntitiesFromFile_RecordType) {
+  base::FilePath file_path = GetFilePath();
+  base::WriteFile(file_path, R"({
+    "entities" : [
+      {
+        "entity_type" : "Passport",
+        "attributes" : {
+          "Number" : "1"
+        }
+      },
+      {
+        "entity_type" : "Passport",
+        "record_type" : "local",
+        "attributes" : {
+          "Number" : "2"
+        }
+      },
+      {
+        "entity_type" : "Passport",
+        "record_type" : "serverWallet",
+        "attributes" : {
+          "Number" : "3"
+        }
+      },
+      {
+        "entity_type" : "Passport",
+        "record_type" : "personalContext",
+        "attributes" : {
+          "Number" : "4"
+        }
+      }
+    ]
+  })");
+
+  std::optional<std::vector<EntityInstance>> entities =
+      LoadEntitiesFromFile(file_path);
+  ASSERT_TRUE(entities.has_value());
+  ASSERT_EQ(entities->size(), 4u);
+
+  EXPECT_EQ(entities->at(0).record_type(), EntityInstance::RecordType::kLocal);
+  EXPECT_EQ(entities->at(1).record_type(), EntityInstance::RecordType::kLocal);
+  EXPECT_EQ(entities->at(2).record_type(),
+            EntityInstance::RecordType::kServerWallet);
+  EXPECT_EQ(entities->at(3).record_type(),
+            EntityInstance::RecordType::kPersonalContext);
+}
+
+// Tests that invalid entity record_type fails import.
+TEST_F(ManualTestingImportTest, LoadEntitiesFromFile_InvalidRecordType) {
+  base::FilePath file_path = GetFilePath();
+  base::WriteFile(file_path, R"({
+    "entities" : [
+      {
+        "entity_type" : "Passport",
+        "record_type" : "invalid",
+        "attributes" : {
+          "Number" : "1"
+        }
+      }
+    ]
+  })");
+
+  EXPECT_FALSE(LoadEntitiesFromFile(file_path).has_value());
+}
+
+// Tests that Order and Shipment entities can be imported with all attributes.
+TEST_F(ManualTestingImportTest, LoadEntitiesFromFile_OrderAndShipment) {
+  base::FilePath file_path = GetFilePath();
+  base::WriteFile(file_path, R"({
+    "entities" : [
+      {
+        "entity_type": "Order",
+        "record_type": "serverWallet",
+        "attributes": {
+          "Id": "12345",
+          "Account": "user@example.com",
+          "Date": "2025-05-12",
+          "Merchant name": "Example Store",
+          "Merchant domain": "example.com",
+          "Product names": "Widget, Gadget"
+        }
+      },
+      {
+        "entity_type": "Shipment",
+        "record_type": "serverWallet",
+        "attributes": {
+          "Tracking number": "TRK123456",
+          "Delivery zip code": "94043",
+          "Carrier name": "Carrier X",
+          "Carrier domain": "carrierx.com",
+          "Estimated delivery date": "2025-05-15",
+          "Order ids": "12345",
+          "Order dates": "2025-05-12",
+          "Merchant name": "Example Store",
+          "Product names": "Widget, Gadget"
+        }
+      }
+    ]
+  })");
+
+  // Expected Order
+  EntityInstance expected_order(
+      EntityType(EntityTypeName::kOrder),
+      {CreateAttribute(AttributeTypeName::kOrderId, "12345"),
+       CreateAttribute(AttributeTypeName::kOrderAccount, "user@example.com"),
+       CreateAttribute(AttributeTypeName::kOrderDate, "2025-05-12"),
+       CreateAttribute(AttributeTypeName::kOrderMerchantName, "Example Store"),
+       CreateAttribute(AttributeTypeName::kOrderMerchantDomain, "example.com"),
+       CreateAttribute(AttributeTypeName::kOrderProductNames,
+                       "Widget, Gadget")},
+      EntityInstance::EntityId(base::Uuid::GenerateRandomV4()),
+      /*nickname=*/"", base::Time::Now(), /*use_count=*/0,
+      /*use_date=*/base::Time(), EntityInstance::RecordType::kServerWallet,
+      EntityInstance::AreAttributesReadOnly(false),
+      /*frecency_override=*/"");
+
+  // Expected Shipment
+  EntityInstance expected_shipment(
+      EntityType(EntityTypeName::kShipment),
+      {CreateAttribute(AttributeTypeName::kShipmentTrackingNumber, "TRK123456"),
+       CreateAttribute(AttributeTypeName::kShipmentDeliveryZipCode, "94043"),
+       CreateAttribute(AttributeTypeName::kShipmentCarrierName, "Carrier X"),
+       CreateAttribute(AttributeTypeName::kShipmentCarrierDomain,
+                       "carrierx.com"),
+       CreateAttribute(AttributeTypeName::kShipmentEstimatedDeliveryDate,
+                       "2025-05-15"),
+       CreateAttribute(AttributeTypeName::kShipmentOrderIds, "12345"),
+       CreateAttribute(AttributeTypeName::kShipmentOrderDates, "2025-05-12"),
+       CreateAttribute(AttributeTypeName::kShipmentMerchantName,
+                       "Example Store"),
+       CreateAttribute(AttributeTypeName::kShipmentProductNames,
+                       "Widget, Gadget")},
+      EntityInstance::EntityId(base::Uuid::GenerateRandomV4()),
+      /*nickname=*/"", base::Time::Now(), /*use_count=*/0,
+      /*use_date=*/base::Time(), EntityInstance::RecordType::kServerWallet,
+      EntityInstance::AreAttributesReadOnly(false),
+      /*frecency_override=*/"");
+
+  std::optional<std::vector<EntityInstance>> entities =
+      LoadEntitiesFromFile(file_path);
+  ASSERT_TRUE(entities.has_value());
+  ASSERT_EQ(entities->size(), 2u);
+
+  EXPECT_EQ(entities->at(0).type(), expected_order.type());
+  EXPECT_EQ(entities->at(0).attributes(), expected_order.attributes());
+  EXPECT_EQ(entities->at(0).record_type(), expected_order.record_type());
+
+  EXPECT_EQ(entities->at(1).type(), expected_shipment.type());
+  EXPECT_EQ(entities->at(1).attributes(), expected_shipment.attributes());
+  EXPECT_EQ(entities->at(1).record_type(), expected_shipment.record_type());
+}
+
 // Tests that profiles are converted correctly.
 TEST_F(ManualTestingImportTest, LoadProfilesFromFile_Valid) {
   base::FilePath file_path = GetFilePath();

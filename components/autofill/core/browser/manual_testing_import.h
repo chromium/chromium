@@ -73,18 +73,46 @@ namespace autofill {
 //         "Arrival airport": "JFK",
 //         "Departure date": "2024-12-25"
 //       }
+//     },
+//     {
+//       "entity_type": "Order",
+//       "record_type": "serverWallet",
+//       "attributes": {
+//         "Id": "12345",
+//         "Account": "user@example.com",
+//         "Date": "2025-05-12",
+//         "Merchant name": "Example Store",
+//         "Merchant domain": "example.com",
+//         "Product names": "Widget, Gadget"
+//       }
+//     },
+//     {
+//       "entity_type": "Shipment",
+//       "record_type": "serverWallet",
+//       "attributes": {
+//         "Tracking number": "TRK123456",
+//         "Delivery zip code": "94043",
+//         "Carrier name": "Carrier X",
+//         "Carrier domain": "carrierx.com",
+//         "Estimated delivery date": "2025-05-15",
+//         "Order ids": "12345",
+//         "Order dates": "2025-05-12",
+//         "Merchant name": "Example Store",
+//         "Product names": "Widget, Gadget"
+//       }
 //     }
 //   ]
 // }
-// The "record_type" is optional and can either be "account" or
-// "localOrSyncable". This corresponds to the AutofillProfile::RecordType of the
-// resulting profile. It default to "localOrSyncable". The "initial_creator_id"
-// is an optional int value which sets the profile's property of the same name.
-// The "nickname" in credit cards optional as well. "field-type" corresponds to
-// FieldTypes like "NAME_FULL". For profiles and credit cards, only field types
-// valid for AutofillProfile or CreditCard are accepted. All profiles and credit
-// cards specified in the file are imported. They replace any existing data. The
-// profiles are expected to be fully structured.
+// The "record_type" is optional. For profiles, it can either be "account" or
+// "localOrSyncable" (defaulting to "localOrSyncable"). For entities, it can
+// be "local", "serverWallet", or "personalContext" (defaulting to "local").
+// The "initial_creator_id" is an optional int value which sets the profile's
+// property of the same name. The "nickname" in credit cards optional as well.
+// "field-type" corresponds to FieldTypes like "NAME_FULL". For profiles and
+// credit cards, only field types valid for AutofillProfile or CreditCard are
+// accepted. All profiles and credit cards specified in the file are imported.
+// They replace any existing data. The profiles are expected to be fully
+// structured.
 // TODO(crbug.com/40255599): remove `profiles` from flags' name.
 constexpr char kManualFileImportForTestingFlag[] =
     "autofill-profiles-for-manual-testing";
