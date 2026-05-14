@@ -535,7 +535,7 @@ BASE_FEATURE_PARAM(bool,
                    kInitialWebUIUseSeparateProcess,
                    &features::kInitialWebUI,
                    "use_separate_process",
-                   false);
+                   true);
 
 // If enabled, the initial WebUI GPU stream is set to UI priority.
 BASE_FEATURE_PARAM(bool,
@@ -549,7 +549,7 @@ BASE_FEATURE_PARAM(bool,
                    kInitialWebUIWithoutSpellCheck,
                    &features::kInitialWebUI,
                    "without_spellcheck",
-                   false);
+                   true);
 
 // Whether initial WebUI navigations should synchronously go from navigation
 // start to commit, by doing e.g. in-renderer body loading.
