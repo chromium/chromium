@@ -2613,7 +2613,7 @@ class OverlayProcessorWinTest : public OverlayProcessorTestBase {
 
   std::unique_ptr<OverlayProcessorWin> overlay_processor_;
   gfx::Rect damage_rect_;
-
+  std::vector<gfx::Rect> content_bounds_;
 };
 
 enum class SurfaceTestMode {
@@ -2755,7 +2755,7 @@ class OverlayProcessorWinSurfacePlaneTest
         resource_provider_.get(), render_passes, SkM44(),
         std::move(surface_damage_rect_list_in_root_space),
         GetDefaultPrimaryPlane(render_passes->back()->output_rect.size()),
-        candidates, &damage_rect_);
+        candidates, &damage_rect_, &content_bounds_);
   }
 
  private:
@@ -3129,7 +3129,7 @@ class OverlayProcessorWinDelegatedCompositingTest
         resource_provider_.get(), &pass_list, GetIdentityColorMatrix(),
         std::move(surface_damage_rect_list),
         GetDefaultPrimaryPlane(pass_list.back()->output_rect.size()),
-        &candidates, &damage_rect_);
+        &candidates, &damage_rect_, &content_bounds_);
 
     const bool delegation_succeeded = std::ranges::none_of(
         candidates,

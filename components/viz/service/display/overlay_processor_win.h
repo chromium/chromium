@@ -62,7 +62,8 @@ class VIZ_SERVICE_EXPORT OverlayProcessorWin
       SurfaceDamageRectList surface_damage_rect_list_in_root_space,
       const PrimaryPlaneParams& primary_plane_params,
       OverlayCandidateList* overlay_candidates,
-      gfx::Rect* root_damage_rect) override;
+      gfx::Rect* root_damage_rect,
+      std::vector<gfx::Rect>* content_bounds) override;
 
   void SetFrameHasDelegatedInk() override;
 

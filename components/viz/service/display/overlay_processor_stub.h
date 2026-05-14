@@ -33,7 +33,8 @@ class VIZ_SERVICE_EXPORT OverlayProcessorStub
       SurfaceDamageRectList surface_damage_rect_list,
       const PrimaryPlaneParams& primary_plane_params,
       CandidateList* overlay_candidates,
-      gfx::Rect* damage_rect) final {}
+      gfx::Rect* damage_rect,
+      std::vector<gfx::Rect>* content_bounds) final {}
   void SetDisplayTransformHint(gfx::OverlayTransform transform) final {}
   void SetViewportSize(const gfx::Size& size) final {}
   gfx::CALayerResult GetCALayerErrorCode() const final;

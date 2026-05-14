@@ -34,9 +34,12 @@ class VIZ_SERVICE_EXPORT OutputSurfaceFrame {
   OutputSurfaceFrame& operator=(OutputSurfaceFrame&& other);
 
   gfx::Size size;
-  // If |sub_buffer_rect| is not present, regular swap is used.
+  // Providing both |sub_buffer_rect| and |content_bounds| is not supported;
+  // if neither is present, regular swap is used.
   // Optional rect for partial or empty swap.
   std::optional<gfx::Rect> sub_buffer_rect;
+  // Optional content area for SwapWithBounds. Rectangles may overlap.
+  std::vector<gfx::Rect> content_bounds;
   std::vector<ui::LatencyInfo> latency_info;
   std::optional<int64_t> choreographer_vsync_id;
   // FrameData for the GLSurface.

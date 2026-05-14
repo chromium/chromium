@@ -73,6 +73,7 @@ GL_EXPORT extern const char kTestGLLib[];
 GL_EXPORT extern const char kUseGpuInTests[];
 GL_EXPORT extern const char kEnableSgiVideoSync[];
 GL_EXPORT extern const char kDisableGLExtensions[];
+GL_EXPORT extern const char kEnableSwapBuffersWithBounds[];
 GL_EXPORT extern const char kDisableDirectComposition[];
 GL_EXPORT extern const char kEnableDirectCompositionVideoOverlays[];
 GL_EXPORT extern const char kUseAdapterLuid[];

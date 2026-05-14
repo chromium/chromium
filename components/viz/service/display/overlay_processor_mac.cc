@@ -47,7 +47,8 @@ void OverlayProcessorMac::ProcessForOverlays(
     SurfaceDamageRectList surface_damage_rect_list,
     const PrimaryPlaneParams& primary_plane_params,
     CandidateList* candidates,
-    gfx::Rect* damage_rect) {
+    gfx::Rect* damage_rect,
+    std::vector<gfx::Rect>* content_bounds) {
   TRACE_EVENT0("viz", "OverlayProcessorMac::ProcessForOverlays");
   auto* render_pass = render_passes->back().get();
 

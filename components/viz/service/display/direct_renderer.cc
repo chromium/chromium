@@ -325,7 +325,8 @@ void DirectRenderer::DrawFrame(
                     : gpu::Mailbox(),
 #endif
         },
-        &current_frame()->overlay_list, &current_frame()->root_damage_rect);
+        &current_frame()->overlay_list, &current_frame()->root_damage_rect,
+        &current_frame()->root_content_bounds);
     auto overlay_processing_time = overlay_processing_timer.Elapsed();
 
     constexpr auto kMinTime = base::Microseconds(5);

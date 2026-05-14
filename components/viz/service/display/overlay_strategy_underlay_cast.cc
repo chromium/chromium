@@ -48,7 +48,8 @@ void OverlayStrategyUnderlayCast::Propose(
     AggregatedRenderPassList* render_pass_list,
     SurfaceDamageRectList* surface_damage_rect_list,
     const std::optional<OverlayCandidate>& primary_plane,
-    std::vector<OverlayProposedCandidate>* candidates) {
+    std::vector<OverlayProposedCandidate>* candidates,
+    std::vector<gfx::Rect>* content_bounds) {
   auto* render_pass = render_pass_list->back().get();
   QuadList& quad_list = render_pass->quad_list;
   OverlayCandidate candidate;
@@ -94,6 +95,7 @@ bool OverlayStrategyUnderlayCast::Attempt(
     SurfaceDamageRectList* surface_damage_rect_list,
     const std::optional<OverlayCandidate>& primary_plane,
     OverlayCandidateList* candidate_list,
+    std::vector<gfx::Rect>* content_bounds,
     const OverlayProposedCandidate& proposed_candidate) {
   // Before we attempt an overlay strategy, the candidate list should be empty.
   DCHECK(candidate_list->empty());
@@ -167,6 +169,10 @@ bool OverlayStrategyUnderlayCast::Attempt(
     }
   }
 
+  DCHECK(content_bounds && content_bounds->empty());
+  if (found_underlay) {
+    content_bounds->push_back(content_rect);
+  }
   return found_underlay;
 }
 
