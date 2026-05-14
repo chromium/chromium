@@ -98,8 +98,6 @@ cast_source_set("browser") {
     "application_media_info_manager.h",
     "audio_socket_broker.cc",
     "audio_socket_broker.h",
-    "bluetooth/cast_bluetooth_chooser.cc",
-    "bluetooth/cast_bluetooth_chooser.h",
     "cast_browser_context.cc",
     "cast_browser_context.h",
     "cast_browser_interface_binders.cc",
@@ -566,7 +564,6 @@ cast_source_set("unittests") {
   sources = [
     "application_media_info_manager_unittest.cc",
     "audio_socket_broker_unittest.cc",
-    "bluetooth/cast_bluetooth_chooser_unittest.cc",
     "cast_media_blocker_unittest.cc",
     "cast_resource_bundle_unittest.cc",
     "cast_session_id_map_unittest.cc",
