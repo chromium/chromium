@@ -4341,22 +4341,6 @@ void LayerTreeHostImpl::ReleaseLayerTreeFrameSink() {
     ClearUIResources();
   }
 
-  bool should_finish = !base::FeatureList::IsEnabled(
-      features::kSkipFinishDuringReleaseLayerTreeFrameSink);
-#if BUILDFLAG(IS_WIN)
-  // Windows does not have stability issues that require calling Finish.
-  // To minimize risk, only avoid waiting for the UI layer tree.
-  should_finish &= !settings_.is_layer_tree_for_ui;
-#endif
-
-  if (should_finish && layer_tree_frame_sink_->context_provider()) {
-    // TODO(kylechar): Exactly where this finish call is still required is not
-    // obvious. Attempts have been made to remove it which caused problems, eg.
-    // https://crbug.com/846709. We should test removing it via finch to find
-    // out if this is still needed on any platforms.
-    layer_tree_frame_sink_->context_provider()->RasterInterface()->Finish();
-  }
-
   // Release any context visibility before we destroy the LayerTreeFrameSink.
   SetContextVisibility(false);
 

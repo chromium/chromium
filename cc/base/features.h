@@ -234,9 +234,6 @@ CC_BASE_EXPORT BASE_DECLARE_FEATURE(kOverscrollEffectOnNonRootScrollers);
 // curve as a regular scroller.
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(kSnapFlingNearExtremes);
 
-// A kill switch in case skipping finish causes unexpected issues.
-CC_BASE_EXPORT BASE_DECLARE_FEATURE(kSkipFinishDuringReleaseLayerTreeFrameSink);
-
 // When enabled, the V4 scroll jank metric will be emitted.
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(kScrollJankV4Metric);
 CC_BASE_EXPORT BASE_DECLARE_FEATURE_PARAM(

@@ -215,9 +215,6 @@ BASE_FEATURE(kOverscrollEffectOnNonRootScrollers,
 
 BASE_FEATURE(kSnapFlingNearExtremes, base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kSkipFinishDuringReleaseLayerTreeFrameSink,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kScrollJankV4Metric, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE_PARAM(double,
