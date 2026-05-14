@@ -32,6 +32,8 @@ class AttemptFormFillingToolRequest : public TabToolRequest {
     FormFillingRequest& operator=(FormFillingRequest&&);
 
     RequestedData requested_data{};
+    // TODO(crbug.com/502157873): Pass section_label to the tool logic.
+    std::string section_label;
     std::vector<PageTarget> trigger_fields;
   };
 
@@ -47,6 +49,10 @@ class AttemptFormFillingToolRequest : public TabToolRequest {
                               ToolDelegate& tool_delegate) const override;
   std::string_view Name() const override;
   void Apply(ToolRequestVisitorFunctor& f) const override;
+
+  const std::vector<FormFillingRequest>& GetRequestsForTesting() const {
+    return requests_;
+  }
 
  private:
   std::vector<FormFillingRequest> requests_;

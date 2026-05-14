@@ -71,7 +71,8 @@ void AttemptFormFillingToolRequest::Apply(ToolRequestVisitorFunctor& f) const {
 std::ostream& operator<<(
     std::ostream& out,
     const AttemptFormFillingToolRequest::FormFillingRequest& request) {
-  out << "Request(" << static_cast<int>(request.requested_data);
+  out << "Request(" << static_cast<int>(request.requested_data)
+      << ", section_label=" << request.section_label;
   for (const auto& field : request.trigger_fields) {
     if (std::holds_alternative<gfx::Point>(field)) {
       out << ", Point(" << field << ")";

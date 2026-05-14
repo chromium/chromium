@@ -10581,6 +10581,10 @@ const FeatureEntry kFeatureEntries[] = {
     {"glic-actor-autofill", flag_descriptions::kGlicActorAutofillName,
      flag_descriptions::kGlicActorAutofillDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kGlicActorAutofill)},
+    {"glic-actor-autofill-section-label",
+     flag_descriptions::kGlicActorAutofillSectionLabelName,
+     flag_descriptions::kGlicActorAutofillSectionLabelDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(features::kGlicActorAutofillSectionLabel)},
     {"glic-actor-cursor", flag_descriptions::kGlicActorCursorName,
      flag_descriptions::kGlicActorCursorDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kGlicActorUiMagicCursor)},
@@ -11176,7 +11180,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAAudioPerStreamDeviceSelectionDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(features::kAAudioPerStreamDeviceSelection)},
 #endif  // BUILDFLAG(IS_ANDROID)
-
 
     {"autofill-vcn-enroll-strike-expiry-time",
      flag_descriptions::kAutofillVcnEnrollStrikeExpiryTimeName,

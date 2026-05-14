@@ -11634,6 +11634,7 @@ from previous Chrome versions.
   <int value="-815616832"
       label="OmniboxRemoveExcessiveRecycledViewClearCalls:enabled"/>
   <int value="-815601488" label="CrostiniTerminaDlcForceOta:disabled"/>
+  <int value="-815513308" label="GlicActorAutofillSectionLabel:disabled"/>
   <int value="-815487797" label="WindowSplitting:enabled"/>
   <int value="-815213125" label="SplitSettings:enabled"/>
   <int value="-814908813" label="OmniboxUrlSuggestionsOnFocus:disabled"/>
@@ -16183,6 +16184,7 @@ from previous Chrome versions.
   <int value="691020108" label="NTPCondensedTileLayout:disabled"/>
   <int value="691523087" label="GlicPanelResetOnStart:disabled"/>
   <int value="691982483" label="WifiConnectMacAddressRandomization:disabled"/>
+  <int value="692890016" label="GlicActorAutofillSectionLabel:enabled"/>
   <int value="693012666" label="QuickUnlockPin:disabled"/>
   <int value="693480759" label="PageInfoAboutThisSiteEn:disabled"/>
   <int value="693570345" label="CachedLocationProvider:enabled"/>

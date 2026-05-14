@@ -595,6 +595,10 @@ std::unique_ptr<ToolRequest> CreateAttemptFormFillingRequest(
     AttemptFormFillingToolRequest::FormFillingRequest request;
     request.requested_data =
         requested_data_enum_converter(request_proto.requested_data());
+    if (base::FeatureList::IsEnabled(
+            features::kGlicActorAutofillSectionLabel)) {
+      request.section_label = request_proto.section_label();
+    }
     for (const auto& trigger_field : request_proto.trigger_fields()) {
       std::optional<PageTarget> page_target = ToPageTarget(trigger_field);
       if (!page_target) {

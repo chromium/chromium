@@ -5169,6 +5169,14 @@
     "expiry_milestone": 160
   },
   {
+    "name": "glic-actor-autofill-section-label",
+    "owners": [
+      "slobodan@chromium.org",
+      "//components/autofill/OWNERS"
+    ],
+    "expiry_milestone": 160
+  },
+  {
     "name": "glic-actor-cursor",
     "owners": [
       "jacobstanley@google.com",

@@ -1477,6 +1477,11 @@ inline constexpr char kGlicActorAutofillName[] = "Glic actor autofill";
 inline constexpr char kGlicActorAutofillDescription[] =
     "Enables autofill actions for the Glic actor. Specific fillable types may "
     "also need to be enabled.";
+inline constexpr char kGlicActorAutofillSectionLabelName[] =
+    "Glic actor autofill section label";
+inline constexpr char kGlicActorAutofillSectionLabelDescription[] =
+    "Enables the section label in Glic actor autofill. Only effective if Glic "
+    "actor autofill is also enabled.";
 inline constexpr char kGlicActorCursorName[] = "Glic actor cursor";
 inline constexpr char kGlicActorCursorDescription[] =
     "Enables the Glic actor cursor";

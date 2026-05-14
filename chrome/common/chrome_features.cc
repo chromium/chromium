@@ -950,6 +950,10 @@ BASE_FEATURE_PARAM(base::TimeDelta,
 BASE_FEATURE(kGlicActorAutofillOneTimePassword,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Whether to enable the section label in Glic actor autofill.
+// This feature is also gated by |kGlicActorAutofill|.
+BASE_FEATURE(kGlicActorAutofillSectionLabel, base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kGlicDisableUnderlineAnimations,
              base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kGlicGuestUrlPresets, base::FEATURE_DISABLED_BY_DEFAULT);
