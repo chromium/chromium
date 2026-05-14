@@ -8,7 +8,7 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNativeNtpUrl;
 
 import android.app.Activity;
-import android.app.ActivityManager.AppTask;
+import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.content.pm.ResolveInfo;
 import android.graphics.Rect;
@@ -30,6 +30,7 @@ import org.chromium.chrome.browser.app.tab_activity_glue.ActivityTabWebContentsD
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.CustomTabsUiType;
+import org.chromium.chrome.browser.browserservices.intents.WebApkExtras;
 import org.chromium.chrome.browser.browserservices.intents.WebappExtras;
 import org.chromium.chrome.browser.browserservices.permissiondelegation.InstalledWebappPermissionManager;
 import org.chromium.chrome.browser.browserservices.ui.controller.AuthTabVerifier;
@@ -58,7 +59,6 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.ExclusiveAccessManager;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
-import org.chromium.chrome.browser.util.AndroidTaskUtils;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 import org.chromium.components.browser_ui.util.BrowserControlsVisibilityDelegate;
@@ -72,6 +72,7 @@ import org.chromium.components.external_intents.ExternalNavigationParams;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.url.GURL;
+import org.chromium.webapk.lib.common.WebApkConstants;
 
 import java.util.List;
 import java.util.function.Supplier;
@@ -284,27 +285,12 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
         protected void bringActivityToForeground() {
             assert mActivity != null;
 
-            if (ChromeFeatureList.sUseAppTaskForCustomTabActivation.isEnabled()) {
-                AppTask appTask =
-                        AndroidTaskUtils.getAppTaskFromId(mActivity, mActivity.getTaskId());
-                if (appTask != null) {
-                    // Clone the original intent to preserve WebappExtras and SessionHolder.
-                    // If we use a generic intent, CustomTabIntentHandler.onNewIntent() will
-                    // treat it as an invalid cross-session launch and crash.
-                    Intent newIntent = new Intent(mActivity.getIntent());
-                    newIntent.removeFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-
-                    try {
-                        appTask.startActivity(mActivity, newIntent, null);
-                        return;
-                    } catch (IllegalArgumentException | SecurityException e) {
-                        Log.e(TAG, "Failed to start activity via AppTask", e);
-                    }
-                }
+            if (ChromeFeatureList.sUseAppTaskForCustomTabActivation.isEnabled()
+                    && tryBringingWebApkToForeground()) {
+                return;
             }
 
-            // Fallback for when the flag is disabled, AppTask is not found, or the startActivity
-            // call fails.
+            // Fallback for when the flag is disabled, or startActivity fails.
             ApiCompatibilityUtils.moveTaskToFront(mActivity, mActivity.getTaskId(), 0);
         }
 
@@ -384,6 +370,52 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
             if (mDesktopWindowStateManager != null) {
                 mDesktopWindowStateManager.updateSystemGestureExclusionRects(regions);
             }
+        }
+
+        /**
+         * Tries to restore a minimized WebAPK activity to the foreground by starting its
+         * OpaqueMainActivity with the {@link WebApkConstants#EXTRA_BRING_TO_FRONT} instruction.
+         *
+         * <p>This acts as a bypass for Background Activity Launch (BAL) restrictions where
+         * moveTaskToFront() is blocked if the host browser is in the background.
+         *
+         * @return true if the WebAPK activity start was successfully triggered, false otherwise.
+         */
+        private boolean tryBringingWebApkToForeground() {
+            if (mActivity == null
+                    || mIntentDataProvider == null
+                    || !mIntentDataProvider.isWebApkActivity()) {
+                return false;
+            }
+
+            WebApkExtras webApkExtras = mIntentDataProvider.getWebApkExtras();
+            if (webApkExtras == null) return false;
+
+            String webApkPackageName = webApkExtras.webApkPackageName;
+            if (TextUtils.isEmpty(webApkPackageName)) return false;
+
+            // TODO(crbug.com/512117951): This extra hoop of launching an activity in the target
+            // task and then calling moveTaskToFront() internally is a workaround for an Android OS
+            // bug where startActivity() (even with FLAG_ACTIVITY_REORDER_TO_FRONT) fails to
+            // foreground an occluded task. Once crbug.com/512117951 is addressed, we should be able
+            // to simplify this and rely on the OS to correctly foreground the task via
+            // startActivity().
+            Intent intent = new Intent();
+            intent.setComponent(
+                    new android.content.ComponentName(
+                            webApkPackageName,
+                            WebApkConstants.WEBAPK_OPAQUE_MAIN_ACTIVITY_CLASS_NAME));
+            intent.putExtra(WebApkConstants.EXTRA_BRING_TO_FRONT, true);
+            intent.addFlags(
+                    Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
+            try {
+                mActivity.startActivity(intent);
+                return true;
+            } catch (ActivityNotFoundException | SecurityException e) {
+                Log.e(TAG, "Failed to start WebAPK activity via startActivity", e);
+            }
+
+            return false;
         }
     }
 

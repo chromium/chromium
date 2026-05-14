@@ -33,6 +33,11 @@ public final class WebApkConstants {
     // Tells the host browser to relaunch the WebAPK.
     public static final String EXTRA_RELAUNCH = "org.chromium.webapk.relaunch";
     public static final String EXTRA_IS_WEBAPK = "org.chromium.webapk.is_webapk";
+    // Extra key telling OpaqueMainActivity to only bring the existing task to the front.
+    public static final String EXTRA_BRING_TO_FRONT = "org.chromium.webapk.bring_to_front";
+    // Component class name of the OpaqueMainActivity in WebAPKs.
+    public static final String WEBAPK_OPAQUE_MAIN_ACTIVITY_CLASS_NAME =
+            "org.chromium.webapk.shell_apk.h2o.H2OOpaqueMainActivity";
 
     // Must be kept in sync with components/webapps/browser/android/shortcut_info.h.
     public @interface ShortcutSource {
