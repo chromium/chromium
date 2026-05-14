@@ -283,10 +283,9 @@ TEST_P(SeedReaderWriterSeedFilesGroupTest, WriteSeed) {
   ASSERT_EQ(base::FieldTrialList::FindFullName(kSeedFileTrial),
             GetParam().field_trial_group);
 
-  EXPECT_FALSE(base::PathExists(temp_seed_file_path_));
+  ASSERT_FALSE(base::PathExists(temp_seed_file_path_));
 
   // Initialize seed_reader_writer with test thread and timer.
-  base::HistogramTester histogram_tester;
   std::string_view histogram_suffix = GetHistogramSuffix();
   SeedReaderWriter seed_reader_writer(
       &local_state_, /*seed_file_dir=*/temp_dir_.GetPath(), kSeedFilename,
@@ -294,11 +293,13 @@ TEST_P(SeedReaderWriterSeedFilesGroupTest, WriteSeed) {
       entropy_providers_.get(), histogram_suffix,
       file_writer_thread_.task_runner());
   seed_reader_writer.SetTimerForTesting(&timer_);
+  file_writer_thread_.FlushForTesting();
 
   // Create and store seed.
   const std::string seed_data = CreateVariationsSeed();
   const base::Time seed_date = base::Time::Now();
   const base::Time fetch_time = base::Time::Now();
+  base::HistogramTester histogram_tester;
   seed_reader_writer.StoreValidatedSeedInfo(ValidatedSeedInfo{
       .seed_data = seed_data,
       .signature = "signature",
@@ -588,6 +589,41 @@ TEST_P(SeedReaderWriterSeedFilesGroupTest, FallbackToLocalState) {
       seed_reader_writer.ReadSeedDataOnStartup(&stored_seed_data, nullptr);
   ASSERT_EQ(read_result, LoadSeedResult::kSuccess);
   EXPECT_EQ(stored_seed_data, CreateVariationsSeed());
+}
+
+// Verifies clients in SeedFiles group read seeds from local state prefs if no
+// seed file found.
+TEST_P(SeedReaderWriterSeedFilesGroupTest, FallbackToLocalStateWithSentinel) {
+  ASSERT_EQ(base::FieldTrialList::FindFullName(kSeedFileTrial),
+            GetParam().field_trial_group);
+  // Create and store seed.
+  const std::string_view seed_data_field = GetParam().seed_fields_prefs.seed;
+  local_state_.SetString(seed_data_field, kIdenticalToSafeSeedSentinel);
+
+  ASSERT_FALSE(base::PathExists(temp_seed_file_path_));
+  ASSERT_FALSE(base::PathExists(temp_old_seed_file_path_));
+
+  std::string_view histogram_suffix = GetHistogramSuffix();
+
+  // Initialize seed_reader_writer with test thread.
+  base::HistogramTester histogram_tester;
+  SeedReaderWriter seed_reader_writer(
+      &local_state_, /*seed_file_dir=*/temp_dir_.GetPath(), kSeedFilename,
+      kOldSeedFilename, GetParam().seed_fields_prefs, GetParam().channel,
+      entropy_providers_.get(), histogram_suffix,
+      file_writer_thread_.task_runner());
+
+  // Ensure read failed due to seed file not existing.
+  histogram_tester.ExpectUniqueSample(
+      base::StrCat({"Variations.SeedFileRead.", histogram_suffix}),
+      /*sample=*/0, /*expected_bucket_count=*/1);
+
+  // Ensure seed data from local state prefs is loaded and decoded.
+  std::string stored_seed_data;
+  LoadSeedResult read_result =
+      seed_reader_writer.ReadSeedDataOnStartup(&stored_seed_data, nullptr);
+  ASSERT_EQ(read_result, LoadSeedResult::kSuccess);
+  EXPECT_EQ(stored_seed_data, kIdenticalToSafeSeedSentinel);
 }
 
 TEST_P(SeedReaderWriterSeedFilesGroupTest, ReadMissingSeedFileEmptyLocalState) {
