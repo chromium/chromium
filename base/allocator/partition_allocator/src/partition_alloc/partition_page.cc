@@ -2,12 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "partition_alloc/slot_start.h"
+
+#include "partition_alloc/partition_page.h"
+
 #include <cstdint>
 
 #include "partition_alloc/address_pool_manager.h"
 #include "partition_alloc/buildflags.h"
-#include "partition_alloc/internal/partition_page_internal.h"
-#include "partition_alloc/internal/partition_root_internal.h"
 #include "partition_alloc/page_allocator.h"
 #include "partition_alloc/page_allocator_constants.h"
 #include "partition_alloc/partition_address_space.h"
@@ -20,8 +22,8 @@
 #include "partition_alloc/partition_alloc_forward.h"
 #include "partition_alloc/partition_direct_map_extent.h"
 #include "partition_alloc/partition_freelist_entry.h"
+#include "partition_alloc/partition_root.h"
 #include "partition_alloc/reservation_offset_table.h"
-#include "partition_alloc/slot_start.h"
 #include "partition_alloc/tagging.h"
 
 namespace partition_alloc::internal {

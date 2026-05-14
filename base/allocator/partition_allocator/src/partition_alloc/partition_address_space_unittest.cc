@@ -2,8 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "partition_alloc/partition_address_space.h"
+
 #include "partition_alloc/buildflags.h"
-#include "partition_alloc/internal/partition_address_space_internal.h"
 #include "partition_alloc/partition_alloc_config.h"
 #include "partition_alloc/use_death_tests.h"
 #include "testing/gtest/include/gtest/gtest.h"

@@ -9,7 +9,6 @@
 
 #include "partition_alloc/build_config.h"
 #include "partition_alloc/buildflags.h"
-#include "partition_alloc/internal/partition_root_internal.h"
 #include "partition_alloc/partition_alloc_base/compiler_specific.h"
 #include "partition_alloc/partition_alloc_base/logging.h"
 #include "partition_alloc/partition_alloc_config.h"
@@ -20,7 +19,7 @@
 #if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && \
     PA_CONFIG(THREAD_CACHE_SUPPORTED)
 #include "partition_alloc/extended_api.h"
-#include "partition_alloc/internal/thread_cache_internal.h"
+#include "partition_alloc/thread_cache.h"
 #endif
 
 // Otherwise, PartitionAlloc doesn't allocate any memory, and the tests are
@@ -117,7 +116,7 @@ TEST_F(MemoryReclaimerTest, DoNotAlwaysPurgeThreadCache) {
   auto* root = allocator_shim::internal::PartitionAllocMalloc::Allocator();
   internal::ThreadCacheProcessScopeForTesting scope(root);
 
-  for (size_t i = 0; i < internal::ThreadCache::kDefaultSizeThreshold; i++) {
+  for (size_t i = 0; i < ThreadCache::kDefaultSizeThreshold; i++) {
     void* data = malloc(i);
     FreeForTest(data);
   }
@@ -126,7 +125,7 @@ TEST_F(MemoryReclaimerTest, DoNotAlwaysPurgeThreadCache) {
   ASSERT_TRUE(tcache);
   // ThreadCache must not be tomestone. If so, tcache->CacheMemory() will
   // cause memory access violation.
-  ASSERT_TRUE(!internal::ThreadCache::IsTombstone());
+  ASSERT_TRUE(!ThreadCache::IsTombstone());
   size_t cached_size = tcache->CachedMemory();
 
   Reclaim();

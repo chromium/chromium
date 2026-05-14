@@ -3,9 +3,9 @@
 // found in the LICENSE file.
 #include "components/gwp_asan/client/extreme_lightweight_detector_quarantine.h"
 
-#include "partition_alloc/internal/partition_page_internal.h"  // nogncheck
-#include "partition_alloc/internal/partition_root_internal.h"  // nogncheck
 #include "partition_alloc/internal_allocator.h"
+#include "partition_alloc/partition_page.h"
+#include "partition_alloc/partition_root.h"
 #include "partition_alloc/slot_start.h"
 
 namespace gwp_asan::internal {

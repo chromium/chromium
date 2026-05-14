@@ -11,7 +11,6 @@
 #include "base/test/multiprocess_test.h"
 #include "base/test/test_timeouts.h"
 #include "partition_alloc/buildflags.h"
-#include "partition_alloc/internal/partition_root_internal.h"  // nogncheck
 #include "partition_alloc/shim/allocator_shim_default_dispatch_to_partition_alloc.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/multiprocess_func_list.h"

@@ -6,14 +6,14 @@
 
 #include <atomic>
 
-#include "partition_alloc/internal/partition_root_internal.h"
-#include "partition_alloc/internal/thread_cache_internal.h"
 #include "partition_alloc/internal_allocator.h"
 #include "partition_alloc/partition_alloc_base/compiler_specific.h"
 #include "partition_alloc/partition_alloc_check.h"
 #include "partition_alloc/partition_page.h"
+#include "partition_alloc/partition_root.h"
 #include "partition_alloc/scheduler_loop_quarantine_support.h"
 #include "partition_alloc/slot_start.h"
+#include "partition_alloc/thread_cache.h"
 
 namespace partition_alloc::internal {
 

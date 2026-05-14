@@ -7,7 +7,6 @@
 #include "base/allocator/partition_alloc_features.h"
 #include "base/compiler_specific.h"
 #include "base/feature_list.h"
-#include "partition_alloc/internal/partition_root_internal.h"  // nogncheck
 #include "partition_alloc/partition_address_space.h"
 #include "partition_alloc/partition_root.h"
 #include "partition_alloc/scheduler_loop_quarantine.h"

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef PARTITION_ALLOC_INTERNAL_PAGE_ALLOCATOR_INTERNAL_H_
-#define PARTITION_ALLOC_INTERNAL_PAGE_ALLOCATOR_INTERNAL_H_
+#ifndef PARTITION_ALLOC_PAGE_ALLOCATOR_INTERNAL_H_
+#define PARTITION_ALLOC_PAGE_ALLOCATOR_INTERNAL_H_
 
 #include <cstddef>
 #include <cstdint>
@@ -26,4 +26,4 @@ size_t GetZeroSegmentSizeFromOS();
 
 }  // namespace partition_alloc::internal
 
-#endif  // PARTITION_ALLOC_INTERNAL_PAGE_ALLOCATOR_INTERNAL_H_
+#endif  // PARTITION_ALLOC_PAGE_ALLOCATOR_INTERNAL_H_
