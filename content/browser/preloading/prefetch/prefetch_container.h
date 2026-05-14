@@ -320,6 +320,10 @@ class CONTENT_EXPORT PrefetchContainer
   base::WeakPtr<const PrefetchContainer> GetWeakPtr() const {
     return weak_method_factory_.GetWeakPtr();
   }
+  // Be cautious when using this, as this is like a const cast.
+  base::WeakPtr<PrefetchContainer> GetMutableWeakPtr() const {
+    return weak_method_factory_.GetMutableWeakPtr();
+  }
 
   // The status of the current prefetch. Note that |HasPrefetchStatus| will be
   // initially false until |SetPrefetchStatus| is called. |SetPrefetchStatus|

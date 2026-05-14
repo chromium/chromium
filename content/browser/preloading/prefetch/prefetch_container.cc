@@ -390,8 +390,8 @@ PrefetchContainer::~PrefetchContainer() {
 
   if (auto* renderer_initiator_info = request().GetRendererInitiatorInfo()) {
     if (renderer_initiator_info->prefetch_document_manager()) {
-      renderer_initiator_info->prefetch_document_manager()
-          ->PrefetchWillBeDestroyed(this);
+      renderer_initiator_info->prefetch_document_manager()->OnWillBeDestroyed(
+          *this);
     }
   }
 
@@ -420,8 +420,7 @@ PrefetchContainer::CreateConstServingHandle() const {
   // `std::unique_ptr<const PrefetchServingHandle>`, as
   // `const PrefetchServingHandle` doesn't use its
   // non-const `PrefetchContainer` reference.
-  return std::make_unique<const PrefetchServingHandle>(
-      weak_method_factory_.GetMutableWeakPtr(), 0);
+  return std::make_unique<const PrefetchServingHandle>(GetMutableWeakPtr(), 0);
 }
 
 const std::vector<std::unique_ptr<PrefetchSingleRedirectHop>>&
@@ -830,13 +829,10 @@ void PrefetchContainer::OnEligibilityCheckComplete(
     prefetch_container_metrics_.time_initial_eligibility_got =
         base::TimeTicks::Now();
 
-    // Recording an eligiblity for PrefetchReferringPageMetrics.
-    // TODO(crbug.com/40946257): Current code doesn't support
-    // PrefetchReferringPageMetrics when the prefetch is initiated by browser.
     if (auto* renderer_initiator_info = request().GetRendererInitiatorInfo()) {
       if (renderer_initiator_info->prefetch_document_manager()) {
         renderer_initiator_info->prefetch_document_manager()
-            ->OnEligibilityCheckComplete(is_eligible);
+            ->OnGotInitialEligibility(*this);
       }
     }
 
@@ -1183,16 +1179,10 @@ void PrefetchContainer::OnPrefetchCompleteInternal() {
         GetCompletionStatus()->decoded_body_length);
   }
 
-  const PrefetchStatus prefetch_status = GetPrefetchStatus();
-
-  if (prefetch_status == PrefetchStatus::kPrefetchSuccessful) {
-    // TODO(crbug.com/40946257): Current code doesn't support
-    // PrefetchReferringPageMetrics when the prefetch is initiated by browser.
-    if (auto* renderer_initiator_info = request().GetRendererInitiatorInfo()) {
-      if (renderer_initiator_info->prefetch_document_manager()) {
-        renderer_initiator_info->prefetch_document_manager()
-            ->OnPrefetchSuccessful(this);
-      }
+  if (auto* renderer_initiator_info = request().GetRendererInitiatorInfo()) {
+    if (renderer_initiator_info->prefetch_document_manager()) {
+      renderer_initiator_info->prefetch_document_manager()
+          ->OnPrefetchCompletedOrFailed(*this);
     }
   }
 }

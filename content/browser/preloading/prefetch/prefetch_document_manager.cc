@@ -303,20 +303,37 @@ PrefetchService* PrefetchDocumentManager::GetPrefetchService() const {
       ->GetPrefetchService();
 }
 
-void PrefetchDocumentManager::OnEligibilityCheckComplete(bool is_eligible) {
-  if (is_eligible) {
+void PrefetchDocumentManager::OnGotInitialEligibility(
+    const PrefetchContainer& prefetch_container) {
+  // Recording an eligiblity for PrefetchReferringPageMetrics.
+  // TODO(crbug.com/40946257): Current code doesn't support
+  // PrefetchReferringPageMetrics when the prefetch is initiated by browser.
+  if (prefetch_container.GetInitialEligibility() ==
+      PreloadingEligibility::kEligible) {
     referring_page_metrics_.prefetch_eligible_count++;
   }
 }
 
-void PrefetchDocumentManager::OnPrefetchSuccessful(
-    PrefetchContainer* prefetch) {
+void PrefetchDocumentManager::OnPrefetchCompletedOrFailed(
+    const PrefetchContainer& prefetch_container) {
+  // TODO(crbug.com/40946257): Current code doesn't support
+  // PrefetchReferringPageMetrics when the prefetch is initiated by browser.
+  // TODO(crbug.com/433057364): Currently `PrefetchStatus::kPrefetchSuccessful`
+  // is used to preserve the existing behavior and metrics, but probably we
+  // should revamp this, e.g. because currently we don't count
+  // `PrefetchStatus::kPrefetchResponseUsed` cases.
+  if (prefetch_container.GetPrefetchStatus() !=
+      PrefetchStatus::kPrefetchSuccessful) {
+    return;
+  }
   referring_page_metrics_.prefetch_successful_count++;
   if (IsImmediateSpeculationEagerness(
-          prefetch->request().prefetch_type().GetEagerness())) {
-    completed_immediate_prefetches_.push_back(prefetch->GetWeakPtr());
+          prefetch_container.request().prefetch_type().GetEagerness())) {
+    completed_immediate_prefetches_.push_back(
+        prefetch_container.GetMutableWeakPtr());
   } else {
-    completed_non_immediate_prefetches_.push_back(prefetch->GetWeakPtr());
+    completed_non_immediate_prefetches_.push_back(
+        prefetch_container.GetMutableWeakPtr());
   }
 }
 
@@ -357,16 +374,16 @@ void PrefetchDocumentManager::SetPrefetchDestructionCallback(
   prefetch_destruction_callback_ = std::move(callback);
 }
 
-void PrefetchDocumentManager::PrefetchWillBeDestroyed(
-    PrefetchContainer* prefetch) {
-  prefetch_destruction_callback_.Run(prefetch->GetURL());
+void PrefetchDocumentManager::OnWillBeDestroyed(
+    const PrefetchContainer& prefetch_container) {
+  prefetch_destruction_callback_.Run(prefetch_container.GetURL());
 
   std::vector<base::WeakPtr<PrefetchContainer>>& completed_prefetches =
       IsImmediateSpeculationEagerness(
-          prefetch->request().prefetch_type().GetEagerness())
+          prefetch_container.request().prefetch_type().GetEagerness())
           ? completed_immediate_prefetches_
           : completed_non_immediate_prefetches_;
-  auto it = std::ranges::find(completed_prefetches, prefetch->key(),
+  auto it = std::ranges::find(completed_prefetches, prefetch_container.key(),
                               [&](const auto& p) { return p->key(); });
   if (it != completed_prefetches.end()) {
     completed_prefetches.erase(it);
