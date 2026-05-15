@@ -57,7 +57,11 @@ void LayerAnimationSequence::Start(LayerAnimationDelegate* delegate) {
          "indefinite amount of time without any actual animated content";
 
   elements_[0]->set_requested_start_time(start_time_);
+  base::WeakPtr<LayerAnimationSequence> alive(AsWeakPtr());
   elements_[0]->Start(delegate, animation_group_id_);
+  if (!alive) {
+    return;
+  }
 
   NotifyStarted();
 
@@ -74,6 +78,8 @@ void LayerAnimationSequence::Progress(base::TimeTicks now,
 
   if (last_element_ == 0)
     last_start_ = start_time_;
+
+  base::WeakPtr<LayerAnimationSequence> alive(AsWeakPtr());
 
   const base::TimeDelta total_duration = GetTotalDurationOfAllElements();
   const auto animation_should_progress = [this, total_duration]() {
@@ -95,6 +101,11 @@ void LayerAnimationSequence::Progress(base::TimeTicks now,
     // Let the element we're passing finish.
     if (elements_[current_index]->ProgressToEnd(delegate))
       redraw_required = true;
+
+    if (!alive) {
+      return;
+    }
+
     last_start_ += element_duration;
     ++last_element_;
     last_progressed_fraction_ =
@@ -109,15 +120,22 @@ void LayerAnimationSequence::Progress(base::TimeTicks now,
       animation_group_id_ = cc::AnimationIdProvider::NextGroupId();
       elements_[current_index]->Start(delegate, animation_group_id_);
     }
-    base::WeakPtr<LayerAnimationSequence> alive(AsWeakPtr());
-    if (elements_[current_index]->Progress(now, delegate))
-      redraw_required = true;
-    if (!alive)
+
+    if (!alive) {
       return;
+    }
+
+    if (elements_[current_index]->Progress(now, delegate)) {
+      redraw_required = true;
+    }
+
+    if (!alive) {
+      return;
+    }
+
     last_progressed_fraction_ =
         elements_[current_index]->last_progressed_fraction();
   }
-
   // Since the delegate may be deleted due to the notifications below, it is
   // important that we schedule a draw before sending them.
   if (redraw_required)
@@ -166,10 +184,17 @@ void LayerAnimationSequence::ProgressToEnd(LayerAnimationDelegate* delegate) {
   if (elements_.empty())
     return;
 
+  base::WeakPtr<LayerAnimationSequence> alive(AsWeakPtr());
+
   size_t current_index = last_element_ % elements_.size();
   while (current_index < elements_.size()) {
     if (elements_[current_index]->ProgressToEnd(delegate))
       redraw_required = true;
+
+    if (!alive) {
+      return;
+    }
+
     last_progressed_fraction_ =
         elements_[current_index]->last_progressed_fraction();
     ++current_index;
@@ -199,9 +224,13 @@ void LayerAnimationSequence::GetTargetValue(
 }
 
 void LayerAnimationSequence::Abort(LayerAnimationDelegate* delegate) {
+  base::WeakPtr<LayerAnimationSequence> alive(AsWeakPtr());
   size_t current_index = last_element_ % elements_.size();
   while (current_index < elements_.size()) {
     elements_[current_index]->Abort(delegate);
+    if (!alive) {
+      return;
+    }
     ++current_index;
   }
   last_element_ = 0;
