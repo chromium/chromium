@@ -205,6 +205,9 @@ crbug.com/524808 [ win8 nvidia ] ContextLost_WebGLContextLostFromSelectElement [
 # Suspect tab switch is too slow on older devices
 crbug.com/443295355 [ android android-pixel-4 ] ContextLost_WebGLContextLostInHiddenTab [ Slow ]
 
+# Timing out on Pixel-2
+crbug.com/513426790 [ android android-pixel-2 ] ContextLost_WorkerWebGLRAFAfterGPUCrash [ Slow ]
+
 # Fails with Graphite on Windows and Mac
 crbug.com/329145823 [ win release amd ] GpuCrash_InfoForHardwareGpu [ Failure ]
 crbug.com/329145823 [ win release amd ] GpuCrash_SoftwareFallbackDisabled [ Failure ]
