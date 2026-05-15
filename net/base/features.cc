@@ -496,6 +496,11 @@ BASE_FEATURE_PARAM(bool,
                    "SqlDiskCachePreloadDatabase",
                    false);
 BASE_FEATURE_PARAM(bool,
+                   kSqlDiskCacheWalMode,
+                   &kDiskCacheBackendExperiment,
+                   "SqlDiskCacheWalMode",
+                   true);
+BASE_FEATURE_PARAM(bool,
                    kSqlDiskCacheSynchronousOff,
                    &kDiskCacheBackendExperiment,
                    "SqlDiskCacheSynchronousOff",

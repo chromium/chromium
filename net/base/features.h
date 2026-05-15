@@ -567,7 +567,9 @@ NET_EXPORT BASE_DECLARE_FEATURE_PARAM(int,
 // specified by this param, the SQL backend executes optimistic writes.
 NET_EXPORT BASE_DECLARE_FEATURE_PARAM(int,
                                       kSqlDiskCacheOptimisticWriteBufferSize);
-// Disables synchronous writes in the WAL file of the SQL disk cache's DB.
+// Whether to enable WAL mode for the SQL disk cache backend.
+NET_EXPORT BASE_DECLARE_FEATURE_PARAM(bool, kSqlDiskCacheWalMode);
+// Disables synchronous writes in the SQL disk cache's DB.
 // This is faster but less safe.
 NET_EXPORT BASE_DECLARE_FEATURE_PARAM(bool, kSqlDiskCacheSynchronousOff);
 // Enables the database preloading for the SQL disk cache backend.

@@ -926,7 +926,7 @@ TEST_P(SqliteVfsMultiprocessTest, WalDynamicGrowth) {
           // Disable automatic checkpointing to grow the write-ahead log.
           .set_wal_commit_callback(base::DoNothing())
           // Disable sync so the test isn't slower than it needs to be.
-          .set_no_sync_on_wal_mode(true),
+          .set_no_sync(true),
       sql::Database::Tag("Test"));
   ::testing::StrictMock<ScopedMockErrorCallback> error_mock(db);
   ASSERT_TRUE(db.Open(file_set.GetDbVirtualFilePath()));

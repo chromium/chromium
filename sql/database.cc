@@ -2319,6 +2319,34 @@ bool Database::OpenInternal(const std::string& db_file_path) {
       return false;
     }
 
+    // Set the synchronous flag, which controls how aggressively SQLite writes
+    // data to disk.
+    //
+    // If `no_sync_` is true, this is set to OFF. With synchronous=OFF, SQLite
+    // hands data to the OS for writing but doesn't wait for it to complete.
+    // This is very fast, but an OS crash or power failure can lead to database
+    // corruption. Data is safe from an application crash.
+    //
+    // Otherwise, if WAL mode is enabled, this is set to NORMAL. In WAL mode,
+    // synchronous=NORMAL means SQLite syncs at critical moments (like
+    // checkpoints), but not for every individual transaction. An OS crash or
+    // power failure may cause the loss of transactions that occurred since the
+    // last checkpoint, but the database file itself will not be corrupted.
+    //
+    // If `no_sync_` is false and WAL mode is disabled, the synchronous flag is
+    // not set, which means SQLite uses its default (FULL).
+    // See https://www.sqlite.org/pragma.html#pragma_synchronous for more
+    // details.
+    if (options_.no_sync_ || UseWALMode()) {
+      if (!Execute(options_.no_sync_
+                       ? base::cstring_view("PRAGMA synchronous=OFF")
+                       : base::cstring_view("PRAGMA synchronous=NORMAL"))) {
+        RecordOpenDatabaseFailureReason(
+            histogram_tag_, OpenDatabaseFailedReason::kPragmaSynchronousFailed);
+        return false;
+      }
+    }
+
     // https://www.sqlite.org/pragma.html#pragma_journal_mode
     // WAL - Use a write-ahead log instead of a journal file.
     // DELETE (default) - delete -journal file to commit.
@@ -2331,33 +2359,6 @@ bool Database::OpenInternal(const std::string& db_file_path) {
     // Needs to be performed after setting exclusive locking mode. Otherwise can
     // fail if underlying VFS doesn't support shared memory.
     if (UseWALMode()) {
-      // Set the synchronous flag, which controls how aggressively SQLite writes
-      // data to disk.
-      //
-      // If `no_sync_on_wal_mode_` is true, this is set to OFF. With
-      // synchronous=OFF, SQLite hands data to the OS for writing but doesn't
-      // wait for it to complete. This is very fast, but an OS crash or power
-      // failure can lead to database corruption. Data is safe from an
-      // application crash.
-      //
-      // Otherwise, this is set to NORMAL. In WAL mode, synchronous=NORMAL means
-      // SQLite syncs at critical moments (like checkpoints), but not for every
-      // individual transaction. An OS crash or power failure may cause the loss
-      // of transactions that occurred since the last checkpoint, but the
-      // database file itself will not be corrupted.
-      // See https://www.sqlite.org/pragma.html#pragma_synchronous for more
-      // details.
-      //
-      // TODO(shuagga@microsoft.com): Evaluate if this loss of durability is a
-      // concern.
-      if (!Execute(options_.no_sync_on_wal_mode_
-                       ? base::cstring_view("PRAGMA synchronous=OFF")
-                       : base::cstring_view("PRAGMA synchronous=NORMAL"))) {
-        RecordOpenDatabaseFailureReason(
-            histogram_tag_, OpenDatabaseFailedReason::kPragmaSynchronousFailed);
-        return false;
-      }
-
       // Opening the db in WAL mode can fail (eg if the underlying VFS doesn't
       // support shared memory and we are not in exclusive locking mode).
       if (!Execute("PRAGMA journal_mode=WAL")) {
