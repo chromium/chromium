@@ -1,0 +1,37 @@
+From bd2e8db6a88bc03306d93555e13a4afd807a7008 Mon Sep 17 00:00:00 2001
+From: Greg Thompson <grt@chromium.org>
+Date: Wed, 13 May 2026 14:17:24 +0200
+Subject: [PATCH 1/6] Shorten segment names in Asm/x86/LzmaDecOpt.asm to make
+ the build deterministic
+
+---
+ third_party/lzma_sdk/src/Asm/x86/LzmaDecOpt.asm | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
+
+diff --git a/third_party/lzma_sdk/src/Asm/x86/LzmaDecOpt.asm b/third_party/lzma_sdk/src/Asm/x86/LzmaDecOpt.asm
+index 7c568df1d2e64..56d9e71f47c3f 100644
+--- a/third_party/lzma_sdk/src/Asm/x86/LzmaDecOpt.asm
++++ b/third_party/lzma_sdk/src/Asm/x86/LzmaDecOpt.asm
+@@ -39,7 +39,9 @@ endif
+ endif
+ 
+ ifdef Z7_LZMA_DEC_OPT_ASM_USE_SEGMENT
+-_TEXT$LZMADECOPT SEGMENT ALIGN(64) 'CODE'
++; Make this deterministic
++; _TEXT$LZMADECOPT SEGMENT ALIGN(64) 'CODE'
++LZMADEC SEGMENT ALIGN(64) 'CODE'
+ MY_ALIGN macro num:req
+         align  num
+         ; align  16
+@@ -1333,7 +1335,7 @@ MY_POP_PRESERVED_ABI_REGS
+ MY_ENDP
+ 
+ ifdef Z7_LZMA_DEC_OPT_ASM_USE_SEGMENT
+-_TEXT$LZMADECOPT ENDS
++LZMADEC ENDS
+ endif
+ 
+ end
+-- 
+2.54.0.563.g4f69b47b94-goog
+

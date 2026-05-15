@@ -1,20 +1,20 @@
 Name: LZMA SDK
 Short Name: lzma
 URL: http://www.7-zip.org/sdk.html
-Version: 25.01
-Date: 2025-08-25
+Version: 26.00
+Date: 2026-04-29
 Update Mechanism: Manual
 License: LZMA-SDK-9.22
-License File: LICENSE
+License File: src/DOC/lzma-sdk.txt
 Security Critical: yes
 Shipped: yes
-CPEPrefix: cpe:2.3:a:7-zip:7-zip:25.01:*:*:*:*:*:*:*
+CPEPrefix: cpe:2.3:a:7-zip:7-zip:26.00:*:*:*:*:*:*:*
 
 Description:
-This contains a part of LZMA SDK 25.01. It builds only in single-threaded mode.
+This contains a part of LZMA SDK 26.00. It builds only in single-threaded mode.
 
 Local Modifications:
-The original code can be found at https://www.7-zip.org/a/lzma2501.7z.
+The original code can be found at https://www.7-zip.org/a/lzma2600.7z.
 
 The 7z binaries are installed via a 3pp CIPD package into bin/ if Windows is
 specified as a target OS in the .gclient file. There are two subdirectories in

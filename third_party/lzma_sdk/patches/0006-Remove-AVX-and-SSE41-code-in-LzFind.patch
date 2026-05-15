@@ -1,0 +1,34 @@
+From 9e505a36e7769daeda1ca6287d457b67778b9a40 Mon Sep 17 00:00:00 2001
+From: Greg Thompson <grt@chromium.org>
+Date: Wed, 13 May 2026 14:19:22 +0200
+Subject: [PATCH 6/6] Remove AVX and SSE41 code in LzFind
+
+---
+ third_party/lzma_sdk/src/C/LzFind.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/third_party/lzma_sdk/src/C/LzFind.c b/third_party/lzma_sdk/src/C/LzFind.c
+index 330bc17293153..728c7afae6a0f 100644
+--- a/third_party/lzma_sdk/src/C/LzFind.c
++++ b/third_party/lzma_sdk/src/C/LzFind.c
+@@ -595,7 +595,7 @@ void MatchFinder_Init(void *_p)
+ }
+ 
+ 
+-
++#if 0
+ #ifdef MY_CPU_X86_OR_AMD64
+   #if defined(__clang__) && (__clang_major__ >= 4) \
+     || defined(Z7_GCC_VERSION) && (Z7_GCC_VERSION >= 40900)
+@@ -639,7 +639,7 @@ void MatchFinder_Init(void *_p)
+   #endif
+ 
+ #endif
+-
++#endif // #if 0
+ 
+ #ifdef USE_LZFIND_SATUR_SUB_128
+ 
+-- 
+2.54.0.563.g4f69b47b94-goog
+

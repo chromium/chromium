@@ -1,0 +1,37 @@
+From a35b25d245fc0db0c52b6057ce3f02b48a64f5c4 Mon Sep 17 00:00:00 2001
+From: Greg Thompson <grt@chromium.org>
+Date: Wed, 13 May 2026 14:19:04 +0200
+Subject: [PATCH 5/6] Extend the search range for 7z archive signature to
+ accomodate increased sfx binary size in debug builds
+
+---
+ third_party/lzma_sdk/src/C/Util/SfxSetup/SfxSetup.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
+
+diff --git a/third_party/lzma_sdk/src/C/Util/SfxSetup/SfxSetup.c b/third_party/lzma_sdk/src/C/Util/SfxSetup/SfxSetup.c
+index 9b5c1f9117668..c52e838f7f546 100644
+--- a/third_party/lzma_sdk/src/C/Util/SfxSetup/SfxSetup.c
++++ b/third_party/lzma_sdk/src/C/Util/SfxSetup/SfxSetup.c
+@@ -11,6 +11,10 @@
+ #define _UNICODE
+ #endif
+ 
++// SHELLEXECUTEINFO
++#include <windows.h>
++#include <shellapi.h>
++
+ #ifdef _CONSOLE
+ #include <stdio.h>
+ #endif
+@@ -141,7 +145,7 @@ static WRes MyCreateDir(const WCHAR *name)
+ #define kBufferSize (1 << 15)
+ #endif
+ 
+-#define kSignatureSearchLimit (1 << 22)
++#define kSignatureSearchLimit (1 << 26)
+ 
+ static BoolInt FindSignature(CSzFile *stream, UInt64 *resPos)
+ {
+-- 
+2.54.0.563.g4f69b47b94-goog
+

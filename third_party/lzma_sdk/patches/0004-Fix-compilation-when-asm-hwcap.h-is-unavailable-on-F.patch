@@ -1,0 +1,29 @@
+From 2e5a2dc2fd8c6d76f9cdbbefa809ec5a20c1dc5a Mon Sep 17 00:00:00 2001
+From: Greg Thompson <grt@chromium.org>
+Date: Wed, 13 May 2026 14:18:44 +0200
+Subject: [PATCH 4/6] Fix compilation when <asm/hwcap.h> is unavailable (on
+ Fuchsia)
+
+---
+ third_party/lzma_sdk/src/C/CpuArch.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/third_party/lzma_sdk/src/C/CpuArch.c b/third_party/lzma_sdk/src/C/CpuArch.c
+index 342280d0bc7f7..876f00410ab80 100644
+--- a/third_party/lzma_sdk/src/C/CpuArch.c
++++ b/third_party/lzma_sdk/src/C/CpuArch.c
+@@ -871,9 +871,11 @@ BoolInt CPU_IsSupported_AES (void) { return APPLE_CRYPTO_SUPPORT_VAL; }
+ 
+ #ifdef Z7_GETAUXV_AVAILABLE
+ // #pragma message("=== Z7_GETAUXV_AVAILABLE === ")
++#if defined(__FreeBSD__) || (defined(__has_include) && __has_include(<asm/hwcap.h>))
+ #include <sys/auxv.h>
+ #define USE_HWCAP
+ #endif
++#endif  // Z7_GETAUXV_AVAILABLE
+ 
+ #ifdef USE_HWCAP
+ 
+-- 
+2.54.0.563.g4f69b47b94-goog
+

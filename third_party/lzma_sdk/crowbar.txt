@@ -1,0 +1,81 @@
+How to update lzma_sdk:
+
+1. Pick the version number to which you wish to update; for example, the current
+   release on https://github.com/ip7z/7zip/releases (which is
+   https://github.com/ip7z/7zip/releases/latest).
+
+2. Find the download link for the "7zNNNN-src.tar.xz" asset, where "NNNN" is the
+   version number without a period (e.g., "7z2600-src.tar.xz" for version
+   26.00).
+
+3. Create a CL for the file 3pp/7z/3pp.pb that updates the "download_url" field
+   to the link discovered above and the "version" to the version chosen above,
+   send it for review, and submit it. See https://crrev.com/c/7807444 for an
+   example.
+
+4. After the 3pp system has generated new binaries from those sources, browse
+   https://chrome-infra-packages.appspot.com/p/infra/3pp/tools/7z/windows-amd64
+   to find the version tag for the new binaries; for example, "version:3@26.00".
+
+5. Create a new git branch on which to work:
+   git new-branch lzma
+
+6. In //DEPS, change the "version" field to this new version for both the
+   host_platform and win64 7z entries.
+
+7. From the GitHub release chosen above, download the asset file matching the
+   pattern "lzmaNNNN.7z" where "NNNN" is the version number without a period
+   (e.g., "lzma2600.7z" for version 26.00).
+
+8. Expand the archive into a subdirectory of third_party/lzma_sdk:
+   ( mkdir third_party/lzma_sdk/lzma2600 && cd third_party/lzma_sdk/lzma2600 \
+       && ../bin/host_platform/7za x ~/Downloads/lzma2600.7z )
+
+9. Convert line endings of the extracted text files:
+   find third_party/lzma_sdk/lzma2600 -name bin -prune -o -type f \
+       ! -name \*.ico -print0 | xargs -0 dos2unix
+
+10. Delete the src/ directory:
+    rm -fr third_party/lzma_sdk/src
+
+11. Create a new src/ directory:
+    mkdir third_party/lzma_sdk/src
+
+12. Copy Asm/, C/, and DOC/lzma-sdk.txt from the extracted archive into src/.
+    For example:
+    (cd third_party/lzma_sdk/lzma2600 && tar -cf - Asm DOC/lzma-sdk.txt C) | \
+        (cd third_party/lzma_sdk/src && tar -xf -)
+
+13. Delete the expanded archive.
+    rm -fr third_party/lzma_sdk/lzma2600
+
+14. Create a git commit for the upstream files:
+    git add third_party/lzma_sdk/src && git ci -m "LZMA SDK 26.00"
+
+15. Create a new branch for patch application:
+    git co -b patch_chain
+
+16. Apply the patches/*, fixing each in its own commit as necessary:
+    git am third_party/lzma_sdk/patches/*
+
+17. Build //chrome/test:unit_tests and run the 7zip reader tests:
+    autoninja -C out/Default chrome/test:unit_tests && \
+    out/Default/unit_tests --single-process-tests --gtest_filter=SevenZipReader\*
+
+18. Regenerate the patch files:
+    git format-patch lzma -o third_party/lzma_sdk/patches
+
+19. Update the Version, Date, CPEPrefix, and version number and link in the
+    description of third_party/lzma_sdk/README.chromium.
+
+20. Commit:
+    git add third_party/lzma_sdk && git ci -m patches
+
+21. Move the main branch to the latest commit and delete the patch_chain branch:
+    git co -B lzma && git br -d patch_chain
+
+22. Squash everything to one commit:
+    git squash-branch
+
+23. Give the commit a proper description and upload for review:
+    git ci --amend && git cl upload --commit-description=+ -d

@@ -1,0 +1,55 @@
+From 5f9da78043867561259e529c6757d426232450b0 Mon Sep 17 00:00:00 2001
+From: Greg Thompson <grt@chromium.org>
+Date: Wed, 13 May 2026 14:18:23 +0200
+Subject: [PATCH 3/6] Add the ability to suppress CRC hardware acceleration for
+ fuzzing
+
+---
+ third_party/lzma_sdk/src/C/7zCrc.c | 5 +++--
+ third_party/lzma_sdk/src/C/7zCrc.h | 1 +
+ 2 files changed, 4 insertions(+), 2 deletions(-)
+
+diff --git a/third_party/lzma_sdk/src/C/7zCrc.c b/third_party/lzma_sdk/src/C/7zCrc.c
+index 6e2db9eab192b..3043c5f95e632 100644
+--- a/third_party/lzma_sdk/src/C/7zCrc.c
++++ b/third_party/lzma_sdk/src/C/7zCrc.c
+@@ -9,7 +9,7 @@
+ // for debug:
+ // #define __ARM_FEATURE_CRC32 1
+ 
+-#ifdef __ARM_FEATURE_CRC32
++#if defined(__ARM_FEATURE_CRC32) && !defined(Z7_NO_CRC_HW_FORCE)
+ // #pragma message("__ARM_FEATURE_CRC32")
+ #define Z7_CRC_HW_FORCE
+ #endif
+@@ -237,13 +237,14 @@ Z7_DIAGNOSTIC_IGNORE_END_RESERVED_MACRO_IDENTIFIER
+ 
+ #ifndef Z7_CRC_HW_FORCE
+ 
++unsigned g_Crc_Algo;
++
+ #if defined(Z7_CRC_HW_USE) || defined(Z7_CRC_UPDATE_T1_FUNC_NAME)
+ /*
+ typedef UInt32 (Z7_FASTCALL *Z7_CRC_UPDATE_WITH_TABLE_FUNC)
+     (UInt32 v, const void *data, size_t size, const UInt32 *table);
+ Z7_CRC_UPDATE_WITH_TABLE_FUNC g_CrcUpdate;
+ */
+-static unsigned g_Crc_Algo;
+ #if (!defined(MY_CPU_LE) && !defined(MY_CPU_BE))
+ static unsigned g_Crc_Be;
+ #endif
+diff --git a/third_party/lzma_sdk/src/C/7zCrc.h b/third_party/lzma_sdk/src/C/7zCrc.h
+index 3e6d408b9287f..36d915390609b 100644
+--- a/third_party/lzma_sdk/src/C/7zCrc.h
++++ b/third_party/lzma_sdk/src/C/7zCrc.h
+@@ -9,6 +9,7 @@
+ EXTERN_C_BEGIN
+ 
+ extern UInt32 g_CrcTable[];
++extern unsigned g_Crc_Algo;
+ 
+ /* Call CrcGenerateTable one time before other CRC functions */
+ void Z7_FASTCALL CrcGenerateTable(void);
+-- 
+2.54.0.563.g4f69b47b94-goog
+

@@ -1,6 +1,18 @@
---- lzma2501/C/CpuArch.h	2025-04-05 10:00:00.000000000 +0200
-+++ src/C/CpuArch.h	2026-04-27 14:52:47.549394679 +0200
-@@ -416,14 +416,18 @@
+From 1bedb0fcc70b860098ac847846ca4210d48364af Mon Sep 17 00:00:00 2001
+From: Greg Thompson <grt@chromium.org>
+Date: Wed, 13 May 2026 14:18:06 +0200
+Subject: [PATCH 2/6] Fix undefined behavior in CpuArch.h flagged by UBSan
+ caused by invalid pointer casts
+
+---
+ third_party/lzma_sdk/src/C/CpuArch.h | 10 +++++++---
+ 1 file changed, 7 insertions(+), 3 deletions(-)
+
+diff --git a/third_party/lzma_sdk/src/C/CpuArch.h b/third_party/lzma_sdk/src/C/CpuArch.h
+index c682720874b98..e4560ae3fc22c 100644
+--- a/third_party/lzma_sdk/src/C/CpuArch.h
++++ b/third_party/lzma_sdk/src/C/CpuArch.h
+@@ -421,14 +421,18 @@ MY_CPU_64BIT means that processor can work with 64-bit registers.
  #endif
  
  
@@ -22,3 +34,6 @@
    #elif defined(__ARM_FEATURE_UNALIGNED)
  /* === ALIGNMENT on 32-bit arm and LDRD/STRD/LDM/STM instructions.
    Description of problems:
+-- 
+2.54.0.563.g4f69b47b94-goog
+

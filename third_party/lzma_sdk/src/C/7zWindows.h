@@ -1,10 +1,16 @@
-/* 7zWindows.h -- StdAfx
-2023-04-02 : Igor Pavlov : Public domain */
+/* 7zWindows.h -- Windows.h and related code
+Igor Pavlov : Public domain */
 
 #ifndef ZIP7_INC_7Z_WINDOWS_H
 #define ZIP7_INC_7Z_WINDOWS_H
 
 #ifdef _WIN32
+
+#if defined(_MSC_VER) && _MSC_VER >= 1950 && !defined(__clang__) // VS2026
+// <Windows.h> and some another windows files need that option
+// VS2026: wtypesbase.h: warning C4865: 'tagCLSCTX': the underlying type will change from 'int' to 'unsigned int' when '/Zc:enumTypes' is specified on the command line
+#pragma warning(disable : 4865)
+#endif
 
 #if defined(__clang__)
 # pragma clang diagnostic push

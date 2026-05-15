@@ -31,7 +31,12 @@ MY_CPU_64BIT means that processor can work with 64-bit registers.
     #define MY_CPU_NAME "x32"
     #define MY_CPU_SIZEOF_POINTER 4
   #else
-    #define MY_CPU_NAME "x64"
+    #if defined(__APX_EGPR__) || defined(__EGPR__)
+      #define MY_CPU_NAME "x64-apx"
+      #define MY_CPU_AMD64_APX
+    #else
+      #define MY_CPU_NAME "x64"
+    #endif
     #define MY_CPU_SIZEOF_POINTER 8
   #endif
   #define MY_CPU_64BIT
@@ -600,8 +605,20 @@ problem-4 : performace:
 #define SetBe32a(p, v)   { *(UInt32 *)(void *)(p) = (v); }
 #define SetBe16a(p, v)   { *(UInt16 *)(void *)(p) = (v); }
 
+// gcc and clang for powerpc can transform load byte access to load reverse word access.
+// sp we can use byte access instead of word access. Z7_BSWAP64 cab be slow
+#if 1 && defined(Z7_CPU_FAST_BSWAP_SUPPORTED) && defined(MY_CPU_64BIT)
+#define GetUi64a(p)   Z7_BSWAP64 (*(const UInt64 *)(const void *)(p))
+#else
 #define GetUi64a(p)      GetUi64(p)
+#endif
+
+#if 1 && defined(Z7_CPU_FAST_BSWAP_SUPPORTED)
+#define GetUi32a(p)   Z7_BSWAP32 (*(const UInt32 *)(const void *)(p))
+#else
 #define GetUi32a(p)      GetUi32(p)
+#endif
+
 #define GetUi16a(p)      GetUi16(p)
 #define SetUi32a(p, v)   SetUi32(p, v)
 #define SetUi16a(p, v)   SetUi16(p, v)
