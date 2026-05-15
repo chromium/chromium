@@ -1303,6 +1303,8 @@ data/accessibility/aria/aria-mismatched-table-attr-expected-mac.txt
 data/accessibility/aria/aria-mismatched-table-attr-expected-uia-win.txt
 data/accessibility/aria/aria-mismatched-table-attr-expected-win.txt
 data/accessibility/aria/aria-mismatched-table-attr.html
+data/accessibility/aria/aria-modal-close-visibility-hidden-expected-mac.txt
+data/accessibility/aria/aria-modal-close-visibility-hidden.html
 data/accessibility/aria/aria-modal-expected-android-external.txt
 data/accessibility/aria/aria-modal-expected-auralinux.txt
 data/accessibility/aria/aria-modal-expected-mac.txt

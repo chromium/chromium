@@ -1,0 +1,29 @@
+<!--
+@WAIT-FOR:Background Button
+-->
+<!DOCTYPE html>
+<html>
+<body>
+  <button id="background" style="display:none;">Background Button</button>
+
+  <div role="dialog" id="dialog" aria-label="modal dialog" aria-modal="true">
+    <button id="innerButton">Inner Button</button>
+  </div>
+
+  <script>
+    // Test that when an active ARIA modal dialog is hidden via
+    // visibility:hidden and focus is cleared, the accessibility tree is not
+    // pruned.
+    //
+    // Note: aria-modal pruning logic currently only runs on Mac.
+    function run() {
+      innerButton.focus();
+      setTimeout(() => {
+        dialog.style.visibility = 'hidden';
+        background.style.display = 'block';
+      }, 100);
+    }
+    window.onload = run;
+  </script>
+</body>
+</html>

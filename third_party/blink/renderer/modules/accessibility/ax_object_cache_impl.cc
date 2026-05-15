@@ -5924,6 +5924,13 @@ void AXObjectCacheImpl::HandleFocusedUIElementChanged(
   if (!new_focused_element) {
     // When focus is cleared, implicitly focus the document by sending a blur.
     if (GetDocument().documentElement()) {
+      // If focus is cleared while an aria-modal dialog is active, re-evaluate
+      // the active aria-modal dialog so we don't keep pruning the accessibility
+      // tree indefinitely.
+      if (active_aria_modal_dialog_) {
+        UpdateActiveAriaModalDialog(GetDocument().documentElement());
+      }
+
       DeferTreeUpdate(TreeUpdateReason::kNodeLostFocus,
                       GetDocument().documentElement());
     }
