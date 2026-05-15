@@ -1919,6 +1919,9 @@ deps = {
   'src/third_party/anonymous_tokens/src':
     Var('chromium_git') + '/external/github.com/google/anonymous-tokens.git' + '@' + '92d1fdf881a932e7aa2a9b20e006136a659c7a20',
 
+  'src/third_party/aria-practices/src':
+    Var('chromium_git') + '/external/github.com/w3c/aria-practices.git' + '@' + '7b134ce6d19497cce8a67db4a9f59980baf853dc',
+
     'src/third_party/blink/renderer/core/css/perftest_data': {
       'dep_type': 'gcs',
       'condition': 'non_git_source',

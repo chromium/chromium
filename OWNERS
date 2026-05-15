@@ -135,6 +135,7 @@ per-file third_party/angle=*
 per-file third_party/anonymous_tokens/src=*
 per-file third_party/apache-portable-runtime/src=*
 per-file third_party/arcore-android-sdk/src=*
+per-file third_party/aria-practices/src=*
 per-file third_party/barhopper=*
 per-file third_party/beto-core/src=*
 per-file third_party/boringssl/src=*

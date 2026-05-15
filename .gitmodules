@@ -83,6 +83,9 @@
 [submodule "third_party/anonymous_tokens/src"]
 	path = third_party/anonymous_tokens/src
 	url = https://chromium.googlesource.com/external/github.com/google/anonymous-tokens
+[submodule "third_party/aria-practices/src"]
+	path = third_party/aria-practices/src
+	url = https://chromium.googlesource.com/external/github.com/w3c/aria-practices
 [submodule "third_party/readability/src"]
 	path = third_party/readability/src
 	url = https://chromium.googlesource.com/external/github.com/mozilla/readability

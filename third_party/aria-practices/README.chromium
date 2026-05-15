@@ -1,0 +1,17 @@
+Name: W3C ARIA Authoring Practices Guide (APG)
+Short Name: aria-practices
+URL: https://chromium.googlesource.com/external/github.com/w3c/aria-practices
+Version: N/A
+Revision: 7b134ce6d19497cce8a67db4a9f59980baf853dc
+Security Critical: no
+Shipped: no
+License: W3C
+License File: LICENSE
+Update Mechanism: Autoroll
+
+Description:
+The W3C ARIA Authoring Practices Guide (APG) provides templates and design patterns
+for creating accessible web applications using WAI-ARIA.
+
+Local Modifications:
+None
