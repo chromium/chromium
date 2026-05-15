@@ -659,13 +659,20 @@ AudioContext::AudioContext(LocalDOMWindow& window,
   // once the context is constructed.  We need the destination to be initialized
   // so we have to compute it here.
   //
-  // TODO(hongchan): Due to the incompatible constructor between
+  // Per specification, baseLatency is the processing latency of the
+  // AudioContext caused by the rendering quantum size or the hardware buffer
+  // size, whichever is greater.
+  //
+  // TODO(crbug.com/512526279): Due to the incompatible constructor between
   // AudioDestinationNode and RealtimeAudioDestinationNode, casting directly
   // from `destination()` is impossible. This is a temporary workaround until
   // the refactoring is completed.
-  base_latency_ =
-      GetRealtimeAudioDestinationNode()->GetOwnHandler().GetFramesPerBuffer() /
-      static_cast<double>(sampleRate());
+  size_t base_latency_frames =
+      std::max(static_cast<size_t>(GetRealtimeAudioDestinationNode()
+                                       ->GetOwnHandler()
+                                       .GetFramesPerBuffer()),
+               static_cast<size_t>(renderQuantumSize()));
+  base_latency_ = base_latency_frames / static_cast<double>(sampleRate());
   SendLogMessage(__func__, String::Format("=> (base latency=%.3f seconds))",
                                           base_latency_));
 
