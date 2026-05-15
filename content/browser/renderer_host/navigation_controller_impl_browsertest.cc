@@ -90,6 +90,7 @@
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/controllable_http_response.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "net/test/embedded_test_server/expectation_handler.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/url_request/url_request_failed_job.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -17105,8 +17106,9 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
 // result in an error page.
 IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTestNoServer,
                        EmptyBody500CommitsErrorPage) {
-  net::test_server::ControllableHttpResponse response(embedded_test_server(),
-                                                      "/title1.html");
+  net::test_server::ExpectationHandler handler(embedded_test_server());
+  handler.OnRequest("/title1.html")
+      .RespondWith(net::HTTP_INTERNAL_SERVER_ERROR);
   ASSERT_TRUE(embedded_test_server()->Start());
   NavigationControllerImpl& controller =
       static_cast<NavigationControllerImpl&>(contents()->GetController());
@@ -17115,9 +17117,6 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTestNoServer,
   GURL url(embedded_test_server()->GetURL("/title1.html"));
   TestNavigationObserver observer(contents());
   shell()->LoadURL(url);
-  response.WaitForRequest();
-  response.Send(net::HTTP_INTERNAL_SERVER_ERROR);
-  response.Done();
   observer.Wait();
 
   // The navigation fails and commits a 500 error page.
