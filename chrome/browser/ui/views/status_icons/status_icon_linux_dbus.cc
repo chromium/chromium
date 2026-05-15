@@ -19,6 +19,7 @@
 #include "base/notreached.h"
 #include "base/numerics/checked_math.h"
 #include "base/process/process.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/thread_pool.h"
@@ -26,8 +27,8 @@
 #include "components/dbus/properties/dbus_properties.h"
 #include "components/dbus/properties/success_barrier_callback.h"
 #include "components/dbus/thread_linux/dbus_thread_linux.h"
-#include "components/dbus/utils/call_method.h"
 #include "components/dbus/utils/bind_weak_ptr_for_export_method.h"
+#include "components/dbus/utils/call_method.h"
 #include "components/dbus/utils/export_method.h"
 #include "components/dbus/utils/signature.h"
 #include "components/dbus/utils/variant.h"
@@ -66,9 +67,9 @@ const char kInterfaceStatusNotifierItem[] = "org.kde.StatusNotifierItem";
 const char kInterfaceStatusNotifierWatcher[] = "org.kde.StatusNotifierWatcher";
 
 // Object paths.
-const char kPathStatusNotifierItem[] = "/StatusNotifierItem";
+const char kPathStatusNotifierItem[] = "/org/chromium/StatusNotifierItem";
 const char kPathStatusNotifierWatcher[] = "/StatusNotifierWatcher";
-const char kPathDbusMenu[] = "/com/canonical/dbusmenu";
+const char kPathDbusMenu[] = "/org/chromium/DbusMenu";
 
 // Methods.
 const char kMethodNameHasOwner[] = "NameHasOwner";
@@ -135,6 +136,11 @@ int NextServiceId() {
 
 std::string PropertyIdFromId(int service_id) {
   return "chrome_status_icon_" + base::NumberToString(service_id);
+}
+
+dbus::ObjectPath ObjectPathFromId(const std::string& path, int service_id) {
+  return dbus::ObjectPath(
+      base::StrCat({path, "/", base::NumberToString(service_id)}));
 }
 
 using DbusImage = std::tuple</*width=*/int32_t,
@@ -303,6 +309,18 @@ void StatusIconLinuxDbus::ExecuteCommand(int command_id, int event_flags) {
 StatusIconLinuxDbus::~StatusIconLinuxDbus() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   CleanupIconFile();
+
+  properties_.reset();
+  if (item_) {
+    bus_->UnregisterExportedObject(
+        ObjectPathFromId(kPathStatusNotifierItem, service_id_));
+  }
+
+  if (menu_) {
+    menu_.reset();
+    bus_->UnregisterExportedObject(
+        ObjectPathFromId(kPathDbusMenu, service_id_));
+  }
 }
 
 void StatusIconLinuxDbus::CheckStatusNotifierWatcherHasOwner() {
@@ -357,7 +375,8 @@ void StatusIconLinuxDbus::OnHostRegisteredResponse(
       6, base::BindOnce(&StatusIconLinuxDbus::OnInitialized,
                         weak_factory_.GetWeakPtr()));
 
-  item_ = bus_->GetExportedObject(dbus::ObjectPath(kPathStatusNotifierItem));
+  item_ = bus_->GetExportedObject(
+      ObjectPathFromId(kPathStatusNotifierItem, service_id_));
 
   dbus_utils::ExportMethod<"ii", "">(
       item_, kInterfaceStatusNotifierItem, kMethodActivate,
@@ -386,7 +405,8 @@ void StatusIconLinuxDbus::OnHostRegisteredResponse(
                      weak_factory_.GetWeakPtr()));
 
   menu_ = std::make_unique<DbusMenu>(
-      bus_->GetExportedObject(dbus::ObjectPath(kPathDbusMenu)), barrier_);
+      bus_->GetExportedObject(ObjectPathFromId(kPathDbusMenu, service_id_)),
+      barrier_);
   UpdateMenuImpl(delegate_->GetMenuModel(), false);
 
   properties_ = std::make_unique<DbusProperties>(item_, barrier_);
@@ -397,7 +417,8 @@ void StatusIconLinuxDbus::OnHostRegisteredResponse(
   properties_->SetProperty<"i">(kInterfaceStatusNotifierItem, kPropertyWindowId,
                                 0, false);
   properties_->SetProperty<"o">(kInterfaceStatusNotifierItem, kPropertyMenu,
-                                dbus::ObjectPath(kPathDbusMenu), false);
+                                ObjectPathFromId(kPathDbusMenu, service_id_),
+                                false);
   properties_->SetProperty<"s">(kInterfaceStatusNotifierItem,
                                 kPropertyAttentionIconName, "", false);
   properties_->SetProperty<"s">(kInterfaceStatusNotifierItem,
@@ -452,7 +473,7 @@ void StatusIconLinuxDbus::RegisterStatusNotifierItem() {
       kMethodRegisterStatusNotifierItem,
       base::BindOnce(&StatusIconLinuxDbus::OnRegistered,
                      weak_factory_.GetWeakPtr()),
-      bus_->GetConnectionName());
+      ObjectPathFromId(kPathStatusNotifierItem, service_id_).value());
 }
 
 void StatusIconLinuxDbus::OnRegistered(

@@ -112,14 +112,15 @@ void StatusIconButtonLinux::UpdatePlatformContextMenu(ui::MenuModel* model) {
 }
 
 void StatusIconButtonLinux::OnSetDelegate() {
-  if (!ui::OzonePlatform::GetInstance()
-           ->GetPlatformRuntimeProperties()
-           .supports_system_tray_windowing) {
+  // The delegate may have been cleared.
+  if (!delegate_) {
     return;
   }
 
-  // The delegate may have been cleared.
-  if (!delegate_) {
+  if (!ui::OzonePlatform::GetInstance()
+           ->GetPlatformRuntimeProperties()
+           .supports_system_tray_windowing) {
+    delegate_->OnImplInitializationFailed();
     return;
   }
 
