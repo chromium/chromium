@@ -919,6 +919,39 @@ TEST_F(ScrollSnapDataTest, SnapFlingNearExtremes) {
   EXPECT_FALSE(result2.is_extremity);
 }
 
+TEST_F(ScrollSnapDataTest, SnapFlingNearExtremesMustStop) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(features::kSnapFlingNearExtremes);
+
+  SnapContainerData container(
+      ScrollSnapType(false, SnapAxis::kX, SnapStrictness::kMandatory),
+      gfx::RectF(0, 0, 200, 200), gfx::PointF(1000, 1000));
+
+  // Add three must-stop snap areas.
+  SnapAreaData area1(ScrollSnapAlign(SnapAlignment::kStart),
+                     gfx::RectF(100, 0, 10, 10), true, false, ElementId(10));
+  SnapAreaData area2(ScrollSnapAlign(SnapAlignment::kStart),
+                     gfx::RectF(500, 0, 10, 10), true, false, ElementId(20));
+  SnapAreaData area3(ScrollSnapAlign(SnapAlignment::kStart),
+                     gfx::RectF(900, 0, 10, 10), true, false, ElementId(30));
+
+  container.AddSnapAreaData(area1);
+  container.AddSnapAreaData(area2);
+  container.AddSnapAreaData(area3);
+
+  // Fling towards start, targeting area1.
+  // Current position 150, delta -20. Target would be 100.
+  // Since it must_snap, it should not be marked as
+  // extremity.
+  std::unique_ptr<SnapSelectionStrategy> strategy1 =
+      SnapSelectionStrategy::CreateForDisplacement(
+          gfx::PointF(150, 0), gfx::Vector2dF(-20, 0), false);
+  SnapPositionData result1 = container.FindSnapPosition(*strategy1);
+  EXPECT_EQ(Type::kAligned, result1.type);
+  EXPECT_EQ(100, result1.position.x());
+  EXPECT_FALSE(result1.is_extremity);
+}
+
 TEST_F(ScrollSnapDataTest, SnapFlingLargeAreaExtremes) {
   SnapContainerData container(
       ScrollSnapType(false, SnapAxis::kX, SnapStrictness::kMandatory),
