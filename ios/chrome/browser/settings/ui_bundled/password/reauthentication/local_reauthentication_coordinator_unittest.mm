@@ -336,3 +336,18 @@ TEST_F(
   ASSERT_TRUE(delegate_.successfulReauth);
   CheckReauthenticationViewControllerNotPresented();
 }
+
+// Tests that the reauth view controller has modalInPresentation set to YES.
+TEST_F(ReauthenticationCoordinatorTest,
+       ReauthViewControllerIsModalInPresentation) {
+  CheckReauthenticationViewControllerNotPresented();
+
+  // Simulate start of transition to background state.
+  scene_state_.activationLevel = SceneActivationLevelForegroundInactive;
+
+  CheckReauthenticationViewControllerIsPresented();
+
+  UIViewController* topViewController =
+      base_navigation_controller_.topViewController;
+  EXPECT_TRUE(topViewController.modalInPresentation);
+}
