@@ -25,6 +25,10 @@ namespace {
 static AccessibilityPrefsCustomAssociator*
     g_accessibility_prefs_custom_associator = nullptr;
 
+bool PrefNeedsResolution(const AccessibilityPrefBatchEntry& entry) {
+  return entry.resolution_policy != ConflictResolutionPolicy::kNone;
+}
+
 }  // namespace
 
 AccessibilityPrefsCustomAssociator::AccessibilityPrefsCustomAssociator(
@@ -39,8 +43,7 @@ AccessibilityPrefsCustomAssociator::AccessibilityPrefsCustomAssociator(
   }
 
   for (auto& enabled_sync_pref : enabled_sync_prefs_) {
-    if (enabled_sync_pref.resolution_policy !=
-        ConflictResolutionPolicy::kNone) {
+    if (PrefNeedsResolution(enabled_sync_pref)) {
       prefs_->AddSyncedPrefObserver(enabled_sync_pref.pref_name, this);
     }
   }
@@ -55,8 +58,7 @@ AccessibilityPrefsCustomAssociator::~AccessibilityPrefsCustomAssociator() {
   }
 
   for (auto& enabled_sync_pref : enabled_sync_prefs_) {
-    if (enabled_sync_pref.resolution_policy !=
-        ConflictResolutionPolicy::kNone) {
+    if (PrefNeedsResolution(enabled_sync_pref)) {
       prefs_->RemoveSyncedPrefObserver(enabled_sync_pref.pref_name, this);
     }
   }
@@ -92,12 +94,11 @@ bool AccessibilityPrefsCustomAssociator::CanLockPref(
     std::string_view pref_name) const {
   // TODO(crbug.com/485997708): Remove the lambda below when there is no
   // AccessibilityPrefBatchEntry set with ConflictResolutionPolicy::kNone left.
-  auto it = std::find_if(enabled_sync_prefs_.begin(), enabled_sync_prefs_.end(),
-                         [&](const auto& p) {
-                           return p.pref_name == pref_name &&
-                                  p.resolution_policy !=
-                                      ConflictResolutionPolicy::kNone;
-                         });
+  auto it =
+      std::find_if(enabled_sync_prefs_.begin(), enabled_sync_prefs_.end(),
+                   [&](const auto& p) {
+                     return p.pref_name == pref_name && PrefNeedsResolution(p);
+                   });
   return it != enabled_sync_prefs_.end();
 }
 
