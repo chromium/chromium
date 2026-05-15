@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {UrlType} from 'chrome-untrusted://boca-app/app/boca_app.js';
+import {GeminiEnablementState, UrlType} from 'chrome-untrusted://boca-app/app/boca_app.js';
 import {ClientDelegateFactory, getNetworkInfoMojomToUI, getSessionConfigMojomToUI, getStudentActivityMojomToUI} from 'chrome-untrusted://boca-app/app/client_delegate.js';
 import type {AddStudentsError, Assignment, BocaValidPref, CaptionConfig, Config, Course, CreateSessionError, EndViewScreenSessionError, Identity, OnTaskConfig, Permission, PermissionSetting, RemoveStudentError, RenotifyStudentError, SessionResult, SetViewScreenSessionActiveError, UpdateSessionError, ViewStudentScreenError, Window} from 'chrome-untrusted://boca-app/mojom/boca.mojom-webui.js';
-import {PageHandlerRemote, SubmitAccessCodeError, UrlType as UrlTypeMojo} from 'chrome-untrusted://boca-app/mojom/boca.mojom-webui.js';
+import {GeminiEnablementState as GeminiEnablementStateMojom, PageHandlerRemote, SubmitAccessCodeError, UrlType as UrlTypeMojo} from 'chrome-untrusted://boca-app/mojom/boca.mojom-webui.js';
 import type {TimeDelta} from 'chrome-untrusted://resources/mojo/mojo/public/mojom/base/time.mojom-webui.js';
 import type {Value} from 'chrome-untrusted://resources/mojo/mojo/public/mojom/base/values.mojom-webui.js';
 import {assertDeepEquals, assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
@@ -841,6 +841,7 @@ suite('ClientDelegateTest', function() {
           isHandRaised: false,
           joinMethod: 0,
           viewScreenSessionCode: 'abcd',
+          geminiState: GeminiEnablementStateMojom.kEnabled,
         },
       },
       {
@@ -853,6 +854,7 @@ suite('ClientDelegateTest', function() {
           isHandRaised: false,
           joinMethod: 1,
           viewScreenSessionCode: null,
+          geminiState: GeminiEnablementStateMojom.kDisabled,
         },
       },
     ];
@@ -869,6 +871,7 @@ suite('ClientDelegateTest', function() {
               isHandRaised: false,
               joinMethod: 0,
               viewScreenSessionCode: 'abcd',
+              geminiState: GeminiEnablementState.ENABLED,
             },
           },
           {
@@ -881,6 +884,7 @@ suite('ClientDelegateTest', function() {
               isHandRaised: false,
               joinMethod: 1,
               viewScreenSessionCode: undefined,
+              geminiState: GeminiEnablementState.DISABLED,
             },
           },
         ],

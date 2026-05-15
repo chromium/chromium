@@ -130,6 +130,12 @@ export enum StudentStatusDetail {
   MULTIPLE_DEVICE_SIGNED_IN = 9,
 }
 
+export enum GeminiEnablementState {
+  UNKNOWN = 0,
+  ENABLED = 1,
+  DISABLED = 2,
+}
+
 /**
  * Declare network state enum type
  */
@@ -283,6 +289,7 @@ export declare interface StudentActivity {
   // multi-group.
   joinMethod: JoinMethod;
   viewScreenSessionCode?: string;
+  geminiState: GeminiEnablementState;
 }
 
 /**

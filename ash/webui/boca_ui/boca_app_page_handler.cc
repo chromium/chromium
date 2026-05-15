@@ -114,6 +114,18 @@ std::optional<mojom::UrlType> ConvertUrlTypeProtoToMojom(
   return ::boca::URL_TYPE_UNSPECIFIED;
 }
 
+mojom::GeminiEnablementState ConvertGeminiEnablementStateProtoToMojom(
+    ::boca::GeminiEnablementState state) {
+  switch (state) {
+    case ::boca::GEMINI_ENABLEMENT_STATE_ENABLED:
+      return mojom::GeminiEnablementState::kEnabled;
+    case ::boca::GEMINI_ENABLEMENT_STATE_DISABLED:
+      return mojom::GeminiEnablementState::kDisabled;
+    default:
+      return mojom::GeminiEnablementState::kUnknown;
+  }
+}
+
 std::unique_ptr<::boca::OnTaskConfig> OnTaskConfigMojomToProto(
     const mojom::OnTaskConfigPtr& config) {
   auto on_task_config = std::make_unique<::boca::OnTaskConfig>();
@@ -262,7 +274,9 @@ std::vector<mojom::IdentifiedActivityPtr> SessionActivityProtoToMojom(
                         student_status_detail, device_active, active_tab,
                         /*is_caption_enabled=*/false,
                         /*is_hand_raised=*/false, mojom::JoinMethod::kRoster,
-                        connection_code));
+                        connection_code,
+                        ConvertGeminiEnablementStateProtoToMojom(
+                            item.second.gemini_enablement_state())));
     result.push_back(std::move(identity_ptr));
   }
   return result;

@@ -2223,10 +2223,13 @@ TEST_F(BocaAppPageHandlerProducerTest, UpdateNonEmptyStudentActivitySucceed) {
   device_1.mutable_view_screen_config()
       ->mutable_connection_param()
       ->set_connection_code("abcd");
+  status_1.set_gemini_enablement_state(::boca::GEMINI_ENABLEMENT_STATE_ENABLED);
   (*status_1.mutable_devices())["device1"] = std::move(device_1);
 
   ::boca::StudentStatus status_2;
   status_2.set_state(::boca::StudentStatus::ADDED);
+  status_2.set_gemini_enablement_state(
+      ::boca::GEMINI_ENABLEMENT_STATE_DISABLED);
   ::boca::StudentDevice device_2;
   device_2.set_state(::boca::StudentDevice::ACTIVE);
   auto* activity_2 = device_2.mutable_activity();
@@ -2249,10 +2252,14 @@ TEST_F(BocaAppPageHandlerProducerTest, UpdateNonEmptyStudentActivitySucceed) {
   EXPECT_EQ("google", result[0]->activity->active_tab);
   // Connection code should be set
   EXPECT_EQ("abcd", result[0]->activity->view_screen_session_code);
+  EXPECT_EQ(mojom::GeminiEnablementState::kEnabled,
+            result[0]->activity->gemini_state);
 
   EXPECT_EQ("2", result[1]->id);
   EXPECT_EQ("youtube", result[1]->activity->active_tab);
   EXPECT_TRUE(result[1]->activity->is_active);
+  EXPECT_EQ(mojom::GeminiEnablementState::kDisabled,
+            result[1]->activity->gemini_state);
 }
 
 TEST_F(BocaAppPageHandlerProducerTest,
@@ -2274,6 +2281,8 @@ TEST_F(BocaAppPageHandlerProducerTest,
   EXPECT_FALSE(result[0]->activity->is_active);
   EXPECT_EQ("", result[0]->activity->active_tab);
   EXPECT_EQ("", result[0]->activity->view_screen_session_code);
+  EXPECT_EQ(mojom::GeminiEnablementState::kUnknown,
+            result[0]->activity->gemini_state);
 }
 
 TEST_F(BocaAppPageHandlerProducerTest,
@@ -2300,6 +2309,8 @@ TEST_F(BocaAppPageHandlerProducerTest,
   EXPECT_FALSE(result[0]->activity->is_active);
   EXPECT_EQ("", result[0]->activity->active_tab);
   EXPECT_EQ("", result[0]->activity->view_screen_session_code);
+  EXPECT_EQ(mojom::GeminiEnablementState::kUnknown,
+            result[0]->activity->gemini_state);
 }
 
 TEST_F(BocaAppPageHandlerProducerTest,

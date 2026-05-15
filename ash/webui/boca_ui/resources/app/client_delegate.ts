@@ -65,6 +65,7 @@ export function getStudentActivityMojomToUI(activities: Activity[]):
         viewScreenSessionCode: item.activity.viewScreenSessionCode ?
             item.activity.viewScreenSessionCode :
             undefined,
+        geminiState: item.activity.geminiState.valueOf(),
       },
     };
   });
