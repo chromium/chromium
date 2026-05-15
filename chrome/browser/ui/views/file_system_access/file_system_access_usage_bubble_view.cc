@@ -417,10 +417,13 @@ std::u16string FileSystemAccessUsageBubbleView::GetAccessibleWindowTitle()
     return {};
   }
 
-  return BrowserView::GetBrowserViewForBrowser(browser)
-      ->toolbar_button_provider()
-      ->GetPageActionView(kActionShowFileSystemAccess)
-      ->GetTooltipText();
+  auto* page_action_view = BrowserView::GetBrowserViewForBrowser(browser)
+                               ->toolbar_button_provider()
+                               ->GetPageActionView(kActionShowFileSystemAccess);
+  if (!page_action_view) {
+    return {};
+  }
+  return page_action_view->GetTooltipText();
 }
 
 bool FileSystemAccessUsageBubbleView::ShouldShowCloseButton() const {
