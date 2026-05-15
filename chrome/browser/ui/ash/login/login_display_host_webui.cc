@@ -57,7 +57,6 @@
 #include "chrome/browser/ash/system/device_disabling_manager.h"
 #include "chrome/browser/ash/system/input_device_settings.h"
 #include "chrome/browser/ash/system/timezone_resolver_manager.h"
-#include "chrome/browser/ash/system/timezone_util.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/global_features.h"
@@ -91,6 +90,7 @@
 #include "chromeos/ash/components/settings/cros_settings_provider.h"
 #include "chromeos/ash/components/settings/timezone_settings.h"
 #include "chromeos/ash/components/timezone/timezone_resolver.h"
+#include "chromeos/ash/components/timezone/timezone_util.h"
 #include "chromeos/ash/grit/ash_resources.h"
 #include "components/account_id/account_id.h"
 #include "components/keep_alive_registry/keep_alive_registry.h"
@@ -353,7 +353,8 @@ void ShowLoginWizardFinish(
     }
   }
   if (!timezone.empty()) {
-    system::SetSystemAndSigninScreenTimezone(timezone);
+    system::SetSystemAndSigninScreenTimezone(CHECK_DEREF(local_state),
+                                             timezone);
   }
 
   // This step requires the session manager to have been initialized and login

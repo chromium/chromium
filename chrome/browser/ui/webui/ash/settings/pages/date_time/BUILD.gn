@@ -42,6 +42,7 @@ static_library("date_time") {
     "//chrome/common",
     "//chrome/common:constants",
     "//chromeos/ash/components/browser_context_helper",
+    "//chromeos/ash/components/timezone:util",
     "//components/policy/proto",
     "//components/user_manager",
     "//ui/base",

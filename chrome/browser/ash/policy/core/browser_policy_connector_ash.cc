@@ -64,7 +64,6 @@
 #include "chrome/browser/ash/policy/server_backed_state/server_backed_state_keys_broker.h"
 #include "chrome/browser/ash/printing/enterprise/bulk_printers_calculator_factory.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
-#include "chrome/browser/ash/system/timezone_util.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/device_identity/device_identity_provider.h"
 #include "chrome/browser/device_identity/device_oauth2_token_service_factory.h"
@@ -87,6 +86,7 @@
 #include "chromeos/ash/components/settings/cros_settings_provider.h"
 #include "chromeos/ash/components/settings/timezone_settings.h"
 #include "chromeos/ash/components/system/statistics_provider.h"
+#include "chromeos/ash/components/timezone/timezone_util.h"
 #include "components/gcm_driver/instance_id/instance_id_driver.h"
 #include "components/invalidation/invalidation_listener.h"
 #include "components/invalidation/legacy_topics_cleaner.h"
@@ -671,7 +671,8 @@ void BrowserPolicyConnectorAsh::SetTimezoneIfPolicyAvailable() {
   if (ash::CrosSettings::Get()->GetString(ash::kSystemTimezonePolicy,
                                           &timezone) &&
       !timezone.empty()) {
-    ash::system::SetSystemAndSigninScreenTimezone(timezone);
+    ash::system::SetSystemAndSigninScreenTimezone(
+        CHECK_DEREF(local_state_.get()), timezone);
   }
 }
 

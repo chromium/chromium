@@ -12,7 +12,7 @@
 
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
-#include "base/command_line.h"
+#include "base/check_deref.h"
 #include "base/i18n/rtl.h"
 #include "base/i18n/unicodestring.h"
 #include "base/logging.h"
@@ -31,6 +31,7 @@
 #include "chromeos/ash/components/settings/cros_settings.h"
 #include "chromeos/ash/components/settings/timezone_settings.h"
 #include "chromeos/ash/components/timezone/timezone_request.h"
+#include "chromeos/ash/components/timezone/timezone_util.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user.h"
@@ -151,17 +152,6 @@ std::u16string GetTimezoneName(const icu::TimeZone& timezone) {
       GetExemplarCity(timezone)));
   base::i18n::AdjustStringForLocaleDirection(&result);
   return result;
-}
-
-bool CanSetSystemTimezoneFromManagedGuestSession() {
-  const int automatic_detection_policy =
-      g_browser_process->local_state()->GetInteger(
-          ash::prefs::kSystemTimezoneAutomaticDetectionPolicy);
-
-  return (automatic_detection_policy ==
-          enterprise_management::SystemTimezoneProto::DISABLED) ||
-         (automatic_detection_policy ==
-          enterprise_management::SystemTimezoneProto::USERS_DECIDE);
 }
 
 }  // namespace
@@ -294,7 +284,8 @@ void ApplyTimeZone(const TimeZoneResponseData* timezone) {
       TimezoneSettings::GetInstance()->SetTimezoneFromID(
           base::UTF8ToUTF16(timezone->timeZoneId));
     } else {
-      SetSystemAndSigninScreenTimezone(timezone->timeZoneId);
+      SetSystemAndSigninScreenTimezone(
+          CHECK_DEREF(g_browser_process->local_state()), timezone->timeZoneId);
     }
   } else {
     TimezoneSettings::GetInstance()->SetTimezoneFromID(
@@ -303,6 +294,9 @@ void ApplyTimeZone(const TimeZoneResponseData* timezone) {
 }
 
 void UpdateSystemTimezone(Profile* profile) {
+  const PrefService& local_state =
+      CHECK_DEREF(g_browser_process->local_state());
+
   if (IsTimezonePrefsManaged(ash::prefs::kUserTimezone)) {
     VLOG(1) << "Ignoring user timezone change, because timezone is enterprise "
                "managed.";
@@ -327,77 +321,30 @@ void UpdateSystemTimezone(Profile* profile) {
 
   if (user_manager->GetPrimaryUser() == user &&
       ash::switches::IsPerUserTimezoneEnabled()) {
-    SetSystemTimezone(user, value);
-  }
-}
-
-// TODO(b/353580799): Add unit tests for this function.
-bool CanSetSystemTimezone(const user_manager::User* user) {
-  if (!user->is_logged_in()) {
-    return false;
-  }
-
-  switch (user->GetType()) {
-    case user_manager::UserType::kRegular:
-    case user_manager::UserType::kKioskChromeApp:
-    case user_manager::UserType::kKioskWebApp:
-    case user_manager::UserType::kKioskIWA:
-    case user_manager::UserType::kKioskArcvmApp:
-    case user_manager::UserType::kChild:
-      return true;
-
-    case user_manager::UserType::kGuest:
-      return false;
-
-    case user_manager::UserType::kPublicAccount:
-      return CanSetSystemTimezoneFromManagedGuestSession();
-
-      // No default case means the compiler makes sure we handle new types.
-  }
-  NOTREACHED();
-}
-
-bool SetSystemTimezone(const user_manager::User* user,
-                       const std::string& timezone) {
-  DCHECK(user);
-  if (!CanSetSystemTimezone(user))
-    return false;
-  TimezoneSettings::GetInstance()->SetTimezoneFromID(
-      base::UTF8ToUTF16(timezone));
-  return true;
-}
-
-void SetSystemAndSigninScreenTimezone(const std::string& timezone) {
-  if (timezone.empty())
-    return;
-
-  g_browser_process->local_state()->SetString(ash::prefs::kSigninScreenTimezone,
-                                              timezone);
-
-  std::string current_timezone_id;
-  CrosSettings::Get()->GetString(kSystemTimezone, &current_timezone_id);
-  if (current_timezone_id != timezone) {
-    TimezoneSettings::GetInstance()->SetTimezoneFromID(
-        base::UTF8ToUTF16(timezone));
+    SetSystemTimezone(local_state, user, value);
   }
 }
 
 void SetTimezoneFromUI(Profile* profile, const std::string& timezone_id) {
+  const PrefService& local_state =
+      CHECK_DEREF(g_browser_process->local_state());
+
   const user_manager::User* user =
       ProfileHelper::Get()->GetUserByProfile(profile);
 
   if (!ash::switches::IsPerUserTimezoneEnabled()) {
-    SetSystemTimezone(user, timezone_id);
+    SetSystemTimezone(local_state, user, timezone_id);
     return;
   }
 
   if (ProfileHelper::IsSigninProfile(profile)) {
-    SetSystemAndSigninScreenTimezone(timezone_id);
+    SetSystemAndSigninScreenTimezone(
+        CHECK_DEREF(g_browser_process->local_state()), timezone_id);
     return;
   }
 
   if (ProfileHelper::IsEphemeralUserProfile(profile)) {
-    SetSystemTimezone(user, timezone_id);
+    SetSystemTimezone(local_state, user, timezone_id);
     return;
   }
 

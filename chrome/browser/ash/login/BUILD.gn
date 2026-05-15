@@ -201,6 +201,7 @@ static_library("login") {
     "//chromeos/ash/components/settings",
     "//chromeos/ash/components/system",
     "//chromeos/ash/components/timezone",
+    "//chromeos/ash/components/timezone:util",
     "//chromeos/ash/experiences/arc:arc_base_utils",
     "//chromeos/ash/experiences/arc:arc_features",
     "//chromeos/ash/experiences/arc:prefs",

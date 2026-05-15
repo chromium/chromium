@@ -77,7 +77,6 @@
 #include "chrome/browser/ash/policy/external_data/cloud_external_data_manager_base_test_util.h"
 #include "chrome/browser/ash/policy/test_support/embedded_policy_test_server_mixin.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/ash/system/timezone_util.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/chromeos/extensions/external_loader/device_local_account_external_policy_loader.h"
@@ -118,6 +117,7 @@
 #include "chromeos/ash/components/network/policy_certificate_provider.h"
 #include "chromeos/ash/components/policy/device_local_account/device_local_account_type.h"
 #include "chromeos/ash/components/settings/timezone_settings.h"
+#include "chromeos/ash/components/timezone/timezone_util.h"
 #include "chromeos/components/mgs/managed_guest_session_utils.h"
 #include "components/crx_file/crx_verifier.h"
 #include "components/metrics_services_manager/metrics_services_manager.h"
@@ -1733,6 +1733,9 @@ IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, NoRecommendedLocaleSwitch) {
 // timezone, which should be possible iff the timezone automatic detection
 // policy is set to either DISABLED or USERS_DECIDE.
 IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, ManagedSessionTimezoneChange) {
+  const PrefService& local_state =
+      CHECK_DEREF(g_browser_process->local_state());
+
   UploadAndInstallDeviceLocalAccountPolicy();
   AddPublicSessionToDevicePolicy(kAccountId1);
   EnableAutoLogin();
@@ -1757,30 +1760,30 @@ IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, ManagedSessionTimezoneChange) {
 
   timezone_settings->SetTimezoneFromID(timezone_id1);
   SetSystemTimezoneAutomaticDetectionPolicy(em::SystemTimezoneProto::DISABLED);
-  ash::system::SetSystemTimezone(user, timezone_id2);
+  ash::system::SetSystemTimezone(local_state, user, timezone_id2);
   EXPECT_EQ(timezone_settings->GetCurrentTimezoneID(), timezone_id2_utf16);
 
   timezone_settings->SetTimezoneFromID(timezone_id1);
   SetSystemTimezoneAutomaticDetectionPolicy(
       em::SystemTimezoneProto::USERS_DECIDE);
-  ash::system::SetSystemTimezone(user, timezone_id2);
+  ash::system::SetSystemTimezone(local_state, user, timezone_id2);
   EXPECT_EQ(timezone_settings->GetCurrentTimezoneID(), timezone_id2_utf16);
 
   timezone_settings->SetTimezoneFromID(timezone_id1);
   SetSystemTimezoneAutomaticDetectionPolicy(em::SystemTimezoneProto::IP_ONLY);
-  ash::system::SetSystemTimezone(user, timezone_id2);
+  ash::system::SetSystemTimezone(local_state, user, timezone_id2);
   EXPECT_NE(timezone_settings->GetCurrentTimezoneID(), timezone_id2_utf16);
 
   timezone_settings->SetTimezoneFromID(timezone_id1);
   SetSystemTimezoneAutomaticDetectionPolicy(
       em::SystemTimezoneProto::SEND_WIFI_ACCESS_POINTS);
-  ash::system::SetSystemTimezone(user, timezone_id2);
+  ash::system::SetSystemTimezone(local_state, user, timezone_id2);
   EXPECT_NE(timezone_settings->GetCurrentTimezoneID(), timezone_id2_utf16);
 
   timezone_settings->SetTimezoneFromID(timezone_id1);
   SetSystemTimezoneAutomaticDetectionPolicy(
       em::SystemTimezoneProto::SEND_ALL_LOCATION_INFO);
-  ash::system::SetSystemTimezone(user, timezone_id2);
+  ash::system::SetSystemTimezone(local_state, user, timezone_id2);
   EXPECT_NE(timezone_settings->GetCurrentTimezoneID(), timezone_id2_utf16);
 }
 

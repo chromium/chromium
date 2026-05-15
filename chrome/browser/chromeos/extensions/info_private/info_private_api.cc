@@ -39,6 +39,7 @@
 #include "chromeos/ash/components/settings/cros_settings.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "chromeos/ash/components/system/statistics_provider.h"
+#include "chromeos/ash/components/timezone/timezone_util.h"
 #include "chromeos/ash/experiences/arc/arc_util.h"
 #include "chromeos/constants/devicetype.h"
 #include "components/metrics/metrics_service.h"
@@ -476,7 +477,8 @@ void SetTimezone(const std::string& value) {
         ash::ProfileHelper::Get()->GetUserByProfile(
             ProfileManager::GetPrimaryUserProfile());
     if (user) {
-      ash::system::SetSystemTimezone(user, value);
+      ash::system::SetSystemTimezone(
+          CHECK_DEREF(g_browser_process->local_state()), user, value);
     }
   }
 }

@@ -507,6 +507,7 @@ source_set("browser_tests") {
     "//chromeos/ash/components/settings:test_support",
     "//chromeos/ash/components/smbfs",
     "//chromeos/ash/components/smbfs/mojom",
+    "//chromeos/ash/components/timezone:util",
     "//chromeos/ash/experiences/arc:arc_base_utils",
     "//chromeos/ash/experiences/arc:arc_features",
     "//chromeos/ash/experiences/arc:arc_test_support",

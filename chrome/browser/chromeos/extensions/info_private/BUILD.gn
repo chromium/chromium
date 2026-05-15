@@ -39,6 +39,7 @@ static_library("info_private") {
     "//chromeos/ash/components/network",
     "//chromeos/ash/components/settings",
     "//chromeos/ash/components/system",
+    "//chromeos/ash/components/timezone:util",
     "//chromeos/ash/experiences/arc:arc_base_utils",
     "//chromeos/constants",
     "//components/metrics",

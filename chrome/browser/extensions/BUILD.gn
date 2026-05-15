@@ -1376,6 +1376,7 @@ source_set("extensions") {
         "//chromeos/ash/components/settings",
         "//chromeos/ash/components/system",
         "//chromeos/ash/components/tether",
+        "//chromeos/ash/components/timezone:util",
         "//chromeos/ash/components/tpm",
         "//chromeos/ash/experiences/arc",
         "//chromeos/ash/experiences/arc:arc_app_constants",

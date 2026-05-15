@@ -7,6 +7,7 @@
 #include <array>
 
 #include "ash/constants/url_constants.h"
+#include "base/check_deref.h"
 #include "base/containers/span.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -20,6 +21,7 @@
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "chromeos/ash/components/settings/system_settings_provider.h"
 #include "chromeos/ash/components/settings/timezone_settings.h"
+#include "chromeos/ash/components/timezone/timezone_util.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/webui/web_ui_util.h"
@@ -154,6 +156,7 @@ void DateTimeSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
   html_source->AddBoolean(
       "canSetSystemTimezone",
       ash::system::CanSetSystemTimezone(
+          CHECK_DEREF(g_browser_process->local_state()),
           BrowserContextHelper::Get()->GetUserByBrowserContext(profile())));
 }
 

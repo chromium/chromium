@@ -31,7 +31,6 @@
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ash/policy/enrollment/enrollment_requisition_manager.h"
 #include "chrome/browser/ash/system/timezone_resolver_manager.h"
-#include "chrome/browser/ash/system/timezone_util.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/login/input_events_blocker.h"
 #include "chrome/browser/ui/ash/login/login_screen_client_impl.h"
@@ -41,6 +40,7 @@
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/components/quick_start/quick_start_metrics.h"
+#include "chromeos/ash/components/timezone/timezone_util.h"
 #include "chromeos/dbus/constants/dbus_switches.h"
 #include "components/application_locale_storage/application_locale_storage.h"
 #include "components/language/core/browser/pref_names.h"
@@ -311,7 +311,7 @@ void WelcomeScreen::SetTimezone(const std::string& timezone_id) {
     return;
 
   timezone_ = timezone_id;
-  system::SetSystemAndSigninScreenTimezone(timezone_id);
+  system::SetSystemAndSigninScreenTimezone(local_state_.get(), timezone_id);
 }
 
 std::string WelcomeScreen::GetTimezone() const {

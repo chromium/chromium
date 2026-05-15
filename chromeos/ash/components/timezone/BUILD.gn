@@ -24,6 +24,21 @@ component("timezone") {
   ]
 }
 
+source_set("util") {
+  deps = [
+    "//ash/constants",
+    "//base",
+    "//chromeos/ash/components/settings",
+    "//components/policy/proto",
+    "//components/prefs",
+    "//components/user_manager",
+  ]
+  sources = [
+    "timezone_util.cc",
+    "timezone_util.h",
+  ]
+}
+
 source_set("unit_tests") {
   testonly = true
   deps = [

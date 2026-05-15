@@ -13,10 +13,6 @@
 
 class Profile;
 
-namespace user_manager {
-class User;
-}
-
 namespace ash {
 
 struct TimeZoneResponseData;
@@ -49,25 +45,6 @@ bool IsTimezonePrefsManaged(const std::string& pref_name);
 // This is called from `Preferences` after updating profile
 // preferences to apply new value to system time zone.
 void UpdateSystemTimezone(Profile* profile);
-
-// Returns true if the given user is allowed to set the system timezone - that
-// is, the single timezone at TimezoneSettings::GetInstance()->GetTimezone(),
-// which is also stored in a file at /var/lib/timezone/localtime.
-bool CanSetSystemTimezone(const user_manager::User* user);
-
-// Set system timezone to the given |timezone_id|, as long as the given |user|
-// is allowed to set it (so not a guest or public account).
-// Updates only the global system timezone - not specific to the user - and
-// doesn't care if perUserTimezone is enabled.
-// Returns |true| if the system timezone is set, false if the given user cannot.
-bool SetSystemTimezone(const user_manager::User* user,
-                       const std::string& timezone);
-
-// Updates Local State preference ash::prefs::kSigninScreenTimezone AND
-// also immediately sets system timezone (ash::system::TimezoneSettings).
-// This is called when there is no user session (i.e. OOBE and signin screen),
-// or when device policies are updated.
-void SetSystemAndSigninScreenTimezone(const std::string& timezone);
 
 // This is called from UI code to apply user-selected time zone.
 void SetTimezoneFromUI(Profile* profile, const std::string& timezone_id);
