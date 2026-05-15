@@ -540,7 +540,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   // Wait for the new suggestions to show.
   [ChromeEarlGrey
       waitForUIElementToAppearWithMatcher:
-          chrome_test_util::OmniboxPopupRowVisibleWithString(@"abcdefghi")];
+          chrome_test_util::OmniboxPopupRowVisibleWithString(@"abcdefg")];
 }
 
 // Test when the popup is scrolled, the keyboard is dismissed
