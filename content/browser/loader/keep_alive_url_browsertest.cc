@@ -46,6 +46,7 @@
 #include "net/http/http_request_headers.h"
 #include "net/http/http_status_code.h"
 #include "net/test/embedded_test_server/controllable_http_response.h"
+#include "net/test/embedded_test_server/expectation_handler.h"
 #include "net/test/embedded_test_server/request_handler_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -1191,16 +1192,14 @@ IN_PROC_BROWSER_TEST_P(KeepAliveFetchRetryBrowserTest,
 // Test failing a load due to HTTP 500 error. The request should not be retried.
 IN_PROC_BROWSER_TEST_P(KeepAliveFetchRetryBrowserTest,
                        FailedNotRetried_HTTPError) {
-  net::test_server::ControllableHttpResponse response(server(),
-                                                      kKeepAliveEndpoint);
+  net::test_server::ExpectationHandler handler(server());
+  // Send a HTTP 500 response. This should not be retried, as it's not a network
+  // error
+  handler.OnRequest(kKeepAliveEndpoint)
+      .RespondWith(net::HTTP_INTERNAL_SERVER_ERROR, "text/html", "");
   ASSERT_TRUE(server()->Start());
   const auto beacon_url = server()->GetURL(kPrimaryHost, kKeepAliveEndpoint);
   LoadPageAndTriggerFetchKeepaliveWithRetry(beacon_url);
-  // Send a HTTP 500 response. This should not be retried, as it's not a network
-  // error.
-  response.WaitForRequest();
-  response.Send(net::HTTP_INTERNAL_SERVER_ERROR);
-  response.Done();
   loaders_observer().WaitForTotalOnReceiveResponse(1);
   loaders_observer().WaitForTotalOnComplete({net::OK});
   loaders_observer().WaitForTotalOnCompleteForwarded({net::OK});
