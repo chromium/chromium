@@ -8,6 +8,21 @@
 #include "base/functional/bind.h"
 #include "base/notimplemented.h"
 
+namespace {
+
+bool IsStatusTrayAvailable() {
+  // During browser shutdown, the UI and window manager (`ash::Shell`) are torn
+  // down before global browser features. Specifically, `ash::Shell` is
+  // destroyed in `ChromeBrowserMainExtraPartsAsh::PostMainMessageLoopRun()`,
+  // whereas components like `GlicBackgroundModeManager` (which holds onto
+  // `StatusIconChromeOS`) are destroyed later during
+  // `BrowserProcessImpl::StartTearDown()`. We must check if `ash::Shell` still
+  // exists before attempting to interact with it.
+  return ash::Shell::HasInstance();
+}
+
+}  // namespace
+
 using TrayIconConfiguration = ash::TrayIconConfiguration;
 
 StatusIconChromeOS::StatusIconChromeOS(int64_t icon_id) : id_(icon_id) {
@@ -15,6 +30,10 @@ StatusIconChromeOS::StatusIconChromeOS(int64_t icon_id) : id_(icon_id) {
 }
 
 StatusIconChromeOS::~StatusIconChromeOS() {
+  if (!IsStatusTrayAvailable()) {
+    return;
+  }
+
   TrayIconConfiguration icon_config;
   icon_config.id = id_;
 
@@ -37,7 +56,7 @@ void StatusIconChromeOS::OnClick() {
 
 void StatusIconChromeOS::SetImage(const gfx::ImageSkia& image) {
   image_ = image;
-  if (!initialized_) {
+  if (!initialized_ || !IsStatusTrayAvailable()) {
     return;
   }
 
@@ -52,7 +71,7 @@ void StatusIconChromeOS::SetImage(const gfx::ImageSkia& image) {
 
 void StatusIconChromeOS::SetToolTip(const std::u16string& tool_tip) {
   tool_tip_ = tool_tip;
-  if (!initialized_) {
+  if (!initialized_ || !IsStatusTrayAvailable()) {
     return;
   }
 
@@ -83,6 +102,10 @@ void StatusIconChromeOS::OnDisplayAdded(const display::Display& new_display) {
 
 void StatusIconChromeOS::OnWillRemoveDisplays(
     const display::Displays& removed_displays) {
+  if (!IsStatusTrayAvailable()) {
+    return;
+  }
+
   TrayIconConfiguration icon_config;
   icon_config.id = id_;
 
@@ -92,6 +115,10 @@ void StatusIconChromeOS::OnWillRemoveDisplays(
 }
 
 void StatusIconChromeOS::AddStatusIconForDisplay(int64_t display_id) {
+  if (!IsStatusTrayAvailable()) {
+    return;
+  }
+
   TrayIconConfiguration icon_config;
   icon_config.id = id_;
   icon_config.tool_tip = tool_tip_;
