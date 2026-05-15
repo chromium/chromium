@@ -34,8 +34,6 @@ import java.util.List;
 /** This is the place where we define these: List of Omnibox features and parameters. */
 @NullMarked
 public class OmniboxFeatures {
-    private static final String TAG = "OmniboxFeatures";
-
     @IntDef({FeatureState.DISABLED, FeatureState.ENABLED_IN_TEST, FeatureState.ENABLED_IN_PROD})
     @Retention(RetentionPolicy.SOURCE)
     @interface FeatureState {
@@ -45,7 +43,6 @@ public class OmniboxFeatures {
     }
 
     // LINT.IfChange(OmniboxJumpStartState)
-    // TODO(ender): move OmniboxMetrics to //components and relocate this code there.
     @IntDef({
         OmniboxJumpStartState.NOT_ELIGIBLE,
         OmniboxJumpStartState.ENABLED,
@@ -81,7 +78,7 @@ public class OmniboxFeatures {
     // Minimum number of characters required to trigger rich inline autocomplete.
     private static final int DEFAULT_RICH_INLINE_MIN_CHAR = 3;
 
-    // Auto-populated list of Omnibox cached feature flags.
+    // Autopopulated list of Omnibox cached feature flags.
     // Each flag created via newFlag() will be automatically added to this list.
     private static final List<CachedFlag> sCachedFlags = new ArrayList<>();
     private static final List<CachedFeatureParam<?>> sCachedParams = new ArrayList<>();
@@ -331,7 +328,7 @@ public class OmniboxFeatures {
     }
 
     /**
-     * Returns whether a touch down event on a search suggestion should send a signal to prefetch
+     * Returns whether a touch-down event on a search suggestion should send a signal to prefetch
      * the corresponding page.
      */
     public static boolean isTouchDownTriggerForPrefetchEnabled() {
@@ -437,9 +434,5 @@ public class OmniboxFeatures {
     /** Record the current time as the time the User exited Chrome. */
     public static void updateLastExitTimestamp() {
         sPrefs.edit().putLong(KEY_LAST_EXIT_TIMESTAMP, TimeUtils.currentTimeMillis()).apply();
-    }
-
-    public static boolean allowMultilineEditField() {
-        return sMultilineEditField.isEnabled();
     }
 }

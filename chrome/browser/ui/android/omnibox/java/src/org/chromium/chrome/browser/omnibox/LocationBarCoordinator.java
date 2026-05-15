@@ -970,7 +970,7 @@ public class LocationBarCoordinator
      * whether it will be applied.
      */
     private void updateUrlBarForMultilineInput() {
-        boolean allowMultilineInput = OmniboxFeatures.allowMultilineEditField();
+        boolean allowMultilineInput = OmniboxFeatures.sMultilineEditField.isEnabled();
         // Disable multiline input on Tablets if Fusebox state is "off".
         allowMultilineInput &= !(isTabletLayout() && mCurrentFuseboxState == FuseboxState.DISABLED);
         mUrlCoordinator.setAllowMultilineInput(allowMultilineInput);

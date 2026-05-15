@@ -28,10 +28,10 @@ public class OmniboxCapabilities {
     /// Holds the information whether logic should focus on preserving memory on this device.
     private static @Nullable Boolean sIsLowMemoryDevice;
 
-    /** See {@link #setHasDesktopExperienceForTesting(boolean)}. */
+    /** See {@link #setHasDesktopExperienceForTesting(Boolean)}. */
     private static @Nullable Boolean sHasDesktopExperienceForTesting;
 
-    /** See {@link #setIsDesktopPlatformForTesting(boolean)}. */
+    /** See {@link #setIsDesktopPlatformForTesting(Boolean)}. */
     private static @Nullable Boolean sIsDesktopPlatformForTesting;
 
     /**
@@ -84,7 +84,7 @@ public class OmniboxCapabilities {
                 && DeviceInput.supportsPrecisionPointer();
     }
 
-    /** Modifies the output of {@link #hasDesktopExperience()} for testing. */
+    /** Modifies the output of {@link #hasDesktopExperience(Context)} for testing. */
     public static void setHasDesktopExperienceForTesting(Boolean hasDesktopExperience) {
         sHasDesktopExperienceForTesting = hasDesktopExperience;
         ResettersForTesting.register(() -> sHasDesktopExperienceForTesting = null);
@@ -94,7 +94,7 @@ public class OmniboxCapabilities {
      * Return whether the current platform is specifically a desktop platform.
      *
      * <p>This call should be used sparingly - only to gate features that are strictly Desktop
-     * specific. All other calls should defer to {@link #hasDesktopExperience()}.
+     * specific. All other calls should defer to {@link #hasDesktopExperience(Context)}.
      */
     public static boolean isDesktopPlatform() {
         if (sIsDesktopPlatformForTesting != null) {
