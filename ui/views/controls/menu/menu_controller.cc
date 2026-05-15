@@ -412,8 +412,48 @@ static void RepostEventImpl(const ui::LocatedEvent* event,
     WPARAM target = client_area ? event->native_event().wParam
                                 : static_cast<WPARAM>(nc_hit_result);
     LPARAM window_coords = MAKELPARAM(window_x, window_y);
-    PostMessage(target_window, event->native_event().message, target,
-                window_coords);
+    UINT message_type = event->native_event().message;
+    if (!client_area) {
+      switch (message_type) {
+        case WM_LBUTTONDOWN:
+          message_type = WM_NCLBUTTONDOWN;
+          break;
+        case WM_RBUTTONDOWN:
+          message_type = WM_NCRBUTTONDOWN;
+          break;
+        case WM_MBUTTONDOWN:
+          message_type = WM_NCMBUTTONDOWN;
+          break;
+        case WM_XBUTTONDOWN:
+          message_type = WM_NCXBUTTONDOWN;
+          break;
+        case WM_LBUTTONUP:
+          message_type = WM_NCLBUTTONUP;
+          break;
+        case WM_RBUTTONUP:
+          message_type = WM_NCRBUTTONUP;
+          break;
+        case WM_MBUTTONUP:
+          message_type = WM_NCMBUTTONUP;
+          break;
+        case WM_XBUTTONUP:
+          message_type = WM_NCXBUTTONUP;
+          break;
+        case WM_LBUTTONDBLCLK:
+          message_type = WM_NCLBUTTONDBLCLK;
+          break;
+        case WM_RBUTTONDBLCLK:
+          message_type = WM_NCRBUTTONDBLCLK;
+          break;
+        case WM_MBUTTONDBLCLK:
+          message_type = WM_NCMBUTTONDBLCLK;
+          break;
+        case WM_XBUTTONDBLCLK:
+          message_type = WM_NCXBUTTONDBLCLK;
+          break;
+      }
+    }
+    PostMessage(target_window, message_type, target, window_coords);
     return;
   }
 
