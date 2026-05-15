@@ -582,8 +582,10 @@ void GetSearchOverriddenParamsThenRun(
     }
     // The explicit choice dialog needs to be shown until a choice is made,
     // so suppress the mechanism that limits the number of times the dialog is
-    // shown.
-    params->unlimited_shows = true;
+    // shown. This is Finch-controlled in case it's proven undesirable.
+    params->unlimited_shows =
+        extensions_features::kSearchEngineExplicitChoiceDialogUnlimitedShows
+            .Get();
 
     std::vector<IconFetchParams> icon_lookups;
 

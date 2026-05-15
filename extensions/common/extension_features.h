@@ -324,6 +324,11 @@ BASE_DECLARE_FEATURE(kEnableShouldShowPromotion);
 BASE_DECLARE_FEATURE(kSearchEngineExplicitChoiceDialog);
 BASE_DECLARE_FEATURE_PARAM(bool, kSearchEngineExplicitChoiceDialogEscapable);
 
+// If true, the dialog is re-shown until a choice is made. If false, the
+// dialog is limited to once per session, as the original dialog works.
+BASE_DECLARE_FEATURE_PARAM(bool,
+                           kSearchEngineExplicitChoiceDialogUnlimitedShows);
+
 // When enabled, all search extensions will unconditionally get the search
 // engine override dialog.
 BASE_DECLARE_FEATURE(kSearchEngineUnconditionalDialog);
