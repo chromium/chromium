@@ -62,6 +62,7 @@
 #if BUILDFLAG(ENABLE_WEBUI_NTP)
 #include "chrome/browser/ui/webui/new_tab_page/action_chips/action_chips.mojom.h"
 #include "chrome/browser/ui/webui/new_tab_page/new_tab_page_ui.h"
+#include "components/search/ntp_features.h"
 #include "ui/webui/color_change_listener/color_change_handler.h"
 #include "ui/webui/resources/cr_components/color_change_listener/color_change_listener.mojom.h"
 #include "ui/webui/resources/cr_components/composebox/composebox.mojom.h"
@@ -200,6 +201,10 @@ void PopulateChromeWebUIFrameBindersPartsAllPlatforms(
   content::RegisterWebUIControllerInterfaceBinder<
       customize_buttons::mojom::CustomizeButtonsHandlerFactory, NewTabPageUI>(
       map);
+  if (base::FeatureList::IsEnabled(ntp_features::kNtpNextFeatures)) {
+    content::RegisterWebUIControllerInterfaceBinder<
+        action_chips::mojom::ActionChipsHandlerFactory, NewTabPageUI>(map);
+  }
   map->Add<color_change_listener::mojom::PageHandler>(
       base::BindRepeating(&BindColorChangeListener));
 // TODO(b/502297163): Implement for Android.

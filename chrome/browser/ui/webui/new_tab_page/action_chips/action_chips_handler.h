@@ -12,7 +12,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/webui/new_tab_page/action_chips/action_chips.mojom.h"
 #include "chrome/browser/ui/webui/new_tab_page/action_chips/action_chips_generator.h"
 #include "chrome/browser/ui/webui/new_tab_page/action_chips/tab_id_generator.h"
@@ -25,14 +24,22 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "url/gurl.h"
 
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
+#endif
+
 namespace base {
 class TimeTicks;
 }
 
 class Profile;
 
-class ActionChipsHandler : public action_chips::mojom::ActionChipsHandler,
-                           public TabStripModelObserver {
+class ActionChipsHandler : public action_chips::mojom::ActionChipsHandler
+#if !BUILDFLAG(IS_ANDROID)
+    ,
+                           public TabStripModelObserver
+#endif
+{
  public:
   ActionChipsHandler(
       mojo::PendingReceiver<action_chips::mojom::ActionChipsHandler> receiver,
@@ -49,10 +56,12 @@ class ActionChipsHandler : public action_chips::mojom::ActionChipsHandler,
   void SetActionChipsVisibility(bool is_visible) override;
   void NotifyActionChipClicked() override;
 
+#if !BUILDFLAG(IS_ANDROID)
   void OnTabStripModelChanged(
       TabStripModel* tab_strip_model,
       const TabStripModelChange& change,
       const TabStripSelectionChange& selection) override;
+#endif
 
  private:
   void SendActionChipsToUi(
