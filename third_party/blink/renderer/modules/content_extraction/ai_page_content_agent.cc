@@ -479,6 +479,25 @@ bool IsAnchoredOffscreen(const LayoutObject& object,
     return false;
   }
 
+  if (is_in_fixed_to_view_subtree) {
+    // Check if the position: fixed offscreen anchor case should be handled.
+    if (!RuntimeEnabledFeatures::
+            AIPageContentAnchoredFixedOffscreenNonActionabilityEnabled()) {
+      return false;
+    }
+  } else {
+    // Check if the position: absolute case should be handled. For now, this is
+    // turned off in stable builds because the implementation was flawed, and
+    // was marking elements that could be scrolled to in an ancestor scrollable
+    // div as anchored offscreen.
+    // TODO(crbug.com/513343406) only support this path if position:absolute is
+    // on an ancestor, and address the overflow:scroll/auto ancestor case.
+    if (!RuntimeEnabledFeatures::
+            AIPageContentAnchoredAbsoluteOffscreenNonActionabilityEnabled()) {
+      return false;
+    }
+  }
+
   // Nodes in a viewport-fixed subtree must intersect the current viewport to
   // be reachable. Other nodes only need to intersect the scrollable document
   // bounds, because normal document scrolling can still bring them onscreen
@@ -2334,13 +2353,12 @@ AIPageContentAgent::ContentBuilder::MaybeGenerateContentNodeImpl(
   // the area reachable by scrolling until another control changes state.
   // We drop the actionable metadata so that downstream click generation does
   // not chase nodes that scrolling can never reach.
-  if (RuntimeEnabledFeatures::
-          AIPageContentAnchoredOffscreenNonActionabilityEnabled() &&
-      attributes.node_interaction_info && attributes.geometry &&
+  if (attributes.node_interaction_info && attributes.geometry &&
       IsAnchoredOffscreen(object, *attributes.geometry,
                           recursion_data.is_in_fixed_to_view_subtree)) {
     attributes.node_interaction_info.reset();
   }
+
   AddLabel(object, attributes);
   attributes.is_ad_related = element && element->IsAdRelated();
 

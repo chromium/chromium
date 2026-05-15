@@ -7390,8 +7390,8 @@ TEST_F(AIPageContentAgentTestZOrder, HitTestElementsOffscreen) {
 }
 
 TEST_F(AIPageContentAgentTestZOrder, HitTestElementsOffscreenFeatureDisabled) {
-  ScopedAIPageContentAnchoredOffscreenNonActionabilityForTest scoped_feature(
-      false);
+  ScopedAIPageContentAnchoredFixedOffscreenNonActionabilityForTest
+      scoped_feature(false);
 
   frame_test_helpers::LoadHTMLString(
       helper_.LocalMainFrame(),
