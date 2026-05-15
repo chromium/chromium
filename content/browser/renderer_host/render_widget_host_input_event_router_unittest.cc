@@ -146,6 +146,15 @@ class MockRootRenderWidgetHostView : public TestRenderWidgetHostView {
   blink::WebInputEvent::Type last_gesture_seen() { return last_gesture_seen_; }
   uint32_t last_id_for_touch_ack() { return unique_id_for_last_touch_ack_; }
 
+  input::RenderInputRouter* GetViewRenderInputRouter() override {
+    if (force_null_rir_) {
+      return nullptr;
+    }
+    return TestRenderWidgetHostView::GetViewRenderInputRouter();
+  }
+
+  void set_force_null_rir(bool force) { force_null_rir_ = force; }
+
   void SetHittestResult(RenderWidgetHostViewBase* result_view,
                         bool query_renderer) {
     DCHECK(GetHostFrameSinkManager());
@@ -164,6 +173,7 @@ class MockRootRenderWidgetHostView : public TestRenderWidgetHostView {
   blink::WebInputEvent::Type last_gesture_seen_ =
       blink::WebInputEvent::Type::kUndefined;
   uint32_t unique_id_for_last_touch_ack_ = 0;
+  bool force_null_rir_ = false;
 };
 
 class MockInputTargetClient : public viz::mojom::InputTargetClient {
@@ -761,6 +771,43 @@ TEST_F(RenderWidgetHostInputEventRouterTest,
   EXPECT_EQ(view_root_.get(), bubbling_gesture_scroll_target());
   EXPECT_EQ(blink::WebInputEvent::Type::kGestureScrollBegin,
             view_root_->last_gesture_seen());
+}
+
+// Test that if a parent view is destroyed during browser-side page teardown
+// or frame detaches (where its RenderWidgetHostImpl is destroyed) while an
+// active child scroll bubbling ACK is in-flight, the defensive checks inside
+// BubbleScrollEvent catch the null parent RIR and return false cleanly,
+// preventing a Null Pointer Dereference crash.
+TEST_F(RenderWidgetHostInputEventRouterTest,
+       BubbleScrollEventNullSafetyDuringTeardown) {
+  gfx::Vector2dF delta(0.f, 10.f);
+  blink::WebGestureEvent scroll_begin =
+      blink::SyntheticWebGestureEventBuilder::BuildScrollBegin(
+          delta.x(), delta.y(), blink::WebGestureDevice::kTouchscreen);
+
+  ChildViewState child = MakeChildView(view_root_.get());
+
+  // Force parent view (view_root_) to return a null RenderInputRouter.
+  view_root_->set_force_null_rir(true);
+
+  // Simulate GestureEventAck on child view.
+  // In the buggy version, this would call BubbleScrollEvent(), dereference the
+  // null parent RIR, and crash the test runner. In the fixed version, it
+  // catches the null parent RIR, returns false, and cancels bubbling.
+  child.view->GestureEventAck(
+      scroll_begin, blink::mojom::InputEventResultSource::kCompositorThread,
+      blink::mojom::InputEventResultState::kNotConsumed);
+
+  // We should not crash, and scroll bubbling should not be active on the child
+  // view or RWHIER.
+  EXPECT_FALSE(child.view->input_helper_->IsScrollSequenceBubbling());
+  EXPECT_EQ(nullptr, bubbling_gesture_scroll_origin());
+  EXPECT_EQ(nullptr, bubbling_gesture_scroll_target());
+
+  view_root_->set_force_null_rir(false);
+
+  // Cleanup child view.
+  rwhier()->OnRenderWidgetHostViewInputDestroyed(child.view.get());
 }
 
 // Ensure filtered scroll events while a scroll bubble is in progress don't

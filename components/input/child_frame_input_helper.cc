@@ -353,9 +353,14 @@ bool ChildFrameInputHelper::BubbleScrollEvent(
     return false;
   }
 
-  auto* event_router = parent_view->GetViewRenderInputRouter()
-                           ->delegate()
-                           ->GetInputEventRouter();
+  auto* parent_rir = parent_view->GetViewRenderInputRouter();
+  if (!parent_rir || !parent_rir->delegate()) {
+    return false;
+  }
+  auto* event_router = parent_rir->delegate()->GetInputEventRouter();
+  if (!event_router) {
+    return false;
+  }
 
   // We will only convert the coordinates back to the root here. The
   // RenderWidgetHostInputEventRouter will determine which ancestor view will
@@ -367,9 +372,7 @@ bool ChildFrameInputHelper::BubbleScrollEvent(
   resent_gesture_event.SetPositionInWidget(root_point);
   // When a gesture event is bubbled to the parent frame, set the allowed touch
   // action of the parent frame to Auto so that this gesture event is allowed.
-  parent_view->GetViewRenderInputRouter()
-      ->input_router()
-      ->ForceSetTouchActionAuto();
+  parent_rir->input_router()->ForceSetTouchActionAuto();
 
   TRACE_EVENT_INSTANT("input", "Did_Bubble_To_InputEventRouter");
   return event_router->BubbleScrollEvent(parent_view, view_,

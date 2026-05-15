@@ -666,7 +666,7 @@ RenderWidgetHostViewBase::GetInputWeakPtr() {
 }
 
 input::RenderInputRouter* RenderWidgetHostViewBase::GetViewRenderInputRouter() {
-  return host()->GetRenderInputRouter();
+  return host() ? host()->GetRenderInputRouter() : nullptr;
 }
 
 void RenderWidgetHostViewBase::SetScaleOverrideForCapture(float scale) {

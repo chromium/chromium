@@ -320,6 +320,8 @@ class CONTENT_EXPORT RenderWidgetHostViewChildFrame
   FRIEND_TEST_ALL_PREFIXES(SitePerProcessBrowserTest,
                            SubframeVisibleAfterRenderViewBecomesSwappedOut);
   FRIEND_TEST_ALL_PREFIXES(RenderWidgetHostInputEventRouterTest,
+                           BubbleScrollEventNullSafetyDuringTeardown);
+  FRIEND_TEST_ALL_PREFIXES(RenderWidgetHostInputEventRouterTest,
                            FilteredGestureDoesntInterruptBubbling);
   friend class RenderWidgetHostViewChildFrameTest;
 
