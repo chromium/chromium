@@ -7,15 +7,13 @@ desc: |-
 
   When the policy is set to Disabled (1), the model will not be downloaded, and the existing model (if already downloaded) will be deleted.
 
-  On desktop platforms, model downloading can also be disabled by <ph name="COMPONENT_UPDATES_ENABLED_POLICY_NAME">ComponentUpdatesEnabled</ph>.
+  On desktop platforms, model downloading can also be disabled by setting <ph name="COMPONENT_UPDATES_ENABLED_POLICY_NAME">ComponentUpdatesEnabled</ph> to false.
 
 default: 0
 example_value: 1
 features:
   dynamic_refresh: true
   per_profile: false
-future_on:
-- chrome_os
 items:
 - caption: Downloads model automatically
   name: Allowed
@@ -34,4 +32,5 @@ tags: []
 supported_on:
 - android:142-
 - chrome.*:124-
+- chrome_os:149-
 type: int-enum
