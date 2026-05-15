@@ -76,13 +76,13 @@ BASE_DECLARE_FEATURE(kGlicButtonAutoSummarize);
 
 BASE_DECLARE_FEATURE(kGlicGetTabFaviconById);
 
-
 BASE_DECLARE_FEATURE(kGlicWebClientLoadTimes);
 extern const base::FeatureParam<int> kGlicPreLoadingTimeMs;
 extern const base::FeatureParam<int> kGlicMinLoadingTimeMs;
 extern const base::FeatureParam<int> kGlicMaxLoadingTimeMs;
 extern const base::FeatureParam<int> kGlicReloadMaxLoadingTimeMs;
 
+BASE_DECLARE_FEATURE(kGlicOptInImpressionMetrics);
 }  // namespace features
 
 #endif  // CHROME_BROWSER_GLIC_PUBLIC_FEATURES_H_

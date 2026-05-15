@@ -1,7 +1,6 @@
 // Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-
 import type {WebClientInitialState} from '../glic.mojom-webui.js';
 import type {ActorTaskInterruptReason, ActorTaskPauseReason, ActorTaskState, ActorTaskStopReason, AdditionalContext, AdditionalContextPart, AnnotatedPageData, AutofillSuggestion, CancelActionsResult, CaptureRegionErrorReason, CaptureRegionResult, ChromeVersion, ClientCapabilities, ConversationInfo, CreateSkillRequest, Credential, DraggableArea, ErrorReasonTypes, ErrorWithReason, FocusedTabDataHasFocus, FocusedTabDataHasNoFocus, FormFactor, FormFillingRequest, FormFillingResponse, GetPinCandidatesOptions, HostCapability, InvokeOptions, Journal, MetricUserInputReactionType, MicrophoneStatus, NavigationConfirmationRequest, NavigationConfirmationResponse, OnResponseStoppedDetails, OpenPanelInfo, OpenSettingsOptions, PageMetadata, PanelOpeningData, PanelState, PdfDocumentData, PinCandidate, PinTabsOptions, Platform, ResumeActorTaskResult, Screenshot, ScrollToParams, SelectAutofillSuggestionsDialogRequest, SelectAutofillSuggestionsDialogResponse, SelectCredentialDialogRequest, SelectCredentialDialogResponse, Skill, SkillPreview, SkillsWebClientEvent, TabContextOptions, TabContextResult, TabData, TaskOptions, UnpinTabsOptions, UpdateSkillRequest, UserConfirmationDialogRequest, UserConfirmationDialogResponse, UserProfileInfo, WebClientMode, ZeroStateSuggestions, ZeroStateSuggestionsOptions, ZeroStateSuggestionsV2} from '../glic_api/glic_api.js';
 
@@ -398,6 +397,9 @@ export declare type HostRequestTypes = ValidateRequestMap<{
     request: {
       reactionType: MetricUserInputReactionType,
     },
+  },
+  glicBrowserOnOptinImpression: {
+    backgroundAllowed: true,
   },
   glicBrowserOnContextUploadStarted: {
     backgroundAllowed: true,
@@ -1042,6 +1044,7 @@ export const HOST_REQUEST_TYPES: HostRequestEnumNamesType&{MAX_VALUE: number} =
         ShowBrowseSkillsUi: 95,
         SubscribeToZoomLevel: 96,
         UnsubscribeFromZoomLevel: 97,
+        OnOptinImpression: 99,
       };
       return {...result, MAX_VALUE: Math.max(...Object.values(result))};
     })();

@@ -1577,6 +1577,10 @@ class GlicBrowserHostJournalImpl implements GlicBrowserHostJournal {
 class GlicBrowserHostMetricsImpl implements GlicBrowserHostMetrics {
   constructor(private sender: PostMessageRequestSender) {}
 
+  onOptinImpression(): void {
+    this.sender.requestNoResponse('glicBrowserOnOptinImpression', undefined);
+  }
+
   onUserInputSubmitted(mode: number): void {
     this.sender.requestNoResponse('glicBrowserOnUserInputSubmitted', {mode});
   }

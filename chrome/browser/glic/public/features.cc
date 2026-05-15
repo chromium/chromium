@@ -131,4 +131,6 @@ const base::FeatureParam<int> kGlicMaxLoadingTimeMs{
 const base::FeatureParam<int> kGlicReloadMaxLoadingTimeMs{
     &kGlicWebClientLoadTimes, "glic-reload-max-loading-time-ms", 30000};
 
+BASE_FEATURE(kGlicOptInImpressionMetrics, base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace features
