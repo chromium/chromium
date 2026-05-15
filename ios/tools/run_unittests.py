@@ -133,6 +133,10 @@ def main() -> int:
       '--test-target',
       default='ios_chrome_unittests',
       help='The test target to run (default: %(default)s).')
+  parser.add_argument(
+      '--no-build',
+      action='store_true',
+      help='Skip compiling/building the tests and only run them.')
   args = parser.parse_args()
 
   simulator = shared_test_utils.find_and_boot_simulator(
@@ -140,8 +144,9 @@ def main() -> int:
   if not simulator:
     return 1
 
-  if not _build_tests(args.out_dir, args.test_target):
-    return 1
+  if not args.no_build:
+    if not _build_tests(args.out_dir, args.test_target):
+      return 1
 
   return _run_tests(args.out_dir, simulator.udid, args.gtest_filter,
                     args.test_target, args.gtest_repeat)
