@@ -54,6 +54,7 @@ class DEVICE_VR_EXPORT OpenXrDevice : public VRDeviceBase,
   void ForceEndSession(ExitXrPresentReason reason);
   void OnPresentingControllerMojoConnectionError();
   bool IsArBlendModeSupported();
+  void OnSessionEnded();
 
   XrInstance instance_{XR_NULL_HANDLE};
   std::unique_ptr<OpenXrExtensionHelper> extension_helper_;
