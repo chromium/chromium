@@ -34,7 +34,6 @@ per-file embedded_frame_sink*.*=kylechar@chromium.org
 # DirectWrite font code.
 per-file dwrite_*=drott@chromium.org
 
-per-file back_forward_cache*=file://content/browser/BACK_FORWARD_CACHE_OWNERS
 
 # Clipboard
 per-file *clipboard_host_impl*=file://ui/base/clipboard/OWNERS

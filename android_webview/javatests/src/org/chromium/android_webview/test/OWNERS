@@ -2,7 +2,7 @@
 per-file AwAutofillTest.java=file://components/android_autofill/OWNERS
 
 # BFCache
-per-file AwBackForwardCacheTest.java=file://content/browser/BACK_FORWARD_CACHE_OWNERS
+per-file AwBackForwardCacheTest.java=file://content/browser/back_forward_cache/OWNERS
 
 # ContentCapture
 per-file AwContentCaptureTest.java=file://components/content_capture/OWNERS

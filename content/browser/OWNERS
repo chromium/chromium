@@ -29,7 +29,7 @@ per-file sandbox_host_linux.*=file://sandbox/linux/OWNERS
 per-file sandbox_ipc_linux.*=file://sandbox/linux/OWNERS
 
 # BackForwardCache
-per-file back_forward_cache*=file://content/browser/BACK_FORWARD_CACHE_OWNERS
+per-file back_forward_cache*=file://content/browser/back_forward_cache/OWNERS
 
 # Storage API dependencies.
 per-file storage_partition*=file://storage/OWNERS
