@@ -78,6 +78,8 @@ class GlicCueTargetTest : public testing::Test {
         /*contextual_cueing_service=*/nullptr, actor_keyed_service_.get());
 
     tab_strip_model_delegate_ = std::make_unique<TestTabStripModelDelegate>();
+    tab_strip_model_delegate_->SetBrowserWindowInterface(
+        mock_browser_window_interface_.get());
     tab_strip_model_ = std::make_unique<TabStripModel>(
         tab_strip_model_delegate_.get(), profile_);
   }
