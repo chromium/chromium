@@ -7,6 +7,7 @@
 
 #include "base/scoped_multi_source_observation.h"
 #include "base/scoped_observation.h"
+#include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/foundations/autofill_driver_factory.h"
 #include "components/autofill/core/browser/foundations/autofill_manager.h"
 

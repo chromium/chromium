@@ -4,9 +4,19 @@
 
 #include "components/autofill/core/browser/payments/payments_requests/get_iban_upload_details_request.h"
 
+#include <cstdint>
+#include <memory>
+#include <string>
+#include <utility>
+#include <vector>
+
+#include "base/functional/callback.h"
 #include "base/json/json_writer.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
+#include "components/autofill/core/browser/payments/client_behavior_constants.h"
+#include "components/autofill/core/browser/payments/payments_autofill_client.h"
+#include "components/autofill/core/browser/payments/payments_requests/payments_request.h"
 
 namespace autofill::payments {
 

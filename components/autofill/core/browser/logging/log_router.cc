@@ -4,8 +4,10 @@
 
 #include "components/autofill/core/browser/logging/log_router.h"
 
+#include <string>
+
+#include "base/check.h"
 #include "base/observer_list.h"
-#include "base/strings/escape.h"
 #include "base/strings/string_split.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/browser/logging/log_receiver.h"

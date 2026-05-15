@@ -5,8 +5,11 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_WEBDATA_ADDRESSES_CONTACT_INFO_LOCAL_DATA_BATCH_UPLOADER_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_WEBDATA_ADDRESSES_CONTACT_INFO_LOCAL_DATA_BATCH_UPLOADER_H_
 
+#include <vector>
+
 #include "base/functional/callback.h"
 #include "components/sync/service/data_type_local_data_batch_uploader.h"
+#include "components/sync/service/local_data_description.h"
 
 namespace autofill {
 

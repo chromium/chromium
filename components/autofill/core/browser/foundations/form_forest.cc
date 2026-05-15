@@ -5,6 +5,7 @@
 #include "components/autofill/core/browser/foundations/form_forest.h"
 
 #include <algorithm>
+#include <cstddef>
 #include <limits>
 #include <memory>
 #include <optional>
@@ -14,13 +15,21 @@
 
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/containers/flat_set.h"
+#include "base/containers/span.h"
 #include "base/containers/stack.h"
+#include "base/memory/raw_ref.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/not_fatal_until.h"
 #include "base/numerics/safe_conversions.h"
+#include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/foundations/autofill_driver.h"
 #include "components/autofill/core/browser/foundations/form_forest_util_inl.h"
+#include "components/autofill/core/common/form_data.h"
+#include "components/autofill/core/common/form_field_data.h"
+#include "components/autofill/core/common/unique_ids.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
+#include "url/origin.h"
 
 namespace autofill::internal {
 

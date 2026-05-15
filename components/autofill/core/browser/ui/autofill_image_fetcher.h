@@ -7,9 +7,8 @@
 
 #include <map>
 #include <memory>
-#include <optional>
 
-#include "base/barrier_callback.h"
+#include "base/containers/span.h"
 #include "base/memory/weak_ptr.h"
 #include "components/autofill/core/browser/ui/autofill_image_fetcher_base.h"
 #include "components/image_fetcher/core/image_fetcher_types.h"

@@ -4,11 +4,16 @@
 
 #include "components/autofill/core/browser/field_type_utils.h"
 
+#include <cstddef>
+#include <optional>
+
 #include "base/check.h"
+#include "base/check_op.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/notreached.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/autofill_type.h"
+#include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
 #include "components/autofill/core/browser/field_types.h"
 
 namespace autofill {

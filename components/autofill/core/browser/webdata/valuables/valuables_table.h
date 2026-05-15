@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "components/autofill/core/browser/data_model/valuables/loyalty_card.h"
+#include "components/autofill/core/browser/data_model/valuables/valuable_types.h"
 #include "components/webdata/common/web_database_table.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 

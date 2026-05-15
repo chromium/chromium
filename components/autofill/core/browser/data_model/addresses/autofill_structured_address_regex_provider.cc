@@ -4,15 +4,18 @@
 
 #include "components/autofill/core/browser/data_model/addresses/autofill_structured_address_regex_provider.h"
 
+#include <memory>
+#include <string>
 #include <utility>
 
 #include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
+#include "base/synchronization/lock.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_structured_address_constants.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_structured_address_utils.h"
 #include "components/autofill/core/browser/field_types.h"
-#include "components/autofill/core/common/autofill_features.h"
+#include "third_party/re2/src/re2/re2.h"
 
 namespace autofill {
 

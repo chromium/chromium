@@ -8,9 +8,9 @@
 #include <memory>
 
 #include "base/containers/flat_map.h"
+#include "base/containers/span.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/heuristic_source.h"
-#include "components/autofill/core/common/dense_set.h"
 #include "components/autofill/core/common/is_required.h"
 #include "components/autofill/core/common/unique_ids.h"
 

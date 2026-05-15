@@ -5,13 +5,15 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_PAYMENTS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_BOTTOM_SHEET_DELEGATE_MOBILE_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_PAYMENTS_AUTOFILL_VIRTUAL_CARD_ENROLLMENT_BOTTOM_SHEET_DELEGATE_MOBILE_H_
 
-#include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "components/autofill/core/browser/metrics/payments/virtual_card_enrollment_metrics.h"
 #include "components/autofill/core/browser/payments/legal_message_line.h"
+#include "components/autofill/core/browser/ui/payments/payments_ui_closed_reasons.h"
 #include "components/autofill/core/browser/ui/payments/virtual_card_enroll_bubble_controller.h"
 #include "ui/gfx/image/image.h"
+#include "url/gurl.h"
 
 namespace autofill {
 

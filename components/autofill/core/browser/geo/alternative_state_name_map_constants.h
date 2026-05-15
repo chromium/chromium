@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_GEO_ALTERNATIVE_STATE_NAME_MAP_CONSTANTS_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_GEO_ALTERNATIVE_STATE_NAME_MAP_CONSTANTS_H_
 
-#include <string>
+#include <string_view>
 
 #include "components/autofill/core/browser/geo/grit/autofill_alternative_state_name_map_resources.h"
 

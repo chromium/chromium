@@ -7,10 +7,9 @@
 
 #include <stdint.h>
 
+#include <memory>
 #include <string>
 
-#include "base/metrics/histogram_functions.h"
-#include "components/autofill/core/browser/metrics/autofill_metrics.h"
 
 namespace autofill::payments {
 

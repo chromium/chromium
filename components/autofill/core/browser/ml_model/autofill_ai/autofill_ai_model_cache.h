@@ -5,14 +5,14 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_ML_MODEL_AUTOFILL_AI_AUTOFILL_AI_MODEL_CACHE_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_ML_MODEL_AUTOFILL_AI_AUTOFILL_AI_MODEL_CACHE_H_
 
+#include <cstddef>
 #include <map>
+#include <optional>
 
 #include "base/containers/flat_map.h"
 #include "base/containers/span.h"
-#include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/autofill_format_string.h"
 #include "components/autofill/core/browser/field_types.h"
-#include "components/autofill/core/browser/metrics/log_event.h"
 #include "components/autofill/core/browser/proto/autofill_ai_model_cache.pb.h"
 #include "components/autofill/core/common/signatures.h"
 #include "components/keyed_service/core/keyed_service.h"

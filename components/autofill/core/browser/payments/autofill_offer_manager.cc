@@ -4,22 +4,11 @@
 
 #include "components/autofill/core/browser/payments/autofill_offer_manager.h"
 
-#include <algorithm>
-#include <ranges>
 
 #include "base/check_deref.h"
-#include "base/functional/bind.h"
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
-#include "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #include "components/autofill/core/browser/data_model/payments/autofill_offer_data.h"
-#include "components/autofill/core/browser/data_model/payments/credit_card.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
-#include "components/autofill/core/browser/suggestions/suggestion_type.h"
-#include "components/autofill/core/common/autofill_features.h"
-#include "components/autofill/core/common/autofill_payments_features.h"
-#include "components/feature_engagement/public/feature_constants.h"
-#include "components/strings/grit/components_strings.h"
-#include "ui/base/l10n/l10n_util.h"
 
 namespace autofill {
 AutofillOfferManager::AutofillOfferManager(

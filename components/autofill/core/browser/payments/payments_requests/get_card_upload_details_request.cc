@@ -4,13 +4,22 @@
 
 #include "components/autofill/core/browser/payments/payments_requests/get_card_upload_details_request.h"
 
+#include <cstdint>
+#include <memory>
 #include <string>
+#include <utility>
+#include <vector>
 
+#include "base/functional/callback.h"
 #include "base/json/json_writer.h"
-#include "base/strings/string_util.h"
+#include "base/logging.h"
+#include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
+#include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
 #include "components/autofill/core/browser/payments/client_behavior_constants.h"
+#include "components/autofill/core/browser/payments/payments_autofill_client.h"
+#include "components/autofill/core/browser/payments/payments_request_details.h"
 
 namespace autofill::payments {
 

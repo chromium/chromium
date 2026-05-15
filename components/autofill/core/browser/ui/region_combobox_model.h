@@ -5,13 +5,13 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_UI_REGION_COMBOBOX_MODEL_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_UI_REGION_COMBOBOX_MODEL_H_
 
-#include <memory>
+#include <cstddef>
 #include <string>
 #include <utility>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
-#include "base/observer_list.h"
+#include "base/memory/weak_ptr.h"
 #include "ui/base/models/combobox_model.h"
 
 namespace i18n {

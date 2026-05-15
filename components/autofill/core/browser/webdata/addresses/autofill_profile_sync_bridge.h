@@ -17,6 +17,7 @@
 #include "components/autofill/core/browser/webdata/autofill_webdata_backend.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service_observer.h"
 #include "components/sync/model/data_type_sync_bridge.h"
+#include "components/sync/model/entity_change.h"
 
 namespace syncer {
 class DataTypeLocalChangeProcessor;

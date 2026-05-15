@@ -4,15 +4,28 @@
 
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 
-#include <type_traits>
+#include <cstddef>
+#include <map>
+#include <ostream>
+#include <string>
+#include <string_view>
 #include <utility>
+#include <vector>
 
+#include "base/containers/span.h"
 #include "base/containers/to_vector.h"
+#include "base/feature.h"
+#include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/utf_ostream_operators.h"
 #include "base/strings/utf_string_conversions.h"
-#include "components/autofill/core/browser/data_model/payments/credit_card.h"
+#include "build/buildflag.h"
+#include "components/accessibility_annotator/core/annotation_reducer/entry_type.h"
+#include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
+#include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/suggestions/suggestion_type.h"
+#include "url/gurl.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/jni_android.h"

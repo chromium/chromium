@@ -5,7 +5,10 @@
 #include "chrome/browser/ui/passwords/bubble_controllers/save_update_bubble_controller.h"
 
 #include <algorithm>
+#include <string>
 
+#include "base/check.h"
+#include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/time/default_clock.h"
@@ -124,7 +127,7 @@ SaveUpdateBubbleController::SaveUpdateBubbleController(
     const password_manager::InteractionsStats* stats =
         delegate_->GetCurrentInteractionStats();
     if (stats) {
-      CHECK_EQ(interaction_stats_.username_value, stats->username_value);
+      CHECK(interaction_stats_.username_value == stats->username_value);
       CHECK_EQ(interaction_stats_.origin_domain, stats->origin_domain);
       interaction_stats_.dismissal_count = stats->dismissal_count;
     }

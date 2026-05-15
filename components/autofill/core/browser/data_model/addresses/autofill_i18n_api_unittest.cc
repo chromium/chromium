@@ -11,6 +11,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_i18n_formatting_expressions.h"
+#include "components/autofill/core/browser/data_model/addresses/autofill_i18n_hierarchies.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_i18n_parsing_expressions.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_structured_address.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_structured_address_component_test_api.h"

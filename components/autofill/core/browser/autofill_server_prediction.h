@@ -6,7 +6,6 @@
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_AUTOFILL_SERVER_PREDICTION_H_
 
 #include <optional>
-#include <string>
 #include <vector>
 
 #include "components/autofill/core/browser/field_types.h"

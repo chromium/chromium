@@ -8,7 +8,6 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include <string_view>
 
 #include "components/autofill/core/browser/data_model/payments/bnpl_issuer.h"
 

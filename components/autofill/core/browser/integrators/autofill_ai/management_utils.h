@@ -9,6 +9,7 @@
 
 #include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
+#include "components/autofill/core/common/dense_set.h"
 
 namespace autofill {
 

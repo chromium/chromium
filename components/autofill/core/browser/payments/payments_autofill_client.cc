@@ -4,21 +4,10 @@
 
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 
-#include <optional>
-#include <vector>
-
-#include "components/autofill/core/browser/data_model/payments/credit_card.h"
-#include "components/autofill/core/browser/payments/autofill_error_dialog_context.h"
-#include "components/autofill/core/browser/payments/card_unmask_challenge_option.h"
-#include "components/autofill/core/browser/payments/card_unmask_delegate.h"
+#include "build/buildflag.h"
 #include "components/autofill/core/browser/payments/virtual_card_enrollment_manager.h"
-#include "components/autofill/core/browser/single_field_fillers/payments/merchant_promo_code_manager.h"
-#include "components/autofill/core/browser/suggestions/suggestion.h"
-#include "components/autofill/core/browser/ui/payments/bubble_show_options.h"
-#include "components/autofill/core/browser/ui/payments/card_unmask_prompt_options.h"
 
 #if !BUILDFLAG(IS_IOS)
-#include "components/webauthn/core/browser/internal_authenticator.h"
 #endif  // !BUILDFLAG(IS_IOS)
 
 namespace autofill::payments {

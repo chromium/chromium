@@ -4,8 +4,18 @@
 
 #include "components/autofill/core/browser/suggestions/passkeys/passkey_suggestion_generator.h"
 
+#include <optional>
+#include <utility>
+#include <vector>
+
+#include "base/functional/callback.h"
+#include "build/buildflag.h"
+#include "components/autofill/core/browser/data_quality/addresses/profile_token_quality.h"
+#include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/integrators/password_manager/password_manager_delegate.h"
-#include "ui/base/l10n/l10n_util.h"
+#include "components/autofill/core/common/autocomplete_parsing_util.h"
+#include "components/autofill/core/common/form_data.h"
+#include "components/autofill/core/common/form_field_data.h"
 
 namespace autofill {
 

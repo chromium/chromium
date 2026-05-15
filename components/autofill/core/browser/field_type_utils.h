@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_FIELD_TYPE_UTILS_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_FIELD_TYPE_UTILS_H_
 
+#include <cstddef>
+
 #include "base/notreached.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
 #include "components/autofill/core/browser/field_types.h"

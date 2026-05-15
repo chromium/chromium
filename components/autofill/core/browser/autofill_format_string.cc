@@ -5,6 +5,8 @@
 #include "components/autofill/core/browser/autofill_format_string.h"
 
 #include <string>
+#include <string_view>
+#include <utility>
 
 #include "base/check.h"
 #include "components/autofill/core/browser/data_model/data_model_utils.h"

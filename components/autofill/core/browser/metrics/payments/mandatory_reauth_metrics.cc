@@ -4,6 +4,9 @@
 
 #include "components/autofill/core/browser/metrics/payments/mandatory_reauth_metrics.h"
 
+#include <string>
+#include <string_view>
+
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "components/autofill/core/browser/payments/mandatory_reauth_manager.h"

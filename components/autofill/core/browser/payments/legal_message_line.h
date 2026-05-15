@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_PAYMENTS_LEGAL_MESSAGE_LINE_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_PAYMENTS_LEGAL_MESSAGE_LINE_H_
 
+#include <cstddef>
 #include <string>
 #include <vector>
 

@@ -4,6 +4,10 @@
 
 #include "components/autofill/core/browser/suggestions/suggestion_type.h"
 
+#include <ostream>
+#include <string>
+#include <string_view>
+
 #include "base/notreached.h"
 #include "suggestion_type.h"
 

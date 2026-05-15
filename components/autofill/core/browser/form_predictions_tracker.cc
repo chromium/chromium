@@ -4,10 +4,24 @@
 
 #include "components/autofill/core/browser/form_predictions_tracker.h"
 
+#include <algorithm>
+#include <memory>
+#include <utility>
+
+#include "base/check.h"
+#include "base/containers/span.h"
 #include "base/feature_list.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_forward.h"
+#include "base/location.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/timer/timer.h"
+#include "components/autofill/core/browser/foundations/autofill_client.h"
+#include "components/autofill/core/browser/foundations/autofill_driver.h"
+#include "components/autofill/core/browser/foundations/autofill_manager.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "components/autofill/core/common/unique_ids.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 namespace autofill {
 namespace {

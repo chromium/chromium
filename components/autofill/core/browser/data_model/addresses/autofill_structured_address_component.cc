@@ -5,13 +5,18 @@
 #include "components/autofill/core/browser/data_model/addresses/autofill_structured_address_component.h"
 
 #include <algorithm>
-#include <map>
+#include <cstddef>
 #include <optional>
+#include <ostream>
 #include <string>
 #include <string_view>
+#include <type_traits>
 #include <utility>
+#include <vector>
 
 #include "base/check.h"
+#include "base/check_op.h"
+#include "base/containers/fixed_flat_set.h"
 #include "base/containers/to_vector.h"
 #include "base/feature_list.h"
 #include "base/notreached.h"
@@ -21,14 +26,14 @@
 #include "base/strings/utf_ostream_operators.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/types/zip.h"
-#include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_i18n_api.h"
+#include "components/autofill/core/browser/data_model/addresses/autofill_i18n_parsing_expression_components.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_normalization_utils.h"
-#include "components/autofill/core/browser/data_model/addresses/autofill_structured_address_format_provider.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_structured_address_utils.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "third_party/re2/src/re2/re2.h"
 
 namespace autofill {
 

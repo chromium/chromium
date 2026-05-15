@@ -4,11 +4,14 @@
 
 #include "components/autofill/core/browser/form_parsing/alternative_name_field_parser.h"
 
-#include <string>
+#include <memory>
+#include <optional>
 
-#include "base/notimplemented.h"
+#include "base/memory/ptr_util.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_parsing/autofill_scanner.h"
+#include "components/autofill/core/browser/form_parsing/field_candidates.h"
+#include "components/autofill/core/browser/form_parsing/form_field_parser.h"
 
 namespace autofill {
 namespace {

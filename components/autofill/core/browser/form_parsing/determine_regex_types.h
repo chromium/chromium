@@ -13,7 +13,10 @@
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_parsing/field_candidates.h"
 #include "components/autofill/core/browser/heuristic_source.h"
+#include "components/autofill/core/common/form_field_data.h"
+#include "components/autofill/core/common/is_required.h"
 #include "components/autofill/core/common/language_code.h"
+#include "components/autofill/core/common/signatures.h"
 #include "components/autofill/core/common/unique_ids.h"
 
 namespace autofill {

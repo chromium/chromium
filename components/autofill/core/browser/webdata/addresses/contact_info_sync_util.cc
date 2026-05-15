@@ -4,17 +4,27 @@
 
 #include "components/autofill/core/browser/webdata/addresses/contact_info_sync_util.h"
 
+#include <cstdint>
+#include <memory>
+#include <string>
+
+#include "base/check.h"
+#include "base/check_op.h"
 #include "base/feature_list.h"
 #include "base/hash/hash.h"
 #include "base/memory/raw_ref.h"
+#include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/uuid.h"
 #include "components/autofill/core/browser/country_type.h"
+#include "components/autofill/core/browser/data_model/addresses/autofill_structured_address_component.h"
 #include "components/autofill/core/browser/data_quality/addresses/profile_token_quality.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/geo/country_names.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "components/sync/protocol/contact_info_specifics.pb.h"
+#include "components/sync/protocol/entity_data.h"
 
 namespace autofill {
 

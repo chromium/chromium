@@ -9,6 +9,7 @@
 #include <optional>
 
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
@@ -16,6 +17,7 @@
 #include "components/autofill/core/browser/data_manager/autofill_ai/entity_data_manager.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/network/autofill_ai/wallet_pass_access_manager.h"
+#include "components/consent_auditor/consent_auditor.h"
 #include "components/wallet/core/browser/network/wallet_http_client.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 

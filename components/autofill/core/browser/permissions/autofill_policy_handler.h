@@ -6,7 +6,6 @@
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_PERMISSIONS_AUTOFILL_POLICY_HANDLER_H_
 
 #include "components/policy/core/browser/configuration_policy_handler.h"
-#include "components/policy/policy_export.h"
 
 namespace autofill {
 

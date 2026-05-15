@@ -4,6 +4,10 @@
 
 #include "components/autofill/core/browser/autofill_trigger_source.h"
 
+#include "base/notreached.h"
+#include "build/buildflag.h"
+#include "components/autofill/core/common/aliases.h"
+
 namespace autofill {
 
 AutofillTriggerSource TriggerSourceFromSuggestionTriggerSource(

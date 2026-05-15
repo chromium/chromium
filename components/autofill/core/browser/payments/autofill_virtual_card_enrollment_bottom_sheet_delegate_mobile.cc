@@ -4,10 +4,13 @@
 
 #include "components/autofill/core/browser/payments/autofill_virtual_card_enrollment_bottom_sheet_delegate_mobile.h"
 
-#include <utility>
+#include <string>
 
-#include "base/notreached.h"
-#include "components/grit/components_scaled_resources.h"
+#include "base/check.h"
+#include "components/autofill/core/browser/data_model/payments/credit_card.h"
+#include "components/autofill/core/browser/payments/legal_message_line.h"
+#include "components/autofill/core/browser/ui/payments/payments_ui_closed_reasons.h"
+#include "ui/gfx/image/image.h"
 #include "url/gurl.h"
 
 namespace autofill {

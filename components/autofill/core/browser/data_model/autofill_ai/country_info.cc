@@ -5,6 +5,7 @@
 #include "components/autofill/core/browser/data_model/autofill_ai/country_info.h"
 
 #include <string>
+#include <string_view>
 
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"

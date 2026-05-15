@@ -5,12 +5,11 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_WEBDATA_AUTOFILL_TABLE_UTILS_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_WEBDATA_AUTOFILL_TABLE_UTILS_H_
 
-#include <cstdint>
+#include <cstddef>
 #include <initializer_list>
 #include <string>
 #include <string_view>
 #include <utility>
-#include <vector>
 
 namespace sql {
 class Database;

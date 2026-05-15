@@ -8,7 +8,7 @@
 #include <string>
 #include <vector>
 
-#include "base/functional/callback_forward.h"
+#include "base/functional/callback.h"
 
 namespace i18n {
 namespace addressinput {

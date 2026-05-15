@@ -6,28 +6,36 @@
 
 #include <algorithm>
 #include <array>
-#include <iterator>
+#include <cstddef>
+#include <cstdint>
+#include <string>
 #include <string_view>
 #include <vector>
 
+#include "base/containers/span.h"
+#include "base/feature_list.h"
 #include "base/i18n/char_iterator.h"
-#include "base/no_destructor.h"
+#include "base/logging.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/branding_buildflags.h"
 #include "components/autofill/core/browser/autofill_type.h"
+#include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/geo/autofill_country.h"
+#include "components/autofill/core/browser/geo/country_data.h"
 #include "components/autofill/core/browser/webdata/autofill_table_utils.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/autofill/core/common/credit_card_network_identifiers.h"
 #include "components/grit/components_scaled_resources.h"
 #include "components/strings/grit/components_strings.h"
+#include "third_party/icu/source/common/unicode/umachine.h"
+#include "third_party/icu/source/common/unicode/urename.h"
 #include "third_party/icu/source/common/unicode/uscript.h"
-#include "third_party/re2/src/re2/re2.h"
+#include "third_party/icu/source/common/unicode/utypes.h"
 
 namespace autofill::data_util {
 

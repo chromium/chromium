@@ -5,9 +5,15 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_FIELD_TYPES_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_FIELD_TYPES_H_
 
+#include <array>
+#include <optional>
+#include <ostream>
+#include <string>
+#include <string_view>
 #include <type_traits>
 #include <utility>
 
+#include "base/notreached.h"
 #include "components/autofill/core/common/dense_set.h"
 #include "components/autofill/core/common/html_field_types.h"
 

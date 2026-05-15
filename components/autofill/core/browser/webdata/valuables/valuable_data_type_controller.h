@@ -5,6 +5,11 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_WEBDATA_VALUABLES_VALUABLE_DATA_TYPE_CONTROLLER_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_WEBDATA_VALUABLES_VALUABLE_DATA_TYPE_CONTROLLER_H_
 
+#include <memory>
+
+#include "components/sync/base/data_type.h"
+#include "components/sync/base/sync_mode.h"
+#include "components/sync/base/sync_stop_metadata_fate.h"
 #include "components/sync/model/proxy_data_type_controller_delegate.h"
 #include "components/sync/service/data_type_controller.h"
 

@@ -7,10 +7,8 @@
 
 #include <memory>
 
-#include "base/compiler_specific.h"
-#include "components/autofill/core/browser/country_type.h"
+#include "components/autofill/core/browser/form_parsing/field_candidates.h"
 #include "components/autofill/core/browser/form_parsing/form_field_parser.h"
-#include "components/autofill/core/common/language_code.h"
 
 namespace autofill {
 

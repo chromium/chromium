@@ -7,8 +7,9 @@
 
 #include <stddef.h>
 
-#include "components/autofill/core/browser/data_manager/addresses/address_data_cleaner.h"
-#include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
+#include <string>
+
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 namespace autofill::autofill_metrics {
 

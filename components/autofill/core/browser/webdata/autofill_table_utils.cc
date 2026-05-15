@@ -7,9 +7,9 @@
 #include <initializer_list>
 #include <string>
 #include <string_view>
+#include <utility>
 
 #include "base/strings/strcat.h"
-#include "base/strings/string_util.h"
 #include "sql/database.h"
 #include "sql/statement.h"
 #include "sql/table_management_helpers.h"

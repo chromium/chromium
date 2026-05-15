@@ -5,13 +5,10 @@
 #include "components/autofill/core/browser/autofill_server_prediction.h"
 
 #include <optional>
-#include <string>
 #include <vector>
 
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/field_types.h"
-#include "components/autofill/core/browser/proto/api_v1.pb.h"
-#include "components/autofill/core/browser/proto/password_requirements.pb.h"
 
 namespace autofill {
 

@@ -8,8 +8,10 @@
 #include <string_view>
 #include <utility>
 
-#include "components/autofill/core/browser/form_parsing/regex_patterns.h"
-#include "components/autofill/core/common/autofill_regex_constants.h"
+#include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/form_parsing/autofill_scanner.h"
+#include "components/autofill/core/browser/form_parsing/field_candidates.h"
+#include "components/autofill/core/browser/form_parsing/form_field_parser.h"
 
 namespace autofill {
 

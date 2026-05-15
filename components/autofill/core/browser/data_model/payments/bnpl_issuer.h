@@ -9,11 +9,15 @@
 #include <optional>
 #include <string>
 #include <string_view>
+#include <utility>
 #include <vector>
 
+#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/types/optional_ref.h"
 #include "base/types/strong_alias.h"
 #include "components/autofill/core/browser/data_model/payments/payment_instrument.h"
+#include "components/autofill/core/common/dense_set.h"
 
 namespace autofill {
 

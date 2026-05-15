@@ -10,6 +10,7 @@
 
 #include "components/autofill/core/browser/ml_model/field_classification_model_encoder.h"
 #include "components/optimization_guide/core/inference/base_model_executor.h"
+#include "third_party/tflite/src/tensorflow/lite/core/c/common.h"
 
 namespace autofill {
 

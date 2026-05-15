@@ -4,11 +4,19 @@
 
 #include "components/autofill/core/browser/form_parsing/regex_patterns.h"
 
+#include <optional>
+#include <string_view>
+#include <utility>
+
 #include "base/check.h"
+#include "base/containers/span.h"
 #include "base/notreached.h"
+#include "build/buildflag.h"
+#include "components/autofill/core/browser/form_parsing/autofill_parsing_utils.h"
 #include "components/autofill/core/browser/form_parsing/regex_patterns_inl.h"
 #include "components/autofill/core/browser/heuristic_source.h"
-#include "components/autofill/core/common/autofill_features.h"
+#include "components/autofill/core/common/dense_set.h"
+#include "components/autofill/core/common/language_code.h"
 
 namespace autofill {
 

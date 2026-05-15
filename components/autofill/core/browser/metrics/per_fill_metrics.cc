@@ -4,10 +4,17 @@
 
 #include "components/autofill/core/browser/metrics/per_fill_metrics.h"
 
+#include <cstddef>
+#include <string>
+#include <string_view>
+#include <variant>
+
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
+#include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/filling/form_filler.h"
+#include "components/autofill/core/browser/integrators/one_time_tokens/otp_suggestion.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
 
 namespace autofill::autofill_metrics {

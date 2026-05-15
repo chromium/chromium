@@ -4,10 +4,15 @@
 
 #include "components/autofill/core/browser/geo/country_names_for_locale.h"
 
+#include <cstddef>
+#include <cstdint>
 #include <map>
+#include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 
+#include "base/check.h"
 #include "base/check_op.h"
 #include "base/containers/heap_array.h"
 #include "base/containers/span.h"
@@ -16,6 +21,9 @@
 #include "components/autofill/core/browser/geo/country_data.h"
 #include "components/autofill/core/common/autofill_l10n_util.h"
 #include "third_party/icu/source/common/unicode/locid.h"
+#include "third_party/icu/source/common/unicode/utypes.h"
+#include "third_party/icu/source/i18n/unicode/coll.h"
+#include "third_party/icu/source/i18n/unicode/ucol.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace autofill {

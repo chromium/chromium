@@ -5,9 +5,11 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_HEURISTIC_SOURCE_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_HEURISTIC_SOURCE_H_
 
+#include <optional>
+#include <string_view>
+
 #include "components/autofill/core/browser/form_parsing/buildflags.h"
 #include "components/autofill/core/browser/form_parsing/regex_patterns.h"
-#include "components/autofill/core/common/dense_set.h"
 
 namespace autofill {
 

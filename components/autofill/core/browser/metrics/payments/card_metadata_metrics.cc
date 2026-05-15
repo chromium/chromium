@@ -4,12 +4,19 @@
 
 #include "components/autofill/core/browser/metrics/payments/card_metadata_metrics.h"
 
+#include <cstdint>
+#include <string>
+#include <string_view>
+#include <vector>
+
 #include "base/containers/fixed_flat_set.h"
+#include "base/containers/flat_map.h"
+#include "base/containers/span.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
-#include "components/autofill/core/browser/metrics/form_events/form_events.h"
+#include "base/time/time.h"
+#include "components/autofill/core/browser/data_model/payments/credit_card.h"
 #include "components/autofill/core/browser/payments/constants.h"
-#include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/autofill/core/common/credit_card_network_identifiers.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 

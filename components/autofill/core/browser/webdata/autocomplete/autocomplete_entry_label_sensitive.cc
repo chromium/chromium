@@ -9,9 +9,11 @@
 #include "components/autofill/core/browser/webdata/autocomplete/autocomplete_entry_label_sensitive.h"
 
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/strings/utf_string_conversions.h"
+#include "base/time/time.h"
 
 namespace autofill {
 

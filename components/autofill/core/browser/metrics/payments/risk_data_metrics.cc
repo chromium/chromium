@@ -5,6 +5,7 @@
 #include "components/autofill/core/browser/metrics/payments/risk_data_metrics.h"
 
 #include "base/metrics/histogram_functions.h"
+#include "base/time/time.h"
 
 namespace autofill::autofill_metrics {
 

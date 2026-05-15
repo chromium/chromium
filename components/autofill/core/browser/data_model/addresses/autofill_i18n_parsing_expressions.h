@@ -12,12 +12,9 @@
 #include <utility>
 
 #include "base/containers/fixed_flat_map.h"
-#include "base/containers/flat_map.h"
 #include "base/containers/span.h"
-#include "base/memory/raw_ptr.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_i18n_parsing_expression_components.h"
 #include "components/autofill/core/browser/field_types.h"
-#include "third_party/re2/src/re2/re2.h"
 
 namespace autofill::i18n_model_definition {
 

@@ -5,6 +5,9 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_DATA_MODEL_TRANSLITERATOR_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_DATA_MODEL_TRANSLITERATOR_H_
 
+#include <string>
+#include <string_view>
+
 #include "components/autofill/core/browser/country_type.h"
 
 namespace autofill {

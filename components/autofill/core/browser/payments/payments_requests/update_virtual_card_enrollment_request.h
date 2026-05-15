@@ -9,6 +9,8 @@
 #include <string>
 
 #include "base/functional/callback.h"
+#include "base/time/time.h"
+#include "base/values.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/payments/payments_request_details.h"
 #include "components/autofill/core/browser/payments/payments_requests/payments_request.h"

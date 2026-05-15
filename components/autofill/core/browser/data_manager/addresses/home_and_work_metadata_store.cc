@@ -4,9 +4,12 @@
 
 #include "components/autofill/core/browser/data_manager/addresses/home_and_work_metadata_store.h"
 
+#include <algorithm>
+#include <cstddef>
 #include <optional>
 #include <string_view>
 #include <utility>
+#include <vector>
 
 #include "base/functional/callback.h"
 #include "base/json/values_util.h"
@@ -17,6 +20,7 @@
 #include "base/values.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/usage_history_information.h"
+#include "components/autofill/core/browser/webdata/autofill_change.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/prefs/pref_service.h"
 #include "components/sync/service/sync_service.h"

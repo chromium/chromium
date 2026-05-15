@@ -4,7 +4,12 @@
 
 #include "components/autofill/core/browser/payments/payments_data_cleaner.h"
 
+#include <cstddef>
+#include <string>
+#include <vector>
+
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
+#include "components/autofill/core/browser/data_model/payments/credit_card.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/common/autofill_constants.h"
 

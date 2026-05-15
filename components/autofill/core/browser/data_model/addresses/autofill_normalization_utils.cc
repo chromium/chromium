@@ -4,14 +4,19 @@
 
 #include "components/autofill/core/browser/data_model/addresses/autofill_normalization_utils.h"
 
+#include <cstdint>
+#include <string>
 #include <string_view>
 
+#include "base/feature_list.h"
+#include "base/i18n/char_iterator.h"
 #include "base/strings/utf_string_conversion_utils.h"
+#include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/data_model/transliterator.h"
-#include "components/autofill/core/browser/field_type_utils.h"
 #include "components/autofill/core/browser/geo/address_rewriter.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "third_party/icu/source/common/unicode/uchar.h"
+#include "third_party/icu/source/common/unicode/urename.h"
 
 namespace autofill::normalization {
 

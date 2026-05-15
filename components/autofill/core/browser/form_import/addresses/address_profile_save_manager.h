@@ -5,12 +5,15 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_IMPORT_ADDRESSES_ADDRESS_PROFILE_SAVE_MANAGER_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_IMPORT_ADDRESSES_ADDRESS_PROFILE_SAVE_MANAGER_H_
 
+#include <memory>
 #include <string>
 
-#include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
+#include "base/types/optional_ref.h"
 #include "components/autofill/core/browser/form_import/addresses/autofill_profile_import_process.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 
 namespace autofill {
 

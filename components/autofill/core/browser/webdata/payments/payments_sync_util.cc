@@ -4,10 +4,11 @@
 
 #include "components/autofill/core/browser/webdata/payments/payments_sync_util.h"
 
+#include <string>
+
 #include "base/logging.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
-#include "components/sync/base/data_type.h"
 #include "components/sync/protocol/autofill_offer_specifics.pb.h"
 #include "components/sync/protocol/autofill_specifics.pb.h"
 #include "components/sync/protocol/autofill_valuable_specifics.pb.h"

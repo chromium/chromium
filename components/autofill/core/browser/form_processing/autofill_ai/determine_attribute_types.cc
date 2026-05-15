@@ -4,22 +4,26 @@
 
 #include "components/autofill/core/browser/form_processing/autofill_ai/determine_attribute_types.h"
 
+#include <algorithm>
+#include <array>
+#include <cstddef>
+#include <cstdlib>
+#include <map>
 #include <memory>
+#include <optional>
 #include <utility>
 #include <vector>
 
+#include "base/check.h"
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/span.h"
 #include "base/types/zip.h"
 #include "components/autofill/core/browser/autofill_field.h"
-#include "components/autofill/core/browser/data_manager/autofill_ai/entity_data_manager.h"
-#include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
 #include "components/autofill/core/browser/field_types.h"
-#include "components/autofill/core/common/autofill_features.h"
-#include "components/autofill/core/common/form_data.h"
-#include "components/autofill/core/common/unique_ids.h"
+#include "components/autofill/core/common/dense_set.h"
 
 namespace autofill {
 

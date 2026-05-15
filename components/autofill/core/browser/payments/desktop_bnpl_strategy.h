@@ -6,6 +6,7 @@
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_PAYMENTS_DESKTOP_BNPL_STRATEGY_H_
 
 #include "components/autofill/core/browser/payments/bnpl_strategy.h"
+#include "components/autofill/core/browser/payments/payments_autofill_client.h"
 
 namespace autofill::payments {
 

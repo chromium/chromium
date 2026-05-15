@@ -4,10 +4,14 @@
 
 #include "components/autofill/core/browser/webdata/valuables/valuable_data_type_controller.h"
 
+#include <memory>
+#include <utility>
+
+#include "base/check.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/base/sync_stop_metadata_fate.h"
 #include "components/sync/model/proxy_data_type_controller_delegate.h"
 #include "components/sync/service/data_type_controller.h"
-#include "components/sync/service/sync_service.h"
 
 namespace autofill {
 

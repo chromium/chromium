@@ -5,13 +5,19 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_METRICS_LOG_EVENT_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_METRICS_LOG_EVENT_H_
 
+#include <cstddef>
+#include <cstdint>
+#include <optional>
+#include <string>
 #include <variant>
 
 #include "base/time/time.h"
 #include "base/types/id_type.h"
+#include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/filling/field_filling_skip_reason.h"
 #include "components/autofill/core/browser/heuristic_source.h"
 #include "components/autofill/core/browser/studies/autofill_ablation_study.h"
+#include "components/autofill/core/common/html_field_types.h"
 #include "components/autofill/core/common/is_required.h"
 
 namespace autofill {

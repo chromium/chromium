@@ -4,7 +4,12 @@
 
 #include "components/autofill/core/browser/data_model/identity_credential/identity_credential.h"
 
-#include "ui/gfx/image/image_skia.h"
+#include <map>
+#include <string>
+
+#include "components/autofill/core/browser/field_types.h"
+#include "ui/gfx/image/image.h"
+#include "url/gurl.h"
 
 namespace autofill {
 

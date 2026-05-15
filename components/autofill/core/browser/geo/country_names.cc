@@ -5,13 +5,13 @@
 #include "components/autofill/core/browser/geo/country_names.h"
 
 #include <map>
-#include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 
-#include "base/i18n/rtl.h"
 #include "base/i18n/case_conversion.h"
-#include "base/lazy_instance.h"
+#include "base/i18n/rtl.h"
+#include "base/no_destructor.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/lock.h"
@@ -19,6 +19,7 @@
 #include "components/autofill/core/browser/geo/country_data.h"
 #include "components/autofill/core/browser/geo/country_names_for_locale.h"
 #include "components/autofill/core/browser/geo/country_native_names_inl.h"
+#include "third_party/icu/source/common/unicode/locid.h"
 
 namespace autofill {
 

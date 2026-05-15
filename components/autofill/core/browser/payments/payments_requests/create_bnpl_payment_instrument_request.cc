@@ -4,8 +4,15 @@
 
 #include "components/autofill/core/browser/payments/payments_requests/create_bnpl_payment_instrument_request.h"
 
+#include <string>
+#include <utility>
+
+#include "base/functional/callback.h"
 #include "base/json/json_writer.h"
 #include "base/values.h"
+#include "components/autofill/core/browser/payments/payments_autofill_client.h"
+#include "components/autofill/core/browser/payments/payments_request_details.h"
+#include "components/autofill/core/browser/payments/payments_requests/payments_request.h"
 
 namespace autofill::payments {
 

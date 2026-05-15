@@ -4,12 +4,21 @@
 
 #include "components/autofill/core/browser/autofill_ai_form_rationalization.h"
 
+#include <algorithm>
+#include <cstddef>
+#include <iterator>
+#include <memory>
 #include <vector>
 
+#include "base/check.h"
+#include "base/compiler_specific.h"
+#include "base/containers/flat_map.h"
 #include "base/containers/span.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
+#include "components/autofill/core/browser/data_model/autofill_ai/entity_type_names.h"
 #include "components/autofill/core/browser/form_processing/autofill_ai/determine_attribute_types.h"
+#include "components/autofill/core/common/dense_set.h"
 
 namespace autofill {
 

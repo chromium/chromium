@@ -5,15 +5,21 @@
 #include "components/autofill/core/browser/metrics/stored_profile_metrics.h"
 
 #include <algorithm>
-#include <functional>
+#include <cstddef>
+#include <string>
+#include <vector>
 
+#include "base/check_op.h"
+#include "base/containers/span.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
-#include "components/autofill/core/browser/data_model/addresses/autofill_profile_comparator.h"
+#include "base/time/time.h"
+#include "components/autofill/core/browser/country_type.h"
+#include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics_utils.h"
 #include "components/autofill/core/common/autofill_clock.h"
-#include "components/autofill/core/common/autofill_features.h"
+#include "components/autofill/core/common/autofill_constants.h"
 
 namespace autofill::autofill_metrics {
 

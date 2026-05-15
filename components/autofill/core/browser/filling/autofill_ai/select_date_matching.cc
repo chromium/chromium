@@ -4,16 +4,18 @@
 
 #include "components/autofill/core/browser/filling/autofill_ai/select_date_matching.h"
 
+#include <algorithm>
+#include <cstddef>
 #include <cstdint>
-#include <limits>
+#include <cstdlib>
 #include <string>
 #include <string_view>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/containers/to_vector.h"
-#include "base/memory/stack_allocated.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/types/optional_ref.h"
+#include "base/strings/string_util.h"
 #include "components/autofill/core/common/form_field_data.h"
 
 namespace autofill {

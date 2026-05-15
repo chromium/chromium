@@ -4,7 +4,7 @@
 
 #include "components/autofill/core/browser/metrics/autofill_in_devtools_metrics.h"
 
-#include <string>
+#include <string_view>
 
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"

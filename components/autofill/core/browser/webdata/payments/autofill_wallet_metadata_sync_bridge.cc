@@ -4,24 +4,34 @@
 
 #include "components/autofill/core/browser/webdata/payments/autofill_wallet_metadata_sync_bridge.h"
 
+#include <algorithm>
+#include <concepts>
+#include <cstdint>
 #include <map>
+#include <memory>
 #include <optional>
 #include <ranges>
+#include <set>
+#include <string>
 #include <utility>
-#include <variant>
 #include <vector>
 
 #include "base/base64.h"
+#include "base/check.h"
 #include "base/check_op.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/location.h"
 #include "base/notimplemented.h"
 #include "base/notreached.h"
 #include "base/pickle.h"
+#include "base/sequence_checker.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/time/time.h"
 #include "components/autofill/core/browser/data_model/payments/credit_card.h"
 #include "components/autofill/core/browser/data_model/payments/payments_metadata.h"
+#include "components/autofill/core/browser/webdata/autofill_change.h"
 #include "components/autofill/core/browser/webdata/autofill_sync_metadata_table.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/autofill/core/browser/webdata/payments/payments_autofill_table.h"
@@ -31,8 +41,15 @@
 #include "components/sync/base/data_type.h"
 #include "components/sync/base/deletion_origin.h"
 #include "components/sync/model/client_tag_based_data_type_processor.h"
+#include "components/sync/model/data_batch.h"
+#include "components/sync/model/data_type_local_change_processor.h"
+#include "components/sync/model/data_type_sync_bridge.h"
+#include "components/sync/model/entity_change.h"
+#include "components/sync/model/metadata_change_list.h"
+#include "components/sync/model/model_error.h"
 #include "components/sync/model/mutable_data_batch.h"
 #include "components/sync/model/sync_metadata_store_change_list.h"
+#include "components/sync/protocol/autofill_specifics.pb.h"
 #include "components/sync/protocol/entity_data.h"
 #include "components/webdata/common/web_database.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_set.h"

@@ -7,10 +7,9 @@
 
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/single_field_fillers/single_field_fill_router.h"
-#include "components/autofill/core/browser/suggestions/suggestion_type.h"
-#include "components/autofill/core/common/unique_ids.h"
+#include "components/autofill/core/browser/suggestions/suggestion.h"
+#include "components/autofill/core/common/form_field_data.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "components/webdata/common/web_data_service_consumer.h"
 
 namespace autofill {
 

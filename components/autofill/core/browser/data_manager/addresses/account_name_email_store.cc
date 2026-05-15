@@ -4,18 +4,31 @@
 
 #include "components/autofill/core/browser/data_manager/addresses/account_name_email_store.h"
 
+#include <memory>
 #include <optional>
+#include <string>
+#include <string_view>
+#include <vector>
 
+#include "base/check.h"
+#include "base/functional/bind.h"
 #include "base/hash/hash.h"
+#include "base/no_destructor.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "build/buildflag.h"
+#include "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
+#include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
+#include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/webdata/autofill_change.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/base/features.h"
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/service/sync_service.h"

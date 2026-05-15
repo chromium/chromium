@@ -5,8 +5,14 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_UI_PAYMENTS_SAVE_AND_FILL_DIALOG_CONTROLLER_IMPL_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_UI_PAYMENTS_SAVE_AND_FILL_DIALOG_CONTROLLER_IMPL_H_
 
+#include <cstddef>
+#include <memory>
+#include <string>
+#include <string_view>
+
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
+#include "build/buildflag.h"
 #include "components/autofill/core/browser/payments/legal_message_line.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/ui/payments/save_and_fill_dialog_controller.h"

@@ -9,6 +9,9 @@
 
 #include "base/memory/raw_ptr.h"
 #include "components/prefs/pref_change_registrar.h"
+#include "components/sync/base/data_type.h"
+#include "components/sync/base/sync_stop_metadata_fate.h"
+#include "components/sync/model/data_type_controller_delegate.h"
 #include "components/sync/service/data_type_controller.h"
 #include "components/sync/service/sync_service_observer.h"
 

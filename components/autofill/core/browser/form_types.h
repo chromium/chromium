@@ -5,9 +5,11 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_TYPES_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_TYPES_H_
 
+#include <ostream>
 #include <string_view>
 
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/common/dense_set.h"
 
 namespace autofill {
 

@@ -4,16 +4,26 @@
 
 #include "components/autofill/core/browser/payments/credit_card_risk_based_authenticator.h"
 
+#include <memory>
+#include <string>
+#include <utility>
+
+#include "base/check.h"
 #include "base/check_deref.h"
+#include "base/functional/bind.h"
+#include "base/memory/weak_ptr.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/time/time.h"
 #include "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #include "components/autofill/core/browser/data_model/payments/credit_card.h"
 #include "components/autofill/core/browser/metrics/payments/card_unmask_authentication_metrics.h"
 #include "components/autofill/core/browser/payments/autofill_error_dialog_context.h"
 #include "components/autofill/core/browser/payments/autofill_payments_feature_availability.h"
+#include "components/autofill/core/browser/payments/client_behavior_constants.h"
+#include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/payments/payments_network_interface.h"
+#include "components/autofill/core/browser/payments/payments_request_details.h"
 #include "components/autofill/core/browser/payments/payments_util.h"
-#include "components/autofill/core/common/autofill_payments_features.h"
 
 namespace autofill {
 namespace {

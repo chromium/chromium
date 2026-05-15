@@ -6,14 +6,13 @@
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_STRUCTURE_RATIONALIZER_H_
 
 #include <memory>
-#include <vector>
 
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/memory/raw_span.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/country_type.h"
-#include "components/autofill/core/browser/field_types.h"
-#include "components/autofill/core/common/form_field_data.h"
+#include "components/autofill/core/common/language_code.h"
 #include "url/origin.h"
 
 namespace autofill {

@@ -4,8 +4,15 @@
 
 #include "components/autofill/core/browser/metrics/payments/save_and_fill_metrics.h"
 
+#include <string_view>
+
+#include "base/check.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/notreached.h"
 #include "base/strings/strcat.h"
+#include "base/time/time.h"
+#include "components/autofill/core/browser/metrics/autofill_metrics.h"
+#include "components/autofill/core/browser/payments/payments_autofill_client.h"
 
 namespace autofill::autofill_metrics {
 

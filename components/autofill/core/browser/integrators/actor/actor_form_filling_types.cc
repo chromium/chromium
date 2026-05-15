@@ -5,6 +5,7 @@
 #include "components/autofill/core/browser/integrators/actor/actor_form_filling_types.h"
 
 #include <ostream>
+#include <string_view>
 
 #include "base/notreached.h"
 

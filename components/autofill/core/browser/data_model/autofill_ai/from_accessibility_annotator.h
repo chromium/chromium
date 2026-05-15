@@ -6,6 +6,7 @@
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_DATA_MODEL_AUTOFILL_AI_FROM_ACCESSIBILITY_ANNOTATOR_H_
 
 #include <optional>
+#include <string>
 
 #include "components/accessibility_annotator/core/annotation_reducer/entry_type.h"
 #include "components/accessibility_annotator/core/data_models/entity.h"

@@ -10,6 +10,7 @@
 #include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/logging.h"
 #include "base/notreached.h"
 #include "base/run_loop.h"
 #include "base/task/current_thread.h"

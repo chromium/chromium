@@ -5,11 +5,13 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_DATA_MODEL_ADDRESSES_AUTOFILL_I18N_API_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_DATA_MODEL_ADDRESSES_AUTOFILL_I18N_API_H_
 
+#include <string>
+#include <string_view>
+
 #include "components/autofill/core/browser/country_type.h"
-#include "components/autofill/core/browser/data_model/addresses/autofill_i18n_hierarchies.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_i18n_parsing_expression_components.h"
-#include "components/autofill/core/browser/data_model/addresses/autofill_structured_address_component.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_structured_address_component_store.h"
+#include "components/autofill/core/browser/field_types.h"
 
 namespace autofill::i18n_model_definition {
 

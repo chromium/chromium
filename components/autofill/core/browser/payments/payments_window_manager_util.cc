@@ -4,16 +4,25 @@
 
 #include "components/autofill/core/browser/payments/payments_window_manager_util.h"
 
+#include <string>
+#include <string_view>
 #include <utility>
 
+#include "base/check.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/time/time.h"
+#include "base/types/expected.h"
 #include "components/autofill/core/browser/data_manager/personal_data_manager.h"
+#include "components/autofill/core/browser/data_model/payments/credit_card.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/metrics/payments/bnpl_metrics.h"
+#include "components/autofill/core/browser/payments/card_unmask_challenge_option.h"
+#include "components/autofill/core/browser/payments/payments_request_details.h"
 #include "components/autofill/core/browser/payments/payments_util.h"
 #include "components/autofill/core/browser/payments/payments_window_manager.h"
 #include "url/gurl.h"
 #include "url/origin.h"
+#include "url/third_party/mozilla/url_parse.h"
 
 namespace autofill::payments {
 

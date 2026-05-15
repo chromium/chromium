@@ -5,13 +5,13 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_PROCESSING_NAME_PROCESSING_UTIL_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_PROCESSING_NAME_PROCESSING_UTIL_H_
 
+#include <cstddef>
 #include <memory>
 #include <string>
 #include <string_view>
 
 #include "base/containers/flat_map.h"
 #include "base/containers/span.h"
-#include "base/memory/raw_ptr.h"
 #include "components/autofill/core/common/unique_ids.h"
 
 namespace autofill {

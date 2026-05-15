@@ -4,6 +4,10 @@
 
 #include "components/autofill/core/browser/metrics/payments/credit_card_save_metrics_desktop.h"
 
+#include <string>
+#include <string_view>
+
+#include "base/check.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "components/autofill/core/browser/metrics/payments/credit_card_save_metrics.h"

@@ -6,7 +6,7 @@
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_ML_MODEL_LOGGING_ML_LOG_ROUTER_H_
 
 #include "base/observer_list.h"
-#include "base/scoped_observation_traits.h"
+#include "base/observer_list_types.h"
 #include "components/autofill/core/browser/ml_model/logging/autofill_ml_internals.mojom.h"
 #include "components/keyed_service/core/keyed_service.h"
 

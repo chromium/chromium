@@ -5,12 +5,16 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_DATA_MODEL_AUTOFILL_AI_ENTITY_INSTANCE_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_DATA_MODEL_AUTOFILL_AI_ENTITY_INSTANCE_H_
 
+#include <cstdint>
+#include <optional>
 #include <ostream>
 #include <string>
 #include <string_view>
 #include <utility>
 #include <variant>
+#include <vector>
 
+#include "base/check_op.h"
 #include "base/compiler_specific.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/span.h"
@@ -25,9 +29,8 @@
 #include "components/autofill/core/browser/data_model/autofill_ai/country_info.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/date_info.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
+#include "components/autofill/core/browser/data_model/autofill_ai/entity_type_names.h"
 #include "components/autofill/core/browser/field_types.h"
-#include "components/autofill/core/common/dense_set.h"
-#include "components/autofill/core/common/is_required.h"
 
 namespace sync_pb {
 class AutofillValuableSpecifics;

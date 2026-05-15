@@ -6,6 +6,8 @@
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_SUGGESTIONS_SUGGESTION_TYPE_H_
 
 #include <ostream>
+#include <string>
+#include <string_view>
 
 namespace autofill {
 

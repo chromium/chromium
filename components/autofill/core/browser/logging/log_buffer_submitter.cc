@@ -4,6 +4,9 @@
 
 #include "components/autofill/core/browser/logging/log_buffer_submitter.h"
 
+#include <optional>
+#include <utility>
+
 #include "components/autofill/core/browser/logging/log_manager.h"
 
 namespace autofill {

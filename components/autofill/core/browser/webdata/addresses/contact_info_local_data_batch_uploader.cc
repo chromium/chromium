@@ -4,6 +4,12 @@
 
 #include "components/autofill/core/browser/webdata/addresses/contact_info_local_data_batch_uploader.h"
 
+#include <set>
+#include <string>
+#include <string_view>
+#include <utility>
+#include <vector>
+
 #include "base/check_deref.h"
 #include "base/functional/callback.h"
 #include "base/strings/utf_string_conversions.h"

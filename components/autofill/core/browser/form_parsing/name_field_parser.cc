@@ -5,17 +5,17 @@
 #include "components/autofill/core/browser/form_parsing/name_field_parser.h"
 
 #include <memory>
+#include <optional>
 #include <string_view>
+#include <utility>
 
 #include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
-#include "base/memory/raw_ptr.h"
-#include "base/strings/string_util.h"
-#include "components/autofill/core/browser/autofill_type.h"
+#include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_parsing/autofill_scanner.h"
-#include "components/autofill/core/browser/form_parsing/regex_patterns.h"
+#include "components/autofill/core/browser/form_parsing/field_candidates.h"
+#include "components/autofill/core/browser/form_parsing/form_field_parser.h"
 #include "components/autofill/core/common/autofill_features.h"
-#include "components/autofill/core/common/autofill_regex_constants.h"
 
 namespace autofill {
 namespace {

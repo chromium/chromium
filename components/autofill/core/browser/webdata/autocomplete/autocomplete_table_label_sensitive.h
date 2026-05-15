@@ -9,8 +9,11 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_WEBDATA_AUTOCOMPLETE_AUTOCOMPLETE_TABLE_LABEL_SENSITIVE_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_WEBDATA_AUTOCOMPLETE_AUTOCOMPLETE_TABLE_LABEL_SENSITIVE_H_
 
+#include <cstddef>
 #include <optional>
 #include <string>
+#include <string_view>
+#include <type_traits>
 #include <vector>
 
 #include "base/time/time.h"

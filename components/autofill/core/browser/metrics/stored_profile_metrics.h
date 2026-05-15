@@ -7,9 +7,9 @@
 
 #include <stddef.h>
 
-#include <string_view>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics_utils.h"
 

@@ -8,7 +8,6 @@
 #include <optional>
 
 #include "base/time/time.h"
-#include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 
 namespace autofill::autofill_metrics {

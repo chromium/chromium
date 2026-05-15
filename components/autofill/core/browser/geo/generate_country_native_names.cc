@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <cstdint>
 #include <map>
 #include <set>
 #include <string>
@@ -10,12 +11,12 @@
 #include "base/at_exit.h"
 #include "base/check.h"
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/i18n/case_conversion.h"
 #include "base/i18n/icu_util.h"
 #include "base/i18n/unicodestring.h"
-#include "base/logging.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/geo/country_data.h"
 #include "third_party/icu/source/common/unicode/locid.h"

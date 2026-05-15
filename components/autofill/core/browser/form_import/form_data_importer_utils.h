@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_IMPORT_FORM_DATA_IMPORTER_UTILS_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_IMPORT_FORM_DATA_IMPORTER_UTILS_H_
 
+#include <cstddef>
 #include <iterator>
 #include <limits>
 #include <list>
@@ -12,6 +13,7 @@
 #include <string>
 #include <utility>
 
+#include "base/check.h"
 #include "base/time/time.h"
 #include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
@@ -20,9 +22,9 @@
 #include "components/autofill/core/browser/form_import/addresses/autofill_profile_import_process.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/common/autofill_clock.h"
-#include "components/autofill/core/common/logging/log_buffer.h"
 #include "components/autofill/core/common/signatures.h"
 #include "components/history/core/browser/history_types.h"
+#include "url/origin.h"
 
 namespace autofill {
 

@@ -4,7 +4,11 @@
 
 #include "components/autofill/core/browser/payments/amount_extraction_heuristic_regexes.h"
 
-#include "base/logging.h"
+#include <cstdint>
+#include <memory>
+#include <string>
+
+#include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
 #include "components/autofill/core/browser/metrics/payments/amount_extraction_metrics.h"
 #include "components/autofill/core/browser/payments/amount_extraction_heuristic_regexes.pb.h"

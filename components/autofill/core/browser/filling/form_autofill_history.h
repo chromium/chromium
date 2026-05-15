@@ -5,11 +5,15 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_FILLING_FORM_AUTOFILL_HISTORY_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_FILLING_FORM_AUTOFILL_HISTORY_H_
 
+#include <cstddef>
 #include <list>
 #include <map>
 #include <optional>
 #include <string>
+#include <vector>
 
+#include "base/containers/span.h"
+#include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/filling/filling_product.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/unique_ids.h"

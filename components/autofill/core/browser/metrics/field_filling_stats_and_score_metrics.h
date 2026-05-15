@@ -5,8 +5,12 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_METRICS_FIELD_FILLING_STATS_AND_SCORE_METRICS_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_METRICS_FIELD_FILLING_STATS_AND_SCORE_METRICS_H_
 
-#include "base/containers/flat_map.h"
-#include "components/autofill/core/browser/metrics/autofill_metrics_utils.h"
+#include <cstddef>
+
+#include "components/autofill/core/browser/autofill_field.h"
+#include "components/autofill/core/browser/form_structure.h"
+#include "components/autofill/core/browser/form_types.h"
+#include "components/autofill/core/browser/suggestions/suggestion_util.h"
 
 namespace autofill::autofill_metrics {
 

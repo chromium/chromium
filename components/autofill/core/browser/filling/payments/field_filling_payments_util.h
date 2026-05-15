@@ -5,9 +5,10 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_FILLING_PAYMENTS_FIELD_FILLING_PAYMENTS_UTIL_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_FILLING_PAYMENTS_FIELD_FILLING_PAYMENTS_UTIL_H_
 
+#include <memory>
 #include <string>
-#include <vector>
 
+#include "base/containers/span.h"
 #include "components/autofill/core/browser/autofill_trigger_source.h"
 #include "components/autofill/core/browser/filling/field_filling_util.h"
 #include "components/autofill/core/browser/suggestions/suggestion_util.h"

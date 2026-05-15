@@ -9,6 +9,7 @@
 
 #include "components/autofill/core/browser/webdata/addresses/contact_info_precondition_checker.h"
 #include "components/sync/base/sync_mode.h"
+#include "components/sync/base/sync_stop_metadata_fate.h"
 #include "components/sync/service/data_type_controller.h"
 #include "components/sync/service/sync_service.h"
 

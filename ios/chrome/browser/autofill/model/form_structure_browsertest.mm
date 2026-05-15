@@ -8,6 +8,7 @@
 #import <vector>
 
 #import "base/apple/foundation_util.h"
+#import "base/containers/fixed_flat_set.h"
 #import "base/files/file_enumerator.h"
 #import "base/files/file_path.h"
 #import "base/files/file_util.h"

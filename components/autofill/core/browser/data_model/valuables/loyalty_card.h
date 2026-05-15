@@ -7,8 +7,10 @@
 
 #include <cstdint>
 #include <string>
+#include <utility>
 #include <vector>
 
+#include "base/check_op.h"
 #include "base/time/time.h"
 #include "components/autofill/core/browser/data_model/valuables/valuable_types.h"
 #include "url/gurl.h"

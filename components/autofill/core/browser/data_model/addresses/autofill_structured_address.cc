@@ -5,15 +5,18 @@
 #include "components/autofill/core/browser/data_model/addresses/autofill_structured_address.h"
 
 #include <algorithm>
+#include <cstddef>
+#include <optional>
 #include <string>
 #include <utility>
+#include <vector>
 
-#include "base/containers/fixed_flat_set.h"
+#include "base/check.h"
 #include "base/feature_list.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "components/autofill/core/browser/autofill_type.h"
+#include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_i18n_api.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_normalization_utils.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_structured_address_component.h"
@@ -21,7 +24,6 @@
 #include "components/autofill/core/browser/data_model/addresses/autofill_structured_address_utils.h"
 #include "components/autofill/core/browser/field_type_utils.h"
 #include "components/autofill/core/browser/field_types.h"
-#include "components/autofill/core/browser/geo/address_rewriter.h"
 #include "components/autofill/core/browser/geo/alternative_state_name_map.h"
 #include "components/autofill/core/common/autofill_features.h"
 

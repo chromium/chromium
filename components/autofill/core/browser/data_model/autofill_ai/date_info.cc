@@ -5,11 +5,14 @@
 #include "components/autofill/core/browser/data_model/autofill_ai/date_info.h"
 
 #include <string>
+#include <string_view>
 
 #include "base/i18n/unicodestring.h"
 #include "base/time/time.h"
 #include "components/autofill/core/browser/data_model/data_model_utils.h"
-#include "third_party/icu/source/i18n/unicode/dtptngen.h"
+#include "third_party/icu/source/common/unicode/locid.h"
+#include "third_party/icu/source/common/unicode/unistr.h"
+#include "third_party/icu/source/common/unicode/utypes.h"
 #include "third_party/icu/source/i18n/unicode/smpdtfmt.h"
 #include "third_party/icu/source/i18n/unicode/timezone.h"
 

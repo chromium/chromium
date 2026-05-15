@@ -4,8 +4,13 @@
 
 #include "components/autofill/core/browser/geo/region_data_loader_impl.h"
 
+#include <string>
+#include <vector>
+
 #include "base/functional/bind.h"
+#include "base/location.h"
 #include "base/task/single_thread_task_runner.h"
+#include "third_party/libaddressinput/src/cpp/include/libaddressinput/callback.h"
 #include "third_party/libaddressinput/src/cpp/include/libaddressinput/region_data.h"
 #include "third_party/libaddressinput/src/cpp/include/libaddressinput/region_data_builder.h"
 #include "third_party/libaddressinput/src/cpp/include/libaddressinput/source.h"

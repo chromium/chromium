@@ -7,7 +7,9 @@
 #include <string>
 #include <vector>
 
+#include "base/check_op.h"
 #include "base/functional/bind.h"
+#include "base/strings/utf_ostream_operators.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/features/password_manager_features_util.h"

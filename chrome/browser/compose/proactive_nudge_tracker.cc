@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/functional/callback_helpers.h"
+#include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_conversions.h"

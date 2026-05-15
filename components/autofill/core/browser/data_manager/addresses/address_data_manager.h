@@ -9,14 +9,17 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <utility>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
+#include "build/buildflag.h"
 #include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
 #include "components/autofill/core/browser/strike_databases/addresses/address_on_typing_suggestion_strike_database.h"
@@ -24,15 +27,19 @@
 #include "components/autofill/core/browser/strike_databases/addresses/autofill_profile_migration_strike_database.h"
 #include "components/autofill/core/browser/strike_databases/addresses/autofill_profile_save_strike_database.h"
 #include "components/autofill/core/browser/strike_databases/addresses/autofill_profile_update_strike_database.h"
+#include "components/autofill/core/browser/webdata/autofill_change.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service_observer.h"
 #include "components/autofill/core/common/dense_set.h"
+#include "components/autofill/core/common/signatures.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/prefs/pref_member.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/strike_database/strike_database_base.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/service/sync_service.h"
-#include "components/webdata/common/web_data_service_consumer.h"
+#include "components/webdata/common/web_data_results.h"
+#include "components/webdata/common/web_data_service_base.h"
 
 namespace signin {
 class IdentityManager;

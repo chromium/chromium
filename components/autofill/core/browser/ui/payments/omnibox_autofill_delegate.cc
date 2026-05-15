@@ -4,6 +4,7 @@
 
 #include "components/autofill/core/browser/ui/payments/omnibox_autofill_delegate.h"
 
+#include <memory>
 #include <set>
 
 #include "base/check_deref.h"

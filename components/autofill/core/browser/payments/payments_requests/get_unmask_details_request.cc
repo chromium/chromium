@@ -4,9 +4,17 @@
 
 #include "components/autofill/core/browser/payments/payments_requests/get_unmask_details_request.h"
 
+#include <optional>
 #include <string>
+#include <utility>
 
+#include "base/functional/callback.h"
 #include "base/json/json_writer.h"
+#include "base/logging.h"
+#include "base/values.h"
+#include "components/autofill/core/browser/payments/payments_autofill_client.h"
+#include "components/autofill/core/browser/payments/payments_request_details.h"
+#include "components/autofill/core/browser/payments/payments_requests/payments_request.h"
 
 namespace autofill::payments {
 

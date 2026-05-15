@@ -5,29 +5,36 @@
 #include "components/autofill/core/browser/metrics/quality_metrics.h"
 
 #include <algorithm>
+#include <cstddef>
 #include <memory>
-#include <utility>
+#include <string>
 
+#include "base/check.h"
+#include "base/feature_list.h"
 #include "base/i18n/char_iterator.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/time/time.h"
 #include "components/autofill/core/browser/autofill_browser_util.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/data_quality/autofill_data_util.h"
-#include "components/autofill/core/browser/data_quality/validation.h"
 #include "components/autofill/core/browser/field_type_utils.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/filling/filling_product.h"
 #include "components/autofill/core/browser/form_structure.h"
-#include "components/autofill/core/browser/heuristic_source.h"
-#include "components/autofill/core/browser/metrics/autofill_metrics_utils.h"
+#include "components/autofill/core/browser/form_types.h"
+#include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/metrics/field_filling_stats_and_score_metrics.h"
 #include "components/autofill/core/browser/metrics/form_interactions_ukm_logger.h"
 #include "components/autofill/core/browser/metrics/prediction_quality_metrics.h"
 #include "components/autofill/core/browser/metrics/quality_metrics_filling.h"
-#include "components/autofill/core/common/autofill_data_validation.h"
+#include "components/autofill/core/browser/suggestions/suggestion_util.h"
+#include "components/autofill/core/common/autofill_constants.h"
 #include "components/autofill/core/common/autofill_features.h"
-#include "components/autofill/core/common/autofill_util.h"
+#include "components/autofill/core/common/html_field_types.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
+#include "third_party/icu/source/common/unicode/urename.h"
 #include "third_party/icu/source/common/unicode/uscript.h"
+#include "third_party/icu/source/common/unicode/utypes.h"
 
 namespace autofill::autofill_metrics {
 

@@ -6,14 +6,13 @@
 
 #include <stddef.h>
 
-#include <ostream>
+#include <array>
+#include <cstddef>
+#include <string>
 #include <string_view>
 
-#include "base/check.h"
-#include "base/containers/adapters.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/fixed_flat_set.h"
-#include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -24,7 +23,6 @@
 #include "components/autofill/core/common/autofill_regex_constants.h"
 #include "components/autofill/core/common/autofill_regexes.h"
 #include "components/autofill/core/common/credit_card_network_identifiers.h"
-#include "components/strings/grit/components_strings.h"
 
 namespace autofill {
 

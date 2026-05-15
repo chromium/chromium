@@ -4,20 +4,16 @@
 
 #include "components/autofill/core/browser/payments/payments_service_url.h"
 
+#include <cstdint>
 #include <string>
 
 #include "base/command_line.h"
-#include "base/format_macros.h"
 #include "base/metrics/field_trial.h"
+#include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_util.h"
-#include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/data_model/payments/bnpl_issuer.h"
-#include "components/autofill/core/browser/payments/constants.h"
-#include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/autofill/core/common/autofill_switches.h"
-#include "google_apis/gaia/gaia_urls.h"
 #include "net/base/url_util.h"
 #include "url/gurl.h"
 #include "url/origin.h"

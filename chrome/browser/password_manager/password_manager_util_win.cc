@@ -21,6 +21,7 @@
 
 #include "base/containers/heap_array.h"
 #include "base/containers/span.h"
+#include "base/logging.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/hang_watcher.h"
 #include "base/threading/scoped_thread_priority.h"

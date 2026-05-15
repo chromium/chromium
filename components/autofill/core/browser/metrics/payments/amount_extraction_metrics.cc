@@ -4,9 +4,16 @@
 
 #include "components/autofill/core/browser/metrics/payments/amount_extraction_metrics.h"
 
+#include <cstdint>
+#include <optional>
+
+#include "base/check.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
+#include "base/time/time.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
+#include "services/metrics/public/cpp/ukm_recorder.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 
 namespace autofill::autofill_metrics {
 

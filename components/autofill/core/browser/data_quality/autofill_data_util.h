@@ -5,9 +5,9 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_DATA_QUALITY_AUTOFILL_DATA_UTIL_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_DATA_QUALITY_AUTOFILL_DATA_UTIL_H_
 
+#include <cstdint>
 #include <string>
 #include <string_view>
-#include <vector>
 
 #include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/field_types.h"

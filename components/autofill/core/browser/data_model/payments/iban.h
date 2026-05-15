@@ -5,13 +5,14 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_DATA_MODEL_PAYMENTS_IBAN_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_DATA_MODEL_PAYMENTS_IBAN_H_
 
+#include <cstddef>
+#include <cstdint>
+#include <ostream>
 #include <string>
 #include <string_view>
 #include <variant>
 
-#include "base/time/time.h"
 #include "base/types/strong_alias.h"
-#include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/data_model/usage_history_information.h"
 
 namespace autofill {

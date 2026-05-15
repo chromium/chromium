@@ -4,13 +4,18 @@
 
 #include "components/autofill/core/browser/metrics/payments/iban_metrics.h"
 
+#include <cstddef>
+#include <memory>
 #include <string>
+#include <string_view>
 #include <vector>
 
+#include "base/check.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
 #include "components/autofill/core/browser/data_model/payments/iban.h"
+#include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/common/autofill_clock.h"
 
 namespace autofill::autofill_metrics {

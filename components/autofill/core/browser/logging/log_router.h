@@ -6,7 +6,6 @@
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_LOGGING_LOG_ROUTER_H_
 
 #include <string>
-#include <vector>
 
 #include "base/observer_list.h"
 #include "base/scoped_observation_traits.h"

@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_DATA_MODEL_PAYMENTS_PAYMENTS_METADATA_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_DATA_MODEL_PAYMENTS_PAYMENTS_METADATA_H_
 
+#include <cstddef>
+#include <ostream>
 #include <string>
 
 #include "base/time/time.h"

@@ -4,17 +4,26 @@
 
 #include "components/autofill/core/browser/data_manager/valuables/valuables_data_manager.h"
 
+#include <algorithm>
+#include <memory>
 #include <optional>
+#include <utility>
 #include <vector>
 
+#include "base/check_op.h"
+#include "base/functional/bind.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
+#include "base/types/optional_ref.h"
 #include "components/autofill/core/browser/data_model/valuables/loyalty_card.h"
+#include "components/autofill/core/browser/data_model/valuables/valuable_types.h"
 #include "components/autofill/core/browser/ui/autofill_image_fetcher_base.h"
-#include "components/autofill/core/browser/webdata/autofill_change.h"
+#include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/autofill/core/common/autofill_prefs.h"
-#include "components/sync/base/features.h"
+#include "components/sync/base/data_type.h"
 #include "components/webdata/common/web_data_results.h"
+#include "components/webdata/common/web_data_service_base.h"
 #include "url/gurl.h"
 
 namespace autofill {

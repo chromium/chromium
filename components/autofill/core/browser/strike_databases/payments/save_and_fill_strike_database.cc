@@ -4,6 +4,10 @@
 
 #include "components/autofill/core/browser/strike_databases/payments/save_and_fill_strike_database.h"
 
+#include <optional>
+
+#include "base/time/time.h"
+
 namespace autofill {
 
 std::optional<base::TimeDelta>

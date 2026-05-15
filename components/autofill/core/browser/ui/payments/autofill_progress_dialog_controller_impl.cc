@@ -4,8 +4,15 @@
 
 #include "components/autofill/core/browser/ui/payments/autofill_progress_dialog_controller_impl.h"
 
+#include <string>
+#include <utility>
+
+#include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
+#include "base/notreached.h"
+#include "build/buildflag.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
+#include "components/autofill/core/browser/ui/payments/autofill_progress_dialog_controller.h"
 #include "components/autofill/core/browser/ui/payments/autofill_progress_ui_type.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"

@@ -5,26 +5,30 @@
 #include "components/autofill/core/browser/geo/address_rewriter.h"
 
 #include <memory>
+#include <string>
 #include <string_view>
+#include <utility>
+#include <vector>
 
 #include "base/check_op.h"
 #include "base/feature_list.h"
-#include "base/i18n/case_conversion.h"
-#include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/synchronization/lock.h"
+#include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/geo/grit/autofill_address_rewriter_resources_map.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_regexes.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
-#include "third_party/icu/source/common/unicode/utypes.h"
 #include "third_party/icu/source/i18n/unicode/regex.h"
+#include "third_party/icu/source/i18n/unicode/uregex.h"
 #include "third_party/zlib/google/compression_utils.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/base/webui/resource_path.h"
 
 namespace autofill {
 namespace {

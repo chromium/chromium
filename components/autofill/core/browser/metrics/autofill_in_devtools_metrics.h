@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_METRICS_AUTOFILL_IN_DEVTOOLS_METRICS_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_METRICS_AUTOFILL_IN_DEVTOOLS_METRICS_H_
 
-#include <string>
+#include <string_view>
 
 namespace autofill::autofill_metrics {
 

@@ -6,20 +6,26 @@
 
 #include <cstdint>
 #include <optional>
+#include <string>
 #include <string_view>
+#include <utility>
 #include <vector>
 
 #include "base/check_deref.h"
 #include "base/strings/strcat.h"
+#include "base/time/time.h"
 #include "components/autofill/core/browser/data_model/valuables/loyalty_card.h"
 #include "components/autofill/core/browser/data_model/valuables/valuable_types.h"
 #include "components/autofill/core/browser/webdata/autofill_table_utils.h"
 #include "components/webdata/common/web_database.h"
+#include "components/webdata/common/web_database_table.h"
 #include "sql/database.h"
 #include "sql/statement.h"
 #include "sql/statement_id.h"
 #include "sql/table_management_helpers.h"
 #include "sql/transaction.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
+#include "url/gurl.h"
 
 namespace autofill {
 

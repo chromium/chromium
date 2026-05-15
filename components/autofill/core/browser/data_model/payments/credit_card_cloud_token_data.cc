@@ -4,6 +4,9 @@
 
 #include "components/autofill/core/browser/data_model/payments/credit_card_cloud_token_data.h"
 
+#include <optional>
+#include <string>
+
 #include "components/autofill/core/browser/data_model/data_model_utils.h"
 
 namespace autofill {

@@ -12,6 +12,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
+#include "build/buildflag.h"
 #include "components/autofill/core/browser/data_quality/addresses/address_normalizer.h"
 
 #if BUILDFLAG(IS_ANDROID)

@@ -4,13 +4,23 @@
 
 #include "components/autofill/core/browser/payments/mandatory_reauth_manager.h"
 
+#include <optional>
+#include <string>
+#include <utility>
 #include <variant>
 
-#include "base/strings/utf_string_conversions.h"
+#include "base/check.h"
+#include "base/check_op.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
+#include "base/notreached.h"
+#include "build/buildflag.h"
 #include "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #include "components/autofill/core/browser/data_model/payments/credit_card.h"
+#include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/metrics/payments/mandatory_reauth_metrics.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
+#include "components/device_reauth/device_authenticator.h"
 #include "components/strings/grit/components_branded_strings.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"

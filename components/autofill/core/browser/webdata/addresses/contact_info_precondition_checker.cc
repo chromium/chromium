@@ -4,9 +4,21 @@
 
 #include "components/autofill/core/browser/webdata/addresses/contact_info_precondition_checker.h"
 
+#include <memory>
+#include <utility>
+
+#include "base/check.h"
 #include "base/check_deref.h"
+#include "base/check_op.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_forward.h"
+#include "components/signin/public/identity_manager/account_info.h"
+#include "components/signin/public/identity_manager/account_managed_status_finder.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/sync/base/features.h"
+#include "components/sync/service/data_type_controller.h"
+#include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_user_settings.h"
 
 namespace autofill {

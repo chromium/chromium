@@ -4,11 +4,18 @@
 
 #include "components/autofill/core/browser/form_types.h"
 
+#include <algorithm>
+#include <memory>
+#include <ostream>
+#include <string_view>
+
 #include "base/containers/to_vector.h"
+#include "base/notreached.h"
 #include "base/strings/string_util.h"
+#include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_structure.h"
-#include "components/autofill/core/common/autofill_util.h"
+#include "components/autofill/core/common/dense_set.h"
 
 namespace autofill {
 

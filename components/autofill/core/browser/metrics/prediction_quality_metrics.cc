@@ -4,14 +4,17 @@
 
 #include "components/autofill/core/browser/metrics/prediction_quality_metrics.h"
 
+#include <algorithm>
+#include <cstdint>
+#include <memory>
 #include <string>
 #include <string_view>
 #include <utility>
-#include <vector>
 
 #include "base/check_op.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "components/autofill/core/browser/autofill_field.h"
@@ -23,7 +26,9 @@
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_util.h"
 #include "components/autofill/core/common/dense_set.h"
+#include "components/autofill/core/common/html_field_types.h"
 #include "components/autofill/core/common/label_source_util.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 
 namespace autofill::autofill_metrics {
 

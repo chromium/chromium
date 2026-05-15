@@ -12,7 +12,6 @@
 
 #include "base/time/time.h"
 #include "components/strike_database/simple_strike_database.h"
-#include "components/strike_database/strike_database.h"
 
 namespace autofill {
 

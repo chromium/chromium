@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "components/autofill/core/browser/form_parsing/field_candidates.h"
 #include "components/autofill/core/browser/form_parsing/form_field_parser.h"
 
 namespace autofill {

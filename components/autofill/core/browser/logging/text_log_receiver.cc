@@ -5,10 +5,15 @@
 #include "components/autofill/core/browser/logging/text_log_receiver.h"
 
 #include <algorithm>
+#include <iterator>
+#include <string>
+#include <vector>
 
+#include "base/check.h"
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
+#include "base/values.h"
 
 namespace autofill {
 

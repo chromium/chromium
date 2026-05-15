@@ -4,8 +4,12 @@
 
 #include "components/autofill/core/browser/webdata/autofill_sync_metadata_table.h"
 
+#include <memory>
+#include <string>
 #include <string_view>
+#include <utility>
 
+#include "base/check.h"
 #include "base/logging.h"
 #include "components/autofill/core/browser/webdata/autofill_table_utils.h"
 #include "components/sync/base/data_type.h"
@@ -13,6 +17,7 @@
 #include "components/sync/protocol/data_type_state.pb.h"
 #include "components/sync/protocol/entity_metadata.pb.h"
 #include "components/webdata/common/web_database.h"
+#include "components/webdata/common/web_database_table.h"
 #include "sql/statement.h"
 #include "sql/statement_id.h"
 #include "sql/table_management_helpers.h"

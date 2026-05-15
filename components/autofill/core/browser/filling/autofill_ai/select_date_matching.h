@@ -5,11 +5,13 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_FILLING_AUTOFILL_AI_SELECT_DATE_MATCHING_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_FILLING_AUTOFILL_AI_SELECT_DATE_MATCHING_H_
 
+#include <cstddef>
 #include <cstdint>
 #include <limits>
-#include <string>
-#include <string_view>
+#include <optional>
 
+#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/memory/stack_allocated.h"
 #include "base/types/optional_ref.h"
 #include "components/autofill/core/common/form_field_data.h"

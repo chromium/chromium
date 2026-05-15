@@ -3,14 +3,31 @@
 // found in the LICENSE file.
 #include "components/autofill/core/browser/suggestions/one_time_passwords/otp_suggestion_generator.h"
 
-#include "base/containers/to_vector.h"
+#include <string>
+#include <utility>
+#include <vector>
+
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/strings/utf_string_conversions.h"
+#include "build/buildflag.h"
 #include "components/autofill/core/browser/autofill_field.h"
-#include "components/autofill/core/browser/filling/filling_product.h"
+#include "components/autofill/core/browser/data_quality/addresses/profile_token_quality.h"
+#include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/foundations/autofill_client.h"
+#if BUILDFLAG(IS_ANDROID)
+#include "components/strings/grit/components_strings.h"
+#endif
 #include "components/autofill/core/browser/integrators/one_time_tokens/otp_manager.h"
+#include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/browser/suggestions/suggestion_generator.h"
+#include "components/autofill/core/browser/suggestions/suggestion_type.h"
+#include "components/autofill/core/common/form_data.h"
+#include "components/autofill/core/common/form_field_data.h"
+#if BUILDFLAG(IS_ANDROID)
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
+#endif
 
 namespace autofill {
 namespace {

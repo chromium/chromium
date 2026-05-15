@@ -4,6 +4,12 @@
 
 #include "components/autofill/core/browser/crowdsourcing/disambiguate_possible_field_types.h"
 
+#include <algorithm>
+#include <cstddef>
+#include <memory>
+#include <vector>
+
+#include "base/containers/span.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/crowdsourcing/determine_possible_field_types.h"
 #include "components/autofill/core/browser/field_type_utils.h"

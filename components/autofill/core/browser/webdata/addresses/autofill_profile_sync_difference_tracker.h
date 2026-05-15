@@ -6,7 +6,6 @@
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_WEBDATA_ADDRESSES_AUTOFILL_PROFILE_SYNC_DIFFERENCE_TRACKER_H_
 
 #include <map>
-#include <memory>
 #include <optional>
 #include <set>
 #include <string>

@@ -6,11 +6,11 @@
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_PAYMENTS_IBAN_MANAGER_H_
 
 #include "base/memory/raw_ptr.h"
-#include "components/autofill/core/browser/data_model/payments/iban.h"
-#include "components/autofill/core/browser/metrics/payments/iban_metrics.h"
+#include "components/autofill/core/browser/data_quality/addresses/profile_token_quality.h"
 #include "components/autofill/core/browser/single_field_fillers/single_field_fill_router.h"
-#include "components/autofill/core/browser/suggestions/suggestion_type.h"
-#include "components/webdata/common/web_data_service_consumer.h"
+#include "components/autofill/core/browser/suggestions/suggestion.h"
+#include "components/autofill/core/common/form_field_data.h"
+#include "components/autofill/core/common/unique_ids.h"
 
 namespace autofill {
 

@@ -5,34 +5,57 @@
 #include "components/autofill/core/browser/ml_model/field_classification_model_handler.h"
 
 #include <algorithm>
-#include <iterator>
+#include <cstddef>
+#include <map>
+#include <memory>
+#include <optional>
+#include <string>
+#include <utility>
 #include <vector>
 
 #include "base/barrier_callback.h"
+#include "base/callback_list.h"
+#include "base/check.h"
+#include "base/check_op.h"
 #include "base/containers/extend.h"
 #include "base/containers/span.h"
 #include "base/containers/to_vector.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/hash/hash.h"
 #include "base/memory/weak_ptr.h"
+#include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/utf_string_conversions.h"
+#include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
 #include "base/time/time.h"
+#include "base/types/optional_ref.h"
 #include "base/types/zip.h"
+#include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/form_parsing/autofill_parsing_utils.h"
 #include "components/autofill/core/browser/form_parsing/field_candidates.h"
 #include "components/autofill/core/browser/form_parsing/form_field_parser.h"
-#include "components/autofill/core/browser/form_parsing/regex_patterns.h"
 #include "components/autofill/core/browser/heuristic_source.h"
 #include "components/autofill/core/browser/ml_model/field_classification_model_encoder.h"
 #include "components/autofill/core/browser/ml_model/field_classification_model_executor.h"
 #include "components/autofill/core/browser/ml_model/logging/autofill_ml_internals.mojom.h"
+#include "components/autofill/core/browser/ml_model/logging/ml_log_router.h"
 #include "components/autofill/core/browser/ml_model/model_predictions.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_field_data.h"
+#include "components/autofill/core/common/signatures.h"
+#include "components/autofill/core/common/unique_ids.h"
+#include "components/optimization_guide/core/delivery/model_info.h"
 #include "components/optimization_guide/core/delivery/optimization_guide_model_provider.h"
 #include "components/optimization_guide/core/inference/model_handler.h"
 #include "components/optimization_guide/proto/autofill_field_classification_model_metadata.pb.h"
+#include "components/optimization_guide/proto/common_types.pb.h"
+#include "components/optimization_guide/proto/models.pb.h"
+#include "third_party/protobuf/src/google/protobuf/repeated_ptr_field.h"
 
 namespace autofill {
 

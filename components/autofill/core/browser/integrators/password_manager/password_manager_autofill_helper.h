@@ -6,7 +6,6 @@
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_INTEGRATORS_PASSWORD_MANAGER_PASSWORD_MANAGER_AUTOFILL_HELPER_H_
 
 #include "base/memory/raw_ptr.h"
-#include "components/autofill/core/browser/filling/filling_product.h"
 #include "components/autofill/core/browser/integrators/password_manager/password_manager_autofill_helper_delegate.h"
 #include "components/autofill/core/common/unique_ids.h"
 

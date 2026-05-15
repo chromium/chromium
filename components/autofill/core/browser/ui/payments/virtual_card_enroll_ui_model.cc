@@ -4,6 +4,9 @@
 
 #include "components/autofill/core/browser/ui/payments/virtual_card_enroll_ui_model.h"
 
+#include "base/feature_list.h"
+#include "components/autofill/core/browser/payments/virtual_card_enrollment_flow.h"
+#include "components/autofill/core/browser/payments/virtual_card_enrollment_manager.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"

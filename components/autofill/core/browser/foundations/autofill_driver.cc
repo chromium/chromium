@@ -7,6 +7,9 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/check_op.h"
+#include "base/dcheck_is_on.h"
+#include "base/types/pass_key.h"
 
 namespace autofill {
 

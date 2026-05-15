@@ -4,16 +4,22 @@
 
 #include "components/autofill/core/browser/webdata/autofill_ai/entity_sync_util.h"
 
+#include <memory>
+#include <optional>
 #include <string>
+#include <string_view>
+#include <utility>
 
+#include "base/check_op.h"
+#include "base/containers/flat_set.h"
 #include "base/i18n/time_formatting.h"
-#include "base/notimplemented.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
-#include "components/autofill/core/browser/autofill_field.h"
+#include "base/time/time.h"
+#include "base/types/optional_ref.h"
 #include "components/autofill/core/browser/autofill_format_string.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_structured_address_component.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
@@ -23,6 +29,7 @@
 #include "components/autofill/core/browser/proto/autofill_ai_chrome_metadata.pb.h"
 #include "components/autofill/core/browser/proto/server.pb.h"
 #include "components/autofill/core/browser/webdata/valuables/valuables_sync_util.h"
+#include "components/sync/protocol/autofill_valuable_specifics.pb.h"
 #include "components/sync/protocol/entity_data.h"
 #include "third_party/icu/source/i18n/unicode/timezone.h"
 

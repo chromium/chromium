@@ -4,7 +4,9 @@
 
 #include "components/autofill/core/browser/geo/phone_number_i18n.h"
 
+#include <algorithm>
 #include <memory>
+#include <string>
 #include <string_view>
 #include <utility>
 
@@ -15,6 +17,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
 #include "components/autofill/core/browser/data_quality/autofill_data_util.h"
+#include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/geo/autofill_country.h"
 #include "third_party/libphonenumber/phonenumber_api.h"
 

@@ -5,6 +5,7 @@
 #include "components/autofill/core/browser/form_processing/optimization_guide_proto_util.h"
 
 #include <concepts>
+#include <cstddef>
 
 #include "base/check_op.h"
 #include "base/strings/utf_string_conversions.h"

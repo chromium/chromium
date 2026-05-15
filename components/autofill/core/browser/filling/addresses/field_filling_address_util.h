@@ -9,7 +9,6 @@
 
 #include <string>
 
-#include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/filling/field_filling_util.h"
 
 namespace autofill {

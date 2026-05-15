@@ -5,29 +5,31 @@
 #include "components/autofill/core/browser/integrators/autofill_ai/autofill_ai_labels.h"
 
 #include <algorithm>
+#include <array>
+#include <cstddef>
 #include <functional>
+#include <map>
 #include <optional>
 #include <ranges>
 #include <string>
 #include <string_view>
+#include <utility>
 #include <vector>
 
-#include "base/containers/extend.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/span.h"
 #include "base/containers/to_vector.h"
 #include "base/strings/string_util.h"
+#include "base/types/optional_ref.h"
 #include "base/types/zip.h"
-#include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/autofill_format_string.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type_names.h"
 #include "components/autofill/core/browser/data_model/data_model_utils.h"
-#include "components/autofill/core/browser/field_type_utils.h"
-#include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/filling/field_filling_util.h"
-#include "components/autofill/core/browser/form_structure.h"
+#include "components/autofill/core/browser/proto/server.pb.h"
+#include "components/autofill/core/common/dense_set.h"
 
 namespace autofill {
 

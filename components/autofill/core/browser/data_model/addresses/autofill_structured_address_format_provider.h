@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_DATA_MODEL_ADDRESSES_AUTOFILL_STRUCTURED_ADDRESS_FORMAT_PROVIDER_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_DATA_MODEL_ADDRESSES_AUTOFILL_STRUCTURED_ADDRESS_FORMAT_PROVIDER_H_
 
-#include <string>
+#include <string_view>
 
 #include "base/no_destructor.h"
 #include "components/autofill/core/browser/field_types.h"

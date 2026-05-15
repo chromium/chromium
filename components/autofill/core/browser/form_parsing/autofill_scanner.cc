@@ -4,9 +4,12 @@
 
 #include "components/autofill/core/browser/form_parsing/autofill_scanner.h"
 
+#include <cstddef>
+#include <iterator>
+
 #include "base/check.h"
 #include "base/containers/span.h"
-#include "components/autofill/core/browser/autofill_field.h"
+#include "components/autofill/core/common/form_field_data.h"
 
 namespace autofill {
 

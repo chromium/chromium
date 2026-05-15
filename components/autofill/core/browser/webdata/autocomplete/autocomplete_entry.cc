@@ -7,6 +7,7 @@
 #include <string>
 
 #include "base/strings/utf_string_conversions.h"
+#include "base/time/time.h"
 
 namespace autofill {
 

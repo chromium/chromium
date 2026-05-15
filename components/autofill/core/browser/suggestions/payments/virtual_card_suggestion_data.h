@@ -6,6 +6,7 @@
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_SUGGESTIONS_PAYMENTS_VIRTUAL_CARD_SUGGESTION_DATA_H_
 
 #include <string>
+#include <utility>
 
 #include "components/autofill/core/browser/data_model/payments/credit_card.h"
 

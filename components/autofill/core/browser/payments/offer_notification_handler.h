@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_PAYMENTS_OFFER_NOTIFICATION_HANDLER_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_PAYMENTS_OFFER_NOTIFICATION_HANDLER_H_
 
+#include <cstdint>
+
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ref.h"
 #include "url/gurl.h"

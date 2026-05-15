@@ -5,14 +5,15 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_STRIKE_DATABASES_ADDRESSES_ADDRESS_SUGGESTION_STRIKE_DATABASE_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_STRIKE_DATABASES_ADDRESSES_ADDRESS_SUGGESTION_STRIKE_DATABASE_H_
 
+#include <cstddef>
 #include <optional>
-#include <set>
 #include <string>
+#include <string_view>
 
-#include "components/autofill/core/common/autofill_features.h"
+#include "base/check_op.h"
+#include "base/time/time.h"
 #include "components/autofill/core/common/signatures.h"
 #include "components/strike_database/history_clearable_strike_database.h"
-#include "components/strike_database/strike_database_integrator_base.h"
 #include "url/gurl.h"
 
 namespace autofill {

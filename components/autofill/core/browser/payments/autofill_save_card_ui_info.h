@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "build/buildflag.h"
 #include "components/autofill/core/browser/payments/legal_message_line.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "ui/gfx/image/image.h"

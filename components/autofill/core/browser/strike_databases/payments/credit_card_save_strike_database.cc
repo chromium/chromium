@@ -4,6 +4,8 @@
 
 #include "components/autofill/core/browser/strike_databases/payments/credit_card_save_strike_database.h"
 
+#include <optional>
+
 #include "base/feature_list.h"
 #include "base/time/time.h"
 #include "components/autofill/core/common/autofill_payments_features.h"

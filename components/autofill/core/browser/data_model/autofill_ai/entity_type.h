@@ -5,7 +5,9 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_DATA_MODEL_AUTOFILL_AI_ENTITY_TYPE_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_DATA_MODEL_AUTOFILL_AI_ENTITY_TYPE_H_
 
+#include <optional>
 #include <ostream>
+#include <string>
 #include <string_view>
 #include <type_traits>
 #include <utility>

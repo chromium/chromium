@@ -4,12 +4,14 @@
 
 #include "components/autofill/core/browser/autofill_browser_util.h"
 
+#include <algorithm>
+#include <memory>
+
 #include "base/check_deref.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/security_interstitials/core/insecure_form_util.h"
-#include "third_party/abseil-cpp/absl/functional/overload.h"
 
 namespace autofill {
 

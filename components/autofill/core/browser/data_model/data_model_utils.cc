@@ -4,22 +4,32 @@
 
 #include "components/autofill/core/browser/data_model/data_model_utils.h"
 
+#include <array>
+#include <cstddef>
+#include <cstdint>
+#include <cstdlib>
+#include <memory>
 #include <optional>
-#include <ranges>
+#include <string>
+#include <string_view>
+#include <vector>
 
+#include "base/check.h"
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/i18n/string_search.h"
 #include "base/i18n/unicodestring.h"
 #include "base/notreached.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_regex_constants.h"
 #include "components/autofill/core/common/autofill_regexes.h"
-#include "components/autofill/core/common/dense_set.h"
-#include "third_party/icu/source/common/unicode/uloc.h"
+#include "third_party/icu/source/common/unicode/locid.h"
+#include "third_party/icu/source/common/unicode/unistr.h"
+#include "third_party/icu/source/common/unicode/utypes.h"
 #include "third_party/icu/source/i18n/unicode/dtfmtsym.h"
 #include "third_party/icu/source/i18n/unicode/dtptngen.h"
 

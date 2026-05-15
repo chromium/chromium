@@ -4,9 +4,16 @@
 
 #include "components/autofill/core/browser/logging/log_manager.h"
 
+#include <memory>
+#include <optional>
 #include <utility>
+#include <vector>
 
+#include "base/check.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
+#include "base/types/pass_key.h"
+#include "components/autofill/core/browser/logging/log_buffer_submitter.h"
 #include "components/autofill/core/browser/logging/log_router.h"
 
 namespace autofill {

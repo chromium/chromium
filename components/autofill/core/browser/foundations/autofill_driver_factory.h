@@ -5,7 +5,10 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_FOUNDATIONS_AUTOFILL_DRIVER_FACTORY_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_FOUNDATIONS_AUTOFILL_DRIVER_FACTORY_H_
 
+#include <vector>
+
 #include "base/observer_list.h"
+#include "base/observer_list_types.h"
 #include "components/autofill/core/browser/foundations/autofill_driver.h"
 
 namespace autofill {

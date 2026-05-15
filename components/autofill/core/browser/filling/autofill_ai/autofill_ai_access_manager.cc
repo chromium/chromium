@@ -5,24 +5,20 @@
 #include "components/autofill/core/browser/filling/autofill_ai/autofill_ai_access_manager.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
-#include <variant>
-#include <vector>
 
 #include "base/check_deref.h"
-#include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/task/sequenced_task_runner.h"
-#include "base/types/optional_ref.h"
+#include "base/types/expected.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/foundations/browser_autofill_manager.h"
 #include "components/autofill/core/browser/network/autofill_ai/wallet_pass_access_manager.h"
-#include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/device_reauth/device_authenticator.h"
 #include "components/strings/grit/components_strings.h"

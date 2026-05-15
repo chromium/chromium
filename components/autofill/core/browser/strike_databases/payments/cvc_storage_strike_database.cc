@@ -4,6 +4,8 @@
 
 #include "components/autofill/core/browser/strike_databases/payments/cvc_storage_strike_database.h"
 
+#include <optional>
+
 #include "base/time/time.h"
 
 namespace autofill {

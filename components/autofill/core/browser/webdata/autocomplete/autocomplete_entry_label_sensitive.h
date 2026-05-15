@@ -10,6 +10,7 @@
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_WEBDATA_AUTOCOMPLETE_AUTOCOMPLETE_ENTRY_LABEL_SENSITIVE_H_
 
 #include <string>
+#include <string_view>
 
 #include "base/time/time.h"
 

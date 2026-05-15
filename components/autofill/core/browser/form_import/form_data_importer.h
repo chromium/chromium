@@ -5,17 +5,20 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_IMPORT_FORM_DATA_IMPORTER_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_IMPORT_FORM_DATA_IMPORTER_H_
 
-#include <memory>
 #include <optional>
-#include <string>
-#include <utility>
+#include <vector>
 
-#include "base/containers/flat_set.h"
+#include "base/memory/raw_ref.h"
 #include "base/scoped_observation.h"
+#include "components/autofill/core/browser/data_model/payments/credit_card.h"
 #include "components/autofill/core/browser/form_import/addresses/address_form_data_importer.h"
+#include "components/autofill/core/browser/form_import/form_data_importer_utils.h"
 #include "components/autofill/core/browser/form_import/payments/payments_form_data_importer.h"
 #include "components/autofill/core/browser/form_structure.h"
+#include "components/autofill/core/common/signatures.h"
 #include "components/history/core/browser/history_service_observer.h"
+#include "components/history/core/browser/history_types.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 
 namespace history {
 class HistoryService;

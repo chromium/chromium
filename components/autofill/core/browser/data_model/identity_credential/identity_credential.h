@@ -5,6 +5,9 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_DATA_MODEL_IDENTITY_CREDENTIAL_IDENTITY_CREDENTIAL_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_DATA_MODEL_IDENTITY_CREDENTIAL_IDENTITY_CREDENTIAL_H_
 
+#include <map>
+#include <string>
+
 #include "components/autofill/core/browser/field_types.h"
 #include "ui/gfx/image/image.h"
 #include "url/gurl.h"

@@ -4,8 +4,11 @@
 
 #include "components/autofill/core/browser/suggestions/suggestion_util.h"
 
+#include <vector>
+
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_field.h"
+#include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 
 namespace autofill {

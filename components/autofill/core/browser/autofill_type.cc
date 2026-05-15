@@ -4,15 +4,15 @@
 
 #include "components/autofill/core/browser/autofill_type.h"
 
+#include <algorithm>
 #include <string>
 
+#include "base/check.h"
+#include "base/check_op.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
-#include "components/autofill/core/browser/field_type_utils.h"
 #include "components/autofill/core/browser/field_types.h"
-#include "components/autofill/core/browser/proto/api_v1.pb.h"
-#include "components/autofill/core/browser/proto/password_requirements.pb.h"
-#include "components/autofill/core/common/autofill_features.h"
-#include "third_party/abseil-cpp/absl/functional/overload.h"
+#include "components/autofill/core/browser/form_types.h"
+#include "components/autofill/core/common/dense_set.h"
 
 namespace autofill {
 

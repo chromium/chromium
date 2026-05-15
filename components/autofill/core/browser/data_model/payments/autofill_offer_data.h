@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_DATA_MODEL_PAYMENTS_AUTOFILL_OFFER_DATA_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_DATA_MODEL_PAYMENTS_AUTOFILL_OFFER_DATA_H_
 
-#include <optional>
+#include <cstdint>
 #include <string>
 #include <vector>
 

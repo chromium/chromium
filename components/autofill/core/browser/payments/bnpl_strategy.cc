@@ -5,6 +5,7 @@
 #include "components/autofill/core/browser/payments/bnpl_strategy.h"
 
 #include "base/notreached.h"
+#include "components/autofill/core/browser/payments/payments_autofill_client.h"
 
 namespace autofill::payments {
 

@@ -4,6 +4,7 @@
 
 #include "components/autofill/core/browser/form_parsing/autofill_parsing_utils.h"
 
+#include "base/feature.h"
 #include "base/feature_list.h"
 #include "base/notreached.h"
 #include "components/autofill/core/common/autofill_features.h"

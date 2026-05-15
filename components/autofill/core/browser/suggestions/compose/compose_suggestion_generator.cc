@@ -4,7 +4,16 @@
 
 #include "components/autofill/core/browser/suggestions/compose/compose_suggestion_generator.h"
 
+#include <utility>
+
+#include "base/functional/callback.h"
+#include "base/functional/function_ref.h"
+#include "components/autofill/core/browser/data_quality/addresses/profile_token_quality.h"
+#include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/integrators/compose/autofill_compose_delegate.h"
+#include "components/autofill/core/common/aliases.h"
+#include "components/autofill/core/common/form_data.h"
+#include "components/autofill/core/common/form_field_data.h"
 
 namespace autofill {
 

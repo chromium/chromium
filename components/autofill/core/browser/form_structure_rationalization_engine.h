@@ -5,12 +5,14 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_STRUCTURE_RATIONALIZATION_ENGINE_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_STRUCTURE_RATIONALIZATION_ENGINE_H_
 
+#include <cstddef>
 #include <memory>
 #include <optional>
 #include <string_view>
 #include <vector>
 
-#include "base/feature_list.h"
+#include "base/containers/span.h"
+#include "base/feature.h"
 #include "base/memory/raw_ptr.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/country_type.h"

@@ -4,8 +4,10 @@
 
 #include "components/autofill/core/browser/strike_databases/autofill_ai/autofill_ai_save_strike_database_by_host.h"
 
+#include <optional>
 #include <string>
 #include <string_view>
+#include <utility>
 
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"

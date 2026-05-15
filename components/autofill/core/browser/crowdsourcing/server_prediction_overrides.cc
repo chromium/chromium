@@ -4,11 +4,18 @@
 
 #include "components/autofill/core/browser/crowdsourcing/server_prediction_overrides.h"
 
+#include <cstdint>
 #include <optional>
+#include <string>
+#include <string_view>
+#include <utility>
+#include <vector>
 
 #include "base/base64.h"
 #include "base/containers/flat_map.h"
+#include "base/containers/span.h"
 #include "base/json/json_reader.h"
+#include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"

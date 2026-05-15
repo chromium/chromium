@@ -4,9 +4,18 @@
 
 #include "components/autofill/core/browser/payments/payments_requests/select_challenge_option_request.h"
 
-#include "base/functional/bind.h"
+#include <string>
+#include <utility>
+
+#include "base/check_op.h"
+#include "base/functional/callback.h"
 #include "base/json/json_writer.h"
+#include "base/logging.h"
 #include "base/values.h"
+#include "components/autofill/core/browser/payments/card_unmask_challenge_option.h"
+#include "components/autofill/core/browser/payments/payments_autofill_client.h"
+#include "components/autofill/core/browser/payments/payments_request_details.h"
+#include "components/autofill/core/browser/payments/payments_requests/payments_request.h"
 
 namespace autofill {
 namespace payments {

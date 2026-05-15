@@ -5,15 +5,15 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_PARSING_CREDIT_CARD_FIELD_PARSER_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_PARSING_CREDIT_CARD_FIELD_PARSER_H_
 
+#include <cstdint>
 #include <memory>
+#include <optional>
+#include <string>
 #include <vector>
 
-#include "base/compiler_specific.h"
-#include "base/memory/raw_ptr.h"
-#include "components/autofill/core/browser/autofill_type.h"
-#include "components/autofill/core/browser/country_type.h"
+#include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/form_parsing/field_candidates.h"
 #include "components/autofill/core/browser/form_parsing/form_field_parser.h"
-#include "components/autofill/core/common/language_code.h"
 
 namespace autofill {
 

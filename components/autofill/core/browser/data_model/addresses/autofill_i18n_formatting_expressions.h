@@ -8,6 +8,7 @@
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_DATA_MODEL_AUTOFILL_I18N_FORMATTING_EXPRESSIONS_H_
 
 #include <string_view>
+#include <utility>
 
 #include "base/containers/fixed_flat_map.h"
 #include "components/autofill/core/browser/field_types.h"

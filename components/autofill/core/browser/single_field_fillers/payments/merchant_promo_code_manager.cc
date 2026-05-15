@@ -4,13 +4,16 @@
 
 #include "components/autofill/core/browser/single_field_fillers/payments/merchant_promo_code_manager.h"
 
-#include "base/strings/utf_string_conversions.h"
-#include "components/autofill/core/browser/data_manager/personal_data_manager.h"
-#include "components/autofill/core/browser/data_model/payments/autofill_offer_data.h"
+#include <functional>
+#include <utility>
+
+#include "base/functional/bind.h"
 #include "components/autofill/core/browser/foundations/browser_autofill_manager.h"
+#include "components/autofill/core/browser/single_field_fillers/single_field_fill_router.h"
 #include "components/autofill/core/browser/suggestions/payments/merchant_promo_code_suggestion_generator.h"
 #include "components/autofill/core/browser/suggestions/payments/payments_suggestion_generator_util.h"
-#include "components/autofill/core/browser/suggestions/suggestion_type.h"
+#include "components/autofill/core/browser/suggestions/suggestion_generator.h"
+#include "components/autofill/core/common/unique_ids.h"
 
 namespace autofill {
 

@@ -5,15 +5,27 @@
 #include "components/autofill/core/browser/suggestions/payments/iban_suggestion_generator.h"
 
 #include <algorithm>
+#include <string>
+#include <utility>
+#include <vector>
 
-#include "base/containers/to_vector.h"
+#include "base/check.h"
+#include "base/check_op.h"
+#include "base/functional/callback.h"
 #include "base/functional/function_ref.h"
 #include "base/strings/string_util.h"
+#include "build/buildflag.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
+#include "components/autofill/core/browser/data_model/payments/iban.h"
+#include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/integrators/optimization_guide/autofill_optimization_guide_decider.h"
+#include "components/autofill/core/browser/metrics/payments/iban_metrics.h"
 #include "components/autofill/core/browser/payments/iban_manager.h"
 #include "components/autofill/core/browser/suggestions/payments/payments_suggestion_generator_util.h"
+#include "components/autofill/core/browser/suggestions/suggestion.h"
+#include "components/autofill/core/browser/suggestions/suggestion_type.h"
+#include "components/autofill/core/common/form_data.h"
 #include "components/grit/components_scaled_resources.h"
 #include "ui/base/resource/resource_bundle.h"
 

@@ -5,6 +5,9 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_SUGGESTIONS_IDENTITY_CREDENTIAL_SUGGESTION_UTILS_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_SUGGESTIONS_IDENTITY_CREDENTIAL_SUGGESTION_UTILS_H_
 
+#include <vector>
+
+#include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/integrators/identity_credential/identity_credential_delegate.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"

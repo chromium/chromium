@@ -3,7 +3,10 @@
 // found in the LICENSE file.
 
 #include "components/autofill/core/browser/payments/virtual_card_enroll_metrics_logger.h"
-#include "components/autofill/core/common/autofill_payments_features.h"
+
+#include "base/notreached.h"
+#include "components/autofill/core/browser/metrics/payments/virtual_card_enrollment_metrics.h"
+#include "components/autofill/core/browser/payments/virtual_card_enrollment_flow.h"
 
 namespace autofill {
 

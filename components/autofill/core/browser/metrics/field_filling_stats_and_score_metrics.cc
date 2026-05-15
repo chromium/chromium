@@ -4,8 +4,14 @@
 
 #include "components/autofill/core/browser/metrics/field_filling_stats_and_score_metrics.h"
 
-#include "base/containers/flat_map.h"
+#include <algorithm>
+#include <cstddef>
+#include <memory>
+#include <string>
+
+#include "base/check_op.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/field_type_utils.h"
@@ -13,7 +19,8 @@
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/form_types.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics_utils.h"
-#include "components/autofill/core/common/autofill_features.h"
+#include "components/autofill/core/browser/suggestions/suggestion_util.h"
+#include "components/autofill/core/common/dense_set.h"
 #include "components/autofill/core/common/html_field_types.h"
 
 namespace autofill::autofill_metrics {

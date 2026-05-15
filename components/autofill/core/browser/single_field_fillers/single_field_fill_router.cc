@@ -4,14 +4,20 @@
 
 #include "components/autofill/core/browser/single_field_fillers/single_field_fill_router.h"
 
+#include <cstddef>
 #include <string>
 #include <vector>
 
+#include "base/check.h"
 #include "base/check_deref.h"
+#include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/payments/iban_manager.h"
 #include "components/autofill/core/browser/single_field_fillers/autocomplete/autocomplete_history_manager.h"
 #include "components/autofill/core/browser/single_field_fillers/payments/merchant_promo_code_manager.h"
+#include "components/autofill/core/browser/suggestions/suggestion.h"
+#include "components/autofill/core/browser/suggestions/suggestion_type.h"
+#include "components/autofill/core/common/form_field_data.h"
 
 namespace autofill {
 

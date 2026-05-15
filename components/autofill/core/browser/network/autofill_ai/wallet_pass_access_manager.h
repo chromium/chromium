@@ -5,12 +5,12 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_NETWORK_AUTOFILL_AI_WALLET_PASS_ACCESS_MANAGER_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_NETWORK_AUTOFILL_AI_WALLET_PASS_ACCESS_MANAGER_H_
 
+#include <optional>
+
 #include "base/functional/callback.h"
-#include "base/types/expected.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/consent_auditor/consent_auditor.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "components/wallet/core/browser/network/wallet_http_client.h"
 
 namespace autofill {
 

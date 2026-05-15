@@ -4,6 +4,8 @@
 
 #include "components/autofill/core/browser/data_model/payments/autofill_wallet_usage_data.h"
 
+#include "url/origin.h"
+
 namespace autofill {
 
 VirtualCardUsageData::VirtualCardUsageData(

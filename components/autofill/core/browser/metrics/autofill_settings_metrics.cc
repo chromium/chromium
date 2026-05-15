@@ -4,12 +4,17 @@
 
 #include "components/autofill/core/browser/metrics/autofill_settings_metrics.h"
 
+#include <string>
+#include <string_view>
+
+#include "base/check.h"
 #include "base/check_deref.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "base/strings/strcat.h"
+#include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/prefs/pref_service.h"
 

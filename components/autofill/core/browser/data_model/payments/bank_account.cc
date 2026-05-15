@@ -4,7 +4,14 @@
 
 #include "components/autofill/core/browser/data_model/payments/bank_account.h"
 
+#include <compare>
+#include <cstdint>
+#include <string>
+#include <utility>
+
+#include "components/autofill/core/browser/data_model/payments/payment_instrument.h"
 #include "components/autofill/core/browser/webdata/payments/payments_autofill_table.h"
+#include "components/autofill/core/common/dense_set.h"
 
 namespace autofill {
 

@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_INTEGRATORS_OPTIMIZATION_GUIDE_AUTOFILL_OPTIMIZATION_GUIDE_DECIDER_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_INTEGRATORS_OPTIMIZATION_GUIDE_AUTOFILL_OPTIMIZATION_GUIDE_DECIDER_H_
 
+#include <string_view>
+
 #include "base/memory/raw_ptr.h"
 #include "components/autofill/core/browser/data_model/payments/bnpl_issuer.h"
 #include "components/autofill/core/browser/data_model/payments/credit_card_benefit.h"

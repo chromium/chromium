@@ -7,10 +7,13 @@
 
 #include <memory>
 #include <optional>
-#include <string_view>
 
+#include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
+#include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_parsing/autofill_scanner.h"
+#include "components/autofill/core/browser/form_parsing/field_candidates.h"
 #include "components/autofill/core/browser/form_parsing/form_field_parser.h"
 
 namespace autofill {

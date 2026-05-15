@@ -4,21 +4,35 @@
 
 #include "components/autofill/core/browser/form_import/payments/payments_form_data_importer.h"
 
+#include <algorithm>
+#include <memory>
 #include <optional>
 #include <string>
+#include <vector>
 
 #include "base/check_deref.h"
+#include "base/check_op.h"
 #include "base/containers/flat_set.h"
+#include "base/feature_list.h"
+#include "base/functional/bind.h"
+#include "base/strings/string_util.h"
+#include "build/buildflag.h"
+#include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
 #include "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #include "components/autofill/core/browser/data_model/payments/iban.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
+#include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/payments/credit_card_save_manager.h"
 #include "components/autofill/core/browser/payments/iban_save_manager.h"
 #include "components/autofill/core/browser/payments/mandatory_reauth_manager.h"
+#include "components/autofill/core/browser/payments/virtual_card_enrollment_flow.h"
 #include "components/autofill/core/browser/payments/virtual_card_enrollment_manager.h"
+#include "components/autofill/core/common/autofill_payments_features.h"
+#include "components/autofill/core/common/form_field_data.h"
+#include "net/base/url_util.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 
 namespace autofill::payments {

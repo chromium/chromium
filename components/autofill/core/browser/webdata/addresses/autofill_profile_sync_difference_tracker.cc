@@ -4,7 +4,18 @@
 
 #include "components/autofill/core/browser/webdata/addresses/autofill_profile_sync_difference_tracker.h"
 
+#include <algorithm>
+#include <map>
+#include <optional>
+#include <string>
+#include <utility>
+#include <vector>
+
+#include "base/check.h"
+#include "base/functional/callback_forward.h"
+#include "base/location.h"
 #include "base/logging.h"
+#include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile_comparator.h"

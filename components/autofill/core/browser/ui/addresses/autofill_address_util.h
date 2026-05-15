@@ -6,6 +6,7 @@
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_UI_ADDRESSES_AUTOFILL_ADDRESS_UTIL_H_
 
 #include <string>
+#include <vector>
 
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile_comparator.h"
 #include "components/autofill/core/browser/field_types.h"

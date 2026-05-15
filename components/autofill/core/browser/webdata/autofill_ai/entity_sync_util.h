@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_WEBDATA_AUTOFILL_AI_ENTITY_SYNC_UTIL_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_WEBDATA_AUTOFILL_AI_ENTITY_SYNC_UTIL_H_
 
+#include <memory>
 #include <optional>
 
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"

@@ -5,11 +5,13 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_DATA_MODEL_ADDRESSES_AUTOFILL_I18N_PARSING_EXPRESSION_COMPONENTS_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_DATA_MODEL_ADDRESSES_AUTOFILL_I18N_PARSING_EXPRESSION_COMPONENTS_H_
 
+#include <optional>
+#include <string>
+#include <string_view>
+
 #include "base/containers/flat_map.h"
 #include "base/containers/span.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/raw_span.h"
-#include "components/autofill/core/browser/field_types.h"
 
 namespace autofill::i18n_model_definition {
 

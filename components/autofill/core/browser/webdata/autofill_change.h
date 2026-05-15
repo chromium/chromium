@@ -6,6 +6,8 @@
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_WEBDATA_AUTOFILL_CHANGE_H__
 
 #include <concepts>
+#include <cstdint>
+#include <optional>
 #include <string>
 #include <variant>
 #include <vector>

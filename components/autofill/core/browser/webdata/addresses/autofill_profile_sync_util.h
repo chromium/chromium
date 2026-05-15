@@ -6,7 +6,6 @@
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_WEBDATA_ADDRESSES_AUTOFILL_PROFILE_SYNC_UTIL_H_
 
 #include <memory>
-#include <optional>
 #include <string>
 
 namespace syncer {

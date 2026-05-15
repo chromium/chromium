@@ -6,8 +6,9 @@
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_PAYMENTS_IBAN_ACCESS_MANAGER_H_
 
 #include <string>
+#include <utility>
 
-#include "base/functional/callback_forward.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"

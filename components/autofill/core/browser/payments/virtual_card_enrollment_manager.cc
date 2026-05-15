@@ -4,11 +4,20 @@
 
 #include "components/autofill/core/browser/payments/virtual_card_enrollment_manager.h"
 
+#include <cstdint>
+#include <memory>
+#include <optional>
 #include <string>
+#include <utility>
 
+#include "base/check.h"
 #include "base/check_deref.h"
+#include "base/check_op.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
+#include "build/buildflag.h"
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
 #include "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #include "components/autofill/core/browser/data_model/payments/credit_card.h"
@@ -17,13 +26,14 @@
 #include "components/autofill/core/browser/payments/autofill_payments_feature_availability.h"
 #include "components/autofill/core/browser/payments/multiple_request_payments_network_interface.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
+#include "components/autofill/core/browser/payments/payments_request_details.h"
 #include "components/autofill/core/browser/payments/payments_util.h"
 #include "components/autofill/core/browser/payments/virtual_card_enrollment_flow.h"
 #include "components/autofill/core/browser/strike_databases/payments/virtual_card_enrollment_strike_database.h"
-#include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/strike_database/strike_database.h"
 #include "components/strike_database/strike_database_base.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/image/image.h"
 
 namespace autofill {

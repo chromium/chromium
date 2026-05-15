@@ -4,12 +4,16 @@
 
 #include "components/autofill/core/browser/metrics/payments/virtual_card_enrollment_metrics.h"
 
+#include <string>
+#include <string_view>
+
+#include "base/check_op.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
+#include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/payments/virtual_card_enrollment_flow.h"
 
 namespace autofill {

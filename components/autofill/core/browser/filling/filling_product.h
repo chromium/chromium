@@ -5,10 +5,15 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_FILLING_FILLING_PRODUCT_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_FILLING_FILLING_PRODUCT_H_
 
+#include <optional>
+#include <string>
+#include <type_traits>
+#include <utility>
+
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/suggestions/suggestion_generator.h"
 #include "components/autofill/core/browser/suggestions/suggestion_type.h"
-#include "components/autofill/core/common/aliases.h"
+#include "components/autofill/core/common/dense_set.h"
 
 namespace autofill {
 

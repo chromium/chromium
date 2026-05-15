@@ -4,10 +4,10 @@
 
 #include "components/autofill/core/browser/geo/address_i18n.h"
 
+#include <memory>
+#include <string>
 #include <string_view>
 
-#include "base/functional/bind.h"
-#include "base/functional/callback.h"
 #include "base/notreached.h"
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
@@ -15,6 +15,7 @@
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "third_party/libaddressinput/src/cpp/include/libaddressinput/address_data.h"
+#include "third_party/libaddressinput/src/cpp/include/libaddressinput/address_field.h"
 #include "third_party/libaddressinput/src/cpp/include/libaddressinput/address_metadata.h"
 
 namespace autofill::i18n {

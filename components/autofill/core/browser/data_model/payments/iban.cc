@@ -4,17 +4,21 @@
 
 #include "components/autofill/core/browser/data_model/payments/iban.h"
 
+#include <cstddef>
+#include <cstdint>
+#include <ostream>
+#include <string>
 #include <string_view>
+#include <utility>
 #include <variant>
 
-#include "base/containers/fixed_flat_map.h"
+#include "base/check.h"
+#include "base/check_op.h"
+#include "base/i18n/case_conversion.h"
 #include "base/notreached.h"
-#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/uuid.h"
-#include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/data_model/payments/payments_metadata.h"
 #include "components/autofill/core/browser/metrics/payments/iban_metrics.h"
 #include "components/autofill/core/browser/suggestions/payments/payments_suggestion_generator_util.h"

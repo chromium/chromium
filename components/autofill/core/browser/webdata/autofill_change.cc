@@ -4,6 +4,7 @@
 
 #include "components/autofill/core/browser/webdata/autofill_change.h"
 
+#include "components/autofill/core/browser/webdata/autocomplete/autocomplete_entry.h"
 
 namespace autofill {
 

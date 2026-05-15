@@ -14,13 +14,13 @@
 #include <utility>
 #include <vector>
 
+#include "base/check.h"
 #include "base/containers/circular_deque.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/span.h"
 #include "base/memory/raw_ref.h"
 #include "base/types/strong_alias.h"
 #include "components/autofill/core/browser/field_types.h"
-#include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/signatures.h"
 
 namespace autofill {

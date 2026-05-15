@@ -4,6 +4,14 @@
 
 #include "components/autofill/core/browser/data_model/payments/payment_instrument.h"
 
+#include <compare>
+#include <cstdint>
+#include <string>
+#include <utility>
+
+#include "components/autofill/core/common/dense_set.h"
+#include "url/gurl.h"
+
 namespace autofill {
 
 std::strong_ordering operator<=>(const PaymentInstrument& a,

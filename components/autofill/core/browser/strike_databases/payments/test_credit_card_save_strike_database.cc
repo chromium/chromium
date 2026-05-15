@@ -4,6 +4,8 @@
 
 #include "components/autofill/core/browser/strike_databases/payments/test_credit_card_save_strike_database.h"
 
+#include "components/strike_database/strike_database.h"
+
 namespace autofill {
 
 TestCreditCardSaveStrikeDatabase::TestCreditCardSaveStrikeDatabase(

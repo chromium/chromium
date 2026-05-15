@@ -6,6 +6,7 @@
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_METRICS_QUALITY_METRICS_FILLING_H_
 
 #include "components/autofill/core/browser/form_structure.h"
+#include "components/autofill/core/browser/suggestions/suggestion_util.h"
 
 namespace autofill::autofill_metrics {
 

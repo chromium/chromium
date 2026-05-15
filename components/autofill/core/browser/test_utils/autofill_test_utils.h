@@ -36,6 +36,13 @@
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/sync/protocol/autofill_specifics.pb.h"
 
+// TODO(crbug.com/489636471): This include belongs to
+// components/payments/core/payments_profile_comparator_unittest.cc
+// ios/chrome/browser/infobars/model/overlays/browser_agent/interaction_handlers/autofill_address_profile/save_address_profile_infobar_modal_interaction_handler_unittest.mm
+// ios/chrome/browser/infobars/model/overlays/browser_agent/interaction_handlers/autofill_address_profile/save_address_profile_infobar_modal_overlay_request_callback_installer_unittest.mm
+// ios/chrome/browser/settings/ui_bundled/autofill/autofill_profile_table_view_controller_unittest.mm
+#include "components/autofill/core/browser/data_model/addresses/autofill_i18n_api.h"
+
 class PrefService;
 
 namespace user_prefs {

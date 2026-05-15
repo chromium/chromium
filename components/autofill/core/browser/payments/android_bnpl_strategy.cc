@@ -4,6 +4,9 @@
 
 #include "components/autofill/core/browser/payments/android_bnpl_strategy.h"
 
+#include "components/autofill/core/browser/payments/bnpl_strategy.h"
+#include "components/autofill/core/browser/payments/payments_autofill_client.h"
+
 namespace autofill::payments {
 
 AndroidBnplStrategy::AndroidBnplStrategy() = default;

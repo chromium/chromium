@@ -6,14 +6,19 @@
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_SUGGESTIONS_SUGGESTION_H_
 
 #include <cstdint>
+#include <map>
 #include <optional>
 #include <ostream>
 #include <string>
 #include <string_view>
 #include <variant>
+#include <vector>
 
+#include "base/check.h"
+#include "base/containers/span.h"
+#include "base/dcheck_is_on.h"
+#include "base/feature.h"
 #include "base/feature_list.h"
-#include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/types/strong_alias.h"
 #include "build/build_config.h"
@@ -25,7 +30,6 @@
 #include "components/autofill/core/browser/suggestions/suggestion_type.h"
 #include "components/autofill/core/browser/webdata/autocomplete/autocomplete_entry.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
-#include "components/autofill/core/common/unique_ids.h"
 #include "ui/gfx/image/image.h"
 #include "url/gurl.h"
 

@@ -4,8 +4,17 @@
 
 #include "components/autofill/core/browser/data_model/addresses/autofill_i18n_parsing_expression_components.h"
 
+#include <cstddef>
+#include <optional>
+#include <string>
+#include <string_view>
+#include <utility>
+#include <vector>
+
+#include "base/containers/flat_map.h"
 #include "base/strings/strcat.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_structured_address_utils.h"
+#include "third_party/re2/src/re2/re2.h"
 
 namespace autofill::i18n_model_definition {
 namespace {

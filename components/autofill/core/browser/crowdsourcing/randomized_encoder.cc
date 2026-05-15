@@ -6,21 +6,23 @@
 
 #include <algorithm>
 #include <array>
-#include <limits>
+#include <cinttypes>
+#include <cstddef>
+#include <cstdint>
+#include <optional>
+#include <string>
 #include <string_view>
+#include <utility>
 
-#include "base/feature_list.h"
-#include "base/format_macros.h"
+#include "base/check.h"
+#include "base/check_op.h"
 #include "base/logging.h"
-#include "base/metrics/field_trial_params.h"
-#include "base/metrics/sparse_histogram.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/unguessable_token.h"
-#include "components/autofill/core/common/autofill_features.h"
+#include "components/autofill/core/browser/proto/server.pb.h"
 #include "components/autofill/core/common/autofill_prefs.h"
-#include "components/autofill/core/common/autofill_switches.h"
 #include "components/autofill/core/common/signatures.h"
 #include "components/prefs/pref_service.h"
 #include "crypto/hkdf.h"

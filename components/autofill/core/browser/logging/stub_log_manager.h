@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_LOGGING_STUB_LOG_MANAGER_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_LOGGING_STUB_LOG_MANAGER_H_
 
+#include "base/types/pass_key.h"
+#include "components/autofill/core/browser/logging/log_buffer_submitter.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
 
 namespace autofill {

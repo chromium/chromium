@@ -7,10 +7,14 @@
 
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "components/autofill/core/browser/data_model/payments/credit_card_benefit.h"
 #include "components/sync/model/entity_change.h"
+#include "components/sync/protocol/autofill_offer_specifics.pb.h"
+#include "components/sync/protocol/autofill_specifics.pb.h"
 #include "components/sync/protocol/autofill_wallet_credential_specifics.pb.h"
+#include "components/sync/protocol/autofill_wallet_usage_specifics.pb.h"
 
 namespace autofill {
 

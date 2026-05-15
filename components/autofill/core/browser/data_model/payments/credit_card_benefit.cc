@@ -4,7 +4,12 @@
 
 #include "components/autofill/core/browser/data_model/payments/credit_card_benefit.h"
 
+#include <string>
+#include <utility>
+
+#include "base/containers/flat_set.h"
 #include "components/autofill/core/common/autofill_clock.h"
+#include "url/origin.h"
 
 namespace autofill {
 

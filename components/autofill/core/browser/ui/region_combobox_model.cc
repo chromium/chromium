@@ -4,11 +4,14 @@
 
 #include "components/autofill/core/browser/ui/region_combobox_model.h"
 
-#include <utility>
+#include <algorithm>
+#include <cstddef>
+#include <string>
+#include <vector>
 
+#include "base/check.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_helpers.h"
-#include "base/observer_list.h"
+#include "base/functional/callback.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/geo/region_data_loader.h"
 #include "components/strings/grit/components_strings.h"

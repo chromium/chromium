@@ -4,6 +4,9 @@
 
 #include "components/autofill/core/browser/payments/card_unmask_challenge_option.h"
 
+#include <cstddef>
+#include <string>
+
 namespace autofill {
 
 Vcn3dsChallengeOptionMetadata::Vcn3dsChallengeOptionMetadata() = default;

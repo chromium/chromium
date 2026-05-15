@@ -4,11 +4,17 @@
 
 #include "components/autofill/core/browser/metrics/profile_token_quality_metrics.h"
 
-#include <set>
+#include <cmath>
+#include <cstddef>
+#include <cstdint>
+#include <memory>
+#include <optional>
+#include <string_view>
 #include <utility>
 #include <vector>
 
-#include "base/feature_list.h"
+#include "base/check.h"
+#include "base/check_op.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "components/autofill/core/browser/autofill_field.h"
@@ -18,7 +24,6 @@
 #include "components/autofill/core/browser/field_type_utils.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_structure.h"
-#include "components/autofill/core/common/autofill_features.h"
 
 namespace autofill::autofill_metrics {
 

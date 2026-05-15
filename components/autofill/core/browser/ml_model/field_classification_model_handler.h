@@ -5,7 +5,11 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_ML_MODEL_FIELD_CLASSIFICATION_MODEL_HANDLER_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_ML_MODEL_FIELD_CLASSIFICATION_MODEL_HANDLER_H_
 
+#include <cstddef>
+#include <cstdint>
 #include <optional>
+#include <string>
+#include <utility>
 #include <vector>
 
 #include "base/callback_list.h"
@@ -14,6 +18,8 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/types/optional_ref.h"
+#include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/ml_model/field_classification_model_encoder.h"
@@ -21,9 +27,11 @@
 #include "components/autofill/core/browser/ml_model/logging/ml_log_router.h"
 #include "components/autofill/core/browser/ml_model/model_predictions.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/optimization_guide/core/delivery/model_info.h"
 #include "components/optimization_guide/core/delivery/optimization_guide_model_provider.h"
 #include "components/optimization_guide/core/inference/model_handler.h"
 #include "components/optimization_guide/proto/autofill_field_classification_model_metadata.pb.h"
+#include "components/optimization_guide/proto/models.pb.h"
 
 namespace autofill {
 

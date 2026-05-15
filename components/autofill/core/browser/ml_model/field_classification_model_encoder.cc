@@ -6,10 +6,14 @@
 
 #include <stddef.h>
 
+#include <algorithm>
+#include <iterator>
 #include <string>
 #include <string_view>
+#include <utility>
 #include <vector>
 
+#include "base/check.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/to_vector.h"
 #include "base/i18n/case_conversion.h"
@@ -17,9 +21,10 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/common/autofill_util.h"
+#include "components/autofill/core/common/form_field_data.h"
+#include "components/optimization_guide/proto/autofill_field_classification_model_metadata.pb.h"
 #include "third_party/protobuf/src/google/protobuf/repeated_ptr_field.h"
 #include "third_party/re2/src/re2/re2.h"
 

@@ -7,9 +7,7 @@
 
 #include <cstddef>
 
-#include "base/containers/flat_map.h"
-#include "components/autofill/core/browser/autofill_type.h"
-#include "components/autofill/core/browser/suggestions/suggestion.h"
+#include "components/autofill/core/browser/field_types.h"
 
 namespace autofill {
 class AutofillField;

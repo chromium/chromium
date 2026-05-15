@@ -6,6 +6,7 @@
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_AUTOFILL_FORMAT_STRING_H_
 
 #include <string>
+#include <string_view>
 
 namespace autofill {
 

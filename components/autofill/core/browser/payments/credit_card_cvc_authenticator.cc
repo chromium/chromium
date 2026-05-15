@@ -5,10 +5,15 @@
 #include "components/autofill/core/browser/payments/credit_card_cvc_authenticator.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 
+#include "base/check.h"
 #include "base/check_deref.h"
+#include "base/check_op.h"
+#include "base/memory/weak_ptr.h"
+#include "base/notreached.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/data_model/payments/credit_card.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
@@ -16,6 +21,7 @@
 #include "components/autofill/core/browser/payments/card_unmask_challenge_option.h"
 #include "components/autofill/core/browser/payments/full_card_request.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
+#include "components/autofill/core/browser/payments/payments_request_details.h"
 
 namespace autofill {
 

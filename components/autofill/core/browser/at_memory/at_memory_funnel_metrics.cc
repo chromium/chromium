@@ -6,6 +6,8 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
+#include "components/autofill/core/browser/metrics/autofill_metrics.h"
+#include "components/autofill/core/common/aliases.h"
 
 namespace autofill {
 

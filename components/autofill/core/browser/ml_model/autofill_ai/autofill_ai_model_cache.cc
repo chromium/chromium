@@ -4,9 +4,11 @@
 
 #include "components/autofill/core/browser/ml_model/autofill_ai/autofill_ai_model_cache.h"
 
+#include <optional>
 #include <utility>
 
 #include "components/autofill/core/browser/autofill_format_string.h"
+#include "components/autofill/core/browser/field_types.h"
 
 namespace autofill {
 

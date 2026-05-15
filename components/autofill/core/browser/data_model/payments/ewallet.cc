@@ -5,12 +5,17 @@
 #include "components/autofill/core/browser/data_model/payments/ewallet.h"
 
 #include <algorithm>
+#include <compare>
 #include <cstdint>
 #include <string>
 #include <string_view>
+#include <utility>
 
 #include "base/containers/flat_set.h"
 #include "base/strings/utf_string_conversions.h"
+#include "build/buildflag.h"
+#include "components/autofill/core/browser/data_model/payments/payment_instrument.h"
+#include "components/autofill/core/common/dense_set.h"
 #include "third_party/re2/src/re2/re2.h"
 #include "url/gurl.h"
 

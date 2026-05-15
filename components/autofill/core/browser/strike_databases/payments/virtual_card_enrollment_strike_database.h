@@ -5,9 +5,14 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_STRIKE_DATABASES_PAYMENTS_VIRTUAL_CARD_ENROLLMENT_STRIKE_DATABASE_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_STRIKE_DATABASES_PAYMENTS_VIRTUAL_CARD_ENROLLMENT_STRIKE_DATABASE_H_
 
+#include <cstddef>
+#include <optional>
 #include <string>
+#include <string_view>
 
-#include "components/strike_database/simple_strike_database.h"
+#include "base/time/time.h"
+#include "components/strike_database/strike_database_base.h"
+#include "components/strike_database/strike_database_integrator_base.h"
 
 namespace autofill {
 

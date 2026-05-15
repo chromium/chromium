@@ -4,7 +4,7 @@
 
 #include "components/autofill/core/browser/data_model/addresses/autofill_structured_address_format_provider.h"
 
-#include <string>
+#include <string_view>
 
 #include "base/containers/fixed_flat_map.h"
 #include "base/no_destructor.h"

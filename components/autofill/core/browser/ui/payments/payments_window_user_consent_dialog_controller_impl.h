@@ -10,6 +10,7 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
+#include "components/autofill/core/browser/metrics/payments/payments_window_metrics.h"
 #include "components/autofill/core/browser/ui/payments/payments_window_user_consent_dialog_controller.h"
 
 namespace autofill::payments {

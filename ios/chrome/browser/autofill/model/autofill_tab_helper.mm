@@ -6,6 +6,7 @@
 
 #import "base/check.h"
 #import "base/memory/ptr_util.h"
+#import "components/autofill/core/common/autofill_features.h"
 #import "components/autofill/ios/browser/autofill_agent.h"
 #import "components/autofill/ios/browser/autofill_driver_ios.h"
 #import "components/autofill/ios/browser/autofill_driver_ios_factory.h"

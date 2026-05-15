@@ -6,12 +6,15 @@
 
 #include <algorithm>
 #include <cmath>
+#include <cstddef>
+#include <functional>
+#include <optional>
+#include <tuple>
 
+#include "base/check.h"
 #include "base/check_op.h"
 #include "base/containers/extend.h"
-#include "base/feature_list.h"
 #include "components/autofill/core/common/autofill_clock.h"
-#include "components/autofill/core/common/autofill_features.h"
 
 namespace autofill {
 

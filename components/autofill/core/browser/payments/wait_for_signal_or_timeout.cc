@@ -3,6 +3,12 @@
 // found in the LICENSE file.
 
 #include "components/autofill/core/browser/payments/wait_for_signal_or_timeout.h"
+
+#include <utility>
+
+#include "base/functional/bind.h"
+#include "base/location.h"
+#include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 
 WaitForSignalOrTimeout::WaitForSignalOrTimeout() = default;

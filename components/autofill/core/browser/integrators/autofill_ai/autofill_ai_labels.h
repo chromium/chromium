@@ -9,9 +9,7 @@
 #include <string_view>
 #include <vector>
 
-#include "base/containers/flat_set.h"
 #include "base/containers/span.h"
-#include "base/types/optional_ref.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
 #include "components/autofill/core/common/dense_set.h"
 

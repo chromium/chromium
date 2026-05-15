@@ -5,7 +5,10 @@
 #include "components/autofill/core/browser/payments/payments_util.h"
 
 #include <algorithm>
-#include <string_view>
+#include <cstdint>
+#include <string>
+#include <utility>
+#include <vector>
 
 #include "base/check_op.h"
 #include "base/strings/string_number_conversions.h"

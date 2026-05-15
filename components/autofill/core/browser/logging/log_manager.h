@@ -11,6 +11,7 @@
 #include "base/functional/callback.h"
 #include "base/types/pass_key.h"
 #include "components/autofill/core/browser/logging/log_buffer_submitter.h"
+#include "components/autofill/core/common/logging/log_buffer.h"
 #include "components/autofill/core/common/logging/log_macros.h"
 
 namespace base {

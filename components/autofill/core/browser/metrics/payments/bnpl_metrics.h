@@ -7,6 +7,7 @@
 
 #include <string_view>
 
+#include "base/time/time.h"
 #include "components/autofill/core/browser/data_model/payments/bnpl_issuer.h"
 #include "components/autofill/core/browser/payments/payments_window_manager.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"

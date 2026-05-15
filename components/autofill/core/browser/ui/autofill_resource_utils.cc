@@ -5,12 +5,12 @@
 #include "components/autofill/core/browser/ui/autofill_resource_utils.h"
 
 #include "base/containers/fixed_flat_map.h"
+#include "base/feature_list.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
-#include "components/autofill/core/browser/data_model/payments/credit_card.h"
+#include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/grit/components_scaled_resources.h"
-#include "components/strings/grit/components_strings.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "components/resources/android/theme_resources.h"

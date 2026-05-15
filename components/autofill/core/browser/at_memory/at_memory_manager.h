@@ -6,17 +6,16 @@
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_AT_MEMORY_AT_MEMORY_MANAGER_H_
 
 #include <memory>
-#include <optional>
 #include <string>
 #include <vector>
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "components/autofill/core/browser/at_memory/at_memory_funnel_metrics.h"
-#include "components/autofill/core/browser/autofill_trigger_source.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
+#include "components/autofill/core/common/aliases.h"
+#include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 
 namespace accessibility_annotator {
 struct MemorySearchResults;

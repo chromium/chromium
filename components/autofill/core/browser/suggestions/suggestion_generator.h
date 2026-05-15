@@ -6,22 +6,18 @@
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_SUGGESTIONS_SUGGESTION_GENERATOR_H_
 
 #include <array>
-#include <variant>
+#include <cstddef>
+#include <utility>
+#include <vector>
 
+#include "base/containers/fixed_flat_map.h"
 #include "base/containers/flat_map.h"
-#include "base/containers/span.h"
-#include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
-#include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
-#include "components/autofill/core/browser/data_model/identity_credential/identity_credential.h"
-#include "components/autofill/core/browser/data_model/payments/autofill_offer_data.h"
-#include "components/autofill/core/browser/data_model/payments/credit_card.h"
-#include "components/autofill/core/browser/data_model/payments/iban.h"
-#include "components/autofill/core/browser/data_model/valuables/loyalty_card.h"
+#include "base/functional/callback_forward.h"
+#include "components/autofill/core/browser/data_quality/addresses/profile_token_quality.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
-#include "components/autofill/core/browser/suggestions/payments/save_and_fill_suggestion.h"
-#include "components/autofill/core/browser/suggestions/payments/virtual_card_suggestion_data.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
-#include "components/autofill/core/browser/webdata/autocomplete/autocomplete_entry.h"
+#include "components/autofill/core/common/dense_set.h"
+#include "components/autofill/core/common/form_data.h"
 
 namespace autofill {
 

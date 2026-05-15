@@ -5,7 +5,13 @@
 #include "components/autofill/core/browser/filling/form_autofill_history.h"
 
 #include <algorithm>
+#include <list>
+#include <optional>
+#include <string>
+#include <utility>
+#include <vector>
 
+#include "base/containers/span.h"
 #include "base/types/pass_key.h"
 #include "base/types/zip.h"
 #include "components/autofill/core/browser/autofill_field.h"

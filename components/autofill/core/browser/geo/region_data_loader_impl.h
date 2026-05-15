@@ -10,7 +10,6 @@
 #include <memory>
 #include <string>
 
-#include "base/timer/timer.h"
 #include "third_party/libaddressinput/src/cpp/include/libaddressinput/preload_supplier.h"
 
 namespace i18n {

@@ -6,34 +6,48 @@
 
 #include <stdint.h>
 
+#include <algorithm>
 #include <array>
-#include <iterator>
+#include <cstddef>
+#include <memory>
 #include <optional>
-#include <ranges>
+#include <ostream>
+#include <string>
+#include <string_view>
+#include <utility>
 #include <variant>
+#include <vector>
 
-#include "base/containers/fixed_flat_set.h"
+#include "base/check.h"
+#include "base/containers/flat_map.h"
+#include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/no_destructor.h"
+#include "base/not_fatal_until.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/types/optional_ref.h"
+#include "base/types/pass_key.h"
 #include "components/autofill/core/browser/autofill_format_string.h"
-#include "components/autofill/core/browser/data_model/data_model_utils.h"
+#include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/field_type_utils.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/heuristic_source.h"
-#include "components/autofill/core/browser/ml_model/field_classification_model_handler.h"
 #include "components/autofill/core/browser/proto/api_v1.pb.h"
+#include "components/autofill/core/browser/proto/password_requirements.pb.h"
 #include "components/autofill/core/browser/proto/server.pb.h"
+#include "components/autofill/core/browser/suggestions/suggestion_util.h"
 #include "components/autofill/core/common/autofill_constants.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/dense_set.h"
+#include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/html_field_types.h"
 #include "components/autofill/core/common/logging/log_buffer.h"
 #include "components/autofill/core/common/signatures.h"
+#include "components/autofill/core/common/unique_ids.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
 
 namespace autofill {
