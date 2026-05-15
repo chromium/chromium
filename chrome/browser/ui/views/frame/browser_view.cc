@@ -1391,6 +1391,14 @@ bool BrowserView::GetRegularOrGuestSession() const {
 
 bool BrowserView::GetAccelerator(int cmd_id,
                                  ui::Accelerator* accelerator) const {
+  // Different command IDs are used for the task manager for telemetry
+  // purpose. Map thees commands to the Task Manager shortcut ID.
+  if (cmd_id == IDC_TASK_MANAGER || cmd_id == IDC_TASK_MANAGER_APP_MENU ||
+      cmd_id == IDC_TASK_MANAGER_CONTEXT_MENU ||
+      cmd_id == IDC_TASK_MANAGER_MAIN_MENU) {
+    cmd_id = IDC_TASK_MANAGER_SHORTCUT;
+  }
+
 #if BUILDFLAG(IS_MAC)
   // On macOS, most accelerators are defined in MainMenu.xib and are user
   // configurable. Furthermore, their values and enabled state depends on the
