@@ -72,19 +72,6 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//components/accessibility_annotator/content/content_annotator/content_classifier_types.h:ContentAnnotatorMissingDependentInformation) -->
 
-<!-- LINT.IfChange(PersonalContextNoticeInteractions) -->
-
-<enum name="PersonalContextNoticeInteractions">
-  <summary>
-    The outcomes of interaction with the Personal Context notice.
-  </summary>
-  <int value="0" label="Shown"/>
-  <int value="1" label="Accepted"/>
-  <int value="2" label="Dismissed"/>
-</enum>
-
-<!-- LINT.ThenChange(//components/accessibility_annotator/first_run/accessibility_annotator_first_run_types.h:InfoShowRequestResult) -->
-
 </enums>
 
 </histogram-configuration>

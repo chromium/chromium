@@ -1,0 +1,37 @@
+<!--
+Copyright 2026 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+This file is used to generate a comprehensive list of Personal Context
+histograms along with a detailed description for each histogram.
+
+For best practices on writing histogram descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md
+
+Please follow the instructions in the OWNERS file in this directory to find a
+reviewer. If no OWNERS file exists, please consider signing up at
+go/reviewing-metrics (Googlers only), as all subdirectories are expected to
+have an OWNERS file. As a last resort you can send the CL to
+chromium-metrics-reviews@google.com.
+-->
+
+<histogram-configuration>
+
+<histograms>
+
+<histogram name="PersonalContext.NoticeInteractions"
+    enum="PersonalContextNoticeInteractions" expires_after="2026-10-04">
+  <owner>kalinino@google.com</owner>
+  <owner>chrome-browser-privacy-team@google.com</owner>
+  <summary>
+    Records the user interaction with the Personal Context notice. Recorded when
+    the notice is shown to the user, and when the user accepts or dismisses it.
+  </summary>
+</histogram>
+
+</histograms>
+
+</histogram-configuration>

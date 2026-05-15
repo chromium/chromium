@@ -143,16 +143,6 @@ chromium-metrics-reviews@google.com.
       variants="AccessibilityAnnotator.ValueClassifierType"/>
 </histogram>
 
-<histogram name="PersonalContext.NoticeInteractions"
-    enum="PersonalContextNoticeInteractions" expires_after="2026-10-04">
-  <owner>kalinino@google.com</owner>
-  <owner>chrome-browser-privacy-team@google.com</owner>
-  <summary>
-    Records the user interaction with the Personal Context notice. Recorded when
-    the notice is shown to the user, and when the user accepts or dismisses it.
-  </summary>
-</histogram>
-
 </histograms>
 
 </histogram-configuration>

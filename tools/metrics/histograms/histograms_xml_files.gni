@@ -201,6 +201,8 @@ histograms_xml_files = [
   "//tools/metrics/histograms/metadata/permissions/histograms.xml",
   "//tools/metrics/histograms/metadata/persistent_cache/enums.xml",
   "//tools/metrics/histograms/metadata/persistent_cache/histograms.xml",
+  "//tools/metrics/histograms/metadata/personal_context/enums.xml",
+  "//tools/metrics/histograms/metadata/personal_context/histograms.xml",
   "//tools/metrics/histograms/metadata/phonehub/enums.xml",
   "//tools/metrics/histograms/metadata/phonehub/histograms.xml",
   "//tools/metrics/histograms/metadata/platform/enums.xml",
