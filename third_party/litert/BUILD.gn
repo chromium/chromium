@@ -928,7 +928,6 @@ if (use_litert_tflite) {
     ]
 
     public_deps = [
-      "//third_party/gemmlowp",
       "//third_party/neon_2_sse",
       "//third_party/ruy",
     ]
@@ -940,6 +939,7 @@ if (use_litert_tflite) {
       "//third_party/farmhash",
       "//third_party/flatbuffers",
       "//third_party/fp16",
+      "//third_party/gemmlowp",
       "//third_party/tflite:fft2d_deps",
     ]
 
@@ -1217,8 +1217,10 @@ if (use_litert_tflite) {
       ":tflite_public_headers",
       "//third_party/abseil-cpp:absl",
       "//third_party/flatbuffers",
-      "//third_party/gemmlowp",
     ]
+
+    deps = [ "//third_party/gemmlowp" ]
+
     visibility = [
       ":*",
       "//third_party/tflite:*",
@@ -1415,10 +1417,9 @@ if (use_litert_tflite) {
       ":tflite_proto",
       ":tflite_public_headers",
       "//third_party/flatbuffers",
-      "//third_party/gemmlowp",
       "//third_party/ruy",
     ]
-
+    deps = [ "//third_party/gemmlowp" ]
     configs_to_remove = [ "//build/config/compiler:chromium_code" ]
     configs_to_add = [
       "//build/config/compiler:no_chromium_code",

@@ -479,6 +479,7 @@ if (!use_litert_tflite) {
       ":tflite_kernel_internals",
       ":tflite_public_headers",
       "//third_party/flatbuffers",
+      "//third_party/gemmlowp",
     ]
 
     conditional_deps = [ ":tflite_logging" ]
@@ -602,7 +603,6 @@ if (!use_litert_tflite) {
     ]
 
     public_deps = [
-      "//third_party/gemmlowp",
       "//third_party/neon_2_sse",
       "//third_party/ruy",
     ]
@@ -615,6 +615,7 @@ if (!use_litert_tflite) {
       "//third_party/farmhash",
       "//third_party/flatbuffers",
       "//third_party/fp16",
+      "//third_party/gemmlowp",
     ]
 
     configs += [
@@ -886,8 +887,10 @@ if (!use_litert_tflite) {
       ":tflite_public_headers",
       "//third_party/abseil-cpp:absl",
       "//third_party/flatbuffers",
-      "//third_party/gemmlowp",
     ]
+
+    deps = [ "//third_party/gemmlowp" ]
+
     visibility = [ ":*" ]
   }
 
@@ -1054,6 +1057,7 @@ if (!use_litert_tflite) {
       "//third_party/farmhash",
       "//third_party/fft2d",
       "//third_party/fp16",
+      "//third_party/gemmlowp",
       "//third_party/neon_2_sse",
     ]
 
@@ -1088,7 +1092,6 @@ if (!use_litert_tflite) {
       ":tflite_proto",
       ":tflite_public_headers",
       "//third_party/flatbuffers",
-      "//third_party/gemmlowp",
       "//third_party/ruy",
     ]
 
@@ -1153,6 +1156,7 @@ if (!use_litert_tflite && build_with_chromium) {
       ":tflite_tools_proto",
       "//third_party/abseil-cpp:absl",
       "//third_party/fp16",
+      "//third_party/gemmlowp",
       "//third_party/ruy",
     ]
 
