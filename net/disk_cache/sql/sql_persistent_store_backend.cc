@@ -2188,7 +2188,7 @@ Int64OrError SqlPersistentStore::Backend::CalculateSizeOfEntriesBetween(
                      });
   base::ElapsedTimer timer;
   auto result = CalculateSizeOfEntriesBetweenInternal(initial_time, end_time);
-  RecordTimeAndErrorResultHistogram("CalculateSizeOfEntriesBetween",
+  RecordTimeAndErrorResultHistogram("CalculateSizeOfEntriesBetween2",
                                     posting_delay, timer.Elapsed(),
                                     result.error_or(Error::kOk),
                                     /*corruption_detected=*/false);
@@ -2495,8 +2495,10 @@ SqlPersistentStore::Backend::ResumePendingEviction(
       std::move(abort_flag), std::move(remaining_mandatory_size),
       /*trust_target_size=*/false, corruption_detected);
   RecordTimeAndErrorResultHistogram(
-      "CalculateSizeOfEntriesBetween", posting_delay, timer.Elapsed(),
-      result.error_or(Error::kOk), corruption_detected);
+      !is_idle_time_eviction ? "ResumePendingEviction"
+                             : "ResumePendingEvictionOnIdleTime",
+      posting_delay, timer.Elapsed(), result.error_or(Error::kOk),
+      corruption_detected);
   TRACE_EVENT_END1("disk_cache", "SqlBackend.ResumePendingEviction", "result",
                    [&](perfetto::TracedValue trace_context) {
                      auto dict = std::move(trace_context).WriteDictionary();

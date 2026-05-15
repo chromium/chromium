@@ -153,7 +153,7 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <variants name="SqlPersistentStoreMethodName">
-  <variant name="CalculateSizeOfEntriesBetween"/>
+  <variant name="CalculateSizeOfEntriesBetween2"/>
   <variant name="CreateEntry"/>
   <variant name="DeleteAllEntries"/>
   <variant name="DeleteDoomedEntries"/>
@@ -171,6 +171,8 @@ chromium-metrics-reviews@google.com.
   <variant name="ReadEntryData"/>
   <variant name="ResumeEviction"/>
   <variant name="ResumeEvictionOnIdleTime"/>
+  <variant name="ResumePendingEviction"/>
+  <variant name="ResumePendingEvictionOnIdleTime"/>
   <variant name="RunNewEviction"/>
   <variant name="RunNewEvictionOnIdleTime"/>
   <variant name="UpdateEntryLastUsedByKey"/>
