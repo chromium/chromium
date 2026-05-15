@@ -1467,14 +1467,20 @@ void ToolbarView::InitLayout() {
   // This will cause them to be the first ones to drop out or shrink to minimum.
   // Order 1 - kOrderOffset will be assigned to new flex-able elements.
   constexpr int kOrderOffset = 1000;
-  constexpr int kLocationBarFlexOrder = kOrderOffset + 1;
+  // If kOmniboxResizingPrioritization is enabled, give the location bar the
+  // highest priority as it will first shrink down to its soft minimum but won't
+  // hit its hard minimum until all other items have dropped out.
+  const int location_bar_flex_order =
+      base::FeatureList::IsEnabled(features::kOmniboxResizingPrioritization)
+          ? 1
+          : kOrderOffset + 1;
   constexpr int kToolbarActionsFlexOrder = kOrderOffset + 2;
   constexpr int kExtensionsFlexOrder = kOrderOffset + 3;
 
   const views::FlexSpecification location_bar_flex_rule =
       views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToMinimum,
                                views::MaximumFlexSizeRule::kUnbounded)
-          .WithOrder(kLocationBarFlexOrder);
+          .WithOrder(location_bar_flex_order);
 
   layout_manager_ = SetLayoutManager(std::make_unique<views::FlexLayout>());
 
@@ -1521,7 +1527,9 @@ void ToolbarView::InitLayout() {
             0, GetLayoutConstant(LayoutConstant::kToolbarDividerSpacing)));
   }
 
-  constexpr int kToolbarFlexOrderStart = 1;
+  // Order 1 is reserved for the location bar if kOmniboxResizingPrioritization
+  // is enabled.
+  constexpr int kToolbarFlexOrderStart = 2;
 
   // TODO(crbug.com/40929989): Ignore containers till issue addressed.
   toolbar_controller_ = std::make_unique<ToolbarController>(

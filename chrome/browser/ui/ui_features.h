@@ -358,6 +358,8 @@ BASE_DECLARE_FEATURE_PARAM(bool, kTabGroupsFocusingDefaultToFocused);
 BASE_DECLARE_FEATURE(kVerticalTabsGrabHandleRemoval);
 BASE_DECLARE_FEATURE_PARAM(bool, kVerticalTabsGrabHandleRemovalAlways);
 
+BASE_DECLARE_FEATURE(kOmniboxResizingPrioritization);
+
 // Whether or not OSCryptAsyncAvailabilityInfoBarDelegate is enabled.
 BASE_DECLARE_FEATURE(kOSCryptAsyncAvailabilityInfoBar);
 
