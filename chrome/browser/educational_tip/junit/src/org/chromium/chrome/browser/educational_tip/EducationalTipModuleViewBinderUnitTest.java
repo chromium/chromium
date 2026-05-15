@@ -15,6 +15,7 @@ import static org.chromium.chrome.browser.educational_tip.EducationalTipModulePr
 import static org.chromium.chrome.browser.educational_tip.EducationalTipModuleProperties.MODULE_CONTENT_DESCRIPTION_STRING;
 import static org.chromium.chrome.browser.educational_tip.EducationalTipModuleProperties.MODULE_CONTENT_IMAGE;
 import static org.chromium.chrome.browser.educational_tip.EducationalTipModuleProperties.MODULE_CONTENT_TITLE_STRING;
+import static org.chromium.chrome.browser.educational_tip.EducationalTipModuleProperties.USE_TRANSPARENT_ICON_BACKGROUND;
 
 import android.app.Activity;
 import android.view.View;
@@ -140,6 +141,16 @@ public final class EducationalTipModuleViewBinderUnitTest {
                         mModel, mMockView, EducationalTipModuleViewBinder::bind);
         mModel.set(MARK_COMPLETED, true);
         verify(mMockView).setCompleted(true);
+    }
+
+    @Test
+    @SmallTest
+    public void testSetUseTransparentIconBackground() {
+        mPropertyModelChangeProcessor =
+                PropertyModelChangeProcessor.create(
+                        mModel, mMockView, EducationalTipModuleViewBinder::bind);
+        mModel.set(USE_TRANSPARENT_ICON_BACKGROUND, true);
+        verify(mMockView).setUseTransparentIconBackground(true);
     }
 
     @Test

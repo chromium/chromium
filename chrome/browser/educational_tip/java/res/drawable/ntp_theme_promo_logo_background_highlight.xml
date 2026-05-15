@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2026 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<vector android:autoMirrored="true"
+    android:height="43dp"
+    android:viewportHeight="43"
+    android:viewportWidth="42"
+    android:width="42dp"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <path android:fillColor="@android:color/black"
+        android:pathData="M2.584,0.896L8.534,7.649"
+        android:strokeColor="?attr/colorOnPrimary"
+        android:strokeLineCap="round"
+        android:strokeWidth="1.6129"/>
+    <path android:fillColor="@android:color/black"
+        android:pathData="M19.11,0.807V3.807"
+        android:strokeColor="?attr/colorOnPrimary"
+        android:strokeLineCap="round"
+        android:strokeWidth="1.6129"/>
+    <path android:fillColor="@android:color/black"
+        android:pathData="M3.806,17.115H0.806"
+        android:strokeColor="?attr/colorOnPrimary"
+        android:strokeLineCap="round"
+        android:strokeWidth="1.6129"/>
+    <path android:fillColor="@android:color/black"
+        android:pathData="M39.335,42.029L33.385,35.277"
+        android:strokeColor="?attr/colorOnPrimary"
+        android:strokeLineCap="round"
+        android:strokeWidth="1.6129"/>
+    <path android:fillColor="@android:color/black"
+        android:pathData="M22.809,42.117L22.809,39.117"
+        android:strokeColor="?attr/colorOnPrimary"
+        android:strokeLineCap="round"
+        android:strokeWidth="1.6129"/>
+    <path android:fillColor="@android:color/black"
+        android:pathData="M38.113,25.81L41.113,25.81"
+        android:strokeColor="?attr/colorOnPrimary"
+        android:strokeLineCap="round"
+        android:strokeWidth="1.6129"/>
+</vector>

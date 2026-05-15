@@ -36,6 +36,9 @@ public class EducationalTipModuleViewBinder {
                     model.get(EducationalTipModuleProperties.MODULE_BUTTON_STRING));
         } else if (EducationalTipModuleProperties.MARK_COMPLETED == propertyKey) {
             moduleView.setCompleted(model.get(EducationalTipModuleProperties.MARK_COMPLETED));
+        } else if (EducationalTipModuleProperties.USE_TRANSPARENT_ICON_BACKGROUND == propertyKey) {
+            moduleView.setUseTransparentIconBackground(
+                    model.get(EducationalTipModuleProperties.USE_TRANSPARENT_ICON_BACKGROUND));
         } else {
             assert false : "Unhandled property detected in EducationalTipModuleViewBinder!";
         }
