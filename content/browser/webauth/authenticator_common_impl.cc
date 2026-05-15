@@ -1966,11 +1966,14 @@ void AuthenticatorCommonImpl::GetClientCapabilities(
 
   bool immediate_get_enabled =
       base::FeatureList::IsEnabled(device::kWebAuthnImmediateGet);
+  bool ambient_get_enabled =
+      base::FeatureList::IsEnabled(device::kWebAuthnAmbientSignin);
   // IMPORTANT: If you add or remove a capability check below (and expect to
   // collect the results of the check with the `BarrierCallback`), update this
   // constant to match the number of `barrier_callback.Run()` calls. Otherwise,
   // the `GetClientCapabilities()` call will crash or timeout.
-  const size_t kNumberOfComputedCapabilities = immediate_get_enabled ? 9 : 8;
+  const size_t kNumberOfComputedCapabilities =
+      8 + (immediate_get_enabled ? 1 : 0) + (ambient_get_enabled ? 1 : 0);
   auto barrier_callback =
       base::BarrierCallback<blink::mojom::WebAuthnClientCapabilityPtr>(
           kNumberOfComputedCapabilities, std::move(completion_callback));
@@ -1997,6 +2000,10 @@ void AuthenticatorCommonImpl::GetClientCapabilities(
   if (immediate_get_enabled) {
     barrier_callback.Run(
         MakeCapability(client_capabilities::kImmediateGet, true));
+  }
+  if (ambient_get_enabled) {
+    barrier_callback.Run(
+        MakeCapability(client_capabilities::kAmbientGet, true));
   }
 
   barrier_callback.Run(

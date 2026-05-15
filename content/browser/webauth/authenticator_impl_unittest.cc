@@ -796,7 +796,10 @@ TEST_F(AuthenticatorImplTest, MakeCredentialPlatformAuthenticator) {
 
 TEST_F(AuthenticatorImplTest, GetClientCapabilities) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatureState(device::kWebAuthnImmediateGet, false);
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{},
+      /*disabled_features=*/{device::kWebAuthnImmediateGet,
+                             device::kWebAuthnAmbientSignin});
 
   NavigateAndCommit(GURL(kTestOrigin1));
 
@@ -877,12 +880,22 @@ TEST_F(AuthenticatorImplTest, GetClientCapabilities_ImmediateGet) {
   }
 }
 
+TEST_F(AuthenticatorImplTest, GetClientCapabilities_AmbientGet) {
+  for (const bool enabled : {false, true}) {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitWithFeatureState(device::kWebAuthnAmbientSignin, enabled);
+    NavigateAndCommit(GURL(kTestOrigin1));
+    ClientCapabilitiesList capabilities = AuthenticatorGetClientCapabilities();
+    ExpectCapability(capabilities, client_capabilities::kAmbientGet,
+                     enabled ? std::optional<bool>(true) : std::nullopt);
+  }
+}
+
 TEST_F(AuthenticatorImplTest, GetClientCapabilities_SignalApi) {
   NavigateAndCommit(GURL(kTestOrigin1));
   ClientCapabilitiesList capabilities = AuthenticatorGetClientCapabilities();
   ExpectCapability(capabilities,
                    client_capabilities::kSignalAllAcceptedCredentials, true);
-  ExpectCapability(capabilities, client_capabilities::kRelatedOrigins, true);
   ExpectCapability(capabilities, client_capabilities::kRelatedOrigins, true);
 }
 

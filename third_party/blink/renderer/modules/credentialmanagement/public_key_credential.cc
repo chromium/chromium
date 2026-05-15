@@ -104,6 +104,15 @@ void OnGetClientCapabilitiesComplete(
       }
     }
   }
+  if (!RuntimeEnabledFeatures::WebAuthenticationAmbientEnabled(
+          resolver->GetExecutionContext())) {
+    for (wtf_size_t i = 0; i < results.size(); ++i) {
+      if (results[i].first == "ambientGet") {
+        results.EraseAt(i);
+        break;
+      }
+    }
+  }
   resolver->Resolve(std::move(results));
 }
 

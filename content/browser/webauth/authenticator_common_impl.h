@@ -65,6 +65,7 @@ inline constexpr char kUserVerifyingPlatformAuthenticator[] =
     "userVerifyingPlatformAuthenticator";
 inline constexpr char kRelatedOrigins[] = "relatedOrigins";
 inline constexpr char kImmediateGet[] = "immediateGet";
+inline constexpr char kAmbientGet[] = "ambientGet";
 inline constexpr char kSignalAllAcceptedCredentials[] =
     "signalAllAcceptedCredentials";
 inline constexpr char kSignalCurrentUserDetails[] = "signalCurrentUserDetails";
