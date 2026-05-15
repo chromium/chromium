@@ -3,10 +3,14 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import dataclasses
 import pathlib
 import unittest
 
+import modulemap_config
+
 from generate_system_modulemap import (
+    AllowList,
     Header,
     calculate_transitive_headers,
     combine_modulemaps,
@@ -44,7 +48,8 @@ module "sysroot.h" {
   export *
 }
 module "public_subdir.h" {
-  textual header "../../sysroot/usr/include/x86_64-linux-gnu/bits/public_subdir.h"
+  textual header \
+"../../sysroot/usr/include/x86_64-linux-gnu/bits/public_subdir.h"
   export *
 }
 }
@@ -73,6 +78,32 @@ _WANT_SPLIT_MODULEMAP = {
 
 class GenerateSysrootModulemapTest(unittest.TestCase):
   maxDiff = None
+
+  def test_allowlist(self):
+    # Test successful allowlist extraction
+    hdrs = [
+        modulemap_config.Header('normal.h'),
+        modulemap_config.Header('only_on_win.h',
+                                module_name='only_on_win',
+                                exports=['*', 'other']),
+        modulemap_config.Header('textual.h', textual=True),
+        modulemap_config.Header('win_lazy.h', lazy=True),
+        modulemap_config.Header('win_textual.h', textual=True),
+    ]
+    al = AllowList(hdrs)
+    self.assertEqual(
+        al.includes(),
+        ['normal.h', 'only_on_win.h', 'textual.h', 'win_textual.h'])
+    self.assertIsNone(al.textual('normal.h'))
+    self.assertTrue(al.textual('textual.h'))
+    self.assertTrue(al.textual('win_textual.h'))
+    self.assertTrue(al.textual('bits/some.h'))
+    self.assertFalse(al.private('normal.h'))
+    self.assertTrue(al.private('unknown.h'))
+    self.assertEqual(al.module_name('only_on_win.h'), 'only_on_win')
+    self.assertIsNone(al.module_name('normal.h'))
+    self.assertEqual(al.exports('only_on_win.h'), ['*', 'other'])
+    self.assertEqual(al.exports('normal.h'), ['*'])
 
   def test_generate_system_modulemap(self):
     common_dir, headers = parse_modulemap(_TESTDATA / 'gen/module.modulemap')
@@ -108,10 +139,10 @@ class GenerateSysrootModulemapTest(unittest.TestCase):
         sysroot_dirs=[
             _SYSROOT / 'usr/include', _SYSROOT / 'usr/include/x86_64-linux-gnu'
         ],
-        extra_public_headers={
-            'public_root.h': None,
-            'bits/public_subdir.h': None
-        },
+        allowlist=AllowList([
+            modulemap_config.Header('bits/public_subdir.h'),
+            modulemap_config.Header('public_root.h'),
+        ]),
         target_os='linux',
         target_cpu='x64',
     )

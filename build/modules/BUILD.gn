@@ -48,7 +48,7 @@ if (use_unified_system_module) {
 
     inputs = [
                clang,
-               "//build/include_sysroot_allowlist.txt",
+               "//build/modules/unified/modulemap_config.py",
                "//third_party/libc++/src/include/module.modulemap.in",
                "${clang_dir}/module.modulemap",
              ] + system_headers
