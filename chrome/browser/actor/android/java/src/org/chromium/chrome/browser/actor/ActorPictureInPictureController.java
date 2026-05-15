@@ -13,6 +13,7 @@ import android.content.res.Configuration;
 import android.graphics.drawable.Icon;
 import android.os.Handler;
 import android.os.Looper;
+import android.os.SystemClock;
 import android.util.Rational;
 import android.util.Size;
 import android.view.ViewGroup;
@@ -22,6 +23,7 @@ import androidx.annotation.VisibleForTesting;
 import androidx.core.content.ContextCompat;
 import androidx.core.pip.BasicPictureInPicture;
 import androidx.core.pip.PictureInPictureDelegate;
+import androidx.lifecycle.Lifecycle;
 
 import org.chromium.base.Callback;
 import org.chromium.base.Log;
@@ -74,6 +76,7 @@ public class ActorPictureInPictureController
     private @Nullable Runnable mTabSelectRunnable;
     private @Nullable Tab mActingTab;
     private boolean mReceivedNewIntent;
+    private long mPipStartTime;
 
     /**
      * @param activity The ComponentActivity.
@@ -241,6 +244,9 @@ public class ActorPictureInPictureController
                         hideOverlay();
                         mActivity.moveTaskToBack(true);
                         ActorMetrics.recordPipStatus(ActorMetrics.ActorPipStatus.EXITED);
+                        ActorMetrics.recordPipExitReason(ActorMetrics.ActorPipExitReason.COMPLETED);
+                        long duration = SystemClock.elapsedRealtime() - mPipStartTime;
+                        ActorMetrics.recordPipDuration(duration);
                     }
                 };
         mHandler.postDelayed(mExitPipRunnable, PIP_EXIT_DELAY_MS);
@@ -347,6 +353,7 @@ public class ActorPictureInPictureController
             mTabSelectRunnable = null;
         }
         mInActorPiP = true;
+        mPipStartTime = SystemClock.elapsedRealtime();
         mReceivedNewIntent = false;
         mActingTab = getCurrentActingTab();
         ActorMetrics.recordPipStatus(ActorMetrics.ActorPipStatus.ENTERED);
@@ -360,7 +367,9 @@ public class ActorPictureInPictureController
 
         mInActorPiP = false;
         ActorMetrics.recordPipStatus(ActorMetrics.ActorPipStatus.EXITED);
-        stopOffscreenRendering();
+
+        long duration = SystemClock.elapsedRealtime() - mPipStartTime;
+        ActorMetrics.recordPipDuration(duration);
 
         // Delay the tab selection to ensure it runs after onNewIntent has been processed.
         // This allows us to detect if the expansion was caused by a new intent (e.g. launcher icon
@@ -368,10 +377,18 @@ public class ActorPictureInPictureController
         mTabSelectRunnable =
                 () -> {
                     mTabSelectRunnable = null;
-                    maybeSelectActingTabOnExpand();
+                    if (mActivity
+                            .getLifecycle()
+                            .getCurrentState()
+                            .isAtLeast(Lifecycle.State.STARTED)) {
+                        maybeSelectActingTabOnExpand();
+                    } else {
+                        ActorMetrics.recordPipExitReason(ActorMetrics.ActorPipExitReason.CLOSE);
+                    }
                 };
         mHandler.post(mTabSelectRunnable);
 
+        stopOffscreenRendering();
         hideOverlay();
         updatePipState();
         cancelPendingExit();
@@ -383,9 +400,11 @@ public class ActorPictureInPictureController
         // Chrome intent handling to take over.
         if (mReceivedNewIntent) {
             mReceivedNewIntent = false;
+            ActorMetrics.recordPipExitReason(ActorMetrics.ActorPipExitReason.CLOSE);
             return;
         }
 
+        ActorMetrics.recordPipExitReason(ActorMetrics.ActorPipExitReason.EXPAND);
         ActorMetrics.recordPipUserInteraction(ActorMetrics.ActorPipUserInteraction.EXPAND);
         TabModelSelector selector = mTabModelSelectorSupplier.get();
         if (selector == null) return;

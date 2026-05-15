@@ -16,6 +16,8 @@ import java.lang.annotation.RetentionPolicy;
 @NullMarked
 public class ActorMetrics {
 
+    // LINT.IfChange(ActorPipStatus)
+
     @IntDef({ActorPipStatus.ENTERED, ActorPipStatus.EXITED})
     @Retention(RetentionPolicy.SOURCE)
     public @interface ActorPipStatus {
@@ -23,6 +25,27 @@ public class ActorMetrics {
         int EXITED = 1;
         int NUM_ENTRIES = 2;
     }
+
+    // LINT.ThenChange(//chrome/browser/actor/actor_metrics.cc:ActorPipStatus)
+
+    // LINT.IfChange(ActorPipExitReason)
+
+    @IntDef({
+        ActorPipExitReason.CLOSE,
+        ActorPipExitReason.EXPAND,
+        ActorPipExitReason.COMPLETED,
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface ActorPipExitReason {
+        int CLOSE = 0;
+        int EXPAND = 1;
+        int COMPLETED = 2;
+        int NUM_ENTRIES = 3;
+    }
+
+    // LINT.ThenChange(//chrome/browser/actor/actor_metrics.cc:ActorPipExitReason)
+
+    // LINT.IfChange(ActorPipUserInteraction)
 
     @IntDef({
         ActorPipUserInteraction.PAUSE,
@@ -37,6 +60,8 @@ public class ActorMetrics {
         int NUM_ENTRIES = 3;
     }
 
+    // LINT.ThenChange(//chrome/browser/actor/actor_metrics.cc:ActorPipUserInteraction)
+
     @IntDef({
         ActorPauseResumeSource.PIP,
     })
@@ -49,6 +74,17 @@ public class ActorMetrics {
     public static void recordPipStatus(@ActorPipStatus int status) {
         RecordHistogram.recordEnumeratedHistogram(
                 "Actor.Pip.Status", status, ActorPipStatus.NUM_ENTRIES);
+    }
+
+    /** Records the PiP exit reason. */
+    public static void recordPipExitReason(@ActorPipExitReason int reason) {
+        RecordHistogram.recordEnumeratedHistogram(
+                "Actor.Pip.ExitReason", reason, ActorPipExitReason.NUM_ENTRIES);
+    }
+
+    /** Records the PiP duration. */
+    public static void recordPipDuration(long durationMs) {
+        RecordHistogram.recordLongTimesHistogram("Actor.Pip.Duration", durationMs);
     }
 
     /** Records an interaction with the PiP window. */

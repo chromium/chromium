@@ -25,6 +25,7 @@ import android.widget.FrameLayout;
 
 import androidx.activity.ComponentActivity;
 import androidx.core.pip.PictureInPictureDelegate;
+import androidx.lifecycle.Lifecycle;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -40,6 +41,7 @@ import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.actor.ui.ActorPictureInPictureOverlayCoordinator;
 import org.chromium.chrome.browser.actor.ui.R;
 import org.chromium.chrome.browser.glic.GlicKeyedService;
@@ -76,6 +78,7 @@ public class ActorPictureInPictureControllerTest {
     @Mock private Tab mTab;
     @Mock private WebContents mWebContents;
     @Mock private WindowAndroid mWindowAndroid;
+    @Mock private Lifecycle mLifecycle;
 
     private ComponentActivity mActivity;
     private Supplier<Profile> mProfileSupplier;
@@ -118,6 +121,9 @@ public class ActorPictureInPictureControllerTest {
         when(mTab.getWebContents()).thenReturn(mWebContents);
         when(mWebContents.getTopLevelNativeWindow()).thenReturn(mWindowAndroid);
         when(mTabModelSelector.getTabById(anyInt())).thenReturn(mTab);
+
+        when(mActivity.getLifecycle()).thenReturn(mLifecycle);
+        when(mLifecycle.getCurrentState()).thenReturn(Lifecycle.State.RESUMED);
     }
 
     private ActorTask createMockActorTask(int taskId, String title, @ActorTaskState int state) {
@@ -390,6 +396,12 @@ public class ActorPictureInPictureControllerTest {
         when(mActorService.getTask(101)).thenReturn(mockTask);
         when(mActorService.getActiveTasksCount()).thenReturn(0);
 
+        var exitWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Actor.Pip.ExitReason", ActorMetrics.ActorPipExitReason.COMPLETED);
+        var durationWatcher =
+                HistogramWatcher.newBuilder().expectAnyRecord("Actor.Pip.Duration").build();
+
         mController.onTaskStateChanged(101, ActorTaskState.FINISHED);
 
         // Should NOT exit immediately
@@ -397,6 +409,9 @@ public class ActorPictureInPictureControllerTest {
 
         // Advance time by 1 hour
         ShadowLooper.idleMainLooper(1, TimeUnit.MINUTES);
+
+        exitWatcher.assertExpected();
+        durationWatcher.assertExpected();
 
         // Now it should exit
         verify(mActivity).moveTaskToBack(true);
@@ -502,5 +517,45 @@ public class ActorPictureInPictureControllerTest {
 
         verify(mOffscreenRenderingManager).stopOffscreenRendering(mTab);
         verify(mOnPipChangedCallback).onResult(false);
+    }
+
+    @Test
+    public void testExitPip_Expand_RecordsMetrics() {
+        createMockActorTask(101, "Task", ActorTaskState.ACTING);
+        mController.onPictureInPictureEvent(PictureInPictureDelegate.Event.ENTERED, null);
+
+        var exitWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Actor.Pip.ExitReason", ActorMetrics.ActorPipExitReason.EXPAND);
+        var durationWatcher =
+                HistogramWatcher.newBuilder().expectAnyRecord("Actor.Pip.Duration").build();
+
+        mController.onPictureInPictureEvent(PictureInPictureDelegate.Event.EXITED, null);
+
+        ShadowLooper.idleMainLooper();
+
+        exitWatcher.assertExpected();
+        durationWatcher.assertExpected();
+    }
+
+    @Test
+    public void testExitPip_Close_RecordsMetrics() {
+        createMockActorTask(101, "Task", ActorTaskState.ACTING);
+        mController.onPictureInPictureEvent(PictureInPictureDelegate.Event.ENTERED, null);
+
+        // Set lifecycle to background to simulate CLOSE
+        when(mLifecycle.getCurrentState()).thenReturn(Lifecycle.State.CREATED);
+
+        var exitWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Actor.Pip.ExitReason", ActorMetrics.ActorPipExitReason.CLOSE);
+        var durationWatcher =
+                HistogramWatcher.newBuilder().expectAnyRecord("Actor.Pip.Duration").build();
+
+        mController.onPictureInPictureEvent(PictureInPictureDelegate.Event.EXITED, null);
+        ShadowLooper.idleMainLooper();
+
+        exitWatcher.assertExpected();
+        durationWatcher.assertExpected();
     }
 }

@@ -211,16 +211,34 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/actor/actor_metrics.cc:ActorObservationOutcome) -->
 
+<!-- LINT.IfChange(ActorPipExitReason) -->
+
+<enum name="ActorPipExitReason">
+  <int value="0" label="Close"/>
+  <int value="1" label="Expand"/>
+  <int value="2" label="Completed"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/actor/actor_metrics.cc:ActorPipExitReason) -->
+
+<!-- LINT.IfChange(ActorPipStatus) -->
+
 <enum name="ActorPipStatus">
   <int value="0" label="Entered"/>
   <int value="1" label="Exited"/>
 </enum>
+
+<!-- LINT.ThenChange(//chrome/browser/actor/actor_metrics.cc:ActorPipStatus) -->
+
+<!-- LINT.IfChange(ActorPipUserInteraction) -->
 
 <enum name="ActorPipUserInteraction">
   <int value="0" label="Pause"/>
   <int value="1" label="Resume"/>
   <int value="2" label="Expand"/>
 </enum>
+
+<!-- LINT.ThenChange(//chrome/browser/actor/actor_metrics.cc:ActorPipUserInteraction) -->
 
 <!-- LINT.IfChange(ActorServerConfirmationResult) -->
 

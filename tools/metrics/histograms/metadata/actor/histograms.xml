@@ -610,6 +610,25 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Actor.Pip.Duration" units="ms" expires_after="2027-05-11">
+  <owner>bbetini@google.com</owner>
+  <owner>ritikagup@google.com</owner>
+  <summary>
+    Recorded when Picture-in-Picture mode for Actor exits, capturing the total
+    time spent in PiP mode.
+  </summary>
+</histogram>
+
+<histogram name="Actor.Pip.ExitReason" enum="ActorPipExitReason"
+    expires_after="2027-05-11">
+  <owner>bbetini@google.com</owner>
+  <owner>ritikagup@google.com</owner>
+  <summary>
+    Recorded when Picture-in-Picture mode for Actor exits, indicating the reason
+    for the exit.
+  </summary>
+</histogram>
+
 <histogram name="Actor.Pip.Status" enum="ActorPipStatus"
     expires_after="2027-03-31">
   <owner>bbetini@google.com</owner>
