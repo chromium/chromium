@@ -2203,8 +2203,10 @@ class PermissionRequestManagerApproximateLocationBrowserTest
  public:
   void SetUpCommandLine(base::CommandLine* command_line) override {
     PermissionRequestManagerBrowserTestBase::SetUpCommandLine(command_line);
-    command_line->AppendSwitchASCII("enable-blink-features",
-                                    "ApproximateGeolocationPermissionAPI");
+    command_line->AppendSwitchASCII(
+        "enable-blink-features",
+        "ApproximateGeolocationPermissionAPI,"
+        "ApproximateGeolocationPermissionAccuracyMode");
   }
 
   void SetUpOnMainThread() override {

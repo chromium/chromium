@@ -26,8 +26,9 @@ PermissionStatus* PermissionStatus::Take(PermissionStatusListener* listener,
                                          ScriptPromiseResolverBase* resolver) {
   ExecutionContext* execution_context = resolver->GetExecutionContext();
   PermissionStatus* permission_status;
-  if (RuntimeEnabledFeatures::ApproximateGeolocationPermissionAPIEnabled(
-          execution_context) &&
+  if (RuntimeEnabledFeatures::
+          ApproximateGeolocationPermissionAccuracyModeEnabled(
+              execution_context) &&
       listener->permission_name() ==
           mojom::blink::PermissionName::GEOLOCATION) {
     permission_status = MakeGarbageCollected<GeolocationPermissionStatus>(

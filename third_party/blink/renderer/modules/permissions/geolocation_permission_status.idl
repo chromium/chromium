@@ -7,7 +7,7 @@
 
 [
     Exposed=(Window,Worker),
-    RuntimeEnabled=ApproximateGeolocationPermissionAPI
+    RuntimeEnabled=ApproximateGeolocationPermissionAccuracyMode
 ] interface GeolocationPermissionStatus : PermissionStatus {
   readonly attribute AccuracyMode? accuracyMode;
 };
