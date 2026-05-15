@@ -619,7 +619,7 @@
 <translation id="7409735910987429903">საიტებს შეუძლია როგორც ამომხტარი ფანჯრების გამოგზავნა (რეკლამის საჩვენებლად), ისე გადამისამართებების გამოყენება (ისეთ საიტებზე გადასაყვანად, რომელთა მონახულებაც შეიძლება არ გსურდეთ)</translation>
 <translation id="7412160840120117304">ძირითადი ფერის კოდი</translation>
 <translation id="7412223528111026033">{ZOOM_PERCENTAGE,plural, =1{მასშტაბირება}other{მასშტაბირება: <ph name="ZOOM_PERCENTAGE_NUMBER" />%%}}</translation>
-<translation id="7423098979219808738">წინასწარი შეკითხვა</translation>
+<translation id="7423098979219808738">წინასწარ კითხვა</translation>
 <translation id="7423538860840206698">გაცვლის ბუფერზე წვდომა დაბლოკილია</translation>
 <translation id="7425915948813553151">მუქი თემა საიტებისთვის</translation>
 <translation id="746412105358554870">JavaScript ოპტიმიზაცია და უსაფრთხოება</translation>

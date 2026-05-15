@@ -311,7 +311,7 @@
 <translation id="2044681667265133332">يتولّى النطاق <ph name="HOSTED_DOMAIN" /> إدارة الحساب <ph name="USER_EMAIL" />، وقد يكون بإمكانه الاطّلاع على بعض البيانات. <ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">عنصر جديد</translation>
 <translation id="2049727122989709386">‫<ph name="COUNT" /> حساب يستخدم كلمة المرور نفسها</translation>
-<translation id="205013082884273671">البحث في أي محتوى يظهر على شاشتك</translation>
+<translation id="205013082884273671">ابحث في أي محتوى يظهر على شاشتك</translation>
 <translation id="2054044186557130763">تسجيل الدخول باستخدام حساب "<ph name="NAME" />" (<ph name="EMAIL" />) الذي تديره مؤسستك</translation>
 <translation id="2059166748188874810">بلدية</translation>
 <translation id="2060638295449304809">‏يتم حفظ هذا العنوان على هذا الجهاز فقط. ولاستخدامه على أجهزتك الأخرى، يمكنك حفظه في حسابك على Google (<ph name="USER_EMAIL" />)</translation>
@@ -532,7 +532,7 @@
 <translation id="2825777862277359739">يمكنك الوصول إلى كلمات المرور وعلامات التبويب والإشارات المرجعية المحفوظة وغير ذلك بتسجيل الدخول.</translation>
 <translation id="2827760117436553203">هل تريد الاحتفاظ بالبيانات منفصلة؟</translation>
 <translation id="2829172210806130158">البحث عن المحتوى الظاهر على الشاشة</translation>
-<translation id="2831109159746537587">للبحث، عليك رسم دائرة حول الصورة أو النقر عليها</translation>
+<translation id="2831109159746537587">للبحث، يكفي رسم دائرة حول الصورة أو النقر عليها</translation>
 <translation id="2834399722155632105">‏3‏. انقر على Password Options (خيارات كلمات المرور).</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />، <ph name="STATE" />، <ph name="URL" /></translation>
 <translation id="2841013758207633010">الوقت</translation>
@@ -1397,7 +1397,7 @@
 <translation id="5938160824633642847">جهازك ممتلئ تقريبًا. يمكنك إخلاء بعض المساحة وإعادة المحاولة.</translation>
 <translation id="5944869793365969636">مسح رمز الاستجابة السريعة</translation>
 <translation id="5948291296578561264">يسمح لك ذلك بحفظ الصور في مكتبة صورك.</translation>
-<translation id="5948605885471592910">كيفية الاطّلاع على جميع علامات التبويب والمجموعات المفتوحة وإدارتها</translation>
+<translation id="5948605885471592910">للاطّلاع على جميع علامات التبويب والمجموعات المفتوحة وإدارتها</translation>
 <translation id="5952641243319721872">هل تريد فعلاً إلغاء الاختيار؟</translation>
 <translation id="5956112131836209882">علامة التبويب <ph name="TAB_INDEX_IN_GROUP" /> في مجموعة علامات التبويب التي تضم <ph name="NUMBER_OF_TABS_IN_GROUP" /></translation>
 <translation id="595769230373966252">البحث باستخدام "<ph name="SEARCH_PROVIDER" />"</translation>
@@ -2111,7 +2111,7 @@
 <translation id="8363484128299778310">استرداد مؤقت في حال حدوث مشكلة</translation>
 <translation id="8364563001733875155">لتغيير رقم التعريف الشخصي، عليك أولاً ضبط رمز مرور على جهازك.</translation>
 <translation id="8366466717204352506">تعذّر التحقُّق من كلمات المرور</translation>
-<translation id="8367705492654390392">البحث عن أي شيء</translation>
+<translation id="8367705492654390392">يمكنك طرح أي سؤال</translation>
 <translation id="8368001212524806591">تتبُّع السعر</translation>
 <translation id="8368198938968349418">تفعيل ميزة "الملء التلقائي"…</translation>
 <translation id="8370406443343902172">جارٍ الانتقال إلى الإعدادات...</translation>
