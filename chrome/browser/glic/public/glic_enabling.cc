@@ -12,6 +12,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
+#include "base/system/sys_info.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/browser_management/browser_management_service.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
@@ -49,7 +50,6 @@
 #include "components/variations/service/variations_service_utils.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
-#include "base/system/sys_info.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"  // nogncheck
 #include "chromeos/ash/components/browser_context_helper/browser_context_types.h"  // nogncheck
 #include "chromeos/constants/chromeos_features.h"
@@ -478,11 +478,15 @@ GlicGlobalEnabling::GlicGlobalEnabling(Delegate& delegate) {
 GlicGlobalEnabling::~GlicGlobalEnabling() = default;
 
 bool GlicGlobalEnabling::IsSystemRequirementMet() const {
-#if BUILDFLAG(IS_CHROMEOS)
   static const bool supported_system_requirements = [] {
+    if (base::SysInfo::AmountOfPhysicalMemory() <
+        base::MiB(features::kGlicMinRequiredRamMb.Get())) {
+      return false;
+    }
+#if BUILDFLAG(IS_CHROMEOS)
     constexpr base::ByteCount kMinimumMemoryThreshold = base::GiB(8);
 
-    // TODO(b:468055370): Remove the bypassing once Glic is fully launched.
+    // TODO(b:513258292): Remove the bypassing once Glic is fully launched.
     const bool bypass_cbx_requirement =
         base::FeatureList::IsEnabled(
             chromeos::features::kGlicEnableFor8GbDevices) &&
@@ -491,12 +495,12 @@ bool GlicGlobalEnabling::IsSystemRequirementMet() const {
     return (bypass_cbx_requirement ||
             base::FeatureList::IsEnabled(
                 chromeos::features::kFeatureManagementGlic));
+#else
+    return true;
+#endif  // BUILDFLAG(IS_CHROMEOS)
   }();
 
   return supported_system_requirements;
-#else
-  return true;
-#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 bool GlicGlobalEnabling::IsEnabledByGlobalCriteria() {

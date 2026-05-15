@@ -320,6 +320,9 @@ BASE_DECLARE_FEATURE(kGlicMessageFirstFre);
 COMPONENT_EXPORT(CHROME_FEATURES) BASE_DECLARE_FEATURE(kGlic);
 
 COMPONENT_EXPORT(CHROME_FEATURES)
+extern const base::FeatureParam<int> kGlicMinRequiredRamMb;
+
+COMPONENT_EXPORT(CHROME_FEATURES)
 BASE_DECLARE_FEATURE(kGlicDevelopmentSyncGoogleCookies);
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::FeatureParam<bool> kGlicStatusIconOpenMenuWithSecondaryClick;
