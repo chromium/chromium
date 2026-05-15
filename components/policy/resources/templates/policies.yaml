@@ -1451,6 +1451,7 @@ policies:
   1450: SubAppsWithoutPromptsBlockedForOrigins
   1451: IsolatedModeSettings
   1452: GeminiExperimentalTriggeringSettings
+  1453: SmartTabSharingSettings
 
 
 atomic_groups:

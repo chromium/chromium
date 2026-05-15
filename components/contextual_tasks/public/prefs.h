@@ -7,13 +7,23 @@
 
 #include "base/values.h"
 
+class PrefRegistrySimple;
 class PrefService;
 
 namespace contextual_tasks {
 
+enum class SmartTabSharingSettingsValue {
+  kEnabled = 0,
+  kDisabled = 1,
+};
+
 extern const char kContextualTasksOnboardingTooltipDismissedCount[];
 extern const char kContextualTasksShareOpenTabsEveryThread[];
 extern const char kContextualTasksSiteExclusions[];
+extern const char kContextualTasksSmartTabSharingSettings[];
+
+// Registers profile prefs.
+void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
 // The `site_exclusions` dictionary uses lowercase domain names as keys,
 // mapping to timestamp values. The timestamps are C++ double floating point

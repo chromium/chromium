@@ -34,8 +34,12 @@ source_set("contextual_tasks") {
     "contextual_tasks_ui_interface.h",
     "contextual_tasks_ui_service_delegate.h",
     "contextual_tasks_utils.h",
+    "smart_tab_sharing_settings_policy_handler.h",
     "task_info_delegate.h",
   ]
+  if (!is_android) {
+    sources += [ "smart_tab_sharing_settings_policy_handler.h" ]
+  }
 
   deps = [
     "//base",
@@ -62,6 +66,9 @@ source_set("contextual_tasks") {
     "//third_party/abseil-cpp:absl",
     "//third_party/omnibox_proto",
   ]
+  if (!is_android) {
+    public_deps += [ "//components/policy/core/browser" ]
+  }
 }
 
 # This target is for all non-public files (all .c - including factories and
@@ -104,6 +111,7 @@ source_set("impl") {
     sources += [
       "contextual_tasks_ui_service_delegate_desktop.cc",
       "contextual_tasks_ui_service_delegate_desktop.h",
+      "smart_tab_sharing_settings_policy_handler.cc",
     ]
   }
 
@@ -154,6 +162,8 @@ source_set("impl") {
       "//chrome/browser/ui/webui:webui_util",
       "//ui/android",
     ]
+  } else {
+    deps += [ "//components/policy/core/browser" ]
   }
 }
 

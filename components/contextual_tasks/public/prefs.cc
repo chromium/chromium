@@ -5,6 +5,7 @@
 #include "components/contextual_tasks/public/prefs.h"
 
 #include "base/values.h"
+#include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 
 namespace contextual_tasks {
@@ -17,6 +18,15 @@ const char kContextualTasksShareOpenTabsEveryThread[] =
 
 const char kContextualTasksSiteExclusions[] =
     "contextual_tasks.site_exclusions";
+
+const char kContextualTasksSmartTabSharingSettings[] =
+    "contextual_tasks.smart_tab_sharing_settings";
+
+void RegisterProfilePrefs(PrefRegistrySimple* registry) {
+  registry->RegisterIntegerPref(
+      kContextualTasksSmartTabSharingSettings,
+      static_cast<int>(SmartTabSharingSettingsValue::kEnabled));
+}
 
 void SaveSiteExclusionsToPrefs(PrefService* pref_service,
                                const base::DictValue& site_exclusions) {

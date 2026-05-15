@@ -1,0 +1,32 @@
+[
+  {
+    "os": [
+      "linux",
+      "mac",
+      "win",
+      "chromeos"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "SmartTabSharingSettings": 1
+        },
+        "prefs": {
+          "contextual_tasks.smart_tab_sharing_settings": {
+            "value": 1
+          }
+        }
+      },
+      {
+        "policies": {
+          "SmartTabSharingSettings": 0
+        },
+        "prefs": {
+          "contextual_tasks.smart_tab_sharing_settings": {
+            "value": 0
+          }
+        }
+      }
+    ]
+  }
+]

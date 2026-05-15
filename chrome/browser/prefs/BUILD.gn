@@ -134,6 +134,7 @@ source_set("impl") {
     "//components/commerce/core:prefs",
     "//components/content_settings/core/browser",
     "//components/contextual_search:public",
+    "//components/contextual_tasks/public",
     "//components/custom_handlers",
     "//components/domain_reliability:prefs",
     "//components/enterprise/browser/groups:prefs",
