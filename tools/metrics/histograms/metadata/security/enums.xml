@@ -139,6 +139,18 @@ chromium-metrics-reviews@google.com.
              Ask-Before-HTTP prevented the navigation."/>
 </enum>
 
+<!-- LINT.IfChange -->
+
+<enum name="HttpsFirstModeFallbackReason">
+  <int value="0" label="kNone">No fallback</int>
+  <int value="1" label="kTimerFired">Fast-fallback timer fired</int>
+  <int value="2" label="kCertError">Misconfigured HTTPS certificate</int>
+  <int value="3" label="kRedirectLoop">Redirect loop (downgrade)</int>
+  <int value="4" label="kNetError">Other network error</int>
+</enum>
+
+<!-- LINT.ThenChange(/components/security_interstitials/core/https_only_mode_metrics.h) -->
+
 <enum name="HttpsFirstModeInterstitialReason">
   <int value="0" label="kUnknown">Unknown reason</int>
   <int value="1" label="kPref">

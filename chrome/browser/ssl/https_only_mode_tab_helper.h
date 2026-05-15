@@ -5,6 +5,9 @@
 #ifndef CHROME_BROWSER_SSL_HTTPS_ONLY_MODE_TAB_HELPER_H_
 #define CHROME_BROWSER_SSL_HTTPS_ONLY_MODE_TAB_HELPER_H_
 
+#include <map>
+
+#include "components/security_interstitials/core/https_only_mode_metrics.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 
@@ -48,7 +51,28 @@ class HttpsOnlyModeTabHelper
   bool has_failed_upgrade(const GURL& url) const {
     return failed_upgrade_urls_.contains(url);
   }
-  void add_failed_upgrade(const GURL& url) { failed_upgrade_urls_.insert(url); }
+  void add_failed_upgrade(
+      const GURL& url,
+      security_interstitials::https_only_mode::FallbackReason reason) {
+    failed_upgrade_urls_[url] = reason;
+  }
+  security_interstitials::https_only_mode::FallbackReason
+  get_failed_upgrade_reason(const GURL& url) const {
+    auto it = failed_upgrade_urls_.find(url);
+    if (it != failed_upgrade_urls_.end()) {
+      return it->second;
+    }
+    return security_interstitials::https_only_mode::FallbackReason::kNone;
+  }
+
+  void set_fallback_reason(
+      security_interstitials::https_only_mode::FallbackReason reason) {
+    fallback_reason_ = reason;
+  }
+  security_interstitials::https_only_mode::FallbackReason fallback_reason()
+      const {
+    return fallback_reason_;
+  }
 
   void set_is_exempt_error(bool is_exempt_error) {
     is_exempt_error_ = is_exempt_error;
@@ -77,11 +101,17 @@ class HttpsOnlyModeTabHelper
   // WebContents. This is used to immediately show the HTTP interstitial without
   // re-trying to upgrade the navigation -- currently this is only applied to
   // back/forward navigations as they interact badly with interceptors, and this
-  // acts as the browser "remembering" the navigation state.
+  // acts as the browser "remembering" the navigation state. This includes the
+  // fallback reason so we can record the correct UKM metrics when the user
+  // finally makes a decision on the warning.
   //
   // In the case of HTTPS Upgrades, without HTTPS-First Mode enabled, these
   // hostnames will also be on the HTTP allowlist, bypassing upgrade attempts.
-  std::set<GURL> failed_upgrade_urls_;
+  std::map<GURL, security_interstitials::https_only_mode::FallbackReason>
+      failed_upgrade_urls_;
+
+  security_interstitials::https_only_mode::FallbackReason fallback_reason_ =
+      security_interstitials::https_only_mode::FallbackReason::kNone;
 
   // Set to true if the current navigation resulted in a net error that is
   // indicative of potentially-transient network conditions (such as a hostname

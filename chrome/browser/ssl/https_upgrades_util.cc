@@ -143,8 +143,6 @@ bool IsBalancedModeInterstitialEnabledByHeuristics(
           state.enabled_by_typically_secure_browsing);
 }
 
-
-
 bool IsInterstitialEnabled(const HttpInterstitialState& state) {
   // Interstitials are enabled when "strict" interstitials are enabled...
   if (IsStrictInterstitialEnabled(state)) {
@@ -191,6 +189,7 @@ bool MustDisableTypicallySecureUserHeuristic(Profile* profile) {
 
 void RecordHttpsFirstModeUKM(
     ukm::SourceId source_id,
+    security_interstitials::https_only_mode::FallbackReason fallback_reason,
     security_interstitials::https_only_mode::BlockingResult result) {
   if (source_id == ukm::kInvalidSourceId) {
     return;
@@ -200,6 +199,7 @@ void RecordHttpsFirstModeUKM(
   CHECK(ukm_recorder);
   ukm::builders::HttpsFirstMode_Event(source_id)
       .SetResult(static_cast<int>(result))
+      .SetFallbackReason(static_cast<int>(fallback_reason))
       .Record(ukm_recorder);
 }
 

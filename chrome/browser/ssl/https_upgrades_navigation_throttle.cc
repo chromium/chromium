@@ -148,12 +148,16 @@ HttpsUpgradesNavigationThrottle::WillStartRequest() {
         ukm::SourceId source_id =
             ukm::ConvertToSourceId(navigation_handle()->GetNavigationId(),
                                    ukm::SourceIdType::NAVIGATION_ID);
+        security_interstitials::https_only_mode::FallbackReason
+            fallback_reason =
+                tab_helper->get_failed_upgrade_reason(handle->GetURL());
         std::unique_ptr<security_interstitials::HttpsOnlyModeBlockingPage>
             blocking_page =
                 blocking_page_factory_->CreateHttpsOnlyModeBlockingPage(
                     contents, handle->GetURL(), interstitial_state_,
                     /*url_type_param=*/std::nullopt,
-                    base::BindRepeating(&RecordHttpsFirstModeUKM, source_id));
+                    base::BindRepeating(&RecordHttpsFirstModeUKM, source_id,
+                                        fallback_reason));
         std::string interstitial_html = blocking_page->GetHTMLContents();
         security_interstitials::SecurityInterstitialTabHelper::
             AssociateBlockingPage(handle, std::move(blocking_page));
@@ -226,7 +230,8 @@ HttpsUpgradesNavigationThrottle::WillRedirectRequest() {
               blocking_page_factory_->CreateHttpsOnlyModeBlockingPage(
                   contents, handle->GetURL(), interstitial_state_,
                   /*url_type_param=*/std::nullopt,
-                  base::BindRepeating(&RecordHttpsFirstModeUKM, source_id));
+                  base::BindRepeating(&RecordHttpsFirstModeUKM, source_id,
+                                      tab_helper->fallback_reason()));
       std::string interstitial_html = blocking_page->GetHTMLContents();
       security_interstitials::SecurityInterstitialTabHelper::
           AssociateBlockingPage(handle, std::move(blocking_page));

@@ -55,9 +55,11 @@ class AskBeforeHttpDialogController : public content::WebContentsObserver {
   // Show the Ask-before-HTTP dialog. The user can choose to proceed through the
   // warning, or go back to the previous page. If called while a dialog is
   // already showing, this will create a new dialog and replace the old one.
-  void ShowDialog(content::WebContents* web_contents,
-                  const GURL& request_url,
-                  ukm::SourceId navigation_source_id);
+  void ShowDialog(
+      content::WebContents* web_contents,
+      const GURL& request_url,
+      ukm::SourceId navigation_source_id,
+      security_interstitials::https_only_mode::FallbackReason fallback_reason);
 
   // Returns whether there is an associated open dialog.
   bool HasOpenDialog() const;
@@ -89,6 +91,8 @@ class AskBeforeHttpDialogController : public content::WebContentsObserver {
   void OnUserDismissed();
 
   ukm::SourceId navigation_source_id_ = ukm::kInvalidSourceId;
+  security_interstitials::https_only_mode::FallbackReason fallback_reason_ =
+      security_interstitials::https_only_mode::FallbackReason::kNone;
   GURL request_url_;
   bool is_suspended_ = false;
   std::unique_ptr<security_interstitials::MetricsHelper> metrics_helper_;

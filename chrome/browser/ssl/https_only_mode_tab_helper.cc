@@ -51,6 +51,8 @@ void HttpsOnlyModeTabHelper::DidStartNavigation(
     set_fallback_url(GURL());
     set_is_navigation_fallback(false);
     set_is_navigation_upgraded(false);
+    set_fallback_reason(
+        security_interstitials::https_only_mode::FallbackReason::kNone);
   }
 }
 
@@ -84,7 +86,8 @@ void HttpsOnlyModeTabHelper::DidFinishNavigation(
     ukm::SourceId ukm_source_id = ukm::ConvertToSourceId(
         navigation_handle->GetNavigationId(), ukm::SourceIdType::NAVIGATION_ID);
     dialog_controller->ShowDialog(navigation_handle->GetWebContents(),
-                                  navigation_handle->GetURL(), ukm_source_id);
+                                  navigation_handle->GetURL(), ukm_source_id,
+                                  fallback_reason());
     // Make sure that the security indicator shows the correct icon.
     // TODO(crbug.com/351990829): Add the new icon and integration.
     navigation_handle->GetWebContents()->DidChangeVisibleSecurityState();

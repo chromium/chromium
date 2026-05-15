@@ -6,6 +6,7 @@
 #define COMPONENTS_SECURITY_INTERSTITIALS_CORE_HTTPS_ONLY_MODE_METRICS_H_
 
 #include <cstddef>
+
 #include "base/time/time.h"
 
 namespace security_interstitials::https_only_mode {
@@ -244,6 +245,21 @@ InterstitialReason GetInterstitialReason(
     const HttpInterstitialState& interstitial_state);
 
 void RecordInterstitialReason(const HttpInterstitialState& interstitial_state);
+
+// LINT.IfChange
+
+// Reason why the navigation fell back to HTTP. Used for UKM. There is only a
+// single FallbackReason per navigation.
+enum class FallbackReason {
+  kNone = 0,
+  kTimerFired = 1,
+  kCertError = 2,
+  kRedirectLoop = 3,
+  kNetError = 4,
+  kMaxValue = kNetError,
+};
+
+// LINT.ThenChange(/tools/metrics/histograms/metadata/security/enums.xml:HttpsFirstModeFallbackReason)
 
 // Used for UKM. There is only a single BlockingResult per navigation.
 enum class BlockingResult {

@@ -89,6 +89,7 @@ using chrome_browser_interstitials::IsShowingInterstitial;
 using chrome_browser_interstitials::ProceedThroughHttpsFirstModeInterstitial;
 using security_interstitials::https_only_mode::BlockingResult;
 using security_interstitials::https_only_mode::Event;
+using security_interstitials::https_only_mode::FallbackReason;
 using security_interstitials::https_only_mode::InterstitialReason;
 using security_interstitials::https_only_mode::kEventHistogram;
 using security_interstitials::https_only_mode::
@@ -678,6 +679,22 @@ class HttpsUpgradesBrowserTest
     test_ukm_recorder_->ExpectEntrySourceHasUrl(entries[0], url);
     test_ukm_recorder_->ExpectEntryMetric(entries[0], "Result",
                                           static_cast<int>(result));
+  }
+
+  // Checks that the interstitial UKM has an entry for `url`, `result` and
+  // `fallback_reason`.
+  void ExpectUKMEntryWithReason(
+      const GURL& url,
+      security_interstitials::https_only_mode::BlockingResult result,
+      security_interstitials::https_only_mode::FallbackReason fallback_reason) {
+    auto entries = test_ukm_recorder_->GetEntriesByName(UkmEntry::kEntryName);
+    EXPECT_EQ(1u, entries.size());
+
+    test_ukm_recorder_->ExpectEntrySourceHasUrl(entries[0], url);
+    test_ukm_recorder_->ExpectEntryMetric(entries[0], "Result",
+                                          static_cast<int>(result));
+    test_ukm_recorder_->ExpectEntryMetric(entries[0], "FallbackReason",
+                                          static_cast<int>(fallback_reason));
   }
 
   // Checks that the interstitial UKM has no entry.
@@ -3798,6 +3815,84 @@ IN_PROC_BROWSER_TEST_P(
     histograms()->ExpectBucketCount(
         kNavigationRequestSecurityLevelHistogram,
         NavigationRequestSecurityLevel::kCaptivePortalLogin, 1);
+  }
+}
+
+// Tests that UKM fallback reasons are correctly recorded as kCertError when
+// the upgrade fails due to a certificate error.
+IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest, UKM_CertError) {
+  GURL http_url = http_server()->GetURL("bad-https.com", "/simple.html");
+  auto* contents = GetBrowser()->tab_strip_model()->GetActiveWebContents();
+  NavigateAndWaitForFallback(contents, http_url);
+
+  if (IsHttpsFirstModeInterstitialEnabledAcrossSites()) {
+    EXPECT_TRUE(IsShowingHttpsFirstModeInterstitial(contents));
+    ProceedThroughHttpsFirstModeInterstitial(contents);
+    ExpectUKMEntryWithReason(http_url, BlockingResult::kInterstitialProceed,
+                             FallbackReason::kCertError);
+  }
+}
+
+// Tests that UKM fallback reasons are correctly recorded as kTimerFired when
+// the upgrade times out.
+IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest, UKM_TimerFired) {
+  HttpsUpgradesNavigationThrottle::set_timeout_for_testing(base::TimeDelta());
+  net::EmbeddedTestServer timeout_server{net::EmbeddedTestServer::TYPE_HTTPS};
+  timeout_server.RegisterRequestHandler(base::BindLambdaForTesting(
+      [&](const net::test_server::HttpRequest& request)
+          -> std::unique_ptr<net::test_server::HttpResponse> {
+        return std::make_unique<net::test_server::HungResponse>();
+      }));
+  ASSERT_TRUE(timeout_server.Start());
+  HttpsUpgradesInterceptor::SetHttpsPortForTesting(timeout_server.port());
+
+  const GURL http_url = http_server()->GetURL("foo.com", "/simple.html");
+  auto* contents = GetBrowser()->tab_strip_model()->GetActiveWebContents();
+  NavigateAndWaitForFallback(contents, http_url);
+
+  if (IsHttpsFirstModeInterstitialEnabledAcrossSites()) {
+    EXPECT_TRUE(IsShowingHttpsFirstModeInterstitial(contents));
+    ProceedThroughHttpsFirstModeInterstitial(contents);
+    ExpectUKMEntryWithReason(http_url, BlockingResult::kInterstitialProceed,
+                             FallbackReason::kTimerFired);
+  }
+}
+
+// Tests that UKM fallback reasons are correctly recorded as kRedirectLoop when
+// the upgraded HTTPS site redirects back to HTTP.
+IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest, UKM_RedirectLoop) {
+  net::EmbeddedTestServer downgrading_server{
+      net::EmbeddedTestServer::TYPE_HTTPS};
+  downgrading_server.RegisterRequestHandler(base::BindLambdaForTesting(
+      [&](const net::test_server::HttpRequest& request)
+          -> std::unique_ptr<net::test_server::HttpResponse> {
+        GURL::Replacements http_downgrade;
+        http_downgrade.SetSchemeStr(url::kHttpScheme);
+        http_downgrade.SetHostStr("foo.com");
+        auto redirect_url = request.GetURL().ReplaceComponents(http_downgrade);
+        auto response = std::make_unique<net::test_server::BasicHttpResponse>();
+        response->set_code(net::HTTP_TEMPORARY_REDIRECT);
+        response->AddCustomHeader("Location", redirect_url.spec());
+        return response;
+      }));
+  ASSERT_TRUE(downgrading_server.Start());
+  HttpsUpgradesInterceptor::SetHttpPortForTesting(downgrading_server.port());
+  HttpsUpgradesInterceptor::SetHttpsPortForTesting(downgrading_server.port());
+
+  GURL url = downgrading_server.GetURL("foo.com", "/");
+  auto* contents = GetBrowser()->tab_strip_model()->GetActiveWebContents();
+  NavigateAndWaitForFallback(contents, url);
+
+  if (IsHttpsFirstModeInterstitialEnabledAcrossSites()) {
+    EXPECT_TRUE(IsShowingHttpsFirstModeInterstitial(contents));
+    ProceedThroughHttpsFirstModeInterstitial(contents);
+
+    GURL::Replacements http_scheme;
+    http_scheme.SetSchemeStr(url::kHttpScheme);
+    GURL http_url = url.ReplaceComponents(http_scheme);
+
+    ExpectUKMEntryWithReason(http_url, BlockingResult::kInterstitialProceed,
+                             FallbackReason::kRedirectLoop);
   }
 }
 

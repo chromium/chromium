@@ -637,7 +637,11 @@ void HttpsUpgradesInterceptor::MaybeCreateLoaderOnHstsQueryCompleted(
 
     tab_helper->set_is_navigation_upgraded(false);
     tab_helper->set_is_navigation_fallback(true);
-    tab_helper->add_failed_upgrade(tab_helper->fallback_url());
+    tab_helper->set_fallback_reason(
+        security_interstitials::https_only_mode::FallbackReason::kRedirectLoop);
+    tab_helper->add_failed_upgrade(
+        tab_helper->fallback_url(),
+        security_interstitials::https_only_mode::FallbackReason::kRedirectLoop);
 
     // Note: If `fallback_url` is the same as the request URL, this
     // could skip doing an additional redirect, but then the NavigationThrottle
@@ -740,12 +744,18 @@ bool HttpsUpgradesInterceptor::MaybeCreateLoaderForResponse(
 
   // Record failure type metrics for upgraded navigations.
   RecordHttpsFirstModeNavigation(Event::kUpgradeFailed, *interstitial_state_);
+  security_interstitials::https_only_mode::FallbackReason fallback_reason =
+      security_interstitials::https_only_mode::FallbackReason::kNetError;
   if (net::IsCertificateError(status.error_code)) {
     RecordHttpsFirstModeNavigation(Event::kUpgradeCertError,
                                    *interstitial_state_);
+    fallback_reason =
+        security_interstitials::https_only_mode::FallbackReason::kCertError;
   } else if (status.error_code == net::ERR_TIMED_OUT) {
     RecordHttpsFirstModeNavigation(Event::kUpgradeTimedOut,
                                    *interstitial_state_);
+    fallback_reason =
+        security_interstitials::https_only_mode::FallbackReason::kTimerFired;
   } else {
     RecordHttpsFirstModeNavigation(Event::kUpgradeNetError,
                                    *interstitial_state_);
@@ -774,7 +784,8 @@ bool HttpsUpgradesInterceptor::MaybeCreateLoaderForResponse(
 
   tab_helper->set_is_navigation_upgraded(false);
   tab_helper->set_is_navigation_fallback(true);
-  tab_helper->add_failed_upgrade(tab_helper->fallback_url());
+  tab_helper->set_fallback_reason(fallback_reason);
+  tab_helper->add_failed_upgrade(tab_helper->fallback_url(), fallback_reason);
 
   // `client_` may have been previously bound from handling the initial upgrade
   // in MaybeCreateLoader(), so reset it before re-binding it to handle this

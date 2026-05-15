@@ -83,6 +83,7 @@ bool MustDisableTypicallySecureUserHeuristic(Profile* profile);
 
 void RecordHttpsFirstModeUKM(
     ukm::SourceId source_id,
+    security_interstitials::https_only_mode::FallbackReason fallback_reason,
     security_interstitials::https_only_mode::BlockingResult result);
 
 // An instance of this class adds `hostnames` to the HttpAllowlist enterprise
