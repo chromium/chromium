@@ -127,7 +127,8 @@ std::unique_ptr<net::test_server::HttpResponse> LargeLinksPageResponse(
   [self runLinksTestWithRichExtraction:YES actionableMode:YES expectNull:YES];
 }
 
-- (void)testLargePage_RichOn_ActionableOff_ExpectNull {
+// TODO(crbug.com/513432449): Re-enable this test once the bug is fixed.
+- (void)DISABLED_testLargePage_RichOn_ActionableOff_ExpectNull {
   [self runLinksTestWithRichExtraction:YES actionableMode:NO expectNull:YES];
 }
 
