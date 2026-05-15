@@ -73,6 +73,7 @@ source_set("unit_tests") {
     "personal_context_enablement_service_impl_unittest.cc",
     "personal_context_fetcher_unittest.cc",
     "personal_context_manager_unittest.cc",
+    "personal_context_service_impl_unittest.cc",
   ]
 
   deps = [

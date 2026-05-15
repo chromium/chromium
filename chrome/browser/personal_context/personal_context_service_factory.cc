@@ -6,8 +6,10 @@
 
 #include "base/feature_list.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "components/personal_context/core/personal_context_features.h"
 #include "components/personal_context/core/personal_context_service_impl.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 
 // static
 personal_context::PersonalContextService*
@@ -28,7 +30,9 @@ PersonalContextServiceFactory::PersonalContextServiceFactory()
           "PersonalContextService",
           ProfileSelections::Builder()
               .WithRegular(ProfileSelection::kOriginalOnly)
-              .Build()) {}
+              .Build()) {
+  DependsOn(IdentityManagerFactory::GetInstance());
+}
 
 PersonalContextServiceFactory::~PersonalContextServiceFactory() =
     default;
@@ -41,6 +45,8 @@ PersonalContextServiceFactory::BuildServiceInstanceForBrowserContext(
     return nullptr;
   }
 
-  return std::make_unique<
-      personal_context::PersonalContextServiceImpl>();
+  Profile* profile = Profile::FromBrowserContext(context);
+  return std::make_unique<personal_context::PersonalContextServiceImpl>(
+      profile->GetURLLoaderFactory(),
+      IdentityManagerFactory::GetForProfile(profile));
 }
