@@ -21,7 +21,7 @@ found in the LICENSE file.
       app:tint="@macro/drag_handle_color" />
 
   <ScrollView
-      android:id="@+id/accessibility_annotator_scroll_view"
+      android:id="@+id/personal_context_scroll_view"
       android:layout_width="match_parent"
       android:layout_height="wrap_content">
 
@@ -29,12 +29,12 @@ found in the LICENSE file.
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingLeft="@dimen/accessibility_annotator_sheet_padding_horizontal"
-        android:paddingRight="@dimen/accessibility_annotator_sheet_padding_horizontal"
-        android:layout_marginTop="@dimen/accessibility_annotator_spacing_medium">
+        android:paddingLeft="@dimen/personal_context_sheet_padding_horizontal"
+        android:paddingRight="@dimen/personal_context_sheet_padding_horizontal"
+        android:layout_marginTop="@dimen/personal_context_spacing_medium">
 
       <com.airbnb.lottie.LottieAnimationView
-          android:id="@+id/accessibility_annotator_icon"
+          android:id="@+id/personal_context_icon"
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
           android:layout_gravity="center_horizontal"
@@ -45,7 +45,7 @@ found in the LICENSE file.
           android:adjustViewBounds="true"/>
 
       <TextView
-          android:id="@+id/accessibility_annotator_title"
+          android:id="@+id/personal_context_title"
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
           android:layout_marginTop="4dp"
@@ -53,10 +53,10 @@ found in the LICENSE file.
           android:textAlignment="center" />
 
       <TextView
-          android:id="@+id/accessibility_annotator_description"
+          android:id="@+id/personal_context_description"
           android:layout_height="wrap_content"
           android:layout_width="match_parent"
-          android:layout_marginTop="@dimen/accessibility_annotator_spacing_large"
+          android:layout_marginTop="@dimen/personal_context_spacing_large"
           android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
           android:textAlignment="viewStart" />
 
@@ -64,17 +64,17 @@ found in the LICENSE file.
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
           android:orientation="vertical"
-          android:layout_marginTop="@dimen/accessibility_annotator_spacing_large"
+          android:layout_marginTop="@dimen/personal_context_spacing_large"
           android:background="@drawable/card_container_background">
         <TextView
-            android:id="@+id/accessibility_annotator_card_1_text"
+            android:id="@+id/personal_context_card_1_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:minHeight="?android:attr/listPreferredItemHeightSmall"
-            android:padding="@dimen/accessibility_annotator_spacing_large"
+            android:padding="@dimen/personal_context_spacing_large"
             android:gravity="center_vertical"
-            android:drawableStart="@drawable/accessibility_annotator_first_run_card_1"
-            android:drawablePadding="@dimen/accessibility_annotator_spacing_large"
+            android:drawableStart="@drawable/personal_context_first_run_card_1"
+            android:drawablePadding="@dimen/personal_context_spacing_large"
             android:textAppearance="@style/TextAppearance.TextMediumThick.Primary" />
 
         <View
@@ -84,27 +84,27 @@ found in the LICENSE file.
             android:background="@color/bottom_sheet_bg_color" />
 
         <TextView
-            android:id="@+id/accessibility_annotator_card_2_text"
+            android:id="@+id/personal_context_card_2_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:minHeight="?android:attr/listPreferredItemHeightSmall"
-            android:padding="@dimen/accessibility_annotator_spacing_large"
+            android:padding="@dimen/personal_context_spacing_large"
             android:gravity="center_vertical"
-            android:drawableStart="@drawable/accessibility_annotator_first_run_card_2"
-            android:drawablePadding="@dimen/accessibility_annotator_spacing_large"
+            android:drawableStart="@drawable/personal_context_first_run_card_2"
+            android:drawablePadding="@dimen/personal_context_spacing_large"
             android:textAppearance="@style/TextAppearance.TextMediumThick.Primary" />
       </LinearLayout>
 
       <org.chromium.ui.widget.TextViewWithClickableSpans
-          android:id="@+id/accessibility_annotator_learn_more_description"
+          android:id="@+id/personal_context_learn_more_description"
           android:layout_height="wrap_content"
           android:layout_width="match_parent"
-          android:layout_marginTop="@dimen/accessibility_annotator_spacing_large"
+          android:layout_marginTop="@dimen/personal_context_spacing_large"
           android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
           android:textAlignment="viewStart" />
 
       <org.chromium.ui.widget.ButtonCompat
-          android:id="@+id/accessibility_annotator_primary_button"
+          android:id="@+id/personal_context_primary_button"
           style="@style/FilledButton"
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
@@ -114,13 +114,13 @@ found in the LICENSE file.
           android:minWidth="@dimen/min_touch_target_size" />
 
       <org.chromium.ui.widget.ButtonCompat
-          android:id="@+id/accessibility_annotator_secondary_button"
+          android:id="@+id/personal_context_secondary_button"
           style="@style/TextButton"
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
           android:textAlignment="center"
-          android:layout_marginTop="@dimen/accessibility_annotator_spacing_medium"
-          android:layout_marginBottom="@dimen/accessibility_annotator_spacing_medium"
+          android:layout_marginTop="@dimen/personal_context_spacing_medium"
+          android:layout_marginBottom="@dimen/personal_context_spacing_medium"
           android:minHeight="@dimen/min_touch_target_size"
           android:minWidth="@dimen/min_touch_target_size" />
 

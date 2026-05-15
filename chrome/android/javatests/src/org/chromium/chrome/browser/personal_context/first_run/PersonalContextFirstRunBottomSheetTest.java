@@ -128,7 +128,7 @@ public class PersonalContextFirstRunBottomSheetTest {
 
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
 
-        onView(withId(R.id.accessibility_annotator_learn_more_description))
+        onView(withId(R.id.personal_context_learn_more_description))
                 .perform(
                         new ViewAction() {
                             @Override

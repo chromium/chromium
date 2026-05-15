@@ -501,10 +501,10 @@ found in the LICENSE file.
     <dimen name="iph_bubble_triangle_height">20dp</dimen>
     <dimen name="tap_to_dismiss_text_margin">53dp</dimen>
 
-    <!-- Accessibility Annotator dimensions -->
-    <dimen name="accessibility_annotator_sheet_padding_horizontal">24dp</dimen>
-    <dimen name="accessibility_annotator_spacing_large">16dp</dimen>
-    <dimen name="accessibility_annotator_spacing_medium">12dp</dimen>
+    <!-- Personal Context dimensions -->
+    <dimen name="personal_context_sheet_padding_horizontal">24dp</dimen>
+    <dimen name="personal_context_spacing_large">16dp</dimen>
+    <dimen name="personal_context_spacing_medium">12dp</dimen>
 
     <!-- Toast dimensions -->
     <dimen name="background_tab_toast_y_margin">16dp</dimen>
