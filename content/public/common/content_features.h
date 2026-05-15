@@ -167,6 +167,9 @@ CONTENT_EXPORT BASE_DECLARE_FEATURE_PARAM(bool,
 CONTENT_EXPORT BASE_DECLARE_FEATURE_PARAM(bool,
                                           kInitialWebUIHighStreamPriority);
 CONTENT_EXPORT BASE_DECLARE_FEATURE_PARAM(bool, kInitialWebUIWithoutSpellCheck);
+CONTENT_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    bool,
+    kInitialWebUIWithoutLanguageDetection);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kInitialWebUISyncNavStartToCommit);
 CONTENT_EXPORT BASE_DECLARE_FEATURE_PARAM(std::string,
                                           kIgnoreDuplicateNavsOrigins);

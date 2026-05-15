@@ -2,8 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <algorithm>
+
 #include "base/memory/ref_counted_memory.h"
 #include "base/test/scoped_feature_list.h"
+#include "components/language_detection/content/common/language_detection.mojom.h"
 #include "content/browser/renderer_host/navigation_controller_impl.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
@@ -21,6 +24,7 @@
 #include "content/public/test/web_ui_browsertest_util.h"
 #include "content/shell/browser/shell.h"
 #include "content/test/content_browser_test_utils_internal.h"
+#include "mojo/public/cpp/bindings/remote.h"
 
 namespace content {
 
@@ -74,9 +78,10 @@ class InitialWebUINavigationBrowserTest : public ContentBrowserTest {
  public:
   InitialWebUINavigationBrowserTest() {
     WebUIControllerFactory::RegisterFactory(&factory_);
-    scoped_feature_list_.InitWithFeatures(
-        {features::kInitialWebUISyncNavStartToCommit,
-         features::kWebUIInProcessResourceLoadingV2},
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{features::kInitialWebUISyncNavStartToCommit, {}},
+         {features::kWebUIInProcessResourceLoadingV2, {}},
+         {features::kInitialWebUI, {{"without_language_detection", "true"}}}},
         {});
   }
 
@@ -167,6 +172,46 @@ IN_PROC_BROWSER_TEST_F(InitialWebUINavigationBrowserTest, CommitInitialWebUI) {
         "trusted-types;frame-ancestors 'none';",
         root_csp[0]->header->header_value);
   }
+}
+
+// Verifies that the language detection driver is not bound for Initial WebUIs
+// when the optimization feature is enabled, avoiding unnecessary work on
+// startup.
+IN_PROC_BROWSER_TEST_F(InitialWebUINavigationBrowserTest,
+                       SkipsLanguageDetection) {
+  GURL url("chrome://foo");
+  // Make `url` an initial WebUI URL.
+  InitialWebUIOverrideContentBrowserClient content_browser_client(url);
+
+  WebContents::CreateParams params(
+      contents()->GetBrowserContext(),
+      SiteInstance::CreateForURL(contents()->GetBrowserContext(), url));
+  auto new_web_contents = WebContents::Create(params);
+
+  WebUIDataSource::CreateAndAdd(contents()->GetBrowserContext(), "foo")
+      ->SetResourcePathToResponse("", "<!doctype html><body>bar</body>");
+
+  EXPECT_TRUE(NavigateToURL(new_web_contents.get(), url));
+
+  RenderFrameHostImpl* rfh =
+      static_cast<WebContentsImpl*>(new_web_contents.get())
+          ->GetPrimaryMainFrame();
+  EXPECT_TRUE(rfh->GetProcess()->IsForTopChromeWebUI());
+
+  auto* broker_impl = static_cast<
+      BrowserInterfaceBrokerImpl<RenderFrameHostImpl, RenderFrameHost*>*>(
+      rfh->browser_interface_broker_receiver_for_testing()
+          .internal_state()
+          ->impl());
+
+  std::vector<std::string> interfaces;
+  broker_impl->GetBinderMapInterfacesForTesting(interfaces);
+
+  EXPECT_TRUE(
+      std::find(
+          interfaces.begin(), interfaces.end(),
+          language_detection::mojom::ContentLanguageDetectionDriver::Name_) ==
+      interfaces.end());
 }
 #endif
 

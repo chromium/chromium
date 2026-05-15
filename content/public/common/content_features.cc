@@ -557,6 +557,13 @@ BASE_FEATURE_PARAM(bool,
                    "without_spellcheck",
                    true);
 
+// If enabled, the initial WebUI language detection initialization is skipped.
+BASE_FEATURE_PARAM(bool,
+                   kInitialWebUIWithoutLanguageDetection,
+                   &features::kInitialWebUI,
+                   "without_language_detection",
+                   false);
+
 // Whether initial WebUI navigations should synchronously go from navigation
 // start to commit, by doing e.g. in-renderer body loading.
 BASE_FEATURE(kInitialWebUISyncNavStartToCommit,

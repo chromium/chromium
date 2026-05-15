@@ -1953,6 +1953,7 @@ test("content_browsertests") {
     "//components/favicon/content",
     "//components/history/core/browser:features",
     "//components/input",
+    "//components/language_detection/content/common",
     "//components/metrics/dwa:dwa_builders",
     "//components/metrics/private_metrics",
     "//components/network_session_configurator/common",
