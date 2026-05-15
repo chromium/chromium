@@ -69,6 +69,9 @@ export class ContentRegionElement extends CrLitElement {
   removeTab(tabId: string) {
     const webview = this.webviews.get(tabId);
     assert(webview);
+    if (this.activeWebview === webview) {
+      this.activeWebview = undefined;
+    }
     this.webviews.delete(tabId);
     webview.remove();
     this.requestUpdate();

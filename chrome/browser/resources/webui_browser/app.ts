@@ -250,7 +250,9 @@ export class WebuiBrowserAppElement extends CrLitElement {
       return;
     }
 
+    this.$.contentRegion.activateTab(tabData.id);
     this.updateUrlForActiveTab_(tabData);
+    this.refreshLayout();
   }
 
   private updateUrlForActiveTab_(active: TabData) {

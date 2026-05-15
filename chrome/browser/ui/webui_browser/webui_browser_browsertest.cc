@@ -426,3 +426,52 @@ IN_PROC_BROWSER_TEST_F(WebUIBrowserSurfaceEmbedPixelTest,
     return found_expected_color;
   }));
 }
+
+#if BUILDFLAG(IS_CHROMEOS)
+// TODO(crbug.com/451876195): Fix and re-enable this test for CrOS.
+#define MAYBE_CloseTabDoesNotMakeRemainingTabBlank \
+  DISABLED_CloseTabDoesNotMakeRemainingTabBlank
+#else
+#define MAYBE_CloseTabDoesNotMakeRemainingTabBlank \
+  CloseTabDoesNotMakeRemainingTabBlank
+#endif
+IN_PROC_BROWSER_TEST_F(WebUIBrowserTest,
+                       MAYBE_CloseTabDoesNotMakeRemainingTabBlank) {
+  auto* window = browser()->window();
+  ASSERT_TRUE(window);
+
+  content::WebContents* ui_web_contents =
+      WebUIBrowserWindow::FromBrowser(browser())
+          ->GetWebUIBrowserUI()
+          ->web_ui()
+          ->GetWebContents();
+  EXPECT_TRUE(content::WaitForLoadStop(ui_web_contents));
+
+  // Initial tab is active. Let's open a second tab.
+  GURL url = embedded_https_test_server().GetURL("a.com", "/defaultresponse");
+  EXPECT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+      browser(), url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+
+  // We should have exactly 2 tabs now and index 1 is active.
+  ASSERT_EQ(2, browser()->tab_strip_model()->count());
+  ASSERT_EQ(1, browser()->tab_strip_model()->active_index());
+
+  // Close the active tab at index 1.
+  browser()->tab_strip_model()->CloseWebContentsAt(
+      1, TabCloseTypes::CLOSE_USER_GESTURE);
+
+  // Wait for the remaining tab at index 0 to become active.
+  ASSERT_EQ(1, browser()->tab_strip_model()->count());
+  ASSERT_EQ(0, browser()->tab_strip_model()->active_index());
+
+  // Verify via EvalJs that the content-region's active Webview is defined
+  // and is STILL contained in the content-region's shadow DOM.
+  auto is_webview_valid = EvalJs(
+      ui_web_contents,
+      "const app = document.querySelector('webui-browser-app');"
+      "const contentRegion = app.shadowRoot.querySelector('content-region');"
+      "const active = contentRegion.activeWebview;"
+      "!!active && contentRegion.shadowRoot.contains(active);");
+  EXPECT_TRUE(is_webview_valid.ExtractBool());
+}
