@@ -16,6 +16,7 @@
 #include "base/base64.h"
 #include "base/command_line.h"
 #include "base/debug/crash_logging.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -516,7 +517,11 @@ GURL VariationsService::GetVariationsServerURL(HttpOptions http_options) {
         net::AppendOrReplaceQueryParameter(server_url, "corpus", corpus);
   }
 
-  DCHECK(server_url.is_valid());
+  if (!server_url.is_valid()) {
+    SCOPED_CRASH_KEY_STRING1024("VariationsService", "server_url",
+                                server_url.possibly_invalid_spec());
+    base::debug::DumpWithoutCrashing();
+  }
   return server_url;
 }
 
