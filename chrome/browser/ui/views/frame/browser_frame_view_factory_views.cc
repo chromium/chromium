@@ -46,13 +46,13 @@ std::unique_ptr<OpaqueBrowserFrameView> CreateOpaqueBrowserFrameViewLinux(
   // display_override so the web contents can blend with the overlay by using
   // the developer-provided theme color for a better experience. Context:
   // https://crbug.com/40771982. Also ignore the toolkit theme for web apps with
-  // borderless as there's no surface left to apply the theme for.
-  bool app_uses_wco_or_borderless =
+  // unframed as there's no surface left to apply the theme for.
+  bool app_uses_wco_or_unframed =
       app_controller && (app_controller->AppUsesWindowControlsOverlay() ||
-                         app_controller->AppUsesBorderlessMode());
+                         app_controller->AppUsesUnframedMode());
 
   if (linux_ui_theme && theme_service_factory->UsingSystemTheme() &&
-      !app_uses_wco_or_borderless) {
+      !app_uses_wco_or_unframed) {
     auto nav_button_provider =
         linux_ui_theme->CreateNavButtonProvider(ui::FrameType::kBrowser);
     if (nav_button_provider) {

@@ -39,9 +39,9 @@ int BrowserFrameViewLayoutLinuxNative::CaptionButtonY(
 
 gfx::Insets BrowserFrameViewLayoutLinuxNative::RestoredFrameBorderInsets()
     const {
-  // Borderless mode only has a minimal frame to be able to resize it from the
+  // Unframed mode only has a minimal frame to be able to resize it from the
   // borders.
-  if (delegate_->GetBorderlessModeEnabled()) {
+  if (delegate_->GetUnframedModeEnabled()) {
     return gfx::Insets(
         OpaqueBrowserFrameViewLayout::RestoredFrameBorderInsets());
   }

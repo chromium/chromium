@@ -6,7 +6,7 @@ body {
   background: blue;
 }
 
-@media (display-mode: borderless) {
+@media (display-mode: unframed) {
   body {
     background: red;
   }

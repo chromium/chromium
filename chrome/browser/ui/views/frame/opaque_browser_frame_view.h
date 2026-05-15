@@ -95,7 +95,7 @@ class OpaqueBrowserFrameView : public BrowserFrameView,
   bool IsMinimized() const override;
   bool IsFullscreen() const override;
   bool IsTabStripVisible() const override;
-  bool GetBorderlessModeEnabled() const override;
+  bool GetUnframedModeEnabled() const override;
   bool IsToolbarVisible() const override;
   int GetTopAreaHeight() const override;
   bool UseCustomFrame() const override;

@@ -2578,7 +2578,7 @@ void BrowserView::UpdateUnframedModeEnabled() {
     }
 
     if (unframed_mode_enabled && browser()->app_controller() &&
-        !browser()->app_controller()->UrlMatchesBorderlessPattern(
+        !browser()->app_controller()->UrlMatchesUnframedPattern(
             web_contents->GetVisibleURL())) {
       unframed_mode_enabled = false;
     }
@@ -2595,7 +2595,7 @@ void BrowserView::UpdateUnframedModeEnabled() {
   unframed_mode_enabled_ = unframed_mode_enabled;
 
   if (web_app_frame_toolbar()) {
-    web_app_frame_toolbar()->UpdateBorderlessModeEnabled();
+    web_app_frame_toolbar()->UpdateUnframedModeEnabled();
   }
 }
 
@@ -2683,7 +2683,7 @@ BrowserView* BrowserView::AsBrowserView() {
 
 bool BrowserView::AppUsesUnframedMode() const {
   return browser()->app_controller() &&
-         browser()->app_controller()->AppUsesBorderlessMode();
+         browser()->app_controller()->AppUsesUnframedMode();
 }
 
 bool BrowserView::AreDraggableRegionsEnabled() const {

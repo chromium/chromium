@@ -75,7 +75,7 @@ class TestLayoutDelegate : public OpaqueBrowserFrameViewLayoutDelegate {
   bool IsMinimized() const override { return false; }
   bool IsFullscreen() const override { return false; }
   bool IsTabStripVisible() const override { return window_title_.empty(); }
-  bool GetBorderlessModeEnabled() const override { return false; }
+  bool GetUnframedModeEnabled() const override { return false; }
   bool IsToolbarVisible() const override { return true; }
   int GetTopAreaHeight() const override { return 0; }
   bool UseCustomFrame() const override { return true; }

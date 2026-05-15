@@ -88,8 +88,8 @@ BrowserViewAppLayoutImpl::~BrowserViewAppLayoutImpl() = default;
 
 gfx::Size BrowserViewAppLayoutImpl::GetMinimumSize(
     const views::View* host) const {
-  // The minimum size of a window is unrestricted for a borderless mode app.
-  if (delegate().GetBorderlessModeEnabled()) {
+  // The minimum size of a window is unrestricted for a unframed mode app.
+  if (delegate().GetUnframedModeEnabled()) {
     return gfx::Size(1, 1);
   }
 
@@ -258,7 +258,7 @@ void BrowserViewAppLayoutImpl::CalculateTitlebarLayout(
     BrowserLayoutParams& params) const {
   const bool should_draw_toolbar = delegate().ShouldDrawWebAppFrameToolbar();
   gfx::Rect full_titlebar_bounds;
-  if (!delegate().GetBorderlessModeEnabled()) {
+  if (!delegate().GetUnframedModeEnabled()) {
     full_titlebar_bounds =
         should_draw_toolbar
             ? GetBoundsWithExclusion(params, views().web_app_frame_toolbar)

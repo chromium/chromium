@@ -143,10 +143,10 @@ class BrowserFrameViewChromeOS
   FRIEND_TEST_ALL_PREFIXES(ImmersiveModeBrowserViewTest, ImmersiveFullscreen);
   class ProfileChangeObserver;
 
-  // App is a PWA and has borderless in its manifest. This doesn't yet mean
-  // that the `window-management` permission has been granted and borderless
+  // App is a PWA and has unframed in its manifest. This doesn't yet mean
+  // that the `window-management` permission has been granted and unframed
   // mode would be activated.
-  bool AppIsPwaWithBorderlessDisplayMode() const;
+  bool AppIsPwaWithUnframedDisplayMode() const;
 
   // Returns true if `GetShowCaptionButtonsWhenNotInOverview()` returns true
   // and this browser window is not showing in overview.
@@ -192,7 +192,7 @@ class BrowserFrameViewChromeOS
 
   void LayoutProfileIndicator();
 
-  void UpdateBorderlessModeEnabled();
+  void UpdateUnframedModeEnabled();
 
   // Returns whether this window is currently in the overview list.
   bool GetOverviewMode() const;

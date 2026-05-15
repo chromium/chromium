@@ -249,8 +249,8 @@ void BrowserFrameViewChromeOS::Init() {
   display_observer_.emplace(this);
   frame_header_ = CreateFrameHeader();
 
-  if (AppIsPwaWithBorderlessDisplayMode()) {
-    UpdateBorderlessModeEnabled();
+  if (AppIsPwaWithUnframedDisplayMode()) {
+    UpdateUnframedModeEnabled();
   }
 
   ImmersiveModeController::From(GetBrowserView()->browser())->AddObserver(this);
@@ -480,12 +480,12 @@ void BrowserFrameViewChromeOS::OnPaint(gfx::Canvas* canvas) {
   }
 }
 
-void BrowserFrameViewChromeOS::UpdateBorderlessModeEnabled() {
-  caption_button_container_->UpdateBorderlessModeEnabled(
+void BrowserFrameViewChromeOS::UpdateUnframedModeEnabled() {
+  caption_button_container_->UpdateUnframedModeEnabled(
       GetBrowserView()->IsUnframedModeEnabled());
 }
 
-bool BrowserFrameViewChromeOS::AppIsPwaWithBorderlessDisplayMode() const {
+bool BrowserFrameViewChromeOS::AppIsPwaWithUnframedDisplayMode() const {
   return GetBrowserView()->GetIsWebAppType() &&
          GetBrowserView()->AppUsesUnframedMode();
 }
@@ -510,8 +510,8 @@ void BrowserFrameViewChromeOS::Layout(PassKey) {
     LayoutProfileIndicator();
   }
 
-  if (AppIsPwaWithBorderlessDisplayMode()) {
-    UpdateBorderlessModeEnabled();
+  if (AppIsPwaWithUnframedDisplayMode()) {
+    UpdateUnframedModeEnabled();
   }
 
   LayoutSuperclass<BrowserFrameView>(this);
@@ -1005,7 +1005,7 @@ void BrowserFrameViewChromeOS::UpdateTopViewInset() {
       ImmersiveModeController::From(GetBrowserView()->browser())->IsEnabled();
   const bool tab_strip_visible = GetBrowserView()->GetTabStripVisible();
   const int inset = (tab_strip_visible || immersive ||
-                     (AppIsPwaWithBorderlessDisplayMode() &&
+                     (AppIsPwaWithUnframedDisplayMode() &&
                       GetBrowserView()->IsUnframedModeEnabled()))
                         ? 0
                         : GetTopInset(/*restored=*/false);

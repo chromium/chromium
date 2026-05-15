@@ -221,13 +221,12 @@ void WebAppBrowserController::ToggleWindowControlsOverlayEnabled(
       /*on_complete=*/std::move(on_complete));
 }
 
-bool WebAppBrowserController::AppUsesBorderlessMode() const {
+bool WebAppBrowserController::AppUsesUnframedMode() const {
   return IsIsolatedWebApp() &&
          effective_display_mode_ == DisplayMode::kUnframed;
 }
 
-bool WebAppBrowserController::UrlMatchesBorderlessPattern(
-    const GURL& url) const {
+bool WebAppBrowserController::UrlMatchesUnframedPattern(const GURL& url) const {
   const WebApp* app = registrar().GetAppById(app_id());
   if (app == nullptr) {
     return false;

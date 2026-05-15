@@ -5,16 +5,16 @@
 'use strict';
 
 // This string must match with
-// `BorderlessIsolatedWebAppBrowserTest::kBorderlessAppOnloadTitle`.
+// `UnframedIsolatedWebAppBrowserTest::kUnframedAppOnloadTitle`.
 window.onload = function() {
-  document.title = 'Borderless';
+  document.title = 'Unframed';
 };
 
-const mql = window.matchMedia('(display-mode: borderless)');
+const mql = window.matchMedia('(display-mode: unframed)');
 mql.addEventListener('change', event => {
   if (event.matches) {
-    document.title = 'match-media-borderless';
+    document.title = 'match-media-unframed';
   } else {
-    document.title = 'Borderless';  // The same title as set onload.
+    document.title = 'Unframed';  // The same title as set onload.
   }
 });

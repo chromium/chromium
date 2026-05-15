@@ -462,11 +462,11 @@ bool AppBrowserController::AppUsesWindowControlsOverlay() const {
   return false;
 }
 
-bool AppBrowserController::AppUsesBorderlessMode() const {
+bool AppBrowserController::AppUsesUnframedMode() const {
   return false;
 }
 
-bool AppBrowserController::UrlMatchesBorderlessPattern(const GURL& url) const {
+bool AppBrowserController::UrlMatchesUnframedPattern(const GURL& url) const {
   return false;
 }
 
@@ -602,10 +602,10 @@ void AppBrowserController::OnBackgroundColorChanged() {
 
 void AppBrowserController::PrimaryPageChanged(content::Page& page) {
   // Reset the draggable regions for window controls overlay apps so they are
-  // not cached on navigation. Note that these are not cleared for borderless
-  // apps because when we navigate out of scope and then back to scope, the
-  // draggable regions stay same and nothing triggers to re-initialize them.
-  // So if they are cleared, they don't work anymore when coming back to scope.
+  // not cached on navigation. Note that these are not cleared for unframed apps
+  // because when we navigate out of scope and then back to scope, the draggable
+  // regions stay same and nothing triggers to re-initialize them. So if they
+  // are cleared, they don't work anymore when coming back to scope.
   if (AppUsesWindowControlsOverlay()) {
     draggable_region_ = std::nullopt;
   }
@@ -880,10 +880,10 @@ void AppBrowserController::OnTabInserted(content::WebContents* contents) {
   }
 
   // Collect draggable app regions if the app supports Window Controls Overlay
-  // or Borderless mode. This is required in addition to the use in
+  // or Unframed mode. This is required in addition to the use in
   // RenderFrameCreated to handle existing web contents being reparented into an
   // app window.
-  if (AppUsesWindowControlsOverlay() || AppUsesBorderlessMode()) {
+  if (AppUsesWindowControlsOverlay() || AppUsesUnframedMode()) {
     contents->SetSupportsDraggableRegions(/*supports_draggable_regions=*/true);
   }
 

@@ -246,12 +246,12 @@ class AppBrowserController : public ui::ColorProviderKey::InitializerSupplier,
   // window-controls-overlay.
   virtual bool AppUsesWindowControlsOverlay() const;
 
-  // Returns true when an app's effective display mode is borderless.
-  virtual bool AppUsesBorderlessMode() const;
+  // Returns true when an app's effective display mode is unframed.
+  virtual bool AppUsesUnframedMode() const;
 
   // Returns true when `url` matches the display mode override patterns for
-  // borderless mode, or when there are no patterns to match.
-  virtual bool UrlMatchesBorderlessPattern(const GURL& url) const;
+  // unframed mode, or when there are no patterns to match.
+  virtual bool UrlMatchesUnframedPattern(const GURL& url) const;
 
   // Returns true when an app's effective display mode is tabbed.
   virtual bool AppUsesTabbed() const;

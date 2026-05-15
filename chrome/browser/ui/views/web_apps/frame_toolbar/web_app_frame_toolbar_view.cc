@@ -148,7 +148,7 @@ WebAppFrameToolbarView::WebAppFrameToolbarView(BrowserView* browser_view)
     OnWindowControlsOverlayEnabledChanged();
   }
   if (browser_view_->AppUsesUnframedMode()) {
-    UpdateBorderlessModeEnabled();
+    UpdateUnframedModeEnabled();
   }
 
   SetEventTargeter(std::make_unique<views::ViewTargeter>(
@@ -417,14 +417,14 @@ void WebAppFrameToolbarView::OnWindowControlsOverlayEnabledChanged() {
           browser_view_->IsWindowControlsOverlayEnabled());
 }
 
-void WebAppFrameToolbarView::UpdateBorderlessModeEnabled() {
-  bool is_borderless_mode_enabled = browser_view_->IsUnframedModeEnabled();
+void WebAppFrameToolbarView::UpdateUnframedModeEnabled() {
+  bool is_unframed_mode_enabled = browser_view_->IsUnframedModeEnabled();
 
   // The toolbar is hidden and not set to null, because there are many features
   // that depend on the toolbar and would not work without it. For example all
   // the shortcut commands (e.g. Ctrl+F, zoom) rely on the menu button (child of
   // toolbar) so when these are hidden, the shortcuts will still work.
-  SetVisible(!is_borderless_mode_enabled);
+  SetVisible(!is_unframed_mode_enabled);
 }
 
 void WebAppFrameToolbarView::SetWindowControlsOverlayToggleVisible(

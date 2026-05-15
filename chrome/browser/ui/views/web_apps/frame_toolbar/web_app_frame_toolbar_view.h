@@ -97,7 +97,7 @@ class WebAppFrameToolbarView : public views::AccessiblePaneView,
   WebUIToolbarWebView* GetWebUIToolbarViewForTesting() override;
 
   void OnWindowControlsOverlayEnabledChanged();
-  void UpdateBorderlessModeEnabled();
+  void UpdateUnframedModeEnabled();
   void SetWindowControlsOverlayToggleVisible(bool visible);
 
   WebAppNavigationButtonContainer* get_left_container_for_testing() {

@@ -133,7 +133,7 @@ WebAppToolbarButtonContainer::WebAppToolbarButtonContainer(
 
   const auto* app_controller = browser_view_->browser()->app_controller();
 
-  // App's origin will not be shown in the borderless mode, it will only be
+  // App's origin will not be shown in the unframed mode, it will only be
   // visible in App Settings UI.
   if (app_controller->HasTitlebarAppOriginText() &&
       !browser_view_->IsUnframedModeEnabled()) {

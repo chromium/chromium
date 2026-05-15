@@ -27037,7 +27037,7 @@ others/histograms.xml -->
   <int value="4" label="Fullscreen"/>
   <int value="5" label="WindowControlsOverlay"/>
   <int value="6" label="Tabbed"/>
-  <int value="7" label="Borderless"/>
+  <int value="7" label="Unframed"/>
   <int value="8" label="Picture-in-Picture"/>
 </enum>
 

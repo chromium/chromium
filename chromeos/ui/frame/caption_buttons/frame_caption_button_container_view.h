@@ -135,9 +135,9 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) FrameCaptionButtonContainerView
                                              SkColor background_color);
 
   // Updates the visibility of the caption button container based on whether the
-  // app is in borderless mode or not, which means whether the title bar is
+  // app is in unframed mode or not, which means whether the title bar is
   // shown or not.
-  void UpdateBorderlessModeEnabled(bool enabled);
+  void UpdateUnframedModeEnabled(bool enabled);
 
   // Updates the caption buttons' state based on the caption button model's
   // state. A parent view should relayout to reflect the change in states.
@@ -261,9 +261,9 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) FrameCaptionButtonContainerView
   // button container changes and SetBackgroundColor() gets called.
   bool window_controls_overlay_enabled_ = false;
 
-  // Keeps track of the borderless mode being enabled or not. This defines the
+  // Keeps track of the unframed mode being enabled or not. This defines the
   // visibility of the caption button container.
-  bool is_borderless_mode_enabled_ = false;
+  bool is_unframed_mode_enabled_ = false;
 
   base::ScopedObservation<views::Widget, views::WidgetObserver> frame_observer_{
       this};

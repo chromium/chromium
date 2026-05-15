@@ -35,7 +35,7 @@ class BrowserViewLayoutDelegate {
   virtual bool ShouldDrawVerticalTabStrip() const = 0;
   virtual bool IsVerticalTabStripCollapsed() const = 0;
   virtual bool ShouldDrawWebAppFrameToolbar() const = 0;
-  virtual bool GetBorderlessModeEnabled() const = 0;
+  virtual bool GetUnframedModeEnabled() const = 0;
   virtual BrowserLayoutParams GetBrowserLayoutParams(
       bool use_browser_bounds) const = 0;
   virtual WindowState GetBrowserWindowState() const = 0;

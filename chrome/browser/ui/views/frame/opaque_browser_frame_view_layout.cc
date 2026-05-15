@@ -92,9 +92,8 @@ gfx::Size OpaqueBrowserFrameViewLayout::GetMinimumSize(
     const views::View* host) const {
   // Ensure that we can fit the main browser view.
   gfx::Size min_size = delegate_->GetBrowserViewMinimumSize();
-  if (delegate_->GetBorderlessModeEnabled()) {
-    // In borderless mode the window doesn't have the window controls or tab
-    // strip.
+  if (delegate_->GetUnframedModeEnabled()) {
+    // In unframed mode the window has no window controls or tab strip.
     return min_size;
   }
 
@@ -181,7 +180,7 @@ gfx::Rect OpaqueBrowserFrameViewLayout::CalculateClientAreaBounds(
     int height) const {
   auto border_thickness = FrameBorderInsets(false);
   int top_height =
-      (is_window_controls_overlay_enabled_ || is_borderless_mode_enabled_ ||
+      (is_window_controls_overlay_enabled_ || is_unframed_mode_enabled_ ||
        delegate_->WebAppButtonHeight() > 0)
           ? border_thickness.top()
           : NonClientTopHeight(false);
@@ -237,9 +236,9 @@ void OpaqueBrowserFrameViewLayout::SetWindowControlsOverlayEnabled(
   }
 }
 
-void OpaqueBrowserFrameViewLayout::SetBorderlessModeEnabled(bool enabled,
-                                                            views::View* host) {
-  is_borderless_mode_enabled_ = enabled;
+void OpaqueBrowserFrameViewLayout::SetUnframedModeEnabled(bool enabled,
+                                                          views::View* host) {
+  is_unframed_mode_enabled_ = enabled;
 }
 
 ///////////////////////////////////////////////////////////////////////////////

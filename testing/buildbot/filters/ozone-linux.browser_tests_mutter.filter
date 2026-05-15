@@ -14,7 +14,7 @@
 -All/SearchEnginePreconnectorNoDelaysBrowserTest.PreconnectOnlyInForeground/*
 -All/SoftNavigationTest.LayoutShift/*
 -BackForwardCachePageLoadMetricsObserverBrowserTest.LayoutShiftNormalization_AfterBackForwardCacheRestore
--BorderlessIsolatedWebAppBrowserTest.PopupResize_CanSubceedMinimumWindowSize_And_InnerAndOuterSizesAreCorrect
+-UnframedIsolatedWebAppBrowserTest.PopupResize_CanSubceedMinimumWindowSize_And_InnerAndOuterSizesAreCorrect
 
 # TODO(crbug.com/40688401) This test requires full Picture-in-Picture support.
 -FedCmAccountSelectionViewBrowserTest.DisabledWhenOccluded

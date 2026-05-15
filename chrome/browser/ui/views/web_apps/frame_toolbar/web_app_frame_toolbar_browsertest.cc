@@ -810,21 +810,21 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_NoElidedExtensionsMenu,
   EXPECT_FALSE(IsMenuCommandEnabled(WebAppMenuModel::kExtensionsMenuCommandId));
 }
 
-// Borderless has not been implemented for win/mac.
+// Unframed mode has not been implemented for win/mac.
 #if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS))
-class BorderlessIsolatedWebAppBrowserTest
+class UnframedIsolatedWebAppBrowserTest
     : public web_app::IsolatedWebAppBrowserTestHarness {
  public:
-  BorderlessIsolatedWebAppBrowserTest() = default;
+  UnframedIsolatedWebAppBrowserTest() = default;
 
   void SetUp() override {
-    SetupBorderlessFeatureFlag();
+    SetupUnframedFeatureFlag();
     IsolatedWebAppBrowserTestHarness::SetUp();
   }
 
-  void InstallAndLaunchIsolatedWebApp(bool uses_borderless) {
+  void InstallAndLaunchIsolatedWebApp(bool uses_unframed) {
     std::unique_ptr<web_app::ScopedBundledIsolatedWebApp> app =
-        uses_borderless
+        uses_unframed
             ? web_app::IsolatedWebAppBuilder(
                   web_app::ManifestBuilder()
                       .SetDisplayModeOverride({web_app::DisplayOverride::Create(
@@ -834,7 +834,7 @@ class BorderlessIsolatedWebAppBrowserTest
                               kWindowManagement,
                           true, {})
                       .SetStartUrl("/index.html"))
-                  .AddFolderFromDisk("/", "web_apps/borderless_isolated_app")
+                  .AddFolderFromDisk("/", "web_apps/unframed_isolated_app")
                   .BuildBundle()
             : web_app::IsolatedWebAppBuilder(web_app::ManifestBuilder())
                   .BuildBundle();
@@ -844,13 +844,13 @@ class BorderlessIsolatedWebAppBrowserTest
     browser_ = GetBrowserFromFrame(OpenApp(url_info.app_id()));
     browser_view_ = BrowserView::GetBrowserViewForBrowser(browser_);
 
-    if (uses_borderless) {
-      // In web_apps/borderless_isolated_app/borderless.js the title is set on
+    if (uses_unframed) {
+      // In web_apps/unframed_isolated_app/unframed.js the title is set on
       // `window.onload`. This is to make sure that the web contents have loaded
       // before doing any checks and to reduce the flakiness of the tests.
       content::TitleWatcher title_watcher(
-          browser_view()->GetActiveWebContents(), kBorderlessAppOnloadTitle);
-      EXPECT_EQ(title_watcher.WaitAndGetTitle(), kBorderlessAppOnloadTitle);
+          browser_view()->GetActiveWebContents(), kUnframedAppOnloadTitle);
+      EXPECT_EQ(title_watcher.WaitAndGetTitle(), kUnframedAppOnloadTitle);
     }
 
     views::FrameView* frame_view =
@@ -862,24 +862,24 @@ class BorderlessIsolatedWebAppBrowserTest
     auto* web_contents = browser_view()->GetActiveWebContents();
     WebAppFrameToolbarTestHelper::GrantWindowManagementPermission(web_contents);
 
-    // It takes some time to udate the borderless mode state. The title is
+    // It takes some time to udate the unframed mode state. The title is
     // updated on a change event hooked to the window.matchMedia() function,
-    // which gets triggered when the permission is granted and the borderless
+    // which gets triggered when the permission is granted and the unframed
     // mode gets enabled.
-    const std::u16string kExpectedMatchMediaTitle = u"match-media-borderless";
+    const std::u16string kExpectedMatchMediaTitle = u"match-media-unframed";
     content::TitleWatcher title_watcher(web_contents, kExpectedMatchMediaTitle);
     ASSERT_EQ(title_watcher.WaitAndGetTitle(), kExpectedMatchMediaTitle);
   }
 
-  BorderlessIsolatedWebAppBrowserTest(
-      const BorderlessIsolatedWebAppBrowserTest&) = delete;
-  BorderlessIsolatedWebAppBrowserTest& operator=(
-      const BorderlessIsolatedWebAppBrowserTest&) = delete;
+  UnframedIsolatedWebAppBrowserTest(const UnframedIsolatedWebAppBrowserTest&) =
+      delete;
+  UnframedIsolatedWebAppBrowserTest& operator=(
+      const UnframedIsolatedWebAppBrowserTest&) = delete;
 
  protected:
   // This string must match with the title set in the `window.onload` function
-  // in web_apps/borderless_isolated_app/borderless.js.
-  const std::u16string kBorderlessAppOnloadTitle = u"Borderless";
+  // in web_apps/unframed_isolated_app/unframed.js.
+  const std::u16string kUnframedAppOnloadTitle = u"Unframed";
 
   BrowserView* browser_view() { return browser_view_; }
 
@@ -941,9 +941,8 @@ class BorderlessIsolatedWebAppBrowserTest
     }
   }
 
-  virtual void SetupBorderlessFeatureFlag() {
-    scoped_feature_list_.InitAndEnableFeature(
-        blink::features::kWebAppBorderless);
+  virtual void SetupUnframedFeatureFlag() {
+    scoped_feature_list_.InitAndEnableFeature(blink::features::kUnframedIwa);
   }
   base::test::ScopedFeatureList scoped_feature_list_;
 
@@ -953,9 +952,9 @@ class BorderlessIsolatedWebAppBrowserTest
   raw_ptr<BrowserFrameView, AcrossTasksDanglingUntriaged> frame_view_;
 };
 
-IN_PROC_BROWSER_TEST_F(BorderlessIsolatedWebAppBrowserTest,
-                       AppUsesBorderlessModeAndHasWindowManagementPermission) {
-  InstallAndLaunchIsolatedWebApp(/*uses_borderless=*/true);
+IN_PROC_BROWSER_TEST_F(UnframedIsolatedWebAppBrowserTest,
+                       AppUsesUnframedModeAndHasWindowManagementPermission) {
+  InstallAndLaunchIsolatedWebApp(/*uses_unframed=*/true);
   EXPECT_TRUE(browser_view()->AppUsesUnframedMode());
 
   GrantWindowManagementPermission();
@@ -966,9 +965,9 @@ IN_PROC_BROWSER_TEST_F(BorderlessIsolatedWebAppBrowserTest,
 }
 
 // Regression test for b/321784833.
-IN_PROC_BROWSER_TEST_F(BorderlessIsolatedWebAppBrowserTest,
-                       BorderlessModeHidesTitlebarAndWindowingControls) {
-  InstallAndLaunchIsolatedWebApp(/*uses_borderless=*/true);
+IN_PROC_BROWSER_TEST_F(UnframedIsolatedWebAppBrowserTest,
+                       UnframedModeHidesTitlebarAndWindowingControls) {
+  InstallAndLaunchIsolatedWebApp(/*uses_unframed=*/true);
   EXPECT_TRUE(browser_view()->AppUsesUnframedMode());
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -990,9 +989,8 @@ IN_PROC_BROWSER_TEST_F(BorderlessIsolatedWebAppBrowserTest,
 #endif
 }
 
-IN_PROC_BROWSER_TEST_F(BorderlessIsolatedWebAppBrowserTest,
-                       DisplayModeMediaCSS) {
-  InstallAndLaunchIsolatedWebApp(/*uses_borderless=*/true);
+IN_PROC_BROWSER_TEST_F(UnframedIsolatedWebAppBrowserTest, DisplayModeMediaCSS) {
+  InstallAndLaunchIsolatedWebApp(/*uses_unframed=*/true);
   EXPECT_TRUE(browser_view()->AppUsesUnframedMode());
   auto* web_contents = browser_view()->GetActiveWebContents();
 
@@ -1002,8 +1000,8 @@ IN_PROC_BROWSER_TEST_F(BorderlessIsolatedWebAppBrowserTest,
   )";
   std::string match_media_standalone =
       "window.matchMedia('(display-mode: standalone)').matches;";
-  std::string match_media_borderless =
-      "window.matchMedia('(display-mode: borderless)').matches;";
+  std::string match_media_unframed =
+      "window.matchMedia('(display-mode: unframed)').matches;";
   std::string blue = "rgb(0, 0, 255)";
   std::string red = "rgb(255, 0, 0)";
 
@@ -1016,15 +1014,15 @@ IN_PROC_BROWSER_TEST_F(BorderlessIsolatedWebAppBrowserTest,
   ASSERT_TRUE(browser_view()->IsUnframedModeEnabled());
 
   // Validate that after granting the permission the display-mode matches with
-  // "borderless" and updates the background-color accordingly.
-  EXPECT_TRUE(EvalJs(web_contents, match_media_borderless).ExtractBool());
+  // "unframed" and updates the background-color accordingly.
+  EXPECT_TRUE(EvalJs(web_contents, match_media_unframed).ExtractBool());
   ASSERT_EQ(red, EvalJs(web_contents, get_background_color));
 }
 
 IN_PROC_BROWSER_TEST_F(
-    BorderlessIsolatedWebAppBrowserTest,
-    AppUsesBorderlessModeAndDoesNotHaveWindowManagementPermission) {
-  InstallAndLaunchIsolatedWebApp(/*uses_borderless=*/true);
+    UnframedIsolatedWebAppBrowserTest,
+    AppUsesUnframedModeAndDoesNotHaveWindowManagementPermission) {
+  InstallAndLaunchIsolatedWebApp(/*uses_unframed=*/true);
   EXPECT_TRUE(browser_view()->AppUsesUnframedMode());
   ASSERT_TRUE(browser_view()->unframed_mode_enabled_for_testing());
   ASSERT_FALSE(
@@ -1032,9 +1030,9 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_FALSE(browser_view()->IsUnframedModeEnabled());
 }
 
-IN_PROC_BROWSER_TEST_F(BorderlessIsolatedWebAppBrowserTest,
-                       AppDoesntUseBorderlessMode) {
-  InstallAndLaunchIsolatedWebApp(/*uses_borderless=*/false);
+IN_PROC_BROWSER_TEST_F(UnframedIsolatedWebAppBrowserTest,
+                       AppDoesntUseUnframedMode) {
+  InstallAndLaunchIsolatedWebApp(/*uses_unframed=*/false);
   EXPECT_FALSE(browser_view()->AppUsesUnframedMode());
   ASSERT_FALSE(browser_view()->unframed_mode_enabled_for_testing());
   ASSERT_FALSE(
@@ -1042,9 +1040,9 @@ IN_PROC_BROWSER_TEST_F(BorderlessIsolatedWebAppBrowserTest,
   ASSERT_FALSE(browser_view()->IsUnframedModeEnabled());
 }
 
-IN_PROC_BROWSER_TEST_F(BorderlessIsolatedWebAppBrowserTest,
-                       PopupToItselfIsBorderless) {
-  InstallAndLaunchIsolatedWebApp(/*uses_borderless=*/true);
+IN_PROC_BROWSER_TEST_F(UnframedIsolatedWebAppBrowserTest,
+                       PopupToItselfIsUnframed) {
+  InstallAndLaunchIsolatedWebApp(/*uses_unframed=*/true);
   EXPECT_TRUE(browser_view()->AppUsesUnframedMode());
   GrantWindowManagementPermission();
   ASSERT_TRUE(browser_view()->IsUnframedModeEnabled());
@@ -1058,9 +1056,9 @@ IN_PROC_BROWSER_TEST_F(BorderlessIsolatedWebAppBrowserTest,
   EXPECT_TRUE(popup_browser_view->IsUnframedModeEnabled());
 }
 
-IN_PROC_BROWSER_TEST_F(BorderlessIsolatedWebAppBrowserTest,
-                       PopupToAnyOtherOriginIsNotBorderless) {
-  InstallAndLaunchIsolatedWebApp(/*uses_borderless=*/true);
+IN_PROC_BROWSER_TEST_F(UnframedIsolatedWebAppBrowserTest,
+                       PopupToAnyOtherOriginIsNotUnframed) {
+  InstallAndLaunchIsolatedWebApp(/*uses_unframed=*/true);
   EXPECT_TRUE(browser_view()->AppUsesUnframedMode());
   GrantWindowManagementPermission();
   ASSERT_TRUE(browser_view()->IsUnframedModeEnabled());
@@ -1072,9 +1070,9 @@ IN_PROC_BROWSER_TEST_F(BorderlessIsolatedWebAppBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(
-    BorderlessIsolatedWebAppBrowserTest,
+    UnframedIsolatedWebAppBrowserTest,
     PopupSize_CanSubceedMinimumWindowSize_And_InnerAndOuterSizesAreCorrect) {
-  InstallAndLaunchIsolatedWebApp(/*uses_borderless=*/true);
+  InstallAndLaunchIsolatedWebApp(/*uses_unframed=*/true);
   EXPECT_TRUE(browser_view()->AppUsesUnframedMode());
   GrantWindowManagementPermission();
   ASSERT_TRUE(browser_view()->IsUnframedModeEnabled());
@@ -1084,7 +1082,7 @@ IN_PROC_BROWSER_TEST_F(
           .ExtractString();
 
   // width and height set should be less than `blink::kMinimumWindowSize` to
-  // ensure that for borderless apps, it's possible to subceed the limit.
+  // ensure that for unframed apps, it's possible to subceed the limit.
   const std::string kWindowOpenScript = base::StrCat(
       {"window.open('", url,
        "', '', 'location=0, status=0, scrollbars=0, left=0, top=0, width=",
@@ -1095,11 +1093,11 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(popup_browser_view->IsUnframedModeEnabled());
   auto* popup_web_contents = popup_browser_view->GetActiveWebContents();
 
-  // Make sure the popup is fully ready. The title gets set to Borderless on
+  // Make sure the popup is fully ready. The title gets set to Unframed on
   // window.onload event.
   content::TitleWatcher init_title_watcher(popup_web_contents,
-                                           kBorderlessAppOnloadTitle);
-  EXPECT_EQ(init_title_watcher.WaitAndGetTitle(), kBorderlessAppOnloadTitle);
+                                           kUnframedAppOnloadTitle);
+  EXPECT_EQ(init_title_watcher.WaitAndGetTitle(), kUnframedAppOnloadTitle);
 
   gfx::Size expected_size(blink::kMinimumUnframedWindowSize,
                           blink::kMinimumUnframedWindowSize);
@@ -1122,9 +1120,9 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 IN_PROC_BROWSER_TEST_F(
-    BorderlessIsolatedWebAppBrowserTest,
+    UnframedIsolatedWebAppBrowserTest,
     PopupResize_CanSubceedMinimumWindowSize_And_InnerAndOuterSizesAreCorrect) {
-  InstallAndLaunchIsolatedWebApp(/*uses_borderless=*/true);
+  InstallAndLaunchIsolatedWebApp(/*uses_unframed=*/true);
   EXPECT_TRUE(browser_view()->AppUsesUnframedMode());
   GrantWindowManagementPermission();
   ASSERT_TRUE(browser_view()->IsUnframedModeEnabled());
@@ -1141,11 +1139,11 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(popup_browser_view->IsUnframedModeEnabled());
   auto* popup_web_contents = popup_browser_view->GetActiveWebContents();
 
-  // Make sure the popup is fully ready. The title gets set to Borderless on
+  // Make sure the popup is fully ready. The title gets set to Unframed on
   // window.onload event.
   content::TitleWatcher init_title_watcher(popup_web_contents,
-                                           kBorderlessAppOnloadTitle);
-  EXPECT_EQ(init_title_watcher.WaitAndGetTitle(), kBorderlessAppOnloadTitle);
+                                           kUnframedAppOnloadTitle);
+  EXPECT_EQ(init_title_watcher.WaitAndGetTitle(), kUnframedAppOnloadTitle);
 
   const std::u16string kResizeTitle = u"resized";
   content::TitleWatcher resized_title_watcher(popup_web_contents, kResizeTitle);
@@ -1161,7 +1159,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(ExecJs(popup_web_contents, kOnResizeScript));
 
   // width and height set should be less than `blink::kMinimumWindowSize` to
-  // ensure that for borderless apps, it's possible to subceed the limit.
+  // ensure that for unframed apps, it's possible to subceed the limit.
   const std::string kResizeToScript = content::JsReplace(
       R"(
     window.resizeTo($1,$1)
@@ -1189,10 +1187,10 @@ IN_PROC_BROWSER_TEST_F(
 #endif
 }
 
-// Test to ensure that the minimum size for a borderless app is as small as
+// Test to ensure that the minimum size for a unframed app is as small as
 // possible. To test the fix for b/265935069.
-IN_PROC_BROWSER_TEST_F(BorderlessIsolatedWebAppBrowserTest, FrameMinimumSize) {
-  InstallAndLaunchIsolatedWebApp(/*uses_borderless=*/true);
+IN_PROC_BROWSER_TEST_F(UnframedIsolatedWebAppBrowserTest, FrameMinimumSize) {
+  InstallAndLaunchIsolatedWebApp(/*uses_unframed=*/true);
   EXPECT_TRUE(browser_view()->AppUsesUnframedMode());
   GrantWindowManagementPermission();
 
@@ -1201,7 +1199,7 @@ IN_PROC_BROWSER_TEST_F(BorderlessIsolatedWebAppBrowserTest, FrameMinimumSize) {
       browser_view()->window_management_permission_granted_for_testing());
   ASSERT_TRUE(browser_view()->IsUnframedModeEnabled());
 
-  // The minimum size of a window is smaller for a borderless mode app than for
+  // The minimum size of a window is smaller for a unframed mode app than for
   // a normal app. The size of the borders is inconsistent (and we don't have
   // access to the exact borders from here) and varies by OS.
 #if BUILDFLAG(IS_CHROMEOS)
@@ -1212,18 +1210,17 @@ IN_PROC_BROWSER_TEST_F(BorderlessIsolatedWebAppBrowserTest, FrameMinimumSize) {
 #endif
 }
 
-class BorderlessIsolatedWebAppBrowserTestDisabledFlag
-    : public BorderlessIsolatedWebAppBrowserTest {
+class UnframedIsolatedWebAppBrowserTestDisabledFlag
+    : public UnframedIsolatedWebAppBrowserTest {
  protected:
-  void SetupBorderlessFeatureFlag() override {
-    scoped_feature_list_.InitAndDisableFeature(
-        blink::features::kWebAppBorderless);
+  void SetupUnframedFeatureFlag() override {
+    scoped_feature_list_.InitAndDisableFeature(blink::features::kUnframedIwa);
   }
 };
 
-IN_PROC_BROWSER_TEST_F(BorderlessIsolatedWebAppBrowserTestDisabledFlag,
-                       AppCannotUseFeatureWhenBorderlessFlagIsDisabled) {
-  InstallAndLaunchIsolatedWebApp(/*uses_borderless=*/true);
+IN_PROC_BROWSER_TEST_F(UnframedIsolatedWebAppBrowserTestDisabledFlag,
+                       AppCannotUseFeatureWhenUnframedFlagIsDisabled) {
+  InstallAndLaunchIsolatedWebApp(/*uses_unframed=*/true);
 
   EXPECT_FALSE(browser_view()->AppUsesUnframedMode());
   EXPECT_FALSE(
@@ -1730,7 +1727,7 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_WindowControlsOverlay,
   EXPECT_EQ(initial_height_value, updated_rect_list[3].GetInt());
 }
 
-// TODO(crbug.com/40809857): Flaky. Also enable for borderless mode when
+// TODO(crbug.com/40809857): Flaky. Also enable for unframed mode when
 // fixed.
 IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_WindowControlsOverlay,
                        DISABLED_WindowControlsOverlayDraggableRegions) {

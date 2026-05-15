@@ -403,7 +403,7 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="fullscreen"/>
   <int value="5" label="windowControlsOverlay"/>
   <int value="6" label="tabbed"/>
-  <int value="7" label="borderless"/>
+  <int value="7" label="unframed"/>
   <int value="8" label="pictureInPicture"/>
 </enum>
 

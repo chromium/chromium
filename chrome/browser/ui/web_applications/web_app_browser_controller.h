@@ -113,8 +113,8 @@ class WebAppBrowserController : public AppBrowserController,
   bool IsWindowControlsOverlayEnabled() const override;
   void ToggleWindowControlsOverlayEnabled(
       base::OnceClosure on_complete) override;
-  bool AppUsesBorderlessMode() const override;
-  bool UrlMatchesBorderlessPattern(const GURL& url) const override;
+  bool AppUsesUnframedMode() const override;
+  bool UrlMatchesUnframedPattern(const GURL& url) const override;
   bool IsIsolatedWebApp() const override;
   void SetIsolatedWebAppTrueForTesting() override;
   gfx::Rect GetDefaultBounds() const override;

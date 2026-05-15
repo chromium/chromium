@@ -144,8 +144,8 @@ OpaqueBrowserFrameView::OpaqueBrowserFrameView(
   }
 
   if (browser_view->AppUsesUnframedMode()) {
-    layout_->SetBorderlessModeEnabled(browser_view->IsUnframedModeEnabled(),
-                                      this);
+    layout_->SetUnframedModeEnabled(browser_view->IsUnframedModeEnabled(),
+                                    this);
   }
   SetLayoutManager(std::unique_ptr<views::LayoutManager>(layout_));
 
@@ -554,7 +554,7 @@ bool OpaqueBrowserFrameView::IsTabStripVisible() const {
   return GetBrowserView()->GetTabStripVisible();
 }
 
-bool OpaqueBrowserFrameView::GetBorderlessModeEnabled() const {
+bool OpaqueBrowserFrameView::GetUnframedModeEnabled() const {
   return GetBrowserView()->IsUnframedModeEnabled();
 }
 

@@ -2674,7 +2674,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_Borderless, Borderless) {
   Browser* const app_browser = LaunchWebAppBrowser(app_id);
   app_browser->app_controller()->SetIsolatedWebAppTrueForTesting();
 
-  EXPECT_TRUE(app_browser->app_controller()->AppUsesBorderlessMode());
+  EXPECT_TRUE(app_browser->app_controller()->AppUsesUnframedMode());
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_Tabbed, TabbedDisplayOverride) {
