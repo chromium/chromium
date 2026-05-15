@@ -5,6 +5,7 @@
 #include "components/page_load_metrics/browser/observers/declarative_performance_observer.h"
 
 #include "base/feature_list.h"
+#include "base/values.h"
 #include "content/public/browser/navigation_handle.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/mojom/declarative_performance_observer.mojom.h"
@@ -27,6 +28,8 @@ DeclarativePerformanceObserver::OnStart(
           network::features::kDeclarativePerformanceObserver)) {
     return STOP_OBSERVING;
   }
+
+  started_in_foreground_ = started_in_foreground;
 
   return CONTINUE_OBSERVING;
 }
@@ -71,7 +74,21 @@ DeclarativePerformanceObserver::OnCommit(
   enabled_types_ = base::flat_set<network::mojom::PerformanceEntryType>(
       policy->entry_types.begin(), policy->entry_types.end());
 
+  if (enabled_types_.contains(
+          network::mojom::PerformanceEntryType::kVisibilityState)) {
+    base::DictValue entry;
+    entry.Set("name", started_in_foreground_ ? "visible" : "hidden");
+    entry.Set("entryType", "visibility-state");
+    entry.Set("startTime", 0.0);
+    entry.Set("duration", 0.0);
+    AddEntryToBuffer(std::move(entry));
+  }
+
   return CONTINUE_OBSERVING;
+}
+
+void DeclarativePerformanceObserver::AddEntryToBuffer(base::DictValue entry) {
+  buffered_entries_.Append(std::move(entry));
 }
 
 }  // namespace page_load_metrics
