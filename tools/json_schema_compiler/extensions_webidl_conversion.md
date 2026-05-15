@@ -201,6 +201,26 @@ All functions that used a trailing callback must be converted to return a `Promi
   * An array argument `void(Type[] arg)` becomes a sequence `Promise<sequence<Type>>`.
 * void Keyword: The `void` keyword should be replaced with `undefined`.
 
+### Functions that Do Not Support Promises
+Functions annotated with the `[doesNotSupportPromises]` extended attribute (often due to multi-parameter callbacks or complex custom bindings) must not be converted to return a `Promise<T>`. Instead they must retain the trailing callback parameter and the `[doesNotSupportPromises]` extended attribute should be removed.
+
+**Before (`.idl`):**
+```
+// Description of the function.
+// |name|: The name of the alarm.
+// |callback|: Called when done.
+[doesNotSupportPromises="Multi-parameter callback crbug.com/123456"]
+static void foo(DOMString name, FooCallback callback);
+```
+
+**After (`.webidl`):**
+```
+// Description of the function.
+// |name|: The name of the alarm.
+// |callback|: Called when done.
+static undefined foo(DOMString name, FooCallback callback);
+```
+
 ### Promise Function Documentation
 
 When a function is converted from using a callback to returning a `Promise`, its documentation must be updated to reflect this change. The single description for the old `|callback|` parameter is split into two new, more specific tags: `|Returns|` and `|PromiseValue|`.

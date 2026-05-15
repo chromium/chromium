@@ -704,22 +704,45 @@ class Operation:
     # Return type processing.
     return_type = FunctionReturn(
         self.node, description_data.parameter_descriptions).Process()
-    if 'type' in return_type and return_type['type'] is UndefinedType:
-      # This is an Undefined return, so we don't add anything.
-      pass
-    # If no type was specified but there is a parameters property, we can infer
-    # this is a promise definition for an asynchronous return.
-    elif 'type' not in return_type and 'parameters' in return_type:
-      # For legacy reasons Promise based returns are represented on a
-      # "returns_async" property.
-      # TODO(crbug.com/428187556): Once we've migrated schemas to WebIDL, we
-      # should be able to just use the 'returns' field with 'type' = 'promise'
-      # instead of the 'returns_async' property.
-      properties['returns_async'] = return_type
+
+    # A few functions with asynchronous returns don't support promises and
+    # instead use a trailing callback parameter. We need to pop this off and put
+    # it into the `returns_async` field.
+    # Note: We only do this for normal Operation definitions which are not
+    # marked with the `trailingCallbackIsFunctionParameter` extended attribute.
+    if (self.node.GetClass() == 'Operation' and not HasExtendedAttribute(
+        self.node, 'trailingCallbackIsFunctionParameter')
+        and len(parameters) > 0 and parameters[-1].get('type') == 'function'):
+      # Pop the callback from the parameters and format it as returns_async.
+      returns_async = parameters.pop()
+      returns_async.pop('type')
+      returns_async['does_not_support_promises'] = True
+
+      properties['returns_async'] = returns_async
+
+      # Add any synchronous return if it's not Undefined for functions with both
+      # a synchronous and asynchronous return.
+      if 'type' not in return_type or return_type['type'] is not UndefinedType:
+        properties['returns'] = return_type
+
+    # Otherwise we process the returns/returns_async normally.
     else:
-      # Otherwise this is a typed return using either the 'type' key or '$ref'
-      # key to reference the underlying type.
-      properties['returns'] = return_type
+      if 'type' in return_type and return_type['type'] is UndefinedType:
+        # This is an Undefined return, so we don't add anything.
+        pass
+      # If no type was specified but there is a parameters property, we can
+      # infer this is a promise definition for an asynchronous return.
+      elif 'type' not in return_type and 'parameters' in return_type:
+        # For legacy reasons Promise based returns are represented on a
+        # "returns_async" property.
+        # TODO(crbug.com/428187556): Once we've migrated schemas to WebIDL, we
+        # should be able to just use the 'returns' field with 'type' = 'promise'
+        # instead of the 'returns_async' property.
+        properties['returns_async'] = return_type
+      else:
+        # Otherwise this is a typed return using either the 'type' key or '$ref'
+        # key to reference the underlying type.
+        properties['returns'] = return_type
 
     return properties
 

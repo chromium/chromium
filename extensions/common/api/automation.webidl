@@ -1716,12 +1716,12 @@ interface Automation {
   // listen to changes across all trees. Pass a filter to determine what
   // specific tree changes to listen to, and note that listnening to all
   // tree changes can be expensive.
-  [nocompile]
+  [nocompile, trailingCallbackIsFunctionParameter]
   static undefined addTreeChangeObserver(
       TreeChangeObserverFilter filter, TreeChangeObserver observer);
 
   // Remove a tree change observer.
-  [nocompile]
+  [nocompile, trailingCallbackIsFunctionParameter]
   static undefined removeTreeChangeObserver(TreeChangeObserver observer);
 
   // Sets the selection in a tree. This creates a selection in a single

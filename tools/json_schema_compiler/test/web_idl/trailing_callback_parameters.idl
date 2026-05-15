@@ -1,0 +1,38 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Callback description.
+// |x|: The x value.
+callback MyCallback = undefined (long x);
+
+// Callback with a trailing callback.
+// |callback|: The trailing callback.
+callback CallbackWithTrailingCallback = undefined (MyCallback callback);
+
+dictionary CallbackDictionary {
+  required CallbackWithTrailingCallback trailingCallback;
+};
+
+interface DoesNotSupportPromisesAPI {
+  // Foo description.
+  // |arg|: The arg.
+  // |callback|: The callback.
+  static undefined foo(long arg, optional MyCallback callback);
+
+  static undefined bar(MyCallback callback);
+
+  // Description for syncAndAsync.
+  // |callback|: Async return description.
+  // |Returns|: Sync return description.
+  static long syncAndAsync(MyCallback callback);
+
+  // Description for withExtAttr.
+  // |arg|: The arg.
+  // |callback|: The callback as a normal parameter.
+  [trailingCallbackIsFunctionParameter] static undefined withExtAttr(long arg, MyCallback callback);
+};
+
+partial interface Browser {
+  static attribute DoesNotSupportPromisesAPI api;
+};

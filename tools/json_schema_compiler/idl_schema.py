@@ -145,7 +145,7 @@ class Callspec(object):
       does_not_support_promises = self.node.GetProperty(
           'doesNotSupportPromises')
       if does_not_support_promises is not None:
-        returns_async['does_not_support_promises'] = does_not_support_promises
+        returns_async['does_not_support_promises'] = True
       else:
         # Since all functions which support Promise based calls can inherently
         # drop the callback to get a Promise returned, any optionality specified

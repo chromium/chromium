@@ -598,7 +598,7 @@ class IdlSchemaTest(unittest.TestCase):
             'name': 'x',
             'type': 'integer'
         }],
-        'does_not_support_promises': 'Test'
+        'does_not_support_promises': True
     }
     params = getParams(schema, 'non_promise_supporting')
     returns_async = getReturnsAsync(schema, 'non_promise_supporting')
@@ -626,7 +626,7 @@ class IdlSchemaTest(unittest.TestCase):
             'name': 'x',
             'type': 'integer'
         }],
-        'does_not_support_promises': 'Test'
+        'does_not_support_promises': True
     }
     params = getParams(schema, 'non_promise_supporting_with_params')
     returns_async = getReturnsAsync(schema,

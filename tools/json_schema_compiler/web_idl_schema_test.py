@@ -1504,6 +1504,81 @@ class WebIdlSchemaTest(unittest.TestCase):
         long_identifier_function['parameters'][0].get('description'),
     )
 
+  # Various tests for trailing callback parameters on function definitions.
+  def testTrailingCallbackParameters(self):
+    idl = web_idl_schema.Load('test/web_idl/trailing_callback_parameters.idl')
+    self.assertEqual(1, len(idl))
+    schema = idl[0]
+
+    # Verifies an optional callback parameter is marked as optional and as not
+    # supporting promises, along with various related descritiptions come
+    # through as expected.
+    foo_function = getFunction(schema, 'foo')
+    self.assertEqual('Foo description.', foo_function.get('description'))
+    self.assertEqual(1, len(foo_function['parameters']))
+    self.assertEqual('The arg.',
+                     foo_function['parameters'][0].get('description'))
+
+    foo_async_return = getFunctionAsyncReturn(schema, 'foo')
+    self.assertTrue(foo_async_return.get('does_not_support_promises'))
+    self.assertTrue(foo_async_return.get('optional'))
+    self.assertEqual('callback', foo_async_return.get('name'))
+    self.assertEqual('The callback.', foo_async_return.get('description'))
+
+    self.assertEqual(1, len(foo_async_return['parameters']))
+    self.assertEqual('The x value.',
+                     foo_async_return['parameters'][0].get('description'))
+
+    # Verifies a required callback parameter isn't marked optional and is marked
+    # as not supporting promises.
+    bar_async_return = getFunctionAsyncReturn(schema, 'bar')
+    self.assertTrue(bar_async_return.get('does_not_support_promises'))
+    self.assertNotIn('optional', bar_async_return)
+
+    # Verifies a function with both callback and a synchronous return gets both
+    # of those processed as expected.
+    sync_and_async_function = getFunction(schema, 'syncAndAsync')
+    self.assertEqual('Description for syncAndAsync.',
+                     sync_and_async_function.get('description'))
+
+    sync_return = getFunctionReturn(schema, 'syncAndAsync')
+    self.assertEqual('integer', sync_return.get('type'))
+    self.assertEqual('Sync return description.', sync_return.get('description'))
+
+    async_return = getFunctionAsyncReturn(schema, 'syncAndAsync')
+    self.assertTrue(async_return.get('does_not_support_promises'))
+    self.assertEqual('callback', async_return.get('name'))
+    self.assertEqual('Async return description.',
+                     async_return.get('description'))
+
+    # Verifies that the [trailingCallbackIsFunctionParameter] extended attribute
+    # on a function leaves the trailing callback as a normal function parameter
+    # and doesn't get turned into an async return.
+    with_ext_attr_function = getFunction(schema, 'withExtAttr')
+    self.assertEqual('Description for withExtAttr.',
+                     with_ext_attr_function.get('description'))
+    self.assertEqual(2, len(with_ext_attr_function['parameters']))
+    self.assertEqual('The arg.',
+                     with_ext_attr_function['parameters'][0].get('description'))
+    self.assertEqual('The callback as a normal parameter.',
+                     with_ext_attr_function['parameters'][1].get('description'))
+    self.assertEqual('function',
+                     with_ext_attr_function['parameters'][1].get('type'))
+    self.assertIsNone(getFunctionAsyncReturn(schema, 'withExtAttr'))
+
+    # Verifies that a Callback definition with a trailing callback does not pop
+    # it into returns_async. We test this by getting the type on a dictionary
+    # member which references the callback.
+    callback_type = getType(
+        schema, 'CallbackDictionary')['properties']['trailingCallback']
+    self.assertEqual('function', callback_type.get('type'))
+    self.assertEqual(1, len(callback_type['parameters']))
+    self.assertEqual('callback', callback_type['parameters'][0].get('name'))
+    self.assertEqual('function', callback_type['parameters'][0].get('type'))
+    self.assertEqual('The trailing callback.',
+                     callback_type['parameters'][0].get('description'))
+    self.assertNotIn('returns_async', callback_type)
+
 
 if __name__ == '__main__':
   unittest.main()
