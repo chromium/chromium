@@ -39,11 +39,6 @@ __attribute__((visibility("default"))) int ChromeMain(int argc, char* argv[]);
 
 namespace {
 
-// Kill switch to disable adding memory ranges to crash data when heap
-// corruption or double free is detected by PA-E.
-BASE_FEATURE(kIOSCorruptionDetectedMemoryRangesKillSwitch,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // The number of times a PA-E double free or corruption has been detected.
 int g_double_free_or_corruption_detected_count = 0;
 
@@ -139,8 +134,7 @@ int ChromeMain(int argc, char* argv[]) {
         base::NumberToString(g_double_free_or_corruption_detected_count));
 
     // If the kill switch is enabled, skip adding memory ranges.
-    if (base::FeatureList::IsEnabled(
-            kIOSCorruptionDetectedMemoryRangesKillSwitch)) {
+    if (crash_helper::IsCorruptionDetectedMemoryRangesKillSwitchEnabled()) {
       return;
     }
 

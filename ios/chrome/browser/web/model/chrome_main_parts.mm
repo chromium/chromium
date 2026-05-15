@@ -342,6 +342,7 @@ void IOSChromeMainParts::PreMainMessageLoopRun() {
       ->ReconfigureAfterFeatureListInit("");
   base::allocator::PartitionAllocSupport::Get()->ReconfigureAfterTaskRunnerInit(
       "");
+  crash_helper::CacheCorruptionDetectedMemoryRangesKillSwitch();
 #endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC)
 
   TranslateServiceIOS::Initialize();

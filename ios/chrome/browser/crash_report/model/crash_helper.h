@@ -52,6 +52,15 @@ void ClearReportsBetween(base::Time delete_begin, base::Time delete_end);
 base::CallbackListSubscription AddProcessIntermediateDumpsFinishedCallback(
     const base::RepeatingCallback<void(bool)>& callback);
 
+// Caches the state of kIOSCorruptionDetectedMemoryRangesKillSwitch after
+// FeatureList is initialized.
+void CacheCorruptionDetectedMemoryRangesKillSwitch();
+
+// Returns true if kIOSCorruptionDetectedMemoryRangesKillSwitch is enabled,
+// reading from a cached atomic variable to avoid feature flag tracking
+// dynamic allocations inside crash handlers.
+bool IsCorruptionDetectedMemoryRangesKillSwitchEnabled();
+
 }  // namespace crash_helper
 
 #endif  // IOS_CHROME_BROWSER_CRASH_REPORT_MODEL_CRASH_HELPER_H_

@@ -10,6 +10,8 @@
 #import <sys/stat.h>
 #import <sys/sysctl.h>
 
+#import <atomic>
+
 #import "base/auto_reset.h"
 #import "base/debug/crash_logging.h"
 #import "base/feature_list.h"
@@ -51,6 +53,13 @@ namespace {
 // safe mode crashes will be ignored. This also disables the main thread freeze
 // detector.
 BASE_FEATURE(kIOSCrashUploadKillSwitch, base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Kill switch to disable adding memory ranges to crash data when heap
+// corruption or double free is detected by PA-E.
+BASE_FEATURE(kIOSCorruptionDetectedMemoryRangesKillSwitch,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+std::atomic<bool> g_corruption_kill_switch_enabled = false;
 
 const char kUptimeAtRestoreInMs[] = "uptime_at_restore_in_ms";
 const char kUploadedInRecoveryMode[] = "uploaded_in_recovery_mode";
@@ -243,6 +252,17 @@ void StartUploadingReportsInRecoveryMode() {
 
 void ClearReportsBetween(base::Time delete_begin, base::Time delete_end) {
   ios::CreateCrashUploadList()->Clear(delete_begin, delete_end);
+}
+
+void CacheCorruptionDetectedMemoryRangesKillSwitch() {
+  g_corruption_kill_switch_enabled.store(
+      base::FeatureList::IsEnabled(
+          kIOSCorruptionDetectedMemoryRangesKillSwitch),
+      std::memory_order_relaxed);
+}
+
+bool IsCorruptionDetectedMemoryRangesKillSwitchEnabled() {
+  return g_corruption_kill_switch_enabled.load(std::memory_order_relaxed);
 }
 
 }  // namespace crash_helper
