@@ -12,6 +12,7 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JniType;
 
 import org.chromium.base.Callback;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ServiceLoaderUtil;
 import org.chromium.base.ThreadUtils;
 import org.chromium.build.annotations.NullMarked;
@@ -157,7 +158,13 @@ public class LocaleManager implements DefaultSearchEngineDialogHelper.Delegate {
     /** Set a LocaleManagerDelegate to be used for testing. */
     @VisibleForTesting
     public void setDelegateForTest(LocaleManagerDelegate delegate) {
+        LocaleManagerDelegate previousDelegate = mDelegate;
         mDelegate = delegate;
         mDelegate.setDefaultSearchEngineDelegate(this);
+        ResettersForTesting.register(
+                () -> {
+                    mDelegate = previousDelegate;
+                    mDelegate.setDefaultSearchEngineDelegate(this);
+                });
     }
 }
