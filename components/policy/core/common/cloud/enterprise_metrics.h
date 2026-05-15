@@ -320,7 +320,7 @@ inline constexpr char kMetricUserRemoteCommandReceived[] =
 // Enterprise.UserRemoteCommand.Executed.BrowserRotateAttestationCredential
 // Enterprise.UserRemoteCommand.Executed.FetchCrdAvailabilityInfo
 // Enterprise.UserRemoteCommand.Executed.FetchSupportPacket
-// Enterprise.UserRemoteCommand.Executed.ExtensionUpdateCheck
+// Enterprise.UserRemoteCommand.Executed.BrowserExtensionUpdateCheck
 // Enterprise.UserRemoteCommand.Executed.QueryGeolocation
 inline constexpr char kMetricUserRemoteCommandExecutedTemplate[] =
     "Enterprise.UserRemoteCommand.Executed.%s";
@@ -402,7 +402,7 @@ inline constexpr char kMetricDeviceRemoteCommandCrdSessionDurationTemplate[] =
 // Enterprise.DeviceRemoteCommand.Executed.DeviceResetEuicc
 // Enterprise.DeviceRemoteCommand.Executed.BrowserRotateAttestationCredential
 // Enterprise.DeviceRemoteCommand.Executed.FetchCrdAvailabilityInfo
-// Enterprise.DeviceRemoteCommand.Executed.ExtensionUpdateCheck
+// Enterprise.DeviceRemoteCommand.Executed.BrowserExtensionUpdateCheck
 // Enterprise.DeviceRemoteCommand.Executed.FetchSupportPacket
 // Enterprise.DeviceRemoteCommand.Executed.QueryGeolocation
 inline constexpr char kMetricDeviceRemoteCommandExecutedTemplate[] =
@@ -429,7 +429,7 @@ inline constexpr char kMetricCBCMRemoteCommandReceived[] =
 // Enterprise.CBCMRemoteCommand.Executed.DeviceResetEuicc
 // Enterprise.CBCMRemoteCommand.Executed.BrowserRotateAttestationCredential
 // Enterprise.CBCMRemoteCommand.Executed.FetchCrdAvailabilityInfo
-// Enterprise.CBCMRemoteCommand.Executed.ExtensionUpdateCheck
+// Enterprise.CBCMRemoteCommand.Executed.BrowserExtensionUpdateCheck
 // Enterprise.CBCMRemoteCommand.Executed.FetchSupportPacket
 // Enterprise.CBCMRemoteCommand.Executed.QueryGeolocation
 inline constexpr char kMetricCBCMRemoteCommandExecutedTemplate[] =

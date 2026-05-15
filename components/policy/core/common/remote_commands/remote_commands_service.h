@@ -73,9 +73,9 @@ class POLICY_EXPORT RemoteCommandsService
     kFetchCrdAvailabilityInfo = 21,
     kFetchSupportPacket = 22,
     kQueryGeolocation = 23,
-    kExtensionUpdateCheck = 24,
+    kBrowserExtensionUpdateCheck = 24,
     // Used by UMA histograms. Shall refer to the last enumeration.
-    kMaxValue = kExtensionUpdateCheck
+    kMaxValue = kBrowserExtensionUpdateCheck
   };
 
   // Signature type that will be used for the requests.

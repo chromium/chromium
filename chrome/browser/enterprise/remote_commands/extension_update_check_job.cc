@@ -31,7 +31,8 @@ ExtensionUpdateCheckJob::~ExtensionUpdateCheckJob() = default;
 
 enterprise_management::RemoteCommand_Type ExtensionUpdateCheckJob::GetType()
     const {
-  return enterprise_management::RemoteCommand_Type_EXTENSION_UPDATE_CHECK;
+  return enterprise_management::
+      RemoteCommand_Type_BROWSER_EXTENSION_UPDATE_CHECK;
 }
 
 bool ExtensionUpdateCheckJob::ParseCommandPayload(

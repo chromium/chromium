@@ -265,7 +265,7 @@ IN_PROC_BROWSER_TEST_P(UserRemoteCommandsServiceTest, Success) {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 IN_PROC_BROWSER_TEST_P(UserRemoteCommandsServiceTest, ExtensionUpdateCheck) {
   em::RemoteCommand command;
-  command.set_type(em::RemoteCommand_Type_EXTENSION_UPDATE_CHECK);
+  command.set_type(em::RemoteCommand_Type_BROWSER_EXTENSION_UPDATE_CHECK);
   command.set_command_id(kCommandId);
   command.set_payload("{}");
   AddPendingRemoteCommand(command);

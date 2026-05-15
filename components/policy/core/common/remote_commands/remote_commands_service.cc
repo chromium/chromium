@@ -76,8 +76,8 @@ RemoteCommandsService::MetricReceivedRemoteCommand RemoteCommandMetricFromType(
       return Metric::kFetchSupportPacket;
     case em::RemoteCommand_Type_QUERY_GEOLOCATION:
       return Metric::kQueryGeolocation;
-    case em::RemoteCommand_Type_EXTENSION_UPDATE_CHECK:
-      return Metric::kExtensionUpdateCheck;
+    case em::RemoteCommand_Type_BROWSER_EXTENSION_UPDATE_CHECK:
+      return Metric::kBrowserExtensionUpdateCheck;
   }
 
   // None of possible types matched. May indicate that there is new unhandled
@@ -125,8 +125,8 @@ const char* RemoteCommandTypeToString(em::RemoteCommand_Type type) {
       return "FetchSupportPacket";
     case em::RemoteCommand_Type_QUERY_GEOLOCATION:
       return "QueryGeolocation";
-    case em::RemoteCommand_Type_EXTENSION_UPDATE_CHECK:
-      return "ExtensionUpdateCheck";
+    case em::RemoteCommand_Type_BROWSER_EXTENSION_UPDATE_CHECK:
+      return "BrowserExtensionUpdateCheck";
   }
 
   NOTREACHED() << "Unknown command type: " << type;
