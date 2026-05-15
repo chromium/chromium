@@ -5,6 +5,7 @@
 #ifndef EXTENSIONS_BROWSER_API_OFFSCREEN_OFFSCREEN_API_H_
 #define EXTENSIONS_BROWSER_API_OFFSCREEN_OFFSCREEN_API_H_
 
+#include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "extensions/browser/extension_function.h"
 #include "extensions/browser/extension_function_histogram_value.h"
@@ -50,6 +51,8 @@ class OffscreenCreateDocumentFunction : public ExtensionFunction,
   // Observes the newly-created document to wait for it to be ready.
   base::ScopedObservation<ExtensionHost, ExtensionHostObserver> host_observer_{
       this};
+
+  base::WeakPtrFactory<OffscreenCreateDocumentFunction> weak_factory_{this};
 };
 
 class OffscreenCloseDocumentFunction : public ExtensionFunction,
