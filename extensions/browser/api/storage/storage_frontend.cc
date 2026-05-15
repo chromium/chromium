@@ -670,11 +670,20 @@ void StorageFrontend::OnSettingsChanged(
   bool has_area_changed_event_listener =
       event_router->ExtensionHasEventListener(extension_id, area_event_name);
 
+  if (!has_event_changed_listener && !has_area_changed_event_listener) {
+    return;
+  }
+
+  api::storage::AccessLevel effective_access_level =
+      access_level.has_value()
+          ? access_level.value()
+          : storage_utils::GetAccessLevelForArea(
+                extension_id, *browser_context_, storage_area);
+
+  std::optional<mojom::ContextType> restrict_to_context_type = std::nullopt;
   // Restrict event to privileged context if access level is set only to trusted
   // contexts.
-  std::optional<mojom::ContextType> restrict_to_context_type = std::nullopt;
-  if (access_level.has_value() &&
-      access_level.value() == api::storage::AccessLevel::kTrustedContexts) {
+  if (effective_access_level == api::storage::AccessLevel::kTrustedContexts) {
     restrict_to_context_type = mojom::ContextType::kPrivilegedExtension;
   }
 
