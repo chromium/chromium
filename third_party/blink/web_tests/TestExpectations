@@ -8781,7 +8781,7 @@ crbug.com/40336192 virtual/disable-css-line-clamp/external/wpt/css/css-text/whit
 crbug.com/40336192 virtual/disable-css-line-clamp/fast/overflow/line-clamp-floats-dont-grow-container.html [ Failure ]
 
 # Dark Mode Failures
-[ Mac15 ] virtual/dark-mode-default/dark-mode/images/country-flags.html [ Failure Pass ]
+crbug.com/513290098 [ Mac15 ] virtual/dark-mode-default/dark-mode/images/country-flags.html [ Failure Pass ]
 
 # backdrop-filter-mirror-edge
 crbug.com/904592 external/wpt/css/filter-effects/backdrop-filter-svg-blur.html [ Failure ]
