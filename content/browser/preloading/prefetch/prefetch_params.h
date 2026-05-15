@@ -112,8 +112,8 @@ CONTENT_EXPORT std::string GetMetricsSuffixTriggerTypeAndEagerness(
 
 // The max number of immediate prefetches allowed.
 inline constexpr size_t kMaxNumberOfImmediatePrefetchesPerPage = 50;
-// The max number of non-immediate prefetches allowed.
-inline constexpr size_t kMaxNumberOfNonImmediatePrefetchesPerPage = 2;
+// The max number of conservative prefetches allowed.
+inline constexpr size_t kMaxNumberOfConservativePrefetchesPerPage = 2;
 
 // Returns true if NIK prefetch scope is enabled. See crbug.com/1502326
 bool PrefetchNIKScopeEnabled();

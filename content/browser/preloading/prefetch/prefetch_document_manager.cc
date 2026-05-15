@@ -9,6 +9,7 @@
 #include "content/browser/browser_context_impl.h"
 #include "content/browser/preloading/prefetch/no_vary_search_helper.h"
 #include "content/browser/preloading/prefetch/prefetch_container.h"
+#include "content/browser/preloading/prefetch/prefetch_features.h"
 #include "content/browser/preloading/prefetch/prefetch_handle_impl.h"
 #include "content/browser/preloading/prefetch/prefetch_params.h"
 #include "content/browser/preloading/prefetch/prefetch_request.h"
@@ -337,6 +338,25 @@ void PrefetchDocumentManager::OnPrefetchCompletedOrFailed(
   }
 }
 
+size_t PrefetchDocumentManager::GetPrefetchLimit(
+    blink::mojom::SpeculationEagerness eagerness) const {
+  if (IsImmediateSpeculationEagerness(eagerness)) {
+    return kMaxNumberOfImmediatePrefetchesPerPage;
+  }
+
+  switch (eagerness) {
+    case blink::mojom::SpeculationEagerness::kEager:
+      return features::kMaxNumberOfEagerPrefetchesPerPage.Get();
+    case blink::mojom::SpeculationEagerness::kModerate:
+      return features::kMaxNumberOfModeratePrefetchesPerPage.Get();
+    case blink::mojom::SpeculationEagerness::kConservative:
+      return kMaxNumberOfConservativePrefetchesPerPage;
+    case blink::mojom::SpeculationEagerness::kImmediate:
+      NOTREACHED();
+  }
+  NOTREACHED();
+}
+
 std::tuple<bool, base::WeakPtr<PrefetchContainer>>
 PrefetchDocumentManager::CanPrefetchNow(PrefetchContainer* prefetch) {
   RenderFrameHost* rfh = &render_frame_host();
@@ -347,14 +367,17 @@ PrefetchDocumentManager::CanPrefetchNow(PrefetchContainer* prefetch) {
           Visibility::VISIBLE) {
     return std::make_tuple(false, nullptr);
   }
-  if (IsImmediateSpeculationEagerness(
-          prefetch->request().prefetch_type().GetEagerness())) {
-    return std::make_tuple(completed_immediate_prefetches_.size() <
-                               kMaxNumberOfImmediatePrefetchesPerPage,
+
+  blink::mojom::SpeculationEagerness eagerness =
+      prefetch->request().prefetch_type().GetEagerness();
+
+  size_t limit = GetPrefetchLimit(eagerness);
+
+  if (IsImmediateSpeculationEagerness(eagerness)) {
+    return std::make_tuple(completed_immediate_prefetches_.size() < limit,
                            nullptr);
   } else {
-    if (completed_non_immediate_prefetches_.size() <
-        kMaxNumberOfNonImmediatePrefetchesPerPage) {
+    if (completed_non_immediate_prefetches_.size() < limit) {
       return std::make_tuple(true, nullptr);
     }
     // We are at capacity, and now need to evict the oldest non-immediate

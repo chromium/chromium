@@ -416,13 +416,10 @@ void PrefetchScheduler::ProgressOne(
       return;
     }
 
-    base::WeakPtr<PrefetchContainer> prefetch_to_evict = std::get<1>(
-        prefetch_document_manager->CanPrefetchNow(prefetch_container.get()));
-    if (!prefetch_to_evict) {
-      return;
-    }
-
-    {
+    // Cancel existing prefetches until a slot for a new prefetch is ensured.
+    while (base::WeakPtr<PrefetchContainer> prefetch_to_evict =
+               std::get<1>(prefetch_document_manager->CanPrefetchNow(
+                   prefetch_container.get()))) {
       base::AutoReset<bool> guard{&in_eviction_, true};
       prefetch_service_->EvictPrefetch(base::PassKey<PrefetchScheduler>(),
                                        *prefetch_to_evict);

@@ -6,8 +6,13 @@
 
 #include <string>
 
+#include "base/strings/string_number_conversions.h"
+#include "content/browser/preloading/prefetch/prefetch_container.h"
+#include "content/browser/preloading/prefetch/prefetch_features.h"
 #include "content/browser/preloading/prefetch/prefetch_request.h"
 #include "content/browser/preloading/prefetch/prefetch_test_util_internal.h"
+#include "content/browser/preloading/preloading.h"
+#include "content/browser/preloading/speculation_rules/speculation_rules_util.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/test/test_render_frame_host.h"
 #include "services/network/public/mojom/no_vary_search.mojom.h"
@@ -427,6 +432,264 @@ TEST_F(PrefetchDocumentManagerTest, FencedFrameDoesNotStartPrefetch) {
   // `CanPrefetchNow()` blocks the speculationrules prefetch from fenced frame.
   EXPECT_THAT(prefetch_document_manager->CanPrefetchNow(prefetch_urls[0].get()),
               FieldsAre(false, IsNull()));
+}
+
+TEST_F(PrefetchDocumentManagerTest, CanPrefetchNowLimits_Default) {
+  auto* prefetch_document_manager =
+      PrefetchDocumentManager::GetOrCreateForCurrentDocument(main_rfh());
+
+  // Create 2 completed non-immediate prefetches to reach the default limit.
+  for (int i = 0; i < 2; ++i) {
+    auto candidate = blink::mojom::SpeculationCandidate::New();
+    candidate->action = blink::mojom::SpeculationAction::kPrefetch;
+    candidate->url =
+        GetCrossOriginUrl("/candidate" + base::NumberToString(i) + ".html");
+    candidate->referrer = blink::mojom::Referrer::New();
+    candidate->eagerness = blink::mojom::SpeculationEagerness::kModerate;
+
+    std::vector<blink::mojom::SpeculationCandidatePtr> candidates;
+    candidates.push_back(std::move(candidate));
+    prefetch_document_manager->ProcessCandidates(candidates);
+
+    auto& prefetch = GetPrefetches().back();
+    prefetch->SetPrefetchStatus(PrefetchStatus::kPrefetchSuccessful);
+    prefetch_document_manager->OnPrefetchCompletedOrFailed(*prefetch);
+  }
+
+  ASSERT_EQ(GetPrefetches().size(), 2u);
+
+  // Now we are at the default limit (2).
+  // A new regular candidate should trigger eviction.
+  {
+    auto candidate = blink::mojom::SpeculationCandidate::New();
+    candidate->action = blink::mojom::SpeculationAction::kPrefetch;
+    candidate->url = GetCrossOriginUrl("/candidate_new.html");
+    candidate->referrer = blink::mojom::Referrer::New();
+    candidate->eagerness = blink::mojom::SpeculationEagerness::kModerate;
+
+    std::vector<blink::mojom::SpeculationCandidatePtr> candidates;
+    candidates.push_back(std::move(candidate));
+    prefetch_document_manager->ProcessCandidates(candidates);
+
+    auto& prefetch = GetPrefetches().back();
+    auto [can_prefetch, to_evict] =
+        prefetch_document_manager->CanPrefetchNow(prefetch.get());
+    EXPECT_TRUE(can_prefetch);
+    EXPECT_EQ(to_evict.get(), GetPrefetches()[0].get());
+  }
+}
+
+TEST_F(PrefetchDocumentManagerTest, CanPrefetchNowLimits_EagerEviction) {
+  auto* prefetch_document_manager =
+      PrefetchDocumentManager::GetOrCreateForCurrentDocument(main_rfh());
+
+  // Enable the feature and set limit to 4 for viewport heuristics.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      ::features::kPrefetchEagerLimit,
+      {{"max_number_of_eager_prefetches_per_page", "4"}});
+
+  // Add 4 completed Moderate prefetches to reach 4.
+  for (int i = 0; i < 4; ++i) {
+    const GURL url_mod =
+        GetCrossOriginUrl("/candidate_mod" + base::NumberToString(i) + ".html");
+    PrefetchType prefetch_type_mod(
+        PreloadingTriggerType::kSpeculationRule,
+        /*use_prefetch_proxy=*/false,
+        blink::mojom::SpeculationEagerness::kModerate);
+
+    prefetch_document_manager->PrefetchUrl(
+        url_mod, prefetch_type_mod,
+        preloading_predictor::kModerateViewportHeuristic,
+        blink::mojom::Referrer(), std::nullopt, nullptr,
+        PreloadPipelineInfo::Create(PreloadingType::kPrefetch));
+
+    auto& prefetch = GetPrefetches().back();
+    prefetch->SetPrefetchStatus(PrefetchStatus::kPrefetchSuccessful);
+    prefetch_document_manager->OnPrefetchCompletedOrFailed(*prefetch);
+  }
+
+  ASSERT_EQ(GetPrefetches().size(), 4u);
+
+  // Create an Eager candidate.
+  const GURL url_eager = GetCrossOriginUrl("/candidate_eager.html");
+  PrefetchType prefetch_type_eager(PreloadingTriggerType::kSpeculationRule,
+                                   /*use_prefetch_proxy=*/false,
+                                   blink::mojom::SpeculationEagerness::kEager);
+
+  // Determine the correct enacting predictor based on platform behavior.
+  const bool is_eager_immediate = IsImmediateSpeculationEagerness(
+      blink::mojom::SpeculationEagerness::kEager);
+  const PreloadingPredictor enacting_predictor =
+      is_eager_immediate ? content_preloading_predictor::kSpeculationRules
+                         : preloading_predictor::kModerateViewportHeuristic;
+
+  prefetch_document_manager->PrefetchUrl(
+      url_eager, prefetch_type_eager, enacting_predictor,
+      blink::mojom::Referrer(), std::nullopt, nullptr,
+      PreloadPipelineInfo::Create(PreloadingType::kPrefetch));
+
+  auto& prefetch_eager = GetPrefetches().back();
+
+  auto [can_prefetch, to_evict] =
+      prefetch_document_manager->CanPrefetchNow(prefetch_eager.get());
+  EXPECT_TRUE(can_prefetch);
+
+  if (is_eager_immediate) {
+    // If eager is immediate, it uses the immediate limit (50) and does not
+    // trigger eviction of non-immediate prefetches.
+    EXPECT_FALSE(to_evict);
+  } else {
+    // If eager is not immediate, it is subject to the eager limit (4) and
+    // should trigger eviction.
+    EXPECT_EQ(to_evict.get(), GetPrefetches()[0].get());
+  }
+}
+
+TEST_F(PrefetchDocumentManagerTest, CanPrefetchNowLimits_ModerateEviction) {
+  auto* prefetch_document_manager =
+      PrefetchDocumentManager::GetOrCreateForCurrentDocument(main_rfh());
+
+  // Enable the feature and set limit to 4 for viewport heuristics.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      ::features::kPrefetchModerateLimit,
+      {{"max_number_of_moderate_prefetches_per_page", "4"}});
+
+  // Add 4 completed Moderate prefetches to reach 4.
+  for (int i = 0; i < 4; ++i) {
+    const GURL url_mod =
+        GetCrossOriginUrl("/candidate_mod" + base::NumberToString(i) + ".html");
+    PrefetchType prefetch_type_mod(
+        PreloadingTriggerType::kSpeculationRule,
+        /*use_prefetch_proxy=*/false,
+        blink::mojom::SpeculationEagerness::kModerate);
+
+    prefetch_document_manager->PrefetchUrl(
+        url_mod, prefetch_type_mod,
+        preloading_predictor::kModerateViewportHeuristic,
+        blink::mojom::Referrer(), std::nullopt, nullptr,
+        PreloadPipelineInfo::Create(PreloadingType::kPrefetch));
+
+    auto& prefetch = GetPrefetches().back();
+    prefetch->SetPrefetchStatus(PrefetchStatus::kPrefetchSuccessful);
+    prefetch_document_manager->OnPrefetchCompletedOrFailed(*prefetch);
+  }
+
+  ASSERT_EQ(GetPrefetches().size(), 4u);
+
+  // Create a Moderate candidate.
+  const GURL url_mod_new = GetCrossOriginUrl("/candidate_mod_new.html");
+  PrefetchType prefetch_type_mod_new(
+      PreloadingTriggerType::kSpeculationRule,
+      /*use_prefetch_proxy=*/false,
+      blink::mojom::SpeculationEagerness::kModerate);
+
+  prefetch_document_manager->PrefetchUrl(
+      url_mod_new, prefetch_type_mod_new,
+      preloading_predictor::kModerateViewportHeuristic,
+      blink::mojom::Referrer(), std::nullopt, nullptr,
+      PreloadPipelineInfo::Create(PreloadingType::kPrefetch));
+
+  auto& prefetch_mod_new = GetPrefetches().back();
+
+  // We are at limit (4). Moderate candidate should trigger eviction.
+  auto [can_prefetch, to_evict] =
+      prefetch_document_manager->CanPrefetchNow(prefetch_mod_new.get());
+  EXPECT_TRUE(can_prefetch);
+  EXPECT_EQ(to_evict.get(), GetPrefetches()[0].get());
+}
+
+TEST_F(PrefetchDocumentManagerTest, CanPrefetchNowLimits_ConservativeEviction) {
+  auto* prefetch_document_manager =
+      PrefetchDocumentManager::GetOrCreateForCurrentDocument(main_rfh());
+
+  // Enable the feature and set limit to 4 for viewport heuristics.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      ::features::kPrefetchModerateLimit,
+      {{"max_number_of_moderate_prefetches_per_page", "4"}});
+
+  std::vector<base::WeakPtr<PrefetchContainer>> my_prefetches;
+
+  // Add 4 completed Moderate prefetches to reach 4.
+  for (int i = 0; i < 4; ++i) {
+    const GURL url_mod =
+        GetCrossOriginUrl("/candidate_mod" + base::NumberToString(i) + ".html");
+    PrefetchType prefetch_type_mod(
+        PreloadingTriggerType::kSpeculationRule,
+        /*use_prefetch_proxy=*/false,
+        blink::mojom::SpeculationEagerness::kModerate);
+
+    prefetch_document_manager->PrefetchUrl(
+        url_mod, prefetch_type_mod,
+        preloading_predictor::kModerateViewportHeuristic,
+        blink::mojom::Referrer(), std::nullopt, nullptr,
+        PreloadPipelineInfo::Create(PreloadingType::kPrefetch));
+
+    my_prefetches.push_back(GetPrefetches().back());
+    my_prefetches.back()->SetPrefetchStatus(
+        PrefetchStatus::kPrefetchSuccessful);
+    prefetch_document_manager->OnPrefetchCompletedOrFailed(
+        *my_prefetches.back());
+  }
+
+  ASSERT_EQ(GetPrefetches().size(), 4u);
+
+  // Create a Conservative candidate.
+  const GURL url_cons = GetCrossOriginUrl("/candidate_cons.html");
+  PrefetchType prefetch_type_cons(
+      PreloadingTriggerType::kSpeculationRule,
+      /*use_prefetch_proxy=*/false,
+      blink::mojom::SpeculationEagerness::kConservative);
+
+  prefetch_document_manager->PrefetchUrl(
+      url_cons, prefetch_type_cons,
+      preloading_predictor::kModerateViewportHeuristic,
+      blink::mojom::Referrer(), std::nullopt, nullptr,
+      PreloadPipelineInfo::Create(PreloadingType::kPrefetch));
+
+  auto& prefetch_cons = GetPrefetches().back();
+
+  // Limit for Conservative is 2. We have 4 completed non-immediate prefetches.
+  // CanPrefetchNow should return true and suggest oldest for eviction.
+
+  auto [can_prefetch_cons, to_evict_cons] =
+      prefetch_document_manager->CanPrefetchNow(prefetch_cons.get());
+  EXPECT_TRUE(can_prefetch_cons);
+  EXPECT_EQ(to_evict_cons.get(), my_prefetches[0].get());
+
+  // Set a dummy callback to avoid crash in OnWillBeDestroyed.
+  prefetch_document_manager->SetPrefetchDestructionCallback(
+      base::BindRepeating([](const GURL&) {}));
+
+  // Simulate eviction of the first one!
+  prefetch_document_manager->OnWillBeDestroyed(*my_prefetches[0]);
+
+  // Call CanPrefetchNow again! Count is now 3. Limit is still 2.
+  auto [can_prefetch_cons2, to_evict_cons2] =
+      prefetch_document_manager->CanPrefetchNow(prefetch_cons.get());
+  EXPECT_TRUE(can_prefetch_cons2);
+  EXPECT_EQ(to_evict_cons2.get(), my_prefetches[1].get());
+
+  // Simulate eviction of the second one!
+  prefetch_document_manager->OnWillBeDestroyed(*my_prefetches[1]);
+
+  // Call CanPrefetchNow again! Count is now 2. Limit is still 2.
+  auto [can_prefetch_cons3, to_evict_cons3] =
+      prefetch_document_manager->CanPrefetchNow(prefetch_cons.get());
+  EXPECT_TRUE(can_prefetch_cons3);
+  EXPECT_EQ(to_evict_cons3.get(), my_prefetches[2].get());
+
+  // Simulate eviction of the third one!
+  prefetch_document_manager->OnWillBeDestroyed(*my_prefetches[2]);
+
+  // Call CanPrefetchNow again! Count is now 1. Limit is still 2.
+  // Now count is less than limit, so no eviction needed!
+  auto [can_prefetch_cons4, to_evict_cons4] =
+      prefetch_document_manager->CanPrefetchNow(prefetch_cons.get());
+  EXPECT_TRUE(can_prefetch_cons4);
+  EXPECT_FALSE(to_evict_cons4);
 }
 
 }  // namespace

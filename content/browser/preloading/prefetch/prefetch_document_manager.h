@@ -132,6 +132,10 @@ class CONTENT_EXPORT PrefetchDocumentManager
       const GURL& url,
       PreloadingType planned_max_preloading_type);
 
+  // Calculates the prefetch concurrency limit based on eagerness and active
+  // heuristics.
+  size_t GetPrefetchLimit(blink::mojom::SpeculationEagerness eagerness) const;
+
   blink::DocumentToken document_token_;
 
   // Use `all_prefetches()` where applicable to clarify modifications.

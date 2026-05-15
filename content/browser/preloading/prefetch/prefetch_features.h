@@ -91,6 +91,18 @@ CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrefetchMultipleActiveSetSizeLimitForBase);
 CONTENT_EXPORT extern const base::FeatureParam<size_t>
     kPrefetchMultipleActiveSetSizeLimitForBaseValue;
 
+// Controls the limit for Eager prefetches.
+CONTENT_EXPORT
+BASE_DECLARE_FEATURE(kPrefetchEagerLimit);
+CONTENT_EXPORT extern const base::FeatureParam<size_t>
+    kMaxNumberOfEagerPrefetchesPerPage;
+
+// Controls the limit for Moderate prefetches.
+CONTENT_EXPORT
+BASE_DECLARE_FEATURE(kPrefetchModerateLimit);
+CONTENT_EXPORT extern const base::FeatureParam<size_t>
+    kMaxNumberOfModeratePrefetchesPerPage;
+
 // Force the off-the-main-thread prefetch code path for testing, to anyway
 // increase the test coverage of off-the-main-thread prefetch.
 // https://crbug.com/452389538

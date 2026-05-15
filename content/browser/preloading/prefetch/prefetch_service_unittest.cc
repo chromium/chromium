@@ -5887,7 +5887,7 @@ TEST_P(PrefetchServiceLimitsTest, NonImmediatePrefetchEvictedAtLimit) {
 
   // This test is written to assume this specific limit and will need
   // modification if it changes.
-  ASSERT_EQ(kMaxNumberOfNonImmediatePrefetchesPerPage, 2);
+  ASSERT_EQ(kMaxNumberOfConservativePrefetchesPerPage, 2);
 
   MakePrefetchService(
       std::make_unique<testing::NiceMock<MockPrefetchServiceDelegate>>(
