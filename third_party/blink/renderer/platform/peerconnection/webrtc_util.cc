@@ -138,7 +138,7 @@ bool PLATFORM_EXPORT UseH264AcceleratedEncoderForWebRTC() {
   return ::features::IsOpenH264SoftwareEncoderEnabledForWebRTC();
 #else
   // On Android, H264 HW encoder can be used without SW encoder because the SW
-  // fallback logic has been explicitly disabled.
+  // fallback logic can be explicitly disabled.
   return true;
 #endif
 }
