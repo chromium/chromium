@@ -24,7 +24,6 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.CriteriaNotSatisfiedException;
-import org.chromium.base.test.util.UrlUtils;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.autofill.CardUnmaskPrompt;
@@ -123,6 +122,9 @@ import java.util.concurrent.atomic.AtomicReference;
     /* package */ static final String ENABLE_EXPERIMENTAL_WEB_PLATFORM_FEATURES =
             "enable-experimental-web-platform-features";
 
+    // We need a consistent port so that strings don't vary for render tests.
+    private static final int TEST_PORT = 41234;
+
     private final PaymentsCallbackHelper<PaymentRequestUi> mShowCalled;
     private final PaymentsCallbackHelper<PaymentRequestUi> mReadyForInput;
     private final PaymentsCallbackHelper<PaymentRequestUi> mReadyToPay;
@@ -181,7 +183,7 @@ import java.util.concurrent.atomic.AtomicReference;
      *     the main activity would start automatically.
      */
     /* package */ PaymentRequestTestRule(String testFileName, boolean delayStartActivity) {
-        this(testFileName, /* pathPrefix= */ "components/test/data/payments/", delayStartActivity);
+        this(testFileName, /* pathPrefix= */ "/components/test/data/payments/", delayStartActivity);
     }
 
     /**
@@ -197,6 +199,7 @@ import java.util.concurrent.atomic.AtomicReference;
     private PaymentRequestTestRule(
             String testFilePath, String pathPrefix, boolean delayStartActivity) {
         super();
+        getEmbeddedTestServerRule().setServerPort(TEST_PORT);
         mShowCalled = new PaymentsCallbackHelper<>();
         mReadyForInput = new PaymentsCallbackHelper<>();
         mReadyToPay = new PaymentsCallbackHelper<>();
@@ -223,7 +226,7 @@ import java.util.concurrent.atomic.AtomicReference;
         if (testFilePath.equals("about:blank") || testFilePath.startsWith("data:")) {
             mTestFilePath = testFilePath;
         } else {
-            mTestFilePath = UrlUtils.getIsolatedTestFilePath(pathPrefix + testFilePath);
+            mTestFilePath = getTestServer().getURL(pathPrefix + testFilePath);
         }
         mDelayStartActivity = delayStartActivity;
         mAutoAdvanceInputProtectorClock = true;
