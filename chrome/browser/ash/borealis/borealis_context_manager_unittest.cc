@@ -235,7 +235,7 @@ TEST_F(BorealisContextManagerTest, StartupSucceedsMetricsRecorded) {
   histogram_tester_->ExpectTotalCount(kBorealisStartupNumAttemptsHistogram, 1);
   histogram_tester_->ExpectUniqueSample(kBorealisStartupResultHistogram,
                                         BorealisStartupResult::kSuccess, 1);
-  histogram_tester_->ExpectTotalCount(kBorealisStartupOverallTimeHistogram, 1);
+  histogram_tester_->ExpectTotalCount(kBorealisStartupOverallTimeHistogram2, 1);
 }
 
 TEST_F(BorealisContextManagerTest, StartupFailsMetricsRecorded) {
@@ -248,7 +248,7 @@ TEST_F(BorealisContextManagerTest, StartupFailsMetricsRecorded) {
   histogram_tester_->ExpectUniqueSample(kBorealisStartupResultHistogram,
                                         BorealisStartupResult::kStartVmFailed,
                                         1);
-  histogram_tester_->ExpectTotalCount(kBorealisStartupOverallTimeHistogram, 0);
+  histogram_tester_->ExpectTotalCount(kBorealisStartupOverallTimeHistogram2, 0);
 }
 
 class NeverCompletingContextManager : public BorealisContextManagerImpl {

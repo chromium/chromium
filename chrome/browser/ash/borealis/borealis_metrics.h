@@ -19,7 +19,7 @@ extern const char kBorealisShutdownResultHistogram[];
 extern const char kBorealisStabilityHistogram[];
 extern const char kBorealisStartupNumAttemptsHistogram[];
 extern const char kBorealisStartupResultHistogram[];
-extern const char kBorealisStartupOverallTimeHistogram[];
+extern const char kBorealisStartupOverallTimeHistogram2[];
 extern const char kBorealisUninstallNumAttemptsHistogram[];
 extern const char kBorealisUninstallResultHistogram[];
 

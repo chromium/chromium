@@ -285,18 +285,6 @@ chromium-metrics-reviews@google.com.
   <summary>Recording every attempt to start Borealis (via the UI).</summary>
 </histogram>
 
-<histogram name="Borealis.Startup.OverallTime" units="ms"
-    expires_after="2024-11-03">
-<!-- NB: deprecated; remove instead of extending its expiry date -->
-
-  <owner>philpearson@google.com</owner>
-  <owner>src/chrome/browser/ash/borealis/OWNERS</owner>
-  <summary>
-    Recording the time taken for each successful attempt to start Borealis (via
-    the UI). Deprecated; prefer Borealis.Startup.OverallTime2.
-  </summary>
-</histogram>
-
 <histogram name="Borealis.Startup.OverallTime2" units="ms"
     expires_after="2026-09-13">
   <owner>philpearson@google.com</owner>
@@ -306,8 +294,6 @@ chromium-metrics-reviews@google.com.
     Recording the time taken for each successful attempt to start the Borealis
     VM (via the UI), until the VM is responsive and able to launch the Steam
     client.
-
-    (Same as Borealis.Startup.OverallTime but with larger bucket sizes.)
   </summary>
 </histogram>
 
