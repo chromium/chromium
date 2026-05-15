@@ -817,7 +817,7 @@ public class SettingsSearchCoordinator
 
         setFragmentState(FS_SETTINGS);
         mBackActionCallback.setEnabled(false);
-        if (mUseMultiColumn) mUpdateFirstVisibleTitle.onResult(0);
+        mUpdateFirstVisibleTitle.onResult(0);
 
         updateHelpMenuVisibility();
         adjustTalkbackTraversalOrder(searchBox);
