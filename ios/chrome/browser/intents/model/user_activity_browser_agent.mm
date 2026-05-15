@@ -419,7 +419,7 @@ BOOL UserActivityBrowserAgent::ContinueUserActivity(
   }
   return ContinueUserActivityURL(webpage_url, application_is_active, NO, NO);
 }
-// LINT.ThenChange(ios/chrome/app/task_request_user_activity.mm)
+// LINT.ThenChange(//ios/chrome/app/task_request_user_activity.mm)
 
 // LINT.IfChange
 // TODO(crbug.com/462018636): This code will be soon migrated to
@@ -437,7 +437,7 @@ BOOL UserActivityBrowserAgent::Handle3DTouchApplicationShortcuts(
   }
   return handled_shortcut_item;
 }
-// LINT.ThenChange(ios/chrome/app/task_request_shortcut_item.mm)
+// LINT.ThenChange(//ios/chrome/app/task_request_shortcut_item.mm)
 
 void UserActivityBrowserAgent::RouteToCorrectTab() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -589,7 +589,7 @@ BOOL UserActivityBrowserAgent::HandleShortcutItem(
   base::debug::DumpWithoutCrashing();
   return NO;
 }
-// LINT.ThenChange(ios/chrome/app/task_request_shortcut_item.mm)
+// LINT.ThenChange(//ios/chrome/app/task_request_shortcut_item.mm)
 
 void UserActivityBrowserAgent::OpenRequestedURLs(
     const std::vector<GURL>& webpage_urls,
@@ -678,7 +678,7 @@ BOOL UserActivityBrowserAgent::ContinueUserActivityURL(
   }
   return YES;
 }
-// LINT.ThenChange(ios/chrome/app/task_request_user_activity.mm)
+// LINT.ThenChange(//ios/chrome/app/task_request_user_activity.mm)
 
 void UserActivityBrowserAgent::OpenMultipleTabs() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
