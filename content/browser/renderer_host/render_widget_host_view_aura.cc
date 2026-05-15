@@ -580,8 +580,15 @@ RenderFrameHostImpl* RenderWidgetHostViewAura::GetFocusedFrame() const {
 void RenderWidgetHostViewAura::HandleBoundsInRootChanged() {
 #if BUILDFLAG(IS_WIN)
   if (legacy_render_widget_host_HWND_) {
+    // `SetBounds()` calls ::SetWindowPos which can spin a nested message loop
+    // on Windows, potentially destroying `this`.
+    base::WeakPtr<RenderWidgetHostViewAura> weak_this(
+        weak_ptr_factory_.GetWeakPtr());
     legacy_render_widget_host_HWND_->SetBounds(
         window_->GetBoundsInRootWindow());
+    if (!weak_this) {
+      return;
+    }
   }
 #endif
   if (!in_shutdown_) {
@@ -705,6 +712,8 @@ void RenderWidgetHostViewAura::NotifyHostAndDelegateOnWasShown(
 
 #if BUILDFLAG(IS_WIN)
   UpdateLegacyWin();
+  // WARNING: Do not add any code after this line, since the last call can
+  // potentially destroy `this`.
 #endif
 }
 
@@ -3124,7 +3133,14 @@ void RenderWidgetHostViewAura::InternalSetBounds(const gfx::Rect& rect) {
                               window_->GetLocalSurfaceId());
 
 #if BUILDFLAG(IS_WIN)
+  // `UpdateLegacyWin()` can spin a nested message loop on Windows, potentially
+  // destroying `this`.
+  base::WeakPtr<RenderWidgetHostViewAura> weak_this(
+      weak_ptr_factory_.GetWeakPtr());
   UpdateLegacyWin();
+  if (!weak_this) {
+    return;
+  }
 
   if (IsPointerLocked()) {
     UpdateMouseLockRegion();
@@ -3154,9 +3170,19 @@ void RenderWidgetHostViewAura::UpdateLegacyWin() {
   }
 
   if (legacy_render_widget_host_HWND_) {
+    // Both UpdateParent and SetBounds can spin a nested message loop on
+    // Windows, potentially destroying `this`.
+    base::WeakPtr<RenderWidgetHostViewAura> weak_this(
+        weak_ptr_factory_.GetWeakPtr());
     legacy_render_widget_host_HWND_->UpdateParent(GetHostWindowHWND());
+    if (!weak_this) {
+      return;
+    }
     legacy_render_widget_host_HWND_->SetBounds(
         window_->GetBoundsInRootWindow());
+    if (!weak_this) {
+      return;
+    }
     // There are cases where the parent window is created, made visible and
     // the associated RenderWidget is also visible before the
     // LegacyRenderWidgetHostHWND instace is created. Ensure that it is shown
@@ -3187,7 +3213,14 @@ void RenderWidgetHostViewAura::AddedToRootWindow() {
   }
 
 #if BUILDFLAG(IS_WIN)
+  // `UpdateLegacyWin()` can spin a nested message loop on Windows, potentially
+  // destroying `this`.
+  base::WeakPtr<RenderWidgetHostViewAura> weak_this(
+      weak_ptr_factory_.GetWeakPtr());
   UpdateLegacyWin();
+  if (!weak_this) {
+    return;
+  }
 #endif
 
   delegated_frame_host_->AttachToCompositor(GetCompositor());

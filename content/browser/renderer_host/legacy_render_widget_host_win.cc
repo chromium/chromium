@@ -196,9 +196,16 @@ void LegacyRenderWidgetHostHWND::Hide() {
 void LegacyRenderWidgetHostHWND::SetBounds(const gfx::Rect& bounds) {
   gfx::Rect bounds_in_pixel =
       display::win::GetScreenWin()->DIPToClientRect(hwnd(), bounds);
+  // ::SetWindowPos can spin a nested message loop, which can potentially
+  // destroy `this`.
+  base::WeakPtr<LegacyRenderWidgetHostHWND> ref(
+      msg_handler_weak_factory_.GetWeakPtr());
   ::SetWindowPos(hwnd(), nullptr, bounds_in_pixel.x(), bounds_in_pixel.y(),
                  bounds_in_pixel.width(), bounds_in_pixel.height(),
                  SWP_NOREDRAW);
+  if (!ref) {
+    return;
+  }
   if (direct_manipulation_helper_) {
     direct_manipulation_helper_->SetSizeInPixels(bounds_in_pixel.size());
   }
