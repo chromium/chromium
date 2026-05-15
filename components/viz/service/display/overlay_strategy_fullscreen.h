@@ -34,8 +34,7 @@ class VIZ_SERVICE_EXPORT OverlayStrategyFullscreen
       AggregatedRenderPassList* render_pass_list,
       SurfaceDamageRectList* surface_damage_rect_list,
       const std::optional<OverlayCandidate>& primary_plane,
-      std::vector<OverlayProposedCandidate>* candidates,
-      std::vector<gfx::Rect>* content_bounds) override;
+      std::vector<OverlayProposedCandidate>* candidates) override;
 
   bool Attempt(
       const SkM44& output_color_matrix,
@@ -44,7 +43,6 @@ class VIZ_SERVICE_EXPORT OverlayStrategyFullscreen
       SurfaceDamageRectList* surface_damage_rect_list,
       const std::optional<OverlayCandidate>& primary_plane,
       OverlayCandidateList* candidates,
-      std::vector<gfx::Rect>* content_bounds,
       const OverlayProposedCandidate& proposed_candidate) override;
 
   void CommitCandidate(const OverlayProposedCandidate& proposed_candidate,

@@ -188,8 +188,7 @@ void OverlayProcessorWin::ProcessForOverlays(
     SurfaceDamageRectList surface_damage_rect_list_in_root_space,
     const PrimaryPlaneParams& primary_plane_params,
     CandidateList* candidates,
-    gfx::Rect* root_damage_rect,
-    std::vector<gfx::Rect>* content_bounds) {
+    gfx::Rect* root_damage_rect) {
   TRACE_EVENT0("viz", "OverlayProcessorWin::ProcessForOverlays");
 
   DebugLogBeforeDelegation(*root_damage_rect,

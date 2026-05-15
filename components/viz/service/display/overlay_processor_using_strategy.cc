@@ -262,8 +262,7 @@ void OverlayProcessorUsingStrategy::ProcessForOverlays(
     SurfaceDamageRectList surface_damage_rect_list,
     const PrimaryPlaneParams& primary_plane_params,
     CandidateList* candidates,
-    gfx::Rect* damage_rect,
-    std::vector<gfx::Rect>* content_bounds) {
+    gfx::Rect* damage_rect) {
 #if BUILDFLAG(IS_CHROMEOS)
   // TODO(b/181974042):  Remove when color space is plumbed.
   primary_plane_color_space_ = primary_plane_params.color_space;
@@ -292,7 +291,7 @@ void OverlayProcessorUsingStrategy::ProcessForOverlays(
   if (!skip_because_copy_request && !disable_overlay()) {
     success = AttemptWithStrategies(output_color_matrix, resource_provider,
                                     render_passes, &surface_damage_rect_list,
-                                    primary_plane, candidates, content_bounds,
+                                    primary_plane, candidates,
                                     damage_rect);
   }
 
@@ -680,13 +679,12 @@ bool OverlayProcessorUsingStrategy::AttemptWithStrategies(
     SurfaceDamageRectList* surface_damage_rect_list,
     std::optional<OverlayCandidate>& primary_plane,
     OverlayCandidateList* candidates,
-    std::vector<gfx::Rect>* content_bounds,
     gfx::Rect* incoming_damage) {
   std::vector<OverlayProposedCandidate> proposed_candidates;
   for (const auto& strategy : strategies_) {
     strategy->Propose(output_color_matrix, resource_provider, render_pass_list,
                       surface_damage_rect_list, primary_plane,
-                      &proposed_candidates, content_bounds);
+                      &proposed_candidates);
   }
 
   size_t num_proposed_pre_sort = proposed_candidates.size();
@@ -715,7 +713,7 @@ bool OverlayProcessorUsingStrategy::AttemptWithStrategies(
 
     bool used_overlay = candidate.strategy->Attempt(
         output_color_matrix, resource_provider, render_pass_list,
-        surface_damage_rect_list, primary_plane, candidates, content_bounds,
+        surface_damage_rect_list, primary_plane, candidates,
         candidate);
     if (!used_overlay && candidate.candidate.requires_overlay) {
       // Check if we likely failed due to scaling capabilities, and if so, try
@@ -744,7 +742,7 @@ bool OverlayProcessorUsingStrategy::AttemptWithStrategies(
           if (candidate.strategy->Attempt(
                   output_color_matrix, resource_provider, render_pass_list,
                   surface_damage_rect_list, primary_plane, candidates,
-                  content_bounds, candidate)) {
+                  candidate)) {
             used_overlay = true;
             break;
           } else {

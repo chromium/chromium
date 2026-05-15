@@ -50,8 +50,7 @@ class VIZ_SERVICE_EXPORT OverlayProcessorDelegated
       SurfaceDamageRectList surface_damage_rect_list,
       const PrimaryPlaneParams& primary_plane_params,
       CandidateList* overlay_candidates,
-      gfx::Rect* damage_rect,
-      std::vector<gfx::Rect>* content_bounds) final;
+      gfx::Rect* damage_rect) final;
 
   gfx::RectF GetUnassignedDamage() const override;
 
@@ -71,8 +70,7 @@ class VIZ_SERVICE_EXPORT OverlayProcessorDelegated
       AggregatedRenderPassList* render_pass_list,
       SurfaceDamageRectList* surface_damage_rect_list,
       const std::optional<OverlayCandidate>& primary_plane,
-      OverlayCandidateList* candidates,
-      std::vector<gfx::Rect>* content_bounds);
+      OverlayCandidateList* candidates);
 
   // Should delegation be blocked because we have recently had copy output
   // requests on any render passes. The root render pass must not be delegated

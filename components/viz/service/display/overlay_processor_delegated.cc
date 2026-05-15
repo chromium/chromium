@@ -68,8 +68,7 @@ bool OverlayProcessorDelegated::AttemptWithStrategies(
     AggregatedRenderPassList* render_pass_list,
     SurfaceDamageRectList* surface_damage_rect_list,
     const std::optional<OverlayCandidate>& primary_plane,
-    OverlayCandidateList* candidates,
-    std::vector<gfx::Rect>* content_bounds) {
+    OverlayCandidateList* candidates) {
   DCHECK(candidates->empty());
   auto* render_pass = render_pass_list->back().get();
   QuadList* quad_list = &render_pass->quad_list;
@@ -177,8 +176,7 @@ void OverlayProcessorDelegated::ProcessForOverlays(
     SurfaceDamageRectList surface_damage_rect_list,
     const PrimaryPlaneParams& primary_plane_params,
     CandidateList* candidates,
-    gfx::Rect* damage_rect,
-    std::vector<gfx::Rect>* content_bounds) {
+    gfx::Rect* damage_rect) {
   DCHECK(candidates->empty());
   bool success = false;
 
@@ -189,7 +187,7 @@ void OverlayProcessorDelegated::ProcessForOverlays(
 
   success = AttemptWithStrategies(output_color_matrix, resource_provider,
                                   render_passes, &surface_damage_rect_list,
-                                  primary_plane, candidates, content_bounds);
+                                  primary_plane, candidates);
 
   DCHECK(candidates->empty() || success);
 

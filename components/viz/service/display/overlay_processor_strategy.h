@@ -34,8 +34,7 @@ class VIZ_SERVICE_EXPORT OverlayProcessorStrategy {
       AggregatedRenderPassList* render_pass_list,
       SurfaceDamageRectList* surface_damage_rect_list,
       const std::optional<OverlayCandidate>& primary_plane,
-      std::vector<OverlayProposedCandidate>* candidates,
-      std::vector<gfx::Rect>* content_bounds) = 0;
+      std::vector<OverlayProposedCandidate>* candidates) = 0;
 
   // Returns false if the specific |proposed_candidate| cannot be made to work
   // for this strategy with the current set of render passes. Returns true if
@@ -49,7 +48,6 @@ class VIZ_SERVICE_EXPORT OverlayProcessorStrategy {
       SurfaceDamageRectList* surface_damage_rect_list,
       const std::optional<OverlayCandidate>& primary_plane,
       OverlayCandidateList* candidates,
-      std::vector<gfx::Rect>* content_bounds,
       const OverlayProposedCandidate& proposed_candidate) = 0;
 
   // Commits to using the proposed candidate by updating |render_pass| as

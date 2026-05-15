@@ -120,8 +120,7 @@ class VIZ_SERVICE_EXPORT OverlayProcessorInterface {
       SurfaceDamageRectList surface_damage_rect_list,
       const PrimaryPlaneParams& primary_plane_params,
       CandidateList* overlay_candidates,
-      gfx::Rect* damage_rect,
-      std::vector<gfx::Rect>* content_bounds) = 0;
+      gfx::Rect* damage_rect) = 0;
 
   // Before the overlay refactor to use OverlayProcessorOnGpu, overlay
   // candidates are stored inside DirectRenderer. Those overlay candidates are
