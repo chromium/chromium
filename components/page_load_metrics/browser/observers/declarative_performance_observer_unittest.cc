@@ -50,4 +50,59 @@ TEST_F(DeclarativePerformanceObserverTest, OnStartDisabled) {
             observer()->OnStart(&handle, GURL("https://example.com"), true));
 }
 
+TEST_F(DeclarativePerformanceObserverTest, OnCommitWithPolicy) {
+  content::MockNavigationHandle handle;
+
+  auto policy = network::mojom::DeclarativePerformanceObserverPolicy::New();
+  policy->reporting_endpoint = "default";
+  // Add at least one entry type to pass the empty check.
+  policy->entry_types.push_back(
+      network::mojom::PerformanceEntryType::kNavigation);
+
+  EXPECT_CALL(handle, GetDeclarativePerformanceObserverPolicy())
+      .WillRepeatedly(testing::Return(policy.get()));
+
+  EXPECT_EQ(page_load_metrics::PageLoadMetricsObserver::CONTINUE_OBSERVING,
+            observer()->OnCommit(&handle));
+}
+
+TEST_F(DeclarativePerformanceObserverTest, OnCommitWithoutPolicy) {
+  content::MockNavigationHandle handle;
+
+  EXPECT_CALL(handle, GetDeclarativePerformanceObserverPolicy())
+      .WillRepeatedly(testing::Return(nullptr));
+
+  EXPECT_EQ(page_load_metrics::PageLoadMetricsObserver::STOP_OBSERVING,
+            observer()->OnCommit(&handle));
+}
+
+TEST_F(DeclarativePerformanceObserverTest, OnCommitWithNullReportingEndpoint) {
+  content::MockNavigationHandle handle;
+
+  auto policy = network::mojom::DeclarativePerformanceObserverPolicy::New();
+  // Leave reporting_endpoint as null.
+  policy->entry_types.push_back(
+      network::mojom::PerformanceEntryType::kNavigation);
+
+  EXPECT_CALL(handle, GetDeclarativePerformanceObserverPolicy())
+      .WillRepeatedly(testing::Return(policy.get()));
+
+  EXPECT_EQ(page_load_metrics::PageLoadMetricsObserver::STOP_OBSERVING,
+            observer()->OnCommit(&handle));
+}
+
+TEST_F(DeclarativePerformanceObserverTest, OnCommitWithEmptyEntryTypes) {
+  content::MockNavigationHandle handle;
+
+  auto policy = network::mojom::DeclarativePerformanceObserverPolicy::New();
+  policy->reporting_endpoint = "default";
+  // Leave entry_types as empty.
+
+  EXPECT_CALL(handle, GetDeclarativePerformanceObserverPolicy())
+      .WillRepeatedly(testing::Return(policy.get()));
+
+  EXPECT_EQ(page_load_metrics::PageLoadMetricsObserver::STOP_OBSERVING,
+            observer()->OnCommit(&handle));
+}
+
 }  // namespace page_load_metrics
