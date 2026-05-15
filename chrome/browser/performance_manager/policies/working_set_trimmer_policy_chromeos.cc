@@ -19,12 +19,15 @@
 #include "chromeos/ash/experiences/arc/process/arc_process.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "components/performance_manager/performance_manager_impl.h"
+#include "components/performance_manager/public/decorators/page_live_state_decorator.h"
 #include "components/performance_manager/public/graph/frame_node.h"
 #include "components/performance_manager/public/graph/graph.h"
 #include "components/performance_manager/public/graph/page_node.h"
+#include "components/performance_manager/public/graph/process_node.h"
 #include "components/performance_manager/public/performance_manager.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "third_party/blink/public/mojom/permissions/permission_status.mojom.h"
 #include "url/gurl.h"
 
 namespace performance_manager {
@@ -58,6 +61,31 @@ void GetArcProcessList(
   }
 }
 
+// This is similar to DiscardEligibilityPolicy::CanDiscard(), but more focusing
+// on user perception.
+bool IsPagePerceptible(const PageNode* page_node) {
+  if (page_node->IsVisible() || page_node->IsAudible() ||
+      page_node->HasPictureInPicture()) {
+    return true;
+  }
+
+  const auto* live_state_data =
+      PageLiveStateDecorator::Data::FromPageNode(page_node);
+  if (live_state_data) {
+    if (live_state_data->IsCapturingVideo() ||
+        live_state_data->IsCapturingAudio() ||
+        live_state_data->IsBeingMirrored() ||
+        live_state_data->IsCapturingWindow() ||
+        live_state_data->IsCapturingDisplay() ||
+        live_state_data->IsConnectedToBluetoothDevice() ||
+        live_state_data->IsConnectedToUSBDevice()) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
 }  // namespace
 
 WorkingSetTrimmerPolicyChromeOS::WorkingSetTrimmerPolicyChromeOS() {
@@ -66,6 +94,8 @@ WorkingSetTrimmerPolicyChromeOS::WorkingSetTrimmerPolicyChromeOS() {
       base::FeatureList::IsEnabled(features::kTrimArcOnMemoryPressure);
   trim_arcvm_on_memory_pressure_ =
       base::FeatureList::IsEnabled(features::kTrimArcVmOnMemoryPressure);
+  trim_imperceptible_process_ =
+      base::FeatureList::IsEnabled(features::kTrimImperceptibleProcess);
   disable_trim_while_suspended_ =
       base::FeatureList::IsEnabled(features::kDisableTrimmingWhileSuspended);
 
@@ -162,26 +192,62 @@ void WorkingSetTrimmerPolicyChromeOS::set_arcvm_delegate_for_testing(
 
 void WorkingSetTrimmerPolicyChromeOS::TrimNodesOnGraph() {
   const base::TimeTicks now_ticks = base::TimeTicks::Now();
-  for (const PageNode* page_node : GetOwningGraph()->GetAllPageNodes()) {
-    if (!page_node->IsVisible() &&
-        (now_ticks - page_node->GetLastVisibilityChangeTime()) >
-            params_.node_invisible_time) {
-      // Get the process node and if it has not been
-      // trimmed within the backoff period, we will do that
-      // now.
+  if (!trim_imperceptible_process_) {
+    for (const PageNode* page_node : GetOwningGraph()->GetAllPageNodes()) {
+      if (!page_node->IsVisible() &&
+          (now_ticks - page_node->GetLastVisibilityChangeTime()) >
+              params_.node_invisible_time) {
+        // Get the process node and if it has not been
+        // trimmed within the backoff period, we will do that
+        // now.
 
-      // Check that we have a main frame.
-      const FrameNode* frame_node = page_node->GetMainFrameNode();
-      if (!frame_node) {
+        // Check that we have a main frame.
+        const FrameNode* frame_node = page_node->GetMainFrameNode();
+        if (!frame_node) {
+          continue;
+        }
+
+        const ProcessNode* process_node = frame_node->GetProcessNode();
+        if (process_node && process_node->GetProcess().IsValid()) {
+          base::TimeTicks last_trim = GetLastTrimTime(process_node);
+          if (now_ticks - last_trim > params_.node_trim_backoff_time) {
+            TrimWorkingSet(process_node);
+          }
+        }
+      }
+    }
+  } else {
+    for (const ProcessNode* process_node :
+         GetOwningGraph()->GetAllProcessNodes()) {
+      if (process_node->GetProcessType() != content::PROCESS_TYPE_RENDERER ||
+          !process_node->GetProcess().IsValid()) {
         continue;
       }
 
-      const ProcessNode* process_node = frame_node->GetProcessNode();
-      if (process_node && process_node->GetProcess().IsValid()) {
-        base::TimeTicks last_trim = GetLastTrimTime(process_node);
-        if (now_ticks - last_trim > params_.node_trim_backoff_time) {
-          TrimWorkingSet(process_node);
+      auto frames = process_node->GetFrameNodes();
+      if (frames.empty()) {
+        continue;
+      }
+
+      base::TimeTicks last_trim = GetLastTrimTime(process_node);
+      if ((now_ticks - last_trim) <= params_.node_trim_backoff_time) {
+        continue;
+      }
+
+      bool all_frames_imperceptible = true;
+      for (const FrameNode* frame_node : frames) {
+        const PageNode* page_node = frame_node->GetPageNode();
+        if (page_node &&
+            (IsPagePerceptible(page_node) ||
+             (now_ticks - page_node->GetLastVisibilityChangeTime()) <=
+                 params_.node_invisible_time)) {
+          all_frames_imperceptible = false;
+          break;
         }
+      }
+
+      if (all_frames_imperceptible) {
+        TrimWorkingSet(process_node);
       }
     }
   }

@@ -24,6 +24,8 @@ BASE_FEATURE(kTrimArcOnMemoryPressure, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kTrimArcVmOnMemoryPressure, base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kTrimImperceptibleProcess, base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kTrimOnFreeze, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kDisableTrimmingWhileSuspended, base::FEATURE_ENABLED_BY_DEFAULT);

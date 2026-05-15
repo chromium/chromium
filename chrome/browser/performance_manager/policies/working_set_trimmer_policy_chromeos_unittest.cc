@@ -27,6 +27,7 @@
 #include "components/performance_manager/performance_manager_impl.h"
 #include "components/performance_manager/test_support/graph_test_harness.h"
 #include "components/performance_manager/test_support/mock_graphs.h"
+#include "content/public/common/process_type.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -1250,6 +1251,61 @@ TEST_F(WorkingSetTrimmerPolicyChromeOSTest, ArcVmTrimProcessesForceTrim) {
   base::MemoryPressureListener::SimulatePressureNotification(
       base::MEMORY_PRESSURE_LEVEL_CRITICAL);
   run_loop()->Run();
+}
+
+TEST_F(WorkingSetTrimmerPolicyChromeOSTest, TrimImperceptibleProcess) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kTrimImperceptibleProcess);
+  RecreatePolicy(
+      base::BindLambdaForTesting([](MockWorkingSetTrimmerPolicyChromeOS*) {}));
+
+  // 1. Create an imperceptible page in process 1.
+  auto context1 = CreateInvisiblePage();
+  // Fast forward by 15 mins to exceed node_invisible_time.
+  FastForwardBy(base::Minutes(15) + base::Seconds(1));
+
+  // 2. Create a perceptible page in process 2.
+  auto context2 = CreateInvisiblePage();
+  context2->page_node_->SetIsAudible(true);
+  // Fast forward by 15 mins.
+  FastForwardBy(base::Minutes(15) + base::Seconds(1));
+
+  // 3. Create a process with one imperceptible and one perceptible frame.
+  auto context3_imperceptible = CreateInvisiblePage();
+  auto context3_perceptible_page = CreateNode<PageNodeImpl>();
+  context3_perceptible_page->SetIsVisible(false);
+  context3_perceptible_page->SetIsAudible(true);
+  auto context3_perceptible_frame =
+      CreateFrameNodeAutoId(context3_imperceptible->process_node_.get(),
+                            context3_perceptible_page.get());
+  // Fast forward by 15 mins.
+  FastForwardBy(base::Minutes(15) + base::Seconds(1));
+
+  // 4. Create a page with notification permission in process 4.
+  auto context4 = CreateInvisiblePage();
+  context4->page_node_->SetMainFrameRestoredState(
+      GURL("https://example.com"), blink::mojom::PermissionStatus::GRANTED);
+  // Fast forward by 15 mins.
+  FastForwardBy(base::Minutes(15) + base::Seconds(1));
+
+  // Expectations:
+  // process 1: trimmed (all frames imperceptible)
+  // process 2: NOT trimmed (page is audible)
+  // process 3: NOT trimmed (one frame is audible)
+  // process 4: trimmed (notification permission doesn't make it perceptible)
+  EXPECT_CALL(*policy(), TrimWorkingSet(context1->process_node_.get()))
+      .Times(1);
+  EXPECT_CALL(*policy(), TrimWorkingSet(context2->process_node_.get()))
+      .Times(0);
+  EXPECT_CALL(*policy(),
+              TrimWorkingSet(context3_imperceptible->process_node_.get()))
+      .Times(0);
+  EXPECT_CALL(*policy(), TrimWorkingSet(context4->process_node_.get()))
+      .Times(1);
+
+  base::MemoryPressureListener::SimulatePressureNotification(
+      base::MEMORY_PRESSURE_LEVEL_MODERATE);
+  FastForwardBy(base::Seconds(1));
 }
 
 }  // namespace policies

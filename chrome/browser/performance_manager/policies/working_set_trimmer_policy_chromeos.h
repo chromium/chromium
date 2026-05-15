@@ -160,6 +160,7 @@ class WorkingSetTrimmerPolicyChromeOS : public WorkingSetTrimmerPolicy,
   bool trim_on_freeze_ = false;
   bool trim_arc_on_memory_pressure_ = false;
   bool trim_arcvm_on_memory_pressure_ = false;
+  bool trim_imperceptible_process_ = false;
   bool disable_trim_while_suspended_ = false;
   // The status of suspend is updated by PowerManagerClient::Observer which runs
   // on the main thread, and is referenced by

@@ -23650,6 +23650,21 @@
             ]
         }
     ],
+    "TrimImperceptibleProcess": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "TrimImperceptibleProcess"
+                    ]
+                }
+            ]
+        }
+    ],
     "TrustSafetySentimentSurvey": [
         {
             "platforms": [
