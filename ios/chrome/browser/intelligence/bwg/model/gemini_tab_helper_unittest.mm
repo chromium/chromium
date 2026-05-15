@@ -598,6 +598,9 @@ TEST_F(GeminiTabHelperTest,
 @end
 
 TEST_F(GeminiTabHelperTest, TestGeneratePageContext) {
+  web_state_->SetCurrentURL(GURL("https://example.com"));
+  web_state_->SetContentsMimeType("text/html");
+
   id mockWrapperClass = OCMClassMock([PageContextWrapper class]);
   FakePageContextWrapper* fakeWrapper =
       [[FakePageContextWrapper alloc] initWithWebState:web_state_.get()
@@ -605,11 +608,10 @@ TEST_F(GeminiTabHelperTest, TestGeneratePageContext) {
   OCMStub([mockWrapperClass alloc]).andReturn(fakeWrapper);
 
   base::RunLoop run_loop;
-  tab_helper_->SetupPageContextGeneration(base::BindRepeating(
-      [](base::RunLoop* run_loop, PageContextWrapperCallbackResponse response) {
-        run_loop->Quit();
-      },
-      &run_loop));
+  tab_helper_->GeneratePageContext(
+      base::BindRepeating([](base::RunLoop* run_loop,
+                             GeminiPageContext* response) { run_loop->Quit(); },
+                          &run_loop));
 
   EXPECT_TRUE(fakeWrapper.shouldGetAnnotatedPageContent);
   EXPECT_TRUE(fakeWrapper.shouldGetSnapshot);
@@ -617,6 +619,8 @@ TEST_F(GeminiTabHelperTest, TestGeneratePageContext) {
 }
 
 TEST_F(GeminiTabHelperTest, TestGeneratePageContext_WaitsForLoad) {
+  web_state_->SetCurrentURL(GURL("https://example.com"));
+  web_state_->SetContentsMimeType("text/html");
   web_state_->SetLoading(true);
 
   id mockWrapperClass = OCMClassMock([PageContextWrapper class]);
@@ -625,7 +629,7 @@ TEST_F(GeminiTabHelperTest, TestGeneratePageContext_WaitsForLoad) {
                                     completionCallback:base::DoNothing()];
   OCMStub([mockWrapperClass alloc]).andReturn(fakeWrapper);
 
-  tab_helper_->SetupPageContextGeneration(base::DoNothing());
+  tab_helper_->GeneratePageContext(base::DoNothing());
 
   // Should NOT be called immediately.
   EXPECT_FALSE(fakeWrapper.populateCalled);
@@ -679,6 +683,8 @@ TEST_F(GeminiTabHelperTest,
 }
 
 TEST_F(GeminiTabHelperTest, TestForcePageContextGeneration) {
+  web_state_->SetCurrentURL(GURL("https://example.com"));
+  web_state_->SetContentsMimeType("text/html");
   web_state_->SetLoading(true);
 
   id mockWrapperClass = OCMClassMock([PageContextWrapper class]);
@@ -687,13 +693,35 @@ TEST_F(GeminiTabHelperTest, TestForcePageContextGeneration) {
                                     completionCallback:base::DoNothing()];
   OCMStub([mockWrapperClass alloc]).andReturn(fakeWrapper);
 
-  tab_helper_->SetupPageContextGeneration(base::DoNothing());
+  tab_helper_->GeneratePageContext(base::DoNothing());
 
   // Should NOT be called immediately.
   EXPECT_FALSE(fakeWrapper.populateCalled);
 
   // Force generation.
   tab_helper_->ForcePageContextGeneration();
+
+  EXPECT_TRUE(fakeWrapper.populateCalled);
+}
+
+TEST_F(GeminiTabHelperTest, TestGeneratePageContext_Timeout) {
+  web_state_->SetCurrentURL(GURL("https://example.com"));
+  web_state_->SetContentsMimeType("text/html");
+  web_state_->SetLoading(true);
+
+  id mockWrapperClass = OCMClassMock([PageContextWrapper class]);
+  FakePageContextWrapper* fakeWrapper =
+      [[FakePageContextWrapper alloc] initWithWebState:web_state_.get()
+                                    completionCallback:base::DoNothing()];
+  OCMStub([mockWrapperClass alloc]).andReturn(fakeWrapper);
+
+  tab_helper_->GeneratePageContext(base::DoNothing());
+
+  // Should NOT be called immediately.
+  EXPECT_FALSE(fakeWrapper.populateCalled);
+
+  // Fast forward by timeout.
+  task_environment_.FastForwardBy(base::Seconds(3) + base::Milliseconds(100));
 
   EXPECT_TRUE(fakeWrapper.populateCalled);
 }

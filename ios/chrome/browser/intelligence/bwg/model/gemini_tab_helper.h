@@ -49,16 +49,13 @@ class GeminiTabHelper : public web::WebStateObserver,
 
   ~GeminiTabHelper() override;
 
-  // Set up generation of page Context and the callback to be run when the page
-  // context is ready.
-  void SetupPageContextGeneration(
-      base::RepeatingCallback<void(PageContextWrapperCallbackResponse)>
-          callback);
-
   // Forces the generation of page context immediately, bypassing any wait for
   // page load completion. Used when the page load timeout is exceeded.
   // This is no op if page has already finished loading.
   void ForcePageContextGeneration();
+
+  // Cancels any ongoing page context generation.
+  void CancelPageContextGeneration();
 
   // Executes the zero-state suggestions flow.
   void ExecuteZeroStateSuggestions(
@@ -123,6 +120,12 @@ class GeminiTabHelper : public web::WebStateObserver,
 
   // Sets a callback to be run when the page has finished loading.
   void SetPageLoadedCallback(base::RepeatingClosure callback);
+
+  // Requests the latest page context. Resolves immediately if the page is
+  // restricted to surface-level metadata, or asynchronously if deep extraction
+  // is required.
+  void GeneratePageContext(
+      base::RepeatingCallback<void(GeminiPageContext*)> callback);
 
   // Returns the partial PageContext for the current WebState, including URL,
   // Title, and Favicon.
@@ -232,6 +235,20 @@ class GeminiTabHelper : public web::WebStateObserver,
   void ParseSuggestionsResponse(
       base::OnceCallback<void(NSArray<NSString*>*)> callback,
       ai::mojom::ZeroStateSuggestionsResponseResultPtr result);
+
+  // Fetches the cached favicon or generates a default fallback.
+  UIImage* GetFavicon();
+
+  // Handles the asynchronous result from PageContextWrapper.
+  void OnPageContextWrapperResponse(
+      PageContextWrapperCallbackResponse expected_page_context);
+
+  // Tracks the best-effort extraction timeout.
+  base::OneShotTimer page_context_timeout_timer_;
+
+  // Stores the consumer callback waiting for the final context object.
+  base::RepeatingCallback<void(GeminiPageContext*)>
+      page_context_consumer_callback_;
 
   // WebState this tab helper is attached to.
   raw_ptr<web::WebState> web_state_ = nullptr;

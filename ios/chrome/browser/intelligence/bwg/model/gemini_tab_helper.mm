@@ -12,6 +12,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/time/time.h"
+#import "base/timer/timer.h"
 #import "base/values.h"
 #import "components/favicon/ios/web_favicon_driver.h"
 #import "components/feature_engagement/public/feature_constants.h"
@@ -62,6 +63,9 @@
 
 namespace {
 
+// The maximum time to wait for full page load before timing out extraction.
+const base::TimeDelta kFullPageContextTimeout = base::Seconds(3);
+
 NSMutableArray<NSString*>* ZeroStateSuggestionsAsNSArray(
     std::vector<std::string> suggestions) {
   NSMutableArray<NSString*>* ns_suggestions =
@@ -70,6 +74,21 @@ NSMutableArray<NSString*>* ZeroStateSuggestionsAsNSArray(
     [ns_suggestions addObject:base::SysUTF8ToNSString(suggestion)];
   }
   return ns_suggestions;
+}
+
+// Helper to convert PageContextWrapperError to
+// GeminiPageContextComputationState.
+ios::provider::GeminiPageContextComputationState
+GeminiPageContextComputationStateFromPageContextWrapperError(
+    PageContextWrapperError error) {
+  switch (error) {
+    case PageContextWrapperError::kForceDetachError:
+      return ios::provider::GeminiPageContextComputationState::kProtected;
+    case PageContextWrapperError::kPageNotExtractableError:
+      return ios::provider::GeminiPageContextComputationState::kError;
+    default:
+      return ios::provider::GeminiPageContextComputationState::kError;
+  }
 }
 
 }  // namespace
@@ -119,33 +138,50 @@ bool GeminiTabHelper::HasObserver(GeminiTabHelperObserver* observer) {
   return observers_.HasObserver(observer);
 }
 
-void GeminiTabHelper::SetupPageContextGeneration(
-    base::RepeatingCallback<void(PageContextWrapperCallbackResponse)>
-        callback) {
-  page_context_wrapper_response_ready_callback_ = std::move(callback);
+void GeminiTabHelper::GeneratePageContext(
+    base::RepeatingCallback<void(GeminiPageContext*)> callback) {
+  page_context_consumer_callback_ = std::move(callback);
 
-  // If the page is still loading, wait for it to finish before extracting the
-  // page context.
+  // Call back immediately if the page context cannot be extracted.
+  if (!CanExtractPageContextForWebState(web_state_)) {
+    if (page_context_consumer_callback_) {
+      page_context_consumer_callback_.Run(GetPartialPageContext());
+    }
+    return;
+  }
+
+  // If the page is still loading, defer extraction untl a certain time has
+  // elapsed, followed by a best-effort extraction.
   if (web_state_->IsLoading()) {
-    // TODO(crbug.com/466107255): Move waiting for page loading responsibility
-    // to GeminiBrowserAgent.
     base::RepeatingCallback<void()> pageContextPopulateCallback =
         base::BindRepeating(&GeminiTabHelper::PopulatePageContextFields,
                             weak_ptr_factory_.GetWeakPtr());
     SetPageLoadedCallback(std::move(pageContextPopulateCallback));
+
+    page_context_timeout_timer_.Start(
+        FROM_HERE, kFullPageContextTimeout,
+        base::BindOnce(&GeminiTabHelper::ForcePageContextGeneration,
+                       weak_ptr_factory_.GetWeakPtr()));
     return;
   }
 
+  // Otherwise, extract full page context.
   PopulatePageContextFields();
 }
 
 void GeminiTabHelper::ForcePageContextGeneration() {
+  page_context_timeout_timer_.Stop();
   if (page_loaded_callback_) {
     // Override the wait for PageLoaded.
     // Run the callback but do not reset it, so it can run again when the page
     // actually finishes loading (to get the full context).
     page_loaded_callback_.Run();
   }
+}
+
+void GeminiTabHelper::CancelPageContextGeneration() {
+  page_context_timeout_timer_.Stop();
+  page_loaded_callback_.Reset();
 }
 
 void GeminiTabHelper::ExecuteZeroStateSuggestions(
@@ -204,19 +240,46 @@ void GeminiTabHelper::SetPageLoadedCallback(base::RepeatingClosure callback) {
   page_loaded_callback_ = std::move(callback);
 }
 
+UIImage* GeminiTabHelper::GetFavicon() {
+  if (current_favicon_) {
+    return current_favicon_;
+  }
+
+  favicon::WebFaviconDriver* driver =
+      favicon::WebFaviconDriver::FromWebState(web_state_);
+  if (driver) {
+    gfx::Image cached_favicon = driver->GetFavicon();
+    if (!cached_favicon.IsEmpty()) {
+      current_favicon_ = cached_favicon.ToUIImage();
+      return current_favicon_;
+    }
+  }
+
+  UIImageConfiguration* configuration = [UIImageSymbolConfiguration
+      configurationWithPointSize:gfx::kFaviconSize
+                          weight:UIImageSymbolWeightBold
+                           scale:UIImageSymbolScaleMedium];
+  current_favicon_ =
+      DefaultSymbolWithConfiguration(kGlobeAmericasSymbol, configuration);
+  return current_favicon_;
+}
+
 GeminiPageContext* GeminiTabHelper::GetPartialPageContext() {
   GeminiPageContext* gemini_page_context = [[GeminiPageContext alloc] init];
-  if (!CanExtractPageContextForWebState(web_state_) &&
-      IsGeminiFloatyAllPagesEnabled()) {
+  gemini_page_context.favicon = GetFavicon();
+
+  if (!CanExtractPageContextForWebState(web_state_)) {
     gemini_page_context.geminiPageContextComputationState =
-        ios::provider::GeminiPageContextComputationState::kBlocked;
-    gemini_page_context.geminiPageContextAttachmentState =
-        ios::provider::GetCurrentPageContextAttachmentState();
+        IsGeminiFloatyAllPagesEnabled()
+            ? ios::provider::GeminiPageContextComputationState::kBlocked
+            : ios::provider::GeminiPageContextComputationState::kError;
+    // Attachment state will be explicitly determined by the browser agent
+    // applying user prefs.
     return gemini_page_context;
   }
+
   gemini_page_context.geminiPageContextComputationState =
       ios::provider::GeminiPageContextComputationState::kPending;
-  gemini_page_context.favicon = current_favicon_;
 
   std::unique_ptr<optimization_guide::proto::PageContext> page_context =
       std::make_unique<optimization_guide::proto::PageContext>();
@@ -253,6 +316,7 @@ void GeminiTabHelper::UpdatePresentedSource(gemini::FloatyUpdateSource source,
 }
 
 void GeminiTabHelper::DeactivateGeminiSession() {
+  CancelPageContextGeneration();
   GeminiTabHelper::DeleteGeminiSessionInStorage();
 }
 
@@ -368,6 +432,8 @@ void GeminiTabHelper::WasHidden(web::WebState* web_state) {
     return;
   }
 
+  CancelPageContextGeneration();
+
   [gemini_commands_handler_
       hideFloatyIfInvokedAnimated:NO
                        fromSource:gemini::FloatyUpdateSource::WebNavigation];
@@ -376,8 +442,8 @@ void GeminiTabHelper::WasHidden(web::WebState* web_state) {
 void GeminiTabHelper::DidStartNavigation(
     web::WebState* web_state,
     web::NavigationContext* navigation_context) {
-  // Cancel the callback that runs on page load, since we're now going to a new
-  // page.
+  // Reset active timers and loading state when traversing to a new location.
+  page_context_timeout_timer_.Stop();
   page_loaded_callback_.Reset();
 
   const GURL& new_url = navigation_context->GetUrl();
@@ -494,6 +560,7 @@ void GeminiTabHelper::TitleWasSet(web::WebState* web_state) {
 void GeminiTabHelper::PageLoaded(
     web::WebState* web_state,
     web::PageLoadCompletionStatus load_completion_status) {
+  page_context_timeout_timer_.Stop();
   if (page_loaded_callback_) {
     page_loaded_callback_.Run();
     page_loaded_callback_.Reset();
@@ -532,6 +599,7 @@ void GeminiTabHelper::FaviconUrlUpdated(
 }
 
 void GeminiTabHelper::WebStateDestroyed(web::WebState* web_state) {
+  page_context_timeout_timer_.Stop();
   weak_ptr_factory_.InvalidateWeakPtrs();
   web_state_observation_.Reset();
   web_state_ = nullptr;
@@ -544,6 +612,7 @@ void GeminiTabHelper::WebStateDestroyed(web::WebState* web_state) {
 #pragma mark - Private
 
 void GeminiTabHelper::PopulatePageContextFields() {
+  page_context_timeout_timer_.Stop();
   // Cancel any ongoing page context operation.
   if (page_context_wrapper_) {
     page_context_wrapper_ = nil;
@@ -561,14 +630,35 @@ void GeminiTabHelper::PopulatePageContextFields() {
   page_context_wrapper_ = [[PageContextWrapper alloc]
         initWithWebState:web_state_
                   config:config
-      completionCallback:page_context_wrapper_response_ready_callback_];
-
-  // Configure it to fetch full context.
+      completionCallback:base::BindRepeating(
+                             &GeminiTabHelper::OnPageContextWrapperResponse,
+                             weak_ptr_factory_.GetWeakPtr())];
   [page_context_wrapper_ setShouldGetAnnotatedPageContent:YES];
   [page_context_wrapper_ setShouldGetSnapshot:YES];
-
-  // Start populating the page context fields.
   [page_context_wrapper_ populatePageContextFieldsAsync];
+}
+
+void GeminiTabHelper::OnPageContextWrapperResponse(
+    PageContextWrapperCallbackResponse expected_page_context) {
+  GeminiPageContext* gemini_page_context = [[GeminiPageContext alloc] init];
+  gemini_page_context.geminiPageContextComputationState =
+      ios::provider::GeminiPageContextComputationState::kSuccess;
+  std::unique_ptr<optimization_guide::proto::PageContext> page_context_proto =
+      nullptr;
+
+  if (expected_page_context.has_value()) {
+    page_context_proto = std::move(expected_page_context.value());
+  } else {
+    gemini_page_context.geminiPageContextComputationState =
+        GeminiPageContextComputationStateFromPageContextWrapperError(
+            expected_page_context.error());
+  }
+  gemini_page_context.uniquePageContext = std::move(page_context_proto);
+  gemini_page_context.favicon = GetFavicon();
+
+  if (page_context_consumer_callback_) {
+    page_context_consumer_callback_.Run(gemini_page_context);
+  }
 }
 
 void GeminiTabHelper::ClearZeroStateSuggestions() {
@@ -628,16 +718,8 @@ void GeminiTabHelper::OnCanApplyContextualCueingDecision(
   latest_load_contextual_cueing_metadata_ = metadata.ParsedMetadata<
       optimization_guide::proto::GlicContextualCueingMetadata>();
 
-  if (!web_state_) {
-    return;
-  }
-
-  // If the tab is not visible, do not attempt to update the UI.
-  if (!web_state_->IsVisible()) {
-    return;
-  }
-
-  if (!latest_load_contextual_cueing_metadata_) {
+  if (!web_state_ || !web_state_->IsVisible() ||
+      !latest_load_contextual_cueing_metadata_) {
     return;
   }
 
