@@ -45,6 +45,7 @@ source_set("impl") {
     "//chrome/browser/picture_in_picture",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/profiles/keep_alive",
+    "//chrome/browser/ui:tab_modal_confirm_dialog_delegate",
     "//chrome/browser/ui/navigator",
     "//components/keep_alive_registry",
     "//components/version_info",

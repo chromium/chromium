@@ -2020,6 +2020,7 @@ static_library("browser") {
     "//chrome/browser/trusted_vault:impl",
     "//chrome/browser/ui",
     "//chrome/browser/ui:browser_element_identifiers",
+    "//chrome/browser/ui:tab_modal_confirm_dialog_delegate",
     "//chrome/browser/ui:ui_features",
     "//chrome/browser/ui/actions",
     "//chrome/browser/ui/actions:actions_headers",

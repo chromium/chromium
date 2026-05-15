@@ -51,6 +51,18 @@ source_set("simple_message_box_headers") {
   ]
 }
 
+# Header-only target so non-:ui targets (e.g.
+# //chrome/browser:repost_form_warning_controller) can include this header
+# without depending on :ui. The .cc file remains in :ui.
+source_set("tab_modal_confirm_dialog_delegate") {
+  public = [ "tab_modal_confirm_dialog_delegate.h" ]
+  deps = [
+    "//base",
+    "//content/public/browser",
+    "//ui/base",
+  ]
+}
+
 # Use a static library here because many test binaries depend on this but don't
 # require many files from it. This makes linking more efficient.
 # TODO(https://crbug.com/353332589): Once //chrome/browser is properly
@@ -269,6 +281,7 @@ static_library("ui") {
 
   deps = [
     ":browser_element_identifiers",
+    ":tab_modal_confirm_dialog_delegate",
     ":ui_features",
     ":url_identity",
     "//base",
@@ -1199,7 +1212,6 @@ static_library("ui") {
       "singleton_tabs.cc",
       "singleton_tabs.h",
       "tab_modal_confirm_dialog_delegate.cc",
-      "tab_modal_confirm_dialog_delegate.h",
       "uma_browsing_activity_observer.cc",
       "uma_browsing_activity_observer.h",
       "unload_controller.cc",

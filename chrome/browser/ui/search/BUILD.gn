@@ -72,6 +72,7 @@ source_set("impl") {
       "//chrome/browser/history",
       "//chrome/browser/profiles:profile",
       "//chrome/browser/signin",
+      "//chrome/browser/ui:tab_modal_confirm_dialog_delegate",
       "//chrome/browser/ui/bookmarks",
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/location_bar",
