@@ -31,6 +31,7 @@ component("background_tracing") {
   public_deps = [ "//services/tracing/public/mojom" ]
   deps = [
     "//base",
+    "//build:blink_buildflags",
     "//components/variations",
     "//net",
     "//services/tracing/public/cpp",

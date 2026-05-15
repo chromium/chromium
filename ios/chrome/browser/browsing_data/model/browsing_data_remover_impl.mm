@@ -72,6 +72,7 @@
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/signin/model/account_consistency_service_factory.h"
+#import "ios/chrome/browser/tracing/ios_tracing_controller.h"
 #import "ios/chrome/browser/web/model/font_size/font_size_tab_helper.h"
 #import "ios/chrome/browser/web_state_list/model/web_usage_enabler/web_usage_enabler_browser_agent.h"
 #import "ios/chrome/browser/webdata_services/model/web_data_service_factory.h"
@@ -575,6 +576,11 @@ void BrowsingDataRemoverImpl::RemoveImpl(base::Time delete_begin,
     }
 
     crash_helper::ClearReportsBetween(delete_begin, delete_end);
+
+    if (IOSTracingController::HasInstance()) {
+      IOSTracingController::GetInstance().DeleteTracesInDateRange(delete_begin,
+                                                                  delete_end);
+    }
   }
 
   if (IsRemoveDataMaskSet(mask, BrowsingDataRemoveMask::REMOVE_PASSWORDS)) {

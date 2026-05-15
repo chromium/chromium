@@ -193,6 +193,7 @@ source_set("model") {
     "//ios/chrome/browser/sync/model",
     "//ios/chrome/browser/sync/model:device_info_sync_service_factory",
     "//ios/chrome/browser/tabs/model",
+    "//ios/chrome/browser/tracing",
     "//ios/chrome/browser/translate/model",
     "//ios/chrome/browser/variations/model",
     "//ios/chrome/common",

@@ -4,12 +4,16 @@
 
 #import "ios/chrome/browser/tracing/ios_tracing_controller.h"
 
+#import "base/apple/foundation_util.h"
 #import "base/files/file_util.h"
 #import "base/files/scoped_temp_dir.h"
 #import "base/run_loop.h"
 #import "base/strings/string_number_conversions.h"
+#import "base/task/sequenced_task_runner.h"
 #import "base/task/thread_pool.h"
 #import "base/task/thread_pool/thread_pool_instance.h"
+#import "base/test/bind.h"
+#import "base/test/run_until.h"
 #import "base/test/scoped_command_line.h"
 #import "base/test/task_environment.h"
 #import "base/test/tracing/test_trace_processor.h"
@@ -17,14 +21,33 @@
 #import "base/trace_event/trace_log.h"
 #import "base/tracing/perfetto_platform.h"
 #import "components/tracing/common/tracing_switches.h"
+#import "services/tracing/public/cpp/background_tracing/trace_report_database.h"
+#import "services/tracing/public/cpp/background_tracing/tracing_scenario.h"
 #import "services/tracing/public/cpp/perfetto/perfetto_data_source_names.h"
 #import "services/tracing/public/cpp/startup_tracing_controller.h"
 #import "services/tracing/public/cpp/trace_startup_config.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
-#import "third_party/perfetto/protos/perfetto/config/chrome/chrome_config.gen.h"
+#import "third_party/perfetto/protos/perfetto/config/chrome/scenario_config.gen.h"
 #import "third_party/perfetto/protos/perfetto/config/data_source_config.gen.h"
-#import "third_party/perfetto/protos/perfetto/config/trace_config.gen.h"
+
+namespace {
+
+size_t GetDatabaseReportCount(IOSTracingController& instance) {
+  size_t result_count = 0;
+  base::RunLoop run_loop;
+  instance.GetAllTraceReports(base::BindOnce(
+      [](base::RunLoop* run_loop, size_t* out_count,
+         std::vector<tracing::ClientTraceReport> reports) {
+        *out_count = reports.size();
+        run_loop->Quit();
+      },
+      base::Unretained(&run_loop), base::Unretained(&result_count)));
+  run_loop.Run();
+  return result_count;
+}
+
+}  // namespace
 
 class IOSTracingControllerTest : public PlatformTest {
  protected:
@@ -38,6 +61,14 @@ class IOSTracingControllerTest : public PlatformTest {
     IOSTracingController::GetInstance().ResetForTesting();
     PlatformTest::TearDown();
   }
+
+  bool IsRecordingAllowed(IOSTracingController& instance,
+                          bool privacy_filter_enabled,
+                          base::TimeTicks scenario_start_time) {
+    return instance.IsRecordingAllowed(privacy_filter_enabled,
+                                       scenario_start_time);
+  }
+
   base::test::TaskEnvironment task_environment_;
 };
 
@@ -101,6 +132,7 @@ TEST_F(IOSTracingControllerTest, StartupTraceRecording) {
 
   // Reset and re-initialize to restart startup tracing.
   IOSTracingController::GetInstance().ResetForTesting();
+  base::ThreadPoolInstance::Get()->FlushForTesting();
   IOSTracingController::GetInstance().InitializeForTesting();
 
   // Wait for the background tracer to start blocking and actually begin
@@ -203,4 +235,131 @@ TEST_F(IOSTracingControllerTest, ManualTraceRecording) {
   int count = 0;
   base::StringToInt(result.result()[1][0], &count);
   EXPECT_GE(count, 1);
+}
+
+TEST_F(IOSTracingControllerTest, UploadFlow) {
+  base::ThreadPoolInstance::Get()->FlushForTesting();
+
+  perfetto::protos::gen::TriggerRule config;
+  config.set_manual_trigger_name("test_trigger");
+  auto rule = tracing::BackgroundTracingRule::Create(config);
+
+  perfetto::protos::gen::ScenarioConfig scenario_config;
+  scenario_config.set_scenario_name("test_scenario");
+  auto scenario = tracing::TracingScenario::Create(
+      scenario_config, /*enable_privacy_filter=*/false,
+      /*is_local_scenario=*/false, /*enable_package_name_filter=*/false,
+      /*request_startup_tracing=*/false,
+      static_cast<tracing::TracingScenario::Delegate*>(
+          &IOSTracingController::GetInstance()));
+
+  base::Token uuid = base::Token::CreateRandom();
+
+  std::string fake_trace = "fake trace data";
+  IOSTracingController::GetInstance().SaveTraceForTesting(
+      std::move(fake_trace), scenario->scenario_name(), rule->rule_name(),
+      uuid);
+
+  base::ThreadPoolInstance::Get()->FlushForTesting();
+  EXPECT_TRUE(base::test::RunUntil([]() -> bool {
+    return IOSTracingController::GetInstance().HasTraceToUpload();
+  }));
+
+  bool called = false;
+  IOSTracingController::GetInstance().GetTraceToUpload(
+      base::BindLambdaForTesting([&](std::optional<std::string> content,
+                                     std::optional<std::string> system_profile,
+                                     base::OnceClosure upload_complete) {
+        called = true;
+        EXPECT_TRUE(content.has_value());
+        if (content.has_value()) {
+          EXPECT_FALSE(content->empty());
+        }
+        std::move(upload_complete).Run();
+      }));
+
+  base::ThreadPoolInstance::Get()->FlushForTesting();
+  EXPECT_TRUE(base::test::RunUntil([&] { return called; }));
+
+  EXPECT_TRUE(called);
+}
+
+TEST_F(IOSTracingControllerTest, InitializeFieldScenarios) {
+  perfetto::protos::gen::ChromeFieldTracingConfig config;
+  auto* scenario = config.add_scenarios();
+  scenario->set_scenario_name("test_scenario");
+
+  bool result = IOSTracingController::GetInstance().InitializeFieldScenarios(
+      config, tracing::BackgroundTracingManager::ANONYMIZE_DATA,
+      /*force_uploads=*/false,
+      /*upload_limit_kb=*/0);
+
+  EXPECT_TRUE(result);
+  EXPECT_FALSE(IOSTracingController::GetInstance().HasTraceToUpload());
+}
+
+TEST_F(IOSTracingControllerTest, OversizedLogSuppression) {
+  base::ThreadPoolInstance::Get()->FlushForTesting();
+
+  auto& instance = IOSTracingController::GetInstance();
+
+  perfetto::protos::gen::ChromeFieldTracingConfig config;
+  auto* scenario_cfg = config.add_scenarios();
+  scenario_cfg->set_scenario_name("test_scenario");
+
+  instance.InitializeFieldScenarios(
+      config, tracing::BackgroundTracingManager::ANONYMIZE_DATA,
+      /*force_uploads=*/false,
+      /*upload_limit_kb_=*/1);
+
+  std::string big_trace(2048, 'a');
+
+  perfetto::protos::gen::TriggerRule rule_cfg;
+  rule_cfg.set_manual_trigger_name("test_trigger");
+  auto rule = tracing::BackgroundTracingRule::Create(rule_cfg);
+
+  perfetto::protos::gen::ScenarioConfig proto_scenario_cfg;
+  proto_scenario_cfg.set_scenario_name("test_scenario");
+  auto scenario = tracing::TracingScenario::Create(
+      proto_scenario_cfg, /*enable_privacy_filter=*/false,
+      /*is_local_scenario=*/false, /*enable_package_name_filter=*/false,
+      /*request_startup_tracing=*/false,
+      static_cast<tracing::TracingScenario::Delegate*>(&instance));
+
+  base::Token uuid = base::Token::CreateRandom();
+  instance.SaveTraceForTesting(std::move(big_trace), scenario->scenario_name(),
+                               rule->rule_name(), uuid);
+
+  base::ThreadPoolInstance::Get()->FlushForTesting();
+
+  EXPECT_EQ(GetDatabaseReportCount(instance), 1u);
+}
+
+TEST_F(IOSTracingControllerTest, IsRecordingAllowedOTRProtection) {
+  auto& instance = IOSTracingController::GetInstance();
+
+  base::TimeTicks now = base::TimeTicks::Now();
+
+  // 1. Without privacy filter enabled, recording is always allowed.
+  EXPECT_TRUE(
+      IsRecordingAllowed(instance, /*privacy_filter_enabled=*/false, now));
+
+  // 2. With privacy filter enabled:
+  // - If no incognito session was ever launched, recording is allowed.
+  EXPECT_TRUE(
+      IsRecordingAllowed(instance, /*privacy_filter_enabled=*/true, now));
+
+  // - If an incognito session was launched AFTER the tracing session started
+  // (session <= incognito),
+  //   recording is blocked.
+  instance.SetLatestIncognitoLaunchedForTesting(now + base::Seconds(5));
+  EXPECT_FALSE(
+      IsRecordingAllowed(instance, /*privacy_filter_enabled=*/true, now));
+
+  // - If an incognito session was launched BEFORE the tracing session started
+  // (session > incognito),
+  //   recording is allowed again.
+  instance.SetLatestIncognitoLaunchedForTesting(now - base::Seconds(5));
+  EXPECT_TRUE(
+      IsRecordingAllowed(instance, /*privacy_filter_enabled=*/true, now));
 }

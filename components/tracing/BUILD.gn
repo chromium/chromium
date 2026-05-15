@@ -70,42 +70,45 @@ if (is_win) {
   }
 }
 
-if (!is_ios) {
-  component("tracing_metrics") {
-    sources = [
-      "common/background_tracing_metrics_provider.cc",
-      "common/background_tracing_metrics_provider.h",
-      "common/system_profile_metadata_recorder.cc",
-      "common/system_profile_metadata_recorder.h",
-      "tracing_export.h",
-    ]
+component("tracing_metrics") {
+  sources = [
+    "common/background_tracing_metrics_provider.cc",
+    "common/background_tracing_metrics_provider.h",
+    "common/system_profile_metadata_recorder.cc",
+    "common/system_profile_metadata_recorder.h",
+    "tracing_export.h",
+  ]
 
-    defines = [ "TRACING_IMPLEMENTATION" ]
+  defines = [ "TRACING_IMPLEMENTATION" ]
 
-    deps = [
-      "//base",
-      "//components/metrics:content",
-      "//content/public/browser",
-      "//services/tracing/public/cpp/background_tracing",
-      "//third_party/metrics_proto",
-    ]
+  deps = [
+    "//base",
+    "//build:blink_buildflags",
+    "//components/metrics",
+    "//services/tracing/public/cpp",
+    "//services/tracing/public/cpp/background_tracing",
+    "//third_party/metrics_proto",
+  ]
+
+  if (use_blink) {
+    deps += [ "//components/metrics:content" ]
   }
+}
 
-  component("background_tracing_utils") {
-    sources = [
-      "common/background_tracing_utils.cc",
-      "common/background_tracing_utils.h",
-    ]
+component("background_tracing_utils") {
+  sources = [
+    "common/background_tracing_utils.cc",
+    "common/background_tracing_utils.h",
+  ]
 
-    defines = [ "IS_BACKGROUND_TRACING_UTILS_IMPL" ]
+  defines = [ "IS_BACKGROUND_TRACING_UTILS_IMPL" ]
 
-    deps = [
-      ":tracing_config",
-      "//base",
-      "//content/public/browser",
-      "//services/tracing/public/cpp/background_tracing",
-    ]
-  }
+  deps = [
+    ":tracing_config",
+    "//base",
+    "//build:blink_buildflags",
+    "//services/tracing/public/cpp/background_tracing",
+  ]
 }
 
 source_set("unit_tests") {

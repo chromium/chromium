@@ -4,26 +4,44 @@
 
 source_set("tracing") {
   sources = [
+    "ios_chrome_background_tracing_metrics_provider.h",
+    "ios_chrome_background_tracing_metrics_provider.mm",
     "ios_tracing_controller.h",
     "ios_tracing_controller.mm",
   ]
   deps = [
     "//base",
+    "//components/application_locale_storage",
+    "//components/metrics",
+    "//components/tracing:background_tracing_utils",
     "//components/tracing:tracing_config",
+    "//components/tracing:tracing_metrics",
+    "//components/variations",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/paths",
+    "//ios/chrome/browser/shared/model/profile:incognito_session_tracker",
+    "//ios/chrome/common",
     "//services/tracing/public/cpp",
+    "//services/tracing/public/cpp/background_tracing",
+    "//third_party/metrics_proto",
     "//third_party/perfetto:libperfetto",
   ]
 }
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "ios_tracing_controller_unittest.mm" ]
+  sources = [
+    "ios_chrome_background_tracing_metrics_provider_unittest.mm",
+    "ios_tracing_controller_unittest.mm",
+  ]
   deps = [
     ":tracing",
     "//base/test:test_support",
     "//base/test:test_trace_processor",
     "//services/tracing/public/cpp",
+    "//services/tracing/public/cpp/background_tracing",
     "//testing/gtest",
+    "//third_party/metrics_proto",
     "//third_party/perfetto:libperfetto",
   ]
 }

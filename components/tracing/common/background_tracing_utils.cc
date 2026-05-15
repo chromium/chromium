@@ -20,7 +20,6 @@
 #include "components/tracing/common/background_tracing_state_manager.h"
 #include "components/tracing/common/tracing_scenarios_config.h"
 #include "components/tracing/common/tracing_switches.h"
-#include "content/public/browser/browser_thread.h"
 #include "services/tracing/public/cpp/background_tracing/background_tracing_manager.h"
 
 namespace tracing {
@@ -44,7 +43,6 @@ void WriteTraceToFile(
     std::string file_contents,
     tracing::BackgroundTracingManager::FinishedProcessingCallback
         done_callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   base::FilePath output_file = output_path.AppendASCII(file_name);
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock()},

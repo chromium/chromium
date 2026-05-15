@@ -105,6 +105,7 @@
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/sync/model/device_info_sync_service_factory.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
+#import "ios/chrome/browser/tracing/ios_chrome_background_tracing_metrics_provider.h"
 #import "ios/chrome/browser/translate/model/translate_ranker_metrics_provider.h"
 #import "ios/chrome/common/channel_info.h"
 #import "ios/public/provider/chrome/browser/app_distribution/app_distribution_api.h"
@@ -436,6 +437,9 @@ void IOSChromeMetricsServiceClient::RegisterMetricsServiceProviders() {
         std::make_unique<
             regional_capabilities::IOSRegionalCapabilitiesMetricsProvider>());
   }
+
+  metrics_service_->RegisterMetricsProvider(
+      std::make_unique<tracing::IOSChromeBackgroundTracingMetricsProvider>());
 }
 
 void IOSChromeMetricsServiceClient::RegisterUKMProviders() {

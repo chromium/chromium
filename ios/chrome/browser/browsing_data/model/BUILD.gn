@@ -68,6 +68,7 @@ source_set("model") {
     "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/snapshots/model",
     "//ios/chrome/browser/sync/model",
+    "//ios/chrome/browser/tracing",
     "//ios/chrome/browser/translate/model",
     "//ios/chrome/browser/web/model",
     "//ios/chrome/browser/web/model/font_size",
