@@ -5136,7 +5136,7 @@ enum WebFeature {
   kSynthesizedMiddleClickAnchor = 5819,
   kSynthesizedMiddleClickArea = 5820,
   kSynthesizedMiddleClickSVGAnchor = 5821,
-  kWebAuthenticationCspDisallowsRpId = 5822,
+  kOBSOLETE_WebAuthenticationCspDisallowsRpId = 5822,
   kHistoryGoBackWouldSkipAd = 5823,
   kHistoryGoForwardWouldSkipAd = 5824,
   kHistoryGoBackWouldNotSkipAdDueToSameOriginExclusion = 5825,
@@ -5210,6 +5210,7 @@ enum WebFeature {
   kCapabilityElementOnValidationStatusChange = 5893,
   kInputParsedParentSelectNoOptions = 5894,
   kFocusGroupStart = 5895,
+  kWebAuthenticationRemoteCspDisallowsRpId = 5896,
 
   // Add new features immediately above this line. Don't change the existing
   // numbers of any item, and don't reuse removed slots. Also don't add extra

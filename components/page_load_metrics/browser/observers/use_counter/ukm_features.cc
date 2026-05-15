@@ -52,7 +52,7 @@ UseCounterMetricsRecorder::GetAllowedUkmFeatures() {
           WebFeature::kPaymentHandler,
           WebFeature::kPaymentRequestShowWithoutGesture,
           WebFeature::kPaymentRequestShowWithoutGestureOrToken,
-          WebFeature::kWebAuthenticationCspDisallowsRpId,
+          WebFeature::kWebAuthenticationRemoteCspDisallowsRpId,
           WebFeature::kTextToSpeech_Speak,
           WebFeature::kTextToSpeech_SpeakDisallowedByAutoplay,
           WebFeature::kCSSEnvironmentVariable_SafeAreaInsetTop,

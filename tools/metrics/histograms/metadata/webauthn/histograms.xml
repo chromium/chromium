@@ -291,6 +291,18 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="WebAuthentication.CspAllow.Remote" enum="Boolean"
+    expires_after="2026-12-31">
+  <owner>kenrb@chromium.org</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <summary>
+    Records whether a WebAuthn RP ID would be allowed by the document's Content
+    Security Policy (specifically connect-src or default-src). Recorded for a
+    public key credential request that does not have a matched RP ID and
+    therefore is having a Related Origin check performed.
+  </summary>
+</histogram>
+
 <histogram name="WebAuthentication.CspAllow.{RequestType}" enum="Boolean"
     expires_after="2026-12-31">
   <owner>kenrb@chromium.org</owner>

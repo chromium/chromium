@@ -108,9 +108,15 @@ source_set("common_utils") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "webauthn_security_utils_unittest.cc" ]
+  sources = [
+    "remote_validation_unittest.cc",
+    "webauthn_security_utils_unittest.cc",
+  ]
   deps = [
     ":common_utils",
+    "//base/test:test_support",
+    "//services/network:test_support",
+    "//services/network/public/cpp",
     "//testing/gtest",
     "//url",
   ]

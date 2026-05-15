@@ -6,6 +6,7 @@
 
 #import "base/check_deref.h"
 #import "base/debug/dump_without_crashing.h"
+#import "base/functional/callback.h"
 #import "base/logging.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/notreached.h"
@@ -270,6 +271,7 @@ bool PasskeyTabHelper::PerformRemoteRpIdValidation(
     base::OnceCallback<void(ValidationStatus)> callback) {
   std::unique_ptr<RemoteValidation> loader = RemoteValidation::Create(
       origin, rp_id, web_state_->GetBrowserState()->GetSharedURLLoaderFactory(),
+      /*content_security_policies=*/{}, base::OnceClosure(),
       std::move(callback));
   if (loader) {
     loaders_[passkey_request_id] = std::move(loader);

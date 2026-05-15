@@ -6460,7 +6460,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5819" label="SynthesizedMiddleClickAnchor"/>
   <int value="5820" label="SynthesizedMiddleClickArea"/>
   <int value="5821" label="SynthesizedMiddleClickSVGAnchor"/>
-  <int value="5822" label="WebAuthenticationCspDisallowsRpId"/>
+  <int value="5822" label="OBSOLETE_WebAuthenticationCspDisallowsRpId"/>
   <int value="5823" label="HistoryGoBackWouldSkipAd"/>
   <int value="5824" label="HistoryGoForwardWouldSkipAd"/>
   <int value="5825"
@@ -6537,6 +6537,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5893" label="CapabilityElementOnValidationStatusChange"/>
   <int value="5894" label="InputParsedParentSelectNoOptions"/>
   <int value="5895" label="FocusGroupStart"/>
+  <int value="5896" label="WebAuthenticationRemoteCspDisallowsRpId"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->

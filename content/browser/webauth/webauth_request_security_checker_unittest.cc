@@ -8,6 +8,8 @@
 
 #include "base/json/json_reader.h"
 #include "base/memory/raw_ptr.h"
+#include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "components/webauthn/core/browser/remote_validation.h"
@@ -19,9 +21,13 @@
 #include "content/public/test/test_browser_context.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/test_web_contents_factory.h"
+#include "services/network/public/cpp/content_security_policy/content_security_policy.h"
 #include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
+#include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
+#include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom.h"
 #include "third_party/blink/public/mojom/webauthn/authenticator.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -29,6 +35,32 @@
 
 namespace content {
 namespace {
+
+using ::testing::_;
+
+class MockWebAuthnContentBrowserClient : public ContentBrowserClient {
+ public:
+  MockWebAuthnContentBrowserClient() = default;
+  ~MockWebAuthnContentBrowserClient() override = default;
+
+  MOCK_METHOD(void,
+              LogWebFeatureForCurrentPage,
+              (RenderFrameHost*, blink::mojom::WebFeature),
+              (override));
+
+  scoped_refptr<network::SharedURLLoaderFactory>
+  GetSystemSharedURLLoaderFactory() override {
+    return shared_url_loader_factory_;
+  }
+
+  void set_shared_url_loader_factory(
+      scoped_refptr<network::SharedURLLoaderFactory> factory) {
+    shared_url_loader_factory_ = std::move(factory);
+  }
+
+ private:
+  scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory_;
+};
 
 network::ParsedPermissionsPolicy CreatePolicyToAllowWebAuthn() {
   return {network::ParsedPermissionsPolicyDeclaration(
@@ -420,6 +452,78 @@ TEST_F(WebAuthRequestSecurityCheckerWellKnownJSONTest, Inputs) {
 
     EXPECT_EQ(test.expected, Test("https://foo.com", test.json));
   }
+}
+
+TEST_F(WebAuthRequestSecurityCheckerSingleFrameTest,
+       ValidateDomainAndRelyingPartyID_CspMetrics) {
+  const char kCsp[] = "connect-src https://allowed.com";
+  auto navigation = NavigationSimulator::CreateBrowserInitiated(
+      GURL("https://example.com"), web_contents());
+  navigation->Commit();
+  RenderFrameHost* frame = web_contents()->GetPrimaryMainFrame();
+
+  auto policies = network::ParseContentSecurityPolicies(
+      kCsp, network::mojom::ContentSecurityPolicyType::kEnforce,
+      network::mojom::ContentSecurityPolicySource::kHTTP,
+      GURL("https://example.com"));
+  static_cast<RenderFrameHostImpl*>(frame)
+      ->policy_container_host()
+      ->AddContentSecurityPolicies(std::move(policies));
+
+  network::TestURLLoaderFactory test_url_loader_factory;
+  auto shared_url_loader_factory =
+      base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
+          &test_url_loader_factory);
+
+  MockWebAuthnContentBrowserClient mock_client;
+  mock_client.set_shared_url_loader_factory(shared_url_loader_factory);
+  ContentBrowserClient* old_client = SetBrowserClientForTesting(&mock_client);
+  WebAuthRequestSecurityChecker::UseSystemSharedURLLoaderFactoryForTesting() =
+      true;
+
+  scoped_refptr<WebAuthRequestSecurityChecker> checker =
+      static_cast<RenderFrameHostImpl*>(frame)
+          ->GetWebAuthRequestSecurityChecker();
+
+  base::HistogramTester histograms;
+
+  // RP ID allowed.
+  EXPECT_CALL(mock_client, LogWebFeatureForCurrentPage(_, _)).Times(0);
+  base::RunLoop run_loop1;
+  auto validation1 = checker->ValidateDomainAndRelyingPartyID(
+      url::Origin::Create(GURL("https://example.com")), "allowed.com",
+      WebAuthRequestSecurityChecker::RequestType::kGetAssertion,
+      /*remote_desktop_client_override_origin=*/std::nullopt,
+      base::BindLambdaForTesting(
+          [&](blink::mojom::AuthenticatorStatus status) { run_loop1.Quit(); }));
+  test_url_loader_factory.AddResponse(
+      "https://allowed.com/.well-known/webauthn", "");
+  run_loop1.Run();
+  histograms.ExpectUniqueSample("WebAuthentication.CspAllow.Remote", true, 1);
+
+  // RP ID disallowed.
+  EXPECT_CALL(
+      mock_client,
+      LogWebFeatureForCurrentPage(
+          frame,
+          blink::mojom::WebFeature::kWebAuthenticationRemoteCspDisallowsRpId))
+      .Times(1);
+  base::RunLoop run_loop2;
+  auto validation2 = checker->ValidateDomainAndRelyingPartyID(
+      url::Origin::Create(GURL("https://example.com")), "disallowed.com",
+      WebAuthRequestSecurityChecker::RequestType::kGetAssertion,
+      /*remote_desktop_client_override_origin=*/std::nullopt,
+      base::BindLambdaForTesting(
+          [&](blink::mojom::AuthenticatorStatus status) { run_loop2.Quit(); }));
+  test_url_loader_factory.AddResponse(
+      "https://disallowed.com/.well-known/webauthn", "");
+  run_loop2.Run();
+  histograms.ExpectBucketCount("WebAuthentication.CspAllow.Remote", false, 1);
+  histograms.ExpectTotalCount("WebAuthentication.CspAllow.Remote", 2);
+
+  WebAuthRequestSecurityChecker::UseSystemSharedURLLoaderFactoryForTesting() =
+      false;
+  SetBrowserClientForTesting(old_client);
 }
 
 }  // namespace

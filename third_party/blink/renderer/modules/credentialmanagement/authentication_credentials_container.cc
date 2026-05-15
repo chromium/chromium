@@ -140,10 +140,6 @@ void RecordWebAuthnCspMetric(ExecutionContext* context,
   base::UmaHistogramBoolean(
       std::string("WebAuthentication.CspAllow.") + request_type.Utf8(),
       allowed);
-
-  if (!allowed) {
-    UseCounter::Count(context, WebFeature::kWebAuthenticationCspDisallowsRpId);
-  }
 }
 
 // RequiredOriginType enumerates the requirements on the environment to perform
