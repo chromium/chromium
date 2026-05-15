@@ -230,6 +230,7 @@
 #include "chrome/browser/ui/waap/initial_webui_window_metrics_manager.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/webui/top_chrome/webui_contents_preload_manager.h"
+#include "chrome/browser/ui/window_feature_controller/window_feature_controller.h"
 #include "chrome/browser/ui/window_sizer/window_sizer.h"
 #include "chrome/browser/ui/zoom/browser_window_zoom_observer.h"
 #include "chrome/browser/user_education/user_education_service.h"
@@ -1246,20 +1247,6 @@ std::vector<ContentsContainerView*> BrowserView::GetContentsContainerViews() {
   return multi_contents_view_->contents_container_views();
 }
 
-#if BUILDFLAG(IS_MAC)
-bool BrowserView::UsesImmersiveFullscreenMode() const {
-  const bool is_pwa = GetIsWebAppType();
-  const bool is_tabbed_window = GetSupportsTabStrip();
-  return is_pwa || is_tabbed_window;
-}
-
-bool BrowserView::UsesImmersiveFullscreenTabbedMode() const {
-  const bool is_pwa = GetIsWebAppType();
-  const bool is_tabbed_window = GetSupportsTabStrip();
-  return is_tabbed_window && !is_pwa;
-}
-#endif
-
 TabStripRegionView* BrowserView::tab_strip_view() const {
   auto* controller = tabs::VerticalTabStripStateController::From(browser_);
   if (vertical_tab_strip_region_view_ && controller &&
@@ -1476,7 +1463,7 @@ float BrowserView::GetTopControlsSlideBehaviorShownRatio() const {
 
 views::Widget* BrowserView::GetWidgetForAnchoring() {
 #if BUILDFLAG(IS_MAC)
-  if (UsesImmersiveFullscreenMode()) {
+  if (WindowFeatureController::From(browser())->UsesImmersiveFullscreenMode()) {
     return IsFullscreen() ? overlay_widget_.get() : GetWidget();
   }
 #endif
@@ -2196,8 +2183,11 @@ void BrowserView::FullscreenStateChanged() {
   // a higher z-order level. This overlay widget should be used for anchoring
   // secondary UIs, otherwise they will be covered by the toolbar.
   views::Widget* widget_for_anchoring =
-      UsesImmersiveFullscreenMode() && IsFullscreen() ? overlay_widget_.get()
-                                                      : nullptr;
+      WindowFeatureController::From(browser())->UsesImmersiveFullscreenMode() &&
+              IsFullscreen()
+          ? overlay_widget_.get()
+          : nullptr;
+
   contents_container()->SetProperty(views::kWidgetForAnchoringKey,
                                     widget_for_anchoring);
   GetFrameView()->OnFullscreenStateChanged();
@@ -2929,7 +2919,8 @@ bool BrowserView::IsToolbarVisible() const {
 #if BUILDFLAG(IS_MAC)
   // Immersive full screen makes it possible to display the toolbar when
   // kShowFullscreenToolbar is not set.
-  if (!UsesImmersiveFullscreenMode()) {
+  if (!WindowFeatureController::From(browser())
+           ->UsesImmersiveFullscreenMode()) {
     if (IsFullscreen() &&
         !fullscreen_utils::IsAlwaysShowToolbarEnabled(browser())) {
       return false;
@@ -3703,7 +3694,8 @@ void BrowserView::ReparentTabStripAndWebAppViewsToTopContainer(
   }
 
 #if BUILDFLAG(IS_MAC)
-  if (!UsesImmersiveFullscreenTabbedMode()) {
+  if (!WindowFeatureController::From(browser())
+           ->UsesImmersiveFullscreenTabbedMode()) {
     top_container()->AddChildViewAt(horizontal_tab_strip_region_view_.get(), 0);
   }
 #endif  // BUILDFLAG(IS_MAC)
@@ -3975,7 +3967,8 @@ views::View* BrowserView::CreateOverlayView() {
 
 #if BUILDFLAG(IS_MAC)
 views::View* BrowserView::CreateMacOverlayView() {
-  DCHECK(UsesImmersiveFullscreenMode());
+  DCHECK(
+      WindowFeatureController::From(browser())->UsesImmersiveFullscreenMode());
 
   // Create the toolbar overlay widget.
   overlay_widget_ = OverlayWidgetMac::Create(this, GetWidget());
@@ -3997,7 +3990,8 @@ views::View* BrowserView::CreateMacOverlayView() {
   // empty bounds during layout, which might hide its children.
   overlay_widget_->SetContentsView(std::move(overlay_view));
 
-  if (UsesImmersiveFullscreenTabbedMode()) {
+  if (WindowFeatureController::From(browser())
+          ->UsesImmersiveFullscreenTabbedMode()) {
     // Create the tab overlay widget as a child of overlay_widget_.
     tab_overlay_widget_ = OverlayWidgetMac::Create(this, overlay_widget_);
     auto tab_overlay_view = std::make_unique<TabContainerOverlayViewMac>(

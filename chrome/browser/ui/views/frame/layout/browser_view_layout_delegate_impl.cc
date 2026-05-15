@@ -28,6 +28,7 @@
 
 #if BUILDFLAG(IS_MAC)
 #include "chrome/browser/ui/fullscreen_util_mac.h"
+#include "chrome/browser/ui/window_feature_controller/window_feature_controller.h"
 #endif
 
 BrowserViewLayoutDelegateImpl::BrowserViewLayoutDelegateImpl(
@@ -229,7 +230,8 @@ bool BrowserViewLayoutDelegateImpl::ShouldLayoutTabStrip() const {
 #if BUILDFLAG(IS_MAC)
   // The tab strip is hosted in a separate widget in immersive fullscreen on
   // macOS.
-  if (browser_view_->UsesImmersiveFullscreenTabbedMode() &&
+  if (WindowFeatureController::From(browser_view_->browser())
+          ->UsesImmersiveFullscreenTabbedMode() &&
       GetImmersiveModeController()->IsEnabled()) {
     return false;
   }
@@ -240,7 +242,9 @@ bool BrowserViewLayoutDelegateImpl::ShouldLayoutTabStrip() const {
 int BrowserViewLayoutDelegateImpl::GetExtraInfobarOffset() const {
 #if BUILDFLAG(IS_MAC)
   auto* const controller = GetImmersiveModeController();
-  if (browser_view_->UsesImmersiveFullscreenMode() && controller->IsEnabled()) {
+  if (WindowFeatureController::From(browser_view_->browser())
+          ->UsesImmersiveFullscreenMode() &&
+      controller->IsEnabled()) {
     return controller->GetExtraInfobarOffset();
   }
 #endif

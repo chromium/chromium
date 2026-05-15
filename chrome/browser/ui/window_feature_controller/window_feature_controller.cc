@@ -6,6 +6,7 @@
 
 #include "base/check.h"
 #include "base/check_deref.h"
+#include "build/build_config.h"
 #include "chrome/browser/ui/fullscreen/browser_window_fullscreen_controller.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 
@@ -52,6 +53,22 @@ bool WindowFeatureController::CanSupportWindowFeature(
     WindowFeature feature) const {
   return SupportsWindowFeatureImpl(feature, /*check_can_support=*/true);
 }
+
+#if BUILDFLAG(IS_MAC)
+bool WindowFeatureController::UsesImmersiveFullscreenMode() const {
+  const bool is_pwa = app_controller_ != nullptr;
+  const bool is_tabbed_window =
+      CanSupportWindowFeature(WindowFeature::kFeatureTabStrip);
+  return is_pwa || is_tabbed_window;
+}
+
+bool WindowFeatureController::UsesImmersiveFullscreenTabbedMode() const {
+  const bool is_pwa = app_controller_ != nullptr;
+  const bool is_tabbed_window =
+      CanSupportWindowFeature(WindowFeature::kFeatureTabStrip);
+  return is_tabbed_window && !is_pwa;
+}
+#endif
 
 bool WindowFeatureController::NormalBrowserSupportsWindowFeature(
     WindowFeature feature,

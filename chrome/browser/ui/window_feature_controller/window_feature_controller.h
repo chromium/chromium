@@ -7,6 +7,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
+#include "build/build_config.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
@@ -57,6 +58,14 @@ class WindowFeatureController {
   // Returns true if the Browser can support the specified feature. See comment
   // in |SupportsWindowFeature| for details on this.
   bool CanSupportWindowFeature(WindowFeature feature) const;
+
+#if BUILDFLAG(IS_MAC)
+  // Returns if the window will use immersive fullscreen mode.
+  bool UsesImmersiveFullscreenMode() const;
+
+  // Returns if the window will use immersive fullscreen tabbed mode.
+  bool UsesImmersiveFullscreenTabbedMode() const;
+#endif
 
  private:
   bool NormalBrowserSupportsWindowFeature(WindowFeature feature,

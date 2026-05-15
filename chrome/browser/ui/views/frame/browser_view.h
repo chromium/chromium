@@ -257,16 +257,6 @@ class BrowserView : public BrowserWindow,
   const views::View* tab_overlay_view() const {
     return tab_overlay_view_.get();
   }
-
-  // Returns if this browser view will use immersive fullscreen mode, based on
-  // the type of browser this is a view for.
-  bool UsesImmersiveFullscreenMode() const;
-
-  // Returns if this browser view will use immersive fullscreen tabbed mode.
-  // In tabbed mode the tab strip is contained within the window's titlebar. In
-  // non-tabbed mode the tab strip is positioned below the titlebar.
-  // The return value is determined by the type of browser.
-  bool UsesImmersiveFullscreenTabbedMode() const;
 #endif
 
   // Container for the web contents.
