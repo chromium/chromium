@@ -28,6 +28,28 @@ fuzzer_test("string_compare_fuzzer") {
   is_fuzztest_compatible = false
 }
 
+test("string_compare_fuzztest_fuzzer") {
+  sources = [ "string_compare_fuzztest_fuzzer.cc" ]
+  fuzztests = [ "TestFuzzer.StringCompare" ]
+  deps = [ "//third_party/fuzztest:fuzztest_gtest_main" ]
+  configs += [ "//testing/libfuzzer:no_clusterfuzz" ]
+}
+
+# Manually wrap the LLVM-style fuzzer to use FUZZ_TEST.
+test("string_compare_fuzztest_wrapper_fuzzer") {
+  sources = [ "string_compare_fuzzer.cc" ]
+  fuzztests = [ "LLVMFuzzer.TestOneInput" ]
+  deps = [ "//third_party/fuzztest:llvm_wrapper" ]
+  configs += [ "//testing/libfuzzer:no_clusterfuzz" ]
+}
+
+test("string_compare_seeded_fuzztest_fuzzer") {
+  sources = [ "string_compare_seeded_fuzztest_fuzzer.cc" ]
+  fuzztests = [ "TestFuzzer.StringCompareWithSeeds" ]
+  deps = [ "//third_party/fuzztest:fuzztest_gtest_main" ]
+  configs += [ "//testing/libfuzzer:no_clusterfuzz" ]
+}
+
 fuzzer_test("string_compare_proto_fuzzer") {
   sources = [ "string_compare_proto_fuzzer.cc" ]
   deps = [
