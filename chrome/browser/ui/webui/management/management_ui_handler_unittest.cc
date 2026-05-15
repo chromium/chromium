@@ -452,6 +452,8 @@ class ManagementUIHandlerTests :
     base::ListValue report_website_telemetry_allowlist;
     bool sync_windows;
     bool sync_cookies;
+    bool saas_reporting_browser_enabled;
+    bool saas_reporting_profile_enabled;
   };
 
   void ResetTestConfig() { ResetTestConfig(true); }
@@ -488,6 +490,8 @@ class ManagementUIHandlerTests :
     setup_config_.real_time_url_check_connector_enabled = default_value;
     setup_config_.sync_windows = false;
     setup_config_.sync_cookies = false;
+    setup_config_.saas_reporting_browser_enabled = false;
+    setup_config_.saas_reporting_profile_enabled = false;
   }
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -662,6 +666,22 @@ class ManagementUIHandlerTests :
         profile_manager_->CreateTestingProfile(GetTestConfig().profile_name);
     if (GetTestConfig().override_policy_connector_is_managed) {
       profile_->GetProfilePolicyConnector()->OverrideIsManagedForTesting(true);
+    }
+
+    if (GetTestConfig().saas_reporting_browser_enabled) {
+      base::ListValue urls;
+      urls.Append("https://example.com");
+      TestingBrowserProcess::GetGlobal()->local_state()->SetList(
+          enterprise_reporting::kSaasUsageDomainUrlsForBrowser,
+          std::move(urls));
+    }
+
+    if (GetTestConfig().saas_reporting_profile_enabled) {
+      base::ListValue urls;
+      urls.Append("https://example.com");
+      profile_->GetTestingPrefService()->SetManagedPref(
+          enterprise_reporting::kSaasUsageDomainUrlsForProfile,
+          std::make_unique<base::Value>(std::move(urls)));
     }
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -2011,3 +2031,27 @@ TEST_F(ManagementUIHandlerTests, GetFilesUploadToCloud) {
   EXPECT_FALSE(handler_.GetFilesUploadToCloudInfo(profile_).empty());
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+TEST_F(ManagementUIHandlerTests, SaasReportingBrowserPolicyEnabled) {
+  ResetTestConfig(false);
+  GetTestConfig().saas_reporting_browser_enabled = true;
+  ASSERT_TRUE(SetUpProfileAndHandler());
+
+  base::ListValue reports = handler_.GetReportingInfo(
+      /*can_collect_signals=*/false, /*is_browser=*/true);
+  EXPECT_TRUE(MessagesToBeEQ("browser_reports", "expected", reports,
+                             {kManagementExtensionReportVisitedUrl}));
+}
+
+TEST_F(ManagementUIHandlerTests, SaasReportingProfilePolicyEnabled) {
+  ResetTestConfig(false);
+  GetTestConfig().saas_reporting_profile_enabled = true;
+  ASSERT_TRUE(SetUpProfileAndHandler());
+
+  base::ListValue reports = handler_.GetReportingInfo(
+      /*can_collect_signals=*/false, /*is_browser=*/true);
+  EXPECT_TRUE(MessagesToBeEQ("browser_reports", "expected", reports,
+                             {kManagementExtensionReportVisitedUrl}));
+}
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)

@@ -196,6 +196,20 @@ void AddThreatProtectionPermission(const char* title,
 }
 #endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
 
+bool IsSaasReportingEnabled(content::WebUI* web_ui) {
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  return !Profile::FromWebUI(web_ui)
+              ->GetPrefs()
+              ->GetList(enterprise_reporting::kSaasUsageDomainUrlsForProfile)
+              .empty() ||
+         !g_browser_process->local_state()
+              ->GetList(enterprise_reporting::kSaasUsageDomainUrlsForBrowser)
+              .empty();
+#else
+  return false;
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+}
+
 }  // namespace
 
 ManagementUIHandler::ManagementUIHandler(Profile* profile) {
@@ -341,7 +355,9 @@ void ManagementUIHandler::AddBrowserReportingInfo(
        kManagementExtensionReportUserBrowsingData, ReportingType::kUserActivity,
        false},
       {kPolicyKeyReportVisitedUrlData, kManagementExtensionReportVisitedUrl,
-       ReportingType::kUrl, real_time_url_check_connector_enabled},
+       ReportingType::kUrl,
+       real_time_url_check_connector_enabled ||
+           IsSaasReportingEnabled(web_ui())},
       {kPolicyKeyReportUserBrowsingData, kManagementLegacyTechReport,
        ReportingType::kLegacyTech, cloud_legacy_tech_report_enabled}};
 
