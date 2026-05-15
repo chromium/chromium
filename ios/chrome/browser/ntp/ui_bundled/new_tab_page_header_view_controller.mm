@@ -250,11 +250,9 @@ const CGFloat kIdentityDiscMaxFontSize = 24;
             : 1;
     [self updateLogoForOffset:offset];
 
-    if (!IsChromeNextIaEnabled()) {
-      if (!CanShowTabStrip(self) && IsSplitToolbarMode(self)) {
-        // Ensure omnibox is reset when not a regular tablet.
-        progress = 1.0;
-      }
+    if (!CanShowTabStrip(self) && IsSplitToolbarMode(self)) {
+      // Ensure omnibox is reset when not a regular tablet.
+      progress = 1.0;
     }
 
     [self.toolbarDelegate setScrollProgressForTabletOmnibox:progress];
@@ -481,17 +479,17 @@ const CGFloat kIdentityDiscMaxFontSize = 24;
 
   void (^transitionBlock)(id<UIViewControllerTransitionCoordinatorContext>) =
       ^(id<UIViewControllerTransitionCoordinatorContext>) {
+        __strong __typeof(self) strongSelf = weakSelf;
+        if (!strongSelf) {
+          return;
+        }
+
+        // Ensure omnibox is reset when not a regular tablet.
+        if (isSplitToolbarMode && !CanShowTabStrip(newCollection)) {
+          [strongSelf.toolbarDelegate setScrollProgressForTabletOmnibox:1];
+        }
+
         if (!IsChromeNextIaEnabled()) {
-          __strong __typeof(self) strongSelf = weakSelf;
-          if (!strongSelf) {
-            return;
-          }
-
-          // Ensure omnibox is reset when not a regular tablet.
-          if (isSplitToolbarMode && !CanShowTabStrip(newCollection)) {
-            [strongSelf.toolbarDelegate setScrollProgressForTabletOmnibox:1];
-          }
-
           // Fake Tap button only needs to work in portrait. Disable the button
           // in landscape because in landscape the button covers logoView (which
           // need to handle taps).
