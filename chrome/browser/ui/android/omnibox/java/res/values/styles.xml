@@ -54,7 +54,6 @@ found in the LICENSE file.
             @style/TextAppearance.TextSmall.Secondary
         </item>
         <item name="android:paddingHorizontal">8dp</item>
-        <item name="android:importantForAccessibility">no</item>
         <item name="android:layout_marginTop">4dp</item>
     </style>
 
