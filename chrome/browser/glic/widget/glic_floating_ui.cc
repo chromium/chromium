@@ -9,8 +9,8 @@
 #include "base/memory/weak_ptr.h"
 #include "base/notimplemented.h"
 #include "base/time/time.h"
-#include "chrome/browser/glic/common/application_hotkey_delegate.h"
-#include "chrome/browser/glic/common/glic_panel_hotkey_delegate.h"
+#include "chrome/browser/glic/common/panel_focus_dependent_hotkey_manager.h"
+#include "chrome/browser/glic/common/panel_visibility_dependent_hotkey_manager.h"
 #include "chrome/browser/glic/glic_profile_manager.h"
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/service/glic_instance_helper.h"
@@ -69,10 +69,12 @@ GlicFloatingUi::GlicFloatingUi(Profile* profile,
               &GlicFloatingUi::OnSourceTabDestroyed, base::Unretained(this)));
     }
   }
-  application_hotkey_manager_ =
-      MakeApplicationHotkeyManager(weak_ptr_factory_.GetWeakPtr());
-  glic_panel_hotkey_manager_ =
-      MakeGlicWindowHotkeyManager(weak_ptr_factory_.GetWeakPtr());
+  panel_visibility_dependent_hotkey_manager_ =
+      std::make_unique<PanelVisibilityDependentHotkeyManager>(
+          weak_ptr_factory_.GetWeakPtr());
+  panel_focus_dependent_hotkey_manager_ =
+      std::make_unique<PanelFocusDependentHotkeyManager>(
+          weak_ptr_factory_.GetWeakPtr());
   CreateAndSetupWidget(initial_bounds);
   panel_state_.kind = mojom::PanelStateKind::kDetached;
   PictureInPictureOcclusionTracker* tracker =
@@ -129,9 +131,9 @@ GlicView* GlicFloatingUi::GetGlicView() const {
 }
 
 void GlicFloatingUi::CreateAndSetupWidget(gfx::Rect initial_bounds) {
-  auto glic_view =
-      std::make_unique<GlicView>(profile_, initial_bounds.size(),
-                                 glic_panel_hotkey_manager_->GetWeakPtr());
+  auto glic_view = std::make_unique<GlicView>(
+      profile_, initial_bounds.size(),
+      panel_focus_dependent_hotkey_manager_->GetAcceleratorTargetWeakPtr());
   glic_view->SetWebContents(delegate_->host().webui_contents());
   glic_delegate_ =
       GlicWidget::CreateWidgetDelegate(std::move(glic_view), user_resizable_);
@@ -333,8 +335,8 @@ void GlicFloatingUi::Show(const ShowOptions& options) {
   GlicProfileManager::GetInstance()->SetCurrentDetachedGlic(profile_);
   GetGlicWidget()->Show();
   GetGlicView()->UpdateBackgroundColor();
-  application_hotkey_manager_->InitializeAccelerators();
-  glic_panel_hotkey_manager_->InitializeAccelerators();
+  panel_visibility_dependent_hotkey_manager_->InitializeAccelerators();
+  panel_focus_dependent_hotkey_manager_->InitializeAccelerators();
   ConfigureWebContentsModalDialogs();
 }
 

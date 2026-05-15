@@ -10,6 +10,8 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/glic/common/local_hotkey_manager.h"
+#include "chrome/browser/glic/common/panel_focus_dependent_hotkey_manager.h"
+#include "chrome/browser/glic/common/panel_visibility_dependent_hotkey_manager.h"
 #include "chrome/browser/glic/host/context/glic_screenshot_capturer.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/host/host.h"
@@ -112,8 +114,10 @@ class GlicSidePanelUi
   raw_ref<GlicUiEmbedder::Delegate> delegate_;
   raw_ref<GlicInstanceMetrics> instance_metrics_;
   base::WeakPtr<GlicView> glic_view_;
-  std::unique_ptr<LocalHotkeyManager> application_hotkey_manager_;
-  std::unique_ptr<LocalHotkeyManager> glic_panel_hotkey_manager_;
+  std::unique_ptr<PanelVisibilityDependentHotkeyManager>
+      panel_visibility_dependent_hotkey_manager_;
+  std::unique_ptr<PanelFocusDependentHotkeyManager>
+      panel_focus_dependent_hotkey_manager_;
   base::CallbackListSubscription activation_subscription_;
   base::CallbackListSubscription deactivation_subscription_;
 

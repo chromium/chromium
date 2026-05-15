@@ -122,6 +122,7 @@ class GlicInstanceImpl : public GlicInstance,
 
   // Returns whether host's webcontents are focused.
   bool HasFocus();
+  GlicUiEmbedder* GetActiveEmbedder();
 
   // GlicSharingManagerProvider implementation.
   GlicSharingManager& sharing_manager() override;
@@ -298,7 +299,6 @@ class GlicInstanceImpl : public GlicInstance,
   void NotifyStateChange();
   void NotifyConversationTitleChanged();
 
-  GlicUiEmbedder* GetActiveEmbedder();
   GlicUiEmbedder* GetEmbedderForKey(EmbedderKey key);
   EmbedderEntry* GetEmbedderEntry(EmbedderKey key);
   void DeactivateCurrentEmbedder();

@@ -11,38 +11,22 @@
 
 namespace glic {
 
-// Manages hotkeys that are active application-wide when Glic is relevant.
-// This class acts as a delegate for a LocalHotkeyManager instance, configuring
-// it with the set of hotkeys relevant application-wide (like focus toggle)
-// and handling the registration and dispatch of those hotkeys within the
-// application's scope (typically via BrowserView's FocusManager).
-class ApplicationHotkeyDelegate : public LocalHotkeyManager::Delegate {
+// A registration delegate that registers hotkeys application-wide.
+// It ensures that the registered accelerators are active in all current and
+// future browser windows by observing the global browser collection and
+// registering/unregistering with each window's FocusManager (or
+// platform-specific equivalent on Android).
+class ApplicationScopedRegistrationDelegate
+    : public LocalHotkeyManager::RegistrationDelegate {
  public:
-  explicit ApplicationHotkeyDelegate(
-      base::WeakPtr<LocalHotkeyManager::Panel> panel);
-  ~ApplicationHotkeyDelegate() override;
+  ApplicationScopedRegistrationDelegate();
+  ~ApplicationScopedRegistrationDelegate() override;
 
-  // LocalHotkeyManager::Delegate:
-  const base::span<const LocalHotkeyManager::Hotkey> GetSupportedHotkeys()
-      const override;
-
-  bool AcceleratorPressed(LocalHotkeyManager::Hotkey Hotkey) override;
   std::unique_ptr<LocalHotkeyManager::ScopedHotkeyRegistration>
   CreateScopedHotkeyRegistration(
       ui::Accelerator accelerator,
       base::WeakPtr<ui::AcceleratorTarget> target) override;
-
-  base::WeakPtr<ApplicationHotkeyDelegate> GetWeakPtr() {
-    return weak_ptr_factory_.GetWeakPtr();
-  }
-
- private:
-  base::WeakPtr<LocalHotkeyManager::Panel> panel_;
-  base::WeakPtrFactory<ApplicationHotkeyDelegate> weak_ptr_factory_{this};
 };
-
-std::unique_ptr<LocalHotkeyManager> MakeApplicationHotkeyManager(
-    base::WeakPtr<LocalHotkeyManager::Panel> panel);
 
 }  // namespace glic
 

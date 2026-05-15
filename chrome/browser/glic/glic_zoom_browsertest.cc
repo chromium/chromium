@@ -57,7 +57,7 @@ IN_PROC_BROWSER_TEST_F(GlicZoomBrowserTest, ZoomHotkey) {
   // Trigger accelerator for zoom-in.
   base::span<const ui::Accelerator> zoom_in_accels =
       LocalHotkeyManager::GetStaticAccelerators(
-          LocalHotkeyManager::Hotkey::kZoomIn);
+          LocalHotkeyManager::Command::kZoomIn);
   ASSERT_FALSE(zoom_in_accels.empty());
   EXPECT_TRUE(focus_manager->ProcessAccelerator(zoom_in_accels[0]));
 
@@ -68,7 +68,7 @@ IN_PROC_BROWSER_TEST_F(GlicZoomBrowserTest, ZoomHotkey) {
   // Trigger accelerator for zoom-out.
   base::span<const ui::Accelerator> zoom_out_accels =
       LocalHotkeyManager::GetStaticAccelerators(
-          LocalHotkeyManager::Hotkey::kZoomOut);
+          LocalHotkeyManager::Command::kZoomOut);
   ASSERT_FALSE(zoom_out_accels.empty());
   EXPECT_TRUE(focus_manager->ProcessAccelerator(zoom_out_accels[0]));
   // Verify zoom level decreased.
@@ -82,7 +82,7 @@ IN_PROC_BROWSER_TEST_F(GlicZoomBrowserTest, ZoomHotkey) {
 
   base::span<const ui::Accelerator> zoom_reset_accels =
       LocalHotkeyManager::GetStaticAccelerators(
-          LocalHotkeyManager::Hotkey::kZoomReset);
+          LocalHotkeyManager::Command::kZoomReset);
   ASSERT_FALSE(zoom_reset_accels.empty());
   EXPECT_TRUE(focus_manager->ProcessAccelerator(zoom_reset_accels[0]));
 

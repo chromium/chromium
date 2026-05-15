@@ -37,9 +37,6 @@ namespace glic {
 
 namespace {
 
-constexpr std::array<glic::LocalHotkeyManager::Hotkey, 1> kSupportedHotkeys = {
-    glic::LocalHotkeyManager::Hotkey::kFocusToggle};
-
 // Implementation of ScopedHotkeyRegistration specifically for application-wide
 // hotkeys. It registers and unregisters accelerators with the FocusManager of
 // all current and future BrowserViews.
@@ -120,47 +117,16 @@ class ApplicationScopedHotkeyRegistration
 };
 }  // namespace
 
-ApplicationHotkeyDelegate::ApplicationHotkeyDelegate(
-    base::WeakPtr<LocalHotkeyManager::Panel> panel)
-    : panel_(panel) {}
-
-ApplicationHotkeyDelegate::~ApplicationHotkeyDelegate() = default;
-
-const base::span<const LocalHotkeyManager::Hotkey>
-ApplicationHotkeyDelegate::GetSupportedHotkeys() const {
-  return kSupportedHotkeys;
-}
+ApplicationScopedRegistrationDelegate::ApplicationScopedRegistrationDelegate() =
+    default;
+ApplicationScopedRegistrationDelegate::
+    ~ApplicationScopedRegistrationDelegate() = default;
 
 std::unique_ptr<LocalHotkeyManager::ScopedHotkeyRegistration>
-ApplicationHotkeyDelegate::CreateScopedHotkeyRegistration(
+ApplicationScopedRegistrationDelegate::CreateScopedHotkeyRegistration(
     ui::Accelerator accelerator,
     base::WeakPtr<ui::AcceleratorTarget> target) {
   return std::make_unique<ApplicationScopedHotkeyRegistration>(accelerator,
                                                                target);
-}
-
-bool ApplicationHotkeyDelegate::AcceleratorPressed(
-    LocalHotkeyManager::Hotkey hotkey) {
-  if (!panel_) {
-    return false;
-  }
-
-  switch (hotkey) {
-    case LocalHotkeyManager::Hotkey::kFocusToggle:
-      panel_->FocusIfOpen();
-      base::RecordAction(base::UserMetricsAction("Glic.FocusHotKey"));
-      return true;
-    default:
-      NOTREACHED() << "no handling implemented for "
-                   << LocalHotkeyManager::HotkeyToString(hotkey);
-  }
-}
-
-std::unique_ptr<LocalHotkeyManager> MakeApplicationHotkeyManager(
-    base::WeakPtr<LocalHotkeyManager::Panel> panel) {
-  auto hotkey_manager = std::make_unique<LocalHotkeyManager>(
-      panel, std::make_unique<ApplicationHotkeyDelegate>(panel));
-  hotkey_manager->InitializeAccelerators();
-  return hotkey_manager;
 }
 }  // namespace glic

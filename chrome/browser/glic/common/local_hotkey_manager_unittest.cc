@@ -47,43 +47,42 @@ class FakeScopedHotkeyRegistration
   base::OnceClosure destruction_callback_;
 };
 
-class FakeLocalHotkeyDelegate : public LocalHotkeyManager::Delegate {
+class FakeState {
  public:
-  FakeLocalHotkeyDelegate() = default;
-  ~FakeLocalHotkeyDelegate() override = default;
-
-  // LocalHotkeyManager::Delegate:
-  const base::span<const LocalHotkeyManager::Hotkey> GetSupportedHotkeys()
-      const override {
-    return supported_hotkeys_;
-  }
-
-  std::unique_ptr<FakeScopedHotkeyRegistration::ScopedHotkeyRegistration>
-  CreateScopedHotkeyRegistration(
-      ui::Accelerator accelerator,
-      base::WeakPtr<ui::AcceleratorTarget> target) override {
+  std::unique_ptr<LocalHotkeyManager::ScopedHotkeyRegistration>
+  CreateScopedHotkeyRegistration(ui::Accelerator accelerator,
+                                 base::WeakPtr<ui::AcceleratorTarget> target) {
     last_registered_accelerator_ = accelerator;
     registration_count_++;
     auto registration = std::make_unique<FakeScopedHotkeyRegistration>(
-        accelerator,
-        base::BindOnce(&FakeLocalHotkeyDelegate::OnRegistrationDestroyed,
-                       base::Unretained(this), accelerator));
+        accelerator, base::BindOnce(&FakeState::OnRegistrationDestroyed,
+                                    base::Unretained(this), accelerator));
     active_registrations_.insert(accelerator);
     return registration;
   }
 
-  bool AcceleratorPressed(LocalHotkeyManager::Hotkey hotkey) override {
-    last_pressed_hotkey_ = hotkey;
-    return true;  // Assume handled
+  const base::span<const LocalHotkeyManager::Command> GetSupportedCommands()
+      const {
+    return supported_commands_;
   }
 
-  // Test helpers
-  void SetSupportedHotkeys(std::vector<LocalHotkeyManager::Hotkey> hotkeys) {
-    supported_hotkeys_ = std::move(hotkeys);
+  bool AcceleratorPressed(LocalHotkeyManager::Command command) {
+    last_pressed_command_ = command;
+    return true;
   }
 
-  std::optional<LocalHotkeyManager::Hotkey> last_pressed_hotkey() const {
-    return last_pressed_hotkey_;
+  bool CanHandleAccelerators() const { return can_handle_accelerators_; }
+
+  void SetSupportedCommands(std::vector<LocalHotkeyManager::Command> commands) {
+    supported_commands_ = std::move(commands);
+  }
+
+  void SetCanHandleAccelerators(bool can_handle) {
+    can_handle_accelerators_ = can_handle;
+  }
+
+  std::optional<LocalHotkeyManager::Command> last_pressed_command() const {
+    return last_pressed_command_;
   }
 
   std::optional<ui::Accelerator> last_registered_accelerator() const {
@@ -102,14 +101,45 @@ class FakeLocalHotkeyDelegate : public LocalHotkeyManager::Delegate {
     active_registrations_.erase(accelerator);
   }
 
-  std::vector<LocalHotkeyManager::Hotkey> supported_hotkeys_ = {
-      LocalHotkeyManager::Hotkey::kClose,
-      LocalHotkeyManager::Hotkey::kFocusToggle};
-  std::optional<LocalHotkeyManager::Hotkey> last_pressed_hotkey_;
+  std::vector<LocalHotkeyManager::Command> supported_commands_ = {
+      LocalHotkeyManager::Command::kClose,
+      LocalHotkeyManager::Command::kFocusToggle};
+  std::optional<LocalHotkeyManager::Command> last_pressed_command_;
   std::optional<ui::Accelerator> last_registered_accelerator_;
   int registration_count_ = 0;
   int destruction_count_ = 0;
+  bool can_handle_accelerators_ = true;
   base::flat_set<ui::Accelerator> active_registrations_;
+};
+
+class FakeRegistrationDelegate
+    : public LocalHotkeyManager::RegistrationDelegate {
+ public:
+  explicit FakeRegistrationDelegate(FakeState* state) : state_(state) {}
+  std::unique_ptr<LocalHotkeyManager::ScopedHotkeyRegistration>
+  CreateScopedHotkeyRegistration(
+      ui::Accelerator accelerator,
+      base::WeakPtr<ui::AcceleratorTarget> target) override {
+    return state_->CreateScopedHotkeyRegistration(accelerator, target);
+  }
+
+ private:
+  raw_ptr<FakeState> state_;
+};
+
+class FakeEventHandler : public LocalHotkeyManager::EventHandler {
+ public:
+  explicit FakeEventHandler(FakeState* state) : state_(state) {}
+
+  bool AcceleratorPressed(LocalHotkeyManager::Command command) override {
+    return state_->AcceleratorPressed(command);
+  }
+  bool CanHandleAccelerators() const override {
+    return state_->CanHandleAccelerators();
+  }
+
+ private:
+  raw_ptr<FakeState> state_;
 };
 
 class LocalHotkeyManagerTest : public testing::Test {
@@ -117,73 +147,72 @@ class LocalHotkeyManagerTest : public testing::Test {
   LocalHotkeyManagerTest() = default;
 
   void SetUp() override {
-    mock_panel_ = std::make_unique<MockLocalHotkeyPanel>();
-    auto fake_delegate = std::make_unique<FakeLocalHotkeyDelegate>();
-    fake_delegate_ = fake_delegate.get();  // Keep a raw pointer for access
-
-    manager_ = std::make_unique<LocalHotkeyManager>(mock_panel_->GetWeakPtr(),
-                                                    std::move(fake_delegate));
+    fake_state_ = std::make_unique<FakeState>();
+    fake_event_handler_ = std::make_unique<FakeEventHandler>(fake_state_.get());
+    manager_ = std::make_unique<LocalHotkeyManager>(
+        std::make_unique<FakeRegistrationDelegate>(fake_state_.get()),
+        fake_event_handler_.get(), fake_state_->GetSupportedCommands());
   }
 
  protected:
   base::test::TaskEnvironment task_environment_;
-  std::unique_ptr<MockLocalHotkeyPanel> mock_panel_;
+  std::unique_ptr<FakeState> fake_state_;
+  std::unique_ptr<FakeEventHandler> fake_event_handler_;
   std::unique_ptr<LocalHotkeyManager> manager_;
-  raw_ptr<FakeLocalHotkeyDelegate> fake_delegate_;
 };
 
 }  // namespace
 
-TEST_F(LocalHotkeyManagerTest, InitializationRegistersSupportedHotkeys) {
-  EXPECT_EQ(fake_delegate_->registration_count(), 0);
+TEST_F(LocalHotkeyManagerTest, InitializationRegistersSupportedCommands) {
+  EXPECT_EQ(fake_state_->registration_count(), 0);
 
   manager_->InitializeAccelerators();
 
-  // Default FakeLocalHotkeyDelegate supports kClose and kFocusToggle.
+  // Default FakeEventHandler supports kClose and kFocusToggle.
   // kClose has 2 static accelerators (Escape, Ctrl/Cmd+W).
   // kFocusToggle has 1 configurable accelerator.
   // Total = 3.
-  EXPECT_EQ(fake_delegate_->registration_count(), 3);
+  EXPECT_EQ(fake_state_->registration_count(), 3);
 
   for (const auto& acc : LocalHotkeyManager::GetStaticAccelerators(
-           LocalHotkeyManager::Hotkey::kClose)) {
-    EXPECT_TRUE(fake_delegate_->IsRegistered(acc));
+           LocalHotkeyManager::Command::kClose)) {
+    EXPECT_TRUE(fake_state_->IsRegistered(acc));
   }
   EXPECT_TRUE(
-      fake_delegate_->IsRegistered(LocalHotkeyManager::GetDefaultAccelerator(
-          LocalHotkeyManager::Hotkey::kFocusToggle)));
+      fake_state_->IsRegistered(LocalHotkeyManager::GetDefaultAccelerator(
+          LocalHotkeyManager::Command::kFocusToggle)));
 }
 
-TEST_F(LocalHotkeyManagerTest, AcceleratorPressedCallsDelegate) {
+TEST_F(LocalHotkeyManagerTest, AcceleratorPressedCallsEventHandler) {
   manager_->InitializeAccelerators();
   // Use the first static accelerator for kClose (Escape)
   ui::Accelerator close_acc = LocalHotkeyManager::GetStaticAccelerators(
-      LocalHotkeyManager::Hotkey::kClose)[0];
+      LocalHotkeyManager::Command::kClose)[0];
 
-  EXPECT_FALSE(fake_delegate_->last_pressed_hotkey().has_value());
+  EXPECT_FALSE(fake_state_->last_pressed_command().has_value());
   EXPECT_TRUE(manager_->AcceleratorPressed(close_acc));
-  ASSERT_TRUE(fake_delegate_->last_pressed_hotkey().has_value());
-  EXPECT_EQ(fake_delegate_->last_pressed_hotkey().value(),
-            LocalHotkeyManager::Hotkey::kClose);
+  ASSERT_TRUE(fake_state_->last_pressed_command().has_value());
+  EXPECT_EQ(fake_state_->last_pressed_command().value(),
+            LocalHotkeyManager::Command::kClose);
 }
 
-TEST_F(LocalHotkeyManagerTest, CanHandleAcceleratorsDependsOnController) {
-  EXPECT_CALL(*mock_panel_, IsShowing()).WillOnce(testing::Return(false));
+TEST_F(LocalHotkeyManagerTest, CanHandleAcceleratorsDependsOnEventHandler) {
+  fake_state_->SetCanHandleAccelerators(false);
   EXPECT_FALSE(manager_->CanHandleAccelerators());
 
-  EXPECT_CALL(*mock_panel_, IsShowing()).WillOnce(testing::Return(true));
+  fake_state_->SetCanHandleAccelerators(true);
   EXPECT_TRUE(manager_->CanHandleAccelerators());
 }
 
 TEST_F(LocalHotkeyManagerTest, PrefChangeUpdatesRegistration) {
   manager_->InitializeAccelerators();
   // Initial: kClose (2 accelerators) + kFocusToggle (1 accelerator) = 3
-  EXPECT_EQ(fake_delegate_->registration_count(), 3);
-  EXPECT_EQ(fake_delegate_->destruction_count(), 0);
+  EXPECT_EQ(fake_state_->registration_count(), 3);
+  EXPECT_EQ(fake_state_->destruction_count(), 0);
 
   ui::Accelerator default_focus_acc = LocalHotkeyManager::GetDefaultAccelerator(
-      LocalHotkeyManager::Hotkey::kFocusToggle);
-  EXPECT_TRUE(fake_delegate_->IsRegistered(default_focus_acc));
+      LocalHotkeyManager::Command::kFocusToggle);
+  EXPECT_TRUE(fake_state_->IsRegistered(default_focus_acc));
 
   // Change the pref to a new valid accelerator.
   ui::Accelerator new_focus_acc(ui::VKEY_X, ui::EF_CONTROL_DOWN);
@@ -192,10 +221,10 @@ TEST_F(LocalHotkeyManagerTest, PrefChangeUpdatesRegistration) {
       ui::Command::AcceleratorToString(new_focus_acc));
 
   // Should destroy the old registration and create a new one.
-  EXPECT_EQ(fake_delegate_->registration_count(), 4);
-  EXPECT_EQ(fake_delegate_->destruction_count(), 1);
-  EXPECT_FALSE(fake_delegate_->IsRegistered(default_focus_acc));
-  EXPECT_TRUE(fake_delegate_->IsRegistered(new_focus_acc));
+  EXPECT_EQ(fake_state_->registration_count(), 4);
+  EXPECT_EQ(fake_state_->destruction_count(), 1);
+  EXPECT_FALSE(fake_state_->IsRegistered(default_focus_acc));
+  EXPECT_TRUE(fake_state_->IsRegistered(new_focus_acc));
 
   // Change the pref to an empty string (clears the shortcut).
   TestingBrowserProcess::GetGlobal()->local_state()->SetString(
@@ -204,18 +233,18 @@ TEST_F(LocalHotkeyManagerTest, PrefChangeUpdatesRegistration) {
   // Should destroy the custom registration, no new one created.
   // Registration count remains the same as the previous step because one was
   // destroyed but no new one was added.
-  EXPECT_EQ(fake_delegate_->registration_count(), 4);
-  EXPECT_EQ(fake_delegate_->destruction_count(), 2);
-  EXPECT_FALSE(fake_delegate_->IsRegistered(new_focus_acc));
+  EXPECT_EQ(fake_state_->registration_count(), 4);
+  EXPECT_EQ(fake_state_->destruction_count(), 2);
+  EXPECT_FALSE(fake_state_->IsRegistered(new_focus_acc));
 }
 
 TEST_F(LocalHotkeyManagerTest, GetAcceleratorRespectsPrefs) {
   ui::Accelerator default_focus_acc = LocalHotkeyManager::GetDefaultAccelerator(
-      LocalHotkeyManager::Hotkey::kFocusToggle);
+      LocalHotkeyManager::Command::kFocusToggle);
 
   // FocusToggle is backed by a pref. Default initially.
   EXPECT_EQ(LocalHotkeyManager::GetConfigurableAccelerator(
-                LocalHotkeyManager::Hotkey::kFocusToggle),
+                LocalHotkeyManager::Command::kFocusToggle),
             default_focus_acc);
 
   // Set a valid pref.
@@ -224,14 +253,14 @@ TEST_F(LocalHotkeyManagerTest, GetAcceleratorRespectsPrefs) {
       prefs::kGlicFocusToggleHotkey,
       ui::Command::AcceleratorToString(new_focus_acc));
   EXPECT_EQ(LocalHotkeyManager::GetConfigurableAccelerator(
-                LocalHotkeyManager::Hotkey::kFocusToggle),
+                LocalHotkeyManager::Command::kFocusToggle),
             new_focus_acc);
 
   // Set an invalid pref string (e.g., just a modifier).
   TestingBrowserProcess::GetGlobal()->local_state()->SetString(
       prefs::kGlicFocusToggleHotkey, "Ctrl");
   EXPECT_TRUE(LocalHotkeyManager::GetConfigurableAccelerator(
-                  LocalHotkeyManager::Hotkey::kFocusToggle)
+                  LocalHotkeyManager::Command::kFocusToggle)
                   .IsEmpty());
 }
 

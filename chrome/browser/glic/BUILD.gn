@@ -262,9 +262,13 @@ source_set("impl") {
   sources = [
     "common/application_hotkey_delegate.cc",
     "common/application_hotkey_delegate.h",
-    "common/glic_panel_hotkey_delegate.cc",
-    "common/glic_panel_hotkey_delegate.h",
+    "common/instance_independent_hotkey_manager.cc",
+    "common/instance_independent_hotkey_manager.h",
     "common/local_hotkey_manager.cc",
+    "common/panel_focus_dependent_hotkey_manager.cc",
+    "common/panel_focus_dependent_hotkey_manager.h",
+    "common/panel_visibility_dependent_hotkey_manager.cc",
+    "common/panel_visibility_dependent_hotkey_manager.h",
     "gemini_act_on_web_settings_policy_handler.cc",
     "glic_hotkey.cc",
     "glic_metrics.cc",
@@ -627,8 +631,8 @@ source_set("unit_tests") {
   ]
   if (!is_android) {
     sources += [
-      "common/glic_panel_hotkey_delegate_unittest.cc",
       "common/local_hotkey_manager_unittest.cc",
+      "common/panel_focus_dependent_hotkey_manager_unittest.cc",
       "glic_metrics_provider_unittest.cc",
       "glic_metrics_unittest.cc",
       "glic_selection_observer_unittest.cc",
@@ -752,8 +756,8 @@ source_set("browser_tests") {
       "host/glic_permission_enforcement_browsertest.cc",
       "host/guest_util_browsertest.cc",
       "public/glic_enabling_browsertest.cc",
-      "widget/application_hotkey_delegate_browsertest.cc",
       "widget/glic_side_panel_coordinator_browsertest.cc",
+      "widget/panel_visibility_dependent_hotkey_manager_browsertest.cc",
     ]
 
     deps += [

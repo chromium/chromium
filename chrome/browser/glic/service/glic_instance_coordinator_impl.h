@@ -18,6 +18,7 @@
 #include "base/scoped_observation.h"
 #include "build/build_config.h"
 #include "chrome/browser/glic/common/glic_tab_observer.h"
+#include "chrome/browser/glic/common/instance_independent_hotkey_manager.h"
 #include "chrome/browser/glic/glic_tab_restore_data.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/host/glic_web_client_access.h"
@@ -294,6 +295,7 @@ class GlicInstanceCoordinatorImpl
                           signin::IdentityManager::Observer>
       identity_manager_observation_{this};
 
+  std::unique_ptr<InstanceIndependentHotkeyManager> hotkey_manager_;
   base::WeakPtrFactory<GlicInstanceCoordinatorImpl> weak_ptr_factory_{this};
 };
 

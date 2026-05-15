@@ -7,8 +7,8 @@
 #include "base/notimplemented.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
-#include "chrome/browser/glic/common/application_hotkey_delegate.h"
-#include "chrome/browser/glic/common/glic_panel_hotkey_delegate.h"
+#include "chrome/browser/glic/common/panel_focus_dependent_hotkey_manager.h"
+#include "chrome/browser/glic/common/panel_visibility_dependent_hotkey_manager.h"
 #include "chrome/browser/glic/public/glic_instance.h"
 #include "chrome/browser/glic/selection/selection_overlay_controller.h"
 #include "chrome/browser/glic/service/glic_ui_embedder.h"
@@ -47,10 +47,12 @@ GlicSidePanelUi::GlicSidePanelUi(Profile* profile,
     return;
   }
 
-  application_hotkey_manager_ =
-      MakeApplicationHotkeyManager(weak_ptr_factory_.GetWeakPtr());
-  glic_panel_hotkey_manager_ =
-      MakeGlicWindowHotkeyManager(weak_ptr_factory_.GetWeakPtr());
+  panel_visibility_dependent_hotkey_manager_ =
+      std::make_unique<PanelVisibilityDependentHotkeyManager>(
+          weak_ptr_factory_.GetWeakPtr());
+  panel_focus_dependent_hotkey_manager_ =
+      std::make_unique<PanelFocusDependentHotkeyManager>(
+          weak_ptr_factory_.GetWeakPtr());
 
   panel_visibility_subscription_ =
       glic_side_panel_coordinator->AddStateCallback(
@@ -79,9 +81,9 @@ GlicSidePanelUi::GlicSidePanelUi(Profile* profile,
 }
 
 std::unique_ptr<views::View> GlicSidePanelUi::CreateView(Profile* profile) {
-  auto glic_view =
-      std::make_unique<GlicView>(profile, GlicWidget::GetInitialSize(),
-                                 glic_panel_hotkey_manager_->GetWeakPtr());
+  auto glic_view = std::make_unique<GlicView>(
+      profile, GlicWidget::GetInitialSize(),
+      panel_focus_dependent_hotkey_manager_->GetAcceleratorTargetWeakPtr());
   glic_view->SetWebContents(delegate_->host().webui_contents());
   glic_view->UpdateBackgroundColor();
   glic_view_ = glic_view->GetWeakPtr();
@@ -219,8 +221,8 @@ void GlicSidePanelUi::Show(const ShowOptions& options) {
   panel_state_.kind = mojom::PanelStateKind::kAttached;
   delegate_->NotifyPanelStateChanged();
   delegate_->host().FloatingPanelCanAttachChanged(false);
-  application_hotkey_manager_->InitializeAccelerators();
-  glic_panel_hotkey_manager_->InitializeAccelerators();
+  panel_visibility_dependent_hotkey_manager_->InitializeAccelerators();
+  panel_focus_dependent_hotkey_manager_->InitializeAccelerators();
 
   glic_side_panel_coordinator->Show(ConvertToCoordinatorShowOptions(
       options, glic_side_panel_coordinator->SupportsPeek()));

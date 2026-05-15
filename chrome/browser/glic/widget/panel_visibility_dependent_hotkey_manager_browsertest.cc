@@ -1,14 +1,15 @@
-// Copyright 2025 The Chromium Authors
+// Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/glic/common/application_hotkey_delegate.h"
+#include "chrome/browser/glic/common/panel_visibility_dependent_hotkey_manager.h"
 
 #include <memory>
 
 #include "base/memory/weak_ptr.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/glic/common/application_hotkey_delegate.h"
 #include "chrome/browser/glic/test_support/mock_local_hotkey_panel.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -38,11 +39,18 @@ class MockAcceleratorTarget : public ui::AcceleratorTarget {
   base::WeakPtrFactory<MockAcceleratorTarget> weak_factory_{this};
 };
 
-class ApplicationHotkeyDelegateTest : public InProcessBrowserTest {
+class PanelVisibilityDependentHotkeyManagerTest : public InProcessBrowserTest {
  protected:
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
-    delegate_.emplace(mock_panel_.GetWeakPtr());
+    manager_.emplace(mock_panel_.GetWeakPtr());
+    registration_delegate_.emplace();
+  }
+
+  void TearDownOnMainThread() override {
+    manager_.reset();
+    registration_delegate_.reset();
+    InProcessBrowserTest::TearDownOnMainThread();
   }
 
   BrowserView* GetBrowserView() {
@@ -54,43 +62,38 @@ class ApplicationHotkeyDelegateTest : public InProcessBrowserTest {
   }
 
   MockLocalHotkeyPanel mock_panel_;
-  std::optional<ApplicationHotkeyDelegate> delegate_;
+  std::optional<PanelVisibilityDependentHotkeyManager> manager_;
+  std::optional<ApplicationScopedRegistrationDelegate> registration_delegate_;
   base::UserActionTester user_action_tester_;
 };
 
 }  // namespace
 
-IN_PROC_BROWSER_TEST_F(ApplicationHotkeyDelegateTest, GetSupportedHotkeys) {
-  CHECK(g_browser_process);
-  auto supported = delegate_->GetSupportedHotkeys();
-  // kFocusToggle is the only supported hotkey for application-wide scope.
-  EXPECT_THAT(supported,
-              testing::ElementsAre(LocalHotkeyManager::Hotkey::kFocusToggle));
-}
-
-IN_PROC_BROWSER_TEST_F(ApplicationHotkeyDelegateTest,
+IN_PROC_BROWSER_TEST_F(PanelVisibilityDependentHotkeyManagerTest,
                        AcceleratorPressedFocusToggle) {
   EXPECT_CALL(mock_panel_, FocusIfOpen()).Times(1);
+  EXPECT_CALL(mock_panel_, IsShowing()).WillOnce(testing::Return(true));
 
   EXPECT_TRUE(
-      delegate_->AcceleratorPressed(LocalHotkeyManager::Hotkey::kFocusToggle));
+      manager_->AcceleratorPressed(LocalHotkeyManager::Command::kFocusToggle));
   EXPECT_EQ(1, user_action_tester_.GetActionCount("Glic.FocusHotKey"));
 }
 
-IN_PROC_BROWSER_TEST_F(ApplicationHotkeyDelegateTest,
+IN_PROC_BROWSER_TEST_F(PanelVisibilityDependentHotkeyManagerTest,
                        AcceleratorPressedControllerNull) {
-  // Create a delegate with an invalidated controller WeakPtr.
+  // Create a manager with an invalidated controller WeakPtr.
   auto panel = std::make_unique<MockLocalHotkeyPanel>();
-  auto delegate_with_null_controller =
-      std::make_unique<ApplicationHotkeyDelegate>(panel->GetWeakPtr());
+  auto manager_with_null_controller =
+      std::make_unique<PanelVisibilityDependentHotkeyManager>(
+          panel->GetWeakPtr());
   panel.reset();  // Invalidate the WeakPtr
 
-  EXPECT_FALSE(delegate_with_null_controller->AcceleratorPressed(
-      LocalHotkeyManager::Hotkey::kFocusToggle));
+  EXPECT_FALSE(manager_with_null_controller->AcceleratorPressed(
+      LocalHotkeyManager::Command::kFocusToggle));
   EXPECT_EQ(0, user_action_tester_.GetActionCount("Glic.FocusHotKey"));
 }
 
-IN_PROC_BROWSER_TEST_F(ApplicationHotkeyDelegateTest,
+IN_PROC_BROWSER_TEST_F(PanelVisibilityDependentHotkeyManagerTest,
                        CreateScopedHotkeyRegistration) {
   ui::Accelerator test_accel(ui::VKEY_A, ui::EF_NONE);
   MockAcceleratorTarget mock_target;
@@ -101,7 +104,7 @@ IN_PROC_BROWSER_TEST_F(ApplicationHotkeyDelegateTest,
 
   EXPECT_FALSE(focus_manager->IsAcceleratorRegistered(test_accel));
 
-  auto registration = delegate_->CreateScopedHotkeyRegistration(
+  auto registration = registration_delegate_->CreateScopedHotkeyRegistration(
       test_accel, mock_target.GetWeakPtr());
   ASSERT_TRUE(registration);
 
@@ -123,12 +126,6 @@ IN_PROC_BROWSER_TEST_F(ApplicationHotkeyDelegateTest,
 
   EXPECT_FALSE(focus_manager->IsAcceleratorRegistered(test_accel));
   EXPECT_FALSE(focus_manager2->IsAcceleratorRegistered(test_accel));
-}
-
-IN_PROC_BROWSER_TEST_F(ApplicationHotkeyDelegateTest,
-                       MakeApplicationHotkeyManager) {
-  auto manager = MakeApplicationHotkeyManager(mock_panel_.GetWeakPtr());
-  EXPECT_TRUE(manager);
 }
 
 }  // namespace glic
