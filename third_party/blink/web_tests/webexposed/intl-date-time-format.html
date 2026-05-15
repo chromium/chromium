@@ -35,4 +35,8 @@ for (const [locale, { displayName, timeZone }] of Object.entries(locales)) {
   print('');
 }
 
+// crbug.com/512895199
+print(`[en] English calender:iso8601`);
+const d = new Date(2026, 11, 15)
+print(`  "${new Intl.DateTimeFormat('en', {month:'long', calendar:'iso8601'}).format(d)}" "${new Intl.DateTimeFormat('en', {month:'long', year:'numeric', calendar:'iso8601'}).format(d)}"`);
 </script>
