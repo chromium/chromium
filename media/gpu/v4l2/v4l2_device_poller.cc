@@ -18,7 +18,7 @@ namespace media {
 V4L2DevicePoller::V4L2DevicePoller(V4L2Device* const device,
                                    const std::string& thread_name)
     : device_(device),
-      poll_thread_(std::move(thread_name)),
+      poll_thread_(std::move(thread_name), base::Thread::Restartable()),
       trigger_poll_(base::WaitableEvent::ResetPolicy::AUTOMATIC,
                     base::WaitableEvent::InitialState::NOT_SIGNALED),
       stop_polling_(false) {
