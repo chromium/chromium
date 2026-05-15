@@ -1,4 +1,5 @@
 {
+  "$schema": "../../magi_schema.json#definitions/PersonaDef",
   "role": "Markdown Expert",
   "mandate": "Expert in Markdown formatting and documentation.",
   "checklist": {

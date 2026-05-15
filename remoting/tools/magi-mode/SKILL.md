@@ -498,10 +498,11 @@ If `project.magi.json#environment/harness == "JETSKI"`, the Orchestrator:
 
 1. **Direct Prompt Injection:** SHOULD read the `personas/**/*.json` files and
    inject their `mandate` and `checklist` directly into the `Prompt` or `Role`
-   arguments of `invoke_subagent` tool calls. This eliminates a redundant
-   file-reading turn (`view_file` call) for every sub-agent. *Note: This
-   diverges from the "Opaque Passing" rule to optimize for execution speed in
-   this environment.*
+   arguments of `invoke_subagent` tool calls. *Joining Rule:* If a mandate or
+   checklist item is an array of strings, the Orchestrator MUST join them using
+   a single space separator (`" ".join(array)`) to prevent token merging (e.g.,
+   preventing "Your" and "goal" from becoming "Yourgoal"). *Note: This diverges
+   from the "Opaque Passing" rule...*
 2. **Orchestrator Routing:** MUST act as the active routing environment by
    parsing the `next_stage` token from sub-agent output JSONs and manually
    calling the next tool (standard Jetski does not have an automatic background

@@ -467,6 +467,19 @@ def CheckJsonFiles(input_api, output_api):
                                             f'item at index {i} must be a '
                                             f'string, got '
                                             f'{type(item).__name__}'))
+                            # Token Merging Check: ensure joining won't create
+                            # semantic errors.
+                            full_text = "".join(v)
+                            if any(v[j].endswith(tuple(".,!?;:")) == False and
+                                   v[j].endswith(" ") == False and j < len(v) -
+                                   1 for j in range(len(v))):
+                                results.append(
+                                    output_api.PresubmitPromptWarning(
+                                        f'File {f.LocalPath()} persona key '
+                                        f'"{k}" uses an array but some items '
+                                        'lack trailing spaces. Ensure your '
+                                        'Orchestrator uses a space-join '
+                                        'strategy to prevent token merging.'))
                     else:
                         if not isinstance(v, bool):
                             results.append(

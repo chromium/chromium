@@ -1,4 +1,5 @@
 {
+  "$schema": "../../magi_schema.json#definitions/PersonaDef",
   "role": "C++ Expert",
   "mandate": "Expert in C++ programming and Chromium style guide.",
   "checklist": {

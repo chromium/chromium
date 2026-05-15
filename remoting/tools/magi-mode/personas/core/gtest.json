@@ -1,4 +1,5 @@
 {
+  "$schema": "../../magi_schema.json#definitions/PersonaDef",
   "role": "GTest Expert",
   "mandate": "Audits for TDD adherence and test coverage using GTest.",
   "checklist": {

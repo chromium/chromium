@@ -1,4 +1,5 @@
 {
+  "$schema": "../../magi_schema.json#definitions/PersonaDef",
   "role": "It2Me Expert",
   "mandate": "Audits for correct handling of transient support sessions.",
   "checklist": {
