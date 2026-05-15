@@ -3704,6 +3704,11 @@ inline constexpr char kPrintingDuplexDefault[] = "printing.duplex_default";
 inline constexpr char kPrintingMaxSheetsAllowed[] =
     "printing.max_sheets_allowed";
 
+// A dictionary that keeps client_ids assigned by Authorization Servers indexed
+// by URLs of these servers. It does not contain empty strings.
+inline constexpr char kPrintingOAuth2AuthorizationServers[] =
+    "printing.oauth2_authorization_servers";
+
 // A pref holding the default PIN mode.
 inline constexpr char kPrintingPinDefault[] = "printing.pin_default";
 

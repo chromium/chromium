@@ -3110,13 +3110,6 @@ inline constexpr char
     kAccessControlAllowMethodsInCORSPreflightSpecConformant[] =
         "access_control_allow_methods_in_cors_preflight_spec_conformant";
 
-#if BUILDFLAG(IS_CHROMEOS)
-// A dictionary that keeps client_ids assigned by Authorization Servers indexed
-// by URLs of these servers. It does not contain empty strings.
-inline constexpr char kPrintingOAuth2AuthorizationServers[] =
-    "printing.oauth2_authorization_servers";
-#endif
-
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX)
 // If this exists and is true, Chrome may run system DNS resolution out of the
 // network process. If false, Chrome will run system DNS resolution in the

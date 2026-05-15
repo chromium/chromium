@@ -7,11 +7,11 @@
 #include <memory>
 #include <string>
 
+#include "ash/constants/ash_pref_names.h"
 #include "base/memory/raw_ptr.h"
 #include "base/values.h"
 #include "chrome/browser/ash/printing/oauth2/status_code.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/common/pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "url/gurl.h"
@@ -22,7 +22,7 @@ class ClientIdsDatabaseImpl : public ClientIdsDatabase {
  public:
   ClientIdsDatabaseImpl()
       : pref_(g_browser_process->local_state()),
-        data_(pref_->GetDict(prefs::kPrintingOAuth2AuthorizationServers)
+        data_(pref_->GetDict(ash::prefs::kPrintingOAuth2AuthorizationServers)
                   .Clone()) {}
 
   ClientIdsDatabaseImpl(const ClientIdsDatabaseImpl&) = delete;
@@ -39,7 +39,8 @@ class ClientIdsDatabaseImpl : public ClientIdsDatabase {
     DCHECK(!data_.FindString(key));
     DCHECK(!client_id.empty());
     data_.Set(key, client_id);
-    pref_->SetDict(prefs::kPrintingOAuth2AuthorizationServers, data_.Clone());
+    pref_->SetDict(ash::prefs::kPrintingOAuth2AuthorizationServers,
+                   data_.Clone());
   }
 
  private:
@@ -52,7 +53,8 @@ std::unique_ptr<ClientIdsDatabase> ClientIdsDatabase::Create() {
 }
 
 void ClientIdsDatabase::RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
-  registry->RegisterDictionaryPref(prefs::kPrintingOAuth2AuthorizationServers);
+  registry->RegisterDictionaryPref(
+      ash::prefs::kPrintingOAuth2AuthorizationServers);
 }
 
 }  // namespace ash::printing::oauth2
