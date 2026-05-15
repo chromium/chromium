@@ -4645,9 +4645,19 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "EnabledInBrowser",
                     "enable_features": [
                         "CADisplayLinkInBrowser"
+                    ],
+                    "disable_features": [
+                        "CADisplayLinkInGpuThenBrowser"
+                    ]
+                },
+                {
+                    "name": "EnabledInGpuThenBrowser",
+                    "enable_features": [
+                        "CADisplayLinkInBrowser",
+                        "CADisplayLinkInGpuThenBrowser"
                     ]
                 }
             ]
