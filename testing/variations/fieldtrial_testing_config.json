@@ -11879,6 +11879,9 @@
             "experiments": [
                 {
                     "name": "Enabled",
+                    "params": {
+                        "arm": "3"
+                    },
                     "enable_features": [
                         "PdfGlicSummarize"
                     ]
