@@ -969,7 +969,7 @@ void SearchBoxView::UpdateLayout(AppListState target_state,
   box_layout_view()->SetInsideBorderInsets(
       gfx::Insets::TLBR(0, horizontal_spacing, 0, horizontal_right_padding));
   box_layout_view()->SetBetweenChildSpacing(horizontal_spacing);
-  InvalidateLayout();
+
   // Avoid setting background when animating to kStateApps, background will be
   // set when the animation ends.
   if (target_state != AppListState::kStateApps)
