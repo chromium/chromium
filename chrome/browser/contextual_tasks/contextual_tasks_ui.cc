@@ -90,6 +90,7 @@
 #include "third_party/lens_server_proto/aim_communication.pb.h"
 #include "ui/base/device_form_factor.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/color/color_provider_key.h"
 #include "ui/webui/webui_util.h"
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -542,7 +543,9 @@ ContextualTasksUI::ContextualTasksUI(content::WebUI* web_ui)
       IDS_SIDE_PANEL_LENS_OVERLAY_PROTECTED_PAGE_ERROR_SECOND_LINE);
 #else
   // TODO(crbug.com/483442073): Replace the values with Android resources.
-  source->AddBoolean("darkMode", false);
+  bool is_dark_mode = web_ui->GetWebContents()->GetColorMode() ==
+                      ui::ColorProviderKey::ColorMode::kDark;
+  source->AddBoolean("darkMode", is_dark_mode);
   source->AddString("protectedErrorPageTopLine", "string");
   source->AddString("protectedErrorPageBottomLine", "string");
 #endif

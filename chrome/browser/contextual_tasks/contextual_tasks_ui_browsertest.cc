@@ -57,6 +57,7 @@
 #include "net/base/url_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/lens_server_proto/aim_communication.pb.h"
+#include "ui/base/ui_base_switches.h"
 #include "ui/webui/resources/cr_components/composebox/composebox.mojom.h"
 
 namespace {
@@ -717,6 +718,43 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksNoMockBrowserTest,
   // Wait for load stop on that web_contents.
   EXPECT_TRUE(content::WaitForLoadStop(web_contents));
 }
+
+#if BUILDFLAG(IS_ANDROID)
+class ContextualTasksDarkModeBrowserTest
+    : public ContextualTasksNoMockBrowserTest {
+ public:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    ContextualTasksNoMockBrowserTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitch(switches::kForceDarkMode);
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksDarkModeBrowserTest,
+                       DarkModeLoadTimeData) {
+  EXPECT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GURL(chrome::kChromeUIContextualTasksURL)));
+  content::WebContents* web_contents =
+      TabListInterface::From(browser())->GetActiveTab()->GetContents();
+
+  bool is_dark_mode =
+      content::EvalJs(web_contents, "loadTimeData.getBoolean('darkMode')")
+          .ExtractBool();
+  EXPECT_TRUE(is_dark_mode);
+}
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksNoMockBrowserTest,
+                       LightModeLoadTimeData) {
+  EXPECT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GURL(chrome::kChromeUIContextualTasksURL)));
+  content::WebContents* web_contents =
+      TabListInterface::From(browser())->GetActiveTab()->GetContents();
+
+  bool is_dark_mode =
+      content::EvalJs(web_contents, "loadTimeData.getBoolean('darkMode')")
+          .ExtractBool();
+  EXPECT_FALSE(is_dark_mode);
+}
+#endif  // BUILDFLAG(IS_ANDROID)
 
 IN_PROC_BROWSER_TEST_F(ContextualTasksUIBrowserTest,
                        UpdateModelFromUrlOnNavigation) {
