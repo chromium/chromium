@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.multiwindow;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.inOrder;
@@ -45,6 +46,8 @@ import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.util.HistogramWatcher;
+import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -107,6 +110,10 @@ public class TabbedCrashRecoveryDelegateUnitTest {
                 /* numNonVisibleWindows= */ 0,
                 /* numDefaultDisplayWindows= */ 0,
                 /* numNonDefaultDisplayWindows= */ 0);
+        var initWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord("Android.MultiWindow.CrashRecoveryWindowCount", 1)
+                        .build();
 
         // Act.
         mDelegate.initiateCrashRecovery(
@@ -114,6 +121,7 @@ public class TabbedCrashRecoveryDelegateUnitTest {
 
         // Verify.
         verifyNoInteractions(mModalDialogManager);
+        initWatcher.assertExpected();
     }
 
     @Test
@@ -124,6 +132,10 @@ public class TabbedCrashRecoveryDelegateUnitTest {
                 /* numDefaultDisplayWindows= */ 1,
                 /* numNonDefaultDisplayWindows= */ 0);
         setupPreRecoveryAppTasks(0, 1, 2);
+        var initWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord("Android.MultiWindow.CrashRecoveryWindowCount", 3)
+                        .build();
 
         // Act.
         mDelegate.initiateCrashRecovery(
@@ -131,6 +143,7 @@ public class TabbedCrashRecoveryDelegateUnitTest {
 
         // Verify.
         verifyNoInteractions(mModalDialogManager);
+        initWatcher.assertExpected();
     }
 
     @Test
@@ -287,6 +300,11 @@ public class TabbedCrashRecoveryDelegateUnitTest {
         setupPreRecoveryAppTasks(0, 1);
         mDelegate.initiateCrashRecovery(
                 mModalDialogManagerSupplier, mHostActivity, mCrashedWindows);
+        var expectedWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectAnyRecord("Android.MultiWindow.CrashRecoveryDuration")
+                        .build();
+        var userActionTester = new UserActionTester();
 
         // Act.
         mDelegate.restoreWindows(mHostActivity);
@@ -298,6 +316,7 @@ public class TabbedCrashRecoveryDelegateUnitTest {
         // Verify: Only the visible window (windowId=2) should be started.
         ArgumentCaptor<Intent> intentCaptor = ArgumentCaptor.forClass(Intent.class);
         verify(mHostActivity).startActivity(intentCaptor.capture(), any());
+        mDelegate.registerRecovery(2);
         // Verify: No single-arg startActivity was called for the non-visible window.
         verify(mHostActivity, never()).startActivity(any());
 
@@ -306,6 +325,68 @@ public class TabbedCrashRecoveryDelegateUnitTest {
         assertEquals(2, intent.getIntExtra(IntentHandler.EXTRA_WINDOW_ID, -1));
         assertFalse(ChromeMultiInstancePersistentStore.readIsRecoverable(1));
         assertFalse(ChromeMultiInstancePersistentStore.readIsRecoverable(2));
+
+        // Verify: Success metrics should be recorded.
+        expectedWatcher.assertExpected();
+        assertTrue(
+                userActionTester
+                        .getActions()
+                        .contains("Android.MultiWindow.CrashRecoveryCompleted"));
+    }
+
+    @Test
+    public void testInitiateAndRegisterRecovery_recordsMetrics() {
+        // Setup.
+        setupOtherCrashedWindows(
+                /* numNonVisibleWindows= */ 0,
+                /* numDefaultDisplayWindows= */ 1,
+                /* numNonDefaultDisplayWindows= */ 1);
+        setupPreRecoveryAppTasks(0);
+
+        var initWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord("Android.MultiWindow.CrashRecoveryWindowCount", 3)
+                        .build();
+        mDelegate.initiateCrashRecovery(
+                mModalDialogManagerSupplier, mHostActivity, mCrashedWindows);
+        initWatcher.assertExpected();
+
+        var userActionTester = new UserActionTester();
+        mDelegate.restoreWindows(mHostActivity);
+        assertTrue(
+                userActionTester
+                        .getActions()
+                        .contains("Android.MultiWindow.CrashRecoveryInitiated"));
+        var noRecordsWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords("Android.MultiWindow.CrashRecoveryDuration")
+                        .build();
+
+        // Act: Recover first window (windowId=1).
+        mDelegate.registerRecovery(1);
+
+        // Verify: Metrics should not be recorded yet because window 2 is still pending.
+        noRecordsWatcher.assertExpected();
+        assertFalse(
+                userActionTester
+                        .getActions()
+                        .contains("Android.MultiWindow.CrashRecoveryCompleted"));
+        var expectedWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectAnyRecord("Android.MultiWindow.CrashRecoveryDuration")
+                        .build();
+
+        // Act: Recover second window (windowId=2).
+        mDelegate.registerRecovery(2);
+
+        // Verify: All windows recovered, success metrics should be recorded.
+        expectedWatcher.assertExpected();
+        assertTrue(
+                userActionTester
+                        .getActions()
+                        .contains("Android.MultiWindow.CrashRecoveryCompleted"));
+
+        userActionTester.tearDown();
     }
 
     private void setupOtherCrashedWindows(

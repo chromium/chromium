@@ -1131,7 +1131,10 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sSendTabToSelfExtraEntryPoints =
             newCachedFlag(SEND_TAB_TO_SELF_EXTRA_ENTRY_POINTS, /* defaultValue= */ false);
     public static final CachedFlag sSessionRestoreAfterCrash =
-            newCachedFlag(SESSION_RESTORE_AFTER_CRASH, false);
+            newCachedFlag(
+                    SESSION_RESTORE_AFTER_CRASH,
+                    /* defaultValue= */ false,
+                    /* defaultValueInTests= */ true);
     public static final CachedFlag sSettingsMultiColumn =
             newCachedFlag(
                     SETTINGS_MULTI_COLUMN,

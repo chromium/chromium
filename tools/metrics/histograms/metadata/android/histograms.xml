@@ -3685,6 +3685,31 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.MultiWindow.CrashRecoveryDuration" units="ms"
+    expires_after="2027-05-14">
+  <owner>aishwaryarj@google.com</owner>
+  <owner>zheliooo@google.com</owner>
+  <owner>clank-large-form-factors@google.com</owner>
+  <summary>
+    Records the time it takes to successfully recover all windows from the
+    previous Chrome session after an app crash, when the user opts to restore
+    all windows from the recovery prompt.
+  </summary>
+</histogram>
+
+<histogram name="Android.MultiWindow.CrashRecoveryWindowCount" units="windows"
+    expires_after="2027-05-14">
+  <owner>aishwaryarj@google.com</owner>
+  <owner>zheliooo@google.com</owner>
+  <owner>clank-large-form-factors@google.com</owner>
+  <summary>
+    Records the number of windows that were active at the time of a crash,
+    determined from the crash recovery data. Recorded when the first
+    ChromeTabbedActivity starts up in a new browser process after an unclean app
+    exit is detected.
+  </summary>
+</histogram>
+
 <histogram name="Android.MultiWindow.Occlusion.CalculateDuration" units="ms"
     expires_after="2027-04-02">
   <owner>kalutes@google.com</owner>

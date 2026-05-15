@@ -4893,6 +4893,22 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Android.MultiWindow.CrashRecoveryCompleted">
+  <owner>aishwaryarj@google.com</owner>
+  <owner>zheliooo@google.com</owner>
+  <owner>clank-large-form-factors@google.com</owner>
+  <description>
+    Recorded when crash recovery successfully restores all windows.
+  </description>
+</action>
+
+<action name="Android.MultiWindow.CrashRecoveryInitiated">
+  <owner>aishwaryarj@google.com</owner>
+  <owner>zheliooo@google.com</owner>
+  <owner>clank-large-form-factors@google.com</owner>
+  <description>Recorded when crash recovery is initiated.</description>
+</action>
+
 <action name="Android.MultiWindowMode.Enter">
   <obsolete>
     Deprecated as the data is not valid any more from M100 onward.

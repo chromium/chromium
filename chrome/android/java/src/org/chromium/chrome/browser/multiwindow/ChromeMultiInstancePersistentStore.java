@@ -11,7 +11,6 @@ import android.graphics.Rect;
 
 import org.chromium.base.TimeUtils;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
-import org.chromium.build.BuildConfig;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -406,9 +405,7 @@ class ChromeMultiInstancePersistentStore extends MultiInstancePersistentStore {
     }
 
     static void writeIsRecoverable(int instanceId, boolean isRecoverable) {
-        if (sData != null
-                && (BuildConfig.IS_FOR_TEST
-                        || ChromeFeatureList.sSessionRestoreAfterCrash.isEnabled())) {
+        if (sData != null && ChromeFeatureList.sSessionRestoreAfterCrash.isEnabled()) {
             putInstance(
                     instanceId, getInstanceFromProto(instanceId).setIsRecoverable(isRecoverable));
         }

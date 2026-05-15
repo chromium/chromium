@@ -25,7 +25,7 @@ public class TabbedWindowStateTracker implements ChromeAndroidTaskFeature {
      */
     public static @Nullable TabbedWindowStateTracker create(int windowId) {
         if (!MultiWindowUtils.isMultiInstanceApi31Enabled()
-                || !ChromeFeatureList.isEnabled(ChromeFeatureList.SESSION_RESTORE_AFTER_CRASH)) {
+                || !ChromeFeatureList.sSessionRestoreAfterCrash.isEnabled()) {
             return null;
         }
         return new TabbedWindowStateTracker(windowId);

@@ -193,6 +193,7 @@ import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.PersistedIns
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManagerFactory;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceOrchestratorFactory;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
+import org.chromium.chrome.browser.multiwindow.TabbedCrashRecoveryDelegate;
 import org.chromium.chrome.browser.multiwindow.TabbedWindowStateTracker;
 import org.chromium.chrome.browser.native_page.NativePageAssassin;
 import org.chromium.chrome.browser.navigation_predictor.NavigationPredictorBridge;
@@ -3157,6 +3158,15 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
         mDseNewTabUrlManager = new DseNewTabUrlManager(mTabModelProfileSupplier);
 
         initHub();
+
+        Intent intent = getIntent();
+        int newWindowAppSource =
+                intent.getIntExtra(
+                        IntentHandler.EXTRA_NEW_WINDOW_APP_SOURCE, NewWindowAppSource.UNKNOWN);
+        if (newWindowAppSource == NewWindowAppSource.CRASH_RECOVERY
+                && ChromeFeatureList.sSessionRestoreAfterCrash.isEnabled()) {
+            TabbedCrashRecoveryDelegate.getInstance().registerRecovery(mWindowId);
+        }
     }
 
     @Override
