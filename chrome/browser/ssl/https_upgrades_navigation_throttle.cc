@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ssl/https_upgrades_navigation_throttle.h"
 
+#include <optional>
 #include <utility>
 
 #include "base/feature_list.h"
@@ -36,9 +37,8 @@ using security_interstitials::https_only_mode::Event;
 
 namespace {
 
-// Time that the throttle will wait before canceling the upgraded navigation and
-// showing the HTTPS-First Mode interstitial.
-base::TimeDelta g_fallback_delay = base::Seconds(3);
+// If set, the fallback delay has been overridden for testing.
+std::optional<base::TimeDelta> g_fallback_delay;
 
 // TODO(crbug.com/351990829): Consider setting the page title and favicon to be
 // more like interstitials.
@@ -262,10 +262,13 @@ HttpsUpgradesNavigationThrottle::WillRedirectRequest() {
   // long, the fallback timer will kick in. ERR_TOO_MANY_REDIRECTS should result
   // in the request failing and triggering fallback.
   if (tab_helper->is_navigation_upgraded()) {
-    // Check if the timer is already started, as there may be additional
-    // redirects on the navigation after the artificial upgrade redirect.
-    bool timer_started =
-        navigation_handle()->SetNavigationTimeout(g_fallback_delay);
+    base::TimeDelta default_delay =
+        IsInterstitialEnabled(interstitial_state_)
+            ? features::kHttpsUpgradesAskBeforeHttpFallbackDelay.Get()
+            : features::kHttpsUpgradesFallbackDelay.Get();
+    base::TimeDelta delay = g_fallback_delay.value_or(default_delay);
+    // Only log the first time the timeout is set.
+    bool timer_started = navigation_handle()->SetNavigationTimeout(delay);
     if (timer_started) {
       RecordHttpsFirstModeNavigation(Event::kUpgradeAttempted,
                                      interstitial_state_);

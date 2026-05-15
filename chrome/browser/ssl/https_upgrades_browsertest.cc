@@ -4213,3 +4213,176 @@ IN_PROC_BROWSER_TEST_F(HttpsUpgradesAdvancedProtectionBrowserTest,
   nav_observer.Wait();
   EXPECT_TRUE(IsShowingHttpsFirstModeInterstitial(contents));
 }
+
+// Test fixture for testing Ask-Before-HTTP fallback delay via FeatureParams.
+// Initializes ScopedFeatureList in the constructor before browser startup.
+class HttpsUpgradesAskBeforeHttpDelayTest : public InProcessBrowserTest {
+ public:
+  HttpsUpgradesAskBeforeHttpDelayTest() {
+    feature_list_.InitAndEnableFeatureWithParameters(
+        features::kHttpsUpgrades, {{"ask-before-http-fallback-delay", "0ms"},
+                                   {"fallback-delay", "100s"}});
+  }
+  ~HttpsUpgradesAskBeforeHttpDelayTest() override = default;
+
+  void SetUpOnMainThread() override {
+    // By default allow all hosts on HTTPS.
+    mock_cert_verifier_.mock_cert_verifier()->set_default_result(net::OK);
+    host_resolver()->AddRule("*", "127.0.0.1");
+
+    // bad-https.com will fail HTTPS and fallback to HTTP.
+    scoped_refptr<net::X509Certificate> cert(https_server_.GetCertificate());
+    net::CertVerifyResult verify_result;
+    verify_result.is_issued_by_known_root = false;
+    verify_result.verified_cert = cert;
+    verify_result.cert_status = net::CERT_STATUS_COMMON_NAME_INVALID;
+    mock_cert_verifier_.mock_cert_verifier()->AddResultForCertAndHost(
+        cert, "bad-https.com", verify_result,
+        net::ERR_CERT_COMMON_NAME_INVALID);
+
+    http_server_.AddDefaultHandlers(GetChromeTestDataDir());
+    https_server_.AddDefaultHandlers(GetChromeTestDataDir());
+    ASSERT_TRUE(http_server_.Start());
+    ASSERT_TRUE(https_server_.Start());
+
+    HttpsUpgradesInterceptor::SetHttpsPortForTesting(https_server_.port());
+    HttpsUpgradesInterceptor::SetHttpPortForTesting(http_server_.port());
+
+    // Enable HFM pref.
+    auto* prefs = browser()->profile()->GetPrefs();
+    prefs->SetBoolean(prefs::kHttpsOnlyModeEnabled, true);
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    mock_cert_verifier_.SetUpCommandLine(command_line);
+  }
+
+  void SetUpInProcessBrowserTestFixture() override {
+    mock_cert_verifier_.SetUpInProcessBrowserTestFixture();
+  }
+
+  void TearDownInProcessBrowserTestFixture() override {
+    mock_cert_verifier_.TearDownInProcessBrowserTestFixture();
+  }
+
+  net::EmbeddedTestServer* http_server() { return &http_server_; }
+  net::EmbeddedTestServer* https_server() { return &https_server_; }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+  net::EmbeddedTestServer http_server_{net::EmbeddedTestServer::TYPE_HTTP};
+  net::EmbeddedTestServer https_server_{net::EmbeddedTestServer::TYPE_HTTPS};
+  content::ContentMockCertVerifier mock_cert_verifier_;
+};
+
+IN_PROC_BROWSER_TEST_F(HttpsUpgradesAskBeforeHttpDelayTest,
+                       FallbackDelayFeatureParam_AskBeforeHttp) {
+  // Set up a custom HTTPS server that times out without sending a response.
+  net::EmbeddedTestServer timeout_server{net::EmbeddedTestServer::TYPE_HTTPS};
+  timeout_server.RegisterRequestHandler(base::BindLambdaForTesting(
+      [&](const net::test_server::HttpRequest& request)
+          -> std::unique_ptr<net::test_server::HttpResponse> {
+        return std::make_unique<net::test_server::HungResponse>();
+      }));
+  ASSERT_TRUE(timeout_server.Start());
+  HttpsUpgradesInterceptor::SetHttpsPortForTesting(timeout_server.port());
+
+  const GURL http_url = http_server()->GetURL("foo.com", "/simple.html");
+  auto* contents = browser()->tab_strip_model()->GetActiveWebContents();
+
+  // Navigate to HTTP. It should upgrade to HTTPS and immediately fallback to
+  // HTTP and show the interstitial because ask-before-http-fallback-delay is
+  // 0ms.
+  content::NavigateToURLBlockUntilNavigationsComplete(contents, http_url, 1);
+
+  EXPECT_TRUE(IsShowingHttpsFirstModeInterstitial(contents));
+  EXPECT_EQ(http_url, contents->GetLastCommittedURL());
+}
+
+// Test fixture for testing Silent Fallback delay via FeatureParams.
+// Initializes ScopedFeatureList in the constructor before browser startup.
+// This is the same as HttpsUpgradesAskBeforeHttpDelayTest but with the
+// FeatureParams swapped and the HFM pref disabled so this runs with silent
+// HTTPS-Upgrades only.
+class HttpsUpgradesSilentFallbackDelayTest : public InProcessBrowserTest {
+ public:
+  HttpsUpgradesSilentFallbackDelayTest() {
+    feature_list_.InitAndEnableFeatureWithParameters(
+        features::kHttpsUpgrades, {{"fallback-delay", "0ms"},
+                                   {"ask-before-http-fallback-delay", "100s"}});
+  }
+  ~HttpsUpgradesSilentFallbackDelayTest() override = default;
+
+  void SetUpOnMainThread() override {
+    // By default allow all hosts on HTTPS.
+    mock_cert_verifier_.mock_cert_verifier()->set_default_result(net::OK);
+    host_resolver()->AddRule("*", "127.0.0.1");
+
+    // bad-https.com will fail HTTPS and fallback to HTTP.
+    scoped_refptr<net::X509Certificate> cert(https_server_.GetCertificate());
+    net::CertVerifyResult verify_result;
+    verify_result.is_issued_by_known_root = false;
+    verify_result.verified_cert = cert;
+    verify_result.cert_status = net::CERT_STATUS_COMMON_NAME_INVALID;
+    mock_cert_verifier_.mock_cert_verifier()->AddResultForCertAndHost(
+        cert, "bad-https.com", verify_result,
+        net::ERR_CERT_COMMON_NAME_INVALID);
+
+    http_server_.AddDefaultHandlers(GetChromeTestDataDir());
+    https_server_.AddDefaultHandlers(GetChromeTestDataDir());
+    ASSERT_TRUE(http_server_.Start());
+    ASSERT_TRUE(https_server_.Start());
+
+    HttpsUpgradesInterceptor::SetHttpsPortForTesting(https_server_.port());
+    HttpsUpgradesInterceptor::SetHttpPortForTesting(http_server_.port());
+
+    // Disable HFM pref.
+    auto* prefs = browser()->profile()->GetPrefs();
+    prefs->SetBoolean(prefs::kHttpsOnlyModeEnabled, false);
+    prefs->SetBoolean(prefs::kHttpsFirstBalancedMode, false);
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    mock_cert_verifier_.SetUpCommandLine(command_line);
+  }
+
+  void SetUpInProcessBrowserTestFixture() override {
+    mock_cert_verifier_.SetUpInProcessBrowserTestFixture();
+  }
+
+  void TearDownInProcessBrowserTestFixture() override {
+    mock_cert_verifier_.TearDownInProcessBrowserTestFixture();
+  }
+
+  net::EmbeddedTestServer* http_server() { return &http_server_; }
+  net::EmbeddedTestServer* https_server() { return &https_server_; }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+  net::EmbeddedTestServer http_server_{net::EmbeddedTestServer::TYPE_HTTP};
+  net::EmbeddedTestServer https_server_{net::EmbeddedTestServer::TYPE_HTTPS};
+  content::ContentMockCertVerifier mock_cert_verifier_;
+};
+
+IN_PROC_BROWSER_TEST_F(HttpsUpgradesSilentFallbackDelayTest,
+                       FallbackDelayFeatureParam_SilentFallback) {
+  // Set up a custom HTTPS server that times out without sending a response.
+  net::EmbeddedTestServer timeout_server{net::EmbeddedTestServer::TYPE_HTTPS};
+  timeout_server.RegisterRequestHandler(base::BindLambdaForTesting(
+      [&](const net::test_server::HttpRequest& request)
+          -> std::unique_ptr<net::test_server::HttpResponse> {
+        return std::make_unique<net::test_server::HungResponse>();
+      }));
+  ASSERT_TRUE(timeout_server.Start());
+  HttpsUpgradesInterceptor::SetHttpsPortForTesting(timeout_server.port());
+
+  const GURL http_url = http_server()->GetURL("foo.com", "/simple.html");
+  auto* contents = browser()->tab_strip_model()->GetActiveWebContents();
+
+  // Navigate to HTTP. It should upgrade to HTTPS and immediately fallback to
+  // HTTP because fallback-delay is 0ms.
+  content::NavigateToURLBlockUntilNavigationsComplete(contents, http_url, 1);
+
+  EXPECT_FALSE(IsShowingHttpsFirstModeInterstitial(contents));
+  EXPECT_EQ(http_url, contents->GetLastCommittedURL());
+}

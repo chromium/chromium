@@ -1152,6 +1152,13 @@ BASE_FEATURE(kHttpsFirstModeV2ForTypicallySecureUsers,
 // Enables automatically upgrading main frame navigations to HTTPS.
 BASE_FEATURE(kHttpsUpgrades, base::FEATURE_ENABLED_BY_DEFAULT);
 
+const base::FeatureParam<base::TimeDelta> kHttpsUpgradesFallbackDelay{
+    &kHttpsUpgrades, "fallback-delay", base::Seconds(3)};
+
+const base::FeatureParam<base::TimeDelta>
+    kHttpsUpgradesAskBeforeHttpFallbackDelay{
+        &kHttpsUpgrades, "ask-before-http-fallback-delay", base::Seconds(5)};
+
 // Enables HTTPS-First Mode by default in Incognito Mode.
 BASE_FEATURE(kHttpsFirstModeIncognito, base::FEATURE_ENABLED_BY_DEFAULT);
 
