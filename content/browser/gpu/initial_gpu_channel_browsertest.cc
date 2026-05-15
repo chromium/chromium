@@ -12,13 +12,20 @@
 #include "content/browser/renderer_host/render_process_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
 #include "content/browser/renderer_host/spare_render_process_host_manager_impl.h"
+#include "content/browser/webui/web_ui_data_source_impl.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_ui_controller.h"
+#include "content/public/browser/web_ui_controller_factory.h"
+#include "content/public/common/content_features.h"
+#include "content/public/common/url_utils.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
+#include "content/public/test/content_browser_test_content_browser_client.h"
 #include "content/public/test/content_browser_test_utils.h"
+#include "content/public/test/test_navigation_observer.h"
 #include "content/shell/browser/shell.h"
 #include "gpu/config/gpu_finch_features.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -52,7 +59,9 @@ std::string GetForceCompositeScript() {
 class InitialGpuChannelBrowserTest : public ContentBrowserTest {
  public:
   InitialGpuChannelBrowserTest() {
-    feature_list_.InitAndEnableFeature(features::kSendGPUChannelEarly);
+    feature_list_.InitAndEnableFeatureWithParameters(
+        features::kSendGPUChannelEarly,
+        {{"for_topchrome_webui_only", "false"}});
   }
 
   void SetUpOnMainThread() override {
@@ -283,5 +292,127 @@ IN_PROC_BROWSER_TEST_F(InitialGpuChannelDisabledBrowserTest,
   // Wait for Viz to composite the frames.
   frame_observer.WaitForNextFrameSubmission();
 }
+
+#if !BUILDFLAG(IS_ANDROID)
+
+namespace {
+class InitialWebUIOverrideContentBrowserClient
+    : public ContentBrowserTestContentBrowserClient {
+ public:
+  explicit InitialWebUIOverrideContentBrowserClient(
+      const GURL& initial_webui_url)
+      : initial_webui_url_(initial_webui_url) {}
+
+  bool IsInitialWebUIURL(const GURL& url) override {
+    return initial_webui_url_ == url;
+  }
+  bool IsTopChromeWebUIURL(const GURL& url) override {
+    return initial_webui_url_ == url;
+  }
+
+ private:
+  GURL initial_webui_url_;
+};
+
+class WebUITestWebUIControllerFactory : public WebUIControllerFactory {
+ public:
+  std::unique_ptr<WebUIController> CreateWebUIControllerForURL(
+      WebUI* web_ui,
+      const GURL& url) override {
+    return HasWebUIScheme(url) ? std::make_unique<WebUIController>(web_ui)
+                               : nullptr;
+  }
+  WebUI::TypeID GetWebUIType(BrowserContext* browser_context,
+                             const GURL& url) override {
+    return HasWebUIScheme(url) ? reinterpret_cast<WebUI::TypeID>(1) : nullptr;
+  }
+  bool UseWebUIForURL(BrowserContext* browser_context,
+                      const GURL& url) override {
+    return HasWebUIScheme(url);
+  }
+};
+
+}  // namespace
+
+class InitialGpuChannelForTopChromeWebUIOnlyBrowserTest
+    : public ContentBrowserTest {
+ public:
+  InitialGpuChannelForTopChromeWebUIOnlyBrowserTest() {
+    WebUIControllerFactory::RegisterFactory(&factory_);
+    feature_list_.InitWithFeaturesAndParameters(
+        {{features::kSendGPUChannelEarly,
+          {{"for_topchrome_webui_only", "true"}}},
+         {features::kInitialWebUISyncNavStartToCommit, {}},
+         {features::kWebUIInProcessResourceLoadingV2, {}}},
+        {/* disabled_features */});
+  }
+
+  void SetUpOnMainThread() override {
+    ASSERT_TRUE(embedded_test_server()->Start());
+  }
+
+ private:
+  WebUITestWebUIControllerFactory factory_;
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(InitialGpuChannelForTopChromeWebUIOnlyBrowserTest,
+                       FallsBackToStandardInitializationForRegularPages) {
+  shell()->web_contents()->WasHidden();
+
+  // Navigate to a regular page (not a Top Chrome WebUI).
+  EXPECT_TRUE(
+      NavigateToURL(shell(), embedded_test_server()->GetURL("/title1.html")));
+
+  auto* rwhi = static_cast<RenderWidgetHostImpl*>(
+      shell()->web_contents()->GetPrimaryMainFrame()->GetRenderWidgetHost());
+
+  // Since this is a regular page, early GPU channel and frame sink
+  // optimizations are disabled by the feature parameter constraint.
+  EXPECT_FALSE(rwhi->has_initial_frame_sink_for_testing());
+}
+
+IN_PROC_BROWSER_TEST_F(InitialGpuChannelForTopChromeWebUIOnlyBrowserTest,
+                       UsesEarlyChannelForInitialWebUI) {
+  GURL url("chrome://foo");
+  InitialWebUIOverrideContentBrowserClient content_browser_client(url);
+
+  // Create a new WebContents to ensure it is the very first navigation,
+  // which is required for initial WebUI navigations. Ensure it starts hidden
+  // so we can inspect the deferred initial frame sink creation.
+  WebContents::CreateParams new_contents_params(
+      shell()->web_contents()->GetBrowserContext(),
+      shell()->web_contents()->GetSiteInstance());
+  new_contents_params.site_instance = SiteInstance::CreateForURL(
+      shell()->web_contents()->GetBrowserContext(), url);
+  std::unique_ptr<WebContents> new_web_contents(
+      WebContents::Create(new_contents_params));
+  new_web_contents->WasHidden();
+
+  WebUIDataSource* source = WebUIDataSource::CreateAndAdd(
+      new_web_contents->GetBrowserContext(), "foo");
+  source->SetResourcePathToResponse("", "<!doctype html><body>bar</body>");
+
+  TestNavigationObserver navigation_observer(url);
+  navigation_observer.WatchExistingWebContents();
+  new_web_contents->GetController().LoadURLWithParams(
+      NavigationController::LoadURLParams(url));
+  navigation_observer.Wait();
+
+  EXPECT_TRUE(navigation_observer.last_navigation_succeeded());
+  EXPECT_EQ(navigation_observer.last_navigation_url(), url);
+
+  auto* rwhi = static_cast<RenderWidgetHostImpl*>(
+      new_web_contents->GetPrimaryMainFrame()->GetRenderWidgetHost());
+
+#if BUILDFLAG(IS_CHROMEOS)
+  EXPECT_FALSE(rwhi->has_initial_frame_sink_for_testing());
+#else
+  EXPECT_EQ(rwhi->is_hidden_for_testing(),
+            rwhi->has_initial_frame_sink_for_testing());
+#endif
+}
+
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace content

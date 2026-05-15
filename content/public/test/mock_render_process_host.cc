@@ -34,6 +34,7 @@
 #include "content/public/browser/render_widget_host_iterator.h"
 #include "content/public/browser/site_instance.h"
 #include "content/test/fake_network_url_loader_factory.h"
+#include "gpu/config/gpu_finch_features.h"
 #include "media/media_buildflags.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 
@@ -194,6 +195,12 @@ bool MockRenderProcessHost::GetIntersectsViewport() {
 
 bool MockRenderProcessHost::IsForTopChromeWebUI() const {
   return is_for_top_chrome_web_ui_;
+}
+
+bool MockRenderProcessHost::ShouldSendGpuChannelEarly() const {
+  return base::FeatureList::IsEnabled(features::kSendGPUChannelEarly) &&
+         (!features::kSendGPUChannelEarlyTopChromeOnly.Get() ||
+          IsForTopChromeWebUI());
 }
 
 bool MockRenderProcessHost::IsForGuestsOnly() {

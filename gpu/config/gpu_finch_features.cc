@@ -870,5 +870,9 @@ const base::FeatureParam<int> kConfigurableGPUWatchdogTimeoutSeconds{
 // early when the renderer process is being initialized, instead of waiting
 // for the renderer to request the GPU channel to the browser process.
 BASE_FEATURE(kSendGPUChannelEarly, base::FEATURE_DISABLED_BY_DEFAULT);
+// If true, only enable the early GPU channel optimization for topchrome WebUI
+// renderers.
+const base::FeatureParam<bool> kSendGPUChannelEarlyTopChromeOnly{
+    &kSendGPUChannelEarly, "for_topchrome_webui_only", false};
 
 }  // namespace features

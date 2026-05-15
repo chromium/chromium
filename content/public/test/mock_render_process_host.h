@@ -93,6 +93,7 @@ class MockRenderProcessHost : public RenderProcessHost {
   unsigned int GetFrameDepth() override;
   bool GetIntersectsViewport() override;
   bool IsForTopChromeWebUI() const override;
+  bool ShouldSendGpuChannelEarly() const override;
   bool IsForGuestsOnly() override;
   bool IsJitDisabled() override;
   bool AreV8OptimizationsDisabled() override;
