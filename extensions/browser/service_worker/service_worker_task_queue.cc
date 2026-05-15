@@ -1016,20 +1016,13 @@ void ServiceWorkerTaskQueue::DidUnregisterServiceWorker(
         status);
   }
 
-  // `kErrorNotFound` means the //content layer confirmed that there is no
-  // registration for this scope. It doesn't trigger `OnRegistrationDeletedSync`
-  // because no registration was deleted, so clear any stale cached registration
-  // info here.
-  if (status == blink::ServiceWorkerStatusCode::kErrorNotFound) {
-    RemoveRegisteredServiceWorkerInfo(extension_id);
-  }
-
-  // For `kOk`, `OnRegistrationDeletedSync()` should have already removed the
-  // cached registration info synchronously. For `kErrorNotFound`, we just
-  // removed it above. Verify it's actually gone.
-  if (status == blink::ServiceWorkerStatusCode::kOk ||
-      status == blink::ServiceWorkerStatusCode::kErrorNotFound) {
+  if (status == blink::ServiceWorkerStatusCode::kOk) {
     CHECK(!RetrieveRegisteredServiceWorkerVersion(extension_id).IsValid());
+  } else if (!(status == blink::ServiceWorkerStatusCode::kErrorAbort &&
+               browser_context_shutting_down_)) {
+    // Force a fresh `REGISTER_ON_EXTENSION_LOAD` on next activation instead
+    // of trusting a possibly-corrupted leftover registration.
+    RemoveRegisteredServiceWorkerInfo(extension_id);
   }
 
   if (g_test_observer) {
