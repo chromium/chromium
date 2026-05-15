@@ -32,7 +32,6 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/pref_names.h"
-#include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
@@ -49,6 +48,9 @@
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/signin/public/identity_manager/tribool.h"
+#include "content/public/test/browser_task_environment.h"
+#include "content/public/test/test_renderer_host.h"
+#include "content/public/test/web_contents_tester.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -173,11 +175,9 @@ std::string ParamToTestSuffixForInterceptionAndSyncPromo(
 
 }  // namespace
 
-class DiceWebSigninInterceptorTest : public BrowserWithTestWindowTest {
+class DiceWebSigninInterceptorTest : public testing::Test {
  public:
-  DiceWebSigninInterceptorTest()
-      : BrowserWithTestWindowTest(
-            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+  DiceWebSigninInterceptorTest() = default;
   ~DiceWebSigninInterceptorTest() override = default;
 
   DiceWebSigninInterceptor* interceptor() {
@@ -188,9 +188,13 @@ class DiceWebSigninInterceptorTest : public BrowserWithTestWindowTest {
     return mock_delegate_.get();
   }
 
-  content::WebContents* web_contents() {
-    return browser()->tab_strip_model()->GetActiveWebContents();
+  TestingProfile* profile() { return profile_; }
+  TestingProfileManager* profile_manager() { return &profile_manager_; }
+  content::BrowserTaskEnvironment* task_environment() {
+    return &task_environment_;
   }
+
+  content::WebContents* web_contents() { return web_contents_.get(); }
 
   ProfileAttributesStorage* profile_attributes_storage() {
     return profile_manager()->profile_attributes_storage();
@@ -265,24 +269,33 @@ class DiceWebSigninInterceptorTest : public BrowserWithTestWindowTest {
  protected:
   // testing::Test:
   void SetUp() override {
-    BrowserWithTestWindowTest::SetUp();
+    ASSERT_TRUE(profile_manager_.SetUp());
+    profile_ =
+        profile_manager_.CreateTestingProfile("Default", GetTestingFactories());
+
+    web_contents_ =
+        content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
 
     identity_test_env_profile_adaptor_ =
         std::make_unique<IdentityTestEnvironmentProfileAdaptor>(profile());
     identity_test_env_profile_adaptor_->identity_test_env()
         ->SetTestURLLoaderFactory(&test_url_loader_factory_);
 
-    // Create the first tab so that web_contents() exists.
-    AddTab(browser(), GURL("http://foo/1"));
     disclaimer_service_resetter_ =
         enterprise_util::DisableAutomaticManagementDisclaimerUntilReset(
             profile());
+
+    // Creating the interceptor is necessary for setting the
+    // mock_delegate_, so we can't rely on it being lazily initialized.
+    DiceWebSigninInterceptorFactory::GetForProfile(profile());
   }
 
  private:
   void TearDown() override {
     identity_test_env_profile_adaptor_.reset();
-    BrowserWithTestWindowTest::TearDown();
+    web_contents_.reset();
+    profile_ = nullptr;
+    profile_manager_.DeleteAllTestingProfiles();
   }
 
   std::unique_ptr<KeyedService> BuildDiceWebSigninInterceptor(
@@ -296,7 +309,7 @@ class DiceWebSigninInterceptorTest : public BrowserWithTestWindowTest {
         profile(), std::move(delegate), &profile_metrics_service_);
   }
 
-  TestingProfile::TestingFactories GetTestingFactories() override {
+  TestingProfile::TestingFactories GetTestingFactories() {
     TestingProfile::TestingFactories factories =
         IdentityTestEnvironmentProfileAdaptor::
             GetIdentityTestEnvironmentFactories();
@@ -313,6 +326,13 @@ class DiceWebSigninInterceptorTest : public BrowserWithTestWindowTest {
 
     return factories;
   }
+
+  content::BrowserTaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  content::RenderViewHostTestEnabler rvh_test_enabler_;
+  TestingProfileManager profile_manager_{TestingBrowserProcess::GetGlobal()};
+  raw_ptr<TestingProfile> profile_ = nullptr;
+  std::unique_ptr<content::WebContents> web_contents_;
 
   // Force local machine to be unmanaged, so that variations in try bots and
   // developer machines don't affect the tests. See https://crbug.com/40268091.
