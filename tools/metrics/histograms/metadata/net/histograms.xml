@@ -7573,7 +7573,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.RestrictedCookieManager.SiteForCookiesOK.Subsampled"
-    enum="BooleanMatched" expires_after="2025-03-09">
+    enum="BooleanMatched" expires_after="2026-11-14">
   <owner>morlovich@chromium.org</owner>
   <owner>src/net/cookies/OWNERS</owner>
   <summary>
@@ -7582,11 +7582,14 @@ chromium-metrics-reviews@google.com.
 
     Subsampled to 1/1000. See kHistogramSampleProbability in
     net/cookies/cookie_constants.h for details.
+
+    Warning: Histogram was expired from 2025-03-09 to 2026-05-14. Data may be
+    missing.
   </summary>
 </histogram>
 
 <histogram name="Net.RestrictedCookieManager.TopFrameOriginOK.Subsampled"
-    enum="BooleanMatched" expires_after="2025-01-26">
+    enum="BooleanMatched" expires_after="2026-11-14">
   <owner>morlovich@chromium.org</owner>
   <owner>src/net/cookies/OWNERS</owner>
   <summary>
@@ -7595,6 +7598,9 @@ chromium-metrics-reviews@google.com.
 
     Subsampled to 1/1000. See kHistogramSampleProbability in
     net/cookies/cookie_constants.h for details.
+
+    Warning: Histogram was expired from 2025-01-26 to 2026-05-14. Data may be
+    missing.
   </summary>
 </histogram>
 
