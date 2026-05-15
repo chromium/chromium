@@ -9,11 +9,6 @@ import {getRectIndexAtY} from '../shared/dom_queries.js';
 import type {LineFocusModel} from './line_focus_model.js';
 import type {LineFocusStyle} from './read_anything_types.js';
 
-// Used to prevent microadjustments of the line focus window when adjusting to
-// new line heights as it can be distracting for no functional difference.
-// Determined by experimentation and should be tweaked as needed.
-export const WINDOW_DIFF_THRESHOLD = 5;
-
 // Base class for the visual style of the line focus element (e.g. a
 // single line vs a larger window).
 export abstract class LineFocusStyleMode {
@@ -37,6 +32,15 @@ export abstract class LineFocusStyleMode {
       return center - (this.model_.getMaxY() / 2);
     }
     return 0;
+  }
+
+  // Returns how far from the center the current focal point is.
+  getCenterDiff(targetIndex: number): number {
+    const textBounds = this.model_.getTextBounds();
+    const {topRect, bottomRect} =
+        this.getFocusWindowBounds(textBounds, targetIndex);
+    const center = this.getFocalPoint(topRect, bottomRect);
+    return center - (this.model_.getMaxY() / 2);
   }
 
   // Returns where the center of the focus element should be in the focus area
@@ -63,7 +67,7 @@ export abstract class LineFocusStyleMode {
 
   // Returns true if after a line-focus-initiated scroll, this focus area
   // calculates a change in position or height.
-  abstract updateAfterScroll(): boolean;
+  abstract shouldAdaptToTextBounds(): boolean;
 
   // Returns the bounding rects for the top and bottom lines of the focus area.
   protected abstract getFocusWindowBounds(
@@ -98,7 +102,7 @@ export class LineFocusLineStyleMode extends LineFocusStyleMode {
     return index;
   }
 
-  updateAfterScroll(): boolean {
+  shouldAdaptToTextBounds(): boolean {
     // No need to update the focus area in line mode since the size of the line
     // does not affect the underline size.
     return false;
@@ -134,7 +138,7 @@ export class LineFocusWindowStyleMode extends LineFocusStyleMode {
 
     // Use the average line height to calculate a multi-line window if the
     // window should not adapt to the line heights.
-    if (!this.model_.getAdaptMultiLineWindow() && this.style_.lines > 1) {
+    if (!this.shouldAdaptToTextBounds()) {
       const center = this.model_.getMaxY() / 2;
       const averageHeight =
           (bounds.at(-1)!.bottom - bounds.at(0)!.y) / bounds.length;
@@ -147,6 +151,14 @@ export class LineFocusWindowStyleMode extends LineFocusStyleMode {
     const currentLineIndex = this.model_.getCurrentLineIndex() ??
         getRectIndexAtY(this.model_.getFocalPoint(),
                         this.model_.getTextBounds(), true);
+    if (this.style_.lines === 1) {
+      // This is essentially what the math below comes out to when lines === 1,
+      // so the simplified way is written here for easier understanding.
+      this.model_.setTop(bounds[currentLineIndex]!.top);
+      this.model_.setWindowHeight(bounds[currentLineIndex]!.height);
+      return;
+    }
+
     const numLines = this.style_.lines;
     const topIndex = currentLineIndex - ((numLines - 1) / 2);
     const maxTopIndex = bounds.length - numLines;
@@ -194,21 +206,8 @@ export class LineFocusWindowStyleMode extends LineFocusStyleMode {
     return Math.max(0, Math.min(maxIndex, clampedIndex));
   }
 
-  updateAfterScroll(): boolean {
-    if (this.style_.lines > 1) {
-      return false;
-    }
-
-    // Always adapt the single line focus window height to the current text line
-    // height, otherwise the text line might be much bigger than the focus area.
-    // This isn't needed for larger window sizes.
-    const oldHeight = this.model_.getWindowHeight();
-    const oldTop = this.model_.getTop();
-    this.updateFocusBounds();
-    const heightDiff = Math.abs(oldHeight - this.model_.getWindowHeight());
-    const topDiff = Math.abs(oldTop - this.model_.getTop());
-    return heightDiff > WINDOW_DIFF_THRESHOLD ||
-        topDiff > WINDOW_DIFF_THRESHOLD;
+  shouldAdaptToTextBounds(): boolean {
+    return this.style_.lines === 1 || this.model_.getAdaptMultiLineWindow();
   }
 
   // The focus window spans multiple lines around the center index.
@@ -257,7 +256,7 @@ export class LineFocusNoneStyleMode extends LineFocusStyleMode {
     return 0;
   }
 
-  updateAfterScroll(): boolean {
+  shouldAdaptToTextBounds(): boolean {
     // Do nothing when line focus is disabled.
     return false;
   }

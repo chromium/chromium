@@ -74,7 +74,7 @@ suite('AppContent', () => {
   });
 
   test(
-      'menus close after toolbar mouse movement updates line focus',
+      'connected callback adds line focus mouse listener in toolbar',
       async () => {
         chrome.readingMode.isLineFocusEnabled = true;
         emitEvent(
@@ -84,22 +84,21 @@ suite('AppContent', () => {
             app, ToolbarEvent.LINE_FOCUS_STYLE,
             {detail: {data: LineFocusStyle.UNDERLINE}});
         await microtasksFinished();
-        const newPos = 202;
+        let mouseMoveInToolbar = false;
+        let mouseMove = false;
+        LineFocusController.getInstance().onMouseMove = () => {
+          mouseMove = true;
+        };
+        LineFocusController.getInstance().onMouseMoveInToolbar = () => {
+          mouseMoveInToolbar = true;
+        };
+
         app.connectedCallback();
         await microtasksFinished();
+        app.$.toolbar.dispatchEvent(new MouseEvent('mousemove', {clientY: 10}));
 
-        // Line focus should not move during toolbar movement.
-        app.$.toolbar.dispatchEvent(
-            new MouseEvent('mousemove', {clientY: newPos}));
-        await microtasksFinished();
-        const lineFocusY = app.style.getPropertyValue('--line-focus-y');
-        assertTrue(lineFocusY === '' || lineFocusY === '0px');
-
-        // After the menus close, then the line focus position should update.
-        emitEvent(app, ToolbarEvent.CLOSE_ALL_MENUS);
-        await microtasksFinished();
-        assertEquals(
-            `${newPos}px`, app.style.getPropertyValue('--line-focus-y'));
+        assertTrue(mouseMoveInToolbar);
+        assertFalse(mouseMove);
       });
 
   test('connected callback adds line focus mouse listener', async () => {
@@ -111,13 +110,22 @@ suite('AppContent', () => {
         app, ToolbarEvent.LINE_FOCUS_STYLE,
         {detail: {data: LineFocusStyle.UNDERLINE}});
     await microtasksFinished();
+    let mouseMoveInToolbar = false;
+    let mouseMove = false;
+    LineFocusController.getInstance().onMouseMove = () => {
+      mouseMove = true;
+    };
+    LineFocusController.getInstance().onMouseMoveInToolbar = () => {
+      mouseMoveInToolbar = true;
+    };
 
     app.connectedCallback();
     await microtasksFinished();
     app.$.containerParent.dispatchEvent(
         new MouseEvent('mousemove', {clientY: 10}));
 
-    assertEquals('10px', app.style.getPropertyValue('--line-focus-y'));
+    assertTrue(mouseMove);
+    assertFalse(mouseMoveInToolbar);
   });
 
   test('new content updates padding for line focus', async () => {

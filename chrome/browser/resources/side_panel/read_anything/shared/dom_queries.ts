@@ -68,7 +68,7 @@ export function getRectIndexAtY(
   let previousY = 0;
   for (let index = 0; index < rects.length; index++) {
     const rectBottom = rects[index]!.bottom;
-    if (y >= previousY && y < rectBottom) {
+    if (y >= previousY && y <= rectBottom) {
       return (isForward || (index <= 0)) ? index : index - 1;
     }
     previousY = rectBottom;
