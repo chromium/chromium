@@ -6,6 +6,7 @@
 
 #import "base/check.h"
 #import "base/logging.h"
+#import "base/memory/weak_ptr.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/sequence_checker.h"
 #import "base/strings/sys_string_conversions.h"
@@ -237,10 +238,14 @@ using web::NavigationManagerImpl;
       }
       existingContext->SetIsSameDocument(isSameDocumentNavigation);
       existingContext->SetHasCommitted(!isSameDocumentNavigation);
+      base::WeakPtr<web::NavigationContextImpl> weakContext =
+          existingContext->GetWeakPtr();
       self.webStateImpl->OnNavigationStarted(existingContext);
-      [self.delegate navigationObserver:self
-               didChangePageWithContext:existingContext];
-      self.webStateImpl->OnNavigationFinished(existingContext);
+      if (weakContext) {
+        [self.delegate navigationObserver:self
+                 didChangePageWithContext:weakContext.get()];
+        self.webStateImpl->OnNavigationFinished(weakContext.get());
+      }
     }
   }
 

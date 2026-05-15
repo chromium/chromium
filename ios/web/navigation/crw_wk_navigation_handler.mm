@@ -9,6 +9,7 @@
 #import "base/apple/foundation_util.h"
 #import "base/feature_list.h"
 #import "base/ios/ns_error_util.h"
+#import "base/memory/weak_ptr.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/histogram_macros.h"
 #import "base/metrics/user_metrics.h"
@@ -945,15 +946,17 @@ void LogPresentingErrorPageFailedWithError(NSError* error) {
   [self.navigationStates setState:web::WKNavigationState::COMMITTED
                     forNavigation:navigation];
 
+  base::WeakPtr<web::NavigationContextImpl> weakContext =
+      context ? context->GetWeakPtr() : nullptr;
   if (!committedNavigation && context && !context->IsLoadingErrorPage()) {
     self.webStateImpl->OnNavigationFinished(context);
   }
 
   // The actual navigation item will not be committed until the native content
   // or WebUI is shown.
-  if (context && !context->GetUrl().SchemeIs(url::kAboutScheme)) {
+  if (weakContext && !weakContext->GetUrl().SchemeIs(url::kAboutScheme)) {
     [self.delegate webViewHandlerUpdateSSLStatusForCurrentNavigationItem:self];
-    if (!context->IsLoadingErrorPage()) {
+    if (!weakContext->IsLoadingErrorPage()) {
       [self setLastCommittedNavigationItemTitle:webView.title];
     }
   }
@@ -1951,8 +1954,12 @@ void LogPresentingErrorPageFailedWithError(NSError* error) {
         // WKWebView will revert the url to about:blank. Simply discard pending
         // item and fail the navigation.
         navigationContext->ReleaseItem();
+        base::WeakPtr<web::NavigationContextImpl> weakContext =
+            navigationContext->GetWeakPtr();
         self.webStateImpl->OnNavigationFinished(navigationContext);
-        self.webStateImpl->OnPageLoaded(navigationContext->GetUrl(), false);
+        if (weakContext) {
+          self.webStateImpl->OnPageLoaded(weakContext->GetUrl(), false);
+        }
         return;
       }
     }
@@ -2264,13 +2271,17 @@ void LogPresentingErrorPageFailedWithError(NSError* error) {
         // `OnNavigationFinished` callback.
         navContext->SetUrl(failingURL);
         navContext->SetHasCommitted(true);
+        base::WeakPtr<web::NavigationContextImpl> weakContext =
+            navContext->GetWeakPtr();
         self.webStateImpl->OnNavigationFinished(navContext);
 
         // For SSL cert error pages, SSLStatus needs to be set manually because
         // the placeholder navigation for the error page is committed and
         // there is no server trust (since there's no network navigation), which
         // is required to create a cert in CRWSSLStatusUpdater.
-        if (web::IsWKWebViewSSLCertError(navContext->GetError()) && info.cert) {
+        if (weakContext &&
+            web::IsWKWebViewSSLCertError(weakContext->GetError()) &&
+            info.cert) {
           web::SSLStatus& SSLStatus =
               self.navigationManagerImpl->GetLastCommittedItem()->GetSSL();
           SSLStatus.cert_status = info.cert_status;

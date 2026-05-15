@@ -15,6 +15,7 @@
 #import "base/ios/block_types.h"
 #import "base/ios/ios_util.h"
 #import "base/json/string_escape.h"
+#import "base/memory/weak_ptr.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
@@ -1823,7 +1824,12 @@ CrFullscreenState CrFullscreenStateFromWKFullscreenState(
           contextForPendingMainFrameNavigationWithURL:newURL];
     }
     navigationContext->SetIsSameDocument(true);
+    base::WeakPtr<web::NavigationContextImpl> weakContext =
+        navigationContext->GetWeakPtr();
     self.webStateImpl->OnNavigationStarted(navigationContext);
+    if (!weakContext) {
+      return;
+    }
     [self didStartLoading];
     self.navigationManagerImpl->CommitPendingItem(
         navigationContext->ReleaseItem());
