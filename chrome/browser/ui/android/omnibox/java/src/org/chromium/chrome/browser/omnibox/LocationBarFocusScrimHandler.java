@@ -11,6 +11,7 @@ import android.view.View;
 import androidx.annotation.ColorInt;
 
 import org.chromium.base.Callback;
+import org.chromium.base.Log;
 import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker;
@@ -26,6 +27,8 @@ import org.chromium.ui.util.ColorUtils;
 /** Handles showing and hiding a scrim when url bar focus changes. */
 @NullMarked
 public class LocationBarFocusScrimHandler {
+    private static final String TAG = "ScrimHandler";
+
     /** The params used to control how the scrim behaves when shown for the omnibox. */
     private final PropertyModel mScrimModel;
 
@@ -77,10 +80,22 @@ public class LocationBarFocusScrimHandler {
                         .with(ScrimProperties.CLICK_DELEGATE, clickDelegate)
                         .with(ScrimProperties.VISIBILITY_CALLBACK, visibilityChangeCallback)
                         .build();
+        if (ChromeFeatureList.sDebugToolbarPositioning.isEnabled()) {
+            Log.i(TAG, "Setting mScrimModel topMargin in constructor: %d", topMargin);
+        }
 
         mTabStripHeightSupplier = tabStripHeightSupplier;
         mTabStripHeightChangeCallback =
-                newHeight -> mScrimModel.set(ScrimProperties.TOP_MARGIN, newHeight);
+                newHeight -> {
+                    if (ChromeFeatureList.sDebugToolbarPositioning.isEnabled()) {
+                        Log.i(
+                                TAG,
+                                "Setting mScrimModel topMargin from mTabStripHeightChangeCallback:"
+                                        + " %d",
+                                newHeight);
+                    }
+                    mScrimModel.set(ScrimProperties.TOP_MARGIN, newHeight);
+                };
         mTabStripHeightSupplier.addSyncObserverAndPostIfNonNull(mTabStripHeightChangeCallback);
     }
 

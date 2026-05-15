@@ -5585,6 +5585,12 @@ inline constexpr char kCrossDeviceTaskHandoffDescription[] =
     "Allows users to pick up where they left off in Chrome by transferring "
     "tasks and states to nearby devices.";
 
+inline constexpr char kDebugToolbarPositioningName[] =
+    "Debug Toolbar Positioning";
+inline constexpr char kDebugToolbarPositioningDescription[] =
+    "Enables logging/dumping status of TopControlsStacker and "
+    "LocationBarFocusScrimHandler for debugging.";
+
 inline constexpr char kDefaultBrowserPromoEntryPointName[] =
     "DefaultBrowserPromoEntryPoint";
 inline constexpr char kDefaultBrowserPromoEntryPointDescription[] =
