@@ -144,13 +144,12 @@ void NotificationInputContainer::RemoveLayerFromRegions(ui::Layer* layer) {
 void NotificationInputContainer::OnThemeChanged() {
   View::OnThemeChanged();
 
-  const auto* color_provider = GetColorProvider();
   textfield_->SetTextColorId(ui::kColorNotificationInputForeground);
   StyleTextfield();
   if (ink_drop_container_)
     textfield_->SetBackgroundColor(SK_ColorTRANSPARENT);
-  textfield_->set_placeholder_text_color(color_provider->GetColor(
-      ui::kColorNotificationInputPlaceholderForeground));
+  textfield_->SetPlaceholderTextColorId(
+      ui::kColorNotificationInputPlaceholderForeground);
   UpdateButtonImage();
 }
 

@@ -1383,8 +1383,8 @@ void AshNotificationView::OnThemeChanged() {
   // For unittests, `GetColorProvider()` could be nullptr.
   if (inline_reply() && GetColorProvider()) {
     inline_reply()->textfield()->SetTextColorId(cros_tokens::kCrosSysOnSurface);
-    inline_reply()->textfield()->set_placeholder_text_color(
-        GetColorProvider()->GetColor(cros_tokens::kCrosSysOnSurfaceVariant));
+    inline_reply()->textfield()->SetPlaceholderTextColorId(
+        cros_tokens::kCrosSysOnSurfaceVariant);
   }
 
   if (icon_view() &&

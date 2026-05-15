@@ -189,8 +189,7 @@ class LoginPasswordView::LoginTextfield : public views::Textfield {
     views::Textfield::OnThemeChanged();
     SetTextColorId(kColorAshTextColorPrimary);
     SetBackgroundColor(SK_ColorTRANSPARENT);
-    set_placeholder_text_color(
-        GetColorProvider()->GetColor(kColorAshTextColorSecondary));
+    SetPlaceholderTextColorId(kColorAshTextColorSecondary);
   }
 
   // views::Textfield:

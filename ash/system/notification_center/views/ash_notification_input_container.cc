@@ -123,8 +123,7 @@ void AshNotificationInputContainer::OnThemeChanged() {
   textfield()->SetFontList(
       ash::TypographyProvider::Get()->ResolveTypographyToken(
           ash::TypographyToken::kCrosBody2));
-  textfield()->set_placeholder_text_color(
-      GetColorProvider()->GetColor(cros_tokens::kCrosSysOnSurfaceVariant));
+  textfield()->SetPlaceholderTextColorId(cros_tokens::kCrosSysOnSurfaceVariant);
   textfield()->set_placeholder_font_list(
       ash::TypographyProvider::Get()->ResolveTypographyToken(
           ash::TypographyToken::kCrosBody2));

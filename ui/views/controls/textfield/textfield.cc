@@ -5,6 +5,7 @@
 #include "ui/views/controls/textfield/textfield.h"
 
 #include <algorithm>
+#include <optional>
 #include <set>
 #include <string>
 #include <string_view>
@@ -544,6 +545,20 @@ void Textfield::SetPlaceholderText(std::u16string_view text) {
   placeholder_text_ = std::u16string(text);
   GetViewAccessibility().SetPlaceholder(base::UTF16ToUTF8(text));
   OnPropertyChanged(&placeholder_text_, PropertyEffects::kPaint);
+}
+
+SkColor Textfield::GetPlaceholderTextColor() const {
+  if (placeholder_text_color_id_.has_value()) {
+    return GetColorProvider()->GetColor(placeholder_text_color_id_.value());
+  }
+  return GetColorProvider()->GetColor(TypographyProvider::Get().GetColorId(
+      style::CONTEXT_TEXTFIELD_PLACEHOLDER,
+      GetInvalid() ? style::STYLE_INVALID : style::STYLE_PRIMARY));
+}
+
+void Textfield::SetPlaceholderTextColorId(std::optional<ui::ColorId> color_id) {
+  placeholder_text_color_id_ = color_id;
+  OnPropertyChanged(&placeholder_text_color_id_, PropertyEffects::kPaint);
 }
 
 gfx::HorizontalAlignment Textfield::GetHorizontalAlignment() const {
@@ -2951,11 +2966,8 @@ void Textfield::PaintTextAndCursor(gfx::Canvas* canvas) {
 
     canvas->DrawStringRectWithFlags(
         GetPlaceholderText(), placeholder_font_list_.value_or(GetFontList()),
-        placeholder_text_color_.value_or(
-            GetColorProvider()->GetColor(TypographyProvider::Get().GetColorId(
-                style::CONTEXT_TEXTFIELD_PLACEHOLDER,
-                GetInvalid() ? style::STYLE_INVALID : style::STYLE_PRIMARY))),
-        render_text->display_rect(), placeholder_text_draw_flags);
+        GetPlaceholderTextColor(), render_text->display_rect(),
+        placeholder_text_draw_flags);
   }
 
   // If drop cursor is active, draw |render_text| with its text selected.
@@ -3510,6 +3522,9 @@ ADD_READONLY_PROPERTY_METADATA(SkColor,
                                ui::metadata::SkColorConverter)
 ADD_PROPERTY_METADATA(bool, CursorEnabled)
 ADD_PROPERTY_METADATA(std::u16string_view, PlaceholderText)
+ADD_READONLY_PROPERTY_METADATA(SkColor,
+                               PlaceholderTextColor,
+                               ui::metadata::SkColorConverter)
 ADD_PROPERTY_METADATA(bool, Invalid)
 ADD_PROPERTY_METADATA(gfx::HorizontalAlignment, HorizontalAlignment)
 ADD_PROPERTY_METADATA(gfx::Range, SelectedRange)

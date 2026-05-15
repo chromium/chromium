@@ -2681,9 +2681,9 @@ void OmniboxViewViews::UpdatePlaceholderTextColor() {
       controller()->edit_model()->keyword_placeholder().empty() &&
       !ShouldInstallAimPlaceholderText() &&
       !ShouldInstallContextualTasksPlaceholderText();
-  set_placeholder_text_color(GetColorProvider()->GetColor(
-      dse_placeholder_installed ? kColorOmniboxText
-                                : kColorOmniboxForegroundDisabled));
+  SetPlaceholderTextColorId(dse_placeholder_installed
+                                ? kColorOmniboxText
+                                : kColorOmniboxForegroundDisabled);
 }
 
 bool OmniboxViewViews::AreAimHintImpressionLimitsReached() const {

@@ -692,17 +692,15 @@ void SearchBoxView::SetQueryChangedCallback(QueryChangedCallback callback) {
 }
 
 void SearchBoxView::UpdatePlaceholderTextStyle() {
-  SkColor primary_color =
-      GetColorProvider()->GetColor(cros_tokens::kCrosSysOnSurface);
-  SkColor secondary_color =
-      GetColorProvider()->GetColor(cros_tokens::kCrosSysOnSurfaceVariant);
+  ui::ColorId primary_color_id = cros_tokens::kCrosSysOnSurface;
+  ui::ColorId secondary_color_id = cros_tokens::kCrosSysOnSurfaceVariant;
   if (is_app_list_bubble_) {
     // The bubble launcher text is always side-aligned.
     search_box()->set_placeholder_text_draw_flags(
         base::i18n::IsRTL() ? gfx::Canvas::TEXT_ALIGN_RIGHT
                             : gfx::Canvas::TEXT_ALIGN_LEFT);
     // Bubble launcher uses standard text colors (light-on-dark by default).
-    search_box()->set_placeholder_text_color(secondary_color);
+    search_box()->SetPlaceholderTextColorId(secondary_color_id);
     return;
   }
   // Fullscreen launcher centers the text when inactive.
@@ -712,8 +710,8 @@ void SearchBoxView::UpdatePlaceholderTextStyle() {
                                  : gfx::Canvas::TEXT_ALIGN_LEFT)
           : gfx::Canvas::TEXT_ALIGN_CENTER);
   // Fullscreen launcher uses custom colors (dark-on-light by default).
-  search_box()->set_placeholder_text_color(
-      is_search_box_active() ? secondary_color : primary_color);
+  search_box()->SetPlaceholderTextColorId(
+      is_search_box_active() ? secondary_color_id : primary_color_id);
 }
 
 void SearchBoxView::UpdateSearchBoxBorder() {

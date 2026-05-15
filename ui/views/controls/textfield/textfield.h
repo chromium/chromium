@@ -261,9 +261,11 @@ class VIEWS_EXPORT Textfield : public View,
   std::u16string_view GetPlaceholderText() const;
   void SetPlaceholderText(std::u16string_view text);
 
-  void set_placeholder_text_color(SkColor color) {
-    placeholder_text_color_ = color;
+  void SetPlaceholderTextColorId(std::optional<ui::ColorId> color_id);
+  std::optional<ui::ColorId> placeholder_text_color_id() const {
+    return placeholder_text_color_id_;
   }
+  SkColor GetPlaceholderTextColor() const;
 
   void set_placeholder_font_list(const gfx::FontList& font_list) {
     placeholder_font_list_ = font_list;
@@ -807,20 +809,14 @@ class VIEWS_EXPORT Textfield : public View,
   int minimum_width_in_chars_ = -1;
 
   // Colors which override default system colors.
-  // TODO(tluk): These should be updated to be ColorIds instead of SkColors.
   std::optional<ui::ColorId> text_color_id_;
   std::optional<ui::ColorVariant> background_color_;
   std::optional<ui::ColorId> selection_text_color_id_;
   std::optional<ui::ColorId> selection_background_color_id_;
 
-  // Text to display when empty.
+  // Text to display when empty and its color.
   std::u16string placeholder_text_;
-
-  // Placeholder text color.
-  // TODO(newcomer): Use NativeTheme to define different default placeholder
-  // text colors for chrome/CrOS when harmony is enabled by default
-  // (https://crbug.com/803279).
-  std::optional<SkColor> placeholder_text_color_;
+  std::optional<ui::ColorId> placeholder_text_color_id_;
 
   // The draw flags specified for |placeholder_text_|.
   int placeholder_text_draw_flags_;
@@ -1002,6 +998,7 @@ VIEW_BUILDER_PROPERTY(gfx::HorizontalAlignment, HorizontalAlignment)
 VIEW_BUILDER_PROPERTY(bool, Invalid)
 VIEW_BUILDER_PROPERTY(int, MinimumWidthInChars)
 VIEW_BUILDER_PROPERTY(std::u16string, PlaceholderText)
+VIEW_BUILDER_PROPERTY(std::optional<ui::ColorId>, PlaceholderTextColorId)
 VIEW_BUILDER_PROPERTY(bool, ReadOnly)
 VIEW_BUILDER_PROPERTY(gfx::Range, SelectedRange)
 VIEW_BUILDER_PROPERTY(std::optional<ui::ColorId>, SelectionBackgroundColorId)

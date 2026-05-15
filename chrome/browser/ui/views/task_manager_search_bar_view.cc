@@ -151,11 +151,8 @@ gfx::Point TaskManagerSearchBarView::GetClearButtonScreenCenterPointForTesting()
 }
 
 void TaskManagerSearchBarView::UpdateTextfield() {
-  if (const auto* const color_provider = GetColorProvider(); color_provider) {
-    input_->set_placeholder_text_color(
-        color_provider->GetColor(textfield_placeholder_color_id_.value_or(
-            ui::kColorTextfieldForegroundPlaceholder)));
-  }
+  input_->SetPlaceholderTextColorId(textfield_placeholder_color_id_.value_or(
+      ui::kColorTextfieldForegroundPlaceholder));
 }
 
 BEGIN_METADATA(TaskManagerSearchBarView)
