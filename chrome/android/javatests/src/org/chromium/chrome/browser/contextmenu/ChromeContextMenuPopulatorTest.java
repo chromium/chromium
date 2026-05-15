@@ -2486,9 +2486,14 @@ public class ChromeContextMenuPopulatorTest {
                 true);
         checkMenuOptions(expected);
 
+        int[][] expectedThinWebView = {
+            {R.id.contextmenu_save_page, R.id.contextmenu_share_page, R.id.contextmenu_print_page},
+            {R.id.contextmenu_view_page_source},
+        };
+
         initializePopulator(
                 ChromeContextMenuPopulator.ContextMenuMode.THIN_WEB_VIEW, params, true, true, true);
-        checkMenuOptions(expected);
+        checkMenuOptions(expectedThinWebView);
     }
 
     @Test

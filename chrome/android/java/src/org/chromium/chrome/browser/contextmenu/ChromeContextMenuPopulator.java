@@ -789,8 +789,12 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
                     && shouldShowViewPageSourceMenu()) {
                 developerGroup.add(createListItem(Item.VIEW_PAGE_SOURCE));
             }
-            developerGroup.add(createListItem(Item.INSPECT_ELEMENT));
-            groupedItems.add(developerGroup);
+            if (mMode != ContextMenuMode.THIN_WEB_VIEW) {
+                developerGroup.add(createListItem(Item.INSPECT_ELEMENT));
+            }
+            if (!developerGroup.isEmpty()) {
+                groupedItems.add(developerGroup);
+            }
         }
 
         ModelList modelList = mParams.getMenuModelBridge().populateModelList();
