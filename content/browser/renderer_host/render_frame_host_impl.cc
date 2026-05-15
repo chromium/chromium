@@ -2809,6 +2809,7 @@ RenderFrameHostImpl::RenderFrameHostImpl(
 }
 
 RenderFrameHostImpl::~RenderFrameHostImpl() {
+  DismissUnboundedSurfaceIfActive();
   base::trace_event::TraceSessionObserverList::RemoveObserver(this);
   TRACE_EVENT("navigation", "RenderFrameHostImpl::~RenderFrameHostImpl",
               perfetto::TerminatingFlow::FromPointer(this));
@@ -11194,8 +11195,59 @@ void RenderFrameHostImpl::RequestUnboundedSurface(
     mojo::PendingAssociatedRemote<blink::mojom::UnboundedSurfaceClient>
         client) {
   // TODO(crbug.com/508672616) Store and use the mojo endpoints.
-  local_frame_host_receiver_.ReportBadMessage(
-      "RequestUnboundedSurface is not implemented yet.");
+  if (!base::FeatureList::IsEnabled(blink::features::kUnboundedElement)) {
+    local_frame_host_receiver_.ReportBadMessage(
+        "RequestUnboundedSurface should not be called without the "
+        "UnboundedElement feature enabled.");
+    return;
+  }
+  if (!HasTransientUserActivation()) {
+    local_frame_host_receiver_.ReportBadMessage(
+        "RequestUnboundedSurface should not be called without user "
+        "activation.");
+    return;
+  }
+  // Only allow unbounded elements to be used by WebUI and other chrome://
+  // scheme callers.
+  bool is_privileged = GetWebUI() != nullptr ||
+                       GetLastCommittedOrigin().scheme() == kChromeUIScheme;
+  if (!is_privileged) {
+    local_frame_host_receiver_.ReportBadMessage(
+        "RequestUnboundedSurface is only supported from privileged contexts.");
+    return;
+  }
+  RenderFrameHostImpl* outermost = GetOutermostMainFrame();
+  if (!outermost) {
+    return;
+  }
+
+  DismissActiveUnboundedSurface();
+
+  unbounded_surface_client_.Bind(std::move(client));
+  unbounded_surface_client_.set_disconnect_handler(
+      base::BindOnce(&RenderFrameHostImpl::DismissUnboundedSurfaceIfActive,
+                     base::Unretained(this)));
+  outermost->active_unbounded_frame_ = GetWeakPtr();
+}
+
+void RenderFrameHostImpl::DismissActiveUnboundedSurface() {
+  RenderFrameHostImpl* outermost = GetOutermostMainFrame();
+  if (outermost && outermost->active_unbounded_frame_) {
+    DCHECK_EQ(outermost->active_unbounded_frame_->GetOutermostMainFrame(),
+              outermost);
+    outermost->active_unbounded_frame_->DismissUnboundedSurfaceIfActive();
+  }
+}
+
+void RenderFrameHostImpl::DismissUnboundedSurfaceIfActive() {
+  if (unbounded_surface_client_.is_bound()) {
+    unbounded_surface_client_->OnDismissed();
+    unbounded_surface_client_.reset();
+  }
+  RenderFrameHostImpl* outermost = GetOutermostMainFrame();
+  if (outermost && outermost->active_unbounded_frame_.get() == this) {
+    outermost->active_unbounded_frame_.reset();
+  }
 }
 
 void RenderFrameHostImpl::CreateNewPopupWidget(

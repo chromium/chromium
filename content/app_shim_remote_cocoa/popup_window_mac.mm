@@ -7,6 +7,11 @@
 #import "content/app_shim_remote_cocoa/render_widget_host_view_cocoa.h"
 #include "ui/gfx/mac/coordinate_conversion.h"
 
+namespace {
+// Virtual key code for the Escape key on macOS.
+constexpr unsigned short kVK_Escape = 53;
+}  // namespace
+
 @interface RenderWidgetPopupWindow : NSWindow
 @end
 
@@ -61,7 +66,9 @@
                                      if (eventType ==
                                              NSEventTypeLeftMouseDown ||
                                          eventType ==
-                                             NSEventTypeRightMouseDown) {
+                                             NSEventTypeRightMouseDown ||
+                                         (eventType == NSEventTypeKeyDown &&
+                                          event.keyCode == kVK_Escape)) {
                                        [strongSelf close];
                                      }
                                      return event;
