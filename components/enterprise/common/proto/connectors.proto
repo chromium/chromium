@@ -239,6 +239,9 @@ message ContentAnalysisRequest {
   // the initial upload, only for larger files.
   optional bool content_hash_in_final_call = 24;
 
+  // If true, the request originates from mobile browser.
+  optional bool is_mobile = 25;
+
   // Reserved to make sure there is no overlap with DeepScanningClientRequest.
   reserved 3, 4, 6 to 8;
 }
