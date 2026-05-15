@@ -2692,8 +2692,7 @@ void OpenPasswordManagerWidgetPromoInstructions() {
 // Tests that when a new credential is saved or an existing one is updated via
 // the add credential flow, the VC auto scrolls to the newly created or the
 // updated entry.
-// TODO(crbug.com/460743577): Test is flaky.
-- (void)FLAKY_testAutoScroll {
+- (void)testAutoScroll {
   for (int i = 0; i < 20; i++) {
     NSString* username = [NSString stringWithFormat:@"username %d", i];
     NSString* password = [NSString stringWithFormat:@"password %d", i];
@@ -2704,7 +2703,7 @@ void OpenPasswordManagerWidgetPromoInstructions() {
   OpenPasswordManager();
 
   // Press "Add".
-  [[EarlGrey selectElementWithMatcher:AddPasswordButton()]
+  [GetInteractionForListItem(AddPasswordButton(), kGREYDirectionDown)
       performAction:grey_tap()];
 
   NSString* const kAddedDomain = @"zexample.com";
@@ -2731,9 +2730,9 @@ void OpenPasswordManagerWidgetPromoInstructions() {
                     error:&error];
     return error == nil;
   };
-  GREYAssert(
-      base::test::ios::WaitUntilConditionOrTimeout(base::Seconds(2), condition),
-      @"Didn't scroll to the added credential item");
+  GREYAssert(base::test::ios::WaitUntilConditionOrTimeout(
+                 base::test::ios::kWaitForUIElementTimeout, condition),
+             @"Didn't scroll to the added credential item");
 }
 
 // Tests that adding new password credential where the username and website
