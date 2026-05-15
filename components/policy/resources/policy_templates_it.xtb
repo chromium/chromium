@@ -955,6 +955,7 @@ la voce della policy abbia effetto (ossia la policy NON estende le funzionalità
 
 Se la policy non viene configurata, <ph name="PRODUCT_OS_NAME" /> può selezionare gestori predefiniti in base alla logica interna.</translation>
 <translation id="1651810147727432656">Blocca l'autorizzazione per la gestione delle finestre su questi siti</translation>
+<translation id="1652357791185933887">Modalità Isolata disattivata</translation>
 <translation id="1654087023995670109">Applica modalità ospite del browser</translation>
 <translation id="1655229863189977773">Imposta le dimensioni della cache su disco in byte</translation>
 <translation id="1655518801232583832">Attiva la risoluzione DNS di sistema all'esterno del servizio di rete</translation>
@@ -3474,6 +3475,7 @@ Se non viene configurata, verrà utilizzato il nuovo comportamento, esattamente 
 <translation id="3229163415739929305">Se la policy viene impostata su Attivata o se non viene configurata, viene attivato il recupero dei metadati di caricamento delle pagine e dei modelli di machine learning che migliorano l'esperienza di navigazione.
       Se la policy viene impostata su Disattivata, il comportamento di alcune funzionalità potrebbe non essere corretto.</translation>
 <translation id="3231311173895401135">Lascia che sia il browser a decidere in merito al supporto</translation>
+<translation id="3231684792162319504">Non consentire l'attivazione sperimentale di Gemini.</translation>
 <translation id="3231837273069128027">La configurazione della policy consente di impostare disponibilità e comportamento degli aggiornamenti del firmware <ph name="TPM_FIRMWARE_UPDATE_TPM" />.
 
       Specifica le singole impostazioni nelle proprietà JSON:
@@ -4402,6 +4404,15 @@ Tieni presente che questa policy non ha alcun effetto se <ph name="ENTERPRISE_PR
       Ogni voce dell'elenco contiene un dizionario che deve includere l'ID dell'estensione nel campo "extension-id" e il relativo URL di aggiornamento nel campo "update-url".</translation>
 <translation id="3869180930654347954">Disattiva First-Party Sets per tutti gli utenti interessati</translation>
 <translation id="3869566220234507038">Carica sempre il browser <ph name="LACROS_NAME" /> <ph name="LACROS_ROOTFS_NAME" /></translation>
+<translation id="3869959969423392506">La policy consente di stabilire se le app web isolate (IWA) potranno aggiungere Sub Apps per impostazione predefinita.
+
+Se la policy viene impostata su 1, le origini delle IWA possono aggiungere Sub Apps e bypassare i requisiti relativi all'attivazione dall'utente o alla conferma dell'utente.
+
+Se la policy viene impostata su 2, le origini delle IWA non possono aggiungere Sub Apps.
+
+Se la policy viene impostata su 3 o se non viene configurata, le origini delle app web isolate possono aggiungere Sub Apps dopo la conferma dell'utente.
+
+È possibile eseguire l'override di questa policy per origini di app web isolate specifiche utilizzando le policy <ph name="SUB_APPS__WITHOUT_PROMPTS_ALLOWED_FOR_ORIGINS_POLICY_NAME" /> e <ph name="SUB_APPS_WITHOUT_PROMPTS_BLOCKED_FOR_POLICY_NAME" />.</translation>
 <translation id="3870035799352372700">Blocca l'accesso dell'Assistente Google al contesto dello schermo durante le interazioni</translation>
 <translation id="3870059789954671543">Consente di attivare la funzione di accessibilità di evidenziazione dell'elemento attivo tramite tastiera nella schermata di accesso.
 
@@ -4678,6 +4689,7 @@ Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita 
       Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita la pagina https://chromeenterprise.google/policies/url-patterns/. Tieni presente, tuttavia, che il pattern "*", che corrisponde a qualsiasi URL, non è supportato da questa policy.</translation>
 <translation id="4070039109671307724">Varie</translation>
 <translation id="4071922398488395340">Includi i cookie di sessione nella funzionalità SSO mobile</translation>
+<translation id="4072065629757524">Impedisci alle origini delle app web isolate di aggiungere Sub Apps</translation>
 <translation id="4072225853834793549">Disattiva le scorciatoie di accessibilità nella schermata di accesso</translation>
 <translation id="4074922053013383215">Risparmio di memoria moderato.</translation>
 <translation id="4075675819066819571">Posiziona la barra delle app sul lato sinistro dello schermo</translation>
@@ -4751,6 +4763,11 @@ La disponibilità delle estensioni è comunque controllata da altre policy.</tra
 <translation id="4120401094617902941">La velocità di campionamento e raccolta dei contatori del tempo di esecuzione. Il minimo consentito è 1 giorno.
 
 Se la policy non viene impostata, viene applicata la velocità predefinita di 1 giorno.</translation>
+<translation id="4121173511469084157">Per impostazione predefinita, le app web isolate (IWA) possono aggiungere Sub Apps a condizione che l'utente confermi il prompt in modo interattivo.
+
+Questa policy consente di stabilire quali origini delle IWA potranno aggiungere Sub Apps senza che venga richiesto all'utente.
+
+Questa policy esegue l'override del comportamento di <ph name="DEFAULT_SUB_APPS_WITHOUT_PROMPTS_SETTING_POLICY_NAME" /> ed è soggetto all'override da parte di <ph name="SUB_APPS_WITHOUT_PROMPTS_BLOCKED_FOR_ORIGINS_POLICY_NAME" />.</translation>
 <translation id="4121350739760194865">Impedisci la visualizzazione delle promozioni di applicazioni nella pagina Nuova scheda</translation>
 <translation id="4122432898152851612">L'utente non può vedere nessun elemento della UI relativa alla funzionalità di sincronizzazione file di <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="4122473079291425973">La pagina Nuova scheda mostra le schede se sono disponibili contenuti, ma consente all'utente di modificare l'impostazione</translation>
@@ -5199,6 +5216,7 @@ Se la policy viene configurata, gli utenti non possono modificarla in <ph name="
 <translation id="4435032708588431506">Consenti QUIC</translation>
 <translation id="443665821428652897">Cancella i dati del sito alla chiusura del browser (obsoleta)</translation>
 <translation id="4436941175475497595">Disattiva anteprima di stampa</translation>
+<translation id="4436992815485865052">Consenti l'attivazione sperimentale di Gemini.</translation>
 <translation id="4439336120285389675">Consente di specificare un elenco di funzioni ritirate della piattaforma web da riattivare temporaneamente.
 
       Questa norma consente agli amministratori di riattivare funzioni ritirate della piattaforma web per un periodo di tempo limitato. Le funzioni sono identificate da un tag string e le funzioni corrispondenti ai tag inclusi nell'elenco specificato tramite questa norma verranno riattivate.
@@ -5457,6 +5475,7 @@ Per informazioni dettagliate sui pattern URL validi, visita la pagina https://ch
           Questa policy viene applicata per processo del renderer, con il valore più recente dell'impostazione della policy attivo all'inizio di un processo del renderer. È necessario un riavvio completo per garantire che tutte le schede caricate ricevano un'impostazione della policy coerente. I processi possono essere eseguiti in sicurezza con valori diversi di questa policy.
           </translation>
 <translation id="4578265298946081589">Non riavviare all'uscita dell'utente.</translation>
+<translation id="4579171808398039136">Impedisci alle app web isolate di utilizzare l'API Sub Apps Add senza prompt dell'utente</translation>
 <translation id="4581507927311097234">Il periodo di tempo, in millisecondi, senza input dell'utente trascorso il quale lo schermo viene disattivato.</translation>
 <translation id="4582027661281685066">Elenco di pattern URL. Le richieste avviate da siti web pubblicati da origini corrispondenti non sono soggette ai controlli di <ph name="PRIVATE_NETWORK_ACCESS" />.
 
@@ -5939,6 +5958,7 @@ Se la policy non viene configurata, <ph name="DEFAULT_DIRECT_SOCKETS_SETTING_POL
 I pattern URL non devono essere in conflitto con <ph name="DIRECT_SOCKETS_BLOCKED_FOR_URLS_POLICY_NAME" />. Nessuna policy ha la precedenza se un URL presenta corrispondenze con entrambi.
 
 Per informazioni dettagliate sui pattern URL validi, visita la pagina https://chromeenterprise.google/policies/url-patterns. <ph name="WILDCARD_VALUE" /> non è un valore accettato per questa policy.</translation>
+<translation id="4883562563790831457">Sostituisci la modalità Incognito con la modalità Isolata</translation>
 <translation id="4885338965457068455">Contiene un'espressione regolare per determinare gli Account Google idonei per il salvataggio di file PDF su Google Drive dal visualizzatore PDF di <ph name="PRODUCT_NAME" />.
 
       Se un utente tenta di caricare un file PDF su Google Drive utilizzando un account che non corrisponde a questo pattern, viene visualizzato un errore.
@@ -6615,6 +6635,7 @@ Nota: questa funzionalità non è ancora disponibile per tutti gli utenti, quind
 <translation id="5255790642269910630">La configurazione della policy comporta la rotazione di ogni display nell'orientamento specificato a ogni riavvio e la prima volta che viene eseguita la connessione del display dopo la modifica del valore della policy. Gli utenti possono modificare la rotazione del display tramite la pagina delle impostazioni dopo aver eseguito l'accesso, ma la rotazione tornerà allo stato precedente al riavvio successivo. Questa policy si applica ai display primari e secondari.
 
 Se non viene configurata, il valore predefinito è 0 e gli utenti sono liberi di modificarlo. In questo caso, il valore predefinito non viene applicato nuovamente al riavvio.</translation>
+<translation id="5256792633540454282">Controlla l'attivazione sperimentale di Gemini</translation>
 <translation id="5257395339965216304">Dati app ospitate</translation>
 <translation id="5258445772095084618">Consenti agli utenti non affiliati di usare le macchine virtuali necessarie per supportare le app Linux</translation>
 <translation id="5258651513421638932">Consenti la connessione della smart card da parte delle app isolate</translation>
@@ -6676,13 +6697,6 @@ Nota: questa policy non viene applicata agli upgrade a HSTS.</translation>
 <translation id="5303080953475303561">La configurazione della policy consente di stabilire la frequenza della richiesta della password nella schermata di blocco per lo sblocco rapido. Ogni volta che viene visualizzata la schermata di blocco, se l'ultimo inserimento della password si è verificato prima del periodo di tempo specificato dal valore scelto, lo sblocco rapido non sarà disponibile. Se l'utente rimane nella schermata di blocco per un tempo superiore a quello specificato in questa policy, viene richiesta la password la volta successiva che inserisce il codice sbagliato o accede di nuovo alla schermata di blocco, a seconda dell'evento che si verifica per primo.
 
       Se la policy non viene configurata, gli utenti che usano lo sblocco rapido devono inserire la password nella schermata di blocco ogni giorno.</translation>
-<translation id="530488290401810961">Configura il modo in cui <ph name="PRODUCT_NAME" /> scarica il modello di base GenAI e lo utilizza localmente per l'inferenza.
-
-Se la policy viene impostata su Consentito (0) o se non viene configurata, il modello viene scaricato automaticamente e utilizzato per l'inferenza.
-
-Se la policy viene impostata su Disattivato (1), il modello non viene scaricato e il modello esistente (se già scaricato) viene eliminato.
-
-Sulle piattaforme desktop, il download del modello può essere disattivato anche da <ph name="COMPONENT_UPDATES_ENABLED_POLICY_NAME" />.</translation>
 <translation id="5306186200045823863">Considera attendibile l'infrastruttura PKI precedente di Symantec Corporation</translation>
 <translation id="5307432759655324440">Disponibilità della modalità Incognito</translation>
 <translation id="5308551343115571396">Dopo la disattivazione di <ph name="LACROS_NAME" />, tentiamo di conservare il maggior numero possibile di dati utente, rimuovendo tutti i dati del browser.</translation>
@@ -7627,6 +7641,7 @@ Su <ph name="MAC_OS_NAME" />, questa policy è disponibile soltanto per le istan
 
       Questa policy è deprecata. Usa la policy <ph name="PRINTERS_BULK_BLOCKLIST" />.</translation>
 <translation id="591088232153082363">Ricarica adattiva della batteria sulla base dei pattern di utilizzo batteria.</translation>
+<translation id="5911656389795271430">Questa è una policy sperimentale.</translation>
 <translation id="5913506885872855604">Questa può essere utilizzata per trattare determinati intervalli di indirizzi interni come "pubblici" e quindi non soggetti a controlli di <ph name="LOCAL_NETWORK_ACCES" />. Al contrario, può essere utilizzata per trattare determinati intervalli di indirizzi pubblici che potrebbero essere utilizzati internamente come "locali", in modo che siano protetti dai controlli di <ph name="LOCAL_NETWORK_ACCESS" />.
 
 Gli override dello spazio di indirizzi IP hanno due forme:
@@ -10004,6 +10019,7 @@ Se questa policy viene impostata su False, viene attivato il comportamento prece
 <translation id="7372831798009983116">Attiva la funzione di accessibilità di clic automatico</translation>
 <translation id="7373200034079131670">Riavvia all'uscita dell'utente se si avvia Android o una VM.</translation>
 <translation id="7374784840090523241">Imposta come predefinita la creazione di passkey in altri spazi di archiviazione, ad esempio il profilo <ph name="PRODUCT_NAME" />.</translation>
+<translation id="73755679940750599">Consenti alle origini delle app web isolate di aggiungere Sub Apps senza prompt dell'utente</translation>
 <translation id="7375785904116479354">Se la policy viene impostata su Attivata, il motore di ricerca predefinito del precedente browser predefinito verrà importato alla prima esecuzione. Se la policy viene impostata su Disattivata o se non viene configurata, il motore di ricerca predefinito non verrà importato alla prima esecuzione.
 
       Gli utenti possono attivare una finestra di dialogo per l'importazione e la casella di controllo del motore di ricerca predefinito verrà selezionata o deselezionata in modo che corrisponda al valore della policy.</translation>
@@ -10872,6 +10888,7 @@ Disattiva la policy solo se utilizzi una soluzione di sicurezza degli endpoint c
       Se non viene configurata, i siti web possono richiedere l'accesso, ma gli utenti possono modificare l'impostazione.
 
       È possibile eseguire l'override della policy per pattern <ph name="URL_LABEL" /> specifici utilizzando le policy <ph name="WEB_HID_ASK_FOR_URLS_POLICY_NAME" /> e <ph name="WEB_HID_BLOCKED_FOR_URLS_POLICY_NAME" />.</translation>
+<translation id="794786228154185413">Consenti alle app web isolate di utilizzare l'API Sub Apps Add senza prompt dell'utente</translation>
 <translation id="7950451717181391167">La configurazione della policy specifica se gli utenti utilizzano <ph name="CLASS_TOOLS_NAME" /> per inviare/ricevere contenuti, inviare/ricevere didascalie come studenti o insegnanti oppure se gli strumenti di gestione dei corsi sono disattivati per gli utenti.</translation>
 <translation id="7952007677054834789">Consente di configurare le pagine da caricare all'avvio, la pagina iniziale predefinita e la pagina Nuova scheda predefinita in <ph name="PRODUCT_NAME" />; inoltre, impedisce agli utenti di modificare queste impostazioni.
 
@@ -10933,6 +10950,11 @@ Questa policy è stata pensata per essere temporanea e verrà rimossa in futuro.
           Questa policy è stata rimossa in Chrome 110.
                                         </translation>
 <translation id="7976157349247117979">Nome della destinazione di <ph name="PRODUCT_NAME" /></translation>
+<translation id="7981824720804106055">Per impostazione predefinita, le app web isolate (IWA) possono aggiungere Sub Apps a condizione che l'utente confermi il prompt in modo interattivo.
+
+Questa policy consente di stabilire quali origini delle IWA verranno bloccate dall'aggiunta di Sub Apps senza che all'utente venga richiesto di interagire.
+
+Questa policy esegue l'override del comportamento di <ph name="DEFAULT_SUB_APPS_WITHOUT_PROMPTS_SETTING_POLICY_NAME" /> e <ph name="SUB_APPS_WITHOUT_PROMPTS_ALLOWED_FOR_ORIGINS_POLICY_NAME" />.</translation>
 <translation id="7985242821674907985"><ph name="PRODUCT_NAME" /></translation>
 <translation id="7985781946183471651">Glanceables su <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="7986473886676689183">Attiva la creazione di report Android</translation>
@@ -11475,6 +11497,7 @@ Se la policy viene impostata su <ph name="RUNTIME_ENABLED_VALUE_NAME" />, consen
 Se la policy non viene configurata, il comportamento predefinito è <ph name="RUNTIME_ENABLED_VALUE_NAME" />.
 
 Nota: questa policy costituisce una soluzione temporanea per aiutare la transizione dalle API a schermo intero con prefisso -webkit. M131 è l'ultima versione che include questa policy.</translation>
+<translation id="8355021858374793722">Controlla l'utilizzo dell'API Sub Apps Add</translation>
 <translation id="8356953698979920095">Se la policy viene impostata su uno dei valori indicati, per impostazione predefinita il colore di retroilluminazione della tastiera del dispositivo viene applicato durante l'accesso dell'utente.</translation>
 <translation id="8357681633047935212">Limita la durata di una sessione utente</translation>
 <translation id="8357989008292691856">Elenco di utenti autorizzati ad accedere</translation>
@@ -12726,10 +12749,12 @@ L'impostazione predefinita è RollbackDisabled.</translation>
 <translation id="9206364386317031168">Consenti ai siti di effettuare richieste di rete al dispositivo locale.</translation>
 <translation id="9206472508136116830">Non consentire il rilevamento condivisioni NetBIOS</translation>
 <translation id="9207596996305971030">Gli eventi di accesso/uscita non vengono segnalati</translation>
+<translation id="9208328979373108724">Consenti alle origini delle app web isolate di aggiungere Sub Apps, ma richiedi un prompt dell'utente</translation>
 <translation id="9210647066889383361">Consenti agli utenti di accedere al proprio dispositivo con Smart Lock</translation>
 <translation id="9212598607138782107">Provider di identità cloud Okta®</translation>
 <translation id="9213751049772256263">Disattiva tutte le varianti</translation>
 <translation id="9217154963008402249">Frequenza dei pacchetti di rete di monitoraggio</translation>
+<translation id="921762538903956073">Modalità Isolata disponibile</translation>
 <translation id="9220314833408124365">Viene usata una policy relativa al referrer predefinito no-referrer-when-downgrade</translation>
 <translation id="922160134042190462">Non attivare <ph name="DESK_API_NAME" /> per il controllo <ph name="PRODUCT_OS_NAME" /> di terze parti</translation>
 <translation id="9221827710437832530">Consenti l'accesso alla geolocalizzazione nella schermata di accesso.</translation>

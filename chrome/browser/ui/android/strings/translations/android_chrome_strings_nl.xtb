@@ -263,6 +263,7 @@ Alleen iemand met je wachtwoordzin kan je versleutelde gegevens lezen. De wachtw
 <translation id="2184272387334793084">Log in om onder andere je wachtwoorden op al je apparaten te gebruiken</translation>
 <translation id="218608176142494674">Delen</translation>
 <translation id="2186779861549045980">Je kunt kiezen welke gegevens je wilt opslaan in je Google-account.\nJe kunt deze items ook bekijken en beheren in je bookmarks, Leeslijst of Wachtwoordmanager.</translation>
+<translation id="2190355936436201913">(leeg)</translation>
 <translation id="219283042927675668">Tabbladen in groep</translation>
 <translation id="2194856509914051091">Overwegingen</translation>
 <translation id="2205701497928406883"><ph name="TAB_TITLE" />, vastgezet tabblad voor content delen</translation>
@@ -300,6 +301,7 @@ Alleen iemand met je wachtwoordzin kan je versleutelde gegevens lezen. De wachtw
 <translation id="233375395665273385">Verwijderen en uitloggen</translation>
 <translation id="2341410551640223969">Kan <ph name="WEBAPK_NAME" /> niet installeren.</translation>
 <translation id="2349710944427398404">Totale gegevens gebruikt door Chrome, inclusief accounts, bookmarks en opgeslagen instellingen</translation>
+<translation id="2354001756790975382">Andere bookmarks</translation>
 <translation id="235789365079050412">Privacybeleid van Google</translation>
 <translation id="2359808026110333948">Doorgaan</translation>
 <translation id="2362083820973145409">Ingelogd als <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Hiermee worden de instellingen geopend.</translation>
@@ -1269,6 +1271,7 @@ Zo kunnen sommige websites op dit verzoek reageren door advertenties te bekijken
 <translation id="6437162790453527153">Log in om onder andere je bookmarks op al je apparaten te gebruiken</translation>
 <translation id="6437478888915024427">Pagina-informatie</translation>
 <translation id="6440291723980579689">Pagina's worden pas geladen nadat je ze opent</translation>
+<translation id="6441377161852435370">Tabblad toevoegen aan leeslijst</translation>
 <translation id="6441734959916820584">Naam is te lang</translation>
 <translation id="6444291413624515012">Tabbladgroep <ph name="TAB_GROUP_TITLE" /> gesloten</translation>
 <translation id="6452534462676960500">Nieuwe activiteit</translation>
@@ -1358,6 +1361,7 @@ Zo kunnen sommige websites op dit verzoek reageren door advertenties te bekijken
 <translation id="6787600234697426339">Limiet van <ph name="MAX_INSTANCE_COUNT" /> vensters bereikt</translation>
 <translation id="6795633245022906657">Open snel een nieuw tabblad. Je kunt deze snelkoppeling bewerken via Instellingen.</translation>
 <translation id="679588508577699489">Chrome instellen als je standaardbrowser</translation>
+<translation id="679845623837196966">Leeslijst tonen</translation>
 <translation id="679956319013005046">Als je je voorkeursservice voor automatisch invullen wilt instellen, voeg je de service eerst toe in de <ph name="BEGIN_LINK" />Android-instellingen<ph name="END_LINK" />.</translation>
 <translation id="6802555630140434547">Het venster wordt gesloten</translation>
 <translation id="6803791793483522764">Meldingen checken</translation>
@@ -1658,6 +1662,7 @@ Als je deze instelling wilt wijzigen, <ph name="BEGIN_LINK" />verwijder je de Ch
 <translation id="7934668619883965330">Kan bestand niet downloaden. Bestandsindeling wordt niet ondersteund.</translation>
 <translation id="7951102827450076904">Gedownloade pdf's altijd openen</translation>
 <translation id="7952479614398473176">Als je een nieuw venster wilt openen, verlaag je het totale aantal actieve vensters tot <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> of minder.</translation>
+<translation id="7956713633345437162">Mobiele bookmarks</translation>
 <translation id="7957413488482743710">Een virtuele kaart verbergt je werkelijke kaart om je te beschermen tegen potentiële fraude. <ph name="BEGIN_LINK1" />Meer informatie over virtuele kaarten<ph name="END_LINK1" /></translation>
 <translation id="7959485987650214982">Tabbladen op dit apparaat</translation>
 <translation id="7961926449547174351">Je hebt Opslagtoegang uitgezet. Ga naar Instellingen om deze aan te zetten.</translation>
@@ -1846,6 +1851,7 @@ Als je deze instelling wilt wijzigen, <ph name="BEGIN_LINK" />verwijder je de Ch
 <translation id="867914734596684889">Bookmarkbalk tonen of verbergen</translation>
 <translation id="8683039184091909753">afbeelding</translation>
 <translation id="8688183792442786085"><ph name="TAB_TITLE" />, geselecteerd tabblad</translation>
+<translation id="8696297579102085705">Naar je apparaat sturen</translation>
 <translation id="8697753151306746444">In plaats daarvan venster of scherm delen</translation>
 <translation id="8699120352855309748">Niet aanbieden om deze talen te vertalen</translation>
 <translation id="8712637175834984815">Begrepen</translation>

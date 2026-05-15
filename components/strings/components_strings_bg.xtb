@@ -316,7 +316,6 @@
 <translation id="1463793142714244641">Таймшеър и ваканционни имоти</translation>
 <translation id="1465457928007067810">IBAN номерът е запазен в профила ви в Google</translation>
 <translation id="1467432559032391204">Наляво</translation>
-<translation id="1468653229182955856"><ph name="ONE_TIME_CODE" /> е кодът ви за <ph name="EMBEDDED_ORIGIN" />, за да продължите към <ph name="TOP_ORIGIN" /></translation>
 <translation id="1472675084647422956">Показване на още</translation>
 <translation id="1473183651233018052">JIS B10</translation>
 <translation id="1473495410389165587">Въведете 3 или повече думи, за да получите помощ с писането</translation>
@@ -549,6 +548,7 @@
 <translation id="1832474362231610822">Снимката е запазена в OneDrive</translation>
 <translation id="1832730227369924598">Синхронизиране на работния плот</translation>
 <translation id="1834452765064623979">Строителство и поддръжка</translation>
+<translation id="1837606605602726453">Оценката на риска и категориите се пренебрегват, защото разширението е изрично разрешено или блокирано от администратора.</translation>
 <translation id="1838374766361614909">Изчистване на търсенето</translation>
 <translation id="1839331950812095887">няколко думи, които обобщават мислите ви</translation>
 <translation id="1839551713262164453">Проверката на стойностите на правилата не бе успешна – възникнаха грешки</translation>
@@ -1821,6 +1821,7 @@
 <translation id="380865868633614173">Информацията за картата се запазва</translation>
 <translation id="3810770279996899697">Мениджър на пароли се нуждае от достъп до Keychain на macOS</translation>
 <translation id="3810973564298564668">Управление</translation>
+<translation id="3811328723651698330"><ph name="STRING_1" />, <ph name="STRING_2" /></translation>
 <translation id="3812398568375898177">Това е критична актуализация, която подобрява ефективността на приложенията за Android под ChromeOS.</translation>
 <translation id="3814865536373139791">Рационализирайте начина, по който организацията ви управлява правилата</translation>
 <translation id="3815434930383843058">8 x 12 инча</translation>
@@ -1860,6 +1861,7 @@
 <translation id="3875783148670536197">Покажете ми как</translation>
 <translation id="3877603629930976930">Без споделяне</translation>
 <translation id="3878445208930547646">Копирането от този сайт е забранено</translation>
+<translation id="3879674895057686427">Избиране на целеви език</translation>
 <translation id="3879748587602334249">Мениджър на изтеглянията</translation>
 <translation id="3880456882942693779">Изкуство и развлечения</translation>
 <translation id="3880589673277376494">Интернет и телекомуникации</translation>
@@ -2399,6 +2401,7 @@
 <translation id="4736934858538408121">Виртуална карта</translation>
 <translation id="473775607612524610">Актуализиране</translation>
 <translation id="4738601419177586157">Предложение за търсене на „<ph name="TEXT" />“</translation>
+<translation id="473866660302034629"><ph name="TAB_TITLE" />, избран раздел, <ph name="INDEX" /> от <ph name="TOTAL" />. Използвайте стрелката за наляво или надясно, за да превключвате между разделите</translation>
 <translation id="4742407542027196863">Управление на паролите…</translation>
 <translation id="474270528725216349">От поне 1 сайт на синхронизираните устройства</translation>
 <translation id="4743275772928623722">Системата бе актуализирана, но някои от приложенията и файловете ви не бяха възстановени. Приложенията ви автоматично ще бъдат изтеглени отново.</translation>
@@ -2466,6 +2469,7 @@
 <translation id="4832961164064927107">Готвене на барбекю и грил</translation>
 <translation id="4835568975547260025">Chrome ще споделя по подразбиране подходящите отворени раздели, за да ви помага да получавате по-персонализирани отговори на въпросите си.</translation>
 <translation id="4840250757394056958">Преглед на историята ви в Chrome</translation>
+<translation id="4842365697443353018">Изчистете формуляра, за да използвате опцията за плащане по-късно</translation>
 <translation id="484462545196658690">Автоматично</translation>
 <translation id="4844937814014739139">Превъртане и промяна на мащаба на споделените раздели</translation>
 <translation id="484671803914931257">Получаване на отстъпки за <ph name="MERCHANT_NAME" /> и др.</translation>
@@ -3446,6 +3450,7 @@
 <translation id="634500758737709758">Упътвания</translation>
 <translation id="6348220984832452017">Активни варианти</translation>
 <translation id="6349101878882523185">Инсталиране на <ph name="APP_NAME" /></translation>
+<translation id="6350739641326887427">Плащайте без копиране и поставяне на кода за Pix. <ph name="BEGIN_LINK1" />Вижте как<ph name="END_LINK1" /></translation>
 <translation id="6351658970066645919">Данни за сърф.: Изтр.</translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{Няма}=1{1 парола (за <ph name="DOMAIN_LIST" />, синхронизирана)}=2{2 пароли (за <ph name="DOMAIN_LIST" />, синхронизирани)}other{# пароли (за <ph name="DOMAIN_LIST" />, синхронизирани)}}</translation>
 <translation id="6354918092619878358">Елиптична крива secp256r1 по SECG (позната и като ANSI X9.62 prime256v1, NIST P-256)</translation>
@@ -3504,7 +3509,6 @@
 <translation id="6424600253695044005">Хранилище в облака</translation>
 <translation id="6425092077175753609">Material</translation>
 <translation id="6427730057873428458">Сгъване на двата края навътре</translation>
-<translation id="6428450836711225518">Потвърдете телефонния си номер</translation>
 <translation id="6429267199680088961">A4 Tab</translation>
 <translation id="643051589346665201">Промяна на паролата за Google</translation>
 <translation id="6431556523611594411">Споделяне на отворените раздели</translation>
@@ -3661,6 +3665,7 @@
 <translation id="668132230070712111">Видеоклипът е запазен в Google Диск</translation>
 <translation id="6681790815630918386">Кодът за проверка е запазен</translation>
 <translation id="6683022854667115063">Слушалки</translation>
+<translation id="6686570026048064255">За да изключите разпознаването на кода за Pix, отворете <ph name="BEGIN_LINK1" />настройките на Chrome<ph name="END_LINK1" /></translation>
 <translation id="6687230248707087982">Плик (обикновен)</translation>
 <translation id="6687335167692595844">Размерът на шрифта е заявен</translation>
 <translation id="6688743156324860098">Актуализира се…</translation>
@@ -4452,7 +4457,6 @@
 <translation id="7874796722855317864"><ph name="PROXY_UNKNOWN_CONDITION" /> не е известен тип състояние.</translation>
 <translation id="7877007680666472091">идентификатори на защитено съдържание</translation>
 <translation id="7878562273885520351">Възможно е паролата ви да е компрометирана</translation>
-<translation id="7881044256965445977">Търсене и свързване с устройства в локалната ви мрежа</translation>
 <translation id="7885670691503039914">Ще получавате сигнали по имейл, когато има понижение на цената в който и да е сайт. Тази страница ще бъде запазена в папката за отметки „<ph name="LAST_BOOKMARKS_FOLDER" />“.</translation>
 <translation id="7886897188117641322">Изберете кои широки категории теми могат да се използват за персонализиране на рекламите</translation>
 <translation id="7887683347370398519">Прегледайте кода за проверка и опитайте отново</translation>
@@ -4978,7 +4982,6 @@
 <translation id="8737685506611670901">Да отваря връзки от типа „<ph name="PROTOCOL" />“ вместо <ph name="REPLACED_HANDLER_TITLE" /></translation>
 <translation id="8738058698779197622">За установяване на сигурна връзка е необходимо часовникът ви да е верен. Това е така, защото сертификатите, с които уебсайтовете се идентифицират, са валидни само за конкретни периоди от време. Тъй като часовникът на устройството ви не е верен, Chromium не може да потвърди тези сертификати.</translation>
 <translation id="8740359287975076522">&lt;abbr id="dnsDefinition"&gt;DNS адресът&lt;/abbr&gt; на <ph name="HOST_NAME" /> не можа да бъде намерен. Проблемът се диагностицира.</translation>
-<translation id="8742371904523228557"><ph name="ONE_TIME_CODE" /> е кодът ви за <ph name="ORIGIN" /></translation>
 <translation id="874918643257405732">Запазване на отметка към този раздел</translation>
 <translation id="8751426954251315517">Моля, опитайте отново следващия път</translation>
 <translation id="8753913772043329557">Регистрационни файлове за правилата</translation>
@@ -5156,7 +5159,6 @@
 <translation id="9042827002460091668">Проверете връзката си с интернет и опитайте отново</translation>
 <translation id="9043161870923715789">Режим с AI</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> – <ph name="RESULT_PRODUCT_SOURCE" /></translation>
-<translation id="9046578823518542618"><ph name="URL" /> иска да търси и да се свързва с устройства в локалната ви мрежа</translation>
 <translation id="9046864189129893978">Микрофони (<ph name="MICS_COUNT" />)</translation>
 <translation id="9046865906192819796">Екранът с Общите условия на „Купете сега, платете по-късно“ е отворен на половината височина.</translation>
 <translation id="9047528041803621289">Основната ви търсеща машина ви дава възможност да търсите в мрежата. Можете да я промените от настройките.</translation>

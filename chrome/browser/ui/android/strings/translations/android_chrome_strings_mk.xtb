@@ -263,6 +263,7 @@
 <translation id="2184272387334793084">Најавете се за да ги добиете лозинките и друго на сите ваши уреди</translation>
 <translation id="218608176142494674">Се споделува</translation>
 <translation id="2186779861549045980">Може да изберете кои податоци да се зачувуваат во вашата сметка на Google.\nМоже и да ги прегледувате и да управувате со овие ставки во вашите обележувачи, список за читање или управувач со лозинки.</translation>
+<translation id="2190355936436201913">(празно)</translation>
 <translation id="219283042927675668">Картички во група</translation>
 <translation id="2194856509914051091">Нешта што треба да се земат предвид</translation>
 <translation id="2205701497928406883"><ph name="TAB_TITLE" />, прикачена картичка за споделување</translation>
@@ -300,6 +301,7 @@
 <translation id="233375395665273385">Избриши и одјави се</translation>
 <translation id="2341410551640223969">Не можеше да се инсталира <ph name="WEBAPK_NAME" />.</translation>
 <translation id="2349710944427398404">Вкупен сообраќај искористен од Chrome, вклучувајќи сметки, обележувачи и зачувани поставки</translation>
+<translation id="2354001756790975382">Други обележувачи</translation>
 <translation id="235789365079050412">„Политика за приватност“ на Google</translation>
 <translation id="2359808026110333948">Продолжи</translation>
 <translation id="2362083820973145409">Најавени сте како: <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Ги отвора поставките.</translation>
@@ -896,6 +898,7 @@
 <translation id="4864369630010738180">Се најавува…</translation>
 <translation id="4866368707455379617">Не може да се инсталира <ph name="MODULE" /> за Chrome</translation>
 <translation id="4875775213178255010">Предлози за содржина</translation>
+<translation id="4876880121961092787">Скриј ја лентата со обележувачи</translation>
 <translation id="4877678010818027629">Влезете во режим „Инкогнито“</translation>
 <translation id="4878404682131129617">Воспоставувањето тунел преку прокси-сервер не успеа</translation>
 <translation id="4880127995492972015">Преведи…</translation>
@@ -1268,6 +1271,7 @@
 <translation id="6437162790453527153">Најавете се за да ги добиете обележувачите и друго на сите ваши уреди</translation>
 <translation id="6437478888915024427">Информации за страницата</translation>
 <translation id="6440291723980579689">Страниците се вчитуваат само откако ќе ги отворите</translation>
+<translation id="6441377161852435370">Додај ја картичката во списокот за читање</translation>
 <translation id="6441734959916820584">Името е предолго</translation>
 <translation id="6444291413624515012">Групата картички <ph name="TAB_GROUP_TITLE" /> е затворена</translation>
 <translation id="6452534462676960500">Нова активност</translation>
@@ -1357,6 +1361,7 @@
 <translation id="6787600234697426339">Ограничувањето од <ph name="MAX_INSTANCE_COUNT" /> прозорци е достигнато</translation>
 <translation id="6795633245022906657">Брзо отворете нова картичка. За да ја измените кратенкава, одете во „Поставки“.</translation>
 <translation id="679588508577699489">Поставете го Chrome како стандарден прелистувач</translation>
+<translation id="679845623837196966">Прикажи го списокот за читање</translation>
 <translation id="679956319013005046">За да ја поставите претпочитаната услуга за автоматско пополнување, прво додајте ја услугата во <ph name="BEGIN_LINK" />Поставките за Android<ph name="END_LINK" />.</translation>
 <translation id="6802555630140434547">Прозорецот ќе се затвори</translation>
 <translation id="6803791793483522764">Прегледајте ги известувањата</translation>
@@ -1657,6 +1662,7 @@
 <translation id="7934668619883965330">Датотеката не може да се преземе. Форматот на датотеката не е поддржан.</translation>
 <translation id="7951102827450076904">Секогаш отворај ги преземените PDF-датотеки</translation>
 <translation id="7952479614398473176">За да отворите нов прозорец, намалете го вкупниот број активни прозорци на <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> или помалку.</translation>
+<translation id="7956713633345437162">Мобилни обележувачи</translation>
 <translation id="7957413488482743710">Виртуелната картичка ја сокрива вашата актуелна картичка за да ја заштити од потенцијална измама. <ph name="BEGIN_LINK1" />Дознајте повеќе за виртуелните картички<ph name="END_LINK1" /></translation>
 <translation id="7959485987650214982">Картички на уредов</translation>
 <translation id="7961926449547174351">Сте го оневозможиле пристапот до „Капацитет“, одете во „Поставки“ за да го овозможите.</translation>
@@ -1845,6 +1851,7 @@
 <translation id="867914734596684889">Прикажи ја или скриј ја лентата со обележувачи</translation>
 <translation id="8683039184091909753">слика</translation>
 <translation id="8688183792442786085"><ph name="TAB_TITLE" />, избрана картичка</translation>
+<translation id="8696297579102085705">Испратете до вашиот уред</translation>
 <translation id="8697753151306746444">Наместо тоа, споделете прозорец или екран</translation>
 <translation id="8699120352855309748">Не нуди превод за овие јазици</translation>
 <translation id="8712637175834984815">Сфатив</translation>

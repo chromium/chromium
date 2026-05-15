@@ -69,6 +69,7 @@
 <translation id="1253032109800629289">Ocultar "Recibir notificaciones de seguimiento de precios"</translation>
 <translation id="1254424942107648268">Buscar anterior</translation>
 <translation id="1258491128795710625">Novedades</translation>
+<translation id="126093867734601535">Reajusta la altura de la hoja.</translation>
 <translation id="1262724000444746916">Ocultar la opción Agregar a Favoritos</translation>
 <translation id="1263231323834454256">Lista de lectura</translation>
 <translation id="1263433075299269530">La última pestaña que abriste</translation>
@@ -201,6 +202,7 @@
 <translation id="1657011748321897393">Error al compartir por falta de conexión a la red</translation>
 <translation id="1668001730617725852">Abrir en un nuevo grupo de pestañas</translation>
 <translation id="1670861525135254448">Guardar el vehículo</translation>
+<translation id="1671568970992212376">Guarda fotos en Google Fotos y accede a ellas en cualquier momento.</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> a <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1678855624321223424">Según las políticas de tu organización, es posible que este archivo contenga información sensible</translation>
 <translation id="168389590065701766">Ahora puedes abrir Google Lens desde la barra de direcciones y buscar lo que ves</translation>
@@ -335,7 +337,6 @@
 <translation id="2119962645034852864">Algunos servicios no están disponibles para tu cuenta</translation>
 <translation id="2120553909046681540">Tu organización desactivó la navegación privada.</translation>
 <translation id="2122754583996902531">Tu navegador está administrado. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
-<translation id="21243612977487926">Los chats de tu organización no se usan para mejorar nuestros modelos. Es posible que Gemini muestre información imprecisa, incluidos datos sobre personas, así que verifica las respuestas. <ph name="YOUR_PRIVACY_GEMINI" /></translation>
 <translation id="2139867232736819575">Buscar el texto copiado</translation>
 <translation id="2147127444698817042">Solo disponible en iPhone</translation>
 <translation id="2148799636999124959">Accede rápidamente a sitios y apps con tus contraseñas guardadas.</translation>
@@ -677,6 +678,7 @@
 <translation id="340669334496430859">Última modificación</translation>
 <translation id="3409785640040772790">Maps</translation>
 <translation id="3416023309465857378">25 de octubre de 2023</translation>
+<translation id="3426715535827854458">Ocultar la barra de herramientas</translation>
 <translation id="3435738964857648380">Seguridad</translation>
 <translation id="3441673211568148613">Mantén tu navegación en privado</translation>
 <translation id="3443810440409579745">Se recibió una pestaña.</translation>
@@ -721,7 +723,6 @@
 <translation id="3565012355885596568">No se pudieron cargar las imágenes</translation>
 <translation id="3565930036634619844">Pestaña. <ph name="TAB_INDEX" /> de <ph name="NUMBER_OF_TABS" />.</translation>
 <translation id="3567168891086460374">Guardar de otra forma</translation>
-<translation id="3571703298474554279">Una forma más rápida de usar la app</translation>
 <translation id="3572503683475187385">La pestaña actual se comparte con Gemini cuando inicias un chat nuevo. Cuando compartes una pestaña con Gemini, se envían a Google las URLs y el contenido de la página. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="3572607909481582402">En tu Cuenta de Google</translation>
 <translation id="3575234738189584619">Buscar con Lens</translation>
@@ -979,6 +980,7 @@
 <translation id="4489536976005181779">{count,plural, =1{Se agregó la página a la lista de lectura de tu cuenta ({email})}other{Se agregaron las páginas a la lista de lectura de tu cuenta ({email})}}</translation>
 <translation id="4493604894403585654">Accediste como <ph name="USER_EMAIL" />. Puedes detener la sincronización en cualquier momento desde la configuración. Es posible que Google personalice la Búsqueda y otros servicios en función de tu historial.</translation>
 <translation id="4502423230170890588">Quitar de este dispositivo</translation>
+<translation id="4508486880075514067">Expandir a pantalla completa</translation>
 <translation id="4508750114462689118">Cerrar promoción de acceso</translation>
 <translation id="4509345063551561634">Ubicación:</translation>
 <translation id="4517684186578051919">Información del dispositivo</translation>
@@ -1211,6 +1213,7 @@
 <translation id="5242899254250321823">Cambiar la contraseña en el sitio web</translation>
 <translation id="5248640482715684545">Este sitio está intentando abrir otra aplicación.</translation>
 <translation id="5250371859659394278">De una fuente desconocida</translation>
+<translation id="525510229763628836">Minimizada</translation>
 <translation id="5269913829202614649">Personaliza la página principal</translation>
 <translation id="5271265092610673171">{count,plural, =1{Un campo obligatorio está vacío. Llénalo antes de guardar.}other{Algunos campos obligatorios están vacíos. Llénalos antes de guardar.}}</translation>
 <translation id="5271549068863921519">Guardar contraseña</translation>
@@ -1322,7 +1325,6 @@ Handoff también debe estar habilitado en la sección General de la configuraci�
 <translation id="5652623411397330904">Aquí se muestran los productos que sigues.</translation>
 <translation id="5656431592348714536">Calendario mejorado</translation>
 <translation id="5659593005791499971">Correo</translation>
-<translation id="5665739277590037307">Se aplican las <ph name="GOOGLE_TERMS" /> y el <ph name="GEMINI_APPS_PRIVACY" />. Gemini puede cometer errores, así que verifica las respuestas.</translation>
 <translation id="5666313630530585305">Accede a un sitio web.</translation>
 <translation id="5669335982068190158">Saliste de tu cuenta como parte del restablecimiento de tu iPhone. Presiona Continuar para acceder.</translation>
 <translation id="5669528293118408608">www</translation>
@@ -1665,6 +1667,7 @@ Handoff también debe estar habilitado en la sección General de la configuraci�
 <translation id="6746338529702829275">Revisa los datos de tu cuenta</translation>
 <translation id="6750456911389438250">{count,plural, =1{Se importó {count} elemento del historial}other{Se importaron {count} elementos del historial}}</translation>
 <translation id="6755200887046212842">Administrar cuentas</translation>
+<translation id="6757899787818440812">Altura media</translation>
 <translation id="6759709389246683070">Puedes mantener presionada esta pestaña para establecer un recordatorio para volver a verla más tarde</translation>
 <translation id="6761393919622941301">Audio</translation>
 <translation id="6770452996697898492">[PROGRAMADO]</translation>
@@ -1741,6 +1744,7 @@ Handoff también debe estar habilitado en la sección General de la configuraci�
 <translation id="7015418667643980944">Vista dividida</translation>
 <translation id="7016070607649558507">Tienes 1 contraseña poco segura. Cámbiala ahora para mantener tu cuenta segura.</translation>
 <translation id="7016958933495968912">Opciones para Descubre</translation>
+<translation id="7019477124580742994">Búsqueda de <ph name="SEARCH_PROVIDER" /></translation>
 <translation id="7029809446516969842">Contraseñas</translation>
 <translation id="7035825883570480307">¿Quieres activar las notificaciones?</translation>
 <translation id="7039345315346323556">Recientes</translation>
@@ -1750,7 +1754,6 @@ Handoff también debe estar habilitado en la sección General de la configuraci�
 <translation id="7063811929043357292">Tu madre o padre administra tu cuenta.
 <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="7067780033517902110">Todos los archivos</translation>
-<translation id="707086654079606593">Administrar direcciones…</translation>
 <translation id="7080806333218412752">Envía las URL a la Navegación segura para revisarlas. También envía una pequeña muestra de páginas, descargas, información del sistema y actividad de extensiones para ayudar a descubrir nuevas amenazas. Vincula estos datos de manera temporal con tu Cuenta de Google cuando accedes a ella para protegerte en todas las apps de Google.</translation>
 <translation id="7082853213442715471">Cuando lo actives, se bloquearán ciertas tecnologías web, lo que puede provocar que algunos sitios web se carguen más lento o no funcionen correctamente.</translation>
 <translation id="7091023926159231962">{count,plural, =1{No se pudo importar {count} contraseña}other{No se pudieron importar {count} contraseñas}}</translation>
@@ -1800,7 +1803,6 @@ Handoff también debe estar habilitado en la sección General de la configuraci�
 <translation id="7275307913765547631">Condiciones del Servicio de Ubicación de Corea</translation>
 <translation id="728025568708172005">Mostrar el lugar</translation>
 <translation id="7280980607183752256">No se puede importar este archivo</translation>
-<translation id="7281202269687163394">Tu privacidad y Gemini.</translation>
 <translation id="7282197670900591579">Tema mostaza</translation>
 <translation id="7293429513719260019">Seleccionar idioma</translation>
 <translation id="7300448350764260141">Agrega una capa adicional de protección contra las amenazas en línea.</translation>
@@ -1812,7 +1814,6 @@ Handoff también debe estar habilitado en la sección General de la configuraci�
 <translation id="7345061034321640811">No se permite la importación</translation>
 <translation id="7347998088283246662">Importa contraseñas, historial, favoritos y mucho más</translation>
 <translation id="7352651011704765696">Se produjo un error</translation>
-<translation id="7363497636543208734">Ahora es más fácil navegar en la app.</translation>
 <translation id="7364796246159120393">Seleccionar archivo</translation>
 <translation id="736564850024123010">Cambia la posición de la barra de direcciones para obtener una experiencia personalizada.</translation>
 <translation id="7366909168761621528">Datos de navegación</translation>
@@ -2124,6 +2125,7 @@ Handoff también debe estar habilitado en la sección General de la configuraci�
 <translation id="8368001212524806591">Seguir precio</translation>
 <translation id="8368198938968349418">Activar Autocompletar…</translation>
 <translation id="8370406443343902172">Ir a Configuración…</translation>
+<translation id="8370929854657845191">Expandir a la altura media</translation>
 <translation id="8372471489238799313">{count,plural, =1{Borrar dirección}other{Borrar direcciones}}</translation>
 <translation id="8378714024927312812">Administrado por tu organización</translation>
 <translation id="8385363453480067273">Busca lo que ves con Google Lens</translation>

@@ -5,7 +5,6 @@
 <translation id="1036348656032585052">خاموش کردن</translation>
 <translation id="1046742265332833834">زمینه آبی</translation>
 <translation id="1070329623210597193">فایل‌هایی که این سایت می‌تواند مشاهده یا ویرایش کند</translation>
-<translation id="1073417869336441572">‏با گفتن دلیل مجاز کردن کوکی‌های طرف سوم، به ما در بهبود Chrome کمک کنید. <ph name="BEGIN_LINK" />ارسال بازخورد<ph name="END_LINK" /></translation>
 <translation id="1074758928858737435">می‌توانید درخواست کنید نسخه رایانه سایت‌ها را ببینید</translation>
 <translation id="1109482864356262001">ویژگی‌هایی که به حسگرهای حرکتی یا نوری نیاز دارند کار نخواهند کرد</translation>
 <translation id="1126523729897810826">‏کنش‌های پیشنهادی زیر را تکمیل کنید تا بیشترین بهره را از Chrome ببرید</translation>
@@ -328,6 +327,7 @@
 <translation id="4290791284969893584">پس‌از بستن صفحه، ممکن است کارهایی که شروع کرده‌اید تمام نشوند</translation>
 <translation id="429312253194641664">سایتی درحال پخش رسانه است</translation>
 <translation id="42981349822642051">بزرگ کردن</translation>
+<translation id="4310738531374808763">سفارشی کردن صفحه اصلی شما.</translation>
 <translation id="4336219115486912529">{COUNT,plural, =1{فردا منقضی می‌شود}one{‫# روز دیگر منقضی می‌شود}other{‫# روز دیگر منقضی می‌شود}}</translation>
 <translation id="4338831206024587507">همه سایت‌های تحت <ph name="DOMAIN" /></translation>
 <translation id="4340799661701629185">به سایت‌ها اجازه داده نشود اعلان ارسال کنند</translation>
@@ -440,7 +440,6 @@
 <translation id="5555115555607204100">‏سرعت سایت‌ها بااستفاده از موتور V8‏ Chrome افزایش پیدا نکند اما Chrome در برابر حملات کمی مقاوم‌تر شود</translation>
 <translation id="5556459405103347317">مجدد بار کردن</translation>
 <translation id="5591840828808741583">‫<ph name="SITE_NAME" /> مسدود شده است</translation>
-<translation id="560980142378233747">این یعنی ویژگی‌های سایت باید طبق انتظار کار کند اما ممکن است محافظت کمتری در مرورگر داشته باشید. <ph name="BEGIN_LINK" />ارسال بازخورد<ph name="END_LINK" /></translation>
 <translation id="5617702678271228680">برگ زیرین کارت‌های صفحه زبانه جدید</translation>
 <translation id="5621413808884657932">وقتی‌که روشن باشد، سایت‌ها می‌توانند برای دسترسی به برنامه‌ها و سرویس‌های دیگر در این دستگاه درخواست دهند. وقتی‌که خاموش باشد، سایت‌ها نمی‌توانند به برنامه‌ها و سرویس‌های دیگر در این دستگاه دسترسی داشته باشند.</translation>
 <translation id="5632485077360054581">نشان دادن روش کار</translation>
@@ -519,6 +518,7 @@
 <translation id="6262279340360821358"><ph name="PERMISSION_1" /> و <ph name="PERMISSION_2" /> مسدود هستند</translation>
 <translation id="6270391203985052864">سایت‌ها می‌توانند برای ارسال اعلان درخواست دهند</translation>
 <translation id="6295158916970320988">همه سایت‌ها</translation>
+<translation id="6305257382500066042">اکنون امتحان کنید</translation>
 <translation id="6320088164292336938">لرزش</translation>
 <translation id="6367753977865761591">ورود به سیستم طرف سوم برای سایت خاصی مسدود می‌شود.</translation>
 <translation id="6398765197997659313">خروج از حالت تمام صفحه</translation>
@@ -529,7 +529,6 @@
 <translation id="6447842834002726250">کوکی‌ها</translation>
 <translation id="6452138246455930388">کاهش قیمت در زبانه باز، از <ph name="OLD_PRICE" /> به <ph name="NEW_PRICE" />، <ph name="PRODUCT_NAME" />، <ph name="DOMAIN_NAME" /></translation>
 <translation id="6500423977866688905">وقتی پنجره باریک است، نمای تلفن همراه درخواست شود</translation>
-<translation id="6514791408445720076">سفارشی‌سازی کردن صفحه</translation>
 <translation id="6527303717912515753">هم‌رسانی</translation>
 <translation id="6530703012083415527">هرگاه روشن باشد، سایت‌ها می‌توانند از بالاپرها و هدایت کردن استفاده کنند. هرگاه خاموش باشد، سایت‌ها نمی‌توانند از بالاپرها و هدایت کردن استفاده کنند.</translation>
 <translation id="6540488083026747005">کوکی‌های طرف سوم را برای این سایت مجاز کرده‌اید</translation>
@@ -593,7 +592,6 @@
 <translation id="7141896414559753902">مسدود کردن نمایش پنجره‌های بازشو و هدایت‌ها در سایت‌ها (توصیه می‌شود)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> کیلوبایت</translation>
 <translation id="7180611975245234373">بازآوری</translation>
-<translation id="7180865173735832675">سفارشی کردن</translation>
 <translation id="7188508872042490670">داده‌های سایت‌ها در دستگاه</translation>
 <translation id="7201549776650881587">با این کار همه داده‌ها و کوکی‌های ذخیره‌شده توسط همه سایت‌های تحت <ph name="ORIGIN" /> یا برنامه آن در صفحه اصلی حذف خواهد شد</translation>
 <translation id="7219254577985949841">داده‌های سایت حذف شود؟</translation>
@@ -603,7 +601,7 @@
 <translation id="7250468141469952378"><ph name="ITEM_COUNT" /> مورد انتخاب شد</translation>
 <translation id="7260727271532453612"><ph name="PERMISSION_1" /> و <ph name="PERMISSION_2" /> مجاز هستند</translation>
 <translation id="7276071417425470385">هرگاه روشن باشد، سایت‌ها می‌توانند استفاده از دستگاه‌های واقعیت مجازی را درخواست کنند. هرگاه خاموش باشد، سایت‌ها نمی‌توانند از دستگاه‌های واقعیت مجازی استفاده کنند.</translation>
-<translation id="7279851812866769760">هم‌رسانی مخاطبین</translation>
+<translation id="7279851812866769760">هم‌رسانی کردن مخاطبین</translation>
 <translation id="7282197670900591579">زمینه لیمویی</translation>
 <translation id="728412880473384942">سایت‌ها سرعت بیشتری دارند اما امنیت آن‌ها کمتر است</translation>
 <translation id="7352902948037373520">‏در <ph name="BEGIN_LINK1" />تنظیمات Android<ph name="END_LINK1" /> مدیریت کنید
@@ -707,7 +705,6 @@
 <translation id="83792324527827022">سایتی درحال استفاده از دوربین و میکروفونتان است</translation>
 <translation id="8380167699614421159">این سایتْ آگهی‌های مزاحم یا گمراه‌کننده نشان می‌دهد</translation>
 <translation id="8394832520002899662">برای برگشتن به سایت تک‌ضرب بزنید</translation>
-<translation id="8404500559369898929">‏با انتخاب زمینه پس‌زمینه سفارشی، Chrome را برای خودتان اختصاصی کنید</translation>
 <translation id="8409345997656833551">هرزمان که بتوان مقاله را در نمای ساده‌شده نشان داد، اعلان دریافت می‌کنید</translation>
 <translation id="8416874502399604126">میکروفون این بار اجازه هست</translation>
 <translation id="8423565414844018592">تنظیم مقیاس‌گذاری نوشتار روی <ph name="TEXT_SCALING" /></translation>
@@ -791,7 +788,7 @@
 <translation id="9156722768168878035">‏اجازه دهید Chrome برگه‌های اخیرتان را در فهرست برنامه‌ها و نتایج جستجوی دستگاهتان نشان دهد. هرزمان بخواهید می‌توانید این گزینه را در تنظیمات Chrome خاموش کنید.</translation>
 <translation id="9162462602695099906">این صفحه خطرناک است</translation>
 <translation id="9182556968660520230">به سایت‌ها اجازه داده نشود محتوای محافظت‌شده را پخش کنند</translation>
-<translation id="927148002081263046">اشتراک‌گذاری مخاطب</translation>
+<translation id="927148002081263046">هم‌رسانی کردن مخاطب</translation>
 <translation id="947156494302904893">سایت‌هایی که بازدید می‌کنید می‌توانند درستی‌سنجی کنند که شما شخص واقعی هستید و روبات نیستید</translation>
 <translation id="959682366969460160">سازمان‌دهی شوید</translation>
 <translation id="960590623979248167">نمایش پیوندها</translation>

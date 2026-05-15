@@ -5,7 +5,6 @@
 <translation id="1036348656032585052">Isključi</translation>
 <translation id="1046742265332833834">Plava tema</translation>
 <translation id="1070329623210597193">Fajlovi koje ova web lokacija može pregledati ili urediti</translation>
-<translation id="1073417869336441572">Kažite nam zašto ste dozvolili kolačiće treće strane i pomozite nam da poboljšamo Chrome. <ph name="BEGIN_LINK" />Pošaljite povratne informacije<ph name="END_LINK" /></translation>
 <translation id="1074758928858737435">Možete zatražiti da vidite računarsku verziju web lokacija</translation>
 <translation id="1109482864356262001">Funkcije koje trebaju senzore kretanja ili svjetlosti neće funkcionirati</translation>
 <translation id="1126523729897810826">Izvršite predložene radnje u nastavku da iskoristite sve prednosti Chromea</translation>
@@ -328,6 +327,7 @@
 <translation id="4290791284969893584">Kada zatvorite stranicu, zadaci koje ste započeli se možda neće završiti</translation>
 <translation id="429312253194641664">Web lokacija reproducira medij</translation>
 <translation id="42981349822642051">Proširi</translation>
+<translation id="4310738531374808763">Prilagodite početnu stranicu</translation>
 <translation id="4336219115486912529">{COUNT,plural, =1{Ističe sutra}one{Ističe za # dan}few{Ističe za # dana}other{Ističe za # dana}}</translation>
 <translation id="4338831206024587507">Sve web lokacije pod domenom <ph name="DOMAIN" /></translation>
 <translation id="4340799661701629185">Nemoj dozvoliti web lokacijama slanje obavještenja</translation>
@@ -440,7 +440,6 @@
 <translation id="5555115555607204100">Nemoj ubrzavati web lokacije pomoću Chromeovog pretraživača V8, ali učini Chrome malo otpornijim na napade</translation>
 <translation id="5556459405103347317">Učitaj ponovo</translation>
 <translation id="5591840828808741583">Web lokacija <ph name="SITE_NAME" /> je blokirana</translation>
-<translation id="560980142378233747">Ovo znači da bi funkcije web lokacije trebale funkcionirati prema očekivanjima, ali ćete možda imati manju zaštitu prilikom pregledanja. <ph name="BEGIN_LINK" />Pošaljite povratne informacije<ph name="END_LINK" /></translation>
 <translation id="5617702678271228680">Donja tabela kartica na stranici Nova kartica</translation>
 <translation id="5621413808884657932">Kada je ova funkcija uključena, web lokacije mogu zatražiti pristup drugim aplikacijama i uslugama na uređaju. Kada je isključena, web lokacije ne mogu pristupati drugim aplikacijama i uslugama na uređaju.</translation>
 <translation id="5632485077360054581">Pokaži mi kako</translation>
@@ -519,6 +518,7 @@
 <translation id="6262279340360821358">Blokirano: <ph name="PERMISSION_1" /> i <ph name="PERMISSION_2" /></translation>
 <translation id="6270391203985052864">Web lokacije mogu tražiti da šalju obavještenja</translation>
 <translation id="6295158916970320988">Sve web lokacije</translation>
+<translation id="6305257382500066042">Isprobajte sada</translation>
 <translation id="6320088164292336938">Vibracija</translation>
 <translation id="6367753977865761591">Blokirajte prijavu trećih stana za određenu web lokaciju.</translation>
 <translation id="6398765197997659313">Napusti prikaz preko cijelog ekrana</translation>
@@ -529,7 +529,6 @@
 <translation id="6447842834002726250">Kolačići</translation>
 <translation id="6452138246455930388">Pad cijene na otvorenoj kartici, sa <ph name="OLD_PRICE" /> na <ph name="NEW_PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN_NAME" /></translation>
 <translation id="6500423977866688905">Kada je prozor uzak, zatražite prikaz na mobilnom uređaju</translation>
-<translation id="6514791408445720076">Prilagodite stranicu</translation>
 <translation id="6527303717912515753">Dijeli</translation>
 <translation id="6530703012083415527">Kada je postavka uključena, web lokacije mogu koristiti skočne prozore i preusmjeravanja. Kada je postavka isključena, web lokacije ne mogu koristiti skočne prozore i preusmjeravanja.</translation>
 <translation id="6540488083026747005">Dozvolili ste kolačiće treće strane na ovoj web lokaciji</translation>
@@ -593,7 +592,6 @@
 <translation id="7141896414559753902">Blokiranje prikazivanja skočnih prozora na web lokacijama i preusmjeravanje (preporučeno)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> kB</translation>
 <translation id="7180611975245234373">Osvježi</translation>
-<translation id="7180865173735832675">Prilagodi</translation>
 <translation id="7188508872042490670">Podaci web lokacije na uređaju</translation>
 <translation id="7201549776650881587">Ova radnja će izbrisati sve podatke i kolačiće koje su pohranile sve web lokacije na domeni <ph name="ORIGIN" /> ili pripadajuća aplikacija na početnom ekranu</translation>
 <translation id="7219254577985949841">Izbrisati podatke web lokacije?</translation>
@@ -707,7 +705,6 @@ Napredna zaštita upravlja ovim postavkama Chromea:</translation>
 <translation id="83792324527827022">Web lokacija koristi vašu kameru i mikrofon</translation>
 <translation id="8380167699614421159">Ova web lokacija prikazuje ometajuće ili obmanjujuće oglase</translation>
 <translation id="8394832520002899662">Dodirnite da se vratite na web lokaciju</translation>
-<translation id="8404500559369898929">Personalizirajte Chrome odabirom prilagođene pozadinske teme</translation>
 <translation id="8409345997656833551">Primajte obavještenja kada se članak može prikazati u pojednostavljenom prikazu</translation>
 <translation id="8416874502399604126">Mikrofon je dozvoljen ovaj put</translation>
 <translation id="8423565414844018592">Skaliranje teksta je postavljeno na <ph name="TEXT_SCALING" /></translation>

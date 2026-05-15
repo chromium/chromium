@@ -316,7 +316,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="1463793142714244641">Mga Timeshare at Bakasyunan</translation>
 <translation id="1465457928007067810">Na-save ang IBAN sa iyong Google Account</translation>
 <translation id="1467432559032391204">Kaliwa</translation>
-<translation id="1468653229182955856"><ph name="ONE_TIME_CODE" /> ang iyong code para sa <ph name="EMBEDDED_ORIGIN" /> para makapagpatuloy sa <ph name="TOP_ORIGIN" /></translation>
 <translation id="1472675084647422956">Magpakita ng higit pa</translation>
 <translation id="1473183651233018052">JIS B10</translation>
 <translation id="1473495410389165587">Maglagay ng 3 o higit pang salita para makatanggap ng tulong sa pagsusulat</translation>
@@ -549,6 +548,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="1832474362231610822">Na-save ang larawan sa OneDrive</translation>
 <translation id="1832730227369924598">Pag-sync sa desk</translation>
 <translation id="1834452765064623979">Konstruksyon at Pagmementina</translation>
+<translation id="1837606605602726453">Binalewala ang score at mga kategorya ng panganib dahil tahasang pinapayagan o bina-block ng administrator ang extension.</translation>
 <translation id="1838374766361614909">I-clear ang paghahanap</translation>
 <translation id="1839331950812095887">ilang salitang nagbubuod ng iyong mga iniisip</translation>
 <translation id="1839551713262164453">Hindi na-validate ang mga value ng patakaran at may mga error</translation>
@@ -1860,6 +1860,7 @@ Para i-hide ang mga opsyon sa pay later, pumunta sa <ph name="BEGIN_LINK" />mga 
 <translation id="3875783148670536197">Ipakita sa Akin Kung Paano</translation>
 <translation id="3877603629930976930">Huwag i-share</translation>
 <translation id="3878445208930547646">Hindi pinapayagan ang pagkopya mula sa site na ito</translation>
+<translation id="3879674895057686427">Pumili ng Wika kung saan Isasalin</translation>
 <translation id="3879748587602334249">Download manager</translation>
 <translation id="3880456882942693779">Sining at Entertainment</translation>
 <translation id="3880589673277376494">Internet at Telecom</translation>
@@ -2235,6 +2236,7 @@ Para i-hide ang mga opsyon sa pay later, pumunta sa <ph name="BEGIN_LINK" />mga 
 <translation id="443673843213245140">Hindi pinagana ang paggamit ng isang proxy ngunit tinutukoy ang isang tahasang configuration ng proxy.</translation>
 <translation id="4438821706955556403">Karaniwang presyo</translation>
 <translation id="4441832193888514600">Binalewala dahil ang patakaran ay puwede lang itakda bilang patakaran ng user ng cloud.</translation>
+<translation id="4444062564459679679">Naipadala na sa Chrome sa iyong <ph name="DEVICE_NAME" /></translation>
 <translation id="4445133368066241428">Mga sikat na paksa</translation>
 <translation id="4445694043187340808"><ph name="STARTER_PACK_TABS_FOCUSED_FRIENDLY_MATCH_TEXT" />, pindutin ang Enter para maghanap sa mga tab</translation>
 <translation id="4445964943162061557">Isa itong pang-eksperimentong feature at hindi ito palaging tama.</translation>
@@ -3505,7 +3507,6 @@ Para i-hide ang mga opsyon sa pay later, pumunta sa <ph name="BEGIN_LINK" />mga 
 <translation id="6424600253695044005">Cloud Storage</translation>
 <translation id="6425092077175753609">Material</translation>
 <translation id="6427730057873428458">Gate fold</translation>
-<translation id="6428450836711225518">I-verify ang iyong numero ng telepono</translation>
 <translation id="6429267199680088961">A4 Tab</translation>
 <translation id="643051589346665201">Palitan ang password sa Google</translation>
 <translation id="6431556523611594411">I-share ang mga nakabukas na tab</translation>
@@ -4454,7 +4455,6 @@ Mga karagdagang detalye:
 <translation id="7874796722855317864">Hindi kilalang uri ng kundisyon ang "<ph name="PROXY_UNKNOWN_CONDITION" />."</translation>
 <translation id="7877007680666472091">mga pinoprotektahang content ID</translation>
 <translation id="7878562273885520351">Maaaring makompromismo ang iyong password</translation>
-<translation id="7881044256965445977">Maghanap ng at kumonekta sa anumang device sa iyong lokal na network</translation>
 <translation id="7885670691503039914">Makakatanggap ka ng mga alerto sa email kung bababa ang presyo sa anumang site. Mase-save ang page na ito sa folder ng bookmark na <ph name="LAST_BOOKMARKS_FOLDER" />.</translation>
 <translation id="7886897188117641322">Piliin kung aling malalawak na kategorya ng mga paksa ang puwedeng gamitin para tumulong na mag-personalize ng mga ad</translation>
 <translation id="7887683347370398519">Tingnan ang iyong CVC at subukan ulit</translation>
@@ -4848,6 +4848,7 @@ Mga karagdagang detalye:
 <translation id="8511402995811232419">Pamahalaan ang cookies</translation>
 <translation id="851353418319061866">Pagsusuri sa Katumpakan</translation>
 <translation id="8513580896341796021">Nagsimula na ang pag-download. Para makita ito, pindutin ang |<ph name="ACCELERATOR" />|.</translation>
+<translation id="8515544520486085367">I-autofill ang pagbabayad</translation>
 <translation id="8519753333133776369">HID device na pinapayagan ng iyong administrator</translation>
 <translation id="8521013008769249764">Mga Sofa at Upuan</translation>
 <translation id="8521812709849134608">Mga Countertop</translation>
@@ -4980,7 +4981,6 @@ Mga karagdagang detalye:
 <translation id="8737685506611670901">Buksan ang mga link ng <ph name="PROTOCOL" /> sa halip na ang <ph name="REPLACED_HANDLER_TITLE" /></translation>
 <translation id="8738058698779197622">Upang makapagtatag ng secure na koneksyon, kailangang itakda nang tama ang iyong orasan. Ito ay dahil sa may-bisa lang ang mga certificate na ginagamit ng mga website upang tukuyin ang mga sarili ng mga ito sa loob ng mga partikular na tagal ng panahon. Dahil mali ang orasan ng iyong device, hindi ma-verify ng Chromium ang mga certificate na ito.</translation>
 <translation id="8740359287975076522">Hindi makita ang &lt;abbr id="dnsDefinition"&gt;DNS address&lt;/abbr&gt; ng <ph name="HOST_NAME" />. Dina-diagnose ang problema.</translation>
-<translation id="8742371904523228557"><ph name="ONE_TIME_CODE" /> ang iyong code para sa <ph name="ORIGIN" /></translation>
 <translation id="874918643257405732">I-bookmark ang tab na ito</translation>
 <translation id="8751426954251315517">Pakisubukang muli sa susunod</translation>
 <translation id="8753913772043329557">Mga Log ng Patakaran</translation>
@@ -5158,7 +5158,6 @@ Mga karagdagang detalye:
 <translation id="9042827002460091668">Tingnan ang iyong koneksyon sa internet at subukan ulit</translation>
 <translation id="9043161870923715789">AI Mode</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
-<translation id="9046578823518542618">Gusto ng <ph name="URL" /> na maghanap ng at kumonekta sa anumang device sa iyong lokal na network</translation>
 <translation id="9046864189129893978">Mga Mikropono (<ph name="MICS_COUNT" />)</translation>
 <translation id="9046865906192819796">Nakabukas ang screen ng mga tuntunin ng serbisyo ng Buy-Now-Pay-Later nang sakop ang kalahati ng screen.</translation>
 <translation id="9047528041803621289">Nagbibigay-daan sa iyo ang default mo na makapaghanap sa web. Mababago mo ito sa mga setting.</translation>

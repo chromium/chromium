@@ -316,7 +316,6 @@
 <translation id="1463793142714244641">टाइमशेयर और वेकेशन प्रॉपर्टी</translation>
 <translation id="1465457928007067810">IBAN को आपके Google खाते में सेव किया गया है</translation>
 <translation id="1467432559032391204">बाएं</translation>
-<translation id="1468653229182955856"><ph name="TOP_ORIGIN" /> पर जारी रखने के लिए, <ph name="EMBEDDED_ORIGIN" /> के लिए आपका कोड <ph name="ONE_TIME_CODE" /> है.</translation>
 <translation id="1472675084647422956">और दिखाएं</translation>
 <translation id="1473183651233018052">JIS B10</translation>
 <translation id="1473495410389165587">लिखने में मदद पाने के लिए, तीन या इससे ज़्यादा शब्द डालें</translation>
@@ -1465,7 +1464,7 @@
 <translation id="3261488570342242926">वर्चुअल कार्ड के बारे में जानें</translation>
 <translation id="3262698603497362968">खरीदने के विकल्प</translation>
 <translation id="3264315627780269177">यह टैब शेयर नहीं किया जा सकता</translation>
-<translation id="3264637689694266148">सुझाव पाने की सुविधा बंद होने पर भी Chrome की अन्य सुविधाओं के लिए, आपके टैब के पेज टाइटल और यूआरएल प्रोसेस किए जा सकते हैं. इस डेटा के लिए ब्राउज़र का ऐक्सेस, यहां जाकर मैनेज किया जा सकता है:</translation>
+<translation id="3264637689694266148">अगर आपने सुझाव पाने की सुविधा बंद की हुई है, तब भी Chrome की अन्य सुविधाओं के लिए, आपके टैब के पेज टाइटल और यूआरएल प्रोसेस किए जा सकते हैं. इस डेटा के लिए ब्राउज़र का ऐक्सेस, यहां जाकर मैनेज किया जा सकता है:</translation>
 <translation id="3266793032086590337">मान (मेल नहीं खा रहा)</translation>
 <translation id="3268451620468152448">खुले सत्र</translation>
 <translation id="3270041629388773465">सीवीसी सेव होने पर तेज़ी से पेमेंट किया जा सकता है</translation>
@@ -1822,6 +1821,7 @@
 <translation id="380865868633614173">कार्ड की जानकारी सेव की जा रही है</translation>
 <translation id="3810770279996899697">Password Manager को MacOS Keychain का ऐक्सेस चाहिए</translation>
 <translation id="3810973564298564668">मैनेज करें</translation>
+<translation id="3811328723651698330"><ph name="STRING_1" />, <ph name="STRING_2" /></translation>
 <translation id="3812398568375898177">यह एक ज़रूरी अपडेट है, जिससे ChromeOS पर Android ऐप्लिकेशन की परफ़ॉर्मेंस बेहतर होती है.</translation>
 <translation id="3814865536373139791">आपका संगठन नीतियों को कैसे मैनेज करता है, उसे आसान बनाएं</translation>
 <translation id="3815434930383843058">8 x 12 इंच</translation>
@@ -1861,6 +1861,7 @@
 <translation id="3875783148670536197">मुझे इसका तरीका दिखाएं</translation>
 <translation id="3877603629930976930">शेयर न करें</translation>
 <translation id="3878445208930547646">इस साइट से कॉन्टेंट कॉपी करने की अनुमति नहीं है</translation>
+<translation id="3879674895057686427">वह भाषा चुनें जिसमें अनुवाद करना है</translation>
 <translation id="3879748587602334249">डाउनलोड मैनेजर</translation>
 <translation id="3880456882942693779">कला और मनोरंजन</translation>
 <translation id="3880589673277376494">इंटरनेट और टेलीकॉम</translation>
@@ -2236,6 +2237,7 @@
 <translation id="443673843213245140">प्रॉक्‍सी का उपयोग अक्षम है लेकिन कोई स्‍पष्ट प्रॉक्‍सी कॉन्फ़िगरेशन दर्ज किया गया है.</translation>
 <translation id="4438821706955556403">औसत कीमत</translation>
 <translation id="4441832193888514600">अनदेखा किया गया है, क्योंकि इस नीति को सिर्फ़ क्लाउड की उपयोगकर्ता नीति के तौर पर सेट किया जा सकता है.</translation>
+<translation id="4444062564459679679">आपके <ph name="DEVICE_NAME" /> पर Chrome में पहले ही भेजा जा चुका है</translation>
 <translation id="4445133368066241428">लोकप्रिय विषय</translation>
 <translation id="4445694043187340808"><ph name="STARTER_PACK_TABS_FOCUSED_FRIENDLY_MATCH_TEXT" />, टैब खोजने के लिए Enter दबाएं</translation>
 <translation id="4445964943162061557">यह सुविधा एक्सपेरिमेंट के तौर पर उपलब्ध है. यह ज़रूरी नहीं है कि यह सुविधा हमेशा सही तरीके से काम करें.</translation>
@@ -2400,6 +2402,7 @@
 <translation id="4736934858538408121">वर्चुअल कार्ड</translation>
 <translation id="473775607612524610">अपडेट करें</translation>
 <translation id="4738601419177586157"><ph name="TEXT" /> खोज सुझाव</translation>
+<translation id="473866660302034629"><ph name="TAB_TITLE" />, चुना गया टैब, <ph name="TOTAL" /> में से <ph name="INDEX" />, टैब के बीच स्विच करने के लिए लेफ़्ट या राइट ऐरो का इस्तेमाल करें</translation>
 <translation id="4742407542027196863">पासवर्ड मैनेज करें…</translation>
 <translation id="474270528725216349">सिंक किए गए डिवाइसों पर, कम से कम एक साइट का डेटा</translation>
 <translation id="4743275772928623722">आपका सिस्टम अपडेट कर दिया गया था, लेकिन आपके कुछ ऐप्लिकेशन और फ़ाइलें वापस नहीं लाई जा सकीं. आपके ऐप्लिकेशन फिर से अपने-आप डाउनलोड हो जाएंगे.</translation>
@@ -2467,6 +2470,7 @@
 <translation id="4832961164064927107">बारबेक्यू और ग्रिलिंग</translation>
 <translation id="4835568975547260025">आपके सवालों के ज़्यादा सटीक जवाब देने के लिए, Chrome खुले हुए टैब की जानकारी डिफ़ॉल्ट रूप से शेयर करेगा.</translation>
 <translation id="4840250757394056958">अपना 'Chrome इतिहास' देखें</translation>
+<translation id="4842365697443353018">'बाद में पेमेंट करें' सुविधा इस्तेमाल करने के लिए, फ़ॉर्म में भरी जानकारी मिटाएं</translation>
 <translation id="484462545196658690">ऑटो</translation>
 <translation id="4844937814014739139">शेयर किए गए टैब में स्क्रोल और ज़ूम करने की अनुमति दें</translation>
 <translation id="484671803914931257"><ph name="MERCHANT_NAME" /> और कई अन्य पर छूट पाएं</translation>
@@ -3447,6 +3451,7 @@
 <translation id="634500758737709758">निर्देश</translation>
 <translation id="6348220984832452017">इस्तेमाल किए जा सकने वाले वर्शन</translation>
 <translation id="6349101878882523185"><ph name="APP_NAME" /> इंस्टॉल करें</translation>
+<translation id="6350739641326887427">Pix कोड को कॉपी किए और चिपकाए बिना पेमेंट करें. <ph name="BEGIN_LINK1" />देखें कि यह कैसे काम करता है<ph name="END_LINK1" /></translation>
 <translation id="6351658970066645919">ब्राउज़िंग डेटा मिटाएं</translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{कोई पासवर्ड नहीं है}=1{(<ph name="DOMAIN_LIST" /> के लिए, सिंक किया गया) 1 पासवर्ड}=2{(<ph name="DOMAIN_LIST" /> के लिए, सिंक किए गए) 2 पासवर्ड}one{(<ph name="DOMAIN_LIST" /> के लिए, सिंक किए गए) # पासवर्ड}other{(<ph name="DOMAIN_LIST" /> के लिए, सिंक किए गए) # पासवर्ड}}</translation>
 <translation id="6354918092619878358">SECG अंडाकार वक्र secp256r1 (अर्थात ANSI X9.62 prime256v1, NIST P-256)</translation>
@@ -3505,7 +3510,6 @@
 <translation id="6424600253695044005">Cloud Storage</translation>
 <translation id="6425092077175753609">मटीरियल</translation>
 <translation id="6427730057873428458">गेट फ़ोल्ड</translation>
-<translation id="6428450836711225518">अपने फ़ोन नंबर की पुष्टि करें</translation>
 <translation id="6429267199680088961">A4 Tab</translation>
 <translation id="643051589346665201">Google पासवर्ड बदलें</translation>
 <translation id="6431556523611594411">खुले हुए टैब शेयर करें</translation>
@@ -3532,7 +3536,7 @@
 <translation id="6451458296329894277">फ़ार्म फिर से जमा करने की पुष्टि करें</translation>
 <translation id="6452429044474066211">डाइविंग और अंडरवॉटर ऐक्टिविटी</translation>
 <translation id="6452889436791091116">ISO ID-1</translation>
-<translation id="6453646205942063831">आपको काम के सुझाव देने के लिए, खुले हुए टैब के पेज टाइटल और यूआरएल इस्तेमाल किए जाते हैं</translation>
+<translation id="6453646205942063831">आपको काम के सुझाव देने के लिए, आपके खुले हुए टैब के पेज टाइटल और यूआरएल इस्तेमाल किए जाते हैं</translation>
 <translation id="6455632609396391811">स्वास्थ्य बीमा</translation>
 <translation id="6456955391422100996">विज्ञापन हटाया गया.</translation>
 <translation id="6457206614190510200">सैडल स्टिच</translation>
@@ -3662,6 +3666,7 @@
 <translation id="668132230070712111">वीडियो को Google Drive में सेव किया गया</translation>
 <translation id="6681790815630918386">सीवीसी सेव किया गया</translation>
 <translation id="6683022854667115063">हेडफ़ोन</translation>
+<translation id="6686570026048064255">Pix कोड का पता लगाने की सुविधा बंद करने के लिए, <ph name="BEGIN_LINK1" />Chrome की सेटिंग<ph name="END_LINK1" /> पर जाएं</translation>
 <translation id="6687230248707087982">एन्वेलप (प्लेन)</translation>
 <translation id="6687335167692595844">फ़ॉन्ट साइज़ का अनुरोध किया गया</translation>
 <translation id="6688743156324860098">अपडेट करें…</translation>
@@ -4453,7 +4458,6 @@
 <translation id="7874796722855317864">"<ph name="PROXY_UNKNOWN_CONDITION" />" कोई जाना-पहचाना कंडिशन टाइप नहीं है.</translation>
 <translation id="7877007680666472091">सुरक्षित Content ID</translation>
 <translation id="7878562273885520351">आपके पासवर्ड से छेड़छाड़ की जा सकती है</translation>
-<translation id="7881044256965445977">अपने लोकल नेटवर्क पर मौजूद किसी भी डिवाइस को खोजने और उससे कनेक्ट करने की अनुमति</translation>
 <translation id="7885670691503039914">किसी भी साइट पर, प्रॉडक्ट की कीमत कम होने पर आपको ईमेल से सूचना मिलेगी. यह पेज, <ph name="LAST_BOOKMARKS_FOLDER" /> बुकमार्क फ़ोल्डर में सेव किया जाएगा.</translation>
 <translation id="7886897188117641322">चुनें कि आपको दिलचस्पी के मुताबिक विज्ञापन दिखाने के लिए, विषयों की किन कैटगरी का इस्तेमाल किया जाए</translation>
 <translation id="7887683347370398519">अपना कार्ड वेरीफ़िकेशन कोड (सीवीसी) जांचे और फिर से कोशिश करें</translation>
@@ -4847,6 +4851,7 @@
 <translation id="8511402995811232419">कुकी मैनेज करें</translation>
 <translation id="851353418319061866">विश्वसनीयता के लिए दी गई सलाह की जांच करना</translation>
 <translation id="8513580896341796021">डाउनलोड शुरू हुआ. इसे देखने के लिए, |<ph name="ACCELERATOR" />| दबाएं.</translation>
+<translation id="8515544520486085367">पेमेंट की जानकारी ऑटोमैटिक तरीके से भरने की सुविधा</translation>
 <translation id="8519753333133776369">ऐसा एचआईडी डिवाइस जिसे एडमिन ने अनुमति दी है</translation>
 <translation id="8521013008769249764">सोफ़े और कुर्सियां</translation>
 <translation id="8521812709849134608">काउंटरटॉप</translation>
@@ -4980,7 +4985,6 @@
 <translation id="8737685506611670901"><ph name="REPLACED_HANDLER_TITLE" /> के बजाय <ph name="PROTOCOL" /> लिंक खोलें</translation>
 <translation id="8738058698779197622">सुरक्षित कनेक्‍शन स्‍थापित करने के लिए, आपकी घड़ी को ठीक से सेट किए जाने की आवश्‍यकता है. ऐसा इसलिए क्‍योंकि वेबसाइटों द्वारा स्‍वयं की पहचान करने के लिए उपयोग किए जाने वाले प्रमाण पत्र केवल विशिष्‍ट समयावधियों के लिए ही मान्‍य होते हैं. चूंकि आपके डिवाइस की घड़ी गलत है, इसलिए क्रोमियम इन प्रमाणपत्रों को सत्‍यापित नहीं कर सकता.</translation>
 <translation id="8740359287975076522"><ph name="HOST_NAME" /> का &lt;abbr id="dnsDefinition"&gt;DNS पता&lt;/abbr&gt; नहीं पाया जा सका. समस्या का निदान किया जा रहा है.</translation>
-<translation id="8742371904523228557"><ph name="ORIGIN" /> के लिए आपका कोड <ph name="ONE_TIME_CODE" /> है</translation>
 <translation id="874918643257405732">इस टैब को बुकमार्क करें</translation>
 <translation id="8751426954251315517">कृपया बाद में कोशिश करें</translation>
 <translation id="8753913772043329557">नीति के लॉग</translation>
@@ -5158,7 +5162,6 @@
 <translation id="9042827002460091668">अपने इंटरनेट कनेक्शन की जांच करें और फिर से कोशिश करें</translation>
 <translation id="9043161870923715789">एआई मोड</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
-<translation id="9046578823518542618"><ph name="URL" /> को अपने लोकल नेटवर्क पर मौजूद किसी भी डिवाइस को खोजने और उससे कनेक्ट करने की अनुमति चाहिए</translation>
 <translation id="9046864189129893978">माइक्रोफ़ोन (<ph name="MICS_COUNT" />)</translation>
 <translation id="9046865906192819796">'अभी खरीदें, बाद में पेमेंट करें' सुविधा की सेवा की शर्तों वाला पेज, आधी स्क्रीन पर खुला है.</translation>
 <translation id="9047528041803621289">डिफ़ॉल्ट सर्च इंजन, वेब पर कुछ भी खोजने में मदद करता है. सेटिंग में जाकर इसे बदला जा सकता है.</translation>

@@ -69,6 +69,7 @@
 <translation id="1253032109800629289">Skjul "Få notifikationer om prissporing"</translation>
 <translation id="1254424942107648268">Find forrige</translation>
 <translation id="1258491128795710625">Nyheder</translation>
+<translation id="126093867734601535">Justerer regnearkets højde.</translation>
 <translation id="1262724000444746916">Skjul Føj til Bogmærker</translation>
 <translation id="1263231323834454256">Læseliste</translation>
 <translation id="1263433075299269530">Din seneste åbne fane</translation>
@@ -201,6 +202,7 @@
 <translation id="1657011748321897393">Deling mislykkedes. Du har ikke forbindelse til netværket.</translation>
 <translation id="1668001730617725852">Åbn i en ny fanegruppe</translation>
 <translation id="1670861525135254448">Gem køretøj</translation>
+<translation id="1671568970992212376">Gem billeder i Google Fotos, og tilgå dem når som helst.</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> til <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1678855624321223424">På baggrund af din organisations politikker kan denne fil indeholde følsomme oplysninger</translation>
 <translation id="168389590065701766">Du kan nu åbne Google Lens via din adresselinje og søge efter alt det, du ser</translation>
@@ -335,7 +337,6 @@
 <translation id="2119962645034852864">Visse tjenester er ikke tilgængelige for din konto</translation>
 <translation id="2120553909046681540">Din organisation har deaktiveret privat browsing.</translation>
 <translation id="2122754583996902531">Din browser administreres. <ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" /></translation>
-<translation id="21243612977487926">Din organisations chatsamtaler bruges ikke til at forbedre vores modeller. Gemini kan vise unøjagtige oplysninger, herunder om personer, så sørg for at dobbelttjekke svarene. <ph name="YOUR_PRIVACY_GEMINI" /></translation>
 <translation id="2139867232736819575">Søg efter tekst, du har kopieret</translation>
 <translation id="2147127444698817042">Kun tilgængelig på iPhone</translation>
 <translation id="2148799636999124959">Log hurtigt ind på websites og i apps med dine gemte adgangskoder.</translation>
@@ -677,6 +678,7 @@
 <translation id="340669334496430859">Senest ændret</translation>
 <translation id="3409785640040772790">Maps</translation>
 <translation id="3416023309465857378">25. okt. 2023</translation>
+<translation id="3426715535827854458">Skjul Skjul værktøjslinje</translation>
 <translation id="3435738964857648380">Sikkerhed</translation>
 <translation id="3441673211568148613">Hold din browsing privat</translation>
 <translation id="3443810440409579745">Du har modtaget en fane.</translation>
@@ -721,7 +723,6 @@
 <translation id="3565012355885596568">Billederne kunne ikke indlæses</translation>
 <translation id="3565930036634619844">Fane. <ph name="TAB_INDEX" /> af <ph name="NUMBER_OF_TABS" />.</translation>
 <translation id="3567168891086460374">Gem på en anden måde</translation>
-<translation id="3571703298474554279">En hurtigere måde at bruge appen på</translation>
 <translation id="3572503683475187385">Den aktuelle fane deles med Gemini, når du starter en ny chat. Når du deler en fane med Gemini, sendes dens indhold og webadresse til Google. <ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" /></translation>
 <translation id="3572607909481582402">På din Google-konto</translation>
 <translation id="3575234738189584619">Søg med Lens</translation>
@@ -979,6 +980,7 @@
 <translation id="4489536976005181779">{count,plural, =1{Siden blev føjet til din læseliste på kontoen {email}}one{Siden blev føjet til din læseliste på kontoen {email}}other{Siderne blev føjet til din læseliste på kontoen {email}}}</translation>
 <translation id="4493604894403585654">Du er logget ind som <ph name="USER_EMAIL" />. Du kan til enhver tid stoppe med at synkronisere ved at gå til indstillingerne. Google kan tilpasse Søgning og andre tjenester baseret på din historik.</translation>
 <translation id="4502423230170890588">Fjern fra denne enhed</translation>
+<translation id="4508486880075514067">Udvid til fuld skærm</translation>
 <translation id="4508750114462689118">Luk loginkampagne</translation>
 <translation id="4509345063551561634">Lokation:</translation>
 <translation id="4517684186578051919">Enhedsoplysninger</translation>
@@ -1211,6 +1213,7 @@
 <translation id="5242899254250321823">Skift adgangskode på website</translation>
 <translation id="5248640482715684545">Dette website forsøger at åbne en anden app.</translation>
 <translation id="5250371859659394278">Via en ukendt kilde</translation>
+<translation id="525510229763628836">Minimeret</translation>
 <translation id="5269913829202614649">Tilpas startsiden</translation>
 <translation id="5271265092610673171">{count,plural, =1{Et obligatorisk felt er tomt. Udfyld det, inden du gemmer.}one{Et obligatorisk felt er tomt. Udfyld det, inden du gemmer.}other{Nogle obligatoriske felter er tomme. Udfyld dem, inden du gemmer.}}</translation>
 <translation id="5271549068863921519">Gem adgangskode</translation>
@@ -1322,7 +1325,6 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="5652623411397330904">De produkter, hvis pris du holder øje med, vises her.</translation>
 <translation id="5656431592348714536">Forbedret kalender</translation>
 <translation id="5659593005791499971">Mail</translation>
-<translation id="5665739277590037307"><ph name="GOOGLE_TERMS" /> og <ph name="GEMINI_APPS_PRIVACY" /> er gældende. Gemini kan begå fejl, så sørg for at dobbelttjekke dens svar.</translation>
 <translation id="5666313630530585305">Log ind på et website.</translation>
 <translation id="5669335982068190158">Du er blevet logget ud som en del af nulstillingen af din iPhone. Tryk på Fortsæt nedenfor for at logge ind.</translation>
 <translation id="5669528293118408608">www</translation>
@@ -1665,6 +1667,7 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="6746338529702829275">Gennemgå dine kontodata</translation>
 <translation id="6750456911389438250">{count,plural, =1{{count} historikelement blev importeret}one{{count} historikelemente blev importeret}other{{count} historikelementer blev importeret}}</translation>
 <translation id="6755200887046212842">Administrer konti</translation>
+<translation id="6757899787818440812">Middelhøj</translation>
 <translation id="6759709389246683070">Du kan holde fingeren på denne fane for at indstille en påmindelse om at vende tilbage senere</translation>
 <translation id="6761393919622941301">Lyd</translation>
 <translation id="6770452996697898492">[BOOKET]</translation>
@@ -1741,6 +1744,7 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="7015418667643980944">Opdelt visning</translation>
 <translation id="7016070607649558507">Du har 1 svag adgangskode. Løs problemet nu for at forblive beskyttet.</translation>
 <translation id="7016958933495968912">Indstillinger for Discover</translation>
+<translation id="7019477124580742994"><ph name="SEARCH_PROVIDER" /> Søgning</translation>
 <translation id="7029809446516969842">Adgangskoder</translation>
 <translation id="7035825883570480307">Vil du aktivere notifikationer?</translation>
 <translation id="7039345315346323556">Seneste</translation>
@@ -1750,7 +1754,6 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="7063811929043357292">Din konto administreres af din forælder.
 <ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" /></translation>
 <translation id="7067780033517902110">Alle filer</translation>
-<translation id="707086654079606593">Administrer adresser…</translation>
 <translation id="7080806333218412752">Sender webadresser til tjek i Beskyttet browsing. Der sendes også et mindre antal sider, downloads, udvidelsesaktivitet og systemoplysninger for at identificere nye trusler. Disse data knyttes midlertidigt til din Google-konto, når du er logget ind, for at beskytte dig i Google-apps.</translation>
 <translation id="7082853213442715471">Når denne funktion er aktiveret, blokeres visse webteknologier, hvilket kan medføre, at nogle websites indlæses langsommere eller ikke fungerer korrekt.</translation>
 <translation id="7091023926159231962">{count,plural, =1{{count} adgangskode kunne ikke importeres}one{{count} adgangskode kunne ikke importeres}other{{count} adgangskoder kunne ikke importeres}}</translation>
@@ -1800,7 +1803,6 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="7275307913765547631">Koreanske servicevilkår for lokation</translation>
 <translation id="728025568708172005">Vis mig rundt</translation>
 <translation id="7280980607183752256">Denne fil kan ikke importeres</translation>
-<translation id="7281202269687163394">Dit privatliv og Gemini.</translation>
 <translation id="7282197670900591579">Citrongult tema</translation>
 <translation id="7293429513719260019">Vælg sprog</translation>
 <translation id="7300448350764260141">Tilføj ekstra beskyttelse mod onlinetrusler.</translation>
@@ -1812,7 +1814,6 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="7345061034321640811">Import er ikke tilladt</translation>
 <translation id="7347998088283246662">Importér adgangskoder, historik, bogmærker m.m.</translation>
 <translation id="7352651011704765696">Noget gik galt</translation>
-<translation id="7363497636543208734">Det er nemmere at navigere i appen nu.</translation>
 <translation id="7364796246159120393">Vælg fil</translation>
 <translation id="736564850024123010">Flyt din adresselinje for at få en tilpasset oplevelse.</translation>
 <translation id="7366909168761621528">Browserdata</translation>
@@ -2124,6 +2125,7 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="8368001212524806591">Overvåg pris</translation>
 <translation id="8368198938968349418">Aktivér Autofyld…</translation>
 <translation id="8370406443343902172">Gå til Indstillinger…</translation>
+<translation id="8370929854657845191">Udvid til middel</translation>
 <translation id="8372471489238799313">{count,plural, =1{Slet adresse}one{Slet adresse}other{Slet adresser}}</translation>
 <translation id="8378714024927312812">Administreret af din organisation</translation>
 <translation id="8385363453480067273">Søg efter det, du ser, med Google Lens</translation>

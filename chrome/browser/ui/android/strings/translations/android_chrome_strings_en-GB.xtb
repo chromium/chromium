@@ -263,6 +263,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="2184272387334793084">Sign in to get your passwords and more on all your devices</translation>
 <translation id="218608176142494674">Sharing</translation>
 <translation id="2186779861549045980">You can choose what data to save in your Google Account.\nYou can also view and manage these items in your bookmarks, reading list or password manager.</translation>
+<translation id="2190355936436201913">(empty)</translation>
 <translation id="219283042927675668">Tabs in group</translation>
 <translation id="2194856509914051091">Things to consider</translation>
 <translation id="2205701497928406883"><ph name="TAB_TITLE" />, pinned sharing tab</translation>
@@ -300,6 +301,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="233375395665273385">Delete and sign out</translation>
 <translation id="2341410551640223969">Couldn’t install <ph name="WEBAPK_NAME" />.</translation>
 <translation id="2349710944427398404">Total data used by Chrome, including accounts, bookmarks and saved settings</translation>
+<translation id="2354001756790975382">Other bookmarks</translation>
 <translation id="235789365079050412">Google Privacy Policy</translation>
 <translation id="2359808026110333948">Continue</translation>
 <translation id="2362083820973145409">Signed in as <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Opens settings.</translation>
@@ -544,6 +546,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="3359667936385849800">Use your current service provider</translation>
 <translation id="3373701465337594448">When on, a list of sites that you visit that guess your interests appears here</translation>
 <translation id="3384347053049321195">Share image</translation>
+<translation id="3385749568468586663">Gemini isn't available in Incognito mode</translation>
 <translation id="3387650086002190359"><ph name="FILE_NAME" /> download failed due to file system errors.</translation>
 <translation id="3417835166382867856">Search tabs</translation>
 <translation id="3430670036890315772">Turning off your profile lock will remove your saved info</translation>
@@ -896,6 +899,7 @@ Your Google Account may have other forms of browsing history such as searches an
 <translation id="4864369630010738180">Signing in...</translation>
 <translation id="4866368707455379617">Unable to install <ph name="MODULE" /> for Chrome</translation>
 <translation id="4875775213178255010">Content Suggestions</translation>
+<translation id="4876880121961092787">Hide bookmarks bar</translation>
 <translation id="4877678010818027629">Enter Incognito mode</translation>
 <translation id="4878404682131129617">Establishing a tunnel via proxy server failed</translation>
 <translation id="4880127995492972015">Translate…</translation>
@@ -1268,6 +1272,7 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="6437162790453527153">Sign in to get your bookmarks and more on all your devices</translation>
 <translation id="6437478888915024427">Page info</translation>
 <translation id="6440291723980579689">Pages load only after you open them</translation>
+<translation id="6441377161852435370">Add tab to reading list</translation>
 <translation id="6441734959916820584">Name is too long</translation>
 <translation id="6444291413624515012"><ph name="TAB_GROUP_TITLE" /> tab group closed</translation>
 <translation id="6452534462676960500">New activity</translation>
@@ -1357,6 +1362,7 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="6787600234697426339"><ph name="MAX_INSTANCE_COUNT" /> window limit reached</translation>
 <translation id="6795633245022906657">Quickly open a new tab. To edit this shortcut, go to Settings.</translation>
 <translation id="679588508577699489">Make Chrome your default</translation>
+<translation id="679845623837196966">Show reading list</translation>
 <translation id="679956319013005046">To set your preferred service for autofill, first add the service in <ph name="BEGIN_LINK" />Android settings<ph name="END_LINK" /> .</translation>
 <translation id="6802555630140434547">The window will be closed</translation>
 <translation id="6803791793483522764">Review notifications</translation>
@@ -1657,6 +1663,7 @@ To change this setting, <ph name="BEGIN_LINK" />delete the Chrome data in your a
 <translation id="7934668619883965330">Cannot download file. File format not supported.</translation>
 <translation id="7951102827450076904">Always open downloaded PDFs</translation>
 <translation id="7952479614398473176">To open a new window, reduce the total number of active windows to <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> or fewer.</translation>
+<translation id="7956713633345437162">Mobile bookmarks</translation>
 <translation id="7957413488482743710">A virtual card hides your actual card to help protect you from potential fraud. <ph name="BEGIN_LINK1" />Learn more about virtual cards<ph name="END_LINK1" /></translation>
 <translation id="7959485987650214982">Tabs on this device</translation>
 <translation id="7961926449547174351">You have disabled storage access. Please go to settings to enable it.</translation>
@@ -1845,6 +1852,7 @@ To change this setting, <ph name="BEGIN_LINK" />delete the Chrome data in your a
 <translation id="867914734596684889">Show or hide bookmarks bar</translation>
 <translation id="8683039184091909753">image</translation>
 <translation id="8688183792442786085"><ph name="TAB_TITLE" />, selected tab</translation>
+<translation id="8696297579102085705">Send to your device</translation>
 <translation id="8697753151306746444">Share window or screen instead</translation>
 <translation id="8699120352855309748">Don’t offer to translate these languages</translation>
 <translation id="8712637175834984815">Got it</translation>

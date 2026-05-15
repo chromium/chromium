@@ -5,7 +5,6 @@
 <translation id="1036348656032585052">বন্ধ করুন</translation>
 <translation id="1046742265332833834">ব্লু থিম</translation>
 <translation id="1070329623210597193">এই সাইট যেসব ফাইল দেখতে বা এডিট করতে পারবে</translation>
-<translation id="1073417869336441572">আপনি কেন থার্ড-পার্টি কুকিতে অনুমতি দিয়েছেন তা আমাদের জানিয়ে Chrome উন্নত করতে সাহায্য করুন। <ph name="BEGIN_LINK" />মতামত জানান<ph name="END_LINK" /></translation>
 <translation id="1074758928858737435">আপনি সাইটের ডেস্কটপ ভার্সন দেখতে চাইতে পারেন</translation>
 <translation id="1109482864356262001">যেসব ফিচার ব্যবহার করতে মোশন বা লাইট সেন্সর দরকার সেগুলি কাজ করবে না</translation>
 <translation id="1126523729897810826">Chrome ব্যবহার করার সবচেয়ে ভাল সুবিধা পেতে নিচে সাজেস্ট করা এইসব অ্যাকশন সম্পূর্ণ করুন।</translation>
@@ -328,6 +327,7 @@
 <translation id="4290791284969893584">কোনও পৃষ্ঠা বন্ধ করে দিলে, আপনার শুরু করা টাস্ক নাও শেষ হতে পারে</translation>
 <translation id="429312253194641664">একটি সাইট মিডিয়া চালাচ্ছে</translation>
 <translation id="42981349822642051">প্রসারিত করুন</translation>
+<translation id="4310738531374808763">আপনার হোমপেজ কাস্টমাইজ করুন</translation>
 <translation id="4336219115486912529">{COUNT,plural, =1{আগামীকাল মেয়াদ শেষ হবে}one{# দিনে মেয়াদ শেষ হবে}other{# দিনে মেয়াদ শেষ হবে}}</translation>
 <translation id="4338831206024587507"><ph name="DOMAIN" />-এর সবকটি সাইট</translation>
 <translation id="4340799661701629185">সাইটগুলিকে বিজ্ঞপ্তি পাঠানোর অনুমতি দেয় না</translation>
@@ -440,7 +440,6 @@
 <translation id="5555115555607204100">Chrome-এর V8 ইঞ্জিনের সাহায্যে সাইটের কাজ করার স্পিড বাড়াবেন না তবে এর ফলে Chrome-এ সুরক্ষা সম্পর্কিত ঝুঁকি সম্ভাবনা কিছুটা কমে যায়</translation>
 <translation id="5556459405103347317">রিলোড করুন</translation>
 <translation id="5591840828808741583"><ph name="SITE_NAME" /> ব্লক করা হয়েছে</translation>
-<translation id="560980142378233747">অর্থাৎ, সাইটের ফিচার প্রত্যাশা অনুযায়ী কাজ করলেও ব্রাউজিং সংক্রান্ত সুরক্ষা কম হতে পারে। <ph name="BEGIN_LINK" />মতামত জানান<ph name="END_LINK" /></translation>
 <translation id="5617702678271228680">নতুন ট্যাব পৃষ্ঠা কার্ড সম্পর্কিত স্ক্রিনের নিচে অ্যাটাচ করা শিট</translation>
 <translation id="5621413808884657932">চালু থাকলে, সাইট এই ডিভাইসে অন্যান্য অ্যাপ ও পরিষেবা অ্যাক্সেস করার অনুমতি চাইতে পারে। বন্ধ থাকলে, সাইট এই ডিভাইসে অন্যান্য অ্যাপ ও পরিষেবা অ্যাক্সেস করতে পারবে না।</translation>
 <translation id="5632485077360054581">কীভাবে করতে হবে তা দেখান</translation>
@@ -519,6 +518,7 @@
 <translation id="6262279340360821358"><ph name="PERMISSION_1" /> ও <ph name="PERMISSION_2" /> ব্লক করা হয়েছে</translation>
 <translation id="6270391203985052864">সাইট আপনাকে বিজ্ঞপ্তি পাঠানোর আগে অনুমতি চাইতে পারে</translation>
 <translation id="6295158916970320988">সমস্ত সাইট</translation>
+<translation id="6305257382500066042">এখনই ব্যবহার করে দেখুন</translation>
 <translation id="6320088164292336938">কম্পন</translation>
 <translation id="6367753977865761591">কোনও নির্দিষ্ট সাইটের জন্য থার্ড-পার্টি সাইন-ইন ব্লক করুন।</translation>
 <translation id="6398765197997659313">পূর্ণ স্ক্রীণ বন্ধ করুন</translation>
@@ -529,7 +529,6 @@
 <translation id="6447842834002726250">কুকিজ</translation>
 <translation id="6452138246455930388">আপনার খোলা ট্যাবে দাম কমার তথ্য, <ph name="OLD_PRICE" /> থেকে <ph name="NEW_PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN_NAME" /></translation>
 <translation id="6500423977866688905">উইন্ডো ছোট হলে, মোবাইল ভিউয়ের জন্য অনুরোধ করুন</translation>
-<translation id="6514791408445720076">আপনার পৃষ্ঠা কাস্টমাইজ করুন</translation>
 <translation id="6527303717912515753">শেয়ার করুন</translation>
 <translation id="6530703012083415527">চালু থাকলে, সাইট পপ-আপ ও রিডাইরেক্ট ব্যবহার করতে পারে। বন্ধ থাকলে, সাইট পপ-আপ ও রিডাইরেক্ট ব্যবহার করতে পারে না।</translation>
 <translation id="6540488083026747005">এই সাইটে আপনি থার্ড-পার্টি কুকিকে অনুমতি দিয়েছেন</translation>
@@ -593,7 +592,6 @@
 <translation id="7141896414559753902">সাইটগুলিকে পপ-আপ দেখাতে এবং রিডাইরেক্ট করা থেকে বাধা দিন (প্রস্তাবিত)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> কেবি</translation>
 <translation id="7180611975245234373">রিফ্রেশ করুন</translation>
-<translation id="7180865173735832675">কাস্টমাইজ করুন</translation>
 <translation id="7188508872042490670">অন-ডিভাইস সাইট ডেটা</translation>
 <translation id="7201549776650881587">এই অ্যাকশন আপনার হোম স্ক্রিনে <ph name="ORIGIN" />-এর অধীনে থাকা সমস্ত সাইট বা তার অ্যাপের মাধ্যমে সেভ করা সব ডেটা এবং কুকি মুছে দেবে</translation>
 <translation id="7219254577985949841">সাইট ডেটা মুছবেন?</translation>
@@ -707,7 +705,6 @@
 <translation id="83792324527827022">একটি সাইট আপনার ক্যামেরা ও মাইক্রোফোন ব্যবহার করছে</translation>
 <translation id="8380167699614421159">এই সাইট ব্যাঘাত সৃষ্টিকারী বা বিভ্রান্তিকর বিজ্ঞাপন দেখায়</translation>
 <translation id="8394832520002899662">সাইটে ফিরে যেতে ট্যাপ করুন</translation>
-<translation id="8404500559369898929">কাস্টম ব্যাকগ্রাউন্ড থিম বেছে নিয়ে Chrome নিজের মতো করে সাজিয়ে নিন</translation>
 <translation id="8409345997656833551">কোনও নিবন্ধে সিমপ্লিফায়েড ভিউ কাজ করলে সেই বিষয়ে বিজ্ঞপ্তি পান</translation>
 <translation id="8416874502399604126">এই সময় মাইক্রোফোনের অনুমতি দেওয়া হয়েছে</translation>
 <translation id="8423565414844018592"><ph name="TEXT_SCALING" />-এ টেক্সট স্কেলিং সেট করা আছে</translation>

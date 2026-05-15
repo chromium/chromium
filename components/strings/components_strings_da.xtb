@@ -316,7 +316,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="1463793142714244641">Timeshares og ferieejendomme</translation>
 <translation id="1465457928007067810">IBAN er gemt på din Google-konto</translation>
 <translation id="1467432559032391204">Venstre</translation>
-<translation id="1468653229182955856"><ph name="ONE_TIME_CODE" /> er din kode til <ph name="EMBEDDED_ORIGIN" />, som giver tilladelse til at fortsætte på <ph name="TOP_ORIGIN" /></translation>
 <translation id="1472675084647422956">Vis mere</translation>
 <translation id="1473183651233018052">JIS B10</translation>
 <translation id="1473495410389165587">Angiv mindst 3 ord for at få hjælp til at skrive</translation>
@@ -549,6 +548,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="1832474362231610822">Billedet er gemt i OneDrive</translation>
 <translation id="1832730227369924598">Skrivebordssynkronisering</translation>
 <translation id="1834452765064623979">Konstruktion og vedligeholdelse</translation>
+<translation id="1837606605602726453">Risikoscoren og -kategorierne ignoreres, fordi udvidelsen udtrykkeligt er tilladt eller blokeret af administratoren.</translation>
 <translation id="1838374766361614909">Ryd søgning</translation>
 <translation id="1839331950812095887">Nogle få ord, der opsummerer dine tanker</translation>
 <translation id="1839551713262164453">Validering af politikværdier mislykkedes med fejl</translation>
@@ -1860,6 +1860,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsindstillingerne<ph name="END_LINK" /> f
 <translation id="3875783148670536197">Vis mig hvordan</translation>
 <translation id="3877603629930976930">Del ikke</translation>
 <translation id="3878445208930547646">Det er ikke tilladt at kopiere fra dette website</translation>
+<translation id="3879674895057686427">Vælg det sprog, der skal oversættes til</translation>
 <translation id="3879748587602334249">Downloadadministrator</translation>
 <translation id="3880456882942693779">Kunst og underholdning</translation>
 <translation id="3880589673277376494">Internet og telekommunikation</translation>
@@ -3446,6 +3447,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsindstillingerne<ph name="END_LINK" /> f
 <translation id="634500758737709758">Rutevejledning</translation>
 <translation id="6348220984832452017">Aktive variationer</translation>
 <translation id="6349101878882523185">Installer <ph name="APP_NAME" /></translation>
+<translation id="6350739641326887427">Betal uden at kopiere og indsætte Pix-koden. <ph name="BEGIN_LINK1" />Se, hvordan det fungerer<ph name="END_LINK1" /></translation>
 <translation id="6351658970066645919">Slet browserdata</translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{Ingen}=1{1 adgangskode (til <ph name="DOMAIN_LIST" /> – synkroniseret)}=2{2 adgangskoder (til <ph name="DOMAIN_LIST" /> – synkroniseret)}one{# adgangskode (til <ph name="DOMAIN_LIST" /> – synkroniseret)}other{# adgangskoder (til <ph name="DOMAIN_LIST" /> – synkroniseret)}}</translation>
 <translation id="6354918092619878358">SECG elliptisk kurve secp256r1 (også kaldet ANSI X9.62 prime256v1, NIST P-256)</translation>
@@ -3504,7 +3506,6 @@ Gå til <ph name="BEGIN_LINK" />betalingsindstillingerne<ph name="END_LINK" /> f
 <translation id="6424600253695044005">Cloud Storage</translation>
 <translation id="6425092077175753609">Material</translation>
 <translation id="6427730057873428458">Portfals</translation>
-<translation id="6428450836711225518">Verificer dit telefonnummer</translation>
 <translation id="6429267199680088961">A4 Tab</translation>
 <translation id="643051589346665201">Skift Google-adgangskode</translation>
 <translation id="6431556523611594411">Del åbne faner</translation>
@@ -3661,6 +3662,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsindstillingerne<ph name="END_LINK" /> f
 <translation id="668132230070712111">Videoen er gemt i Google Drev</translation>
 <translation id="6681790815630918386">CVC er gemt</translation>
 <translation id="6683022854667115063">Høretelefoner</translation>
+<translation id="6686570026048064255">Gå til <ph name="BEGIN_LINK1" />Chrome-indstillingerne<ph name="END_LINK1" /> for at deaktivere registrering af Pix-kode</translation>
 <translation id="6687230248707087982">Kuvert (almindelig)</translation>
 <translation id="6687335167692595844">Der blev anmodet om størrelse på skrifttype</translation>
 <translation id="6688743156324860098">Opdater…</translation>
@@ -4452,7 +4454,6 @@ Yderligere oplysninger:
 <translation id="7874796722855317864">"<ph name="PROXY_UNKNOWN_CONDITION" />" er ikke en kendt tilstandstype.</translation>
 <translation id="7877007680666472091">beskyttede indholds-id'er</translation>
 <translation id="7878562273885520351">Din adgangskode kan være kompromitteret</translation>
-<translation id="7881044256965445977">Søg efter og opret forbindelse til enheder på dit lokale netværk</translation>
 <translation id="7885670691503039914">Du får underretninger via mail, hvis prisen falder på et website. Denne side gemmes i bogmærkemappen <ph name="LAST_BOOKMARKS_FOLDER" />.</translation>
 <translation id="7886897188117641322">Vælg, hvilke generelle emnekategorier der kan bruges til at foretage personlig tilpasning af annoncer</translation>
 <translation id="7887683347370398519">Kontrollér, om din CVC er korrekt, og prøv igen.</translation>
@@ -4979,7 +4980,6 @@ Yderligere oplysninger:
 <translation id="8737685506611670901">Åbne <ph name="PROTOCOL" />-links i stedet for <ph name="REPLACED_HANDLER_TITLE" /></translation>
 <translation id="8738058698779197622">For at kunne oprette en sikker forbindelse skal dit ur være indstillet korrekt. Det er vigtigt, da de certifikater, som websites bruger til at identificere sig selv, kun er gyldige i bestemte tidsperioder. Da uret på din enhed går forkert, kan Chromium ikke verificere disse certifikater.</translation>
 <translation id="8740359287975076522">&lt;abbr id="dnsDefinition"&gt;DNS-adressen&lt;/abbr&gt; for <ph name="HOST_NAME" /> blev ikke fundet. Diagnosticerer problemet.</translation>
-<translation id="8742371904523228557"><ph name="ONE_TIME_CODE" /> er din kode til <ph name="ORIGIN" /></translation>
 <translation id="874918643257405732">Tilføj denne fane som bogmærke</translation>
 <translation id="8751426954251315517">Prøv igen næste gang</translation>
 <translation id="8753913772043329557">Politiklogs</translation>
@@ -5157,7 +5157,6 @@ Yderligere oplysninger:
 <translation id="9042827002460091668">Tjek din internetforbindelse, og prøv igen</translation>
 <translation id="9043161870923715789">AI-tilstand</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> – <ph name="RESULT_PRODUCT_SOURCE" /></translation>
-<translation id="9046578823518542618"><ph name="URL" /> vil gerne søge efter og oprette tilknytning til enheder på dit lokale netværk</translation>
 <translation id="9046864189129893978">Mikrofoner (<ph name="MICS_COUNT" />)</translation>
 <translation id="9046865906192819796">Skærmen med servicevilkår for Køb nu, betal senere er åbnet i halv højde.</translation>
 <translation id="9047528041803621289">Din standardsøgemaskine giver dig mulighed for at søge på nettet. Du kan ændre den i indstillingerne.</translation>

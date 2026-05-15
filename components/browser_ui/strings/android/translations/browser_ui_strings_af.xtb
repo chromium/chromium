@@ -5,7 +5,6 @@
 <translation id="1036348656032585052">Skakel af</translation>
 <translation id="1046742265332833834">Blou tema</translation>
 <translation id="1070329623210597193">Lêers wat hierdie werf kan bekyk of wysig</translation>
-<translation id="1073417869336441572">Help ons om Chrome te verbeter deur ons te vertel hoekom jy derdepartywebkoekies toegelaat het. <ph name="BEGIN_LINK" />Stuur terugvoer<ph name="END_LINK" /></translation>
 <translation id="1074758928858737435">Jy kan vra om die rekenaarweergawe van werwe te sien</translation>
 <translation id="1109482864356262001">Kenmerke waarvoor beweging- of ligsensors nodig is, sal nie werk nie</translation>
 <translation id="1126523729897810826">Voltooi die voorgestelde handelinge hier onder om Chrome ten beste te benut.</translation>
@@ -328,6 +327,7 @@
 <translation id="4290791284969893584">Take wat jy begin het, sal dalk nie klaarmaak as jy 'n bladsy toemaak nie</translation>
 <translation id="429312253194641664">'n Werf speel tans media</translation>
 <translation id="42981349822642051">Vou uit</translation>
+<translation id="4310738531374808763">Pasmaak jou tuisblad</translation>
 <translation id="4336219115486912529">{COUNT,plural, =1{Verval môre}other{Verval oor # dae}}</translation>
 <translation id="4338831206024587507">Alle werwe onder <ph name="DOMAIN" /></translation>
 <translation id="4340799661701629185">Moenie werwe toelaat om kennisgewings te stuur nie</translation>
@@ -440,7 +440,6 @@
 <translation id="5555115555607204100">Maak werwe nie vinniger met Chrome se V8-enjin nie, maar maak Chrome effens meer bestand teen aanvalle</translation>
 <translation id="5556459405103347317">Herlaai</translation>
 <translation id="5591840828808741583"><ph name="SITE_NAME" /> geblokkeer</translation>
-<translation id="560980142378233747">Dit beteken dat werfkenmerke soos verwag behoort te werk, maar dat jy dalk minder blaaibeskerming het. <ph name="BEGIN_LINK" />Stuur terugvoer<ph name="END_LINK" /></translation>
 <translation id="5617702678271228680">Onderste blad van Nuwe Oortjie-bladsykaarte</translation>
 <translation id="5621413808884657932">Wanneer dit aan is, kan werwe vra om toegang tot ander apps en dienste op hierdie toestel te kry. Wanneer dit af is, kan werwe nie toegang tot ander apps en dienste op hierdie toestel kry nie.</translation>
 <translation id="5632485077360054581">Wys my hoe</translation>
@@ -519,6 +518,7 @@
 <translation id="6262279340360821358"><ph name="PERMISSION_1" /> en <ph name="PERMISSION_2" /> word geblokkeer.</translation>
 <translation id="6270391203985052864">Werwe kan vra om kennisgewings te stuur</translation>
 <translation id="6295158916970320988">Alle werwe</translation>
+<translation id="6305257382500066042">Probeer dit nou</translation>
 <translation id="6320088164292336938">Vibreer</translation>
 <translation id="6367753977865761591">Blokkeer aanmelding deur derde partye vir ’n spesifieke werf.</translation>
 <translation id="6398765197997659313">Gaan by volskerm uit</translation>
@@ -529,7 +529,6 @@
 <translation id="6447842834002726250">Webkoekies</translation>
 <translation id="6452138246455930388">Prysdaling op jou oop oortjie, van<ph name="OLD_PRICE" /> tot <ph name="NEW_PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN_NAME" /></translation>
 <translation id="6500423977866688905">Versoek mobiele aansig wanneer die venster smal is</translation>
-<translation id="6514791408445720076">Pasmaak jou bladsy</translation>
 <translation id="6527303717912515753">Deel</translation>
 <translation id="6530703012083415527">Wanneer dit aan is, kan werwe opspringers en herleidings gebruik. Wanneer dit af is, kan werwe nie opspringers en herleidings gebruik nie.</translation>
 <translation id="6540488083026747005">Jy het derdepartywebkoekies op hierdie werf toegelaat</translation>
@@ -593,7 +592,6 @@
 <translation id="7141896414559753902">Verhinder werwe om opspringers en herleidings te wys (aanbeveel)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> KB</translation>
 <translation id="7180611975245234373">Herlaai</translation>
-<translation id="7180865173735832675">Pasmaak</translation>
 <translation id="7188508872042490670">Werfdata op toestel</translation>
 <translation id="7201549776650881587">Hierdie handeling sal alle data en webkoekies uitvee wat deur alle werwe onder <ph name="ORIGIN" /> of deur sy app op jou Tuisskerm geberg is</translation>
 <translation id="7219254577985949841">Vee werfdata uit?</translation>
@@ -707,7 +705,6 @@ Gevorderde Beskerming beheer hierdie Chrome-instellings:</translation>
 <translation id="83792324527827022">'n Werf gebruik tans jou kamera en mikrofoon</translation>
 <translation id="8380167699614421159">Hierdie werf wys indringerige of misleidende advertensies</translation>
 <translation id="8394832520002899662">Tik om na werf terug te keer</translation>
-<translation id="8404500559369898929">Maak Chrome jou eie deur ’n gepasmaakte agtergrondtema te kies</translation>
 <translation id="8409345997656833551">Word in kennis gestel wanneer ’n artikel in vereenvoudigde aansig gewys kan word</translation>
 <translation id="8416874502399604126">Mikrofoon hierdie keer toegelaat</translation>
 <translation id="8423565414844018592">Teksskalering is gestel op <ph name="TEXT_SCALING" /></translation>

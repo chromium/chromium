@@ -5,7 +5,6 @@
 <translation id="1036348656032585052">Turn off</translation>
 <translation id="1046742265332833834">Blue theme</translation>
 <translation id="1070329623210597193">Files this site can view or edit</translation>
-<translation id="1073417869336441572">Help us improve Chrome by telling us why you allowed third-party cookies. <ph name="BEGIN_LINK" />Send feedback<ph name="END_LINK" /></translation>
 <translation id="1074758928858737435">You can ask to see the desktop version of sites</translation>
 <translation id="1109482864356262001">Features that need motion or light sensors won't work</translation>
 <translation id="1126523729897810826">Complete these suggested actions below to get the most out of Chrome</translation>
@@ -328,6 +327,7 @@
 <translation id="4290791284969893584">After closing a page, tasks that you started might not finish</translation>
 <translation id="429312253194641664">A site is playing media</translation>
 <translation id="42981349822642051">Expand</translation>
+<translation id="4310738531374808763">Customise your homepage</translation>
 <translation id="4336219115486912529">{COUNT,plural, =1{Expires tomorrow}other{Expires in # days}}</translation>
 <translation id="4338831206024587507">All sites under <ph name="DOMAIN" /></translation>
 <translation id="4340799661701629185">Don't allow sites to send notifications</translation>
@@ -440,7 +440,6 @@
 <translation id="5555115555607204100">Do not speed up sites with Chrome's V8 engine but make Chrome slightly more resistant to attacks</translation>
 <translation id="5556459405103347317">Reload</translation>
 <translation id="5591840828808741583"><ph name="SITE_NAME" /> blocked</translation>
-<translation id="560980142378233747">This means site features should work as expected, but you may have less browsing protection. <ph name="BEGIN_LINK" />Send feedback<ph name="END_LINK" /></translation>
 <translation id="5617702678271228680">New tab page cards bottom sheet</translation>
 <translation id="5621413808884657932">When on, sites can ask to access other apps and services on this device. When off, sites can't access other apps and services on this device.</translation>
 <translation id="5632485077360054581">Show me how</translation>
@@ -519,6 +518,7 @@
 <translation id="6262279340360821358"><ph name="PERMISSION_1" /> and <ph name="PERMISSION_2" /> blocked</translation>
 <translation id="6270391203985052864">Sites can ask to send notifications</translation>
 <translation id="6295158916970320988">All sites</translation>
+<translation id="6305257382500066042">Try it now</translation>
 <translation id="6320088164292336938">Vibrate</translation>
 <translation id="6367753977865761591">Block third-party sign-in for a specific site.</translation>
 <translation id="6398765197997659313">Exit full screen</translation>
@@ -529,7 +529,6 @@
 <translation id="6447842834002726250">Cookies</translation>
 <translation id="6452138246455930388">Price drop on your open tab, from <ph name="OLD_PRICE" /> to <ph name="NEW_PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN_NAME" /></translation>
 <translation id="6500423977866688905">When the window is narrow, request mobile view</translation>
-<translation id="6514791408445720076">Customise your page</translation>
 <translation id="6527303717912515753">Share</translation>
 <translation id="6530703012083415527">When on, sites can use pop-ups and redirects. When off, sites can't use pop-ups and redirects.</translation>
 <translation id="6540488083026747005">You allowed third-party cookies on this site</translation>
@@ -593,7 +592,6 @@
 <translation id="7141896414559753902">Block sites from showing pop-ups and redirects (recommended)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> KB</translation>
 <translation id="7180611975245234373">Refresh</translation>
-<translation id="7180865173735832675">Customise</translation>
 <translation id="7188508872042490670">On-device site data</translation>
 <translation id="7201549776650881587">This action will clear all data and cookies stored by all sites under <ph name="ORIGIN" /> or by its app on your Home screen</translation>
 <translation id="7219254577985949841">Delete site data?</translation>
@@ -707,7 +705,6 @@ Advanced Protection controls these Chrome settings:</translation>
 <translation id="83792324527827022">A site is using your camera and microphone</translation>
 <translation id="8380167699614421159">This site shows intrusive or misleading ads</translation>
 <translation id="8394832520002899662">Tap to return to the site</translation>
-<translation id="8404500559369898929">Make Chrome your own by choosing a custom background theme</translation>
 <translation id="8409345997656833551">Get notified when an article can be shown in simplified view</translation>
 <translation id="8416874502399604126">Microphone allowed this time</translation>
 <translation id="8423565414844018592">Text scaling set to <ph name="TEXT_SCALING" /></translation>

@@ -37,6 +37,7 @@
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{Đánh dấu <ph name="TABS_COUNT_ONE" /> thẻ đã chọn}other{Đánh dấu <ph name="TABS_COUNT_MANY" /> thẻ đã chọn}}</translation>
 <translation id="2055057176188061528">Chọn nhóm thẻ hoặc tạo nhóm thẻ mới</translation>
 <translation id="2074527029802029717">Bỏ gắn thẻ</translation>
+<translation id="2111670510994270194">Thẻ mới ở bên phải</translation>
 <translation id="2118649612461486615">Thông tin cửa hàng</translation>
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{Bạn có thể mở lại các thẻ và nhóm đã đóng trong phần Các thẻ gần đây và phần Nhóm thẻ. Thẻ ẩn danh sẽ bị mất.}other{Bạn có thể mở lại các thẻ và nhóm đã đóng trong phần Các thẻ gần đây và phần Nhóm thẻ. # thẻ ẩn danh sẽ bị mất.}}</translation>
 <translation id="2153899164605463849">{TAB_COUNT,plural, =1{Bật tiếng trang web}other{Bật tiếng các trang web}}</translation>

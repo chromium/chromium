@@ -5,7 +5,6 @@
 <translation id="1036348656032585052">I-off</translation>
 <translation id="1046742265332833834">Asul na tema</translation>
 <translation id="1070329623210597193">Mga file na puwedeng tingnan o i-edit ng site na ito</translation>
-<translation id="1073417869336441572">Tulungan kaming pahusayin ang Chrome sa pamamagitan ng pagsasabi sa amin kung bakit mo pinayagan ang third-party na cookies. <ph name="BEGIN_LINK" />Magpadala ng feedback<ph name="END_LINK" /></translation>
 <translation id="1074758928858737435">Puwede mong hilinging makita ang desktop na bersyon ng mga site</translation>
 <translation id="1109482864356262001">Hindi gagana ang mga feature na nangangailangan ng mga sensor ng paggalaw o liwanag</translation>
 <translation id="1126523729897810826">Kumpletuhin ang mga iminumungkahing aksyong ito sa ibaba para masulit ang Chrome</translation>
@@ -328,6 +327,7 @@
 <translation id="4290791284969893584">Pagkatapos isara ang isang page, posibleng hindi matapos ang mga gawaing sinimulan mo</translation>
 <translation id="429312253194641664">May site na nagpe-play ng media</translation>
 <translation id="42981349822642051">Palawakin</translation>
+<translation id="4310738531374808763">I-customize ang iyong homepage</translation>
 <translation id="4336219115486912529">{COUNT,plural, =1{Mag-e-expire bukas}one{Mag-e-expire sa loob ng # araw}other{Mag-e-expire sa loob ng # na araw}}</translation>
 <translation id="4338831206024587507">Lahat ng site sa ilalim ng <ph name="DOMAIN" /></translation>
 <translation id="4340799661701629185">Huwag payagan ang mga site na magpadala ng mga notification</translation>
@@ -440,7 +440,6 @@
 <translation id="5555115555607204100">Huwag pabilisin ang mga site gamit ang V8 na engine ng Chrome pero gawing bahagyang mas resistant sa mga attack ang Chrome</translation>
 <translation id="5556459405103347317">I-reload</translation>
 <translation id="5591840828808741583">Naka-block ang <ph name="SITE_NAME" /></translation>
-<translation id="560980142378233747">Nangangahulugan itong dapat gumana ang mga feature ng site na gaya ng inaasahan, pero posibleng magkaroon ka ng mas mahinang proteksyon sa pag-browse. <ph name="BEGIN_LINK" />Magpadala ng feedback<ph name="END_LINK" /></translation>
 <translation id="5617702678271228680">Bottom sheet ng mga card ng page na bagong tab</translation>
 <translation id="5621413808884657932">Kapag naka-on, puwedeng humiling ang mga site na i-access ang iba pang app at serbisyo sa device na ito. Kapag naka-off, hindi maa-access ng mga site ang iba pang app at serbisyo sa device na ito.</translation>
 <translation id="5632485077360054581">Ipakita sa akin kung paano</translation>
@@ -519,6 +518,7 @@
 <translation id="6262279340360821358">Naka-block ang <ph name="PERMISSION_1" /> at <ph name="PERMISSION_2" /></translation>
 <translation id="6270391203985052864">Puwedeng humiling ang mga site na magpadala ng mga notification</translation>
 <translation id="6295158916970320988">Lahat ng site</translation>
+<translation id="6305257382500066042">Subukan ito ngayon</translation>
 <translation id="6320088164292336938">Mag-vibrate</translation>
 <translation id="6367753977865761591">I-block ang third-party na pag-sign in para sa partikular na site.</translation>
 <translation id="6398765197997659313">Lumabas sa buong screen</translation>
@@ -529,7 +529,6 @@
 <translation id="6447842834002726250">Cookies</translation>
 <translation id="6452138246455930388">May pagbaba ng presyo sa iyong nakabukas na tab, <ph name="NEW_PRICE" /> na dating <ph name="OLD_PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN_NAME" /></translation>
 <translation id="6500423977866688905">Kapag makitid ang window, i-request ang mobile view</translation>
-<translation id="6514791408445720076">I-customize ang iyong page</translation>
 <translation id="6527303717912515753">Ibahagi</translation>
 <translation id="6530703012083415527">Kapag naka-on, makakagamit ng mga pop-up at pag-redirect ang mga site. Kapag naka-off, hindi makakagamit ng mga pop-up at pag-redirect ang mga site .</translation>
 <translation id="6540488083026747005">Pinayagan mo ang third-party na cookies sa site na ito</translation>
@@ -593,7 +592,6 @@
 <translation id="7141896414559753902">I-block ang pagpapakita ng mga site ng mga pop-up at pag-redirect (inirerekomenda)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> KB</translation>
 <translation id="7180611975245234373">I-refresh</translation>
-<translation id="7180865173735832675">I-customize</translation>
 <translation id="7188508872042490670">On-device na data ng site</translation>
 <translation id="7201549776650881587">Ide-delete ng pagkilos na ito ang lahat ng data at cookies na na-store ng lahat ng site sa ilalim ng <ph name="ORIGIN" /> o ng app nito sa iyong Home screen</translation>
 <translation id="7219254577985949841">I-delete ang data ng site?</translation>
@@ -707,7 +705,6 @@ Kinokontrol ng Advanced na Proteksyon ang mga setting ng Chrome na ito:</transla
 <translation id="83792324527827022">Ginagamit ng isang site ang iyong camera at mikropono</translation>
 <translation id="8380167699614421159">Nagpapakita ang site na ito ng mga nakakasagabal o nakakapanlinlang na ad</translation>
 <translation id="8394832520002899662">Mag-tap para bumalik sa site</translation>
-<translation id="8404500559369898929">Gawing pansarili mo ang Chrome sa pamamagitan ng pagpili ng custom na tema ng background</translation>
 <translation id="8409345997656833551">Maabisuhan kapag maipapakita sa pinasimpleng view ang isang artikulo</translation>
 <translation id="8416874502399604126">Pinapayagan ang mikropono sa ngayon</translation>
 <translation id="8423565414844018592">Nakatakda ang pag-scale ng text sa <ph name="TEXT_SCALING" /></translation>

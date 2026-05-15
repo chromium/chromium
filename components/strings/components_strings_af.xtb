@@ -316,7 +316,6 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="1463793142714244641">Tyddeel en vakansie-eiendomme</translation>
 <translation id="1465457928007067810">IBAN is in jou Google-rekening gestoor</translation>
 <translation id="1467432559032391204">Links</translation>
-<translation id="1468653229182955856"><ph name="ONE_TIME_CODE" /> is jou kode vir <ph name="EMBEDDED_ORIGIN" /> om op <ph name="TOP_ORIGIN" /> voort te gaan</translation>
 <translation id="1472675084647422956">Wys meer</translation>
 <translation id="1473183651233018052">JIS B10</translation>
 <translation id="1473495410389165587">Voer 3 of meer woorde in om skryfhulp te kry</translation>
@@ -549,6 +548,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="1832474362231610822">Foto is in OneDrive gestoor</translation>
 <translation id="1832730227369924598">Lessenaarsinkronisering</translation>
 <translation id="1834452765064623979">Konstruksie en instandhouding</translation>
+<translation id="1837606605602726453">Die risikotelling en -kategorieë word geïgnoreer omdat die uitbreiding uitdruklik deur die admin toegelaat of geblokkeer word.</translation>
 <translation id="1838374766361614909">Vee soektog uit</translation>
 <translation id="1839331950812095887">’n paar woorde wat jou gedagtes opsom</translation>
 <translation id="1839551713262164453">Bevestiging van beleidswaardes het misluk met foute</translation>
@@ -1860,6 +1860,7 @@ Gaan na <ph name="BEGIN_LINK" />betalinginstellings<ph name="END_LINK" /> om Bet
 <translation id="3875783148670536197">Wys my hoe</translation>
 <translation id="3877603629930976930">Moenie deel nie</translation>
 <translation id="3878445208930547646">Dit word nie toegelaat om van hierdie webwerf te kopieer nie</translation>
+<translation id="3879674895057686427">Kies taal om in te vertaal</translation>
 <translation id="3879748587602334249">Aflaaibestuurder</translation>
 <translation id="3880456882942693779">Kuns en vermaak</translation>
 <translation id="3880589673277376494">Internet en telekom</translation>
@@ -3446,6 +3447,7 @@ Gaan na <ph name="BEGIN_LINK" />betalinginstellings<ph name="END_LINK" /> om Bet
 <translation id="634500758737709758">Aanwysings</translation>
 <translation id="6348220984832452017">Aktiewe variasies</translation>
 <translation id="6349101878882523185">Installeer <ph name="APP_NAME" /></translation>
+<translation id="6350739641326887427">Betaal sonder om Pix-kode te kopieer en te plak. <ph name="BEGIN_LINK1" />Sien hoe dit werk<ph name="END_LINK1" /></translation>
 <translation id="6351658970066645919">Vee blaaierdata uit</translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{Geen}=1{1 wagwoord (vir <ph name="DOMAIN_LIST" />, gesinkroniseer)}=2{2 wagwoorde (vir <ph name="DOMAIN_LIST" />, gesinkroniseer)}other{# wagwoorde (vir <ph name="DOMAIN_LIST" /> gesinkroniseer)}}</translation>
 <translation id="6354918092619878358">SECG-elliptiesekurwe-secp256r1 (ook bekend as ANSI X9.62 prime256v1, NIST P-256)</translation>
@@ -3504,7 +3506,6 @@ Gaan na <ph name="BEGIN_LINK" />betalinginstellings<ph name="END_LINK" /> om Bet
 <translation id="6424600253695044005">Wolkberging</translation>
 <translation id="6425092077175753609">Materiaal</translation>
 <translation id="6427730057873428458">Uitvoublad</translation>
-<translation id="6428450836711225518">Verifieer jou foonnommer</translation>
 <translation id="6429267199680088961">A4 Tab</translation>
 <translation id="643051589346665201">Verander Google-wagwoord</translation>
 <translation id="6431556523611594411">Deel oop oortjies</translation>
@@ -3661,6 +3662,7 @@ Gaan na <ph name="BEGIN_LINK" />betalinginstellings<ph name="END_LINK" /> om Bet
 <translation id="668132230070712111">Video is in Google Drive gestoor</translation>
 <translation id="6681790815630918386">CVC gestoor</translation>
 <translation id="6683022854667115063">Oorfone</translation>
+<translation id="6686570026048064255">Gaan na <ph name="BEGIN_LINK1" />Chrome-instellings<ph name="END_LINK1" /> toe om Pix-kodebespeuring af te skakel</translation>
 <translation id="6687230248707087982">Koevert (gewoon)</translation>
 <translation id="6687335167692595844">Lettertipegrootte versoek</translation>
 <translation id="6688743156324860098">Dateer op …</translation>
@@ -4451,7 +4453,6 @@ om uit te vind hoe om die sagteware permanent van jou rekenaar te verwyder&lt;/o
 <translation id="7874796722855317864">“<ph name="PROXY_UNKNOWN_CONDITION" />” is nie ’n bekende toestandtipe nie.</translation>
 <translation id="7877007680666472091">ID's van beskermde inhoud</translation>
 <translation id="7878562273885520351">Jou wagwoord is dalk in gevaar</translation>
-<translation id="7881044256965445977">Soek en koppel aan enige toestel op jou plaaslike netwerk</translation>
 <translation id="7885670691503039914">Jy sal e-poskennisgewings kry as die prys op enige werf daal. Hierdie bladsy sal in die <ph name="LAST_BOOKMARKS_FOLDER" />-boekmerkvouer gestoor word.</translation>
 <translation id="7886897188117641322">Kies watter breë kategorieë onderwerpe gebruik kan word om te help om advertensies te personaliseer</translation>
 <translation id="7887683347370398519">Gaan jou CVC na en probeer weer</translation>
@@ -4977,7 +4978,6 @@ Bykomende besonderhede:
 <translation id="8737685506611670901">Maak <ph name="PROTOCOL" />-skakels oop pleks van <ph name="REPLACED_HANDLER_TITLE" /></translation>
 <translation id="8738058698779197622">Om 'n veilige verbinding te maak, moet jou horlosie reg gestel wees. Die rede hiervoor is omdat sertifikate wat webwerwe gebruik om hulself te identifiseer, net vir sekere tydperke beskikbaar is. Chromium kan nie hierdie sertifikate verifieer nie, omdat jou toestel se horlosie nie reg gestel is nie.</translation>
 <translation id="8740359287975076522"><ph name="HOST_NAME" /> se &lt;abbr id="dnsDefinition"&gt;DNS-adres&lt;/abbr&gt; kon nie gevind word nie. Diagnoseer tans die probleem.</translation>
-<translation id="8742371904523228557"><ph name="ONE_TIME_CODE" /> is jou kode vir <ph name="ORIGIN" /></translation>
 <translation id="874918643257405732">Boekmerk hierdie oortjie</translation>
 <translation id="8751426954251315517">Probeer volgende keer weer</translation>
 <translation id="8753913772043329557">Beleidloglêers</translation>
@@ -5155,7 +5155,6 @@ Bykomende besonderhede:
 <translation id="9042827002460091668">Gaan jou internetverbinding na en probeer weer</translation>
 <translation id="9043161870923715789">KI-modus</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> – <ph name="RESULT_PRODUCT_SOURCE" /></translation>
-<translation id="9046578823518542618"><ph name="URL" /> wil enige toestel op jou plaaslike netwerk soek en daaraan koppel</translation>
 <translation id="9046864189129893978">Mikrofone (<ph name="MICS_COUNT" />)</translation>
 <translation id="9046865906192819796">Koop nou, betaal later se diensbepalingsskerm is teen halwe hoogte oopgemaak.</translation>
 <translation id="9047528041803621289">Jou verstekwaarde laat jou toe om op die web te soek. Jy kan dit in instellings verander.</translation>

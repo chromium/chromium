@@ -263,6 +263,7 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="2184272387334793084">Logg på for å få blant annet passordene dine på alle enhetene dine</translation>
 <translation id="218608176142494674">Deling</translation>
 <translation id="2186779861549045980">Du kan velge hvilke data du vil lagre i Google-kontoen din.\nDu kan også se og administrere disse elementene i bokmerkene, på leselisten eller i passordlagringen.</translation>
+<translation id="2190355936436201913">(tom)</translation>
 <translation id="219283042927675668">Faner i gruppen</translation>
 <translation id="2194856509914051091">Ting å tenke på</translation>
 <translation id="2205701497928406883"><ph name="TAB_TITLE" />, festet delingsfane</translation>
@@ -300,6 +301,7 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="233375395665273385">Slett og logg av</translation>
 <translation id="2341410551640223969">Kunne ikke installere <ph name="WEBAPK_NAME" />.</translation>
 <translation id="2349710944427398404">Total datamengde som brukes av Chrome, deriblant kontoer, bokmerker og lagrede innstillinger</translation>
+<translation id="2354001756790975382">Andre bokmerker</translation>
 <translation id="235789365079050412">Googles personvernregler</translation>
 <translation id="2359808026110333948">Fortsett</translation>
 <translation id="2362083820973145409">Logget på som <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Åpner innstillinger.</translation>
@@ -896,6 +898,7 @@ Google-kontoen din kan ha andre former for nettleserlogger, for eksempel søk og
 <translation id="4864369630010738180">Logger på ...</translation>
 <translation id="4866368707455379617">Kan ikke installere <ph name="MODULE" /> for Chrome</translation>
 <translation id="4875775213178255010">Innholdsforslag</translation>
+<translation id="4876880121961092787">Skjul bokmerkeraden</translation>
 <translation id="4877678010818027629">Slå på Inkognitomodus</translation>
 <translation id="4878404682131129617">Kunne ikke opprette tunnel via proxy-tjener.</translation>
 <translation id="4880127995492972015">Oversett</translation>
@@ -1268,6 +1271,7 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="6437162790453527153">Logg på for å få blant annet bokmerkene dine på alle enhetene dine</translation>
 <translation id="6437478888915024427">Sideinformasjon</translation>
 <translation id="6440291723980579689">Sider lastes bare inn etter at du har åpnet dem</translation>
+<translation id="6441377161852435370">Legg fanen til på leselisten</translation>
 <translation id="6441734959916820584">Navnet er for langt</translation>
 <translation id="6444291413624515012">Fanegruppen <ph name="TAB_GROUP_TITLE" /> ble lukket</translation>
 <translation id="6452534462676960500">Ny aktivitet</translation>
@@ -1357,6 +1361,7 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="6787600234697426339">Vindusgrense er nådd på <ph name="MAX_INSTANCE_COUNT" /></translation>
 <translation id="6795633245022906657">Åpner raskt en ny fane. For å redigere denne snarveien, gå til Innstillinger.</translation>
 <translation id="679588508577699489">Gjør Chrome til standardnettleser</translation>
+<translation id="679845623837196966">Vis leselisten</translation>
 <translation id="679956319013005046">For å angi den foretrukne tjenesten for autofyll, legg til tjenesten i <ph name="BEGIN_LINK" />Android-innstillingene<ph name="END_LINK" /> først.</translation>
 <translation id="6802555630140434547">Vinduet blir lukket</translation>
 <translation id="6803791793483522764">Gjennomgå varsler</translation>
@@ -1657,6 +1662,7 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />slett Chrome-dataene i
 <translation id="7934668619883965330">Kan ikke laste ned filen. Filformatet støttes ikke.</translation>
 <translation id="7951102827450076904">Åpne alltid nedlastede PDF-filer</translation>
 <translation id="7952479614398473176">For å åpne et nytt vindu må du redusere det totale antallet aktive vinduer til <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> eller færre.</translation>
+<translation id="7956713633345437162">Bokmerker for mobil</translation>
 <translation id="7957413488482743710">Et virtuelt kort skjuler det faktiske kortet ditt for å beskytte deg mot potensiell svindel. <ph name="BEGIN_LINK1" />Finn ut mer om virtuelle kort<ph name="END_LINK1" /></translation>
 <translation id="7959485987650214982">Faner på denne enheten</translation>
 <translation id="7961926449547174351">Du har slått av tilgang til Lagring. Gå til Innstillinger for å slå på tilgangen.</translation>
@@ -1845,6 +1851,7 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />slett Chrome-dataene i
 <translation id="867914734596684889">Vis eller skjul bokmerkeraden</translation>
 <translation id="8683039184091909753">bilde</translation>
 <translation id="8688183792442786085"><ph name="TAB_TITLE" /> – valgt fane</translation>
+<translation id="8696297579102085705">Send til enheten din</translation>
 <translation id="8697753151306746444">Del vinduet eller skjermen i stedet</translation>
 <translation id="8699120352855309748">Ikke tilby å oversette disse språkene</translation>
 <translation id="8712637175834984815">Skjønner</translation>

@@ -316,7 +316,6 @@
 <translation id="1463793142714244641">Proprietăți deținute pe durată limitată și proprietăți de vacanță</translation>
 <translation id="1465457928007067810">Codul IBAN a fost salvat în Contul Google</translation>
 <translation id="1467432559032391204">Stânga</translation>
-<translation id="1468653229182955856"><ph name="ONE_TIME_CODE" /> este codul tău pentru ca <ph name="EMBEDDED_ORIGIN" /> să continue pe <ph name="TOP_ORIGIN" /></translation>
 <translation id="1472675084647422956">Afișați mai multe</translation>
 <translation id="1473183651233018052">JIS B10</translation>
 <translation id="1473495410389165587">Introdu trei sau mai multe cuvinte pentru a obține ajutor la scriere</translation>
@@ -549,6 +548,7 @@
 <translation id="1832474362231610822">Fotografia a fost salvată în OneDrive</translation>
 <translation id="1832730227369924598">Sincronizarea desktopului</translation>
 <translation id="1834452765064623979">Construcție și întreținere</translation>
+<translation id="1837606605602726453">Scorul de risc și categoriile sunt ignorate deoarece extensia este permisă sau blocată în mod explicit de administrator.</translation>
 <translation id="1838374766361614909">Șterge căutarea</translation>
 <translation id="1839331950812095887">câteva cuvinte care îți prezintă ideile</translation>
 <translation id="1839551713262164453">Validarea valorilor de politică a returnat erori</translation>
@@ -1860,6 +1860,7 @@ Pentru a ascunde opțiunile de plată mai târziu, accesează <ph name="BEGIN_LI
 <translation id="3875783148670536197">Arată-mi cum</translation>
 <translation id="3877603629930976930">Nu trimite</translation>
 <translation id="3878445208930547646">Copierea de pe acest site nu este permisă</translation>
+<translation id="3879674895057686427">Alege limba în care vrei să traduci</translation>
 <translation id="3879748587602334249">Manager de descărcări</translation>
 <translation id="3880456882942693779">Artă și divertisment</translation>
 <translation id="3880589673277376494">Internet și telecomunicații</translation>
@@ -3505,7 +3506,6 @@ Pentru a ascunde opțiunile de plată mai târziu, accesează <ph name="BEGIN_LI
 <translation id="6424600253695044005">Stocare în cloud</translation>
 <translation id="6425092077175753609">Material</translation>
 <translation id="6427730057873428458">Îndoire de tip fereastră</translation>
-<translation id="6428450836711225518">Confirmă numărul de telefon</translation>
 <translation id="6429267199680088961">A4 Tab</translation>
 <translation id="643051589346665201">Schimbă parola Google</translation>
 <translation id="6431556523611594411">Permite accesul la filele deschise</translation>
@@ -4454,7 +4454,6 @@ Detalii suplimentare:
 <translation id="7874796722855317864"><ph name="PROXY_UNKNOWN_CONDITION" /> nu este un tip de condiție cunoscut.</translation>
 <translation id="7877007680666472091">ID-uri de conținut protejat</translation>
 <translation id="7878562273885520351">Este posibil ca parola să fie compromisă</translation>
-<translation id="7881044256965445977">Caută și conectează-te la orice dispozitiv din rețeaua locală</translation>
 <translation id="7885670691503039914">Vei primi alerte prin e-mail dacă prețul scade pe orice site. Pagina se va salva în dosarul de marcaje <ph name="LAST_BOOKMARKS_FOLDER" />.</translation>
 <translation id="7886897188117641322">Alege categoriile ample de subiecte care pot fi folosite pentru personalizarea anunțurilor</translation>
 <translation id="7887683347370398519">Verifică codul CVC și încearcă din nou</translation>
@@ -4981,7 +4980,6 @@ Detalii suplimentare:
 <translation id="8737685506611670901">Deschide linkurile <ph name="PROTOCOL" /> și nu <ph name="REPLACED_HANDLER_TITLE" /></translation>
 <translation id="8738058698779197622">Pentru a stabili o conexiune securizată, ceasul trebuie să fie setat corect. Aceasta deoarece certificatele pe care site-urile le folosesc pentru a se identifica sunt valabile numai pentru anumite intervale de timp. Din moment ce ora de pe dispozitiv este incorectă, Chromium nu poate verifica aceste certificate.</translation>
 <translation id="8740359287975076522">&lt;abbr id="dnsDefinition"&gt;Adresa DNS&lt;/abbr&gt; pentru <ph name="HOST_NAME" /> nu a putut fi găsită. Se diagnostichează problema.</translation>
-<translation id="8742371904523228557"><ph name="ONE_TIME_CODE" /> este codul tău pentru <ph name="ORIGIN" /></translation>
 <translation id="874918643257405732">Marchează această filă</translation>
 <translation id="8751426954251315517">Încearcă mai târziu</translation>
 <translation id="8753913772043329557">Jurnale de politici</translation>
@@ -5159,7 +5157,6 @@ Detalii suplimentare:
 <translation id="9042827002460091668">Verifică-ți conexiunea la internet și încearcă din nou</translation>
 <translation id="9043161870923715789">Modul AI</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> – <ph name="RESULT_PRODUCT_SOURCE" /></translation>
-<translation id="9046578823518542618"><ph name="URL" /> dorește să caute și să se conecteze la orice dispozitiv din rețeaua locală</translation>
 <translation id="9046864189129893978">Microfoane (<ph name="MICS_COUNT" />)</translation>
 <translation id="9046865906192819796">Ecranul cu termenii și condițiile opțiunii Cumpără acum, plătește mai târziu deschis la jumătate din înălțime.</translation>
 <translation id="9047528041803621289">Setarea prestabilită îți dă posibilitatea să cauți pe web. Poți modifica opțiunea în setări.</translation>

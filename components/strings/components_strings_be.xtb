@@ -316,7 +316,6 @@
 <translation id="1463793142714244641">Арэнда жылля на пэўны час</translation>
 <translation id="1465457928007067810">Нумар IBAN захаваны ва Уліковым запісе Google</translation>
 <translation id="1467432559032391204">Злева</translation>
-<translation id="1468653229182955856">Каб працягнуць работу на сайце <ph name="TOP_ORIGIN" />, увядзіце код <ph name="ONE_TIME_CODE" /> для фрэйма <ph name="EMBEDDED_ORIGIN" /></translation>
 <translation id="1472675084647422956">Разгарнуць</translation>
 <translation id="1473183651233018052">JIS B10</translation>
 <translation id="1473495410389165587">Каб атрымаць дапамогу з напісаннем, увядзіце прынамсі тры словы</translation>
@@ -549,6 +548,7 @@
 <translation id="1832474362231610822">Фота захавана ў OneDrive</translation>
 <translation id="1832730227369924598">Сінхранізацыя працоўнага стала</translation>
 <translation id="1834452765064623979">Будаўніцтва і абслугоўванне</translation>
+<translation id="1837606605602726453">Ацэнка рызыкі і катэгорыі ігнаруюцца, бо пашырэнне дазволена або заблакіравана адміністратарам.</translation>
 <translation id="1838374766361614909">Ачысціць поле пошуку</translation>
 <translation id="1839331950812095887">Некалькі слоў, якія падсумуюць вашы думкі.</translation>
 <translation id="1839551713262164453">Пра праверцы значэнняў палітыкі адбыліся памылкі</translation>
@@ -1860,6 +1860,7 @@
 <translation id="3875783148670536197">Паказаць</translation>
 <translation id="3877603629930976930">Не абагульваць</translation>
 <translation id="3878445208930547646">Капіраванне змесціва з гэтага сайта забаронена</translation>
+<translation id="3879674895057686427">Выбраць мову, на якую трэба перакласці</translation>
 <translation id="3879748587602334249">Менеджар спамповак</translation>
 <translation id="3880456882942693779">Мастацтва і забавы</translation>
 <translation id="3880589673277376494">Інтэрнэт і тэлекамунікацыі</translation>
@@ -3504,7 +3505,6 @@
 <translation id="6424600253695044005">Воблачнае сховішча</translation>
 <translation id="6425092077175753609">Матэрыял</translation>
 <translation id="6427730057873428458">Згіб "вароты"</translation>
-<translation id="6428450836711225518">Спраўдзіце свой нумар тэлефона</translation>
 <translation id="6429267199680088961">A4 Tab</translation>
 <translation id="643051589346665201">Змяніць пароль Google</translation>
 <translation id="6431556523611594411">Абагульваць адкрытыя ўкладкі</translation>
@@ -4453,7 +4453,6 @@
 <translation id="7874796722855317864">"<ph name="PROXY_UNKNOWN_CONDITION" />" не з’яўляецца вядомым тыпам умовы.</translation>
 <translation id="7877007680666472091">ідэнтыфікатары абароненага змесціва</translation>
 <translation id="7878562273885520351">Ваш пароль можа быць раскрыты</translation>
-<translation id="7881044256965445977">Можа шукаць прылады ў вашай лакальнай сетцы і падключацца да іх</translation>
 <translation id="7885670691503039914">Пры зніжэнні цаны на любым з сайтаў вы будзеце атрымліваць абвесткі па электроннай пошце. Гэта старонка будзе захоўвацца ў папцы "<ph name="LAST_BOOKMARKS_FOLDER" />".</translation>
 <translation id="7886897188117641322">Укажыце, якія катэгорыі тэм могуць выкарыстоўвацца для персаналізацыі рэкламы</translation>
 <translation id="7887683347370398519">Праверце код CVC і паўтарыце спробу</translation>
@@ -4979,7 +4978,6 @@
 <translation id="8737685506611670901">Адкрываць спасылкі <ph name="PROTOCOL" /> замест <ph name="REPLACED_HANDLER_TITLE" /></translation>
 <translation id="8738058698779197622">Для ўстанаўлення бяспечнага злучэння трэба, каб гадзіннік быў наладжаны правільна. Гэта патрабуецца таму, што сертыфікаты, якія выкарыстоўваюцца вэб-сайтамі для іх ідэнтыфікацыі, дзейнічаюць толькі пэўны час. Калі гадзіннік на вашай прыладзе наладжаны няправільна, Chromium не зможа спраўдзіць гэтыя сертыфікаты.</translation>
 <translation id="8740359287975076522">&lt;abbr id="dnsDefinition"&gt;Адрас DNS &lt;/abbr&gt; хоста <ph name="HOST_NAME" /> не знойдзены. Дыягностыка праблемы.</translation>
-<translation id="8742371904523228557"><ph name="ONE_TIME_CODE" /> – ваш код для <ph name="ORIGIN" /></translation>
 <translation id="874918643257405732">Дадаць гэту ўкладку ў закладкі</translation>
 <translation id="8751426954251315517">Паўтарыце спробу пазней</translation>
 <translation id="8753913772043329557">Журналы палітыкі</translation>
@@ -5157,7 +5155,6 @@
 <translation id="9042827002460091668">Праверце падключэнне да інтэрнэту і паўтарыце спробу</translation>
 <translation id="9043161870923715789">Рэжым AI</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" />.–.<ph name="RESULT_PRODUCT_SOURCE" /></translation>
-<translation id="9046578823518542618">Сайт "<ph name="URL" />" запытвае дазвол на пошук прылад у лакальнай сетцы і падключэнне да іх</translation>
 <translation id="9046864189129893978">Мікрафоны (<ph name="MICS_COUNT" />)</translation>
 <translation id="9046865906192819796">Экран з умовамі выкарыстання куплі ў растэрміноўку адкрыты на палову вышыні.</translation>
 <translation id="9047528041803621289">Выбраная вамі стандартная праграма дазваляе выконваць пошук у інтэрнэце. Яе можна змяніць у наладах.</translation>

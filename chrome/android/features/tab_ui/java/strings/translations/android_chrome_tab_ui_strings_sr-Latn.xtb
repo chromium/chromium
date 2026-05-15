@@ -37,6 +37,7 @@
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{Obeležite <ph name="TABS_COUNT_ONE" /> izabranu karticu}one{Obeležite <ph name="TABS_COUNT_MANY" /> izabranu karticu}few{Obeležite <ph name="TABS_COUNT_MANY" /> izabrane kartice}other{Obeležite <ph name="TABS_COUNT_MANY" /> izabranih kartica}}</translation>
 <translation id="2055057176188061528">Izaberite grupu kartica ili napravite novu grupu kartica</translation>
 <translation id="2074527029802029717">Otkači karticu</translation>
+<translation id="2111670510994270194">Nova kartica na desnoj strani</translation>
 <translation id="2118649612461486615">Detalji o prodavnici</translation>
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{Zatvorene kartice i grupe možete ponovo da otvorite u odeljku Nedavne kartice i odeljku Grupe kartica. Kartica bez arhiviranja neće biti dostupna.}one{Zatvorene kartice i grupe možete ponovo da otvorite u odeljku Nedavne kartice i odeljku Grupe kartica. # kartica bez arhiviranja neće biti dostupna.}few{Zatvorene kartice i grupe možete ponovo da otvorite u odeljku Nedavne kartice i odeljku Grupe kartica. # kartice bez arhiviranja neće biti dostupne.}other{Zatvorene kartice i grupe možete ponovo da otvorite u odeljku Nedavne kartice i odeljku Grupe kartica. # kartica bez arhiviranja neće biti dostupno.}}</translation>
 <translation id="2153899164605463849">{TAB_COUNT,plural, =1{Uključi zvuk sajta}one{Uključi zvuk sajtova}few{Uključi zvuk sajtova}other{Uključi zvuk sajtova}}</translation>

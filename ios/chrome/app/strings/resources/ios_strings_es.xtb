@@ -69,6 +69,7 @@
 <translation id="1253032109800629289">Ocultar Recibe notificaciones de seguimiento de precios</translation>
 <translation id="1254424942107648268">Buscar anterior</translation>
 <translation id="1258491128795710625">Novedades</translation>
+<translation id="126093867734601535">Ajusta la altura de la hoja.</translation>
 <translation id="1262724000444746916">Ocultar Añadir a marcadores</translation>
 <translation id="1263231323834454256">Lista de lectura</translation>
 <translation id="1263433075299269530">Tu última pestaña abierta</translation>
@@ -336,7 +337,6 @@
 <translation id="2119962645034852864">Algunos servicios no están disponibles en tu cuenta</translation>
 <translation id="2120553909046681540">Tu organización ha desactivado la navegación privada.</translation>
 <translation id="2122754583996902531">Tu navegador está administrado. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
-<translation id="21243612977487926">Las conversaciones de tu organización no se usan para mejorar nuestros modelos. Gemini puede mostrar información incorrecta (incluidos datos sobre personas), así que comprueba sus respuestas. <ph name="YOUR_PRIVACY_GEMINI" /></translation>
 <translation id="2139867232736819575">Buscar el texto que has copiado</translation>
 <translation id="2147127444698817042">Solo disponible en iPhone</translation>
 <translation id="2148799636999124959">Inicia sesión rápidamente en sitios y aplicaciones con tus contraseñas guardadas.</translation>
@@ -678,6 +678,7 @@
 <translation id="340669334496430859">Última modificación</translation>
 <translation id="3409785640040772790">Maps</translation>
 <translation id="3416023309465857378">25 oct 2023</translation>
+<translation id="3426715535827854458">Ocultar Ocultar barra de herramientas</translation>
 <translation id="3435738964857648380">Seguridad</translation>
 <translation id="3441673211568148613">Mantén tu navegación privada</translation>
 <translation id="3443810440409579745">Se ha recibido una pestaña.</translation>
@@ -722,7 +723,6 @@
 <translation id="3565012355885596568">No se han podido cargar las imágenes</translation>
 <translation id="3565930036634619844">Pestaña <ph name="TAB_INDEX" /> de <ph name="NUMBER_OF_TABS" />.</translation>
 <translation id="3567168891086460374">Guardar de otra forma</translation>
-<translation id="3571703298474554279">Una forma más rápida de usar la aplicación</translation>
 <translation id="3572503683475187385">La pestaña actual se comparte con Gemini cuando inicias una conversación. Cuando compartes una pestaña con Gemini, el contenido y la URL se envían a Google. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="3572607909481582402">En tu cuenta de Google</translation>
 <translation id="3575234738189584619">Buscar con Lens</translation>
@@ -980,6 +980,7 @@
 <translation id="4489536976005181779">{count,plural, =1{Página añadida a la lista de lectura de tu cuenta ({email})}other{Páginas añadidas a la lista de lectura de tu cuenta ({email})}}</translation>
 <translation id="4493604894403585654">Has iniciado sesión como <ph name="USER_EMAIL" />. Puedes detener la sincronización en cualquier momento desde la configuración. Google puede personalizar la Búsqueda y otros servicios en función de tu historial.</translation>
 <translation id="4502423230170890588">Eliminar del dispositivo</translation>
+<translation id="4508486880075514067">Ampliar a pantalla completa</translation>
 <translation id="4508750114462689118">Cierra el inicio de sesión en la promoción</translation>
 <translation id="4509345063551561634">Ubicación:</translation>
 <translation id="4517684186578051919">Información del dispositivo</translation>
@@ -1212,6 +1213,7 @@
 <translation id="5242899254250321823">Cambiar contraseña en el sitio web</translation>
 <translation id="5248640482715684545">Este sitio está intentando abrir otra aplicación.</translation>
 <translation id="5250371859659394278">Desde un origen desconocido</translation>
+<translation id="525510229763628836">Minimizada</translation>
 <translation id="5269913829202614649">Personalizar página principal</translation>
 <translation id="5271265092610673171">{count,plural, =1{Un campo obligatorio está vacío. Rellénalo antes de guardar.}other{Algunos campos obligatorios están vacíos. Rellénalos antes de guardar.}}</translation>
 <translation id="5271549068863921519">Guardar contraseña</translation>
@@ -1323,7 +1325,6 @@ Handoff también debe estar habilitado en la sección General de Ajustes del sis
 <translation id="5652623411397330904">Los productos que sigas aparecerán aquí.</translation>
 <translation id="5656431592348714536">Calendario mejorado</translation>
 <translation id="5659593005791499971">Correo electrónico</translation>
-<translation id="5665739277590037307">Se aplican los <ph name="GOOGLE_TERMS" /> y el <ph name="GEMINI_APPS_PRIVACY" />. Gemini puede cometer errores, así que comprueba sus respuestas.</translation>
 <translation id="5666313630530585305">Inicia sesión en un sitio web.</translation>
 <translation id="5669335982068190158">Se ha cerrado tu sesión al restablecer tu iPhone. Toca Continuar abajo para iniciar sesión.</translation>
 <translation id="5669528293118408608">www</translation>
@@ -1666,6 +1667,7 @@ Handoff también debe estar habilitado en la sección General de Ajustes del sis
 <translation id="6746338529702829275">Revisa los datos de tu cuenta</translation>
 <translation id="6750456911389438250">{count,plural, =1{{count} elemento del historial importado}other{{count} elementos del historial importados}}</translation>
 <translation id="6755200887046212842">Gestionar cuentas</translation>
+<translation id="6757899787818440812">Altura media</translation>
 <translation id="6759709389246683070">Puedes mantener pulsada esta pestaña para configurar un recordatorio con el fin de volver a visitarla más adelante</translation>
 <translation id="6761393919622941301">Audio</translation>
 <translation id="6770452996697898492">[BOOKED]</translation>
@@ -1742,6 +1744,7 @@ Handoff también debe estar habilitado en la sección General de Ajustes del sis
 <translation id="7015418667643980944">Vista dividida</translation>
 <translation id="7016070607649558507">Tienes 1 contraseña poco segura. Corrige el problema para protegerte.</translation>
 <translation id="7016958933495968912">Opciones de Discover</translation>
+<translation id="7019477124580742994">Búsqueda de <ph name="SEARCH_PROVIDER" /></translation>
 <translation id="7029809446516969842">Contraseñas</translation>
 <translation id="7035825883570480307">¿Activar las notificaciones?</translation>
 <translation id="7039345315346323556">Recientes</translation>
@@ -1751,7 +1754,6 @@ Handoff también debe estar habilitado en la sección General de Ajustes del sis
 <translation id="7063811929043357292">Tu padre o madre gestiona tu cuenta.
 <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="7067780033517902110">Todos los archivos</translation>
-<translation id="707086654079606593">Gestionar direcciones…</translation>
 <translation id="7080806333218412752">Envía URL a Navegación segura para que las compruebe. También envía una muestra pequeña de páginas, descargas, actividad de las extensiones e información del sistema para ayudar a detectar nuevas amenazas. Cuando inicias sesión, vincula estos datos a tu cuenta de Google de forma temporal para protegerte en las aplicaciones de Google.</translation>
 <translation id="7082853213442715471">Cuando está activado, se bloquean algunas tecnologías web, lo que puede que haga que algunos sitios web se carguen más despacio o no funcionen correctamente.</translation>
 <translation id="7091023926159231962">{count,plural, =1{No se ha podido importar {count} contraseña}other{No se han podido importar {count} contraseñas}}</translation>
@@ -1801,7 +1803,6 @@ Handoff también debe estar habilitado en la sección General de Ajustes del sis
 <translation id="7275307913765547631">Términos del Servicio de Ubicación de Corea</translation>
 <translation id="728025568708172005">Ver ahora</translation>
 <translation id="7280980607183752256">Este archivo no se puede importar</translation>
-<translation id="7281202269687163394">Tu privacidad y Gemini.</translation>
 <translation id="7282197670900591579">Tema mostaza</translation>
 <translation id="7293429513719260019">Seleccionar idioma</translation>
 <translation id="7300448350764260141">Añade una capa adicional de protección frente a las amenazas online.</translation>
@@ -1813,7 +1814,6 @@ Handoff también debe estar habilitado en la sección General de Ajustes del sis
 <translation id="7345061034321640811">Importación no permitida</translation>
 <translation id="7347998088283246662">Importa tus contraseñas, historial, marcadores y más</translation>
 <translation id="7352651011704765696">Se ha producido un problema</translation>
-<translation id="7363497636543208734">Ahora es más fácil moverse por la aplicación.</translation>
 <translation id="7364796246159120393">Seleccionar archivo</translation>
 <translation id="736564850024123010">Cambia la posición de la barra de direcciones para personalizar tu experiencia.</translation>
 <translation id="7366909168761621528">Datos de navegación</translation>
@@ -2125,6 +2125,7 @@ Handoff también debe estar habilitado en la sección General de Ajustes del sis
 <translation id="8368001212524806591">Seguir precio</translation>
 <translation id="8368198938968349418">Activar Autocompletar…</translation>
 <translation id="8370406443343902172">Ir a Configuración…</translation>
+<translation id="8370929854657845191">Ampliar a Medio</translation>
 <translation id="8372471489238799313">{count,plural, =1{Eliminar dirección}other{Eliminar direcciones}}</translation>
 <translation id="8378714024927312812">Gestionado por tu organización</translation>
 <translation id="8385363453480067273">Busca información de lo que ves con Google Lens</translation>

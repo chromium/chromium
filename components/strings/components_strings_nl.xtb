@@ -316,7 +316,6 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="1463793142714244641">Timesharing en vakantiehuizen</translation>
 <translation id="1465457928007067810">IBAN opgeslagen in je Google-account</translation>
 <translation id="1467432559032391204">Links</translation>
-<translation id="1468653229182955856"><ph name="ONE_TIME_CODE" /> is je code om door te gaan met <ph name="EMBEDDED_ORIGIN" /> op <ph name="TOP_ORIGIN" /></translation>
 <translation id="1472675084647422956">Meer bekijken</translation>
 <translation id="1473183651233018052">JIS B10</translation>
 <translation id="1473495410389165587">Voer 3 of meer woorden in om schrijfhulp te krijgen</translation>
@@ -1856,6 +1855,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="3875783148670536197">Laten zien</translation>
 <translation id="3877603629930976930">Niet delen</translation>
 <translation id="3878445208930547646">Kopiëren vanaf deze site is niet toegestaan</translation>
+<translation id="3879674895057686427">Kies de taal waarnaar je wilt vertalen</translation>
 <translation id="3879748587602334249">Downloadbeheer</translation>
 <translation id="3880456882942693779">Kunst en entertainment</translation>
 <translation id="3880589673277376494">Internet en telecom</translation>
@@ -3440,6 +3440,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="634500758737709758">Route</translation>
 <translation id="6348220984832452017">Actieve variaties</translation>
 <translation id="6349101878882523185"><ph name="APP_NAME" /> installeren</translation>
+<translation id="6350739641326887427">Betaal zonder de Pix-code te kopiëren en plakken. <ph name="BEGIN_LINK1" />Kijken hoe het werkt<ph name="END_LINK1" /></translation>
 <translation id="6351658970066645919">Browsegegevens verwijderen</translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{Geen}=1{1 wachtwoord (voor <ph name="DOMAIN_LIST" />, gesynchroniseerd)}=2{2 wachtwoorden (voor <ph name="DOMAIN_LIST" />, gesynchroniseerd)}other{# wachtwoorden (voor <ph name="DOMAIN_LIST" />, gesynchroniseerd)}}</translation>
 <translation id="6354918092619878358">Elliptische SECG-kromme secp256r1 (ook wel ANSI X9.62 prime256v1, NIST P-256)</translation>
@@ -3498,7 +3499,6 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="6424600253695044005">Cloudopslag</translation>
 <translation id="6425092077175753609">Material</translation>
 <translation id="6427730057873428458">Luikvouw</translation>
-<translation id="6428450836711225518">Je telefoonnummer verifiëren</translation>
 <translation id="6429267199680088961">A4 Tab</translation>
 <translation id="643051589346665201">Google-wachtwoord wijzigen</translation>
 <translation id="6431556523611594411">Geopende tabbladen delen</translation>
@@ -3655,6 +3655,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="668132230070712111">Video opgeslagen in Google Drive</translation>
 <translation id="6681790815630918386">CVC opgeslagen</translation>
 <translation id="6683022854667115063">Hoofdtelefoon</translation>
+<translation id="6686570026048064255">Als je detectie van Pix-codes wilt uitzetten, ga je naar de <ph name="BEGIN_LINK1" />Chrome-instellingen<ph name="END_LINK1" /></translation>
 <translation id="6687230248707087982">Envelop (effen)</translation>
 <translation id="6687335167692595844">Lettergrootte aangevraagd</translation>
 <translation id="6688743156324860098">Updaten…</translation>
@@ -4446,7 +4447,6 @@ Aanvullende informatie:
 <translation id="7874796722855317864"><ph name="PROXY_UNKNOWN_CONDITION" /> is geen bekend type voorwaarde.</translation>
 <translation id="7877007680666472091">ID's van beschermde content</translation>
 <translation id="7878562273885520351">Je wachtwoord is mogelijk gehackt</translation>
-<translation id="7881044256965445977">Apparaten in je lokale netwerk zoeken en verbinding ermee maken</translation>
 <translation id="7885670691503039914">Je krijgt e-mailmeldingen bij een prijsdaling op een site. Deze pagina wordt opgeslagen in de bookmarkmap <ph name="LAST_BOOKMARKS_FOLDER" />.</translation>
 <translation id="7886897188117641322">Kies welke brede onderwerpcategorieën kunnen worden gebruikt om advertenties te personaliseren</translation>
 <translation id="7887683347370398519">Controleer je CVC-code en probeer het opnieuw</translation>
@@ -4972,7 +4972,6 @@ Aanvullende informatie:
 <translation id="8737685506611670901">Links voor <ph name="PROTOCOL" /> openen in plaats van <ph name="REPLACED_HANDLER_TITLE" /></translation>
 <translation id="8738058698779197622">Als je een beveiligde verbinding tot stand wilt brengen, moet je klok goed zijn ingesteld. Dit moet omdat de certificaten die deze websites gebruiken om zichzelf te identificeren, slechts gedurende bepaalde perioden geldig zijn. Aangezien de klok van je apparaat niet goed is ingesteld, kan Chromium deze certificaten niet verifiëren.</translation>
 <translation id="8740359287975076522">Het &lt;abbr id="dnsDefinition"&gt;DNS-adres&lt;/abbr&gt; van <ph name="HOST_NAME" /> kan niet worden gevonden. Er wordt een diagnose van het probleem uitgevoerd.</translation>
-<translation id="8742371904523228557">Je code voor <ph name="ORIGIN" /> is<ph name="ONE_TIME_CODE" />.</translation>
 <translation id="874918643257405732">Bookmark toevoegen voor dit tabblad</translation>
 <translation id="8751426954251315517">Probeer het de volgende keer opnieuw</translation>
 <translation id="8753913772043329557">Beleidslogboeken</translation>
@@ -5150,7 +5149,6 @@ Aanvullende informatie:
 <translation id="9042827002460091668">Check de internetverbinding en probeer het opnieuw</translation>
 <translation id="9043161870923715789">AI-modus</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
-<translation id="9046578823518542618"><ph name="URL" /> wil apparaten in je lokale netwerk zoeken en verbinding ermee maken</translation>
 <translation id="9046864189129893978">Microfoons (<ph name="MICS_COUNT" />)</translation>
 <translation id="9046865906192819796">Scherm met servicevoorwaarden voor Koop nu, betaal later is op halve hoogte geopend.</translation>
 <translation id="9047528041803621289">Met je standaard zoekmachine kun je op internet zoeken. Je kunt dit wijzigen in de instellingen.</translation>

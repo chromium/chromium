@@ -316,7 +316,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="1463793142714244641">Multiproprietà e case vacanze</translation>
 <translation id="1465457928007067810">IBAN salvato nel tuo Account Google</translation>
 <translation id="1467432559032391204">Sinistra</translation>
-<translation id="1468653229182955856"><ph name="ONE_TIME_CODE" /> è il tuo codice di <ph name="EMBEDDED_ORIGIN" /> per continuare su <ph name="TOP_ORIGIN" /></translation>
 <translation id="1472675084647422956">Mostra altro</translation>
 <translation id="1473183651233018052">JIS B10</translation>
 <translation id="1473495410389165587">Inserisci 3 o più parole per ricevere aiuto per la scrittura</translation>
@@ -549,6 +548,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="1832474362231610822">Foto salvata su OneDrive</translation>
 <translation id="1832730227369924598">Sincronizzazione scrivania</translation>
 <translation id="1834452765064623979">Edilizia e manutenzione</translation>
+<translation id="1837606605602726453">Il punteggio di rischio e le categorie vengono ignorati perché l'estensione è esplicitamente consentita o bloccata dall'amministratore.</translation>
 <translation id="1838374766361614909">Cancella ricerca</translation>
 <translation id="1839331950812095887">poche parole che riassumono i tuoi pensieri</translation>
 <translation id="1839551713262164453">Convalida dei valori della norma non riuscita con errori</translation>
@@ -1857,6 +1857,7 @@ Per nascondere le opzioni di pagamento posticipato, vai alle <ph name="BEGIN_LIN
 <translation id="3875783148670536197">Mostrami come fare</translation>
 <translation id="3877603629930976930">Non condividere</translation>
 <translation id="3878445208930547646">La copia da questo sito non è consentita</translation>
+<translation id="3879674895057686427">Scegli la lingua in cui tradurre</translation>
 <translation id="3879748587602334249">Gestione dei download</translation>
 <translation id="3880456882942693779">Arti e intrattenimento</translation>
 <translation id="3880589673277376494">Internet e telecomunicazioni</translation>
@@ -3442,6 +3443,7 @@ Per nascondere le opzioni di pagamento posticipato, vai alle <ph name="BEGIN_LIN
 <translation id="634500758737709758">Indicazioni stradali</translation>
 <translation id="6348220984832452017">Varianti attive</translation>
 <translation id="6349101878882523185">Installa <ph name="APP_NAME" /></translation>
+<translation id="6350739641326887427">Paga senza copiare e incollare il codice Pix. <ph name="BEGIN_LINK1" />Scopri come funziona<ph name="END_LINK1" /></translation>
 <translation id="6351658970066645919">Elimina dati di navigazione</translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{Nessuna}=1{1 password per <ph name="DOMAIN_LIST" /> (sincronizzata)}=2{2 password per <ph name="DOMAIN_LIST" /> (sincronizzate)}other{# password per (<ph name="DOMAIN_LIST" />, sincronizzate)}}</translation>
 <translation id="6354918092619878358">Curva ellittica SECG secp256r1 (anche nota come ANSI X9.62 prime256v1, NIST P-256)</translation>
@@ -3500,7 +3502,6 @@ Per nascondere le opzioni di pagamento posticipato, vai alle <ph name="BEGIN_LIN
 <translation id="6424600253695044005">Spazio di archiviazione sul cloud</translation>
 <translation id="6425092077175753609">Material</translation>
 <translation id="6427730057873428458">Piegatura a finestra</translation>
-<translation id="6428450836711225518">Verifica il numero di telefono</translation>
 <translation id="6429267199680088961">A4 Tab</translation>
 <translation id="643051589346665201">Cambia la password Google</translation>
 <translation id="6431556523611594411">Condividi schede aperte</translation>
@@ -3657,6 +3658,7 @@ Per nascondere le opzioni di pagamento posticipato, vai alle <ph name="BEGIN_LIN
 <translation id="668132230070712111">Video salvato su Google Drive</translation>
 <translation id="6681790815630918386">CVC salvato</translation>
 <translation id="6683022854667115063">Cuffie</translation>
+<translation id="6686570026048064255">Per disattivare il rilevamento del codice Pix, vai alle <ph name="BEGIN_LINK1" />Impostazioni di Chrome<ph name="END_LINK1" /></translation>
 <translation id="6687230248707087982">Busta (normale)</translation>
 <translation id="6687335167692595844">Dimensioni carattere richieste</translation>
 <translation id="6688743156324860098">Aggiorna…</translation>
@@ -4448,7 +4450,6 @@ Ulteriori dettagli:
 <translation id="7874796722855317864">"<ph name="PROXY_UNKNOWN_CONDITION" />" non è un tipo di condizione noto.</translation>
 <translation id="7877007680666472091">ID contenuti protetti</translation>
 <translation id="7878562273885520351">La tua password potrebbe essere stata compromessa</translation>
-<translation id="7881044256965445977">Cercare e connettersi a qualsiasi dispositivo sulla rete locale</translation>
 <translation id="7885670691503039914">Riceverai avvisi via email se il prezzo calerà su qualsiasi sito. Questa pagina verrà salvata nella cartella dei preferiti "<ph name="LAST_BOOKMARKS_FOLDER" />".</translation>
 <translation id="7886897188117641322">Scegli quali categorie di argomenti possono essere utilizzate per personalizzare gli annunci</translation>
 <translation id="7887683347370398519">Controlla il tuo codice CVC e riprova</translation>
@@ -4974,7 +4975,6 @@ Ulteriori dettagli:
 <translation id="8737685506611670901">Aprire link <ph name="PROTOCOL" /> anziché <ph name="REPLACED_HANDLER_TITLE" /></translation>
 <translation id="8738058698779197622">Per poter stabilire una connessione protetta, l'orologio deve essere impostato correttamente perché i certificati utilizzati dai siti web per identificarsi sono validi soltanto per determinati periodi di tempo. L'orologio del dispositivo è sbagliato, pertanto Chromium non può verificare i certificati.</translation>
 <translation id="8740359287975076522">Impossibile trovare l'&lt;abbr id="dnsDefinition"&gt;indirizzo DNS&lt;/abbr&gt; di <ph name="HOST_NAME" />. Stiamo analizzando il problema.</translation>
-<translation id="8742371904523228557"><ph name="ONE_TIME_CODE" /> è il tuo codice per <ph name="ORIGIN" /></translation>
 <translation id="874918643257405732">Aggiungi questa scheda ai preferiti</translation>
 <translation id="8751426954251315517">Riprova la prossima volta</translation>
 <translation id="8753913772043329557">Log delle policy</translation>
@@ -5152,7 +5152,6 @@ Ulteriori dettagli:
 <translation id="9042827002460091668">Controlla la connessione a Internet e riprova</translation>
 <translation id="9043161870923715789">AI Mode</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
-<translation id="9046578823518542618"><ph name="URL" /> vuole cercare e connettersi a qualsiasi dispositivo sulla tua rete locale</translation>
 <translation id="9046864189129893978">Microfoni (<ph name="MICS_COUNT" />)</translation>
 <translation id="9046865906192819796">Schermata dei Termini di servizio di Buy now, pay later aperta nella parte inferiore dello schermo.</translation>
 <translation id="9047528041803621289">La ricerca predefinita ti consente di cercare sul web. Puoi modificare questa opzione nelle Impostazioni.</translation>

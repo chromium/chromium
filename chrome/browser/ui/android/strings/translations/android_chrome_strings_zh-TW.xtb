@@ -263,6 +263,7 @@
 <translation id="2184272387334793084">登入帳戶即可在任何裝置上存取自己的密碼及其他設定</translation>
 <translation id="218608176142494674">共用</translation>
 <translation id="2186779861549045980">你可以選擇要在 Google 帳戶中儲存哪些資料。\n你也可以查看及管理這些書籤、閱讀清單或密碼管理工具項目。</translation>
+<translation id="2190355936436201913">(空白)</translation>
 <translation id="219283042927675668">群組中的分頁</translation>
 <translation id="2194856509914051091">注意事項</translation>
 <translation id="2205701497928406883"><ph name="TAB_TITLE" />，固定的分頁，正在分享內容</translation>
@@ -300,6 +301,7 @@
 <translation id="233375395665273385">刪除並登出</translation>
 <translation id="2341410551640223969">無法安裝「<ph name="WEBAPK_NAME" />」。</translation>
 <translation id="2349710944427398404">Chrome 使用的資料總量，包括帳戶、書籤和儲存的設定</translation>
+<translation id="2354001756790975382">其他書籤</translation>
 <translation id="235789365079050412">Google 隱私權政策</translation>
 <translation id="2359808026110333948">繼續</translation>
 <translation id="2362083820973145409">目前登入的帳戶是<ph name="USER_NAME" />。<ph name="USER_EMAIL" />。開啟設定。</translation>
@@ -896,6 +898,7 @@
 <translation id="4864369630010738180">登入中...</translation>
 <translation id="4866368707455379617">無法為 Chrome 安裝 <ph name="MODULE" /></translation>
 <translation id="4875775213178255010">內容建議</translation>
+<translation id="4876880121961092787">隱藏書籤列</translation>
 <translation id="4877678010818027629">進入無痕模式</translation>
 <translation id="4878404682131129617">無法透過 Proxy 伺服器建立通道</translation>
 <translation id="4880127995492972015">翻譯...</translation>
@@ -1268,6 +1271,7 @@
 <translation id="6437162790453527153">只要在裝置上登入帳戶，即可存取你的書籤和其他資訊</translation>
 <translation id="6437478888915024427">頁面資訊</translation>
 <translation id="6440291723980579689">網頁只會在開啟後載入</translation>
+<translation id="6441377161852435370">將分頁新增至閱讀清單</translation>
 <translation id="6441734959916820584">這個名稱太長</translation>
 <translation id="6444291413624515012">已關閉「<ph name="TAB_GROUP_TITLE" />」分頁群組</translation>
 <translation id="6452534462676960500">新活動</translation>
@@ -1357,6 +1361,7 @@
 <translation id="6787600234697426339">已達 <ph name="MAX_INSTANCE_COUNT" /> 個視窗數量上限</translation>
 <translation id="6795633245022906657">快速開啟新分頁。如要編輯這個捷徑，請前往 [設定]。</translation>
 <translation id="679588508577699489">將 Chrome 設為預設瀏覽器</translation>
+<translation id="679845623837196966">顯示閱讀清單</translation>
 <translation id="679956319013005046">如要設定偏好的自動填入服務，請先在 <ph name="BEGIN_LINK" />Android 設定<ph name="END_LINK" />中新增該項服務。</translation>
 <translation id="6802555630140434547">視窗即將關閉</translation>
 <translation id="6803791793483522764">檢查通知權限</translation>
@@ -1657,6 +1662,7 @@
 <translation id="7934668619883965330">無法下載檔案，因為系統不支援檔案格式。</translation>
 <translation id="7951102827450076904">一律開啟下載好的 PDF</translation>
 <translation id="7952479614398473176">如要開啟新視窗，請將使用中視窗的總數減少到 <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> 個以下。</translation>
+<translation id="7956713633345437162">行動版書籤</translation>
 <translation id="7957413488482743710">虛擬卡片可隱藏真正的卡片，協助防範潛在詐欺活動。<ph name="BEGIN_LINK1" />進一步瞭解虛擬卡片<ph name="END_LINK1" /></translation>
 <translation id="7959485987650214982">這部裝置上的分頁</translation>
 <translation id="7961926449547174351">你已停用儲存空間存取權，請前往「設定」頁面啟用這項權限。</translation>
@@ -1845,6 +1851,7 @@
 <translation id="867914734596684889">顯示或隱藏書籤列</translation>
 <translation id="8683039184091909753">圖片</translation>
 <translation id="8688183792442786085"><ph name="TAB_TITLE" />，選取的分頁</translation>
+<translation id="8696297579102085705">傳送到你的裝置</translation>
 <translation id="8697753151306746444">改為分享視窗或螢幕畫面</translation>
 <translation id="8699120352855309748">不要詢問是否要翻譯這些語言</translation>
 <translation id="8712637175834984815">我瞭解了</translation>

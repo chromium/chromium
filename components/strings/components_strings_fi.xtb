@@ -316,7 +316,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="1463793142714244641">Lomaosakkeet ja vapaa-ajan asunnot</translation>
 <translation id="1465457928007067810">IBAN tallennettu Google-tilillesi</translation>
 <translation id="1467432559032391204">Vasemmalla</translation>
-<translation id="1468653229182955856">Voit jatkaa osoitteeseen <ph name="TOP_ORIGIN" /> koodilla <ph name="ONE_TIME_CODE" /> (<ph name="EMBEDDED_ORIGIN" />)</translation>
 <translation id="1472675084647422956">Näytä enemmän</translation>
 <translation id="1473183651233018052">JIS B10 (32 mm x 45 mm)</translation>
 <translation id="1473495410389165587">Kirjoita vähintään kolme sanaa, niin saat apua kirjoittamiseen</translation>
@@ -1862,6 +1861,7 @@ Jos haluat piilottaa maksa myöhemmin ‑vaihtoehdot, siirry <ph name="BEGIN_LIN
 <translation id="3875783148670536197">Näytä miten</translation>
 <translation id="3877603629930976930">Älä jaa</translation>
 <translation id="3878445208930547646">Tältä sivustolta ei saa kopioida</translation>
+<translation id="3879674895057686427">Valitse kieli, jolle käännetään</translation>
 <translation id="3879748587602334249">Latausten hallinta</translation>
 <translation id="3880456882942693779">Taide ja viihde</translation>
 <translation id="3880589673277376494">Internet ja tietoliikenne</translation>
@@ -3448,6 +3448,7 @@ Jos haluat piilottaa maksa myöhemmin ‑vaihtoehdot, siirry <ph name="BEGIN_LIN
 <translation id="634500758737709758">Reittiohjeet</translation>
 <translation id="6348220984832452017">Aktiiviset muunnelmat</translation>
 <translation id="6349101878882523185">Asenna <ph name="APP_NAME" /></translation>
+<translation id="6350739641326887427">Maksa kopioimatta ja liittämättä Pix-koodia. <ph name="BEGIN_LINK1" />Näin se toimii<ph name="END_LINK1" /></translation>
 <translation id="6351658970066645919">Poista selausdata</translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{Ei mitään}=1{1 salasana: (<ph name="DOMAIN_LIST" />, synkronoitu)}=2{2 salasanaa (<ph name="DOMAIN_LIST" />, synkronoitu)}other{# salasanaa (<ph name="DOMAIN_LIST" />, synkronoitu)}}</translation>
 <translation id="6354918092619878358">SECG elliptinen käyrä secp256r1 (eli ANSI X9.62 prime256v1, NIST P-256)</translation>
@@ -3506,7 +3507,6 @@ Jos haluat piilottaa maksa myöhemmin ‑vaihtoehdot, siirry <ph name="BEGIN_LIN
 <translation id="6424600253695044005">Pilvitallennus</translation>
 <translation id="6425092077175753609">Material</translation>
 <translation id="6427730057873428458">Lehtitaite</translation>
-<translation id="6428450836711225518">Vahvista puhelinnumerosi</translation>
 <translation id="6429267199680088961">A4-välilehti</translation>
 <translation id="643051589346665201">Vaihda Google-salasana</translation>
 <translation id="6431556523611594411">Jaa avoimet välilehdet</translation>
@@ -3663,6 +3663,7 @@ Jos haluat piilottaa maksa myöhemmin ‑vaihtoehdot, siirry <ph name="BEGIN_LIN
 <translation id="668132230070712111">Video tallennettu Google Driveen</translation>
 <translation id="6681790815630918386">CVC tallennettu</translation>
 <translation id="6683022854667115063">Kuulokkeet</translation>
+<translation id="6686570026048064255">Voit laittaa Pix-koodin tunnistuksen pois päältä <ph name="BEGIN_LINK1" />Chrome-asetuksista<ph name="END_LINK1" />.</translation>
 <translation id="6687230248707087982">Kirjekuori (tavallinen)</translation>
 <translation id="6687335167692595844">Fonttikokoa pyydetty</translation>
 <translation id="6688743156324860098">Päivitä…</translation>
@@ -4454,7 +4455,6 @@ Lisätietoja:
 <translation id="7874796722855317864">"<ph name="PROXY_UNKNOWN_CONDITION" />" ei ole tunnettu ehtotyyppi.</translation>
 <translation id="7877007680666472091">suojatun sisällön tunnukset</translation>
 <translation id="7878562273885520351">Salasanasi on saattanut vaarantua.</translation>
-<translation id="7881044256965445977">Etsi paikallisessa verkossa olevia laitteita ja muodosta niihin yhteys</translation>
 <translation id="7885670691503039914">Saat sähköposti-ilmoituksen, jos hinta laskee jollakin sivustolla. Sivu tallennetaan kirjanmerkkikansioon <ph name="LAST_BOOKMARKS_FOLDER" />.</translation>
 <translation id="7886897188117641322">Valitse laajoja aihekategorioita, joiden perusteella mainoksia voidaan personoida</translation>
 <translation id="7887683347370398519">Tarkista CVC ja yritä uudelleen.</translation>
@@ -4981,7 +4981,6 @@ Lisätietoja:
 <translation id="8737685506611670901">Avata <ph name="PROTOCOL" />-linkit palvelun <ph name="REPLACED_HANDLER_TITLE" /> sijaan.</translation>
 <translation id="8738058698779197622">Kellosi täytyy asettaa oikeaan aikaan, jotta salattu yhteys voidaan muodostaa. Tämä johtuu siitä, että verkkosivustojen tunnistamisessa käytettävät varmenteet ovat voimassa vain tiettyinä ajanjaksoina. Chromium ei voi vahvistaa varmenteita, koska laitteesi kello on väärässä ajassa.</translation>
 <translation id="8740359287975076522">Sivuston <ph name="HOST_NAME" /> &lt;abbr id="dnsDefinition"&gt;DNS-osoitetta&lt;/abbr&gt; ei löydy. Ongelmaa diagnosoidaan.</translation>
-<translation id="8742371904523228557">Koodisi on <ph name="ONE_TIME_CODE" /> (<ph name="ORIGIN" />)</translation>
 <translation id="874918643257405732">Aseta tämä välilehti kirjanmerkiksi</translation>
 <translation id="8751426954251315517">Yritä seuraavalla kerralla uudelleen</translation>
 <translation id="8753913772043329557">Käytäntölokit</translation>
@@ -5159,7 +5158,6 @@ Lisätietoja:
 <translation id="9042827002460091668">Tarkista internetyhteys ja yritä uudelleen</translation>
 <translation id="9043161870923715789">Tekoälytila</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> – <ph name="RESULT_PRODUCT_SOURCE" /></translation>
-<translation id="9046578823518542618"><ph name="URL" /> haluaa etsiä paikallisessa verkossa olevia laitteita ja muodostaa niihin yhteyden</translation>
 <translation id="9046864189129893978">Mikrofonit (<ph name="MICS_COUNT" />)</translation>
 <translation id="9046865906192819796">Osta nyt, maksa myöhemmin ‐käyttöehtojen näyttö puoliksi avattuna.</translation>
 <translation id="9047528041803621289">Oletusvalinnoilla voit tehdä verkkohakuja. Voit muuttaa niitä asetuksista.</translation>

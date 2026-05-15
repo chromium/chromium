@@ -316,7 +316,6 @@
 <translation id="1463793142714244641">શેર કરેલી માલિકીની અને વેકેશન પ્રોપર્ટી</translation>
 <translation id="1465457928007067810">IBAN તમારા Google એકાઉન્ટમાં સાચવવામાં આવ્યો છે</translation>
 <translation id="1467432559032391204">ડાબું</translation>
-<translation id="1468653229182955856"><ph name="TOP_ORIGIN" /> પર ચાલુ રાખવા, <ph name="EMBEDDED_ORIGIN" /> માટેનો તમારો કોડ <ph name="ONE_TIME_CODE" /> છે</translation>
 <translation id="1472675084647422956">વધુ બતાવો</translation>
 <translation id="1473183651233018052">JIS B10</translation>
 <translation id="1473495410389165587">લેખન સંબંધિત સહાય મેળવવા માટે 3 કે તેથી વધુ શબ્દો દાખલ કરો</translation>
@@ -1861,6 +1860,7 @@
 <translation id="3875783148670536197">મને બતાવો કે કેવી રીતે</translation>
 <translation id="3877603629930976930">શેર કરશો નહીં</translation>
 <translation id="3878445208930547646">આ સાઇટ પરથી કૉપિ કરવાની મંજૂરી નથી</translation>
+<translation id="3879674895057686427">જે ભાષામાં અનુવાદ કરવો છે તે પસંદ કરો</translation>
 <translation id="3879748587602334249">ડાઉનલોડ મેનેજર</translation>
 <translation id="3880456882942693779">આર્ટ અને મનોરંજન</translation>
 <translation id="3880589673277376494">ઇન્ટરનેટ અને ટેલિકોમ</translation>
@@ -2236,6 +2236,7 @@
 <translation id="443673843213245140">પ્રૉક્સીનો ઉપયોગ બંધ કરેલો છે પણ એક સ્પષ્ટ પ્રૉક્સી ગોઠવણીનો ઉલ્લેખ કરેલો છે.</translation>
 <translation id="4438821706955556403">સામાન્ય કિંમત</translation>
 <translation id="4441832193888514600">અવગણવામાં આવ્યું કારણ કે પૉલિસી માત્ર ક્લાઉડ વપરાશકર્તાની પૉલિસી તરીકે જ સેટ કરવામાં આવી શકે છે.</translation>
+<translation id="4444062564459679679">તમારા <ph name="DEVICE_NAME" /> પર Chromeને પહેલેથી મોકલવામાં આવ્યું છે</translation>
 <translation id="4445133368066241428">લોકપ્રિય વિષયો</translation>
 <translation id="4445694043187340808"><ph name="STARTER_PACK_TABS_FOCUSED_FRIENDLY_MATCH_TEXT" />, ટૅબ શોધવા માટે Enter કી દબાવો</translation>
 <translation id="4445964943162061557">આ એક પ્રાયોગિક સુવિધા છે અને તે હંમેશાં સચોટ જ હોય એવું જરૂરી નથી.</translation>
@@ -3506,7 +3507,6 @@
 <translation id="6424600253695044005">ક્લાઉડ સ્ટોરેજ</translation>
 <translation id="6425092077175753609">સામગ્રી</translation>
 <translation id="6427730057873428458">ગેટ ફોલ્ડ</translation>
-<translation id="6428450836711225518">તમારો ફોન નંબર ચકાસો</translation>
 <translation id="6429267199680088961">A4 ટૅબ</translation>
 <translation id="643051589346665201">Google પાસવર્ડ બદલો</translation>
 <translation id="6431556523611594411">ખુલ્લા ટૅબ શેર કરો</translation>
@@ -4455,7 +4455,6 @@
 <translation id="7874796722855317864">"<ph name="PROXY_UNKNOWN_CONDITION" />" એ શરતના પ્રકાર તરીકે ઓળખાતી નથી.</translation>
 <translation id="7877007680666472091">સંરક્ષિત કન્ટેન્ટ IDs</translation>
 <translation id="7878562273885520351">તમારા પાસવર્ડ સાથે ચેડાં થઈ શકે છે</translation>
-<translation id="7881044256965445977">તમારા સ્થાનિક નેટવર્ક પર કોઈપણ ડિવાઇસ શોધો અને તેની સાથે કનેક્ટ કરો</translation>
 <translation id="7885670691503039914">જો કોઈપણ સાઇટ પર કિંમતમાં ઘટાડો થાય, તો તમને ઇમેઇલ દ્વારા અલર્ટ મળશે. આ પેજને બુકમાર્ક ફોલ્ડર <ph name="LAST_BOOKMARKS_FOLDER" />માં સાચવવામાં આવશે.</translation>
 <translation id="7886897188117641322">જાહેરાતોને મનગમતી બનાવવામાં સહાય કરવા માટે વિષયોની કઈ વ્યાપક કૅટેગરીનો ઉપયોગ કરી શકાય તે પસંદ કરો</translation>
 <translation id="7887683347370398519">તમારું CVC તપાસો અને ફરીથી પ્રયાસ કરો</translation>
@@ -4849,6 +4848,7 @@
 <translation id="8511402995811232419">કુકી મેનેજ કરો</translation>
 <translation id="851353418319061866">સચોટતાની તપાસ</translation>
 <translation id="8513580896341796021">ડાઉનલોડ શરૂ થયું. તેને જોવા માટે, |<ph name="ACCELERATOR" />| દબાવો.</translation>
+<translation id="8515544520486085367">ચુકવણીની માહિતી ઑટોમૅટિક રીતે ભરો</translation>
 <translation id="8519753333133776369">તમારા ઍડમિનિસ્ટ્રેટર દ્વારા મંજૂરી આપવામાં આવેલું HID ડિવાઇસ</translation>
 <translation id="8521013008769249764">સોફા અને હાથાવાળી ખુરશીઓ</translation>
 <translation id="8521812709849134608">કાઉન્ટરટૉપ</translation>
@@ -4981,7 +4981,6 @@
 <translation id="8737685506611670901"><ph name="REPLACED_HANDLER_TITLE" /> ને બદલે <ph name="PROTOCOL" /> લિંક્સ ખોલો</translation>
 <translation id="8738058698779197622">એક સુરક્ષિત કનેક્શન સ્થાપિત કરવા માટે, તમારું ઘડિયાળ યોગ્ય રીતે સેટ હોવું જરૂરી છે. આનું કારણ એ કે  વેબસાઇટ્સ તેઓને ઓળખવા માટે જે પ્રમાણપત્રોનો ઉપયોગ કરે છે તે ચોક્કસ સમય અવધિ માટે જ માન્ય હોય છે. તમારા ઉપકરણની ઘડિયાળ ખોટી હોવાને લીધે, Chromium આ પ્રમાણપત્રોને ચકાસી શકતું નથી.</translation>
 <translation id="8740359287975076522"><ph name="HOST_NAME" /> નું &lt;abbr id="dnsDefinition"&gt;DNS સરનામું&lt;/abbr&gt; શોધી શકાયું નથી. સમસ્યાનું નિદાન કરી રહ્યાં છીએ.</translation>
-<translation id="8742371904523228557"><ph name="ONE_TIME_CODE" /> એ <ph name="ORIGIN" /> માટેનો તમારો કોડ છે</translation>
 <translation id="874918643257405732">આ ટૅબને બુકમાર્ક કરો</translation>
 <translation id="8751426954251315517">કૃપા કરીને આગલી વખતે ફરી પ્રયાસ કરો</translation>
 <translation id="8753913772043329557">પૉલિસી સંબંધિત લૉગ</translation>
@@ -5159,7 +5158,6 @@
 <translation id="9042827002460091668">તમારું ઇન્ટરનેટ કનેક્શન ચેક કરો અને ફરી પ્રયાસ કરો</translation>
 <translation id="9043161870923715789">AI મોડ</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
-<translation id="9046578823518542618"><ph name="URL" /> તમારા સ્થાનિક નેટવર્ક પર કોઈપણ ડિવાઇસ શોધવા અને તેની સાથે કનેક્ટ કરવા માગે છે</translation>
 <translation id="9046864189129893978">માઇક્રોફોન (<ph name="MICS_COUNT" />)</translation>
 <translation id="9046865906192819796">"હમણાં ખરીદો, પછીથી ચુકવો" સેવાની શરતોની સ્ક્રીન અડધી ઊંચાઈએ ખુલી છે.</translation>
 <translation id="9047528041803621289">તમારું ડિફૉલ્ટ શોધ એન્જિન તમને વેબ પર શોધવાની મંજૂરી આપે છે. તમે સેટિંગમાં જઈને તેને બદલી શકો છો.</translation>

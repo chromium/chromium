@@ -316,7 +316,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="1463793142714244641">Üdülési jogok és üdülők</translation>
 <translation id="1465457928007067810">IBAN-kód mentve a Google-fiókjába</translation>
 <translation id="1467432559032391204">Balra</translation>
-<translation id="1468653229182955856">A(z) <ph name="TOP_ORIGIN" /> használatának folytatása érdekében <ph name="ONE_TIME_CODE" /> az Ön kódja a következőhöz: <ph name="EMBEDDED_ORIGIN" /></translation>
 <translation id="1472675084647422956">Továbbiak megjelenítése</translation>
 <translation id="1473183651233018052">JIS B10</translation>
 <translation id="1473495410389165587">Ha segítségre van szüksége az írással kapcsolatban, írjon be legalább három szót</translation>
@@ -549,6 +548,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="1832474362231610822">A fotó mentve a OneDrive-ra</translation>
 <translation id="1832730227369924598">Asztali szinkronizálás</translation>
 <translation id="1834452765064623979">Építkezés és karbantartás</translation>
+<translation id="1837606605602726453">A kockázati pontszámot és a kategóriákat a rendszer figyelmen kívül hagyja, mert a bővítményt az adminisztrátor kifejezetten engedélyezte vagy letiltotta.</translation>
 <translation id="1838374766361614909">Keresett kifejezés törlése</translation>
 <translation id="1839331950812095887">néhány szó, amelyek összefoglalják gondolataidat</translation>
 <translation id="1839551713262164453">A házirendértékek ellenőrzése hibák miatt sikertelen</translation>
@@ -1858,6 +1858,7 @@ A későbbi fizetési lehetőségek elrejtéséhez lépjen a <ph name="BEGIN_LIN
 <translation id="3875783148670536197">Bemutató</translation>
 <translation id="3877603629930976930">Nem osztom meg</translation>
 <translation id="3878445208930547646">Erről a webhelyről nem engedélyezett a másolás</translation>
+<translation id="3879674895057686427">Válassza ki a fordítás célnyelvét</translation>
 <translation id="3879748587602334249">Letöltéskezelő</translation>
 <translation id="3880456882942693779">Művészet és szórakoztatás</translation>
 <translation id="3880589673277376494">Internet és telekommunikáció</translation>
@@ -3502,7 +3503,6 @@ A későbbi fizetési lehetőségek elrejtéséhez lépjen a <ph name="BEGIN_LIN
 <translation id="6424600253695044005">Cloud Storage</translation>
 <translation id="6425092077175753609">Anyag</translation>
 <translation id="6427730057873428458">Kihajtható</translation>
-<translation id="6428450836711225518">Telefonszám ellenőrzése</translation>
 <translation id="6429267199680088961">A4 Tab</translation>
 <translation id="643051589346665201">Google-jelszó módosítása</translation>
 <translation id="6431556523611594411">Megnyitott lapok megosztása</translation>
@@ -4451,7 +4451,6 @@ További részletek:
 <translation id="7874796722855317864">A(z) „<ph name="PROXY_UNKNOWN_CONDITION" />” nem ismert feltételtípus.</translation>
 <translation id="7877007680666472091">a védett tartalmak azonosítói</translation>
 <translation id="7878562273885520351">Előfordultat, hogy jelszava már nem biztonságos</translation>
-<translation id="7881044256965445977">Eszközök keresése az Ön helyi hálózatán és csatlakozás hozzájuk</translation>
 <translation id="7885670691503039914">E-mailes értesítést küldünk, ha valamelyik webhelyen csökken az ár. Ez az oldal a következő könyvjelzőmappába lesz elmentve: <ph name="LAST_BOOKMARKS_FOLDER" />.</translation>
 <translation id="7886897188117641322">Kiválaszthatja, hogy milyen tágabb témakategóriák legyenek használhatók a hirdetések személyre szabásához.</translation>
 <translation id="7887683347370398519">Ellenőrizze a CVC-t, majd próbálja újra</translation>
@@ -4979,7 +4978,6 @@ További részletek:
 <translation id="8737685506611670901"><ph name="PROTOCOL" /> linkek megnyitása a(z) <ph name="REPLACED_HANDLER_TITLE" /> helyett</translation>
 <translation id="8738058698779197622">Biztonságos kapcsolat létrehozásához az órát pontosan be kell állítani. Ez azért szükséges, mert a webhelyek által az azonosításukra használt tanúsítványok csak adott ideig érvényesek. Mivel az eszköz órája nem pontos, a Chromium nem tudja ellenőrizni ezeket a tanúsítványokat.</translation>
 <translation id="8740359287975076522">A(z) <ph name="HOST_NAME" /> &lt;abbr id="dnsDefinition"&gt;DNS-címe&lt;/abbr&gt; nem található. A probléma diagnosztizálása folyamatban van.</translation>
-<translation id="8742371904523228557">A(z) <ph name="ORIGIN" /> webhelyhez tartozó kód a következő: <ph name="ONE_TIME_CODE" /></translation>
 <translation id="874918643257405732">Lap hozzáadása a könyvjelzőkhöz</translation>
 <translation id="8751426954251315517">Próbálja újra később</translation>
 <translation id="8753913772043329557">Házirendnaplók</translation>
@@ -5157,7 +5155,6 @@ További részletek:
 <translation id="9042827002460091668">Ellenőrizze az internetkapcsolatot, és próbálja újra</translation>
 <translation id="9043161870923715789">AI-mód</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> – <ph name="RESULT_PRODUCT_SOURCE" /></translation>
-<translation id="9046578823518542618">A(z) <ph name="URL" /> meg szeretné keresni a helyi hálózaton lévő eszközöket, és csatlakozni szeretne hozzájuk</translation>
 <translation id="9046864189129893978">Mikrofonok (<ph name="MICS_COUNT" />)</translation>
 <translation id="9046865906192819796">A Késleltetett fizetés Általános Szerződési Feltételek képernyője félmagasságban van megnyitva.</translation>
 <translation id="9047528041803621289">Az alapértelmezett keresőmotorral az interneten kereshet. Ezt a beállításokban módosíthatja.</translation>

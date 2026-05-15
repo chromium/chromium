@@ -316,7 +316,6 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="1463793142714244641">Eiddo Cyfran Gyfnodol a Gwyliau</translation>
 <translation id="1465457928007067810">IBAN wedi'i gadw i'ch Cyfrif Google</translation>
 <translation id="1467432559032391204">Wedi gadael</translation>
-<translation id="1468653229182955856"><ph name="ONE_TIME_CODE" /> yw eich cod ar gyfer <ph name="EMBEDDED_ORIGIN" /> i barhau ar <ph name="TOP_ORIGIN" /></translation>
 <translation id="1472675084647422956">Dangos mwy</translation>
 <translation id="1473183651233018052">JIS B10</translation>
 <translation id="1473495410389165587">Rhowch 3 gair neu fwy i gael cymorth ysgrifennu</translation>
@@ -549,6 +548,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="1832474362231610822">Llun wedi'i gadw i OneDrive</translation>
 <translation id="1832730227369924598">Cysoni desg</translation>
 <translation id="1834452765064623979">Adeiladu a Chynnal a Chadw</translation>
+<translation id="1837606605602726453">Anwybyddir y sgôr risg a'r categorïau oherwydd bod yr estyniad wedi'i ganiatáu neu ei rwystro'n benodol gan y gweinyddwr.</translation>
 <translation id="1838374766361614909">Clirio'r blwch chwilio</translation>
 <translation id="1839331950812095887">ychydig eiriau sy'n crynhoi eich meddyliau</translation>
 <translation id="1839551713262164453">Mae dilysu gwerthoedd polisi wedi methu gyda gwallau</translation>
@@ -1860,6 +1860,7 @@ I guddio opsiynau talu'n ddiweddarach, ewch i'r <ph name="BEGIN_LINK" />gosodiad
 <translation id="3875783148670536197">Dangoswch i Fi Sut</translation>
 <translation id="3877603629930976930">Peidio â rhannu</translation>
 <translation id="3878445208930547646">Ni chaniateir copïo o'r wefan hon</translation>
+<translation id="3879674895057686427">Dewiswch Iaith i Gyfieithu iddi</translation>
 <translation id="3879748587602334249">Rheolwr lawrlwythiadau</translation>
 <translation id="3880456882942693779">Y Celfyddydau ac Adloniant</translation>
 <translation id="3880589673277376494">Rhyngrwyd a Thelegyfathrebu</translation>
@@ -3505,7 +3506,6 @@ I guddio opsiynau talu'n ddiweddarach, ewch i'r <ph name="BEGIN_LINK" />gosodiad
 <translation id="6424600253695044005">Storfa'r Cwmwl</translation>
 <translation id="6425092077175753609">Deunydd</translation>
 <translation id="6427730057873428458">Plyg giât</translation>
-<translation id="6428450836711225518">Dilysu'ch rhif ffôn</translation>
 <translation id="6429267199680088961">A4 Tab</translation>
 <translation id="643051589346665201">Newid cyfrinair Google</translation>
 <translation id="6431556523611594411">Rhannu tabiau agored</translation>
@@ -4453,7 +4453,6 @@ Manylion ychwanegol:
 <translation id="7874796722855317864">Nid yw "<ph name="PROXY_UNKNOWN_CONDITION" />" yn fath amod hysbys.</translation>
 <translation id="7877007680666472091">dulliau adnabod cynnwys gwarchodedig</translation>
 <translation id="7878562273885520351">Mae'n bosib bod eich cyfrinair dan fygythiad</translation>
-<translation id="7881044256965445977">Chwiliwch am, a chysylltwch ag, unrhyw ddyfais ar eich rhwydwaith lleol</translation>
 <translation id="7885670691503039914">Byddwch yn cael hysbysiadau os bydd y pris yn gostwng ar unrhyw wefan. Bydd y dudalen hon yn cael ei chadw i'r ffolder nodau tudalen <ph name="LAST_BOOKMARKS_FOLDER" />.</translation>
 <translation id="7886897188117641322">Dewiswch pa gategorïau eang o bynciau y gellir eu defnyddio i helpu i bersonoleiddio hysbysebion</translation>
 <translation id="7887683347370398519">Gwiriwch eich CVC a rhowch gynnig arall arni</translation>
@@ -4979,7 +4978,6 @@ Manylion ychwanegol:
 <translation id="8737685506611670901">Agor dolenni <ph name="PROTOCOL" /> yn lle <ph name="REPLACED_HANDLER_TITLE" /></translation>
 <translation id="8738058698779197622">Er mwyn gosod cysylltiad diogel, mae angen gosod eich cloc yn gywir. Mae hyn oherwydd bod y tystysgrifau y mae gwefannau yn eu defnyddio i adnabod eu hunain yn ddilys am gyfnodau penodol yn unig. Gan fod cloc eich dyfais yn anghywir, ni all Chromium ddilysu'r tystysgrifau hyn.</translation>
 <translation id="8740359287975076522">Ni ellid dod o hyd i &lt;abbr id="dnsDefinition"&gt;gyfeiriad DNS&lt;/abbr&gt; <ph name="HOST_NAME" />. Wrthi'n diagnosio'r broblem.</translation>
-<translation id="8742371904523228557"><ph name="ONE_TIME_CODE" /> yw eich cod ar gyfer <ph name="ORIGIN" /></translation>
 <translation id="874918643257405732">Creu nod tudalen ar gyfer y tab hwn</translation>
 <translation id="8751426954251315517">Rhowch gynnig arall arni y tro nesaf</translation>
 <translation id="8753913772043329557">Logiau Polisi</translation>
@@ -5157,7 +5155,6 @@ Manylion ychwanegol:
 <translation id="9042827002460091668">Gwiriwch eich cysylltiad rhyngrwyd a rhowch gynnig arall arni</translation>
 <translation id="9043161870923715789">Dull AI</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
-<translation id="9046578823518542618"><ph name="URL" /> eisiau chwilio am, a chysylltu ag, unrhyw ddyfais ar eich rhwydwaith lleol</translation>
 <translation id="9046864189129893978">Meicroffonau (<ph name="MICS_COUNT" />)</translation>
 <translation id="9046865906192819796">Mae sgrîn telerau gwasanaeth Prynu-Nawr-Talu-Yn-Ddiweddarach wedi'i hagor ar hanner uchder.</translation>
 <translation id="9047528041803621289">Mae eich gosodiad diofyn yn caniatáu i chi chwilio'r we. Gallwch ei newid yn y gosodiadau.</translation>

@@ -316,7 +316,6 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="1463793142714244641">Nekretnine za tajmšer i odmor</translation>
 <translation id="1465457928007067810">IBAN je sačuvan na Google nalogu</translation>
 <translation id="1467432559032391204">Ulevo</translation>
-<translation id="1468653229182955856"><ph name="ONE_TIME_CODE" /> je vaš kôd za <ph name="EMBEDDED_ORIGIN" /> pomoću kog možete da nastavite na sajtu <ph name="TOP_ORIGIN" /></translation>
 <translation id="1472675084647422956">Prikaži više</translation>
 <translation id="1473183651233018052">JIS B10</translation>
 <translation id="1473495410389165587">Unesite 3 ili više reči da biste dobili pomoć pri pisanju</translation>
@@ -549,6 +548,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="1832474362231610822">Slika je sačuvana na OneDrive-u</translation>
 <translation id="1832730227369924598">Sinhronizacija radnih površina</translation>
 <translation id="1834452765064623979">Izgradnja i održavanje</translation>
+<translation id="1837606605602726453">Ocena rizika i kategorije se zanemaruju jer je administrator eksplicitno dozvolio ili blokirao dodatak.</translation>
 <translation id="1838374766361614909">Obrišite pretragu</translation>
 <translation id="1839331950812095887">nekoliko reči kao rezime vaših misli</translation>
 <translation id="1839551713262164453">Validacija vrednosti smernica nije uspela uz greške</translation>
@@ -1860,6 +1860,7 @@ Da biste sakrili opcije za kasnije plaćanje, idite u <ph name="BEGIN_LINK" />p
 <translation id="3875783148670536197">Pokaži mi kako</translation>
 <translation id="3877603629930976930">Ne deli</translation>
 <translation id="3878445208930547646">Kopiranje sa ovog sajta nije dozvoljeno</translation>
+<translation id="3879674895057686427">Odaberite jezik prevoda</translation>
 <translation id="3879748587602334249">Menadžer preuzimanja</translation>
 <translation id="3880456882942693779">Umetnost i zabava</translation>
 <translation id="3880589673277376494">Internet i telekomunikacije</translation>
@@ -3504,7 +3505,6 @@ Da biste sakrili opcije za kasnije plaćanje, idite u <ph name="BEGIN_LINK" />p
 <translation id="6424600253695044005">Prostor u klaudu</translation>
 <translation id="6425092077175753609">Material</translation>
 <translation id="6427730057873428458">Presavijanje u obliku prozora</translation>
-<translation id="6428450836711225518">Verifikujte broj telefona</translation>
 <translation id="6429267199680088961">A4 Tab</translation>
 <translation id="643051589346665201">Promenite Google lozinku</translation>
 <translation id="6431556523611594411">Deli otvorene kartice</translation>
@@ -4453,7 +4453,6 @@ Dodatni detalji:
 <translation id="7874796722855317864">„<ph name="PROXY_UNKNOWN_CONDITION" />“ nije poznat tip uslova.</translation>
 <translation id="7877007680666472091">ID-ovi zaštićenog sadržaja</translation>
 <translation id="7878562273885520351">Lozinka je možda kompromitovana</translation>
-<translation id="7881044256965445977">Potražite uređaje na lokalnoj mreži i povežite se sa njima</translation>
 <translation id="7885670691503039914">Dobijaćete upozorenja imejlom ako se cena snizi na bilo kom sajtu. Ova stranica će biti sačuvana u folderu obeleživača <ph name="LAST_BOOKMARKS_FOLDER" />.</translation>
 <translation id="7886897188117641322">Odaberite široke kategorije tema koje mogu da se koriste za personalizaciju oglasa</translation>
 <translation id="7887683347370398519">Proverite CVC i pokušajte ponovo</translation>
@@ -4980,7 +4979,6 @@ Dodatni detalji:
 <translation id="8737685506611670901">otvori linkove za <ph name="PROTOCOL" /> umesto <ph name="REPLACED_HANDLER_TITLE" /></translation>
 <translation id="8738058698779197622">Da biste uspostavili bezbednu vezu, sat na uređaju mora da bude tačan. To je zato što sertifikati koje veb-sajtovi koriste za identifikaciju važe samo određeni vremenski period. Pošto sat na vašem uređaju nije tačan, Chromium ne može da verifikuje ove sertifikate.</translation>
 <translation id="8740359287975076522">Nismo uspeli da pronađemo &lt;abbr id="dnsDefinition"&gt;DNS adresu&lt;/abbr&gt; hosta <ph name="HOST_NAME" />. Pokušavamo da utvrdimo u čemu je problem.</translation>
-<translation id="8742371904523228557"><ph name="ONE_TIME_CODE" /> je vaš kôd za <ph name="ORIGIN" /></translation>
 <translation id="874918643257405732">Obeležite ovu karticu</translation>
 <translation id="8751426954251315517">Probajte ponovo sledeći put</translation>
 <translation id="8753913772043329557">Evidencije smernica</translation>
@@ -5158,7 +5156,6 @@ Dodatni detalji:
 <translation id="9042827002460091668">Proverite internet vezu i probajte ponovo</translation>
 <translation id="9043161870923715789">AI režim</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> – <ph name="RESULT_PRODUCT_SOURCE" /></translation>
-<translation id="9046578823518542618"><ph name="URL" /> želi da traži uređaje na lokalnoj mreži i povezuje se sa njima</translation>
 <translation id="9046864189129893978">Mikrofoni (<ph name="MICS_COUNT" />)</translation>
 <translation id="9046865906192819796">Ekran sa uslovima korišćenja usluge Kupite odmah, platite kasnije otvoren je do polovine ekrana.</translation>
 <translation id="9047528041803621289">Podrazumevani pretraživač vam omogućava da pretražujete veb. Možete da ga promenite u podešavanjima.</translation>

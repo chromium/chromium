@@ -263,6 +263,7 @@ Seule une personne connaissant votre phrase de passe peut lire vos données chif
 <translation id="2184272387334793084">Connectez-vous pour accéder à vos mots de passe et plus encore sur tous vos appareils</translation>
 <translation id="218608176142494674">Partage</translation>
 <translation id="2186779861549045980">Vous pouvez choisir les données à enregistrer dans votre compte Google.\nVous pouvez également afficher et gérer ces éléments dans vos favoris, votre Liste de lecture ou votre gestionnaire de mots de passe.</translation>
+<translation id="2190355936436201913">(vide)</translation>
 <translation id="219283042927675668">Onglets dans le groupe</translation>
 <translation id="2194856509914051091">Points à prendre en compte</translation>
 <translation id="2205701497928406883"><ph name="TAB_TITLE" />, onglet épinglé avec partage en cours</translation>
@@ -300,6 +301,7 @@ Seule une personne connaissant votre phrase de passe peut lire vos données chif
 <translation id="233375395665273385">Supprimer et se déconnecter</translation>
 <translation id="2341410551640223969">Impossible d'installer <ph name="WEBAPK_NAME" />.</translation>
 <translation id="2349710944427398404">Le total des données utilisées par Chrome, comprenant les comptes, les favoris et les paramètres enregistrés</translation>
+<translation id="2354001756790975382">Autres favoris</translation>
 <translation id="235789365079050412">Politique de confidentialité de Google</translation>
 <translation id="2359808026110333948">Continuer</translation>
 <translation id="2362083820973145409">Connecté en tant que <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Ouvre les paramètres.</translation>
@@ -896,6 +898,7 @@ D'autres formes d'historique de navigation, telles que les recherches et l'activ
 <translation id="4864369630010738180">Connexion en cours…</translation>
 <translation id="4866368707455379617">Impossible d'installer <ph name="MODULE" /> dans Chrome</translation>
 <translation id="4875775213178255010">Suggestions de contenu</translation>
+<translation id="4876880121961092787">Masquer la barre de favoris</translation>
 <translation id="4877678010818027629">Activer le mode de navigation privée</translation>
 <translation id="4878404682131129617">Échec de l'établissement d'un tunnel par l'intermédiaire d'un serveur mandataire</translation>
 <translation id="4880127995492972015">Traduire…</translation>
@@ -1268,6 +1271,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="6437162790453527153">Connectez-vous pour accéder à vos favoris et plus encore sur tous vos appareils</translation>
 <translation id="6437478888915024427">Renseignements sur la page</translation>
 <translation id="6440291723980579689">Les pages se chargent uniquement lorsque vous les ouvrez</translation>
+<translation id="6441377161852435370">Ajouter l'onglet à la liste de lecture</translation>
 <translation id="6441734959916820584">Le nom est trop long</translation>
 <translation id="6444291413624515012">Groupe d'onglets <ph name="TAB_GROUP_TITLE" /> fermé</translation>
 <translation id="6452534462676960500">Nouvelle activité</translation>
@@ -1357,6 +1361,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="6787600234697426339">Limite de <ph name="MAX_INSTANCE_COUNT" /> fenêtre atteinte</translation>
 <translation id="6795633245022906657">Ouvrez rapidement un nouvel onglet. Pour modifier ce raccourci, accédez à Paramètres.</translation>
 <translation id="679588508577699489">Faites de Chrome votre navigateur par défaut</translation>
+<translation id="679845623837196966">Afficher la liste de lecture</translation>
 <translation id="679956319013005046">Pour définir votre service préféré pour le remplissage automatique, ajoutez d'abord le service dans les <ph name="BEGIN_LINK" />paramètres Android<ph name="END_LINK" />.</translation>
 <translation id="6802555630140434547">La fenêtre sera fermée</translation>
 <translation id="6803791793483522764">Examiner les notifications</translation>
@@ -1490,7 +1495,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 téléchargement en attente}one{# téléchargement en attente}other{# téléchargements en attente}}</translation>
 <translation id="7237724030342645845">Le gestionnaire de mots de passe Google a cessé de fonctionner</translation>
 <translation id="7239496616545081903">Masquer le mode Lecture</translation>
-<translation id="72415438529550637">La suggestion de mot de passe est fermée.</translation>
+<translation id="72415438529550637">La suggestion de mot de passe est ignorée.</translation>
 <translation id="724510009481365878">Impossible d'imprimer cette page</translation>
 <translation id="7248671827512403053">Application</translation>
 <translation id="7253951228444156601">Vérification des mots de passe en cours…</translation>
@@ -1657,6 +1662,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 <translation id="7934668619883965330">Impossible de télécharger le fichier. Format de fichier non compatible.</translation>
 <translation id="7951102827450076904">Toujours ouvrir les fichiers PDF téléchargés</translation>
 <translation id="7952479614398473176">Pour ouvrir une nouvelle fenêtre, réduisez le nombre total de fenêtres actives à <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> ou moins.</translation>
+<translation id="7956713633345437162">Favoris d'appareil mobile</translation>
 <translation id="7957413488482743710">Une carte virtuelle masque votre carte réelle pour vous protéger de fraudes potentielles. <ph name="BEGIN_LINK1" />En savoir plus sur les cartes virtuelles<ph name="END_LINK1" /></translation>
 <translation id="7959485987650214982">Onglets sur cet appareil</translation>
 <translation id="7961926449547174351">Vous avez désactivé l'accès à l'espace de stockage. Veuillez accéder au menu Paramètres pour l'activer.</translation>
@@ -1845,6 +1851,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 <translation id="867914734596684889">Afficher ou masquer la barre de favoris</translation>
 <translation id="8683039184091909753">image</translation>
 <translation id="8688183792442786085"><ph name="TAB_TITLE" />, onglet sélectionné</translation>
+<translation id="8696297579102085705">Envoyer l'onglet à votre appareil</translation>
 <translation id="8697753151306746444">Partagez la fenêtre ou l'écran à la place</translation>
 <translation id="8699120352855309748">Ne pas proposer de traduire ces langues</translation>
 <translation id="8712637175834984815">OK</translation>

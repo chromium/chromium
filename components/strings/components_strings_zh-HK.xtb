@@ -316,7 +316,6 @@
 <translation id="1463793142714244641">分時度假屋和度假物業</translation>
 <translation id="1465457928007067810">IBAN 已儲存到你的 Google 帳戶</translation>
 <translation id="1467432559032391204">向左</translation>
-<translation id="1468653229182955856">您的 <ph name="EMBEDDED_ORIGIN" /> 驗證碼是 <ph name="ONE_TIME_CODE" />。您需要輸入此驗證碼，才能繼續瀏覽 <ph name="TOP_ORIGIN" /></translation>
 <translation id="1472675084647422956">顯示更多</translation>
 <translation id="1473183651233018052">JIS B10</translation>
 <translation id="1473495410389165587">請輸入 3 個以上的字詞，才能取得撰寫協助</translation>
@@ -549,6 +548,7 @@
 <translation id="1832474362231610822">相片已儲存至 OneDrive</translation>
 <translation id="1832730227369924598">桌面同步</translation>
 <translation id="1834452765064623979">建築和維修</translation>
+<translation id="1837606605602726453">由於管理員已明確允許或封鎖此擴充程式，因此系統會忽略風險分數和類別。</translation>
 <translation id="1838374766361614909">清除搜尋</translation>
 <translation id="1839331950812095887">用幾個字詞歸納想法</translation>
 <translation id="1839551713262164453">發生錯誤，政策值驗證失敗</translation>
@@ -1859,6 +1859,7 @@
 <translation id="3875783148670536197">顯示方法</translation>
 <translation id="3877603629930976930">不要分享</translation>
 <translation id="3878445208930547646">不允許複製此網站的內容</translation>
+<translation id="3879674895057686427">選擇譯文語言</translation>
 <translation id="3879748587602334249">下載管理員</translation>
 <translation id="3880456882942693779">藝術及娛樂</translation>
 <translation id="3880589673277376494">互聯網及電訊公司</translation>
@@ -2234,6 +2235,7 @@
 <translation id="443673843213245140">雖然已停用 Proxy，不過已明確指定了 Proxy 設定。</translation>
 <translation id="4438821706955556403">一般價格</translation>
 <translation id="4441832193888514600">由於此政策只能設定為雲端使用者政策，因此系統已忽略。</translation>
+<translation id="4444062564459679679">已傳送至 <ph name="DEVICE_NAME" /> 上的 Chrome</translation>
 <translation id="4445133368066241428">熱門主題</translation>
 <translation id="4445694043187340808"><ph name="STARTER_PACK_TABS_FOCUSED_FRIENDLY_MATCH_TEXT" />，㩒 Enter 掣就可以搜尋分頁</translation>
 <translation id="4445964943162061557">這是實驗版功能，提供的建議不一定符合需求。</translation>
@@ -3445,6 +3447,7 @@
 <translation id="634500758737709758">規劃路線</translation>
 <translation id="6348220984832452017">使用中的變化版本</translation>
 <translation id="6349101878882523185">安裝「<ph name="APP_NAME" />」</translation>
+<translation id="6350739641326887427">無需複製並貼上 Pix 代碼即可付款。<ph name="BEGIN_LINK1" />查看運作方式<ph name="END_LINK1" /></translation>
 <translation id="6351658970066645919">刪除瀏覽資料</translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{無}=1{有 1 個密碼 (<ph name="DOMAIN_LIST" />，已同步)}=2{有 2 個密碼 (<ph name="DOMAIN_LIST" />，已同步)}other{有 # 個密碼 (<ph name="DOMAIN_LIST" />，已同步)}}</translation>
 <translation id="6354918092619878358">SECG 橢圓曲線 secp256r1 (亦稱為 ANSI X9.62 prime256v1、NIST P-256)</translation>
@@ -3503,7 +3506,6 @@
 <translation id="6424600253695044005">雲端儲存空間</translation>
 <translation id="6425092077175753609">質感</translation>
 <translation id="6427730057873428458">摺頁</translation>
-<translation id="6428450836711225518">請驗證您的電話號碼</translation>
 <translation id="6429267199680088961">A4 Tab</translation>
 <translation id="643051589346665201">變更 Google 密碼</translation>
 <translation id="6431556523611594411">分享已開啟的分頁</translation>
@@ -3660,6 +3662,7 @@
 <translation id="668132230070712111">影片已儲存至「Google 雲端硬碟」</translation>
 <translation id="6681790815630918386">已儲存 CVC</translation>
 <translation id="6683022854667115063">耳機</translation>
+<translation id="6686570026048064255">如要關閉 Pix 代碼偵測，請前往 <ph name="BEGIN_LINK1" />Chrome 設定<ph name="END_LINK1" /></translation>
 <translation id="6687230248707087982">信封 (普通紙)</translation>
 <translation id="6687335167692595844">要求的字型大小</translation>
 <translation id="6688743156324860098">更新…</translation>
@@ -4451,7 +4454,6 @@
 <translation id="7874796722855317864">「<ph name="PROXY_UNKNOWN_CONDITION" />」並非已知的條件類型。</translation>
 <translation id="7877007680666472091">受保護的內容 ID</translation>
 <translation id="7878562273885520351">您的密碼可能會被盜用</translation>
-<translation id="7881044256965445977">尋找區域網絡上的任何裝置並連線</translation>
 <translation id="7885670691503039914">如果產品在任何網站上降價，系統會向你傳送電郵警示。此頁會將儲存至「<ph name="LAST_BOOKMARKS_FOLDER" />」書籤資料夾。</translation>
 <translation id="7886897188117641322">選擇系統可根據哪些廣泛的主題類別放送個人化廣告</translation>
 <translation id="7887683347370398519">請檢查您的 CVC，然後再試一次</translation>
@@ -4845,6 +4847,7 @@
 <translation id="8511402995811232419">管理 Cookie</translation>
 <translation id="851353418319061866">精確度檢查</translation>
 <translation id="8513580896341796021">已開始下載。如要查看，請按 |<ph name="ACCELERATOR" />|。</translation>
+<translation id="8515544520486085367">自動填入付款資料</translation>
 <translation id="8519753333133776369">管理員允許使用的 HID 裝置</translation>
 <translation id="8521013008769249764">梳化和扶手椅</translation>
 <translation id="8521812709849134608">廚房工作台</translation>
@@ -4977,7 +4980,6 @@
 <translation id="8737685506611670901">開啟<ph name="PROTOCOL" />連結 (而非 <ph name="REPLACED_HANDLER_TITLE" />)</translation>
 <translation id="8738058698779197622">如要建立安全連線，您時鐘的設定必須正確無誤；因為網站用於自我識別的憑證僅在特定時間內有效。由於您裝置的時鐘設定有誤，Chromium 無法驗證這些憑證。</translation>
 <translation id="8740359287975076522">找不到 <ph name="HOST_NAME" /> 的 &lt;abbr id="dnsDefinition"&gt;網域名稱系統 (DNS) 地址&lt;/abbr&gt;。正在診斷問題。</translation>
-<translation id="8742371904523228557">您的 <ph name="ORIGIN" /> 驗證碼是 <ph name="ONE_TIME_CODE" /></translation>
 <translation id="874918643257405732">將此分頁加入書籤</translation>
 <translation id="8751426954251315517">請稍候再試</translation>
 <translation id="8753913772043329557">政策記錄</translation>
@@ -5155,7 +5157,6 @@
 <translation id="9042827002460091668">請檢查您的互聯網連線，然後再試一次</translation>
 <translation id="9043161870923715789">AI 模式</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
-<translation id="9046578823518542618"><ph name="URL" /> 想尋找區域網絡上的任何裝置並連線</translation>
 <translation id="9046864189129893978">麥克風 (<ph name="MICS_COUNT" />)</translation>
 <translation id="9046865906192819796">「先買後付」嘅服務條款畫面宜家顯示喺螢幕下半部。</translation>
 <translation id="9047528041803621289">預設搜尋引擎可讓你在網上搜尋資料。你可在設定中變更預設設定。</translation>

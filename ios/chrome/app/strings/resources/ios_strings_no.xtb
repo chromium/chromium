@@ -69,6 +69,7 @@
 <translation id="1253032109800629289">Skjul «Få varsler om prissporing»</translation>
 <translation id="1254424942107648268">Finn forrige</translation>
 <translation id="1258491128795710625">Hva er nytt?</translation>
+<translation id="126093867734601535">Justerer høyden på arket.</translation>
 <translation id="1262724000444746916">Skjul Legg til i bokmerker</translation>
 <translation id="1263231323834454256">Leseliste</translation>
 <translation id="1263433075299269530">Den siste åpne fanen din</translation>
@@ -201,6 +202,7 @@
 <translation id="1657011748321897393">Delingen mislyktes fordi du ikke er tilkoblet nettverket.</translation>
 <translation id="1668001730617725852">Åpne i en ny fanegruppe</translation>
 <translation id="1670861525135254448">Lagre kjøretøy</translation>
+<translation id="1671568970992212376">Lagre bilder i Google Foto, og få tilgang til dem når som helst.</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> til <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1678855624321223424">Basert på retningslinjene for organisasjonen din kan denne filen inneholde sensitiv informasjon</translation>
 <translation id="168389590065701766">Nå kan du åpne Google Lens fra adressefeltet og søke etter hva som helst du ser</translation>
@@ -335,7 +337,6 @@
 <translation id="2119962645034852864">Noen tjenester er ikke tilgjengelige for kontoen din</translation>
 <translation id="2120553909046681540">Organisasjonen din har slått av privat surfing.</translation>
 <translation id="2122754583996902531">Nettleseren din administreres. <ph name="BEGIN_LINK" />Finn ut mer<ph name="END_LINK" /></translation>
-<translation id="21243612977487926">Chattene til organisasjonen din brukes ikke til å forbedre modellene våre. Gemini kan vise unøyaktig informasjon, blant annet om mennesker, så du bør dobbeltsjekke svarene den gir.<ph name="YOUR_PRIVACY_GEMINI" /></translation>
 <translation id="2139867232736819575">Søk etter teksten du kopierte</translation>
 <translation id="2147127444698817042">Bare tilgjengelig på iPhone</translation>
 <translation id="2148799636999124959">Du kan enkelt logge på nettsteder og apper med de lagrede passordene dine.</translation>
@@ -677,6 +678,7 @@
 <translation id="340669334496430859">Sist endret</translation>
 <translation id="3409785640040772790">Maps</translation>
 <translation id="3416023309465857378">25. oktober 2023</translation>
+<translation id="3426715535827854458">Skjul verktøylinjen</translation>
 <translation id="3435738964857648380">Sikkerhet</translation>
 <translation id="3441673211568148613">Hold surfingen din privat</translation>
 <translation id="3443810440409579745">Fane er mottatt.</translation>
@@ -721,7 +723,6 @@
 <translation id="3565012355885596568">Kunne ikke laste inn bilder</translation>
 <translation id="3565930036634619844">Fane. <ph name="TAB_INDEX" /> av <ph name="NUMBER_OF_TABS" />.</translation>
 <translation id="3567168891086460374">Lagre annerledes</translation>
-<translation id="3571703298474554279">En raskere måte å bruke appen på</translation>
 <translation id="3572503683475187385">Den aktive fanen deles med Gemini når du starter en ny chat. Når du deler en fane med Gemini, sendes innholdet og nettadressen til Google. <ph name="BEGIN_LINK" />Finn ut mer<ph name="END_LINK" /></translation>
 <translation id="3572607909481582402">I Google-kontoen din</translation>
 <translation id="3575234738189584619">Søk med Lens</translation>
@@ -979,6 +980,7 @@
 <translation id="4489536976005181779">{count,plural, =1{Siden er lagt til på leselisten i kontoen din, {email}}other{Sidene er lagt til på leselisten i kontoen din, {email}}}</translation>
 <translation id="4493604894403585654">Du er pålogget som <ph name="USER_EMAIL" />. Du kan når som helst stoppe synkroniseringen i innstillingene. Google kan gi Søk og andre tjenester personlig preg basert på loggen din.</translation>
 <translation id="4502423230170890588">Fjern fra denne enheten</translation>
+<translation id="4508486880075514067">Utvid til fullskjerm</translation>
 <translation id="4508750114462689118">Lukk påloggingskampanjen</translation>
 <translation id="4509345063551561634">Sted:</translation>
 <translation id="4517684186578051919">Enhetsinformasjon</translation>
@@ -1211,6 +1213,7 @@
 <translation id="5242899254250321823">Bytt passord på nettstedet</translation>
 <translation id="5248640482715684545">Dette nettstedet prøver å åpne en annen app.</translation>
 <translation id="5250371859659394278">Fra en ukjent kilde</translation>
+<translation id="525510229763628836">Minimert</translation>
 <translation id="5269913829202614649">Tilpass startsiden</translation>
 <translation id="5271265092610673171">{count,plural, =1{Et obligatorisk felt er tomt. Fyll det ut før du lagrer.}other{Noen obligatoriske felt er tomme. Fyll dem ut før du lagrer.}}</translation>
 <translation id="5271549068863921519">Lagre passord</translation>
@@ -1322,7 +1325,6 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="5652623411397330904">Produktene du sporer, vises her.</translation>
 <translation id="5656431592348714536">Forbedret kalender</translation>
 <translation id="5659593005791499971">E-post</translation>
-<translation id="5665739277590037307"><ph name="GOOGLE_TERMS" /> og <ph name="GEMINI_APPS_PRIVACY" /> gjelder. Gemini kan gjøre feil, så dobbeltsjekk svaret.</translation>
 <translation id="5666313630530585305">Logg på et nettsted.</translation>
 <translation id="5669335982068190158">Du ble logget av som en del av tilbakestillingen av iPhone. Trykk på Fortsett under for å logge på.</translation>
 <translation id="5669528293118408608">www</translation>
@@ -1665,6 +1667,7 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="6746338529702829275">Gjennomgå kontodataene dine</translation>
 <translation id="6750456911389438250">{count,plural, =1{Importerte {count} loggelement}other{Importerte {count} loggelementer}}</translation>
 <translation id="6755200887046212842">Administrer kontoer</translation>
+<translation id="6757899787818440812">Middels høy</translation>
 <translation id="6759709389246683070">Du kan trykke og holde på denne fanen for å stille inn en påminnelse om å komme tilbake senere</translation>
 <translation id="6761393919622941301">Lyd</translation>
 <translation id="6770452996697898492">[BESTILT]</translation>
@@ -1741,6 +1744,7 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="7015418667643980944">Delt visning</translation>
 <translation id="7016070607649558507">Du har ett svakt passord. Løs problemet nå for å ivareta sikkerheten.</translation>
 <translation id="7016958933495968912">Alternativer for Discover</translation>
+<translation id="7019477124580742994"><ph name="SEARCH_PROVIDER" /> Søk</translation>
 <translation id="7029809446516969842">Passord</translation>
 <translation id="7035825883570480307">Vil du slå på varsler?</translation>
 <translation id="7039345315346323556">Nylige</translation>
@@ -1750,7 +1754,6 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="7063811929043357292">Kontoen din administreres av forelderen din.
 <ph name="BEGIN_LINK" />Finn ut mer<ph name="END_LINK" /></translation>
 <translation id="7067780033517902110">Alle filer</translation>
-<translation id="707086654079606593">Administrer adresser…</translation>
 <translation id="7080806333218412752">Sender nettadresser til Safe Browsing for å sjekke dem. Sender også et lite utvalg av sider, nedlastinger, utvidelsesaktivitet og systeminformasjon for å bidra til å oppdage nye trusler. Knytter disse dataene til Google-kontoen din midlertidig når du er pålogget, slik at du er beskyttet i alle Google-appene.</translation>
 <translation id="7082853213442715471">Når denne innstillingen er på, blokkeres enkelte netteknologier, noe som kan føre til at enkelte nettsteder lastes inn tregere eller ikke fungerer som de skal.</translation>
 <translation id="7091023926159231962">{count,plural, =1{Kunne ikke importere {count} passord}other{Kunne ikke importere {count} passord}}</translation>
@@ -1800,7 +1803,6 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="7275307913765547631">koreanske vilkår for posisjonstjenester</translation>
 <translation id="728025568708172005">Vis meg rundt</translation>
 <translation id="7280980607183752256">Denne filen kan ikke importeres</translation>
-<translation id="7281202269687163394">Personvernet ditt og Gemini.</translation>
 <translation id="7282197670900591579">Sitron tema</translation>
 <translation id="7293429513719260019">Velg språk</translation>
 <translation id="7300448350764260141">Legg til et ekstra lag med beskyttelse mot trusler på nettet.</translation>
@@ -1812,7 +1814,6 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="7345061034321640811">Import er ikke tillatt</translation>
 <translation id="7347998088283246662">Importer passord, logg, bokmerker med mer</translation>
 <translation id="7352651011704765696">Noe gikk galt</translation>
-<translation id="7363497636543208734">Nå er det enklere å navigere i appen.</translation>
 <translation id="7364796246159120393">Velg fil</translation>
 <translation id="736564850024123010">Endre adressefeltets plassering for å få en tilpasset opplevelse.</translation>
 <translation id="7366909168761621528">Nettleserdata</translation>
@@ -2124,6 +2125,7 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="8368001212524806591">Spor prisen</translation>
 <translation id="8368198938968349418">Slå på Autoutfyll…</translation>
 <translation id="8370406443343902172">Gå til Innstillinger…</translation>
+<translation id="8370929854657845191">Vis medium høyde</translation>
 <translation id="8372471489238799313">{count,plural, =1{Slett adressen}other{Slett adressene}}</translation>
 <translation id="8378714024927312812">Administreres av organisasjonen din</translation>
 <translation id="8385363453480067273">Søk etter det du ser, med Google Lens</translation>

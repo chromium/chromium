@@ -316,7 +316,6 @@
 <translation id="1463793142714244641">ტაიმშერები და დასასვენებელი ობიექტები</translation>
 <translation id="1465457928007067810">IBAN შენახულია თქვენს Google ანგარიშში</translation>
 <translation id="1467432559032391204">მარცხენა</translation>
-<translation id="1468653229182955856"><ph name="ONE_TIME_CODE" /> არის თქვენი კოდი <ph name="EMBEDDED_ORIGIN" />-ისთვის <ph name="TOP_ORIGIN" />-ზე გასაგრძელებლად</translation>
 <translation id="1472675084647422956">მეტის ჩვენება</translation>
 <translation id="1473183651233018052">JIS B10</translation>
 <translation id="1473495410389165587">შეიყვანეთ 3 ან მეტი სიტყვა, დაწერაში დახმარება რომ მიიღოთ</translation>
@@ -1861,6 +1860,7 @@
 <translation id="3875783148670536197">ინსტრუქციის ნახვა</translation>
 <translation id="3877603629930976930">არ გაზიარდეს</translation>
 <translation id="3878445208930547646">ამ საიტიდან კოპირება დაუშვებელია</translation>
+<translation id="3879674895057686427">აირჩიეთ ენა, რომელზეც გსურთ თარგმნა</translation>
 <translation id="3879748587602334249">ჩამოტვირთვის მენეჯერი</translation>
 <translation id="3880456882942693779">ხელოვნება და გართობა</translation>
 <translation id="3880589673277376494">ინტერნეტი და ტელეკომუნიკაცია</translation>
@@ -2404,7 +2404,7 @@
 <translation id="474270528725216349">მინიმუმ 1 საიტიდან სინქრონიზებულ მოწყობილობებში</translation>
 <translation id="4743275772928623722">თქვენი სისტემა განახლდა, თუმცა თქვენი ზოგიერთი აპისა და ფაილის აღდგენა ვერ მოხერხდა. თქვენი აპები ხელახლა ჩამოიტვირთება ავტომატურად.</translation>
 <translation id="4744514002166662487">პრეზენტაციის შექმნა</translation>
-<translation id="4744603770635761495">შესრულებადი მისამართი</translation>
+<translation id="4744603770635761495">გაშვებადი ფაილის მდებარეობა</translation>
 <translation id="4744816391336495134">შეგიძლიათ, შეინახოთ თითის ანაბეჭდი, რათა ყოველთვის დაადასტუროთ ვინაობა შენახული პაროლის გამოყენებისას</translation>
 <translation id="4749011317274908093">თქვენ გადახვედით ინკოგნიტო რეჟიმზე</translation>
 <translation id="4750671009706599284">ეს ტელეფონი</translation>
@@ -3506,7 +3506,6 @@
 <translation id="6424600253695044005">ღრუბლოვანი საცავი</translation>
 <translation id="6425092077175753609">Material</translation>
 <translation id="6427730057873428458">დაკეცვა ჭიშკრის ფორმით</translation>
-<translation id="6428450836711225518">დაადასტურეთ თქვენი ტელეფონის ნომერი</translation>
 <translation id="6429267199680088961">A4 Tab</translation>
 <translation id="643051589346665201">Google პაროლის შეცვლა</translation>
 <translation id="6431556523611594411">გახსნილი ჩანართების გაზიარება</translation>
@@ -4454,7 +4453,6 @@
 <translation id="7874796722855317864">„<ph name="PROXY_UNKNOWN_CONDITION" />“ არ არის პირობის ცნობილი ტიპი.</translation>
 <translation id="7877007680666472091">დაცული კონტენტის ID-ები</translation>
 <translation id="7878562273885520351">შესაძლოა თქვენს პაროლს საფრთხე ემუქრებოდეს</translation>
-<translation id="7881044256965445977">მოძებნეთ ნებისმიერი მოწყობილობა და შეუერთდით მას თქვენს ქსელში</translation>
 <translation id="7885670691503039914">როცა რომელიმე საიტზე ფასი დაიკლებს, ელფოსტით გაფრთხილებებს მიიღებთ. ეს გვერდი შეინახება ამ სანიშნეების საქაღალდეში: <ph name="LAST_BOOKMARKS_FOLDER" />.</translation>
 <translation id="7886897188117641322">აირჩიეთ, თემების რომელი ვრცელი კატეგორია იყოს გამოყენებული რეკლამის პერსონალიზების ხელშეწყობის მიზნით</translation>
 <translation id="7887683347370398519">შეამოწმეთ თქვენი CVC და ხელახლა სცადეთ</translation>
@@ -4980,7 +4978,6 @@
 <translation id="8737685506611670901"><ph name="REPLACED_HANDLER_TITLE" />-ის ნაცვლად, <ph name="PROTOCOL" />-ის ბმულების გახსნა</translation>
 <translation id="8738058698779197622">უსაფრთხო კავშირის დასამყარებლად, საჭიროა საათის გასწორება. ამის მიზეზია ის, რომ სერტიფიკატები, რომლებსაც ვებსაიტები იყენებენ იდენტიფიცირების მიზნით, მოქმედებს მხოლოდ გარკვეული პერიოდის განმავლობაში. რადგან თქვენი მოწყობილობის საათი არასწორია, Chromium ვერ დაადასტურებს ამ სერტიფიკატებს.</translation>
 <translation id="8740359287975076522"><ph name="HOST_NAME" />-ის &lt;abbr id="dnsDefinition"&gt;DNS მისამართი&lt;/abbr&gt; ვერ მოიძებნა. მიმდინარეობს პრობლემის დიაგნოსტიკა.</translation>
-<translation id="8742371904523228557"><ph name="ONE_TIME_CODE" /> არის თქვენი კოდი <ph name="ORIGIN" />-ისთვის</translation>
 <translation id="874918643257405732">ამ ჩანართის სანიშნეებში დამატება</translation>
 <translation id="8751426954251315517">გთხოვთ, ცადოთ სხვა დროს</translation>
 <translation id="8753913772043329557">წესების ჟურნალები</translation>
@@ -5158,7 +5155,6 @@
 <translation id="9042827002460091668">შეამოწმეთ ინტერნეტთან კავშირი და ცადეთ ხელახლა</translation>
 <translation id="9043161870923715789">ხელოვნური ინტელექტის რეჟიმი</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> — <ph name="RESULT_PRODUCT_SOURCE" /></translation>
-<translation id="9046578823518542618"><ph name="URL" />-ს სურს, მოძებნოს თქვენს ლოკალურ ქსელში ჩართული მოწყობილობა და დაუკავშირდეს მას</translation>
 <translation id="9046864189129893978">მიკროფონები (<ph name="MICS_COUNT" />)</translation>
 <translation id="9046865906192819796">„იყიდეთ ახლა, გადაიხადეთ მოგვიანებით“ მომსახურების პირობების ეკრანი გახსნილია ნახევარ სიმაღლეზე.</translation>
 <translation id="9047528041803621289">თქვენი ნაგულისხმევი პარამეტრები ვებში ძიების საშუალებას გაძლევთ. მისი შეცვლა პარამეტრებიდან შეგიძლიათ.</translation>

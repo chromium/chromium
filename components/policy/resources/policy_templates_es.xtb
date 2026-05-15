@@ -246,6 +246,29 @@ Para obtener más información sobre el tratamiento de datos en las funciones de
 <translation id="1160479894929412407">Permitir protocolo QUIC</translation>
 <translation id="1160939557934457296">Inhabilitar seguir navegando desde la página de advertencia sobre Navegación segura</translation>
 <translation id="1161685818042751282">No importar certificados de servidor TLS añadidos por el usuario desde almacenes de confianza de la plataforma.</translation>
+<translation id="1162404282416180562">Configura una lista de reglas de control de datos para evitar filtraciones de datos.
+
+      Cada regla consta de los siguientes elementos:
+      - Campos de condición para activar esa regla. Las reglas solo se activarán si la acción del usuario coincide con todos los campos rellenados en sus campos de <ph name="DATA_CONTROLS_SOURCES" />, <ph name="DATA_CONTROLS_DESTINATIONS" />, <ph name="DATA_CONTROLS_AND" />, <ph name="DATA_CONTROLS_OR" /> y <ph name="DATA_CONTROLS_NOT" />. En el caso de los subcampos de la lista, solo es necesario que coincida una entrada; por ejemplo, basta con que coincida un patrón de URL para activar la regla.
+      - Una lista de restricciones que deben aplicarse. En función de la restricción, puede que solo estén disponibles las condiciones <ph name="DATA_CONTROLS_SOURCES" /> o <ph name="DATA_CONTROLS_DESTINATIONS" />.
+
+      Se pueden añadir reglas para:
+      - Controlar los datos del portapapeles compartidos entre las fuentes y los destinos.
+      - Controlar el bloqueo de capturas de pantalla según las pestañas de origen.
+
+      Si se le asigna el valor True a la política <ph name="ON_SECURITY_EVENT_ENTERPRISE_CONNECTOR" />, se informará al administrador de las reglas activadas.
+      Al nivel de restricción se le puede asignar uno de estos valores: BLOCK, WARN o REPORT.
+      - Si se asigna el valor BLOCK al nivel de restricción, la acción no se permitirá.
+      - Si se asigna el valor WARN al nivel de restricción, se advertirá al usuario, que podrá elegir si continúa con la acción o la cancela.
+      - Si se asigna el valor REPORT al nivel de restricción, la acción del usuario no se interrumpirá, pero se enviará un informe si la política <ph name="ON_SECURITY_EVENT_ENTERPRISE_CONNECTOR" /> está habilitada.
+
+      Notas:
+      - Los patrones de URL deben tener el formato que se indica en esta página: https://support.google.com/chrome/a?p=url_blocklist_filter_format.
+      - Para ver las reglas de prevención de filtraciones de datos específicas de <ph name="PRODUCT_OS_NAME" />, consulta también la política <ph name="DATA_LEAK_PREVENTION_RULES_LIST" />.
+
+      Si no se asigna ningún valor a esta política, no se aplicará ninguna restricción.
+
+      Esta política solo está disponible para los usuarios que tengan una licencia de <ph name="CHROME_ENTERPRISE_PREMIUM_NAME" /> asignada.</translation>
 <translation id="1163080558183062209">Inhabilitar tipos de impresora en la lista de denegación</translation>
 <translation id="1163389598183927209">Un grupo de políticas relacionadas con <ph name="PRIVACY_SANDBOX_NAME" />. Visita <ph name="PRIVACY_SANDBOX_URL" /> para consultar más información sobre las iniciativas de <ph name="PRODUCT_NAME" /> para suprimir las cookies de terceros.</translation>
 <translation id="1165923723751466821">Permitir que se inicie sesión en el navegador con el modo Invitado y con inicios de sesión de perfil</translation>
@@ -697,6 +720,15 @@ Si no se asigna ningún valor a esta política, el selector de emojis estará ha
 <translation id="1509692106376861764">Esta política no está disponible desde la versión 29 de <ph name="PRODUCT_NAME" />.</translation>
 <translation id="1509839615768187049">Usar siempre el cliente DNS integrado</translation>
 <translation id="1514888685242892912">Habilitar <ph name="PRODUCT_NAME" /></translation>
+<translation id="1514959848081381646">Esta política controla las integraciones del Modo IA de Google en la barra de direcciones y en el cuadro de búsqueda de una nueva pestaña.
+
+Para acceder a esta función, Google debe estar configurado como buscador predeterminado del usuario.
+
+Si se le asigna el valor 0, la función estará disponible para los usuarios.
+
+Si se le asigna el valor 1, la función no estará disponible para los usuarios.
+
+Si no se define esta política, su comportamiento lo determinará la política <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />.</translation>
 <translation id="1515230621229117540">Habilita el menú de accesibilidad flotante</translation>
 <translation id="1515824657887788963">Permite que las páginas realicen solicitudes XHR síncronas durante el cierre de la página.</translation>
 <translation id="1516486219683984217">No permitir que se usen notificaciones del sistema</translation>
@@ -1964,6 +1996,18 @@ Si no se define la política, los usuarios podrán cambiar la lista de aplicacio
 
       Si se le asigna el valor "Falso" o no se le asigna ninguno, no se mostrará ese botón.</translation>
 <translation id="2294382669900758280">La reproducción de vídeo en las aplicaciones para Android no se tiene en cuenta, aunque se haya asignado el valor <ph name="TRUE" /> a esta política.</translation>
+<translation id="2296529215567227994">Especifica si se debe sustituir el modo Incógnito por el modo Aislado.
+
+El modo Aislado es un modo de navegación de carácter efímero exclusivo para empresas que sustituye al modo Incógnito.
+A diferencia del modo Incógnito, el modo Aislado admite políticas de empresa relacionadas con DLP y extensiones instaladas de manera forzada.
+
+Ten en cuenta que las políticas relacionadas con el modo Incógnito no se aplican al modo Aislado.
+
+Si se le asigna el valor 1 (habilitada), se habilitará el modo Aislado y sustituirá al modo Incógnito.
+
+Si se le asigna el valor 0 (inhabilitada) o no se define, se inhabilitará el modo Aislado y se usará el comportamiento estándar de Incógnito.
+
+Es necesario tener una licencia de <ph name="CHROME_ENTERPRISE_PREMIUM_NAME" /> para poder aplicar esta política.</translation>
 <translation id="2299220924812062390">Especificar una lista de complementos habilitados</translation>
 <translation id="2299815818824242485">No permitir consultas de mayor protección mediante proxy</translation>
 <translation id="2303795211377219696">Habilitar la función Autocompletar para tarjetas de crédito</translation>
@@ -6631,13 +6675,6 @@ Nota: Esta política no se aplica a las actualizaciones de HSTS.</translation>
 <translation id="5303080953475303561">Esta política controla la frecuencia con la que la pantalla de bloqueo solicita la contraseña para el desbloqueo rápido. Cuando aparece la pantalla de bloqueo, si el tiempo transcurrido desde la última vez que se introdujo la contraseña es mayor al del valor elegido, el desbloqueo rápido no estará disponible. Si los usuarios permanecen en la pantalla de bloqueo pasado ese tiempo, la próxima vez que introduzcan un código incorrecto o vuelvan a acceder a la pantalla de bloqueo (lo que suceda primero), se les pedirá la contraseña.
 
       Si no se establece esta política, los usuarios que utilicen el desbloqueo rápido deben introducir su contraseña en la pantalla de bloqueo cada día.</translation>
-<translation id="530488290401810961">Configura cómo descarga <ph name="PRODUCT_NAME" /> el modelo fundacional de IA generativa y lo usa para la inferencia de forma local.
-
-Si se permite esta política (valor 0) o no se define, el modelo se descargará automáticamente y se usará para la inferencia.
-
-Si se inhabilita esta política (valor 1), el modelo no se descargará y el modelo ya descargado (si lo hay) se eliminará.
-
-En las plataformas de ordenadores, <ph name="COMPONENT_UPDATES_ENABLED_POLICY_NAME" /> también puede inhabilitar la descarga del modelo.</translation>
 <translation id="5306186200045823863">Confiar en la infraestructura de PKI antigua de Symantec Corporation</translation>
 <translation id="5307432759655324440">Disponibilidad del modo Incógnito</translation>
 <translation id="5308551343115571396">Después de que se inhabilite <ph name="LACROS_NAME" />, intentaremos conservar tantos datos de usuario como sea posible y eliminaremos todos los datos del navegador.</translation>
@@ -8296,6 +8333,23 @@ Si la política no se define, <ph name="PRODUCT_OS_NAME" /> usará el directorio
 
       Si le asignas un valor a esta política, los usuarios no podrán cambiarlo. Si no se le asigna ninguno, los usuarios decidirán si se muestran o se ocultan los accesos directos a aplicaciones en el menú contextual de la barra de marcadores.</translation>
 <translation id="638003144128412430">Inhabilitar los informes sobre la zona horaria del dispositivo</translation>
+<translation id="638217866669468708">Esta política controla el uso compartido de contenido de páginas y archivos con el <ph name="GOOGLE_AI_MODE_PRODUCT_NAME" /> y <ph name="GOOGLE_LENS_PRODUCT_NAME" /> mediante el panel lateral o las pestañas de <ph name="PRODUCT_NAME" />.
+
+Ten en cuenta que esta política no afecta al <ph name="GOOGLE_AI_MODE_PRODUCT_NAME" /> en la Web. Solo controla cómo pueden los usuarios compartir información con la función cuando usan <ph name="PRODUCT_NAME" />.
+
+Si se le asigna el valor 0, los usuarios pueden compartir contenido de páginas o archivos con el <ph name="GOOGLE_AI_MODE_PRODUCT_NAME" />.
+
+Si se le asigna el valor 1, los usuarios no pueden compartir contenido de páginas ni archivos con el <ph name="GOOGLE_AI_MODE_PRODUCT_NAME" />. Los puntos de entrada para compartir contexto y el panel lateral se inhabilitarán u ocultarán.
+
+Esta política se ignorará cuando la <ph name="GOOGLE_SEARCH_PRODUCT_NAME" /> no sea el buscador predeterminado de los usuarios, ya que la función está inhabilitada.
+
+Esta política es independiente de la política <ph name="AI_MODE_SETTINGS_POLICY_NAME" />. La política <ph name="AI_MODE_SETTINGS_POLICY_NAME" /> solo controla los puntos de entrada en el omnibox o en el cuadro de búsqueda de una nueva pestaña, mientras que esta política controla el uso compartido de contexto mediante el panel lateral o de las pestañas.
+
+Esta política tampoco controla la integración de <ph name="GOOGLE_GEMINI_PRODUCT_NAME" />, que se puede inhabilitar mediante <ph name="GEMINI_SETTINGS_POLICY_NAME" />.
+
+Si no se define esta política, su comportamiento lo determinará la política <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />.
+
+Para obtener más información sobre el tratamiento de datos en las funciones de IA generativa, consulta https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="6382209369210116232">Inhabilitar extensiones no publicadas</translation>
 <translation id="6382287177674997281">Esta política permite a los usuarios iniciar cualquier tipo de actualización de firmware.
 
@@ -11116,6 +11170,15 @@ Se permiten las URLs que coincidan con la lista de permitidas y con la de bloque
 
 Para obtener información detallada sobre los patrones válidos de URL, consulta https://support.google.com/chrome/a?p=url_blocklist_filter_format.</translation>
 <translation id="8186911565834244165">Permitir comentarios de los usuarios</translation>
+<translation id="8190271041226151932">Este ajuste permite las integraciones de la aplicación Gemini.
+
+Si se le asigna el valor 0, la integración de Gemini estará disponible para los usuarios.
+
+Si se le asigna el valor 1, la integración de Gemini no estará disponible para los usuarios.
+
+Si no se define esta política, su comportamiento lo determinará la política <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />.
+
+Para obtener más información, consulta el artículo del Centro de Ayuda https://support.google.com/chrome/a?p=gemini_in_chrome.</translation>
 <translation id="8195133650230097559">Ignorar las solicitudes de wake locks para la gestión de energía</translation>
 <translation id="8196558469954193908">Esta política permite la unión de conexiones HTTP/2 cuando se usan certificados de cliente. Para que se unan, el nombre de host de la posible nueva conexión y de la conexión existente deben coincidir con uno o varios patrones descritos en esta política. La política establece una lista de hosts que utilizan el formato de filtro <ph name="URL_BLOCKLIST_POLICY_NAME" />: "example.com" coincide con "example.com" y con todos sus subdominios (como "sub.example.com"), mientras que ".example.net" coincide de forma exacta con "example.net".
 

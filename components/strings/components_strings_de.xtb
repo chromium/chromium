@@ -316,7 +316,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="1463793142714244641">Timesharing- und Ferienobjekte</translation>
 <translation id="1465457928007067810">IBAN in deinem Google-Konto gespeichert</translation>
 <translation id="1467432559032391204">Links</translation>
-<translation id="1468653229182955856"><ph name="ONE_TIME_CODE" /> ist dein Code für <ph name="EMBEDDED_ORIGIN" />, damit du auf <ph name="TOP_ORIGIN" /> fortfahren kannst</translation>
 <translation id="1472675084647422956">Mehr anzeigen</translation>
 <translation id="1473183651233018052">JIS B10</translation>
 <translation id="1473495410389165587">Gib mindestens 3 Wörter ein, um Hilfe beim Schreiben zu erhalten</translation>
@@ -549,6 +548,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="1832474362231610822">Foto in OneDrive gespeichert</translation>
 <translation id="1832730227369924598">Desktop-Synchronisierung</translation>
 <translation id="1834452765064623979">Baugewerbe und Hausverwaltung</translation>
+<translation id="1837606605602726453">Die Risikobewertung und -kategorien werden ignoriert, da die Erweiterung vom Administrator explizit zugelassen oder blockiert wird.</translation>
 <translation id="1838374766361614909">Suche löschen</translation>
 <translation id="1839331950812095887">einige Worte, die deine Gedanken zusammenfassen</translation>
 <translation id="1839551713262164453">Die Validierung der Richtlinienwerte hat Fehler ergeben und ist fehlgeschlagen</translation>
@@ -1858,6 +1858,7 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="3875783148670536197">So gehts</translation>
 <translation id="3877603629930976930">Nicht teilen</translation>
 <translation id="3878445208930547646">Das Kopieren von dieser Website ist nicht zulässig</translation>
+<translation id="3879674895057686427">Sprache auswählen, in die übersetzt werden soll</translation>
 <translation id="3879748587602334249">Download-Manager</translation>
 <translation id="3880456882942693779">Kunst und Unterhaltung</translation>
 <translation id="3880589673277376494">Internet und Telekommunikation</translation>
@@ -3096,7 +3097,7 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="5808435672482059465">Chrome-Verlauf ansehen</translation>
 <translation id="5810442152076338065">Deine Verbindung zu <ph name="DOMAIN" /> ist mit einer veralteten Codier-Suite verschlüsselt.</translation>
 <translation id="5813119285467412249">&amp;Hinzufügen wiederholen</translation>
-<translation id="5813274153495000141">Du kannst deine Informationen speichern, um entsprechende Formulare in Zukunft schneller auszufüllen. Die Informationen werden auf deinem Gerät gespeichert.</translation>
+<translation id="5813274153495000141">Du kannst deine Informationen speichern, um Formulare in Zukunft schneller auszufüllen. Die Informationen werden auf deinem Gerät gespeichert.</translation>
 <translation id="5813753398265398978">Physik</translation>
 <translation id="5817918615728894473">Koppeln</translation>
 <translation id="5820625124144807242">Nachdem du deine Bestellung geprüft hast, musst du dich mit <ph name="BNPL_ISSUER_NAME" /> in deinem Konto anmelden oder ein neues erstellen. Dieses Konto wird automatisch mit Google Pay verknüpft.</translation>
@@ -3444,6 +3445,7 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="634500758737709758">Route</translation>
 <translation id="6348220984832452017">Aktive Variationen</translation>
 <translation id="6349101878882523185"><ph name="APP_NAME" /> installieren</translation>
+<translation id="6350739641326887427">Du kannst bezahlen, ohne den Pix-Code kopieren und einfügen zu müssen. <ph name="BEGIN_LINK1" />So funktionierts<ph name="END_LINK1" /></translation>
 <translation id="6351658970066645919">Browserdaten löschen</translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{Keins}=1{1 Passwort (für <ph name="DOMAIN_LIST" />, synchronisiert)}=2{2 Passwörter (für <ph name="DOMAIN_LIST" />, synchronisiert)}other{# Passwörter (für <ph name="DOMAIN_LIST" />, synchronisiert)}}</translation>
 <translation id="6354918092619878358">Elliptische SECG-Kurve secp256r1 (ANSI X9.62 prime256v1, NIST P-256)</translation>
@@ -3502,7 +3504,6 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="6424600253695044005">Cloud-Speicher</translation>
 <translation id="6425092077175753609">Material</translation>
 <translation id="6427730057873428458">Fensterfaltung</translation>
-<translation id="6428450836711225518">Telefonnummer bestätigen</translation>
 <translation id="6429267199680088961">A4-Tab</translation>
 <translation id="643051589346665201">Google-Passwort ändern</translation>
 <translation id="6431556523611594411">Geöffnete Tabs teilen</translation>
@@ -3659,6 +3660,7 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="668132230070712111">Video in Google Drive gespeichert</translation>
 <translation id="6681790815630918386">CVC gespeichert</translation>
 <translation id="6683022854667115063">Kopfhörer</translation>
+<translation id="6686570026048064255">Wenn du die Erkennung von Pix-Codes deaktivieren möchtest, rufe die <ph name="BEGIN_LINK1" />Chrome-Einstellungen<ph name="END_LINK1" /> auf</translation>
 <translation id="6687230248707087982">Umschlag (unbedruckt)</translation>
 <translation id="6687335167692595844">Gewünschte Schriftgröße</translation>
 <translation id="6688743156324860098">Aktualisieren</translation>
@@ -4450,7 +4452,6 @@ Weitere Details:
 <translation id="7874796722855317864">„<ph name="PROXY_UNKNOWN_CONDITION" />“ ist kein bekannter Bedingungstyp.</translation>
 <translation id="7877007680666472091">geschützte Inhalts-IDs</translation>
 <translation id="7878562273885520351">Dein Passwort könnte gefährdet sein</translation>
-<translation id="7881044256965445977">Nach Geräten in deinem lokalen Netzwerk suchen und eine Verbindung mit ihnen herstellen</translation>
 <translation id="7885670691503039914">Du erhältst eine E‑Mail-Benachrichtigung, wenn der Preis auf einer Website gesenkt wird. Diese Seite wird im Lesezeichenordner „<ph name="LAST_BOOKMARKS_FOLDER" />“ gespeichert.</translation>
 <translation id="7886897188117641322">Wähle aus, welche allgemeinen Themenkategorien für die Personalisierung von Werbung verwendet werden können</translation>
 <translation id="7887683347370398519">Prüfe deinen CVC und versuche es dann noch einmal.</translation>
@@ -4977,7 +4978,6 @@ Weitere Details:
 <translation id="8737685506611670901"><ph name="PROTOCOL" />-Links anstelle von <ph name="REPLACED_HANDLER_TITLE" /> öffnen</translation>
 <translation id="8738058698779197622">Zum Aufbau einer sicheren Verbindung muss die Uhrzeit richtig eingestellt sein. Der Grund hierfür ist, dass Websites sich mithilfe von Zertifikaten identifizieren, die nur für einen bestimmten Zeitraum gelten. Da die Uhrzeit deines Geräts falsch ist, kann Chromium diese Zertifikate nicht bestätigen.</translation>
 <translation id="8740359287975076522">Die &lt;abbr id="dnsDefinition"&gt;DNS-Adresse&lt;/abbr&gt; von <ph name="HOST_NAME" /> wurde nicht gefunden. Eine Problemdiagnose wird durchgeführt.</translation>
-<translation id="8742371904523228557"><ph name="ONE_TIME_CODE" /> ist dein Code für <ph name="ORIGIN" /></translation>
 <translation id="874918643257405732">Lesezeichen für diesen Tab erstellen</translation>
 <translation id="8751426954251315517">Bitte versuche es später noch einmal</translation>
 <translation id="8753913772043329557">Richtlinienprotokolle</translation>
@@ -5156,7 +5156,6 @@ Weitere Details:
 <translation id="9042827002460091668">Prüfe deine Internetverbindung und versuch es noch einmal</translation>
 <translation id="9043161870923715789">KI‑Modus</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> – <ph name="RESULT_PRODUCT_SOURCE" /></translation>
-<translation id="9046578823518542618"><ph name="URL" /> möchte nach Geräten in deinem lokalen Netzwerk suchen und eine Verbindung mit ihnen herstellen</translation>
 <translation id="9046864189129893978">Mikrofone (<ph name="MICS_COUNT" />)</translation>
 <translation id="9046865906192819796">Der Bildschirm mit den Nutzungsbedingungen für „Jetzt kaufen, später bezahlen“ ist halb geöffnet.</translation>
 <translation id="9047528041803621289">Deine Standardsuchmaschine ist die Suchmaschine, die standardmäßig für Websuchen verwendet wird. Du kannst sie in den Einstellungen ändern.</translation>

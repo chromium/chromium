@@ -316,7 +316,6 @@
 <translation id="1463793142714244641">タイムシェア、別荘</translation>
 <translation id="1465457928007067810">IBAN が Google アカウントに保存されました</translation>
 <translation id="1467432559032391204">左</translation>
-<translation id="1468653229182955856"><ph name="ONE_TIME_CODE" /> は、<ph name="EMBEDDED_ORIGIN" /> が <ph name="TOP_ORIGIN" /> で動作するのに必要なコードです</translation>
 <translation id="1472675084647422956">表示項目を増やす</translation>
 <translation id="1473183651233018052">JIS B10</translation>
 <translation id="1473495410389165587">文章作成サポートを使用するには、3 つ以上の単語を入力してください</translation>
@@ -1861,6 +1860,7 @@
 <translation id="3875783148670536197">手順を見る</translation>
 <translation id="3877603629930976930">共有しない</translation>
 <translation id="3878445208930547646">このサイトからのコピーは許可されていません</translation>
+<translation id="3879674895057686427">訳文の言語を選択</translation>
 <translation id="3879748587602334249">ダウンロード マネージャ</translation>
 <translation id="3880456882942693779">アート、エンターテインメント</translation>
 <translation id="3880589673277376494">インターネット、通信事業</translation>
@@ -3447,6 +3447,7 @@
 <translation id="634500758737709758">経路案内</translation>
 <translation id="6348220984832452017">バリエーションを有効にする</translation>
 <translation id="6349101878882523185"><ph name="APP_NAME" /> をインストールします</translation>
+<translation id="6350739641326887427">Pix コードをコピーして貼り付けなくても、お支払いが可能。<ph name="BEGIN_LINK1" />仕組みを確認<ph name="END_LINK1" /></translation>
 <translation id="6351658970066645919">閲覧履歴データの削除</translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{なし}=1{<ph name="DOMAIN_LIST" /> のパスワード 1 件（同期）}=2{<ph name="DOMAIN_LIST" /> のパスワード 2 件（同期）}other{<ph name="DOMAIN_LIST" /> のパスワード # 件（同期）}}</translation>
 <translation id="6354918092619878358">SECG 楕円曲線 secp256r1（別名 ANSI X9.62 prime256v1、NIST P-256）</translation>
@@ -3505,7 +3506,6 @@
 <translation id="6424600253695044005">クラウド ストレージ</translation>
 <translation id="6425092077175753609">マテリアル</translation>
 <translation id="6427730057873428458">観音折り</translation>
-<translation id="6428450836711225518">電話番号の確認</translation>
 <translation id="6429267199680088961">A4 Tab</translation>
 <translation id="643051589346665201">Google のパスワードを変更</translation>
 <translation id="6431556523611594411">開いているタブを共有する</translation>
@@ -3662,6 +3662,7 @@
 <translation id="668132230070712111">動画を Google ドライブに保存しました</translation>
 <translation id="6681790815630918386">CVC 保存済み</translation>
 <translation id="6683022854667115063">ヘッドフォン</translation>
+<translation id="6686570026048064255">Pix コードの検出をオフにするには、<ph name="BEGIN_LINK1" />Chrome の設定<ph name="END_LINK1" />に移動してください</translation>
 <translation id="6687230248707087982">封筒（無地）</translation>
 <translation id="6687335167692595844">リクエストされたフォントサイズ</translation>
 <translation id="6688743156324860098">更新…</translation>
@@ -4453,7 +4454,6 @@
 <translation id="7874796722855317864">「<ph name="PROXY_UNKNOWN_CONDITION" />」は既知の条件タイプではありません。</translation>
 <translation id="7877007680666472091">保護されたコンテンツ ID</translation>
 <translation id="7878562273885520351">パスワードが不正使用される可能性があります</translation>
-<translation id="7881044256965445977">ローカル ネットワーク上のデバイスを検索して接続する</translation>
 <translation id="7885670691503039914">値下げしたサイトがある場合、メールで通知します。このページはブックマーク フォルダ「<ph name="LAST_BOOKMARKS_FOLDER" />」に保存されます。</translation>
 <translation id="7886897188117641322">広告のパーソナライズに使用できるトピックの大まかなカテゴリを選択します</translation>
 <translation id="7887683347370398519">CVC を確認してからもう一度お試しください</translation>
@@ -4980,7 +4980,6 @@
 <translation id="8737685506611670901"><ph name="REPLACED_HANDLER_TITLE" /> の代わりに「<ph name="PROTOCOL" />」リンクを開く</translation>
 <translation id="8738058698779197622">安全な接続を確立するには時計が正しく設定されている必要があります。この理由は、本物のウェブサイトであることを示すためにウェブサイトで使用される証明書には、有効期間（発効日時と失効日時）が設定されているためです。デバイスの時計が正しくないため、Chromium ではこれらの証明書を確認できません。</translation>
 <translation id="8740359287975076522"><ph name="HOST_NAME" /> の &lt;abbr id="dnsDefinition"&gt;DNS アドレス&lt;/abbr&gt;が見つかりませんでした。問題を診断しています。</translation>
-<translation id="8742371904523228557"><ph name="ORIGIN" /> のコードは「<ph name="ONE_TIME_CODE" />」です</translation>
 <translation id="874918643257405732">このタブをブックマークに追加します</translation>
 <translation id="8751426954251315517">後でもう一度お試しください。</translation>
 <translation id="8753913772043329557">ポリシーログ</translation>
@@ -5158,7 +5157,6 @@
 <translation id="9042827002460091668">インターネット接続を確認してもう一度お試しください</translation>
 <translation id="9043161870923715789">AI モード</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
-<translation id="9046578823518542618"><ph name="URL" /> はローカル ネットワーク上のデバイスの検出と接続を要求しています</translation>
 <translation id="9046864189129893978">マイク（<ph name="MICS_COUNT" />）</translation>
 <translation id="9046865906192819796">後払い決済の利用規約画面が画面の下半分に表示されています。</translation>
 <translation id="9047528041803621289">デフォルトで設定したサービス（検索エンジン）でウェブを検索できます。なお、使用する検索サービスは [設定] で変更できます。</translation>

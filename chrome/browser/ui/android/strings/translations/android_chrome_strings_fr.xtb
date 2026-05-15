@@ -263,6 +263,7 @@ Seule une personne connaissant votre phrase secrète peut lire vos données chif
 <translation id="2184272387334793084">Connectez-vous pour accéder à vos mots de passe et plus encore sur tous vos appareils</translation>
 <translation id="218608176142494674">Partage</translation>
 <translation id="2186779861549045980">Vous pouvez choisir les données à enregistrer dans votre compte Google.\nVous pouvez aussi afficher et gérer ces éléments dans vos favoris, votre liste de lecture ou le Gestionnaire de mots de passe.</translation>
+<translation id="2190355936436201913">(vide)</translation>
 <translation id="219283042927675668">Onglets dans le groupe</translation>
 <translation id="2194856509914051091">Éléments à prendre en compte</translation>
 <translation id="2205701497928406883"><ph name="TAB_TITLE" />, onglet épinglé avec partage en cours</translation>
@@ -300,6 +301,7 @@ Seule une personne connaissant votre phrase secrète peut lire vos données chif
 <translation id="233375395665273385">Supprimer et se déconnecter</translation>
 <translation id="2341410551640223969">Impossible d'installer <ph name="WEBAPK_NAME" />.</translation>
 <translation id="2349710944427398404">Espace de stockage utilisé pour l'ensemble des données Chrome, y compris les comptes, favoris et paramètres enregistrés</translation>
+<translation id="2354001756790975382">Autres favoris</translation>
 <translation id="235789365079050412">Règles de confidentialité de Google</translation>
 <translation id="2359808026110333948">Continuer</translation>
 <translation id="2362083820973145409">Connecté en tant que <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Ouvre les paramètres.</translation>
@@ -896,6 +898,7 @@ Votre compte Google conserve peut-être d'autres contenus d'historique de naviga
 <translation id="4864369630010738180">Connexion...</translation>
 <translation id="4866368707455379617">Impossible d'installer le module <ph name="MODULE" /> pour Chrome</translation>
 <translation id="4875775213178255010">Recommandations de contenus</translation>
+<translation id="4876880121961092787">Masquer la barre de favoris</translation>
 <translation id="4877678010818027629">Entrer en mode navigation privée</translation>
 <translation id="4878404682131129617">Échec de l'établissement d'un tunnel via un serveur proxy</translation>
 <translation id="4880127995492972015">Traduire…</translation>
@@ -1268,6 +1271,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="6437162790453527153">Connectez-vous pour accéder à vos favoris et bien plus sur tous vos appareils</translation>
 <translation id="6437478888915024427">Infos sur la page</translation>
 <translation id="6440291723980579689">Les pages ne se chargent qu'une fois que vous les avez ouvertes</translation>
+<translation id="6441377161852435370">Ajouter l'onglet à la liste de lecture</translation>
 <translation id="6441734959916820584">Nom trop long</translation>
 <translation id="6444291413624515012">Groupe d'onglets <ph name="TAB_GROUP_TITLE" /> fermé</translation>
 <translation id="6452534462676960500">Nouvelle activité</translation>
@@ -1357,6 +1361,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="6787600234697426339">Limite de <ph name="MAX_INSTANCE_COUNT" /> fenêtres atteinte</translation>
 <translation id="6795633245022906657">Ouvrir rapidement un nouvel onglet. Pour modifier ce raccourci, accédez aux paramètres.</translation>
 <translation id="679588508577699489">Définir Chrome comme votre navigateur par défaut</translation>
+<translation id="679845623837196966">Afficher la liste de lecture</translation>
 <translation id="679956319013005046">Pour définir votre service préféré pour la saisie automatique, commencez par l'ajouter dans les <ph name="BEGIN_LINK" />paramètres Android<ph name="END_LINK" />.</translation>
 <translation id="6802555630140434547">La fenêtre sera fermée</translation>
 <translation id="6803791793483522764">Examiner les notifications</translation>
@@ -1657,6 +1662,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 <translation id="7934668619883965330">Impossible de télécharger le fichier. Format de fichier non compatible.</translation>
 <translation id="7951102827450076904">Toujours ouvrir les PDF téléchargés</translation>
 <translation id="7952479614398473176">Pour ouvrir une nouvelle fenêtre, réduisez le nombre total de fenêtres actives à <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> ou moins.</translation>
+<translation id="7956713633345437162">Favoris d'appareils mobiles</translation>
 <translation id="7957413488482743710">Une carte virtuelle masque votre carte réelle pour vous protéger des fraudes potentielles. <ph name="BEGIN_LINK1" />En savoir plus sur les cartes virtuelles<ph name="END_LINK1" /></translation>
 <translation id="7959485987650214982">Onglets sur cet appareil</translation>
 <translation id="7961926449547174351">Vous avez désactivé l'accès à l'espace de stockage. Veuillez accéder aux paramètres pour l'activer.</translation>
@@ -1845,6 +1851,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 <translation id="867914734596684889">Afficher ou masquer la barre de favoris</translation>
 <translation id="8683039184091909753">image</translation>
 <translation id="8688183792442786085"><ph name="TAB_TITLE" />, onglet sélectionné</translation>
+<translation id="8696297579102085705">Envoyer sur votre appareil</translation>
 <translation id="8697753151306746444">Partagez plutôt une fenêtre ou un écran</translation>
 <translation id="8699120352855309748">Ne pas proposer de traduire ces langues</translation>
 <translation id="8712637175834984815">OK</translation>

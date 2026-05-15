@@ -5,7 +5,6 @@
 <translation id="1036348656032585052">બંધ કરો</translation>
 <translation id="1046742265332833834">બ્લૂ થીમ</translation>
 <translation id="1070329623210597193">આ સાઇટ ફાઇલો જોઈ શકે છે અથવા તેમાં ફેરફાર કરી શકે છે</translation>
-<translation id="1073417869336441572">તમે ત્રીજા પક્ષની કુકીને કેમ મંજૂરી આપી છે તે અમને જણાવીને Chromeને બહેતર બનાવવામાં અમારી સહાય કરો. <ph name="BEGIN_LINK" />પ્રતિસાદ મોકલો<ph name="END_LINK" /></translation>
 <translation id="1074758928858737435">તમે સાઇટના ડેસ્કટૉપ વર્ઝન જોવાનું પૂછી શકો છો</translation>
 <translation id="1109482864356262001">મોશન અથવા લાઇટ સેન્સરની આવશ્યકતા હોય તેવી સુવિધાઓ કાર્ય કરશે નહીં</translation>
 <translation id="1126523729897810826">Chromeનો સૌથી વધુ લાભ મેળવવા માટે આ નીચે સૂચવેલી ઍક્શન પૂર્ણ કરો</translation>
@@ -328,6 +327,7 @@
 <translation id="4290791284969893584">કોઈ પેજ બંધ કર્યા પછી, તમે શરૂ કરેલા કાર્ય કદાચ પૂર્ણ થઈ શકશે નહીં</translation>
 <translation id="429312253194641664">સાઇટ મીડિયા ચલાવી રહી છે</translation>
 <translation id="42981349822642051">વિસ્તૃત કરો</translation>
+<translation id="4310738531374808763">તમારું હોમપેજ કસ્ટમાઇઝ કરો</translation>
 <translation id="4336219115486912529">{COUNT,plural, =1{આવતીકાલે સમયસીમા સમાપ્ત થાય છે}one{# દિવસમાં સમયસીમા સમાપ્ત થાય છે}other{# દિવસમાં સમયસીમા સમાપ્ત થાય છે}}</translation>
 <translation id="4338831206024587507"><ph name="DOMAIN" /> હેઠળની બધી સાઇટ</translation>
 <translation id="4340799661701629185">સાઇટને નોટિફિકેશન મોકલવાની મંજૂરી આપશો નહીં</translation>
@@ -440,7 +440,6 @@
 <translation id="5555115555607204100">Chromeના V8 એન્જિન વડે સાઇટની ગતિ ન વધારો, પણ Chromeને અટૅક પ્રતિ થોડું વધુ પ્રતિરોધક બનાવો</translation>
 <translation id="5556459405103347317">ફરીથી લોડ કરો</translation>
 <translation id="5591840828808741583"><ph name="SITE_NAME" /> બ્લૉક કરી</translation>
-<translation id="560980142378233747">આનો અર્થ એ છે કે સાઇટની સુવિધાઓ અપેક્ષા મુજબ કાર્ય કરવી જોઈએ, પરંતુ તમારી પાસે બ્રાઉઝિંગ સંરક્ષણ ઓછું હોઈ શકે છે. <ph name="BEGIN_LINK" />પ્રતિસાદ મોકલો<ph name="END_LINK" /></translation>
 <translation id="5617702678271228680">નવા ટૅબ પેજ કાર્ડની બોટમ શીટ</translation>
 <translation id="5621413808884657932">જ્યારે આ સેટિંગ ચાલુ હોય, ત્યારે સાઇટ આ ડિવાઇસ પરની અન્ય ઍપ અને સેવાઓ ઍક્સેસ કરવાનું પૂછી શકે છે. જ્યારે બંધ હોય, ત્યારે સાઇટ આ ડિવાઇસ પરની અન્ય ઍપ અને સેવાઓને ઍક્સેસ કરી શકતી નથી.</translation>
 <translation id="5632485077360054581">મને બતાવો કે કેવી રીતે</translation>
@@ -519,6 +518,7 @@
 <translation id="6262279340360821358"><ph name="PERMISSION_1" /> અને <ph name="PERMISSION_2" />ને બ્લૉક કર્યા</translation>
 <translation id="6270391203985052864">સાઇટ તમને નોટિફિકેશન મોકલવા માટે પૂછી શકે છે</translation>
 <translation id="6295158916970320988">બધી સાઇટ</translation>
+<translation id="6305257382500066042">હમણાં જ અજમાવી જુઓ</translation>
 <translation id="6320088164292336938">વાઇબ્રેટ</translation>
 <translation id="6367753977865761591">ચોક્કસ સાઇટ માટે ત્રીજા પક્ષ દ્વારા સાઇન-ઇનને બ્લૉક કરો.</translation>
 <translation id="6398765197997659313">પૂર્ણ સ્ક્રીનથી બહાર નીકળો</translation>
@@ -529,7 +529,6 @@
 <translation id="6447842834002726250">કૂકીઝ</translation>
 <translation id="6452138246455930388">તમારા ખુલ્લા ટૅબ પર કિંમતમાં ઘટાડો, <ph name="OLD_PRICE" />માંથી <ph name="NEW_PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN_NAME" /></translation>
 <translation id="6500423977866688905">વિન્ડો નાની હોય ત્યારે, મોબાઇલ વ્યૂની વિનંતી કરો</translation>
-<translation id="6514791408445720076">તમારું પેજ કસ્ટમાઇઝ કરો</translation>
 <translation id="6527303717912515753">શેર કરો</translation>
 <translation id="6530703012083415527">ચાલુ હોય ત્યારે, સાઇટ પૉપ-અપ અને રીડાયરેક્ટનો ઉપયોગ કરી શકે છે. બંધ હોય ત્યારે, સાઇટ પૉપ-અપ અને રીડાયરેક્ટનો ઉપયોગ કરી શકતી નથી.</translation>
 <translation id="6540488083026747005">તમે આ સાઇટ માટે ત્રીજા પક્ષની કુકીને મંજૂરી આપી છે</translation>
@@ -593,7 +592,6 @@
 <translation id="7141896414559753902">સાઇટને પૉપ-અપ અને રીડાયરેક્ટ બતાવવા દેવાથી બ્લૉક કરો (સુઝાવ આપીએ છીએ)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> KB</translation>
 <translation id="7180611975245234373">રિફ્રેશ કરો</translation>
-<translation id="7180865173735832675">કસ્ટમાઇઝ કરો</translation>
 <translation id="7188508872042490670">ડિવાઇસ પર સાઇટનો ડેટા</translation>
 <translation id="7201549776650881587">આ ક્રિયાના પરિણામે <ph name="ORIGIN" /> હેઠળની બધી સાઇટ અથવા તેની ઍપ દ્વારા તમારી હોમ સ્ક્રીન પર સ્ટોર કરવામાં આવેલો બધો ડેટા અને કુકી ડિલીટ થઈ જશે</translation>
 <translation id="7219254577985949841">શું સાઇટનો ડેટા ડિલીટ કરીએ?</translation>
@@ -707,7 +705,6 @@
 <translation id="83792324527827022">કોઈ સાઇટ તમારા કૅમેરા અને માઇક્રોફોનનો ઉપયોગ કરી રહી છે</translation>
 <translation id="8380167699614421159">આ સાઇટ ઘૃણાસ્પદ અથવા ભ્રામક જાહેરાતો બતાવે છે</translation>
 <translation id="8394832520002899662">સાઇટ પર પાછા ફરવા માટે, ટૅપ કરો</translation>
-<translation id="8404500559369898929">કસ્ટમ બૅકગ્રાઉન્ડ થીમ પસંદ કરીને Chromeને તમારું પોતાનું બનાવો</translation>
 <translation id="8409345997656833551">જ્યારે લેખને સરળ બનાવેલા વ્યૂમાં બતાવી શકાતો હોય ત્યારે નોટિફિકેશન મેળવો</translation>
 <translation id="8416874502399604126">આ વખતે માઇક્રોફોનને મંજૂરી આપી છે</translation>
 <translation id="8423565414844018592">ટેક્સ્ટ સ્કેલિંગ <ph name="TEXT_SCALING" /> પર સેટ કર્યું</translation>

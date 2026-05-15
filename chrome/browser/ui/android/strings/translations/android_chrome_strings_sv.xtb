@@ -263,6 +263,7 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="2184272387334793084">Logga in om du vill ha dina lösenord med mera på alla dina enheter</translation>
 <translation id="218608176142494674">Delar</translation>
 <translation id="2186779861549045980">Du kan välja vilken data som ska sparas i Google-kontot.\nDu kan även visa och hantera objekten i bokmärken, läslistan eller Lösenordshantering.</translation>
+<translation id="2190355936436201913">(tom)</translation>
 <translation id="219283042927675668">Flikar i gruppen</translation>
 <translation id="2194856509914051091">Tänk på detta</translation>
 <translation id="2205701497928406883"><ph name="TAB_TITLE" />, fäst flik som delas</translation>
@@ -300,6 +301,7 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="233375395665273385">Radera och logga ut</translation>
 <translation id="2341410551640223969">Det gick inte att installera <ph name="WEBAPK_NAME" />.</translation>
 <translation id="2349710944427398404">Total data som används av Chrome, inklusive konton, bokmärken och sparade inställningar</translation>
+<translation id="2354001756790975382">Övriga bokmärken</translation>
 <translation id="235789365079050412">Googles integritetspolicy</translation>
 <translation id="2359808026110333948">Fortsätt</translation>
 <translation id="2362083820973145409">Inloggad som <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Öppnar inställningarna.</translation>
@@ -897,6 +899,7 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="4864369630010738180">Loggar in ...</translation>
 <translation id="4866368707455379617">Det gick inte att installera <ph name="MODULE" /> i Chrome</translation>
 <translation id="4875775213178255010">Förslag på innehåll</translation>
+<translation id="4876880121961092787">Dölj bokmärkesfältet</translation>
 <translation id="4877678010818027629">Starta inkognitoläget</translation>
 <translation id="4878404682131129617">Det gick inte att upprätta en tunnel via proxyserver</translation>
 <translation id="4880127995492972015">Översätt …</translation>
@@ -1269,6 +1272,7 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="6437162790453527153">Logga in om du vill ha dina bokmärken med mera på alla dina enheter</translation>
 <translation id="6437478888915024427">Sidinformation</translation>
 <translation id="6440291723980579689">Sidor läses endast in när du har öppnat dem</translation>
+<translation id="6441377161852435370">Lägg till fliken i läslistan</translation>
 <translation id="6441734959916820584">Namnet är för långt</translation>
 <translation id="6444291413624515012">Flikgruppen <ph name="TAB_GROUP_TITLE" /> har stängts</translation>
 <translation id="6452534462676960500">Ny aktivitet</translation>
@@ -1358,6 +1362,7 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="6787600234697426339">Gränsen på <ph name="MAX_INSTANCE_COUNT" /> fönster har uppnåtts</translation>
 <translation id="6795633245022906657">Öppna en ny flik snabbt. Öppna inställningarna om du vill ändra genvägen.</translation>
 <translation id="679588508577699489">Ange Chrome som standard</translation>
+<translation id="679845623837196966">Visa läslista</translation>
 <translation id="679956319013005046">Om du vill ställa in din önskade tjänst för autofyll lägger du först till tjänsten i <ph name="BEGIN_LINK" />Android-inställningarna<ph name="END_LINK" />.</translation>
 <translation id="6802555630140434547">Fönstret stängs</translation>
 <translation id="6803791793483522764">Granska aviseringar</translation>
@@ -1658,6 +1663,7 @@ Om du vill ändra den här inställningen <ph name="BEGIN_LINK" />raderar du Chr
 <translation id="7934668619883965330">Det gick inte att ladda ned filen. Filformatet stöds inte.</translation>
 <translation id="7951102827450076904">Öppna alltid nedladdade PDF-filer</translation>
 <translation id="7952479614398473176">Om du vill öppna ett nytt fönster minskar du det totala antalet aktiva fönster till högst <ph name="MAX_WINDOW_COUNT_MINUS_ONE" />.</translation>
+<translation id="7956713633345437162">Bokmärken i mobilen</translation>
 <translation id="7957413488482743710">Ett virtuellt kort döljer det riktiga kortet och skyddar dig från eventuella bedrägerier. <ph name="BEGIN_LINK1" />Läs mer om virtuella kort<ph name="END_LINK1" /></translation>
 <translation id="7959485987650214982">Flikar på den här enheten</translation>
 <translation id="7961926449547174351">Du har inaktiverat åtkomst till lagringsutrymmet. Återaktivera i inställningarna.</translation>
@@ -1846,6 +1852,7 @@ Om du vill ändra den här inställningen <ph name="BEGIN_LINK" />raderar du Chr
 <translation id="867914734596684889">Visa eller dölj bokmärkesfältet</translation>
 <translation id="8683039184091909753">bild</translation>
 <translation id="8688183792442786085"><ph name="TAB_TITLE" />, vald flik</translation>
+<translation id="8696297579102085705">Skicka till din enhet</translation>
 <translation id="8697753151306746444">Dela ett fönster eller en skärm i stället</translation>
 <translation id="8699120352855309748">Erbjud inte att översätta dessa språk</translation>
 <translation id="8712637175834984815">Uppfattat</translation>

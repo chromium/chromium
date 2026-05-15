@@ -316,7 +316,6 @@
 <translation id="1463793142714244641">وقت کے اشتراکات اور تعطیل کی خصوصیات</translation>
 <translation id="1465457928007067810">‏‫IBAN آپ کے Google اکاؤنٹ میں محفوظ ہو گیا ہے</translation>
 <translation id="1467432559032391204">بائیں</translation>
-<translation id="1468653229182955856"><ph name="TOP_ORIGIN" /> پر جاری رکھنے کے لئے <ph name="EMBEDDED_ORIGIN" /> کی خاطر <ph name="ONE_TIME_CODE" /> آپ کا کوڈ ہے</translation>
 <translation id="1472675084647422956">مزید دکھائیں</translation>
 <translation id="1473183651233018052">JIS B10</translation>
 <translation id="1473495410389165587">تحریری مدد حاصل کرنے کے لیے 3 یا اس سے زیادہ الفاظ درج کریں</translation>
@@ -1862,6 +1861,7 @@
 <translation id="3875783148670536197">مجھے طریقہ دکھائیں</translation>
 <translation id="3877603629930976930">اشتراک نہ کریں</translation>
 <translation id="3878445208930547646">اس سائٹ سے کاپی کرنے کی اجازت نہیں ہے</translation>
+<translation id="3879674895057686427">جس زبان میں ترجمہ کرنا ہے اسے منتخب کریں</translation>
 <translation id="3879748587602334249">ڈاؤن لوڈ مینیجر</translation>
 <translation id="3880456882942693779">آرٹس اور تفریح</translation>
 <translation id="3880589673277376494">انٹرنیٹ اور ٹیلی کام</translation>
@@ -2237,6 +2237,7 @@
 <translation id="443673843213245140">پراکسی کا استعمال غیر فعال کر دیا گیا ہے لیکن ایک واضح پراکسی کنفیگریشن متعین کی گئی ہے۔</translation>
 <translation id="4438821706955556403">عمومی قیمت</translation>
 <translation id="4441832193888514600">نظر انداز کر دیا گیا کیونکہ پالیسی صرف کلاؤڈ صارف کی پالیسی کے بطور سیٹ کی جا سکتی ہے۔</translation>
+<translation id="4444062564459679679">‏آپ کے <ph name="DEVICE_NAME" /> پر Chrome کو پہلے ہی بھیج دیا گیا ہے</translation>
 <translation id="4445133368066241428">مقبول موضوعات</translation>
 <translation id="4445694043187340808">‏‫<ph name="STARTER_PACK_TABS_FOCUSED_FRIENDLY_MATCH_TEXT" />، ٹیبز کو تلاش کرنے کے لیے Enter دبائیں</translation>
 <translation id="4445964943162061557">یہ ایک تجرباتی خصوصیت ہے اور یہ ہمیشہ درست نہیں ہوگی۔</translation>
@@ -3508,7 +3509,6 @@
 <translation id="6424600253695044005">کلاؤڈ اسٹوریج</translation>
 <translation id="6425092077175753609">مٹیریل</translation>
 <translation id="6427730057873428458">گیٹ فولڈ</translation>
-<translation id="6428450836711225518">اپنے فون نمبر کی توثیق کریں</translation>
 <translation id="6429267199680088961">A4 Tab</translation>
 <translation id="643051589346665201">‏Google کا پاس ورڈ تبدیل کریں</translation>
 <translation id="6431556523611594411">کھلے ٹیبز کا اشتراک کریں</translation>
@@ -4456,7 +4456,6 @@
 <translation id="7874796722855317864">‫"<ph name="PROXY_UNKNOWN_CONDITION" />" حالت کی معلوم قسم نہیں ہے۔</translation>
 <translation id="7877007680666472091">‏تحفظ یافتہ مواد کی IDs</translation>
 <translation id="7878562273885520351">لگتا ہے کسی نے آپ کے پاس ورڈ کے ساتھ چھیڑ چھاڑ کی ہے</translation>
-<translation id="7881044256965445977">اپنے مقامی نیٹ ورک پر کسی بھی آلے کو تلاش کریں اور اس سے منسلک ہوں</translation>
 <translation id="7885670691503039914">کسی بھی سائٹ پر قیمت میں گراوٹ ہونے پر، آپ کو ای میل الرٹس موصول ہوں گے۔ یہ صفحہ بُک مارک فولڈر <ph name="LAST_BOOKMARKS_FOLDER" /> میں محفوظ ہو جائے گا۔</translation>
 <translation id="7886897188117641322">منتخب کریں کہ اشتہارات کو ذاتی نوعیت کا بنانے میں مدد کے لیے موضوعات کے کون سے وسیع زمرے استعمال کیے جا سکتے ہیں</translation>
 <translation id="7887683347370398519">‏اپنا CVC چیک کریں اور دوبارہ کوشش کریں</translation>
@@ -4850,6 +4849,7 @@
 <translation id="8511402995811232419">کوکیز کا نظم کریں</translation>
 <translation id="851353418319061866">درستگی چیک</translation>
 <translation id="8513580896341796021">ڈاؤن لوڈ شروع ہوگیا۔ اسے دیکھنے کے لیے |<ph name="ACCELERATOR" />| دبائیں۔</translation>
+<translation id="8515544520486085367">ادائیگی کو آٹو فل کریں</translation>
 <translation id="8519753333133776369">‏آپ کے منتظم کی جانب سے HID آلے کی اجازت ہے</translation>
 <translation id="8521013008769249764">صوفے اور آرام کرسیاں</translation>
 <translation id="8521812709849134608">کاؤنٹرٹاپس</translation>
@@ -4982,7 +4982,6 @@
 <translation id="8737685506611670901"><ph name="REPLACED_HANDLER_TITLE" /> کی بجائے <ph name="PROTOCOL" /> لنکس کھولیں</translation>
 <translation id="8738058698779197622">‏ایک محفوظ کنکشن تشکیل دینے کیلئے، آپ کی گھڑی کو صحیح سے سیٹ کرنے کی ضرورت ہے۔ اس کی وجہ یہ ہے کہ ویب سائٹس خود کو شناخت کرنے کیلئے جو سرٹیفکیٹس استعمال کرتی ہیں وہ صرف مخصوص وقت کیلئے درست ہیں۔ چونکہ آپ کے آلے کی گھڑی غلط ہے لہذا Chromium ان سرٹیفکیٹس کی توثیق نہیں کر سکتا ہے۔</translation>
 <translation id="8740359287975076522">‏<ph name="HOST_NAME" /> کا ‎&lt;abbr id="dnsDefinition"&gt;DNS پتہ‎&lt;/abbr&gt;‎ نہیں مل سکا۔ مسئلہ کی تشخیص کی جا رہی ہے۔</translation>
-<translation id="8742371904523228557"><ph name="ORIGIN" /> کیلئے آپ کا کوڈ <ph name="ONE_TIME_CODE" /> ہے</translation>
 <translation id="874918643257405732">اس ٹیب کو بُک مارک کریں</translation>
 <translation id="8751426954251315517">براہ کرم اگلی بار دوبارہ کوشش کریں</translation>
 <translation id="8753913772043329557">پالیسی لاگز</translation>
@@ -5160,7 +5159,6 @@
 <translation id="9042827002460091668">اپنا انٹرنیٹ کنکشن چیک کریں اور دوبارہ کوشش کریں</translation>
 <translation id="9043161870923715789">‏‫AI وضع</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
-<translation id="9046578823518542618">‫<ph name="URL" /> آپ کے مقامی نیٹ ورک پر کسی بھی آلہ کو تلاش کرنا اور اس سے منسلک ہونا چاہتا ہے</translation>
 <translation id="9046864189129893978">مائیکروفونز (<ph name="MICS_COUNT" />)</translation>
 <translation id="9046865906192819796">ابھی خریدیں، ادائیگی بعد میں کریں کی سروس کی شرائط کی اسکرین آدھی کھلی ہے۔</translation>
 <translation id="9047528041803621289">آپ کا ڈیفالٹ آپ کو ویب پر تلاش کرنے دیتا ہے۔ آپ اسے ترتیبات میں تبدیل کر سکتے ہیں۔</translation>

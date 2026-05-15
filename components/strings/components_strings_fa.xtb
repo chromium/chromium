@@ -316,7 +316,6 @@
 <translation id="1463793142714244641">املاک ویژه تعطیلات و مالکیت شراکتی</translation>
 <translation id="1465457928007067810">‏‫IBAN در «حساب Google» شما ذخیره شد</translation>
 <translation id="1467432559032391204">چپ</translation>
-<translation id="1468653229182955856"><ph name="ONE_TIME_CODE" /> کد شما برای <ph name="EMBEDDED_ORIGIN" /> جهت ادامه دادن در <ph name="TOP_ORIGIN" /> است</translation>
 <translation id="1472675084647422956">بیشتر نشان دادن</translation>
 <translation id="1473183651233018052">JIS B10</translation>
 <translation id="1473495410389165587">برای دریافت کمک در نوشتن، ۳ کلمه یا بیشتر وارد کنید</translation>
@@ -549,6 +548,7 @@
 <translation id="1832474362231610822">‏عکس در OneDrive ذخیره شد.</translation>
 <translation id="1832730227369924598">همگام‌سازی میزکار</translation>
 <translation id="1834452765064623979">ساخت‌وساز و تعمیر و نگهداری</translation>
+<translation id="1837606605602726453">دسته‌ها و امتیاز خطر نادیده گرفته می‌شوند زیرا سرپرست صریحاً افزونه را مجاز یا مسدود می‌کند.</translation>
 <translation id="1838374766361614909">پاک کردن جستجو</translation>
 <translation id="1839331950812095887">چند کلمه که افکار شما را خلاصه می‌کند</translation>
 <translation id="1839551713262164453">اعتبارسنجی مقادیر خط‌مشی با خطا متوقف شد</translation>
@@ -1465,7 +1465,7 @@
 <translation id="3261488570342242926">درباره کارت‌های مجازی بیشتر بدانید</translation>
 <translation id="3262698603497362968">گزینه‌های خرید</translation>
 <translation id="3264315627780269177">امکان هم‌رسانی این زبانه وجود ندارد</translation>
-<translation id="3264637689694266148">‏اگر پیشنهادها را خاموش کنید، عنوان صفحه و نشانی‌های وب زبانه‌هایتان ممکن است همچنان برای ویژگی‌های دیگر Chrome پردازش شود. می‌توانید دسترسی مرورگر به این داده‌ها را در این بخش مدیریت کنید</translation>
+<translation id="3264637689694266148">‏اگر پیشنهادها را خاموش کنید، عنوان صفحه و نشانی‌های وب زبانه‌هایتان ممکن است همچنان برای ویژگی‌های دیگر Chrome پردازش شود. می‌توانید دسترسی مرورگر به این داده‌ها را در تنظیمات همگام‌سازی مدیریت کنید</translation>
 <translation id="3266793032086590337">مقدار (مغایر)</translation>
 <translation id="3268451620468152448">زبانه‌های باز</translation>
 <translation id="3270041629388773465">‏با ذخیره کردن کدهای تأیید کارت (CVC) سریع‌تر تسویه‌حساب کنید</translation>
@@ -1861,6 +1861,7 @@
 <translation id="3875783148670536197">نشان دادن روش کار</translation>
 <translation id="3877603629930976930">هم‌رسانی نشود</translation>
 <translation id="3878445208930547646">کپی کردن از این سایت مجاز نیست</translation>
+<translation id="3879674895057686427">انتخاب زبان مقصد برای ترجمه</translation>
 <translation id="3879748587602334249">مدیریت بارگیری</translation>
 <translation id="3880456882942693779">هنر و سرگرمی</translation>
 <translation id="3880589673277376494">اینترنت و مخابرات</translation>
@@ -2236,6 +2237,7 @@
 <translation id="443673843213245140">استفاده از پروکسی غیرفعال است اما یک پیکربندی خاص برای پروکسی تعیین شده است.</translation>
 <translation id="4438821706955556403">قیمت معمول</translation>
 <translation id="4441832193888514600">نادیده گرفته شد زیرا این خط‌مشی فقط می‌تواند به‌عنوان خط‌مشی کاربر ابری تنظیم شود.</translation>
+<translation id="4444062564459679679">‏قبلاً به Chrome در <ph name="DEVICE_NAME" /> شما ارسال شده است</translation>
 <translation id="4445133368066241428">موضوع‌های پرطرفدار</translation>
 <translation id="4445694043187340808">‏‫<ph name="STARTER_PACK_TABS_FOCUSED_FRIENDLY_MATCH_TEXT" />، برای جستجوی زبانه‌ها، کلید Enter را فشار دهید</translation>
 <translation id="4445964943162061557">این یک ویژگی آزمایشی است و همیشه درست عمل نمی‌کند.</translation>
@@ -3506,7 +3508,6 @@
 <translation id="6424600253695044005">فضای ذخیره‌سازی ابری</translation>
 <translation id="6425092077175753609">سه‌بعدی</translation>
 <translation id="6427730057873428458">تاخوردگی دروازه‌ای</translation>
-<translation id="6428450836711225518">درستی‌سنجی کردن شماره تلفن</translation>
 <translation id="6429267199680088961">A4 Tab</translation>
 <translation id="643051589346665201">‏تغییر گذرواژه Google</translation>
 <translation id="6431556523611594411">هم‌رسانی زبانه‌های باز</translation>
@@ -4455,7 +4456,6 @@
 <translation id="7874796722855317864">‫«<ph name="PROXY_UNKNOWN_CONDITION" />» نوع وضعیت شناخته‌شده‌ای نیست.</translation>
 <translation id="7877007680666472091">شناسه‌های محتوای محافظت‌شده</translation>
 <translation id="7878562273885520351">ممکن است گذرواژه‌تان درمعرض خطر باشد</translation>
-<translation id="7881044256965445977">جستجو کردن و متصل شدن به هر دستگاهی در شبکه محلی</translation>
 <translation id="7885670691503039914">اگر قیمت در هر سایتی کاهش پیدا کند، هشدار ایمیلی دریافت خواهید کرد. این صفحه در پوشه نشانک <ph name="LAST_BOOKMARKS_FOLDER" /> ذخیره خواهد شد.</translation>
 <translation id="7886897188117641322">انتخاب کنید کدام دسته‌های گسترده از موضوع‌ها می‌توانند برای کمک به شخصی‌سازی کردن آگهی‌ها استفاده شوند</translation>
 <translation id="7887683347370398519">‏CVC را بررسی کرده و دوباره امتحان کنید</translation>
@@ -4849,6 +4849,7 @@
 <translation id="8511402995811232419">مدیریت کوکی‌ها</translation>
 <translation id="851353418319061866">صحت‌سنجی</translation>
 <translation id="8513580896341796021">بارگیری شروع شد. برای دیدن آن، |<ph name="ACCELERATOR" />| را فشار دهید.</translation>
+<translation id="8515544520486085367">تکمیل خودکار پرداخت</translation>
 <translation id="8519753333133776369">‏دستگاه HID را سرپرستتان مجاز کرده است</translation>
 <translation id="8521013008769249764">مبل و صندلی راحتی</translation>
 <translation id="8521812709849134608">رویه میز پیشخوان</translation>
@@ -4981,7 +4982,6 @@
 <translation id="8737685506611670901">باز کردن پیوندهای <ph name="PROTOCOL" /> به‌جای <ph name="REPLACED_HANDLER_TITLE" /></translation>
 <translation id="8738058698779197622">‏به منظور برقراری یک اتصال ایمن، لازم است که ساعت شما به درستی تنظیم شود. زیرا گواهینامه‌هایی که وب‌سایت‌ها برای شناسایی خودشان استفاده می‌کنند تنها برای دوره‌های زمانی خاصی معتبر هستند. از آنجایی که ساعت دستگاه نادرست است، Chromium نمی‌تواند این گواهینامه‌ها را تأیید کند.</translation>
 <translation id="8740359287975076522">‏<ph name="HOST_NAME" />’s &lt;abbr id="dnsDefinition"&gt;آدرس DNS&lt;/abbr&gt; پیدا نشد. درحال بررسی برای تشخیص مشکل.</translation>
-<translation id="8742371904523228557"><ph name="ONE_TIME_CODE" /> کد شما برای <ph name="ORIGIN" /> است</translation>
 <translation id="874918643257405732">نشانک‌گذاری این برگه</translation>
 <translation id="8751426954251315517">لطفاً بعداً دوباره امتحان کنید</translation>
 <translation id="8753913772043329557">گزارش‌های خط‌مشی</translation>
@@ -5159,7 +5159,6 @@
 <translation id="9042827002460091668">اتصال اینترنت را بررسی کنید و دوباره امتحان کنید</translation>
 <translation id="9043161870923715789">حالت هوشواره‌ای</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
-<translation id="9046578823518542618">‫<ph name="URL" /> می‌خواهد دستگاه‌های موجود در شبکه محلی شما را جستجو کند و به آن‌ها متصل شود</translation>
 <translation id="9046864189129893978">میکروفون‌ها (<ph name="MICS_COUNT" />)</translation>
 <translation id="9046865906192819796">صفحه شرایط خدمات «حالا خرید کنید، بعداً بپردازید» به‌صورت نیمه باز شده است.</translation>
 <translation id="9047528041803621289">موتور جستجوی پیش‌فرضتان به شما امکان می‌دهد در وب جستجو کنید. می‌توانید آن را در تنظیمات تغییر دهید.</translation>

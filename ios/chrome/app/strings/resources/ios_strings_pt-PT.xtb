@@ -69,6 +69,7 @@
 <translation id="1253032109800629289">Ocultar "Receba notificações de acompanhamento de preço"</translation>
 <translation id="1254424942107648268">Encontrar anterior</translation>
 <translation id="1258491128795710625">Novidades</translation>
+<translation id="126093867734601535">Reajusta a altura da página.</translation>
 <translation id="1262724000444746916">Ocultar Adicionar aos marcadores</translation>
 <translation id="1263231323834454256">Lista de leitura</translation>
 <translation id="1263433075299269530">O seu último separador aberto</translation>
@@ -177,6 +178,7 @@
 <translation id="1582732959743469162">Esta ação vai interromper totalmente o progresso da transferência atual.</translation>
 <translation id="1594034544529347967">Início</translation>
 <translation id="1598751033135758830">Abrir na app…</translation>
+<translation id="1600571977391127696">Algum conteúdo pode não ser adequado para todos.</translation>
 <translation id="1601560923496285236">Aplicar</translation>
 <translation id="1603718000246404895">{COUNT,plural, =1{1 endereço}other{# endereços}}</translation>
 <translation id="1605405588277479165">Desativada – Não recomendado</translation>
@@ -201,6 +203,7 @@
 <translation id="1657011748321897393">A partilha falhou porque não está ligado à rede.</translation>
 <translation id="1668001730617725852">Abrir num novo grupo de separadores</translation>
 <translation id="1670861525135254448">Guarde o veículo</translation>
+<translation id="1671568970992212376">Guarde as fotos no Google Fotos e aceda às fotos em qualquer altura.</translation>
 <translation id="1674504678466460478">De <ph name="SOURCE_LANGUAGE" /> para <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1678855624321223424">Com base nas políticas da sua organização, este ficheiro pode conter informações confidenciais</translation>
 <translation id="168389590065701766">Agora, pode abrir o Google Lens a partir da barra de endereço e pesquisar tudo o que vê</translation>
@@ -280,7 +283,6 @@
 <translation id="1925706052394657380">Abra as definições de <ph name="BEGIN_BOLD" />Apps predefinidas<ph name="END_BOLD" /> no iOS</translation>
 <translation id="1941314575388338491">Toque duas vezes para copiar.</translation>
 <translation id="1943478190258551035">Menu → Definições</translation>
-<translation id="1948562571551232853">Gemini integrado</translation>
 <translation id="1952728750904661634">Iniciar sessão com uma conta gerida</translation>
 <translation id="1955773397805078763">Adicionar método de pagamento</translation>
 <translation id="1956138802718275401">Aceda às palavras-passe a partir do ecrã principal</translation>
@@ -311,6 +313,7 @@
 <translation id="2012723204723845092">Olá novamente!</translation>
 <translation id="2015722694326466240">Para ver as palavras-passe, tem de definir primeiro um código secreto no dispositivo.</translation>
 <translation id="201759455285471444">Expandir grupo de separadores.</translation>
+<translation id="2031515492007104071">Level Up</translation>
 <translation id="2044394949148788042">Abra a grelha de separadores</translation>
 <translation id="2044681667265133332">A conta <ph name="USER_EMAIL" /> é gerida por <ph name="HOSTED_DOMAIN" />, que pode ver algumas informações. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">novo item</translation>
@@ -336,7 +339,6 @@
 <translation id="2119962645034852864">Alguns serviços não estão disponíveis para a sua conta</translation>
 <translation id="2120553909046681540">A sua organização desativou a navegação anónima.</translation>
 <translation id="2122754583996902531">O seu navegador é gerido. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
-<translation id="21243612977487926">Os chats da sua organização não são usados para melhorar os nossos modelos. O Gemini pode apresentar informações incorretas, inclusive sobre pessoas, por isso, verifique-as. <ph name="YOUR_PRIVACY_GEMINI" /></translation>
 <translation id="2139867232736819575">Pesquisar o texto que copiou</translation>
 <translation id="2147127444698817042">Disponível apenas no iPhone</translation>
 <translation id="2148799636999124959">Inicie sessão rapidamente em sites e apps com as suas palavras-passe guardadas.</translation>
@@ -678,6 +680,7 @@
 <translation id="340669334496430859">Última modificação</translation>
 <translation id="3409785640040772790">Maps</translation>
 <translation id="3416023309465857378">25 de outubro de 2023</translation>
+<translation id="3426715535827854458">Ocultar Ocultar barra de ferramentas</translation>
 <translation id="3435738964857648380">Segurança</translation>
 <translation id="3441673211568148613">Mantenha a sua navegação privada</translation>
 <translation id="3443810440409579745">Separador recebido.</translation>
@@ -722,7 +725,6 @@
 <translation id="3565012355885596568">Não foi possível carregar as imagens</translation>
 <translation id="3565930036634619844">Separador <ph name="TAB_INDEX" /> de <ph name="NUMBER_OF_TABS" />.</translation>
 <translation id="3567168891086460374">Guardar de outra forma</translation>
-<translation id="3571703298474554279">Uma forma mais rápida de usar a app</translation>
 <translation id="3572503683475187385">O separador atual é partilhado com o Gemini quando inicia um novo chat. Quando partilha um separador com o Gemini, o respetivo conteúdo e URL são enviados para a Google. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="3572607909481582402">Na sua Conta Google</translation>
 <translation id="3575234738189584619">Pesquisar com o Lens</translation>
@@ -845,6 +847,7 @@
 <translation id="3994911892367422121">OK</translation>
 <translation id="3995521777587992544">Barra de progresso do carregamento de página, <ph name="EMAIL" /> carregado(s).</translation>
 <translation id="3997522473364371632">A partilha de palavras-passe foi desativada pelo seu administrador.</translation>
+<translation id="4000707564769984863">Ver: <ph name="WATCH_LINK" /></translation>
 <translation id="4002066346123236978">Título</translation>
 <translation id="4004204301268239848">As palavras-passe são guardadas na sua Conta Google para que as possa utilizar em qualquer dispositivo.</translation>
 <translation id="4007463141047732631">Editar grupo</translation>
@@ -875,6 +878,7 @@
 <translation id="4129768137228347731">Guardar <ph name="ENTITY_TYPE" />?</translation>
 <translation id="4133139945030148655">Está tudo pronto para começar</translation>
 <translation id="4133265950310064865">Proteção melhorada</translation>
+<translation id="4142372594294312814">5 informações essenciais sobre a IA generativa</translation>
 <translation id="4145507240503767005"><ph name="SEARCH_ENGINE_NAME" />, <ph name="SEARCH_ENGINE_DOMAIN" /></translation>
 <translation id="4147897805161313378">Google Fotos</translation>
 <translation id="4148023517926189160">Este Website quer transferir um ficheiro e adicioná-lo ao seu calendário.</translation>
@@ -980,6 +984,7 @@
 <translation id="4489536976005181779">{count,plural, =1{Página adicionada à sua Lista de leitura na sua conta, {email}}other{Páginas adicionadas à sua Lista de leitura na sua conta, {email}}}</translation>
 <translation id="4493604894403585654">Tem sessão iniciada como <ph name="USER_EMAIL" />. Pode parar a sincronização em qualquer altura nas definições. A Google pode personalizar a Pesquisa e outros serviços com base no seu histórico.</translation>
 <translation id="4502423230170890588">Remover deste dispositivo</translation>
+<translation id="4508486880075514067">Expandir para ecrã inteiro</translation>
 <translation id="4508750114462689118">Fechar a promoção de início de sessão</translation>
 <translation id="4509345063551561634">Localização:</translation>
 <translation id="4517684186578051919">Informações do dispositivo</translation>
@@ -996,6 +1001,7 @@
 <translation id="456502772933839252">A partilhar <ph name="PAGE_TITLE" /></translation>
 <translation id="4565377596337484307">Ocultar palavra-passe</translation>
 <translation id="4568230126482344545">Ocultar Separadores recentes</translation>
+<translation id="4571490460651837010">Gerir moradas e muito mais…</translation>
 <translation id="4578835633387306383">Ativar…</translation>
 <translation id="4580621046861724270">Alguns marcadores não foram guardados</translation>
 <translation id="4580716718466706433">Aceda ao "Gestor de Palavras-passe"</translation>
@@ -1212,6 +1218,7 @@
 <translation id="5242899254250321823">Alterar palavra-passe no Website</translation>
 <translation id="5248640482715684545">Este site está a tentar abrir outra aplicação.</translation>
 <translation id="5250371859659394278">A partir de uma fonte desconhecida</translation>
+<translation id="525510229763628836">Minimizada</translation>
 <translation id="5269913829202614649">Personalize a página inicial</translation>
 <translation id="5271265092610673171">{count,plural, =1{Um campo obrigatório está vazio. Preencha-o antes de guardar.}other{Alguns campos obrigatórios estão vazios. Preencha-os antes de guardar.}}</translation>
 <translation id="5271549068863921519">Guardar palavra-passe</translation>
@@ -1232,6 +1239,7 @@
 <translation id="5329451663851195956">Pode puxar para baixo para atualizar.</translation>
 <translation id="5336910966955551309">Toque sem soltar para afixar os seus sites favoritos</translation>
 <translation id="5338512273860059533">Início de sessão em curso.</translation>
+<translation id="5340148832014094861">Aplicam-se os <ph name="GOOGLE_TERMS" /> e o <ph name="GEMINI_APPS_PRIVACY" />. O Gemini é IA e pode cometer erros, inclusive sobre pessoas.</translation>
 <translation id="5343472494710226394">Notícias, desporto e conteúdos com base nos seus interesses.</translation>
 <translation id="5352128922772839949">Guardar ficheiro</translation>
 <translation id="5355191726083956201">A Proteção melhorada está ativada.</translation>
@@ -1262,7 +1270,6 @@
 <translation id="5457082343331641453">Adicione à sua pesquisa</translation>
 <translation id="5457226814769348910">Abrir versão offline</translation>
 <translation id="5467163657366219870">Desativar Pré-visualizações do Maps</translation>
-<translation id="5467596285052510344">Use o Gemini para resumir, explicar e muito mais.</translation>
 <translation id="5474397204728336997">Palavras-passe familiares, novas personalizações e muito mais. Toque para saber mais.</translation>
 <translation id="5475793109165786685">{count,plural, =0{Nenhuma palavra-passe importada}=1{{count} palavra-passe importada}other{{count} palavras-passe importadas}}</translation>
 <translation id="5478327362747197944">Crie eventos do Calendário diretamente ao clicar numa data numa página Web.</translation>
@@ -1324,7 +1331,6 @@ A Entrega também tem de estar ativada na secção Geral das Definições e os s
 <translation id="5652623411397330904">Os produtos que monitorizar aparecem aqui.</translation>
 <translation id="5656431592348714536">Calendário melhorado</translation>
 <translation id="5659593005791499971">Email</translation>
-<translation id="5665739277590037307">Aplicam-se os <ph name="GOOGLE_TERMS" /> e o <ph name="GEMINI_APPS_PRIVACY" />. O Gemini pode cometer erros, por isso, verifique as informações.</translation>
 <translation id="5666313630530585305">Inicie sessão num Website.</translation>
 <translation id="5669335982068190158">Como parte da reposição do iPhone, a sua sessão foi terminada. Toque em Continuar abaixo para iniciar sessão.</translation>
 <translation id="5669528293118408608">www</translation>
@@ -1577,6 +1583,7 @@ A Entrega também tem de estar ativada na secção Geral das Definições e os s
 <translation id="647867789226964031">Altere as suas palavras-passe</translation>
 <translation id="6480363549849064919">Autenticação do cliente</translation>
 <translation id="6489174933860678546">Abra separadores de navegação anónima para navegar na Web com mais privacidade.</translation>
+<translation id="6489775505977274806">Ocultar Level Up</translation>
 <translation id="6494931198667773526">Fim</translation>
 <translation id="6503077044568424649">Mais visitadas</translation>
 <translation id="6503763061813913607">Notificações da verificação de segurança</translation>
@@ -1667,6 +1674,7 @@ A Entrega também tem de estar ativada na secção Geral das Definições e os s
 <translation id="6746338529702829275">Reveja os dados da sua conta</translation>
 <translation id="6750456911389438250">{count,plural, =1{{count} item do histórico importado}other{{count} itens do histórico importados}}</translation>
 <translation id="6755200887046212842">Gerir contas</translation>
+<translation id="6757899787818440812">Altura média</translation>
 <translation id="6759709389246683070">Pode tocar sem soltar neste separador para definir um lembrete para consultar mais tarde</translation>
 <translation id="6761393919622941301">Áudio</translation>
 <translation id="6770452996697898492">[RESERVADO]</translation>
@@ -1753,7 +1761,6 @@ A Entrega também tem de estar ativada na secção Geral das Definições e os s
 <translation id="7063811929043357292">A conta é gerida pelos teus pais.
 <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="7067780033517902110">Todos os ficheiros</translation>
-<translation id="707086654079606593">Gerir moradas…</translation>
 <translation id="7080806333218412752">Envia URLs para a Navegação segura para os verificar. Envia também um pequeno exemplo de páginas, transferências, atividade de extensões e informações do sistema para ajudar a detetar novas ameaças. Associa temporariamente estes dados à sua Conta Google quando tiver sessão iniciada, para garantir a sua proteção nas apps Google.</translation>
 <translation id="7082853213442715471">Quando está ativado, determinadas tecnologias Web são bloqueadas, o que pode fazer com que alguns Websites sejam carregados mais lentamente ou não funcionem corretamente.</translation>
 <translation id="7091023926159231962">{count,plural, =1{Não foi possível importar {count} palavra-passe}other{Não foi possível importar {count} palavras-passes}}</translation>
@@ -1803,7 +1810,6 @@ A Entrega também tem de estar ativada na secção Geral das Definições e os s
 <translation id="7275307913765547631">Termos de Utilização da Localização Coreanos</translation>
 <translation id="728025568708172005">Iniciar visita guiada</translation>
 <translation id="7280980607183752256">Não é possível importar este ficheiro</translation>
-<translation id="7281202269687163394">A sua privacidade e o Gemini.</translation>
 <translation id="7282197670900591579">Tema citrino</translation>
 <translation id="7293429513719260019">Selecionar idioma</translation>
 <translation id="7300448350764260141">Adicione uma camada extra de proteção contra ameaças online.</translation>
@@ -1815,7 +1821,6 @@ A Entrega também tem de estar ativada na secção Geral das Definições e os s
 <translation id="7345061034321640811">Importação não permitida</translation>
 <translation id="7347998088283246662">Importe palavras-passe, histórico, marcadores e muito mais</translation>
 <translation id="7352651011704765696">Algo correu mal</translation>
-<translation id="7363497636543208734">Agora, é mais fácil explorar a app.</translation>
 <translation id="7364796246159120393">Escolher ficheiro</translation>
 <translation id="736564850024123010">Mude a posição da barra de endereço para ter uma experiência personalizada.</translation>
 <translation id="7366909168761621528">Dados de navegação</translation>
@@ -2127,6 +2132,7 @@ A Entrega também tem de estar ativada na secção Geral das Definições e os s
 <translation id="8368001212524806591">Monitorizar preço</translation>
 <translation id="8368198938968349418">Ativar preenchimento automático…</translation>
 <translation id="8370406443343902172">Aceder às Definições…</translation>
+<translation id="8370929854657845191">Expandir para altura média</translation>
 <translation id="8372471489238799313">{count,plural, =1{Eliminar morada}other{Eliminar moradas}}</translation>
 <translation id="8378714024927312812">Gerido pela sua entidade</translation>
 <translation id="8385363453480067273">Pesquise o que vê com o Google Lens</translation>

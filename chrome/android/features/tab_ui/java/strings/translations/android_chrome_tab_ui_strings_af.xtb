@@ -37,6 +37,7 @@
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{Boekmerk <ph name="TABS_COUNT_ONE" /> gekose oortjie}other{Boekmerk <ph name="TABS_COUNT_MANY" /> gekose oortjies}}</translation>
 <translation id="2055057176188061528">Kies oortjiegroep of skep nuwe oortjiegroep</translation>
 <translation id="2074527029802029717">Ontspeld oortjie</translation>
+<translation id="2111670510994270194">Nuwe oortjie aan die regterkant</translation>
 <translation id="2118649612461486615">Winkelinligting</translation>
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{Jou toegemaakte oortjies en groepe kan weer uit die Onlangse oortjies-afdeling en die Oortjiegroepe-afdeling oopgemaak word. Jou Incognito-oortjie sal nie beskikbaar wees nie.}other{Jou toegemaakte oortjies en groepe kan weer uit die Onlangse oortjies-afdeling en die Oortjiegroepe-afdeling oopgemaak word. Jou # Incognito-oortjies sal nie beskikbaar wees nie.}}</translation>
 <translation id="2153899164605463849">{TAB_COUNT,plural, =1{Ontdemp werf}other{Ontdemp werwe}}</translation>

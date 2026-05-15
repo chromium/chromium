@@ -316,7 +316,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="1463793142714244641">Propriedades de férias</translation>
 <translation id="1465457928007067810">IBAN salvo na sua Conta do Google</translation>
 <translation id="1467432559032391204">À esquerda</translation>
-<translation id="1468653229182955856"><ph name="ONE_TIME_CODE" /> é o código de <ph name="EMBEDDED_ORIGIN" /> para continuar para <ph name="TOP_ORIGIN" /></translation>
 <translation id="1472675084647422956">Mostrar mais</translation>
 <translation id="1473183651233018052">JIS B10</translation>
 <translation id="1473495410389165587">Digite três palavras ou mais para receber ajuda com a escrita</translation>
@@ -1822,6 +1821,7 @@ Se quiser ocultar as opções para pagar depois, acesse as <ph name="BEGIN_LINK"
 <translation id="380865868633614173">Salvando informações do cartão</translation>
 <translation id="3810770279996899697">O Gerenciador de senhas precisa de permissão para abrir o Acesso às Chaves do MacOS</translation>
 <translation id="3810973564298564668">Gerenciar</translation>
+<translation id="3811328723651698330"><ph name="STRING_1" />, <ph name="STRING_2" /></translation>
 <translation id="3812398568375898177">Esta é uma atualização essencial que melhora o desempenho de apps Android no ChromeOS.</translation>
 <translation id="3814865536373139791">Simplifique a forma como sua organização gerencia as políticas</translation>
 <translation id="3815434930383843058">8 x 12 pol.</translation>
@@ -2237,6 +2237,7 @@ Se quiser ocultar as opções para pagar depois, acesse as <ph name="BEGIN_LINK"
 <translation id="443673843213245140">O uso de um proxy está desativado, mas uma configuração explícita de proxy é especificada.</translation>
 <translation id="4438821706955556403">Preço normal</translation>
 <translation id="4441832193888514600">Ignorada porque a política só pode ser definida como uma política do usuário em nuvem.</translation>
+<translation id="4444062564459679679">Já enviado para o Chrome no seu <ph name="DEVICE_NAME" /></translation>
 <translation id="4445133368066241428">Temas em alta</translation>
 <translation id="4445694043187340808"><ph name="STARTER_PACK_TABS_FOCUSED_FRIENDLY_MATCH_TEXT" />. Pressione Enter para pesquisar guias</translation>
 <translation id="4445964943162061557">Esse é um recurso experimental e nem sempre acerta.</translation>
@@ -2401,6 +2402,7 @@ Se quiser ocultar as opções para pagar depois, acesse as <ph name="BEGIN_LINK"
 <translation id="4736934858538408121">Cartão virtual</translation>
 <translation id="473775607612524610">Atualizar</translation>
 <translation id="4738601419177586157">Sugestão de pesquisa: <ph name="TEXT" /></translation>
+<translation id="473866660302034629"><ph name="TAB_TITLE" />, guia selecionada, <ph name="INDEX" /> de <ph name="TOTAL" />. Use as setas para a esquerda ou direita para trocar de guia.</translation>
 <translation id="4742407542027196863">Gerenciar senhas…</translation>
 <translation id="474270528725216349">De pelo menos 1 site nos dispositivos sincronizados</translation>
 <translation id="4743275772928623722">O sistema foi atualizado, mas não foi possível recuperar alguns apps e arquivos. O download dos apps será feito automaticamente.</translation>
@@ -2468,6 +2470,7 @@ Se quiser ocultar as opções para pagar depois, acesse as <ph name="BEGIN_LINK"
 <translation id="4832961164064927107">Churrasco e grelhados</translation>
 <translation id="4835568975547260025">O Chrome vai compartilhar guias abertas relevantes por padrão para ajudar você a receber respostas mais personalizadas às suas perguntas.</translation>
 <translation id="4840250757394056958">Ver seu histórico do Chrome</translation>
+<translation id="4842365697443353018">Limpe o formulário para usar a opção de pagar depois</translation>
 <translation id="484462545196658690">Automática</translation>
 <translation id="4844937814014739139">Rolar a tela e aplicar zoom em guias compartilhadas</translation>
 <translation id="484671803914931257">Receba descontos para <ph name="MERCHANT_NAME" /> e mais</translation>
@@ -3507,7 +3510,6 @@ Se quiser ocultar as opções para pagar depois, acesse as <ph name="BEGIN_LINK"
 <translation id="6424600253695044005">Armazenamento em nuvem</translation>
 <translation id="6425092077175753609">Material</translation>
 <translation id="6427730057873428458">Dobra janela</translation>
-<translation id="6428450836711225518">Verificar seu número de telefone</translation>
 <translation id="6429267199680088961">A4 Tab</translation>
 <translation id="643051589346665201">Mudar senha do Google</translation>
 <translation id="6431556523611594411">Compartilhar guias abertas</translation>
@@ -4456,7 +4458,6 @@ Mais detalhes:
 <translation id="7874796722855317864">"<ph name="PROXY_UNKNOWN_CONDITION" />" não é um tipo de condição conhecido.</translation>
 <translation id="7877007680666472091">IDs de conteúdo protegido</translation>
 <translation id="7878562273885520351">Sua senha pode estar comprometida</translation>
-<translation id="7881044256965445977">Buscar e se conectar a qualquer dispositivo na sua rede local</translation>
 <translation id="7885670691503039914">Você vai receber alertas por e-mail se houver uma redução no preço em algum site. Esta página será salva na pasta de favoritos <ph name="LAST_BOOKMARKS_FOLDER" />.</translation>
 <translation id="7886897188117641322">Escolha quais categorias amplas de temas podem ser usadas para personalizar anúncios</translation>
 <translation id="7887683347370398519">Verifique seu CVC e tente novamente</translation>
@@ -4850,6 +4851,7 @@ Mais detalhes:
 <translation id="8511402995811232419">Gerenciar cookies</translation>
 <translation id="851353418319061866">Verificação de precisão</translation>
 <translation id="8513580896341796021">O download foi iniciado. Para conferir, pressione |<ph name="ACCELERATOR" />|.</translation>
+<translation id="8515544520486085367">Pagamento com preenchimento automático</translation>
 <translation id="8519753333133776369">Dispositivo HID permitido pelo administrador</translation>
 <translation id="8521013008769249764">Sofás e poltronas</translation>
 <translation id="8521812709849134608">Bancadas</translation>
@@ -4983,7 +4985,6 @@ Mais detalhes:
 <translation id="8737685506611670901">Abrir links de <ph name="PROTOCOL" /> em vez de <ph name="REPLACED_HANDLER_TITLE" /></translation>
 <translation id="8738058698779197622">Para estabelecer uma conexão segura, o relógio precisa ser ajustado corretamente. Isso ocorre porque os certificados que os websites usam para se identificar são válidos apenas por períodos específicos. Como o relógio do seu dispositivo está incorreto, o Chromium não pode verificar esses certificados.</translation>
 <translation id="8740359287975076522">Não foi possível encontrar o &lt;abbr id="dnsDefinition"&gt;endereço DNS&lt;/abbr&gt; de <ph name="HOST_NAME" />. Diagnosticando o problema.</translation>
-<translation id="8742371904523228557"><ph name="ONE_TIME_CODE" /> é seu código para <ph name="ORIGIN" /></translation>
 <translation id="874918643257405732">Adicionar esta guia aos favoritos</translation>
 <translation id="8751426954251315517">Tente novamente mais tarde</translation>
 <translation id="8753913772043329557">Registros de política</translation>
@@ -5161,7 +5162,6 @@ Mais detalhes:
 <translation id="9042827002460091668">Confira sua conexão de Internet e tente de novo</translation>
 <translation id="9043161870923715789">Modo IA</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" />: <ph name="RESULT_PRODUCT_SOURCE" /></translation>
-<translation id="9046578823518542618"><ph name="URL" /> quer buscar e se conectar a qualquer dispositivo na sua rede local</translation>
 <translation id="9046864189129893978">Microfones (<ph name="MICS_COUNT" />)</translation>
 <translation id="9046865906192819796">A tela dos Termos de Serviço da opção Compre Agora, Pague Depois está aberta na metade da altura.</translation>
 <translation id="9047528041803621289">Sua escolha padrão permite pesquisar na Web. Você pode mudar isso nas configurações.</translation>

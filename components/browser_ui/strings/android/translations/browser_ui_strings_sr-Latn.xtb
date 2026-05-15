@@ -5,7 +5,6 @@
 <translation id="1036348656032585052">Isključi</translation>
 <translation id="1046742265332833834">Plava tema</translation>
 <translation id="1070329623210597193">Fajlovi koje ovaj sajt može da pregleda ili menja</translation>
-<translation id="1073417869336441572">Pomozite nam da poboljšamo Chrome tako što ćete nam reći zašto ste dozvolili kolačiće treće strane. <ph name="BEGIN_LINK" />Pošaljite povratne informacije<ph name="END_LINK" /></translation>
 <translation id="1074758928858737435">Možete da zatražite da vidite verziju sajtova za računare</translation>
 <translation id="1109482864356262001">Funkcije koje zahtevaju senzore pokreta i svetlosti neće raditi</translation>
 <translation id="1126523729897810826">Obavite ove predložene radnje u nastavku da biste iskoristili Chrome na najbolji način</translation>
@@ -328,6 +327,7 @@
 <translation id="4290791284969893584">Posle zatvaranja stranice zadaci koje ste započeli se možda neće dovršiti</translation>
 <translation id="429312253194641664">Sajt pušta medijski sadržaj</translation>
 <translation id="42981349822642051">Proširite</translation>
+<translation id="4310738531374808763">Prilagodite stranicu Početna</translation>
 <translation id="4336219115486912529">{COUNT,plural, =1{Ističe sutra}one{Ističe za # dan}few{Ističe za # dana}other{Ističe za # dana}}</translation>
 <translation id="4338831206024587507">Svi sajtovi u okviru domena <ph name="DOMAIN" /></translation>
 <translation id="4340799661701629185">Ne dozvoljavaj sajtovima da šalju obaveštenja</translation>
@@ -440,7 +440,6 @@
 <translation id="5555115555607204100">Ne ubrzava sajtove pomoću Chrome mehanizma V8, ali čini Chrome malo otpornijim na napade</translation>
 <translation id="5556459405103347317">Učitaj ponovo</translation>
 <translation id="5591840828808741583"><ph name="SITE_NAME" /> je blokiran</translation>
-<translation id="560980142378233747">To znači da bi funkcije sajta trebalo da rade na očekivani način, ali možda ćete imati manje zaštite pri pregledanju. <ph name="BEGIN_LINK" />Pošaljite povratne informacije<ph name="END_LINK" /></translation>
 <translation id="5617702678271228680">Donja tabela kartica na stranici nove kartice</translation>
 <translation id="5621413808884657932">Kada je uključeno, sajtovi mogu da zatraže pristup drugim aplikacijama i uslugama na ovom uređaju. Kada je isključeno, sajtovi ne mogu da pristupaju drugim aplikacijama ni uslugama na ovom uređaju.</translation>
 <translation id="5632485077360054581">Pokaži mi kako</translation>
@@ -519,6 +518,7 @@
 <translation id="6262279340360821358">Dozvole <ph name="PERMISSION_1" /> i <ph name="PERMISSION_2" /> su blokirane</translation>
 <translation id="6270391203985052864">Sajtovi mogu da traže da šalju obaveštenja</translation>
 <translation id="6295158916970320988">Svi sajtovi</translation>
+<translation id="6305257382500066042">Isprobajte</translation>
 <translation id="6320088164292336938">Vibracija</translation>
 <translation id="6367753977865761591">Blokirajte prijavljivanje trećih strana za određeni sajt.</translation>
 <translation id="6398765197997659313">Izađi iz režima celog ekrana</translation>
@@ -529,7 +529,6 @@
 <translation id="6447842834002726250">Kolačići</translation>
 <translation id="6452138246455930388">Sniženje na otvorenoj kartici, sa <ph name="OLD_PRICE" /> na <ph name="NEW_PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN_NAME" /></translation>
 <translation id="6500423977866688905">Kada je prozor uzak, zahtevaj prikaz za mobilne uređaje</translation>
-<translation id="6514791408445720076">Prilagodite stranicu</translation>
 <translation id="6527303717912515753">Deli</translation>
 <translation id="6530703012083415527">Kada je uključeno, sajtovi mogu da koriste iskačuće prozore i preusmeravanja. Kada je isključeno, sajtovi ne mogu da koriste iskačuće prozore i preusmeravanja.</translation>
 <translation id="6540488083026747005">Dozvolili ste kolačiće treće strane za ovaj sajt</translation>
@@ -593,7 +592,6 @@
 <translation id="7141896414559753902">Blokiraj prikazivanje iskačućih prozora i preusmeravanja na sajtovima (preporučeno)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> kB</translation>
 <translation id="7180611975245234373">Osveži</translation>
-<translation id="7180865173735832675">Prilagodi</translation>
 <translation id="7188508872042490670">Podaci o sajtovima na uređaju</translation>
 <translation id="7201549776650881587">Ova radnja će obrisati sve podatke i kolačiće koje čuvaju svi sajtovi u okviru domena <ph name="ORIGIN" /> ili koje čuva povezana aplikacija na početnom ekranu</translation>
 <translation id="7219254577985949841">Želite da izbrišete podatke sajta?</translation>
@@ -707,7 +705,6 @@ Napredna zaštita upravlja ovim Chrome podešavanjima:</translation>
 <translation id="83792324527827022">Sajt koristi kameru i mikrofon</translation>
 <translation id="8380167699614421159">Ovaj sajt prikazuje oglase koji ometaju aktivnosti ili obmanjujuće oglase</translation>
 <translation id="8394832520002899662">Dodirnite da biste se vratili na sajt</translation>
-<translation id="8404500559369898929">Personalizujte Chrome tako što ćete izabrati prilagođene teme pozadine</translation>
 <translation id="8409345997656833551">Dobijte obaveštenje kada je pojednostavljeni prikaz dostupan za članak</translation>
 <translation id="8416874502399604126">Mikrofon je dozvoljen ovaj put</translation>
 <translation id="8423565414844018592">Promena veličine teksta je podešena na <ph name="TEXT_SCALING" /></translation>

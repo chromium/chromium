@@ -37,6 +37,7 @@
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{Bookmark <ph name="TABS_COUNT_ONE" /> tab yang dipilih}other{Bookmark <ph name="TABS_COUNT_MANY" /> tab yang dipilih}}</translation>
 <translation id="2055057176188061528">Pilih grup tab atau buat grup tab baru</translation>
 <translation id="2074527029802029717">Lepas sematan tab</translation>
+<translation id="2111670510994270194">Tab baru di sebelah kanan</translation>
 <translation id="2118649612461486615">Info toko</translation>
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{Tab dan grup yang ditutup dapat dibuka kembali dari bagian Tab terbaru dan bagian Grup tab. Tab Samaran Anda tidak akan tersedia.}other{Tab dan grup yang ditutup dapat dibuka kembali dari bagian Tab terbaru dan bagian Grup tab. # tab Samaran Anda tidak akan tersedia.}}</translation>
 <translation id="2153899164605463849">{TAB_COUNT,plural, =1{Aktifkan notifikasi situs}other{Aktifkan notifikasi situs}}</translation>

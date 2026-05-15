@@ -316,7 +316,6 @@
 <translation id="1463793142714244641">ଟାଇମସେୟାର ଏବଂ ଛୁଟି କାଟିବା ପାଇଁ ପ୍ରପର୍ଟିଗୁଡ଼ିକ</translation>
 <translation id="1465457928007067810">IBANକୁ ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟରେ ସେଭ କରାଯାଇଛି</translation>
 <translation id="1467432559032391204">ବାମ</translation>
-<translation id="1468653229182955856"><ph name="TOP_ORIGIN" />ରେ ଜାରି ରଖିବାକୁ <ph name="EMBEDDED_ORIGIN" /> ପାଇଁ ଆପଣଙ୍କ କୋଡ୍ ହେଉଛି <ph name="ONE_TIME_CODE" /></translation>
 <translation id="1472675084647422956">ଅଧିକ ଦେଖାନ୍ତୁ</translation>
 <translation id="1473183651233018052">JIS B10</translation>
 <translation id="1473495410389165587">ଲେଖିବାରେ ସହାୟତା ପାଇବାକୁ 3 କିମ୍ବା ଅଧିକ ଶବ୍ଦ ଲେଖନ୍ତୁ</translation>
@@ -1819,6 +1818,7 @@
 <translation id="380865868633614173">କାର୍ଡ ସୂଚନା ସେଭ କରାଯାଉଛି</translation>
 <translation id="3810770279996899697">Password Manager ପାଇଁ MacOS କୀଚେନକୁ ଆକ୍ସେସ ଆବଶ୍ୟକ</translation>
 <translation id="3810973564298564668">ପରିଚାଳନା</translation>
+<translation id="3811328723651698330"><ph name="STRING_1" />, <ph name="STRING_2" /></translation>
 <translation id="3812398568375898177">ଏହା ChromeOSରେ Android ଆପ୍ସର ପରଫରମାନ୍ସକୁ ଉନ୍ନତ କରୁଥିବା ଏକ ଗୁରୁତ୍ୱପୂର୍ଣ୍ଣ ଅପଡେଟ ଅଟେ।</translation>
 <translation id="3814865536373139791">ଆପଣଙ୍କ ସଂସ୍ଥା କିପରି ନୀତିଗୁଡ଼ିକୁ ପରିଚାଳନା କରେ ତାହା ଷ୍ଟ୍ରିମଲାଇନ କରନ୍ତୁ</translation>
 <translation id="3815434930383843058">8 x 12 ଇଞ୍ଚ</translation>
@@ -1858,6 +1858,7 @@
 <translation id="3875783148670536197">କିପରି କରାଯାଏ ତାହା ମୋତେ ଦେଖାନ୍ତୁ</translation>
 <translation id="3877603629930976930">ସେୟାର କରନ୍ତୁ ନାହିଁ</translation>
 <translation id="3878445208930547646">ଏହି ସାଇଟରୁ କପି କରିବାକୁ ଅନୁମତି ଦିଆଯାଏ ନାହିଁ</translation>
+<translation id="3879674895057686427">ଅନୁବାଦ କରିବାକୁ ଭାଷା ବାଛନ୍ତୁ</translation>
 <translation id="3879748587602334249">ଡାଉନ୍‌ଲୋଡ୍ ପରିଚାଳକ</translation>
 <translation id="3880456882942693779">କଳା ଓ ମନୋରଞ୍ଜନ</translation>
 <translation id="3880589673277376494">ଇଣ୍ଟରନେଟ ଓ ଟେଲିକମ</translation>
@@ -2397,6 +2398,7 @@
 <translation id="4736934858538408121">ଭର୍ଚୁଆଲ୍ କାର୍ଡ</translation>
 <translation id="473775607612524610">ଅପ୍‍‍ଡେଟ୍</translation>
 <translation id="4738601419177586157"><ph name="TEXT" /> ସର୍ଚ୍ଚ ପ୍ରସ୍ତାବ</translation>
+<translation id="473866660302034629"><ph name="TAB_TITLE" />, ଚୟନିତ ଟାବ, <ph name="TOTAL" />ର <ph name="INDEX" />, ଟାବଗୁଡ଼ିକ ମଧ୍ୟରେ ସୁଇଚ କରିବାକୁ ବାମ କିମ୍ବା ଡାହାଣ ତୀର ବ୍ୟବହାର କରନ୍ତୁ</translation>
 <translation id="4742407542027196863">ପାସ୍‌ୱର୍ଡଗୁଡ଼ିକୁ ପରିଚାଳିତ କରନ୍ତୁ…</translation>
 <translation id="474270528725216349">ସିଙ୍କ ହୋଇଥିବା ଡିଭାଇସରେ ଅତି କମରେ 1 ସାଇଟରୁ</translation>
 <translation id="4743275772928623722">ଆପଣଙ୍କ ସିଷ୍ଟମକୁ ଅପଡେଟ କରାଯାଇଛି କିନ୍ତୁ ଆପଣଙ୍କର କିଛି ଆପ୍ସ ଏବଂ ଫାଇଲକୁ ରିକଭର କରାଯାଇପାରିଲା ନାହିଁ। ଆପଣଙ୍କର ଆପ୍ସକୁ ସ୍ୱତଃ ପୁଣି ଡାଉନଲୋଡ କରାଯିବ।</translation>
@@ -2464,6 +2466,7 @@
 <translation id="4832961164064927107">BBQ ଏବଂ ଗ୍ରିଲିଂ</translation>
 <translation id="4835568975547260025">ଆପଣଙ୍କ ପ୍ରଶ୍ନଗୁଡ଼ିକର ଅଧିକ ଉପଯୋଗୀ ଉତ୍ତର ପାଇବାରେ ଆପଣଙ୍କୁ ସାହାଯ୍ୟ କରିବା ପାଇଁ Chrome ଡିଫଲ୍ଟ ଭାବେ ପ୍ରାସଙ୍ଗିକ ଖୋଲା ଥିବା ଟାବଗୁଡ଼ିକୁ ସେୟାର କରିବ।</translation>
 <translation id="4840250757394056958">ଆପଣଙ୍କ Chrome ଇତିହାସ ଦେଖନ୍ତୁ</translation>
+<translation id="4842365697443353018">ପରେ ପେମେଣ୍ଟ କରନ୍ତୁ ବ୍ୟବହାର କରିବାକୁ ଫର୍ମ ଖାଲି କରନ୍ତୁ</translation>
 <translation id="484462545196658690">ସ୍ୱତଃ</translation>
 <translation id="4844937814014739139">ସେୟାର କରାଯାଇଥିବା ଟାବଗୁଡ଼ିକୁ ସ୍କ୍ରୋଲ ଏବଂ ଜୁମ କରିବା</translation>
 <translation id="484671803914931257"><ph name="MERCHANT_NAME" /> ଏବଂ ଆହୁରି ଅନେକ କିଛିରେ ରିହାତି ପାଆନ୍ତୁ</translation>
@@ -3502,7 +3505,6 @@
 <translation id="6424600253695044005">କ୍ଲାଉଡ ଷ୍ଟୋରେଜ</translation>
 <translation id="6425092077175753609">ସାମଗ୍ରୀ</translation>
 <translation id="6427730057873428458">ଗେଟ୍ ଫୋଲ୍ଡ</translation>
-<translation id="6428450836711225518">ଆପଣଙ୍କ ଫୋନ୍ ନମ୍ବର ଯାଞ୍ଚ କରନ୍ତୁ</translation>
 <translation id="6429267199680088961">A4 Tab</translation>
 <translation id="643051589346665201">Google ପାସୱାର୍ଡ ପରିବର୍ତ୍ତନ କରନ୍ତୁ</translation>
 <translation id="6431556523611594411">ଖୋଲା ଥିବା ଟାବଗୁଡ଼ିକୁ ସେୟାର କରନ୍ତୁ</translation>
@@ -4450,7 +4452,6 @@
 <translation id="7874796722855317864">"<ph name="PROXY_UNKNOWN_CONDITION" />" ଏକ ଜଣାଶୁଣା ସର୍ତ୍ତ ପ୍ରକାର ନୁହେଁ।</translation>
 <translation id="7877007680666472091">ସୁରକ୍ଷିତ ବିଷୟବସ୍ତୁ IDଗୁଡ଼ିକ</translation>
 <translation id="7878562273885520351">ଆପଣଙ୍କର ପାସ୍‌ୱର୍ଡରେ ହେର୍‍ଫେର୍‌ କରାଯାଇଥାଇପାରେ</translation>
-<translation id="7881044256965445977">ଆପଣଙ୍କ ସ୍ଥାନୀୟ ନେଟୱାର୍କରେ ଯେ କୌଣସି ଡିଭାଇସକୁ ଖୋଜନ୍ତୁ ଏବଂ କନେକ୍ଟ କରନ୍ତୁ</translation>
 <translation id="7885670691503039914">ଯଦି କୌଣସି ସାଇଟରେ ମୂଲ୍ୟ ହ୍ରାସ ପାଏ, ତେବେ ଆପଣ ଇମେଲ ଆଲର୍ଟ ପାଇବେ। ଏହି ପୃଷ୍ଠାଟି ବୁକମାର୍କ ଫୋଲ୍ଡର <ph name="LAST_BOOKMARKS_FOLDER" />ରେ ସେଭ କରାଯିବ।</translation>
 <translation id="7886897188117641322">ବିଜ୍ଞାପନକୁ ପର୍ସନାଲାଇଜ କରିବାରେ ସାହାଯ୍ୟ କରିବା ପାଇଁ ବିଷୟଗୁଡ଼ିକର କେଉଁ ବ୍ୟାପକ ବର୍ଗଗୁଡ଼ିକୁ ବ୍ୟବହାର କରାଯାଇପାରିବ ତାହା ବାଛନ୍ତୁ</translation>
 <translation id="7887683347370398519">ଆପଣଙ୍କର CVC ଯାଞ୍ଚ କରନ୍ତୁ ଏବଂ ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ</translation>
@@ -4976,7 +4977,6 @@
 <translation id="8737685506611670901"><ph name="REPLACED_HANDLER_TITLE" />ପରିବର୍ତ୍ତେ <ph name="PROTOCOL" /> ଲିଙ୍କ୍ ଖୋଲନ୍ତୁ</translation>
 <translation id="8738058698779197622">ଏକ ସୁରକ୍ଷିତ ସଂଯୋଗ ପ୍ରତିଷ୍ଠା କରିବାକୁ ଆପଣଙ୍କର ଘଣ୍ଟାକୁ ସଠିକ୍ ଭାବେ ସେଟ୍ କରିବା ଆବଶ୍ୟକ। ଏହା ଏପରି କାରଣ ୱେବ୍‌ସାଇଟ୍‌ଗୁଡ଼ିକ ଦ୍ୱାରା ନିଜକୁ ଚିହ୍ନଟ କରିବା ପାଇଁ ବ୍ୟବହାର କରାଯାଉଥିବା ସାର୍ଟିଫିକେଟ୍‍ କେବଳ ନିର୍ଦ୍ଧିଷ୍ଟ ସମୟର ଅବଧି ପାଇଁ କେବଳ ବୈଧ ଅଟେ। ଯେହେତୁ ଡିଭାଇସ୍‌ର ଘଣ୍ଟା ଭୁଲ୍ ଅଛି, ତେଣୁ Chromium ଏହି ସାର୍ଟିଫିକେଟ୍‌ଗୁଡ଼ିକୁ ଯାଞ୍ଚ କରିପାରିବ ନାହିଁ।</translation>
 <translation id="8740359287975076522"><ph name="HOST_NAME" />’ର &lt;abbr id="dnsDefinition"&gt;DNS ଠିକଣା&lt;/abbr&gt; ମିଳିଲା ନାହିଁ। ସମସ୍ୟ ଡାଏଗ୍ନୋଜ୍ ହେଉଛି।</translation>
-<translation id="8742371904523228557"><ph name="ORIGIN" /> ପାଇଁ <ph name="ONE_TIME_CODE" /> ହେଉଛି ଆପଣଙ୍କର କୋଡ୍</translation>
 <translation id="874918643257405732">ଏହି ଟାବ୍‌କୁ ବୁକ୍‌ମାର୍କ କରନ୍ତୁ</translation>
 <translation id="8751426954251315517">ଦୟାକରି ପରବର୍ତ୍ତୀ ସମୟରେ ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ</translation>
 <translation id="8753913772043329557">ନୀତି ଲଗଗୁଡ଼ିକ</translation>
@@ -5154,7 +5154,6 @@
 <translation id="9042827002460091668">ଆପଣଙ୍କ ଇଣ୍ଟରନେଟ କନେକ୍ସନ ଯାଞ୍ଚ କରି ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ</translation>
 <translation id="9043161870923715789">AI ମୋଡ</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
-<translation id="9046578823518542618"><ph name="URL" /> ଆପଣଙ୍କ ସ୍ଥାନୀୟ ନେଟୱାର୍କରେ ଯେ କୌଣସି ଡିଭାଇସକୁ ଖୋଜିବା ଏବଂ କନେକ୍ଟ କରିବାକୁ ଚାହେଁ</translation>
 <translation id="9046864189129893978">ମାଇକ୍ରୋଫୋନ (<ph name="MICS_COUNT" />)</translation>
 <translation id="9046865906192819796">'ବର୍ତ୍ତମାନ-କିଣନ୍ତୁ-ପରେ-ପେମେଣ୍ଟ କରନ୍ତୁ' ସର୍ଭିସର ସର୍ତ୍ତାବଳୀ ସ୍କ୍ରିନ ଅଧା ଖୋଲାଯାଇଛି।</translation>
 <translation id="9047528041803621289">ଆପଣଙ୍କ ଡିଫଲ୍ଟ ଆପଣଙ୍କୁ ୱେବ ସର୍ଚ୍ଚ କରିବାକୁ ଦିଏ। ଆପଣ ସେଟିଂସରେ ଏହାକୁ ପରିବର୍ତ୍ତନ କରିପାରିବେ।</translation>

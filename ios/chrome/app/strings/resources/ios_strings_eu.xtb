@@ -201,6 +201,7 @@
 <translation id="1657011748321897393">Ezin izan da partekatu ez zaudelako Internetera konektatuta.</translation>
 <translation id="1668001730617725852">Ireki beste fitxa talde batean</translation>
 <translation id="1670861525135254448">Gorde ibilgailua</translation>
+<translation id="1671568970992212376">Gorde argazkiak Google Argazkiak zerbitzuan eta atzi itzazu nahi duzunean.</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> - <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1678855624321223424">Zure erakundearen gidalerroen arabera, baliteke fitxategi honek kontuzko informazioa izatea</translation>
 <translation id="168389590065701766">Orain, Google Lens helbide-barratik ireki dezakezu, eta ikusten duzun edozer bilatu</translation>
@@ -335,7 +336,6 @@
 <translation id="2119962645034852864">Zerbitzu batzuk ez daude erabilgarri zure kontuan</translation>
 <translation id="2120553909046681540">Zure erakundeak arakatze pribatua desaktibatu du.</translation>
 <translation id="2122754583996902531">Arakatzailea kudeatuta dago. <ph name="BEGIN_LINK" />Lortu informazio gehiago<ph name="END_LINK" /></translation>
-<translation id="21243612977487926">Zure erakundearen txatak ez dira erabiltzen gure ereduak hobetzeko. Baliteke Gemini-k informazio okerra bistaratzea (jendeari buruzkoa barne); beraz, egiaztatu erantzunak. <ph name="YOUR_PRIVACY_GEMINI" /></translation>
 <translation id="2139867232736819575">Bilatu kopiatu duzun testua</translation>
 <translation id="2147127444698817042">iPhone-rako soilik erabilgarri</translation>
 <translation id="2148799636999124959">Hasi saioa bizkor webgune eta aplikazioetan, gordetako pasahitzak erabilita.</translation>
@@ -721,7 +721,6 @@
 <translation id="3565012355885596568">Ezin izan dira kargatu irudiak</translation>
 <translation id="3565930036634619844">Fitxa. <ph name="NUMBER_OF_TABS" /> fitxatatik <ph name="TAB_INDEX" />garrena.</translation>
 <translation id="3567168891086460374">Gorde beste modu batera</translation>
-<translation id="3571703298474554279">Aplikazioa erabiltzeko modu bizkorragoa</translation>
 <translation id="3572503683475187385">Elkarrizketa bat hasten duzunean, irekita daukazun fitxa Gemini-rekin partekatzen da. Fitxa bat Gemini-rekin partekatzen duzunean, haren edukia eta URLa Google-ra bidaltzen dira. <ph name="BEGIN_LINK" />Lortu informazio gehiago<ph name="END_LINK" /></translation>
 <translation id="3572607909481582402">Google-ko kontuan daudenak</translation>
 <translation id="3575234738189584619">Bilatu Lens bidez</translation>
@@ -1322,7 +1321,6 @@
 <translation id="5652623411397330904">Jarraipena egiten diezun produktuak hemen agertuko dira.</translation>
 <translation id="5656431592348714536">Egutegi hobetua</translation>
 <translation id="5659593005791499971">Helbide elektronikoa</translation>
-<translation id="5665739277590037307"><ph name="GOOGLE_TERMS" /> eta <ph name="GEMINI_APPS_PRIVACY" /> aplikatzen dira. Baliteke Gemini-k akatsak egitea; beraz, egiaztatu erantzunak.</translation>
 <translation id="5666313630530585305">Hasi saioa webgune batean.</translation>
 <translation id="5669335982068190158">iPhone-a berrezarri duzunez, saioa amaitu zaizu. Saioa hasteko, sakatu aurrera egiteko aukera.</translation>
 <translation id="5669528293118408608">www</translation>
@@ -1741,6 +1739,7 @@
 <translation id="7015418667643980944">Ikuspegi zatitua</translation>
 <translation id="7016070607649558507">Segurua ez den pasahitz bat daukazu. Segurtasuna bermatzeko, alda ezazu.</translation>
 <translation id="7016958933495968912">Discover-en aukerak</translation>
+<translation id="7019477124580742994"><ph name="SEARCH_PROVIDER" /> zerbitzuaren bilaketa</translation>
 <translation id="7029809446516969842">Pasahitzak</translation>
 <translation id="7035825883570480307">Jakinarazpenak aktibatu nahi dituzu?</translation>
 <translation id="7039345315346323556">Azkenaldikoak</translation>
@@ -1750,7 +1749,6 @@
 <translation id="7063811929043357292">Gurasoak kudeatzen dizu kontua.
 <ph name="BEGIN_LINK" />Lortu informazio gehiago<ph name="END_LINK" /></translation>
 <translation id="7067780033517902110">Fitxategi guztiak</translation>
-<translation id="707086654079606593">Kudeatu helbideak…</translation>
 <translation id="7080806333218412752">URLak Arakatze segurua eginbideari bidaltzen dizkio egiazta ditzan. Gainera, orrien, deskargen, luzapenen jardueren eta sistemaren informazioaren lagin txikiak bidaltzen ditu mehatxu berriak aurkitzen laguntzeko. Saioa hasita daukazunean, datu horiek Google-ko kontuarekin lotzen ditu aldi baterako, Google-ren aplikazioetan babestuta egon zaitezen.</translation>
 <translation id="7082853213442715471">Aktibatuta dagoenean, sareko zenbait teknologia blokeatzen dira. Horregatik, baliteke webgune batzuk motelago kargatzea edo gaizki funtzionatzea.</translation>
 <translation id="7091023926159231962">{count,plural, =1{Ezin izan da inportatu {count} pasahitz}other{Ezin izan dira inportatu {count} pasahitz}}</translation>
@@ -1800,7 +1798,6 @@
 <translation id="7275307913765547631">Koreako Kokapen-baldintzak</translation>
 <translation id="728025568708172005">Eraman nazazue txangoan</translation>
 <translation id="7280980607183752256">Ezin da inportatu fitxategia</translation>
-<translation id="7281202269687163394">Zure pribatutasuna eta Gemini.</translation>
 <translation id="7282197670900591579">Limoi-koloreko gaia</translation>
 <translation id="7293429513719260019">Hautatu hizkuntza</translation>
 <translation id="7300448350764260141">Gehitu beste babes-geruza bat sareko mehatxuen aurka.</translation>
@@ -1812,7 +1809,6 @@
 <translation id="7345061034321640811">Inportazioa ez dago baimenduta</translation>
 <translation id="7347998088283246662">Inportatu pasahitzak, historia, laster-markak eta abar</translation>
 <translation id="7352651011704765696">Arazo bat izan da</translation>
-<translation id="7363497636543208734">Orain, errazagoa da aplikazioan nabigatzea.</translation>
 <translation id="7364796246159120393">Aukeratu fitxategia</translation>
 <translation id="736564850024123010">Zerbitzua pertsonalizatzeko, aldatu helbide-barraren posizioa.</translation>
 <translation id="7366909168761621528">Arakatze-datuak</translation>

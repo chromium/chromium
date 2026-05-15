@@ -5,7 +5,6 @@
 <translation id="1036348656032585052">Vypnúť</translation>
 <translation id="1046742265332833834">Modrý motív</translation>
 <translation id="1070329623210597193">Súbory, ktoré môže tento web čítať alebo upravovať</translation>
-<translation id="1073417869336441572">Pomôžte nám zlepšiť Chrome tým, že nám poviete, prečo ste povolili súbory cookie tretích strán. <ph name="BEGIN_LINK" />Odoslať spätnú väzbu<ph name="END_LINK" /></translation>
 <translation id="1074758928858737435">Môžete požiadať o zobrazenie verzie webov pre počítače</translation>
 <translation id="1109482864356262001">Funkcie vyžadujúce senzory pohybu alebo svetla nebudú fungovať</translation>
 <translation id="1126523729897810826">Vykonajte akcie navrhované nižšie, aby ste Chrome využívali naplno</translation>
@@ -328,6 +327,7 @@
 <translation id="4290791284969893584">Po zatvorení stránky sa začaté úlohy nemusia dokončiť</translation>
 <translation id="429312253194641664">Web prehráva médiá</translation>
 <translation id="42981349822642051">Rozbaliť</translation>
+<translation id="4310738531374808763">Prispôsobenie domovskej stránky</translation>
 <translation id="4336219115486912529">{COUNT,plural, =1{Vyprší zajtra}few{Vyprší o # dni}many{Vyprší o # dňa}other{Vyprší o # dní}}</translation>
 <translation id="4338831206024587507">Všetky weby v doméne <ph name="DOMAIN" /></translation>
 <translation id="4340799661701629185">Nepovoliť webom odosielať upozornenia</translation>
@@ -440,7 +440,6 @@
 <translation id="5555115555607204100">Nezrýchľovať weby pomocou nástroja V8 Chromu (Chrome bude o niečo odolnejší voči útokom)</translation>
 <translation id="5556459405103347317">Znova načítať</translation>
 <translation id="5591840828808741583">Blokované: <ph name="SITE_NAME" /></translation>
-<translation id="560980142378233747">Znamená to, že funkcie webu by mali pracovať podľa očakávaní, ale môžete mať menšiu ochranu pri prehliadaní. <ph name="BEGIN_LINK" />Odoslať spätnú väzbu<ph name="END_LINK" /></translation>
 <translation id="5617702678271228680">Dolný hárok kariet na stránke na novej karte</translation>
 <translation id="5621413808884657932">Keď je táto možnosť zapnutá, weby môžu žiadať o prístup k iným aplikáciám a službám v tomto zariadení. Keď je táto možnosť vypnutá, weby nemajú prístup k iným aplikáciám a službám v tomto zariadení.</translation>
 <translation id="5632485077360054581">Ukázať postup</translation>
@@ -519,6 +518,7 @@
 <translation id="6262279340360821358">Blokované: <ph name="PERMISSION_1" /> a <ph name="PERMISSION_2" /></translation>
 <translation id="6270391203985052864">Weby môžu žiadať o odosielanie upozornení</translation>
 <translation id="6295158916970320988">Všetky weby</translation>
+<translation id="6305257382500066042">Vyskúšať</translation>
 <translation id="6320088164292336938">Vibrovanie</translation>
 <translation id="6367753977865761591">Na konkrétnom webe môžete blokovať prihlasovanie tretími stranami.</translation>
 <translation id="6398765197997659313">Ukončiť zobrazenie na celú obrazovku</translation>
@@ -529,7 +529,6 @@
 <translation id="6447842834002726250">Súbory cookie</translation>
 <translation id="6452138246455930388">Pokles ceny na vašej otvorenej karte z <ph name="OLD_PRICE" /> na <ph name="NEW_PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN_NAME" /></translation>
 <translation id="6500423977866688905">Keď je okno úzke, požiadajte o zobrazenie v mobile</translation>
-<translation id="6514791408445720076">Prispôsobte si stránku</translation>
 <translation id="6527303717912515753">Zdieľať</translation>
 <translation id="6530703012083415527">Keď je táto možnosť zapnutá, weby môžu používať vyskakovacie okná a presmerovania. Keď je táto možnosť vypnutá, weby nemôžu používať vyskakovacie okná ani presmerovania.</translation>
 <translation id="6540488083026747005">Pre tento web ste povolili súbory cookie tretej strany</translation>
@@ -593,7 +592,6 @@
 <translation id="7141896414559753902">Brániť webom otvárať vyskakovacie okná a používať presmerovania (odporúčané)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> kB</translation>
 <translation id="7180611975245234373">Obnoviť</translation>
-<translation id="7180865173735832675">Prispôsobiť</translation>
 <translation id="7188508872042490670">Dáta webov v zariadení</translation>
 <translation id="7201549776650881587">Touto akciou odstránite všetky údaje a súbory cookie uložené všetkými webmi domény <ph name="ORIGIN" /> alebo jej aplikáciou na ploche</translation>
 <translation id="7219254577985949841">Chcete odstrániť dáta webu?</translation>
@@ -707,7 +705,6 @@ Rozšírená ochrana ovláda tieto nastavenia Chromu:</translation>
 <translation id="83792324527827022">Váš fotoaparát a mikrofón používa nejaký web</translation>
 <translation id="8380167699614421159">Tento web zobrazuje obťažujúce alebo zavádzajúce reklamy</translation>
 <translation id="8394832520002899662">Klepnutím sa vrátite na web</translation>
-<translation id="8404500559369898929">Prispôsobte si Chrome výberom vlastného motívu pozadia</translation>
 <translation id="8409345997656833551">Dostávajte upozornenia, keď bude článok dostupný v zjednodušenom zobrazení</translation>
 <translation id="8416874502399604126">Mikrofón je momentálne povolený</translation>
 <translation id="8423565414844018592">Škálovanie textu je nastavené na <ph name="TEXT_SCALING" /></translation>

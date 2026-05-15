@@ -5,7 +5,6 @@
 <translation id="1036348656032585052">Izslēgt</translation>
 <translation id="1046742265332833834">Zils motīvs</translation>
 <translation id="1070329623210597193">Faili, ko šī vietne drīkst skatīt vai rediģēt</translation>
-<translation id="1073417869336441572">Palīdziet mums uzlabot pārlūku Chrome, pastāstot, kāpēc atļāvāt trešo pušu sīkfailus. <ph name="BEGIN_LINK" />Sūtīt atsauksmes<ph name="END_LINK" /></translation>
 <translation id="1074758928858737435">Varat pieprasīt skatīt vietņu datora versiju.</translation>
 <translation id="1109482864356262001">Funkcijas, kurām nepieciešama piekļuve kustību vai gaismas sensoriem, nedarbosies.</translation>
 <translation id="1126523729897810826">Lai pilnvērtīgi izmantotu pārlūku Chrome, veiciet tālāk ieteiktās darbības.</translation>
@@ -328,6 +327,7 @@
 <translation id="4290791284969893584">Pēc lapas aizvēršanas var netikt pabeigti jūsu iesāktie uzdevumi</translation>
 <translation id="429312253194641664">Vietne atskaņo multivides saturu</translation>
 <translation id="42981349822642051">Izvērst</translation>
+<translation id="4310738531374808763">Sākumlapas pielāgošana</translation>
 <translation id="4336219115486912529">{COUNT,plural, =1{Derīguma termiņš beigsies rīt}zero{Derīguma termiņš beigsies pēc # dienām}one{Derīguma termiņš beigsies pēc # dienas}other{Derīguma termiņš beigsies pēc # dienām}}</translation>
 <translation id="4338831206024587507">Visas vietnes domēnā <ph name="DOMAIN" /></translation>
 <translation id="4340799661701629185">Neļaut vietnēm sūtīt paziņojumus</translation>
@@ -440,7 +440,6 @@
 <translation id="5555115555607204100">Neizmantot Chrome programmu V8 vietņu darbības paātrināšanai, bet nedaudz palielināt Chrome izturību pret uzbrukumiem</translation>
 <translation id="5556459405103347317">Pārlādēt</translation>
 <translation id="5591840828808741583">Bloķēta vietnē <ph name="SITE_NAME" /></translation>
-<translation id="560980142378233747">Tas nozīmē, ka vietnes funkcijas, visticamāk, darbosies paredzētajā veidā, taču, iespējams, pārlūkošanas aizsardzības līmenis būs zemāks. <ph name="BEGIN_LINK" />Sūtīt atsauksmes<ph name="END_LINK" /></translation>
 <translation id="5617702678271228680">Jaunas cilnes lapas kartīšu ekrāna apakšdaļas lapa</translation>
 <translation id="5621413808884657932">Kad šis slēdzis ir ieslēgts, vietnes var pieprasīt atļauju piekļūt citām lietotnēm un pakalpojumiem šajā ierīcē. Kad šis slēdzis ir izslēgts, vietnes nevar piekļūt citām lietotnēm un pakalpojumiem šajā ierīcē.</translation>
 <translation id="5632485077360054581">Parādīt, kā</translation>
@@ -519,6 +518,7 @@
 <translation id="6262279340360821358">Bloķētas: <ph name="PERMISSION_1" /> un <ph name="PERMISSION_2" /></translation>
 <translation id="6270391203985052864">Vietnēs var lūgt atļauju sūtīt paziņojumus</translation>
 <translation id="6295158916970320988">Visas vietnes</translation>
+<translation id="6305257382500066042">Izmēģināt jau tūlīt</translation>
 <translation id="6320088164292336938">Vibrācija</translation>
 <translation id="6367753977865761591">Trešās puses pierakstīšanās bloķēšana konkrētā vietnē</translation>
 <translation id="6398765197997659313">Iziet no pilnekrāna režīma</translation>
@@ -529,7 +529,6 @@
 <translation id="6447842834002726250">Sīkfaili</translation>
 <translation id="6452138246455930388">Cenas kritums atvērtajā cilnē no <ph name="OLD_PRICE" /> uz <ph name="NEW_PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN_NAME" /></translation>
 <translation id="6500423977866688905">Ja logs ir šaurs, pieprasīt skatu mobilajā ierīcē</translation>
-<translation id="6514791408445720076">Pielāgojiet savu lapu</translation>
 <translation id="6527303717912515753">Kopīgot</translation>
 <translation id="6530703012083415527">Kad šis slēdzis ir ieslēgts, vietnēs var izmantot uznirstošos elementus un novirzīšanu. Kad šis slēdzis ir izslēgts, vietnēs nevar izmantot uznirstošos elementus un novirzīšanu.</translation>
 <translation id="6540488083026747005">Jūs atļāvāt trešo pušu sīkfailus šajā vietnē</translation>
@@ -593,7 +592,6 @@
 <translation id="7141896414559753902">Neļaut vietnēm novirzīt un rādīt uznirstošos elementus (ieteicams)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> KB</translation>
 <translation id="7180611975245234373">Atsvaidzināt</translation>
-<translation id="7180865173735832675">Pielāgot</translation>
 <translation id="7188508872042490670">Vietnes dati ierīcē</translation>
 <translation id="7201549776650881587">Veicot šo darbību, tiks izdzēsti visi dati un sīkfaili, ko jūsu sākuma ekrānā glabā vietņu grupa <ph name="ORIGIN" /> vai tās lietotne.</translation>
 <translation id="7219254577985949841">Vai dzēst vietnes datus?</translation>
@@ -707,7 +705,6 @@ Papildu aizsardzība pārvalda tālāk norādītos Chrome iestatījumus.</transl
 <translation id="83792324527827022">Kāda vietne izmanto jūsu kameru un mikrofonu</translation>
 <translation id="8380167699614421159">Šajā vietnē tiek rādītas traucējošas vai maldinošas reklāmas</translation>
 <translation id="8394832520002899662">Lai atgrieztos vietnē, pieskarieties šeit</translation>
-<translation id="8404500559369898929">Personalizējiet pārlūku Chrome, izvēloties pielāgotu fona motīvu.</translation>
 <translation id="8409345997656833551">Saņemiet paziņojumu, kad rakstu var parādīt vienkāršotajā skatā</translation>
 <translation id="8416874502399604126">Ir atļauts šoreiz izmantot mikrofonu</translation>
 <translation id="8423565414844018592">Iestatītā teksta mērogošanas vērtība: <ph name="TEXT_SCALING" /></translation>

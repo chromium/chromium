@@ -316,7 +316,6 @@
 <translation id="1463793142714244641">分时度假房产与一般度假房产</translation>
 <translation id="1465457928007067810">IBAN 已保存到您的 Google 账号</translation>
 <translation id="1467432559032391204">向左</translation>
-<translation id="1468653229182955856">您的 <ph name="EMBEDDED_ORIGIN" /> 验证码是 <ph name="ONE_TIME_CODE" />，您需要输入此验证码，才能继续访问 <ph name="TOP_ORIGIN" />。</translation>
 <translation id="1472675084647422956">展开</translation>
 <translation id="1473183651233018052">JIS B10</translation>
 <translation id="1473495410389165587">输入 3 个或更多字词，即可获得写作帮助</translation>
@@ -549,6 +548,7 @@
 <translation id="1832474362231610822">照片已保存到 OneDrive</translation>
 <translation id="1832730227369924598">桌面同步</translation>
 <translation id="1834452765064623979">施工与维护</translation>
+<translation id="1837606605602726453">由于管理员已明确允许或屏蔽此扩展程序，因此系统将忽略其风险评分和类别。</translation>
 <translation id="1838374766361614909">清除搜索字词</translation>
 <translation id="1839331950812095887">总结想法的几个字词</translation>
 <translation id="1839551713262164453">由于出现错误，未能成功验证政策值</translation>
@@ -996,7 +996,7 @@
 <translation id="2521385132275182522">钉装（右下角）</translation>
 <translation id="2521736961081452453">创建表单</translation>
 <translation id="2524461107774643265">添加更多信息</translation>
-<translation id="2524962131655207565"><ph name="BEGIN_BOLD" />系统会将结账页中的内容分享给 Google，以便提供这些选项。<ph name="END_BOLD" />支付方案需满足资格要求。如要隐藏先买后付选项，请前往<ph name="BEGIN_LINK" />支付设置<ph name="END_LINK" />。</translation>
+<translation id="2524962131655207565"><ph name="BEGIN_BOLD" />为提供以上选项，系统会将结账页中的内容分享给 Google。<ph name="END_BOLD" />付款方案需满足资格要求。如要隐藏先买后付选项，请前往<ph name="BEGIN_LINK" />支付设置<ph name="END_LINK" />。</translation>
 <translation id="2526062290525841862">如需运行此应用，请重新启用独立式 Web 应用 (IWA) 开发者模式</translation>
 <translation id="2526280916094749336">您可在各种 Google 产品中使用已保存的地址。此地址将保存到您的 Google 账号 <ph name="ACCOUNT" /> 中。</translation>
 <translation id="2527451058878391043">您的银行卡验证码 (CVC) 位于银行卡的正面，即卡号右上角的 4 位数代码。</translation>
@@ -1856,6 +1856,7 @@
 <translation id="3875783148670536197">操作步骤</translation>
 <translation id="3877603629930976930">请勿分享</translation>
 <translation id="3878445208930547646">不允许从该网站复制</translation>
+<translation id="3879674895057686427">选择翻译目标语言</translation>
 <translation id="3879748587602334249">下载管理器</translation>
 <translation id="3880456882942693779">艺术与娱乐</translation>
 <translation id="3880589673277376494">互联网与电信</translation>
@@ -3441,6 +3442,7 @@
 <translation id="634500758737709758">路线</translation>
 <translation id="6348220984832452017">使用中的变体</translation>
 <translation id="6349101878882523185">安装“<ph name="APP_NAME" />”</translation>
+<translation id="6350739641326887427">无需复制和粘贴 Pix 代码即可付款。<ph name="BEGIN_LINK1" />了解运作方式<ph name="END_LINK1" /></translation>
 <translation id="6351658970066645919">删除浏览数据</translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{无}=1{1 个密码（用于 <ph name="DOMAIN_LIST" />，已同步）}=2{2 个密码（用于 <ph name="DOMAIN_LIST" />，已同步）}other{# 个密码（用于 <ph name="DOMAIN_LIST" />，已同步）}}</translation>
 <translation id="6354918092619878358">SECG 椭圆曲线 secp256r1（又称 ANSI X9.62 prime256v1 或 NIST P-256）</translation>
@@ -3499,7 +3501,6 @@
 <translation id="6424600253695044005">云端存储</translation>
 <translation id="6425092077175753609">Material</translation>
 <translation id="6427730057873428458">关门折</translation>
-<translation id="6428450836711225518">验证您的手机号码</translation>
 <translation id="6429267199680088961">A4 Tab</translation>
 <translation id="643051589346665201">更改 Google 密码</translation>
 <translation id="6431556523611594411">分享已打开的标签页</translation>
@@ -3656,6 +3657,7 @@
 <translation id="668132230070712111">视频已保存到 Google 云端硬盘</translation>
 <translation id="6681790815630918386">已保存银行卡验证码 (CVC)</translation>
 <translation id="6683022854667115063">头戴式耳机</translation>
+<translation id="6686570026048064255">如需关闭 Pix 代码检测，请前往 <ph name="BEGIN_LINK1" />Chrome 设置<ph name="END_LINK1" /></translation>
 <translation id="6687230248707087982">信封（普通）</translation>
 <translation id="6687335167692595844">请求的字号</translation>
 <translation id="6688743156324860098">更新…</translation>
@@ -4447,7 +4449,6 @@
 <translation id="7874796722855317864">“<ph name="PROXY_UNKNOWN_CONDITION" />”不是已知的条件类型。</translation>
 <translation id="7877007680666472091">受保护内容 ID</translation>
 <translation id="7878562273885520351">您的密码可能会被盗用</translation>
-<translation id="7881044256965445977">查找并连接到本地网络上的任何设备</translation>
 <translation id="7885670691503039914">当任一网站上的商品降价时，您会收到邮件提醒。该网页将保存到书签文件夹“<ph name="LAST_BOOKMARKS_FOLDER" />”中。</translation>
 <translation id="7886897188117641322">选择可用于帮助展示个性化广告的大类主题</translation>
 <translation id="7887683347370398519">请检查您的银行卡验证码 (CVC)，然后重试</translation>
@@ -4974,7 +4975,6 @@
 <translation id="8737685506611670901">打开<ph name="PROTOCOL" />链接而非“<ph name="REPLACED_HANDLER_TITLE" />”</translation>
 <translation id="8738058698779197622">要建立安全连接，您的时钟设置必须正确。这是因为，网站用于证明身份的证书仅在特定时间段有效。由于您设备的时钟不正确，因此 Chromium 无法验证这些证书。</translation>
 <translation id="8740359287975076522">无法找到 <ph name="HOST_NAME" /> 的 &lt;abbr id="dnsDefinition"&gt;DNS 地址&lt;/abbr&gt;。正在诊断该问题。</translation>
-<translation id="8742371904523228557">您的 <ph name="ORIGIN" /> 验证码是 <ph name="ONE_TIME_CODE" /></translation>
 <translation id="874918643257405732">为此标签页添加书签</translation>
 <translation id="8751426954251315517">请稍后重试</translation>
 <translation id="8753913772043329557">政策日志</translation>
@@ -5152,7 +5152,6 @@
 <translation id="9042827002460091668">请检查互联网连接，然后重试</translation>
 <translation id="9043161870923715789">AI 模式</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
-<translation id="9046578823518542618"><ph name="URL" /> 想要查找并连接到本地网络中的任何设备</translation>
 <translation id="9046864189129893978">麦克风（<ph name="MICS_COUNT" /> 个）</translation>
 <translation id="9046865906192819796">“先买后付”服务条款界面已以一半高度显示。</translation>
 <translation id="9047528041803621289">默认搜索引擎用于搜索网络中的信息，您可在设置中更改默认搜索引擎。</translation>

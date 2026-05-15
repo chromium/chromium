@@ -316,7 +316,6 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="1463793142714244641">Nuosavybė, padalyta pagal naudojimosi laiką, ir atostogų ypatybės</translation>
 <translation id="1465457928007067810">IBAN išsaugotas „Google“ paskyroje</translation>
 <translation id="1467432559032391204">Kairė</translation>
-<translation id="1468653229182955856"><ph name="ONE_TIME_CODE" /> yra jūsų kodas, skirtas <ph name="EMBEDDED_ORIGIN" />, norint tęsti veiklą adresu <ph name="TOP_ORIGIN" /></translation>
 <translation id="1472675084647422956">Rodyti daugiau</translation>
 <translation id="1473183651233018052">JIS B10</translation>
 <translation id="1473495410389165587">Įveskite tris ar daugiau žodžių, kad gautumėte pagalbos rašydami</translation>
@@ -549,6 +548,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="1832474362231610822">Nuotrauka išsaugota sistemoje „OneDrive“</translation>
 <translation id="1832730227369924598">Darbalaukio sinchronizavimas</translation>
 <translation id="1834452765064623979">Statyba ir techninė priežiūra</translation>
+<translation id="1837606605602726453">Rizikos balo ir kategorijų nepaisoma, nes administratorius aiškiai leidžia arba blokuoja plėtinį.</translation>
 <translation id="1838374766361614909">Išvalyti paiešką</translation>
 <translation id="1839331950812095887">keli žodžiai, apibendrinantys jūsų mintis</translation>
 <translation id="1839551713262164453">Nepavyko patvirtinti politikos verčių (rasta klaidų)</translation>
@@ -1822,6 +1822,7 @@ Jei norite paslėpti mokėjimo vėliau parinktis, eikite į <ph name="BEGIN_LINK
 <translation id="380865868633614173">Išsaugoma kortelės informacija</translation>
 <translation id="3810770279996899697">Slaptažodžių tvarkyklei reikalinga prieiga prie „MacOS Keychain“</translation>
 <translation id="3810973564298564668">Tvarkyti</translation>
+<translation id="3811328723651698330"><ph name="STRING_1" />, <ph name="STRING_2" /></translation>
 <translation id="3812398568375898177">Tai yra svarbus naujinys, pagerinantis „Android“ programų našumą sistemoje „ChromeOS“.</translation>
 <translation id="3814865536373139791">Supaprastinkite tai, kaip jūsų organizacija tvarko politiką</translation>
 <translation id="3815434930383843058">8 x 12 col.</translation>
@@ -1861,6 +1862,7 @@ Jei norite paslėpti mokėjimo vėliau parinktis, eikite į <ph name="BEGIN_LINK
 <translation id="3875783148670536197">Peržiūrėti, kaip tai padaryti</translation>
 <translation id="3877603629930976930">Nebendrinti</translation>
 <translation id="3878445208930547646">Neleidžiama kopijuoti iš šios svetainės</translation>
+<translation id="3879674895057686427">Pasirinkite kalbą, į kurią norite versti</translation>
 <translation id="3879748587602334249">Atsisiuntimų tvarkytuvė</translation>
 <translation id="3880456882942693779">Menas ir pramogos</translation>
 <translation id="3880589673277376494">Internetas ir telekomunikacijos</translation>
@@ -2400,6 +2402,7 @@ Jei norite paslėpti mokėjimo vėliau parinktis, eikite į <ph name="BEGIN_LINK
 <translation id="4736934858538408121">Virtuali kortelė</translation>
 <translation id="473775607612524610">Atnaujinti</translation>
 <translation id="4738601419177586157">„<ph name="TEXT" />“ paieškos pasiūlymas</translation>
+<translation id="473866660302034629">„<ph name="TAB_TITLE" />“, pasirinktas skirtukas, <ph name="INDEX" /> iš <ph name="TOTAL" />, naudokite rodyklę kairėn arba dešinėn, kad perjungtumėte skirtukus</translation>
 <translation id="4742407542027196863">Tvarkyti slaptažodžius…</translation>
 <translation id="474270528725216349">Iš bent vienos svetainės sinchronizuojamuose įrenginiuose</translation>
 <translation id="4743275772928623722">Sistema atnaujinta, bet kai kurių programų ir failų atkurti nepavyko. Programos bus vėl atsisiųstos automatiškai.</translation>
@@ -2467,6 +2470,7 @@ Jei norite paslėpti mokėjimo vėliau parinktis, eikite į <ph name="BEGIN_LINK
 <translation id="4832961164064927107">Kepsniai ir kepimas ant grotelių</translation>
 <translation id="4835568975547260025">„Chrome“ pagal numatytuosius nustatymus bendrins atitinkamus atidarytus skirtukus, kad padėtų jums gauti labiau pritaikytus atsakymus į klausimus.</translation>
 <translation id="4840250757394056958">Peržiūrėti „Chrome“ istoriją</translation>
+<translation id="4842365697443353018">Išvalykite formą, kad galėtumėte naudoti mokėjimo vėliau parinktį</translation>
 <translation id="484462545196658690">Automatiškai</translation>
 <translation id="4844937814014739139">Slinkimas bendrinamais skirtukais ir jų mastelio keitimas</translation>
 <translation id="484671803914931257">Gaukite nuolaidą iš „<ph name="MERCHANT_NAME" />“ ir kt.</translation>
@@ -3506,7 +3510,6 @@ Jei norite paslėpti mokėjimo vėliau parinktis, eikite į <ph name="BEGIN_LINK
 <translation id="6424600253695044005">Saugykla debesyje</translation>
 <translation id="6425092077175753609">Trimačiai objektai</translation>
 <translation id="6427730057873428458">Du atvartai</translation>
-<translation id="6428450836711225518">Patvirtinkite savo telefono numerį</translation>
 <translation id="6429267199680088961">A4 Tab</translation>
 <translation id="643051589346665201">Keisti „Google“ slaptažodį</translation>
 <translation id="6431556523611594411">Bendrinti atidarytus skirtukus</translation>
@@ -4455,7 +4458,6 @@ Papildoma išsami informacija:
 <translation id="7874796722855317864">„<ph name="PROXY_UNKNOWN_CONDITION" />“ nėra žinomas būsenos tipas.</translation>
 <translation id="7877007680666472091">apsaugoto turinio ID</translation>
 <translation id="7878562273885520351">Jūsų slaptažodis gali būti pažeistas</translation>
-<translation id="7881044256965445977">Ieškoti ir prisijungti prie bet kurio įrenginio vietiniame tinkle</translation>
 <translation id="7885670691503039914">Jei kurioje nors svetainėje sumažės kaina, gausite įspėjimą el. paštu. Šis puslapis bus išsaugotas žymių aplanke „<ph name="LAST_BOOKMARKS_FOLDER" />“.</translation>
 <translation id="7886897188117641322">Pasirinkite, kurias plačias temų kategorijas galima naudoti skelbimams suasmeninti</translation>
 <translation id="7887683347370398519">Patikrinkite kortelės saugos kodą (CVC) ir bandykite dar kartą</translation>
@@ -4982,7 +4984,6 @@ Papildoma išsami informacija:
 <translation id="8737685506611670901">Atidaryti „<ph name="PROTOCOL" />“ nuorodas vietoje „<ph name="REPLACED_HANDLER_TITLE" />“</translation>
 <translation id="8738058698779197622">Jei norite užmegzti saugų ryšį, turėsite tinkamai nustatyti laikrodį. To reikalaujama todėl, kad svetainių tapatybei įrodyti naudojami sertifikatai galioja tik tam tikrą laikotarpį. Kadangi įrenginio laikrodis nustatytas netinkamai, „Chromium“ negali tinkamai patvirtinti sertifikatų.</translation>
 <translation id="8740359287975076522">Nepavyko rasti <ph name="HOST_NAME" /> &lt;abbr id="dnsDefinition"&gt;DNS adreso&lt;/abbr&gt;. Nustatoma problema.</translation>
-<translation id="8742371904523228557"><ph name="ONE_TIME_CODE" /> yra kodas, skirtas svetainei <ph name="ORIGIN" /></translation>
 <translation id="874918643257405732">Žymėti šį skirtuką</translation>
 <translation id="8751426954251315517">Vėliau bandykite dar kartą</translation>
 <translation id="8753913772043329557">Politikos žurnalai</translation>
@@ -5160,7 +5161,6 @@ Papildoma išsami informacija:
 <translation id="9042827002460091668">Patikrinkite interneto ryšį ir bandykite dar kartą</translation>
 <translation id="9043161870923715789">DI režimas</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> – <ph name="RESULT_PRODUCT_SOURCE" /></translation>
-<translation id="9046578823518542618">„<ph name="URL" />“ nori ieškoti ir prisijungti prie bet kurio įrenginio vietiniame tinkle</translation>
 <translation id="9046864189129893978">Mikrofonai (<ph name="MICS_COUNT" />)</translation>
 <translation id="9046865906192819796">Funkcijos „Pirkite dabar, mokėkite vėliau“ paslaugų teikimo sąlygų ekranas atidarytas per pusę ekrano aukščio.</translation>
 <translation id="9047528041803621289">Numatytasis nustatymas leidžia ieškoti žiniatinklyje. Tai galite pakeisti nustatymuose.</translation>

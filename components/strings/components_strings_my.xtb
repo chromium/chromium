@@ -316,7 +316,6 @@
 <translation id="1463793142714244641">အချိန်အလိုက်မျှသုံးခြင်း၊ အားလပ်ရက်တည်းခိုစရာ</translation>
 <translation id="1465457928007067810">IBAN ကို သင်၏ Google Account တွင် သိမ်းလိုက်သည်</translation>
 <translation id="1467432559032391204">ဘယ်</translation>
-<translation id="1468653229182955856"><ph name="ONE_TIME_CODE" /> သည် <ph name="TOP_ORIGIN" /> တွင် ရှေ့ဆက်ရန် <ph name="EMBEDDED_ORIGIN" /> အတွက် ကုဒ်ဖြစ်ပါသည်</translation>
 <translation id="1472675084647422956">ပိုပြပါ</translation>
 <translation id="1473183651233018052">JIS B10</translation>
 <translation id="1473495410389165587">ရေးသားမှုအကူအညီ ရယူရန် စာလုံး ၃ လုံးနှင့်အထက် ထည့်ပါ</translation>
@@ -550,6 +549,7 @@
 <translation id="1832474362231610822">ဓာတ်ပုံကို OneDrive တွင် သိမ်းလိုက်သည်</translation>
 <translation id="1832730227369924598">မျက်နှာပြင် စင့်ခ်လုပ်ခြင်း</translation>
 <translation id="1834452765064623979">ဆောက်လုပ်ရေး၊ ပြုပြင်ထိန်းသိမ်းရေး</translation>
+<translation id="1837606605602726453">နောက်ဆက်တွဲကို စီမံခန့်ခွဲသူက တိုက်ရိုက်ခွင့်ပြုထား (သို့) ပိတ်ထားသဖြင့် အန္တရာယ်ရှိနိုင်ခြေ ရမှတ်နှင့် အမျိုးအစားများကို လျစ်လျူရှုထားသည်။</translation>
 <translation id="1838374766361614909">ရှာဖွေမှုကို ရှင်းပါ</translation>
 <translation id="1839331950812095887">သင့်အတွေးများကို အနှစ်ချုပ်ပေးနိုင်သည့် စကားလုံးအချို့</translation>
 <translation id="1839551713262164453">မူဝါဒတန်ဖိုးများကို အတည်ပြုရာတွင် အမှားအယွင်းရှိနေသည်</translation>
@@ -1860,6 +1860,7 @@
 <translation id="3875783148670536197">လုပ်နည်း ပြရန်</translation>
 <translation id="3877603629930976930">မမျှဝေပါနှင့်</translation>
 <translation id="3878445208930547646">ဤဝဘ်ဆိုက်မှ မိတ္တူကူးခြင်းကို ခွင့်မပြုပါ</translation>
+<translation id="3879674895057686427">ပြန်ဆိုမည့် ဘာသာစကား ရွေးရန်</translation>
 <translation id="3879748587602334249">ဒေါင်းလုဒ်မန်နေဂျာ</translation>
 <translation id="3880456882942693779">အနုပညာ၊ ဖျော်ဖြေရေး</translation>
 <translation id="3880589673277376494">အင်တာနက်၊ တယ်လီကွန်</translation>
@@ -3505,7 +3506,6 @@
 <translation id="6424600253695044005">Cloud သိုလှောင်ခန်း</translation>
 <translation id="6425092077175753609">ရုပ်ဝတ္ထုပစ္စည်း</translation>
 <translation id="6427730057873428458">ဝင်းတံခါးပုံ ခေါက်ရန်</translation>
-<translation id="6428450836711225518">သင်၏ဖုန်းနံပါတ်ကို အတည်ပြုပါ</translation>
 <translation id="6429267199680088961">A4 Tab</translation>
 <translation id="643051589346665201">Google စကားဝှက် ပြောင်းရန်</translation>
 <translation id="6431556523611594411">ဖွင့်ထားသောတဘ်များကို မျှဝေရန်</translation>
@@ -4454,7 +4454,6 @@
 <translation id="7874796722855317864">“<ph name="PROXY_UNKNOWN_CONDITION" />” သည် သိထားသော အခြေအနေအမျိုးအစား မဟုတ်ပါ။</translation>
 <translation id="7877007680666472091">ကာကွယ်ထားသည့် အကြောင်းအရာ ID များ</translation>
 <translation id="7878562273885520351">သင့်စကားဝှက် အခိုးခံထားရနိုင်သည်</translation>
-<translation id="7881044256965445977">အိမ်တွင်းကွန်ရက်ရှိ မည်သည့်စက်ကိုမဆို ရှာဖွေချိတ်ဆက်ပါ</translation>
 <translation id="7885670691503039914">ဝဘ်ဆိုက်တစ်ခုခုတွင် ဈေးကျသွားပါက အီးမေးလ်သတိပေးချက်များ ရရှိမည်။ ဤစာမျက်နှာကို <ph name="LAST_BOOKMARKS_FOLDER" /> လိပ်စာဖိုင်တွဲတွင် သိမ်းပါမည်။</translation>
 <translation id="7886897188117641322">ကြော်ငြာများကို ပုဂ္ဂိုလ်ရေးသီးသန့်ပြုလုပ်ရန် သုံးနိုင်သည့် ကျယ်ပြန့်သော အကြောင်းအရာအမျိုးအစားများကို ရွေးနိုင်သည်</translation>
 <translation id="7887683347370398519">သင့် CVC အားစစ်ဆေးပြီး ထပ်မံကြိုးစားပါ</translation>
@@ -4981,7 +4980,6 @@
 <translation id="8737685506611670901"><ph name="PROTOCOL" /> လင့်များအား <ph name="REPLACED_HANDLER_TITLE" /> အစား ဖွင့်ရန်</translation>
 <translation id="8738058698779197622">စိတ်ချရသည့်  ချိတ်ဆက်မှုကို ထူထောင်ရန်၊ သင့်နာရီကို မှန်ကန်စွာ သတ်မှတ်ပေးရန် လိုအပ်သည်။ ဝက်ဘ်ဆိုက်များက မိမိကိုမိမိ သက်သေထူရန် အသုံးပြုကြသည့် လက်မှတ်များမှာ သတ်မှတ်ထားသည့် အချိန်ကာလ အတွင်းမှာသာ သက်တမ်းရှိကြ၍ ဖြစ်ပါသည်။ သင့်ကိရိယာ၏ နာရီချိန် မမှန်သောကြောင့်၊ Chromium က ထိုလက်မှတ်များကို စိစစ်မရနိုင်ပါ။</translation>
 <translation id="8740359287975076522"><ph name="HOST_NAME" />၏ &lt;abbr id="dnsDefinition"&gt;DNS လိပ်စာ&lt;/abbr&gt; ကိုရှာမတွေ့ပါ။ ပြဿနာကို အဖြေရှာနေပါသည်။</translation>
-<translation id="8742371904523228557"><ph name="ONE_TIME_CODE" /> သည် <ph name="ORIGIN" /> အတွက် သင်၏ကုဒ်ဖြစ်သည်</translation>
 <translation id="874918643257405732">ဤတဘ်၏လိပ်စာကို မှတ်ရန်</translation>
 <translation id="8751426954251315517">နောက်တစ်ကြိမ် ထပ်စမ်းကြည့်ပါ</translation>
 <translation id="8753913772043329557">မူဝါဒမှတ်တမ်းများ</translation>
@@ -5159,7 +5157,6 @@
 <translation id="9042827002460091668">အင်တာနက်ချိတ်ဆက်မှုကို စစ်ဆေးပြီး ထပ်စမ်းကြည့်ပါ</translation>
 <translation id="9043161870923715789">AI မုဒ်</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
-<translation id="9046578823518542618"><ph name="URL" /> သည် အိမ်သုံးကွန်ရက်ရှိ မည်သည့်စက်ကိုမဆို ရှာဖွေချိတ်ဆက်လိုသည်</translation>
 <translation id="9046864189129893978">မိုက်ခရိုဖုန်း (<ph name="MICS_COUNT" />) ခု</translation>
 <translation id="9046865906192819796">‘အခုဝယ်-နောက်မှပေး’ ဝန်ဆောင်မှုစည်းမျဉ်းများ စခရင်ကို မြင်ကွင်းတစ်ဝက် ဖွင့်လိုက်သည်။</translation>
 <translation id="9047528041803621289">မူရင်းရွေးချယ်မှုက ဝဘ်တွင်ရှာခွင့်ပေးသည်။ ၎င်းကို ဆက်တင်များတွင် ပြောင်းနိုင်သည်။</translation>

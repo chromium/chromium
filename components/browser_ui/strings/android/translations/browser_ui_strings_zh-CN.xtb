@@ -5,7 +5,6 @@
 <translation id="1036348656032585052">关闭</translation>
 <translation id="1046742265332833834">蓝色主题</translation>
 <translation id="1070329623210597193">此网站可以查看或修改的文件</translation>
-<translation id="1073417869336441572">请告诉我们您允许使用第三方 Cookie 的原因，以帮助我们改进 Chrome<ph name="BEGIN_LINK" />发送反馈<ph name="END_LINK" /></translation>
 <translation id="1074758928858737435">您可以查看桌面版网站</translation>
 <translation id="1109482864356262001">需要使用移动传感器或光传感器的功能将无法正常运行</translation>
 <translation id="1126523729897810826">完成下方操作建议，充分利用 Chrome</translation>
@@ -328,6 +327,7 @@
 <translation id="4290791284969893584">关闭网页后，您已启动的任务可能会无法完成</translation>
 <translation id="429312253194641664">某个网站正在播放媒体内容</translation>
 <translation id="42981349822642051">展开</translation>
+<translation id="4310738531374808763">自定义首页</translation>
 <translation id="4336219115486912529">{COUNT,plural, =1{明天过期}other{# 天后过期}}</translation>
 <translation id="4338831206024587507"><ph name="DOMAIN" /> 下的所有网站</translation>
 <translation id="4340799661701629185">不允许网站发送通知</translation>
@@ -440,7 +440,6 @@
 <translation id="5555115555607204100">不使用 Chrome 的 V8 引擎加速网站，但 Chrome 的防攻击能力会略微增强</translation>
 <translation id="5556459405103347317">重新加载</translation>
 <translation id="5591840828808741583">已为 <ph name="SITE_NAME" /> 禁用此权限</translation>
-<translation id="560980142378233747">这意味着，网站功能应该会按预期运行，但您受到的浏览保护级别可能较低。<ph name="BEGIN_LINK" />发送反馈<ph name="END_LINK" /></translation>
 <translation id="5617702678271228680">“新标签页”页面卡片底部动作条</translation>
 <translation id="5621413808884657932">开启此设置后，网站可以请求访问此设备上的其他应用和服务。关闭此设置后，网站无法访问此设备上的其他应用和服务。</translation>
 <translation id="5632485077360054581">操作步骤</translation>
@@ -519,6 +518,7 @@
 <translation id="6262279340360821358">已禁用“<ph name="PERMISSION_1" />”权限和“<ph name="PERMISSION_2" />”权限</translation>
 <translation id="6270391203985052864">网站可以询问能否向您发送通知</translation>
 <translation id="6295158916970320988">所有网站</translation>
+<translation id="6305257382500066042">立即试用</translation>
 <translation id="6320088164292336938">振动</translation>
 <translation id="6367753977865761591">禁止使用第三方账号登录特定网站。</translation>
 <translation id="6398765197997659313">退出全屏模式</translation>
@@ -529,7 +529,6 @@
 <translation id="6447842834002726250">Cookie</translation>
 <translation id="6452138246455930388">您打开的标签页中有降价，原价为 <ph name="OLD_PRICE" />，现价为 <ph name="NEW_PRICE" />”，<ph name="PRODUCT_NAME" />，<ph name="DOMAIN_NAME" /></translation>
 <translation id="6500423977866688905">当窗口狭窄时，请求使用移动版视图</translation>
-<translation id="6514791408445720076">自定义您的页面</translation>
 <translation id="6527303717912515753">分享</translation>
 <translation id="6530703012083415527">开启此设置后，网站可以使用弹出式窗口和重定向。关闭此设置后，网站无法使用弹出式窗口和重定向。</translation>
 <translation id="6540488083026747005">您已允许此网站使用第三方 Cookie</translation>
@@ -593,7 +592,6 @@
 <translation id="7141896414559753902">禁止网站显示弹出式窗口和重定向（推荐）</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> KB</translation>
 <translation id="7180611975245234373">刷新</translation>
-<translation id="7180865173735832675">自定义</translation>
 <translation id="7188508872042490670">设备端网站数据</translation>
 <translation id="7201549776650881587">此操作会删除 <ph name="ORIGIN" /> 下属所有网站或其在主屏幕中安装的应用存储的全部数据和 Cookie</translation>
 <translation id="7219254577985949841">删除网站数据？</translation>
@@ -707,7 +705,6 @@
 <translation id="83792324527827022">有一个网站正在使用您的摄像头和麦克风</translation>
 <translation id="8380167699614421159">此网站会展示侵扰性或误导性广告</translation>
 <translation id="8394832520002899662">点按即可返回到网站</translation>
-<translation id="8404500559369898929">选择自定义背景主题，开启专属 Chrome 体验</translation>
 <translation id="8409345997656833551">当文章能以简化版视图显示时通知我</translation>
 <translation id="8416874502399604126">这次可以使用麦克风</translation>
 <translation id="8423565414844018592">文字缩放比例目前设为 <ph name="TEXT_SCALING" /></translation>

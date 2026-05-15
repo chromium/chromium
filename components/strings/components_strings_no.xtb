@@ -316,7 +316,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="1463793142714244641">Timeshare og ferieleiligheter</translation>
 <translation id="1465457928007067810">IBAN-nummeret er lagret i Google-kontoen din</translation>
 <translation id="1467432559032391204">Venstre</translation>
-<translation id="1468653229182955856"><ph name="ONE_TIME_CODE" /> er koden din for <ph name="EMBEDDED_ORIGIN" /> for å fortsette på <ph name="TOP_ORIGIN" /></translation>
 <translation id="1472675084647422956">Vis mer</translation>
 <translation id="1473183651233018052">JIS B10</translation>
 <translation id="1473495410389165587">Skriv inn tre eller flere ord for å få skrivehjelp</translation>
@@ -549,6 +548,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="1832474362231610822">Bildet er lagret i OneDrive</translation>
 <translation id="1832730227369924598">Synkronisering av skrivebord</translation>
 <translation id="1834452765064623979">Bygging og vedlikehold</translation>
+<translation id="1837606605602726453">Risikopoengsummen og -kategoriene ignoreres fordi utvidelsen er eksplisitt tillatt eller blokkert av administratoren.</translation>
 <translation id="1838374766361614909">Fjern søket</translation>
 <translation id="1839331950812095887">noen få ord som oppsummerer tankene dine</translation>
 <translation id="1839551713262164453">Validering av regelverdier mislyktes med feil</translation>
@@ -1821,6 +1821,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsinnstillingene<ph name="END_LINK" /> fo
 <translation id="380865868633614173">Lagrer kortinformasjon</translation>
 <translation id="3810770279996899697">Passordlagring trenger tilgang til macOS-nøkkelring</translation>
 <translation id="3810973564298564668">Administrer</translation>
+<translation id="3811328723651698330"><ph name="STRING_1" />, <ph name="STRING_2" /></translation>
 <translation id="3812398568375898177">Dette er en viktig oppdatering som forbedrer ytelsen til Android-apper i ChromeOS.</translation>
 <translation id="3814865536373139791">Effektiviser hvordan organisasjonen din administrerer regler</translation>
 <translation id="3815434930383843058">8 x 12 tommer</translation>
@@ -1860,6 +1861,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsinnstillingene<ph name="END_LINK" /> fo
 <translation id="3875783148670536197">Vis meg hvordan</translation>
 <translation id="3877603629930976930">Ikke del</translation>
 <translation id="3878445208930547646">Det er ikke tillatt å kopiere fra dette nettstedet</translation>
+<translation id="3879674895057686427">Velg språket du vil oversette til</translation>
 <translation id="3879748587602334249">Nedlastingsbehandling</translation>
 <translation id="3880456882942693779">Kunst og underholdning</translation>
 <translation id="3880589673277376494">Internett og telekommunikasjon</translation>
@@ -2399,6 +2401,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsinnstillingene<ph name="END_LINK" /> fo
 <translation id="4736934858538408121">Virtuelt kort</translation>
 <translation id="473775607612524610">Oppdater</translation>
 <translation id="4738601419177586157">Søkeforslag for <ph name="TEXT" /></translation>
+<translation id="473866660302034629"><ph name="TAB_TITLE" />, valgt fane, <ph name="INDEX" /> av <ph name="TOTAL" />, bruk venstre- eller høyrepilen for å bytte mellom faner</translation>
 <translation id="4742407542027196863">Administrer passord…</translation>
 <translation id="474270528725216349">Fra minst 1 nettsted på synkroniserte enheter</translation>
 <translation id="4743275772928623722">Systemet ditt ble oppdatert, men noen av appene og filene kunne ikke gjenopprettes. Appene dine lastes ned på nytt automatisk.</translation>
@@ -2466,6 +2469,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsinnstillingene<ph name="END_LINK" /> fo
 <translation id="4832961164064927107">Grilling</translation>
 <translation id="4835568975547260025">Chrome deler relevante åpne faner som standard for å hjelpe deg med å få mer skreddersydde svar på spørsmålene.</translation>
 <translation id="4840250757394056958">Se Chrome-loggen din</translation>
+<translation id="4842365697443353018">Tøm skjemaet for å bruke «Betal senere»</translation>
 <translation id="484462545196658690">Auto</translation>
 <translation id="4844937814014739139">Rulling og zooming på delte faner</translation>
 <translation id="484671803914931257">Få rabatt hos <ph name="MERCHANT_NAME" /> og flere</translation>
@@ -3446,6 +3450,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsinnstillingene<ph name="END_LINK" /> fo
 <translation id="634500758737709758">Veibeskrivelser</translation>
 <translation id="6348220984832452017">Aktive variasjoner</translation>
 <translation id="6349101878882523185">Installer <ph name="APP_NAME" /></translation>
+<translation id="6350739641326887427">Betal uten å kopiere og lime inn Pix-koden. <ph name="BEGIN_LINK1" />Se hvordan det fungerer<ph name="END_LINK1" /></translation>
 <translation id="6351658970066645919">Slett nettlesingsdata</translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{Ingen}=1{1 passord (for <ph name="DOMAIN_LIST" /> – synkronisert)}=2{2 passord (for <ph name="DOMAIN_LIST" /> – synkronisert)}other{# passord (for <ph name="DOMAIN_LIST" /> – synkronisert)}}</translation>
 <translation id="6354918092619878358">SECG elliptisk kurve secp256r1 (også kjent som ANSI X9.62 prime256v1, NIST P-256)</translation>
@@ -3504,7 +3509,6 @@ Gå til <ph name="BEGIN_LINK" />betalingsinnstillingene<ph name="END_LINK" /> fo
 <translation id="6424600253695044005">Cloud Storage</translation>
 <translation id="6425092077175753609">Materiale</translation>
 <translation id="6427730057873428458">Vindusfals</translation>
-<translation id="6428450836711225518">Bekreft telefonnummeret ditt</translation>
 <translation id="6429267199680088961">A4 Tab</translation>
 <translation id="643051589346665201">Bytt Google-passord</translation>
 <translation id="6431556523611594411">Del åpne faner</translation>
@@ -3661,6 +3665,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsinnstillingene<ph name="END_LINK" /> fo
 <translation id="668132230070712111">Videoen er lagret i Google Disk</translation>
 <translation id="6681790815630918386">Verifiseringskoden er lagret</translation>
 <translation id="6683022854667115063">Hodetelefoner</translation>
+<translation id="6686570026048064255">For å slå av gjenkjenning av Pix-koder, gå til <ph name="BEGIN_LINK1" />Chrome-innstillingene<ph name="END_LINK1" />.</translation>
 <translation id="6687230248707087982">Konvolutt (vanlig)</translation>
 <translation id="6687335167692595844">Forespurt skriftstørrelse</translation>
 <translation id="6688743156324860098">Oppdater …</translation>
@@ -4451,7 +4456,6 @@ Gå til <ph name="BEGIN_LINK" />betalingsinnstillingene<ph name="END_LINK" /> fo
 <translation id="7874796722855317864">«<ph name="PROXY_UNKNOWN_CONDITION" />» er ikke en kjent betingelsestype.</translation>
 <translation id="7877007680666472091">ID-er for beskyttet innhold</translation>
 <translation id="7878562273885520351">Passordet ditt kan være kompromittert</translation>
-<translation id="7881044256965445977">Se etter og koble til enheter på det lokale nettverket</translation>
 <translation id="7885670691503039914">Du får e-postvarsler hvis prisen settes ned på noe nettsted. Denne siden lagres i bokmerkemappen <ph name="LAST_BOOKMARKS_FOLDER" />.</translation>
 <translation id="7886897188117641322">Velg hvilke generelle emnekategorier som kan brukes til å tilpasse annonser personlig</translation>
 <translation id="7887683347370398519">Kontroller CVC-koden din, og prøv igjen.</translation>
@@ -4977,7 +4981,6 @@ Mer informasjon:
 <translation id="8737685506611670901">åpne linker til <ph name="PROTOCOL" /> i stedet for <ph name="REPLACED_HANDLER_TITLE" /></translation>
 <translation id="8738058698779197622">Klokken din må være riktig stilt for at du skal kunne opprette en sikker forbindelse. Sertifikatene som nettsteder bruker til å identifisere seg med, er nemlig bare gyldige i en viss tid. Siden enhetens klokke er feil, kan ikke Chromium kontrollere disse sertifikatene.</translation>
 <translation id="8740359287975076522">&lt;abbr id="dnsDefinition"&gt;DNS-adressen&lt;/abbr&gt; til <ph name="HOST_NAME" /> ble ikke funnet. Problemet diagnostiseres.</translation>
-<translation id="8742371904523228557"><ph name="ONE_TIME_CODE" /> er koden din for <ph name="ORIGIN" /></translation>
 <translation id="874918643257405732">Bokmerk denne fanen</translation>
 <translation id="8751426954251315517">Prøv på nytt neste gang</translation>
 <translation id="8753913772043329557">Logger for retningslinjer</translation>
@@ -5155,7 +5158,6 @@ Mer informasjon:
 <translation id="9042827002460091668">Sjekk internettilkoblingen, og prøv på nytt</translation>
 <translation id="9043161870923715789">AI-modus</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> – <ph name="RESULT_PRODUCT_SOURCE" /></translation>
-<translation id="9046578823518542618"><ph name="URL" /> vil se etter og koble til enheter på det lokale nettverket ditt</translation>
 <translation id="9046864189129893978">Mikrofoner (<ph name="MICS_COUNT" />)</translation>
 <translation id="9046865906192819796">Skjermen med vilkår for bruk av Kjøp nå, betal senere er åpnet i halv høyde.</translation>
 <translation id="9047528041803621289">Med standardinnstillingen kan du søke på nettet. Du kan endre den i innstillingene.</translation>

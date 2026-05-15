@@ -316,7 +316,6 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="1463793142714244641">Atpūtas namu īre un atpūtas īpašumi</translation>
 <translation id="1465457928007067810">IBAN ir saglabāts Google kontā.</translation>
 <translation id="1467432559032391204">Pa kreisi</translation>
-<translation id="1468653229182955856"><ph name="ONE_TIME_CODE" /> ir jūsu kods ietvaram <ph name="EMBEDDED_ORIGIN" /> vietnē <ph name="TOP_ORIGIN" /></translation>
 <translation id="1472675084647422956">Rādīt vairāk</translation>
 <translation id="1473183651233018052">JIS B10</translation>
 <translation id="1473495410389165587">Ievadiet vismaz trīs vārdus, lai saņemtu palīdzību rakstīšanā.</translation>
@@ -549,6 +548,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="1832474362231610822">Fotoattēls ir saglabāts pakalpojumā OneDrive</translation>
 <translation id="1832730227369924598">Darbvietas sinhronizācija</translation>
 <translation id="1834452765064623979">Būvniecība un apsaimniekošana</translation>
+<translation id="1837606605602726453">Riska novērtējums un kategorijas tiek ignorētas, jo administrators ir skaidri atļāvis vai bloķējis paplašinājumu.</translation>
 <translation id="1838374766361614909">Notīrīt meklēšanas vaicājumu</translation>
 <translation id="1839331950812095887">jūsu domas dažos vārdos</translation>
 <translation id="1839551713262164453">Politikas vērtību validēšana neizdevās, tika konstatētas kļūdas</translation>
@@ -1859,6 +1859,7 @@ Lai paslēptu vēlākas maksāšanas iespējas, pārejiet uz <ph name="BEGIN_LIN
 <translation id="3875783148670536197">Parādīt, kā</translation>
 <translation id="3877603629930976930">Nekopīgot</translation>
 <translation id="3878445208930547646">Kopēšana no šīs vietnes nav atļauta</translation>
+<translation id="3879674895057686427">Izvēlieties valodu, kurā tulkot</translation>
 <translation id="3879748587602334249">Lejupielāžu pārvaldnieks</translation>
 <translation id="3880456882942693779">Māksla un izklaide</translation>
 <translation id="3880589673277376494">Internets un telekomunikācijas</translation>
@@ -3503,7 +3504,6 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="6424600253695044005">Mākoņkrātuves</translation>
 <translation id="6425092077175753609">Materiāls</translation>
 <translation id="6427730057873428458">Abpusējs locījums</translation>
-<translation id="6428450836711225518">Verificējiet savu tālruņa numuru</translation>
 <translation id="6429267199680088961">A4 Tab</translation>
 <translation id="643051589346665201">Mainīt Google paroli</translation>
 <translation id="6431556523611594411">Kopīgot atvērtās cilnes</translation>
@@ -4452,7 +4452,6 @@ Papildu informācija:
 <translation id="7874796722855317864">“<ph name="PROXY_UNKNOWN_CONDITION" />” nav zināms stāvokļa veids.</translation>
 <translation id="7877007680666472091">aizsargāta satura identifikatori</translation>
 <translation id="7878562273885520351">Iespējams, jūsu parole ir apdraudēta</translation>
-<translation id="7881044256965445977">Meklēt un izveidot savienojumu ar jebkuru ierīci jūsu lokālajā tīklā</translation>
 <translation id="7885670691503039914">Jūs saņemsiet e-pasta brīdinājumus, ja kādā vietnē tiks konstatēts cenas samazinājums. Šī lapa tiks saglabāta grāmatzīmju mapē <ph name="LAST_BOOKMARKS_FOLDER" />.</translation>
 <translation id="7886897188117641322">Izvēlieties, kuras plašās tēmu kategorijas drīkst izmantot, lai personalizētu reklāmas.</translation>
 <translation id="7887683347370398519">Pārbaudiet CVC kodu un mēģiniet vēlreiz.</translation>
@@ -4979,7 +4978,6 @@ Papildu informācija:
 <translation id="8737685506611670901">atvērt <ph name="PROTOCOL" /> saites, nevis <ph name="REPLACED_HANDLER_TITLE" /></translation>
 <translation id="8738058698779197622">Lai izveidotu drošu savienojumu, ir jāiestata pareizs pulksteņa laiks. Tas ir nepieciešams, jo sertifikāti, kurus vietnes izmanto, lai tiktu identificētas, ir derīgi tikai noteiktos laika periodos. Tā kā jūsu ierīces pulkstenis nav pareizi iestatīts, Chromium nevar verificēt šos sertifikātus.</translation>
 <translation id="8740359287975076522">Nevarēja atrast <ph name="HOST_NAME" /> &lt;abbr id="dnsDefinition"&gt;DNS adresi&lt;/abbr&gt;. Notiek problēmas diagnosticēšana.</translation>
-<translation id="8742371904523228557"><ph name="ONE_TIME_CODE" /> ir jūsu kods vietnei <ph name="ORIGIN" />.</translation>
 <translation id="874918643257405732">Saglabāt šo cilni kā grāmatzīmi</translation>
 <translation id="8751426954251315517">Mēģiniet vēlreiz nākamajā reizē</translation>
 <translation id="8753913772043329557">Politiku žurnāli</translation>
@@ -5157,7 +5155,6 @@ Papildu informācija:
 <translation id="9042827002460091668">Pārbaudiet interneta savienojumu un mēģiniet vēlreiz.</translation>
 <translation id="9043161870923715789">MI režīms</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> — <ph name="RESULT_PRODUCT_SOURCE" /></translation>
-<translation id="9046578823518542618"><ph name="URL" /> vēlas meklēt un izveidot savienojumu ar jebkuru ierīci jūsu lokālajā tīklā</translation>
 <translation id="9046864189129893978">Mikrofoni (<ph name="MICS_COUNT" />)</translation>
 <translation id="9046865906192819796">Funkcijas “Pērciet tūlīt, maksājiet vēlāk” pakalpojumu sniegšanas noteikumu ekrāns ir atvērts pusekrāna augstumā.</translation>
 <translation id="9047528041803621289">Noklusējuma meklētājprogramma ļauj veikt meklēšanu tīmeklī. Varat to mainīt iestatījumos.</translation>

@@ -5,7 +5,6 @@
 <translation id="1036348656032585052">ปิด</translation>
 <translation id="1046742265332833834">ธีมสีน้ำเงิน</translation>
 <translation id="1070329623210597193">ไฟล์ที่เว็บไซต์นี้ดูหรือแก้ไขได้</translation>
-<translation id="1073417869336441572">ช่วยปรับปรุง Chrome โดยแจ้งให้เราทราบถึงเหตุผลที่คุณอนุญาตคุกกี้ของบุคคลที่สาม <ph name="BEGIN_LINK" />ส่งความคิดเห็น<ph name="END_LINK" /></translation>
 <translation id="1074758928858737435">คุณสามารถขอดูเว็บไซต์เวอร์ชันเดสก์ท็อปได้</translation>
 <translation id="1109482864356262001">ฟีเจอร์ที่ต้องใช้เซ็นเซอร์จับการเคลื่อนไหวหรือแสงจะไม่ทำงาน</translation>
 <translation id="1126523729897810826">โปรดดำเนินการตามที่แนะนําด้านล่างเพื่อให้ใช้ Chrome ได้เกิดประโยชน์สูงสุด</translation>
@@ -328,6 +327,7 @@
 <translation id="4290791284969893584">หลังจากปิดหน้าไปแล้ว งานที่คุณเริ่มไว้อาจไม่ดำเนินต่อจนเสร็จสิ้น</translation>
 <translation id="429312253194641664">เว็บไซต์กำลังเล่นสื่อ</translation>
 <translation id="42981349822642051">ขยาย</translation>
+<translation id="4310738531374808763">ปรับแต่งหน้าแรกของคุณ</translation>
 <translation id="4336219115486912529">{COUNT,plural, =1{หมดอายุวันพรุ่งนี้}other{หมดอายุในอีก # วัน}}</translation>
 <translation id="4338831206024587507">ทุกเว็บไซต์ในโดเมน <ph name="DOMAIN" /></translation>
 <translation id="4340799661701629185">ไม่อนุญาตให้เว็บไซต์ส่งการแจ้งเตือน</translation>
@@ -440,7 +440,6 @@
 <translation id="5555115555607204100">ไม่เพิ่มความเร็วให้เว็บไซต์ด้วยเครื่องมือ V8 ของ Chrome แต่ทำให้ Chrome ต้านทานการโจมตีได้มากขึ้นเล็กน้อย</translation>
 <translation id="5556459405103347317">โหลดใหม่</translation>
 <translation id="5591840828808741583"><ph name="SITE_NAME" /> ถูกบล็อก</translation>
-<translation id="560980142378233747">การตั้งค่านี้หมายความว่าฟีเจอร์ของเว็บไซต์ควรทำงานตามที่คาดไว้ แต่การปกป้องขณะท่องเว็บอาจลดลง <ph name="BEGIN_LINK" />ส่งความคิดเห็น<ph name="END_LINK" /></translation>
 <translation id="5617702678271228680">Bottom Sheet ของการ์ดหน้าแท็บใหม่</translation>
 <translation id="5621413808884657932">เมื่อเปิด เว็บไซต์จะขอเข้าถึงแอปและบริการอื่นๆ ในอุปกรณ์นี้ได้ เมื่อปิด เว็บไซต์จะเข้าถึงแอปและบริการอื่นๆ ในอุปกรณ์นี้ไม่ได้</translation>
 <translation id="5632485077360054581">แสดงวิธีการ</translation>
@@ -519,6 +518,7 @@
 <translation id="6262279340360821358">บล็อก<ph name="PERMISSION_1" />และ<ph name="PERMISSION_2" /></translation>
 <translation id="6270391203985052864">เว็บไซต์ขอส่งการแจ้งเตือนได้</translation>
 <translation id="6295158916970320988">เว็บไซต์ทั้งหมด</translation>
+<translation id="6305257382500066042">ลองใช้เลย</translation>
 <translation id="6320088164292336938">สั่น</translation>
 <translation id="6367753977865761591">บล็อกการลงชื่อเข้าใช้ของบุคคลที่สามสำหรับบางเว็บไซต์</translation>
 <translation id="6398765197997659313">ออกจากการแสดงแบบเต็มหน้าจอ</translation>
@@ -529,7 +529,6 @@
 <translation id="6447842834002726250">คุกกี้</translation>
 <translation id="6452138246455930388">ราคาต่ำลงในแท็บที่เปิดอยู่ จาก <ph name="OLD_PRICE" /> เป็น <ph name="NEW_PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN_NAME" /></translation>
 <translation id="6500423977866688905">เมื่อใช้หน้าต่างที่แคบ ให้ขอมุมมองบนมือถือ</translation>
-<translation id="6514791408445720076">ปรับแต่งหน้าเว็บ</translation>
 <translation id="6527303717912515753">แชร์</translation>
 <translation id="6530703012083415527">เมื่อเปิด เว็บไซต์จะใช้ป๊อปอัปและการเปลี่ยนเส้นทางได้ เมื่อปิด เว็บไซต์จะใช้ป๊อปอัปและการเปลี่ยนเส้นทางไม่ได้</translation>
 <translation id="6540488083026747005">คุณอนุญาตคุกกี้ของบุคคลที่สามสำหรับเว็บไซต์นี้</translation>
@@ -593,7 +592,6 @@
 <translation id="7141896414559753902">บล็อกเว็บไซต์ไม่ให้แสดงป๊อปอัปและการเปลี่ยนเส้นทาง (แนะนำ)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> KB</translation>
 <translation id="7180611975245234373">รีเฟรช</translation>
-<translation id="7180865173735832675">กำหนดค่า</translation>
 <translation id="7188508872042490670">ข้อมูลเว็บไซต์ในอุปกรณ์</translation>
 <translation id="7201549776650881587">การดำเนินการนี้จะลบข้อมูลและคุกกี้ทั้งหมดที่ทุกเว็บไซต์จาก <ph name="ORIGIN" /> หรือแอปในหน้าจอหลักจัดเก็บไว้</translation>
 <translation id="7219254577985949841">ลบข้อมูลเว็บไซต์ใช่ไหม</translation>
@@ -707,7 +705,6 @@
 <translation id="83792324527827022">มีเว็บไซต์กำลังใช้กล้องถ่ายรูปและไมโครโฟน</translation>
 <translation id="8380167699614421159">เว็บไซต์นี้แสดงโฆษณาที่แทรกหรือทำให้เข้าใจผิด</translation>
 <translation id="8394832520002899662">แตะเพื่อกลับไปที่เว็บไซต์</translation>
-<translation id="8404500559369898929">ปรับเปลี่ยน Chrome ในแบบของคุณด้วยการเลือกธีมพื้นหลังที่กำหนดเอง</translation>
 <translation id="8409345997656833551">รับการแจ้งเตือนเมื่อแสดงบทความในมุมมองอย่างง่ายได้</translation>
 <translation id="8416874502399604126">อนุญาตให้ใช้ไมโครโฟนในครั้งนี้</translation>
 <translation id="8423565414844018592">ตั้งค่าการปรับขนาดข้อความเป็น <ph name="TEXT_SCALING" /></translation>

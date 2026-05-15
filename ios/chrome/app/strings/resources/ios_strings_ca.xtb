@@ -335,7 +335,6 @@
 <translation id="2119962645034852864">Alguns serveis no estan disponibles per al teu compte</translation>
 <translation id="2120553909046681540">La teva organització ha desactivat la navegació privada.</translation>
 <translation id="2122754583996902531">El navegador està gestionat. <ph name="BEGIN_LINK" />Més informació<ph name="END_LINK" /></translation>
-<translation id="21243612977487926">Els xats de la teva organització no s'utilitzen per millorar els nostres models. És possible que Gemini mostri informació imprecisa, també sobre persones, així que comprova-la. <ph name="YOUR_PRIVACY_GEMINI" /></translation>
 <translation id="2139867232736819575">Cerca el text que has copiat</translation>
 <translation id="2147127444698817042">Només disponible a iPhone</translation>
 <translation id="2148799636999124959">Inicia fàcilment la sessió en aplicacions i llocs web amb les contrasenyes desades.</translation>
@@ -721,7 +720,6 @@
 <translation id="3565012355885596568">No s'han pogut carregar les imatges</translation>
 <translation id="3565930036634619844">Pestanya. <ph name="TAB_INDEX" /> de <ph name="NUMBER_OF_TABS" />.</translation>
 <translation id="3567168891086460374">Desa d'altra forma</translation>
-<translation id="3571703298474554279">Una manera més ràpida d'utilitzar l'aplicació</translation>
 <translation id="3572503683475187385">La pestanya actual es comparteix amb Gemini quan inicies un xat nou. Quan comparteixes una pestanya amb Gemini, el contingut i l'URL corresponents s'envien a Google. <ph name="BEGIN_LINK" />Més informació<ph name="END_LINK" /></translation>
 <translation id="3572607909481582402">Al teu Compte de Google</translation>
 <translation id="3575234738189584619">Cerca amb Lens</translation>
@@ -1322,7 +1320,6 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="5652623411397330904">Els productes que segueixis es mostraran aquí.</translation>
 <translation id="5656431592348714536">Calendari millorat</translation>
 <translation id="5659593005791499971">Adreça electrònica</translation>
-<translation id="5665739277590037307">S'hi apliquen les <ph name="GOOGLE_TERMS" /> i l‘<ph name="GEMINI_APPS_PRIVACY" />. Gemini pot cometre errors, així que comprova'n les respostes.</translation>
 <translation id="5666313630530585305">Inicia la sessió en un lloc web.</translation>
 <translation id="5669335982068190158">Se t'ha tancat la sessió com a part del restabliment de l'iPhone. Per iniciar-la, toca Continua, més avall.</translation>
 <translation id="5669528293118408608">www</translation>
@@ -1741,6 +1738,7 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="7015418667643980944">Vista dividida</translation>
 <translation id="7016070607649558507">Tens 1 contrasenya poc segura. Corregeix el problema per protegir-te.</translation>
 <translation id="7016958933495968912">Opcions per a Discover</translation>
+<translation id="7019477124580742994">Cerca de <ph name="SEARCH_PROVIDER" /></translation>
 <translation id="7029809446516969842">Contrasenyes</translation>
 <translation id="7035825883570480307">Vols activar les notificacions?</translation>
 <translation id="7039345315346323556">Recents</translation>
@@ -1750,7 +1748,6 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="7063811929043357292">El teu pare o mare gestiona el teu compte.
 <ph name="BEGIN_LINK" />Més informació<ph name="END_LINK" /></translation>
 <translation id="7067780033517902110">Tots els fitxers</translation>
-<translation id="707086654079606593">Gestiona les adreces…</translation>
 <translation id="7080806333218412752">Envia els URL a Navegació segura perquè els comprovi. També envia una petita mostra de pàgines, baixades, activitat d'extensions i informació del sistema per ajudar a detectar amenaces noves. Enllaça temporalment aquestes dades al teu Compte de Google quan tens la sessió iniciada per protegir-te a les aplicacions de Google.</translation>
 <translation id="7082853213442715471">Quan està activat, determinades tecnologies web es bloquegen, la qual cosa pot fer que alguns llocs web es carreguin més lentament o no funcionin correctament.</translation>
 <translation id="7091023926159231962">{count,plural, =1{No s'ha pogut importar {count} contrasenya}other{No s'han pogut importar {count} contrasenyes}}</translation>
@@ -1800,7 +1797,6 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="7275307913765547631">Condicions del servei d'ubicació de Corea</translation>
 <translation id="728025568708172005">Mostra'm la zona</translation>
 <translation id="7280980607183752256">Aquest fitxer no es pot importar</translation>
-<translation id="7281202269687163394">La teva privadesa i Gemini.</translation>
 <translation id="7282197670900591579">Tema groc verdós</translation>
 <translation id="7293429513719260019">Selecciona l'idioma</translation>
 <translation id="7300448350764260141">Afegeix una capa addicional de protecció contra les amenaces en línia.</translation>
@@ -1812,7 +1808,6 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="7345061034321640811">No es permet la importació</translation>
 <translation id="7347998088283246662">Importa les contrasenyes, l'historial, les adreces d'interès i més</translation>
 <translation id="7352651011704765696">S'ha produït un error</translation>
-<translation id="7363497636543208734">Ara és més fàcil moure's per l'aplicació.</translation>
 <translation id="7364796246159120393">Tria un fitxer</translation>
 <translation id="736564850024123010">Canvia la posició de la barra d'adreces per gaudir d'una experiència personalitzada.</translation>
 <translation id="7366909168761621528">Dades de navegació</translation>

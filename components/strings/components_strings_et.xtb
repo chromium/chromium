@@ -316,7 +316,6 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="1463793142714244641">Osaajalise kasutusõigusega kinnisvara ja puhkeomandid</translation>
 <translation id="1465457928007067810">IBAN on salvestatud teie Google'i kontole</translation>
 <translation id="1467432559032391204">Vasakule</translation>
-<translation id="1468653229182955856"><ph name="ONE_TIME_CODE" /> on teie kood üksuse <ph name="EMBEDDED_ORIGIN" /> jaoks, et minna edasi sihtkohta <ph name="TOP_ORIGIN" /></translation>
 <translation id="1472675084647422956">Kuva rohkem</translation>
 <translation id="1473183651233018052">JIS B10</translation>
 <translation id="1473495410389165587">Kirjutamisabi saamiseks sisestage vähemalt kolm sõna</translation>
@@ -549,6 +548,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="1832474362231610822">Foto salvestati OneDrive’i</translation>
 <translation id="1832730227369924598">Töölaua sünkroonimine</translation>
 <translation id="1834452765064623979">Ehitus ja hooldus</translation>
+<translation id="1837606605602726453">Riskiskoori ja -kategooriaid eiratakse, kuna administraator on laienduse sõnaselgelt lubanud või blokeerinud.</translation>
 <translation id="1838374766361614909">Otsingu kustutamine</translation>
 <translation id="1839331950812095887">paar sõna, mis võtavad teie mõtted kokku</translation>
 <translation id="1839551713262164453">Reegli väärtuste valideerimine nurjus ja selle käigus ilmnesid vead</translation>
@@ -1860,6 +1860,7 @@ Hiljem maksmise valikute peitmiseks avage <ph name="BEGIN_LINK" />makseseaded<ph
 <translation id="3875783148670536197">Kuva juhised</translation>
 <translation id="3877603629930976930">Ära jaga</translation>
 <translation id="3878445208930547646">Sellelt saidilt kopeerimine ei ole lubatud</translation>
+<translation id="3879674895057686427">Valige keel, millesse tõlkida</translation>
 <translation id="3879748587602334249">Allalaadimishaldur</translation>
 <translation id="3880456882942693779">Kunst ja meelelahutus</translation>
 <translation id="3880589673277376494">Internet ja telekommunikatsioon</translation>
@@ -3446,6 +3447,7 @@ Hiljem maksmise valikute peitmiseks avage <ph name="BEGIN_LINK" />makseseaded<ph
 <translation id="634500758737709758">Juhised</translation>
 <translation id="6348220984832452017">Aktiivsed variatsioonid</translation>
 <translation id="6349101878882523185">Installi <ph name="APP_NAME" /></translation>
+<translation id="6350739641326887427">Makske ilma Pixi koodi kopeerimata ja kleepimata. <ph name="BEGIN_LINK1" />Vaadake lähemalt<ph name="END_LINK1" />.</translation>
 <translation id="6351658970066645919">Sirvimisandmete kustutamine</translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{Puudub}=1{1 parool (loendile <ph name="DOMAIN_LIST" />, sünkroonitud)}=2{2 parooli (loendile <ph name="DOMAIN_LIST" />, sünkroonitud)}other{# parooli (loendile <ph name="DOMAIN_LIST" />, sünkroonitud)}}</translation>
 <translation id="6354918092619878358">SECG elliptilise kõveraga secp256r1 (ehk ANSI X9.62 prime256v1, NIST P-256)</translation>
@@ -3504,7 +3506,6 @@ Hiljem maksmise valikute peitmiseks avage <ph name="BEGIN_LINK" />makseseaded<ph
 <translation id="6424600253695044005">Pilvepõhine salvestusruum</translation>
 <translation id="6425092077175753609">Materiaalne</translation>
 <translation id="6427730057873428458">Väravakujuliselt volditud</translation>
-<translation id="6428450836711225518">Kinnitage oma telefoninumber</translation>
 <translation id="6429267199680088961">A4 tabloid</translation>
 <translation id="643051589346665201">Muuda Google'i parooli</translation>
 <translation id="6431556523611594411">Avatud vahelehtede jagamine</translation>
@@ -3661,6 +3662,7 @@ Hiljem maksmise valikute peitmiseks avage <ph name="BEGIN_LINK" />makseseaded<ph
 <translation id="668132230070712111">Video salvestati Google Drive’i</translation>
 <translation id="6681790815630918386">CVC on salvestatud</translation>
 <translation id="6683022854667115063">Kõrvaklapid</translation>
+<translation id="6686570026048064255">Pixi koodi tuvastamise väljalülitamiseks avage <ph name="BEGIN_LINK1" />Chrome'i seaded<ph name="END_LINK1" />.</translation>
 <translation id="6687230248707087982">Ümbrik (tavaline)</translation>
 <translation id="6687335167692595844">Fondi taotletud suurus</translation>
 <translation id="6688743156324860098">Värskendage …</translation>
@@ -4452,7 +4454,6 @@ Lisateave:
 <translation id="7874796722855317864">„<ph name="PROXY_UNKNOWN_CONDITION" />“ ei ole teadaolev tingimuse tüüp.</translation>
 <translation id="7877007680666472091">kaitstud sisu ID-d</translation>
 <translation id="7878562273885520351">Teie parool võib olla ohus</translation>
-<translation id="7881044256965445977">Otsige mis tahes seadet oma kohalikus võrgus ja looge sellega ühendus</translation>
 <translation id="7885670691503039914">Teile saadetakse meiliteavitus, kui hind mõnel saidil langeb. See leht salvestatakse järjehoidjakausta <ph name="LAST_BOOKMARKS_FOLDER" />.</translation>
 <translation id="7886897188117641322">Valige, milliseid üldiseid teemade kategooriaid võib kasutada reklaamide isikupärastamise hõlbustamiseks</translation>
 <translation id="7887683347370398519">Kontrollige CVC-d ja proovige uuesti</translation>
@@ -4978,7 +4979,6 @@ Lisateave:
 <translation id="8737685506611670901">Ava protokolli <ph name="PROTOCOL" /> lingid teenuse <ph name="REPLACED_HANDLER_TITLE" /> asemel</translation>
 <translation id="8738058698779197622">Turvalise ühenduse loomiseks peab kell olema õigesti seadistatud. See on nii, kuna sertifikaadid, mida veebisaidid kasutavad enda tuvastamiseks, kehtivad ainult teatud perioodi jooksul. Kuna teie seadme kell on vale, ei saa Chromium neid sertifikaate kinnitada.</translation>
 <translation id="8740359287975076522">Hosti <ph name="HOST_NAME" /> &lt;abbr id="dnsDefinition"&gt;DNS-aadressi&lt;/abbr&gt; ei leitud. Probleemi diagnoositakse.</translation>
-<translation id="8742371904523228557"><ph name="ONE_TIME_CODE" /> on saidi <ph name="ORIGIN" /> puhul teie kood</translation>
 <translation id="874918643257405732">Lisa vaheleht järjehoidjatesse</translation>
 <translation id="8751426954251315517">Proovige järgmisel korral uuesti</translation>
 <translation id="8753913772043329557">Reeglilogid</translation>
@@ -5156,7 +5156,6 @@ Lisateave:
 <translation id="9042827002460091668">Kontrollige internetiühendust ja proovige uuesti</translation>
 <translation id="9043161870923715789">AI-režiim</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> – <ph name="RESULT_PRODUCT_SOURCE" /></translation>
-<translation id="9046578823518542618"><ph name="URL" /> soovib teie kohalikus võrgus otsida mis tahes seadet ja sellega ühendust luua</translation>
 <translation id="9046864189129893978">Mikrofonid (<ph name="MICS_COUNT" />)</translation>
 <translation id="9046865906192819796">Järelmaksu teenusetingimuste kuva on avatud poolel kõrgusel.</translation>
 <translation id="9047528041803621289">Teie vaikevalik võimaldab teil veebiotsinguid teha. Saate seda muuta seadetes.</translation>

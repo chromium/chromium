@@ -934,6 +934,7 @@ Beachte, dass Apps im Manifest für angegebene Dateiendungen als Datei-Handler d
 
 Wenn die Richtlinie nicht konfiguriert ist, kann <ph name="PRODUCT_OS_NAME" /> gemäß der internen Logik Standard-Handler selbst festlegen.</translation>
 <translation id="1651810147727432656">Berechtigung für die Fensterverwaltung auf diesen Websites blockieren</translation>
+<translation id="1652357791185933887">Isolierter Modus deaktiviert</translation>
 <translation id="1654087023995670109">Gastmodus im Browser erzwingen</translation>
 <translation id="1655229863189977773">Cache-Größe für Datenträger in Byte festlegen</translation>
 <translation id="1655518801232583832">DNS-Auflösung des Systems außerhalb des Netzwerkdienstes aktivieren</translation>
@@ -3405,6 +3406,7 @@ Wenn diese Richtlinie nicht konfiguriert ist, wird genau wie bei den anderen Chr
 <translation id="3229163415739929305">Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, werden Metadaten zum Seitenaufbau und Modelle zum maschinellen Lernen abgerufen, die die Browsernutzung verbessern.
       Ist sie deaktiviert, funktionieren einige Funktionen eventuell nicht richtig.</translation>
 <translation id="3231311173895401135">Unterstützung vom Browser entscheiden lassen</translation>
+<translation id="3231684792162319504">Experimentelles Auslösen von Gemini nicht zulassen.</translation>
 <translation id="3231837273069128027">Mit dieser Richtlinie werden Verfügbarkeit und Verhalten von <ph name="TPM_FIRMWARE_UPDATE_TPM" />-Firmware-Updates konfiguriert.
 
       Gib einzelne Einstellungen in den JSON-Eigenschaften an:
@@ -4332,6 +4334,15 @@ Falls die Richtlinie nicht festgelegt wird, bleibt die Varianten-Seed-URL unver�
        Jeder Eintrag enthält ein Verzeichnis, in dem im Feld "extension-id" die Erweiterungs-ID und im Feld "update-url" die Aktualisierungs-URL angegeben werden müssen.</translation>
 <translation id="3869180930654347954">„First-Party-Sets“ für alle betroffenen Nutzer deaktivieren</translation>
 <translation id="3869566220234507038">Immer den <ph name="LACROS_ROOTFS_NAME" />-<ph name="LACROS_NAME" />-Browser laden</translation>
+<translation id="3869959969423392506">Mit dieser Richtlinie wird festgelegt, ob isolierte Web-Apps (IWAs) standardmäßig Sub Apps hinzufügen können.
+
+Wenn die Richtlinie auf 1 gesetzt ist, können IWA-Ursprünge Sub Apps hinzufügen und die Anforderungen für Nutzergesten oder Nutzerbestätigungen umgehen.
+
+Wenn die Richtlinie auf „2“ gesetzt ist, können IWA-Ursprünge keine Sub Apps hinzufügen.
+
+Wenn die Richtlinie auf „3“ gesetzt oder nicht konfiguriert ist, können Ursprünge von isolierten Web-Apps nach Bestätigung durch den Nutzer Sub Apps hinzufügen.
+
+Diese Richtlinie kann für bestimmte Ursprünge der isolierten Web-App überschrieben werden. Hierfür stehen die Richtlinien „<ph name="SUB_APPS__WITHOUT_PROMPTS_ALLOWED_FOR_ORIGINS_POLICY_NAME" />“ und „<ph name="SUB_APPS_WITHOUT_PROMPTS_BLOCKED_FOR_POLICY_NAME" />“ zur Verfügung.</translation>
 <translation id="3870035799352372700">Nicht zulassen, dass Google Assistant bei Interaktionen auf den Bildschirmkontext zugreift</translation>
 <translation id="3870059789954671543">Hiermit wird die Bedienungshilfe "Objekt mit Tastaturfokus hervorheben" auf dem Anmeldebildschirm aktiviert.
 
@@ -4607,6 +4618,7 @@ Weitere Informationen zu gültigen <ph name="URL_LABEL" />-Mustern findest du un
       Ausführliche Informationen zu gültigen <ph name="URL_LABEL" />-Mustern findest du unter https://chromeenterprise.google/policies/url-patterns/. Das Muster „*“, das bei jeder URL zu einer Übereinstimmung führt, wird von dieser Richtlinie jedoch nicht unterstützt.</translation>
 <translation id="4070039109671307724">Sonstiges</translation>
 <translation id="4071922398488395340">Sitzungscookies in Floating‑SSO-Funktionalität einbeziehen</translation>
+<translation id="4072065629757524">Ursprünge isolierter Web-Apps daran hindern, Sub Apps hinzuzufügen</translation>
 <translation id="4072225853834793549">Kurzbefehle für Bedienungshilfen auf dem Anmeldebildschirm deaktivieren</translation>
 <translation id="4074922053013383215">Moderate Arbeitsspeichereinsparungen.</translation>
 <translation id="4075675819066819571">Ablage auf der linken Seite des Bildschirms anzeigen</translation>
@@ -4680,6 +4692,11 @@ Die Verfügbarkeit von Erweiterungen wird weiterhin über andere Richtlinien fes
 <translation id="4120401094617902941">Häufigkeit, mit der Laufzeitzähler analysiert und erhoben werden. Die geringste zulässige Häufigkeit beträgt 1 Tag.
 
 Wenn die Richtlinie nicht konfiguriert ist, beträgt die Häufigkeit standardmäßig 1 Tag.</translation>
+<translation id="4121173511469084157">Standardmäßig können isolierte Web-Apps (IWAs) Sub Apps hinzufügen, sofern der Nutzer die Aufforderung interaktiv bestätigt.
+
+Mit dieser Richtlinie wird festgelegt, welche IWA-Ursprünge Sub Apps hinzufügen können, ohne dass der Nutzer dazu aufgefordert wird.
+
+Diese Richtlinie überschreibt das Verhalten von „<ph name="DEFAULT_SUB_APPS_WITHOUT_PROMPTS_SETTING_POLICY_NAME" />“ und wird von „<ph name="SUB_APPS_WITHOUT_PROMPTS_BLOCKED_FOR_ORIGINS_POLICY_NAME" />“ überschrieben.</translation>
 <translation id="4121350739760194865">App-Werbung nicht auf der "Neuer Tab"-Seite anzeigen</translation>
 <translation id="4122432898152851612">Der Nutzer kann die Elemente der Benutzeroberfläche im Zusammenhang mit der <ph name="PRODUCT_OS_NAME" />-Dateisynchronisierungsfunktion nicht sehen.</translation>
 <translation id="4122473079291425973">Die „Neuer Tab“-Seite zeigt Karten an, sofern Inhalte verfügbar sind; Nutzer können diese Einstellung jedoch ändern</translation>
@@ -5117,6 +5134,7 @@ Wenn diese Richtlinie konfiguriert ist, kann sie von Nutzern in <ph name="PRODUC
 <translation id="4435032708588431506">QUIC-Protokoll zulassen</translation>
 <translation id="443665821428652897">Websitedaten beim Schließen des Browsers löschen (veraltet)</translation>
 <translation id="4436941175475497595">Druckvorschau deaktivieren</translation>
+<translation id="4436992815485865052">Experimentelles Auslösen von Gemini zulassen.</translation>
 <translation id="4439336120285389675">Mit dieser Richtlinie kann eine Liste mit eingestellten Webplattformfunktionen festgelegt werden, die vorübergehend wieder aktiviert werden sollen.
 
       Mit der Richtlinie haben Administratoren die Möglichkeit, eingestellte Webplattformfunktionen für einen begrenzten Zeitraum wieder zu aktivieren. Die Funktionen werden durch ein String-Tag identifiziert und die Funktionen, die den Tags in der Liste entsprechen, die durch diese Richtlinie festgelegt wurde, werden wieder aktiviert.
@@ -5374,6 +5392,7 @@ Ausführliche Informationen zu gültigen URL-Mustern findest du unter https://ch
           Bitte beachte, dass die Richtlinie pro Renderer-Prozess angewendet wird. Dabei wird der letzte Wert der Richtlinie angewendet, wenn ein Renderer-Prozess startet. Wenn du dafür sorgen möchtest, dass alle geladenen Tabs die gleiche Richtlinieneinstellung erhalten, ist ein kompletter Neustart nötig. Allerdings ist es kein Problem, wenn einzelne Prozesse mit unterschiedlichen Werten für diese Richtlinie laufen.
           </translation>
 <translation id="4578265298946081589">Nach Nutzerabmeldung nicht neu starten.</translation>
+<translation id="4579171808398039136">Isolierte Web-Apps daran hindern, die Sub Apps Add API ohne Nutzeraufforderung zu verwenden</translation>
 <translation id="4581507927311097234">Zeitraum ohne Nutzereingabe, nach dem der Bildschirm ausgeschaltet wird, angegeben in Millisekunden.</translation>
 <translation id="4582027661281685066">Liste der URL-Muster. Anfragen, die von Websites initiiert werden, welche durch übereinstimmende Ursprünge bereitgestellt werden, unterliegen keinen <ph name="PRIVATE_NETWORK_ACCESS" />-Prüfungen.
 
@@ -5829,6 +5848,7 @@ Wenn die Richtlinie nicht konfiguriert ist, gilt „<ph name="DEFAULT_DIRECT_SOC
 URL‑Muster dürfen nicht im Konflikt mit „<ph name="DIRECT_SOCKETS_BLOCKED_FOR_URLS_POLICY_NAME" />“ stehen. Keine Richtlinie hat Vorrang, falls eine URL mit beiden übereinstimmt.
 
 Ausführliche Informationen zu gültigen URL‑Mustern findest du unter https://chromeenterprise.google/policies/url-patterns. Der Platzhalter „<ph name="WILDCARD_VALUE" />“ ist kein akzeptierter Wert für diese Richtlinie.</translation>
+<translation id="4883562563790831457">Inkognitomodus durch isolierten Modus ersetzen</translation>
 <translation id="4885338965457068455">Enthält einen regulären Ausdruck, um die zulässigen Google-Konten zu bestimmen, die zum Speichern von PDF-Dateien in Google Drive über den PDF-Viewer von <ph name="PRODUCT_NAME" /> berechtigt sind.
 
       Wenn ein Nutzer versucht, eine PDF-Datei mit einem Konto, das nicht diesem Muster entspricht, in Google Drive hochzuladen, wird ein Fehler angezeigt.
@@ -6520,6 +6540,7 @@ Hinweis: Diese Funktion ist noch nicht allgemein verfügbar. Wenn du sie aktivie
 <translation id="5255790642269910630">Ist die Richtlinie konfiguriert, wird jeder Bildschirm anhand der festgelegten Bildschirmausrichtung gedreht, wenn das Gerät neu gestartet oder der Bildschirm nach einer Änderung des Richtlinienwerts zum ersten Mal angeschlossen wird. Nachdem ein Nutzer sich angemeldet hat, kann er die Bildschirmausrichtung auf der Einstellungsseite ändern, sie wird aber nach dem nächsten Neustart zurückgesetzt. Diese Richtlinie gilt sowohl für primäre als auch sekundäre Bildschirme.
 
 Ist die Richtlinie nicht konfiguriert, wird der Standardwert von 0 Grad verwendet und Nutzer können die Bildschirmausrichtung ändern. Die Bildschirmausrichtung wird dann nach dem Neustart nicht zurückgesetzt.</translation>
+<translation id="5256792633540454282">Steuert das experimentelle Auslösen von Gemini</translation>
 <translation id="5257395339965216304">Daten für gehostete Apps</translation>
 <translation id="5258445772095084618">Zulassen, dass nicht verknüpfte Nutzer virtuelle Maschinen verwenden, die für Linux-Apps benötigt werden</translation>
 <translation id="5258651513421638932">Isolierten Apps erlauben, eine Verbindung zu Smartcards herzustellen</translation>
@@ -6581,13 +6602,6 @@ Hinweis: Diese Richtlinie gilt nicht für HSTS-Umstellungen.</translation>
 <translation id="5303080953475303561">Mit dieser Richtlinie kannst du festlegen, wie oft auf dem Sperrbildschirm das Passwort zum schnellen Entsperren angefordert wird. Immer dann, wenn der Sperrbildschirm angezeigt wird und die letzte Passworteingabe vor dem über den ausgewählten Wert festgelegten Zeitfenster liegt, steht schnelles Entsperren nicht zur Verfügung. Wenn Nutzer auf dem Sperrbildschirm bleiben, bis diese Zeit abgelaufen ist, wird das nächste Mal, wenn sie einen falschen Code eingeben oder wieder auf den Sperrbildschirm gelangen, ein Passwort angefordert, je nachdem, welche Situation zuerst eintritt.
 
       Wenn die Richtlinie nicht konfiguriert ist, müssen Nutzer, die schnelles Entsperren verwenden, ihr Passwort einmal am Tag eingeben.</translation>
-<translation id="530488290401810961">Mit dieser Richtlinie kann konfiguriert werden, wie <ph name="PRODUCT_NAME" /> das Foundation Model für generative KI herunterlädt und lokal für die Inferenz verwendet.
-
-Wenn die Richtlinie auf „Zulässig (0)“ gesetzt oder nicht konfiguriert ist, wird das Modell automatisch heruntergeladen und für die Inferenz verwendet.
-
-Ist die Richtlinie auf „Deaktiviert (1)“ gesetzt, wird das Modell nicht heruntergeladen und das vorhandene Modell (sofern bereits heruntergeladen) gelöscht.
-
-Auf Desktop-Plattformen kann das Herunterladen von Modellen auch über die Richtlinie „<ph name="COMPONENT_UPDATES_ENABLED_POLICY_NAME" />“ deaktiviert werden.</translation>
 <translation id="5306186200045823863">Der veralteten Symantec-PKI vertrauen</translation>
 <translation id="5307432759655324440">Inkognitomodus - Verfügbarkeit</translation>
 <translation id="5308551343115571396">Wenn <ph name="LACROS_NAME" /> deaktiviert wurde, versuchen wir, so viele Nutzerdaten wie möglich zu speichern und gleichzeitig alle Browserdaten zu entfernen.</translation>
@@ -7519,6 +7533,7 @@ Unter <ph name="MAC_OS_NAME" /> steht diese Richtlinie nur bei Instanzen zur Ver
 
       Diese Richtlinie wurde eingestellt. Bitte verwende stattdessen die Richtlinie <ph name="PRINTERS_BULK_BLOCKLIST" />.</translation>
 <translation id="591088232153082363">Lädt den Akku basierend auf der Akkunutzung intelligent auf.</translation>
+<translation id="5911656389795271430">Dies ist eine experimentelle Richtlinie.</translation>
 <translation id="5913506885872855604">Damit können bestimmte interne Adressbereiche als „öffentlich“ behandelt und somit nicht <ph name="LOCAL_NETWORK_ACCES" />-Prüfungen unterzogen werden. Umgekehrt kann dies verwendet werden, um bestimmte öffentliche Adressbereiche, die möglicherweise intern verwendet werden, als „lokal“ zu behandeln, sodass sie durch <ph name="LOCAL_NETWORK_ACCESS" />-Prüfungen geschützt sind.
 
 Überschreibungen des IP-Adressbereichs haben zwei Formen:
@@ -9822,6 +9837,7 @@ Wenn diese Richtlinie auf „false“ gesetzt ist, ist das alte Verhalten aktivi
 <translation id="7372831798009983116">Bedienungshilfe "Automatisch klicken" aktivieren</translation>
 <translation id="7373200034079131670">Nach Nutzerabmeldung neu starten, wenn Android oder eine VM gestartet wurde.</translation>
 <translation id="7374784840090523241">Passkeys standardmäßig in einem anderen Speicher erstellen, z. B. im <ph name="PRODUCT_NAME" />-Profil.</translation>
+<translation id="73755679940750599">Ursprüngen isolierter Web-Apps erlauben, Sub Apps ohne Nutzeraufforderung hinzuzufügen</translation>
 <translation id="7375785904116479354">Wenn die Richtlinie aktiviert ist, wird die Standardsuchmaschine bei der ersten Ausführung aus dem vorherigen Standardbrowser importiert. Ist die Richtlinie deaktiviert oder nicht konfiguriert, wird die Standardsuchmaschine bei der ersten Ausführung nicht importiert.
 
       Nutzer können einen Importdialog öffnen. Das Kästchen für die Standardsuchmaschine wird je nach Konfiguration dieser Richtlinie aktiviert oder deaktiviert.</translation>
@@ -10674,6 +10690,7 @@ Deaktiviere die Richtlinie nur, wenn du eine Endpunkt-Sicherheitslösung verwend
       Wenn sie nicht konfiguriert ist, können Websites um Zugriff bitten, aber Nutzer können diese Einstellung ändern.
 
       Die Richtlinie kann für bestimmte <ph name="URL_LABEL" />-Muster überschrieben werden. Hierfür stehen die Richtlinien <ph name="WEB_HID_ASK_FOR_URLS_POLICY_NAME" /> und <ph name="WEB_HID_BLOCKED_FOR_URLS_POLICY_NAME" /> zur Verfügung.</translation>
+<translation id="794786228154185413">Isolierten Web-Apps erlauben, die Sub Apps Add API ohne Nutzeraufforderung zu verwenden</translation>
 <translation id="7950451717181391167">Mit dieser Richtlinie wird festgelegt, ob Nutzer mit <ph name="CLASS_TOOLS_NAME" /> Inhalte senden bzw. empfangen können und ob Schüler/Studenten und Lehrkräfte mit diesen Tools Untertitel senden bzw. empfangen können oder ob die Tools zur Kursverwaltung für Nutzer deaktiviert sind.</translation>
 <translation id="7952007677054834789">Hiermit werden die Seiten konfiguriert, die beim Start geladen werden: die standardmäßige Startseite und die Standardseite "Neuer Tab" in <ph name="PRODUCT_NAME" />. Außerdem wird verhindert, dass Nutzer diese Einstellungen ändern.
 
@@ -10729,6 +10746,11 @@ Diese Richtlinie ist vorübergehend und wird in Zukunft entfernt.</translation>
           Diese Richtlinie wurde in Chrome 110 entfernt.
                                         </translation>
 <translation id="7976157349247117979">Name des <ph name="PRODUCT_NAME" />-Ziels</translation>
+<translation id="7981824720804106055">Standardmäßig können isolierte Web-Apps Sub Apps hinzufügen, sofern der Nutzer die Aufforderung interaktiv bestätigt.
+
+Mit dieser Richtlinie wird festgelegt, welche IWA-Ursprünge daran gehindert werden, Sub Apps hinzuzufügen, ohne dass der Nutzer interaktiv dazu aufgefordert wird.
+
+Diese Richtlinie überschreibt das Verhalten von „<ph name="DEFAULT_SUB_APPS_WITHOUT_PROMPTS_SETTING_POLICY_NAME" />“ und „<ph name="SUB_APPS_WITHOUT_PROMPTS_ALLOWED_FOR_ORIGINS_POLICY_NAME" />“.</translation>
 <translation id="7985242821674907985"><ph name="PRODUCT_NAME" /></translation>
 <translation id="7985781946183471651">Glanceables in <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="7986473886676689183">Android-Berichterstellung aktivieren</translation>
@@ -11273,6 +11295,7 @@ Ist die Richtlinie auf „<ph name="RUNTIME_ENABLED_VALUE_NAME" />“ gesetzt, k
 Wenn die Richtlinie nicht konfiguriert ist, wird standardmäßig „<ph name="RUNTIME_ENABLED_VALUE_NAME" />“ verwendet.
 
 Hinweis: Diese Richtlinie ist eine vorübergehende Lösung, um die Umstellung von Vollbild-APIs mit webkit-Präfix zu erleichtern. M131 ist die letzte Version, für die diese Richtlinie gilt.</translation>
+<translation id="8355021858374793722">Verwendung von Sub Apps Add API festlegen</translation>
 <translation id="8356953698979920095">Wenn die Richtlinie auf die Werte festgelegt ist, wird die Farbe für die Hintergrundbeleuchtung einer Gerätetastatur bei der Nutzeranmeldung standardmäßig festgelegt.</translation>
 <translation id="8357681633047935212">Dauer einer Nutzersitzung beschränken</translation>
 <translation id="8357989008292691856">Zulassungsliste für Nutzer, die sich anmelden dürfen</translation>
@@ -12497,10 +12520,12 @@ Standardwert ist RollbackDisabled.</translation>
 <translation id="9206364386317031168">Websites erlauben, Netzwerkanfragen an das lokale Gerät zu senden.</translation>
 <translation id="9206472508136116830">NetBIOS-Freigabenerkennung nicht zulassen</translation>
 <translation id="9207596996305971030">Anmelde-/Abmeldeereignisse nicht melden</translation>
+<translation id="9208328979373108724">Ursprüngen der isolierten Web-App erlauben, Sub Apps hinzuzufügen, jedoch eine Nutzeraufforderung erfordern</translation>
 <translation id="9210647066889383361">Nutzer dürfen sich auf ihrem Gerät mit Smart Lock anmelden</translation>
 <translation id="9212598607138782107">Okta®-Cloud-Identitätsanbieter</translation>
 <translation id="9213751049772256263">Alle Variationen deaktivieren</translation>
 <translation id="9217154963008402249">Häufigkeit von Kontrollnetzwerkpaketen</translation>
+<translation id="921762538903956073">Isolierter Modus verfügbar</translation>
 <translation id="9220314833408124365">Setzt die standardmäßige Verweisrichtlinie auf „no-referrer-when-downgrade“</translation>
 <translation id="922160134042190462"><ph name="DESK_API_NAME" /> nicht für die <ph name="PRODUCT_OS_NAME" />-Steuerung über Drittanbieter aktivieren</translation>
 <translation id="9221827710437832530">Zugriff auf Standortbestimmung auf dem Anmeldebildschirm zulassen.</translation>

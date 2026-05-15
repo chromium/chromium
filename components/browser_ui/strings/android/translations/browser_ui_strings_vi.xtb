@@ -5,7 +5,6 @@
 <translation id="1036348656032585052">Tắt</translation>
 <translation id="1046742265332833834">Giao diện màu xanh dương</translation>
 <translation id="1070329623210597193">Các tệp mà trang web này có thể xem hoặc chỉnh sửa</translation>
-<translation id="1073417869336441572">Hãy chia sẻ lý do bạn cho phép cookie của bên thứ ba để giúp chúng tôi cải thiện Chrome. <ph name="BEGIN_LINK" />Gửi phản hồi<ph name="END_LINK" /></translation>
 <translation id="1074758928858737435">Bạn có thể yêu cầu xem phiên bản trang web dành cho máy tính</translation>
 <translation id="1109482864356262001">Các tính năng cần dùng cảm biến chuyển động hoặc cảm biến ánh sáng sẽ không hoạt động</translation>
 <translation id="1126523729897810826">Làm theo các đề xuất dưới đây để sử dụng Chrome hiệu quả nhất</translation>
@@ -328,6 +327,7 @@
 <translation id="4290791284969893584">Sau khi đóng một trang, các thao tác bạn đã bắt đầu có thể không hoàn tất</translation>
 <translation id="429312253194641664">Một trang web đang phát nội dung đa phương tiện</translation>
 <translation id="42981349822642051">Mở rộng</translation>
+<translation id="4310738531374808763">Tuỳ chỉnh trang chủ của bạn</translation>
 <translation id="4336219115486912529">{COUNT,plural, =1{Hết hạn ngày mai}other{Hết hạn sau # ngày nữa}}</translation>
 <translation id="4338831206024587507">Tất cả trang web thuộc <ph name="DOMAIN" /></translation>
 <translation id="4340799661701629185">Không cho phép các trang web gửi thông báo</translation>
@@ -440,7 +440,6 @@
 <translation id="5555115555607204100">Không tăng tốc độ tải trang web bằng công cụ V8 của Chrome nhưng giúp Chrome tăng khả năng chống lại các cuộc tấn công</translation>
 <translation id="5556459405103347317">Tải lại</translation>
 <translation id="5591840828808741583"><ph name="SITE_NAME" /> bị chặn</translation>
-<translation id="560980142378233747">Điều này có nghĩa là các tính năng của trang web sẽ hoạt động như mong đợi, nhưng khả năng bảo vệ khi duyệt web có thể bị giảm. <ph name="BEGIN_LINK" />Gửi phản hồi<ph name="END_LINK" /></translation>
 <translation id="5617702678271228680">Bảng thẻ trên trang Thẻ mới ở dưới cùng</translation>
 <translation id="5621413808884657932">Khi bạn bật lựa chọn này, trang web có thể yêu cầu quyền truy cập vào các ứng dụng và dịch vụ khác trên thiết bị này. Khi bạn tắt lựa chọn này, trang web không thể truy cập vào các ứng dụng và dịch vụ khác trên thiết bị này.</translation>
 <translation id="5632485077360054581">Xem cách làm</translation>
@@ -519,6 +518,7 @@
 <translation id="6262279340360821358">Đã chặn: <ph name="PERMISSION_1" /> và <ph name="PERMISSION_2" /></translation>
 <translation id="6270391203985052864">Các trang web có thể yêu cầu gửi thông báo</translation>
 <translation id="6295158916970320988">Tất cả các trang web</translation>
+<translation id="6305257382500066042">Dùng thử ngay bây giờ</translation>
 <translation id="6320088164292336938">Rung</translation>
 <translation id="6367753977865761591">Cho phép đăng nhập qua bên thứ ba cho một trang web cụ thể.</translation>
 <translation id="6398765197997659313">Thoát khỏi chế độ toàn màn hình</translation>
@@ -529,7 +529,6 @@
 <translation id="6447842834002726250">Cookie</translation>
 <translation id="6452138246455930388">Có ưu đãi giảm giá trên một thẻ đang mở, từ <ph name="OLD_PRICE" /> xuống còn <ph name="NEW_PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN_NAME" /></translation>
 <translation id="6500423977866688905">Khi cửa sổ bị thu hẹp, hãy yêu cầu chế độ xem trên thiết bị di động</translation>
-<translation id="6514791408445720076">Tuỳ chỉnh trang của bạn</translation>
 <translation id="6527303717912515753">Chia sẻ</translation>
 <translation id="6530703012083415527">Khi bạn bật tuỳ chọn này, các trang web có thể sử dụng cửa sổ bật lên và đường liên kết chuyển hướng. Khi bạn tắt tuỳ chọn này, các trang web không thể sử dụng cửa sổ bật lên và đường liên kết chuyển hướng.</translation>
 <translation id="6540488083026747005">Bạn đã cho phép cookie của bên thứ ba trên trang web này</translation>
@@ -593,7 +592,6 @@
 <translation id="7141896414559753902">Chặn trang web hiển thị cửa sổ bật lên và liên kết chuyển hướng (khuyên dùng)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> KB</translation>
 <translation id="7180611975245234373">Làm mới</translation>
-<translation id="7180865173735832675">Tùy chỉnh</translation>
 <translation id="7188508872042490670">Dữ liệu trang web trên máy</translation>
 <translation id="7201549776650881587">Thao tác này sẽ xoá toàn bộ dữ liệu và cookie do tất cả trang web thuộc miền <ph name="ORIGIN" /> hoặc ứng dụng liên quan trên Màn hình chính lưu trữ</translation>
 <translation id="7219254577985949841">Xoá dữ liệu trang web?</translation>
@@ -707,7 +705,6 @@ Chương trình Bảo vệ nâng cao kiểm soát các chế độ cài đặt s
 <translation id="83792324527827022">Một trang web đang sử dụng máy ảnh và micrô của bạn</translation>
 <translation id="8380167699614421159">Trang web này hiển thị quảng cáo xâm nhập hoặc quảng cáo gây hiểu nhầm</translation>
 <translation id="8394832520002899662">Nhấn để quay lại trang web</translation>
-<translation id="8404500559369898929">Thiết lập Chrome theo cách riêng bằng cách chọn giao diện nền tuỳ chỉnh</translation>
 <translation id="8409345997656833551">Nhận thông báo khi có thể xem bài viết ở chế độ đơn giản hoá</translation>
 <translation id="8416874502399604126">Đã cho phép sử dụng micrô cho lần này</translation>
 <translation id="8423565414844018592">Đã đặt tỷ lệ văn bản thành <ph name="TEXT_SCALING" /></translation>

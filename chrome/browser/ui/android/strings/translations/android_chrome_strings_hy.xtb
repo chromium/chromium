@@ -263,6 +263,7 @@
 <translation id="2184272387334793084">Մուտք գործեք՝ ձեր գաղտնաբառերը և մյուս տվյալները ձեր բոլոր սարքերում օգտագործելու համար</translation>
 <translation id="218608176142494674">Ընդհանուր օգտագործում</translation>
 <translation id="2186779861549045980">Ընտրեք, թե ինչ տվյալներ պահել ձեր Google հաշվում։\nԴուք կարող եք դիտել և կառավարել դրանք ձեր էջանիշներում, ընթերցանության ցանկում կամ գաղտնաբառերի կառավարչում։</translation>
+<translation id="2190355936436201913">(դատարկ)</translation>
 <translation id="219283042927675668">Ներդիրներ՝ խմբում</translation>
 <translation id="2194856509914051091">Կարևոր տեղեկություններ</translation>
 <translation id="2205701497928406883"><ph name="TAB_TITLE" />, ամրացված ներդիր, որը հասանելի է այլ օգտատերերի</translation>
@@ -300,6 +301,7 @@
 <translation id="233375395665273385">Ջնջել և դուրս գալ</translation>
 <translation id="2341410551640223969">Չհաջողվեց տեղադրել <ph name="WEBAPK_NAME" /> հավելվածը։</translation>
 <translation id="2349710944427398404">Chrome-ի օգտագործած ընդհանուր տարածքը, ներառյալ` հաշիվները, էջանիշները և պահված կարգավորումները</translation>
+<translation id="2354001756790975382">Այլ էջանիշներ</translation>
 <translation id="235789365079050412">Google-ի գաղտնիության քաղաքականություն</translation>
 <translation id="2359808026110333948">Շարունակել</translation>
 <translation id="2362083820973145409">Դուք մուտք եք գործել որպես <ph name="USER_NAME" />։ <ph name="USER_EMAIL" />։ Բացել կարգավորումները:</translation>
@@ -1269,6 +1271,7 @@
 <translation id="6437162790453527153">Մուտք գործեք՝ ձեր էջանիշները և մյուս տվյալները ձեր բոլոր սարքերում օգտագործելու համար</translation>
 <translation id="6437478888915024427">Տեղեկություններ էջի մասին</translation>
 <translation id="6440291723980579689">Էջերը բեռնվում են միայն, եթե բացում եք դրանք</translation>
+<translation id="6441377161852435370">Ավելացնել ներդիր ընթերցանության ցանկում</translation>
 <translation id="6441734959916820584">Անունը չափազանց երկար է</translation>
 <translation id="6444291413624515012">«<ph name="TAB_GROUP_TITLE" />» ներդիրների խումբը փակվեց</translation>
 <translation id="6452534462676960500">Նոր գործողություն</translation>
@@ -1358,6 +1361,7 @@
 <translation id="6787600234697426339"><ph name="MAX_INSTANCE_COUNT" /> պատուհանի սահմանաչափը լրացել է</translation>
 <translation id="6795633245022906657">Արագ բացեք նոր ներդիր։ Այս դյուրանցումը փոփոխելու համար անցեք կարգավորումներ։</translation>
 <translation id="679588508577699489">Դարձրեք Chrome-ը ձեր կանխադրված դիտարկիչը</translation>
+<translation id="679845623837196966">Ցուցադրել ընթերցանության ցանկը</translation>
 <translation id="679956319013005046">Ինքնալրացման ձեր նախընտրած ծառայությունն օգտագործելու համար ավելացրեք ծառայությունը <ph name="BEGIN_LINK" />Android-ի կարգավորումներում<ph name="END_LINK" />։</translation>
 <translation id="6802555630140434547">Պատուհանը կփակվի</translation>
 <translation id="6803791793483522764">Ծանուցումների դիտում</translation>
@@ -1658,6 +1662,7 @@
 <translation id="7934668619883965330">Չհաջողվեց ներբեռնել ֆայլը։ Ֆայլի ձևաչափը չի աջակցվում։</translation>
 <translation id="7951102827450076904">Միշտ բացել ներբեռնված PDF ֆայլերը</translation>
 <translation id="7952479614398473176">Նոր պատուհան բացելու համար համոզվեք, որ ունեք ոչ ավելի, քան <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> ակտիվ պատուհան։</translation>
+<translation id="7956713633345437162">Բջջային էջանիշներ</translation>
 <translation id="7957413488482743710">Վիրտուալ քարտը թաքցնում է ձեր իրական քարտը՝ օգնելով պաշտպանել ձեզ հնարավոր խարդախությունից։ <ph name="BEGIN_LINK1" />Իմանալ ավելին վիրտուալ քարտերի մասին<ph name="END_LINK1" /></translation>
 <translation id="7959485987650214982">Ներդիրները այս սարքում</translation>
 <translation id="7961926449547174351">Դուք անջատել եք հիշողության հասանելիությունը։ Միացնելու համար անցեք կարգավորումներ։</translation>
@@ -1846,6 +1851,7 @@
 <translation id="867914734596684889">Ցուցադրել կամ թաքցնել էջանիշների գոտին</translation>
 <translation id="8683039184091909753">պատկեր</translation>
 <translation id="8688183792442786085"><ph name="TAB_TITLE" />, ընտրված ներդիր</translation>
+<translation id="8696297579102085705">Ուղարկել իմ սարքին</translation>
 <translation id="8697753151306746444">Սկսեք պատուհանի կամ էկրանի ցուցադրումը</translation>
 <translation id="8699120352855309748">Չառաջարկել թարգմանել այս լեզուները</translation>
 <translation id="8712637175834984815">Պատրաստ է</translation>

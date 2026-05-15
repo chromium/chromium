@@ -263,6 +263,7 @@
 <translation id="2184272387334793084">سجِّل الدخول للوصول إلى كلمات المرور والإعدادات الأخرى على جميع أجهزتك</translation>
 <translation id="218608176142494674">المشاركة</translation>
 <translation id="2186779861549045980">‏يمكنك اختيار البيانات المراد حفظها في حسابك على Google.‏\nبإمكانك أيضًا الاطّلاع على هذه العناصر وإدارتها في الإشارات المرجعية أو "قائمة القراءة" أو "مدير كلمات المرور".</translation>
+<translation id="2190355936436201913">(فارغ)</translation>
 <translation id="219283042927675668">علامات التبويب في المجموعة</translation>
 <translation id="2194856509914051091">ملاحظات مهمّة</translation>
 <translation id="2205701497928406883">‫"<ph name="TAB_TITLE" />"، علامة تبويب مثبَّتة تشارك محتواها</translation>
@@ -300,6 +301,7 @@
 <translation id="233375395665273385">الحذف وتسجيل الخروج</translation>
 <translation id="2341410551640223969">تعذَّر تثبيت <ph name="WEBAPK_NAME" />.</translation>
 <translation id="2349710944427398404">‏إجمالي البيانات المُستخدَمة من قِبل Chrome، بما في ذلك الحسابات والإشارات المرجعية والإعدادات المحفوظة</translation>
+<translation id="2354001756790975382">الإشارات المرجعية الأخرى</translation>
 <translation id="235789365079050412">‏سياسة خصوصية Google</translation>
 <translation id="2359808026110333948">متابعة</translation>
 <translation id="2362083820973145409">تم تسجيل الدخول باسم "<ph name="USER_NAME" />". عنوان البريد الإلكتروني للمستخدم هو <ph name="USER_EMAIL" />. يفتح هذا الزر صفحة الإعدادات.</translation>
@@ -545,6 +547,7 @@
 <translation id="3359667936385849800">استخدام مقدِّم الخدمة الحالي</translation>
 <translation id="3373701465337594448">عندما يكون هذا الإعداد مفعّلاً، تظهر هنا قائمة بالمواقع الإلكترونية التي تزورها ويمكنها تخمين اهتماماتك.</translation>
 <translation id="3384347053049321195">مشاركة صورة</translation>
+<translation id="3385749568468586663">‏‫Gemini غير متاح في "وضع التصفّح المتخفي"</translation>
 <translation id="3387650086002190359">تعذّر تنزيل الملف <ph name="FILE_NAME" /> بسبب أخطاء في نظام الملف.</translation>
 <translation id="3417835166382867856">البحث في علامات التبويب</translation>
 <translation id="3430670036890315772">إيقاف قفل الملف الشخصي سيؤدي إلى إزالة معلوماتك المحفوظة.</translation>
@@ -897,6 +900,7 @@
 <translation id="4864369630010738180">جارٍ تسجيل الدخول...</translation>
 <translation id="4866368707455379617">‏تعذر تثبيت <ph name="MODULE" /> لمتصفِّح Chrome</translation>
 <translation id="4875775213178255010">اقتراحات المحتوى</translation>
+<translation id="4876880121961092787">إخفاء شريط الإشارات</translation>
 <translation id="4877678010818027629">الدخول إلى وضع التصفُّح المتخفي</translation>
 <translation id="4878404682131129617">أخفق إنشاء نفق عبر الخادم الوكيل.</translation>
 <translation id="4880127995492972015">ترجمة…</translation>
@@ -1269,6 +1273,7 @@
 <translation id="6437162790453527153">سجِّل الدخول للوصول إلى الإشارات المرجعية وغير ذلك على جميع أجهزتك</translation>
 <translation id="6437478888915024427">معلومات الصفحة</translation>
 <translation id="6440291723980579689">لا يتم تحميل الصفحات إلّا بعد أن تفتحها.</translation>
+<translation id="6441377161852435370">إضافة علامة التبويب إلى قائمة القراءة</translation>
 <translation id="6441734959916820584">الاسم طويل جدًا</translation>
 <translation id="6444291413624515012">تم إغلاق مجموعة علامات التبويب "<ph name="TAB_GROUP_TITLE" />"</translation>
 <translation id="6452534462676960500">نشاط جديد</translation>
@@ -1358,6 +1363,7 @@
 <translation id="6787600234697426339">لا يمكن فتح المزيد من النوافذ (الحد الأقصى <ph name="MAX_INSTANCE_COUNT" />)</translation>
 <translation id="6795633245022906657">يتيح لك هذا الزر فتح علامة تبويب جديدة بسرعة. ولتعديل هذا الاختصار، انتقِل إلى "الإعدادات".</translation>
 <translation id="679588508577699489">‏جعل Chrome المتصفّح التلقائي</translation>
+<translation id="679845623837196966">إظهار قائمة القراءة</translation>
 <translation id="679956319013005046">‏لضبط الخدمة المفضّلة للملء التلقائي، عليك أولاً إضافة الخدمة في <ph name="BEGIN_LINK" />إعدادات Android<ph name="END_LINK" />.</translation>
 <translation id="6802555630140434547">سيتم إغلاق النافذة.</translation>
 <translation id="6803791793483522764">مراجعة الإشعارات</translation>
@@ -1660,6 +1666,7 @@
 <translation id="7934668619883965330">لا يمكن تنزيل الملف لأنّ تنسيقه غير متوافق.</translation>
 <translation id="7951102827450076904">‏الفتح التلقائي لملفات PDF التي يتم تنزيلها</translation>
 <translation id="7952479614398473176">لفتح نافذة جديدة، عليك تقليل العدد الإجمالي للنوافذ النشطة إلى <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> أو أقل.</translation>
+<translation id="7956713633345437162">الإشارات المرجعية للجوّال</translation>
 <translation id="7957413488482743710">تُخفي البطاقة الافتراضية بطاقتك الفعلية للمساعدة على حمايتك من عمليات الاحتيال المحتمَلة. <ph name="BEGIN_LINK1" />مزيد من المعلومات حول البطاقات الافتراضية<ph name="END_LINK1" /></translation>
 <translation id="7959485987650214982">علامات التبويب على هذا الجهاز</translation>
 <translation id="7961926449547174351">لقد أوقفت إذن الوصول إلى "مساحة التخزين". يُرجى الانتقال إلى "الإعدادات" لتفعيله.</translation>
@@ -1849,6 +1856,7 @@
 <translation id="867914734596684889">إظهار شريط الإشارات أو إخفاؤه</translation>
 <translation id="8683039184091909753">صورة</translation>
 <translation id="8688183792442786085">تم تحديد علامة التبويب "<ph name="TAB_TITLE" />"</translation>
+<translation id="8696297579102085705">الإرسال إلى جهازك</translation>
 <translation id="8697753151306746444">مشاركة النافذة أو الشاشة بدلاً من ذلك</translation>
 <translation id="8699120352855309748">عدم اقتراح ترجمة لهذه اللغات</translation>
 <translation id="8712637175834984815">حسنًا</translation>

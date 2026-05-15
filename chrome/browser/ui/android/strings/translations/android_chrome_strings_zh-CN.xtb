@@ -263,6 +263,7 @@
 <translation id="2184272387334793084">登录后即可将密码等信息同步到您的所有设备上</translation>
 <translation id="218608176142494674">共享</translation>
 <translation id="2186779861549045980">您可以选择要将哪些数据保存到您的 Google 账号中。\n您也可在书签、阅读清单或密码管理工具中查看和管理这些内容。</translation>
+<translation id="2190355936436201913">（空）</translation>
 <translation id="219283042927675668">分组内的标签页</translation>
 <translation id="2194856509914051091">注意事项</translation>
 <translation id="2205701497928406883"><ph name="TAB_TITLE" />，已固定的标签页，正在共享内容</translation>
@@ -300,6 +301,7 @@
 <translation id="233375395665273385">删除数据并退出账号</translation>
 <translation id="2341410551640223969">无法安装 <ph name="WEBAPK_NAME" />。</translation>
 <translation id="2349710944427398404">Chrome 所使用的数据总量，包括账号、书签和已保存的设置</translation>
+<translation id="2354001756790975382">其他书签</translation>
 <translation id="235789365079050412">Google 隐私权政策</translation>
 <translation id="2359808026110333948">继续</translation>
 <translation id="2362083820973145409">您已使用<ph name="USER_NAME" />的身份登录。<ph name="USER_EMAIL" />。打开设置。</translation>
@@ -896,6 +898,7 @@
 <translation id="4864369630010738180">正在登录…</translation>
 <translation id="4866368707455379617">无法为 Chrome 安装<ph name="MODULE" /></translation>
 <translation id="4875775213178255010">内容建议</translation>
+<translation id="4876880121961092787">隐藏书签栏</translation>
 <translation id="4877678010818027629">进入无痕模式</translation>
 <translation id="4878404682131129617">未能成功通过代理服务器建立隧道</translation>
 <translation id="4880127995492972015">翻译…</translation>
@@ -1268,6 +1271,7 @@
 <translation id="6437162790453527153">登录账号即可将您的书签等信息同步到您的所有设备上</translation>
 <translation id="6437478888915024427">网页信息</translation>
 <translation id="6440291723980579689">仅当您打开网页后，它们才会加载</translation>
+<translation id="6441377161852435370">向阅读清单中添加标签页</translation>
 <translation id="6441734959916820584">名称太长</translation>
 <translation id="6444291413624515012">已关闭“<ph name="TAB_GROUP_TITLE" />”标签页分组</translation>
 <translation id="6452534462676960500">新活动</translation>
@@ -1357,6 +1361,7 @@
 <translation id="6787600234697426339">打开的窗口数已达 <ph name="MAX_INSTANCE_COUNT" /> 个上限</translation>
 <translation id="6795633245022906657">快速打开一个新标签页。若要修改该快捷方式，请前往“设置”部分。</translation>
 <translation id="679588508577699489">将 Chrome 设为默认浏览器</translation>
+<translation id="679845623837196966">显示阅读清单</translation>
 <translation id="679956319013005046">如需设置首选的自动填充服务，请先在 <ph name="BEGIN_LINK" />Android 设置<ph name="END_LINK" />中添加该服务。</translation>
 <translation id="6802555630140434547">系统将会关闭此窗口</translation>
 <translation id="6803791793483522764">查看通知</translation>
@@ -1655,6 +1660,7 @@
 <translation id="7934668619883965330">无法下载此文件。文件格式不受支持。</translation>
 <translation id="7951102827450076904">一律打开下载的 PDF</translation>
 <translation id="7952479614398473176">如需打开一个新窗口，请先将使用中的窗口总数减少到 <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> 个或更少。</translation>
+<translation id="7956713633345437162">移动设备书签</translation>
 <translation id="7957413488482743710">使用虚拟卡可隐藏您的实体卡信息，保护您免遭潜在欺诈活动的威胁。<ph name="BEGIN_LINK1" />详细了解虚拟卡<ph name="END_LINK1" /></translation>
 <translation id="7959485987650214982">此设备上的标签页</translation>
 <translation id="7961926449547174351">您已停用存储空间的访问权限，请转到“设置”启用该访问权限。</translation>
@@ -1843,6 +1849,7 @@
 <translation id="867914734596684889">显示或隐藏书签栏</translation>
 <translation id="8683039184091909753">图片</translation>
 <translation id="8688183792442786085"><ph name="TAB_TITLE" />，所选的标签页</translation>
+<translation id="8696297579102085705">发送到您的设备</translation>
 <translation id="8697753151306746444">改为共享窗口或屏幕</translation>
 <translation id="8699120352855309748">不询问是否翻译这些语言</translation>
 <translation id="8712637175834984815">知道了</translation>

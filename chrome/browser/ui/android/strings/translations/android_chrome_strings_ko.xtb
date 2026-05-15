@@ -263,6 +263,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="2184272387334793084">모든 기기에서 비밀번호 등을 가져오려면 Chrome에 로그인하세요.</translation>
 <translation id="218608176142494674">공유</translation>
 <translation id="2186779861549045980">Google 계정에 저장할 데이터를 선택할 수 있습니다.\n북마크, 읽기 목록 또는 비밀번호 관리자에서 이러한 항목을 보고 관리할 수도 있습니다.</translation>
+<translation id="2190355936436201913">(비어있음)</translation>
 <translation id="219283042927675668">그룹에 포함된 탭</translation>
 <translation id="2194856509914051091">고려사항</translation>
 <translation id="2205701497928406883"><ph name="TAB_TITLE" />, 고정되고 공유 중인 탭</translation>
@@ -300,6 +301,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="233375395665273385">삭제 및 로그아웃</translation>
 <translation id="2341410551640223969"><ph name="WEBAPK_NAME" /> APK를 설치할 수 없음</translation>
 <translation id="2349710944427398404">계정, 북마크, 저장된 설정 등 Chrome에서 사용한 전체 데이터</translation>
+<translation id="2354001756790975382">기타 북마크</translation>
 <translation id="235789365079050412">Google 개인정보처리방침</translation>
 <translation id="2359808026110333948">계속</translation>
 <translation id="2362083820973145409"><ph name="USER_NAME" /> 계정으로 로그인되었습니다. <ph name="USER_EMAIL" />입니다. 설정을 엽니다.</translation>
@@ -896,6 +898,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="4864369630010738180">로그인 중...</translation>
 <translation id="4866368707455379617">Chrome에 <ph name="MODULE" />을(를) 설치할 수 없습니다.</translation>
 <translation id="4875775213178255010">콘텐츠 추천</translation>
+<translation id="4876880121961092787">북마크바 숨기기</translation>
 <translation id="4877678010818027629">시크릿 모드 시작</translation>
 <translation id="4878404682131129617">프록시 서버를 통한 터널 설정에 실패했습니다</translation>
 <translation id="4880127995492972015">번역...</translation>
@@ -1268,6 +1271,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="6437162790453527153">모든 기기에서 내 북마크 등을 사용하려면 로그인하세요</translation>
 <translation id="6437478888915024427">페이지 정보</translation>
 <translation id="6440291723980579689">사용자가 페이지를 열어야 페이지가 로드됩니다.</translation>
+<translation id="6441377161852435370">읽기 목록에 탭 추가</translation>
 <translation id="6441734959916820584">이름이 너무 깁니다.</translation>
 <translation id="6444291413624515012"><ph name="TAB_GROUP_TITLE" /> 탭 그룹 닫힘</translation>
 <translation id="6452534462676960500">새로운 활동</translation>
@@ -1357,6 +1361,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="6787600234697426339">창 <ph name="MAX_INSTANCE_COUNT" />개 한도에 도달</translation>
 <translation id="6795633245022906657">새 탭을 빠르게 엽니다. 바로가기를 수정하려면 설정으로 이동하세요.</translation>
 <translation id="679588508577699489">Chrome을 기본 브라우저로 설정하기</translation>
+<translation id="679845623837196966">읽기 목록 표시</translation>
 <translation id="679956319013005046">자동 완성에 사용할 기본 서비스를 설정하려면 먼저 <ph name="BEGIN_LINK" />Android 설정<ph name="END_LINK" />에서 서비스를 추가하세요.</translation>
 <translation id="6802555630140434547">창이 닫힙니다.</translation>
 <translation id="6803791793483522764">알림 검토</translation>
@@ -1657,6 +1662,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="7934668619883965330">파일을 다운로드할 수 없습니다. 지원되지 않는 파일 형식입니다.</translation>
 <translation id="7951102827450076904">다운로드한 PDF 항상 열기</translation>
 <translation id="7952479614398473176">새 창을 열려면 활성 창의 총개수를 <ph name="MAX_WINDOW_COUNT_MINUS_ONE" />개 이하로 줄이세요.</translation>
+<translation id="7956713633345437162">모바일 북마크</translation>
 <translation id="7957413488482743710">가상 카드는 실제 카드를 숨겨서 사기당할 위험을 줄여줍니다. <ph name="BEGIN_LINK1" />가상 카드 자세히 알아보기<ph name="END_LINK1" /></translation>
 <translation id="7959485987650214982">이 기기의 탭</translation>
 <translation id="7961926449547174351">저장소 액세스 권한을 사용 중지했습니다. 설정으로 이동하여 사용 설정해 주세요.</translation>
@@ -1845,6 +1851,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="867914734596684889">북마크바 표시 또는 숨기기</translation>
 <translation id="8683039184091909753">이미지</translation>
 <translation id="8688183792442786085"><ph name="TAB_TITLE" />, 선택된 탭</translation>
+<translation id="8696297579102085705">기기로 보내기</translation>
 <translation id="8697753151306746444">대신 창 또는 화면 공유</translation>
 <translation id="8699120352855309748">번역할지 묻지 않을 언어</translation>
 <translation id="8712637175834984815">확인</translation>

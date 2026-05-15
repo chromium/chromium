@@ -316,7 +316,6 @@
 <translation id="1463793142714244641">टाइमशेअर आणि सुट्‍ट्यांसाठीच्या मालमत्ता</translation>
 <translation id="1465457928007067810">तुमच्या Google खाते वर IBAN सेव्ह केला गेला</translation>
 <translation id="1467432559032391204">डावे</translation>
-<translation id="1468653229182955856"><ph name="TOP_ORIGIN" /> वर पुढे सुरू ठेवण्यासाठी <ph name="EMBEDDED_ORIGIN" /> करिता तुमचा कोड <ph name="ONE_TIME_CODE" /> आहे</translation>
 <translation id="1472675084647422956">अधिक दर्शवा</translation>
 <translation id="1473183651233018052">JIS B10</translation>
 <translation id="1473495410389165587">लेखनाशी संबंधित मदत मिळवण्यासाठी ३ किंवा आणखी शब्द एंटर करा</translation>
@@ -1860,6 +1859,7 @@
 <translation id="3875783148670536197">मला कसे ते दाखवा</translation>
 <translation id="3877603629930976930">शेअर करू नका</translation>
 <translation id="3878445208930547646">या साइटवरून कॉपी करण्याची अनुमती नाही</translation>
+<translation id="3879674895057686427">भाषांतरित करण्यासाठी भाषा निवडा</translation>
 <translation id="3879748587602334249">डाउनलोड व्यवस्थापक</translation>
 <translation id="3880456882942693779">कला आणि मनोरंजन</translation>
 <translation id="3880589673277376494">इंटरनेट आणि टेलिकॉम</translation>
@@ -2235,6 +2235,7 @@
 <translation id="443673843213245140">प्रॉक्सीचा वापर अक्षम करण्‍यात आला आहे पण एक सुस्पष्‍ट प्रॉक्सी कॉन्‍फिगरेशन निर्दिष्‍ट करण्‍यात आले आहे.</translation>
 <translation id="4438821706955556403">सामान्य किंमत</translation>
 <translation id="4441832193888514600">दुर्लक्ष केले आहे, कारण हे धोरण फक्त क्लाउड वापरकर्ता धोरण म्हणून सेट केले जाऊ शकते.</translation>
+<translation id="4444062564459679679">तुमच्या <ph name="DEVICE_NAME" /> वरील Chrome वर आधीच पाठवला आहे</translation>
 <translation id="4445133368066241428">लोकप्रिय विषय</translation>
 <translation id="4445694043187340808"><ph name="STARTER_PACK_TABS_FOCUSED_FRIENDLY_MATCH_TEXT" />, टॅब शोधण्यासाठी एंटर प्रेस करा</translation>
 <translation id="4445964943162061557">हे प्रायोगिक वैशिष्ट्य आहे आणि ते नेहमीच बरोबर असेल असे नाही.</translation>
@@ -3506,7 +3507,6 @@
 <translation id="6424600253695044005">क्लाउड स्‍टोरेज</translation>
 <translation id="6425092077175753609">आशय</translation>
 <translation id="6427730057873428458">गेट फोल्ड</translation>
-<translation id="6428450836711225518">तुमच्या फोन नंबरची पडताळणी करा</translation>
 <translation id="6429267199680088961">A4 टॅब</translation>
 <translation id="643051589346665201">Google पासवर्ड बदला</translation>
 <translation id="6431556523611594411">उघडे असलेले टॅब शेअर करा</translation>
@@ -4455,7 +4455,6 @@
 <translation id="7874796722855317864">"<ph name="PROXY_UNKNOWN_CONDITION" />" हा अटीचा ज्ञात प्रकार नाही.</translation>
 <translation id="7877007680666472091">संरक्षित आशय आयडी</translation>
 <translation id="7878562273885520351">तुमच्या पासवर्डशी तडजोड होत असल्याची शक्यता आहे</translation>
-<translation id="7881044256965445977">तुमच्या स्थानिक नेटवर्कवरील कोणतेही डिव्हाइस शोधा आणि कनेक्ट करा</translation>
 <translation id="7885670691503039914">कोणत्याही साइटवर किंमत कमी झाल्यास, तुम्हाला ईमेल अलर्ट मिळतील. हे पेज बुकमार्क फोल्डर <ph name="LAST_BOOKMARKS_FOLDER" /> मध्ये सेव्ह केले जाईल.</translation>
 <translation id="7886897188117641322">जाहिराती पर्सनलाइझ करण्यात मदत व्हावी, यासाठी विषयांच्या कोणत्या व्यापक वर्गवाऱ्या वापरल्या जाऊ शकतात हे निवडा</translation>
 <translation id="7887683347370398519">तुमचे CVC तपासा आणि पुन्हा प्रयत्न करा</translation>
@@ -4849,6 +4848,7 @@
 <translation id="8511402995811232419">कुकी व्यवस्थापित करा</translation>
 <translation id="851353418319061866">अचूकतेची तपासणी</translation>
 <translation id="8513580896341796021">डाउनलोड सुरू झाले. ते पाहण्यासाठी, |<ph name="ACCELERATOR" />| प्रेस करा.</translation>
+<translation id="8515544520486085367">पेमेंट ऑटोफिल करा</translation>
 <translation id="8519753333133776369">तुमच्या अ‍ॅडमिनिस्ट्रेटरने अनुमती दिलेले HID डिव्हाइस</translation>
 <translation id="8521013008769249764">सोफा आणि आर्मचेअर</translation>
 <translation id="8521812709849134608">काउंटरटॉप</translation>
@@ -4981,7 +4981,6 @@
 <translation id="8737685506611670901"><ph name="REPLACED_HANDLER_TITLE" /> ऐवजी <ph name="PROTOCOL" /> लिंक उघडा</translation>
 <translation id="8738058698779197622">एक सुरक्षित कनेक्‍शन स्‍थापित करण्‍यापूर्वी, तुमचे घड्‍याळ योग्यरित्या सेट केले असणे आवश्यक आहे. कारण वेबसाइट त्यांना स्‍वत:ला ओळखण्‍यासाठी वापरलेली ती सर्टिफिकेटे केवळ नमूद केलेल्‍या कालावधीसाठी वैध असतात. तुमच्या डिव्‍हाइसचे घड्‍याळ चुकीचे असल्‍यामुळे, Chromium ला सर्टिफिकेटे पडताळणी करता आले नाही.</translation>
 <translation id="8740359287975076522"><ph name="HOST_NAME" />चा &lt;abbr id="dnsDefinition"&gt;DNS पत्ता&lt;/abbr&gt; शोधणे शक्य झाले नाही. समस्येचे निराकरण करीत आहे.</translation>
-<translation id="8742371904523228557"><ph name="ONE_TIME_CODE" /> हा तुमचा <ph name="ORIGIN" />साठीचा कोड आहे</translation>
 <translation id="874918643257405732">हा टॅब बुकमार्क करा</translation>
 <translation id="8751426954251315517">कृपया पुढील वेळेस पुन्हा प्रयत्न करा</translation>
 <translation id="8753913772043329557">धोरण लॉग</translation>
@@ -5159,7 +5158,6 @@
 <translation id="9042827002460091668">तुमचे इंटरनेट कनेक्शन तपासा आणि पुन्हा प्रयत्न करा</translation>
 <translation id="9043161870923715789">AI मोड</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
-<translation id="9046578823518542618"><ph name="URL" /> ला तुमच्या स्थानिक नेटवर्कवरील कोणतेही डिव्हाइस शोधून त्याच्याशी कनेक्ट करायचे आहे</translation>
 <translation id="9046864189129893978">मायक्रोफोन (<ph name="MICS_COUNT" />)</translation>
 <translation id="9046865906192819796">आता विकत घ्या, नंतर पैसे द्या यासंबंधित सेवा अटींची स्क्रीन अर्ध्या उंचीवर उघडली आहे.</translation>
 <translation id="9047528041803621289">तुमचे डीफॉल्ट तुम्हाला वेबवर शोधू देते. तुम्ही ते सेटिंग्जमध्ये बदलू शकता.</translation>

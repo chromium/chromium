@@ -316,7 +316,6 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="1463793142714244641">Multipropriétés et propriétés de vacances</translation>
 <translation id="1465457928007067810">IBAN enregistré dans votre compte Google</translation>
 <translation id="1467432559032391204">À gauche</translation>
-<translation id="1468653229182955856">Saisissez le code <ph name="ONE_TIME_CODE" /> pour passer de <ph name="EMBEDDED_ORIGIN" /> à <ph name="TOP_ORIGIN" /></translation>
 <translation id="1472675084647422956">Plus</translation>
 <translation id="1473183651233018052">JIS B10</translation>
 <translation id="1473495410389165587">Saisissez au moins trois mots pour obtenir de l'aide pour écrire</translation>
@@ -549,6 +548,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="1832474362231610822">Photo enregistrée dans OneDrive</translation>
 <translation id="1832730227369924598">Synchronisation du bureau</translation>
 <translation id="1834452765064623979">Construction et maintenance</translation>
+<translation id="1837606605602726453">Le score de risque et les catégories sont ignorés, car l'extension est explicitement autorisée ou bloquée par l'administrateur.</translation>
 <translation id="1838374766361614909">Effacer la recherche</translation>
 <translation id="1839331950812095887">quelques mots ou plus qui résument votre pensée</translation>
 <translation id="1839551713262164453">Échec de la validation des valeurs de règle avec des erreurs</translation>
@@ -1860,6 +1860,7 @@ Pour masquer les options de paiement différé, accédez aux <ph name="BEGIN_LIN
 <translation id="3875783148670536197">Démonstration</translation>
 <translation id="3877603629930976930">Ne pas partager</translation>
 <translation id="3878445208930547646">Vous n'êtes pas autorisé à copier depuis ce site</translation>
+<translation id="3879674895057686427">Sélectionnez la langue dans laquelle traduire</translation>
 <translation id="3879748587602334249">Gestionnaire de téléchargement</translation>
 <translation id="3880456882942693779">Arts et divertissements</translation>
 <translation id="3880589673277376494">Internet et télécoms</translation>
@@ -3446,6 +3447,7 @@ Pour masquer les options de paiement différé, accédez aux <ph name="BEGIN_LIN
 <translation id="634500758737709758">Itinéraire</translation>
 <translation id="6348220984832452017">Variantes actives</translation>
 <translation id="6349101878882523185">Installer <ph name="APP_NAME" /></translation>
+<translation id="6350739641326887427">Payez sans copier ni coller de code Pix. <ph name="BEGIN_LINK1" />En savoir plus<ph name="END_LINK1" /></translation>
 <translation id="6351658970066645919">Supprimer les données de navigation</translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{Aucun}=1{1 mot de passe (associé à <ph name="DOMAIN_LIST" /> ; synchronisé)}=2{2 mots de passe (associés à <ph name="DOMAIN_LIST" /> ; synchronisés)}one{# mot de passe (associé à <ph name="DOMAIN_LIST" /> ; synchronisé)}other{# mots de passe (associés à <ph name="DOMAIN_LIST" /> ; synchronisés)}}</translation>
 <translation id="6354918092619878358">Courbe elliptique SECG secp256r1 (également appelée "ANSI X9.62 prime256v1, NIST P-256")</translation>
@@ -3504,7 +3506,6 @@ Pour masquer les options de paiement différé, accédez aux <ph name="BEGIN_LIN
 <translation id="6424600253695044005">Stockage cloud</translation>
 <translation id="6425092077175753609">Material</translation>
 <translation id="6427730057873428458">Pli en volets</translation>
-<translation id="6428450836711225518">Validez votre numéro de téléphone</translation>
 <translation id="6429267199680088961">A4 Tab</translation>
 <translation id="643051589346665201">Changer de mot de passe Google</translation>
 <translation id="6431556523611594411">Partager les onglets ouverts</translation>
@@ -3661,6 +3662,7 @@ Pour masquer les options de paiement différé, accédez aux <ph name="BEGIN_LIN
 <translation id="668132230070712111">Vidéo enregistrée dans Google Drive</translation>
 <translation id="6681790815630918386">Code CVC enregistré</translation>
 <translation id="6683022854667115063">Casque audio</translation>
+<translation id="6686570026048064255">Pour désactiver la détection des codes Pix, accédez aux <ph name="BEGIN_LINK1" />paramètres de Chrome<ph name="END_LINK1" />.</translation>
 <translation id="6687230248707087982">Enveloppe (ordinaire)</translation>
 <translation id="6687335167692595844">Taille de police demandée</translation>
 <translation id="6688743156324860098">Mettre à jour…</translation>
@@ -4453,7 +4455,6 @@ Informations supplémentaires :
 <translation id="7874796722855317864">"<ph name="PROXY_UNKNOWN_CONDITION" />" n'est pas un type de condition connu.</translation>
 <translation id="7877007680666472091">ID de contenus protégés</translation>
 <translation id="7878562273885520351">Votre mot de passe a peut-être été piraté</translation>
-<translation id="7881044256965445977">Rechercher les appareils sur votre réseau local et s'y connecter</translation>
 <translation id="7885670691503039914">Vous recevrez des alertes par e-mail si le prix baisse sur un site. Cette page sera enregistrée dans le dossier de favoris <ph name="LAST_BOOKMARKS_FOLDER" />.</translation>
 <translation id="7886897188117641322">Sélectionnez les grandes catégories de thèmes à utiliser pour personnaliser les annonces</translation>
 <translation id="7887683347370398519">Veuillez vérifier votre code CVC et réessayer.</translation>
@@ -4979,7 +4980,6 @@ Informations supplémentaires :
 <translation id="8737685506611670901">Ouvrir les liens "<ph name="PROTOCOL" />" à la place de "<ph name="REPLACED_HANDLER_TITLE" />"</translation>
 <translation id="8738058698779197622">Afin d'établir une connexion sécurisée, votre horloge doit être réglée correctement. Les certificats permettant aux sites Web de s'identifier sont en effet valides pendant une période précise. Si l'horloge de votre appareil est incorrecte, Chromium n'est pas en mesure de vérifier la validité des certificats.</translation>
 <translation id="8740359287975076522">L'&lt;abbr id="dnsDefinition"&gt;adresse DNS&lt;/abbr&gt; de <ph name="HOST_NAME" /> est introuvable. Identification du problème…</translation>
-<translation id="8742371904523228557">Votre code pour <ph name="ORIGIN" /> est <ph name="ONE_TIME_CODE" /></translation>
 <translation id="874918643257405732">Ajouter cet onglet aux favoris</translation>
 <translation id="8751426954251315517">Veuillez réessayer plus tard</translation>
 <translation id="8753913772043329557">Journaux des règles</translation>
@@ -5157,7 +5157,6 @@ Informations supplémentaires :
 <translation id="9042827002460091668">Vérifiez votre connexion Internet, puis réessayez</translation>
 <translation id="9043161870923715789">Mode IA</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
-<translation id="9046578823518542618"><ph name="URL" /> souhaite rechercher les appareils sur votre réseau local et s'y connecter</translation>
 <translation id="9046864189129893978">Micros (<ph name="MICS_COUNT" />)</translation>
 <translation id="9046865906192819796">Écran des Conditions d'utilisation Acheter maintenant, payer plus tard ouvert à mi-hauteur.</translation>
 <translation id="9047528041803621289">Votre moteur de recherche par défaut vous permet d'effectuer des recherches sur le Web. Vous pouvez le modifier dans les paramètres.</translation>

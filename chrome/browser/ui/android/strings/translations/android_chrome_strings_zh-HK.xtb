@@ -263,6 +263,7 @@
 <translation id="2184272387334793084">登入帳戶即可在任何裝置上存取自己的密碼及其他設定</translation>
 <translation id="218608176142494674">共用</translation>
 <translation id="2186779861549045980">你可以選擇將哪些資料儲存到 Google 帳戶。\n你也可以在書籤、閱讀清單或密碼管理工具中查看及管理這些項目。</translation>
+<translation id="2190355936436201913">(空白)</translation>
 <translation id="219283042927675668">群組中的分頁</translation>
 <translation id="2194856509914051091">考慮因素</translation>
 <translation id="2205701497928406883"><ph name="TAB_TITLE" />，分享緊內容嘅固定分頁</translation>
@@ -300,6 +301,7 @@
 <translation id="233375395665273385">刪除並登出</translation>
 <translation id="2341410551640223969">無法安裝「<ph name="WEBAPK_NAME" />」。</translation>
 <translation id="2349710944427398404">Chrome 使用的資料總量，包括帳戶、書籤和已儲存的設定</translation>
+<translation id="2354001756790975382">其他書籤</translation>
 <translation id="235789365079050412">Google 私隱權政策</translation>
 <translation id="2359808026110333948">繼續</translation>
 <translation id="2362083820973145409">已使用<ph name="USER_NAME" />的身分登入。<ph name="USER_EMAIL" />。開啟設定。</translation>
@@ -544,6 +546,7 @@
 <translation id="3359667936385849800">使用目前的服務供應商</translation>
 <translation id="3373701465337594448">開啟設定後，系統會在此顯示您曾瀏覽的網站清單來推斷您的興趣。</translation>
 <translation id="3384347053049321195">分享圖片</translation>
+<translation id="3385749568468586663">Gemini 不支援無痕模式</translation>
 <translation id="3387650086002190359">檔案系統發生錯誤，因此無法下載 <ph name="FILE_NAME" />。</translation>
 <translation id="3417835166382867856">搜尋分頁</translation>
 <translation id="3430670036890315772">如果關閉個人檔案鎖定，系統將移除已儲存的資料</translation>
@@ -896,6 +899,7 @@
 <translation id="4864369630010738180">正在登入…</translation>
 <translation id="4866368707455379617">無法為 Chrome 安裝 <ph name="MODULE" /></translation>
 <translation id="4875775213178255010">內容建議</translation>
+<translation id="4876880121961092787">隱藏書籤列</translation>
 <translation id="4877678010818027629">進入無痕模式</translation>
 <translation id="4878404682131129617">透過 Proxy 伺服器建立通道失敗</translation>
 <translation id="4880127995492972015">翻譯…</translation>
@@ -1268,6 +1272,7 @@
 <translation id="6437162790453527153">登入帳戶即可在任何裝置上存取自己的書籤及其他內容</translation>
 <translation id="6437478888915024427">網頁資訊</translation>
 <translation id="6440291723980579689">網頁只會在開啟後載入</translation>
+<translation id="6441377161852435370">將分頁新增至閱讀清單</translation>
 <translation id="6441734959916820584">此名稱過長</translation>
 <translation id="6444291413624515012">已關閉「<ph name="TAB_GROUP_TITLE" />」分頁群組</translation>
 <translation id="6452534462676960500">新活動</translation>
@@ -1357,6 +1362,7 @@
 <translation id="6787600234697426339">視窗數目已達 <ph name="MAX_INSTANCE_COUNT" /> 個的上限</translation>
 <translation id="6795633245022906657">快速開啟新分頁。如要編輯此捷徑，請前往「設定」。</translation>
 <translation id="679588508577699489">將 Chrome 設定為預設瀏覽器</translation>
+<translation id="679845623837196966">顯示閱讀清單</translation>
 <translation id="679956319013005046">如要設定偏好的自動填入服務，請先在「<ph name="BEGIN_LINK" />Android 設定<ph name="END_LINK" />」中加入該服務。</translation>
 <translation id="6802555630140434547">視窗即將關閉</translation>
 <translation id="6803791793483522764">檢查通知</translation>
@@ -1657,6 +1663,7 @@
 <translation id="7934668619883965330">無法下載檔案，因為系統不支援檔案格式。</translation>
 <translation id="7951102827450076904">一律開啟已下載的 PDF</translation>
 <translation id="7952479614398473176">如要開啟新視窗，請將使用中視窗的總數減至 <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> 個或以下。</translation>
+<translation id="7956713633345437162">流動版書籤</translation>
 <translation id="7957413488482743710">虛擬卡會隱藏您的實體卡，保護您免受潛在欺詐行為的威脅。<ph name="BEGIN_LINK1" />進一步瞭解虛擬卡<ph name="END_LINK1" /></translation>
 <translation id="7959485987650214982">此裝置上的分頁</translation>
 <translation id="7961926449547174351">您已停用儲存空間存取權，請前往「設定」頁面啟用該權限。</translation>
@@ -1845,6 +1852,7 @@
 <translation id="867914734596684889">顯示或隱藏「書籤列」</translation>
 <translation id="8683039184091909753">圖片</translation>
 <translation id="8688183792442786085"><ph name="TAB_TITLE" />，已選取的分頁</translation>
+<translation id="8696297579102085705">傳送至你的裝置</translation>
 <translation id="8697753151306746444">改為分享視窗或畫面</translation>
 <translation id="8699120352855309748">不要詢問是否翻譯這些語言</translation>
 <translation id="8712637175834984815">我知道了</translation>

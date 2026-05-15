@@ -5,7 +5,6 @@
 <translation id="1036348656032585052">Désactiver</translation>
 <translation id="1046742265332833834">Thème bleu</translation>
 <translation id="1070329623210597193">Les fichiers que ce site peut afficher ou modifier</translation>
-<translation id="1073417869336441572">Aidez-nous à améliorer Chrome en nous indiquant pourquoi vous avez autorisé les témoins tiers. <ph name="BEGIN_LINK" />Envoyer des commentaires<ph name="END_LINK" /></translation>
 <translation id="1074758928858737435">Vous pouvez demander à voir la version pour ordinateur de bureau des sites</translation>
 <translation id="1109482864356262001">Les fonctionnalités qui nécessitent l'accès aux capteurs de mouvement ou de luminosité ne seront pas accessibles</translation>
 <translation id="1126523729897810826">Effectuez les actions suggérées ci-dessous pour tirer le meilleur parti de Chrome</translation>
@@ -328,6 +327,7 @@
 <translation id="4290791284969893584">Si vous fermez une page, les tâches lancées risquent de ne pas être terminées</translation>
 <translation id="429312253194641664">Un site lit du contenu multimédia</translation>
 <translation id="42981349822642051">Développer</translation>
+<translation id="4310738531374808763">Personnaliser votre page d'accueil</translation>
 <translation id="4336219115486912529">{COUNT,plural, =1{Expire demain}one{Expire dans # jour}other{Expire dans # jours}}</translation>
 <translation id="4338831206024587507">Tous les sites associés à <ph name="DOMAIN" /></translation>
 <translation id="4340799661701629185">Ne pas autoriser les sites à envoyer des notifications</translation>
@@ -440,7 +440,6 @@
 <translation id="5555115555607204100">Ne pas accélérer les sites avec le moteur V8 de Chrome, mais rendre Chrome légèrement plus résistant aux attaques</translation>
 <translation id="5556459405103347317">Actualiser</translation>
 <translation id="5591840828808741583"><ph name="SITE_NAME" /> bloqué</translation>
-<translation id="560980142378233747">Cela signifie que les fonctionnalités du site devraient fonctionner comme prévu, mais que le niveau de protection de la navigation est moins élevé. <ph name="BEGIN_LINK" />Envoyer des commentaires<ph name="END_LINK" /></translation>
 <translation id="5617702678271228680">Zone de contenu dans le bas de l'écran concernant les cartes de la page Nouvel onglet</translation>
 <translation id="5621413808884657932">Lorsque cette option est activée, les sites peuvent demander à accéder à d'autres applis et services sur cet appareil. Lorsqu'elle est désactivée, les sites ne peuvent pas accéder aux autres applis et services sur cet appareil.</translation>
 <translation id="5632485077360054581">Afficher la marche à suivre</translation>
@@ -519,6 +518,7 @@
 <translation id="6262279340360821358">Autorisations <ph name="PERMISSION_1" /> et <ph name="PERMISSION_2" /> bloquées</translation>
 <translation id="6270391203985052864">Les sites peuvent vous demander l'autorisation d'envoyer des notifications</translation>
 <translation id="6295158916970320988">Tous les sites</translation>
+<translation id="6305257382500066042">Essayer maintenant</translation>
 <translation id="6320088164292336938">Vibrer</translation>
 <translation id="6367753977865761591">Bloquez la connexion de tiers pour un site particulier.</translation>
 <translation id="6398765197997659313">Quitter le mode plein écran</translation>
@@ -529,7 +529,6 @@
 <translation id="6447842834002726250">Témoins</translation>
 <translation id="6452138246455930388">Baisse de prix sur votre onglet ouvert, de <ph name="OLD_PRICE" /> à <ph name="NEW_PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN_NAME" /></translation>
 <translation id="6500423977866688905">Lorsque la fenêtre est étroite, demander l'affichage sur appareil mobile</translation>
-<translation id="6514791408445720076">Personnaliser votre page</translation>
 <translation id="6527303717912515753">Partager</translation>
 <translation id="6530703012083415527">Lorsque cette option est activée, les sites peuvent utiliser des fenêtres contextuelles et des redirections. Lorsqu'elle est désactivée, les sites ne peuvent pas utiliser des fenêtres contextuelles ni des redirections.</translation>
 <translation id="6540488083026747005">Vous avez autorisé les témoins tiers pour ce site</translation>
@@ -593,7 +592,6 @@
 <translation id="7141896414559753902">Bloquer l'affichage de fenêtres contextuelles et de redirections à partir des sites (recommandé)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> ko</translation>
 <translation id="7180611975245234373">Actualiser</translation>
-<translation id="7180865173735832675">Personnaliser</translation>
 <translation id="7188508872042490670">Données relatives aux sites sur l’appareil</translation>
 <translation id="7201549776650881587">Cette action supprimera toutes les données et tous les témoins stockés par tous les sites subordonnés de <ph name="ORIGIN" /> ou par son application sur votre écran d'accueil</translation>
 <translation id="7219254577985949841">Supprimer les données relatives aux sites?</translation>
@@ -707,7 +705,6 @@ La protection avancée contrôle ces paramètres Chrome :</translation>
 <translation id="83792324527827022">Un site utilise votre appareil photo et votre microphone</translation>
 <translation id="8380167699614421159">Ce site diffuse des annonces intrusives ou trompeuses</translation>
 <translation id="8394832520002899662">Touchez pour revenir au site</translation>
-<translation id="8404500559369898929">Personnalisez Chrome en choisissant un thème d'arrière-plan personnalisé</translation>
 <translation id="8409345997656833551">Recevez une notification lorsqu'un article peut s’afficher en vue simplifiée</translation>
 <translation id="8416874502399604126">Le microphone est autorisé cette fois</translation>
 <translation id="8423565414844018592">Mise à l'échelle du texte définie sur <ph name="TEXT_SCALING" /></translation>

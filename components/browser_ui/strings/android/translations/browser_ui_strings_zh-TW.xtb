@@ -5,7 +5,6 @@
 <translation id="1036348656032585052">關閉</translation>
 <translation id="1046742265332833834">藍色主題</translation>
 <translation id="1070329623210597193">這個網站可以查看或編輯的檔案</translation>
-<translation id="1073417869336441572">請說明你允許使用第三方 Cookie 的原因，協助我們改善 Chrome。<ph name="BEGIN_LINK" />提供意見<ph name="END_LINK" /></translation>
 <translation id="1074758928858737435">你可以要求查看電腦版網站</translation>
 <translation id="1109482864356262001">需要動作或光源感應器的功能將無法運作</translation>
 <translation id="1126523729897810826">完成下列建議動作，充分運用 Chrome 的各項功能</translation>
@@ -328,6 +327,7 @@
 <translation id="4290791284969893584">關閉網頁後，你已啟動的工作可能無法完成</translation>
 <translation id="429312253194641664">一個網站正在播放媒體內容</translation>
 <translation id="42981349822642051">展開</translation>
+<translation id="4310738531374808763">自訂你的首頁</translation>
 <translation id="4336219115486912529">{COUNT,plural, =1{明天到期}other{# 天後到期}}</translation>
 <translation id="4338831206024587507"><ph name="DOMAIN" /> 底下的所有網站</translation>
 <translation id="4340799661701629185">禁止網站傳送通知</translation>
@@ -440,7 +440,6 @@
 <translation id="5555115555607204100">不使用 Chrome 的 V8 引擎加快網站速度，但稍微提高 Chrome 防範攻擊的能力</translation>
 <translation id="5556459405103347317">重新載入</translation>
 <translation id="5591840828808741583">已封鎖「<ph name="SITE_NAME" />」</translation>
-<translation id="560980142378233747">這表示網站功能應可正常運作，但瀏覽防護的強度可能會降低。<ph name="BEGIN_LINK" />提供意見<ph name="END_LINK" /></translation>
 <translation id="5617702678271228680">新分頁資訊卡底部功能表</translation>
 <translation id="5621413808884657932">啟用時，網站可以要求存取這部裝置上的其他應用程式和服務。關閉時，網站將無法存取這部裝置上的其他應用程式和服務。</translation>
 <translation id="5632485077360054581">顯示操作說明</translation>
@@ -519,6 +518,7 @@
 <translation id="6262279340360821358">已封鎖「<ph name="PERMISSION_1" />」和「<ph name="PERMISSION_2" />」</translation>
 <translation id="6270391203985052864">網站可以要求傳送通知給你</translation>
 <translation id="6295158916970320988">所有網站</translation>
+<translation id="6305257382500066042">立即體驗</translation>
 <translation id="6320088164292336938">震動</translation>
 <translation id="6367753977865761591">禁止特定網站使用第三方登入功能。</translation>
 <translation id="6398765197997659313">退出全螢幕模式</translation>
@@ -529,7 +529,6 @@
 <translation id="6447842834002726250">Cookie</translation>
 <translation id="6452138246455930388">開啟的分頁中有商品降價，原價為 <ph name="OLD_PRICE" />，現價為 <ph name="NEW_PRICE" />，<ph name="PRODUCT_NAME" />，<ph name="DOMAIN_NAME" /></translation>
 <translation id="6500423977866688905">視窗縮小時要求使用行動裝置檢視畫面</translation>
-<translation id="6514791408445720076">自訂頁面</translation>
 <translation id="6527303717912515753">分享</translation>
 <translation id="6530703012083415527">如果啟用，網站就可以使用彈出式視窗和重新導向。如果停用，網站將無法使用彈出式視窗和重新導向。</translation>
 <translation id="6540488083026747005">你已允許這個網站使用第三方 Cookie</translation>
@@ -593,7 +592,6 @@
 <translation id="7141896414559753902">禁止網站顯示彈出式視窗及重新導向 (建議)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> KB</translation>
 <translation id="7180611975245234373">重新整理</translation>
-<translation id="7180865173735832675">自訂</translation>
 <translation id="7188508872042490670">網站在裝置端的資料</translation>
 <translation id="7201549776650881587">這項操作會刪除 <ph name="ORIGIN" /> 底下所有網站或該網站在主畫面上的應用程式儲存的所有資料和 Cookie</translation>
 <translation id="7219254577985949841">要刪除網站資料嗎？</translation>
@@ -707,7 +705,6 @@
 <translation id="83792324527827022">有網站正在使用你的攝影機和麥克風</translation>
 <translation id="8380167699614421159">這個網站會顯示干擾性或誤導性的廣告</translation>
 <translation id="8394832520002899662">輕觸即可返回網站</translation>
-<translation id="8404500559369898929">選擇自訂背景主題，打造專屬 Chrome</translation>
 <translation id="8409345997656833551">在文章能以簡易檢視模式顯示時通知我</translation>
 <translation id="8416874502399604126">這次允許使用麥克風</translation>
 <translation id="8423565414844018592">文字縮放已設為 <ph name="TEXT_SCALING" /></translation>

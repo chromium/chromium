@@ -316,7 +316,6 @@
 <translation id="1463793142714244641">Таймшер и недвижимость для отдыха</translation>
 <translation id="1465457928007067810">Код IBAN сохранен в аккаунте Google.</translation>
 <translation id="1467432559032391204">Слева</translation>
-<translation id="1468653229182955856">Чтобы продолжить работу на сайте <ph name="TOP_ORIGIN" />, введите код <ph name="ONE_TIME_CODE" /> для фрейма <ph name="EMBEDDED_ORIGIN" />.</translation>
 <translation id="1472675084647422956">Показать больше</translation>
 <translation id="1473183651233018052">JIS B10</translation>
 <translation id="1473495410389165587">Добавьте ещё три слова или более, чтобы получить помощь с написанием.</translation>
@@ -1860,6 +1859,7 @@
 <translation id="3875783148670536197">Подробнее</translation>
 <translation id="3877603629930976930">Не делиться</translation>
 <translation id="3878445208930547646">Копировать материалы этого сайта запрещено</translation>
+<translation id="3879674895057686427">Выбрать язык перевода</translation>
 <translation id="3879748587602334249">Менеджер скачивания</translation>
 <translation id="3880456882942693779">Искусство и развлечения</translation>
 <translation id="3880589673277376494">Интернет и телекоммуникации</translation>
@@ -2235,6 +2235,7 @@
 <translation id="443673843213245140">Прокси-сервер отключен, но при этом его конфигурация задана явным образом.</translation>
 <translation id="4438821706955556403">Средняя цена</translation>
 <translation id="4441832193888514600">Игнорируется, так как правило может быть настроено только на уровне облака.</translation>
+<translation id="4444062564459679679">Уже отправлено в Chrome на устройство <ph name="DEVICE_NAME" />.</translation>
 <translation id="4445133368066241428">Популярные темы</translation>
 <translation id="4445694043187340808"><ph name="STARTER_PACK_TABS_FOCUSED_FRIENDLY_MATCH_TEXT" />. Чтобы найти нужные вкладки, нажмите Ввод.</translation>
 <translation id="4445964943162061557">Это экспериментальная функция. Она не всегда работает корректно.</translation>
@@ -3505,7 +3506,6 @@
 <translation id="6424600253695044005">Облачные хранилища</translation>
 <translation id="6425092077175753609">Material design</translation>
 <translation id="6427730057873428458">Фальцовка калиткой в два сгиба</translation>
-<translation id="6428450836711225518">Подтвердите номер телефона</translation>
 <translation id="6429267199680088961">A4 Tab</translation>
 <translation id="643051589346665201">Изменить пароль Google</translation>
 <translation id="6431556523611594411">Делиться открытыми вкладками</translation>
@@ -4454,7 +4454,6 @@
 <translation id="7874796722855317864">Неподдерживаемый тип условия (<ph name="PROXY_UNKNOWN_CONDITION" />).</translation>
 <translation id="7877007680666472091">идентификаторы защищенного контента</translation>
 <translation id="7878562273885520351">Злоумышленники могли узнать ваш пароль</translation>
-<translation id="7881044256965445977">Поиск устройств в локальной сети и подключение к ним</translation>
 <translation id="7885670691503039914">Если на одном из сайтов появится скидка, вы получите оповещение по электронной почте. Закладка будет сохранена в папку "<ph name="LAST_BOOKMARKS_FOLDER" />".</translation>
 <translation id="7886897188117641322">Выбирайте, какие категории тем могут использоваться для персонализации рекламы</translation>
 <translation id="7887683347370398519">Проверьте CVC-код и повторите попытку</translation>
@@ -4848,6 +4847,7 @@
 <translation id="8511402995811232419">Открыть настройки файлов cookie</translation>
 <translation id="851353418319061866">Проверка точности</translation>
 <translation id="8513580896341796021">Скачивание началось. Чтобы посмотреть файл, нажмите |<ph name="ACCELERATOR" />|.</translation>
+<translation id="8515544520486085367">Автозаполнение платежных данных</translation>
 <translation id="8519753333133776369">Разрешенное администратором HID-устройство</translation>
 <translation id="8521013008769249764">Диваны и кресла</translation>
 <translation id="8521812709849134608">Столешницы</translation>
@@ -4980,7 +4980,6 @@
 <translation id="8737685506611670901">обработку всех ссылок типа "<ph name="PROTOCOL" />" вместо сервиса <ph name="REPLACED_HANDLER_TITLE" /></translation>
 <translation id="8738058698779197622">Для создания безопасного подключения необходимо, чтобы показания системных часов были верны. Причина в том, что сертификаты для идентификации сайтов имеют ограниченный срок действия. Если часы на устройстве неточны, Chromium не может проверить актуальность этих сертификатов.</translation>
 <translation id="8740359287975076522">Не удается найти &lt;abbr id="dnsDefinition"&gt;DNS-адрес&lt;/abbr&gt; сайта <ph name="HOST_NAME" />. Выполняется диагностика.</translation>
-<translation id="8742371904523228557">Ваш код для сервиса <ph name="ORIGIN" />: <ph name="ONE_TIME_CODE" />.</translation>
 <translation id="874918643257405732">Добавить страницу в закладки</translation>
 <translation id="8751426954251315517">Повторите попытку позже</translation>
 <translation id="8753913772043329557">Журналы правила</translation>
@@ -5158,7 +5157,6 @@
 <translation id="9042827002460091668">Проверьте подключение к интернету и повторите попытку.</translation>
 <translation id="9043161870923715789">Режим ИИ</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> – <ph name="RESULT_PRODUCT_SOURCE" /></translation>
-<translation id="9046578823518542618"><ph name="URL" /> запрашивает разрешение на поиск устройств в локальной сети и подключение к ним.</translation>
 <translation id="9046864189129893978">Микрофоны (<ph name="MICS_COUNT" />)</translation>
 <translation id="9046865906192819796">Экран с условиями покупки в рассрочку открыт наполовину.</translation>
 <translation id="9047528041803621289">Поисковая система по умолчанию будет помогать вам находить нужную информацию. Вы можете выбрать другую в настройках.</translation>

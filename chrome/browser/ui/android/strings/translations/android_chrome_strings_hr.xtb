@@ -263,6 +263,7 @@ Vaše šifrirane podatke može pročitati samo osoba koja ima vašu šifru. Šif
 <translation id="2184272387334793084">Prijavite se kako biste imali pristup svojim zaporkama i ostalom na svim svojim uređajima</translation>
 <translation id="218608176142494674">Dijeljenje</translation>
 <translation id="2186779861549045980">Možete odabrati koje podatke želite spremati na svoj Google račun.\nTe stavke također možete pregledavati i upravljati njima u oznakama, na popisu za čitanje ili u upravitelju zaporki.</translation>
+<translation id="2190355936436201913">(prazno)</translation>
 <translation id="219283042927675668">Kartice u grupi</translation>
 <translation id="2194856509914051091">Važne napomene</translation>
 <translation id="2205701497928406883"><ph name="TAB_TITLE" />, prikvačena kartica koja dijeli sadržaj</translation>
@@ -300,6 +301,7 @@ Vaše šifrirane podatke može pročitati samo osoba koja ima vašu šifru. Šif
 <translation id="233375395665273385">Izbriši i odjavi se</translation>
 <translation id="2341410551640223969">Instaliranje aplikacije <ph name="WEBAPK_NAME" /> nije uspjelo.</translation>
 <translation id="2349710944427398404">Ukupna količina podataka koju Chrome upotrebljava, uključujući račune, oznake i spremljene postavke.</translation>
+<translation id="2354001756790975382">Druge oznake</translation>
 <translation id="235789365079050412">Googleova pravila o privatnosti</translation>
 <translation id="2359808026110333948">Nastavi</translation>
 <translation id="2362083820973145409">Prijavljeni ste kao <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Otvara postavke.</translation>
@@ -896,6 +898,7 @@ Vaš Google račun može sadržavati druge oblike povijesti pregledavanja, na pr
 <translation id="4864369630010738180">Prijavljivanje...</translation>
 <translation id="4866368707455379617">Instaliranje modula <ph name="MODULE" /> za Chrome nije uspjelo</translation>
 <translation id="4875775213178255010">Prijedlozi sadržaja</translation>
+<translation id="4876880121961092787">Sakrij traku oznaka</translation>
 <translation id="4877678010818027629">Otvori anonimni način</translation>
 <translation id="4878404682131129617">Uspostava tunela putem proxy poslužitelja nije uspjela</translation>
 <translation id="4880127995492972015">Prevedi…</translation>
@@ -1268,6 +1271,7 @@ Na primjer, neke web-lokacije na taj zahtjev mogu odgovoriti tako da vam prikaž
 <translation id="6437162790453527153">Prijavite se kako biste imali pristup svojim oznakama i ostalom na svim svojim uređajima</translation>
 <translation id="6437478888915024427">Informacije o stranici</translation>
 <translation id="6440291723980579689">Stranice se učitavaju samo nakon što ih otvorite</translation>
+<translation id="6441377161852435370">Dodaj karticu na popis za čitanje</translation>
 <translation id="6441734959916820584">Naziv je predugačak</translation>
 <translation id="6444291413624515012">Zatvorena je grupa kartica <ph name="TAB_GROUP_TITLE" /></translation>
 <translation id="6452534462676960500">Nova aktivnost</translation>
@@ -1357,6 +1361,7 @@ Na primjer, neke web-lokacije na taj zahtjev mogu odgovoriti tako da vam prikaž
 <translation id="6787600234697426339">Dosegnuto je ograničenje broja otvorenih prozora od <ph name="MAX_INSTANCE_COUNT" /></translation>
 <translation id="6795633245022906657">Brzo otvorite novu karticu. Da biste uredili prečac, otvorite Postavke.</translation>
 <translation id="679588508577699489">Postavite Chrome kao zadani preglednik</translation>
+<translation id="679845623837196966">Prikaži popis za čitanje</translation>
 <translation id="679956319013005046">Da biste postavili preferiranu uslugu za automatsko popunjavanje, prvo je dodajte u <ph name="BEGIN_LINK" />postavkama Androida<ph name="END_LINK" />.</translation>
 <translation id="6802555630140434547">Prozor će se zatvoriti</translation>
 <translation id="6803791793483522764">Pregled obavijesti</translation>
@@ -1657,6 +1662,7 @@ Kako biste promijenili tu postavku, <ph name="BEGIN_LINK" />izbrišite podatke C
 <translation id="7934668619883965330">Nije moguće preuzeti datoteku. Format datoteke nije podržan.</translation>
 <translation id="7951102827450076904">Uvijek otvaraj preuzete PDF-ove</translation>
 <translation id="7952479614398473176">Da biste otvorili novi prozor, smanjite ukupan broj aktivnih prozora na najviše <ph name="MAX_WINDOW_COUNT_MINUS_ONE" />.</translation>
+<translation id="7956713633345437162">Mobilne oznake</translation>
 <translation id="7957413488482743710">Virtualna kartica skriva vašu stvarnu karticu kako bi vas bolje zaštitila od potencijalne prijevare. <ph name="BEGIN_LINK1" />Saznajte više o virtualnim karticama<ph name="END_LINK1" /></translation>
 <translation id="7959485987650214982">Kartice na ovom uređaju</translation>
 <translation id="7961926449547174351">Onemogućili ste pristup pohrani. Omogućite ga u Postavkama.</translation>
@@ -1845,6 +1851,7 @@ Kako biste promijenili tu postavku, <ph name="BEGIN_LINK" />izbrišite podatke C
 <translation id="867914734596684889">Prikaz ili skrivanje trake oznaka</translation>
 <translation id="8683039184091909753">slika</translation>
 <translation id="8688183792442786085"><ph name="TAB_TITLE" />, odabrana kartica</translation>
+<translation id="8696297579102085705">Pošaljite na svoj uređaj</translation>
 <translation id="8697753151306746444">Umjesto toga podijelite prozor ili zaslon</translation>
 <translation id="8699120352855309748">Nemoj nuditi prevođenje ovih jezika</translation>
 <translation id="8712637175834984815">Shvaćam</translation>

@@ -209,6 +209,7 @@ Kontrolloji fjalëkalimet e tua në çdo kohë te <ph name="GOOGLE_PASSWORD_MANA
 <translation id="1137589305610962734">të dhënat e përkohshme</translation>
 <translation id="1137673463384776352">Hape lidhjen në <ph name="APP" /></translation>
 <translation id="1138686548582345331">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Njoftim i ri}other{# njoftime të reja}}</translation>
+<translation id="1139368021151541038">Duhet të ketë të paktën një shkronjë ose simbol</translation>
 <translation id="1139923033416533844">Përdorimi i memories</translation>
 <translation id="1140317858355046628">Nëse e fshin atë, të gjithë do të humbasin menjëherë qasjen te grupi i skedave "<ph name="GROUP_NAME" />" dhe ai do të fshihet nga të gjitha pajisjet.</translation>
 <translation id="1140351953533677694">Qasu në pajisjet e tua me Bluetooth dhe Serial</translation>
@@ -257,7 +258,6 @@ Kontrolloji fjalëkalimet e tua në çdo kohë te <ph name="GOOGLE_PASSWORD_MANA
 <translation id="1168704243733734901">Tema e fundit me IA <ph name="INDEX" /> nga "<ph name="SUBJECT" />", në stilin "<ph name="STYLE" />", me atmosferën "<ph name="MOOD" />".</translation>
 <translation id="1168799042879144934">Pyet Google rreth faqes së mëparshme</translation>
 <translation id="116896278675803795">Ndrysho automatikisht gjuhën që të përputhet me përmbajtjen e zgjedhur</translation>
-<translation id="1169435433292653700"><ph name="FILE_NAME" /> ka të dhëna delikate ose të rrezikshme. Administratori yt thotë: "<ph name="CUSTOM_MESSAGE" />"</translation>
 <translation id="1169496364218149825">{NUM_SITES,plural, =1{Rishikimi përfundoi për 1 sajt}other{Rishikimi përfundoi për {NUM_SITES} sajte}}</translation>
 <translation id="1171515578268894665"><ph name="ORIGIN" /> dëshiron të lidhet me një pajisje HID</translation>
 <translation id="1172750555846831341">Ktheje në anën e shkurtër</translation>
@@ -787,6 +787,7 @@ Lejet që u ke dhënë tashmë sajteve të uebit dhe aplikacioneve mund të zbat
 <translation id="1536883206862903762">Kjo do të çaktivizojë shtesat dhe do t'i rivendosë cilësimet te parazgjedhjet e sigurta. Skedat, skedarët dhe kukit do të ruhen. <ph name="LINK_BEGIN" />Mëso më shumë<ph name="LINK_END" /></translation>
 <translation id="1537254971476575106">Zmadhuesi i ekranit të plotë</translation>
 <translation id="15373452373711364">Kursor i madh</translation>
+<translation id="1538808328818992871">Duhet të ketë të paktën <ph name="MIN_LENGTH" /> karaktere</translation>
 <translation id="1539248305642687917">Mos lejo që sajtet të zëvendësojnë hyrjen e tastierës sate</translation>
 <translation id="1539727654733007771">Nuk ka asnjë rrjet celular të konfiguruar. Shkarko një <ph name="BEGIN_LINK" />profil<ph name="END_LINK" /> të ri.</translation>
 <translation id="1540265419569299117">Shërbimi i aplikacioneve të ChromeOS</translation>
@@ -832,6 +833,7 @@ Lejet që u ke dhënë tashmë sajteve të uebit dhe aplikacioneve mund të zbat
 <translation id="1567579616025300478">Ky sajt nuk lejohet të ruajë të dhëna në pajisjen tënde.</translation>
 <translation id="156793199942386351">"<ph name="CURRENTKEY" />" i është caktuar tashmë veprimit "<ph name="ACTION" />". Shtyp një tast çfarëdo për të <ph name="RESPONSE" />.</translation>
 <translation id="1567993339577891801">Paneli i JavaScript</translation>
+<translation id="1568242747239041185">Duhet të ketë dy nga sa më poshtë: shkronja të mëdha, shkronja të vogla, numra ose simbole</translation>
 <translation id="157005186601751931">Hap skedën në aplikacion</translation>
 <translation id="1570604804919108255">Aktivizo njoftimet</translation>
 <translation id="1570990174567554976">Dosja e faqeshënuesve "<ph name="BOOKMARK_TITLE" />" u krijua.</translation>
@@ -1865,6 +1867,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="2271986192355138465">Mëso se si të instalosh aplikacionet e uebit</translation>
 <translation id="2272430695183451567">0 çelësa të caktuar</translation>
 <translation id="2272570998639520080">Gotë Martini</translation>
+<translation id="2273432041732361925">Nuk duhet të ketë karaktere të përsëritura ose sekuenca me 4 ose më shumë</translation>
 <translation id="2274840746523584236">Kariko pajisjen Chromebook</translation>
 <translation id="2275193525496879616">Lejohet. Lidh një kamerë me pajisjen tënde.</translation>
 <translation id="2275352532065325930">Pozicioni i kërkimit të skedës</translation>
@@ -1948,7 +1951,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="2319072477089403627">Po lidhet me telefonin tënd Android...</translation>
 <translation id="2319459402137712349">Zgjidh një fushë teksti për të hapur tastierën. Mund të zgjedhësh po ashtu ikonën e tastierës në fund të ekranit.</translation>
 <translation id="2319993584768066746">Fotografitë e ekranit të identifikimit</translation>
-<translation id="2321487076181785382">Ndaj skedat</translation>
 <translation id="2322193970951063277">Titujt dhe fundet e faqeve</translation>
 <translation id="2322318151094136999">Pyet kur një sajt dëshiron të ketë qasje te portat seriale (rekomandohet)</translation>
 <translation id="2322622365472107569">Koha e përfundimit: <ph name="TIME" /></translation>
@@ -3349,6 +3351,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3289856944988573801">Për të kontrolluar për përditësime, përdor rrjetin Ethernet ose Wi-Fi.</translation>
 <translation id="3290249595466894471">Dërgon gjithashtu një shembull të vogël të faqeve, shkarkimeve, aktivitetit të shtesave dhe informacioneve të sistemit për të ndihmuar në zbulimin e kërcënimeve të reja</translation>
 <translation id="3292966601422448005">Lejet që jep për <ph name="APP_NAME" /> do të lejohen edhe për aplikacionet e instaluara nga ai.</translation>
+<translation id="3293080634164207409">Shto skedat</translation>
 <translation id="3293181007446299124">Historiku yt i shfletimit ruhet privat në pajisjen tënde dhe raportet dërgohen me një vonesë për të mbrojtur identitetin tënd</translation>
 <translation id="329324683265785818">Shkurtorja k në tastierë për luajtjen/vendosjen në pauzë</translation>
 <translation id="3293644607209440645">Dërgoje këtë faqe</translation>
@@ -3738,6 +3741,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3564848315152754834">Çelësi i sigurisë me USB</translation>
 <translation id="3566211766752891194">Shfaq përdorimin e memories nga skedat</translation>
 <translation id="3566325075220776093">Nga kjo pajisje</translation>
+<translation id="3566639033325271639">Përditëso cilësimet</translation>
 <translation id="3566721612727112615">Nuk u shtuan sajte</translation>
 <translation id="3567168891086460374">Ruaje në një mënyrë tjetër</translation>
 <translation id="3567284462585300767">Për të marrë dhe pranuar skedarë nga njerëzit përreth teje, bëhu i dukshëm</translation>
@@ -4538,6 +4542,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="4089817585533500276">shift + <ph name="TOP_ROW_KEY" /></translation>
 <translation id="4090103403438682346">Aktivizo qasjen e verifikuar</translation>
 <translation id="4092709865241032354">Për të ndihmuar që "Menaxheri i fjalëkalimeve i Google" të ruajë informacionet e tua të identifikimit, shto emrin tënd të përdoruesit për këtë sajt</translation>
+<translation id="4093173301198419723">Duhet të ketë shkronja të mëdha, shkronja të vogla, numra dhe simbole</translation>
 <translation id="4093865285251893588">Imazhi i profilit</translation>
 <translation id="4093955363990068916">Skedari lokal:</translation>
 <translation id="4094647278880271855">Po përdor një ndryshore mjedisi që nuk mbështetet: <ph name="BAD_VAR" />. Kjo do të ketë ndikim te qëndrueshmëria dhe siguria.</translation>
@@ -5459,6 +5464,7 @@ Përdor Ctrl + Alt + "Ul ndriçimin" për ta zvogëluar.</translation>
 <translation id="4750185073185658673">Shko te telefoni për të shqyrtuar disa leje të tjera. Sigurohu që Bluetooth-i dhe Wi-Fi në telefon të jenë aktive.</translation>
 <translation id="4750394297954878236">Sugjerime</translation>
 <translation id="475088594373173692">Përdoruesi i parë</translation>
+<translation id="4753084533826742808">Duhet të ketë të paktën 1 karakter</translation>
 <translation id="4754590344707355551">Përmirëso shfletuesin tënd me shtesat</translation>
 <translation id="4756378406049221019">Ndalo/Ringarko</translation>
 <translation id="4756388243121344051">&amp;Historiku</translation>
@@ -5628,6 +5634,7 @@ Përdor Ctrl + Alt + "Ul ndriçimin" për ta zvogëluar.</translation>
 <translation id="4865063548323785458">Ruaj dhe plotëso automatikisht fjalëkalimet për t'u identifikuar me lehtësi në sajte dhe aplikacione</translation>
 <translation id="486635084936119914">Hap automatikisht lloje të caktuara të skedarëve pas shkarkimit</translation>
 <translation id="4867272607148176509">Prindërit mund të miratojnë ose të bllokojnë aplikacionet, të caktojnë kufijtë kohorë dhe të kontrollojnë shfletimin në ueb. Mund të shtohet më vonë një llogari shkolle për t'u qasur në shumicën e burimeve të shkollës.</translation>
+<translation id="486796517585164369">· Skeda e fundit</translation>
 <translation id="4868284252360267853">Ky dialog nuk është aktualisht në fokus. Shtyp Command-Shift-Option dhe A për të fokusuar këtë dialog.</translation>
 <translation id="4868351661310357223">Instalo aplikacione dhe lojëra nga Google Play në <ph name="DEVICE_TYPE" />.</translation>
 <translation id="4869170227080975044">Të lexojë informacionet e rrjetit të ChromeOS</translation>
@@ -6769,7 +6776,6 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="5678888125599911373">Mund t'i hapësh përsëri skedat që ke mbyllur së fundi nga çdo vend ku përdor Chrome</translation>
 <translation id="5678955352098267522">Lexo të dhënat e tua në <ph name="WEBSITE_1" /></translation>
 <translation id="5680050361008726776">Të hiqet "<ph name="ESIM_PROFILE_NAME" />"?</translation>
-<translation id="5680716514229021751">"<ph name="FILE_NAME" />" ka të dhëna delikate. Organizata jote do të të lejojë që ta ruash atë në hapësirën ruajtëse në renë kompjuterike ose ta heqësh atë. Administratori yt thotë: <ph name="CUSTOM_MESSAGE" /></translation>
 <translation id="5681586175480958839">Skedari është hapur tashmë</translation>
 <translation id="5684110242705861346">Shtesa "<ph name="NAME" />" është shtuar nga politika e organizatës sate dhe po e kontrollon këtë cilësim. <ph name="BEGIN_LINK" />Shiko detajet<ph name="END_LINK" /></translation>
 <translation id="5684181005476681636">Detajet e Wi-Fi</translation>
@@ -8481,6 +8487,7 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="6871860225073478239">Gjuhët...</translation>
 <translation id="6873156759937047811">Kodi PIN:</translation>
 <translation id="6873571253135628430">Ndrysho lejet e sajtit</translation>
+<translation id="6874986444867497677">Instalimi nuk mund të përfundohej. Provo përsëri ose mbylle këtë dritare.</translation>
 <translation id="6876155724392614295">Biçikletë</translation>
 <translation id="6876469544038980967">Jo i dobishëm</translation>
 <translation id="6878422606530379992">Sensorët lejohen</translation>
@@ -9887,6 +9894,7 @@ Shtyp një çelës ose tast të caktuar për të hequr detyrën.</translation>
 <translation id="786073089922909430">Shërbimi: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7861215335140947162">&amp;Shkarkimet</translation>
 <translation id="7861846108263890455">Gjuha e "Llogarisë së Google"</translation>
+<translation id="7862185352068345852">Dëshiron të largohesh nga sajti?</translation>
 <translation id="7864114920800968141">Për <ph name="NUM_MIN" /> min.</translation>
 <translation id="7864539943188674973">Çaktivizo Bluetooth-in</translation>
 <translation id="7864825798076155402">Të ruhet në "Llogarinë tënde të Google"?</translation>
@@ -10017,6 +10025,7 @@ Shtyp një çelës ose tast të caktuar për të hequr detyrën.</translation>
 <translation id="7947962633355574091">K&amp;opjo adresën e videos</translation>
 <translation id="7947964080535614577">Sajtet shfaqin zakonisht reklama që të mund të ofrojnë përmbajtje ose shërbime falas. Por disa sajte dihet se shfaqin reklama ndërhyrëse ose mashtruese.</translation>
 <translation id="7948407723851303488">Të gjitha faqet e <ph name="DOMAIN_NAME" /></translation>
+<translation id="7948579849190819732">Skeda aktuale</translation>
 <translation id="7949038991703929816">Ngarkimi i historikut dështoi. Sigurohu që skedarët të përmbajnë evidenca të vlefshme të përditësuesit.</translation>
 <translation id="7950629216186736592">Arsyeja: LBS mbështet vetëm URL-të në formatin http://, https:// dhe file://.</translation>
 <translation id="7950814699499457511">Aktive • Kjo shtesë nuk i ka publikuar praktikat e privatësisë, si p.sh. se si i mbledh dhe i përdor të dhënat</translation>
@@ -10327,6 +10336,7 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="815491593104042026">Gabim! Vërtetimi dështoi, sepse ishte i konfiguruar të përdorte një URL jo të sigurt (<ph name="BLOCKED_URL" />). Kontakto me administratorin tënd.</translation>
 <translation id="8155214519979960765">Për t'u identifikuar përsëri me një çelës kalimi në këtë pajisje, do të duhet të verifikosh që je ti. Nëse ke një opsion tjetër identifikimi, si p.sh. një fjalëkalim, mund të përdorësh atë më mirë për t'u identifikuar.</translation>
 <translation id="8157248655669507702">Aktivizo të dhënat celulare për të instaluar një profil të kartës eSIM</translation>
+<translation id="8157295877370077682">Largohu nga sajti</translation>
 <translation id="8157704005178149728">Po konfiguron mbikëqyrjen</translation>
 <translation id="8157728322324420120">Sugjeruar për ty</translation>
 <translation id="8157849462797352650">Pajisja jote merr përditësimet më të fundit të sigurisë, qëndrueshmërisë dhe performancës</translation>
@@ -10911,6 +10921,7 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8564220755011656606">Nuk mund të qaset te mikrofoni</translation>
 <translation id="8565021320663436446">Të hiqet <ph name="MEMBER_FULL_NAME" />?</translation>
 <translation id="8566916288687510520">Fjalëkalimi i ri u mor</translation>
+<translation id="8567946600191652875">Duhet të ketë të paktën 6 karaktere dhe të ketë të paktën një shkronjë ose simbol</translation>
 <translation id="8569673829373920831">Më shumë rreth: <ph name="APP_NAME" /></translation>
 <translation id="8569682776816196752">Nuk u gjet asnjë destinacion</translation>
 <translation id="857026972772582291">Politikat e <ph name="APP_NAME" /></translation>
@@ -11853,6 +11864,7 @@ Kjo mund të përfshijë informacione për softuerët e instaluar, skedarët, sh
 <translation id="918352324374649435">{COUNT,plural, =1{Aplikacion}other{# aplikacione}}</translation>
 <translation id="9186743636216815027">{NUM_APPS,plural,offset:2 =1{Administratori yt mund të regjistrojë ekranin tënd me <ph name="APP0_NAME" />. Nuk do të njoftohesh kur të fillojë regjistrimi.}=2{Administratori yt mund të regjistrojë ekranin tënd me <ph name="APP0_NAME" /> dhe <ph name="APP1_NAME" />. Nuk do të njoftohesh kur të fillojë regjistrimi.}=3{Administratori yt mund të regjistrojë ekranin tënd me <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> dhe 1 aplikacion tjetër. Nuk do të njoftohesh kur të fillojë regjistrimi.}other{Administratori yt mund të regjistrojë ekranin tënd me <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> dhe # aplikacione të tjera. Nuk do të njoftohesh kur të fillojë regjistrimi.}}</translation>
 <translation id="9186963452600581158">Identifikohu me "Llogarinë e Google" të fëmijës tënd</translation>
+<translation id="9187249589560413026">{TAB_COUNT,plural, =1{Po ndan 1 skedë}other{Po ndan # skeda}}</translation>
 <translation id="9187967020623675250">Tastet nuk përputhen. Shtyp një tast çfarëdo për veprimin "<ph name="RESPONSE" />".</translation>
 <translation id="9188142767272053574">Aktivizo izolimin e procesit</translation>
 <translation id="9192019773545828776">Dëgjo komentet me zë që të mund ta përdorësh pajisjen pa shikuar në ekran. Komentet në breil ofrohen me një pajisje të lidhur. Përdor Ctrl + Alt + Z për të aktivizuar dhe çaktivizuar ChromeVox. Përdor "Kërko" + shigjeta majtas ose shigjeta djathtas për të naviguar. Përdor "Kërko" + "Hapësirë" për të zgjedhur (për të aktivizuar).</translation>

@@ -69,6 +69,7 @@
 <translation id="1253032109800629289">„Benachrichtigungen zum Preis-Tracking erhalten“ ausblenden</translation>
 <translation id="1254424942107648268">Vorherige Übereinstimmung suchen</translation>
 <translation id="1258491128795710625">Neue Funktionen</translation>
+<translation id="126093867734601535">Passt die Höhe des Tabellenblatts wieder an.</translation>
 <translation id="1262724000444746916">„Zu Lesezeichen hinzufügen“ ausblenden</translation>
 <translation id="1263231323834454256">Leseliste</translation>
 <translation id="1263433075299269530">Zuletzt geöffneter Tab</translation>
@@ -201,6 +202,7 @@
 <translation id="1657011748321897393">Fehler beim Teilen, weil keine Netzwerkverbindung besteht</translation>
 <translation id="1668001730617725852">In neuer Tabgruppe öffnen</translation>
 <translation id="1670861525135254448">Fahrzeug speichern</translation>
+<translation id="1671568970992212376">Du kannst Fotos in Google Fotos speichern und jederzeit auf sie zugreifen.</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> – <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1678855624321223424">Aufgrund der Richtlinien deiner Organisation kann diese Datei vertrauliche Informationen enthalten</translation>
 <translation id="168389590065701766">Du kannst Google Lens jetzt über die Adressleiste öffnen und nach allem suchen, was du siehst</translation>
@@ -335,7 +337,6 @@
 <translation id="2119962645034852864">Einige Dienste sind für dein Konto nicht verfügbar</translation>
 <translation id="2120553909046681540">Deine Organisation hat das private Surfen deaktiviert.</translation>
 <translation id="2122754583996902531">Dein Browser wird verwaltet. <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
-<translation id="21243612977487926">Die Chats deiner Organisation werden nicht zur Optimierung unserer Modelle verwendet. Da Gemini Fehler machen kann, auch bei Informationen über Personen, solltest du die Antworten überprüfen. <ph name="YOUR_PRIVACY_GEMINI" /></translation>
 <translation id="2139867232736819575">Nach von dir kopiertem Text suchen</translation>
 <translation id="2147127444698817042">Nur für iPhone</translation>
 <translation id="2148799636999124959">Zum schnellen Anmelden auf Websites und in Apps.</translation>
@@ -677,6 +678,7 @@
 <translation id="340669334496430859">Zuletzt geändert</translation>
 <translation id="3409785640040772790">Maps</translation>
 <translation id="3416023309465857378">25. Okt. 2023</translation>
+<translation id="3426715535827854458">„Symbolleiste ausblenden“ ausblenden</translation>
 <translation id="3435738964857648380">Sicherheit</translation>
 <translation id="3441673211568148613">Private Browsing-Aktivitäten schützen</translation>
 <translation id="3443810440409579745">Tab erhalten.</translation>
@@ -721,7 +723,6 @@
 <translation id="3565012355885596568">Bilder konnten nicht geladen werden</translation>
 <translation id="3565930036634619844">Tab. <ph name="TAB_INDEX" /> von <ph name="NUMBER_OF_TABS" />.</translation>
 <translation id="3567168891086460374">Anders speichern</translation>
-<translation id="3571703298474554279">Schnellere Nutzung der App</translation>
 <translation id="3572503683475187385">Der aktuelle Tab wird mit Gemini geteilt, wenn du einen neuen Chat startest. Inhalte und URLs geteilter Tabs werden an Google gesendet. <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
 <translation id="3572607909481582402">Im Google-Konto</translation>
 <translation id="3575234738189584619">Mit Lens suchen</translation>
@@ -979,6 +980,7 @@
 <translation id="4489536976005181779">{count,plural, =1{Die Seite wurde der Leseliste in deinem Konto {email} hinzugefügt}other{Die Seiten wurden der Leseliste in deinem Konto {email} hinzugefügt}}</translation>
 <translation id="4493604894403585654">Du bist als <ph name="USER_EMAIL" /> angemeldet. Du kannst die Synchronisierung jederzeit in den Einstellungen beenden. Google kann die Google Suche und andere Dienste auf der Grundlage deines Verlaufs personalisieren.</translation>
 <translation id="4502423230170890588">Von diesem Gerät entfernen</translation>
+<translation id="4508486880075514067">Auf Vollbild maximieren</translation>
 <translation id="4508750114462689118">Anmeldeangebot schließen</translation>
 <translation id="4509345063551561634">Speicherort:</translation>
 <translation id="4517684186578051919">Geräteinformationen</translation>
@@ -1211,6 +1213,7 @@
 <translation id="5242899254250321823">Passwort auf der Website ändern</translation>
 <translation id="5248640482715684545">Diese Website versucht, eine andere App zu öffnen.</translation>
 <translation id="5250371859659394278">Von einer unbekannten Quelle</translation>
+<translation id="525510229763628836">Minimiert</translation>
 <translation id="5269913829202614649">Startseite anpassen</translation>
 <translation id="5271265092610673171">{count,plural, =1{Ein Pflichtfeld ist leer. Bitte fülle es vor dem Speichern aus.}other{Einige Pflichtfelder sind leer. Bitte fülle sie vor dem Speichern aus.}}</translation>
 <translation id="5271549068863921519">Passwort speichern</translation>
@@ -1322,7 +1325,6 @@ Handoff muss auch im Abschnitt „Allgemein“ deiner Einstellungen aktiviert se
 <translation id="5652623411397330904">Hier werden die von dir beobachteten Produkte angezeigt.</translation>
 <translation id="5656431592348714536">Verbesserter Kalender</translation>
 <translation id="5659593005791499971">E-Mail</translation>
-<translation id="5665739277590037307">Es gelten die <ph name="GOOGLE_TERMS" /> und die <ph name="GEMINI_APPS_PRIVACY" />. Da Gemini Fehler machen kann, solltest du die Antworten überprüfen.</translation>
 <translation id="5666313630530585305">Melde dich auf einer Website an.</translation>
 <translation id="5669335982068190158">Du wurdest beim Zurücksetzen deines iPhones abgemeldet. Tippe unten auf „Weiter“, um dich anzumelden.</translation>
 <translation id="5669528293118408608">www</translation>
@@ -1665,6 +1667,7 @@ Handoff muss auch im Abschnitt „Allgemein“ deiner Einstellungen aktiviert se
 <translation id="6746338529702829275">Kontodaten prüfen</translation>
 <translation id="6750456911389438250">{count,plural, =1{{count} Verlaufseintrag importiert}other{{count} Verlaufseinträge importiert}}</translation>
 <translation id="6755200887046212842">Konten verwalten</translation>
+<translation id="6757899787818440812">Mittlere Höhe</translation>
 <translation id="6759709389246683070">Du kannst diesen Tab gedrückt halten, um eine Erinnerung dafür einzurichten, dass du ihn später noch einmal aufrufen möchtest</translation>
 <translation id="6761393919622941301">Audio</translation>
 <translation id="6770452996697898492">[GEBUCHT]</translation>
@@ -1741,6 +1744,7 @@ Handoff muss auch im Abschnitt „Allgemein“ deiner Einstellungen aktiviert se
 <translation id="7015418667643980944">Geteilte Ansicht</translation>
 <translation id="7016070607649558507">Du nutzt 1 schwaches Passwort. Ändere es jetzt, um dich bestmöglich zu schützen.</translation>
 <translation id="7016958933495968912">Optionen für Discover</translation>
+<translation id="7019477124580742994"><ph name="SEARCH_PROVIDER" /> Suche</translation>
 <translation id="7029809446516969842">Passwörter</translation>
 <translation id="7035825883570480307">Benachrichtigungen aktivieren?</translation>
 <translation id="7039345315346323556">Zuletzt verwendet</translation>
@@ -1750,7 +1754,6 @@ Handoff muss auch im Abschnitt „Allgemein“ deiner Einstellungen aktiviert se
 <translation id="7063811929043357292">Dein Konto wird von deinen Eltern verwaltet.
 <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
 <translation id="7067780033517902110">Alle Dateien</translation>
-<translation id="707086654079606593">Adressen verwalten…</translation>
 <translation id="7080806333218412752">Sendet URLs an Safe Browsing, um sie zu prüfen. Sendet außerdem eine kleine Auswahl von Seiten, Downloads, Erweiterungsaktivitäten und Systeminformationen, um die Erkennung neuer Bedrohungen zu verbessern. Verknüpft diese Daten vorübergehend mit deinem Google-Konto, sofern du angemeldet bist, um dich in Google-Apps zu schützen.</translation>
 <translation id="7082853213442715471">Wenn dieser Modus aktiviert ist, werden bestimmte Webtechnologien blockiert. Dies kann dazu führen, dass einige Websites langsamer geladen werden oder nicht richtig funktionieren.</translation>
 <translation id="7091023926159231962">{count,plural, =1{{count} Passwort konnte nicht importiert werden}other{{count} Passwörter konnten nicht importiert werden}}</translation>
@@ -1800,7 +1803,6 @@ Handoff muss auch im Abschnitt „Allgemein“ deiner Einstellungen aktiviert se
 <translation id="7275307913765547631">Standortnutzungsbedingungen für Korea</translation>
 <translation id="728025568708172005">Tour starten</translation>
 <translation id="7280980607183752256">Datei kann nicht importiert werden</translation>
-<translation id="7281202269687163394">Datenschutz und Gemini.</translation>
 <translation id="7282197670900591579">Zitronengelbes Design</translation>
 <translation id="7293429513719260019">Sprache auswählen</translation>
 <translation id="7300448350764260141">Schütze dich noch besser vor Onlinebedrohungen.</translation>
@@ -1812,7 +1814,6 @@ Handoff muss auch im Abschnitt „Allgemein“ deiner Einstellungen aktiviert se
 <translation id="7345061034321640811">Import nicht zulässig</translation>
 <translation id="7347998088283246662">Du kannst Passwörter, deinen Verlauf, Lesezeichen und mehr importieren</translation>
 <translation id="7352651011704765696">Ein Problem ist aufgetreten</translation>
-<translation id="7363497636543208734">Die Bedienung der App ist jetzt einfacher.</translation>
 <translation id="7364796246159120393">Datei auswählen</translation>
 <translation id="736564850024123010">Du kannst die Position der Adressleiste verschieben, um den Browser an deine Bedürfnisse anzupassen.</translation>
 <translation id="7366909168761621528">Browserdaten</translation>
@@ -2124,6 +2125,7 @@ Handoff muss auch im Abschnitt „Allgemein“ deiner Einstellungen aktiviert se
 <translation id="8368001212524806591">Preis beobachten</translation>
 <translation id="8368198938968349418">Autofill aktivieren…</translation>
 <translation id="8370406443343902172">Zu den Einstellungen…</translation>
+<translation id="8370929854657845191">Auf mittlere Höhe erweitern</translation>
 <translation id="8372471489238799313">{count,plural, =1{Adresse löschen}other{Adressen löschen}}</translation>
 <translation id="8378714024927312812">Von deiner Organisation verwaltet</translation>
 <translation id="8385363453480067273">Infos zu dem, was du gerade siehst – mit Google Lens</translation>

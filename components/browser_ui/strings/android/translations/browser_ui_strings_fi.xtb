@@ -5,7 +5,6 @@
 <translation id="1036348656032585052">Poista käytöstä</translation>
 <translation id="1046742265332833834">Sininen teema</translation>
 <translation id="1070329623210597193">Tiedostot, jotka sivusto voi katsella tai muokata</translation>
-<translation id="1073417869336441572">Auta meitä parantamaan Chromea kertomalla, miksi sallit kolmannen osapuolen evästeet. <ph name="BEGIN_LINK" />Lähetä palautetta<ph name="END_LINK" /></translation>
 <translation id="1074758928858737435">Voit pyytää sivustojen tietokoneversiota</translation>
 <translation id="1109482864356262001">Liike- tai valoantureita edellyttävät ominaisuudet eivät toimi</translation>
 <translation id="1126523729897810826">Näillä ehdotuksilla saat Chromesta mahdollisimman paljon irti</translation>
@@ -328,6 +327,7 @@
 <translation id="4290791284969893584">Kun sivu on suljettu, aloittamiasi tehtäviä ei välttämättä suoriteta loppuun</translation>
 <translation id="429312253194641664">Sivusto toistaa mediaa</translation>
 <translation id="42981349822642051">Laajenna</translation>
+<translation id="4310738531374808763">Etusivun räätälöinti</translation>
 <translation id="4336219115486912529">{COUNT,plural, =1{Vanhenee huomenna}other{Vanhenee # päivän kuluttua}}</translation>
 <translation id="4338831206024587507">Kaikki sivustot, jotka kuuluvat verkkotunnukseen <ph name="DOMAIN" /></translation>
 <translation id="4340799661701629185">Älä salli sivustojen lähettää ilmoituksia</translation>
@@ -440,7 +440,6 @@
 <translation id="5555115555607204100">Älä nopeuta sivustoja Chromen V8-moottorilla, mutta paranna Chromen suojaa hyökkäyksiä vastaan hieman</translation>
 <translation id="5556459405103347317">Lataa uudelleen</translation>
 <translation id="5591840828808741583"><ph name="SITE_NAME" /> estetty</translation>
-<translation id="560980142378233747">Tällöin sivuston ominaisuuksien pitäisi toimia odotetulla tavalla, mutta selaussuojaus saattaa olla heikompi. <ph name="BEGIN_LINK" />Lähetä palautetta<ph name="END_LINK" /></translation>
 <translation id="5617702678271228680">Uusi välilehti ‐sivun korttien alapaneeli</translation>
 <translation id="5621413808884657932">Kun tämä on päällä, sivustot voivat pyytää pääsyä muihin sovelluksiin ja palveluihin tällä laitteella. Kun tämä on pois päältä, sivustot eivät pääse muihin sovelluksiin ja palveluihin tällä laitteella.</translation>
 <translation id="5632485077360054581">Näytä miten</translation>
@@ -519,6 +518,7 @@
 <translation id="6262279340360821358"><ph name="PERMISSION_1" /> ja <ph name="PERMISSION_2" /> estetty</translation>
 <translation id="6270391203985052864">Sivustot saavat pyytää lupaa lähettää ilmoituksia</translation>
 <translation id="6295158916970320988">Kaikki sivustot</translation>
+<translation id="6305257382500066042">Kokeile nyt</translation>
 <translation id="6320088164292336938">Värinä</translation>
 <translation id="6367753977865761591">Estä kolmannen osapuolen sisäänkirjautuminen tietylle sivustolle.</translation>
 <translation id="6398765197997659313">Poistu koko näytön tilasta</translation>
@@ -529,7 +529,6 @@
 <translation id="6447842834002726250">Evästeet</translation>
 <translation id="6452138246455930388">Hinnanalennus avoimella välilehdellä, vanha hinta <ph name="OLD_PRICE" />, nyt <ph name="NEW_PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN_NAME" /></translation>
 <translation id="6500423977866688905">Kun ikkuna on kapea, pyydä mobiilinäkymää</translation>
-<translation id="6514791408445720076">Muokkaa sivua</translation>
 <translation id="6527303717912515753">Jaa</translation>
 <translation id="6530703012083415527">Kun tämä on päällä, sivustot voivat käyttää ponnahdusikkunoita ja uudelleenohjauksia. Kun tämä on pois päältä, sivustot eivät voi käyttää ponnahdusikkunoita tai uudelleenohjauksia.</translation>
 <translation id="6540488083026747005">Olet sallinut kolmannen osapuolen evästeet tällä sivustolla</translation>
@@ -593,7 +592,6 @@
 <translation id="7141896414559753902">Estä ponnahdusikkunoiden näyttäminen sivustoilla (suositus)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> kt</translation>
 <translation id="7180611975245234373">Päivitä</translation>
-<translation id="7180865173735832675">Muokkaa</translation>
 <translation id="7188508872042490670">Laitepohjainen sivustodata</translation>
 <translation id="7201549776650881587">Tämä toiminto poistaa kaiken datan ja kaikki evästeet sivuston <ph name="ORIGIN" /> alla olevilta sivustoilta tai sen sovelluksesta aloitusnäytöllä</translation>
 <translation id="7219254577985949841">Poistetaanko sivustodata?</translation>
@@ -707,7 +705,6 @@ Lisäsuojaus ohjaa näitä Chromen asetuksia:</translation>
 <translation id="83792324527827022">Sivusto käyttää kameraasi ja mikrofoniasi</translation>
 <translation id="8380167699614421159">Tällä sivustolla on häiritseviä tai harhaanjohtavia mainoksia</translation>
 <translation id="8394832520002899662">Palaa sivustolle napauttamalla</translation>
-<translation id="8404500559369898929">Tee Chromesta näköisesi valitsemalla oma taustateema</translation>
 <translation id="8409345997656833551">Saat ilmoituksen, kun artikkelissa voidaan käyttää yksinkertaistettua näkymää</translation>
 <translation id="8416874502399604126">Mikrofoni sallittu tällä kertaa</translation>
 <translation id="8423565414844018592">Tekstin skaalaukseksi valittu <ph name="TEXT_SCALING" /></translation>
@@ -791,7 +788,7 @@ Lisäsuojaus ohjaa näitä Chromen asetuksia:</translation>
 <translation id="9156722768168878035">Salli Chromen näyttää viimeaikaiset välilehdet laitteen sovelluslistalla ja hakutuloksissa. Voit laittaa tämän pois päältä milloin tahansa Chromen asetuksista.</translation>
 <translation id="9162462602695099906">Tämä sivu on vaarallinen</translation>
 <translation id="9182556968660520230">Älä salli sivustojen toistaa suojattua sisältöä</translation>
-<translation id="927148002081263046">Yhteystiedon jakaminen</translation>
+<translation id="927148002081263046">Jaa yhteystieto</translation>
 <translation id="947156494302904893">Avaamasi sivustot voivat vahvistaa, että olet oikea ihminen etkä botti</translation>
 <translation id="959682366969460160">Järjestä</translation>
 <translation id="960590623979248167">Näytä linkit</translation>

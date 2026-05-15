@@ -69,6 +69,7 @@
 <translation id="1253032109800629289">隱藏「接收價格追蹤通知」</translation>
 <translation id="1254424942107648268">尋找上一個相符的項目</translation>
 <translation id="1258491128795710625">新功能</translation>
+<translation id="126093867734601535">重新調整功能表高度。</translation>
 <translation id="1262724000444746916">隱藏「加入書籤」</translation>
 <translation id="1263231323834454256">閱讀清單</translation>
 <translation id="1263433075299269530">上次開啟的分頁</translation>
@@ -201,6 +202,7 @@
 <translation id="1657011748321897393">您尚未連上網路，因此無法分享。</translation>
 <translation id="1668001730617725852">在新分頁群組中開啟</translation>
 <translation id="1670861525135254448">儲存車輛</translation>
+<translation id="1671568970992212376">將相片儲存到 Google 相簿，隨時都能存取。</translation>
 <translation id="1674504678466460478">從<ph name="SOURCE_LANGUAGE" />翻譯為<ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1678855624321223424">根據貴機構的政策，這個檔案可能含有機密資訊</translation>
 <translation id="168389590065701766">你現在可以從網址列開啟 Google 智慧鏡頭，搜尋畫面上的任何內容</translation>
@@ -335,7 +337,6 @@
 <translation id="2119962645034852864">你的帳戶無法使用某些服務</translation>
 <translation id="2120553909046681540">貴機構已關閉私密瀏覽功能。</translation>
 <translation id="2122754583996902531">你的瀏覽器受到管理。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
-<translation id="21243612977487926">貴組織的對話內容不會用於改良我們的模型。Gemini 提供的資訊可能不準確 (包括人物介紹)，因此請務必查證。<ph name="YOUR_PRIVACY_GEMINI" /></translation>
 <translation id="2139867232736819575">搜尋你複製的文字</translation>
 <translation id="2147127444698817042">僅適用於 iPhone</translation>
 <translation id="2148799636999124959">使用已儲存的密碼快速登入網站和應用程式。</translation>
@@ -677,6 +678,7 @@
 <translation id="340669334496430859">上次修改時間</translation>
 <translation id="3409785640040772790">地圖</translation>
 <translation id="3416023309465857378">2023 年 10 月 25 日</translation>
+<translation id="3426715535827854458">隱藏「隱藏工具列」</translation>
 <translation id="3435738964857648380">安全性</translation>
 <translation id="3441673211568148613">保護瀏覽隱私</translation>
 <translation id="3443810440409579745">已收到分頁。</translation>
@@ -721,7 +723,6 @@
 <translation id="3565012355885596568">無法載入圖片</translation>
 <translation id="3565930036634619844">分頁。第 <ph name="NUMBER_OF_TABS" /> 個，共 <ph name="TAB_INDEX" /> 個。</translation>
 <translation id="3567168891086460374">以其他方式儲存</translation>
-<translation id="3571703298474554279">使用應用程式更快速</translation>
 <translation id="3572503683475187385">展開新對話時，系統會與 Gemini 分享目前的分頁。與 Gemini 分享分頁時，系統會將內容和網址傳送給 Google。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="3572607909481582402">儲存到你的 Google 帳戶</translation>
 <translation id="3575234738189584619">使用智慧鏡頭搜尋</translation>
@@ -979,6 +980,7 @@
 <translation id="4489536976005181779">{count,plural, =1{已將網頁新增至帳戶 {email} 的閱讀清單}other{已將網頁新增至帳戶 {email} 的閱讀清單}}</translation>
 <translation id="4493604894403585654">目前登入的帳戶是 <ph name="USER_EMAIL" />。你隨時可以前往「設定」停止同步。Google 可能會根據你的歷史記錄，在 Google 搜尋和其他服務中提供個人化體驗。</translation>
 <translation id="4502423230170890588">從這個裝置中移除</translation>
+<translation id="4508486880075514067">開啟全螢幕模式</translation>
 <translation id="4508750114462689118">關閉登入提示</translation>
 <translation id="4509345063551561634">位置：</translation>
 <translation id="4517684186578051919">裝置資訊</translation>
@@ -1211,6 +1213,7 @@
 <translation id="5242899254250321823">變更網站密碼</translation>
 <translation id="5248640482715684545">這個網站正在嘗試開啟另一個應用程式。</translation>
 <translation id="5250371859659394278">來源不明</translation>
+<translation id="525510229763628836">已縮到最小</translation>
 <translation id="5269913829202614649">自訂首頁</translation>
 <translation id="5271265092610673171">{count,plural, =1{必填欄位沒有內容，請先填寫再儲存。}other{部分必填欄位沒有內容，請先填寫再儲存。}}</translation>
 <translation id="5271549068863921519">儲存密碼</translation>
@@ -1322,7 +1325,6 @@
 <translation id="5652623411397330904">你追蹤的產品會顯示在這裡。</translation>
 <translation id="5656431592348714536">加強型日曆</translation>
 <translation id="5659593005791499971">電子郵件</translation>
-<translation id="5665739277590037307">適用《<ph name="GOOGLE_TERMS" />》和《<ph name="GEMINI_APPS_PRIVACY" />》。Gemini 可能會&lt;br&gt;出錯，因此請查證回覆內容。</translation>
 <translation id="5666313630530585305">登入網站。</translation>
 <translation id="5669335982068190158">你已在重設 iPhone 時登出，輕觸下方的「繼續」即可登入。</translation>
 <translation id="5669528293118408608">www</translation>
@@ -1665,6 +1667,7 @@
 <translation id="6746338529702829275">查看帳戶資料</translation>
 <translation id="6750456911389438250">{count,plural, =1{已匯入 {count} 個歷史記錄項目}other{已匯入 {count} 個歷史記錄項目}}</translation>
 <translation id="6755200887046212842">管理帳戶</translation>
+<translation id="6757899787818440812">中等高度</translation>
 <translation id="6759709389246683070">按住這個分頁即可設定提醒，通知自己之後再回來查看</translation>
 <translation id="6761393919622941301">音訊</translation>
 <translation id="6770452996697898492">[已預約]</translation>
@@ -1741,6 +1744,7 @@
 <translation id="7015418667643980944">分割畫面</translation>
 <translation id="7016070607649558507">你有 1 組低強度密碼，請立即修正以確保安全。</translation>
 <translation id="7016958933495968912">探索的選項</translation>
+<translation id="7019477124580742994"><ph name="SEARCH_PROVIDER" /> 搜尋</translation>
 <translation id="7029809446516969842">密碼</translation>
 <translation id="7035825883570480307">要開啟通知功能嗎？</translation>
 <translation id="7039345315346323556">近期存取</translation>
@@ -1750,7 +1754,6 @@
 <translation id="7063811929043357292">你的帳戶是由家長管理。
 <ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="7067780033517902110">所有檔案</translation>
-<translation id="707086654079606593">管理地址…</translation>
 <translation id="7080806333218412752">可將網址傳送至安全瀏覽功能進行檢查。同時也會傳送少量網頁、下載內容、擴充功能活動及系統資訊，以協助找出新的威脅。當你登入 Google 帳戶後，系統會將這些資料暫時連結至你的帳戶，以便在你使用各項 Google 應用程式時提供保護。</translation>
 <translation id="7082853213442715471">開啟後，系統會封鎖特定的網頁技術，部分網站載入速度可能會因此變慢或無法正常運作。</translation>
 <translation id="7091023926159231962">{count,plural, =1{無法匯入 {count} 組密碼}other{無法匯入 {count} 組密碼}}</translation>
@@ -1800,7 +1803,6 @@
 <translation id="7275307913765547631">韓國定位條款</translation>
 <translation id="728025568708172005">開始導覽</translation>
 <translation id="7280980607183752256">無法匯入這個檔案</translation>
-<translation id="7281202269687163394">個人隱私權與 Gemini。</translation>
 <translation id="7282197670900591579">黃金柚主題</translation>
 <translation id="7293429513719260019">選取語言</translation>
 <translation id="7300448350764260141">多添一層防護，有效防範線上威脅。</translation>
@@ -1812,7 +1814,6 @@
 <translation id="7345061034321640811">不允許匯入</translation>
 <translation id="7347998088283246662">匯入密碼、歷史記錄、書籤等資料</translation>
 <translation id="7352651011704765696">發生錯誤</translation>
-<translation id="7363497636543208734">現在操作更順手。</translation>
 <translation id="7364796246159120393">選擇檔案</translation>
 <translation id="736564850024123010">你可更動網址列位置，讓自己使用更順手。</translation>
 <translation id="7366909168761621528">瀏覽資料</translation>
@@ -2124,6 +2125,7 @@
 <translation id="8368001212524806591">追蹤價格</translation>
 <translation id="8368198938968349418">開啟自動填寫功能…</translation>
 <translation id="8370406443343902172">前往「設定」...</translation>
+<translation id="8370929854657845191">展開到中等高度</translation>
 <translation id="8372471489238799313">{count,plural, =1{刪除地址}other{刪除地址}}</translation>
 <translation id="8378714024927312812">由貴機構管理</translation>
 <translation id="8385363453480067273">使用 Google 智慧鏡頭搜尋你的視界</translation>

@@ -263,6 +263,7 @@ Csak az Ön összetett jelszava ismeretében tudja bárki is megtekinteni a titk
 <translation id="2184272387334793084">A bejelentkezéssel valamennyi eszközén hozzáférhet jelszavaihoz és egyebekhez</translation>
 <translation id="218608176142494674">Megosztás</translation>
 <translation id="2186779861549045980">Kiválaszthatja, hogy milyen adatokat szeretne menteni Google-fiókjába.\nEzeket az elemeket a könyvjelzők között, az olvasólistán és a jelszókezelőben is megtekintheti és kezelheti.</translation>
+<translation id="2190355936436201913">(üres)</translation>
 <translation id="219283042927675668">Lapok a csoportban</translation>
 <translation id="2194856509914051091">Megfontolandó szempontok</translation>
 <translation id="2205701497928406883"><ph name="TAB_TITLE" />, rögzített, tartalmat megosztó lap</translation>
@@ -300,6 +301,7 @@ Csak az Ön összetett jelszava ismeretében tudja bárki is megtekinteni a titk
 <translation id="233375395665273385">Törlés és kijelentkezés</translation>
 <translation id="2341410551640223969">A(z) <ph name="WEBAPK_NAME" /> telepítése nem sikerült.</translation>
 <translation id="2349710944427398404">A Chrome által használt teljes adatmennyiség, beleértve a fiókokat, könyvjelzőket és mentett beállításokat is</translation>
+<translation id="2354001756790975382">További könyvjelzők</translation>
 <translation id="235789365079050412">Google Adatvédelmi irányelvek</translation>
 <translation id="2359808026110333948">Tovább</translation>
 <translation id="2362083820973145409">Bejelentkezve a következőként: <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Megnyitja a beállításokat.</translation>
@@ -896,6 +898,7 @@ Előfordulhat, hogy Google-fiókjában (a <ph name="BEGIN_LINK" />myactivity.goo
 <translation id="4864369630010738180">Bejelentkezés...</translation>
 <translation id="4866368707455379617">Nem lehetséges a(z) <ph name="MODULE" /> telepítése a Chrome-hoz</translation>
 <translation id="4875775213178255010">Javasolt tartalmak</translation>
+<translation id="4876880121961092787">Könyvjelzősáv elrejtése</translation>
 <translation id="4877678010818027629">Belépés inkognitó módba</translation>
 <translation id="4878404682131129617">Nem sikerült a proxyszerveren keresztüli alagút kialakítása</translation>
 <translation id="4880127995492972015">Fordítás…</translation>
@@ -1268,6 +1271,7 @@ Egyes webhelyek például válaszolhatnak rá úgy, hogy olyan hirdetéseket jel
 <translation id="6437162790453527153">Bejelentkezve valamennyi eszközén hozzáférhet könyvjelzőihez és egyebekhez.</translation>
 <translation id="6437478888915024427">Oldaladatok</translation>
 <translation id="6440291723980579689">Az oldalak csak a megnyitásuk után töltődnek be</translation>
+<translation id="6441377161852435370">Lap hozzáadása az olvasólistához</translation>
 <translation id="6441734959916820584">Túl hosszú a név</translation>
 <translation id="6444291413624515012"><ph name="TAB_GROUP_TITLE" /> lapcsoport bezárva</translation>
 <translation id="6452534462676960500">Új tevékenység</translation>
@@ -1357,6 +1361,7 @@ Egyes webhelyek például válaszolhatnak rá úgy, hogy olyan hirdetéseket jel
 <translation id="6787600234697426339">Elérte a maximális ablakszámot (<ph name="MAX_INSTANCE_COUNT" />)</translation>
 <translation id="6795633245022906657">Új lap gyors megnyitása. A gyorsparancs szerkesztéséhez lépjen a Beálltásokhoz.</translation>
 <translation id="679588508577699489">A Chrome beállítása alapértelmezett böngészőként</translation>
+<translation id="679845623837196966">Olvasólista megjelenítése</translation>
 <translation id="679956319013005046">Az automatikus kitöltéshez használni kívánt szolgáltatás beállításához először adja hozzá a szolgáltatást az <ph name="BEGIN_LINK" />Android-beállításokban<ph name="END_LINK" />.</translation>
 <translation id="6802555630140434547">Az ablak be lesz zárva</translation>
 <translation id="6803791793483522764">Értesítések áttekintése</translation>
@@ -1657,6 +1662,7 @@ A beállítás módosításához <ph name="BEGIN_LINK" />törölje a fiókjában
 <translation id="7934668619883965330">A fájl nem tölthető le. A fájlformátum nem támogatott.</translation>
 <translation id="7951102827450076904">Mindig nyissa meg a letöltött PDF-fájlokat</translation>
 <translation id="7952479614398473176">Új ablak megnyitásához csökkentse az aktív ablakok teljes számát legfeljebb ennyire: <ph name="MAX_WINDOW_COUNT_MINUS_ONE" />.</translation>
+<translation id="7956713633345437162">Mobilos könyvjelzők</translation>
 <translation id="7957413488482743710">A virtuális kártya elrejti tényleges kártyáját, így segíthet az esetleges csalások elleni védekezésben. <ph name="BEGIN_LINK1" />További információ a virtuális kártyákról<ph name="END_LINK1" />.</translation>
 <translation id="7959485987650214982">Lapok ezen az eszközön</translation>
 <translation id="7961926449547174351">Letiltotta a tárhelyhez való hozzáférést. A Beállítások menüpontban ismét engedélyezheti.</translation>
@@ -1845,6 +1851,7 @@ A beállítás módosításához <ph name="BEGIN_LINK" />törölje a fiókjában
 <translation id="867914734596684889">Könyvjelzősáv megjelenítése vagy elrejtése</translation>
 <translation id="8683039184091909753">kép</translation>
 <translation id="8688183792442786085"><ph name="TAB_TITLE" />, kiválasztott lap</translation>
+<translation id="8696297579102085705">Küldés az eszközére</translation>
 <translation id="8697753151306746444">Inkább ablak vagy képernyő megosztása</translation>
 <translation id="8699120352855309748">Ne ajánlja fel a fordítást ezekről a nyelvekről</translation>
 <translation id="8712637175834984815">Értem</translation>

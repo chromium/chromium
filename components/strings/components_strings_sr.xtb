@@ -316,7 +316,6 @@
 <translation id="1463793142714244641">Некретнине за тајмшер и одмор</translation>
 <translation id="1465457928007067810">IBAN је сачуван на Google налогу</translation>
 <translation id="1467432559032391204">Улево</translation>
-<translation id="1468653229182955856"><ph name="ONE_TIME_CODE" /> је ваш кôд за <ph name="EMBEDDED_ORIGIN" /> помоћу ког можете да наставите на сајту <ph name="TOP_ORIGIN" /></translation>
 <translation id="1472675084647422956">Прикажи више</translation>
 <translation id="1473183651233018052">JIS B10</translation>
 <translation id="1473495410389165587">Унесите 3 или више речи да бисте добили помоћ при писању</translation>
@@ -549,6 +548,7 @@
 <translation id="1832474362231610822">Слика је сачувана на OneDrive-у</translation>
 <translation id="1832730227369924598">Синхронизација радних површина</translation>
 <translation id="1834452765064623979">Изградња и одржавање</translation>
+<translation id="1837606605602726453">Оцена ризика и категорије се занемарују јер је администратор експлицитно дозволио или блокирао додатак.</translation>
 <translation id="1838374766361614909">Обришите претрагу</translation>
 <translation id="1839331950812095887">неколико речи као резиме ваших мисли</translation>
 <translation id="1839551713262164453">Валидација вредности смерница није успела уз грешке</translation>
@@ -1860,6 +1860,7 @@
 <translation id="3875783148670536197">Покажи ми како</translation>
 <translation id="3877603629930976930">Не дели</translation>
 <translation id="3878445208930547646">Копирање са овог сајта није дозвољено</translation>
+<translation id="3879674895057686427">Одаберите језик превода</translation>
 <translation id="3879748587602334249">Менаџер преузимања</translation>
 <translation id="3880456882942693779">Уметност и забава</translation>
 <translation id="3880589673277376494">Интернет и телекомуникације</translation>
@@ -3504,7 +3505,6 @@
 <translation id="6424600253695044005">Простор у клауду</translation>
 <translation id="6425092077175753609">Material</translation>
 <translation id="6427730057873428458">Пресавијање у облику прозора</translation>
-<translation id="6428450836711225518">Верификујте број телефона</translation>
 <translation id="6429267199680088961">A4 Tab</translation>
 <translation id="643051589346665201">Промените Google лозинку</translation>
 <translation id="6431556523611594411">Дели отворене картице</translation>
@@ -4453,7 +4453,6 @@
 <translation id="7874796722855317864">„<ph name="PROXY_UNKNOWN_CONDITION" />“ није познат тип услова.</translation>
 <translation id="7877007680666472091">ИД-ови заштићеног садржаја</translation>
 <translation id="7878562273885520351">Лозинка је можда компромитована</translation>
-<translation id="7881044256965445977">Потражите уређаје на локалној мрежи и повежите се са њима</translation>
 <translation id="7885670691503039914">Добијаћете упозорења имејлом ако се цена снизи на било ком сајту. Ова страница ће бити сачувана у фолдеру обележивача <ph name="LAST_BOOKMARKS_FOLDER" />.</translation>
 <translation id="7886897188117641322">Одаберите широке категорије тема које могу да се користе за персонализацију огласа</translation>
 <translation id="7887683347370398519">Проверите CVC и покушајте поново</translation>
@@ -4980,7 +4979,6 @@
 <translation id="8737685506611670901">отвори линкове за <ph name="PROTOCOL" /> уместо <ph name="REPLACED_HANDLER_TITLE" /></translation>
 <translation id="8738058698779197622">Да бисте успоставили безбедну везу, сат на уређају мора да буде тачан. То је зато што сертификати које веб-сајтови користе за идентификацију важе само одређени временски период. Пошто сат на вашем уређају није тачан, Chromium не може да верификује ове сертификате.</translation>
 <translation id="8740359287975076522">Нисмо успели да пронађемо &lt;abbr id="dnsDefinition"&gt;DNS адресу&lt;/abbr&gt; хоста <ph name="HOST_NAME" />. Покушавамо да утврдимо у чему је проблем.</translation>
-<translation id="8742371904523228557"><ph name="ONE_TIME_CODE" /> је ваш кôд за <ph name="ORIGIN" /></translation>
 <translation id="874918643257405732">Обележите ову картицу</translation>
 <translation id="8751426954251315517">Пробајте поново следећи пут</translation>
 <translation id="8753913772043329557">Евиденције смерница</translation>
@@ -5158,7 +5156,6 @@
 <translation id="9042827002460091668">Проверите интернет везу и пробајте поново</translation>
 <translation id="9043161870923715789">AI режим</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> – <ph name="RESULT_PRODUCT_SOURCE" /></translation>
-<translation id="9046578823518542618"><ph name="URL" /> жели да тражи уређаје на локалној мрежи и повезује се са њима</translation>
 <translation id="9046864189129893978">Микрофони (<ph name="MICS_COUNT" />)</translation>
 <translation id="9046865906192819796">Екран са условима коришћења услуге Купите одмах, платите касније отворен је до половине екрана.</translation>
 <translation id="9047528041803621289">Подразумевани претраживач вам омогућава да претражујете веб. Можете да га промените у подешавањима.</translation>

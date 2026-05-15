@@ -263,6 +263,7 @@ Numai un utilizator care deține expresia ta de acces îți poate citi datele cr
 <translation id="2184272387334793084">Conectează-te pentru a-ți accesa parolele și alte date de pe toate dispozitivele</translation>
 <translation id="218608176142494674">Trimitere</translation>
 <translation id="2186779861549045980">Poți alege ce date să salvezi în Contul Google.\nPoți și să vezi și să gestionezi aceste elemente în marcaje, în lista de lecturi sau în managerul de parole.</translation>
+<translation id="2190355936436201913">(gol)</translation>
 <translation id="219283042927675668">File în grup</translation>
 <translation id="2194856509914051091">De reținut</translation>
 <translation id="2205701497928406883"><ph name="TAB_TITLE" />, filă de trimitere fixată</translation>
@@ -300,6 +301,7 @@ Numai un utilizator care deține expresia ta de acces îți poate citi datele cr
 <translation id="233375395665273385">Șterge și deconectează-te</translation>
 <translation id="2341410551640223969">Nu s-a putut instala <ph name="WEBAPK_NAME" />.</translation>
 <translation id="2349710944427398404">Totalul datelor folosite de Chrome, inclusiv conturile, marcajele și setările salvate</translation>
+<translation id="2354001756790975382">Alte marcaje</translation>
 <translation id="235789365079050412">Politica de confidențialitate Google</translation>
 <translation id="2359808026110333948">Continuă</translation>
 <translation id="2362083820973145409">Conectat(ă) ca <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Deschide setările.</translation>
@@ -896,6 +898,7 @@ Contul Google poate să ofere alte forme ale istoricului de navigare, cum ar fi 
 <translation id="4864369630010738180">Se conectează...</translation>
 <translation id="4866368707455379617">Nu se poate instala <ph name="MODULE" /> pentru Chrome</translation>
 <translation id="4875775213178255010">Sugestii de conținut</translation>
+<translation id="4876880121961092787">Ascunde bara de marcaje</translation>
 <translation id="4877678010818027629">Intră în modul incognito</translation>
 <translation id="4878404682131129617">Nu s-a putut stabili un tunel prin serverul proxy</translation>
 <translation id="4880127995492972015">Tradu…</translation>
@@ -1268,6 +1271,7 @@ De exemplu, unele site-uri pot răspunde la această solicitare afișând anunț
 <translation id="6437162790453527153">Conectează-te pentru a-ți accesa marcajele și altele pe toate dispozitivele</translation>
 <translation id="6437478888915024427">Informații despre pagină</translation>
 <translation id="6440291723980579689">Paginile se încarcă numai după ce le deschizi</translation>
+<translation id="6441377161852435370">Adaugă fila în lista de lectură</translation>
 <translation id="6441734959916820584">Numele este prea lung</translation>
 <translation id="6444291413624515012">Grupul de file <ph name="TAB_GROUP_TITLE" /> a fost închis</translation>
 <translation id="6452534462676960500">Activitate nouă</translation>
@@ -1357,6 +1361,7 @@ De exemplu, unele site-uri pot răspunde la această solicitare afișând anunț
 <translation id="6787600234697426339">S-a atins limita de <ph name="MAX_INSTANCE_COUNT" /> ferestre deschise</translation>
 <translation id="6795633245022906657">Deschide rapid o filă nouă. Pentru a edita comanda rapidă, accesează setările.</translation>
 <translation id="679588508577699489">Setează Chrome ca browser prestabilit</translation>
+<translation id="679845623837196966">Afișează lista de lecturi</translation>
 <translation id="679956319013005046">Ca să setezi serviciul preferat de completare automată, mai întâi adaugă serviciul în <ph name="BEGIN_LINK" />Setările Android<ph name="END_LINK" />.</translation>
 <translation id="6802555630140434547">Fereastra va fi închisă</translation>
 <translation id="6803791793483522764">Examinează notificările</translation>
@@ -1657,6 +1662,7 @@ Pentru a modifica această setare, <ph name="BEGIN_LINK" />șterge datele Chrome
 <translation id="7934668619883965330">Nu se poate descărca fișierul. Formatul fișierului nu este acceptat.</translation>
 <translation id="7951102827450076904">Deschide întotdeauna fișierele PDF descărcate</translation>
 <translation id="7952479614398473176">Pentru a deschide o fereastră nouă, redu numărul total de ferestre active la cel mult <ph name="MAX_WINDOW_COUNT_MINUS_ONE" />.</translation>
+<translation id="7956713633345437162">Marcaje mobile</translation>
 <translation id="7957413488482743710">Cardul virtual îți ascunde cardul fizic pentru a te proteja împotriva fraudelor. <ph name="BEGIN_LINK1" />Află mai multe despre cardurile virtuale<ph name="END_LINK1" /></translation>
 <translation id="7959485987650214982">Filele de pe acest dispozitiv</translation>
 <translation id="7961926449547174351">Ai dezactivat accesul la stocare. Accesează Setările pentru a-l activa.</translation>
@@ -1845,6 +1851,7 @@ Pentru a modifica această setare, <ph name="BEGIN_LINK" />șterge datele Chrome
 <translation id="867914734596684889">Afișează sau ascunde bara de marcaje</translation>
 <translation id="8683039184091909753">imagine</translation>
 <translation id="8688183792442786085"><ph name="TAB_TITLE" />, filă selectată</translation>
+<translation id="8696297579102085705">Trimite pe dispozitivul tău</translation>
 <translation id="8697753151306746444">Permite accesul la fereastră sau ecran</translation>
 <translation id="8699120352855309748">Nu oferi traducerea pentru aceste limbi</translation>
 <translation id="8712637175834984815">Am înțeles</translation>

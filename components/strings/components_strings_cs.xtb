@@ -316,7 +316,6 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="1463793142714244641">Nemovitosti pro trávení dovolené</translation>
 <translation id="1465457928007067810">Číslo IBAN bylo uloženo do vašeho účtu Google</translation>
 <translation id="1467432559032391204">Vlevo</translation>
-<translation id="1468653229182955856">Váš kód pro <ph name="EMBEDDED_ORIGIN" /> k pokračování na <ph name="TOP_ORIGIN" /> je <ph name="ONE_TIME_CODE" /></translation>
 <translation id="1472675084647422956">Zobrazit více</translation>
 <translation id="1473183651233018052">JIS B10</translation>
 <translation id="1473495410389165587">Pokud chcete získat pomoc s psaním, zadejte alespoň tři slova</translation>
@@ -549,6 +548,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="1832474362231610822">Fotka se uložila na OneDrive</translation>
 <translation id="1832730227369924598">Synchronizace plochy</translation>
 <translation id="1834452765064623979">Stavby a údržba</translation>
+<translation id="1837606605602726453">Skóre rizika a kategorie se ignorují, protože rozšíření je explicitně povoleno nebo blokováno administrátorem.</translation>
 <translation id="1838374766361614909">Vymazat vyhledávání</translation>
 <translation id="1839331950812095887">pár slov, která shrnují vaše myšlenky</translation>
 <translation id="1839551713262164453">Ověření hodnot zásad selhalo s chybami</translation>
@@ -1856,6 +1856,7 @@ Pokud chcete možnosti uhrazení na splátky skrýt, přejděte na <ph name="BEG
 <translation id="3875783148670536197">Ukázat postup</translation>
 <translation id="3877603629930976930">Nesdílet</translation>
 <translation id="3878445208930547646">Kopírování z tohoto webu není povoleno</translation>
+<translation id="3879674895057686427">Vyberte jazyk, do kterého chcete překládat</translation>
 <translation id="3879748587602334249">Správce stahování</translation>
 <translation id="3880456882942693779">Umění a zábava</translation>
 <translation id="3880589673277376494">Internet a telekomunikace</translation>
@@ -3500,7 +3501,6 @@ Kontaktujte administrátora systému.</translation>
 <translation id="6424600253695044005">Cloudové úložiště</translation>
 <translation id="6425092077175753609">Material</translation>
 <translation id="6427730057873428458">Otevírací přeložení</translation>
-<translation id="6428450836711225518">Ověření telefonního čísla</translation>
 <translation id="6429267199680088961">A4 Tab</translation>
 <translation id="643051589346665201">Změnit heslo Google</translation>
 <translation id="6431556523611594411">Sdílet otevřené karty</translation>
@@ -4448,7 +4448,6 @@ Kontaktujte administrátora systému.</translation>
 <translation id="7874796722855317864">„<ph name="PROXY_UNKNOWN_CONDITION" />“ není známý typ podmínky.</translation>
 <translation id="7877007680666472091">chráněná ID obsahu</translation>
 <translation id="7878562273885520351">Heslo může být prolomeno</translation>
-<translation id="7881044256965445977">Vyhledávat zařízení v místní síti a připojovat se k nim</translation>
 <translation id="7885670691503039914">Pokud cena na některém webu klesne, dostanete e‑mailové upozornění. Tato stránka se uloží do složky záložek <ph name="LAST_BOOKMARKS_FOLDER" />.</translation>
 <translation id="7886897188117641322">Vyberte, které široké kategorie témat mohou být používány k personalizaci reklam</translation>
 <translation id="7887683347370398519">Zkontrolujte kód CVC a zkuste to znovu</translation>
@@ -4975,7 +4974,6 @@ Další podrobnosti:
 <translation id="8737685506611670901">Otevírat odkazy <ph name="PROTOCOL" /> namísto aplikace <ph name="REPLACED_HANDLER_TITLE" /></translation>
 <translation id="8738058698779197622">Aby bylo možné navázat zabezpečené spojení, hodiny musejí být nastaveny správně. Důvodem je, že certifikáty, pomocí kterých se weby identifikují, platí pouze pro pevně daná období. Jelikož hodiny v zařízení nejsou nastaveny správně, prohlížeč Chromium tyto certifikáty nemůže ověřit.</translation>
 <translation id="8740359287975076522">&lt;abbr id="dnsDefinition"&gt;Adresu DNS&lt;/abbr&gt; webu <ph name="HOST_NAME" /> nelze najít. Diagnostikování problému…</translation>
-<translation id="8742371904523228557">Váš kód pro <ph name="ORIGIN" /> je <ph name="ONE_TIME_CODE" /></translation>
 <translation id="874918643257405732">Přidat tuto kartu do záložek</translation>
 <translation id="8751426954251315517">Zkuste to znovu později</translation>
 <translation id="8753913772043329557">Protokoly zásad</translation>
@@ -5153,7 +5151,6 @@ Další podrobnosti:
 <translation id="9042827002460091668">Zkontrolujte připojení k internetu a zkuste to znovu</translation>
 <translation id="9043161870923715789">Režim AI</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> – <ph name="RESULT_PRODUCT_SOURCE" /></translation>
-<translation id="9046578823518542618"><ph name="URL" /> chce vyhledávat zařízení ve vaší místní síti a připojovat se k nim</translation>
 <translation id="9046864189129893978">Mikrofony (<ph name="MICS_COUNT" />)</translation>
 <translation id="9046865906192819796">Obrazovka se smluvními podmínkami platební metody Koupit teď, zaplatit později je otevřená na polovinu výšky.</translation>
 <translation id="9047528041803621289">Pomocí výchozího vyhledávače podle svého výběru můžete vyhledávat na webu. V nastavení ho můžete změnit.</translation>

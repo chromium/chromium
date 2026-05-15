@@ -316,7 +316,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="1463793142714244641">Počitniške enote v časovnem zakupu in počitniške hišice/apartmaji</translation>
 <translation id="1465457928007067810">Številka IBAN je shranjena v račun Google</translation>
 <translation id="1467432559032391204">V levo</translation>
-<translation id="1468653229182955856"><ph name="ONE_TIME_CODE" /> je koda za <ph name="EMBEDDED_ORIGIN" />, če želite nadaljevati na <ph name="TOP_ORIGIN" />.</translation>
 <translation id="1472675084647422956">Pokaži več</translation>
 <translation id="1473183651233018052">JIS B10</translation>
 <translation id="1473495410389165587">Če želite pomoč pri pisanju, vnesite 3 ali več besed</translation>
@@ -549,6 +548,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="1832474362231610822">Fotografija je shranjena v OneDrive</translation>
 <translation id="1832730227369924598">Sinhronizacija namizja</translation>
 <translation id="1834452765064623979">Gradnja in vzdrževanje</translation>
+<translation id="1837606605602726453">Ocena tveganja in kategorije so prezrte, ker je skrbnik razširitev izrecno dovolil ali blokiral.</translation>
 <translation id="1838374766361614909">Čiščenje iskanja</translation>
 <translation id="1839331950812095887">Nekaj besed, ki povzemajo vaše misli</translation>
 <translation id="1839551713262164453">Preverjanje vrednosti pravilnika je bilo neuspešno z napakami</translation>
@@ -1860,6 +1860,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="3875783148670536197">Postopek</translation>
 <translation id="3877603629930976930">Ne deli</translation>
 <translation id="3878445208930547646">Kopiranje s tega spletnega mesta ni dovoljeno</translation>
+<translation id="3879674895057686427">Izberite jezik, v katerega želite prevod</translation>
 <translation id="3879748587602334249">Upravitelj prenosov</translation>
 <translation id="3880456882942693779">Umetnost in zabava</translation>
 <translation id="3880589673277376494">Internet in telekomunikacije</translation>
@@ -3505,7 +3506,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="6424600253695044005">Shramba v oblaku</translation>
 <translation id="6425092077175753609">Materialno</translation>
 <translation id="6427730057873428458">Prepogibanje v obliki okna</translation>
-<translation id="6428450836711225518">Preverjanje telefonske številke</translation>
 <translation id="6429267199680088961">A4 Tab</translation>
 <translation id="643051589346665201">Spremeni geslo za Google</translation>
 <translation id="6431556523611594411">Deljenje odprtih zavihkov</translation>
@@ -4454,7 +4454,6 @@ Dodatne podrobnosti:
 <translation id="7874796722855317864">»<ph name="PROXY_UNKNOWN_CONDITION" />« ni znana vrsta stanja.</translation>
 <translation id="7877007680666472091">ID-ji zaščitene vsebine</translation>
 <translation id="7878562273885520351">Geslo je morda ogroženo</translation>
-<translation id="7881044256965445977">Iskanje in vzpostavljanje povezav z napravami v lokalnem omrežju</translation>
 <translation id="7885670691503039914">Če se cena zniža na katerem koli spletnem mestu, boste prejeli e-poštna opozorila. Ta stran bo shranjena v mapo z zaznamki <ph name="LAST_BOOKMARKS_FOLDER" />.</translation>
 <translation id="7886897188117641322">Izberite, katere širše kategorije tem se lahko uporabljajo za lažje osebno prilagajanje oglasov</translation>
 <translation id="7887683347370398519">Preverite CVC in poskusite znova</translation>
@@ -4980,7 +4979,6 @@ Dodatne podrobnosti:
 <translation id="8737685506611670901">Odpiranje povezav za <ph name="PROTOCOL" /> namesto <ph name="REPLACED_HANDLER_TITLE" /></translation>
 <translation id="8738058698779197622">Če želite vzpostaviti varno povezavo, mora biti ura pravilno nastavljena. Potrdila, ki jih uporabljajo spletna mesta za prepoznavanje, namreč veljajo samo določen čas. Ker je ura sistema nepravilna, Chromium teh potrdil ne more preveriti.</translation>
 <translation id="8740359287975076522">&lt;abbr id="dnsDefinition"&gt;Naslova DNS&lt;/abbr&gt; spletnega mesta <ph name="HOST_NAME" /> ni bilo mogoče najti. Poteka diagnosticiranje težave.</translation>
-<translation id="8742371904523228557"><ph name="ONE_TIME_CODE" /> je vaša koda za <ph name="ORIGIN" /></translation>
 <translation id="874918643257405732">Dodajanje tega zavihka med zaznamke</translation>
 <translation id="8751426954251315517">Poskusite znova pozneje</translation>
 <translation id="8753913772043329557">Dnevniki pravilnikov</translation>
@@ -5158,7 +5156,6 @@ Dodatne podrobnosti:
 <translation id="9042827002460091668">Preverite internetno povezavo in poskusite znova.</translation>
 <translation id="9043161870923715789">Način umetne inteligence</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> – <ph name="RESULT_PRODUCT_SOURCE" /></translation>
-<translation id="9046578823518542618"><ph name="URL" /> želi iskati in vzpostavljati povezave s katero koli napravo v lokalnem omrežju</translation>
 <translation id="9046864189129893978">Mikrofoni (<ph name="MICS_COUNT" />)</translation>
 <translation id="9046865906192819796">Zaslon s pogoji storitve za »Kupi zdaj, plačaj pozneje« je odprt pri polovični višini.</translation>
 <translation id="9047528041803621289">Privzeti iskalnik omogoča iskanje po spletu. To lahko spremenite v nastavitvah.</translation>

@@ -5,7 +5,6 @@
 <translation id="1036348656032585052">Disattiva</translation>
 <translation id="1046742265332833834">Tema blu</translation>
 <translation id="1070329623210597193">File che questo sito può visualizzare o modificare</translation>
-<translation id="1073417869336441572">Aiutaci a migliorare Chrome spiegandoci perché hai consentito i cookie di terze parti. <ph name="BEGIN_LINK" />Invia feedback<ph name="END_LINK" /></translation>
 <translation id="1074758928858737435">Puoi chiedere di visualizzare la versione desktop dei siti</translation>
 <translation id="1109482864356262001">Le funzionalità che richiedono sensori di movimento o della luce non funzioneranno</translation>
 <translation id="1126523729897810826">Completa le azioni suggerite di seguito per usare al meglio Chrome</translation>
@@ -328,6 +327,7 @@
 <translation id="4290791284969893584">Dopo aver chiuso una pagina, le attività che hai avviato potrebbero non concludersi</translation>
 <translation id="429312253194641664">Un sito sta riproducendo contenuti multimediali</translation>
 <translation id="42981349822642051">Espandi</translation>
+<translation id="4310738531374808763">Personalizza la tua home page</translation>
 <translation id="4336219115486912529">{COUNT,plural, =1{Scade domani}other{Scade tra # giorni}}</translation>
 <translation id="4338831206024587507">Tutti i siti in <ph name="DOMAIN" /></translation>
 <translation id="4340799661701629185">Non consentire ai siti di inviare notifiche</translation>
@@ -440,7 +440,6 @@
 <translation id="5555115555607204100">Non accelerare i siti con il motore V8 di Chrome, ma rendi Chrome leggermente più resistente agli attacchi</translation>
 <translation id="5556459405103347317">Ricarica</translation>
 <translation id="5591840828808741583">URL <ph name="SITE_NAME" /> bloccato</translation>
-<translation id="560980142378233747">Ciò significa che le funzionalità del sito dovrebbero funzionare come previsto, ma potresti avere meno protezione durante la navigazione. <ph name="BEGIN_LINK" />Invia feedback<ph name="END_LINK" /></translation>
 <translation id="5617702678271228680">Riquadro inferiore di Contenuti nuove schede</translation>
 <translation id="5621413808884657932">Quando l'opzione è attiva, i siti possono chiedere di accedere ad altri servizi e app su questo dispositivo. Quando l'opzione è disattivata, i siti non possono accedere ad altri servizi e app su questo dispositivo.</translation>
 <translation id="5632485077360054581">Mostrami come fare</translation>
@@ -519,6 +518,7 @@
 <translation id="6262279340360821358">Autorizzazioni <ph name="PERMISSION_1" /> e <ph name="PERMISSION_2" /> bloccate</translation>
 <translation id="6270391203985052864">I siti possono chiedere di inviare notifiche</translation>
 <translation id="6295158916970320988">Tutti i siti</translation>
+<translation id="6305257382500066042">Prova ora</translation>
 <translation id="6320088164292336938">Vibrazione</translation>
 <translation id="6367753977865761591">Blocca l'accesso di terze parti per un sito specifico.</translation>
 <translation id="6398765197997659313">Esci da schermo intero</translation>
@@ -529,7 +529,6 @@
 <translation id="6447842834002726250">Cookie</translation>
 <translation id="6452138246455930388">Calo di prezzo nella scheda aperta, da <ph name="OLD_PRICE" /> a <ph name="NEW_PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN_NAME" /></translation>
 <translation id="6500423977866688905">Richiedi la visualizzazione mobile se la finestra è stretta</translation>
-<translation id="6514791408445720076">Personalizza la tua pagina</translation>
 <translation id="6527303717912515753">Condividi</translation>
 <translation id="6530703012083415527">Quando l'opzione è attiva, i siti possono utilizzare popup e reindirizzamenti. Quando l'opzione è disattivata, i siti non possono utilizzare popup e reindirizzamenti.</translation>
 <translation id="6540488083026747005">Hai consentito i cookie di terze parti su questo sito</translation>
@@ -593,7 +592,6 @@
 <translation id="7141896414559753902">Impedisci ai siti di mostrare popup e reindirizzamenti (opzione consigliata)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> kB</translation>
 <translation id="7180611975245234373">Aggiorna</translation>
-<translation id="7180865173735832675">Personalizza</translation>
 <translation id="7188508872042490670">Dati dei siti sul dispositivo</translation>
 <translation id="7201549776650881587">Questa azione eliminerà tutti i dati e i cookie memorizzati da tutti i siti in <ph name="ORIGIN" /> o dalla relativa app nella schermata Home</translation>
 <translation id="7219254577985949841">Vuoi eliminare i dati del sito?</translation>
@@ -707,7 +705,6 @@ La protezione avanzata controlla queste impostazioni di Chrome:</translation>
 <translation id="83792324527827022">Un sito sta utilizzando la fotocamera e il microfono</translation>
 <translation id="8380167699614421159">Questo sito mostra annunci invasivi o fuorvianti</translation>
 <translation id="8394832520002899662">Tocca per tornare al sito.</translation>
-<translation id="8404500559369898929">Personalizza Chrome scegliendo un tema di sfondo personalizzato</translation>
 <translation id="8409345997656833551">Ricevi una notifica quando un articolo può essere mostrato nella visualizzazione semplificata</translation>
 <translation id="8416874502399604126">Microfono consentito questa volta</translation>
 <translation id="8423565414844018592">Ridimensionamento del testo impostato su <ph name="TEXT_SCALING" /></translation>

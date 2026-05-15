@@ -5,7 +5,6 @@
 <translation id="1036348656032585052">Zima</translation>
 <translation id="1046742265332833834">Mandhari ya buluu</translation>
 <translation id="1070329623210597193">Faili ambazo tovuti hii inaweza kuona au kubadilisha</translation>
-<translation id="1073417869336441572">Tusaidie kuboresha Chrome kwa kutuambia kwa nini umeruhusu vidakuzi vya mshirika mwingine. <ph name="BEGIN_LINK" />Tuma maoni<ph name="END_LINK" /></translation>
 <translation id="1074758928858737435">Unaweza kuomba kuona toleo la eneokazi la tovuti</translation>
 <translation id="1109482864356262001">Vipengele vinavyohitaji vitambuzi vya mwendo au mwangaza havitafanya kazi</translation>
 <translation id="1126523729897810826">Kamilisha vitendo hivi vilivyopendekezwa hapa chini ili unufaike zaidi na Chrome</translation>
@@ -328,6 +327,7 @@
 <translation id="4290791284969893584">Baada ya kufunga ukurasa, huenda majukumu uliyoyaanza yasimalizike</translation>
 <translation id="429312253194641664">Tovuti inacheza maudhui</translation>
 <translation id="42981349822642051">Panua</translation>
+<translation id="4310738531374808763">Badilisha upendavyo ukurasa wako wa kwanza</translation>
 <translation id="4336219115486912529">{COUNT,plural, =1{Muda wa matumizi utaisha kesho}other{Muda wa matumizi utaisha baada ya siku #}}</translation>
 <translation id="4338831206024587507">Tovuti zote zenye kikoa cha <ph name="DOMAIN" /></translation>
 <translation id="4340799661701629185">Usiruhusu tovuti zitume arifa</translation>
@@ -440,7 +440,6 @@
 <translation id="5555115555607204100">Usiongeze kasi ya tovuti kupakia ukitumia mtambo wa V8 wa Chrome lakini uifanye Chrome istahimili sana mashambulio</translation>
 <translation id="5556459405103347317">Pakia upya</translation>
 <translation id="5591840828808741583">Umezuia <ph name="SITE_NAME" /></translation>
-<translation id="560980142378233747">Hii inamaanisha vipengele vya tovuti vinapaswa kufanya kazi ipasavyo, lakini huenda usiwe na ulinzi kamili wa shughuli zako za kuvinjari. <ph name="BEGIN_LINK" />Tuma maoni<ph name="END_LINK" /></translation>
 <translation id="5617702678271228680">Safu ya chini ya kadi za ukurasa wa kichupo kipya</translation>
 <translation id="5621413808884657932">Kikiwashwa, tovuti zinaweza kuomba idhini ya kufikia programu na huduma nyingine kwenye kifaa hiki. Kikiwa kimezimwa, tovuti haziwezi kufikia programu na huduma nyingine kwenye kifaa hiki.</translation>
 <translation id="5632485077360054581">Nionyeshe jinsi ya kufanya</translation>
@@ -519,6 +518,7 @@
 <translation id="6262279340360821358">Umezuia <ph name="PERMISSION_1" /> na <ph name="PERMISSION_2" /></translation>
 <translation id="6270391203985052864">Tovuti zinaweza kukuuliza kutuma arifa</translation>
 <translation id="6295158916970320988">Tovuti zote</translation>
+<translation id="6305257382500066042">Ijaribu sasa</translation>
 <translation id="6320088164292336938">Tetema</translation>
 <translation id="6367753977865761591">Zuia uingiaji wa wahusika wengine katika akaunti kwenye tovuti mahususi.</translation>
 <translation id="6398765197997659313">Ondoka kwenye Skrini nzima</translation>
@@ -529,7 +529,6 @@
 <translation id="6447842834002726250">Vidakuzi</translation>
 <translation id="6452138246455930388">Punguzo la bei kwenye kichupo chako kilichofunguliwa, kutoka <ph name="OLD_PRICE" /> hadi <ph name="NEW_PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN_NAME" /></translation>
 <translation id="6500423977866688905">Iwapo dirisha ni nyembamba, omba mwonekano wa kifaa cha mkononi</translation>
-<translation id="6514791408445720076">Kubadilisha upendavyo ukurasa wako</translation>
 <translation id="6527303717912515753">Shiriki</translation>
 <translation id="6530703012083415527">Kikiwashwa, tovuti zinaweza kutumia madirisha ibukizi na viungo vya kuelekeza kwingine. Kikizimwa, tovuti haziwezi kutumia madirisha ibukizi na viungo vya kuelekeza kwingine.</translation>
 <translation id="6540488083026747005">Umeruhusu vidakuzi vya washirika wengine kwenye tovuti hii</translation>
@@ -593,7 +592,6 @@
 <translation id="7141896414559753902">Zuia tovuti zisionyeshe madirisha ibukizi na kuelekeza kwingine (inapendekezwa)</translation>
 <translation id="7176368934862295254">KB <ph name="KILOBYTES" /></translation>
 <translation id="7180611975245234373">Onyesha upya</translation>
-<translation id="7180865173735832675">Binafsisha</translation>
 <translation id="7188508872042490670">Data ya tovuti kwenye kifaa</translation>
 <translation id="7201549776650881587">Kitendo hiki kitafuta data na vidakuzi vyote vilivyohifadhiwa na tovuti zote zinazosimamiwa na <ph name="ORIGIN" /> au na programu yake kwenye Skrini yako ya kwanza</translation>
 <translation id="7219254577985949841">Je, ungependa kufuta data ya tovuti?</translation>
@@ -707,7 +705,6 @@ Ulinzi wa Hali ya Juu hudhibiti mipangilio hii ya Chrome:</translation>
 <translation id="83792324527827022">Tovuti inatumia kamera na maikrofoni yako</translation>
 <translation id="8380167699614421159">Tovuti hii inaonyesha matangazo yanayopotosha au yanayokatiza huduma</translation>
 <translation id="8394832520002899662">Gusa ili urudi kwenye tovuti</translation>
-<translation id="8404500559369898929">Badilisha Chrome upendavyo kwa kuchagua mandhari maalum ya mandharinyuma</translation>
 <translation id="8409345997656833551">Pata arifa wakati makala inaweza kuonyeshwa katika mwonekano uliorahisishwa</translation>
 <translation id="8416874502399604126">Maikrofoni inaruhusiwa wakati huu</translation>
 <translation id="8423565414844018592">Urekebishaji wa maandishi umewekwa kuwa <ph name="TEXT_SCALING" /></translation>

@@ -316,7 +316,6 @@
 <translation id="1463793142714244641">分時度假與度假房產</translation>
 <translation id="1465457928007067810">已將 IBAN 儲存至 Google 帳戶</translation>
 <translation id="1467432559032391204">向左</translation>
-<translation id="1468653229182955856">你的 <ph name="EMBEDDED_ORIGIN" /> 驗證碼是 <ph name="ONE_TIME_CODE" />，請輸入此驗證碼，以便繼續使用 <ph name="TOP_ORIGIN" /></translation>
 <translation id="1472675084647422956">顯示更多</translation>
 <translation id="1473183651233018052">JIS B10</translation>
 <translation id="1473495410389165587">請輸入 3 個以上的字詞，才能取得撰寫協助</translation>
@@ -548,6 +547,7 @@
 <translation id="1832474362231610822">相片已儲存至 OneDrive</translation>
 <translation id="1832730227369924598">桌面同步處理</translation>
 <translation id="1834452765064623979">建築與裝修</translation>
+<translation id="1837606605602726453">管理員已明確允許或封鎖這項擴充功能，因此系統會忽略其風險分數和類別。</translation>
 <translation id="1838374766361614909">清除搜尋</translation>
 <translation id="1839331950812095887">用幾個字詞歸納想法</translation>
 <translation id="1839551713262164453">發生錯誤，政策值驗證失敗</translation>
@@ -746,7 +746,7 @@
 <translation id="21613918653299710">線上圖庫</translation>
 <translation id="2161656808144014275">文字</translation>
 <translation id="2162435186600002085">主要頁首標誌</translation>
-<translation id="2162535140284745414">運用 AI 即時建議，體驗全新瀏覽方式。</translation>
+<translation id="2162535140284745414">取得 AI 即時建議，體驗全新瀏覽方式。</translation>
 <translation id="2162620598375156287">「<ph name="SOURCE_WEBSITE" />」目前售價　<ph name="CURRENT_PRICE" /></translation>
 <translation id="2164510882479075877">請檢查 <ph name="HOST_NAME" /> 中是否有錯字。</translation>
 <translation id="2166049586286450108">完整管理員存取權</translation>
@@ -1462,7 +1462,7 @@
 <translation id="3261488570342242926">瞭解虛擬卡片</translation>
 <translation id="3262698603497362968">購買選項</translation>
 <translation id="3264315627780269177">無法分享這個分頁</translation>
-<translation id="3264637689694266148">即使關閉建議功能，系統仍可能會處理分頁的網頁標題和網址，以支援其他 Chrome 功能。如要管理瀏覽器存取這項資料的權限，可以前往</translation>
+<translation id="3264637689694266148">即使關閉建議功能，系統仍可能會處理分頁的標題和網址，以支援其他 Chrome 功能。如要管理瀏覽器存取這項資料的權限，可以前往</translation>
 <translation id="3266793032086590337">值 (衝突)</translation>
 <translation id="3268451620468152448">開啟的分頁</translation>
 <translation id="3270041629388773465">儲存信用卡驗證碼可加快結帳速度</translation>
@@ -1858,6 +1858,7 @@
 <translation id="3875783148670536197">顯示操作說明</translation>
 <translation id="3877603629930976930">不要分享</translation>
 <translation id="3878445208930547646">不允許複製這個網站的內容</translation>
+<translation id="3879674895057686427">選擇譯文語言</translation>
 <translation id="3879748587602334249">下載管理員</translation>
 <translation id="3880456882942693779">藝術與娛樂</translation>
 <translation id="3880589673277376494">網際網路與電信</translation>
@@ -3444,6 +3445,7 @@
 <translation id="634500758737709758">規劃路線</translation>
 <translation id="6348220984832452017">使用中的變化版本</translation>
 <translation id="6349101878882523185">安裝 <ph name="APP_NAME" /></translation>
+<translation id="6350739641326887427">付款時不必複製及貼上 Pix 碼。<ph name="BEGIN_LINK1" />瞭解詳情<ph name="END_LINK1" /></translation>
 <translation id="6351658970066645919">刪除瀏覽資料</translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{無}=1{有 1 組密碼 (<ph name="DOMAIN_LIST" />，已同步處理)}=2{有 2 組密碼 (<ph name="DOMAIN_LIST" />，已同步處理)}other{有 # 組密碼 (<ph name="DOMAIN_LIST" />，已同步處理)}}</translation>
 <translation id="6354918092619878358">SECG 橢圓曲線 secp256r1 (亦稱為 ANSI X9.62 prime256v1、NIST P-256)</translation>
@@ -3502,7 +3504,6 @@
 <translation id="6424600253695044005">雲端儲存空間</translation>
 <translation id="6425092077175753609">質感</translation>
 <translation id="6427730057873428458">開門摺</translation>
-<translation id="6428450836711225518">驗證你的電話號碼</translation>
 <translation id="6429267199680088961">A4 Tab</translation>
 <translation id="643051589346665201">變更 Google 密碼</translation>
 <translation id="6431556523611594411">分享已開啟的分頁</translation>
@@ -3659,6 +3660,7 @@
 <translation id="668132230070712111">影片已儲存至 Google 雲端硬碟</translation>
 <translation id="6681790815630918386">信用卡安全碼已儲存</translation>
 <translation id="6683022854667115063">耳罩式耳機</translation>
+<translation id="6686570026048064255">如要關閉 Pix 碼偵測功能，請前往 <ph name="BEGIN_LINK1" />Chrome 設定<ph name="END_LINK1" /></translation>
 <translation id="6687230248707087982">信封 (普通紙)</translation>
 <translation id="6687335167692595844">要求的字型大小</translation>
 <translation id="6688743156324860098">更新…</translation>
@@ -4422,7 +4424,7 @@
 <translation id="7819605256207059717">遭到貴機構封鎖</translation>
 <translation id="7822611063308883975">掌上型遊戲主機</translation>
 <translation id="7825558994363763489">微波爐</translation>
-<translation id="7827688884439021871">運用 AI 即時建議，體驗全新瀏覽方式</translation>
+<translation id="7827688884439021871">取得 AI 即時建議，體驗全新瀏覽方式</translation>
 <translation id="782886543891417279">目前使用的 Wi-Fi 網路 (<ph name="WIFI_NAME" />) 可能會要求您造訪登入網頁。</translation>
 <translation id="7831993212387676366">什麼是購物清單？</translation>
 <translation id="7840103971441592723">開始擷取螢幕畫面</translation>
@@ -4450,7 +4452,6 @@
 <translation id="7874796722855317864">「<ph name="PROXY_UNKNOWN_CONDITION" />」不是已知的條件類型。</translation>
 <translation id="7877007680666472091">受保護的內容 ID</translation>
 <translation id="7878562273885520351">你的密碼可能已經外洩</translation>
-<translation id="7881044256965445977">尋找區域網路上的任何裝置並連線</translation>
 <translation id="7885670691503039914">如果產品在任何網站上降價，你就會收到電子郵件快訊。這個網頁將儲存到「<ph name="LAST_BOOKMARKS_FOLDER" />」書籤資料夾。</translation>
 <translation id="7886897188117641322">選擇系統可根據哪些廣泛的主題類別放送個人化廣告</translation>
 <translation id="7887683347370398519">請檢查您的信用卡驗證碼，然後再試一次</translation>
@@ -4976,7 +4977,6 @@
 <translation id="8737685506611670901">開啟<ph name="PROTOCOL" />連結 (取代 <ph name="REPLACED_HANDLER_TITLE" />)</translation>
 <translation id="8738058698779197622">你必須正確設定時鐘，才能建立安全連線。這是因為網站驗證身分時所使用的憑證僅於特定一段時間內有效。由於你裝置的時鐘不正確，因此 Chromium 無法驗證這些憑證。</translation>
 <translation id="8740359287975076522">找不到 <ph name="HOST_NAME" /> 的 &lt;abbr id="dnsDefinition"&gt;DNS 位址&lt;/abbr&gt;，正在診斷問題。</translation>
-<translation id="8742371904523228557">你的 <ph name="ORIGIN" /> 驗證碼是 <ph name="ONE_TIME_CODE" /></translation>
 <translation id="874918643257405732">將此分頁加入書籤</translation>
 <translation id="8751426954251315517">請稍後再試</translation>
 <translation id="8753913772043329557">政策記錄</translation>
@@ -5154,7 +5154,6 @@
 <translation id="9042827002460091668">請檢查你的網際網路連線，然後再試一次</translation>
 <translation id="9043161870923715789">AI 模式</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
-<translation id="9046578823518542618"><ph name="URL" /> 想要尋找區域網路上的裝置並連線</translation>
 <translation id="9046864189129893978">麥克風 (<ph name="MICS_COUNT" />)</translation>
 <translation id="9046865906192819796">「先買後付」服務條款內容已顯示在畫面下半部。</translation>
 <translation id="9047528041803621289">預設搜尋引擎將用來尋找網路內容，你可以前往設定變更。</translation>

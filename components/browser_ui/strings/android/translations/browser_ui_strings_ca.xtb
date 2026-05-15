@@ -5,7 +5,6 @@
 <translation id="1036348656032585052">Desactiva</translation>
 <translation id="1046742265332833834">Tema blau</translation>
 <translation id="1070329623210597193">Fitxers que aquest lloc web pot visualitzar o editar</translation>
-<translation id="1073417869336441572">Ajuda'ns a millorar Chrome explicant-nos per què has permès les galetes de tercers. <ph name="BEGIN_LINK" />Envia suggeriments<ph name="END_LINK" /></translation>
 <translation id="1074758928858737435">Pots sol·licitar que es mostri la versió per a ordinadors dels llocs web</translation>
 <translation id="1109482864356262001">Les funcions que necessitin sensors de moviment o de llum no funcionaran</translation>
 <translation id="1126523729897810826">Completa aquestes accions suggerides per treure el màxim profit de Chrome</translation>
@@ -328,6 +327,7 @@
 <translation id="4290791284969893584">En tancar una pàgina, pot ser que les tasques que hagis començat no finalitzin</translation>
 <translation id="429312253194641664">Un lloc web està reproduint contingut multimèdia</translation>
 <translation id="42981349822642051">Desplega</translation>
+<translation id="4310738531374808763">Personalitza la pàgina d'inici</translation>
 <translation id="4336219115486912529">{COUNT,plural, =1{Caduca demà}other{Caduca d'aquí a # dies}}</translation>
 <translation id="4338831206024587507">Tots els llocs web de <ph name="DOMAIN" /></translation>
 <translation id="4340799661701629185">No permetis que els llocs web enviïn notificacions</translation>
@@ -440,7 +440,6 @@
 <translation id="5555115555607204100">No agilitza els llocs web amb el motor V8 de Chrome, però fa que Chrome sigui una mica més resistent als atacs</translation>
 <translation id="5556459405103347317">Torna a carregar</translation>
 <translation id="5591840828808741583"><ph name="SITE_NAME" /> bloquejat</translation>
-<translation id="560980142378233747">Això significa que les funcions del lloc web haurien de funcionar de la manera prevista, tot i que pot ser que tinguis menys protecció de navegació. <ph name="BEGIN_LINK" />Envia suggeriments<ph name="END_LINK" /></translation>
 <translation id="5617702678271228680">Full inferior de les targetes de la pàgina Pestanya nova</translation>
 <translation id="5621413808884657932">Quan aquesta opció està activada, els llocs web poden demanar permís per accedir a altres aplicacions i serveis d'aquest dispositiu. Quan aquesta opció està desactivada, els llocs web no poden accedir a altres aplicacions i serveis d'aquest dispositiu.</translation>
 <translation id="5632485077360054581">Mostra'm com</translation>
@@ -519,6 +518,7 @@
 <translation id="6262279340360821358">S'han bloquejat <ph name="PERMISSION_1" /> i <ph name="PERMISSION_2" /></translation>
 <translation id="6270391203985052864">Els llocs web poden demanar-te permís per enviar-te notificacions</translation>
 <translation id="6295158916970320988">Tots els llocs web</translation>
+<translation id="6305257382500066042">Prova-ho ara</translation>
 <translation id="6320088164292336938">Vibració</translation>
 <translation id="6367753977865761591">Bloqueja l'inici de sessió de tercers en un lloc web concret.</translation>
 <translation id="6398765197997659313">Surt del mode de pantalla completa</translation>
@@ -529,7 +529,6 @@
 <translation id="6447842834002726250">Galetes</translation>
 <translation id="6452138246455930388">Baixada de preu a la pestanya oberta (abans <ph name="OLD_PRICE" />, ara <ph name="NEW_PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN_NAME" />)</translation>
 <translation id="6500423977866688905">Si la finestra és estreta, sol·licita la vista per a mòbils</translation>
-<translation id="6514791408445720076">Personalitza la pàgina</translation>
 <translation id="6527303717912515753">Comparteix</translation>
 <translation id="6530703012083415527">Quan aquesta opció està activada, els llocs web poden utilitzar finestres emergents i redireccions. Quan aquesta opció està desactivada, els llocs web no poden utilitzar finestres emergents ni redireccions.</translation>
 <translation id="6540488083026747005">Has permès les galetes de tercers en aquest lloc web</translation>
@@ -593,7 +592,6 @@
 <translation id="7141896414559753902">Bloqueja les finestres emergents i les redireccions als llocs web (opció recomanada)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> kB</translation>
 <translation id="7180611975245234373">Actualitza</translation>
-<translation id="7180865173735832675">Personalitza</translation>
 <translation id="7188508872042490670">Dades dels llocs web al dispositiu</translation>
 <translation id="7201549776650881587">Aquesta acció suprimirà de la pantalla d'inici totes les dades i galetes emmagatzemades per tots els llocs web de <ph name="ORIGIN" /> o per la seva aplicació</translation>
 <translation id="7219254577985949841">Vols suprimir les dades del lloc web?</translation>
@@ -707,7 +705,6 @@ La Protecció avançada controla aquestes opcions de configuració de Chrome:</t
 <translation id="83792324527827022">Un lloc web està utilitzant la càmera i el micròfon</translation>
 <translation id="8380167699614421159">Aquest lloc web mostra anuncis intrusius o enganyosos</translation>
 <translation id="8394832520002899662">Toca per tornar al lloc web</translation>
-<translation id="8404500559369898929">Fes que Chrome s'adapti al teu gust triant un tema de fons personalitzat</translation>
 <translation id="8409345997656833551">Rep una notificació quan un article es pugui mostrar amb la visualització simplificada</translation>
 <translation id="8416874502399604126">S'ha permès l'ús del micròfon aquesta vegada</translation>
 <translation id="8423565414844018592">L'ajust del text s'ha definit en <ph name="TEXT_SCALING" /></translation>

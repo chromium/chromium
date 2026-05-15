@@ -316,7 +316,6 @@
 <translation id="1463793142714244641">ടൈംഷെയറുകളും വെക്കേഷൻ പ്രോപ്പർട്ടികളും</translation>
 <translation id="1465457928007067810">IBAN നിങ്ങളുടെ Google Account-ൽ സംരക്ഷിച്ചു</translation>
 <translation id="1467432559032391204">ഇടത്</translation>
-<translation id="1468653229182955856"><ph name="TOP_ORIGIN" /> എന്നതിൽ തുടരാൻ <ph name="EMBEDDED_ORIGIN" /> എന്നതിനുള്ള നിങ്ങളുടെ കോഡ് <ph name="ONE_TIME_CODE" /> ആണ്</translation>
 <translation id="1472675084647422956">കൂടുതൽ‍ കാണിക്കുക</translation>
 <translation id="1473183651233018052">JIS B10</translation>
 <translation id="1473495410389165587">എഴുതാൻ സഹായം തേടാൻ 3 അല്ലെങ്കിൽ അതിലധികം വാക്കുകൾ നൽകുക</translation>
@@ -549,6 +548,7 @@
 <translation id="1832474362231610822">OneDrive-ലേക്ക് ഫോട്ടോ സംരക്ഷിച്ചു</translation>
 <translation id="1832730227369924598">ഡെസ്‌ക് സമന്വയം</translation>
 <translation id="1834452765064623979">നിർമ്മാണവും പരിപാലനവും</translation>
+<translation id="1837606605602726453">വിപുലീകരണം അഡ്‌മിൻ വ്യക്തമായി അനുവദിക്കുകയോ ബ്ലോക്ക് ചെയ്യുകയോ ചെയ്‌തിരിക്കുന്നതിനാൽ റിസ്‌ക് സ്‌കോറും വിഭാഗങ്ങളും അവഗണിച്ചു.</translation>
 <translation id="1838374766361614909">തിരയൽ മായ്ക്കുക</translation>
 <translation id="1839331950812095887">നിങ്ങളുടെ ചിന്തകളെ സംഗ്രഹിക്കുന്ന ഏതാനും വാക്കുകൾ</translation>
 <translation id="1839551713262164453">നയ മൂല്യങ്ങളുടെ സാധൂകരണം പിശകുകളോടെ പരാജയപ്പെട്ടു</translation>
@@ -1859,6 +1859,7 @@
 <translation id="3875783148670536197">എങ്ങനെയെന്ന് എന്നെ കാണിക്കുക</translation>
 <translation id="3877603629930976930">പങ്കിടരുത്</translation>
 <translation id="3878445208930547646">ഈ സൈറ്റിൽ നിന്ന് പകർത്തുന്നത് അനുവദനീയമല്ല</translation>
+<translation id="3879674895057686427">വിവർത്തനം ചെയ്യേണ്ട ഭാഷ തിരഞ്ഞെടുക്കുക</translation>
 <translation id="3879748587602334249">ഡൗൺലോഡ് മാനേജർ</translation>
 <translation id="3880456882942693779">കലയും വിനോദവും</translation>
 <translation id="3880589673277376494">ഇന്റർനെറ്റും ടെലികോമും</translation>
@@ -2234,6 +2235,7 @@
 <translation id="443673843213245140">പ്രോക്‌സി ഉപയോഗം അപ്രാപ്‌തമാക്കി പക്ഷെ ഒരു വ്യക്തമായ പ്രോക്‌സി കോൺഫിഗറേഷൻ നിർദ്ദേശിച്ചു.</translation>
 <translation id="4438821706955556403">സാധാരണ നിരക്ക്</translation>
 <translation id="4441832193888514600">ക്ലൗഡ് ഉപയോക്തൃ നയം ആയി മാത്രമേ നയം സജ്ജീകരിക്കാനാകൂ എന്നതിനാൽ അവഗണിക്കൂ.</translation>
+<translation id="4444062564459679679">നിങ്ങളുടെ <ph name="DEVICE_NAME" /> എന്നതിലെ Chrome-ലേക്ക് ഇതിനകം അയച്ചു</translation>
 <translation id="4445133368066241428">ജനപ്രിയ വിഷയങ്ങൾ</translation>
 <translation id="4445694043187340808"><ph name="STARTER_PACK_TABS_FOCUSED_FRIENDLY_MATCH_TEXT" />, ടാബുകൾ തിരയാൻ Enter അമർത്തുക</translation>
 <translation id="4445964943162061557">ഇതൊരു പരീക്ഷണാത്മക ഫീച്ചറാണ്, അത് എല്ലായ്‌പ്പോഴും ശരിയായിരിക്കണമെന്നില്ല.</translation>
@@ -3504,7 +3506,6 @@
 <translation id="6424600253695044005">ക്ലൗഡ് സ്റ്റോറേജ്</translation>
 <translation id="6425092077175753609">മെറ്റീരിയൽ</translation>
 <translation id="6427730057873428458">ഗേറ്റ് മടക്ക്</translation>
-<translation id="6428450836711225518">നിങ്ങളുടെ ഫോൺ നമ്പർ പരിശോധിച്ചുറപ്പിക്കുക</translation>
 <translation id="6429267199680088961">A4 ടാബ്</translation>
 <translation id="643051589346665201">Google പാസ്‌വേഡ് മാറ്റുക</translation>
 <translation id="6431556523611594411">തുറന്ന ടാബുകൾ പങ്കിടുക</translation>
@@ -4451,7 +4452,6 @@
 <translation id="7874796722855317864">"<ph name="PROXY_UNKNOWN_CONDITION" />" എന്നത് അറിയപ്പെടുന്ന ഒരു വ്യവസ്ഥാ തരം അല്ല.</translation>
 <translation id="7877007680666472091">പരിരക്ഷിച്ച Content ID-കൾ</translation>
 <translation id="7878562273885520351">നിങ്ങളുടെ പാസ്‍വേഡ് അപഹരിക്കപ്പെട്ടേക്കാം</translation>
-<translation id="7881044256965445977">നിങ്ങളുടെ പ്രാദേശിക നെറ്റ്‌വർക്കിലെ ഏതെങ്കിലും ഉപകരണം തിരയുക, അതിലേക്ക് കണക്റ്റ് ചെയ്യുക</translation>
 <translation id="7885670691503039914">ഏതെങ്കിലും സൈറ്റിൽ വിലക്കുറവ് ഉണ്ടെങ്കിൽ നിങ്ങൾക്ക് ഇമെയിൽ അറിയിപ്പുകൾ ലഭിക്കും. <ph name="LAST_BOOKMARKS_FOLDER" /> എന്ന ബുക്ക്‌മാർക്ക് ഫോൾഡറിൽ ഈ പേജ് സംരക്ഷിക്കും.</translation>
 <translation id="7886897188117641322">പരസ്യങ്ങൾ വ്യക്തിപരമാക്കാൻ സഹായിക്കുന്നതിന്, ഏതൊക്കെ വിശാലമായ വിഷയ വിഭാഗങ്ങളാണ് ഉപയോഗിക്കേണ്ടതെന്ന് തിരഞ്ഞെടുക്കുക</translation>
 <translation id="7887683347370398519">നിങ്ങളുടെ CVC പരിശോധിച്ച് വീണ്ടും ശ്രമിക്കുക</translation>
@@ -4845,6 +4845,7 @@
 <translation id="8511402995811232419">കുക്കികൾ മാനേജ് ചെയ്യുക</translation>
 <translation id="851353418319061866">കൃത്യതാ പരിശോധന</translation>
 <translation id="8513580896341796021">ഡൗൺലോഡ് ആരംഭിച്ചു. അത് കാണാൻ, |<ph name="ACCELERATOR" />| അമർത്തുക.</translation>
+<translation id="8515544520486085367">പേയ്മെന്റ് സ്വയമേവ പൂരിപ്പിക്കുക</translation>
 <translation id="8519753333133776369">നിങ്ങളുടെ അഡ്‌മിൻ അനുവദിച്ചിരിക്കുന്ന HID ഉപകരണം</translation>
 <translation id="8521013008769249764">സോഫകളും ചാരുകസേരകളും</translation>
 <translation id="8521812709849134608">കൗണ്ടർടോപ്പുകൾ</translation>
@@ -4977,7 +4978,6 @@
 <translation id="8737685506611670901"><ph name="REPLACED_HANDLER_TITLE" /> എന്നതിന് പകരം <ph name="PROTOCOL" /> ലിങ്കുകൾ തുറക്കുക</translation>
 <translation id="8738058698779197622">സുരക്ഷിത കണക്ഷൻ സ്ഥാപിക്കുന്നതിന്, നിങ്ങളുടെ ക്ലോക്ക് ശരിയായി സജ്ജീകരിക്കേണ്ടതുണ്ട്. വെബ്‌സൈറ്റുകൾ സ്വയം തിരിച്ചറിയുന്നതിന് ഉപയോഗിക്കുന്ന സർട്ടിഫിക്കറ്റുകൾ, നിർദ്ദിഷ്‌ട സമയ പരിധിയ്‌ക്ക് മാത്രമായി സാധുതയുള്ളതിനാലാണിത്. നിങ്ങളുടെ ഉപകരണത്തിന്റെ ക്ലോക്ക് തെറ്റായിരിക്കുന്നതിനാൽ, Chromium-ന് ഈ സർട്ടിഫിക്കറ്റുകൾ പരിശോധിച്ചുറപ്പിക്കാനാവില്ല.</translation>
 <translation id="8740359287975076522"><ph name="HOST_NAME" /> ഹോസ്‌റ്റിന്‍റെ &lt;abbr id="dnsDefinition"&gt;DNS വിലാസം&lt;/abbr&gt; കണ്ടെത്താനായില്ല. പ്രശ്‌നം നിർണ്ണയിക്കുന്നു.</translation>
-<translation id="8742371904523228557"><ph name="ORIGIN" /> എന്നതിന്റെ നിങ്ങളുടെ കോഡ് <ph name="ONE_TIME_CODE" /> ആണ്</translation>
 <translation id="874918643257405732">ഈ ടാബ് ബുക്ക്‌മാർക്ക് ചെയ്യുക</translation>
 <translation id="8751426954251315517">പിന്നീട് വീണ്ടും ശ്രമിക്കുക</translation>
 <translation id="8753913772043329557">നയ ലോഗുകൾ</translation>
@@ -5155,7 +5155,6 @@
 <translation id="9042827002460091668">നിങ്ങളുടെ ഇന്റർനെറ്റ് കണക്ഷൻ പരിശോധിച്ച് വീണ്ടും ശ്രമിക്കുക</translation>
 <translation id="9043161870923715789">AI മോഡ്</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
-<translation id="9046578823518542618">നിങ്ങളുടെ പ്രാദേശിക നെറ്റ്‌വർക്കിലെ ഏത് ഉപകരണവും തിരയാനും കണക്‌റ്റ് ചെയ്യാനും <ph name="URL" /> ആഗ്രഹിക്കുന്നു</translation>
 <translation id="9046864189129893978">മൈക്രോഫോണുകൾ (<ph name="MICS_COUNT" />)</translation>
 <translation id="9046865906192819796">'ഇപ്പോൾ വാങ്ങി പിന്നീട് പണമടയ്ക്കുക' സേവന നിബന്ധനകളുടെ സ്ക്രീൻ പകുതി ഉയരത്തിൽ തുറന്നു.</translation>
 <translation id="9047528041803621289">നിങ്ങളുടെ ഡിഫോൾട്ട് തിരയൽ എഞ്ചിൻ, വെബിൽ തിരയാൻ നിങ്ങളെ അനുവദിക്കുന്നു. ക്രമീകരണത്തിൽ നിങ്ങൾക്ക് ഇത് മാറ്റാം.</translation>

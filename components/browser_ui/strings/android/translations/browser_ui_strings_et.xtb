@@ -5,7 +5,6 @@
 <translation id="1036348656032585052">Lülita välja</translation>
 <translation id="1046742265332833834">Sinine teema</translation>
 <translation id="1070329623210597193">Failid, mida see sait saab vaadata või muuta</translation>
-<translation id="1073417869336441572">Aidake meil Chrome’i täiustada, andes teada, miks lubasite kolmanda osapoole küpsisefailid. <ph name="BEGIN_LINK" />Tagasiside saatmine<ph name="END_LINK" /></translation>
 <translation id="1074758928858737435">Saate paluda saitide lauaarvuti versiooni nägemist</translation>
 <translation id="1109482864356262001">Liikumis- või valgusandureid vajavad funktsioonid ei tööta.</translation>
 <translation id="1126523729897810826">Viige lõpule allolevad soovitatavad toimingud, et Chrome'i parimal moel kasutada.</translation>
@@ -328,6 +327,7 @@
 <translation id="4290791284969893584">Pärast lehe sulgemist ei pruugita alustatud toiminguid lõpule viia</translation>
 <translation id="429312253194641664">Sait esitab meediasisu</translation>
 <translation id="42981349822642051">Laienda</translation>
+<translation id="4310738531374808763">Avalehe kohandamine</translation>
 <translation id="4336219115486912529">{COUNT,plural, =1{Aegub homme}other{Aegub # päeva pärast}}</translation>
 <translation id="4338831206024587507">Kõik saidid domeenil <ph name="DOMAIN" /></translation>
 <translation id="4340799661701629185">Ära luba saitidel saata märguandeid</translation>
@@ -440,7 +440,6 @@
 <translation id="5555115555607204100">Ära kiirenda saite Chrome’i V8 mootoriga, aga suurenda pisut Chrome’i vastupanuvõimet rünnetele</translation>
 <translation id="5556459405103347317">Laadi uuesti</translation>
 <translation id="5591840828808741583">Saidi <ph name="SITE_NAME" /> jaoks blokeeritud</translation>
-<translation id="560980142378233747">See tähendab, et saidi funktsioonid peaksid ootuspäraselt töötama, kuid teil võib olla väiksem sirvimiskaitse. <ph name="BEGIN_LINK" />Tagasiside saatmine<ph name="END_LINK" /></translation>
 <translation id="5617702678271228680">Uue vahelehe kaartide alumine leht</translation>
 <translation id="5621413808884657932">Kui see on sisse lülitatud, võivad saidid küsida luba selle seadme muudele rakendustele ja teenustele juurdepääsemiseks. Kui see on välja lülitatud, ei pääse saidid selle seadme teistele rakendustele ja teenustele juurde.</translation>
 <translation id="5632485077360054581">Kuva juhised</translation>
@@ -519,6 +518,7 @@
 <translation id="6262279340360821358"><ph name="PERMISSION_1" /> ja <ph name="PERMISSION_2" /> on keelatud</translation>
 <translation id="6270391203985052864">Saidid saavad küsida luba märguannete saatmiseks</translation>
 <translation id="6295158916970320988">Kõik saidid</translation>
+<translation id="6305257382500066042">Proovige kohe</translation>
 <translation id="6320088164292336938">Vibreerimine</translation>
 <translation id="6367753977865761591">Konkreetse saidi jaoks kolmanda osapoole sisselogimise blokeerimine.</translation>
 <translation id="6398765197997659313">Välju täisekraanilt</translation>
@@ -529,7 +529,6 @@
 <translation id="6447842834002726250">Küpsised</translation>
 <translation id="6452138246455930388">Hinnalangus avatud vahelehel, hinnalt <ph name="OLD_PRICE" /> hinnale <ph name="NEW_PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN_NAME" /></translation>
 <translation id="6500423977866688905">Kui aken on kitsas, taotlege mobiilivaadet</translation>
-<translation id="6514791408445720076">Kohandage lehte</translation>
 <translation id="6527303717912515753">Jaga</translation>
 <translation id="6530703012083415527">Kui see on sisse lülitatud, saavad saidid kasutada hüpikaknaid ja ümbersuunamisi. Kui see on välja lülitatud, ei saa saidid kasutada hüpikaknaid ega ümbersuunamisi.</translation>
 <translation id="6540488083026747005">Lubasite sellel saidil kolmanda osapoole küpsisefailid</translation>
@@ -593,7 +592,6 @@
 <translation id="7141896414559753902">Blokeeri saitidel hüpikakende ja ümbersuunamiste kuvamine (soovitatav)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> kB</translation>
 <translation id="7180611975245234373">Värskenda</translation>
-<translation id="7180865173735832675">Kohandamine</translation>
 <translation id="7188508872042490670">Seadmes olevad saidiandmed</translation>
 <translation id="7201549776650881587">See toiming kustutab teie avakuval kõik saidigrupi <ph name="ORIGIN" /> alla kuuluvate saitide või selle rakenduse salvestatud andmed ja küpsised</translation>
 <translation id="7219254577985949841">Kas kustutada saidi andmed?</translation>
@@ -707,7 +705,6 @@ Täiustatud kaitse reguleerib neid Chrome’i seadeid:</translation>
 <translation id="83792324527827022">Sait kasutab teie kaamerat ja mikrofoni</translation>
 <translation id="8380167699614421159">Sait kuvab sekkuvaid või eksitavaid reklaame.</translation>
 <translation id="8394832520002899662">Puudutage saidile naasmiseks</translation>
-<translation id="8404500559369898929">Muutke Chrome omanäoliseks, valides kohandatud taustateema.</translation>
 <translation id="8409345997656833551">Saate märguande, kui artiklit saab kuvada lihtsustatud vaates</translation>
 <translation id="8416874502399604126">Mikrofon seekord lubatud</translation>
 <translation id="8423565414844018592">Teksti suuruseks on määratud <ph name="TEXT_SCALING" /></translation>

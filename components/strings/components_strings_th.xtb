@@ -316,7 +316,6 @@
 <translation id="1463793142714244641">สถานที่พักผ่อนในวันหยุดและสถานที่ประเภทแบ่งเวลา</translation>
 <translation id="1465457928007067810">บันทึก IBAN ไปยังบัญชี Google แล้ว</translation>
 <translation id="1467432559032391204">ซ้าย</translation>
-<translation id="1468653229182955856"><ph name="ONE_TIME_CODE" /> คือรหัสสำหรับ <ph name="EMBEDDED_ORIGIN" /> เพื่อดำเนินการต่อใน <ph name="TOP_ORIGIN" /></translation>
 <translation id="1472675084647422956">แสดงเพิ่มเติม</translation>
 <translation id="1473183651233018052">JIS B10</translation>
 <translation id="1473495410389165587">ป้อนคำอย่างน้อย 3 คำเพื่อรับความช่วยเหลือในการเขียน</translation>
@@ -549,6 +548,7 @@
 <translation id="1832474362231610822">บันทึกรูปภาพไปยัง OneDrive แล้ว</translation>
 <translation id="1832730227369924598">การซิงค์เดสก์</translation>
 <translation id="1834452765064623979">การก่อสร้างและบำรุงรักษา</translation>
+<translation id="1837606605602726453">ระบบจะไม่สนใจคะแนนความเสี่ยงและหมวดหมู่เนื่องจากผู้ดูแลระบบอนุญาตหรือบล็อกส่วนขยายอย่างชัดเจน</translation>
 <translation id="1838374766361614909">ล้างการค้นหา</translation>
 <translation id="1839331950812095887">สรุปความคิดของคุณในไม่กี่คำ</translation>
 <translation id="1839551713262164453">การตรวจสอบความถูกต้องของค่านโยบายมีข้อผิดพลาดและล้มเหลว</translation>
@@ -1859,6 +1859,7 @@
 <translation id="3875783148670536197">แสดงวิธีการ</translation>
 <translation id="3877603629930976930">ไม่แชร์</translation>
 <translation id="3878445208930547646">ไม่อนุญาตให้คัดลอกจากเว็บไซต์นี้</translation>
+<translation id="3879674895057686427">เลือกภาษาปลายทาง</translation>
 <translation id="3879748587602334249">Download Manager</translation>
 <translation id="3880456882942693779">ศิลปะและความบันเทิง</translation>
 <translation id="3880589673277376494">อินเทอร์เน็ตและโทรคมนาคม</translation>
@@ -2234,6 +2235,7 @@
 <translation id="443673843213245140">การใช้พร็อกซีถูกปิดใช้งาน แต่มีการระบุการกำหนดค่าพร็อกซีอย่างชัดเจน</translation>
 <translation id="4438821706955556403">ราคาปกติ</translation>
 <translation id="4441832193888514600">ถูกละเว้นเนื่องจากนโยบายจะต้องตั้งค่าเป็นนโยบายผู้ใช้ระบบคลาวด์เท่านั้น</translation>
+<translation id="4444062564459679679">ส่งไปยัง Chrome ใน <ph name="DEVICE_NAME" /> แล้ว</translation>
 <translation id="4445133368066241428">หัวข้อยอดนิยม</translation>
 <translation id="4445694043187340808"><ph name="STARTER_PACK_TABS_FOCUSED_FRIENDLY_MATCH_TEXT" /> กด Enter เพื่อค้นหาแท็บ</translation>
 <translation id="4445964943162061557">ฟีเจอร์นี้อยู่ในขั้นทดลองและอาจไม่ได้ทำงานถูกต้องเสมอไป</translation>
@@ -3445,6 +3447,7 @@
 <translation id="634500758737709758">เส้นทาง</translation>
 <translation id="6348220984832452017">รูปแบบที่ใช้งานอยู่</translation>
 <translation id="6349101878882523185">ติดตั้ง <ph name="APP_NAME" /></translation>
+<translation id="6350739641326887427">ชำระเงินโดยไม่ต้องคัดลอกและวางโค้ด Pix <ph name="BEGIN_LINK1" />ดูวิธีการทำงาน<ph name="END_LINK1" /></translation>
 <translation id="6351658970066645919">ลบข้อมูลการท่องเว็บ</translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{ไม่มี}=1{มีรหัสผ่าน 1 รายการ (สำหรับ <ph name="DOMAIN_LIST" />, ซิงค์แล้ว)}=2{มีรหัสผ่าน 2 รายการ (สำหรับ <ph name="DOMAIN_LIST" />, ซิงค์แล้ว)}other{มีรหัสผ่าน # รายการ (สำหรับ <ph name="DOMAIN_LIST" />, ซิงค์แล้ว)}}</translation>
 <translation id="6354918092619878358">SECG elliptic curve secp256r1 (เรียกอีกอย่างว่า ANSI X9.62 prime256v1, NIST P-256)</translation>
@@ -3503,7 +3506,6 @@
 <translation id="6424600253695044005">พื้นที่เก็บข้อมูลในระบบคลาวด์</translation>
 <translation id="6425092077175753609">วัสดุ</translation>
 <translation id="6427730057873428458">พับทบ</translation>
-<translation id="6428450836711225518">ยืนยันเบอร์โทรศัพท์</translation>
 <translation id="6429267199680088961">A4 Tab</translation>
 <translation id="643051589346665201">เปลี่ยนรหัสผ่าน Google</translation>
 <translation id="6431556523611594411">แชร์แท็บที่เปิดอยู่</translation>
@@ -3660,6 +3662,7 @@
 <translation id="668132230070712111">บันทึกวิดีโอไปยัง Google ไดรฟ์แล้ว</translation>
 <translation id="6681790815630918386">บันทึก CVC แล้ว</translation>
 <translation id="6683022854667115063">หูฟัง</translation>
+<translation id="6686570026048064255">หากต้องการปิดการตรวจหาโค้ด Pix ให้ไปที่<ph name="BEGIN_LINK1" />การตั้งค่า Chrome<ph name="END_LINK1" /></translation>
 <translation id="6687230248707087982">ซอง (ธรรมดา)</translation>
 <translation id="6687335167692595844">ขอขนาดแบบอักษรแล้ว</translation>
 <translation id="6688743156324860098">อัปเดต…</translation>
@@ -4451,7 +4454,6 @@
 <translation id="7874796722855317864">"<ph name="PROXY_UNKNOWN_CONDITION" />" ไม่ใช่ประเภทเงื่อนไขที่รู้จัก</translation>
 <translation id="7877007680666472091">รหัสเนื้อหาที่มีการคุ้มครอง</translation>
 <translation id="7878562273885520351">รหัสผ่านของคุณอาจถูกขโมยได้</translation>
-<translation id="7881044256965445977">ค้นหาและเชื่อมต่อกับอุปกรณ์ในเครือข่ายภายในของคุณ</translation>
 <translation id="7885670691503039914">คุณจะได้รับการแจ้งเตือนทางอีเมลหากราคาลดลงในเว็บไซต์ใดก็ตาม ระบบจะบันทึกหน้านี้ไว้ในโฟลเดอร์บุ๊กมาร์ก <ph name="LAST_BOOKMARKS_FOLDER" /></translation>
 <translation id="7886897188117641322">เลือกหมวดหมู่กว้างๆ ของหัวข้อที่สามารถใช้ในการปรับโฆษณาตามโปรไฟล์ของผู้ใช้</translation>
 <translation id="7887683347370398519">ตรวจสอบ CVC และลองอีกครั้ง</translation>
@@ -4845,6 +4847,7 @@
 <translation id="8511402995811232419">จัดการคุกกี้</translation>
 <translation id="851353418319061866">การตรวจสอบความถูกต้อง</translation>
 <translation id="8513580896341796021">เริ่มดาวน์โหลดแล้ว หากต้องการดู ให้กด |<ph name="ACCELERATOR" />|</translation>
+<translation id="8515544520486085367">ป้อนข้อมูลการชำระเงินโดยอัตโนมัติ</translation>
 <translation id="8519753333133776369">อุปกรณ์ HID นี้ได้รับอนุญาตจากผู้ดูแลระบบ</translation>
 <translation id="8521013008769249764">โซฟาและเก้าอี้</translation>
 <translation id="8521812709849134608">ท็อปเคาน์เตอร์</translation>
@@ -4978,7 +4981,6 @@
 <translation id="8737685506611670901">เปิดลิงก์ <ph name="PROTOCOL" /> แทน <ph name="REPLACED_HANDLER_TITLE" /></translation>
 <translation id="8738058698779197622">หากต้องเริ่มการเชื่อมต่อที่ปลอดภัย นาฬิกาจะต้องตั้งค่าไว้อย่างถูกต้อง เนื่องจากใบรับรองที่เว็บไซต์ใช้เพื่อระบุตนเองจะใช้ได้เฉพาะช่วงเวลาหนึ่งเท่านั้น นาฬิกาของอุปกรณ์ไม่ถูกต้อง Chromium จึงไม่สามารถยืนยันใบรับรองเหล่านี้ได้</translation>
 <translation id="8740359287975076522">ไม่พบ&lt;abbr id="dnsDefinition"&gt;ที่อยู่ DNS&lt;/abbr&gt; ของ <ph name="HOST_NAME" /> กำลังวินิจฉัยปัญหา</translation>
-<translation id="8742371904523228557">รหัสสำหรับ <ph name="ORIGIN" /> คือ <ph name="ONE_TIME_CODE" /></translation>
 <translation id="874918643257405732">บุ๊กมาร์กแท็บนี้</translation>
 <translation id="8751426954251315517">โปรดลองอีกครั้งในคราวหน้า</translation>
 <translation id="8753913772043329557">บันทึกนโยบาย</translation>
@@ -5156,7 +5158,6 @@
 <translation id="9042827002460091668">ตรวจสอบการเชื่อมต่ออินเทอร์เน็ตและลองอีกครั้ง</translation>
 <translation id="9043161870923715789">โหมด AI</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
-<translation id="9046578823518542618"><ph name="URL" /> ต้องการค้นหาและเชื่อมต่อกับอุปกรณ์ในเครือข่ายภายในของคุณ</translation>
 <translation id="9046864189129893978">ไมโครโฟน (<ph name="MICS_COUNT" /> ตัว)</translation>
 <translation id="9046865906192819796">หน้าจอข้อกำหนดในการให้บริการของ "ซื้อก่อน จ่ายทีหลัง" เปิดอยู่ครึ่งหน้าจอ</translation>
 <translation id="9047528041803621289">ค่าเริ่มต้นช่วยให้คุณค้นหาในเว็บได้ โดยคุณเปลี่ยนได้ในการตั้งค่า</translation>

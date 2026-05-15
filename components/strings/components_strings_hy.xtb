@@ -320,7 +320,6 @@
 <translation id="1463793142714244641">Թայմշեյրներ և ամառանոցներ</translation>
 <translation id="1465457928007067810">IBAN համարը պահվեց ձեր Google հաշվում</translation>
 <translation id="1467432559032391204">Ձախ</translation>
-<translation id="1468653229182955856">Աշխատանքը <ph name="TOP_ORIGIN" /> կայքում շարունակելու համար մուտքագրեք <ph name="ONE_TIME_CODE" /> կոդը <ph name="EMBEDDED_ORIGIN" /> շրջանակի համար։</translation>
 <translation id="1472675084647422956">Ցույց տալ ավելին</translation>
 <translation id="1473183651233018052">JIS B10</translation>
 <translation id="1473495410389165587">Մուտքագրեք առնվազն 3 բառ՝ գրելու հետ կապված օգնություն ստանալու համար</translation>
@@ -1869,6 +1868,7 @@
 <translation id="3875783148670536197">Ցույց տալ, թե ինչպես</translation>
 <translation id="3877603629930976930">Չկիսվել</translation>
 <translation id="3878445208930547646">Այս կայքից պատճենումն արգելված է</translation>
+<translation id="3879674895057686427">Ընտրեք թարգմանության լեզուն</translation>
 <translation id="3879748587602334249">Ներբեռնման կառավարիչ</translation>
 <translation id="3880456882942693779">Արվեստ և զվարճանք</translation>
 <translation id="3880589673277376494">Ինտերնետ և հեռահաղորդակցություն</translation>
@@ -3515,7 +3515,6 @@
 <translation id="6424600253695044005">Ամպային տարածք</translation>
 <translation id="6425092077175753609">Material</translation>
 <translation id="6427730057873428458">Երկփեղկ ծալում</translation>
-<translation id="6428450836711225518">Հաստատեք ձեր հեռախոսահամարը</translation>
 <translation id="6429267199680088961">A4 Tab</translation>
 <translation id="643051589346665201">Փոխել Google-ի գաղտնաբառը</translation>
 <translation id="6431556523611594411">Կիսվել բաց ներդիրներով</translation>
@@ -4463,7 +4462,6 @@
 <translation id="7874796722855317864">«<ph name="PROXY_UNKNOWN_CONDITION" />» պարամետրը պայմանի հայտնի տեսակ չէ։</translation>
 <translation id="7877007680666472091">պաշտպանված բովանդակության նույնացուցիչներ</translation>
 <translation id="7878562273885520351">Ձեր գաղտնաբառը կարող են հափշտակել</translation>
-<translation id="7881044256965445977">Ձեր լոկալ ցանցում փնտրեք ցանկացած սարք և միացեք դրան</translation>
 <translation id="7885670691503039914">Դուք էլփոստով ծանուցումներ կստանաք, երբ որևէ կայքում գնիջեցում լինի։ Այս էջը կպահվի էջանիշների «<ph name="LAST_BOOKMARKS_FOLDER" />» պանակում։</translation>
 <translation id="7886897188117641322">Ընտրեք թեմաների լայն կատեգորիաները, որոնք կարող են օգտագործվել գովազդներն անհատականացնելու համար</translation>
 <translation id="7887683347370398519">Ստուգեք ձեր CVC կոդը և նորից փորձեք</translation>
@@ -4989,7 +4987,6 @@
 <translation id="8737685506611670901">Բացել <ph name="PROTOCOL" /> -ի հղումները <ph name="REPLACED_HANDLER_TITLE" />-ի փոխարեն</translation>
 <translation id="8738058698779197622">Անվտանգ կապակցում հաստատելու համար ձեր ժամացույցը պետք է ճիշտ կարգավորված լինի: Պատճառն այն է, որ վկայագրերը, որոնք կայքերն օգտագործում են իրենց նույնականացնելու համար, վավեր են լինում միայն որոշակի ժամանակահատվածի ընթացքում: Քանի որ ձեր սարքի ժամացույցը սխալ է, Chromium-ը չի կարող ստուգել այս վկայագրերը:</translation>
 <translation id="8740359287975076522"><ph name="HOST_NAME" />-ի &lt;abbr id="dnsDefinition"&gt;DNS հասցեն&lt;/abbr&gt; չհաջողվեց գտնել: Կատարվում է խնդրի ախտորոշում:</translation>
-<translation id="8742371904523228557"><ph name="ORIGIN" /> կայքի ձեր կոդը՝ <ph name="ONE_TIME_CODE" /></translation>
 <translation id="874918643257405732">Էջանշել այս ներդիրը</translation>
 <translation id="8751426954251315517">Փորձեք ավելի ուշ</translation>
 <translation id="8753913772043329557">Կանոնների մատյաններ</translation>
@@ -5167,7 +5164,6 @@
 <translation id="9042827002460091668">Ստուգեք ձեր ինտերնետ կապը և նորից փորձեք</translation>
 <translation id="9043161870923715789">ԱԲ ռեժիմ</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
-<translation id="9046578823518542618"><ph name="URL" /> կայքը հայցում է լոկալ ցանցում սարքեր փնտրելու և դրանց միանալու թույլտվություն</translation>
 <translation id="9046864189129893978">Խոսափողներ (<ph name="MICS_COUNT" />)</translation>
 <translation id="9046865906192819796">Ապառիկ գնման պայմանների էկրանը բացված է կիսով չափ։</translation>
 <translation id="9047528041803621289">Ձեր կանխադրված որոնողական համակարգը թույլ է տալիս որոնել համացանցում։ Այն կարող եք կարգավորումներում փոխել։</translation>

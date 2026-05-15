@@ -316,7 +316,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="1463793142714244641">Tiempo compartido y propiedades vacacionales</translation>
 <translation id="1465457928007067810">Se guardó el IBAN en tu Cuenta de Google</translation>
 <translation id="1467432559032391204">Izquierda</translation>
-<translation id="1468653229182955856"><ph name="ONE_TIME_CODE" /> es el código de <ph name="EMBEDDED_ORIGIN" /> que necesitas para continuar en <ph name="TOP_ORIGIN" /></translation>
 <translation id="1472675084647422956">Mostrar más</translation>
 <translation id="1473183651233018052">JIS B10</translation>
 <translation id="1473495410389165587">Ingresa 3 o más palabras para obtener ayuda con la escritura</translation>
@@ -549,6 +548,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="1832474362231610822">Se guardó la foto en OneDrive</translation>
 <translation id="1832730227369924598">Sincronización de escritorio</translation>
 <translation id="1834452765064623979">Construcción y mantenimiento</translation>
+<translation id="1837606605602726453">Se ignoran la puntuación y las categorías de riesgo porque el administrador permitió o bloqueó explícitamente la extensión.</translation>
 <translation id="1838374766361614909">Borrar la búsqueda</translation>
 <translation id="1839331950812095887">algunas palabras que resuman tus pensamientos</translation>
 <translation id="1839551713262164453">Se produjeron errores en la validación de los valores de la política</translation>
@@ -1861,6 +1861,7 @@ Para ocultar las opciones de pago más tarde, ve a la <ph name="BEGIN_LINK" />co
 <translation id="3875783148670536197">Cómo hacerlo</translation>
 <translation id="3877603629930976930">No compartir</translation>
 <translation id="3878445208930547646">No se puede copiar desde este sitio</translation>
+<translation id="3879674895057686427">Elegir el idioma al que quieres traducir</translation>
 <translation id="3879748587602334249">Administrador de descargas</translation>
 <translation id="3880456882942693779">Arte y entretenimiento</translation>
 <translation id="3880589673277376494">Internet y telecomunicaciones</translation>
@@ -3447,6 +3448,7 @@ Para ocultar las opciones de pago más tarde, ve a la <ph name="BEGIN_LINK" />co
 <translation id="634500758737709758">Instrucciones</translation>
 <translation id="6348220984832452017">Variaciones activas</translation>
 <translation id="6349101878882523185">Instalar <ph name="APP_NAME" /></translation>
+<translation id="6350739641326887427">Paga sin copiar ni pegar el código de Pix. <ph name="BEGIN_LINK1" />Ver cómo funciona<ph name="END_LINK1" /></translation>
 <translation id="6351658970066645919">Borrar datos de navegación</translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{Ninguna}=1{1 contraseña (para <ph name="DOMAIN_LIST" />, sincronizada)}=2{2 contraseñas (para <ph name="DOMAIN_LIST" />, sincronizadas)}other{# contraseñas (para <ph name="DOMAIN_LIST" />, sincronizadas)}}</translation>
 <translation id="6354918092619878358">Curva elíptica SECG elliptic secp256r1 (también conocido como ANSI X9.62 prime256v1, NIST P-256)</translation>
@@ -3505,7 +3507,6 @@ Para ocultar las opciones de pago más tarde, ve a la <ph name="BEGIN_LINK" />co
 <translation id="6424600253695044005">Almacenamiento en la nube</translation>
 <translation id="6425092077175753609">Material</translation>
 <translation id="6427730057873428458">Plegado en ventana</translation>
-<translation id="6428450836711225518">Verifica tu número de teléfono</translation>
 <translation id="6429267199680088961">A4 Tab</translation>
 <translation id="643051589346665201">Cambiar la contraseña de Google</translation>
 <translation id="6431556523611594411">Compartir pestañas abiertas</translation>
@@ -3662,6 +3663,7 @@ Para ocultar las opciones de pago más tarde, ve a la <ph name="BEGIN_LINK" />co
 <translation id="668132230070712111">Se guardó el video en Google Drive</translation>
 <translation id="6681790815630918386">Se guardó el CVC</translation>
 <translation id="6683022854667115063">Auriculares</translation>
+<translation id="6686570026048064255">Para desactivar la detección de códigos Pix, ve a la <ph name="BEGIN_LINK1" />configuración de Chrome<ph name="END_LINK1" /></translation>
 <translation id="6687230248707087982">Sobre (liso)</translation>
 <translation id="6687335167692595844">Se necesita el tamaño de la fuente</translation>
 <translation id="6688743156324860098">Actualizar…</translation>
@@ -4453,7 +4455,6 @@ Detalles adicionales:
 <translation id="7874796722855317864">“<ph name="PROXY_UNKNOWN_CONDITION" />” no es un tipo de condición conocido.</translation>
 <translation id="7877007680666472091">ID de contenido protegidos</translation>
 <translation id="7878562273885520351">Es posible que tu contraseña esté en peligro</translation>
-<translation id="7881044256965445977">Buscar y conectarse a cualquier dispositivo de tu red local</translation>
 <translation id="7885670691503039914">Recibirás alertas por correo electrónico si hay reducciones de precio en algún sitio. Se guardará esta página en la carpeta de favoritos <ph name="LAST_BOOKMARKS_FOLDER" />.</translation>
 <translation id="7886897188117641322">Elige qué categorías de temas generales se pueden utilizar para personalizar los anuncios</translation>
 <translation id="7887683347370398519">Verifica tu CVC y vuelve a intentarlo.</translation>
@@ -4980,7 +4981,6 @@ Detalles adicionales:
 <translation id="8737685506611670901">Abrir vínculos de <ph name="PROTOCOL" /> en lugar de <ph name="REPLACED_HANDLER_TITLE" /></translation>
 <translation id="8738058698779197622">Para establecer una conexión segura, el reloj debe estar configurado correctamente. Esto se debe a que los certificados que usan los sitios web para su identificación solo son válidos por períodos de tiempo específicos. Debido a que la configuración del reloj del dispositivo es incorrecta, Chromium no puede verificar estos certificados.</translation>
 <translation id="8740359287975076522">No se encontró <ph name="HOST_NAME" />’s &lt;abbr id="dnsDefinition"&gt;DNS address&lt;/abbr&gt;. Se está diagnosticando el problema.</translation>
-<translation id="8742371904523228557"><ph name="ONE_TIME_CODE" /> es tu código para <ph name="ORIGIN" /></translation>
 <translation id="874918643257405732">Agregar esta pestaña a favoritos</translation>
 <translation id="8751426954251315517">Vuelve a intentarlo más tarde</translation>
 <translation id="8753913772043329557">Registros de políticas</translation>
@@ -5158,7 +5158,6 @@ Detalles adicionales:
 <translation id="9042827002460091668">Revisa la conexión a Internet y vuelve a intentarlo</translation>
 <translation id="9043161870923715789">Modo IA</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
-<translation id="9046578823518542618"><ph name="URL" /> quiere buscar y conectarse a cualquier dispositivo de tu red local</translation>
 <translation id="9046864189129893978">Micrófonos (<ph name="MICS_COUNT" />)</translation>
 <translation id="9046865906192819796">La pantalla de las condiciones del servicio de Compra ahora y paga después está abierta a media altura.</translation>
 <translation id="9047528041803621289">La opción predeterminada te permite buscar en la Web. Puedes cambiarla en la configuración.</translation>

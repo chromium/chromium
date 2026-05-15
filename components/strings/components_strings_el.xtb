@@ -316,7 +316,6 @@
 <translation id="1463793142714244641">Χρονομεριστικές μισθώσεις και ακίνητα διακοπών</translation>
 <translation id="1465457928007067810">Το IBAN αποθηκεύτηκε στον Λογαριασμό σας Google</translation>
 <translation id="1467432559032391204">Αριστερά</translation>
-<translation id="1468653229182955856">Το <ph name="ONE_TIME_CODE" /> είναι ο κωδικός σας για το <ph name="EMBEDDED_ORIGIN" /> για να συνεχίσετε στο <ph name="TOP_ORIGIN" /></translation>
 <translation id="1472675084647422956">Εμφάνιση περισσότερων</translation>
 <translation id="1473183651233018052">JIS B10</translation>
 <translation id="1473495410389165587">Εισαγάγετε 3 ή περισσότερες λέξεις για να λάβετε βοήθεια σχετικά με το γράψιμο</translation>
@@ -549,6 +548,7 @@
 <translation id="1832474362231610822">Η φωτογραφία αποθηκεύτηκε στο OneDrive</translation>
 <translation id="1832730227369924598">Συγχρονισμός γραφείου</translation>
 <translation id="1834452765064623979">Οικοδομές και συντήρηση</translation>
+<translation id="1837606605602726453">Ο δείκτης και οι κατηγορίες κινδύνου παραβλέπονται, καθώς η επέκταση έχει επιτραπεί ή αποκλειστεί ρητά από τον διαχειριστή.</translation>
 <translation id="1838374766361614909">Διαγραφή αναζητήσεων</translation>
 <translation id="1839331950812095887">λίγες λέξεις που συνοψίζουν τις σκέψεις σας</translation>
 <translation id="1839551713262164453">Η επικύρωση των τιμών πολιτικής απέτυχε αφού παρουσίασε σφάλματα</translation>
@@ -1860,6 +1860,7 @@
 <translation id="3875783148670536197">Οδηγίες</translation>
 <translation id="3877603629930976930">Να μην γίνει κοινή χρήση</translation>
 <translation id="3878445208930547646">Δεν επιτρέπεται η αντιγραφή από αυτόν τον ιστότοπο</translation>
+<translation id="3879674895057686427">Επιλέξτε τη γλώσσα στην οποία θα γίνει η μετάφραση</translation>
 <translation id="3879748587602334249">Διαχείριση λήψεων</translation>
 <translation id="3880456882942693779">Τέχνες και ψυχαγωγία</translation>
 <translation id="3880589673277376494">Διαδίκτυο και τηλεπικοινωνίες</translation>
@@ -3447,6 +3448,7 @@
 <translation id="634500758737709758">Οδηγίες</translation>
 <translation id="6348220984832452017">Ενεργές παραλλαγές</translation>
 <translation id="6349101878882523185">Εγκατάσταση εφαρμογής <ph name="APP_NAME" /></translation>
+<translation id="6350739641326887427">Πληρώστε χωρίς αντιγραφή και επικόλληση του κωδικού Pix. <ph name="BEGIN_LINK1" />Δείτε πώς λειτουργεί<ph name="END_LINK1" /></translation>
 <translation id="6351658970066645919">Διαγραφή δεδομένων περιήγησης</translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{Κανένας}=1{1 κωδικός πρόσβασης (για <ph name="DOMAIN_LIST" />, συγχρονισμένος)}=2{2 κωδικοί πρόσβασης (για <ph name="DOMAIN_LIST" />, συγχρονισμένοι)}other{# κωδικοί πρόσβασης (για <ph name="DOMAIN_LIST" />, συγχρονισμένοι)}}</translation>
 <translation id="6354918092619878358">Ελλειπτική καμπύλη SECG secp256r1 (επίσης γνωστή ως ANSI X9.62 prime256v1, NIST P-256)</translation>
@@ -3505,7 +3507,6 @@
 <translation id="6424600253695044005">Αποθηκευτικός χώρος cloud</translation>
 <translation id="6425092077175753609">Material</translation>
 <translation id="6427730057873428458">Δίπλωση παράθυρο</translation>
-<translation id="6428450836711225518">Επαλήθευση του αριθμού τηλεφώνου σας</translation>
 <translation id="6429267199680088961">A4 Tab</translation>
 <translation id="643051589346665201">Αλλαγή κωδικού πρόσβασης Google</translation>
 <translation id="6431556523611594411">Κοινή χρήση ανοιχτών καρτελών</translation>
@@ -3663,6 +3664,7 @@
 <translation id="668132230070712111">Το βίντεο αποθηκεύτηκε στο Google Drive</translation>
 <translation id="6681790815630918386">Το CVC αποθηκεύτηκε</translation>
 <translation id="6683022854667115063">Ακουστικά</translation>
+<translation id="6686570026048064255">Για να απενεργοποιήσετε την ανίχνευση κωδικού Pix, μεταβείτε στις <ph name="BEGIN_LINK1" />Ρυθμίσεις του Chrome<ph name="END_LINK1" /></translation>
 <translation id="6687230248707087982">Φάκελος (Απλός)</translation>
 <translation id="6687335167692595844">Ζητήθηκε μέγεθος γραμματοσειράς</translation>
 <translation id="6688743156324860098">Ενημέρωση…</translation>
@@ -4454,7 +4456,6 @@
 <translation id="7874796722855317864">Η τιμή <ph name="PROXY_UNKNOWN_CONDITION" /> δεν αποτελεί γνωστό τύπο συνθήκης.</translation>
 <translation id="7877007680666472091">προστατευμένα αναγνωριστικά περιεχομένου</translation>
 <translation id="7878562273885520351">Ο κωδικός πρόσβασής σας μπορεί να έχει παραβιαστεί</translation>
-<translation id="7881044256965445977">Αναζητήστε και συνδεθείτε σε οποιαδήποτε συσκευή στο τοπικό σας δίκτυο</translation>
 <translation id="7885670691503039914">Αν η τιμή πέσει σε οποιονδήποτε ιστότοπο, θα λάβετε ειδοποιήσεις ηλεκτρονικού ταχυδρομείου. Αυτή η σελίδα θα αποθηκευτεί στον φάκελο σελιδοδεικτών <ph name="LAST_BOOKMARKS_FOLDER" />.</translation>
 <translation id="7886897188117641322">Επιλέξτε τις ευρείες κατηγορίες θεμάτων που μπορούν να χρησιμοποιηθούν για την εξατομίκευση των διαφημίσεων</translation>
 <translation id="7887683347370398519">Ελέγξτε τον κωδικό σας CVC και δοκιμάστε ξανά</translation>
@@ -4981,7 +4982,6 @@
 <translation id="8737685506611670901">Άνοιγμα συνδέσμων <ph name="PROTOCOL" /> αντί για <ph name="REPLACED_HANDLER_TITLE" /></translation>
 <translation id="8738058698779197622">Για την επίτευξη μιας ασφαλούς σύνδεσης, θα πρέπει να γίνει σωστή ρύθμιση του ρολογιού σας. Αυτό οφείλεται στο γεγονός ότι τα πιστοποιητικά που χρησιμοποιούν οι ιστότοποι για την ταυτοποίησή τους είναι έγκυρα μόνο για συγκεκριμένες χρονικές περιόδους. Εφόσον το ρολόι της συσκευής σας δεν είναι σωστά ρυθμισμένο, το Chromium δεν μπορεί να επαληθεύσει αυτά τα πιστοποιητικά.</translation>
 <translation id="8740359287975076522">Δεν ήταν δυνατός ο εντοπισμός της &lt;abbr id="dnsDefinition"&gt;διεύθυνσης DNS&lt;/abbr&gt; του κεντρικού υπολογιστή <ph name="HOST_NAME" />. Γίνεται διάγνωση του προβλήματος.</translation>
-<translation id="8742371904523228557">Το <ph name="ONE_TIME_CODE" /> είναι ο κωδικός σας για το <ph name="ORIGIN" /></translation>
 <translation id="874918643257405732">Προσθήκη αυτής της καρτέλας στους σελιδοδείκτες</translation>
 <translation id="8751426954251315517">Δοκιμάστε ξανά την επόμενη φορά</translation>
 <translation id="8753913772043329557">Αρχεία καταγραφής πολιτικών</translation>
@@ -5159,7 +5159,6 @@
 <translation id="9042827002460091668">Ελέγξτε τη σύνδεσή σας στο διαδίκτυο και δοκιμάστε ξανά</translation>
 <translation id="9043161870923715789">Λειτουργία AI</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
-<translation id="9046578823518542618">Ο ιστότοπος <ph name="URL" /> θέλει να αναζητήσει και να συνδεθεί σε οποιαδήποτε συσκευή στο τοπικό σας δίκτυο</translation>
 <translation id="9046864189129893978">Μικρόφωνα (<ph name="MICS_COUNT" />)</translation>
 <translation id="9046865906192819796">Η οθόνη όρων παροχής υπηρεσιών της δυνατότητας Αγοράστε τώρα, πληρώστε αργότερα άνοιξε στο μισό ύψος.</translation>
 <translation id="9047528041803621289">Η προεπιλεγμένη μηχανή αναζήτησης σας επιτρέπει να κάνετε αναζήτηση στον ιστό. Μπορείτε να την αλλάξετε στις ρυθμίσεις.</translation>

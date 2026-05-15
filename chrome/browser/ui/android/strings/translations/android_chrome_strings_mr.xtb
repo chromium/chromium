@@ -263,6 +263,7 @@
 <translation id="2184272387334793084">तुमच्या सर्व डिव्हाइसवर तुमचे पासवर्ड आणि आणखी बरेच काही मिळवण्यासाठी साइन इन करा</translation>
 <translation id="218608176142494674">शेअर करत आहे</translation>
 <translation id="2186779861549045980">तुमच्या Google खाते मध्ये कोणता डेटा सेव्ह केला जावा हे तुम्ही निवडू शकता.\nतुम्ही हे आयटम तुमचे बुकमार्क, वाचन सूची किंवा Password Manager यामध्ये पाहू शकता आणि व्यवस्थापित करू शकता.</translation>
+<translation id="2190355936436201913">(रिक्त)</translation>
 <translation id="219283042927675668">गटामधील टॅब</translation>
 <translation id="2194856509914051091">विचार करण्याच्या गोष्टी</translation>
 <translation id="2205701497928406883"><ph name="TAB_TITLE" />, पिन केलेला शेअर करत असलेला टॅब</translation>
@@ -300,6 +301,7 @@
 <translation id="233375395665273385">हटवा आणि साइन आउट करा</translation>
 <translation id="2341410551640223969"><ph name="WEBAPK_NAME" /> इंस्टॉल करता आले नाही.</translation>
 <translation id="2349710944427398404">खाती, बुकमार्क आणि सेव्ह केलेल्या सेटिंग्जसह, Chrome ने वापरलेला एकूण डेटा</translation>
+<translation id="2354001756790975382">इतर बुकमार्क</translation>
 <translation id="235789365079050412">Google गोपनीयता धोरण</translation>
 <translation id="2359808026110333948">सुरू ठेवा</translation>
 <translation id="2362083820973145409"><ph name="USER_NAME" /> म्हणून साइन इन केले. <ph name="USER_EMAIL" />. सेटिंग उघडते.</translation>
@@ -544,6 +546,7 @@
 <translation id="3359667936385849800">तुमचा सध्याचा सेवा पुरवठादार वापरा</translation>
 <translation id="3373701465337594448">सुरू असताना, तुम्ही भेट देता त्या तुमच्या स्वारस्यांचा अंदाज लावणाऱ्या साइटची सूची येथे दिसते</translation>
 <translation id="3384347053049321195">इमेज शेअर करा</translation>
+<translation id="3385749568468586663">Gemini हे गुप्त मोडमध्ये उपलब्ध नाही</translation>
 <translation id="3387650086002190359">फाइल सिस्टीम एररमुळे <ph name="FILE_NAME" /> डाउनलोड करता आले नाही.</translation>
 <translation id="3417835166382867856">टॅब शोधा</translation>
 <translation id="3430670036890315772">तुमचे प्रोफाइल लॉक बंद केल्याने तुमची सेव्ह केलेली माहिती काढून टाकली जाईल</translation>
@@ -1269,6 +1272,7 @@
 <translation id="6437162790453527153">तुमच्या सर्व डिव्हाइसवर तुमचे बुकमार्क आणि आणखी बरेच काही मिळवण्यासाठी साइन इन करा</translation>
 <translation id="6437478888915024427">पेज माहिती</translation>
 <translation id="6440291723980579689">तुम्ही पेज उघडल्यानंतरच ती लोड होतात</translation>
+<translation id="6441377161852435370">वाचन सूचीवर टॅब जोडा</translation>
 <translation id="6441734959916820584">नाव खूपच मोठे आहे</translation>
 <translation id="6444291413624515012"><ph name="TAB_GROUP_TITLE" /> टॅब गट बंद केला आहे</translation>
 <translation id="6452534462676960500">नवीन अ‍ॅक्टिव्हिटी</translation>
@@ -1358,6 +1362,7 @@
 <translation id="6787600234697426339"><ph name="MAX_INSTANCE_COUNT" /> विंडोची मर्यादा गाठली आहे</translation>
 <translation id="6795633245022906657">झटपट नवीन टॅब उघडा. हा शॉर्टकट संपादित करण्यासाठी, सेटिंग्ज वर जा.</translation>
 <translation id="679588508577699489">Chrome ला तुमचे डीफॉल्ट बनवा</translation>
+<translation id="679845623837196966">वाचन सूची दाखवा</translation>
 <translation id="679956319013005046">ऑटोफिलसाठी तुमची प्राधान्य दिलेली सेवा सेट करण्याकरिता, सर्वप्रथम ती सेवा <ph name="BEGIN_LINK" />Android सेटिंग्ज<ph name="END_LINK" /> मध्ये जोडा.</translation>
 <translation id="6802555630140434547">विंडो बंद केली जाईल</translation>
 <translation id="6803791793483522764">नोटिफिकेशनचे पुनरावलोकन करा</translation>
@@ -1658,6 +1663,7 @@
 <translation id="7934668619883965330">फाइल डाउनलोड करू शकत नाही. फाइल फॉरमॅटला सपोर्ट नाही.</translation>
 <translation id="7951102827450076904">डाउनलोड केलेल्या PDFs नेहमी उघडा</translation>
 <translation id="7952479614398473176">नवीन विंडो उघडण्यासाठी, अ‍ॅक्टिव्ह विंडोची एकूण संख्या <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> किंवा त्याहून कमी करा.</translation>
+<translation id="7956713633345437162">Mobile बुकमार्क</translation>
 <translation id="7957413488482743710">संभाव्य फसवणुकीपासून तुमचे संरक्षण करण्यात मदत करण्यासाठी, व्हर्च्युअल कार्ड तुमचे मूळ कार्ड लपवते. <ph name="BEGIN_LINK1" />व्हर्च्युअल कार्डबद्दल अधिक जाणून घ्या<ph name="END_LINK1" /></translation>
 <translation id="7959485987650214982">या डिव्हाइसवर टॅब आहेत</translation>
 <translation id="7961926449547174351">तुम्ही स्टोरेज चा ॲक्सेस बंद केला आहे, तो सुरू करण्यासाठी कृपया सेटिंग्ज मध्ये जा.</translation>
@@ -1846,6 +1852,7 @@
 <translation id="867914734596684889">बुकमार्क बार दाखवा किंवा लपवा</translation>
 <translation id="8683039184091909753">इमेज</translation>
 <translation id="8688183792442786085"><ph name="TAB_TITLE" />, निवडलेला टॅब</translation>
+<translation id="8696297579102085705">तुमच्या डिव्हाइसवर पाठवा</translation>
 <translation id="8697753151306746444">त्याऐवजी विंडो किंवा स्क्रीन शेअर करा</translation>
 <translation id="8699120352855309748">या भाषांचे भाषांतर करणे ऑफर करू नका</translation>
 <translation id="8712637175834984815">समजले</translation>

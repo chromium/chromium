@@ -263,6 +263,7 @@
 <translation id="2184272387334793084">Prihláste sa a používajte heslá a ďalší obsah vo všetkých svojich zariadeniach</translation>
 <translation id="218608176142494674">Zdieľanie</translation>
 <translation id="2186779861549045980">Môžete si vybrať, ktoré údaje sa majú ukladať vo vašom účte Google.\nTieto položky si môžete zobraziť a spravovať aj v záložkách, čitateľskom zozname alebo Správcovi hesiel.</translation>
+<translation id="2190355936436201913">(prázdne)</translation>
 <translation id="219283042927675668">Karty v skupine</translation>
 <translation id="2194856509914051091">Čo je potrebné zohľadniť</translation>
 <translation id="2205701497928406883"><ph name="TAB_TITLE" />, pripnutá karta na zdieľanie</translation>
@@ -300,6 +301,7 @@
 <translation id="233375395665273385">Odstrániť a odhlásiť</translation>
 <translation id="2341410551640223969"><ph name="WEBAPK_NAME" /> sa nepodarilo nainštalovať.</translation>
 <translation id="2349710944427398404">Celkové dáta využívané Chromom vrátane účtov, záložiek a uložených nastavení</translation>
+<translation id="2354001756790975382">Ostatné</translation>
 <translation id="235789365079050412">Pravidlá ochrany súkromia spoločnosti Google</translation>
 <translation id="2359808026110333948">Pokračovať</translation>
 <translation id="2362083820973145409">Prihlásili ste sa ako <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Otvorí nastavenia.</translation>
@@ -896,6 +898,7 @@ Váš účet Google môže mať na adrese <ph name="BEGIN_LINK" />myactivity.goo
 <translation id="4864369630010738180">Prebieha prihlasovanie...</translation>
 <translation id="4866368707455379617">Modul <ph name="MODULE" /> pre Chrome sa nepodarilo nainštalovať</translation>
 <translation id="4875775213178255010">Návrhy obsahu</translation>
+<translation id="4876880121961092787">Skryť panel so záložkami</translation>
 <translation id="4877678010818027629">Spustiť režim inkognito</translation>
 <translation id="4878404682131129617">Vytvorenie tunela prostredníctvom proxy servera zlyhalo</translation>
 <translation id="4880127995492972015">Preložiť…</translation>
@@ -1268,6 +1271,7 @@ Niektoré weby môžu napríklad na túto žiadosť reagovať tak, že vám zobr
 <translation id="6437162790453527153">Prihláste sa a používajte záložky a ďalší obsah vo všetkých svojich zariadeniach</translation>
 <translation id="6437478888915024427">Informácie o stránke</translation>
 <translation id="6440291723980579689">Stránky sa načítavajú až po otvorení</translation>
+<translation id="6441377161852435370">Pridať kartu do čitateľského zoznamu</translation>
 <translation id="6441734959916820584">Názov je príliš dlhý</translation>
 <translation id="6444291413624515012">Skupina kariet <ph name="TAB_GROUP_TITLE" /> bola zavretá</translation>
 <translation id="6452534462676960500">Nová aktivita</translation>
@@ -1357,6 +1361,7 @@ Niektoré weby môžu napríklad na túto žiadosť reagovať tak, že vám zobr
 <translation id="6787600234697426339">Bol dosiahnutý maximálny počet okien <ph name="MAX_INSTANCE_COUNT" /></translation>
 <translation id="6795633245022906657">Skratka na rýchle otvorenie novej karty. Ak chcete skratku upraviť, prejdite do Nastavení.</translation>
 <translation id="679588508577699489">Nastavte si Chrome ako predvolený prehliadač</translation>
+<translation id="679845623837196966">Zobraziť čitateľský zoznam</translation>
 <translation id="679956319013005046">Ak chcete nastaviť preferovanú službu automatického dopĺňania, najprv ju pridajte v <ph name="BEGIN_LINK" />Nastaveniach Androidu<ph name="END_LINK" />.</translation>
 <translation id="6802555630140434547">Okno bude zavreté</translation>
 <translation id="6803791793483522764">Kontrola upozornení</translation>
@@ -1657,6 +1662,7 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />odstráňte údaje Ch
 <translation id="7934668619883965330">Súbor sa nedá stiahnuť. Formát súboru nie je podporovaný.</translation>
 <translation id="7951102827450076904">Vždy otvárať stiahnuté súbory PDF</translation>
 <translation id="7952479614398473176">Ak chcete otvoriť nové okno, znížte celkový počet aktívnych okien na <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> alebo menej.</translation>
+<translation id="7956713633345437162">Mobilné záložky</translation>
 <translation id="7957413488482743710">Virtuálnou kartou sa skryje vaša skutočná karta, čo vás ochráni pred potenciálnymi podvodmi. <ph name="BEGIN_LINK1" />Ďalšie informácie o virtuálnych kartách<ph name="END_LINK1" /></translation>
 <translation id="7959485987650214982">Karty v tomto zariadení</translation>
 <translation id="7961926449547174351">Deaktivovali ste prístup k úložisku. Aktivujete ho v sekcii Nastavenia.</translation>
@@ -1845,6 +1851,7 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />odstráňte údaje Ch
 <translation id="867914734596684889">Zobrazenie alebo skrytie panela so záložkami</translation>
 <translation id="8683039184091909753">obrázok</translation>
 <translation id="8688183792442786085"><ph name="TAB_TITLE" />, vybraná karta</translation>
+<translation id="8696297579102085705">Odoslať do zariadenia</translation>
 <translation id="8697753151306746444">Zdieľajte okno alebo obrazovku</translation>
 <translation id="8699120352855309748">Neponúkať preklad týchto jazykov</translation>
 <translation id="8712637175834984815">Dobre</translation>

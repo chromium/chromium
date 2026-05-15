@@ -316,7 +316,6 @@
 <translation id="1463793142714244641">Имоти за размена и одмор</translation>
 <translation id="1465457928007067810">IBAN е зачуван во вашата сметка на Google</translation>
 <translation id="1467432559032391204">Лево</translation>
-<translation id="1468653229182955856"><ph name="ONE_TIME_CODE" /> е вашиот код за да продолжи <ph name="EMBEDDED_ORIGIN" /> на <ph name="TOP_ORIGIN" /></translation>
 <translation id="1472675084647422956">Прикажи повеќе</translation>
 <translation id="1473183651233018052">JIS B10</translation>
 <translation id="1473495410389165587">Внесете 3 или повеќе збора за да добиете помош за пишување</translation>
@@ -549,6 +548,7 @@
 <translation id="1832474362231610822">Фотографијата е зачувана во OneDrive</translation>
 <translation id="1832730227369924598">Синхронизација на работната површина</translation>
 <translation id="1834452765064623979">Градежни работи и одржување</translation>
+<translation id="1837606605602726453">Оценката и категориите на ризик се игнорираат бидејќи екстензијата експлицитно ја дозволува или ја блокира администраторот.</translation>
 <translation id="1838374766361614909">Исчисти го пребарувањето</translation>
 <translation id="1839331950812095887">неколку зборови што резимираат што мислите</translation>
 <translation id="1839551713262164453">Проверката на вредностите на правилото не успеа поради грешки</translation>
@@ -1860,6 +1860,7 @@
 <translation id="3875783148670536197">Покажи ми како</translation>
 <translation id="3877603629930976930">Не споделувај</translation>
 <translation id="3878445208930547646">Не е дозволено копирање од сајтов</translation>
+<translation id="3879674895057686427">Изберете го јазикот на кој ќе се преведува</translation>
 <translation id="3879748587602334249">Управник со преземања</translation>
 <translation id="3880456882942693779">Уметности и забава</translation>
 <translation id="3880589673277376494">Интернет и телекомуникации</translation>
@@ -3446,6 +3447,7 @@
 <translation id="634500758737709758">Насоки</translation>
 <translation id="6348220984832452017">Активни варијации</translation>
 <translation id="6349101878882523185">Инсталирај <ph name="APP_NAME" /></translation>
+<translation id="6350739641326887427">Плаќајте без да копирате и да залепувате Pix-код. <ph name="BEGIN_LINK1" />Погледнете како функционира<ph name="END_LINK1" /></translation>
 <translation id="6351658970066645919">Избришете ги податоците од прелистување</translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{Ниедна}=1{1 лозинка (за <ph name="DOMAIN_LIST" />, синхронизирана)}=2{2 лозинка (за <ph name="DOMAIN_LIST" />, синхронизирани)}one{# лозинка (за <ph name="DOMAIN_LIST" />, синхронизирани)}other{# лозинки (за <ph name="DOMAIN_LIST" />, синхронизирани)}}</translation>
 <translation id="6354918092619878358">SECG елиптична крива secp256r1 (наречена ANSI X9.62 prime256v1, NIST P-256)</translation>
@@ -3504,7 +3506,6 @@
 <translation id="6424600253695044005">Простор во облак</translation>
 <translation id="6425092077175753609">Материјален</translation>
 <translation id="6427730057873428458">Превиткување како брошура</translation>
-<translation id="6428450836711225518">Потврдете го телефонскиот број</translation>
 <translation id="6429267199680088961">A4 Tab</translation>
 <translation id="643051589346665201">Променете ја лозинката на Google</translation>
 <translation id="6431556523611594411">Споделувајте ги отворените картички</translation>
@@ -3661,6 +3662,7 @@
 <translation id="668132230070712111">Видеото е зачувано во Google Drive</translation>
 <translation id="6681790815630918386">CVC е зачуван</translation>
 <translation id="6683022854667115063">Слушалки</translation>
+<translation id="6686570026048064255">За да го исклучите откривањето Pix-код, одете во <ph name="BEGIN_LINK1" />поставките за Wallet<ph name="END_LINK1" /></translation>
 <translation id="6687230248707087982">Коверт (обичен)</translation>
 <translation id="6687335167692595844">Побарана е големина на фонтот</translation>
 <translation id="6688743156324860098">Ажурирајте…</translation>
@@ -4451,7 +4453,6 @@
 <translation id="7874796722855317864">„<ph name="PROXY_UNKNOWN_CONDITION" />“ не е познат тип услов.</translation>
 <translation id="7877007680666472091">ID-броеви на заштитени содржини</translation>
 <translation id="7878562273885520351">Можно е да ви е компромитирана лозинката</translation>
-<translation id="7881044256965445977">Барајте и поврзувајте се со кој било уред на локалната мрежа</translation>
 <translation id="7885670691503039914">Ќе добивате известувања преку е-пошта ако се намали цената на кој било сајт. Страницава ќе биде зачувана во папката со обележувачи <ph name="LAST_BOOKMARKS_FOLDER" />.</translation>
 <translation id="7886897188117641322">Изберете кои општи категории теми може да се користат за да помогнат при персонализирањето реклами</translation>
 <translation id="7887683347370398519">Проверете го КВК и обидете се повторно.</translation>
@@ -4977,7 +4978,6 @@
 <translation id="8737685506611670901">Отвори <ph name="PROTOCOL" /> врски наместо <ph name="REPLACED_HANDLER_TITLE" /></translation>
 <translation id="8738058698779197622">За воспоставување безбедна врска, вашиот часовник треба да биде правилно поставен. Ова е така затоа што сертификатите кои веб-локациите ги користат за да се идентификуваат важат само определени периоди на време. Бидејќи часовникот на вашиот уред не е точен, Chromium не може да ги потврди овие сертификати.</translation>
 <translation id="8740359287975076522">&lt;abbr id="dnsDefinition"&gt;DNS-адресата&lt;/abbr&gt; на <ph name="HOST_NAME" /> не може да се пронајде. Го дијагностицираме проблемот.</translation>
-<translation id="8742371904523228557"><ph name="ONE_TIME_CODE" /> е вашиот код за <ph name="ORIGIN" /></translation>
 <translation id="874918643257405732">Обележете ја картичкава</translation>
 <translation id="8751426954251315517">Обидете се повторно следниот пат</translation>
 <translation id="8753913772043329557">Евиденции за правила</translation>
@@ -5155,7 +5155,6 @@
 <translation id="9042827002460091668">Проверете ја интернет-врската и обидете се повторно</translation>
 <translation id="9043161870923715789">AI-режим</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
-<translation id="9046578823518542618"><ph name="URL" /> сака да бара и да се поврзува со кој било уред во вашата локална мрежа</translation>
 <translation id="9046864189129893978">Микрофони (<ph name="MICS_COUNT" />)</translation>
 <translation id="9046865906192819796">Екранот со условите за користење на „Купете сега, платете подоцна“ е отворен на половина висина.</translation>
 <translation id="9047528041803621289">Вашиот стандарден пребарувач ви овозможува да пребарувате на интернет. Може да го промените во поставките.</translation>

@@ -263,6 +263,7 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="2184272387334793084">Inicia sesión para poder acceder aos teus contrasinais e moito máis en todos os teus dispositivos</translation>
 <translation id="218608176142494674">Uso compartido</translation>
 <translation id="2186779861549045980">Podes escoller que datos gardar na túa Conta de Google.\nTamén podes ver e xestionar estes elementos nos teus marcadores, na lista de lectura ou no xestor de contrasinais.</translation>
+<translation id="2190355936436201913">(baleiro)</translation>
 <translation id="219283042927675668">Pestanas no grupo</translation>
 <translation id="2194856509914051091">Cuestións que se deben ter en conta</translation>
 <translation id="2205701497928406883"><ph name="TAB_TITLE" />, pestana de uso compartido fixada</translation>
@@ -300,6 +301,7 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="233375395665273385">Eliminar e pechar sesión</translation>
 <translation id="2341410551640223969">Non se puido instalar <ph name="WEBAPK_NAME" />.</translation>
 <translation id="2349710944427398404">Datos totais usados por Chrome, incluídas as contas, os marcadores e a configuración gardada</translation>
+<translation id="2354001756790975382">Outros marcadores</translation>
 <translation id="235789365079050412">Política de privacidade de Google</translation>
 <translation id="2359808026110333948">Continuar</translation>
 <translation id="2362083820973145409">Iniciaches sesión como <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Abre a configuración.</translation>
@@ -896,6 +898,7 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="4864369630010738180">Iniciando sesión...</translation>
 <translation id="4866368707455379617">Non se puido instalar o módulo <ph name="MODULE" /> para Chrome</translation>
 <translation id="4875775213178255010">Suxestións de contido</translation>
+<translation id="4876880121961092787">Ocultar barra de marcadores</translation>
 <translation id="4877678010818027629">Entrar no modo de incógnito</translation>
 <translation id="4878404682131129617">Produciuse un erro ao establecer un túnel a través do servidor proxy</translation>
 <translation id="4880127995492972015">Traducir…</translation>
@@ -1268,6 +1271,7 @@ Por exemplo, algúns sitios web poden responder a esta solicitude mostrándoche 
 <translation id="6437162790453527153">Inicia sesión para poder acceder aos teus marcadores e moito máis en todos os teus dispositivos</translation>
 <translation id="6437478888915024427">Información sobre a páxina</translation>
 <translation id="6440291723980579689">As páxinas só se cargarán unha vez que as abras</translation>
+<translation id="6441377161852435370">Engadir pestana á lista de lectura</translation>
 <translation id="6441734959916820584">O nome é demasiado longo</translation>
 <translation id="6444291413624515012"><ph name="TAB_GROUP_TITLE" /> grupo de pestanas pechado</translation>
 <translation id="6452534462676960500">Actividade nova</translation>
@@ -1357,6 +1361,7 @@ Por exemplo, algúns sitios web poden responder a esta solicitude mostrándoche 
 <translation id="6787600234697426339">Alcanzouse o límite máximo de ventás (<ph name="MAX_INSTANCE_COUNT" />)</translation>
 <translation id="6795633245022906657">Abre rapidamente unha pestana nova. Para editar este atallo, vai a Configuración.</translation>
 <translation id="679588508577699489">Fai que Chrome sexa o teu navegador predeterminado</translation>
+<translation id="679845623837196966">Mostrar Lista de lectura</translation>
 <translation id="679956319013005046">Para configurar o teu servizo preferido de autocompletar, primeiro engádeo na <ph name="BEGIN_LINK" />configuración de Android<ph name="END_LINK" />.</translation>
 <translation id="6802555630140434547">Pecharase a ventá</translation>
 <translation id="6803791793483522764">Revisar as notificacións</translation>
@@ -1657,6 +1662,7 @@ Para cambiar esta opción de configuración, <ph name="BEGIN_LINK" />elimina os 
 <translation id="7934668619883965330">Produciuse un erro na descarga. O formato de ficheiro non é compatible.</translation>
 <translation id="7951102827450076904">Abrir sempre os PDF descargados</translation>
 <translation id="7952479614398473176">Para abrir unha nova ventá, reduce o número total das que estean activas a <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> ou menos.</translation>
+<translation id="7956713633345437162">Marcadores do móbil</translation>
 <translation id="7957413488482743710">As tarxetas virtuais ocultan as tarxetas reais para protexerte de posibles fraudes. <ph name="BEGIN_LINK1" />Máis información sobre as tarxetas virtuais<ph name="END_LINK1" /></translation>
 <translation id="7959485987650214982">Pestanas neste dispositivo</translation>
 <translation id="7961926449547174351">Desactivaches o acceso ao almacenamento. Actívao en Configuración.</translation>
@@ -1845,6 +1851,7 @@ Para cambiar esta opción de configuración, <ph name="BEGIN_LINK" />elimina os 
 <translation id="867914734596684889">Mostrar ou ocultar a barra de marcadores</translation>
 <translation id="8683039184091909753">imaxe</translation>
 <translation id="8688183792442786085"><ph name="TAB_TITLE" />, pestana seleccionada</translation>
+<translation id="8696297579102085705">Enviar ao teu dispositivo</translation>
 <translation id="8697753151306746444">Comparte a ventá ou a pantalla no seu lugar</translation>
 <translation id="8699120352855309748">Non ofrecer a opción de traducir texto escrito nestes idiomas</translation>
 <translation id="8712637175834984815">De acordo</translation>

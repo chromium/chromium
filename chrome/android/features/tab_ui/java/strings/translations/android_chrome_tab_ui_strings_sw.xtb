@@ -37,6 +37,7 @@
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{Alamisha kichupo <ph name="TABS_COUNT_ONE" /> kilichochaguliwa}other{Alamisha vichupo <ph name="TABS_COUNT_MANY" /> vilivyochaguliwa}}</translation>
 <translation id="2055057176188061528">Chagua kikundi cha vichupo au uanzishe kikundi kipya cha vichupo</translation>
 <translation id="2074527029802029717">Banua kichupo</translation>
+<translation id="2111670510994270194">Kichupo kipya kulia</translation>
 <translation id="2118649612461486615">Maelezo ya duka</translation>
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{Vichupo na vikundi ulivyofunga vinaweza kufunguliwa upya katika sehemu ya Vichupo vya hivi karibuni na sehemu ya Vikundi vya vichupo. Kichupo chako cha Faragha hakitapatikana.}other{Vichupo na vikundi ulivyofunga vinaweza kufunguliwa upya katika sehemu ya Vichupo vya hivi karibuni na sehemu ya Vikundi vya vichupo. Vichupo vyako # vya Faragha havitapatikana.}}</translation>
 <translation id="2153899164605463849">{TAB_COUNT,plural, =1{Rejesha sauti ya tovuti}other{Rejesha sauti za tovuti}}</translation>

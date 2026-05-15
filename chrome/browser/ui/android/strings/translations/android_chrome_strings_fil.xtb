@@ -263,6 +263,7 @@ Ang taong may passphrase mo lang ang makakabasa ng iyong naka-encrypt na data. H
 <translation id="2184272387334793084">Mag-sign in para makuha ang iyong mga password at higit pa sa lahat ng device mo</translation>
 <translation id="218608176142494674">Pagbabahagi</translation>
 <translation id="2186779861549045980">Puwede mong piliin kung anong data ang ise-save sa iyong Google Account.\nPuwede mo ring tingnan at pamahalaan ang mga item na ito sa iyong mga bookmark, listahan ng babasahin, o password manager.</translation>
+<translation id="2190355936436201913">(walang laman)</translation>
 <translation id="219283042927675668">Mga tab sa grupo</translation>
 <translation id="2194856509914051091">Mga bagay na dapat isaalang-alang</translation>
 <translation id="2205701497928406883"><ph name="TAB_TITLE" />, Naka-pin at Nagshe-share na Tab</translation>
@@ -300,6 +301,7 @@ Ang taong may passphrase mo lang ang makakabasa ng iyong naka-encrypt na data. H
 <translation id="233375395665273385">I-delete at mag-sign out</translation>
 <translation id="2341410551640223969">Hindi ma-install ang <ph name="WEBAPK_NAME" />.</translation>
 <translation id="2349710944427398404">Kabuuang data na ginagamit ng Chrome, kabilang ang mga account, bookmark at naka-save na setting</translation>
+<translation id="2354001756790975382">Iba pang mga bookmark</translation>
 <translation id="235789365079050412">Patakaran sa Privacy ng Google</translation>
 <translation id="2359808026110333948">Magpatuloy</translation>
 <translation id="2362083820973145409">Naka-sign in bilang <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Binubuksan ang mga setting.</translation>
@@ -544,6 +546,7 @@ Ang taong may passphrase mo lang ang makakabasa ng iyong naka-encrypt na data. H
 <translation id="3359667936385849800">Gamitin ang iyong kasalukuyang service provider</translation>
 <translation id="3373701465337594448">Kapag naka-on, lalabas dito ang listahan ng mga binibisita mong site na humuhula ng iyong mga interes</translation>
 <translation id="3384347053049321195">Magbahagi ng larawan</translation>
+<translation id="3385749568468586663">Hindi available ang Gemini sa Incognito mode</translation>
 <translation id="3387650086002190359">Hindi na-download ang <ph name="FILE_NAME" /> dahil sa mga error sa file system.</translation>
 <translation id="3417835166382867856">Maghanap sa mga tab</translation>
 <translation id="3430670036890315772">Kapag in-off ang iyong lock ng profile, maaalis ang naka-save na impormasyon mo</translation>
@@ -896,6 +899,7 @@ Maaaring may ibang uri ng history ng pag-browse ang iyong Google account tulad n
 <translation id="4864369630010738180">Nagsa-sign in...</translation>
 <translation id="4866368707455379617">Hindi ma-install ang <ph name="MODULE" /> para sa Chrome</translation>
 <translation id="4875775213178255010">Mga Iminumungkahing Content</translation>
+<translation id="4876880121961092787">I-hide ang bookmarks bar</translation>
 <translation id="4877678010818027629">Pumasok sa Incognito mode</translation>
 <translation id="4878404682131129617">Hindi nakagawa ng tunnel sa pamamagitan ng proxy server</translation>
 <translation id="4880127995492972015">Isalin…</translation>
@@ -1268,6 +1272,7 @@ Halimbawa, puwedeng tumugon ang ilang website sa kahilingang ito sa pamamagitan 
 <translation id="6437162790453527153">Mag-sign in para makuha ang iyong mga bookmark at higit pa sa lahat ng device mo</translation>
 <translation id="6437478888915024427">Impormasyon ng page</translation>
 <translation id="6440291723980579689">Maglo-load lang ang mga page pagkatapos mong buksan ang mga ito</translation>
+<translation id="6441377161852435370">Idagdag ang tab sa listahan ng babasahin</translation>
 <translation id="6441734959916820584">Masyadong mahaba ang pangalan</translation>
 <translation id="6444291413624515012">Isinara ang grupo ng tab na <ph name="TAB_GROUP_TITLE" /></translation>
 <translation id="6452534462676960500">Bagong aktibidad</translation>
@@ -1357,6 +1362,7 @@ Halimbawa, puwedeng tumugon ang ilang website sa kahilingang ito sa pamamagitan 
 <translation id="6787600234697426339">Naabot na ang <ph name="MAX_INSTANCE_COUNT" /> (na) limitasyon sa window</translation>
 <translation id="6795633245022906657">Mabilis na magbukas ng bagong tab. Para i-edit ang shortcut na ito, pumunta sa Mga Setting.</translation>
 <translation id="679588508577699489">Gawing default mo ang Chrome</translation>
+<translation id="679845623837196966">Ipakita ang listahan ng babasahin</translation>
 <translation id="679956319013005046">Para itakda ang gusto mong serbisyo para sa autofill, idagdag muna ang serbisyo sa <ph name="BEGIN_LINK" />Mga Setting ng Android<ph name="END_LINK" /> .</translation>
 <translation id="6802555630140434547">Isasara ang window</translation>
 <translation id="6803791793483522764">Suriin ang mga notification</translation>
@@ -1657,6 +1663,7 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-delete ang data sa Ch
 <translation id="7934668619883965330">Hindi ma-download ang file. Hindi sinusuportahan ang format ng file.</translation>
 <translation id="7951102827450076904">Palaging buksan ang mga na-download na PDF</translation>
 <translation id="7952479614398473176">Para magbukas ng bagong window, bawasan ang kabuuang bilang ng mga aktibong window sa <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> o mas kaunti.</translation>
+<translation id="7956713633345437162">Mga bookmark sa mobile</translation>
 <translation id="7957413488482743710">Itinatago ng virtual card ang iyong aktwal na card para makatulong na protektahan ka laban sa potensyal na panloloko. <ph name="BEGIN_LINK1" />Matuto pa tungkol sa mga virtual na card<ph name="END_LINK1" /></translation>
 <translation id="7959485987650214982">Mga tab sa device na ito</translation>
 <translation id="7961926449547174351">Na-disable mo ang access sa Storage, pumunta sa Mga Setting para i-enable ito.</translation>
@@ -1845,6 +1852,7 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-delete ang data sa Ch
 <translation id="867914734596684889">Ipakita o i-hide ang Bookmarks bar</translation>
 <translation id="8683039184091909753">larawan</translation>
 <translation id="8688183792442786085"><ph name="TAB_TITLE" />, Napiling Tab</translation>
+<translation id="8696297579102085705">Ipadala sa iyong device</translation>
 <translation id="8697753151306746444">I-share na lang ang window o screen</translation>
 <translation id="8699120352855309748">Huwag mag-alok na isalin ang mga wikang ito</translation>
 <translation id="8712637175834984815">Nakuha ko</translation>

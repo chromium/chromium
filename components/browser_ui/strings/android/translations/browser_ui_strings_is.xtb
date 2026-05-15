@@ -5,7 +5,6 @@
 <translation id="1036348656032585052">Slökkva</translation>
 <translation id="1046742265332833834">Blátt þema</translation>
 <translation id="1070329623210597193">Skrár sem þetta svæði getur skoðað eða breytt</translation>
-<translation id="1073417869336441572">Hjálpaðu okkur að bæta Chrome með því að segja okkur hvers vegna þú leyfðir fótspor þriðju aðila. <ph name="BEGIN_LINK" />Senda ábendingu<ph name="END_LINK" /></translation>
 <translation id="1074758928858737435">Þú getur beðið um að sjá borðtölvuútgáfu vefsvæða</translation>
 <translation id="1109482864356262001">Eiginleikar sem þurfa hreyfi- eða birtuskynjara virka ekki</translation>
 <translation id="1126523729897810826">Ljúktu ráðlögðu aðgerðunum hér að neðan til að nýta Chrome sem best</translation>
@@ -328,6 +327,7 @@
 <translation id="4290791284969893584">Þegar þú lokar síðu er óvíst að verkefnum sem þú byrjaðir á verði lokið</translation>
 <translation id="429312253194641664">Vefsvæði er að spila efni</translation>
 <translation id="42981349822642051">Stækka</translation>
+<translation id="4310738531374808763">Sérsníddu heimasíðuna þína</translation>
 <translation id="4336219115486912529">{COUNT,plural, =1{Rennur út á morgun}one{Rennur út eftir # dag}other{Rennur út eftir # daga}}</translation>
 <translation id="4338831206024587507">Öll vefsvæði undir <ph name="DOMAIN" /></translation>
 <translation id="4340799661701629185">Ekki leyfa vefsvæðum að senda tilkynningar</translation>
@@ -440,7 +440,6 @@
 <translation id="5555115555607204100">Ekki stytta hleðslutíma vefsvæða með V8-vél Chrome en gera Chrome öruggari gagnvart árásum</translation>
 <translation id="5556459405103347317">Endurhlaða</translation>
 <translation id="5591840828808741583">Lokað er á <ph name="SITE_NAME" /></translation>
-<translation id="560980142378233747">Þetta þýðir að flestir eiginleikar vefsvæðisins ættu að virka sem skyldi, en hugsanlega er minni vernd þegar vafrað er. <ph name="BEGIN_LINK" />Senda ábendingu<ph name="END_LINK" /></translation>
 <translation id="5617702678271228680">Blað neðst á spjöldum síðu nýrra flipa</translation>
 <translation id="5621413808884657932">Þegar kveikt er á þessu geta vefsvæði beðið um aðgang að öðrum forritum og þjónustum í þessu tæki. Þegar slökkt er á þessu geta vefsvæði ekki fengið aðgang að öðrum forritum og þjónustum í þessu tæki.</translation>
 <translation id="5632485077360054581">Fá leiðbeiningar</translation>
@@ -519,6 +518,7 @@
 <translation id="6262279340360821358">Lokað er fyrir <ph name="PERMISSION_1" /> og <ph name="PERMISSION_2" /></translation>
 <translation id="6270391203985052864">Vefsvæði geta óskað eftir því að senda tilkynningar</translation>
 <translation id="6295158916970320988">Öll vefsvæði</translation>
+<translation id="6305257382500066042">Prófa núna</translation>
 <translation id="6320088164292336938">Titringur</translation>
 <translation id="6367753977865761591">Loka á innskráningu þriðja aðila á tilteknu vefsvæði.</translation>
 <translation id="6398765197997659313">Hætta að nota allan skjáinn</translation>
@@ -529,7 +529,6 @@
 <translation id="6447842834002726250">Fótspor</translation>
 <translation id="6452138246455930388">Verðlækkun í opnum flipa, úr <ph name="OLD_PRICE" /> í <ph name="NEW_PRICE" />, <ph name="PRODUCT_NAME" /> <ph name="DOMAIN_NAME" /></translation>
 <translation id="6500423977866688905">Þegar glugginn er mjór skaltu biðja um símaútgáfu</translation>
-<translation id="6514791408445720076">Sérsníddu síðuna þína</translation>
 <translation id="6527303717912515753">Deila</translation>
 <translation id="6530703012083415527">Þegar kveikt er á þessu geta vefsvæði notað sprettiglugga og framsendingar. Þegar slökkt er á þessu geta vefsvæði ekki notað sprettiglugga og framsendingar.</translation>
 <translation id="6540488083026747005">Þú leyfðir fótspor þriðju aðila á þessu vefsvæði</translation>
@@ -593,7 +592,6 @@
 <translation id="7141896414559753902">Banna síðum að birta sprettiglugga og framsendingar (ráðlagt)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> KB</translation>
 <translation id="7180611975245234373">Endurnýja</translation>
-<translation id="7180865173735832675">Sérsníða</translation>
 <translation id="7188508872042490670">Vefsvæðagögn í tækinu</translation>
 <translation id="7201549776650881587">Þessi aðgerð eyðir öllum gögnum og fótsporum sem eru vistuð á öllum vefsvæðum undir <ph name="ORIGIN" /> eða í forriti þess á heimaskjánum hjá þér</translation>
 <translation id="7219254577985949841">Eyða vefsvæðagögnum?</translation>
@@ -707,7 +705,6 @@
 <translation id="83792324527827022">Vefsvæði er að nota myndavélina þína og hljóðnemann</translation>
 <translation id="8380167699614421159">Þetta vefsvæði sýnir ágengar eða villandi auglýsingar</translation>
 <translation id="8394832520002899662">Ýttu til að fara aftur á vefsvæðið</translation>
-<translation id="8404500559369898929">Gerðu Chrome að þínum eigin með því að velja sérsniðið bakgrunnsþema</translation>
 <translation id="8409345997656833551">Fá tilkynningu þegar hægt er að birta grein í einfaldaðri útgáfu</translation>
 <translation id="8416874502399604126">Hljóðnemi leyfður í þetta skipti</translation>
 <translation id="8423565414844018592">Textastærð er stillt á <ph name="TEXT_SCALING" /></translation>

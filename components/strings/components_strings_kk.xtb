@@ -316,7 +316,6 @@
 <translation id="1463793142714244641">Демалыс үйлері және оларды ортақ жалдау</translation>
 <translation id="1465457928007067810">IBAN нөмірі Google аккаунтыңызға сақталды.</translation>
 <translation id="1467432559032391204">Сол жақ</translation>
-<translation id="1468653229182955856"><ph name="TOP_ORIGIN" /> сайтында жұмысты жалғастыру үшін <ph name="EMBEDDED_ORIGIN" /> арналған <ph name="ONE_TIME_CODE" /> кодын пайдаланыңыз.</translation>
 <translation id="1472675084647422956">Толық көрсету</translation>
 <translation id="1473183651233018052">JIS B10</translation>
 <translation id="1473495410389165587">Жазу бойынша көмек алу үшін 3 не одан көп сөз жазыңыз.</translation>
@@ -549,6 +548,7 @@
 <translation id="1832474362231610822">Фотосурет OneDrive-қа сақталды</translation>
 <translation id="1832730227369924598">Жұмыс үстелін синхрондау</translation>
 <translation id="1834452765064623979">Құрылыс және жөндеу жұмыстары</translation>
+<translation id="1837606605602726453">Кеңейтімге әкімші анық рұқсат бергендіктен немесе оны блоктағандықтан, қауіп деңгейі мен санаттары еленбейді.</translation>
 <translation id="1838374766361614909">Іздеуді тазарту</translation>
 <translation id="1839331950812095887">ойыңызды қорытындылайтын бір-екі сөз</translation>
 <translation id="1839551713262164453">Қателерге байланысты саясат мәндері тексерілмеді</translation>
@@ -1820,6 +1820,7 @@
 <translation id="380865868633614173">Карта туралы ақпарат сақталып жатыр</translation>
 <translation id="3810770279996899697">Password Manager қызметіне MacOS кілттер тізбегін пайдалануға рұқсат қажет</translation>
 <translation id="3810973564298564668">Басқару</translation>
+<translation id="3811328723651698330"><ph name="STRING_1" />, <ph name="STRING_2" /></translation>
 <translation id="3812398568375898177">Бұл — ChromeOS жүйесіндегі Android қолданбаларының өнімділігін жақсартатын маңызды жаңарту.</translation>
 <translation id="3814865536373139791">Ұйымыңыздың саясаттарды басқару жолын жеңілдетіңіз</translation>
 <translation id="3815434930383843058">8 x 12 дюйм</translation>
@@ -1859,6 +1860,7 @@
 <translation id="3875783148670536197">Орындалуын көру</translation>
 <translation id="3877603629930976930">Бөліспеу</translation>
 <translation id="3878445208930547646">Бұл сайттан көшіруге рұқсат берілмейді</translation>
+<translation id="3879674895057686427">Аударма тілін таңдау</translation>
 <translation id="3879748587602334249">Жүктеп алу менеджері</translation>
 <translation id="3880456882942693779">Өнер және ойын-сауық</translation>
 <translation id="3880589673277376494">Интернет және телекоммуникация</translation>
@@ -2234,6 +2236,7 @@
 <translation id="443673843213245140">Проксиді пайдалану өшірілген, бірақ айқын прокси конфигурациясы көрсетілген.</translation>
 <translation id="4438821706955556403">Әдеттегі бағасы</translation>
 <translation id="4441832193888514600">Еленбеді, себебі саясат бұлт пайдаланушысы саясаты ретінде ғана орнатылады.</translation>
+<translation id="4444062564459679679"><ph name="DEVICE_NAME" /> құрылғысындағы Chrome-ға жіберіліп қойған.</translation>
 <translation id="4445133368066241428">Көп ізделетін тақырыптар</translation>
 <translation id="4445694043187340808"><ph name="STARTER_PACK_TABS_FOCUSED_FRIENDLY_MATCH_TEXT" />. Қойындыларды іздеу үшін Enter пернесін басыңыз</translation>
 <translation id="4445964943162061557">Бұл — эксперименттік функция және кейде қате жіберуі мүмкін.</translation>
@@ -2398,6 +2401,7 @@
 <translation id="4736934858538408121">Виртуалдық карта</translation>
 <translation id="473775607612524610">Жаңарту</translation>
 <translation id="4738601419177586157">Ұсынылатын сұрау: <ph name="TEXT" /></translation>
+<translation id="473866660302034629"><ph name="TAB_TITLE" />, таңдалған қойынды, <ph name="INDEX" />/<ph name="TOTAL" />, қойындылар арасында ауысу үшін сол немесе оң бағыт пернесін пайдаланыңыз.</translation>
 <translation id="4742407542027196863">Құпия сөздерді басқару...</translation>
 <translation id="474270528725216349">Синхрондалған құрылғылардағы кем дегенде 1 сайт</translation>
 <translation id="4743275772928623722">Жүйе жаңартылды, бірақ кейбір қолданбалар мен файлдарды қалпына келтіру мүмкін болмады. Қолданбаларыңыз автоматты түрде қайта жүктеп алынады.</translation>
@@ -2465,6 +2469,7 @@
 <translation id="4832961164064927107">Гриль және барбекю</translation>
 <translation id="4835568975547260025">Сұрақтарыңызға бейімделген жауаптар алуға көмектесу үшін Chrome қатысы бар ашық қойындыларды әдепкісінше бөліседі.</translation>
 <translation id="4840250757394056958">Chrome тарихын көру</translation>
+<translation id="4842365697443353018">Кейін төлеу үшін үлгіні тазалаңыз</translation>
 <translation id="484462545196658690">Авто</translation>
 <translation id="4844937814014739139">Ортақ қойындыларды айналдыру және масштабтау</translation>
 <translation id="484671803914931257"><ph name="MERCHANT_NAME" /> және т. б. дүкендердің жеңілдіктерін алыңыз</translation>
@@ -3504,7 +3509,6 @@
 <translation id="6424600253695044005">Бұлт жады</translation>
 <translation id="6425092077175753609">Материал</translation>
 <translation id="6427730057873428458">Қақпа тәрізді бүктеу</translation>
-<translation id="6428450836711225518">Телефон нөміріңізді растаңыз</translation>
 <translation id="6429267199680088961">A4 Tab</translation>
 <translation id="643051589346665201">Google құпия сөзін өзгерту</translation>
 <translation id="6431556523611594411">Ашық қойындыларды бөлісу</translation>
@@ -4452,7 +4456,6 @@
 <translation id="7874796722855317864">"<ph name="PROXY_UNKNOWN_CONDITION" />" белгілі шарт түрі емес.</translation>
 <translation id="7877007680666472091">Қорғалған content ID-лер</translation>
 <translation id="7878562273885520351">Құпия сөзіңіз ұрланған болуы мүмкін</translation>
-<translation id="7881044256965445977">Жергілікті желідегі құрылғыларды іздеу және қосылу</translation>
 <translation id="7885670691503039914">Қандай да бір сайтта баға төмендесе, электрондық пошта хабарландыруларын аласыз. Бұл бет <ph name="LAST_BOOKMARKS_FOLDER" /> бетбелгі қалтасына сақталады.</translation>
 <translation id="7886897188117641322">Жарнамаларды жекелендіру үшін тақырыптардың қандай жалпылама санаттарын пайдалануға болатынын таңдаңыз.</translation>
 <translation id="7887683347370398519">CVC нөмірін енгізіп, әрекетті қайталаңыз</translation>
@@ -4846,6 +4849,7 @@
 <translation id="8511402995811232419">Cookie файлдарын басқару</translation>
 <translation id="851353418319061866">Дәлдікті тексеру</translation>
 <translation id="8513580896341796021">Жүктеп алу басталды. Оны көру үшін |<ph name="ACCELERATOR" />| басыңыз.</translation>
+<translation id="8515544520486085367">Төлемді автоматты түрде толтыру</translation>
 <translation id="8519753333133776369">Әкімші рұқсат берген HID құрылғысы</translation>
 <translation id="8521013008769249764">Дивандар мен креслолар</translation>
 <translation id="8521812709849134608">Үстелдің үстіңгі тақтайлары</translation>
@@ -4978,7 +4982,6 @@
 <translation id="8737685506611670901"><ph name="REPLACED_HANDLER_TITLE" /> орнына <ph name="PROTOCOL" /> сілтемелерін ашу</translation>
 <translation id="8738058698779197622">Қауіпсіз байланыс орнату үшін сағатыңыз дұрыс орнатылуы қажет. Себебі веб-сайттар өзін анықтау үшін пайдаланатын сертификаттар көрсетілген уақыт мерзімінде ғана жарамды. Құрылғыңыздың сағаты дұрыс емес болғандықтан, Chromium бұл сертификаттарды растай алмайды.</translation>
 <translation id="8740359287975076522"><ph name="HOST_NAME" /> &lt;abbr id="dnsDefinition"&gt;DNS мекенжайы&lt;/abbr&gt; табылмады. Мәселе анықталуда.</translation>
-<translation id="8742371904523228557"><ph name="ONE_TIME_CODE" /> – <ph name="ORIGIN" /> сайтына арналған код</translation>
 <translation id="874918643257405732">Осы қойындыға бетбелгі қойыңыз</translation>
 <translation id="8751426954251315517">Келесі жолы қайталап көріңіз.</translation>
 <translation id="8753913772043329557">Саясат журналдары</translation>
@@ -5156,7 +5159,6 @@
 <translation id="9042827002460091668">Интернет байланысын тексеріп, әрекетті қайталаңыз.</translation>
 <translation id="9043161870923715789">AI режимі</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> – <ph name="RESULT_PRODUCT_SOURCE" /></translation>
-<translation id="9046578823518542618"><ph name="URL" /> жергілікті желідегі кез келген құрылғыны іздегісі және оған қосылғысы келеді</translation>
 <translation id="9046864189129893978">Микрофондар (<ph name="MICS_COUNT" />)</translation>
 <translation id="9046865906192819796">Бөліп төлеудің Қызмет көрсету шарттарының экраны жартылай ашылды.</translation>
 <translation id="9047528041803621289">Әдепкі жүйе интернеттен ақпарат іздеуге мүмкіндік береді. Оны параметрлерде өзгерте аласыз.</translation>

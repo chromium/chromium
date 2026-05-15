@@ -964,6 +964,7 @@ que se aplique ese elemento de la política (es decir, la política NO extiende 
 
 Si no estableces la política, <ph name="PRODUCT_OS_NAME" /> podrá seleccionar controladores predeterminados según la lógica interna.</translation>
 <translation id="1651810147727432656">Bloquear el permiso de Administración de ventanas en estos sitios</translation>
+<translation id="1652357791185933887">Se inhabilitó el modo aislado</translation>
 <translation id="1654087023995670109">Aplica el modo de invitado en el navegador</translation>
 <translation id="1655229863189977773">Establecer el tamaño del caché de disco en bytes</translation>
 <translation id="1655518801232583832">Habilitar la resolución de DNS del sistema fuera del servicio de red</translation>
@@ -3546,6 +3547,7 @@ Si no se establece, se usará el comportamiento nuevo al igual que en el resto d
 <translation id="3229163415739929305">Si habilitas la política o no la estableces, se permitirá la recuperación de metadatos de la carga de páginas y de modelos de aprendizaje automático que mejoran la experiencia de navegación.
       Si inhabilitas la política, es posible que algunas funciones no operen correctamente.</translation>
 <translation id="3231311173895401135">Permitir que el navegador decida la compatibilidad</translation>
+<translation id="3231684792162319504">No permitir la activación experimental de Gemini.</translation>
 <translation id="3231837273069128027">Si estableces la política, se configurará la disponibilidad y el comportamiento de las actualizaciones del firmware<ph name="TPM_FIRMWARE_UPDATE_TPM" />.
 
       Podrás especificar opciones de configuración específicas en las propiedades de JSON:
@@ -4492,6 +4494,15 @@ Ten en cuenta que esta política no tiene efecto si la política <ph name="ENTER
       Cada entrada de la lista contiene un diccionario que debe incluir el ID de extensión en el campo "extension-id" y su URL de actualización en el campo "update-url".</translation>
 <translation id="3869180930654347954">Inhabilitar First-Party Sets para todos los usuarios afectados</translation>
 <translation id="3869566220234507038">Cargar siempre el navegador <ph name="LACROS_ROOTFS_NAME" /> <ph name="LACROS_NAME" /></translation>
+<translation id="3869959969423392506">La política controla si las apps web aisladas (IWA) podrán agregar apps secundarias de forma predeterminada.
+
+Si estableces la política en 1, los orígenes de IWA podrán agregar apps secundarias y omitir los requisitos de gestos del usuario o confirmación del usuario.
+
+Si estableces la política en 2, se impedirá que los orígenes de IWA agreguen apps secundarias.
+
+Si estableces la política en 3 o no la estableces, los orígenes de apps web aisladas podrán agregar apps secundarias con la confirmación del usuario.
+
+Esta política puede anularse para orígenes específicos de apps web aisladas a través de las políticas <ph name="SUB_APPS__WITHOUT_PROMPTS_ALLOWED_FOR_ORIGINS_POLICY_NAME" /> y <ph name="SUB_APPS_WITHOUT_PROMPTS_BLOCKED_FOR_POLICY_NAME" />.</translation>
 <translation id="3870035799352372700">Bloquear el acceso de Asistente de Google al contexto en pantalla durante las interacciones</translation>
 <translation id="3870059789954671543">Habilita la función de accesibilidad para destacar el cursor del teclado en la pantalla de acceso.
 
@@ -4770,6 +4781,7 @@ Para obtener información detallada sobre los patrones válidos de <ph name="URL
       Para obtener información detallada sobre los patrones válidos de <ph name="URL_LABEL" />, consulta https://chromeenterprise.google/policies/url-patterns/. Sin embargo, ten en cuenta que esta política no admite el patrón "*", que coincide con cualquier URL.</translation>
 <translation id="4070039109671307724">Varios</translation>
 <translation id="4071922398488395340">Incluir cookies de sesión en la funcionalidad de SSO flotante</translation>
+<translation id="4072065629757524">Impedir que los orígenes de apps web aisladas agreguen apps secundarias</translation>
 <translation id="4072225853834793549">Inhabilitar los atajos de accesibilidad en la pantalla de acceso</translation>
 <translation id="4074922053013383215">Ahorro de memoria moderado.</translation>
 <translation id="4075675819066819571">Ubicar la biblioteca en el lado izquierdo de la pantalla</translation>
@@ -4845,6 +4857,11 @@ La disponibilidad de las extensiones aún se controla mediante otras políticas.
 <translation id="4120401094617902941">Tasa en la que se recopilan los contadores de tiempo de ejecución y se toman muestras de ellos. El mínimo permitido es de 1 día.
 
 Si no estableces la política, se aplicará la tasa predeterminada de 1 día.</translation>
+<translation id="4121173511469084157">De forma predeterminada, las apps web aisladas (IWA) pueden agregar apps secundarias siempre que el usuario confirme la acción de forma interactiva.
+
+Esta política controla qué orígenes de IWA podrán agregar apps secundarias sin que el usuario deba confirmar la acción.
+
+Esta política anula el comportamiento de <ph name="DEFAULT_SUB_APPS_WITHOUT_PROMPTS_SETTING_POLICY_NAME" /> y es anulada por <ph name="SUB_APPS_WITHOUT_PROMPTS_BLOCKED_FOR_ORIGINS_POLICY_NAME" />.</translation>
 <translation id="4121350739760194865">Impedir que aparezcan las promociones de aplicaciones en la página de la nueva pestaña</translation>
 <translation id="4122432898152851612">El usuario no puede ver ninguna de las IU relacionadas con la función de sincronización de archivos de <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="4122473079291425973">La página Nueva pestaña mostrará tarjetas si hay contenido disponible, pero permitirá que el usuario cambie esta configuración</translation>
@@ -5300,6 +5317,7 @@ Si estableces esta política, los usuarios no podrán cambiarla en <ph name="PRO
 <translation id="4435032708588431506">Permitir QUIC</translation>
 <translation id="443665821428652897">Borrar los datos del sitio al cerrar el navegador (en desuso)</translation>
 <translation id="4436941175475497595">Inhabilitar vista previa de impresión</translation>
+<translation id="4436992815485865052">Permitir la activación experimental de Gemini.</translation>
 <translation id="4439336120285389675">Especificar una lista de funciones de Web Platform que ya no están disponibles para volver a habilitarlas temporalmente
 
       Esta política brinda a los administradores la posibilidad de volver a habilitar por un tiempo limitado funciones de Web Platform que dejaron de estar disponibles. Las funciones se identifican con una etiqueta de cadena y las que se correspondan con las etiquetas incluidas en la lista especificada por esta política se volverán a habilitar.
@@ -5566,6 +5584,7 @@ Para obtener información detallada sobre los patrones de URL válidos, consulta
           para los procesos.
           </translation>
 <translation id="4578265298946081589">No reiniciar el sistema cuando el usuario salga de su cuenta</translation>
+<translation id="4579171808398039136">Impedir que las apps web aisladas usen la API de Sub Apps Add sin la confirmación del usuario</translation>
 <translation id="4581507927311097234">El período sin intervención del usuario después del cual se apaga la pantalla (en milisegundos).</translation>
 <translation id="4582027661281685066">Lista de patrones de URL. Las solicitudes iniciadas en sitios web entregados por orígenes coincidentes no están sujetas a verificaciones del <ph name="PRIVATE_NETWORK_ACCESS" />.
 
@@ -6051,6 +6070,7 @@ Si no estableces la política, se aplicará <ph name="DEFAULT_DIRECT_SOCKETS_SET
 Los patrones de URL no deben entrar en conflicto con <ph name="DIRECT_SOCKETS_BLOCKED_FOR_URLS_POLICY_NAME" />. Si una URL se ajusta a ambas políticas, no prevalece ninguna de las dos.
 
 Para obtener información detallada sobre los patrones de URL válidos, consulta https://chromeenterprise.google/policies/url-patterns. <ph name="WILDCARD_VALUE" /> no es un valor aceptado para esta política.</translation>
+<translation id="4883562563790831457">Reemplazar el modo Incógnito por el modo aislado</translation>
 <translation id="4885338965457068455">Contiene una expresión regular para determinar las cuentas de Google aptas para guardar archivos PDF en Google Drive desde el lector de PDF de <ph name="PRODUCT_NAME" />.
 
       Se muestra un error si un usuario intenta subir un archivo PDF a Google Drive con una cuenta que no coincide con este patrón.
@@ -6756,6 +6776,7 @@ Nota: Esta función aún no está disponible de forma general, por lo que habili
 <translation id="5255790642269910630">Si estableces la política, las pantallas rotarán a la orientación especificada en cada reinicio y la primera vez que se conecten después de cambiar el valor de la política. Después de acceder, los usuarios podrán cambiar la rotación de las pantallas en la página de configuración, pero volverá a cambiar en el próximo reinicio. Esta política se aplica a la pantalla principal y a la secundaria.
 
 Si no la estableces, el valor predeterminado será 0 grados y los usuarios podrán cambiarlo. Si deciden hacerlo, no se volverá a aplicar el valor predeterminado en el reinicio.</translation>
+<translation id="5256792633540454282">Controlar la activación experimental de Gemini</translation>
 <translation id="5257395339965216304">Datos de apps alojadas</translation>
 <translation id="5258445772095084618">Permitir que los usuarios no afiliados usen las máquinas virtuales necesarias para admitir apps de Linux</translation>
 <translation id="5258651513421638932">Permitir la conexión de Smart Card con apps aisladas</translation>
@@ -6824,13 +6845,6 @@ Nota: Esta política no se aplica a las actualizaciones de HSTS.</translation>
 <translation id="5303080953475303561">Si estableces la política, se controlará la frecuencia con la que la pantalla de bloqueo solicita la contraseña para un desbloqueo rápido. Cada vez que aparezca la pantalla de bloqueo, si se ingresó la contraseña por última vez antes del período que especifica el valor elegido, el desbloqueo rápido no estará disponible. Si el usuario permanece en la pantalla de bloqueo por más tiempo que el especificado, la próxima vez que ingrese el código incorrecto o reingrese la pantalla de bloqueo (lo que ocurra primero), se le solicitará una contraseña.
 
       Si no estableces la política, los usuarios que utilizan el desbloqueo rápido ingresarán sus contraseñas en la pantalla de bloqueo una vez al día.</translation>
-<translation id="530488290401810961">Configura la forma en que <ph name="PRODUCT_NAME" /> descarga el modelo básico de IA generativa y lo usa para la inferencia a nivel local.
-
-Si permites (0) la política o no la estableces, el modelo se descargará automáticamente y se usará para las inferencias.
-
-Si la inhabilitas (1), no se descargará el modelo y se borrará el modelo existente (si ya se descargó).
-
-<ph name="COMPONENT_UPDATES_ENABLED_POLICY_NAME" /> también puede inhabilitar la descarga de modelos en plataformas de escritorio.</translation>
 <translation id="5306186200045823863">Habilitar la confianza en la infraestructura de PKI heredada de Symantec Corporation</translation>
 <translation id="5307432759655324440">Disponibilidad del modo incógnito</translation>
 <translation id="5308551343115571396">Después de inhabilitar <ph name="LACROS_NAME" />, intentaremos conservar la mayor cantidad de datos del usuario posible y quitar todos los datos de navegación.</translation>
@@ -7797,6 +7811,7 @@ En <ph name="MAC_OS_NAME" />, esta política solo está disponible en instancias
 
       Esta política dejó de estar disponible; usa <ph name="PRINTERS_BULK_BLOCKLIST" /> en su lugar.</translation>
 <translation id="591088232153082363">Carga adaptable de la batería según el patrón de uso</translation>
+<translation id="5911656389795271430">Esta es una política experimental.</translation>
 <translation id="5913506885872855604">Esto se puede usar para tratar ciertos rangos de direcciones internas como "públicos" y, por lo tanto, no sujetos a las verificaciones de <ph name="LOCAL_NETWORK_ACCES" />. Por el contrario, esto se puede usar para tratar ciertos rangos de direcciones públicas que podrían usarse internamente como "locales" para que estén protegidos por las verificaciones de <ph name="LOCAL_NETWORK_ACCESS" />.
 
 Las anulaciones del espacio de direcciones IP tienen dos formas:
@@ -10274,6 +10289,7 @@ Si la estableces como falsa, se habilitará el comportamiento anterior.</transla
 <translation id="7372831798009983116">Habilita la función de accesibilidad de clic automático</translation>
 <translation id="7373200034079131670">Reiniciar cuando el usuario sale de su cuenta si se inició Android o una VM</translation>
 <translation id="7374784840090523241">Crear llaves de acceso de forma predeterminada en otros almacenes, como el perfil de <ph name="PRODUCT_NAME" /></translation>
+<translation id="73755679940750599">Permitir que los orígenes de apps web aisladas agreguen apps secundarias sin la confirmación del usuario</translation>
 <translation id="7375785904116479354">Si habilitas la política, se importará el motor de búsqueda predeterminado del navegador predeterminado anterior en la primera ejecución. Si inhabilitas la política o no la estableces, no se importará el motor de búsqueda predeterminado en la primera ejecución.
 
       Los usuarios podrán activar un diálogo de importación; la casilla de verificación correspondiente al motor de búsqueda predeterminado estará marcada o desmarcada en función del valor de esta política.</translation>
@@ -11151,6 +11167,7 @@ Solo desactiva la política si usas una solución de seguridad de endpoint que b
       Si no la estableces, los sitios web podrán solicitar acceso, pero los usuarios podrán cambiar esta configuración.
 
       Esta política puede anularse para patrones de <ph name="URL_LABEL" />específicos a través de las políticas de <ph name="WEB_HID_ASK_FOR_URLS_POLICY_NAME" /> y <ph name="WEB_HID_BLOCKED_FOR_URLS_POLICY_NAME" />.</translation>
+<translation id="794786228154185413">Permitir que las apps web aisladas usen la API de Sub Apps Add sin la confirmación del usuario</translation>
 <translation id="7950451717181391167">Si estableces la política, se especificará si los usuarios utilizan <ph name="CLASS_TOOLS_NAME" /> para enviar o recibir contenido, enviar o recibir subtítulos como estudiantes o profesores, o si las Herramientas de administración de clase están inhabilitadas para los usuarios.</translation>
 <translation id="7952007677054834789">Configura las páginas que deben cargarse en el inicio, la página principal y la página Nueva pestaña predeterminadas en <ph name="PRODUCT_NAME" />, y evita que los usuarios las cambien.
 
@@ -11215,6 +11232,11 @@ Esta política es temporal y se quitará en el futuro.</translation>
           Se quitó esta política en Chrome 110.
                                         </translation>
 <translation id="7976157349247117979">Nombre del destino de <ph name="PRODUCT_NAME" /></translation>
+<translation id="7981824720804106055">De forma predeterminada, las apps web aisladas (IWA) pueden agregar apps secundarias siempre que el usuario confirme la acción de forma interactiva.
+
+Esta política controla qué orígenes de IWA se bloquearán para que no puedan agregar apps secundarias sin que el usuario confirme la acción de forma interactiva.
+
+Esta política anula el comportamiento de <ph name="DEFAULT_SUB_APPS_WITHOUT_PROMPTS_SETTING_POLICY_NAME" /> y <ph name="SUB_APPS_WITHOUT_PROMPTS_ALLOWED_FOR_ORIGINS_POLICY_NAME" />.</translation>
 <translation id="7985242821674907985"><ph name="PRODUCT_NAME" /></translation>
 <translation id="7985781946183471651">Widgets de consulta rápida en <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="7986473886676689183">Habilitar los informes de Android</translation>
@@ -11787,6 +11809,7 @@ Si estableces la política en <ph name="RUNTIME_ENABLED_VALUE_NAME" />, se permi
 Si no estableces la política, el comportamiento predeterminado será <ph name="RUNTIME_ENABLED_VALUE_NAME" />.
 
 Nota: Esta política es una solución temporal para ayudar a dejar de usar las APIs de pantalla completa con el prefijo webkit. M131 es la última versión que tendrá esta política.</translation>
+<translation id="8355021858374793722">Controlar el uso de la API de Sub Apps Add</translation>
 <translation id="8356953698979920095">Si estableces la política con un valor, se usará ese color de forma predeterminada para la retroiluminación del teclado
 
 del dispositivo durante el acceso del usuario.</translation>
@@ -13075,10 +13098,12 @@ El valor predeterminado es RollbackDisabled.</translation>
 <translation id="9206364386317031168">Permitir que los sitios envíen solicitudes de red al dispositivo local.</translation>
 <translation id="9206472508136116830">No permitir la Detección de archivos compartidos de NetBIOS</translation>
 <translation id="9207596996305971030">No informar eventos de acceso y salida</translation>
+<translation id="9208328979373108724">Permitir que los orígenes de apps web aisladas agreguen apps secundarias, pero se requiere la confirmación del usuario</translation>
 <translation id="9210647066889383361">Permitir que los usuarios accedan a sus dispositivos con Smart Lock</translation>
 <translation id="9212598607138782107">Proveedor de identidad en la nube de Okta®</translation>
 <translation id="9213751049772256263">Inhabilitar todas las variaciones</translation>
 <translation id="9217154963008402249">Frecuencia de envío de paquetes de red de control</translation>
+<translation id="921762538903956073">Modo aislado disponible</translation>
 <translation id="9220314833408124365">Usar una política de referente predeterminado con el valor no-referrer-when-downgrade</translation>
 <translation id="922160134042190462">No habilitar <ph name="DESK_API_NAME" /> para el control de terceros de <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="9221827710437832530">Permitir el acceso a la ubicación geográfica en la pantalla de acceso</translation>

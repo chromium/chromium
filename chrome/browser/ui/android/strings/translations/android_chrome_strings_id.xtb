@@ -263,6 +263,7 @@ Hanya orang yang memiliki frasa sandi Anda yang dapat membaca data terenkripsi A
 <translation id="2184272387334793084">Login untuk mendapatkan bookmark dan lainnya di semua perangkat Anda</translation>
 <translation id="218608176142494674">Berbagi</translation>
 <translation id="2186779861549045980">Anda dapat memilih data yang akan disimpan di Akun Google Anda.\nAnda juga dapat melihat dan mengelola item ini di bookmark, daftar bacaan, atau pengelola sandi.</translation>
+<translation id="2190355936436201913">(kosong)</translation>
 <translation id="219283042927675668">Tab dalam grup</translation>
 <translation id="2194856509914051091">Hal-hal yang perlu dipertimbangkan</translation>
 <translation id="2205701497928406883"><ph name="TAB_TITLE" />, Tab yang sedang Berbagi dan Disematkan</translation>
@@ -300,6 +301,7 @@ Hanya orang yang memiliki frasa sandi Anda yang dapat membaca data terenkripsi A
 <translation id="233375395665273385">Hapus dan logout</translation>
 <translation id="2341410551640223969">Tidak dapat menginstal <ph name="WEBAPK_NAME" />.</translation>
 <translation id="2349710944427398404">Total data yang digunakan oleh Chrome, termasuk akun, bookmark, dan setelan yang tersimpan</translation>
+<translation id="2354001756790975382">Bookmark lain</translation>
 <translation id="235789365079050412">Kebijakan Privasi Google</translation>
 <translation id="2359808026110333948">Lanjutkan</translation>
 <translation id="2362083820973145409">Login sebagai <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Membuka setelan.</translation>
@@ -896,6 +898,7 @@ Akun Google Anda mungkin memiliki bentuk histori penjelajahan lain seperti penel
 <translation id="4864369630010738180">Login...</translation>
 <translation id="4866368707455379617">Tidak dapat menginstal <ph name="MODULE" /> untuk Chrome</translation>
 <translation id="4875775213178255010">Saran Konten</translation>
+<translation id="4876880121961092787">Sembunyikan kolom bookmark</translation>
 <translation id="4877678010818027629">Masuk mode Samaran</translation>
 <translation id="4878404682131129617">Gagal membentuk saluran melalui server proxy</translation>
 <translation id="4880127995492972015">Terjemahkan…</translation>
@@ -1268,6 +1271,7 @@ Misalnya, beberapa situs web mungkin menanggapi permintaan ini dengan menayangka
 <translation id="6437162790453527153">Login untuk mendapatkan bookmark dan lainnya di semua perangkat Anda</translation>
 <translation id="6437478888915024427">Info halaman</translation>
 <translation id="6440291723980579689">Halaman dimuat hanya setelah Anda membukanya</translation>
+<translation id="6441377161852435370">Tambahkan tab ke daftar bacaan</translation>
 <translation id="6441734959916820584">Nama terlalu panjang</translation>
 <translation id="6444291413624515012"><ph name="TAB_GROUP_TITLE" /> grup tab ditutup</translation>
 <translation id="6452534462676960500">Aktivitas baru</translation>
@@ -1357,6 +1361,7 @@ Misalnya, beberapa situs web mungkin menanggapi permintaan ini dengan menayangka
 <translation id="6787600234697426339"><ph name="MAX_INSTANCE_COUNT" /> batas jendela tercapai</translation>
 <translation id="6795633245022906657">Buka tab baru dengan cepat. Untuk mengedit pintasan ini, buka Setelan.</translation>
 <translation id="679588508577699489">Jadikan Chrome sebagai browser default Anda</translation>
+<translation id="679845623837196966">Tampilkan daftar bacaan</translation>
 <translation id="679956319013005046">Untuk menyetel layanan pilihan Anda untuk isi otomatis, tambahkan layanan tersebut di <ph name="BEGIN_LINK" />Setelan Android<ph name="END_LINK" /> terlebih dahulu.</translation>
 <translation id="6802555630140434547">Jendela akan ditutup</translation>
 <translation id="6803791793483522764">Meninjau notifikasi</translation>
@@ -1657,6 +1662,7 @@ Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />hapus data Chrome di akun An
 <translation id="7934668619883965330">Tidak dapat mendownload file. Format file tidak didukung.</translation>
 <translation id="7951102827450076904">Selalu buka PDF yang didownload</translation>
 <translation id="7952479614398473176">Untuk membuka jendela baru, kurangi jumlah total jendela aktif menjadi <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> atau kurang.</translation>
+<translation id="7956713633345437162">Bookmark seluler</translation>
 <translation id="7957413488482743710">Kartu virtual menyembunyikan kartu Anda yang sebenarnya untuk membantu melindungi Anda dari kemungkinan penipuan. <ph name="BEGIN_LINK1" />Pelajari kartu virtual lebih lanjut<ph name="END_LINK1" /></translation>
 <translation id="7959485987650214982">Tab di perangkat ini</translation>
 <translation id="7961926449547174351">Anda telah menonaktifkan Akses penyimpanan, buka Setelan untuk mengaktifkannya.</translation>
@@ -1845,6 +1851,7 @@ Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />hapus data Chrome di akun An
 <translation id="867914734596684889">Tampilkan atau sembunyikan kolom Bookmark</translation>
 <translation id="8683039184091909753">gambar</translation>
 <translation id="8688183792442786085"><ph name="TAB_TITLE" />, Tab yang Dipilih</translation>
+<translation id="8696297579102085705">Kirim ke perangkat Anda</translation>
 <translation id="8697753151306746444">Bagikan jendela atau layar</translation>
 <translation id="8699120352855309748">Jangan tawarkan penerjemahan bahasa ini</translation>
 <translation id="8712637175834984815">Mengerti</translation>

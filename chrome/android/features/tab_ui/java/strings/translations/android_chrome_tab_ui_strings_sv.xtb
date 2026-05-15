@@ -37,6 +37,7 @@
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{Infoga bokmärke för <ph name="TABS_COUNT_ONE" /> vald flik}other{Infoga bokmärken för <ph name="TABS_COUNT_MANY" /> valda flikar}}</translation>
 <translation id="2055057176188061528">Välj en flikgrupp eller skapa en ny flikgrupp</translation>
 <translation id="2074527029802029717">Lossa flik</translation>
+<translation id="2111670510994270194">Ny flik till höger</translation>
 <translation id="2118649612461486615">Butiksinformation</translation>
 <translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{Du kan öppna dina stängda flikar och grupper på nytt från avsnittet Senaste flikar och avsnittet Flikgrupper. Inkognitofliken är inte tillgänglig.}other{Du kan öppna dina stängda flikar och grupper på nytt från avsnittet Senaste flikar och avsnittet Flikgrupper. Dina # inkognitoflikar är inte tillgängliga.}}</translation>
 <translation id="2153899164605463849">{TAB_COUNT,plural, =1{Sätt på webbplatsens ljud}other{Sätt på webbplatsernas ljud}}</translation>

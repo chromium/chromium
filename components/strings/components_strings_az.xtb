@@ -316,7 +316,6 @@
 <translation id="1463793142714244641">Müvəqqəti Paylaşılan və Tətil Evləri</translation>
 <translation id="1465457928007067810">IBAN Google Hesabında yadda saxlandı</translation>
 <translation id="1467432559032391204">Sol</translation>
-<translation id="1468653229182955856"><ph name="ONE_TIME_CODE" /> <ph name="TOP_ORIGIN" /> bölməsinə davam etmək üçün <ph name="EMBEDDED_ORIGIN" /> kodunuzdur</translation>
 <translation id="1472675084647422956">Daha çox göstərin</translation>
 <translation id="1473183651233018052">JIS B10</translation>
 <translation id="1473495410389165587">Yazarkən kömək almaq üçün minimum 3 söz daxil edin</translation>
@@ -549,6 +548,7 @@
 <translation id="1832474362231610822">Foto OneDrive-da yadda saxlanıldı</translation>
 <translation id="1832730227369924598">Masa sinxronizasiyası</translation>
 <translation id="1834452765064623979">İnşaat və Bərpa</translation>
+<translation id="1837606605602726453">Artırmaya administrator tərəfindən açıq şəkildə icazə verildiyi və ya bloklandığı üçün risk xalı və kateqoriyalar nəzərə alınmır.</translation>
 <translation id="1838374766361614909">Axtarışı təmizləyin</translation>
 <translation id="1839331950812095887">fikirlərinizi ümumiləşdirən bir neçə söz</translation>
 <translation id="1839551713262164453">Siyasət dəyərlərinin doğrulanması xəta səbəbilə alınmadı</translation>
@@ -1856,6 +1856,7 @@ Sonra ödəmə seçimlərini gizlətmək üçün <ph name="BEGIN_LINK" />ödəni
 <translation id="3875783148670536197">İstifadə Qaydasını Göstərin</translation>
 <translation id="3877603629930976930">Paylaşmayın</translation>
 <translation id="3878445208930547646">Bu saytdan kopyalamağa icazə verilmir</translation>
+<translation id="3879674895057686427">Tərcümə ediləcək dili seçin</translation>
 <translation id="3879748587602334249">Endirmə meneceri</translation>
 <translation id="3880456882942693779">İncəsənət və Əyləncə</translation>
 <translation id="3880589673277376494">İnternet və Telekom</translation>
@@ -3501,7 +3502,6 @@ Sonra ödəmə seçimlərini gizlətmək üçün <ph name="BEGIN_LINK" />ödəni
 <translation id="6424600253695044005">Bulud yaddaşı</translation>
 <translation id="6425092077175753609">Material</translation>
 <translation id="6427730057873428458">Qapı şəklində qatlayın</translation>
-<translation id="6428450836711225518">Telefon nömrənizi doğrulayın</translation>
 <translation id="6429267199680088961">A4 Tab</translation>
 <translation id="643051589346665201">Google parolunu dəyişin</translation>
 <translation id="6431556523611594411">Açıq tabları paylaşın</translation>
@@ -4449,7 +4449,6 @@ Sonra ödəmə seçimlərini gizlətmək üçün <ph name="BEGIN_LINK" />ödəni
 <translation id="7874796722855317864">"<ph name="PROXY_UNKNOWN_CONDITION" />" məlum şərt növü deyil.</translation>
 <translation id="7877007680666472091">qorunan məzmun ID-ləri</translation>
 <translation id="7878562273885520351">Parolunuz təhlükədə ola bilər</translation>
-<translation id="7881044256965445977">Lokal şəbəkədə istənilən cihazı axtarın və ona qoşulun</translation>
 <translation id="7885670691503039914">Hər hansı saytda qiymət enərsə, e-poçt xəbərdarlıqları alacaqsınız. Bu səhifə <ph name="LAST_BOOKMARKS_FOLDER" /> əlfəcin qovluğunda yadda saxlanılacaq.</translation>
 <translation id="7886897188117641322">Reklamları fərdiləşdirmək üçün istifadə olunacaq geniş mövzu kateqoriyalarını seçin</translation>
 <translation id="7887683347370398519">CVC kodunuzu yoxlayın və yenidən cəhd edin</translation>
@@ -4975,7 +4974,6 @@ Sonra ödəmə seçimlərini gizlətmək üçün <ph name="BEGIN_LINK" />ödəni
 <translation id="8737685506611670901"><ph name="REPLACED_HANDLER_TITLE" /> əvəzinə <ph name="PROTOCOL" /> linklərini açın</translation>
 <translation id="8738058698779197622">Güvənli bağlantı yaratmaq üçün saatınız düzgün ayarlanmalıdır. Çünki saytların işlətdikləri sertifikatlar zamana bağlıdır. Saatınız düzgün işləmədiyi halda Chromium bu sertifikatları doğrulaya bilmir.</translation>
 <translation id="8740359287975076522"><ph name="HOST_NAME" />’s &lt;abbr id="dnsDefinition"&gt;DNS address&lt;/abbr&gt; tapılmadı. Problem təyin edilir.</translation>
-<translation id="8742371904523228557"><ph name="ORIGIN" /> üçün kodunuz: <ph name="ONE_TIME_CODE" /></translation>
 <translation id="874918643257405732">Bu tabı əlfəcinlərə əlavə edin</translation>
 <translation id="8751426954251315517">Sonra yenidən cəhd edin</translation>
 <translation id="8753913772043329557">Siyasət Qeydləri</translation>
@@ -5153,7 +5151,6 @@ Sonra ödəmə seçimlərini gizlətmək üçün <ph name="BEGIN_LINK" />ödəni
 <translation id="9042827002460091668">İnternet bağlantınızı yoxlayın və yenidən sınayın</translation>
 <translation id="9043161870923715789">Sİ rejimi</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
-<translation id="9046578823518542618"><ph name="URL" /> yerli şəbəkənizdə istənilən cihazı axtarmaq və ona qoşulmaq istəyir</translation>
 <translation id="9046864189129893978">Mikrofonlar (<ph name="MICS_COUNT" />)</translation>
 <translation id="9046865906192819796">"İndi al, sonra ödə" xidmət şərtləri ekranı yarım hündürlükdə açıldı.</translation>
 <translation id="9047528041803621289">Defoltunuz internetdə axtarış etməyə imkan verir. Bunu ayarlarda dəyişə bilərsiniz.</translation>

@@ -5,7 +5,6 @@
 <translation id="1036348656032585052">ປິດ</translation>
 <translation id="1046742265332833834">ຮູບແບບສີສັນສີຟ້າ</translation>
 <translation id="1070329623210597193">ໄຟລ໌ທີ່ເວັບໄຊນີ້ສາມາດເບິ່ງ ຫຼື ແກ້ໄຂໄດ້</translation>
-<translation id="1073417869336441572">ຊ່ວຍພວກເຮົາປັບປຸງ Chrome ໂດຍແຈ້ງໃຫ້ພວກເຮົາຮູ້ເຫດຜົນທີ່ທ່ານໄດ້ອະນຸຍາດຄຸກກີ້ພາກສ່ວນທີສາມ. <ph name="BEGIN_LINK" />ສົ່ງຄຳຕິຊົມ<ph name="END_LINK" /></translation>
 <translation id="1074758928858737435">ທ່ານສາມາດຂໍເບິ່ງເວັບໄຊເວີຊັນເດັສທັອບໄດ້</translation>
 <translation id="1109482864356262001">ຄຸນສົມບັດທີ່ຕ້ອງໃຊ້ເຊັນເຊີກວດຈັບການເຄື່ອນໄຫວ ຫຼື ແສງຈະບໍ່ເຮັດວຽກ</translation>
 <translation id="1126523729897810826">ກະລຸນາດຳເນີນການຕາມຄຳສັ່ງທີ່ແນະນຳເຫຼົ່ານີ້ທາງລຸ່ມເພື່ອໃຊ້ປະໂຫຍດສູງສຸດຈາກ Chrome</translation>
@@ -328,6 +327,7 @@
 <translation id="4290791284969893584">ຫຼັງຈາກການປິດໜ້າໃດໜຶ່ງ, ໜ້າວຽກທີ່ທ່ານເລີ່ມຕົ້ນໄວ້ອາດບໍ່ແລ້ວ</translation>
 <translation id="429312253194641664">ເວັບໄຊກຳລັງຫຼິ້ນສື່ຢູ່</translation>
 <translation id="42981349822642051">ຂະ​ຫຍາຍ</translation>
+<translation id="4310738531374808763">ປັບແຕ່ງໜ້າຫຼັກຂອງທ່ານ</translation>
 <translation id="4336219115486912529">{COUNT,plural, =1{ໝົດອາຍຸມື້ອື່ນ}other{ໝົດອາຍຸໃນ # ມື້}}</translation>
 <translation id="4338831206024587507">ເວັບໄຊທັງໝົດພາຍໃຕ້ <ph name="DOMAIN" /></translation>
 <translation id="4340799661701629185">ບໍ່ອະນຸຍາດໃຫ້ເວັບໄຊສົ່ງການແຈ້ງເຕືອນ</translation>
@@ -440,7 +440,6 @@
 <translation id="5555115555607204100">ຢ່າເພີ່ມຄວາມໄວໃຫ້ເວັບໄຊດ້ວຍເຄື່ອງຈັກ V8 ຂອງ Chrome ແຕ່ເຮັດໃຫ້ Chrome ທົນທານຕໍ່ກັບການໂຈມຕີເພີ່ມຂຶ້ນເລັກນ້ອຍ</translation>
 <translation id="5556459405103347317">ໂຫຼດຄືນໃໝ່</translation>
 <translation id="5591840828808741583">ບລັອກ <ph name="SITE_NAME" /> ໄວ້ແລ້ວ</translation>
-<translation id="560980142378233747">ການຕັ້ງຄ່ານີ້ໝາຍຄວາມວ່າຄຸນສົມບັດຂອງເວັບໄຊຄວນເຮັດວຽກຕາມທີ່ຄາດໄວ້, ແຕ່ການປົກປ້ອງທ່ານໃນລະຫວ່າງການທ່ອງເວັບອາດຫຼຸດລົງ. <ph name="BEGIN_LINK" />ສົ່ງຄຳຕິຊົມ<ph name="END_LINK" /></translation>
 <translation id="5617702678271228680">ຊີດລຸ່ມສຸດຂອງບັດໜ້າແຖບໃໝ່</translation>
 <translation id="5621413808884657932">ເມື່ອເປີດ, ເວັບໄຊສາມາດຂໍເຂົ້າເຖິງແອັບ ແລະ ບໍລິການອື່ນໆໃນອຸປະກອນນີ້ໄດ້. ເມື່ອປິດ, ເວັບໄຊຈະບໍ່ສາມາດເຂົ້າເຖິງແອັບ ແລະ ບໍລິການອື່ນໆໃນອຸປະກອນນີ້ໄດ້.</translation>
 <translation id="5632485077360054581">ສະແດງວິທີໃຫ້ຂ້ອຍເບິ່ງ</translation>
@@ -519,6 +518,7 @@
 <translation id="6262279340360821358">ບລັອກ <ph name="PERMISSION_1" /> ແລະ <ph name="PERMISSION_2" /> ໄວ້ແລ້ວ</translation>
 <translation id="6270391203985052864">ເວັບໄຊສາມາດຂໍໃຫ້ສົ່ງການແຈ້ງເຕືອນໄດ້</translation>
 <translation id="6295158916970320988">ທຸກ​ເວັບ​ໄຊ​ທ໌</translation>
+<translation id="6305257382500066042">ລອງໃຊ້ເລີຍ</translation>
 <translation id="6320088164292336938">ສັ່ນ</translation>
 <translation id="6367753977865761591">ບລັອກການເຂົ້າສູ່ລະບົບພາກສ່ວນທີສາມສຳລັບເວັບໄຊສະເພາະໃດໜຶ່ງ.</translation>
 <translation id="6398765197997659313">ອອກຈາກເຕັມໜ້າຈໍ</translation>
@@ -529,7 +529,6 @@
 <translation id="6447842834002726250">ຄຸກກີ້</translation>
 <translation id="6452138246455930388">ລາຄາຕ່ຳລົງໃນແຖບທີ່ເປີດຢູ່ຂອງທ່ານ, ຈາກ <ph name="OLD_PRICE" /> ເປັນ <ph name="NEW_PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN_NAME" /></translation>
 <translation id="6500423977866688905">ເມື່ອໜ້າຈໍແຄບ,​ ໃຫ້ຮ້ອງຂໍມຸມມອງມືຖື</translation>
-<translation id="6514791408445720076">ປັບແຕ່ງໜ້າຂອງທ່ານ</translation>
 <translation id="6527303717912515753">ແຊຣ໌</translation>
 <translation id="6530703012083415527">ເມື່ອເປີດ, ເວັບໄຊສາມາດໃຊ້ປັອບອັບ ແລະ ປ່ຽນເສັ້ນທາງໄດ້. ເມື່ອປິດ, ເວັບໄຊບໍ່ສາມາດໃຊ້ປັອບອັບ ແລະ ປ່ຽນເສັ້ນທາງໄດ້.</translation>
 <translation id="6540488083026747005">ທ່ານໄດ້ອະນຸຍາດຄຸກກີ້ພາກສ່ວນທີສາມຢູ່ເວັບໄຊນີ້ແລ້ວ</translation>
@@ -593,7 +592,6 @@
 <translation id="7141896414559753902">ບລັອກບໍ່ໃຫ້ເວັບໄຊສະແດງປັອບອັບ ແລະ ການປ່ຽນເສັ້ນທາງ (ແນະນຳ)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> KB</translation>
 <translation id="7180611975245234373">ຣີເຟຣຊ</translation>
-<translation id="7180865173735832675">ກໍານົດເອງ</translation>
 <translation id="7188508872042490670">ຂໍ້ມູນເວັບໄຊຢູ່ອຸປະກອນ</translation>
 <translation id="7201549776650881587">ຄຳສັ່ງນີ້ຈະລຶບຂໍ້ມູນ ແລະ ຄຸກກີ້ທັງໝົດທີ່ທຸກເວັບໄຊຈາກ <ph name="ORIGIN" /> ຫຼື ແອັບທີ່ຢູ່ໃນໂຮມສະກຣີນຂອງທ່ານຈັດເກັບໄວ້</translation>
 <translation id="7219254577985949841">ລຶບຂໍ້ມູນເວັບໄຊອອກບໍ?</translation>
@@ -707,7 +705,6 @@
 <translation id="83792324527827022">ເວັບໄຊກຳລັງໃຊ້ກ້ອງ ແລະ ໄມໂຄຣໂຟນຂອງທ່ານຢູ່</translation>
 <translation id="8380167699614421159">ເວັບໄຊນີ້ສະແດງໂຄສະນາທີ່ລົບກວນ ຫຼື ຫຼອກລວງ</translation>
 <translation id="8394832520002899662">ແຕະເພື່ອກັບຄືນຫາເວັບໄຊ</translation>
-<translation id="8404500559369898929">ປັບແຕ່ງ Chrome ໃຫ້ເປັນແບບຂອງທ່ານເອງໂດຍເລືອກຮູບແບບສີສັນພື້ນຫຼັງທີ່ກຳນົດເອງ</translation>
 <translation id="8409345997656833551">ຮັບການແຈ້ງເຕືອນເມື່ອສາມາດສະແດງບົດຄວາມໃດໜຶ່ງໃນມຸມມອງແບບງ່າຍໄດ້</translation>
 <translation id="8416874502399604126">ຂະນະນີ້ອະນຸຍາດໄມໂຄຣໂຟນແລ້ວ</translation>
 <translation id="8423565414844018592">ຕັ້ງຄ່າມາດຕາສ່ວນຂໍ້ຄວາມເປັນ <ph name="TEXT_SCALING" /></translation>

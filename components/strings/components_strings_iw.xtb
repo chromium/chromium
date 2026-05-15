@@ -316,7 +316,6 @@
 <translation id="1463793142714244641">יחידות נופש משותפות ונכסים לנופש</translation>
 <translation id="1465457928007067810">‏מספר ה-IBAN נשמר בחשבון שלך ב-Google</translation>
 <translation id="1467432559032391204">שמאלה</translation>
-<translation id="1468653229182955856">הקוד שלך עבור <ph name="EMBEDDED_ORIGIN" /> כדי להמשיך אל <ph name="TOP_ORIGIN" /> הוא <ph name="ONE_TIME_CODE" /></translation>
 <translation id="1472675084647422956">הצגת יותר מידע</translation>
 <translation id="1473183651233018052">JIS B10</translation>
 <translation id="1473495410389165587">צריך להזין 3 מילים לפחות כדי לקבל עזרה בכתיבה</translation>
@@ -549,6 +548,7 @@
 <translation id="1832474362231610822">‏התמונה נשמרה ב-OneDrive</translation>
 <translation id="1832730227369924598">סנכרון שולחן העבודה הווירטואלי</translation>
 <translation id="1834452765064623979">בניין ותחזוקה</translation>
+<translation id="1837606605602726453">המערכת מתעלמת מהציון של הסיכונים ומהסיווג שלהם כי האדמין אישר או חסם את התוסף באופן מפורש.</translation>
 <translation id="1838374766361614909">ניקוי חיפוש</translation>
 <translation id="1839331950812095887">סיכום בכמה מילים של הדברים שרצית לומר</translation>
 <translation id="1839551713262164453">אימות ערכי המדיניות נכשל והתרחשו שגיאות</translation>
@@ -1860,6 +1860,7 @@
 <translation id="3875783148670536197">איך עושים זאת?</translation>
 <translation id="3877603629930976930">לא לשתף</translation>
 <translation id="3878445208930547646">אין לך הרשאה להעתיק מהאתר הזה</translation>
+<translation id="3879674895057686427">לאיזו שפה לתרגם?</translation>
 <translation id="3879748587602334249">מנהל ההורדות</translation>
 <translation id="3880456882942693779">אומנויות ובידור</translation>
 <translation id="3880589673277376494">אינטרנט וטלקום</translation>
@@ -3451,6 +3452,7 @@ Del</translation>
 <translation id="634500758737709758">מסלול</translation>
 <translation id="6348220984832452017">הגרסאות הפעילות</translation>
 <translation id="6349101878882523185">התקנת <ph name="APP_NAME" /></translation>
+<translation id="6350739641326887427">‏רוצה לשלם בלי להעתיק ולהדביק את קוד Pix? <ph name="BEGIN_LINK1" />איך זה עובד<ph name="END_LINK1" /></translation>
 <translation id="6351658970066645919">מחיקת נתוני הגלישה</translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{אין}=1{סיסמה אחת (עבור <ph name="DOMAIN_LIST" />, מסונכרנת)}=2{שתי סיסמאות (עבור <ph name="DOMAIN_LIST" />, מסונכרנות)}one{סיסמה אחת (עבור <ph name="DOMAIN_LIST" />, מסונכרנת)}other{# סיסמאות (עבור <ph name="DOMAIN_LIST" />, מסונכרנות)}}</translation>
 <translation id="6354918092619878358">‏עקומה אליפטית SECG מסוג secp256r1 (מוכרת גם בשם ANSI X9.62 prime256v1‏, NIST P-256)</translation>
@@ -3509,7 +3511,6 @@ Del</translation>
 <translation id="6424600253695044005">אחסון בענן</translation>
 <translation id="6425092077175753609">עיצוב חדשני תלת-ממדי</translation>
 <translation id="6427730057873428458">כנף בקיפול</translation>
-<translation id="6428450836711225518">אימות מספר הטלפון שלך</translation>
 <translation id="6429267199680088961">A4 Tab</translation>
 <translation id="643051589346665201">‏שינוי הסיסמה ל-Google</translation>
 <translation id="6431556523611594411">שיתוף הכרטיסיות הפתוחות</translation>
@@ -3666,6 +3667,7 @@ Del</translation>
 <translation id="668132230070712111">‏הסרטון נשמר ב-Google Drive</translation>
 <translation id="6681790815630918386">‏קוד האימות (CVC) נשמר</translation>
 <translation id="6683022854667115063">אוזניות</translation>
+<translation id="6686570026048064255">‏כדי להשבית את הזיהוי של קוד Pix, צריך לעבור <ph name="BEGIN_LINK1" />להגדרות של Chrome‏<ph name="END_LINK1" /></translation>
 <translation id="6687230248707087982">Envelope (Plain)</translation>
 <translation id="6687335167692595844">גודל הגופן שהתבקש</translation>
 <translation id="6688743156324860098">עדכון…</translation>
@@ -4457,7 +4459,6 @@ Del</translation>
 <translation id="7874796722855317864">‫"<ph name="PROXY_UNKNOWN_CONDITION" />" הוא לא סוג תנאי ידוע.</translation>
 <translation id="7877007680666472091">‏תוכן מוגן ב-Content ID</translation>
 <translation id="7878562273885520351">ייתכן שאבטחת הסיסמה שלך נפגעה</translation>
-<translation id="7881044256965445977">לחפש מכשירים ברשת המקומית ולהתחבר אליהם</translation>
 <translation id="7885670691503039914">נשלח אליך התראה באימייל אם המחיר ירד באתר כלשהו. הדף הזה יישמר בתיקיית הסימניות <ph name="LAST_BOOKMARKS_FOLDER" />.</translation>
 <translation id="7886897188117641322">אפשר לבחור קטגוריות רחבות של נושאים שיוכלו לשמש להתאמה אישית של מודעות</translation>
 <translation id="7887683347370398519">‏יש לבדוק את ה-CVC ולנסות שוב</translation>
@@ -4983,7 +4984,6 @@ Del</translation>
 <translation id="8737685506611670901">פתיחת קישורי <ph name="PROTOCOL" /> במקום <ph name="REPLACED_HANDLER_TITLE" /></translation>
 <translation id="8738058698779197622">‏כדי ליצור חיבור מאובטח, השעון צריך להיות מוגדר כהלכה. הסיבה לכך היא שהאישורים שבהם אתרים משתמשים כדי לזהות את עצמם תקפים רק למשך פרקי זמן מסוימים. מאחר שהשעון במכשיר שלך שגוי, Chromium לא יכול לאמת את האישורים האלו.</translation>
 <translation id="8740359287975076522">‏לא ניתן היה למצוא את &lt;abbr id="dnsDefinition"&gt;כתובת ה-DNS&lt;/abbr&gt; של <ph name="HOST_NAME" />. מאבחן את הבעיה.</translation>
-<translation id="8742371904523228557"><ph name="ONE_TIME_CODE" /> הוא הקוד שלך בשביל <ph name="ORIGIN" /></translation>
 <translation id="874918643257405732">הוספת הכרטיסייה לסימניות</translation>
 <translation id="8751426954251315517">אפשר לנסות שוב מאוחר יותר.</translation>
 <translation id="8753913772043329557">יומני המדיניות</translation>
@@ -5161,7 +5161,6 @@ Del</translation>
 <translation id="9042827002460091668">מומלץ לבדוק את החיבור לאינטרנט ולנסות שוב</translation>
 <translation id="9043161870923715789">‏מצב AI</translation>
 <translation id="9045525010788763347"><ph name="RESULT_MODIFIED_DATE" /> - <ph name="RESULT_PRODUCT_SOURCE" /></translation>
-<translation id="9046578823518542618">‫<ph name="URL" /> רוצה לחפש מכשירים ברשת המקומית ולהתחבר אליהם</translation>
 <translation id="9046864189129893978">מיקרופונים (<ph name="MICS_COUNT" />)</translation>
 <translation id="9046865906192819796">‏מסך התנאים וההגבלות של "קונים עכשיו, משלמים אחר כך (BNPL)" נפתח בחצי מגובה המסך.</translation>
 <translation id="9047528041803621289">מנוע החיפוש שמוגדר כברירת מחדל מאפשר לך לחפש באינטרנט. אפשר לשנות את זה בהגדרות.</translation>

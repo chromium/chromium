@@ -263,6 +263,7 @@
 <translation id="2184272387334793084">Увайдзіце, каб атрымаць доступ да пароляў і іншых даных на ўсіх сваіх прыладах</translation>
 <translation id="218608176142494674">Абагульванне</translation>
 <translation id="2186779861549045980">Вы можаце выбраць, якія даныя захоўваць ва Уліковым запісе Google.\nВы таксама можаце праглядаць гэтыя даныя і кіраваць імі ў закладках, спісе на прагляд і менеджары пароляў.</translation>
+<translation id="2190355936436201913">(пуста)</translation>
 <translation id="219283042927675668">Укладкі ў групе</translation>
 <translation id="2194856509914051091">Інфармацыя для разгляду</translation>
 <translation id="2205701497928406883"><ph name="TAB_TITLE" />, замацаваная ўкладка, змесціва якой абагульваецца</translation>
@@ -300,6 +301,7 @@
 <translation id="233375395665273385">Выдаліць і выйсці</translation>
 <translation id="2341410551640223969">Не ўдалося ўсталяваць праграму "<ph name="WEBAPK_NAME" />".</translation>
 <translation id="2349710944427398404">Агульны аб’ём даных Chrome, у тым ліку закладкі, уліковыя запісы і захаваныя налады</translation>
+<translation id="2354001756790975382">Іншыя закладкі</translation>
 <translation id="235789365079050412">Палітыка прыватнасці Google</translation>
 <translation id="2359808026110333948">Працягнуць</translation>
 <translation id="2362083820973145409">Вы ўвайшлі як <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Кнопка адкрывае налады.</translation>
@@ -896,6 +898,7 @@
 <translation id="4864369630010738180">Уваход...</translation>
 <translation id="4866368707455379617">Не ўдалося ўсталяваць модуль "<ph name="MODULE" />" для Chrome</translation>
 <translation id="4875775213178255010">Рэкамендацыі змесціва</translation>
+<translation id="4876880121961092787">Схаваць панэль закладак</translation>
 <translation id="4877678010818027629">Увайсці ў рэжым інкогніта</translation>
 <translation id="4878404682131129617">Не ўдалося стварыць тунэль праз проксі-сервер</translation>
 <translation id="4880127995492972015">Перакласці…</translation>
@@ -1268,6 +1271,7 @@
 <translation id="6437162790453527153">Увайдзіце, каб атрымаць доступ да закладак і іншых даных на ўсіх сваіх прыладах</translation>
 <translation id="6437478888915024427">Інфармацыя пра старонку</translation>
 <translation id="6440291723980579689">Старонкі загружаюцца толькі пасля таго, як вы іх адкрыеце</translation>
+<translation id="6441377161852435370">Дадаць укладку ў спіс чытання</translation>
 <translation id="6441734959916820584">Назва занадта доўгая</translation>
 <translation id="6444291413624515012">Група ўкладак "<ph name="TAB_GROUP_TITLE" />" закрыта</translation>
 <translation id="6452534462676960500">Новае дзеянне</translation>
@@ -1357,6 +1361,7 @@
 <translation id="6787600234697426339">Дасягнуты ліміт вокнаў (<ph name="MAX_INSTANCE_COUNT" />)</translation>
 <translation id="6795633245022906657">Хуткае адкрыццё новай укладкі. Каб змяніць функцыю гэтай кнопкі, перайдзіце ў Налады.</translation>
 <translation id="679588508577699489">Зрабіце Chrome стандартным браўзерам</translation>
+<translation id="679845623837196966">Паказаць спіс на прагляд</translation>
 <translation id="679956319013005046">Каб задаць пераважную службу для аўтазапаўнення, спачатку дадайце гэту службу ў <ph name="BEGIN_LINK" />Налады Android<ph name="END_LINK" />.</translation>
 <translation id="6802555630140434547">Акно будзе закрыта</translation>
 <translation id="6803791793483522764">Праверка апавяшчэнняў</translation>
@@ -1657,6 +1662,7 @@
 <translation id="7934668619883965330">Не ўдаецца спампаваць файл. Фармат файла не падтрымліваецца.</translation>
 <translation id="7951102827450076904">Заўсёды адкрываць спампаваныя PDF</translation>
 <translation id="7952479614398473176">Каб адкрыць новае акно, скараціце агульную колькасць актыўных вокнаў да <ph name="MAX_WINDOW_COUNT_MINUS_ONE" /> ці менш.</translation>
+<translation id="7956713633345437162">Мабільныя закладкі</translation>
 <translation id="7957413488482743710">Каб абараніць вас ад патэнцыяльнага махлярства, замест захаванай вамі карткі будзе паказвацца віртуальная. <ph name="BEGIN_LINK1" />Даведацца больш пра віртуальныя карткі<ph name="END_LINK1" /></translation>
 <translation id="7959485987650214982">Укладкі на гэтай прыладзе</translation>
 <translation id="7961926449547174351">Вы забаранілі доступ да сховішча. Каб дазволіць доступ зноў, перайдзіце ў Налады.</translation>
@@ -1845,6 +1851,7 @@
 <translation id="867914734596684889">Паказаць або схаваць панэль закладак</translation>
 <translation id="8683039184091909753">відарыс</translation>
 <translation id="8688183792442786085"><ph name="TAB_TITLE" />, выбраная ўкладка</translation>
+<translation id="8696297579102085705">Адправіць на прыладу</translation>
 <translation id="8697753151306746444">Вы можаце абагуліць акно або экран</translation>
 <translation id="8699120352855309748">Не прапаноўваць перакладаць з гэтых моў</translation>
 <translation id="8712637175834984815">Зразумела</translation>

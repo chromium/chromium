@@ -263,6 +263,7 @@
 <translation id="2184272387334793084">Влезте в профила си, за да имате достъп до своите пароли и др. на всичките си устройства</translation>
 <translation id="218608176142494674">Споделяне</translation>
 <translation id="2186779861549045980">Можете да изберете какви данни да се запазват в профила ви в Google.\nМожете също да преглеждате и управлявате тези елементи в отметките си, списъка си за четене или мениджъра на пароли.</translation>
+<translation id="2190355936436201913">(празно)</translation>
 <translation id="219283042927675668">Раздели в групата</translation>
 <translation id="2194856509914051091">Обмислете следните неща</translation>
 <translation id="2205701497928406883"><ph name="TAB_TITLE" /> – фиксиран раздел, който споделя</translation>
@@ -300,6 +301,7 @@
 <translation id="233375395665273385">Изтриване и излизане от профила</translation>
 <translation id="2341410551640223969">Инсталирането на <ph name="WEBAPK_NAME" /> не бе успешно.</translation>
 <translation id="2349710944427398404">Общо място в хранилището, което се използва от Chrome, включително за профили, отметки и запазени настройки</translation>
+<translation id="2354001756790975382">Други отметки</translation>
 <translation id="235789365079050412">Декларация за поверителност на Google</translation>
 <translation id="2359808026110333948">Напред</translation>
 <translation id="2362083820973145409">Влезли сте като <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Отваря настройките.</translation>
@@ -896,6 +898,7 @@
 <translation id="4864369630010738180">Извършва се влизане...</translation>
 <translation id="4866368707455379617">Модулът „<ph name="MODULE" />“ за Chrome не може да се инсталира</translation>
 <translation id="4875775213178255010">Предложения за съдържание</translation>
+<translation id="4876880121961092787">Скриване на лентата на отметките</translation>
 <translation id="4877678010818027629">Влизане в режим „инкогнито“</translation>
 <translation id="4878404682131129617">Създаването на тунел през прокси сървъра не бе успешно</translation>
 <translation id="4880127995492972015">Превод…</translation>
@@ -1268,6 +1271,7 @@
 <translation id="6437162790453527153">Влезте в профила си, за да имате достъп до своите отметки и др. на всичките си устройства</translation>
 <translation id="6437478888915024427">Информация за страницата</translation>
 <translation id="6440291723980579689">Страниците се зареждат само след като ги отворите</translation>
+<translation id="6441377161852435370">Добавяне на раздела към списъка за четене</translation>
 <translation id="6441734959916820584">Името е твърде дълго</translation>
 <translation id="6444291413624515012">Групата раздели „<ph name="TAB_GROUP_TITLE" />“ бе затворена</translation>
 <translation id="6452534462676960500">Нова активност</translation>
@@ -1357,6 +1361,7 @@
 <translation id="6787600234697426339">Достигнато е ограничението от <ph name="MAX_INSTANCE_COUNT" /> прозореца</translation>
 <translation id="6795633245022906657">Бързо отваряне на нов раздел. За да редактирате този пряк път, отворете настройките.</translation>
 <translation id="679588508577699489">Задайте Chrome като браузър по подразбиране</translation>
+<translation id="679845623837196966">Показване на списъка за четене</translation>
 <translation id="679956319013005046">За да зададете предпочитаната от вас услуга за автоматично попълване, първо я добавете от <ph name="BEGIN_LINK" />настройките на Android<ph name="END_LINK" />.</translation>
 <translation id="6802555630140434547">Прозорецът ще бъде затворен</translation>
 <translation id="6803791793483522764">Преглед на известията</translation>
@@ -1657,6 +1662,7 @@
 <translation id="7934668619883965330">Файлът не може да се изтегли. Файловият формат не се поддържа.</translation>
 <translation id="7951102827450076904">Изтеглените PDF файлове да се отварят винаги</translation>
 <translation id="7952479614398473176">За да отворите нов прозорец, намалете общия брой на активните прозорци до не повече от <ph name="MAX_WINDOW_COUNT_MINUS_ONE" />.</translation>
+<translation id="7956713633345437162">Мобилни отметки</translation>
 <translation id="7957413488482743710">Виртуалната карта скрива действителната ви, за да ви защити от потенциална измама. <ph name="BEGIN_LINK1" />Научете повече за виртуалните карти<ph name="END_LINK1" /></translation>
 <translation id="7959485987650214982">Раздели на това устройство</translation>
 <translation id="7961926449547174351">Деактивирахте достъпа до хранилището. Моля, отворете настройките, за да го активирате.</translation>
@@ -1845,6 +1851,7 @@
 <translation id="867914734596684889">Показване или скриване на лентата на отметките</translation>
 <translation id="8683039184091909753">изображение</translation>
 <translation id="8688183792442786085"><ph name="TAB_TITLE" /> – избран раздел</translation>
+<translation id="8696297579102085705">Изпращане до устройството ви</translation>
 <translation id="8697753151306746444">Вместо това споделяне на прозорец или екран</translation>
 <translation id="8699120352855309748">Да не се предлага превод от тези езици</translation>
 <translation id="8712637175834984815">Разбрах</translation>
