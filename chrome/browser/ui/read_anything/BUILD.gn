@@ -31,6 +31,8 @@ source_set("read_anything") {
     "read_anything_entry_point_controller.cc",
     "read_anything_entry_point_controller.h",
     "read_anything_enums.h",
+    "read_anything_hats_survey_controller.cc",
+    "read_anything_hats_survey_controller.h",
     "read_anything_immersive_activation_observer.h",
     "read_anything_immersive_overlay_view.cc",
     "read_anything_immersive_overlay_view.h",
@@ -159,5 +161,22 @@ source_set("interactive_ui_tests") {
     "//content/test:test_support",
     "//testing/gtest",
     "//ui/views",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "read_anything_hats_survey_controller_unittest.cc" ]
+  deps = [
+    ":read_anything",
+    "//base",
+    "//chrome/browser/ui",
+    "//chrome/browser/ui/hats:test_support",
+    "//chrome/browser/ui/side_panel:side_panel_views_dependent",
+    "//chrome/test:test_support",
+    "//components/tabs:test_support",
+    "//content/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
   ]
 }

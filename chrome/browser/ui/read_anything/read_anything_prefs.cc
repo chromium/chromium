@@ -72,6 +72,10 @@ void RegisterReadAnythingProfilePrefs(
       prefs::kAccessibilityReadAnythingLastOpenedPresentationState,
       static_cast<int>(read_anything::mojom::ReadAnythingPresentationState::
                            kInImmersiveOverlay));
+  registry->RegisterListPref(
+      prefs::kAccessibilityReadAnythingRecentUsagesStartTimes,
+      base::ListValue());
+
   if (features::IsReadAnythingLineFocusEnabled()) {
     registry->RegisterIntegerPref(
         prefs::kAccessibilityReadAnythingLineFocus,
