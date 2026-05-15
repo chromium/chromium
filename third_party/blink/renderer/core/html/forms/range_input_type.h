@@ -66,7 +66,6 @@ class RangeInputType final : public InputType, public InputTypeView {
   void CreateShadowSubtree() override;
   Decimal ParseToNumber(const String&, const Decimal&) const override;
   String Serialize(const Decimal&) const override;
-  void AccessKeyAction(SimulatedClickCreationScope creation_scope) override;
   void SanitizeValueInResponseToMinOrMaxAttributeChange() override;
   void StepAttributeChanged() override;
   void WarnIfValueIsInvalid(const String&) const override;

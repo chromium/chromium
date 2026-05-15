@@ -63,7 +63,6 @@ class BaseCheckableInputType : public InputType, public InputTypeView {
   void RestoreFormControlState(const FormControlState&) final;
   void AppendToFormData(FormData&) const final;
   void HandleKeypressEvent(KeyboardEvent&) final;
-  void AccessKeyAction(SimulatedClickCreationScope creation_scope) final;
   bool MatchesDefaultPseudoClass() override;
   ValueMode GetValueMode() const override;
   void SetValue(const String&,

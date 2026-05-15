@@ -110,6 +110,7 @@ class MultipleFieldsTemporalInputTypeView final
   void HandleFocusInEvent(Element* old_focused_element,
                           mojom::blink::FocusType) final;
   void HandleKeydownEvent(KeyboardEvent&) final;
+  void AccessKeyAction(SimulatedClickCreationScope creation_scope) final;
   bool HasBadInput() const override;
   bool HasCustomFocusLogic() const final;
   void MinOrMaxAttributeChanged() final;

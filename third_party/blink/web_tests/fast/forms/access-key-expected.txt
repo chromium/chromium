@@ -13,6 +13,7 @@ If this test passes you should see 1 - 9 and a, b and c clicked or focussed.
 3 input type checkbox focussed
 3 input type checkbox clicked
 4 input type text focussed
+4 input type text clicked
 5 input type submit focussed
 5 input type submit clicked
 6 input type reset focussed
@@ -20,7 +21,9 @@ If this test passes you should see 1 - 9 and a, b and c clicked or focussed.
 7 link focussed
 7 link clicked
 9 input type associated to label around input focussed
+9 input type associated to label around input clicked
 a input type associated to label closed before input focussed
+a input type associated to label closed before input clicked
 b area 1 focussed
 b area 1 clicked
 c area 2 focussed

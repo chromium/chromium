@@ -7661,8 +7661,10 @@ bool AXObject::OnNativeClickAction() {
       document->GetFrame(),
       mojom::blink::UserActivationNotificationType::kInteraction);
 
-  if (IsTextField())
-    return OnNativeFocusAction();
+  // Text elements activate IME on focus
+  if (IsTextField()) {
+    OnNativeFocusAction();
+  }
 
   Element* element = GetClosestElement();
 
@@ -7686,8 +7688,10 @@ bool AXObject::OnNativeClickAction() {
       }
     }
 
-    // For most elements, AccessKeyAction triggers sending a simulated
+    // For most elements, `AccessKeyAction()` triggers sending a simulated
     // click, including simulating the mousedown, mouseup, and click events.
+    // For some elements (e.g. <option> inside <select>), `AccessKeyAction()`
+    // has special handling that needs to be available to assistive tools.
     element->AccessKeyAction(SimulatedClickCreationScope::kFromAccessibility);
     return true;
   }

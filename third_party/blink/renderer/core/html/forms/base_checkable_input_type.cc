@@ -99,14 +99,6 @@ bool BaseCheckableInputType::CanSetStringValue() const {
   return false;
 }
 
-// FIXME: Could share this with KeyboardClickableInputTypeView and
-// RangeInputType if we had a common base class.
-void BaseCheckableInputType::AccessKeyAction(
-    SimulatedClickCreationScope creation_scope) {
-  InputTypeView::AccessKeyAction(creation_scope);
-  GetElement().DispatchSimulatedClick(nullptr, creation_scope);
-}
-
 bool BaseCheckableInputType::MatchesDefaultPseudoClass() {
   return GetElement().FastHasAttribute(html_names::kCheckedAttr);
 }

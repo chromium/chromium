@@ -47,7 +47,6 @@ class CORE_EXPORT KeyboardClickableInputTypeView : public InputTypeView {
   void HandleKeydownEvent(KeyboardEvent&) override;
   void HandleKeypressEvent(KeyboardEvent&) override;
   void HandleKeyupEvent(KeyboardEvent&) override;
-  void AccessKeyAction(SimulatedClickCreationScope creation_scope) override;
 };
 
 }  // namespace blink

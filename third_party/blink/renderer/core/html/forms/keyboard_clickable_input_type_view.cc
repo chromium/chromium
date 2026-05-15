@@ -67,12 +67,4 @@ void KeyboardClickableInputTypeView::HandleKeyupEvent(KeyboardEvent& event) {
   DispatchSimulatedClickIfActive(event);
 }
 
-// FIXME: Could share this with BaseCheckableInputType and RangeInputType if we
-// had a common base class.
-void KeyboardClickableInputTypeView::AccessKeyAction(
-    SimulatedClickCreationScope creation_scope) {
-  InputTypeView::AccessKeyAction(creation_scope);
-  GetElement().DispatchSimulatedClick(nullptr, creation_scope);
-}
-
 }  // namespace blink

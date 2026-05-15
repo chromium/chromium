@@ -308,14 +308,6 @@ String RangeInputType::Serialize(const Decimal& value) const {
   return SerializeForNumberType(value);
 }
 
-// FIXME: Could share this with KeyboardClickableInputTypeView and
-// BaseCheckableInputType if we had a common base class.
-void RangeInputType::AccessKeyAction(
-    SimulatedClickCreationScope creation_scope) {
-  InputTypeView::AccessKeyAction(creation_scope);
-  GetElement().DispatchSimulatedClick(nullptr, creation_scope);
-}
-
 void RangeInputType::SanitizeValueInResponseToMinOrMaxAttributeChange() {
   if (GetElement().HasDirtyValue())
     GetElement().SetValue(GetElement().Value());
