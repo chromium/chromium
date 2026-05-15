@@ -41,6 +41,11 @@ class CC_EXPORT TileBasedLayerImpl : public LayerImpl {
     kBelowHigh,
   };
 
+  enum class IterationStatus {
+    kContinue,
+    kStop,
+  };
+
   TileBasedLayerImpl(const TileBasedLayerImpl&) = delete;
   ~TileBasedLayerImpl() override = default;
 
@@ -120,6 +125,14 @@ class CC_EXPORT TileBasedLayerImpl : public LayerImpl {
   bool LastAppendQuadsScalesContains(float scale) const {
     return std::ranges::contains(last_append_quads_scales_, scale);
   }
+
+  // Invokes `functor` for each visible tile in `coverage_rect`.
+  template <typename Functor>
+  void ForEachVisibleTile(const gfx::Rect& coverage_rect,
+                          float max_contents_scale,
+                          float ideal_scale_key,
+                          const Occlusion& scaled_occlusion,
+                          Functor functor) const;
 
   // Invoked when a tile is determined to be ready to draw, allowing subclasses
   virtual void WillProcessReadyToDrawTile(
@@ -230,6 +243,44 @@ class CC_EXPORT TileBasedLayerImpl : public LayerImpl {
   bool nearest_neighbor_ : 1 = false;
   bool produced_tile_last_append_quads_ : 1 = true;
 };
+
+template <typename Tiling>
+template <typename Functor>
+void TileBasedLayerImpl<Tiling>::ForEachVisibleTile(
+    const gfx::Rect& coverage_rect,
+    float max_contents_scale,
+    float ideal_scale_key,
+    const Occlusion& scaled_occlusion,
+    Functor functor) const {
+  const gfx::Rect scaled_recorded_bounds =
+      gfx::ScaleToEnclosingRect(RecordedBounds(), max_contents_scale);
+
+  for (auto iter = Cover(coverage_rect, max_contents_scale, ideal_scale_key);
+       iter; ++iter) {
+    const gfx::Rect& geometry_rect = iter.geometry_rect();
+    if (!scaled_recorded_bounds.Intersects(geometry_rect)) {
+      // This happens when the tiling rect is snapped to be bigger than the
+      // recorded bounds, and CoverageIterator returns a "missing" tile
+      // to cover some of the empty area. The tile should be ignored, otherwise
+      // it would be mistakenly treated as checkerboarded and drawn with the
+      // safe background color.
+      // TODO(crbug.com/328677988): Ideally we should check intersection with
+      // visible_geometry_rect and remove the visible_geometry_rect.IsEmpty()
+      // condition below.
+      continue;
+    }
+
+    gfx::Rect visible_geometry_rect =
+        scaled_occlusion.GetUnoccludedContentRect(geometry_rect);
+    if (visible_geometry_rect.IsEmpty()) {
+      continue;
+    }
+
+    if (functor(iter, visible_geometry_rect) == IterationStatus::kStop) {
+      break;
+    }
+  }
+}
 
 template <typename Tiling>
 void TileBasedLayerImpl<Tiling>::AppendQuads(
@@ -372,50 +423,32 @@ void TileBasedLayerImpl<Tiling>::AppendQuads(
   const gfx::Rect scaled_viewport_for_tile_priority =
       GetScaledViewportForTilePriority(max_contents_scale);
 
-  const gfx::Rect scaled_recorded_bounds =
-      gfx::ScaleToEnclosingRect(RecordedBounds(), max_contents_scale);
-
   int missing_tile_count = 0;
-  for (auto iter = Cover(shared_quad_state->visible_quad_layer_rect,
-                         max_contents_scale, ideal_scale_key);
-       iter; ++iter) {
-    const gfx::Rect& geometry_rect = iter.geometry_rect();
-    if (!scaled_recorded_bounds.Intersects(geometry_rect)) {
-      // This happens when the tiling rect is snapped to be bigger than the
-      // recorded bounds, and CoverageIterator returns a "missing" tile
-      // to cover some of the empty area. The tile should be ignored, otherwise
-      // it would be mistakenly treated as checkerboarded and drawn with the
-      // safe background color.
-      // TODO(crbug.com/328677988): Ideally we should check intersection with
-      // visible_geometry_rect and remove the visible_geometry_rect.IsEmpty()
-      // condition below.
-      continue;
-    }
+  ForEachVisibleTile(
+      shared_quad_state->visible_quad_layer_rect, max_contents_scale,
+      ideal_scale_key, scaled_occlusion,
+      [&](const TilingSetCoverageIterator<Tiling>& iter,
+          const gfx::Rect& visible_geometry_rect) {
+        gfx::Rect offset_geometry_rect = iter.geometry_rect();
+        offset_geometry_rect.Offset(quad_offset);
+        gfx::Rect offset_visible_geometry_rect = visible_geometry_rect;
+        offset_visible_geometry_rect.Offset(quad_offset);
 
-    gfx::Rect visible_geometry_rect =
-        scaled_occlusion.GetUnoccludedContentRect(geometry_rect);
-    if (visible_geometry_rect.IsEmpty()) {
-      continue;
-    }
+        const bool needs_blending = !contents_opaque();
 
-    gfx::Rect offset_geometry_rect = geometry_rect;
-    offset_geometry_rect.Offset(quad_offset);
-    gfx::Rect offset_visible_geometry_rect = visible_geometry_rect;
-    offset_visible_geometry_rect.Offset(quad_offset);
+        append_quads_data->visible_layer_area +=
+            visible_geometry_rect.size().Area64();
 
-    const bool needs_blending = !contents_opaque();
-
-    append_quads_data->visible_layer_area +=
-        visible_geometry_rect.size().Area64();
-
-    if (!AppendQuadForTile(
-            iter, context, render_pass, append_quads_data, shared_quad_state,
-            scaled_occlusion, offset_geometry_rect,
-            offset_visible_geometry_rect, visible_geometry_rect, needs_blending,
-            max_contents_scale, scaled_viewport_for_tile_priority)) {
-      missing_tile_count++;
-    }
-  }
+        if (!AppendQuadForTile(
+                iter, context, render_pass, append_quads_data,
+                shared_quad_state, scaled_occlusion, offset_geometry_rect,
+                offset_visible_geometry_rect, visible_geometry_rect,
+                needs_blending, max_contents_scale,
+                scaled_viewport_for_tile_priority)) {
+          missing_tile_count++;
+        }
+        return IterationStatus::kContinue;
+      });
 
   if (missing_tile_count) {
     append_quads_data->num_missing_tiles += missing_tile_count;
@@ -443,8 +476,6 @@ bool TileBasedLayerImpl<Tiling>::HasMissingTiles() const {
 
   const float max_contents_scale = GetMaximumContentsScaleForUseInAppendQuads();
   const float ideal_scale_key = GetIdealContentsScaleKey();
-  const gfx::Rect scaled_recorded_bounds =
-      gfx::ScaleToEnclosingRect(RecordedBounds(), max_contents_scale);
 
   const gfx::Size scaled_bounds =
       gfx::ScaleToCeiledSize(bounds(), max_contents_scale);
@@ -464,29 +495,23 @@ bool TileBasedLayerImpl<Tiling>::HasMissingTiles() const {
   const gfx::Rect scaled_viewport_for_tile_priority =
       GetScaledViewportForTilePriority(max_contents_scale);
 
-  for (auto iter = Cover(scaled_visible_layer_rect, max_contents_scale,
-                         ideal_scale_key);
-       iter; ++iter) {
-    const gfx::Rect& geometry_rect = iter.geometry_rect();
-    if (!scaled_recorded_bounds.Intersects(geometry_rect)) {
-      continue;
-    }
+  bool has_missing = false;
+  ForEachVisibleTile(
+      scaled_visible_layer_rect, max_contents_scale, ideal_scale_key,
+      scaled_occlusion,
+      [&](const TilingSetCoverageIterator<Tiling>& iter,
+          const gfx::Rect& visible_geometry_rect) {
+        if (!*iter || !iter->IsReadyToDraw()) {
+          if (ShouldReportTileAsMissing(iter.geometry_rect(),
+                                        scaled_viewport_for_tile_priority)) {
+            has_missing = true;
+            return IterationStatus::kStop;
+          }
+        }
+        return IterationStatus::kContinue;
+      });
 
-    gfx::Rect visible_geometry_rect =
-        scaled_occlusion.GetUnoccludedContentRect(geometry_rect);
-    if (visible_geometry_rect.IsEmpty()) {
-      continue;
-    }
-
-    if (!*iter || !iter->IsReadyToDraw()) {
-      if (ShouldReportTileAsMissing(geometry_rect,
-                                    scaled_viewport_for_tile_priority)) {
-        return true;
-      }
-    }
-  }
-
-  return false;
+  return has_missing;
 }
 
 template <typename Tiling>
