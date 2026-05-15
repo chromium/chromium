@@ -54,7 +54,6 @@
 
 namespace {
 
-using autofill::test::CreateTestFormField;
 using ::base::test::RunOnceCallback;
 using ::testing::_;
 using ::testing::DoAll;
@@ -73,6 +72,13 @@ const std::u16string kNewPassword = u"cE1L45Vgxyzlu8";
 const char kUrlString[] = "https://www.foo.com/";
 const int password_renderer_id = 1;
 const int new_password_renderer_id = 2;
+
+template <typename... Args>
+autofill::FormFieldData CreateTestFormField(Args&&... args) {
+  auto field = autofill::test::CreateTestFormField(std::forward<Args>(args)...);
+  field.set_is_enabled(true);
+  return field;
+}
 
 class MockChromePasswordManagerClient
     : public password_manager::StubPasswordManagerClient {

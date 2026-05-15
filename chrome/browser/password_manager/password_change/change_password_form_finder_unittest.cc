@@ -52,6 +52,13 @@ using testing::WithArg;
 using QualityStatus = optimization_guide::proto::
     PasswordChangeQuality_StepQuality_SubmissionStatus;
 
+template <typename... Args>
+autofill::FormFieldData CreateTestFormField(Args&&... args) {
+  auto field = autofill::test::CreateTestFormField(std::forward<Args>(args)...);
+  field.set_is_enabled(true);
+  return field;
+}
+
 class MockChromePasswordManagerClient
     : public password_manager::StubPasswordManagerClient {
  public:

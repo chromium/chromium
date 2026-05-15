@@ -20,6 +20,8 @@ source_set("password_change") {
     "cross_origin_navigation_observer.h",
     "detached_web_contents.cc",
     "detached_web_contents.h",
+    "features.cc",
+    "features.h",
     "form_filling_helper.cc",
     "form_filling_helper.h",
     "login_state_checker.cc",

@@ -7,6 +7,7 @@
 #include "base/containers/adapters.h"
 #include "base/feature_list.h"
 #include "base/task/single_thread_task_runner.h"
+#include "chrome/browser/password_manager/password_change/features.h"
 #include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/autofill/core/browser/ml_model/field_classification_model_handler.h"
 #include "components/autofill/core/common/unique_ids.h"
@@ -44,6 +45,17 @@ bool FieldFocusable(autofill::FieldRendererId renderer_id,
   return field->is_focusable();
 }
 
+bool FieldEnabled(autofill::FieldRendererId renderer_id,
+                  const autofill::FormData& form_data) {
+  const auto& fields = form_data.fields();
+  auto field = std::ranges::find(fields, renderer_id,
+                                 &autofill::FormFieldData::renderer_id);
+  if (field == fields.end()) {
+    return false;
+  }
+  return field->is_enabled() && !field->is_readonly();
+}
+
 bool IsLikelyChangePasswordForm(
     const password_manager::PasswordFormManager* form_manager) {
   auto* parsed_form = form_manager->GetParsedObservedForm();
@@ -54,6 +66,16 @@ bool IsLikelyChangePasswordForm(
 
   // New password field must be present in a change password form.
   if (!parsed_form->new_password_element_renderer_id) {
+    return false;
+  }
+
+  // The new password field must be enabled to be considered a change password
+  // form.
+  if (base::FeatureList::IsEnabled(
+          password_change::features::
+              kCheckFieldEnabledInChangePasswordFormWaiter) &&
+      !FieldEnabled(parsed_form->new_password_element_renderer_id,
+                    parsed_form->form_data)) {
     return false;
   }
 
