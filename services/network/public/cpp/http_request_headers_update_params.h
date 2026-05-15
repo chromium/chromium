@@ -34,6 +34,9 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE) HttpRequestHeadersUpdateParams final {
   HttpRequestHeadersUpdateParams& operator=(
       const HttpRequestHeadersUpdateParams&) = delete;
 
+  void Apply(net::HttpRequestHeaders& headers,
+             net::HttpRequestHeaders& cors_exempt_headers) const;
+
   std::vector<std::string> removed_headers;
   net::HttpRequestHeaders modified_headers;
   net::HttpRequestHeaders modified_cors_exempt_headers;

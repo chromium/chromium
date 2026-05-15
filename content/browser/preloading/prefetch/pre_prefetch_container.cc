@@ -107,16 +107,10 @@ void PrePrefetchContainer::Start(
   // Apply any custom headers provided by the service via the thread-safe
   // callbacks after the initial `ResourceRequest` construction.
   for (const auto& callback : non_ui_thread_update_headers_callbacks) {
-    network::HttpRequestHeadersUpdateParams params =
+    network::HttpRequestHeadersUpdateParams headers_update_params =
         callback.Run(*resource_request_);
-
-    for (const auto& removed_header : params.removed_headers) {
-      resource_request_->headers.RemoveHeader(removed_header);
-      resource_request_->cors_exempt_headers.RemoveHeader(removed_header);
-    }
-    resource_request_->headers.MergeFrom(params.modified_headers);
-    resource_request_->cors_exempt_headers.MergeFrom(
-        params.modified_cors_exempt_headers);
+    headers_update_params.Apply(resource_request_->headers,
+                                resource_request_->cors_exempt_headers);
   }
 
   auto receiver = url_loader_.InitWithNewPipeAndPassReceiver();

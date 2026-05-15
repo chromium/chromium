@@ -13,4 +13,15 @@ HttpRequestHeadersUpdateParams::HttpRequestHeadersUpdateParams(
 HttpRequestHeadersUpdateParams& HttpRequestHeadersUpdateParams::operator=(
     HttpRequestHeadersUpdateParams&&) = default;
 
+void HttpRequestHeadersUpdateParams::Apply(
+    net::HttpRequestHeaders& headers,
+    net::HttpRequestHeaders& cors_exempt_headers) const {
+  for (const auto& removed_header : removed_headers) {
+    headers.RemoveHeader(removed_header);
+    cors_exempt_headers.RemoveHeader(removed_header);
+  }
+  headers.MergeFrom(modified_headers);
+  cors_exempt_headers.MergeFrom(modified_cors_exempt_headers);
+}
+
 }  // namespace network
