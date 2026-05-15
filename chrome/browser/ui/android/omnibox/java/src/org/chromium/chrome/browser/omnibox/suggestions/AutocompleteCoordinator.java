@@ -43,6 +43,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.AutocompleteMatch;
+import org.chromium.components.omnibox.AutocompleteStopReason;
 import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.ui.AsyncViewProvider;
 import org.chromium.ui.AsyncViewStub;
@@ -477,7 +478,7 @@ public class AutocompleteCoordinator implements OmniboxSuggestionsVisualState {
 
     /** Stop current suggestions requests and clear the suggestions list. */
     public void stopAutocomplete() {
-        mMediator.stopAutocomplete(/* clear= */ true);
+        mMediator.stopAutocomplete(AutocompleteStopReason.CLOBBERED);
     }
 
     /** Returns whether Autocomplete is serving suggestions. */
@@ -526,8 +527,8 @@ public class AutocompleteCoordinator implements OmniboxSuggestionsVisualState {
         return mModalDialogManagerSupplier.get();
     }
 
-    public void stopAutocompleteForTest(boolean clearResults) {
-        mMediator.stopAutocomplete(clearResults);
+    public void stopAutocompleteForTest(@AutocompleteStopReason int stopReason) {
+        mMediator.stopAutocomplete(stopReason);
     }
 
     /**

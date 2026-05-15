@@ -67,7 +67,7 @@ class AutocompleteControllerAndroid : public AutocompleteController::Observer,
       ::metrics::OmniboxEventProto::PageClassification page_classification,
       omnibox::ToolMode tool_mode,
       const std::u16string& current_title);
-  void Stop(JNIEnv* env, bool clear_result);
+  void Stop(JNIEnv* env, AutocompleteStopReason reason);
   void ResetSession(JNIEnv* env);
   void StartPrewarm(JNIEnv* env, content::WebContents* web_contents);
 

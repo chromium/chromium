@@ -89,6 +89,7 @@ import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.AutocompleteMatchBuilder;
 import org.chromium.components.omnibox.AutocompleteRequestType;
 import org.chromium.components.omnibox.AutocompleteResult;
+import org.chromium.components.omnibox.AutocompleteStopReason;
 import org.chromium.components.omnibox.OmniboxFeatureList;
 import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.omnibox.OmniboxSuggestionType;
@@ -1866,7 +1867,7 @@ public class AutocompleteMediatorUnitTest {
         // Deactivate: should remove observers and stop autocomplete.
         clearInvocations(mAutocompleteController);
         mMediator.onTopResumedActivityChanged(false);
-        verify(mAutocompleteController).stop(true);
+        verify(mAutocompleteController).stop(AutocompleteStopReason.CLOBBERED);
         verify(mAutocompleteController).removeOnSuggestionsReceivedListener(mMediator);
 
         // Re-activate: should install observers and trigger suggestions.

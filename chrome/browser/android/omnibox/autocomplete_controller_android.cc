@@ -328,12 +328,11 @@ void AutocompleteControllerAndroid::OnOmniboxFocused(
   autocomplete_controller_->Start(input_);
 }
 
-void AutocompleteControllerAndroid::Stop(JNIEnv* env, bool clear_results) {
-  autocomplete_controller_->Stop(clear_results
-                                     ? AutocompleteStopReason::kClobbered
-                                     : AutocompleteStopReason::kInteraction);
+void AutocompleteControllerAndroid::Stop(JNIEnv* env,
+                                         AutocompleteStopReason reason) {
+  autocomplete_controller_->Stop(reason);
 
-  if (clear_results) {
+  if (reason == AutocompleteStopReason::kClobbered) {
     contextual_tasks_web_contents_.reset();
   }
 }

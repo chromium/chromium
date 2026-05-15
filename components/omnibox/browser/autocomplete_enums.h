@@ -7,6 +7,7 @@
 
 // The reason `AutocompleteController::Stop()` or `AutocompleteProvider::Stop()`
 // were called.
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.omnibox
 enum class AutocompleteStopReason {
 
   // - Called when: Significant change occurred and the existing state is no

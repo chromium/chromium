@@ -52,6 +52,7 @@ import org.chromium.chrome.browser.searchwidget.SearchActivity;
 import org.chromium.chrome.browser.toolbar.top.ToolbarLayout;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.AutocompleteResult;
+import org.chromium.components.omnibox.AutocompleteStopReason;
 import org.chromium.components.omnibox.suggestions.OmniboxSuggestionUiType;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -279,7 +280,7 @@ public class OmniboxTestUtils {
                     // arrives late. This guarantees that the suggestions will not change and the
                     // list can be used for testing purposes.
                     if (count.incrementAndGet() < 3) return false;
-                    mAutocomplete.stopAutocompleteForTest(false);
+                    mAutocomplete.stopAutocompleteForTest(AutocompleteStopReason.INTERACTION);
                     return true;
                 });
     }

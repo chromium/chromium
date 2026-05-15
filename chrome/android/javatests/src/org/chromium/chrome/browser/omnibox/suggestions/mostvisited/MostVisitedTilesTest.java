@@ -56,6 +56,7 @@ import org.chromium.chrome.test.util.OmniboxTestUtils.SuggestionInfo;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.AutocompleteMatchBuilder;
 import org.chromium.components.omnibox.AutocompleteResult;
+import org.chromium.components.omnibox.AutocompleteStopReason;
 import org.chromium.components.omnibox.GroupsProto.GroupsInfo;
 import org.chromium.components.omnibox.OmniboxSuggestionType;
 import org.chromium.components.omnibox.suggestions.OmniboxSuggestionUiType;
@@ -255,7 +256,7 @@ public class MostVisitedTilesTest {
         longClickTileAtPosition(2);
         // onTopResumedActivityChanged calls `hideSuggestions()` which may bump the number of times
         // `stop()` is called.
-        verify(mController, atLeastOnce()).stop(/* clear?=*/ eq(false));
+        verify(mController, atLeastOnce()).stop(AutocompleteStopReason.INTERACTION);
 
         // Wait for the delete dialog to come up...
         CriteriaHelper.pollUiThread(

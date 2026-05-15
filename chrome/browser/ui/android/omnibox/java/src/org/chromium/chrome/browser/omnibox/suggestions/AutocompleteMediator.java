@@ -68,6 +68,7 @@ import org.chromium.components.omnibox.AutocompleteInput.SiteSearchData;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.AutocompleteRequestType;
 import org.chromium.components.omnibox.AutocompleteResult;
+import org.chromium.components.omnibox.AutocompleteStopReason;
 import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.omnibox.OmniboxSuggestionType;
 import org.chromium.components.omnibox.ToolModeUtils;
@@ -296,7 +297,7 @@ class AutocompleteMediator
     }
 
     public void destroy() {
-        stopAutocomplete(false);
+        stopAutocomplete(AutocompleteStopReason.INTERACTION);
         endInput();
         mDataProvider.getToolbarPositionSupplier().removeObserver(mToolbarPositionChangedCallback);
 
@@ -528,7 +529,7 @@ class AutocompleteMediator
             // Ensure we don't show any lingering suggestions if the user jumps between
             // an active input session and NTP on LFF where the omnibox is prefocused but
             // suggestions list are not shown.
-            stopAutocomplete(true);
+            stopAutocomplete(AutocompleteStopReason.CLOBBERED);
         } else {
             // Ask directly for zero-suggestions related to current input, unless the user is
             // currently visiting SearchActivity and the input is populated from the launch intent.
@@ -827,7 +828,7 @@ class AutocompleteMediator
     @Override
     public void onRefineSuggestion(AutocompleteMatch suggestion) {
         if (!isInInputSession()) return;
-        stopAutocomplete(false);
+        stopAutocomplete(AutocompleteStopReason.INTERACTION);
         boolean isSearchSuggestion = suggestion.isSearchSuggestion();
         boolean isZeroPrefix = mAutocompleteInput.isInZeroPrefixContext();
         String refineText = stripKeywordIfNecessary(suggestion.getFillIntoEdit());
@@ -860,7 +861,7 @@ class AutocompleteMediator
     @Override
     public void onGesture(boolean isGestureUp, long timestamp) {
         try (TraceEvent e = TraceEvent.scoped("AutocompleteMediator.onGesture")) {
-            stopAutocomplete(false);
+            stopAutocomplete(AutocompleteStopReason.INTERACTION);
             if (isGestureUp) {
                 mLastActionUpTimestamp = timestamp;
             }
@@ -932,7 +933,7 @@ class AutocompleteMediator
         // action (there is no native match to delete). Calling `stopAutocomplete()` here will
         // ensure that suggestions don't change the moment the User is presented with the dialog,
         // allowing us to complete the deletion.
-        stopAutocomplete(/* clear= */ false);
+        stopAutocomplete(AutocompleteStopReason.INTERACTION);
         if (!suggestion.isDeletable()) return;
         // Do not attempt to delete matches that have been detached from their native counterpart.
         // These matches likely come from cache, or the delete request came for a previous set of
@@ -1098,7 +1099,7 @@ class AutocompleteMediator
             }
         }
 
-        stopAutocomplete(false);
+        stopAutocomplete(AutocompleteStopReason.INACTIVITY);
 
         if (isInZeroPrefixContext) {
             startZeroSuggest();
@@ -1562,7 +1563,7 @@ class AutocompleteMediator
      */
     @VisibleForTesting
     void clearSuggestions() {
-        stopAutocomplete(true);
+        stopAutocomplete(AutocompleteStopReason.CLOBBERED);
         dismissDeleteDialog(DialogDismissalCause.NAVIGATE_BACK_OR_TOUCH_OUTSIDE);
 
         mDropdownViewInfoListManager.clear();
@@ -1573,12 +1574,14 @@ class AutocompleteMediator
      * Signals the autocomplete controller to stop generating omnibox suggestions and cancels the
      * queued task to start the autocomplete controller, if any.
      *
-     * @param clear Whether to clear the most recent autocomplete results.
+     * @param stopReason The reason to stop autocomplete. If {@link
+     *     AutocompleteStopReason#CLOBBERED} is passed, the most recent autocomplete results will be
+     *     cleared.
      */
     @VisibleForTesting
-    void stopAutocomplete(boolean clear) {
+    void stopAutocomplete(@AutocompleteStopReason int stopReason) {
         if (!isInInputSession()) return;
-        mAutocomplete.stop(clear);
+        mAutocomplete.stop(stopReason);
         // All suggestions are now removed.
         cancelAutocompleteRequests();
     }
@@ -1606,7 +1609,7 @@ class AutocompleteMediator
         assert isInInputSession();
 
         if (!isInInputSession()) return;
-        stopAutocomplete(false);
+        stopAutocomplete(AutocompleteStopReason.INACTIVITY);
         mAutocompleteInput.setUserText(query);
         mAutocomplete.start(
                 mSessionState.getContextualTasksWebContents(), mAutocompleteInput, -1, false);
@@ -1875,7 +1878,7 @@ class AutocompleteMediator
                 installAutocompleteObservers();
                 onInputChanged();
             } else {
-                stopAutocomplete(/* clear= */ true);
+                stopAutocomplete(AutocompleteStopReason.CLOBBERED);
                 removeAutocompleteObservers();
             }
         }
