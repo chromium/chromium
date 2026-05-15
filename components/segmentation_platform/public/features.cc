@@ -269,11 +269,11 @@ constexpr base::FeatureParam<bool> kNewTabPageCustomizationV2ShowPromo{
 
 constexpr base::FeatureParam<int> kNewTabPageCustomizationV2IphMaxImpression{
     &kNewTabPageCustomizationV2, "iph_max_impression",
-    /*default_value=*/5};
+    /*default_value=*/3};
 
 constexpr base::FeatureParam<int>
     kNewTabPageCustomizationV2IphDisplayIntervalDays{
         &kNewTabPageCustomizationV2, "iph_display_interval_days",
-        /*default_value=*/14};
+        /*default_value=*/7};
 
 }  // namespace segmentation_platform::features
