@@ -622,6 +622,14 @@ void GetSearchOverriddenParamsThenRun(
 
     LogMissingParams(*params);
 
+    // After logging any missing parameters, attempt to fill in placeholders.
+    // This is a temporary workaround until we've figured out which scenario(s)
+    // yield no default search information. See http://crbug.com/513310356.
+    if (previous_setting.text.empty()) {
+      previous_setting.text =
+          l10n_util::GetStringUTF16(IDS_RESET_PROFILE_SETTINGS_DSE);
+    }
+
     // Asynchronously look up icons (if needed) then continue.
     FetchIconsThenRun(
         icon_lookups, profile,
