@@ -432,6 +432,7 @@ class DnsTransactionImpl final : public DnsTransaction {
     if (!callback_.is_null()) {
       net_log_.EndEventWithNetErrorCode(NetLogEventType::DNS_TRANSACTION,
                                         ERR_ABORTED);
+      RecordHttpsLookupResult(ERR_ABORTED);
     }  // otherwise logged in DoCallback or Start
   }
 
@@ -575,12 +576,45 @@ class DnsTransactionImpl final : public DnsTransaction {
     net_log_.EndEventWithNetErrorCode(NetLogEventType::DNS_TRANSACTION,
                                       result.rv);
 
+    RecordHttpsLookupResult(result.rv);
+
     std::move(callback_).Run(result.rv, response);
   }
 
   void RecordAttemptUma(DnsAttemptType attempt_type) {
     UMA_HISTOGRAM_ENUMERATION("Net.DNS.DnsTransaction.AttemptType",
                               attempt_type);
+  }
+
+  void RecordHttpsLookupResult(int net_error) {
+    CHECK_NE(ERR_IO_PENDING, net_error);
+    if (qtype_ != dns_protocol::kTypeHttps) {
+      return;
+    }
+
+    constexpr std::string_view kHistogramBase =
+        "Net.DNS.DnsTransaction.HttpsLookupResult";
+    net_error = -net_error;
+    base::UmaHistogramSparse(kHistogramBase, net_error);
+    switch (attempt_mode_) {
+      case DnsTransactionFactory::AttemptMode::kClassic:
+        base::UmaHistogramSparse(base::StrCat({kHistogramBase, ".Classic"}),
+                                 net_error);
+        if (had_tcp_retry_) {
+          base::UmaHistogramSparse(
+              base::StrCat({kHistogramBase, ".ClassicTruncatedAndTcpRetried"}),
+              net_error);
+        }
+        break;
+      case DnsTransactionFactory::AttemptMode::kHttp:
+        base::UmaHistogramSparse(base::StrCat({kHistogramBase, ".DoH"}),
+                                 net_error);
+        break;
+      case DnsTransactionFactory::AttemptMode::kPlatform:
+        base::UmaHistogramSparse(base::StrCat({kHistogramBase, ".Platform"}),
+                                 net_error);
+        break;
+    }
   }
 
   AttemptResult MakeAttempt() {

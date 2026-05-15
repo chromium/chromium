@@ -2665,6 +2665,46 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Net.DNS.DnsTransaction.HttpsLookupResult" enum="NetErrorCodes"
+    expires_after="2026-11-01">
+  <owner>stefanoduo@google.com</owner>
+  <owner>src/net/dns/OWNERS</owner>
+  <summary>
+    Net error codes resulting from completed or aborted DnsTransactions querying
+    for HTTPS resource records. Recorded across all resolution modes when a
+    transaction completes or is aborted before completion.
+  </summary>
+</histogram>
+
+<histogram
+    name="Net.DNS.DnsTransaction.HttpsLookupResult.ClassicTruncatedAndTcpRetried"
+    enum="NetErrorCodes" expires_after="2026-11-01">
+  <owner>stefanoduo@google.com</owner>
+  <owner>src/net/dns/OWNERS</owner>
+  <summary>
+    Net error codes resulting from completed or aborted classic (Do53)
+    DnsTransactions querying for HTTPS resource records that experienced UDP
+    truncation (TC bit set) and retried over TCP. Recorded when a classic DNS
+    transaction completes or is aborted after retrying over TCP.
+  </summary>
+</histogram>
+
+<histogram name="Net.DNS.DnsTransaction.HttpsLookupResult.{AttemptMode}"
+    enum="NetErrorCodes" expires_after="2026-11-01">
+  <owner>stefanoduo@google.com</owner>
+  <owner>src/net/dns/OWNERS</owner>
+  <summary>
+    Net error codes resulting from completed or aborted DnsTransactions querying
+    for HTTPS resource records using {AttemptMode}. Recorded when a transaction
+    completes or is aborted before completion.
+  </summary>
+  <token key="AttemptMode">
+    <variant name="Classic" summary="classic DNS (Do53)"/>
+    <variant name="DoH" summary="DNS over HTTPS"/>
+    <variant name="Platform" summary="platform resolver"/>
+  </token>
+</histogram>
+
 <histogram name="Net.DNS.DnsTransaction.Insecure.{DohProviderId}FailureTime"
     units="ms" expires_after="2026-10-11">
   <owner>awillia@chromium.org</owner>
