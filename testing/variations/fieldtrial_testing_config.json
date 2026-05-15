@@ -11833,6 +11833,25 @@
             ]
         }
     ],
+    "GlicOptInImpressionMetrics": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_",
+                    "enable_features": [
+                        "GlicOptInImpressionMetrics"
+                    ]
+                }
+            ]
+        }
+    ],
     "GlicPdfSummarizeButton": [
         {
             "platforms": [
