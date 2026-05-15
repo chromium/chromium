@@ -213,14 +213,12 @@
     }
   }
 
-  ManualFillVirtualCardCache::FromWebState(
-      self.browser->GetWebStateList()->GetActiveWebState())
-      ->SetUnmaskingOrigin([self.injectionHandler activeWebFrameOrigin]);
-
-  [self.cardRequester requestFullCreditCard:*autofillCreditCard
-                     withBaseViewController:self.baseViewController
-                                 recordType:card.recordType
-                                  fieldType:fieldType];
+  [self.cardRequester
+       requestFullCreditCard:*autofillCreditCard
+      withBaseViewController:self.baseViewController
+                  recordType:card.recordType
+                   fieldType:fieldType
+                      origin:[self.injectionHandler activeWebFrameOrigin]];
 }
 
 - (void)didTriggerOpenCardDetails:(autofill::CreditCard)card

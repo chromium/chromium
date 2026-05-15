@@ -21,17 +21,7 @@ class ManualFillVirtualCardCache
   ~ManualFillVirtualCardCache() override;
 
   // Caches the unmasked card, associated with the origin where it was unmasked.
-  void CacheUnmaskedCard(const autofill::CreditCard& card,
-                         const url::Origin& origin);
-
-  // Sets the origin of the frame that initiated the active unmasking request.
-  void SetUnmaskingOrigin(const url::Origin& origin);
-
-  // Consumes the stored unmasking origin, and clears it.
-  url::Origin ConsumeUnmaskingOrigin();
-
-  // Resets/clears the stored unmasking origin.
-  void ClearUnmaskingOrigin();
+  void CacheUnmaskedCard(const autofill::CreditCard& card, url::Origin origin);
 
   // Returns the cached card only if the server_id matches and the current
   // origin matches the origin where the card was unmasked.
@@ -54,9 +44,6 @@ class ManualFillVirtualCardCache
   };
 
   std::map<std::string, CachedCard> server_id_to_unmasked_card_map_;
-
-  // The origin of the frame that initiated the active unmasking request.
-  std::optional<url::Origin> unmasking_origin_;
 };
 
 #endif  // IOS_CHROME_BROWSER_AUTOFILL_MODEL_MANUAL_FILL_VIRTUAL_CARD_CACHE_H_

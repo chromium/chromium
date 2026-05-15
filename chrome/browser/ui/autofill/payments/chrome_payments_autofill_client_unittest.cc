@@ -550,7 +550,7 @@ TEST_F(ChromePaymentsAutofillClientTest,
       });
   EXPECT_CALL(*snackbar_controller, Show(AutofillSnackbarType::kBnpl, _));
 
-  chrome_payments_client()->OnCardDataAvailable(options);
+  chrome_payments_client()->OnCardDataAvailable(options, url::Origin());
 }
 
 TEST_F(ChromePaymentsAutofillClientTest,
@@ -576,7 +576,7 @@ TEST_F(ChromePaymentsAutofillClientTest,
   EXPECT_CALL(*snackbar_controller,
               Show(AutofillSnackbarType::kVirtualCard, _));
 
-  chrome_payments_client()->OnCardDataAvailable(options);
+  chrome_payments_client()->OnCardDataAvailable(options, url::Origin());
 }
 
 TEST_F(ChromePaymentsAutofillClientTest,
@@ -602,7 +602,7 @@ TEST_F(ChromePaymentsAutofillClientTest,
   EXPECT_CALL(*snackbar_controller,
               Show(AutofillSnackbarType::kCardInfoRetrieval, _));
 
-  chrome_payments_client()->OnCardDataAvailable(options);
+  chrome_payments_client()->OnCardDataAvailable(options, url::Origin());
 }
 
 // Test that calling `ShowAffiliatedLoyaltyCards` passes the correct lists of

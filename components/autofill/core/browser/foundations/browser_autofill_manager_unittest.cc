@@ -763,7 +763,7 @@ class MockPaymentsAutofillClient : public payments::TestPaymentsAutofillClient {
   MOCK_METHOD(bool, HasCreditCardScanFeature, (), (const override));
   MOCK_METHOD(void,
               OnCardDataAvailable,
-              (const FilledCardInformationBubbleOptions&),
+              (const FilledCardInformationBubbleOptions&, const url::Origin&),
               (override));
 };
 
@@ -3965,7 +3965,8 @@ TEST_F(BrowserAutofillManagerTest,
                 Field(&Options::masked_card_number_last_four,
                       filled_card.ObfuscatedNumberWithVisibleLastFourDigits()),
                 Field(&Options::cvc, filled_card.cvc()),
-                Field(&Options::filled_card, filled_card))));
+                Field(&Options::filled_card, filled_card)),
+          _));
 
   FormData form = CreateTestCreditCardFormData(/*is_https=*/true,
                                                /*use_month_type=*/false);
@@ -3995,15 +3996,16 @@ TEST_F(BrowserAutofillManagerTest, FillOrPreviewForm_CreditCard_Bnpl) {
   EXPECT_CALL(cc_access_manager(), FetchCreditCard).Times(0);
 
   using Options = FilledCardInformationBubbleOptions;
-  EXPECT_CALL(
-      payments_autofill_client(),
-      OnCardDataAvailable(AllOf(
-          Field(&Options::masked_card_name,
-                bnpl_virtual_card.CardNameForAutofillDisplay()),
-          Field(&Options::masked_card_number_last_four,
-                bnpl_virtual_card.ObfuscatedNumberWithVisibleLastFourDigits()),
-          Field(&Options::cvc, bnpl_virtual_card.cvc()),
-          Field(&Options::filled_card, bnpl_virtual_card))));
+  EXPECT_CALL(payments_autofill_client(),
+              OnCardDataAvailable(
+                  AllOf(Field(&Options::masked_card_name,
+                              bnpl_virtual_card.CardNameForAutofillDisplay()),
+                        Field(&Options::masked_card_number_last_four,
+                              bnpl_virtual_card
+                                  .ObfuscatedNumberWithVisibleLastFourDigits()),
+                        Field(&Options::cvc, bnpl_virtual_card.cvc()),
+                        Field(&Options::filled_card, bnpl_virtual_card)),
+                  _));
 
   FormData form = CreateTestCreditCardFormData(/*is_https=*/true,
                                                /*use_month_type=*/false);
@@ -4032,7 +4034,8 @@ TEST_F(BrowserAutofillManagerTest,
                 Field(&Options::masked_card_number_last_four,
                       filled_card.ObfuscatedNumberWithVisibleLastFourDigits()),
                 Field(&Options::cvc, filled_card.cvc()),
-                Field(&Options::filled_card, filled_card))));
+                Field(&Options::filled_card, filled_card)),
+          _));
 
   FormData form = CreateTestCreditCardFormData(/*is_https=*/true,
                                                /*use_month_type=*/false);

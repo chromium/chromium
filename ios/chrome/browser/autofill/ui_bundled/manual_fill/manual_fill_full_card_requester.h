@@ -9,6 +9,7 @@
 
 #import "components/autofill/core/browser/data_model/payments/credit_card.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_constants.h"
+#import "url/origin.h"
 
 class ProfileIOS;
 
@@ -37,7 +38,8 @@ class WebStateList;
 - (void)requestFullCreditCard:(const autofill::CreditCard)card
        withBaseViewController:(UIViewController*)viewController
                    recordType:(autofill::CreditCard::RecordType)recordType
-                    fieldType:(manual_fill::PaymentFieldType)fieldType;
+                    fieldType:(manual_fill::PaymentFieldType)fieldType
+                       origin:(url::Origin)origin;
 
 @end
 

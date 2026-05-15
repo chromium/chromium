@@ -15,8 +15,8 @@ ManualFillVirtualCardCache::~ManualFillVirtualCardCache() = default;
 
 void ManualFillVirtualCardCache::CacheUnmaskedCard(
     const autofill::CreditCard& card,
-    const url::Origin& origin) {
-  server_id_to_unmasked_card_map_[card.server_id()] = {card, origin};
+    url::Origin origin) {
+  server_id_to_unmasked_card_map_[card.server_id()] = {card, std::move(origin)};
 }
 
 const autofill::CreditCard* ManualFillVirtualCardCache::GetUnmaskedCard(
@@ -30,28 +30,12 @@ const autofill::CreditCard* ManualFillVirtualCardCache::GetUnmaskedCard(
   return nullptr;
 }
 
-void ManualFillVirtualCardCache::SetUnmaskingOrigin(const url::Origin& origin) {
-  CHECK(!unmasking_origin_.has_value());
-  unmasking_origin_ = origin;
-}
-
-url::Origin ManualFillVirtualCardCache::ConsumeUnmaskingOrigin() {
-  url::Origin origin = std::move(unmasking_origin_).value_or(url::Origin());
-  unmasking_origin_.reset();
-  return origin;
-}
-
-void ManualFillVirtualCardCache::ClearUnmaskingOrigin() {
-  unmasking_origin_.reset();
-}
-
 void ManualFillVirtualCardCache::DidFinishNavigation(
     web::WebState* web_state,
     web::NavigationContext* navigation_context) {
   // Clear the sensitive cache whenever the user navigates to a new document.
   if (!navigation_context->IsSameDocument()) {
     server_id_to_unmasked_card_map_.clear();
-    unmasking_origin_.reset();
   }
 }
 

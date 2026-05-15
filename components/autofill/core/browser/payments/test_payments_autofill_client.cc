@@ -155,7 +155,8 @@ void TestPaymentsAutofillClient::VirtualCardEnrollCompleted(
     PaymentsRpcResult result) {}
 
 void TestPaymentsAutofillClient::OnCardDataAvailable(
-    const FilledCardInformationBubbleOptions& options) {}
+    const FilledCardInformationBubbleOptions& options,
+    const url::Origin& origin) {}
 
 void TestPaymentsAutofillClient::ConfirmSaveIbanLocally(
     const Iban& iban,

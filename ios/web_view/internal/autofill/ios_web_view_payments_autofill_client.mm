@@ -136,7 +136,8 @@ void IOSWebViewPaymentsAutofillClient::VirtualCardEnrollCompleted(
 }
 
 void IOSWebViewPaymentsAutofillClient::OnCardDataAvailable(
-    const FilledCardInformationBubbleOptions& options) {}
+    const FilledCardInformationBubbleOptions& options,
+    const url::Origin& origin) {}
 
 void IOSWebViewPaymentsAutofillClient::ConfirmSaveIbanLocally(
     const Iban& iban,

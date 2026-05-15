@@ -23,6 +23,7 @@
 #include "components/autofill/core/browser/payments/legal_message_line.h"
 #include "components/autofill/core/browser/payments/risk_data_loader.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
+#include "url/origin.h"
 
 #if !BUILDFLAG(IS_IOS)
 namespace webauthn {
@@ -466,8 +467,11 @@ class PaymentsAutofillClient : public RiskDataLoader {
 
   // Called when the card has been fetched successfully. Uses the necessary
   // information in `options` to show the FilledCardInformationBubble.
+  // `origin` is the origin of the frame on which fetching was originally
+  // triggered.
   virtual void OnCardDataAvailable(
-      const FilledCardInformationBubbleOptions& options) = 0;
+      const FilledCardInformationBubbleOptions& options,
+      const url::Origin& origin) = 0;
 
   // Runs `callback` once the user makes a decision with respect to the
   // offer-to-save prompt. On desktop, shows the offer-to-save bubble if
