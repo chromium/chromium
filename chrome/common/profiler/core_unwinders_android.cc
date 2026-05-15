@@ -8,6 +8,7 @@
 #include <type_traits>
 #include <vector>
 
+#include "base/android/library_loader/anchor_functions_buildflags.h"
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
 #include "base/feature_list.h"
@@ -25,7 +26,8 @@
 #include "components/sampling_profiler/process_type.h"
 #include "components/version_info/channel.h"
 
-#if defined(ARCH_CPU_ARMEL) && BUILDFLAG(ENABLE_ARM_CFI_TABLE)
+#if defined(ARCH_CPU_ARMEL) && BUILDFLAG(ENABLE_ARM_CFI_TABLE) && \
+    BUILDFLAG(SUPPORTS_CODE_ORDERING)
 #define ARM32_UNWINDING_SUPPORTED 1
 #else
 #define ARM32_UNWINDING_SUPPORTED 0

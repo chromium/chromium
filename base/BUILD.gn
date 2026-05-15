@@ -3330,6 +3330,7 @@ source_set("base_stack_sampling_profiler_test_util") {
     "profiler/stack_sampling_profiler_test_util.h",
   ]
   deps = [
+    ":anchor_functions_buildflags",
     ":base",
     "//base/test:test_support",
     "//testing/gtest",
