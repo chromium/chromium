@@ -17,9 +17,10 @@ rootWebArea
 ++++++++menuItemCheckBox name='ARIA leaf content is not removed in editor' checkedState=false
 ++++++++++staticText name='ARIA leaf content is not removed in editor'
 ++++++++++++inlineTextBox name='ARIA leaf content is not removed in editor'
-++++++++listBoxOption name='ARIA leaf content is not removed in editor' selected=false
-++++++++++staticText name='ARIA leaf content is not removed in editor'
-++++++++++++inlineTextBox name='ARIA leaf content is not removed in editor'
+++++++++listBox
+++++++++++listBoxOption name='ARIA leaf content is not removed in editor' selected=false
+++++++++++++staticText name='ARIA leaf content is not removed in editor'
+++++++++++++++inlineTextBox name='ARIA leaf content is not removed in editor'
 ++++++++progressIndicator minValueForRange=0.00 maxValueForRange=100.00
 ++++++++++staticText name='ARIA leaf content is not removed in editor'
 ++++++++++++inlineTextBox name='ARIA leaf content is not removed in editor'

@@ -67,6 +67,7 @@ rootWebArea
 ++++++++toggleButton name='Pressed Button' nameFrom=contents checkedState=true
 ++++++++++staticText name='Pressed Button' nameFrom=contents
 ++++++++++++inlineTextBox name='Pressed Button' nameFrom=contents
-++++++++listBoxOption name='Option Button' nameFrom=contents selected=false
-++++++++++staticText name='Option Button' nameFrom=contents
-++++++++++++inlineTextBox name='Option Button' nameFrom=contents
+++++++++listBox
+++++++++++listBoxOption name='Option Button' nameFrom=contents selected=false
+++++++++++++staticText name='Option Button' nameFrom=contents
+++++++++++++++inlineTextBox name='Option Button' nameFrom=contents

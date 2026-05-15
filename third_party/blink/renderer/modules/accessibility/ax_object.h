@@ -843,13 +843,14 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   // where it is difficult to check for this change, the role from (4) is used
   // instead of the final role from (5).
 
-  // (1) Determine the ARIA role purely based on the role attribute, when no
-  // additional rules or limitations on role usage are applied. Use
-  // RawAriaRole() instead if the raw role does not need to be recomputed.
-  ax::mojom::blink::Role DetermineRawAriaRole() const;
-  // Static helper for callers that only have an Element. It mirrors
-  // DetermineRawAriaRole() by mapping the explicit role attribute (if present)
-  // to the internal role enum, otherwise returning kUnknown.
+  // (1) Determine the raw ARIA role based on the role attribute and parent
+  // context validation. Local presentational suppression rules or implicit
+  // role mappings are not applied. Use RawAriaRole() if the cached raw role
+  // does not need to be recomputed.
+  ax::mojom::blink::Role DetermineRawAriaRoleWithContext() const;
+  // Static helper for callers that only have an Element. Unlike the instance
+  // method, it maps the explicit role attribute (if present) to the internal
+  // role enum without validating parent context.
   static ax::mojom::blink::Role DetermineRawAriaRole(const Element&);
 
   // (2) Determine the ARIA role after applying rules based on other properties.
@@ -863,6 +864,12 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   // RoleValue() instead if the role does not need to be recomputed.
   virtual ax::mojom::blink::Role DetermineRoleValue();
 
+  // Re-evaluates the object's role in place by calling DetermineRoleValue()
+  // and caching the result in role_. This is intended for relation updates
+  // (e.g., aria-owns) where the required parent context changes dynamically,
+  // requiring a role recompute before tree serialization.
+  void UpdateRole();
+
   // (5) Return the role after all possible rules from HTML-AAM, WAI-ARIA, etc.
   // have been applied.
   //
@@ -874,7 +881,7 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   // platforms ignore.
   ax::mojom::blink::Role ComputeFinalRoleForSerialization() const;
 
-  // Returns the cached raw ARIA role from DetermineRawAriaRole().
+  // Returns the cached raw ARIA role from DetermineRawAriaRoleWithContext().
   virtual ax::mojom::blink::Role RawAriaRole() const;
 
   // Returns the cached role from DetermineRoleValue().
@@ -893,6 +900,22 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   static ax::mojom::blink::Role FirstValidRoleInRoleString(
       const String&,
       bool ignore_form_and_region = false);
+
+  // Determines if the role has a required parent context (e.g., a listitem
+  // requires a list, an option requires a listbox), and if so, whether the
+  // element is legally contained in that context (either in the DOM or via
+  // aria-owns). Returns true if the context is satisfied or if the role has
+  // no required context.
+  bool HasRequiredParentContext(ax::mojom::blink::Role role) const;
+
+  // Parses the explicit role attribute and returns the first valid ARIA role
+  // token that satisfies its required parent context. Falls back to subsequent
+  // tokens in the string, or returns Role::kUnknown if none satisfy the
+  // required context (triggering fallback to the host element's native role).
+  // Matches CORE-AAM: https://w3c.github.io/core-aam/#roleMappingComputedRole
+  ax::mojom::blink::Role FirstValidRoleInRoleStringWithContext(
+      const String& role_str,
+      bool ignore_form_and_region = false) const;
 
   // Return the equivalent ARIA name for an enumerated role, or g_null_atom.
   static const AtomicString& AriaRoleName(ax::mojom::blink::Role);
@@ -1759,6 +1782,17 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   // Return true if it's necessary to destroy a subtrees when detaching
   // from the parent.
   bool ShouldDestroyWhenDetachingFromParent() const;
+
+  // Returns true if the listitem is an orphan (i.e., not owned via aria-owns
+  // and not a descendant of a list element). Skips generic structural <div>
+  // wrappers without explicit roles as intervening containers.
+  // Matches HTML-AAM: https://w3c.github.io/html-aam/#el-li
+  bool IsOrphanedListItem(const Element&) const;
+
+  // Returns true if the option is an orphan (i.e., not owned via aria-owns
+  // and not a descendant of a select/listbox element). Skips generic <div>
+  // wrappers.
+  bool IsOrphanedOption(const Element&) const;
 
   // Attaches the tree with the given ID to this object as a child tree and
   // updates the cache.

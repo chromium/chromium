@@ -822,9 +822,13 @@ void AXRelationCache::MapOwnedChildrenWithCleanLayout(
             original_parent->ParentObject());
       }
     }
-    // Now that the child is owned, it's "included in tree" state must be
-    // recomputed because owned children are always included in the tree.
     added_child->UpdateCachedAttributeValuesIfNeeded(false);
+
+    // Re-evaluate the role since its required parent context is now satisfied.
+    if (added_child->RoleValue() !=
+        added_child->DetermineRawAriaRoleWithContext()) {
+      added_child->UpdateRole();
+    }
 
     // If the added child had a change in an inherited state because of the new
     // owner, that state needs to propagate into the subtree. Remove its

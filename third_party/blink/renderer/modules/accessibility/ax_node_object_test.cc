@@ -260,7 +260,9 @@ TEST_F(AccessibilityTest, FocusgroupItemImpliedRoleMenubar) {
 TEST_F(AccessibilityTest, FocusgroupItemExplicitRolePreserved) {
   SetBodyInnerHTML(R"HTML(
       <div id="fg" focusgroup="tablist">
-        <span tabindex="0" id="child" role="listitem">Item</span>
+        <div role="list">
+          <span tabindex="0" id="child" role="listitem">Item</span>
+        </div>
       </div>)HTML");
   const AXObject* child = GetAXObjectByElementId("child");
   ASSERT_NE(nullptr, child);
@@ -405,7 +407,9 @@ TEST_F(AccessibilityTest, FocusgroupPopupButtonDialogHaspopupInferredRole) {
 TEST_F(AccessibilityTest, FocusgroupPopupButtonExplicitRolePreserved) {
   SetBodyInnerHTML(R"HTML(
       <div id="fg" focusgroup="menubar">
-        <button id="child" aria-haspopup="menu" role="listitem">List Item</button>
+        <div role="list">
+          <button id="child" aria-haspopup="menu" role="listitem">List Item</button>
+        </div>
       </div>)HTML");
   const AXObject* child = GetAXObjectByElementId("child");
   ASSERT_NE(nullptr, child);
@@ -430,7 +434,9 @@ TEST_F(AccessibilityTest, FocusgroupToggleButtonRoleNotInferred) {
 TEST_F(AccessibilityTest, FocusgroupButtonExplicitRolePreserved) {
   SetBodyInnerHTML(R"HTML(
       <div id="fg" focusgroup="tablist">
-        <button id="child" role="listitem">List Item</button>
+        <div role="list">
+          <button id="child" role="listitem">List Item</button>
+        </div>
       </div>)HTML");
   const AXObject* child = GetAXObjectByElementId("child");
   ASSERT_NE(nullptr, child);

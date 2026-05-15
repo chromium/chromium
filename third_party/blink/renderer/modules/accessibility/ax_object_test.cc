@@ -2435,6 +2435,97 @@ TEST_F(AccessibilityReplaceRangesTest, NonEditableTextRemainsUnchanged) {
   EXPECT_EQ(R"HTML(<div>Hello, World!</div>)HTML",
             GetDocument().body()->GetInnerHTMLString());
 }
+TEST_F(AccessibilityTest, OrphanedRolesFallback) {
+  SetBodyInnerHTML(R"HTML(
+    <div id="container">
+      <div id="orphaned_listitem" role="listitem">x</div>
+      <p id="orphaned_listitem_p" role="listitem">x</p>
+      <nav id="orphaned_option" role="option">x</nav>
+    </div>
+  )HTML");
+
+  const AXObject* orphaned_listitem =
+      GetAXObjectByElementId("orphaned_listitem");
+  ASSERT_NE(nullptr, orphaned_listitem);
+  EXPECT_EQ(ax::mojom::blink::Role::kGenericContainer,
+            orphaned_listitem->RoleValue());
+
+  const AXObject* orphaned_listitem_p =
+      GetAXObjectByElementId("orphaned_listitem_p");
+  ASSERT_NE(nullptr, orphaned_listitem_p);
+  EXPECT_EQ(ax::mojom::blink::Role::kParagraph,
+            orphaned_listitem_p->RoleValue());
+
+  const AXObject* orphaned_option = GetAXObjectByElementId("orphaned_option");
+  ASSERT_NE(nullptr, orphaned_option);
+  EXPECT_EQ(ax::mojom::blink::Role::kNavigation, orphaned_option->RoleValue());
+}
+
+TEST_F(AccessibilityTest, RoleAllowedViaAriaOwns) {
+  SetBodyInnerHTML(R"HTML(
+    <div id="owner_list" role="list" aria-owns="owned_listitem"></div>
+    <div id="owner_listbox" role="listbox" aria-owns="owned_option"></div>
+    <div id="container">
+      <div id="owned_listitem" role="listitem">x</div>
+      <nav id="owned_option" role="option">x</nav>
+    </div>
+  )HTML");
+
+  const AXObject* owned_listitem = GetAXObjectByElementId("owned_listitem");
+  ASSERT_NE(nullptr, owned_listitem);
+  EXPECT_EQ(ax::mojom::blink::Role::kListItem, owned_listitem->RoleValue());
+
+  const AXObject* owned_option = GetAXObjectByElementId("owned_option");
+  ASSERT_NE(nullptr, owned_option);
+  EXPECT_EQ(ax::mojom::blink::Role::kListBoxOption, owned_option->RoleValue());
+}
+
+TEST_F(AccessibilityTest, RolePreservedWithInterveningPresentationalContainer) {
+  SetBodyInnerHTML(R"HTML(
+    <div id="owner_list" role="list">
+      <div role="presentation">
+        <div role="none">
+          <div id="listitem" role="listitem">x</div>
+        </div>
+      </div>
+    </div>
+    <div id="owner_listbox" role="listbox">
+      <div role="presentation">
+        <div role="none">
+          <div id="option" role="option">x</div>
+        </div>
+      </div>
+    </div>
+  )HTML");
+
+  const AXObject* listitem = GetAXObjectByElementId("listitem");
+  ASSERT_NE(nullptr, listitem);
+  EXPECT_EQ(ax::mojom::blink::Role::kListItem, listitem->RoleValue());
+
+  const AXObject* option = GetAXObjectByElementId("option");
+  ASSERT_NE(nullptr, option);
+  EXPECT_EQ(ax::mojom::blink::Role::kListBoxOption, option->RoleValue());
+}
+
+TEST_F(AccessibilityTest, MultipleRolesWithContext) {
+  SetBodyInnerHTML(R"HTML(
+    <div id="orphaned" role="option navigation">x</div>
+    <div id="owner_listbox" role="listbox" aria-owns="owned"></div>
+    <div id="container">
+      <div id="owned" role="option navigation">x</div>
+    </div>
+  )HTML");
+
+  const AXObject* orphaned = GetAXObjectByElementId("orphaned");
+  ASSERT_NE(nullptr, orphaned);
+  // The option role is orphaned, so it should fall back to navigation.
+  EXPECT_EQ(ax::mojom::blink::Role::kNavigation, orphaned->RoleValue());
+
+  const AXObject* owned = GetAXObjectByElementId("owned");
+  ASSERT_NE(nullptr, owned);
+  // The option role is owned by a listbox, so it should be preserved.
+  EXPECT_EQ(ax::mojom::blink::Role::kListBoxOption, owned->RoleValue());
+}
 
 }  // namespace test
 }  // namespace blink

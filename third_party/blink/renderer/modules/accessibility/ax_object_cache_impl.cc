@@ -4771,7 +4771,8 @@ void AXObjectCacheImpl::SectionOrRegionRoleMaybeChangedWithCleanLayout(
 
   // Require <section> or role="region" markup.
   if (!element->HasTagName(html_names::kSectionTag) &&
-      ax_object->DetermineRawAriaRole() != ax::mojom::blink::Role::kRegion) {
+      ax_object->DetermineRawAriaRoleWithContext() !=
+          ax::mojom::blink::Role::kRegion) {
     return;
   }
 

@@ -238,8 +238,10 @@ const TestCase kDistillWebPageTestCases[] = {
       <body>
         <main>
           <p>Main</p>
-          <div role='listitem' aria-expanded='true'>Expanded</div>
-          <div role='listitem' aria-expanded='false'>Collapsed</div>
+          <div role='list'>
+            <div role='listitem' aria-expanded='true'>Expanded</div>
+            <div role='listitem' aria-expanded='false'>Collapsed</div>
+          </div>
         </main>
       <body>)HTML",
      {"Main", "Expanded"}},

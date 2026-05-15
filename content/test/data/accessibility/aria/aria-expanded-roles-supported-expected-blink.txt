@@ -50,7 +50,8 @@ rootWebArea
 ++++++meter
 ++++++navigation
 ++++++note
-++++++listBoxOption
+++++++listBox
+++++++++listBoxOption
 ++++++paragraph
 ++++++progressIndicator
 ++++++radioButton

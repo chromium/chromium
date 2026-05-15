@@ -513,6 +513,7 @@ class MODULES_EXPORT AXObjectCacheImpl : public AXObjectCacheBase {
 
   // Returns the parent of the given object due to aria-owns, if valid.
   AXObject* ValidatedAriaOwner(const AXObject*) const;
+  AXRelationCache* RelationCache() { return relation_cache_.get(); }
 
   // Given an object that has an aria-owns attribute, return the validated
   // set of aria-owned children.
