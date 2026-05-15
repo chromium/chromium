@@ -658,6 +658,16 @@ static_library("model_execution_test_support") {
       "//services/on_device_model/public/cpp:types",
       "//services/on_device_model/public/cpp/test_support",
     ]
+    if (is_android) {
+      sources += [
+        "model_execution/test/fake_model_broker_android.cc",
+        "model_execution/test/fake_model_broker_android.h",
+      ]
+      deps += [
+        "//services/on_device_model/android",
+        "//services/on_device_model/android:test_support",
+      ]
+    }
   }
 }
 
