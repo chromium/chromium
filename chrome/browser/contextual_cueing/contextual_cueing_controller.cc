@@ -608,6 +608,27 @@ void ContextualCueingController::OnCueClicked(
     actions::ActionInvocationContext) {
   CUEING_LOG(
       base::StringPrintf("Cue type '%s' was clicked", GetName(cue_type)));
+#if !BUILDFLAG(IS_ANDROID)
+  CHECK(page_action_observer_);
+  const page_actions::PageActionState& state =
+      page_action_observer_->GetCurrentPageActionState();
+  if (!state.anchored_message_showing) {
+    tabs::TabInterface* active_tab = tab_list_interface_->GetActiveTab();
+    if (active_tab) {
+      // Re-show the anchored message to allow for the user to see the tab
+      // sharing UI before invoking the cue target's click action
+      if (page_actions::PageActionController* page_action_controller =
+              active_tab->GetTabFeatures()->page_action_controller()) {
+        page_action_controller->ShowAnchoredMessage(
+            kActionAnchoredContextualCue,
+            {.priority =
+                 page_actions::PageActionPriorityCategory::kContextualCue});
+      }
+    }
+    return;
+  }
+#endif
+
   if (CueTarget* target = GetTarget(cue_type)) {
     target->OnClick(std::move(data));
   }
