@@ -26,7 +26,6 @@
 #import "ios/chrome/browser/home_customization/utils/home_customization_constants.h"
 #import "ios/chrome/browser/home_customization/utils/home_customization_helper.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_constants.h"
-#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
 #import "ios/chrome/browser/settings/ui_bundled/settings_table_view_controller_constants.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -148,7 +147,6 @@ NSString* AccessibilityIdentifierForMostVisitedCellAtIndex(int index) {
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
   config.features_enabled.push_back(kEnableFeedAblation);
-  config.features_enabled.push_back(kMostVisitedTilesCustomizationIOS);
   config.additional_args.push_back("--test-ios-module-ranker=mvt");
   if ([self isRunningTest:@selector(testMagicStackEditButton)] ||
       [self isRunningTest:@selector

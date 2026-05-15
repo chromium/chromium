@@ -91,7 +91,6 @@ source_set("eg2_tests") {
     "//ios/chrome/browser/content_suggestions/public:ntp_home_constants",
     "//ios/chrome/browser/device_reauth/test:eg_test_support+eg2",
     "//ios/chrome/browser/history/ui_bundled:constants",
-    "//ios/chrome/browser/ntp/ui_bundled:feature_flags",
     "//ios/chrome/browser/omnibox/public:constants",
     "//ios/chrome/browser/omnibox/public:features",
     "//ios/chrome/browser/omnibox/ui:omnibox_popup_shared",

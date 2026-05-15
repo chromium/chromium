@@ -193,7 +193,8 @@ TEST_F(ActionFactoryTest, RemoveAction) {
 
   UIImage* expectedImage =
       DefaultSymbolWithPointSize(kHideActionSymbol, kSymbolActionPointSize);
-  NSString* expectedTitle = l10n_util::GetNSString(IDS_IOS_REMOVE_ACTION_TITLE);
+  NSString* expectedTitle =
+      l10n_util::GetNSString(IDS_IOS_CONTENT_SUGGESTIONS_NEVER_SHOW_SITE);
 
   UIAction* action = [factory actionToRemoveWithBlock:^{
   }];

@@ -6,7 +6,6 @@
 
 #import "base/functional/bind.h"
 #import "base/memory/raw_ptr.h"
-#import "base/test/scoped_feature_list.h"
 #import "base/time/time.h"
 #import "components/feature_engagement/test/mock_tracker.h"
 #import "components/history/core/browser/history_service.h"
@@ -108,8 +107,6 @@ class MostVisitedTilesMediatorTest : public PlatformTest {
  public:
   void SetUp() override {
     PlatformTest::SetUp();
-    scoped_feature_list_.InitAndEnableFeature(
-        kMostVisitedTilesCustomizationIOS);
     TestProfileIOS::Builder test_profile_builder;
     test_profile_builder.AddTestingFactory(
         IOSChromeLargeIconServiceFactory::GetInstance(),
@@ -217,7 +214,6 @@ class MostVisitedTilesMediatorTest : public PlatformTest {
   }
 
  protected:
-  base::test::ScopedFeatureList scoped_feature_list_;
   web::WebTaskEnvironment task_environment_;
   sync_preferences::TestingPrefServiceSyncable pref_service_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
