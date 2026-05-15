@@ -19,6 +19,8 @@ class WebauthnDialog {
   static WebauthnDialog* CreateAndShow(WebauthnDialogController* controller,
                                        WebauthnDialogState dialog_state);
 
+  virtual ~WebauthnDialog() = default;
+
   virtual WebauthnDialogModel* GetDialogModel() const = 0;
 };
 
