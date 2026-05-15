@@ -45,6 +45,7 @@ class FirstWebContentsProfiler : public FirstWebContentsProfilerBase {
   void RecordFinishReason(StartupProfilingFinishReason finish_reason) override;
   void RecordNavigationFinished(base::TimeTicks navigation_start) override;
   void RecordFirstNonEmptyPaint() override;
+  void RecordFirstNonEmptyPaintForOsLaunch() override;
   bool WasStartupInterrupted() override;
 
  private:
@@ -86,6 +87,11 @@ void FirstWebContentsProfiler::RecordFirstNonEmptyPaint() {
   startup_metric_utils::GetBrowser().RecordFirstWebContentsNonEmptyPaint(
       base::TimeTicks::Now(),
       web_contents()->GetPrimaryMainFrame()->GetProcess()->GetLastInitTime());
+}
+
+void FirstWebContentsProfiler::RecordFirstNonEmptyPaintForOsLaunch() {
+  startup_metric_utils::GetBrowser()
+      .RecordFirstWebContentsNonEmptyPaintForOsLaunch(base::TimeTicks::Now());
 }
 
 bool FirstWebContentsProfiler::WasStartupInterrupted() {

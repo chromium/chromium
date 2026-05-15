@@ -40,7 +40,9 @@ enum class StartupProfilingFinishReason {
   // Abandon if the WebContents was already painted. We set up the profiler too
   // late and it missed the first non empty paint event.
   kAbandonAlreadyPaintedContent = 7,
-  kMaxValue = kAbandonAlreadyPaintedContent
+  // Abandon if launched without user interaction (eg. launched by OS).
+  kAbandonNonInteractiveStartup = 8,
+  kMaxValue = kAbandonNonInteractiveStartup,
 };
 
 // Note: Instances of this class self destroy when the first non-empty paint
@@ -72,6 +74,7 @@ class FirstWebContentsProfilerBase : public content::WebContentsObserver {
       StartupProfilingFinishReason finish_reason) = 0;
   virtual void RecordNavigationFinished(base::TimeTicks navigation_start) = 0;
   virtual void RecordFirstNonEmptyPaint() = 0;
+  virtual void RecordFirstNonEmptyPaintForOsLaunch() = 0;
 
  private:
   // content::WebContentsObserver:

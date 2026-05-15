@@ -349,6 +349,7 @@ class FirstWebContentsProfilerForProfilePicker
       metrics::StartupProfilingFinishReason finish_reason) override;
   void RecordNavigationFinished(base::TimeTicks navigation_start) override;
   void RecordFirstNonEmptyPaint() override;
+  void RecordFirstNonEmptyPaintForOsLaunch() override;
   bool WasStartupInterrupted() override;
 
  private:
@@ -385,6 +386,15 @@ void FirstWebContentsProfilerForProfilePicker::RecordFirstNonEmptyPaint() {
   TRACE_EVENT_BEGIN("startup", histogram_name,
                     perfetto::Track::FromPointer(this), pick_time_);
   TRACE_EVENT_END("startup", perfetto::Track::FromPointer(this), paint_time);
+}
+
+void FirstWebContentsProfilerForProfilePicker::
+    RecordFirstNonEmptyPaintForOsLaunch() {
+  base::TimeTicks paint_time = base::TimeTicks::Now();
+  base::UmaHistogramLongTimes100(
+      "ProfilePicker.FirstProfileTime.FirstWebContentsNonEmptyPaint."
+      "AutoLaunchByOs",
+      paint_time - pick_time_);
 }
 
 bool FirstWebContentsProfilerForProfilePicker::WasStartupInterrupted() {

@@ -4,15 +4,32 @@
 
 #include "chrome/browser/metrics/first_web_contents_profiler_base.h"
 
+#include "base/command_line.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/common/chrome_switches.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents_observer.h"
+
+namespace {
+
+// Returns whether this instance was launched automatically by the OS as part of
+// its startup.
+bool IsAutoLaunchedByOs() {
+#if BUILDFLAG(IS_WIN)
+  return base::CommandLine::ForCurrentProcess()->HasSwitch(
+      switches::kStartupForegroundLaunch);
+#else
+  return false;
+#endif
+}
+
+}  // namespace
 
 namespace metrics {
 
@@ -112,6 +129,13 @@ void FirstWebContentsProfilerBase::DidFirstVisuallyNonEmptyPaint() {
 
   if (WasStartupInterrupted()) {
     FinishedCollectingMetrics(StartupProfilingFinishReason::kAbandonBlockingUI);
+    return;
+  }
+
+  if (IsAutoLaunchedByOs()) {
+    RecordFirstNonEmptyPaintForOsLaunch();
+    FinishedCollectingMetrics(
+        StartupProfilingFinishReason::kAbandonNonInteractiveStartup);
     return;
   }
 
