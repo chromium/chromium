@@ -254,15 +254,26 @@ cr-icon-button {
   gap: 16px;
 }
 
-:host([is-oblong-shape_]) #entrypoint {
-  border-radius: 100px;
-  /* This line handles specific margin spacing for the oblong shape in omnibox
-     and the composebox. */
-  margin-inline-start: var(--contextual-entrypoint-oblong-margin-inline-start, 0);
+:host([show-suggestion-label]) cr-button#entrypoint {
+  color: var(
+    --color-sys-on-surface-subtle, --cr-fallback-color-on-surface-subtle);
 }
 
-:host([is-oblong-shape_]) cr-icon-button#entrypoint {
-  padding-inline: 4px;
+:host([show-suggestion-label]) #entrypoint #description {
+  color: var(--color-searchbox-results-foreground);
+  font-size: var(--omnibox-font-size, 14px);
+  font-weight: 400;
+}
+
+:host([is-oblong-shape_]) #entrypoint {
+  --cr-composebox-entrypoint-width: 40px;
+  border-radius: 100px;
+  color: var(
+    --color-sys-on-surface, --cr-fallback-color-on-surface);
+  /* This line handles specific margin spacing for the oblong shape in omnibox
+     and the composebox. */
+  margin-inline-start: var(
+    --contextual-entrypoint-oblong-margin-inline-start, 0);
 }
 
 :host([apply-context-button-background]) #entrypoint {
