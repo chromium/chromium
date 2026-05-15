@@ -868,6 +868,12 @@ void ServiceWorkerContextCore::UnregistrationComplete(
     ServiceWorkerContextCore::UnregistrationCallback callback,
     int64_t registration_id,
     blink::ServiceWorkerStatusCode status) {
+  if (status == blink::ServiceWorkerStatusCode::kOk) {
+    for (auto& observer : sync_observer_list_->observers) {
+      observer.OnRegistrationDeletedSync(registration_id, scope);
+    }
+  }
+
   std::move(callback).Run(status);
   if (status == blink::ServiceWorkerStatusCode::kOk) {
     observer_list_->Notify(

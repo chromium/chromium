@@ -363,7 +363,8 @@ void ServiceWorkerTaskQueue::ActivateExtension(const Extension* extension) {
   // Note: version.IsValid() = false implies we didn't have any prefs stored.
   base::Version version = RetrieveRegisteredServiceWorkerVersion(extension_id);
   const bool service_worker_already_registered =
-      version.IsValid() && version == extension->version();
+      !pending_unregistrations_.contains(extension_id) && version.IsValid() &&
+      version == extension->version();
   if (g_test_observer) {
     g_test_observer->OnActivateExtension(extension_id,
                                          !service_worker_already_registered);
@@ -557,7 +558,6 @@ void ServiceWorkerTaskQueue::RegisterServiceWorker(
 
 void ServiceWorkerTaskQueue::DeactivateExtension(const Extension* extension) {
   const ExtensionId extension_id = extension->id();
-  RemoveRegisteredServiceWorkerInfo(extension_id);
   std::optional<base::UnguessableToken> activation_token =
       GetCurrentActivationToken(extension_id);
 
@@ -607,8 +607,6 @@ void ServiceWorkerTaskQueue::DeactivateExtension(const Extension* extension) {
       base::BindOnce(&ServiceWorkerTaskQueue::DidUnregisterServiceWorker,
                      weak_factory_.GetWeakPtr(), extension_id,
                      *activation_token, worker_previously_registered));
-
-  StopObserving(service_worker_context);
 }
 
 std::vector<ServiceWorkerTaskQueue::PendingTask>*
@@ -1018,11 +1016,32 @@ void ServiceWorkerTaskQueue::DidUnregisterServiceWorker(
         status);
   }
 
+  // `kErrorNotFound` means the //content layer confirmed that there is no
+  // registration for this scope. It doesn't trigger `OnRegistrationDeletedSync`
+  // because no registration was deleted, so clear any stale cached registration
+  // info here.
+  if (status == blink::ServiceWorkerStatusCode::kErrorNotFound) {
+    RemoveRegisteredServiceWorkerInfo(extension_id);
+  }
+
+  // For `kOk`, `OnRegistrationDeletedSync()` should have already removed the
+  // cached registration info synchronously. For `kErrorNotFound`, we just
+  // removed it above. Verify it's actually gone.
+  if (status == blink::ServiceWorkerStatusCode::kOk ||
+      status == blink::ServiceWorkerStatusCode::kErrorNotFound) {
+    CHECK(!RetrieveRegisteredServiceWorkerVersion(extension_id).IsValid());
+  }
+
   if (g_test_observer) {
     g_test_observer->WorkerUnregistered(extension_id);
   }
 
   pending_unregistrations_.erase(extension_id);
+
+  if (content::ServiceWorkerContext* service_worker_context =
+          GetServiceWorkerContext(extension_id)) {
+    StopObserving(service_worker_context);
+  }
 }
 
 bool ServiceWorkerTaskQueue::IsWorkerRegistrationSuccess(
@@ -1133,6 +1152,13 @@ void ServiceWorkerTaskQueue::OnRegistrationStoredSync(int64_t registration_id,
   }
 }
 
+void ServiceWorkerTaskQueue::OnRegistrationDeletedSync(int64_t registration_id,
+                                                       const GURL& scope) {
+  if (scope.SchemeIs(kExtensionScheme) && scope.GetPath() == "/") {
+    RemoveRegisteredServiceWorkerInfo(scope.GetHost());
+  }
+}
+
 void ServiceWorkerTaskQueue::OnReportConsoleMessageSync(
     content::ChildProcessId render_process_id,
     int64_t version_id,
@@ -1222,6 +1248,12 @@ void ServiceWorkerTaskQueue::AddPendingTaskForContextForTesting(
     PendingTask&& pending_task,
     const SequencedContextId& context_id) {
   AddPendingTaskForContext(std::move(pending_task), context_id);
+}
+
+void ServiceWorkerTaskQueue::SetRegisteredServiceWorkerInfoForTesting(
+    const ExtensionId& extension_id,
+    const base::Version& version) {
+  SetRegisteredServiceWorkerInfo(extension_id, version);
 }
 
 size_t ServiceWorkerTaskQueue::GetNumPendingTasksForTest(

@@ -104,6 +104,11 @@ class ServiceWorkerContextObserverSynchronous : public base::CheckedObserver {
   virtual void OnRegistrationStoredSync(int64_t registration_id,
                                         const GURL& scope) {}
 
+  // Called after a service worker registration with `registration_id` and
+  // `scope` is deleted (e.g., due to unregistration).
+  virtual void OnRegistrationDeletedSync(int64_t registration_id,
+                                         const GURL& scope) {}
+
   // Called after the message to start the service worker has been sent.
   virtual void OnStartWorkerMessageSentSync(int64_t version_id,
                                             const GURL& scope) {}

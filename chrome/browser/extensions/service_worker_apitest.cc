@@ -3032,7 +3032,13 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerTestWithEarlyReadyMesssage,
     run_loop.Run();
   }
 
-  // The version should still be stored in the extension system.
+  // The content-layer unregister above clears the recorded registration info
+  // via the `OnRegistrationDeletedSync` observer. Restore it to simulate the
+  // pref-vs-content mismatch state (pref says registered, content has nothing)
+  // that the mitigation logic is meant to recover from on next activation.
+  service_worker_task_queue->SetRegisteredServiceWorkerInfoForTesting(
+      extension->id(), extension->version());
+
   stored_version =
       service_worker_task_queue->RetrieveRegisteredServiceWorkerVersion(
           extension->id());

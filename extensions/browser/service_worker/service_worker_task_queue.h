@@ -243,6 +243,8 @@ class ServiceWorkerTaskQueue
   // content::ServiceWorkerContextObserverSynchronous:
   void OnRegistrationStoredSync(int64_t registration_id,
                                 const GURL& scope) override;
+  void OnRegistrationDeletedSync(int64_t registration_id,
+                                 const GURL& scope) override;
   void OnReportConsoleMessageSync(
       content::ChildProcessId render_process_id,
       int64_t version_id,
@@ -338,6 +340,9 @@ class ServiceWorkerTaskQueue
 
   void AddPendingTaskForContextForTesting(PendingTask&& pending_task,
                                           const SequencedContextId& context_id);
+
+  void SetRegisteredServiceWorkerInfoForTesting(const ExtensionId& extension_id,
+                                                const base::Version& version);
 
   size_t GetNumPendingTasksForTest(const LazyContextId& lazy_context_id);
 
