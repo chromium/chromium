@@ -108,17 +108,22 @@ class FullscreenControllerInteractiveTest : public ExclusiveAccessTest {
   // browser has focus. Thus, this can only be used in interactive ui tests
   // and not on sharded tests.
   bool IsPointerLocked() {
+    const bool controller_locked = browser()
+                                       ->GetExclusiveAccessManager()
+                                       ->pointer_lock_controller()
+                                       ->IsPointerLocked();
     // Verify that IsPointerLocked is consistent between the
     // Fullscreen Controller and the Render View Host View.
-    EXPECT_TRUE(browser()->IsPointerLocked() == browser()
-                                                    ->tab_strip_model()
-                                                    ->GetActiveWebContents()
-                                                    ->GetPrimaryMainFrame()
-                                                    ->GetRenderViewHost()
-                                                    ->GetWidget()
-                                                    ->GetView()
-                                                    ->IsPointerLocked());
-    return browser()->IsPointerLocked();
+    const bool view_locked = browser()
+                                 ->tab_strip_model()
+                                 ->GetActiveWebContents()
+                                 ->GetPrimaryMainFrame()
+                                 ->GetRenderViewHost()
+                                 ->GetWidget()
+                                 ->GetView()
+                                 ->IsPointerLocked();
+    EXPECT_EQ(controller_locked, view_locked);
+    return controller_locked;
   }
 
   void PressKeyAndWaitForPointerLockRequest(ui::KeyboardCode key_code) {

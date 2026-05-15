@@ -709,9 +709,6 @@ class Browser : public TabStripModelObserver,
     return type_ == TYPE_PICTURE_IN_PICTURE;
   }
 
-  // True when the mouse cursor is locked.
-  bool IsPointerLocked() const;
-
   // Called each time the browser window is shown.
   void OnWindowDidShow();
 

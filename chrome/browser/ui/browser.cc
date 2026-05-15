@@ -1824,13 +1824,6 @@ bool Browser::ShouldShowStaleContentOnEviction(content::WebContents* source) {
 #endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
-bool Browser::IsPointerLocked() const {
-  return browser_window_features()
-      ->exclusive_access_manager()
-      ->pointer_lock_controller()
-      ->IsPointerLocked();
-}
-
 void Browser::OnWindowDidShow() {
   if (window_has_shown_) {
     return;
