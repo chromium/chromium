@@ -346,14 +346,13 @@ class FuseboxViewBinder {
         }
 
         @DrawableRes int iconRes = getResIdForIconId(data.iconId);
-        setButtonDrawables(buttonView, data.selected, iconRes);
+        setButtonDrawables(buttonView, iconRes, data.selected);
     }
 
     private static void setButtonDrawables(
-            View buttonView, boolean selected, @DrawableRes int iconRes) {
+            View buttonView, @DrawableRes int iconRes, boolean selected) {
         FuseboxItemViewHolder holder = getViewHolder(buttonView);
         ImageView imageView = holder.mActionIcon;
-        ImageView endImageView = holder.mActionEndIcon;
 
         if (iconRes != Resources.ID_NULL) {
             imageView.setImageResource(iconRes);
@@ -363,6 +362,11 @@ class FuseboxViewBinder {
             imageView.setVisibility(View.GONE);
         }
 
+        setButtonSelected(holder, selected);
+    }
+
+    private static void setButtonSelected(FuseboxItemViewHolder holder, boolean selected) {
+        ImageView endImageView = holder.mActionEndIcon;
         if (selected) {
             endImageView.setImageResource(R.drawable.m3_ic_check_24px);
             endImageView.setVisibility(View.VISIBLE);
@@ -373,16 +377,14 @@ class FuseboxViewBinder {
     }
 
     private static void setCustomButtonDrawables(
-            View buttonView, @Nullable Drawable startDrawable, @Nullable Drawable endDrawable) {
+            View buttonView, @Nullable Drawable startDrawable, boolean selected) {
         FuseboxItemViewHolder holder = getViewHolder(buttonView);
         ImageView imageView = holder.mActionIcon;
-        ImageView endImageView = holder.mActionEndIcon;
 
         imageView.setImageDrawable(startDrawable);
         imageView.setVisibility(startDrawable != null ? View.VISIBLE : View.GONE);
 
-        endImageView.setImageDrawable(endDrawable);
-        endImageView.setVisibility(endDrawable != null ? View.VISIBLE : View.GONE);
+        setButtonSelected(holder, selected);
     }
 
     /** Maps ids found in generated protos to local resources backed drawable ids. */
@@ -687,7 +689,7 @@ class FuseboxViewBinder {
                         context,
                         favicon,
                         res.getDimensionPixelSize(R.dimen.fusebox_popup_item_icon_size));
-        setCustomButtonDrawables(addCurrentTabButton, drawable, null);
+        setCustomButtonDrawables(addCurrentTabButton, drawable, /* selected= */ false);
 
         if (favicon != null) {
             // This will change the alpha value based on the enabled state. The rgb values will
