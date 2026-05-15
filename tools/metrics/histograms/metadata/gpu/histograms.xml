@@ -978,6 +978,39 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="GPU.EstablishGpuChannel.EarliestRequestLatency" units="ms"
+    expires_after="2027-04-24">
+  <owner>rakina@chromium.org</owner>
+  <owner>chrome-webium-product-eng@google.com</owner>
+  <summary>
+    Measures the time from the earliest request in a batch until the channel is
+    established. Logged once per channel establishment upon successful
+    completion.
+  </summary>
+</histogram>
+
+<histogram name="GPU.EstablishGpuChannel.IndividualRequestLatency" units="ms"
+    expires_after="2027-04-24">
+  <owner>rakina@chromium.org</owner>
+  <owner>chrome-webium-product-eng@google.com</owner>
+  <summary>
+    Measures the wait time for each individual request in a batch to establish
+    the GPU channel. Logged for every request in the batch upon successful
+    completion.
+  </summary>
+</histogram>
+
+<histogram name="GPU.EstablishGpuChannel.InitialChannelLatency" units="ms"
+    expires_after="2027-04-24">
+  <owner>rakina@chromium.org</owner>
+  <owner>chrome-webium-product-eng@google.com</owner>
+  <summary>
+    Measures the total time from renderer initialization to GPU channel
+    establishment. Logged once per renderer process initialization when the
+    channel establishment completes successfully.
+  </summary>
+</histogram>
+
 <histogram name="GPU.EstablishGpuChannelSyncRetry" enum="BooleanSuccess"
     expires_after="2026-09-06">
   <owner>fangzhoug@chromium.org</owner>
@@ -1287,6 +1320,17 @@ chromium-metrics-reviews@google.com.
 
     Warning: this histogram was expired from 2020-04-24 to 2022-04-29; data may
     be missing.
+  </summary>
+</histogram>
+
+<histogram name="GPU.InitialChannelEstablishmentSucceeded" enum="Boolean"
+    expires_after="2027-04-24">
+  <owner>rakina@chromium.org</owner>
+  <owner>chrome-webium-product-eng@google.com</owner>
+  <summary>
+    Records whether the initial GPU channel was successfully established and
+    created the GpuChannelHost with correct GPU info. Logged once per renderer
+    process initialization when the channel establishment completes.
   </summary>
 </histogram>
 

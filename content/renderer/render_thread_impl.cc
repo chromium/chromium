@@ -51,6 +51,7 @@
 #include "base/task/thread_pool.h"
 #include "base/threading/simple_thread.h"
 #include "base/threading/thread_restrictions.h"
+#include "base/time/time.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "base/trace_event/memory_pressure_level_proto.h"
 #include "base/trace_event/trace_event.h"
@@ -127,6 +128,7 @@
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
+#include "mojo/public/cpp/system/invitation.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 #include "net/base/net_errors.h"
 #include "net/base/port_util.h"
@@ -490,18 +492,50 @@ void RenderThreadImpl::Init() {
 
   mojo::PendingRemote<viz::mojom::Gpu> remote_gpu;
   BindHostReceiver(remote_gpu.InitWithNewPipeAndPassReceiver());
-  gpu_ = viz::Gpu::Create(std::move(remote_gpu), GetIOTaskRunner());
-
-  // Establish the GPU channel now, so its ready when needed and we don't have
-  // to wait on a sync call.
-  gpu_->EstablishGpuChannel(
-      base::BindOnce([](scoped_refptr<gpu::GpuChannelHost> host) {
+  base::TimeTicks init_start_time = base::TimeTicks::Now();
+  auto gpu_channel_established_callback = base::BindOnce(
+      [](base::TimeTicks start_time, scoped_refptr<gpu::GpuChannelHost> host) {
         // We don't call OnPotentialNewGpuChannelHost() here since this occurs
         // before the RenderMediaClient has been initialized.
         if (host) {
           GetContentClient()->SetGpuInfo(host->gpu_info());
         }
-      }));
+        base::UmaHistogramBoolean("GPU.InitialChannelEstablishmentSucceeded",
+                                  host != nullptr);
+        base::TimeDelta duration = base::TimeTicks::Now() - start_time;
+        // TODO(crbug.com/496408117): For initial channel sent from the browser
+        // via mojo invitation, record the time it takes from the initial
+        // request on the browser side to when it's available in the renderer
+        // as well.
+        base::UmaHistogramTimes("GPU.EstablishGpuChannel.InitialChannelLatency",
+                                duration);
+      },
+      init_start_time);
+
+  const base::CommandLine& command_line =
+      *base::CommandLine::ForCurrentProcess();
+  mojo::ScopedMessagePipeHandle initial_gpu_channel = TakeInitialGPUChannel();
+  const bool use_early_channel =
+      base::FeatureList::IsEnabled(features::kSendGPUChannelEarly) &&
+      command_line.HasSwitch(switches::kGpuClientId) &&
+      initial_gpu_channel.is_valid();
+  if (use_early_channel) {
+    // In the early channel path, we use the pre-allocated pipe passed from the
+    // browser.
+    int client_id = 0;
+    CHECK(base::StringToInt(
+        command_line.GetSwitchValueASCII(switches::kGpuClientId), &client_id));
+    gpu_ = viz::Gpu::Create(std::move(remote_gpu), GetIOTaskRunner(), client_id,
+                            std::move(initial_gpu_channel),
+                            std::move(gpu_channel_established_callback));
+  } else {
+    // In the standard path, we create a new pipe and ask the browser to
+    // connect it on demand.
+    gpu_ = viz::Gpu::Create(std::move(remote_gpu), GetIOTaskRunner());
+    // Establish the GPU channel now, so its ready when needed and we don't have
+    // to wait on a sync call.
+    gpu_->EstablishGpuChannel(std::move(gpu_channel_established_callback));
+  }
 
   // NOTE: Do not add interfaces to |binders| within this method. Instead,
   // modify the definition of |ExposeRendererInterfacesToBrowser()| to ensure
@@ -523,8 +557,6 @@ void RenderThreadImpl::Init() {
       base::BindRepeating(&RenderThreadImpl::OnRendererInterfaceReceiver,
                           base::Unretained(this)));
 
-  const base::CommandLine& command_line =
-      *base::CommandLine::ForCurrentProcess();
 
 #if defined(ENABLE_IPC_FUZZER)
   if (command_line.HasSwitch(switches::kIpcDumpDirectory)) {
