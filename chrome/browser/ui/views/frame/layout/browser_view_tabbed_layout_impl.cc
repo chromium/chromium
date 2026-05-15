@@ -1298,9 +1298,11 @@ void BrowserViewTabbedLayoutImpl::DoPostLayoutVisualAdjustments(
     const VerticalTabStripAnimation animation =
         CalculateVerticalTabStripAnimation(params, window_state);
     auto* const vertical_tabs_background =
-        static_cast<CustomCornersBackground*>(
-            views().vertical_tab_strip_region_view->background());
-    CHECK(vertical_tabs_background);
+        views()
+            .vertical_tab_strip_region_view->background()
+            ->AsA<CustomCornersBackground>();
+    CHECK(vertical_tabs_background)
+        << "Expected vertical tab strip to have a CustomCornersBackground.";
 
     if (features::IsGlassFrameEnabled()) {
       float background_alpha = 0.0f;
@@ -1410,7 +1412,9 @@ void BrowserViewTabbedLayoutImpl::DoPostLayoutVisualAdjustments(
 
   // Set toolbar corners.
   auto* const toolbar_background =
-      static_cast<CustomCornersBackground*>(views().toolbar->background());
+      views().toolbar->background()->AsA<CustomCornersBackground>();
+  CHECK(toolbar_background)
+      << "Expected toolbar to have a CustomCornersBackground.";
   CustomCornersBackground::Corners toolbar_corners;
   switch (tab_strip_type) {
     case TabStripType::kHorizontal: {
@@ -1454,8 +1458,11 @@ void BrowserViewTabbedLayoutImpl::DoPostLayoutVisualAdjustments(
 
   if (views().main_background_region &&
       views().main_background_region->GetVisible()) {
-    auto* const background = static_cast<CustomCornersBackground*>(
-        views().main_background_region->background());
+    auto* const background = views()
+                                 .main_background_region->background()
+                                 ->AsA<CustomCornersBackground>();
+    CHECK(background)
+        << "Expected main background region to have a CustomCornersBackground.";
     CustomCornersBackground::Corners main_background_corners;
 
     // Frame-colored corners are shown at the top in horizontal tabstrip mode.

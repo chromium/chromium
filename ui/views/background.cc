@@ -16,6 +16,7 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "third_party/skia/include/core/SkRRect.h"
+#include "ui/base/interaction/framework_specific_implementation.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/color/color_variant.h"
@@ -34,6 +35,8 @@
 #endif
 
 namespace views {
+
+DEFINE_FRAMEWORK_SPECIFIC_METADATA(Background)
 
 // SolidBackground is a trivial Background implementation that fills the
 // background in a solid color.

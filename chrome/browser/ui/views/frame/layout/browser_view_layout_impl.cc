@@ -275,8 +275,10 @@ void BrowserViewLayoutImpl::Layout(views::View* host) {
   }
 
   // Change how the top container is painted based on layout.
-  auto* const background = static_cast<CustomCornersBackground*>(
-      views().top_container->background());
+  auto* const background =
+      views().top_container->background()->AsA<CustomCornersBackground>();
+  CHECK(background)
+      << "Expected top container to have a CustomCornersBackground.";
   ConfigureTopContainerBackground(params, background);
 
   // Do any additional adjustments required by the specific layout.

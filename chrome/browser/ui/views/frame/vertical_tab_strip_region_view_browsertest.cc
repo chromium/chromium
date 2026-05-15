@@ -1395,7 +1395,7 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewTest,
 IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewGlassFrameTest,
                        DISABLED_GlassFrameAlphaTest) {
   auto* const background =
-      static_cast<CustomCornersBackground*>(region_view()->background());
+      region_view()->background()->AsA<CustomCornersBackground>();
 
   // Background should be opaque during collapse and expand on hover,
   // and transparent otherwise.
