@@ -3207,8 +3207,8 @@ base::TimeTicks LayerTreeHostImpl::UpdateDisplayTree(
   return layer_context_->UpdateDisplayTreeFrom(
       *active_tree(), *resource_provider(),
       layer_tree_frame_sink_->shared_image_interface().get(),
-      frame.origin_begin_main_frame_args, viewport_damage_rect_,
-      !frame.has_no_damage, is_flush, std::move(latency_info));
+      viewport_damage_rect_, !frame.has_no_damage, is_flush,
+      std::move(latency_info));
 }
 
 void LayerTreeHostImpl::FlushDisplayTree() {

@@ -26,7 +26,6 @@ class FakeLayerContext : public LayerContext {
       LayerTreeImpl& tree,
       viz::ClientResourceProvider& resource_provider,
       gpu::SharedImageInterface* shared_image_interface,
-      const viz::BeginFrameArgs& begin_frame_args,
       const gfx::Rect& viewport_damage_rect,
       bool frame_has_damage,
       bool is_flush,

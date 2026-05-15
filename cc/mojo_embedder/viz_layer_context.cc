@@ -1455,7 +1455,6 @@ base::TimeTicks VizLayerContext::UpdateDisplayTreeFrom(
     LayerTreeImpl& tree,
     viz::ClientResourceProvider& resource_provider,
     gpu::SharedImageInterface* shared_image_interface,
-    const viz::BeginFrameArgs& begin_frame_args,
     const gfx::Rect& viewport_damage_rect,
     bool frame_has_damage,
     bool is_flush,
@@ -1464,7 +1463,8 @@ base::TimeTicks VizLayerContext::UpdateDisplayTreeFrom(
 
   auto& property_trees = *tree.property_trees();
   auto update = viz::mojom::LayerTreeUpdate::New();
-  update->begin_frame_args = begin_frame_args;
+  update->begin_frame_args =
+      is_flush ? viz::BeginFrameArgs() : tree.CurrentBeginFrameArgs();
   update->source_frame_number = tree.source_frame_number();
   update->trace_id = tree.trace_id().value();
   update->primary_main_frame_item_sequence_number =
