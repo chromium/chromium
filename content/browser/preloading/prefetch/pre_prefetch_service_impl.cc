@@ -296,14 +296,16 @@ class PrePrefetchServiceCore {
 
   void UpdatePreCalculatedHeaders(
       PrePrefetchPreCalculatedHeadersKey key,
-      std::optional<network::HttpRequestHeadersUpdateParams> params) {
+      std::optional<network::HttpRequestHeadersUpdateParams>
+          headers_update_params) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     CHECK(pending_pre_calculate_headers_keys_.contains(key));
     pending_pre_calculate_headers_keys_.erase(key);
-    if (!params) {
+    if (!headers_update_params) {
       return;
     }
-    ui_thread_pre_calculated_headers_map_[std::move(key)] = std::move(*params);
+    ui_thread_pre_calculated_headers_map_[std::move(key)] =
+        std::move(*headers_update_params);
   }
 
   base::WeakPtr<BrowserContext> browser_context_weak_on_ui_thread_;

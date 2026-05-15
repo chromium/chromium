@@ -96,11 +96,9 @@ TEST_F(PrePrefetchContainerTest, StartPrePrefetch) {
           [](PrePrefetchContainerTest* test_fixture, const GURL& url,
              mojo::PendingRemote<network::mojom::URLLoaderFactory> factory) {
             auto prefetch_request = test_fixture->CreatePrefetchRequest(url);
-            network::HttpRequestHeadersUpdateParams
-                ui_thread_pre_calculated_headers;
             return PrePrefetchContainer::CreateAndStartForTesting(
                 std::move(prefetch_request), std::move(factory),
-                ui_thread_pre_calculated_headers,
+                /*ui_thread_pre_calculated_headers=*/{},
                 /*non_ui_thread_update_headers_callbacks=*/{});
           },
           base::Unretained(this), prefetch_url,
@@ -139,15 +137,16 @@ TEST_F(PrePrefetchContainerTest,
           [](PrePrefetchContainerTest* test_fixture, const GURL& url,
              mojo::PendingRemote<network::mojom::URLLoaderFactory> factory) {
             auto prefetch_request = test_fixture->CreatePrefetchRequest(url);
-            network::HttpRequestHeadersUpdateParams ui_thread_base_headers;
-            ui_thread_base_headers.modified_headers.SetHeader("X-Test-Header",
-                                                              "Value1");
-            ui_thread_base_headers.modified_cors_exempt_headers.SetHeader(
-                "X-Test-Cors-Exempt-Header", "Value2");
+            network::HttpRequestHeadersUpdateParams
+                ui_thread_pre_calculated_headers;
+            ui_thread_pre_calculated_headers.modified_headers.SetHeader(
+                "X-Test-Header", "Value1");
+            ui_thread_pre_calculated_headers.modified_cors_exempt_headers
+                .SetHeader("X-Test-Cors-Exempt-Header", "Value2");
 
             return PrePrefetchContainer::CreateAndStartForTesting(
                 std::move(prefetch_request), std::move(factory),
-                std::move(ui_thread_base_headers),
+                std::move(ui_thread_pre_calculated_headers),
                 /*non_ui_thread_update_headers_callbacks=*/{});
           },
           base::Unretained(this), prefetch_url,
@@ -179,11 +178,12 @@ TEST_F(PrePrefetchContainerTest,
   auto callback =
       base::BindLambdaForTesting([](const network::ResourceRequest& request) {
         EXPECT_TRUE(!BrowserThread::CurrentlyOn(BrowserThread::UI));
-        network::HttpRequestHeadersUpdateParams params;
-        params.modified_headers.SetHeader("X-Test-Header", "Value1");
-        params.modified_cors_exempt_headers.SetHeader(
+        network::HttpRequestHeadersUpdateParams headers_update_params;
+        headers_update_params.modified_headers.SetHeader("X-Test-Header",
+                                                         "Value1");
+        headers_update_params.modified_cors_exempt_headers.SetHeader(
             "X-Test-Cors-Exempt-Header", "Value2");
-        return params;
+        return headers_update_params;
       });
 
   auto url_loader_factory_remote = GetURLLoaderFactoryRemote();
@@ -203,15 +203,13 @@ TEST_F(PrePrefetchContainerTest,
              mojo::PendingRemote<network::mojom::URLLoaderFactory> factory,
              PrePrefetchUpdateHeadersCallback callback) {
             auto prefetch_request = test_fixture->CreatePrefetchRequest(url);
-            network::HttpRequestHeadersUpdateParams
-                ui_thread_pre_calculated_headers;
 
             std::vector<PrePrefetchUpdateHeadersCallback> callbacks;
             callbacks.push_back(std::move(callback));
 
             return PrePrefetchContainer::CreateAndStartForTesting(
                 std::move(prefetch_request), std::move(factory),
-                ui_thread_pre_calculated_headers, std::move(callbacks));
+                /*ui_thread_pre_calculated_headers=*/{}, std::move(callbacks));
           },
           base::Unretained(this), prefetch_url,
           std::move(url_loader_factory_remote), std::move(callback)),
