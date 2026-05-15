@@ -4,6 +4,7 @@
 
 #include "ui/views/animation/widget_fade_animator.h"
 
+#include "base/i18n/rtl.h"
 #include "ui/gfx/animation/linear_animation.h"
 #include "ui/views/widget/widget.h"
 
@@ -16,7 +17,8 @@ WidgetFadeAnimator::WidgetFadeAnimator(Widget* widget)
 
 WidgetFadeAnimator::~WidgetFadeAnimator() = default;
 
-void WidgetFadeAnimator::FadeIn() {
+void WidgetFadeAnimator::FadeIn(int slide_distance,
+                                SlideDirection slide_direction) {
   if (IsFadingIn()) {
     return;
   }
@@ -40,6 +42,7 @@ void WidgetFadeAnimator::FadeIn() {
       break;
   }
 
+  SetBoundsForSliding(slide_distance, slide_direction);
   fade_animation_.Start();
 }
 
@@ -50,9 +53,12 @@ void WidgetFadeAnimator::CancelFadeIn() {
 
   fade_animation_.Stop();
   animation_type_ = FadeType::kNone;
+
+  CancelSlide(false);
 }
 
-void WidgetFadeAnimator::FadeOut() {
+void WidgetFadeAnimator::FadeOut(int slide_distance,
+                                 SlideDirection slide_direction) {
   if (IsFadingOut() || !widget_) {
     return;
   }
@@ -70,6 +76,7 @@ void WidgetFadeAnimator::FadeOut() {
   }
 
   animation_type_ = FadeType::kFadeOut;
+  SetBoundsForSliding(slide_distance, slide_direction);
   fade_animation_.SetDuration(fade_out_duration_);
   fade_animation_.Start();
 }
@@ -82,11 +89,20 @@ void WidgetFadeAnimator::CancelFadeOut() {
   fade_animation_.Stop();
   animation_type_ = FadeType::kNone;
   widget_->SetOpacity(1.0f);
+
+  CancelSlide(false);
 }
 
 base::CallbackListSubscription WidgetFadeAnimator::AddFadeCompleteCallback(
     FadeCompleteCallback callback) {
   return fade_complete_callbacks_.Add(callback);
+}
+
+void WidgetFadeAnimator::CancelSlide(bool snap_to_target) {
+  if (snap_to_target && IsSliding()) {
+    widget_->SetBounds(target_bounds_);
+  }
+  start_bounds_ = target_bounds_ = gfx::Rect();
 }
 
 void WidgetFadeAnimator::AnimationProgressed(const gfx::Animation* animation) {
@@ -109,6 +125,10 @@ void WidgetFadeAnimator::AnimationProgressed(const gfx::Animation* animation) {
   } else {
     widget_->SetOpacity(opacity);
   }
+  if (IsSliding()) {
+    widget_->SetBounds(
+        gfx::Tween::RectValueBetween(value, start_bounds_, target_bounds_));
+  }
 }
 
 void WidgetFadeAnimator::AnimationEnded(const gfx::Animation* animation) {
@@ -123,6 +143,44 @@ void WidgetFadeAnimator::OnWidgetDestroying(Widget* widget) {
   fade_animation_.End();
   animation_type_ = FadeType::kNone;
   widget_ = nullptr;
+}
+
+bool WidgetFadeAnimator::IsSliding() const {
+  return start_bounds_ != target_bounds_;
+}
+
+void WidgetFadeAnimator::SetBoundsForSliding(int slide_distance,
+                                             SlideDirection slide_direction) {
+  CHECK(animation_type_ != FadeType::kNone);
+
+  if (slide_direction == SlideDirection::kNone) {
+    start_bounds_ = target_bounds_ = gfx::Rect();
+    return;
+  }
+
+  start_bounds_ = target_bounds_ = widget_->GetWindowBoundsInScreen();
+
+  // On fade in we displace the starting bounds to slide to the
+  // current window bounds. We reverse this on fade out.
+  gfx::Rect& displaced =
+      animation_type_ == FadeType::kFadeIn ? start_bounds_ : target_bounds_;
+
+  switch (slide_direction) {
+    case SlideDirection::kUp:
+      displaced.Offset(0, slide_distance);
+      break;
+    case SlideDirection::kDown:
+      displaced.Offset(0, -slide_distance);
+      break;
+    case SlideDirection::kLeading:
+      displaced.Offset((base::i18n::IsRTL() ? -1 : 1) * slide_distance, 0);
+      break;
+    case SlideDirection::kTrailing:
+      displaced.Offset((base::i18n::IsRTL() ? 1 : -1) * slide_distance, 0);
+      break;
+    default:
+      NOTREACHED();
+  }
 }
 
 }  // namespace views
