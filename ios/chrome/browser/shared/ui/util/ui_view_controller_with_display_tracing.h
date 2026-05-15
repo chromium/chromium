@@ -13,14 +13,20 @@ typedef NS_OPTIONS(NSUInteger, UIViewControllerDisplayTracingOptions) {
   UIViewControllerDisplayTracingOptionEventDispatch = 1 << 0,
   UIViewControllerDisplayTracingOptionCADisplayLinkDispatch = 1 << 1,
   UIViewControllerDisplayTracingOptionCATransactionCommit = 1 << 2,
+  UIViewControllerDisplayTracingOptionLayout = 1 << 3,
+  UIViewControllerDisplayTracingOptionAppear = 1 << 4,
 
   UIViewControllerDisplayTracingOptionAllTraces =
       UIViewControllerDisplayTracingOptionEventDispatch |
       UIViewControllerDisplayTracingOptionCADisplayLinkDispatch |
-      UIViewControllerDisplayTracingOptionCATransactionCommit,
+      UIViewControllerDisplayTracingOptionCATransactionCommit |
+      UIViewControllerDisplayTracingOptionLayout |
+      UIViewControllerDisplayTracingOptionAppear,
 
   UIViewControllerDisplayTracingOptionEssentialTraces =
-      UIViewControllerDisplayTracingOptionCATransactionCommit,
+      UIViewControllerDisplayTracingOptionCATransactionCommit |
+      UIViewControllerDisplayTracingOptionLayout |
+      UIViewControllerDisplayTracingOptionAppear,
 };
 
 // A mixin class that can be added to subclasses of UIViewController to inject

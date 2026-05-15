@@ -32,6 +32,7 @@ enum class UIUpdatePhase {
   std::string _className;
   BOOL _phaseActive;
   UIViewControllerDisplayTracingOptions _displayTracingOptions;
+  BOOL _appearing;
   uint64_t _flowID;
   uint64_t _flowCounter;
 #if !BUILDFLAG(IS_IOS_MACCATALYST)
@@ -87,6 +88,55 @@ enum class UIUpdatePhase {
 
 - (void)commonInit {
   _className = base::SysNSStringToUTF8(NSStringFromClass([self class]));
+}
+
+- (UIViewControllerDisplayTracingOptions)displayTracingOptions {
+  return UIViewControllerDisplayTracingOptionEssentialTraces;
+}
+
+- (void)viewWillAppear:(BOOL)animated {
+  if ([self displayTracingOptions] &
+      UIViewControllerDisplayTracingOptionAppear) {
+    // Note: `viewWillAppear:` and `viewDidAppear:` execute across different
+    // runloop spins, so using TRACE_EVENT_BEGIN/END here intentionally leaves
+    // the trace slice open across runloop boundaries on the main thread. All
+    // main thread tasks executed during the transition will be nested inside
+    // this "Appear" event. This is intended: the UI thread is busy during this
+    // transition period, and since CoreFoundation does not provide hooks to
+    // bracket individual CF runloop tasks, this slice gives visibility into the
+    // burst of UI work occurring while the view is appearing.
+    TRACE_EVENT_BEGIN("ui", "UIViewControllerWithDisplayTracing Appear",
+                      perfetto::Flow::ProcessScoped([self ensureFlowID]),
+                      "controller", _className);
+    _appearing = YES;
+  }
+  [super viewWillAppear:animated];
+}
+
+- (void)viewDidAppear:(BOOL)animated {
+  [super viewDidAppear:animated];
+  if (_appearing) {
+    TRACE_EVENT_END("ui");
+    _appearing = NO;
+  }
+}
+
+- (void)viewWillLayoutSubviews {
+  if ([self displayTracingOptions] &
+      UIViewControllerDisplayTracingOptionLayout) {
+    TRACE_EVENT_BEGIN("ui", "UIViewControllerWithDisplayTracing LayoutSubviews",
+                      perfetto::Flow::ProcessScoped([self ensureFlowID]),
+                      "controller", _className);
+  }
+  [super viewWillLayoutSubviews];
+}
+
+- (void)viewDidLayoutSubviews {
+  [super viewDidLayoutSubviews];
+  if ([self displayTracingOptions] &
+      UIViewControllerDisplayTracingOptionLayout) {
+    TRACE_EVENT_END("ui");
+  }
 }
 
 - (void)viewIsAppearing:(BOOL)animated {
@@ -147,6 +197,11 @@ enum class UIUpdatePhase {
 
 - (void)viewDidDisappear:(BOOL)animated {
   [super viewDidDisappear:animated];
+
+  if (_appearing) {
+    TRACE_EVENT_END("ui");
+    _appearing = NO;
+  }
 
 #if !BUILDFLAG(IS_IOS_MACCATALYST)
   if (_updateLink) {
