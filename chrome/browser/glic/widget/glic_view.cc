@@ -140,6 +140,11 @@ void GlicView::UpdateBackgroundColor() {
   }
 }
 
+void GlicView::OnThemeChanged() {
+  views::WebView::OnThemeChanged();
+  UpdateBackgroundColor();
+}
+
 void GlicView::SetBackgroundRoundedCorners(const gfx::RoundedCornersF& radii) {
   if (radii == background_radii_) {
     return;

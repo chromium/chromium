@@ -17,21 +17,26 @@
 #include "chrome/browser/glic/widget/glic_view.h"
 #include "chrome/browser/glic/widget/glic_widget.h"
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
-#include "chrome/common/webui_url_constants.h"
-#if !BUILDFLAG(IS_ANDROID)
-#include "components/web_modal/web_contents_modal_dialog_manager.h"
-#endif
 #include "chrome/browser/ui/color/chrome_color_id.h"
+#include "chrome/common/webui_url_constants.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_ui.h"
 #include "printing/buildflags/buildflags.h"
+#include "ui/color/color_provider_key.h"
+#include "ui/color/color_provider_manager.h"
 #include "ui/native_theme/native_theme.h"
 #include "ui/views/controls/webview/webview.h"
 
 #if BUILDFLAG(ENABLE_PRINTING)
 #include "chrome/browser/printing/printing_init.h"
+#endif
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/themes/theme_service.h"
+#include "chrome/browser/themes/theme_service_factory.h"
+#include "components/web_modal/web_contents_modal_dialog_manager.h"
 #endif
 
 namespace glic {
@@ -42,6 +47,25 @@ content::WebContents::CreateParams MakeCreateParams(Profile* profile,
   auto params = content::WebContents::CreateParams(profile);
   params.initially_hidden = initially_hidden;
   return params;
+}
+
+SkColor GetGlicBackgroundColor(Profile* profile,
+                               const ui::ColorProvider& color_provider) {
+#if !BUILDFLAG(IS_ANDROID)
+  ThemeService* theme_service = ThemeServiceFactory::GetForProfile(profile);
+  bool use_dark = theme_service->BrowserUsesDarkColors();
+
+  ui::ColorProviderKey key;
+  key.color_mode = use_dark ? ui::ColorProviderKey::ColorMode::kDark
+                            : ui::ColorProviderKey::ColorMode::kLight;
+
+  const ui::ColorProvider* explicit_color_provider =
+      ui::ColorProviderManager::Get().GetColorProviderFor(key);
+
+  return explicit_color_provider->GetColor(kColorGlicBackground);
+#else
+  return color_provider.GetColor(kColorGlicBackground);
+#endif
 }
 
 }  // namespace
@@ -63,7 +87,8 @@ WebUIContentsContainerImpl::WebUIContentsContainerImpl(Profile* profile,
   CreateGlicWebUiData(web_contents_.get());
   Observe(web_contents_.get());
   web_contents_->SetPageBaseBackgroundColor(
-      web_contents_->GetColorProvider().GetColor(kColorGlicBackground));
+      GetGlicBackgroundColor(profile, web_contents_->GetColorProvider()));
+
   web_contents_->SetSupportsDraggableRegions(true);
 
 #if !BUILDFLAG(IS_ANDROID)

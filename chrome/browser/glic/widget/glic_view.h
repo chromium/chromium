@@ -55,6 +55,9 @@ class GlicView : public views::WebView {
       const std::vector<blink::mojom::DraggableRegionPtr>& regions,
       content::WebContents* contents) override;
 
+  // views::View:
+  void OnThemeChanged() override;
+
   bool IsPointWithinDraggableRegion(const gfx::Point& point);
 
   // Try to get the background color from the web UI and use it as this view's

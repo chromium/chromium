@@ -13,6 +13,7 @@
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "content/public/common/drop_data.h"
 #include "third_party/blink/public/common/page/drag_operation.h"
+#include "ui/views/widget/widget.h"
 
 namespace glic {
 
@@ -80,6 +81,23 @@ TEST_F(GlicViewTest, CanDragEnter_Disabled) {
 
   // Should be rejected because the feature is disabled.
   EXPECT_FALSE(glic_view->CanDragEnter(nullptr, drop_data, ops));
+}
+
+TEST_F(GlicViewTest, UpdatesBackgroundColorOnThemeChange) {
+  auto widget = std::make_unique<views::Widget>();
+  views::Widget::InitParams params =
+      CreateParams(views::Widget::InitParams::TYPE_POPUP);
+  params.ownership = views::Widget::InitParams::CLIENT_OWNS_WIDGET;
+  widget->Init(std::move(params));
+
+  auto* glic_view = widget->SetContentsView(
+      std::make_unique<GlicView>(profile(), gfx::Size(800, 600), nullptr));
+
+  // Trigger OnThemeChanged manually to simulate the view being notified.
+  glic_view->OnThemeChanged();
+
+  // Verify that a background has been set on the view.
+  EXPECT_NE(glic_view->GetBackground(), nullptr);
 }
 
 }  // namespace glic
