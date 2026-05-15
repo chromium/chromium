@@ -18,3 +18,6 @@ thefrog@chromium.org #{LAST_RESORT_SUGGESTION}
 
 # For Crypto.UnexportableKeys and DeviceBoundSessions
 alexilin@chromium.org #{LAST_RESORT_SUGGESTION}
+
+# For cookie related histograms
+file://tools/metrics/histograms/metadata/cookie/OWNERS
