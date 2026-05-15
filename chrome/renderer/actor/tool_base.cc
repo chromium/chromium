@@ -311,8 +311,6 @@ mojom::ActionResultPtr ToolBase::ValidateTimeOfUse(
             mojom::ActionResultCode::kObservedTargetElementDestroyed,
             /*requires_page_stabilization=*/false,
             "The observed element at the target location is destroyed");
-      } else {
-        return MakeOkResult();
       }
     }
 
