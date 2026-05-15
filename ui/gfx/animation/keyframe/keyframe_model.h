@@ -179,6 +179,13 @@ class GFX_KEYFRAME_ANIMATION_EXPORT KeyframeModel {
   // animation with an unresolved current time.
   base::TimeDelta CalculateInitialHoldTime(double playback_rate) const;
 
+  // Calculate current time[1]. If the current time is unresolved, this falls
+  // back to the hold time that blink::Animation::pause/play would adopt.
+  // [1]
+  // https://www.w3.org/TR/web-animations-1/#the-current-time-of-an-animation
+  base::TimeDelta CalculateCurrentTime(base::TimeTicks monotonic_time,
+                                       double playback_rate) const;
+
  protected:
   KeyframeModel(std::unique_ptr<AnimationCurve> curve,
                 int keyframe_model_id,
@@ -220,11 +227,6 @@ class GFX_KEYFRAME_ANIMATION_EXPORT KeyframeModel {
   // [1] https://drafts.csswg.org/web-animations/#local-time-section
   base::TimeDelta ConvertMonotonicTimeToLocalTime(
       base::TimeTicks monotonic_time) const;
-  // Calculate the hold time using the current local time. If there is no
-  // start time, this returns a fallback hold time matching blink's hold time
-  // calculation if current time is unresolved.
-  base::TimeDelta CalculateHoldTime(base::TimeTicks monotonic_time,
-                                    double playback_rate) const;
   // Calculate the effect end time[1].
   // [1] https://www.w3.org/TR/web-animations-1/#end-time
   base::TimeDelta CalculateEndTime() const;

@@ -139,6 +139,15 @@ void AnimationTrigger::PerformPlay(Animation& animation,
   animation.Play(monotonic_time);
 }
 
+void AnimationTrigger::PerformPause(Animation& animation,
+                                    base::TimeTicks monotonic_time) {
+  if (animation.IsPaused() || animation.IsFinished()) {
+    return;
+  }
+
+  animation.Pause(animation.CalculateCurrentTime(monotonic_time));
+}
+
 void AnimationTrigger::PerformBehavior(Animation& animation,
                                        Behavior behavior,
                                        base::TimeTicks monotonic_time) {
@@ -146,10 +155,12 @@ void AnimationTrigger::PerformBehavior(Animation& animation,
     case Behavior::kPlay:
       PerformPlay(animation, monotonic_time);
       break;
+    case Behavior::kPause:
+      PerformPause(animation, monotonic_time);
+      break;
     case Behavior::kPlayOnce:
     case Behavior::kPlayForwards:
     case Behavior::kPlayBackwards:
-    case Behavior::kPause:
     case Behavior::kReset:
     case Behavior::kReplay:
       // TODO(crbug.com/451238244): Implement these behaviors.

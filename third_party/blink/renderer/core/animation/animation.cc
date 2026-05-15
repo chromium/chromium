@@ -1042,6 +1042,26 @@ void Animation::NotifyAnimationStartedAsync(base::TimeDelta monotonic_time) {
   cc_animation->SetRunState(cc::KeyframeModel::RunState::RUNNING);
 }
 
+void Animation::NotifyAnimationPausedAsync(base::TimeDelta monotonic_time) {
+  DCHECK(compositor_state_);
+  DCHECK(pending_pause_);
+
+  double monotonic_animation_start_time = monotonic_time.InSecondsF();
+
+  AnimationTimeDelta ready_time =
+      ANIMATION_TIME_DELTA_FROM_SECONDS(monotonic_animation_start_time) -
+      TimelineInternal()->ZeroTime();
+  NotifyReady(ready_time);
+
+  DCHECK(!start_time_.has_value());
+  compositor_state_->start_time = std::nullopt;
+  compositor_state_->hold_time = hold_time_;
+
+  cc::Animation* cc_animation = GetCompositorAnimation()->CcAnimation();
+  DCHECK(hold_time_);
+  cc_animation->Pause(ComputeCompositorHoldTime().value());
+}
+
 void Animation::NotifyReady(AnimationTimeDelta ready_time) {
   // Complete the pending updates prior to updating the compositor state in
   // order to ensure a correct start time for the compositor state without the
@@ -3469,8 +3489,13 @@ bool Animation::StartTriggeredAnimationOnCompositor(
                              StartOnCompositorReason::kAnimationTrigger);
 
   base::TimeDelta hold_time = *ComputeCompositorHoldTime();
+  // TODO(crbug.com/451238244): If finished, use FINISHED run state. To do this,
+  // we will need to ensure that triggered animations in the FINISHED state
+  // don't get deleted by
+  // KeyframeEffect::RemoveKeyframeModelsCompletedOnMainThread.
   GetCompositorAnimation()->CcAnimation()->Pause(
-      hold_time, cc::KeyframeModel::PAUSED_EXCLUSIVE);
+      hold_time, paused_for_trigger_ ? cc::KeyframeModel::PAUSED_EXCLUSIVE
+                                     : cc::KeyframeModel::PAUSED);
 
   return true;
 }

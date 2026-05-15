@@ -43,6 +43,7 @@
 #include "cc/animation/keyframe_effect.h"
 #include "cc/animation/keyframe_model.h"
 #include "cc/layers/picture_layer.h"
+#include "cc/test/animation_test_common.h"
 #include "cc/trees/client_layer_tree_host_impl.h"
 #include "cc/trees/single_thread_proxy.h"
 #include "cc/trees/transform_node.h"
@@ -4004,9 +4005,11 @@ TEST_F(CompositorAnimationTriggerTest, PausedExclusiveFillMode) {
     cc::KeyframeModel* fill_none_km = get_km(fill_none_animation);
 
     EXPECT_EQ(fill_both_km->run_state(),
-              gfx::KeyframeModel::RunState::PAUSED_EXCLUSIVE);
+              expect_finished ? gfx::KeyframeModel::RunState::PAUSED
+                              : gfx::KeyframeModel::RunState::PAUSED_EXCLUSIVE);
     EXPECT_EQ(fill_none_km->run_state(),
-              gfx::KeyframeModel::RunState::PAUSED_EXCLUSIVE);
+              expect_finished ? gfx::KeyframeModel::RunState::PAUSED
+                              : gfx::KeyframeModel::RunState::PAUSED_EXCLUSIVE);
 
     base::TimeTicks monotonic_time =
         GetLayerTreeHostImpl()->CurrentBeginFrameArgs().frame_time;
@@ -4614,15 +4617,51 @@ class CompositorTimelineTriggerBehaviorTest
     return has_expected_animation && has_expected_run_state;
   }
 
+  bool ExpectMainAnimation(
+      const cc::Animation* animation,
+      std::optional<gfx::KeyframeModel::RunState> expected_run_state) {
+    bool has_expected_animation = GetMainCcAnimation() == animation;
+    bool has_expected_run_state =
+        animation->GetRunState() == expected_run_state;
+    return has_expected_animation && has_expected_run_state;
+  }
+
+  void VerifyAnimationStates(
+      const cc::Animation* impl_animation,
+      gfx::KeyframeModel::RunState expected_impl_run_state,
+      base::TimeDelta expected_impl_current_time,
+      const cc::Animation* main_animation,
+      gfx::KeyframeModel::RunState expected_main_run_state,
+      base::TimeDelta expected_main_current_time,
+      V8AnimationPlayState::Enum expected_blink_state) {
+    EXPECT_TRUE(ExpectImplAnimation(impl_animation, expected_impl_run_state));
+    EXPECT_TRUE(ExpectMainAnimation(main_animation, expected_main_run_state));
+    EXPECT_EQ(blink_animation_->CalculateAnimationPlayState(),
+              expected_blink_state);
+    EXPECT_NEAR(
+        impl_animation->CalculateCurrentTime(Compositor().LastFrameTime())
+            .InSecondsF(),
+        expected_impl_current_time.InSecondsF(), 0.001);
+    EXPECT_NEAR(
+        main_animation->CalculateCurrentTime(Compositor().LastFrameTime())
+            .InSecondsF(),
+        expected_main_current_time.InSecondsF(), 0.001);
+  }
+
   void TestKeyframeModel(cc::KeyframeModel* keyframe_model,
                          gfx::KeyframeModel::RunState run_state,
                          std::optional<base::TimeDelta> hold_time,
                          std::optional<base::TimeTicks> start_time) {
     EXPECT_EQ(keyframe_model->run_state(), run_state);
-    EXPECT_EQ(keyframe_model->hold_time(), hold_time);
+    EXPECT_EQ(keyframe_model->hold_time().has_value(), hold_time.has_value());
+    if (hold_time.has_value()) {
+      EXPECT_NEAR(keyframe_model->hold_time()->InSecondsF(),
+                  hold_time->InSecondsF(), 0.001);
+    }
     EXPECT_EQ(keyframe_model->has_set_start_time(), start_time.has_value());
     if (start_time.has_value()) {
-      EXPECT_EQ(keyframe_model->start_time(), *start_time);
+      EXPECT_NEAR(cc::ToMilliseconds(keyframe_model->start_time()),
+                  cc::ToMilliseconds(*start_time), 0.001);
     }
   }
 
@@ -4713,7 +4752,7 @@ TEST_F(CompositorTimelineTriggerBehaviorTest, PerformPlayOnPausedAnimation) {
   cc::KeyframeModel* main_keyframe_model = GetMainKeyframeModel();
 
   TestKeyframeModel(
-      impl_keyframe_model, gfx::KeyframeModel::PAUSED_EXCLUSIVE,
+      impl_keyframe_model, gfx::KeyframeModel::PAUSED,
       /* hold_time=*/
       base::TimeDelta(base::Milliseconds(kAnimationDurationMilliSeconds / 2)),
       /* start_time=*/std::nullopt);
@@ -4737,7 +4776,7 @@ TEST_F(CompositorTimelineTriggerBehaviorTest, PerformPlayOnPausedAnimation) {
   cc::AnimationTrigger* main_trigger = GetMainCcTrigger();
 
   TestKeyframeModel(
-      main_keyframe_model, gfx::KeyframeModel::PAUSED_EXCLUSIVE,
+      main_keyframe_model, gfx::KeyframeModel::PAUSED,
       /*hold_time=*/
       base::TimeDelta(base::Milliseconds(kAnimationDurationMilliSeconds / 2)),
       /*start_time=*/std::nullopt);
@@ -4765,7 +4804,7 @@ TEST_F(CompositorTimelineTriggerBehaviorTest, PerformPlayOnFinishedAnimation) {
   cc::KeyframeModel* main_keyframe_model = GetMainKeyframeModel();
 
   TestKeyframeModel(
-      impl_keyframe_model, gfx::KeyframeModel::PAUSED_EXCLUSIVE,
+      impl_keyframe_model, gfx::KeyframeModel::PAUSED,
       /* hold_time=*/
       base::TimeDelta(base::Milliseconds(kAnimationDurationMilliSeconds)),
       /* start_time=*/std::nullopt);
@@ -4788,7 +4827,7 @@ TEST_F(CompositorTimelineTriggerBehaviorTest, PerformPlayOnFinishedAnimation) {
   cc::AnimationTrigger* main_trigger = GetMainCcTrigger();
 
   TestKeyframeModel(
-      main_keyframe_model, gfx::KeyframeModel::PAUSED_EXCLUSIVE,
+      main_keyframe_model, gfx::KeyframeModel::PAUSED,
       /*hold_time=*/
       base::TimeDelta(base::Milliseconds(kAnimationDurationMilliSeconds)),
       /*start_time=*/std::nullopt);
@@ -4848,10 +4887,212 @@ TEST_F(CompositorTimelineTriggerBehaviorTest, PlaySimple) {
   // After the blink animation finishes, it creates a new cc Animation to
   // replace the old one.
   impl_animation = GetImplCcAnimation();
-  EXPECT_TRUE(ExpectImplAnimation(impl_animation,
-                                  gfx::KeyframeModel::PAUSED_EXCLUSIVE));
+  EXPECT_TRUE(ExpectImplAnimation(impl_animation, gfx::KeyframeModel::PAUSED));
   EXPECT_EQ(blink_animation_->CalculateAnimationPlayState(),
             V8AnimationPlayState::Enum::kFinished);
+}
+
+TEST_F(CompositorTimelineTriggerBehaviorTest, PerformPauseOnRunningAnimation) {
+  Initialize("pause", "none");
+
+  // Play the animation. Blink should create a cc::Animation to replacement
+  // that should immediately enter the RUNNING state.
+  blink_animation_->play(ASSERT_NO_EXCEPTION);
+  EXPECT_EQ(blink_animation_->CalculateAnimationPlayState(),
+            V8AnimationPlayState::Enum::kRunning);
+  DoBeginFrame();
+
+  cc::KeyframeModel* impl_keyframe_model = GetImplKeyframeModel();
+  cc::KeyframeModel* main_keyframe_model = GetMainKeyframeModel();
+
+  base::TimeTicks start_time = Compositor().LastFrameTime();
+  TestKeyframeModel(impl_keyframe_model, gfx::KeyframeModel::RUNNING,
+                    /* hold_time=*/std::nullopt,
+                    /* start_time=*/start_time);
+
+  DoBeginFrame();
+  TestKeyframeModel(main_keyframe_model, gfx::KeyframeModel::RUNNING,
+                    /* hold_time=*/std::nullopt,
+                    /*start_time=*/impl_keyframe_model->start_time());
+
+  // Simulate trigger activation.
+  base::TimeTicks pause_time =
+      start_time + base::Milliseconds(kAnimationDurationMilliSeconds / 2);
+  std::unique_ptr<cc::AnimationEvents> animation_events =
+      PerformImplActivate(pause_time);
+
+  EXPECT_EQ(animation_events->events().size(), 1);
+  cc::AnimationTriggerEvent& event =
+      std::get<cc::AnimationTriggerEvent>(animation_events->events()[0]);
+  EXPECT_EQ(event.type, cc::AnimationTriggerEvent::Type::kActivate);
+  EXPECT_EQ(event.time, pause_time);
+
+  TestKeyframeModel(
+      impl_keyframe_model, gfx::KeyframeModel::PAUSED,
+      /* hold_time=*/base::Milliseconds(kAnimationDurationMilliSeconds / 2),
+      /* start_time=*/std::nullopt);
+
+  cc::AnimationTrigger* main_trigger = GetMainCcTrigger();
+  // Simulate main thread sync.
+  main_trigger->DispatchAnimationTriggerEvent(event);
+
+  TestKeyframeModel(
+      main_keyframe_model, gfx::KeyframeModel::PAUSED,
+      /*hold_time=*/base::Milliseconds(kAnimationDurationMilliSeconds / 2),
+      /*start_time=*/std::nullopt);
+
+  // After the next frame, blink should create new cc Animations waiting to be
+  // triggered.
+  DoBeginFrame();
+  impl_keyframe_model = GetImplKeyframeModel();
+  main_keyframe_model = GetMainKeyframeModel();
+
+  TestKeyframeModel(
+      impl_keyframe_model, gfx::KeyframeModel::PAUSED,
+      /* hold_time=*/
+      base::TimeDelta(base::Milliseconds(kAnimationDurationMilliSeconds / 2)),
+      /* start_time=*/std::nullopt);
+  TestKeyframeModel(
+      main_keyframe_model, gfx::KeyframeModel::PAUSED,
+      /* hold_time=*/
+      base::TimeDelta(base::Milliseconds(kAnimationDurationMilliSeconds / 2)),
+      /* start_time=*/std::nullopt);
+}
+
+TEST_F(CompositorTimelineTriggerBehaviorTest, PerformPauseOnPausedAnimation) {
+  Initialize("pause", "none");
+
+  // Pause the animation half way. Blink should create a cc::Animation to
+  // replacement cc Animation waiting to be triggered.
+  blink_animation_->pause(ASSERT_NO_EXCEPTION);
+  blink_animation_->setCurrentTime(
+      MakeGarbageCollected<V8CSSNumberish>(kAnimationDurationMilliSeconds / 2),
+      ASSERT_NO_EXCEPTION);
+  EXPECT_EQ(blink_animation_->CalculateAnimationPlayState(),
+            V8AnimationPlayState::Enum::kPaused);
+  DoBeginFrame();
+
+  cc::KeyframeModel* impl_keyframe_model = GetImplKeyframeModel();
+  cc::KeyframeModel* main_keyframe_model = GetMainKeyframeModel();
+
+  TestKeyframeModel(
+      impl_keyframe_model, gfx::KeyframeModel::PAUSED,
+      /* hold_time=*/
+      base::TimeDelta(base::Milliseconds(kAnimationDurationMilliSeconds / 2)),
+      /* start_time=*/std::nullopt);
+
+  // Simulate trigger activation. As the animation is already paused, this
+  // should have no effect.
+  base::TimeTicks pause_time = ZeroTime() + base::Seconds(1000);
+  std::unique_ptr<cc::AnimationEvents> animation_events =
+      PerformImplActivate(pause_time);
+
+  EXPECT_EQ(animation_events->events().size(), 1);
+  cc::AnimationTriggerEvent& event =
+      std::get<cc::AnimationTriggerEvent>(animation_events->events()[0]);
+  EXPECT_EQ(event.type, cc::AnimationTriggerEvent::Type::kActivate);
+  EXPECT_EQ(event.time, pause_time);
+
+  TestKeyframeModel(
+      impl_keyframe_model, gfx::KeyframeModel::PAUSED,
+      /* hold_time=*/
+      base::TimeDelta(base::Milliseconds(kAnimationDurationMilliSeconds / 2)),
+      /* start_time=*/std::nullopt);
+
+  cc::AnimationTrigger* main_trigger = GetMainCcTrigger();
+
+  TestKeyframeModel(
+      main_keyframe_model, gfx::KeyframeModel::PAUSED,
+      /* hold_time=*/
+      base::TimeDelta(base::Milliseconds(kAnimationDurationMilliSeconds / 2)),
+      /* start_time=*/std::nullopt);
+
+  // Simulate main thread sync.
+  main_trigger->DispatchAnimationTriggerEvent(event);
+
+  TestKeyframeModel(
+      main_keyframe_model, gfx::KeyframeModel::PAUSED,
+      /* hold_time=*/
+      base::TimeDelta(base::Milliseconds(kAnimationDurationMilliSeconds / 2)),
+      /* start_time=*/std::nullopt);
+}
+
+TEST_F(CompositorTimelineTriggerBehaviorTest, PlayPause) {
+  Initialize("play", "pause");
+
+  cc::Animation* impl_animation = GetImplCcAnimation();
+  cc::Animation* main_animation = GetMainCcAnimation();
+  source_->scrollIntoView(nullptr);
+  // The activation will be observed at the next commit when the updated scroll
+  // offset is visible to the impl thread.
+  VerifyAnimationStates(
+      impl_animation,
+      /*expected_impl_run_state=*/gfx::KeyframeModel::PAUSED_EXCLUSIVE,
+      /*expected_impl_current_time=*/base::TimeDelta(), main_animation,
+      /*expected_main_run_state=*/gfx::KeyframeModel::PAUSED_EXCLUSIVE,
+      /*expected_main_current_time=*/base::TimeDelta(),
+      /*expected_blink_state=*/V8AnimationPlayState::Enum::kPaused);
+
+  // We need one frame to commit the main thread scroll offset to cc.
+  // When cc sees this update the trigger plays the animation.
+  DoBeginFrame();
+  base::TimeTicks start_time = *impl_animation->GetStartTime();
+  VerifyAnimationStates(
+      impl_animation, /*expected_impl_run_state=*/gfx::KeyframeModel::RUNNING,
+      /*expected_impl_current_time=*/Compositor().LastFrameTime() - start_time,
+      main_animation,
+      /*expected_main_run_state=*/gfx::KeyframeModel::PAUSED_EXCLUSIVE,
+      /*expected_main_current_time=*/base::TimeDelta(),
+      /*expected_blink_state=*/V8AnimationPlayState::Enum::kPaused);
+
+  // Then, we need one frame to notify the main thread that the animation has
+  // been triggered.
+  DoBeginFrame();
+  VerifyAnimationStates(
+      impl_animation, /*expected_impl_run_state=*/gfx::KeyframeModel::RUNNING,
+      /*expected_impl_current_time=*/Compositor().LastFrameTime() - start_time,
+      main_animation, /*expected_main_run_state=*/gfx::KeyframeModel::RUNNING,
+      /*expected_main_current_time=*/Compositor().LastFrameTime() - start_time,
+      /*expected_blink_state=*/V8AnimationPlayState::Enum::kRunning);
+
+  // This scrolls out of the active range. The trigger should pause the
+  // animation.
+  scroller_->scrollTo(nullptr, 0, 0);
+  // The deactivation will be observed at the next commit when the updated
+  // scroll offset is visible to the impl thread.
+  VerifyAnimationStates(
+      impl_animation, /*expected_impl_run_state=*/gfx::KeyframeModel::RUNNING,
+      /*expected_impl_current_time=*/Compositor().LastFrameTime() - start_time,
+      main_animation, /*expected_main_run_state=*/gfx::KeyframeModel::RUNNING,
+      /*expected_main_current_time=*/Compositor().LastFrameTime() - start_time,
+      /*expected_blink_state=*/V8AnimationPlayState::Enum::kRunning);
+
+  DoBeginFrame();
+  VerifyAnimationStates(
+      impl_animation, /*expected_impl_run_state=*/gfx::KeyframeModel::PAUSED,
+      /*expected_impl_current_time=*/Compositor().LastFrameTime() - start_time,
+      main_animation, /*expected_main_run_state=*/gfx::KeyframeModel::RUNNING,
+      /*expected_main_current_time=*/Compositor().LastFrameTime() - start_time,
+      /*expected_blink_state=*/V8AnimationPlayState::Enum::kRunning);
+  base::TimeDelta current_time_at_pause =
+      Compositor().LastFrameTime() - start_time;
+
+  DoBeginFrame();
+  // After the main thread has synchronized the pause, it will create a new
+  // PAUSED_EXCLUSIVE cc Animation.
+  impl_animation = GetImplCcAnimation();
+  main_animation = GetMainCcAnimation();
+
+  // After the next frame, blink creates a new cc Animation waiting to be
+  // triggered.
+  VerifyAnimationStates(
+      impl_animation,
+      /*expected_impl_run_state=*/gfx::KeyframeModel::PAUSED,
+      /*expected_impl_current_time=*/current_time_at_pause,
+      GetMainCcAnimation(),
+      /*expected_main_run_state=*/gfx::KeyframeModel::PAUSED,
+      /*expected_main_current_time=*/current_time_at_pause,
+      /*expected_blink_state=*/V8AnimationPlayState::Enum::kPaused);
 }
 
 }  // namespace blink

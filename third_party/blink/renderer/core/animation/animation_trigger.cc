@@ -43,9 +43,14 @@ void PerformPlay(Animation& animation,
 
 void PerformPause(Animation& animation,
                   V8AnimationPlayState::Enum play_state,
+                  std::optional<base::TimeDelta> event_time,
                   ExceptionState& exception_state) {
   if (play_state == V8AnimationPlayState::Enum::kRunning) {
     animation.PauseInternal(ASSERT_NO_EXCEPTION);
+
+    if (event_time) {
+      animation.NotifyAnimationPausedAsync(event_time.value());
+    }
   }
 }
 
@@ -109,7 +114,7 @@ void AnimationTrigger::PerformBehavior(
       PerformPlay(animation, async_event_time, exception_state);
       break;
     case Behavior::kPause:
-      PerformPause(animation, play_state, exception_state);
+      PerformPause(animation, play_state, async_event_time, exception_state);
       break;
     case Behavior::kPlayForwards:
       PerformPlayForwards(animation, play_state, exception_state);
@@ -175,13 +180,13 @@ cc::AnimationTrigger::Behavior AnimationTrigger::ToCcAnimationTriggerBehavior(
 bool AnimationTrigger::CanCompositeBehavior(Behavior behavior) {
   switch (behavior) {
     case Behavior::kPlay:
+    case Behavior::kPause:
     case Behavior::kNone:
       return true;
     case Behavior::kPlayOnce:
     case Behavior::kPlayForwards:
     case Behavior::kPlayBackwards:
     case Behavior::kReplay:
-    case Behavior::kPause:
     case Behavior::kReset:
       return false;
   }

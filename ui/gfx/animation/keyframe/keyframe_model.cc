@@ -83,7 +83,7 @@ void KeyframeModel::Pause(base::TimeDelta hold_time, RunState pause_run_state) {
 
 void KeyframeModel::Reverse(base::TimeTicks monotonic_time) {
   base::TimeDelta current_time_to_match =
-      CalculateHoldTime(monotonic_time, -playback_rate_);
+      CalculateCurrentTime(monotonic_time, -playback_rate_);
   set_hold_time(std::nullopt);
   set_playback_rate(-playback_rate_);
   set_start_time(monotonic_time - current_time_to_match / playback_rate());
@@ -291,8 +291,9 @@ base::TimeDelta KeyframeModel::ConvertMonotonicTimeToLocalTime(
          playback_rate_;
 }
 
-base::TimeDelta KeyframeModel::CalculateHoldTime(base::TimeTicks monotonic_time,
-                                                 double playback_rate) const {
+base::TimeDelta KeyframeModel::CalculateCurrentTime(
+    base::TimeTicks monotonic_time,
+    double playback_rate) const {
   if (hold_time_) {
     return hold_time_.value();
   }

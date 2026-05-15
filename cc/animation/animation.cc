@@ -286,6 +286,13 @@ void Animation::SetHoldTime(std::optional<base::TimeDelta> hold_time) {
   }
 }
 
+base::TimeDelta Animation::CalculateCurrentTime(
+    base::TimeTicks monotonic_time) const {
+  const gfx::KeyframeModel* km =
+      keyframe_effect()->keyframe_models().front().get();
+  return km->CalculateCurrentTime(monotonic_time, km->playback_rate());
+}
+
 gfx::KeyframeModel::RunState Animation::GetRunState() const {
   return keyframe_effect()->keyframe_models().front()->run_state();
 }
@@ -294,6 +301,11 @@ void Animation::SetRunState(KeyframeModel::RunState run_state) {
   for (auto& km : keyframe_effect()->keyframe_models()) {
     km->SetRunState(run_state);
   }
+}
+
+bool Animation::IsPaused() const {
+  const gfx::KeyframeModel& km = *keyframe_effect()->keyframe_models().front();
+  return km.IsPaused(km.run_state());
 }
 
 bool Animation::IsFinished() const {

@@ -365,6 +365,10 @@ class CORE_EXPORT Animation : public EventTarget,
   // triggered[1] animations.
   // [1] https://drafts.csswg.org/animation-triggers-1/
   void NotifyAnimationStartedAsync(base::TimeDelta monotonic_time);
+  // The compositor paused this animation on the impl thread.
+  // This is only called for triggered animations.
+  void NotifyAnimationPausedAsync(base::TimeDelta monotonic_time);
+
   void NotifyReady(AnimationTimeDelta ready_time);
   void CommitPendingPlay(AnimationTimeDelta ready_time);
   void CommitPendingPause(AnimationTimeDelta ready_time);

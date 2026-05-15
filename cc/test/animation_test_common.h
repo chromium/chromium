@@ -21,6 +21,11 @@ class PointF;
 
 namespace cc {
 
+// Helper method to convert base::TimeTicks to double.
+// Returns double milliseconds if the input value is resolved or
+// std::numeric_limits<double>::quiet_NaN() otherwise.
+double ToMilliseconds(std::optional<base::TimeTicks> time_ticks);
+
 class FakeFloatAnimationCurve : public gfx::FloatAnimationCurve {
  public:
   FakeFloatAnimationCurve();

@@ -31,16 +31,6 @@ using ::testing::Return;
 namespace cc {
 namespace {
 
-// Helper method to convert base::TimeTicks to double.
-// Returns double milliseconds if the input value is resolved or
-// std::numeric_limits<double>::quiet_NaN() otherwise.
-double ToMilliseconds(std::optional<base::TimeTicks> time_ticks) {
-  if (!time_ticks) {
-    return std::numeric_limits<double>::quiet_NaN();
-  }
-  return (time_ticks.value() - base::TimeTicks()).InMillisecondsF();
-}
-
 class AnimationHostTest : public AnimationTimelinesTest {
  public:
   AnimationHostTest() = default;

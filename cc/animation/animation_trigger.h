@@ -126,6 +126,7 @@ class CC_ANIMATION_EXPORT AnimationTrigger
   friend class CompositorTimelineTriggerBehaviorTest;
 
   void PerformPlay(Animation& animation, base::TimeTicks monotonic_time);
+  void PerformPause(Animation& animation, base::TimeTicks monotonic_time);
 
   void PerformBehavior(Animation& animation,
                        Behavior behavior,

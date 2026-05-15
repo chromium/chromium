@@ -158,9 +158,12 @@ class CC_ANIMATION_EXPORT Animation : public base::RefCounted<Animation>,
 
   void SetHoldTime(std::optional<base::TimeDelta> hold_time);
 
+  base::TimeDelta CalculateCurrentTime(base::TimeTicks monotonic_time) const;
+
   void SetRunState(KeyframeModel::RunState run_state);
   KeyframeModel::RunState GetRunState() const;
 
+  bool IsPaused() const;
   bool IsFinished() const;
 
   void Play(base::TimeTicks monotonic_time);
