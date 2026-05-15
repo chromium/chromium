@@ -22,13 +22,10 @@
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
+#include "content/public/test/browser_task_environment.h"
 #include "google_apis/gaia/gaia_constants.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-
-#if !BUILDFLAG(IS_ANDROID)
-#include "chrome/test/base/browser_with_test_window_test.h"
-#endif
 
 #if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
 
@@ -49,16 +46,12 @@ class MockChromeSigninClient : public ChromeSigninClient {
   MOCK_METHOD0(GetExtensionsCount, std::optional<size_t>());
 };
 
-class ChromeSigninClientSignoutTest : public BrowserWithTestWindowTest {
+class ChromeSigninClientSignoutTest : public testing::Test {
  public:
   ChromeSigninClientSignoutTest() : forced_signin_setter_(true) {}
   void SetUp() override {
-    BrowserWithTestWindowTest::SetUp();
-    CreateClient(browser()->profile());
-  }
-
-  void TearDown() override {
-    BrowserWithTestWindowTest::TearDown();
+    profile_ = TestingProfile::Builder().Build();
+    CreateClient(profile_.get());
   }
 
   void CreateClient(Profile* profile) {
@@ -72,7 +65,9 @@ class ChromeSigninClientSignoutTest : public BrowserWithTestWindowTest {
         source_metric);
   }
 
+  content::BrowserTaskEnvironment task_environment_;
   signin_util::ScopedForceSigninSetterForTesting forced_signin_setter_;
+  std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<MockChromeSigninClient> client_;
 };
 
@@ -80,10 +75,8 @@ TEST_F(ChromeSigninClientSignoutTest, SignOut) {
   signin_metrics::ProfileSignout source_metric =
       signin_metrics::ProfileSignout::kUserClickedSignoutSettings;
 
-  EXPECT_CALL(*client_, ShowUserManager(browser()->profile()->GetPath()))
-      .Times(1);
-  EXPECT_CALL(*client_, LockForceSigninProfile(browser()->profile()->GetPath()))
-      .Times(1);
+  EXPECT_CALL(*client_, ShowUserManager(profile_->GetPath())).Times(1);
+  EXPECT_CALL(*client_, LockForceSigninProfile(profile_->GetPath())).Times(1);
   EXPECT_CALL(*client_, SignOutCallback(source_metric,
                                         SigninClient::SignoutDecision::ALLOW))
       .Times(1);
@@ -93,15 +86,13 @@ TEST_F(ChromeSigninClientSignoutTest, SignOut) {
 
 TEST_F(ChromeSigninClientSignoutTest, SignOutWithoutForceSignin) {
   signin_util::ScopedForceSigninSetterForTesting signin_setter(false);
-  CreateClient(browser()->profile());
+  CreateClient(profile_.get());
 
   signin_metrics::ProfileSignout source_metric =
       signin_metrics::ProfileSignout::kUserClickedSignoutSettings;
 
-  EXPECT_CALL(*client_, ShowUserManager(browser()->profile()->GetPath()))
-      .Times(0);
-  EXPECT_CALL(*client_, LockForceSigninProfile(browser()->profile()->GetPath()))
-      .Times(0);
+  EXPECT_CALL(*client_, ShowUserManager(profile_->GetPath())).Times(0);
+  EXPECT_CALL(*client_, LockForceSigninProfile(profile_->GetPath())).Times(0);
   EXPECT_CALL(*client_, SignOutCallback(source_metric,
                                         SigninClient::SignoutDecision::ALLOW))
       .Times(1);
