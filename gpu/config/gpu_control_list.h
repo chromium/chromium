@@ -285,16 +285,20 @@ class GPU_CONFIG_EXPORT GpuControlList {
   // system and returns the union of features specified in each entry.
   // If os is kOsAny, use the current OS; if os_version is empty, use the
   // current OS version.
-  std::set<int32_t> MakeDecision(OsType os,
-                                 std::string_view os_version,
-                                 const GPUInfo& gpu_info);
+  std::set<int32_t> MakeDecision(
+      OsType os,
+      std::string_view os_version,
+      const GPUInfo& gpu_info,
+      const std::vector<uint32_t>& ignored_entries = {});
   // Same as the above function, but instead of using the entries with no
   // "test_group" specified or "test_group" = 0, using the entries with
   // "test_group" = |target_test_group|.
-  std::set<int32_t> MakeDecision(OsType os,
-                                 std::string_view os_version,
-                                 const GPUInfo& gpu_info,
-                                 uint32_t target_test_group);
+  std::set<int32_t> MakeDecision(
+      OsType os,
+      std::string_view os_version,
+      const GPUInfo& gpu_info,
+      uint32_t target_test_group,
+      const std::vector<uint32_t>& ignored_entries = {});
 
   // Return the active entry indices from the last MakeDecision() call.
   const std::vector<uint32_t>& GetActiveEntries() const;

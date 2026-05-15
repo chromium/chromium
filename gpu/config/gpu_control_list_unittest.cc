@@ -170,6 +170,47 @@ TEST_P(GpuControlListTest, IgnorableEntries) {
   EXPECT_FALSE(control_list->needs_more_info());
 }
 
+TEST_P(GpuControlListTest, IgnoredEntries) {
+  const Entry kEntries[2] = {
+      GetGpuControlListTestingEntries()[kGpuControlListTest_IgnorableEntries_0],
+      GetGpuControlListTestingEntries()
+          [kGpuControlListEntryTest_DirectRendering]};
+  std::unique_ptr<GpuControlList> control_list = Create(kEntries);
+
+  GPUInfo gpu_info;
+  gpu_info.gpu.vendor_id = kIntelVendorId;
+  gpu_info.direct_rendering_version = "2.0";
+
+  // By default, both entries apply.
+  std::set<int> features = control_list->MakeDecision(GpuControlList::kOsLinux,
+                                                      kOsVersion, gpu_info);
+  EXPECT_EQ(2u, features.size());
+  EXPECT_EQ(1u, features.count(TEST_FEATURE_0));
+  EXPECT_EQ(1u, features.count(TEST_FEATURE_1));
+
+  // Skip the first entry.
+  std::vector<uint32_t> ignored_entries;
+  ignored_entries.push_back(kEntries[0].id);
+  features = control_list->MakeDecision(GpuControlList::kOsLinux, kOsVersion,
+                                        gpu_info, ignored_entries);
+  EXPECT_SINGLE_FEATURE(features, TEST_FEATURE_1);
+
+  // Skip the second entry.
+  ignored_entries.clear();
+  ignored_entries.push_back(kEntries[1].id);
+  features = control_list->MakeDecision(GpuControlList::kOsLinux, kOsVersion,
+                                        gpu_info, ignored_entries);
+  EXPECT_SINGLE_FEATURE(features, TEST_FEATURE_0);
+
+  // Skip both entries.
+  ignored_entries.clear();
+  ignored_entries.push_back(kEntries[0].id);
+  ignored_entries.push_back(kEntries[1].id);
+  features = control_list->MakeDecision(GpuControlList::kOsLinux, kOsVersion,
+                                        gpu_info, ignored_entries);
+  EXPECT_EMPTY_SET(features);
+}
+
 TEST_P(GpuControlListTest, DisabledExtensionTest) {
   // exact setting.
   const Entry kEntries[2] = {GetGpuControlListTestingEntries()

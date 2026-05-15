@@ -4,6 +4,7 @@
 
 #include "gpu/config/gpu_control_list.h"
 
+#include <algorithm>
 #include <utility>
 
 #include "base/json/values_util.h"
@@ -696,16 +697,20 @@ GpuControlList::GpuControlList(base::span<const Entry> data) : entries_(data) {
 
 GpuControlList::~GpuControlList() = default;
 
-std::set<int32_t> GpuControlList::MakeDecision(GpuControlList::OsType os,
-                                               std::string_view os_version,
-                                               const GPUInfo& gpu_info) {
-  return MakeDecision(os, os_version, gpu_info, 0);
+std::set<int32_t> GpuControlList::MakeDecision(
+    GpuControlList::OsType os,
+    std::string_view os_version,
+    const GPUInfo& gpu_info,
+    const std::vector<uint32_t>& ignored_entries) {
+  return MakeDecision(os, os_version, gpu_info, 0, ignored_entries);
 }
 
-std::set<int32_t> GpuControlList::MakeDecision(GpuControlList::OsType os,
-                                               std::string_view os_version,
-                                               const GPUInfo& gpu_info,
-                                               uint32_t target_test_group) {
+std::set<int32_t> GpuControlList::MakeDecision(
+    GpuControlList::OsType os,
+    std::string_view os_version,
+    const GPUInfo& gpu_info,
+    uint32_t target_test_group,
+    const std::vector<uint32_t>& ignored_entries) {
   active_entries_.clear();
   std::set<int> features;
 
@@ -740,6 +745,10 @@ std::set<int32_t> GpuControlList::MakeDecision(GpuControlList::OsType os,
   for (size_t ii = 0; ii < entries_.size(); ++ii) {
     const Entry& entry = entries_[ii];
     DCHECK_NE(0u, entry.id);
+    if (std::find(ignored_entries.begin(), ignored_entries.end(), entry.id) !=
+        ignored_entries.end()) {
+      continue;
+    }
     if (!entry.AppliesToTestGroup(target_test_group))
       continue;
     if (entry.Contains(os, processed_os_version, gpu_info)) {
