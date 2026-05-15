@@ -272,6 +272,9 @@ bool IsFullscreenNextIAEnabled() {
   // view.
   BOOL _lensOverlayVisible;
 
+  // Tracks if the secondary toolbar is currently above the keyboard.
+  BOOL _isSecondaryToolbarAboveKeyboard;
+
   __weak id<BrowserCoordinatorCommands> _browserCoordinatorHandler;
   __weak id<ToolbarCommands> _toolbarHandler;
 
@@ -2233,6 +2236,11 @@ bool IsFullscreenNextIAEnabled() {
 // Resizes the secondary toolbar according to `progress`, where a progress of
 // 1.0 fully expands the toolbar and a progress of 0.0 collapses it.
 - (void)updateNextIASecondaryToolbarForFullscreenProgress:(CGFloat)progress {
+  // Early return if the toolbar is currently managed by keyboard avoidance.
+  if (_isSecondaryToolbarAboveKeyboard) {
+    return;
+  }
+
   const CGFloat expandedHeight = [self secondaryToolbarHeightWithInset];
   if (expandedHeight <= 0.0) {
     return;
@@ -2901,12 +2909,16 @@ bool IsFullscreenNextIAEnabled() {
 }
 
 - (void)secondaryToolbarMovedAboveKeyboard {
+  _isSecondaryToolbarAboveKeyboard = YES;
+
   // Lower the height constraint priority, allowing UIKeyboardLayoutGuide to
   // move the toolbar above the keyboard.
   self.secondaryToolbarHeightConstraint.priority = UILayoutPriorityDefaultHigh;
 }
 
 - (void)secondaryToolbarRemovedFromKeyboard {
+  _isSecondaryToolbarAboveKeyboard = NO;
+
   // Return to required priority, otherwise UIKeyboardLayoutGuide would set the
   // toolbar minimum height to the bottom safe area.
   self.secondaryToolbarHeightConstraint.priority = UILayoutPriorityRequired - 1;
@@ -2917,6 +2929,7 @@ bool IsFullscreenNextIAEnabled() {
                                        duration:(NSTimeInterval)duration
                                           curve:(UIViewAnimationCurve)curve {
   CHECK(ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TABLET);
+  _isSecondaryToolbarAboveKeyboard = (keyboardHeight > 0);
   CGFloat keyboardAttachedOffset =
       keyboardHeight +
       self.toolbarCoordinator.keyboardAttachedBottomOmniboxHeight;
