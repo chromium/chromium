@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.accessibility_annotator.first_run;
+package org.chromium.chrome.browser.personal_context.first_run;
 
 import android.content.Context;
 import android.view.View;
@@ -13,13 +13,13 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 
-/** Implements the content for the Accessibility Annotator first-run bottom sheet. */
+/** Implements the content for the Personal Context first-run bottom sheet. */
 @NullMarked
-/*package*/ class AccessibilityAnnotatorFirstRunBottomSheetContent implements BottomSheetContent {
+/*package*/ class PersonalContextFirstRunBottomSheetContent implements BottomSheetContent {
     private final View mContentView;
     private final ScrollView mScrollView;
 
-    AccessibilityAnnotatorFirstRunBottomSheetContent(View contentView, ScrollView scrollView) {
+    PersonalContextFirstRunBottomSheetContent(View contentView, ScrollView scrollView) {
         mContentView = contentView;
         mScrollView = scrollView;
     }

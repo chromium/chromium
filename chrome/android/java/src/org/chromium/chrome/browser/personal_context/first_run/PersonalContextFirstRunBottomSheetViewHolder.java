@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.accessibility_annotator.first_run;
+package org.chromium.chrome.browser.personal_context.first_run;
 
 import android.content.Context;
 import android.text.method.LinkMovementMethod;
@@ -20,9 +20,9 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.R;
 import org.chromium.ui.widget.TextViewWithClickableSpans;
 
-/** View for the Accessibility Annotator first-run bottom sheet. */
+/** View for the Personal Context first-run bottom sheet. */
 @NullMarked
-/*package*/ class AccessibilityAnnotatorFirstRunBottomSheetViewHolder {
+/*package*/ class PersonalContextFirstRunBottomSheetViewHolder {
     final ViewGroup mContentView;
     final ScrollView mScrollView;
     final LottieAnimationView mIcon;
@@ -34,7 +34,7 @@ import org.chromium.ui.widget.TextViewWithClickableSpans;
     final Button mPrimaryButton;
     final Button mSecondaryButton;
 
-    AccessibilityAnnotatorFirstRunBottomSheetViewHolder(Context context) {
+    PersonalContextFirstRunBottomSheetViewHolder(Context context) {
         mContentView =
                 (ViewGroup)
                         LayoutInflater.from(context)

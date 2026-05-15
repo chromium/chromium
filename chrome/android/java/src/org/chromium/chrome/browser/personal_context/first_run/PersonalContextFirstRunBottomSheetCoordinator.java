@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.accessibility_annotator.first_run;
+package org.chromium.chrome.browser.personal_context.first_run;
 
 import android.content.Context;
 import android.text.SpannableString;
@@ -18,9 +18,9 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.text.SpanApplier;
 
-/** Coordinator for the Accessibility Annotator first-run bottom sheet. */
+/** Coordinator for the Personal Context first-run bottom sheet. */
 @NullMarked
-public class AccessibilityAnnotatorFirstRunBottomSheetCoordinator {
+public class PersonalContextFirstRunBottomSheetCoordinator {
     /** Delegate interface for handling bottom sheet actions. */
     public interface Delegate {
         void onInfoAcknowledged();
@@ -32,44 +32,40 @@ public class AccessibilityAnnotatorFirstRunBottomSheetCoordinator {
         void onInfoDismissed();
     }
 
-    private final AccessibilityAnnotatorFirstRunBottomSheetViewHolder mView;
-    private final AccessibilityAnnotatorFirstRunBottomSheetMediator mMediator;
+    private final PersonalContextFirstRunBottomSheetViewHolder mView;
+    private final PersonalContextFirstRunBottomSheetMediator mMediator;
     private final PropertyModel mModel;
 
-    public AccessibilityAnnotatorFirstRunBottomSheetCoordinator(
+    public PersonalContextFirstRunBottomSheetCoordinator(
             Context context, BottomSheetController bottomSheetController, Delegate delegate) {
-        mView = new AccessibilityAnnotatorFirstRunBottomSheetViewHolder(context);
+        mView = new PersonalContextFirstRunBottomSheetViewHolder(context);
         mModel =
-                new PropertyModel.Builder(
-                                AccessibilityAnnotatorFirstRunBottomSheetProperties.ALL_KEYS)
+                new PropertyModel.Builder(PersonalContextFirstRunBottomSheetProperties.ALL_KEYS)
                         .with(
-                                AccessibilityAnnotatorFirstRunBottomSheetProperties.TITLE,
+                                PersonalContextFirstRunBottomSheetProperties.TITLE,
                                 context.getString(R.string.accessibility_annotator_info_title))
                         .with(
-                                AccessibilityAnnotatorFirstRunBottomSheetProperties.DESCRIPTION,
+                                PersonalContextFirstRunBottomSheetProperties.DESCRIPTION,
                                 context.getString(
                                         R.string.accessibility_annotator_info_description_android))
                         .with(
-                                AccessibilityAnnotatorFirstRunBottomSheetProperties
-                                        .LEARN_MORE_DESCRIPTION,
+                                PersonalContextFirstRunBottomSheetProperties.LEARN_MORE_DESCRIPTION,
                                 context.getString(
                                         R.string.accessibility_annotator_info_learn_more_android))
                         .with(
-                                AccessibilityAnnotatorFirstRunBottomSheetProperties.CARD_1_TEXT,
+                                PersonalContextFirstRunBottomSheetProperties.CARD_1_TEXT,
                                 context.getString(
                                         R.string.accessibility_annotator_info_card_1_android))
                         .with(
-                                AccessibilityAnnotatorFirstRunBottomSheetProperties.CARD_2_TEXT,
+                                PersonalContextFirstRunBottomSheetProperties.CARD_2_TEXT,
                                 context.getString(
                                         R.string.accessibility_annotator_info_card_2_android))
                         .with(
-                                AccessibilityAnnotatorFirstRunBottomSheetProperties
-                                        .PRIMARY_BUTTON_LABEL,
+                                PersonalContextFirstRunBottomSheetProperties.PRIMARY_BUTTON_LABEL,
                                 context.getString(
                                         R.string.accessibility_annotator_info_primary_button))
                         .with(
-                                AccessibilityAnnotatorFirstRunBottomSheetProperties
-                                        .SECONDARY_BUTTON_LABEL,
+                                PersonalContextFirstRunBottomSheetProperties.SECONDARY_BUTTON_LABEL,
                                 context.getString(
                                         R.string.accessibility_annotator_info_secondary_button))
                         .build();
@@ -85,23 +81,23 @@ public class AccessibilityAnnotatorFirstRunBottomSheetCoordinator {
         SpannableString learnMoreDescription =
                 SpanApplier.applySpans(
                         mModel.get(
-                                        AccessibilityAnnotatorFirstRunBottomSheetProperties
+                                        PersonalContextFirstRunBottomSheetProperties
                                                 .LEARN_MORE_DESCRIPTION)
                                 .toString(),
                         new SpanApplier.SpanInfo("<link>", "</link>", learnMoreSpan));
 
         mModel.set(
-                AccessibilityAnnotatorFirstRunBottomSheetProperties.LEARN_MORE_DESCRIPTION,
+                PersonalContextFirstRunBottomSheetProperties.LEARN_MORE_DESCRIPTION,
                 learnMoreDescription);
 
         PropertyModelChangeProcessor.create(
-                mModel, mView, AccessibilityAnnotatorFirstRunBottomSheetViewBinder::bind);
+                mModel, mView, PersonalContextFirstRunBottomSheetViewBinder::bind);
 
         mMediator =
-                new AccessibilityAnnotatorFirstRunBottomSheetMediator(
+                new PersonalContextFirstRunBottomSheetMediator(
                         context,
                         bottomSheetController,
-                        new AccessibilityAnnotatorFirstRunBottomSheetContent(
+                        new PersonalContextFirstRunBottomSheetContent(
                                 mView.mContentView, mView.mScrollView),
                         delegate,
                         new SettingsCustomTabLauncherImpl());

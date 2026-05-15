@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.accessibility_annotator.first_run;
+package org.chromium.chrome.browser.personal_context.first_run;
 
 import android.content.Context;
 
@@ -14,13 +14,13 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 import org.chromium.components.browser_ui.settings.SettingsCustomTabLauncher;
 
-/** Mediator for the Accessibility Annotator first-run bottom sheet. */
+/** Mediator for the Personal Context first-run bottom sheet. */
 @NullMarked
-/*package*/ class AccessibilityAnnotatorFirstRunBottomSheetMediator {
+/*package*/ class PersonalContextFirstRunBottomSheetMediator {
     private final Context mContext;
     private final BottomSheetController mBottomSheetController;
-    private final AccessibilityAnnotatorFirstRunBottomSheetContent mContent;
-    private final AccessibilityAnnotatorFirstRunBottomSheetCoordinator.Delegate mDelegate;
+    private final PersonalContextFirstRunBottomSheetContent mContent;
+    private final PersonalContextFirstRunBottomSheetCoordinator.Delegate mDelegate;
     private final SettingsCustomTabLauncher mCustomTabLauncher;
 
     private @Nullable String mManageSettingsUrl;
@@ -37,11 +37,11 @@ import org.chromium.components.browser_ui.settings.SettingsCustomTabLauncher;
                 }
             };
 
-    AccessibilityAnnotatorFirstRunBottomSheetMediator(
+    PersonalContextFirstRunBottomSheetMediator(
             Context context,
             BottomSheetController bottomSheetController,
-            AccessibilityAnnotatorFirstRunBottomSheetContent content,
-            AccessibilityAnnotatorFirstRunBottomSheetCoordinator.Delegate delegate,
+            PersonalContextFirstRunBottomSheetContent content,
+            PersonalContextFirstRunBottomSheetCoordinator.Delegate delegate,
             SettingsCustomTabLauncher customTabLauncher) {
         mContext = context;
         mBottomSheetController = bottomSheetController;

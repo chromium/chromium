@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.accessibility_annotator.first_run;
+package org.chromium.chrome.browser.personal_context.first_run;
 
 import android.content.Context;
 
@@ -18,19 +18,19 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvi
 import org.chromium.ui.base.WindowAndroid;
 
 /**
- * Bridge class for AccessibilityAnnotatorFirstRunBottomSheet.
+ * Bridge class for PersonalContextFirstRunBottomSheet.
  *
  * <p>Objects of this type are created and owned by the corresponding native implementation.
  */
-@JNINamespace("accessibility_annotator")
+@JNINamespace("personal_context")
 @NullMarked
-class AccessibilityAnnotatorFirstRunBottomSheetBridge
-        implements AccessibilityAnnotatorFirstRunBottomSheetCoordinator.Delegate {
+class PersonalContextFirstRunBottomSheetBridge
+        implements PersonalContextFirstRunBottomSheetCoordinator.Delegate {
     private long mNativeBridge;
-    private final AccessibilityAnnotatorFirstRunBottomSheetCoordinator mCoordinator;
+    private final PersonalContextFirstRunBottomSheetCoordinator mCoordinator;
 
     @CalledByNative
-    private static @Nullable AccessibilityAnnotatorFirstRunBottomSheetBridge create(
+    private static @Nullable PersonalContextFirstRunBottomSheetBridge create(
             long nativeBridge, WindowAndroid windowAndroid) {
         BottomSheetController bottomSheetController =
                 BottomSheetControllerProvider.from(windowAndroid);
@@ -40,15 +40,15 @@ class AccessibilityAnnotatorFirstRunBottomSheetBridge
             return null;
         }
 
-        return new AccessibilityAnnotatorFirstRunBottomSheetBridge(
+        return new PersonalContextFirstRunBottomSheetBridge(
                 nativeBridge, context, bottomSheetController);
     }
 
-    private AccessibilityAnnotatorFirstRunBottomSheetBridge(
+    private PersonalContextFirstRunBottomSheetBridge(
             long nativeBridge, Context context, BottomSheetController bottomSheetController) {
         mNativeBridge = nativeBridge;
         mCoordinator =
-                new AccessibilityAnnotatorFirstRunBottomSheetCoordinator(
+                new PersonalContextFirstRunBottomSheetCoordinator(
                         context, bottomSheetController, this);
     }
 
@@ -76,15 +76,14 @@ class AccessibilityAnnotatorFirstRunBottomSheetBridge
     @Override
     public void onInfoAcknowledged() {
         if (mNativeBridge != 0) {
-            AccessibilityAnnotatorFirstRunBottomSheetBridgeJni.get()
-                    .onInfoAcknowledged(mNativeBridge);
+            PersonalContextFirstRunBottomSheetBridgeJni.get().onInfoAcknowledged(mNativeBridge);
         }
     }
 
     @Override
     public void onManageSettingsClicked() {
         if (mNativeBridge != 0) {
-            AccessibilityAnnotatorFirstRunBottomSheetBridgeJni.get()
+            PersonalContextFirstRunBottomSheetBridgeJni.get()
                     .onManageSettingsClicked(mNativeBridge);
         }
     }
@@ -92,38 +91,33 @@ class AccessibilityAnnotatorFirstRunBottomSheetBridge
     @Override
     public void onLearnMoreClicked() {
         if (mNativeBridge != 0) {
-            AccessibilityAnnotatorFirstRunBottomSheetBridgeJni.get()
-                    .onLearnMoreClicked(mNativeBridge);
+            PersonalContextFirstRunBottomSheetBridgeJni.get().onLearnMoreClicked(mNativeBridge);
         }
     }
 
     @Override
     public void onInfoDismissed() {
         if (mNativeBridge != 0) {
-            AccessibilityAnnotatorFirstRunBottomSheetBridgeJni.get().onInfoDismissed(mNativeBridge);
+            PersonalContextFirstRunBottomSheetBridgeJni.get().onInfoDismissed(mNativeBridge);
         }
     }
 
     @NativeMethods
     interface Natives {
         void onInfoAcknowledged(
-                @JniType(
-                                "accessibility_annotator::AccessibilityAnnotatorFirstRunBottomSheetBridge*")
-                        long nativeAccessibilityAnnotatorFirstRunBottomSheetBridge);
+                @JniType("personal_context::PersonalContextFirstRunBottomSheetBridge*")
+                        long nativePersonalContextFirstRunBottomSheetBridge);
 
         void onManageSettingsClicked(
-                @JniType(
-                                "accessibility_annotator::AccessibilityAnnotatorFirstRunBottomSheetBridge*")
-                        long nativeAccessibilityAnnotatorFirstRunBottomSheetBridge);
+                @JniType("personal_context::PersonalContextFirstRunBottomSheetBridge*")
+                        long nativePersonalContextFirstRunBottomSheetBridge);
 
         void onLearnMoreClicked(
-                @JniType(
-                                "accessibility_annotator::AccessibilityAnnotatorFirstRunBottomSheetBridge*")
-                        long nativeAccessibilityAnnotatorFirstRunBottomSheetBridge);
+                @JniType("personal_context::PersonalContextFirstRunBottomSheetBridge*")
+                        long nativePersonalContextFirstRunBottomSheetBridge);
 
         void onInfoDismissed(
-                @JniType(
-                                "accessibility_annotator::AccessibilityAnnotatorFirstRunBottomSheetBridge*")
-                        long nativeAccessibilityAnnotatorFirstRunBottomSheetBridge);
+                @JniType("personal_context::PersonalContextFirstRunBottomSheetBridge*")
+                        long nativePersonalContextFirstRunBottomSheetBridge);
     }
 }

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.accessibility_annotator.first_run;
+package org.chromium.chrome.browser.personal_context.first_run;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
@@ -48,17 +48,17 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetTestSupport;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
-/** Tests for {@link AccessibilityAnnotatorFirstRunBottomSheet}. */
+/** Tests for {@link PersonalContextFirstRunBottomSheet}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
-public class AccessibilityAnnotatorFirstRunBottomSheetTest {
+public class PersonalContextFirstRunBottomSheetTest {
     @Rule
     public AutoResetCtaTransitTestRule mActivityTestRule =
             ChromeTransitTestRules.autoResetCtaActivityRule();
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Mock private AccessibilityAnnotatorFirstRunBottomSheetCoordinator.Delegate mDelegate;
+    @Mock private PersonalContextFirstRunBottomSheetCoordinator.Delegate mDelegate;
     private static final String TEST_TITLE = "Test Title";
     private static final String TEST_DESCRIPTION = "Test Description";
     private static final String TEST_CARD_1_TEXT = "Card 1";
@@ -69,7 +69,7 @@ public class AccessibilityAnnotatorFirstRunBottomSheetTest {
     private static final String LEARN_MORE_URL = "https://example.com/learn_more";
 
     private BottomSheetController mBottomSheetController;
-    private AccessibilityAnnotatorFirstRunBottomSheetCoordinator mCoordinator;
+    private PersonalContextFirstRunBottomSheetCoordinator mCoordinator;
 
     @Before
     public void setUp() {
@@ -85,7 +85,7 @@ public class AccessibilityAnnotatorFirstRunBottomSheetTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mCoordinator =
-                            new AccessibilityAnnotatorFirstRunBottomSheetCoordinator(
+                            new PersonalContextFirstRunBottomSheetCoordinator(
                                     mActivityTestRule.getActivity(),
                                     mBottomSheetController,
                                     mDelegate);
@@ -179,42 +179,38 @@ public class AccessibilityAnnotatorFirstRunBottomSheetTest {
                 () -> {
                     PropertyModel model =
                             new PropertyModel.Builder(
-                                            AccessibilityAnnotatorFirstRunBottomSheetProperties
-                                                    .ALL_KEYS)
+                                            PersonalContextFirstRunBottomSheetProperties.ALL_KEYS)
                                     .with(
-                                            AccessibilityAnnotatorFirstRunBottomSheetProperties
-                                                    .TITLE,
+                                            PersonalContextFirstRunBottomSheetProperties.TITLE,
                                             TEST_TITLE)
                                     .with(
-                                            AccessibilityAnnotatorFirstRunBottomSheetProperties
+                                            PersonalContextFirstRunBottomSheetProperties
                                                     .DESCRIPTION,
                                             TEST_DESCRIPTION)
                                     .with(
-                                            AccessibilityAnnotatorFirstRunBottomSheetProperties
+                                            PersonalContextFirstRunBottomSheetProperties
                                                     .CARD_1_TEXT,
                                             TEST_CARD_1_TEXT)
                                     .with(
-                                            AccessibilityAnnotatorFirstRunBottomSheetProperties
+                                            PersonalContextFirstRunBottomSheetProperties
                                                     .CARD_2_TEXT,
                                             TEST_CARD_2_TEXT)
                                     .with(
-                                            AccessibilityAnnotatorFirstRunBottomSheetProperties
+                                            PersonalContextFirstRunBottomSheetProperties
                                                     .PRIMARY_BUTTON_LABEL,
                                             TEST_PRIMARY_BUTTON_LABEL)
                                     .with(
-                                            AccessibilityAnnotatorFirstRunBottomSheetProperties
+                                            PersonalContextFirstRunBottomSheetProperties
                                                     .SECONDARY_BUTTON_LABEL,
                                             TEST_SECONDARY_BUTTON_LABEL)
                                     .build();
 
-                    AccessibilityAnnotatorFirstRunBottomSheetViewHolder holder =
-                            new AccessibilityAnnotatorFirstRunBottomSheetViewHolder(
+                    PersonalContextFirstRunBottomSheetViewHolder holder =
+                            new PersonalContextFirstRunBottomSheetViewHolder(
                                     mActivityTestRule.getActivity());
 
                     PropertyModelChangeProcessor.create(
-                            model,
-                            holder,
-                            AccessibilityAnnotatorFirstRunBottomSheetViewBinder::bind);
+                            model, holder, PersonalContextFirstRunBottomSheetViewBinder::bind);
 
                     assertTextViewContent(holder.mTitle, TEST_TITLE);
                     assertTextViewContent(holder.mDescription, TEST_DESCRIPTION);

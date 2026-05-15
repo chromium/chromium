@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.accessibility_annotator.first_run;
+package org.chromium.chrome.browser.personal_context.first_run;
 
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -25,18 +25,18 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.Stat
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.components.browser_ui.settings.SettingsCustomTabLauncher;
 
-/** Unit tests for {@link AccessibilityAnnotatorFirstRunBottomSheet}. */
+/** Unit tests for {@link PersonalContextFirstRunBottomSheet}. */
 @RunWith(BaseRobolectricTestRunner.class)
-public class AccessibilityAnnotatorFirstRunBottomSheetUnitTest {
+public class PersonalContextFirstRunBottomSheetUnitTest {
     @Rule public MockitoRule mockitoRule = MockitoJUnit.rule();
 
     @Mock private Context mContext;
     @Mock private BottomSheetController mBottomSheetController;
-    @Mock private AccessibilityAnnotatorFirstRunBottomSheetContent mContent;
-    @Mock private AccessibilityAnnotatorFirstRunBottomSheetCoordinator.Delegate mDelegate;
+    @Mock private PersonalContextFirstRunBottomSheetContent mContent;
+    @Mock private PersonalContextFirstRunBottomSheetCoordinator.Delegate mDelegate;
     @Mock private SettingsCustomTabLauncher mCustomTabLauncher;
 
-    private AccessibilityAnnotatorFirstRunBottomSheetMediator mMediator;
+    private PersonalContextFirstRunBottomSheetMediator mMediator;
 
     private static final String MANAGE_SETTINGS_URL = "https://example.com/manage";
     private static final String LEARN_MORE_URL = "https://example.com/learn_more";
@@ -44,7 +44,7 @@ public class AccessibilityAnnotatorFirstRunBottomSheetUnitTest {
     @Before
     public void setUp() {
         mMediator =
-                new AccessibilityAnnotatorFirstRunBottomSheetMediator(
+                new PersonalContextFirstRunBottomSheetMediator(
                         mContext, mBottomSheetController, mContent, mDelegate, mCustomTabLauncher);
     }
 

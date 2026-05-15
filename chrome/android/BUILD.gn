@@ -1095,7 +1095,6 @@ if (_is_default_toolchain) {
 
     deps = [
       "junit:chrome_junit_tests_org.chromium.chrome.browser",
-      "junit:chrome_junit_tests_org.chromium.chrome.browser.accessibility_annotator",
       "junit:chrome_junit_tests_org.chromium.chrome.browser.app",
       "junit:chrome_junit_tests_org.chromium.chrome.browser.autofill",
       "junit:chrome_junit_tests_org.chromium.chrome.browser.background_sync",
@@ -1123,6 +1122,7 @@ if (_is_default_toolchain) {
       "junit:chrome_junit_tests_org.chromium.chrome.browser.page_info",
       "junit:chrome_junit_tests_org.chromium.chrome.browser.password_manager",
       "junit:chrome_junit_tests_org.chromium.chrome.browser.permissions",
+      "junit:chrome_junit_tests_org.chromium.chrome.browser.personal_context",
       "junit:chrome_junit_tests_org.chromium.chrome.browser.price_tracking",
       "junit:chrome_junit_tests_org.chromium.chrome.browser.privacy_sandbox",
       "junit:chrome_junit_tests_org.chromium.chrome.browser.screenshotprovider",
@@ -2966,7 +2966,6 @@ if (_is_default_toolchain) {
       "java/src/org/chromium/chrome/browser/WarmupManager.java",
       "java/src/org/chromium/chrome/browser/about_settings/AboutSettingsBridge.java",
       "java/src/org/chromium/chrome/browser/accessibility/settings/AccessibilitySettingsBridge.java",
-      "java/src/org/chromium/chrome/browser/accessibility_annotator/first_run/AccessibilityAnnotatorFirstRunBottomSheetBridge.java",
       "java/src/org/chromium/chrome/browser/announcement/AnnouncementNotificationManager.java",
       "java/src/org/chromium/chrome/browser/app/feed/NavigationRecorder.java",
       "java/src/org/chromium/chrome/browser/app/flags/ChromeCachedFlags.java",
@@ -3099,6 +3098,7 @@ if (_is_default_toolchain) {
       "java/src/org/chromium/chrome/browser/payments/ServiceWorkerPaymentAppBridge.java",
       "java/src/org/chromium/chrome/browser/permissions/PermissionBlockedDialog.java",
       "java/src/org/chromium/chrome/browser/permissions/PermissionUpdateRequester.java",
+      "java/src/org/chromium/chrome/browser/personal_context/first_run/PersonalContextFirstRunBottomSheetBridge.java",
       "java/src/org/chromium/chrome/browser/policy/PolicyAuditor.java",
       "java/src/org/chromium/chrome/browser/policy/PolicyAuditorBridge.java",
       "java/src/org/chromium/chrome/browser/printing/TabPrinter.java",

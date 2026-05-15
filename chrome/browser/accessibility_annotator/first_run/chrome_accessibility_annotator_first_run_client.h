@@ -16,8 +16,8 @@ class WebContents;
 }
 
 #if BUILDFLAG(IS_ANDROID)
-namespace accessibility_annotator {
-class AccessibilityAnnotatorFirstRunBottomSheetBridge;
+namespace personal_context {
+class PersonalContextFirstRunBottomSheetBridge;
 }
 #endif
 
@@ -44,8 +44,7 @@ class ChromeAccessibilityAnnotatorFirstRunClient
       base::OnceCallback<void(accessibility_annotator::InfoResult)> callback,
       accessibility_annotator::InfoResult result);
 
-  std::unique_ptr<
-      accessibility_annotator::AccessibilityAnnotatorFirstRunBottomSheetBridge>
+  std::unique_ptr<personal_context::PersonalContextFirstRunBottomSheetBridge>
       android_bridge_;
 #endif
 };
