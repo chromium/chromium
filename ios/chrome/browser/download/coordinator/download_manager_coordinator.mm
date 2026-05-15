@@ -41,6 +41,7 @@
 #import "ios/chrome/browser/download/ui/unopened_downloads_tracker.h"
 #import "ios/chrome/browser/drive/model/drive_service_factory.h"
 #import "ios/chrome/browser/drive/model/upload_task.h"
+#import "ios/chrome/browser/fullscreen/model/fullscreen_browser_agent.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_constants.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
@@ -144,9 +145,15 @@
   _viewController.incognito = isIncognito;
 
   if (_shouldObserveFullscreen) {
-    FullscreenController* fullscreenController =
-        FullscreenController::FromBrowser(self.browser);
-    [_viewController setFullscreenController:fullscreenController];
+    if (IsFullscreenRefactoringEnabled()) {
+      FullscreenBrowserAgent* fullscreenBrowserAgent =
+          FullscreenBrowserAgent::FromBrowser(self.browser);
+      [_viewController setFullscreenBrowserAgent:fullscreenBrowserAgent];
+    } else {
+      FullscreenController* fullscreenController =
+          FullscreenController::FromBrowser(self.browser);
+      [_viewController setFullscreenController:fullscreenController];
+    }
   }
 
   _mediator.SetIsIncognito(isIncognito);
@@ -204,7 +211,11 @@
     [self.presenter dismissAnimated:self.animatesPresentation];
     // Prevent delegate callbacks for stopped coordinator.
     _viewController.delegate = nil;
-    [_viewController setFullscreenController:nullptr];
+    if (IsFullscreenRefactoringEnabled()) {
+      [_viewController setFullscreenBrowserAgent:nullptr];
+    } else {
+      [_viewController setFullscreenController:nullptr];
+    }
     _viewController = nil;
   }
 
@@ -321,11 +332,21 @@
                adaptToFullscreen:(bool)adaptToFullscreen {
   _shouldObserveFullscreen = adaptToFullscreen;
   if (adaptToFullscreen) {
-    FullscreenController* fullscreenController =
-        FullscreenController::FromBrowser(self.browser);
-    [_viewController setFullscreenController:fullscreenController];
+    if (IsFullscreenRefactoringEnabled()) {
+      FullscreenBrowserAgent* fullscreenBrowserAgent =
+          FullscreenBrowserAgent::FromBrowser(self.browser);
+      [_viewController setFullscreenBrowserAgent:fullscreenBrowserAgent];
+    } else {
+      FullscreenController* fullscreenController =
+          FullscreenController::FromBrowser(self.browser);
+      [_viewController setFullscreenController:fullscreenController];
+    }
   } else {
-    [_viewController setFullscreenController:nullptr];
+    if (IsFullscreenRefactoringEnabled()) {
+      [_viewController setFullscreenBrowserAgent:nullptr];
+    } else {
+      [_viewController setFullscreenController:nullptr];
+    }
   }
 }
 

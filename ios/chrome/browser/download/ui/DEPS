@@ -1,6 +1,7 @@
 include_rules = [
   # keep-sorted start
   "+ios/chrome/browser/drive/model",
+  "+ios/chrome/browser/fullscreen/model",
   "+ios/chrome/browser/fullscreen/ui_bundled",
   "+ios/chrome/browser/infobars/model",
   "+ios/chrome/browser/overlays/model/public",

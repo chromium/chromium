@@ -8,6 +8,7 @@
 #import <UIKit/UIKit.h>
 
 @protocol DownloadManagerViewControllerDelegate;
+class FullscreenBrowserAgent;
 class FullscreenController;
 @class LayoutGuideCenter;
 
@@ -27,6 +28,10 @@ class FullscreenController;
 
 // Sets the fullscreen controller to update UI on fullscreen changes.
 - (void)setFullscreenController:(FullscreenController*)fullscreenController;
+
+// Sets the fullscreen browser agent to update UI on fullscreen changes.
+- (void)setFullscreenBrowserAgent:
+    (FullscreenBrowserAgent*)fullscreenBrowserAgent;
 
 @end
 
