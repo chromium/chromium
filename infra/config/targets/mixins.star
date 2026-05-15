@@ -719,7 +719,7 @@ targets.mixin(
         dimensions = {
             "os": "Android",
             "device_type": "frankel",
-            "device_os": "BD3A.250721.001",
+            "device_os": "CP1A.260405.005",
             "device_os_type": "userdebug",
             "pool": "chromium.tests.gpu",
         },

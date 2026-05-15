@@ -362,6 +362,9 @@ crbug.com/1255288 [ linux intel ] conformance/textures/misc/texture-size-limit.h
 # Skip test that breaks subsequent tests.
 crbug.com/1043953 [ chromeos chromeos-board-amd64-generic ] conformance/textures/misc/texture-size-limit.html [ Skip ]
 
+# Causes the shard to hang.
+crbug.com/507502286 [ android android-pixel-10 ] conformance/extensions/webgl-blend-func-extended.html [ Skip ]
+
 ###############################
 # Permanent Slow Expectations #
 ###############################
@@ -571,7 +574,6 @@ crbug.com/465162387 [ android android-pixel-6 ] conformance/extensions/oes-eleme
 crbug.com/446122639 [ android android-pixel-10 imagination-technologies ] WebglExtension_EXT_texture_compression_bptc [ Failure ]
 crbug.com/446122639 [ android android-pixel-10 ] WebglExtension_OES_texture_float_linear [ Failure ]
 crbug.com/446122639 [ android android-pixel-10 ] conformance/context/context-size-change.html [ Failure ]
-crbug.com/446122639 [ android android-pixel-10 ] conformance/extensions/webgl-blend-func-extended.html [ Failure ]
 crbug.com/446122639 [ android android-pixel-10 ] conformance/glsl/functions/glsl-function-cross.html [ Failure ]
 crbug.com/446122639 [ android android-pixel-10 ] conformance/ogles/GL/build/build_009_to_016.html [ Failure ]
 crbug.com/446122639 [ android android-pixel-10 ] conformance/rendering/gl-scissor-fbo-test.html [ Failure ]
@@ -581,6 +583,10 @@ crbug.com/446122639 [ android android-pixel-10 ] conformance/textures/misc/textu
 crbug.com/446122639 [ android android-pixel-10 ] conformance/textures/misc/texture-upload-cube-maps.html [ Failure ]
 crbug.com/446122639 [ android android-pixel-10 ] conformance/textures/webgl_canvas/tex-2d-rgb-rgb-unsigned_byte.html [ Failure ]
 crbug.com/446122639 [ android android-pixel-10 ] conformance/textures/webgl_canvas/tex-2d-rgba-rgba-unsigned_byte.html [ Failure ]
+
+# New failures from OS upgrade.
+crbug.com/513192893 [ android android-pixel-10 angle-opengles ] conformance/extensions/angle-instanced-arrays-out-of-bounds.html [ Failure ]
+crbug.com/513192891 [ android android-pixel-10 angle-opengles ] conformance/rendering/out-of-bounds-array-buffers.html [ Failure ]
 
 ## Misc failures ##
 
