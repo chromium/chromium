@@ -18,7 +18,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/metrics_hashes.h"
-#include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/strings/to_string.h"
 #include "base/task/thread_pool.h"
@@ -130,6 +129,26 @@ ml::ModelBackendType GetBackendType(
   }
   // Update once we support more backend types for performance hints.
   return ml::ModelBackendType::kGpuBackend;
+}
+
+ml::ModelPerformanceHint ConvertPerformanceHint(
+    const proto::OnDeviceModelPerformanceHint& performance_hint) {
+  switch (performance_hint) {
+    case proto::OnDeviceModelPerformanceHint::
+        ON_DEVICE_MODEL_PERFORMANCE_HINT_HIGHEST_QUALITY:
+      return ml::ModelPerformanceHint::kHighestQuality;
+    case proto::OnDeviceModelPerformanceHint::
+        ON_DEVICE_MODEL_PERFORMANCE_HINT_FASTEST_INFERENCE:
+      return ml::ModelPerformanceHint::kFastestInference;
+    case proto::OnDeviceModelPerformanceHint::
+        ON_DEVICE_MODEL_PERFORMANCE_HINT_UNSPECIFIED:
+    case proto::OnDeviceModelPerformanceHint::
+        ON_DEVICE_MODEL_PERFORMANCE_HINT_CPU:
+      // Default to highest quality if the performance hint is unspecified or
+      // CPU performance hint is used. For the latter, there's no submodel
+      // support for CPU which is only used if fastest inference is hinted.
+      return ml::ModelPerformanceHint::kHighestQuality;
+  }
 }
 
 }  // namespace
@@ -510,12 +529,7 @@ void OnDeviceModelServiceController::BaseModelController::OnModelAssetsLoaded(
   proto::OnDeviceModelPerformanceHint hint =
       model_metadata_->performance_hint();
   params->backend_type = GetBackendType(hint);
-  // TODO(crbug.com/510448557): Currently CPU defaults to `kHighestQuality` mojo
-  // enum, which is mismatched from the proto performance hint CPU enum. The
-  // mojo enum definition should be updated to match.
-  if (hint == proto::ON_DEVICE_MODEL_PERFORMANCE_HINT_FASTEST_INFERENCE) {
-    params->performance_hint = ml::ModelPerformanceHint::kFastestInference;
-  }
+  params->performance_hint = ConvertPerformanceHint(hint);
   controller_->service_client_->Get()->LoadModel(
       std::move(params), std::move(model),
       base::BindOnce(&RecordOnDeviceLoadModelResult));
