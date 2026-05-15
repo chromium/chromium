@@ -22,6 +22,7 @@ mojom_component("mojom") {
       "meet_browser.mojom",
       "meet_devices_data_aggregator.mojom",
       "meet_devices_diagnostics.mojom",
+      "meet_devices_hotrod_status.mojom",
       "meet_devices_info.mojom",
       "meet_devices_logger.mojom",
     ]

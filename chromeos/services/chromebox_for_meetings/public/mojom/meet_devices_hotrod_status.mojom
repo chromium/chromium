@@ -1,0 +1,14 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+//
+// Next MinVersion: 1
+
+module ash.cfm.mojom;
+
+// Provides an endpoint for the Hotrod app to post information.
+[Stable, Uuid="e20678bb-a708-4d0c-bf43-ae5544002811"]
+interface HotrodStatus {
+  // Update the current call status.
+  PostCallStatus@0(bool is_user_in_call)=>(bool success);
+};
