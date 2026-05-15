@@ -1080,8 +1080,14 @@ void GenerateResourceOnSyncTokenReleased(
     RETURN_ON_FAILURE_WITH_CALLBACK(E_FAIL, "Invalid shared context state");
   }
 
+  auto shared_context_state = shared_image_stub->shared_context_state();
+  const bool needs_gl = !shared_context_state->IsGraphiteDawn();
+  if (!shared_context_state->MakeCurrent(nullptr, needs_gl)) {
+    RETURN_ON_FAILURE_WITH_CALLBACK(E_FAIL, "Failed to make context current");
+  }
+
   Microsoft::WRL::ComPtr<ID3D11Device> shared_d3d11_device =
-      shared_image_stub->shared_context_state()->GetD3D11Device();
+      shared_context_state->GetD3D11Device();
   HRESULT hr = shared_d3d11_device ? S_OK : E_FAIL;
   RETURN_ON_FAILURE_WITH_CALLBACK(hr, "Invalid shared d3d11 device");
   bool use_same_device = (encoder_device.Get() == shared_d3d11_device.Get());
