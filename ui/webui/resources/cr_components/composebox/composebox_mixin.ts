@@ -142,6 +142,8 @@ export const ComposeboxEmbedderMixin =
               type: Boolean,
               reflect: true,
             },
+            hasVoiceSearchError: {type: Boolean},
+            isListening: {type: Boolean},
           };
         }
 
@@ -163,6 +165,12 @@ export const ComposeboxEmbedderMixin =
         accessor shouldShowGhostFiles: boolean = false;
         accessor showMenuOnClick: boolean = true;
         accessor isCanvasQuerySubmitted: boolean = false;
+        // If voice search error scrim is showing:
+        accessor hasVoiceSearchError: boolean = false;
+        // Voice search is listening if there is no error and voice search
+        // overlay is open (and active).
+        accessor isListening: boolean = false;
+
         browserTabContextAdded: boolean = false;
         pendingUploads: Set<UnguessableToken> = new Set();
         dragAndDropEnabled: boolean =
@@ -194,6 +202,9 @@ export const ComposeboxEmbedderMixin =
             loadTimeData.getString('searchboxComposePlaceholder');
         accessor inputState: InputState|null = null;
         accessor inToolMode: boolean = false;
+        // Indicates if voice search overlay is open. Does not indicate if it
+        // is 'listening'. This is because there might be an error scrim showing
+        // (see `hasVoiceSearchError`), making voice search not 'listening'.
         accessor inVoiceSearchMode: boolean = false;
         accessor maxSuggestions: number|null = null;
         accessor receivedSpeech: boolean = false;
@@ -210,6 +221,9 @@ export const ComposeboxEmbedderMixin =
         accessor usePecApi: boolean = false;
         searchboxListenerIds: number[] = [];
         showZps: boolean = loadTimeData.getBoolean('composeboxShowZps');
+        // Attribute that can be set by parent to enable/disable voice search
+        // overlay. `inVoiceSearchMode` indicates if voice search overlay is (at
+        // least) open.
         accessor showVoiceSearch: boolean = false;
         accessor smartComposeInlineHint: string = '';
         accessor smartComposeStats: SmartComposeStats = {
@@ -336,6 +350,13 @@ export const ComposeboxEmbedderMixin =
               changedPrivateProperties.has('inputState') ||
               changedPrivateProperties.has('inputState.activeTool')) {
             this.updateInputPlaceholder();
+          }
+
+          // Listening is true if there is no error and voice search is open.
+          if (changedProperties.has('inVoiceSearchMode') ||
+              changedProperties.has('hasVoiceSearchError')) {
+            this.isListening =
+                this.inVoiceSearchMode && !this.hasVoiceSearchError;
           }
         }
 
@@ -981,6 +1002,7 @@ export const ComposeboxEmbedderMixin =
 
         onVoiceSearchButtonClick() {
           this.inVoiceSearchMode = true;
+          this.hasVoiceSearchError = false;
           this.animationState = GlowAnimationState.LISTENING;
           this.fire('voice-search-action', {value: VoiceSearchAction.ACTIVATE});
           // For contextual tasks composebox voice metrics.
@@ -1765,6 +1787,7 @@ export const ComposeboxEmbedderMixin =
         }
 
         onVoiceSearchError(e: CustomEvent<boolean>) {
+          this.hasVoiceSearchError = true;
           // For contextual tasks composebox voice metrics:
           if (e.detail) {
             // An error that canceled voice search.
@@ -1925,6 +1948,8 @@ export interface ComposeboxEmbedderMixinInterface extends
   lastQueriedInput: string;
   haveReceivedAutcompleteResponse: boolean;
   lensSendRawFileMediaTypesEnabled: boolean;
+  hasVoiceSearchError: boolean;
+  isListening: boolean;
 
   // Embedder-provided methods for DOM and Mojo access
   updateInputPlaceholder(): void;

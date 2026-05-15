@@ -691,7 +691,7 @@
   }
 }
 
-:host(:not([in-voice-search-mode])) #recordingWave {
+:host(:not([is-listening])) #recordingWave {
   display: none;
 }
 

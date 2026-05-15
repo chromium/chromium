@@ -66,19 +66,17 @@ export function getHtml(this: SearchAnimatedGlowElement) {
     `}
 
     <div id="fullContainerOverlay">
-        ${this.coloredTicTacVoiceAnimationEnabled
-            && this.inVoiceSearchMode
-            && this.requiresVoice ?
+       ${this.coloredTicTacVoiceAnimationEnabled
+           && this.isListening && this.requiresVoice ?
            html`<recording-wave id='recordingWave'
-                .isListening="${this.inVoiceSearchMode}">
+                .isListening="${this.isListening}">
                 </recording-wave>`
            : ''}
     </div>
     ${!this.coloredTicTacVoiceAnimationEnabled
-        && this.inVoiceSearchMode
-        && this.requiresVoice ?
+       && this.isListening && this.requiresVoice ?
        html`<audio-wave
-            ?is-listening="${this.inVoiceSearchMode}"
+            .isListening="${this.isListening}"
             .transcript="${this.transcript}"
             .receivedSpeech="${this.receivedSpeech}">
             </audio-wave>`

@@ -75,7 +75,7 @@ export class SearchAnimatedGlowElement extends CrLitElement {
       },
       transcript: {type: String},
       receivedSpeech: {type: Boolean},
-      inVoiceSearchMode: {
+      isListening: {
         type: Boolean,
         reflect: true,
       },
@@ -100,8 +100,8 @@ export class SearchAnimatedGlowElement extends CrLitElement {
   accessor receivedSpeech: boolean = false;
   // Source of truth for voice search (as not every parent has
   // `animationState`).
-  accessor inVoiceSearchMode: boolean = false;
   accessor coloredTicTacVoiceAnimationEnabled: boolean = false;
+  accessor isListening: boolean = false;
   accessor energyEffectAnimationEnabled: boolean = false;
   accessor isZeroState: boolean = false;
 
