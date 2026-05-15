@@ -112,6 +112,12 @@ export class LensOverlayAppElement extends LensOverlayAppElementBase {
             'computeShouldHideSearchBox(isTranslateModeActive, sidePanelOpened, forceHideSearchBox)',
         reflectToAttribute: true,
       },
+      privacyNoticeHidden: {
+        type: Boolean,
+        computed:
+            'computeShouldHidePrivacyNotice(isTranslateModeActive, forceHideSearchBox)',
+        reflectToAttribute: true,
+      },
       isClosing: {
         type: Boolean,
         reflectToAttribute: true,
@@ -270,6 +276,8 @@ export class LensOverlayAppElement extends LensOverlayAppElementBase {
   declare private sidePanelOpened: boolean;
   // Whether the search box should be hidden.
   declare private searchBoxHidden: boolean;
+  // Whether the privacy notice should be hidden.
+  declare private privacyNoticeHidden: boolean;
   // Whether the search box should be forced to hide. Used to prevent the search
   // box from showing when we know the side panel will be opened.
   declare private forceHideSearchBox: boolean;
@@ -344,10 +352,16 @@ export class LensOverlayAppElement extends LensOverlayAppElementBase {
 
   private searchboxBoundingClientRectObserver: ResizeObserver =
       new ResizeObserver(this.onSearchboxBoundsChanged.bind(this));
+  private resizeObserver: ResizeObserver =
+      new ResizeObserver(this.handleResize.bind(this));
 
   // The ID returned by requestAnimationFrame for the updateCursorPosition
   // function.
   private updateCursorPositionRequestId?: number;
+
+  // The ID returned by requestAnimationFrame for the handleResize
+  // function.
+  private handleResizeRequestId?: number;
 
   constructor() {
     super();
@@ -360,6 +374,7 @@ export class LensOverlayAppElement extends LensOverlayAppElementBase {
 
   override connectedCallback() {
     super.connectedCallback();
+    this.resizeObserver.observe(document.body);
 
     const callbackRouter = this.browserProxy.callbackRouter;
     this.listenerIds = [
@@ -380,6 +395,7 @@ export class LensOverlayAppElement extends LensOverlayAppElementBase {
         this.hasPermissionsForSession = true;
         this.performanceTracker.reset();
         this.performanceTracker.startSession();
+        this.updatePrivacyNoticePosition(window.innerWidth, window.innerHeight);
       }),
       callbackRouter.suppressGhostLoader.addListener(
           this.suppressGhostLoader_.bind(this)),
@@ -438,6 +454,7 @@ export class LensOverlayAppElement extends LensOverlayAppElementBase {
 
   override disconnectedCallback() {
     super.disconnectedCallback();
+    this.resizeObserver.unobserve(document.body);
     this.listenerIds.forEach(
         id => assert(this.browserProxy.callbackRouter.removeListener(id)));
     this.listenerIds = [];
@@ -688,6 +705,7 @@ export class LensOverlayAppElement extends LensOverlayAppElementBase {
 
   private onNotifyResultsPanelOpened() {
     this.sidePanelOpened = true;
+    this.updatePrivacyNoticePosition(window.innerWidth, window.innerHeight);
   }
 
 
@@ -716,6 +734,7 @@ export class LensOverlayAppElement extends LensOverlayAppElementBase {
   private onScreenshotRendered(e: CustomEvent<{isSidePanelOpen: boolean}>) {
     this.isImageRendered = true;
     this.sidePanelOpened = e.detail.isSidePanelOpen;
+    this.updatePrivacyNoticePosition(window.innerWidth, window.innerHeight);
     // Focus the searchbox simultaneously with the initial flash animation.
     if (this.enableCsbMotionTweaks && this.autoFocusSearchbox &&
         this.isLensOverlayContextualSearchboxVisible) {
@@ -785,6 +804,10 @@ export class LensOverlayAppElement extends LensOverlayAppElementBase {
   private computeShouldHideSearchBox(): boolean {
     return this.isTranslateModeActive || this.sidePanelOpened ||
         this.forceHideSearchBox;
+  }
+
+  private computeShouldHidePrivacyNotice(): boolean {
+    return this.isTranslateModeActive || this.forceHideSearchBox;
   }
 
   private async showToast(message: string) {
@@ -858,6 +881,58 @@ export class LensOverlayAppElement extends LensOverlayAppElementBase {
 
   getOverlayReshowInProgressForTesting(): boolean {
     return this.overlayReshowInProgress;
+  }
+
+  private handleResize(entries: ResizeObserverEntry[]) {
+    if (this.handleResizeRequestId) {
+      cancelAnimationFrame(this.handleResizeRequestId);
+    }
+
+    this.handleResizeRequestId = requestAnimationFrame(() => {
+      assert(entries.length === 1);
+      const newRect = entries[0].contentRect;
+      if (newRect.width > 0 && newRect.height > 0) {
+        this.updatePrivacyNoticePosition(newRect.width, newRect.height);
+      }
+      this.handleResizeRequestId = undefined;
+    });
+  }
+
+  private updatePrivacyNoticePosition(
+      containerWidth: number, containerHeight: number) {
+    // Only needed if the privacy notice is being displayed while the side panel
+    // is open (i.e. in the non-blocking image context menu search case).
+    // Otherwise, the styles in the HTML file are sufficient.
+    const privacyNotice =
+        this.shadowRoot!.querySelector<HTMLElement>('#privacyNotice');
+    if (!privacyNotice || !this.sidePanelOpened) {
+      return;
+    }
+
+    const selectionOverlayRect = this.$.selectionOverlay.getBoundingRect();
+    const screenshotWidth = selectionOverlayRect.width;
+    const screenshotHeight = selectionOverlayRect.height;
+    if (screenshotWidth === 0 || screenshotHeight === 0) {
+      return;
+    }
+
+    const margins = 48;
+    const newContainerWidth = containerWidth - margins;
+    const newContainerHeight = containerHeight - margins;
+
+    const aspectRatio = screenshotWidth / screenshotHeight;
+    const widthBasedHeight = Math.round(newContainerWidth / aspectRatio);
+    const heightBasedWidth = Math.round(newContainerHeight * aspectRatio);
+
+    if (widthBasedHeight <= newContainerHeight) {
+      privacyNotice.style.insetBlockStart =
+          `${(newContainerHeight - widthBasedHeight) / 2 + 12}px`;
+      privacyNotice.style.insetInlineEnd = `62px`;
+    } else {
+      privacyNotice.style.insetBlockStart = `12px`;
+      privacyNotice.style.insetInlineEnd =
+          `${(newContainerWidth - heightBasedWidth) / 2 + 62}px`;
+    }
   }
 }
 

@@ -342,7 +342,7 @@
     z-index: 6;  /* Keep aligned with cursor and context menu. */
   }
 
-  :host(:not([is-lens-overlay-contextual-searchbox-visible])) #privacyNotice {
+  :host(:not([side-panel-opened]):not([is-lens-overlay-contextual-searchbox-visible])) #privacyNotice {
     inset-block-start: 34px;
     inset-inline-end: 124px;
   }
@@ -373,7 +373,7 @@
     transition: inherit;
   }
 
-  :host([search-box-hidden]) #privacyNotice {
+  :host([privacy-notice-hidden]) #privacyNotice {
     /* Hide when initiating a drag. */
     display: none;
   }
