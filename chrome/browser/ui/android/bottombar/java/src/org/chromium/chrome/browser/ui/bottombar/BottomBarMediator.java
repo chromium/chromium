@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.ui.bottombar;
 import android.content.res.ColorStateList;
 
 import org.chromium.base.Callback;
+import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
@@ -17,13 +18,14 @@ import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
+import org.chromium.chrome.browser.ui.actions.ActionId;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** Mediator for the bottom bar */
 @NullMarked
-public class BottomBarMediator implements ThemeColorProvider.TintObserver {
+public class BottomBarMediator implements ThemeColorProvider.TintObserver, Destroyable {
     /** Delegate for compositor-level visibility changes. */
     public interface VisibilityDelegate {
         /**
@@ -32,9 +34,13 @@ public class BottomBarMediator implements ThemeColorProvider.TintObserver {
          * @param isVisible True if the bottom bar is visible, false otherwise.
          */
         void onVisibilityChanged(boolean isVisible);
+
+        /** Called when the model state changes and a new screenshot is needed. */
+        void onModelTokenChange();
     }
 
     private final PropertyModel mModel;
+    private final BottomBarButtonManager mButtonManager;
     private final ThemeColorProvider mThemeColorProvider;
     private final NullableObservableSupplier<Tab> mTabSupplier;
     private final TabObserver mTabObserver;
@@ -45,6 +51,7 @@ public class BottomBarMediator implements ThemeColorProvider.TintObserver {
     private final Callback<Boolean> mHomepageEnabledObserver = this::onHomepageEnabledChanged;
     private final Callback<Boolean> mOmniboxFocusObserver = this::onOmniboxFocusChanged;
     private final boolean mShouldIncludeHomeButton;
+    private final boolean mShouldIncludeGlic;
     private final NullableObservableSupplier<Profile> mProfileSupplier;
     private final Callback<@Nullable Profile> mProfileObserver = this::updateGlicVisibility;
 
@@ -59,24 +66,26 @@ public class BottomBarMediator implements ThemeColorProvider.TintObserver {
      */
     public BottomBarMediator(
             PropertyModel model,
+            BottomBarButtonManager buttonManager,
             ThemeColorProvider themeColorProvider,
             NullableObservableSupplier<Tab> tabSupplier,
             NonNullObservableSupplier<Boolean> homepageEnabledSupplier,
             VisibilityDelegate visibilityDelegate,
             boolean shouldIncludeHomeButton,
+            boolean shouldIncludeGlic,
             NullableObservableSupplier<Profile> profileSupplier,
             NonNullObservableSupplier<Boolean> omniboxFocusStateSupplier) {
         mModel = model;
+        mButtonManager = buttonManager;
         mThemeColorProvider = themeColorProvider;
         mTabSupplier = tabSupplier;
         mHomepageEnabledSupplier = homepageEnabledSupplier;
         mVisibilityDelegate = visibilityDelegate;
         mShouldIncludeHomeButton = shouldIncludeHomeButton;
+        mShouldIncludeGlic = shouldIncludeGlic;
         mProfileSupplier = profileSupplier;
         mOmniboxFocusStateSupplier = omniboxFocusStateSupplier;
 
-        mProfileSupplier.addSyncObserverAndCallIfNonNull(mProfileObserver);
-        mOmniboxFocusStateSupplier.addSyncObserver(mOmniboxFocusObserver);
         mTabObserver =
                 new EmptyTabObserver() {
                     @Override
@@ -87,12 +96,18 @@ public class BottomBarMediator implements ThemeColorProvider.TintObserver {
 
         mThemeColorProvider.addTintObserver(this);
         mModel.set(BottomBarProperties.COLOR_SCHEME, mThemeColorProvider.getBrandedColorScheme());
+        if (mShouldIncludeGlic) {
+            mProfileSupplier.addSyncObserverAndCallIfNonNull(mProfileObserver);
+        }
+        mOmniboxFocusStateSupplier.addSyncObserver(mOmniboxFocusObserver);
         onTabChanged(mTabSupplier.addSyncObserver(mTabSupplierObserver));
         if (mShouldIncludeHomeButton) {
             mHomepageEnabledSupplier.addSyncObserverAndCallIfNonNull(mHomepageEnabledObserver);
-        } else {
-            updateNewTabButtonBackground();
         }
+
+        // Safe to set the listener after all observers are initialized to trigger the immediate
+        // callback with the correct state.
+        mButtonManager.setListener(this::onButtonChanged);
     }
 
     private void onTabChanged(@Nullable Tab tab) {
@@ -116,9 +131,9 @@ public class BottomBarMediator implements ThemeColorProvider.TintObserver {
                         && UrlUtilities.isNtpUrl(mCurrentTab.getUrl())
                         && !mCurrentTab.isOffTheRecord();
         boolean isOmniboxFocused = mOmniboxFocusStateSupplier.get();
-        boolean isVisible =
-                !(BottomBarConfigUtils.shouldDisableOnNtp() && currentTabIsRegularNtp)
-                        && !isOmniboxFocused;
+        boolean shouldDisableOnNtp =
+                BottomBarConfigUtils.shouldDisableOnNtp() && currentTabIsRegularNtp;
+        boolean isVisible = !shouldDisableOnNtp && !isOmniboxFocused;
 
         if (mIsVisible != null && mIsVisible == isVisible) return;
         mIsVisible = isVisible;
@@ -128,30 +143,45 @@ public class BottomBarMediator implements ThemeColorProvider.TintObserver {
     }
 
     private void updateGlicVisibility(@Nullable Profile profile) {
-        if (profile == null) {
-            mModel.set(BottomBarProperties.IS_GLIC_BUTTON_VISIBLE, false);
-            return;
-        }
         // We only care about whether the original profile allows GLIC. To disable on OTR profiles
         // we rely on the button state which is set elsewhere.
-        boolean isGlicVisible = GlicEnabling.isEnabledForProfile(profile.getOriginalProfile());
-        mModel.set(BottomBarProperties.IS_GLIC_BUTTON_VISIBLE, isGlicVisible);
+        boolean shouldBeVisible =
+                profile != null && GlicEnabling.isEnabledForProfile(profile.getOriginalProfile());
+        setButtonVisibility(ActionId.GLIC, shouldBeVisible);
     }
 
     private void onHomepageEnabledChanged(boolean isEnabled) {
-        mModel.set(BottomBarProperties.IS_HOME_BUTTON_VISIBLE, isEnabled);
-        updateNewTabButtonBackground();
+        setButtonVisibility(ActionId.HOME_BUTTON, isEnabled);
+    }
+
+    private void setButtonVisibility(int actionId, boolean visible) {
+        mButtonManager.setButtonVisibility(actionId, visible);
+    }
+
+    private void onButtonChanged(boolean visibilityChanged) {
+        mVisibilityDelegate.onModelTokenChange();
+        if (visibilityChanged) {
+            updateNewTabButtonBackground();
+        }
     }
 
     private void updateNewTabButtonBackground() {
-        // TODO(crbug.com/483096892): Come up with a more scalable solution for this.
-        boolean isHomeButtonVisible = mModel.get(BottomBarProperties.IS_HOME_BUTTON_VISIBLE);
-        int visibleLeft = isHomeButtonVisible ? 1 : 0;
-        int visibleRight = 1 + (BottomBarConfigUtils.shouldIncludeAppMenuButton() ? 1 : 0);
-        mModel.set(BottomBarProperties.IS_NEW_TAB_BACKGROUND_VISIBLE, visibleLeft == visibleRight);
+        boolean isCentered = mButtonManager.hasCenteredButton();
+        Boolean current = mModel.get(BottomBarProperties.IS_NEW_TAB_BACKGROUND_VISIBLE);
+        if (current == null || current != isCentered) {
+            mModel.set(BottomBarProperties.IS_NEW_TAB_BACKGROUND_VISIBLE, isCentered);
+        }
     }
 
-    /** Remove observers. */
+    @Override
+    public void onTintChanged(
+            @Nullable ColorStateList tint,
+            @Nullable ColorStateList activityFocusTint,
+            @BrandedColorScheme int brandedColorScheme) {
+        mModel.set(BottomBarProperties.COLOR_SCHEME, brandedColorScheme);
+    }
+
+    @Override
     public void destroy() {
         mThemeColorProvider.removeTintObserver(this);
         if (mCurrentTab != null) {
@@ -162,15 +192,9 @@ public class BottomBarMediator implements ThemeColorProvider.TintObserver {
         if (mShouldIncludeHomeButton) {
             mHomepageEnabledSupplier.removeObserver(mHomepageEnabledObserver);
         }
-        mProfileSupplier.removeObserver(mProfileObserver);
+        if (mShouldIncludeGlic) {
+            mProfileSupplier.removeObserver(mProfileObserver);
+        }
         mOmniboxFocusStateSupplier.removeObserver(mOmniboxFocusObserver);
-    }
-
-    @Override
-    public void onTintChanged(
-            @Nullable ColorStateList tint,
-            @Nullable ColorStateList activityFocusTint,
-            @BrandedColorScheme int brandedColorScheme) {
-        mModel.set(BottomBarProperties.COLOR_SCHEME, brandedColorScheme);
     }
 }

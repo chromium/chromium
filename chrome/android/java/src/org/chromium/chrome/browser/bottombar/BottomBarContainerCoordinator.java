@@ -79,9 +79,7 @@ public class BottomBarContainerCoordinator
         mVisibilityController = visibilityController;
         mOnModelTokenChange = onModelTokenChange;
         updateVisibility();
-        // TODO(crbug.com/493594829): The token change should be based on the property model of the
-        // bottom bar.
-        mOnModelTokenChange.onResult(new Object());
+        onModelTokenChange();
     }
 
     @Override
@@ -93,6 +91,13 @@ public class BottomBarContainerCoordinator
     public void onVisibilityChanged(boolean isVisible) {
         mIsVisible = isVisible;
         updateVisibility();
+    }
+
+    @Override
+    public void onModelTokenChange() {
+        if (mOnModelTokenChange != null) {
+            mOnModelTokenChange.onResult(new Object());
+        }
     }
 
     @Override
@@ -114,12 +119,7 @@ public class BottomBarContainerCoordinator
     public void attachBottomBarView(View view) {
         mBottomBarContainer.addView(view);
 
-        if (mOnModelTokenChange != null) {
-            // TODO(crbug.com/493594829): The token change should be based on the property model of
-            // the bottom bar.
-            mOnModelTokenChange.onResult(new Object());
-        }
-
+        onModelTokenChange();
         mRequestLayerUpdateCallback.onResult(true);
     }
 
