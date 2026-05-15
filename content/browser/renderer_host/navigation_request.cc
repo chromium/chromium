@@ -1794,6 +1794,7 @@ NavigationRequest::NavigationRequest(
   CHECK(IsInOutermostMainFrame() || commit_params_->data_url_as_string.empty());
 #endif
   CheckSoftNavigationHeuristicsInvariants();
+  ScopedCrashKeys crash_keys(*this);
 
 #if !BUILDFLAG(IS_ANDROID)
   // It should not be possible to navigate away from the initial WebUI page,
@@ -1805,7 +1806,14 @@ NavigationRequest::NavigationRequest(
               ->GetSiteInstance()
               ->GetSecurityPrincipal()
               .GetDeprecatedSiteURL());
-  CHECK(!current_rfh_is_initial_webui || IsInitialWebUINavigation());
+  if (current_rfh_is_initial_webui && !IsInitialWebUINavigation()) {
+    // TODO(crbug.com/511971445): Turn this into a CHECK again once
+    // investigation on what can cause this is finished.
+    base::debug::DumpWithoutCrashing();
+    // We should not allow navigating away from initial WebUI. Mark this
+    // request for cancellation in BeginNavigation().
+    should_cancel_on_leaving_initial_webui_ = true;
+  }
   if (IsInitialWebUINavigation()) {
     // Initial WebUI navigations must satisfy all these conditions
     // - Is browser initiated
@@ -1832,7 +1840,6 @@ NavigationRequest::NavigationRequest(
   }
 #endif
 
-  ScopedCrashKeys crash_keys(*this);
 
   ComputeDownloadPolicy();
 
@@ -2486,6 +2493,17 @@ void NavigationRequest::BeginNavigation() {
   CHECK(!HasRenderFrameHost());
   ScopedCrashKeys crash_keys(*this);
   UpdateNavigationHandleTimingsOnBeginNavigation();
+
+  // Cancel the navigation if it is an invalid attempt to navigate away from
+  // an initial WebUI page.
+  if (should_cancel_on_leaving_initial_webui_) {
+    StartNavigation();
+    OnRequestFailedInternal(
+        network::URLLoaderCompletionStatus(net::ERR_ABORTED),
+        /*skip_throttles=*/false, /*error_page_content=*/std::nullopt,
+        /*collapse_frame=*/false);
+    return;
+  }
 
   if (begin_navigation_callback_for_testing_) {
     std::move(begin_navigation_callback_for_testing_).Run();

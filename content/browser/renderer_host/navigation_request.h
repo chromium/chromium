@@ -3675,6 +3675,11 @@ class CONTENT_EXPORT NavigationRequest
   // be alive during the callback to work.
   bool is_destructing_ = false;
 
+  // Set to true if this navigation is trying to navigate away from an initial
+  // WebUI page (and is not itself a valid initial WebUI navigation). Such
+  // navigations are invalid and should be cancelled in BeginNavigation().
+  bool should_cancel_on_leaving_initial_webui_ = false;
+
   base::WeakPtrFactory<NavigationRequest> weak_factory_{this};
 };
 
