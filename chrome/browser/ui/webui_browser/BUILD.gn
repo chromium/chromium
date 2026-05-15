@@ -160,7 +160,12 @@ source_set("browser_tests") {
   testonly = true
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
-  sources = [ "webui_browser_browsertest.cc" ]
+  sources = []
+
+  # TODO(crbug.com/451876195): Fix and re-enable these tests on CrOS.
+  if (!is_chromeos) {
+    sources += [ "webui_browser_browsertest.cc" ]
+  }
 
   deps = [
     ":impl",

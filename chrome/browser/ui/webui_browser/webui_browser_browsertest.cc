@@ -129,16 +129,7 @@ IN_PROC_BROWSER_TEST_F(WebUIBrowserTest, StartupAndShutdown) {
 // Verifies that WebUIBrowserWindow allows keyboard lock for tab WebContents.
 // Tabs in WebUIBrowserWindow are inner WebContents, so this must return true
 // for keyboard lock to work.
-#if BUILDFLAG(IS_CHROMEOS)
-// TODO(crbug.com/451876195): Fix and re-enable this test for CrOS.
-#define MAYBE_AllowKeyboardLockForInnerContents \
-  DISABLED_AllowKeyboardLockForInnerContents
-#else
-#define MAYBE_AllowKeyboardLockForInnerContents \
-  AllowKeyboardLockForInnerContents
-#endif
-IN_PROC_BROWSER_TEST_F(WebUIBrowserTest,
-                       MAYBE_AllowKeyboardLockForInnerContents) {
+IN_PROC_BROWSER_TEST_F(WebUIBrowserTest, AllowKeyboardLockForInnerContents) {
   auto* capabilities = DesktopBrowserWindowCapabilities::From(browser());
   ASSERT_TRUE(capabilities);
 
@@ -148,19 +139,8 @@ IN_PROC_BROWSER_TEST_F(WebUIBrowserTest,
   EXPECT_TRUE(capabilities->AllowKeyboardLockForInnerContents(web_contents));
 }
 
-#if BUILDFLAG(IS_CHROMEOS)
-// TODO(crbug.com/451876195): Fix and re-enable this test for CrOS.
-// For now this is disabled on CrOS since BrowserStatusMonitor/
-// AppServiceInstanceRegistryHelper aren't happy with our shutdown deletion
-// order of native windows vs. Browser and aren't tracking the switch over
-// of views on child guest contents properly.
-#define MAYBE_NavigatePage DISABLED_NavigatePage
-#else
-#define MAYBE_NavigatePage NavigatePage
-#endif
-
 // Navigation at chrome/ layer, which hits some focus management paths.
-IN_PROC_BROWSER_TEST_F(WebUIBrowserTest, MAYBE_NavigatePage) {
+IN_PROC_BROWSER_TEST_F(WebUIBrowserTest, NavigatePage) {
   auto* window = browser()->window();
   ASSERT_TRUE(window);
 
@@ -181,18 +161,8 @@ IN_PROC_BROWSER_TEST_F(WebUIBrowserTest, MAYBE_NavigatePage) {
             EvalJs(web_contents, "document.body.textContent"));
 }
 
-#if BUILDFLAG(IS_CHROMEOS)
-// TODO(crbug.com/451876195): Fix and re-enable this test for CrOS.
-// For now this is disabled on CrOS since BrowserStatusMonitor/
-// AppServiceInstanceRegistryHelper aren't happy with our shutdown deletion
-// order of native windows vs. Browser and aren't tracking the switch over
-// of views on child guest contents properly.
-#define MAYBE_EnumerateDevToolsTargets DISABLED_EnumerateDevToolsTargets
-#else
-#define MAYBE_EnumerateDevToolsTargets EnumerateDevToolsTargets
-#endif
 // Verify DevTools targets enumeration for browser UI and tabs.
-IN_PROC_BROWSER_TEST_F(WebUIBrowserTest, MAYBE_EnumerateDevToolsTargets) {
+IN_PROC_BROWSER_TEST_F(WebUIBrowserTest, EnumerateDevToolsTargets) {
   auto* window = browser()->window();
   ASSERT_TRUE(window);
 
@@ -235,14 +205,8 @@ IN_PROC_BROWSER_TEST_F(WebUIBrowserTest, MAYBE_EnumerateDevToolsTargets) {
   EXPECT_EQ(page_count, 1);
 }
 
-#if BUILDFLAG(IS_CHROMEOS)
-// TODO(crbug.com/451876195): Fix and re-enable this test for CrOS.
-#define MAYBE_FullscreenEnterAndExit DISABLED_FullscreenEnterAndExit
-#else
-#define MAYBE_FullscreenEnterAndExit FullscreenEnterAndExit
-#endif
 // Test entering and exiting fullscreen mode.
-IN_PROC_BROWSER_TEST_F(WebUIBrowserTest, MAYBE_FullscreenEnterAndExit) {
+IN_PROC_BROWSER_TEST_F(WebUIBrowserTest, FullscreenEnterAndExit) {
   auto* window = browser()->window();
   ASSERT_TRUE(window);
 
@@ -263,14 +227,8 @@ IN_PROC_BROWSER_TEST_F(WebUIBrowserTest, MAYBE_FullscreenEnterAndExit) {
   EXPECT_FALSE(window->IsFullscreen());
 }
 
-#if BUILDFLAG(IS_CHROMEOS)
-// TODO(crbug.com/451876195): Fix and re-enable this test for CrOS.
-#define MAYBE_TabFullscreenEnterAndExit DISABLED_TabFullscreenEnterAndExit
-#else
-#define MAYBE_TabFullscreenEnterAndExit TabFullscreenEnterAndExit
-#endif
 // Test entering and exiting tab fullscreen mode, including tab switching.
-IN_PROC_BROWSER_TEST_F(WebUIBrowserTest, MAYBE_TabFullscreenEnterAndExit) {
+IN_PROC_BROWSER_TEST_F(WebUIBrowserTest, TabFullscreenEnterAndExit) {
   auto* window = browser()->window();
   ASSERT_TRUE(window);
 
@@ -368,18 +326,11 @@ IN_PROC_BROWSER_TEST_F(WebUIBrowserTest, BookmarkNodeFaviconChangedRegression) {
   }
 }
 
-#if BUILDFLAG(IS_CHROMEOS)
-// TODO(crbug.com/451876195): Enable this test for CrOS.
-#define MAYBE_SurfaceEmbedRendersRedRect DISABLED_SurfaceEmbedRendersRedRect
-#else
-#define MAYBE_SurfaceEmbedRendersRedRect SurfaceEmbedRendersRedRect
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
 // Verifies that when kSurfaceEmbed is enabled, the WebUI browser (Webium)
 // renders a red rectangle for the tab content. This test will need updated as
 // surface embed support is expanded.
 IN_PROC_BROWSER_TEST_F(WebUIBrowserSurfaceEmbedPixelTest,
-                       MAYBE_SurfaceEmbedRendersRedRect) {
+                       SurfaceEmbedRendersRedRect) {
   // Get the UI WebContents (the embedder/outer frame that contains the <embed>
   // element with the SurfaceEmbedWebPlugin). We need to capture from this
   // WebContents since it has the fully composed view including the plugin's
