@@ -149,6 +149,7 @@ class MockH264Accelerator : public H264Decoder::H264Accelerator {
   MOCK_METHOD2(SetStream,
                Status(base::span<const uint8_t> stream,
                       const DecryptConfig* decrypt_config));
+  MOCK_METHOD0(RequiresRefLists, bool());
 
   void Reset() override {}
 
@@ -215,6 +216,8 @@ class H264DecoderTest : public ::testing::Test {
 
 void H264DecoderTest::SetUp() {
   auto mock_accelerator = std::make_unique<MockH264Accelerator>();
+  EXPECT_CALL(*mock_accelerator, RequiresRefLists())
+      .WillRepeatedly(Return(false));
   accelerator_ = mock_accelerator.get();
   decoder_ = std::make_unique<H264Decoder>(std::move(mock_accelerator),
                                            VIDEO_CODEC_PROFILE_UNKNOWN);
@@ -1012,6 +1015,191 @@ TEST_F(H264DecoderTest,
   ASSERT_EQ(temp_ref_pic_list0[5], nullptr);
   ASSERT_EQ(temp_ref_pic_list0[6]->long_term_pic_num, 18);
   ASSERT_EQ(temp_ref_pic_list0[7], nullptr);
+}
+
+TEST_F(H264DecoderTest, HandleLargeFrameNumGap) {
+  auto mock_accelerator = std::make_unique<MockH264Accelerator>();
+  EXPECT_CALL(*mock_accelerator, RequiresRefLists())
+      .WillRepeatedly(Return(true));
+  accelerator_ = mock_accelerator.get();
+  decoder_ = std::make_unique<H264Decoder>(std::move(mock_accelerator),
+                                           VIDEO_CODEC_PROFILE_UNKNOWN);
+
+  H26xAnnexBBitstreamBuilder builder;
+
+  H264SPS sps = {};
+  sps.seq_parameter_set_id = 0;
+  sps.profile_idc = H264SPS::kProfileIDCMain;
+  sps.level_idc = H264SPS::kLevelIDC5p1;
+  sps.log2_max_frame_num_minus4 = 12;  // MaxFrameNum = 65536
+  sps.log2_max_pic_order_cnt_lsb_minus4 = 4;
+  sps.pic_width_in_mbs_minus1 = 39;
+  sps.pic_height_in_map_units_minus1 = 29;
+  sps.frame_mbs_only_flag = true;
+  sps.max_num_ref_frames = 1;
+  sps.gaps_in_frame_num_value_allowed_flag = true;
+  BuildPackedH264SPS(builder, sps);
+
+  H264PPS pps = {};
+  pps.pic_parameter_set_id = 0;
+  pps.seq_parameter_set_id = 0;
+  BuildPackedH264PPS(builder, sps, pps);
+
+  // IDR Slice (frame_num = 0)
+  builder.AppendBits(32, 0x00000001);  // start code
+  builder.Flush();
+  builder.AppendBits(1, 0);                    // forbidden_zero_bit
+  builder.AppendBits(2, 3);                    // nal_ref_idc
+  builder.AppendBits(5, H264NALU::kIDRSlice);  // nal_unit_type
+
+  builder.AppendUE(0);  // first_mb_in_slice
+  builder.AppendUE(7);  // slice_type = I (7)
+  builder.AppendUE(0);  // pic_parameter_set_id
+  builder.AppendBits(sps.log2_max_frame_num_minus4 + 4, 0);  // frame_num
+  builder.AppendUE(0);                                       // idr_pic_id
+  builder.AppendBits(sps.log2_max_pic_order_cnt_lsb_minus4 + 4, 0);  // poc_lsb
+
+  builder.AppendBool(false);  // no_output_of_prior_pics_flag
+  builder.AppendBool(false);  // long_term_reference_flag
+
+  builder.AppendSE(0);       // slice_qp_delta
+  builder.AppendBool(true);  // byte alignment bit
+  builder.Flush();
+
+  // Non-IDR Slice (frame_num = 60000)
+  builder.AppendBits(32, 0x00000001);  // start code
+  builder.Flush();
+  builder.AppendBits(1, 0);                       // forbidden_zero_bit
+  builder.AppendBits(2, 3);                       // nal_ref_idc
+  builder.AppendBits(5, H264NALU::kNonIDRSlice);  // nal_unit_type
+
+  builder.AppendUE(0);  // first_mb_in_slice
+  builder.AppendUE(5);  // slice_type = P (5)
+  builder.AppendUE(0);  // pic_parameter_set_id
+  builder.AppendBits(sps.log2_max_frame_num_minus4 + 4, 60000);  // frame_num
+  builder.AppendBits(sps.log2_max_pic_order_cnt_lsb_minus4 + 4, 2);  // poc_lsb
+
+  builder.AppendBool(false);  // num_ref_idx_active_override_flag
+  builder.AppendBool(true);   // ref_pic_list_modification_flag_l0
+  builder.AppendUE(0);        // modification_of_pic_nums_idc (subtract)
+  builder.AppendUE(0);        // abs_diff_pic_num_minus1 (subtract 1)
+  builder.AppendUE(3);        // modification_of_pic_nums_idc (end)
+  builder.AppendBool(false);  // adaptive_ref_pic_marking_mode_flag
+
+  builder.AppendSE(0);       // slice_qp_delta
+  builder.AppendBool(true);  // byte alignment bit
+  builder.Flush();
+
+  auto buffer = DecoderBuffer::CopyFrom(builder.data());
+
+  EXPECT_CALL(*accelerator_, SetStream(_, _))
+      .WillRepeatedly(Return(H264Decoder::H264Accelerator::Status::kOk));
+  EXPECT_CALL(*accelerator_, CreateH264Picture()).WillRepeatedly([]() {
+    return base::MakeRefCounted<H264Picture>();
+  });
+  EXPECT_CALL(*accelerator_, SubmitFrameMetadata(_, _, _, _, _, _, _))
+      .WillRepeatedly(Return(H264Decoder::H264Accelerator::Status::kOk));
+  EXPECT_CALL(*accelerator_, SubmitSlice(_, _, _, _, _, _, _, _))
+      .WillRepeatedly(Return(H264Decoder::H264Accelerator::Status::kOk));
+  EXPECT_CALL(*accelerator_, SubmitDecode(_))
+      .WillRepeatedly(Return(H264Decoder::H264Accelerator::Status::kOk));
+  EXPECT_CALL(*accelerator_, OutputPicture(_)).WillRepeatedly(Return(true));
+
+  decoder_->SetStream(1, buffer);
+
+  // Decode config change
+  EXPECT_EQ(AcceleratedVideoDecoder::kConfigChange, decoder_->Decode());
+
+  // Decode the rest of the stream
+  EXPECT_EQ(AcceleratedVideoDecoder::kRanOutOfStreamData, decoder_->Decode());
+}
+
+TEST_F(H264DecoderTest, HandleNormalFrameNumGap) {
+  H26xAnnexBBitstreamBuilder builder;
+
+  H264SPS sps = {};
+  sps.seq_parameter_set_id = 0;
+  sps.profile_idc = H264SPS::kProfileIDCMain;
+  sps.level_idc = H264SPS::kLevelIDC5p1;
+  sps.log2_max_frame_num_minus4 = 12;  // MaxFrameNum = 65536
+  sps.log2_max_pic_order_cnt_lsb_minus4 = 4;
+  sps.pic_width_in_mbs_minus1 = 39;
+  sps.pic_height_in_map_units_minus1 = 29;
+  sps.frame_mbs_only_flag = true;
+  sps.max_num_ref_frames = 1;
+  sps.gaps_in_frame_num_value_allowed_flag = true;
+  BuildPackedH264SPS(builder, sps);
+
+  H264PPS pps = {};
+  pps.pic_parameter_set_id = 0;
+  pps.seq_parameter_set_id = 0;
+  BuildPackedH264PPS(builder, sps, pps);
+
+  // IDR Slice (frame_num = 0)
+  builder.AppendBits(32, 0x00000001);  // start code
+  builder.Flush();
+  builder.AppendBits(1, 0);                    // forbidden_zero_bit
+  builder.AppendBits(2, 3);                    // nal_ref_idc
+  builder.AppendBits(5, H264NALU::kIDRSlice);  // nal_unit_type
+
+  builder.AppendUE(0);  // first_mb_in_slice
+  builder.AppendUE(7);  // slice_type = I (7)
+  builder.AppendUE(0);  // pic_parameter_set_id
+  builder.AppendBits(sps.log2_max_frame_num_minus4 + 4, 0);  // frame_num
+  builder.AppendUE(0);                                       // idr_pic_id
+  builder.AppendBits(sps.log2_max_pic_order_cnt_lsb_minus4 + 4, 0);  // poc_lsb
+
+  builder.AppendBool(false);  // no_output_of_prior_pics_flag
+  builder.AppendBool(false);  // long_term_reference_flag
+
+  builder.AppendSE(0);       // slice_qp_delta
+  builder.AppendBool(true);  // byte alignment bit
+  builder.Flush();
+
+  // Non-IDR Slice (frame_num = 5)
+  builder.AppendBits(32, 0x00000001);  // start code
+  builder.Flush();
+  builder.AppendBits(1, 0);                       // forbidden_zero_bit
+  builder.AppendBits(2, 3);                       // nal_ref_idc
+  builder.AppendBits(5, H264NALU::kNonIDRSlice);  // nal_unit_type
+
+  builder.AppendUE(0);  // first_mb_in_slice
+  builder.AppendUE(5);  // slice_type = P (5)
+  builder.AppendUE(0);  // pic_parameter_set_id
+  builder.AppendBits(sps.log2_max_frame_num_minus4 + 4, 5);  // frame_num
+  builder.AppendBits(sps.log2_max_pic_order_cnt_lsb_minus4 + 4, 2);  // poc_lsb
+
+  builder.AppendBool(false);  // num_ref_idx_active_override_flag
+  builder.AppendBool(false);  // ref_pic_list_modification_flag_l0
+  builder.AppendBool(false);  // adaptive_ref_pic_marking_mode_flag
+
+  builder.AppendSE(0);       // slice_qp_delta
+  builder.AppendBool(true);  // byte alignment bit
+  builder.Flush();
+
+  auto buffer = DecoderBuffer::CopyFrom(builder.data());
+
+  EXPECT_CALL(*accelerator_, SetStream(_, _))
+      .WillRepeatedly(Return(H264Decoder::H264Accelerator::Status::kOk));
+  // CreateH264Picture should be called 2 times: 1 for IDR, 1 for non-IDR
+  EXPECT_CALL(*accelerator_, CreateH264Picture()).Times(2).WillRepeatedly([]() {
+    return base::MakeRefCounted<H264Picture>();
+  });
+  EXPECT_CALL(*accelerator_, SubmitFrameMetadata(_, _, _, _, _, _, _))
+      .WillRepeatedly(Return(H264Decoder::H264Accelerator::Status::kOk));
+  EXPECT_CALL(*accelerator_, SubmitSlice(_, _, _, _, _, _, _, _))
+      .WillRepeatedly(Return(H264Decoder::H264Accelerator::Status::kOk));
+  EXPECT_CALL(*accelerator_, SubmitDecode(_))
+      .WillRepeatedly(Return(H264Decoder::H264Accelerator::Status::kOk));
+  EXPECT_CALL(*accelerator_, OutputPicture(_)).WillRepeatedly(Return(true));
+
+  decoder_->SetStream(1, buffer);
+
+  // Decode config change
+  EXPECT_EQ(AcceleratedVideoDecoder::kConfigChange, decoder_->Decode());
+
+  // Decode the rest of the stream
+  EXPECT_EQ(AcceleratedVideoDecoder::kRanOutOfStreamData, decoder_->Decode());
 }
 
 }  // namespace

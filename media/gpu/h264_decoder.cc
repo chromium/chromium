@@ -757,6 +757,7 @@ bool H264Decoder::OutputAllRemainingPics() {
   // Output all pictures that are waiting to be outputted.
   if (FinishPrevFrameIfPresent() != H264Accelerator::Status::kOk)
     return false;
+
   H264Picture::Vector to_output;
   dpb_.GetNotOutputtedPicsAppending(&to_output);
   // Sort them by ascending POC to output in order.
@@ -1354,6 +1355,60 @@ bool H264Decoder::HandleFrameNumGap(int frame_num) {
 
   // 7.4.3/7-23
   int unused_short_term_frame_num = (prev_ref_frame_num_ + 1) % max_frame_num_;
+
+  const int gap_size =
+      (frame_num - unused_short_term_frame_num + max_frame_num_) %
+      max_frame_num_;
+  if (gap_size > H264DPB::kDPBMaxSize) {
+    // A gap larger than the DPB size will inevitably push out all existing
+    // frames. Instead of allocating thousands of dummy pictures to fill the
+    // gap (which can cause a timeout/OOM), fast-forward the state to just
+    // before the last `H264DPB::kDPBMaxSize` frames. The while loop below
+    // will then naturally fill the DPB with those dummy frames.
+
+    int skip_count = gap_size - H264DPB::kDPBMaxSize;
+
+    if (recovery_frame_num_) {
+      int recovery_offset = (*recovery_frame_num_ -
+                             unused_short_term_frame_num + max_frame_num_) %
+                            max_frame_num_;
+      if (recovery_offset < skip_count) {
+        // The recovery frame was skipped. Stop dropping frames.
+        recovery_frame_num_ = std::nullopt;
+      }
+    }
+
+    if (prev_has_memmgmnt5_) {
+      prev_frame_num_offset_ = 0;
+      prev_has_memmgmnt5_ = false;
+    }
+
+    int wrap_count = 0;
+    if (prev_frame_num_ > unused_short_term_frame_num) {
+      wrap_count++;
+    }
+    if (unused_short_term_frame_num + skip_count > max_frame_num_) {
+      wrap_count++;
+    }
+
+    if (wrap_count > 0) {
+      if (!base::CheckAdd(prev_frame_num_offset_, wrap_count * max_frame_num_)
+               .AssignIfValid(&prev_frame_num_offset_)) {
+        DVLOG(1) << "Frame num offset overflow";
+        return false;
+      }
+    }
+
+    int advanced_frame_num =
+        (unused_short_term_frame_num + skip_count) % max_frame_num_;
+    prev_ref_frame_num_ =
+        (advanced_frame_num - 1 + max_frame_num_) % max_frame_num_;
+    prev_frame_num_ = prev_ref_frame_num_;
+    prev_ref_has_memmgmnt5_ = false;
+
+    unused_short_term_frame_num = advanced_frame_num;
+  }
+
   while (unused_short_term_frame_num != frame_num) {
     auto pic = base::MakeRefCounted<H264Picture>();
     if (!InitNonexistingPicture(pic, unused_short_term_frame_num))
