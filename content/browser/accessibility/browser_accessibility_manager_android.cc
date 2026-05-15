@@ -62,8 +62,7 @@ BrowserAccessibilityManagerAndroid::BrowserAccessibilityManagerAndroid(
     ui::AXNodeIdDelegate& node_id_delegate,
     ui::AXPlatformTreeManagerDelegate* delegate)
     : ui::BrowserAccessibilityManager(node_id_delegate, delegate),
-      web_contents_accessibility_(std::move(web_contents_accessibility)),
-      prune_tree_for_screen_reader_(true) {
+      web_contents_accessibility_(std::move(web_contents_accessibility)) {
   if (base::FeatureList::IsEnabled(
           features::kAccessibilityRequestScopedContentChangedEvents)) {
     SetAccessibilityEventsCallbackForTesting(

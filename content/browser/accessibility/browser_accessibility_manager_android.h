@@ -94,18 +94,6 @@ class CONTENT_EXPORT BrowserAccessibilityManagerAndroid
     return nodes_already_cleared_;
   }
 
-  // By default, the tree is pruned for a better screen reading experience,
-  // including:
-  //   * If the node has only static text children
-  //   * If the node is focusable and has no focusable children
-  //   * If the node is a heading
-  // This can be turned off to generate a tree that more accurately reflects
-  // the DOM and includes style changes within these nodes.
-  void set_prune_tree_for_screen_reader(bool prune) {
-    prune_tree_for_screen_reader_ = prune;
-  }
-  bool prune_tree_for_screen_reader() { return prune_tree_for_screen_reader_; }
-
   void set_web_contents_accessibility(
       base::WeakPtr<WebContentsAccessibilityAndroid> wcax) {
     web_contents_accessibility_ = std::move(wcax);
@@ -230,9 +218,6 @@ class CONTENT_EXPORT BrowserAccessibilityManagerAndroid
   // Only the root manager has the reference. Should be accessed through
   // |GetWebContentsAXFromRootManager| rather than directly.
   base::WeakPtr<WebContentsAccessibilityAndroid> web_contents_accessibility_;
-
-  // See docs for set_prune_tree_for_screen_reader, above.
-  bool prune_tree_for_screen_reader_;
 
   // True if this instance should force enable the image descriptions feature
   // for testing. This allows us to mock generated image descriptions and test
