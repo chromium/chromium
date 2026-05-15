@@ -331,10 +331,6 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
   // Deletes all server cards (both masked and unmasked).
   void ClearAllServerDataForTesting();
 
-  // Sets |credit_cards_| to the contents of |credit_cards| and updates the web
-  // database by adding, updating and removing credit cards.
-  void SetCreditCards(std::vector<CreditCard>* credit_cards);
-
   // Try to save a credit card locally. If the card already exists, do nothing
   // and return false. If the card is new, save it locally and return true.
   virtual bool SaveCardLocallyIfNew(const CreditCard& imported_credit_card);
@@ -425,7 +421,7 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
 
   // Called when the user accepts the prompt to save the credit card locally.
   // Records some metrics and attempts to save the imported card. Returns the
-  // guid of the new or updated card, or the empty string if no card was saved.
+  // guid of the new or updated card.
   std::string OnAcceptedLocalCreditCardSave(
       const CreditCard& imported_credit_card);
 

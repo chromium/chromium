@@ -1632,69 +1632,21 @@ void PaymentsDataManager::ClearAllServerDataForTesting() {
   unlinked_bnpl_issuers_.clear();
 }
 
-void PaymentsDataManager::SetCreditCards(
-    std::vector<CreditCard>* credit_cards) {
-  // Remove empty credit cards from input.
-  std::erase_if(*credit_cards, [this](const CreditCard& credit_card) {
-    return credit_card.IsEmpty(app_locale_);
-  });
-
-  if (!GetLocalDatabase()) {
-    return;
-  }
-
-  // Any credit cards that are not in the new credit card list should be
-  // removed.
-  for (const auto& card : local_credit_cards_) {
-    if (!FindByGUID(*credit_cards, card->guid())) {
-      GetLocalDatabase()->RemoveCreditCard(card->guid());
-    }
-  }
-
-  // Update the web database with the existing credit cards.
-  for (const CreditCard& card : *credit_cards) {
-    if (FindByGUID(local_credit_cards_, card.guid())) {
-      GetLocalDatabase()->UpdateCreditCard(card);
-    }
-  }
-
-  // Add the new credit cards to the web database.  Don't add a duplicate.
-  for (const CreditCard& card : *credit_cards) {
-    if (!FindByGUID(local_credit_cards_, card.guid()) &&
-        !FindByContents(local_credit_cards_, card)) {
-      GetLocalDatabase()->AddCreditCard(card);
-    }
-  }
-
-  // Copy in the new credit cards.
-  local_credit_cards_.clear();
-  for (const CreditCard& card : *credit_cards) {
-    local_credit_cards_.push_back(std::make_unique<CreditCard>(card));
-  }
-
-  // Refresh our local cache and send notifications to observers.
-  Refresh();
-}
-
 bool PaymentsDataManager::SaveCardLocallyIfNew(
     const CreditCard& imported_card) {
   CHECK(!imported_card.number().empty());
 
-  std::vector<CreditCard> credit_cards;
   for (auto& card : local_credit_cards_) {
     if (card->MatchingCardDetails(imported_card)) {
       return false;
     }
-    credit_cards.push_back(*card);
   }
 
-  auto imported_card_copy = imported_card;
+  CreditCard imported_card_copy = imported_card;
   if (!IsPaymentCvcStorageEnabled()) {
     imported_card_copy.clear_cvc();
   }
-  credit_cards.push_back(imported_card_copy);
-
-  SetCreditCards(&credit_cards);
+  AddCreditCard(imported_card_copy);
   return true;
 }
 
@@ -2190,28 +2142,18 @@ size_t PaymentsDataManager::GetServerCardWithArtImageCount() const {
 
 std::string PaymentsDataManager::SaveImportedCreditCard(
     const CreditCard& imported_card) {
-  // Set to true if |imported_card| is merged into the credit card list.
-  bool merged = false;
-  std::string guid = imported_card.guid();
-  std::vector<CreditCard> credit_cards;
-  for (auto& card : local_credit_cards_) {
-    // If |imported_card| has not yet been merged, check whether it should be
-    // with the current |card|.
-    if (!merged && card->UpdateFromImportedCard(imported_card, app_locale_)) {
-      guid = card->guid();
-      merged = true;
+  // Potentially merge the card with an existing card.
+  for (std::unique_ptr<CreditCard>& card : local_credit_cards_) {
+    if (card->UpdateFromImportedCard(imported_card, app_locale_)) {
+      GetLocalDatabase()->UpdateCreditCard(*card);
+      Refresh();
+      return card->guid();
     }
-
-    credit_cards.push_back(*card);
   }
 
-  if (!merged) {
-    credit_cards.push_back(imported_card);
-  }
-
-  SetCreditCards(&credit_cards);
-
-  return guid;
+  // If the card was not merged, insert it as a new card.
+  AddCreditCard(imported_card);
+  return imported_card.guid();
 }
 
 void PaymentsDataManager::OnMaskedBankAccountsRefreshed() {

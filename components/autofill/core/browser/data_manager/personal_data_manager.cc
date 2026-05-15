@@ -133,4 +133,8 @@ void PersonalDataManager::NotifyPersonalDataObserver() {
   }
 }
 
+base::WeakPtr<PersonalDataManager> PersonalDataManager::GetWeakPtr() {
+  return weak_factory_.GetWeakPtr();
+}
+
 }  // namespace autofill

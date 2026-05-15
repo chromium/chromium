@@ -13,9 +13,13 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/json/json_reader.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/run_until.h"
+#include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/task_environment.h"
 #include "base/values.h"
 #include "components/autofill/core/browser/country_type.h"
+#include "components/autofill/core/browser/data_manager/test_personal_data_manager.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_i18n_api.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
@@ -23,6 +27,7 @@
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type_names.h"
 #include "components/autofill/core/browser/data_model/payments/credit_card.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -50,14 +55,16 @@ MATCHER(DataModelsCompareEqual, "") {
 }
 
 class ManualTestingImportTest : public testing::Test {
-  void SetUp() override { ASSERT_TRUE(scoped_temp_dir.CreateUniqueTempDir()); }
+  void SetUp() override { ASSERT_TRUE(scoped_temp_dir_.CreateUniqueTempDir()); }
 
  public:
   base::FilePath GetFilePath() const {
-    return scoped_temp_dir.GetPath().Append(
+    return scoped_temp_dir_.GetPath().Append(
         FILE_PATH_LITERAL("test_file.json"));
   }
-  base::ScopedTempDir scoped_temp_dir;
+  base::ScopedTempDir scoped_temp_dir_;
+  base::test::TaskEnvironment task_environment_;
+  TestPersonalDataManager test_personal_data_manager_;
 };
 
 // Tests that profiles are converted correctly.
@@ -582,7 +589,7 @@ TEST_F(ManualTestingImportTest,
 // an invalid value.
 TEST_F(ManualTestingImportTest, LoadProfilesFromFile_InvalidInitialCreatorId) {
   base::FilePath file_path1 =
-      scoped_temp_dir.GetPath().Append(FILE_PATH_LITERAL("test_file1.json"));
+      scoped_temp_dir_.GetPath().Append(FILE_PATH_LITERAL("test_file1.json"));
   base::WriteFile(file_path1, R"({
     "profiles" : [
       {
@@ -593,7 +600,7 @@ TEST_F(ManualTestingImportTest, LoadProfilesFromFile_InvalidInitialCreatorId) {
   EXPECT_FALSE(LoadProfilesFromFile(file_path1).has_value());
 
   base::FilePath file_path2 =
-      scoped_temp_dir.GetPath().Append(FILE_PATH_LITERAL("test_file2.json"));
+      scoped_temp_dir_.GetPath().Append(FILE_PATH_LITERAL("test_file2.json"));
   base::WriteFile(file_path2, R"({
     "profiles" : [
       {
@@ -687,6 +694,59 @@ TEST_F(ManualTestingImportTesti18n, Loadi18nProfilesFromFile_Valid) {
                                    {expected_profile1, expected_profile2})));
   EXPECT_TRUE(loaded_profiles.value().at(0).GetAddress().IsLegacyAddress());
   EXPECT_FALSE(loaded_profiles.value().at(1).GetAddress().IsLegacyAddress());
+}
+
+// This test reproduces crbug.com/512382646 where re-importing the same credit
+// card with a different GUID causes the card to be deleted from the database.
+TEST_F(ManualTestingImportTest, SetCreditCards_PreservesCardOnGuidMismatch) {
+  base::FilePath file_path = GetFilePath();
+  base::WriteFile(file_path, R"({
+    "credit-cards" : [
+      {
+        "CREDIT_CARD_NAME_FULL" : "first1 last1",
+        "CREDIT_CARD_NAME_FIRST" : "first1",
+        "CREDIT_CARD_NAME_LAST" : "last1",
+        "CREDIT_CARD_NUMBER" : "4111111111111111",
+        "CREDIT_CARD_EXP_MONTH" : "10",
+        "CREDIT_CARD_EXP_2_DIGIT_YEAR" : "27",
+        "CREDIT_CARD_VERIFICATION_CODE" : "123"
+      }
+    ]
+  })");
+
+  base::test::ScopedCommandLine command_line;
+  command_line.GetProcessCommandLine()->AppendSwitchPath(
+      kManualFileImportForTestingFlag, file_path);
+
+  std::optional<std::vector<CreditCard>> loaded_cards =
+      LoadCreditCardsFromFile(file_path);
+  ASSERT_TRUE(loaded_cards);
+  ASSERT_EQ(1u, loaded_cards->size());
+
+  PaymentsDataManager& pdm =
+      test_personal_data_manager_.test_payments_data_manager();
+
+  // 1. Create a card that's identical to the card that will be loaded from the
+  // file except for it's id.
+  CreditCard card1 = loaded_cards->at(0);
+  card1.set_guid(base::Uuid::GenerateRandomV4().AsLowercaseString());
+  pdm.AddCreditCard(card1);
+
+  // Verify it lands in the `PaymentsDataManager`.
+  ASSERT_EQ(1u, pdm.GetCreditCards().size());
+  EXPECT_EQ(card1.guid(), pdm.GetCreditCards()[0]->guid());
+
+  // 2. Simulate importing cards from a file.
+  MaybeImportProfilesAndCardsForTesting(
+      test_personal_data_manager_.GetWeakPtr());
+
+  // We expect that at some point in time, the same credit card exists in the
+  // database but with a different guid.
+  EXPECT_TRUE(base::test::RunUntil([&] {
+    std::vector<const CreditCard*> cards = pdm.GetCreditCards();
+    return cards.size() == 1u && cards[0]->guid() != card1.guid() &&
+           cards[0]->number() == card1.number();
+  }));
 }
 
 }  // namespace

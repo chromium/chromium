@@ -145,6 +145,8 @@ class PersonalDataManager : public KeyedService,
   void SetSyncServiceForTest(syncer::SyncService* sync_service);
 
  protected:
+  base::WeakPtr<PersonalDataManager> GetWeakPtr();
+
   // Responsible for all address-related logic of the PDM. Non-null.
   std::unique_ptr<AddressDataManager> address_data_manager_;
 

@@ -898,7 +898,9 @@ TEST_F(PaymentsDataManagerTest, AddCreditCard_CrazyCharacters) {
   card4.SetRawInfo(CREDIT_CARD_EXP_4_DIGIT_YEAR, u"2016");
   cards.push_back(card4);
 
-  payments_data_manager().SetCreditCards(&cards);
+  for (const CreditCard& card : cards) {
+    payments_data_manager().AddCreditCard(card);
+  }
 
   WaitForOnPaymentsDataChanged();
 
@@ -913,10 +915,9 @@ TEST_F(PaymentsDataManagerTest, AddCreditCard_CrazyCharacters) {
 TEST_F(PaymentsDataManagerTest, AddCreditCard_Invalid) {
   CreditCard card;
   card.SetRawInfo(CREDIT_CARD_NUMBER, u"Not_0123-5Checked");
+  payments_data_manager().AddCreditCard(card);
 
-  std::vector<CreditCard> cards;
-  cards.push_back(card);
-  payments_data_manager().SetCreditCards(&cards);
+  WaitForOnPaymentsDataChanged();
 
   ASSERT_EQ(1u, payments_data_manager().GetCreditCards().size());
   ASSERT_EQ(card, *payments_data_manager().GetCreditCards()[0]);
@@ -2873,9 +2874,7 @@ class PaymentsDataManagerStartupBenefitsTest
       public testing::Test,
       public testing::WithParamInterface<bool> {
  public:
-  PaymentsDataManagerStartupBenefitsTest() {
-    SetUpTest();
-  }
+  PaymentsDataManagerStartupBenefitsTest() { SetUpTest(); }
 
   ~PaymentsDataManagerStartupBenefitsTest() override = default;
 
@@ -2893,9 +2892,9 @@ TEST_P(PaymentsDataManagerStartupBenefitsTest,
   prefs::SetPaymentCardBenefits(prefs_.get(), IsBenefitsPrefTurnedOn());
   base::HistogramTester histogram_tester;
   ResetPaymentsDataManager();
-    histogram_tester.ExpectUniqueSample(
-        "Autofill.PaymentMethods.CardBenefitsIsEnabled.Startup",
-        IsBenefitsPrefTurnedOn(), 1);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.PaymentMethods.CardBenefitsIsEnabled.Startup",
+      IsBenefitsPrefTurnedOn(), 1);
 }
 #endif  // !BUILDFLAG(IS_IOS)
 

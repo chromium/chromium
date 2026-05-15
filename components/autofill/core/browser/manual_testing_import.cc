@@ -276,7 +276,10 @@ void SetDataForPDM(base::WeakPtr<PersonalDataManager> pdm,
     }
   }
   if (!import_data->credit_cards->empty()) {
-    pdm->payments_data_manager().SetCreditCards(&*import_data->credit_cards);
+    pdm->payments_data_manager().DeleteAllLocalCreditCards();
+    for (const CreditCard& card : *import_data->credit_cards) {
+      pdm->payments_data_manager().AddCreditCard(card);
+    }
   }
 }
 

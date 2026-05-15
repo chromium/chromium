@@ -40,7 +40,6 @@ using autofill_helper::PROFILE_MARION;
 using autofill_helper::PROFILE_NULL;
 using autofill_helper::ProfilesMatch;
 using autofill_helper::RemoveProfile;
-using autofill_helper::SetCreditCards;
 using autofill_helper::UpdateProfile;
 
 class TwoClientAutofillProfileSyncTest : public SyncTest {
@@ -466,8 +465,8 @@ IN_PROC_BROWSER_TEST_F(TwoClientAutofillProfileSyncTest, NoCreditCardSync) {
 
   CreditCard card;
   card.SetRawInfo(autofill::CREDIT_CARD_NUMBER, u"6011111111111117");
-  std::vector<CreditCard> credit_cards{card};
-  SetCreditCards(0, &credit_cards);
+  PersonalDataManager* pdm = GetPersonalDataManager(0);
+  pdm->payments_data_manager().AddCreditCard(card);
 
   AddProfile(0, CreateAutofillProfile(PROFILE_HOMER));
 
@@ -477,7 +476,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientAutofillProfileSyncTest, NoCreditCardSync) {
   // because we're expecting it to not sync.
   EXPECT_TRUE(AutofillProfileChecker(0, 1, /*expected_count=*/1U).Wait());
 
-  PersonalDataManager* pdm = GetPersonalDataManager(1);
+  pdm = GetPersonalDataManager(1);
   EXPECT_EQ(0U, pdm->payments_data_manager().GetCreditCards().size());
 }
 

@@ -18,7 +18,6 @@
 namespace autofill {
 class AutocompleteKey;
 class AutofillProfile;
-class CreditCard;
 class PersonalDataManager;
 
 }  // namespace autofill
@@ -52,11 +51,6 @@ void RemoveKeys(int profile);
 // Compares the form fields in the WebDataServices of sync profiles
 // |profile_a| and |profile_b|. Returns true if they match.
 [[nodiscard]] bool KeysMatch(int profile_a, int profile_b);
-
-// Replaces the CreditCard profiles in sync profile |profile| with
-// |credit_cards|.
-void SetCreditCards(int profile,
-                    std::vector<autofill::CreditCard>* credit_cards);
 
 // Adds the autofill profile |autofill_profile| to sync profile |profile|.
 void AddProfile(int profile, const autofill::AutofillProfile& autofill_profile);
