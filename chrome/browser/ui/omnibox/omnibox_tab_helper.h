@@ -97,6 +97,8 @@ class OmniboxTabHelper
   void PrimaryPageChanged(content::Page& page) override;
   void PrimaryMainDocumentElementAvailable() override;
   void DOMContentLoaded(content::RenderFrameHost* render_frame_host) override;
+  void DidFinishNavigation(
+      content::NavigationHandle* navigation_handle) override;
 
   // Logs the timings from a navigation to the omnibox being focused, IFF they
   // have not already been logged for this navigation.

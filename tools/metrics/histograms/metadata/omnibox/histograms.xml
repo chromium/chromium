@@ -3693,6 +3693,17 @@ Keep consistent with active providers. Doesn't need to include every provider in
   </summary>
 </histogram>
 
+<histogram name="Omnibox.SearchEngineType.PostNavigation"
+    enum="OmniboxSearchEngineType" expires_after="2026-11-12">
+  <owner>jdonnelly@chromium.org</owner>
+  <owner>wfh@chromium.org</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <summary>
+    The type of search engine associated with a match opened from the omnibox,
+    recorded after all navigations (including server redirects) have completed.
+  </summary>
+</histogram>
+
 <histogram name="Omnibox.SearchEngineType{Population}"
     enum="OmniboxSearchEngineType" expires_after="2026-11-12">
   <owner>jdonnelly@chromium.org</owner>

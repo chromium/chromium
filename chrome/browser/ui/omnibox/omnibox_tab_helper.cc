@@ -25,11 +25,17 @@
 #include "components/omnibox/common/omnibox_focus_state.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "components/page_content_annotations/content/page_content_extraction_service.h"
+#include "components/search_engines/search_engine_type.h"
+#include "components/search_engines/search_engine_utils.h"
+#include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/page.h"
 #include "content/public/browser/render_frame_host.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
+#include "ui/base/page_transition_types.h"
+#include "url/gurl.h"
+#include "url/url_util.h"
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(OmniboxTabHelper);
 
@@ -215,6 +221,27 @@ void OmniboxTabHelper::DOMContentLoaded(
     return;
   }
   dom_content_loaded_time_ = base::ElapsedTimer();
+}
+
+void OmniboxTabHelper::DidFinishNavigation(
+    content::NavigationHandle* navigation_handle) {
+  if (!navigation_handle->HasCommitted() ||
+      !navigation_handle->IsInPrimaryMainFrame()) {
+    return;
+  }
+
+  // Only report navigations that originated from the omnibox.
+  const ui::PageTransition transition = navigation_handle->GetPageTransition();
+  if (ui::PageTransitionCoreTypeIs(transition, ui::PAGE_TRANSITION_GENERATED) ||
+      ui::PageTransitionCoreTypeIs(transition, ui::PAGE_TRANSITION_KEYWORD)) {
+    const SearchEngineType search_engine_type =
+        navigation_handle->GetURL().is_valid()
+            ? search_engine_utils::GetEngineType(navigation_handle->GetURL())
+            : SEARCH_ENGINE_OTHER;
+
+    base::UmaHistogramEnumeration("Omnibox.SearchEngineType.PostNavigation",
+                                  search_engine_type, SEARCH_ENGINE_MAX);
+  }
 }
 
 void OmniboxTabHelper::MaybeLogNavigationToPopupShownTimings(
