@@ -363,8 +363,7 @@ UserActivityType UserActivityTypeOf(NSUserActivity* user_activity) {
   NSString* activity_type = user_activity.activityType;
 
   if (@available(iOS 26, *)) {
-    if (CredentialExchangeEnabled() &&
-        [activity_type isEqualToString:[CredentialImportManager
+    if ([activity_type isEqualToString:[CredentialImportManager
                                            credentialExchangeActivity]]) {
       return UserActivityType::kCredentialExchange;
     }

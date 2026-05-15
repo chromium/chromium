@@ -576,12 +576,10 @@ NSString* GetSavePasswordsItemTitle() {
       [[TableViewTextItem alloc] initWithType:ItemTypeExportPasswordsButton];
   exportPasswordsItem.text = l10n_util::GetNSString(IDS_IOS_EXPORT_PASSWORDS);
   if (@available(iOS 26, *)) {
-    if (CredentialExchangeEnabled()) {
-      exportPasswordsItem.text =
-          l10n_util::GetNSString(IDS_IOS_EXPORT_PASSWORDS_AND_PASSKEYS);
-      exportPasswordsItem.accessoryType =
-          UITableViewCellAccessoryDisclosureIndicator;
-    }
+    exportPasswordsItem.text =
+        l10n_util::GetNSString(IDS_IOS_EXPORT_PASSWORDS_AND_PASSKEYS);
+    exportPasswordsItem.accessoryType =
+        UITableViewCellAccessoryDisclosureIndicator;
   }
   exportPasswordsItem.accessibilityTraits = UIAccessibilityTraitButton;
   exportPasswordsItem.accessibilityIdentifier =

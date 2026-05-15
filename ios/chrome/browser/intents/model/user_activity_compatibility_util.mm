@@ -52,8 +52,7 @@ ActivityCompatibilityMode CompatibleModeForActivityType(
     return ActivityCompatibilityMode::kRegularAndIncognito;
   }
   if (@available(iOS 26, *)) {
-    if (CredentialExchangeEnabled() &&
-        [activity_type isEqualToString:[CredentialImportManager
+    if ([activity_type isEqualToString:[CredentialImportManager
                                            credentialExchangeActivity]]) {
       return ActivityCompatibilityMode::kRegularAndIncognito;
     }

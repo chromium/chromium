@@ -365,7 +365,6 @@ TEST_F(PasswordSettingsMediatorTest, CountsProfileStorePasswordsAsLocal) {
   [[consumer_ verify] setCanBulkMove:NO localPasswordsCount:2];
 }
 
-#if BUILDFLAG(IOS_CREDENTIAL_EXCHANGE_ENABLED)
 // Tests that the export button is enabled/disabled based on passkey presence
 // when the Credential Exchange feature is enabled.
 TEST_F(PasswordSettingsMediatorTest, UpdatesExportStateWhenPasskeysChange) {
@@ -376,4 +375,3 @@ TEST_F(PasswordSettingsMediatorTest, UpdatesExportStateWhenPasskeysChange) {
   AddPasskey();
   [[consumer_ verify] setCanExportCredentials:YES];
 }
-#endif

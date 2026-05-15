@@ -15,9 +15,6 @@ assert(
 
 tweak_info_plist("tweak_info_plist") {
   info_plists = [ "Info.plist" ]
-  if (ios_cpe_enable_credential_exchange) {
-    info_plists += [ "CredentialExchange+Info.plist" ]
-  }
 }
 
 compile_entitlements("entitlements") {

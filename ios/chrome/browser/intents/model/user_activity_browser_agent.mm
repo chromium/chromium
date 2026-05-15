@@ -104,15 +104,11 @@ BOOL UserActivityBrowserAgent::ContinueUserActivity(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   NSURL* webpage_url = user_activity.webpageURL;
 
-  // Credential exchange activity should only be handled in iOS 26 with the
-  // compile-time flag controlling the feature enabled.
+  // Credential exchange activity should only be handled in iOS 26.
   BOOL isCredentialExchangeActivity = NO;
   if (@available(iOS 26, *)) {
-    isCredentialExchangeActivity =
-        CredentialExchangeEnabled() &&
-        [user_activity.activityType
-            isEqualToString:[CredentialImportManager
-                                credentialExchangeActivity]];
+    isCredentialExchangeActivity = [user_activity.activityType
+        isEqualToString:[CredentialImportManager credentialExchangeActivity]];
   }
 
   if ([user_activity.activityType

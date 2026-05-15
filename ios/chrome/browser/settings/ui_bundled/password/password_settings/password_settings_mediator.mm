@@ -491,8 +491,7 @@ bool IsCredentialLocalPassword(const CredentialUIEntry& credential) {
 
 // Pushes the current state of the exporter to the consumer.
 - (void)pushExportStateToConsumer {
-  BOOL hasExportableData =
-      _hasSavedPasswords || (_hasSavedPasskeys && CredentialExchangeEnabled());
+  BOOL hasExportableData = _hasSavedPasswords || _hasSavedPasskeys;
   [self.consumer setCanExportCredentials:hasExportableData && _exporterIsReady];
 }
 

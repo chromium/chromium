@@ -29,7 +29,6 @@ using ::password_manager_test_utils::OpenPasswordManager;
 using ::password_manager_test_utils::SaveExamplePasskeyToStore;
 using ::password_manager_test_utils::SavePasswordFormToAccountStore;
 
-#if BUILDFLAG(IOS_CREDENTIAL_EXCHANGE_ENABLED)
 // Matcher for the continue button.
 id<GREYMatcher> ContinueButton() {
   return grey_accessibilityID(
@@ -104,7 +103,6 @@ void CheckCredentialExportScreenActionMetric(
                                        forHistogram:histogram];
   GREYAssertNil(error, @"Failed to record credential export screen histogram.");
 }
-#endif
 
 }  // namespace
 
@@ -135,7 +133,6 @@ void CheckCredentialExportScreenActionMetric(
 
 #pragma mark - Tests
 
-#if BUILDFLAG(IOS_CREDENTIAL_EXCHANGE_ENABLED)
 // Tests that tapping the Continue button proceeds with the export process.
 // TODO(crbug.com/454566693): The OS bottom sheet doesn't seem to appear.
 - (void)DISABLED_testTapContinueButton {
@@ -359,6 +356,5 @@ void CheckCredentialExportScreenActionMetric(
                                           expectedLabelForTwoSelected)]
       assertWithMatcher:grey_sufficientlyVisible()];
 }
-#endif
 
 @end
