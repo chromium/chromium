@@ -19,11 +19,9 @@ namespace ukm {
 
 namespace {
 
-// The maximum length of a URL we will record.
+// The maximum length of a URL we will record. URL exceeding this limit will be
+// truncated.
 constexpr int kMaxURLLength = 2 * 1024;
-
-// The string sent in place of a URL if the real URL was too long.
-constexpr char kMaxUrlLengthMessage[] = "URLTooLong";
 
 // Using a simple global assumes that all access to it will be done on the same
 // thread, namely the UI thread. If this becomes not the case then it can be
@@ -31,12 +29,35 @@ constexpr char kMaxUrlLengthMessage[] = "URLTooLong";
 // and accessed with no-barrier loads and stores.
 int32_t g_android_activity_type_state = -1;
 
-// Returns a URL that is under the length limit, by returning a constant
-// string when the URL is too long.
-std::string GetShortenedURL(const GURL& url) {
-  if (url.spec().length() > kMaxURLLength)
-    return kMaxUrlLengthMessage;
-  return url.spec();
+// Returns where the URL got truncated.
+TruncationStatus GetTruncationStatus(const GURL& url) {
+  // Determine whether the URL was truncated within the query (preserving the
+  // full path), within the path (preserving the URL without query), or within
+  // the origin.
+  const url::Parsed& parsed = url.parsed_for_possibly_invalid_spec();
+  int query_start = parsed.CountCharactersBefore(url::Parsed::QUERY, true);
+  int path_start = parsed.CountCharactersBefore(url::Parsed::PATH, true);
+
+  if (url.has_query() && kMaxURLLength >= query_start) {
+    return TRUNCATED_AT_FULL_PATH;
+  } else if (kMaxURLLength > path_start) {
+    return TRUNCATED_AT_URL_WITHOUT_QUERY;
+  } else {
+    return TRUNCATED_AT_ORIGIN;
+  }
+}
+
+// Sets the URL on the UrlInfo protobuf, and truncates the string if it's too
+// long. Also sets the truncation_status on the UrlInfo if it's truncated.
+void SetTruncatedURL(const GURL& url, UrlInfo* url_info) {
+  if (url.spec().length() <= kMaxURLLength) {
+    url_info->set_url(url.spec());
+    url_info->set_truncation_status(NOT_TRUNCATED);
+    return;
+  }
+
+  url_info->set_url(url.spec().substr(0, kMaxURLLength));
+  url_info->set_truncation_status(GetTruncationStatus(url));
 }
 
 // Translates ukm::SourceIdType to the equivalent Source proto enum value.
@@ -173,7 +194,8 @@ void UkmSource::PopulateProto(Source* proto_source) const {
   proto_source->set_type(ToProtobufSourceType(type_));
   for (const auto& url : urls()) {
     if (!url.is_empty()) {
-      proto_source->add_urls()->set_url(GetShortenedURL(url));
+      UrlInfo* url_info = proto_source->add_urls();
+      SetTruncatedURL(url, url_info);
     }
   }
 
@@ -224,7 +246,10 @@ void UkmSource::PopulateProto(Source* proto_source) const {
   }
 
   for (const auto& url : navigation_data_.resolved_urls) {
-    proto_source->add_resolved_urls()->set_url(GetShortenedURL(url));
+    if (!url.is_empty()) {
+      UrlInfo* url_info = proto_source->add_resolved_urls();
+      SetTruncatedURL(url, url_info);
+    }
   }
 }
 
