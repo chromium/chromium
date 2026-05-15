@@ -5,8 +5,13 @@
 #ifndef BASE_I18N_LANGUAGE_CODE_BUILDER_H_
 #define BASE_I18N_LANGUAGE_CODE_BUILDER_H_
 
+#include <algorithm>
 #include <optional>
+#include <string_view>
+#include <type_traits>
 
+#include "base/containers/fixed_flat_set.h"
+#include "base/i18n/base_i18n_export.h"
 #include "base/i18n/language_code.h"
 
 namespace base {

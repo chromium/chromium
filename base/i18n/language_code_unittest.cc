@@ -5,6 +5,7 @@
 #include "base/i18n/language_code.h"
 
 #include "base/i18n/language_code_builder.h"
+#include "base/i18n/language_codes.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace base {
@@ -12,7 +13,7 @@ namespace base {
 TEST(LanguageCodeTest, ParseAndToString) {
   auto lc = LanguageCodeBuilder::GetInstance().FromString("en-US");
   ASSERT_TRUE(lc.has_value());
-  EXPECT_EQ(lc->ToString(), "en-US");
+  EXPECT_EQ(lc, language_codes::ENGLISH_US());
 
   auto lc_norm = LanguageCodeBuilder::GetInstance().FromString("EN-us");
   ASSERT_TRUE(lc_norm.has_value());
@@ -45,10 +46,8 @@ TEST(LanguageCodeTest, ValidButUnknowLocales) {
 }
 
 TEST(LanguageCodeTest, ToLegacyICUFormat) {
-  auto lc = LanguageCodeBuilder::GetInstance().FromString("en-XX");
-  ASSERT_TRUE(lc.has_value());
-  // ICU4X leaves unknown regions unmodified during canonicalization.
-  EXPECT_EQ(lc->ToLegacyICUFormat(), "en_XX");
+  EXPECT_EQ(language_codes::BRAZILIAN_PORTUGUESE().ToLegacyICUFormat(),
+            "pt_BR");
 }
 
 TEST(LanguageCodeTest, ComplexLocales) {
@@ -66,7 +65,7 @@ TEST(LanguageCodeTest, NumericRegions) {
   // Locales with numeric regions.
   auto lc_es = LanguageCodeBuilder::GetInstance().FromString("es-419");
   ASSERT_TRUE(lc_es.has_value());
-  EXPECT_EQ(lc_es->ToString(), "es-419");
+  EXPECT_EQ(lc_es, language_codes::SPANISH_LATIN_AMERICAN());
 }
 
 TEST(LanguageCodeTest, ThreeLetterLanguages) {
@@ -102,12 +101,44 @@ TEST(LanguageCodeTest, Canonicalize) {
   // Deprecated tags: "iw" -> "he"
   auto lc_iw = LanguageCodeBuilder::GetInstance().FromString("iw");
   ASSERT_TRUE(lc_iw.has_value());
-  EXPECT_EQ(lc_iw->ToString(), "he");
+  EXPECT_EQ(lc_iw, language_codes::HEBREW());
 
   // Deprecated tags: "cmn" -> "zh"
   auto lc_cmn = LanguageCodeBuilder::GetInstance().FromString("cmn");
   ASSERT_TRUE(lc_cmn.has_value());
-  EXPECT_EQ(lc_cmn->ToString(), "zh");
+  EXPECT_EQ(lc_cmn, language_codes::CHINESE());
 }
+
+struct LanguageTestData {
+  const char* tag;
+  const char* name;
+  const LanguageCode& (*get_code)();
+};
+
+class LanguageCodeAllCodesTest
+    : public testing::TestWithParam<LanguageTestData> {};
+
+TEST_P(LanguageCodeAllCodesTest, Verify) {
+  const LanguageTestData& param = GetParam();
+  auto lc = LanguageCodeBuilder::GetInstance().FromString(param.tag);
+  ASSERT_TRUE(lc.has_value());
+  EXPECT_EQ(lc->ToString(), param.tag);
+  EXPECT_EQ(*lc, param.get_code());
+}
+
+const LanguageTestData kTestData[] = {
+#define IMPL_LANGUAGECODE_TAG_NAME(tag, name) \
+  {tag, #name, &language_codes::name},
+#include "base/i18n/internal/canonical_language_codes.inc"
+#undef IMPL_LANGUAGECODE_TAG_NAME
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    LanguageCodeAllCodesTest,
+    testing::ValuesIn(kTestData),
+    [](const testing::TestParamInfo<LanguageTestData>& info) {
+      return info.param.name;
+    });
 
 }  // namespace base
