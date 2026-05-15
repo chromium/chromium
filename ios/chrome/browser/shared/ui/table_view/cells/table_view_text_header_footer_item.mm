@@ -224,6 +224,12 @@ const CGFloat kHorizontalSpacingToAlignWithItems = 16.0;
   }
 
   self.subtitleView.attributedText = attributedText;
+  // UITextView does not notify its parent UIStackView when attributedText
+  // changes. Invalidate intrinsic content size and force layout so UITableView
+  // calculates the section height correctly.
+  [self.subtitleView invalidateIntrinsicContentSize];
+  [self setNeedsLayout];
+  [self layoutIfNeeded];
 }
 
 - (void)setForceIndents:(BOOL)forceIndents {
