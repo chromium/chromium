@@ -228,17 +228,384 @@ chromium-metrics-reviews@google.com.
 </enum>
 
 <enum name="CrsRootIds">
+<!-- Generated from net/data/ssl/chrome_root_store/root_store.textproto.
+Called by update_crs_root_ids_enum.py.-->
+
 <!-- The first three values are special values defined in
-CertVerifyResult::CrsRootIdSpecialValues. -->
+CertVerifyResult::CrsRootIdSpecialValues.
+The remaining values are defined in root_store.textproto. Old values should be
+left in the histogram enum even after the anchors with that ID are removed from
+the root_store.textproto, as old versions of Chrome may still log them, and for
+historical analysis. -->
 
   <int value="0" label="Error"/>
   <int value="1" label="Locally-installed trust anchor"/>
   <int value="2" label="Unknown CRS root ID"/>
-<!-- The remaining values are defined in root_store.textproto. Old values should be left in the histogram enum even after the anchors with that ID are removed from the root_store.textproto, as old versions of Chrome may still log them, and for historical analysis. -->
-
-<!-- TODO(crbug.com/347047630): Add script to generate labels from
-root_store.textproto and fill in the rest of the IDs. -->
-
+  <int value="3"
+      label="25d4913cf587097414d29d26f6c1b1942cd6d64eaf45d0fcf81526adba96d324
+             CN=Actalis Authentication Root CA,O=Actalis
+             S.p.A./03358520967,L=Milan,C=IT"/>
+  <int value="4"
+      label="36abc32656acfc645c61b71613c4bf21c787f5cabbee48348d58597803d7abc9
+             CN=Amazon Root CA 3,O=Amazon,C=US"/>
+  <int value="5"
+      label="7f4296fc5b6a4e3b35d3c369623e364ab1af381d8fa7121533c9d6c633ea2461
+             CN=Amazon Root CA 2,O=Amazon,C=US"/>
+  <int value="6"
+      label="fbe3018031f9586bcbf41727e417b7d1c45c2f47f93be372a17b96b50757d5a2
+             CN=Amazon Root CA 1,O=Amazon,C=US"/>
+  <int value="7"
+      label="f7ecded5c66047d28ed6466b543c40e0743abe81d109254dcf845d4c2c7853c5
+             CN=Amazon Root CA 4,O=Amazon,C=US"/>
+  <int value="8"
+      label="aa2630a7b617b04d0a294bab7a8caaa5016e6dbe604837a83a85719fab667eb5
+             CN=Certum Trusted Network CA,OU=Certum Certification
+             Authority,O=Unizeto Technologies S.A.,C=PL"/>
+  <int value="9"
+      label="e5ca37bc7b6c361979bc6b123ca9a1db019046d7ff5f57dfb854b19d10b0682f
+             C=DE,O=Atos,CN=Atos TrustedRoot 2011"/>
+  <int value="10"
+      label="3b0d73b4be4a854adc3e51d7ef9fa48aefbb2cdd824d67bdc7d7d09a2abc2d43
+             CN=Autoridad de Certificacion Firmaprofesional CIF
+             A62634068,C=ES"/>
+  <int value="11"
+      label="5955ae291574a931342cf7450e16652ede1e0fb3097e1571dfac11c915601564
+             CN=Buypass Class 2 Root CA,O=Buypass AS-983163327,C=NO"/>
+  <int value="12"
+      label="b03d87b056d08cc9d4e675ef19ca83ab53532168a8258598be72e6d85c7dd7c1
+             CN=Buypass Class 3 Root CA,O=Buypass AS-983163327,C=NO"/>
+  <int value="13"
+      label="cbad7b1d384849df0946b7ee8e7f5f7ce3aed876fda7bc9d30d8b16f29ff2c53
+             OU=certSIGN ROOT CA G2,O=CERTSIGN SA,C=RO"/>
+  <int value="14"
+      label="dd5ed1c090f9f448061baa94a6bb11017544e9eefaa20cc714ce6c633f5dc629
+             CN=CFCA EV ROOT,O=China Financial Certification Authority,C=CN"/>
+  <int value="15"
+      label="62554c17005543b237215f04268dcd2fd1c470240ad3c8660e25ae2c59630f55
+             OU=ePKI Root Certification Authority,O=Chunghwa Telecom Co.\,
+             Ltd.,C=TW"/>
+  <int value="16"
+      label="eca0f181402ce7a8652b31b4d036df247e3a30b7f41a50d91ec4f90b006b43a1
+             CN=D-TRUST Root Class 3 CA 2 2009,O=D-Trust GmbH,C=DE"/>
+  <int value="17"
+      label="ff342fb6c4c8bd30a4706f73489539f19e6e48cc05f46254654f6610dbc540e9
+             CN=D-TRUST Root Class 3 CA 2 EV 2009,O=D-Trust GmbH,C=DE"/>
+  <int value="18"
+      label="6106c0e3a0a299831875127bd7d3cc1859803d511cac11eb6e0840dd166fc10e
+             CN=T-TeleSec GlobalRoot Class 2,OU=T-Systems Trust
+             Center,O=T-Systems Enterprise Services GmbH,C=DE"/>
+  <int value="19"
+      label="8d767764b3cbda08929d072a22a561f4dcdd1bc57d3cbddc948c47d2b47f9122
+             CN=T-TeleSec GlobalRoot Class 3,OU=T-Systems Trust
+             Center,O=T-Systems Enterprise Services GmbH,C=DE"/>
+  <int value="20"
+      label="8e8046ec4cac015a507ce0d2d0154a4b40e8e42b3165cfa546571435112d17e5
+             CN=Certigna Root CA,OU=0002 48146308100036,O=Dhimyotis,C=FR"/>
+  <int value="21"
+      label="b94c198300cec5c057ad0727b70bbe91816992256439a7b32f4598119dda9c97
+             CN=DigiCert Global Root G3,OU=www.digicert.com,O=DigiCert
+             Inc,C=US"/>
+  <int value="22"
+      label="59df317bfa9f4f0ab7ca514d7772296aa2c765b87664d08b96e57399e364729c
+             CN=DigiCert Trusted Root G4,OU=www.digicert.com,O=DigiCert
+             Inc,C=US"/>
+  <int value="23"
+      label="f1c6ba670cfc88e4df52973cae420f0a089dd474144fe5806c420064e1591229
+             CN=DigiCert Assured ID Root G2,OU=www.digicert.com,O=DigiCert
+             Inc,C=US"/>
+  <int value="24"
+      label="15eed339594b304f8cf847b477371d8d6fec61f4db2b01af589e7c53b35cae4c
+             CN=DigiCert Assured ID Root G3,OU=www.digicert.com,O=DigiCert
+             Inc,C=US"/>
+  <int value="25"
+      label="8bb593a93be1d0e8a822bb887c547890c3e706aad2dab76254f97fb36b82fc26
+             CN=DigiCert Global Root G2,OU=www.digicert.com,O=DigiCert
+             Inc,C=US"/>
+  <int value="26"
+      label="702116ccd8bf23e16466f0e0dba0ed6a239a9c1cd6a8f5a66b39af3595020385
+             CN=CA Disig Root R2,O=Disig a.s.,L=Bratislava,C=SK"/>
+  <int value="27"
+      label="376a1a7082a593dccc20d561d119e9ab8d30f11cc321d0a37fa41f0df284e01c
+             CN=emSign Root CA - G1,O=eMudhra Technologies Limited,OU=emSign
+             PKI,C=IN"/>
+  <int value="28"
+      label="8d417db2dd8bf5e3084d1e3f196d583849d81bdd4c00c70b9d39369e96b8c782
+             CN=emSign ECC Root CA - G3,O=eMudhra Technologies
+             Limited,OU=emSign PKI,C=IN"/>
+  <int value="29"
+      label="ceb19411c65052c757f941eb826c96941e4d08d096c7db7e7ea3c4f8c13f1a13
+             CN=GDCA TrustAUTH R5 ROOT,O=GUANG DONG CERTIFICATE AUTHORITY
+             CO.\,LTD.,C=CN"/>
+  <int value="30"
+      label="7e0ead76bb6819dc2f54511a84354f6e8b307b9dd82058ea6c004f01d9dda5df
+             CN=GlobalSign,O=GlobalSign,OU=GlobalSign ECC Root CA - R5"/>
+  <int value="31"
+      label="682747f8ba621b87cdd3bc295ed5cabce722a1c0c0363d1d68b38928d2787f1e
+             CN=GlobalSign,O=GlobalSign,OU=GlobalSign Root CA - R6"/>
+  <int value="32"
+      label="706bb1017c855c59169bad5c1781cf597f12d2cad2f63d1a4aa37493800ffb80
+             CN=GlobalSign,O=GlobalSign,OU=GlobalSign Root CA - R3"/>
+  <int value="33"
+      label="808d68b3fab4884a5f971ace7d10550d7a95a163774f3ec36afffb213fbe4c74
+             CN=Starfield Root Certificate Authority - G2,O=Starfield
+             Technologies\, Inc.,L=Scottsdale,ST=Arizona,C=US"/>
+  <int value="34"
+      label="2a8f2d8af0eb123898f74c866ac3fa669054e23c17bc7a95bd0234192dc635d0
+             CN=Go Daddy Root Certificate Authority - G2,O=GoDaddy.com\,
+             Inc.,L=Scottsdale,ST=Arizona,C=US"/>
+  <int value="35"
+      label="4179edd981ef747477b49626408af43daa2ca7ab7f9e082c1060f84096774348
+             CN=GTS Root R3,O=Google Trust Services LLC,C=US"/>
+  <int value="36"
+      label="871a9194f4eed5b312ff40c84c1d524aed2f778bbff25f138cf81f680a7adc67
+             CN=GTS Root R1,O=Google Trust Services LLC,C=US"/>
+  <int value="37"
+      label="9847e5653e5e9e847516e5cb818606aa7544a19be67fd7366d506988e8d84347
+             CN=GTS Root R4,O=Google Trust Services LLC,C=US"/>
+  <int value="38"
+      label="08b3a6335fce5ef48f8f0e543986c07fd18a3b1226129f61864bbd5bdd1f1cc9
+             CN=GlobalSign,O=GlobalSign,OU=GlobalSign ECC Root CA - R4"/>
+  <int value="39"
+      label="55f77de41c03792428f8d518c55104225be43a5598d926a528ad653e1ccec7bf
+             CN=GTS Root R2,O=Google Trust Services LLC,C=US"/>
+  <int value="40"
+      label="2541e53ba5b3b07acbe7097ac4a03e040c11cf7a6d4a67cb213d558b50167a06
+             CN=Hongkong Post Root CA 3,O=Hongkong Post,L=Hong Kong,ST=Hong
+             Kong,C=HK"/>
+  <int value="41"
+      label="05570ae6eb0fceb4210e6db79486b7094caf200401e149b6677441b5f25e449b
+             C=ES,O=ACCV,OU=PKIACCV,CN=ACCVRAIZ1"/>
+  <int value="42"
+      label="2fc5667a4b9a2678ed6ac6ad25465fcbf6094bfcd9504097c7a8fa47ade5e888
+             OU=AC RAIZ FNMT-RCM,O=FNMT-RCM,C=ES"/>
+  <int value="43"
+      label="55e00be277ceb0545299f24fd9f877e2acf32852db43ffcd29bca74b39b4c9fa
+             CN=TUBITAK Kamu SM SSL Kok Sertifikasi - Surum 1,OU=Kamu
+             Sertifikasyon Merkezi - Kamu SM,O=Turkiye Bilimsel ve Teknolojik
+             Arastirma Kurumu - TUBITAK,L=Gebze - Kocaeli,C=TR"/>
+  <int value="44"
+      label="07e854f26a7cbd389927aa041bfef1b6cd21dd143818ad947dc655a9e587fe88
+             CN=IdenTrust Commercial Root CA 1,O=IdenTrust,C=US"/>
+  <int value="45"
+      label="0b9fa5a59eed715c26c1020c711b4f6ec42d58b0015e14337a39dad301c5afc3
+             CN=ISRG Root X1,O=Internet Security Research Group,C=US"/>
+  <int value="46"
+      label="952c2039c0243eb515dd73d83fc3643184874feb0862a9837731ed9b4742e17a
+             CN=Izenpe.com,O=IZENPE S.A.,C=ES"/>
+  <int value="47"
+      label="6e364b6133deefdcbb21273c5f445a20afbc05038d5b021c0c2153039016345b
+             CN=SZAFIR ROOT CA2,O=Krajowa Izba Rozliczeniowa S.A.,C=PL"/>
+  <int value="48"
+      label="616167201433aea6c8e5e3070afcaf6749188f814bd1abb179ae8dad3abf26ec
+             1.2.840.113549.1.9.1=info@e-szigno.hu,CN=Microsec e-Szigno Root
+             CA 2009,O=Microsec Ltd.,L=Budapest,C=HU"/>
+  <int value="49"
+      label="42431627ea76cc78697f915e3455b1b2ec82ff2f6380ee6423ef3c0840b7e631
+             CN=e-Szigno Root CA 2017,2.5.4.97=VATHU-23584497,O=Microsec
+             Ltd.,L=Budapest,C=HU"/>
+  <int value="50"
+      label="35f53ce1264611e03340fe37e1ec7d4cc986c5613dca70fd04aa44545f2daf28
+             CN=Microsoft ECC Root Certificate Authority 2017,O=Microsoft
+             Corporation,C=US"/>
+  <int value="51"
+      label="b2f7298b52bf2c3cac4ddfe72de4d682ac58957595982f2b62301af597c699c5
+             CN=Microsoft RSA Root Certificate Authority 2017,O=Microsoft
+             Corporation,C=US"/>
+  <int value="52"
+      label="f48badd7df6a06690d0ae31373b12855f8dedb14517f362a313101cc98cc6b35
+             CN=NetLock Arany (Class Gold) Főtanúsítvány,OU=Tanúsítványkiadók
+             (Certification Services),O=NetLock Kft.,L=Budapest,C=HU"/>
+  <int value="53"
+      label="149f2ee63b9a5e5803240a770dc991fc2e3445e62831c245a49bc4f1f738ff9c
+             CN=OISTE WISeKey Global Root GB CA,OU=OISTE Foundation
+             Endorsed,O=WISeKey,C=CH"/>
+  <int value="54"
+      label="fd371bea9755ff60c8828c849b8e5215de532d61b009855fa0ad630d90eef82e
+             CN=OISTE WISeKey Global Root GC CA,OU=OISTE Foundation
+             Endorsed,O=WISeKey,C=CH"/>
+  <int value="55"
+      label="f3438e23b3ce532522facf307923f58fd18608e9ba7addc30e952b43c49616c3
+             CN=QuoVadis Root CA 3 G3,O=QuoVadis Limited,C=BM"/>
+  <int value="56"
+      label="4a49edbd2f8f8230bd5592b313573fe1c172a45fa98011cc1eddbb36ade3fce5
+             CN=QuoVadis Root CA 2 G3,O=QuoVadis Limited,C=BM"/>
+  <int value="57"
+      label="3380709af3b096be3cc2a40548142c0a520028db09e2cb77ae2206616ab6cbb4
+             OU=Security Communication RootCA2,O=SECOM Trust Systems
+             CO.\,LTD.,C=JP"/>
+  <int value="58"
+      label="006d7be7555dd82026442c4f1a27a80e89a1989cb87b34448ed2194c18196d5e
+             CN=COMODO Certification Authority,O=COMODO CA
+             Limited,L=Salford,ST=Greater Manchester,C=GB"/>
+  <int value="59"
+      label="e7ca91bbfbb18788057b3a8070446ea5291160194102f7dcc3b9848c63cb9cd5
+             CN=COMODO ECC Certification Authority,O=COMODO CA
+             Limited,L=Salford,ST=Greater Manchester,C=GB"/>
+  <int value="60"
+      label="2021917e98263945c859c43f1d73cb4139053c414fa03ca3bc7ee88614298f3b
+             CN=USERTrust ECC Certification Authority,O=The USERTRUST
+             Network,L=Jersey City,ST=New Jersey,C=US"/>
+  <int value="61"
+      label="82b5f84daf47a59c7ab521e4982aefa40a53406a3aec26039efa6b2e0e7244c1
+             CN=COMODO RSA Certification Authority,O=COMODO CA
+             Limited,L=Salford,ST=Greater Manchester,C=GB"/>
+  <int value="62"
+      label="c784333d20bcd742b9fdc3236f4e509b8937070e73067e254dd3bf9c45bf4dde
+             CN=USERTrust RSA Certification Authority,O=The USERTRUST
+             Network,L=Jersey City,ST=New Jersey,C=US"/>
+  <int value="63"
+      label="1255cabe8152fa64df942f7a47417e29f96c1ce11bf8c84ecbe2815cc1280810
+             CN=UCA Global G2 Root,O=UniTrust,C=CN"/>
+  <int value="64"
+      label="5c41a73ab2c35dfcd771f6fd6e3e8fac9b469d386cadda56a95b646eb48cca34
+             CN=UCA Extended Validation Root,O=UniTrust,C=CN"/>
+  <int value="65"
+      label="348767cdad3bdd28b2b8dd5351aec30c68cec5cd69d276df3827dbc4f5806464
+             CN=SSL.com EV Root Certification Authority ECC,O=SSL
+             Corporation,L=Houston,ST=Texas,C=US"/>
+  <int value="66"
+      label="7cd67c248f69d83fc2f9bb01dcb1f7ad67a363d046043796d0984c3a231f6bb0
+             CN=SSL.com EV Root Certification Authority RSA R2,O=SSL
+             Corporation,L=Houston,ST=Texas,C=US"/>
+  <int value="67"
+      label="a320f4d534d7be97c1ae8dd0499735bc895c323add2d388bfccf662c23d7f99a
+             CN=SSL.com Root Certification Authority ECC,O=SSL
+             Corporation,L=Houston,ST=Texas,C=US"/>
+  <int value="68"
+      label="d1c45377ebdcd618cd1651dc2e02c21d751e5aa9fcd1b3431ff6ecf6a31348fa
+             CN=SSL.com Root Certification Authority RSA,O=SSL
+             Corporation,L=Houston,ST=Texas,C=US"/>
+  <int value="69"
+      label="c444b5b66ce5d71e1b5e40f27385c95cbfd24a05b56f70cac0992f0f50c3379c
+             CN=TWCA Global Root CA,OU=Root CA,O=TAIWAN-CA,C=TW"/>
+  <int value="70"
+      label="de7b6932e9c44582ce0de07abdab7eea90c75d6d2a07331df57bd5cb88553d13
+             CN=Certum EC-384 CA,OU=Certum Certification Authority,O=Asseco
+             Data Systems S.A.,C=PL"/>
+  <int value="71"
+      label="681dc482c296c8402c6ebb20e68309a3bc846523ae34b984a84ee697a3312db7
+             CN=Certum Trusted Root CA,OU=Certum Certification
+             Authority,O=Asseco Data Systems S.A.,C=PL"/>
+  <int value="72"
+      label="603f76f28c9feba83ec751edb66c8d7523ea40fe49fe74427629f50dabbcf55a
+             CN=D-TRUST BR Root CA 1 2020,O=D-Trust GmbH,C=DE"/>
+  <int value="73"
+      label="9d37e4a989eab3882d116052fc8b58446702cb593726e4604c3795940c7103e2
+             CN=D-TRUST EV Root CA 1 2020,O=D-Trust GmbH,C=DE"/>
+  <int value="74"
+      label="e04a022ce32f4ccf2c7f6046287b828a32a909f5e751447f83fd2c71f6fd8173
+             CN=GlobalSign Root E46,O=GlobalSign nv-sa,C=BE"/>
+  <int value="75"
+      label="ae7f962cb9e6a7dbf7b833fb18fa9b71a89175df949c232b6a9ef7cb3df2bbfc
+             CN=GlobalSign Root R46,O=GlobalSign nv-sa,C=BE"/>
+  <int value="76"
+      label="fc784300ec8df4d3d1bad763835182918d52a9ff0238bdf695a1cd9bdb98321c
+             CN=HARICA TLS ECC Root CA 2021,O=Hellenic Academic and Research
+             Institutions CA,C=GR"/>
+  <int value="77"
+      label="693c9aa6b245b3b0261637750863eadb6c248a16e52d6f4bc90c86bbf32d7042
+             CN=HARICA TLS RSA Root CA 2021,O=Hellenic Academic and Research
+             Institutions CA,C=GR"/>
+  <int value="78"
+      label="79caaf5347e6e4a94c8e78a98496fc74020f809ede13f220fab6104c8ded329f
+             CN=HiPKI Root CA - G1,O=Chunghwa Telecom Co.\, Ltd.,C=TW"/>
+  <int value="79"
+      label="762195c225586ee6c0237456e2107dc54f1efc21f61a792ebd515913cce68332
+             CN=ISRG Root X2,O=Internet Security Research Group,C=US"/>
+  <int value="80"
+      label="786ffa578618c3b9a311175e50816f4dda0605c3869f296ebc5943bf09f4e904
+             CN=NAVER Global Root Certification Authority,O=NAVER BUSINESS
+             PLATFORM Corp.,C=KR"/>
+  <int value="81"
+      label="c2b3c31a4a29850aa8f3cf472a1169ff71b416579f6a4482ec7744b83df988ac
+             CN=Telia Root CA v2,O=Telia Finland Oyj,C=FI"/>
+  <int value="82"
+      label="a02fafa192c8cb81cb1341554f9c05b71cca2a890b0d1298d683647c961efbdf
+             CN=DigiCert TLS ECC P384 Root G5,O=DigiCert\, Inc.,C=US"/>
+  <int value="83"
+      label="6a97b51c8219e93e5dec64bad5806cdeb0f8355be47e757010b702456e01aafd
+             CN=DigiCert TLS RSA4096 Root G5,O=DigiCert\, Inc.,C=US"/>
+  <int value="84"
+      label="1ef64625daa2e5d433d7449ae31a200d1025e0012a8fecfa70932f8b599b75dd
+             CN=Certainly Root E1,O=Certainly,C=US"/>
+  <int value="85"
+      label="3f93f3fcf79d225d213eef6a4a3f5885cf84fe3d7a7a3c11553517688c0e2100
+             CN=Certainly Root R1,O=Certainly,C=US"/>
+  <int value="86"
+      label="453b74809b69019627f2f843001db5950cdd1d45371053e7f3dfdbc3714113c6
+             CN=AC RAIZ FNMT-RCM SERVIDORES
+             SEGUROS,2.5.4.97=VATES-Q2826004J,OU=Ceres,O=FNMT-RCM,C=ES"/>
+  <int value="87"
+      label="9a52ff6a3cb6e353a08567e0dc9c395b300d60a22292ab8c18c1656b2983ae90
+             CN=ANF Secure Server Root CA,OU=ANF CA Raiz,O=ANF Autoridad de
+             Certificacion,C=ES,2.5.4.5=G63287510"/>
+  <int value="88"
+      label="3329bfa13b6007ab5fc3713f0acb289426e2fbc99cc5c110a914b139571600b6
+             CN=Security Communication ECC RootCA1,O=SECOM Trust Systems
+             CO.\,LTD.,C=JP"/>
+  <int value="89"
+      label="c942262c0c7c0a95bb152b71c42556ddbe9a04fa8378373550d2b7ce27d952a3
+             CN=TunTrust Root CA,O=Agence Nationale de Certification
+             Electronique,C=TN"/>
+  <int value="90"
+      label="a246b822f96cfecc155156e5476957845492acf32187ec8a2ef12d89618d711d
+             CN=vTrus ECC Root CA,O=iTrusChina Co.\,Ltd.,C=CN"/>
+  <int value="91"
+      label="e06647e52610160c3e83c42d22e39aa8750c584d6c24afaed54a61164742000a
+             CN=vTrus Root CA,O=iTrusChina Co.\,Ltd.,C=CN"/>
+  <int value="92"
+      label="608963c78c455e6e34b072468ace0956cff18d34643f9f305b7162fa181979fc
+             C=DE,O=Atos,CN=Atos TrustedRoot Root CA ECC TLS 2021"/>
+  <int value="93"
+      label="f7ca77a610e3d42447240692dbd57cfd13cf042acd2062e6a62b87b9ed81c1a7
+             C=DE,O=Atos,CN=Atos TrustedRoot Root CA RSA TLS 2021"/>
+  <int value="94"
+      label="b0b56335468561f5bb9fa12d801784a633a572705d34f32b643445dfa8b005d1
+             CN=Sectigo Public Server Authentication Root E46,O=Sectigo
+             Limited,C=GB"/>
+  <int value="95"
+      label="0e8bb18bbeefb381be21bfc1a206d317298462ad104855f04a0542699708d3d4
+             CN=Sectigo Public Server Authentication Root R46,O=Sectigo
+             Limited,C=GB"/>
+  <int value="96"
+      label="1bf00d5c8f13c094dd17e00504cf0888850f12fd067fa1f92c0fdbf60b86e321
+             CN=SSL.com TLS ECC Root CA 2022,O=SSL Corporation,C=US"/>
+  <int value="97"
+      label="2bcf553a66f570900ddd32ba6dfe1ecc06c9182d662dc1b60e1f7b767c2bdd54
+             CN=SSL.com TLS RSA Root CA 2022,O=SSL Corporation,C=US"/>
+  <int value="98"
+      label="06600b94c0318bb6967f0c7787cc8a1032a179c4e95e3c5760b32e290f7fec9b
+             CN=TWCA CYBER Root CA,OU=Root CA,O=TAIWAN-CA,C=TW"/>
+  <int value="99"
+      label="f4632e58701c0bd7dafc7e3831355ec433fc13777de286683e8ec50964df0452
+             CN=TrustAsia TLS ECC Root CA,O=TrustAsia Technologies\,
+             Inc.,C=CN"/>
+  <int value="100"
+      label="5628872e245fe66148b80badeac9c40f6252e642fa9595aece4b3e8a58b8fd46
+             CN=TrustAsia TLS RSA Root CA,O=TrustAsia Technologies\,
+             Inc.,C=CN"/>
+  <int value="101"
+      label="ebc978ae0dd9e5822d6b19652596f620c93d7caefa952191cb050a632ca9005f
+             CN=SwissSign RSA TLS Root CA 2022 - 1,O=SwissSign AG,C=CH"/>
+  <int value="102"
+      label="ac76f63a46e761b5acc3259705c920cb7f0563d248d8d180f934af68099a15f9
+             CN=D-TRUST BR Root CA 2 2023,O=D-Trust GmbH,C=DE"/>
+  <int value="103"
+      label="e753cdd9f13413c7ca9cda82962f8c0ce5ed13d1657312954af5267eb2cb7c79
+             CN=D-TRUST EV Root CA 2 2023,O=D-Trust GmbH,C=DE"/>
+  <int value="104"
+      label="eab0de5a46419010b01b2d55553fc111aa82b43d9395edfeaeaa8c76e6ad1995
+             CN=Telekom Security TLS ECC Root 2020,O=Deutsche Telekom
+             Security GmbH,C=DE"/>
+  <int value="105"
+      label="0e05e9bb23869eb689dc56839dcec475a3ae75fa6b50bc5a4978360cbe673323
+             CN=Telekom Security TLS RSA Root 2023,O=Deutsche Telekom
+             Security GmbH,C=DE"/>
+  <int value="106"
+      label="47487900a1beb9ee08ccbc1116a8ec55f454b638994319f051b984023ced6423
+             CN=e-Szigno TLS Root CA 2023,2.5.4.97=VATHU-23584497,O=Microsec
+             Ltd.,L=Budapest,C=HU"/>
+  <int value="107" label="44363.48.8"/>
 </enum>
 
 <enum name="CTRequirementStatus">
