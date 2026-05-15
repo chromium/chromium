@@ -72,7 +72,6 @@ import org.chromium.chrome.browser.bookmarks.bar.BookmarkBarUtils;
 import org.chromium.chrome.browser.bookmarks.bar.BookmarkBarVisibilityProvider;
 import org.chromium.chrome.browser.bookmarks.bar.BookmarkBarVisibilityProvider.BookmarkBarVisibilityObserver;
 import org.chromium.chrome.browser.browser_controls.BottomOverscrollHandler;
-import org.chromium.chrome.browser.browser_controls.BrowserControlsUtils;
 import org.chromium.chrome.browser.collaboration.CollaborationControllerDelegateFactory;
 import org.chromium.chrome.browser.collaboration.CollaborationControllerDelegateImpl;
 import org.chromium.chrome.browser.collaboration.CollaborationServiceFactory;
@@ -327,7 +326,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     private final Callback<@Nullable Tab> mSendToBackground;
     private final LayoutStateProvider.LayoutStateObserver mGestureNavLayoutObserver;
 
-    private @Nullable Callback<Integer> mOnTabStripHeightChangedCallback;
     private final @Nullable MultiInstanceManager mMultiInstanceManager;
     private int mStatusIndicatorHeight;
     private final OneshotSupplier<HubManager> mHubManagerSupplier;
@@ -744,12 +742,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
 
         if (mToolbarManager != null) {
             mToolbarManager.getOmniboxStub().removeUrlFocusChangeListener(mUrlFocusChangeListener);
-            if (mOnTabStripHeightChangedCallback != null) {
-                mToolbarManager
-                        .getTabStripHeightSupplier()
-                        .removeObserver(mOnTabStripHeightChangedCallback);
-                mOnTabStripHeightChangedCallback = null;
-            }
         }
 
         if (mOfflineIndicatorInProductHelpController != null) {
@@ -1196,7 +1188,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         PwaBottomSheetControllerFactory.attach(mWindowAndroid, mPwaBottomSheetController);
         initCommerceSubscriptionsService();
         initUndoGroupSnackbarController();
-        initTabStripTransitionCoordinator();
 
         new OneShotCallback<>(mProfileSupplier, this::initCollaborationDelegatesOnProfile);
 
@@ -1826,19 +1817,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                         defaultVisibility);
         mSystemBarColorHelperSupplier.set(bottomChinColorHelper);
         return bottomChinColorHelper;
-    }
-
-    private void initTabStripTransitionCoordinator() {
-        // Tab strip transition is only supported for tablets.
-        if (!DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity)) return;
-
-        mOnTabStripHeightChangedCallback = (height) -> updateTopControlsHeight();
-
-        if (!BrowserControlsUtils.isTopControlsRefactorOffsetEnabled()) {
-            getToolbarManager()
-                    .getTabStripHeightSupplier()
-                    .addSyncObserverAndPostIfNonNull(mOnTabStripHeightChangedCallback);
-        }
     }
 
     private void initiateTabBottomSheetManagers() {

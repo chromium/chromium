@@ -172,7 +172,7 @@ public class TabStripTopControlLayer implements TopControlLayer, TabStripTransit
 
     @Override
     public int getTopControlVisibility() {
-        if (BrowserControlsUtils.isTopControlsRefactorOffsetEnabled() && mTransitionState != null) {
+        if (mTransitionState != null) {
             return mTransitionState.visibility;
         }
 
@@ -241,9 +241,7 @@ public class TabStripTopControlLayer implements TopControlLayer, TabStripTransit
         //  mToolbar.getTabStripHeight().
         mSupplier.set(newHeight);
 
-        if (BrowserControlsUtils.isTopControlsRefactorOffsetEnabled()
-                && isInTransition()
-                && mTransitionState.targetHeight != mTransitionState.startHeight) {
+        if (isInTransition() && mTransitionState.targetHeight != mTransitionState.startHeight) {
             mTopControlsStacker.requestLayerUpdateSync(mTransitionState.hasAnimation);
         }
     }

@@ -48,7 +48,6 @@ import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.app.tabmodel.AllTabObserver;
 import org.chromium.chrome.browser.app.tabmodel.AsyncTabParamsManagerSingleton;
 import org.chromium.chrome.browser.app.tabmodel.TabModelOrchestrator;
-import org.chromium.chrome.browser.browser_controls.BrowserControlsUtils;
 import org.chromium.chrome.browser.browserservices.InstalledWebappDataRegister;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.CustomTabsUiType;
@@ -1406,11 +1405,9 @@ public abstract class BaseCustomTabActivity extends ChromeActivity {
                     new CustomTabBrowserControlsVisibilityDelegate(this::getBrowserControlsManager);
 
             // TODO(crbug.com/470432106): Move this to root ui coordinator.
-            if (BrowserControlsUtils.isTopControlsRefactorOffsetEnabled()) {
-                getBaseCustomTabRootUiCoordinator()
-                        .getAppBrowserControlsVisibilityDelegate()
-                        .addDelegate(getCustomTabBrowserControlsVisibilityDelegate());
-            }
+            getBaseCustomTabRootUiCoordinator()
+                    .getAppBrowserControlsVisibilityDelegate()
+                    .addDelegate(getCustomTabBrowserControlsVisibilityDelegate());
         }
         return mCustomTabBrowserControlsVisibilityDelegate;
     }

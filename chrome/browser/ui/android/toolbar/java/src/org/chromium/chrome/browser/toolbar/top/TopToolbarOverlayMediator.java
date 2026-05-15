@@ -297,10 +297,8 @@ public class TopToolbarOverlayMediator {
                             @BrowserControlsState int constraints,
                             boolean shouldUpdateOffsets) {
                         // Offset tag application is handled by TopControlsStacker when
-                        // #isTopControlsRefactorOffsetEnabled is enabled and browser controls
-                        // is at the top.
-                        if (!BrowserControlsUtils.isTopControlsRefactorOffsetEnabled()
-                                || getControlsPosition() == ControlsPosition.BOTTOM) {
+                        // browser controls is at the top.
+                        if (getControlsPosition() == ControlsPosition.BOTTOM) {
                             updateOffsetTag(offsetTagsInfo);
                         }
                         if (shouldUpdateOffsets) {
@@ -563,7 +561,6 @@ public class TopToolbarOverlayMediator {
      * @param yOffset The Y offset of the toolbar.
      */
     void setYOffset(float yOffset) {
-        assert BrowserControlsUtils.isTopControlsRefactorOffsetEnabled();
         mModel.set(TopToolbarOverlayProperties.Y_OFFSET, yOffset);
     }
 
@@ -648,9 +645,7 @@ public class TopToolbarOverlayMediator {
     }
 
     private void applyContentOffsetToModel(float contentOffset) {
-        if (BrowserControlsUtils.isTopControlsRefactorOffsetEnabled()
-                && getControlsPosition() == ControlsPosition.TOP
-                && !mIsVisibilityManuallyControlled) {
+        if (getControlsPosition() == ControlsPosition.TOP && !mIsVisibilityManuallyControlled) {
             contentOffset = INVALID_CONTENT_OFFSET;
         }
         mModel.set(TopToolbarOverlayProperties.LEGACY_CONTENT_OFFSET, contentOffset);

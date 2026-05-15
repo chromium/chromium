@@ -348,7 +348,6 @@ public class TopToolbarCoordinator implements Toolbar, TopControlLayer {
             mTabStripTransitionCoordinator =
                     maybeInitializeTabStripTransitionCoordinator(
                             mToolbarLayout,
-                            browserControlsVisibilityManager,
                             mControlContainer,
                             mTabObscuringHandler,
                             mDesktopWindowStateManager,
@@ -442,8 +441,7 @@ public class TopToolbarCoordinator implements Toolbar, TopControlLayer {
 
             // mOverlayCoordinator needs to receive the latest yOffset and offset tags to position
             // the scene layer. It's better to request another update to avoid stale values.
-            if (BrowserControlsUtils.isTopControlsRefactorOffsetEnabled()
-                    && mBrowserControls.getControlsPosition() == ControlsPosition.TOP) {
+            if (mBrowserControls.getControlsPosition() == ControlsPosition.TOP) {
                 mTopControlsStacker.requestLayerUpdatePost(false);
             }
         }
@@ -452,7 +450,6 @@ public class TopToolbarCoordinator implements Toolbar, TopControlLayer {
             mTabStripTransitionCoordinator =
                     maybeInitializeTabStripTransitionCoordinator(
                             mToolbarLayout,
-                            browserControlsVisibilityManager,
                             mControlContainer,
                             mTabObscuringHandler,
                             mDesktopWindowStateManager,
@@ -464,7 +461,6 @@ public class TopToolbarCoordinator implements Toolbar, TopControlLayer {
     private static @Nullable TabStripTransitionCoordinator
             maybeInitializeTabStripTransitionCoordinator(
                     ToolbarLayout toolbarLayout,
-                    BrowserControlsVisibilityManager browserControlsVisibilityManager,
                     ControlContainer controlContainer,
                     TabObscuringHandler tabObscuringHandler,
                     @Nullable DesktopWindowStateManager desktopWindowStateManager,
@@ -475,7 +471,6 @@ public class TopToolbarCoordinator implements Toolbar, TopControlLayer {
 
         var coordinator =
                 new TabStripTransitionCoordinator(
-                        browserControlsVisibilityManager,
                         controlContainer,
                         tabStripHeightResource,
                         tabObscuringHandler,
@@ -925,9 +920,7 @@ public class TopToolbarCoordinator implements Toolbar, TopControlLayer {
 
     @Override
     public void onCaptureSizeUpdated() {
-        // Y Offset is used when isTopControlsRefactorOffsetEnabled.
-        if (!BrowserControlsUtils.isTopControlsRefactorOffsetEnabled()
-                || mBrowserControls.getControlsPosition() != ControlsPosition.TOP
+        if (mBrowserControls.getControlsPosition() != ControlsPosition.TOP
                 || mOverlayCoordinator == null) {
             return;
         }
@@ -992,7 +985,6 @@ public class TopToolbarCoordinator implements Toolbar, TopControlLayer {
     @Override
     public void updateOffsetTag(@Nullable BrowserControlsOffsetTagsInfo offsetTagsInfo) {
         if (mBrowserControls.getControlsPosition() != ControlsPosition.TOP
-                || !BrowserControlsUtils.isTopControlsRefactorOffsetEnabled()
                 || mOverlayCoordinator == null) {
             return;
         }
@@ -1021,7 +1013,6 @@ public class TopToolbarCoordinator implements Toolbar, TopControlLayer {
     @Override
     public void prepForHeightAdjustmentAnimation(int latestYOffset) {
         if (mBrowserControls.getControlsPosition() != ControlsPosition.TOP
-                || !BrowserControlsUtils.isTopControlsRefactorOffsetEnabled()
                 || mOverlayCoordinator == null) {
             return;
         }

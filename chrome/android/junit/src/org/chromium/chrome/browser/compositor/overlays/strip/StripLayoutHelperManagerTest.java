@@ -25,7 +25,6 @@ import static org.mockito.Mockito.when;
 import static org.chromium.chrome.browser.multiwindow.MultiWindowTestUtils.enableMultiInstance;
 
 import android.app.Activity;
-import android.graphics.Color;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.os.Build.VERSION_CODES;
@@ -751,80 +750,6 @@ public class StripLayoutHelperManagerTest {
     }
 
     @Test
-    @SuppressWarnings("DirectInvocationOnMock")
-    // TODO(crbug.com/430058918): Reenable or add new test.
-    @DisableFeatures(ChromeFeatureList.TOP_CONTROLS_REFACTOR_V2)
-    public void testTabStripHeightTransition_Hide() {
-
-        float yOffset = 10;
-        doReturn((int) yOffset).when(mBrowserControlStateProvider).getTopControlOffset();
-        // With tab strip transition, the yOffset will be forced to be 0.
-        mTabStripHeightSupplier.set(0);
-        mStripLayoutHelperManager.onHeightChanged(0, /* applyScrimOverlay= */ true);
-        float progress = 0.75f; // 1 - yOffset / TAB_STRIP_HEIGHT = 1 - 10 / 40 = 0.75f
-        float expectedOpacity =
-                StripLayoutHelperManager.TAB_STRIP_TRANSITION_INTERPOLATOR.getInterpolation(
-                        progress);
-        mStripLayoutHelperManager.getUpdatedSceneOverlayTree(
-                new RectF(), new RectF(), mResourceManager);
-        verify(mTabStripTreeProvider)
-                .pushAndUpdateStrip(
-                        any(),
-                        any(),
-                        any(),
-                        any(),
-                        any(),
-                        any(),
-                        /* yOffset= */ eq(0f),
-                        anyInt(),
-                        anyInt(),
-                        eq(mToolbarPrimaryColor),
-                        /* scrimOpacity= */ eq(expectedOpacity),
-                        anyFloat(),
-                        anyFloat(),
-                        anyFloat());
-
-        // With tab strip transition finished, the yOffset will be forced to be the negative of the
-        // tab strip height.
-        mStripLayoutHelperManager.onHeightTransitionFinished(true);
-        mStripLayoutHelperManager.getUpdatedSceneOverlayTree(
-                new RectF(), new RectF(), mResourceManager);
-        verify(mTabStripTreeProvider)
-                .pushAndUpdateStrip(
-                        any(),
-                        any(),
-                        any(),
-                        any(),
-                        any(),
-                        any(),
-                        /* yOffset= */ eq(yOffset - TAB_STRIP_HEIGHT_PX),
-                        anyInt(),
-                        anyInt(),
-                        eq(mToolbarPrimaryColor),
-                        /* scrimOpacity= */ eq(0f),
-                        anyFloat(),
-                        anyFloat(),
-                        anyFloat());
-
-        // Verify StatusBarColorController method invocations.
-        InOrder inOrder = Mockito.inOrder(mStatusBarColorController);
-        // Invocation during the transition.
-        inOrder.verify(mStatusBarColorController)
-                .setTabStripColorOverlay(mToolbarPrimaryColor, expectedOpacity);
-        // Invocation after the transition finished.
-        inOrder.verify(mStatusBarColorController).setTabStripHiddenOnTablet(true);
-        inOrder.verify(mStatusBarColorController).setTabStripColorOverlay(Color.TRANSPARENT, 0f);
-    }
-
-    @Test
-    @SuppressWarnings("DirectInvocationOnMock")
-    // TODO(crbug.com/430058918): Reenable or add new test.
-    @DisableFeatures(ChromeFeatureList.TOP_CONTROLS_REFACTOR_V2)
-    public void testTabStripHeightTransition_Show() {
-        doTestTabStripHeightTransition_Show(mToolbarPrimaryColor);
-    }
-
-    @Test
     public void testGetFadeTransitionThresholdDp_MsbShown() {
         when(mStandardTabModel.getCount()).thenReturn(1);
         int expectedThresholdDp = 284;
@@ -934,98 +859,6 @@ public class StripLayoutHelperManagerTest {
         actual = mStripLayoutHelperManager.calculateScrimOpacityDuringHeightTransition(30f);
         assertEquals(expected, actual, 0f);
         mStripLayoutHelperManager.onHeightTransitionFinished(true);
-    }
-
-    @SuppressWarnings("DirectInvocationOnMock")
-    private void doTestTabStripHeightTransition_Show(int scrimColor) {
-        // Assume tab strip is hidden from the beginning.
-        mTabStripHeightSupplier.set(0);
-        mStripLayoutHelperManager.onHeightChanged(0, /* applyScrimOverlay= */ true);
-        mStripLayoutHelperManager.onHeightTransitionFinished(true);
-
-        // The yOffset will be forced to be reduced by the tab strip height to be kept invisible.
-        float yOffset = -10;
-        doReturn((int) yOffset).when(mBrowserControlStateProvider).getTopControlOffset();
-        mStripLayoutHelperManager.getUpdatedSceneOverlayTree(
-                new RectF(), new RectF(), mResourceManager);
-        verify(mTabStripTreeProvider)
-                .pushAndUpdateStrip(
-                        any(),
-                        any(),
-                        any(),
-                        any(),
-                        any(),
-                        any(),
-                        /* yOffset= */ eq(yOffset - TAB_STRIP_HEIGHT_PX),
-                        anyInt(),
-                        anyInt(),
-                        eq(scrimColor),
-                        /* scrimOpacity= */ eq(0f),
-                        anyFloat(),
-                        anyFloat(),
-                        anyFloat());
-
-        // With tab strip transition, the yOffset will be forced to be 0.
-        mTabStripHeightSupplier.set(TAB_STRIP_HEIGHT_PX);
-        mStripLayoutHelperManager.onHeightChanged(
-                TAB_STRIP_HEIGHT_PX, /* applyScrimOverlay= */ true);
-        float progress =
-                0.25f; // 1 - (TAB_STRIP_HEIGHT+yOffset) / TAB_STRIP_HEIGHT = 1 - 30 / 40 = 0.25f
-        float expectedOpacity =
-                StripLayoutHelperManager.TAB_STRIP_TRANSITION_INTERPOLATOR.getInterpolation(
-                        progress);
-        mStripLayoutHelperManager.getUpdatedSceneOverlayTree(
-                new RectF(), new RectF(), mResourceManager);
-        verify(mTabStripTreeProvider)
-                .pushAndUpdateStrip(
-                        any(),
-                        any(),
-                        any(),
-                        any(),
-                        any(),
-                        any(),
-                        /* yOffset= */ eq(0f),
-                        anyInt(),
-                        anyInt(),
-                        eq(scrimColor),
-                        /* scrimOpacity= */ eq(expectedOpacity),
-                        anyFloat(),
-                        anyFloat(),
-                        anyFloat());
-
-        // When transition finished while tabs strip showing, yOffset will be applied by viz, so
-        // the layer should be offset to 0.
-        mStripLayoutHelperManager.onHeightTransitionFinished(true);
-        mStripLayoutHelperManager.getUpdatedSceneOverlayTree(
-                new RectF(), new RectF(), mResourceManager);
-        verify(mTabStripTreeProvider)
-                .pushAndUpdateStrip(
-                        any(),
-                        any(),
-                        any(),
-                        any(),
-                        any(),
-                        any(),
-                        /* yOffset= */ eq(0f),
-                        anyInt(),
-                        anyInt(),
-                        eq(scrimColor),
-                        /* scrimOpacity= */ eq(0f),
-                        anyFloat(),
-                        anyFloat(),
-                        anyFloat());
-
-        // Verify StatusBarColorController method invocations.
-        InOrder inOrder = Mockito.inOrder(mStatusBarColorController);
-        // Invocations before the transition started.
-        inOrder.verify(mStatusBarColorController).setTabStripHiddenOnTablet(true);
-        inOrder.verify(mStatusBarColorController).setTabStripColorOverlay(Color.TRANSPARENT, 0f);
-        // Invocations during the transition.
-        inOrder.verify(mStatusBarColorController).setTabStripHiddenOnTablet(false);
-        inOrder.verify(mStatusBarColorController)
-                .setTabStripColorOverlay(scrimColor, expectedOpacity);
-        // Invocation after the transition finished.
-        inOrder.verify(mStatusBarColorController).setTabStripColorOverlay(Color.TRANSPARENT, 0f);
     }
 
     @Test
@@ -1454,60 +1287,6 @@ public class StripLayoutHelperManagerTest {
                         & mStripLayoutHelperManager.getStripVisibilityStateSupplier().get());
     }
 
-    @Test
-    @SuppressWarnings("DirectInvocationOnMock")
-    // TODO(crbug.com/430058918): Reenable or add new test.
-    @DisableFeatures(ChromeFeatureList.TOP_CONTROLS_REFACTOR_V2)
-    public void testVisibilityConstraintAndOffsetOverride() {
-        doReturn(false).when(mBrowserControlStateProvider).isVisibilityForced();
-
-        float yOffset = 10;
-        doReturn((int) yOffset).when(mBrowserControlStateProvider).getTopControlOffset();
-        mStripLayoutHelperManager.getUpdatedSceneOverlayTree(
-                new RectF(), new RectF(), mResourceManager);
-
-        // When visibility isn't forced, and when we're not in a height transition, the offset
-        // should always be 0, to position the controls at their fully visible positions.
-        verify(mTabStripTreeProvider)
-                .pushAndUpdateStrip(
-                        any(),
-                        any(),
-                        any(),
-                        any(),
-                        any(),
-                        any(),
-                        /* yOffset= */ eq(0f),
-                        anyInt(),
-                        anyInt(),
-                        anyInt(),
-                        anyFloat(),
-                        anyFloat(),
-                        anyFloat(),
-                        anyFloat());
-
-        doReturn(true).when(mBrowserControlStateProvider).isVisibilityForced();
-        mStripLayoutHelperManager.getUpdatedSceneOverlayTree(
-                new RectF(), new RectF(), mResourceManager);
-
-        // When visibility is forced, use the provided offset.
-        verify(mTabStripTreeProvider)
-                .pushAndUpdateStrip(
-                        any(),
-                        any(),
-                        any(),
-                        any(),
-                        any(),
-                        any(),
-                        /* yOffset= */ eq(yOffset),
-                        anyInt(),
-                        anyInt(),
-                        anyInt(),
-                        anyFloat(),
-                        anyFloat(),
-                        anyFloat(),
-                        anyFloat());
-    }
-
     private void resizeDesktopWindowAndTriggerFadeTransition(boolean showStrip) {
         int leftPadding = 10;
         int rightPadding = 20;
@@ -1575,10 +1354,7 @@ public class StripLayoutHelperManagerTest {
     }
 
     @Test
-    @EnableFeatures({
-        ChromeFeatureList.TOP_CONTROLS_REFACTOR_V2
-    })
-    public void testPushAndUpdateStrip_RefactorEnabled() {
+    public void testPushAndUpdateStrip() {
 
         mTabStripHeightSupplier.set(0);
         mStripLayoutHelperManager.onHeightChanged(0, true);
@@ -1647,21 +1423,6 @@ public class StripLayoutHelperManagerTest {
         assertEquals(
                 "Unexpected bottom px value.",
                 (Integer) (yOffsetPx + visibleHeightPx),
-                mStripLayoutHelperManager.getStripBottomPxSupplier().get());
-    }
-
-    @Test
-    @DisableFeatures(ChromeFeatureList.TOP_CONTROLS_REFACTOR_V2)
-    public void testStripBottomPxSupplier_getUpdatedSceneOverlayTree() {
-        int topControlOffset = 10;
-        when(mBrowserControlStateProvider.getTopControlOffset()).thenReturn(topControlOffset);
-        when(mBrowserControlStateProvider.isVisibilityForced()).thenReturn(true);
-        mStripLayoutHelperManager.getUpdatedSceneOverlayTree(
-                new RectF(), new RectF(), mResourceManager);
-
-        assertEquals(
-                "Unexpected bottom px value.",
-                (Integer) (TAB_STRIP_HEIGHT_PX + topControlOffset),
                 mStripLayoutHelperManager.getStripBottomPxSupplier().get());
     }
 

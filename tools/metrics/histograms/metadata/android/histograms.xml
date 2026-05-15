@@ -2171,7 +2171,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Android.DynamicTopChrome.TabStripTransition.Finished"
     enum="Boolean" expires_after="2026-08-30">
-  <owner>wenyufu@chromium.org</owner>
+  <owner>mschillaci@google.com</owner>
   <owner>clank-large-form-factors@google.com</owner>
   <summary>
     On tablets, when the width of the tab strip passes a certain threshold, the

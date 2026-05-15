@@ -412,8 +412,6 @@ public class TopControlsStacker implements BrowserControlsStateProvider.Observer
             int initialTopOffset,
             int initialTopControlsMinHeightOffset,
             boolean offsetsAppliedByBrowser) {
-        if (!BrowserControlsUtils.isTopControlsRefactorOffsetEnabled()) return;
-
         if (sDumpStatusLogs) {
             Log.i(
                     TAG,

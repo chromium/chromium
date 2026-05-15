@@ -2582,8 +2582,7 @@ public class ToolbarManager
                             () -> TabArchiveSettings.setIphShownThisSession(false));
         }
 
-        if (BrowserControlsUtils.isTopControlsRefactorOffsetEnabled()
-                && stripLayoutHelperManager != null) {
+        if (stripLayoutHelperManager != null) {
             mTabStripTopControlLayer.initializeWithNative(stripLayoutHelperManager);
         }
         mToolbar.initializeWithNative(

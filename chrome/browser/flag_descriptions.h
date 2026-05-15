@@ -4421,11 +4421,6 @@ inline constexpr char kTLSTrustAnchorIDsDescription[] =
     "This option configures TLS Trust Anchor IDs, allowing compatible servers "
     "to select between available certificates issued by different CAs.";
 
-inline constexpr char kTopControlsRefactorV2Name[] = "Top Controls Refactor V2";
-inline constexpr char kTopControlsRefactorV2Description[] =
-    "Enables the alternative code path in Android for the top controls layout "
-    "control, v2, including y-offsets.";
-
 inline constexpr char kToolbarGlowUpName[] = "Toolbar Glow Up";
 inline constexpr char kToolbarGlowUpDescription[] =
     "Enables the Toolbar Glow Up feature.";

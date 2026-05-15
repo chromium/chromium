@@ -11316,12 +11316,6 @@ const FeatureEntry kFeatureEntries[] = {
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
-    {"top-controls-refactor-v2", flag_descriptions::kTopControlsRefactorV2Name,
-     flag_descriptions::kTopControlsRefactorV2Description, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kTopControlsRefactorV2)},
-#endif  // BUILDFLAG(IS_ANDROID)
-
-#if BUILDFLAG(IS_ANDROID)
     {"touch-to-search-callout", flag_descriptions::kTouchToSearchCalloutName,
      flag_descriptions::kTouchToSearchCalloutDescription, kOsAndroid,
      FEATURE_WITH_PARAMS_VALUE_TYPE(chrome::android::kTouchToSearchCallout,

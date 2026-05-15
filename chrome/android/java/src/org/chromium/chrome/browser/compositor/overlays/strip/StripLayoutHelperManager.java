@@ -41,13 +41,11 @@ import org.chromium.build.annotations.EnsuresNonNullIf;
 import org.chromium.build.annotations.MonotonicNonNull;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.cc.input.BrowserControlsState;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.actor.ui.ActorUiTabController;
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsOffsetTagsInfo;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
-import org.chromium.chrome.browser.browser_controls.BrowserControlsUtils;
 import org.chromium.chrome.browser.compositor.LayerTitleCache;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerHost;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
@@ -885,16 +883,6 @@ public class StripLayoutHelperManager
         assert mTabStripTreeProvider != null;
         mResourceManager = resourceManager;
 
-        // When refactor is enabled, the mSceneLayerYOffset / mSceneLayerVisibleHeight wil be
-        // calculated externally, so we can skip the adjustment here.
-        if (!BrowserControlsUtils.isTopControlsRefactorOffsetEnabled()) {
-            float topControlOffsetDp =
-                    mBrowserControlsStateProvider.getTopControlOffset() / mDensity;
-            mSceneLayerVisibleHeight = getVisibleHeightDp(topControlOffsetDp);
-            mSceneLayerYOffset = getAdjustedYOffset(topControlOffsetDp);
-            updateStripBottomPx();
-        }
-
         pushAndUpdateStrip(mSceneLayerYOffset, mSceneLayerVisibleHeight);
         return mTabStripTreeProvider;
     }
@@ -943,44 +931,6 @@ public class StripLayoutHelperManager
                 getActiveStripLayoutHelper().getLeftPaddingToDraw(),
                 getActiveStripLayoutHelper().getRightPaddingToDraw(),
                 mTopPadding);
-    }
-
-    private float getVisibleHeightDp(float topControlOffsetDp) {
-        if (!duringTabStripHeightTransition()) return getHeight();
-
-        // During tab strip transition, make the yOffset stick to the top of the browser
-        // controls. This assumes on tablet there are no other components on top of the control
-        // container.
-        float visibleHeightDp = topControlOffsetDp;
-        if (visibleHeightDp < 0) visibleHeightDp += getHeight();
-        return visibleHeightDp;
-    }
-
-    private float getAdjustedYOffset(float topControlsOffset) {
-        // When tab strip is hiding, animation will trigger the toolbar moving up and tab
-        // strip fade-out in place. In this case the tab strip should not move at all.
-        if (duringTabStripHeightTransition()) {
-            return 0;
-        }
-
-        if ((getStripVisibilityStateSupplier().get()
-                        & StripVisibilityState.HIDDEN_BY_HEIGHT_TRANSITION)
-                != 0) {
-            // When the tab strip is hidden by a height transition, the stable offset of this scene
-            // layer should be a negative value.
-            // Use mScrollableStripHeight as the baseline height because mHeight may have already
-            // changed during a height transition to hide the strip.
-            return topControlsOffset - (mHeight > 0 ? mHeight : mScrollableStripHeight);
-        }
-
-        if (!mBrowserControlsStateProvider.isVisibilityForced()) {
-            // With bciv, as long as if the visibility isn't forced by the browser, and if the
-            // tabstrip isn't hidden, the composited layers should positioned at their fully visible
-            // positions.
-            return 0;
-        }
-
-        return topControlsOffset;
     }
 
     @Override
@@ -1102,7 +1052,10 @@ public class StripLayoutHelperManager
             mSceneLayerYOffset = yOffsetDp;
             mSceneLayerVisibleHeight = visibleHeightDp;
             pushAndUpdateStrip(mSceneLayerYOffset, mSceneLayerVisibleHeight);
-            updateStripBottomPx();
+            @Px
+            int tabStripBottomPx =
+                    Math.round(mDensity * (mSceneLayerYOffset + mSceneLayerVisibleHeight));
+            mStripBottomPxSupplier.set(tabStripBottomPx);
         }
     }
 
@@ -1662,17 +1615,6 @@ public class StripLayoutHelperManager
                     }
 
                     @Override
-                    public void onOffsetTagsInfoChanged(
-                            Tab tab,
-                            BrowserControlsOffsetTagsInfo oldOffsetTagsInfo,
-                            BrowserControlsOffsetTagsInfo offsetTagsInfo,
-                            @BrowserControlsState int constraints) {
-                        if (!BrowserControlsUtils.isTopControlsRefactorOffsetEnabled()) {
-                            updateOffsetTagsInfo(offsetTagsInfo);
-                        }
-                    }
-
-                    @Override
                     public void onMediaStateChanged(Tab tab, @MediaState int mediaState) {
                         getStripLayoutHelper(tab.isIncognito())
                                 .onMediaStateChanged(tab, mediaState);
@@ -1971,13 +1913,6 @@ public class StripLayoutHelperManager
     /** Returns a {@link NonNullObservableSupplier} for the bottom of the tab strip in px. */
     public NonNullObservableSupplier<Integer> getStripBottomPxSupplier() {
         return mStripBottomPxSupplier;
-    }
-
-    private void updateStripBottomPx() {
-        @Px
-        int tabStripBottomPx =
-                Math.round(mDensity * (mSceneLayerYOffset + mSceneLayerVisibleHeight));
-        mStripBottomPxSupplier.set(tabStripBottomPx);
     }
 
     void simulateHoverEventForTesting(int event, float x, float y) {

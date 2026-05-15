@@ -17,7 +17,6 @@ import org.chromium.base.ResettersForTesting;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.browser_controls.BrowserControlsVisibilityManager;
 import org.chromium.chrome.browser.tab.TabObscuringHandler;
 import org.chromium.chrome.browser.toolbar.ControlContainer;
 import org.chromium.chrome.browser.toolbar.R;
@@ -131,8 +130,6 @@ public class TabStripTransitionCoordinator implements ComponentCallbacks, AppHea
     /**
      * Create the coordinator to manage transitions to show / hide the tab strip.
      *
-     * @param browserControlsVisibilityManager {@link BrowserControlsVisibilityManager} to observe
-     *     browser controls height and animation state.
      * @param controlContainer The {@link ControlContainer} for the containing activity.
      * @param tabStripHeightFromResource The height of the tab strip defined in resource.
      * @param tabObscuringHandler Delegate object handling obscuring views.
@@ -143,7 +140,6 @@ public class TabStripTransitionCoordinator implements ComponentCallbacks, AppHea
      *     tab strip visibility transitions.
      */
     public TabStripTransitionCoordinator(
-            BrowserControlsVisibilityManager browserControlsVisibilityManager,
             ControlContainer controlContainer,
             int tabStripHeightFromResource,
             TabObscuringHandler tabObscuringHandler,
@@ -157,7 +153,6 @@ public class TabStripTransitionCoordinator implements ComponentCallbacks, AppHea
         mTabStripTransitionDelegateSupplier = tabStripTransitionDelegateSupplier;
         mHeightTransitionHandler =
                 new HeightTransitionHandler(
-                        browserControlsVisibilityManager,
                         controlContainer,
                         tabStripHeightFromResource,
                         mCallbackController,

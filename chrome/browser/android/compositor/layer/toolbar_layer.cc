@@ -153,8 +153,7 @@ void ToolbarLayer::PushResource(int toolbar_resource_id,
   // always at the bottom of the browser controls. This is no longer the case
   // as for 2025.
   // TODO(https://crbug.com/454338286): Rename / remove in favor of y_Offset.
-  if (!base::FeatureList::IsEnabled(chrome::android::kTopControlsRefactorV2) ||
-      kInvalidContentOffset != legacy_content_offset) {
+  if (kInvalidContentOffset != legacy_content_offset) {
     y_offset = legacy_content_offset - layer_->bounds().height();
   }
 

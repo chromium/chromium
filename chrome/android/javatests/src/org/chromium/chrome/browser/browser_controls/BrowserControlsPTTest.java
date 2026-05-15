@@ -36,9 +36,6 @@ import org.chromium.ui.test.util.DeviceRestriction;
     ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
     ChromeSwitches.DISABLE_MINIMUM_SHOW_DURATION
 })
-@EnableFeatures({
-    ChromeFeatureList.TOP_CONTROLS_REFACTOR_V2
-})
 @Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO)
 public class BrowserControlsPTTest {
 
