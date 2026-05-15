@@ -951,9 +951,15 @@ void PaintIndirect(cc::PaintCanvas* destination_canvas,
   }
 
   skia::InitializeDC(offscreen_hdc.Get());
-  if (const HRGN clip = CreateRectRgn(0, 0, rect.width(), rect.height());
-      (SelectClipRgn(offscreen_hdc.Get(), clip) == ERROR) ||
-      !DeleteObject(clip)) {
+
+  // Set a clip region so native theme drawing cannot paint outside the
+  // offscreen bitmap bounds. If `CreateRectRgn` returns NULL (GDI exhaustion),
+  // skip drawing entirely: passing NULL to `SelectClipRgn` *clears* the clip
+  // rather than failing, which would silently allow overdraw.
+  const base::win::ScopedGDIObject<HRGN> clip(
+      CreateRectRgn(0, 0, rect.width(), rect.height()));
+  if (!clip.is_valid() ||
+      SelectClipRgn(offscreen_hdc.Get(), clip.get()) == ERROR) {
     return;
   }
 
