@@ -414,7 +414,29 @@ bool BrowserAccessibilityAndroid::IsFocusable() const {
     return HasStringAttribute(ax::mojom::StringAttribute::kName);
   }
 
-  return BrowserAccessibility::IsFocusable();
+  if (!BrowserAccessibility::IsFocusable()) {
+    return false;
+  }
+
+  // Suppress focusability for generic container nodes that have no explicit
+  // name and only contain collection/list items, to prevent TalkBack from
+  // announcing them as 'Page.Page' when they wrap carousels/pagers.
+  if (GetRole() == ax::mojom::Role::kGenericContainer &&
+      !HasStringAttribute(ax::mojom::StringAttribute::kName)) {
+    bool has_only_collection_children = true;
+    for (auto it = InternalChildrenBegin(); it != InternalChildrenEnd(); ++it) {
+      if (!static_cast<const BrowserAccessibilityAndroid*>(it.get())
+               ->IsCollection()) {
+        has_only_collection_children = false;
+        break;
+      }
+    }
+    if (has_only_collection_children && InternalChildCount() > 0) {
+      return false;
+    }
+  }
+
+  return true;
 }
 
 bool BrowserAccessibilityAndroid::IsFormDescendant() const {
