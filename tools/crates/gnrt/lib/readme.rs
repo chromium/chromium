@@ -105,63 +105,20 @@ fn readme_file_from_package<'a>(
         }
     };
 
-    let config_license_files = crate_config.and_then(|config| {
-        let config_license_files = config
-            .license_files
-            .iter()
-            .map(Path::new)
-            .map(|p| crate_vendor_dir.join(p))
-            .collect::<Vec<_>>();
-        if config_license_files.is_empty() {
+    let config_license_files = crate_config.and_then(|c| {
+        if c.license_files.is_empty() {
             None
         } else {
-            Some(config_license_files)
+            Some(c.license_files.as_slice())
         }
     });
-    let license_files = if let Some(config_license_files) = config_license_files {
-        for path in config_license_files.iter() {
-            ensure!(
-                does_license_file_exist(path)?,
-                "`gnrt_config.toml` for `{crate_name}` crate listed \
-                 a license file that doesn't actually exist: {path}",
-                crate_name = package.name(),
-                path = path.display(),
-            );
-        }
-        config_license_files
-            .into_iter()
-            .map(|p| format!("//{}", paths::normalize_unix_path_separator(&p)))
-            .collect()
-    } else if let Some(pkg_license) = package.license() {
-        let license_kinds = parse_license_string(pkg_license)?;
-        find_license_files_for_kinds(&license_kinds, &crate_vendor_dir)?
-    } else {
-        Vec::new()
-    };
-
-    if license_files.is_empty() {
-        bail!(
-            r#"License file not found for crate `{name}-{version}`.
-
-* If a license file exists but `gnrt` can't find it under
-  `{crate_vendor_dir}` then,
-    * Specify `license_files` in `[crate.{name}]`
-      section of `chromium_crates_io/gnrt_config.toml`
-    * Or tweak the `LICENSE_KIND_TO_LICENSE_FILES` map in
-      `tools/crates/gnrt/lib/readme.rs` to teach `gnrt`
-      about alternative filenames
-* If the crate didn't publish the license, then this may need
-  to be fixed upstream before the crate can be imported.
-  See also:
-    - https://crbug.com/369075726
-    - https://github.com/brendanzab/codespan/pull/355
-    - https://github.com/rust-lang/rustc-demangle/issues/72
-    - https://github.com/udoprog/relative-path/pull/60"#,
-            name = package.name(),
-            version = package.version(),
-            crate_vendor_dir = crate_vendor_dir.display(),
-        );
-    }
+    let license_files = get_license_files(
+        package.name(),
+        package.version(),
+        &crate_vendor_dir,
+        config_license_files,
+        package.license(),
+    )?;
 
     let revision = {
         if let Ok(file) = std::fs::File::open(
@@ -201,6 +158,79 @@ fn readme_file_from_package<'a>(
     };
 
     Ok((crate_build_dir, readme))
+}
+
+fn get_license_files(
+    crate_name: &str,
+    crate_version: &Version,
+    crate_vendor_dir: &Path,
+    config_license_files: Option<&[String]>,
+    pkg_license: Option<&str>,
+) -> Result<Vec<String>> {
+    let license_kinds = if let Some(pkg_license) = pkg_license {
+        parse_license_string(pkg_license)?
+    } else {
+        bail!("No `license` entry in `Cargo.toml` for `{crate_name}-{crate_version}`.");
+    };
+
+    let license_files = if let Some(config_files) = config_license_files {
+        let mut resolved_files = Vec::new();
+        for f in config_files {
+            let path = crate_vendor_dir.join(Path::new(f));
+            ensure!(
+                does_license_file_exist(&path)?,
+                "`gnrt_config.toml` for `{crate_name}` crate listed \
+                 a license file that doesn't actually exist: {path}",
+                crate_name = crate_name,
+                path = path.display(),
+            );
+            resolved_files.push(format!("//{}", paths::normalize_unix_path_separator(&path)));
+        }
+        ensure!(
+            resolved_files.len() == license_kinds.len(),
+            "`gnrt_config.toml` for `{crate_name}` crate listed {config_len} \
+             license files, but the crate uses {kinds_len} license kinds.",
+            crate_name = crate_name,
+            config_len = resolved_files.len(),
+            kinds_len = license_kinds.len(),
+        );
+        resolved_files
+    } else {
+        let license_files_map = find_license_files_for_kinds(&license_kinds, crate_vendor_dir)?;
+        for kind in &license_kinds {
+            if !license_files_map.contains_key(kind) {
+                bail!(
+                    r#"`{kind}` license file not found for crate `{name}-{version}`.
+
+* If a license file exists but `gnrt` can't find it under
+  `{crate_vendor_dir}` then,
+    * Specify `license_files` in `[crate.{name}]`
+      section of `chromium_crates_io/gnrt_config.toml`
+    * Or tweak the `LICENSE_KIND_TO_LICENSE_FILES` map in
+      `tools/crates/gnrt/lib/readme.rs` to teach `gnrt`
+      about alternative filenames
+* If the crate didn't publish the license, then this may need
+  to be fixed upstream before the crate can be imported.
+  See also:
+    - https://crbug.com/369075726
+    - https://github.com/brendanzab/codespan/pull/355
+    - https://github.com/rust-lang/rustc-demangle/issues/72
+    - https://github.com/udoprog/relative-path/pull/60"#,
+                    name = crate_name,
+                    version = crate_version,
+                    crate_vendor_dir = crate_vendor_dir.display(),
+                );
+            }
+        }
+
+        let mut files = Vec::new();
+        for kind in &license_kinds {
+            files.push(license_files_map.get(kind).unwrap().clone());
+        }
+        files
+    };
+
+    Ok(license_files)
 }
 
 /// REVIEW REQUIREMENT: When adding a new `LicenseKind`, please consult
@@ -365,8 +395,8 @@ fn license_kinds_to_string(license_kinds: &[LicenseKind]) -> String {
 fn find_license_files_for_kinds(
     license_kinds: &[LicenseKind],
     crate_vendor_dir: &Path,
-) -> Result<Vec<String>> {
-    let mut found_files = Vec::new();
+) -> Result<HashMap<LicenseKind, String>> {
+    let mut found_files = HashMap::new();
 
     for kind in license_kinds {
         // Safe to unwrap because if a LicenseKind isn't in
@@ -380,15 +410,15 @@ fn find_license_files_for_kinds(
             let path = crate_vendor_dir.join(file);
             if does_license_file_exist(&path)? {
                 let normalized_path = format!("//{}", paths::normalize_unix_path_separator(&path));
-                found_files.push(normalized_path);
+                found_files.insert(*kind, normalized_path);
                 break; // Found highest priority file for this license kind.
             }
         }
     }
 
-    // Check for duplicates using itertools.
-    if found_files.iter().duplicates().count() > 0 {
-        bail!("Duplicate license files found: {:?}", found_files);
+    // Check for duplicates in values using itertools.
+    if found_files.values().duplicates().count() > 0 {
+        bail!("Duplicate license files found: {:?}", found_files.values().collect::<Vec<_>>());
     }
 
     Ok(found_files)
@@ -408,9 +438,9 @@ fn does_license_file_exist(path: &Path) -> Result<bool> {
 
 #[cfg(test)]
 mod test {
-    use crate::readme::LicenseKind;
-
     use super::{license_kinds_to_string, parse_license_string, LICENSE_KIND_TO_LICENSE_FILES};
+    use crate::readme::LicenseKind;
+    use std::path::PathBuf;
 
     #[test]
     fn test_convert_license_field_from_cargo_to_chromium_format() {
@@ -504,5 +534,148 @@ mod test {
             let actual_filenames = &LICENSE_KIND_TO_LICENSE_FILES[license];
             assert_eq!(actual_filenames, expected_filenames);
         }
+    }
+
+    struct GetLicenseFilesTest {
+        temp_dir: tempfile::TempDir,
+        crate_name: &'static str,
+        crate_version: semver::Version,
+        pkg_license: &'static str,
+        crate_vendor_dir_path: PathBuf,
+    }
+
+    impl GetLicenseFilesTest {
+        fn new(name: &'static str, version: &'static str, license: &'static str) -> Self {
+            let temp_dir = tempfile::tempdir().unwrap();
+            let crate_vendor_dir_path = temp_dir.path().join("test-crate-vendor-dir");
+            std::fs::create_dir(&crate_vendor_dir_path).unwrap();
+
+            Self {
+                temp_dir,
+                crate_name: name,
+                crate_version: semver::Version::parse(version).unwrap(),
+                pkg_license: license,
+                crate_vendor_dir_path,
+            }
+        }
+
+        fn add_vendor_file(&self, filename: &str) {
+            std::fs::write(self.crate_vendor_dir_path.join(filename), "").unwrap();
+        }
+
+        fn get_license_files(
+            &self,
+            config_license_files: Option<&[String]>,
+        ) -> anyhow::Result<Vec<String>> {
+            let result = super::get_license_files(
+                self.crate_name,
+                &self.crate_version,
+                &self.crate_vendor_dir_path,
+                config_license_files,
+                Some(self.pkg_license),
+            )?;
+
+            let temp_dir_prefix =
+                format!("//{}", crate::paths::normalize_unix_path_separator(self.temp_dir.path()),);
+            let stripped_result = result
+                .into_iter()
+                .map(|path| {
+                    if let Some(stripped) = path.strip_prefix(&temp_dir_prefix) {
+                        format!("//{}", stripped.trim_start_matches('/'))
+                    } else {
+                        path
+                    }
+                })
+                .collect();
+
+            Ok(stripped_result)
+        }
+    }
+
+    #[test]
+    fn test_get_license_files_basic_test() {
+        let test = GetLicenseFilesTest::new("test-crate", "1.2.3", "Apache-2.0");
+        test.add_vendor_file("LICENSE-Apache");
+
+        let result = test.get_license_files(None).unwrap();
+        assert_eq!(&result, &["//test-crate-vendor-dir/LICENSE-Apache"]);
+    }
+
+    #[test]
+    fn test_get_license_files_two_licenses() {
+        // Mimicking `unicode-ident` crate:
+        let test =
+            GetLicenseFilesTest::new("test-crate", "1.2.3", "(MIT OR Apache-2.0) AND Unicode-3.0");
+        test.add_vendor_file("LICENSE-Apache");
+        test.add_vendor_file("LICENSE-UNICODE");
+
+        let result = test.get_license_files(None).unwrap();
+        assert_eq!(
+            &result,
+            &["//test-crate-vendor-dir/LICENSE-Apache", "//test-crate-vendor-dir/LICENSE-UNICODE",]
+        );
+    }
+
+    #[test]
+    fn test_get_license_files_config_present_file_present() {
+        let test = GetLicenseFilesTest::new("test-crate", "1.2.3", "Apache-2.0");
+        let license_file = "LICENSE.foo";
+        test.add_vendor_file(license_file);
+
+        let result = test.get_license_files(Some(&[license_file.to_string()])).unwrap();
+        assert_eq!(&result, &[format!("//test-crate-vendor-dir/{license_file}")]);
+    }
+
+    #[test]
+    fn test_get_license_files_config_present_file_missing() {
+        let test = GetLicenseFilesTest::new("test-crate", "1.2.3", "Apache-2.0");
+        let license_file = "LICENSE.foo";
+
+        let result = test.get_license_files(Some(&[license_file.to_string()]));
+        assert!(result.is_err());
+        let err_msg = result.unwrap_err().to_string();
+        assert!(err_msg.contains("gnrt_config.toml"));
+        assert!(err_msg.contains(license_file));
+    }
+
+    #[test]
+    fn test_get_license_files_two_licenses_one_file_missing() {
+        let test =
+            GetLicenseFilesTest::new("test-crate", "1.2.3", "(MIT OR Apache-2.0) AND Unicode-3.0");
+        test.add_vendor_file("LICENSE-Apache");
+
+        let result = test.get_license_files(None);
+        assert!(result.is_err());
+        let err_msg = result.unwrap_err().to_string();
+        assert!(err_msg.contains("license file not found"));
+        assert!(err_msg.contains("Unicode-3.0"));
+        assert!(!err_msg.contains("Apache"));
+    }
+
+    #[test]
+    fn test_get_license_files_two_licenses_only_one_file_in_config() {
+        let test =
+            GetLicenseFilesTest::new("test-crate", "1.2.3", "(MIT OR Apache-2.0) AND Unicode-3.0");
+        let license_file = "LICENSE-Apache";
+        test.add_vendor_file(license_file);
+
+        let result = test.get_license_files(Some(&[license_file.to_string()]));
+        assert!(result.is_err());
+        let err_msg = result.unwrap_err().to_string();
+        assert!(err_msg.contains("1 license files"));
+        assert!(err_msg.contains("2 license kinds"));
+    }
+
+    #[test]
+    fn test_get_license_files_two_licenses_resolve_to_single_file() {
+        let test = GetLicenseFilesTest::new("test-crate", "1.2.3", "Apache-2.0 AND MIT");
+        test.add_vendor_file("LICENSE");
+
+        let result = test.get_license_files(None);
+        assert!(
+            result.is_err(),
+            "Expected error for duplicate license files, but got Ok: {:?}",
+            result
+        );
     }
 }
