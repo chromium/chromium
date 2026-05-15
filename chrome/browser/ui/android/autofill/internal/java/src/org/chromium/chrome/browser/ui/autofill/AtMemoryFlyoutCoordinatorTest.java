@@ -10,10 +10,10 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import android.view.ContextThemeWrapper;
+
 import androidx.test.core.app.ApplicationProvider;
-import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.build.annotations.NullMarked;
-import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -22,9 +22,12 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
-/**
- * Component tests for the AtMemory Flyout Coordinator.
- */
+import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.R;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+
+/** Component tests for the AtMemory Flyout Coordinator. */
 @NullMarked
 @RunWith(BaseRobolectricTestRunner.class)
 public class AtMemoryFlyoutCoordinatorTest {
@@ -39,7 +42,9 @@ public class AtMemoryFlyoutCoordinatorTest {
     public void setUp() {
         mCoordinator =
                 new AtMemoryFlyoutCoordinator(
-                        ApplicationProvider.getApplicationContext(),
+                        new ContextThemeWrapper(
+                                ApplicationProvider.getApplicationContext(),
+                                R.style.Theme_BrowserUI_DayNight),
                         mBottomSheetController,
                         mMockDelegate);
     }

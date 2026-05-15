@@ -10,7 +10,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 /** Contains the business logic for the AtMemory Flyout. */
 @NullMarked
 class AtMemoryFlyoutMediator {
-    @SuppressWarnings("unused") // TODO(crbug.com/505257277): Remove after adding logic.
+    @SuppressWarnings("unused") // TODO(crbug.com/505255929): Remove after adding logic.
     private final PropertyModel mModel;
     private final AtMemoryFlyoutCoordinator.Delegate mDelegate;
 

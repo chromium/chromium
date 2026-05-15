@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2026 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:paddingStart="16dp"
+    android:paddingEnd="16dp"
+    android:paddingTop="8dp"
+    android:paddingBottom="24dp"
+    android:background="@macro/default_bg_color">
+
+    <LinearLayout
+        tools:ignore="UseCompoundDrawables"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingStart="8dp"
+        android:paddingEnd="8dp"
+        android:layout_marginBottom="@dimen/at_memory_flyout_default_margin">
+
+        <ImageView
+            android:id="@+id/flyout_back_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_arrow_back_24dp"
+            android:contentDescription="@string/back"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:layout_marginEnd="8dp" />
+
+        <TextView
+            android:id="@+id/flyout_title"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textAppearance="@style/TextAppearance.TextLarge.Primary" />
+    </LinearLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/flyout_chips_container"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="12dp">
+
+        <androidx.constraintlayout.helper.widget.Flow
+            android:id="@+id/chips_flow"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:flow_wrapMode="chain"
+            app:flow_verticalAlign="top"
+            app:flow_horizontalGap="12dp"
+            app:flow_verticalGap="2dp"
+            app:flow_horizontalStyle="packed"
+            app:flow_horizontalBias="0.0"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginTop="20dp"
+        android:layout_marginBottom="12dp"
+        android:background="@drawable/at_memory_flyout_buttons_bg">
+
+        <TextView
+            android:id="@+id/flyout_source_row"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="?attr/selectableItemBackground"
+            android:padding="16dp"
+            android:textAppearance="@style/TextAppearance.TextLarge.Primary"
+            android:drawableStart="@drawable/ic_spark_24dp"
+            android:drawableTint="@macro/default_icon_color"
+            android:drawablePadding="@dimen/at_memory_flyout_default_margin"
+            android:gravity="center_vertical" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/at_memory_flyout_divider_height"
+            android:background="@macro/default_bg_color" />
+
+        <TextView
+            android:id="@+id/flyout_manage_row"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="?attr/selectableItemBackground"
+            android:padding="16dp"
+            android:text=
+                "@string/autofill_at_memory_manage_suggestion_main_text"
+            android:textAppearance="@style/TextAppearance.TextLarge.Primary"
+            android:drawableStart="@drawable/ic_chrome"
+            android:drawablePadding="@dimen/at_memory_flyout_default_margin"
+            android:gravity="center_vertical" />
+
+    </LinearLayout>
+
+</LinearLayout>

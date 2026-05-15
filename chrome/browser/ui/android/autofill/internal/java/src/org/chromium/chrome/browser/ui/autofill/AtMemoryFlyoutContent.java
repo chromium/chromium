@@ -6,7 +6,7 @@ package org.chromium.chrome.browser.ui.autofill;
 
 import android.content.Context;
 import android.view.View;
-import android.widget.FrameLayout;
+
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
@@ -16,8 +16,8 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 class AtMemoryFlyoutContent implements BottomSheetContent {
     private final View mContentView;
 
-    AtMemoryFlyoutContent(Context context) {
-        mContentView = new FrameLayout(context);
+    AtMemoryFlyoutContent(View contentView) {
+        mContentView = contentView;
     }
 
     @Override
@@ -60,12 +60,12 @@ class AtMemoryFlyoutContent implements BottomSheetContent {
 
     @Override
     public float getHalfHeightRatio() {
-        return 0.5f;
+        return HeightMode.DISABLED;
     }
 
     @Override
     public float getFullHeightRatio() {
-        return 1.0f;
+        return HeightMode.WRAP_CONTENT;
     }
 
     @Override
@@ -75,25 +75,27 @@ class AtMemoryFlyoutContent implements BottomSheetContent {
 
     @Override
     public String getSheetContentDescription(Context context) {
-        // TODO(crbug.com/505257277): Implement a string.
+        // TODO(crbug.com/505253534): Implement a string.
         return "";
     }
 
     @Override
     public int getSheetHalfHeightAccessibilityStringId() {
-        // TODO(crbug.com/505257277): Provide a proper accessibility string for the half height state.
-        return 0;
+        // TODO(crbug.com/505253534): Provide a proper accessibility string for the half height
+        // state.
+        return android.R.string.ok;
     }
 
     @Override
     public int getSheetFullHeightAccessibilityStringId() {
-        // TODO(crbug.com/505257277): Provide a proper accessibility string for the full height state.
-        return 0;
+        // TODO(crbug.com/505253534): Provide a proper accessibility string for the full height
+        // state.
+        return android.R.string.ok;
     }
 
     @Override
     public int getSheetClosedAccessibilityStringId() {
-        // TODO(crbug.com/505257277): Provide a proper accessibility string for the closed state.
-        return 0;
+        // TODO(crbug.com/505253534): Provide a proper accessibility string for the closed state.
+        return android.R.string.ok;
     }
 }

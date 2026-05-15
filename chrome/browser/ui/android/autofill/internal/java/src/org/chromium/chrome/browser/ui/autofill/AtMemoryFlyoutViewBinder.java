@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.ui.autofill;
 
-import android.view.View;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -14,8 +13,15 @@ import org.chromium.ui.modelutil.PropertyModel;
 class AtMemoryFlyoutViewBinder {
     private AtMemoryFlyoutViewBinder() {}
 
-    static void bind(PropertyModel model, View view, PropertyKey propertyKey) {
-        // TODO(crbug.com/505257277): Handle property updates when properties are added.
-        assert false : "Unhandled property: " + propertyKey;
+    static void bind(PropertyModel model, AtMemoryFlyoutView view, PropertyKey propertyKey) {
+        if (propertyKey == AtMemoryFlyoutProperties.TITLE) {
+            view.setTitle(model.get(AtMemoryFlyoutProperties.TITLE));
+        } else if (propertyKey == AtMemoryFlyoutProperties.SOURCE_TEXT) {
+            view.setSourceText(model.get(AtMemoryFlyoutProperties.SOURCE_TEXT));
+        } else if (propertyKey == AtMemoryFlyoutProperties.CHIPS_DATA) {
+            view.setChipsData(model.get(AtMemoryFlyoutProperties.CHIPS_DATA));
+        } else {
+            assert false : "Unhandled property: " + propertyKey;
+        }
     }
 }

@@ -46,11 +46,11 @@ class AtMemoryFlyoutCoordinator {
 
         mMediator = new AtMemoryFlyoutMediator(delegate, model);
 
-        mContent = new AtMemoryFlyoutContent(context);
+        AtMemoryFlyoutView view = new AtMemoryFlyoutView(context);
 
-        PropertyModelChangeProcessor.create(
-                        model, mContent.getContentView(), AtMemoryFlyoutViewBinder::bind);
+        mContent = new AtMemoryFlyoutContent(view.getContentView());
 
+        PropertyModelChangeProcessor.create(model, view, AtMemoryFlyoutViewBinder::bind);
     }
 
     void show() {

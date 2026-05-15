@@ -6,9 +6,6 @@ package org.chromium.chrome.browser.ui.autofill;
 
 import static org.mockito.Mockito.verify;
 
-import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.build.annotations.NullMarked;
-import org.chromium.ui.modelutil.PropertyModel;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -16,6 +13,10 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+
+import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.ui.modelutil.PropertyModel;
 
 /** Unit tests for {@link AtMemoryFlyoutMediator}. */
 @RunWith(BaseRobolectricTestRunner.class)

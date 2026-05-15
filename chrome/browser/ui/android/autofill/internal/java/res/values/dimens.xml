@@ -19,4 +19,8 @@ found in the LICENSE file.
   <dimen name="progress_bar_dialog_margin_top">60dp</dimen>
   <dimen name="progress_bar_dialog_margin_bottom">30dp</dimen>
   <dimen name="progress_bar_description_spacing">5dp</dimen>
+
+  <dimen name="at_memory_flyout_divider_height">2dp</dimen>
+  <dimen name="at_memory_flyout_default_margin">16dp</dimen>
+  <dimen name="at_memory_flyout_chip_padding_vertical">6dp</dimen>
 </resources>

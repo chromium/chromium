@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2026 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<org.chromium.components.browser_ui.widget.chips.ChipView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:minHeight="36dp"
+    app:textArrangement="vertical"
+    android:layout_margin="8dp"
+    app:chipColor="@macro/default_bg_color"
+    app:primaryTextAppearance="@style/TextAppearance.TextAccentMediumThick"
+    app:secondaryTextAppearance="@style/TextAppearance.TextSmall"
+    style="@style/SuggestionChip" />

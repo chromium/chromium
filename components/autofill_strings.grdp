@@ -910,6 +910,9 @@
       Find and fill info with Gemini
     </message>
   </if>
+  <message name="IDS_AUTOFILL_AT_MEMORY_MANAGE_SUGGESTION_MAIN_TEXT" desc="The label for a button in the At Memory flyout that opens the Autofill for AI information management interface in Chrome settings." formatter_data="android_java" translateable="false">
+    Manage information
+  </message>
 
   <!-- Autofill Address Edit Dialog -->
   <!-- Common on all platforms -->
