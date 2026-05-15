@@ -36,6 +36,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.RobolectricUtil;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.ntp.NewTabPage;
@@ -69,6 +70,7 @@ public class StatusBarColorControllerUnitTest {
     @Mock private TopUiThemeColorProvider mTopUiThemeColorProvider;
     @Mock private EdgeToEdgeSystemBarColorHelper mSystemBarColorHelper;
     @Mock private DesktopWindowStateManager mDesktopWindowStateManager;
+    @Mock private BrowserControlsStateProvider mBrowserControlsStateProvider;
     @Mock private Tab mNtpTab;
     @Mock private NewTabPage mNewTabPage;
 
@@ -348,7 +350,8 @@ public class StatusBarColorControllerUnitTest {
                         mTopUiThemeColorProvider,
                         mSystemBarColorHelper,
                         mDesktopWindowStateManager,
-                        mOverviewColorSupplier);
+                        mOverviewColorSupplier,
+                        mBrowserControlsStateProvider);
         mStatusBarColorController.maybeInitializeForCustomizedNtp(mActivity, supportEdgeToEdge);
         RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
     }

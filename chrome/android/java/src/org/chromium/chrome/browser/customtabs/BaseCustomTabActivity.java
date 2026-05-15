@@ -117,7 +117,7 @@ import org.chromium.chrome.browser.tabmodel.ChromeTabCreator;
 import org.chromium.chrome.browser.tabmodel.SupportedProfileType;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorImpl;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
-import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
+import org.chromium.chrome.browser.theme.ToolbarThemeColorProvider;
 import org.chromium.chrome.browser.ui.RootUiCoordinator;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuPropertiesDelegate;
 import org.chromium.chrome.browser.ui.browser_window.BrowserWindowType;
@@ -666,7 +666,7 @@ public abstract class BaseCustomTabActivity extends ChromeActivity {
                         getCompositorViewHolderSupplier(),
                         getTabContentManagerSupplier(),
                         /* compositorViewHolderInitializer= */ this,
-                        getTopUiThemeColorProvider(),
+                        getToolbarThemeColorProvider(),
                         getLifecycleDispatcher());
 
         mCustomTabBottomBarDelegate =
@@ -829,7 +829,7 @@ public abstract class BaseCustomTabActivity extends ChromeActivity {
                 getCustomTabActivityTabProvider(),
                 getTabObserverRegistrar(),
                 getIntentDataProvider(),
-                getTopUiThemeColorProvider(),
+                getToolbarThemeColorProvider(),
                 getLifecycleDispatcher());
 
         if (mIntentDataProvider.isPartialCustomTab()) {
@@ -921,10 +921,10 @@ public abstract class BaseCustomTabActivity extends ChromeActivity {
     }
 
     /**
-     * @return {@link ThemeColorProvider} for top UI.
+     * @return {@link ThemeColorProvider} for the toolbar.
      */
-    public TopUiThemeColorProvider getTopUiThemeColorProvider() {
-        return mRootUiCoordinator.getTopUiThemeColorProvider();
+    public ToolbarThemeColorProvider getToolbarThemeColorProvider() {
+        return mRootUiCoordinator.getToolbarThemeColorProvider();
     }
 
     @Override
@@ -1669,7 +1669,7 @@ public abstract class BaseCustomTabActivity extends ChromeActivity {
                 new BrowserServicesThemeColorProvider(
                         this,
                         getIntentDataProvider(),
-                        getTopUiThemeColorProvider(),
+                        getToolbarThemeColorProvider(),
                         getCustomTabActivityTabProvider(),
                         getTabObserverRegistrar(),
                         getLifecycleDispatcher(),

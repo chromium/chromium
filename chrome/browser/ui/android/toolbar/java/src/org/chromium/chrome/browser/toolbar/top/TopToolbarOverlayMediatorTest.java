@@ -40,7 +40,7 @@ import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
-import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
+import org.chromium.chrome.browser.theme.ToolbarThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.ToolbarProgressBar;
 import org.chromium.components.browser_ui.widget.ClipDrawableProgressBar;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -53,7 +53,7 @@ public class TopToolbarOverlayMediatorTest {
     @Mock private Context mContext;
     @Mock private LayoutStateProvider mLayoutStateProvider;
     @Mock private BrowserControlsStateProvider mBrowserControlsStateProvider;
-    @Mock private TopUiThemeColorProvider mTopUiThemeColorProvider;
+    @Mock private ToolbarThemeColorProvider mToolbarThemeColorProvider;
     @Mock private Tab mTab;
     @Mock private Tab mTab2;
     @Mock private ToolbarProgressBar mProgressBar;
@@ -103,7 +103,7 @@ public class TopToolbarOverlayMediatorTest {
                         (info) -> {},
                         mTabSupplier,
                         mBrowserControlsStateProvider,
-                        mTopUiThemeColorProvider,
+                        mToolbarThemeColorProvider,
                         mBottomToolbarControlsOffsetSupplier,
                         mSuppressToolbarSceneLayerSupplier,
                         LayoutType.BROWSING,
@@ -193,7 +193,7 @@ public class TopToolbarOverlayMediatorTest {
                         (info) -> {},
                         mTabSupplier,
                         mBrowserControlsStateProvider,
-                        mTopUiThemeColorProvider,
+                        mToolbarThemeColorProvider,
                         mBottomToolbarControlsOffsetSupplier,
                         mSuppressToolbarSceneLayerSupplier,
                         LayoutType.BROWSING,

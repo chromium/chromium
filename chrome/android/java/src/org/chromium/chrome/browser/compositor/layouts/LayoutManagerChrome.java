@@ -37,7 +37,7 @@ import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
-import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
+import org.chromium.chrome.browser.theme.ToolbarThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.ControlContainer;
 import org.chromium.chrome.browser.toolbar.ToolbarPositionController;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
@@ -96,7 +96,7 @@ public class LayoutManagerChrome extends LayoutManagerImpl implements Accessibil
      *     to create TabSwitcherLayout if it has value.
      * @param tabModelSelectorSupplier Supplier for an interface to talk to the Tab Model Selector.
      * @param tabContentManagerSupplier Supplier of the {@link TabContentManager} instance.
-     * @param topUiThemeColorProvider {@link ThemeColorProvider} for top UI.
+     * @param toolbarThemeColorProvider {@link ThemeColorProvider} for the toolbar.
      * @param hubLayoutDependencyHolder The dependency holder for creating {@link HubLayout}.
      */
     public LayoutManagerChrome(
@@ -105,9 +105,9 @@ public class LayoutManagerChrome extends LayoutManagerImpl implements Accessibil
             Supplier<TabSwitcher> tabSwitcherSupplier,
             Supplier<TabModelSelector> tabModelSelectorSupplier,
             MonotonicObservableSupplier<TabContentManager> tabContentManagerSupplier,
-            Supplier<TopUiThemeColorProvider> topUiThemeColorProvider,
+            Supplier<ToolbarThemeColorProvider> toolbarThemeColorProvider,
             HubLayoutDependencyHolder hubLayoutDependencyHolder) {
-        super(host, contentContainer, tabContentManagerSupplier, topUiThemeColorProvider);
+        super(host, contentContainer, tabContentManagerSupplier, toolbarThemeColorProvider);
         // Build Event Filter Handlers
         mToolbarSwipeHandler =
                 createToolbarSwipeHandler(/* supportsSwipeToShowTabSwitcher= */ true);
@@ -174,7 +174,7 @@ public class LayoutManagerChrome extends LayoutManagerImpl implements Accessibil
             TabCreatorManager creator,
             @Nullable ControlContainer controlContainer,
             DynamicResourceLoader dynamicResourceLoader,
-            TopUiThemeColorProvider topUiColorProvider,
+            ToolbarThemeColorProvider toolbarThemeColorProvider,
             NonNullObservableSupplier<Integer> bottomControlsOffsetSupplier) {
         Context context = mHost.getContext();
         LayoutRenderHost renderHost = mHost.getLayoutRenderHost();
@@ -189,7 +189,7 @@ public class LayoutManagerChrome extends LayoutManagerImpl implements Accessibil
                         renderHost,
                         browserControlsStateProvider,
                         this,
-                        topUiColorProvider,
+                        toolbarThemeColorProvider,
                         bottomControlsOffsetSupplier,
                         getContentContainer(),
                         () -> {
@@ -203,7 +203,7 @@ public class LayoutManagerChrome extends LayoutManagerImpl implements Accessibil
                 creator,
                 controlContainer,
                 dynamicResourceLoader,
-                topUiColorProvider,
+                toolbarThemeColorProvider,
                 bottomControlsOffsetSupplier);
 
         // Initialize Layouts.

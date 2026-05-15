@@ -51,7 +51,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObscuringHandler;
 import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
-import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
+import org.chromium.chrome.browser.theme.ToolbarThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.ControlContainer;
 import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.chrome.browser.toolbar.ToolbarDataProvider;
@@ -380,7 +380,7 @@ public class TopToolbarCoordinator implements Toolbar, TopControlLayer {
      * @param tabSupplier Supplier of the activity tab.
      * @param browserControlsVisibilityManager {@link BrowserControlsVisibilityManager} to access
      *     browser controls offsets and visibility.
-     * @param topUiThemeColorProvider {@link ThemeColorProvider} for top UI.
+     * @param toolbarThemeColorProvider {@link ThemeColorProvider} for top UI.
      * @param bottomToolbarControlsOffsetSupplier Supplier of the offset, relative to the bottom of
      *     the viewport, of the bottom-anchored toolbar.
      * @param suppressToolbarSceneLayerSupplier Supplier for whether suppress the update to the
@@ -398,7 +398,7 @@ public class TopToolbarCoordinator implements Toolbar, TopControlLayer {
             LayoutManager layoutManager,
             NullableObservableSupplier<Tab> tabSupplier,
             BrowserControlsVisibilityManager browserControlsVisibilityManager,
-            TopUiThemeColorProvider topUiThemeColorProvider,
+            ToolbarThemeColorProvider toolbarThemeColorProvider,
             NonNullObservableSupplier<Integer> bottomToolbarControlsOffsetSupplier,
             NonNullObservableSupplier<Boolean> suppressToolbarSceneLayerSupplier,
             Callback<DrawingInfo> progressInfoCallback,
@@ -429,7 +429,7 @@ public class TopToolbarCoordinator implements Toolbar, TopControlLayer {
                             tabSupplier,
                             browserControlsVisibilityManager,
                             mResourceManagerSupplier,
-                            topUiThemeColorProvider,
+                            toolbarThemeColorProvider,
                             bottomToolbarControlsOffsetSupplier,
                             suppressToolbarSceneLayerSupplier,
                             layoutsToShowOn,

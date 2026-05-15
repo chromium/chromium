@@ -47,7 +47,7 @@ import org.chromium.chrome.browser.customtabs.features.toolbar.BrowserServicesTh
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
+import org.chromium.chrome.browser.theme.ToolbarThemeColorProvider;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 import org.chromium.components.browser_ui.styles.ChromeColors;
@@ -60,7 +60,7 @@ public class BrowserServicesThemeColorProviderUnitTest {
     @Rule public MockitoRule mockitoRule = MockitoJUnit.rule();
 
     @Mock public Tab tab;
-    @Mock public TopUiThemeColorProvider mTopUiThemeColorProvider;
+    @Mock public ToolbarThemeColorProvider mToolbarThemeColorProvider;
     @Mock public CustomTabActivityTabProvider mCustomTabActivityTabProvider;
     @Mock public DesktopWindowStateManager mDesktopWindowStateManager;
     @Mock public TabObserverRegistrar mTabObserverRegistrar;
@@ -81,7 +81,7 @@ public class BrowserServicesThemeColorProviderUnitTest {
         return new BrowserServicesThemeColorProvider(
                 mContext,
                 intentDataProvider,
-                mTopUiThemeColorProvider,
+                mToolbarThemeColorProvider,
                 mCustomTabActivityTabProvider,
                 mTabObserverRegistrar,
                 mActivityLifecycleDispatcher,
@@ -232,7 +232,7 @@ public class BrowserServicesThemeColorProviderUnitTest {
     public void testLightColorTabTheme_TabColorWithLightScheme() {
         // emulate not incognito tab with page theme
         when(tab.getThemeColor()).thenReturn(LIGHT_COLOR);
-        when(mTopUiThemeColorProvider.getToolbarBackgroundColor(eq(tab))).thenReturn(LIGHT_COLOR);
+        when(mToolbarThemeColorProvider.getToolbarBackgroundColor(eq(tab))).thenReturn(LIGHT_COLOR);
         var intentDataProvider =
                 buildCctIntentDataProvider(
                         COLOR_SCHEME_LIGHT,
@@ -254,7 +254,7 @@ public class BrowserServicesThemeColorProviderUnitTest {
     public void testDarkColorTabTheme_TabColorWithDarkScheme() {
         // emulate not incognito tab with page theme
         when(tab.getThemeColor()).thenReturn(DARK_COLOR);
-        when(mTopUiThemeColorProvider.getToolbarBackgroundColor(eq(tab))).thenReturn(DARK_COLOR);
+        when(mToolbarThemeColorProvider.getToolbarBackgroundColor(eq(tab))).thenReturn(DARK_COLOR);
         var intentDataProvider =
                 buildCctIntentDataProvider(
                         COLOR_SCHEME_LIGHT,

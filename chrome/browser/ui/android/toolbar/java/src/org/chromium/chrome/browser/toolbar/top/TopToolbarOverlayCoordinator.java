@@ -20,7 +20,7 @@ import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.chrome.browser.layouts.SceneOverlay;
 import org.chromium.chrome.browser.layouts.scene_layer.SceneOverlayLayer;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
+import org.chromium.chrome.browser.theme.ToolbarThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.chrome.browser.toolbar.ToolbarProgressBar;
 import org.chromium.components.browser_ui.widget.ClipDrawableProgressBar;
@@ -53,7 +53,7 @@ public class TopToolbarOverlayCoordinator implements SceneOverlay {
             NullableObservableSupplier<Tab> tabSupplier,
             BrowserControlsStateProvider browserControlsStateProvider,
             Supplier<ResourceManager> resourceManagerSupplier,
-            TopUiThemeColorProvider topUiThemeColorProvider,
+            ToolbarThemeColorProvider toolbarThemeColorProvider,
             NonNullObservableSupplier<Integer> bottomToolbarControlsOffsetSupplier,
             NonNullObservableSupplier<Boolean> suppressToolbarSceneLayerSupplier,
             int layoutsToShowOn,
@@ -89,7 +89,7 @@ public class TopToolbarOverlayCoordinator implements SceneOverlay {
                         progressInfoCallback,
                         tabSupplier,
                         browserControlsStateProvider,
-                        topUiThemeColorProvider,
+                        toolbarThemeColorProvider,
                         bottomToolbarControlsOffsetSupplier,
                         suppressToolbarSceneLayerSupplier,
                         layoutsToShowOn,

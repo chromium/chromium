@@ -44,7 +44,7 @@ import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiUtils;
-import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
+import org.chromium.chrome.browser.theme.ToolbarThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.top.TopToolbarOverlayCoordinator;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
@@ -133,7 +133,7 @@ public class ToolbarSwipeLayout extends Layout {
             LayoutRenderHost renderHost,
             BrowserControlsStateProvider browserControlsStateProvider,
             LayoutManager layoutManager,
-            TopUiThemeColorProvider topUiColorProvider,
+            ToolbarThemeColorProvider toolbarColorProvider,
             NonNullObservableSupplier<Integer> bottomControlsOffsetSupplier,
             ViewGroup contentContainer,
             Runnable forceLayoutUpdateAndCaptureRunnable) {
@@ -162,7 +162,7 @@ public class ToolbarSwipeLayout extends Layout {
                             mLeftTabSupplier,
                             mBrowserControlsStateProvider,
                             () -> mRenderHost.getResourceManager(),
-                            topUiColorProvider,
+                            toolbarColorProvider,
                             bottomControlsOffsetSupplier,
                             ObservableSuppliers.alwaysFalse(),
                             LayoutType.TOOLBAR_SWIPE,
@@ -180,7 +180,7 @@ public class ToolbarSwipeLayout extends Layout {
                             mRightTabSupplier,
                             mBrowserControlsStateProvider,
                             () -> mRenderHost.getResourceManager(),
-                            topUiColorProvider,
+                            toolbarColorProvider,
                             bottomControlsOffsetSupplier,
                             ObservableSuppliers.alwaysFalse(),
                             LayoutType.TOOLBAR_SWIPE,

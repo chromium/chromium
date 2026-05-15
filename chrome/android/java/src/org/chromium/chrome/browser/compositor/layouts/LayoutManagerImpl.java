@@ -70,7 +70,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.theme.ThemeUtils;
-import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
+import org.chromium.chrome.browser.theme.ToolbarThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.ControlContainer;
 import org.chromium.chrome.browser.toolbar.bottom.ScrollingBottomViewSceneLayer;
 import org.chromium.chrome.browser.toolbar.top.TopToolbarOverlayCoordinator;
@@ -193,8 +193,8 @@ public class LayoutManagerImpl
     /** A map of {@link SceneOverlay} to its position relative to the others. */
     private Map<Class, Integer> mOverlayOrderMap = new HashMap<>();
 
-    /** The supplier of {@link ThemeColorProvider} for top UI. */
-    private final Supplier<TopUiThemeColorProvider> mTopUiThemeColorProvider;
+    /** The supplier of {@link ToolbarThemeColorProvider} for the toolbar. */
+    private final Supplier<ToolbarThemeColorProvider> mToolbarThemeColorProvider;
 
     /** The supplier of whether this is going to intercept back press gesture. */
     private final SettableNonNullObservableSupplier<Boolean> mHandleBackPressChangedSupplier =
@@ -342,20 +342,21 @@ public class LayoutManagerImpl
 
     /**
      * Creates a {@link LayoutManagerImpl} instance.
+     *
      * @param host A {@link LayoutManagerHost} instance.
      * @param contentContainer A {@link ViewGroup} for Android views to be bound to.
      * @param tabContentManagerSupplier Supplier of the {@link TabContentManager} instance.
-     * @param topUiThemeColorProvider {@link ThemeColorProvider} for top UI.
+     * @param toolbarThemeColorProvider {@link ToolbarThemeColorProvider} for the toolbar.
      */
     public LayoutManagerImpl(
             LayoutManagerHost host,
             ViewGroup contentContainer,
             MonotonicObservableSupplier<TabContentManager> tabContentManagerSupplier,
-            Supplier<TopUiThemeColorProvider> topUiThemeColorProvider) {
+            Supplier<ToolbarThemeColorProvider> toolbarThemeColorProvider) {
         mHost = host;
         mPxToDp = 1.f / mHost.getContext().getResources().getDisplayMetrics().density;
         mTabContentManagerSupplier = tabContentManagerSupplier;
-        mTopUiThemeColorProvider = topUiThemeColorProvider;
+        mToolbarThemeColorProvider = toolbarThemeColorProvider;
         mContext = host.getContext();
 
         // Overlays are ordered back (closest to the web content) to front.
@@ -645,7 +646,7 @@ public class LayoutManagerImpl
      * @param creator A {@link TabCreatorManager} instance.
      * @param controlContainer A {@link ControlContainer} for browser controls' layout.
      * @param dynamicResourceLoader A {@link DynamicResourceLoader} instance.
-     * @param topUiColorProvider A theme color provider for the top browser controls.
+     * @param toolbarColorProvider A theme color provider for the top browser controls.
      * @param bottomControlsOffsetSupplier Supplier of the offset, relative to the bottom of the
      *     viewport, of the bottom-anchored toolbar.
      */
@@ -655,7 +656,7 @@ public class LayoutManagerImpl
             TabCreatorManager creator,
             @Nullable ControlContainer controlContainer,
             DynamicResourceLoader dynamicResourceLoader,
-            TopUiThemeColorProvider topUiColorProvider,
+            ToolbarThemeColorProvider toolbarColorProvider,
             NonNullObservableSupplier<Integer> bottomControlsOffsetSupplier) {
         LayoutRenderHost renderHost = mHost.getLayoutRenderHost();
 
@@ -673,7 +674,7 @@ public class LayoutManagerImpl
                         selector,
                         assertNonNull(mTabContentManagerSupplier.get()),
                         mBrowserControlsStateProvider,
-                        mTopUiThemeColorProvider,
+                        mToolbarThemeColorProvider,
                         getLayoutNeedOffsetTagSupplier());
 
         setNextLayout(null, true);
@@ -995,8 +996,8 @@ public class LayoutManagerImpl
      */
     protected void tabsAllClosing(boolean incognito) {}
 
-    protected Supplier<TopUiThemeColorProvider> getTopUiThemeColorProvider() {
-        return mTopUiThemeColorProvider;
+    protected Supplier<ToolbarThemeColorProvider> getTopUiThemeColorProvider() {
+        return mToolbarThemeColorProvider;
     }
 
     @Override
@@ -1020,8 +1021,8 @@ public class LayoutManagerImpl
                         && !isNativePage
                         && !tab.isHidden();
 
-        TopUiThemeColorProvider topUiTheme = mTopUiThemeColorProvider.get();
-        @ColorInt int toolbarBackgroundColor = topUiTheme.getToolbarBackgroundColor(tab);
+        ToolbarThemeColorProvider toolbarTheme = mToolbarThemeColorProvider.get();
+        @ColorInt int toolbarBackgroundColor = toolbarTheme.getToolbarBackgroundColor(tab);
         layoutTab.initFromHost(
                 ThemeUtils.getBackgroundColor(tab),
                 canUseLiveTexture,

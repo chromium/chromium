@@ -159,12 +159,11 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabstrip.TabStripTopControlLayer;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupUi;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupUiOneshotSupplier;
-import org.chromium.chrome.browser.theme.AdjustedTopUiThemeColorProvider;
 import org.chromium.chrome.browser.theme.BottomUiThemeColorProvider;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.chrome.browser.theme.ThemeColorProvider.ThemeColorObserver;
 import org.chromium.chrome.browser.theme.ThemeColorProvider.TintObserver;
-import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
+import org.chromium.chrome.browser.theme.ToolbarThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant;
 import org.chromium.chrome.browser.toolbar.back_button.BackButtonCoordinator;
 import org.chromium.chrome.browser.toolbar.bottom.BottomControlsContentDelegate;
@@ -286,8 +285,8 @@ public class ToolbarManager
                 MenuButtonDelegate,
                 TabObscuringHandler.Observer {
     private final IncognitoStateProvider mIncognitoStateProvider;
-    private final TopUiThemeColorProvider mTopUiThemeColorProvider;
-    private final @Nullable AdjustedTopUiThemeColorProvider mAdjustedTopUiThemeColorProvider;
+    private final ToolbarThemeColorProvider mToolbarThemeColorProvider;
+    private final @Nullable ToolbarThemeColorProvider mAdjustedTopUiThemeColorProvider;
     private final MonotonicObservableSupplier<EphemeralTabCoordinator>
             mEphemeralTabCoordinatorSupplier;
     private AppThemeColorProvider mAppThemeColorProvider;
@@ -690,7 +689,7 @@ public class ToolbarManager
      * @param controlContainer The container of the toolbar.
      * @param compositorViewHolder Class that holds a {@link CompositorView}.
      * @param urlFocusChangedCallback The callback to be notified when the URL focus changes.
-     * @param topUiThemeColorProvider The ThemeColorProvider object for top UI.
+     * @param toolbarThemeColorProvider The ThemeColorProvider object for the toolbar.
      * @param adjustedTopUiThemeColorProvider The ThemeColorProvider object for top UI which may
      *     adjust tint colors.
      * @param tabObscuringHandler Delegate object handling obscuring views.
@@ -750,8 +749,8 @@ public class ToolbarManager
             ToolbarControlContainer controlContainer,
             CompositorViewHolder compositorViewHolder,
             Callback<Boolean> urlFocusChangedCallback,
-            TopUiThemeColorProvider topUiThemeColorProvider,
-            @Nullable AdjustedTopUiThemeColorProvider adjustedTopUiThemeColorProvider,
+            ToolbarThemeColorProvider toolbarThemeColorProvider,
+            @Nullable ToolbarThemeColorProvider adjustedTopUiThemeColorProvider,
             BottomUiThemeColorProvider bottomUiThemeColorProvider,
             IncognitoStateProvider incognitoStateProvider,
             TabObscuringHandler tabObscuringHandler,
@@ -901,8 +900,8 @@ public class ToolbarManager
 
         mIncognitoStateProvider = incognitoStateProvider;
         mBottomUiThemeColorProvider = bottomUiThemeColorProvider;
-        mTopUiThemeColorProvider = topUiThemeColorProvider;
-        mTopUiThemeColorProvider.addThemeColorObserver(this);
+        mToolbarThemeColorProvider = toolbarThemeColorProvider;
+        mToolbarThemeColorProvider.addThemeColorObserver(this);
         mAdjustedTopUiThemeColorProvider = adjustedTopUiThemeColorProvider;
         if (mAdjustedTopUiThemeColorProvider != null) {
             mAdjustedTopUiThemeColorProvider.addThemeColorObserver(this);
@@ -2591,7 +2590,7 @@ public class ToolbarManager
                 layoutManager,
                 mActivityTabProvider.asObservable(),
                 mBrowserControlsSizer,
-                mTopUiThemeColorProvider,
+                mToolbarThemeColorProvider,
                 mBottomToolbarControlsOffsetSupplier,
                 mSuppressToolbarSceneLayerSupplier,
                 mToolbarProgressBarLayer::onProgressBarInfoUpdate,
@@ -2830,8 +2829,8 @@ public class ToolbarManager
         mBrowserControlsSizer.removeObserver(mBrowserControlsObserver);
         mFullscreenManager.removeObserver(mFullscreenObserver);
 
-        if (mTopUiThemeColorProvider != null) {
-            mTopUiThemeColorProvider.removeThemeColorObserver(this);
+        if (mToolbarThemeColorProvider != null) {
+            mToolbarThemeColorProvider.removeThemeColorObserver(this);
         }
 
         if (mAdjustedTopUiThemeColorProvider != null) {
@@ -3384,7 +3383,7 @@ public class ToolbarManager
                     ChromeColors.getDefaultThemeColor(mActivity, isIncognitoBranded);
             int primaryColor =
                     tab != null
-                            ? mTopUiThemeColorProvider.getToolbarBackgroundColor(tab)
+                            ? mToolbarThemeColorProvider.getToolbarBackgroundColor(tab)
                             : defaultPrimaryColor;
             // TODO(jinsukkim): Let TopUiThemeColorProvider handle this by updating the theme color.
             onThemeColorChanged(primaryColor, false);
@@ -3715,17 +3714,17 @@ public class ToolbarManager
 
     /**
      * Returns the mAdjustedTopUiThemeColorProvider if non-null, otherwise returns the
-     * mTopUiThemeColorProvider.
+     * mToolbarThemeColorProvider.
      */
-    private TopUiThemeColorProvider getAdjustedTopUiThemeColorProvider() {
+    private ToolbarThemeColorProvider getAdjustedTopUiThemeColorProvider() {
         return mAdjustedTopUiThemeColorProvider != null
                 ? mAdjustedTopUiThemeColorProvider
-                : mTopUiThemeColorProvider;
+                : mToolbarThemeColorProvider;
     }
 
-    /** Returns mAppThemeColorProvider for tablets or mTopUiThemeColorProvider for non-tablets. */
+    /** Returns mAppThemeColorProvider for tablets or mToolbarThemeColorProvider for non-tablets. */
     private ThemeColorProvider getBrowsingModeThemeColorProvider() {
-        return mIsTablet ? mAppThemeColorProvider : mTopUiThemeColorProvider;
+        return mIsTablet ? mAppThemeColorProvider : mToolbarThemeColorProvider;
     }
 
     /**

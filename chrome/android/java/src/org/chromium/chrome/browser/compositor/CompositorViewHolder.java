@@ -81,8 +81,7 @@ import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
-import org.chromium.chrome.browser.theme.ThemeColorProvider;
-import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
+import org.chromium.chrome.browser.theme.ToolbarThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.ControlContainer;
 import org.chromium.chrome.browser.ui.side_panel.AndroidSidePanelEnabledFn;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.SideUiSpecs;
@@ -277,7 +276,7 @@ public class CompositorViewHolder extends FrameLayout
 
     private boolean mHasDrawnOnce;
 
-    private @Nullable TopUiThemeColorProvider mTopUiThemeColorProvider;
+    private @Nullable ToolbarThemeColorProvider mToolbarThemeColorProvider;
 
     // Permissions are requested on a drop event, and are released when another drag starts
     // (drag-started event) or when the current page navigates to a new URL or the tab changes.
@@ -704,10 +703,10 @@ public class CompositorViewHolder extends FrameLayout
     }
 
     /**
-     * @param themeColorProvider {@link ThemeColorProvider} for top UI part.
+     * @param themeColorProvider {@link ToolbarThemeColorProvider} for the toolbar.
      */
-    public void setTopUiThemeColorProvider(TopUiThemeColorProvider themeColorProvider) {
-        mTopUiThemeColorProvider = themeColorProvider;
+    public void setToolbarThemeColorProvider(ToolbarThemeColorProvider themeColorProvider) {
+        mToolbarThemeColorProvider = themeColorProvider;
     }
 
     /**
@@ -1746,13 +1745,13 @@ public class CompositorViewHolder extends FrameLayout
             TabCreatorManager tabCreatorManager,
             NonNullObservableSupplier<Integer> bottomControlsOffsetSupplier) {
         assert mLayoutManager != null;
-        assert mTopUiThemeColorProvider != null;
+        assert mToolbarThemeColorProvider != null;
         mLayoutManager.init(
                 tabModelSelector,
                 tabCreatorManager,
                 mControlContainer,
                 mCompositorView.getResourceManager().getDynamicResourceLoader(),
-                mTopUiThemeColorProvider,
+                mToolbarThemeColorProvider,
                 bottomControlsOffsetSupplier);
 
         mTabModelSelector = tabModelSelector;

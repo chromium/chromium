@@ -61,7 +61,7 @@ import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
+import org.chromium.chrome.browser.theme.ToolbarThemeColorProvider;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.content_public.browser.RenderWidgetHostView;
 import org.chromium.content_public.browser.WebContents;
@@ -114,7 +114,7 @@ public class StaticLayoutUnitTest {
             mBrowserControlsStateProviderObserverCaptor;
 
     private final UserDataHost mUserDataHost = new UserDataHost();
-    @Mock private TopUiThemeColorProvider mTopUiThemeColorProvider;
+    @Mock private ToolbarThemeColorProvider mToolbarThemeColorProvider;
 
     @Mock private View mTabView;
 
@@ -176,14 +176,14 @@ public class StaticLayoutUnitTest {
                         mTabModelSelector,
                         mTabContentManager,
                         mBrowserControlsStateProvider,
-                        () -> mTopUiThemeColorProvider,
+                        () -> mToolbarThemeColorProvider,
                         mStaticTabSceneLayer,
                         mNeedsOffsetTagsSupplier);
         mModel = mStaticLayout.getModelForTesting();
         mStaticLayout.setIsActive(true);
 
         doReturn(TOOLBAR_BACKGROUND_COLOR)
-                .when(mTopUiThemeColorProvider)
+                .when(mToolbarThemeColorProvider)
                 .getToolbarBackgroundColor(any());
         mStaticLayout.setTextBoxBackgroundColorForTesting(TEXT_BOX_BACKGROUND_COLOR);
 

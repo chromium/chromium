@@ -178,6 +178,7 @@ import org.chromium.chrome.browser.tabstrip.StripVisibilityState;
 import org.chromium.chrome.browser.tabwindow.TabWindowInfo;
 import org.chromium.chrome.browser.theme.AdjustedTopUiThemeColorProvider;
 import org.chromium.chrome.browser.theme.BottomUiThemeColorProvider;
+import org.chromium.chrome.browser.theme.ToolbarThemeColorProvider;
 import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.ToolbarIntentMetadata;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
@@ -338,13 +339,31 @@ public class RootUiCoordinator
     private final OneshotSupplierImpl<IncognitoReauthController>
             mIncognitoReauthControllerOneshotSupplier = new OneshotSupplierImpl<>();
 
-    /** A means of providing the theme color to different features. */
+    /** The color of the top UI (i.e. status bar or top positioned toolbar). */
     private TopUiThemeColorProvider mTopUiThemeColorProvider;
 
-    /** A subclass of TopUiThemeColorProvider to provide adjusted tint color. */
+    /**
+     * An adjusted version of {@link TopUiThemeColorProvider} that correctly handles theme colors
+     * for new tab page customization. A subset of toolbar controls use this provider instead of
+     * {@link mTopUiThemeColorProvider}.
+     */
     private @Nullable AdjustedTopUiThemeColorProvider mAdjustedTopUiThemeColorProvider;
 
+    /** The color of the bottom UI (i.e. bottom positioned toolbar or any other bottom bars). */
     private BottomUiThemeColorProvider mBottomUiThemeColorProvider;
+
+    /**
+     * A wrapper around {@link TopUiThemeColorProvider} and {@link BottomUiThemeColorProvider} that
+     * is used to provide theme colors for the toolbar depending on its position.
+     */
+    private ToolbarThemeColorProvider mToolbarThemeColorProvider;
+
+    /**
+     * The same as {@link mToolbarThemeColorProvider} but uses the {@link
+     * mAdjustedTopUiThemeColorProvider} to handle new tab page customization.
+     */
+    private @Nullable ToolbarThemeColorProvider mAdjustedToolbarThemeColorProvider;
+
     private IncognitoStateProvider mIncognitoStateProvider;
 
     private final @Nullable Callback<Boolean> mOnOmniboxFocusChangedListener;
@@ -681,7 +700,8 @@ public class RootUiCoordinator
                         mTopUiThemeColorProvider,
                         edgeToEdgeManager.getEdgeToEdgeSystemBarColorHelper(),
                         mDesktopWindowStateManager,
-                        mOverviewColorSupplier);
+                        mOverviewColorSupplier,
+                        mBrowserControlsManager);
         mPageZoomManager =
                 new PageZoomManager(
                         new PageZoomManagerDelegate() {
@@ -806,6 +826,22 @@ public class RootUiCoordinator
                         mIncognitoStateProvider,
                         mActivity);
 
+        mToolbarThemeColorProvider =
+                new ToolbarThemeColorProvider(
+                        mActivity,
+                        mTopUiThemeColorProvider,
+                        mBottomUiThemeColorProvider,
+                        mBrowserControlsManager);
+
+        if (mAdjustedTopUiThemeColorProvider != null) {
+            mAdjustedToolbarThemeColorProvider =
+                    new ToolbarThemeColorProvider(
+                            mActivity,
+                            mAdjustedTopUiThemeColorProvider,
+                            mBottomUiThemeColorProvider,
+                            mBrowserControlsManager);
+        }
+
         if (BrowserControlsUtils.doSyncMinHeightWithTotalHeightV2(mActivity)) {
             mTopControlsLockCoordinator =
                     new TopControlsLockCoordinator(
@@ -834,6 +870,10 @@ public class RootUiCoordinator
      */
     public TopUiThemeColorProvider getTopUiThemeColorProvider() {
         return mTopUiThemeColorProvider;
+    }
+
+    public ToolbarThemeColorProvider getToolbarThemeColorProvider() {
+        return mToolbarThemeColorProvider;
     }
 
     /**
@@ -929,6 +969,16 @@ public class RootUiCoordinator
                 mAppMenuCoordinator.getAppMenuHandler().removeObserver(mAppMenuObserver);
             }
             mAppMenuCoordinator.destroy();
+        }
+
+        if (mToolbarThemeColorProvider != null) {
+            mToolbarThemeColorProvider.destroy();
+            mToolbarThemeColorProvider = null;
+        }
+
+        if (mAdjustedToolbarThemeColorProvider != null) {
+            mAdjustedToolbarThemeColorProvider.destroy();
+            mAdjustedToolbarThemeColorProvider = null;
         }
 
         if (mTopUiThemeColorProvider != null) {
@@ -1295,7 +1345,7 @@ public class RootUiCoordinator
                             assertNonNull(getBottomSheetController()),
                             mActivityTabProvider,
                             mBrowserControlsManager,
-                            mTopUiThemeColorProvider);
+                            mToolbarThemeColorProvider);
         }
 
         if (DeviceInfo.isAutomotive()) {
@@ -1989,8 +2039,8 @@ public class RootUiCoordinator
                             mToolbarContainer,
                             mCompositorViewHolderSupplier.asNonNull().get(),
                             urlFocusChangedCallback,
-                            mTopUiThemeColorProvider,
-                            mAdjustedTopUiThemeColorProvider,
+                            mToolbarThemeColorProvider,
+                            mAdjustedToolbarThemeColorProvider,
                             mBottomUiThemeColorProvider,
                             mIncognitoStateProvider,
                             mTabObscuringHandlerSupplier.get(),

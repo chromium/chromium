@@ -25,6 +25,8 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
 import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider.LayoutStateObserver;
@@ -48,6 +50,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiThemeUtil;
 import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.top.TopToolbarCoordinator;
+import org.chromium.chrome.browser.ui.bottombar.BottomBarConfigUtils;
 import org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderUtils;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
@@ -103,6 +106,7 @@ public class StatusBarColorController
     private final Callback<TabModel> mCurrentTabModelObserver;
     private final TopUiThemeColorProvider mTopUiThemeColor;
     private final EdgeToEdgeSystemBarColorHelper mEdgeToEdgeSystemBarColorHelper;
+    private final BrowserControlsStateProvider mBrowserControlsStateProvider;
     private final @ColorInt int mStandardDefaultThemeColor;
     private final @ColorInt int mIncognitoDefaultThemeColor;
     private final @ColorInt int mActiveOmniboxDefaultColor;
@@ -172,6 +176,7 @@ public class StatusBarColorController
      * @param edgeToEdgeSystemBarColorHelper Draws status bar color for Edge to Edge.
      * @param desktopWindowStateManager Instance to retrieve desktop window information.
      * @param overviewColorSupplier Notifies when the overview color changes.
+     * @param browserControlsStateProvider Provides the state of the browser controls.
      */
     public StatusBarColorController(
             Activity activity,
@@ -183,13 +188,15 @@ public class StatusBarColorController
             TopUiThemeColorProvider topUiThemeColorProvider,
             EdgeToEdgeSystemBarColorHelper edgeToEdgeSystemBarColorHelper,
             @Nullable DesktopWindowStateManager desktopWindowStateManager,
-            NonNullObservableSupplier<Integer> overviewColorSupplier) {
+            NonNullObservableSupplier<Integer> overviewColorSupplier,
+            BrowserControlsStateProvider browserControlsStateProvider) {
         mActivity = activity;
         mWindow = activity.getWindow();
         mIsTablet = isTablet;
         mStatusBarColorProvider = statusBarColorProvider;
         mAllowToolbarColorOnTablets = false;
         mOverviewColorSupplier = overviewColorSupplier;
+        mBrowserControlsStateProvider = browserControlsStateProvider;
 
         mStandardDefaultThemeColor =
                 ChromeColors.getDefaultThemeColor(activity, /* isIncognito= */ false);
@@ -576,7 +583,9 @@ public class StatusBarColorController
         // The theme should be restored when Omnibox focus clears.
         if (mIsOmniboxFocused) {
             // If the flag is enabled, we will use the toolbar color.
-            if (mToolbarColorChanged) return mToolbarColor;
+            if (mToolbarColorChanged && !isBottomBarEnabledAndBottomControls()) {
+                return mToolbarColor;
+            }
             return calculateDefaultStatusBarColor();
         }
 
@@ -587,7 +596,7 @@ public class StatusBarColorController
 
         // Return status bar color to match the toolbar.
         // If the flag is enabled, we will use the toolbar color.
-        if (mToolbarColorChanged) return mToolbarColor;
+        if (mToolbarColorChanged && !isBottomBarEnabledAndBottomControls()) return mToolbarColor;
         return mTopUiThemeColor.getThemeColorOrFallback(
                 mCurrentTab, calculateDefaultStatusBarColor());
     }
@@ -721,6 +730,11 @@ public class StatusBarColorController
      */
     private boolean isStandardNtp() {
         return mCurrentTab != null && mCurrentTab.getNativePage() instanceof NewTabPage;
+    }
+
+    private boolean isBottomBarEnabledAndBottomControls() {
+        return mBrowserControlsStateProvider.getControlsPosition() == ControlsPosition.BOTTOM
+                && BottomBarConfigUtils.isBottomBarEnabled(mActivity);
     }
 
     @ColorInt

@@ -97,9 +97,8 @@ import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.browser.theme.AdjustedTopUiThemeColorProvider;
 import org.chromium.chrome.browser.theme.BottomUiThemeColorProvider;
-import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
+import org.chromium.chrome.browser.theme.ToolbarThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonCoordinator.VisibilityDelegate;
 import org.chromium.chrome.browser.toolbar.top.ToolbarActionModeCallback;
 import org.chromium.chrome.browser.toolbar.top.ToolbarControlContainer;
@@ -181,8 +180,8 @@ public class ToolbarManagerUnitTest {
     @Mock private FullscreenManager mFullscreenManager;
     @Mock private CompositorViewHolder mCompositorViewHolder;
     @Mock private Callback<Boolean> mUrlFocusChangedCallback;
-    @Mock private TopUiThemeColorProvider mTopUiThemeColorProvider;
-    @Mock private AdjustedTopUiThemeColorProvider mAdjustedTopUiThemeColorProvider;
+    @Mock private ToolbarThemeColorProvider mToolbarThemeColorProvider;
+    @Mock private ToolbarThemeColorProvider mAdjustedToolbarThemeColorProvider;
     @Mock private TabObscuringHandler mTabObscuringHandler;
     @Mock private ScrimManager mScrimManager;
     @Mock private ToolbarActionModeCallback mToolbarActionModeCallback;
@@ -381,8 +380,8 @@ public class ToolbarManagerUnitTest {
                         controlContainer,
                         mCompositorViewHolder,
                         mUrlFocusChangedCallback,
-                        mTopUiThemeColorProvider,
-                        mAdjustedTopUiThemeColorProvider,
+                        mToolbarThemeColorProvider,
+                        mAdjustedToolbarThemeColorProvider,
                         mBottomUiThemeColorProvider,
                         mIncognitoStateProvider,
                         mTabObscuringHandler,

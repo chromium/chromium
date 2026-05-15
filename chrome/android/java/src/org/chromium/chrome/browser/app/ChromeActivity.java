@@ -2508,8 +2508,8 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
                 mManualFillingComponentSupplier.get().getBottomInsetSupplier());
         compositorViewHolder.setApplicationViewportInsetSupplier(insetSupplier);
 
-        compositorViewHolder.setTopUiThemeColorProvider(
-                mRootUiCoordinator.getTopUiThemeColorProvider());
+        compositorViewHolder.setToolbarThemeColorProvider(
+                mRootUiCoordinator.getToolbarThemeColorProvider());
         compositorViewHolder.onFinishNativeInitialization(
                 getTabModelSelector(), this, getToolbarManager().getBottomToolbarOffsetSupplier());
 

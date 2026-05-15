@@ -24,7 +24,7 @@ import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.DestroyObserver;
 import org.chromium.chrome.browser.lifecycle.NativeInitObserver;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
+import org.chromium.chrome.browser.theme.ToolbarThemeColorProvider;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.security_state.SecurityStateModel;
@@ -43,7 +43,7 @@ public class CustomTabTaskDescriptionHelper implements NativeInitObserver, Destr
     private final CustomTabActivityTabProvider mTabProvider;
     private final TabObserverRegistrar mTabObserverRegistrar;
     private final BrowserServicesIntentDataProvider mIntentDataProvider;
-    private final TopUiThemeColorProvider mTopUiThemeColorProvider;
+    private final ToolbarThemeColorProvider mToolbarThemeColorProvider;
 
     private @Nullable CustomTabTaskDescriptionIconGenerator mIconGenerator;
     private @Nullable FaviconHelper mFaviconHelper;
@@ -63,13 +63,13 @@ public class CustomTabTaskDescriptionHelper implements NativeInitObserver, Destr
             CustomTabActivityTabProvider customTabActivityTabProvider,
             TabObserverRegistrar tabObserverRegistrar,
             BrowserServicesIntentDataProvider intentDataProvider,
-            TopUiThemeColorProvider topUiThemeColorProvider,
+            ToolbarThemeColorProvider toolbarThemeColorProvider,
             ActivityLifecycleDispatcher lifecycleDispatcher) {
         mActivity = activity;
         mTabProvider = customTabActivityTabProvider;
         mTabObserverRegistrar = tabObserverRegistrar;
         mIntentDataProvider = intentDataProvider;
-        mTopUiThemeColorProvider = topUiThemeColorProvider;
+        mToolbarThemeColorProvider = toolbarThemeColorProvider;
 
         lifecycleDispatcher.register(this);
     }
@@ -239,7 +239,8 @@ public class CustomTabTaskDescriptionHelper implements NativeInitObserver, Destr
     /** Computes the theme color for the task description. */
     private int computeThemeColor() {
         Tab tab = mTabProvider.getTab();
-        int themeColor = mTopUiThemeColorProvider.getThemeColorOrFallback(tab, mDefaultThemeColor);
+        int themeColor =
+                mToolbarThemeColorProvider.getThemeColorOrFallback(tab, mDefaultThemeColor);
         return ColorUtils.getOpaqueColor(themeColor);
     }
 

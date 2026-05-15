@@ -35,7 +35,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabObserver;
 import org.chromium.chrome.browser.theme.ThemeUtils;
-import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
+import org.chromium.chrome.browser.theme.ToolbarThemeColorProvider;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.DeviceFormFactor;
@@ -80,7 +80,7 @@ public class StaticLayout extends Layout {
     private final BrowserControlsStateProvider mBrowserControlsStateProvider;
     private final BrowserControlsStateProvider.Observer mBrowserControlsStateProviderObserver;
 
-    private final Supplier<TopUiThemeColorProvider> mTopUiThemeColorProvider;
+    private final Supplier<ToolbarThemeColorProvider> mToolbarThemeColorProvider;
 
     private boolean mIsShowing;
     private @Nullable BrowserControlsOffsetTagsInfo mOffsetTagsInfo;
@@ -101,7 +101,7 @@ public class StaticLayout extends Layout {
      * @param tabModelSelector {@link TabModelSelector} instance.
      * @param tabContentManager {@link TabContentsManager} instance.
      * @param browserControlsStateProvider A {@link BrowserControlsStateProvider}.
-     * @param topUiThemeColorProvider {@link ThemeColorProvider} for top UI.
+     * @param toolbarThemeColorProvider {@link ThemeColorProvider} for the toolbar.
      * @param needsOffsetTag Whether or not this layout needs an OffsetTag.
      */
     public StaticLayout(
@@ -114,7 +114,7 @@ public class StaticLayout extends Layout {
             TabModelSelector tabModelSelector,
             TabContentManager tabContentManager,
             BrowserControlsStateProvider browserControlsStateProvider,
-            Supplier<TopUiThemeColorProvider> topUiThemeColorProvider,
+            Supplier<ToolbarThemeColorProvider> toolbarThemeColorProvider,
             NonNullObservableSupplier<Boolean> needsOffsetTag) {
         this(
                 context,
@@ -126,7 +126,7 @@ public class StaticLayout extends Layout {
                 tabModelSelector,
                 tabContentManager,
                 browserControlsStateProvider,
-                topUiThemeColorProvider,
+                toolbarThemeColorProvider,
                 null,
                 needsOffsetTag);
     }
@@ -143,7 +143,7 @@ public class StaticLayout extends Layout {
             TabModelSelector tabModelSelector,
             TabContentManager tabContentManager,
             BrowserControlsStateProvider browserControlsStateProvider,
-            Supplier<TopUiThemeColorProvider> topUiThemeColorProvider,
+            Supplier<ToolbarThemeColorProvider> toolbarThemeColorProvider,
             @Nullable StaticTabSceneLayer testSceneLayer,
             NonNullObservableSupplier<Boolean> needsOffsetTag) {
         super(context, updateHost, renderHost);
@@ -175,7 +175,7 @@ public class StaticLayout extends Layout {
                         .with(LayoutTab.IS_ACTIVE_LAYOUT, false)
                         .build();
 
-        mTopUiThemeColorProvider = topUiThemeColorProvider;
+        mToolbarThemeColorProvider = toolbarThemeColorProvider;
 
         Resources res = context.getResources();
         float dpToPx = res.getDisplayMetrics().density;
@@ -410,9 +410,9 @@ public class StaticLayout extends Layout {
             updateVisibleIdsCheckingLiveLayer(tab.getId(), useLiveTexture);
         }
 
-        TopUiThemeColorProvider topUiTheme = mTopUiThemeColorProvider.get();
+        ToolbarThemeColorProvider toolbarTheme = mToolbarThemeColorProvider.get();
         mModel.set(LayoutTab.BACKGROUND_COLOR, ThemeUtils.getBackgroundColor(tab));
-        mModel.set(LayoutTab.TOOLBAR_BACKGROUND_COLOR, topUiTheme.getToolbarBackgroundColor(tab));
+        mModel.set(LayoutTab.TOOLBAR_BACKGROUND_COLOR, toolbarTheme.getToolbarBackgroundColor(tab));
         mModel.set(LayoutTab.TEXT_BOX_BACKGROUND_COLOR, getToolbarTextBoxBackgroundColor(tab));
         mModel.set(LayoutTab.CAN_USE_LIVE_TEXTURE, useLiveTexture);
     }
@@ -423,7 +423,7 @@ public class StaticLayout extends Layout {
         }
 
         return ThemeUtils.getTextBoxColorForToolbarBackground(
-                mContext, tab, mTopUiThemeColorProvider.get().getToolbarBackgroundColor(tab));
+                mContext, tab, mToolbarThemeColorProvider.get().getToolbarBackgroundColor(tab));
     }
 
     void setTextBoxBackgroundColorForTesting(Integer color) {

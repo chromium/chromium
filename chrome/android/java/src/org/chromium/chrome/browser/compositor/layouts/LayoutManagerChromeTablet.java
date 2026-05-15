@@ -36,7 +36,7 @@ import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tab_ui.TabSwitcher;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
+import org.chromium.chrome.browser.theme.ToolbarThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.ControlContainer;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
@@ -77,7 +77,7 @@ public class LayoutManagerChromeTablet extends LayoutManagerChrome {
      * @param tabModelSelectorSupplier Supplier for an interface to talk to the Tab Model Selector.
      * @param browserControlsStateProvider The BrowserControlsStateProvider for top controls.
      * @param tabContentManagerSupplier Supplier of the TabContentManager instance.
-     * @param topUiThemeColorProvider ThemeColorProvider for top UI.
+     * @param toolbarThemeColorProvider ThemeColorProvider for the toolbar.
      * @param lifecycleDispatcher ActivityLifecycleDispatcher to be passed to TabStrip helper.
      * @param hubLayoutDependencyHolder The dependency holder for creating HubLayout.
      * @param multiInstanceManager MultiInstanceManager passed to StripLayoutHelper to support tab
@@ -106,7 +106,7 @@ public class LayoutManagerChromeTablet extends LayoutManagerChrome {
             Supplier<TabModelSelector> tabModelSelectorSupplier,
             BrowserControlsStateProvider browserControlsStateProvider,
             MonotonicObservableSupplier<TabContentManager> tabContentManagerSupplier,
-            Supplier<TopUiThemeColorProvider> topUiThemeColorProvider,
+            Supplier<ToolbarThemeColorProvider> toolbarThemeColorProvider,
             MonotonicObservableSupplier<TabModelStartupInfo> tabModelStartupInfoSupplier,
             ActivityLifecycleDispatcher lifecycleDispatcher,
             HubLayoutDependencyHolder hubLayoutDependencyHolder,
@@ -132,7 +132,7 @@ public class LayoutManagerChromeTablet extends LayoutManagerChrome {
                 tabSwitcherSupplier,
                 tabModelSelectorSupplier,
                 tabContentManagerSupplier,
-                topUiThemeColorProvider,
+                toolbarThemeColorProvider,
                 hubLayoutDependencyHolder);
 
         mXrSceneCoreSessionManager = xrSceneCoreSessionManager;
@@ -215,14 +215,14 @@ public class LayoutManagerChromeTablet extends LayoutManagerChrome {
             TabCreatorManager creator,
             @Nullable ControlContainer controlContainer,
             DynamicResourceLoader dynamicResourceLoader,
-            TopUiThemeColorProvider topUiColorProvider,
+            ToolbarThemeColorProvider toolbarColorProvider,
             NonNullObservableSupplier<Integer> bottomControlsOffsetSupplier) {
         super.init(
                 selector,
                 creator,
                 controlContainer,
                 dynamicResourceLoader,
-                topUiColorProvider,
+                toolbarColorProvider,
                 bottomControlsOffsetSupplier);
         if (DeviceClassManager.enableLayerDecorationCache()) {
             mLayerTitleCache =

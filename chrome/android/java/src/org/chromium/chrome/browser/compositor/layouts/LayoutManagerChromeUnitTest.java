@@ -29,7 +29,7 @@ import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tab_ui.TabSwitcher;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
+import org.chromium.chrome.browser.theme.ToolbarThemeColorProvider;
 import org.chromium.ui.base.TestActivity;
 
 /** Unit tests for {@link LayoutManagerChrome}. */
@@ -52,8 +52,8 @@ public class LayoutManagerChromeUnitTest {
             ObservableSuppliers.createNullable();
     private final SettableMonotonicObservableSupplier<TabContentManager>
             mTabContentManagerSupplier = ObservableSuppliers.createMonotonic();
-    private final SettableNullableObservableSupplier<TopUiThemeColorProvider>
-            mTopUiThemeColorProvider = ObservableSuppliers.createNullable();
+    private final SettableNullableObservableSupplier<ToolbarThemeColorProvider>
+            mToolbarThemeColorProvider = ObservableSuppliers.createNullable();
 
     @Before
     public void setUp() {
@@ -72,7 +72,7 @@ public class LayoutManagerChromeUnitTest {
                         mTabSwitcherSupplier,
                         mTabModelSelectorSupplier,
                         mTabContentManagerSupplier,
-                        mTopUiThemeColorProvider,
+                        mToolbarThemeColorProvider,
                         mHubLayoutDependencyHolder);
         layoutManagerChrome.destroy();
         layoutManagerChrome.showLayout(LayoutType.TAB_SWITCHER, /* animate= */ true);

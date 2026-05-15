@@ -26,7 +26,7 @@ import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.chrome.browser.theme.ThemeUtils;
-import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
+import org.chromium.chrome.browser.theme.ToolbarThemeColorProvider;
 import org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderUtils;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
@@ -79,7 +79,7 @@ public class BrowserServicesThemeColorProvider extends ThemeColorProvider
     private final BrowserServicesIntentDataProvider mIntentDataProvider;
     private final CustomTabActivityTabProvider mTabSupplier;
     private final TabObserverRegistrar mTabObserverRegistrar;
-    private final TopUiThemeColorProvider mTopUiThemeColorProvider;
+    private final ToolbarThemeColorProvider mToolbarThemeColorProvider;
     private boolean mShouldUseTabTheme;
 
     private final ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
@@ -118,6 +118,8 @@ public class BrowserServicesThemeColorProvider extends ThemeColorProvider
      * @param context The {@link Context} that is used to retrieve color related resources.
      * @param intentDataProvider intent data provider that contains relevant browser service data,
      *     for example web app manifest properties.
+     * @param toolbarThemeColorProvider The {@link ToolbarThemeColorProvider} to get the toolbar
+     *     color from the tab.
      * @param tabSupplier provides current active tab in the browser service.
      * @param tabRegistrar allows to observe active tab changes, including the tab itself.
      * @param activityLifecycleDispatcher The {@link ActivityLifecycleDispatcher} to dispatch {@link
@@ -129,7 +131,7 @@ public class BrowserServicesThemeColorProvider extends ThemeColorProvider
     public BrowserServicesThemeColorProvider(
             Context context,
             BrowserServicesIntentDataProvider intentDataProvider,
-            TopUiThemeColorProvider topUiThemeColorProvider,
+            ToolbarThemeColorProvider toolbarThemeColorProvider,
             CustomTabActivityTabProvider tabSupplier,
             TabObserverRegistrar tabRegistrar,
             ActivityLifecycleDispatcher activityLifecycleDispatcher,
@@ -139,7 +141,7 @@ public class BrowserServicesThemeColorProvider extends ThemeColorProvider
         mIntentDataProvider = intentDataProvider;
         mTabSupplier = tabSupplier;
         mTabObserverRegistrar = tabRegistrar;
-        mTopUiThemeColorProvider = topUiThemeColorProvider;
+        mToolbarThemeColorProvider = toolbarThemeColorProvider;
 
         mDesktopWindowStateManager = desktopWindowStateManager;
         mActivityLifecycleDispatcher = activityLifecycleDispatcher;
@@ -242,7 +244,7 @@ public class BrowserServicesThemeColorProvider extends ThemeColorProvider
 
     private @ColorInt int getTabThemeColor(@Nullable Tab tab) {
         assert tab != null;
-        return mTopUiThemeColorProvider.getToolbarBackgroundColor(tab);
+        return mToolbarThemeColorProvider.getToolbarBackgroundColor(tab);
     }
 
     private @ColorInt int getDefaultChromeColor() {

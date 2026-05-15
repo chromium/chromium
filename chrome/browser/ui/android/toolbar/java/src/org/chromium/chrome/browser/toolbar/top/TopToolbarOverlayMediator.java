@@ -33,7 +33,7 @@ import org.chromium.chrome.browser.tab.CurrentTabObserver;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.theme.ThemeUtils;
-import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
+import org.chromium.chrome.browser.theme.ToolbarThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.ToolbarProgressBar;
 import org.chromium.components.browser_ui.widget.ClipDrawableProgressBar;
 import org.chromium.components.browser_ui.widget.ClipDrawableProgressBar.DrawingInfo;
@@ -85,7 +85,7 @@ public class TopToolbarOverlayMediator {
 
     private final ProgressBarObserver mProgressBarObserver;
 
-    private final TopUiThemeColorProvider mTopUiThemeColorProvider;
+    private final ToolbarThemeColorProvider mToolbarThemeColorProvider;
 
     /** The view state for this overlay. */
     private final PropertyModel mModel;
@@ -154,7 +154,7 @@ public class TopToolbarOverlayMediator {
             Callback<DrawingInfo> progressInfoCallback,
             NullableObservableSupplier<Tab> tabSupplier,
             BrowserControlsStateProvider browserControlsStateProvider,
-            TopUiThemeColorProvider topUiThemeColorProvider,
+            ToolbarThemeColorProvider toolbarThemeColorProvider,
             NonNullObservableSupplier<Integer> bottomToolbarControlsOffsetSupplier,
             NonNullObservableSupplier<Boolean> suppressToolbarSceneLayerSupplier,
             int layoutsToShowOn,
@@ -165,7 +165,7 @@ public class TopToolbarOverlayMediator {
         mLayoutStateProvider = layoutStateProvider;
         mProgressInfoCallback = progressInfoCallback;
         mBrowserControlsStateProvider = browserControlsStateProvider;
-        mTopUiThemeColorProvider = topUiThemeColorProvider;
+        mToolbarThemeColorProvider = toolbarThemeColorProvider;
         mModel = model;
         mBottomToolbarControlsOffsetSupplier = bottomToolbarControlsOffsetSupplier;
         mSuppressToolbarSceneLayerSupplier = suppressToolbarSceneLayerSupplier;
@@ -310,6 +310,10 @@ public class TopToolbarOverlayMediator {
                     @Override
                     public void onControlsPositionChanged(int controlsPosition) {
                         updateOffsetTag(mBrowserControlsOffsetTagsInfo);
+                        Tab tab = mTabSupplier.get();
+                        if (tab != null) {
+                            updateThemeColor(tab);
+                        }
                         if (ChromeFeatureList.sAndroidAnimatedProgressBarInBrowser.isEnabled()
                                 && ChromeFeatureList.sAndroidApb144Patch8.isEnabled()) {
                             updateProgress();
@@ -442,7 +446,7 @@ public class TopToolbarOverlayMediator {
      */
     private @ColorInt int getToolbarBackgroundColor(Tab tab) {
         if (sToolbarBackgroundColorForTesting != null) return sToolbarBackgroundColorForTesting;
-        return mTopUiThemeColorProvider.getToolbarBackgroundColor(tab);
+        return mToolbarThemeColorProvider.getToolbarBackgroundColor(tab);
     }
 
     /**
