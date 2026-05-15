@@ -5,7 +5,6 @@
 import 'chrome://settings/lazy_load.js';
 
 import type {SettingsAiModeSearchPageElement} from 'chrome://settings/lazy_load.js';
-import type {SettingsPrefsElement} from 'chrome://settings/settings.js';
 import {CrSettingsPrefs, OpenWindowProxyImpl} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
@@ -15,29 +14,21 @@ import {eventToPromise} from 'chrome://webui-test/test_util.js';
 suite('AiModeSearchSubpage', function() {
   let openWindowProxy: TestOpenWindowProxy;
   let subpage: SettingsAiModeSearchPageElement;
-  let settingsPrefs: SettingsPrefsElement;
 
   suiteSetup(function() {
     openWindowProxy = new TestOpenWindowProxy();
     OpenWindowProxyImpl.setInstance(openWindowProxy);
-    settingsPrefs = document.createElement('settings-prefs');
+    document.createElement('settings-prefs');
     return CrSettingsPrefs.initialized;
+  });
+
+  teardown(function() {
+    openWindowProxy.reset();
   });
 
   function createPage() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     subpage = document.createElement('settings-ai-mode-search-page');
-    subpage.prefs = settingsPrefs.prefs!;
-    document.body.appendChild(subpage);
-    return flushTasks();
-  }
-
-  test('shareTabsEveryThreadToggle', async () => {
-    await createPage();
-
-    const toggle = subpage.shadowRoot!.querySelector('settings-toggle-button');
-    assertTrue(!!toggle);
-
     subpage.set('prefs', {
       contextual_tasks: {
         share_open_tabs_every_thread: {
@@ -48,8 +39,21 @@ suite('AiModeSearchSubpage', function() {
           type: chrome.settingsPrivate.PrefType.DICTIONARY,
           value: {},
         },
+        smart_tab_sharing_settings: {
+          type: chrome.settingsPrivate.PrefType.NUMBER,
+          value: 0,
+        },
       },
     });
+    document.body.appendChild(subpage);
+    return flushTasks();
+  }
+
+  test('shareTabsEveryThreadToggle', async () => {
+    await createPage();
+
+    const toggle = subpage.shadowRoot!.querySelector('settings-toggle-button');
+    assertTrue(!!toggle);
     assertFalse(toggle.checked);
 
     // Click toggle
@@ -67,6 +71,37 @@ suite('AiModeSearchSubpage', function() {
             .getPref<boolean>('contextual_tasks.share_open_tabs_every_thread')
             .value);
     assertFalse(toggle.checked);
+  });
+
+  test('smartTabSharingNotDisabledByPolicy', async () => {
+    await createPage();
+
+    const indicator =
+        subpage.shadowRoot!.querySelector('cr-policy-pref-indicator');
+    assertFalse(!!indicator);
+
+    const linkout = subpage.shadowRoot!.querySelector('cr-link-row');
+    assertTrue(!!linkout);
+  });
+
+  test('smartTabSharingDisabledByPolicy', async () => {
+    await createPage();
+    subpage.set('prefs.contextual_tasks.smart_tab_sharing_settings', {
+      type: chrome.settingsPrivate.PrefType.NUMBER,
+      value: 1,
+    });
+    await flushTasks();
+
+    const indicator =
+        subpage.shadowRoot!.querySelector('cr-policy-pref-indicator');
+    assertTrue(!!indicator);
+
+    const toggle = subpage.shadowRoot!.querySelector('settings-toggle-button');
+    assertTrue(!!toggle);
+    assertTrue(toggle.disabled);
+
+    const linkout = subpage.shadowRoot!.querySelector('cr-link-row');
+    assertFalse(!!linkout);
   });
 
   test('learnMoreLinkRow', async function() {
@@ -94,18 +129,6 @@ suite('AiModeSearchSubpage', function() {
   test('siteExclusionsPref', async () => {
     await createPage();
 
-    subpage.set('prefs', {
-      contextual_tasks: {
-        share_open_tabs_every_thread: {
-          type: chrome.settingsPrivate.PrefType.BOOLEAN,
-          value: false,
-        },
-        site_exclusions: {
-          type: chrome.settingsPrivate.PrefType.DICTIONARY,
-          value: {},
-        },
-      },
-    });
     let exclusions = subpage.getSiteExclusions();
     assertEquals(0, Object.keys(exclusions).length);
 
@@ -119,19 +142,6 @@ suite('AiModeSearchSubpage', function() {
 
   test('siteExclusionsUi', async () => {
     await createPage();
-
-    subpage.set('prefs', {
-      contextual_tasks: {
-        share_open_tabs_every_thread: {
-          type: chrome.settingsPrivate.PrefType.BOOLEAN,
-          value: false,
-        },
-        site_exclusions: {
-          type: chrome.settingsPrivate.PrefType.DICTIONARY,
-          value: {},
-        },
-      },
-    });
 
     // Check initial state
     const siteList = subpage.shadowRoot!.querySelector('#siteList');
