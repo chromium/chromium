@@ -19,6 +19,7 @@
 #include "components/viz/common/surfaces/local_surface_id.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
+#include "services/viz/public/mojom/compositing/compositor_frame_sink.mojom-blink.h"
 #include "third_party/blink/public/common/metrics/document_update_reason.h"
 #include "third_party/blink/public/common/page/content_to_visible_time_reporter.h"
 #include "third_party/blink/public/common/page/content_to_visible_time_request.h"
@@ -107,6 +108,17 @@ class PLATFORM_EXPORT WidgetBase : public mojom::blink::Widget,
       base::WeakPtr<mojom::blink::FrameWidgetInputHandler>
           frame_widget_input_handler,
       WidgetBase* previous_widget);
+
+  void SetInitialFrameSink(
+      CrossVariantMojoRemote<
+          viz::mojom::blink::CompositorFrameSinkInterfaceBase>
+          initial_frame_sink,
+      CrossVariantMojoReceiver<
+          viz::mojom::blink::CompositorFrameSinkClientInterfaceBase>
+          initial_frame_sink_client,
+      CrossVariantMojoReceiver<
+          mojom::blink::RenderInputRouterClientInterfaceBase>
+          initial_viz_rir_client);
 
   // Similar to `InitializeCompositing()` but for non-compositing widgets.
   // Exactly one of either `InitializeCompositing()` or this method must
@@ -620,6 +632,11 @@ class PLATFORM_EXPORT WidgetBase : public mojom::blink::Widget,
   // side `WidgetInputHandler` call is received.
   std::optional<mojo::PendingReceiver<mojom::blink::WidgetInputHandler>>
       pending_viz_widget_input_handler_ = std::nullopt;
+
+  std::optional<mojom::blink::InitialFrameSinkParams> initial_frame_sink_pipes_;
+  base::TimeTicks frame_sink_bind_time_;
+  bool waiting_for_first_begin_frame_ = false;
+  bool is_using_early_frame_sink_ = false;
 
   base::WeakPtrFactory<WidgetBase> weak_ptr_factory_{this};
 };

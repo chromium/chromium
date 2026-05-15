@@ -394,7 +394,7 @@ WebPagePopupImpl::WebPagePopupImpl(
   }
 
   InitializeCompositing(screen_infos,
-                        /*settings=*/nullptr);
+                        /*settings=*/nullptr, {}, {}, {});
 
   popup_client_->AdjustSettings(page_->GetSettings());
   popup_client_->CreatePagePopupController(*page_, *this);
@@ -483,7 +483,14 @@ void WebPagePopupImpl::DidSetBounds() {
 
 void WebPagePopupImpl::InitializeCompositing(
     const display::ScreenInfos& screen_infos,
-    const cc::LayerTreeSettings* settings) {
+    const cc::LayerTreeSettings* settings,
+    CrossVariantMojoRemote<viz::mojom::blink::CompositorFrameSinkInterfaceBase>
+        initial_frame_sink,
+    CrossVariantMojoReceiver<
+        viz::mojom::blink::CompositorFrameSinkClientInterfaceBase>
+        initial_frame_sink_client,
+    CrossVariantMojoReceiver<mojom::blink::RenderInputRouterClientInterfaceBase>
+        initial_viz_rir_client) {
   // Careful Initialize() is called after InitializeCompositing, so don't do
   // much work here.
   widget_base_->InitializeCompositing(*page_->GetPageScheduler(), screen_infos,

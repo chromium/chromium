@@ -147,6 +147,7 @@
 #include "services/service_manager/public/mojom/interface_provider.mojom.h"
 #include "services/tracing/public/cpp/perfetto/track_name_recorder.h"
 #include "services/viz/public/cpp/gpu/context_provider_command_buffer.h"
+#include "services/viz/public/mojom/compositing/compositor_frame_sink.mojom.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
@@ -1244,6 +1245,20 @@ bool ShouldNotifySubresourceResponseStarted(
   return pref.send_subresource_notification;
 }
 
+void ExtractInitialFrameSinkPipes(
+    blink::mojom::InitialFrameSinkParamsPtr params,
+    mojo::PendingRemote<viz::mojom::CompositorFrameSink>& initial_frame_sink,
+    mojo::PendingReceiver<viz::mojom::CompositorFrameSinkClient>&
+        initial_frame_sink_client,
+    mojo::PendingReceiver<blink::mojom::RenderInputRouterClient>&
+        initial_viz_rir_client) {
+  if (params) {
+    initial_frame_sink = std::move(params->initial_frame_sink);
+    initial_frame_sink_client = std::move(params->initial_frame_sink_client);
+    initial_viz_rir_client = std::move(params->initial_viz_rir_client);
+  }
+}
+
 // Initialize the WebFrameWidget with compositing. Only local root frames
 // create a widget.
 void InitializeFrameWidgetForFrame(
@@ -1267,9 +1282,19 @@ void InitializeFrameWidgetForFrame(
       frame_sink_id, is_for_nested_main_frame, is_for_scalable_page,
       /*hidden=*/true);
 
+  mojo::PendingRemote<viz::mojom::CompositorFrameSink> initial_frame_sink;
+  mojo::PendingReceiver<viz::mojom::CompositorFrameSinkClient>
+      initial_frame_sink_client;
+  mojo::PendingReceiver<blink::mojom::RenderInputRouterClient>
+      initial_viz_rir_client;
+  ExtractInitialFrameSinkPipes(
+      std::move(widget_params->initial_frame_sink_params), initial_frame_sink,
+      initial_frame_sink_client, initial_viz_rir_client);
+
   web_frame_widget->InitializeCompositing(
       widget_params->visual_properties.screen_infos,
-      /*settings=*/nullptr);
+      /*settings=*/nullptr, std::move(initial_frame_sink),
+      std::move(initial_frame_sink_client), std::move(initial_viz_rir_client));
 
   // The WebFrameWidget should start with valid VisualProperties, including a
   // non-zero size. While WebFrameWidget would not normally receive IPCs and
@@ -1651,9 +1676,19 @@ RenderFrameImpl* RenderFrameImpl::CreateMainFrame(
                        params->widget_params->routing_id),
       is_for_nested_main_frame, is_for_scalable_page,
       /*hidden=*/true);
+  mojo::PendingRemote<viz::mojom::CompositorFrameSink> initial_frame_sink;
+  mojo::PendingReceiver<viz::mojom::CompositorFrameSinkClient>
+      initial_frame_sink_client;
+  mojo::PendingReceiver<blink::mojom::RenderInputRouterClient>
+      initial_viz_rir_client;
+  ExtractInitialFrameSinkPipes(
+      std::move(params->widget_params->initial_frame_sink_params),
+      initial_frame_sink, initial_frame_sink_client, initial_viz_rir_client);
+
   web_frame_widget->InitializeCompositing(
       params->widget_params->visual_properties.screen_infos,
-      /*settings=*/nullptr);
+      /*settings=*/nullptr, std::move(initial_frame_sink),
+      std::move(initial_frame_sink_client), std::move(initial_viz_rir_client));
 
   // The WebFrame created here was already attached to the Page as its main
   // frame, and the WebFrameWidget has been initialized, so we can call

@@ -18,6 +18,13 @@ import "ui/base/ime/mojom/text_input_state.mojom";
 import "services/viz/public/mojom/hit_test/input_target_client.mojom";
 import "ui/base/mojom/menu_source_type.mojom";
 
+struct InitialFrameSinkParams {
+  pending_remote<viz.mojom.CompositorFrameSink> initial_frame_sink;
+  pending_receiver<viz.mojom.CompositorFrameSinkClient>
+    initial_frame_sink_client;
+  pending_receiver<blink.mojom.RenderInputRouterClient> initial_viz_rir_client;
+};
+
 // This interface is bound on the compositor thread.
 interface WidgetCompositor {
   // Requests that the RenderWidget sends back a response after the next main

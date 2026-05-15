@@ -695,7 +695,7 @@ TestWebFrameWidget* WebViewHelper::CreateFrameWidgetAndInitializeCompositing(
   display::ScreenInfos initial_screen_infos(
       frame_widget->GetInitialScreenInfo());
   frame_widget->InitializeCompositing(initial_screen_infos,
-                                      &layer_tree_settings);
+                                      &layer_tree_settings, {}, {}, {});
   // This runs WidgetInputHandlerManager::InitOnInputHandlingThread, which will
   // set up the InputHandlerProxy.
   frame_widget->FlushInputHandlerTasks();

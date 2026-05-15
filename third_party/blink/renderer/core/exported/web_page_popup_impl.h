@@ -34,6 +34,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
+#include "services/viz/public/mojom/compositing/compositor_frame_sink.mojom-blink.h"
 #include "third_party/blink/public/mojom/input/pointer_lock_context.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/input/pointer_lock_result.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/page/widget.mojom-blink.h"
@@ -181,8 +182,18 @@ class CORE_EXPORT WebPagePopupImpl final : public WebPagePopup,
   void SetFocus(bool) override;
   bool HasFocus() override;
   WebHitTestResult HitTestResultAt(const gfx::PointF&) override;
-  void InitializeCompositing(const display::ScreenInfos& screen_infos,
-                             const cc::LayerTreeSettings* settings) override;
+  void InitializeCompositing(
+      const display::ScreenInfos& screen_infos,
+      const cc::LayerTreeSettings* settings,
+      CrossVariantMojoRemote<
+          viz::mojom::blink::CompositorFrameSinkInterfaceBase>
+          initial_frame_sink,
+      CrossVariantMojoReceiver<
+          viz::mojom::blink::CompositorFrameSinkClientInterfaceBase>
+          initial_frame_sink_client,
+      CrossVariantMojoReceiver<
+          mojom::blink::RenderInputRouterClientInterfaceBase>
+          initial_viz_rir_client) override;
   void SetCursor(const ui::Cursor& cursor) override;
   bool HandlingInputEvent() override;
   void SetHandlingInputEvent(bool handling) override;

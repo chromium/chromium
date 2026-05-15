@@ -8,6 +8,7 @@
 #include "base/test/test_future.h"
 #include "components/viz/host/gpu_client.h"
 #include "content/browser/renderer_host/render_process_host_impl.h"
+#include "content/browser/renderer_host/render_widget_host_impl.h"
 #include "content/browser/renderer_host/spare_render_process_host_manager_impl.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
@@ -183,6 +184,51 @@ IN_PROC_BROWSER_TEST_F(InitialGpuChannelBrowserTest,
         success_future.GetCallback());
     EXPECT_TRUE(success_future.Get());
   }
+}
+
+IN_PROC_BROWSER_TEST_F(InitialGpuChannelBrowserTest,
+                       EarlyFrameSinkUsed_InitiallyHidden) {
+  // Hide the WebContents before navigation.
+  shell()->web_contents()->WasHidden();
+
+  // Navigate to a page.
+  EXPECT_TRUE(
+      NavigateToURL(shell(), embedded_test_server()->GetURL("/title1.html")));
+  RenderFrameSubmissionObserver frame_observer(shell()->web_contents());
+  frame_observer.SetWaitForNextFrame();
+
+  auto* rwhi = static_cast<RenderWidgetHostImpl*>(
+      shell()->web_contents()->GetPrimaryMainFrame()->GetRenderWidgetHost());
+
+  // On non-ChromeOS platforms, the frame sink pipes should be created but
+  // deferred because we are hidden.
+#if BUILDFLAG(IS_CHROMEOS)
+  EXPECT_FALSE(rwhi->has_initial_frame_sink_for_testing());
+#else
+  // Note that there might be some racy Show() call before this, which might
+  // trigger the sending of the initial frame sink pipe earlier.
+  EXPECT_EQ(rwhi->is_hidden_for_testing(),
+            rwhi->has_initial_frame_sink_for_testing());
+#endif
+
+  // Show the WebContents and focus it.
+  shell()->web_contents()->WasShown();
+  shell()->web_contents()->Focus();
+
+  // The pipes should have been used and cleared!
+  EXPECT_FALSE(rwhi->has_initial_frame_sink_for_testing());
+
+  // Ping the renderer to ensure WasShown() and UpdateVisualProperties() Mojo
+  // messages are fully processed, and the early frame sink is bound.
+  EXPECT_EQ(true, EvalJs(shell(), "true"));
+
+  // Force a repaint on a new surface. This guarantees a new frame is drawn
+  // and submitted to Viz even if there is no other page damage.
+  EXPECT_TRUE(rwhi->RequestRepaintOnNewSurface());
+
+  // Wait for a frame to be submitted. This ensures the renderer has processed
+  // the WasShown() call and requested the frame sink.
+  frame_observer.WaitForNextFrameSubmission();
 }
 
 class InitialGpuChannelDisabledBrowserTest : public ContentBrowserTest {
