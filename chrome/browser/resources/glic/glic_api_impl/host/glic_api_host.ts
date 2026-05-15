@@ -9,8 +9,8 @@ import {assert} from '//resources/js/assert.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 
 import type {BrowserProxy} from '../../browser_proxy.js';
+import {ActorClientReceiver, ActorHandlerRemote, WebClientHandlerRemote} from '../../glic.mojom-webui.js';
 import type {ExperimentalTriggeringUpdatesHandlerRemote, WebClientInitialState} from '../../glic.mojom-webui.js';
-import {WebClientHandlerRemote} from '../../glic.mojom-webui.js';
 import {ObservableValue} from '../../observable.js';
 import type {ObservableValueReadOnly} from '../../observable.js';
 import {TaskQueue} from '../../task_queue.js';
@@ -24,6 +24,7 @@ import {urlFromClient} from './conversions.js';
 import {GatedSender} from './gated_sender.js';
 import {HostMessageHandler, TabDataHandlerSet, TabFaviconHandlerSet} from './host_from_client.js';
 import type {CaptureRegionObserverImpl, PinCandidatesObserverImpl} from './host_from_client.js';
+import {ActorClientImpl} from './host_to_client.js';
 import type {HostBackgroundResponse, HostBackgroundResponseDoes, HostBackgroundResponseReturns} from './types.js';
 import {BACKGROUND_RESPONSES} from './types.js';
 
@@ -206,6 +207,7 @@ export class GlicApiHost implements PostMessageRequestHandler {
   captureRegionObserver?: CaptureRegionObserverImpl;
   tabDataHandlerSet: TabDataHandlerSet;
   tabFaviconHandlerSet: TabFaviconHandlerSet;
+  actorHandler?: ActorHandlerRemote;
   private isSubscribedToZoomLevel = false;
   private experimentalTriggeringUpdatesHandler =
       new Map<number, ExperimentalTriggeringUpdatesHandlerRemote>();
@@ -250,6 +252,10 @@ export class GlicApiHost implements PostMessageRequestHandler {
     this.messageHandler.destroy();
     this.pinCandidatesObserver?.disconnectFromSource();
     this.captureRegionObserver?.disconnectFromSource();
+    if (this.actorHandler) {
+      this.actorHandler.$.close();
+      this.actorHandler = undefined;
+    }
     for (const handler of this.experimentalTriggeringUpdatesHandler.values()) {
       handler.$.close();
     }
@@ -259,6 +265,14 @@ export class GlicApiHost implements PostMessageRequestHandler {
   setInitialState(initialState: WebClientInitialState) {
     this.enableApiActivationGating = initialState.enableApiActivationGating;
     this.panelIsActive = initialState.panelIsActive;
+    if (initialState.enableActInFocusedTab) {
+      this.actorHandler = new ActorHandlerRemote();
+      const actorClientReceiver =
+          new ActorClientReceiver(new ActorClientImpl(this));
+      this.handler.createActorHandler(
+          this.actorHandler.$.bindNewPipeAndPassReceiver(),
+          actorClientReceiver.$.bindNewPipeAndPassRemote());
+    }
     this.updateSenderActive();
   }
 

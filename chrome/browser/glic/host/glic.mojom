@@ -4,9 +4,9 @@
 
 module glic.mojom;
 
-import "chrome/common/glic_enums.mojom";
 import "chrome/browser/glic/host/glic_features.mojom";
 import "chrome/common/actor_webui.mojom";
+import "chrome/common/glic_enums.mojom";
 import "components/content_settings/core/common/content_settings_types.mojom";
 import "mojo/public/mojom/base/absl_status.mojom";
 import "mojo/public/mojom/base/big_buffer.mojom";
@@ -947,58 +947,46 @@ struct UnpinTabsOptions {
   UnpinTrigger unpin_trigger;
 };
 
-// @generate glic_api
-// Result of CancelActions().
-[Stable, Extensible]
-enum CancelActionsResult {
-  // Do not manually use this value. Fail safe when an old client receives an
-  // extended new enum.
-  [Default] kUnknown = 0,
-  // Actions were successfully cancelled.
-  kSuccess = 1,
-  // The task was not found.
-  kTaskNotFound = 2,
-  // Could not cancel the actions for other reasons (e.g., the task is already
-  // completed).
-  kFailed = 3,
+// Interface for actor-related callbacks to the web client.
+interface ActorClient {
+  // Requests the web client to show a dialog to the user to select a credential
+  // for actor login. The web client should show the dialog and wait for the
+  // user to interact with it.
+  RequestToShowCredentialSelectionDialog(
+      actor.webui.mojom.SelectCredentialDialogRequest request)
+      => (actor.webui.mojom.SelectCredentialDialogResponse response);
+
+  // Requests the web client to show a dialog to the user to select autofill
+  // suggestions. The web client should show the dialog and wait for the user
+  // to interact with it.
+  //
+  // Selections for multiple forms can be requested by populating multiple
+  // FormFillingRequest objects.
+  RequestToShowAutofillSuggestionsDialog(
+      actor.webui.mojom.SelectAutofillSuggestionsDialogRequest request)
+      => (actor.webui.mojom.SelectAutofillSuggestionsDialogResponse response);
+
+  // Requests the web client to show a dialog for deterministic user
+  // confirmation. This should occur when Chrome detects the actor
+  // engaging in security-sensitive operations that require user permission.
+  RequestToShowUserConfirmationDialog(
+      actor.webui.mojom.UserConfirmationDialogRequest request)
+      => (actor.webui.mojom.UserConfirmationDialogResponse response);
+
+  // Requests the web client confirm navigation to a novel origin
+  // that the model has not yet encountered, but is not sensitive
+  // enough to require structured user confirmation.
+  RequestToConfirmNavigation(
+      actor.webui.mojom.NavigationConfirmationRequest request)
+      => (actor.webui.mojom.NavigationConfirmationResponse response);
+
+  // Notify that the actor task with the given id has changed to the indicated
+  // state.
+  NotifyActorTaskStateChanged(int32 task_id, ActorTaskState state);
 };
 
-// Options used to customize region capture.
-struct CaptureRegionParams {
-  int32 tab_id;
-  GetTabContextOptions options;
-};
-
-// Access to the browser from the web client by proxy through the WebUI.
-// A single WebClientHandler will provide access to the browser for only
-// a single web client. If the webview navigates or refreshes, a new
-// WebClientHandler is created.
-interface WebClientHandler {
-  // Called just before the web client initialize() call. Provides the initial
-  // state of any values that can be queried.
-  WebClientCreated(pending_remote<WebClient> web_client)
-      => (WebClientInitialState initial_state);
-
-  // Called when the web client loads and successfully returns from
-  // initialize(), indicating that it will support Chrome. `web_client` may
-  // be used to communicate with the client.
-  WebClientInitialized();
-
-  // Called when the web client loads, but throws an exception in initialize().
-  WebClientInitializeFailed();
-
-  // Creates a new tab. `url` must have a http or https protocol.
-  // `tab_data` is null if the tab could not be created, which may happen if the
-  // url or window_id is invalid.
-  CreateTab(url.mojom.Url url, bool open_in_background, int32? window_id)
-      => (TabData? tab_data);
-
-  // Creates a new popup window.
-  OpenLinkInPopup(url.mojom.Url url, int32 popup_width, int32 popup_height);
-
-  // Opens the glic settings page.
-  OpenGlicSettingsPage(OpenSettingsOptions options);
-
+// Interface for actor-related functionality.
+interface ActorHandler {
   // Called when a form is presented in the autofill selection dialog.
   AutofillSuggestionDialogOnFormPresented(
       int32 task_id,
@@ -1017,104 +1005,11 @@ interface WebClientHandler {
       int32 task_id,
       actor.webui.mojom.AutofillSuggestionDialogOnFormConfirmedParams params);
 
-  // Opens the password manager settings page.
-  OpenPasswordManagerSettingsPage();
-
-  // Closes the Glic panel.
-  ClosePanel();
-
-  // Shuts down the Glic panel.
-  ClosePanelAndShutdown();
-
-  // Requests that the web client's panel be attached to a browser
-  // window.
-  AttachPanel();
-
-  // Requests that the web client's panel be detached from a browser
-  // window (floats free).
-  DetachPanel();
-
-  // Notifies the browser that the web client has switched modes.
-  OnModeChange(WebClientMode new_mode);
-
-  // Called when the microphone status changes in the web client.
-  OnMicrophoneStatusChange(MicrophoneStatus status);
-
-  // Triggers the change profile flow, which allows the user to switch which
-  // profile is used. If a new profile is chosen, this WebUI will be closed in
-  // favor of a new one.
-  ShowProfilePicker();
-
-  // Returns the current model quality client id.
-  [RuntimeFeature=glic.mojom.features.kGlicAppendModelQualityClientId]
-  GetModelQualityClientId() => (string model_quality_client_id);
-
-  // Returns the context from the currently active tab.
-  // `tab_context_result` is null if tab content could not be captured.
-  // This may fail if the tab is navigated while collecting data, or closed
-  // before data is collected.
-  GetContextFromFocusedTab(GetTabContextOptions options)
-      => (GetContextResult result);
-
-  // Returns the context from the tab associated with `tab_id`.
-  // `tab_context_result` is null if tab content could not be captured.
-  // This may fail if the tab is navigated while collecting data, or closed
-  // before data is collected.
-  GetContextFromTab(int32 tab_id, GetTabContextOptions options)
-      => (GetContextResult result);
-
   // Returns the context from the tab associated with `tab_id` for an actor.
   // This skips the focus check.
   [RuntimeFeature=glic.mojom.features.kGlicActorTabContext]
   GetContextForActorFromTab(int32 tab_id, GetTabContextOptions options)
       => (GetContextResult result);
-
-  // Sets the maximum number of supported pinned tabs. Negative means that the
-  // client has no limit. Since the browser may only support so many, the
-  // effective limit is returned. The returned number may also differ from the
-  // requested number if the current number of pinned tabs exceeds the requested
-  // amount.
-  SetMaximumNumberOfPinnedTabs(uint32 requested_max)
-      => (uint32 effective_max);
-
-  // Pins the given tabs. Can fail if the tabs cannot be found, if the number of
-  // pinned tabs exceeds the allowed limit or if the tabs are already pinned.
-  // Returns true if all the given tabs were pinned.
-  PinTabs(array<int32> tab_ids, PinTabsOptions? options) => (bool pinned_all);
-
-  // Unpins the given tabs. Can fail if the tabs cannot be found, or if some of
-  // the given tabs aren't pinned.
-  UnpinTabs(array<int32> tab_ids, UnpinTabsOptions? options)
-      => (bool unpinned_all);
-
-  // Unpins all currently pinned tabs.
-  UnpinAllTabs(UnpinTabsOptions? options);
-
-  // Initiates the creation of a skill by opening a modal dialog. It returns a
-  // boolean indicating whether the modal dialog was opened successfully.
-  // TODO(crbug.com/471796872): Add the actual c++ implementation.
-  CreateSkill(CreateSkillRequest request) => (bool modal_opened);
-
-  // Initiates the update of a skill by opening a modal dialog. It returns a
-  // boolean indicating whether the modal dialog was opened successfully.
-  // TODO(crbug.com/471796872): Add the actual c++ implementation.
-  UpdateSkill(UpdateSkillRequest request) => (bool modal_opened);
-
-  // Requests that the browser show skill management UI.
-  ShowManageSkillsUi();
-
-  // Requests that the browser show skill browsing UI.
-  ShowBrowseSkillsUi();
-
-  // Gets a skill by its id. Returns null if the skill does not exist.
-  GetSkill(string id) => (Skill? skill);
-
-  // Logs metrics for web client specific skill events.
-  RecordSkillsWebClientEvent(SkillsWebClientEvent event);
-
-  // Subscribes to receive updates on pin candidates.
-  SubscribeToPinCandidates(GetPinCandidatesOptions options,
-                           pending_remote<PinCandidatesObserver> observer);
 
   // Creates a new task in the actor framework and returns the new task's ID.
   // `task_options` contains information used to initialize the task. A
@@ -1185,6 +1080,184 @@ interface WebClientHandler {
                  bool open_in_background,
                  int32? initiator_tab_id,
                  int32? initiator_window_id) => (TabData? tab_data);
+
+  // Log a begin event in the journal.
+  LogBeginAsyncEvent(
+      uint64 event_async_id, int32 task_id, string event, string details);
+
+  // Log an end event in the journal.
+  LogEndAsyncEvent(uint64 event_async_id, string details);
+
+  // Log an instant event in the journal.
+  LogInstantEvent(int32 task_id, string event, string details);
+
+  // Clear the journal.
+  JournalClear();
+
+  // Serialize the current journal collection to a encoded
+  // perfetto protobuf encoding.
+  JournalSnapshot(bool clear_journal) => (Journal journal);
+
+  // Start journal collection.
+  JournalStart(uint64 max_bytes, bool capture_screenshots);
+
+  // Stop journal collection.
+  JournalStop();
+
+  // Record the journal in a listnr feedback. The reason will be sent to listnr
+  // as the feedback description exactly as is without being parsed or processed
+  // in the browser process.
+  JournalRecordFeedback(bool positive, string reason);
+};
+
+// @generate glic_api
+// Result of CancelActions().
+[Stable, Extensible]
+enum CancelActionsResult {
+  // Do not manually use this value. Fail safe when an old client receives an
+  // extended new enum.
+  [Default] kUnknown = 0,
+  // Actions were successfully cancelled.
+  kSuccess = 1,
+  // The task was not found.
+  kTaskNotFound = 2,
+  // Could not cancel the actions for other reasons (e.g., the task is already
+  // completed).
+  kFailed = 3,
+};
+
+// Options used to customize region capture.
+struct CaptureRegionParams {
+  int32 tab_id;
+  GetTabContextOptions options;
+};
+
+// Access to the browser from the web client by proxy through the WebUI.
+// A single WebClientHandler will provide access to the browser for only
+// a single web client. If the webview navigates or refreshes, a new
+// WebClientHandler is created.
+interface WebClientHandler {
+  // Called just before the web client initialize() call. Provides the initial
+  // state of any values that can be queried.
+  WebClientCreated(pending_remote<WebClient> web_client)
+      => (WebClientInitialState initial_state);
+
+  // Called when the web client loads and successfully returns from
+  // initialize(), indicating that it will support Chrome. `web_client` may
+  // be used to communicate with the client.
+  WebClientInitialized();
+
+  // Called when the web client loads, but throws an exception in initialize().
+  WebClientInitializeFailed();
+
+  // Creates the actor handler.
+  CreateActorHandler(pending_receiver<ActorHandler> receiver,
+                     pending_remote<ActorClient> client);
+
+  // Creates a new tab. `url` must have a http or https protocol.
+  // `tab_data` is null if the tab could not be created, which may happen if the
+  // url or window_id is invalid.
+  CreateTab(url.mojom.Url url, bool open_in_background, int32? window_id)
+      => (TabData? tab_data);
+
+  // Creates a new popup window.
+  OpenLinkInPopup(url.mojom.Url url, int32 popup_width, int32 popup_height);
+
+  // Opens the glic settings page.
+  OpenGlicSettingsPage(OpenSettingsOptions options);
+
+  // Opens the password manager settings page.
+  OpenPasswordManagerSettingsPage();
+
+  // Closes the Glic panel.
+  ClosePanel();
+
+  // Shuts down the Glic panel.
+  ClosePanelAndShutdown();
+
+  // Requests that the web client's panel be attached to a browser
+  // window.
+  AttachPanel();
+
+  // Requests that the web client's panel be detached from a browser
+  // window (floats free).
+  DetachPanel();
+
+  // Notifies the browser that the web client has switched modes.
+  OnModeChange(WebClientMode new_mode);
+
+  // Called when the microphone status changes in the web client.
+  OnMicrophoneStatusChange(MicrophoneStatus status);
+
+  // Triggers the change profile flow, which allows the user to switch which
+  // profile is used. If a new profile is chosen, this WebUI will be closed in
+  // favor of a new one.
+  ShowProfilePicker();
+
+  // Returns the current model quality client id.
+  [RuntimeFeature=glic.mojom.features.kGlicAppendModelQualityClientId]
+  GetModelQualityClientId() => (string model_quality_client_id);
+
+  // Returns the context from the currently active tab.
+  // `tab_context_result` is null if tab content could not be captured.
+  // This may fail if the tab is navigated while collecting data, or closed
+  // before data is collected.
+  GetContextFromFocusedTab(GetTabContextOptions options)
+      => (GetContextResult result);
+
+  // Returns the context from the tab associated with `tab_id`.
+  // `tab_context_result` is null if tab content could not be captured.
+  // This may fail if the tab is navigated while collecting data, or closed
+  // before data is collected.
+  GetContextFromTab(int32 tab_id, GetTabContextOptions options)
+      => (GetContextResult result);
+
+  // Sets the maximum number of supported pinned tabs. Negative means that the
+  // client has no limit. Since the browser may only support so many, the
+  // effective limit is returned. The returned number may also differ from the
+  // requested number if the current number of pinned tabs exceeds the requested
+  // amount.
+  SetMaximumNumberOfPinnedTabs(uint32 requested_max)
+      => (uint32 effective_max);
+
+  // Pins the given tabs. Can fail if the tabs cannot be found, if the number of
+  // pinned tabs exceeds the allowed limit or if the tabs are already pinned.
+  // Returns true if all the given tabs were pinned.
+  PinTabs(array<int32> tab_ids, PinTabsOptions? options) => (bool pinned_all);
+
+  // Unpins the given tabs. Can fail if the tabs cannot be found, or if some of
+  // the given tabs aren't pinned.
+  UnpinTabs(array<int32> tab_ids, UnpinTabsOptions? options)
+      => (bool unpinned_all);
+
+  // Unpins all currently pinned tabs.
+  UnpinAllTabs(UnpinTabsOptions? options);
+
+  // Initiates the creation of a skill by opening a modal dialog. It returns a
+  // boolean indicating whether the modal dialog was opened successfully.
+  // TODO(crbug.com/471796872): Add the actual c++ implementation.
+  CreateSkill(CreateSkillRequest request) => (bool modal_opened);
+
+  // Initiates the update of a skill by opening a modal dialog. It returns a
+  // boolean indicating whether the modal dialog was opened successfully.
+  // TODO(crbug.com/471796872): Add the actual c++ implementation.
+  UpdateSkill(UpdateSkillRequest request) => (bool modal_opened);
+
+  // Requests that the browser show skill management UI.
+  ShowManageSkillsUi();
+
+  // Requests that the browser show skill browsing UI.
+  ShowBrowseSkillsUi();
+
+  // Gets a skill by its id. Returns null if the skill does not exist.
+  GetSkill(string id) => (Skill? skill);
+
+  // Logs metrics for web client specific skill events.
+  RecordSkillsWebClientEvent(SkillsWebClientEvent event);
+
+  // Subscribes to receive updates on pin candidates.
+  SubscribeToPinCandidates(GetPinCandidatesOptions options,
+                           pending_remote<PinCandidatesObserver> observer);
 
   // Foregrounds the given tab.
   // No-op if the tab doesn't exist or is already in the foreground.
@@ -1287,34 +1360,6 @@ interface WebClientHandler {
   // Reports that the web client encountered a transient error. These errors may
   // be presented to the user, but may not prevent further use of Glic.
   ReportClientTransientError(mojo_base.mojom.AbslStatusCode status_code);
-
-  // Log a begin event in the journal.
-  LogBeginAsyncEvent(
-      uint64 event_async_id, int32 task_id, string event, string details);
-
-  // Log an end event in the journal.
-  LogEndAsyncEvent(uint64 event_async_id, string details);
-
-  // Log an instant event in the journal.
-  LogInstantEvent(int32 task_id, string event, string details);
-
-  // Clear the journal.
-  JournalClear();
-
-  // Serialize the current journal collection to a encoded
-  // perfetto protobuf encoding.
-  JournalSnapshot(bool clear_journal) => (Journal journal);
-
-  // Start journal collection.
-  JournalStart(uint64 max_bytes, bool capture_screenshots);
-
-  // Stop journal collection.
-  JournalStop();
-
-  // Record the journal in a listnr feedback. The reason will be sent to listnr
-  // as the feedback description exactly as is without being parsed or processed
-  // in the browser process.
-  JournalRecordFeedback(bool positive, string reason);
 
   // Called when the opt-in CTA is shown.
   OnOptinImpression();
@@ -1944,10 +1989,6 @@ interface WebClient {
   NotifyZeroStateSuggestionsChanged(ZeroStateSuggestionsV2? suggestions,
                                     ZeroStateSuggestionsOptions options);
 
-  // Notify that the actor task with the given id has changed to the indicated
-  // state.
-  NotifyActorTaskStateChanged(int32 task_id, ActorTaskState state);
-
   // Informs the client that the metadata tags have changed.
   // Contents from meta tags are passed unsanitized from the renderer.
   NotifyPageMetadataChanged(
@@ -1956,37 +1997,6 @@ interface WebClient {
   // Informs the client when the default state for tab context sharing for new
   // sessions changes.
   NotifyDefaultTabContextPermissionStateChanged(bool enabled);
-
-  // Requests the web client to show a dialog to the user to select a credential
-  // for actor login. The web client should show the dialog and wait for the
-  // user to interact with it.
-  RequestToShowCredentialSelectionDialog(
-      actor.webui.mojom.SelectCredentialDialogRequest request)
-      => (actor.webui.mojom.SelectCredentialDialogResponse response);
-
-  // Requests the web client to show a dialog to the user to select autofill
-  // suggestions. The web client should show the dialog and wait for the user
-  // to interact with it.
-  //
-  // Selections for multiple forms can be requested by populating multiple
-  // FormFillingRequest objects.
-  RequestToShowAutofillSuggestionsDialog(
-      actor.webui.mojom.SelectAutofillSuggestionsDialogRequest request)
-      => (actor.webui.mojom.SelectAutofillSuggestionsDialogResponse response);
-
-  // Requests the web client to show a dialog for deterministic user
-  // confirmation. This should occur when Chrome detects the actor
-  // engaging in security-sensitive operations that require user permission.
-  RequestToShowUserConfirmationDialog(
-      actor.webui.mojom.UserConfirmationDialogRequest request)
-      => (actor.webui.mojom.UserConfirmationDialogResponse response);
-
-  // Requests the web client confirm navigation to a novel origin
-  // that the model has not yet encountered, but is not sensitive
-  // enough to require structured user confirmation.
-  RequestToConfirmNavigation(
-      actor.webui.mojom.NavigationConfirmationRequest request)
-      => (actor.webui.mojom.NavigationConfirmationResponse response);
 
   // Informs the client that additional context is available.
   NotifyAdditionalContext(AdditionalContext context);

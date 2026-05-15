@@ -795,12 +795,15 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testDialogResponseCallOrder) {
   // response from it is received.
   base::test::TestFuture<actor::ActorTask::State>
       state_when_dialog_response_received;
-  GetHost()->RequestToShowUserConfirmationDialog(
-      task->id(), url::Origin(), /*for_blocklisted_origin=*/false,
-      base::BindLambdaForTesting(
-          [&](actor::webui::mojom::UserConfirmationDialogResponsePtr) {
-            state_when_dialog_response_received.SetValue(task->GetState());
-          }));
+  GetGlicInstanceImpl()
+      ->GetActorTaskManager()
+      ->GetClientSessionForTesting()
+      ->RequestToShowUserConfirmationDialog(
+          task->id(), url::Origin(), /*for_sensitive_origin=*/false,
+          base::BindLambdaForTesting(
+              [&](actor::webui::mojom::UserConfirmationDialogResponsePtr) {
+                state_when_dialog_response_received.SetValue(task->GetState());
+              }));
 
   // The client side will respond to the dialog then uninterrupt the task.
   // Ensure the dialog response is received before the task has been

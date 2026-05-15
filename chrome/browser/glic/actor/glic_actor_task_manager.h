@@ -23,6 +23,8 @@
 #include "components/optimization_guide/proto/features/actions_data.pb.h"
 #include "components/page_content_annotations/content/page_context_fetcher.h"
 #include "components/tabs/public/tab_interface.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 
 class Profile;
 
@@ -38,6 +40,17 @@ namespace glic {
 class GlicActorClientSession;
 class GlicInstanceMetrics;
 class GlicActorJournalHandler;
+class GlicSharingManager;
+class GlicInstanceMetrics;
+class GlicActorClientSession;
+
+class GlicActorClientSessionInterface : public mojom::ActorHandler,
+                                        public actor::ActorTaskDelegate {
+ public:
+  ~GlicActorClientSessionInterface() override;
+  virtual mojom::ActorClient* GetClient() = 0;
+  virtual void CancelActiveTask() = 0;
+};
 
 // Manages actor-related tasks for GlicKeyedService.
 class GlicActorTaskManager {
@@ -54,6 +67,7 @@ class GlicActorTaskManager {
                                 actor::ActorKeyedService* actor_keyed_service,
                                 GlicActorPolicyChecker& actor_policy_checker,
                                 GlicInstanceMetrics* instance_metrics,
+                                glic::GlicSharingManager* sharing_manager,
                                 Delegate* delegate);
   GlicActorTaskManager(const GlicActorTaskManager&) = delete;
   GlicActorTaskManager& operator=(const GlicActorTaskManager&) = delete;
@@ -68,13 +82,14 @@ class GlicActorTaskManager {
   base::CallbackListSubscription AddActuatingChangedCallback(
       base::RepeatingCallback<void(bool)> callback);
 
-  GlicActorClientSession* BindSession(glic::mojom::WebClient* web_client);
+  void Bind(mojo::PendingReceiver<mojom::ActorHandler> receiver,
+            mojo::PendingRemote<mojom::ActorClient> client);
   void UnbindSession();
 
   base::WeakPtr<GlicActorTaskManager> GetWeakPtr();
   Profile* profile() const { return profile_; }
 
-  GlicActorClientSession* GetClientSessionForTesting();
+  GlicActorClientSessionInterface* GetClientSessionForTesting();
 
  private:
   void SetActuating(bool actuating);
@@ -84,6 +99,7 @@ class GlicActorTaskManager {
   raw_ptr<actor::ActorKeyedService> actor_keyed_service_;
   const raw_ref<GlicActorPolicyChecker> actor_policy_checker_;
   raw_ptr<GlicInstanceMetrics> instance_metrics_;
+  raw_ptr<GlicSharingManager> sharing_manager_;
   bool actuating_ = false;
   base::RepeatingCallbackList<void(bool)> actuating_changed_callbacks_;
   raw_ptr<Delegate> delegate_;
@@ -91,56 +107,67 @@ class GlicActorTaskManager {
   base::WeakPtrFactory<GlicActorTaskManager> weak_ptr_factory_{this};
 };
 
-class GlicActorClientSession : public actor::ActorTaskDelegate {
+class GlicActorClientSession : public GlicActorClientSessionInterface {
  public:
-  explicit GlicActorClientSession(GlicActorTaskManager* manager,
-                                  glic::mojom::WebClient* web_client);
+  GlicActorClientSession(GlicActorTaskManager* manager,
+                         mojo::PendingReceiver<mojom::ActorHandler> receiver,
+                         mojo::PendingRemote<mojom::ActorClient> client);
   ~GlicActorClientSession() override;
 
   // Unbinds this session from GlicActorTaskManager. Deletes this.
   void Unbind();
+  void CancelActiveTask() override;
+
+  // GlicActorClientSessionInterface:
+  mojom::ActorClient* GetClient() override;
+
+  // mojom::ActorHandler:
+  void GetContextForActorFromTab(
+      int32_t tab_id,
+      mojom::GetTabContextOptionsPtr options,
+      GetContextForActorFromTabCallback callback) override;
+
+  // actor::mojom::ActorHandler:
   bool IsActuating() const;
   void CanActOnWebChanged(bool can_act_on_web);
   void CreateTask(actor::webui::mojom::TaskOptionsPtr options,
-                  glic::mojom::WebClientHandler::CreateTaskCallback callback);
+                  CreateTaskCallback callback) override;
   void PerformActions(const std::vector<uint8_t>& actions_proto,
-                      mojom::WebClientHandler::PerformActionsCallback callback);
-  void CancelActions(actor::TaskId task_id,
-                     mojom::WebClientHandler::CancelActionsCallback callback);
-  void StopActorTask(actor::TaskId task_id,
-                     mojom::ActorTaskStopReason stop_reason);
-  void PauseActorTask(actor::TaskId task_id,
+                      PerformActionsCallback callback) override;
+  void CancelActions(int32_t task_id, CancelActionsCallback callback) override;
+  void StopActorTask(int32_t task_id,
+                     mojom::ActorTaskStopReason stop_reason) override;
+  void PauseActorTask(int32_t task_id,
                       mojom::ActorTaskPauseReason pause_reason,
-                      tabs::TabInterface::Handle tab_handle);
-  void ResumeActorTask(
-      actor::TaskId task_id,
-      const mojom::GetTabContextOptions& context_options,
-      glic::mojom::WebClientHandler::ResumeActorTaskCallback callback);
-  void InterruptActorTask(actor::TaskId task_id);
-  void UninterruptActorTask(actor::TaskId task_id);
-  void CreateActorTab(
-      actor::TaskId task_id,
-      bool open_in_background,
-      const std::optional<int32_t>& initiator_tab_id,
-      const std::optional<int32_t>& initiator_window_id,
-      glic::mojom::WebClientHandler::CreateActorTabCallback callback);
-  void CancelTask();
+                      std::optional<int32_t> tab_handle) override;
+  void ResumeActorTask(int32_t task_id,
+                       mojom::GetTabContextOptionsPtr context_options,
+                       ResumeActorTaskCallback callback) override;
+  void InterruptActorTask(
+      int32_t task_id,
+      std::optional<mojom::ActorTaskInterruptReason> interrupt_reason) override;
+  void UninterruptActorTask(int32_t task_id) override;
+  void CreateActorTab(int32_t task_id,
+                      bool open_in_background,
+                      std::optional<int32_t> initiator_tab_id,
+                      std::optional<int32_t> initiator_window_id,
+                      CreateActorTabCallback callback) override;
 
   void LogBeginAsyncEvent(uint64_t event_async_id,
                           int32_t task_id,
                           const std::string& event,
-                          const std::string& details);
-  void LogEndAsyncEvent(uint64_t event_async_id, const std::string& details);
+                          const std::string& details) override;
+  void LogEndAsyncEvent(uint64_t event_async_id,
+                        const std::string& details) override;
   void LogInstantEvent(int32_t task_id,
                        const std::string& event,
-                       const std::string& details);
-  void JournalClear();
-  void JournalSnapshot(
-      bool clear_journal,
-      glic::mojom::WebClientHandler::JournalSnapshotCallback callback);
-  void JournalStart(uint64_t max_bytes, bool capture_screenshots);
-  void JournalStop();
-  void JournalRecordFeedback(bool positive, const std::string& reason);
+                       const std::string& details) override;
+  void JournalClear() override;
+  void JournalSnapshot(bool clear_journal,
+                       JournalSnapshotCallback callback) override;
+  void JournalStart(uint64_t max_bytes, bool capture_screenshots) override;
+  void JournalStop() override;
+  void JournalRecordFeedback(bool positive, const std::string& reason) override;
 
   base::WeakPtr<GlicActorClientSession> GetWeakPtr();
 
@@ -171,19 +198,19 @@ class GlicActorClientSession : public actor::ActorTaskDelegate {
   void AutofillSuggestionDialogOnFormPresented(
       int32_t task_id,
       actor::webui::mojom::AutofillSuggestionDialogOnFormPresentedParamsPtr
-          params);
+          params) override;
   void AutofillSuggestionDialogOnFormPreviewChanged(
       int32_t task_id,
       actor::webui::mojom::AutofillSuggestionDialogOnFormPreviewChangedParamsPtr
-          params);
+          params) override;
   void AutofillSuggestionDialogOnFormConfirmed(
       int32_t task_id,
       actor::webui::mojom::AutofillSuggestionDialogOnFormConfirmedParamsPtr
-          params);
+          params) override;
 
  private:
   void PerformActionsFinished(
-      mojom::WebClientHandler::PerformActionsCallback callback,
+      PerformActionsCallback callback,
       actor::TaskId task_id,
       base::TimeTicks start_time,
       bool skip_async_observation_information,
@@ -192,7 +219,7 @@ class GlicActorClientSession : public actor::ActorTaskDelegate {
           screenshot_collection_options,
       std::vector<actor::ActionResultWithLatencyInfo> action_results);
   void DidFinishBuildObservation(
-      mojom::WebClientHandler::PerformActionsCallback callback,
+      PerformActionsCallback callback,
       base::TimeTicks start_time,
       std::vector<actor::ActionResultWithLatencyInfo> action_results,
       actor::TaskId task_id,
@@ -204,7 +231,7 @@ class GlicActorClientSession : public actor::ActorTaskDelegate {
       std::unique_ptr<actor::AggregatedJournal::PendingAsyncEntry>
           journal_entry);
   void OnPerformActionsComplete(
-      mojom::WebClientHandler::PerformActionsCallback callback,
+      PerformActionsCallback callback,
       base::TimeTicks start_time,
       std::vector<actor::ActionResultWithLatencyInfo> action_results,
       std::unique_ptr<actor::AggregatedJournal::PendingAsyncEntry>
@@ -214,9 +241,8 @@ class GlicActorClientSession : public actor::ActorTaskDelegate {
   void ReloadCrashedTab(tabs::TabInterface& crashed_tab,
                         actor::TaskId task_id,
                         base::OnceClosure callback);
-  void CreateActorTabFinished(
-      glic::mojom::WebClientHandler::CreateActorTabCallback callback,
-      tabs::TabInterface* new_tab);
+  void CreateActorTabFinished(CreateActorTabCallback callback,
+                              tabs::TabInterface* new_tab);
   void ReloadObserverDone(tabs::TabHandle tab_handle,
                           base::OnceClosure callback,
                           actor::ObservationDelayController::Result result);
@@ -228,9 +254,8 @@ class GlicActorClientSession : public actor::ActorTaskDelegate {
   GlicInstanceMetrics& instance_metrics() const;
   Profile& profile() const;
 
-  // Note: Migration in progress to split up this mojo interface. This should
-  // only be used to call actor-specific methods.
-  raw_ptr<glic::mojom::WebClient> web_client_;
+  mojo::Remote<mojom::ActorClient> actor_client_;
+  mojo::Receiver<mojom::ActorHandler> receiver_{this};
   std::unique_ptr<actor::ObservationDelayController> reload_observer_;
   std::vector<std::unique_ptr<actor::TabObservationController>>
       observation_controllers_;

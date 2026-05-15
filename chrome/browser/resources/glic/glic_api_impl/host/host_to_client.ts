@@ -5,7 +5,7 @@
 // This file handles messages from the browser, sending messages to the client.
 
 import type {PageMetadata as PageMetadataMojo} from '../../ai_page_content_metadata.mojom-webui.js';
-import type {ActorTaskState as ActorTaskStateMojo, AdditionalContext as AdditionalContextMojo, ExperimentalTriggeringUpdatesHandlerRemote, FocusedTabData as FocusedTabDataMojo, InvokeOptions as InvokeOptionsMojo, OpenPanelInfo as OpenPanelInfoMojo, PanelOpeningData as PanelOpeningDataMojo, PanelState as PanelStateMojo, Skill as SkillMojo, SkillPreview as SkillPreviewMojo, TabData as TabDataMojo, WebClientInterface, ZeroStateSuggestionsOptions as ZeroStateSuggestionsOptionsMojo, ZeroStateSuggestionsV2 as ZeroStateSuggestionsV2Mojo} from '../../glic.mojom-webui.js';
+import type {ActorClientInterface, ActorTaskState as ActorTaskStateMojo, AdditionalContext as AdditionalContextMojo, ExperimentalTriggeringUpdatesHandlerRemote, FocusedTabData as FocusedTabDataMojo, InvokeOptions as InvokeOptionsMojo, OpenPanelInfo as OpenPanelInfoMojo, PanelOpeningData as PanelOpeningDataMojo, PanelState as PanelStateMojo, Skill as SkillMojo, SkillPreview as SkillPreviewMojo, TabData as TabDataMojo, WebClientInterface, ZeroStateSuggestionsOptions as ZeroStateSuggestionsOptionsMojo, ZeroStateSuggestionsV2 as ZeroStateSuggestionsV2Mojo} from '../../glic.mojom-webui.js';
 import {enumToClient} from '../enum_conversions.js';
 
 import type {NavigationConfirmationRequest as NavigationConfirmationRequestMojo, NavigationConfirmationResponse as NavigationConfirmationResponseMojo, SelectAutofillSuggestionsDialogRequest as SelectAutofillSuggestionsDialogRequestMojo, SelectAutofillSuggestionsDialogResponse as SelectAutofillSuggestionsDialogResponseMojo, SelectCredentialDialogRequest as SelectCredentialDialogRequestMojo, SelectCredentialDialogResponse as SelectCredentialDialogResponseMojo, UserConfirmationDialogRequest as UserConfirmationDialogRequestMojo, UserConfirmationDialogResponse as UserConfirmationDialogResponseMojo} from './../../actor_webui.mojom-webui.js';
@@ -294,13 +294,6 @@ export class WebClientImpl implements WebClientInterface {
         });
   }
 
-  notifyActorTaskStateChanged(taskId: number, state: ActorTaskStateMojo): void {
-    const clientState = enumToClient(state);
-    this.sender.requestNoResponse(
-        'glicWebClientNotifyActorTaskStateChanged',
-        {taskId, state: clientState});
-  }
-
   notifyPageMetadataChanged(tabId: number, metadata: PageMetadataMojo|null):
       void {
     this.sender.sendLatestWhenActive(
@@ -309,6 +302,44 @@ export class WebClientImpl implements WebClientInterface {
           pageMetadata: pageMetadataToClient(metadata),
         },
         undefined, `${tabId}`);
+  }
+
+  notifyAdditionalContext(context: AdditionalContextMojo): void {
+    const extras = new ResponseExtras();
+    const clientContext = additionalContextToClient(context, extras);
+    this.sender.sendWhenActive(
+        'glicWebClientNotifyAdditionalContext', {context: clientContext},
+        extras.transfers);
+  }
+
+  notifyActOnWebCapabilityChanged(canActOnWeb: boolean): void {
+    this.sender.requestNoResponse(
+        'glicWebClientNotifyActOnWebCapabilityChanged', {canActOnWeb});
+  }
+
+  notifyOnboardingCompletedChanged(completed: boolean): void {
+    this.sender.requestNoResponse(
+        'glicWebClientOnboardingCompletedChanged', {completed});
+  }
+
+  notifyActorTaskListRowClicked(taskId: number): void {
+    this.sender.requestNoResponse(
+        'glicWebClientNotifyActorTaskListRowClicked', {taskId});
+  }
+}
+
+export class ActorClientImpl implements ActorClientInterface {
+  private sender: GatedSender;
+
+  constructor(private host: GlicApiHost) {
+    this.sender = this.host.sender;
+  }
+
+  notifyActorTaskStateChanged(taskId: number, state: ActorTaskStateMojo): void {
+    const clientState = enumToClient(state);
+    this.sender.requestNoResponse(
+        'glicWebClientNotifyActorTaskStateChanged',
+        {taskId, state: clientState});
   }
 
   async requestToShowCredentialSelectionDialog(
@@ -341,29 +372,6 @@ export class WebClientImpl implements WebClientInterface {
     return {
       response: navigationConfirmationResponseToMojo(clientResponse.response),
     };
-  }
-
-  notifyAdditionalContext(context: AdditionalContextMojo): void {
-    const extras = new ResponseExtras();
-    const clientContext = additionalContextToClient(context, extras);
-    this.sender.sendWhenActive(
-        'glicWebClientNotifyAdditionalContext', {context: clientContext},
-        extras.transfers);
-  }
-
-  notifyActOnWebCapabilityChanged(canActOnWeb: boolean): void {
-    this.sender.requestNoResponse(
-        'glicWebClientNotifyActOnWebCapabilityChanged', {canActOnWeb});
-  }
-
-  notifyOnboardingCompletedChanged(completed: boolean): void {
-    this.sender.requestNoResponse(
-        'glicWebClientOnboardingCompletedChanged', {completed});
-  }
-
-  notifyActorTaskListRowClicked(taskId: number): void {
-    this.sender.requestNoResponse(
-        'glicWebClientNotifyActorTaskListRowClicked', {taskId});
   }
 
   async requestToShowAutofillSuggestionsDialog(

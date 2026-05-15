@@ -505,13 +505,6 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
     web_client_.set_disconnect_handler(base::BindOnce(
         &GlicWebClientHandler::WebClientDisconnected, base::Unretained(this)));
 
-    if (base::FeatureList::IsEnabled(features::kGlicActor)) {
-      actor_client_session_ = host()
-                                  .instance_delegate()
-                                  .BindActorClientSession(web_client_.get())
-                                  ->GetWeakPtr();
-    }
-
     page_metadata_manager_ =
         std::make_unique<PageMetadataManager>(profile_, web_client_.get());
 
@@ -584,13 +577,6 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
             base::Unretained(this)));
 
     if (base::FeatureList::IsEnabled(features::kGlicActor)) {
-      if (auto* actor_service = actor::ActorKeyedService::Get(profile_)) {
-        actor_task_state_changed_subscription_ =
-            actor_service->AddTaskStateChangedCallback(base::BindRepeating(
-                &GlicWebClientHandler::NotifyActorTaskStateChanged,
-                base::Unretained(this)));
-      }
-
       // CallbackListSubscription prevents these callbacks from being invoked
       // when this object is destructed.
       act_on_web_capability_changed_subscription_ =
@@ -891,19 +877,6 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
             .Then(std::move(callback)));
   }
 
-  void GetContextForActorFromTab(
-      int32_t tab_id,
-      glic::mojom::GetTabContextOptionsPtr options,
-      GetContextForActorFromTabCallback callback) override {
-    sharing_manager().GetContextForActorFromTab(
-        tabs::TabHandle(tab_id), *options,
-        base::BindOnce(
-            &LogErrorAndUnwrapResult,
-            base::BindOnce(&GlicMetrics::LogGetContextForActorFromTabError,
-                           base::Unretained(glic_service_->metrics())))
-            .Then(std::move(callback)));
-  }
-
   void SetMaximumNumberOfPinnedTabs(
       uint32_t num_tabs,
       SetMaximumNumberOfPinnedTabsCallback callback) override {
@@ -960,92 +933,11 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
     sharing_manager().UnpinAllTabs(trigger);
   }
 
-  void CreateTask(actor::webui::mojom::TaskOptionsPtr options,
-                  CreateTaskCallback callback) override {
-    if (!actor_client_session_) {
-      std::move(callback).Run(base::unexpected(
-          mojom::CreateTaskErrorReason::kTaskSystemUnavailable));
-      return;
-    }
-    actor_client_session_->CreateTask(std::move(options), std::move(callback));
-  }
-
-  void PerformActions(const std::vector<uint8_t>& actions_proto,
-                      PerformActionsCallback callback) override {
-    if (!actor_client_session_) {
-      receiver_.ReportBadMessage(
-          "PerformActions cannot be called without GlicActor enabled.");
-      return;
-    }
-    actor_client_session_->PerformActions(actions_proto, std::move(callback));
-  }
-
-  void CancelActions(int32_t task_id, CancelActionsCallback callback) override {
-    if (!actor_client_session_) {
-      receiver_.ReportBadMessage(
-          "CancelActions cannot be called without GlicActor enabled.");
-      return;
-    }
-    actor_client_session_->CancelActions(actor::TaskId(task_id),
-                                         std::move(callback));
-  }
-
-  void StopActorTask(int32_t task_id,
-                     mojom::ActorTaskStopReason stop_reason) override {
-    if (!actor_client_session_) {
-      receiver_.ReportBadMessage(
-          "StopActorTask cannot be called without GlicActor enabled.");
-      return;
-    }
-    actor_client_session_->StopActorTask(actor::TaskId(task_id), stop_reason);
-  }
-
-  void PauseActorTask(int32_t task_id,
-                      mojom::ActorTaskPauseReason pause_reason,
-                      std::optional<int32_t> tab_id) override {
-    if (!actor_client_session_) {
-      receiver_.ReportBadMessage(
-          "PauseActorTask cannot be called without GlicActor enabled.");
-      return;
-    }
-    tabs::TabInterface::Handle tab_handle;
-    if (tab_id.has_value()) {
-      tab_handle = tabs::TabInterface::Handle(*tab_id);
-    }
-    actor_client_session_->PauseActorTask(actor::TaskId(task_id), pause_reason,
-                                          tab_handle);
-  }
-
-  void ResumeActorTask(int32_t task_id,
-                       glic::mojom::GetTabContextOptionsPtr context_options,
-                       ResumeActorTaskCallback callback) override {
-    if (!actor_client_session_) {
-      receiver_.ReportBadMessage(
-          "ResumeActorTask cannot be called without GlicActor enabled.");
-      return;
-    }
-    actor_client_session_->ResumeActorTask(
-        actor::TaskId(task_id), *context_options, std::move(callback));
-  }
-
-  void InterruptActorTask(int32_t task_id,
-                          std::optional<glic::mojom::ActorTaskInterruptReason>
-                              interrupt_reason) override {
-    if (!actor_client_session_) {
-      receiver_.ReportBadMessage(
-          "InterruptActorTask cannot be called without GlicActor enabled.");
-      return;
-    }
-    actor_client_session_->InterruptActorTask(actor::TaskId(task_id));
-  }
-
-  void UninterruptActorTask(int32_t task_id) override {
-    if (!actor_client_session_) {
-      receiver_.ReportBadMessage(
-          "UninterruptActorTask cannot be called without GlicActor enabled.");
-      return;
-    }
-    actor_client_session_->UninterruptActorTask(actor::TaskId(task_id));
+  void CreateActorHandler(
+      mojo::PendingReceiver<mojom::ActorHandler> receiver,
+      mojo::PendingRemote<mojom::ActorClient> client) override {
+    host().instance_delegate().CreateActorHandler(std::move(receiver),
+                                                  std::move(client));
   }
 
   void CreateSkill(mojom::CreateSkillRequestPtr request,
@@ -1127,21 +1019,6 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
   void RecordSkillsWebClientEvent(
       glic::mojom::SkillsWebClientEvent action) override {
     host().instance_metrics().RecordSkillsWebClientEvent(action);
-  }
-
-  void CreateActorTab(int32_t task_id,
-                      bool open_in_background,
-                      std::optional<int32_t> initiator_tab_id,
-                      std::optional<int32_t> initiator_window_id,
-                      CreateActorTabCallback callback) override {
-    if (!actor_client_session_) {
-      receiver_.ReportBadMessage(
-          "StopActorTask cannot be called without GlicActor enabled.");
-      return;
-    }
-    actor_client_session_->CreateActorTab(
-        actor::TaskId(task_id), open_in_background, initiator_tab_id,
-        initiator_window_id, std::move(callback));
   }
 
   void ActivateTab(int32_t tab_id) override {
@@ -1380,64 +1257,6 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
     glic_service_->GetAuthController().OnClientTransientError(status_code);
     base::UmaHistogramSparse("Glic.Api.Client.TransientError",
                              static_cast<int>(status_code));
-  }
-
-  void LogBeginAsyncEvent(uint64_t event_async_id,
-                          int32_t task_id,
-                          const std::string& event,
-                          const std::string& details) override {
-    if (actor_client_session_) {
-      actor_client_session_->LogBeginAsyncEvent(event_async_id, task_id, event,
-                                                details);
-    }
-  }
-
-  void LogEndAsyncEvent(uint64_t event_async_id,
-                        const std::string& details) override {
-    if (actor_client_session_) {
-      actor_client_session_->LogEndAsyncEvent(event_async_id, details);
-    }
-  }
-
-  void LogInstantEvent(int32_t task_id,
-                       const std::string& event,
-                       const std::string& details) override {
-    if (actor_client_session_) {
-      actor_client_session_->LogInstantEvent(task_id, event, details);
-    }
-  }
-
-  void JournalClear() override {
-    if (actor_client_session_) {
-      actor_client_session_->JournalClear();
-    }
-  }
-
-  void JournalSnapshot(bool clear_journal,
-                       JournalSnapshotCallback callback) override {
-    if (actor_client_session_) {
-      actor_client_session_->JournalSnapshot(clear_journal,
-                                             std::move(callback));
-    }
-  }
-
-  void JournalStart(uint64_t max_bytes, bool capture_screenshots) override {
-    if (actor_client_session_) {
-      actor_client_session_->JournalStart(max_bytes, capture_screenshots);
-    }
-  }
-
-  void JournalStop() override {
-    if (actor_client_session_) {
-      actor_client_session_->JournalStop();
-    }
-  }
-
-  void JournalRecordFeedback(bool positive,
-                             const std::string& reason) override {
-    if (actor_client_session_) {
-      actor_client_session_->JournalRecordFeedback(positive, reason);
-    }
   }
 
   void OnOptinImpression() override {
@@ -1882,10 +1701,6 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
     if (skills_service_) {
       skills_service_->RemoveObserver(this);
     }
-    if (actor_client_session_) {
-      actor_client_session_->Unbind();
-    }
-    actor_client_session_ = nullptr;
   }
 
   void WebClientDisconnected() {
@@ -1974,108 +1789,6 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
     web_client_->NotifyFocusedTabChanged(std::move(data));
   }
 
-  void NotifyActorTaskStateChanged(actor::ActorTask& task) {
-    const mojom::ActorTaskState state = [&]() {
-      switch (task.GetState()) {
-        case actor::ActorTask::State::kCreated:
-        case actor::ActorTask::State::kReflecting:
-        case actor::ActorTask::State::kWaitingOnUser:
-          return mojom::ActorTaskState::kIdle;
-        case actor::ActorTask::State::kActing:
-          return mojom::ActorTaskState::kActing;
-        case actor::ActorTask::State::kPausedByActor:
-        case actor::ActorTask::State::kPausedByUser:
-          return mojom::ActorTaskState::kPaused;
-        case actor::ActorTask::State::kCancelled:
-        case actor::ActorTask::State::kFinished:
-        case actor::ActorTask::State::kFailed:
-          return mojom::ActorTaskState::kStopped;
-      }
-    }();
-    web_client_->NotifyActorTaskStateChanged(task.id().value(), state);
-  }
-
-  void RequestToShowCredentialSelectionDialog(
-      actor::TaskId task_id,
-      const base::flat_map<std::string, gfx::Image>& icons,
-      const std::vector<actor_login::Credential>& credentials,
-      actor::ActorTaskDelegate::CredentialSelectedCallback callback) override {
-    if (actor_client_session_) {
-      actor_client_session_->RequestToShowCredentialSelectionDialog(
-          task_id, icons, credentials, std::move(callback));
-    }
-  }
-
-  void RequestToShowUserConfirmationDialog(
-      actor::TaskId task_id,
-      const url::Origin& navigation_origin,
-      bool for_sensitive_origin,
-      actor::ActorTaskDelegate::UserConfirmationDialogCallback callback)
-      override {
-    if (actor_client_session_) {
-      actor_client_session_->RequestToShowUserConfirmationDialog(
-          task_id, navigation_origin, for_sensitive_origin,
-          std::move(callback));
-    }
-  }
-
-  void RequestToConfirmNavigation(
-      actor::TaskId task_id,
-      const url::Origin& navigation_origin,
-      actor::ActorTaskDelegate::NavigationConfirmationCallback callback)
-      override {
-    if (actor_client_session_) {
-      actor_client_session_->RequestToConfirmNavigation(
-          task_id, navigation_origin, std::move(callback));
-    }
-  }
-
-  void RequestToShowAutofillSuggestionsDialog(
-      actor::TaskId task_id,
-      std::vector<autofill::ActorFormFillingRequest> requests,
-      base::WeakPtr<actor::AutofillSelectionDialogEventHandler> event_handler,
-      actor::ActorTaskDelegate::AutofillSuggestionSelectedCallback callback)
-      override {
-    if (actor_client_session_) {
-      actor_client_session_->RequestToShowAutofillSuggestionsDialog(
-          task_id, std::move(requests), std::move(event_handler),
-          std::move(callback));
-    }
-  }
-
-  void AutofillSuggestionDialogOnFormPresented(
-      int32_t task_id,
-      actor::webui::mojom::AutofillSuggestionDialogOnFormPresentedParamsPtr
-          params) override {
-    if (!actor_client_session_) {
-      return;
-    }
-    actor_client_session_->AutofillSuggestionDialogOnFormPresented(
-        task_id, std::move(params));
-  }
-
-  void AutofillSuggestionDialogOnFormPreviewChanged(
-      int32_t task_id,
-      actor::webui::mojom::AutofillSuggestionDialogOnFormPreviewChangedParamsPtr
-          params) override {
-    if (!actor_client_session_) {
-      return;
-    }
-    actor_client_session_->AutofillSuggestionDialogOnFormPreviewChanged(
-        task_id, std::move(params));
-  }
-
-  void AutofillSuggestionDialogOnFormConfirmed(
-      int32_t task_id,
-      actor::webui::mojom::AutofillSuggestionDialogOnFormConfirmedParamsPtr
-          params) override {
-    if (!actor_client_session_) {
-      return;
-    }
-    actor_client_session_->AutofillSuggestionDialogOnFormConfirmed(
-        task_id, std::move(params));
-  }
-
   mojom::SkillPtr GetSkillById(std::string_view skill_id) {
     if (!skills_service_) {
       return nullptr;
@@ -2153,10 +1866,10 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
   const std::unique_ptr<GlicAnnotationManager> annotation_manager_;
   std::unique_ptr<system_permission_settings::ScopedObservation>
       system_permission_settings_observation_;
+
   std::unique_ptr<DebouncerDeduper> debouncer_deduper_;
   std::unique_ptr<PageMetadataManager> page_metadata_manager_;
   raw_ptr<skills::SkillsService> skills_service_;
-  base::WeakPtr<GlicActorClientSession> actor_client_session_;
   bool floating_panel_can_attach_ = false;
 };
 

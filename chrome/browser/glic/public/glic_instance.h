@@ -26,6 +26,7 @@ class TabInterface;
 
 namespace glic {
 
+class GlicActorTaskManager;
 class Host;
 
 // Instance IDs are created in the form `<index>-<64-bit-random-int>`.
@@ -126,6 +127,8 @@ class GlicInstance {
   // Returns the duration since the instance was last active.
   // Returns base::TimeDelta() if the instance is currently active.
   virtual base::TimeDelta GetTimeSinceLastActive() const = 0;
+
+  virtual GlicActorTaskManager* GetActorTaskManager() = 0;
 
   // Metrics springboard for selection area changed.
   // TODO(b/500385503): Figure out what to do here. This is exposed for now

@@ -39,9 +39,8 @@ class GlicActorJournalHandler {
                        const std::string& event,
                        const std::string& details);
   void Clear();
-  void Snapshot(
-      bool clear_journal,
-      glic::mojom::WebClientHandler::JournalSnapshotCallback callback);
+  void Snapshot(bool clear_journal,
+                glic::mojom::ActorHandler::JournalSnapshotCallback callback);
   std::vector<uint8_t> GetSnapshot(bool clear_journal);
   void Start(uint64_t max_bytes, bool capture_screenshots);
   void Stop();

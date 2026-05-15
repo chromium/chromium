@@ -290,7 +290,7 @@ GlicInstanceImpl::GlicInstanceImpl(
           actor::ActorKeyedServiceFactory::GetActorKeyedService(profile_)) {
     actor_task_manager_ = std::make_unique<GlicActorTaskManager>(
         profile_, actor_keyed_service, service_->actor_policy_checker(),
-        &instance_metrics_, this);
+        &instance_metrics_, &sharing_manager(), this);
   }
 
   browser_collection_observation_.Observe(
@@ -700,12 +700,12 @@ void GlicInstanceImpl::CreateTab(
                                  /*success=*/true, created_tab, source_tab);
 }
 
-GlicActorClientSession* GlicInstanceImpl::BindActorClientSession(
-    glic::mojom::WebClient* web_client) {
+void GlicInstanceImpl::CreateActorHandler(
+    mojo::PendingReceiver<mojom::ActorHandler> receiver,
+    mojo::PendingRemote<mojom::ActorClient> client) {
   if (actor_task_manager_) {
-    return actor_task_manager_->BindSession(web_client);
+    actor_task_manager_->Bind(std::move(receiver), std::move(client));
   }
-  return nullptr;
 }
 
 void GlicInstanceImpl::GetZeroStateSuggestionsAndSubscribe(
@@ -856,6 +856,10 @@ void GlicInstanceImpl::CancelTask() {
   if (actor_task_manager_) {
     actor_task_manager_->CancelTask();
   }
+}
+
+GlicActorTaskManager* GlicInstanceImpl::GetActorTaskManager() {
+  return actor_task_manager_.get();
 }
 
 void GlicInstanceImpl::FetchZeroStateSuggestions(

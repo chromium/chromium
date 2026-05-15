@@ -230,7 +230,7 @@ class ExperimentalTriggeringUpdatesHandler
           TaskUpdate::FAILED, TaskUpdate::ERROR_MESSAGE,
           "Failed to stop task due to missing glic instance.");
     } else {
-      instance_->CancelTask();
+      instance_->GetActorTaskManager()->CancelTask();
       SendTaskUpdateMessage(TaskUpdate::STOPPED);
     }
 

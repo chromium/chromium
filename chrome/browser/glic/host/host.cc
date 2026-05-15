@@ -11,8 +11,6 @@
 #include "base/containers/to_vector.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notimplemented.h"
-#include "chrome/browser/actor/actor_keyed_service.h"
-#include "chrome/browser/actor/ui/actor_ui_state_manager_interface.h"
 #include "chrome/browser/glic/fre/glic_fre_controller.h"
 #include "chrome/browser/glic/glic_profile_manager.h"
 #include "chrome/browser/glic/host/context/glic_screenshot_capturer.h"
@@ -31,7 +29,6 @@
 #include "chrome/browser/glic/service/glic_instance_coordinator_impl.h"
 #include "chrome/common/actor_webui.mojom.h"
 #include "chrome/common/chrome_features.h"
-#include "components/autofill/core/browser/integrators/actor/actor_form_filling_types.h"
 #include "components/guest_view/browser/guest_view_base.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/navigation_controller.h"
@@ -685,71 +682,6 @@ bool Host::IsWidgetShowing(GlicWebClientAccess* client) const {
 
 mojom::PanelState Host::GetPanelState(GlicWebClientAccess* client) const {
   return glic_instance_ ? glic_instance_->GetPanelState() : mojom::PanelState();
-}
-
-void Host::RequestToShowCredentialSelectionDialog(
-    actor::TaskId task_id,
-    const base::flat_map<std::string, gfx::Image>& icons,
-    const std::vector<actor_login::Credential>& credentials,
-    actor::ActorTaskDelegate::CredentialSelectedCallback callback) {
-  if (!IsWebClientConnected()) {
-    std::move(callback).Run(
-        actor::webui::mojom::SelectCredentialDialogResponse::New());
-    return;
-  }
-  handler_info_->web_client->RequestToShowCredentialSelectionDialog(
-      task_id, icons, credentials, std::move(callback));
-}
-
-void Host::RequestToShowUserConfirmationDialog(
-    actor::TaskId task_id,
-    const url::Origin& navigation_origin,
-    bool for_blocklisted_origin,
-    actor::ActorTaskDelegate::UserConfirmationDialogCallback callback) {
-  if (!IsWebClientConnected()) {
-    std::move(callback).Run(
-        actor::webui::mojom::UserConfirmationDialogResponse::New(
-            actor::webui::mojom::ConfirmationRequestResult::
-                NewPermissionGranted(/*value=*/false)));
-    return;
-  }
-  handler_info_->web_client->RequestToShowUserConfirmationDialog(
-      task_id, navigation_origin, for_blocklisted_origin, std::move(callback));
-}
-
-void Host::RequestToConfirmNavigation(
-    actor::TaskId task_id,
-    const url::Origin& navigation_origin,
-    actor::ActorTaskDelegate::NavigationConfirmationCallback callback) {
-  if (!IsWebClientConnected()) {
-    std::move(callback).Run(
-        actor::webui::mojom::NavigationConfirmationResponse::New(
-            actor::webui::mojom::ConfirmationRequestResult::
-                NewPermissionGranted(/*value=*/false)));
-    return;
-  }
-  handler_info_->web_client->RequestToConfirmNavigation(
-      task_id, navigation_origin, std::move(callback));
-}
-
-void Host::RequestToShowAutofillSuggestionsDialog(
-    actor::TaskId task_id,
-    std::vector<autofill::ActorFormFillingRequest> requests,
-    base::WeakPtr<actor::AutofillSelectionDialogEventHandler> event_handler,
-    actor::ActorTaskDelegate::AutofillSuggestionSelectedCallback callback) {
-  if (!IsWebClientConnected()) {
-    std::move(callback).Run(
-        actor::webui::mojom::SelectAutofillSuggestionsDialogResponse::New(
-            task_id.value(),
-            actor::webui::mojom::SelectAutofillSuggestionsDialogResult::
-                NewErrorReason(actor::webui::mojom::
-                                   SelectAutofillSuggestionsDialogErrorReason::
-                                       kDialogPromiseNoSubscriber)));
-    return;
-  }
-  handler_info_->web_client->RequestToShowAutofillSuggestionsDialog(
-      task_id, std::move(requests), std::move(event_handler),
-      std::move(callback));
 }
 
 void Host::FloatingPanelCanAttachChanged(bool can_attach) {

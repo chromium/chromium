@@ -1977,7 +1977,8 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorActuationBrowserTest,
 
   // Stop the task and verify callback IS called.
   instance->GetActorTaskManager()->GetClientSessionForTesting()->StopActorTask(
-      task_id, glic::mojom::ActorTaskStopReason::kTaskComplete);
+      task_id.GetUnsafeValue(),
+      glic::mojom::ActorTaskStopReason::kTaskComplete);
 
   EXPECT_TRUE(success_future.Wait());
 

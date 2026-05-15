@@ -105,7 +105,7 @@ void GlicActorJournalHandler::Clear() {
 
 void GlicActorJournalHandler::Snapshot(
     bool clear_journal,
-    glic::mojom::WebClientHandler::JournalSnapshotCallback callback) {
+    glic::mojom::ActorHandler::JournalSnapshotCallback callback) {
   if (!journal_serializer_) {
     std::move(callback).Run(glic::mojom::Journal::New());
     return;

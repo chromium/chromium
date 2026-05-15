@@ -309,7 +309,7 @@ export class HostMessageHandler implements HostMessageHandlerInterface {
       extras: ResponseExtras):
       Promise<{tabContextResult: TabContextResultPrivate}> {
     const {result: {errorReason, tabContext}} =
-        await this.handler.getContextForActorFromTab(
+        await this.host.actorHandler!.getContextForActorFromTab(
             idFromClient(request.tabId),
             tabContextOptionsFromClient(request.options));
     if (!tabContext) {
@@ -334,8 +334,8 @@ export class HostMessageHandler implements HostMessageHandlerInterface {
   async glicBrowserCreateTask(request: {taskOptions?: TaskOptions}):
       Promise<{taskId: number}> {
     try {
-      const taskId =
-          await this.handler.createTask(taskOptionsToMojo(request.taskOptions));
+      const taskId = await this.host.actorHandler!.createTask(
+          taskOptionsToMojo(request.taskOptions));
       return {
         taskId: taskId,
       };
@@ -350,7 +350,7 @@ export class HostMessageHandler implements HostMessageHandlerInterface {
   async glicBrowserPerformActions(request: {actions: ArrayBuffer}):
       Promise<{actionsResult: ArrayBuffer}> {
     try {
-      const resultProto = await this.handler.performActions(
+      const resultProto = await this.host.actorHandler!.performActions(
           byteArrayFromClient(request.actions));
       const buffer = getArrayBufferFromBigBuffer(resultProto.smuggled);
       if (!buffer) {
@@ -369,7 +369,8 @@ export class HostMessageHandler implements HostMessageHandlerInterface {
 
   async glicBrowserCancelActions(request: {taskId: number}):
       Promise<{result: CancelActionsResult}> {
-    const cancelResult = await this.handler.cancelActions(request.taskId);
+    const cancelResult =
+        await this.host.actorHandler!.cancelActions(request.taskId);
     return {
       result: enumToClient(cancelResult.result),
     };
@@ -377,7 +378,7 @@ export class HostMessageHandler implements HostMessageHandlerInterface {
 
   glicBrowserStopActorTask(
       request: {taskId: number, stopReason: ActorTaskStopReason}): void {
-    this.handler.stopActorTask(
+    this.host.actorHandler!.stopActorTask(
         request.taskId, enumFromClient(request.stopReason));
   }
 
@@ -386,7 +387,7 @@ export class HostMessageHandler implements HostMessageHandlerInterface {
     pauseReason: ActorTaskPauseReason,
     tabId: string,
   }): void {
-    this.handler.pauseActorTask(
+    this.host.actorHandler!.pauseActorTask(
         request.taskId, enumFromClient(request.pauseReason),
         idFromClient(request.tabId));
   }
@@ -402,7 +403,7 @@ export class HostMessageHandler implements HostMessageHandlerInterface {
         actionResult,
       },
     } =
-        await this.handler.resumeActorTask(
+        await this.host.actorHandler!.resumeActorTask(
             request.taskId,
             tabContextOptionsFromClient(request.tabContextOptions));
     if (!getContextResult.tabContext || actionResult === null) {
@@ -419,14 +420,14 @@ export class HostMessageHandler implements HostMessageHandlerInterface {
     taskId: number,
     interruptReason?: ActorTaskInterruptReason,
   }): void {
-    this.handler.interruptActorTask(
+    this.host.actorHandler!.interruptActorTask(
         request.taskId, enumFromClient(request.interruptReason));
   }
 
   glicBrowserUninterruptActorTask(request: {
     taskId: number,
   }): void {
-    this.handler.uninterruptActorTask(request.taskId);
+    this.host.actorHandler!.uninterruptActorTask(request.taskId);
   }
 
   async glicBrowserCreateSkill(request: {
@@ -491,7 +492,7 @@ export class HostMessageHandler implements HostMessageHandlerInterface {
       openInBackground?: boolean,
     },
   }) {
-    const response = await this.handler.createActorTab(
+    const response = await this.host.actorHandler!.createActorTab(
         request.taskId, request.options.openInBackground === true,
         idFromClient(request.options.initiatorTabId),
         idFromClient(request.options.initiatorWindowId));
@@ -707,31 +708,31 @@ export class HostMessageHandler implements HostMessageHandlerInterface {
     event: string,
     details: string,
   }): void {
-    this.handler.logBeginAsyncEvent(
+    this.host.actorHandler!.logBeginAsyncEvent(
         BigInt(request.asyncEventId), request.taskId, request.event,
         request.details);
   }
 
   glicBrowserLogEndAsyncEvent(request: {asyncEventId: number, details: string}):
       void {
-    this.handler.logEndAsyncEvent(
+    this.host.actorHandler!.logEndAsyncEvent(
         BigInt(request.asyncEventId), request.details);
   }
 
   glicBrowserLogInstantEvent(
       request: {taskId: number, event: string, details: string}): void {
-    this.handler.logInstantEvent(
+    this.host.actorHandler!.logInstantEvent(
         request.taskId, request.event, request.details);
   }
 
   glicBrowserJournalClear(): void {
-    this.handler.journalClear();
+    this.host.actorHandler!.journalClear();
   }
 
   async glicBrowserJournalSnapshot(
       request: {clear: boolean},
       extras: ResponseExtras): Promise<{journal: Journal}> {
-    const result = await this.handler.journalSnapshot(request.clear);
+    const result = await this.host.actorHandler!.journalSnapshot(request.clear);
     const journalArray = new Uint8Array(result.journal.data);
     extras.addTransfer(journalArray.buffer);
     return {
@@ -743,17 +744,18 @@ export class HostMessageHandler implements HostMessageHandlerInterface {
 
   glicBrowserJournalStart(
       request: {maxBytes: number, captureScreenshots: boolean}): void {
-    this.handler.journalStart(
+    this.host.actorHandler!.journalStart(
         BigInt(request.maxBytes), request.captureScreenshots);
   }
 
   glicBrowserJournalStop(): void {
-    this.handler.journalStop();
+    this.host.actorHandler!.journalStop();
   }
 
   glicBrowserJournalRecordFeedback(
       request: {positive: boolean, reason: string}): void {
-    this.handler.journalRecordFeedback(request.positive, request.reason);
+    this.host.actorHandler!.journalRecordFeedback(
+        request.positive, request.reason);
   }
 
   glicBrowserOnResponseRated(request: {positive: boolean}): void {
@@ -988,7 +990,7 @@ export class HostMessageHandler implements HostMessageHandlerInterface {
     taskId: number,
     params: {formFillingRequestIndex: number},
   }): void {
-    this.handler.autofillSuggestionDialogOnFormPresented(
+    this.host.actorHandler!.autofillSuggestionDialogOnFormPresented(
         payload.taskId, payload.params);
   }
 
@@ -999,10 +1001,11 @@ export class HostMessageHandler implements HostMessageHandlerInterface {
       response?: FormFillingResponse,
     },
   }): void {
-    this.handler.autofillSuggestionDialogOnFormPreviewChanged(payload.taskId, {
-      formFillingRequestIndex: payload.params.formFillingRequestIndex,
-      response: payload.params.response ?? null,
-    });
+    this.host.actorHandler!.autofillSuggestionDialogOnFormPreviewChanged(
+        payload.taskId, {
+          formFillingRequestIndex: payload.params.formFillingRequestIndex,
+          response: payload.params.response ?? null,
+        });
   }
 
   glicBrowserAutofillSuggestionDialogOnFormConfirmed(payload: {
@@ -1012,7 +1015,7 @@ export class HostMessageHandler implements HostMessageHandlerInterface {
       response: FormFillingResponse,
     },
   }): void {
-    this.handler.autofillSuggestionDialogOnFormConfirmed(
+    this.host.actorHandler!.autofillSuggestionDialogOnFormConfirmed(
         payload.taskId, payload.params);
   }
 

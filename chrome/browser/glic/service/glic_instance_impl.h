@@ -196,8 +196,8 @@ class GlicInstanceImpl : public GlicInstance,
       StateChangeCallback callback) override;
   base::CallbackListSubscription AddConversationInfoChangedCallback(
       base::RepeatingCallback<void(const mojom::ConversationInfo&)> callback);
-
   void CancelTask() override;
+  GlicActorTaskManager* GetActorTaskManager() override;
 
   // Called exactly once, right before the instance is destroyed.
   using DestructionCallback = base::OnceCallback<void(GlicInstance*)>;
@@ -210,8 +210,6 @@ class GlicInstanceImpl : public GlicInstance,
       bool open_in_background,
       const std::optional<int32_t>& window_id,
       glic::mojom::WebClientHandler::CreateTabCallback callback) override;
-  GlicActorClientSession* BindActorClientSession(
-      glic::mojom::WebClient* web_client) override;
   void FetchZeroStateSuggestions(
       bool is_first_run,
       std::optional<std::vector<std::string>> supported_tools,
@@ -236,6 +234,9 @@ class GlicInstanceImpl : public GlicInstance,
   void OnPolylinePointsChanged(const std::vector<int>& counts) override;
   std::unique_ptr<WebUIContentsContainer> CreateWebUIContentsContainer()
       override;
+  void CreateActorHandler(
+      mojo::PendingReceiver<mojom::ActorHandler> receiver,
+      mojo::PendingRemote<mojom::ActorClient> client) override;
 
   // GlicUiEmbedder::Delegate:
   void OnEmbedderWindowActivationChanged(bool has_focus) override;
@@ -272,10 +273,6 @@ class GlicInstanceImpl : public GlicInstance,
   tabs::TabInterface* GetActiveEmbedderTabForTesting();
   std::string DescribeForTesting();
 
-  GlicActorTaskManager* GetActorTaskManager() {
-    return actor_task_manager_.get();
-  }
-
   base::WeakPtr<GlicInstanceImpl> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
   }
@@ -283,6 +280,7 @@ class GlicInstanceImpl : public GlicInstance,
   // GlicActorTaskManager::Delegate:
   void OnTabAddedToTask(actor::TaskId task_id,
                         const tabs::TabInterface::Handle& tab_handle) override;
+
  private:
   struct EmbedderEntry {
     EmbedderEntry();

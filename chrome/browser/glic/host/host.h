@@ -23,11 +23,6 @@
 #include "components/autofill/core/browser/integrators/actor/actor_form_filling_types.h"
 #include "components/tabs/public/tab_interface.h"
 
-namespace actor {
-class ActorTaskDelegate;
-class AutofillSelectionDialogEventHandler;
-}  // namespace actor
-
 class Profile;
 namespace content {
 class WebContents;
@@ -39,7 +34,6 @@ class GlicPageHandler;
 class WebUIContentsContainer;
 class GlicInstanceMetrics;
 class GlicInstanceMetricsBackwardsCompatibility;
-class GlicActorClientSession;
 
 class GlicSkillsManager;
 
@@ -98,9 +92,6 @@ class Host : public GlicSharingManagerProvider {
         bool open_in_background,
         const std::optional<int32_t>& window_id,
         glic::mojom::WebClientHandler::CreateTabCallback callback) = 0;
-    // TODO(mcnee): `delegate` appears unused.
-    virtual GlicActorClientSession* BindActorClientSession(
-        glic::mojom::WebClient* web_client) = 0;
 
     virtual void FetchZeroStateSuggestions(
         bool is_first_run,
@@ -131,6 +122,10 @@ class Host : public GlicSharingManagerProvider {
 
     virtual std::unique_ptr<WebUIContentsContainer>
     CreateWebUIContentsContainer() = 0;
+
+    virtual void CreateActorHandler(
+        mojo::PendingReceiver<mojom::ActorHandler> receiver,
+        mojo::PendingRemote<mojom::ActorClient> client) = 0;
   };
 
   class Observer : public base::CheckedObserver {
@@ -375,29 +370,6 @@ class Host : public GlicSharingManagerProvider {
   mojom::PanelState GetPanelState(GlicWebClientAccess* client) const;
 
   base::WeakPtr<Host> GetWeakPtr() { return weak_ptr_factory_.GetWeakPtr(); }
-
-  void RequestToShowCredentialSelectionDialog(
-      actor::TaskId task_id,
-      const base::flat_map<std::string, gfx::Image>& icons,
-      const std::vector<actor_login::Credential>& credentials,
-      actor::ActorTaskDelegate::CredentialSelectedCallback callback);
-
-  void RequestToShowUserConfirmationDialog(
-      actor::TaskId task_id,
-      const url::Origin& navigation_origin,
-      bool for_blocklisted_origin,
-      actor::ActorTaskDelegate::UserConfirmationDialogCallback callback);
-
-  void RequestToConfirmNavigation(
-      actor::TaskId task_id,
-      const url::Origin& navigation_origin,
-      actor::ActorTaskDelegate::NavigationConfirmationCallback callback);
-
-  void RequestToShowAutofillSuggestionsDialog(
-      actor::TaskId task_id,
-      std::vector<autofill::ActorFormFillingRequest> requests,
-      base::WeakPtr<actor::AutofillSelectionDialogEventHandler> event_handler,
-      actor::ActorTaskDelegate::AutofillSuggestionSelectedCallback callback);
 
   void FloatingPanelCanAttachChanged(bool can_attach);
 
