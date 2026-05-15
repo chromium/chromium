@@ -48,6 +48,13 @@ BASE_FEATURE(kWebUsbBlocklist,
 BASE_FEATURE(kWebUsbProtectedClassControlTransferBlock,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// When enabled, WebUSB control transfers enforce a positive matching allowlist
+// for Standard requests (permitting only GET_STATUS, GET_DESCRIPTOR,
+// GET_CONFIGURATION, GET_INTERFACE, SYNCH_FRAME). All other Standard requests
+// are strictly blocked.
+BASE_FEATURE(kWebUsbEnforceStandardRequestAllowlist,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // When enabled, accessing the navigator.hid attribute does not prevent the
 // frame from entering the back forward cache.
 BASE_FEATURE(kWebHidAttributeAllowsBackForwardCache,

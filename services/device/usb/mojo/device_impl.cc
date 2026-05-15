@@ -42,6 +42,19 @@ namespace {
 
 constexpr size_t kUsbTransferLengthLimit = 32 * 1024 * 1024;  // 32 MiB
 
+// USB 2.0 Specification Table 9-4: Standard Request Codes
+constexpr uint8_t kUsbRequestGetStatus = 0x00;
+[[maybe_unused]] constexpr uint8_t kUsbRequestClearFeature = 0x01;
+[[maybe_unused]] constexpr uint8_t kUsbRequestSetFeature = 0x03;
+[[maybe_unused]] constexpr uint8_t kUsbRequestSetAddress = 0x05;
+constexpr uint8_t kUsbRequestGetDescriptor = 0x06;
+[[maybe_unused]] constexpr uint8_t kUsbRequestSetDescriptor = 0x07;
+constexpr uint8_t kUsbRequestGetConfiguration = 0x08;
+[[maybe_unused]] constexpr uint8_t kUsbRequestSetConfiguration = 0x09;
+constexpr uint8_t kUsbRequestGetInterface = 0x0A;
+[[maybe_unused]] constexpr uint8_t kUsbRequestSetInterface = 0x0B;
+constexpr uint8_t kUsbRequestSynchFrame = 0x0C;
+
 void OnTransferIn(mojom::UsbDevice::GenericTransferInCallback callback,
                   UsbTransferStatus status,
                   scoped_refptr<base::RefCountedBytes> buffer,
@@ -189,22 +202,43 @@ bool DeviceImpl::HasControlTransferPermission(
     UsbTransferDirection direction,
     UsbControlTransferType type,
     UsbControlTransferRecipient recipient,
+    uint8_t request,
     uint16_t index) {
   DCHECK(device_handle_);
 
-  // STANDARD requests to the DEVICE or OTHER recipients (e.g. GET_DESCRIPTOR)
-  // are fundamental for device discovery and management. These requests are
-  // always permitted because the USB 2.0 spec (Section 9.3) defines the usage
-  // of the `index` field (wIndex in the spec) for these types as either 0 or a
-  // Language ID. Since they are not used for interface-based routing, they
-  // are always allowed.
-  if (type == UsbControlTransferType::STANDARD &&
-      (recipient == UsbControlTransferRecipient::DEVICE ||
-       recipient == UsbControlTransferRecipient::OTHER)) {
-    base::UmaHistogramEnumeration(
-        "WebUsb.ControlTransferPermissionOutcome",
-        WebUsbControlTransferPermissionOutcome::kAllowed);
-    return true;
+  if (type == UsbControlTransferType::STANDARD) {
+    if (base::FeatureList::IsEnabled(
+            features::kWebUsbEnforceStandardRequestAllowlist)) {
+      // Reject all Standard requests except fundamental inspection and
+      // discovery commands (GET_STATUS, GET_DESCRIPTOR, GET_CONFIGURATION,
+      // GET_INTERFACE, SYNCH_FRAME). Legitimate configuration and feature
+      // management must be performed via dedicated WebIDL methods (e.g.,
+      // selectConfiguration).
+      if (request == kUsbRequestGetStatus ||
+          request == kUsbRequestGetDescriptor ||
+          request == kUsbRequestGetConfiguration ||
+          request == kUsbRequestGetInterface ||
+          request == kUsbRequestSynchFrame) {
+        base::UmaHistogramEnumeration(
+            "WebUsb.ControlTransferPermissionOutcome",
+            WebUsbControlTransferPermissionOutcome::kAllowed);
+        return true;
+      } else {
+        base::UmaHistogramEnumeration(
+            "WebUsb.ControlTransferPermissionOutcome",
+            WebUsbControlTransferPermissionOutcome::kBlocked);
+        return false;
+      }
+    } else {
+      // Legacy fallback behavior.
+      if (recipient == UsbControlTransferRecipient::DEVICE ||
+          recipient == UsbControlTransferRecipient::OTHER) {
+        base::UmaHistogramEnumeration(
+            "WebUsb.ControlTransferPermissionOutcome",
+            WebUsbControlTransferPermissionOutcome::kAllowed);
+        return true;
+      }
+    }
   }
 
   const mojom::UsbConfigurationInfo* config = device_->GetActiveConfiguration();
@@ -475,7 +509,8 @@ void DeviceImpl::ControlTransferIn(UsbControlTransferParamsPtr params,
   }
 
   if (HasControlTransferPermission(UsbTransferDirection::INBOUND, params->type,
-                                   params->recipient, params->index)) {
+                                   params->recipient, params->request,
+                                   params->index)) {
     auto buffer = base::MakeRefCounted<base::RefCountedBytes>(length);
     device_handle_->ControlTransfer(
         UsbTransferDirection::INBOUND, params->type, params->recipient,
@@ -499,7 +534,8 @@ void DeviceImpl::ControlTransferOut(UsbControlTransferParamsPtr params,
   }
 
   if (HasControlTransferPermission(UsbTransferDirection::OUTBOUND, params->type,
-                                   params->recipient, params->index) &&
+                                   params->recipient, params->request,
+                                   params->index) &&
       (allow_security_key_requests_ ||
        !IsAndroidSecurityKeyRequest(params, data))) {
     auto buffer = base::MakeRefCounted<base::RefCountedBytes>(data);
