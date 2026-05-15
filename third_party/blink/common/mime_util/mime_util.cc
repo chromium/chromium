@@ -42,7 +42,7 @@ constexpr auto kSupportedImageTypes = base::MakeFixedFlatSet<std::string_view>({
     "image/x-icon",              // ico
     "image/x-xbitmap",           // xbm
     "image/x-png",
-#if BUILDFLAG(ENABLE_AV1_DECODER)
+#if BUILDFLAG(ENABLE_DAV1D_DECODER)
     "image/avif",
 #endif
 });

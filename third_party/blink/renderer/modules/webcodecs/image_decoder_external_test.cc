@@ -90,7 +90,7 @@ class ImageDecoderTest : public testing::Test {
   }
 
   static bool HasAv1Decoder() {
-#if BUILDFLAG(ENABLE_AV1_DECODER)
+#if BUILDFLAG(ENABLE_DAV1D_DECODER)
     return true;
 #else
     return false;
@@ -682,7 +682,7 @@ TEST_F(ImageDecoderTest, DecoderReadableStreamAvif) {
 
   // Verify decode completes successfully.
   decode_tester.WaitUntilSettled();
-#if BUILDFLAG(ENABLE_AV1_DECODER)
+#if BUILDFLAG(ENABLE_DAV1D_DECODER)
   ASSERT_TRUE(decode_tester.IsFulfilled());
   auto* result = ToImageDecodeResult(&v8_scope, decode_tester.Value());
   EXPECT_TRUE(result->complete());
@@ -756,7 +756,7 @@ TEST_F(ImageDecoderTest, ReadableStreamAvifStillYuvDecoding) {
     auto promise = decoder->decode();
     ScriptPromiseTester tester(v8_scope.GetScriptState(), promise);
     tester.WaitUntilSettled();
-#if BUILDFLAG(ENABLE_AV1_DECODER)
+#if BUILDFLAG(ENABLE_DAV1D_DECODER)
     ASSERT_TRUE(tester.IsFulfilled());
     auto* result = ToImageDecodeResult(&v8_scope, tester.Value());
     EXPECT_TRUE(result->complete());

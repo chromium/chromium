@@ -22,14 +22,14 @@ inline constexpr base::ByteSize kMaxLengthOfDataURLString = base::MiBU(20);
 // Accept header used for frame requests.
 // Note: JXL inclusion is determined at runtime via features::kJXLImageFormat.
 // These constants provide the base values with and without JXL.
-#if BUILDFLAG(ENABLE_AV1_DECODER) && BUILDFLAG(ENABLE_JXL_DECODER)
+#if BUILDFLAG(ENABLE_DAV1D_DECODER) && BUILDFLAG(ENABLE_JXL_DECODER)
 inline constexpr char kFrameAcceptHeaderValue[] =
     "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,"
     "image/webp,image/apng,*/*;q=0.8";
 inline constexpr char kFrameAcceptHeaderValueWithJxl[] =
     "text/html,application/xhtml+xml,application/xml;q=0.9,image/jxl,"
     "image/avif,image/webp,image/apng,*/*;q=0.8";
-#elif BUILDFLAG(ENABLE_AV1_DECODER)
+#elif BUILDFLAG(ENABLE_DAV1D_DECODER)
 inline constexpr char kFrameAcceptHeaderValue[] =
     "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,"
     "image/webp,image/apng,*/*;q=0.8";

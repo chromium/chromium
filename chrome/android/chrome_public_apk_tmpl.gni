@@ -44,7 +44,7 @@ default_chrome_public_jinja_variables = [
   "is_desktop_android=$is_desktop_android",
   "enable_screen_capture=$enable_screen_capture",
   "use_proprietary_codecs=$proprietary_codecs",
-  "enable_av1_decoder=$enable_av1_decoder",
+  "enable_dav1d_decoder=$enable_dav1d_decoder",
   "enable_jxl_decoder=$enable_jxl_decoder",
   "zygote_preload_class=org.chromium.content_public.app.ZygotePreload",
 ]

@@ -77,7 +77,7 @@ component("image_decoders") {
     "//ui/gfx/geometry:geometry_skia",
   ]
 
-  if (enable_av1_decoder) {
+  if (enable_dav1d_decoder) {
     sources += [
       "avif/avif_image_decoder.cc",
       "avif/avif_image_decoder.h",
@@ -128,7 +128,7 @@ source_set("unit_tests") {
     deps += [ "//ui/base:pixel_diff_test_support" ]
   }
 
-  if (enable_av1_decoder) {
+  if (enable_dav1d_decoder) {
     sources += [ "avif/avif_image_decoder_test.cc" ]
   }
 

@@ -345,7 +345,7 @@ TEST(ImageDecoderTest, decodedSizeLimitIsIgnored) {
 
 #endif  // BUILDFLAG(IS_FUCHSIA)
 
-#if BUILDFLAG(ENABLE_AV1_DECODER)
+#if BUILDFLAG(ENABLE_DAV1D_DECODER)
 TEST(ImageDecoderTest, hasSufficientDataToSniffMimeTypeAvif) {
   // The first 36 bytes of the Netflix AVIF test image
   // Chimera-AV1-10bit-1280x720-2380kbps-100.avif. Since the major_brand is
@@ -376,6 +376,6 @@ TEST(ImageDecoderTest, hasSufficientDataToSniffMimeTypeAvif) {
   EXPECT_TRUE(ImageDecoder::HasSufficientDataToSniffMimeType(*buffer));
   EXPECT_EQ(ImageDecoder::SniffMimeType(buffer), "image/avif");
 }
-#endif  // BUILDFLAG(ENABLE_AV1_DECODER)
+#endif  // BUILDFLAG(ENABLE_DAV1D_DECODER)
 
 }  // namespace blink

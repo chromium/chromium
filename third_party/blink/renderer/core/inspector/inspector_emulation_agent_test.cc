@@ -22,7 +22,7 @@ String BuildExpectedAcceptHeader(bool include_webp, bool include_avif) {
     sb.Append("image/jxl,");
   }
 #endif
-#if BUILDFLAG(ENABLE_AV1_DECODER)
+#if BUILDFLAG(ENABLE_DAV1D_DECODER)
   if (include_avif) {
     sb.Append("image/avif,");
   }

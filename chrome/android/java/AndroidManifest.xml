@@ -394,7 +394,7 @@ by a child template that "extends" this file.
                 {% if enable_jxl_decoder == "true" %}
                 <data android:mimeType="image/jxl" />
                 {% endif %}
-                {% if enable_av1_decoder == "true" %}
+                {% if enable_dav1d_decoder == "true" %}
                 <data android:mimeType="image/avif" />
                 {% endif %}
                 <data android:mimeType="image/webp" />
