@@ -13,6 +13,7 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -21,6 +22,7 @@ import static org.robolectric.Shadows.shadowOf;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Looper;
 
@@ -372,9 +374,33 @@ public class WebAppLaunchHandlerTest {
         mExpectedFileList = new String[] {CONTENT_URI};
         doTestNavigateNewNewIntent(
                 LaunchHandlerClientMode.NAVIGATE_NEW, /* expectedStartActivityTimes= */ 1);
-        verify(mActivityMock, times(1))
+        verify(mActivityMock, never())
                 .grantUriPermission(
                         eq(TEST_PACKAGE_NAME), eq(mFileHandlingData.uris.get(0)), anyInt());
+    }
+
+    @Test
+    public void navigateNewStartNewTask_fileData_chromePrivateData() {
+        doTestNavigateNewInitialIntent(LaunchHandlerClientMode.NAVIGATE_NEW);
+
+        final Uri pwCsv =
+                Uri.parse(
+                        "content://com.android.chrome.FileProvider/passwords/"
+                                + "Chrome%20Passwords.csv");
+
+        when(mActivityMock.checkCallingUriPermission(eq(pwCsv), anyInt()))
+                .thenReturn(PackageManager.PERMISSION_DENIED);
+
+        mFileHandlingData = new FileHandlingData(Arrays.asList(Uri.parse(CONTENT_URI), pwCsv));
+        mExpectedFileList = new String[] {CONTENT_URI};
+        doTestNavigateNewNewIntent(
+                LaunchHandlerClientMode.NAVIGATE_NEW, /* expectedStartActivityTimes= */ 1);
+        verify(mActivityMock, never())
+                .grantUriPermission(
+                        eq(TEST_PACKAGE_NAME), eq(mFileHandlingData.uris.get(0)), anyInt());
+        verify(mActivityMock, never())
+                .grantUriPermission(
+                        eq(TEST_PACKAGE_NAME), eq(mFileHandlingData.uris.get(1)), anyInt());
     }
 
     @Test
@@ -406,7 +432,7 @@ public class WebAppLaunchHandlerTest {
         mExpectedFileList = new String[] {CONTENT_URI};
         doTestNavigateNewNewIntent(
                 LaunchHandlerClientMode.NAVIGATE_EXISTING, /* expectedStartActivityTimes= */ 1);
-        verify(mActivityMock, times(1))
+        verify(mActivityMock, never())
                 .grantUriPermission(
                         eq(TEST_PACKAGE_NAME), eq(mFileHandlingData.uris.get(0)), anyInt());
     }

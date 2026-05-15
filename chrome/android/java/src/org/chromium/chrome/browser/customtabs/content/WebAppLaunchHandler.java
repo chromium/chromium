@@ -260,13 +260,6 @@ public class WebAppLaunchHandler extends WebContentsObserver {
         /* This method can be called for file handling intent as well. In this case we need to send
         a file data extras as well. Also we need to grant file permissions */
         if (fileData != null && !fileData.uris.isEmpty()) {
-            for (Uri uri : fileData.uris) {
-                mActivity.grantUriPermission(
-                        packageName,
-                        uri,
-                        Intent.FLAG_GRANT_READ_URI_PERMISSION
-                                | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
-            }
             newIntent.putExtra(EXTRA_FILE_HANDLING_DATA, fileData.toBundle());
         }
 
