@@ -72,7 +72,7 @@
   color: var(--color-searchbox-results-foreground);
 }
 
-#context[is-oblong-shape_] {
+#context[is-oblong-shape] {
   --contextual-entrypoint-oblong-margin-inline-start: 2px;
 }
 

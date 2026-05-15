@@ -563,7 +563,7 @@ search-animated-glow {
   --cr-icon-button-size: 36px;
 }
 
-:host([searchbox-next-enabled][entrypoint-name='Omnibox']) #contextEntrypoint[is-oblong-shape_]::part(context-menu-entrypoint-icon) {
+:host([searchbox-next-enabled][entrypoint-name='Omnibox']) #contextEntrypoint[is-oblong-shape]::part(context-menu-entrypoint-icon) {
   --cr-icon-button-size: 32px;
 }
 

@@ -28,6 +28,7 @@ suite('AppTest', function() {
       composeboxShowContextMenuDescription: false,
       omniboxShowContextButtonSuggestionLabel: false,
       addContext: 'Add tabs and more',
+      contextButtonShapeIsOblong: false,
     });
 
     testProxy = new TestSearchboxBrowserProxy();

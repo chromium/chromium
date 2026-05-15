@@ -63,6 +63,7 @@ export function getHtml(this: OmniboxComposeboxElement) {
                       class="upload-button no-overlap"
                       .inputState="${this.inputState}"
                       .applyContextButtonBackground="${this.applyContextButtonBackground}"
+                      .isOblongShape="${this.isOblongShape}"
                       ?upload-button-disabled="${this.uploadButtonDisabled}"
                       ?show-context-menu-description="${this.showContextMenuDescription}">
                   </cr-composebox-contextual-entrypoint-button>

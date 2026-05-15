@@ -50,6 +50,7 @@ export function getHtml(this: ComposeboxElement) {
         exportparts="context-menu-entrypoint-icon, entrypoint-button"
         class="upload-button no-overlap"
         .inputState="${this.inputState}"
+        .isOblongShape="${this.isOblongShape}"
         .applyContextButtonBackground="${this.applyContextButtonBackground}"
         ?upload-button-disabled="${this.uploadButtonDisabled}"
         ?show-context-menu-description="${this.showContextMenuDescription}">

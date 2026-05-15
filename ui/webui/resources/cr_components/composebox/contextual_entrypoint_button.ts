@@ -19,7 +19,7 @@ import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {InputState} from '//resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
 import {ToolMode} from '//resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
 
-import {getLoadTimeBoolean, GlifAnimationState, recordBoolean} from './common.js';
+import {GlifAnimationState, recordBoolean} from './common.js';
 import {getCss} from './contextual_entrypoint_button.css.js';
 import {getHtml} from './contextual_entrypoint_button.html.js';
 import {WindowProxy} from './window_proxy.js';
@@ -52,8 +52,8 @@ export class ContextualEntrypointButtonElement extends
       uploadButtonDisabled: {type: Boolean},
       hasPopupFocus: {type: Boolean, reflect: true},
       applyContextButtonBackground: {type: Boolean, reflect: true},
+      isOblongShape: {type: Boolean, reflect: true},
       windowWidthBelowThreshold_: {type: Boolean},
-      isOblongShape_: {type: Boolean, reflect: true},
     };
   }
 
@@ -65,9 +65,8 @@ export class ContextualEntrypointButtonElement extends
   accessor uploadButtonDisabled: boolean = false;
   accessor hasPopupFocus: boolean = false;
   accessor applyContextButtonBackground: boolean = false;
+  accessor isOblongShape: boolean = false;
   protected accessor windowWidthBelowThreshold_: boolean = false;
-  protected accessor isOblongShape_: boolean =
-      getLoadTimeBoolean('contextButtonShapeIsOblong', false);
   private showContextMenuDescriptionEnabled_: boolean =
       loadTimeData.getBoolean('composeboxShowContextMenuDescription');
   private metricsSource_: string = loadTimeData.getString('composeboxSource');

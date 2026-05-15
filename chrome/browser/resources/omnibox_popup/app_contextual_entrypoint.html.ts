@@ -17,6 +17,7 @@ export function getHtml(this: OmniboxPopupAppElement) {
         class="upload-button"
         .inputState="${this.inputState_}"
         .applyContextButtonBackground="${this.applyContextButtonBackground_}"
+        .isOblongShape="${this.isOblongShape_}"
         ?show-suggestion-label="${this.showContextButtonSuggestionLabel_}"
         @context-menu-entrypoint-click="${this.onContextMenuEntrypointClick_}">
     </cr-composebox-contextual-entrypoint-button>
