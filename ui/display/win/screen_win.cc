@@ -15,7 +15,6 @@
 #include "base/callback_list.h"
 #include "base/check.h"
 #include "base/compiler_specific.h"
-#include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/debug/alias.h"
 #include "base/feature_list.h"
@@ -26,7 +25,6 @@
 #include "base/no_destructor.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/trace_event/trace_event.h"
-#include "base/win/scoped_hdc.h"
 #include "base/win/win_util.h"
 #include "base/win/windows_version.h"
 #include "components/device_event_log/device_event_log.h"
@@ -467,43 +465,6 @@ std::optional<gfx::Vector2dF> GetMonitorPixelsPerInch(HMONITOR monitor) {
   return std::nullopt;
 }
 
-// Enumerates available monitors collecting some of their device capabilities,
-// which can later be retrieved using HMONITOR.
-class MonitorDeviceCapsProvider {
- public:
-  MonitorDeviceCapsProvider() { CollectMonitorDeviceCaps(); }
-
-  int GetColorDepth(HMONITOR hMonitor) {
-    const auto it = monitors_.find(hMonitor);
-    if (it != monitors_.cend() && it->second.color_depth > 0) {
-      return it->second.color_depth;
-    }
-    return Display::kDefaultBitsPerPixel;
-  }
-
- private:
-  void CollectMonitorDeviceCaps() {
-    base::win::ScopedGetDC hdc_desktop(HWND_DESKTOP);
-    ::EnumDisplayMonitors(
-        hdc_desktop, /*lprcClip=*/nullptr,
-        [](HMONITOR hMonitor, HDC hdc, LPRECT lpRect, LPARAM lParam) -> BOOL {
-          auto* monitors =
-              reinterpret_cast<base::flat_map<HMONITOR, DeviceCaps>*>(lParam);
-          // The provided hdc is only valid in this context, we won't be able to
-          // query it outside, so grab all the device caps we need here.
-          int color_depth = ::GetDeviceCaps(hdc, BITSPIXEL);
-          monitors->insert({hMonitor, {.color_depth = color_depth}});
-          return TRUE;
-        },
-        reinterpret_cast<LPARAM>(&monitors_));
-  }
-
-  struct DeviceCaps {
-    int color_depth;
-  };
-  base::flat_map<HMONITOR, DeviceCaps> monitors_;
-};
-
 std::vector<internal::DisplayInfo> GetDisplayInfosFromSystem() {
   std::vector<HMONITOR> monitors;
   ::EnumDisplayMonitors(
@@ -514,15 +475,6 @@ std::vector<internal::DisplayInfo> GetDisplayInfosFromSystem() {
         return TRUE;
       },
       reinterpret_cast<LPARAM>(&monitors));
-
-  // It is tempting to retrieve monitor device capabilities in the same
-  // ::EnumDisplayMonitors() call where the monitors are collected; however, in
-  // order to receive an HDC in the callback for device capabilities retrieval,
-  // we need to provide the desktop HDC to ::EnumDisplayMonitors(). This changes
-  // its behavior in such a way that, under certain conditions, it can return
-  // the same physical monitor more than once, each time with a different
-  // monitor handle, causing https://crbug.com/476243212.
-  MonitorDeviceCapsProvider monitor_device_caps_provider;
 
   std::vector<internal::DisplayInfo> display_infos;
   display_infos.reserve(monitors.size());
@@ -549,8 +501,7 @@ std::vector<internal::DisplayInfo> GetDisplayInfosFromSystem() {
     }
     display_infos.emplace_back(
         std::move(cached_hmonitor), *monitor_info,
-        GetMonitorScaleFactor(monitor),
-        monitor_device_caps_provider.GetColorDepth(monitor),
+        GetMonitorScaleFactor(monitor), Display::kDefaultBitsPerPixel,
         GetSDRWhiteLevel(path_info), display_settings.rotation,
         display_settings.frequency, pixels_per_inch,
         GetOutputTechnology(path_info), GetFriendlyDeviceName(path_info));
