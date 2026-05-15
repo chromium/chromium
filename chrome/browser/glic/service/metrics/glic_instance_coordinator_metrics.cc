@@ -23,6 +23,9 @@ namespace {
 int BytesToMB(uint64_t bytes) {
   return static_cast<int>(bytes / 1024 / 1024);
 }
+
+const base::FeatureParam<base::TimeDelta> kMemoryMetricsPeriod{
+    &features::kGlicRecordMemoryFootprintMetrics, "period", base::Minutes(30)};
 }  // namespace
 
 GlicInstanceCoordinatorMetrics::GlicInstanceCoordinatorMetrics(
@@ -31,6 +34,15 @@ GlicInstanceCoordinatorMetrics::GlicInstanceCoordinatorMetrics(
 
 GlicInstanceCoordinatorMetrics::~GlicInstanceCoordinatorMetrics() {
   EndConcurrentVisibility();
+}
+
+void GlicInstanceCoordinatorMetrics::StartPeriodicMemoryMetricsRecording() {
+  if (base::FeatureList::IsEnabled(
+          features::kGlicRecordMemoryFootprintMetrics)) {
+    memory_metrics_timer_.Start(
+        FROM_HERE, kMemoryMetricsPeriod.Get(), this,
+        &GlicInstanceCoordinatorMetrics::RecordPeriodicMemoryMetrics);
+  }
 }
 
 void GlicInstanceCoordinatorMetrics::OnInstanceVisibilityChanged() {
@@ -73,6 +85,18 @@ void GlicInstanceCoordinatorMetrics::RecordSwitchConversationTarget(
 
 void GlicInstanceCoordinatorMetrics::OnMemoryPressure(
     base::MemoryPressureLevel level) {
+  std::string_view suffix = (level == base::MEMORY_PRESSURE_LEVEL_MODERATE)
+                                ? ".ModeratePressure"
+                                : ".CriticalPressure";
+  RecordMemoryFootprint(suffix);
+}
+
+void GlicInstanceCoordinatorMetrics::RecordPeriodicMemoryMetrics() {
+  RecordMemoryFootprint(".Periodic");
+}
+
+void GlicInstanceCoordinatorMetrics::RecordMemoryFootprint(
+    std::string_view suffix) {
   if (!base::FeatureList::IsEnabled(
           features::kGlicRecordMemoryFootprintMetrics)) {
     return;
@@ -118,10 +142,6 @@ void GlicInstanceCoordinatorMetrics::OnMemoryPressure(
   int avg_client_mb = BytesToMB(total_client_bytes / instance_count);
   int avg_total_mb = BytesToMB(absolute_total_bytes / instance_count);
   int total_mb = BytesToMB(absolute_total_bytes);
-
-  std::string_view suffix = (level == base::MEMORY_PRESSURE_LEVEL_MODERATE)
-                                ? ".ModeratePressure"
-                                : ".CriticalPressure";
 
   base::UmaHistogramMemoryLargeMB(
       base::StrCat({"Glic.Instance.AvgWebUIPrivateMemoryFootprint", suffix}),

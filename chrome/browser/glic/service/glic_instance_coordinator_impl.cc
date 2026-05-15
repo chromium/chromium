@@ -102,6 +102,7 @@ GlicInstanceCoordinatorImpl::GlicInstanceCoordinatorImpl(
         profile_, base::BindRepeating(&GlicInstanceCoordinatorImpl::OnTabEvent,
                                       weak_ptr_factory_.GetWeakPtr()));
   }
+  metrics_.StartPeriodicMemoryMetricsRecording();
 }
 
 GlicInstanceCoordinatorImpl::~GlicInstanceCoordinatorImpl() {

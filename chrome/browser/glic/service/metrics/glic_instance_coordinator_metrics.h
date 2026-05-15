@@ -11,6 +11,7 @@
 
 #include "base/memory/memory_pressure_listener.h"
 #include "base/memory/raw_ptr.h"
+#include "base/timer/timer.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 
 namespace glic {
@@ -46,6 +47,9 @@ class GlicInstanceCoordinatorMetrics {
   explicit GlicInstanceCoordinatorMetrics(DataProvider* data_provider);
   ~GlicInstanceCoordinatorMetrics();
 
+  // Starts periodic recording of memory metrics.
+  void StartPeriodicMemoryMetricsRecording();
+
   // Called by the coordinator whenever an instance's visibility changes.
   void OnInstanceVisibilityChanged();
 
@@ -56,7 +60,12 @@ class GlicInstanceCoordinatorMetrics {
       const std::optional<std::string>& target_instance_conversation_id,
       raw_ptr<GlicInstance> active_instance);
 
+  // Called on memory pressure events to record memory footprint metrics.
   void OnMemoryPressure(base::MemoryPressureLevel level);
+
+  // Called periodically to record memory footprint metrics using the averaging
+  // and totals scheme.
+  void RecordPeriodicMemoryMetrics();
 
  private:
   // Helper to calculate currently visible instances using
@@ -73,6 +82,10 @@ class GlicInstanceCoordinatorMetrics {
   std::optional<std::string> GetMostRecentlyActiveConversationId(
       raw_ptr<GlicInstance> excluded_instance);
 
+  // Helper method to calculate and record memory footprint metrics with a given
+  // suffix.
+  void RecordMemoryFootprint(std::string_view suffix);
+
   const raw_ptr<DataProvider> data_provider_;
 
   // Tracks the start time of a "Concurrent Visibility" period, which is a
@@ -84,6 +97,8 @@ class GlicInstanceCoordinatorMetrics {
 
   // Tracks the ID of the currently active conversation.
   std::optional<std::string> active_conversation_id_;
+
+  base::RepeatingTimer memory_metrics_timer_;
 };
 
 }  // namespace glic

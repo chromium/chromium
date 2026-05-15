@@ -187,6 +187,7 @@ class GlicInstanceCoordinatorImpl
   GlicWebContentsWarmingPool& GetWebContentsWarmingPoolForTesting();
   std::string DescribeForTesting();
   std::vector<GlicInstanceImpl*> GetInstancesForTesting();
+  GlicInstanceCoordinatorMetrics& GetMetricsForTesting() { return metrics_; }
 
   // Testing support. These methods should not be added to the public interface.
   GlicInstanceImpl* GetInstanceImplFor(const InstanceId& id) const;

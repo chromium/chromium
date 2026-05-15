@@ -178,14 +178,17 @@ chromium-metrics-reviews@google.com.
   <variant name="ZeroStateAutoSummarize"/>
 </variants>
 
+<variants name="MemoryTriggerEvent">
+  <variant name="CriticalPressure"
+      summary="recorded upon critical memory pressure"/>
+  <variant name="ModeratePressure"
+      summary="recorded upon moderate memory pressure"/>
+  <variant name="Periodic" summary="recorded periodically (every 30 minutes)"/>
+</variants>
+
 <variants name="PanelEvent">
   <variant name="OnClose" summary="the glic panel is closed."/>
   <variant name="OnOpen" summary="the glic panel is opened."/>
-</variants>
-
-<variants name="PressureLevel">
-  <variant name="CriticalPressure" summary="critical memory pressure"/>
-  <variant name="ModeratePressure" summary="moderate memory pressure"/>
 </variants>
 
 <variants name="ProfileEnablementSuffix">
@@ -843,37 +846,37 @@ chromium-metrics-reviews@google.com.
 
 </histogram>
 
-<histogram name="Glic.Instance.AvgClientPrivateMemoryFootprint.{PressureLevel}"
+<histogram name="Glic.Instance.AvgClientPrivateMemoryFootprint.{TriggerEvent}"
     units="MB" expires_after="2027-06-01">
   <owner>bryantchandler@google.com</owner>
   <owner>birnie@google.com</owner>
   <summary>
     Records the average private memory footprint of Client processes across all
-    unhibernated Glic instances when a {PressureLevel} event is received.
+    unhibernated Glic instances, {TriggerEvent}.
   </summary>
-  <token key="PressureLevel" variants="PressureLevel"/>
+  <token key="TriggerEvent" variants="MemoryTriggerEvent"/>
 </histogram>
 
-<histogram name="Glic.Instance.AvgTotalPrivateMemoryFootprint.{PressureLevel}"
+<histogram name="Glic.Instance.AvgTotalPrivateMemoryFootprint.{TriggerEvent}"
     units="MB" expires_after="2027-06-01">
   <owner>bryantchandler@google.com</owner>
   <owner>birnie@google.com</owner>
   <summary>
     Records the average total private memory footprint of all processes across
-    all unhibernated Glic instances when a {PressureLevel} event is received.
+    all unhibernated Glic instances, {TriggerEvent}.
   </summary>
-  <token key="PressureLevel" variants="PressureLevel"/>
+  <token key="TriggerEvent" variants="MemoryTriggerEvent"/>
 </histogram>
 
-<histogram name="Glic.Instance.AvgWebUIPrivateMemoryFootprint.{PressureLevel}"
+<histogram name="Glic.Instance.AvgWebUIPrivateMemoryFootprint.{TriggerEvent}"
     units="MB" expires_after="2027-06-01">
   <owner>bryantchandler@google.com</owner>
   <owner>birnie@google.com</owner>
   <summary>
     Records the average private memory footprint of WebUI processes across all
-    unhibernated Glic instances when a {PressureLevel} event is received.
+    unhibernated Glic instances, {TriggerEvent}.
   </summary>
-  <token key="PressureLevel" variants="PressureLevel"/>
+  <token key="TriggerEvent" variants="MemoryTriggerEvent"/>
 </histogram>
 
 <histogram name="Glic.Instance.EventCounts" enum="GlicInstanceEvent"
@@ -1397,15 +1400,15 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Glic.Instance.TotalPrivateMemoryFootprint.{PressureLevel}"
+<histogram name="Glic.Instance.TotalPrivateMemoryFootprint.{TriggerEvent}"
     units="MB" expires_after="2027-06-01">
   <owner>bryantchandler@google.com</owner>
   <owner>birnie@google.com</owner>
   <summary>
     Records the absolute total private memory footprint of all processes across
-    all unhibernated Glic instances when a {PressureLevel} event is received.
+    all unhibernated Glic instances, {TriggerEvent}.
   </summary>
-  <token key="PressureLevel" variants="PressureLevel"/>
+  <token key="TriggerEvent" variants="MemoryTriggerEvent"/>
 </histogram>
 
 <histogram name="Glic.Instance.TotalTabsBoundInLifetime" units="count"
@@ -1461,56 +1464,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records the duration of a single, uninterrupted period of time that a
     GlicInstance was visible. Recorded each time an instance becomes hidden.
-  </summary>
-</histogram>
-
-<histogram name="Glic.Instance.WebClient.MaxPrivateMemoryFootprint2" units="MB"
-    expires_after="2026-12-09">
-  <owner>birnie@google.com</owner>
-  <owner>bryantchandler@google.com</owner>
-  <summary>
-    Records the maximum observed private memory footprint of the Glic WebClient
-    renderer process. Recorded exactly once per Glic instance lifecycle, when
-    the instance is permanently destroyed or hibernated. This value represents
-    the peak memory usage observed during any 30-minute interval within that
-    session.
-  </summary>
-</histogram>
-
-<histogram name="Glic.Instance.WebClient.PrivateMemoryFootprint" units="MB"
-    expires_after="2026-12-09">
-  <owner>birnie@google.com</owner>
-  <owner>bryantchandler@google.com</owner>
-  <summary>
-    Records the private memory footprint of the Glic WebClient renderer process.
-    Recorded every 30 minutes. This metric is biased towards long-running
-    instances. Instances that end before 30 minutes will not record a value.
-  </summary>
-</histogram>
-
-<histogram name="Glic.Instance.WebUI.MaxPrivateMemoryFootprint2" units="MB"
-    expires_after="2026-12-09">
-  <owner>birnie@google.com</owner>
-  <owner>bryantchandler@google.com</owner>
-  <summary>
-    Records the maximum observed private memory footprint of the Glic WebUI
-    renderer process. Recorded exactly once per Glic instance lifecycle, when
-    the instance is permanently destroyed or hibernated. This value represents
-    the peak memory usage observed during any 30-minute interval within that
-    session. WebUI memory is expected to be significantly lower than WebClient
-    memory.
-  </summary>
-</histogram>
-
-<histogram name="Glic.Instance.WebUI.PrivateMemoryFootprint" units="MB"
-    expires_after="2026-12-09">
-  <owner>birnie@google.com</owner>
-  <owner>bryantchandler@google.com</owner>
-  <summary>
-    Records the private memory footprint of the Glic WebUI renderer process.
-    Recorded every 30 minutes. This metric is biased towards long-running
-    instances. Instances that end before 30 minutes will not record a value.
-    WebUI memory is expected to be significantly lower than WebClient memory.
   </summary>
 </histogram>
 

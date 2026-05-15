@@ -6,6 +6,7 @@
 
 #include "base/test/run_until.h"
 #include "build/build_config.h"
+#include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/service/glic_instance_coordinator_impl.h"
 #include "chrome/browser/glic/test_support/glic_browser_test.h"
@@ -80,6 +81,45 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorMetricsBrowserTest,
       "Glic.Instance.AvgTotalPrivateMemoryFootprint.CriticalPressure", 1);
   histogram_tester.ExpectTotalCount(
       "Glic.Instance.TotalPrivateMemoryFootprint.CriticalPressure", 1);
+}
+
+class GlicInstanceCoordinatorMetricsPeriodicTest : public GlicBrowserTest {
+ public:
+  GlicInstanceCoordinatorMetricsPeriodicTest() {
+    feature_list_.InitAndEnableFeatureWithParameters(
+        features::kGlicRecordMemoryFootprintMetrics, {{"period", "1s"}});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorMetricsPeriodicTest,
+                       PeriodicMemoryMetrics) {
+  GlicHistogramTester histogram_tester;
+
+  // Open at least one instance so we have processes to measure.
+  ASSERT_OK(OpenGlicForActiveTab());
+
+  // Wait for periodic recording to happen at least twice.
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return histogram_tester.GetTotalCount(
+               "Glic.Instance.AvgWebUIPrivateMemoryFootprint.Periodic") >= 2;
+  }));
+
+  // Verify that memory histograms are recorded.
+  EXPECT_GE(histogram_tester.GetTotalCount(
+                "Glic.Instance.AvgWebUIPrivateMemoryFootprint.Periodic"),
+            2);
+  EXPECT_GE(histogram_tester.GetTotalCount(
+                "Glic.Instance.AvgClientPrivateMemoryFootprint.Periodic"),
+            2);
+  EXPECT_GE(histogram_tester.GetTotalCount(
+                "Glic.Instance.AvgTotalPrivateMemoryFootprint.Periodic"),
+            2);
+  EXPECT_GE(histogram_tester.GetTotalCount(
+                "Glic.Instance.TotalPrivateMemoryFootprint.Periodic"),
+            2);
 }
 
 IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorMetricsBrowserTest,

@@ -17,7 +17,6 @@
 #include "chrome/browser/glic/host/context/glic_sharing_manager_provider.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/host/glic_web_client_access.h"
-#include "chrome/browser/glic/host/host_metrics.h"
 #include "chrome/browser/glic/public/glic_instance.h"
 #include "chrome/browser/glic/public/glic_passkeys.h"
 #include "chrome/common/actor/task_id.h"
@@ -501,8 +500,6 @@ class Host : public GlicSharingManagerProvider {
 
   mojom::MicrophoneStatus microphone_status_ =
       mojom::MicrophoneStatus::kUnknown;
-
-  HostMetrics metrics_;
 
   base::WeakPtrFactory<Host> weak_ptr_factory_{this};
 };

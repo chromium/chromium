@@ -49,6 +49,16 @@ class GlicHistogramTester {
     tester_.ExpectTotalCount(name, count);
   }
 
+  base::HistogramBase::Count32 GetTotalCount(std::string_view name) const {
+    CollectHistograms();
+    auto samples = tester_.GetAllSamples(name);
+    base::HistogramBase::Count32 count = 0;
+    for (const auto& bucket : samples) {
+      count += bucket.count;
+    }
+    return count;
+  }
+
   template <typename T>
   base::HistogramBase::Count32 GetBucketCount(std::string_view name,
                                               T sample) const {

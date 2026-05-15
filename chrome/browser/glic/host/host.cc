@@ -22,7 +22,6 @@
 #include "chrome/browser/glic/host/glic_skills_manager_impl.h"
 #include "chrome/browser/glic/host/glic_web_contents_warming_pool.h"
 #include "chrome/browser/glic/host/host.h"
-#include "chrome/browser/glic/host/host_metrics.h"
 #include "chrome/browser/glic/host/webui_contents_container.h"
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_instance_metrics_backwards_compatibility.h"
@@ -81,8 +80,7 @@ Host::Host(Profile* profile,
     : profile_(profile),
       instance_delegate_(instance_delegate),
       glic_instance_(glic_instance),
-      sharing_manager_provider_(sharing_manager_provider),
-      metrics_(this) {
+      sharing_manager_provider_(sharing_manager_provider) {
   VLOG(1) << "Glic [Host] Constructor";
 }
 
@@ -100,7 +98,6 @@ void Host::SetDelegate(EmbedderDelegate* new_delegate) {
 
 void Host::Shutdown() {
   VLOG(1) << "Glic [Host] Shutdown";
-  metrics_.Shutdown();
 
   handler_info_.reset();
   contents_.reset();
@@ -219,8 +216,6 @@ void Host::CreateContents() {
   glic_service().fre_controller().RecordFrameworkStartTime();
   contents_ = instance_delegate_->CreateWebUIContentsContainer();
   contents_->AttachToHost(this);
-
-  metrics_.StartRecording();
 }
 
 Host::PanelWillOpenOptions::PanelWillOpenOptions() = default;
