@@ -185,6 +185,11 @@ BASE_DECLARE_FEATURE(kLensOverlayOptimizationFilter);
 COMPONENT_EXPORT(LENS_FEATURES)
 BASE_DECLARE_FEATURE(kLensOverlayNonBlockingPrivacyNotice);
 
+// Enables using the non-blocking privacy notice for the image search
+// entrypoint.
+COMPONENT_EXPORT(LENS_FEATURES)
+BASE_DECLARE_FEATURE(kLensOverlayNonBlockingPrivacyNoticeForImageSearch);
+
 // Enables using separate request ids for page contents vs page viewport
 // uploads.
 // TODO(crbug.com/479292553): Make this flag apply to the legacy CSB flow.
@@ -1094,6 +1099,11 @@ int GetLensAimSuggestionsCount();
 // Whether to use the non-blocking privacy notice for the Lens overlay.
 COMPONENT_EXPORT(LENS_FEATURES)
 extern bool IsLensOverlayNonBlockingPrivacyNoticeEnabled();
+
+// Whether to use the non-blocking privacy notice for the image search
+// entrypoint.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern bool IsLensOverlayNonBlockingPrivacyNoticeForImageSearchEnabled();
 
 // Returns the maximum number of times to show the non-blocking privacy
 // notice. If the notice may appear an unlimited number of times, returns a

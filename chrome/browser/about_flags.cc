@@ -8637,7 +8637,6 @@ const FeatureEntry kFeatureEntries[] = {
      kOsDesktop,
      FEATURE_VALUE_TYPE(switches::kUsePrimaryAndTonalButtonsForPromos)},
 
-
     // The entry in kFeatureEntries
     {"policy-registration-delay",
      flag_descriptions::kPolicyRegistrationDelayName,
@@ -12103,6 +12102,14 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kLensOverlayNonBlockingPrivacyNoticeDescription,
      kOsDesktop,
      FEATURE_VALUE_TYPE(lens::features::kLensOverlayNonBlockingPrivacyNotice)},
+
+    {"lens-overlay-non-blocking-privacy-notice-for-image-search",
+     flag_descriptions::kLensOverlayNonBlockingPrivacyNoticeForImageSearchName,
+     flag_descriptions::
+         kLensOverlayNonBlockingPrivacyNoticeForImageSearchDescription,
+     kOsDesktop,
+     FEATURE_VALUE_TYPE(
+         lens::features::kLensOverlayNonBlockingPrivacyNoticeForImageSearch)},
 #endif
 
     {"migrate-syncing-user-to-signed-in",

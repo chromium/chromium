@@ -80,9 +80,20 @@ std::string ScaleBitmapAndEncodeToDataUri(SkBitmap bitmap) {
 }
 
 bool UseNonBlockingPrivacyNotice(
-    lens::LensOverlayInvocationSource invocation_source) {
+    lens::LensOverlayInvocationSource invocation_source,
+    bool should_route_to_contextual_tasks) {
   if (!lens::features::IsLensOverlayNonBlockingPrivacyNoticeEnabled()) {
     return false;
+  }
+  // The non-blocking privacy notice may be used for the image context menu
+  // entrypoint if the flag is enabled and if the query is not being routed to
+  // Contextual Tasks.
+  if (lens::features::
+          IsLensOverlayNonBlockingPrivacyNoticeForImageSearchEnabled() &&
+      invocation_source ==
+          lens::LensOverlayInvocationSource::kContentAreaContextMenuImage &&
+      !should_route_to_contextual_tasks) {
+    return true;
   }
   // Invocation sources that simply open the overlay without submitting a query
   // are permitted to use the non-blocking privacy notice.
@@ -800,7 +811,9 @@ bool LensSearchController::RunLensEligibilityChecks(
   // The non-blocking privacy notice permits the overlay to open without
   // requesting user permission via the bubble.
   if (lens::features::IsLensOverlayNonBlockingPrivacyNoticeEnabled() &&
-      UseNonBlockingPrivacyNotice(invocation_source)) {
+      UseNonBlockingPrivacyNotice(
+          invocation_source,
+          ShouldEnableContextualTasksRouting(invocation_source))) {
     return true;
   }
 

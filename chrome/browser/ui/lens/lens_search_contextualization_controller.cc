@@ -993,7 +993,7 @@ void LensSearchContextualizationController::
   page_title_ = page_title;
 
   GetQueryController()->StartQueryFlow(
-      viewport_screenshot_, page_url_, page_title_,
+      viewport_screenshot_, viewport_screenshot_, page_url_, page_title_,
       ConvertSignificantRegionBoxes(all_bounds),
       std::vector<lens::PageContent>(), lens::MimeType::kUnknown,
       pdf_current_page, GetUiScaleFactor(), base::TimeTicks::Now());

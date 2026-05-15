@@ -29,6 +29,7 @@ class MockLensOverlayQueryController : public LensOverlayQueryController {
   MOCK_METHOD(void,
               StartQueryFlow,
               (const SkBitmap&,
+               const SkBitmap&,
                GURL,
                std::optional<std::string>,
                std::vector<lens::mojom::CenterRotatedBoxPtr>,
@@ -323,6 +324,7 @@ class TestLensOverlayQueryController : public LensOverlayQueryController {
 
   void StartQueryFlow(
       const SkBitmap& screenshot,
+      const SkBitmap& initial_image,
       GURL page_url,
       std::optional<std::string> page_title,
       std::vector<lens::mojom::CenterRotatedBoxPtr> significant_region_boxes,

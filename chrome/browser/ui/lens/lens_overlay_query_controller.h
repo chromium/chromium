@@ -107,6 +107,7 @@ class LensOverlayQueryController {
   // testing.
   virtual void StartQueryFlow(
       const SkBitmap& screenshot,
+      const SkBitmap& initial_image,
       GURL page_url,
       std::optional<std::string> page_title,
       std::vector<lens::mojom::CenterRotatedBoxPtr> significant_region_boxes,
@@ -731,6 +732,11 @@ class LensOverlayQueryController {
   // The original screenshot image.
   SkBitmap original_screenshot_;
 
+  // Screenshot to be sent for the initial query, which may differ from
+  // `original_screenshot_` during the non-blocking context menu image search
+  // flow.
+  SkBitmap initial_image_;
+
   // The dimensions of the resized bitmap. Needed in case geometry needs to be
   // recaclulated. For example, in the case of translated words.
   gfx::Size resized_bitmap_size_;
@@ -1007,6 +1013,19 @@ class LensOverlayQueryController {
   // not need to check prefs for whether the user has granted permissions
   // permanently.
   bool has_permission_for_session_ = false;
+
+  // True if the session began without permanent permissions in a flow requiring
+  // restricted initial uploads (e.g. image context menu search).
+  bool initial_query_restricted_ = false;
+
+  // True if the initial page content upload was blocked because the user
+  // performed a context menu image search but had not granted permissions
+  // permanently.
+  bool initial_page_content_blocked_ = false;
+
+  // True if the full screenshot and page context have been sent after the
+  // initial query of the non-blocking image context menu search flow.
+  bool deferred_screenshot_and_page_context_sent_ = false;
 
   base::WeakPtrFactory<LensOverlayQueryController> weak_ptr_factory_{this};
 };

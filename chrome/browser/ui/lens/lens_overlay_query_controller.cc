@@ -416,6 +416,7 @@ LensOverlayQueryController::~LensOverlayQueryController() {
 
 void LensOverlayQueryController::StartQueryFlow(
     const SkBitmap& screenshot,
+    const SkBitmap& initial_image,
     GURL page_url,
     std::optional<std::string> page_title,
     std::vector<lens::mojom::CenterRotatedBoxPtr> significant_region_boxes,
@@ -425,6 +426,7 @@ void LensOverlayQueryController::StartQueryFlow(
     float ui_scale_factor,
     base::TimeTicks invocation_time) {
   original_screenshot_ = screenshot;
+  initial_image_ = initial_image;
   page_url_ = page_url;
   page_title_ = page_title;
   significant_region_boxes_ = std::move(significant_region_boxes);
@@ -436,6 +438,14 @@ void LensOverlayQueryController::StartQueryFlow(
   gen204_id_ = base::RandUint64();
   gen204_controller_->OnQueryFlowStart(invocation_source_, profile_,
                                        gen204_id_);
+
+  if (lens::features::
+          IsLensOverlayNonBlockingPrivacyNoticeForImageSearchEnabled() &&
+      invocation_source_ ==
+          lens::LensOverlayInvocationSource::kContentAreaContextMenuImage &&
+      !lens::DidUserGrantLensOverlayNeededPermissions(profile_)) {
+    initial_query_restricted_ = true;
+  }
 
   if (primary_content_type_ != lens::MimeType::kUnknown) {
     suggest_inputs_.set_contextual_visual_input_type(
@@ -939,6 +949,7 @@ void LensOverlayQueryController::ClusterInfoFetchResponseHandler(
 }
 
 void LensOverlayQueryController::PrepareAndFetchFullImageRequest() {
+  bool is_initial_full_image_request = (initial_request_id_ == nullptr);
   // If permissions have not yet been granted, exit early. Once permissions are
   // granted and the cluster info response is received,
   // PrepareAndFetchFullImageRequest will be called again.
@@ -1023,6 +1034,14 @@ void LensOverlayQueryController::PrepareAndFetchFullImageRequest() {
   // Async Flow 1: Creating the full image request.
   // Do the image encoding asynchronously to prevent the main thread from
   // blocking on the encoding.
+  //
+  // If this is the initial query, send `initial_image_` instead
+  // of `original_screenshot_`. These will only differ during the non-blocking
+  // image context menu flow; otherwise, they will be the same.
+  const SkBitmap& image_to_send =
+      (is_initial_full_image_request && !initial_image_.drawsNothing())
+          ? initial_image_
+          : original_screenshot_;
   encoding_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(
@@ -1031,7 +1050,7 @@ void LensOverlayQueryController::PrepareAndFetchFullImageRequest() {
             return lens::DownscaleAndEncodeBitmap(screenshot, scale_factor,
                                                   logs);
           },
-          original_screenshot_, ui_scale_factor_, ref_counted_logs),
+          image_to_send, ui_scale_factor_, ref_counted_logs),
       base::BindOnce(&LensOverlayQueryController::
                          CreateFullImageRequestAndTryPerformFullImageRequest,
                      weak_ptr_factory_.GetWeakPtr(), current_sequence_id,
@@ -1267,6 +1286,14 @@ void LensOverlayQueryController::PrepareAndFetchPageContentRequest() {
     // full image request will recall this method once the cluster info is
     // fetched.
     MaybeRestartQueryFlow();
+    return;
+  }
+
+  // If the initial query was restricted in the non-blocking image context menu
+  // flow, block the page content request. Subsequent queries will be allowed
+  // since the privacy notice will have been shown.
+  if (initial_query_restricted_ && !initial_page_content_blocked_) {
+    initial_page_content_blocked_ = true;
     return;
   }
 
@@ -1734,6 +1761,23 @@ void LensOverlayQueryController::SendInteraction(
   // Reset any pending interaction requests that will get fired via the full
   // image request / response handlers.
   pending_interaction_callback_.Reset();
+
+  // If in the non-blocking image context menu flow, the full screenshot and
+  // page content were blocked during the initial request, but they are allowed
+  // for subsequent requests since the privacy notice has been shown. Send them
+  // now before handling the interaction.
+  if (initial_query_restricted_ && selection_type != lens::INJECTED_IMAGE &&
+      !deferred_screenshot_and_page_context_sent_) {
+    pending_interaction_callback_ = base::BindOnce(
+        &LensOverlayQueryController::SendInteraction,
+        weak_ptr_factory_.GetWeakPtr(), query_start_time, std::move(region),
+        query_text, object_id, selection_type, additional_search_query_params,
+        region_bytes, media_type);
+    PrepareAndFetchFullImageRequest();
+    PrepareAndFetchPageContentRequest();
+    deferred_screenshot_and_page_context_sent_ = true;
+    return;
+  }
 
   // If the cluster info is missing add the interaction to the pending callback
   // to be sent once the cluster info is available.
