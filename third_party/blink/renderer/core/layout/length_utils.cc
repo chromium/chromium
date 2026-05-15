@@ -1723,7 +1723,10 @@ FragmentGeometry CalculateInitialFragmentGeometry(
     const auto content_box_inline_size =
         inline_size - border_padding.InlineSum();
     if (scrollbar.InlineSum() > content_box_inline_size) {
-      if (scrollbar.inline_end) {
+      if (scrollbar.inline_start && scrollbar.inline_end) {
+        scrollbar.inline_start = content_box_inline_size / 2;
+        scrollbar.inline_end = content_box_inline_size - scrollbar.inline_start;
+      } else if (scrollbar.inline_end) {
         DCHECK(!scrollbar.inline_start);
         scrollbar.inline_end = content_box_inline_size;
       } else {
