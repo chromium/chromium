@@ -1,0 +1,50 @@
+/* Copyright 2026 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=//resources/cr_elements/cr_icons_lit.css.js
+ * #import=//resources/cr_components/composebox/composebox_shared_style.css.js
+ * #scheme=relative
+ * #include=cr-icons-lit composebox-shared-style
+ * #css_wrapper_metadata_end */
+
+:host {
+  --composebox-cancel-button-top: var(--cr-composebox-cancel-button-top, 10px);
+
+  --text-input-top-spacing: 10px;
+  --text-input-inline-end-spacing: 80px;
+  --text-input-max-height: 190px;
+  --cr-composebox-font-size: var(--cr-composebox-custom-font-size, 16px);
+  --input-bottom-spacing: 12px;
+  --text-input-inline-start-spacing: var(--cr-composebox-text-input-inline-start, 18px);
+  --expanded-border-radius: var(--cr-composebox-expanded-border-radius, 30px);
+  border-radius: var(--expanded-border-radius);
+  box-shadow: var(--cr-searchbox-shadow);
+  font-size: var(--cr-composebox-font-size);
+  width: var(--cr-composebox-width, 337px);
+}
+
+#composebox {
+  display: flex;
+  flex-direction: column;
+  height: calc-size(auto, size);
+  max-height: var(--cr-composebox-max-height, 422px);
+  pointer-events: auto;
+  position: relative;
+  overflow: hidden;
+}
+
+#inputContainer {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 0;
+  overflow: hidden;
+  width: 100%;
+}
+
+cr-composebox-input::part(cancel) {
+  opacity: 1;
+}
