@@ -18,9 +18,11 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_command_line.h"
+#include "base/test/test_timeouts.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
 #include "content/browser/accessibility/browser_accessibility_state_impl.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_view_child_frame.h"
 #include "content/public/browser/ax_inspect_factory.h"
 #include "content/public/common/content_features.h"
@@ -535,9 +537,19 @@ void DumpAccessibilityTestBase::RunTestForPlatform(
     accessibility_mode.emplace(ax_mode_for_test);
     BrowserAccessibilityStateImpl::GetInstance()->SetAXModeChangeAllowed(false);
     EXPECT_TRUE(NavigateToURL(shell(), url));
-    // TODO(crbug.com/40844856): Investigate why this does not return
-    // true.
-    ASSERT_TRUE(accessibility_waiter.WaitForNotification());
+
+    if (!accessibility_waiter.WaitForNotificationWithTimeout(
+            TestTimeouts::action_timeout())) {
+      // crbug.com/40844856: the first SetMode call to a new RenderFrameHost can
+      // be silently dropped if its RenderAccessibility isn't bound yet. If that
+      // happens, resend SetMode on every frame via UpdateAccessibilityMode,
+      // then call ResetAccessibility so kLoadComplete is emitted.
+      web_contents->GetPrimaryMainFrame()->ForEachRenderFrameHostImpl(
+          [](RenderFrameHostImpl* rfh) { rfh->UpdateAccessibilityMode(); });
+      web_contents->ResetAccessibility();
+      ASSERT_TRUE(accessibility_waiter.WaitForNotificationWithTimeout(
+          TestTimeouts::action_max_timeout()));
+    }
   }
 
   WaitForAllFramesLoaded();
@@ -731,8 +743,7 @@ DumpAccessibilityTestBase::CaptureEvents(InvokeAction invoke_action) {
   // wait for at least one event. This may unblock either when |waiter|
   // observes either an ax::mojom::Event or ui::AXEventGenerator::Event, or
   // when |event_recorder| records a platform event.
-  // TODO(crbug.com/40844856): Investigate why this does not return
-  // true.
+  // TODO(crbug.com/40844856): May time out if SetMode was silently dropped.
   if (scenario_.default_action_on.empty()) {
     EXPECT_TRUE(waiter.WaitForNotification());
   }
