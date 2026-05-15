@@ -332,6 +332,52 @@ suite('Requests', function() {
     assertEquals('ERR_BLOCKED_BY_CLIENT', loadAbortEvent.reason);
   });
 
+  test('ServerRedirectToAllowedOriginSucceeds', async function() {
+    const webview = document.createElement('webview');
+    const origin = getOrigin(getTestUrl('/'));
+    webview.allowedOriginsParams =
+        new OriginCheckParams(['main_frame'], [origin]);
+    document.body.appendChild(webview);
+
+    const loadStartPromise = eventToPromise<LoadEvent>('loadstart', webview);
+    const loadCommitPromise = eventToPromise<LoadEvent>('loadcommit', webview);
+    const contentLoadPromise = eventToPromise('contentload', webview);
+    const loadStopPromise = eventToPromise('loadstop', webview);
+
+    const targetUrl = getTestUrl('/simple.html');
+    webview.src =
+        getTestUrl(`/server-redirect?url=${encodeURIComponent(targetUrl)}`);
+
+    const [loadStartEvent, loadCommitEvent] = await Promise.all([
+      loadStartPromise,
+      loadCommitPromise,
+      contentLoadPromise,
+      loadStopPromise,
+    ]);
+
+    assertEquals(loadStartEvent.url, webview.src);
+    assertEquals(loadCommitEvent.url, targetUrl);
+  });
+
+  test('ServerRedirectToDisallowedOriginFails', async function() {
+    const webview = document.createElement('webview');
+    const origin = getOrigin(getTestUrl('/'));
+    webview.allowedOriginsParams =
+        new OriginCheckParams(['main_frame'], [origin]);
+    document.body.appendChild(webview);
+
+    const loadAbortPromise =
+        eventToPromise<LoadAbortEvent>('loadabort', webview);
+
+    const targetUrl = getCrossOriginUrl('/simple.html');
+    webview.src =
+        getTestUrl(`/server-redirect?url=${encodeURIComponent(targetUrl)}`);
+
+    const loadAbortEvent = await loadAbortPromise;
+
+    assertEquals('ERR_BLOCKED_BY_CLIENT', loadAbortEvent.reason);
+  });
+
   test('FetchAllowedCrossOriginSubDomainSucceeds', async function() {
     const webview = document.createElement('webview');
     const subDomainCrossOriginPattern = getCrossOriginSubDomain('*');

@@ -17,6 +17,7 @@
 #include "content/public/browser/web_ui_data_source.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "net/base/url_util.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
@@ -88,6 +89,16 @@ class SlimWebviewBrowserTest : public WebUIMochaBrowserTest {
 
   std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
       const net::test_server::HttpRequest& request) {
+    if (request.GetURL().path() == "/server-redirect") {
+      std::string dest;
+      if (net::GetValueForKeyInQuery(request.GetURL(), "url", &dest)) {
+        auto http_response =
+            std::make_unique<net::test_server::BasicHttpResponse>();
+        http_response->set_code(net::HTTP_FOUND);
+        http_response->AddCustomHeader("Location", dest);
+        return http_response;
+      }
+    }
     if (request.GetURL().path() == "/capture-headers") {
       auto http_response =
           std::make_unique<net::test_server::BasicHttpResponse>();
