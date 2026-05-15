@@ -105,4 +105,27 @@ TEST_F(DeclarativePerformanceObserverTest, OnCommitWithEmptyEntryTypes) {
             observer()->OnCommit(&handle));
 }
 
+TEST_F(DeclarativePerformanceObserverTest, OnCommitStoresPolicy) {
+  content::MockNavigationHandle handle;
+
+  auto policy = network::mojom::DeclarativePerformanceObserverPolicy::New();
+  policy->reporting_endpoint = "my-endpoint";
+  policy->entry_types.push_back(
+      network::mojom::PerformanceEntryType::kNavigation);
+  policy->entry_types.push_back(
+      network::mojom::PerformanceEntryType::kVisibilityState);
+
+  EXPECT_CALL(handle, GetDeclarativePerformanceObserverPolicy())
+      .WillRepeatedly(testing::Return(policy.get()));
+
+  EXPECT_EQ(page_load_metrics::PageLoadMetricsObserver::CONTINUE_OBSERVING,
+            observer()->OnCommit(&handle));
+
+  EXPECT_EQ(observer()->reporting_endpoint_for_testing(), "my-endpoint");
+  EXPECT_TRUE(observer()->enabled_types_for_testing().contains(
+      network::mojom::PerformanceEntryType::kNavigation));
+  EXPECT_TRUE(observer()->enabled_types_for_testing().contains(
+      network::mojom::PerformanceEntryType::kVisibilityState));
+}
+
 }  // namespace page_load_metrics

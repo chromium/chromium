@@ -5,7 +5,9 @@
 #ifndef COMPONENTS_PAGE_LOAD_METRICS_BROWSER_OBSERVERS_DECLARATIVE_PERFORMANCE_OBSERVER_H_
 #define COMPONENTS_PAGE_LOAD_METRICS_BROWSER_OBSERVERS_DECLARATIVE_PERFORMANCE_OBSERVER_H_
 
+#include "base/containers/flat_set.h"
 #include "components/page_load_metrics/browser/page_load_metrics_observer.h"
+#include "services/network/public/mojom/declarative_performance_observer.mojom.h"
 
 namespace page_load_metrics {
 
@@ -30,6 +32,18 @@ class DeclarativePerformanceObserver : public PageLoadMetricsObserver {
   ObservePolicy OnPrerenderStart(content::NavigationHandle* navigation_handle,
                                  const GURL& currently_committed_url) override;
   ObservePolicy OnCommit(content::NavigationHandle* navigation_handle) override;
+
+  const std::string& reporting_endpoint_for_testing() const {
+    return reporting_endpoint_;
+  }
+  const base::flat_set<network::mojom::PerformanceEntryType>&
+  enabled_types_for_testing() const {
+    return enabled_types_;
+  }
+
+ private:
+  std::string reporting_endpoint_;
+  base::flat_set<network::mojom::PerformanceEntryType> enabled_types_;
 };
 
 }  // namespace page_load_metrics

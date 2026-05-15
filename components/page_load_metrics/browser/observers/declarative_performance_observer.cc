@@ -67,6 +67,10 @@ DeclarativePerformanceObserver::OnCommit(
     return STOP_OBSERVING;
   }
 
+  reporting_endpoint_ = *policy->reporting_endpoint;
+  enabled_types_ = base::flat_set<network::mojom::PerformanceEntryType>(
+      policy->entry_types.begin(), policy->entry_types.end());
+
   return CONTINUE_OBSERVING;
 }
 
