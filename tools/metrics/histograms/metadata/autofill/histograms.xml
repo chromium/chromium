@@ -7225,22 +7225,6 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   </summary>
 </histogram>
 
-<histogram name="Autofill.SaveAndFill.DialogShown.{SaveType}" enum="Boolean"
-    expires_after="2026-06-07">
-  <owner>averina@google.com</owner>
-  <owner>siyua@chromium.org</owner>
-  <owner>payments-autofill-team@google.com</owner>
-  <summary>
-    Obsolete metric, replaced by Autofill.SaveAndFill.DialogShown2. Records when
-    the Save and Fill dialog is shown, broken down by whether it is a local or
-    upload save.
-  </summary>
-  <token key="SaveType">
-    <variant name="Local" summary="Local save"/>
-    <variant name="Upload" summary="Server save"/>
-  </token>
-</histogram>
-
 <histogram name="Autofill.SaveAndFill.DialogShown2"
     enum="SaveAndFillDialogShown" expires_after="2027-04-30">
   <owner>averina@google.com</owner>
