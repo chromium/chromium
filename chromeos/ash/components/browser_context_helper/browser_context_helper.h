@@ -143,6 +143,12 @@ class COMPONENT_EXPORT(ASH_BROWSER_CONTEXT_HELPER) BrowserContextHelper {
   // Returns the path of shimless-rma-app browser context.
   base::FilePath GetShimlessRmaAppBrowserContextPath() const;
 
+  // Returns the off-the-record BrowserContext instance corresponding to
+  // `browser_context`. Creates one if `create_if_needed` is true.
+  content::BrowserContext* GetOTRBrowserContext(
+      content::BrowserContext* browser_context,
+      bool create_if_needed);
+
   // TODO(b/40225390): forcibly enables mapping by annotated AccountId.
   // This is a workaround for the transition period. Remove once it's
   // completed.

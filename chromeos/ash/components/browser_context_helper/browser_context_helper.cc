@@ -107,6 +107,17 @@ content::BrowserContext* BrowserContextHelper::GetBrowserContextByAccountId(
   return GetBrowserContextByUser(user);
 }
 
+content::BrowserContext* BrowserContextHelper::GetOTRBrowserContext(
+    content::BrowserContext* browser_context,
+    bool create_if_needed) {
+  if (!browser_context) {
+    return nullptr;
+  }
+
+  return delegate_->GetPrimaryOTRBrowserContext(browser_context,
+                                                create_if_needed);
+}
+
 content::BrowserContext* BrowserContextHelper::GetBrowserContextByUser(
     const user_manager::User* user) {
   DCHECK(user);
