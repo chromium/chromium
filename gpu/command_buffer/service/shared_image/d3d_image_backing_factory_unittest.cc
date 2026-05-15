@@ -1044,6 +1044,87 @@ TEST_P(D3DImageBackingFactoryTest, CreateSharedImageFromHandleFormatTYPELESS) {
   RunCreateSharedImageFromHandleTest(DXGI_FORMAT_R8G8B8A8_TYPELESS);
 }
 
+TEST_P(D3DImageBackingFactoryTest, InvalidExternalFence) {
+  Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device =
+      shared_image_factory_->GetDeviceForTesting();
+  if (!gfx::D3DSharedFence::IsSupported(d3d11_device.Get())) {
+    GTEST_SKIP();
+  }
+
+  const auto format = viz::SinglePlaneFormat::kRGBA_8888;
+  const gfx::Size size(1, 1);
+  const auto color_space = gfx::ColorSpace::CreateSRGB();
+  const gpu::SharedImageUsageSet usage =
+      SHARED_IMAGE_USAGE_GLES2_READ | SHARED_IMAGE_USAGE_DISPLAY_READ;
+
+  D3D11_TEXTURE2D_DESC desc;
+  desc.Width = size.width();
+  desc.Height = size.height();
+  desc.MipLevels = 1;
+  desc.ArraySize = 1;
+  desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+  desc.SampleDesc.Count = 1;
+  desc.SampleDesc.Quality = 0;
+  desc.Usage = D3D11_USAGE_DEFAULT;
+  desc.BindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_RENDER_TARGET;
+  desc.CPUAccessFlags = 0;
+  desc.MiscFlags =
+      D3D11_RESOURCE_MISC_SHARED_NTHANDLE | D3D11_RESOURCE_MISC_SHARED;
+  Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11_texture;
+  HRESULT hr = d3d11_device->CreateTexture2D(&desc, nullptr, &d3d11_texture);
+  ASSERT_EQ(hr, S_OK);
+
+  Microsoft::WRL::ComPtr<IDXGIResource1> dxgi_resource;
+  hr = d3d11_texture.As(&dxgi_resource);
+  ASSERT_EQ(hr, S_OK);
+
+  HANDLE shared_handle;
+  hr = dxgi_resource->CreateSharedHandle(
+      nullptr, DXGI_SHARED_RESOURCE_READ | DXGI_SHARED_RESOURCE_WRITE, nullptr,
+      &shared_handle);
+  ASSERT_EQ(hr, S_OK);
+
+  gfx::GpuMemoryBufferHandle gmb_handle{
+      gfx::DXGIHandle(base::win::ScopedHandle(shared_handle))};
+
+  auto mailbox = Mailbox::Generate();
+  auto backing = shared_image_factory_->CreateSharedImage(
+      mailbox,
+      SharedImageInfo(format, size, color_space, kTopLeft_GrSurfaceOrigin,
+                      kPremul_SkAlphaType, usage, "TestLabel"),
+      /*is_thread_safe=*/false, std::move(gmb_handle));
+  ASSERT_NE(backing, nullptr);
+
+  D3DImageBacking* d3d_backing = static_cast<D3DImageBacking*>(backing.get());
+
+  // Create a dummy event handle to use as an invalid fence handle.
+  HANDLE dummy_handle = ::CreateEvent(nullptr, FALSE, FALSE, nullptr);
+  ASSERT_NE(dummy_handle, nullptr);
+  auto invalid_fence = gfx::D3DSharedFence::CreateFromScopedHandle(
+      base::win::ScopedHandle(dummy_handle), gfx::DXGIHandleToken());
+
+  // Inject the invalid fence.
+  d3d_backing->UpdateExternalFence(invalid_fence);
+
+  std::unique_ptr<SharedImageRepresentationFactoryRef> factory_ref =
+      shared_image_manager_.Register(std::move(backing),
+                                     memory_type_tracker_.get());
+
+  // Produce a representation and try to BeginAccess.
+  auto gl_representation =
+      shared_image_representation_factory_->ProduceGLTexturePassthrough(
+          mailbox);
+  ASSERT_TRUE(gl_representation);
+
+  // BeginAccess should fail because GetPendingWaitFences will fail on the
+  // invalid fence.
+  std::unique_ptr<GLTexturePassthroughImageRepresentation::ScopedAccess>
+      scoped_access = gl_representation->BeginScopedAccess(
+          GL_SHARED_IMAGE_ACCESS_MODE_READ_CHROMIUM,
+          SharedImageRepresentation::AllowUnclearedAccess::kYes);
+  EXPECT_FALSE(scoped_access);
+}
+
 // Tests that writing to a Skia representation of a D3DImageBacking created
 // from a shared handle is reflected in a second backing created from the
 // same handle.

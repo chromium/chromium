@@ -343,7 +343,8 @@ class GPU_GLES2_EXPORT D3DImageBacking final
   // no-op. Similarly, |wait_dawn_device| can be provided to skip over waits on
   // fences previously signaled on the same Dawn device which are cached in
   // |dawn_signaled_fence_map_|.
-  std::vector<scoped_refptr<gfx::D3DSharedFence>> GetPendingWaitFences(
+  std::optional<std::vector<scoped_refptr<gfx::D3DSharedFence>>>
+  GetPendingWaitFences(
       const Microsoft::WRL::ComPtr<ID3D11Device>& wait_d3d11_device,
       const wgpu::Device& wait_dawn_device,
       bool write_access) EXCLUSIVE_LOCKS_REQUIRED(lock_);
