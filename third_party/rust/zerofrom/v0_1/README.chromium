@@ -1,7 +1,7 @@
 Name: zerofrom
 URL: https://crates.io/crates/zerofrom
-Version: 0.1.7
-Revision: c9fac4e625ccb2c6a7aa35079fff9709db4385ac
+Version: 0.1.8
+Revision: e9575f7e4b5aeddfeeb87ada5d3e715950e8233e
 Update Mechanism: Manual (https://crbug.com/449898466)
 License: Unicode-3.0
 License File: //third_party/rust/chromium_crates_io/vendor/zerofrom-v0_1/LICENSE

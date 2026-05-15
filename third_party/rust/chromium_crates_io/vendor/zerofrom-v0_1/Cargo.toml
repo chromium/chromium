@@ -13,8 +13,8 @@
 edition = "2021"
 rust-version = "1.71.1"
 name = "zerofrom"
-version = "0.1.7"
-authors = ["Manish Goregaokar <manishsmail@gmail.com>"]
+version = "0.1.8"
+authors = ["The ICU4X Project Developers"]
 build = false
 include = [
     "data/**/*",
@@ -53,6 +53,9 @@ independent = true
 [package.metadata.docs.rs]
 all-features = true
 
+[package.metadata.playground]
+all-features = true
+
 [features]
 alloc = []
 default = ["alloc"]
@@ -69,6 +72,7 @@ default-features = false
 
 [lints.clippy]
 alloc-instead-of-core = "warn"
+bool-assert-comparison = "allow"
 branches-sharing-code = "warn"
 collection_is_never_read = "warn"
 crosspointer_transmute = "warn"

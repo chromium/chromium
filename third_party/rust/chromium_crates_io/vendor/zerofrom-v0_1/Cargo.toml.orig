@@ -5,12 +5,12 @@
 [package]
 name = "zerofrom"
 description = "ZeroFrom trait for constructing"
-version = "0.1.7"
-authors = ["Manish Goregaokar <manishsmail@gmail.com>"]
+version = "0.1.8"
 categories = ["data-structures", "caching", "no-std"]
 keywords = ["zero-copy", "serialization", "memory-efficiency"]
 
-edition.workspace = true
+authors.workspace = true
+edition = "2021"
 include.workspace = true
 license.workspace = true
 repository.workspace = true
@@ -20,6 +20,9 @@ rust-version = "1.71.1"
 independent = true
 
 [package.metadata.docs.rs]
+all-features = true
+
+[package.metadata.playground]
 all-features = true
 
 [features]

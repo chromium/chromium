@@ -23,11 +23,11 @@ cargo_crate("lib") {
 
   build_native_rust_unit_tests = false
   edition = "2021"
-  cargo_pkg_authors = "Manish Goregaokar <manishsmail@gmail.com>"
+  cargo_pkg_authors = "The ICU4X Project Developers"
   cargo_pkg_name = "zerofrom"
   cargo_pkg_description = "ZeroFrom trait for constructing"
   cargo_pkg_repository = "https://github.com/unicode-org/icu4x"
-  cargo_pkg_version = "0.1.7"
+  cargo_pkg_version = "0.1.8"
 
   allow_unsafe = false
 
