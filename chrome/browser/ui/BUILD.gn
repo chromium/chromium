@@ -4050,8 +4050,6 @@ static_library("ui") {
       "views/frame/tab_modal_dialog_host.h",
       "views/frame/themed_background.cc",
       "views/frame/themed_background.h",
-      "views/frame/top_container_loading_bar.cc",
-      "views/frame/top_container_loading_bar.h",
       "views/frame/top_container_view.cc",
       "views/frame/top_container_view.h",
       "views/frame/top_controls_slide_controller.h",

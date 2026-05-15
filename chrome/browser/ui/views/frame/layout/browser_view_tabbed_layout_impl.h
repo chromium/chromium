@@ -136,7 +136,6 @@ class BrowserViewTabbedLayoutImpl : public BrowserViewLayoutImpl {
   // Returns the type of top separator.
   enum class TopSeparatorType {
     kNone,
-    kLoadingBar,
     kTopContainer,
     kMultiContents
   };

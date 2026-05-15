@@ -164,7 +164,6 @@
 #include "chrome/browser/ui/views/frame/shadow_overlay_view.h"
 #include "chrome/browser/ui/views/frame/tab_modal_dialog_host.h"
 #include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
-#include "chrome/browser/ui/views/frame/top_container_loading_bar.h"
 #include "chrome/browser/ui/views/frame/top_container_view.h"
 #include "chrome/browser/ui/views/frame/top_controls_slide_controller.h"
 #include "chrome/browser/ui/views/frame/vertical_tab_strip_region_view.h"
@@ -1100,7 +1099,6 @@ BrowserView::~BrowserView() {
 
   toolbar_ = nullptr;
   top_container_separator_ = nullptr;
-  loading_bar_ = nullptr;
   find_bar_host_view_ = nullptr;
   infobar_container_ = nullptr;
   multi_contents_view_ = nullptr;
@@ -1925,9 +1923,6 @@ void BrowserView::OnActiveTabChanged(content::WebContents* old_contents,
       // read out to screen readers, even if focus doesn't actually change.
       GetWidget()->GetFocusManager()->ClearFocus();
     }
-    if (loading_bar_) {
-      loading_bar_->SetWebContents(nullptr);
-    }
 
     multi_contents_view_->GetInactiveContentsView()->SetWebContents(nullptr);
     active_contents_view->SetWebContents(nullptr);
@@ -1980,10 +1975,6 @@ void BrowserView::OnActiveTabChanged(content::WebContents* old_contents,
         base::BindRepeating([](ContentsWebView* contents_view) {
           contents_view->GetWebContentsCloseHandler()->ActiveTabChanged();
         }));
-
-    if (loading_bar_) {
-      loading_bar_->SetWebContents(new_contents);
-    }
 
     const tabs::TabInterface* active_tab =
         tabs::TabInterface::GetFromContents(new_contents);
@@ -2057,9 +2048,6 @@ void BrowserView::OnTabDetached(content::WebContents* contents,
         contents_view->GetWebContentsCloseHandler()->ActiveTabChanged();
       }));
 
-  if (loading_bar_) {
-    loading_bar_->SetWebContents(nullptr);
-  }
   GetActiveContentsWebView()->SetWebContents(nullptr);
   infobar_container_->ChangeInfoBarManager(nullptr);
   app_banner_manager_observation_.Reset();
@@ -3435,10 +3423,6 @@ void BrowserView::OnTabStripModelChanged(
     if (active_contents) {
       UpdateAccessibleURLForRootView(active_contents->GetURL());
     }
-  }
-
-  if (loading_bar_) {
-    loading_bar_->SetWebContents(GetActiveWebContents());
   }
 
   if (change.type() != TabStripModelChange::kInserted) {

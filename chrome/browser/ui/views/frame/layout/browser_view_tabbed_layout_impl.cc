@@ -49,12 +49,6 @@
 
 namespace {
 
-// Loading bar is thicker than a separator, but instead of moving the bottom
-// of the top container down, it starts above where the separator would go.
-constexpr int kLoadingBarHeight = 3;
-constexpr int kLoadingBarOffset =
-    kLoadingBarHeight - views::Separator::kThickness;
-
 // Minimum area next to caption buttons to use as a grab handle.
 constexpr int kVerticalTabsGrabHandleSize = 40;
 
@@ -117,10 +111,6 @@ BrowserViewTabbedLayoutImpl::TopSeparatorType
 BrowserViewTabbedLayoutImpl::GetTopSeparatorType() const {
   if (!delegate().IsToolbarVisible() && !delegate().IsBookmarkBarVisible()) {
     return TopSeparatorType::kNone;
-  }
-
-  if (IsParentedTo(views().loading_bar, views().top_container)) {
-    return TopSeparatorType::kLoadingBar;
   }
 
   // In immersive mode, when the top container is visually separate, the
@@ -1190,20 +1180,6 @@ gfx::Rect BrowserViewTabbedLayoutImpl::CalculateTopContainerLayoutImpl(
 
   // There are multiple different ways the top separator can render.
   const TopSeparatorType top_separator_type = GetTopSeparatorType();
-
-  // Lay out the loading bar when present.
-  if (IsParentedTo(views().loading_bar, views().top_container)) {
-    gfx::Rect loading_bar_bounds;
-    if (top_separator_type == TopSeparatorType::kLoadingBar) {
-      loading_bar_bounds =
-          gfx::Rect(params.visual_client_area.x(),
-                    params.visual_client_area.y() - kLoadingBarOffset,
-                    params.visual_client_area.width(), kLoadingBarHeight);
-      params.SetTop(loading_bar_bounds.bottom());
-    }
-    layout.AddChild(views().loading_bar, loading_bar_bounds,
-                    top_separator_type == TopSeparatorType::kLoadingBar);
-  }
 
   // Maybe show the separator in the top container.
   if (IsParentedTo(views().top_container_separator, views().top_container)) {

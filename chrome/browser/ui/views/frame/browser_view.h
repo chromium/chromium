@@ -92,7 +92,6 @@ class TabStrip;
 class TabStripRegionView;
 class ToolbarButtonProvider;
 class ToolbarView;
-class TopContainerLoadingBar;
 class TopContainerView;
 class TopControlsSlideController;
 class TopControlsSlideControllerTest;
@@ -1222,9 +1221,6 @@ class BrowserView : public BrowserWindow,
   // rolled out, we can rely on `MultiContentsView` to manage the contents
   // separator when not overlaid (i.e. no immersive fullscreen).
   raw_ptr<views::View> top_container_separator_ = nullptr;
-
-  // Loading bar (part of top container for / WebUI tab strip).
-  raw_ptr<TopContainerLoadingBar> loading_bar_ = nullptr;
 
   // The do-nothing view which controls the z-order of the find bar widget
   // relative to views which paint into layers and views with an associated

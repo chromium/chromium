@@ -87,7 +87,6 @@ struct BrowserViewLayoutViews {
   // LINT.ThenChange(//chrome/browser/ui/views/frame/browser_view.cc:BrowserViewLayoutViews)
 
   // These views are dynamically set.
-  raw_ptr<views::View> loading_bar = nullptr;
   raw_ptr<BookmarkBarView> bookmark_bar = nullptr;
 };
 
@@ -123,9 +122,6 @@ class BrowserViewLayout : public views::LayoutManager {
       BrowserViewLayoutViews views);
 
   // Sets or updates views that are not available when |this| is initialized.
-  void set_loading_bar(views::View* loading_bar) {
-    views_.loading_bar = loading_bar;
-  }
   void set_bookmark_bar(BookmarkBarView* bookmark_bar) {
     views_.bookmark_bar = bookmark_bar;
   }
