@@ -1202,26 +1202,16 @@ class ChromeFileSystemAccessPermissionContext::PermissionGrantImpl
     }
   }
 
-  // Downgrades the in-memory read permission grant for the `path` if it exist
-  //  in `grants`. This is different from
+  // Downgrades the in-memory read permission grant. This is different from
   // ChromeFileSystemAccessPermissionContext::RevokeGrant in that this method
   // does not reset the persisted permission state.
-  static void DowngradeReadGrantInMemory(
-      std::map<base::FilePath, raw_ptr<PermissionGrantImpl, CtnExperimental>>&
-          grants,
-      const content::PathInfo& path) {
-    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  void DowngradeActiveReadGrant() {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-    auto entry_it = std::ranges::find_if(grants, [&path](const auto& entry) {
-      return entry.first == path.path;
-    });
-    if (entry_it == grants.end()) {
+    if (GetActivePermissionStatus() != PermissionStatus::GRANTED) {
       return;
     }
 
-    DCHECK_EQ(entry_it->second->GetActivePermissionStatus(),
-              PermissionStatus::GRANTED);
-    auto* const grant_impl = entry_it->second.get();
     // Updates the in-memory status of the grant synchronously. This ensures
     // that any existing handle instances that hold a `scoped_refptr` to this
     // grant will immediately see the updated permission status.
@@ -1234,9 +1224,8 @@ class ChromeFileSystemAccessPermissionContext::PermissionGrantImpl
     // asynchronously after a `remove()`, a subsequent query for a new handle
     // (e.g., from IndexedDB) could read the stale on-disk state and
     // incorrectly return `GRANTED`.
-    grant_impl->SetStatus(
-        PermissionStatus::DENIED,
-        PersistedPermissionOptions::kDoNotUpdatePersistedPermission);
+    SetStatus(PermissionStatus::DENIED,
+              PersistedPermissionOptions::kDoNotUpdatePersistedPermission);
   }
 
  protected:
@@ -2617,24 +2606,41 @@ void ChromeFileSystemAccessPermissionContext::NotifyEntryRemoved(
     return;
   }
 
+  auto is_path_or_descendant = [&](const base::FilePath& file_path) {
+    return file_path == path.path || path.path.IsParent(file_path);
+  };
+
   bool updated = false;
   auto it = active_permissions_map_.find(origin);
   if (it != active_permissions_map_.end()) {
-    PermissionGrantImpl::DowngradeReadGrantInMemory(it->second.read_grants,
-                                                    path);
-    // Marks the path as downgraded so that it can be restored later.
-    it->second.downgraded_read_paths.insert(path.path);
+    auto& origin_state = it->second;
+    // Always insert the removed path itself into downgraded read paths.
+    origin_state.downgraded_read_paths.insert(path.path);
     updated = true;
+
+    // Revoke active read grants for the removed entry and its descendants.
+    for (auto& [grant_path, grant] : origin_state.read_grants) {
+      if (!is_path_or_descendant(grant_path)) {
+        continue;
+      }
+      grant->DowngradeActiveReadGrant();
+      origin_state.downgraded_read_paths.insert(grant_path);
+    }
   }
 
   if (base::FeatureList::IsEnabled(
           features::kFileSystemAccessPersistentPermissions)) {
     // Active grants are a subset of persisted grants, so we also need to update
-    // persisted grants, which is not covered by
-    // `PermissionGrantImpl::DowngradeReadGrantInMemory()` above.
-    const std::unique_ptr<Object> object =
-        GetGrantedObject(origin, PathAsPermissionKey(path.path));
-    if (object) {
+    // persisted grants, which is not covered by `DowngradeActiveReadGrant()`
+    // above.
+    // Revoke persisted read grants for the removed entry and its descendants.
+    for (const auto& object : GetGrantedObjects(origin)) {
+      std::optional<base::FilePath> grant_path =
+          base::ValueToFilePath(object->value.Find(kPermissionPathKey));
+      if (!grant_path || !is_path_or_descendant(*grant_path)) {
+        continue;
+      }
+
       base::DictValue new_object = object->value.Clone();
       new_object.Set(GetGrantKeyFromGrantType(GrantType::kRead), false);
       UpdateObjectPermission(origin, object->value, std::move(new_object));
