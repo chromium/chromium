@@ -12,6 +12,7 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "base/trace_event/trace_event.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
@@ -49,7 +50,7 @@ struct CADisplayLinkGlobals {
   // process (e.g., due to a power event or system refresh rate change).
   absl::flat_hash_set<CGDirectDisplayID> invalidated_displays GUARDED_BY(lock);
 
-  // Indicate whether the display creation has been logged within the
+  // Indicates whether the display creation has been logged within the
   // 'Viz.ExternalBeginFrameSourceMac.DisplayLink.Create2' histogram.
   absl::flat_hash_set<CGDirectDisplayID> recorded_displays GUARDED_BY(lock);
 
@@ -128,21 +129,27 @@ void CADisplayLinkMac::GetRefreshIntervalRange(
 }
 
 // static
+// This function is called from both the GPU and the Browser process.
 void CADisplayLinkMac::TryRecordDisplayLinkCreation(
     CGDirectDisplayID display_id,
     bool success,
     bool in_gpu_process) {
-  // Only record the one from the GPU process as we cannot track the status from
-  // multi-process in one |globals.recorded_displays|.
-  if (!in_gpu_process) {
-    return;
-  }
   auto& globals = CADisplayLinkGlobals::Get();
   base::AutoLock lock(globals.lock);
-
   auto [it, inserted] = globals.recorded_displays.insert(display_id);
   if (inserted) {
-    RecordDisplayLinkCreation(success);
+    if (in_gpu_process) {
+      // Recorded from the GpuMain (CompositorGpuThread) or VizCompositor
+      // threads in the GPU process.
+      UMA_HISTOGRAM_BOOLEAN("Viz.DisplayLink.Create.GPU.CADisplayLink",
+                            success);
+
+    } else {
+      // Created only from the VSyncThread of the Browser process.
+      // Viz.ExternalBeginFrameSourceMac.DisplayLink.Create2 is used to compare
+      // CADisplayLink in Browser with CVDisplayLink.
+      RecordDisplayLinkCreation(success);
+    }
   }
 }
 

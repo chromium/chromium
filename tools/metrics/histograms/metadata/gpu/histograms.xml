@@ -2471,6 +2471,26 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Viz.DisplayLink.Create.GPU.{Source}" enum="BooleanSuccess"
+    expires_after="2027-03-30">
+  <owner>magchen@chromium.org</owner>
+  <owner>chrome-gpu-metric-alerts@chromium.org</owner>
+  <summary>
+    The result of creating {Source} in the GPU process for each display.
+    Recorded whenever a DisplayLink is created in ExternalBeginFrameSourceMac or
+    ImageTransportSurfaceOverlayMacEGL within the GPU process.
+  </summary>
+  <token key="Source">
+    <variant name="CADisplayLink"
+        summary="CADisplayLink using [screen displayLinkWithTarget]"/>
+    <variant name="CVDisplayLink"
+        summary="CVDisplayLink using CVDisplayLinkCreateWithCGDisplay"/>
+    <variant name="ExternalDisplayLink"
+        summary="ExternalDisplayLink using CADisplayLink in the Browser
+                 process"/>
+  </token>
+</histogram>
+
 <histogram name="Viz.ExternalBeginFrameSource.Interval" units="ms"
     expires_after="2026-09-18">
   <owner>lizeb@chromium.org</owner>
@@ -2493,21 +2513,6 @@ chromium-metrics-reviews@google.com.
     recorded each time a DisplayLink is created during
     RootCompositorFrameSinkImpl/ExternalBeginFrameSourceMac creation or during
     the monitor change in the existing ExternalBeginFrameSourceMac.
-  </summary>
-</histogram>
-
-<histogram name="Viz.ExternalBeginFrameSourceMac.DisplayLink.Create"
-    enum="BooleanSuccess" expires_after="2026-05-01">
-  <owner>magchen@chromium.org</owner>
-  <owner>chrome-gpu-metric-alerts@chromium.org</owner>
-  <summary>
-    The result of creating CVDisplaylink with CVDisplayLinkCreateWithCGDisplay
-    or CADisplayLink with [screen displayLinkWithTarget]. It does not track
-    ExternalDisplayLinkMac or Timer. This histogram is recorded each time a
-    DisplayLink is created in ExternalBeginFrameSourceMac,
-    ImageTransportSurfaceOverlayMacEGL, or DisplayLinkMacMojo. Replaced by
-    Viz.ExternalBeginFrameSourceMac.DisplayLink.Create2 as this histogram is
-    inflated by retires for CVDisplayLink when the initial creation fails.
   </summary>
 </histogram>
 

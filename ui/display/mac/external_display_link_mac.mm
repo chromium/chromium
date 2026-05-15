@@ -6,21 +6,55 @@
 
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/task/bind_post_task.h"
 #include "base/trace_event/trace_event.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "ui/display/mac/screen_utils_mac.h"
 
 namespace ui {
 
+namespace {
+struct DisplayLinkGlobals {
+  DisplayLinkGlobals() = default;
+  base::Lock lock;
+
+  // Indicates whether the display creation has been logged within the
+  // 'Viz.ExternalBeginFrameSourceMac.DisplayLink.Create2' histogram.
+  absl::flat_hash_set<CGDirectDisplayID> recorded_displays GUARDED_BY(lock);
+
+  static DisplayLinkGlobals& Get() {
+    static base::NoDestructor<DisplayLinkGlobals> instance;
+    return *instance;
+  }
+};
+}  // namespace
+
+// static
+void ExternalDisplayLinkMac::TryRecordDisplayLinkCreation(
+    CGDirectDisplayID display_id,
+    bool success) {
+  auto& globals = DisplayLinkGlobals::Get();
+  base::AutoLock lock(globals.lock);
+
+  auto [it, inserted] = globals.recorded_displays.insert(display_id);
+  if (inserted) {
+    UMA_HISTOGRAM_BOOLEAN("Viz.DisplayLink.Create.GPU.ExternalDisplayLink",
+                          success);
+  }
+}
 // static
 scoped_refptr<DisplayLinkMac> ExternalDisplayLinkMac::GetForDisplay(
     CGDirectDisplayID display_id) {
   TRACE_EVENT("gpu", "ExternalDisplayLinkMac::GetForDisplay");
+
   if (!VSyncProviderMac::GetInstance()->IsDisplayLinkInBrowserValid(
           display_id)) {
+    TryRecordDisplayLinkCreation(display_id, /*success=*/false);
     return nullptr;
   }
 
+  TryRecordDisplayLinkCreation(display_id, /*success=*/true);
   return (new ExternalDisplayLinkMac(display_id));
 }
 
