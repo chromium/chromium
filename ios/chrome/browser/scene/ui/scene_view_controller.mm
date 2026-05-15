@@ -81,6 +81,11 @@ constexpr NSTimeInterval kIPHTransitionDelay = 0.5;
   BOOL _assistantVisible;
 }
 
+- (instancetype)init {
+  return [super initWithDisplayTracingOptions:
+                    UIViewControllerDisplayTracingOptionAllTraces];
+}
+
 #pragma mark - UIViewController
 
 - (void)loadView {

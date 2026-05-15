@@ -7,9 +7,38 @@
 
 #import <UIKit/UIKit.h>
 
+// Bitmask for selecting which UI update steps are traced.
+typedef NS_OPTIONS(NSUInteger, UIViewControllerDisplayTracingOptions) {
+  UIViewControllerDisplayTracingOptionNone = 0,
+  UIViewControllerDisplayTracingOptionEventDispatch = 1 << 0,
+  UIViewControllerDisplayTracingOptionCADisplayLinkDispatch = 1 << 1,
+  UIViewControllerDisplayTracingOptionCATransactionCommit = 1 << 2,
+
+  UIViewControllerDisplayTracingOptionAllTraces =
+      UIViewControllerDisplayTracingOptionEventDispatch |
+      UIViewControllerDisplayTracingOptionCADisplayLinkDispatch |
+      UIViewControllerDisplayTracingOptionCATransactionCommit,
+
+  UIViewControllerDisplayTracingOptionEssentialTraces =
+      UIViewControllerDisplayTracingOptionCATransactionCommit,
+};
+
 // A mixin class that can be added to subclasses of UIViewController to inject
 // new tracing capabilities based on CADisplayLink.
 @interface UIViewControllerWithDisplayTracing : UIViewController
+
+// Initializes the view controller with specific display tracing options.
+- (instancetype)initWithDisplayTracingOptions:
+    (UIViewControllerDisplayTracingOptions)displayTracingOptions;
+
+- (instancetype)initWithNibName:(NSString*)nibNameOrNil
+                         bundle:(NSBundle*)nibBundleOrNil
+          displayTracingOptions:
+              (UIViewControllerDisplayTracingOptions)displayTracingOptions;
+
+- (instancetype)initWithCoder:(NSCoder*)coder
+        displayTracingOptions:
+            (UIViewControllerDisplayTracingOptions)displayTracingOptions;
 
 @end
 

@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/assistant/ui/assistant_container_presenter.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_ui_element.h"
 #import "ios/chrome/browser/scene/ui/scene_consumer.h"
+#import "ios/chrome/browser/shared/ui/util/ui_view_controller_with_display_tracing.h"
 
 @class AssistantContainerViewController;
 @protocol BWGCommands;
@@ -21,9 +22,10 @@
 
 // A view controller that can act as the `rootViewController` for a scene's
 // window.
-@interface SceneViewController : UIViewController <AssistantContainerPresenter,
-                                                   FullscreenUIElement,
-                                                   SceneConsumer>
+@interface SceneViewController
+    : UIViewControllerWithDisplayTracing <AssistantContainerPresenter,
+                                          FullscreenUIElement,
+                                          SceneConsumer>
 
 // The layout state to observe.
 @property(nonatomic, weak) LayoutState* layoutState;

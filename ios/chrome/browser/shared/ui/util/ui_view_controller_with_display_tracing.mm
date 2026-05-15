@@ -31,28 +31,53 @@ enum class UIUpdatePhase {
 @implementation UIViewControllerWithDisplayTracing {
   std::string _className;
   BOOL _phaseActive;
+  UIViewControllerDisplayTracingOptions _displayTracingOptions;
 #if !BUILDFLAG(IS_IOS_MACCATALYST)
   UIUpdateLink* _updateLink;
 #endif  // !BUILDFLAG(IS_IOS_MACCATALYST)
 }
 
 - (instancetype)init {
-  if ((self = [super init])) {
-    [self commonInit];
-  }
-  return self;
+  return [self initWithNibName:nil
+                        bundle:nil
+         displayTracingOptions:UIViewControllerDisplayTracingOptionNone];
+}
+
+- (instancetype)initWithDisplayTracingOptions:
+    (UIViewControllerDisplayTracingOptions)displayTracingOptions {
+  return [self initWithNibName:nil
+                        bundle:nil
+         displayTracingOptions:displayTracingOptions];
 }
 
 - (instancetype)initWithNibName:(NSString*)nibNameOrNil
                          bundle:(NSBundle*)nibBundleOrNil {
+  return [self initWithNibName:nibNameOrNil
+                        bundle:nibBundleOrNil
+         displayTracingOptions:UIViewControllerDisplayTracingOptionNone];
+}
+
+- (instancetype)initWithNibName:(NSString*)nibNameOrNil
+                         bundle:(NSBundle*)nibBundleOrNil
+          displayTracingOptions:
+              (UIViewControllerDisplayTracingOptions)displayTracingOptions {
   if ((self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil])) {
+    _displayTracingOptions = displayTracingOptions;
     [self commonInit];
   }
   return self;
 }
 
 - (instancetype)initWithCoder:(NSCoder*)coder {
+  return [self initWithCoder:coder
+       displayTracingOptions:UIViewControllerDisplayTracingOptionNone];
+}
+
+- (instancetype)initWithCoder:(NSCoder*)coder
+        displayTracingOptions:
+            (UIViewControllerDisplayTracingOptions)displayTracingOptions {
   if ((self = [super initWithCoder:coder])) {
+    _displayTracingOptions = displayTracingOptions;
     [self commonInit];
   }
   return self;
@@ -65,43 +90,53 @@ enum class UIUpdatePhase {
 - (void)viewIsAppearing:(BOOL)animated {
   [super viewIsAppearing:animated];
 #if !BUILDFLAG(IS_IOS_MACCATALYST)
-  _updateLink = [UIUpdateLink updateLinkForView:self.view];
   if (!_updateLink) {
-    return;
+    _updateLink = [UIUpdateLink updateLinkForView:self.view];
+    if (!_updateLink) {
+      return;
+    }
+
+    UIUpdateLink* localUpdateLink = _updateLink;
+    __weak __typeof(self) weakSelf = self;
+    auto registerPhase = ^(UIUpdateActionPhase* phase, UIUpdatePhase phaseId) {
+      [localUpdateLink
+          addActionToPhase:phase
+                   handler:^(UIUpdateLink* link, UIUpdateInfo* info) {
+                     [weakSelf handleUpdatePhase:phaseId];
+                   }];
+    };
+
+    if (_displayTracingOptions &
+        UIViewControllerDisplayTracingOptionEventDispatch) {
+      registerPhase(UIUpdateActionPhase.beforeEventDispatch,
+                    UIUpdatePhase::kBeforeEventDispatch);
+      registerPhase(UIUpdateActionPhase.afterEventDispatch,
+                    UIUpdatePhase::kAfterEventDispatch);
+      registerPhase(UIUpdateActionPhase.beforeLowLatencyEventDispatch,
+                    UIUpdatePhase::kBeforeLowLatencyEventDispatch);
+      registerPhase(UIUpdateActionPhase.afterLowLatencyEventDispatch,
+                    UIUpdatePhase::kAfterLowLatencyEventDispatch);
+    }
+    if (_displayTracingOptions &
+        UIViewControllerDisplayTracingOptionCADisplayLinkDispatch) {
+      registerPhase(UIUpdateActionPhase.beforeCADisplayLinkDispatch,
+                    UIUpdatePhase::kBeforeCADisplayLinkDispatch);
+      registerPhase(UIUpdateActionPhase.afterCADisplayLinkDispatch,
+                    UIUpdatePhase::kAfterCADisplayLinkDispatch);
+    }
+    if (_displayTracingOptions &
+        UIViewControllerDisplayTracingOptionCATransactionCommit) {
+      registerPhase(UIUpdateActionPhase.beforeCATransactionCommit,
+                    UIUpdatePhase::kBeforeCATransactionCommit);
+      registerPhase(UIUpdateActionPhase.afterCATransactionCommit,
+                    UIUpdatePhase::kAfterCATransactionCommit);
+      registerPhase(UIUpdateActionPhase.beforeLowLatencyCATransactionCommit,
+                    UIUpdatePhase::kBeforeLowLatencyCATransactionCommit);
+      registerPhase(UIUpdateActionPhase.afterLowLatencyCATransactionCommit,
+                    UIUpdatePhase::kAfterLowLatencyCATransactionCommit);
+    }
+    _updateLink.enabled = YES;
   }
-
-  UIUpdateLink* localUpdateLink = _updateLink;
-  __weak __typeof(self) weakSelf = self;
-  auto registerPhase = ^(UIUpdateActionPhase* phase, UIUpdatePhase phaseId) {
-    [localUpdateLink
-        addActionToPhase:phase
-                 handler:^(UIUpdateLink* link, UIUpdateInfo* info) {
-                   [weakSelf handleUpdatePhase:phaseId];
-                 }];
-  };
-
-  registerPhase(UIUpdateActionPhase.beforeEventDispatch,
-                UIUpdatePhase::kBeforeEventDispatch);
-  registerPhase(UIUpdateActionPhase.afterEventDispatch,
-                UIUpdatePhase::kAfterEventDispatch);
-  registerPhase(UIUpdateActionPhase.beforeCADisplayLinkDispatch,
-                UIUpdatePhase::kBeforeCADisplayLinkDispatch);
-  registerPhase(UIUpdateActionPhase.afterCADisplayLinkDispatch,
-                UIUpdatePhase::kAfterCADisplayLinkDispatch);
-  registerPhase(UIUpdateActionPhase.beforeCATransactionCommit,
-                UIUpdatePhase::kBeforeCATransactionCommit);
-  registerPhase(UIUpdateActionPhase.afterCATransactionCommit,
-                UIUpdatePhase::kAfterCATransactionCommit);
-  registerPhase(UIUpdateActionPhase.beforeLowLatencyEventDispatch,
-                UIUpdatePhase::kBeforeLowLatencyEventDispatch);
-  registerPhase(UIUpdateActionPhase.afterLowLatencyEventDispatch,
-                UIUpdatePhase::kAfterLowLatencyEventDispatch);
-  registerPhase(UIUpdateActionPhase.beforeLowLatencyCATransactionCommit,
-                UIUpdatePhase::kBeforeLowLatencyCATransactionCommit);
-  registerPhase(UIUpdateActionPhase.afterLowLatencyCATransactionCommit,
-                UIUpdatePhase::kAfterLowLatencyCATransactionCommit);
-
-  _updateLink.enabled = YES;
 #endif  // !BUILDFLAG(IS_IOS_MACCATALYST)
 }
 
