@@ -839,6 +839,8 @@ bool TemplateURLRef::ParseParameter(size_t start,
     replacements->push_back(Replacement(GOOGLE_SEARCH_CLIENT, start));
   } else if (parameter == "google:searchFieldtrialParameter") {
     replacements->push_back(Replacement(GOOGLE_SEARCH_FIELDTRIAL_GROUP, start));
+  } else if (parameter == "google:searchSource") {
+    replacements->push_back(Replacement(GOOGLE_SEARCH_SOURCE, start));
   } else if (parameter == "google:searchVersion") {
     replacements->push_back(Replacement(GOOGLE_SEARCH_VERSION, start));
   } else if (parameter == "google:sessionToken") {
@@ -1405,6 +1407,27 @@ std::string TemplateURLRef::HandleReplacements(
         // url.  If we do, then we'd have some conditional insert such as:
         // url.insert(replacement.index, used_www ? "gcx=w&" : "gcx=c&");
         break;
+
+      case GOOGLE_SEARCH_SOURCE: {
+        DCHECK(!replacement.is_post_param);
+        using OEP = ::metrics::OmniboxEventProto;
+        std::string source_param;
+        const auto pc = search_terms_args.page_classification;
+        if (pc == OEP::NTP ||
+            pc == OEP::INSTANT_NTP_WITH_OMNIBOX_AS_STARTING_FOCUS ||
+            pc == OEP::SEARCH_RESULT_PAGE_NO_SEARCH_TERM_REPLACEMENT ||
+            pc == OEP::SEARCH_RESULT_PAGE_DOING_SEARCH_TERM_REPLACEMENT ||
+            pc == OEP::SEARCH_RESULT_PAGE_ON_CCT ||
+            pc == OEP::SRP_ZPS_PREFETCH || pc == OEP::OTHER) {
+          source_param = "chrome.ob";
+        } else if (pc == OEP::NTP_REALBOX) {
+          source_param = "chrome.rb";
+        }
+        if (!source_param.empty()) {
+          HandleReplacement("source", source_param, replacement, &url);
+        }
+        break;
+      }
 
       case GOOGLE_SEARCH_SOURCE_ID: {
         DCHECK(!replacement.is_post_param);

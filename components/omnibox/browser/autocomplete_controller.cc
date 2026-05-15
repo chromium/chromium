@@ -121,9 +121,6 @@ constexpr bool kIsDesktop = !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS);
 
 namespace {
 
-inline constexpr char kInvocationSourceParameterKey[] = "source";
-inline constexpr char kInvocationSourceOmnibox[] = "chrome.ob";
-inline constexpr char kInvocationSourceRealbox[] = "chrome.rb";
 
 using ScoringSignals = ::metrics::OmniboxScoringSignals;
 using ProviderType = AutocompleteProvider::Type;
@@ -1017,34 +1014,6 @@ void AutocompleteController::SetSmartComposeStats(
   smart_compose_stats_ = stats;
 }
 
-void AutocompleteController::UpdateMatchDestinationURLWithInvocationSource(
-    AutocompleteMatch* match) const {
-  if (!base::FeatureList::IsEnabled(omnibox::kOmniboxAppendInvocationSource)) {
-    return;
-  }
-
-  if (!AutocompleteMatch::IsSearchType(match->type) ||
-      !match->destination_url.is_valid() || !match->search_terms_args) {
-    return;
-  }
-
-  const TemplateURL* turl = match->GetTemplateURL(template_url_service_);
-  if (!turl || turl != template_url_service_->GetDefaultSearchProvider()) {
-    return;
-  }
-
-  std::string source_param;
-  if (omnibox::IsOmnibox(input_.current_page_classification())) {
-    source_param = kInvocationSourceOmnibox;
-  } else if (omnibox::IsNTPRealbox(input_.current_page_classification())) {
-    source_param = kInvocationSourceRealbox;
-  }
-
-  if (!source_param.empty()) {
-    match->destination_url = net::AppendOrReplaceQueryParameter(
-        match->destination_url, kInvocationSourceParameterKey, source_param);
-  }
-}
 
 void AutocompleteController::SetMatchDestinationURL(
     AutocompleteMatch* match) const {

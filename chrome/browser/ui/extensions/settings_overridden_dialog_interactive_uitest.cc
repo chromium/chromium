@@ -38,12 +38,10 @@
 #include "components/search_engines/search_engines_test_util.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_service.h"
-#include "components/omnibox/common/omnibox_features.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "extensions/common/extension_features.h"
-#include "net/base/url_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -304,9 +302,7 @@ class SettingsOverriddenExplicitChoiceDialogInteractiveUiTest
  protected:
   SettingsOverriddenExplicitChoiceDialogInteractiveUiTest() {
     feature_list_.InitWithFeatures(
-        {extensions_features::kSearchEngineExplicitChoiceDialog,
-         omnibox::kOmniboxAppendInvocationSource},
-        {});
+        {extensions_features::kSearchEngineExplicitChoiceDialog}, {});
   }
 
  private:
@@ -481,22 +477,20 @@ IN_PROC_BROWSER_TEST_F(SettingsOverriddenExplicitChoiceDialogInteractiveUiTest,
   // on the existing page until the dialog is resolved.
   const GURL kInitialUrl("https://www.google.com/");
 
-  RunTestSequence(InstrumentTab(kWebContentsId),
-                  NavigateWebContents(kWebContentsId, kInitialUrl),
-                  SetNewSearchProvider(DefaultSearch::kUseDefault),
-                  LoadExtensionOverridingSearch(), PerformSearchFromOmnibox(),
-                  WaitForDialogToShow(),
-                  // Visible URL should still be the initial site, not the
-                  // extension's search.
-                  CheckActiveUrl(kInitialUrl),
-                  // Select previous search setting.
-                  PressButton(kNewSettingButtonId), PressButton(kSaveButtonId),
-                  WaitForHide(kSettingsOverriddenDialogId),
-                  // Only now should the navigation complete.
-                  WaitForWebContentsNavigation(
-                      kWebContentsId,
-                      net::AppendOrReplaceQueryParameter(
-                          GURL(kExtensionSearchUrl), "source", "chrome.ob")));
+  RunTestSequence(
+      InstrumentTab(kWebContentsId),
+      NavigateWebContents(kWebContentsId, kInitialUrl),
+      SetNewSearchProvider(DefaultSearch::kUseDefault),
+      LoadExtensionOverridingSearch(), PerformSearchFromOmnibox(),
+      WaitForDialogToShow(),
+      // Visible URL should still be the initial site, not the
+      // extension's search.
+      CheckActiveUrl(kInitialUrl),
+      // Select previous search setting.
+      PressButton(kNewSettingButtonId), PressButton(kSaveButtonId),
+      WaitForHide(kSettingsOverriddenDialogId),
+      // Only now should the navigation complete.
+      WaitForWebContentsNavigation(kWebContentsId, GURL(kExtensionSearchUrl)));
 }
 
 class SettingsOverriddenExplicitChoiceDialogHatsInteractiveUiTest

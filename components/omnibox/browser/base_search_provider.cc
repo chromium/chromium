@@ -210,6 +210,8 @@ AutocompleteMatch BaseSearchProvider::CreateSearchSuggestion(
   match.search_terms_args->request_source = input.request_source();
   match.search_terms_args->original_query = original_query;
   match.search_terms_args->accepted_suggestion = accepted_suggestion;
+  match.search_terms_args->page_classification =
+      input.current_page_classification();
   if (suggest_template_info) {
     match.search_terms_args->additional_query_params =
         CreateQueryParamStringFromMap(

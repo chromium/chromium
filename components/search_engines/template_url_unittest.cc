@@ -407,6 +407,7 @@ TEST_F(TemplateURLTest, ParsePlayStoreDefinitions) {
       "{google:processedImageDimensions}",
       "{google:searchClient}",
       "{google:searchFieldtrialParameter}",
+      "{google:searchSource}",
       "{google:searchVersion}",
       "{google:sessionToken}",
       "{google:sourceId}",
@@ -547,6 +548,27 @@ TEST_F(TemplateURLTest, URLRefTestEncoding2) {
       TemplateURLRef::SearchTermsArgs(u"X"), search_terms_data_));
   ASSERT_TRUE(result.is_valid());
   EXPECT_EQ("http://fooxxutf-8yutf-8a/", result.spec());
+}
+
+TEST_F(TemplateURLTest, URLRefTestSearchSource) {
+  TemplateURLData data;
+  data.SetURL("http://foo/?q={searchTerms}&{google:searchSource}");
+  TemplateURL url(data);
+  EXPECT_TRUE(url.url_ref().IsValid(search_terms_data_));
+  ASSERT_TRUE(url.url_ref().SupportsReplacement(search_terms_data_));
+
+  TemplateURLRef::SearchTermsArgs args(u"X");
+  args.page_classification = metrics::OmniboxEventProto::NTP;
+  GURL result_ntp(url.url_ref().ReplaceSearchTerms(args, search_terms_data_));
+  EXPECT_EQ("http://foo/?q=X&source=chrome.ob&", result_ntp.spec());
+
+  args.page_classification = metrics::OmniboxEventProto::NTP_REALBOX;
+  GURL result_rb(url.url_ref().ReplaceSearchTerms(args, search_terms_data_));
+  EXPECT_EQ("http://foo/?q=X&source=chrome.rb&", result_rb.spec());
+
+  args.page_classification = metrics::OmniboxEventProto::ANDROID_HUB;
+  GURL result_other(url.url_ref().ReplaceSearchTerms(args, search_terms_data_));
+  EXPECT_EQ("http://foo/?q=X&", result_other.spec());
 }
 
 TEST_F(TemplateURLTest, URLRefTestSearchTermsUsingTermsData) {

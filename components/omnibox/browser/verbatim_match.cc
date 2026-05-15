@@ -174,6 +174,8 @@ AutocompleteMatch VerbatimMatchForContext(AutocompleteProvider* provider,
         client->GetTemplateURLService()->GetDefaultSearchProvider();
     if (default_search_provider) {
       TemplateURLRef::SearchTermsArgs search_terms_args;
+      search_terms_args.page_classification =
+          input.current_page_classification();
       match.destination_url =
           GURL(default_search_provider->url_ref().ReplaceSearchTerms(
               search_terms_args,

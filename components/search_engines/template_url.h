@@ -471,6 +471,9 @@ class TemplateURLRef {
     GOOGLE_RLZ,
     GOOGLE_SEARCH_CLIENT,
     GOOGLE_SEARCH_FIELDTRIAL_GROUP,
+    // The searchbox source that led to the current search (e.g. omnibox).
+    GOOGLE_SEARCH_SOURCE,
+    // The platform that led to the current search (e.g. Chrome).
     GOOGLE_SEARCH_SOURCE_ID,
     GOOGLE_SEARCH_VERSION,
     GOOGLE_SESSION_TOKEN,

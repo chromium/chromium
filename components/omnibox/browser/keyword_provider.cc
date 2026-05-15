@@ -395,7 +395,7 @@ AutocompleteMatch KeywordProvider::CreateAutocompleteMatch(
 
   // Create destination URL and popup entry content by substituting user input
   // into keyword templates.
-  FillInUrlAndContents(remaining_input, template_url, &match);
+  FillInUrlAndContents(input, remaining_input, template_url, &match);
 
   // TODO(manukh) Consider not showing HISTORY_KEYWORD suggestions; i.e. not
   //   showing keyword matches for keywords that don't support replacement; they
@@ -410,6 +410,7 @@ AutocompleteMatch KeywordProvider::CreateAutocompleteMatch(
 }
 
 void KeywordProvider::FillInUrlAndContents(
+    const AutocompleteInput& input,
     const std::u16string& remaining_input,
     const TemplateURL* turl,
     AutocompleteMatch* match) const {
@@ -446,6 +447,7 @@ void KeywordProvider::FillInUrlAndContents(
     DCHECK(turl_ref.SupportsReplacement(
         GetTemplateURLService()->search_terms_data()));
     TemplateURLRef::SearchTermsArgs search_terms_args(remaining_input);
+    search_terms_args.page_classification = input.current_page_classification();
     search_terms_args.append_extra_query_params_from_command_line =
         turl == GetTemplateURLService()->GetDefaultSearchProvider();
     match->destination_url = GURL(turl_ref.ReplaceSearchTerms(
