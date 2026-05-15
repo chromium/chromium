@@ -294,6 +294,12 @@ void ForeignSessionHandler::OpenForeignSessionTab(
       modifiers->middle_button, modifiers->alt_key, modifiers->ctrl_key,
       modifiers->meta_key, modifiers->shift_key);
 
+  if (side_panel_ui_ && disposition == WindowOpenDisposition::CURRENT_TAB) {
+    // In the side panel, never replace the current tab but open a new tab
+    // instead.
+    disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+  }
+
   // If this is in the side panel, `web_contents_` refers to the content of the
   // side panel, *not* the main tab where the foreign tab should be restored.
   content::WebContents* web_contents =

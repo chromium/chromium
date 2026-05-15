@@ -372,16 +372,16 @@ TEST_F(ForeignSessionHandlerSidePanelTest,
       session_sync_service()->GetOpenTabsUIDelegate()->AddTabToForeignSession(
           "my_session_tag", GURL("https://www.google.com"));
 
-  // Perform a left click so that it replaces the current tab.
+  // Perform a left click so that it opens a new foreground tab.
   ui::mojom::ClickModifiersPtr modifiers = ui::mojom::ClickModifiers::New();
 
   // The restore callback should be run with the active WebContents (*not* the
-  // WebContents hosting the side panel), and with CURRENT_TAB corresponding to
-  // left-click.
+  // WebContents hosting the side panel), and with NEW_FOREGROUND_TAB
+  // corresponding to left-click in the side panel.
   EXPECT_CALL(restore_tab_callback_,
               Run(tab_strip_model_->GetActiveWebContents(),
                   TabHasUrl(GURL("https://www.google.com")),
-                  WindowOpenDisposition::CURRENT_TAB));
+                  WindowOpenDisposition::NEW_FOREGROUND_TAB));
 
   handler_->OpenForeignSessionTab("my_session_tag", tab->tab_id.id(),
                                   std::move(modifiers));
