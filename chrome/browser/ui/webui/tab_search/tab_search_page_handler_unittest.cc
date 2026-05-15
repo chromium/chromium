@@ -903,6 +903,36 @@ TEST_F(TabSearchPageHandlerTest, RecentlyClosedSectionExpandedUserPref) {
   handler()->GetProfileData(std::move(callback2));
 }
 
+TEST_F(TabSearchPageHandlerTest, RecentlyClosedTabInFuture) {
+  AddTabWithTitle(browser1(), GURL(kTabUrl1), kTabName1);
+  AddTabWithTitle(browser1(), GURL(kTabUrl2), kTabName2);
+
+  int tab_id =
+      browser1()->tab_strip_model()->GetTabAtIndex(0)->GetHandle().raw_value();
+  handler()->CloseTab(tab_id);
+
+  sessions::TabRestoreService* tab_restore_service =
+      TabRestoreServiceFactory::GetForProfile(profile1());
+  ASSERT_TRUE(tab_restore_service);
+  ASSERT_FALSE(tab_restore_service->entries().empty());
+  tab_restore_service->entries().front()->timestamp =
+      base::Time::Now() + base::Hours(2);
+
+  tab_search::mojom::PageHandler::GetProfileDataCallback callback =
+      base::BindLambdaForTesting(
+          [&](tab_search::mojom::ProfileDataPtr profile_tabs) {
+            auto& recently_closed_tabs = profile_tabs->recently_closed_tabs;
+            ASSERT_EQ(1u, recently_closed_tabs.size());
+            ExpectRecentlyClosedTab(recently_closed_tabs[0].get(), kTabUrl2,
+                                    kTabName2);
+            EXPECT_FALSE(
+                recently_closed_tabs[0]->last_active_elapsed_text.empty());
+          });
+  handler()->GetProfileData(std::move(callback));
+  EXPECT_CALL(page_, TabUpdated(_)).Times(1);
+  EXPECT_CALL(page_, TabsRemoved(_)).Times(1);
+}
+
 TEST_F(TabSearchPageHandlerTest, ReplaceActiveSplitTab) {
   std::unique_ptr<content::WebContents> test_web_contents(
       content::WebContentsTester::CreateTestWebContents(

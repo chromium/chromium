@@ -76,14 +76,15 @@ constexpr base::TimeDelta kTabsChangeDelay = base::Milliseconds(50);
 
 std::string GetLastActiveElapsedText(
     const base::TimeTicks& last_active_time_ticks) {
-  const base::TimeDelta elapsed =
-      base::TimeTicks::Now() - last_active_time_ticks;
+  const base::TimeDelta elapsed = std::max(
+      base::TimeDelta(), base::TimeTicks::Now() - last_active_time_ticks);
   return base::UTF16ToUTF8(ui::TimeFormat::Simple(
       ui::TimeFormat::FORMAT_ELAPSED, ui::TimeFormat::LENGTH_SHORT, elapsed));
 }
 
 std::string GetLastActiveElapsedText(const base::Time& last_active_time) {
-  const base::TimeDelta elapsed = base::Time::Now() - last_active_time;
+  const base::TimeDelta elapsed =
+      std::max(base::TimeDelta(), base::Time::Now() - last_active_time);
   return base::UTF16ToUTF8(ui::TimeFormat::Simple(
       ui::TimeFormat::FORMAT_ELAPSED, ui::TimeFormat::LENGTH_SHORT, elapsed));
 }
