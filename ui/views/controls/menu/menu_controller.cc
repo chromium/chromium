@@ -2575,7 +2575,14 @@ void MenuController::OpenMenuImpl(MenuItemView* item, bool show) {
     } else {
       params.context = owner_;
     }
+    auto weak_this = AsWeakPtr();
     item->GetSubmenu()->ShowAt(params);
+    // It is possible that the ShowAt() above can synchronously re-enter and
+    // destroy `this` and the entire MenuItemView tree. We do a CHECK() here
+    // instead of a early return. There are still other things up the stack that
+    // would require additional guarding. It is also unknown what state things
+    // would be left in should it be allowed to continue.
+    CHECK(weak_this);
 
     // Figure out if the mouse is under the menu; if so, remember the mouse
     // location so we can ignore the first mouse move event(s) with that
