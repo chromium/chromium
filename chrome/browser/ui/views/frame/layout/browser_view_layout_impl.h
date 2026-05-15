@@ -164,9 +164,11 @@ class BrowserViewLayoutImpl : public BrowserViewLayout {
   int GetDialogBottom(const ProposedLayout& layout) const;
 
   // BrowserViewLayout overrides:
-  gfx::Point GetDialogPosition(const gfx::Size& dialog_size) const override;
-  gfx::Size GetMaximumDialogSize() const override;
+  gfx::Point GetDialogPosition(const gfx::Size& dialog_size) const final;
+  gfx::Size GetMaximumDialogSize() const final;
 
+  int dialog_top_ = 0;
+  int dialog_bottom_ = 0;
   bool reentrancy_guard_ = false;
 };
 

@@ -218,10 +218,12 @@ void BrowserViewLayoutImpl::Layout(views::View* host) {
   DoPreLayoutVisualAdjustments(params);
 
   // Lay out the browser view itself.
-  CalculateProposedLayout(params).ApplyLayout(
-      host, [this](views::View* view, bool visible) {
-        SetViewVisibility(view, visible);
-      });
+  auto layout = CalculateProposedLayout(params);
+  dialog_top_ = GetDialogTop(layout);
+  dialog_bottom_ = GetDialogBottom(layout);
+  std::move(layout).ApplyLayout(host, [this](views::View* view, bool visible) {
+    SetViewVisibility(view, visible);
+  });
 
   // If the top container is not parented to the main container, it is an
   // overlay and must be laid out separately.
@@ -338,14 +340,12 @@ gfx::Point BrowserViewLayoutImpl::GetDialogPosition(
   if (params.IsEmpty()) {
     return gfx::Point();
   }
-  const ProposedLayout layout = CalculateProposedLayout(params);
 
   // Calculate the dialog bounds in browser view space.
   const int browser_width = params.visual_client_area.width();
   const int dialog_x =
       params.visual_client_area.x() + (browser_width - dialog_size.width()) / 2;
-  const int dialog_y = GetDialogTop(layout);
-  gfx::Rect dialog_rect(dialog_x, dialog_y, dialog_size.width(),
+  gfx::Rect dialog_rect(dialog_x, dialog_top_, dialog_size.width(),
                         dialog_size.height());
 
   // TODO: consider whether this should change in RTL?
@@ -358,11 +358,9 @@ gfx::Size BrowserViewLayoutImpl::GetMaximumDialogSize() const {
   if (params.IsEmpty()) {
     return gfx::Size();
   }
-  const ProposedLayout layout = CalculateProposedLayout(params);
 
   // This computation is irrespective of coordinate system (all coordinates
   // happen to be in browser view space).
-  const int top = GetDialogTop(layout);
-  const int bottom = GetDialogBottom(layout);
-  return gfx::Size(params.visual_client_area.width(), bottom - top);
+  return gfx::Size(params.visual_client_area.width(),
+                   dialog_bottom_ - dialog_top_);
 }
