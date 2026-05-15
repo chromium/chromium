@@ -272,6 +272,9 @@ next expert.
 2. **Mandates for Domain Experts:**
    - **Production Code Focus:** Domain experts SHOULD focus primarily on
      implementing the production code logic.
+   - **Production Hardening:** Domain experts MUST adhere to the **Production
+     Hardening Checklist** (defined at the end of this document) during
+     implementation.
    - **Domain Edge Cases:** If a domain expert identifies specific edge cases or
      scenarios that need verification, they MUST add a stubbed test case in the
      test file (with both `ADD_FAILURE() << "NOT IMPLEMENTED"` and a descriptive
@@ -292,7 +295,10 @@ next expert.
 1. **Conflict Resolution:** The Synthesizing Architect MUST use a surgical 3-way
    merge strategy (Base Scaffold + Draft A + Draft B) rather than full-file
    overwrites to resolve conflicts between domain experts.
-2. **Synthesis Build:** If `build_targets` are defined in `project.magi.json`,
+2. **Hardening Audit:** The Synthesizing Architect MUST perform a final audit
+   against the **Production Hardening Checklist** during synthesis to ensure
+   merged code maintains architectural integrity.
+3. **Synthesis Build:** If `build_targets` are defined in `project.magi.json`,
    the Synthesizing Architect MUST run the local build/test suite on "Draft A".
    The Orchestrator MUST verify that the scaffold compiles and that the tests
    still fail with "NOT IMPLEMENTED" (as Domain Experts only added stubbed
@@ -388,12 +394,7 @@ next expert.
    - **CLEANUP:** Do NOT delete `.magi` files yet; the Trainer will need them.
      The Orchestrator reports the final conclusion of the work.
 
-#### Step 3: Harden (Synthesizing Architect)
-
-1. Apply production hardening checklist (Lifetime safety, Zero-copy, DoS
-   mitigation, Atomic state).
-
-#### Step 4: Train (The Trainer)
+#### Step 3: Train (The Trainer)
 
 1. **Continuous Improvement:** Once consensus is reached, the Orchestrator MUST
    invoke a "Trainer" sub-agent. The Trainer evaluates the final State Block and
