@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "ash/constants/ash_switches.h"
+#include "ash/public/cpp/keyboard/keyboard_controller.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_helper.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
@@ -39,7 +40,7 @@
 #include "chrome/browser/extensions/test_extension_system.h"
 #include "chrome/browser/global_features.h"
 #include "chrome/browser/prefs/browser_prefs.h"
-#include "chrome/browser/ui/ash/keyboard/chrome_keyboard_controller_client_test_helper.h"
+#include "chrome/browser/ui/ash/keyboard/chrome_keyboard_controller_client.h"
 #include "chrome/browser/ui/ash/login/fake_login_display_host.h"
 #include "chrome/browser/ui/ash/wallpaper/test_wallpaper_controller.h"
 #include "chrome/browser/ui/ash/wallpaper/wallpaper_controller_client_impl.h"
@@ -71,6 +72,8 @@
 #include "chromeos/ash/services/network_config/public/cpp/cros_network_config_test_helper.h"
 #include "components/ownership/mock_owner_key_util.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/session_manager/core/fake_session_manager_delegate.h"
+#include "components/session_manager/core/session_manager.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/user_manager/fake_user_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
@@ -196,30 +199,77 @@ class WizardControllerTestBase : public ::testing::Test {
   }
 
   void SetUp() override {
+    enrollment_launcher_factory_ =
+        std::make_unique<ScopedEnrollmentLauncherFactoryOverrideForTesting>(
+            base::BindRepeating(FakeEnrollmentLauncher::Create,
+                                &mock_enrollment_launcher_));
+
+    // PostEarlyInitialization:
+    DBusThreadManager::Initialize();
+    BiodClient::InitializeFake();
+    InstallAttributesClient::InitializeFake();
+    OobeConfigurationClient::InitializeFake();
+    SessionManagerClient::InitializeFake();
+    chromeos::TpmManagerClient::InitializeFake();
+    UserDataAuthClient::InitializeFake();
+    device_settings_service_ =
+        std::make_unique<ash::ScopedTestDeviceSettingsService>();
+    scoped_stub_install_attributes_ =
+        std::make_unique<ScopedStubInstallAttributes>();
+
+    // PreCreateMainMessageLoop:
+    session_manager_ = std::make_unique<session_manager::SessionManager>(
+        std::make_unique<session_manager::FakeSessionManagerDelegate>());
+
+    task_environment_ = std::make_unique<content::BrowserTaskEnvironment>(
+        base::test::TaskEnvironment::ThreadingMode::MULTIPLE_THREADS,
+        base::test::TaskEnvironment::TimeSource::MOCK_TIME);
+
     TestingBrowserProcess::GetGlobal()->SetSharedURLLoaderFactory(
         test_url_loader_factory_.GetSafeWeakWrapper());
 
-    SessionManagerClient::InitializeFake();
-
+    // PostCreateMainMessageLoop:
+    TestingBrowserProcess::GetGlobal()
+        ->platform_part()
+        ->InitializeComponentManager();
+    network_handler_test_helper_ = std::make_unique<NetworkHandlerTestHelper>();
     DeviceSettingsService::Get()->StartProcessing(
         TestingBrowserProcess::GetGlobal()->local_state(),
         SessionManagerClient::Get(), new ownership::MockOwnerKeyUtil());
     DeviceSettingsService::Get()->Load();
 
+    // PreCreateThreads:
+    cros_settings_ = std::make_unique<ScopedTestingCrosSettings>();
+    StatsReportingController::Initialize(
+        TestingBrowserProcess::GetGlobal()->local_state());
+
+    // PreMainMessageLoopRun:
+    session_termination_manager_ =
+        std::make_unique<ash::SessionTerminationManager>();
+    auth_events_recorder_ = AuthEventsRecorder::CreateForTesting();
+
+    // PreProfileInit:
+    fake_user_manager_.Reset(std::make_unique<user_manager::FakeUserManager>());
+    session_manager_->OnUserManagerCreated(fake_user_manager_.Get());
     profile_manager_ = std::make_unique<TestingProfileManager>(
         TestingBrowserProcess::GetGlobal());
     CHECK(profile_manager_->SetUp());
 
-    TestingBrowserProcess::GetGlobal()
-        ->platform_part()
-        ->InitializeComponentManager();
-
-    browser_controller_ = std::make_unique<ash::BrowserControllerImpl>();
-    network_handler_test_helper_ = std::make_unique<NetworkHandlerTestHelper>();
     input_method::Initialize(TestingBrowserProcess::GetGlobal()->local_state(),
                              TestingBrowserProcess::GetGlobal()
                                  ->GetFeatures()
                                  ->application_locale_storage());
+
+    chrome_keyboard_controller_client_ =
+        ChromeKeyboardControllerClient::CreateForTest();
+
+    kiosk_chrome_app_manager_ = std::make_unique<KioskChromeAppManager>(
+        TestingBrowserProcess::GetGlobal()->local_state(),
+        TestingBrowserProcess::GetGlobal()->shared_url_loader_factory(),
+        &kiosk_cryptohome_remover_);
+
+    browser_controller_ = std::make_unique<ash::BrowserControllerImpl>();
+
     AshTestHelper::InitParams params;
     params.start_session = false;
     params.local_state = TestingBrowserProcess::GetGlobal()->local_state();
@@ -228,9 +278,15 @@ class WizardControllerTestBase : public ::testing::Test {
     ash_test_helper_ = std::make_unique<AshTestHelper>(
         test_context_factories_->GetContextFactory());
     ash_test_helper_->SetUp(std::move(params));
-    ash::UserDataAuthClient::InitializeFake();
-    chrome_keyboard_controller_client_test_helper_ =
-        ChromeKeyboardControllerClientTestHelper::InitializeForAsh();
+
+    wallpaper_controller_client_ = std::make_unique<
+        WallpaperControllerClientImpl>(
+        CHECK_DEREF(TestingBrowserProcess::GetGlobal()->local_state()),
+        std::make_unique<wallpaper_handlers::TestWallpaperFetcherDelegate>());
+    wallpaper_controller_client_->InitForTesting(WallpaperController::Get());
+
+    chrome_keyboard_controller_client_->Init(KeyboardController::Get());
+
     auto prefs =
         std::make_unique<sync_preferences::TestingPrefServiceSyncable>();
     prefs->SetInitializationCompleted();
@@ -239,68 +295,74 @@ class WizardControllerTestBase : public ::testing::Test {
         ash::kSigninBrowserContextBaseName, std::move(prefs),
         base::UTF8ToUTF16(ash::kSigninBrowserContextBaseName), 0,
         TestingProfile::TestingFactories());
+
     auto* input_method_manager = input_method::InputMethodManager::Get();
     input_method_manager->SetState(
         input_method_manager->CreateNewState(profile_));
-    ash::BiodClient::InitializeFake();
-    ash::InstallAttributesClient::InitializeFake();
-    DBusThreadManager::Initialize();
-    OobeConfigurationClient::InitializeFake();
-    enrollment_launcher_factory_ =
-        std::make_unique<ScopedEnrollmentLauncherFactoryOverrideForTesting>(
-            base::BindRepeating(FakeEnrollmentLauncher::Create,
-                                &mock_enrollment_launcher_));
-    chromeos::TpmManagerClient::InitializeFake();
-    StatsReportingController::Initialize(
-        TestingBrowserProcess::GetGlobal()->local_state());
+
     CreateExtensionServiceFor(profile_.get());
     CreateExtensionServiceFor(
         profile_->GetPrimaryOTRProfile(/*create_if_needed=*/true));
-    auth_events_recorder_ = AuthEventsRecorder::CreateForTesting();
-    wallpaper_controller_client_ = std::make_unique<
-        WallpaperControllerClientImpl>(
-        CHECK_DEREF(TestingBrowserProcess::GetGlobal()->local_state()),
-        std::make_unique<wallpaper_handlers::TestWallpaperFetcherDelegate>());
-    wallpaper_controller_client_->InitForTesting(WallpaperController::Get());
   }
 
   void TearDown() override {
-    wallpaper_controller_client_.reset();
+    // PostMainMessageLoopRun:
+    DeviceSettingsService::Get()->StopProcessing();
     auth_events_recorder_.reset();
-    StatsReportingController::Shutdown();
-    chromeos::TpmManagerClient::Shutdown();
-    enrollment_launcher_factory_.reset();
-    OobeConfigurationClient::Shutdown();
-    DBusThreadManager::Shutdown();
-    ash::InstallAttributesClient::Shutdown();
-    ash::BiodClient::Shutdown();
-    chrome_keyboard_controller_client_test_helper_.reset();
-    ash::UserDataAuthClient::Shutdown();
+    kiosk_chrome_app_manager_.reset();
+    wallpaper_controller_client_.reset();
+    chrome_keyboard_controller_client_.reset();
     ash_test_helper_->TearDown();
-    test_context_factories_.reset();
-    input_method::Shutdown();
-    network_handler_test_helper_.reset();
-    // Need to call `StartTearDown` otherwise timezone resolver still registered
-    // with prefs when we delete profile manager.
+
+    // Need to call `StartTearDown` here because `TimeZoneResolverManager`
+    // depends on the profile PrefService and `SystemLocationProvider`.
+    // Note that the latter is destroyed in ~AshTestHelper.
     TestingBrowserProcess::GetGlobal()->platform_part()->StartTearDown();
 
+    ash_test_helper_.reset();
+    test_context_factories_.reset();
+    input_method::Shutdown();
+    profile_ = nullptr;
+    profile_manager_.reset();
+    session_manager_.reset();
+    fake_user_manager_.Reset();
+
+    task_environment_.reset();
+
+    // PostDestroyThreads:
+    network_handler_test_helper_.reset();
     TestingBrowserProcess::GetGlobal()
         ->platform_part()
         ->ShutdownComponentManager();
-
     browser_controller_.reset();
-    profile_ = nullptr;
-    profile_manager_.reset();
-
-    DeviceSettingsService::Get()->StopProcessing();
+    UserDataAuthClient::Shutdown();
     SessionManagerClient::Shutdown();
+    chromeos::TpmManagerClient::Shutdown();
+    OobeConfigurationClient::Shutdown();
+    InstallAttributesClient::Shutdown();
+    BiodClient::Shutdown();
+    DBusThreadManager::Shutdown();
+    StatsReportingController::Shutdown();
+    cros_settings_.reset();
 
-    TestingBrowserProcess::GetGlobal()->SetSharedURLLoaderFactory(nullptr);
+    // TestingBrowserProcess::DeleteInstance() is needed here because
+    // InstallAttributes must outlive DeviceCloudPolicyStoreAsh, which is
+    // transitively owned by TestingBrowserProcess.
+    //
+    // DeviceCloudPolicyStoreAsh is created with BrowserPolicyConnectorAsh.
+    // In this test fixture, this happens when a TestingProfile is
+    // created.
+    TestingBrowserProcess::DeleteInstance();
+
+    scoped_stub_install_attributes_.reset();
+    device_settings_service_.reset();
+
+    enrollment_launcher_factory_.reset();
   }
 
   void FakeInstallAttributesForDemoMode() {
-    scoped_stub_install_attributes_.Get()->set_device_locked(true);
-    scoped_stub_install_attributes_.Get()->SetDemoMode();
+    scoped_stub_install_attributes_->Get()->set_device_locked(true);
+    scoped_stub_install_attributes_->Get()->SetDemoMode();
   }
 
  protected:
@@ -308,42 +370,41 @@ class WizardControllerTestBase : public ::testing::Test {
 
  private:
   base::test::ScopedCommandLine command_line_;
+  std::unique_ptr<ScopedEnrollmentLauncherFactoryOverrideForTesting>
+      enrollment_launcher_factory_;
 
-  std::unique_ptr<base::test::TaskEnvironment> task_environment_ =
-      std::make_unique<content::BrowserTaskEnvironment>(
-          base::test::TaskEnvironment::ThreadingMode::MULTIPLE_THREADS,
-          base::test::TaskEnvironment::TimeSource::MOCK_TIME);
+  std::unique_ptr<ash::ScopedTestDeviceSettingsService>
+      device_settings_service_;
+  std::unique_ptr<ScopedStubInstallAttributes> scoped_stub_install_attributes_;
+  std::unique_ptr<NetworkHandlerTestHelper> network_handler_test_helper_;
+  std::unique_ptr<session_manager::SessionManager> session_manager_;
+
+  std::unique_ptr<base::test::TaskEnvironment> task_environment_;
   network::TestURLLoaderFactory test_url_loader_factory_;
 
-  ash::SessionTerminationManager session_termination_manager_;
+  std::unique_ptr<ScopedTestingCrosSettings> cros_settings_;
+  std::unique_ptr<ash::SessionTerminationManager> session_termination_manager_;
+  std::unique_ptr<AuthEventsRecorder> auth_events_recorder_;
   user_manager::TypedScopedUserManager<user_manager::FakeUserManager>
-      fake_user_manager_{std::make_unique<user_manager::FakeUserManager>()};
+      fake_user_manager_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
+  std::unique_ptr<ChromeKeyboardControllerClient>
+      chrome_keyboard_controller_client_;
+  std::unique_ptr<KioskChromeAppManager> kiosk_chrome_app_manager_;
   std::unique_ptr<ash::BrowserControllerImpl> browser_controller_;
-  raw_ptr<Profile> profile_ = nullptr;
   std::unique_ptr<ui::TestContextFactories> test_context_factories_;
   std::unique_ptr<AshTestHelper> ash_test_helper_;
+  std::unique_ptr<WallpaperControllerClientImpl> wallpaper_controller_client_;
+  raw_ptr<Profile> profile_ = nullptr;
 
   input_method::FakeInputMethodDelegate delegate_;
   input_method::InputMethodUtil util_{&delegate_};
   OobeConfiguration oobe_configuration_;
-  std::unique_ptr<NetworkHandlerTestHelper> network_handler_test_helper_;
-  std::unique_ptr<ChromeKeyboardControllerClientTestHelper>
-      chrome_keyboard_controller_client_test_helper_;
-  ash::ScopedTestDeviceSettingsService device_settings_service_;
-  ScopedTestingCrosSettings settings_;
   KioskCryptohomeRemover kiosk_cryptohome_remover_{
       TestingBrowserProcess::GetGlobal()->local_state()};
-  KioskChromeAppManager kiosk_chrome_app_manager_{
-      TestingBrowserProcess::GetGlobal()->local_state(),
-      TestingBrowserProcess::GetGlobal()->shared_url_loader_factory(),
-      &kiosk_cryptohome_remover_};
-  ScopedStubInstallAttributes scoped_stub_install_attributes_;
+
+  // Note: StatisticsProvider is created with base::Singleton in production.
   ash::system::ScopedFakeStatisticsProvider statistics_provider_;
-  std::unique_ptr<ScopedEnrollmentLauncherFactoryOverrideForTesting>
-      enrollment_launcher_factory_;
-  std::unique_ptr<AuthEventsRecorder> auth_events_recorder_;
-  std::unique_ptr<WallpaperControllerClientImpl> wallpaper_controller_client_;
 };
 
 }  // namespace
@@ -352,6 +413,9 @@ class WizardControllerTest : public WizardControllerTestBase {
  public:
   void SetUp() override {
     WizardControllerTestBase::SetUp();
+    cros_network_config_test_helper_ =
+        std::make_unique<network_config::CrosNetworkConfigTestHelper>();
+
     auto* web_ui_profile = ProfileManager::GetActiveUserProfile();
     web_contents_factory_ = std::make_unique<content::TestWebContentsFactory>();
     test_web_ui_ = std::make_unique<content::TestWebUI>();
@@ -388,7 +452,7 @@ class WizardControllerTest : public WizardControllerTestBase {
   }
 
   void TearDown() override {
-    cros_network_config_test_helper_.network_state_helper()
+    cros_network_config_test_helper_->network_state_helper()
         .ResetDevicesAndServices();
 
     wizard_controller_ = nullptr;
@@ -397,6 +461,7 @@ class WizardControllerTest : public WizardControllerTestBase {
     UpdateEngineClient::Shutdown();
     test_web_ui_.reset();
     web_contents_factory_.reset();
+    cros_network_config_test_helper_.reset();
     WizardControllerTestBase::TearDown();
   }
 
@@ -424,10 +489,10 @@ class WizardControllerTest : public WizardControllerTestBase {
 
   // Starts network connection asynchronously.
   void StartNetworkConnection() {
-    cros_network_config_test_helper_.network_state_helper().AddDevice(
+    cros_network_config_test_helper_->network_state_helper().AddDevice(
         kEthDevicePath, shill::kTypeEthernet, kEthName);
 
-    cros_network_config_test_helper_.network_state_helper()
+    cros_network_config_test_helper_->network_state_helper()
         .service_test()
         ->AddService(kEthServicePath, kEthGuid, kEthServiceName,
                      shill::kTypeEthernet, shill::kStateOnline, true);
@@ -450,7 +515,8 @@ class WizardControllerTest : public WizardControllerTestBase {
  private:
   raw_ptr<FakeUpdateEngineClient> fake_update_engine_client_;
   std::unique_ptr<content::TestWebUI> test_web_ui_;
-  network_config::CrosNetworkConfigTestHelper cros_network_config_test_helper_;
+  std::unique_ptr<network_config::CrosNetworkConfigTestHelper>
+      cros_network_config_test_helper_;
   std::unique_ptr<FakeLoginDisplayHost> fake_login_display_host_;
   std::unique_ptr<content::TestWebContentsFactory> web_contents_factory_;
   SigninProfileHandler signing_profile_handler_;
