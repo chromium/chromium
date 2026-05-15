@@ -220,7 +220,7 @@ raw_ptr<views::View> OverlayBaseController::CreateViewForOverlay() {
   views::View* host_view = nullptr;
 
   // For split views, we may use ContentsContainerViews to look up the ID.
-  if (UsesContentsContainerView()) {
+  if (!IsOverlayViewShared()) {
     auto* browser_view = BrowserView::GetBrowserViewForBrowser(
         tab_->GetBrowserWindowInterface());
     if (browser_view) {
@@ -467,8 +467,10 @@ void OverlayBaseController::TabWillEnterBackground(tabs::TabInterface* tab) {
     // kHidden. Otherwise, restore to the current state.
     backgrounded_state_ = is_in_transitional_state ? State::kHidden : state_;
 
-    // If the overlay UI is showing, hide it.
-    if (overlay_web_view_ && overlay_web_view_->GetVisible()) {
+    // If the overlay UI shared across multiple tabs is showing, hide it. Do not
+    // hide the overlay if it is unique to each tab.
+    if (IsOverlayViewShared() && overlay_web_view_ &&
+        overlay_web_view_->GetVisible()) {
       HideOverlay();
     }
 
