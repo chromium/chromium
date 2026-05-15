@@ -370,6 +370,7 @@ ValuableSyncBridge::ApplyIncrementalSyncChanges(
           case sync_pb::AutofillValuableSpecifics::kKnownTravelerNumber:
           case sync_pb::AutofillValuableSpecifics::kEventTicket:
           case sync_pb::AutofillValuableSpecifics::kTransitPass:
+          case sync_pb::AutofillValuableSpecifics::kOffer:
             if (std::optional<EntityInstance> entity =
                     CreateEntityInstanceFromSpecificsAndLoadMetadata(
                         specifics, *GetEntityTable())) {
@@ -492,6 +493,7 @@ bool ValuableSyncBridge::IsEntityDataValid(
       return IsSyncWalletPrivatePassesEnabled();
     case sync_pb::AutofillValuableSpecifics::kEventTicket:
     case sync_pb::AutofillValuableSpecifics::kTransitPass:
+    case sync_pb::AutofillValuableSpecifics::kOffer:
     case sync_pb::AutofillValuableSpecifics::VALUABLE_DATA_NOT_SET:
       // Ignore new entry types that the client doesn't know about.
       return false;
@@ -658,6 +660,7 @@ std::optional<syncer::ModelError> ValuableSyncBridge::SetSyncData(
             break;
           case sync_pb::AutofillValuableSpecifics::kEventTicket:
           case sync_pb::AutofillValuableSpecifics::kTransitPass:
+          case sync_pb::AutofillValuableSpecifics::kOffer:
           case sync_pb::AutofillValuableSpecifics::VALUABLE_DATA_NOT_SET:
             // Ignore new entry types that the client doesn't know about.
             break;

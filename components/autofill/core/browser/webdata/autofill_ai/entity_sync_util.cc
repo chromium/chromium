@@ -757,6 +757,7 @@ std::optional<EntityInstance> CreateEntityInstanceFromSpecifics(
     case sync_pb::AutofillValuableSpecifics::kLoyaltyCard:
     case sync_pb::AutofillValuableSpecifics::kEventTicket:
     case sync_pb::AutofillValuableSpecifics::kTransitPass:
+    case sync_pb::AutofillValuableSpecifics::kOffer:
     case sync_pb::AutofillValuableSpecifics::VALUABLE_DATA_NOT_SET:
       // These entity types aren't supported by AutofillAi.
       return std::nullopt;

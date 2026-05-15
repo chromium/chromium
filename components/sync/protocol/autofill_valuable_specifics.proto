@@ -304,6 +304,31 @@ message TransitPass {
   repeated string agency_domains = 5;
 }
 
+// Represents an offer from Google Wallet. Note that this proto is
+// currently used by Android but not used in Chrome.
+message Offer {
+  // Localized displayable issuer name, like "Safeway".
+  optional string issuer_name = 1;
+
+  // User visible name of the provider, like "coupon.com".
+  optional string provider_name = 2;
+
+  // Short title of the offer, like "50% off".
+  optional string offer_short_title = 3;
+
+  // The expiration time of the offer in unix epoch microseconds.
+  optional int64 expiration_time_unix_epoch_micros = 4;
+
+  // The code of the offer, like "1234567890".
+  optional string offer_code = 5;
+
+  // The url of the title image of the offer.
+  optional string offer_title_image_url = 6;
+
+  // Domains associated with the offer issuer.
+  repeated string issuer_domains = 7;
+}
+
 // Valuables coming from Google Wallet.
 message AutofillValuableSpecifics {
   // The valuable id.
@@ -325,6 +350,8 @@ message AutofillValuableSpecifics {
     EventTicket event_ticket = 12;
     // Note that TransitPass is used by Android but not by Chrome.
     TransitPass transit_pass = 13;
+    // Note that Offer is used by Android but not by Chrome.
+    Offer offer = 14;
     // add other valuable types here.
   }
 

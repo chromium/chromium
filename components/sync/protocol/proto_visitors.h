@@ -2141,6 +2141,7 @@ VISIT_PROTO_FIELDS(const sync_pb::AutofillValuableSpecifics& proto) {
   VISIT(serialized_chrome_valuables_metadata);
   VISIT(event_ticket);
   VISIT(transit_pass);
+  VISIT(offer);
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::Any& proto) {
@@ -2250,6 +2251,16 @@ VISIT_PROTO_FIELDS(const sync_pb::TransitPass& proto) {
   VISIT(transit_pass_number);
   VISIT(agency_logo_url);
   VISIT_REP(agency_domains);
+}
+
+VISIT_PROTO_FIELDS(const sync_pb::Offer& proto) {
+  VISIT(issuer_name);
+  VISIT(provider_name);
+  VISIT(offer_short_title);
+  VISIT(expiration_time_unix_epoch_micros);
+  VISIT(offer_code);
+  VISIT(offer_title_image_url);
+  VISIT_REP(issuer_domains);
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::AutofillValuableMetadataSpecifics& proto) {
