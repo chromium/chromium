@@ -163,8 +163,7 @@ scoped_refptr<AudioChunk> SpeechRecognizerImpl::OnDataConverter::Convert(
   static_assert(SpeechRecognizerImpl::kNumBitsPerAudioSample == 16,
                 "kNumBitsPerAudioSample must match interleaving type.");
   output_bus_->ToInterleaved<media::SignedInt16SampleTypeTraits>(
-      output_bus_->frames(),
-      reinterpret_cast<int16_t*>(chunk->writable_data()));
+      chunk->SamplesData16AsWriteableSpan());
   return chunk;
 }
 
@@ -345,7 +344,7 @@ void SpeechRecognizerImpl::AddAudioFromRenderer(
       buffer->channel_count * buffer->frame_count * kNumBitsPerAudioSample / 8,
       kNumBitsPerAudioSample / 8));
   data->ToInterleaved<media::SignedInt16SampleTypeTraits>(
-      data->frames(), reinterpret_cast<int16_t*>(chunk->writable_data()));
+      chunk->SamplesData16AsWriteableSpan());
   FSMEventArgs event_args(EVENT_AUDIO_DATA);
   event_args.audio_chunk = std::move(chunk);
   GetIOThreadTaskRunner({})->PostTask(

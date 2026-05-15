@@ -40,7 +40,6 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   encoder.Encode(*dummy_chunk.get());
   encoder.Flush();
   scoped_refptr<AudioChunk> encoded_data(encoder.GetEncodedDataAndClear());
-  encoded_data->AsString();
   encoder.GetMimeType();
   encoder.GetBitsPerSample();
   return 0;

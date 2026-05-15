@@ -37,7 +37,7 @@ class UpstreamLoader : public network::mojom::ChunkedDataPipeGetter {
 
   void SendData();
 
-  void AppendChunkToUpload(const std::string& data, bool is_last_chunk);
+  void AppendChunkToUpload(std::string_view data, bool is_last_chunk);
 
  private:
   void OnUploadPipeWriteable(MojoResult unused);

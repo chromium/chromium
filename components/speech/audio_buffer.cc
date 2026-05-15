@@ -4,63 +4,103 @@
 
 #include "components/speech/audio_buffer.h"
 
+#include <algorithm>
+
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
 
+namespace {
+void VerifyBytesPerSample(int bytes_per_sample) {
+  CHECK(bytes_per_sample == 1 || bytes_per_sample == 2 ||
+        bytes_per_sample == 4);
+}
+}  // namespace
+
 AudioChunk::AudioChunk(int bytes_per_sample)
-    : bytes_per_sample_(bytes_per_sample) {}
+    : bytes_per_sample_(bytes_per_sample) {
+  VerifyBytesPerSample(bytes_per_sample);
+}
 
 AudioChunk::AudioChunk(size_t length, int bytes_per_sample)
-    : data_string_(length, '\0'), bytes_per_sample_(bytes_per_sample) {
-  DCHECK_EQ(length % bytes_per_sample, 0U);
+    : data_(base::AlignedUninit<uint8_t>(length, bytes_per_sample)),
+      bytes_per_sample_(bytes_per_sample) {
+  VerifyBytesPerSample(bytes_per_sample);
+  CHECK_EQ(length % bytes_per_sample, 0U);
+  std::ranges::fill(data_, 0);
 }
 
 AudioChunk::AudioChunk(const uint8_t* data, size_t length, int bytes_per_sample)
-    : data_string_(reinterpret_cast<const char*>(data), length),
+    : data_(base::AlignedUninit<uint8_t>(length, bytes_per_sample)),
       bytes_per_sample_(bytes_per_sample) {
-  DCHECK_EQ(length % bytes_per_sample, 0U);
+  VerifyBytesPerSample(bytes_per_sample);
+  CHECK_EQ(length % bytes_per_sample, 0U);
+  // SAFETY: Per API contract, `data` must contain exactly `length` bytes.
+  base::span(data_).copy_from_nonoverlapping(
+      UNSAFE_BUFFERS(base::span(data, length)));
 }
 
 AudioChunk::AudioChunk(base::span<const uint8_t> data_span,
                        int bytes_per_sample)
-    : data_string_(data_span.begin(), data_span.end()),
+    : data_(base::AlignedUninit<uint8_t>(data_span.size(), bytes_per_sample)),
       bytes_per_sample_(bytes_per_sample) {
-  DCHECK_EQ(data_span.size() % bytes_per_sample, 0U);
+  CHECK_EQ(data_span.size() % bytes_per_sample, 0U);
+  base::span(data_).copy_from_nonoverlapping(data_span);
 }
 
 AudioChunk::~AudioChunk() = default;
 
 bool AudioChunk::IsEmpty() const {
-  return data_string_.empty();
+  return data_.empty();
 }
 
 size_t AudioChunk::NumSamples() const {
-  return data_string_.size() / bytes_per_sample_;
-}
-
-const std::string& AudioChunk::AsString() const {
-  return data_string_;
+  return data_.size() / bytes_per_sample_;
 }
 
 int16_t AudioChunk::GetSample16(size_t index) const {
-  DCHECK_EQ(static_cast<size_t>(bytes_per_sample_), sizeof(int16_t));
+  // `SamplesData16AsSpan()` will check all the necessary safety constraints.
   return SamplesData16AsSpan()[index];
 }
 
+std::string_view AudioChunk::AsStringView() const {
+  return std::string_view(reinterpret_cast<const char*>(data_.data()),
+                          data_.size());
+}
+
+std::string AudioChunk::AsString() {
+  // The extra copy is unfortunate here...
+  // TODO(crbug.com/484089981): Delete this method when all uses have been
+  // replaced by `AsStringView()`.
+  return std::string(reinterpret_cast<const char*>(data_.data()), data_.size());
+}
+
 base::span<const int16_t> AudioChunk::SamplesData16AsSpan() const {
-  // SAFETY: SamplesData16 returns a pointer to data_ data.
-  // The only concern would be if the length is not multiple of sizeof(int16_t),
-  // which we CHECK below.
-  CHECK_EQ(data_string_.size() % sizeof(int16_t), 0u);
-  return UNSAFE_BUFFERS(base::span<const int16_t>(
-      reinterpret_cast<const int16_t*>(data_string_.data()),
-      data_string_.size() / sizeof(int16_t)));
+  // SAFETY: `SamplesData16AsSpan()` returns a pointer to `data_`. Make sure
+  // this is safe by ensuring the byte size is a multiple of sizeof(int16_t) and
+  // the data is properly aligned (which the constructor should already
+  // guarantee).
+  CHECK_EQ(static_cast<size_t>(bytes_per_sample_), sizeof(int16_t));
+  CHECK(base::IsAligned(data_.data(), alignof(int16_t)));
+  return UNSAFE_BUFFERS(
+      base::span<const int16_t>(reinterpret_cast<const int16_t*>(data_.data()),
+                                data_.size() / sizeof(int16_t)));
+}
+
+base::span<int16_t> AudioChunk::SamplesData16AsWriteableSpan() {
+  // SAFETY: `SamplesData16AsSpan()` returns a pointer to `data_`. Make sure
+  // this is safe by ensuring the byte size is a multiple of sizeof(int16_t) and
+  // the data is properly aligned (which the constructor should already
+  // guarantee).
+  CHECK_EQ(static_cast<size_t>(bytes_per_sample_), sizeof(int16_t));
+  CHECK(base::IsAligned(data_.data(), alignof(int16_t)));
+  return UNSAFE_BUFFERS(
+      base::span<int16_t>(reinterpret_cast<int16_t*>(data_.data()),
+                          data_.size() / sizeof(int16_t)));
 }
 
 AudioBuffer::AudioBuffer(int bytes_per_sample)
     : bytes_per_sample_(bytes_per_sample) {
-  DCHECK(bytes_per_sample == 1 || bytes_per_sample == 2 ||
-         bytes_per_sample == 4);
+  VerifyBytesPerSample(bytes_per_sample);
 }
 
 AudioBuffer::~AudioBuffer() {
@@ -79,23 +119,30 @@ scoped_refptr<AudioChunk> AudioBuffer::DequeueSingleChunk() {
 }
 
 scoped_refptr<AudioChunk> AudioBuffer::DequeueAll() {
-  size_t resulting_length = 0;
-  ChunksContainer::const_iterator it;
-  // In order to improve performance, calulate in advance the total length
+  if (chunks_.empty()) {
+    return base::MakeRefCounted<AudioChunk>(bytes_per_sample_);
+  }
+
+  base::CheckedNumeric<size_t> total_size = 0;
+  // In order to improve performance, calculate in advance the total length
   // and then copy the chunks.
-  for (it = chunks_.begin(); it != chunks_.end(); ++it) {
-    resulting_length += (*it)->AsString().length();
+  for (const auto& chunk : chunks_) {
+    total_size += chunk->data().size();
   }
-  scoped_refptr<AudioChunk> chunk(
-      new AudioChunk(resulting_length, bytes_per_sample_));
-  uint8_t* dest = chunk->writable_data();
-  for (it = chunks_.begin(); it != chunks_.end(); ++it) {
-    UNSAFE_TODO(
-        memcpy(dest, (*it)->AsString().data(), (*it)->AsString().length()));
-    UNSAFE_TODO(dest += (*it)->AsString().length());
+
+  auto merged_chunk = base::MakeRefCounted<AudioChunk>(total_size.ValueOrDie(),
+                                                       bytes_per_sample_);
+  base::span<uint8_t> remaining_data = merged_chunk->writable_data();
+
+  for (const auto& chunk : chunks_) {
+    auto dest = remaining_data.take_first(chunk->data().size());
+    dest.copy_from_nonoverlapping(chunk->data());
   }
+
+  CHECK(remaining_data.empty());
+
   Clear();
-  return chunk;
+  return merged_chunk;
 }
 
 void AudioBuffer::Clear() {
