@@ -13,6 +13,7 @@
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/shell/browser/shell.h"
 #include "net/test/embedded_test_server/controllable_http_response.h"
+#include "net/test/embedded_test_server/expectation_handler.h"
 #include "third_party/blink/public/common/features.h"
 
 // This file contains back-/forward-cache tests for fetching from the network.
@@ -30,8 +31,8 @@ using NotRestoredReason = BackForwardCacheMetrics::NotRestoredReason;
 // kLoadingTaskUnfreezable, a page will keep processing the in-flight network
 // requests while the page is frozen in BackForwardCache.
 IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, FetchWhileStoring) {
-  net::test_server::ControllableHttpResponse fetch_response(
-      embedded_test_server(), "/fetch");
+  net::test_server::ExpectationHandler handler(embedded_test_server());
+  handler.OnRequest("/fetch").RespondWith("text/html", "TheResponse");
   ASSERT_TRUE(embedded_test_server()->Start());
 
   GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
@@ -51,10 +52,6 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, FetchWhileStoring) {
 
   // 2) Navigate to B.
   EXPECT_TRUE(NavigateToURL(shell(), url_b));
-
-  fetch_response.WaitForRequest();
-  fetch_response.Send(net::HTTP_OK, "text/html", "TheResponse");
-  fetch_response.Done();
   EXPECT_TRUE(rfh_a->IsInBackForwardCache());
   EXPECT_FALSE(delete_observer_rfh_a.deleted());
 
