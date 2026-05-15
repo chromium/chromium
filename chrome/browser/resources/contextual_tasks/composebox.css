@@ -98,6 +98,12 @@
   }
 }
 
+@media (prefers-color-scheme: dark) {
+  :host([energy-effect-enabled_]) {
+    --color-composebox-file-chip-background: rgba(78, 80, 89, 1);
+  }
+}
+
 /* Composebox default colors are for light mode on AIM results. */
 #composeboxContainer {
   --color-composebox-scrim-background: var(--search-background-color);
