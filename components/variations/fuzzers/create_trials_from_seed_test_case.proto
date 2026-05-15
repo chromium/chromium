@@ -5,8 +5,8 @@ option java_package = "org.chromium.components.variations";
 
 package variations;
 
-import "study.proto";
-import "variations_seed.proto";
+import "components/variations/proto/study.proto";
+import "components/variations/proto/variations_seed.proto";
 
 // The VariationsSeed is a protobuf response from the server that contains the
 // list of studies and a serial number to uniquely identify its contents. The

@@ -12,7 +12,7 @@ option java_package = "org.chromium.components.variations";
 
 package variations;
 
-import "layer.proto";
+import "components/variations/proto/layer.proto";
 
 option features.enum_type = CLOSED;
 option features.utf8_validation = NONE;

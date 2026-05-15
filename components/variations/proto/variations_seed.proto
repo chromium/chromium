@@ -12,8 +12,8 @@ option java_package = "org.chromium.components.variations";
 
 package variations;
 
-import "layer.proto";
-import "study.proto";
+import "components/variations/proto/layer.proto";
+import "components/variations/proto/study.proto";
 import "google/protobuf/cpp_features.proto";
 
 option features.(pb.cpp).string_type = VIEW;

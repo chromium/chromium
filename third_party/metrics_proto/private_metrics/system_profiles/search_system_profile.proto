@@ -12,7 +12,7 @@ option java_package = "org.chromium.components.metrics";
 
 package private_metrics;
 
-import "private_metrics/system_profiles/coarse_system_profile.proto";
+import "third_party/metrics_proto/private_metrics/system_profiles/coarse_system_profile.proto";
 
 option features.enum_type = CLOSED;
 

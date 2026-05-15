@@ -161,8 +161,16 @@ message Source {
   int64 opener_source_id = 12;
 
   // URL information linked to the Source within the record. Only URLs from main
-  // frames are recorded. For redirects, only the initial and final URLs in the
-  // redirect chain are recorded, in that order.
+  // frames are recorded.
+  // - For non-navigation sources, e.g. a Blink Document, this will contain
+  //   exactly one element.
+  // - For navigation sources, this contains one element if there's no
+  //   redirects.
+  //   If there's a redirect, at version 149.0.7817.0 or later, this field
+  //   represents the whole redirect chain (up to
+  //   net::URLRequest::kMaxRedirects) in order. The last element  of the vector
+  //   is the URL of the final landing page. Before version 149.0.7817.0, this
+  //   field contains only the initial URL and the final landing URL.
   repeated UrlInfo urls = 8;
 
   // Data about the URL of the Document, copied from the Source message whose

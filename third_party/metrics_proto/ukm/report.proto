@@ -12,13 +12,13 @@ option java_package = "org.chromium.components.metrics";
 
 package ukm;
 
-import "ukm/aggregate.proto";
-import "ukm/entry.proto";
-import "ukm/source.proto";
-import "ukm/web_features.proto";
-import "chrome_user_metrics_extension.proto";
-import "system_profile.proto";
-import "user_demographics.proto";
+import "third_party/metrics_proto/ukm/aggregate.proto";
+import "third_party/metrics_proto/ukm/entry.proto";
+import "third_party/metrics_proto/ukm/source.proto";
+import "third_party/metrics_proto/ukm/web_features.proto";
+import "third_party/metrics_proto/chrome_user_metrics_extension.proto";
+import "third_party/metrics_proto/system_profile.proto";
+import "third_party/metrics_proto/user_demographics.proto";
 
 // This is the message type sent from Chrome to the UKM collector.
 // Next tag: 15
@@ -111,6 +111,8 @@ message Report {
   // List of Entries containing aggregated UKM data.
   repeated Aggregate aggregates = 7;
 
+  // Downsampling rates applied to events in this report.
+  // Next tag: 4
   message DownsamplingRate {
     // Hash of the event name to identify the event type. This field should
     // always be set when any other field in this message is set.
@@ -132,7 +134,7 @@ message Report {
     uint32 custom_rate = 3;
   }
 
-  // TODO(yrsun): populated this field, and add the milestone number when this
-  // is available for querying here.
+  // Rates at which each event type is downsampled. This field is populated
+  // since Chrome version 150.0.7830.0.
   repeated DownsamplingRate downsampling_rates = 14;
 }

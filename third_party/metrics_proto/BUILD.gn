@@ -6,6 +6,7 @@
 # See README.chromium for details.
 
 import("//components/proto_extras/proto_extras.gni")
+import("//third_party/libprotobuf-mutator/fuzzable_proto_library.gni")
 import("//third_party/protobuf/proto_library.gni")
 
 if (is_android) {
@@ -52,14 +53,14 @@ _proto_files = [
   "user_demographics.proto",
 ]
 
-proto_library("metrics_proto") {
+fuzzable_proto_library("metrics_proto") {
   sources = _proto_files
-  proto_in_dir = "."
+  proto_in_dir = "//"
 }
 
 if (is_android) {
   proto_java_library("metrics_proto_java") {
-    proto_path = "."
+    proto_path = "//"
     sources = _proto_files
   }
 }
@@ -69,9 +70,7 @@ proto_extras("metrics_proto_with_extension_and_system_extras") {
     "extension_install.proto",
     "system_profile.proto",
   ]
-  proto_in_dir = "."
+  proto_in_dir = "//"
   deps = [ ":metrics_proto" ]
-
-  # Ensure the plugin can resolve its own imports.
-  import_dirs = [ "//third_party/metrics_proto/" ]
+  protobuf_full_support = true
 }

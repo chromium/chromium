@@ -14,7 +14,7 @@ option java_outer_classname = "SystemProfileProtos";
 
 package metrics;
 
-import "extension_install.proto";
+import "third_party/metrics_proto/extension_install.proto";
 
 option features.utf8_validation = NONE;
 

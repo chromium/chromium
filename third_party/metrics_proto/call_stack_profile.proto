@@ -14,7 +14,7 @@ option java_outer_classname = "CallStackProfileProtos";
 
 package metrics;
 
-import "execution_context.proto";
+import "third_party/metrics_proto/execution_context.proto";
 
 option features.utf8_validation = NONE;
 

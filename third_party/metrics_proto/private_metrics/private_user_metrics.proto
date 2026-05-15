@@ -12,9 +12,9 @@ option java_package = "org.chromium.components.metrics";
 
 package private_metrics;
 
-import "private_metrics/system_profiles/rc_coarse_system_profile.proto";
-import "private_metrics/system_profiles/search_system_profile.proto";
-import "histogram_event.proto";
+import "third_party/metrics_proto/private_metrics/system_profiles/rc_coarse_system_profile.proto";
+import "third_party/metrics_proto/private_metrics/system_profiles/search_system_profile.proto";
+import "third_party/metrics_proto/histogram_event.proto";
 
 // Private user metrics.
 // This is the top-level log proto for PUMA logs.

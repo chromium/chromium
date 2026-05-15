@@ -8,11 +8,11 @@
 
 #include "base/test/scoped_feature_list.h"
 #include "components/metrics/public/mojom/call_stack_profile_collector.mojom.h"
-#include "execution_context.pb.h"
 #include "mojo/public/cpp/base/proto_wrapper.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/metrics_proto/chrome_user_metrics_extension.pb.h"
+#include "third_party/metrics_proto/execution_context.pb.h"
 
 namespace metrics {
 

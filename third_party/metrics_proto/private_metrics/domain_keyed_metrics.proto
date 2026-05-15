@@ -12,9 +12,9 @@ option java_package = "org.chromium.components.metrics";
 
 package private_metrics;
 
-import "private_metrics/metric.proto";
-import "private_metrics/system_profiles/coarse_system_profile.proto";
-import "system_profile.proto";
+import "third_party/metrics_proto/private_metrics/metric.proto";
+import "third_party/metrics_proto/private_metrics/system_profiles/coarse_system_profile.proto";
+import "third_party/metrics_proto/system_profile.proto";
 
 option features.utf8_validation = NONE;
 

@@ -12,9 +12,9 @@ option java_package = "org.chromium.components.metrics";
 
 package private_metrics;
 
-import "dwa/deidentified_web_analytics.proto";
-import "private_metrics/domain_keyed_metrics.proto";
-import "private_metrics/private_user_metrics.proto";
+import "third_party/metrics_proto/dwa/deidentified_web_analytics.proto";
+import "third_party/metrics_proto/private_metrics/domain_keyed_metrics.proto";
+import "third_party/metrics_proto/private_metrics/private_user_metrics.proto";
 
 option features.enum_type = CLOSED;
 
