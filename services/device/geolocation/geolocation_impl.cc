@@ -121,6 +121,14 @@ void GeolocationImpl::QueryCachedPosition(
 
   mojom::GeopositionResultPtr result =
       GeolocationProvider::GetInstance()->GetCachedPosition();
+
+  // If the cached position is precise but the client only has approximate
+  // permission, treat it as unavailable to avoid leaking precise location.
+  if (result && result->is_position() && result->get_position()->is_precise &&
+      !has_precise_permission_) {
+    result.reset();
+  }
+
   if (result) {
     std::move(callback).Run(std::move(result));
     return;

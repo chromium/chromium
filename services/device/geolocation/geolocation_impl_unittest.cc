@@ -91,8 +91,7 @@ class GeolocationImplTest : public testing::Test {
     geolocation_context_.BindGeolocation(
         geolocation_.BindNewPipeAndPassReceiver(),
         url::Origin::Create(GURL("https://test.com")),
-        mojom::GeolocationClientId::kForTesting,
-        /*has_precise_permission=*/true);
+        mojom::GeolocationClientId::kForTesting, has_precise_permission);
   }
 
   void OnPermissionUpdated(mojom::GeolocationPermissionLevel permission_level) {
@@ -400,6 +399,37 @@ TEST_F(GeolocationImplTest, QueryCachedPositionWithOverride) {
   geolocation()->QueryCachedPosition(future.GetCallback());
 
   EXPECT_EQ(future.Get(), override_position);
+}
+
+TEST_F(GeolocationImplTest,
+       QueryCachedPositionApproximatePermissionPreciseResult) {
+  BindGeolocation(/*has_precise_permission=*/false);
+
+  auto position = MakeGeoposition(37, -122);
+  position->get_position()->is_precise = true;
+  SimulateLocationUpdate(*position);
+
+  TestFuture<mojom::GeopositionResultPtr> geolocation_result;
+  geolocation()->QueryCachedPosition(geolocation_result.GetCallback());
+
+  EXPECT_TRUE(geolocation_result.Get()->is_error());
+  EXPECT_EQ(geolocation_result.Get()->get_error()->error_code,
+            mojom::GeopositionErrorCode::kPositionUnavailable);
+}
+
+TEST_F(GeolocationImplTest,
+       QueryCachedPositionApproximatePermissionApproximateResult) {
+  BindGeolocation(/*has_precise_permission=*/false);
+
+  auto position = MakeGeoposition(37, -122);
+  position->get_position()->is_precise = false;
+  SimulateLocationUpdate(*position);
+
+  TestFuture<mojom::GeopositionResultPtr> geolocation_result;
+  geolocation()->QueryCachedPosition(geolocation_result.GetCallback());
+
+  EXPECT_TRUE(geolocation_result.Get()->is_position());
+  EXPECT_EQ(geolocation_result.Get()->get_position()->latitude, 37);
 }
 
 }  // namespace device
