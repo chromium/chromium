@@ -5,7 +5,6 @@
 import("//build/config/chrome_build.gni")
 import("//build/config/coverage/coverage.gni")
 import("//build/config/sanitizers/sanitizers.gni")
-import("//extensions/buildflags/buildflags.gni")
 
 declare_args() {
   # Optimize parts of Chrome's UI written with web technologies (HTML/CSS/JS)
@@ -31,13 +30,7 @@ declare_args() {
   enable_webui_generate_code_cache = true
 
   # Enable the WebUI version of the New Tab Page.
-  enable_webui_ntp = target_os == "win" || target_os == "mac" ||
-      target_os == "linux" || target_os == "chromeos"
-}
-
-if (enable_webui_ntp) {
-  # NTP relies on chrome.metricsPrivate, which is an extensions API.
-  assert(enable_extensions_core)
+  enable_webui_ntp = !is_android && !is_ios
 }
 
 # Build-time WebUI code caching is only used in optimize_webui builds. When the

@@ -1011,8 +1011,6 @@ static_library("ui") {
 
   if (!is_android || enable_webui_ntp) {
     sources += [
-      "webui/new_tab_page/action_chips/action_chips_handler.cc",
-      "webui/new_tab_page/action_chips/action_chips_handler.h",
       "webui/theme_source.cc",
       "webui/theme_source.h",
     ]
@@ -1023,7 +1021,6 @@ static_library("ui") {
       "//chrome/browser/search/background",
       "//chrome/browser/ui/color:mixers",
       "//chrome/browser/ui/webui:webui_util",
-      "//chrome/browser/ui/webui/new_tab_page/action_chips",
       "//chrome/browser/ui/webui/sanitized_image:sanitized_image_source",
       "//components/themes",
     ]
@@ -1284,6 +1281,8 @@ static_library("ui") {
       "webui/media_router/media_router_internals_webui_message_handler.cc",
       "webui/media_router/media_router_internals_webui_message_handler.h",
       "webui/media_router/web_contents_display_observer.h",
+      "webui/new_tab_page/action_chips/action_chips_handler.cc",
+      "webui/new_tab_page/action_chips/action_chips_handler.h",
       "webui/new_tab_page_third_party/new_tab_page_third_party_handler.cc",
       "webui/new_tab_page_third_party/new_tab_page_third_party_handler.h",
       "webui/new_tab_page_third_party/new_tab_page_third_party_ui.cc",
@@ -1706,6 +1705,7 @@ static_library("ui") {
       "//chrome/browser/ui/webui/metrics_reporter:impl",
       "//chrome/browser/ui/webui/new_tab_footer",
       "//chrome/browser/ui/webui/new_tab_footer:impl",
+      "//chrome/browser/ui/webui/new_tab_page/action_chips",
       "//chrome/browser/ui/webui/new_tab_page/ntp_promo",
       "//chrome/browser/ui/webui/password_manager:mojo_bindings",
       "//chrome/browser/ui/webui/password_manager:password_manager_ui_handler",
