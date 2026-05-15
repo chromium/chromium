@@ -99,10 +99,16 @@ source_set("eg2_tests") {
   sources = [ "share_file_download_egtest.mm" ]
   deps = [
     "//base/test:test_support",
+    "//components/enterprise/connectors/core:cloud_content_scanning_test_support",
+    "//components/safe_browsing/core/common",
+    "//components/strings",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/enterprise/connectors/analysis/test:eg_test_support+eg2",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
     "//ios/components/enterprise/analysis:features",
     "//ios/testing/earl_grey:eg_test_support+eg2",
     "//net:test_support",
+    "//ui/base",
   ]
   frameworks = [ "UIKit.framework" ]
 }
