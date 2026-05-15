@@ -5,10 +5,12 @@
 package org.chromium.chrome.browser.ui.bottombar;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewStub;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -50,5 +52,16 @@ public class BottomBarButtonContainer extends FrameLayout implements DelegatingA
             mTargetView = stub.inflate();
         }
         assert mTargetView != null : "Stub inflation failed.";
+    }
+
+    /**
+     * Sets the tint for the icon in the target view, if it is an ImageView.
+     *
+     * @param tint The color state list to apply.
+     */
+    public void setIconTint(ColorStateList tint) {
+        if (mTargetView instanceof ImageView imageView) {
+            imageView.setImageTintList(tint);
+        }
     }
 }
