@@ -344,8 +344,7 @@ void ImageTransportSurfaceOverlayMacEGL::RefreshRateChangedOnSameDisplay() {
     return;
   }
 
-  if (display_link_mac_ &&
-      !display_link_mac_->NotifyEventAndCheckValidity(display_id_)) {
+  if (display_link_mac_ && !display_link_mac_->NotifyEventAndCheckValidity()) {
     // Recreate a new DisplayLink
     SetVSyncDisplayID(display_id_, /*force_update=*/true);
   }
@@ -424,8 +423,7 @@ void ImageTransportSurfaceOverlayMacEGL::OnVSyncPresentation(
 }
 
 void ImageTransportSurfaceOverlayMacEGL::OnResume() {
-  if (display_link_mac_ &&
-      !display_link_mac_->NotifyEventAndCheckValidity(display_id_)) {
+  if (display_link_mac_ && !display_link_mac_->NotifyEventAndCheckValidity()) {
     // Recreate a new DisplayLink.
     SetVSyncDisplayID(display_id_, /*force_update=*/true);
   }

@@ -110,7 +110,7 @@ class DISPLAY_EXPORT DisplayLinkMac : public base::RefCounted<DisplayLinkMac> {
   //
   // Returns true if the display link instance is still valid after a power
   // event or refresh rate change.
-  virtual bool NotifyEventAndCheckValidity(int64_t display_id);
+  virtual bool NotifyEventAndCheckValidity();
 
   // Register an observer callback.
   // * The specified callback will be called at every VSync tick, until the

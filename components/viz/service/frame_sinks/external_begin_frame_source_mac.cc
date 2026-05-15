@@ -213,8 +213,7 @@ void ExternalBeginFrameSourceMac::RefreshRateChangedOnSameDisplay() {
   // Forward the notification to output surface for frame presentation.
   output_surface_->RefreshRateChangedOnSameDisplay();
 
-  if (display_link_mac_ &&
-      !display_link_mac_->NotifyEventAndCheckValidity(display_id_)) {
+  if (display_link_mac_ && !display_link_mac_->NotifyEventAndCheckValidity()) {
     // Recreate a new one.
     SetVSyncDisplayID(display_id_, /*force_update=*/true);
   }
@@ -527,8 +526,7 @@ ExternalBeginFrameSourceMac::GetSupportedFrameIntervals(
 }
 
 void ExternalBeginFrameSourceMac::OnResume() {
-  if (display_link_mac_ &&
-      !display_link_mac_->NotifyEventAndCheckValidity(display_id_)) {
+  if (display_link_mac_ && !display_link_mac_->NotifyEventAndCheckValidity()) {
     // Recreate a new one.
     SetVSyncDisplayID(display_id_, /*force_update=*/true);
   }

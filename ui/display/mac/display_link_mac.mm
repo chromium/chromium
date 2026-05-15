@@ -89,7 +89,7 @@ DisplayLinkMac::RegisterPresentationCallback(
   NOTREACHED();
 }
 
-bool DisplayLinkMac::NotifyEventAndCheckValidity(int64_t display_id) {
+bool DisplayLinkMac::NotifyEventAndCheckValidity() {
   return true;
 }
 

@@ -124,8 +124,8 @@ class VIZ_COMMON_EXPORT ExternalBeginFrameSourceMac
 
   // Screen refresh interval caps.
   base::TimeDelta min_refresh_interval_ = BeginFrameArgs::DefaultInterval();
-  base::TimeDelta max_refresh_interval_;
-  base::TimeDelta granularity_;
+  base::TimeDelta max_refresh_interval_ = BeginFrameArgs::DefaultInterval();
+  base::TimeDelta granularity_ = BeginFrameArgs::DefaultInterval();
 
   base::WeakPtrFactory<ExternalBeginFrameSourceMac> weak_ptr_factory_{this};
 };

@@ -252,12 +252,9 @@ void CADisplayLinkMac::UnregisterCallback(VSyncCallbackMac* callback) {
   }
 }
 
-bool CADisplayLinkMac::NotifyEventAndCheckValidity(int64_t vsync_display_id) {
-  CGDirectDisplayID display_id =
-      base::checked_cast<CGDirectDisplayID>(vsync_display_id);
-
+bool CADisplayLinkMac::NotifyEventAndCheckValidity() {
   base::AutoLock lock(CADisplayLinkGlobals::Get().lock);
-  CADisplayLinkGlobals::Get().invalidated_displays.insert(display_id);
+  CADisplayLinkGlobals::Get().invalidated_displays.insert(display_id_);
   return false;
 }
 
