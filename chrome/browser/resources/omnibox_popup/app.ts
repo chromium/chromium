@@ -139,6 +139,7 @@ export class OmniboxPopupAppElement extends I18nMixinLit
       webuiOmniboxPopupSelectionControlEnabled_: {type: Boolean},
       inputState_: {type: Object},
       usePecApi_: {type: Boolean},
+      applyContextButtonBackground_: {type: Boolean},
     };
   }
 
@@ -167,11 +168,14 @@ export class OmniboxPopupAppElement extends I18nMixinLit
   protected accessor inputState_: InputState|null = null;
   protected accessor usePecApi_: boolean =
       loadTimeData.getBoolean('contextualMenuUsePecApi');
+  protected accessor applyContextButtonBackground_: boolean = false;
 
   private callbackRouter_: SearchboxPageCallbackRouter;
   private eventTracker_ = new EventTracker();
   private hideContextButton_: boolean =
       loadTimeData.getBoolean('hideClassicContextButton');
+  private contextButtonHasBackground_: boolean =
+      loadTimeData.getBoolean('contextButtonHasBackground');
   protected accessor showContextButtonSuggestionLabel_: boolean =
       loadTimeData.getBoolean('omniboxShowContextButtonSuggestionLabel');
   private listenerIds_: number[] = [];
@@ -293,6 +297,8 @@ export class OmniboxPopupAppElement extends I18nMixinLit
         changedPrivateProperties.has('isLensSearchEligible_')) {
       this.isLensChipShown_ =
           this.isContentSharingEnabled_ && this.isLensSearchEligible_;
+      this.applyContextButtonBackground_ =
+          this.contextButtonHasBackground_ && !this.isLensChipShown_;
     }
   }
 
