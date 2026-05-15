@@ -379,14 +379,6 @@ target(link_target_type, "renderer") {
     }
 
     if (is_castos || is_cast_android) {
-      if (enable_cast_audio_renderer) {
-        sources += [
-          "media/cast_renderer_factory.cc",
-          "media/cast_renderer_factory.h",
-        ]
-
-        deps += [ "//chromecast/media/audio:audio_renderer" ]
-      }
 
       deps += [ "//media/remoting:remoting_renderer" ]
     }

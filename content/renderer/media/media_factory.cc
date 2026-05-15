@@ -116,9 +116,6 @@
 #include "media/remoting/renderer_controller.h"       // nogncheck
 #endif
 
-#if BUILDFLAG(ENABLE_CAST_AUDIO_RENDERER)
-#include "content/renderer/media/cast_renderer_factory.h"
-#endif  // BUILDFLAG(ENABLE_CAST_AUDIO_RENDERER)
 
 #if BUILDFLAG(IS_CASTOS) || BUILDFLAG(IS_CAST_ANDROID)
 // Enable remoting receiver
@@ -596,17 +593,6 @@ MediaFactory::CreateRendererFactorySelector(
   }
 #endif  // BUILDFLAG(ENABLE_MOJO_RENDERER)
 
-#if BUILDFLAG(ENABLE_CAST_AUDIO_RENDERER)
-  DCHECK(!is_base_renderer_factory_set);
-  is_base_renderer_factory_set = true;
-  factory_selector->AddBaseFactory(
-      RendererType::kCast,
-      std::make_unique<CastRendererFactory>(
-          media_log, decoder_factory,
-          base::BindRepeating(&RenderThreadImpl::GetGpuFactories,
-                              base::Unretained(render_thread)),
-          render_frame_->GetBrowserInterfaceBroker()));
-#endif  // BUILDFLAG(ENABLE_CAST_AUDIO_RENDERER)
 
 #if BUILDFLAG(ENABLE_MEDIA_REMOTING)
   mojo::PendingRemote<media::mojom::RemotingSource> remoting_source;

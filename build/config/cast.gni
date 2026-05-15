@@ -18,10 +18,6 @@ declare_args() {
   # Set true to enable modular_updater.
   enable_modular_updater = false
 
-  # True to enable the cast audio renderer.
-  #
-  # TODO(crbug.com/1293520): Remove this buildflag.
-  enable_cast_audio_renderer = false
 
   # Set this to true to build for Nest hardware running Linux (aka "CastOS").
   # Set this to false to use the defaults for Linux.
@@ -55,25 +51,7 @@ declare_args() {
 # Configures media options for cast.  See media/media_options.gni
 cast_mojo_media_services = []
 cast_mojo_media_host = ""
-
-if (enable_cast_audio_renderer) {
-  if (is_android) {
-    cast_mojo_media_services = [
-      "cdm",
-      "audio_decoder",
-    ]
-  }
-
-  if (!is_cast_audio_only) {
-    cast_mojo_media_services += [ "video_decoder" ]
-  }
-
-  if (is_android && is_cast_audio_only) {
-    cast_mojo_media_host = "browser"
-  } else {
-    cast_mojo_media_host = "gpu"
-  }
-} else if (enable_cast_renderer) {
+if (enable_cast_renderer) {
   # In this path, mojo media services are hosted in two processes:
   # 1. "renderer" and "cdm" run in browser process. This is hard coded in the
   # code.

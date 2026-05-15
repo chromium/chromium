@@ -109,30 +109,6 @@ cast_source_set("channel_mixer") {
   ]
 }
 
-cast_source_set("audio_renderer") {
-  sources = [
-    "cast_audio_renderer.cc",
-    "cast_audio_renderer.h",
-  ]
-
-  public_deps = [ "//chromecast/media/audio/audio_output_service:proto" ]
-
-  deps = [
-    ":audio_io_thread",
-    "//base",
-    "//chromecast/common/mojom",
-    "//chromecast/media/audio/audio_output_service:output_connection",
-    "//chromecast/media/audio/net:common",
-    "//chromecast/media/cma/base",
-    "//chromecast/public/media",
-    "//media",
-    "//media/mojo/mojom",
-    "//mojo/public/cpp/bindings",
-    "//net",
-    "//third_party/blink/public:blink_headers",
-  ]
-}
-
 cast_source_set("audio") {
   sources = [
     "audio_clock_simulator_impl.cc",
