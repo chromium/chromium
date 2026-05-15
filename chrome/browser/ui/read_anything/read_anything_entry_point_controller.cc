@@ -238,7 +238,9 @@ void ReadAnythingEntryPointController::InvokePageAction(
 
   ReadAnythingOpenTrigger open_trigger;
   if (side_panel_trigger ==
-      static_cast<int>(SidePanelOpenTrigger::kPinnedEntryToolbarButton)) {
+          static_cast<int>(SidePanelOpenTrigger::kPinnedEntryToolbarButton) ||
+      side_panel_trigger ==
+          static_cast<int>(SidePanelOpenTrigger::kOverflowMenu)) {
     open_trigger = ReadAnythingOpenTrigger::kPinnedSidePanelEntryToolbarButton;
   } else if (IsTriggeredByOmnibox(context)) {
     open_trigger = ReadAnythingOpenTrigger::kOmniboxChip;
