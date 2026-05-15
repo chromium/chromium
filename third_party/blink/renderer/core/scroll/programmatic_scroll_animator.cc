@@ -94,9 +94,8 @@ void ProgrammaticScrollAnimator::CancelAnimation() {
   DCHECK_NE(run_state_, RunState::kRunningOnCompositorButNeedsUpdate);
   ScrollAnimatorCompositorCoordinator::CancelAnimation();
   if (on_finish_) {
-    // TODO(https://crbug.com/40712058): Why is this callback not run as
-    // interrupted?
-    std::move(on_finish_).Run(ScrollableArea::ScrollCompletionMode::kFinished);
+    std::move(on_finish_)
+        .Run(ScrollableArea::ScrollCompletionMode::kInterruptedByScroll);
   }
 }
 

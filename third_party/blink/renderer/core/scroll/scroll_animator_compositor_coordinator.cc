@@ -40,6 +40,9 @@ void ScrollAnimatorCompositorCoordinator::Dispose() {
 
 void ScrollAnimatorCompositorCoordinator::DetachElement() {
   DCHECK(!element_detached_);
+  if (RuntimeEnabledFeatures::ProgrammaticScrollPromiseEnabled()) {
+    CancelAnimation();
+  }
   element_detached_ = true;
   ReattachCompositorAnimationIfNeeded(
       GetScrollableArea()->GetCompositorAnimationTimeline());

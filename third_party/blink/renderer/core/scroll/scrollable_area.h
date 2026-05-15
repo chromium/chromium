@@ -535,6 +535,8 @@ class CORE_EXPORT ScrollableArea : public GarbageCollectedMixin {
 
   void Trace(Visitor*) const override;
 
+  // TODO(https://crbug.com/40712058): The name is misleading because this is
+  // used only from `DisposeImpl`. Why is this not part of `DisposeImpl`?
   virtual void ClearScrollableArea();
 
   virtual bool RestoreScrollAnchor(const SerializedAnchor&) { return false; }
