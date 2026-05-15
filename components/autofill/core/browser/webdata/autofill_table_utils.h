@@ -26,6 +26,13 @@ inline constexpr size_t kMaxDataLengthForDatabase = 1024;
 // Truncates `data` to `kMaxDataLengthForDatabase`.
 std::u16string Truncate(std::u16string_view data);
 
+// Escapes all wildcards recognized by the SQL LIKE operator in `pattern`. This
+// is useful for Autocomplete queries, where prefix matching is applied through
+// the SQL query using "autocomplete_value LIKE {user_input}%". Without escaping
+// any wildcards present in the user_input would be applied to the search.
+std::u16string EscapeLikePattern(std::u16string_view pattern,
+                                 char16_t escape_char);
+
 // Helper functions to construct SQL statements from string constants.
 // - Functions with names corresponding to SQL keywords execute the statement
 //   directly and return if it was successful.

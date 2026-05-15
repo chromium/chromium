@@ -26,6 +26,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/time/time.h"
 #include "components/autofill/core/browser/webdata/autocomplete/autocomplete_entry_label_sensitive.h"
+#include "components/autofill/core/browser/webdata/autofill_table_utils.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_constants.h"
 #include "components/autofill/core/common/form_field_data.h"
@@ -222,7 +223,7 @@ bool AutocompleteTableLabelSensitive::GetFormValuesForElementNameAndLabel(
       "  MAX(count) AS max_count "
       "FROM autocomplete, inputs "
       "WHERE (name = inputs._name OR (label != '' AND label_normalized = "
-      "inputs._label)) AND value_lower LIKE inputs._prefix "
+      "inputs._label)) AND value_lower LIKE inputs._prefix ESCAPE '\\' "
       "GROUP BY value, matching_type "
       "ORDER BY "
       "  CASE "
@@ -233,7 +234,8 @@ bool AutocompleteTableLabelSensitive::GetFormValuesForElementNameAndLabel(
       "LIMIT ?"));
   s.BindString16(0, name);
   s.BindString16(1, NormalizeLabel(label));
-  s.BindString16(2, base::i18n::ToLower(prefix) + u"%");
+  s.BindString16(2,
+                 EscapeLikePattern(base::i18n::ToLower(prefix), u'\\') + u"%");
 
   // Later in this function we remove duplicates. Potentially every matching
   // type can return entries with identical values. So to make sure we will

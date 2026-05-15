@@ -20,6 +20,19 @@ std::u16string Truncate(std::u16string_view data) {
   return std::u16string(data.substr(0, kMaxDataLengthForDatabase));
 }
 
+std::u16string EscapeLikePattern(std::u16string_view pattern,
+                                 char16_t escape_char) {
+  std::u16string escaped_pattern;
+  escaped_pattern.reserve(pattern.size());
+  for (char16_t c : pattern) {
+    if (c == escape_char || c == u'%' || c == u'_') {
+      escaped_pattern.push_back(escape_char);
+    }
+    escaped_pattern.push_back(c);
+  }
+  return escaped_pattern;
+}
+
 bool CreateTableIfNotExists(
     sql::Database* db,
     std::string_view table_name,
