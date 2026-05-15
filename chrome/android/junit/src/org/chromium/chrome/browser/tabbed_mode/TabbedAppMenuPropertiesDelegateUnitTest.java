@@ -650,8 +650,6 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                                         item(R.id.open_history_menu_id),
                                         item(R.id.recent_tabs_menu_id),
                                         item(R.id.quick_delete_menu_id)),
-                                item(R.id.info_menu_id),
-                                item(R.id.page_info_divider_line_id),
                                 item(R.id.downloads_menu_id),
                                 item(
                                         R.id.bookmarks_parent_menu_id,

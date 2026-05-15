@@ -764,6 +764,10 @@ public abstract class AppMenuPropertiesDelegateImpl implements AppMenuProperties
     }
 
     protected boolean shouldShowPageInfoItem() {
+        Tab currentTab = mActivityTabProvider.get();
+        if (currentTab != null && UrlUtilities.isNtpUrl(currentTab.getUrl())) {
+            return false;
+        }
         return BrowserUiUtils.isPageInfoMovedToAppMenu(mContext)
                 || ChromeFeatureList.sThreeDotMenuBackButton.isEnabled();
     }
