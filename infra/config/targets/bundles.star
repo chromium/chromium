@@ -5161,6 +5161,7 @@ targets.bundle(
         "blink_fuzzer_unittests",
         "blink_heap_unittests",
         "blink_platform_unittests",
+        "blink_unittests",
         "boringssl_crypto_tests",
         "boringssl_ssl_tests",
         "capture_unittests",
@@ -5218,6 +5219,12 @@ targets.bundle(
             args = [
                 "--test-launcher-bot-mode",
                 "--test-launcher-filter-file=testing/buildbot/filters/ios.blink_platform_unittests.filter",
+            ],
+        ),
+        "blink_unittests": targets.mixin(
+            args = [
+                "--test-launcher-bot-mode",
+                "--test-launcher-filter-file=testing/buildbot/filters/ios.blink_unittests.filter",
             ],
         ),
         "cc_unittests": targets.mixin(
