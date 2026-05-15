@@ -217,15 +217,23 @@ void DisplayLinkMacMojo::OnDisplayAdded(const display::Display& new_display) {
                                 base::Unretained(this), display_id));
 }
 
-void DisplayLinkMacMojo::DisplayAddedOnVSyncThread(int64_t display_id) {
+void DisplayLinkMacMojo::DisplayAddedOnVSyncThread(int64_t vsync_display_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(vsync_thread_sequence_checker_);
   DCHECK(external_begin_frame_controller_);
 
-  if (auto it = display_links_.find(display_id); it != display_links_.end()) {
+  if (auto it = display_links_.find(vsync_display_id);
+      it != display_links_.end()) {
     // This display has been added.
     return;
   }
 
+  if (!base::IsValueInRangeForNumericType<CGDirectDisplayID>(
+          vsync_display_id)) {
+    return;
+  }
+
+  CGDirectDisplayID display_id =
+      static_cast<CGDirectDisplayID>(vsync_display_id);
   scoped_refptr<DisplayLinkMac> display_link_mac =
       CADisplayLinkMac::GetForDisplay(display_id, /*in_gpu_process=*/false);
   if (!display_link_mac) {

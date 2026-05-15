@@ -21,8 +21,27 @@ VSyncProviderMac::VSyncProviderMac()
 
 VSyncProviderMac::~VSyncProviderMac() = default;
 
-void VSyncProviderMac::SetSupportedDisplayLinkId(int64_t display_id,
+bool VSyncProviderMac::IsDisplayLinkInBrowserValid(int64_t vsync_display_id) {
+  // Early exit when the weak pointer to the callback
+  // ExternalBeginFrameSourceMojoMac::NeedsBeginFrameWithId() is invalid.
+  if (!needs_begin_frame_callback_) {
+    return false;
+  }
+
+  CGDirectDisplayID display_id =
+      base::checked_cast<CGDirectDisplayID>(vsync_display_id);
+
+  // |callback_lists_| is updated on Viz thread. A lock is needed when this
+  // function is called on CrGpuMain or CompositorGpuThread (DrDC).
+  base::AutoLock lock(id_lock_);
+  return callback_lists_.find(display_id) != callback_lists_.end();
+}
+
+void VSyncProviderMac::SetSupportedDisplayLinkId(int64_t vsync_display_id,
                                                  bool is_supported) {
+  CGDirectDisplayID display_id =
+      base::checked_cast<CGDirectDisplayID>(vsync_display_id);
+
   if (is_supported) {
     AddSupportedDisplayLinkId(display_id);
   } else {
@@ -30,7 +49,7 @@ void VSyncProviderMac::SetSupportedDisplayLinkId(int64_t display_id,
   }
 }
 
-void VSyncProviderMac::AddSupportedDisplayLinkId(int64_t display_id) {
+void VSyncProviderMac::AddSupportedDisplayLinkId(CGDirectDisplayID display_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(vsync_sequence_checker_);
 
   base::AutoLock lock(id_lock_);
@@ -45,7 +64,8 @@ void VSyncProviderMac::AddSupportedDisplayLinkId(int64_t display_id) {
   }
 }
 
-void VSyncProviderMac::RemoveSupportedDisplayLinkId(int64_t display_id) {
+void VSyncProviderMac::RemoveSupportedDisplayLinkId(
+    CGDirectDisplayID display_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(vsync_sequence_checker_);
 
   base::AutoLock lock(id_lock_);
@@ -56,7 +76,7 @@ void VSyncProviderMac::RemoveSupportedDisplayLinkId(int64_t display_id) {
 }
 
 void VSyncProviderMac::RegisterCallback(VSyncCallbackMac::Callback callback,
-                                        int64_t display_id) {
+                                        CGDirectDisplayID display_id) {
   if (!task_runner_->BelongsToCurrentThread()) {
     task_runner_->PostTask(FROM_HERE,
                            base::BindOnce(&VSyncProviderMac::RegisterCallback,
@@ -83,7 +103,7 @@ void VSyncProviderMac::RegisterCallback(VSyncCallbackMac::Callback callback,
 }
 
 void VSyncProviderMac::UnregisterCallback(VSyncCallbackMac::Callback callback,
-                                          int64_t display_id) {
+                                          CGDirectDisplayID display_id) {
   if (!task_runner_->BelongsToCurrentThread()) {
     task_runner_->PostTask(FROM_HERE,
                            base::BindOnce(&VSyncProviderMac::UnregisterCallback,
@@ -108,9 +128,12 @@ void VSyncProviderMac::UnregisterCallback(VSyncCallbackMac::Callback callback,
 }
 
 void VSyncProviderMac::OnVSync(const VSyncParamsMac& params,
-                               int64_t display_id) {
+                               int64_t vsync_display_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(vsync_sequence_checker_);
   TRACE_EVENT0("gpu", "VSyncProviderMac::OnVSync");
+
+  CGDirectDisplayID display_id =
+      base::checked_cast<CGDirectDisplayID>(vsync_display_id);
 
   // DisplayLink entry might no longer exist.
   auto found = callback_lists_.find(display_id);
@@ -133,19 +156,6 @@ void VSyncProviderMac::SetCallbackForRemoteNeedsBeginFrame(
     NeedsBeginFrameCB callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(vsync_sequence_checker_);
   needs_begin_frame_callback_ = std::move(callback);
-}
-
-bool VSyncProviderMac::IsDisplayLinkInBrowserValid(int64_t display_id) {
-  // Early exit when the weak pointer to
-  // ExternalBeginFrameSourceMojoMac::NeedsBeginFrameWithId() is invalid.
-  if (!needs_begin_frame_callback_) {
-    return false;
-  }
-
-  // |callback_lists_| is updated on Viz thread. A lock is needed when this
-  // function is called on CrGpuMain or CompositorGpuThread (DrDC).
-  base::AutoLock lock(id_lock_);
-  return callback_lists_.find(display_id) != callback_lists_.end();
 }
 
 bool VSyncProviderMac::BelongsToCurrentThread() {

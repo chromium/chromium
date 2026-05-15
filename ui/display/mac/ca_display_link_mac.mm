@@ -47,7 +47,7 @@ struct CADisplayLinkGlobals {
   base::Lock lock;
   // Set of display IDs where CADisplayLink has become unreliable in the GPU
   // process (e.g., due to a power event or system refresh rate change).
-  absl::flat_hash_set<int64_t> invalidated_displays GUARDED_BY(lock);
+  absl::flat_hash_set<CGDirectDisplayID> invalidated_displays GUARDED_BY(lock);
 
   // Indicate whether the display creation has been logged within the
   // 'Viz.ExternalBeginFrameSourceMac.DisplayLink.Create2' histogram.
@@ -245,14 +245,17 @@ void CADisplayLinkMac::UnregisterCallback(VSyncCallbackMac* callback) {
   }
 }
 
-bool CADisplayLinkMac::NotifyEventAndCheckValidity(int64_t display_id) {
+bool CADisplayLinkMac::NotifyEventAndCheckValidity(int64_t vsync_display_id) {
+  CGDirectDisplayID display_id =
+      base::checked_cast<CGDirectDisplayID>(vsync_display_id);
+
   base::AutoLock lock(CADisplayLinkGlobals::Get().lock);
   CADisplayLinkGlobals::Get().invalidated_displays.insert(display_id);
   return false;
 }
 
 // static
-bool CADisplayLinkMac::IsValidInGpuProcess(int64_t display_id) {
+bool CADisplayLinkMac::IsValidInGpuProcess(CGDirectDisplayID display_id) {
   if (!base::FeatureList::IsEnabled(kCADisplayLinkInGpuThenBrowser)) {
     return false;
   }

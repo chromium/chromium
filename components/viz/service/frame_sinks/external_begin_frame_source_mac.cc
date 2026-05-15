@@ -78,7 +78,9 @@ ExternalBeginFrameSourceMac::ExternalBeginFrameSourceMac(
     base::PowerMonitor::GetInstance()->AddPowerSuspendObserver(this);
   }
 
-  if (display_id == display::kInvalidDisplayId) {
+  // Record the status and do early exit here. All negative numbers are internal
+  // ids such as display::kInvalidDisplayId (-1).
+  if (display_id < 0) {
     RecordDisplayLinkCreateStatus(DisplayLinkResult::kFailedInvalidDisplayId);
     DLOG(ERROR)
         << "DisplayLinkMac ID is not available. "
@@ -179,7 +181,7 @@ void ExternalBeginFrameSourceMac::SetVSyncDisplayID(int64_t display_id,
     RecordDisplayLinkCreateStatus(display_link_result);
   } else {
     DisplayLinkResult display_link_result =
-        display_id == display::kInvalidDisplayId
+        display_id < 0
             ? DisplayLinkResult::kFailedInvalidDisplayId
             : (force_update
                    ? DisplayLinkResult::kFailedForcedUpdateCreateDisplayLink

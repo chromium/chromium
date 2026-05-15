@@ -90,7 +90,7 @@ class COMPOSITOR_EXPORT DisplayLinkMacMojo
 
   void OnDisplayLinkVSyncCallback(int64_t display_id, VSyncParamsMac params);
 
-  void DisplayAddedOnVSyncThread(int64_t display_id);
+  void DisplayAddedOnVSyncThread(int64_t vsync_display_id);
 
   void DisplaysRemovedOnVSyncThread(std::vector<int64_t> display_ids);
 

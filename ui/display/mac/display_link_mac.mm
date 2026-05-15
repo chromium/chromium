@@ -6,6 +6,7 @@
 
 #include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/task/bind_post_task.h"
 #include "ui/display/display_features.h"
 #include "ui/display/mac/ca_display_link_mac.h"
@@ -34,12 +35,16 @@ bool DisplayLinkMac::SupportsDisplayLinkMacInBrowser() {
 // static
 scoped_refptr<DisplayLinkMac> DisplayLinkMac::GetForDisplay(
     int64_t vsync_display_id) {
-  if (vsync_display_id == display::kInvalidDisplayId) {
+  // Convert int64_t to uint32_t. A negative id is an internal constant such as
+  // display::kInvalidDisplayId, which is invalid for creating a CADisplayLink.
+  // CGDirectDisplayID has a type of uint32_t.
+  if (!base::IsValueInRangeForNumericType<CGDirectDisplayID>(
+          vsync_display_id)) {
     return nullptr;
   }
 
   CGDirectDisplayID display_id =
-      base::checked_cast<CGDirectDisplayID>(vsync_display_id);
+      static_cast<CGDirectDisplayID>(vsync_display_id);
 
   // CADisplayLink is available only for MacOS 14.0+.
   if (@available(macos 14.0, *)) {

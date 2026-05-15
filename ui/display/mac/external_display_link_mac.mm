@@ -14,22 +14,17 @@ namespace ui {
 
 // static
 scoped_refptr<DisplayLinkMac> ExternalDisplayLinkMac::GetForDisplay(
-    int64_t display_id) {
+    CGDirectDisplayID display_id) {
   TRACE_EVENT("gpu", "ExternalDisplayLinkMac::GetForDisplay");
-  if (!IsDisplayLinkInBrowserValid(display_id)) {
+  if (!VSyncProviderMac::GetInstance()->IsDisplayLinkInBrowserValid(
+          display_id)) {
     return nullptr;
   }
 
   return (new ExternalDisplayLinkMac(display_id));
 }
 
-// static
-bool ExternalDisplayLinkMac::IsDisplayLinkInBrowserValid(int64_t display_id) {
-  return VSyncProviderMac::GetInstance()->IsDisplayLinkInBrowserValid(
-      display_id);
-}
-
-ExternalDisplayLinkMac::ExternalDisplayLinkMac(int64_t display_id)
+ExternalDisplayLinkMac::ExternalDisplayLinkMac(CGDirectDisplayID display_id)
     : display_id_(display_id),
       vsync_provider_(VSyncProviderMac::GetInstance()),
       post_callback_to_ctor_thread_(
