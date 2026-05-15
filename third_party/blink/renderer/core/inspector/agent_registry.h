@@ -7,7 +7,9 @@
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
+#include "third_party/blink/renderer/platform/heap/visitor.h"
 
 namespace blink {
 
@@ -18,18 +20,21 @@ class CORE_EXPORT AgentRegistry {
   DISALLOW_NEW();
 
  public:
+  AgentRegistry() : data_(MakeGarbageCollected<Data>()) {}
+
   // Add an agent to this list. An agent should not be added to the same
   // list more than once.
   void AddAgent(AgentType* agent) {
     if (HasAgent(agent))
       return;
     if (!RequiresCopy()) {
-      agents_.push_back(agent);
+      data_->agents.push_back(agent);
+      is_empty_ = false;
       return;
     }
-    HeapVector<Member<AgentType>> new_agents = agents_;
-    new_agents.push_back(agent);
-    agents_.swap(new_agents);
+    data_ = MakeGarbageCollected<Data>(*data_);
+    data_->agents.push_back(agent);
+    is_empty_ = false;
     iteration_counter_ = 0;
   }
 
@@ -38,14 +43,15 @@ class CORE_EXPORT AgentRegistry {
   void RemoveAgent(AgentType* agent) {
     if (!HasAgent(agent))
       return;
-    wtf_size_t position = agents_.Find(agent);
+    wtf_size_t position = data_->agents.Find(agent);
     if (!RequiresCopy()) {
-      agents_.EraseAt(position);
+      data_->agents.EraseAt(position);
+      is_empty_ = data_->agents.empty();
       return;
     }
-    HeapVector<Member<AgentType>> new_agents = agents_;
-    new_agents.EraseAt(position);
-    agents_.swap(new_agents);
+    data_ = MakeGarbageCollected<Data>(*data_);
+    data_->agents.EraseAt(position);
+    is_empty_ = data_->agents.empty();
     iteration_counter_ = 0;
   }
 
@@ -53,12 +59,13 @@ class CORE_EXPORT AgentRegistry {
   // modification.
   bool RequiresCopy() const { return iteration_counter_ != 0; }
 
-  bool IsEmpty() const { return agents_.empty(); }
+  // This method must be safe to call during finalization.
+  bool IsEmpty() const { return is_empty_; }
 
-  wtf_size_t size() const { return agents_.size(); }
+  wtf_size_t size() const { return data_->agents.size(); }
 
   bool HasAgent(AgentType* agent) const {
-    return agents_.Find(agent) != kNotFound;
+    return data_->agents.Find(agent) != kNotFound;
   }
 
   // Safely iterate over the registered agents.
@@ -70,19 +77,26 @@ class CORE_EXPORT AgentRegistry {
   template <typename ForEachCallable>
   void ForEachAgent(const ForEachCallable& callable) const {
     iteration_counter_++;
-    for (const Member<AgentType>& agent : agents_) {
+    Member<Data> snapshot = data_;
+    for (const Member<AgentType>& agent : snapshot->agents) {
       callable(agent);
     }
     if (iteration_counter_ > 0)
       iteration_counter_--;
   }
 
-  void Trace(Visitor* visitor) const { visitor->Trace(agents_); }
+  void Trace(Visitor* visitor) const { visitor->Trace(data_); }
 
  private:
+  struct Data : public GarbageCollected<Data> {
+    HeapVector<Member<AgentType>> agents;
+    void Trace(Visitor* visitor) const { visitor->Trace(agents); }
+  };
+
   // Number of iteration over original vector is recorded.
   mutable size_t iteration_counter_ = 0;
-  HeapVector<Member<AgentType>> agents_;
+  bool is_empty_ = true;
+  Member<Data> data_;
 };
 
 }  // namespace blink
