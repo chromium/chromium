@@ -203,6 +203,11 @@ gfx::Rect BrowserViewLayoutImpl::GetTopContainerBoundsInParent(
 // Layout logic.
 
 void BrowserViewLayoutImpl::Layout(views::View* host) {
+  if (reentrancy_guard_) {
+    return;
+  }
+  base::AutoReset<bool> guard_reset(&reentrancy_guard_, true);
+
   const auto params =
       delegate().GetBrowserLayoutParams(/*use_browser_bounds=*/true);
   if (params.IsEmpty()) {

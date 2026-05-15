@@ -166,6 +166,8 @@ class BrowserViewLayoutImpl : public BrowserViewLayout {
   // BrowserViewLayout overrides:
   gfx::Point GetDialogPosition(const gfx::Size& dialog_size) const override;
   gfx::Size GetMaximumDialogSize() const override;
+
+  bool reentrancy_guard_ = false;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_FRAME_LAYOUT_BROWSER_VIEW_LAYOUT_IMPL_H_
