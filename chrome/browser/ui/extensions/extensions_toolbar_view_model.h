@@ -202,6 +202,7 @@ class ExtensionsToolbarViewModel
   void OnToolbarActionUpdated(
       const ToolbarActionsModel::ActionId& action_id) override;
   void OnToolbarPinnedActionsChanged() override;
+  void OnToolbarActionsModelShutdown() override;
 
   // content::WebContentsObserver:
   void DidFinishNavigation(content::NavigationHandle* handle) override;
@@ -227,6 +228,7 @@ class ExtensionsToolbarViewModel
   void OnShowAccessRequestsInToolbarChanged(
       const extensions::ExtensionId& extension_id,
       bool can_show_requests) override;
+  void OnPermissionsManagerShutdown() override;
 
  private:
   // Returns whether any of `actions` given have access to the `web_contents`.
@@ -244,7 +246,7 @@ class ExtensionsToolbarViewModel
   // The delegate to retrieve platform-specific information.
   const raw_ptr<Delegate> delegate_;
 
-  const raw_ptr<ToolbarActionsModel> actions_model_;
+  raw_ptr<ToolbarActionsModel> actions_model_;
   base::ScopedObservation<ToolbarActionsModel, ToolbarActionsModel::Observer>
       actions_model_observation_{this};
 

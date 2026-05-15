@@ -148,12 +148,16 @@ class PermissionsManager : public KeyedService {
         const ExtensionId& extension_id,
         const url::Origin& origin) {}
 
+    // Called when PermissionsManager is shutting down.
+    virtual void OnPermissionsManagerShutdown() {}
+
    protected:
     ~Observer() override = default;
   };
 
   explicit PermissionsManager(content::BrowserContext* browser_context);
   ~PermissionsManager() override;
+  void Shutdown() override;
   PermissionsManager(const PermissionsManager&) = delete;
   const PermissionsManager& operator=(const PermissionsManager&) = delete;
 

@@ -290,6 +290,12 @@ PermissionsManager::~PermissionsManager() {
   requests_helpers_.clear();
 }
 
+void PermissionsManager::Shutdown() {
+  for (Observer& observer : observers_) {
+    observer.OnPermissionsManagerShutdown();
+  }
+}
+
 // static
 PermissionsManager* PermissionsManager::Get(
     content::BrowserContext* browser_context) {

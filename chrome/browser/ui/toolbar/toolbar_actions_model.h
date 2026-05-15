@@ -86,6 +86,9 @@ class ToolbarActionsModel
     // Called whenever the pinned actions change.
     virtual void OnToolbarPinnedActionsChanged() = 0;
 
+    // Called when the ToolbarActionsModel is shutting down.
+    virtual void OnToolbarActionsModelShutdown() {}
+
    protected:
     virtual ~Observer() = default;
   };

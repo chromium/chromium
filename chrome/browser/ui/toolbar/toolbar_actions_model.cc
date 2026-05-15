@@ -224,6 +224,9 @@ void ToolbarActionsModel::OnActiveTabPermissionGranted(
 }
 
 void ToolbarActionsModel::Shutdown() {
+  for (Observer& observer : observers_) {
+    observer.OnToolbarActionsModelShutdown();
+  }
   permissions_manager_observation_.Reset();
 }
 
