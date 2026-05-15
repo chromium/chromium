@@ -336,6 +336,7 @@ if (enable_uncompressed_archive) {
 if (!(is_component_build && is_debug && target_cpu == "x86") &&
     host_os == "win") {
   action("previous_version_mini_installer") {
+    pool = "//build/toolchain:link_pool($default_toolchain)"
     script = "generate_previous_version_mini_installer.py"
     testonly = true
     if (target_cpu == "arm64") {
