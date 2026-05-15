@@ -547,6 +547,44 @@ suite('NewTabPageComposeboxUploadFileTest', () => {
         await testProxy.element.updateComplete;
         assertFalse(testProxy.element['uploadButtonDisabled']);
       });
+
+  test('uploading drive file hides dropdown and does not query autocomplete', async () => {
+    loadTimeData.overrideValues({
+      composeboxShowZps: true,
+      composeboxShowContextMenu: true,
+    });
+    testSupport.createComposeboxElement(testProxy);
+    await microtasksFinished();
+
+    // Autocomplete queried once when composebox is opened for ZPS.
+    assertEquals(
+        testProxy.searchboxHandler.getCallCount('queryAutocomplete'), 1);
+
+    testProxy.searchboxHandler.setPromiseResolveFor(
+        'onDriveUploadClicked', {
+          response: {
+            files: [{
+              token: {low: BigInt(1), high: BigInt(2)},
+              fileName: 'foo.pdf',
+              mimeType: 'application/pdf',
+              thumbnailUrl: null,
+            }],
+            error: null,
+          },
+        });
+
+    const contextEntrypoint = $$(testProxy.element, '#contextEntrypoint');
+    assertTrue(!!contextEntrypoint);
+    contextEntrypoint.dispatchEvent(
+        new CustomEvent('open-drive-upload', {bubbles: true, composed: true}));
+
+    await testProxy.searchboxHandler.whenCalled('onDriveUploadClicked');
+    await microtasksFinished();
+
+    // Matches should be hidden.
+    assertFalse(await testSupport.areMatchesShowing(
+        testProxy.element, testProxy.searchboxCallbackRouterRemote));
+  });
 });
 
 suite('NewTabPageComposeboxUploadPasteTest', () => {

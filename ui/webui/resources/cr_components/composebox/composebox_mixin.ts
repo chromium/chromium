@@ -1633,6 +1633,7 @@ export const ComposeboxEmbedderMixin =
             ]);
             this.recordFileValidationMetric(ComposeboxFileValidationError.NONE);
             this.focusInput();
+            this.showDropdown = false;
           }
         }
 
