@@ -12,18 +12,10 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "build/branding_buildflags.h"
-#include "cc/paint/paint_flags.h"
-#include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/themes/theme_properties.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_otr_state.h"
-#include "chrome/browser/ui/color/chrome_color_id.h"
-#include "chrome/browser/ui/layout_constants.h"
-#include "chrome/browser/ui/toolbar/app_menu_icon_controller.h"
-#include "chrome/browser/ui/toolbar/app_menu_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/toolbar/app_menu.h"
+#include "chrome/browser/ui/views/toolbar/lottie_icon_source.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_ink_drop_util.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
@@ -64,37 +56,6 @@ namespace {
 constexpr int kChromeRefreshImageLabelPadding = 2;
 constexpr int kGlowUpImageLabelPadding = 4;
 constexpr base::TimeDelta kAnimationDuration = base::Milliseconds(300);
-
-class LottieIconSource : public gfx::CanvasImageSource {
- public:
-  LottieIconSource(lottie::Animation* animation,
-                   float progress,
-                   int size,
-                   SkColor color)
-      : gfx::CanvasImageSource(gfx::Size(size, size)),
-        animation_(animation),
-        progress_(progress),
-        color_(color) {}
-  LottieIconSource(const LottieIconSource&) = delete;
-  LottieIconSource& operator=(const LottieIconSource&) = delete;
-  ~LottieIconSource() override = default;
-
-  // gfx::CanvasImageSource:
-  void Draw(gfx::Canvas* canvas) override {
-    cc::PaintFlags flags;
-    flags.setColorFilter(cc::ColorFilter::MakeBlend(
-        SkColor4f::FromColor(color_), SkBlendMode::kSrcIn));
-    canvas->SaveLayerWithFlags(flags);
-    animation_->PaintFrame(canvas, progress_, size());
-    canvas->Restore();
-  }
-
- private:
-  const raw_ptr<lottie::Animation> animation_;
-  const float progress_;
-  const SkColor color_;
-};
-
 }  // namespace
 
 // static
