@@ -31,4 +31,9 @@ test(() => {
   element.unbounded = true;
   assert_equals(getComputedStyle(element).visibility, 'hidden', 'Element with unbounded attribute should default to visibility: hidden.');
 }, 'Verify the default user-agent styling for [unbounded].');
+
+promise_test(async t => {
+  const element = document.getElementById('target');
+  await promise_rejects_dom(t, 'NotAllowedError', element.showUnboundedElement());
+}, 'Verify showUnboundedElement() throws DOMException without user activation.');
 </script>

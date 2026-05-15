@@ -4121,6 +4121,7 @@ interface HTMLElement : Element
     method focus
     method hidePopover
     method showPopover
+    method showUnboundedElement
     method togglePopover
     setter accessKey
     setter autocapitalize

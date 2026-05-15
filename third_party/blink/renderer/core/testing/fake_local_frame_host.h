@@ -216,6 +216,10 @@ class FakeLocalFrameHost : public mojom::blink::LocalFrameHost {
   void InitializeCrashReportContext(
       uint64_t length,
       InitializeCrashReportContextCallback callback) override;
+  void RequestUnboundedSurface(
+      mojo::PendingAssociatedReceiver<mojom::blink::UnboundedSurfaceHost> host,
+      mojo::PendingAssociatedRemote<mojom::blink::UnboundedSurfaceClient>
+          client) override {}
   void NotifyDocumentInteractive() override;
 
  private:

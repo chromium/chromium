@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/visual_viewport.h"
 #include "third_party/blink/renderer/core/html/html_frame_owner_element.h"
+#include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/layout/layout_block.h"
 #include "third_party/blink/renderer/core/page/page_animator.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
@@ -662,6 +663,41 @@ TEST_P(CompositingReasonFinderTest, WillChangeScrollPosition) {
   EXPECT_REASONS(
       CompositingReason::kNone,
       CompositingReasonFinder::DirectReasonsForPaintProperties(*target));
+}
+
+TEST_P(CompositingReasonFinderTest, UnboundedElementCompositingReason) {
+  SetBodyInnerHTML(R"HTML(
+    <div id="target" style="width: 100px; height: 100px;"></div>
+  )HTML");
+
+  auto* element = GetDocument().getElementById(AtomicString("target"));
+  auto* html_element = To<HTMLElement>(element);
+
+  // 1. No attribute, inactive: kNone
+  EXPECT_REASONS(CompositingReason::kNone,
+                 CompositingReasonFinder::DirectReasonsForPaintProperties(
+                     *GetLayoutObjectByElementId("target")));
+
+  // 2. With attribute, but inactive: kNone
+  html_element->setAttribute(html_names::kUnboundedAttr, g_empty_atom);
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_REASONS(CompositingReason::kNone,
+                 CompositingReasonFinder::DirectReasonsForPaintProperties(
+                     *GetLayoutObjectByElementId("target")));
+
+  // 3. With attribute AND active: kUnboundedElement
+  html_element->SetUnboundedElementActive(true);
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_REASONS(CompositingReason::kUnboundedElement,
+                 CompositingReasonFinder::DirectReasonsForPaintProperties(
+                     *GetLayoutObjectByElementId("target")));
+
+  // 4. Remove attribute, keep active: kNone
+  html_element->removeAttribute(html_names::kUnboundedAttr);
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_REASONS(CompositingReason::kNone,
+                 CompositingReasonFinder::DirectReasonsForPaintProperties(
+                     *GetLayoutObjectByElementId("target")));
 }
 
 }  // namespace blink

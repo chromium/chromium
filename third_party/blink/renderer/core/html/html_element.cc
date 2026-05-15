@@ -31,7 +31,9 @@
 #include "base/containers/enum_set.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/forms/form_control_type.mojom-blink.h"
+#include "third_party/blink/public/mojom/frame/frame.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/js_event_handler_for_content_attribute.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_attach_internals_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_show_popover_options.h"
@@ -52,6 +54,7 @@
 #include "third_party/blink/renderer/core/css_value_keywords.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/document_fragment.h"
+#include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/element_rare_data_vector.h"
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
@@ -1548,6 +1551,46 @@ void MarkPopoverInvokersDirty(const HTMLElement& popover) {
   }
 }
 }  // namespace
+
+ScriptPromise<IDLUndefined> HTMLElement::showUnboundedElement(
+    ScriptState* script_state) {
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(script_state);
+  auto promise = resolver->Promise();
+
+  auto* frame = GetDocument().GetFrame();
+  if (!frame) {
+    resolver->Reject(MakeGarbageCollected<DOMException>(
+        DOMExceptionCode::kInvalidStateError,
+        "The element is not in a document with a valid frame."));
+    return promise;
+  }
+
+  if (!LocalFrame::HasTransientUserActivation(frame)) {
+    resolver->Reject(MakeGarbageCollected<DOMException>(
+        DOMExceptionCode::kNotAllowedError,
+        "API can only be initiated by a user gesture."));
+    return promise;
+  }
+
+  // TODO(crbug.com/508672616) This should invalidate compositing, via
+  // SetNeedsPaintPropertyUpdate().
+  SetUnboundedElementActive(true);
+
+  // TODO(crbug.com/508672616) Store and use the local mojo endpoints.
+  mojo::PendingAssociatedRemote<mojom::blink::UnboundedSurfaceHost> host_remote;
+  auto host_receiver = host_remote.InitWithNewEndpointAndPassReceiver();
+
+  mojo::PendingAssociatedReceiver<mojom::blink::UnboundedSurfaceClient>
+      client_receiver;
+  auto client_remote = client_receiver.InitWithNewEndpointAndPassRemote();
+
+  frame->GetLocalFrameHostRemote().RequestUnboundedSurface(
+      std::move(host_receiver), std::move(client_remote));
+  resolver->Resolve();
+
+  return promise;
+}
 
 bool HTMLElement::togglePopover(ExceptionState& exception_state) {
   return togglePopover(nullptr, exception_state);

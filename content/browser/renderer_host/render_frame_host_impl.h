@@ -2657,6 +2657,10 @@ class CONTENT_EXPORT RenderFrameHostImpl
   void InitializeCrashReportContext(
       uint64_t length,
       InitializeCrashReportContextCallback callback) override;
+  void RequestUnboundedSurface(
+      mojo::PendingAssociatedReceiver<blink::mojom::UnboundedSurfaceHost> host,
+      mojo::PendingAssociatedRemote<blink::mojom::UnboundedSurfaceClient>
+          client) override;
 
   // blink::mojom::BackForwardCacheControllerHost:
   void EvictFromBackForwardCache(

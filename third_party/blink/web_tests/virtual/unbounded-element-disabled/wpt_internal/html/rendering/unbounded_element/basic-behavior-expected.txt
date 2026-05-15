@@ -3,5 +3,7 @@ This is a testharness.js-based test.
   assert_true: The unbounded IDL attribute should be exposed on HTMLElement. expected true got false
 [FAIL] Verify the default user-agent styling for [unbounded].
   assert_equals: Element with unbounded attribute should default to visibility: hidden. expected "hidden" but got "visible"
+[FAIL] Verify showUnboundedElement() throws DOMException without user activation.
+  promise_test: Unhandled rejection with value: object "TypeError: element.showUnboundedElement is not a function"
 Harness: the test ran to completion.
 

@@ -11189,6 +11189,15 @@ void RenderFrameHostImpl::InitializeCrashReportContext(
   std::move(callback).Run(std::move(region));
 }
 
+void RenderFrameHostImpl::RequestUnboundedSurface(
+    mojo::PendingAssociatedReceiver<blink::mojom::UnboundedSurfaceHost> host,
+    mojo::PendingAssociatedRemote<blink::mojom::UnboundedSurfaceClient>
+        client) {
+  // TODO(crbug.com/508672616) Store and use the mojo endpoints.
+  local_frame_host_receiver_.ReportBadMessage(
+      "RequestUnboundedSurface is not implemented yet.");
+}
+
 void RenderFrameHostImpl::CreateNewPopupWidget(
     mojo::PendingAssociatedReceiver<blink::mojom::PopupWidgetHost>
         blink_popup_widget_host,

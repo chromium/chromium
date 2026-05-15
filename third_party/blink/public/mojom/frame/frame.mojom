@@ -260,6 +260,21 @@ struct LegacyTechEventCodeLocation {
 // data; see `CreateCrashReportContext()`.
 const uint64 kMaxCrashReportContextSize = 65536;
 
+// Implemented on the browser side, this interface manages lifetime
+// operations and window resizing actions for unbounded elements.
+// Note: This interface should only be exposed to trusted renderers.
+interface UnboundedSurfaceHost {
+};
+
+// Implemented on the renderer side, this interface receives events
+// from the browser process when an unbounded element's display
+// surface is dismissed.
+interface UnboundedSurfaceClient {
+  // Notification from the browser that the unbounded element window has been
+  // dismissed. E.g. by light dismiss or user hitting ESC.
+  OnDismissed();
+};
+
 // Implemented in Browser, this interface defines frame-specific methods that
 // will be invoked from the render process (e.g. content::RenderFrameHostImpl).
 //
@@ -787,6 +802,11 @@ interface LocalFrameHost {
   // instead of using the two synchronous IPCs below.
   InitializeCrashReportContext(uint64 length)
       => (mojo_base.mojom.UnsafeSharedMemoryRegion region);
+
+  // Request the instantiation of an overlay host container.
+  RequestUnboundedSurface(
+      pending_associated_receiver<UnboundedSurfaceHost> host,
+      pending_associated_remote<UnboundedSurfaceClient> client);
 };
 
 // Implemented in Browser, this interface defines frame-specific methods

@@ -203,8 +203,9 @@ enum class ElementFlags {
   kContainsPersistentVideo = 1 << 5,
   kIsEligibleForElementCapture = 1 << 6,
   kHasCheckedElementCaptureEligibility = 1 << 7,
+  kIsUnboundedElementActive = 1 << 8,
 
-  kNumberOfElementFlags = 8,  // Size of bitfield used to store the flags.
+  kNumberOfElementFlags = 9,  // Size of bitfield used to store the flags.
 };
 
 enum class ShadowRootMode;
@@ -2073,6 +2074,10 @@ class CORE_EXPORT Element : public ContainerNode {
   void SetHasBeenHeuristicCustomPasswordCSS();
 
  protected:
+  bool HasElementFlag(ElementFlags mask) const;
+  void SetElementFlag(ElementFlags, bool value = true);
+  void ClearElementFlag(ElementFlags);
+
   bool HasElementData() const { return static_cast<bool>(element_data_); }
   const ElementData* GetElementData() const { return element_data_.Get(); }
   UniqueElementData& EnsureUniqueElementData();
@@ -2220,10 +2225,6 @@ class CORE_EXPORT Element : public ContainerNode {
   bool ScrollLayoutBoxTo(const ScrollToOptions*, ScrollPromiseResolver*);
   bool ScrollFrameBy(const ScrollToOptions*, ScrollPromiseResolver*);
   bool ScrollFrameTo(const ScrollToOptions*, ScrollPromiseResolver*);
-
-  bool HasElementFlag(ElementFlags mask) const;
-  void SetElementFlag(ElementFlags, bool value = true);
-  void ClearElementFlag(ElementFlags);
 
   void ClearPseudoElement(PseudoId,
                           const AtomicString& pseudo_argument = g_null_atom);

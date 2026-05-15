@@ -402,6 +402,15 @@ class CORE_EXPORT HTMLElement : public Element {
   // See comment on this method in element.h
   bool IsRenderedInTopLayer() const override;
 
+  // The Unbounded Element API. See crbug.com/508672616.
+  ScriptPromise<IDLUndefined> showUnboundedElement(ScriptState*);
+  bool IsUnboundedElementActive() const {
+    return HasElementFlag(ElementFlags::kIsUnboundedElementActive);
+  }
+  void SetUnboundedElementActive(bool active) {
+    SetElementFlag(ElementFlags::kIsUnboundedElementActive, active);
+  }
+
  protected:
   FocusableState SupportsFocus(UpdateBehavior update_behavior) const override;
   int DefaultTabIndex() const override;

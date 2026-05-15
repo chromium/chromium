@@ -365,6 +365,7 @@ namespace http://www.w3.org/1999/xhtml
     property setPointerCapture
     property shadowRoot
     property showPopover
+    property showUnboundedElement
     property slot
     property spellcheck
     property startViewTransition

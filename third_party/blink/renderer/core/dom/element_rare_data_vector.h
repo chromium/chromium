@@ -135,9 +135,8 @@ class CORE_EXPORT ElementRareDataVector final
 
   enum {
     kConnectedFrameCountBits = 10,  // Must fit Page::maxNumberOfFrames.
-    kNumberOfElementFlags = 8,
+    kNumberOfElementFlags = 9,
     kNumberOfDynamicRestyleFlags = 14
-    // 0 bits remaining.
   };
 
   static ElementRareDataVector* Create() {
@@ -770,6 +769,7 @@ class CORE_EXPORT ElementRareDataVector final
     uint32_t restyle_flags_ : kNumberOfDynamicRestyleFlags = 0u;
     uint32_t connected_frame_count_ : kConnectedFrameCountBits = 0u;
     uint32_t element_flags_ : kNumberOfElementFlags = 0u;
+    // 8 bits remaining in first word of Flags.
 
     unsigned did_attach_internals : 1 = false;
     unsigned has_undo_stack : 1 = false;
@@ -812,7 +812,7 @@ class CORE_EXPORT ElementRareDataVector final
     // This is distinct from native passwords (<input type=password>).
     unsigned has_been_heuristic_custom_password_css_ : 1 = false;
 
-    // Currently 10 free bits left.
+    // 1 free bit in the second word (9 free bits overall).
   };
   static_assert(sizeof(Flags) <= 8, "Flags struct should not exceed 64 bits");
 

@@ -15,6 +15,8 @@
 #include "third_party/blink/renderer/core/fullscreen/fullscreen.h"
 #include "third_party/blink/renderer/core/html/canvas/html_canvas_element.h"
 #include "third_party/blink/renderer/core/html/html_body_element.h"
+#include "third_party/blink/renderer/core/html/html_element.h"
+#include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/layout/layout_embedded_content.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_transformable_container.h"
@@ -393,6 +395,13 @@ CompositingReasons CompositingReasonFinder::DirectReasonsForPaintProperties(
   }
 
   reasons |= CompositingReasonsFor3DSceneLeaf(object);
+
+  if (auto* html_element = DynamicTo<HTMLElement>(element);
+      html_element &&
+      html_element->FastHasAttribute(html_names::kUnboundedAttr) &&
+      html_element->IsUnboundedElementActive()) {
+    reasons |= CompositingReason::kUnboundedElement;
+  }
 
   if (object.CanHaveAdditionalCompositingReasons())
     reasons |= object.AdditionalCompositingReasons();
