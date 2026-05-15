@@ -517,6 +517,9 @@ import java.util.function.Supplier;
             if (scrimAnchor == null) {
                 scrimAnchor = mViewHolder.parentView;
             }
+            if (mScrimModel != null) {
+                mScrimManager.hideScrim(mScrimModel, /* animate= */ false);
+            }
             mScrimModel =
                     new PropertyModel.Builder(ScrimProperties.ALL_KEYS)
                             .with(ScrimProperties.ANCHOR_VIEW, scrimAnchor)
@@ -544,6 +547,7 @@ import java.util.function.Supplier;
         mPopupStateSupplier.set(PopupState.HIDDEN);
         if (mScrimModel != null) {
             mScrimManager.hideScrim(mScrimModel, /* animate= */ true);
+            mScrimModel = null;
         }
         if (wasBottomSheet) {
             View focusedView = mViewHolder.parentView.findFocus();

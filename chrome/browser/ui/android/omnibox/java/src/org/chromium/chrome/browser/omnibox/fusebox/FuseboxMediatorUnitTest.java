@@ -608,6 +608,22 @@ public class FuseboxMediatorUnitTest {
     }
 
     @Test
+    public void testDoubleBeginInput_hidesPreviousScrim() {
+        OmniboxFeatures.setShowBottomSheetPopupForTesting(true);
+        mInput.setFocusReason(OmniboxFocusReason.FAKE_BOX_PLUS_BUTTON_TAP);
+        recreateMediator();
+
+        verify(mScrimManager).showScrim(any());
+        clearInvocations(mScrimManager);
+
+        // Trigger second beginInput on the same mediator (simulating double tap from ntp fakebox).
+        mMediator.beginInput(createSession());
+
+        verify(mScrimManager).hideScrim(any(), eq(false));
+        verify(mScrimManager).showScrim(any());
+    }
+
+    @Test
     public void testPopupShowHide_floatingMode_doesNotTriggerScrim() {
         OmniboxFeatures.setShowBottomSheetPopupForTesting(false);
         recreateMediator();
