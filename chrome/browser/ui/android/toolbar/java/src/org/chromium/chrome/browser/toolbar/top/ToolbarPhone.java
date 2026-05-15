@@ -2507,6 +2507,7 @@ public class ToolbarPhone extends ToolbarLayout
                         if (!hasFocus) {
                             mDisableLocationBarRelayout = true;
                         } else {
+                            mDisableLocationBarRelayout = false;
                             mLayoutLocationBarInFocusedMode = true;
                             ViewUtils.requestLayout(
                                     ToolbarPhone.this,
@@ -2523,8 +2524,8 @@ public class ToolbarPhone extends ToolbarLayout
 
                     @Override
                     public void onEnd(Animator animation) {
+                        mDisableLocationBarRelayout = false;
                         if (!hasFocus) {
-                            mDisableLocationBarRelayout = false;
                             mLayoutLocationBarInFocusedMode = false;
                             ViewUtils.requestLayout(
                                     ToolbarPhone.this,
