@@ -18,6 +18,11 @@
 
 namespace personal_context {
 
+namespace {
+constexpr char kNoticeInteractionsHistogramName[] =
+    "PersonalContext.NoticeInteractions";
+}  // namespace
+
 PersonalContextFirstRunBottomSheetBridge::
     PersonalContextFirstRunBottomSheetBridge(
         content::WebContents* web_contents,
@@ -59,7 +64,7 @@ bool PersonalContextFirstRunBottomSheetBridge::PerformShowContent() {
 void PersonalContextFirstRunBottomSheetBridge::Show() {
   if (PerformShowContent()) {
     base::UmaHistogramEnumeration(
-        "AccessibilityAnnotator.RemoteAnnotatorInfo",
+        kNoticeInteractionsHistogramName,
         accessibility_annotator::InfoShowRequestResult::kShown);
   } else {
     // TODO(crbug.com/502445725): Record "NotShown" histogram value.
@@ -82,20 +87,20 @@ void PersonalContextFirstRunBottomSheetBridge::OnInfoAcknowledged(JNIEnv* env) {
     std::move(callback_).Run(
         accessibility_annotator::InfoResult::kAcknowledged);
     base::UmaHistogramEnumeration(
-        "AccessibilityAnnotator.RemoteAnnotatorInfo",
+        kNoticeInteractionsHistogramName,
         accessibility_annotator::InfoShowRequestResult::kAccepted);
   }
 }
 
 void PersonalContextFirstRunBottomSheetBridge::OnManageSettingsClicked(
     JNIEnv* env) {
-  base::RecordAction(base::UserMetricsAction(
-      "AccessibilityAnnotator.RemoteAnnotatorInfo.SettingsLinkClick"));
+  base::RecordAction(
+      base::UserMetricsAction("PersonalContext.Notice.SettingsLinkClick"));
 }
 
 void PersonalContextFirstRunBottomSheetBridge::OnLearnMoreClicked(JNIEnv* env) {
-  base::RecordAction(base::UserMetricsAction(
-      "AccessibilityAnnotator.RemoteAnnotatorInfo.LearnMoreLinkClick"));
+  base::RecordAction(
+      base::UserMetricsAction("PersonalContext.Notice.LearnMoreLinkClick"));
 }
 
 void PersonalContextFirstRunBottomSheetBridge::OnInfoDismissed(JNIEnv* env) {
@@ -103,7 +108,7 @@ void PersonalContextFirstRunBottomSheetBridge::OnInfoDismissed(JNIEnv* env) {
     std::move(callback_).Run(
         accessibility_annotator::InfoResult::kNotAcknowledged);
     base::UmaHistogramEnumeration(
-        "AccessibilityAnnotator.RemoteAnnotatorInfo",
+        kNoticeInteractionsHistogramName,
         accessibility_annotator::InfoShowRequestResult::kDismissed);
   }
 }

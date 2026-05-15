@@ -31,7 +31,7 @@ enum class InfoShowRequestResult {
   kDismissed = 2,
   kMaxValue = kDismissed,
 };
-// LINT.ThenChange(//tools/metrics/histograms/metadata/accessibility_annotator/enums.xml:AccessibilityAnnotatorRemoteAnnotatorInfo)
+// LINT.ThenChange(//tools/metrics/histograms/metadata/accessibility_annotator/enums.xml:PersonalContextNoticeInteractions)
 
 // Source of the first run invocation.
 enum class FirstRunInvocationSource {

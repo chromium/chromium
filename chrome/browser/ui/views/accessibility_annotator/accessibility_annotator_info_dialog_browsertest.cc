@@ -68,7 +68,7 @@ class AccessibilityAnnotatorInfoDialogBrowserTest
 IN_PROC_BROWSER_TEST_F(AccessibilityAnnotatorInfoDialogBrowserTest,
                        InvokeUi_default) {
   base::HistogramTester histogram_tester;
-  std::string histogram_name = "AccessibilityAnnotator.RemoteAnnotatorInfo";
+  std::string histogram_name = "PersonalContext.NoticeInteractions";
 
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
@@ -176,7 +176,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityAnnotatorInfoDialogBrowserTest,
 IN_PROC_BROWSER_TEST_F(AccessibilityAnnotatorInfoDialogBrowserTest,
                        GotItClickDismissesDialog) {
   base::HistogramTester histogram_tester;
-  std::string histogram_name = "AccessibilityAnnotator.RemoteAnnotatorInfo";
+  std::string histogram_name = "PersonalContext.NoticeInteractions";
 
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
@@ -224,7 +224,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityAnnotatorInfoDialogBrowserTest,
 IN_PROC_BROWSER_TEST_F(AccessibilityAnnotatorInfoDialogBrowserTest,
                        MAYBE_ClickOutsideDismissesDialog) {
   base::HistogramTester histogram_tester;
-  std::string histogram_name = "AccessibilityAnnotator.RemoteAnnotatorInfo";
+  std::string histogram_name = "PersonalContext.NoticeInteractions";
 
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();

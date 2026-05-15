@@ -86,10 +86,12 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="AccessibilityAnnotator.RemoteAnnotatorInfo"
-    enum="AccessibilityAnnotatorRemoteAnnotatorInfo" expires_after="2026-10-04">
+    enum="PersonalContextNoticeInteractions" expires_after="2026-10-04">
   <owner>kalinino@google.com</owner>
   <owner>chrome-browser-privacy-team@google.com</owner>
   <summary>
+    (Obsolete) Renamed to PersonalContext.NoticeInteractions.
+
     Records the user interaction with the Accessibility Annotator info dialog.
     Recorded when the info dialog is shown to the user, and when the user
     accepts or dismisses it.
@@ -139,6 +141,16 @@ chromium-metrics-reviews@google.com.
   </summary>
   <token key="ValueClassifierType"
       variants="AccessibilityAnnotator.ValueClassifierType"/>
+</histogram>
+
+<histogram name="PersonalContext.NoticeInteractions"
+    enum="PersonalContextNoticeInteractions" expires_after="2026-10-04">
+  <owner>kalinino@google.com</owner>
+  <owner>chrome-browser-privacy-team@google.com</owner>
+  <summary>
+    Records the user interaction with the Personal Context notice. Recorded when
+    the notice is shown to the user, and when the user accepts or dismisses it.
+  </summary>
 </histogram>
 
 </histograms>

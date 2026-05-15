@@ -80,7 +80,7 @@ void AccessibilityAnnotatorInfoPageHandler::GetAccountInfo(
 }
 
 void AccessibilityAnnotatorInfoPageHandler::OnInfoAcknowledged() {
-  base::UmaHistogramEnumeration("AccessibilityAnnotator.RemoteAnnotatorInfo",
+  base::UmaHistogramEnumeration("PersonalContext.NoticeInteractions",
                                 InfoShowRequestResult::kAccepted);
 
   if (callback_) {
@@ -89,7 +89,7 @@ void AccessibilityAnnotatorInfoPageHandler::OnInfoAcknowledged() {
 }
 
 void AccessibilityAnnotatorInfoPageHandler::OnInfoDismissed() {
-  base::UmaHistogramEnumeration("AccessibilityAnnotator.RemoteAnnotatorInfo",
+  base::UmaHistogramEnumeration("PersonalContext.NoticeInteractions",
                                 InfoShowRequestResult::kDismissed);
 
   if (callback_) {
@@ -98,8 +98,8 @@ void AccessibilityAnnotatorInfoPageHandler::OnInfoDismissed() {
 }
 
 void AccessibilityAnnotatorInfoPageHandler::OnManageSettingsClicked() {
-  base::RecordAction(base::UserMetricsAction(
-      "AccessibilityAnnotator.RemoteAnnotatorInfo.SettingsLinkClick"));
+  base::RecordAction(
+      base::UserMetricsAction("PersonalContext.Notice.SettingsLinkClick"));
   auto* browser_window_interface =
       webui::GetBrowserWindowInterface(web_contents_);
 
@@ -115,8 +115,8 @@ void AccessibilityAnnotatorInfoPageHandler::OnManageSettingsClicked() {
 }
 
 void AccessibilityAnnotatorInfoPageHandler::OnLearnMoreClicked() {
-  base::RecordAction(base::UserMetricsAction(
-      "AccessibilityAnnotator.RemoteAnnotatorInfo.LearnMoreLinkClick"));
+  base::RecordAction(
+      base::UserMetricsAction("PersonalContext.Notice.LearnMoreLinkClick"));
 
   auto* browser_window_interface =
       webui::GetBrowserWindowInterface(web_contents_);
@@ -135,7 +135,7 @@ void AccessibilityAnnotatorInfoPageHandler::OnLearnMoreClicked() {
 void AccessibilityAnnotatorInfoPageHandler::ShowUi() {
   info_ui_->ShowUI();
 
-  base::UmaHistogramEnumeration("AccessibilityAnnotator.RemoteAnnotatorInfo",
+  base::UmaHistogramEnumeration("PersonalContext.NoticeInteractions",
                                 InfoShowRequestResult::kShown);
 }
 

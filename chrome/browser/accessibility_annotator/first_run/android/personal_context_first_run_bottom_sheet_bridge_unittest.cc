@@ -17,6 +17,11 @@ namespace personal_context {
 
 using testing::_;
 
+namespace {
+constexpr char kNoticeInteractionsHistogramName[] =
+    "PersonalContext.NoticeInteractions";
+}  // namespace
+
 class TestPersonalContextFirstRunBottomSheetBridge
     : public PersonalContextFirstRunBottomSheetBridge {
  public:
@@ -44,8 +49,7 @@ TEST(PersonalContextFirstRunBottomSheetBridgeTest, ShowWithoutJava) {
               Run(accessibility_annotator::InfoResult::kNotAcknowledged));
   bridge->Show();
 
-  histogram_tester.ExpectTotalCount(
-      "AccessibilityAnnotator.RemoteAnnotatorInfo", 0);
+  histogram_tester.ExpectTotalCount(kNoticeInteractionsHistogramName, 0);
 }
 
 TEST(PersonalContextFirstRunBottomSheetBridgeTest, ShowSuccessRecordsMetric) {
@@ -61,7 +65,7 @@ TEST(PersonalContextFirstRunBottomSheetBridgeTest, ShowSuccessRecordsMetric) {
   bridge->Show();
 
   histogram_tester.ExpectUniqueSample(
-      "AccessibilityAnnotator.RemoteAnnotatorInfo",
+      kNoticeInteractionsHistogramName,
       accessibility_annotator::InfoShowRequestResult::kShown, 1);
 }
 
@@ -78,7 +82,7 @@ TEST(PersonalContextFirstRunBottomSheetBridgeTest, OnInfoAcknowledged) {
   bridge->OnInfoAcknowledged(/*env=*/nullptr);
 
   histogram_tester.ExpectUniqueSample(
-      "AccessibilityAnnotator.RemoteAnnotatorInfo",
+      kNoticeInteractionsHistogramName,
       accessibility_annotator::InfoShowRequestResult::kAccepted, 1);
 }
 
@@ -95,7 +99,7 @@ TEST(PersonalContextFirstRunBottomSheetBridgeTest, OnInfoDismissed) {
   bridge->OnInfoDismissed(/*env=*/nullptr);
 
   histogram_tester.ExpectUniqueSample(
-      "AccessibilityAnnotator.RemoteAnnotatorInfo",
+      kNoticeInteractionsHistogramName,
       accessibility_annotator::InfoShowRequestResult::kDismissed, 1);
 }
 
@@ -109,9 +113,8 @@ TEST(PersonalContextFirstRunBottomSheetBridgeTest, OnManageSettingsClicked) {
 
   bridge->OnManageSettingsClicked(/*env=*/nullptr);
 
-  EXPECT_EQ(
-      1, user_action_tester.GetActionCount(
-             "AccessibilityAnnotator.RemoteAnnotatorInfo.SettingsLinkClick"));
+  EXPECT_EQ(1, user_action_tester.GetActionCount(
+                   "PersonalContext.Notice.SettingsLinkClick"));
 }
 
 TEST(PersonalContextFirstRunBottomSheetBridgeTest, OnLearnMoreClicked) {
@@ -124,9 +127,8 @@ TEST(PersonalContextFirstRunBottomSheetBridgeTest, OnLearnMoreClicked) {
 
   bridge->OnLearnMoreClicked(/*env=*/nullptr);
 
-  EXPECT_EQ(
-      1, user_action_tester.GetActionCount(
-             "AccessibilityAnnotator.RemoteAnnotatorInfo.LearnMoreLinkClick"));
+  EXPECT_EQ(1, user_action_tester.GetActionCount(
+                   "PersonalContext.Notice.LearnMoreLinkClick"));
 }
 
 TEST(PersonalContextFirstRunBottomSheetBridgeTest, HideWithoutJava) {

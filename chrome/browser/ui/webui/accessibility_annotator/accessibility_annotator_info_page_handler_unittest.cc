@@ -35,7 +35,7 @@ namespace accessibility_annotator::info {
 namespace {
 
 constexpr char kDialogResultHistogramName[] =
-    "AccessibilityAnnotator.RemoteAnnotatorInfo";
+    "PersonalContext.NoticeInteractions";
 
 class AccessibilityAnnotatorInfoPageHandlerTest
     : public ChromeRenderViewHostTestHarness {
@@ -173,9 +173,8 @@ TEST_F(AccessibilityAnnotatorInfoPageHandlerTest,
 }
 
 TEST_F(AccessibilityAnnotatorInfoPageHandlerTest, OnLearnMoreClicked) {
-  EXPECT_EQ(
-      0, user_action_tester_.GetActionCount(
-             "AccessibilityAnnotator.RemoteAnnotatorInfo.LearnMoreLinkClick"));
+  EXPECT_EQ(0, user_action_tester_.GetActionCount(
+                   "PersonalContext.Notice.LearnMoreLinkClick"));
 
   EXPECT_CALL(
       mock_browser_interface_,
@@ -187,15 +186,13 @@ TEST_F(AccessibilityAnnotatorInfoPageHandlerTest, OnLearnMoreClicked) {
 
   handler_->OnLearnMoreClicked();
 
-  EXPECT_EQ(
-      1, user_action_tester_.GetActionCount(
-             "AccessibilityAnnotator.RemoteAnnotatorInfo.LearnMoreLinkClick"));
+  EXPECT_EQ(1, user_action_tester_.GetActionCount(
+                   "PersonalContext.Notice.LearnMoreLinkClick"));
 }
 
 TEST_F(AccessibilityAnnotatorInfoPageHandlerTest, OnManageSettingsClicked) {
-  EXPECT_EQ(
-      0, user_action_tester_.GetActionCount(
-             "AccessibilityAnnotator.RemoteAnnotatorInfo.SettingsLinkClick"));
+  EXPECT_EQ(0, user_action_tester_.GetActionCount(
+                   "PersonalContext.Notice.SettingsLinkClick"));
 
   EXPECT_CALL(
       mock_browser_interface_,
@@ -209,9 +206,8 @@ TEST_F(AccessibilityAnnotatorInfoPageHandlerTest, OnManageSettingsClicked) {
 
   handler_->OnManageSettingsClicked();
 
-  EXPECT_EQ(
-      1, user_action_tester_.GetActionCount(
-             "AccessibilityAnnotator.RemoteAnnotatorInfo.SettingsLinkClick"));
+  EXPECT_EQ(1, user_action_tester_.GetActionCount(
+                   "PersonalContext.Notice.SettingsLinkClick"));
 }
 
 }  // namespace

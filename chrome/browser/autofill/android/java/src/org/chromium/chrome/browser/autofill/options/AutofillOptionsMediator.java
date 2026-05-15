@@ -77,9 +77,8 @@ public class AutofillOptionsMediator implements ModalDialogProperties.Controller
             "Autofill.Settings.AutofillOptionsRestartAccepted";
 
     @VisibleForTesting
-    // TODO(b/511147685): Rename histogram name.
     static final String HISTOGRAM_PERSONAL_CONTEXT_SETTINGS_LINK_ROW_CLICK =
-            "Autofill.Settings.AccessibilityAnnotatorSettingsLinkRowClick";
+            "Autofill.Settings.PersonalContextSettingsLinkRowClick";
 
     private final Profile mProfile;
     private final Runnable mRestartRunnable;

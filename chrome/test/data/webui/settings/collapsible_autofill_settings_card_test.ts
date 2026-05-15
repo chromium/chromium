@@ -680,7 +680,7 @@ suite('CollapsibleAutofillSettingsCard', function() {
 
     const metric = await testMetricsBrowserProxy.whenCalled('recordAction');
     assertEquals(
-        'Autofill.Settings.AccessibilityAnnotatorSettingsLinkRowClick', metric);
+        'Autofill.Settings.PersonalContextSettingsLinkRowClick', metric);
   });
 
   test('PersonalContextSettingsLinkRowNotVisible', async function() {

@@ -3410,6 +3410,8 @@ should be able to be added at any place in this file.
   <owner>tommasin@chromium.org</owner>
   <owner>chrome-browser-privacy-team@google.com</owner>
   <description>
+    (Obsolete) Renamed to PersonalContext.Notice.LearnMoreLinkClick.
+
     Recorded when the user clicks the Learn More link in the Accessibility
     Annotator info dialog.
   </description>
@@ -3419,6 +3421,8 @@ should be able to be added at any place in this file.
   <owner>tommasin@chromium.org</owner>
   <owner>chrome-browser-privacy-team@google.com</owner>
   <description>
+    (Obsolete) Renamed to PersonalContext.Notice.SettingsLinkClick.
+
     Recorded when the user clicks the Manage Settings link in the Accessibility
     Annotator info dialog.
   </description>
@@ -6386,7 +6390,17 @@ should be able to be added at any place in this file.
   <owner>rainhard@chromium.org</owner>
   <owner>chrome-browser-privacy-team@google.com</owner>
   <description>
+    (Obsolete) Renamed to Autofill.Settings.PersonalContextSettingsLinkRowClick.
+
     Recorded when the user clicks the accessibility annotator settings link row.
+  </description>
+</action>
+
+<action name="Autofill.Settings.PersonalContextSettingsLinkRowClick">
+  <owner>rainhard@chromium.org</owner>
+  <owner>chrome-browser-privacy-team@google.com</owner>
+  <description>
+    Recorded when the user clicks the Personal Context settings link row.
   </description>
 </action>
 
@@ -38542,6 +38556,24 @@ should be able to be added at any place in this file.
     being clicked, navigates the user to the notifications category settings
     page. This metric can be baselined against
     &quot;Permissions.QuietChip.TimeToInteraction&quot; histogram.
+  </description>
+</action>
+
+<action name="PersonalContext.Notice.LearnMoreLinkClick">
+  <owner>tommasin@chromium.org</owner>
+  <owner>chrome-browser-privacy-team@google.com</owner>
+  <description>
+    Recorded when the user clicks the Learn More link in the Personal Context
+    notice.
+  </description>
+</action>
+
+<action name="PersonalContext.Notice.SettingsLinkClick">
+  <owner>tommasin@chromium.org</owner>
+  <owner>chrome-browser-privacy-team@google.com</owner>
+  <description>
+    Recorded when the user clicks the Manage Settings link in the Personal
+    Context notice.
   </description>
 </action>
 

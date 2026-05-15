@@ -220,7 +220,7 @@ export class CollapsibleCardElement extends SettingsViewMixin
     OpenWindowProxyImpl.getInstance().openUrl(
         loadTimeData.getString('personalContextSettingsUrl'));
     MetricsBrowserProxyImpl.getInstance().recordAction(
-        'Autofill.Settings.AccessibilityAnnotatorSettingsLinkRowClick');
+        'Autofill.Settings.PersonalContextSettingsLinkRowClick');
   }
 
   /**
