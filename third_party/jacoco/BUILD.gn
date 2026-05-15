@@ -4,6 +4,11 @@
 
 import("//build/config/android/rules.gni")
 
+# JaCoCo version as packaged by CIPD. Must match the version inside the
+# `/lib/org.jacoco.*-.jar` files. Download the CIPD package from:
+# https://chrome-infra-packages.appspot.com/p/chromium/third_party/jacoco/
+_jacoco_version = "0.8.14.202605050529"
+
 java_group("jacoco_all_java") {
   testonly = true
   deps = [
@@ -40,20 +45,20 @@ java_prebuilt("jacococli_java") {
 
 java_prebuilt("org_jacocoagent_java") {
   testonly = true
-  jar_path = "cipd/lib/org.jacoco.agent-0.8.8.202306091247.jar"
+  jar_path = "cipd/lib/org.jacoco.agent-$_jacoco_version.jar"
 }
 
 java_prebuilt("org_jacocoant_java") {
   testonly = true
-  jar_path = "cipd/lib/org.jacoco.ant-0.8.8.202306091247.jar"
+  jar_path = "cipd/lib/org.jacoco.ant-$_jacoco_version.jar"
 }
 
 java_prebuilt("org_jacococore_java") {
   testonly = true
-  jar_path = "cipd/lib/org.jacoco.core-0.8.8.202306091247.jar"
+  jar_path = "cipd/lib/org.jacoco.core-$_jacoco_version.jar"
 }
 
 java_prebuilt("org_jacocoreport_java") {
   testonly = true
-  jar_path = "cipd/lib/org.jacoco.report-0.8.8.202306091247.jar"
+  jar_path = "cipd/lib/org.jacoco.report-$_jacoco_version.jar"
 }
