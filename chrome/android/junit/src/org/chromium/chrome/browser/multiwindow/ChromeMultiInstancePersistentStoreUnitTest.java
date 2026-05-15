@@ -35,7 +35,10 @@ import java.util.Set;
  */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-@EnableFeatures(ChromeFeatureList.MULTI_INSTANCE_SHARED_PREFS_MIGRATION)
+@EnableFeatures({
+    ChromeFeatureList.MULTI_INSTANCE_SHARED_PREFS_MIGRATION,
+    ChromeFeatureList.SESSION_RESTORE_AFTER_CRASH
+})
 public class ChromeMultiInstancePersistentStoreUnitTest {
 
     private static final int INSTANCE_ID_0 = 0;

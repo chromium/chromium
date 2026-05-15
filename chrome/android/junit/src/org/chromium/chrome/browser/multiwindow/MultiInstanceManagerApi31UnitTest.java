@@ -88,6 +88,7 @@ import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceDataProto.MultiInstanceData;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.AllocatedIdInfo;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.CloseWindowAppSource;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.InstanceAllocationType;
@@ -134,6 +135,7 @@ import java.util.stream.Collectors;
 /** Unit tests for {@link MultiInstanceManagerApi31}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
+@EnableFeatures(ChromeFeatureList.SESSION_RESTORE_AFTER_CRASH)
 @DisableFeatures(ChromeFeatureList.ROBUST_WINDOW_MANAGEMENT_EXPERIMENTAL)
 public class MultiInstanceManagerApi31UnitTest {
     private static final int INSTANCE_ID_1 = 1;
@@ -2189,5 +2191,132 @@ public class MultiInstanceManagerApi31UnitTest {
         // tabs.
         verify(mRecentlyClosedTracker).onInstancesClosed(any(), eq(false));
         verify(mRecentlyClosedTracker, never()).onInstancesClosed(any(), eq(true));
+    }
+
+    @Test
+    public void testOnDestroy_whenFinishing_makesInstanceNonRecoverable() {
+        // Setup sData so that isRecoverable is supported.
+        ChromeMultiInstancePersistentStore.sData = MultiInstanceData.getDefaultInstance();
+
+        int instanceId = allocInstanceIndex(PASSED_ID_INVALID, mCurrentActivity);
+        mMultiInstanceManager.initialize(instanceId, TASK_ID_56, SupportedProfileType.MIXED);
+
+        assertTrue(
+                "Instance should be recoverable initially.",
+                ChromeMultiInstancePersistentStore.readCrashRecoveryData().stream()
+                        .anyMatch(info -> info.windowId == instanceId));
+
+        // Mock activity as finishing.
+        when(mCurrentActivity.isFinishing()).thenReturn(true);
+
+        // Call onDestroy.
+        mMultiInstanceManager.onDestroy();
+
+        // Verify task ID is NOT removed even if activity is finishing.
+        assertEquals(
+                "Task ID should NOT be removed in onDestroy.",
+                TASK_ID_56,
+                ChromeMultiInstancePersistentStore.readTaskId(instanceId));
+
+        // Verify isRecoverable is cleared.
+        assertFalse(
+                "Instance should not be recoverable after onDestroy() when finishing.",
+                ChromeMultiInstancePersistentStore.readCrashRecoveryData().stream()
+                        .anyMatch(info -> info.windowId == instanceId));
+
+        ChromeMultiInstancePersistentStore.sData = null;
+    }
+
+    @Test
+    public void testOnDestroy_whenNotFinishing_keepsInstanceRecoverable() {
+        // Setup sData so that isRecoverable is supported.
+        ChromeMultiInstancePersistentStore.sData = MultiInstanceData.getDefaultInstance();
+
+        int instanceId = allocInstanceIndex(PASSED_ID_INVALID, mCurrentActivity);
+        mMultiInstanceManager.initialize(instanceId, TASK_ID_56, SupportedProfileType.MIXED);
+
+        assertTrue(
+                "Instance should be recoverable initially.",
+                ChromeMultiInstancePersistentStore.readCrashRecoveryData().stream()
+                        .anyMatch(info -> info.windowId == instanceId));
+
+        // Mock activity as NOT finishing (e.g. system kill).
+        when(mCurrentActivity.isFinishing()).thenReturn(false);
+
+        // Call onDestroy.
+        mMultiInstanceManager.onDestroy();
+
+        // Verify task ID is NOT removed.
+        assertEquals(
+                "Task ID should NOT be removed.",
+                TASK_ID_56,
+                ChromeMultiInstancePersistentStore.readTaskId(instanceId));
+
+        // Verify isRecoverable is NOT cleared.
+        assertTrue(
+                "Instance should still be recoverable after onDestroy() when not finishing.",
+                ChromeMultiInstancePersistentStore.readCrashRecoveryData().stream()
+                        .anyMatch(info -> info.windowId == instanceId));
+
+        ChromeMultiInstancePersistentStore.sData = null;
+    }
+
+    @Test
+    public void testOnStopWithNative_whenFinishing_makesInstanceNonRecoverable() {
+        // Setup sData so that isRecoverable is supported.
+        ChromeMultiInstancePersistentStore.sData = MultiInstanceData.getDefaultInstance();
+
+        int instanceId = allocInstanceIndex(PASSED_ID_INVALID, mCurrentActivity);
+        mMultiInstanceManager.initialize(instanceId, TASK_ID_56, SupportedProfileType.MIXED);
+
+        assertTrue(
+                "Instance should be recoverable initially.",
+                ChromeMultiInstancePersistentStore.readCrashRecoveryData().stream()
+                        .anyMatch(info -> info.windowId == instanceId));
+
+        // Mock activity as finishing.
+        when(mCurrentActivity.isFinishing()).thenReturn(true);
+
+        // Call onStopWithNative.
+        mMultiInstanceManager.onStopWithNative();
+
+        // Verify isRecoverable is cleared.
+        assertFalse(
+                "Instance should not be recoverable after onStopWithNative() when finishing.",
+                ChromeMultiInstancePersistentStore.readCrashRecoveryData().stream()
+                        .anyMatch(info -> info.windowId == instanceId));
+
+        ChromeMultiInstancePersistentStore.sData = null;
+    }
+
+    @Test
+    public void testCloseWindow_makesInstanceNonRecoverable() {
+        // Setup sData.
+        ChromeMultiInstancePersistentStore.sData = MultiInstanceData.getDefaultInstance();
+
+        int instanceId = allocInstanceIndex(PASSED_ID_INVALID, mCurrentActivity);
+        mMultiInstanceManager.initialize(instanceId, TASK_ID_56, SupportedProfileType.MIXED);
+
+        assertTrue(
+                "Instance should be recoverable initially.",
+                ChromeMultiInstancePersistentStore.readCrashRecoveryData().stream()
+                        .anyMatch(info -> info.windowId == instanceId));
+
+        // Call closeWindows with WINDOW_MANAGER source so it's not permanently deleted.
+        mMultiInstanceManager.closeWindows(
+                Collections.singletonList(instanceId), CloseWindowAppSource.WINDOW_MANAGER);
+
+        // Verify marked for deletion.
+        assertTrue(
+                "Instance should be marked for deletion.",
+                ChromeMultiInstancePersistentStore.readMarkedForDeletion(instanceId));
+
+        // Verify isRecoverable is cleared.
+        assertFalse(
+                "Instance should not be recoverable after being marked for deletion.",
+                ChromeMultiInstancePersistentStore.readCrashRecoveryData().stream()
+                        .anyMatch(info -> info.windowId == instanceId));
+
+        ChromeMultiInstancePersistentStore.sData = null;
     }
 }

@@ -589,6 +589,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
         ChromeMultiInstancePersistentStore.writeProfileType(instanceId, profileType);
         ChromeMultiInstancePersistentStore.writeMarkedForDeletion(
                 instanceId, /* markedForDeletion= */ false);
+        ChromeMultiInstancePersistentStore.writeIsRecoverable(instanceId, true);
         installTabModelObserver();
         recordInstanceCountHistogram();
         recordActivityCountHistogram();
@@ -922,6 +923,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
         } else {
             ChromeMultiInstancePersistentStore.writeMarkedForDeletion(
                     instanceId, /* markedForDeletion= */ true);
+            ChromeMultiInstancePersistentStore.writeIsRecoverable(instanceId, false);
             ChromeMultiInstancePersistentStore.writeClosureTime(instanceId);
             ChromeMultiInstancePersistentStore.removeTaskId(instanceId);
         }
@@ -1043,6 +1045,9 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
             ChromeMultiInstancePersistentStore.writeClosureTime(mInstanceId);
         }
         if (mActivity.isFinishing()) {
+            if (ChromeMultiInstancePersistentStore.hasInstance(mInstanceId)) {
+                ChromeMultiInstancePersistentStore.writeIsRecoverable(mInstanceId, false);
+            }
             // Notify Recent Tabs page that the instance is closing.
             notifyInstancesClosed(Collections.singletonList(mInstanceId), isPermanentDeletion);
         }
@@ -1086,7 +1091,14 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
         super.onStopWithNative();
         // We persist last closed time when the activity is stopped as a fallback for when
         // #onDestroy() is not called for a finishing activity.
-        ChromeMultiInstancePersistentStore.writeClosureTime(mInstanceId);
+        // TODO: remove the hasInstance check here and instead guard in the
+        // ChromeMultiInstancePersistentStore's write methods.
+        if (ChromeMultiInstancePersistentStore.hasInstance(mInstanceId)) {
+            ChromeMultiInstancePersistentStore.writeClosureTime(mInstanceId);
+            if (mActivity.isFinishing()) {
+                ChromeMultiInstancePersistentStore.writeIsRecoverable(mInstanceId, false);
+            }
+        }
     }
 
     @Override
