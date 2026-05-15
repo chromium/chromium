@@ -130,6 +130,16 @@ class HeadlessModeDumpDomCommandBrowserTestBase
  public:
   HeadlessModeDumpDomCommandBrowserTestBase() = default;
 
+  void PreRunTestOnMainThread() override {
+#if defined(MEMORY_SANITIZER)
+    if (base::FeatureList::IsEnabled(features::kInitialWebUI)) {
+      GTEST_SKIP() << "Skipping test on MSAN with InitialWebUI enabled. "
+                      "See crbug.com/477426026.";
+    }
+#endif
+    HeadlessModeCommandBrowserTest::PreRunTestOnMainThread();
+  }
+
   void SetUpCommandLine(base::CommandLine* command_line) override {
     HeadlessModeCommandBrowserTest::SetUpCommandLine(command_line);
     command_line->AppendSwitch(switches::kDumpDom);
@@ -164,13 +174,6 @@ INSTANTIATE_TEST_SUITE_P(/* no prefix */,
 #endif
 IN_PROC_BROWSER_TEST_P(HeadlessModeDumpDomCommandBrowserTest,
                        MAYBE_HeadlessDumpDom) {
-#if defined(MEMORY_SANITIZER)
-  if (base::FeatureList::IsEnabled(features::kInitialWebUI)) {
-    GTEST_SKIP() << "Skipping test on MSAN with InitialWebUI enabled. "
-                    "See crbug.com/477426026.";
-  }
-#endif
-
   ASSERT_THAT(ProcessCommands(),
               testing::Eq(HeadlessCommandHandler::Result::kSuccess));
 
@@ -318,13 +321,6 @@ INSTANTIATE_TEST_SUITE_P(
 IN_PROC_BROWSER_TEST_P(
     HeadlessModeDumpDomCommandBrowserTestWithSubResourceTimeout,
     MAYBE_HeadlessDumpDomWithSubResourceTimeout) {
-#if defined(MEMORY_SANITIZER)
-  if (base::FeatureList::IsEnabled(features::kInitialWebUI)) {
-    GTEST_SKIP() << "Skipping test on MSAN with InitialWebUI enabled. "
-                    "See crbug.com/477426026.";
-  }
-#endif
-
   std::optional<HeadlessCommandHandler::Result> result = ProcessCommands();
 
   capture_stdout_.StopCapture();
@@ -359,13 +355,6 @@ HEADLESS_MODE_COMMAND_BROWSER_TEST_WITH_TARGET_URL(
     HeadlessModeDumpDomCommandBrowserTestBase,
     MAYBE_DumpDomWithBeforeUnloadPreventDefault,
     "/before_unload_prevent_default.html") {
-#if defined(MEMORY_SANITIZER)
-  if (base::FeatureList::IsEnabled(features::kInitialWebUI)) {
-    GTEST_SKIP() << "Skipping test on MSAN with InitialWebUI enabled. "
-                    "See crbug.com/477426026.";
-  }
-#endif
-
   // Make sure that 'beforeunload' that prevents default action does not stall
   // the command processing. The "Leave site" popup should not appear because
   // command target was not user activated.
@@ -391,6 +380,17 @@ class HeadlessModeScreenshotCommandBrowserTest
   }
 #endif
 
+  void PreRunTestOnMainThread() override {
+#if defined(MEMORY_SANITIZER)
+    if (base::FeatureList::IsEnabled(features::kInitialWebUI)) {
+      GTEST_SKIP() << "Skipping test on MSAN with InitialWebUI enabled. "
+                      "See crbug.com/477426026.";
+    }
+#endif
+
+    HeadlessModeCommandBrowserTestWithTempDir::PreRunTestOnMainThread();
+  }
+
   void SetUpCommandLine(base::CommandLine* command_line) override {
     HeadlessModeCommandBrowserTestWithTempDir::SetUpCommandLine(command_line);
 
@@ -406,13 +406,6 @@ class HeadlessModeScreenshotCommandBrowserTest
 
 IN_PROC_BROWSER_TEST_F(HeadlessModeScreenshotCommandBrowserTest,
                        HeadlessScreenshot) {
-#if defined(MEMORY_SANITIZER)
-  if (base::FeatureList::IsEnabled(features::kInitialWebUI)) {
-    GTEST_SKIP() << "Skipping test on MSAN with InitialWebUI enabled. "
-                    "See crbug.com/477426026.";
-  }
-#endif
-
   ASSERT_THAT(ProcessCommands(),
               testing::Eq(HeadlessCommandHandler::Result::kSuccess));
 
@@ -478,13 +471,6 @@ class HeadlessModeScreenshotCommandWithBackgroundBrowserTest
 
 IN_PROC_BROWSER_TEST_F(HeadlessModeScreenshotCommandWithBackgroundBrowserTest,
                        HeadlessScreenshotWithBackground) {
-#if defined(MEMORY_SANITIZER)
-  if (base::FeatureList::IsEnabled(features::kInitialWebUI)) {
-    GTEST_SKIP() << "Skipping test on MSAN with InitialWebUI enabled. "
-                    "See crbug.com/477426026.";
-  }
-#endif
-
   ASSERT_THAT(ProcessCommands(),
               testing::Eq(HeadlessCommandHandler::Result::kSuccess));
 
@@ -529,6 +515,16 @@ class HeadlessModePrintToPdfCommandBrowserTest
  public:
   HeadlessModePrintToPdfCommandBrowserTest() = default;
 
+  void PreRunTestOnMainThread() override {
+#if defined(MEMORY_SANITIZER)
+    if (base::FeatureList::IsEnabled(features::kInitialWebUI)) {
+      GTEST_SKIP() << "Skipping test on MSAN with InitialWebUI enabled. "
+                      "See crbug.com/477426026.";
+    }
+#endif
+    HeadlessModePrintToPdfCommandBrowserTestBase::PreRunTestOnMainThread();
+  }
+
   std::string GetTargetPage() override { return "/centered_blue_box.html"; }
 };
 
@@ -540,13 +536,6 @@ class HeadlessModePrintToPdfCommandBrowserTest
 #endif
 IN_PROC_BROWSER_TEST_F(HeadlessModePrintToPdfCommandBrowserTest,
                        MAYBE_HeadlessPrintToPdf) {
-#if defined(MEMORY_SANITIZER)
-  if (base::FeatureList::IsEnabled(features::kInitialWebUI)) {
-    GTEST_SKIP() << "Skipping test on MSAN with InitialWebUI enabled. "
-                    "See crbug.com/477426026.";
-  }
-#endif
-
   ASSERT_THAT(ProcessCommands(),
               testing::Eq(HeadlessCommandHandler::Result::kSuccess));
 
@@ -590,6 +579,16 @@ class HeadlessModeTaggedPrintToPdfCommandBrowserTest
       public ::testing::WithParamInterface<bool> {
  public:
   HeadlessModeTaggedPrintToPdfCommandBrowserTest() = default;
+
+  void PreRunTestOnMainThread() override {
+#if defined(MEMORY_SANITIZER)
+    if (base::FeatureList::IsEnabled(features::kInitialWebUI)) {
+      GTEST_SKIP() << "Skipping test on MSAN with InitialWebUI enabled. "
+                      "See crbug.com/477426026.";
+    }
+#endif
+    HeadlessModePrintToPdfCommandBrowserTestBase::PreRunTestOnMainThread();
+  }
 
   bool generate_tagged_pdf() { return GetParam(); }
 
