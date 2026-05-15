@@ -141,10 +141,9 @@ class PasswordChangeDelegateImpl : public PasswordChangeDelegate {
   std::u16string generated_password_;
 
   raw_ptr<content::WebContents> originator_ = nullptr;
-  // If the password change tab is visible to the user, hidden_executor_ will be
-  // null, if it's hidden, visible_executor_ will be null.
+  // If the password change tab is visible to the user (moved to tab strip),
+  // `hidden_executor_` will be null.
   std::unique_ptr<DetachedWebContents> hidden_executor_;
-  raw_ptr<content::WebContents> visible_executor_ = nullptr;
 
   const raw_ptr<Profile> profile_ = nullptr;
 

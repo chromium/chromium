@@ -140,15 +140,6 @@ void AddPasswordChangeToTabStrip(
                                      /*foreground=*/true);
 }
 
-void FocusPasswordChangeTab(content::WebContents* executor) {
-  auto* tab_interface = tabs::TabInterface::GetFromContents(executor);
-  TabStripModel* tab_strip_model =
-      tab_interface->GetBrowserWindowInterface()->GetTabStripModel();
-  int index = tab_strip_model->GetIndexOfWebContents(executor);
-  CHECK(index != TabStripModel::kNoTab);
-  tab_strip_model->ActivateTabAt(index);
-}
-
 PasswordChangeDelegate::CoarseFinalPasswordChangeState GetCoarseState(
     PasswordChangeDelegate::State state) {
   switch (state) {
@@ -317,8 +308,7 @@ PasswordChangeDelegateImpl::~PasswordChangeDelegateImpl() {
 }
 
 content::WebContents* PasswordChangeDelegateImpl::executor() const {
-  return hidden_executor_ ? hidden_executor_->GetWebContents()
-                          : visible_executor_.get();
+  return hidden_executor_ ? hidden_executor_->GetWebContents() : nullptr;
 }
 
 void PasswordChangeDelegateImpl::StartPasswordChangeFlow() {
@@ -430,7 +420,6 @@ void PasswordChangeDelegateImpl::OnTabWillDetach(
     // Reset pointers immediately to avoid keeping dangling pointer to the tab.
     ResetInternalState();
     originator_ = nullptr;
-    visible_executor_ = nullptr;
     hidden_executor_.reset();
     ui_controller_.reset();
     Stop();
@@ -465,12 +454,10 @@ void PasswordChangeDelegateImpl::OpenPasswordChangeTab() {
                                /* is_renderer_initiated= */ false),
         /*navigation_handle_callback=*/{});
     CHECK(web_contents);
-  } else if (!visible_executor_) {
+  } else {
     AddPasswordChangeToTabStrip(
         originator_,
         DetachedWebContents::ReleaseWebContents(std::move(hidden_executor_)));
-  } else {
-    FocusPasswordChangeTab(web_contents);
   }
 
   if (current_state_ == State::kOtpDetected && form_manager_) {
@@ -554,15 +541,7 @@ void PasswordChangeDelegateImpl::ProceedToChangePassword() {
   login_state_checker_.reset();
   UpdateState(State::kWaitingForChangePasswordForm);
 
-  if (base::FeatureList::IsEnabled(
-          password_manager::features::kRunPasswordChangeInBackgroundTab)) {
-    visible_executor_ = originator_->OpenURL(
-        content::OpenURLParams(GURL(change_password_url_), content::Referrer(),
-                               WindowOpenDisposition::NEW_BACKGROUND_TAB,
-                               ui::PAGE_TRANSITION_LINK,
-                               /*is_renderer_initiated=*/false),
-        /*navigation_handle_callback=*/{});
-  } else if (!hidden_executor_) {
+  if (!hidden_executor_) {
     hidden_executor_ =
         CreateDetachedWebContents(profile_, change_password_url_);
   }

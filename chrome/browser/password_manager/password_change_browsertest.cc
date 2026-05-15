@@ -1282,36 +1282,6 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest,
       FinalModelStatus::FINAL_MODEL_STATUS_UNSPECIFIED);
 }
 
-class PasswordChangeBrowserTestShowHiddenTab
-    : public PasswordChangeBrowserTest {
- public:
-  PasswordChangeBrowserTestShowHiddenTab() {
-    scoped_feature_list_.InitAndEnableFeature(
-        password_manager::features::kRunPasswordChangeInBackgroundTab);
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTestShowHiddenTab,
-                       ShowHiddenTabDuringPasswordChange) {
-  SetPrivacyNoticeAcceptedPref();
-  password_change_service()->OfferPasswordChangeUi(
-      CreatePasswordForm(WebContents()->GetLastCommittedURL(), u"test",
-                         u"pa$$word",
-                         "/password/update_form_empty_fields_no_submit.html"),
-      WebContents());
-  PasswordChangeDelegate* delegate =
-      password_change_service()->GetPasswordChangeDelegate(WebContents());
-  delegate->StartPasswordChangeFlow();
-  MockLoginOutcome(LoginCheckResult::kLoggedIn);
-
-  TabStripModel* tab_strip = browser()->tab_strip_model();
-  // Assert that password change tab is opened.
-  ASSERT_EQ(tab_strip->count(), 2);
-}
-
 IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest,
                        UserInterventionAfterSubmission_TaskWasTakenOver) {
   SetPrivacyNoticeAcceptedPref();

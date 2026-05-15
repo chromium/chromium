@@ -199,10 +199,6 @@ BASE_DECLARE_FEATURE(kPasswordCheckupPrototype);
 BASE_DECLARE_FEATURE(kRestartToGainAccessToKeychain);
 #endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
-// Runs the Password Change flow (enabled by kImprovedPasswordChangeService
-// feature flag) in a user-visible background tab.
-BASE_DECLARE_FEATURE(kRunPasswordChangeInBackgroundTab);
-
 // Shows a tab with password change instead of bubble/settings page after
 // successful password change.
 BASE_DECLARE_FEATURE(kShowTabWithPasswordChangeOnSuccess);
