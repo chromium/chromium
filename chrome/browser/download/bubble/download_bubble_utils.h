@@ -55,6 +55,7 @@ BrowserWindowInterface* FindBrowserToShowAnimation(
 
 // Gets a pointer to the web app id, if the browser is for a web app, otherwise
 // nullptr.
-const webapps::AppId* GetWebAppIdForBrowser(const Browser* browser);
+const webapps::AppId* GetWebAppIdForBrowser(
+    const BrowserWindowInterface* browser);
 
 #endif  // CHROME_BROWSER_DOWNLOAD_BUBBLE_DOWNLOAD_BUBBLE_UTILS_H_

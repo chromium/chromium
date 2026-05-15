@@ -20,7 +20,6 @@
 #include "chrome/browser/download/download_item_model.h"
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/download/download_ui_controller.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
@@ -79,8 +78,7 @@ BrowserWindowInterface* FindMostRecentBrowserForProfileMatchingWebApp(
   BrowserWindowInterface* result = nullptr;
   ProfileBrowserCollection::GetForProfile(profile)
       ->ForEach([&](BrowserWindowInterface* browser) {
-        const webapps::AppId* browser_app_id =
-            GetWebAppIdForBrowser(browser->GetBrowserForMigrationOnly());
+        const webapps::AppId* browser_app_id = GetWebAppIdForBrowser(browser);
         bool app_ids_match =
             (!app_id && !browser_app_id) ||
             (app_id && browser_app_id && *app_id == *browser_app_id);
@@ -122,7 +120,7 @@ class DownloadDisplayController::FullscreenObservationHelper
 
 DownloadDisplayController::DownloadDisplayController(
     DownloadDisplay* display,
-    Browser* browser,
+    BrowserWindowInterface* browser,
     DownloadBubbleUIController* bubble_controller)
     : display_(display),
       browser_(browser),
@@ -148,7 +146,7 @@ void DownloadDisplayController::SetTaskRunnerForTesting(
 }
 
 void DownloadDisplayController::OnNewItem(bool show_animation) {
-  if (!download::ShouldShowDownloadBubble(browser_->profile())) {
+  if (!download::ShouldShowDownloadBubble(browser_->GetProfile())) {
     return;
   }
 
@@ -171,7 +169,7 @@ void DownloadDisplayController::OnNewItem(bool show_animation) {
 
 void DownloadDisplayController::OnUpdatedItem(bool is_done,
                                               bool may_show_details) {
-  if (!download::ShouldShowDownloadBubble(browser_->profile())) {
+  if (!download::ShouldShowDownloadBubble(browser_->GetProfile())) {
     return;
   }
   HandleAccessibleAlerts();
@@ -208,7 +206,7 @@ void DownloadDisplayController::OnUpdatedItem(bool is_done,
 }
 
 void DownloadDisplayController::OnRemovedItem(const ContentId& id) {
-  if (!download::ShouldShowDownloadBubble(browser_->profile())) {
+  if (!download::ShouldShowDownloadBubble(browser_->GetProfile())) {
     return;
   }
   UpdateButtonStateFromUpdateService();
@@ -217,7 +215,7 @@ void DownloadDisplayController::OnRemovedItem(const ContentId& id) {
 void DownloadDisplayController::OnButtonPressed() {
   DownloadUIController* download_ui_controller =
       DownloadCoreServiceFactory::GetForBrowserContext(
-          browser_->profile()->GetOriginalProfile())
+          browser_->GetProfile()->GetOriginalProfile())
           ->GetDownloadUIController();
   if (download_ui_controller) {
     download_ui_controller->OnButtonClicked();
@@ -269,7 +267,7 @@ void DownloadDisplayController::OnFullscreenStateChanged() {
   fullscreen_notification_shown_ = false;
 
   UpdateButtonStateFromUpdateService();
-  if (download::ShouldShowDownloadBubble(browser_->profile()) &&
+  if (download::ShouldShowDownloadBubble(browser_->GetProfile()) &&
       should_show_details_on_exit_fullscreen_) {
     display_->ShowDetails();
     should_show_details_on_exit_fullscreen_ = false;
@@ -363,7 +361,7 @@ void DownloadDisplayController::HandleAccessibleAlerts() {
   // Don't attempt to announce through more than one browser.
   const webapps::AppId* app_id = GetWebAppIdForBrowser(browser_);
   if (browser_ != FindMostRecentBrowserForProfileMatchingWebApp(
-                      browser_->profile(), app_id)) {
+                      browser_->GetProfile(), app_id)) {
     return;
   }
   for (const std::u16string& alert :
@@ -389,7 +387,7 @@ void DownloadDisplayController::ScheduleToolbarInactive(
 }
 
 void DownloadDisplayController::MaybeShowButtonWhenCreated() {
-  if (!download::ShouldShowDownloadBubble(browser_->profile())) {
+  if (!download::ShouldShowDownloadBubble(browser_->GetProfile())) {
     return;
   }
 

@@ -31,12 +31,12 @@
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/offline_items_collection/offline_content_aggregator_factory.h"
 #include "chrome/browser/profiles/profile_key.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/hats/trust_safety_sentiment_service.h"
 #include "chrome/browser/ui/hats/trust_safety_sentiment_service_factory.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/download/bubble/download_toolbar_ui_controller.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "components/download/public/common/download_danger_type.h"
@@ -78,11 +78,10 @@ bool IsForDownload(BrowserWindowInterface* browser,
 
   if (DownloadItemWebAppData* web_app_data = DownloadItemWebAppData::Get(item);
       web_app_data) {
-    return web_app::AppBrowserController::IsForWebApp(
-        browser->GetBrowserForMigrationOnly(), web_app_data->id());
+    return web_app::AppBrowserController::IsForWebApp(browser,
+                                                      web_app_data->id());
   } else {
-    return !web_app::AppBrowserController::IsWebApp(
-        browser->GetBrowserForMigrationOnly());
+    return !web_app::AppBrowserController::IsWebApp(browser);
   }
 }
 
@@ -213,7 +212,7 @@ std::vector<DownloadUIModelPtr> DownloadBubbleUIController::GetDownloadUIModels(
     return all_items;
   }
   update_service_->GetAllModelsToDisplay(
-      all_items, GetWebAppIdForBrowser(browser_->GetBrowserForMigrationOnly()),
+      all_items, GetWebAppIdForBrowser(browser_),
       /*force_backfill_download_items=*/true);
   std::vector<DownloadUIModelPtr> items_to_return;
   for (auto& model : all_items) {

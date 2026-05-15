@@ -9,7 +9,6 @@
 #include "base/time/time.h"
 #include "chrome/browser/devtools/devtools_window.h"
 #include "chrome/browser/download/download_ui_model.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/download/download_item_mode.h"
@@ -217,8 +216,9 @@ BrowserWindowInterface* FindBrowserToShowAnimation(
   return browser_to_show_animation;
 }
 
-const webapps::AppId* GetWebAppIdForBrowser(const Browser* browser) {
-  return web_app::AppBrowserController::IsWebApp(browser)
-             ? &browser->app_controller()->app_id()
-             : nullptr;
+const webapps::AppId* GetWebAppIdForBrowser(
+    const BrowserWindowInterface* browser) {
+  const web_app::AppBrowserController* controller =
+      web_app::AppBrowserController::From(browser);
+  return controller ? &controller->app_id() : nullptr;
 }

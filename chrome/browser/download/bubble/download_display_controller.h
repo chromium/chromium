@@ -16,6 +16,7 @@
 #include "components/offline_items_collection/core/offline_content_aggregator.h"
 #include "components/offline_items_collection/core/offline_content_provider.h"
 
+class BrowserWindowInterface;
 struct DownloadBubbleDisplayInfo;
 class DownloadBubbleUIController;
 class DownloadDisplay;
@@ -38,7 +39,7 @@ struct ContentId;
 class DownloadDisplayController : public base::PowerSuspendObserver {
  public:
   DownloadDisplayController(DownloadDisplay* display,
-                            Browser* browser,
+                            BrowserWindowInterface* browser,
                             DownloadBubbleUIController* bubble_controller);
   DownloadDisplayController(const DownloadDisplayController&) = delete;
   DownloadDisplayController& operator=(const DownloadDisplayController&) =
@@ -131,7 +132,7 @@ class DownloadDisplayController : public base::PowerSuspendObserver {
 
   // The pointer is created in ToolbarView and owned by ToolbarView.
   raw_ptr<DownloadDisplay> const display_;
-  raw_ptr<Browser> browser_;
+  raw_ptr<BrowserWindowInterface> browser_;
   std::unique_ptr<FullscreenObservationHelper> fullscreen_observation_helper_;
   base::OneShotTimer icon_disappearance_timer_;
   base::OneShotTimer icon_inactive_timer_;
