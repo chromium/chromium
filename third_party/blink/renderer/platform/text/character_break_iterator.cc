@@ -23,10 +23,135 @@
 
 #include "third_party/blink/renderer/platform/text/character_break_iterator.h"
 
+#include <unicode/brkiter.h>
+
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
+#include "third_party/blink/renderer/platform/text/icu_error.h"
+#include "third_party/blink/renderer/platform/text/text_break_iterator_internal_icu.h"
+#include "third_party/blink/renderer/platform/wtf/thread_specific.h"
 
 namespace blink {
+
+//
+// A simple pool of `icu::BreakIterator` without any keys, as
+// `CharacterBreakIterator` is locale-independent.
+//
+class CharacterBreakIterator::Pool {
+ public:
+  static Pool& Get() {
+    DEFINE_THREAD_SAFE_STATIC_LOCAL(ThreadSpecific<Pool>, pool, ());
+    return *pool;
+  }
+
+  PooledIterator TakeOrCreate() {
+    if (!pool_.empty()) {
+      PooledIterator iterator(pool_.back().release());
+      pool_.pop_back();
+      return iterator;
+    }
+
+    IcuError error_code;
+    PooledIterator iterator(icu::BreakIterator::createCharacterInstance(
+        CurrentTextBreakIcuLocale(), error_code));
+    DCHECK(U_SUCCESS(error_code) && iterator)
+        << "ICU could not open a break iterator: " << u_errorName(error_code)
+        << " (" << error_code << ")";
+    return iterator;
+  }
+
+  void Put(icu::BreakIterator* iterator) { pool_.push_back(iterator); }
+
+ private:
+  static constexpr size_t kCapacity = 4;
+  Vector<std::unique_ptr<icu::BreakIterator>, kCapacity> pool_;
+};
+
+void CharacterBreakIterator::ReturnToPool::operator()(void* ptr) const {
+  icu::BreakIterator* iterator = static_cast<icu::BreakIterator*>(ptr);
+  DCHECK(iterator);
+  Pool::Get().Put(iterator);
+}
+
+CharacterBreakIterator::CharacterBreakIterator(const StringView& string) {
+  if (string.empty()) {
+    is_8bit_ = true;
+    return;
+  }
+
+  is_8bit_ = string.Is8Bit();
+
+  if (is_8bit_) {
+    base::span<const LChar> chars = string.Span8();
+    charaters8_ = chars.data();
+    offset_ = 0;
+    // static_cast<> is safe because `chars` came from a StringView.
+    length_ = static_cast<unsigned>(chars.size());
+    return;
+  }
+
+  CreateIteratorForBuffer(string.Span16());
+}
+
+CharacterBreakIterator::CharacterBreakIterator(base::span<const UChar> buffer) {
+  CreateIteratorForBuffer(buffer);
+}
+
+void CharacterBreakIterator::CreateIteratorForBuffer(
+    base::span<const UChar> buffer) {
+  iterator_ = Pool::Get().TakeOrCreate();
+  SetText16(iterator_.get(), buffer);
+}
+
+int CharacterBreakIterator::Next() {
+  if (!is_8bit_) {
+    return iterator_->next();
+  }
+
+  if (offset_ >= length_) {
+    return kTextBreakDone;
+  }
+
+  offset_ += ClusterLengthStartingAt(offset_);
+  return offset_;
+}
+
+int CharacterBreakIterator::Current() {
+  if (!is_8bit_) {
+    return iterator_->current();
+  }
+  return offset_;
+}
+
+bool CharacterBreakIterator::IsBreak(int offset) const {
+  if (!is_8bit_) {
+    return iterator_->isBoundary(offset);
+  }
+  return !IsLfAfterCr(offset);
+}
+
+int CharacterBreakIterator::Preceding(int offset) const {
+  if (!is_8bit_) {
+    return iterator_->preceding(offset);
+  }
+  if (offset <= 0) {
+    return kTextBreakDone;
+  }
+  if (IsLfAfterCr(offset)) {
+    return offset - 2;
+  }
+  return offset - 1;
+}
+
+int CharacterBreakIterator::Following(int offset) const {
+  if (!is_8bit_) {
+    return iterator_->following(offset);
+  }
+  if (static_cast<unsigned>(offset) >= length_) {
+    return kTextBreakDone;
+  }
+  return offset + ClusterLengthStartingAt(offset);
+}
 
 unsigned NumGraphemeClusters(const StringView& string) {
   unsigned string_length = string.length();

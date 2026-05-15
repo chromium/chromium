@@ -21,7 +21,12 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_TEXT_TEXT_BREAK_ITERATOR_INTERNAL_ICU_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_TEXT_TEXT_BREAK_ITERATOR_INTERNAL_ICU_H_
 
+#include <unicode/brkiter.h>
+#include <unicode/locid.h>
+
+#include "base/containers/span.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
+#include "third_party/blink/renderer/platform/wtf/text/wtf_uchar.h"
 
 // FIXME: Now that this handles locales for ICU, not just for text breaking,
 // this file and the various implementation files should be renamed.
@@ -30,6 +35,14 @@ namespace blink {
 
 PLATFORM_EXPORT const char* CurrentSearchLocaleID();
 PLATFORM_EXPORT const char* CurrentTextBreakLocaleID();
+
+inline icu::Locale CurrentTextBreakIcuLocale() {
+  return icu::Locale(CurrentTextBreakLocaleID());
 }
+
+PLATFORM_EXPORT void SetText16(icu::BreakIterator* iter,
+                               base::span<const UChar> string);
+
+}  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_TEXT_TEXT_BREAK_ITERATOR_INTERNAL_ICU_H_
