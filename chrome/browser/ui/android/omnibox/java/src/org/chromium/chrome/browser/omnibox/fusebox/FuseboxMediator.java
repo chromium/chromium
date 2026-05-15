@@ -608,8 +608,8 @@ import java.util.function.Supplier;
 
     private void onAttachmentsChanged() {
         if (!isInInputSession()) return;
+        updateFuseboxState();
         mModel.set(FuseboxProperties.ATTACHMENTS_VISIBLE, !mModelList.isEmpty());
-
         if (!OmniboxFeatures.sShowModelPicker.getValue()) {
             updateClientControlledToolButtonList();
             updatePopupButtonEnabledStates();

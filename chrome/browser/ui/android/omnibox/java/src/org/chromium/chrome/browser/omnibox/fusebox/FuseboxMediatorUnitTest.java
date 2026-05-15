@@ -458,6 +458,19 @@ public class FuseboxMediatorUnitTest {
     }
 
     @Test
+    public void testClickRequestTypeChip_transitionsToCompactWhenHasAttachments() {
+        OmniboxFeatures.sCompactFusebox.setForTesting(true);
+        recreateMediator();
+
+        addAttachment("title", "token", FuseboxAttachmentType.ATTACHMENT_IMAGE);
+        assertEquals(FuseboxState.EXPANDED, mModel.get(FuseboxProperties.FUSEBOX_STATE).intValue());
+
+        mModel.get(FuseboxProperties.AUTOCOMPLETE_REQUEST_TYPE_CLICKED).run();
+
+        assertEquals(FuseboxState.COMPACT, mModel.get(FuseboxProperties.FUSEBOX_STATE).intValue());
+    }
+
+    @Test
     public void updateFuseboxState_notDesktop_textWrapping_isExpanded() {
         OmniboxFeatures.sCompactFusebox.setForTesting(true);
         OmniboxFeatures.setIsDesktopPlatformForTesting(false);
