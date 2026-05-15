@@ -29,6 +29,7 @@
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_actuation_handler.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_camera_handler.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_configuration.h"
+#import "ios/chrome/browser/intelligence/bwg/model/gemini_consent_provider_handler.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_link_opening_handler.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_page_context.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_page_state_change_handler.h"
@@ -238,6 +239,10 @@ GeminiBrowserAgent::GeminiBrowserAgent(Browser* browser)
         initWithWebStateList:browser_->GetWebStateList()];
     bwg_gateway_.suggestionHandler = gemini_suggestion_handler_;
 
+    gemini_consent_provider_handler_ = [[GeminiConsentProviderHandler alloc]
+        initWithPrefService:browser_->GetProfile()->GetPrefs()];
+    bwg_gateway_.consentProviderHandler = gemini_consent_provider_handler_;
+
     if (gemini::IsFeatureAvailable(gemini::Feature::kImageRemix,
                                    browser_->GetProfile())) {
       gemini_camera_handler_ = [[GeminiCameraHandler alloc]
@@ -326,6 +331,7 @@ GeminiBrowserAgent::~GeminiBrowserAgent() {
   gemini_view_state_handler_ = nil;
 
   gemini_actuation_handler_ = nil;
+  gemini_consent_provider_handler_ = nil;
 
   if (keyboard_show_observer_) {
     [[NSNotificationCenter defaultCenter]
