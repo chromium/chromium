@@ -462,6 +462,14 @@ public class TabGridDialogMediatorUnitTest {
     }
 
     @Test
+    public void handleBackPress_DialogNotVisible() {
+        mModel.set(TabGridDialogProperties.IS_DIALOG_VISIBLE, false);
+        when(mTabListEditorController.isVisible()).thenReturn(false);
+
+        assertFalse(mMediator.handleBackPress());
+    }
+
+    @Test
     @SuppressWarnings("DirectInvocationOnMock")
     public void onTitleTextChange_WithoutFocus() {
         TextWatcher textWatcher = mModel.get(TabGridDialogProperties.TITLE_TEXT_WATCHER);

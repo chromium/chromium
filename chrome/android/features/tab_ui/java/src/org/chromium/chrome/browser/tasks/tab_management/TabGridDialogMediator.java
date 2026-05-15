@@ -668,9 +668,7 @@ public class TabGridDialogMediator
         mModel.set(TabGridDialogProperties.IS_DIALOG_VISIBLE, false);
     }
 
-    /**
-     * @return a boolean indicating if the result of handling the backpress was successful.
-     */
+    /** Returns a boolean indicating if the result of handling the backpress was successful. */
     public boolean handleBackPress() {
         if (mTabListEditorControllerSupplier != null
                 && mTabListEditorControllerSupplier.hasValue()) {
@@ -680,6 +678,10 @@ public class TabGridDialogMediator
                 controller.hide();
                 return !controller.isVisible();
             }
+        }
+        // If the dialog is not visible, then the back press is not handled.
+        if (!isVisible()) {
+            return false;
         }
         hideDialog(true);
         RecordUserAction.record("TabGridDialog.Exit");
