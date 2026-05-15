@@ -161,6 +161,27 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/actor/execution_engine.h:State) -->
 
+<!-- LINT.IfChange(ActorForegroundServiceLifecycle) -->
+
+<enum name="ActorForegroundServiceLifecycle">
+  <int value="0" label="Started"/>
+  <int value="1" label="Updated"/>
+  <int value="2" label="Stopped"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/android/java/src/org/chromium/chrome/browser/actor/ActorForegroundServiceUmaHelper.java:ForegroundLifecycle) -->
+
+<!-- LINT.IfChange(ActorForegroundServiceStopReason) -->
+
+<enum name="ActorForegroundServiceStopReason">
+  <int value="0" label="Stopped"/>
+  <int value="1" label="Destroyed"/>
+  <int value="2" label="TaskRemoved"/>
+  <int value="3" label="LowMemory"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/android/java/src/org/chromium/chrome/browser/actor/ActorForegroundServiceUmaHelper.java:StopReason) -->
+
 <!-- LINT.IfChange(ActorLoginAccountTypes) -->
 
 <enum name="ActorLoginAccountTypes">

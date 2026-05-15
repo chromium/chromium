@@ -193,6 +193,44 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Actor.ForegroundService.Duration" units="ms"
+    expires_after="2027-03-31">
+  <owner>bbetini@google.com</owner>
+  <owner>ritkagup@google.com</owner>
+  <summary>
+    Recorded when the Actor foreground service implementation is destroyed.
+    Captures the total duration of when the service was running from the first
+    onStartCommand to onDestroy. Note that this metric is only recorded on
+    Android.
+  </summary>
+</histogram>
+
+<histogram name="Actor.ForegroundService.Lifecycle"
+    enum="ActorForegroundServiceLifecycle" expires_after="2027-03-31">
+  <owner>bbetini@google.com</owner>
+  <owner>ritkagup@google.com</owner>
+  <summary>
+    Records instances where the foreground undergoes a lifecycle change (when
+    the foreground starts, changes pinned notification, or stops). Note that
+    this metric is only recorded on Android.
+  </summary>
+</histogram>
+
+<histogram name="Actor.ForegroundService.StopReason"
+    enum="ActorForegroundServiceStopReason" expires_after="2027-03-31">
+  <owner>bbetini@google.com</owner>
+  <owner>ritkagup@google.com</owner>
+  <summary>
+    Records instances of ActorForegroundService stops. The number of expected
+    stops (stopped) and unexpected stops (task removed, low memory, etc) can be
+    compared to get a sense of how often the service crashes to see how it
+    handles restarts. For example, the number of times the service is stopped
+    because of low memory can be compared to the number of times the service has
+    been destroyed to see how frequently it occurs. Note that this metric is
+    only recorded on Android.
+  </summary>
+</histogram>
+
 <histogram name="Actor.Login.AccountAutoSelected" enum="Boolean"
     expires_after="2027-02-25">
   <owner>npm@google.com</owner>
