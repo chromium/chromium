@@ -622,10 +622,6 @@
  transition: background-color 400ms ease-in-out;
 }
 
-#composebox[in-voice-search-mode_] {
- box-shadow: 2px 17px 18px -10px rgba(0, 0, 0, 0.05);
-}
-
 :host([is-zero-state]) #contextualTasksSuggestionsContainer {
   --cr-composebox-match-height: 100%;
   --cr-composebox-match-line-height: 18px;
