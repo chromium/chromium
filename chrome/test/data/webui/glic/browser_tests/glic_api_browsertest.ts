@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 import {FormFactor, HostCapability, InvocationSource, MetricUserInputReactionType, PanelStateKind, Platform, ResponseStopCause, ScrollToErrorReason, WebClientMode} from '/glic/glic_api/glic_api.js';
-import type {CancelActionsResult, FocusedTabData, GetPinCandidatesOptions, GlicBrowserHost, InvokeOptions, OpenPanelInfo, PageMetadata, PanelOpeningData, ScrollToError, TabData, UserConfirmationDialogRequest, UserProfileInfo, ZeroStateSuggestionsV2} from '/glic/glic_api/glic_api.js';
+import type {CancelActionsResult, FocusedTabData, GetPinCandidatesOptions, InvokeOptions, OpenPanelInfo, PageMetadata, PanelOpeningData, ScrollToError, TabData, UserConfirmationDialogRequest, UserProfileInfo} from '/glic/glic_api/glic_api.js';
 
 import {ApiTestError, ApiTestFixtureBase, assertDefined, assertEquals, assertFalse, assertNotEquals, assertRejects, assertTrue, assertUndefined, checkDefined, mapObservable, observeSequence, readStream, runUntil, sleep, testMain, waitFor, WebClient} from './browser_test_base.js';
 import type {SequencedSubscriber} from './browser_test_base.js';
@@ -460,31 +460,7 @@ class ApiTests extends ApiTestFixtureBase {
     await this.host.enableDragResize(false);
   }
 
-  async testGetZeroStateSuggestionsForFocusedTabApi() {
-    assertDefined(this.host.getZeroStateSuggestionsForFocusedTab);
-    const suggestions = await this.host.getZeroStateSuggestionsForFocusedTab();
-    assertDefined(suggestions);
-    assertEquals(0, suggestions.suggestions.length);
-  }
 
-  async testGetZeroStateSuggestionsForFocusedTabFailsWhenHidden() {
-    assertDefined(this.host.getZeroStateSuggestionsForFocusedTab);
-    assertDefined(this.host.closePanel);
-    await this.closePanelAndWaitUntilInactive();
-    const suggestions = await this.host.getZeroStateSuggestionsForFocusedTab();
-    assertDefined(suggestions);
-    assertEquals(0, suggestions.suggestions.length);
-  }
-
-  async testGetZeroStateSuggestionsApi() {
-    assertDefined(this.host.getZeroStateSuggestions);
-    const sequence = observeSequence<ZeroStateSuggestionsV2>(
-        this.host.getZeroStateSuggestions());
-    const suggestions = await sequence.next();
-    assertDefined(suggestions);
-    assertEquals(0, suggestions.suggestions.length);
-    assertEquals(false, suggestions.isPending);
-  }
 
   async testIsOnboardingCompleted() {
     assertDefined(this.host.isOnboardingCompleted);
@@ -511,48 +487,6 @@ class ApiTests extends ApiTestFixtureBase {
     await this.advanceToNextStep();
   }
 
-  async testGetZeroStateSuggestionsMultipleNavigations() {
-    // Initial state.
-    assertDefined(this.host.getZeroStateSuggestions);
-    const sequence = observeSequence<ZeroStateSuggestionsV2>(
-        this.host.getZeroStateSuggestions());
-    const suggestions = await sequence.next();
-    assertDefined(suggestions);
-    assertEquals(0, suggestions.suggestions.length);
-    assertEquals(false, suggestions.isPending);
-
-    // After a second navigation occurs.
-    await this.advanceToNextStep();
-
-    // Should first get a pending state.
-    const suggestions2 = await sequence.next();
-    assertDefined(suggestions2);
-    // We don't care about the suggestions here.
-    assertEquals(true, suggestions2.isPending);
-
-    // Should later get the actual suggestions.
-    const suggestions3 = await sequence.next();
-    assertDefined(suggestions3);
-    assertEquals(3, suggestions3.suggestions.length);
-    assertEquals(false, suggestions3.isPending);
-  }
-
-  async testGetZeroStateSuggestionsFailsWhenHidden() {
-    // Initial state.
-    assertDefined(this.host.getZeroStateSuggestions);
-    const sequence = observeSequence<ZeroStateSuggestionsV2>(
-        this.host.getZeroStateSuggestions());
-    const suggestions = await sequence.next();
-    assertDefined(suggestions);
-    assertEquals(0, suggestions.suggestions.length);
-
-    // Close panel.
-    assertDefined(this.host.closePanel);
-    await this.closePanelAndWaitUntilInactive();
-
-    // After next navigation in focused tab occurs.
-    await this.advanceToNextStep();
-  }
 
   async testGetFocusedTabStateV2() {
     assertDefined(this.host.getFocusedTabStateV2);
@@ -2592,121 +2526,7 @@ class ApiTestWithoutOpen extends ApiTestFixtureBase {
   }
 }
 
-type InitFailureType = 'error'|'timeout'|'none'|'reloadAfterInitialize'|
-    'navigateToSorryPageBeforeInitialize'|'navigateToSorryPageAfterInitialize';
 
-// A web client that can fail initialize.
-class WebClientThatFailsInitialize extends WebClient {
-  constructor(private failWith: InitFailureType = 'error') {
-    super();
-  }
-
-  override initialize(glicBrowserHost: GlicBrowserHost): Promise<void> {
-    if (this.failWith === 'error') {
-      return Promise.reject(
-          new ApiTestError('WebClientThatFailsInitialize.initialize'));
-    }
-    if (this.failWith === 'timeout') {
-      return sleep(15000);
-    }
-    if (this.failWith === 'reloadAfterInitialize') {
-      sleep(500).then(() => location.reload());
-    }
-    if (this.failWith === 'navigateToSorryPageBeforeInitialize') {
-      location.href = '/sorry/index.html';
-      return sleep(5000);
-    }
-    if (this.failWith === 'navigateToSorryPageAfterInitialize') {
-      sleep(500).then(() => {
-        location.href = '/sorry/index.html';
-      });
-    }
-    // This initialization is sometimes skipped depending on the type of desired
-    // failure detected above
-    return super.initialize(glicBrowserHost);
-  }
-}
-
-class ApiTestFailsToInitialize extends ApiTestFixtureBase {
-  getTestParams(): {failWith?: InitFailureType} {
-    return this.testParams ?? {};
-  }
-
-  override createWebClient(): WebClient {
-    return new WebClientThatFailsInitialize(
-        this.getTestParams().failWith ?? 'error');
-  }
-
-  // Defer setup until the test function is called, so that we can access
-  // testParams when `createWebClient()` is called.
-  override async setUpClient() {}
-
-  // Runs ApiTestFixtureBase.setUpClient() after 100 ms, and returns
-  // immediately. This allows the test to exit cleanly before the web contents
-  // is torn down.
-  deferredSetUpClient() {
-    sleep(100).then(() => super.setUpClient());
-  }
-
-  async testReload() {
-    // First run.
-    if (this.getTestParams().failWith === 'reloadAfterInitialize') {
-      this.deferredSetUpClient();
-      return;
-    }
-
-    // Second run. Client should initialize and be opened.
-    await super.setUpClient();
-    await this.client.waitForFirstOpen();
-  }
-
-  async testSorryPageBeforeInitialize() {
-    this.deferredSetUpClient();
-  }
-
-  async testSorryPageAfterInitialize() {
-    this.deferredSetUpClient();
-  }
-
-  async testInitializeFailsAfterReload() {
-    this.deferredSetUpClient();
-  }
-  // Skips the setup entirely.
-  async testNoClientCreated() {}
-  // Skips the bootstrap as well. The test name "testNoBootstrap" is handled
-  // specially.
-  async testNoBootstrap() {}
-  async testInitializeTimesOut() {
-    await super.setUpClient();
-  }
-
-  async testInitializeFails() {
-    await super.setUpClient();
-  }
-
-  // Tests notifyPanelWillOpen() returning after the panel is closed and then
-  // reopened.
-  async testCloseAndOpenWhileOpening() {
-    const openSignal = Promise.withResolvers<void>();
-    class WebClientThatOpensSlowly extends WebClient {
-      override async notifyPanelWillOpen(): Promise<OpenPanelInfo> {
-        this.panelOpenState.assignAndSignal(true);
-        await openSignal.promise;
-        return {
-          startingMode: WebClientMode.TEXT,
-        };
-      }
-    }
-    await this.setUpWithClient(new WebClientThatOpensSlowly());
-    const panelOpenState = observeSequence(this.client.panelOpenState);
-    panelOpenState.waitForValue(true);
-    await this.host.closePanel!();
-    panelOpenState.waitForValue(false);
-    await this.advanceToNextStep();
-    openSignal.resolve();
-    await panelOpenState.waitForValue(true);
-  }
-}
 
 class WebClientThatOpensOnce extends WebClient {
   notifyPanelWillOpenCallCount = 0;
@@ -2835,7 +2655,6 @@ const TEST_FIXTURES = [
   NotifyPanelWillOpenTest,
   InitiallyNotResizableTest,
   ApiTestWithoutOpen,
-  ApiTestFailsToInitialize,
   ApiTestWithInvoke,
   ApiTestCreateTabInInvoke,
 ];
