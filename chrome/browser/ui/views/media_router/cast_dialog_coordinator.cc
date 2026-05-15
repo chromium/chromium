@@ -51,7 +51,7 @@ void CastDialogCoordinator::OnBubbleAnchorVisible(
     const base::Time& start_time,
     MediaRouterDialogActivationLocation activation_location,
     AfterShownCallback after_shown_callback,
-    base::expected<views::BubbleAnchor, GetAnchorFailureReason> anchor) {
+    BubbleAnchorResult anchor) {
   if (!controller) {
     std::move(after_shown_callback).Run(ShowCastDialogStatus::kCastCanceled);
     return;

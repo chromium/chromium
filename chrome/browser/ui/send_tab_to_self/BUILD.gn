@@ -21,7 +21,10 @@ source_set("send_tab_to_self") {
     "//components/send_tab_to_self",
     "//ui/menus",
   ]
-  deps = [ "//chrome/browser/ui/browser_window" ]
+  deps = [
+    "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/views/toolbar",
+  ]
 }
 
 source_set("impl") {

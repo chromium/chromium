@@ -13,6 +13,7 @@
 #include "base/scoped_observation.h"
 #include "chrome/browser/send_tab_to_self/receiving_ui_handler.h"
 #include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
+#include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions.h"
 #include "components/send_tab_to_self/send_tab_to_self_entry.h"
 
 class BrowserWindowInterface;
@@ -81,6 +82,12 @@ class SendTabToSelfToolbarIconController
 
   void ShowToolbarButton(const SendTabToSelfEntry& entry,
                          BrowserWindowInterface* browser = nullptr);
+
+  // Callback for GetBubbleAnchorAsync() that shows the bubble once the anchor
+  // is ready.
+  void ShowBubbleWithAnchor(base::WeakPtr<BrowserWindowInterface> browser,
+                            SendTabToSelfEntry entry,
+                            BubbleAnchorResult anchor);
 
   const raw_ptr<Profile, DanglingUntriaged> profile_;
 

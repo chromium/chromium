@@ -29,23 +29,18 @@
 #include "ui/views/controls/menu/menu_runner.h"
 
 struct WebUIPinnedToolbarActions::PendingAnchorRequest {
-  PendingAnchorRequest(
-      actions::ActionId id,
-      base::OnceCallback<
-          void(base::expected<views::BubbleAnchor, GetAnchorFailureReason>)> cb,
-      ui::ElementTracker::Subscription sub);
+  PendingAnchorRequest(actions::ActionId id,
+                       base::OnceCallback<void(BubbleAnchorResult)> cb,
+                       ui::ElementTracker::Subscription sub);
   ~PendingAnchorRequest();
   const actions::ActionId action_id;
-  base::OnceCallback<void(
-      base::expected<views::BubbleAnchor, GetAnchorFailureReason>)>
-      callback;
+  base::OnceCallback<void(BubbleAnchorResult)> callback;
   const ui::ElementTracker::Subscription subscription;
 };
 
 WebUIPinnedToolbarActions::PendingAnchorRequest::PendingAnchorRequest(
     actions::ActionId id,
-    base::OnceCallback<
-        void(base::expected<views::BubbleAnchor, GetAnchorFailureReason>)> cb,
+    base::OnceCallback<void(BubbleAnchorResult)> cb,
     ui::ElementTracker::Subscription sub)
     : action_id(id), callback(std::move(cb)), subscription(std::move(sub)) {}
 
@@ -224,8 +219,7 @@ views::BubbleAnchor WebUIPinnedToolbarActions::GetBubbleAnchor(
 
 void WebUIPinnedToolbarActions::GetBubbleAnchorAsync(
     actions::ActionId action_id,
-    base::OnceCallback<void(base::expected<views::BubbleAnchor,
-                                           GetAnchorFailureReason>)> callback) {
+    base::OnceCallback<void(BubbleAnchorResult)> callback) {
   auto element_id = webui_toolbar::ActionIdToElementIdentifier(action_id);
   if (!element_id || !IsActionPinnedOrPoppedOut(action_id)) {
     std::move(callback).Run(

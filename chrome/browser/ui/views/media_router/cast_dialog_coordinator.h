@@ -125,7 +125,7 @@ class CastDialogCoordinator {
       const base::Time& start_time,
       MediaRouterDialogActivationLocation activation_location,
       AfterShownCallback after_shown_callback,
-      base::expected<views::BubbleAnchor, GetAnchorFailureReason> anchor);
+      BubbleAnchorResult anchor);
 
   views::ViewTracker cast_dialog_view_tracker_;
 

@@ -3011,14 +3011,11 @@ class WebUIPinnedToolbarActionsBrowserTest
     EXPECT_TRUE(pinned_actions->GetBubbleAnchor(action_id).IsNull());
     bool missing_anchor = false;
     pinned_actions->GetBubbleAnchorAsync(
-        action_id, base::BindLambdaForTesting(
-                       [&](base::expected<views::BubbleAnchor,
-                                          GetAnchorFailureReason> anchor) {
-                         EXPECT_FALSE(anchor.has_value());
-                         EXPECT_EQ(anchor.error(),
-                                   GetAnchorFailureReason::kAnchorNotFound);
-                         missing_anchor = true;
-                       }));
+        action_id, base::BindLambdaForTesting([&](BubbleAnchorResult anchor) {
+          EXPECT_FALSE(anchor.has_value());
+          EXPECT_EQ(anchor.error(), GetAnchorFailureReason::kAnchorNotFound);
+          missing_anchor = true;
+        }));
     EXPECT_TRUE(missing_anchor);
     EXPECT_EQ(GetToolbarBubbleAnchor(action_id).GetIfView(),
               GetLocationBarView());
@@ -3027,26 +3024,22 @@ class WebUIPinnedToolbarActionsBrowserTest
     // Test async anchor fetching.
     base::RunLoop run_loop;
     pinned_actions->GetBubbleAnchorAsync(
-        action_id, base::BindLambdaForTesting(
-                       [&](base::expected<views::BubbleAnchor,
-                                          GetAnchorFailureReason> anchor) {
-                         EXPECT_TRUE(anchor.has_value());
-                         EXPECT_FALSE(anchor.value().IsNull());
-                         run_loop.Quit();
-                       }));
+        action_id, base::BindLambdaForTesting([&](BubbleAnchorResult anchor) {
+          EXPECT_TRUE(anchor.has_value());
+          EXPECT_FALSE(anchor.value().IsNull());
+          run_loop.Quit();
+        }));
     run_loop.Run();
     // Test sync anchor fetching.
     EXPECT_FALSE(pinned_actions->GetBubbleAnchor(action_id).IsNull());
     EXPECT_TRUE(GetToolbarBubbleAnchor(action_id).GetIfElement());
     bool found_anchor = false;
     pinned_actions->GetBubbleAnchorAsync(
-        action_id, base::BindLambdaForTesting(
-                       [&](base::expected<views::BubbleAnchor,
-                                          GetAnchorFailureReason> anchor) {
-                         EXPECT_TRUE(anchor.has_value());
-                         EXPECT_FALSE(anchor.value().IsNull());
-                         found_anchor = true;
-                       }));
+        action_id, base::BindLambdaForTesting([&](BubbleAnchorResult anchor) {
+          EXPECT_TRUE(anchor.has_value());
+          EXPECT_FALSE(anchor.value().IsNull());
+          found_anchor = true;
+        }));
     EXPECT_TRUE(found_anchor);
     ASSERT_TRUE(base::test::RunUntil(
         [&]() { return IsPinnedButtonVisible(web_contents, mojom_action); }));

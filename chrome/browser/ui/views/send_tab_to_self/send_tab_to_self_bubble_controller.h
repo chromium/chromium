@@ -12,12 +12,14 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
+#include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions.h"
 #include "components/send_tab_to_self/entry_point_display_reason.h"
 #include "components/send_tab_to_self/metrics_util.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "ui/views/widget/widget_observer.h"
 #include "url/gurl.h"
 
+class BrowserWindowInterface;
 class Profile;
 
 namespace actions {
@@ -109,6 +111,12 @@ class SendTabToSelfBubbleController
 
   Profile* GetProfile();
   virtual std::optional<EntryPointDisplayReason> GetEntryPointDisplayReason();
+
+  // Callback for GetBubbleAnchorAsync() that creates and shows the bubble once
+  // the anchor is ready.
+  void ShowBubbleWithAnchor(EntryPointDisplayReason reason,
+                            base::WeakPtr<BrowserWindowInterface> browser,
+                            BubbleAnchorResult anchor);
 
   void HandleSendTabToDeviceResult(const GURL& url,
                                    std::string_view device_name,

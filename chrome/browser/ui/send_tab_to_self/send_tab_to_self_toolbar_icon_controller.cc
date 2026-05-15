@@ -18,6 +18,7 @@
 #include "chrome/browser/ui/toasts/toast_controller.h"
 #include "chrome/browser/ui/toasts/toast_service.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_toolbar_bubble_controller.h"
 #include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions.h"
 #include "components/send_tab_to_self/features.h"
@@ -198,11 +199,32 @@ void SendTabToSelfToolbarIconController::ShowToolbarButton(
   CHECK(controller);
 
   controller->ShowActionEphemerallyInToolbar(kActionSendTabToSelf, true);
-  auto anchor = controller->GetBubbleAnchor(kActionSendTabToSelf);
-  CHECK(!anchor.IsNull());
-  send_tab_to_self::SendTabToSelfToolbarBubbleController::From(browser)
-      ->ShowBubble(entry, anchor);
+  controller->GetBubbleAnchorAsync(
+      kActionSendTabToSelf,
+      base::BindOnce(&SendTabToSelfToolbarIconController::ShowBubbleWithAnchor,
+                     weak_ptr_factory_.GetWeakPtr(), browser->GetWeakPtr(),
+                     entry));
+}
 
+void SendTabToSelfToolbarIconController::ShowBubbleWithAnchor(
+    base::WeakPtr<BrowserWindowInterface> browser,
+    SendTabToSelfEntry entry,
+    BubbleAnchorResult anchor) {
+  if (!anchor.has_value()) {
+    if (!browser) {
+      return;
+    }
+    // PinnedToolbarActions failed to find an anchor. Try ToolbarButtonProvider
+    // as it has fallback anchor logic.
+    auto new_anchor = ToolbarButtonProvider::From(browser.get())
+                          ->GetBubbleAnchor(kActionSendTabToSelf);
+    if (new_anchor.IsNull()) {
+      return;
+    }
+    anchor = new_anchor;
+  }
+  send_tab_to_self::SendTabToSelfToolbarBubbleController::From(browser.get())
+      ->ShowBubble(entry, anchor.value());
   send_tab_to_self::RecordNotificationShown();
 }
 

@@ -81,25 +81,52 @@ void SendTabToSelfBubbleController::ShowBubble(bool show_back_button) {
       GetEntryPointDisplayReason();
   CHECK(reason);
 
+  base::WeakPtr<BrowserWindowInterface> browser_weak_ptr;
   views::BubbleAnchor anchor;
   if (browser) {
+    browser_weak_ptr = browser->GetWeakPtr();
     if (PinnedToolbarActions* pinned_toolbar_actions =
             browser->GetFeatures().pinned_toolbar_actions()) {
       // Show the toolbar action button.
       pinned_toolbar_actions->ShowActionEphemerallyInToolbar(
           kActionSendTabToSelf, true);
-      anchor = pinned_toolbar_actions->GetBubbleAnchor(kActionSendTabToSelf);
-    } else {
-      anchor = ToolbarButtonProvider::From(browser)->GetBubbleAnchor(
-          kActionSendTabToSelf);
+      pinned_toolbar_actions->GetBubbleAnchorAsync(
+          kActionSendTabToSelf,
+          base::BindOnce(&SendTabToSelfBubbleController::ShowBubbleWithAnchor,
+                         weak_ptr_factory_.GetWeakPtr(), *reason,
+                         browser_weak_ptr));
+      return;
     }
+    anchor = ToolbarButtonProvider::From(browser)->GetBubbleAnchor(
+        kActionSendTabToSelf);
+  }
+
+  ShowBubbleWithAnchor(*reason, browser_weak_ptr, std::move(anchor));
+}
+
+void SendTabToSelfBubbleController::ShowBubbleWithAnchor(
+    EntryPointDisplayReason reason,
+    base::WeakPtr<BrowserWindowInterface> browser,
+    BubbleAnchorResult anchor) {
+  if (!anchor.has_value()) {
+    if (!browser) {
+      return;
+    }
+    // PinnedToolbarActions failed to find an anchor. Try ToolbarButtonProvider
+    // as it has fallback anchor logic.
+    auto new_anchor = ToolbarButtonProvider::From(browser.get())
+                          ->GetBubbleAnchor(kActionSendTabToSelf);
+    if (new_anchor.IsNull()) {
+      return;
+    }
+    anchor = new_anchor;
   }
 
   std::unique_ptr<SendTabToSelfBubbleView> bubble_view;
-  switch (*reason) {
+  switch (reason) {
     case send_tab_to_self::EntryPointDisplayReason::kOfferFeature:
       bubble_view = std::make_unique<SendTabToSelfDevicePickerBubbleView>(
-          std::move(anchor), &GetWebContents());
+          std::move(anchor.value()), &GetWebContents());
       break;
     case send_tab_to_self::EntryPointDisplayReason::kOfferSignIn: {
       const SendTabToSelfPromoBubbleView::PromoType promo_type =
@@ -108,12 +135,12 @@ void SendTabToSelfBubbleController::ShowBubble(bool show_back_button) {
               : SendTabToSelfPromoBubbleView::PromoType::
                     kAccountAwareSignInPromo;
       bubble_view = std::make_unique<SendTabToSelfPromoBubbleView>(
-          std::move(anchor), &GetWebContents(), promo_type);
+          std::move(anchor.value()), &GetWebContents(), promo_type);
       break;
     }
     case send_tab_to_self::EntryPointDisplayReason::kInformNoTargetDevice:
       bubble_view = std::make_unique<SendTabToSelfPromoBubbleView>(
-          std::move(anchor), &GetWebContents(),
+          std::move(anchor.value()), &GetWebContents(),
           SendTabToSelfPromoBubbleView::PromoType::kNoTargetDevice);
       break;
   }

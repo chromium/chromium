@@ -26,6 +26,9 @@ enum class GetAnchorFailureReason {
   kAnchorNotFound,
 };
 
+using BubbleAnchorResult =
+    base::expected<views::BubbleAnchor, GetAnchorFailureReason>;
+
 // The PinnedToolbarActions class is a virtual interface, defining access to the
 // window's pinned toolbar actions component.  This class exists so that
 // cross-platform components like the browser command system can talk to the
@@ -59,9 +62,7 @@ class PinnedToolbarActions : public ToolbarController::PinnedActionsDelegate {
   // failing to find the anchor, is passed to `callback`.
   virtual void GetBubbleAnchorAsync(
       actions::ActionId action_id,
-      base::OnceCallback<
-          void(base::expected<views::BubbleAnchor, GetAnchorFailureReason>)>
-          callback) = 0;
+      base::OnceCallback<void(BubbleAnchorResult)> callback) = 0;
 
   // Returns the ChromeLabs button, or nullptr if ChromeLabs is not supported by
   // the PinnedToolbarActions implementation being used.

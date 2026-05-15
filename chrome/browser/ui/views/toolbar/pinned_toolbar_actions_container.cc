@@ -885,8 +885,7 @@ views::BubbleAnchor PinnedToolbarActionsContainer::GetBubbleAnchor(
 
 void PinnedToolbarActionsContainer::GetBubbleAnchorAsync(
     actions::ActionId action_id,
-    base::OnceCallback<void(base::expected<views::BubbleAnchor,
-                                           GetAnchorFailureReason>)> callback) {
+    base::OnceCallback<void(BubbleAnchorResult)> callback) {
   auto anchor = GetBubbleAnchor(action_id);
   if (anchor.IsNull()) {
     std::move(callback).Run(
