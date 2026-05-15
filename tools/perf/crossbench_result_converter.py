@@ -63,11 +63,15 @@ def _get_crossbench_json_paths(out_dir: pathlib.Path) -> List[pathlib.Path]:
       if probe.startswith('cb.') or not probe_data:
         continue
       candidates = probe_data.get('json', [])
-      if len(candidates) > 1:
-        raise ValueError(f'Probe {probe} generated multiple json files, '
-                         f'debug_info={debug_info}')
-      if len(candidates) == 1:
-        probe_json_paths.append(pathlib.Path(candidates[0]))
+      if probe == 'trace_processor':
+        for candidate in candidates:
+          probe_json_paths.append(pathlib.Path(candidate))
+      else:
+        if len(candidates) > 1:
+          raise ValueError(f'Probe {probe} generated multiple json files, '
+                           f'debug_info={debug_info}')
+        if len(candidates) == 1:
+          probe_json_paths.append(pathlib.Path(candidates[0]))
   except AttributeError as e:
     raise AttributeError(f'debug_info={debug_info}') from e
 

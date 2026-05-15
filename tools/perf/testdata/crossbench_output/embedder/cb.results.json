@@ -68,7 +68,8 @@
         "/example/path/trace_processor/query_name.csv"
       ],
       "json": [
-        "/example/path/trace_processor/query_name.json"
+        "/example/path/trace_processor/query_name.json",
+        "/example/path/trace_processor/other_query_name.json"
       ]
     },
     "cb.thermal_monitor": {
