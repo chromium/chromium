@@ -315,9 +315,12 @@ void EtwConsumer::HandleFileIoEvent(const EVENT_HEADER& header,
         DLOG(ERROR) << "Error decoding FileIo_OpEnd event";
       }
       break;
-    case 79:  // FileIo_V2_QueryFullSizeInfo
-    case 80:  // QuerySetVolumeInfo
-      // TODO(crbug.com/400769108): Handle these op codes.
+    case 79:  // Path delete
+    case 80:  // Path rename
+      if (!DecodeFileIoPathOperationEvent(header, buffer_context, pointer_size,
+                                          packet_data)) {
+        DLOG(ERROR) << "Error decoding FileIo_PathOperation event";
+      }
       break;
     // Filter Driver events
     case 83:  // FltRead
@@ -687,8 +690,6 @@ bool EtwConsumer::DecodeFileIoCreateEvent(
     const ETW_BUFFER_CONTEXT& buffer_context,
     size_t pointer_size,
     base::span<const uint8_t> packet_data) {
-  using perfetto::protos::pbzero::FileIoCreateEtwEvent;
-
   // Size of `FileIo_Create` event:
   //   2 pointers + 4 `uint32`s + wide string contents + wide string terminator.
   // Check that `packet_data` is large enough to hold at least the pointers,
@@ -722,8 +723,6 @@ bool EtwConsumer::DecodeFileIoDirEnumEvent(
     const ETW_BUFFER_CONTEXT& buffer_context,
     size_t pointer_size,
     base::span<const uint8_t> packet_data) {
-  using perfetto::protos::pbzero::FileIoDirEnumEtwEvent;
-
   // Size of `FileIo_DirEnum` event:
   //   3 pointers + 4 `uint32`s + wide string contents + wide string terminator.
   // Check that `packet_data` is large enough to hold at least the pointers,
@@ -758,8 +757,6 @@ bool EtwConsumer::DecodeFileIoInfoEvent(
     const ETW_BUFFER_CONTEXT& buffer_context,
     size_t pointer_size,
     base::span<const uint8_t> packet_data) {
-  using perfetto::protos::pbzero::FileIoInfoEtwEvent;
-
   // Size of `FileIo_Info` event: 4 pointers + 2 `uint32`s.
   const size_t kMinimumSize = 4 * pointer_size + 2 * sizeof(uint32_t);
   if (packet_data.size() < kMinimumSize) {
@@ -781,13 +778,44 @@ bool EtwConsumer::DecodeFileIoInfoEvent(
   return true;
 }
 
+bool EtwConsumer::DecodeFileIoPathOperationEvent(
+    const EVENT_HEADER& header,
+    const ETW_BUFFER_CONTEXT& buffer_context,
+    size_t pointer_size,
+    base::span<const uint8_t> packet_data) {
+  // Size of `FileIo_PathOperation` event:
+  //   4 pointers + 2 `uint32`s + wide string contents + wide string terminator.
+  const size_t kMinimumSize =
+      4 * pointer_size + 2 * sizeof(uint32_t) + sizeof(wchar_t);
+  if (packet_data.size() < kMinimumSize) {
+    return false;
+  }
+
+  // Read the contents of `packet_data` and generate a `FileIo_PathOperation`
+  // event.
+  base::BufferIterator<const uint8_t> iterator{packet_data};
+  auto* event = MakeNextEvent(header, buffer_context);
+  event->set_thread_id(header.ThreadId);
+  auto* file_io_path = event->set_file_io_path_operation();
+  file_io_path->set_irp_ptr(CopyPointerHash(iterator, pointer_size));
+  file_io_path->set_file_object(CopyPointerHash(iterator, pointer_size));
+  file_io_path->set_file_key(CopyPointerHash(iterator, pointer_size));
+  file_io_path->set_extra_info(CopyPointer(iterator, pointer_size));
+  file_io_path->set_ttid(*iterator.CopyObject<uint32_t>());
+  file_io_path->set_info_class(*iterator.CopyObject<uint32_t>());
+  if (!privacy_filtering_enabled_) {
+    file_io_path->set_file_name(base::WideToUTF8(*CopyWString(iterator)));
+  }
+  file_io_path->set_opcode(header.EventDescriptor.Opcode);
+
+  return true;
+}
+
 bool EtwConsumer::DecodeFileIoFltOpEvent(
     const EVENT_HEADER& header,
     const ETW_BUFFER_CONTEXT& buffer_context,
     size_t pointer_size,
     base::span<const uint8_t> packet_data) {
-  using perfetto::protos::pbzero::FileIoInfoEtwEvent;
-
   // Size of `FileIo_Info` event: 3 pointers + 4 `uint32`s.
   const size_t kMinimumSize = 3 * pointer_size + 4 * sizeof(uint32_t);
   if (packet_data.size() < kMinimumSize) {
@@ -816,8 +844,6 @@ bool EtwConsumer::DecodeFileIoReadWriteEvent(
     const ETW_BUFFER_CONTEXT& buffer_context,
     size_t pointer_size,
     base::span<const uint8_t> packet_data) {
-  using perfetto::protos::pbzero::FileIoReadWriteEtwEvent;
-
   // Size of `FileIo_ReadWrite` event: 1 uint64 + 3 pointers + 3 `uint32`s.
   const size_t kMinimumSize =
       sizeof(uint64_t) + 3 * pointer_size + 3 * sizeof(uint32_t);
@@ -846,8 +872,6 @@ bool EtwConsumer::DecodeFileIoSimpleOpEvent(
     const ETW_BUFFER_CONTEXT& buffer_context,
     size_t pointer_size,
     base::span<const uint8_t> packet_data) {
-  using perfetto::protos::pbzero::FileIoSimpleOpEtwEvent;
-
   // Size of `FileIo_SimpleOp` event: 3 pointers + 1 uint32.
   const size_t kMinimumSize = 3 * pointer_size + sizeof(uint32_t);
   if (packet_data.size() < kMinimumSize) {
@@ -872,8 +896,6 @@ bool EtwConsumer::DecodeFileIoOpEndEvent(
     const ETW_BUFFER_CONTEXT& buffer_context,
     size_t pointer_size,
     base::span<const uint8_t> packet_data) {
-  using perfetto::protos::pbzero::FileIoOpEndEtwEvent;
-
   // Size of `FileIo_OpEnd` event: 2 pointers + 1 uint32.
   const size_t kMinimumSize = 2 * pointer_size + sizeof(uint32_t);
   if (packet_data.size() < kMinimumSize) {

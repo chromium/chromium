@@ -47,6 +47,8 @@ static constexpr uint8_t kFileIoFltReadOpcode = 83u;
 static constexpr uint8_t kFileIoFltWriteOpcode = 84u;
 static constexpr uint8_t kFileIoFltSetInfoOpcode = 85u;
 static constexpr uint8_t kFileIoFltQueryInfoOpcode = 86u;
+static constexpr uint8_t kFileIoPathOperationDeleteOpcode = 79u;
+static constexpr uint8_t kFileIoPathOperationRenameOpcode = 80u;
 
 // A trace writer that creates TracePacket messages on the heap and sends their
 // serialized form to an owner-provided callback.
@@ -392,6 +394,26 @@ base::HeapArray<uint8_t> EncodeFileIoOpEnd(uint32_t ttid, uint32_t nt_status) {
   return base::HeapArray<uint8_t>::CopiedFrom({buffer});
 }
 
+// Returns the MOF encoding of a `FileIo_PathOperation` event.
+base::HeapArray<uint8_t> EncodeFileIoPathOperation(
+    uint32_t ttid,
+    uint32_t info_class,
+    std::wstring_view file_name) {
+  std::vector<uint8_t> buffer;
+  auto iter = std::back_inserter(buffer);
+  uintptr_t a_pointer = 0;
+  std::ranges::copy(base::byte_span_from_ref(++a_pointer), iter);  // IrpPtr
+  std::ranges::copy(base::byte_span_from_ref(++a_pointer), iter);  // FileObject
+  std::ranges::copy(base::byte_span_from_ref(++a_pointer), iter);  // FileKey
+  std::ranges::copy(base::byte_span_from_ref(++a_pointer), iter);  // ExtraInfo
+  std::ranges::copy(base::byte_span_from_ref(ttid), iter);
+  std::ranges::copy(base::byte_span_from_ref(info_class), iter);
+  std::ranges::copy(base::as_byte_span(file_name), iter);
+  buffer.insert(buffer.end(), sizeof(wchar_t), 0);  // string terminator
+  std::ranges::copy(base::byte_span_from_ref(kFileIoDirEnumOpcode), iter);
+  return base::HeapArray<uint8_t>::CopiedFrom({buffer});
+}
+
 }  // namespace
 
 // A test fixture that instantiates an EtwConsumer and sends it some events to
@@ -606,6 +628,16 @@ class EtwConsumerTest : public testing::Test {
     SendFileIoEvent(/*version=*/0u, /*opcode=*/76u, thread_id, packet_data);
   }
 
+  // Generates an ETW `FileIo_PathOperation` event with `packet_data` as its
+  // payload and sends it to the EtwConsumer for processing. If the EtwConsumer
+  // generates a TracePacket containing a `FileIoPathOperationEtwEvent`, a new
+  // decoder is constructed from it.
+  void ProcessFileIoPathOperationEvent(uint8_t opcode,
+                                       uint32_t thread_id,
+                                       base::span<const uint8_t> packet_data) {
+    SendFileIoEvent(/*version=*/0u, opcode, thread_id, packet_data);
+  }
+
   // Validates the TracePacket processed by `decoder` and populates
   // `file_io_create` with a decoder for the first ETW event contained therein.
   void ValidateAndDecodeFileIoCreate(
@@ -679,6 +711,20 @@ class EtwConsumerTest : public testing::Test {
     ValidateAndDecodeEtwEvent(decoder, event);
     ASSERT_TRUE(event->has_file_io_op_end());
     file_io_op_end.emplace(event->file_io_op_end());
+  }
+
+  // Validates the TracePacket processed by `decoder` and populates
+  // `file_io_path_operation` with a decoder for the first ETW event contained
+  // therein.
+  void ValidateAndDecodeFileIoPathOperation(
+      const MessageAndDecoder& decoder,
+      std::optional<perfetto::protos::pbzero::EtwTraceEvent::Decoder>& event,
+      std::optional<
+          perfetto::protos::pbzero::FileIoPathOperationEtwEvent::Decoder>&
+          file_io_path_operation) {
+    ValidateAndDecodeEtwEvent(decoder, event);
+    ASSERT_TRUE(event->has_file_io_path_operation());
+    file_io_path_operation.emplace(event->file_io_path_operation());
   }
 
   void SendProcessStartEvent(base::span<const uint8_t> packet_data) {
@@ -1295,6 +1341,70 @@ TEST_P(EtwConsumerTestWithPrivacyFiltering, FileIoFltOpEvent) {
   EXPECT_EQ(file_io_info->opcode(), kFileIoFltReadOpcode);
 }
 
+// Tests that a `FileIoPathOperationEtwEvent` is emitted for a
+// `FileIo_PathOperation` ETW event.
+TEST_P(EtwConsumerTestWithPrivacyFiltering, FileIoPathOperationDeleteEvent) {
+  constexpr uint32_t kInfoClass = 0x11;
+  constexpr std::wstring_view kFileName = L"some\\path.txt";
+  ProcessFileIoPathOperationEvent(
+      kFileIoPathOperationDeleteOpcode, kClientTid,
+      EncodeFileIoPathOperation(kClientTid, kInfoClass, kFileName));
+  ASSERT_EQ(decoders().size(), 1u);
+
+  std::optional<perfetto::protos::pbzero::EtwTraceEvent::Decoder> event;
+  std::optional<perfetto::protos::pbzero::FileIoPathOperationEtwEvent::Decoder>
+      file_io_path_operation;
+  ASSERT_NO_FATAL_FAILURE(ValidateAndDecodeFileIoPathOperation(
+      *decoders().back(), event, file_io_path_operation));
+
+  EXPECT_EQ(event->thread_id(), kClientTid);
+  EXPECT_TRUE(file_io_path_operation->has_irp_ptr());
+  EXPECT_TRUE(file_io_path_operation->has_file_object());
+  EXPECT_TRUE(file_io_path_operation->has_file_key());
+  EXPECT_EQ(file_io_path_operation->ttid(), kClientTid);
+  EXPECT_EQ(file_io_path_operation->info_class(), kInfoClass);
+  EXPECT_EQ(file_io_path_operation->has_file_name(),
+            !PrivacyFilteringEnabled());
+  if (!PrivacyFilteringEnabled()) {
+    EXPECT_EQ(std::string(file_io_path_operation->file_name().data,
+                          file_io_path_operation->file_name().size),
+              base::WideToUTF8(kFileName));
+  }
+  EXPECT_EQ(file_io_path_operation->opcode(), kFileIoPathOperationDeleteOpcode);
+}
+
+// Tests that a `FileIoPathOperationEtwEvent` is emitted for a
+// `FileIo_PathOperation` ETW event.
+TEST_P(EtwConsumerTestWithPrivacyFiltering, FileIoPathOperationRename) {
+  constexpr uint32_t kInfoClass = 0x11;
+  constexpr std::wstring_view kFileName = L"some\\path.txt";
+  ProcessFileIoPathOperationEvent(
+      kFileIoPathOperationRenameOpcode, kClientTid,
+      EncodeFileIoPathOperation(kClientTid, kInfoClass, kFileName));
+  ASSERT_EQ(decoders().size(), 1u);
+
+  std::optional<perfetto::protos::pbzero::EtwTraceEvent::Decoder> event;
+  std::optional<perfetto::protos::pbzero::FileIoPathOperationEtwEvent::Decoder>
+      file_io_path_operation;
+  ASSERT_NO_FATAL_FAILURE(ValidateAndDecodeFileIoPathOperation(
+      *decoders().back(), event, file_io_path_operation));
+
+  EXPECT_EQ(event->thread_id(), kClientTid);
+  EXPECT_TRUE(file_io_path_operation->has_irp_ptr());
+  EXPECT_TRUE(file_io_path_operation->has_file_object());
+  EXPECT_TRUE(file_io_path_operation->has_file_key());
+  EXPECT_EQ(file_io_path_operation->ttid(), kClientTid);
+  EXPECT_EQ(file_io_path_operation->info_class(), kInfoClass);
+  EXPECT_EQ(file_io_path_operation->has_file_name(),
+            !PrivacyFilteringEnabled());
+  if (!PrivacyFilteringEnabled()) {
+    EXPECT_EQ(std::string(file_io_path_operation->file_name().data,
+                          file_io_path_operation->file_name().size),
+              base::WideToUTF8(kFileName));
+  }
+  EXPECT_EQ(file_io_path_operation->opcode(), kFileIoPathOperationRenameOpcode);
+}
+
 // Tests that FileIo_Create events are only recorded for Chrome processes.
 TEST_P(EtwConsumerTestWithPrivacyFiltering, FileIoCreateFiltering) {
   // An event is recorded if it belongs to Chrome.
@@ -1411,6 +1521,31 @@ TEST_P(EtwConsumerTestWithPrivacyFiltering, FileIoFltOpFiltering) {
   ProcessFileIoFltOpEvent(kFileIoFltReadOpcode, kOtherTid,
                           EncodeFileIoFltOp(kOtherTid, 0x55, 0x66));
   EXPECT_EQ(decoders().size(), 4u);
+}
+
+// Tests that `FileIo_PathOperation` events are only recorded for Chrome
+// processes.
+TEST_P(EtwConsumerTestWithPrivacyFiltering, FileIoPathOperationFiltering) {
+  constexpr uint32_t kInfoClass = 0x11;
+  constexpr std::wstring_view kFileName = L"some\\path.txt";
+  ProcessFileIoPathOperationEvent(
+      kFileIoPathOperationDeleteOpcode, kClientTid,
+      EncodeFileIoPathOperation(kClientTid, kInfoClass, kFileName));
+  EXPECT_EQ(decoders().size(), 1u);
+  ProcessFileIoPathOperationEvent(
+      kFileIoPathOperationDeleteOpcode, kClientTid,
+      EncodeFileIoPathOperation(kClientTid, kInfoClass, kFileName));
+  EXPECT_EQ(decoders().size(), 2u);
+
+  // An event is not recorded if it doesn't belong to Chrome.
+  ProcessFileIoPathOperationEvent(
+      kFileIoPathOperationDeleteOpcode, kSystemTid,
+      EncodeFileIoPathOperation(kSystemTid, kInfoClass, kFileName));
+  EXPECT_EQ(decoders().size(), 2u);
+  ProcessFileIoPathOperationEvent(
+      kFileIoPathOperationDeleteOpcode, kOtherTid,
+      EncodeFileIoPathOperation(kOtherTid, kInfoClass, kFileName));
+  EXPECT_EQ(decoders().size(), 2u);
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

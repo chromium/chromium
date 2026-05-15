@@ -178,6 +178,14 @@ class TRACING_EXPORT EtwConsumer
                              base::span<const uint8_t> packet_data)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
+  // Decodes a `FileIo_PathOperation` event and emits a Perfetto trace event.
+  // Returns true on success, or false if `packet_data` is invalid.
+  bool DecodeFileIoPathOperationEvent(const EVENT_HEADER& header,
+                                      const ETW_BUFFER_CONTEXT& buffer_context,
+                                      size_t pointer_size,
+                                      base::span<const uint8_t> packet_data)
+      VALID_CONTEXT_REQUIRED(sequence_checker_);
+
   // Decodes a FileIo_FltOp event and emits a Perfetto trace event.
   // Returns true on success, or false if `packet_data` is invalid.
   bool DecodeFileIoFltOpEvent(const EVENT_HEADER& header,
