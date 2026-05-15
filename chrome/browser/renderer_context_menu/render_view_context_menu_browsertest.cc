@@ -99,6 +99,7 @@
 #include "chrome/test/supervised_user/supervision_mixin.h"
 #include "components/compose/buildflags.h"
 #include "components/enterprise/data_controls/core/browser/features.h"
+#include "components/enterprise/data_controls/core/browser/rule.h"
 #include "components/enterprise/data_controls/core/browser/test_utils.h"
 #include "components/guest_view/browser/guest_view_manager_delegate.h"
 #include "components/guest_view/browser/test_guest_view_manager.h"
@@ -1527,6 +1528,7 @@ IN_PROC_BROWSER_TEST_F(DataControlsContextMenuBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(DataControlsContextMenuBrowserTest,
                        DataControlsSearchWith_ReadingModeWarn) {
+  base::HistogramTester histogram_tester;
   auto menu = SetUpReadingModeAndCreateMenu(R"({
       "name": "warn",
       "rule_id": "987",
@@ -1544,6 +1546,10 @@ IN_PROC_BROWSER_TEST_F(DataControlsContextMenuBrowserTest,
   helper.WaitForDialogToInitialize();
   helper.CloseDialogWithoutBypass();
   helper.WaitForDialogToClose();
+
+  histogram_tester.ExpectUniqueSample(
+      "Enterprise.DataControls.SearchWith.Verdict",
+      data_controls::Rule::Level::kWarn, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest,

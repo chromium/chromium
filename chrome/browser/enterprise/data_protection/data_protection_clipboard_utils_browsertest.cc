@@ -1971,16 +1971,22 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
 
 IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
                        ShouldAllowSearchWith_Allowed) {
+  base::HistogramTester histogram_tester;
   auto event_validator = event_report_validator_helper_->CreateValidator();
   event_validator.ExpectNoReport();
 
   base::test::TestFuture<void> callback_future;
   ShouldAllowSearchWith(contents(), 10, callback_future.GetCallback());
   EXPECT_TRUE(callback_future.Wait());
+
+  histogram_tester.ExpectUniqueSample(
+      "Enterprise.DataControls.SearchWith.Verdict",
+      data_controls::Rule::Level::kNotSet, 1);
 }
 
 IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
                        ShouldAllowSearchWith_WarnedBypassed) {
+  base::HistogramTester histogram_tester;
   ASSERT_TRUE(content::NavigateToURL(contents(), GURL("about:blank")));
 
   data_controls::SetDataControls(browser()->profile()->GetPrefs(), {R"({
@@ -2036,10 +2042,15 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
   run_loop.Run();
 
   EXPECT_TRUE(callback_future.Wait());
+
+  histogram_tester.ExpectUniqueSample(
+      "Enterprise.DataControls.SearchWith.Verdict",
+      data_controls::Rule::Level::kWarn, 1);
 }
 
 IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
                        ShouldAllowSearchWith_WarnedCanceled) {
+  base::HistogramTester histogram_tester;
   ASSERT_TRUE(content::NavigateToURL(contents(), GURL("about:blank")));
 
   data_controls::SetDataControls(browser()->profile()->GetPrefs(), {R"({
@@ -2095,6 +2106,10 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
   run_loop.Run();
 
   EXPECT_FALSE(callback_future.IsReady());
+
+  histogram_tester.ExpectUniqueSample(
+      "Enterprise.DataControls.SearchWith.Verdict",
+      data_controls::Rule::Level::kWarn, 1);
 }
 
 }  // namespace enterprise_data_protection
