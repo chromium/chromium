@@ -114,6 +114,8 @@ void SiteFamiliarityFetcher::Start(const GURL& url,
           kSkipSiteFamiliarityDeferralForDefaultSearchEngine) &&
       IsDefaultSearchEngineUrl(fetch_url_, profile_)) {
     // Assume the default search engine search results are familiar to the user.
+    CRSBLOG << "SiteFamiliarityFetcher::Start [URL]: " << fetch_url_
+            << " is default search engine";
     OnComputedVerdictWithoutFetches(/*is_site_familiar=*/true);
     return;
   }
