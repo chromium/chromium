@@ -814,7 +814,7 @@ message FrameData {
 
   // Positive used line height in CSS px. Needed for scaling-proof
   // geometry rules (e.g. menu popup heuristics expecting a minimum size).
-  int32 default_line_height_px = 12 [features = { field_presence: EXPLICIT }];
+  uint32 default_line_height_px = 12 [features = { field_presence: EXPLICIT }];
 
   reserved 7, 10;
 }
