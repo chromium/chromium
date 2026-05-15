@@ -23,6 +23,7 @@ import android.view.ViewParent;
 import android.view.ViewStub;
 
 import androidx.annotation.Px;
+import androidx.annotation.VisibleForTesting;
 import androidx.window.layout.WindowMetricsCalculator;
 
 import org.chromium.base.Callback;
@@ -158,24 +159,25 @@ final class SideUiCoordinatorImpl implements SideUiCoordinator, ConfigurationCha
     }
 
     @Override
-    public SideUiSpecs measureSideUiSpecs() {
-        View sideUiParent = (View) mStartAnchorContainer.getParent();
-        assert sideUiParent == mEndAnchorContainer.getParent()
-                : "Anchor containers should have the same parent.";
+    public SideUiSpecs getCurrentSideUiSpecs() {
+        // Note: When a View's visibility is changed to View.GONE, it won't be laid out so Android
+        // won't update the View's internal states tracking its size. This means View.getWidth() can
+        // return a stale value when the visibility is View.GONE.
+        //
+        // Therefore, we need to explicitly check if the visibility is View.GONE, and if so, return
+        // 0.
+        @Px
+        int startAnchorContainerWidth =
+                mStartAnchorContainer.getVisibility() == View.GONE
+                        ? 0
+                        : mStartAnchorContainer.getWidth();
+        @Px
+        int endAnchorContainerWidth =
+                mEndAnchorContainer.getVisibility() == View.GONE
+                        ? 0
+                        : mEndAnchorContainer.getWidth();
 
-        int sideUiParentHeight = sideUiParent != null ? sideUiParent.getMeasuredHeight() : 0;
-        int sideUiHeight = sideUiParentHeight - mSideUiTopMargin;
-        int sideUiHeightSpec =
-                sideUiHeight > 0
-                        ? makeMeasureSpec(sideUiHeight, EXACTLY)
-                        : makeMeasureSpec(0, MeasureSpec.UNSPECIFIED);
-        int sideUiWidthSpec = makeMeasureSpec(0, MeasureSpec.UNSPECIFIED);
-
-        mStartAnchorContainer.measure(sideUiWidthSpec, sideUiHeightSpec);
-        mEndAnchorContainer.measure(sideUiWidthSpec, sideUiHeightSpec);
-
-        return new SideUiSpecs(
-                mStartAnchorContainer.getMeasuredWidth(), mEndAnchorContainer.getMeasuredWidth());
+        return new SideUiSpecs(startAnchorContainerWidth, endAnchorContainerWidth);
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////////////
@@ -290,29 +292,29 @@ final class SideUiCoordinatorImpl implements SideUiCoordinator, ConfigurationCha
         }
     }
 
-    private SideUiSpecs getCurrentSideUiSpecs() {
-        // Note: When a View's visibility is changed to View.GONE, it won't be laid out so Android
-        // won't update the View's internal states tracking its size. This means View.getWidth() can
-        // return a stale value when the visibility is View.GONE.
-        //
-        // Therefore, we need to explicitly check if the visibility is View.GONE, and if so, return
-        // 0.
-        @Px
-        int startAnchorContainerWidth =
-                mStartAnchorContainer.getVisibility() == View.GONE
-                        ? 0
-                        : mStartAnchorContainer.getWidth();
-        @Px
-        int endAnchorContainerWidth =
-                mEndAnchorContainer.getVisibility() == View.GONE
-                        ? 0
-                        : mEndAnchorContainer.getWidth();
-
-        return new SideUiSpecs(startAnchorContainerWidth, endAnchorContainerWidth);
-    }
-
     private ViewGroup getRootView() {
         return (ViewGroup) mAnchorContainerParent.getRootView();
+    }
+
+    @VisibleForTesting
+    SideUiSpecs measureSideUiSpecs() {
+        View sideUiParent = (View) mStartAnchorContainer.getParent();
+        assert sideUiParent == mEndAnchorContainer.getParent()
+                : "Anchor containers should have the same parent.";
+
+        int sideUiParentHeight = sideUiParent != null ? sideUiParent.getMeasuredHeight() : 0;
+        int sideUiHeight = sideUiParentHeight - mSideUiTopMargin;
+        int sideUiHeightSpec =
+                sideUiHeight > 0
+                        ? makeMeasureSpec(sideUiHeight, EXACTLY)
+                        : makeMeasureSpec(0, MeasureSpec.UNSPECIFIED);
+        int sideUiWidthSpec = makeMeasureSpec(0, MeasureSpec.UNSPECIFIED);
+
+        mStartAnchorContainer.measure(sideUiWidthSpec, sideUiHeightSpec);
+        mEndAnchorContainer.measure(sideUiWidthSpec, sideUiHeightSpec);
+
+        return new SideUiSpecs(
+                mStartAnchorContainer.getMeasuredWidth(), mEndAnchorContainer.getMeasuredWidth());
     }
 
     /**

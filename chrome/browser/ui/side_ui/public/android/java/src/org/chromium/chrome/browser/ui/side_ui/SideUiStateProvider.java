@@ -42,21 +42,6 @@ public interface SideUiStateProvider {
      */
     void removeObserver(SideUiObserver observer);
 
-    /**
-     * Returns the {@link SideUiSpecs} using synchronous {@link android.view.View#measure} calls.
-     *
-     * <p>Most clients should instead register themselves as a {@link SideUiObserver}. This is
-     * primarily intended to be used by {@code CompositorViewHolder}, which needs the {@link
-     * SideUiSpecs} before side UI Views are laid out.
-     *
-     * <p>More context as of May 8, 2026:
-     *
-     * <p>{@code CompositorViewHolder#onSizeChanged()} needs the latest {@link SideUiSpecs}, but
-     * Android invokes {@code View#onSizeChanged} before that View's children are laid out. Although
-     * {@code CompositorViewHolder} and side UI Views are siblings, there can be a race between
-     * {@code CompositorViewHolder#onSizeChanged()} and when side UI Views are laid out.
-     *
-     * @return The measured {@link SideUiSpecs}.
-     */
-    SideUiSpecs measureSideUiSpecs();
+    /** Returns the current {@link SideUiSpecs}. */
+    SideUiSpecs getCurrentSideUiSpecs();
 }

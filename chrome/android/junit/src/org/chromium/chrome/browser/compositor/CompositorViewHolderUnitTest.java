@@ -1383,7 +1383,8 @@ public class CompositorViewHolderUnitTest {
     @Test
     @EnableFeatures(ChromeFeatureList.ENABLE_ANDROID_SIDE_PANEL)
     public void testSetSideUiStateProviderSupplier() {
-        when(mSideUiStateProvider.measureSideUiSpecs()).thenReturn(SideUiSpecs.EMPTY_SIDE_UI_SPECS);
+        when(mSideUiStateProvider.getCurrentSideUiSpecs())
+                .thenReturn(SideUiSpecs.EMPTY_SIDE_UI_SPECS);
         mSideUiStateProviderSupplier.set(mSideUiStateProvider);
         runCurrentTasks();
 
@@ -1406,7 +1407,7 @@ public class CompositorViewHolderUnitTest {
         int startContainerWidth = 100;
         int endContainerWidth = 200;
         SideUiSpecs currentSideUiSpecs = new SideUiSpecs(startContainerWidth, endContainerWidth);
-        when(mSideUiStateProvider.measureSideUiSpecs()).thenReturn(currentSideUiSpecs);
+        when(mSideUiStateProvider.getCurrentSideUiSpecs()).thenReturn(currentSideUiSpecs);
         mSideUiStateProviderSupplier.set(mSideUiStateProvider);
         runCurrentTasks();
 
@@ -1440,7 +1441,7 @@ public class CompositorViewHolderUnitTest {
         int startContainerWidth = 50;
         int endContainerWidth = 150;
         SideUiSpecs currentSideUiSpecs = new SideUiSpecs(startContainerWidth, endContainerWidth);
-        when(mSideUiStateProvider.measureSideUiSpecs()).thenReturn(currentSideUiSpecs);
+        when(mSideUiStateProvider.getCurrentSideUiSpecs()).thenReturn(currentSideUiSpecs);
         mSideUiStateProviderSupplier.set(mSideUiStateProvider);
         runCurrentTasks();
 
@@ -1483,7 +1484,7 @@ public class CompositorViewHolderUnitTest {
 
         // Arbitrary Side UI width.
         SideUiSpecs currentSideUiSpecs = new SideUiSpecs(SIDE_UI_START_WIDTH, SIDE_UI_END_WIDTH);
-        when(mSideUiStateProvider.measureSideUiSpecs()).thenReturn(currentSideUiSpecs);
+        when(mSideUiStateProvider.getCurrentSideUiSpecs()).thenReturn(currentSideUiSpecs);
         mSideUiStateProviderSupplier.set(mSideUiStateProvider);
         runCurrentTasks();
         mCompositorViewHolder.onSideUiSpecsChanged(currentSideUiSpecs);
