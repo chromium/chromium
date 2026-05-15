@@ -120,6 +120,7 @@ chromium-metrics-reviews@google.com.
   <variant name="Test" summary="Test"/>
   <variant name="TextSafety" summary="Text Safety"/>
   <variant name="Unknown" summary="Unknown"/>
+  <variant name="UpdaterChat" summary="Updater Chat"/>
   <variant name="WallpaperSearch" summary="Wallpaper search"/>
   <variant name="WebRTCNeuralResidualEchoEstimator"
       summary="WebRTC Neural Residual Echo Estimator"/>

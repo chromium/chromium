@@ -115,6 +115,11 @@ size_t GetMaxParallelFeatureExecutions(ModelBasedCapabilityKey feature) {
       // Since there can be multiple forms on a single page, multiple parallel
       // executions are allowed for `kFormsClassifications`.
       return 10;
+    case ModelBasedCapabilityKey::kUpdaterChat:
+      // Allow multiple parallel executions for `kUpdaterChat` so the LLM
+      // can generate summaries for multiple log snippets concurrently,
+      // enabling the front-end to display a multi-snippet status view.
+      return 10;
   }
 }
 

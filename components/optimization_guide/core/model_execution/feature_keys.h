@@ -55,6 +55,8 @@ enum class ModelBasedCapabilityKey {
       MODEL_EXECUTION_FEATURE_ANNOTATION_REDUCER_QUERY_CLASSIFIER,
   kContextualCueing =
       proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_CONTEXTUAL_CUEING,
+  kUpdaterChat =
+      proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_UPDATER_CHAT,
 };
 
 inline std::ostream& operator<<(std::ostream& out,
@@ -102,6 +104,8 @@ inline std::ostream& operator<<(std::ostream& out,
       return out << "AnnotationReducerQueryClassifier";
     case ModelBasedCapabilityKey::kContextualCueing:
       return out << "ContextualCueing";
+    case ModelBasedCapabilityKey::kUpdaterChat:
+      return out << "UpdaterChat";
   }
   return out;
 }
@@ -215,6 +219,8 @@ inline proto::ModelExecutionFeature ToModelExecutionFeatureProto(
     case ModelBasedCapabilityKey::kContextualCueing:
       return proto::ModelExecutionFeature::
           MODEL_EXECUTION_FEATURE_CONTEXTUAL_CUEING;
+    case ModelBasedCapabilityKey::kUpdaterChat:
+      return proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_UPDATER_CHAT;
   }
 }
 
