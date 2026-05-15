@@ -101,6 +101,7 @@
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/controllable_http_response.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "net/test/embedded_test_server/expectation_handler.h"
 #include "net/test/embedded_test_server/http_response.h"
 #include "net/test/url_request/url_request_failed_job.h"
 #include "services/metrics/public/cpp/metrics_utils.h"
@@ -1728,36 +1729,34 @@ class NavigationDownloadBrowserTest : public NavigationBaseBrowserTest {
 // 4) There are no more possibilities for DidStopLoading() to be sent.
 IN_PROC_BROWSER_TEST_F(NavigationDownloadBrowserTest,
                        StopLoadingAfterDroppedNavigation) {
-  net::test_server::ControllableHttpResponse main_response(
-      embedded_test_server(), "/main");
+  net::test_server::ExpectationHandler handler(embedded_test_server());
   ASSERT_TRUE(embedded_test_server()->Start());
 
   GURL main_url(embedded_test_server()->GetURL("/main"));
   GURL download_url(embedded_test_server()->GetURL("/download-test1.lib"));
 
-  shell()->LoadURL(main_url);
-  main_response.WaitForRequest();
-  std::string headers =
-      "HTTP/1.1 200 OK\r\n"
-      "Content-Type: text/html; charset=utf-8\r\n"
-      "\r\n";
-
   // Craft special HTML to make the blink::DocumentParser yield CPU to other
   // tasks. The goal is to ensure the response body datapipe is not fully read
   // when URLLoaderClient::OnComplete() is called.
   // This relies on the  HTMLParserScheduler::ShouldYield() heuristics.
-  std::string mix_of_script_and_div = "<script></script><div></div>";
-  for (size_t i = 0; i < 10; ++i) {
-    mix_of_script_and_div += mix_of_script_and_div;  // Exponential growth.
+  constexpr std::string_view kScriptAndDivChunk =
+      "<script></script><div></div>";
+  constexpr size_t kChunkRepeatCount = 1024;
+
+  std::string response_body = base::StrCat({
+      std::string_view("<script>location.href='"),
+      download_url.spec(),
+      std::string_view("'</script>"),
+  });
+  response_body.reserve(response_body.size() +
+                        kScriptAndDivChunk.size() * kChunkRepeatCount);
+  for (size_t i = 0; i < kChunkRepeatCount; ++i) {
+    response_body.append(kScriptAndDivChunk);
   }
+  handler.OnRequest("/main").RespondWith("text/html; charset=utf-8",
+                                         response_body);
 
-  std::string navigate_to_download =
-      "<script>location.href='" + download_url.spec() + "'</script>";
-
-  main_response.Send(headers + navigate_to_download + mix_of_script_and_div);
-  main_response.Done();
-
-  EXPECT_TRUE(WaitForLoadStop(web_contents()));
+  EXPECT_TRUE(content::NavigateToURL(web_contents(), main_url));
 }
 
 // Renderer initiated back/forward navigation in beforeunload should not prevent
