@@ -60,6 +60,10 @@ void DefaultChipSelector::RequestAnchoredMessageShow(
     // anchored message showing, we just show it. If there is another anchored
     // message showing, we downgrade it to a chip and then show the newly
     // requested message with no other changes to the queue.
+    if (std::ranges::contains(active_chips_, page_action_id)) {
+      active_chips_.erase(page_action_id);
+      hide_chip_callback_.Run(page_action_id);
+    }
     if (anchored_message_queue_.empty()) {
       // If no anchored messages are showing, put this one in the queue
       anchored_message_queue_.push_back(page_action_id);

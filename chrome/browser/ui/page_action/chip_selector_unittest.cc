@@ -161,6 +161,14 @@ TEST_F(DefaultChipSelectorTest,
                          Pair("show_anchored_message", 1)));
 }
 
+TEST_F(DefaultChipSelectorTest, UserInteractionAnchoredMessageReplacesChip) {
+  selector->RequestChipShow(0, {});
+  selector->RequestAnchoredMessageShow(
+      0, {.priority = PageActionPriorityCategory::kUserInteraction});
+  EXPECT_THAT(calls, ElementsAre(Pair("show_chip", 0), Pair("hide_chip", 0),
+                                 Pair("show_anchored_message", 0)));
+}
+
 TEST_F(DefaultChipSelectorTest,
        UserInteractionAnchoredMessageReplacesFrontOfQueue) {
   selector->RequestAnchoredMessageShow(0, AnchoredMessageConfig{});
