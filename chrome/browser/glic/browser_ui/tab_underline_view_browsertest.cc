@@ -432,8 +432,15 @@ IN_PROC_BROWSER_TEST_F(TabUnderlineViewBrowserTest, IncognitoModeCrash) {
       ui_test_utils::NavigateToURL(incognito_browser, GURL("about:blank")));
 }
 
+// TODO(crbug.com/513374065): Re-enable this test once the flakiness is fixed on
+// Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_AttachPinnedTabToNewWindow DISABLED_AttachPinnedTabToNewWindow
+#else
+#define MAYBE_AttachPinnedTabToNewWindow AttachPinnedTabToNewWindow
+#endif
 IN_PROC_BROWSER_TEST_F(TabUnderlineViewBrowserTest,
-                       AttachPinnedTabToNewWindow) {
+                       MAYBE_AttachPinnedTabToNewWindow) {
   // Set up two windows, each with one tab
   ASSERT_EQ(GetTabListInterface()->GetTabCount(), 1);
   // Second browser window
