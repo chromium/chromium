@@ -130,7 +130,7 @@ void SystemLocationProvider::DestroyForTesting() {
   g_geolocation_provider = nullptr;
 }
 
-bool SystemLocationProvider::IsGeolocationUsageAllowedForSystem() {
+bool SystemLocationProvider::IsGeolocationUsageAllowedForSystem() const {
   switch (geolocation_access_level_) {
     case GeolocationAccessLevel::kAllowed:
     case GeolocationAccessLevel::kOnlyAllowedForSystem:

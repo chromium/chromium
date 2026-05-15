@@ -22,9 +22,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/lock.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/ash/system/timezone_resolver_manager.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
@@ -246,51 +244,6 @@ bool IsTimezonePrefsManaged(const std::string& pref_name) {
   }
   // Default for unknown policy value.
   NOTREACHED() << "Unrecognized policy value: " << resolve_policy_value;
-}
-
-void ApplyTimeZone(const TimeZoneResponseData* timezone) {
-  if (!g_browser_process->platform_part()
-           ->GetTimezoneResolverManager()
-           ->ShouldApplyResolvedTimezone()) {
-    return;
-  }
-
-  if (timezone->timeZoneId.empty())
-    return;
-
-  VLOG(1) << "Refresh TimeZone: setting timezone to '" << timezone->timeZoneId
-          << "'";
-
-  if (ash::switches::IsPerUserTimezoneEnabled()) {
-    const user_manager::UserManager* user_manager =
-        user_manager::UserManager::Get();
-    const user_manager::User* primary_user = user_manager->GetPrimaryUser();
-
-    if (primary_user) {
-      Profile* profile = ProfileHelper::Get()->GetProfileByUser(primary_user);
-      // profile can be NULL only if user has logged in, but profile has not
-      // been initialized yet. Ignore delayed time zone update until user
-      // preferences are initialized.
-      if (!profile)
-        return;
-
-      profile->GetPrefs()->SetString(ash::prefs::kUserTimezone,
-                                     timezone->timeZoneId);
-      // For non-enterprise device, `Preferences::ApplyPreferences()`
-      // will automatically change system timezone because user is primary.
-      // But it may not happen for enterprise device, as policy may prevent
-      // user from changing device time zone manually.
-      // That is the reason we always update system time zone here.
-      TimezoneSettings::GetInstance()->SetTimezoneFromID(
-          base::UTF8ToUTF16(timezone->timeZoneId));
-    } else {
-      SetSystemAndSigninScreenTimezone(
-          CHECK_DEREF(g_browser_process->local_state()), timezone->timeZoneId);
-    }
-  } else {
-    TimezoneSettings::GetInstance()->SetTimezoneFromID(
-        base::UTF8ToUTF16(timezone->timeZoneId));
-  }
 }
 
 void UpdateSystemTimezone(Profile* profile) {

@@ -60,6 +60,7 @@ class TimeZoneResolverManager : public TimeZoneResolver::Delegate,
   // TimeZoneResolver::Delegate:
   bool ShouldSendWiFiGeolocationData() const override;
   bool ShouldSendCellularGeolocationData() const override;
+  bool ShouldApplyResolvedTimezone() const override;
 
   // session_manager::SessionManagerObserver:
   void OnUserProfileLoaded(const AccountId& account_id) override;
@@ -75,21 +76,17 @@ class TimeZoneResolverManager : public TimeZoneResolver::Delegate,
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 
-  // Returns true if result of timezone resolve should be applied to
-  // system timezone (preferences might have changed since request was started).
-  bool ShouldApplyResolvedTimezone();
-
   // Returns true if `TimeZoneResolver` should be running, taking into account
   // all relevant conditions, namely the system geolocation permission and time
   // zone configuration data.
-  bool TimeZoneResolverShouldBeRunning();
+  bool TimeZoneResolverShouldBeRunning() const;
 
   // Returns true if the time zone configuration data allows `TimeZoneResolver`
   // to be running. The configuration data encompasses all time zone related
   // policy, user and login-screen prefs.
   // Unlike `TimeZoneResolverShouldBeRunning()`, this method disregards the
   // system geolocation permission.
-  bool TimeZoneResolverAllowedByTimeZoneConfigData();
+  bool TimeZoneResolverAllowedByTimeZoneConfigData() const;
 
   // Returns the instance of TimeZoneResolver.
   ash::TimeZoneResolver* GetResolver();

@@ -10,6 +10,8 @@
 #include "base/component_export.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/threading/thread_checker.h"
 #include "chromeos/ash/components/geolocation/system_location_provider.h"
 
@@ -22,16 +24,10 @@ class SharedURLLoaderFactory;
 
 namespace ash {
 
-struct TimeZoneResponseData;
-
 // This class implements periodic timezone synchronization.
 class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_TIMEZONE) TimeZoneResolver {
  public:
   class TimeZoneResolverImpl;
-
-  // This callback will be called when new timezone arrives.
-  using ApplyTimeZoneCallback =
-      base::RepeatingCallback<void(const TimeZoneResponseData*)>;
 
   // `ash::DelayNetworkCall` cannot be used directly due to link restrictions.
   using DelayNetworkCallClosure =
@@ -51,18 +47,25 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_TIMEZONE) TimeZoneResolver {
 
     // Returns true if TimeZoneResolver should include Cellular data in request.
     virtual bool ShouldSendCellularGeolocationData() const = 0;
+
+    // Returns true if result of timezone resolve should be applied to
+    // system timezone (preferences might have changed since request was
+    // started).
+    virtual bool ShouldApplyResolvedTimezone() const = 0;
   };
 
   // This is a LocalState preference to store base::Time value of the last
   // request. It is used to limit request rate on browser restart.
   static const char kLastTimeZoneRefreshTime[];
 
-  TimeZoneResolver(Delegate* delegate,
-                   SystemLocationProvider* geolocation_provider_,
-                   scoped_refptr<network::SharedURLLoaderFactory> factory,
-                   const ApplyTimeZoneCallback& apply_timezone,
-                   const DelayNetworkCallClosure& delay_network_call,
-                   PrefService* local_state);
+  // `local_state` must be non-null and must outlive `this`.
+  // `shared_url_loader_factory` must be non-null.
+  TimeZoneResolver(
+      PrefService* local_state,
+      scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
+      Delegate* delegate,
+      SystemLocationProvider* geolocation_provider_,
+      const DelayNetworkCallClosure& delay_network_call);
 
   TimeZoneResolver(const TimeZoneResolver&) = delete;
   TimeZoneResolver& operator=(const TimeZoneResolver&) = delete;
@@ -89,9 +92,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_TIMEZONE) TimeZoneResolver {
     return delay_network_call_;
   }
 
-  ApplyTimeZoneCallback apply_timezone() const { return apply_timezone_; }
-
-  PrefService* local_state() const { return local_state_; }
+  PrefService& local_state() const { return local_state_.get(); }
 
   // Proxy call to Delegate::ShouldSendWiFiGeolocationData().
   bool ShouldSendWiFiGeolocationData() const;
@@ -99,12 +100,19 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_TIMEZONE) TimeZoneResolver {
   // Proxy call to Delegate::ShouldSendCellularGeolocationData().
   bool ShouldSendCellularGeolocationData() const;
 
+  // Proxy call to Delegate::ShouldApplyResolvedTimezone().
+  bool ShouldApplyResolvedTimezone() const;
+
   // Expose internal fuctions for testing.
   static int MaxRequestsCountForIntervalForTesting(
       const double interval_seconds);
   static int IntervalForNextRequestForTesting(const int requests);
 
  private:
+  const raw_ref<PrefService> local_state_;
+  const scoped_refptr<network::SharedURLLoaderFactory>
+      shared_url_loader_factory_;
+
   bool is_running_ = false;
   const raw_ptr<const Delegate> delegate_;
 
@@ -112,11 +120,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_TIMEZONE) TimeZoneResolver {
   // object lifecycle. Overridden in unit tests.
   raw_ptr<SystemLocationProvider> geolocation_provider_ = nullptr;
 
-  scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory_;
-
-  const ApplyTimeZoneCallback apply_timezone_;
   const DelayNetworkCallClosure delay_network_call_;
-  raw_ptr<PrefService> local_state_;
 
   std::unique_ptr<TimeZoneResolverImpl> implementation_;
 

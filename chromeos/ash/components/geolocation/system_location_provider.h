@@ -73,7 +73,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GEOLOCATION)
 
   // Convenience method for clients to read underlying `GeolocationAccessLevel`
   // as a boolean value.
-  bool IsGeolocationUsageAllowedForSystem();
+  bool IsGeolocationUsageAllowedForSystem() const;
 
   void AddObserver(Observer* obs);
   void RemoveObserver(Observer* obs);

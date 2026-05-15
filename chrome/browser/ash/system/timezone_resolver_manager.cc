@@ -336,11 +336,11 @@ void TimeZoneResolverManager::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
-bool TimeZoneResolverManager::ShouldApplyResolvedTimezone() {
+bool TimeZoneResolverManager::ShouldApplyResolvedTimezone() const {
   return TimeZoneResolverShouldBeRunning();
 }
 
-bool TimeZoneResolverManager::TimeZoneResolverShouldBeRunning() {
+bool TimeZoneResolverManager::TimeZoneResolverShouldBeRunning() const {
   // System geolocation permission is required for automatic timezone
   // resolution.
   if (!geolocation_provider_->IsGeolocationUsageAllowedForSystem()) {
@@ -352,7 +352,8 @@ bool TimeZoneResolverManager::TimeZoneResolverShouldBeRunning() {
   return TimeZoneResolverAllowedByTimeZoneConfigData();
 }
 
-bool TimeZoneResolverManager::TimeZoneResolverAllowedByTimeZoneConfigData() {
+bool TimeZoneResolverManager::TimeZoneResolverAllowedByTimeZoneConfigData()
+    const {
   ServiceConfiguration result = GetServiceConfigurationFromPolicy();
 
   if (result == UNSPECIFIED) {
@@ -369,11 +370,9 @@ bool TimeZoneResolverManager::TimeZoneResolverAllowedByTimeZoneConfigData() {
 ash::TimeZoneResolver* TimeZoneResolverManager::GetResolver() {
   if (!timezone_resolver_.get()) {
     timezone_resolver_ = std::make_unique<ash::TimeZoneResolver>(
-        this, geolocation_provider_,
-        g_browser_process->shared_url_loader_factory(),
-        base::BindRepeating(&ash::system::ApplyTimeZone),
-        base::BindRepeating(&ash::DelayNetworkCall),
-        g_browser_process->local_state());
+        g_browser_process->local_state(),
+        g_browser_process->shared_url_loader_factory(), this,
+        geolocation_provider_, base::BindRepeating(&ash::DelayNetworkCall));
   }
   return timezone_resolver_.get();
 }
