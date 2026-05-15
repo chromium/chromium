@@ -10,6 +10,7 @@ source_set("unit_tests") {
     "//components/private_verification_tokens/common:private_verification_tokens_database_unittest",
     "//components/private_verification_tokens/common:private_verification_tokens_fetcher_unittest",
     "//components/private_verification_tokens/common:private_verification_tokens_public_key_unittest",
+    "//components/private_verification_tokens/common:private_verification_tokens_store_unittest",
     "//components/private_verification_tokens/common:private_verification_tokens_token_unittest",
   ]
 }

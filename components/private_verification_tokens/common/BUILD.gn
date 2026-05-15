@@ -96,3 +96,24 @@ source_set("private_verification_tokens_database_unittest") {
     "//testing/gtest",
   ]
 }
+
+source_set("private_verification_tokens_store") {
+  sources = [
+    "private_verification_tokens_store.cc",
+    "private_verification_tokens_store.h",
+  ]
+  public_deps = [ ":private_verification_tokens_database" ]
+  deps = [ "//base" ]
+}
+
+source_set("private_verification_tokens_store_unittest") {
+  testonly = true
+  sources = [ "private_verification_tokens_store_unittest.cc" ]
+  deps = [
+    ":private_verification_tokens_store",
+    "//base",
+    "//base/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}
