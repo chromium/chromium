@@ -6,6 +6,7 @@
 
 #include "chromeos/ash/components/audio/sounds.h"
 #include "chromeos/ash/grit/ash_resources.h"
+#include "services/audio/public/cpp/sounds/global_sounds_manager.h"
 #include "services/audio/public/cpp/sounds/sounds_manager.h"
 #include "ui/base/resource/resource_bundle.h"
 
@@ -15,33 +16,33 @@ SystemSoundsDelegateImpl::~SystemSoundsDelegateImpl() = default;
 
 void SystemSoundsDelegateImpl::Init() {
   ui::ResourceBundle& bundle = ui::ResourceBundle::GetSharedInstance();
-  audio::SoundsManager* manager = audio::SoundsManager::Get();
+  audio::SoundsManager& manager = audio::GlobalSoundsManager::Get();
 
   // Initialize sounds used for power and battery.
-  manager->Initialize(
+  manager.Initialize(
       static_cast<int>(ash::Sound::kChargeHighBattery),
       bundle.GetRawDataResource(IDR_SOUND_CHARGE_HIGH_BATTERY_FLAC),
       media::AudioCodec::kFLAC);
-  manager->Initialize(
+  manager.Initialize(
       static_cast<int>(ash::Sound::kChargeMediumBattery),
       bundle.GetRawDataResource(IDR_SOUND_CHARGE_MEDIUM_BATTERY_FLAC),
       media::AudioCodec::kFLAC);
-  manager->Initialize(
+  manager.Initialize(
       static_cast<int>(ash::Sound::kChargeLowBattery),
       bundle.GetRawDataResource(IDR_SOUND_CHARGE_LOW_BATTERY_FLAC),
       media::AudioCodec::kFLAC);
-  manager->Initialize(
+  manager.Initialize(
       static_cast<int>(ash::Sound::kNoChargeLowBattery),
       bundle.GetRawDataResource(IDR_SOUND_NO_CHARGE_LOW_BATTERY_FLAC),
       media::AudioCodec::kFLAC);
 
   // Initialize sounds used for Focus mode.
-  manager->Initialize(
+  manager.Initialize(
       static_cast<int>(ash::Sound::kFocusModeEndingMoment),
       bundle.GetRawDataResource(IDR_SOUND_FOCUS_MODE_ENDING_MOMENT_FLAC),
       media::AudioCodec::kFLAC);
 }
 
 void SystemSoundsDelegateImpl::Play(ash::Sound sound_key) {
-  audio::SoundsManager::Get()->Play(static_cast<int>(sound_key));
+  audio::GlobalSoundsManager::Get().Play(static_cast<int>(sound_key));
 }

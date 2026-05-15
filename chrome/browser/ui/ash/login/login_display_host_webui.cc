@@ -103,6 +103,7 @@
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
+#include "services/audio/public/cpp/sounds/global_sounds_manager.h"
 #include "services/audio/public/cpp/sounds/sounds_manager.h"
 #include "third_party/perfetto/include/perfetto/tracing/track.h"
 #include "ui/aura/window.h"
@@ -538,11 +539,11 @@ LoginDisplayHostWebUI::LoginDisplayHostWebUI(
   // shown or the login or lock screen to be shown.
   session_observation_.Observe(session_manager::SessionManager::Get());
 
-  audio::SoundsManager* manager = audio::SoundsManager::Get();
+  audio::SoundsManager& manager = audio::GlobalSoundsManager::Get();
   ui::ResourceBundle& bundle = ui::ResourceBundle::GetSharedInstance();
-  manager->Initialize(std::to_underlying(Sound::kStartup),
-                      bundle.GetRawDataResource(IDR_SOUND_STARTUP_WAV),
-                      media::AudioCodec::kPCM);
+  manager.Initialize(std::to_underlying(Sound::kStartup),
+                     bundle.GetRawDataResource(IDR_SOUND_STARTUP_WAV),
+                     media::AudioCodec::kPCM);
 }
 
 LoginDisplayHostWebUI::~LoginDisplayHostWebUI() {

@@ -100,6 +100,7 @@
 #include "extensions/common/extension_resource.h"
 #include "media/base/audio_codecs.h"
 #include "services/accessibility/buildflags.h"
+#include "services/audio/public/cpp/sounds/global_sounds_manager.h"
 #include "services/audio/public/cpp/sounds/sounds_manager.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/accessibility_switches.h"
@@ -524,54 +525,53 @@ AccessibilityManager::AccessibilityManager(
   user_manager::UserManager::Get()->AddSessionStateObserver(this);
 
   ui::ResourceBundle& bundle = ui::ResourceBundle::GetSharedInstance();
-  audio::SoundsManager* manager = audio::SoundsManager::Get();
-  manager->Initialize(static_cast<int>(Sound::kShutdown),
-                      bundle.GetRawDataResource(IDR_SOUND_SHUTDOWN_WAV),
-                      media::AudioCodec::kPCM);
-  manager->Initialize(
+  audio::SoundsManager& manager = audio::GlobalSoundsManager::Get();
+  manager.Initialize(static_cast<int>(Sound::kShutdown),
+                     bundle.GetRawDataResource(IDR_SOUND_SHUTDOWN_WAV),
+                     media::AudioCodec::kPCM);
+  manager.Initialize(
       static_cast<int>(Sound::kSpokenFeedbackEnabled),
       bundle.GetRawDataResource(IDR_SOUND_SPOKEN_FEEDBACK_ENABLED_WAV),
       media::AudioCodec::kPCM);
-  manager->Initialize(
+  manager.Initialize(
       static_cast<int>(Sound::kSpokenFeedbackDisabled),
       bundle.GetRawDataResource(IDR_SOUND_SPOKEN_FEEDBACK_DISABLED_WAV),
       media::AudioCodec::kPCM);
-  manager->Initialize(static_cast<int>(Sound::kPassthrough),
-                      bundle.GetRawDataResource(IDR_SOUND_PASSTHROUGH_WAV),
-                      media::AudioCodec::kPCM);
-  manager->Initialize(static_cast<int>(Sound::kExitScreen),
-                      bundle.GetRawDataResource(IDR_SOUND_EXIT_SCREEN_WAV),
-                      media::AudioCodec::kPCM);
-  manager->Initialize(static_cast<int>(Sound::kEnterScreen),
-                      bundle.GetRawDataResource(IDR_SOUND_ENTER_SCREEN_WAV),
-                      media::AudioCodec::kPCM);
-  manager->Initialize(
+  manager.Initialize(static_cast<int>(Sound::kPassthrough),
+                     bundle.GetRawDataResource(IDR_SOUND_PASSTHROUGH_WAV),
+                     media::AudioCodec::kPCM);
+  manager.Initialize(static_cast<int>(Sound::kExitScreen),
+                     bundle.GetRawDataResource(IDR_SOUND_EXIT_SCREEN_WAV),
+                     media::AudioCodec::kPCM);
+  manager.Initialize(static_cast<int>(Sound::kEnterScreen),
+                     bundle.GetRawDataResource(IDR_SOUND_ENTER_SCREEN_WAV),
+                     media::AudioCodec::kPCM);
+  manager.Initialize(
       static_cast<int>(Sound::kSpokenFeedbackToggleCountdownHigh),
       bundle.GetRawDataResource(
           IDR_SOUND_SPOKEN_FEEDBACK_TOGGLE_COUNTDOWN_HIGH_WAV),
       media::AudioCodec::kPCM);
-  manager->Initialize(
-      static_cast<int>(Sound::kSpokenFeedbackToggleCountdownLow),
-      bundle.GetRawDataResource(
-          IDR_SOUND_SPOKEN_FEEDBACK_TOGGLE_COUNTDOWN_LOW_WAV),
-      media::AudioCodec::kPCM);
-  manager->Initialize(static_cast<int>(Sound::kTouchType),
-                      bundle.GetRawDataResource(IDR_SOUND_TOUCH_TYPE_WAV),
-                      media::AudioCodec::kPCM);
-  manager->Initialize(static_cast<int>(Sound::kStartup),
-                      bundle.GetRawDataResource(IDR_SOUND_STARTUP_WAV),
-                      media::AudioCodec::kPCM);
-  manager->Initialize(static_cast<int>(Sound::kLock),
-                      bundle.GetRawDataResource(IDR_SOUND_LOCK_WAV),
-                      media::AudioCodec::kPCM);
-  manager->Initialize(static_cast<int>(Sound::kUnlock),
-                      bundle.GetRawDataResource(IDR_SOUND_UNLOCK_WAV),
-                      media::AudioCodec::kPCM);
+  manager.Initialize(static_cast<int>(Sound::kSpokenFeedbackToggleCountdownLow),
+                     bundle.GetRawDataResource(
+                         IDR_SOUND_SPOKEN_FEEDBACK_TOGGLE_COUNTDOWN_LOW_WAV),
+                     media::AudioCodec::kPCM);
+  manager.Initialize(static_cast<int>(Sound::kTouchType),
+                     bundle.GetRawDataResource(IDR_SOUND_TOUCH_TYPE_WAV),
+                     media::AudioCodec::kPCM);
+  manager.Initialize(static_cast<int>(Sound::kStartup),
+                     bundle.GetRawDataResource(IDR_SOUND_STARTUP_WAV),
+                     media::AudioCodec::kPCM);
+  manager.Initialize(static_cast<int>(Sound::kLock),
+                     bundle.GetRawDataResource(IDR_SOUND_LOCK_WAV),
+                     media::AudioCodec::kPCM);
+  manager.Initialize(static_cast<int>(Sound::kUnlock),
+                     bundle.GetRawDataResource(IDR_SOUND_UNLOCK_WAV),
+                     media::AudioCodec::kPCM);
 
   if (VolumeAdjustSoundEnabled()) {
-    manager->Initialize(static_cast<int>(Sound::kVolumeAdjust),
-                        bundle.GetRawDataResource(IDR_SOUND_VOLUME_ADJUST_WAV),
-                        media::AudioCodec::kPCM);
+    manager.Initialize(static_cast<int>(Sound::kVolumeAdjust),
+                       bundle.GetRawDataResource(IDR_SOUND_VOLUME_ADJUST_WAV),
+                       media::AudioCodec::kPCM);
   }
 
   base::FilePath resources_path;
@@ -909,7 +909,7 @@ bool AccessibilityManager::PlayEarcon(Sound sound_key, PlaySoundOption option) {
       !IsSpokenFeedbackEnabled()) {
     return false;
   }
-  return audio::SoundsManager::Get()->Play(static_cast<int>(sound_key));
+  return audio::GlobalSoundsManager::Get().Play(static_cast<int>(sound_key));
 }
 
 void AccessibilityManager::OnTwoFingerTouchStart() {
@@ -947,7 +947,7 @@ bool AccessibilityManager::ShouldToggleSpokenFeedbackViaTouch() {
 }
 
 bool AccessibilityManager::PlaySpokenFeedbackToggleCountdown(int tick_count) {
-  return audio::SoundsManager::Get()->Play(
+  return audio::GlobalSoundsManager::Get().Play(
       tick_count % 2
           ? static_cast<int>(Sound::kSpokenFeedbackToggleCountdownHigh)
           : static_cast<int>(Sound::kSpokenFeedbackToggleCountdownLow));
@@ -1897,7 +1897,7 @@ base::TimeDelta AccessibilityManager::PlayShutdownSound() {
                   PlaySoundOption::kOnlyIfSpokenFeedbackEnabled)) {
     return base::TimeDelta();
   }
-  return audio::SoundsManager::Get()->GetDuration(
+  return audio::GlobalSoundsManager::Get().GetDuration(
       static_cast<int>(Sound::kShutdown));
 }
 

@@ -18,9 +18,6 @@ namespace audio {
 
 namespace {
 
-SoundsManager* g_instance = NULL;
-bool g_initialized_for_testing = false;
-
 // SoundsManagerImpl ---------------------------------------------------
 
 class SoundsManagerImpl : public SoundsManager {
@@ -109,42 +106,16 @@ AudioStreamHandler* SoundsManagerImpl::GetHandler(SoundKey key) {
 
 }  // namespace
 
+// static
+std::unique_ptr<SoundsManager> SoundsManager::Create(
+    SoundsManager::StreamFactoryBinder stream_factory_binder) {
+  return std::make_unique<SoundsManagerImpl>(std::move(stream_factory_binder));
+}
+
 SoundsManager::SoundsManager() = default;
 
 SoundsManager::~SoundsManager() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-}
-
-// static
-void SoundsManager::Create(StreamFactoryBinder stream_factory_binder) {
-  CHECK(!g_instance || g_initialized_for_testing)
-      << "SoundsManager::Create() is called twice";
-  if (g_initialized_for_testing) {
-    return;
-  }
-  g_instance = new SoundsManagerImpl(std::move(stream_factory_binder));
-}
-
-// static
-void SoundsManager::Shutdown() {
-  CHECK(g_instance) << "SoundsManager::Shutdown() is called "
-                    << "without previous call to Create()";
-  delete g_instance;
-  g_instance = NULL;
-}
-
-// static
-SoundsManager* SoundsManager::Get() {
-  CHECK(g_instance) << "SoundsManager::Get() is called before Create()";
-  return g_instance;
-}
-
-// static
-void SoundsManager::InitializeForTesting(SoundsManager* manager) {
-  CHECK(!g_instance) << "SoundsManager is already initialized.";
-  CHECK(manager);
-  g_instance = manager;
-  g_initialized_for_testing = true;
 }
 
 }  // namespace audio

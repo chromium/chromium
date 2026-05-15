@@ -5,6 +5,7 @@
 #include <map>
 #include <memory>
 #include <string_view>
+#include <utility>
 
 #include "ash/constants/ash_switches.h"
 #include "ash/shell.h"
@@ -16,6 +17,7 @@
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
 #include "chromeos/ash/components/audio/sounds.h"
 #include "content/public/test/browser_test.h"
+#include "services/audio/public/cpp/sounds/global_sounds_manager.h"
 #include "services/audio/public/cpp/sounds/sounds_manager.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/events/test/event_generator.h"
@@ -186,8 +188,9 @@ class VolumeControllerSoundsTest : public VolumeControllerTest {
   ~VolumeControllerSoundsTest() override = default;
 
   void SetUpInProcessBrowserTestFixture() override {
-    sounds_manager_ = new SoundsManagerTestImpl();
-    audio::SoundsManager::InitializeForTesting(sounds_manager_);
+    auto sounds_manager = std::make_unique<SoundsManagerTestImpl>();
+    sounds_manager_ = sounds_manager.get();
+    audio::GlobalSoundsManager::InitializeForTesting(std::move(sounds_manager));
   }
 
   bool is_sound_initialized() const {

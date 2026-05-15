@@ -288,7 +288,7 @@
 #include "net/base/network_change_notifier.h"
 #include "net/base/network_change_notifier_passive.h"
 #include "printing/backend/print_backend.h"
-#include "services/audio/public/cpp/sounds/sounds_manager.h"
+#include "services/audio/public/cpp/sounds/global_sounds_manager.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 #include "third_party/cros_system_api/dbus/vm_launch/dbus-constants.h"
 #include "third_party/cros_system_api/dbus/vm_wl/dbus-constants.h"
@@ -1019,7 +1019,8 @@ void ChromeBrowserMainPartsAsh::PreProfileInit() {
             true /* async */);
   }
 
-  audio::SoundsManager::Create(content::GetAudioServiceStreamFactoryBinder());
+  audio::GlobalSoundsManager::Create(
+      content::GetAudioServiceStreamFactoryBinder());
 
   // |arc_service_launcher_| must be initialized before NoteTakingHelper.
   NoteTakingHelper::Initialize();
@@ -1709,7 +1710,7 @@ void ChromeBrowserMainPartsAsh::PostMainMessageLoopRun() {
 
   if (pre_profile_init_called_) {
     MagnificationManager::Shutdown();
-    audio::SoundsManager::Shutdown();
+    audio::GlobalSoundsManager::Shutdown();
   }
   system::StatisticsProvider::GetInstance()->Shutdown();
 

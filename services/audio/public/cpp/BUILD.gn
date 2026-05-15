@@ -24,6 +24,8 @@ component("cpp") {
     sources += [
       "sounds/audio_stream_handler.cc",
       "sounds/audio_stream_handler.h",
+      "sounds/global_sounds_manager.cc",
+      "sounds/global_sounds_manager.h",
       "sounds/sounds_manager.cc",
       "sounds/sounds_manager.h",
     ]
