@@ -43,6 +43,7 @@ struct CC_EXPORT FrameData {
   std::optional<uint32_t> deadline_in_frames;
   bool use_default_lower_bound_deadline = false;
   viz::CompositorRenderPassList render_passes;
+  viz::CompositorRenderPassList unbounded_render_passes;
   // RAW_PTR_EXCLUSION: Renderer performance: visible in sampling profiler
   // stacks.
   RAW_PTR_EXCLUSION const RenderSurfaceList* render_surface_list = nullptr;

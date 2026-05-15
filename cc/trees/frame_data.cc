@@ -38,6 +38,14 @@ void FrameData::AsValueInto(base::trace_event::TracedValue* value) const {
       value->EndDictionary();
     }
     value->EndArray();
+
+    value->BeginArray("unbounded_render_passes");
+    for (const auto& render_pass : unbounded_render_passes) {
+      value->BeginDictionary();
+      render_pass->AsValueInto(value, resource_id_to_index_map);
+      value->EndDictionary();
+    }
+    value->EndArray();
   }
 }
 

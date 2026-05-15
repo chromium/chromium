@@ -901,10 +901,16 @@ static void AppendQuadsToFillScreen(
 }
 
 static viz::CompositorRenderPass* FindRenderPassById(
-    const viz::CompositorRenderPassList& list,
+    const FrameData* frame,
     viz::CompositorRenderPassId id) {
-  auto it = std::ranges::find(list, id, &viz::CompositorRenderPass::id);
-  return it == list.end() ? nullptr : it->get();
+  auto it = std::ranges::find(frame->render_passes, id,
+                              &viz::CompositorRenderPass::id);
+  if (it != frame->render_passes.end()) {
+    return it->get();
+  }
+  it = std::ranges::find(frame->unbounded_render_passes, id,
+                         &viz::CompositorRenderPass::id);
+  return it == frame->unbounded_render_passes.end() ? nullptr : it->get();
 }
 
 bool LayerTreeHostImpl::HasDamage() const {
@@ -1090,15 +1096,19 @@ DrawResult LayerTreeHostImpl::CalculateRenderPasses(FrameData* frame,
     const auto& view_transition_element_resource_id =
         render_surface->ViewTransitionElementResourceId();
     if (should_draw_into_render_pass) {
+      auto& target_list = render_surface->IsUnbounded()
+                              ? frame->unbounded_render_passes
+                              : frame->render_passes;
+
       // Create a capture render pass if we're in the capture phase for this
       // render surface.
       if (render_surface->has_view_transition_capture_contributions()) {
-        frame->render_passes.push_back(
+        target_list.push_back(
             render_surface->CreateViewTransitionCaptureRenderPass(
                 capture_view_transition_tokens));
       }
 
-      frame->render_passes.push_back(
+      target_list.push_back(
           render_surface->CreateRenderPass(capture_view_transition_tokens));
     }
     if (view_transition_element_resource_id.IsValid()) {
@@ -1165,16 +1175,16 @@ DrawResult LayerTreeHostImpl::CalculateRenderPasses(FrameData* frame,
        it.state() != EffectTreeLayerListIterator::State::kEnd; ++it) {
     RenderSurfaceImpl* target_render_surface = it.target_render_surface();
 
-    viz::CompositorRenderPass* target_render_pass = FindRenderPassById(
-        frame->render_passes, target_render_surface->render_pass_id());
+    viz::CompositorRenderPass* target_render_pass =
+        FindRenderPassById(frame, target_render_surface->render_pass_id());
 
-    viz::CompositorRenderPass* view_transition_capture_render_pass =
-        (output_frame_data &&
-         target_render_surface->has_view_transition_capture_contributions())
-            ? FindRenderPassById(frame->render_passes,
-                                 it.target_render_surface()
-                                     ->view_transition_capture_render_pass_id())
-            : nullptr;
+    viz::CompositorRenderPass* view_transition_capture_render_pass = nullptr;
+    if (output_frame_data &&
+        target_render_surface->has_view_transition_capture_contributions()) {
+      view_transition_capture_render_pass = FindRenderPassById(
+          frame,
+          it.target_render_surface()->view_transition_capture_render_pass_id());
+    }
 
     AppendQuadsData append_quads_data;
 
@@ -1200,13 +1210,18 @@ DrawResult LayerTreeHostImpl::CalculateRenderPasses(FrameData* frame,
       if (output_frame_data) {
         RenderSurfaceImpl* render_surface = it.current_render_surface();
         if (render_surface->contributes_to_drawn_surface()) {
-          render_surface->AppendQuads(context, target_render_pass,
-                                      &append_quads_data);
-          if (view_transition_capture_render_pass) {
-            AppendQuadsData data;
-            render_surface->AppendQuads(view_transition_capture_context,
-                                        view_transition_capture_render_pass,
-                                        &data);
+          // An unbounded surface is submitted in a separate
+          // CompositorFrame, so we do not append its RenderPassDrawQuad
+          // to the parent render pass.
+          if (!render_surface->IsUnbounded()) {
+            render_surface->AppendQuads(context, target_render_pass,
+                                        &append_quads_data);
+            if (view_transition_capture_render_pass) {
+              AppendQuadsData data;
+              render_surface->AppendQuads(view_transition_capture_context,
+                                          view_transition_capture_render_pass,
+                                          &data);
+            }
           }
         }
       }
@@ -1357,6 +1372,11 @@ DrawResult LayerTreeHostImpl::CalculateRenderPasses(FrameData* frame,
       DCHECK(quad->shared_quad_state);
     }
   }
+  for (const auto& render_pass : frame->unbounded_render_passes) {
+    for (auto* quad : render_pass->quad_list) {
+      DCHECK(quad->shared_quad_state);
+    }
+  }
   DCHECK_EQ(frame->render_passes.back()->output_rect.origin(),
             active_tree_->GetDeviceViewport().origin());
 #endif
@@ -1454,6 +1474,7 @@ DrawResult LayerTreeHostImpl::PrepareToDraw(FrameData* frame,
 
   frame->render_surface_list = &active_tree_->GetRenderSurfaceList();
   frame->render_passes.clear();
+  frame->unbounded_render_passes.clear();
   frame->will_draw_layers.clear();
   frame->has_no_damage = false;
 
@@ -3129,14 +3150,45 @@ viz::CompositorFrame LayerTreeHostImpl::GenerateCompositorFrame(
     }
   }
 
-  // Collect all resource ids in the render passes into a single array.
-  std::vector<viz::ResourceId> resources;
-  for (const auto& render_pass : frame->render_passes) {
-    for (auto* quad : render_pass->quad_list) {
-      if (quad->resource_id != viz::kInvalidResourceId) {
-        resources.push_back(quad->resource_id);
-      }
-    }
+  auto populate_resources =
+      [&](viz::CompositorFrame& comp_frame,
+          const viz::CompositorRenderPassList& render_passes) {
+        std::vector<viz::ResourceId> resources;
+        for (const auto& render_pass : render_passes) {
+          for (auto* quad : render_pass->quad_list) {
+            if (quad->resource_id != viz::kInvalidResourceId) {
+              resources.push_back(quad->resource_id);
+            }
+          }
+        }
+        resource_provider_->PrepareSendToParent(
+            resources, &comp_frame.resource_list,
+            layer_tree_frame_sink_->shared_image_interface().get());
+      };
+
+  // Build and submit the dedicated CompositorFrame for the unbounded passes.
+  if (!frame->unbounded_render_passes.empty() && delegate_) {
+    // Unbounded element is not implemented for TreesInViz yet.
+    CHECK(!settings_.TreesInVizInClientProcess());
+
+    viz::CompositorFrame unbounded_frame;
+    // TODO(508672616): What other uses of `metadata` are relevant to unbounded
+    // element render passes?
+    unbounded_frame.metadata = MakeCompositorFrameMetadata();
+    unbounded_frame.metadata.begin_frame_ack = frame->begin_frame_ack;
+    unbounded_frame.render_pass_list =
+        std::move(frame->unbounded_render_passes);
+
+    populate_resources(unbounded_frame, unbounded_frame.render_pass_list);
+
+    // TODO(508672616): Consider moving this Submit call to
+    // LayerTreeHostImpl::DrawLayers where the bounded compositor frame is
+    // submitted via LayerTreeFrameSink::SubmitCompositorFrame. Doing so
+    // requires structural changes to GenerateCompositorFrame's return type
+    // to pass back multiple frames, as well as updating DrawLayers'
+    // submission and metrics tracking pipelines to accommodate dual frame
+    // submissions.
+    delegate_->SubmitUnboundedCompositorFrame(std::move(unbounded_frame));
   }
 
   DCHECK(frame->begin_frame_ack.frame_id.IsSequenceValid());
@@ -3145,9 +3197,7 @@ viz::CompositorFrame LayerTreeHostImpl::GenerateCompositorFrame(
   viz::CompositorFrame compositor_frame;
   compositor_frame.metadata = std::move(metadata);
 
-  resource_provider_->PrepareSendToParent(
-      resources, &compositor_frame.resource_list,
-      layer_tree_frame_sink_->shared_image_interface().get());
+  populate_resources(compositor_frame, frame->render_passes);
 
   compositor_frame.render_pass_list = std::move(frame->render_passes);
 

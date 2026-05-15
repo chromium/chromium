@@ -289,6 +289,9 @@ class CC_EXPORT RenderSurfaceImpl {
   // Returns true if the owning effect node has a view transition resource.
   bool IsViewTransitionElement() const;
 
+  // Returns true if this render surface is for an unbounded element.
+  bool IsUnbounded() const;
+
   // Returns the view transition element resource id for this render surface.
   // This may be invalid, if this render surface is not a view transition
   // element.

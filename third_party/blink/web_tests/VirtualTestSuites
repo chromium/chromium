@@ -6483,7 +6483,7 @@
       "wpt_internal/html/rendering/unbounded_element"
     ],
     "args": [
-      "--disable-blink-features=UnboundedElement"
+      "--disable-blink-features=UnboundedElement,UnboundedElementOnTheOpenWeb"
     ],
     "owners": [
       "masonf@chromium.org"

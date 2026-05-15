@@ -6129,6 +6129,13 @@
       // The Unbounded Element API. See crbug.com/508672616.
       name: "UnboundedElement",
       status: "test",
+      implied_by: ["UnboundedElementOnTheOpenWeb"],
+    },
+    {
+      // The Unbounded Element API. See crbug.com/508672616.
+      // Enable Unbounded Element on the open web without privileged context.
+      name: "UnboundedElementOnTheOpenWeb",
+      status: "test",
     },
     {
       name: "UnclosedFormControlIsInvalid",

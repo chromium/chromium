@@ -175,6 +175,14 @@ bool RenderSurfaceImpl::IsViewTransitionElement() const {
   return ViewTransitionElementResourceId().IsValid();
 }
 
+// Returns true if this render surface is for an unbounded element.
+bool RenderSurfaceImpl::IsUnbounded() const {
+  return !layer_tree_impl_->settings().TreesInVizInClientProcess() &&
+         OwningEffectNode() &&
+         OwningEffectNode()->render_surface_reason ==
+             RenderSurfaceReason::kUnboundedElement;
+}
+
 const viz::ViewTransitionElementResourceId&
 RenderSurfaceImpl::ViewTransitionElementResourceId() const {
   return OwningEffectNode()->view_transition_element_resource_id;
@@ -374,6 +382,9 @@ void RenderSurfaceImpl::AccumulateContentRectFromContributingLayer(
       deferred_contributing_layers_.push_back(layer);
     }
   } else {
+    // TODO(508672616): Consider eliding contributions from unbounded surfaces
+    // to save memory, since the bounded render surface that would have
+    // contained the RPDQ can potentially be smaller.
     accumulated_content_rect_.Union(layer->visible_drawable_content_rect());
     view_transition_capture_content_rect_.Union(
         layer->visible_drawable_content_rect());

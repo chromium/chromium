@@ -11211,7 +11211,8 @@ void RenderFrameHostImpl::RequestUnboundedSurface(
   // scheme callers.
   bool is_privileged = GetWebUI() != nullptr ||
                        GetLastCommittedOrigin().scheme() == kChromeUIScheme;
-  if (!is_privileged) {
+  if (!is_privileged && !base::FeatureList::IsEnabled(
+                            blink::features::kUnboundedElementOnTheOpenWeb)) {
     local_frame_host_receiver_.ReportBadMessage(
         "RequestUnboundedSurface is only supported from privileged contexts.");
     return;
