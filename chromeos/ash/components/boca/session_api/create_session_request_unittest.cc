@@ -61,9 +61,25 @@ class MockRequestHandler {
     "duration": {
         "seconds": 120
     },
-    "studentStatuses": {},
+    "studentStatuses": {
+      "2": {
+        "state": "ADDED",
+        "geminiEnablementState": "GEMINI_ENABLEMENT_STATE_DISABLED"
+      },
+      "3": {
+        "state": "ACTIVE",
+        "geminiEnablementState": "GEMINI_ENABLEMENT_STATE_ENABLED"
+      }
+    },
     "roster": {
-        "studentGroups": []
+        "studentGroups": [
+          {
+            "students": [
+              {"gaiaId": "2"},
+              {"gaiaId": "3"}
+            ]
+          }
+        ]
     },
     "sessionState": "ACTIVE",
     "studentGroupConfigs": {
@@ -302,7 +318,14 @@ TEST_F(SessionApiRequestsTest, CreateSessionWithFullInputAndSucceed) {
       "\"1\"}}";
   ASSERT_TRUE(http_request.has_content);
   EXPECT_EQ(contentData, http_request.content);
-  EXPECT_EQ(true, result.has_value());
+  ASSERT_TRUE(result.has_value());
+  std::unique_ptr<::boca::Session> session = std::move(result.value());
+  ASSERT_TRUE(session->student_statuses().contains("2"));
+  EXPECT_EQ(::boca::GEMINI_ENABLEMENT_STATE_DISABLED,
+            session->student_statuses().at("2").gemini_enablement_state());
+  ASSERT_TRUE(session->student_statuses().contains("3"));
+  EXPECT_EQ(::boca::GEMINI_ENABLEMENT_STATE_ENABLED,
+            session->student_statuses().at("3").gemini_enablement_state());
 }
 
 TEST_F(SessionApiRequestsTest, CreateSessionWithCriticalInputAndSucceed) {

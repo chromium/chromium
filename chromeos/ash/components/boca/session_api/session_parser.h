@@ -13,20 +13,7 @@
 #include "chromeos/ash/components/boca/proto/session.pb.h"
 
 namespace ash::boca {
-// Enum translation
-::boca::StudentStatus::StudentState StudentStatusJsonToProto(
-    const std::string& status);
 
-::boca::Session::SessionState SessionStateJsonToProto(const std::string& state);
-
-::boca::LockedNavigationOptions::NavigationType NavigationTypeJsonToProto(
-    const std::string& type);
-
-::boca::StudentGroup::GroupSource GroupSourceJsonToProto(
-    const std::string& type);
-
-::boca::ViewScreenConfig::ViewScreenState ViewScreenStateJsonToProto(
-    const std::string& type);
 // Proto to Json
 void ParseTeacherProtoFromJson(base::DictValue* session_dict,
                                ::boca::Session* session);

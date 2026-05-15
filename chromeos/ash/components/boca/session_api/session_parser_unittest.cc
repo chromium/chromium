@@ -35,10 +35,12 @@ constexpr char kFullSessionResponse[] = R"(
   },
   "studentStatuses": {
     "2": {
-      "state": "ADDED"
+      "state": "ADDED",
+      "geminiEnablementState": "GEMINI_ENABLEMENT_STATE_DISABLED"
     },
     "3": {
       "state": "ACTIVE",
+      "geminiEnablementState": "GEMINI_ENABLEMENT_STATE_ENABLED",
        "devices":
         {
           "kDummyDeviceId":
@@ -163,6 +165,7 @@ constexpr char kPartialResponse[] = R"(
     "studentStatuses": {
       "3": {
         "state": "ACTIVE",
+        "geminiEnablementState": "GEMINI_ENABLEMENT_STATE_ENABLED",
         "devices":
           {
             "kDummyDeviceId":
@@ -384,8 +387,12 @@ TEST_F(SessionParserTest, TestParseStudentStatusProtoFromJson) {
   ASSERT_EQ(3u, session_full->student_statuses().size());
   EXPECT_EQ(::boca::StudentStatus::ADDED,
             session_full->student_statuses().at("2").state());
+  EXPECT_EQ(::boca::GEMINI_ENABLEMENT_STATE_DISABLED,
+            session_full->student_statuses().at("2").gemini_enablement_state());
   EXPECT_EQ(::boca::StudentStatus::ACTIVE,
             session_full->student_statuses().at("3").state());
+  EXPECT_EQ(::boca::GEMINI_ENABLEMENT_STATE_ENABLED,
+            session_full->student_statuses().at("3").gemini_enablement_state());
 
   EXPECT_EQ("google", session_full->student_statuses()
                           .at("3")
@@ -436,6 +443,9 @@ TEST_F(SessionParserTest, TestParseStudentStatusProtoFromJson) {
                                   session_partial.get(), false);
   EXPECT_EQ(::boca::StudentStatus::ACTIVE,
             session_partial->student_statuses().at("3").state());
+  EXPECT_EQ(
+      ::boca::GEMINI_ENABLEMENT_STATE_ENABLED,
+      session_partial->student_statuses().at("3").gemini_enablement_state());
 
   EXPECT_EQ("google", session_partial->student_statuses()
                           .at("3")

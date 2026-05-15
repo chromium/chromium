@@ -15,6 +15,9 @@
 #include "google_apis/common/base_requests.h"
 
 namespace ash::boca {
+namespace {
+
+// Enum translation
 ::boca::StudentStatus::StudentState StudentStatusJsonToProto(
     const std::string& status) {
   if (status == "STUDENT_STATE_UNKNOWN") {
@@ -143,6 +146,19 @@ namespace ash::boca {
   }
   return ::boca::URL_TYPE_UNSPECIFIED;
 }
+
+::boca::GeminiEnablementState GeminiEnablementStateJsonToProto(
+    const std::string& state) {
+  if (state == kGeminiStateEnabled) {
+    return ::boca::GEMINI_ENABLEMENT_STATE_ENABLED;
+  }
+  if (state == kGeminiStateDisabled) {
+    return ::boca::GEMINI_ENABLEMENT_STATE_DISABLED;
+  }
+  return ::boca::GEMINI_ENABLEMENT_STATE_UNSPECIFIED;
+}
+
+}  // namespace
 
 void ParseTeacherProtoFromJson(base::DictValue* session_dict,
                                ::boca::Session* session) {
@@ -328,6 +344,11 @@ void ParseIndividualStudentStatusFromJson(
   // Set the student state
   if (auto* state_ptr = student_status_dict->FindString(kStudentStatusState)) {
     student_status->set_state(StudentStatusJsonToProto(*state_ptr));
+  }
+  if (auto* gemini_status_ptr =
+          student_status_dict->FindString(kGeminiEnablementState)) {
+    student_status->set_gemini_enablement_state(
+        GeminiEnablementStateJsonToProto(*gemini_status_ptr));
   }
   // Parse and set the devices
   if (auto* devices_ptr = student_status_dict->FindDict(kDevices)) {

@@ -61,10 +61,12 @@ class MockRequestHandler {
   },
   "studentStatuses": {
     "2": {
-      "state": "ADDED"
+      "state": "ADDED",
+      "geminiEnablementState": "GEMINI_ENABLEMENT_STATE_DISABLED"
     },
     "3": {
-      "state": "ACTIVE"
+      "state": "ACTIVE",
+      "geminiEnablementState": "GEMINI_ENABLEMENT_STATE_ENABLED"
     }
   },
   "roster": {
@@ -358,8 +360,12 @@ TEST_F(GetSessionRequestTest, GetSessionWithFullProducerInputAndSucceed) {
   ASSERT_EQ(2u, session->student_statuses().size());
   EXPECT_EQ(::boca::StudentStatus::ADDED,
             session->student_statuses().at("2").state());
+  EXPECT_EQ(::boca::GEMINI_ENABLEMENT_STATE_DISABLED,
+            session->student_statuses().at("2").gemini_enablement_state());
   EXPECT_EQ(::boca::StudentStatus::ACTIVE,
             session->student_statuses().at("3").state());
+  EXPECT_EQ(::boca::GEMINI_ENABLEMENT_STATE_ENABLED,
+            session->student_statuses().at("3").gemini_enablement_state());
 
   EXPECT_EQ("tachyon-group", session->tachyon_group_id());
   ASSERT_EQ(2, session->roster().student_groups()[0].students().size());
