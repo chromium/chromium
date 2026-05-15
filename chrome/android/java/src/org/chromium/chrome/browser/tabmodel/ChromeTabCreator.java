@@ -405,6 +405,8 @@ public class ChromeTabCreator implements TabCreator, NeedsTabModel, NeedsTabMode
                 // tab.
                 tab =
                         TabBuilder.createForLazyLoad(getProfile(), loadUrlParams, title)
+                                .setContentViewDeferred(
+                                        ChromeFeatureList.sLoadAllTabsAtStartup.isEnabled())
                                 .setParent(parent)
                                 .setWindow(mNativeWindow)
                                 .setLaunchType(type)
@@ -712,6 +714,8 @@ public class ChromeTabCreator implements TabCreator, NeedsTabModel, NeedsTabMode
         if (tab == null) {
             tab =
                     TabBuilder.createFromFrozenState(getProfile())
+                            .setContentViewDeferred(
+                                    ChromeFeatureList.sLoadAllTabsAtStartup.isEnabled())
                             .setId(id)
                             .setTabResolver(resolver)
                             .setWindow(mNativeWindow)

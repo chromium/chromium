@@ -47,6 +47,7 @@ public class TabBuilder {
     private @Nullable Callback<Tab> mPreInitializeAction;
     private boolean mIsPinned;
     private boolean mIsArchived;
+    private boolean mIsContentViewDeferred;
 
     public TabBuilder(Profile profile) {
         mProfile = profile;
@@ -184,6 +185,11 @@ public class TabBuilder {
         return this;
     }
 
+    public TabBuilder setContentViewDeferred(boolean deferred) {
+        mIsContentViewDeferred = deferred;
+        return this;
+    }
+
     public Tab build() {
         if (sTabForTesting != null) return sTabForTesting;
 
@@ -217,6 +223,8 @@ public class TabBuilder {
         }
 
         if (mPreInitializeAction != null) mPreInitializeAction.onResult(tab);
+
+        tab.setContentViewDeferred(mIsContentViewDeferred && !mIsArchived);
 
         // Initializes Tab. Its user data objects are also initialized through the event
         // |onInitialized| of TabObserver they register.

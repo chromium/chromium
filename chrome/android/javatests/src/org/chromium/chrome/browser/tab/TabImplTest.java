@@ -25,6 +25,7 @@ import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.util.RequiresRestart;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -78,6 +79,56 @@ public class TabImplTest {
                                     .getCurrentTabCreator()
                                     .createFrozenTab(state, tab.getId(), /* index= */ 1);
                 });
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Tab"})
+    @EnableFeatures({"LoadAllTabsAtStartup"})
+    @RequiresRestart(
+            "Optimization feature tests require absolute custom flag evaluations and container"
+                    + " resets.")
+    public void testDeferredContentViewInflation() {
+        TabImpl tab = createFrozenTab();
+
+        assertNotNull("WebContents should be initialized early", tab.getWebContents());
+        assertNotNull("ContentView should return lightweight proxy stub", tab.getContentView());
+
+        // Triggering show() unrolls the deferred view layer attachment safely.
+        ThreadUtils.runOnUiThreadBlocking(() -> tab.show(TabSelectionType.FROM_USER));
+
+        assertNotNull("ContentView should be inflated after show()", tab.getContentView());
+        assertFalse(
+                "ContentView should inflate to regular base instance",
+                tab.getContentView()
+                        .getClass()
+                        .getSimpleName()
+                        .contains("DeferredContentViewStub"));
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Tab"})
+    @EnableFeatures({"LoadAllTabsAtStartup"})
+    @RequiresRestart(
+            "Optimization feature tests require absolute custom flag evaluations and container"
+                    + " resets.")
+    public void testDeferredContentViewInflation_loadIfNeeded() {
+        TabImpl tab = createFrozenTab();
+
+        assertNotNull("WebContents should be initialized early", tab.getWebContents());
+        assertNotNull("ContentView should return lightweight proxy stub", tab.getContentView());
+
+        // Triggering loadIfNeeded() invokes restoration paths that inflate the deferred UI.
+        ThreadUtils.runOnUiThreadBlocking(() -> tab.loadIfNeeded(/* forceBackingSize= */ false));
+
+        assertNotNull("ContentView should be inflated after loadIfNeeded()", tab.getContentView());
+        assertFalse(
+                "ContentView should inflate to regular base instance",
+                tab.getContentView()
+                        .getClass()
+                        .getSimpleName()
+                        .contains("DeferredContentViewStub"));
     }
 
     @Test
