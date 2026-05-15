@@ -37,9 +37,8 @@ namespace {
 void CreateAndAddSignInInternalsHTMLSource(Profile* profile) {
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       profile, chrome::kChromeUISignInInternalsHost);
-  webui::SetupWebUIDataSource(
-      source, base::span<const webui::ResourcePath>(kSigninInternalsResources),
-      IDR_SIGNIN_INTERNALS_SIGNIN_INDEX_HTML);
+  webui::SetupWebUIDataSource(source, kSigninInternalsResources,
+                              IDR_SIGNIN_INTERNALS_SIGNIN_INDEX_HTML);
 }
 
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)

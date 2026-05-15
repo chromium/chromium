@@ -26,7 +26,7 @@ void CreateAndAddWebuiGalleryUIHtmlSource(Profile* profile) {
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       profile, chrome::kChromeUIWebuiGalleryHost);
 
-  webui::SetupWebUIDataSource(source, base::span(kWebuiGalleryResources),
+  webui::SetupWebUIDataSource(source, kWebuiGalleryResources,
                               IDR_WEBUI_GALLERY_WEBUI_GALLERY_HTML);
 
   source->OverrideContentSecurityPolicy(
@@ -42,7 +42,7 @@ void CreateAndAddWebuiGalleryUIHtmlSource(Profile* profile) {
 
   // Add shared SidePanel resources so that those elements can be demonstrated
   // as well.
-  source->AddResourcePaths(base::span(kSidePanelSharedResources));
+  source->AddResourcePaths(kSidePanelSharedResources);
 
   content::URLDataSource::Add(
       profile, std::make_unique<FaviconSource>(

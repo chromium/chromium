@@ -92,7 +92,7 @@ HistorySyncOptinUI::HistorySyncOptinUI(content::WebUI* web_ui)
 
   // Add required resources.
   webui::SetupWebUIDataSource(
-      source, base::span(kSigninHistorySyncOptinResources),
+      source, kSigninHistorySyncOptinResources,
       is_first_run_desktop_refresh_enabled
           ? IDR_SIGNIN_HISTORY_SYNC_OPTIN_HISTORY_SYNC_OPTIN_REFRESH_HTML
           : IDR_SIGNIN_HISTORY_SYNC_OPTIN_HISTORY_SYNC_OPTIN_HTML);

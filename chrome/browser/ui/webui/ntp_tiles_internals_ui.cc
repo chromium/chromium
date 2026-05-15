@@ -135,10 +135,8 @@ void ChromeNTPTilesInternalsMessageHandlerClient::CallJavascriptFunctionSpan(
 void CreateAndAddNTPTilesInternalsHTMLSource(Profile* profile) {
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       profile, chrome::kChromeUINTPTilesInternalsHost);
-  webui::SetupWebUIDataSource(
-      source,
-      base::span<const webui::ResourcePath>(kNtpTilesInternalsResources),
-      IDR_NTP_TILES_INTERNALS_NTP_TILES_INTERNALS_HTML);
+  webui::SetupWebUIDataSource(source, kNtpTilesInternalsResources,
+                              IDR_NTP_TILES_INTERNALS_NTP_TILES_INTERNALS_HTML);
 
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::ScriptSrc,

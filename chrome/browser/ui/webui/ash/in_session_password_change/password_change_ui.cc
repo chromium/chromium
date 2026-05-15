@@ -104,11 +104,11 @@ PasswordChangeUI::PasswordChangeUI(content::WebUI* web_ui)
   source->AddString("hostedHeader", GetHostedHeaderText(password_change_url));
   source->UseStringsJs();
 
-  source->AddResourcePaths(base::span(kPasswordChangeResources));
+  source->AddResourcePaths(kPasswordChangeResources);
   source->SetDefaultResource(IDR_PASSWORD_CHANGE_PASSWORD_CHANGE_APP_HTML);
 
   // Add Gaia Authenticator resources
-  source->AddResourcePaths(base::span(kGaiaAuthHostResources));
+  source->AddResourcePaths(kGaiaAuthHostResources);
 }
 
 PasswordChangeUI::~PasswordChangeUI() = default;
@@ -153,7 +153,7 @@ ConfirmPasswordChangeUI::ConfirmPasswordChangeUI(content::WebUI* web_ui)
 
   source->UseStringsJs();
 
-  source->AddResourcePaths(base::span(kPasswordChangeResources));
+  source->AddResourcePaths(kPasswordChangeResources);
   source->SetDefaultResource(
       IDR_PASSWORD_CHANGE_CONFIRM_PASSWORD_CHANGE_APP_HTML);
 
@@ -198,7 +198,7 @@ UrgentPasswordExpiryNotificationUI::UrgentPasswordExpiryNotificationUI(
 
   source->UseStringsJs();
 
-  source->AddResourcePaths(base::span(kPasswordChangeResources));
+  source->AddResourcePaths(kPasswordChangeResources);
   source->SetDefaultResource(
       IDR_PASSWORD_CHANGE_URGENT_PASSWORD_EXPIRY_NOTIFICATION_HTML);
 

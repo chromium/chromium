@@ -36,7 +36,7 @@ BorealisMOTDUI::BorealisMOTDUI(content::WebUI* web_ui)
       ash::kChromeUIBorealisMOTDHost);
 
   // Add required resources.
-  webui::SetupWebUIDataSource(source, base::span(kBorealisMotdResources),
+  webui::SetupWebUIDataSource(source, kBorealisMotdResources,
                               IDR_BOREALIS_MOTD_INDEX_HTML);
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::ObjectSrc, "object-src *;");

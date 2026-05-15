@@ -21,7 +21,7 @@ InfoBarInternalsUI::InfoBarInternalsUI(content::WebUI* web_ui)
       web_ui->GetWebContents()->GetBrowserContext(),
       chrome::kChromeUIInfobarInternalsHost);
 
-  webui::SetupWebUIDataSource(source, base::span(kInfobarInternalsResources),
+  webui::SetupWebUIDataSource(source, kInfobarInternalsResources,
                               IDR_INFOBAR_INTERNALS_INFOBAR_INTERNALS_HTML);
 }
 

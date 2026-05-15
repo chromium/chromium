@@ -7,7 +7,6 @@
 #include <string>
 #include <utility>
 
-#include "base/containers/span.h"
 #include "chrome/browser/ui/webui/default_browser/default_browser_modal_handler.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/chrome_unscaled_resources.h"
@@ -56,7 +55,7 @@ DefaultBrowserModalUI::DefaultBrowserModalUI(content::WebUI* web_ui)
       chrome::kChromeUIDefaultBrowserModalHost);
 
   webui::SetupWebUIDataSource(
-      source, base::span(kDefaultBrowserModalResources),
+      source, kDefaultBrowserModalResources,
       IDR_DEFAULT_BROWSER_MODAL_DEFAULT_BROWSER_MODAL_HTML);
 
   static constexpr webui::LocalizedString kStrings[] = {

@@ -54,7 +54,7 @@ PrivateAiInternalsUI::PrivateAiInternalsUI(content::WebUI* web_ui)
       profile, chrome::kChromeUIPrivateAiInternalsHost);
 
   webui::SetupWebUIDataSource(
-      source, base::span(kPrivateAiInternalsResources),
+      source, kPrivateAiInternalsResources,
       IDR_PRIVATE_AI_INTERNALS_PRIVATE_AI_INTERNALS_HTML);
 
   source->AddString("default_url", kPrivateAiUrl.Get());

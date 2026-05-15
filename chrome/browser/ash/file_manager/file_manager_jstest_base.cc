@@ -55,7 +55,7 @@ class TestWebUIProvider
         content::WebUIDataSource::CreateAndAdd(
             profile, ash::file_manager::kChromeUIFileManagerHost);
 
-    files_swa_source->AddResourcePaths(base::span(kFileManagerSwaResources));
+    files_swa_source->AddResourcePaths(kFileManagerSwaResources);
 
     ash::file_manager::AddFilesAppResources(files_swa_source,
                                             kFileManagerResources);

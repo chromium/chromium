@@ -37,9 +37,8 @@ void CreateAndAddWhatsNewUIHtmlSource(Profile* profile, bool enable_staging) {
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       profile, chrome::kChromeUIWhatsNewHost);
 
-  webui::SetupWebUIDataSource(
-      source, base::span<const webui::ResourcePath>(kWhatsNewResources),
-      IDR_WHATS_NEW_WHATS_NEW_HTML);
+  webui::SetupWebUIDataSource(source, kWhatsNewResources,
+                              IDR_WHATS_NEW_WHATS_NEW_HTML);
 
   static constexpr webui::LocalizedString kStrings[] = {
       {"title", IDS_WHATS_NEW_TITLE},

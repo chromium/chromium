@@ -7,7 +7,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/containers/span.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/accessibility_annotator_internals/accessibility_annotator_internals_page_handler.h"
 #include "chrome/common/webui_url_constants.h"
@@ -25,7 +24,7 @@ AccessibilityAnnotatorInternalsUI::AccessibilityAnnotatorInternalsUI(
       chrome::kChromeUIAccessibilityAnnotatorInternalsHost);
 
   webui::SetupWebUIDataSource(
-      source, base::span(kAccessibilityAnnotatorInternalsResources),
+      source, kAccessibilityAnnotatorInternalsResources,
       IDR_ACCESSIBILITY_ANNOTATOR_INTERNALS_ACCESSIBILITY_ANNOTATOR_INTERNALS_HTML);
 }
 

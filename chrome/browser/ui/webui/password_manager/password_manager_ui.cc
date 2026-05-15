@@ -97,11 +97,11 @@ content::WebUIDataSource* CreateAndAddPasswordsUIHTMLSource(
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       profile, password_manager::kChromeUIPasswordManagerHost);
 
-  webui::SetupWebUIDataSource(source, base::span(kPasswordManagerResources),
+  webui::SetupWebUIDataSource(source, kPasswordManagerResources,
                               IDR_PASSWORD_MANAGER_PASSWORD_MANAGER_HTML);
 
 #if !BUILDFLAG(OPTIMIZE_WEBUI)
-  source->AddResourcePaths(base::span(kSettingsSharedResources));
+  source->AddResourcePaths(kSettingsSharedResources);
 #endif
 
   static const webui::LocalizedString kStrings[] = {
