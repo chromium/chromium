@@ -73,6 +73,7 @@
 #include "components/tab_groups/tab_group_color.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
+#include "components/tabs/public/split_tab_data.h"
 #include "components/tabs/public/tab_group.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/page_navigator.h"
@@ -2555,6 +2556,75 @@ IN_PROC_BROWSER_TEST_F(SplitTabRestoreTest, RestorePinnedSplit) {
   EXPECT_TRUE(tab_strip_model->GetTabAtIndex(1)->GetSplit().has_value());
   EXPECT_EQ(tab_strip_model->GetTabAtIndex(0)->GetSplit().value(),
             tab_strip_model->GetTabAtIndex(1)->GetSplit().value());
+}
+
+// Close a group containing a split view, then restore it. The tabs should come
+// back in a group and in a split view.
+IN_PROC_BROWSER_TEST_F(SplitTabRestoreTest, RestoreGroupWithSplit) {
+  AddHTTPSSchemeTabs(browser(), 2);
+  TabStripModel* tab_strip_model = browser()->tab_strip_model();
+
+  // Create a group with tabs 1 and 2.
+  tab_groups::TabGroupId group = tab_strip_model->AddToNewGroup({1, 2});
+
+  // Create a split with tabs 1 and 2.
+  tab_strip_model->ActivateTabAt(1);
+  tab_strip_model->AddToNewSplit(
+      {2}, split_tabs::SplitTabVisualData(),
+      split_tabs::SplitTabCreatedSource::kToolbarButton);
+
+  // Close the group.
+  CloseGroup(group);
+
+  // Restore the group.
+  tab_groups::TabGroupId restored_group_id = RestoreGroup(group, browser(), 1);
+
+  // Verify that the tabs are back, in a group, and in a split.
+  EXPECT_EQ(3, tab_strip_model->count());
+  EXPECT_EQ(restored_group_id, tab_strip_model->GetTabGroupForTab(1));
+  EXPECT_EQ(restored_group_id, tab_strip_model->GetTabGroupForTab(2));
+  EXPECT_TRUE(tab_strip_model->GetTabAtIndex(1)->GetSplit().has_value());
+  EXPECT_TRUE(tab_strip_model->GetTabAtIndex(2)->GetSplit().has_value());
+  EXPECT_EQ(tab_strip_model->GetTabAtIndex(1)->GetSplit().value(),
+            tab_strip_model->GetTabAtIndex(2)->GetSplit().value());
+}
+
+// Close a split view inside an open group, then restore it. The tabs should
+// come back in the group and in a split view.
+IN_PROC_BROWSER_TEST_F(SplitTabRestoreTest, RestoreSplitInOpenGroup) {
+  AddHTTPSSchemeTabs(browser(), 3);
+  TabStripModel* tab_strip_model = browser()->tab_strip_model();
+
+  // Create a group with tabs 1, 2, and 3.
+  tab_groups::TabGroupId group = tab_strip_model->AddToNewGroup({1, 2, 3});
+
+  // Create a split with tabs 1 and 2.
+  tab_strip_model->ActivateTabAt(1);
+  tab_strip_model->AddToNewSplit(
+      {2}, split_tabs::SplitTabVisualData(),
+      split_tabs::SplitTabCreatedSource::kToolbarButton);
+
+  // Close the split view.
+  tab_strip_model->CloseSelectedTabs();
+
+  // The group should still be open with tab 3 (now at index 1).
+  EXPECT_EQ(2, tab_strip_model->count());
+  EXPECT_EQ(group, tab_strip_model->GetTabGroupForTab(1));
+
+  // Restore.
+  RestoreMostRecentlyClosed(browser());
+
+  // Verify that the tabs are back, in the group, and in a split.
+  EXPECT_EQ(4, tab_strip_model->count());
+  EXPECT_EQ(group, tab_strip_model->GetTabGroupForTab(1));
+
+  auto splits = tab_strip_model->ListSplits();
+  EXPECT_EQ(1u, splits.size());
+
+  split_tabs::SplitTabId split_id = *splits.begin();
+  auto* split_data = tab_strip_model->GetSplitData(split_id);
+  ASSERT_TRUE(split_data);
+  EXPECT_EQ(2u, split_data->ListTabs().size());
 }
 
 class SoftNavigationTabRestoreTest : public TabRestoreTest {

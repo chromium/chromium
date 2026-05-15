@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "base/uuid.h"
 #include "components/sessions/core/serialized_navigation_entry.h"
@@ -183,6 +184,9 @@ struct SESSIONS_EXPORT Group : public Entry {
   // The ID of the browser to which this group belonged, so it can be restored
   // there.
   SessionID::id_type browser_id = 0;
+
+  // A mapping of split tab IDs to the split tabs inside this group.
+  std::map<split_tabs::SplitTabId, std::vector<raw_ptr<Tab>>> split_tabs;
 };
 
 // Represents a previously open window.

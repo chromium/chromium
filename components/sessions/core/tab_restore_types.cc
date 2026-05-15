@@ -43,7 +43,8 @@ Group::~Group() = default;
 
 size_t Group::EstimateMemoryUsage() const {
   using base::trace_event::EstimateMemoryUsage;
-  return EstimateMemoryUsage(tabs) + EstimateMemoryUsage(visual_data.title());
+  return EstimateMemoryUsage(tabs) + EstimateMemoryUsage(visual_data.title()) +
+         EstimateMemoryUsage(split_tabs);
 }
 
 Split::Split() : Entry(SPLIT) {}

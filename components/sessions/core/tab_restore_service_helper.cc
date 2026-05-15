@@ -278,6 +278,9 @@ TabRestoreServiceHelper::CreateHistoricalGroupImpl(
                   context->GetLiveTabAt(tab_index));
       if (!tab->navigations.empty()) {
         tab->browser_id = context->GetSessionID().id();
+        if (tab->split_id.has_value()) {
+          group->split_tabs[tab->split_id.value()].push_back(tab.get());
+        }
         group->tabs.push_back(std::move(tab));
       }
     }
@@ -862,11 +865,46 @@ std::vector<LiveTab*> TabRestoreServiceHelper::RestoreEntryById(
       // single tab within it. If the entry's ID matches the one to restore,
       // then the entire group will be restored.
       if (entry_id_matches_restore_id) {
+        std::map<SessionID, LiveTab*> restored_tab_map;
         for (const auto& tab : group.tabs) {
           LiveTab* restored_tab = context->AddRestoredTab(
               *tab.get(), context->GetTabCount(), group.tabs[0]->id == tab->id,
               /*restored_from_group_or_window_context=*/true, entry.type);
-          live_tabs.push_back(restored_tab);
+          // The value of restored_tab is null when the AddRestoredTab call
+          // restores an entire group from the service directly.
+          if (restored_tab) {
+            live_tabs.push_back(restored_tab);
+            restored_tab_map[tab->id] = restored_tab;
+          }
+        }
+
+        // Because saved tab groups handle the restore process, we need to
+        // retrieve the LiveTab pointers from the local tab group.
+        if (restored_tab_map.empty() && group.saved_group_id.has_value()) {
+          std::optional<tab_groups::TabGroupId> target_group =
+              context->GetGroupIdForSavedGroup(group.saved_group_id.value());
+          if (target_group.has_value()) {
+            std::vector<LiveTab*> local_group_live_tabs;
+            for (int i = 0; i < context->GetTabCount(); ++i) {
+              if (context->GetTabGroupForTab(i) == target_group) {
+                local_group_live_tabs.push_back(context->GetLiveTabAt(i));
+              }
+            }
+
+            for (size_t i = 0; i < group.tabs.size(); ++i) {
+              restored_tab_map[group.tabs[i]->id] = local_group_live_tabs[i];
+            }
+          }
+        }
+
+        // Reconstruct the split tabs after restoring all the tabs in the group.
+        for (const auto& [split_id, tabs] : group.split_tabs) {
+          CHECK(tabs.size() == 2);
+          LiveTab* leading = restored_tab_map[tabs[0]->id];
+          LiveTab* trailing = restored_tab_map[tabs[1]->id];
+          if (leading && trailing) {
+            context->ReconstructSplit(leading, trailing, split_id);
+          }
         }
       } else {
         // Restore a single tab from the group. Find the tab that matches the
