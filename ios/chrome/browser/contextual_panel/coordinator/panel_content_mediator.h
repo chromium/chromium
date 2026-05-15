@@ -9,6 +9,7 @@
 
 @class ToolbarsSize;
 @class ChromeBroadcaster;
+class FullscreenBrowserAgent;
 @protocol PanelContentConsumer;
 
 // Mediator for the PanelContent view.
@@ -16,11 +17,16 @@
 
 - (instancetype)initWithBroadcaster:(ChromeBroadcaster*)broadcaster
                        toolbarsSize:(ToolbarsSize*)toolbarsSize
+             fullscreenBrowserAgent:
+                 (FullscreenBrowserAgent*)fullscreenBrowserAgent
     NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 
 // The consumer this mediator should inform about any updates.
 @property(nonatomic, weak) id<PanelContentConsumer> consumer;
+
+// Disconnects the mediator and cleans up.
+- (void)disconnect;
 
 @end
 

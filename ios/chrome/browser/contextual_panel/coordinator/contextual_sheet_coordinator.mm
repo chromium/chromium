@@ -177,7 +177,7 @@
 #pragma mark - Boolean Observer
 
 - (void)omniboxPositionBrowserAgent:(OmniboxPositionBrowserAgent*)browser_agent
-       isCurrentLayoutBottomOmnibox:(BOOL)isCurrentLayoutBottomOmnibox {
+                  didUpdatePosition:(BOOL)isCurrentLayoutBottomOmnibox {
   if (isCurrentLayoutBottomOmnibox) {
     [self disableFullscreen];
   } else {

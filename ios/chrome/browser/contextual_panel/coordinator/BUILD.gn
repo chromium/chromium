@@ -19,6 +19,7 @@ source_set("coordinator") {
     "//ios/chrome/browser/contextual_panel/model:public",
     "//ios/chrome/browser/contextual_panel/sample/coordinator",
     "//ios/chrome/browser/contextual_panel/ui",
+    "//ios/chrome/browser/fullscreen/model",
     "//ios/chrome/browser/fullscreen/ui_bundled",
     "//ios/chrome/browser/omnibox/model/omnibox_position",
     "//ios/chrome/browser/price_insights/coordinator",
