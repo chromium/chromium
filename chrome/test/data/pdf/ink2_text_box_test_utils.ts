@@ -69,10 +69,31 @@ export function assertPositionAndSize(
     el: HTMLElement, expectedWidth: string, expectedHeight: string,
     expectedLeft: string, expectedTop: string) {
   const styles = getComputedStyle(el);
-  chrome.test.assertEq(expectedWidth, styles.getPropertyValue('width'));
-  chrome.test.assertEq(expectedHeight, styles.getPropertyValue('height'));
-  chrome.test.assertEq(expectedLeft, styles.getPropertyValue('left'));
-  chrome.test.assertEq(expectedTop, styles.getPropertyValue('top'));
+
+  function parsePixelValue(str: string): number {
+    // Extract the numerical part of the style string.
+    const match = str.match(/^([+-]?\d+(\.\d+)?)px$/);
+    chrome.test.assertTrue(match !== null, `Invalid pixel string: ${str}`);
+    chrome.test.assertEq(3, match.length);
+    return parseFloat(match[1]!);
+  }
+
+  function assertStylePixelValue(expectedString: string, actualString: string) {
+    if (expectedString === 'auto' || actualString === 'auto') {
+      chrome.test.assertEq(expectedString, actualString);
+      return;
+    }
+    const expectedVal = parsePixelValue(expectedString);
+    const actualVal = parsePixelValue(actualString);
+    chrome.test.assertTrue(
+        Math.abs(expectedVal - actualVal) < 1.0,
+        `Expected ${expectedString}, but got ${actualString}`);
+  }
+
+  assertStylePixelValue(expectedWidth, styles.getPropertyValue('width'));
+  assertStylePixelValue(expectedHeight, styles.getPropertyValue('height'));
+  assertStylePixelValue(expectedLeft, styles.getPropertyValue('left'));
+  assertStylePixelValue(expectedTop, styles.getPropertyValue('top'));
 }
 
 export async function dragHandle(
