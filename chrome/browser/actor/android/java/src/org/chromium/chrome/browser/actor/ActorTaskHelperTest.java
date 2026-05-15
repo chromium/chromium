@@ -27,6 +27,8 @@ import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -38,9 +40,12 @@ public class ActorTaskHelperTest {
     @Mock private Profile mProfile;
     @Mock private ActorKeyedService mActorService;
     @Mock private ActorTask mActorTask;
+    @Mock private TabModelSelector mTabModelSelector;
+    @Mock private Tab mTab;
 
     private Activity mActivity;
     private SettableMonotonicObservableSupplier<Profile> mProfileSupplier;
+    private SettableMonotonicObservableSupplier<TabModelSelector> mSelectorSupplier;
     private ActorTaskHelper mActorTaskHelper;
 
     @Before
@@ -50,9 +55,14 @@ public class ActorTaskHelperTest {
 
         mProfileSupplier = ObservableSuppliers.createMonotonic();
         mProfileSupplier.set(mProfile);
+        mSelectorSupplier = ObservableSuppliers.createMonotonic();
+        mSelectorSupplier.set(mTabModelSelector);
+
+        when(mTabModelSelector.getTabById(1)).thenReturn(mTab);
+        when(mActorTask.getTabs()).thenReturn(Collections.singleton(1));
         ActorKeyedServiceFactory.setForTesting(mActorService);
 
-        mActorTaskHelper = new ActorTaskHelper(mActivity, mProfileSupplier);
+        mActorTaskHelper = new ActorTaskHelper(mActivity, mProfileSupplier, mSelectorSupplier);
     }
 
     @Test
@@ -94,15 +104,19 @@ public class ActorTaskHelperTest {
     public void testOnStop() {
         ActorTask taskCreated = mock(ActorTask.class);
         when(taskCreated.getState()).thenReturn(ActorTaskState.CREATED);
+        when(taskCreated.getTabs()).thenReturn(Collections.singleton(1));
 
         ActorTask taskActing = mock(ActorTask.class);
         when(taskActing.getState()).thenReturn(ActorTaskState.ACTING);
+        when(taskActing.getTabs()).thenReturn(Collections.singleton(1));
 
         ActorTask taskReflecting = mock(ActorTask.class);
         when(taskReflecting.getState()).thenReturn(ActorTaskState.REFLECTING);
+        when(taskReflecting.getTabs()).thenReturn(Collections.singleton(1));
 
         ActorTask taskPaused = mock(ActorTask.class);
         when(taskPaused.getState()).thenReturn(ActorTaskState.PAUSED_BY_USER);
+        when(taskPaused.getTabs()).thenReturn(Collections.singleton(1));
 
         when(mActorService.getActiveTasks())
                 .thenReturn(Arrays.asList(taskCreated, taskActing, taskReflecting, taskPaused));
@@ -128,5 +142,34 @@ public class ActorTaskHelperTest {
                 (mActivity.getWindow().getAttributes().flags
                                 & WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
                         != 0);
+    }
+
+    @Test
+    public void testOnStop_OnlyCurrentWindow() {
+        TabModelSelector selector = mock(TabModelSelector.class);
+        SettableMonotonicObservableSupplier<TabModelSelector> selectorSupplier =
+                ObservableSuppliers.createMonotonic();
+        selectorSupplier.set(selector);
+
+        ActorTaskHelper helper = new ActorTaskHelper(mActivity, mProfileSupplier, selectorSupplier);
+
+        ActorTask taskInWindow = mock(ActorTask.class);
+        when(taskInWindow.getState()).thenReturn(ActorTaskState.ACTING);
+        when(taskInWindow.getTabs()).thenReturn(Collections.singleton(101));
+        Tab tab101 = mock(Tab.class);
+        when(selector.getTabById(101)).thenReturn(tab101);
+
+        ActorTask taskOtherWindow = mock(ActorTask.class);
+        when(taskOtherWindow.getState()).thenReturn(ActorTaskState.ACTING);
+        when(taskOtherWindow.getTabs()).thenReturn(Collections.singleton(102));
+        when(selector.getTabById(102)).thenReturn(null);
+
+        when(mActorService.getActiveTasks())
+                .thenReturn(Arrays.asList(taskInWindow, taskOtherWindow));
+
+        helper.onStop();
+
+        verify(taskInWindow).pause();
+        verify(taskOtherWindow, never()).pause();
     }
 }

@@ -1764,7 +1764,9 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
         if (compositorViewHolder != null) compositorViewHolder.onStart();
 
         if (mActorTaskHelper == null && ChromeFeatureList.sGlic.isEnabled()) {
-            mActorTaskHelper = new ActorTaskHelper(this, mTabModelProfileSupplier);
+            mActorTaskHelper =
+                    new ActorTaskHelper(
+                            this, mTabModelProfileSupplier, getTabModelSelectorSupplier());
         }
 
         mStarted = true;

@@ -7,17 +7,21 @@ package org.chromium.chrome.browser.actor;
 import android.app.Activity;
 import android.view.WindowManager;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 
 /** Helper class that keeps the screen on while an Actor task is active. */
 @NullMarked
 public class ActorTaskHelper implements ActorKeyedService.Observer {
     private final Activity mActivity;
     private final MonotonicObservableSupplier<Profile> mProfileSupplier;
+    private final MonotonicObservableSupplier<TabModelSelector> mTabModelSelectorSupplier;
     private final Callback<Profile> mProfileObserver = (p) -> updateKeepScreenOn();
     private @Nullable ActorKeyedService mActorService;
     private boolean mKeepScreenOn;
@@ -25,11 +29,15 @@ public class ActorTaskHelper implements ActorKeyedService.Observer {
     /**
      * @param activity The {@link Activity} to manage flags for.
      * @param profileSupplier Supplier for the current {@link Profile}.
+     * @param tabModelSelectorSupplier Supplier for the current {@link TabModelSelector}.
      */
     public ActorTaskHelper(
-            Activity activity, MonotonicObservableSupplier<Profile> profileSupplier) {
+            Activity activity,
+            MonotonicObservableSupplier<Profile> profileSupplier,
+            MonotonicObservableSupplier<TabModelSelector> tabModelSelectorSupplier) {
         mActivity = activity;
         mProfileSupplier = profileSupplier;
+        mTabModelSelectorSupplier = tabModelSelectorSupplier;
         mProfileSupplier.addSyncObserverAndCallIfNonNull(mProfileObserver);
     }
 
@@ -57,9 +65,26 @@ public class ActorTaskHelper implements ActorKeyedService.Observer {
         return hasActiveTask[0];
     }
 
-    /** Pauses any Actor tasks if they are in an active state. */
+    /** Pauses any Actor tasks if they are in an active state and belong to this window. */
     public void onStop() {
-        forEachActiveTask(task -> task.pause());
+        forEachActiveTask(
+                task -> {
+                    if (isTaskInCurrentWindow(task)) {
+                        task.pause();
+                    }
+                });
+    }
+
+    @VisibleForTesting
+    boolean isTaskInCurrentWindow(ActorTask task) {
+        TabModelSelector selector = mTabModelSelectorSupplier.get();
+        if (selector == null) return false;
+        for (int tabId : task.getTabs()) {
+            if (selector.getTabById(tabId) != null) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private void forEachActiveTask(Callback<ActorTask> callback) {
