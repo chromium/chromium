@@ -1400,8 +1400,8 @@ Regular profiles start at bucket 1. Incognito profiles count towards the origina
   <owner>chrome-omnibox-team@google.com</owner>
   <summary>
     Records whether the Safe Browsing traffic-based search hijacking heuristic
-    matched. Recorded once each time chrome://settings/search page is loaded, if
-    and only if the heuristic is available.
+    matched in the last 7 days. Recorded once each time chrome://settings/search
+    page is loaded, if and only if the heuristic is available.
   </summary>
 </histogram>
 

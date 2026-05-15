@@ -7,6 +7,7 @@
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
@@ -472,7 +473,9 @@ TEST_F(SearchEnginesHandlerTest, TrafficHijackingHeuristic_Match) {
   pref_service->SetTime(prefs::kExtensionTelemetrySearchHijackingLastCheckTime,
                         base::Time::Now());
   base::DictValue signal_data;
-  signal_data.Set("dummy", "data");
+  signal_data.Set(
+      "detection_timestamp",
+      base::NumberToString(base::Time::Now().InMillisecondsSinceUnixEpoch()));
   pref_service->SetDict(prefs::kExtensionTelemetrySearchHijackingSignalData,
                         std::move(signal_data));
 

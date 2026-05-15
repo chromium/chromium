@@ -382,8 +382,10 @@ void SearchEnginesHandler::RecordSearchHijackingHeuristicMetric() {
     return;
   }
 
-  auto status = safe_browsing::SearchHijackingDetector::GetPriorHeuristicResult(
-      profile_->GetPrefs());
+  // Look for matches in the last 7 days, per the histograms.xml description.
+  auto status =
+      safe_browsing::SearchHijackingDetector::GetRecentHeuristicResult(
+          profile_->GetPrefs(), base::Days(7));
 
   bool available =
       (status !=

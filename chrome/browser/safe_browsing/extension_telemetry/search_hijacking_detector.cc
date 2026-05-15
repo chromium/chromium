@@ -67,19 +67,27 @@ SearchHijackingDetector::~SearchHijackingDetector() = default;
 
 // static
 SearchHijackingDetector::HeuristicResult
-SearchHijackingDetector::GetPriorHeuristicResult(PrefService* pref_service) {
-  // The detector saves signal data into prefs if and only if there was a
-  // heuristic match, so checking for presence is sufficient to infer the
-  // heuristic had matched in a prior invocation of the detector.
+SearchHijackingDetector::GetRecentHeuristicResult(PrefService* pref_service,
+                                                  base::TimeDelta interval) {
+  // Finds the latest heuristic result from the signal data if available and
+  // checks it was within the specified `interval`.
   if (pref_service->HasPrefPath(
           prefs::kExtensionTelemetrySearchHijackingSignalData)) {
     const base::DictValue& signal_data = pref_service->GetDict(
         prefs::kExtensionTelemetrySearchHijackingSignalData);
-    if (!signal_data.empty()) {
-      return HeuristicResult::kMatch;
+    const std::string* timestamp_str =
+        signal_data.FindString("detection_timestamp");
+    int64_t timestamp_ms = 0;
+    if (timestamp_str && base::StringToInt64(*timestamp_str, &timestamp_ms)) {
+      base::Time detection_time =
+          base::Time::FromMillisecondsSinceUnixEpoch(timestamp_ms);
+      if (base::Time::Now() - detection_time < interval) {
+        return HeuristicResult::kMatch;
+      }
     }
   }
 
+  // Stale or no match, with prefs showing the detector is active.
   if (pref_service->HasPrefPath(
           prefs::kExtensionTelemetrySearchHijackingLastCheckTime)) {
     return HeuristicResult::kNoMatch;

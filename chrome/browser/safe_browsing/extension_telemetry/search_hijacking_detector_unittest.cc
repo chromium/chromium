@@ -4,6 +4,7 @@
 
 #include "chrome/browser/safe_browsing/extension_telemetry/search_hijacking_detector.h"
 
+#include "base/strings/string_number_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
@@ -211,6 +212,34 @@ TEST_F(SearchHijackingDetectorTest, ClearsAllDataFromPrefs) {
   EXPECT_EQ(detector_->GetCurrentEventCountsForTesting().serp_landings, 0);
   EXPECT_EQ(detector_->GetSignalForReport(), nullptr);
   EXPECT_EQ(detector_->GetLastHeuristicCheckTimeForTesting(), base::Time());
+}
+
+TEST_F(SearchHijackingDetectorTest, GetRecentHeuristicResult) {
+  // With no signal data set, expect unknown.
+  EXPECT_EQ(
+      detector_->GetRecentHeuristicResult(profile_->GetPrefs(), base::Days(7)),
+      SearchHijackingDetector::HeuristicResult::kUnknown);
+
+  base::DictValue signal_data;
+  base::Time stale_time = base::Time::Now() - base::Days(8);
+  signal_data.Set(
+      "detection_timestamp",
+      base::NumberToString(stale_time.InMillisecondsSinceUnixEpoch()));
+  profile_->GetPrefs()->SetDict(
+      prefs::kExtensionTelemetrySearchHijackingSignalData,
+      std::move(signal_data));
+
+  // Also set LastCheckTime so we fall through to kNoMatch.
+  profile_->GetPrefs()->SetTime(
+      prefs::kExtensionTelemetrySearchHijackingLastCheckTime,
+      base::Time::Now());
+
+  EXPECT_EQ(
+      detector_->GetRecentHeuristicResult(profile_->GetPrefs(), base::Days(7)),
+      SearchHijackingDetector::HeuristicResult::kNoMatch);
+  EXPECT_EQ(
+      detector_->GetRecentHeuristicResult(profile_->GetPrefs(), base::Days(14)),
+      SearchHijackingDetector::HeuristicResult::kMatch);
 }
 
 TEST_F(SearchHijackingDetectorTest, RecordsHistograms) {
