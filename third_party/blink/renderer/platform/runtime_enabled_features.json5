@@ -6728,6 +6728,11 @@
       base_feature: "none",
     },
     {
+      name: "WebTransportReceiveStream",
+      status: "experimental",
+      base_feature: "none",
+    },
+    {
       name: "WebTransportSendGroup",
       status: "experimental",
       base_feature: "none",
