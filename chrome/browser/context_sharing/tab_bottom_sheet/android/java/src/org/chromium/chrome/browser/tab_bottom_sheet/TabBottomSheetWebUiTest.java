@@ -12,6 +12,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
 import android.view.ContextThemeWrapper;
@@ -46,6 +47,8 @@ import org.chromium.ui.base.EventForwarder;
 import org.chromium.ui.base.ViewAndroidDelegate;
 import org.chromium.ui.base.WindowAndroid;
 
+import java.lang.ref.WeakReference;
+
 /** Unit tests for {@link TabBottomSheetWebUi}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
@@ -69,6 +72,10 @@ public class TabBottomSheetWebUiTest {
     public void setUp() {
         ThinWebViewFactory.setInstanceForTesting(mThinWebView);
         when(mThinWebView.getView()).thenReturn(mView);
+
+        Activity mockActivity = mock(Activity.class);
+        WeakReference<Activity> weakActivity = new WeakReference<>(mockActivity);
+        when(mWindowAndroid.getActivity()).thenReturn(weakActivity);
 
         when(mWindowAndroid.getWindow()).thenReturn(mMockWindow);
         when(mMockWindow.getDecorView()).thenReturn(mMockDecorView);
@@ -176,6 +183,50 @@ public class TabBottomSheetWebUiTest {
         mWebUi.setWebContents(nonNullWebContents);
         mWebUi.setWebContents(null);
         verify(mThinWebView, times(1)).destroy();
+    }
+
+    @Test
+    public void testSetWebContents_Null_ActivityDestroyed_DoesNotRecreateThinWebView() {
+        WebContents nonNullWebContents = mock(WebContents.class);
+        EventForwarder mockEventForwarder = mock(EventForwarder.class);
+        Mockito.doReturn(mockEventForwarder).when(nonNullWebContents).getEventForwarder();
+
+        Activity mockActivity = mock(Activity.class);
+        when(mockActivity.isDestroyed()).thenReturn(true);
+        WeakReference<Activity> weakActivity = new WeakReference<>(mockActivity);
+        when(mWindowAndroid.getActivity()).thenReturn(weakActivity);
+
+        mWebUi.setWebContents(nonNullWebContents);
+        // Reset verification state of mThinWebView
+        Mockito.reset(mThinWebView);
+
+        mWebUi.setWebContents(null);
+
+        // Verify that mThinWebView's destroy was called (the first one is destroyed).
+        verify(mThinWebView, times(1)).destroy();
+        // Verify that mThinWebView is now null in the WebUi.
+        org.junit.Assert.assertNull(mWebUi.getThinWebViewForTesting());
+    }
+
+    @Test
+    public void testSetWebContents_Null_ActivityReferenceCleared_DoesNotRecreateThinWebView() {
+        WebContents nonNullWebContents = mock(WebContents.class);
+        EventForwarder mockEventForwarder = mock(EventForwarder.class);
+        Mockito.doReturn(mockEventForwarder).when(nonNullWebContents).getEventForwarder();
+
+        WeakReference<Activity> weakActivity = new WeakReference<>(null);
+        when(mWindowAndroid.getActivity()).thenReturn(weakActivity);
+
+        mWebUi.setWebContents(nonNullWebContents);
+        // Reset verification state of mThinWebView
+        Mockito.reset(mThinWebView);
+
+        mWebUi.setWebContents(null);
+
+        // Verify that mThinWebView's destroy was called (the first one is destroyed).
+        verify(mThinWebView, times(1)).destroy();
+        // Verify that mThinWebView is now null in the WebUi.
+        org.junit.Assert.assertNull(mWebUi.getThinWebViewForTesting());
     }
 
     @Test

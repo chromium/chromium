@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.tab_bottom_sheet;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.view.View;
@@ -45,7 +46,7 @@ public class TabBottomSheetWebUi {
     private final @ColorInt int mBackgroundColor;
     private final CoBrowseViewsZoomControl mZoomControl;
 
-    private ThinWebView mThinWebView;
+    private @Nullable ThinWebView mThinWebView;
     private @Nullable WebContents mWebContents;
     private @Nullable ContentView mContentView;
 
@@ -133,18 +134,23 @@ public class TabBottomSheetWebUi {
             ThinWebViewContextMenuItemDelegate itemDelegate =
                     new ThinWebViewContextMenuItemDelegate(mWebContents);
             mContextMenuPopulatorFactory.setItemDelegate(itemDelegate);
-            mThinWebView.attachWebContents(
-                    mWebContents,
-                    contentView,
-                    new ThinWebViewAttachParams.Builder()
-                            .setWebContentsDelegate(createWebContentsDelegate())
-                            .setContextMenuPopulatorFactory(mContextMenuPopulatorFactory)
-                            .setSupportTheming(true)
-                            .build());
-            mWebViewResizingHelper.setThinWebView(mThinWebView, mWebContents);
-            setAllowFullscreenIme(
-                    mContext.getResources().getConfiguration().orientation
-                            == Configuration.ORIENTATION_LANDSCAPE);
+            if (mThinWebView == null) {
+                resetThinWebView();
+            }
+            if (mThinWebView != null) {
+                mThinWebView.attachWebContents(
+                        mWebContents,
+                        contentView,
+                        new ThinWebViewAttachParams.Builder()
+                                .setWebContentsDelegate(createWebContentsDelegate())
+                                .setContextMenuPopulatorFactory(mContextMenuPopulatorFactory)
+                                .setSupportTheming(true)
+                                .build());
+                mWebViewResizingHelper.setThinWebView(mThinWebView, mWebContents);
+                setAllowFullscreenIme(
+                        mContext.getResources().getConfiguration().orientation
+                                == Configuration.ORIENTATION_LANDSCAPE);
+            }
         } else {
             resetThinWebView();
         }
@@ -177,7 +183,10 @@ public class TabBottomSheetWebUi {
         mWebContents = null;
         mContentView = null;
         mWebViewResizingHelper.reset();
-        mThinWebView.destroy();
+        if (mThinWebView != null) {
+            mThinWebView.destroy();
+            mThinWebView = null;
+        }
     }
 
     View getWebUiView() {
@@ -204,7 +213,16 @@ public class TabBottomSheetWebUi {
     }
 
     private void resetThinWebView() {
-        if (mThinWebView != null) mThinWebView.destroy();
+        if (mThinWebView != null) {
+            mThinWebView.destroy();
+            mThinWebView = null;
+        }
+
+        mWebViewResizingHelper.reset();
+        Activity activity = mWindowAndroid.getActivity().get();
+        if (activity == null || activity.isDestroyed() || activity.isFinishing()) {
+            return;
+        }
         ThinWebViewConstraints constraints = new ThinWebViewConstraints();
         constraints.supportsOpacity = true;
         constraints.backgroundColor = mBackgroundColor;
@@ -214,7 +232,10 @@ public class TabBottomSheetWebUi {
                         constraints,
                         assumeNonNull(mWindowAndroid.getIntentRequestTracker()),
                         /* enablePermissionRequests= */ true);
-        mWebViewResizingHelper.reset();
+    }
+
+    @Nullable ThinWebView getThinWebViewForTesting() {
+        return mThinWebView;
     }
 
     static void setInTestModeForTesting() {
