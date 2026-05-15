@@ -9,7 +9,11 @@ import type {IndigoImageReplacementAppElement} from './app.js';
 export function getHtml(this: IndigoImageReplacementAppElement) {
   // clang-format off
   return html`<!--_html_template_start_-->
-<img id="image" .src="${this.imageSrc_}"></img>
+<img
+    id="image"
+    .src="${this.imageSrc_}"
+    .style="object-fit: ${this.objectFit_};">
+</img>
 
 ${this.showOverlay_ ? html`
   <indigo-motion-overlay

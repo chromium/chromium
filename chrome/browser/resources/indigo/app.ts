@@ -33,12 +33,14 @@ export class IndigoImageReplacementAppElement extends CrLitElement {
       showOverlay_: {type: Boolean},
       overlayAnimationState_: {type: String},
       imageSrc_: {type: String},
+      objectFit_: {type: String},
     };
   }
 
   protected accessor showOverlay_: boolean = false;
   protected accessor overlayAnimationState_: 'entry'|'exit'|'none' = 'none';
   protected accessor imageSrc_: string = '';
+  protected accessor objectFit_: 'contain'|'cover' = 'contain';
 
   override async connectedCallback() {
     super.connectedCallback();
@@ -72,6 +74,7 @@ export class IndigoImageReplacementAppElement extends CrLitElement {
     if (typeof imageData.value === 'string') {
       URL.revokeObjectURL(this.imageSrc_);
       await this.updateAndDecodeImage_(imageData.value);
+      this.objectFit_ = this.computeObjectFitForReplacement_();
       this.overlayAnimationState_ = 'exit';
     }
   }
@@ -80,6 +83,19 @@ export class IndigoImageReplacementAppElement extends CrLitElement {
     this.imageSrc_ = src;
     await this.updateComplete;
     await this.$.image.decode();
+  }
+
+  private computeObjectFitForReplacement_(): 'contain'|'cover' {
+    const {naturalWidth, naturalHeight} = this.$.image;
+    if (naturalWidth !== naturalHeight) {
+      return 'contain';
+    }
+    const {clientWidth, clientHeight} = document.documentElement;
+    if (clientWidth === 0 || clientHeight === 0) {
+      return 'contain';
+    }
+    const aspectRatio = clientWidth / clientHeight;
+    return 0.5 <= aspectRatio && aspectRatio <= 1.0 ? 'cover' : 'contain';
   }
 }
 
