@@ -5,6 +5,7 @@
 
 import dataclasses
 import pathlib
+import textwrap
 import unittest
 
 import modulemap_config
@@ -17,7 +18,7 @@ from generate_system_modulemap import (
     parse_depfile,
     parse_modulemap,
     split_modulemap,
-    strip_modules_from_modulemap,
+    modify_modulemap,
 )
 
 _TESTDATA = (pathlib.Path(__file__).parent / 'testdata').resolve()
@@ -106,7 +107,8 @@ class GenerateSysrootModulemapTest(unittest.TestCase):
     self.assertEqual(al.exports('normal.h'), ['*'])
 
   def test_generate_system_modulemap(self):
-    common_dir, headers = parse_modulemap(_TESTDATA / 'gen/module.modulemap')
+    common_dir, headers = parse_modulemap(_TESTDATA / 'gen/module.modulemap',
+                                          {}, set())
     self.assertEqual(common_dir, _LIBCXX)
 
     self.assertEqual(headers, [
@@ -166,11 +168,15 @@ class GenerateSysrootModulemapTest(unittest.TestCase):
                textual=True),
     ])
 
-    self.assertEqual(
-        combine_modulemaps(out=_TESTDATA / 'want/subdir' / 'module.modulemap',
-                           modulemaps=[_TESTDATA / 'gen/module.modulemap'],
-                           headers=deps,
-                           module_name='//system'), _WANT_MODULEMAP)
+    combined = combine_modulemaps(
+        out=_TESTDATA / 'want/subdir' / 'module.modulemap',
+        modulemaps=[_TESTDATA / 'gen/module.modulemap'],
+        headers=deps,
+        module_name='//system',
+        extra_modules=[],
+        modify_modules={},
+        modified_modules=set())
+    self.assertEqual(combined, _WANT_MODULEMAP)
 
   def test_find_modules(self):
     modules = split_modulemap(_MODULES)
@@ -193,17 +199,56 @@ class GenerateSysrootModulemapTest(unittest.TestCase):
             pathlib.Path('/path/to/header3.h'),
         ])
 
-  def test_strip_modules_from_modulemap(self):
-    tent = """module foo {
-  module submodule {
-    header "bar.h"
-  }
-}"""
-    self.assertEqual(strip_modules_from_modulemap(tent, {'foo'}), '')
+  def test_modify_modulemap(self):
+    modulemap = textwrap.dedent("""\
+        module foo {
+          module submodule {
+            header "bar.h"
+          }
+        }""")
+    modified_modules = set()
+    content = modify_modulemap(modulemap, {
+        'foo': lambda s: '',
+        'unused': lambda s: '',
+    }, modified_modules)
+    self.assertEqual(content, '')
+    self.assertEqual(modified_modules, {'foo'})
 
+    modified_modules = set()
+    content = modify_modulemap(
+        modulemap, {'foo.submodule': lambda s: s[:-1] + '  export *\n  }'},
+        modified_modules)
     self.assertEqual(
-        strip_modules_from_modulemap(tent, {'submodule'}).strip(),
-        'module foo {\n\n}')
+        content,
+        textwrap.dedent("""\
+            module foo {
+              module submodule {
+                header "bar.h"
+                export *
+              }
+            }"""))
+    self.assertIn('foo.submodule', modified_modules)
+
+    modified_modules = set()
+    content = modify_modulemap(
+        modulemap, {
+            'foo.submodule': lambda s: s[:-1] + '  export submodule\n  }',
+            'foo': lambda s: s[:-1] + '  export foo\n}',
+            'other.submodule': lambda s: '',
+        }, modified_modules)
+    self.assertEqual(
+        content,
+        textwrap.dedent("""\
+            module foo {
+              module submodule {
+                header "bar.h"
+                export submodule
+              }
+              export foo
+            }"""))
+    self.assertIn('foo.submodule', modified_modules)
+    self.assertIn('foo', modified_modules)
+    self.assertNotIn('other.submodule', modified_modules)
 
 
 if __name__ == '__main__':

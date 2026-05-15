@@ -165,23 +165,55 @@ def _module_end(modulemap: str, start: int) -> int:
   raise ValueError(f'No closing brace for {modulemap[start:start+100]}...')
 
 
-def strip_modules_from_modulemap(content: str,
-                                 exclude_modules: set[str]) -> str:
-  """Strips modules listed in exclude_modules from the modulemap content."""
-  result = []
-  upto = 0
+def modify_modulemap(content: str, modify_modules: dict[str, Callable[[str],
+                                                                      str]],
+                     modified_modules: set[str]) -> str:
+  """Modifies modules within a modulemap file."""
 
+  @dataclasses.dataclass
+  class Module:
+    name: str
+    # An index into content. content[start:end] = 'module foo { ... }'
+    start: int
+    end: int
+    submodules: list = dataclasses.field(default_factory=list)
+
+  root = Module('root', 0, len(content))
+  stack = [root]
   for m in _MODULEMAP_START.finditer(content):
-    if m.start() < upto:
-      # Nested within an already excluded module, skip.
-      continue
+    module = Module(name=m.group(1),
+                    start=m.start(),
+                    end=_module_end(content, m.start()))
+    # Pop the modules that we've already seen the closing brace for.
+    while stack and stack[-1].end <= module.start:
+      stack.pop()
 
-    if m.group(1) in exclude_modules:
-      result.append(content[upto:m.start()])
-      upto = _module_end(content, m.start())
+    stack[-1].submodules.append(module)
+    stack.append(module)
 
-  result.append(content[upto:])
-  return ''.join(result)
+  module_path = []
+
+  # Now we reconstruct the modulemap.
+  def render(submodules: list[Module], start: int, end: int) -> str:
+    result = []
+    upto = start
+    for m in submodules:
+      result.append(content[upto:m.start])
+      module_path.append(m.name)
+      result.append(render(m.submodules, m.start, m.end))
+      module_path.pop()
+      upto = m.end
+    result.append(content[upto:end])
+
+    result = ''.join(result)
+    key = '.'.join(module_path)
+    if key in modify_modules:
+      modified_modules.add(key)
+      result = modify_modules[key](result)
+
+    return result
+
+  return render(root.submodules, root.start, root.end)
 
 
 def split_modulemap(modulemap: str) -> dict[str, str]:
@@ -197,13 +229,15 @@ def split_modulemap(modulemap: str) -> dict[str, str]:
 
 
 def parse_modulemap(
-    modulemap_path: pathlib.Path, exclude_modules: set[str] = set()
-) -> Tuple[pathlib.Path, List[Header]]:
+    modulemap_path: pathlib.Path, modify_modules: dict[str, Callable[[str],
+                                                                     str]],
+    modified_modules: set[str]) -> Tuple[pathlib.Path, list[Header]]:
   """Parses a modulemap file into headers.
 
   Args:
     modulemap_path: Path to the modulemap file.
-    exclude_modules: List of modules to exclude from the modulemap.
+    modify_modules: Mapping of module names to modifier functions.
+    modified_modules: A set to collect the modified module names.
 
   Returns:
     A tuple of (include_dir, headers relative to that directory).
@@ -212,8 +246,8 @@ def parse_modulemap(
   # A stack of modules, each with their own requirements.
   requires_stack = []
 
-  content = strip_modules_from_modulemap(modulemap_path.read_text(),
-                                         exclude_modules)
+  content = modify_modulemap(modulemap_path.read_text(), modify_modules,
+                             modified_modules)
 
   for line in content.splitlines():
     if '{' in line:
@@ -387,14 +421,11 @@ def calculate_transitive_headers(clang_args: list[str],
     return headers
 
 
-def combine_modulemaps(
-    out: pathlib.Path,
-    modulemaps: list[pathlib.Path],
-    headers: List[Header],
-    module_name: str,
-    extra_modules: list[(str, pathlib.Path)] = [],
-    exclude_modules: set[str] = set()
-) -> str:
+def combine_modulemaps(out: pathlib.Path, modulemaps: list[pathlib.Path],
+                       headers: List[Header], module_name: str,
+                       extra_modules: list[Tuple[str, pathlib.Path]],
+                       modify_modules: dict[str, Callable[[str], str]],
+                       modified_modules: set[str]) -> str:
   """Generates the combined modulemap output string from dependencies."""
   custom_header_prefix = os.path.relpath(
       _SRC_PREFIX / 'buildtools/third_party/libc++', out.parent)
@@ -413,7 +444,7 @@ def combine_modulemaps(
 
       mm_content = _SIMPLE_HEADER_RE.sub(
           lambda m: f'{m.group(1)}{rebase_path(m.group(2))}{m.group(3)}',
-          strip_modules_from_modulemap(mm.read_text(), exclude_modules))
+          modify_modulemap(mm.read_text(), modify_modules, modified_modules))
       mm_content = mm_content.replace(
           '@LIBCXX_CONFIG_SITE_MODULE_ENTRY@ // generated via CMake',
           f'textual header "{custom_header_prefix}/__config_site"')
@@ -459,7 +490,7 @@ def combine_modulemaps(
 
       mm_content = _SIMPLE_HEADER_RE.sub(
           lambda m: f'{m.group(1)}{rebase_path(m.group(2))}{m.group(3)}',
-          strip_modules_from_modulemap(content, exclude_modules))
+          modify_modulemap(content, modify_modules, modified_modules))
       s.write(mm_content)
       s.write('\n')
 
@@ -470,6 +501,21 @@ def combine_modulemaps(
 
 def main(args, extra_args):
   """Executes the modulemap generation pipeline."""
+  modify_modules = {}
+  for mod in args.exclude_module:
+    modify_modules[mod] = lambda s: ''
+
+  def make_appender(content):
+    # [:-1] to strip the closing '}' from the old modulemap.
+    return lambda s: s[:-1] + '\n' + content + '\n}'
+
+  for app in args.append_module:
+    mod_name, appended = app.split(':', 1)
+    # Ninja doesn't play nice if gn tries to write a newline in the argument.
+    # So we have GN write a literal backslash instead.
+    modify_modules[mod_name] = make_appender(appended.replace('\\n', '\n'))
+
+  modified_modules = set()
   deps = []
   if args.sysroot or args.os == 'win':
     sysroot_dirs = []
@@ -520,7 +566,7 @@ def main(args, extra_args):
     deps = calculate_transitive_headers(
         clang_args=clang_args,
         include_dirs=[
-            parse_modulemap(mm, set(args.exclude_module))
+            parse_modulemap(mm, modify_modules, modified_modules)
             for mm in args.modulemap
         ],
         sysroot_dirs=sysroot_dirs,
@@ -548,7 +594,12 @@ def main(args, extra_args):
           headers=deps,
           module_name=args.module_name,
           extra_modules=[known_modules[module] for module in args.module],
-          exclude_modules=set(args.exclude_module)))
+          modify_modules=modify_modules,
+          modified_modules=modified_modules))
+
+  unused = modify_modules.keys() - modified_modules
+  if unused:
+    raise ValueError(f'Unable to find modules to modify: {unused}')
 
 
 if __name__ == '__main__':
@@ -590,6 +641,13 @@ if __name__ == '__main__':
       type=str,
       default=[],
       help='Name of a module to exclude from the generated modulemap.')
+  parser.add_argument(
+      '--append-module',
+      action='append',
+      type=str,
+      default=[],
+      help='Name of a module and content to append, in the format name:content.'
+  )
   parser.add_argument('--os', help='GN\'s $target_os variable')
   parser.add_argument('--cpu', help='GN\'s $target_cpu variable')
   parser.add_argument(
