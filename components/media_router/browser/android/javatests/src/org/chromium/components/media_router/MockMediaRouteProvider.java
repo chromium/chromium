@@ -80,7 +80,7 @@ public class MockMediaRouteProvider implements MediaRouteProvider {
     }
 
     @Override
-    public void startObservingMediaSinks(final String sourceId) {
+    public void startObservingMediaSinks(final String sourceId, String origin) {
         final ArrayList<MediaSink> sinks = new ArrayList<>();
         sinks.add(new MediaSink(SINK_ID1, SINK_NAME1, null));
         sinks.add(new MediaSink(SINK_ID2, SINK_NAME2, null));

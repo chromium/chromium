@@ -33,25 +33,37 @@ class MockMediaRouterAndroidBridge : public MediaRouterAndroidBridge {
   MockMediaRouterAndroidBridge() : MediaRouterAndroidBridge(nullptr) {}
   ~MockMediaRouterAndroidBridge() override = default;
 
-  MOCK_METHOD6(CreateRoute,
-               void(const MediaSource::Id&,
-                    const MediaSink::Id&,
-                    const std::string&,
-                    const url::Origin&,
-                    content::WebContents*,
-                    int));
-  MOCK_METHOD5(JoinRoute,
-               void(const MediaSource::Id&,
-                    const std::string&,
-                    const url::Origin&,
-                    content::WebContents*,
-                    int));
-  MOCK_METHOD1(TerminateRoute, void(const MediaRoute::Id&));
-  MOCK_METHOD2(SendRouteMessage,
-               void(const MediaRoute::Id&, const std::string&));
-  MOCK_METHOD1(DetachRoute, void(const MediaRoute::Id&));
-  MOCK_METHOD1(StartObservingMediaSinks, bool(const MediaSource::Id&));
-  MOCK_METHOD1(StopObservingMediaSinks, void(const MediaSource::Id&));
+  MOCK_METHOD(void,
+              CreateRoute,
+              (const MediaSource::Id&,
+               const MediaSink::Id&,
+               const std::string&,
+               const url::Origin&,
+               content::WebContents*,
+               int),
+              (override));
+  MOCK_METHOD(void,
+              JoinRoute,
+              (const MediaSource::Id&,
+               const std::string&,
+               const url::Origin&,
+               content::WebContents*,
+               int),
+              (override));
+  MOCK_METHOD(void, TerminateRoute, (const MediaRoute::Id&), (override));
+  MOCK_METHOD(void,
+              SendRouteMessage,
+              (const MediaRoute::Id&, const std::string&),
+              (override));
+  MOCK_METHOD(void, DetachRoute, (const MediaRoute::Id&), (override));
+  MOCK_METHOD(bool,
+              StartObservingMediaSinks,
+              (const MediaSource::Id&, const url::Origin&),
+              (override));
+  MOCK_METHOD(void,
+              StopObservingMediaSinks,
+              (const MediaSource::Id&),
+              (override));
 };
 
 class MediaRouterAndroidTest : public testing::Test {

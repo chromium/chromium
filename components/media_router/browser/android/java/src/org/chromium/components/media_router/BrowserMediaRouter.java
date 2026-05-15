@@ -227,12 +227,15 @@ public class BrowserMediaRouter implements MediaRouteManager {
      * @return whether the monitoring started (ie. was allowed).
      */
     @CalledByNative
-    public boolean startObservingMediaSinks(@JniType("std::string") String sourceId) {
-        Log.d(TAG, "startObservingMediaSinks: " + sourceId);
-        if (SysUtils.isLowEndDevice()) return false;
+    public boolean startObservingMediaSinks(
+            @JniType("std::string") String sourceId, @JniType("std::string") String origin) {
+        Log.d(TAG, "startObservingMediaSinks: " + sourceId + " from origin: " + origin);
+        if (SysUtils.isLowEndDevice()) {
+            return false;
+        }
 
         for (MediaRouteProvider provider : mRouteProviders) {
-            provider.startObservingMediaSinks(sourceId);
+            provider.startObservingMediaSinks(sourceId, origin);
         }
 
         return true;

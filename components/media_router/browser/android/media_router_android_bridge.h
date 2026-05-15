@@ -51,7 +51,8 @@ class MediaRouterAndroidBridge {
   virtual void SendRouteMessage(const MediaRoute::Id& route_id,
                                 const std::string& message);
   virtual void DetachRoute(const MediaRoute::Id& route_id);
-  virtual bool StartObservingMediaSinks(const MediaSource::Id& source_id);
+  virtual bool StartObservingMediaSinks(const MediaSource::Id& source_id,
+                                        const url::Origin& origin);
   virtual void StopObservingMediaSinks(const MediaSource::Id& source_id);
   virtual std::unique_ptr<media::FlingingController> GetFlingingController(
       const MediaRoute::Id& route_id);

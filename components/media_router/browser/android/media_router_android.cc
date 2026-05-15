@@ -184,7 +184,7 @@ bool MediaRouterAndroid::RegisterMediaSinksObserver(
   }
 
   observer_list->AddObserver(observer);
-  return bridge_->StartObservingMediaSinks(source_id);
+  return bridge_->StartObservingMediaSinks(source_id, observer->origin());
 }
 
 void MediaRouterAndroid::UnregisterMediaSinksObserver(

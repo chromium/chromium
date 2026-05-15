@@ -84,7 +84,9 @@ public class FlingingControllerAdapter implements FlingingController, MediaContr
 
     /** Starts loading the media URL, from the given position. */
     public void load(long position, boolean autoplay) {
-        if (!mSessionController.isConnected()) return;
+        if (!mSessionController.isConnected()) {
+            return;
+        }
         assumeNonNull(mSessionController.getRemoteMediaClient());
 
         mLoaded = true;

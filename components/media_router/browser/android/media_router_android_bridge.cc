@@ -89,10 +89,11 @@ void MediaRouterAndroidBridge::DetachRoute(const MediaRoute::Id& route_id) {
 }
 
 bool MediaRouterAndroidBridge::StartObservingMediaSinks(
-    const MediaSource::Id& source_id) {
+    const MediaSource::Id& source_id,
+    const url::Origin& origin) {
   JNIEnv* env = AttachCurrentThread();
   return Java_BrowserMediaRouter_startObservingMediaSinks(
-      env, java_media_router_, source_id);
+      env, java_media_router_, source_id, origin.GetURL().spec());
 }
 
 void MediaRouterAndroidBridge::StopObservingMediaSinks(

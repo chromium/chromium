@@ -30,13 +30,16 @@ public interface MediaRouteProvider {
     /**
      * Initiates the discovery of media sinks corresponding to the given source id. Does nothing if
      * the source id is not supported by the MRP.
+     *
      * @param sourceId The id of the source to discover the media sinks for.
+     * @param origin The origin of the frame initiating the request.
      */
-    void startObservingMediaSinks(String sourceId);
+    void startObservingMediaSinks(String sourceId, String origin);
 
     /**
-     * Stops the discovery of media sinks corresponding to the given source id. Does nothing if
-     * the source id is not supported by the MRP.
+     * Stops the discovery of media sinks corresponding to the given source id. Does nothing if the
+     * source id is not supported by the MRP.
+     *
      * @param sourceId The id of the source to discover the media sinks for.
      */
     void stopObservingMediaSinks(String sourceId);

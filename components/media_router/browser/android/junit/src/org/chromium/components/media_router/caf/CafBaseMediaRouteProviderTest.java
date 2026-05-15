@@ -24,7 +24,6 @@ import static org.chromium.components.media_router.caf.CafBaseMediaRouteProvider
 
 import android.content.Context;
 
-import androidx.annotation.NonNull;
 import androidx.mediarouter.media.MediaRouteSelector;
 import androidx.mediarouter.media.MediaRouter;
 
@@ -115,7 +114,7 @@ public class CafBaseMediaRouteProviderTest {
     public void testStartObservingMediaSinks_unsupportedSource() {
         doReturn(null).when(mProvider).getSourceFromId(any(String.class));
 
-        mProvider.startObservingMediaSinks("source-id");
+        mProvider.startObservingMediaSinks("source-id", "origin");
         RobolectricUtil.runAllBackgroundAndUi();
 
         verify(mManager).onSinksReceived("source-id", mProvider, NO_SINKS);
@@ -131,7 +130,7 @@ public class CafBaseMediaRouteProviderTest {
         doReturn(mockSource).when(mProvider).getSourceFromId(any(String.class));
         doReturn(null).when(mockSource).buildRouteSelector();
 
-        mProvider.startObservingMediaSinks("source-id");
+        mProvider.startObservingMediaSinks("source-id", "origin");
         RobolectricUtil.runAllBackgroundAndUi();
 
         verify(mManager).onSinksReceived("source-id", mProvider, NO_SINKS);
@@ -151,8 +150,8 @@ public class CafBaseMediaRouteProviderTest {
         prepareMediaSource(mockSource1, mockSelector1, "source-id-1", "app-id-1");
         prepareMediaSource(mockSource2, mockSelector2, "source-id-2", "app-id-2");
 
-        mProvider.startObservingMediaSinks("source-id-1");
-        mProvider.startObservingMediaSinks("source-id-2");
+        mProvider.startObservingMediaSinks("source-id-1", "origin");
+        mProvider.startObservingMediaSinks("source-id-2", "origin");
         RobolectricUtil.runAllBackgroundAndUi();
         RobolectricUtil.runAllBackgroundAndUi();
 
@@ -197,8 +196,8 @@ public class CafBaseMediaRouteProviderTest {
         prepareMediaSource(mockSource1, mockSelector1, "source-id-1", "app-id-1");
         prepareMediaSource(mockSource2, mockSelector2, "source-id-2", "app-id-1");
 
-        mProvider.startObservingMediaSinks("source-id-1");
-        mProvider.startObservingMediaSinks("source-id-2");
+        mProvider.startObservingMediaSinks("source-id-1", "origin");
+        mProvider.startObservingMediaSinks("source-id-2", "origin");
         RobolectricUtil.runAllBackgroundAndUi();
         RobolectricUtil.runAllBackgroundAndUi();
 
@@ -243,7 +242,7 @@ public class CafBaseMediaRouteProviderTest {
         MediaRouteSelector mockSelector = mock(MediaRouteSelector.class);
         prepareMediaSource(mockSource, mockSelector, "source-id", "app-id");
 
-        mProvider.startObservingMediaSinks("source-id");
+        mProvider.startObservingMediaSinks("source-id", "origin");
         RobolectricUtil.runAllBackgroundAndUi();
 
         // Existing devices that match the selector should be published upon start observing.
@@ -261,8 +260,8 @@ public class CafBaseMediaRouteProviderTest {
         prepareMediaSource(mockSource1, mockSelector1, "source-id-1", "app-id-1");
         prepareMediaSource(mockSource2, mockSelector2, "source-id-2", "app-id-1");
 
-        mProvider.startObservingMediaSinks("source-id-1");
-        mProvider.startObservingMediaSinks("source-id-2");
+        mProvider.startObservingMediaSinks("source-id-1", "origin");
+        mProvider.startObservingMediaSinks("source-id-2", "origin");
         mProvider.stopObservingMediaSinks("source-id-1");
 
         verify(mMediaRouterHelper.getShadowImpl(), never())
@@ -687,7 +686,7 @@ public class CafBaseMediaRouteProviderTest {
         }
 
         @Override
-        public MediaSource getSourceFromId(@NonNull String sourceId) {
+        public MediaSource getSourceFromId(String sourceId) {
             return null;
         }
 

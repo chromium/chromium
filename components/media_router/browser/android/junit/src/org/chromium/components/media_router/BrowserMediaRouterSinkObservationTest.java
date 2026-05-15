@@ -124,13 +124,13 @@ public class BrowserMediaRouterSinkObservationTest extends BrowserMediaRouterTes
     @Feature({"MediaRouter"})
     @CommandLineFlags.Add({BaseSwitches.DISABLE_LOW_END_DEVICE_MODE})
     public void testNotLowRamDevice() {
-        assertTrue(mBrowserMediaRouter.startObservingMediaSinks(SOURCE_ID1));
+        assertTrue(mBrowserMediaRouter.startObservingMediaSinks(SOURCE_ID1, "origin"));
     }
 
     @Test
     @Feature({"MediaRouter"})
     @CommandLineFlags.Add({BaseSwitches.ENABLE_LOW_END_DEVICE_MODE})
     public void testIsLowRamDevice() {
-        assertFalse(mBrowserMediaRouter.startObservingMediaSinks(SOURCE_ID1));
+        assertFalse(mBrowserMediaRouter.startObservingMediaSinks(SOURCE_ID1, "origin"));
     }
 }

@@ -57,6 +57,7 @@ class MediaSinksObserver {
                               const std::vector<url::Origin>& origins);
 
   const std::optional<const MediaSource>& source() const { return source_; }
+  const url::Origin& origin() const { return origin_; }
 
  protected:
   // This function is invoked from |OnSinksUpdated(sinks, origins)|.

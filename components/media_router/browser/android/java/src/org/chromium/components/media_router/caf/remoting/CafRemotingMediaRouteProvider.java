@@ -5,6 +5,7 @@
 package org.chromium.components.media_router.caf.remoting;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
+import static org.chromium.components.media_router.caf.CastUtils.isSameOrigin;
 
 import androidx.mediarouter.media.MediaRouter;
 
@@ -70,27 +71,40 @@ public class CafRemotingMediaRouteProvider extends CafBaseMediaRouteProvider {
             return null;
         }
 
-        if (!mRoutes.containsKey(routeId)) return null;
+        if (!mRoutes.containsKey(routeId)) {
+            return null;
+        }
 
         return sessionController().getFlingingController();
     }
 
     @Override
     protected void updateSessionMediaSourceIfNeeded(
-            @Nullable DiscoveryCallback callback, MediaSource source) {
+            @Nullable DiscoveryCallback callback, MediaSource source, String origin) {
         var controller = sessionController();
 
         // There is no active remote playback media route.
-        if (!hasSession() || controller.getFlingingController() == null) return;
+        if (!hasSession() || controller.getFlingingController() == null) {
+            return;
+        }
 
         // Do not update media source for a detached session.
-        if (!mRoutes.containsKey(assumeNonNull(controller.getRouteCreationInfo()).routeId)) return;
+        if (!mRoutes.containsKey(assumeNonNull(controller.getRouteCreationInfo()).routeId)) {
+            return;
+        }
+
+        // Check if origin matches session owner origin.
+        if (!isSameOrigin(origin, controller.getRouteCreationInfo().origin)) {
+            return;
+        }
 
         // Do not update media source if we are still observing the original media
         // source for remote playback.
         String curSessionSourceId =
                 controller.getRouteCreationInfo().getMediaSource().getSourceId();
-        if (callback != null && callback.containsSourceUrn(curSessionSourceId)) return;
+        if (callback != null && callback.containsSourceUrn(curSessionSourceId)) {
+            return;
+        }
 
         ((RemotingSessionController) controller).updateMediaSource(source);
     }
