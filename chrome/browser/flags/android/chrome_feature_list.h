@@ -230,6 +230,7 @@ BASE_DECLARE_FEATURE(kNtpMvcRefactor);
 BASE_DECLARE_FEATURE(kNtpSimplification);
 BASE_DECLARE_FEATURE(kOmahaMinSdkVersionAndroid);
 BASE_DECLARE_FEATURE(kOnDemandBackgroundTabContextCapture);
+BASE_DECLARE_FEATURE(kOnStartupWindowPolicy);
 BASE_DECLARE_FEATURE(kOptimizeGeolocationHeaderGeneration);
 BASE_DECLARE_FEATURE(kPCCTMinimumHeight);
 BASE_DECLARE_FEATURE(kPageAnnotationsService);

@@ -548,6 +548,7 @@ public abstract class ChromeFeatureList {
             "OmniboxCacheSuggestionResources";
     public static final String ON_DEMAND_BACKGROUND_TAB_CONTEXT_CAPTURE =
             "OnDemandBackgroundTabContextCapture";
+    public static final String ON_STARTUP_WINDOW_POLICY = "OnStartupWindowPolicy";
     public static final String OPEN_DOWNLOAD_IN_FILES_APP_IF_NO_HANDLER_FOUND =
             "OpenDownloadInFilesAppIfNoHandlerFound";
     public static final String PAGE_CONTENT_PROVIDER = "PageContentProvider";
@@ -1096,6 +1097,8 @@ public abstract class ChromeFeatureList {
             newCachedFlag(NTP_MVC_REFACTOR, /* defaultValue= */ false);
     public static final CachedFlag sNtpSimplification =
             newCachedFlag(NTP_SIMPLIFICATION, /* defaultValue= */ true);
+    public static final CachedFlag sOnStartupWindowPolicy =
+            newCachedFlag(ON_STARTUP_WINDOW_POLICY, /* defaultValue= */ false);
     public static final CachedFlag sPCctMinimumHeight = newCachedFlag(PCCT_MINIMUM_HEIGHT, true);
     public static final CachedFlag sPaintPreviewDemo = newCachedFlag(PAINT_PREVIEW_DEMO, false);
     public static final CachedFlag sPersistAcrossReboots =
@@ -1362,6 +1365,7 @@ public abstract class ChromeFeatureList {
                     sNotificationTrampolineNoNewTask,
                     sNtpMvcRefactor,
                     sNtpSimplification,
+                    sOnStartupWindowPolicy,
                     sPCctMinimumHeight,
                     sPaintPreviewDemo,
                     sPersistAcrossReboots,

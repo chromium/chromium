@@ -1325,6 +1325,11 @@ inline constexpr char kSessionRestoreAfterCrashDescription[] =
     "When enabled, Chrome provides a prompt to restore windows and tabs "
     "sequentially and maintains window sizes where supported.";
 
+inline constexpr char kOnStartupWindowPolicyName[] = "On Startup Window Policy";
+inline constexpr char kOnStartupWindowPolicyDescription[] =
+    "Enables updated on-startup window default behavior and settings on "
+    "Android.";
+
 inline constexpr char kSettingsMultiColumnName[] =
     "Use MultiColumn mode in Chrome settings";
 inline constexpr char kSettingsMultiColumnDescription[] =

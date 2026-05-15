@@ -10062,6 +10062,7 @@ from previous Chrome versions.
   <int value="-1335017208" label="KeyboardLockAPI:enabled"/>
   <int value="-1334971444" label="AndroidAppearanceSettings:enabled"/>
   <int value="-1334909143" label="NtpModulesDragAndDrop:disabled"/>
+  <int value="-1334678739" label="OnStartupWindowPolicy:enabled"/>
   <int value="-1334336593" label="SystemKoreanPhysicalTyping:disabled"/>
   <int value="-1334327410" label="ash-enable-touch-view-testing"/>
   <int value="-1334258487" label="ChromeRefresh2023TopChromeFont:disabled"/>
@@ -16500,6 +16501,7 @@ from previous Chrome versions.
   <int value="781152619" label="SupportToolScreenshot:disabled"/>
   <int value="781298961" label="CrosAppsBackgroundEventHandling:enabled"/>
   <int value="781573553" label="UnifiedPasswordManagerAndroid:enabled"/>
+  <int value="781713302" label="OnStartupWindowPolicy:disabled"/>
   <int value="781785788" label="ClipboardSuggestionContentHidden:disabled"/>
   <int value="782167080" label="enable-new-qp-input-view"/>
   <int value="782380882" label="SRIMessageSignatureEnforcement:enabled"/>

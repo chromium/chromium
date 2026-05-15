@@ -7323,6 +7323,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kSessionRestoreAfterCrashDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kSessionRestoreAfterCrash)},
 
+    {"on-startup-window-policy", flag_descriptions::kOnStartupWindowPolicyName,
+     flag_descriptions::kOnStartupWindowPolicyDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kOnStartupWindowPolicy)},
+
     {"settings-multi-column", flag_descriptions::kSettingsMultiColumnName,
      flag_descriptions::kSettingsMultiColumnDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kSettingsMultiColumn)},
