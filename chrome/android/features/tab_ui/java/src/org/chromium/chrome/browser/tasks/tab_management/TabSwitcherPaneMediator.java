@@ -322,13 +322,13 @@ public class TabSwitcherPaneMediator
     }
 
     @Override
-    public @Nullable TabActionListener openTabGridDialog(Tab tab) {
+    public @Nullable TabActionListener onTabGroupClicked(Tab tab) {
         if (!ableToOpenDialog(tab)) return null;
         return mTabGridDialogOpener;
     }
 
     @Override
-    public @Nullable TabActionListener openTabGridDialog(String syncId) {
+    public @Nullable TabActionListener onTabGroupClicked(String syncId) {
         // Intentional no-op.
         return null;
     }

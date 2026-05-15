@@ -333,7 +333,7 @@ public class ArchivedTabsDialogCoordinatorUnitTest {
         // Run the click listener.
         GridCardOnClickListenerProvider provider =
                 mCoordinator.getGridCardOnClickListenerProviderForTesting();
-        TabActionListener listener = provider.openTabGridDialog(TAB_GROUP_ID_STRING);
+        TabActionListener listener = provider.onTabGroupClicked(TAB_GROUP_ID_STRING);
         listener.run(mItemView1, TAB_GROUP_ID_STRING, /* triggeringMotion= */ null);
 
         verify(mTabGroupUiActionHandler).openTabGroup(TAB_GROUP_ID_STRING);

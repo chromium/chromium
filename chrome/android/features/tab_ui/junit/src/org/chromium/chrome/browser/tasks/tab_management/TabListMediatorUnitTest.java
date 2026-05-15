@@ -514,10 +514,10 @@ public class TabListMediatorUnitTest {
         doReturn(mTab2).when(mTabModel).getRepresentativeTabAt(POSITION2);
         doReturn(mOpenGroupActionListener)
                 .when(mGridCardOnClickListenerProvider)
-                .openTabGridDialog(any(Tab.class));
+                .onTabGroupClicked(any(Tab.class));
         doReturn(mOpenGroupActionListener)
                 .when(mGridCardOnClickListenerProvider)
-                .openTabGridDialog(anyString());
+                .onTabGroupClicked(anyString());
         doNothing().when(mActivity).registerComponentCallbacks(mComponentCallbacksCaptor.capture());
         doReturn(mGridLayoutManager).when(mRecyclerView).getLayoutManager();
         doReturn(TabListCoordinator.GRID_LAYOUT_SPAN_COUNT_COMPACT)

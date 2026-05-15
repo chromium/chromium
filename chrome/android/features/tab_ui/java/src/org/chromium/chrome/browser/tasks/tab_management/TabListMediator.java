@@ -227,16 +227,16 @@ class TabListMediator implements TabListNotificationHandler {
     /** An interface to get the onClickListener when clicking on a grid card. */
     interface GridCardOnClickListenerProvider {
         /**
-         * @return {@link TabActionListener} to open Tab Grid dialog. If the given {@link Tab} is
-         *     not able to create group, return null;
+         * Returns the {@link TabActionListener} to handle a tab group card click. If the given
+         * {@link Tab} is not able to create a group, return null.
          */
-        @Nullable TabActionListener openTabGridDialog(Tab tab);
+        @Nullable TabActionListener onTabGroupClicked(Tab tab);
 
         /**
-         * @return {@link TabActionListener} to open Tab Grid dialog. If the given syncId is not
-         *     able to create group, return null;
+         * Returns the {@link TabActionListener} to handle a tab group card click. If the given
+         * syncId is not able to create a group, return null.
          */
-        @Nullable TabActionListener openTabGridDialog(String syncId);
+        @Nullable TabActionListener onTabGroupClicked(String syncId);
 
         /**
          * Run additional actions on tab selection.
@@ -1010,8 +1010,8 @@ class TabListMediator implements TabListNotificationHandler {
      *     tabs.
      * @param selectionDelegateProvider Provider for a {@link SelectionDelegate} that is used for a
      *     selectable list. It's null when selection is not possible.
-     * @param gridCardOnClickListenerProvider Provides the onClickListener for opening dialog when
-     *     click on a grid card.
+     * @param gridCardOnClickListenerProvider Provides click listeners for regular tabs and tab
+     *     group cards.
      * @param dialogHandler A handler to handle requests about updating TabGridDialog.
      * @param priceWelcomeMessageControllerSupplier A supplier of a controller to show
      *     PriceWelcomeMessage.
@@ -2085,7 +2085,7 @@ class TabListMediator implements TabListNotificationHandler {
             if (isTabInTabGroup(tab)
                     && mActionsOnAllRelatedTabs
                     && mGridCardOnClickListenerProvider != null) {
-                return mGridCardOnClickListenerProvider.openTabGridDialog(tab);
+                return mGridCardOnClickListenerProvider.onTabGroupClicked(tab);
             } else {
                 return mTabSelectedListener;
             }
@@ -2141,7 +2141,7 @@ class TabListMediator implements TabListNotificationHandler {
         TabActionListener tabClickListener =
                 isSelectableState
                         ? mSelectableTabOnClickListener
-                        : mGridCardOnClickListenerProvider.openTabGridDialog(
+                        : mGridCardOnClickListenerProvider.onTabGroupClicked(
                                 assumeNonNull(savedTabGroup.syncId));
         TabActionListener tabLongClickListener =
                 isSelectableState ? mSelectableTabOnClickListener : null;
@@ -2163,7 +2163,7 @@ class TabListMediator implements TabListNotificationHandler {
                 || !mActionsOnAllRelatedTabs) {
             tabSelectedListener = mTabSelectedListener;
         } else {
-            tabSelectedListener = mGridCardOnClickListenerProvider.openTabGridDialog(tab);
+            tabSelectedListener = mGridCardOnClickListenerProvider.onTabGroupClicked(tab);
             if (tabSelectedListener == null) {
                 tabSelectedListener = mTabSelectedListener;
             }

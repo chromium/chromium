@@ -230,13 +230,13 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
             new GridCardOnClickListenerProvider() {
                 @Nullable
                 @Override
-                public TabActionListener openTabGridDialog(Tab tab) {
+                public TabActionListener onTabGroupClicked(Tab tab) {
                     return null;
                 }
 
                 @Nullable
                 @Override
-                public TabActionListener openTabGridDialog(String syncId) {
+                public TabActionListener onTabGroupClicked(String syncId) {
                     return new TabActionListener() {
                         @Override
                         public void run(

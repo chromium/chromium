@@ -182,8 +182,8 @@ public class TabListCoordinator implements PriceWelcomeMessageProvider, DestroyO
      * @param actionOnRelatedTabs Whether tab-related actions should be operated on all related
      *     tabs.
      * @param dataSharingTabManager The service used to initiate data sharing.
-     * @param gridCardOnClickListenerProvider Provides the onClickListener for opening dialog when
-     *     click on a grid card.
+     * @param gridCardOnClickListenerProvider Provides click listeners for regular tabs and tab
+     *     group cards.
      * @param dialogHandler A handler to handle requests about updating TabGridDialog.
      * @param initialTabActionState The initial {@link TabActionState} to use for the shown tabs.
      *     Must always be CLOSABLE for TabListMode.STRIP.
