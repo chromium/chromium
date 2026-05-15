@@ -6604,7 +6604,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.WebView.AndroidX.ApiCall" enum="AndroidXWebkitApiCall"
-    expires_after="2026-05-03">
+    expires_after="2027-04-01">
   <owner>ntfschr@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
@@ -6615,6 +6615,9 @@ chromium-metrics-reviews@google.com.
     logged each time an AndroidX API is called through the &quot;boundary
     interface&quot; code path (see //android_webview/support_library/README.md
     for more details).
+
+    Warning: this histogram was expired from 2026-05-03 to 2026-05-15; data may
+    be missing.
   </summary>
 </histogram>
 
@@ -6655,7 +6658,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.WebView.ApiCall" enum="WebViewApiCall"
-    expires_after="2026-04-29">
+    expires_after="2027-04-01">
   <owner>ntfschr@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
@@ -6666,6 +6669,9 @@ chromium-metrics-reviews@google.com.
     each time an API is called.
 
     For historical data (before M99), see &quot;WebView.ApiCall&quot;.
+
+    Warning: this histogram was expired from 2026-04-29 to 2026-05-15; data may
+    be missing.
   </summary>
 </histogram>
 
@@ -6760,7 +6766,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.WebView.ApiCall.Static" enum="WebViewApiCallStatic"
-    expires_after="2026-04-29">
+    expires_after="2027-04-01">
   <owner>ntfschr@chromium.org</owner>
   <owner>woa-performance@google.com</owner>
   <owner>src/android_webview/OWNERS</owner>
@@ -6775,11 +6781,14 @@ chromium-metrics-reviews@google.com.
 
     This metric was expired between Aug 2024 and Jan 2025 and may be missing
     data.
+
+    Warning: this histogram was expired from 2026-04-29 to 2026-05-15; data may
+    be missing.
   </summary>
 </histogram>
 
 <histogram name="Android.WebView.ApiCall.System" enum="WebViewApiCallSystem"
-    expires_after="2026-04-29">
+    expires_after="2027-04-01">
   <owner>ntfschr@chromium.org</owner>
   <owner>woa-performance@google.com</owner>
   <owner>src/android_webview/OWNERS</owner>
@@ -6791,16 +6800,22 @@ chromium-metrics-reviews@google.com.
 
     This metric was expired between Aug 2024 and Jan 2025 and may be missing
     data.
+
+    Warning: this histogram was expired from 2026-04-29 to 2026-05-15; data may
+    be missing.
   </summary>
 </histogram>
 
 <histogram name="Android.WebView.ApiCall.TracingController"
-    enum="WebViewApiCallTracingController" expires_after="2026-04-29">
+    enum="WebViewApiCallTracingController" expires_after="2027-04-01">
   <owner>etiennep@chromium.org</owner>
   <owner>ntfschr@chromium.org</owner>
   <summary>
     Records calls to TracingController WebView APIs through the platform
     (framework) APIs. This is logged each time an API is called.
+
+    Warning: this histogram was expired from 2026-04-29 to 2026-05-15; data may
+    be missing.
   </summary>
 </histogram>
 
