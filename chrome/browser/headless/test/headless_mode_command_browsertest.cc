@@ -16,7 +16,6 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/run_loop.h"
-#include "content/public/common/content_features.h"
 #include "base/strings/string_util.h"
 #include "base/strings/to_string.h"
 #include "base/test/test_timeouts.h"
@@ -24,7 +23,10 @@
 #include "base/threading/platform_thread.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/headless/test/headless_mode_browsertest.h"
+#include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/common/chrome_switches.h"
 #include "components/headless/command_handler/headless_command_handler.h"
 #include "components/headless/command_handler/headless_command_switches.h"
@@ -43,9 +45,29 @@
 
 namespace headless {
 
-class HeadlessModeCommandBrowserTest : public HeadlessModeBrowserTest {
+class HeadlessModeCommandBrowserTest : public HeadlessModeBrowserTest,
+                                       public BrowserCollectionObserver {
  public:
   HeadlessModeCommandBrowserTest() = default;
+
+  void PreRunTestOnMainThread() override {
+    if (auto* collection = GlobalBrowserCollection::GetInstance()) {
+      browser_collection_observation_.Observe(collection);
+    }
+    HeadlessModeBrowserTest::PreRunTestOnMainThread();
+  }
+
+  void TearDownOnMainThread() override {
+    browser_collection_observation_.Reset();
+    HeadlessModeBrowserTest::TearDownOnMainThread();
+  }
+
+  void OnBrowserClosed(BrowserWindowInterface* browser) override {
+    // Unconditionally clear browser_ because Headless mode command tests
+    // shouldn't depend on the default browser. This avoids MSAN use-after-free
+    // if the browser is closed during PreRunTestOnMainThread's message loop.
+    SetBrowser(nullptr);
+  }
 
   void SetUp() override {
     ASSERT_TRUE(embedded_test_server()->Start());
@@ -86,6 +108,8 @@ class HeadlessModeCommandBrowserTest : public HeadlessModeBrowserTest {
   std::unique_ptr<base::RunLoop> run_loop_;
   bool test_complete_ = false;
   std::optional<HeadlessCommandHandler::Result> result_;
+  base::ScopedObservation<GlobalBrowserCollection, BrowserCollectionObserver>
+      browser_collection_observation_{this};
 };
 
 #define HEADLESS_MODE_COMMAND_BROWSER_TEST_WITH_TARGET_URL(                \
@@ -129,16 +153,6 @@ class HeadlessModeDumpDomCommandBrowserTestBase
     : public HeadlessModeCommandBrowserTest {
  public:
   HeadlessModeDumpDomCommandBrowserTestBase() = default;
-
-  void PreRunTestOnMainThread() override {
-#if defined(MEMORY_SANITIZER)
-    if (base::FeatureList::IsEnabled(features::kInitialWebUI)) {
-      GTEST_SKIP() << "Skipping test on MSAN with InitialWebUI enabled. "
-                      "See crbug.com/477426026.";
-    }
-#endif
-    HeadlessModeCommandBrowserTest::PreRunTestOnMainThread();
-  }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     HeadlessModeCommandBrowserTest::SetUpCommandLine(command_line);
@@ -380,17 +394,6 @@ class HeadlessModeScreenshotCommandBrowserTest
   }
 #endif
 
-  void PreRunTestOnMainThread() override {
-#if defined(MEMORY_SANITIZER)
-    if (base::FeatureList::IsEnabled(features::kInitialWebUI)) {
-      GTEST_SKIP() << "Skipping test on MSAN with InitialWebUI enabled. "
-                      "See crbug.com/477426026.";
-    }
-#endif
-
-    HeadlessModeCommandBrowserTestWithTempDir::PreRunTestOnMainThread();
-  }
-
   void SetUpCommandLine(base::CommandLine* command_line) override {
     HeadlessModeCommandBrowserTestWithTempDir::SetUpCommandLine(command_line);
 
@@ -515,16 +518,6 @@ class HeadlessModePrintToPdfCommandBrowserTest
  public:
   HeadlessModePrintToPdfCommandBrowserTest() = default;
 
-  void PreRunTestOnMainThread() override {
-#if defined(MEMORY_SANITIZER)
-    if (base::FeatureList::IsEnabled(features::kInitialWebUI)) {
-      GTEST_SKIP() << "Skipping test on MSAN with InitialWebUI enabled. "
-                      "See crbug.com/477426026.";
-    }
-#endif
-    HeadlessModePrintToPdfCommandBrowserTestBase::PreRunTestOnMainThread();
-  }
-
   std::string GetTargetPage() override { return "/centered_blue_box.html"; }
 };
 
@@ -579,16 +572,6 @@ class HeadlessModeTaggedPrintToPdfCommandBrowserTest
       public ::testing::WithParamInterface<bool> {
  public:
   HeadlessModeTaggedPrintToPdfCommandBrowserTest() = default;
-
-  void PreRunTestOnMainThread() override {
-#if defined(MEMORY_SANITIZER)
-    if (base::FeatureList::IsEnabled(features::kInitialWebUI)) {
-      GTEST_SKIP() << "Skipping test on MSAN with InitialWebUI enabled. "
-                      "See crbug.com/477426026.";
-    }
-#endif
-    HeadlessModePrintToPdfCommandBrowserTestBase::PreRunTestOnMainThread();
-  }
 
   bool generate_tagged_pdf() { return GetParam(); }
 
