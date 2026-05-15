@@ -274,7 +274,7 @@ void ActorLoginCredentialFiller::MaybeReauthAndFillAllEligibleFields(
 
   // TODO(crbug.com/458711310): Avoid re-calling this method after fetching
   // forms if re-authentication occurs before filling.
-  if (client_->IsReauthBeforeFillingRequired(device_authenticator_.get())) {
+  if (IsReauthBeforeFillingRequired()) {
     base::OnceCallback<void(
         std::vector<password_manager::PasswordFormManager*>)>
         fill_all_fields_cb =
@@ -325,6 +325,21 @@ const PasswordForm* ActorLoginCredentialFiller::GetMatchingStoredCredential(
     }
   }
   return matching_stored_credential;
+}
+
+bool ActorLoginCredentialFiller::DoesStoredCredentialBelongToManager(
+    const password_manager::PasswordFormManager* manager,
+    const password_manager::PasswordForm& stored_credential) {
+  return std::ranges::any_of(
+      manager->GetBestMatches().begin(), manager->GetBestMatches().end(),
+      [&stored_credential](const PasswordForm& best_match) {
+        return password_manager::ArePasswordFormUniqueKeysEqual(
+            stored_credential, best_match);
+      });
+}
+
+bool ActorLoginCredentialFiller::IsReauthBeforeFillingRequired() {
+  return client_->IsReauthBeforeFillingRequired(device_authenticator_.get());
 }
 
 void ActorLoginCredentialFiller::ReauthenticateAndFill(
@@ -387,13 +402,7 @@ void ActorLoginCredentialFiller::FillAllEligibleFields(
           attempt_login_start_time_);
     }
 
-    bool stored_credential_belongs_to_manager = std::ranges::any_of(
-        manager->GetBestMatches().begin(), manager->GetBestMatches().end(),
-        [&stored_credential](const PasswordForm& best_match) {
-          return password_manager::ArePasswordFormUniqueKeysEqual(
-              stored_credential, best_match);
-        });
-    if (!stored_credential_belongs_to_manager) {
+    if (!DoesStoredCredentialBelongToManager(manager, stored_credential)) {
       continue;
     }
     if (should_store_permission_) {
