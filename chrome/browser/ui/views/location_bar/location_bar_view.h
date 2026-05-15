@@ -615,6 +615,9 @@ class LocationBarView
   // user to clear all text.
   raw_ptr<views::ImageButton> clear_all_button_ = nullptr;
 
+  // A label to show the AI Mode hint text.
+  raw_ptr<views::Label> ai_mode_hint_label_ = nullptr;
+
   // Animation to change whole location bar background color on hover.
   gfx::SlideAnimation hover_animation_{this};
 
