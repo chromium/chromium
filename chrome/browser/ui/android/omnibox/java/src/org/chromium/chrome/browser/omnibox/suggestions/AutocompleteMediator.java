@@ -1443,8 +1443,7 @@ class AutocompleteMediator
 
             if (OmniboxFeatures.sShowModelPicker.getValue()) {
                 @AutocompleteRequestType int requestType = mAutocompleteInput.getRequestType();
-                if (!suggestion.isWhatYouTyped()
-                        || ToolModeUtils.isConventionalRequest(requestType)) {
+                if (ToolModeUtils.isConventionalRequest(requestType)) {
                     onUrlReady.onResult(url);
                 } else {
                     assert ToolModeUtils.isAimRequest(requestType);
