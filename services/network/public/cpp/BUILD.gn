@@ -663,6 +663,8 @@ component("cpp_base") {
     "data_element.h",
     "http_request_headers_mojom_traits.cc",
     "http_request_headers_mojom_traits.h",
+    "http_request_headers_update_params.cc",
+    "http_request_headers_update_params.h",
     "isolation_info_mojom_traits.cc",
     "isolation_info_mojom_traits.h",
     "load_timing_info_mojom_traits.cc",

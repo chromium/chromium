@@ -851,7 +851,7 @@ void PrefetchContainer::OnEligibilityCheckComplete(
 
 void PrefetchContainer::UpdateResourceRequest(
     const net::RedirectInfo& redirect_info,
-    const PrefetchUpdateHeadersParams& update_headers_params) {
+    const network::HttpRequestHeadersUpdateParams& headers_update_params) {
   CHECK(resource_request_);
 
   // TODO(jbroman): We have several places that invoke
@@ -860,16 +860,16 @@ void PrefetchContainer::UpdateResourceRequest(
   bool should_clear_upload = false;
   net::RedirectUtil::UpdateHttpRequest(
       resource_request_->url, resource_request_->method, redirect_info,
-      update_headers_params.removed_headers,
-      update_headers_params.modified_headers, &resource_request_->headers,
+      headers_update_params.removed_headers,
+      headers_update_params.modified_headers, &resource_request_->headers,
       &should_clear_upload);
   CHECK(!should_clear_upload);
 
-  for (const std::string& name : update_headers_params.removed_headers) {
+  for (const std::string& name : headers_update_params.removed_headers) {
     resource_request_->cors_exempt_headers.RemoveHeader(name);
   }
   resource_request_->cors_exempt_headers.MergeFrom(
-      update_headers_params.modified_cors_exempt_headers);
+      headers_update_params.modified_cors_exempt_headers);
 
   resource_request_->UpdateOnRedirect(redirect_info);
   UpdateVariationsHeaderForPrefetch(*resource_request_, request());
@@ -1352,9 +1352,9 @@ void PrefetchContainer::SimulatePrefetchRedirectedForTest(  // IN-TEST
 
   OnEligibilityCheckComplete(eligibility);
 
-  auto update_headers_params =
+  auto headers_update_params =
       PrepareRedirectHeadersForPrefetch(redirect_info.new_url, request());
-  UpdateResourceRequest(redirect_info, std::move(update_headers_params));
+  UpdateResourceRequest(redirect_info, std::move(headers_update_params));
 }
 
 void PrefetchContainer::SimulatePrefetchCompletedForTest() {

@@ -8,7 +8,6 @@
 #include <optional>
 
 #include "content/common/content_export.h"
-#include "content/public/browser/prefetch_update_headers_params.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/http/http_request_headers.h"

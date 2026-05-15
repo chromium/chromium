@@ -330,7 +330,7 @@ void MakeServableStreamingURLLoaderWithRedirectForTest(
   CHECK(weak_streaming_loader);
   weak_streaming_loader->HandleRedirect(PrefetchRedirectStatus::kFollow,
                                         redirect_info, std::move(redirect_head),
-                                        /*update_headers_params=*/{});
+                                        /*headers_update_params=*/{});
 
   // GetResponseReaderForCurrentPrefetch() now points to a new ResponseReader
   // after `SimulatePrefetchRedirectedForTest()` above.
@@ -392,7 +392,7 @@ void MakeServableStreamingURLLoadersWithNetworkTransitionRedirectForTest(
   CHECK(weak_first_streaming_loader);
   weak_first_streaming_loader->HandleRedirect(
       PrefetchRedirectStatus::kSwitchNetworkContext, redirect_info,
-      std::move(redirect_head), /*update_headers_params=*/{});
+      std::move(redirect_head), /*headers_update_params=*/{});
 
   base::RunLoop on_response_received_loop;
   TestPrefetchContainerObserver observer(*prefetch_container);

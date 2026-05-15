@@ -3840,8 +3840,7 @@ fuzzer_test("net_data_url_fuzzer") {
   ]
   dict = "data/fuzzer_dictionaries/net_data_url_fuzzer.dict"
 
-  # IsTokenChar() and ToLowerASCII() are surprisingly slow in instrumented
-  # builds.
+  # IsTokenChar() and ToLowerASCII() are surprisingly slow in instrumented builds.
   libfuzzer_options = [ "max_len=100000" ]
 }
 

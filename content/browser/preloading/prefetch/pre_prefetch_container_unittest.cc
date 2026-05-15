@@ -96,7 +96,8 @@ TEST_F(PrePrefetchContainerTest, StartPrePrefetch) {
           [](PrePrefetchContainerTest* test_fixture, const GURL& url,
              mojo::PendingRemote<network::mojom::URLLoaderFactory> factory) {
             auto prefetch_request = test_fixture->CreatePrefetchRequest(url);
-            PrefetchUpdateHeadersParams ui_thread_pre_calculated_headers;
+            network::HttpRequestHeadersUpdateParams
+                ui_thread_pre_calculated_headers;
             return PrePrefetchContainer::CreateAndStartForTesting(
                 std::move(prefetch_request), std::move(factory),
                 ui_thread_pre_calculated_headers,
@@ -117,8 +118,8 @@ TEST_F(PrePrefetchContainerTest, StartPrePrefetch) {
 }
 
 // Tests that `PrePrefetchContainer` with `ui_thread_pre_calculated_headers`
-// (by `PrefetchUpdateHeadersParams`) sends a network request with those
-// specified header params.
+// (by `network::HttpRequestHeadersUpdateParams`) sends a network request with
+// those specified header params.
 TEST_F(PrePrefetchContainerTest,
        StartPrePrefetchWithUIThreadPreCalculatedHeaders) {
   const GURL prefetch_url("https://example.com/prefetch");
@@ -138,7 +139,7 @@ TEST_F(PrePrefetchContainerTest,
           [](PrePrefetchContainerTest* test_fixture, const GURL& url,
              mojo::PendingRemote<network::mojom::URLLoaderFactory> factory) {
             auto prefetch_request = test_fixture->CreatePrefetchRequest(url);
-            PrefetchUpdateHeadersParams ui_thread_base_headers;
+            network::HttpRequestHeadersUpdateParams ui_thread_base_headers;
             ui_thread_base_headers.modified_headers.SetHeader("X-Test-Header",
                                                               "Value1");
             ui_thread_base_headers.modified_cors_exempt_headers.SetHeader(
@@ -178,7 +179,7 @@ TEST_F(PrePrefetchContainerTest,
   auto callback =
       base::BindLambdaForTesting([](const network::ResourceRequest& request) {
         EXPECT_TRUE(!BrowserThread::CurrentlyOn(BrowserThread::UI));
-        PrefetchUpdateHeadersParams params;
+        network::HttpRequestHeadersUpdateParams params;
         params.modified_headers.SetHeader("X-Test-Header", "Value1");
         params.modified_cors_exempt_headers.SetHeader(
             "X-Test-Cors-Exempt-Header", "Value2");
@@ -202,7 +203,8 @@ TEST_F(PrePrefetchContainerTest,
              mojo::PendingRemote<network::mojom::URLLoaderFactory> factory,
              PrePrefetchUpdateHeadersCallback callback) {
             auto prefetch_request = test_fixture->CreatePrefetchRequest(url);
-            PrefetchUpdateHeadersParams ui_thread_pre_calculated_headers;
+            network::HttpRequestHeadersUpdateParams
+                ui_thread_pre_calculated_headers;
 
             std::vector<PrePrefetchUpdateHeadersCallback> callbacks;
             callbacks.push_back(std::move(callback));

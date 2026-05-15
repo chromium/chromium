@@ -345,8 +345,9 @@ class CONTENT_EXPORT PrefetchContainer
   void AddRedirectHop(const GURL& url);
 
   // Performs the actual modification to `resource_request_` upon redirect.
-  void UpdateResourceRequest(const net::RedirectInfo& redirect_info,
-                             const PrefetchUpdateHeadersParams& params);
+  void UpdateResourceRequest(
+      const net::RedirectInfo& redirect_info,
+      const network::HttpRequestHeadersUpdateParams& params);
 
   // Whether this prefetch is a decoy. Decoy prefetches will not store the
   // response, and not serve any prefetched resources.

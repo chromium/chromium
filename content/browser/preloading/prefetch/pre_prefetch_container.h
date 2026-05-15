@@ -45,13 +45,15 @@ class CONTENT_EXPORT PrePrefetchContainer final {
       base::PassKey<PrePrefetchServiceImpl>,
       std::unique_ptr<const PrefetchRequest> prefetch_request,
       mojo::PendingRemote<network::mojom::URLLoaderFactory> url_loader_factory,
-      const PrefetchUpdateHeadersParams& ui_thread_pre_calculated_headers,
+      const network::HttpRequestHeadersUpdateParams&
+          ui_thread_pre_calculated_headers,
       const std::vector<PrePrefetchUpdateHeadersCallback>&
           non_ui_thread_update_headers_callbacks);
   static std::unique_ptr<PrePrefetchContainer> CreateAndStartForTesting(
       std::unique_ptr<const PrefetchRequest> prefetch_request,
       mojo::PendingRemote<network::mojom::URLLoaderFactory> url_loader_factory,
-      const PrefetchUpdateHeadersParams& ui_thread_pre_calculated_headers,
+      const network::HttpRequestHeadersUpdateParams&
+          ui_thread_pre_calculated_headers,
       const std::vector<PrePrefetchUpdateHeadersCallback>&
           non_ui_thread_update_headers_callbacks);
 
@@ -76,13 +78,15 @@ class CONTENT_EXPORT PrePrefetchContainer final {
   static std::unique_ptr<PrePrefetchContainer> CreateAndStartInternal(
       std::unique_ptr<const PrefetchRequest> prefetch_request,
       mojo::PendingRemote<network::mojom::URLLoaderFactory> url_loader_factory,
-      const PrefetchUpdateHeadersParams& ui_thread_pre_calculated_headers,
+      const network::HttpRequestHeadersUpdateParams&
+          ui_thread_pre_calculated_headers,
       const std::vector<PrePrefetchUpdateHeadersCallback>&
           non_ui_thread_update_headers_callbacks);
 
   void Start(
       mojo::PendingRemote<network::mojom::URLLoaderFactory> url_loader_factory,
-      const PrefetchUpdateHeadersParams& ui_thread_pre_calculated_headers,
+      const network::HttpRequestHeadersUpdateParams&
+          ui_thread_pre_calculated_headers,
       const std::vector<PrePrefetchUpdateHeadersCallback>&
           non_ui_thread_update_headers_callbacks);
 

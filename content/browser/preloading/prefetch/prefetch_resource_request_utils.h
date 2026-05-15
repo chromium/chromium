@@ -11,9 +11,11 @@
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/resource_request.h"
 
-namespace content {
+namespace network {
+struct HttpRequestHeadersUpdateParams;
+}  // namespace network
 
-struct PrefetchUpdateHeadersParams;
+namespace content {
 
 // Avoid using `inline constexpr` here in order to place the definition to
 // `.cc` file to get `tools/traffic_annotation/scripts/auditor/auditor.py` to
@@ -38,33 +40,34 @@ extern const net::NetworkTrafficAnnotationTag
 // for `WebContentsDelegate::ShouldOverrideUserAgentForPreloading()` used for
 // the WebContents `User-Agent` override.
 
-// Returns a `PrefetchUpdateHeadersParams` that contains the headers to be added
-// to the initial prefetch `ResourceRequest`.
+// Returns a `network::HttpRequestHeadersUpdateParams` that contains the headers
+// to be added to the initial prefetch `ResourceRequest`.
 
 // Header constructions are split into two phases, due to the different nature
 // of the dependencies to the UI thread, and in order to apply Phase 1 after
 // receiving actual `PrefetchRequest`s to make more headers reflect actual
 // `PrefetchRequest`s.
-// The two `PrefetchUpdateHeadersParams` must be applied in order.
+// The two `network::HttpRequestHeadersUpdateParams` must be applied in order.
 
 // Phase 1:
 // - [1] and part of [2].
 // - Can be executed on any thread.
-PrefetchUpdateHeadersParams PrepareInitialHeadersForPrefetchPhase1(
+network::HttpRequestHeadersUpdateParams PrepareInitialHeadersForPrefetchPhase1(
     const GURL& request_url,
     const PrefetchRequest& prefetch_request);
 // Phase 2:
 // - [2], [3] and [4].
 // - Must be executed only on the UI thread.
-PrefetchUpdateHeadersParams PrepareInitialHeadersForPrefetchPhase2(
+network::HttpRequestHeadersUpdateParams PrepareInitialHeadersForPrefetchPhase2(
     const GURL& request_url,
     const PrefetchRequest& prefetch_request,
     bool is_first_party_context_for_variations_header);
 
-// Returns `PrefetchUpdateHeadersParams` that indicates the header modification
-// upon redirect, to be passed to `PrefetchContainer::UpdateResourceRequest()`
-// and `URLLoader::FollowRedirect()`.
-PrefetchUpdateHeadersParams PrepareRedirectHeadersForPrefetch(
+// Returns `network::HttpRequestHeadersUpdateParams` that indicates the header
+// modification upon redirect, to be passed to
+// `PrefetchContainer::UpdateResourceRequest()` and
+// `URLLoader::FollowRedirect()`.
+network::HttpRequestHeadersUpdateParams PrepareRedirectHeadersForPrefetch(
     const GURL& request_url,
     const PrefetchRequest& prefetch_request);
 
@@ -91,7 +94,8 @@ MakeInitialResourceRequestForPrefetch(const PrefetchRequest& prefetch_request,
 CONTENT_EXPORT std::unique_ptr<network::ResourceRequest>
 MakeInitialResourceRequestForPrePrefetch(
     const PrefetchRequest& prefetch_request,
-    const PrefetchUpdateHeadersParams& ui_thread_pre_calculated_headers);
+    const network::HttpRequestHeadersUpdateParams&
+        ui_thread_pre_calculated_headers);
 
 }  // namespace content
 

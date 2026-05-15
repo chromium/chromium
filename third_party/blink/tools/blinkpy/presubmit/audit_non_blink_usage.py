@@ -1541,6 +1541,15 @@ _CONFIG = [
     },
     {
         'paths': [
+            'third_party/blink/public/common/loader/',
+            'third_party/blink/common/loader/',
+        ],
+        'allowed': [
+            'network::HttpRequestHeadersUpdateParams',
+        ],
+    },
+    {
+        'paths': [
             'third_party/blink/public/platform/platform.h',
         ],
         'allowed': [

@@ -149,20 +149,20 @@ static PrefService* g_pref_service_for_testing = nullptr;
 // `AwProxyingURLLoaderFactory` (by
 // `ContentBrowserClient::WillCreateURLLoaderFactory`) normally on non UI
 // thread.
-content::PrefetchUpdateHeadersParams GetAwPrefetchHeadersOnNonUIThread(
+network::HttpRequestHeadersUpdateParams GetAwPrefetchHeadersOnNonUIThread(
     const network::ResourceRequest& request) {
-  content::PrefetchUpdateHeadersParams headers;
+  network::HttpRequestHeadersUpdateParams headers_update_params;
   // We can safely ignore any processing handled in
   // `shouldInterceptRequest`, because prefetch intentionally bypasses it.
 
   AwProxyingURLLoaderFactory::SetRequestedWithHeader(
-      request, headers.modified_cors_exempt_headers);
+      request, headers_update_params.modified_cors_exempt_headers);
 
   // TODO(crbug.com/452389538): Apply custom headers configured by the
   // application via the AndroidX Profile.setCustomHeaders() API
   // (AwOriginMatchedHeader).
 
-  return headers;
+  return headers_update_params;
 }
 
 std::unique_ptr<content::PrePrefetchService> CreatePrePrefetchService(

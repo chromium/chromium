@@ -84,7 +84,7 @@ CreateURLLoaderFactoryOnUI(BrowserContext* browser_context) {
   return pending_factory;
 }
 
-PrefetchUpdateHeadersParams PreCalculatePrePrefetchHeadersOnUI(
+network::HttpRequestHeadersUpdateParams PreCalculatePrePrefetchHeadersOnUI(
     BrowserContext* browser_context,
     const PrePrefetchPreCalculatedHeadersKey& key) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -142,7 +142,8 @@ class PrePrefetchServiceCore {
   PrePrefetchServiceCore(
       base::WeakPtr<BrowserContext> browser_context,
       mojo::PendingRemote<network::mojom::URLLoaderFactory> pending_factory,
-      std::map<PrePrefetchPreCalculatedHeadersKey, PrefetchUpdateHeadersParams>
+      std::map<PrePrefetchPreCalculatedHeadersKey,
+               network::HttpRequestHeadersUpdateParams>
           ui_thread_pre_calculated_headers_map,
       std::vector<PrePrefetchUpdateHeadersCallback>
           non_ui_thread_update_headers_callbacks)
@@ -183,8 +184,8 @@ class PrePrefetchServiceCore {
       return;
     }
 
-    const PrefetchUpdateHeadersParams* ui_thread_pre_calculated_headers =
-        nullptr;
+    const network::HttpRequestHeadersUpdateParams*
+        ui_thread_pre_calculated_headers = nullptr;
     PrePrefetchPreCalculatedHeadersKey key;
     key.origin = url::Origin::Create(prefetch_request->key().url());
     key.javascript_enabled = prefetch_request->is_javascript_enabled();
@@ -281,7 +282,7 @@ class PrePrefetchServiceCore {
         base::BindOnce(
             [](base::WeakPtr<BrowserContext> browser_context,
                PrePrefetchPreCalculatedHeadersKey key)
-                -> std::optional<PrefetchUpdateHeadersParams> {
+                -> std::optional<network::HttpRequestHeadersUpdateParams> {
               DCHECK_CURRENTLY_ON(BrowserThread::UI);
               return browser_context ? std::make_optional(
                                            PreCalculatePrePrefetchHeadersOnUI(
@@ -295,7 +296,7 @@ class PrePrefetchServiceCore {
 
   void UpdatePreCalculatedHeaders(
       PrePrefetchPreCalculatedHeadersKey key,
-      std::optional<PrefetchUpdateHeadersParams> params) {
+      std::optional<network::HttpRequestHeadersUpdateParams> params) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     CHECK(pending_pre_calculate_headers_keys_.contains(key));
     pending_pre_calculate_headers_keys_.erase(key);
@@ -313,7 +314,8 @@ class PrePrefetchServiceCore {
   // which is utilized for saving a thread hop to the UI thread if the upcoming
   // PrePrefetch hits this.
   // TODO(crbug.com/452389538): Consider how to refresh these.
-  std::map<PrePrefetchPreCalculatedHeadersKey, PrefetchUpdateHeadersParams>
+  std::map<PrePrefetchPreCalculatedHeadersKey,
+           network::HttpRequestHeadersUpdateParams>
       ui_thread_pre_calculated_headers_map_;
 
   // Tracks in-flight header pre-calculation requests to avoid posting duplicate
@@ -367,7 +369,8 @@ PrePrefetchServiceImpl::PrePrefetchServiceImpl(
   // Pre-calculate headers based on the hints. If we can utilize this upon
   // PrePrefetch happening on the UI thread, we can save a thread hop to the UI
   // thread.
-  std::map<PrePrefetchPreCalculatedHeadersKey, PrefetchUpdateHeadersParams>
+  std::map<PrePrefetchPreCalculatedHeadersKey,
+           network::HttpRequestHeadersUpdateParams>
       ui_thread_pre_calculated_headers_map;
   if (initial_origin_hint.has_value() &&
       initial_javascript_enabled_hint.has_value() &&

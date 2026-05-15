@@ -24,6 +24,7 @@
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/common/content_features.h"
 #include "services/network/public/cpp/client_hints.h"
+#include "services/network/public/cpp/http_request_headers_update_params.h"
 #include "third_party/blink/public/common/client_hints/client_hints.h"
 #include "third_party/blink/public/common/navigation/preloading_headers.h"
 #include "url/origin.h"
@@ -387,10 +388,10 @@ void MaybeApplyOverrideForDevtoolsUserAgentHeader(
   }
 }
 
-PrefetchUpdateHeadersParams PrepareInitialHeadersForPrefetchPhase1(
+network::HttpRequestHeadersUpdateParams PrepareInitialHeadersForPrefetchPhase1(
     const GURL& request_url,
     const PrefetchRequest& prefetch_request) {
-  PrefetchUpdateHeadersParams params;
+  network::HttpRequestHeadersUpdateParams params;
 
   url::Origin request_url_origin = url::Origin::Create(request_url);
 
@@ -423,13 +424,13 @@ PrefetchUpdateHeadersParams PrepareInitialHeadersForPrefetchPhase1(
   return params;
 }
 
-PrefetchUpdateHeadersParams PrepareInitialHeadersForPrefetchPhase2(
+network::HttpRequestHeadersUpdateParams PrepareInitialHeadersForPrefetchPhase2(
     const GURL& request_url,
     const PrefetchRequest& prefetch_request,
     bool is_first_party_context_for_variations_header) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  PrefetchUpdateHeadersParams params;
+  network::HttpRequestHeadersUpdateParams params;
 
   url::Origin request_url_origin = url::Origin::Create(request_url);
 
@@ -490,7 +491,7 @@ PrefetchUpdateHeadersParams PrepareInitialHeadersForPrefetchPhase2(
   return params;
 }
 
-PrefetchUpdateHeadersParams PrepareRedirectHeadersForPrefetch(
+network::HttpRequestHeadersUpdateParams PrepareRedirectHeadersForPrefetch(
     const GURL& request_url,
     const PrefetchRequest& prefetch_request) {
   // There are sometimes other headers that are modified during navigation
@@ -498,20 +499,20 @@ PrefetchUpdateHeadersParams PrepareRedirectHeadersForPrefetch(
   // some which are added by throttles). These aren't yet supported for
   // prefetch, including browsing topics.
 
-  PrefetchUpdateHeadersParams update_headers_params;
+  network::HttpRequestHeadersUpdateParams headers_update_params;
 
   url::Origin request_url_origin = url::Origin::Create(request_url);
 
   // ------------------------------------------------------------------------
   // [2] `Sec-Purpose`:
-  AddSecPurposeHeader(update_headers_params.modified_headers,
+  AddSecPurposeHeader(headers_update_params.modified_headers,
                       request_url_origin, prefetch_request);
 
   // ------------------------------------------------------------------------
   // [2] `Sec-Speculation-Tags`:
-  update_headers_params.removed_headers.push_back(
+  headers_update_params.removed_headers.push_back(
       blink::kSecSpeculationTagsHeaderName);
-  AddSpeculationTagsHeader(update_headers_params.modified_headers,
+  AddSpeculationTagsHeader(headers_update_params.modified_headers,
                            request_url_origin, prefetch_request);
 
   // ------------------------------------------------------------------------
@@ -523,13 +524,13 @@ PrefetchUpdateHeadersParams PrepareRedirectHeadersForPrefetch(
     GetContentClient()->browser()->ModifyRequestHeadersForPrefetch(
         request_url, removed_headers, modified_headers,
         modified_cors_exempt_headers);
-    update_headers_params.removed_headers.reserve(
-        update_headers_params.removed_headers.size() + removed_headers.size());
-    update_headers_params.removed_headers.insert(
-        update_headers_params.removed_headers.end(), removed_headers.begin(),
+    headers_update_params.removed_headers.reserve(
+        headers_update_params.removed_headers.size() + removed_headers.size());
+    headers_update_params.removed_headers.insert(
+        headers_update_params.removed_headers.end(), removed_headers.begin(),
         removed_headers.end());
-    update_headers_params.modified_headers.MergeFrom(modified_headers);
-    update_headers_params.modified_cors_exempt_headers.MergeFrom(
+    headers_update_params.modified_headers.MergeFrom(modified_headers);
+    headers_update_params.modified_cors_exempt_headers.MergeFrom(
         modified_cors_exempt_headers);
   }
 
@@ -546,12 +547,12 @@ PrefetchUpdateHeadersParams PrepareRedirectHeadersForPrefetch(
   // hints that are appropriate for the redirect.
   if (base::FeatureList::IsEnabled(features::kPrefetchClientHints)) {
     const auto& client_hints = network::GetClientHintToNameMap();
-    update_headers_params.removed_headers.reserve(
-        update_headers_params.removed_headers.size() + client_hints.size());
+    headers_update_params.removed_headers.reserve(
+        headers_update_params.removed_headers.size() + client_hints.size());
     for (const auto& [_, header] : client_hints) {
-      update_headers_params.removed_headers.push_back(header);
+      headers_update_params.removed_headers.push_back(header);
     }
-    AddClientHintsHeaders(update_headers_params.modified_headers,
+    AddClientHintsHeaders(headers_update_params.modified_headers,
                           request_url_origin, prefetch_request);
   }
 
@@ -561,9 +562,9 @@ PrefetchUpdateHeadersParams PrepareRedirectHeadersForPrefetch(
   // TODO(crbug.com/422193319): Reconsider the appropriate place to set DevTools
   // override of non-UA Client Hints.
   MaybeApplyOverrideForDevtoolsUserAgentHeader(
-      update_headers_params.modified_headers, prefetch_request);
+      headers_update_params.modified_headers, prefetch_request);
 
-  return update_headers_params;
+  return headers_update_params;
 }
 
 mojo::PendingRemote<network::mojom::DevToolsObserver>
@@ -715,11 +716,11 @@ std::unique_ptr<network::ResourceRequest> MakeInitialResourceRequestForPrefetch(
   auto resource_request = MakeInitialResourceRequestWithoutHeadersForPrefetch(
       prefetch_request, is_decoy);
 
-  PrefetchUpdateHeadersParams headers_params1 =
+  network::HttpRequestHeadersUpdateParams headers_params1 =
       PrepareInitialHeadersForPrefetchPhase1(resource_request->url,
                                              prefetch_request);
 
-  PrefetchUpdateHeadersParams headers_params2 =
+  network::HttpRequestHeadersUpdateParams headers_params2 =
       PrepareInitialHeadersForPrefetchPhase2(
           resource_request->url, prefetch_request,
           IsFirstPartyContext(*resource_request));
@@ -740,11 +741,12 @@ std::unique_ptr<network::ResourceRequest> MakeInitialResourceRequestForPrefetch(
 std::unique_ptr<network::ResourceRequest>
 MakeInitialResourceRequestForPrePrefetch(
     const PrefetchRequest& prefetch_request,
-    const PrefetchUpdateHeadersParams& ui_thread_pre_calculated_headers) {
+    const network::HttpRequestHeadersUpdateParams&
+        ui_thread_pre_calculated_headers) {
   auto resource_request = MakeInitialResourceRequestWithoutHeadersForPrefetch(
       prefetch_request, /*is_decoy=*/false);
 
-  PrefetchUpdateHeadersParams omt_calculated_headers =
+  network::HttpRequestHeadersUpdateParams omt_calculated_headers =
       PrepareInitialHeadersForPrefetchPhase1(prefetch_request.key().url(),
                                              prefetch_request);
 

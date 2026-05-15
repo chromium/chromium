@@ -11,6 +11,7 @@
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "services/network/public/cpp/http_request_headers_update_params.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom-forward.h"
 #include "third_party/perfetto/include/perfetto/tracing/track_event_args.h"
@@ -79,14 +80,15 @@ class CONTENT_EXPORT PrefetchStreamingURLLoader
   // should only be called after `on_prefetch_redirect_callback_` is called. The
   // value of `redirect_status` should be:
   // - `kFollow`, if the redirect should be followed by `this`.
-  //   `update_headers_params` must be provided.
+  //   `headers_update_params` must be provided.
   // - `kSwitchNetworkContext`, if the redirect will be followed by a different
   //   `PrefetchStreamingURLLoader` due to a change in network context.
   // - `kFail`, if the redirect should not be followed by `this`.
-  void HandleRedirect(PrefetchRedirectStatus redirect_status,
-                      const net::RedirectInfo& redirect_info,
-                      network::mojom::URLResponseHeadPtr redirect_head,
-                      PrefetchUpdateHeadersParams update_headers_params);
+  void HandleRedirect(
+      PrefetchRedirectStatus redirect_status,
+      const net::RedirectInfo& redirect_info,
+      network::mojom::URLResponseHeadPtr redirect_head,
+      network::HttpRequestHeadersUpdateParams headers_update_params);
 
   // Called from PrefetchResponseReader.
   void SetPriority(net::RequestPriority priority, int32_t intra_priority_value);
