@@ -353,6 +353,7 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="Mapped-File Already Exists"/>
   <int value="5" label="No Spare File"/>
   <int value="6" label="Could Not Create Upload Directory"/>
+  <int value="7" label="Persistent Histograms Disabled"/>
 </enum>
 
 <enum name="PerUserDaemonStoreFail">

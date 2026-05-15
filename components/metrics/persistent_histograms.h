@@ -14,9 +14,10 @@
 
 // Feature definition for enabling histogram persistence. Note that this feature
 // (along with its param `kPersistentHistogramsStorage`, declared below) is not
-// used for Chrome on Linux, ChromeOS, Windows, macOS, and Android. Instead,
-// histograms are persisted to a memory-mapped file, and set up before field
-// trial initialization (see //chrome/app/chrome_main_delegate.cc).
+// used for Chrome on any platform (Linux, ChromeOS, Windows, macOS, Android,
+// and Fuchsia). Instead, histograms are persisted to a memory-mapped file, and
+// set up before field trial initialization (see
+// //chrome/app/chrome_main_delegate.cc).
 BASE_DECLARE_FEATURE(kPersistentHistogramsFeature);
 
 // If `kPersistentHistogramsStorage` is set to this, histograms will be
@@ -44,7 +45,7 @@ extern const char kBrowserMetricsName[];
 // future session's metrics instead of independently.
 extern const char kDeferredBrowserMetricsName[];
 
-// Get the path under the given base directory that wil be used to create a
+// Get the path under the given base directory that will be used to create a
 // "spare" file if a mapped file is being used for the allocator.
 base::FilePath GetPersistentHistogramsSpareFilePath(
     const base::FilePath& metrics_dir);

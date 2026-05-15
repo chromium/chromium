@@ -92,15 +92,18 @@ base::FilePath GetSpareFilePath(const base::FilePath& metrics_dir) {
 // LINT.ThenChange(/chrome/android/java/src/org/chromium/chrome/browser/backup/ChromeBackupAgentImpl.java)
 
 // Logged to UMA - keep in sync with enums.xml.
-enum InitResult {
+enum class InitResult {
   kLocalMemorySuccess,
+  // TODO(crbug.com/512797313): This enum is not believed to be used. See if it
+  // can be obsoleted.
   kLocalMemoryFailed,
   kMappedFileSuccess,
   kMappedFileFailed,
   kMappedFileExists,
   kNoSpareFile,
   kNoUploadDir,
-  kMaxValue = kNoUploadDir
+  kPersistentHistogramsDisabled,
+  kMaxValue = kPersistentHistogramsDisabled
 };
 
 // Initializes persistent histograms with a memory-mapped file.
@@ -120,10 +123,10 @@ InitResult InitWithMappedFile(const base::FilePath& metrics_dir,
   InitResult result;
   if (!base::PathExists(upload_dir)) {
     // Handle failure to create the directory.
-    result = kNoUploadDir;
+    result = InitResult::kNoUploadDir;
   } else if (base::PathExists(active_file)) {
     // "active" filename is supposed to be unique so this shouldn't happen.
-    result = kMappedFileExists;
+    result = InitResult::kMappedFileExists;
   } else {
     // Disallow multiple writers (Windows only). Needed to ensure multiple
     // instances of Chrome aren't writing to the same file, which could happen
@@ -135,59 +138,64 @@ InitResult InitWithMappedFile(const base::FilePath& metrics_dir,
     base::ReplaceFile(spare_file, active_file, nullptr);
     // Create global allocator using the |active_file|.
     if (kSpareFileRequired && !base::PathExists(active_file)) {
-      result = kNoSpareFile;
+      result = InitResult::kNoSpareFile;
     } else if (base::GlobalHistogramAllocator::CreateWithFile(
                    active_file, kAllocSize, kAllocId, kBrowserMetricsName,
                    exclusive_write)) {
-      result = kMappedFileSuccess;
+      result = InitResult::kMappedFileSuccess;
     } else {
-      result = kMappedFileFailed;
+      result = InitResult::kMappedFileFailed;
     }
   }
 
   return result;
 }
 
-enum PersistentHistogramsMode {
+enum class PersistentHistogramsMode {
   kNotEnabled,
   kMappedFile,
   kLocalMemory,
 };
 
 // Implementation of InstantiatePersistentHistograms() that does the work after
-// the desired |mode| has been determined.
+// the desired `mode` has been determined.
 void InstantiatePersistentHistogramsImpl(const base::FilePath& metrics_dir,
                                          PersistentHistogramsMode mode) {
-  // Create a directory for storing completed metrics files. Files in this
-  // directory must have embedded system profiles. If the directory can't be
-  // created, the file will just be deleted below.
-  base::FilePath upload_dir = metrics_dir.AppendASCII(kBrowserMetricsName);
-  // TODO(crbug.com/40751882): Only create the dir in kMappedFile mode.
-  base::CreateDirectory(upload_dir);
-
   InitResult result;
 
   // Create a global histogram allocator using the desired storage type.
   switch (mode) {
-    case kMappedFile:
+    case PersistentHistogramsMode::kMappedFile: {
+      // Create a directory for storing completed metrics files. Files in this
+      // directory must have embedded system profiles.
+      base::FilePath upload_dir = metrics_dir.AppendASCII(kBrowserMetricsName);
+      base::CreateDirectory(upload_dir);
+
       result = InitWithMappedFile(metrics_dir, upload_dir);
       break;
-    case kLocalMemory:
+    }
+    case PersistentHistogramsMode::kLocalMemory:
       // Use local memory for storage even though it will not persist across
       // an unclean shutdown. This sets the result but the actual creation is
       // done below.
-      result = kLocalMemorySuccess;
+      result = InitResult::kLocalMemorySuccess;
       break;
-    case kNotEnabled:
-      // Persistent metric storage is disabled. Must return here.
-      // TODO(crbug.com/40751882): Log the histogram below in this case too.
-      return;
+    case PersistentHistogramsMode::kNotEnabled:
+      // Persistent metric storage is disabled.
+      result = InitResult::kPersistentHistogramsDisabled;
+      break;
   }
 
-  // Get the allocator that was just created and report result. Exit if the
-  // allocator could not be created.
+  // Report the initialization result via UMA.
   base::UmaHistogramEnumeration("UMA.PersistentHistograms.InitResult", result);
 
+  // If persistent histograms are disabled, there's nothing left to do.
+  if (mode == PersistentHistogramsMode::kNotEnabled) {
+    return;
+  }
+
+  // Retrieve the global allocator. If the desired allocator failed to be
+  // created above, fallback to using local memory.
   base::GlobalHistogramAllocator* allocator =
       base::GlobalHistogramAllocator::Get();
   if (!allocator) {
@@ -212,17 +220,9 @@ void InstantiatePersistentHistogramsImpl(const base::FilePath& metrics_dir,
 
 }  // namespace
 
-BASE_FEATURE(
-    kPersistentHistogramsFeature,
-    "PersistentHistograms",
-#if BUILDFLAG(IS_FUCHSIA)
-    // TODO(crbug.com/42050425): Enable once writable mmap() is supported. Also
-    // move the initialization earlier to chrome/app/chrome_main_delegate.cc.
-    base::FEATURE_DISABLED_BY_DEFAULT
-#else
-    base::FEATURE_ENABLED_BY_DEFAULT
-#endif  // BUILDFLAG(IS_FUCHSIA)
-);
+BASE_FEATURE(kPersistentHistogramsFeature,
+             "PersistentHistograms",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 const char kPersistentHistogramStorageMappedFile[] = "MappedFile";
 const char kPersistentHistogramStorageLocalMemory[] = "LocalMemory";
@@ -242,14 +242,14 @@ base::FilePath GetPersistentHistogramsSpareFilePath(
 void InstantiatePersistentHistograms(const base::FilePath& metrics_dir,
                                      bool persistent_histograms_enabled,
                                      std::string_view storage) {
-  PersistentHistogramsMode mode = kNotEnabled;
+  PersistentHistogramsMode mode = PersistentHistogramsMode::kNotEnabled;
   // Note: The extra feature check is needed so that we don't use the default
   // value of the storage param if the feature is disabled.
   if (persistent_histograms_enabled) {
     if (storage == kPersistentHistogramStorageMappedFile) {
-      mode = kMappedFile;
+      mode = PersistentHistogramsMode::kMappedFile;
     } else if (storage == kPersistentHistogramStorageLocalMemory) {
-      mode = kLocalMemory;
+      mode = PersistentHistogramsMode::kLocalMemory;
     }
   }
 
