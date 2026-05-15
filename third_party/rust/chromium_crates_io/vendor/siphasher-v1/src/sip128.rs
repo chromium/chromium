@@ -149,9 +149,7 @@ impl SipHasher {
     /// Hash a byte array - This is the easiest and safest way to use SipHash.
     #[inline]
     pub fn hash(&self, bytes: &[u8]) -> Hash128 {
-        let mut hasher = self.0.hasher;
-        hasher.write(bytes);
-        hasher.finish128()
+        self.0.hasher.hash128(bytes)
     }
 }
 
@@ -205,9 +203,7 @@ impl SipHasher13 {
     /// Hash a byte array - This is the easiest and safest way to use SipHash.
     #[inline]
     pub fn hash(&self, bytes: &[u8]) -> Hash128 {
-        let mut hasher = self.hasher;
-        hasher.write(bytes);
-        hasher.finish128()
+        self.hasher.hash128(bytes)
     }
 }
 
@@ -261,9 +257,7 @@ impl SipHasher24 {
     /// Hash a byte array - This is the easiest and safest way to use SipHash.
     #[inline]
     pub fn hash(&self, bytes: &[u8]) -> Hash128 {
-        let mut hasher = self.hasher;
-        hasher.write(bytes);
-        hasher.finish128()
+        self.hasher.hash128(bytes)
     }
 }
 
@@ -342,14 +336,38 @@ impl<S: Sip> Hasher<S> {
         self.ntail = size - needed;
         self.tail = if needed < 8 { x >> (8 * needed) } else { 0 };
     }
-}
 
-impl<S: Sip> Hasher<S> {
     #[inline]
-    pub fn finish128(&self) -> Hash128 {
-        let mut state = self.state;
+    fn hash128(&self, msg: &[u8]) -> Hash128 {
+        if self.ntail != 0 {
+            let mut hasher = self.clone();
+            hasher.write(msg);
+            return hasher.finish128();
+        }
 
-        let b: u64 = ((self.length as u64 & 0xff) << 56) | self.tail;
+        let length = self.length + msg.len();
+        let len = msg.len();
+        let left = len & 0x7;
+        let mut state = self.state;
+        let mut i = 0;
+
+        while i < len - left {
+            let mi = unsafe { load_int_le!(msg, i, u64) };
+
+            state.v3 ^= mi;
+            S::c_rounds(&mut state);
+            state.v0 ^= mi;
+
+            i += 8;
+        }
+
+        let tail = unsafe { u8to64_le(msg, i, left) };
+        Self::finish128_with_state(state, length, tail)
+    }
+
+    #[inline]
+    fn finish128_with_state(mut state: State, length: usize, tail: u64) -> Hash128 {
+        let b: u64 = ((length as u64 & 0xff) << 56) | tail;
 
         state.v3 ^= b;
         S::c_rounds(&mut state);
@@ -364,6 +382,13 @@ impl<S: Sip> Hasher<S> {
         let h2 = state.v0 ^ state.v1 ^ state.v2 ^ state.v3;
 
         Hash128 { h1, h2 }
+    }
+}
+
+impl<S: Sip> Hasher<S> {
+    #[inline]
+    pub fn finish128(&self) -> Hash128 {
+        Self::finish128_with_state(self.state, self.length, self.tail)
     }
 }
 
@@ -487,6 +512,11 @@ impl<S: Sip> hash::Hasher for Hasher<S> {
     #[inline]
     fn write_u8(&mut self, i: u8) {
         self.short_write(i, i as u64);
+    }
+
+    #[inline]
+    fn write_u16(&mut self, i: u16) {
+        self.short_write(i, i.to_le() as u64);
     }
 
     #[inline]

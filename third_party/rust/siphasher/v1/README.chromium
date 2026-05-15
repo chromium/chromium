@@ -1,7 +1,7 @@
 Name: siphasher
 URL: https://crates.io/crates/siphasher
-Version: 1.0.2
-Revision: db8172048a1c9bdef0dcec782d965c236161af13
+Version: 1.0.3
+Revision: 451f67d73a772cba325728109bbfa247750ed076
 Update Mechanism: Manual (https://crbug.com/449898466)
 License: Apache-2.0
 License File: //third_party/rust/chromium_crates_io/vendor/siphasher-v1/LICENSE-APACHE

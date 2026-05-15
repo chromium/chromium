@@ -8,7 +8,7 @@ repository = "https://github.com/jedisct1/rust-siphash"
 homepage = "https://docs.rs/siphasher"
 documentation = "https://docs.rs/siphasher"
 readme = "README.md"
-version = "1.0.2"
+version = "1.0.3"
 categories = ["algorithms", "cryptography"]
 edition = "2018"
 
