@@ -341,12 +341,8 @@ void PasswordChangeDelegateImpl::StartPasswordChangeFlow() {
   // a local ML model for field classification.
   // TODO(452883239): Clean this up when model is downloaded on start-up for
   // everybody.
-  if (base::FeatureList::IsEnabled(
-          password_manager::features::
-              kProactivelyDownloadModelForPasswordChange)) {
-    PasswordFieldClassificationModelHandlerFactory::GetForBrowserContext(
-        originator_->GetBrowserContext());
-  }
+  PasswordFieldClassificationModelHandlerFactory::GetForBrowserContext(
+      originator_->GetBrowserContext());
 }
 
 void PasswordChangeDelegateImpl::OnLoginStateCheckResult(

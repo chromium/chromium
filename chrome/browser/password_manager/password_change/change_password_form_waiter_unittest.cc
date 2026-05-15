@@ -701,52 +701,9 @@ TEST_F(ChangePasswordFormWaiterTest, PasswordChangeFormAlreadyParsed) {
   EXPECT_EQ(result_future.Get(), form_managers.back().get());
 }
 
-TEST_F(ChangePasswordFormWaiterTest, FeatureDisabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      {password_manager::features::kPasswordFormClientsideClassifier},
-      {password_manager::features::kProactivelyDownloadModelForPasswordChange});
-
-  base::MockOnceCallback<void(password_manager::PasswordFormManager*)>
-      completion_callback;
-  auto waiter = ChangePasswordFormWaiter::Builder(web_contents(), client(),
-                                                  completion_callback.Get())
-                    .Build();
-
-  // The rest of the test is similar to PasswordChangeFormIdentified.
-  std::vector<autofill::FormFieldData> fields;
-  fields.push_back(CreateTestFormField(
-      /*label=*/"Password:", /*name=*/"password",
-      /*value=*/"", autofill::FormControlType::kInputPassword));
-  fields.back().set_renderer_id(autofill::FieldRendererId(1));
-  fields.push_back(CreateTestFormField(
-      /*label=*/"New password:", /*name=*/"new_password_1",
-      /*value=*/"", autofill::FormControlType::kInputPassword));
-  fields.back().set_renderer_id(autofill::FieldRendererId(2));
-  autofill::FormData form;
-  form.set_url(GURL("https://www.foo.com"));
-  form.set_fields(std::move(fields));
-  std::vector<std::unique_ptr<password_manager::PasswordFormManager>>
-      form_managers;
-  form_managers.push_back(CreateFormManager(form));
-
-  EXPECT_CALL(cache(), GetFormManagers)
-      .WillOnce(testing::Return(base::span(form_managers)));
-  EXPECT_CALL(driver(),
-              CheckViewAreaVisible(autofill::FieldRendererId(2), testing::_))
-      .WillOnce(base::test::RunOnceCallback<1>(true));
-
-  EXPECT_CALL(completion_callback, Run(form_managers.back().get()));
-  static_cast<password_manager::PasswordFormManagerObserver*>(waiter.get())
-      ->OnPasswordFormParsed(form_managers.back().get());
-}
-
-TEST_F(ChangePasswordFormWaiterTest, FeatureEnabled_ModelAvailable) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      {password_manager::features::kPasswordFormClientsideClassifier,
-       password_manager::features::kProactivelyDownloadModelForPasswordChange},
-      {});
+TEST_F(ChangePasswordFormWaiterTest, ModelAvailable) {
+  base::test::ScopedFeatureList feature_list(
+      password_manager::features::kPasswordFormClientsideClassifier);
 
   model_handler()->SetModelAvailability(/*available=*/true);
 
@@ -784,12 +741,9 @@ TEST_F(ChangePasswordFormWaiterTest, FeatureEnabled_ModelAvailable) {
       ->OnPasswordFormParsed(form_managers.back().get());
 }
 
-TEST_F(ChangePasswordFormWaiterTest, FeatureEnabled_ModelBecomesAvailable) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      {password_manager::features::kPasswordFormClientsideClassifier,
-       password_manager::features::kProactivelyDownloadModelForPasswordChange},
-      {});
+TEST_F(ChangePasswordFormWaiterTest, ModelBecomesAvailable) {
+  base::test::ScopedFeatureList feature_list(
+      password_manager::features::kPasswordFormClientsideClassifier);
   model_handler()->SetModelAvailability(/*available=*/false);
 
   std::vector<autofill::FormFieldData> fields;
@@ -828,12 +782,9 @@ TEST_F(ChangePasswordFormWaiterTest, FeatureEnabled_ModelBecomesAvailable) {
   EXPECT_EQ(result_future.Get(), form_managers.back().get());
 }
 
-TEST_F(ChangePasswordFormWaiterTest, FeatureEnabled_ModelNotAvailable_Timeout) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      {password_manager::features::kPasswordFormClientsideClassifier,
-       password_manager::features::kProactivelyDownloadModelForPasswordChange},
-      {});
+TEST_F(ChangePasswordFormWaiterTest, ModelNotAvailable_Timeout) {
+  base::test::ScopedFeatureList feature_list(
+      password_manager::features::kPasswordFormClientsideClassifier);
 
   model_handler()->SetModelAvailability(/*available=*/false);
 

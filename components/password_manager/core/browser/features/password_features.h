@@ -190,12 +190,6 @@ BASE_DECLARE_FEATURE(kPreventPasswordManagerOnFederatedLogin);
 // Prevents offering Automatic Password Change on federated login.
 BASE_DECLARE_FEATURE(kPreventAPCOnFederatedLogin);
 
-// Updates password change flow to await for local ML model availability. The
-// model has a superior performance compared to existing password manager
-// classifications.
-BASE_DECLARE_FEATURE(kProactivelyDownloadModelForPasswordChange);
-
-
 // Triggers password change glow invoking Glic from settings.
 // This flag is only for the prototype version.
 BASE_DECLARE_FEATURE(kPasswordCheckupPrototype);

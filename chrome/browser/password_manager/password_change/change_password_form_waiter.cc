@@ -11,7 +11,6 @@
 #include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/autofill/core/browser/ml_model/field_classification_model_handler.h"
 #include "components/autofill/core/common/unique_ids.h"
-#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_form_manager.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
@@ -137,13 +136,7 @@ ChangePasswordFormWaiter::Builder::SetFieldsToIgnore(
 
 std::unique_ptr<ChangePasswordFormWaiter>
 ChangePasswordFormWaiter::Builder::Build() {
-  if (base::FeatureList::IsEnabled(
-          password_manager::features::
-              kProactivelyDownloadModelForPasswordChange)) {
-    form_waiter_->WaitForLocalMLModelAvailability();
-  } else {
-    form_waiter_->Init();
-  }
+  form_waiter_->WaitForLocalMLModelAvailability();
   return std::move(form_waiter_);
 }
 
