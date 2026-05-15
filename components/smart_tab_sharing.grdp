@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <grit-part>
   <!-- IPH prompting users on Smart Tab Sharing the first time they add context to a prompt -->
-  <message name="IDS_STS_IPH_PROMPT_FIRST_TIME_ADDING_CONTEXT_HEADER" desc="No implementation or screenshot yet. See http://crbug.com/490510281 for context.">
-    Share relevant open tabs for better responses in this thread?
+  <message name="IDS_STS_IPH_PROMPT_FIRST_TIME_ADDING_CONTEXT_HEADER" desc="IPH help bubble header text for smart tab sharing toggle in composebox context menu.">
+    Automatically share open tabs for this thread?
   </message>
   <message name="IDS_STS_IPH_PROMPT_FIRST_TIME_ADDING_CONTEXT_HEADER_V2" desc="No implementation or screenshot yet. See http://crbug.com/490510281 for context.">
     Turn on tab sharing for this thread?
   </message>
-  <message name="IDS_STS_IPH_PROMPT_FIRST_TIME_ADDING_CONTEXT_MESSAGE_BODY" desc="No implementation or screenshot yet. See http://crbug.com/490510281 for context.">
-    Get faster, more tailored responses by sharing your open tabs with this thread.
+  <message name="IDS_STS_IPH_PROMPT_FIRST_TIME_ADDING_CONTEXT_MESSAGE_BODY" desc="IPH help bubble body text for smart tab sharing toggle in composebox context menu.">
+    When on, Chrome will share all tabs in this window to help you get more relevant responses. You can turn this on for all threads in Settings.
   </message>
   <message name="IDS_STS_IPH_PROMPT_FIRST_TIME_ADDING_CONTEXT_MESSAGE_BODY_ALT" desc="No implementation or screenshot yet. See http://crbug.com/490510281 for context.">
     For the most personalized responses, allow this thread to reference your open tabs.

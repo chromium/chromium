@@ -780,7 +780,7 @@ export class ContextualTasksAppElement extends ContextualTasksAppElementBase {
 
   protected onComposeboxContextMenuOpened_() {
     // <if expr="not is_android">
-    setTimeout(async () => {
+    setTimeout(() => {
       const menu = this.getContextualActionMenu();
       // Since a separate IPH "Try It" promo may turn the STS feature on, make
       // sure it is not already on before promoting with the help bubble.
@@ -799,14 +799,15 @@ export class ContextualTasksAppElement extends ContextualTasksAppElementBase {
             // This is necessary to give the floating anchor time for layout
             // when the chrome://user-education-internals Launch button has
             // been pressed. Without the wait, it pops too soon out of place.
-            await this.updateComplete;
-            this.registerHelpBubble(
-                'ContextualTasksUI::kSmartTabSharingMenuItemElementId',
-                '#iphMenuSmartTabSharingAnchor', {
-                  fixed: true,
-                  containerElement: menu.getDialog(),
-                });
-            this.browserProxy_.handler.onContextMenuOpened();
+            setTimeout(() => {
+              this.registerHelpBubble(
+                  'ContextualTasksUI::kSmartTabSharingMenuItemElementId',
+                  '#iphMenuSmartTabSharingAnchor', {
+                    fixed: true,
+                    containerElement: menu.getDialog(),
+                  });
+              this.browserProxy_.handler.onContextMenuOpened();
+            }, 100);
           }
         }
       }
