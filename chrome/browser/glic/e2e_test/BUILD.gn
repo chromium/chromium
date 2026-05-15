@@ -68,12 +68,7 @@ test("glic_internal_e2e_interactive_ui_tests") {
     # Used in wpr utilities.
     "//chrome/test/data/web_page_replay_go_helper_scripts/automation_helper.js",
     "//components/test/data/autofill/web_page_replay_support_files/",
-
-    # WPR binary.
-    "//third_party/catapult/telemetry/telemetry/bin/",
-
-    # Used in WPR command.
-    "//third_party/webpagereplay/deterministic.js",
+    "//third_party/webpagereplay/",
   ]
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
   deps = [

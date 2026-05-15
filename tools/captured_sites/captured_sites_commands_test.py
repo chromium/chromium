@@ -31,13 +31,21 @@ class UnitTestCapturedSitesCommands(unittest.TestCase):
     command.build(args)
     return command.print()
 
-  def helpCompareInputsToExpected(self, actual_input_and_output):
+  def helpCompareInputsToExpected(self,
+                                  actual_input_and_output,
+                                  is_python_cmd=False):
     for i, [name, args, expected_print] in enumerate(actual_input_and_output):
       identifier = ' '.join([name] + args)
       with self.subTest(command=identifier):
         actual_print = self.buildReturnCommandText(name, args)
-        print(name, args)
-        self.assertEqual(actual_print, expected_print)
+        if is_python_cmd:
+          [python_exe, actual_command] = actual_print.split(maxsplit=1)
+          # In practice the vpython creates the executable at a dynamic path, so
+          # checking if "python" is in the path is the best we can do.
+          self.assertTrue("python" in python_exe)
+          self.assertEqual(actual_command, expected_print)
+        else:
+          self.assertEqual(actual_print, expected_print)
 
   def testBuildCommand(self):
     actual_input_and_output = [
@@ -99,7 +107,7 @@ class UnitTestCapturedSitesCommands(unittest.TestCase):
     actual_input_and_output = [
         [
             'wpr', ['record', 'google'],
-            ('third_party/catapult/telemetry/telemetry/bin/linux/x86_64/wpr rec'
+            ('third_party/webpagereplay/scripts/run_wpr.py rec'
              'ord --http_port=8080 --https_port=8081 --inject_scripts=chrome/te'
              'st/data/web_page_replay_go_helper_scripts/automation_helper.js --'
              'no_archive_certificates --https_cert_file=components/test/data/au'
@@ -112,7 +120,7 @@ class UnitTestCapturedSitesCommands(unittest.TestCase):
         ],
         [
             'wpr', ['record', '-c', 'rsa', 'google'],
-            ('third_party/catapult/telemetry/telemetry/bin/linux/x86_64/wpr rec'
+            ('third_party/webpagereplay/scripts/run_wpr.py rec'
              'ord --http_port=8080 --https_port=8081 --inject_scripts=chrome/te'
              'st/data/web_page_replay_go_helper_scripts/automation_helper.js --'
              'no_archive_certificates --https_cert_file=components/test/data/au'
@@ -123,7 +131,7 @@ class UnitTestCapturedSitesCommands(unittest.TestCase):
         ],
         [
             'wpr', ['replay', 'google'],
-            ('third_party/catapult/telemetry/telemetry/bin/linux/x86_64/wpr rep'
+            ('third_party/webpagereplay/scripts/run_wpr.py rep'
              'lay --http_port=8080 --https_port=8081 --inject_scripts=chrome/te'
              'st/data/web_page_replay_go_helper_scripts/automation_helper.js --'
              'no_archive_certificates --serve_response_in_chronological_sequenc'
@@ -137,7 +145,7 @@ class UnitTestCapturedSitesCommands(unittest.TestCase):
         ],
         [
             'wpr', ['replay', 'sign_in_pass', 'google'],
-            ('third_party/catapult/telemetry/telemetry/bin/linux/x86_64/wpr rep'
+            ('third_party/webpagereplay/scripts/run_wpr.py rep'
              'lay --http_port=8080 --https_port=8081 --inject_scripts=chrome/te'
              'st/data/web_page_replay_go_helper_scripts/automation_helper.js --'
              'no_archive_certificates --serve_response_in_chronological_sequenc'
@@ -151,7 +159,7 @@ class UnitTestCapturedSitesCommands(unittest.TestCase):
         ],
         [
             'wpr', ['replay', '-c', 'rsa', 'google'],
-            ('third_party/catapult/telemetry/telemetry/bin/linux/x86_64/wpr rep'
+            ('third_party/webpagereplay/scripts/run_wpr.py rep'
              'lay --http_port=8080 --https_port=8081 --inject_scripts=chrome/te'
              'st/data/web_page_replay_go_helper_scripts/automation_helper.js --'
              'no_archive_certificates --serve_response_in_chronological_sequenc'
@@ -161,7 +169,8 @@ class UnitTestCapturedSitesCommands(unittest.TestCase):
              'ata/autofill/captured_sites/artifacts/google.wpr')
         ],
     ]
-    self.helpCompareInputsToExpected(actual_input_and_output)
+    self.helpCompareInputsToExpected(actual_input_and_output,
+                                     is_python_cmd=True)
 
   def testRefreshCommand(self):
     actual_input_and_output = [

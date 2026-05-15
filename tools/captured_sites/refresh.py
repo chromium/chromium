@@ -29,8 +29,7 @@ import sys
 import subprocess
 
 _BASE_FOLDER = 'chrome/test/data/autofill/captured_sites/artifacts'
-_TELEMETRY_BIN_FOLDER = ('third_party/catapult/telemetry/telemetry/bin/'
-                         'linux/x86_64/')
+_WPR_SCRIPTS_FOLDER = 'third_party/webpagereplay/scripts/'
 _TRIMMED_FOLDER = os.path.join(_BASE_FOLDER, 'trimmed')
 _REFRESH_FOLDER = os.path.join(_BASE_FOLDER, 'refresh')
 _MERGED_FOLDER = os.path.join(_BASE_FOLDER, 'merged')
@@ -74,8 +73,8 @@ class Refresh():
         first_trim = False
 
       command_args = [
-          _TELEMETRY_BIN_FOLDER + 'httparchive', 'trim', '--host', host_domain,
-          to_trim_wpr_archive, trimmed_wpr_archive
+          sys.executable, _WPR_SCRIPTS_FOLDER + 'run_httparchive.py', 'trim',
+          '--host', host_domain, to_trim_wpr_archive, trimmed_wpr_archive
       ]
       _make_process_call(command_args, _PRINT_ONLY)
 
@@ -88,8 +87,8 @@ class Refresh():
     merged_wpr_archive = os.path.join(_MERGED_FOLDER, '%s.wpr' % site_name)
 
     command_args = [
-        _TELEMETRY_BIN_FOLDER + 'httparchive', 'merge', trimmed_wpr_archive,
-        fresh_wpr_archive, merged_wpr_archive
+        sys.executable, _WPR_SCRIPTS_FOLDER + 'run_httparchive.py', 'merge',
+        trimmed_wpr_archive, fresh_wpr_archive, merged_wpr_archive
     ]
     _make_process_call(command_args, _PRINT_ONLY)
 
