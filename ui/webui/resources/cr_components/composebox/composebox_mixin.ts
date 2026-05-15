@@ -46,6 +46,10 @@ export const ComposeboxEmbedderMixin =
               reflect: true,
               type: String,
             },
+            disableCaretColorAnimation: {
+              type: Boolean,
+              reflect: true,
+            },
             disableVoiceSearchAnimation: {type: Boolean},
             isDraggingFile: {
               reflect: true,
@@ -143,6 +147,7 @@ export const ComposeboxEmbedderMixin =
 
         automaticActiveTab: ComposeboxFile|null = null;
         accessor animationState: GlowAnimationState = GlowAnimationState.NONE;
+        accessor disableCaretColorAnimation: boolean = false;
         accessor disableVoiceSearchAnimation: boolean = false;
         accessor addedTabsIds: Map<number, UnguessableToken> = new Map();
         accessor isDraggingFile: boolean = false;
@@ -992,6 +997,63 @@ export const ComposeboxEmbedderMixin =
               ComposeboxContextAddedMethod.CONTEXT_MENU, this.composeboxSource);
         }
 
+        onPaste(event: ClipboardEvent) {
+          if (!this.dragAndDropEnabled || !event.clipboardData?.items) {
+            return;
+          }
+
+          const dataTransfer = new DataTransfer();
+
+          for (const item of event.clipboardData.items) {
+            if (item.kind === 'file') {
+              const file = item.getAsFile();
+              if (file) {
+                dataTransfer.items.add(file);
+              }
+            }
+          }
+
+          const fileList: FileList = dataTransfer.files;
+
+          if (fileList.length > 0) {
+            event.preventDefault();
+            this.processFiles(fileList);
+            recordContextAdditionMethod(
+                ComposeboxContextAddedMethod.COPY_PASTE, this.composeboxSource);
+          }
+        }
+
+        onCancelClick() {
+          if (this.hasContent()) {
+            this.resetModes();
+            this.clearAllInputs(/* querySubmitted= */ false,
+                                /* shouldBlockAutoSuggestedTabs= */ true);
+            this.focusInput();
+            this.queryAutocomplete(/* clearMatches= */ true);
+
+            if (!this.disableCaretColorAnimation) {
+              this.getInputElement().resetCaret();
+            }
+          } else {
+            this.closeComposebox();
+          }
+        }
+
+        onSubmitFocusin(_e: FocusEvent) {
+          // Matches should always be greater than 0 due to verbatim match.
+          if (this.input && !this.selectedMatch) {
+            this.selectFirstMatch();
+          }
+        }
+
+        onSubmitClick(e: MouseEvent) {
+          if (this.hasFiles() ||
+              this.inputState?.activeTool !== ToolMode.kUnspecified) {
+            this.getPageHandler().notifyComposeboxQuerySubmittedWithContext();
+          }
+          this.submitQuery(e);
+        }
+
         // =====================================================================
         // Common helper methods
         // =====================================================================
@@ -1185,7 +1247,11 @@ export const ComposeboxEmbedderMixin =
         }
 
         closeComposebox() {
-          assertNotReached();
+          this.resetModes();
+          this.getSearchboxHandler().clearFiles(
+              /*shouldBlockAutoSuggestedTabs=*/ false);
+          this.resetToolsAndModels();
+          this.fire('close-composebox', {composeboxText: this.input});
         }
 
         handleEscapeKeyLogic() {
@@ -1241,7 +1307,15 @@ export const ComposeboxEmbedderMixin =
         }
 
         submitCleanup() {
-          assertNotReached();
+          this.clearAutocompleteMatches();
+          this.resetSmartComposeStats();
+          this.animationState = GlowAnimationState.SUBMITTING;
+          // Standard behavior: clear inputs if flag is enabled
+          if (this.clearAllInputsWhenSubmittingQuery) {
+            this.clearAllInputs(/* querySubmitted= */ true,
+                                /* shouldBlockAutoSuggestedTabs= */ false);
+          }
+          this.fire('composebox-submit');
         }
 
         hasImageFiles(): boolean {
@@ -1790,6 +1864,7 @@ export interface ComposeboxEmbedderMixinInterface extends
   addedTabsIds: Map<number, UnguessableToken>;
   animationState: GlowAnimationState;
   automaticActiveTab: ComposeboxFile|null;
+  disableCaretColorAnimation: boolean;
   disableVoiceSearchAnimation: boolean;
   isDraggingFile: boolean;
   enableImageContextualSuggestions: boolean;
@@ -1918,6 +1993,10 @@ export interface ComposeboxEmbedderMixinInterface extends
   onOpenDriveUpload(): void;
   onSmartTabSharingActiveChanged(e: CustomEvent<{active: boolean}>): void;
   onFileChange(e: CustomEvent<{files: FileList}>): void;
+  onPaste(event: ClipboardEvent): void;
+  onCancelClick(): void;
+  onSubmitFocusin(e: FocusEvent): void;
+  onSubmitClick(e: MouseEvent): void;
 
   // Common helper methods
   addToPendingUploads(token: UnguessableToken): void;

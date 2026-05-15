@@ -40,7 +40,7 @@ export function getHtml(this: ComposeboxElement) {
         @dragover="${this.dragAndDropHandler_.handleDragOver}"
         @dragleave="${this.dragAndDropHandler_.handleDragLeave}"
         @drop="${this.dragAndDropHandler_.handleDrop}"
-        @paste="${this.onPaste_}">
+        @paste="${this.onPaste}">
       <div id="inputContainer" part="input-container">
         <cr-composebox-input id="composeboxInput"
             exportparts="text-container, icon-container, mirror, input, smart-compose, cancel, action-icon, cancel-icon"
@@ -56,7 +56,7 @@ export function getHtml(this: ComposeboxElement) {
             .cancelButtonTitle="${this.computeCancelButtonTitle_()}"
             @input-input="${this.onInputInput}"
             @input-focusin="${this.onInputFocusin}"
-            @cancel-click="${this.onCancelClick_}">
+            @cancel-click="${this.onCancelClick}">
         </cr-composebox-input>
         <div id="context" part="context-entrypoint"
             class="${this.carouselOnTop_ && this.isCollapsible ? 'icon-fade' : ''}">
@@ -97,8 +97,8 @@ export function getHtml(this: ComposeboxElement) {
                 ?disabled="${!this.canSubmitFilesAndInput}"
                 .iconType="${this.submitButtonIconType}"
                 .submitButtonTitle="${this.i18n('composeboxSubmitButtonTitle')}"
-                @submit-click="${this.onSubmitClick_}"
-                @submit-focusin="${this.onSubmitFocusin_}">
+                @submit-click="${this.onSubmitClick}"
+                @submit-focusin="${this.onSubmitFocusin}">
               </cr-composebox-submit>
               ` : ''}
             </div>
@@ -136,8 +136,8 @@ export function getHtml(this: ComposeboxElement) {
                   ?disabled="${!this.canSubmitFilesAndInput}"
                   .iconType="${this.submitButtonIconType}"
                   .submitButtonTitle="${this.i18n('composeboxSubmitButtonTitle')}"
-                  @submit-click="${this.onSubmitClick_}"
-                  @submit-focusin="${this.onSubmitFocusin_}">
+                  @submit-click="${this.onSubmitClick}"
+                  @submit-focusin="${this.onSubmitFocusin}">
                 </cr-composebox-submit>
             ` : ''}
           </cr-composebox-file-inputs>
@@ -164,8 +164,8 @@ export function getHtml(this: ComposeboxElement) {
           ?disabled="${!this.canSubmitFilesAndInput}"
           .iconType="${this.submitButtonIconType}"
           .submitButtonTitle="${this.i18n('composeboxSubmitButtonTitle')}"
-          @submit-click="${this.onSubmitClick_}"
-          @submit-focusin="${this.onSubmitFocusin_}">
+          @submit-click="${this.onSubmitClick}"
+          @submit-focusin="${this.onSubmitFocusin}">
         </cr-composebox-submit>
       ` : ''}
     </div>

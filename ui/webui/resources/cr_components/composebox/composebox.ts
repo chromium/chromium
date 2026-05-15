@@ -123,10 +123,6 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
         type: Boolean,
       },
       entrypointName: {type: String, reflect: true},
-      disableCaretColorAnimation: {
-        type: Boolean,
-        reflect: true,
-      },
       disableComposeboxAnimation: {type: Boolean},
       // Embedders can opt out of public composebox resize events when they do
       // not use them.
@@ -161,7 +157,6 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
   accessor enableFileHint: boolean = false;
   accessor inputPlaceholderOverride: string = '';
   accessor suggestionActivityEnabled: boolean = true;
-  accessor disableCaretColorAnimation: boolean = false;
   accessor disableComposeboxAnimation: boolean = false;
   accessor observeResize: boolean = true;
   accessor enableCarouselScrolling: boolean = false;
@@ -752,40 +747,6 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
     }
   }
 
-  protected onPaste_(event: ClipboardEvent) {
-    if (!this.dragAndDropEnabled || !event.clipboardData?.items) {
-      return;
-    }
-
-    const dataTransfer = new DataTransfer();
-
-    for (const item of event.clipboardData.items) {
-      if (item.kind === 'file') {
-        const file = item.getAsFile();
-        if (file) {
-          dataTransfer.items.add(file);
-        }
-      }
-    }
-
-    const fileList: FileList = dataTransfer.files;
-
-    if (fileList.length > 0) {
-      event.preventDefault();
-      this.processFiles(fileList);
-      recordContextAdditionMethod(
-          ComposeboxContextAddedMethod.COPY_PASTE, this.composeboxSource);
-    }
-  }
-
-  protected onSubmitClick_(e: MouseEvent) {
-    if (this.hasFiles() ||
-        this.inputState?.activeTool !== ToolMode.kUnspecified) {
-      this.pageHandler_.notifyComposeboxQuerySubmittedWithContext();
-    }
-    this.submitQuery(e);
-  }
-
   protected onLinkClicked_(e: CustomEvent<{ event: Event }>) {
     // Manually handle navigation to support WebView environments where default
     // link clicks may be ignored.
@@ -793,22 +754,6 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
     const href = (e.detail.event.currentTarget as HTMLAnchorElement).href;
     if (href) {
       this.pageHandler_.navigateUrl(href);
-    }
-  }
-
-  protected onCancelClick_() {
-    if (this.hasContent()) {
-      this.resetModes();
-      this.clearAllInputs(/* querySubmitted= */ false,
-                          /* shouldBlockAutoSuggestedTabs= */ true);
-      this.focusInput();
-      this.queryAutocomplete(/* clearMatches= */ true);
-
-      if (!this.disableCaretColorAnimation) {
-        this.getInputElement().resetCaret();
-      }
-    } else {
-      this.closeComposebox();
     }
   }
 
@@ -892,13 +837,6 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
     this.fire('composebox-focus-out');
   }
 
-  protected onSubmitFocusin_() {
-    // Matches should always be greater than 0 due to verbatim match.
-    if (this.input && !this.selectedMatch) {
-      this.selectFirstMatch();
-    }
-  }
-
   // TODO(crbug.com/486707998): Move this to omnibox composebox.
   addSearchContext(context: SearchContext|null) {
     if (context) {
@@ -922,11 +860,10 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
     }
   }
 
+  // TODO(crbug.com/486706573): Common logic is moved to the mixin class. Move
+  // embedder specific logic to the embedder class.
   override closeComposebox() {
-    this.resetModes();
-    this.searchboxHandler_.clearFiles(/*shouldBlockAutoSuggestedTabs=*/ false);
-    this.resetToolsAndModels();
-    this.fire('close-composebox', {composeboxText: this.input});
+    super.closeComposebox();
 
     if (this.isCollapsible) {
       this.expanding_ = false;
@@ -936,19 +873,12 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
   }
 
   override submitCleanup() {
-    this.clearAutocompleteMatches();
-    this.resetSmartComposeStats();
-    // Update states after submitting:
-    this.animationState = GlowAnimationState.SUBMITTING;
-
-    // If the composebox is expandable or we should clear it, clear the input
-    // after submitting the query.
-    if (this.isCollapsible || this.clearAllInputsWhenSubmittingQuery) {
+    if (this.isCollapsible) {
       this.clearAllInputs(/* querySubmitted= */ true,
                           /* shouldBlockAutoSuggestedTabs= */ false);
     }
 
-    this.fire('composebox-submit');
+    super.submitCleanup();
   }
 
   // TODO(crbug.com/486706573): Refactor this function and move the common logic
