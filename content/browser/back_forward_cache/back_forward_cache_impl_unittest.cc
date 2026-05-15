@@ -204,7 +204,7 @@ TEST_F(BackForwardCacheActiveSizeTest, ActiveCacheSize) {
   // The default cache sizes specified by kBackForwardCacheSize takes precedence
   // over kBackForwardCache.
   EXPECT_EQ(bfcache_impl.GetCacheSize(), 6u);
-  EXPECT_EQ(bfcache_impl.GetForegroundedEntriesCacheSize(), 0u);
+  EXPECT_EQ(bfcache_impl.GetForegroundedEntriesCacheSize(), std::nullopt);
   EXPECT_FALSE(bfcache_impl.UsingForegroundBackgroundCacheSizeLimit());
 }
 
@@ -215,7 +215,6 @@ TEST_F(BackForwardCacheActiveSizeTest, ActiveCacheSize) {
 class BackForwardCacheOverwriteSizeTest : public RenderViewHostImplTestHarness {
  protected:
   void SetUp() override {
-    RenderViewHostImplTestHarness::SetUp();
     feature_list_.InitWithFeaturesAndParameters(
         /*enabled_features=*/
         {{kBackForwardCacheSize,
@@ -225,6 +224,7 @@ class BackForwardCacheOverwriteSizeTest : public RenderViewHostImplTestHarness {
         /*disabled_features=*/
         // Allow BackForwardCache for all devices regardless of their memory.
         {{features::kBackForwardCacheMemoryControls}});
+    RenderViewHostImplTestHarness::SetUp();
   }
 
  private:
@@ -234,14 +234,15 @@ class BackForwardCacheOverwriteSizeTest : public RenderViewHostImplTestHarness {
 TEST_F(BackForwardCacheOverwriteSizeTest, OverwrittenCacheSize) {
   auto& bfcache_impl = contents()->GetController().GetBackForwardCache();
   EXPECT_EQ(bfcache_impl.GetCacheSize(), 8u);
-  EXPECT_EQ(bfcache_impl.GetForegroundedEntriesCacheSize(), 4u);
+  EXPECT_EQ(bfcache_impl.GetForegroundedEntriesCacheSize(),
+            std::optional<size_t>(4u));
   EXPECT_TRUE(bfcache_impl.UsingForegroundBackgroundCacheSizeLimit());
 
   // Changing the embedder-supplied cache size will change the return value of
   // GetCacheSize() and disables foreground cache limit.
   bfcache_impl.SetEmbedderSuppliedCacheSize(3u);
   EXPECT_EQ(bfcache_impl.GetCacheSize(), 3u);
-  EXPECT_EQ(bfcache_impl.GetForegroundedEntriesCacheSize(), 0u);
+  EXPECT_EQ(bfcache_impl.GetForegroundedEntriesCacheSize(), std::nullopt);
   EXPECT_FALSE(bfcache_impl.UsingForegroundBackgroundCacheSizeLimit());
 
   contents()
@@ -249,7 +250,7 @@ TEST_F(BackForwardCacheOverwriteSizeTest, OverwrittenCacheSize) {
       .GetBackForwardCache()
       .SetEmbedderSuppliedCacheSize(10u);
   EXPECT_EQ(bfcache_impl.GetCacheSize(), 10u);
-  EXPECT_EQ(bfcache_impl.GetForegroundedEntriesCacheSize(), 0u);
+  EXPECT_EQ(bfcache_impl.GetForegroundedEntriesCacheSize(), std::nullopt);
   EXPECT_FALSE(bfcache_impl.UsingForegroundBackgroundCacheSizeLimit());
 }
 
@@ -258,7 +259,6 @@ TEST_F(BackForwardCacheOverwriteSizeTest, OverwrittenCacheSize) {
 class BackForwardCacheDefaultSizeTest : public RenderViewHostImplTestHarness {
  protected:
   void SetUp() override {
-    RenderViewHostImplTestHarness::SetUp();
     feature_list_.InitWithFeaturesAndParameters(
         /*enabled_features=*/
         // Ensure BackForwardCache is enabled.
@@ -266,6 +266,7 @@ class BackForwardCacheDefaultSizeTest : public RenderViewHostImplTestHarness {
         /*disabled_features=*/
         // Allow BackForwardCache for all devices regardless of their memory.
         {{features::kBackForwardCacheMemoryControls}});
+    RenderViewHostImplTestHarness::SetUp();
   }
 
  private:
@@ -276,19 +277,19 @@ TEST_F(BackForwardCacheDefaultSizeTest, DefaultCacheSize) {
   auto& bfcache_impl = contents()->GetController().GetBackForwardCache();
   // Default cache sizes are specified by kBackForwardCacheSize.
   EXPECT_EQ(bfcache_impl.GetCacheSize(), 6u);
-  EXPECT_EQ(bfcache_impl.GetForegroundedEntriesCacheSize(), 0u);
+  EXPECT_EQ(bfcache_impl.GetForegroundedEntriesCacheSize(), std::nullopt);
   EXPECT_FALSE(bfcache_impl.UsingForegroundBackgroundCacheSizeLimit());
 
   // Changing the embedder-supplied cache size will change the return value of
   // GetCacheSize().
   bfcache_impl.SetEmbedderSuppliedCacheSize(3u);
   EXPECT_EQ(bfcache_impl.GetCacheSize(), 3u);
-  EXPECT_EQ(bfcache_impl.GetForegroundedEntriesCacheSize(), 0u);
+  EXPECT_EQ(bfcache_impl.GetForegroundedEntriesCacheSize(), std::nullopt);
   EXPECT_FALSE(bfcache_impl.UsingForegroundBackgroundCacheSizeLimit());
 
   bfcache_impl.SetEmbedderSuppliedCacheSize(10u);
   EXPECT_EQ(bfcache_impl.GetCacheSize(), 10u);
-  EXPECT_EQ(bfcache_impl.GetForegroundedEntriesCacheSize(), 0u);
+  EXPECT_EQ(bfcache_impl.GetForegroundedEntriesCacheSize(), std::nullopt);
   EXPECT_FALSE(bfcache_impl.UsingForegroundBackgroundCacheSizeLimit());
 }
 

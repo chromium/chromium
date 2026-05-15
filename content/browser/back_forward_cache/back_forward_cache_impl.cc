@@ -83,6 +83,30 @@ const base::FeatureParam<int> kBackForwardCacheSizeForegroundCacheSize{
 
 namespace {
 
+size_t GetDefaultMaxCacheSize() {
+  if (!IsBackForwardCacheEnabled()) {
+    return 0;
+  }
+  if (!base::FeatureList::IsEnabled(kBackForwardCacheSize)) {
+    return 0;
+  }
+  return kBackForwardCacheSizeCacheSize.Get();
+}
+
+std::optional<size_t> GetDefaultMaxForegroundCacheSize() {
+  if (!IsBackForwardCacheEnabled()) {
+    return std::nullopt;
+  }
+  if (!base::FeatureList::IsEnabled(kBackForwardCacheSize)) {
+    return std::nullopt;
+  }
+  int foreground_size = kBackForwardCacheSizeForegroundCacheSize.Get();
+  if (foreground_size <= 0) {
+    return std::nullopt;
+  }
+  return static_cast<size_t>(foreground_size);
+}
+
 using blink::scheduler::WebSchedulerTrackedFeature;
 using blink::scheduler::WebSchedulerTrackedFeatures;
 
@@ -679,6 +703,8 @@ BackForwardCacheImpl::BackForwardCacheImpl(
       allowed_urls_(ParseCommaSeparatedURLs(GetAllowedURLList())),
       blocked_urls_(ParseCommaSeparatedURLs(GetBlockedURLList())),
       blocked_cgi_params_(ParseBlockedCgiParams(GetBlockedCgiParams())),
+      max_cache_size_(GetDefaultMaxCacheSize()),
+      max_foreground_cache_size_(GetDefaultMaxForegroundCacheSize()),
       weak_factory_(this) {
   BrowserContext* browser_context = navigation_controller.GetBrowserContext();
   should_allow_storing_pages_with_cache_control_no_store_ =
@@ -748,40 +774,15 @@ base::TimeDelta BackForwardCacheImpl::GetTimeToLiveInBackForwardCache(
 }
 
 size_t BackForwardCacheImpl::GetCacheSize() {
-  if (!IsBackForwardCacheEnabled()) {
-    return 0;
-  }
-
-  if (embedder_supplied_cache_size_.has_value()) {
-    return embedder_supplied_cache_size_.value();
-  }
-
-  if (base::FeatureList::IsEnabled(kBackForwardCacheSize)) {
-    return kBackForwardCacheSizeCacheSize.Get();
-  }
-
-  return 0;
+  return max_cache_size_;
 }
 
-size_t BackForwardCacheImpl::GetForegroundedEntriesCacheSize() {
-  if (!IsBackForwardCacheEnabled()) {
-    return 0;
-  }
-
-  if (embedder_supplied_cache_size_.has_value()) {
-    // If the embedder supplied a limit (which should affect `GetCacheSize()`),
-    // don't use a foreground-specific limit.
-    return 0;
-  }
-
-  if (base::FeatureList::IsEnabled(kBackForwardCacheSize)) {
-    return kBackForwardCacheSizeForegroundCacheSize.Get();
-  }
-  return 0;
+std::optional<size_t> BackForwardCacheImpl::GetForegroundedEntriesCacheSize() {
+  return max_foreground_cache_size_;
 }
 
 bool BackForwardCacheImpl::UsingForegroundBackgroundCacheSizeLimit() {
-  return GetForegroundedEntriesCacheSize() > 0;
+  return max_foreground_cache_size_.has_value();
 }
 
 BackForwardCacheImpl::Entry* BackForwardCacheImpl::FindMatchingEntry(
@@ -1397,7 +1398,7 @@ void BackForwardCacheImpl::EnforceCacheSizeLimit() {
     // backgrounded process if there is memory pressure, so we can allow more of
     // those to be kept in the cache.
     EnforceCacheSizeLimitInternal(
-        GetForegroundedEntriesCacheSize(),
+        max_foreground_cache_size_.value(),
         BackForwardCacheMetrics::NotRestoredReason::kForegroundCacheLimit);
   }
   EnforceCacheSizeLimitInternal(
@@ -1496,10 +1497,11 @@ size_t BackForwardCacheImpl::EnforceCacheSizeLimitInternal(
 
 void BackForwardCacheImpl::SetEmbedderSuppliedCacheSize(
     size_t embedder_supplied_cache_size) {
-  if (embedder_supplied_cache_size == GetCacheSize()) {
+  if (!IsBackForwardCacheEnabled()) {
     return;
   }
-  embedder_supplied_cache_size_ = embedder_supplied_cache_size;
+  max_cache_size_ = embedder_supplied_cache_size;
+  max_foreground_cache_size_ = std::nullopt;
   EnforceCacheSizeLimit();
 }
 
