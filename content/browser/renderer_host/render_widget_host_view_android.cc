@@ -653,7 +653,6 @@ RenderWidgetHostViewAndroid::RenderWidgetHostViewAndroid(
                                                : Visibility::VISIBLE),
       ime_adapter_android_(nullptr),
       selection_popup_controller_(nullptr),
-      text_suggestion_host_(nullptr),
       gesture_listener_manager_(nullptr),
       view_(ui::ViewAndroid::LayoutType::kMatchParent),
       gesture_provider_(
@@ -1592,8 +1591,13 @@ bool RenderWidgetHostViewAndroid::OnTouchEvent(
 
   // Receiving any other touch event before the double-tap timeout expires
   // cancels opening the spellcheck menu.
-  if (text_suggestion_host_)
-    text_suggestion_host_->StopSuggestionMenuTimer();
+  if (auto* focused_frame = host_->frame_tree()->GetFocusedFrame()) {
+    if (auto* suggestion_host =
+            TextSuggestionHostAndroid::GetForCurrentDocument(
+                focused_frame->current_frame_host())) {
+      suggestion_host->StopSuggestionMenuTimer();
+    }
+  }
 
   // If a browser-based widget consumes the touch event, it's critical that
   // touch event interception be disabled. This avoids issues with
@@ -2743,8 +2747,14 @@ void RenderWidgetHostViewAndroid::SendKeyEvent(
 
   // Receiving a key event before the double-tap timeout expires cancels opening
   // the spellcheck menu. If the suggestion menu is open, we close the menu.
-  if (text_suggestion_host_)
-    text_suggestion_host_->OnKeyEvent();
+  if (auto* focused_frame = host_->frame_tree()->GetFocusedFrame()) {
+    if (auto* suggestion_host =
+            TextSuggestionHostAndroid::GetForCurrentDocument(
+                focused_frame->current_frame_host())) {
+      suggestion_host->StopSuggestionMenuTimer();
+      suggestion_host->HidePopups();
+    }
+  }
 
   // If the key has been reserved as part of the active KeyboardLock request,
   // then we want to mark it as such so it is not intercepted by the browser.

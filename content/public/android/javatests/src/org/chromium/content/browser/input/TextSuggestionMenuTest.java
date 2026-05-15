@@ -74,7 +74,7 @@ public class TextSuggestionMenuTest {
                         new String[] {"goodbye"},
                         SuggestionSpan.FLAG_EASY_CORRECT);
         textToCommit.setSpan(suggestionSpan, 0, 5, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-        mRule.commitText(textToCommit, 1);
+        commitTextAndVerify(textToCommit, "div", "hello");
 
         DOMUtils.clickNode(webContents, "div");
         waitForMenuToShow(webContents);
@@ -105,21 +105,7 @@ public class TextSuggestionMenuTest {
         DOMUtils.focusNode(webContents, "div");
 
         SpannableString textToCommit = new SpannableString("hello");
-        mRule.commitText(textToCommit, 1);
-
-        // Wait for renderer to acknowledge commitText(). ImeActivityTestRule.commitText() blocks
-        // and waits for the IME thread to finish, but the communication between the IME thread and
-        // the renderer is asynchronous, so if we try to run JavaScript right away, the text won't
-        // necessarily have been committed yet.
-        CriteriaHelper.pollInstrumentationThread(
-                () -> {
-                    try {
-                        Criteria.checkThat(
-                                DOMUtils.getNodeContents(webContents, "div"), Matchers.is("hello"));
-                    } catch (TimeoutException e) {
-                        throw new CriteriaNotSatisfiedException(e);
-                    }
-                });
+        commitTextAndVerify(textToCommit, "div", "hello");
 
         // Add a spelling marker on "hello".
         JavaScriptUtils.executeJavaScriptAndWaitForResult(
@@ -192,19 +178,7 @@ public class TextSuggestionMenuTest {
                         SuggestionSpan.FLAG_EASY_CORRECT);
         textToCommit.setSpan(suggestionSpan3, 6, 11, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
 
-        mRule.commitText(textToCommit, 1);
-
-        // Wait for renderer to acknowledge commitText().
-        CriteriaHelper.pollInstrumentationThread(
-                () -> {
-                    try {
-                        Criteria.checkThat(
-                                DOMUtils.getNodeContents(webContents, "div"),
-                                Matchers.is("hello world"));
-                    } catch (TimeoutException e) {
-                        throw new CriteriaNotSatisfiedException(e);
-                    }
-                });
+        commitTextAndVerify(textToCommit, "div", "hello world");
 
         DOMUtils.clickNode(webContents, "span");
         waitForMenuToShow(webContents);
@@ -259,7 +233,7 @@ public class TextSuggestionMenuTest {
                         SuggestionSpan.FLAG_EASY_CORRECT | SuggestionSpan.FLAG_MISSPELLED);
         textToCommit.setSpan(suggestionSpan, 0, 4, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
 
-        mRule.commitText(textToCommit, 1);
+        commitTextAndVerify(textToCommit, "div", "word");
 
         DOMUtils.clickNode(webContents, "span");
         waitForMenuToShow(webContents);
@@ -287,12 +261,7 @@ public class TextSuggestionMenuTest {
         waitForMenuToHide(webContents);
 
         // Verify that the suggestion marker was replaced.
-        Assert.assertEquals(
-                "0",
-                JavaScriptUtils.executeJavaScriptAndWaitForResult(
-                        webContents,
-                        "internals.markerCountForNode("
-                                + "  document.getElementById('div').firstChild, 'suggestion')"));
+        waitForMarkerCount(webContents, "div", "suggestion", 0);
     }
 
     @Test
@@ -310,14 +279,14 @@ public class TextSuggestionMenuTest {
                         new String[] {"goodbye"},
                         SuggestionSpan.FLAG_EASY_CORRECT);
         textToCommit.setSpan(suggestionSpan, 0, 5, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-        mRule.commitText(textToCommit, 1);
+        commitTextAndVerify(textToCommit, "div", "hello");
 
         DOMUtils.clickNode(webContents, "div");
         waitForMenuToShow(webContents);
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    getTextSuggestionHost(webContents)
+                    getTextSuggestionPopupController(webContents)
                             .getTextSuggestionsPopupWindowForTesting()
                             .dismiss();
                 });
@@ -340,12 +309,7 @@ public class TextSuggestionMenuTest {
         mRule.commitText(textToCommit, 1);
         mRule.waitAndVerifyUpdateSelection(1, 5, 5, -1, -1);
 
-        Assert.assertEquals(
-                "1",
-                JavaScriptUtils.executeJavaScriptAndWaitForResult(
-                        webContents,
-                        "internals.markerCountForNode("
-                                + "document.getElementById('div').firstChild, 'suggestion')"));
+        waitForMarkerCount(webContents, "div", "suggestion", 1);
     }
 
     // The following 3 tests (test*RemovesAutoCorrectionSuggestionSpan()) are testing if we
@@ -370,12 +334,7 @@ public class TextSuggestionMenuTest {
         mRule.setComposingText(composingText, 1);
         mRule.waitAndVerifyUpdateSelection(1, 5, 5, 0, 5);
 
-        Assert.assertEquals(
-                "1",
-                JavaScriptUtils.executeJavaScriptAndWaitForResult(
-                        webContents,
-                        "internals.markerCountForNode("
-                                + "document.getElementById('div').firstChild, 'suggestion')"));
+        waitForMarkerCount(webContents, "div", "suggestion", 1);
 
         // setComposingText() will replace the text in current composing range and set a new
         // composing range, so the spans associated with composing range should be removed. If there
@@ -383,12 +342,7 @@ public class TextSuggestionMenuTest {
         mRule.setComposingText(new SpannableString("helloworld"), 1);
         mRule.waitAndVerifyUpdateSelection(2, 10, 10, 0, 10);
 
-        Assert.assertEquals(
-                "0",
-                JavaScriptUtils.executeJavaScriptAndWaitForResult(
-                        webContents,
-                        "internals.markerCountForNode("
-                                + "document.getElementById('div').firstChild, 'suggestion')"));
+        waitForMarkerCount(webContents, "div", "suggestion", 0);
     }
 
     @Test
@@ -409,12 +363,7 @@ public class TextSuggestionMenuTest {
         mRule.setComposingText(composingText, 1);
         mRule.waitAndVerifyUpdateSelection(1, 5, 5, 0, 5);
 
-        Assert.assertEquals(
-                "1",
-                JavaScriptUtils.executeJavaScriptAndWaitForResult(
-                        webContents,
-                        "internals.markerCountForNode("
-                                + "document.getElementById('div').firstChild, 'suggestion')"));
+        waitForMarkerCount(webContents, "div", "suggestion", 1);
 
         // commitText() will replace the text in current composing range and there won't be a new
         // composing range. So we done with composing and the SuggestionSpan with SPAN_COMPOSING
@@ -422,12 +371,7 @@ public class TextSuggestionMenuTest {
         mRule.commitText(new SpannableString("helloworld"), 1);
         mRule.waitAndVerifyUpdateSelection(2, 10, 10, -1, -1);
 
-        Assert.assertEquals(
-                "0",
-                JavaScriptUtils.executeJavaScriptAndWaitForResult(
-                        webContents,
-                        "internals.markerCountForNode("
-                                + "document.getElementById('div').firstChild, 'suggestion')"));
+        waitForMarkerCount(webContents, "div", "suggestion", 0);
     }
 
     @Test
@@ -448,24 +392,74 @@ public class TextSuggestionMenuTest {
         mRule.setComposingText(composingText, 1);
         mRule.waitAndVerifyUpdateSelection(1, 5, 5, 0, 5);
 
-        Assert.assertEquals(
-                "1",
-                JavaScriptUtils.executeJavaScriptAndWaitForResult(
-                        webContents,
-                        "internals.markerCountForNode("
-                                + "document.getElementById('div').firstChild, 'suggestion')"));
+        waitForMarkerCount(webContents, "div", "suggestion", 1);
 
         // finishComposingText() will remove the composing range, any span has SPAN_COMPOSING flag
         // should be removed since there is no composing range available.
         mRule.finishComposingText();
         mRule.waitAndVerifyUpdateSelection(2, 5, 5, -1, -1);
 
-        Assert.assertEquals(
-                "0",
-                JavaScriptUtils.executeJavaScriptAndWaitForResult(
-                        webContents,
-                        "internals.markerCountForNode("
-                                + "document.getElementById('div').firstChild, 'suggestion')"));
+        waitForMarkerCount(webContents, "div", "suggestion", 0);
+    }
+
+    @Test
+    @LargeTest
+    @DisabledTest(message = "https://crbug.com/1156419")
+    public void testHostInstanceDifferentAfterNavigation() throws Throwable {
+        WebContents webContents = mRule.getWebContents();
+
+        // 1. Trigger creation of the host by showing a menu on the first page.
+        DOMUtils.focusNode(webContents, "div");
+        SpannableString textToCommit = new SpannableString("hello");
+        SuggestionSpan suggestionSpan =
+                new SuggestionSpan(
+                        mRule.getActivity(),
+                        new String[] {"goodbye"},
+                        SuggestionSpan.FLAG_EASY_CORRECT);
+        textToCommit.setSpan(suggestionSpan, 0, 5, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        commitTextAndVerify(textToCommit, "div", "hello");
+
+        waitForMarkerCount(webContents, "div", "suggestion", 1);
+
+        DOMUtils.clickNode(webContents, "div");
+        waitForMenuToShow(webContents);
+
+        TextSuggestionPopupController controller = getTextSuggestionPopupController(webContents);
+        TextSuggestionHost hostBeforeNav = controller.getLastShownHostForTesting();
+        Assert.assertNotNull("Host should have been created", hostBeforeNav);
+        int countBeforeNav = controller.getTextSuggestionHostsForTesting().size();
+
+        // 2. Navigate away to destroy the document.
+        mRule.fullyLoadUrl("about:blank");
+
+        // Old host should be destroyed and removed from map!
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(
+                            controller.getTextSuggestionHostsForTesting().size(),
+                            Matchers.lessThan(countBeforeNav));
+                });
+
+        // 3. Navigate back to the test URL to create a new document with the same content.
+        mRule.fullyLoadUrl(URL);
+
+        // 4. Trigger host creation again on the new document.
+        DOMUtils.focusNode(webContents, "div");
+        commitTextAndVerify(textToCommit, "div", "hello");
+
+        waitForMarkerCount(webContents, "div", "suggestion", 1);
+
+        DOMUtils.clickNode(webContents, "div");
+        waitForMenuToShow(webContents);
+
+        TextSuggestionHost hostAfterNav = controller.getLastShownHostForTesting();
+        Assert.assertNotNull("Host should have been created on new page", hostAfterNav);
+
+        // 5. Verify that the instances are different.
+        Assert.assertNotSame(
+                "TextSuggestionHost should be different for different documents",
+                hostBeforeNav,
+                hostAfterNav);
     }
 
     private void waitForMenuToShow(WebContents webContents) {
@@ -485,27 +479,51 @@ public class TextSuggestionMenuTest {
     private void waitForMenuToHide(WebContents webContents) {
         CriteriaHelper.pollUiThread(
                 () -> {
+                    TextSuggestionPopupController controller =
+                            getTextSuggestionPopupController(webContents);
                     SuggestionsPopupWindow suggestionsPopupWindow =
-                            getTextSuggestionHost(webContents)
-                                    .getTextSuggestionsPopupWindowForTesting();
+                            controller.getTextSuggestionsPopupWindowForTesting();
                     Criteria.checkThat(suggestionsPopupWindow, Matchers.nullValue());
 
                     SuggestionsPopupWindow spellCheckPopupWindow =
-                            getTextSuggestionHost(webContents).getSpellCheckPopupWindowForTesting();
+                            controller.getSpellCheckPopupWindowForTesting();
                     Criteria.checkThat(spellCheckPopupWindow, Matchers.nullValue());
                 });
     }
 
+    private void waitForMarkerCount(
+            WebContents webContents, String nodeId, String markerType, int expectedCount) {
+        CriteriaHelper.pollInstrumentationThread(
+                () -> {
+                    try {
+                        String count =
+                                JavaScriptUtils.executeJavaScriptAndWaitForResult(
+                                        webContents,
+                                        "internals.markerCountForNode("
+                                                + "document.getElementById('"
+                                                + nodeId
+                                                + "').firstChild, '"
+                                                + markerType
+                                                + "')");
+                        Criteria.checkThat(count, Matchers.is(String.valueOf(expectedCount)));
+                    } catch (TimeoutException e) {
+                        throw new CriteriaNotSatisfiedException(e);
+                    }
+                });
+    }
+
     private View getContentView(WebContents webContents) {
+        TextSuggestionPopupController controller = getTextSuggestionPopupController(webContents);
+
         SuggestionsPopupWindow suggestionsPopupWindow =
-                getTextSuggestionHost(webContents).getTextSuggestionsPopupWindowForTesting();
+                controller.getTextSuggestionsPopupWindowForTesting();
 
         if (suggestionsPopupWindow != null) {
             return suggestionsPopupWindow.getContentViewForTesting();
         }
 
         SuggestionsPopupWindow spellCheckPopupWindow =
-                getTextSuggestionHost(webContents).getSpellCheckPopupWindowForTesting();
+                controller.getSpellCheckPopupWindowForTesting();
 
         if (spellCheckPopupWindow != null) {
             return spellCheckPopupWindow.getContentViewForTesting();
@@ -514,9 +532,10 @@ public class TextSuggestionMenuTest {
         return null;
     }
 
-    private TextSuggestionHost getTextSuggestionHost(WebContents webContents) {
+    private TextSuggestionPopupController getTextSuggestionPopupController(
+            WebContents webContents) {
         return ThreadUtils.runOnUiThreadBlocking(
-                () -> TextSuggestionHost.fromWebContents(webContents));
+                () -> TextSuggestionPopupController.fromWebContents(webContents));
     }
 
     private ListView getSuggestionList(WebContents webContents) {
@@ -535,5 +554,25 @@ public class TextSuggestionMenuTest {
         }
 
         return contentView.findViewById(R.id.deleteButton);
+    }
+
+    private void commitTextAndVerify(
+            SpannableString textToCommit, String nodeId, String expectedContent) throws Throwable {
+        mRule.commitText(textToCommit, 1);
+
+        // Wait for renderer to acknowledge commitText(). ImeActivityTestRule.commitText() blocks
+        // and waits for the IME thread to finish, but the communication between the IME thread and
+        // the renderer is asynchronous, so if we try to run JavaScript right away, the text won't
+        // necessarily have been committed yet.
+        CriteriaHelper.pollInstrumentationThread(
+                () -> {
+                    try {
+                        Criteria.checkThat(
+                                DOMUtils.getNodeContents(mRule.getWebContents(), nodeId),
+                                Matchers.is(expectedContent));
+                    } catch (TimeoutException e) {
+                        throw new CriteriaNotSatisfiedException(e);
+                    }
+                });
     }
 }

@@ -178,9 +178,6 @@ static void JNI_ImeAdapterImpl_AppendUnderlineSpan(JNIEnv*,
 
 ImeAdapterAndroid::ImeAdapterAndroid(WebContents* web_contents)
     : RenderWidgetHostConnector(web_contents), rwhva_(nullptr) {
-  // Set up mojo client for TextSuggestionHost in advance. Java side is
-  // initialized lazily right before showing the menu first time.
-  TextSuggestionHostAndroid::Create(AttachCurrentThread(), web_contents);
 }
 
 ImeAdapterAndroid::~ImeAdapterAndroid() {

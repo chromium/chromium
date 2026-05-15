@@ -10,16 +10,17 @@
 #include "base/functional/bind.h"
 #include "content/browser/android/text_suggestion_host_mojo_impl_android.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
-#include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/web_contents.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
 #include "ui/gfx/android/view_configuration.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "content/public/android/content_jni_headers/SuggestionInfo_jni.h"
 #include "content/public/android/content_jni_headers/TextSuggestionHost_jni.h"
+#include "content/public/android/content_jni_headers/TextSuggestionPopupController_jni.h"
 
 using base::android::AttachCurrentThread;
 using base::android::ConvertJavaStringToUTF8;
@@ -36,15 +37,10 @@ const size_t kMaxNumberOfSuggestions = 5;
 
 }  // namespace
 
-void TextSuggestionHostAndroid::Create(JNIEnv* env, WebContents* web_contents) {
-  auto* text_suggestion_host = new TextSuggestionHostAndroid(env, web_contents);
-  text_suggestion_host->Initialize();
-}
+DOCUMENT_USER_DATA_KEY_IMPL(TextSuggestionHostAndroid);
 
-TextSuggestionHostAndroid::TextSuggestionHostAndroid(JNIEnv* env,
-                                                     WebContents* web_contents)
-    : RenderWidgetHostConnector(web_contents),
-      rwhva_(nullptr),
+TextSuggestionHostAndroid::TextSuggestionHostAndroid(RenderFrameHost* rfh)
+    : DocumentUserData<TextSuggestionHostAndroid>(rfh),
       suggestion_menu_timeout_(
           base::BindRepeating(
               &TextSuggestionHostAndroid::OnSuggestionMenuTimeout,
@@ -52,21 +48,14 @@ TextSuggestionHostAndroid::TextSuggestionHostAndroid(JNIEnv* env,
           GetUIThreadTaskRunner({BrowserTaskType::kUserInput})) {}
 
 TextSuggestionHostAndroid::~TextSuggestionHostAndroid() {
-  JNIEnv* env = AttachCurrentThread();
-  ScopedJavaLocalRef<jobject> obj = java_text_suggestion_host_.get(env);
-  if (!obj.is_null())
-    Java_TextSuggestionHost_onNativeDestroyed(env, obj);
-}
-
-void TextSuggestionHostAndroid::UpdateRenderProcessConnection(
-    RenderWidgetHostViewAndroid* old_rwhva,
-    RenderWidgetHostViewAndroid* new_rwhva) {
-  text_suggestion_backend_.reset();
-  if (old_rwhva)
-    old_rwhva->set_text_suggestion_host(nullptr);
-  if (new_rwhva)
-    new_rwhva->set_text_suggestion_host(this);
-  rwhva_ = new_rwhva;
+  WebContents* web_contents =
+      WebContents::FromRenderFrameHost(&render_frame_host());
+  if (web_contents) {
+    JNIEnv* env = base::android::AttachCurrentThread();
+    Java_TextSuggestionPopupController_onNativeTextSuggestionHostDestroyed(
+        env, web_contents->GetJavaWebContents(),
+        reinterpret_cast<intptr_t>(this));
+  }
 }
 
 void TextSuggestionHostAndroid::ApplySpellCheckSuggestion(
@@ -118,19 +107,6 @@ void TextSuggestionHostAndroid::OnSuggestionMenuClosed(JNIEnv*) {
   text_suggestion_backend->OnSuggestionMenuClosed();
 }
 
-ScopedJavaLocalRef<jobject>
-TextSuggestionHostAndroid::GetJavaTextSuggestionHost() {
-  JNIEnv* env = AttachCurrentThread();
-  ScopedJavaLocalRef<jobject> obj = java_text_suggestion_host_.get(env);
-  if (obj.is_null()) {
-    obj = Java_TextSuggestionHost_create(
-        env, RenderWidgetHostConnector::web_contents()->GetJavaWebContents(),
-        reinterpret_cast<intptr_t>(this));
-    java_text_suggestion_host_ = JavaObjectWeakGlobalRef(env, obj);
-  }
-  return obj;
-}
-
 void TextSuggestionHostAndroid::ShowSpellCheckSuggestionMenu(
     double caret_x,
     double caret_y,
@@ -141,13 +117,17 @@ void TextSuggestionHostAndroid::ShowSpellCheckSuggestionMenu(
   // tries to send bad input.
   for (size_t i = 0; i < suggestions.size() && i < kMaxNumberOfSuggestions; ++i)
     suggestion_strings.push_back(suggestions[i]->suggestion);
-  JNIEnv* env = AttachCurrentThread();
-  ScopedJavaLocalRef<jobject> obj = GetJavaTextSuggestionHost();
-  if (obj.is_null())
-    return;
 
-  Java_TextSuggestionHost_showSpellCheckSuggestionMenu(
-      env, obj, caret_x, caret_y, ConvertUTF8ToJavaString(env, marked_text),
+  WebContents* web_contents =
+      WebContents::FromRenderFrameHost(&render_frame_host());
+  if (!web_contents) {
+    return;
+  }
+
+  JNIEnv* env = AttachCurrentThread();
+  Java_TextSuggestionPopupController_showSpellCheckSuggestionMenu(
+      env, web_contents->GetJavaWebContents(), reinterpret_cast<intptr_t>(this),
+      caret_x, caret_y, ConvertUTF8ToJavaString(env, marked_text),
       ToJavaArrayOfStrings(env, suggestion_strings));
 }
 
@@ -156,10 +136,13 @@ void TextSuggestionHostAndroid::ShowTextSuggestionMenu(
     double caret_y,
     const std::string& marked_text,
     const std::vector<blink::mojom::TextSuggestionPtr>& suggestions) {
-  JNIEnv* env = AttachCurrentThread();
-  ScopedJavaLocalRef<jobject> obj = GetJavaTextSuggestionHost();
-  if (obj.is_null())
+  WebContents* web_contents =
+      WebContents::FromRenderFrameHost(&render_frame_host());
+  if (!web_contents) {
     return;
+  }
+
+  JNIEnv* env = AttachCurrentThread();
 
   // Enforce kMaxNumberOfSuggestions here in case the renderer is hijacked and
   // tries to send bad input.
@@ -178,8 +161,9 @@ void TextSuggestionHostAndroid::ShowTextSuggestionMenu(
         ConvertUTF8ToJavaString(env, suggestion_ptr->suffix));
   }
 
-  Java_TextSuggestionHost_showTextSuggestionMenu(
-      env, obj, caret_x, caret_y, ConvertUTF8ToJavaString(env, marked_text),
+  Java_TextSuggestionPopupController_showTextSuggestionMenu(
+      env, web_contents->GetJavaWebContents(), reinterpret_cast<intptr_t>(this),
+      caret_x, caret_y, ConvertUTF8ToJavaString(env, marked_text),
       jsuggestion_infos);
 }
 
@@ -189,15 +173,16 @@ void TextSuggestionHostAndroid::StartSuggestionMenuTimer() {
       base::Milliseconds(gfx::ViewConfiguration::GetDoubleTapTimeoutInMs()));
 }
 
-void TextSuggestionHostAndroid::OnKeyEvent() {
-  suggestion_menu_timeout_.Stop();
-
-  JNIEnv* env = AttachCurrentThread();
-  ScopedJavaLocalRef<jobject> obj = java_text_suggestion_host_.get(env);
-  if (obj.is_null())
+void TextSuggestionHostAndroid::HidePopups() {
+  WebContents* web_contents =
+      WebContents::FromRenderFrameHost(&render_frame_host());
+  if (!web_contents) {
     return;
+  }
 
-  Java_TextSuggestionHost_hidePopups(env, obj);
+  JNIEnv* env = base::android::AttachCurrentThread();
+  Java_TextSuggestionPopupController_hidePopups(
+      env, web_contents->GetJavaWebContents());
 }
 
 void TextSuggestionHostAndroid::StopSuggestionMenuTimer() {
@@ -210,28 +195,11 @@ void TextSuggestionHostAndroid::BindTextSuggestionHost(
       TextSuggestionHostMojoImplAndroid::Create(this, std::move(receiver));
 }
 
-RenderFrameHost* TextSuggestionHostAndroid::GetFocusedFrame() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  // We get the focused frame from the WebContents of the page. Although
-  // |rwhva_->GetFocusedWidget()| does a similar thing, there is no direct way
-  // to get a RenderFrameHost from its RWH.
-  if (!rwhva_)
-    return nullptr;
-  RenderWidgetHostImpl* rwh =
-      RenderWidgetHostImpl::From(rwhva_->GetRenderWidgetHost());
-  if (auto* contents = WebContentsImpl::FromRenderWidgetHostImpl(rwh))
-    return contents->GetFocusedFrame();
-
-  return nullptr;
-}
-
 const mojo::Remote<blink::mojom::TextSuggestionBackend>&
 TextSuggestionHostAndroid::GetTextSuggestionBackend() {
   if (!text_suggestion_backend_) {
-    if (RenderFrameHost* rfh = GetFocusedFrame()) {
-      rfh->GetRemoteInterfaces()->GetInterface(
-          text_suggestion_backend_.BindNewPipeAndPassReceiver());
-    }
+    render_frame_host().GetRemoteInterfaces()->GetInterface(
+        text_suggestion_backend_.BindNewPipeAndPassReceiver());
   }
   return text_suggestion_backend_;
 }
@@ -249,3 +217,4 @@ void TextSuggestionHostAndroid::OnSuggestionMenuTimeout() {
 
 DEFINE_JNI(SuggestionInfo)
 DEFINE_JNI(TextSuggestionHost)
+DEFINE_JNI(TextSuggestionPopupController)

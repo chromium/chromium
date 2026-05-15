@@ -90,7 +90,6 @@ class OverscrollControllerAndroid;
 class SelectionPopupController;
 class SynchronousCompositorHost;
 class SynchronousCompositorClient;
-class TextSuggestionHostAndroid;
 class TouchSelectionControllerClientManagerAndroid;
 class WebContentsAccessibilityAndroid;
 struct ContextMenuParams;
@@ -367,13 +366,7 @@ class CONTENT_EXPORT RenderWidgetHostViewAndroid
   SelectionPopupController* selection_popup_controller() const {
     return selection_popup_controller_.get();
   }
-  void set_text_suggestion_host(
-      TextSuggestionHostAndroid* text_suggestion_host) {
-    text_suggestion_host_ = text_suggestion_host;
-  }
-  TextSuggestionHostAndroid* text_suggestion_host() const {
-    return text_suggestion_host_;
-  }
+
   void SetGestureListenerManager(GestureListenerManager* manager);
 
   // See
@@ -700,7 +693,7 @@ class CONTENT_EXPORT RenderWidgetHostViewAndroid
 
   raw_ptr<ImeAdapterAndroid> ime_adapter_android_;
   raw_ptr<SelectionPopupController> selection_popup_controller_;
-  raw_ptr<TextSuggestionHostAndroid> text_suggestion_host_;
+
   raw_ptr<GestureListenerManager> gesture_listener_manager_;
 
   mutable ui::ViewAndroid view_;

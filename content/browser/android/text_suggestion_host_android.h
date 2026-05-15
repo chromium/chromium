@@ -7,10 +7,11 @@
 
 #include "base/memory/raw_ptr.h"
 #include "components/input/timeout_monitor.h"
-#include "content/browser/android/render_widget_host_connector.h"
+#include "content/public/browser/document_user_data.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/mojom/input/input_host.mojom.h"
 #include "third_party/blink/public/mojom/input/input_messages.mojom.h"
+#include "third_party/jni_zero/jni_zero.h"
 
 namespace content {
 
@@ -19,21 +20,11 @@ class TextSuggestionHostMojoImplAndroid;
 // This class, along with its Java counterpart TextSuggestionHost, is used to
 // implement the Android text suggestion menu that appears when you tap a
 // misspelled word. This class creates the Android implementation of
-// mojom::TextSuggestionHost, which is used to communicate back-and-forth with
-// Blink side code (these are separate classes due to lifecycle considerations;
-// this class is created by ImeAdapterAndroid ctor and destroyed together with
-// WebContents. Mojo code takes ownership of mojom::TextSuggestionHost).
-class TextSuggestionHostAndroid : public RenderWidgetHostConnector {
+// mojom::TextSuggestionHost.
+class TextSuggestionHostAndroid
+    : public DocumentUserData<TextSuggestionHostAndroid> {
  public:
-  static void Create(JNIEnv* env, WebContents* web_contents);
-  TextSuggestionHostAndroid(JNIEnv* env,
-                            WebContents* web_contents);
   ~TextSuggestionHostAndroid() override;
-
-  // RenderWidgetHostConnector implementation.
-  void UpdateRenderProcessConnection(
-      RenderWidgetHostViewAndroid* old_rwhva,
-      RenderWidgetHostViewAndroid* new_rhwva) override;
 
   // Called from the Java text suggestion menu to have Blink apply a spell
   // check suggestion.
@@ -73,9 +64,8 @@ class TextSuggestionHostAndroid : public RenderWidgetHostConnector {
       const std::string& marked_text,
       const std::vector<blink::mojom::TextSuggestionPtr>& suggestions);
 
-  // Called by browser-side code in response to an input event to stop the
-  // spell check menu timer and close the suggestion menu (if open).
-  void OnKeyEvent();
+  // Called to trigger any open popups to close.
+  void HidePopups();
   // Called by Blink when the user taps on a spell check marker and we might
   // want to show the text suggestion menu after the double-tap timer expires.
   void StartSuggestionMenuTimer();
@@ -87,17 +77,17 @@ class TextSuggestionHostAndroid : public RenderWidgetHostConnector {
       mojo::PendingReceiver<blink::mojom::TextSuggestionHost> receiver);
 
  private:
-  RenderFrameHost* GetFocusedFrame();
-  base::android::ScopedJavaLocalRef<jobject> GetJavaTextSuggestionHost();
+  friend class DocumentUserData<TextSuggestionHostAndroid>;
+  DOCUMENT_USER_DATA_KEY_DECL();
+
+  explicit TextSuggestionHostAndroid(RenderFrameHost* rfh);
+
   const mojo::Remote<blink::mojom::TextSuggestionBackend>&
   GetTextSuggestionBackend();
   // Used by the spell check menu timer to notify Blink that the timer has
   // expired.
   void OnSuggestionMenuTimeout();
 
-  // Current RenderWidgetHostView connected to this instance. Can be null.
-  raw_ptr<RenderWidgetHostViewAndroid> rwhva_;
-  JavaObjectWeakGlobalRef java_text_suggestion_host_;
   mojo::Remote<blink::mojom::TextSuggestionBackend> text_suggestion_backend_;
   std::unique_ptr<TextSuggestionHostMojoImplAndroid> text_suggestion_impl_;
   input::TimeoutMonitor suggestion_menu_timeout_;
