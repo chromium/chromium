@@ -12,7 +12,7 @@
 // support immersive mode yet.
 class ImmersiveModeControllerStub : public ImmersiveModeController {
  public:
-  explicit ImmersiveModeControllerStub(BrowserWindowInterface* browser);
+  explicit ImmersiveModeControllerStub(ui::UnownedUserDataHost& host);
 
   // ImmersiveModeController overrides:
   void Init(BrowserView* browser_view) override;

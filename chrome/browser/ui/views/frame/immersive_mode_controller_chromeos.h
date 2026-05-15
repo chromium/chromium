@@ -25,7 +25,7 @@ class ImmersiveModeControllerChromeos
       public FullscreenObserver,
       public aura::WindowObserver {
  public:
-  explicit ImmersiveModeControllerChromeos(BrowserWindowInterface* browser);
+  explicit ImmersiveModeControllerChromeos(ui::UnownedUserDataHost& host);
 
   ImmersiveModeControllerChromeos(const ImmersiveModeControllerChromeos&) =
       delete;

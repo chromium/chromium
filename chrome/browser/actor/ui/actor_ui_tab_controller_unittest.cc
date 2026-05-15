@@ -111,8 +111,8 @@ class ActorUiTabControllerTest : public ChromeRenderViewHostTestHarness {
     ON_CALL(mock_browser_window_interface_, GetUnownedUserDataHost)
         .WillByDefault(ReturnRef(user_data_host_));
 
-    immersive_mode_controller_ = std::make_unique<MockImmersiveModeController>(
-        &mock_browser_window_interface_);
+    immersive_mode_controller_ =
+        std::make_unique<MockImmersiveModeController>(user_data_host_);
     ON_CALL(*immersive_mode_controller(), IsEnabled())
         .WillByDefault(Return(false));
 

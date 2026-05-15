@@ -77,10 +77,9 @@ ImmersiveModeControllerMac::RevealedLock::~RevealedLock() {
 }
 
 ImmersiveModeControllerMac::ImmersiveModeControllerMac(
-    BrowserWindowInterface* browser,
+    ui::UnownedUserDataHost& host,
     bool separate_tab_strip)
-    : ImmersiveModeController(browser),
-      separate_tab_strip_(separate_tab_strip) {}
+    : ImmersiveModeController(host), separate_tab_strip_(separate_tab_strip) {}
 
 ImmersiveModeControllerMac::~ImmersiveModeControllerMac() {
   CHECK(!views::WidgetObserver::IsInObserverList());

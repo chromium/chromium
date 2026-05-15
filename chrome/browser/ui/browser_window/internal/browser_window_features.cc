@@ -117,7 +117,6 @@
 #include "chrome/browser/ui/views/frame/find_bar_owner_views.h"
 #include "chrome/browser/ui/views/frame/horizontal_tab_strip_region_view.h"
 #include "chrome/browser/ui/views/frame/immersive_mode_controller.h"
-#include "chrome/browser/ui/views/frame/immersive_mode_controller_stub.h"
 #include "chrome/browser/ui/views/frame/multi_contents_view.h"
 #include "chrome/browser/ui/views/frame/scrim_view_controller.h"
 #include "chrome/browser/ui/views/fullscreen_control/fullscreen_control_host.h"
@@ -289,6 +288,15 @@ void BrowserWindowFeatures::Init(BrowserWindowInterface* browser) {
           browser->GetType(),
           browser->GetBrowserForMigrationOnly()->is_trusted_source(),
           browser->GetUnownedUserDataHost());
+
+  immersive_mode_controller_ =
+      GetUserDataFactory()
+          .CreateInstanceWithFactoryMethod<ImmersiveModeController,
+                                           WindowFeatureController*,
+                                           ui::UnownedUserDataHost&>(
+              *browser_, &chrome::CreateImmersiveModeController,
+              window_feature_controller_.get(),
+              browser->GetUnownedUserDataHost());
 
   browser_command_controller_ =
       std::make_unique<chrome::BrowserCommandController>(browser);
@@ -811,12 +819,6 @@ void BrowserWindowFeatures::InitPostWindowConstruction(Browser* browser) {
     zoom_bubble_coordinator_ =
         GetUserDataFactory().CreateInstance<ZoomBubbleCoordinator>(
             *browser_, *browser_, zoom_bubble_manager_.get());
-
-    // Provide a stub immersive mode controller so things that use it don't
-    // crash. This will need to be changed to use a proper one on platforms
-    // that support it.
-    immersive_mode_controller_ =
-        std::make_unique<ImmersiveModeControllerStub>(browser);
   }
 
   // Focus manager can be null in tests.
@@ -880,10 +882,6 @@ void BrowserWindowFeatures::InitPostBrowserViewConstruction(
         GetUserDataFactory().CreateInstance<CommentsSidePanelCoordinator>(
             *browser_view->browser(), browser_view->browser());
   }
-
-  immersive_mode_controller_ =
-      GetUserDataFactory().CreateInstanceWithFactoryMethod(
-          *browser_, &chrome::CreateImmersiveModeController, browser_view);
 
   if (base::FeatureList::IsEnabled(contextual_tasks::kContextualTasks)) {
     contextual_tasks_active_task_context_provider_ =

@@ -8,8 +8,8 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 
 ImmersiveModeControllerStub::ImmersiveModeControllerStub(
-    BrowserWindowInterface* browser)
-    : ImmersiveModeController(browser) {}
+    ui::UnownedUserDataHost& host)
+    : ImmersiveModeController(host) {}
 
 void ImmersiveModeControllerStub::Init(BrowserView* browser_view) {}
 

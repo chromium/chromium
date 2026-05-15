@@ -4,15 +4,14 @@
 
 #include "build/build_config.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/immersive_mode_controller_stub.h"
+#include "chrome/browser/ui/window_feature_controller/window_feature_controller.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ui/views/frame/immersive_mode_controller_chromeos.h"
 #endif
 
 #if BUILDFLAG(IS_MAC)
-#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/immersive_mode_controller_mac.h"
 #include "chrome/browser/ui/window_feature_controller/window_feature_controller.h"
 #endif
@@ -20,20 +19,20 @@
 namespace chrome {
 
 std::unique_ptr<ImmersiveModeController> CreateImmersiveModeController(
-    BrowserView* browser_view) {
+    WindowFeatureController* window_feature_controller,
+    ui::UnownedUserDataHost& host) {
 #if BUILDFLAG(IS_CHROMEOS)
-  return std::make_unique<ImmersiveModeControllerChromeos>(
-      browser_view->browser());
+  return std::make_unique<ImmersiveModeControllerChromeos>(host);
 #elif BUILDFLAG(IS_MAC)
-  auto* controller = WindowFeatureController::From(browser_view->browser());
-  if (controller->UsesImmersiveFullscreenMode()) {
+  if (window_feature_controller->UsesImmersiveFullscreenMode()) {
     return std::make_unique<ImmersiveModeControllerMac>(
-        browser_view->browser(),
-        /*separate_tab_strip=*/controller->UsesImmersiveFullscreenTabbedMode());
+        host,
+        /*separate_tab_strip=*/window_feature_controller
+            ->UsesImmersiveFullscreenTabbedMode());
   }
-  return std::make_unique<ImmersiveModeControllerStub>(browser_view->browser());
+  return std::make_unique<ImmersiveModeControllerStub>(host);
 #else
-  return std::make_unique<ImmersiveModeControllerStub>(browser_view->browser());
+  return std::make_unique<ImmersiveModeControllerStub>(host);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 }
 

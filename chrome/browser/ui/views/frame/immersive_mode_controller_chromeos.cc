@@ -86,8 +86,8 @@ class ImmersiveRevealedLockChromeos : public ImmersiveRevealedLock {
 }  // namespace
 
 ImmersiveModeControllerChromeos::ImmersiveModeControllerChromeos(
-    BrowserWindowInterface* browser)
-    : ImmersiveModeController(browser) {}
+    ui::UnownedUserDataHost& host)
+    : ImmersiveModeController(host) {}
 
 ImmersiveModeControllerChromeos::~ImmersiveModeControllerChromeos() = default;
 

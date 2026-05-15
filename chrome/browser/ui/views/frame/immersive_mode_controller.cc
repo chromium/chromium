@@ -21,9 +21,8 @@ const ImmersiveModeController* ImmersiveModeController::From(
   return Get(browser->GetUnownedUserDataHost());
 }
 
-ImmersiveModeController::ImmersiveModeController(
-    BrowserWindowInterface* browser)
-    : scoped_unowned_user_data_(browser->GetUnownedUserDataHost(), *this) {}
+ImmersiveModeController::ImmersiveModeController(ui::UnownedUserDataHost& host)
+    : scoped_unowned_user_data_(host, *this) {}
 
 ImmersiveModeController::~ImmersiveModeController() {
   observers_.Notify(&Observer::OnImmersiveModeControllerDestroyed);

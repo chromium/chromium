@@ -64,7 +64,7 @@ class ImmersiveModeControllerMac : public ImmersiveModeController,
 
   // If `separate_tab_strip` is true, the tab strip is split out into its own
   // widget separate from the overlay view so that it can live in the title bar.
-  explicit ImmersiveModeControllerMac(BrowserWindowInterface* window,
+  explicit ImmersiveModeControllerMac(ui::UnownedUserDataHost& host,
                                       bool separate_tab_strip);
 
   ImmersiveModeControllerMac(const ImmersiveModeControllerMac&) = delete;
