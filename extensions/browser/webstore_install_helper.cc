@@ -38,7 +38,7 @@ WebstoreInstallHelper::WebstoreInstallHelper(Delegate* delegate,
       icon_url_(icon_url),
       icon_decode_complete_(false),
       manifest_parse_complete_(false),
-      parse_error_(Delegate::UNKNOWN_ERROR) {}
+      parse_error_(Delegate::InstallHelperResultCode::kUnknownError) {}
 
 WebstoreInstallHelper::~WebstoreInstallHelper() = default;
 
@@ -111,7 +111,7 @@ void WebstoreInstallHelper::OnFetchComplete(
           image_fetcher::RequestMetadata::ResponseCode::RESPONSE_CODE_INVALID ||
       fetched_image.IsEmpty()) {
     error_ = kImageDecodeError;
-    parse_error_ = Delegate::ICON_ERROR;
+    parse_error_ = Delegate::InstallHelperResultCode::kIconError;
   } else {
     icon_ = fetched_image.AsBitmap();
   }
@@ -144,7 +144,7 @@ void WebstoreInstallHelper::OnJSONParsed(
     error_ = (!result.has_value() || result.error().empty())
                  ? "Invalid JSON response"
                  : result.error();
-    parse_error_ = Delegate::kManifestError;
+    parse_error_ = Delegate::InstallHelperResultCode::kManifestError;
   }
   ReportResultsIfComplete();
 }

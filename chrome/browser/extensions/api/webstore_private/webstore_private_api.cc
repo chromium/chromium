@@ -196,11 +196,13 @@ void PendingApprovals::Clear() {
 api::webstore_private::Result WebstoreInstallHelperResultToApiResult(
     WebstoreInstallHelper::Delegate::InstallHelperResultCode result) {
   switch (result) {
-    case WebstoreInstallHelper::Delegate::UNKNOWN_ERROR:
+    case WebstoreInstallHelper::Delegate::InstallHelperResultCode::
+        kUnknownError:
       return api::webstore_private::Result::kUnknownError;
-    case WebstoreInstallHelper::Delegate::ICON_ERROR:
+    case WebstoreInstallHelper::Delegate::InstallHelperResultCode::kIconError:
       return api::webstore_private::Result::kIconError;
-    case WebstoreInstallHelper::Delegate::kManifestError:
+    case WebstoreInstallHelper::Delegate::InstallHelperResultCode::
+        kManifestError:
       return api::webstore_private::Result::kManifestError;
   }
   NOTREACHED();
@@ -531,7 +533,8 @@ void WebstorePrivateBeginInstallWithManifest3Function::OnWebstoreParseSuccess(
       detailed_error += ": " + base::UTF16ToUTF8(error);
     }
     OnWebstoreParseFailure(details().id,
-                           WebstoreInstallHelper::Delegate::kManifestError,
+                           WebstoreInstallHelper::Delegate::
+                               InstallHelperResultCode::kManifestError,
                            detailed_error);
     return;
   }

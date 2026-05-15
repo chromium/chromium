@@ -301,10 +301,11 @@ void WebstoreStandaloneInstaller::OnWebstoreParseFailure(
     const std::string& error_message) {
   webstore_install::Result install_result = webstore_install::OTHER_ERROR;
   switch (result_code) {
-    case WebstoreInstallHelper::Delegate::kManifestError:
+    case WebstoreInstallHelper::Delegate::InstallHelperResultCode::
+        kManifestError:
       install_result = webstore_install::INVALID_MANIFEST;
       break;
-    case WebstoreInstallHelper::Delegate::ICON_ERROR:
+    case WebstoreInstallHelper::Delegate::InstallHelperResultCode::kIconError:
       install_result = webstore_install::ICON_ERROR;
       break;
     default:
