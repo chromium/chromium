@@ -22,8 +22,17 @@ class AccessCodeCastHandlerBrowserTest
 
 // TODO(b/235275754): Add a case for when the network is connected and we
 // surface a server error.
+//
+// TODO(crbug.com/513366591): Re-enable this test on Linux once the flakiness is
+// fixed.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_ExpectNetworkErrorWhenNoNetwork \
+  DISABLED_ExpectNetworkErrorWhenNoNetwork
+#else
+#define MAYBE_ExpectNetworkErrorWhenNoNetwork ExpectNetworkErrorWhenNoNetwork
+#endif
 IN_PROC_BROWSER_TEST_F(AccessCodeCastHandlerBrowserTest,
-                       ExpectNetworkErrorWhenNoNetwork) {
+                       MAYBE_ExpectNetworkErrorWhenNoNetwork) {
   EnableAccessCodeCasting();
 
   // This tests that if the network is not present (we are not connected to the
