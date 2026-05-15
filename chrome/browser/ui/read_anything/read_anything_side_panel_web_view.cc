@@ -16,9 +16,11 @@
 #include "components/input/native_web_keyboard_event.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/context_menu_params.h"
+#include "content/public/common/url_constants.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/events/keycodes/keyboard_codes.h"
+#include "url/url_constants.h"
 
 using SidePanelWebUIViewT_ReadAnythingUntrustedUI =
     SidePanelWebUIViewT<ReadAnythingUntrustedUI>;
@@ -65,6 +67,13 @@ content::WebContents* ReadAnythingSidePanelWebView::OpenURLFromTab(
     const content::OpenURLParams& params,
     base::OnceCallback<void(content::NavigationHandle&)>
         navigation_handle_callback) {
+  // Block navigation to unsupported URL schemes.
+  if (params.url.SchemeIs(content::kChromeUIScheme) ||
+      params.url.SchemeIs(url::kFileScheme) ||
+      params.url.SchemeIs(content::kChromeUIUntrustedScheme) ||
+      params.url.SchemeIs(url::kJavaScriptScheme)) {
+    return nullptr;
+  }
   ReadAnythingSidePanelController* controller =
       ReadAnythingSidePanelControllerGlue::FromWebContents(web_contents())
           ->controller();

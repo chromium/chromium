@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/read_anything/read_anything_controller.h"
 
+#include "base/functional/callback_helpers.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
@@ -1942,6 +1943,83 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
       search_args, template_url_service->search_terms_data()));
 
   EXPECT_EQ(expected_url, new_tab->GetURL());
+}
+
+IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
+                       OpenURLFromTab_BlocksProhibitedSchemes) {
+  // 1. Check Immersive mode.
+  GURL url(embedded_test_server()->GetURL("/simple.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  tabs::TabInterface* tab = browser()->tab_strip_model()->GetActiveTab();
+  ASSERT_TRUE(tab);
+  auto* controller = ReadAnythingController::From(tab);
+  ASSERT_TRUE(controller);
+
+  controller->ShowImmersiveUI(ReadAnythingOpenTrigger::kOmniboxChip);
+  AwaitAndAssertOverlayVisibility(/*visible=*/true);
+
+  content::WebContents* immersive_contents = GetImmersiveWebContents();
+  ASSERT_TRUE(immersive_contents);
+  content::WebContentsDelegate* immersive_delegate =
+      immersive_contents->GetDelegate();
+  ASSERT_TRUE(immersive_delegate);
+
+  int initial_tab_count = browser()->tab_strip_model()->count();
+
+  content::OpenURLParams chrome_params(
+      GURL("chrome://settings/"), content::Referrer(),
+      WindowOpenDisposition::NEW_FOREGROUND_TAB, ui::PAGE_TRANSITION_LINK,
+      false);
+  EXPECT_EQ(nullptr, immersive_delegate->OpenURLFromTab(
+                         immersive_contents, chrome_params, base::DoNothing()));
+  EXPECT_EQ(initial_tab_count, browser()->tab_strip_model()->count());
+
+  content::OpenURLParams file_params(GURL("file:///etc/passwd"),
+                                     content::Referrer(),
+                                     WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                                     ui::PAGE_TRANSITION_LINK, false);
+  EXPECT_EQ(nullptr, immersive_delegate->OpenURLFromTab(
+                         immersive_contents, file_params, base::DoNothing()));
+  EXPECT_EQ(initial_tab_count, browser()->tab_strip_model()->count());
+
+  content::OpenURLParams js_params(GURL("javascript:alert(1)"),
+                                   content::Referrer(),
+                                   WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                                   ui::PAGE_TRANSITION_LINK, false);
+  EXPECT_EQ(nullptr, immersive_delegate->OpenURLFromTab(
+                         immersive_contents, js_params, base::DoNothing()));
+  EXPECT_EQ(initial_tab_count, browser()->tab_strip_model()->count());
+
+  controller->CloseImmersiveUI(ReadAnythingCloseReason::kClosedByUser);
+  AssertOverlayVisibility(/*visible=*/false);
+
+  // 2. Check Side Panel mode.
+  controller->ShowSidePanelUI(SidePanelOpenTrigger::kAppMenu);
+  auto* side_panel_ui = browser()->GetFeatures().side_panel_ui();
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return side_panel_ui->IsSidePanelEntryShowing(
+        SidePanelEntryKey(SidePanelEntryId::kReadAnything));
+  }));
+
+  content::WebContents* side_panel_contents = GetSidePanelWebContents();
+  ASSERT_TRUE(side_panel_contents);
+  content::WebContentsDelegate* side_panel_delegate =
+      side_panel_contents->GetDelegate();
+  ASSERT_TRUE(side_panel_delegate);
+
+  EXPECT_EQ(nullptr,
+            side_panel_delegate->OpenURLFromTab(
+                side_panel_contents, chrome_params, base::DoNothing()));
+  EXPECT_EQ(initial_tab_count, browser()->tab_strip_model()->count());
+
+  EXPECT_EQ(nullptr, side_panel_delegate->OpenURLFromTab(
+                         side_panel_contents, file_params, base::DoNothing()));
+  EXPECT_EQ(initial_tab_count, browser()->tab_strip_model()->count());
+
+  EXPECT_EQ(nullptr, side_panel_delegate->OpenURLFromTab(
+                         side_panel_contents, js_params, base::DoNothing()));
+  EXPECT_EQ(initial_tab_count, browser()->tab_strip_model()->count());
 }
 
 IN_PROC_BROWSER_TEST_F(
