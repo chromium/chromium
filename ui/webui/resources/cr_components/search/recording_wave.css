@@ -9,7 +9,7 @@
 
 :host {
   --bar-max-height: 40px;
-  --color-recording-wave: #8ab4f8;
+  --color-recording-wave: #c9d2ff;
   --recording-wave-top-padding: 10px;
 
   align-items: flex-start;
@@ -96,4 +96,10 @@
   inset-inline-start: 50%;
   transform: translate(-50%, -50%);
   position: absolute;
+}
+
+@media (prefers-color-scheme: dark) {
+  :host {
+    --color-recording-wave: #37466d;
+  }
 }
