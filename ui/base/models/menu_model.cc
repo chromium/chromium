@@ -87,6 +87,10 @@ ImageModel MenuModel::GetMinorIconAt(size_t index) const {
   return ImageModel();
 }
 
+bool MenuModel::GetMinorIconOnRight(MinorIconOnRightPasskey) const {
+  return false;
+}
+
 bool MenuModel::MayHaveMnemonicsAt(size_t index) const {
   return true;
 }

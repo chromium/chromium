@@ -376,6 +376,13 @@ void SimpleMenuModel::SetMinorIcon(size_t index,
   items_[ValidateItemIndex(index)].minor_icon = minor_icon;
 }
 
+void SimpleMenuModel::SetMinorIconOnRight(
+    MenuModel::MinorIconOnRightPasskey passkey,
+    bool minor_icon_on_right) {
+  items_[ValidateItemIndex(passkey.index())].minor_icon_on_right =
+      minor_icon_on_right;
+}
+
 void SimpleMenuModel::SetEnabledAt(size_t index, bool enabled) {
   if (items_[ValidateItemIndex(index)].enabled == enabled) {
     return;
@@ -488,6 +495,11 @@ bool SimpleMenuModel::GetMinorTextIsUrlAt(size_t index) const {
 
 ImageModel SimpleMenuModel::GetMinorIconAt(size_t index) const {
   return items_[ValidateItemIndex(index)].minor_icon;
+}
+
+bool SimpleMenuModel::GetMinorIconOnRight(
+    MenuModel::MinorIconOnRightPasskey passkey) const {
+  return items_[ValidateItemIndex(passkey.index())].minor_icon_on_right;
 }
 
 bool SimpleMenuModel::IsItemDynamicAt(size_t index) const {

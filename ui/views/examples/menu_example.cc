@@ -21,6 +21,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/mojom/menu_source_type.mojom.h"
+#include "ui/color/color_id.h"
 #include "ui/compositor/layer_tree_owner.h"
 #include "ui/menus/simple_menu_model.h"
 #include "ui/views/border.h"
@@ -37,6 +38,7 @@
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/layout_provider.h"
 #include "ui/views/metadata/view_factory.h"
+#include "ui/views/vector_icons.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 
@@ -58,6 +60,8 @@ enum CommandID {
   COMMAND_CHECK_ORANGE,
   COMMAND_CHECK_KIWI,
   COMMAND_GO_HOME,
+  COMMAND_SELECT_ITEM_2,
+  COMMAND_SELECT_ITEM_3,
 };
 
 // The base class for creating a menu runner.
@@ -71,7 +75,7 @@ class MenuRunnerFactory {
 
 class CommandExecutor {
  public:
-  CommandExecutor();
+  explicit CommandExecutor(ui::SimpleMenuModel* menu_model);
   virtual ~CommandExecutor();
 
   bool IsCommandIdChecked(int command_id) const;
@@ -79,6 +83,7 @@ class CommandExecutor {
   virtual void ExecuteCommand(int command_id, int event_flags);
 
  private:
+  raw_ptr<ui::SimpleMenuModel> menu_model_;
   std::set<int> checked_fruits_;
   int current_encoding_command_id_ = COMMAND_SELECT_ASCII;
 };
@@ -102,7 +107,7 @@ class ExampleMenuModel : public ui::SimpleMenuModel,
   };
 
   std::unique_ptr<ui::SimpleMenuModel> submenu_;
-  CommandExecutor executor_;
+  CommandExecutor executor_{this};
 };
 
 class ExampleMenuButton : public MenuButton {
@@ -208,7 +213,7 @@ class DraggableMenuRunnerFactory : public MenuRunnerFactory,
                    std::unique_ptr<ui::LayerTreeOwner> drag_image_layer_owner);
 
   std::vector<Model> models_;
-  CommandExecutor executor_;
+  CommandExecutor executor_{nullptr};
 };
 
 }  // namespace views::examples
@@ -274,10 +279,30 @@ void CommandExecutor::ExecuteCommand(int command_id, int event_flags) {
       }
       break;
     }
+
+    // Select Items.
+    case COMMAND_SELECT_ITEM_2:
+    case COMMAND_SELECT_ITEM_3: {
+      if (!menu_model_) {
+        break;
+      }
+      ui::SimpleMenuModel* sub_menu = static_cast<ui::SimpleMenuModel*>(
+          menu_model_->GetSubmenuModelAt(menu_model_->GetItemCount() - 1));
+      CHECK(sub_menu);
+      auto index = sub_menu->GetIndexOfCommandId(command_id);
+      CHECK(index.has_value());
+      sub_menu->SetMinorIcon(
+          index.value(),
+          ui::ImageModel::FromVectorIcon(views::kCheckboxCheckCr2023OldIcon));
+      PrintStatus(std::string("Selected Item ") +
+                  (command_id == COMMAND_SELECT_ITEM_2 ? "2" : "3"));
+      break;
+    }
   }
 }
 
-CommandExecutor::CommandExecutor() = default;
+CommandExecutor::CommandExecutor(ui::SimpleMenuModel* menu_model)
+    : menu_model_(menu_model) {}
 
 CommandExecutor::~CommandExecutor() = default;
 
@@ -325,6 +350,25 @@ ExampleMenuModel::ExampleMenuModel() : ui::SimpleMenuModel(this) {
   submenu_ = std::make_unique<ui::SimpleMenuModel>(this);
   submenu_->AddItem(COMMAND_DO_SOMETHING,
                     GetStringUTF16(IDS_MENU_DO_SOMETHING_2_LABEL));
+  submenu_->AddItem(COMMAND_SELECT_ITEM_2, u"Sub Item #2");
+  submenu_->SetMinorIcon(
+      submenu_->GetItemCount() - 1,
+      ui::ImageModel::FromVectorIcon(views::kCheckboxCheckCr2023OldIcon));
+  submenu_->SetMinorIconOnRight(ui::SimpleMenuModel::MinorIconOnRightPasskey(
+                                    submenu_->GetItemCount() - 1),
+                                true);
+  submenu_->SetMinorText(submenu_->GetItemCount() - 1, u"Current tab");
+
+  submenu_->AddItem(COMMAND_SELECT_ITEM_3, u"Sub Item #3");
+  submenu_->SetMinorIcon(
+      submenu_->GetItemCount() - 1,
+      ui::ImageModel::FromVectorIcon(views::kMenuRadioEmptyOldIcon,
+                                     ui::kColorRadioButtonForegroundUnchecked,
+                                     kMenuCheckSize));
+  submenu_->SetMinorIconOnRight(ui::SimpleMenuModel::MinorIconOnRightPasskey(
+                                    submenu_->GetItemCount() - 1),
+                                true);
+
   AddSubMenu(0, GetStringUTF16(IDS_MENU_SUBMENU_LABEL), submenu_.get());
 }
 

@@ -142,6 +142,8 @@ MenuItemView* MenuModelAdapter::AddMenuItemFromModelAt(ui::MenuModel* model,
   if (model->GetMinorTextIsUrlAt(model_index)) {
     menu_item_view->SetMinorTextIsUrl(true);
   }
+  menu_item_view->SetMinorIconOnRight(model->GetMinorIconOnRight(
+      ui::MenuModel::MinorIconOnRightPasskey(model_index)));
   menu_item_view->set_new_badge_type(model->GetNewBadgeTypeAt(model_index));
   menu_item_view->set_may_have_mnemonics(
       model->MayHaveMnemonicsAt(model_index));

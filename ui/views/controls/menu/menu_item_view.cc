@@ -497,6 +497,9 @@ SubmenuView* MenuItemView::CreateSubmenu() {
   // Initialize the submenu indicator icon (arrow).
   submenu_arrow_image_view_ = AddChildView(std::make_unique<ImageView>());
 
+  // Cannot have the minor icon on the right if a sub-menu is set.
+  CHECK(!minor_icon_on_right_);
+
   // Force an update as `submenu_arrow_image_view_` needs to be updated. The
   // state is also updated when the theme changes (which is also called when
   // added to a widget).
@@ -559,6 +562,12 @@ void MenuItemView::SetMinorTextIsUrl(bool is_url) {
 void MenuItemView::SetMinorIcon(const ui::ImageModel& minor_icon) {
   minor_icon_ = minor_icon;
   invalidate_dimensions();  // Triggers preferred size recalculation.
+}
+
+void MenuItemView::SetMinorIconOnRight(bool minor_icon_on_right) {
+  minor_icon_on_right_ = minor_icon_on_right;
+  CHECK(!minor_icon_on_right_ || !submenu_arrow_image_view_);
+  invalidate_dimensions();
 }
 
 void MenuItemView::SetSelected(bool selected) {
@@ -1244,15 +1253,41 @@ void MenuItemView::PaintMinorIconAndText(gfx::Canvas* canvas, SkColor color) {
       submenu_arrow_image_view_
           ? submenu_arrow_image_view_->width() + config.item_horizontal_padding
           : 0;
-
-  gfx::Rect minor_text_bounds(
-      width() - submenu->trailing_padding() - max_minor_text_width,
-      vertical_margin, max_minor_text_width - submenu_arrow_width,
-      height() - vertical_margin * 2);
-  minor_text_bounds.set_x(GetMirroredXForRect(minor_text_bounds));
+  const int minor_icon_width =
+      !minor_icon_.IsEmpty()
+          ? minor_icon_.Size().width() +
+                (minor_text.empty() ? 0 : config.item_horizontal_padding)
+          : 0;
 
   std::unique_ptr<gfx::RenderText> render_text =
       gfx::RenderText::CreateRenderText();
+
+  gfx::Rect minor_text_bounds(
+      width() - submenu->trailing_padding() - max_minor_text_width,
+      vertical_margin,
+      max_minor_text_width - submenu_arrow_width -
+          (minor_icon_on_right_ ? minor_icon_width : 0),
+      height() - vertical_margin * 2);
+  minor_text_bounds.set_x(GetMirroredXForRect(minor_text_bounds));
+
+  auto paint_minor_icon = [&](bool paint_on_right) {
+    if (!minor_icon_.IsEmpty()) {
+      const gfx::ImageSkia image = minor_icon_.Rasterize(GetColorProvider());
+
+      const int padding =
+          minor_text.empty() ? 0 : config.item_horizontal_padding;
+      const int image_x =
+          (paint_on_right)
+              ? GetMirroredRect(minor_text_bounds).right() + padding
+              : GetMirroredRect(minor_text_bounds).right() -
+                    render_text->GetContentWidth() - padding - image.width();
+      const int image_y = minor_text_bounds.y() +
+                          (minor_text_bounds.height() - image.height()) / 2;
+      canvas->DrawImageInt(
+          image, GetMirroredXWithWidthInView(image_x, image.width()), image_y);
+    }
+  };
+
   if (!minor_text.empty()) {
     render_text->SetText(minor_text);
     render_text->SetFontList(GetFontList());
@@ -1266,19 +1301,7 @@ void MenuItemView::PaintMinorIconAndText(gfx::Canvas* canvas, SkColor color) {
     render_text->Draw(canvas);
   }
 
-  if (!minor_icon_.IsEmpty()) {
-    const gfx::ImageSkia image = minor_icon_.Rasterize(GetColorProvider());
-
-    const int image_x =
-        GetMirroredRect(minor_text_bounds).right() -
-        render_text->GetContentWidth() -
-        (minor_text.empty() ? 0 : config.item_horizontal_padding) -
-        image.width();
-    const int image_y = minor_text_bounds.y() +
-                        (minor_text_bounds.height() - image.height()) / 2;
-    canvas->DrawImageInt(
-        image, GetMirroredXWithWidthInView(image_x, image.width()), image_y);
-  }
+  paint_minor_icon(minor_icon_on_right_);
 }
 
 SkColor MenuItemView::GetTextColor(bool minor, bool paint_as_selected) const {

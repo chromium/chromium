@@ -784,7 +784,9 @@ bool DesignerExample::GrabHandles::IsGrabHandle(View* view) {
 DesignerExample::DesignerExample() : ExampleBase("Designer") {}
 
 DesignerExample::~DesignerExample() {
-  inspector_->SetModel(nullptr);
+  if (tracker_.view()) {
+    inspector_->SetModel(nullptr);
+  }
 }
 
 void DesignerExample::CreateExampleView(View* container) {

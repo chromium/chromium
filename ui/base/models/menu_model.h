@@ -5,6 +5,7 @@
 #ifndef UI_BASE_MODELS_MENU_MODEL_H_
 #define UI_BASE_MODELS_MENU_MODEL_H_
 
+#include <cstddef>
 #include <optional>
 #include <string>
 
@@ -17,15 +18,26 @@
 #include "ui/color/color_id.h"
 #include "ui/gfx/native_ui_types.h"
 
+// For the friend class below only.
+class OmniboxContextMenuController;
+
 namespace gfx {
 class FontList;
 }
 
+namespace views {
+class MenuModelAdapter;
+namespace examples {
+class ExampleMenuModel;
+}  // namespace examples
+
+}  // namespace views
 namespace ui {
 
 class Accelerator;
 class ButtonMenuItemModel;
 class ImageModel;
+class SimpleMenuModel;
 
 // The new badge type that can be displayed next to a menu item to promote a
 // feature.
@@ -55,6 +67,27 @@ class COMPONENT_EXPORT(UI_BASE) MenuModel {
 
   // ID to use for TYPE_TITLE items.
   static constexpr int kTitleId = -2;
+
+  class MinorIconOnRightPasskey {
+   public:
+    MinorIconOnRightPasskey() = delete;
+    ~MinorIconOnRightPasskey() = default;
+
+   private:
+    // DO NOT ADD TO THIS LIST!
+    // These cases are exclusively the ones allowed to use the feature.
+    friend class ::OmniboxContextMenuController;
+    friend class ::views::MenuModelAdapter;
+    friend class ::ui::SimpleMenuModel;
+    // This item is here merely for testing and example of this feature.
+    friend class ::views::examples::ExampleMenuModel;
+
+    explicit MinorIconOnRightPasskey(size_t index) : index_(index) {}
+
+    size_t index() const { return index_; }
+
+    const size_t index_;
+  };
 
   MenuModel();
 
@@ -90,9 +123,13 @@ class COMPONENT_EXPORT(UI_BASE) MenuModel {
   // a URL when rendering the menu item.
   virtual bool GetMinorTextIsUrlAt(size_t index) const;
 
-  // Returns the minor icon of the item at the specified index. The minor icon
-  // is rendered to the left of the minor text.
+  // Returns the minor icon of the item at the specified index. By default, the
+  // minor icon is rendered to the left of the minor text.
   virtual ImageModel GetMinorIconAt(size_t index) const;
+
+  // Returns whether the minor icon of the item at the specified index is
+  // rendered to the right of the minor text.
+  virtual bool GetMinorIconOnRight(MinorIconOnRightPasskey) const;
 
   // Returns true if the menu item (label/sublabel/icon) at the specified
   // index can change over the course of the menu's lifetime. If this function

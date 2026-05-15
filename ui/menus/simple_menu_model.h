@@ -5,6 +5,7 @@
 #ifndef UI_MENUS_SIMPLE_MENU_MODEL_H_
 #define UI_MENUS_SIMPLE_MENU_MODEL_H_
 
+#include <cstddef>
 #include <optional>
 #include <string>
 #include <vector>
@@ -239,6 +240,12 @@ class COMPONENT_EXPORT(UI_MENUS) SimpleMenuModel : public MenuModel {
   // Sets the minor icon for the item at |index|.
   void SetMinorIcon(size_t index, const ui::ImageModel& minor_icon);
 
+  // Sets whether the minor icon is displayed to the right of the minor text, if
+  // present. Only certain "client" code is allowed to use this API. See the
+  // MinorIconOnRightPasskey above.
+  void SetMinorIconOnRight(MenuModel::MinorIconOnRightPasskey passkey,
+                           bool minor_icon_on_right);
+
   // Sets whether the item at |index| is enabled.
   void SetEnabledAt(size_t index, bool enabled);
 
@@ -288,8 +295,9 @@ class COMPONENT_EXPORT(UI_MENUS) SimpleMenuModel : public MenuModel {
   std::u16string GetSecondaryLabelAt(size_t index) const override;
   std::u16string GetMinorTextAt(size_t index) const override;
   bool GetMinorTextIsUrlAt(size_t index) const override;
-
   ImageModel GetMinorIconAt(size_t index) const override;
+  bool GetMinorIconOnRight(
+      MenuModel::MinorIconOnRightPasskey passkey) const override;
   bool IsItemDynamicAt(size_t index) const override;
   // First defers to the delegate's GetAcceleratorForCommandId() method to
   // retrieve the accelerator for the command associated with the item at
@@ -341,6 +349,7 @@ class COMPONENT_EXPORT(UI_MENUS) SimpleMenuModel : public MenuModel {
     bool minor_text_is_url = false;
     ImageModel minor_icon;
     ImageModel icon;
+    bool minor_icon_on_right = false;
     int group_id = -1;
     raw_ptr<MenuModel, DanglingUntriaged> submenu = nullptr;
     raw_ptr<ButtonMenuItemModel, DanglingUntriaged> button_model = nullptr;
