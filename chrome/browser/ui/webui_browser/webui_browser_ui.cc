@@ -23,6 +23,7 @@
 #include "chrome/browser/ui/webui_browser/webui_browser.h"
 #include "chrome/browser/ui/webui_browser/webui_browser_page_handler.h"
 #include "chrome/browser/ui/webui_browser/webui_browser_side_panel_ui.h"
+#include "chrome/browser/ui/webui_browser/webui_browser_window.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
@@ -92,6 +93,8 @@ WebUIBrowserUI::WebUIBrowserUI(content::WebUI* web_ui)
       WebUIBrowserWindow::FromWebShellWebContents(web_ui->GetWebContents());
   Profile* profile = Profile::FromWebUI(web_ui);
   browser_ = webui_browser_window->browser();
+
+  webui::SetBrowserWindowInterface(web_ui->GetWebContents(), browser_);
 
   // Set up the chrome://webui-browser source.
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(

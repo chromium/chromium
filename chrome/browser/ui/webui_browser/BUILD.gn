@@ -172,6 +172,8 @@ source_set("browser_tests") {
     ":webui_browser",
     "//base/test:test_support",
     "//chrome/browser/ui",
+    "//chrome/browser/ui/webui:webui_util",
+    "//chrome/browser/ui/webui/searchbox",
     "//chrome/common:chrome_features",
     "//chrome/test:test_support",
     "//components/bookmarks/browser",

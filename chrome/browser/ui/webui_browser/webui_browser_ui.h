@@ -100,6 +100,10 @@ class WebUIBrowserUI : public ui::MojoWebUIController,
     return page_.is_bound() ? page_.get() : nullptr;
   }
 
+  RealboxHandler* realbox_handler_for_testing() {
+    return realbox_handler_.get();
+  }
+
   base::WeakPtr<WebUIBrowserUI> GetWeakPtr();
 
  private:

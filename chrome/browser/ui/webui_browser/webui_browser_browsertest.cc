@@ -18,6 +18,10 @@
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/webui/cr_components/searchbox/searchbox_handler.h"
+#include "chrome/browser/ui/webui/omnibox_popup/omnibox_popup_web_contents_helper.h"
+#include "chrome/browser/ui/webui/searchbox/realbox_handler.h"
+#include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/browser/ui/webui_browser/bookmark_bar.mojom.h"
 #include "chrome/browser/ui/webui_browser/bookmark_bar_page_handler.h"
 #include "chrome/browser/ui/webui_browser/webui_browser_ui.h"
@@ -378,16 +382,7 @@ IN_PROC_BROWSER_TEST_F(WebUIBrowserSurfaceEmbedPixelTest,
   }));
 }
 
-#if BUILDFLAG(IS_CHROMEOS)
-// TODO(crbug.com/451876195): Fix and re-enable this test for CrOS.
-#define MAYBE_CloseTabDoesNotMakeRemainingTabBlank \
-  DISABLED_CloseTabDoesNotMakeRemainingTabBlank
-#else
-#define MAYBE_CloseTabDoesNotMakeRemainingTabBlank \
-  CloseTabDoesNotMakeRemainingTabBlank
-#endif
-IN_PROC_BROWSER_TEST_F(WebUIBrowserTest,
-                       MAYBE_CloseTabDoesNotMakeRemainingTabBlank) {
+IN_PROC_BROWSER_TEST_F(WebUIBrowserTest, CloseTabDoesNotMakeRemainingTabBlank) {
   auto* window = browser()->window();
   ASSERT_TRUE(window);
 
@@ -425,4 +420,34 @@ IN_PROC_BROWSER_TEST_F(WebUIBrowserTest,
       "const active = contentRegion.activeWebview;"
       "!!active && contentRegion.shadowRoot.contains(active);");
   EXPECT_TRUE(is_webview_valid.ExtractBool());
+}
+
+IN_PROC_BROWSER_TEST_F(WebUIBrowserTest, RealboxSubmitQueryDoesNotCrash) {
+  auto* window = WebUIBrowserWindow::FromBrowser(browser());
+  ASSERT_TRUE(window);
+
+  content::WebContents* ui_web_contents =
+      window->GetWebUIBrowserUI()->web_ui()->GetWebContents();
+  ASSERT_TRUE(ui_web_contents);
+
+  // Wait for load stop
+  EXPECT_TRUE(content::WaitForLoadStop(ui_web_contents));
+
+  // Ensure the PageHandler is created.
+  RealboxHandler* realbox_handler = nullptr;
+  EXPECT_TRUE(base::test::RunUntil([window, &realbox_handler]() {
+    realbox_handler =
+        window->GetWebUIBrowserUI()->realbox_handler_for_testing();
+    return realbox_handler != nullptr;
+  }));
+
+  // Register OmniboxPopupWebContentsHelper on ui_web_contents to simulate the
+  // Omnibox navigation case.
+  OmniboxPopupWebContentsHelper::CreateForWebContents(ui_web_contents);
+
+  EXPECT_EQ(webui::GetBrowserWindowInterface(ui_web_contents),
+            window->browser());
+
+  // Call SubmitQuery to trigger the navigation code path.
+  realbox_handler->SubmitQuery("test", 0, false, false, false, false);
 }
