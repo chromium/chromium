@@ -5,7 +5,8 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_PAYMENTS_CARD_UNMASK_CHALLENGE_OPTION_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_PAYMENTS_CARD_UNMASK_CHALLENGE_OPTION_H_
 
-#include <cstddef>
+#include <stddef.h>
+
 #include <optional>
 #include <string>
 

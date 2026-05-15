@@ -5,7 +5,8 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_DATA_MODEL_VALUABLES_VALUABLE_TYPES_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_DATA_MODEL_VALUABLES_VALUABLE_TYPES_H_
 
-#include <cstdint>
+#include <stdint.h>
+
 #include <string>
 
 #include "base/time/time.h"

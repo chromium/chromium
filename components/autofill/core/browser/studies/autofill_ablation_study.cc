@@ -4,9 +4,10 @@
 
 #include "components/autofill/core/browser/studies/autofill_ablation_study.h"
 
+#include <stddef.h>
+#include <stdint.h>
+
 #include <array>
-#include <cstddef>
-#include <cstdint>
 #include <memory>
 #include <string>
 #include <string_view>

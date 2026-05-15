@@ -4,7 +4,7 @@
 
 #include "components/autofill/core/browser/data_manager/autofill_ai/entity_instance_cleaner.h"
 
-#include <cstddef>
+#include <stddef.h>
 
 #include "base/check_deref.h"
 #include "base/containers/flat_map.h"

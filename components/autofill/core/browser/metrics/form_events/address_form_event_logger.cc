@@ -4,7 +4,8 @@
 
 #include "components/autofill/core/browser/metrics/form_events/address_form_event_logger.h"
 
-#include <cstdint>
+#include <stdint.h>
+
 #include <optional>
 #include <string>
 #include <vector>

@@ -4,7 +4,8 @@
 
 #include "components/autofill/core/browser/payments/save_and_fill_manager_impl.h"
 
-#include <cstdint>
+#include <stdint.h>
+
 #include <memory>
 #include <optional>
 #include <set>

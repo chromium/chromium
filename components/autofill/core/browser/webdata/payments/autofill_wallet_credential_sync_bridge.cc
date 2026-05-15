@@ -4,7 +4,8 @@
 
 #include "components/autofill/core/browser/webdata/payments/autofill_wallet_credential_sync_bridge.h"
 
-#include <cstdint>
+#include <stdint.h>
+
 #include <memory>
 #include <optional>
 #include <ranges>

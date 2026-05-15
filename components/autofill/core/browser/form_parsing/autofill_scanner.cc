@@ -4,7 +4,8 @@
 
 #include "components/autofill/core/browser/form_parsing/autofill_scanner.h"
 
-#include <cstddef>
+#include <stddef.h>
+
 #include <iterator>
 
 #include "base/check.h"

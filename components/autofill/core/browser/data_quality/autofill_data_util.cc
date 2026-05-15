@@ -4,10 +4,11 @@
 
 #include "components/autofill/core/browser/data_quality/autofill_data_util.h"
 
+#include <stddef.h>
+#include <stdint.h>
+
 #include <algorithm>
 #include <array>
-#include <cstddef>
-#include <cstdint>
 #include <string>
 #include <string_view>
 #include <vector>

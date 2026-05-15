@@ -4,9 +4,10 @@
 
 #include "components/autofill/core/browser/ui/addresses/autofill_address_util.h"
 
+#include <stddef.h>
+
 #include <algorithm>
 #include <array>
-#include <cstddef>
 #include <iterator>
 #include <string>
 #include <vector>

@@ -4,7 +4,8 @@
 
 #include "components/autofill/core/browser/webdata/autocomplete/autocomplete_table.h"
 
-#include <cstddef>
+#include <stddef.h>
+
 #include <ctime>
 #include <limits>
 #include <optional>

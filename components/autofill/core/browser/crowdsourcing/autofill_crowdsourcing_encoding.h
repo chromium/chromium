@@ -5,7 +5,8 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_CROWDSOURCING_AUTOFILL_CROWDSOURCING_ENCODING_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_CROWDSOURCING_AUTOFILL_CROWDSOURCING_ENCODING_H_
 
-#include <cstdint>
+#include <stdint.h>
+
 #include <deque>
 #include <map>
 #include <optional>

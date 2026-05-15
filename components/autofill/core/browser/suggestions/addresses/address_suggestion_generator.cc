@@ -4,8 +4,9 @@
 
 #include "components/autofill/core/browser/suggestions/addresses/address_suggestion_generator.h"
 
+#include <stddef.h>
+
 #include <algorithm>
-#include <cstddef>
 #include <iterator>
 #include <optional>
 #include <set>

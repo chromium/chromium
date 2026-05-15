@@ -4,7 +4,7 @@
 
 #include "components/autofill/core/browser/network/autofill_ai/private_pass_conversion_util.h"
 
-#include <cstdint>
+#include <stdint.h>
 
 #include "base/test/protobuf_matchers.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"

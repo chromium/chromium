@@ -6,8 +6,8 @@
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_WEBDATA_PAYMENTS_SERVER_CVC_H_
 
 #include <stddef.h>
+#include <stdint.h>
 
-#include <cstdint>
 #include <string>
 
 #include "base/time/time.h"

@@ -5,7 +5,8 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_PAYMENTS_PAYMENTS_REQUESTS_PAYMENTS_REQUEST_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_PAYMENTS_PAYMENTS_REQUESTS_PAYMENTS_REQUEST_H_
 
-#include <cstdint>
+#include <stdint.h>
+
 #include <optional>
 #include <string>
 #include <string_view>

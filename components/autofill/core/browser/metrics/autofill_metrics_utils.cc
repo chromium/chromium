@@ -4,7 +4,8 @@
 
 #include "components/autofill/core/browser/metrics/autofill_metrics_utils.h"
 
-#include <cstdint>
+#include <stdint.h>
+
 #include <limits>
 #include <optional>
 

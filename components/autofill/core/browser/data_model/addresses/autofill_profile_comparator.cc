@@ -4,8 +4,9 @@
 
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile_comparator.h"
 
+#include <stddef.h>
+
 #include <algorithm>
-#include <cstddef>
 #include <optional>
 #include <set>
 #include <string>

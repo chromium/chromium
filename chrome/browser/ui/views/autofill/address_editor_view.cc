@@ -4,7 +4,8 @@
 
 #include "chrome/browser/ui/views/autofill/address_editor_view.h"
 
-#include <cstddef>
+#include <stddef.h>
+
 #include <memory>
 #include <string_view>
 

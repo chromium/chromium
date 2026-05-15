@@ -4,8 +4,9 @@
 
 #include "components/autofill/core/browser/autofill_ai_form_rationalization.h"
 
+#include <stddef.h>
+
 #include <algorithm>
-#include <cstddef>
 #include <iterator>
 #include <memory>
 #include <vector>

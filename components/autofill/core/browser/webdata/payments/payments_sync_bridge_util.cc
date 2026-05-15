@@ -4,8 +4,9 @@
 
 #include "components/autofill/core/browser/webdata/payments/payments_sync_bridge_util.h"
 
+#include <stdint.h>
+
 #include <algorithm>
-#include <cstdint>
 #include <memory>
 #include <optional>
 #include <string>

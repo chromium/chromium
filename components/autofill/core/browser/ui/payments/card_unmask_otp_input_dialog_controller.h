@@ -5,7 +5,8 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_UI_PAYMENTS_CARD_UNMASK_OTP_INPUT_DIALOG_CONTROLLER_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_UI_PAYMENTS_CARD_UNMASK_OTP_INPUT_DIALOG_CONTROLLER_H_
 
-#include <cstddef>
+#include <stddef.h>
+
 #include <string>
 
 #include "base/functional/callback_forward.h"

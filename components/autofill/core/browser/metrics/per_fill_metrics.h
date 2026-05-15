@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_METRICS_PER_FILL_METRICS_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_METRICS_PER_FILL_METRICS_H_
 
-#include <cstddef>
+#include <stddef.h>
 
 #include "components/autofill/core/browser/filling/form_filler.h"
 

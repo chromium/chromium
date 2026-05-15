@@ -4,9 +4,10 @@
 
 #include "components/autofill/core/browser/form_processing/name_processing_util.h"
 
+#include <stddef.h>
+
 #include <algorithm>
 #include <concepts>
-#include <cstddef>
 #include <memory>
 #include <string>
 #include <string_view>

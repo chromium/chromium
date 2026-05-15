@@ -4,9 +4,10 @@
 
 #include "components/autofill/core/browser/crowdsourcing/autofill_crowdsourcing_manager.h"
 
+#include <stddef.h>
+#include <stdint.h>
+
 #include <algorithm>
-#include <cstddef>
-#include <cstdint>
 #include <deque>
 #include <functional>
 #include <list>

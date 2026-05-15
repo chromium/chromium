@@ -4,7 +4,8 @@
 
 #include "components/autofill/core/browser/metrics/per_fill_metrics.h"
 
-#include <cstddef>
+#include <stddef.h>
+
 #include <string>
 #include <string_view>
 #include <variant>

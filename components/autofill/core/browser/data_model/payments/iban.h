@@ -5,8 +5,9 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_DATA_MODEL_PAYMENTS_IBAN_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_DATA_MODEL_PAYMENTS_IBAN_H_
 
-#include <cstddef>
-#include <cstdint>
+#include <stddef.h>
+#include <stdint.h>
+
 #include <ostream>
 #include <string>
 #include <string_view>

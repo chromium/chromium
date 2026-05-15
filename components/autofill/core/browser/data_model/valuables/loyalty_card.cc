@@ -4,8 +4,9 @@
 
 #include "components/autofill/core/browser/data_model/valuables/loyalty_card.h"
 
+#include <stdint.h>
+
 #include <algorithm>
-#include <cstdint>
 #include <string>
 #include <utility>
 #include <vector>

@@ -4,7 +4,8 @@
 
 #include "components/autofill/core/browser/payments/amount_extraction_heuristic_regexes.h"
 
-#include <cstdint>
+#include <stdint.h>
+
 #include <memory>
 #include <string>
 

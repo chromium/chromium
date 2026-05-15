@@ -4,7 +4,8 @@
 
 #include "components/autofill/core/browser/metrics/payments/ai_amount_extraction_metrics.h"
 
-#include <cstdint>
+#include <stdint.h>
+
 #include <optional>
 #include <string>
 

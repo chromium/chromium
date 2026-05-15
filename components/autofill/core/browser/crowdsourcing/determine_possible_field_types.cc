@@ -4,8 +4,9 @@
 
 #include "components/autofill/core/browser/crowdsourcing/determine_possible_field_types.h"
 
+#include <stddef.h>
+
 #include <algorithm>
-#include <cstddef>
 #include <memory>
 #include <optional>
 #include <set>

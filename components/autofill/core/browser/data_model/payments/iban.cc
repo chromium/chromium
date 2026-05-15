@@ -4,8 +4,9 @@
 
 #include "components/autofill/core/browser/data_model/payments/iban.h"
 
-#include <cstddef>
-#include <cstdint>
+#include <stddef.h>
+#include <stdint.h>
+
 #include <ostream>
 #include <string>
 #include <string_view>

@@ -4,8 +4,9 @@
 
 #include "components/autofill/core/browser/webdata/autofill_ai/entity_table.h"
 
+#include <stdint.h>
+
 #include <algorithm>
-#include <cstdint>
 #include <map>
 #include <optional>
 #include <string>

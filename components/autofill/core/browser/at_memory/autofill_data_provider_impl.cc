@@ -4,8 +4,9 @@
 
 #include "components/autofill/core/browser/at_memory/autofill_data_provider_impl.h"
 
+#include <stdint.h>
+
 #include <algorithm>
-#include <cstdint>
 #include <optional>
 #include <string>
 #include <string_view>

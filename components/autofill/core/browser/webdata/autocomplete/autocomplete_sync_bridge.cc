@@ -4,8 +4,9 @@
 
 #include "components/autofill/core/browser/webdata/autocomplete/autocomplete_sync_bridge.h"
 
+#include <stdint.h>
+
 #include <algorithm>
-#include <cstdint>
 #include <memory>
 #include <optional>
 #include <ranges>

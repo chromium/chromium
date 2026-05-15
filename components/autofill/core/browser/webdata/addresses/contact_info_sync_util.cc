@@ -4,7 +4,8 @@
 
 #include "components/autofill/core/browser/webdata/addresses/contact_info_sync_util.h"
 
-#include <cstdint>
+#include <stdint.h>
+
 #include <memory>
 #include <string>
 

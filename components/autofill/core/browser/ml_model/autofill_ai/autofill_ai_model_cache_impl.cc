@@ -4,9 +4,10 @@
 
 #include "components/autofill/core/browser/ml_model/autofill_ai/autofill_ai_model_cache_impl.h"
 
+#include <stddef.h>
+#include <stdint.h>
+
 #include <algorithm>
-#include <cstddef>
-#include <cstdint>
 #include <iterator>
 #include <map>
 #include <memory>

@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_AUTOFILL_ANDROID_ENTITY_METADATA_ANDROID_H_
 #define CHROME_BROWSER_AUTOFILL_ANDROID_ENTITY_METADATA_ANDROID_H_
 
-#include <cstdint>
+#include <stdint.h>
 
 #include "base/android/jni_android.h"
 #include "base/android/scoped_java_ref.h"

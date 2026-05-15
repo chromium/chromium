@@ -4,9 +4,10 @@
 
 #include "components/autofill/core/browser/form_processing/autofill_ai/determine_attribute_types.h"
 
+#include <stddef.h>
+
 #include <algorithm>
 #include <array>
-#include <cstddef>
 #include <cstdlib>
 #include <map>
 #include <memory>

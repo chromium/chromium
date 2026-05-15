@@ -4,7 +4,8 @@
 
 #include "components/autofill/core/browser/payments/iban_access_manager.h"
 
-#include <cstdint>
+#include <stdint.h>
+
 #include <optional>
 #include <string>
 #include <utility>

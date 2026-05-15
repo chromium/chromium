@@ -4,9 +4,10 @@
 
 #include "components/autofill/core/browser/form_structure_rationalization_engine.h"
 
+#include <stddef.h>
+
 #include <algorithm>
 #include <array>
-#include <cstddef>
 #include <memory>
 #include <optional>
 #include <string_view>

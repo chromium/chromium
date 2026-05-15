@@ -4,7 +4,8 @@
 
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 
-#include <cstddef>
+#include <stddef.h>
+
 #include <map>
 #include <ostream>
 #include <string>

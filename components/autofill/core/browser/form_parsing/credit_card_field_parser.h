@@ -5,7 +5,8 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_PARSING_CREDIT_CARD_FIELD_PARSER_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_PARSING_CREDIT_CARD_FIELD_PARSER_H_
 
-#include <cstdint>
+#include <stdint.h>
+
 #include <memory>
 #include <optional>
 #include <string>

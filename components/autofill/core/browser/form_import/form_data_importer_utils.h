@@ -5,7 +5,8 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_IMPORT_FORM_DATA_IMPORTER_UTILS_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_IMPORT_FORM_DATA_IMPORTER_UTILS_H_
 
-#include <cstddef>
+#include <stddef.h>
+
 #include <iterator>
 #include <limits>
 #include <list>

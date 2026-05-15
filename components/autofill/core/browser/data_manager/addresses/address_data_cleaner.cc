@@ -4,9 +4,10 @@
 
 #include "components/autofill/core/browser/data_manager/addresses/address_data_cleaner.h"
 
+#include <stddef.h>
+#include <stdint.h>
+
 #include <algorithm>
-#include <cstddef>
-#include <cstdint>
 #include <optional>
 #include <string>
 #include <utility>

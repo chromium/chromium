@@ -5,7 +5,8 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_PARSING_FORM_FIELD_PARSER_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_PARSING_FORM_FIELD_PARSER_H_
 
-#include <cstddef>
+#include <stddef.h>
+
 #include <initializer_list>
 #include <memory>
 #include <optional>

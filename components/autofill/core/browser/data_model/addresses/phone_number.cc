@@ -5,8 +5,8 @@
 #include "components/autofill/core/browser/data_model/addresses/phone_number.h"
 
 #include <limits.h>
+#include <stddef.h>
 
-#include <cstddef>
 #include <string>
 #include <string_view>
 

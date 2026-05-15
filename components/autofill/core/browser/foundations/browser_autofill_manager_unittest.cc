@@ -4,8 +4,9 @@
 
 #include "components/autofill/core/browser/foundations/browser_autofill_manager.h"
 
+#include <stddef.h>
+
 #include <algorithm>
-#include <cstddef>
 #include <memory>
 #include <optional>
 #include <string>

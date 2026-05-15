@@ -6,8 +6,8 @@
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_WEBDATA_PAYMENTS_PAYMENTS_AUTOFILL_TABLE_H_
 
 #include <stddef.h>
+#include <stdint.h>
 
-#include <cstdint>
 #include <memory>
 #include <optional>
 #include <string>

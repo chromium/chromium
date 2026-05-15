@@ -4,8 +4,9 @@
 
 #include "components/autofill/core/browser/form_parsing/phone_field_parser.h"
 
+#include <stddef.h>
+
 #include <algorithm>
-#include <cstddef>
 #include <functional>
 #include <memory>
 #include <optional>

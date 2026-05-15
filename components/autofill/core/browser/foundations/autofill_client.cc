@@ -4,7 +4,8 @@
 
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 
-#include <cstdint>
+#include <stdint.h>
+
 #include <map>
 #include <memory>
 #include <optional>

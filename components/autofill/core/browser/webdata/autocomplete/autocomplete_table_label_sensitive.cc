@@ -8,8 +8,9 @@
 
 #include "components/autofill/core/browser/webdata/autocomplete/autocomplete_table_label_sensitive.h"
 
-#include <cstddef>
-#include <cstdint>
+#include <stddef.h>
+#include <stdint.h>
+
 #include <ctime>
 #include <limits>
 #include <optional>

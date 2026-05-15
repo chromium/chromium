@@ -4,8 +4,9 @@
 
 #include "components/autofill/core/browser/metrics/quality_metrics.h"
 
+#include <stddef.h>
+
 #include <algorithm>
-#include <cstddef>
 #include <memory>
 #include <string>
 

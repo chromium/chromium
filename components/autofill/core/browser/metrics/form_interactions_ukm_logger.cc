@@ -4,8 +4,9 @@
 
 #include "components/autofill/core/browser/metrics/form_interactions_ukm_logger.h"
 
-#include <cstddef>
-#include <cstdint>
+#include <stddef.h>
+#include <stdint.h>
+
 #include <memory>
 #include <optional>
 #include <utility>

@@ -4,8 +4,9 @@
 
 #include "components/autofill/core/browser/data_model/addresses/autofill_structured_address_utils.h"
 
+#include <stddef.h>
+
 #include <algorithm>
-#include <cstddef>
 #include <initializer_list>
 #include <iterator>
 #include <map>

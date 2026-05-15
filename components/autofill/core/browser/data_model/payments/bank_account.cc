@@ -4,8 +4,9 @@
 
 #include "components/autofill/core/browser/data_model/payments/bank_account.h"
 
+#include <stdint.h>
+
 #include <compare>
-#include <cstdint>
 #include <string>
 #include <utility>
 

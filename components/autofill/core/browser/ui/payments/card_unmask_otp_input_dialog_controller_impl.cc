@@ -4,7 +4,8 @@
 
 #include "components/autofill/core/browser/ui/payments/card_unmask_otp_input_dialog_controller_impl.h"
 
-#include <cstddef>
+#include <stddef.h>
+
 #include <string>
 #include <utility>
 

@@ -4,9 +4,10 @@
 
 #include "components/autofill/core/browser/metrics/profile_import_metrics.h"
 
+#include <stddef.h>
+#include <stdint.h>
+
 #include <algorithm>
-#include <cstddef>
-#include <cstdint>
 #include <optional>
 #include <string_view>
 #include <utility>

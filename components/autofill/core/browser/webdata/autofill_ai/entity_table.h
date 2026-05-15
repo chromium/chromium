@@ -5,7 +5,8 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_WEBDATA_AUTOFILL_AI_ENTITY_TABLE_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_WEBDATA_AUTOFILL_AI_ENTITY_TABLE_H_
 
-#include <cstdint>
+#include <stdint.h>
+
 #include <map>
 #include <optional>
 #include <string>

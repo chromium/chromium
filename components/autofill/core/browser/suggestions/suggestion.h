@@ -5,7 +5,8 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_SUGGESTIONS_SUGGESTION_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_SUGGESTIONS_SUGGESTION_H_
 
-#include <cstdint>
+#include <stdint.h>
+
 #include <map>
 #include <optional>
 #include <ostream>

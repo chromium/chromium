@@ -4,8 +4,9 @@
 
 #include "components/autofill/core/browser/metrics/suggestions_list_metrics.h"
 
+#include <stddef.h>
+
 #include <algorithm>
-#include <cstddef>
 
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"

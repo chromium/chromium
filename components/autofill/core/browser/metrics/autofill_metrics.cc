@@ -4,9 +4,10 @@
 
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 
+#include <stddef.h>
+#include <stdint.h>
+
 #include <algorithm>
-#include <cstddef>
-#include <cstdint>
 #include <functional>
 #include <memory>
 #include <optional>

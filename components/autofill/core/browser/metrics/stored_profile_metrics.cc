@@ -4,8 +4,9 @@
 
 #include "components/autofill/core/browser/metrics/stored_profile_metrics.h"
 
+#include <stddef.h>
+
 #include <algorithm>
-#include <cstddef>
 #include <string>
 #include <vector>
 

@@ -4,9 +4,10 @@
 
 #include "components/autofill/core/browser/data_quality/addresses/profile_token_quality.h"
 
+#include <stddef.h>
+#include <stdint.h>
+
 #include <algorithm>
-#include <cstddef>
-#include <cstdint>
 #include <memory>
 #include <set>
 #include <string>

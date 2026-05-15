@@ -4,9 +4,10 @@
 
 #include "components/autofill/core/browser/filling/form_filler.h"
 
+#include <stddef.h>
+
 #include <algorithm>
 #include <array>
-#include <cstddef>
 #include <map>
 #include <memory>
 #include <optional>

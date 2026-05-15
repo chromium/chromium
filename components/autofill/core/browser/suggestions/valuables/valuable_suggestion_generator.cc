@@ -3,8 +3,9 @@
 // found in the LICENSE file.
 #include "components/autofill/core/browser/suggestions/valuables/valuable_suggestion_generator.h"
 
+#include <stddef.h>
+
 #include <algorithm>
-#include <cstddef>
 #include <iterator>
 #include <string>
 #include <string_view>

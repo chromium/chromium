@@ -4,9 +4,10 @@
 
 #include "components/autofill/core/browser/payments/bnpl_util.h"
 
+#include <stddef.h>
+#include <stdint.h>
+
 #include <algorithm>
-#include <cstddef>
-#include <cstdint>
 #include <optional>
 #include <string>
 #include <tuple>

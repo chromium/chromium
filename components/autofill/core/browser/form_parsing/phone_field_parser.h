@@ -5,8 +5,9 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_PARSING_PHONE_FIELD_PARSER_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_PARSING_PHONE_FIELD_PARSER_H_
 
+#include <stddef.h>
+
 #include <array>
-#include <cstddef>
 #include <memory>
 #include <optional>
 #include <string_view>

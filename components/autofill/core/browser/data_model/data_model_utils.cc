@@ -4,9 +4,10 @@
 
 #include "components/autofill/core/browser/data_model/data_model_utils.h"
 
+#include <stddef.h>
+#include <stdint.h>
+
 #include <array>
-#include <cstddef>
-#include <cstdint>
 #include <cstdlib>
 #include <memory>
 #include <optional>

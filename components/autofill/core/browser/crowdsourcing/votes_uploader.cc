@@ -4,8 +4,9 @@
 
 #include "components/autofill/core/browser/crowdsourcing/votes_uploader.h"
 
+#include <stddef.h>
+
 #include <algorithm>
-#include <cstddef>
 #include <list>
 #include <map>
 #include <memory>

@@ -4,7 +4,8 @@
 
 #include "components/autofill/core/browser/crowdsourcing/server_prediction_overrides.h"
 
-#include <cstdint>
+#include <stdint.h>
+
 #include <optional>
 #include <string>
 #include <string_view>

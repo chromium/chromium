@@ -4,7 +4,8 @@
 
 #include "components/autofill/core/browser/at_memory/at_memory_manager.h"
 
-#include <cstdint>
+#include <stdint.h>
+
 #include <memory>
 #include <optional>
 #include <string>

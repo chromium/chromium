@@ -4,10 +4,11 @@
 
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 
+#include <stddef.h>
+#include <stdint.h>
+
 #include <algorithm>
 #include <cmath>
-#include <cstddef>
-#include <cstdint>
 #include <optional>
 #include <ostream>
 #include <string>

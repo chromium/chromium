@@ -4,7 +4,8 @@
 
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 
-#include <cstdint>
+#include <stdint.h>
+
 #include <string>
 #include <utility>
 #include <vector>

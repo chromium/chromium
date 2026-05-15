@@ -4,7 +4,8 @@
 
 #include "components/autofill/core/browser/form_parsing/determine_regex_types.h"
 
-#include <cstddef>
+#include <stddef.h>
+
 #include <functional>
 #include <memory>
 #include <utility>

@@ -5,8 +5,9 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_DATA_MODEL_PAYMENTS_CREDIT_CARD_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_DATA_MODEL_PAYMENTS_CREDIT_CARD_H_
 
-#include <cstddef>
-#include <cstdint>
+#include <stddef.h>
+#include <stdint.h>
+
 #include <iosfwd>
 #include <memory>
 #include <optional>

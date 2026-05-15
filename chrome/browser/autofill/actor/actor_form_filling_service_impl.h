@@ -5,7 +5,8 @@
 #ifndef CHROME_BROWSER_AUTOFILL_ACTOR_ACTOR_FORM_FILLING_SERVICE_IMPL_H_
 #define CHROME_BROWSER_AUTOFILL_ACTOR_ACTOR_FORM_FILLING_SERVICE_IMPL_H_
 
-#include <cstdint>
+#include <stdint.h>
+
 #include <variant>
 #include <vector>
 

@@ -5,7 +5,8 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_FOUNDATIONS_AUTOFILL_CLIENT_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_FOUNDATIONS_AUTOFILL_CLIENT_H_
 
-#include <cstdint>
+#include <stdint.h>
+
 #include <map>
 #include <memory>
 #include <optional>

@@ -4,7 +4,8 @@
 
 #include "components/autofill/core/browser/payments/virtual_card_enrollment_manager.h"
 
-#include <cstdint>
+#include <stdint.h>
+
 #include <memory>
 #include <optional>
 #include <string>

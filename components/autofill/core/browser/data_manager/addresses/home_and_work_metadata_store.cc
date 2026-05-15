@@ -4,8 +4,9 @@
 
 #include "components/autofill/core/browser/data_manager/addresses/home_and_work_metadata_store.h"
 
+#include <stddef.h>
+
 #include <algorithm>
-#include <cstddef>
 #include <optional>
 #include <string_view>
 #include <utility>

@@ -4,9 +4,10 @@
 
 #include "components/autofill/core/browser/metrics/profile_token_quality_metrics.h"
 
+#include <stddef.h>
+#include <stdint.h>
+
 #include <cmath>
-#include <cstddef>
-#include <cstdint>
 #include <memory>
 #include <optional>
 #include <string_view>

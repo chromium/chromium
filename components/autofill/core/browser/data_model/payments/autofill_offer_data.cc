@@ -4,8 +4,9 @@
 
 #include "components/autofill/core/browser/data_model/payments/autofill_offer_data.h"
 
+#include <stdint.h>
+
 #include <algorithm>
-#include <cstdint>
 #include <string>
 #include <vector>
 

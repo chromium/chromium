@@ -5,7 +5,8 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_STRUCTURE_RATIONALIZATION_ENGINE_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_STRUCTURE_RATIONALIZATION_ENGINE_H_
 
-#include <cstddef>
+#include <stddef.h>
+
 #include <memory>
 #include <optional>
 #include <string_view>

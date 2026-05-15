@@ -4,8 +4,9 @@
 
 #include "components/autofill/core/browser/metrics/prediction_quality_metrics.h"
 
+#include <stdint.h>
+
 #include <algorithm>
-#include <cstdint>
 #include <memory>
 #include <string>
 #include <string_view>

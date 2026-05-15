@@ -4,8 +4,9 @@
 
 #include "components/autofill/core/browser/ui/country_combobox_model.h"
 
+#include <stddef.h>
+
 #include <algorithm>
-#include <cstddef>
 #include <iterator>
 #include <memory>
 #include <string>

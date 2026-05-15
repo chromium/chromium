@@ -4,7 +4,7 @@
 
 #include "components/autofill/core/browser/data_model/valuables/loyalty_card.h"
 
-#include <cstdint>
+#include <stdint.h>
 
 #include "base/time/time.h"
 #include "components/autofill/core/browser/data_model/valuables/valuable_types.h"

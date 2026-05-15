@@ -5,7 +5,8 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_FILLING_FIELD_FILLING_SKIP_REASON_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_FILLING_FIELD_FILLING_SKIP_REASON_H_
 
-#include <cstdint>
+#include <stdint.h>
+
 #include <string_view>
 
 namespace autofill {

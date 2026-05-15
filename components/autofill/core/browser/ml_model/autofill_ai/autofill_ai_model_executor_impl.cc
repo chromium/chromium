@@ -4,8 +4,9 @@
 
 #include "components/autofill/core/browser/ml_model/autofill_ai/autofill_ai_model_executor_impl.h"
 
+#include <stddef.h>
+
 #include <algorithm>
-#include <cstddef>
 #include <map>
 #include <memory>
 #include <optional>

@@ -4,7 +4,8 @@
 
 #include "components/autofill/core/browser/integrators/address_on_typing/address_on_typing_manager.h"
 
-#include <cstddef>
+#include <stddef.h>
+
 #include <memory>
 #include <optional>
 #include <set>

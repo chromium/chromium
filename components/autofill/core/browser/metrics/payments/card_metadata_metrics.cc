@@ -4,7 +4,8 @@
 
 #include "components/autofill/core/browser/metrics/payments/card_metadata_metrics.h"
 
-#include <cstdint>
+#include <stdint.h>
+
 #include <string>
 #include <string_view>
 #include <vector>

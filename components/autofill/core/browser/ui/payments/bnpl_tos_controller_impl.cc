@@ -4,7 +4,8 @@
 
 #include "components/autofill/core/browser/ui/payments/bnpl_tos_controller_impl.h"
 
-#include <cstddef>
+#include <stddef.h>
+
 #include <memory>
 #include <string>
 #include <string_view>

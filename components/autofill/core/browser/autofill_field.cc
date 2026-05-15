@@ -4,11 +4,11 @@
 
 #include "components/autofill/core/browser/autofill_field.h"
 
+#include <stddef.h>
 #include <stdint.h>
 
 #include <algorithm>
 #include <array>
-#include <cstddef>
 #include <memory>
 #include <optional>
 #include <ostream>

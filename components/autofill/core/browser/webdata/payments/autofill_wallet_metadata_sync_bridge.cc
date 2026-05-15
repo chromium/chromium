@@ -4,9 +4,10 @@
 
 #include "components/autofill/core/browser/webdata/payments/autofill_wallet_metadata_sync_bridge.h"
 
+#include <stdint.h>
+
 #include <algorithm>
 #include <concepts>
-#include <cstdint>
 #include <map>
 #include <memory>
 #include <optional>

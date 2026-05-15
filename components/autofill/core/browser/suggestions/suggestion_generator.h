@@ -5,8 +5,9 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_SUGGESTIONS_SUGGESTION_GENERATOR_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_SUGGESTIONS_SUGGESTION_GENERATOR_H_
 
+#include <stddef.h>
+
 #include <array>
-#include <cstddef>
 #include <utility>
 #include <vector>
 

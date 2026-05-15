@@ -4,8 +4,9 @@
 
 #include "components/autofill/core/browser/ml_model/field_classification_model_handler.h"
 
+#include <stddef.h>
+
 #include <algorithm>
-#include <cstddef>
 #include <map>
 #include <memory>
 #include <optional>

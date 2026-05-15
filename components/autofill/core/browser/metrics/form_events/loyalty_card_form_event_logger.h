@@ -5,7 +5,8 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_METRICS_FORM_EVENTS_LOYALTY_CARD_FORM_EVENT_LOGGER_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_METRICS_FORM_EVENTS_LOYALTY_CARD_FORM_EVENT_LOGGER_H_
 
-#include <cstddef>
+#include <stddef.h>
+
 #include <vector>
 
 #include "base/containers/span.h"

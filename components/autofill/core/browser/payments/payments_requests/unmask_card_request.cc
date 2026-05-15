@@ -4,7 +4,8 @@
 
 #include "components/autofill/core/browser/payments/payments_requests/unmask_card_request.h"
 
-#include <cstddef>
+#include <stddef.h>
+
 #include <optional>
 #include <string>
 #include <string_view>

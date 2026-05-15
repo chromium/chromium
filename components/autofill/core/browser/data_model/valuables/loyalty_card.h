@@ -5,7 +5,8 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_DATA_MODEL_VALUABLES_LOYALTY_CARD_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_DATA_MODEL_VALUABLES_LOYALTY_CARD_H_
 
-#include <cstdint>
+#include <stdint.h>
+
 #include <string>
 #include <utility>
 #include <vector>

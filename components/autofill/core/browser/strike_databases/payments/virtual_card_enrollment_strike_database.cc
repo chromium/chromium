@@ -4,7 +4,8 @@
 
 #include "components/autofill/core/browser/strike_databases/payments/virtual_card_enrollment_strike_database.h"
 
-#include <cstddef>
+#include <stddef.h>
+
 #include <optional>
 #include <string>
 

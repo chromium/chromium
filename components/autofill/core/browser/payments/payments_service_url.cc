@@ -4,7 +4,8 @@
 
 #include "components/autofill/core/browser/payments/payments_service_url.h"
 
-#include <cstdint>
+#include <stdint.h>
+
 #include <string>
 
 #include "base/command_line.h"

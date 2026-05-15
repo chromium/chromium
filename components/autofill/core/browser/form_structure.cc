@@ -4,10 +4,10 @@
 
 #include "components/autofill/core/browser/form_structure.h"
 
+#include <stddef.h>
 #include <stdint.h>
 
 #include <algorithm>
-#include <cstddef>
 #include <iterator>
 #include <map>
 #include <memory>

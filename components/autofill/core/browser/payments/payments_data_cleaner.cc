@@ -4,7 +4,8 @@
 
 #include "components/autofill/core/browser/payments/payments_data_cleaner.h"
 
-#include <cstddef>
+#include <stddef.h>
+
 #include <string>
 #include <vector>
 

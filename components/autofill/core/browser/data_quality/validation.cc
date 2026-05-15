@@ -7,7 +7,6 @@
 #include <stddef.h>
 
 #include <array>
-#include <cstddef>
 #include <string>
 #include <string_view>
 

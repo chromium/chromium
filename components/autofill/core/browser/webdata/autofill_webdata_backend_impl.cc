@@ -4,8 +4,9 @@
 
 #include "components/autofill/core/browser/webdata/autofill_webdata_backend_impl.h"
 
-#include <cstddef>
-#include <cstdint>
+#include <stddef.h>
+#include <stdint.h>
+
 #include <memory>
 #include <optional>
 #include <string>

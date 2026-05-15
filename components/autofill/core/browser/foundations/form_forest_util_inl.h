@@ -5,7 +5,8 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_FOUNDATIONS_FORM_FOREST_UTIL_INL_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_FOUNDATIONS_FORM_FOREST_UTIL_INL_H_
 
-#include <cstddef>
+#include <stddef.h>
+
 #include <functional>
 #include <iterator>
 

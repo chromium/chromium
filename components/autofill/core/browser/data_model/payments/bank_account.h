@@ -5,8 +5,9 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_DATA_MODEL_PAYMENTS_BANK_ACCOUNT_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_DATA_MODEL_PAYMENTS_BANK_ACCOUNT_H_
 
+#include <stdint.h>
+
 #include <compare>
-#include <cstdint>
 #include <string>
 
 #include "components/autofill/core/browser/data_model/payments/payment_instrument.h"

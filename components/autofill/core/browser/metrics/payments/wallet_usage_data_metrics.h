@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_METRICS_PAYMENTS_WALLET_USAGE_DATA_METRICS_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_METRICS_PAYMENTS_WALLET_USAGE_DATA_METRICS_H_
 
-#include <cstddef>
+#include <stddef.h>
 
 namespace autofill::autofill_metrics {
 

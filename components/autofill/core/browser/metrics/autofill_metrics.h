@@ -6,8 +6,8 @@
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_METRICS_AUTOFILL_METRICS_H_
 
 #include <stddef.h>
+#include <stdint.h>
 
-#include <cstdint>
 #include <memory>
 #include <string>
 #include <string_view>

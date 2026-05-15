@@ -4,8 +4,9 @@
 
 #include "components/autofill/core/browser/payments/payments_util.h"
 
+#include <stdint.h>
+
 #include <algorithm>
-#include <cstdint>
 #include <string>
 #include <utility>
 #include <vector>

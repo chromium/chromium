@@ -4,8 +4,9 @@
 
 #include "components/autofill/core/browser/payments/bnpl_manager.h"
 
+#include <stdint.h>
+
 #include <algorithm>
-#include <cstdint>
 #include <iterator>
 #include <memory>
 #include <optional>

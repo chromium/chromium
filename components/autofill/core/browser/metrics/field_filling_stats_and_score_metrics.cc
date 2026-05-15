@@ -4,8 +4,9 @@
 
 #include "components/autofill/core/browser/metrics/field_filling_stats_and_score_metrics.h"
 
+#include <stddef.h>
+
 #include <algorithm>
-#include <cstddef>
 #include <memory>
 #include <string>
 

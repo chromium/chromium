@@ -5,10 +5,11 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_COMMON_DENSE_SET_H_
 #define COMPONENTS_AUTOFILL_CORE_COMMON_DENSE_SET_H_
 
+#include <stddef.h>
+
 #include <array>
 #include <bit>
 #include <climits>
-#include <cstddef>
 #include <iterator>
 #include <ranges>
 #include <type_traits>

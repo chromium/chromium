@@ -4,7 +4,8 @@
 
 #include "chrome/browser/ui/webui/autofill_and_password_manager_internals/internals_ui_handler.h"
 
-#include <cstdint>
+#include <stdint.h>
+
 #include <optional>
 #include <utility>
 

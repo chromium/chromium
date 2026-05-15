@@ -5,7 +5,8 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_CROWDSOURCING_RANDOMIZED_ENCODER_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_CROWDSOURCING_RANDOMIZED_ENCODER_H_
 
-#include <cstddef>
+#include <stddef.h>
+
 #include <optional>
 #include <string>
 #include <string_view>

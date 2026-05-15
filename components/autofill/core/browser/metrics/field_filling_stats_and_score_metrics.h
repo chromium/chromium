@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_METRICS_FIELD_FILLING_STATS_AND_SCORE_METRICS_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_METRICS_FIELD_FILLING_STATS_AND_SCORE_METRICS_H_
 
-#include <cstddef>
+#include <stddef.h>
 
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/form_structure.h"

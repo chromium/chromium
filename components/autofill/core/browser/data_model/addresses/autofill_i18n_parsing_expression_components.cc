@@ -4,7 +4,8 @@
 
 #include "components/autofill/core/browser/data_model/addresses/autofill_i18n_parsing_expression_components.h"
 
-#include <cstddef>
+#include <stddef.h>
+
 #include <optional>
 #include <string>
 #include <string_view>

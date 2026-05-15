@@ -4,7 +4,8 @@
 
 #include "components/autofill/core/browser/payments/credit_card_fido_authenticator.h"
 
-#include <cstdint>
+#include <stdint.h>
+
 #include <memory>
 #include <optional>
 #include <string>

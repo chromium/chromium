@@ -4,9 +4,10 @@
 
 #include "components/autofill/core/browser/filling/autofill_ai/field_filling_entity_util.h"
 
+#include <stddef.h>
+#include <stdint.h>
+
 #include <algorithm>
-#include <cstddef>
-#include <cstdint>
 #include <limits>
 #include <memory>
 #include <optional>

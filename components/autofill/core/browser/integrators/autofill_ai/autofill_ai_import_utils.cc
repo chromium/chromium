@@ -4,9 +4,10 @@
 
 #include "components/autofill/core/browser/integrators/autofill_ai/autofill_ai_import_utils.h"
 
+#include <stddef.h>
+#include <stdint.h>
+
 #include <algorithm>
-#include <cstddef>
-#include <cstdint>
 #include <map>
 #include <memory>
 #include <optional>

@@ -4,8 +4,9 @@
 
 #include "components/autofill/core/browser/suggestions/autofill_ai/autofill_ai_suggestion_generator.h"
 
+#include <stddef.h>
+
 #include <algorithm>
-#include <cstddef>
 #include <map>
 #include <memory>
 #include <string>

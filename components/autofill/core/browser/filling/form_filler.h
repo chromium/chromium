@@ -5,7 +5,8 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_FILLING_FORM_FILLER_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_FILLING_FORM_FILLER_H_
 
-#include <cstddef>
+#include <stddef.h>
+
 #include <map>
 #include <memory>
 #include <optional>

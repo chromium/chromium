@@ -5,7 +5,8 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_DATA_QUALITY_AUTOFILL_DATA_UTIL_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_DATA_QUALITY_AUTOFILL_DATA_UTIL_H_
 
-#include <cstdint>
+#include <stdint.h>
+
 #include <string>
 #include <string_view>
 

@@ -4,8 +4,9 @@
 
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 
+#include <stdint.h>
+
 #include <algorithm>
-#include <cstdint>
 #include <iterator>
 #include <string>
 #include <string_view>

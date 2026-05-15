@@ -4,7 +4,8 @@
 
 #include "components/autofill/core/browser/metrics/payments/iban_metrics.h"
 
-#include <cstddef>
+#include <stddef.h>
+
 #include <memory>
 #include <string>
 #include <string_view>

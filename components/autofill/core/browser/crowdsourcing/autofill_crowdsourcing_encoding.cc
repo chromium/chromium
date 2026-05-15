@@ -4,11 +4,12 @@
 
 #include "components/autofill/core/browser/crowdsourcing/autofill_crowdsourcing_encoding.h"
 
+#include <stddef.h>
+#include <stdint.h>
+
 #include <algorithm>
 #include <array>
 #include <concepts>
-#include <cstddef>
-#include <cstdint>
 #include <deque>
 #include <iterator>
 #include <map>

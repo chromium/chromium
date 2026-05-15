@@ -5,8 +5,9 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_DATA_MANAGER_PAYMENTS_PAYMENTS_DATA_MANAGER_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_DATA_MANAGER_PAYMENTS_PAYMENTS_DATA_MANAGER_H_
 
-#include <cstddef>
-#include <cstdint>
+#include <stddef.h>
+#include <stdint.h>
+
 #include <memory>
 #include <optional>
 #include <string>

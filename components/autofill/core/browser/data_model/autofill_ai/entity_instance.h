@@ -5,7 +5,8 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_DATA_MODEL_AUTOFILL_AI_ENTITY_INSTANCE_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_DATA_MODEL_AUTOFILL_AI_ENTITY_INSTANCE_H_
 
-#include <cstdint>
+#include <stdint.h>
+
 #include <optional>
 #include <ostream>
 #include <string>

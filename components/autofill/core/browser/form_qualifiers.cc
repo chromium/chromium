@@ -4,9 +4,10 @@
 
 #include "components/autofill/core/browser/form_qualifiers.h"
 
+#include <stddef.h>
+
 #include <algorithm>
 #include <concepts>
-#include <cstddef>
 #include <functional>
 #include <memory>
 #include <string>

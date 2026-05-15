@@ -4,8 +4,9 @@
 
 #include "components/autofill/core/browser/filling/addresses/field_filling_address_util.h"
 
+#include <stdint.h>
+
 #include <algorithm>
-#include <cstdint>
 #include <optional>
 #include <string>
 #include <utility>

@@ -4,8 +4,9 @@
 
 #include "components/autofill/core/browser/integrators/one_time_tokens/otp_suggestion.h"
 
+#include <stddef.h>
+
 #include <algorithm>
-#include <cstddef>
 #include <iterator>
 #include <string>
 #include <vector>

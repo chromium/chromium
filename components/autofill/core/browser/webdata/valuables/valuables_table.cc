@@ -4,7 +4,8 @@
 
 #include "components/autofill/core/browser/webdata/valuables/valuables_table.h"
 
-#include <cstdint>
+#include <stdint.h>
+
 #include <optional>
 #include <string>
 #include <string_view>

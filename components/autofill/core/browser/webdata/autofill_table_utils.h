@@ -5,7 +5,8 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_WEBDATA_AUTOFILL_TABLE_UTILS_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_WEBDATA_AUTOFILL_TABLE_UTILS_H_
 
-#include <cstddef>
+#include <stddef.h>
+
 #include <initializer_list>
 #include <string>
 #include <string_view>

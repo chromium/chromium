@@ -5,7 +5,8 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_DATA_MODEL_PAYMENTS_AUTOFILL_WALLET_USAGE_DATA_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_DATA_MODEL_PAYMENTS_AUTOFILL_WALLET_USAGE_DATA_H_
 
-#include <cstdint>
+#include <stdint.h>
+
 #include <string>
 
 #include "base/types/strong_alias.h"

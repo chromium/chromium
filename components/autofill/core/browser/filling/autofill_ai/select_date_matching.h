@@ -5,8 +5,9 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_FILLING_AUTOFILL_AI_SELECT_DATE_MATCHING_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_FILLING_AUTOFILL_AI_SELECT_DATE_MATCHING_H_
 
-#include <cstddef>
-#include <cstdint>
+#include <stddef.h>
+#include <stdint.h>
+
 #include <limits>
 #include <optional>
 

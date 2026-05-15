@@ -4,9 +4,10 @@
 
 #include "components/autofill/core/browser/form_parsing/field_candidates.h"
 
+#include <stddef.h>
+
 #include <algorithm>
 #include <array>
-#include <cstddef>
 #include <iterator>
 
 #include "components/autofill/core/browser/field_types.h"

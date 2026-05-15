@@ -4,8 +4,9 @@
 
 #include "components/autofill/core/browser/form_structure_sectioning_util.h"
 
+#include <stddef.h>
+
 #include <algorithm>
-#include <cstddef>
 #include <memory>
 
 #include "base/check.h"

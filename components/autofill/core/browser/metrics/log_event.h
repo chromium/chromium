@@ -5,8 +5,9 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_METRICS_LOG_EVENT_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_METRICS_LOG_EVENT_H_
 
-#include <cstddef>
-#include <cstdint>
+#include <stddef.h>
+#include <stdint.h>
+
 #include <optional>
 #include <string>
 #include <variant>

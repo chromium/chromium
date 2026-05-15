@@ -4,9 +4,10 @@
 
 #include "components/autofill/core/browser/suggestions/payments/payments_suggestion_generator_util.h"
 
+#include <stddef.h>
+#include <stdint.h>
+
 #include <algorithm>
-#include <cstddef>
-#include <cstdint>
 #include <memory>
 #include <optional>
 #include <string>

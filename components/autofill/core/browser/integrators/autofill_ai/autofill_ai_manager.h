@@ -5,7 +5,8 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_INTEGRATORS_AUTOFILL_AI_AUTOFILL_AI_MANAGER_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_INTEGRATORS_AUTOFILL_AI_AUTOFILL_AI_MANAGER_H_
 
-#include <cstddef>
+#include <stddef.h>
+
 #include <memory>
 #include <optional>
 #include <vector>

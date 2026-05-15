@@ -4,8 +4,9 @@
 
 #include "components/autofill/core/browser/payments/amount_extraction_manager.h"
 
+#include <stdint.h>
+
 #include <algorithm>
-#include <cstdint>
 #include <memory>
 #include <optional>
 #include <string>

@@ -5,7 +5,8 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_GEO_ALTERNATIVE_STATE_NAME_MAP_UPDATER_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_GEO_ALTERNATIVE_STATE_NAME_MAP_UPDATER_H_
 
-#include <cstdint>
+#include <stdint.h>
+
 #include <map>
 #include <set>
 #include <string>

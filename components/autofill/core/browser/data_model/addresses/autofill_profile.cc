@@ -4,9 +4,10 @@
 
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
 
+#include <stddef.h>
+
 #include <algorithm>
 #include <array>
-#include <cstddef>
 #include <list>
 #include <map>
 #include <memory>

@@ -4,7 +4,8 @@
 
 #include "components/autofill/core/browser/data_model/addresses/autofill_structured_address_name.h"
 
-#include <cstddef>
+#include <stddef.h>
+
 #include <string>
 #include <vector>
 

@@ -5,8 +5,9 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_DATA_MODEL_PAYMENTS_PAYMENT_INSTRUMENT_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_DATA_MODEL_PAYMENTS_PAYMENT_INSTRUMENT_H_
 
+#include <stdint.h>
+
 #include <compare>
-#include <cstdint>
 #include <string>
 
 #include "components/autofill/core/common/dense_set.h"

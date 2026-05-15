@@ -4,7 +4,8 @@
 
 #include "components/autofill/core/browser/data_model/addresses/autofill_normalization_utils.h"
 
-#include <cstdint>
+#include <stdint.h>
+
 #include <string>
 #include <string_view>
 

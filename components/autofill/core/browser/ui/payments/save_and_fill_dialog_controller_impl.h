@@ -5,7 +5,8 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_UI_PAYMENTS_SAVE_AND_FILL_DIALOG_CONTROLLER_IMPL_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_UI_PAYMENTS_SAVE_AND_FILL_DIALOG_CONTROLLER_IMPL_H_
 
-#include <cstddef>
+#include <stddef.h>
+
 #include <memory>
 #include <string>
 #include <string_view>

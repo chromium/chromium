@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_METRICS_SUGGESTIONS_LIST_METRICS_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_METRICS_SUGGESTIONS_LIST_METRICS_H_
 
-#include <cstddef>
+#include <stddef.h>
 
 #include "components/autofill/core/browser/field_types.h"
 

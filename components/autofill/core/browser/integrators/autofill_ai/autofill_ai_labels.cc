@@ -4,9 +4,10 @@
 
 #include "components/autofill/core/browser/integrators/autofill_ai/autofill_ai_labels.h"
 
+#include <stddef.h>
+
 #include <algorithm>
 #include <array>
-#include <cstddef>
 #include <functional>
 #include <map>
 #include <optional>

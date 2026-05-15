@@ -4,8 +4,9 @@
 
 #include "components/autofill/core/browser/geo/country_names_for_locale.h"
 
-#include <cstddef>
-#include <cstdint>
+#include <stddef.h>
+#include <stdint.h>
+
 #include <map>
 #include <memory>
 #include <string>

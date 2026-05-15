@@ -4,9 +4,10 @@
 
 #include "components/autofill/core/browser/data_model/usage_history_information.h"
 
+#include <stddef.h>
+
 #include <algorithm>
 #include <cmath>
-#include <cstddef>
 #include <functional>
 #include <optional>
 #include <tuple>

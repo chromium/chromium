@@ -4,7 +4,8 @@
 
 #include "components/autofill/core/browser/field_type_utils.h"
 
-#include <cstddef>
+#include <stddef.h>
+
 #include <optional>
 
 #include "base/check.h"

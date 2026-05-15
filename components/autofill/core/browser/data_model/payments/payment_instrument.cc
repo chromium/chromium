@@ -4,8 +4,9 @@
 
 #include "components/autofill/core/browser/data_model/payments/payment_instrument.h"
 
+#include <stdint.h>
+
 #include <compare>
-#include <cstdint>
 #include <string>
 #include <utility>
 

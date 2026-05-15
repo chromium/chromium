@@ -4,7 +4,8 @@
 
 #include "components/autofill/core/browser/payments/legal_message_line.h"
 
-#include <cstddef>
+#include <stddef.h>
+
 #include <string>
 #include <vector>
 

@@ -4,7 +4,8 @@
 
 #include "components/autofill/core/browser/payments/payments_requests/upload_card_request.h"
 
-#include <cstdint>
+#include <stdint.h>
+
 #include <optional>
 #include <string>
 #include <string_view>

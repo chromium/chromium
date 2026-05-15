@@ -4,11 +4,12 @@
 
 #include "components/autofill/core/browser/crowdsourcing/randomized_encoder.h"
 
+#include <stddef.h>
+#include <stdint.h>
+
 #include <algorithm>
 #include <array>
 #include <cinttypes>
-#include <cstddef>
-#include <cstdint>
 #include <optional>
 #include <string>
 #include <string_view>

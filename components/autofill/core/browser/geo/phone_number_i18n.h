@@ -5,7 +5,8 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_GEO_PHONE_NUMBER_I18N_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_GEO_PHONE_NUMBER_I18N_H_
 
-#include <cstddef>
+#include <stddef.h>
+
 #include <memory>
 #include <string>
 #include <string_view>

@@ -4,11 +4,11 @@
 
 #include "components/autofill/core/browser/webdata/addresses/address_autofill_table.h"
 
+#include <stddef.h>
 #include <stdint.h>
 
 #include <algorithm>
 #include <array>
-#include <cstddef>
 #include <optional>
 #include <string>
 #include <string_view>

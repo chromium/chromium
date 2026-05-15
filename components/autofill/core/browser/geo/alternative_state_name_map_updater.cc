@@ -4,9 +4,10 @@
 
 #include "components/autofill/core/browser/geo/alternative_state_name_map_updater.h"
 
+#include <stddef.h>
+#include <stdint.h>
+
 #include <algorithm>
-#include <cstddef>
-#include <cstdint>
 #include <string>
 #include <string_view>
 #include <utility>

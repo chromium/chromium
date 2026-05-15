@@ -4,8 +4,9 @@
 
 #include "components/autofill/core/browser/ui/region_combobox_model.h"
 
+#include <stddef.h>
+
 #include <algorithm>
-#include <cstddef>
 #include <string>
 #include <vector>
 

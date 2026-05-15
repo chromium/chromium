@@ -5,8 +5,9 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_QUALIFIERS_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_QUALIFIERS_H_
 
+#include <stddef.h>
+
 #include <algorithm>
-#include <cstddef>
 
 #include "components/autofill/core/common/autofill_constants.h"
 

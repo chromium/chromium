@@ -5,7 +5,8 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_INTEGRATORS_AUTOFILL_AI_METRICS_AUTOFILL_AI_METRICS_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_INTEGRATORS_AUTOFILL_AI_METRICS_AUTOFILL_AI_METRICS_H_
 
-#include <cstddef>
+#include <stddef.h>
+
 #include <string_view>
 
 #include "base/containers/flat_map.h"

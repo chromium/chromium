@@ -4,8 +4,9 @@
 
 #include "components/autofill/core/browser/foundations/form_forest.h"
 
+#include <stddef.h>
+
 #include <algorithm>
-#include <cstddef>
 #include <limits>
 #include <memory>
 #include <optional>

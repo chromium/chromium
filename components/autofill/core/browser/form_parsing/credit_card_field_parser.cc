@@ -5,9 +5,9 @@
 #include "components/autofill/core/browser/form_parsing/credit_card_field_parser.h"
 
 #include <stddef.h>
+#include <stdint.h>
 
 #include <algorithm>
-#include <cstdint>
 #include <memory>
 #include <optional>
 #include <string>

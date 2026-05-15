@@ -4,9 +4,10 @@
 
 #include "components/autofill/core/browser/data_model/payments/ewallet.h"
 
+#include <stdint.h>
+
 #include <algorithm>
 #include <compare>
-#include <cstdint>
 #include <string>
 #include <string_view>
 #include <utility>

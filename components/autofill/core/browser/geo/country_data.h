@@ -5,7 +5,8 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_GEO_COUNTRY_DATA_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_GEO_COUNTRY_DATA_H_
 
-#include <cstddef>
+#include <stddef.h>
+
 #include <string>
 #include <string_view>
 #include <utility>

@@ -4,7 +4,8 @@
 
 #include "components/autofill/core/browser/data_model/payments/bnpl_issuer.h"
 
-#include <cstdint>
+#include <stdint.h>
+
 #include <optional>
 #include <string>
 #include <string_view>

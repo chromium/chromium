@@ -4,7 +4,8 @@
 
 #include "components/autofill/core/common/credit_card_number_validation.h"
 
-#include <cstddef>
+#include <stddef.h>
+
 #include <string>
 
 #include "base/strings/utf_ostream_operators.h"
