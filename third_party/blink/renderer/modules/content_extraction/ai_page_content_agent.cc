@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/modules/content_extraction/ai_page_content_agent.h"
 
 #include <algorithm>
+#include <cstdint>
 
 #include "base/check.h"
 #include "base/containers/adapters.h"
@@ -48,6 +49,7 @@
 #include "third_party/blink/renderer/core/html/html_meta_element.h"
 #include "third_party/blink/renderer/core/html/media/html_video_element.h"
 #include "third_party/blink/renderer/core/input/event_handler.h"
+#include "third_party/blink/renderer/core/layout/adjust_for_absolute_zoom.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/layout/layout_embedded_content.h"
@@ -1163,6 +1165,35 @@ bool FormControlTypeForAriaRole(ax::mojom::blink::Role role,
   }
 }
 
+uint32_t ComputeDefaultLineHeightPx(const ComputedStyle& style) {
+  const LayoutUnit line_height_px = AdjustForAbsoluteZoom::AdjustLayoutUnit(
+      style.ComputedLineHeightAsFixed(), style);
+  // Consumers use this as a minimum row size, so keep fractional and zero-ish
+  // values conservative instead of rounding down to 0.
+  return static_cast<uint32_t>(std::max(1, line_height_px.Ceil()));
+}
+
+// Used only when there is no styled <html> LayoutObject, e.g. display:none or
+// script removing the document element. In that case there is no meaningful
+// author default, and browser callers only need a conservative positive hint.
+constexpr uint32_t kDefaultLineHeightPx = 12;
+
+uint32_t ComputeDefaultLineHeightPx(const LocalFrame& frame) {
+  const Document& document = *frame.GetDocument();
+
+  if (Element* document_element = document.documentElement()) {
+    if (const LayoutObject* layout_object =
+            document_element->GetLayoutObject()) {
+      // Prefer the <html> style because authors set the frame default there.
+      return ComputeDefaultLineHeightPx(layout_object->StyleRef());
+    }
+  }
+
+  // If the document element or its layout object is missing, use a stable
+  // default instead of deriving frame data from the LayoutView.
+  return kDefaultLineHeightPx;
+}
+
 // Populates form control data for ARIA-based controls (e.g. role=checkbox).
 // Returns true if ARIA form control data should be emitted for this element.
 bool ProcessAriaFormControlNode(
@@ -2116,6 +2147,10 @@ void AIPageContentAgent::ContentBuilder::ProcessIframe(
       auto frame_data = mojom::blink::AIPageContentFrameData::New();
       frame_data->frame_interaction_info =
           mojom::blink::AIPageContentFrameInteractionInfo::New();
+      // Browser conversion requires a positive frame-level line height even
+      // when display locks prevent walking the iframe's layout subtree.
+      frame_data->default_line_height_px =
+          ComputeDefaultLineHeightPx(*local_frame);
       content_node.content_attributes->iframe_data->content =
           mojom::blink::AIPageContentIframeContent::NewLocalFrameData(
               std::move(frame_data));
@@ -2701,6 +2736,7 @@ void AIPageContentAgent::ContentBuilder::AddFrameData(
   frame_data.frame_interaction_info =
       mojom::blink::AIPageContentFrameInteractionInfo::New();
   frame_data.title = ReplaceUnpairedSurrogates(frame.GetDocument()->title());
+  frame_data.default_line_height_px = ComputeDefaultLineHeightPx(frame);
   AddFrameInteractionInfo(frame, *frame_data.frame_interaction_info);
   AddMetaData(frame, frame_data.meta_data);
 

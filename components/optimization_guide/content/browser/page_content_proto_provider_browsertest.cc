@@ -732,6 +732,22 @@ IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTest,
+                       FrameDefaultLineHeight) {
+  ASSERT_TRUE(content::NavigateToURL(web_contents(),
+                                     https_server()->GetURL("/simple.html")));
+  ASSERT_TRUE(content::ExecJs(web_contents()->GetPrimaryMainFrame(),
+                              "document.documentElement.style.cssText = "
+                              "'font-size: 10px; line-height: 26px';"));
+
+  // Load through the browser provider so the test covers renderer extraction,
+  // Mojo transport, and Mojo-to-proto conversion together.
+  LoadData();
+
+  // This exact CSS value should survive the full frame-data provider path.
+  EXPECT_EQ(page_content().main_frame_data().default_line_height_px(), 26);
+}
+
+IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTest,
                        ClickabilityReason) {
   LoadPage(https_server()->GetURL("/clickability_reason.html"),
            GetActionableAIPageContentOptions());
@@ -3124,6 +3140,9 @@ IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTest,
 
   const auto& iframe_data = iframe.content_attributes().iframe_data();
   EXPECT_TRUE(iframe_data.has_frame_data());
+  // The renderer still sends minimal frame data when display lock blocks the
+  // iframe subtree, and browser conversion requires a positive line height.
+  EXPECT_GT(iframe_data.frame_data().default_line_height_px(), 0);
 
   // Children should be empty due to display lock blocking traversal.
   EXPECT_EQ(iframe.children_nodes().size(), 0);

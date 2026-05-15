@@ -2330,6 +2330,11 @@ TEST_F(AIPageContentAgentTest, ContentVisibilityHiddenIframeActionable) {
   ASSERT_TRUE(iframe_node.content_attributes->iframe_data->content);
   EXPECT_TRUE(iframe_node.content_attributes->iframe_data->content
                   ->is_local_frame_data());
+  // Display-locked iframes still provide frame data for browser conversion.
+  EXPECT_GT(iframe_node.content_attributes->iframe_data->content
+                ->get_local_frame_data()
+                ->default_line_height_px,
+            0u);
 
   const auto& visible_text_node = *root.children_nodes[1];
   CheckTextNode(visible_text_node, "  visible text");
@@ -2945,6 +2950,68 @@ TEST_F(AIPageContentAgentTest, NativeReadOnlyTextInput) {
   ASSERT_TRUE(input);
   CheckFormControlNode(*input, mojom::blink::FormControlType::kInputText);
   EXPECT_TRUE(input->content_attributes->form_control_data->is_readonly);
+}
+
+TEST_F(AIPageContentAgentTest, FrameDefaultLineHeightUsesCssPixels) {
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(),
+      "<html style='font-size: 10px; line-height: 24px; zoom: 2'>"
+      "<body>"
+      // CSS zoom scales layout values internally, so this verifies APC reports
+      // the author-facing CSS px value rather than the zoomed layout value.
+      "  <input id='input' type='text' "
+      "style='font-size: 10px'>"
+      "</body>",
+      url_test_helpers::ToKURL("http://foobar.com"));
+
+  GetAIPageContent();
+
+  const auto* input = FindNodeBySelector("#input");
+  ASSERT_TRUE(input);
+  CheckFormControlNode(*input, mojom::blink::FormControlType::kInputText);
+  // The default line height is frame data because popups are frame-owned.
+  EXPECT_EQ(Content()->frame_data->default_line_height_px, 24u);
+}
+
+TEST_F(AIPageContentAgentTest,
+       FrameDefaultLineHeightFallsBackWithoutDocumentElementLayoutObject) {
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(),
+      "<html style='display: none'>"
+      "<body>"
+      // The <html> element has no LayoutObject when it is display:none.
+      // APC should still emit frame data instead of crashing the renderer.
+      "  <input id='input' type='text'>"
+      "</body>",
+      url_test_helpers::ToKURL("http://foobar.com"));
+
+  GetAIPageContent();
+
+  ASSERT_TRUE(Content()->frame_data);
+  // Without a <html> LayoutObject, APC uses a fixed fallback row size.
+  EXPECT_EQ(Content()->frame_data->default_line_height_px, 12u);
+}
+
+TEST_F(AIPageContentAgentTest,
+       FrameDefaultLineHeightFallsBackWithoutDocumentElement) {
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(),
+      "<html>"
+      "<body>"
+      "  <input id='input' type='text'>"
+      "</body>",
+      url_test_helpers::ToKURL("http://foobar.com"));
+  Document* document = helper_.LocalMainFrame()->GetFrame()->GetDocument();
+  ASSERT_TRUE(document);
+  ASSERT_TRUE(document->documentElement());
+  // APC can still serialize from the frame LayoutView after script removes
+  // the document element, but no author line-height source remains.
+  document->documentElement()->remove();
+
+  GetAIPageContent();
+
+  ASSERT_TRUE(Content()->frame_data);
+  EXPECT_EQ(Content()->frame_data->default_line_height_px, 12u);
 }
 
 TEST_F(AIPageContentAgentTest, AriaCheckedDoesNotOverrideNativeCheckbox) {

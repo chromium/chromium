@@ -4,6 +4,8 @@
 
 #include "components/optimization_guide/content/browser/page_content_proto_util.h"
 
+#include <cstdint>
+
 #include "base/test/bind.h"
 #include "base/test/gmock_expected_support.h"
 #include "base/test/scoped_feature_list.h"
@@ -31,6 +33,8 @@ using optimization_guide::proto::ContentNode;
 using optimization_guide::proto::Coordinate;
 using optimization_guide::proto::DocumentIdentifier;
 
+constexpr uint32_t kTestDefaultLineHeightPx = 16;
+
 SkColor MakeRgbColor(uint8_t r, uint8_t g, uint8_t b) {
   return SkColorSetRGB(r, g, b);
 }
@@ -45,15 +49,23 @@ blink::mojom::AIPageContentNodePtr CreateContentNode(
   return content_node;
 }
 
+blink::mojom::AIPageContentFrameDataPtr MakeFrameDataForTest() {
+  auto frame_data = blink::mojom::AIPageContentFrameData::New();
+  frame_data->frame_interaction_info =
+      blink::mojom::AIPageContentFrameInteractionInfo::New();
+  // Test Mojo payloads should satisfy the same positive-value contract as
+  // renderer-produced frame data.
+  frame_data->default_line_height_px = kTestDefaultLineHeightPx;
+  return frame_data;
+}
+
 blink::mojom::AIPageContentPtr CreatePageContent() {
   blink::mojom::AIPageContentPtr page_content =
       blink::mojom::AIPageContent::New();
   page_content->root_node =
       CreateContentNode(blink::mojom::AIPageContentAttributeType::kRoot);
-  page_content->frame_data = blink::mojom::AIPageContentFrameData::New();
+  page_content->frame_data = MakeFrameDataForTest();
   page_content->frame_data->title = "Page Title";
-  page_content->frame_data->frame_interaction_info =
-      blink::mojom::AIPageContentFrameInteractionInfo::New();
   return page_content;
 }
 
@@ -557,6 +569,21 @@ TEST_F(PageContentProtoUtilTest, MainFrameDataUrlSet) {
   EXPECT_EQ("data:", page_content.proto.main_frame_data().url());
 }
 
+TEST_F(PageContentProtoUtilTest, MainFrameDefaultLineHeightSet) {
+  auto root_content = CreatePageContent();
+  // Use a non-default value so the test proves the frame Mojo field is copied.
+  root_content->frame_data->default_line_height_px = 24u;
+
+  AIPageContentResult page_content;
+  EXPECT_TRUE(
+      ConvertAIPageContentToProto(root_content, page_content).has_value());
+
+  // The proto owns the line height on FrameData, not per form control.
+  EXPECT_TRUE(
+      page_content.proto.main_frame_data().has_default_line_height_px());
+  EXPECT_EQ(24u, page_content.proto.main_frame_data().default_line_height_px());
+}
+
 TEST_F(PageContentProtoUtilTest, MediaDataSet) {
   auto root_content = CreatePageContent();
 
@@ -696,9 +723,7 @@ TEST_F(PageContentProtoUtilTest, ConvertIframeData) {
   auto iframe_token = CreateFrameToken();
   auto iframe_data = blink::mojom::AIPageContentIframeData::New();
   iframe_data->frame_token = iframe_token.frame_token;
-  auto frame_data = blink::mojom::AIPageContentFrameData::New();
-  frame_data->frame_interaction_info =
-      blink::mojom::AIPageContentFrameInteractionInfo::New();
+  auto frame_data = MakeFrameDataForTest();
   frame_data->frame_interaction_info->selection =
       blink::mojom::AIPageContentSelection::New();
   frame_data->frame_interaction_info->selection->selected_text =
@@ -968,9 +993,7 @@ TEST_F(PageContentProtoUtilTest, ConvertGeometryInIframe) {
   auto iframe_token = CreateFrameToken();
   auto iframe_data = blink::mojom::AIPageContentIframeData::New();
   iframe_data->frame_token = iframe_token.frame_token;
-  auto frame_data = blink::mojom::AIPageContentFrameData::New();
-  frame_data->frame_interaction_info =
-      blink::mojom::AIPageContentFrameInteractionInfo::New();
+  auto frame_data = MakeFrameDataForTest();
   frame_data->frame_interaction_info->focused_dom_node_id = 1;
   frame_data->frame_interaction_info->accessibility_focused_dom_node_id = 1;
   iframe_data->content =
@@ -1210,11 +1233,7 @@ TEST_F(PageContentProtoUtilTest, AccessibilityFocusedFrame_None) {
 TEST_F(PageContentProtoUtilTest, ConvertMainFrameInteractionInfo) {
   auto root_content = CreatePageContent();
 
-  auto frame_data = blink::mojom::AIPageContentFrameData::New();
-  // blink::mojom::AIPageContentFrameData frame_data;
-
-  frame_data->frame_interaction_info =
-      blink::mojom::AIPageContentFrameInteractionInfo::New();
+  auto frame_data = MakeFrameDataForTest();
   frame_data->frame_interaction_info->selection =
       blink::mojom::AIPageContentSelection::New();
   frame_data->frame_interaction_info->selection->selected_text =
@@ -2199,9 +2218,7 @@ TEST_F(PageContentProtoUtilTest, CompromisedRendererIframeNotChild) {
   // child1 claims child2 is its child.
   auto child1_content = CreatePageContent();
 
-  auto child1_frame_data = blink::mojom::AIPageContentFrameData::New();
-  child1_frame_data->frame_interaction_info =
-      blink::mojom::AIPageContentFrameInteractionInfo::New();
+  auto child1_frame_data = MakeFrameDataForTest();
   child1_content->frame_data = std::move(child1_frame_data);
 
   auto malicious_iframe_node =
@@ -2221,9 +2238,7 @@ TEST_F(PageContentProtoUtilTest, CompromisedRendererIframeNotChild) {
   root_content->root_node->children_nodes.emplace_back(
       CreateContentNode(blink::mojom::AIPageContentAttributeType::kIframe));
 
-  auto main_frame_data = blink::mojom::AIPageContentFrameData::New();
-  main_frame_data->frame_interaction_info =
-      blink::mojom::AIPageContentFrameInteractionInfo::New();
+  auto main_frame_data = MakeFrameDataForTest();
   root_content->frame_data = std::move(main_frame_data);
 
   auto main_iframe_data = blink::mojom::AIPageContentIframeData::New();

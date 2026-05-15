@@ -419,6 +419,10 @@ struct AIPageContentFrameData {
   // The opened popup window that is visible on this page, if one exists. Has
   // its own AIPageContentNode tree.
   AIPageContentPopup? popup;
+
+  // Positive used line height in CSS px. This gives callers a scale-stable
+  // minimum text-row size for frame-owned geometry rules such as popups.
+  uint32 default_line_height_px;
 };
 
 // Provides metadata for local redacted frames.

@@ -4,6 +4,7 @@
 
 #include "components/optimization_guide/content/browser/page_content_proto_util.h"
 
+#include <cstdint>
 #include <optional>
 #include <string>
 #include <variant>
@@ -11,6 +12,7 @@
 
 #include "base/feature_list.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "base/supports_user_data.h"
 #include "base/types/expected.h"
@@ -946,6 +948,11 @@ void ConvertFrameData(
   AddDocumentIdentifier(render_frame_info.global_frame_token, frame_token_set,
                         render_frame_info.serialized_server_token,
                         proto_frame_data);
+
+  // The renderer always initializes this from the frame's used line height.
+  // Mojo uses uint32 because negative line heights are not valid.
+  proto_frame_data->set_default_line_height_px(
+      mojom_frame_data.default_line_height_px);
 
   if (mojom_frame_data.contains_paid_content) {
     auto* paid_content_metadata =
