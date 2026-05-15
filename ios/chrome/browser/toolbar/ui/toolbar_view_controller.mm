@@ -1033,11 +1033,19 @@ constexpr CGFloat kOuterSeparatorVerticalOffset = 4;
   [_backButton addTarget:self
                   action:@selector(backButtonTapped)
         forControlEvents:UIControlEventTouchUpInside];
+  [_backButton addAction:[UIAction actionWithHandler:^(UIAction*) {
+                 TriggerHapticFeedbackForImpact(UIImpactFeedbackStyleHeavy);
+               }]
+        forControlEvents:UIControlEventMenuActionTriggered];
   _forwardButton = [self.buttonFactory makeForwardButton];
   _forwardButton.menu = _forwardButtonMenu;
   [_forwardButton addTarget:self
                      action:@selector(forwardButtonTapped)
            forControlEvents:UIControlEventTouchUpInside];
+  [_forwardButton addAction:[UIAction actionWithHandler:^(UIAction*) {
+                    TriggerHapticFeedbackForImpact(UIImpactFeedbackStyleHeavy);
+                  }]
+           forControlEvents:UIControlEventMenuActionTriggered];
   _navigationButtonsContainer =
       [self.buttonFactory makeConjoinedBackButton:_backButton
                                     forwardButton:_forwardButton];
