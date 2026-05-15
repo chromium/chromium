@@ -854,7 +854,6 @@ dictionary GetVolumeRootOptions {
 dictionary Preferences {
   boolean driveEnabled;
   boolean driveSyncEnabledOnMeteredNetwork;
-  boolean searchSuggestEnabled;
   boolean use24hourClock;
   DOMString timezone;
   boolean arcEnabled;

@@ -14,7 +14,6 @@ import {type Preferences, updatePreferences} from './preferences.js';
 const INITIAL_PREFERENCES: Preferences = {
   driveEnabled: false,
   driveSyncEnabledOnMeteredNetwork: false,
-  searchSuggestEnabled: false,
   use24hourClock: false,
   timezone: 'GMT+10',
   arcEnabled: false,

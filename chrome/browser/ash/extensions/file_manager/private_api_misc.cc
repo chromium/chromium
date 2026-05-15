@@ -73,7 +73,6 @@
 #include "chrome/common/extensions/api/file_manager_private.h"
 #include "chrome/common/extensions/api/file_manager_private_internal.h"
 #include "chrome/common/extensions/extension_constants.h"
-#include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/drivefs/drivefs_pinning_manager.h"
 #include "chromeos/ash/components/settings/timezone_settings.h"
@@ -325,8 +324,6 @@ FileManagerPrivateGetPreferencesFunction::Run() {
       drive::util::IsDriveFsBulkPinningAvailable(profile);
   result.drive_fs_bulk_pinning_enabled =
       prefs->GetBoolean(drive::prefs::kDriveFsBulkPinningEnabled);
-  result.search_suggest_enabled =
-      prefs->GetBoolean(prefs::kSearchSuggestEnabled);
   result.use24hour_clock = prefs->GetBoolean(ash::prefs::kUse24HourClock);
   result.timezone = base::UTF16ToUTF8(
       ash::system::TimezoneSettings::GetInstance()->GetCurrentTimezoneID());

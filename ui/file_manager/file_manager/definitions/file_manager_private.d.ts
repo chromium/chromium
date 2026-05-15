@@ -549,7 +549,6 @@ declare global {
       export interface Preferences {
         driveEnabled: boolean;
         driveSyncEnabledOnMeteredNetwork: boolean;
-        searchSuggestEnabled: boolean;
         use24hourClock: boolean;
         timezone: string;
         arcEnabled: boolean;

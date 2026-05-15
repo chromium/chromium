@@ -63,7 +63,6 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/extensions/api/file_manager_private.h"
 #include "chrome/common/extensions/extension_constants.h"
-#include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/disks/disk.h"
 #include "chromeos/ash/components/drivefs/drivefs_host.h"
 #include "chromeos/ash/components/login/login_state/login_state.h"
@@ -727,7 +726,6 @@ void EventRouter::ObserveEvents() {
     pref_change_registrar_->Add(drive::prefs::kDisableDriveOverCellular, cb);
     pref_change_registrar_->Add(drive::prefs::kDisableDrive, cb);
     pref_change_registrar_->Add(ash::prefs::kFilesAppTrashEnabled, cb);
-    pref_change_registrar_->Add(prefs::kSearchSuggestEnabled, cb);
     pref_change_registrar_->Add(ash::prefs::kUse24HourClock, cb);
     pref_change_registrar_->Add(arc::prefs::kArcEnabled, cb);
     pref_change_registrar_->Add(arc::prefs::kArcHasAccessToRemovableMedia, cb);
