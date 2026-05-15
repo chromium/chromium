@@ -67,6 +67,9 @@ ExtensionInstallDialogViewAndroid::ExtensionInstallDialogViewAndroid(
       done_callback_(std::move(done_callback)) {}
 
 ExtensionInstallDialogViewAndroid::~ExtensionInstallDialogViewAndroid() {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  Java_ExtensionInstallDialogBridge_clearNativePtr(env, java_object_);
+
   if (!done_callback_) {
     return;
   }

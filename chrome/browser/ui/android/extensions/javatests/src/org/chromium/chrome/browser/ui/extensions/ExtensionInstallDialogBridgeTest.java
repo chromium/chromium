@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.ui.extensions;
 
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -16,7 +17,6 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.test.core.app.ApplicationProvider;
-import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.filters.SmallTest;
 
 import com.google.android.material.textfield.TextInputEditText;
@@ -29,10 +29,10 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.Robolectric;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.ui.extensions.ExtensionInstallDialogBridge.Natives;
-import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
@@ -45,9 +45,7 @@ import org.chromium.ui.widget.TextViewWithLeading;
 public class ExtensionInstallDialogBridgeTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Rule
-    public ActivityScenarioRule<TestActivity> mActivityScenarioRule =
-            new ActivityScenarioRule<>(TestActivity.class);
+    public static class MyTestActivity extends Activity {}
 
     private static final String TITLE = "Add 'extension name'?";
     private static final String ACCEPT_BUTTON_LABEL = "Add extension";
@@ -72,7 +70,7 @@ public class ExtensionInstallDialogBridgeTest {
     @Before
     public void setUp() {
         reset(mNativeMock);
-        mActivityScenarioRule.getScenario().onActivity(activity -> mActivity = activity);
+        mActivity = Robolectric.buildActivity(MyTestActivity.class).setup().get();
 
         mModalDialogManager = new FakeModalDialogManager(ModalDialogType.TAB);
         mResources = ApplicationProvider.getApplicationContext().getResources();
@@ -297,6 +295,60 @@ public class ExtensionInstallDialogBridgeTest {
         Assert.assertFalse(
                 "Positive button must be re-enabled when text is shortened to max length.",
                 dialogModel.get(ModalDialogProperties.POSITIVE_BUTTON_DISABLED));
+    }
+
+    /**
+     * Tests that clicking on the store link calls native method when active, and does not call it
+     * after the native pointer is cleared.
+     */
+    @Test
+    @SmallTest
+    public void testStoreLinkClick() throws Exception {
+        String storeLinkText = "Open in Chrome Web Store";
+        String storeUrl = "https://chrome.google.com/webstore/detail/";
+
+        // Create placeholder views to avoid layout inflation issues.
+        LinearLayout contentView = new LinearLayout(mActivity);
+        LinearLayout infoContainer = new LinearLayout(mActivity);
+        infoContainer.setId(R.id.webstore_info_container);
+        contentView.addView(infoContainer);
+
+        TextView storeLink = new TextView(mActivity);
+        storeLink.setId(R.id.store_link);
+        contentView.addView(storeLink);
+
+        mExtensionInstallDialogBridge.setContentViewForTesting(contentView);
+
+        mExtensionInstallDialogBridge.withWebstoreData(storeLinkText, "", "", 0.0, storeUrl);
+
+        // 1. Click when active: this should call native.
+        storeLink.performClick();
+        verify(mNativeMock, times(1))
+                .onStoreLinkClicked(NATIVE_INSTALL_EXTENSION_DIALOG_VIEW, storeUrl);
+
+        // Reset mock for the next check.
+        reset(mNativeMock);
+
+        // 2. Clear pointer and click again: this should NOT call native.
+        mExtensionInstallDialogBridge.clearNativePtr();
+        storeLink.performClick();
+        verify(mNativeMock, times(0))
+                .onStoreLinkClicked(NATIVE_INSTALL_EXTENSION_DIALOG_VIEW, storeUrl);
+    }
+
+    /** Tests that onDismiss does not call native methods after the native pointer is cleared. */
+    @Test
+    @SmallTest
+    public void testOnDismissAfterPointerCleared() {
+        // 1. Clear the pointer manually.
+        mExtensionInstallDialogBridge.clearNativePtr();
+
+        // 2. Trigger onDismiss.
+        mExtensionInstallDialogBridge.onDismiss(null, DialogDismissalCause.DISMISSED_BY_NATIVE);
+
+        // 3. Verify no JNI calls were made to onDialogDismissed or onDialogCanceled.
+        verify(mNativeMock, times(0)).onDialogDismissed(anyLong());
+        verify(mNativeMock, times(0)).onDialogCanceled(anyLong());
     }
 
     /**

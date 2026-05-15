@@ -41,7 +41,7 @@ import org.chromium.ui.widget.TextViewWithLeading;
 @JNINamespace("extensions")
 @NullMarked
 public class ExtensionInstallDialogBridge implements ModalDialogProperties.Controller {
-    private final long mNativeExtensionInstallDialogView;
+    private long mNativeExtensionInstallDialogView;
     private final ModalDialogManager mModalDialogManager;
     private final Context mContext;
     private final PropertyModel.Builder mPropertyModelBuilder;
@@ -256,6 +256,7 @@ public class ExtensionInstallDialogBridge implements ModalDialogProperties.Contr
             storeLink.setVisibility(View.VISIBLE);
             storeLink.setOnClickListener(
                     v -> {
+                        if (mNativeExtensionInstallDialogView == 0) return;
                         ExtensionInstallDialogBridgeJni.get()
                                 .onStoreLinkClicked(mNativeExtensionInstallDialogView, storeUrl);
                     });
@@ -281,6 +282,7 @@ public class ExtensionInstallDialogBridge implements ModalDialogProperties.Contr
 
     @Override
     public void onDismiss(PropertyModel model, int dismissalCause) {
+        if (mNativeExtensionInstallDialogView == 0) return;
         switch (dismissalCause) {
             case DialogDismissalCause.POSITIVE_BUTTON_CLICKED:
                 String justificationText = "";
@@ -321,6 +323,15 @@ public class ExtensionInstallDialogBridge implements ModalDialogProperties.Contr
                     LayoutInflater.from(mContext).inflate(R.layout.extension_install_dialog, null);
         }
         return mContentView;
+    }
+
+    @CalledByNative
+    public void clearNativePtr() {
+        mNativeExtensionInstallDialogView = 0;
+    }
+
+    public void setContentViewForTesting(View view) {
+        mContentView = view;
     }
 
     @NativeMethods
