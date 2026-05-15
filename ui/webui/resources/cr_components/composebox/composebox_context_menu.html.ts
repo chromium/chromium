@@ -33,6 +33,7 @@ export function getHtml(this: ComposeboxElement) {
         @smart-tab-sharing-active-changed="${
             this.onSmartTabSharingActiveChanged}"
         .inputState="${this.inputState}"
+        .usePecApi="${this.usePecApi}"
         .smartTabSharingActive="${this.smartTabSharingActive}"
         .searchboxLayoutMode="${this.searchboxLayoutMode}"
         .tabSuggestions="${this.tabSuggestions}"
