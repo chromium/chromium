@@ -102,7 +102,6 @@ class MagiPresubmitTest(unittest.TestCase):
             results = PRESUBMIT.CheckMarkdownFiles(self.mock_input,
                                                    self.mock_output)
 
-        print("TEST REACHABILITY RESULTS:", results)
         # Expect 1 warning for ORPHAN.md (it's unmodified debt)
         orphans = [r for r in results if 'Unreachable' in r]
         self.assertEqual(len(orphans), 1)
@@ -213,7 +212,7 @@ class MagiPresubmitTest(unittest.TestCase):
             '"personas": ['
             '"src/remoting/tools/magi-mode/personas/core/security.json"], '
             '"review_mode": "SUPERVISOR", "state_transport": "EPHEMERAL", '
-            '"next_phase": "CRITIQUE"}')
+            '"next_stage": "CRITIQUE"}')
         self.mock_input.affected_files = [
             MockAffectedFile('remoting/tools/magi-mode/state_block.magi.json'),
             MockAffectedFile(
@@ -232,14 +231,14 @@ class MagiPresubmitTest(unittest.TestCase):
             '"patternProperties": {"^.*$": {"type": "boolean"}}}, '
             '"StateBlock": {"required": ["checklist", "iteration", '
             '"stall_count", "active_constraints", "resolved_constraints", '
-            '"personas", "review_mode", "state_transport", "next_phase"], '
+            '"personas", "review_mode", "state_transport", "next_stage"], '
             '"properties": {"checklist": '
             '{"$ref": "#/definitions/ChecklistObject"}, '
             '"unlisted_issues_found": {"type": "array"}, "iteration": '
             '{"type": "integer"}, "stall_count": {"type": "integer"}, '
             '"active_constraints": {"type": "array"}, "resolved_constraints": '
             '{"type": "array"}, "personas": {"type": "array"}, '
-            '"next_phase": {"type": "string"}, '
+            '"next_stage": {"type": "string"}, '
             '"review_mode": {"type": "string", "enum": '
             '["SUPERVISOR", "CONSENSUS"]}, '
             '"state_transport": {"type": "string", "enum": '
@@ -270,7 +269,7 @@ class MagiPresubmitTest(unittest.TestCase):
             '{"iteration": "1", "stall_count": 0, "active_constraints": [], '
             '"resolved_constraints": [], "personas": [], '
             '"review_mode": "SUPERVISOR", "state_transport": "EPHEMERAL", '
-            '"next_phase": "CRITIQUE"}')
+            '"next_stage": "CRITIQUE"}')
         self.mock_input.files_content = {
             'remoting/tools/magi-mode/state_block.magi.json': wrong_type_json
         }
@@ -290,7 +289,7 @@ class MagiPresubmitTest(unittest.TestCase):
             '"resolved_constraints": [], "personas": '
             '["src/remoting/tools/magi-mode/personas/core/security.json"], '
             '"review_mode": "SUPERVISOR", "state_transport": "EPHEMERAL", '
-            '"next_phase": "CRITIQUE"}')
+            '"next_stage": "CRITIQUE"}')
         self.mock_input.affected_files = [
             MockAffectedFile('remoting/tools/magi-mode/state_block.magi.json'),
             MockAffectedFile(
@@ -307,14 +306,14 @@ class MagiPresubmitTest(unittest.TestCase):
             '"patternProperties": {"^.*$": {"type": "boolean"}}}, '
             '"StateBlock": {"required": ["checklist", "iteration", '
             '"stall_count", "active_constraints", "resolved_constraints", '
-            '"personas", "review_mode", "state_transport", "next_phase"], '
+            '"personas", "review_mode", "state_transport", "next_stage"], '
             '"properties": {"checklist": '
             '{"$ref": "#/definitions/ChecklistObject"}, '
             '"unlisted_issues_found": {"type": "array"}, "iteration": '
             '{"type": "integer"}, "stall_count": {"type": "integer"}, '
             '"active_constraints": {"type": "array"}, "resolved_constraints": '
             '{"type": "array"}, "personas": {"type": "array"}, '
-            '"next_phase": {"type": "string"}, '
+            '"next_stage": {"type": "string"}, '
             '"review_mode": {"type": "string", "enum": '
             '["SUPERVISOR", "CONSENSUS"]}, '
             '"state_transport": {"type": "string", "enum": '
@@ -337,7 +336,7 @@ class MagiPresubmitTest(unittest.TestCase):
             '"resolved_constraints": [], "personas": '
             '["src/remoting/tools/magi-mode/personas/core/security.json"], '
             '"review_mode": "SUPERVISOR", "state_transport": "EPHEMERAL", '
-            '"next_phase": "CRITIQUE"}')
+            '"next_stage": "CRITIQUE"}')
         self.mock_input.affected_files = [
             MockAffectedFile('remoting/tools/magi-mode/state_block.magi.json'),
             MockAffectedFile(
@@ -354,14 +353,14 @@ class MagiPresubmitTest(unittest.TestCase):
             '"patternProperties": {"^.*$": {"type": "boolean"}}}, '
             '"StateBlock": {"required": ["checklist", "iteration", '
             '"stall_count", "active_constraints", "resolved_constraints", '
-            '"personas", "review_mode", "state_transport", "next_phase"], '
+            '"personas", "review_mode", "state_transport", "next_stage"], '
             '"properties": {"checklist": '
             '{"$ref": "#/definitions/ChecklistObject"}, '
             '"unlisted_issues_found": {"type": "array"}, "iteration": '
             '{"type": "integer"}, "stall_count": {"type": "integer"}, '
             '"active_constraints": {"type": "array"}, "resolved_constraints": '
             '{"type": "array"}, "personas": {"type": "array"}, '
-            '"next_phase": {"type": "string"}, '
+            '"next_stage": {"type": "string"}, '
             '"review_mode": {"type": "string", "enum": '
             '["SUPERVISOR", "CONSENSUS"]}, '
             '"state_transport": {"type": "string", "enum": '
@@ -381,7 +380,7 @@ class MagiPresubmitTest(unittest.TestCase):
             '{"checklist": {}, "unlisted_issues_found": [], '
             '"goal": "Test", "target_files": ["foo.cc"], "anti_goals": [], '
             '"edge_cases": [], "paranoia_mode": false, '
-            '"auditability_level": "NORMAL", "next_phase": "SCAFFOLDING"}')
+            '"auditability_level": "NORMAL", "next_stage": "SCAFFOLDING"}')
         self.mock_input.affected_files = [
             MockAffectedFile('remoting/tools/magi-mode/project.magi.json')
         ]
@@ -394,14 +393,14 @@ class MagiPresubmitTest(unittest.TestCase):
             '{"definitions": {"ChecklistObject": {"type": "object", '
             '"patternProperties": {"^.*$": {"type": "boolean"}}}, '
             '"ProjectSpec": {"required": ["checklist", "goal", '
-            '"target_files", "anti_goals", "edge_cases", "next_phase", '
+            '"target_files", "anti_goals", "edge_cases", "next_stage", '
             '"paranoia_mode", "auditability_level"], "properties": '
             '{"checklist": {"$ref": "#/definitions/ChecklistObject"}, '
             '"unlisted_issues_found": {"type": "array"}, '
             '"goal": {"type": "string"}, "target_files": {"type": "array"}, '
             '"anti_goals": {"type": "array"}, "edge_cases": '
             '{"type": "array"}, "paranoia_mode": {"type": "boolean"}, '
-            '"next_phase": {"type": "string"}, '
+            '"next_stage": {"type": "string"}, '
             '"auditability_level": {"type": "string", "enum": ["NORMAL", '
             '"VERBOSE"]}}}}}')
 
@@ -426,7 +425,7 @@ class MagiPresubmitTest(unittest.TestCase):
         wrong_bool_json = (
             '{"goal": "Test", "target_files": ["foo.cc"], "anti_goals": [], '
             '"edge_cases": [], "paranoia_mode": "false", '
-            '"auditability_level": "NORMAL", "next_phase": "SCAFFOLDING"}')
+            '"auditability_level": "NORMAL", "next_stage": "SCAFFOLDING"}')
         self.mock_input.files_content = {
             'remoting/tools/magi-mode/project.magi.json': wrong_bool_json
         }
@@ -442,7 +441,7 @@ class MagiPresubmitTest(unittest.TestCase):
         invalid_enum_json = (
             '{"goal": "Test", "target_files": ["foo.cc"], "anti_goals": [], '
             '"edge_cases": [], "paranoia_mode": false, '
-            '"auditability_level": "UNKNOWN", "next_phase": "SCAFFOLDING"}')
+            '"auditability_level": "UNKNOWN", "next_stage": "SCAFFOLDING"}')
         self.mock_input.files_content = {
             'remoting/tools/magi-mode/project.magi.json': invalid_enum_json
         }
@@ -459,7 +458,7 @@ class MagiPresubmitTest(unittest.TestCase):
         valid_json = (
             '{"verdict": "REJECT", "reasoning": ["Bad"], "comments": '
             '[{"file": "foo.cc", "line": 10, "comment": "Fix this"}], '
-            '"next_phase": "ANALYSIS"}')
+            '"next_stage": "ANALYSIS"}')
         self.mock_input.affected_files = [
             MockAffectedFile(
                 'remoting/tools/magi-mode/review.security.magi.1.json')
@@ -483,7 +482,7 @@ class MagiPresubmitTest(unittest.TestCase):
         # Invalid verdict
         invalid_verdict_json = (
             '{"checklist": {}, "unlisted_issues_found": [], '
-            '"verdict": "MAYBE", "reasoning": [], "next_phase": "ANALYSIS"}')
+            '"verdict": "MAYBE", "reasoning": [], "next_stage": "ANALYSIS"}')
         self.mock_input.files_content = {
             'remoting/tools/magi-mode/review.security.magi.1.json':
             invalid_verdict_json
@@ -498,7 +497,7 @@ class MagiPresubmitTest(unittest.TestCase):
         # Valid constraints
         valid_json = (
             '{"iteration": 2, "constraints": ["Rule 1", "Rule 2"], '
-            '"review_mode": "SUPERVISOR", "next_phase": "SYNTHESIS"}')
+            '"review_mode": "SUPERVISOR", "next_stage": "SYNTHESIS"}')
         self.mock_input.affected_files = [
             MockAffectedFile(
                 'remoting/tools/magi-mode/constraints.magi.2.json')
@@ -509,12 +508,12 @@ class MagiPresubmitTest(unittest.TestCase):
 
         schema_json = (
             '{"definitions": {"Constraints": {"required": ["iteration", '
-            '"constraints", "review_mode", "next_phase"], '
+            '"constraints", "review_mode", "next_stage"], '
             '"properties": {"iteration": '
             '{"type": "integer"}, "constraints": {"type": "array"}, '
             '"review_mode": {"type": "string", "enum": '
             '["SUPERVISOR", "CONSENSUS"]}, '
-            '"next_phase": {"type": "string"}}}}}')
+            '"next_stage": {"type": "string"}}}}}')
 
         with patch('builtins.open',
                    unittest.mock.mock_open(read_data=schema_json)):
@@ -523,13 +522,13 @@ class MagiPresubmitTest(unittest.TestCase):
             self.assertEqual(len(results), 0)
 
     def testDecisionGraphValidation(self):
-        # Invalid next_phase for project
+        # Invalid next_stage for project
         invalid_project = (
             '{"checklist": {}, "unlisted_issues_found": [], '
             '"goal": "T", "target_files": [], "anti_goals": [], '
             '"edge_cases": [], "paranoia_mode": false, '
             '"auditability_level": "NORMAL", '
-            '"next_phase": "SYNTHESIS"}')
+            '"next_stage": "SYNTHESIS"}')
         self.mock_input.affected_files = [
             MockAffectedFile('remoting/tools/magi-mode/project.magi.json')
         ]
@@ -541,26 +540,26 @@ class MagiPresubmitTest(unittest.TestCase):
             '"patternProperties": {"^.*$": {"type": "boolean"}}}, '
             '"ProjectSpec": {"required": ["checklist", "goal", '
             '"target_files", "anti_goals", "edge_cases", "paranoia_mode", '
-            '"auditability_level", "next_phase"], "properties": '
+            '"auditability_level", "next_stage"], "properties": '
             '{"checklist": {"$ref": "#/definitions/ChecklistObject"}, '
             '"unlisted_issues_found": {"type": "array"}, '
             '"goal": {"type": "string"}, "target_files": {"type": "array"}, '
             '"anti_goals": {"type": "array"}, "edge_cases": {"type": '
             '"array"}, "paranoia_mode": {"type": "boolean"}, '
             '"auditability_level": {"type": "string"}, '
-            '"next_phase": {"type": "string"}}}}}')
+            '"next_stage": {"type": "string"}}}}}')
         with patch('builtins.open',
                    unittest.mock.mock_open(read_data=schema_json)):
             results = PRESUBMIT.CheckJsonFiles(self.mock_input,
                                                self.mock_output)
             self.assertTrue(
-                any('must signal next_phase: SCAFFOLDING' in r
+                any('must signal next_stage: SCAFFOLDING or PREPARATION' in r
                     for r in results))
 
         # Invalid handoff for SUPERVISOR constraints
         invalid_supervisor = (
             '{"iteration": 1, "constraints": [], "review_mode": '
-            '"SUPERVISOR", "next_phase": "TPM_UPDATE"}')
+            '"SUPERVISOR", "next_stage": "TPM_UPDATE"}')
         self.mock_input.affected_files = [
             MockAffectedFile(
                 'remoting/tools/magi-mode/constraints.magi.1.json')
@@ -573,7 +572,7 @@ class MagiPresubmitTest(unittest.TestCase):
             '{"definitions": {"Constraints": {"required": ["iteration", '
             '"constraints", "review_mode"], "properties": {"iteration": '
             '{"type": "integer"}, "constraints": {"type": "array"}, '
-            '"review_mode": {"type": "string"}, "next_phase": {"type": '
+            '"review_mode": {"type": "string"}, "next_stage": {"type": '
             '"string"}}}}}')
         with patch('builtins.open',
                    unittest.mock.mock_open(read_data=schema_json)):
@@ -586,7 +585,7 @@ class MagiPresubmitTest(unittest.TestCase):
         invalid_consensus = (
             '{"checklist": {}, "unlisted_issues_found": [], '
             '"iteration": 1, "constraints": [], "review_mode": '
-            '"CONSENSUS", "next_phase": "SYNTHESIS"}')
+            '"CONSENSUS", "next_stage": "SYNTHESIS"}')
         self.mock_input.affected_files = [
             MockAffectedFile(
                 'remoting/tools/magi-mode/constraints.magi.1.json')
@@ -612,7 +611,7 @@ class MagiPresubmitTest(unittest.TestCase):
             '"resolved_constraints": [], "personas": '
             '["src/remoting/tools/magi-mode/personas/core/security.json"], '
             '"review_mode": "SUPERVISOR", "state_transport": "EPHEMERAL", '
-            '"next_phase": "CRITIQUE"}')
+            '"next_stage": "CRITIQUE"}')
 
         proj_paranoia = '{"paranoia_mode": true}'
         proj_verbose = '{"auditability_level": "VERBOSE"}'
@@ -737,7 +736,7 @@ class MagiPresubmitTest(unittest.TestCase):
         invalid_type_json = (
             '{"checklist": {}, "goal": "Test", "target_files": [], '
             '"anti_goals": [], "edge_cases": [], "paranoia_mode": false, '
-            '"auditability_level": "NORMAL", "next_phase": "SCAFFOLDING", '
+            '"auditability_level": "NORMAL", "next_stage": "SCAFFOLDING", '
             '"build_targets": "//remoting/host:host"}')
         self.mock_input.affected_files = [
             MockAffectedFile('remoting/tools/magi-mode/project.magi.json')
@@ -760,7 +759,7 @@ class MagiPresubmitTest(unittest.TestCase):
         invalid_elem_json = (
             '{"checklist": {}, "goal": "Test", "target_files": [], '
             '"anti_goals": [], "edge_cases": [], "paranoia_mode": false, '
-            '"auditability_level": "NORMAL", "next_phase": "SCAFFOLDING", '
+            '"auditability_level": "NORMAL", "next_stage": "SCAFFOLDING", '
             '"build_targets": [123]}')
         self.mock_input.files_content = {
             'remoting/tools/magi-mode/project.magi.json': invalid_elem_json
@@ -778,7 +777,7 @@ class MagiPresubmitTest(unittest.TestCase):
         invalid_env_1 = (
             '{"checklist": {}, "goal": "Test", "target_files": [], '
             '"anti_goals": [], "edge_cases": [], "paranoia_mode": false, '
-            '"auditability_level": "NORMAL", "next_phase": "SCAFFOLDING", '
+            '"auditability_level": "NORMAL", "next_stage": "SCAFFOLDING", '
             '"environment": {"vcs": "JJ", "harness": "JETSKI"}}')
         self.mock_input.affected_files = [
             MockAffectedFile('remoting/tools/magi-mode/project.magi.json')
@@ -800,7 +799,7 @@ class MagiPresubmitTest(unittest.TestCase):
         invalid_env_2 = (
             '{"checklist": {}, "goal": "Test", "target_files": [], '
             '"anti_goals": [], "edge_cases": [], "paranoia_mode": false, '
-            '"auditability_level": "NORMAL", "next_phase": "SCAFFOLDING", '
+            '"auditability_level": "NORMAL", "next_stage": "SCAFFOLDING", '
             '"environment": {"vcs": "JJ", "harness": "JETSKI", "repo_type": "INVALID"}}'
         )
         self.mock_input.files_content = {
@@ -818,7 +817,7 @@ class MagiPresubmitTest(unittest.TestCase):
         invalid_env_3 = (
             '{"checklist": {}, "goal": "Test", "target_files": [], '
             '"anti_goals": [], "edge_cases": [], "paranoia_mode": false, '
-            '"auditability_level": "NORMAL", "next_phase": "SCAFFOLDING", '
+            '"auditability_level": "NORMAL", "next_stage": "SCAFFOLDING", '
             '"environment": {"vcs": "JJ", "harness": "JETSKI", "repo_type": "CHROMIUM", "output_directory": 123}}'
         )
         self.mock_input.files_content = {
@@ -832,14 +831,14 @@ class MagiPresubmitTest(unittest.TestCase):
                 any('environment.output_directory must be a string' in r
                     for r in results))
 
-    def testCheckLogsDirectory(self):
+    def testCheckTempDirectory(self):
         self.mock_input.affected_files = [
-            MockAffectedFile('remoting/tools/magi-mode/.magi_logs/log.json')
+            MockAffectedFile('remoting/tools/magi-mode/.temp/log.json')
         ]
-        results = PRESUBMIT.CheckLogsDirectory(self.mock_input,
+        results = PRESUBMIT.CheckTempDirectory(self.mock_input,
                                                self.mock_output)
-        self.assertTrue(
-            any('is in the .magi_logs/ directory' in r for r in results))
+        self.assertTrue(any('is in the .temp/ directory' in r
+                            for r in results))
 
 
 if __name__ == '__main__':

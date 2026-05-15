@@ -51,7 +51,7 @@
         },
         "implementors": { "type": "array", "items": { "type": "string" } },
         "reviewers": { "type": "array", "items": { "type": "string" } },
-        "next_phase": { "type": "string" },
+        "next_stage": { "type": "string" },
         "review_mode": {
           "type": "string",
           "enum": ["SUPERVISOR", "CONSENSUS"]
@@ -71,7 +71,7 @@
         "reviewers",
         "review_mode",
         "state_transport",
-        "next_phase"
+        "next_stage"
       ]
     },
     "ProjectSpec": {
@@ -91,7 +91,7 @@
         "anti_goals": { "type": "array", "items": { "type": "string" } },
         "edge_cases": { "type": "array", "items": { "type": "string" } },
         "build_targets": { "type": "array", "items": { "type": "string" } },
-        "next_phase": { "type": "string" },
+        "next_stage": { "type": "string" },
         "paranoia_mode": { "type": "boolean" },
         "auditability_level": {
           "type": "string",
@@ -106,7 +106,7 @@
         "target_files",
         "anti_goals",
         "edge_cases",
-        "next_phase",
+        "next_stage",
         "paranoia_mode",
         "auditability_level",
         "environment"
@@ -134,9 +134,9 @@
             "required": ["file", "comment"]
           }
         },
-        "next_phase": { "type": "string" }
+        "next_stage": { "type": "string" }
       },
-      "required": ["checklist", "verdict", "reasoning", "next_phase"]
+      "required": ["checklist", "verdict", "reasoning", "next_stage"]
     },
     "Constraints": {
       "type": "object",
@@ -148,7 +148,7 @@
         },
         "iteration": { "type": "integer" },
         "constraints": { "type": "array", "items": { "type": "string" } },
-        "next_phase": { "type": "string" },
+        "next_stage": { "type": "string" },
         "review_mode": {
           "type": "string",
           "enum": ["SUPERVISOR", "CONSENSUS"]
@@ -159,7 +159,7 @@
         "iteration",
         "constraints",
         "review_mode",
-        "next_phase"
+        "next_stage"
       ]
     }
   }

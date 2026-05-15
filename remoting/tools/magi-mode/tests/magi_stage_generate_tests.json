@@ -1,0 +1,79 @@
+{
+  "$schema": "./magi_test_schemas.json#/definitions/Scenario",
+  "name": "Generate Stage Tests",
+  "description": "Verify steps in Generate stage.",
+  "base_inputs": {
+    "project_spec": "testdata/project.magi.json",
+    "state_block": "testdata/state_block.magi.json"
+  },
+  "cases": [
+    {
+      "stage": "Generate",
+      "step": 1,
+      "name": "Standard Scaffolding",
+      "description": "Verify file creation by Architect.",
+      "override_inputs": {},
+      "expected_outputs": {
+        "files_created": [
+          "testdata/scaffold_file.cc",
+          "testdata/scaffold_file.h"
+        ],
+        "content_patterns": {
+          "testdata/scaffold_file.h": "class ScaffoldFile",
+          "testdata/BUILD.gn": "\"scaffold_file.cc\""
+        },
+        "buildable": true
+      }
+    },
+    {
+      "stage": "Generate",
+      "step": 1,
+      "name": "No Build Targets",
+      "description": "Verify scaffolding without build targets.",
+      "override_inputs": {
+        "project_spec_overrides": {
+          "build_targets": []
+        }
+      },
+      "expected_outputs": {
+        "files_created": [
+          "testdata/scaffold_file.cc"
+        ],
+        "buildable": false
+      }
+    },
+    {
+      "stage": "Generate",
+      "step": 4,
+      "name": "Parallel Implementation - Success",
+      "override_inputs": {
+        "project_spec_overrides": {
+          "goal": "Implement feature X"
+        }
+      },
+      "expected_outputs": {
+        "files_created": [
+          "testdata/feature_x.cc"
+        ],
+        "valid_json": false,
+        "content_patterns": {
+          "testdata/feature_x.cc": "void FeatureX()"
+        }
+      }
+    },
+    {
+      "stage": "Generate",
+      "step": 4,
+      "name": "Parallel Implementation - Empty Tasks",
+      "override_inputs": {
+        "project_spec_overrides": {
+          "goal": ""
+        }
+      },
+      "expected_outputs": {
+        "files_created": [],
+        "content_patterns": {}
+      }
+    }
+  ]
+}

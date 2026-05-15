@@ -10,7 +10,7 @@
     "build_targets": [
         "//remoting/tools/magi-mode/tests/testdata:test_target"
     ],
-    "next_phase": "SCAFFOLDING",
+    "next_stage": "SCAFFOLDING",
     "paranoia_mode": false,
     "auditability_level": "NORMAL",
     "environment": {

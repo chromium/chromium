@@ -136,9 +136,9 @@ def run_test_case(case, base_inputs, invoker, original_test_dir):
         inputs.update(overrides)
 
         # Construct prompt based on inputs (Simplified for prototype)
-        prompt = (
-            f"Execute MAGI phase {case.get('phase', 'unknown')} with inputs: "
-            f"{json.dumps(inputs)}")
+        prompt = (f"Execute MAGI stage {case.get('stage', 'unknown')} "
+                  f"step {case.get('step', 'unknown')} with inputs: "
+                  f"{json.dumps(inputs)}")
 
         if invoker.harness_type == 'JETSKI':
             skill_path = os.path.join(original_test_dir, '..', 'SKILL.md')

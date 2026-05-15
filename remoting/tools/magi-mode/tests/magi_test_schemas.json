@@ -50,7 +50,10 @@
         "TestCase": {
             "type": "object",
             "properties": {
-                "phase": {
+                "stage": {
+                    "type": "string"
+                },
+                "step": {
                     "type": "integer"
                 },
                 "name": {

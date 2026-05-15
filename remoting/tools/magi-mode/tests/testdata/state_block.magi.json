@@ -19,7 +19,7 @@
         "remoting/tools/magi-mode/personas/core/security.json",
         "remoting/tools/magi-mode/personas/domain/signaling.json"
     ],
-    "next_phase": "CRITIQUE",
+    "next_stage": "CRITIQUE",
     "review_mode": "CONSENSUS",
     "state_transport": "FILE_IO"
 }

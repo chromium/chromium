@@ -245,11 +245,14 @@ def CheckMarkdownFiles(input_api, output_api):
                 output_api.PresubmitError(
                     'File SKILL.md TONE MANDATE must explicitly enforce '
                     '"Zero Preamble/Postamble" and "Artifacts Only".'))
-        if 'ADD_FAILURE("NOT IMPLEMENTED");' not in skill_content:
+        if ('ADD_FAILURE("NOT IMPLEMENTED");' not in skill_content
+                and 'ADD_FAILURE() << "NOT IMPLEMENTED"' not in skill_content):
             results.append(
                 output_api.PresubmitError(
                     'File SKILL.md must contain the TDD mandate requiring '
-                    '"ADD_FAILURE(\\"NOT IMPLEMENTED\\");" in stubbed tests.'))
+                    '"ADD_FAILURE(\\"NOT IMPLEMENTED\\");" or '
+                    '"ADD_FAILURE() << \\"NOT IMPLEMENTED\\"" in stubbed tests.'
+                ))
 
     return results
 
@@ -442,7 +445,7 @@ def CheckJsonFiles(input_api, output_api):
 
         # 4. Decision Graph Validation
         review_mode = content.get('review_mode')
-        next_p = content.get('next_phase')
+        next_p = content.get('next_stage')
 
         if filename.startswith('state_block'):
             if next_p and next_p not in [
@@ -456,7 +459,7 @@ def CheckJsonFiles(input_api, output_api):
             ]:
                 results.append(
                     output_api.PresubmitError(
-                        f'File {f.LocalPath()} has invalid next_phase for '
+                        f'File {f.LocalPath()} has invalid next_stage for '
                         f'state block: {next_p}'))
 
             # Cross-file validation for state_transport
@@ -589,10 +592,10 @@ def CheckJsonFiles(input_api, output_api):
                             f'defined in selected personas: '
                             f"{', '.join(sorted(extra_in_state))}"))
         elif filename.startswith('project'):
-            if next_p and next_p != 'SCAFFOLDING':
+            if next_p and next_p not in ('SCAFFOLDING', 'PREPARATION'):
                 results.append(
                     output_api.PresubmitError(
-                        f'File {f.LocalPath()} must signal next_phase: SCAFFOLDING'
+                        f'File {f.LocalPath()} must signal next_stage: SCAFFOLDING or PREPARATION'
                     ))
             if 'environment' in content:
                 environment = content['environment']
@@ -641,7 +644,7 @@ def CheckJsonFiles(input_api, output_api):
             if next_p and next_p != 'ANALYSIS':
                 results.append(
                     output_api.PresubmitError(
-                        f'File {f.LocalPath()} must signal next_phase: ANALYSIS'
+                        f'File {f.LocalPath()} must signal next_stage: ANALYSIS'
                     ))
         elif filename.startswith('constraints'):
             if review_mode == 'SUPERVISOR':
@@ -670,7 +673,7 @@ def CheckTestJsonFiles(input_api, output_api):
         return input_api.FilterSourceFile(
             affected_file,
             files_to_check=(r".*remoting/tools/magi-mode/tests/"
-                            r"magi_phase_.*_tests\.json$", ),
+                            r"magi_stage_.*_tests\.json$", ),
         )
 
     for f in input_api.AffectedFiles(file_filter=FileFilter,
@@ -754,13 +757,13 @@ def CheckTestJsonFiles(input_api, output_api):
     return results
 
 
-def CheckLogsDirectory(input_api, output_api):
+def CheckTempDirectory(input_api, output_api):
     results = []
     for f in input_api.AffectedFiles(include_deletes=False):
-        if '.magi_logs/' in f.LocalPath().replace('\\', '/'):
+        if '.temp/' in f.LocalPath().replace('\\', '/'):
             results.append(
                 output_api.PresubmitError(
-                    f'File {f.LocalPath()} is in the .magi_logs/ directory, '
+                    f'File {f.LocalPath()} is in the .temp/ directory, '
                     f'which must be excluded from all CLs.'))
     return results
 
@@ -770,7 +773,7 @@ def CheckChangeOnUpload(input_api, output_api):
     results.extend(CheckMarkdownFiles(input_api, output_api))
     results.extend(CheckJsonFiles(input_api, output_api))
     results.extend(CheckTestJsonFiles(input_api, output_api))
-    results.extend(CheckLogsDirectory(input_api, output_api))
+    results.extend(CheckTempDirectory(input_api, output_api))
     return results
 
 
@@ -779,5 +782,5 @@ def CheckChangeOnCommit(input_api, output_api):
     results.extend(CheckMarkdownFiles(input_api, output_api))
     results.extend(CheckJsonFiles(input_api, output_api))
     results.extend(CheckTestJsonFiles(input_api, output_api))
-    results.extend(CheckLogsDirectory(input_api, output_api))
+    results.extend(CheckTempDirectory(input_api, output_api))
     return results

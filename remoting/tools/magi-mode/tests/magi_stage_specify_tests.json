@@ -1,0 +1,9 @@
+{
+  "$schema": "./magi_test_schemas.json#/definitions/Scenario",
+  "name": "Specify Stage Tests",
+  "description": "Verify steps in Specify stage.",
+  "base_inputs": {
+    "project_spec": "testdata/project.magi.json"
+  },
+  "cases": []
+}

@@ -8,7 +8,7 @@
     },
     "cases": [
         {
-            "phase": 5,
+            "stage": "Refine", "step": 1,
             "name": "Consensus Logical AND",
             "override_inputs": {
                 "mock_reviews": [
@@ -45,7 +45,7 @@
             }
         },
         {
-            "phase": 5,
+            "stage": "Refine", "step": 1,
             "name": "Detect Use-After-Free",
             "override_inputs": {
                 "project_spec_overrides": {
@@ -80,7 +80,7 @@
             }
         },
         {
-            "phase": 5,
+            "stage": "Refine", "step": 1,
             "name": "Detect Deadlock",
             "override_inputs": {
                 "project_spec_overrides": {
@@ -115,7 +115,7 @@
             }
         },
         {
-            "phase": 5,
+            "stage": "Refine", "step": 1,
             "name": "Detect Unsafe Cast",
             "override_inputs": {
                 "project_spec_overrides": {
@@ -150,7 +150,7 @@
             }
         },
         {
-            "phase": 5,
+            "stage": "Refine", "step": 1,
             "name": "Detect Callback UaF",
             "override_inputs": {
                 "project_spec_overrides": {
@@ -185,7 +185,7 @@
             }
         },
         {
-            "phase": 5,
+            "stage": "Refine", "step": 1,
             "name": "Detect Win Handle Leak",
             "override_inputs": {
                 "project_spec_overrides": {
@@ -220,7 +220,7 @@
             }
         },
         {
-            "phase": 5,
+            "stage": "Refine", "step": 1,
             "name": "Detect Mac Retain Cycle",
             "override_inputs": {
                 "project_spec_overrides": {
@@ -255,7 +255,7 @@
             }
         },
         {
-            "phase": 5,
+            "stage": "Refine", "step": 1,
             "name": "Detect Linux FD Leak",
             "override_inputs": {
                 "project_spec_overrides": {
@@ -290,7 +290,7 @@
             }
         },
         {
-            "phase": 5,
+            "stage": "Refine", "step": 1,
             "name": "Detect Flawed Test",
             "override_inputs": {
                 "project_spec_overrides": {
@@ -325,7 +325,7 @@
             }
         },
         {
-            "phase": 5,
+            "stage": "Refine", "step": 1,
             "name": "All Accept",
             "override_inputs": {
                 "mock_reviews": [
