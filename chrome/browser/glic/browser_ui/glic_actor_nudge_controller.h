@@ -13,10 +13,10 @@
 
 class Profile;
 class BrowserWindowInterface;
-class TabStripActionContainer;
-class ToolbarView;
 
 namespace glic {
+
+class GlicActorNudgeDelegate;
 
 // Controller that handles Glic Actor notification/nudge handling.
 // TODO(crbug.com/431015299): Move GlicNudgeController logic into this
@@ -25,8 +25,9 @@ class GlicActorNudgeController {
  public:
   explicit GlicActorNudgeController(
       BrowserWindowInterface* browser,
-      TabStripActionContainer* tab_strip_action_container,
-      ToolbarView* toolbar_view);
+      GlicActorNudgeDelegate* horizontal_tabs_delegate,
+      GlicActorNudgeDelegate* vertical_tabs_delegate);
+
   GlicActorNudgeController(const GlicActorNudgeController&) = delete;
   GlicActorNudgeController& operator=(const GlicActorNudgeController& other) =
       delete;
@@ -44,6 +45,16 @@ class GlicActorNudgeController {
   // TabStripActionContainer is added to the native widget.
   void UpdateCurrentActorNudgeState();
 
+ protected:
+  virtual void ShowGlicActorTaskIcon();
+  virtual void HideGlicActorTaskIcon();
+  virtual void SetGlicActorNudgeLabel(const std::u16string& nudge_label);
+  virtual void TriggerGlicActorNudge(const std::u16string& nudge_text);
+  virtual void ShowBubble();
+  virtual void CloseBubble();
+  virtual bool IsShowingNudge();
+  virtual void OnBubbleVisibilityChange(bool is_bubble_open);
+
  private:
   // Subscribe to updates from the GlicActorTaskIconManager.
   void RegisterActorNudgeStateCallback();
@@ -53,19 +64,12 @@ class GlicActorNudgeController {
   void UpdateNudgeLabelOrRetrigger(std::u16string nudge_label_text,
                                    bool show_bubble);
 
-  // Trigger GlicActor nudge on all views that contain one.
-  void TriggerGlicActorNudgeOnAll(std::u16string nudge_label_text);
-
-  // Close the task list bubble if it is visible.
-  void CloseBubble();
-
-  // Called when the task list bubble's visibility state changes.
-  void OnBubbleVisibilityChange(bool is_bubble_open);
+  void CallOnBoth(base::RepeatingCallback<void(GlicActorNudgeDelegate&)> fn);
 
   const raw_ptr<Profile> profile_;
   raw_ptr<BrowserWindowInterface> browser_;
-  const raw_ptr<TabStripActionContainer> tab_strip_action_container_;
-  const raw_ptr<ToolbarView> toolbar_view_;
+  raw_ref<GlicActorNudgeDelegate> horizontal_tabs_delegate_;
+  raw_ref<GlicActorNudgeDelegate> vertical_tabs_delegate_;
 
   std::vector<base::CallbackListSubscription>
       actor_nudge_state_change_callback_subscription_;

@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_TABS_TAB_STRIP_ACTION_CONTAINER_H_
 
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/glic/browser_ui/glic_actor_nudge_delegate.h"
 #include "chrome/browser/glic/browser_ui/glic_button_controller_delegate.h"
 #include "chrome/browser/glic/browser_ui/glic_nudge_controller.h"
 #include "chrome/browser/glic/browser_ui/glic_nudge_delegate.h"
@@ -40,6 +41,7 @@ class TabStripActionContainer : public views::View,
                                 public views::AnimationDelegateViews,
                                 public views::MouseWatcherListener,
                                 public glic::GlicNudgeDelegate,
+                                public glic::GlicActorNudgeDelegate,
                                 public glic::GlicButtonControllerDelegate {
   METADATA_HEADER(TabStripActionContainer, views::View)
 
@@ -126,14 +128,18 @@ class TabStripActionContainer : public views::View,
   void SetGlicShowState(bool show) override;
   void SetGlicPanelIsOpen(bool open) override;
 
-  void ShowGlicActorTaskIcon();
-  void HideGlicActorTaskIcon();
-  bool GetIsShowingGlicActorTaskIconNudge();
-  bool IsGlicAdded();
-  void TriggerGlicActorNudge(const std::u16string nudge_text);
+  // GlicActorNudgeDelegate:
+  void ShowGlicActorTaskIcon() override;
+  void HideGlicActorTaskIcon() override;
+  bool GetIsShowingGlicActorTaskIconNudge() override;
+  bool IsGlicAdded() override;
+  void SetGlicActorNudgeLabel(const std::u16string& nudge_label) override;
+  void TriggerGlicActorNudge(const std::u16string& nudge_text) override;
+  void SetGlicActorNudgePressedState(bool pressed) override;
+  void ShowActorTaskListBubble() override;
 
   views::FlexLayoutView* glic_actor_button_container();
-  void ShowGlicActorNudge(const std::u16string nudge_text);
+  void ShowGlicActorNudge(const std::u16string& nudge_text);
 
   void UpdateButtonBorders(gfx::Insets button_insets);
 

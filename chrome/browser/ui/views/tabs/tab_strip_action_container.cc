@@ -445,8 +445,13 @@ views::FlexLayoutView* TabStripActionContainer::glic_actor_button_container() {
   return glic_actor_button_container_;
 }
 
+void TabStripActionContainer::SetGlicActorNudgeLabel(
+    const std::u16string& nudge_label) {
+  glic_actor_task_icon()->ShowNudgeLabel(nudge_label);
+}
+
 void TabStripActionContainer::TriggerGlicActorNudge(
-    const std::u16string nudge_text) {
+    const std::u16string& nudge_text) {
   CHECK(glic_actor_task_icon_);
   if (GetIsShowingGlicNudge()) {
     // If the glic button is showing, start the hide animation in parallel to
@@ -457,8 +462,17 @@ void TabStripActionContainer::TriggerGlicActorNudge(
   ShowGlicActorNudge(nudge_text);
 }
 
+void TabStripActionContainer::SetGlicActorNudgePressedState(bool pressed) {
+  glic_actor_task_icon()->SetPressedState(pressed);
+}
+
+void TabStripActionContainer::ShowActorTaskListBubble() {
+  ActorTaskListBubbleController::From(browser_window_interface_)
+      ->ShowBubble(glic_actor_task_icon());
+}
+
 void TabStripActionContainer::ShowGlicActorNudge(
-    const std::u16string nudge_text) {
+    const std::u16string& nudge_text) {
   CHECK(glic_actor_task_icon_);
   // Start animation for minimizing the glic button.
   glic_button_->Collapse();

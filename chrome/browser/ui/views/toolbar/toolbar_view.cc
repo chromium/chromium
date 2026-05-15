@@ -865,7 +865,11 @@ void ToolbarView::OnHideGlicNudgeUI() {
   }
 }
 
-void ToolbarView::TriggerGlicActorNudge(const std::u16string nudge_text) {
+void ToolbarView::SetGlicActorNudgeLabel(const std::u16string& nudge_label) {
+  glic_actor_task_icon()->ShowNudgeLabel(nudge_label);
+}
+
+void ToolbarView::TriggerGlicActorNudge(const std::u16string& nudge_text) {
   CHECK(glic_actor_task_icon_);
   if (GetIsShowingGlicNudge()) {
     // If the glic button is showing, start the hide animation in parallel to
@@ -935,6 +939,15 @@ void ToolbarView::HideGlicActorTaskIcon() {
   }
 
   FinalizeHideGlicActorTaskIcon();
+}
+
+void ToolbarView::SetGlicActorNudgePressedState(bool pressed) {
+  glic_actor_task_icon()->SetPressedState(pressed);
+}
+
+void ToolbarView::ShowActorTaskListBubble() {
+  ActorTaskListBubbleController::From(browser_)->ShowBubble(
+      glic_actor_task_icon());
 }
 
 void ToolbarView::FinalizeHideGlicActorTaskIcon() {
