@@ -350,7 +350,7 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
 
         // Tab groups
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.SUBMENUS_IN_APP_MENU)) {
-            if (shouldShowTabGroupsParentItem()) {
+            if (shouldShowTabGroupsParentItem(currentTab)) {
                 modelList.add(buildTabGroupsParentItem(currentTab));
             }
         }
@@ -676,19 +676,33 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
         return new ListItem(AppMenuHandler.AppMenuItemType.STANDARD, model);
     }
 
-    private boolean shouldShowTabGroupsParentItem() {
+    private boolean shouldShowTabGroupsParentItem(@Nullable Tab currentTab) {
         if (!ChromeFeatureList.isEnabled(ChromeFeatureList.SUBMENUS_IN_APP_MENU)) {
             return false;
         }
-        return shouldShowAddToGroup();
+
+        return shouldShowAddToGroup() || currentTab != null;
+    }
+
+    private ListItem buildCreateNewTabGroupItem() {
+        return new ListItem(
+                AppMenuHandler.AppMenuItemType.STANDARD,
+                buildModelForStandardMenuItem(
+                        R.id.create_new_tab_group_menu_id,
+                        R.string.menu_create_new_tab_group,
+                        shouldShowIconBeforeItem() ? R.drawable.ic_library_add_24dp : 0));
     }
 
     private ListItem buildTabGroupsParentItem(@Nullable Tab currentTab) {
-        assert shouldShowTabGroupsParentItem();
+        assert shouldShowTabGroupsParentItem(currentTab);
 
         List<ListItem> submenuItems = new ArrayList<>();
-        assert shouldShowAddToGroup();
-        submenuItems.add(buildAddToGroupItem(currentTab));
+        if (shouldShowAddToGroup()) {
+            submenuItems.add(buildAddToGroupItem(currentTab));
+        }
+        if (currentTab != null) {
+            submenuItems.add(buildCreateNewTabGroupItem());
+        }
 
         return new ListItem(
                 AppMenuHandler.AppMenuItemType.MENU_ITEM_WITH_SUBMENU,

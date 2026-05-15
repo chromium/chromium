@@ -28610,6 +28610,13 @@ should be able to be added at any place in this file.
   </token>
 </action>
 
+<action name="MobileMenuCreateTabGroup">
+  <owner>massan@google.com</owner>
+  <description>
+    User pressed 'Create new tab group' in the app menu.
+  </description>
+</action>
+
 <action name="MobileMenuDataSaverOpened">
   <owner>megjablon@chromium.org</owner>
   <description>User opened the data saver item in the app menu.</description>

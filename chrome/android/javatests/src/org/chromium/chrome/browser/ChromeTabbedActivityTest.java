@@ -1149,4 +1149,56 @@ public class ChromeTabbedActivityTest {
                             Matchers.hasItems(tabModel2.getTabById(tab1.getId()), movedTab2));
                 });
     }
+
+    @Test
+    @MediumTest
+    public void testCreateNewTabGroupMenu() {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    Tab tab = mActivity.getActivityTab();
+                    Assert.assertNull(tab.getTabGroupId());
+                    mActivity.handleCreateNewTabGroupAction(tab);
+                });
+
+        // Verify that a tab group was created for the tab.
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(
+                            mActivity.getActivityTab().getTabGroupId(), Matchers.notNullValue());
+                });
+    }
+
+    @Test
+    @MediumTest
+    public void testCreateNewTabGroupMenu_TabAlreadyInGroup() {
+        Token initialGroupId =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> {
+                            Tab tab = mActivity.getActivityTab();
+                            mActivity.getCurrentTabModel().createSingleTabGroup(tab);
+                            return tab.getTabGroupId();
+                        });
+        Assert.assertNotNull(initialGroupId);
+
+        int initialTabCount =
+                ThreadUtils.runOnUiThreadBlocking(() -> mActivity.getCurrentTabModel().getCount());
+
+        // Trigger "Create new tab group" action directly.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mActivity.handleCreateNewTabGroupAction(mActivity.getActivityTab());
+                });
+
+        // Verify that a new tab was opened and added to a different tab group.
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    TabModel tabModel = mActivity.getCurrentTabModel();
+                    Criteria.checkThat(tabModel.getCount(), Matchers.is(initialTabCount + 1));
+
+                    Tab newTab = tabModel.getTabAt(tabModel.getCount() - 1);
+                    Criteria.checkThat(newTab.getTabGroupId(), Matchers.notNullValue());
+                    Criteria.checkThat(
+                            newTab.getTabGroupId(), Matchers.not(Matchers.equalTo(initialGroupId)));
+                });
+    }
 }

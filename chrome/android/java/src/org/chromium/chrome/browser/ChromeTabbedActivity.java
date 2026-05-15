@@ -304,6 +304,7 @@ import org.chromium.chrome.browser.tasks.HomeSurfaceTracker;
 import org.chromium.chrome.browser.tasks.ReturnToChromeUtil;
 import org.chromium.chrome.browser.tasks.tab_management.CloseAllTabsDialog;
 import org.chromium.chrome.browser.tasks.tab_management.CloseAllTabsHelper;
+import org.chromium.chrome.browser.tasks.tab_management.TabGroupCreationDialogManager;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupCreationUiDelegate;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupMenuActionHandler;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupUi;
@@ -4160,6 +4161,9 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                             getModalDialogManager(),
                             profile)
                     .handleAddToGroupAction(currentTab);
+        } else if (id == R.id.create_new_tab_group_menu_id) {
+            RecordUserAction.record("MobileMenuCreateTabGroup");
+            return handleCreateNewTabGroupAction(currentTab);
         } else if (id == R.id.all_bookmarks_menu_id) {
             assumeNonNull(getCompositorViewHolderSupplier().get())
                     .hideKeyboard(
@@ -4387,6 +4391,40 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
             RecordUserAction.record("MobileMenuTabSearch");
         } else {
             return super.onMenuOrKeyboardAction(id, fromMenu, menuItemData, triggeringMotion);
+        }
+        return true;
+    }
+
+    @VisibleForTesting
+    boolean handleCreateNewTabGroupAction(Tab currentTab) {
+        if (!mTabModelSelector.isTabStateInitialized() || currentTab == null) {
+            return false;
+        }
+
+        TabModel tabModel = mTabModelSelector.getCurrentModel();
+        Tab tabForGroup = currentTab;
+        if (currentTab.getTabGroupId() != null) {
+            // Open a new tab if the current tab is already in a tab group.
+            Profile profile = mTabModelProfileSupplier.get();
+            tabForGroup =
+                    getTabCreator(tabModel.isIncognito())
+                            .createNewTab(
+                                    new LoadUrlParams(
+                                            UrlConstantResolverFactory.getForProfile(profile)
+                                                    .getNtpUrl()),
+                                    TabLaunchType.FROM_CHROME_UI,
+                                    currentTab);
+            if (tabForGroup == null) {
+                return false;
+            }
+        }
+
+        tabModel.createSingleTabGroup(tabForGroup);
+        var groupId = tabForGroup.getTabGroupId();
+        if (groupId != null) {
+            TabGroupCreationDialogManager manager =
+                    new TabGroupCreationDialogManager(this, getModalDialogManager(), null);
+            manager.showDialog(groupId, tabModel);
         }
         return true;
     }
