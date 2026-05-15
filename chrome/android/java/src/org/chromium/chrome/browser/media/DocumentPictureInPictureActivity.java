@@ -39,7 +39,9 @@ import org.chromium.build.annotations.MonotonicNonNull;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.app.tab_activity_glue.PopupCreatorImpl;
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
+import org.chromium.chrome.browser.customtabs.PopupCreatorFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.init.AsyncInitializationActivity;
 import org.chromium.chrome.browser.media.document_picture_in_picture_header.DocumentPictureInPictureHeaderCoordinator;
@@ -292,6 +294,7 @@ public class DocumentPictureInPictureActivity extends AsyncInitializationActivit
 
     @Override
     public void initializeCompositor() {
+        PopupCreatorFactory.setInstance(new PopupCreatorImpl());
         ActivityWindowAndroid windowAndroid = getWindowAndroid();
         if (windowAndroid == null) {
             windowAndroid = createWindowAndroid();
