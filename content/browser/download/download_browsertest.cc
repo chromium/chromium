@@ -4574,9 +4574,7 @@ IN_PROC_BROWSER_TEST_F(DownloadContentTest,
 
   // Load a page that contains a cross-origin iframe, where the iframe contains
   // a <a download> link same-origin to the iframe's origin.
-  TestNavigationObserver same_tab_observer(shell()->web_contents(), 1);
-  shell()->LoadURL(document_url);
-  same_tab_observer.Wait();
+  EXPECT_TRUE(NavigateToURL(shell(), document_url));
 
   // Click the <a download> link in the child frame.
   download::DownloadItem* download_item = nullptr;
@@ -5237,54 +5235,40 @@ IN_PROC_BROWSER_TEST_F(MhtmlLoadingTest,
                        DisallowRenderMultipartRelatedPageFromHTTP) {
   net::EmbeddedTestServer server;
   net::test_server::ExpectationHandler handler(&server);
-  handler.OnRequest("/").RespondWith(net::HTTP_OK, "multipart/related");
+  handler.OnRequest("/").RespondWith("multipart/related");
   EXPECT_TRUE(server.Start());
-  std::unique_ptr<DownloadTestObserver> observer(CreateWaiter(shell(), 1));
 
   GURL url = server.GetURL(kOrigin, "/");
 
-  shell()->LoadURL(url);
-
-  observer->WaitForFinished();
-  EXPECT_EQ(
-      1u, observer->NumDownloadsSeenInState(download::DownloadItem::COMPLETE));
+  NavigateToURLAndWaitForDownload(shell(), url,
+                                  download::DownloadItem::COMPLETE);
 }
 
 IN_PROC_BROWSER_TEST_F(MhtmlLoadingTest,
                        DisallowRenderMessageRfc822PageFromHTTP) {
   net::EmbeddedTestServer server;
   net::test_server::ExpectationHandler handler(&server);
-  handler.OnRequest("/").RespondWith(net::HTTP_OK, "message/rfc822");
+  handler.OnRequest("/").RespondWith("message/rfc822");
   EXPECT_TRUE(server.Start());
-  std::unique_ptr<DownloadTestObserver> observer(CreateWaiter(shell(), 1));
+  const GURL url = server.GetURL(kOrigin, "/");
 
-  GURL url = server.GetURL(kOrigin, "/");
-
-  shell()->LoadURL(url);
-
-  observer->WaitForFinished();
-  EXPECT_EQ(
-      1u, observer->NumDownloadsSeenInState(download::DownloadItem::COMPLETE));
+  NavigateToURLAndWaitForDownload(shell(), url,
+                                  download::DownloadItem::COMPLETE);
 }
 
 // Regression test for https://crbug.com/1171765
 IN_PROC_BROWSER_TEST_F(MhtmlLoadingTest, DisallowRenderMessageRfc822Iframe) {
   net::EmbeddedTestServer server;
   net::test_server::ExpectationHandler handler(&server);
-  handler.OnRequest("/main").RespondWith(net::HTTP_OK, "text/html",
+  handler.OnRequest("/main").RespondWith("text/html",
                                          "<iframe src='./sub'></iframe>");
-  handler.OnRequest("/sub").RespondWith(net::HTTP_OK, "message/rfc822");
+  handler.OnRequest("/sub").RespondWith("message/rfc822");
   EXPECT_TRUE(server.Start());
 
-  std::unique_ptr<DownloadTestObserver> observer(CreateWaiter(shell(), 1));
+  const GURL main_url = server.GetURL(kOrigin, "/main");
 
-  GURL main_url = server.GetURL(kOrigin, "/main");
-
-  shell()->LoadURL(main_url);
-
-  observer->WaitForFinished();
-  EXPECT_EQ(
-      1u, observer->NumDownloadsSeenInState(download::DownloadItem::COMPLETE));
+  NavigateToCommittedURLAndWaitForDownload(shell(), main_url,
+                                           download::DownloadItem::COMPLETE);
 }
 
 // MhtmlLoadingTest with `kMHTML_Improvements` enabled.
@@ -5326,17 +5310,16 @@ IN_PROC_BROWSER_TEST_F(MHTMLImprovementsLoadingTest,
     ASSERT_TRUE(base::ReadFileToString(
         GetTestFilePath("download", "forms.mhtml"), &mhtml_content));
   }
-  handler.OnRequest("/").RespondWith(net::HTTP_OK, "multipart/related",
-                                     mhtml_content);
+  handler.OnRequest("/").RespondWith("multipart/related", mhtml_content);
   EXPECT_TRUE(server.Start());
 
-  GURL url = server.GetURL(kOrigin, "/");
+  const GURL url = server.GetURL(kOrigin, "/");
 
   auto observer = std::make_unique<content::TestNavigationObserver>(url);
   observer->WatchExistingWebContents();
   observer->StartWatchingNewWebContents();
 
-  shell()->LoadURL(url);
+  EXPECT_TRUE(NavigateToURL(shell(), url));
 
   observer->WaitForNavigationFinished();
   ASSERT_TRUE(WaitForLoadStop(shell()->web_contents()));
