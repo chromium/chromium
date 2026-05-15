@@ -75,6 +75,11 @@ Run all tests using a shell loop:
 `for f in remoting/tools/magi-mode/tests/magi_stage_*_tests.json; do \`
 `  python3 remoting/tools/magi-mode/run_magi_tests.py --tests "$f"; done`
 
+## How to Run Presubmit Checks
+
+To run the presubmit checks locally without uploading to Gerrit:
+`python3 remoting/tools/magi-mode/run_presubmit.py`
+
 ## Manual Test Execution via Agent
 
 If the automated test runner fails or hangs (e.g., due to environment issues
