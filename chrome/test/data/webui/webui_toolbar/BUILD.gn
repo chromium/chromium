@@ -12,6 +12,7 @@ build_webui_tests("build") {
 
   files = [
     "content_setting_icon_test.ts",
+    "icon_from_table_test.ts",
     "location_bar_test.ts",
     "location_bar_focus_test.ts",
     "location_bar_high_contrast_focus_test.ts",
@@ -23,6 +24,7 @@ build_webui_tests("build") {
 
   ts_deps = [
     "//chrome/browser/resources/webui_toolbar:build_ts",
+    "//ui/webui/resources/cr_elements:build_ts",
     "//ui/webui/resources/js:build_ts",
     "//ui/webui/resources/mojo:build_ts",
   ]

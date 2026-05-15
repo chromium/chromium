@@ -47,3 +47,7 @@ IN_PROC_BROWSER_TEST_F(WebUiToolbarJsTest, LocationBar) {
 IN_PROC_BROWSER_TEST_F(WebUiToolbarJsTest, LocationIcon) {
   RunTest("webui_toolbar/location_icon_test.js", "mocha.run();");
 }
+
+IN_PROC_BROWSER_TEST_F(WebUiToolbarJsTest, IconFromTable) {
+  RunTest("webui_toolbar/icon_from_table_test.js", "mocha.run();");
+}

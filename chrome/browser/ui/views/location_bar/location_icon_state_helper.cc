@@ -86,10 +86,11 @@ bool ShouldShowSecurityChipText(const LocationBarModel* model,
   return !model->GetSecureDisplayText().empty();
 }
 
-bool IsGradientGoogleSuperGIcon(const ui::ImageModel& icon) {
+std::optional<int> MaybeGetGradientGoogleSuperGIcon(
+    const ui::ImageModel& icon) {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   if (!icon.IsImage()) {
-    return false;
+    return std::nullopt;
   }
   gfx::ImageSkia image = icon.GetImage().AsImageSkia();
   gfx::ImageSkia target_16 =
@@ -98,28 +99,14 @@ bool IsGradientGoogleSuperGIcon(const ui::ImageModel& icon) {
   gfx::ImageSkia target_20 =
       *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
           IDR_GOOGLE_G_GRADIENT_20);
-  return image.BackedBySameObjectAs(target_16) ||
-         image.BackedBySameObjectAs(target_20);
-#else
-  return false;
+  if (image.BackedBySameObjectAs(target_16)) {
+    return IDR_GOOGLE_G_GRADIENT_16_ALT;
+  }
+  if (image.BackedBySameObjectAs(target_20)) {
+    return IDR_GOOGLE_G_GRADIENT_20;
+  }
 #endif
-}
-
-SecurityChipIcon GetSecurityChipIconEnum(const LocationBarModel* model,
-                                         bool is_add_context_button_shown) {
-  if (is_add_context_button_shown) {
-    return SecurityChipIcon::kAddContext;
-  }
-
-  auto security_level = model->GetSecurityLevel();
-  if (security_level == security_state::DANGEROUS) {
-    return SecurityChipIcon::kDangerous;
-  } else if (security_level == security_state::WARNING) {
-    return SecurityChipIcon::kNotSecureWarning;
-  } else if (security_level == security_state::SECURE) {
-    return SecurityChipIcon::kSecurePageInfo;
-  }
-  return SecurityChipIcon::kHttp;
+  return std::nullopt;
 }
 
 SecurityChipAccessibilityState GetSecurityChipAccessibilityState(

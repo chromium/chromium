@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/views/location_bar/webui_content_setting_image_control.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter_delegate.h"
 #include "chrome/browser/ui/views/omnibox/webui_readonly_omnibox.h"
+#include "components/browser_apis/ui_controllers/toolbar/icon_handle.h"
 #include "components/browser_apis/ui_controllers/toolbar/toolbar_ui_api_data_model.mojom.h"
 #include "ui/base/interaction/element_tracker.h"
 
@@ -120,6 +121,7 @@ class WebUILocationBar : public LocationBar,
   // Determines whether the location icon should be overridden while a chip is
   // being displayed.
   bool ShouldChipOverrideLocationIcon();
+  bool ShouldShowAddContextButton();
 
   void OnMovedOrShown(ui::TrackedElement* element);
   void OnOmniboxFocusChange(
@@ -132,7 +134,13 @@ class WebUILocationBar : public LocationBar,
 
   // Updates the state of the LHS location bar chips (e.g. security chip) and
   // pushes it to the WebUI.
-  void UpdateLhsChipsState();
+  void UpdateLhsChipsState(bool icon_known = false);
+
+  ui::ImageModel UpdateLocationIcon(
+      toolbar_ui_api::mojom::SecurityLevel security_level,
+      bool is_text_dangerous);
+
+  void OnIconFetched(const gfx::Image& image);
 
   void OnPageInfoBubbleClosed(views::Widget::ClosedReason closed_reason,
                               bool reload_prompt);
@@ -158,6 +166,7 @@ class WebUILocationBar : public LocationBar,
 
   bool is_initialized_ = false;
 
+  toolbar_ui_api::IconHandle location_icon_;
   security_state::SecurityLevel last_update_security_level_ =
       security_state::NONE;
 

@@ -132,17 +132,8 @@
       var(--color-omnibox-security-chip-ink-drop-ripple, transparent);
 }
 
-/* Renders the SVG icon using a webkit mask. This allows the icon to
-   automatically inherit the text color (currentColor) of the chip, bypassing
-   the need to manually manipulate the SVG's internal properties like fill or
-   stroke. */
-#iconContainer {
-  height: var(--location-bar-chip-icon-size);
-  width: var(--location-bar-chip-icon-size);
-  background-color: currentColor;
-  mask-position: center;
-  mask-repeat: no-repeat;
-  mask-size: contain;
+icon-from-table {
+  --icon-size: var(--location-bar-chip-icon-size);
 }
 
 :host([is-dangerous]) #container {

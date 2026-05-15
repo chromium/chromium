@@ -20,6 +20,7 @@
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/webui/util/image_util.h"
 #include "chrome/browser/ui/webui/webui_toolbar/adapters/icon_table_fetcher.h"
+#include "components/omnibox/browser/vector_icons.h"
 #include "components/vector_icons/vector_icons.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -30,88 +31,120 @@
 
 class SkBitmap;
 
+using toolbar_ui_api::mojom::IconType;
+
 namespace webui_toolbar {
 
 namespace {
 
 struct IconInfo {
   std::string_view name_or_url;
-  bool is_url;
+  IconType type;
 };
 
 const base::flat_map<const gfx::VectorIcon*, IconInfo>& KnownIcons() {
   static base::NoDestructor<base::flat_map<const gfx::VectorIcon*, IconInfo>>
       table({
           {{&vector_icons::kPasswordManagerOldIcon},
-           {"rhs_icons/password_manager.svg", true}},
+           {"rhs_icons/password_manager.svg", IconType::kMaskUrl}},
           {{&vector_icons::kLocationOnChromeRefreshOldIcon},
-           {"rhs_icons/location_on_chrome_refresh.svg", true}},
+           {"rhs_icons/location_on_chrome_refresh.svg", IconType::kMaskUrl}},
+
+          // LHS icons:
+          {{&vector_icons::kDangerousChromeRefreshOldIcon},
+           {"lhs_icons/dangerous_chrome_refresh.svg", IconType::kMaskUrl}},
+          {{&vector_icons::kNotSecureWarningChromeRefreshOldIcon},
+           {"lhs_icons/not_secure_warning_chrome_refresh_16.svg",
+            IconType::kMaskUrl}},
+          {{&omnibox::kHttpChromeRefreshOldIcon},
+           {"lhs_icons/http_chrome_refresh.svg", IconType::kMaskUrl}},
+          {{&omnibox::kPageChromeRefreshOldIcon},
+           {"lhs_icons/page_chrome_refresh_icon.svg", IconType::kMaskUrl}},
+          {{&omnibox::kProductChromeRefreshOldIcon},
+           {"lhs_icons/product_chrome_refresh_icon.svg", IconType::kMaskUrl}},
+          {{&omnibox::kSecurePageInfoChromeRefreshOldIcon},
+           {"lhs_icons/secure_page_info_chrome_refresh.svg",
+            IconType::kMaskUrl}},
+
           // Used by pinned toolbar actions:
           {{&kIncognitoRefreshMenuOldIcon},
-           {"pinned-toolbar-action:NewIncognitoWindow", false}},
+           {"pinned-toolbar-action:NewIncognitoWindow", IconType::kIconSet}},
           {{&kCreditCardChromeRefreshOldIcon},
-           {"pinned-toolbar-action:ShowPaymentsBubbleOrPage", false}},
+           {"pinned-toolbar-action:ShowPaymentsBubbleOrPage",
+            IconType::kIconSet}},
           {{&kBookmarksSidePanelRefreshOldIcon},
-           {"pinned-toolbar-action:SidePanelShowBookmarks", false}},
+           {"pinned-toolbar-action:SidePanelShowBookmarks",
+            IconType::kIconSet}},
           {{&kReadingListOldIcon},
-           {"pinned-toolbar-action:SidePanelShowReadingList", false}},
+           {"pinned-toolbar-action:SidePanelShowReadingList",
+            IconType::kIconSet}},
           {{&vector_icons::kHistoryChromeRefreshOldIcon},
-           {"pinned-toolbar-action:SidePanelShowHistoryCluster", false}},
+           {"pinned-toolbar-action:SidePanelShowHistoryCluster",
+            IconType::kIconSet}},
           {{&kDownloadToolbarButtonChromeRefreshOldIcon},
-           {"pinned-toolbar-action:ShowDownloads", false}},
+           {"pinned-toolbar-action:ShowDownloads", IconType::kIconSet}},
           {{&kTrashCanRefreshOldIcon},
-           {"pinned-toolbar-action:ClearBrowsingData", false}},
-          {{&kPrintMenuOldIcon}, {"pinned-toolbar-action:Print", false}},
+           {"pinned-toolbar-action:ClearBrowsingData", IconType::kIconSet}},
+          {{&kPrintMenuOldIcon},
+           {"pinned-toolbar-action:Print", IconType::kIconSet}},
           {{&vector_icons::kSearchChromeRefreshOldIcon},
-           {"pinned-toolbar-action:SidePanelShowLensOverlayResults", false}},
+           {"pinned-toolbar-action:SidePanelShowLensOverlayResults",
+            IconType::kIconSet}},
           {{&vector_icons::kGTranslateIcon},
-           {"pinned-toolbar-action:ShowTranslate", false}},
+           {"pinned-toolbar-action:ShowTranslate", IconType::kIconSet}},
           {{&kQrCodeChromeRefreshOldIcon},
-           {"pinned-toolbar-action:QrCodeGenerator", false}},
+           {"pinned-toolbar-action:QrCodeGenerator", IconType::kIconSet}},
           {{&vector_icons::kMediaRouterIdleChromeRefreshOldIcon},
-           {"pinned-toolbar-action:RouteMediaIdle", false}},
+           {"pinned-toolbar-action:RouteMediaIdle", IconType::kIconSet}},
           {{&vector_icons::kMediaRouterWarningChromeRefreshOldIcon},
-           {"pinned-toolbar-action:RouteMediaWarning", false}},
+           {"pinned-toolbar-action:RouteMediaWarning", IconType::kIconSet}},
           {{&vector_icons::kMediaRouterPausedOldIcon},
-           {"pinned-toolbar-action:RouteMediaPaused", false}},
+           {"pinned-toolbar-action:RouteMediaPaused", IconType::kIconSet}},
           {{&vector_icons::kMediaRouterActiveChromeRefreshOldIcon},
-           {"pinned-toolbar-action:RouteMediaActive", false}},
+           {"pinned-toolbar-action:RouteMediaActive", IconType::kIconSet}},
           {{&kCastChromeRefreshOldIcon},
-           {"pinned-toolbar-action:RouteMedia", false}},
+           {"pinned-toolbar-action:RouteMedia", IconType::kIconSet}},
           {{&kMenuBookChromeRefreshOldIcon},
-           {"pinned-toolbar-action:SidePanelShowReadAnything", false}},
+           {"pinned-toolbar-action:SidePanelShowReadAnything",
+            IconType::kIconSet}},
           {{&kLinkChromeRefreshOldIcon},
-           {"pinned-toolbar-action:CopyUrl", false}},
+           {"pinned-toolbar-action:CopyUrl", IconType::kIconSet}},
           {{&kDevicesChromeRefreshOldIcon},
-           {"pinned-toolbar-action:SendTabToSelf", false}},
+           {"pinned-toolbar-action:SendTabToSelf", IconType::kIconSet}},
           {{&kTaskManagerOldIcon},
-           {"pinned-toolbar-action:TaskManager", false}},
+           {"pinned-toolbar-action:TaskManager", IconType::kIconSet}},
           {{&kDeveloperToolsOldIcon},
-           {"pinned-toolbar-action:DevTools", false}},
+           {"pinned-toolbar-action:DevTools", IconType::kIconSet}},
           {{&kTabSearchTabStripOldIcon},
-           {"pinned-toolbar-action:TabSearch", false}},
+           {"pinned-toolbar-action:TabSearch", IconType::kIconSet}},
           {{&kDockToRightSparkIcon},
-           {"pinned-toolbar-action:SidePanelShowContextualTasks", false}},
+           {"pinned-toolbar-action:SidePanelShowContextualTasks",
+            IconType::kIconSet}},
           {{&vector_icons::kImageSearchOldIcon},
-           {"pinned-toolbar-action:SidePanelShowLens", false}},
+           {"pinned-toolbar-action:SidePanelShowLens", IconType::kIconSet}},
           {{&views::kInfoChromeRefreshOldIcon},
-           {"pinned-toolbar-action:SidePanelShowAboutThisSite", false}},
+           {"pinned-toolbar-action:SidePanelShowAboutThisSite",
+            IconType::kIconSet}},
           {{&vector_icons::kEditChromeRefreshOldIcon},
-           {"pinned-toolbar-action:SidePanelShowCustomizeChrome", false}},
+           {"pinned-toolbar-action:SidePanelShowCustomizeChrome",
+            IconType::kIconSet}},
           {{&vector_icons::kShoppingBagOldIcon},
-           {"pinned-toolbar-action:SidePanelShowShoppingInsights", false}},
+           {"pinned-toolbar-action:SidePanelShowShoppingInsights",
+            IconType::kIconSet}},
           {{&vector_icons::kStorefrontOldIcon},
-           {"pinned-toolbar-action:SidePanelShowMerchantTrust", false}},
+           {"pinned-toolbar-action:SidePanelShowMerchantTrust",
+            IconType::kIconSet}},
           {{&vector_icons::kFeedbackOldIcon},
-           {"pinned-toolbar-action:SendSharedTabGroupFeedback", false}},
+           {"pinned-toolbar-action:SendSharedTabGroupFeedback",
+            IconType::kIconSet}},
           {{&vector_icons::kChatOldIcon},
-           {"pinned-toolbar-action:SidePanelShowComments", false}},
+           {"pinned-toolbar-action:SidePanelShowComments", IconType::kIconSet}},
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
           {{&vector_icons::kGoogleLensMonochromeLogoIcon},
-           {"internal-icons:google_lens_monochrome_logo", false}},
+           {"internal-icons:google_lens_monochrome_logo", IconType::kIconSet}},
           {{&vector_icons::kPageInsightsIcon},
-           {"internal-icons:page_insights", false}},
+           {"internal-icons:page_insights", IconType::kIconSet}},
 #endif
 
       });
@@ -122,29 +155,32 @@ const base::flat_map<const gfx::VectorIcon*, IconInfo>& KnownIcons() {
 
 class IconTable::ProviderImpl : public toolbar_ui_api::IconHandle::Provider {
  public:
+  // If `need_rasterize` is true, `image_model` will be used for rendering;
+  // otherwise the provided value of `name_or_url` will be used.
+  // The image model is also used for reuse checks.
   ProviderImpl(IconTable* icon_table,
                toolbar_ui_api::IconHandleId handle_id,
+               bool need_rasterize,
                std::string name_or_url,
-               bool is_url)
+               IconType icon_type,
+               std::optional<ui::ImageModel> image_model)
       : icon_table_(icon_table),
         handle_id_(handle_id),
+        need_rasterize_(need_rasterize),
         name_or_url_(std::move(name_or_url)),
-        is_url_(is_url) {}
-
-  ProviderImpl(IconTable* icon_table,
-               toolbar_ui_api::IconHandleId handle_id,
-               ui::ImageModel image_model)
-      : icon_table_(icon_table),
-        handle_id_(handle_id),
-        is_url_(true),  // Will produce a URL.
-        image_model_(std::move(image_model)) {}
+        icon_type_(icon_type),
+        image_model_(image_model) {
+    if (need_rasterize) {
+      DCHECK(image_model_.has_value());
+    }
+  }
 
   toolbar_ui_api::IconHandleId HandleId() override { return handle_id_; }
 
   void Detach() { icon_table_ = nullptr; }
 
   toolbar_ui_api::mojom::IconUpdatePtr ToMojom(float scale_factor) {
-    if (image_model_) {
+    if (need_rasterize_) {
       // The downside of lazy rasterization like this is that a lot may
       // happen at once; but it will also not be done until it's needed and
       // it triggers scale factor changes transparently.
@@ -156,7 +192,11 @@ class IconTable::ProviderImpl : public toolbar_ui_api::IconHandle::Provider {
     }
 
     return toolbar_ui_api::mojom::IconUpdate::New(handle_id_.value(),
-                                                  name_or_url_, is_url_);
+                                                  name_or_url_, icon_type_);
+  }
+
+  const std::optional<ui::ImageModel>& MaybeImageModel() {
+    return image_model_;
   }
 
  private:
@@ -168,8 +208,9 @@ class IconTable::ProviderImpl : public toolbar_ui_api::IconHandle::Provider {
 
   raw_ptr<IconTable> icon_table_;
   const toolbar_ui_api::IconHandleId handle_id_;
+  const bool need_rasterize_;
   std::string name_or_url_;
-  bool is_url_;
+  const IconType icon_type_;
 
   std::optional<ui::ImageModel> image_model_;
   // Set if `image_model_` got rendered to `name_or_url_`.
@@ -212,15 +253,17 @@ IconTable::~IconTable() {
 }
 
 toolbar_ui_api::IconHandle IconTable::RegisterVectorIcon(
-    const gfx::VectorIcon& icon) {
+    const gfx::VectorIcon& icon,
+    std::optional<ui::ImageModel> model_info) {
   const auto& known_icons = KnownIcons();
   auto it = known_icons.find(&icon);
   if (it == known_icons.end()) {
     return toolbar_ui_api::IconHandle();
   }
 
-  return AddRegistration(std::string(it->second.name_or_url),
-                         it->second.is_url);
+  return AddRegistration(/*need_rasterize=*/false,
+                         std::string(it->second.name_or_url), it->second.type,
+                         std::move(model_info));
 }
 
 toolbar_ui_api::IconHandle IconTable::RegisterImageModel(ui::ImageModel icon) {
@@ -232,7 +275,8 @@ toolbar_ui_api::IconHandle IconTable::RegisterImageModel(ui::ImageModel icon) {
     const auto& vector_icon_model = icon.GetVectorIcon();
     if (vector_icon_model.vector_icon() && !vector_icon_model.badge_icon()) {
       const gfx::VectorIcon& vector_icon = *icon.GetVectorIcon().vector_icon();
-      toolbar_ui_api::IconHandle maybe_icon = RegisterVectorIcon(vector_icon);
+      toolbar_ui_api::IconHandle maybe_icon =
+          RegisterVectorIcon(vector_icon, icon);
       if (!maybe_icon.is_null()) {
         return maybe_icon;
       } else {
@@ -247,14 +291,33 @@ toolbar_ui_api::IconHandle IconTable::RegisterImageModel(ui::ImageModel icon) {
     }
   }
 
-  auto handle_id = next_id_.GenerateNextId();
-  DCHECK(handle_id.value() != toolbar_ui_api::kNullIconHandleId);
-  auto provider_impl =
-      base::MakeRefCounted<ProviderImpl>(this, handle_id, std::move(icon));
-  registered_icons_.insert(std::pair(handle_id, provider_impl.get()));
-  pending_updates_.insert(handle_id);
-  possibly_scale_dependent_.insert(handle_id);
-  return toolbar_ui_api::IconHandle(std::move(provider_impl));
+  return AddRegistration(/*need_rasterize=*/true,
+                         /*name_or_url=*/std::string(),
+                         /* Will generate a URL to full-color PNG */
+                         IconType::kFullColorUrl, std::move(icon));
+}
+
+toolbar_ui_api::IconHandle IconTable::RegisterImageModelTryReuse(
+    ui::ImageModel icon,
+    toolbar_ui_api::IconHandle previous_handle) {
+  if (!previous_handle.is_null()) {
+    toolbar_ui_api::IconHandleId handle_id = previous_handle.HandleId();
+    if (auto it = registered_icons_.find(handle_id);
+        it != registered_icons_.end()) {
+      const auto& maybe_existing = it->second->MaybeImageModel();
+      if (maybe_existing == icon) {
+        return previous_handle;
+      }
+    }
+  }
+  return RegisterImageModel(std::move(icon));
+}
+
+toolbar_ui_api::IconHandle IconTable::RegisterColorUrl(std::string_view url) {
+  return AddRegistration(/*need_rasterize=*/false,
+                         /*name_or_url=*/std::string(url),
+                         IconType::kFullColorUrl,
+                         /*image_model=*/std::nullopt);
 }
 
 std::unique_ptr<toolbar_ui_api::IconTableFetcher>
@@ -284,7 +347,7 @@ IconTable::TakePendingUpdates() {
       // The icon got deleted on the C++ end since last update; let the JS end
       // know it can free up memory, too.
       updates.push_back(toolbar_ui_api::mojom::IconUpdate::New(
-          id.value(), std::nullopt, /*is_url=*/false));
+          id.value(), std::nullopt, IconType::kMaskUrl));
     }
   }
 
@@ -304,15 +367,23 @@ IconTable::TakePendingUpdates() {
   return updates;
 }
 
-toolbar_ui_api::IconHandle IconTable::AddRegistration(std::string name_or_url,
-                                                      bool is_url) {
+toolbar_ui_api::IconHandle IconTable::AddRegistration(
+    bool need_rasterize,
+    std::string name_or_url,
+    IconType icon_type,
+    std::optional<ui::ImageModel> image_model) {
   auto handle_id = next_id_.GenerateNextId();
   DCHECK(handle_id.value() != toolbar_ui_api::kNullIconHandleId);
   auto provider_impl = base::MakeRefCounted<ProviderImpl>(
-      this, handle_id, std::move(name_or_url), is_url);
+      this, handle_id, need_rasterize, std::move(name_or_url), icon_type,
+      std::move(image_model));
   registered_icons_.insert(std::pair(handle_id, provider_impl.get()));
   pending_updates_.insert(handle_id);
-  return toolbar_ui_api::IconHandle(provider_impl);
+  if (need_rasterize) {
+    possibly_scale_dependent_.insert(handle_id);
+  }
+
+  return toolbar_ui_api::IconHandle(std::move(provider_impl));
 }
 
 void IconTable::UnregisterIcon(toolbar_ui_api::IconHandleId handle_id) {

@@ -263,7 +263,8 @@ void LocationIconView::UpdateIcon() {
   }
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  const bool is_super_g = location_bar::IsGradientGoogleSuperGIcon(icon);
+  const bool is_super_g =
+      location_bar::MaybeGetGradientGoogleSuperGIcon(icon).has_value();
   const bool is_monochrome_g =
       icon.IsVectorIcon() && icon.GetVectorIcon().vector_icon() &&
       icon.GetVectorIcon().vector_icon()->name ==

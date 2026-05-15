@@ -216,7 +216,7 @@ WebUIToolbarWebView::WebUIToolbarWebView(
   last_queued_state_.location_bar_state->lhs_chips_state =
       toolbar_ui_api::mojom::LhsChipsState::New(
           toolbar_ui_api::mojom::SecurityChipState::New(
-              toolbar_ui_api::mojom::SecurityChipIcon::kHttp,
+              toolbar_ui_api::IconHandle(),
               toolbar_ui_api::mojom::SecurityLevel::kNone, std::u16string(),
               /*is_clickable=*/false, /*is_text_dangerous=*/false,
               /*is_visible=*/true),

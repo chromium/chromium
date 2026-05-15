@@ -13,8 +13,8 @@ export function getHtml(this: LocationIconElement) {
     @pointerdown="${this.onPointerdown_}"
     @click="${this.onClick_}"
     @contextmenu="${this.onContextmenu_}">
-  <div id="iconContainer"
-      style="mask-image: ${this.getIconUrl_()};"></div>
+  <icon-from-table .iconHandle="${this.state.icon}">
+  </icon-from-table>
   ${this.state.text ? html`<span id="text">${this.state.text}</span>` : ''}
 </div>
 <!--_html_template_end_-->`;

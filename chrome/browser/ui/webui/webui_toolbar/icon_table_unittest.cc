@@ -17,6 +17,8 @@
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/views/vector_icons.h"
 
+using toolbar_ui_api::mojom::IconType;
+
 namespace webui_toolbar {
 
 namespace {
@@ -52,7 +54,7 @@ TEST_F(IconTableTest, BasicOperation) {
   ASSERT_FALSE(i1.is_null());
 
   auto expected_i1 = toolbar_ui_api::mojom::IconUpdate::New(
-      1u, "rhs_icons/password_manager.svg", /*icon_is_url=*/true);
+      1u, "rhs_icons/password_manager.svg", IconType::kMaskUrl);
 
   // Binding i1 in both full state and pending updates.
   EXPECT_THAT(
@@ -73,7 +75,7 @@ TEST_F(IconTableTest, BasicOperation) {
   // Release i1, bind i2.
   i1 = toolbar_ui_api::IconHandle();
   auto expected_delete_i1 = toolbar_ui_api::mojom::IconUpdate::New(
-      1u, std::nullopt, /*icon_is_url=*/false);
+      1u, std::nullopt, IconType::kMaskUrl);
 
   toolbar_ui_api::IconHandle i2 = icon_table_.RegisterVectorIcon(
       vector_icons::kHistoryChromeRefreshOldIcon);
@@ -81,7 +83,7 @@ TEST_F(IconTableTest, BasicOperation) {
 
   auto expected_i2 = toolbar_ui_api::mojom::IconUpdate::New(
       2u, "pinned-toolbar-action:SidePanelShowHistoryCluster",
-      /*icon_is_url=*/false);
+      IconType::kIconSet);
 
   // Updates has delete of i1, and addition of i2; full state just i2.
   EXPECT_THAT(icon_table_.TakePendingUpdates(),
@@ -99,7 +101,7 @@ TEST_F(IconTableTest, BasicOperation) {
 
   auto expected_i3 = toolbar_ui_api::mojom::IconUpdate::New(
       3u, "pinned-toolbar-action:SidePanelShowReadAnything",
-      /*icon_is_url=*/false);
+      IconType::kIconSet);
 
   // Update has addition of i3; full state i2 + i3.
   EXPECT_THAT(
@@ -121,7 +123,7 @@ TEST_F(IconTableTest, MakeIconTableFetcher) {
       icon_table->RegisterVectorIcon(vector_icons::kPasswordManagerOldIcon);
   ASSERT_FALSE(i1.is_null());
   auto expected_i1 = toolbar_ui_api::mojom::IconUpdate::New(
-      1u, "rhs_icons/password_manager.svg", /*icon_is_url=*/true);
+      1u, "rhs_icons/password_manager.svg", IconType::kMaskUrl);
 
   // Binding i1 in both full state and pending updates.
   EXPECT_THAT(
@@ -138,7 +140,7 @@ TEST_F(IconTableTest, MakeIconTableFetcher) {
 
   auto expected_i2 = toolbar_ui_api::mojom::IconUpdate::New(
       2u, "pinned-toolbar-action:SidePanelShowHistoryCluster",
-      /*icon_is_url=*/false);
+      IconType::kIconSet);
 
   // Pending has i2, full state has both.
   EXPECT_THAT(
@@ -172,12 +174,64 @@ TEST_F(IconTableTest, RegisterImageModel) {
       ui::ImageModel::FromVectorIcon(vector_icons::kPasswordManagerOldIcon));
   ASSERT_FALSE(i2.is_null());
   auto expected_i2 = toolbar_ui_api::mojom::IconUpdate::New(
-      2u, "rhs_icons/password_manager.svg", /*icon_is_url=*/true);
+      2u, "rhs_icons/password_manager.svg", IconType::kMaskUrl);
 
   EXPECT_THAT(
       icon_table_.GetFullState(),
       testing::UnorderedElementsAre(MatchesBitmapIconUpdate(1u),
                                     MatchesIconUpdate(std::ref(expected_i2))));
+}
+
+TEST_F(IconTableTest, RegisterColorUrl) {
+  toolbar_ui_api::IconHandle i1 = icon_table_.RegisterColorUrl("rainbow.png");
+  ASSERT_FALSE(i1.is_null());
+
+  auto expected_i1 = toolbar_ui_api::mojom::IconUpdate::New(
+      1u, "rainbow.png", IconType::kFullColorUrl);
+
+  EXPECT_THAT(
+      icon_table_.GetFullState(),
+      testing::UnorderedElementsAre(MatchesIconUpdate(std::ref(expected_i1))));
+}
+
+TEST_F(IconTableTest, RegisterImageModelTryReuse) {
+  toolbar_ui_api::IconHandle i0 =
+      icon_table_.RegisterVectorIcon(vector_icons::kVrHeadsetOldIcon);
+  ASSERT_TRUE(i0.is_null())
+      << "This test assumes the kVrHeadsetIcon isn't mapped";
+
+  // Start from an empty previous value.
+  toolbar_ui_api::IconHandle i1 = icon_table_.RegisterImageModelTryReuse(
+      ui::ImageModel::FromVectorIcon(vector_icons::kPasswordManagerOldIcon),
+      toolbar_ui_api::IconHandle());
+  ASSERT_FALSE(i1.is_null());
+  auto expected_i1 = toolbar_ui_api::mojom::IconUpdate::New(
+      1u, "rhs_icons/password_manager.svg", IconType::kMaskUrl);
+
+  // Now try to create the same one.
+  toolbar_ui_api::IconHandle i2 = icon_table_.RegisterImageModelTryReuse(
+      ui::ImageModel::FromVectorIcon(vector_icons::kPasswordManagerOldIcon),
+      i1);
+  ASSERT_FALSE(i2.is_null());
+  // Should get the same handle.
+  EXPECT_EQ(i1, i2);
+
+  // Now a different one...
+  toolbar_ui_api::IconHandle i3 = icon_table_.RegisterImageModelTryReuse(
+      ui::ImageModel::FromVectorIcon(vector_icons::kVrHeadsetOldIcon), i2);
+  ASSERT_FALSE(i3.is_null());
+  EXPECT_NE(i2, i3);
+
+  // And can reuse though it's rasterized.
+  toolbar_ui_api::IconHandle i4 = icon_table_.RegisterImageModelTryReuse(
+      ui::ImageModel::FromVectorIcon(vector_icons::kVrHeadsetOldIcon), i3);
+  ASSERT_FALSE(i4.is_null());
+  EXPECT_EQ(i3, i4);
+
+  EXPECT_THAT(
+      icon_table_.GetFullState(),
+      testing::UnorderedElementsAre(MatchesIconUpdate(std::ref(expected_i1)),
+                                    MatchesBitmapIconUpdate(2u)));
 }
 
 TEST_F(IconTableTest, ScaleFactorChange) {
@@ -194,7 +248,7 @@ TEST_F(IconTableTest, ScaleFactorChange) {
       icon_table_.RegisterVectorIcon(vector_icons::kPasswordManagerOldIcon);
   ASSERT_FALSE(i2.is_null());
   auto expected_i2 = toolbar_ui_api::mojom::IconUpdate::New(
-      2u, "rhs_icons/password_manager.svg", /*icon_is_url=*/true);
+      2u, "rhs_icons/password_manager.svg", IconType::kMaskUrl);
 
   EXPECT_THAT(
       icon_table_.TakePendingUpdates(),

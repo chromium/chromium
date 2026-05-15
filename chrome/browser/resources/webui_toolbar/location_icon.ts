@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import './icon_from_table.js';
+
 import {TrackedElementManager} from '//resources/js/tracked_element/tracked_element_manager.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
@@ -9,7 +11,7 @@ import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {BrowserProxyImpl} from './browser_proxy.js';
 import {getCss} from './location_icon.css.js';
 import {getHtml} from './location_icon.html.js';
-import {LhsChipIdentifier, SecurityChipIcon, SecurityLevel} from './toolbar_ui_api_data_model.mojom-webui.js';
+import {LhsChipIdentifier, SecurityLevel} from './toolbar_ui_api_data_model.mojom-webui.js';
 import type {SecurityChipState} from './toolbar_ui_api_data_model.mojom-webui.js';
 
 export class LocationIconElement extends CrLitElement {
@@ -51,7 +53,7 @@ export class LocationIconElement extends CrLitElement {
   }
 
   accessor state: SecurityChipState = {
-    icon: SecurityChipIcon.kUnspecified,
+    icon: {handleId: 0n},
     securityLevel: 0,
     text: '',
     isClickable: false,
@@ -95,25 +97,6 @@ export class LocationIconElement extends CrLitElement {
   override disconnectedCallback() {
     super.disconnectedCallback();
     this.trackedElementManager_.stopTracking(this);
-  }
-
-  protected getIconUrl_(): string {
-    switch (this.state.icon) {
-      case SecurityChipIcon.kHttp:
-        return 'url(lhs_icons/http_chrome_refresh.svg)';
-      case SecurityChipIcon.kDangerous:
-        return 'url(lhs_icons/dangerous_chrome_refresh.svg)';
-      case SecurityChipIcon.kNotSecureWarning:
-        return 'url(lhs_icons/not_secure_warning_chrome_refresh_16.svg)';
-      case SecurityChipIcon.kSecurePageInfo:
-      case SecurityChipIcon.kGoogleSuperG:
-      case SecurityChipIcon.kGoogleGMonochrome:
-      case SecurityChipIcon.kAddContext:
-      default:
-        // Fallbacks for missing Google/Context icons.
-        // TODO(crbug.com/495419742): Add SVGs for missing icons.
-        return 'url(lhs_icons/secure_page_info_chrome_refresh.svg)';
-    }
   }
 
   override willUpdate(changedProperties: PropertyValues<this>) {

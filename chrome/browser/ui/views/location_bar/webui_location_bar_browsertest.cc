@@ -25,6 +25,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "ui/webui/tracked_element/tracked_element_web_ui.h"
 #include "url/gurl.h"
 
@@ -55,6 +56,16 @@ class WebUILocationBarBrowserTest : public InProcessBrowserTest {
 
   LocationBar* GetLocationBar() {
     return BrowserView::GetBrowserViewForBrowser(browser())->GetLocationBar();
+  }
+
+  WebUIToolbarWebView* GetWebUIToolbarWebView() {
+    return BrowserView::GetBrowserViewForBrowser(browser())
+        ->toolbar_button_provider()
+        ->GetWebUIToolbarViewForTesting();
+  }
+
+  content::WebContents* GetWebUIToolbarWebContents() {
+    return GetWebUIToolbarWebView()->web_contents();
   }
 
  private:
@@ -157,6 +168,33 @@ IN_PROC_BROWSER_TEST_F(WebUILocationBarBrowserTest, BasicOmniboxState) {
 
   tab_strip_model->SelectTabAt(1);
   EXPECT_EQ("chrome://version", base::UTF16ToUTF8(omnibox->GetText()));
+}
+
+IN_PROC_BROWSER_TEST_F(WebUILocationBarBrowserTest, LocationIcon) {
+  WaitForInitialWebUIToolbar(browser());
+  LocationBar* location_bar = GetLocationBar();
+  auto* omnibox = location_bar->GetOmniboxView();
+  ASSERT_TRUE(omnibox);
+  EXPECT_EQ("about:blank", base::UTF16ToUTF8(omnibox->GetText()));
+
+  const char kGetIcon[] = R"(
+    document.querySelector('toolbar-app')?.
+      shadowRoot?.querySelector('location-bar')?.
+      shadowRoot?.querySelector('location-icon')?.
+      shadowRoot?.querySelector('icon-from-table')?.
+      shadowRoot?.querySelector('#maskIconContainer')?.
+      getAttribute('style');
+  )";
+
+  EXPECT_EQ("mask-image: url(lhs_icons/http_chrome_refresh.svg);",
+            content::EvalJs(GetWebUIToolbarWebContents(), kGetIcon));
+
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL("chrome://version")));
+  EXPECT_EQ("chrome://version", base::UTF16ToUTF8(omnibox->GetText()));
+
+  EXPECT_EQ("mask-image: url(lhs_icons/product_chrome_refresh_icon.svg);",
+            content::EvalJs(GetWebUIToolbarWebContents(), kGetIcon));
 }
 
 }  // namespace

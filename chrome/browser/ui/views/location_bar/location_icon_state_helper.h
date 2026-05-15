@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_LOCATION_BAR_LOCATION_ICON_STATE_HELPER_H_
 #define CHROME_BROWSER_UI_VIEWS_LOCATION_BAR_LOCATION_ICON_STATE_HELPER_H_
 
+#include <optional>
 #include <string>
 
 #include "components/security_state/core/security_state.h"
@@ -21,14 +22,6 @@ class WebContents;
 
 namespace location_bar {
 
-enum class SecurityChipIcon {
-  kHttp,
-  kSecurePageInfo,
-  kNotSecureWarning,
-  kDangerous,
-  kAddContext,
-};
-
 struct SecurityChipAccessibilityState {
   ax::mojom::Role role;
   std::u16string name;
@@ -43,15 +36,9 @@ std::u16string GetSecurityChipText(const LocationBarModel* model,
 bool ShouldShowSecurityChipText(const LocationBarModel* model,
                                 bool is_editing_or_empty);
 
-// Semantic Icon & Interactivity
-// GetSecurityChipIconEnum returns the corresponding semantic icon shape.
-// Native Views uses the enum to drive its legacy SkColor logic, WebUI
-// passes the enum directly to its frontend via Mojo.
-SecurityChipIcon GetSecurityChipIconEnum(const LocationBarModel* model,
-                                         bool is_add_context_button_shown);
-
-// Returns true if the icon is the Google Super G gradient icon.
-bool IsGradientGoogleSuperGIcon(const ui::ImageModel& icon);
+// Returns the resource ID if the icon is the Google Super G gradient icon;
+// nullopt otherwise.
+std::optional<int> MaybeGetGradientGoogleSuperGIcon(const ui::ImageModel& icon);
 
 // Accessibility & Tooltip
 SecurityChipAccessibilityState GetSecurityChipAccessibilityState(

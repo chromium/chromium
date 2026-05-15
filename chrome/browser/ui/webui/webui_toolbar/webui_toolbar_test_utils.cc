@@ -52,7 +52,7 @@ CreateValidNavigationControlsState() {
           std::vector<toolbar_ui_api::mojom::ContentSettingImageStatePtr>(),
           toolbar_ui_api::mojom::LhsChipsState::New(
               toolbar_ui_api::mojom::SecurityChipState::New(
-                  toolbar_ui_api::mojom::SecurityChipIcon::kHttp,
+                  toolbar_ui_api::IconHandle(),
                   toolbar_ui_api::mojom::SecurityLevel::kNone, std::u16string(),
                   /*is_clickable=*/false, /*is_text_dangerous=*/false,
                   /*is_visible=*/true),
@@ -72,7 +72,7 @@ std::ostream& operator<<(
   return out << "{handle_id: " << icon_update->handle_id
              << ", icon_url_or_name: "
              << icon_update->icon_url_or_name.value_or(std::string("(nullopt)"))
-             << ", icon_is_url: " << icon_update->icon_is_url << "}";
+             << ", icon_type: " << icon_update->icon_type << "}";
 }
 
 }  // namespace mojo

@@ -64,6 +64,7 @@ source_set("impl") {
     "//chrome/browser/ui/toolbar",
     "//chrome/browser/ui/webui:webui_util",
     "//chrome/browser/ui/webui/util",
+    "//components/omnibox/browser:vector_icons",
     "//components/user_education/webui",
     "//ui/base",
   ]

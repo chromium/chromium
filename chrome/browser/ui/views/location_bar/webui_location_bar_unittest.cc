@@ -106,20 +106,15 @@ TEST_F(WebUILocationBarTest, StateManagement_SecurityChip) {
     std::string_view name;
     security_state::SecurityLevel security_level;
     std::u16string display_text;
-    toolbar_ui_api::mojom::SecurityChipIcon expected_icon;
     toolbar_ui_api::mojom::SecurityLevel expected_mojo_level;
   } kTestCases[] = {
       {"Secure", security_state::SECURE, std::u16string(),
-       toolbar_ui_api::mojom::SecurityChipIcon::kSecurePageInfo,
        toolbar_ui_api::mojom::SecurityLevel::kSecure},
       {"Dangerous", security_state::DANGEROUS, u"Dangerous",
-       toolbar_ui_api::mojom::SecurityChipIcon::kDangerous,
        toolbar_ui_api::mojom::SecurityLevel::kDangerous},
       {"Warning", security_state::WARNING, u"Not secure",
-       toolbar_ui_api::mojom::SecurityChipIcon::kNotSecureWarning,
        toolbar_ui_api::mojom::SecurityLevel::kWarning},
       {"None", security_state::NONE, std::u16string(),
-       toolbar_ui_api::mojom::SecurityChipIcon::kHttp,
        toolbar_ui_api::mojom::SecurityLevel::kNone},
   };
 
@@ -140,7 +135,6 @@ TEST_F(WebUILocationBarTest, StateManagement_SecurityChip) {
 
     const auto& chip =
         state->location_bar_state->lhs_chips_state->security_chip;
-    EXPECT_EQ(chip->icon, test_case.expected_icon);
     EXPECT_EQ(chip->security_level, test_case.expected_mojo_level);
     EXPECT_EQ(chip->text, test_case.display_text);
     EXPECT_TRUE(chip->is_clickable);

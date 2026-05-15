@@ -23,10 +23,7 @@
 #include "ui/base/resource/resource_bundle.h"
 #endif
 
-using location_bar::SecurityChipIcon;
-
 using location_bar::GetSecurityChipAccessibilityState;
-using location_bar::GetSecurityChipIconEnum;
 using location_bar::GetSecurityChipText;
 using location_bar::GetSecurityChipTooltipText;
 using location_bar::ShouldAnimateSecurityChipTextChange;
@@ -103,24 +100,6 @@ TEST_F(SecurityChipStateHelperTest, ShouldAnimateTextChange) {
       security_state::SecurityLevel::DANGEROUS));
 }
 
-TEST_F(SecurityChipStateHelperTest, SecurityChipIconEnum) {
-  EXPECT_EQ(
-      SecurityChipIcon::kAddContext,
-      GetSecurityChipIconEnum(model(), /*is_add_context_button_shown=*/true));
-
-  model()->set_security_level(security_state::SecurityLevel::SECURE);
-  model()->set_icon(omnibox::kHttpOldIcon);
-  EXPECT_EQ(
-      SecurityChipIcon::kSecurePageInfo,
-      GetSecurityChipIconEnum(model(), /*is_add_context_button_shown=*/false));
-
-  model()->set_security_level(security_state::SecurityLevel::DANGEROUS);
-  model()->set_icon(omnibox::kHttpOldIcon);
-  EXPECT_EQ(
-      SecurityChipIcon::kDangerous,
-      GetSecurityChipIconEnum(model(), /*is_add_context_button_shown=*/false));
-}
-
 TEST_F(SecurityChipStateHelperTest, AccessibilityState) {
   // When editing or empty.
   auto editing_state = GetSecurityChipAccessibilityState(
@@ -155,24 +134,26 @@ TEST_F(SecurityChipStateHelperTest, TooltipText) {
 }
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)  // nocheck
-TEST_F(SecurityChipStateHelperTest, IsGradientGoogleSuperGIcon) {
+TEST_F(SecurityChipStateHelperTest, MaybeGetGradientGoogleSuperGIcon) {
   ui::ImageModel empty_icon = ui::ImageModel();
-  EXPECT_FALSE(location_bar::IsGradientGoogleSuperGIcon(empty_icon));
+  EXPECT_FALSE(location_bar::MaybeGetGradientGoogleSuperGIcon(empty_icon));
 
   ui::ImageModel vector_icon =
       ui::ImageModel::FromVectorIcon(omnibox::kHttpOldIcon);
-  EXPECT_FALSE(location_bar::IsGradientGoogleSuperGIcon(vector_icon));
+  EXPECT_FALSE(location_bar::MaybeGetGradientGoogleSuperGIcon(vector_icon));
 
   gfx::ImageSkia target_16 =
       *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
           IDR_GOOGLE_G_GRADIENT_16_ALT);
   ui::ImageModel gradient_icon = ui::ImageModel::FromImageSkia(target_16);
-  EXPECT_TRUE(location_bar::IsGradientGoogleSuperGIcon(gradient_icon));
+  EXPECT_EQ(IDR_GOOGLE_G_GRADIENT_16_ALT,
+            location_bar::MaybeGetGradientGoogleSuperGIcon(gradient_icon));
 
   gfx::ImageSkia target_20 =
       *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
           IDR_GOOGLE_G_GRADIENT_20);
   ui::ImageModel gradient_icon_20 = ui::ImageModel::FromImageSkia(target_20);
-  EXPECT_TRUE(location_bar::IsGradientGoogleSuperGIcon(gradient_icon_20));
+  EXPECT_EQ(IDR_GOOGLE_G_GRADIENT_20,
+            location_bar::MaybeGetGradientGoogleSuperGIcon(gradient_icon_20));
 }
 #endif

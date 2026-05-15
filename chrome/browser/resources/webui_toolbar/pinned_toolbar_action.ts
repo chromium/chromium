@@ -94,7 +94,7 @@ export class PinnedToolbarActionElement extends CrLitElement {
   }
 
   protected getIconStyle_(): string|undefined {
-    const providedIconUrl = this.iconTable_.getIconUrl(this.state.icon);
+    const providedIconUrl = this.iconTable_.getIconMaskUrl(this.state.icon);
     if (providedIconUrl) {
       return `--cr-icon-image: url(${providedIconUrl})`;
     }

@@ -30,7 +30,7 @@ suite('LocationBar', function() {
       ...initialState,
       lhsChipsState: {
         securityChip: {
-          icon: 0,
+          icon: {handleId: 0n},
           securityLevel: 0,
           text: 'Not secure',
           isClickable: true,

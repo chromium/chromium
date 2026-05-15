@@ -7,8 +7,8 @@ import 'chrome://webui-toolbar.top-chrome/app.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 import {hasStyle, microtasksFinished} from 'chrome://webui-test/test_util.js';
-import {BrowserProxyImpl, LhsChipIdentifier, SecurityChipIcon} from 'chrome://webui-toolbar.top-chrome/app.js';
-import type {LocationIconElement} from 'chrome://webui-toolbar.top-chrome/app.js';
+import {BrowserProxyImpl, LhsChipIdentifier} from 'chrome://webui-toolbar.top-chrome/app.js';
+import type {IconFromTableElement, LocationIconElement} from 'chrome://webui-toolbar.top-chrome/app.js';
 
 class TestToolbarUiHandler extends TestBrowserProxy {
   constructor() {
@@ -39,7 +39,7 @@ suite('LocationIconTest', function() {
 
   test('Render text', async function() {
     locationIcon.state = {
-      icon: SecurityChipIcon.kHttp,
+      icon: {handleId: 10n},
       securityLevel: 0,
       text: 'Not secure',
       isClickable: true,
@@ -55,10 +55,10 @@ suite('LocationIconTest', function() {
     assertFalse(locationIcon.hasAttribute('is-text-dangerous'));
 
     const iconContainer =
-        locationIcon.shadowRoot.querySelector<HTMLElement>('#iconContainer');
+        locationIcon.shadowRoot.querySelector<IconFromTableElement>(
+            'icon-from-table');
     assertTrue(!!iconContainer);
-    assertTrue(
-        iconContainer.style.maskImage.includes('http_chrome_refresh.svg'));
+    assertEquals(10n, iconContainer.iconHandle.handleId);
   });
 
   test('Dangerous text', async function() {
@@ -68,7 +68,7 @@ suite('LocationIconTest', function() {
         '--color-omnibox-security-chip-text', 'rgb(0, 255, 0)');
 
     locationIcon.state = {
-      icon: SecurityChipIcon.kDangerous,
+      icon: {handleId: 0n},
       securityLevel: 3,  // DANGEROUS
       text: 'Dangerous',
       isClickable: true,
@@ -92,7 +92,7 @@ suite('LocationIconTest', function() {
         '--color-omnibox-security-chip-dangerous', 'rgb(255, 0, 0)');
 
     locationIcon.state = {
-      icon: SecurityChipIcon.kDangerous,
+      icon: {handleId: 0n},
       securityLevel: 3,  // DANGEROUS
       text: 'Not secure',
       isClickable: true,
@@ -112,7 +112,7 @@ suite('LocationIconTest', function() {
 
   test('Warning text', async function() {
     locationIcon.state = {
-      icon: SecurityChipIcon.kNotSecureWarning,
+      icon: {handleId: 0n},
       securityLevel: 4,  // WARNING
       text: 'Not secure',
       isClickable: true,
@@ -127,7 +127,7 @@ suite('LocationIconTest', function() {
 
   test('Unclickable state', async function() {
     locationIcon.state = {
-      icon: SecurityChipIcon.kHttp,
+      icon: {handleId: 0n},
       securityLevel: 0,
       text: '',
       isClickable: false,
@@ -151,7 +151,7 @@ suite('LocationIconTest', function() {
 
   test('Click events', async function() {
     locationIcon.state = {
-      icon: SecurityChipIcon.kHttp,
+      icon: {handleId: 0n},
       securityLevel: 0,
       text: '',
       isClickable: true,

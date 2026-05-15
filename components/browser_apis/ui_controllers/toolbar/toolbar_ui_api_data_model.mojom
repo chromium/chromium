@@ -19,16 +19,25 @@ struct IconHandle {
   uint64 handle_id;
 };
 
+enum IconType {
+  kIconSet,
+  kMaskUrl,
+  kFullColorUrl,
+};
+
 // Used to update binding of an IconHandle.
 struct IconUpdate {
   uint64 handle_id;
   // If this is null, the icon is deleted.
-  // Otherwise, the semantics depend on the icon_is_url bit:
-  // 1) If true, `icon_url_or_name` is a URL (possibly data:) for the icon.
-  // 2) If false,  `icon_url_or_name` is the name of an icon provided by
-  //    a cr-iconset.
+  // Otherwise, the semantics depend on icon_type:
+  // kIconSet: `icon_url_or_name` is the name of an icon provided by a
+  //           <cr-iconset>
+  // kMaskUrl: `icon_url_or_name` is a URL to a monochrome mask image,
+  //           which should be painted with current pen (for now).
+  // kFullColorUrl: `icon_url_or_name` is a URL to a multi-color image,
+  //                that's not controlled by pen colors.
   string? icon_url_or_name;
-  bool icon_is_url = true;
+  IconType icon_type;
 };
 
 // The context menu types that can be opened with ToolbarUIService's
@@ -420,17 +429,6 @@ struct PermissionDashboardState {
   bool is_divider_visible;
 };
 
-enum SecurityChipIcon {
-  kUnspecified,
-  kHttp,
-  kSecurePageInfo,
-  kNotSecureWarning,
-  kDangerous,
-  kGoogleSuperG,
-  kGoogleGMonochrome,
-  kAddContext,
-};
-
 // Represents the security state of the current page.
 // This strictly maps to native security_state::SecurityLevel values.
 enum SecurityLevel {
@@ -442,7 +440,7 @@ enum SecurityLevel {
 };
 
 struct SecurityChipState {
-  SecurityChipIcon icon;
+  IconHandle icon;
   SecurityLevel security_level;
   mojo_base.mojom.String16 text;
   bool is_clickable;

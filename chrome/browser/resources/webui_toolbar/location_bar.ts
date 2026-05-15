@@ -54,7 +54,7 @@ export class LocationBarElement extends CrLitElement {
     },
     lhsChipsState: {
       securityChip: {
-        icon: 0,
+        icon: {handleId: 0n},
         securityLevel: 0,
         text: '',
         isClickable: false,

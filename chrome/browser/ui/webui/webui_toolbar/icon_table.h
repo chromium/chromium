@@ -16,6 +16,7 @@
 #include "components/browser_apis/ui_controllers/toolbar/toolbar_ui_api_data_model.mojom.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
+#include "ui/base/models/image_model.h"
 
 namespace gfx {
 struct VectorIcon;
@@ -27,7 +28,6 @@ class IconTableFetcher;
 
 namespace ui {
 class ColorProvider;
-class ImageModel;
 }  // namespace ui
 
 namespace webui_toolbar {
@@ -59,8 +59,12 @@ class IconTable {
   // (see KnownIcons() in .cc). Returns a null IconHandle if it doesn't
   // recognize it.
   //
+  // If set, `model_info` will be used to help out reuse.
+  //
   // It's the WebUI side's responsibility to set the appropriate pen color.
-  toolbar_ui_api::IconHandle RegisterVectorIcon(const gfx::VectorIcon& icon);
+  toolbar_ui_api::IconHandle RegisterVectorIcon(
+      const gfx::VectorIcon& icon,
+      std::optional<ui::ImageModel> model_info = std::nullopt);
 
   // Register `icon` with an IconHandle. If it's not a recognized vector icon
   // it will be rasterized when needed, so this should only be called when
@@ -71,6 +75,17 @@ class IconTable {
   // Note that for the vector icons, the responsibility is on WebUI side to
   // configure colors.
   toolbar_ui_api::IconHandle RegisterImageModel(ui::ImageModel icon);
+
+  // Like RegisterImageModel, but checks to see if `previous_handle`
+  // already points to the same icon, avoiding doing a bunch of work if it
+  // does.
+  toolbar_ui_api::IconHandle RegisterImageModelTryReuse(
+      ui::ImageModel icon,
+      toolbar_ui_api::IconHandle previous_handle);
+
+  // Registers an icon that's provided by a URL which provides a multi-color
+  // image.
+  toolbar_ui_api::IconHandle RegisterColorUrl(std::string_view url);
 
   // Creates an IconTableFetcher for `this`. Only one of these should be
   // active at once due to statefullness of the TakePendingUpdates() API.
@@ -94,8 +109,11 @@ class IconTable {
   class ProviderImpl;
   class IconTableFetcherImpl;
 
-  toolbar_ui_api::IconHandle AddRegistration(std::string name_or_url,
-                                             bool is_url);
+  toolbar_ui_api::IconHandle AddRegistration(
+      bool need_rasterize,
+      std::string name_or_url,
+      toolbar_ui_api::mojom::IconType icon_type,
+      std::optional<ui::ImageModel> image_model);
 
   void UnregisterIcon(toolbar_ui_api::IconHandleId handle_id);
 

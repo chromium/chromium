@@ -5,6 +5,8 @@
 #include "chrome/browser/ui/views/location_bar/webui_location_bar.h"
 
 #include "base/notimplemented.h"
+#include "build/branding_buildflags.h"
+#include "build/buildflag.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
@@ -35,24 +37,11 @@
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/mouse_constants.h"
 
-namespace {
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#include "chrome/grit/theme_resources.h"
+#endif
 
-toolbar_ui_api::mojom::SecurityChipIcon GetMojoSecurityChipIcon(
-    location_bar::SecurityChipIcon security_chip_icon) {
-  switch (security_chip_icon) {
-    case location_bar::SecurityChipIcon::kHttp:
-      return toolbar_ui_api::mojom::SecurityChipIcon::kHttp;
-    case location_bar::SecurityChipIcon::kSecurePageInfo:
-      return toolbar_ui_api::mojom::SecurityChipIcon::kSecurePageInfo;
-    case location_bar::SecurityChipIcon::kNotSecureWarning:
-      return toolbar_ui_api::mojom::SecurityChipIcon::kNotSecureWarning;
-    case location_bar::SecurityChipIcon::kDangerous:
-      return toolbar_ui_api::mojom::SecurityChipIcon::kDangerous;
-    case location_bar::SecurityChipIcon::kAddContext:
-      return toolbar_ui_api::mojom::SecurityChipIcon::kAddContext;
-  }
-  NOTREACHED();
-}
+namespace {
 
 toolbar_ui_api::mojom::SecurityLevel GetMojoSecurityLevel(
     security_state::SecurityLevel security_level) {
@@ -355,32 +344,55 @@ void WebUILocationBar::Update(content::WebContents* contents) {
   UpdateLocationBarFlagsState();
 }
 
-void WebUILocationBar::UpdateLhsChipsState() {
+void WebUILocationBar::UpdateLhsChipsState(bool icon_known) {
   if (GetLocationBarWidget() && GetLocationBarWidget()->IsClosed()) {
     return;
   }
   LocationBarModel* model = GetLocationBarModel();
   bool is_editing_or_empty = IsEditingOrEmpty();
 
-  auto security_chip_icon = location_bar::GetSecurityChipIconEnum(
-      model, /*is_add_context_button_shown=*/false);
   std::u16string security_chip_text = location_bar::GetSecurityChipText(
       model, GetWebContents(), is_editing_or_empty);
-  // TODO(crbug.com/509938007): Disable the security chip when one of the
-  // Google logo icons is shown.
   bool is_clickable = !is_editing_or_empty;
 
-  auto mojo_security_chip_icon = GetMojoSecurityChipIcon(security_chip_icon);
   auto mojo_security_level = GetMojoSecurityLevel(model->GetSecurityLevel());
 
   bool is_text_dangerous =
       security_chip_text ==
       l10n_util::GetStringUTF16(IDS_DANGEROUS_VERBOSE_STATE);
 
+  // `omnibox_view_` is null in some tests.
+  if (!icon_known && omnibox_view_) {
+    ui::ImageModel maybe_new_icon =
+        UpdateLocationIcon(mojo_security_level, is_text_dangerous);
+    if (!maybe_new_icon.IsEmpty()) {
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+      if (auto maybe_resource_id =
+              location_bar::MaybeGetGradientGoogleSuperGIcon(maybe_new_icon)) {
+        if (*maybe_resource_id == IDR_GOOGLE_G_GRADIENT_16_ALT) {
+          location_icon_ = toolbar_delegate_->GetIconTable().RegisterColorUrl(
+              "chrome://theme/IDR_GOOGLE_G_GRADIENT_16_ALT");
+        } else {
+          DCHECK_EQ(*maybe_resource_id, IDR_GOOGLE_G_GRADIENT_20);
+          location_icon_ = toolbar_delegate_->GetIconTable().RegisterColorUrl(
+              "chrome://theme/IDR_GOOGLE_G_GRADIENT_20");
+        }
+        // Google logo icons aren't clickable.
+        is_clickable = false;
+      } else
+#endif
+      {
+        location_icon_ =
+            toolbar_delegate_->GetIconTable().RegisterImageModelTryReuse(
+                maybe_new_icon, location_icon_);
+      }
+    }
+  }
+
   auto lhs_chips_state = toolbar_ui_api::mojom::LhsChipsState::New(
       toolbar_ui_api::mojom::SecurityChipState::New(
-          mojo_security_chip_icon, mojo_security_level, security_chip_text,
-          is_clickable, is_text_dangerous, !ShouldChipOverrideLocationIcon()),
+          location_icon_, mojo_security_level, security_chip_text, is_clickable,
+          is_text_dangerous, !ShouldChipOverrideLocationIcon()),
       std::vector<toolbar_ui_api::mojom::ContentSettingImageStatePtr>(),
       permission_dashboard_->GetState());
 
@@ -389,6 +401,49 @@ void WebUILocationBar::UpdateLhsChipsState() {
   }
 
   last_update_security_level_ = model->GetSecurityLevel();
+}
+
+ui::ImageModel WebUILocationBar::UpdateLocationIcon(
+    toolbar_ui_api::mojom::SecurityLevel security_level,
+    bool is_text_dangerous) {
+  // TODO(crbug.com/505362587): This duplicates quite some color logic
+  // with the JS side, and also quite a bit of LocationBarView's logic.
+  auto* color_provider = toolbar_delegate_->GetView()->GetColorProvider();
+
+  const ui::ColorId background_id =
+      is_text_dangerous ? kColorOmniboxSecurityChipDangerousBackground
+                        : kColorOmniboxIconBackground;
+
+  bool dark_mode = color_utils::IsDark(color_provider->GetColor(background_id));
+
+  ui::ColorId id = kColorOmniboxText;
+  if (security_level == toolbar_ui_api::mojom::SecurityLevel::kDangerous) {
+    id = kColorOmniboxSecurityChipDangerous;
+  }
+  if (is_text_dangerous) {
+    id = kColorOmniboxSecurityChipText;
+  }
+
+  const int dip_size =
+      GetLayoutConstant(LayoutConstant::kLocationBarLeadingIconSize);
+  if (ShouldShowAddContextButton()) {
+    return GetOmniboxController()->edit_model()->GetAddContextIcon(dip_size);
+  }
+
+  return omnibox_view_->GetIcon(
+      dip_size, color_provider->GetColor(id),
+      color_provider->GetColor(kColorOmniboxResultsIcon),
+      color_provider->GetColor(kColorOmniboxResultsStarterPackIcon),
+      color_provider->GetColor(kColorOmniboxAnswerIconGM3Foreground),
+      base::BindOnce(&WebUILocationBar::OnIconFetched,
+                     weak_ptr_factory_.GetWeakPtr()),
+      dark_mode);
+}
+
+void WebUILocationBar::OnIconFetched(const gfx::Image& image) {
+  location_icon_ = toolbar_delegate_->GetIconTable().RegisterImageModel(
+      ui::ImageModel::FromImage(image));
+  UpdateLhsChipsState(/*icon_known=*/true);
 }
 
 void WebUILocationBar::ResetTabState(content::WebContents* contents) {
@@ -585,6 +640,13 @@ OmniboxPopupAimPresenter* WebUILocationBar::GetOmniboxPopupAimPresenter()
 bool WebUILocationBar::ShouldChipOverrideLocationIcon() {
   return permission_dashboard_->GetIndicatorChip()->GetVisible() ||
          permission_dashboard_->GetRequestChip()->GetVisible();
+}
+
+bool WebUILocationBar::ShouldShowAddContextButton() {
+  NOTIMPLEMENTED();
+  // TODO(crbug.com/503784580): When AIM popup is supported this can
+  // return true.
+  return false;
 }
 
 void WebUILocationBar::OnMovedOrShown(ui::TrackedElement* element) {

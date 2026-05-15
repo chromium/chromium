@@ -1,0 +1,47 @@
+/* Copyright 2026 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #scheme=relative
+ * #css_wrapper_metadata_end */
+
+:host {
+  display: flex;
+}
+
+#container {
+  display: inline-block;
+  height: var(--icon-size);
+  width: var(--icon-size);
+}
+
+#maskIconContainer,
+#colorfulIconContainer {
+  height: 100%;
+  width: 100%;
+}
+
+/* Renders the SVG icon using a mask. This allows the icon to
+   automatically inherit the text color (currentColor) of the chip, bypassing
+   the need to manually manipulate the SVG's internal properties like fill or
+   stroke. */
+#maskIconContainer {
+  background-color: currentColor;
+  mask-position: center;
+  mask-repeat: no-repeat;
+  mask-size: contain;
+}
+
+#colorfulIconContainer {
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+cr-icon {
+  --iron-icon-width: var(--icon-size);
+  --iron-icon-height: var(--icon-size);
+  display: block;
+}

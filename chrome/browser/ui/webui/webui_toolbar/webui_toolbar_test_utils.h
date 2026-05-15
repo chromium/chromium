@@ -163,8 +163,8 @@ MATCHER_P(MatchesIconUpdate, expected, "") {
          testing::ExplainMatchResult(expected.get()->icon_url_or_name,
                                      update->icon_url_or_name,
                                      result_listener) &&
-         testing::ExplainMatchResult(expected.get()->icon_is_url,
-                                     update->icon_is_url, result_listener);
+         testing::ExplainMatchResult(expected.get()->icon_type,
+                                     update->icon_type, result_listener);
 }
 
 // Tests that an update is a PNG data URL for given handle id.
@@ -175,8 +175,9 @@ MATCHER_P(MatchesBitmapIconUpdate, handle_id, "") {
          testing::ExplainMatchResult(
              testing::Optional(testing::StartsWith("data:image/png;base64")),
              update->icon_url_or_name, result_listener) &&
-         testing::ExplainMatchResult(true, update->icon_is_url,
-                                     result_listener);
+         testing::ExplainMatchResult(
+             toolbar_ui_api::mojom::IconType::kFullColorUrl, update->icon_type,
+             result_listener);
 }
 
 // Pretty printer for gTest. It needs to be in mojo namespace to be found;

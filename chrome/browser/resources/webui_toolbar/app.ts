@@ -10,6 +10,7 @@ import './home_button.js';
 import './pinned_toolbar_actions.js';
 import './avatar_button.js';
 import './icon_table.js';
+import './icon_from_table.js';
 
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {TrackedElementManager} from '//resources/js/tracked_element/tracked_element_manager.js';
@@ -31,31 +32,34 @@ import {SplitTabActiveLocation} from './toolbar_ui_api_data_model.mojom-webui.js
 // handles 2 at most now.
 import {
   ContentSettingImageType,
+  IconType,
   LhsChipIdentifier,
   OmniboxTextColor,
-  SecurityChipIcon,
 } from './toolbar_ui_api_data_model.mojom-webui.js';
-import type {OmniboxAction, LocationBarState} from './toolbar_ui_api_data_model.mojom-webui.js';
-import {ReadonlyOmniboxElement} from './readonly_omnibox.js';
-import {LocationBarElement} from './location_bar.js';
-import {LocationIconElement} from './location_icon.js';
+import type {LocationBarState, OmniboxAction} from './toolbar_ui_api_data_model.mojom-webui.js';
 import {ContentSettingIconElement} from './content_setting_icon.js';
 import {ContentSettingsIconsElement} from './content_settings_icons.js';
+import type {IconFromTableElement} from './icon_from_table.js';
+import {LocationBarElement} from './location_bar.js';
+import {LocationIconElement} from './location_icon.js';
+import {ReadonlyOmniboxElement} from './readonly_omnibox.js';
 
 export {
   BrowserProxyImpl,
   ContentSettingIconElement,
   ContentSettingImageType,
   ContentSettingsIconsElement,
+  IconTable,
+  IconType,
   LhsChipIdentifier,
   LocationBarElement,
   LocationIconElement,
   OmniboxTextColor,
   ReadonlyOmniboxElement,
-  SecurityChipIcon,
   TrackedElementManager,
 };
 export type {
+  IconFromTableElement,
   LocationBarState,
   OmniboxAction,
 };
@@ -155,7 +159,7 @@ export class ToolbarAppElement extends AppElementBase {
       contentSettingImageStates: [],
       lhsChipsState: {
         securityChip: {
-          icon: 0,
+          icon: {handleId: 0n},
           securityLevel: 0,
           text: '',
           isClickable: false,
