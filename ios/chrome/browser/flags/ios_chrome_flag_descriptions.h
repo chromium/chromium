@@ -1530,6 +1530,10 @@ inline constexpr char kPageContextIPCOptimizationName[] =
 inline constexpr char kPageContextIPCOptimizationDescription[] =
     "Enables the PageContextIPCOptimization feature.";
 
+inline constexpr char kPageStabilityMetricsName[] = "Page Stability Metrics";
+inline constexpr char kPageStabilityMetricsDescription[] =
+    "Enables metrics to track DOM mutation frequency after user interactions.";
+
 inline constexpr char kPageToolsFeatureUnavailabilityName[] =
     "PageToolsFeatureUnavailability";
 inline constexpr char kPageToolsFeatureUnavailabilityDescription[] =

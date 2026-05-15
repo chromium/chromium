@@ -10,6 +10,7 @@
 #import "ios/web/public/js_messaging/java_script_feature.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/test/fakes/fake_web_client.h"
+#import "ios/web/public/test/navigation_test_util.h"
 #import "ios/web/public/test/web_state_test_util.h"
 #import "ios/web/public/web_client.h"
 #import "ios/web/public/web_state.h"
@@ -43,6 +44,11 @@ void IOSChromeTestWithWebState::LoadHtml(NSString* html) {
 
 void IOSChromeTestWithWebState::LoadHtml(std::string html) {
   web::test::LoadHtml(base::SysUTF8ToNSString(html), web_state_.get());
+}
+
+bool IOSChromeTestWithWebState::LoadUrl(const GURL& url) {
+  web::test::LoadUrl(web_state_.get(), url);
+  return web::test::WaitForPageToFinishLoading(web_state());
 }
 
 web::WebFrame* IOSChromeTestWithWebState::WaitForMainFrame(

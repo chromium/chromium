@@ -44,6 +44,9 @@ class IOSChromeTestWithWebState : public PlatformTest {
   // Loads an HTML page into the WebState.
   void LoadHtml(NSString* html);
   void LoadHtml(std::string html);
+  // Loads a URL in the WebState, returning whether the page finished loading
+  // within a timeout.
+  bool LoadUrl(const GURL& url);
 
   web::WebState* web_state() const { return web_state_.get(); }
 

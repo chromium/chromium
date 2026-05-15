@@ -279,6 +279,8 @@ source_set("java_script_features") {
     "action_target_java_script_feature.mm",
     "click_tool_java_script_feature.h",
     "click_tool_java_script_feature.mm",
+    "page_stability_java_script_feature.h",
+    "page_stability_java_script_feature.mm",
     "scroll_tool_java_script_feature.h",
     "scroll_tool_java_script_feature.mm",
     "select_tool_java_script_feature.h",
@@ -291,6 +293,7 @@ source_set("java_script_features") {
     ":action_target_ts",
     ":actor_tool_interface",
     ":click_tool_ts",
+    ":page_stability_ts",
     ":scroll_tool_ts",
     ":select_tool_ts",
     ":type_tool_ts",
@@ -300,6 +303,7 @@ source_set("java_script_features") {
     "//components/autofill/ios/form_util:child_frame_registrar",
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//ios/chrome/browser/intelligence/actor/tools/public",
+    "//ios/chrome/browser/intelligence/features",
     "//ios/web/public",
     "//ios/web/public/js_messaging",
   ]
@@ -317,6 +321,14 @@ source_set("page_stability") {
     "//ios/chrome/browser/intelligence/features",
     "//ios/web/public",
     "//ios/web/public/js_messaging",
+  ]
+}
+
+optimize_ts("page_stability_ts") {
+  sources = [ "resources/page_stability.ts" ]
+  deps = [
+    "//ios/web/public/js_messaging:gcrweb",
+    "//ios/web/public/js_messaging:util_scripts",
   ]
 }
 
@@ -350,6 +362,7 @@ source_set("unit_tests") {
     "history_tool_unittest.mm",
     "navigate_tool_unittest.mm",
     "observation_delay_controller_unittest.mm",
+    "page_stability_java_script_feature_unittest.mm",
     "scroll_to_tool_unittest.mm",
     "scroll_tool_java_script_feature_unittest.mm",
     "scroll_tool_js_unittest.mm",

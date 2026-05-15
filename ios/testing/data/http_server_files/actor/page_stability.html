@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Page Stability Test</title>
+    <script>
+      // If defined with a {count: number, duration:number}, interactions will
+      // cause sustained DOM mutations.
+      window.sustainedMutations = null;
+
+      function triggerMutation() {
+        if (!window.sustainedMutations || !window.sustainedMutations.count || !window.sustainedMutations.duration) {
+          const new_element = document.createElement("p");
+          new_element.innerText = "<mutating...>!";
+          document.getElementById('content').appendChild(new_element);
+          return;
+        }
+
+        const duration = window.sustainedMutations.duration;
+        const count = window.sustainedMutations.count;
+        const interval = duration / count;
+        let triggeredCount = 0;
+        const id = setInterval(() => {
+          const new_element = document.createElement("p");
+          new_element.innerText = "<mutating...>!";
+          document.getElementById('content').appendChild(new_element);
+          triggeredCount++;
+          if (triggeredCount >= count) clearInterval(id);
+        }, interval);
+      }
+    </script>
+  </head>
+  <body style="height: 2000px; display: block;">
+    <div id="content">Initial Content</div>
+
+    <!-- Button interactions -->
+    <button id="mutate" onclick="triggerMutation()">Mutate</button>
+    <button id="benign">Benign</button>
+
+    <!-- Typing interactions -->
+    <input type="text" id="text_input" onclick="triggerMutation()" oninput="triggerMutation()" placeholder="Type here">
+
+    <!-- Selecting interactions -->
+    <select id="select_input" onclick="triggerMutation()" onchange="triggerMutation()">
+      <option value="1" id="option_1">Option 1</option>
+      <option value="2" id="option_2">Option 2</option>
+      <option value="3" id="option_3">Option 3</option>
+    </select>
+  </body>
+</html>

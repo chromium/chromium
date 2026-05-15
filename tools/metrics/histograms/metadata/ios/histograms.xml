@@ -225,6 +225,54 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(/ios/chrome/browser/promos_manager/model/constants.h:Promo) -->
 
+<histogram name="IOS.Actor.PageStability.InteractionMetrics.MutationCount"
+    units="count" expires_after="2027-01-01">
+  <owner>kaklilu@chromium.org</owner>
+  <owner>bling-ai-foundations@google.com</owner>
+  <summary>
+    Records the number of DOM mutations within the specified duration (e.g.,
+    4000ms) following a user interaction (click, touch, or keydown). This metric
+    helps tune the page stability thresholds for actor tools.
+  </summary>
+</histogram>
+
+<histogram
+    name="IOS.Actor.PageStability.InteractionMetrics.TimeToFirstMutation"
+    units="ms" expires_after="2027-01-01">
+  <owner>kaklilu@chromium.org</owner>
+  <owner>bling-ai-foundations@google.com</owner>
+  <summary>
+    Records the time elapsed between a user interaction (click, touch, or
+    keydown) and the very first DOM mutation that occurs within the specified
+    monitoring interval. The DOM mutations are tracked using a MutationObserver,
+    and include DOM node addition or removal and changes to text data.
+
+    This metric helps us understand the initial reaction time of the page.
+
+    Note: this is only recorded if a DOM mutation was detected in the interval
+    after the interaction.
+  </summary>
+</histogram>
+
+<histogram name="IOS.Actor.PageStability.InteractionMetrics.TimeToLastMutation"
+    units="ms" expires_after="2027-01-01">
+  <owner>kaklilu@chromium.org</owner>
+  <owner>bling-ai-foundations@google.com</owner>
+  <summary>
+    Records the time elapsed between a user interaction (click, touch, or
+    keydown) and the final DOM mutation that occurs within the specified
+    monitoring interval. The DOM mutations are tracked using a MutationObserver,
+    and include DOM node addition or removal and changes to text data.
+
+    This metric helps us understand how long it takes for a page to stabilize.
+
+    Note: this is only recorded if a DOM mutation was detected in the interval
+    after the interaction. This may also be an overestimate if more interactions
+    occur during this interaction interval, but thats tolerated since we just
+    want a baseline to tune stability thresholds.
+  </summary>
+</histogram>
+
 <histogram name="IOS.AIHub.Action" enum="IOSAIHubAction"
     expires_after="2026-10-04">
   <owner>sebsg@chromium.org</owner>

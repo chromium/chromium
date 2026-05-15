@@ -303,6 +303,11 @@ bool IsGeminiResponseViewDynamicResizingEnabled();
 BASE_DECLARE_FEATURE(kGeminiDynamicSettings);
 bool IsGeminiDynamicSettingsEnabled();
 
+// Feature flag for enabling early metrics collection for page stability.
+BASE_DECLARE_FEATURE(kPageStabilityMetrics);
+bool IsPageStabilityMetricsEnabled();
+base::TimeDelta GetPageStabilityIntervalDuration();
+
 // Feature flag for Actor tools.
 BASE_DECLARE_FEATURE(kActorTools);
 bool IsActorEnabled();
