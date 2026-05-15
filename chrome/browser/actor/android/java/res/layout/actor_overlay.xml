@@ -7,7 +7,27 @@ found in the LICENSE file.
 
 <org.chromium.chrome.browser.actor.ui.ActorOverlayView
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/actor_overlay"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:visibility="gone" />
+    android:clipChildren="false"
+    android:clipToPadding="false"
+    android:visibility="gone">
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/take_over_task_button"
+        style="@style/ActorTakeOverButtonStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|center_horizontal"
+        android:layout_marginBottom="@dimen/actor_overlay_button_margin_bottom"
+        android:elevation="@dimen/actor_overlay_button_elevation"
+        android:paddingStart="@dimen/actor_overlay_button_padding_horizontal"
+        android:paddingTop="@dimen/actor_overlay_button_padding_vertical"
+        android:paddingEnd="@dimen/actor_overlay_button_padding_horizontal"
+        android:paddingBottom="@dimen/actor_overlay_button_padding_vertical"
+        android:text="@string/handoff_take_over_task_label"
+        android:visibility="gone" />
+
+</org.chromium.chrome.browser.actor.ui.ActorOverlayView>

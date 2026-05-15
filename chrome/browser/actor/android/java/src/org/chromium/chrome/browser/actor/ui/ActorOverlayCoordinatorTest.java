@@ -39,6 +39,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.actor.ActorKeyedService;
 import org.chromium.chrome.browser.actor.ActorKeyedServiceFactory;
+import org.chromium.chrome.browser.actor.ActorTask;
 import org.chromium.chrome.browser.actor.ActorTaskState;
 import org.chromium.chrome.browser.actor.ui.ActorUiTabController.ActorOverlayState;
 import org.chromium.chrome.browser.actor.ui.ActorUiTabController.HandoffButtonState;
@@ -92,6 +93,10 @@ public class ActorOverlayCoordinatorTest {
     public void setUp() {
         Activity activity = Robolectric.buildActivity(Activity.class).get();
         mView = Mockito.spy(new ActorOverlayView(activity, null));
+        View takeOverButton = new View(activity);
+        takeOverButton.setId(R.id.take_over_task_button);
+        mView.addView(takeOverButton);
+        Mockito.doReturn(takeOverButton).when(mView).getTakeOverButton();
         mView.setLayoutParams(
                 new FrameLayout.LayoutParams(
                         ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
@@ -626,6 +631,21 @@ public class ActorOverlayCoordinatorTest {
         // Setting VISIBLE to false hides it.
         mediator.setOverlayVisible(false);
         Assert.assertFalse(mTabObscuringHandler.isTabContentObscured());
+    }
+
+    @Test
+    public void testTakeOverButtonOnClicked() {
+        OnClickListener clickListener =
+                mCoordinator
+                        .getModelForTesting()
+                        .get(ActorOverlayProperties.ON_TAKE_OVER_CLICK_LISTENER);
+        Assert.assertNotNull(clickListener);
+
+        ActorTask activeTask = Mockito.mock(ActorTask.class);
+        when(mActorKeyedService.getCurrentActiveTask()).thenReturn(activeTask);
+
+        clickListener.onClick(mView);
+        verify(activeTask).takeOverTask();
     }
 
     @Test

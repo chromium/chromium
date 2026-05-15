@@ -38,6 +38,17 @@ class ActorOverlayViewBinder {
             }
         } else if (key == ActorOverlayProperties.ON_CLICK_LISTENER) {
             view.setOnClickListener(model.get(ActorOverlayProperties.ON_CLICK_LISTENER));
+        } else if (key == ActorOverlayProperties.TAKE_OVER_TASK_BUTTON_VISIBLE) {
+            boolean visible = model.get(ActorOverlayProperties.TAKE_OVER_TASK_BUTTON_VISIBLE);
+            View button = view.getTakeOverButton();
+            int visibility = visible ? View.VISIBLE : View.GONE;
+            if (button.getVisibility() != visibility) {
+                button.setVisibility(visibility);
+            }
+        } else if (key == ActorOverlayProperties.ON_TAKE_OVER_CLICK_LISTENER) {
+            view.getTakeOverButton()
+                    .setOnClickListener(
+                            model.get(ActorOverlayProperties.ON_TAKE_OVER_CLICK_LISTENER));
         }
     }
 }

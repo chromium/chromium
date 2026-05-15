@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2026 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<resources>
+    <style name="ActorTakeOverButtonStyle"
+        parent="Widget.Material3.Button.ElevatedButton">
+        <item name="backgroundTint">@color/bottom_sheet_bg_color</item>
+        <item name="cornerRadius">
+            @dimen/actor_overlay_button_corner_radius</item>
+        <item name="icon">@drawable/ic_pause_white_24dp</item>
+        <item name="iconPadding">@dimen/actor_overlay_button_icon_padding</item>
+        <item name="iconSize">@dimen/actor_overlay_button_icon_size</item>
+        <item name="iconTint">
+            @color/default_text_color_link_baseline</item>
+        <item name="android:textColor">
+            @color/default_text_color_link_baseline</item>
+        <item name="android:textAppearance">@style/TextAppearance.Button.Text.Blue</item>
+    </style>
+</resources>

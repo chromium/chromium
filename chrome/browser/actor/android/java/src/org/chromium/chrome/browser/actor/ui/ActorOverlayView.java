@@ -10,6 +10,7 @@ import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
 import android.graphics.drawable.StateListDrawable;
 import android.util.AttributeSet;
+import android.view.View;
 import android.view.ViewGroup.MarginLayoutParams;
 import android.widget.FrameLayout;
 
@@ -55,5 +56,10 @@ public class ActorOverlayView extends FrameLayout {
             params.bottomMargin = bottom;
             setLayoutParams(params);
         }
+    }
+
+    /** Returns the take over task button. */
+    public View getTakeOverButton() {
+        return findViewById(R.id.take_over_task_button);
     }
 }

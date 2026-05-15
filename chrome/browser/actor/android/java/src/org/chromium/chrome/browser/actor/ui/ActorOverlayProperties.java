@@ -28,8 +28,21 @@ class ActorOverlayProperties {
     public static final ReadableObjectPropertyKey<View.OnClickListener> ON_CLICK_LISTENER =
             new ReadableObjectPropertyKey<>();
 
+    /** Whether the take over task button is visible. */
+    public static final WritableBooleanPropertyKey TAKE_OVER_TASK_BUTTON_VISIBLE =
+            new WritableBooleanPropertyKey();
+
+    /** The click listener for the take over task button. */
+    public static final ReadableObjectPropertyKey<View.OnClickListener>
+            ON_TAKE_OVER_CLICK_LISTENER = new ReadableObjectPropertyKey<>();
+
     /** All keys for the property model. */
     public static final PropertyKey[] ALL_KEYS = {
-        VISIBLE, TOP_MARGIN, BOTTOM_MARGIN, ON_CLICK_LISTENER
+        VISIBLE,
+        TOP_MARGIN,
+        BOTTOM_MARGIN,
+        ON_CLICK_LISTENER,
+        TAKE_OVER_TASK_BUTTON_VISIBLE,
+        ON_TAKE_OVER_CLICK_LISTENER
     };
 }

@@ -161,6 +161,28 @@ public class ActorOverlayViewRenderTest {
         mRenderTestRule.render(mParentView, "actor_overlay_hovered");
     }
 
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    public void testActorOverlayWithTakeOverButton() throws Exception {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mCoordinator.getMediator().setOverlayVisible(true);
+                    mCoordinator
+                            .getModelForTesting()
+                            .set(ActorOverlayProperties.TAKE_OVER_TASK_BUTTON_VISIBLE, true);
+                });
+
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    return mParentView.getChildAt(0) != null
+                            && mParentView.getChildAt(0).getWidth() > 0;
+                },
+                "View did not get layout dimensions");
+
+        mRenderTestRule.render(mParentView, "actor_overlay_with_take_over_button");
+    }
+
     // Test implementation that used to bypass mockito limitations on mocking extended interfaces.
     private static class TestBrowserControlsVisibilityManager
             implements BrowserControlsVisibilityManager {

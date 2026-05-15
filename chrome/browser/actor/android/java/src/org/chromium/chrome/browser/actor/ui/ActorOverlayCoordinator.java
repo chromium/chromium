@@ -13,6 +13,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.actor.ActorKeyedService;
 import org.chromium.chrome.browser.actor.ActorKeyedServiceFactory;
+import org.chromium.chrome.browser.actor.ActorTask;
 import org.chromium.chrome.browser.actor.ActorTaskId;
 import org.chromium.chrome.browser.actor.ActorTaskState;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsVisibilityManager;
@@ -74,6 +75,10 @@ public class ActorOverlayCoordinator {
                         .with(ActorOverlayProperties.TOP_MARGIN, 0)
                         .with(ActorOverlayProperties.BOTTOM_MARGIN, 0)
                         .with(ActorOverlayProperties.ON_CLICK_LISTENER, v -> handleOnClick())
+                        .with(
+                                ActorOverlayProperties.ON_TAKE_OVER_CLICK_LISTENER,
+                                v -> handleTakeOverTask())
+                        .with(ActorOverlayProperties.TAKE_OVER_TASK_BUTTON_VISIBLE, false)
                         .build();
         mChangeProcessor =
                 PropertyModelChangeProcessor.create(mModel, mView, ActorOverlayViewBinder::bind);
@@ -121,6 +126,14 @@ public class ActorOverlayCoordinator {
 
     private void handleOnClick() {
         showInteractionLimitedSnackbar();
+    }
+
+    private void handleTakeOverTask() {
+        assert mActorKeyedService != null;
+        ActorTask activeTask = mActorKeyedService.getCurrentActiveTask();
+        if (activeTask != null) {
+            activeTask.takeOverTask();
+        }
     }
 
     private void showInteractionLimitedSnackbar() {

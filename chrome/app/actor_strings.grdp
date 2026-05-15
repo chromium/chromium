@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- Actor specific strings (included from generated_resources.grd). -->
 <grit-part>
-  <message name="IDS_HANDOFF_TAKE_OVER_TASK_LABEL" desc="Text on the handoff button when an actor is in control">
+  <message name="IDS_HANDOFF_TAKE_OVER_TASK_LABEL" desc="Text on the handoff button when an actor is in control" formatter_data="android_java">
     Take over task
   </message>
   <message name="IDS_HANDOFF_GIVE_TASK_BACK_LABEL" desc="[Placeholder Description]" translateable="false">
