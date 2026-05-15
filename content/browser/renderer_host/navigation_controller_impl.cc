@@ -878,7 +878,7 @@ NavigationControllerImpl::NavigationControllerImpl(
       delegate_(delegate),
       ssl_manager_(this),
       get_timestamp_callback_(base::BindRepeating(&base::Time::Now)),
-      back_forward_cache_(browser_context) {
+      back_forward_cache_(*this) {
   DCHECK(browser_context_);
 }
 

@@ -210,7 +210,8 @@ class CONTENT_EXPORT BackForwardCacheImpl
     std::unique_ptr<StoredPage> stored_page_;
   };
 
-  explicit BackForwardCacheImpl(BrowserContext* browser_context);
+  explicit BackForwardCacheImpl(
+      NavigationControllerImpl& navigation_controller);
 
   BackForwardCacheImpl(const BackForwardCacheImpl&) = delete;
   BackForwardCacheImpl& operator=(const BackForwardCacheImpl&) = delete;
@@ -593,6 +594,10 @@ class CONTENT_EXPORT BackForwardCacheImpl
   static BlockListedFeatures GetDisallowedFeatures(
       RequestedFeatures requested_features,
       CacheControlNoStoreContext ccns_context);
+
+  // The navigation controller owns this object and is guaranteed to
+  // outlive it.
+  const raw_ref<NavigationControllerImpl> controller_;
 
   // Contains the set of stored Entries.
   // Invariant:

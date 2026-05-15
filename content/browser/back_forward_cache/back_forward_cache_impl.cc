@@ -30,6 +30,7 @@
 #include "content/browser/back_forward_cache/back_forward_cache_metrics.h"
 #include "content/browser/bad_message.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
+#include "content/browser/renderer_host/navigation_controller_impl.h"
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/renderer_host/render_frame_host_delegate.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
@@ -672,11 +673,14 @@ BackForwardCacheTestDelegate::~BackForwardCacheTestDelegate() {
   g_bfcache_disabled_test_observer = nullptr;
 }
 
-BackForwardCacheImpl::BackForwardCacheImpl(BrowserContext* browser_context)
-    : allowed_urls_(ParseCommaSeparatedURLs(GetAllowedURLList())),
+BackForwardCacheImpl::BackForwardCacheImpl(
+    NavigationControllerImpl& navigation_controller)
+    : controller_(navigation_controller),
+      allowed_urls_(ParseCommaSeparatedURLs(GetAllowedURLList())),
       blocked_urls_(ParseCommaSeparatedURLs(GetBlockedURLList())),
       blocked_cgi_params_(ParseBlockedCgiParams(GetBlockedCgiParams())),
       weak_factory_(this) {
+  BrowserContext* browser_context = navigation_controller.GetBrowserContext();
   should_allow_storing_pages_with_cache_control_no_store_ =
       browser_context &&
       GetContentClient()
@@ -1707,12 +1711,7 @@ BackForwardCacheImpl::GetEntries() {
 }
 
 NavigationControllerImpl& BackForwardCacheImpl::GetNavigationController() {
-  CHECK(!entries_.empty());
-  return entries_.front()
-      ->render_frame_host()
-      ->frame_tree_node()
-      ->navigator()
-      .controller();
+  return *controller_;
 }
 
 std::list<BackForwardCacheImpl::Entry*>
