@@ -22,6 +22,7 @@ namespace password_manager {
 class PasswordManagerDriver;
 class PasswordManagerClient;
 struct PasswordFormDigest;
+struct StoredCredential;
 }  // namespace password_manager
 
 namespace autofill {
@@ -83,12 +84,14 @@ std::string_view GetSignonRealmWithProtocolExcluded(
 // For credentials returned from PasswordStore::GetLogins, specifies the type of
 // the match for the requested page.
 GetLoginMatchType GetMatchType(const password_manager::PasswordForm& form);
+GetLoginMatchType GetMatchType(const password_manager::StoredCredential& form);
 
 // Returns true if the credential is a PSL match or a grouped match. Such
 // matches are called weak matches and do not trigger fill on page load.
 // If the form is submitted with weak match filled, credentials are saved on the
 // submitted form realm without prompting to the user.
 bool IsCredentialWeakMatch(const password_manager::PasswordForm& form);
+bool IsCredentialWeakMatch(const password_manager::StoredCredential& form);
 
 // Given all non-blocklisted |matches| returns best matches as the result of the
 // function. For comparing credentials the following rule is used:
@@ -99,20 +102,27 @@ bool IsCredentialWeakMatch(const password_manager::PasswordForm& form);
 // TODO(crbug.com/343879843) FindBestMatches should be part of FormFetcherImpl
 // implementation detail as it has a strong coupling to form fetcher's internal
 // state.
-std::vector<password_manager::PasswordForm> FindBestMatches(
-    base::span<password_manager::PasswordForm> matches);
+std::vector<password_manager::StoredCredential> FindBestMatches(
+    base::span<password_manager::StoredCredential> matches);
 
-// Returns a form with the given |username_value| from |forms|, or nullptr if
-// none exists. If multiple matches exist, returns the first one.
+// Returns a credential with the given |username_value| from |forms|, or nullptr
+// if none exists. If multiple matches exist, returns the first one.
 const password_manager::PasswordForm* FindFormByUsername(
     base::span<const password_manager::PasswordForm> forms,
+    const std::u16string& username_value);
+const password_manager::StoredCredential* FindCredentialByUsername(
+    base::span<const password_manager::StoredCredential> forms,
+    const std::u16string& username_value);
+const password_manager::StoredCredential* FindCredentialByUsername(
+    const std::vector<raw_ptr<const password_manager::StoredCredential,
+                              VectorExperimental>>& forms,
     const std::u16string& username_value);
 
 // Returns a form from |submitted_manager|'s best matches with
 // `kChangeSubmission` type that matches |submitted_manager|'s pending
 // credentials on username, and has a backup password. Returns nullptr if such
 // form is not found.
-const password_manager::PasswordForm* FindChangedPasswordLoginWithBackup(
+const password_manager::StoredCredential* FindChangedPasswordLoginWithBackup(
     const password_manager::PasswordFormManagerForUI& submitted_manager);
 
 // If the user submits a form, they may have used existing credentials, new
@@ -125,9 +135,9 @@ const password_manager::PasswordForm* FindChangedPasswordLoginWithBackup(
 // PSL and Android matches.
 // |username_updated_in_bubble| indicates whether a username was manually
 // updated during the save prompt bubble.
-const password_manager::PasswordForm* GetMatchForUpdating(
+const password_manager::StoredCredential* GetMatchForUpdating(
     const password_manager::PasswordForm& submitted_form,
-    const std::vector<raw_ptr<const password_manager::PasswordForm,
+    const std::vector<raw_ptr<const password_manager::StoredCredential,
                               VectorExperimental>>& credentials,
     bool username_updated_in_bubble = false);
 

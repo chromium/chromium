@@ -207,9 +207,9 @@ class ChromePasswordManagerClient
           saved_form_manager,
       bool is_update_confirmation) override;
   void PasswordWasAutofilled(
-      base::span<const password_manager::PasswordForm> best_matches,
+      base::span<const password_manager::StoredCredential> best_matches,
       const url::Origin& origin,
-      base::span<const password_manager::PasswordForm> federated_matches,
+      base::span<const password_manager::StoredCredential> federated_matches,
       bool was_autofilled_on_pageload) override;
   void AutofillHttpAuth(
       const password_manager::PasswordForm& preferred_match,

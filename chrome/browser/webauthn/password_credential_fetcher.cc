@@ -77,7 +77,7 @@ void PasswordCredentialFetcher::UpdateDateLastUsed(
 
   for (const auto& match : form_fetcher_->GetBestMatches()) {
     if (match.username_value == username && match.password_value == password) {
-      PasswordForm updated_form = match;
+      PasswordForm updated_form = password_manager::ToPasswordForm(match);
       updated_form.date_last_used = base::Time::Now();
       if ((updated_form.in_store &
            password_manager::PasswordForm::Store::kProfileStore) !=
@@ -110,8 +110,9 @@ void PasswordCredentialFetcher::OnFetchCompleted() {
   PasswordCredentials credentials;
   std::ranges::transform(form_fetcher_->GetBestMatches(),
                          std::back_inserter(credentials),
-                         [](const PasswordForm& form) {
-                           return std::make_unique<PasswordForm>(form);
+                         [](const password_manager::StoredCredential& cred) {
+                           return std::make_unique<PasswordForm>(
+                               password_manager::ToPasswordForm(cred));
                          });
   std::erase_if(credentials, [](const std::unique_ptr<PasswordForm>& form) {
     return form->IsFederatedCredential() || form->username_value.empty();

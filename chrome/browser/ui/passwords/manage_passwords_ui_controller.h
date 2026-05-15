@@ -102,10 +102,11 @@ class ManagePasswordsUIController
   void OnAutomaticPasswordSave(
       std::unique_ptr<password_manager::PasswordFormManagerForUI> form_manager,
       bool is_update_confirmation) override;
+
   void OnPasswordAutofilled(
-      base::span<const password_manager::PasswordForm> password_forms,
+      base::span<const password_manager::StoredCredential> password_credentials,
       const url::Origin& origin,
-      base::span<const password_manager::PasswordForm> federated_matches)
+      base::span<const password_manager::StoredCredential> federated_matches)
       override;
   void OnCredentialLeak(
       password_manager::LeakedPasswordDetails details) override;

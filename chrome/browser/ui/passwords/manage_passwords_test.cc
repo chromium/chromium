@@ -159,7 +159,8 @@ void ManagePasswordsTest::SetupManagingPasswords(
   std::vector<password_manager::PasswordForm> forms = {password_form_,
                                                        federated_form};
   GetController()->OnPasswordAutofilled(
-      forms, embedded_test_server()->GetOrigin(), {});
+      password_manager::FromPasswordForms(forms),
+      embedded_test_server()->GetOrigin(), {});
 }
 
 void ManagePasswordsTest::SetupPendingPassword() {
@@ -226,12 +227,16 @@ void ManagePasswordsTest::SetupMovingPasswords() {
       testing::NiceMock<password_manager::MockPasswordFormManagerForUI>>();
   password_manager::MockPasswordFormManagerForUI* form_manager_ptr =
       form_manager.get();
-  std::vector<password_manager::PasswordForm> best_matches = {*test_form()};
-  EXPECT_CALL(*form_manager, GetBestMatches).WillOnce(Return(best_matches));
+  best_matches_ = password_manager::FromPasswordForms(
+      std::vector<password_manager::PasswordForm>{*test_form()});
+  EXPECT_CALL(*form_manager, GetBestMatches)
+      .WillOnce(Return(
+          base::span<const password_manager::StoredCredential>(best_matches_)));
   ON_CALL(*form_manager, GetPendingCredentials)
       .WillByDefault(ReturnRef(*test_form()));
   ON_CALL(*form_manager, GetFederatedMatches)
-      .WillByDefault(Return(std::vector<password_manager::PasswordForm>{}));
+      .WillByDefault(
+          Return(base::span<const password_manager::StoredCredential>()));
   ON_CALL(*form_manager, GetURL).WillByDefault(ReturnRef(test_form()->url));
   GetController()->OnShowMoveToAccountBubble(std::move(form_manager));
   // Clearing the mock here ensures that |GetBestMatches| won't be called with a

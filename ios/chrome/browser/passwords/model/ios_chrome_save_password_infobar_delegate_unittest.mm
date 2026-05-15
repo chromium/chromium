@@ -19,6 +19,8 @@
 #import "components/password_manager/core/browser/password_form.h"
 #import "components/password_manager/core/browser/password_form_metrics_recorder.h"
 #import "components/password_manager/core/browser/password_manager_metrics_util.h"
+#import "components/password_manager/core/browser/password_store/password_form_converters.h"
+#import "components/password_manager/core/browser/password_store/stored_credential.h"
 #import "components/ukm/test_ukm_recorder.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "services/metrics/public/cpp/ukm_recorder.h"
@@ -834,11 +836,12 @@ TEST_P(IOSChromeSavePasswordInfoBarDelegateRecoveryFlowTest,
                                     ? u"backup password"
                                     : u"not backup password";
 
-  std::vector<password_manager::PasswordForm> forms = {primary_form};
+  std::vector<password_manager::StoredCredential> forms;
+  forms.push_back(password_manager::FromPasswordForm(std::move(primary_form)));
 
   ON_CALL(*form_manager_ptr_, GetBestMatches)
       .WillByDefault(testing::Return(
-          base::span<const password_manager::PasswordForm>(forms)));
+          base::span<const password_manager::StoredCredential>(forms)));
   ON_CALL(testing::Const(*form_manager_ptr_), GetPendingCredentials)
       .WillByDefault(testing::ReturnRef(updated_form));
 

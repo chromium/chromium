@@ -34,6 +34,7 @@
 #include "components/password_manager/core/browser/password_form_prediction_waiter.h"
 #include "components/password_manager/core/browser/password_manager_metrics_recorder.h"
 #include "components/password_manager/core/browser/password_save_manager.h"
+#include "components/password_manager/core/browser/password_store/stored_credential.h"
 #include "components/password_manager/core/browser/possible_username_data.h"
 #include "components/password_manager/core/browser/votes_uploader.h"
 #include "url/gurl.h"
@@ -199,13 +200,13 @@ class PasswordFormManager : public PasswordFormManagerForUI,
                             autofill::FieldRendererId field_id) const;
   // PasswordFormManagerForUI:
   const GURL& GetURL() const override;
-  base::span<const PasswordForm> GetBestMatches() const override;
-  base::span<const PasswordForm> GetFederatedMatches() const override;
+  base::span<const StoredCredential> GetBestMatches() const override;
+  base::span<const StoredCredential> GetFederatedMatches() const override;
   const PasswordForm& GetPendingCredentials() const override;
   metrics_util::CredentialSourceType GetCredentialSource() const override;
   PasswordFormMetricsRecorder* GetMetricsRecorder() override;
   base::span<const InteractionsStats> GetInteractionsStats() const override;
-  base::span<const PasswordForm> GetInsecureCredentials() const override;
+  base::span<const StoredCredential> GetInsecureCredentials() const override;
   bool IsBlocklisted() const override;
   bool IsFetchCompleted() const override;
   bool IsMovableToAccountStore() const override;

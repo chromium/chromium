@@ -209,23 +209,27 @@ PasswordFormFillData GetTestPasswordFormFillData() {
       base::UnguessableToken::CreateForTesting(98765, 43210)));
 
   // Create an exact match in the database.
-  PasswordForm preferred_match = form_on_page;
-  preferred_match.username_element = u"username";
+  StoredCredential preferred_match;
+  preferred_match.url = GURL("https://foo.com/");
   preferred_match.username_value = u"test@gmail.com";
-  preferred_match.password_element = u"password";
   preferred_match.password_value = u"test";
+  preferred_match.signon_realm = "https://foo.com/";
+  preferred_match.scheme = PasswordForm::Scheme::kHtml;
   preferred_match.match_type = PasswordForm::MatchType::kExact;
 
-  std::vector<PasswordForm> matches;
-  PasswordForm non_preferred_match = preferred_match;
+  std::vector<StoredCredential> matches;
+  StoredCredential non_preferred_match;
+  non_preferred_match.url = GURL("https://foo.com/");
   non_preferred_match.username_value = u"test1@gmail.com";
   non_preferred_match.password_value = u"test1";
+  non_preferred_match.signon_realm = "https://foo.com/";
+  non_preferred_match.scheme = PasswordForm::Scheme::kHtml;
   non_preferred_match.match_type = PasswordForm::MatchType::kPSL;
   matches.push_back(std::move(non_preferred_match));
 
   url::Origin page_origin = url::Origin::Create(GURL("https://foo.com/"));
 
-  return CreatePasswordFormFillData(form_on_page, matches, preferred_match,
+  return CreatePasswordFormFillData(form_on_page, matches, &preferred_match,
                                     page_origin, /*wait_for_username=*/true,
                                     /*suggestion_banned_fields=*/{});
 }

@@ -19,20 +19,21 @@
 #include "components/password_manager/core/browser/password_manager_driver.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
 #include "components/password_manager/core/browser/password_save_manager_impl.h"
+#include "components/password_manager/core/browser/password_store/password_form_converters.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "crypto/random.h"
 
 namespace password_manager {
 namespace {
 
-std::vector<PasswordForm> DeepCopyVector(
+std::vector<StoredCredential> DeepCopyToStoredVector(
     const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>& forms) {
   std::vector<PasswordForm> result;
   result.reserve(forms.size());
   for (const PasswordForm* form : forms) {
     result.emplace_back(*form);
   }
-  return result;
+  return FromPasswordForms(std::move(result));
 }
 
 // Implementation of the UI model for "Update password?" bubble in case there is
@@ -54,13 +55,13 @@ class PasswordDataForUI : public PasswordFormManagerForUI {
 
   // PasswordFormManagerForUI:
   const GURL& GetURL() const override;
-  base::span<const PasswordForm> GetBestMatches() const override;
-  base::span<const PasswordForm> GetFederatedMatches() const override;
+  base::span<const StoredCredential> GetBestMatches() const override;
+  base::span<const StoredCredential> GetFederatedMatches() const override;
   const PasswordForm& GetPendingCredentials() const override;
   metrics_util::CredentialSourceType GetCredentialSource() const override;
   PasswordFormMetricsRecorder* GetMetricsRecorder() override;
   base::span<const InteractionsStats> GetInteractionsStats() const override;
-  base::span<const PasswordForm> GetInsecureCredentials() const override;
+  base::span<const StoredCredential> GetInsecureCredentials() const override;
   bool IsBlocklisted() const override;
   bool IsFetchCompleted() const override;
   bool IsMovableToAccountStore() const override;
@@ -80,9 +81,9 @@ class PasswordDataForUI : public PasswordFormManagerForUI {
 
  private:
   PasswordForm pending_form_;
-  std::vector<PasswordForm> matches_;
-  const std::vector<PasswordForm> federated_matches_;
-  const std::vector<PasswordForm> non_federated_matches_;
+  std::vector<StoredCredential> matches_;
+  const std::vector<StoredCredential> federated_matches_;
+  const std::vector<StoredCredential> non_federated_matches_;
   PasswordForm::Store store_for_saving_;
 
   // Observer that waits for bubble interaction.
@@ -100,12 +101,12 @@ PasswordDataForUI::PasswordDataForUI(
     PasswordForm::Store store_for_saving,
     base::RepeatingCallback<void(bool, const PasswordForm&)> bubble_interaction)
     : pending_form_(std::move(pending_form)),
-      federated_matches_(DeepCopyVector(federated)),
-      non_federated_matches_(DeepCopyVector(matches)),
+      federated_matches_(DeepCopyToStoredVector(federated)),
+      non_federated_matches_(DeepCopyToStoredVector(matches)),
       store_for_saving_(store_for_saving),
       bubble_interaction_cb_(std::move(bubble_interaction)) {
-  for (const PasswordForm& form : non_federated_matches_) {
-    matches_.push_back(form);
+  for (const auto& form : non_federated_matches_) {
+    matches_.push_back(CloneStoredCredential(form));
   }
 }
 
@@ -113,11 +114,12 @@ const GURL& PasswordDataForUI::GetURL() const {
   return pending_form_.url;
 }
 
-base::span<const PasswordForm> PasswordDataForUI::GetBestMatches() const {
+base::span<const StoredCredential> PasswordDataForUI::GetBestMatches() const {
   return matches_;
 }
 
-base::span<const PasswordForm> PasswordDataForUI::GetFederatedMatches() const {
+base::span<const StoredCredential> PasswordDataForUI::GetFederatedMatches()
+    const {
   return federated_matches_;
 }
 
@@ -139,7 +141,7 @@ base::span<const InteractionsStats> PasswordDataForUI::GetInteractionsStats()
   return {};
 }
 
-base::span<const PasswordForm> PasswordDataForUI::GetInsecureCredentials()
+base::span<const StoredCredential> PasswordDataForUI::GetInsecureCredentials()
     const {
   return {};
 }

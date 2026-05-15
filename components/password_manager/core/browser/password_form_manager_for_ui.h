@@ -13,6 +13,7 @@
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_store/interactions_stats.h"
+#include "components/password_manager/core/browser/password_store/stored_credential.h"
 
 namespace password_manager {
 
@@ -29,11 +30,11 @@ class PasswordFormManagerForUI {
   virtual const GURL& GetURL() const = 0;
 
   // Returns the best saved matches for the observed form.
-  virtual base::span<const PasswordForm> GetBestMatches() const = 0;
+  virtual base::span<const StoredCredential> GetBestMatches() const = 0;
 
   // Returns the federated saved matches for the observed form.
   // TODO(crbug.com/40570965): merge with GetBestMatches.
-  virtual base::span<const PasswordForm> GetFederatedMatches() const = 0;
+  virtual base::span<const StoredCredential> GetFederatedMatches() const = 0;
 
   // Returns credentials that are ready to be written (saved or updated) to a
   // password store.
@@ -52,7 +53,7 @@ class PasswordFormManagerForUI {
   virtual base::span<const InteractionsStats> GetInteractionsStats() const = 0;
 
   // List of insecure passwords for the current site.
-  virtual base::span<const PasswordForm> GetInsecureCredentials() const = 0;
+  virtual base::span<const StoredCredential> GetInsecureCredentials() const = 0;
 
   // Determines if the user opted to 'never remember' passwords for this form.
   virtual bool IsBlocklisted() const = 0;

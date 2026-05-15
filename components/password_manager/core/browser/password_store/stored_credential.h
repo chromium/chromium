@@ -105,6 +105,7 @@ struct StoredCredential {
   }
 
   std::optional<std::u16string> GetPasswordBackup() const;
+  std::optional<base::Time> GetPasswordBackupDateCreated() const;
 
 #if defined(UNIT_TEST)
   friend bool operator==(const StoredCredential&,

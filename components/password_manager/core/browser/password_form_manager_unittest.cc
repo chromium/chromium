@@ -1291,9 +1291,18 @@ TEST_P(PasswordFormManagerTest, SaveNewCredentials) {
 
   MockFormSaver& form_saver = MockFormSaver::Get(form_manager_.get());
   PasswordForm saved_form;
-  std::vector<raw_ptr<const PasswordForm, VectorExperimental>> best_matches;
+  std::vector<PasswordForm> best_matches;
   EXPECT_CALL(form_saver, Save(_, _, _))
-      .WillOnce(DoAll(SaveArg<0>(&saved_form), SaveArg<1>(&best_matches)));
+      .WillOnce(
+          [&](PasswordForm pending,
+              const std::vector<
+                  raw_ptr<const PasswordForm, VectorExperimental>>& matches,
+              const std::u16string& old_password) {
+            saved_form = std::move(pending);
+            for (const auto& match : matches) {
+              best_matches.push_back(*match);
+            }
+          });
   EXPECT_CALL(client_, UpdateFormManagers());
 
   form_manager_->Save();
@@ -1310,7 +1319,8 @@ TEST_P(PasswordFormManagerTest, SaveNewCredentials) {
   EXPECT_EQ(submitted_form.fields()[kPasswordFieldIndex].name(),
             saved_form.password_element);
   ASSERT_EQ(best_matches.size(), 1u);
-  EXPECT_EQ(*best_matches[0], saved_match_);
+  EXPECT_EQ(best_matches[0], saved_match_);
+  best_matches.clear();
 
   // Check UKM metrics.
   form_manager_.reset();
@@ -1343,9 +1353,18 @@ TEST_P(PasswordFormManagerTest, SavePSLToAlreadySaved) {
 
   MockFormSaver& form_saver = MockFormSaver::Get(form_manager_.get());
   PasswordForm saved_form;
-  std::vector<raw_ptr<const PasswordForm, VectorExperimental>> best_matches;
+  std::vector<PasswordForm> best_matches;
   EXPECT_CALL(form_saver, Save(_, _, _))
-      .WillOnce(DoAll(SaveArg<0>(&saved_form), SaveArg<1>(&best_matches)));
+      .WillOnce(
+          [&](PasswordForm pending,
+              const std::vector<
+                  raw_ptr<const PasswordForm, VectorExperimental>>& matches,
+              const std::u16string& old_password) {
+            saved_form = std::move(pending);
+            for (const auto& match : matches) {
+              best_matches.push_back(*match);
+            }
+          });
 
   form_manager_->Save();
 
@@ -1357,7 +1376,8 @@ TEST_P(PasswordFormManagerTest, SavePSLToAlreadySaved) {
   EXPECT_EQ(saved_form.password_element, psl_saved_match_.password_element);
 
   ASSERT_EQ(best_matches.size(), 1u);
-  EXPECT_EQ(*best_matches[0], psl_saved_match_);
+  EXPECT_EQ(best_matches[0], psl_saved_match_);
+  best_matches.clear();
 }
 
 // Tests that when credentials with already saved username but with a new

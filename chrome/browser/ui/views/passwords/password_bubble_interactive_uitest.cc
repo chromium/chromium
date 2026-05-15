@@ -49,6 +49,7 @@
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
+#include "components/password_manager/core/browser/password_store/password_form_converters.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/signin/public/base/signin_prefs.h"
@@ -1336,8 +1337,10 @@ IN_PROC_BROWSER_TEST_P(SharedPasswordsNotificationBubbleInteractiveUiTest,
   std::vector<password_manager::PasswordForm> forms = {shared_credentials};
 
   auto setup_shared_passwords = [&]() {
-    GetController()->OnPasswordAutofilled(forms, url::Origin::Create(test_url),
-                                          /*federated_matches=*/{});
+    GetController()->OnPasswordAutofilled(
+        password_manager::FromPasswordForms(forms),
+        url::Origin::Create(test_url),
+        /*federated_matches=*/{});
   };
 
   RunTestSequence(Do(setup_shared_passwords),
@@ -1365,8 +1368,10 @@ IN_PROC_BROWSER_TEST_P(
                                                        shared_credentials2};
 
   auto setup_shared_passwords = [&]() {
-    GetController()->OnPasswordAutofilled(forms, url::Origin::Create(test_url),
-                                          /*federated_matches=*/{});
+    GetController()->OnPasswordAutofilled(
+        password_manager::FromPasswordForms(forms),
+        url::Origin::Create(test_url),
+        /*federated_matches=*/{});
   };
 
   RunTestSequence(Do(setup_shared_passwords),
@@ -1396,8 +1401,10 @@ IN_PROC_BROWSER_TEST_P(
                                                        shared_credentials2};
 
   auto setup_shared_passwords = [&]() {
-    GetController()->OnPasswordAutofilled(forms, url::Origin::Create(test_url),
-                                          /*federated_matches=*/{});
+    GetController()->OnPasswordAutofilled(
+        password_manager::FromPasswordForms(forms),
+        url::Origin::Create(test_url),
+        /*federated_matches=*/{});
   };
 
   RunTestSequence(Do(setup_shared_passwords),
@@ -1419,8 +1426,10 @@ IN_PROC_BROWSER_TEST_P(
   std::vector<password_manager::PasswordForm> forms = {shared_credentials};
 
   auto setup_shared_passwords = [&]() {
-    GetController()->OnPasswordAutofilled(forms, url::Origin::Create(test_url),
-                                          /*/*federated_matches=*/{});
+    GetController()->OnPasswordAutofilled(
+        password_manager::FromPasswordForms(forms),
+        url::Origin::Create(test_url),
+        /*/*federated_matches=*/{});
   };
 
   RunTestSequence(Do(setup_shared_passwords),

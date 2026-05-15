@@ -6,6 +6,7 @@
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_MOCK_PASSWORD_FORM_MANAGER_FOR_UI_H_
 
 #include "components/password_manager/core/browser/password_form_manager_for_ui.h"
+#include "components/password_manager/core/browser/password_store/stored_credential.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace password_manager {
@@ -21,11 +22,11 @@ class MockPasswordFormManagerForUI : public PasswordFormManagerForUI {
   ~MockPasswordFormManagerForUI() override;
 
   MOCK_METHOD(const GURL&, GetURL, (), (const override));
-  MOCK_METHOD(base::span<const PasswordForm>,
+  MOCK_METHOD(base::span<const StoredCredential>,
               GetBestMatches,
               (),
               (const override));
-  MOCK_METHOD((base::span<const PasswordForm>),
+  MOCK_METHOD(base::span<const StoredCredential>,
               GetFederatedMatches,
               (),
               (const override));
@@ -39,7 +40,7 @@ class MockPasswordFormManagerForUI : public PasswordFormManagerForUI {
               GetInteractionsStats,
               (),
               (const override));
-  MOCK_METHOD((base::span<const PasswordForm>),
+  MOCK_METHOD(base::span<const StoredCredential>,
               GetInsecureCredentials,
               (),
               (const override));

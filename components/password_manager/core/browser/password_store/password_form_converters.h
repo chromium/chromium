@@ -36,6 +36,14 @@ std::vector<PasswordForm> ToPasswordForms(
 std::vector<StoredCredential> FromPasswordForms(
     std::vector<PasswordForm> forms);
 
+#if defined(UNIT_TEST)
+inline bool operator==(const StoredCredential& lhs, const PasswordForm& rhs) {
+  return ToPasswordForm(lhs) == rhs;
+}
+inline bool operator==(const PasswordForm& lhs, const StoredCredential& rhs) {
+  return lhs == ToPasswordForm(rhs);
+}
+#endif
 
 }  // namespace password_manager
 

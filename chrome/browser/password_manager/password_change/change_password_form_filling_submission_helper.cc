@@ -145,9 +145,9 @@ void ChangePasswordFormFillingSubmissionHelper::FillChangePasswordForm(
         *form_manager->GetParsedObservedForm());
   }
 
-  const password_manager::PasswordForm* best_match =
-      password_manager_util::FindFormByUsername(form_manager_->GetBestMatches(),
-                                                username_);
+  const password_manager::StoredCredential* best_match =
+      password_manager_util::FindCredentialByUsername(
+          form_manager_->GetBestMatches(), username_);
   // If we already have a password for the website but it doesn't match the one
   // used to log in, we don't want to overwrite the existing password without
   // user consent even if the password is wrong.

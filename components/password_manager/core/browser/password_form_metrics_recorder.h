@@ -465,12 +465,12 @@ class PasswordFormMetricsRecorder
 
   void RecordFirstFillingResult(int32_t result);
   void RecordFirstWaitForUsernameReason(WaitForUsernameReason reason);
-  void RecordMatchedFormType(const PasswordForm& form);
+  void RecordMatchedFormType(const StoredCredential& form);
   void RecordPotentialPreferredMatch(std::optional<MatchedFormType> form_type);
 
   // Records whether there was at least one grouped match in fill suggestions.
   void RecordFillSuggestionHasGroupedMatch(
-      base::span<const PasswordForm> best_matches);
+      base::span<const StoredCredential> best_matches);
 
   // Calculates FillingAssistance metrics for |submitted_form|.
   void CalculateFillingAssistanceMetric(

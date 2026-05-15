@@ -631,13 +631,15 @@ IN_PROC_BROWSER_TEST_P(WebAppFrameViewChromeOSTest, ShowManagePasswordsIcon) {
   EXPECT_TRUE(manage_passwords_icon);
   EXPECT_FALSE(manage_passwords_icon->GetVisible());
 
-  password_manager::PasswordForm password_form;
-  password_form.username_value = u"test";
-  password_form.url = GetAppURL().DeprecatedGetOriginAsURL();
-  password_form.match_type = password_manager::PasswordForm::MatchType::kExact;
-  std::vector<password_manager::PasswordForm> forms = {password_form};
+  password_manager::StoredCredential credential;
+  credential.username_value = u"test";
+  credential.url = GetAppURL().DeprecatedGetOriginAsURL();
+  credential.match_type = password_manager::PasswordForm::MatchType::kExact;
+  std::vector<password_manager::StoredCredential> credentials;
+  credentials.push_back(std::move(credential));
   PasswordsClientUIDelegateFromWebContents(web_contents)
-      ->OnPasswordAutofilled(forms, url::Origin::Create(password_form.url), {});
+      ->OnPasswordAutofilled(credentials,
+                             url::Origin::Create(credentials[0].url), {});
   chrome::ManagePasswordsForPage(app_browser_);
   ASSERT_TRUE(WaitForVisible(true, manage_passwords_icon));
 }

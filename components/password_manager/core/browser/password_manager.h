@@ -260,7 +260,7 @@ class PasswordManager : public PasswordManagerInterface {
   // Returns the best matches from the manager which manages |form_id|. |driver|
   // is needed to determine the match. Returns nullptr when no matched manager
   // is found.
-  base::span<const PasswordForm> GetBestMatches(
+  base::span<const StoredCredential> GetBestMatches(
       PasswordManagerDriver* driver,
       autofill::FormRendererId form_id);
 

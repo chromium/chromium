@@ -312,11 +312,11 @@ void SaveUpdatePasswordMessageDelegate::SavePasswordAfterDeviceLockUi(
 void SaveUpdatePasswordMessageDelegate::SaveFormManager() {
   passwords_state_.form_manager()->Save();
 
-  const password_manager::PasswordForm* changed_password_form_with_backup =
+  const password_manager::StoredCredential* changed_credential_with_backup =
       password_manager_util::FindChangedPasswordLoginWithBackup(
           *passwords_state_.form_manager());
-  if (changed_password_form_with_backup &&
-      changed_password_form_with_backup->GetPasswordBackup() ==
+  if (changed_credential_with_backup &&
+      changed_credential_with_backup->GetPasswordBackup() ==
           passwords_state_.form_manager()
               ->GetPendingCredentials()
               .password_value) {

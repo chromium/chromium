@@ -34,6 +34,7 @@
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
+#include "components/password_manager/core/browser/password_store/password_form_converters.h"
 #include "components/password_manager/core/common/password_manager_constants.h"
 
 using autofill::AutofillCrowdsourcingManager;
@@ -49,7 +50,7 @@ using autofill::FormSignature;
 using autofill::FormStructure;
 using autofill::IsMostRecentSingleUsernameCandidate;
 using autofill::RandomizedEncoder;
-using password_manager_util::FindFormByUsername;
+using password_manager_util::FindCredentialByUsername;
 
 using Logger = autofill::SavePasswordProgressLogger;
 using StringID = autofill::SavePasswordProgressLogger::StringID;
@@ -151,11 +152,12 @@ void LabelFields(const FieldTypeMap& field_types,
 // which doesn't have a username.
 bool IsAddingUsernameToExistingMatch(
     const PasswordForm& credentials,
-    const base::span<const PasswordForm>& matches) {
+    const base::span<const StoredCredential>& matches) {
   if (credentials.username_value.empty()) {
     return false;
   }
-  const PasswordForm* match = FindFormByUsername(matches, std::u16string());
+  const StoredCredential* match =
+      FindCredentialByUsername(matches, std::u16string());
 
   if (!match) {
     return false;
@@ -301,14 +303,12 @@ SingleUsernameVoteData::SingleUsernameVoteData()
     : SingleUsernameVoteData(FieldRendererId(),
                              /*username_value=*/std::u16string(),
                              FormPredictions(),
-                             /*stored_credentials=*/{},
                              PasswordFormHadMatchingUsername(false)) {}
 
 SingleUsernameVoteData::SingleUsernameVoteData(
     FieldRendererId renderer_id,
     const std::u16string& username_value,
     const FormPredictions& form_predictions,
-    const base::span<const PasswordForm>& stored_credentials,
     PasswordFormHadMatchingUsername password_form_had_matching_username)
     : renderer_id(renderer_id),
       form_predictions(form_predictions),
@@ -338,7 +338,7 @@ VotesUploader::~VotesUploader() = default;
 void VotesUploader::SendVotesOnSave(
     const FormData& observed,
     const PasswordForm& submitted_form,
-    const base::span<const PasswordForm>& best_matches,
+    const base::span<const StoredCredential>& best_matches,
     PasswordForm* pending_credentials) {
   if (pending_credentials->times_used_in_html_form == 1 ||
       IsAddingUsernameToExistingMatch(*pending_credentials, best_matches)) {
@@ -530,7 +530,7 @@ bool VotesUploader::UploadPasswordVote(
 
 // TODO(crbug.com/40575167): Share common code with UploadPasswordVote.
 void VotesUploader::UploadFirstLoginVotes(
-    const base::span<const PasswordForm>& best_matches,
+    const base::span<const StoredCredential>& best_matches,
     const PasswordForm& pending_credentials,
     const PasswordForm& form_to_upload) {
   AutofillCrowdsourcingManager* crowdsourcing_manager =
@@ -725,15 +725,15 @@ void VotesUploader::AddGeneratedVote(
 
 void VotesUploader::SetKnownValueFlag(
     const PasswordForm& pending_credentials,
-    const base::span<const PasswordForm>& best_matches,
+    const base::span<const StoredCredential>& best_matches,
     FormStructure* form) {
   const std::u16string& known_username = pending_credentials.username_value;
   std::u16string known_password;
   if (password_overridden_) {
     // If we are updating a password, the known value should be the old
     // password, not the new one.
-    const PasswordForm* match =
-        FindFormByUsername(best_matches, known_username);
+    const StoredCredential* match =
+        FindCredentialByUsername(best_matches, known_username);
     if (!match) {
       // Username was not found, do nothing.
       return;
@@ -771,7 +771,7 @@ bool VotesUploader::FindUsernameInOtherAlternativeUsernames(
 }
 
 bool VotesUploader::FindCorrectedUsernameElement(
-    base::span<const PasswordForm> matches,
+    base::span<const StoredCredential> matches,
     const std::u16string& username,
     const std::u16string& password) {
   // As the username may have changed, re-compute |username_correction_vote_|.
@@ -779,9 +779,10 @@ bool VotesUploader::FindCorrectedUsernameElement(
   if (username.empty()) {
     return false;
   }
-  for (const PasswordForm& match : matches) {
+  for (const StoredCredential& match : matches) {
     if ((match.password_value == password) &&
-        FindUsernameInOtherAlternativeUsernames(match, username)) {
+        FindUsernameInOtherAlternativeUsernames(
+            password_manager::ToPasswordForm(match), username)) {
       return true;
     }
   }

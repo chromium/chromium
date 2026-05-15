@@ -35,8 +35,10 @@
 #include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/password_manager/core/browser/password_manager_driver.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
+#include "components/password_manager/core/browser/password_store/password_form_converters.h"
 #include "components/password_manager/core/browser/password_store/password_store_interface.h"
 #include "components/password_manager/core/browser/password_store/password_store_util.h"
+#include "components/password_manager/core/browser/password_store/stored_credential.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/signin_metrics.h"
@@ -51,21 +53,19 @@ using password_manager::sync_util::IsSyncFeatureEnabledIncludingPasswords;
 
 using autofill::password_generation::PasswordGenerationType;
 using password_manager::PasswordForm;
+using password_manager::StoredCredential;
 
 namespace password_manager_util {
 namespace {
 
 std::tuple<int, base::Time, int> GetPriorityProperties(
-    const PasswordForm& form) {
+    const StoredCredential& form) {
   return std::make_tuple(-static_cast<int>(GetMatchType(form)),
                          form.date_last_used, static_cast<int>(form.in_store));
 }
 
-// Consider the following properties:
-// 1. Match strength for the original form (Exact > Affiliations > PSL).
-// 2. Last time used. Most recent is better.
-// 3. Account vs. profile store. Account is better.
-bool IsBetterMatch(const PasswordForm& lhs, const PasswordForm& rhs) {
+bool IsBetterMatchStored(const StoredCredential& lhs,
+                         const StoredCredential& rhs) {
   return GetPriorityProperties(lhs) > GetPriorityProperties(rhs);
 }
 
@@ -182,28 +182,60 @@ GetLoginMatchType GetMatchType(const password_manager::PasswordForm& form) {
   NOTREACHED();
 }
 
+GetLoginMatchType GetMatchType(const password_manager::StoredCredential& form) {
+  CHECK(form.match_type.has_value());
+  if (form.match_type.value() == PasswordForm::MatchType::kExact) {
+    return GetLoginMatchType::kExact;
+  }
+
+  if (static_cast<int>(form.match_type.value() &
+                       PasswordForm::MatchType::kAffiliated)) {
+    return GetLoginMatchType::kAffiliated;
+  }
+
+  if (static_cast<int>(form.match_type.value() &
+                       PasswordForm::MatchType::kPSL)) {
+    return GetLoginMatchType::kPSL;
+  }
+
+  if (static_cast<int>(form.match_type.value() &
+                       PasswordForm::MatchType::kGrouped)) {
+    return GetLoginMatchType::kGrouped;
+  }
+
+  NOTREACHED();
+}
+
 bool IsCredentialWeakMatch(const password_manager::PasswordForm& form) {
   GetLoginMatchType match_type = GetMatchType(form);
   return match_type == GetLoginMatchType::kPSL ||
          match_type == GetLoginMatchType::kGrouped;
 }
 
-std::vector<PasswordForm> FindBestMatches(base::span<PasswordForm> matches) {
-  CHECK(std::ranges::none_of(matches, &PasswordForm::blocked_by_user));
+bool IsCredentialWeakMatch(const password_manager::StoredCredential& form) {
+  GetLoginMatchType match_type = GetMatchType(form);
+  return match_type == GetLoginMatchType::kPSL ||
+         match_type == GetLoginMatchType::kGrouped;
+}
 
-  std::ranges::sort(matches, IsBetterMatch, {});
+std::vector<StoredCredential> FindBestMatches(
+    base::span<StoredCredential> matches) {
+  CHECK(std::ranges::none_of(matches, &StoredCredential::blocked_by_user));
 
-  std::vector<PasswordForm> best_matches;
+  std::ranges::sort(matches, IsBetterMatchStored, {});
+
+  std::vector<StoredCredential> best_matches;
 
   // Map from usernames to the best matching password forms.
-  std::map<std::u16string, std::vector<PasswordForm>> matches_per_username;
+  std::map<std::u16string, std::vector<StoredCredential>> matches_per_username;
   for (auto& match : matches) {
     auto it = matches_per_username.find(match.username_value);
     // The first match for |username_value| in the sorted array is best
     // match.
     if (it == matches_per_username.end()) {
-      matches_per_username[match.username_value] = {match};
-      best_matches.push_back(match);
+      matches_per_username[match.username_value].push_back(
+          CloneStoredCredential(match));
+      best_matches.push_back(CloneStoredCredential(match));
     } else {
       // Insert another credential only if the store is different as well as the
       // password value.
@@ -215,7 +247,7 @@ std::vector<PasswordForm> FindBestMatches(base::span<PasswordForm> matches) {
       // If 2 credential have the same password and the same username, update
       // the in_store value in the best matches.
       auto duplicate_match_it = std::ranges::find_if(
-          best_matches, [&match](const PasswordForm& form) {
+          best_matches, [&match](const StoredCredential& form) {
             return match.username_value == form.username_value &&
                    match.password_value == form.password_value;
           });
@@ -224,8 +256,8 @@ std::vector<PasswordForm> FindBestMatches(base::span<PasswordForm> matches) {
             duplicate_match_it->in_store | match.in_store;
         continue;
       }
-      best_matches.push_back(match);
-      it->second.push_back(match);
+      best_matches.push_back(CloneStoredCredential(match));
+      it->second.push_back(CloneStoredCredential(match));
     }
   }
   return best_matches;
@@ -252,9 +284,32 @@ const PasswordForm* FindFormByUsername(
   return nullptr;
 }
 
-const password_manager::PasswordForm* FindChangedPasswordLoginWithBackup(
+const StoredCredential* FindCredentialByUsername(
+    base::span<const StoredCredential> forms,
+    const std::u16string& username_value) {
+  for (const StoredCredential& form : forms) {
+    if (form.username_value == username_value) {
+      return &form;
+    }
+  }
+  return nullptr;
+}
+
+const StoredCredential* FindCredentialByUsername(
+    const std::vector<raw_ptr<const StoredCredential, VectorExperimental>>&
+        forms,
+    const std::u16string& username_value) {
+  for (const StoredCredential* form : forms) {
+    if (form->username_value == username_value) {
+      return form;
+    }
+  }
+  return nullptr;
+}
+
+const password_manager::StoredCredential* FindChangedPasswordLoginWithBackup(
     const password_manager::PasswordFormManagerForUI& submitted_manager) {
-  const password_manager::PasswordForm* match = FindFormByUsername(
+  const password_manager::StoredCredential* match = FindCredentialByUsername(
       submitted_manager.GetBestMatches(),
       submitted_manager.GetPendingCredentials().username_value);
   return match &&
@@ -265,9 +320,9 @@ const password_manager::PasswordForm* FindChangedPasswordLoginWithBackup(
              : nullptr;
 }
 
-const PasswordForm* GetMatchForUpdating(
+const StoredCredential* GetMatchForUpdating(
     const PasswordForm& submitted_form,
-    const std::vector<raw_ptr<const PasswordForm, VectorExperimental>>&
+    const std::vector<raw_ptr<const StoredCredential, VectorExperimental>>&
         credentials,
     bool username_updated_in_bubble) {
   // This is the case for the credential management API. It should not depend on
@@ -278,8 +333,8 @@ const PasswordForm* GetMatchForUpdating(
   }
 
   // Try to return form with matching |username_value|.
-  const PasswordForm* username_match =
-      FindFormByUsername(credentials, submitted_form.username_value);
+  const StoredCredential* username_match =
+      FindCredentialByUsername(credentials, submitted_form.username_value);
   if (username_match) {
     const bool password_change_should_update_match =
         submitted_form.type == PasswordForm::Type::kChangeSubmission &&
@@ -312,7 +367,7 @@ const PasswordForm* GetMatchForUpdating(
     return nullptr;
   }
 
-  for (const PasswordForm* stored_match : credentials) {
+  for (const StoredCredential* stored_match : credentials) {
     if (stored_match->password_value == submitted_form.password_value) {
       return stored_match;
     }

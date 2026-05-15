@@ -11,7 +11,6 @@
 
 #include "base/containers/span.h"
 #include "base/observer_list_types.h"
-#include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_form_metrics_recorder.h"
 #include "components/password_manager/core/browser/password_store/password_store_util.h"
 #include "components/signin/public/base/gaia_id_hash.h"
@@ -19,7 +18,7 @@
 namespace password_manager {
 
 struct InteractionsStats;
-struct PasswordForm;
+struct StoredCredential;
 
 // This is an API for providing stored credentials to PasswordFormManager (PFM),
 // so that PFM instances do not have to talk to PasswordStore directly. This
@@ -69,14 +68,14 @@ class FormFetcher {
   virtual const std::vector<InteractionsStats>& GetInteractionsStats()
       const = 0;
 
-  // Returns all PasswordForm entries that have insecure features.
-  virtual base::span<const PasswordForm> GetInsecureCredentials() const = 0;
+  // Returns all StoredCredential entries that have insecure features.
+  virtual base::span<const StoredCredential> GetInsecureCredentials() const = 0;
 
   // Non-federated matches obtained from the backend.
-  virtual base::span<const PasswordForm> GetNonFederatedMatches() const = 0;
+  virtual base::span<const StoredCredential> GetNonFederatedMatches() const = 0;
 
   // Federated matches obtained from the backend.
-  virtual base::span<const PasswordForm> GetFederatedMatches() const = 0;
+  virtual base::span<const StoredCredential> GetFederatedMatches() const = 0;
 
   // Whether there are blocklisted matches in the backend. Valid only if
   // GetState() returns NOT_WAITING.
@@ -91,13 +90,13 @@ class FormFetcher {
 
   // Non-federated matches obtained from the backend that have the same scheme
   // of this form.
-  virtual base::span<const PasswordForm> GetAllRelevantMatches() const = 0;
+  virtual base::span<const StoredCredential> GetAllRelevantMatches() const = 0;
 
   // Nonblocklisted matches obtained from the backend.
-  virtual base::span<const PasswordForm> GetBestMatches() const = 0;
+  virtual base::span<const StoredCredential> GetBestMatches() const = 0;
 
   // Pointer to a preferred entry in the vector returned by GetBestMatches().
-  virtual const PasswordForm* GetPreferredMatch() const = 0;
+  virtual const StoredCredential* GetPreferredMatch() const = 0;
 
   // If prefferred match exists, returns its form type. Please note, that
   // `FormFetcher` ignored grouped credentials by default. However, if any

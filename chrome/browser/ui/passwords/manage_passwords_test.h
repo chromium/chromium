@@ -118,6 +118,7 @@ class ManagePasswordsTest : public InteractiveBrowserTest {
   password_manager::FakeFormFetcher fetcher_;
 
   base::CallbackListSubscription create_services_subscription_;
+  std::vector<password_manager::StoredCredential> best_matches_;
 };
 
 #endif  // CHROME_BROWSER_UI_PASSWORDS_MANAGE_PASSWORDS_TEST_H_

@@ -81,6 +81,7 @@ using ReauthSucceeded =
 using InsecureType = password_manager::InsecureType;
 using password_manager::InsecurityMetadata;
 using password_manager::PasswordForm;
+using password_manager::StoredCredential;
 using ::testing::_;
 using ::testing::AtLeast;
 using ::testing::AtMost;
@@ -187,6 +188,17 @@ class TestManagePasswordsUIController : public ManagePasswordsUIController {
        base::OnceCallback<void()>),
       (override));
 
+  using ManagePasswordsUIController::OnPasswordAutofilled;
+
+  void OnPasswordAutofilled(
+      const std::vector<password_manager::PasswordForm>& password_forms,
+      const url::Origin& origin,
+      const std::vector<password_manager::PasswordForm>& federated_matches) {
+    ManagePasswordsUIController::OnPasswordAutofilled(
+        password_manager::FromPasswordForms(password_forms), origin,
+        password_manager::FromPasswordForms(federated_matches));
+  }
+
  private:
   void UpdateBubbleAndIconVisibility() override;
   void HideBubble(bool initiated_by_bubble_manager) override;
@@ -244,19 +256,27 @@ password_manager::PasswordForm CreateInsecureCredential(PasswordForm form) {
   return form;
 }
 
+class TestMockPasswordFormManagerForUI
+    : public testing::StrictMock<
+          password_manager::MockPasswordFormManagerForUI> {
+ public:
+  std::vector<password_manager::StoredCredential> stored_best;
+};
+
 std::unique_ptr<MockPasswordFormManagerForUI> CreateFormManagerWithBestMatches(
     const std::vector<PasswordForm>& best_matches,
     const PasswordForm* password_form,
     bool is_blocklisted = false) {
-  auto form_manager =
-      std::make_unique<testing::StrictMock<MockPasswordFormManagerForUI>>();
+  auto form_manager = std::make_unique<TestMockPasswordFormManagerForUI>();
+  form_manager->stored_best = password_manager::FromPasswordForms(best_matches);
   EXPECT_CALL(*form_manager, GetBestMatches())
       .Times(AtMost(3))
-      .WillRepeatedly(Return(best_matches));
+      .WillRepeatedly(Return(
+          base::span<const StoredCredential>(form_manager->stored_best)));
   EXPECT_CALL(*form_manager, GetFederatedMatches())
       .Times(AtMost(2))
       .WillRepeatedly(
-          Return(base::span<const password_manager::PasswordForm>()));
+          Return(base::span<const password_manager::StoredCredential>()));
   EXPECT_CALL(*form_manager, IsFetchCompleted())
       .WillRepeatedly(testing::Return(true));
   EXPECT_CALL(*form_manager, GetURL())
@@ -270,7 +290,7 @@ std::unique_ptr<MockPasswordFormManagerForUI> CreateFormManagerWithBestMatches(
           Return(base::span<const password_manager::InteractionsStats>()));
   EXPECT_CALL(*form_manager, GetInsecureCredentials())
       .Times(AtMost(1))
-      .WillOnce(Return(base::span<const password_manager::PasswordForm>()));
+      .WillOnce(Return(base::span<const password_manager::StoredCredential>()));
   EXPECT_CALL(*form_manager, GetPendingCredentials())
       .WillRepeatedly(ReturnRef(*password_form));
   EXPECT_CALL(*form_manager, GetMetricsRecorder())
@@ -337,6 +357,8 @@ class ManagePasswordsUIControllerTest : public base::test::WithFeatureOverride,
   }
 
   void WaitForPasswordStore();
+
+  std::vector<StoredCredential> insecure_storage_;
 
  private:
   TestPasswordManagerClient client_;
@@ -1835,8 +1857,10 @@ TEST_P(ManagePasswordsUIControllerTest, OpenSafeStateBubble) {
   PasswordForm credential = CreateInsecureCredential(test_local_form());
   // Pretend that the current credential was insecure but with the updated
   // password not anymore.
+  insecure_storage_ = password_manager::FromPasswordForms(
+      std::vector<PasswordForm>{credential});
   EXPECT_CALL(*test_form_manager_raw, GetInsecureCredentials())
-      .WillOnce(Return(std::vector<PasswordForm>{credential}));
+      .WillOnce(Return(base::span<const StoredCredential>(insecure_storage_)));
   base::WeakPtr<password_manager::PasswordStoreConsumer> post_save_helper;
 
   EXPECT_CALL(*client().GetProfilePasswordStore(), GetAutofillableLogins)
@@ -1878,8 +1902,10 @@ TEST_P(ManagePasswordsUIControllerTest, OpenMoreToFixBubble) {
   EXPECT_CALL(*test_form_manager_raw, Save());
   // Pretend that the current credential was insecure.
   PasswordForm credential = CreateInsecureCredential(test_local_form());
+  insecure_storage_ = password_manager::FromPasswordForms(
+      std::vector<PasswordForm>{credential});
   EXPECT_CALL(*test_form_manager_raw, GetInsecureCredentials())
-      .WillOnce(Return(std::vector<PasswordForm>{credential}));
+      .WillOnce(Return(base::span<const StoredCredential>(insecure_storage_)));
 
   base::WeakPtr<password_manager::PasswordStoreConsumer> post_save_helper;
 
@@ -1926,8 +1952,10 @@ TEST_P(ManagePasswordsUIControllerTest, NoMoreToFixBubbleIfPromoStillOpen) {
   EXPECT_CALL(*test_form_manager_raw, Save());
   PasswordForm credential = CreateInsecureCredential(test_local_form());
   // Pretend that the current credential was insecure.
+  insecure_storage_ = password_manager::FromPasswordForms(
+      std::vector<PasswordForm>{credential});
   EXPECT_CALL(*test_form_manager_raw, GetInsecureCredentials())
-      .WillOnce(Return(std::vector<PasswordForm>{credential}));
+      .WillOnce(Return(base::span<const StoredCredential>(insecure_storage_)));
   controller()->SavePassword(submitted_form().username_value,
                              submitted_form().password_value);
   // The sign-in promo bubble stays open, the warning isn't shown.
@@ -2408,8 +2436,9 @@ TEST_P(ManagePasswordsUIControllerWithBrowserTest,
   std::vector<PasswordForm> forms = {shared_credentials,
                                      non_shared_credentials};
   EXPECT_FALSE(controller()->IsShowingBubble());
-  controller()->OnPasswordAutofilled(
-      forms, url::Origin::Create(forms.front().url), {});
+  controller()->OnPasswordAutofilled(password_manager::FromPasswordForms(forms),
+                                     url::Origin::Create(forms.front().url),
+                                     {});
 
   ASSERT_EQ(2u, controller()->GetCurrentForms().size());
   EXPECT_EQ(controller()->GetState(),
@@ -2440,8 +2469,9 @@ TEST_P(ManagePasswordsUIControllerWithBrowserTest,
 
   std::vector<PasswordForm> forms = {shared_credentials,
                                      non_shared_credentials};
-  controller()->OnPasswordAutofilled(
-      forms, url::Origin::Create(forms.front().url), {});
+  controller()->OnPasswordAutofilled(password_manager::FromPasswordForms(forms),
+                                     url::Origin::Create(forms.front().url),
+                                     {});
 
   ASSERT_EQ(2u, controller()->GetCurrentForms().size());
   // Shared password notification was displayed already, so the state should be

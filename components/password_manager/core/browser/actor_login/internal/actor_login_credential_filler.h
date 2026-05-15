@@ -26,6 +26,7 @@ struct Facet;
 
 namespace password_manager {
 class PasswordManagerInterface;
+struct StoredCredential;
 }  // namespace password_manager
 
 namespace actor_login {
@@ -88,7 +89,7 @@ class ActorLoginCredentialFiller {
   // `eligible_managers`.
   void MaybeReauthAndFillAllEligibleFields(
       std::vector<password_manager::PasswordFormManager*> eligible_managers,
-      const password_manager::PasswordForm& stored_credential);
+      password_manager::StoredCredential stored_credential);
 
   // Triggers the device reauthentication flow.
   // `on_reauth_cb` is executed only if reauthentication is successful.
@@ -98,7 +99,7 @@ class ActorLoginCredentialFiller {
 
   // Retrieves the full data of a saved credential for the form managed
   // by `signin_form_manager` corresponding to `credential_`.
-  const password_manager::PasswordForm* GetMatchingStoredCredential(
+  const password_manager::StoredCredential* GetMatchingStoredCredential(
       const password_manager::PasswordFormManager& signin_form_manager);
 
   // Reauthenticates the user before filling.
@@ -112,7 +113,7 @@ class ActorLoginCredentialFiller {
   // Fills all eligible fields with `stored_credential.password_value` and
   // `stored_credential.username_value`.
   void FillAllEligibleFields(
-      const password_manager::PasswordForm& stored_credential,
+      password_manager::StoredCredential stored_credential,
       bool should_skip_iframes,
       std::vector<password_manager::PasswordFormManager*> eligible_managers);
 

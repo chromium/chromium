@@ -84,6 +84,7 @@
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
 #include "components/password_manager/core/browser/password_store/interactions_stats.h"
+#include "components/password_manager/core/browser/password_store/password_form_converters.h"
 #include "components/password_manager/core/browser/password_ui_utils.h"
 #include "components/password_manager/core/browser/ui/password_check_referrer.h"
 #include "components/password_manager/core/browser/undo_password_change_controller.h"
@@ -429,9 +430,9 @@ void ManagePasswordsUIController::OnAutomaticPasswordSave(
 }
 
 void ManagePasswordsUIController::OnPasswordAutofilled(
-    base::span<const password_manager::PasswordForm> password_forms,
+    base::span<const password_manager::StoredCredential> password_credentials,
     const url::Origin& origin,
-    base::span<const password_manager::PasswordForm> federated_matches) {
+    base::span<const password_manager::StoredCredential> federated_matches) {
   // To change to managed state only when the managed state is more important
   // for the user that the current state.
   if (passwords_data_.state() != password_manager::ui::INACTIVE_STATE &&
@@ -439,7 +440,7 @@ void ManagePasswordsUIController::OnPasswordAutofilled(
     return;
   }
   ClearPopUpFlagForBubble();
-  passwords_data_.OnPasswordAutofilled(password_forms, origin,
+  passwords_data_.OnPasswordAutofilled(password_credentials, origin,
                                        federated_matches);
   // Don't close the existing bubble. Update the icon later.
   if (bubble_status_ == BubbleStatus::SHOWN) {
@@ -954,9 +955,10 @@ void ManagePasswordsUIController::HandlePasswordRecoveryFinished(
 
 void ManagePasswordsUIController::SavePassword(const std::u16string& username,
                                                const std::u16string& password) {
-  if (const password_manager::PasswordForm* changed_password_form_with_backup =
-          password_manager_util::FindChangedPasswordLoginWithBackup(
-              *passwords_data_.form_manager())) {
+  if (const password_manager::StoredCredential*
+          changed_password_form_with_backup =
+              password_manager_util::FindChangedPasswordLoginWithBackup(
+                  *passwords_data_.form_manager())) {
     HandlePasswordRecoveryFinished(
         username, password,
         changed_password_form_with_backup->GetPasswordBackup().value());

@@ -15,6 +15,7 @@
 
 #include "base/check.h"
 #include "base/containers/lru_cache.h"
+#include "base/containers/to_vector.h"
 #include "base/debug/crash_logging.h"
 #include "base/feature_list.h"
 #include "base/i18n/case_conversion.h"
@@ -51,6 +52,7 @@
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
 #include "components/password_manager/core/browser/password_store/interactions_stats.h"
+#include "components/password_manager/core/browser/password_store/password_form_converters.h"
 #include "components/password_manager/core/browser/password_store/password_store_backend_error.h"
 #include "components/password_manager/core/browser/password_store/psl_matching_helper.h"
 #include "components/password_manager/core/browser/possible_username_data.h"
@@ -417,11 +419,11 @@ const GURL& PasswordFormManager::GetURL() const {
   return observed_form() ? observed_form()->url() : observed_digest()->url;
 }
 
-base::span<const PasswordForm> PasswordFormManager::GetBestMatches() const {
+base::span<const StoredCredential> PasswordFormManager::GetBestMatches() const {
   return form_fetcher_->GetBestMatches();
 }
 
-base::span<const PasswordForm> PasswordFormManager::GetFederatedMatches()
+base::span<const StoredCredential> PasswordFormManager::GetFederatedMatches()
     const {
   return form_fetcher_->GetFederatedMatches();
 }
@@ -444,7 +446,7 @@ base::span<const InteractionsStats> PasswordFormManager::GetInteractionsStats()
   return base::span(form_fetcher_->GetInteractionsStats());
 }
 
-base::span<const PasswordForm> PasswordFormManager::GetInsecureCredentials()
+base::span<const StoredCredential> PasswordFormManager::GetInsecureCredentials()
     const {
   return form_fetcher_->GetInsecureCredentials();
 }
@@ -482,7 +484,7 @@ bool PasswordFormManager::IsMovableToAccountStore() const {
   const std::u16string& password = GetPendingCredentials().password_value;
   // If no match in the profile store with the same username and password
   // exists, then there is nothing to move.
-  auto is_movable = [&username, &password](const PasswordForm& match) {
+  auto is_movable = [&username, &password](const StoredCredential& match) {
     return !match.IsUsingAccountStore() && match.username_value == username &&
            match.password_value == password;
   };
@@ -518,7 +520,7 @@ bool PasswordFormManager::IsUpdateAffectingPasswordsStoredInTheGoogleAccount()
   const std::u16string& username = GetPendingCredentials().username_value;
   //  If no match in the account store with the same username exists, then
   //  there is nothing to update in this store.
-  auto same_username_in_account_store = [&](const PasswordForm& match) {
+  auto same_username_in_account_store = [&](const StoredCredential& match) {
     return match.IsUsingAccountStore() && match.username_value == username;
   };
   return std::ranges::any_of(form_fetcher_->GetBestMatches(),
@@ -962,8 +964,10 @@ void PasswordFormManager::OnFetchCompleted() {
     return;
   }
 
-  client_->UpdateCredentialCache(url::Origin::Create(GetURL()),
-                                 form_fetcher_->GetBestMatches(),
+  std::vector<PasswordForm> legacy_best =
+      base::ToVector(form_fetcher_->GetBestMatches(),
+                     [](const auto& cred) { return ToPasswordForm(cred); });
+  client_->UpdateCredentialCache(url::Origin::Create(GetURL()), legacy_best,
                                  form_fetcher_->IsBlocklisted(), error);
 
   if (is_submitted_) {
@@ -1369,7 +1373,8 @@ void PasswordFormManager::FillHttpAuth() {
   if (!form_fetcher_->GetPreferredMatch()) {
     return;
   }
-  client_->AutofillHttpAuth(*form_fetcher_->GetPreferredMatch(), this);
+  client_->AutofillHttpAuth(ToPasswordForm(*form_fetcher_->GetPreferredMatch()),
+                            this);
 }
 
 FormParsingResult PasswordFormManager::ParseFormAndMakeLogging(
@@ -1438,7 +1443,7 @@ void PasswordFormManager::CalculateFillingAssistanceAndCorrectnessMetrics(
   std::set<std::pair<std::u16string, PasswordForm::Store>> saved_usernames;
   std::set<std::pair<std::u16string, PasswordForm::Store>> saved_passwords;
 
-  for (const password_manager::PasswordForm& saved_form :
+  for (const password_manager::StoredCredential& saved_form :
        form_fetcher_->GetNonFederatedMatches()) {
     // Saved credentials might have empty usernames which are not interesting
     // for filling assistance metric.
@@ -1712,7 +1717,6 @@ void PasswordFormManager::HandleUsernameFirstFlow(
           username_candidate.second.value,
           username_candidate.second.form_predictions.value_or(
               FormPredictions()),
-          form_fetcher_->GetBestMatches(),
           FormMatchesUsername(*parsed_submitted_form_.get(),
                               username_candidate.second.value)));
     }
@@ -1820,7 +1824,6 @@ void PasswordFormManager::HandleForgotPasswordFormData() {
         votes_uploader_->AddForgotPasswordVoteData(SingleUsernameVoteData(
             field.field_id, field.value,
             field.stored_predictions.value_or(FormPredictions()),
-            form_fetcher_->GetBestMatches(),
             password_form_had_matching_username));
       }
 
@@ -1903,7 +1906,7 @@ bool HasObservedFormChanged(const FormData& form_data,
 base::flat_set<std::u16string> PasswordFormManager::GetStoredUsernames() const {
   base::flat_set<std::u16string> stored_usernames =
       base::MakeFlatSet<std::u16string>(
-          GetBestMatches(), {}, [](const PasswordForm& password_form) {
+          GetBestMatches(), {}, [](const StoredCredential& password_form) {
             return base::i18n::ToLower(password_form.username_value);
           });
   if (stored_usernames.contains(u"")) {

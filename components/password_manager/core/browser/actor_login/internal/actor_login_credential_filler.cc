@@ -21,14 +21,14 @@
 #include "components/password_manager/core/browser/actor_login/actor_login_types.h"
 #include "components/password_manager/core/browser/actor_login/internal/actor_login_form_finder.h"
 #include "components/password_manager/core/browser/browser_save_password_progress_logger.h"
-#include "components/password_manager/core/browser/features/password_features.h"
-#include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_form_cache.h"
 #include "components/password_manager/core/browser/password_form_manager.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/password_manager/core/browser/password_manager_driver.h"
 #include "components/password_manager/core/browser/password_manager_interface.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
+#include "components/password_manager/core/browser/password_store/password_form_converters.h"
+#include "components/password_manager/core/browser/password_store/stored_credential.h"
 #include "components/strings/grit/components_strings.h"
 #include "services/metrics/public/cpp/metrics_utils.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
@@ -246,7 +246,7 @@ void ActorLoginCredentialFiller::ProcessRetrievedForms(
     return;
   }
 
-  const PasswordForm* stored_credential =
+  const password_manager::StoredCredential* stored_credential =
       GetMatchingStoredCredential(*signin_form_manager);
 
   if (!stored_credential) {
@@ -258,13 +258,14 @@ void ActorLoginCredentialFiller::ProcessRetrievedForms(
 
   device_authenticator_ = client_->GetDeviceAuthenticator();
 
-  MaybeReauthAndFillAllEligibleFields(std::move(eligible_managers),
-                                      *stored_credential);
+  MaybeReauthAndFillAllEligibleFields(
+      std::move(eligible_managers),
+      password_manager::CloneStoredCredential(*stored_credential));
 }
 
 void ActorLoginCredentialFiller::MaybeReauthAndFillAllEligibleFields(
     std::vector<password_manager::PasswordFormManager*> eligible_managers,
-    const password_manager::PasswordForm& stored_credential) {
+    password_manager::StoredCredential stored_credential) {
   // If there is a login form in the primary main frame, don't fill
   // iframes as we prefer forms from the primary main frame.
   bool is_primary_main_frame =
@@ -279,8 +280,8 @@ void ActorLoginCredentialFiller::MaybeReauthAndFillAllEligibleFields(
         std::vector<password_manager::PasswordFormManager*>)>
         fill_all_fields_cb =
             base::BindOnce(&ActorLoginCredentialFiller::FillAllEligibleFields,
-                           weak_ptr_factory_.GetWeakPtr(), stored_credential,
-                           is_primary_main_frame);
+                           weak_ptr_factory_.GetWeakPtr(),
+                           std::move(stored_credential), is_primary_main_frame);
 
     AttemptReauth(base::BindOnce(
         &ActorLoginCredentialFiller::FetchEligibleForms,
@@ -288,7 +289,7 @@ void ActorLoginCredentialFiller::MaybeReauthAndFillAllEligibleFields(
     return;
   }
 
-  FillAllEligibleFields(stored_credential, is_primary_main_frame,
+  FillAllEligibleFields(std::move(stored_credential), is_primary_main_frame,
                         std::move(eligible_managers));
 }
 
@@ -306,10 +307,12 @@ void ActorLoginCredentialFiller::AttemptReauth(base::OnceClosure on_reauth_cb) {
   ReauthenticateAndFill(std::move(on_reauth_cb));
 }
 
-const PasswordForm* ActorLoginCredentialFiller::GetMatchingStoredCredential(
+const password_manager::StoredCredential*
+ActorLoginCredentialFiller::GetMatchingStoredCredential(
     const PasswordFormManager& signin_form_manager) {
-  const PasswordForm* matching_stored_credential = nullptr;
-  for (const password_manager::PasswordForm& stored_credential_form :
+  const password_manager::StoredCredential* matching_stored_credential =
+      nullptr;
+  for (const password_manager::StoredCredential& stored_credential_form :
        signin_form_manager.GetBestMatches()) {
     // Don't consider weakly affiliated credentials (grouped) because they are
     // not provided in the "Get" step and thus don't actually match the
@@ -363,7 +366,7 @@ void ActorLoginCredentialFiller::OnDeviceReauthCompleted(
 }
 
 void ActorLoginCredentialFiller::FillAllEligibleFields(
-    const password_manager::PasswordForm& stored_credential,
+    password_manager::StoredCredential stored_credential,
     bool should_skip_iframes,
     std::vector<password_manager::PasswordFormManager*> eligible_managers) {
   if (reauth_start_time_.has_value()) {
@@ -389,8 +392,9 @@ void ActorLoginCredentialFiller::FillAllEligibleFields(
 
     bool stored_credential_belongs_to_manager = std::ranges::any_of(
         manager->GetBestMatches().begin(), manager->GetBestMatches().end(),
-        [&stored_credential](const PasswordForm& best_match) {
-          return password_manager::ArePasswordFormUniqueKeysEqual(
+        [&stored_credential](
+            const password_manager::StoredCredential& best_match) {
+          return password_manager::AreStoredCredentialUniqueKeysEqual(
               stored_credential, best_match);
         });
     if (!stored_credential_belongs_to_manager) {

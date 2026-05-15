@@ -16,6 +16,7 @@
 #import "components/password_manager/core/browser/form_fetcher_impl.h"
 #import "components/password_manager/core/browser/password_manager_client.h"
 #import "components/password_manager/core/browser/password_manager_util.h"
+#import "components/password_manager/core/browser/password_store/password_form_converters.h"
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #import "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
 #import "components/sync/base/data_type.h"
@@ -679,11 +680,10 @@ std::vector<ManualFillCredentialAndPasswordForm> GetFilteredCredentials(
 
 - (void)fetchDidComplete {
   // Fetch the passwords.
-  const base::span<const PasswordForm> passwordForms =
-      _formFetcher->GetBestMatches();
-
-  std::vector<PasswordForm> passwordFormVector =
-      std::vector<PasswordForm>(passwordForms.begin(), passwordForms.end());
+  std::vector<PasswordForm> passwordFormVector;
+  for (const auto& cred : _formFetcher->GetBestMatches()) {
+    passwordFormVector.push_back(password_manager::ToPasswordForm(cred));
+  }
   _credentials = [self
       createManualFillCredentialsFromPasswordForms:std::move(
                                                        passwordFormVector)];

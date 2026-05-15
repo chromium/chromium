@@ -10,6 +10,7 @@
 
 #include "base/check.h"
 #include "base/check_deref.h"
+#include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
@@ -29,6 +30,7 @@
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
 #include "components/password_manager/core/browser/password_manual_fallback_metrics_recorder.h"
+#include "components/password_manager/core/browser/password_store/password_form_converters.h"
 #include "components/password_manager/core/browser/password_ui_utils.h"
 #include "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #include "url/gurl.h"
@@ -385,7 +387,8 @@ void PasswordManualFallbackFlow::RunFlowImpl(
   // parsed password form and the form contains at most one password field.
   std::vector<Suggestion> suggestions =
       suggestion_generator_.GetManualFallbackSuggestions(
-          form_fetcher_->GetBestMatches(),
+          base::ToVector(form_fetcher_->GetBestMatches(),
+                         [](const auto& cred) { return ToPasswordForm(cred); }),
           passwords_presenter_->GetSavedPasswords(),
           IsTriggeredOnPasswordForm(
               password_form &&

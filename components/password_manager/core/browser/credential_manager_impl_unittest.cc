@@ -107,9 +107,9 @@ class MockPasswordManagerClient : public StubPasswordManagerClient {
               ());
   MOCK_METHOD(void,
               PasswordWasAutofilled,
-              (base::span<const PasswordForm>,
+              (base::span<const StoredCredential>,
                const url::Origin&,
-               (base::span<const PasswordForm>),
+               (base::span<const StoredCredential>),
                bool was_autofilled_on_pageload),
               (override));
   MOCK_METHOD(std::unique_ptr<device_reauth::DeviceAuthenticator>,

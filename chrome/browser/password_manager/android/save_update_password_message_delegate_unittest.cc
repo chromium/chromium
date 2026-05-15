@@ -31,6 +31,7 @@
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_form_metrics_recorder.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
+#include "components/password_manager/core/browser/password_store/password_form_converters.h"
 #include "components/password_manager/core/browser/stub_password_manager_client.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
@@ -225,6 +226,7 @@ class SaveUpdatePasswordMessageDelegateTest
   std::unique_ptr<SaveUpdatePasswordMessageDelegate> delegate_;
   bool is_password_saved_ = false;
   MockPasswordManagerClient password_manager_client_;
+  std::vector<password_manager::StoredCredential> best_matches_;
 };
 
 SaveUpdatePasswordMessageDelegateTest::SaveUpdatePasswordMessageDelegateTest()
@@ -271,14 +273,18 @@ SaveUpdatePasswordMessageDelegateTest::CreateFormManager(
       .WillByDefault(Return(password_manager::metrics_util::
                                 CredentialSourceType::kPasswordManager));
   ON_CALL(*form_manager, GetURL()).WillByDefault(ReturnRef(password_form_url_));
-  ON_CALL(*form_manager, GetBestMatches()).WillByDefault(Return(best_matches));
+  best_matches_ = password_manager::FromPasswordForms(best_matches);
+  ON_CALL(*form_manager, GetBestMatches()).WillByDefault([this]() {
+    return base::span<const password_manager::StoredCredential>(best_matches_);
+  });
   ON_CALL(*form_manager, GetFederatedMatches())
-      .WillByDefault(Return(base::span<const PasswordForm>()));
+      .WillByDefault(
+          Return(base::span<const password_manager::StoredCredential>()));
   ON_CALL(*form_manager, GetMetricsRecorder())
       .WillByDefault(Return(metrics_recorder_.get()));
-  ON_CALL(*form_manager, Save())
-      .WillByDefault(testing::Invoke(
-          this, &SaveUpdatePasswordMessageDelegateTest::RecordPasswordSaved));
+  ON_CALL(*form_manager, Save()).WillByDefault([this]() {
+    RecordPasswordSaved();
+  });
   ON_CALL(*form_manager, GetPasswordStoreForSaving(_))
       .WillByDefault([](const PasswordForm& form) -> PasswordForm::Store {
         return form.IsUsingAccountStore() ? PasswordForm::Store::kAccountStore

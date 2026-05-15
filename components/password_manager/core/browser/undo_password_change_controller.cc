@@ -165,8 +165,8 @@ void UndoPasswordChangeController::OnPasswordFormParsed(
 
   if (form_manager->DoesManageSimilarForm(failed_login_form_.value(),
                                           driver_.get())) {
-    const PasswordForm* form_best_match =
-        password_manager_util::FindFormByUsername(
+    const StoredCredential* form_best_match =
+        password_manager_util::FindCredentialByUsername(
             form_manager->GetBestMatches(), failed_login_form_->username_value);
     if (!form_best_match || !form_best_match->GetPasswordBackup() ||
         form_best_match->GetPasswordBackup() ==

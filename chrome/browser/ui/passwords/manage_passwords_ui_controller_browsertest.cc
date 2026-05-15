@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/views/location_bar/icon_label_bubble_view.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/password_manager/core/browser/password_form.h"
+#include "components/password_manager/core/browser/password_store/password_form_converters.h"
 #include "components/password_manager/core/common/password_manager_ui.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/test/browser_test.h"
@@ -54,7 +55,8 @@ IN_PROC_BROWSER_TEST_F(ManagePasswordsUIControllerBrowserTest,
   // In the buggy version, this would use browser->GetActiveTabInterface()
   // and thus update the PageActionController of the foreground tab.
   background_controller->OnPasswordAutofilled(
-      forms, url::Origin::Create(forms[0].url), {});
+      password_manager::FromPasswordForms(forms),
+      url::Origin::Create(forms[0].url), {});
 
   // 4. Verify Foreground Tab Icon Visibility
   // The foreground tab's page action icon should NOT be visible.

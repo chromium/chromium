@@ -19,6 +19,7 @@
 #include "components/password_manager/core/browser/password_store/password_store_backend_error.h"
 #include "components/password_manager/core/browser/password_store/password_store_consumer.h"
 #include "components/password_manager/core/browser/password_store/password_store_interface.h"
+#include "components/password_manager/core/browser/password_store/stored_credential.h"
 
 namespace password_manager {
 
@@ -49,16 +50,16 @@ class FormFetcherImpl : public FormFetcher,
   void Fetch() override;
   State GetState() const override;
   const std::vector<InteractionsStats>& GetInteractionsStats() const override;
-  base::span<const PasswordForm> GetInsecureCredentials() const override;
-  base::span<const PasswordForm> GetNonFederatedMatches() const override;
-  base::span<const PasswordForm> GetFederatedMatches() const override;
+  base::span<const StoredCredential> GetInsecureCredentials() const override;
+  base::span<const StoredCredential> GetNonFederatedMatches() const override;
+  base::span<const StoredCredential> GetFederatedMatches() const override;
   bool IsBlocklisted() const override;
   bool IsMovingBlocked(const signin::GaiaIdHash& destination,
                        const std::u16string& username) const override;
 
-  base::span<const PasswordForm> GetAllRelevantMatches() const override;
-  base::span<const PasswordForm> GetBestMatches() const override;
-  const PasswordForm* GetPreferredMatch() const override;
+  base::span<const StoredCredential> GetAllRelevantMatches() const override;
+  base::span<const StoredCredential> GetBestMatches() const override;
+  const StoredCredential* GetPreferredMatch() const override;
   std::optional<PasswordFormMetricsRecorder::MatchedFormType>
   GetPreferredOrPotentialMatchedFormType() const override;
   std::unique_ptr<FormFetcher> Clone() override;
@@ -77,11 +78,11 @@ class FormFetcherImpl : public FormFetcher,
   void NotifyConsumer(FormFetcher::Consumer* consumer);
 
   // Actually finds best matches and notifies consumers.
-  void FindMatchesAndNotifyConsumers(std::vector<PasswordForm> results);
+  void FindMatchesAndNotifyConsumers(std::vector<StoredCredential> results);
 
   // Splits |results| into |federated_|, |non_federated_|,
   // |is_blocklisted_in_profile_store_| and |is_blocklisted_in_account_store_|.
-  void SplitResults(std::vector<PasswordForm> results);
+  void SplitResults(std::vector<StoredCredential> results);
 
   // PasswordStoreConsumer:
   void OnGetSiteStatistics(std::vector<InteractionsStats> stats) override;
@@ -92,7 +93,7 @@ class FormFetcherImpl : public FormFetcher,
   // HttpPasswordStoreMigrator::Consumer:
   void ProcessMigratedForms(std::vector<PasswordForm> forms) override;
 
-  void AggregatePasswordStoreResults(std::vector<PasswordForm> results);
+  void AggregatePasswordStoreResults(std::vector<StoredCredential> results);
 
   // PasswordStore results will be fetched for this description.
   const PasswordFormDigest form_digest_;
@@ -110,15 +111,15 @@ class FormFetcherImpl : public FormFetcher,
   // Results obtained from PasswordStore. Matches with the same schema as the
   // observed form are always at the beginning of the vector, sorted by their
   // priority.
-  std::vector<PasswordForm> non_federated_;
+  std::vector<StoredCredential> non_federated_;
 
   // Federated credentials relevant to the observed form. They are neither
   // filled not saved by PasswordFormManager, so they are kept separately from
   // non-federated matches.
-  std::vector<PasswordForm> federated_;
+  std::vector<StoredCredential> federated_;
 
   // List of insecure credentials for the current domain.
-  std::vector<PasswordForm> insecure_credentials_;
+  std::vector<StoredCredential> insecure_credentials_;
 
   // Indicates whether HTTP passwords should be migrated to HTTPS. This is
   // always false for non HTML forms.
@@ -129,9 +130,9 @@ class FormFetcherImpl : public FormFetcher,
                  std::unique_ptr<HttpPasswordStoreMigrator>>
       http_migrators_;
 
-  // Set of nonblocklisted PasswordForms from the password store that best match
-  // the form being managed by |this|.
-  std::vector<PasswordForm> best_matches_;
+  // Set of nonblocklisted StoredCredentials from the password store that best
+  // match the form being managed by |this|.
+  std::vector<StoredCredential> best_matches_;
 
   // Whether there were any blocklisted credentials obtained from the profile
   // and account password stores respectively.
@@ -144,7 +145,7 @@ class FormFetcherImpl : public FormFetcher,
   bool filter_grouped_credentials_ = true;
 
   int wait_counter_ = 0;
-  std::vector<PasswordForm> partial_results_;
+  std::vector<StoredCredential> partial_results_;
 
   // Statistics for the current domain.
   std::vector<InteractionsStats> interactions_stats_;

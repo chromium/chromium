@@ -29,20 +29,23 @@ using password_manager_util::GetMatchType;
 namespace {
 
 std::vector<std::unique_ptr<PasswordForm>> DeepCopyMatchingCredentials(
-    base::span<const PasswordForm> password_forms) {
+    base::span<const password_manager::StoredCredential> password_credentials) {
   std::vector<std::unique_ptr<PasswordForm>> result;
-  result.reserve(password_forms.size());
-  for (const PasswordForm& form : password_forms) {
-    result.push_back(std::make_unique<PasswordForm>(form));
+  result.reserve(password_credentials.size());
+  for (const auto& cred : password_credentials) {
+    result.push_back(
+        std::make_unique<PasswordForm>(password_manager::ToPasswordForm(cred)));
   }
   return result;
 }
 
-void AppendDeepCopyVector(base::span<const PasswordForm> forms,
-                          std::vector<std::unique_ptr<PasswordForm>>* result) {
-  result->reserve(result->size() + forms.size());
-  for (const password_manager::PasswordForm& form : forms) {
-    result->push_back(std::make_unique<PasswordForm>(form));
+void AppendDeepCopyVector(
+    base::span<const password_manager::StoredCredential> credentials,
+    std::vector<std::unique_ptr<PasswordForm>>* result) {
+  result->reserve(result->size() + credentials.size());
+  for (const auto& cred : credentials) {
+    result->push_back(
+        std::make_unique<PasswordForm>(password_manager::ToPasswordForm(cred)));
   }
 }
 
@@ -192,11 +195,12 @@ void ManagePasswordsState::OnSubmittedGeneratedPassword(
 }
 
 void ManagePasswordsState::OnPasswordAutofilled(
-    base::span<const PasswordForm> password_forms,
+    base::span<const password_manager::StoredCredential> password_credentials,
     url::Origin origin,
-    base::span<const PasswordForm> federated_matches) {
-  CHECK(!password_forms.empty() || !federated_matches.empty());
-  auto local_credentials_forms = DeepCopyMatchingCredentials(password_forms);
+    base::span<const password_manager::StoredCredential> federated_matches) {
+  CHECK(!password_credentials.empty() || !federated_matches.empty());
+  auto local_credentials_forms =
+      DeepCopyMatchingCredentials(password_credentials);
   AppendDeepCopyVector(federated_matches, &local_credentials_forms);
 
   // Delete |form_manager_| only when the parameters are processed. They may be

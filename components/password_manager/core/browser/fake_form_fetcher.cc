@@ -8,8 +8,10 @@
 #include <memory>
 
 #include "base/containers/span.h"
+#include "base/containers/to_vector.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
+#include "components/password_manager/core/browser/password_store/password_form_converters.h"
 
 namespace password_manager {
 
@@ -38,15 +40,18 @@ const std::vector<InteractionsStats>& FakeFormFetcher::GetInteractionsStats()
   return stats_;
 }
 
-base::span<const PasswordForm> FakeFormFetcher::GetInsecureCredentials() const {
+base::span<const StoredCredential> FakeFormFetcher::GetInsecureCredentials()
+    const {
   return insecure_credentials_;
 }
 
-base::span<const PasswordForm> FakeFormFetcher::GetNonFederatedMatches() const {
+base::span<const StoredCredential> FakeFormFetcher::GetNonFederatedMatches()
+    const {
   return non_federated_;
 }
 
-base::span<const PasswordForm> FakeFormFetcher::GetFederatedMatches() const {
+base::span<const StoredCredential> FakeFormFetcher::GetFederatedMatches()
+    const {
   return federated_;
 }
 
@@ -58,9 +63,9 @@ bool FakeFormFetcher::IsMovingBlocked(const signin::GaiaIdHash& destination,
                                       const std::u16string& username) const {
   // This is analogous to the implementation in
   // MultiStoreFormFetcher::IsMovingBlocked().
-  for (const std::vector<PasswordForm>& matches_vector :
-       {federated_, non_federated_}) {
-    for (const PasswordForm& form : matches_vector) {
+  for (const std::vector<StoredCredential>* matches_vector :
+       {&federated_, &non_federated_}) {
+    for (const auto& form : *matches_vector) {
       // Only local entries can be moved to the account store (though
       // account store matches should never have |moving_blocked_for_list|
       // entries anyway).
@@ -83,15 +88,16 @@ bool FakeFormFetcher::IsMovingBlocked(const signin::GaiaIdHash& destination,
   return false;
 }
 
-base::span<const PasswordForm> FakeFormFetcher::GetAllRelevantMatches() const {
+base::span<const StoredCredential> FakeFormFetcher::GetAllRelevantMatches()
+    const {
   return non_federated_same_scheme_;
 }
 
-base::span<const PasswordForm> FakeFormFetcher::GetBestMatches() const {
-  return base::span(best_matches_);
+base::span<const StoredCredential> FakeFormFetcher::GetBestMatches() const {
+  return best_matches_;
 }
 
-const PasswordForm* FakeFormFetcher::GetPreferredMatch() const {
+const StoredCredential* FakeFormFetcher::GetPreferredMatch() const {
   if (best_matches_.empty()) {
     return nullptr;
   }
@@ -105,8 +111,22 @@ FakeFormFetcher::GetPreferredOrPotentialMatchedFormType() const {
 
 std::unique_ptr<FormFetcher> FakeFormFetcher::Clone() {
   auto fetcher = std::make_unique<FakeFormFetcher>();
-  fetcher->SetBestMatches(best_matches_);
-  fetcher->SetNonFederated(non_federated_);
+  fetcher->scheme_ = scheme_;
+  fetcher->stats_ = stats_;
+  fetcher->non_federated_ =
+      base::ToVector(non_federated_, &CloneStoredCredential);
+  fetcher->federated_ = base::ToVector(federated_, &CloneStoredCredential);
+  fetcher->non_federated_same_scheme_ =
+      base::ToVector(non_federated_same_scheme_, &CloneStoredCredential);
+  fetcher->best_matches_ =
+      base::ToVector(best_matches_, &CloneStoredCredential);
+  fetcher->insecure_credentials_ =
+      base::ToVector(insecure_credentials_, &CloneStoredCredential);
+  fetcher->is_blocklisted_ = is_blocklisted_;
+  fetcher->profile_store_backend_error_ = profile_store_backend_error_;
+  fetcher->account_store_backend_error_ = account_store_backend_error_;
+  fetcher->preferred_or_potential_matched_form_type_ =
+      preferred_or_potential_matched_form_type_;
   return fetcher;
 }
 
@@ -120,13 +140,13 @@ void FakeFormFetcher::SetNonFederated(
 void FakeFormFetcher::SetNonFederated(
     const std::vector<PasswordForm>& non_federated,
     const std::vector<PasswordForm>& non_federated_same_scheme) {
-  non_federated_ = non_federated;
-  non_federated_same_scheme_ = non_federated_same_scheme;
+  non_federated_ = FromPasswordForms(non_federated);
+  non_federated_same_scheme_ = FromPasswordForms(non_federated_same_scheme);
 }
 
 void FakeFormFetcher::SetBestMatches(
     const std::vector<PasswordForm>& best_matches) {
-  best_matches_ = best_matches;
+  best_matches_ = FromPasswordForms(best_matches);
 }
 void FakeFormFetcher::SetBlocklisted(bool is_blocklisted) {
   is_blocklisted_ = is_blocklisted;

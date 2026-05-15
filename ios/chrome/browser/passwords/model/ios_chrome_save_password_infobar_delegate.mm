@@ -21,6 +21,7 @@
 #import "components/password_manager/core/browser/password_manager_constants.h"
 #import "components/password_manager/core/browser/password_manager_metrics_util.h"
 #import "components/password_manager/core/browser/password_manager_util.h"
+#import "components/password_manager/core/browser/password_store/stored_credential.h"
 #import "components/password_manager/core/browser/password_ui_utils.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
@@ -267,13 +268,13 @@ std::u16string IOSChromeSavePasswordInfoBarDelegate::GetButtonLabel(
 bool IOSChromeSavePasswordInfoBarDelegate::Accept() {
   DCHECK(form_to_save_);
   if (IsPasswordUpdate()) {
-    if (const password_manager::PasswordForm*
-            changed_password_form_with_backup =
+    if (const password_manager::StoredCredential*
+            changed_credential_with_backup =
                 password_manager_util::FindChangedPasswordLoginWithBackup(
                     *form_to_save_)) {
       const password_manager::PasswordForm& pending_credentials =
           form_to_save_->GetPendingCredentials();
-      if (changed_password_form_with_backup->GetPasswordBackup().value() ==
+      if (changed_credential_with_backup->GetPasswordBackup().value() ==
           pending_credentials.password_value) {
         password_manager::metrics_util::LogPrimaryPasswordUpdatedWithBackup(
             ukm_source_id_);

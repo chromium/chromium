@@ -19,6 +19,7 @@
 #import "components/password_manager/core/browser/password_manager.h"
 #import "components/password_manager/core/browser/password_store/password_form_converters.h"
 #import "components/password_manager/core/browser/password_store/password_store_interface.h"
+#import "components/password_manager/core/browser/password_store/stored_credential.h"
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #import "components/password_manager/ios/features.h"
 #import "components/password_manager/ios/ios_password_manager_driver_factory.h"
@@ -193,9 +194,9 @@ NSArray<FormSuggestion*>* SetParamsAndProviderInSuggestions(
   // Vector of credentials related to the current page.
   std::vector<password_manager::CredentialUIEntry> _credentials;
 
-  // Vector of forms that have been received via the password sharing feature
-  // and the user has not been notified about them yet.
-  std::vector<password_manager::PasswordForm> _sharedUnnotifiedForms;
+  // Vector of credentials that have been received via the password sharing
+  // feature and the user has not been notified about them yet.
+  std::vector<password_manager::StoredCredential> _sharedUnnotifiedCredentials;
 
   // Profile images of password senders if any of the passwords were received
   // via the password sharing feature. Empty otherwise.
@@ -490,19 +491,20 @@ NSArray<FormSuggestion*>* SetParamsAndProviderInSuggestions(
 
   password_manager::PasswordManagerDriver* driver =
       IOSPasswordManagerDriverFactory::FromWebStateAndWebFrame(webState, frame);
-  const base::span<const password_manager::PasswordForm> passwordForms =
+  const base::span<const password_manager::StoredCredential> credentials =
       passwordManager->GetBestMatches(driver, formId);
 
-  for (const password_manager::PasswordForm& form : passwordForms) {
-    if (form.type ==
+  for (const password_manager::StoredCredential& cred : credentials) {
+    if (cred.type ==
             password_manager::PasswordForm::Type::kReceivedViaSharing &&
-        !form.sharing_notification_displayed) {
-      _sharedUnnotifiedForms.push_back(form);
+        !cred.sharing_notification_displayed) {
+      _sharedUnnotifiedCredentials.push_back(
+          password_manager::CloneStoredCredential(cred));
       __weak __typeof__(self) weakSelf = self;
       image_fetcher::ImageFetcherParams params(NO_TRAFFIC_ANNOTATION_YET,
                                                kImageFetcherUmaClient);
       _imageFetcher->FetchImage(
-          form.sender_profile_image_url,
+          cred.sender_profile_image_url,
           base::BindOnce(^(const gfx::Image& image,
                            const image_fetcher::RequestMetadata& metadata) {
             if (!image.IsEmpty()) {
@@ -511,34 +513,34 @@ NSArray<FormSuggestion*>* SetParamsAndProviderInSuggestions(
           }),
           params);
     }
-    _credentials.push_back(password_manager::CredentialUIEntry(form));
+    _credentials.push_back(password_manager::CredentialUIEntry(
+        password_manager::CloneStoredCredential(cred)));
   }
 }
 
 // Returns whether the bottom sheet should contain a notification about shared
 // passwords.
 - (BOOL)shouldDisplaySharingNotification {
-  return (_sharedUnnotifiedForms.size() > 0);
+  return (_sharedUnnotifiedCredentials.size() > 0);
 }
 
 // Marks sharing notification as displayed in password store for all credentials
-// on `_sharedUnnotifiedForms`.
+// on `_sharedUnnotifiedCredentials`.
 - (void)markSharedPasswordNotificationsDisplayed {
   if (![self shouldDisplaySharingNotification]) {
     return;
   }
 
-  for (password_manager::PasswordForm& form : _sharedUnnotifiedForms) {
-    form.sharing_notification_displayed = true;
-    if (form.IsUsingAccountStore()) {
-      _accountPasswordStore->UpdateLogin(
-          password_manager::FromPasswordForm(std::move(form)));
+  for (password_manager::StoredCredential& cred :
+       _sharedUnnotifiedCredentials) {
+    cred.sharing_notification_displayed = true;
+    if (cred.IsUsingAccountStore()) {
+      _accountPasswordStore->UpdateLogin(std::move(cred));
     } else {
-      _profilePasswordStore->UpdateLogin(
-          password_manager::FromPasswordForm(std::move(form)));
+      _profilePasswordStore->UpdateLogin(std::move(cred));
     }
   }
-  _sharedUnnotifiedForms.clear();
+  _sharedUnnotifiedCredentials.clear();
 }
 
 // Creates title to be displayed when the user needs to be notified about new
@@ -546,16 +548,16 @@ NSArray<FormSuggestion*>* SetParamsAndProviderInSuggestions(
 - (NSString*)sharingNotificationTitle {
   return base::SysUTF16ToNSString(l10n_util::GetPluralStringFUTF16(
       IDS_IOS_PASSWORD_SHARING_NOTIFICATION_TITLE,
-      _sharedUnnotifiedForms.size()));
+      _sharedUnnotifiedCredentials.size()));
 }
 
 // Creates subtitle to be displayed when the user needs to be notified about new
 // shared passwords.
 - (NSString*)sharingNotificationSubtitle:(NSString*)domain {
-  if (_sharedUnnotifiedForms.size() == 1) {
+  if (_sharedUnnotifiedCredentials.size() == 1) {
     return base::SysUTF16ToNSString(l10n_util::GetStringFUTF16(
         IDS_IOS_PASSWORD_SHARING_NOTIFICATION_SINGLE_PASSWORD_SUBTITLE,
-        _sharedUnnotifiedForms[0].sender_name,
+        _sharedUnnotifiedCredentials[0].sender_name,
         base::SysNSStringToUTF16(domain)));
   } else {
     return base::SysUTF16ToNSString(l10n_util::GetStringFUTF16(

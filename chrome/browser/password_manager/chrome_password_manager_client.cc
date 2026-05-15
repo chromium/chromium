@@ -901,9 +901,9 @@ void ChromePasswordManagerClient::AutomaticPasswordSave(
 }
 
 void ChromePasswordManagerClient::PasswordWasAutofilled(
-    base::span<const PasswordForm> best_matches,
+    base::span<const password_manager::StoredCredential> best_matches,
     const url::Origin& origin,
-    base::span<const PasswordForm> federated_matches,
+    base::span<const password_manager::StoredCredential> federated_matches,
     bool was_autofilled_on_pageload) {
 #if !BUILDFLAG(IS_ANDROID)
   PasswordsClientUIDelegate* manage_passwords_ui_controller =
@@ -937,17 +937,15 @@ void ChromePasswordManagerClient::AutofillHttpAuth(
 
   // Make a copy of best matches as form_manager is not guaranteed to outlive
   // authentication.
-  std::vector<PasswordForm> best_matches;
-  for (const auto& result : form_manager->GetBestMatches()) {
-    best_matches.emplace_back(result);
-  }
+  std::vector<password_manager::StoredCredential> best_matches = base::ToVector(
+      form_manager->GetBestMatches(), &password_manager::CloneStoredCredential);
 
   httpauth_manager_.Autofill(
       preferred_match, form_manager,
       base::BindOnce(&ChromePasswordManagerClient::PasswordWasAutofilled,
                      weak_ptr_factory_.GetWeakPtr(), std::move(best_matches),
                      url::Origin::Create(form_manager->GetURL()),
-                     base::span<const PasswordForm>(),
+                     std::vector<password_manager::StoredCredential>(),
                      /*was_autofilled_on_pageload=*/false));
 }
 

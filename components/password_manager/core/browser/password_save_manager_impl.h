@@ -7,6 +7,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "components/password_manager/core/browser/password_save_manager.h"
+#include "components/password_manager/core/browser/password_store/stored_credential.h"
 
 namespace password_manager {
 
@@ -24,17 +25,23 @@ struct PendingCredentialsStates {
   PendingCredentialsState profile_store_state = PendingCredentialsState::NONE;
   PendingCredentialsState account_store_state = PendingCredentialsState::NONE;
 
-  raw_ptr<const PasswordForm> similar_saved_form_from_profile_store = nullptr;
-  raw_ptr<const PasswordForm> similar_saved_form_from_account_store = nullptr;
+  raw_ptr<const StoredCredential> similar_saved_form_from_profile_store =
+      nullptr;
+  raw_ptr<const StoredCredential> similar_saved_form_from_account_store =
+      nullptr;
 };
 
 // From all |matches| returns those that are stored in the account store.
 // |matches| point to forms held by |form_fetcher_|.
+std::vector<raw_ptr<const StoredCredential, VectorExperimental>>
+AccountStoreMatches(base::span<const StoredCredential> matches);
 std::vector<raw_ptr<const PasswordForm, VectorExperimental>>
 AccountStoreMatches(base::span<const PasswordForm> matches);
 
 // From all |matches| returns those that are stored in the profile store.
 // |matches| point to forms held by |form_fetcher_|.
+std::vector<raw_ptr<const StoredCredential, VectorExperimental>>
+ProfileStoreMatches(base::span<const StoredCredential> matches);
 std::vector<raw_ptr<const PasswordForm, VectorExperimental>>
 ProfileStoreMatches(base::span<const PasswordForm> matches);
 
@@ -120,7 +127,7 @@ class PasswordSaveManagerImpl : public PasswordSaveManager {
       bool is_http_auth,
       bool is_credential_api_save);
 
-  std::pair<const PasswordForm*, PendingCredentialsState>
+  std::pair<const StoredCredential*, PendingCredentialsState>
   FindSimilarSavedFormAndComputeState(
       const PasswordForm& parsed_submitted_form) const;
 
@@ -129,11 +136,11 @@ class PasswordSaveManagerImpl : public PasswordSaveManager {
                           const PasswordForm& parsed_submitted_form);
 
   void SavePendingToStoreImpl(PendingCredentialsState state,
-                              const PasswordForm* similar_saved_form,
+                              const StoredCredential* similar_saved_form,
                               FormSaver* form_saver,
                               PasswordForm::Store store_to_save);
 
-  void UpdateDateLastFilledImpl(const PasswordForm& similar_saved_form,
+  void UpdateDateLastFilledImpl(const StoredCredential& similar_saved_form,
                                 FormSaver* form_saver);
 
   std::u16string GetOldPassword(

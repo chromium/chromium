@@ -23,6 +23,7 @@
 #include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/password_manager/core/browser/password_manager_interface.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
+#include "components/password_manager/core/browser/password_store/password_form_converters.h"
 #include "components/url_formatter/elide_url.h"
 #include "services/metrics/public/cpp/metrics_utils.h"
 #include "url/origin.h"
@@ -120,19 +121,20 @@ Credential PasswordFormToCredential(
 // Goes through all matches and either picks the first non-weak match with
 // permission or returns all matches as `Credential`.
 std::vector<Credential> ConstructCredentialsList(
-    base::span<const password_manager::PasswordForm> best_matches,
+    base::span<const password_manager::StoredCredential> best_matches,
     const url::Origin& request_origin,
     bool immediately_available_to_login) {
   std::vector<Credential> result;
-  for (const auto& form : best_matches) {
+  for (const auto& cred : best_matches) {
     // Don't consider weakly affiliated (grouped) credentials because they are
     // low confidence matches and would require additional user confirmation.
-    if (form.match_type.value() ==
+    if (cred.match_type.value() ==
         password_manager::PasswordForm::MatchType::kGrouped) {
       continue;
     }
-    result.push_back(PasswordFormToCredential(
-        request_origin, immediately_available_to_login, form));
+    result.push_back(
+        PasswordFormToCredential(request_origin, immediately_available_to_login,
+                                 password_manager::ToPasswordForm(cred)));
   }
 
   return result;

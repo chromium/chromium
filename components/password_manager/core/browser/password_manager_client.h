@@ -121,6 +121,7 @@ class PasswordRequirementsService;
 class PasswordReuseManager;
 class PasswordStoreInterface;
 class WebAuthnCredentialsDelegate;
+struct StoredCredential;
 struct PasswordForm;
 
 enum class ErrorMessageFlowType { kSaveFlow, kFillFlow };
@@ -315,9 +316,9 @@ class PasswordManagerClient {
   // implementation is a noop. |was_autofilled_on_pageload| contains information
   // if password form was autofilled on pageload.
   virtual void PasswordWasAutofilled(
-      base::span<const PasswordForm> best_matches,
+      base::span<const StoredCredential> best_matches,
       const url::Origin& origin,
-      base::span<const PasswordForm> federated_matches,
+      base::span<const StoredCredential> federated_matches,
       bool was_autofilled_on_pageload);
 
   // Sends username/password from |preferred_match| for filling in the http auth

@@ -101,7 +101,7 @@ constexpr char kLogInWithPasswordChangeSubmissionHistogram[] =
     "PasswordManager.LogInWithPasswordChangeSubmission";
 bool DidLoginWithPrimaryChangedPassword(
     const PasswordFormManager& submitted_manager,
-    const PasswordForm& change_password_login) {
+    const StoredCredential& change_password_login) {
   CHECK_EQ(change_password_login.type, PasswordForm::Type::kChangeSubmission);
 
   return submitted_manager.GetPendingCredentials().password_value ==
@@ -110,7 +110,7 @@ bool DidLoginWithPrimaryChangedPassword(
 
 bool DidLoginWithBackupChangedPassword(
     const PasswordFormManager& submitted_manager,
-    const PasswordForm& change_password_login) {
+    const StoredCredential& change_password_login) {
   CHECK_EQ(change_password_login.type, PasswordForm::Type::kChangeSubmission);
 
   return submitted_manager.GetPendingCredentials().password_value ==
@@ -124,7 +124,7 @@ bool DidLoginWithBackupChangedPassword(
 // change form. This diff should be very small since we have a timeout for the
 // flow to finish after we start filling the change password form.
 bool IsLikelyFirstLoginAttempAfterPasswordChange(
-    const PasswordForm& change_password_login) {
+    const StoredCredential& change_password_login) {
   CHECK(change_password_login.GetPasswordBackupDateCreated().has_value());
 
   // Allow way more time than needed to catch potential edge cases. At the same
@@ -148,7 +148,7 @@ void RecordMetricsForLoginWithChangedPassword(
     return;
   }
 
-  const PasswordForm* change_password_login =
+  const StoredCredential* change_password_login =
       password_manager_util::FindChangedPasswordLoginWithBackup(
           submitted_manager);
   if (!change_password_login) {
@@ -317,13 +317,13 @@ bool IsRelevantForPasswordManagerButNotRecognizedByRenderer(
          HasNewPasswordVote(form_predictions);
 }
 
-bool IsMutedInsecureCredential(const PasswordForm& credential,
+bool IsMutedInsecureCredential(const StoredCredential& credential,
                                InsecureType insecure_type) {
   auto it = credential.password_issues.find(insecure_type);
   return it != credential.password_issues.end() && it->second.is_muted;
 }
 
-bool HasMutedCredentials(base::span<const PasswordForm> credentials,
+bool HasMutedCredentials(base::span<const StoredCredential> credentials,
                          const std::u16string& username) {
   return std::ranges::any_of(credentials, [&username](const auto& credential) {
     return credential.username_value == username &&
@@ -839,11 +839,12 @@ void PasswordManager::DropFormManagers() {
   owned_submitted_form_manager_.reset();
 }
 
-base::span<const PasswordForm> PasswordManager::GetBestMatches(
+base::span<const StoredCredential> PasswordManager::GetBestMatches(
     PasswordManagerDriver* driver,
     autofill::FormRendererId form_id) {
   PasswordFormManager* manager = GetMatchedManagerForForm(driver, form_id);
-  return manager ? manager->GetBestMatches() : base::span<const PasswordForm>();
+  return manager ? manager->GetBestMatches()
+                 : base::span<const StoredCredential>();
 }
 
 bool PasswordManager::IsPasswordFieldDetectedOnPage() const {
