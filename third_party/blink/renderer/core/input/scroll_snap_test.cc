@@ -208,9 +208,17 @@ TEST_F(ScrollSnapTest, AnimateFlingToArriveAtSnapPoint) {
   ScrollUpdate(100, 100, -5, 0);
   Compositor().BeginFrame();
 
-  // Fling with an inertial GSU.
+  // Simulate a decaying fling sequence with multiple inertial GSUs.
+  // On Android, the first fast GSU (delta -5) triggers a
+  // kConstrainedNativeFling because it is predicted by the
+  // kDistanceEstimatorScalar to reach the extremity.
+  // The second slower GSU (delta -3) simulates deceleration. The remaining
+  // estimated displacement is no longer "fast enough" to reach the extremity,
+  // triggering the transition to the standard snap fling animation.
   ScrollUpdate(95, 100, -5, 0, true);
-  ScrollEnd(90, 100);
+  Compositor().BeginFrame(0.016);
+  ScrollUpdate(90, 100, -3, 0, true);
+  ScrollEnd(87, 100);
 
   // Animate halfway through the fling.
   Compositor().BeginFrame(0.25);
