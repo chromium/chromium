@@ -12,11 +12,6 @@ extension Color {
         ? UIColor(named: kGrey100Color) : UIColor(named: kGrey200Color)
       return color ?? .separator
     }
-
-    if #available(iOS 15, *) {
-      return Color(uiColor: uiColor)
-    } else {
-      return Color(uiColor)
-    }
+    return Color(uiColor: uiColor)
   }
 }
