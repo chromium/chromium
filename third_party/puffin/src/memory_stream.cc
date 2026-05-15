@@ -53,6 +53,10 @@ bool MemoryStream::Read(void* buffer, size_t length) {
   TEST_AND_RETURN_FALSE(read_memory_ != nullptr);
   TEST_AND_RETURN_FALSE(base::IsValueInRangeForNumericType<int>(length));
   TEST_AND_RETURN_FALSE(offset_ + length <= read_memory_->size());
+  if (length == 0) {
+    return true;
+  }
+  TEST_AND_RETURN_FALSE(buffer != nullptr);
   memcpy(buffer, read_memory_->data() + offset_, length);
   offset_ += length;
   return true;
@@ -66,6 +70,10 @@ bool MemoryStream::Write(const void* buffer, size_t length) {
   if (offset_ + length > write_memory_->size()) {
     write_memory_->resize(offset_ + length);
   }
+  if (length == 0) {
+    return true;
+  }
+  TEST_AND_RETURN_FALSE(buffer != nullptr);
   memcpy(write_memory_->data() + offset_, buffer, length);
   offset_ += length;
   return true;
