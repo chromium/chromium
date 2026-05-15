@@ -175,12 +175,17 @@ export function convertSafetyCheckReason(
  */
 export function computeInspectableViewLabel(
     view: chrome.developerPrivate.ExtensionView): string {
-  // Trim the "chrome-extension://<id>/".
-  const url = new URL(view.url);
   let label = view.url;
-  if (url.protocol === 'chrome-extension:') {
-    label = url.pathname.substring(1);
+  // TODO(crbug.com/509552434): Investigate why view.url can have invalid URLs.
+  try {
+    // Trim the "chrome-extension://<id>/".
+    const url = new URL(view.url);
+    if (url.protocol === 'chrome-extension:') {
+      label = url.pathname.substring(1);
+    }
+  } catch (e) {
   }
+
   if (label === '_generated_background_page.html') {
     label = loadTimeData.getString('viewBackgroundPage');
   }
