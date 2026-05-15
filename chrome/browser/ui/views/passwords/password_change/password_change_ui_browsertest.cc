@@ -71,8 +71,6 @@ class PasswordChangeUiBrowserTest : public DialogBrowserTest {
   void ShowUi(const std::string& name) override {
     GURL main_url = GURL("https://example.com/");
     GURL password_change_url = GURL("https://example.com/password");
-    ON_CALL(*affiliation_service(), GetChangePasswordURL(main_url))
-        .WillByDefault(Return(password_change_url));
     if (StartsWith(name, "LeakBubble", base::CompareCase::SENSITIVE)) {
       ON_CALL(*mock_optimization_guide_keyed_service(),
               ShouldFeatureBeCurrentlyEnabledForUser(
@@ -86,6 +84,8 @@ class PasswordChangeUiBrowserTest : public DialogBrowserTest {
     form.signon_realm = main_url.GetWithEmptyPath().spec();
     form.username_value = u"username";
     form.password_value = u"password";
+    form.change_password_url = password_change_url;
+    CHECK(form.change_password_url.is_valid());
     ManagePasswordsUIController::FromWebContents(
         browser()->tab_strip_model()->GetActiveWebContents())
         ->OnCredentialLeak(password_manager::LeakedPasswordDetails(
