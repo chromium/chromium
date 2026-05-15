@@ -131,3 +131,31 @@ IN_PROC_BROWSER_TEST_F(SystemMenuModelBuilderTabSearchDisabledTest,
 
   EXPECT_FALSE(ContainsCommand(menu, IDC_TAB_SEARCH_TOGGLE_PIN, std::nullopt));
 }
+
+class SystemMenuModelBuilderSimplificationTest : public InProcessBrowserTest {
+ protected:
+  void SetUp() override {
+    scoped_feature_list_.InitAndEnableFeature(features::kMenuSimplification);
+    InProcessBrowserTest::SetUp();
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+#if BUILDFLAG(IS_LINUX)
+IN_PROC_BROWSER_TEST_F(SystemMenuModelBuilderSimplificationTest,
+                       LinuxMenuOrder) {
+  ui::MenuModel* menu = BrowserView::GetBrowserViewForBrowser(browser())
+                            ->browser_widget()
+                            ->GetSystemMenuModel();
+
+  ASSERT_GE(menu->GetItemCount(), 6u);
+  EXPECT_EQ(menu->GetCommandIdAt(0), IDC_MINIMIZE_WINDOW);
+  EXPECT_EQ(menu->GetCommandIdAt(1), IDC_MAXIMIZE_WINDOW);
+  EXPECT_EQ(menu->GetCommandIdAt(2), IDC_RESTORE_WINDOW);
+  EXPECT_EQ(menu->GetTypeAt(3), ui::MenuModel::TYPE_SEPARATOR);
+  EXPECT_EQ(menu->GetCommandIdAt(4), IDC_NEW_TAB);
+  EXPECT_EQ(menu->GetCommandIdAt(5), IDC_RESTORE_TAB);
+}
+#endif
