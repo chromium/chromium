@@ -2933,6 +2933,17 @@ class WebUIPinnedToolbarActionsBrowserTest
   }
 
  protected:
+  content::WebContents* GetWebContents() {
+    WebUIToolbarWebView* webui_toolbar_view = GetWebUIToolbarWebView(browser());
+    return webui_toolbar_view->GetWebViewForTesting()->GetWebContents();
+  }
+
+  WebUIPinnedToolbarActions* GetPinnedToolbarActions() {
+    WebUIToolbarWebView* webui_toolbar_view = GetWebUIToolbarWebView(browser());
+    return static_cast<WebUIPinnedToolbarActions*>(
+        webui_toolbar_view->GetPinnedToolbarActions());
+  }
+
   content::EvalJsResult EvalJsOnPinnedButton(
       content::WebContents* web_contents,
       toolbar_ui_api::mojom::PinnedToolbarAction action,
@@ -2996,10 +3007,8 @@ class WebUIPinnedToolbarActionsBrowserTest
 
   void PinAction(actions::ActionId action_id,
                  toolbar_ui_api::mojom::PinnedToolbarAction mojom_action) {
-    auto* webui_toolbar_view = GetWebUIToolbarWebView(browser());
-    auto* web_contents =
-        webui_toolbar_view->GetWebViewForTesting()->GetWebContents();
-    auto* pinned_actions = webui_toolbar_view->GetPinnedToolbarActions();
+    auto* web_contents = GetWebContents();
+    auto* pinned_actions = GetPinnedToolbarActions();
     ui::ElementIdentifier id =
         pinned_toolbar_actions::GetElementIdentifierForAction(action_id);
 
@@ -3060,10 +3069,8 @@ class WebUIPinnedToolbarActionsBrowserTest
 
   void UnpinAction(actions::ActionId action_id,
                    toolbar_ui_api::mojom::PinnedToolbarAction mojom_action) {
-    auto* webui_toolbar_view = GetWebUIToolbarWebView(browser());
-    auto* web_contents =
-        webui_toolbar_view->GetWebViewForTesting()->GetWebContents();
-    auto* pinned_actions = webui_toolbar_view->GetPinnedToolbarActions();
+    auto* web_contents = GetWebContents();
+    auto* pinned_actions = GetPinnedToolbarActions();
     ui::ElementIdentifier id =
         pinned_toolbar_actions::GetElementIdentifierForAction(action_id);
 
@@ -3082,11 +3089,8 @@ class WebUIPinnedToolbarActionsBrowserTest
   }
 
   void VerifyPinnedToolbarWidth() {
-    WebUIToolbarWebView* webui_toolbar_view = GetWebUIToolbarWebView(browser());
-    views::WebView* web_view = webui_toolbar_view->GetWebViewForTesting();
-    content::WebContents* web_contents = web_view->GetWebContents();
-    auto* pinned_actions = static_cast<WebUIPinnedToolbarActions*>(
-        webui_toolbar_view->GetPinnedToolbarActions());
+    auto* web_contents = GetWebContents();
+    auto* pinned_actions = GetPinnedToolbarActions();
 
     // Verify HTML element width matches C++ calculated width.
     ASSERT_TRUE(base::test::RunUntil([&]() {
@@ -3201,30 +3205,76 @@ IN_PROC_BROWSER_TEST_F(WebUIPinnedToolbarActionsBrowserTest, PinAllTogether) {
 }
 
 IN_PROC_BROWSER_TEST_F(WebUIPinnedToolbarActionsBrowserTest, RouteMediaIcons) {
+  auto* web_contents = GetWebContents();
   auto* action_item = static_cast<actions::StatefulImageActionItem*>(
       actions::ActionManager::Get().FindAction(
           kActionRouteMedia, browser()->GetActions()->root_action_item()));
 
-  const std::vector<std::pair<const gfx::VectorIcon&,
-                              toolbar_ui_api::mojom::PinnedToolbarAction>>
-      kRouteMediaIcons = {
-          {vector_icons::kMediaRouterIdleChromeRefreshOldIcon,
-           toolbar_ui_api::mojom::PinnedToolbarAction::kRouteMediaIdle},
-          {vector_icons::kMediaRouterWarningChromeRefreshOldIcon,
-           toolbar_ui_api::mojom::PinnedToolbarAction::kRouteMediaWarning},
-          {vector_icons::kMediaRouterPausedOldIcon,
-           toolbar_ui_api::mojom::PinnedToolbarAction::kRouteMediaPaused},
-          {vector_icons::kMediaRouterActiveChromeRefreshOldIcon,
-           toolbar_ui_api::mojom::PinnedToolbarAction::kRouteMediaActive},
-          {kCastChromeRefreshOldIcon,
-           toolbar_ui_api::mojom::PinnedToolbarAction::kRouteMedia},
-      };
+  struct Test {
+    base::raw_ref<const gfx::VectorIcon> icon;
+    toolbar_ui_api::mojom::PinnedToolbarAction mojom_action;
+    std::string_view expected_icon;
+  };
 
-  for (const auto& [icon, mojom_action] : kRouteMediaIcons) {
-    action_item->SetStatefulImage(ui::ImageModel::FromVectorIcon(icon));
-    PinAction(kActionRouteMedia, mojom_action);
-    UnpinAction(kActionRouteMedia, mojom_action);
+  constexpr auto kRouteMediaIcons = std::to_array<Test>({
+      {base::raw_ref(vector_icons::kMediaRouterIdleChromeRefreshOldIcon),
+       toolbar_ui_api::mojom::PinnedToolbarAction::kRouteMediaIdle,
+       std::string_view("pinned-toolbar-action:RouteMediaIdle")},
+      {base::raw_ref(vector_icons::kMediaRouterWarningChromeRefreshOldIcon),
+       toolbar_ui_api::mojom::PinnedToolbarAction::kRouteMediaWarning,
+       std::string_view("pinned-toolbar-action:RouteMediaWarning")},
+      {base::raw_ref(vector_icons::kMediaRouterPausedOldIcon),
+       toolbar_ui_api::mojom::PinnedToolbarAction::kRouteMediaPaused,
+       std::string_view("pinned-toolbar-action:RouteMediaPaused")},
+      {base::raw_ref(vector_icons::kMediaRouterActiveChromeRefreshOldIcon),
+       toolbar_ui_api::mojom::PinnedToolbarAction::kRouteMediaActive,
+       std::string_view("pinned-toolbar-action:RouteMediaActive")},
+      {base::raw_ref(kCastChromeRefreshOldIcon),
+       toolbar_ui_api::mojom::PinnedToolbarAction::kRouteMedia,
+       std::string_view("pinned-toolbar-action:RouteMedia")},
+  });
+
+  for (const auto& test : kRouteMediaIcons) {
+    SCOPED_TRACE(test.mojom_action);
+    action_item->SetStatefulImage(ui::ImageModel::FromVectorIcon(*test.icon));
+    PinAction(kActionRouteMedia, test.mojom_action);
+
+    // Make sure the icon got wired through.
+    EXPECT_EQ(test.expected_icon,
+              EvalJsOnPinnedButton(
+                  web_contents, test.mojom_action,
+                  "return btn?.getAttribute('iron-icon') || '(null)'"));
+    EXPECT_EQ("(null)", EvalJsOnPinnedButton(
+                            web_contents, test.mojom_action,
+                            "return btn?.getAttribute('style') || '(null)'"));
+
+    UnpinAction(kActionRouteMedia, test.mojom_action);
   }
+}
+
+IN_PROC_BROWSER_TEST_F(WebUIPinnedToolbarActionsBrowserTest,
+                       PasswordManagerIcon) {
+  auto* web_contents = GetWebContents();
+  auto* action_item = static_cast<actions::StatefulImageActionItem*>(
+      actions::ActionManager::Get().FindAction(
+          kActionRouteMedia, browser()->GetActions()->root_action_item()));
+  action_item->SetStatefulImage(
+      ui::ImageModel::FromVectorIcon(vector_icons::kPasswordManagerOldIcon));
+  PinAction(
+      kActionShowPasswordsBubbleOrPage,
+      toolbar_ui_api::mojom::PinnedToolbarAction::kShowPasswordsBubbleOrPage);
+  // This one gets handled via style.
+  EXPECT_EQ("(null)", EvalJsOnPinnedButton(
+                          web_contents,
+                          toolbar_ui_api::mojom::PinnedToolbarAction::
+                              kShowPasswordsBubbleOrPage,
+                          "return btn?.getAttribute('iron-icon') || '(null)'"));
+  EXPECT_EQ(
+      "--cr-icon-image: url(rhs_icons/password_manager.svg)",
+      EvalJsOnPinnedButton(web_contents,
+                           toolbar_ui_api::mojom::PinnedToolbarAction::
+                               kShowPasswordsBubbleOrPage,
+                           "return btn?.getAttribute('style') || '(null)'"));
 }
 
 IN_PROC_BROWSER_TEST_F(WebUIPinnedToolbarActionsBrowserTest, SidePanelToggle) {

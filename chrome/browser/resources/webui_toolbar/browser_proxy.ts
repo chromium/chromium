@@ -10,7 +10,7 @@ import {ClickDispositionFlag} from './browser_controls_api_data_model.mojom-webu
 import {ToolbarUIObserverCallbackRouter, ToolbarUIService} from './toolbar_ui_api.mojom-webui.js';
 import type {ToolbarUIServiceInterface} from './toolbar_ui_api.mojom-webui.js';
 import {ContextMenuType} from './toolbar_ui_api_data_model.mojom-webui.js';
-import type {BackForwardButtonState, NavigationControlsState, OmniboxViewState, ReloadControlState} from './toolbar_ui_api_data_model.mojom-webui.js';
+import type {BackForwardButtonState, IconUpdate, NavigationControlsState, OmniboxViewState, ReloadControlState} from './toolbar_ui_api_data_model.mojom-webui.js';
 
 export {
   ClickDispositionFlag,
@@ -18,13 +18,14 @@ export {
 };
 export type {
   BackForwardButtonState,
+  IconUpdate,
   NavigationControlsState,
   OmniboxViewState,
   ReloadControlState,
 };
 
 export type NavigationControlsStateListener =
-    (state: NavigationControlsState) => void;
+    (icons: IconUpdate[], state: NavigationControlsState) => void;
 
 export type NavigationControlsStateListenerHandle = number;
 export const INVALID_NAVIGATION_CONTROLS_STATE_LISTENER_HANDLE:
@@ -77,7 +78,7 @@ export class BrowserProxyImpl implements BrowserProxy {
         this.callbackRouter.onNavigationControlsStateChanged.addListener(
             listener);
     this.toolbarUIHandler.bind().then(fence => {
-      listener(fence.state);
+      listener(fence.icons, fence.state);
       this.callbackRouter.$.bindHandle(fence.updateStream.handle);
     });
     return handle;

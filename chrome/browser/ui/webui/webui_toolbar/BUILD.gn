@@ -11,6 +11,7 @@ import("//ui/webui/resources/tools/build_webui.gni")
 source_set("webui_toolbar") {
   sources = [
     "browser_controls_service.h",
+    "icon_table.h",
     "toolbar_ui_service.h",
     "webui_toolbar_ui.h",
   ]
@@ -21,6 +22,7 @@ source_set("webui_toolbar") {
     "//components/browser_apis/browser_controls:mojom",
     "//components/browser_apis/browser_controls:mojom_data_model",
     "//components/browser_apis/ui_controllers/toolbar:mojom",
+    "//components/browser_apis/ui_controllers/toolbar:types",
     "//content/public/browser",
     "//ui/webui/resources/js/tracked_element:mojo_bindings",
     "//ui/webui/tracked_element",
@@ -38,6 +40,7 @@ source_set("webui_toolbar") {
 source_set("impl") {
   sources = [
     "browser_controls_service.cc",
+    "icon_table.cc",
     "toolbar_ui_service.cc",
     "webui_toolbar_extensions_container.cc",
     "webui_toolbar_extensions_container.h",
@@ -75,6 +78,7 @@ source_set("test_support") {
   deps = [
     ":webui_toolbar",
     "//chrome/browser:primitives",
+    "//chrome/browser/ui/webui/webui_toolbar/adapters",
     "//testing/gmock",
   ]
 }
@@ -83,6 +87,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "browser_controls_service_unittest.cc",
+    "icon_table_unittest.cc",
     "toolbar_ui_service_unittest.cc",
     "webui_toolbar_layout_css_helper_unittest.cc",
     "webui_toolbar_ui_unittest.cc",

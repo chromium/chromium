@@ -6,7 +6,9 @@
 
 #include <memory>
 #include <utility>
+#include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/types/expected.h"
@@ -48,6 +50,7 @@ class Observer : public mojom::ToolbarUIObserver {
         [&](base::expected<mojom::InitialStatePtr, mojo_base::mojom::ErrorPtr>
                 result) {
           ASSERT_TRUE(result.has_value());
+          icons = std::move(result.value()->icons);
           state = std::move(result.value()->state);
           receiver_.Bind(std::move(result.value()->update_stream));
           run_loop.Quit();
@@ -63,7 +66,9 @@ class Observer : public mojom::ToolbarUIObserver {
   Observer& operator=(const Observer&) = delete;
 
   void OnNavigationControlsStateChanged(
+      std::vector<mojom::IconUpdatePtr> icons_update,
       mojom::NavigationControlsStatePtr changed) override {
+    icons = std::move(icons_update);
     state = std::move(changed);
   }
 
@@ -71,6 +76,7 @@ class Observer : public mojom::ToolbarUIObserver {
 
   // Easily accessible for testing. Start with nullopt to easily differentiate
   // between uninitialized and unset.
+  std::optional<std::vector<mojom::IconUpdatePtr>> icons;
   mojom::NavigationControlsStatePtr state;
 
  private:
@@ -83,18 +89,33 @@ class Observer : public mojom::ToolbarUIObserver {
 // integration with "real" browser services, we should utilize browser tests.
 class ToolbarUIServiceTest : public ::testing::Test {
  public:
+  explicit ToolbarUIServiceTest(bool auto_add_observer = true)
+      : auto_add_observer_(auto_add_observer) {}
+
   void SetUp() override {
     auto fetcher = std::make_unique<NavigationControlsStateFetcherImpl>(
         base::BindLambdaForTesting(
             [&] { return navigation_controls_state().Clone(); }));
+    auto icon_table_fetcher = std::make_unique<FakeIconTableFetcher>();
+    icon_table_fetcher_ = icon_table_fetcher.get();
     service_ = std::make_unique<ToolbarUIService>(
         mojo::PendingReceiver<mojom::ToolbarUIService>(), std::move(fetcher),
-        &metrics_reporter_, &delegate_);
+        std::move(icon_table_fetcher), &metrics_reporter_, &delegate_);
+    if (auto_add_observer_) {
+      AddInitialObserver();
+    }
+  }
+
+  void AddInitialObserver() {
+    DCHECK(!observer_);
     observer_ = std::make_unique<Observer>(service_.get());
     observer_->FlushForTesting();
   }
 
-  void TearDown() override { service_.reset(); }
+  void TearDown() override {
+    icon_table_fetcher_ = nullptr;
+    service_.reset();
+  }
 
  protected:
   ::testing::NiceMock<MockMetricsReporter>& mock_metrics_reporter() {
@@ -108,21 +129,32 @@ class ToolbarUIServiceTest : public ::testing::Test {
   // Updates the service with the current navigation control state.
   void PushNavigationControlsStateUpdate() {
     service_->OnNavigationControlsStateChanged(*navigation_controls_state_);
-    observer()->FlushForTesting();
+    if (observer()) {
+      observer()->FlushForTesting();
+    }
   }
 
   ToolbarUIService& service() { return *service_; }
   Observer* observer() { return observer_.get(); }
   MockToolbarUIServiceDelegate& delegate() { return delegate_; }
+  FakeIconTableFetcher* fake_icon_table() { return icon_table_fetcher_.get(); }
 
  private:
+  bool auto_add_observer_;
   content::BrowserTaskEnvironment task_environment_;
   ::testing::NiceMock<MockMetricsReporter> metrics_reporter_;
   std::unique_ptr<ToolbarUIService> service_;
+  raw_ptr<FakeIconTableFetcher> icon_table_fetcher_;  // owned by service_;
   std::unique_ptr<Observer> observer_;
   MockToolbarUIServiceDelegate delegate_;
   mojom::NavigationControlsStatePtr navigation_controls_state_ =
       CreateValidNavigationControlsState();
+};
+
+class ToolbarUIServiceNoInitialObserverTest : public ToolbarUIServiceTest {
+ public:
+  ToolbarUIServiceNoInitialObserverTest()
+      : ToolbarUIServiceTest(/*auto_add_observer=*/false) {}
 };
 
 // Tests that calling ShowContextMenu() opens the context menu.
@@ -236,6 +268,125 @@ TEST_F(ToolbarUIServiceTest, TestInvokePinnedToolbarAction) {
               InvokePinnedToolbarAction(mojom::PinnedToolbarAction::kPrint));
 
   service().InvokePinnedToolbarAction(mojom::PinnedToolbarAction::kPrint);
+}
+
+TEST_F(ToolbarUIServiceTest, IconUpdates) {
+  auto icon1 = mojom::IconUpdate::New(1u, "a.png", /*icon_is_url=*/true);
+  auto icon2 =
+      mojom::IconUpdate::New(2u, "icon-set:puppy", /*icon_is_url=*/false);
+  auto icon3 =
+      mojom::IconUpdate::New(3u, "icon-set:kitten", /*icon_is_url=*/false);
+
+  fake_icon_table()->AddUpdate(icon1.Clone());
+  PushNavigationControlsStateUpdate();
+  ASSERT_TRUE(observer()->icons);
+  EXPECT_THAT(*observer()->icons,
+              testing::ElementsAre(MatchesIconUpdate(std::ref(icon1))));
+
+  // Add a second observer. It should get the first icon as its initial state.
+  Observer observer2(&service());
+  ASSERT_TRUE(observer2.icons);
+  EXPECT_THAT(*observer2.icons,
+              testing::ElementsAre(MatchesIconUpdate(std::ref(icon1))));
+
+  // Now add a couple more icons. Both observers should get them.
+  // (But not 1 again, since it's not new).
+  fake_icon_table()->AddUpdate(icon2.Clone());
+  fake_icon_table()->AddUpdate(icon3.Clone());
+  PushNavigationControlsStateUpdate();
+
+  ASSERT_TRUE(observer()->icons);
+  EXPECT_THAT(*observer()->icons,
+              testing::ElementsAre(MatchesIconUpdate(std::ref(icon2)),
+                                   MatchesIconUpdate(std::ref(icon3))));
+
+  ASSERT_TRUE(observer2.icons);
+  EXPECT_THAT(*observer2.icons,
+              testing::ElementsAre(MatchesIconUpdate(std::ref(icon2)),
+                                   MatchesIconUpdate(std::ref(icon3))));
+}
+
+// Test with a second observer joining in between updates.
+TEST_F(ToolbarUIServiceTest, IconUpdates2) {
+  auto icon1 = mojom::IconUpdate::New(1u, "a.png", /*icon_is_url=*/true);
+  auto icon2 =
+      mojom::IconUpdate::New(2u, "icon-set:puppy", /*icon_is_url=*/false);
+  auto icon3 =
+      mojom::IconUpdate::New(3u, "icon-set:kitten", /*icon_is_url=*/false);
+
+  fake_icon_table()->AddUpdate(icon1.Clone());
+  PushNavigationControlsStateUpdate();
+  ASSERT_TRUE(observer()->icons);
+  EXPECT_THAT(*observer()->icons,
+              testing::ElementsAre(MatchesIconUpdate(std::ref(icon1))));
+
+  fake_icon_table()->AddUpdate(icon2.Clone());
+
+  // Add a second observer. It should get the current state of the table as
+  // its initial state, so two icons.
+  Observer observer2(&service());
+  ASSERT_TRUE(observer2.icons);
+  EXPECT_THAT(*observer2.icons,
+              testing::ElementsAre(MatchesIconUpdate(std::ref(icon1)),
+                                   MatchesIconUpdate(std::ref(icon2))));
+
+  // Now add the 3rd icon, and push an update.
+  fake_icon_table()->AddUpdate(icon3.Clone());
+  PushNavigationControlsStateUpdate();
+
+  // The update message includes both icons, though the second observer already
+  // knows about `icon2`. This is OK since these are idempotent.
+  ASSERT_TRUE(observer()->icons);
+  EXPECT_THAT(*observer()->icons,
+              testing::ElementsAre(MatchesIconUpdate(std::ref(icon2)),
+                                   MatchesIconUpdate(std::ref(icon3))));
+
+  ASSERT_TRUE(observer2.icons);
+  EXPECT_THAT(*observer2.icons,
+              testing::ElementsAre(MatchesIconUpdate(std::ref(icon2)),
+                                   MatchesIconUpdate(std::ref(icon3))));
+}
+
+// Test for icon updates before connect.
+TEST_F(ToolbarUIServiceNoInitialObserverTest, IconUpdatesBeforeConnect) {
+  auto icon1 = mojom::IconUpdate::New(1u, "a.png", /*icon_is_url=*/true);
+
+  fake_icon_table()->AddUpdate(icon1.Clone());
+
+  // No observer here yet, so this doesn't notify anyone.
+  PushNavigationControlsStateUpdate();
+
+  AddInitialObserver();
+  // Now observer gets the icon as initial state.
+  ASSERT_TRUE(observer()->icons);
+  EXPECT_THAT(*observer()->icons,
+              testing::ElementsAre(MatchesIconUpdate(std::ref(icon1))));
+
+  // Pushing doesn't re-send it.
+  PushNavigationControlsStateUpdate();
+  ASSERT_TRUE(observer()->icons);
+  EXPECT_THAT(*observer()->icons, testing::ElementsAre());
+}
+
+// Test for icon updates before connect. Variant where no push attempt
+// was made.
+TEST_F(ToolbarUIServiceNoInitialObserverTest, IconUpdatesBeforeConnect2) {
+  auto icon1 = mojom::IconUpdate::New(1u, "a.png", /*icon_is_url=*/true);
+
+  fake_icon_table()->AddUpdate(icon1.Clone());
+
+  AddInitialObserver();
+  // The observer gets the icon as initial state.
+  ASSERT_TRUE(observer()->icons);
+  EXPECT_THAT(*observer()->icons,
+              testing::ElementsAre(MatchesIconUpdate(std::ref(icon1))));
+
+  // It gets redundantly re-sent with the first update, but that's not
+  // a big deal since it's idempotent.
+  PushNavigationControlsStateUpdate();
+  ASSERT_TRUE(observer()->icons);
+  EXPECT_THAT(*observer()->icons,
+              testing::ElementsAre(MatchesIconUpdate(std::ref(icon1))));
 }
 
 }  // namespace

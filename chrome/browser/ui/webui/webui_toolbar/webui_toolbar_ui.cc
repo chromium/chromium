@@ -220,6 +220,7 @@ void WebUIToolbarUI::InitToolbarUIService(
   toolbar_ui_service_ = std::make_unique<toolbar_ui_api::ToolbarUIService>(
       std::move(toolbar_channel_service_end_),
       dependency_provider.GetNavigationControlsStateFetcher(),
+      dependency_provider.GetIconTableFetcher(),
       metrics_service->metrics_reporter(),
       dependency_provider.GetToolbarUIServiceDelegate());
 }

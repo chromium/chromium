@@ -8,8 +8,8 @@ import type {PinnedToolbarActionElement} from './pinned_toolbar_action.js';
 
 export function getHtml(this: PinnedToolbarActionElement) {
   return html`<!--_html_template_start_-->
-  <cr-icon-button iron-icon="${this.getIcon_().ironIcon ?? nothing}"
-      class="${this.getIcon_().className ?? nothing}"
+  <cr-icon-button iron-icon="${this.getIronIcon_() ?? nothing}"
+      style="${this.getIconStyle_() ?? nothing}"
       ?disabled="${!this.state.enabled}"
       ?is-menu-open="${this.state.highlighted || this.trackedHighlighted}"
       ?is-activated="${this.state.activated}"

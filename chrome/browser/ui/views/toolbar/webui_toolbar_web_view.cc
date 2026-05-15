@@ -187,6 +187,7 @@ WebUIToolbarWebView::WebUIToolbarWebView(
     std::unique_ptr<WebUILocationBar> location_bar)
     : browser_(browser),
       controller_(controller),
+      icon_table_(this),
       reload_control_(this),
       split_tabs_control_(this),
       home_control_(this),
@@ -514,6 +515,10 @@ void WebUIToolbarWebView::AnnounceAlert(const std::u16string& announcement) {
   GetViewAccessibility().AnnounceAlert(announcement);
 }
 
+webui_toolbar::IconTable& WebUIToolbarWebView::GetIconTable() {
+  return icon_table_;
+}
+
 void WebUIToolbarWebView::OnPreferredSizeChanged() {
   PreferredSizeChanged();
 }
@@ -538,6 +543,11 @@ WebUIToolbarWebView::GetNavigationControlsStateFetcher() {
   return std::make_unique<toolbar_ui_api::NavigationControlsStateFetcherImpl>(
       base::BindRepeating(&WebUIToolbarWebView::GetNavigationControlsState,
                           base::Unretained(this)));
+}
+
+std::unique_ptr<toolbar_ui_api::IconTableFetcher>
+WebUIToolbarWebView::GetIconTableFetcher() {
+  return icon_table_.MakeIconTableFetcher();
 }
 
 CommandUpdater* WebUIToolbarWebView::GetCommandUpdater() {
@@ -671,6 +681,17 @@ void WebUIToolbarWebView::PrimaryMainFrameRenderProcessGone(
             weak_ptr_factory_.GetWeakPtr()),
         features::kWebUIReloadButtonCrashRecoverRetryInterval.Get());
   }
+}
+
+const ui::ColorProvider* WebUIToolbarWebView::GetColorProvider() const {
+  return views::View::GetColorProvider();
+}
+
+float WebUIToolbarWebView::GetScaleFactor() const {
+  if (auto* ui = web_view_->web_contents()->GetWebUI()) {
+    return ui->GetDeviceScaleFactor();
+  }
+  return 1.0f;
 }
 
 void WebUIToolbarWebView::RecoverFromRendererCrashOrUnresponsiveness() {

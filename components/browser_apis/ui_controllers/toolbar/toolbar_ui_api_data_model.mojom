@@ -9,6 +9,28 @@ import "mojo/public/mojom/base/string16.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "ui/gfx/range/mojom/range.mojom";
 
+// A reference to a separately uploaded icon. See IconHandle in icon_handle.h
+// and webui_toolbar::IconTable.
+// Note that this can only be sent C++ -> JS; if you try to sent it towards
+// C++ you'll just end up with a null IconHandle, since the traits don't know
+// what IconTable (or other implementation!) is supposed to be interpreting the
+// number.
+struct IconHandle {
+  uint64 handle_id;
+};
+
+// Used to update binding of an IconHandle.
+struct IconUpdate {
+  uint64 handle_id;
+  // If this is null, the icon is deleted.
+  // Otherwise, the semantics depend on the icon_is_url bit:
+  // 1) If true, `icon_url_or_name` is a URL (possibly data:) for the icon.
+  // 2) If false,  `icon_url_or_name` is the name of an icon provided by
+  //    a cr-iconset.
+  string? icon_url_or_name;
+  bool icon_is_url = true;
+};
+
 // The context menu types that can be opened with ToolbarUIService's
 // ShowContextMenu.
 enum ContextMenuType {
@@ -323,6 +345,9 @@ struct PinnedToolbarActionState {
 
   // The ElementIdentifier for this action, if any.
   string? element_id;
+
+  // The icon to display.
+  IconHandle icon;
 };
 
 struct LocationBarState {

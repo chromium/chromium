@@ -4,5 +4,15 @@
 
 #include "chrome/browser/ui/views/toolbar/mock_webui_toolbar_control_delgate.h"
 
-MockWebUIToolbarControlDelegate::MockWebUIToolbarControlDelegate() = default;
+MockWebUIToolbarControlDelegate::MockWebUIToolbarControlDelegate()
+    : icon_table_(this) {}
 MockWebUIToolbarControlDelegate::~MockWebUIToolbarControlDelegate() = default;
+
+const ui::ColorProvider* MockWebUIToolbarControlDelegate::GetColorProvider()
+    const {
+  return &color_provider_;
+}
+
+float MockWebUIToolbarControlDelegate::GetScaleFactor() const {
+  return 1.0f;
+}

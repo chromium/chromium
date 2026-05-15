@@ -5,6 +5,7 @@
 source_set("adapters") {
   sources = [
     "browser_controls_adapter.h",
+    "icon_table_fetcher.h",
     "navigation_controls_state_fetcher.h",
   ]
   deps = [

@@ -32,6 +32,7 @@ suite('PinnedToolbarAction', function() {
     // Set state before appending to avoid assertNotReached() in getIcon_()
     // during initial render.
     action.state = {
+      ...action.state,
       action: 1,  // PinnedToolbarAction.kNewIncognitoWindow
       highlighted: false,
       enabled: true,

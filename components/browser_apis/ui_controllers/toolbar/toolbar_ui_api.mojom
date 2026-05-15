@@ -17,10 +17,13 @@ interface ToolbarUIObserver {
   // Observes events for navigation controls (e.g. back, forward, reload
   // buttons). |state| contains the state for all navigation controls
   // so that they can update together to avoid visual flicker.
-  OnNavigationControlsStateChanged(NavigationControlsState state);
+  OnNavigationControlsStateChanged(
+    array<IconUpdate> icons,
+    NavigationControlsState state);
 };
 
 struct InitialState {
+    array<IconUpdate> icons;
     NavigationControlsState state;
     pending_receiver<ToolbarUIObserver> update_stream;
 };

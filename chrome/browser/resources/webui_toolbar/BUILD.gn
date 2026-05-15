@@ -94,6 +94,7 @@ build_webui("build") {
     "content_settings_icons.ts",
     "home_button.html.ts",
     "home_button.ts",
+    "icon_table.ts",
     "location_bar.ts",
     "location_bar.html.ts",
     "location_icon.ts",

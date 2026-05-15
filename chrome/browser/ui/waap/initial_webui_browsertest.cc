@@ -104,6 +104,11 @@ class ToolbarDependencyProvider : public WebUIToolbarUI::DependencyProvider {
             []() { return CreateValidNavigationControlsState(); }));
   }
 
+  std::unique_ptr<toolbar_ui_api::IconTableFetcher> GetIconTableFetcher()
+      override {
+    return std::make_unique<FakeIconTableFetcher>();
+  }
+
   CommandUpdater* GetCommandUpdater() override {
     return reinterpret_cast<CommandUpdater*>(
         browser_->GetFeatures().browser_command_controller());

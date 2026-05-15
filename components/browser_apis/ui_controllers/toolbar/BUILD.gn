@@ -8,6 +8,20 @@ import("//mojo/public/tools/bindings/mojom.gni")
 mojom("mojom_data_model") {
   sources = [ "toolbar_ui_api_data_model.mojom" ]
 
+  cpp_typemaps = [
+    {
+      types = [
+        {
+          mojom = "toolbar_ui_api.mojom.IconHandle"
+          cpp = "::toolbar_ui_api::IconHandle"
+        },
+      ]
+      traits_headers = [ "icon_handle_mojom_traits.h" ]
+      traits_sources = [ "icon_handle_mojom_traits.cc" ]
+      traits_deps = [ ":types" ]
+    },
+  ]
+
   # Dependencies on other mojom targets.
   public_deps = [
     "//components/content_settings/core/common:content_settings_types",
@@ -39,6 +53,21 @@ mojom("mojom") {
   webui_module_path = "/"
 }
 
+source_set("types") {
+  sources = [
+    "icon_handle.cc",
+    "icon_handle.h",
+  ]
+  public_deps = [ "//base" ]
+}
+
 source_set("unit_tests") {
+  sources = [ "icon_handle_unittest.cc" ]
   testonly = true
+
+  deps = [
+    ":types",
+    "//base",
+    "//testing/gtest",
+  ]
 }

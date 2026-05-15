@@ -219,6 +219,11 @@ class WebUIToolbarUIBrowserTest : public InProcessBrowserTest,
         base::BindRepeating(
             [&] { return CreateValidNavigationControlsState(); }));
   }
+  std::unique_ptr<toolbar_ui_api::IconTableFetcher> GetIconTableFetcher()
+      override {
+    return std::make_unique<FakeIconTableFetcher>();
+  }
+
   CommandUpdater* GetCommandUpdater() override {
     return reinterpret_cast<CommandUpdater*>(
         webui::GetBrowserWindowInterface(web_ui()->GetWebContents())
@@ -264,11 +269,14 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarUIBrowserTest, SetReloadButtonState) {
 
   EXPECT_CALL(
       connection.mock_observer(),
-      OnNavigationControlsStateChanged(testing::Pointee(testing::Field(
-          &toolbar_ui_api::mojom::NavigationControlsState::reload_control_state,
-          testing::Pointee(testing::Field(
-              &toolbar_ui_api::mojom::ReloadControlState::is_navigation_loading,
-              true))))))
+      OnNavigationControlsStateChanged(
+          testing::_, testing::Pointee(testing::Field(
+                          &toolbar_ui_api::mojom::NavigationControlsState::
+                              reload_control_state,
+                          testing::Pointee(testing::Field(
+                              &toolbar_ui_api::mojom::ReloadControlState::
+                                  is_navigation_loading,
+                              true))))))
       .Times(1);
   ui()->OnNavigationControlsStateChanged(*state);
   connection.mock_observer().FlushForTesting();

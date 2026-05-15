@@ -50,6 +50,9 @@ class WebUIToolbarUI : public TopChromeWebUIController,
     virtual std::unique_ptr<toolbar_ui_api::NavigationControlsStateFetcher>
     GetNavigationControlsStateFetcher() = 0;
     // Cannot be null.
+    virtual std::unique_ptr<toolbar_ui_api::IconTableFetcher>
+    GetIconTableFetcher() = 0;
+    // Cannot be null.
     virtual CommandUpdater* GetCommandUpdater() = 0;
   };
 

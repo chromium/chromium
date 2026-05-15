@@ -9,6 +9,7 @@ import './split_tabs_button.js';
 import './home_button.js';
 import './pinned_toolbar_actions.js';
 import './avatar_button.js';
+import './icon_table.js';
 
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {TrackedElementManager} from '//resources/js/tracked_element/tracked_element_manager.js';
@@ -20,7 +21,8 @@ import {HelpBubbleMixinLit} from 'chrome://resources/cr_components/help_bubble/h
 import {getCss} from './app.css.js';
 import {getHtml} from './app.html.js';
 import {BrowserProxyImpl, INVALID_NAVIGATION_CONTROLS_STATE_LISTENER_HANDLE} from './browser_proxy.js';
-import type {BrowserProxy, NavigationControlsState, NavigationControlsStateListenerHandle} from './browser_proxy.js';
+import type {BrowserProxy, IconUpdate, NavigationControlsState, NavigationControlsStateListenerHandle} from './browser_proxy.js';
+import {IconTable} from './icon_table.js';
 import {MetricsRecorder} from './metrics_recorder.js';
 import {SplitTabActiveLocation} from './toolbar_ui_api_data_model.mojom-webui.js';
 // clang-format off
@@ -174,6 +176,7 @@ export class ToolbarAppElement extends AppElementBase {
   private navigationStateListenerHandle_:
       NavigationControlsStateListenerHandle =
           INVALID_NAVIGATION_CONTROLS_STATE_LISTENER_HANDLE;
+  private iconTable_: IconTable;
 
   constructor() {
     super();
@@ -186,6 +189,7 @@ export class ToolbarAppElement extends AppElementBase {
     this.browserProxy_ = BrowserProxyImpl.getInstance();
     this.metricsRecorder_ = new MetricsRecorder(this.browserProxy_);
     this.trackedElementManager_ = TrackedElementManager.getInstance();
+    this.iconTable_ = IconTable.getInstance();
     ColorChangeUpdater.forDocument().start();
   }
 
@@ -212,7 +216,10 @@ export class ToolbarAppElement extends AppElementBase {
 
     this.navigationStateListenerHandle_ =
         this.browserProxy_.addNavigationStateListener(
-            (state: NavigationControlsState) => {
+            (iconUpdates: IconUpdate[], state: NavigationControlsState) => {
+              // This must be called before updating navigationControlsState_
+              // so the new icons are available for rendering of child widgets.
+              this.iconTable_.applyUpdates(iconUpdates);
               this.navigationControlsState_ = state;
             });
 

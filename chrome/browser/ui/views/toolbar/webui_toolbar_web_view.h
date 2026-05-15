@@ -22,6 +22,7 @@
 #include "chrome/browser/ui/views/toolbar/webui_split_tabs_control.h"
 #include "chrome/browser/ui/webui/webui_toolbar/adapters/navigation_controls_state_fetcher.h"
 #include "chrome/browser/ui/webui/webui_toolbar/browser_controls_service.h"
+#include "chrome/browser/ui/webui/webui_toolbar/icon_table.h"
 #include "chrome/browser/ui/webui/webui_toolbar/toolbar_ui_service.h"
 #include "chrome/browser/ui/webui/webui_toolbar/webui_toolbar_ui.h"
 #include "chrome/common/webui_url_constants.h"
@@ -54,6 +55,8 @@ class WebUIToolbarControlDelegate {
 
   // Announces an alert to accessibility screen readers.
   virtual void AnnounceAlert(const std::u16string& announcement) = 0;
+
+  virtual webui_toolbar::IconTable& GetIconTable() = 0;
 
   // Indicate preferred size of a toolbar control has changed. This results in
   // synchronously fully recalculating layout to see if anything needs to be
@@ -98,7 +101,8 @@ class WebUIToolbarWebView
       public browser_controls_api::BrowserControlsService::
           BrowserControlsServiceDelegate,
       public WebUIToolbarUI::DependencyProvider,
-      public WebUIToolbarControlDelegate {
+      public WebUIToolbarControlDelegate,
+      public webui_toolbar::IconTable::Delegate {
   METADATA_HEADER(WebUIToolbarWebView, views::View)
 
  public:
@@ -130,6 +134,8 @@ class WebUIToolbarWebView
   GetToolbarUIServiceDelegate() override;
   std::unique_ptr<toolbar_ui_api::NavigationControlsStateFetcher>
   GetNavigationControlsStateFetcher() override;
+  std::unique_ptr<toolbar_ui_api::IconTableFetcher> GetIconTableFetcher()
+      override;
   CommandUpdater* GetCommandUpdater() override;
 
   // ToolbarUIService::ToolbarUIServiceDelegate:
@@ -178,6 +184,10 @@ class WebUIToolbarWebView
   void PrimaryMainFrameRenderProcessGone(
       base::TerminationStatus status) override;
 
+  // webui_toolbar::IconTable::Delegate:
+  const ui::ColorProvider* GetColorProvider() const override;
+  float GetScaleFactor() const override;
+
   void SetDidFirstNonEmptyPaintCallbackForTesting(base::OnceClosure callback);
   void SetTickClockForTesting(const base::TickClock* clock);
   views::WebView* GetWebViewForTesting();
@@ -221,6 +231,7 @@ class WebUIToolbarWebView
   chrome::BrowserCommandController* GetCommandController() override;
   views::View* GetView() override;
   void AnnounceAlert(const std::u16string& announcement) override;
+  webui_toolbar::IconTable& GetIconTable() override;
   void OnPreferredSizeChanged() override;
   void OnReloadControlStateChanged(
       toolbar_ui_api::mojom::ReloadControlStatePtr state) override;
@@ -290,6 +301,8 @@ class WebUIToolbarWebView
 
   const raw_ptr<BrowserWindowInterface> browser_;
   const raw_ptr<chrome::BrowserCommandController> controller_;
+
+  webui_toolbar::IconTable icon_table_;
 
   // Classes that manage individual controls. They are responsible for informing
   // `this` when the state of the control changes. Though most are statically

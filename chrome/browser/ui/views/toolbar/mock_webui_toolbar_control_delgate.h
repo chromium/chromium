@@ -9,8 +9,10 @@
 #include <vector>
 
 #include "chrome/browser/ui/views/toolbar/webui_toolbar_web_view.h"
+#include "chrome/browser/ui/webui/webui_toolbar/icon_table.h"
 #include "components/browser_apis/ui_controllers/toolbar/toolbar_ui_api_data_model.mojom-forward.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "ui/color/color_provider.h"
 
 class BrowserWindowInterface;
 
@@ -22,7 +24,9 @@ namespace views {
 class View;
 }  // namespace views
 
-class MockWebUIToolbarControlDelegate : public WebUIToolbarControlDelegate {
+class MockWebUIToolbarControlDelegate
+    : public WebUIToolbarControlDelegate,
+      public webui_toolbar::IconTable::Delegate {
  public:
   MockWebUIToolbarControlDelegate();
   ~MockWebUIToolbarControlDelegate() override;
@@ -75,6 +79,15 @@ class MockWebUIToolbarControlDelegate : public WebUIToolbarControlDelegate {
       GetPinnedToolbarActionsState,
       (),
       (const override));
+  webui_toolbar::IconTable& GetIconTable() override { return icon_table_; }
+
+  // webui_toolbar::IconTable::Delegate:
+  const ui::ColorProvider* GetColorProvider() const override;
+  float GetScaleFactor() const override;
+
+ private:
+  webui_toolbar::IconTable icon_table_;
+  ui::ColorProvider color_provider_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TOOLBAR_MOCK_WEBUI_TOOLBAR_CONTROL_DELGATE_H_

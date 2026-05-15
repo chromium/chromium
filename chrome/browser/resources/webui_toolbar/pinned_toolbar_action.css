@@ -9,11 +9,3 @@
  * #scheme=relative
  * #include=cr-hidden-style-lit toolbar-button
  * #css_wrapper_metadata_end */
-
-.icon-password-manager {
-  --cr-icon-image: url(rhs_icons/password_manager.svg);
-}
-
-.icon-location-on-chrome-refresh {
-  --cr-icon-image: url(rhs_icons/location_on_chrome_refresh.svg);
-}

@@ -5,7 +5,10 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_WEBUI_TOOLBAR_WEBUI_TOOLBAR_TEST_UTILS_H_
 #define CHROME_BROWSER_UI_WEBUI_WEBUI_TOOLBAR_WEBUI_TOOLBAR_TEST_UTILS_H_
 
+#include <ostream>
+
 #include "chrome/browser/command_updater.h"
+#include "chrome/browser/ui/webui/webui_toolbar/adapters/icon_table_fetcher.h"
 #include "chrome/browser/ui/webui/webui_toolbar/browser_controls_service.h"
 #include "chrome/browser/ui/webui/webui_toolbar/toolbar_ui_service.h"
 #include "components/browser_apis/browser_controls/browser_controls_api.mojom.h"
@@ -13,6 +16,7 @@
 #include "components/browser_apis/ui_controllers/toolbar/toolbar_ui_api_data_model.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/gfx/geometry/rect_f.h"
@@ -39,7 +43,8 @@ class MockToolbarUIObserver : public toolbar_ui_api::mojom::ToolbarUIObserver {
   // toolbar_ui_api::mojom::ToolbarUIObserver:
   MOCK_METHOD(void,
               OnNavigationControlsStateChanged,
-              (toolbar_ui_api::mojom::NavigationControlsStatePtr state),
+              (std::vector<toolbar_ui_api::mojom::IconUpdatePtr> icons,
+               toolbar_ui_api::mojom::NavigationControlsStatePtr state),
               (override));
 
  private:
@@ -149,6 +154,55 @@ class MockCommandUpdater : public CommandUpdater {
               (CommandObserver * observer),
               (override));
   MOCK_METHOD(bool, UpdateCommandEnabled, (int id, bool state), (override));
+};
+
+MATCHER_P(MatchesIconUpdate, expected, "") {
+  const toolbar_ui_api::mojom::IconUpdatePtr& update = arg;
+  return testing::ExplainMatchResult(expected.get()->handle_id,
+                                     update->handle_id, result_listener) &&
+         testing::ExplainMatchResult(expected.get()->icon_url_or_name,
+                                     update->icon_url_or_name,
+                                     result_listener) &&
+         testing::ExplainMatchResult(expected.get()->icon_is_url,
+                                     update->icon_is_url, result_listener);
+}
+
+// Tests that an update is a PNG data URL for given handle id.
+MATCHER_P(MatchesBitmapIconUpdate, handle_id, "") {
+  const toolbar_ui_api::mojom::IconUpdatePtr& update = arg;
+  return testing::ExplainMatchResult(handle_id, update->handle_id,
+                                     result_listener) &&
+         testing::ExplainMatchResult(
+             testing::Optional(testing::StartsWith("data:image/png;base64")),
+             update->icon_url_or_name, result_listener) &&
+         testing::ExplainMatchResult(true, update->icon_is_url,
+                                     result_listener);
+}
+
+// Pretty printer for gTest. It needs to be in mojo namespace to be found;
+// note that this is secretly a mojo::InlineStructPtr.
+namespace mojo {
+
+std::ostream& operator<<(
+    std::ostream& out,
+    const toolbar_ui_api::mojom::IconUpdatePtr& icon_update);
+
+}  // namespace mojo
+
+class FakeIconTableFetcher : public toolbar_ui_api::IconTableFetcher {
+ public:
+  FakeIconTableFetcher();
+  ~FakeIconTableFetcher() override;
+
+  void AddUpdate(toolbar_ui_api::mojom::IconUpdatePtr update);
+
+  std::vector<toolbar_ui_api::mojom::IconUpdatePtr> GetFullState() override;
+  std::vector<toolbar_ui_api::mojom::IconUpdatePtr> TakePendingUpdates()
+      override;
+
+ private:
+  std::vector<toolbar_ui_api::mojom::IconUpdatePtr> all_updates_;
+  std::vector<toolbar_ui_api::mojom::IconUpdatePtr> pending_updates_;
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_WEBUI_TOOLBAR_WEBUI_TOOLBAR_TEST_UTILS_H_
