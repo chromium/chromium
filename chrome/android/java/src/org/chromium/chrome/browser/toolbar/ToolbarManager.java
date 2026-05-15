@@ -1860,7 +1860,7 @@ public class ToolbarManager
         return mOmniboxFocusStateSupplier.get()
                 || (mToolbarPositionController != null
                         && mToolbarPositionController.doesPrefMismatchPosition())
-                || isNewTabPage();
+                || (isNewTabPage() && !isIncognitoNewTabPageCurrentlyVisible());
     }
 
     private void back(int metaState, int buttonState) {
@@ -1896,7 +1896,7 @@ public class ToolbarManager
         mIsNtpWithFakeboxShowingSupplier.set(
                 getNewTabPageForCurrentTab() != null
                         && getNewTabPageForCurrentTab().isLocationBarShownInNtp());
-        mIsIncognitoNtpShowingSupplier.set(getIncognitoNewTabPageForCurrentTab() != null);
+        mIsIncognitoNtpShowingSupplier.set(isIncognitoNewTabPageCurrentlyVisible());
         mIsTabSwitcherFinishedShowingSupplier.set(
                 mLayoutStateProvider != null
                         && mLayoutStateProvider.getActiveLayoutType() == LayoutType.TAB_SWITCHER);
@@ -2158,7 +2158,7 @@ public class ToolbarManager
 
         @Override
         public boolean isIncognitoNewTabPageCurrentlyVisible() {
-            return getIncognitoNewTabPageForCurrentTab() != null;
+            return ToolbarManager.this.isIncognitoNewTabPageCurrentlyVisible();
         }
 
         @Override
@@ -2275,16 +2275,14 @@ public class ToolbarManager
         return null;
     }
 
-    private @Nullable IncognitoNewTabPage getIncognitoNewTabPageForCurrentTab() {
+    private boolean isIncognitoNewTabPageCurrentlyVisible() {
         if (mLocationBarModel.hasTab()) {
             Tab tab = mLocationBarModel.getTab();
             assumeNonNull(tab);
             NativePage nativePage = tab.getNativePage();
-            if (nativePage instanceof IncognitoNewTabPage incognitoNewTabPage) {
-                return incognitoNewTabPage;
-            }
+            return nativePage instanceof IncognitoNewTabPage;
         }
-        return null;
+        return false;
     }
 
     private boolean isWebUiNtp() {
@@ -3451,7 +3449,7 @@ public class ToolbarManager
         checkIfNtpShowingWithNoPendingLoad();
 
         if (mToolbarPositionController != null) {
-            mIsIncognitoNtpShowingSupplier.set(getIncognitoNewTabPageForCurrentTab() != null);
+            mIsIncognitoNtpShowingSupplier.set(isIncognitoNewTabPageCurrentlyVisible());
         }
     }
 
