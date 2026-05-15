@@ -34,6 +34,7 @@
 #include "device/bluetooth/bluetooth_device.h"
 #include "device/bluetooth/bluetooth_l2cap_channel_mac.h"
 #include "device/bluetooth/bluetooth_rfcomm_channel_mac.h"
+#include "device/bluetooth/public/cpp/bluetooth_features.h"
 #include "net/base/io_buffer.h"
 #include "net/base/net_errors.h"
 
@@ -773,33 +774,86 @@ void BluetoothSocketMac::Send(scoped_refptr<net::IOBuffer> buffer,
   uint16_t mtu = channel_->GetOutgoingMTU();
   auto send_buffer =
       base::MakeRefCounted<net::DrainableIOBuffer>(buffer.get(), buffer_size);
-  while (send_buffer->BytesRemaining() > 0) {
-    int byte_count = send_buffer->BytesRemaining();
-    if (byte_count > mtu)
-      byte_count = mtu;
-    IOReturn status =
-        channel_->WriteAsync(send_buffer->data(), byte_count, request_ptr);
 
-    if (status != kIOReturnSuccess) {
-      std::stringstream error;
-      error << "Failed to connect bluetooth socket ("
-            << channel_->GetDeviceAddress() << "): (" << status << ")";
-      // Remember the first error only
-      if (request_ptr->status == kIOReturnSuccess)
-        request_ptr->status = status;
-      request_ptr->error_signaled = true;
-      std::move(request_ptr->error_callback).Run(error.str());
-      // We may have failed to issue any write operation. In that case, there
-      // will be no corresponding completion callback for this particular
-      // request, so we must forget about it now.
-      if (request_ptr->active_async_writes == 0) {
-        send_queue_.pop();
+  if (base::FeatureList::IsEnabled(
+          features::kBluetoothSocketMacPreCalculateWriteChunks)) {
+    // Pre-calculate total chunks to prevent premature cleanup if callbacks fire
+    // synchronously.
+    int num_chunks = buffer_size / mtu + (buffer_size % mtu != 0 ? 1 : 0);
+    request_ptr->active_async_writes = num_chunks;
+    int chunks_remaining = num_chunks;
+
+    while (chunks_remaining > 0) {
+      int byte_count = send_buffer->BytesRemaining();
+      if (byte_count > mtu) {
+        byte_count = mtu;
       }
-      return;
-    }
 
-    request_ptr->active_async_writes++;
-    send_buffer->DidConsume(byte_count);
+      IOReturn status =
+          channel_->WriteAsync(send_buffer->data(), byte_count, request_ptr);
+
+      if (status != kIOReturnSuccess) {
+        std::stringstream error;
+        error << "Failed to connect bluetooth socket ("
+              << channel_->GetDeviceAddress() << "): (" << status << ")";
+        // Remember the first error only
+        if (request_ptr->status == kIOReturnSuccess) {
+          request_ptr->status = status;
+        }
+        request_ptr->error_signaled = true;
+        std::move(request_ptr->error_callback).Run(error.str());
+
+        // We failed to issue this write and all subsequent writes.
+        // Subtract the remaining unissued chunks rather than setting to 0
+        // directly, to avoid prematurely freeing the request if previous chunks
+        // succeeded asynchronously and are still in flight.
+        request_ptr->active_async_writes -= chunks_remaining;
+
+        // We may have failed to issue any write operation. In that case, there
+        // will be no corresponding completion callback for this particular
+        // request, so we must forget about it now.
+        if (request_ptr->active_async_writes == 0) {
+          send_queue_.pop();
+        }
+        return;
+      }
+
+      chunks_remaining--;
+      send_buffer->DidConsume(byte_count);
+    }
+  } else {
+    while (send_buffer->BytesRemaining() > 0) {
+      int byte_count = send_buffer->BytesRemaining();
+      if (byte_count > mtu) {
+        byte_count = mtu;
+      }
+
+      IOReturn status =
+          channel_->WriteAsync(send_buffer->data(), byte_count, request_ptr);
+
+      if (status != kIOReturnSuccess) {
+        std::stringstream error;
+        error << "Failed to connect bluetooth socket ("
+              << channel_->GetDeviceAddress() << "): (" << status << ")";
+        // Remember the first error only
+        if (request_ptr->status == kIOReturnSuccess) {
+          request_ptr->status = status;
+        }
+        request_ptr->error_signaled = true;
+        std::move(request_ptr->error_callback).Run(error.str());
+
+        // We may have failed to issue any write operation. In that case, there
+        // will be no corresponding completion callback for this particular
+        // request, so we must forget about it now.
+        if (request_ptr->active_async_writes == 0) {
+          send_queue_.pop();
+        }
+        return;
+      }
+
+      request_ptr->active_async_writes++;
+      send_buffer->DidConsume(byte_count);
+    }
   }
 }
 

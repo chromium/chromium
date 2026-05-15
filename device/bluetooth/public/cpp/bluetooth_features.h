@@ -16,6 +16,9 @@ namespace features {
 BLUETOOTH_FEATURES_EXPORT BASE_DECLARE_FEATURE(
     kWebBluetoothAllowGetAvailabilityWithBfcache);
 
+BLUETOOTH_FEATURES_EXPORT BASE_DECLARE_FEATURE(
+    kBluetoothSocketMacPreCalculateWriteChunks);
+
 }  // namespace features
 
 #endif  // DEVICE_BLUETOOTH_PUBLIC_CPP_BLUETOOTH_FEATURES_H_
