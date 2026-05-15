@@ -952,6 +952,11 @@ void View::DeprecatedLayoutImmediately() {
 void View::Layout(PassKey) {
   needs_layout_ = false;
 
+  if (GetProperty(kViewDoesNotLayOutChildren)) {
+    CHECK(!HasLayoutManager());
+    return;
+  }
+
   // If we have a layout manager, let it handle the layout for us.
   if (HasLayoutManager()) {
     GetLayoutManager()->Layout(this);
