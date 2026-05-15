@@ -130,7 +130,7 @@ Mailbox SharedImageInterfaceProxy::CreateSharedImage(
 
   if (handle_to_populate->is_null()) {
     if (!host_->IsLost()) {
-      LOG(ERROR) << "Buffer handle is null. Not creating a mailbox from it.";
+      VLOG(1) << "Buffer handle is null. Not creating a mailbox from it.";
     }
     return Mailbox();
   }

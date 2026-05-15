@@ -456,7 +456,7 @@ void GpuChannelMessageFilter::CreateGpuMemoryBuffer(
     }
   }
   if (handle.is_null()) {
-    LOG(ERROR) << "Buffer Handle is null.";
+    DLOG(ERROR) << "Buffer Handle is null.";
   }
   std::move(callback).Run(std::move(handle));
 }
