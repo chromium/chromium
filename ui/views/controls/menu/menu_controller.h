@@ -629,7 +629,7 @@ class VIEWS_EXPORT MenuController final : public gfx::AnimationDelegate,
 
   // Performs the teardown of the menu launched by Run(). The selected item is
   // returned.
-  MenuItemView* ExitTopMostMenu();
+  raw_ptr<MenuItemView> ExitTopMostMenu();
 
   // Handles the mouse location event on the submenu |source|.
   void HandleMouseLocation(SubmenuView* source,
