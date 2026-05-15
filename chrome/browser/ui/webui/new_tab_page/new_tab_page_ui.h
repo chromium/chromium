@@ -108,9 +108,9 @@ class NewTabPageUI
       public composebox::mojom::PageHandlerFactory,
       public browser_command::mojom::CommandHandlerFactory,
       public help_bubble::mojom::HelpBubbleHandlerFactory,
-      public action_chips::mojom::ActionChipsHandlerFactory,
 #if !BUILDFLAG(IS_ANDROID)
       public ntp_promo::mojom::NtpPromoHandlerFactory,
+      public action_chips::mojom::ActionChipsHandlerFactory,
 #endif
       public NtpCustomBackgroundServiceObserver,
       public searchbox::mojom::PageHandlerFactory,
@@ -232,10 +232,10 @@ class NewTabPageUI
   void BindInterface(
       mojo::PendingReceiver<ntp_promo::mojom::NtpPromoHandlerFactory>
           pending_receiver);
-#endif  // !BUILDFLAG(IS_ANDROID)
   void BindInterface(
       mojo::PendingReceiver<action_chips::mojom::ActionChipsHandlerFactory>
           pending_receiver);
+#endif  // !BUILDFLAG(IS_ANDROID)
 
   void ConnectToParentDocument(
       mojo::PendingRemote<new_tab_page::mojom::MicrosoftAuthUntrustedDocument>
@@ -303,11 +303,11 @@ class NewTabPageUI
       mojo::PendingRemote<ntp_promo::mojom::NtpPromoClient> client,
       mojo::PendingReceiver<ntp_promo::mojom::NtpPromoHandler> handler)
       override;
-#endif  // !BUILDFLAG(IS_ANDROID)
   // action_chips::mojom::ActionChipsHandlerFactory:
   void CreateActionChipsHandler(
       mojo::PendingReceiver<action_chips::mojom::ActionChipsHandler> handler,
       mojo::PendingRemote<action_chips::mojom::Page> page) override;
+#endif  // !BUILDFLAG(IS_ANDROID)
 
   // NtpCustomBackgroundServiceObserver:
   void OnCustomBackgroundImageUpdated() override;
@@ -371,10 +371,10 @@ class NewTabPageUI
   std::unique_ptr<NtpPromoHandler> ntp_promo_handler_;
   mojo::Receiver<ntp_promo::mojom::NtpPromoHandlerFactory>
       ntp_promo_handler_factory_receiver_;
-#endif  // BUILDFLAG(IS_ANDROID)
   std::unique_ptr<ActionChipsHandler> action_chips_handler_;
   mojo::Receiver<action_chips::mojom::ActionChipsHandlerFactory>
       action_chips_handler_factory_receiver_;
+#endif  // BUILDFLAG(IS_ANDROID)
   std::unique_ptr<BrowserCommandHandler> promo_browser_command_handler_;
   mojo::Receiver<browser_command::mojom::CommandHandlerFactory>
       browser_command_factory_receiver_;

@@ -5,7 +5,6 @@
 import("//build/config/chrome_build.gni")
 import("//build/config/coverage/coverage.gni")
 import("//build/config/sanitizers/sanitizers.gni")
-import("//extensions/buildflags/buildflags.gni")
 
 declare_args() {
   # Optimize parts of Chrome's UI written with web technologies (HTML/CSS/JS)
@@ -32,13 +31,6 @@ declare_args() {
 
   # Enable the WebUI version of the New Tab Page.
   enable_webui_ntp = !is_android && !is_ios
-}
-
-if (enable_webui_ntp) {
-  # NTP relies on chrome.metricsPrivate, which is an extensions API.
-  # Fuschia enables NTP, but presubmably doesn't use it, since it's broken
-  # without this.
-  assert(enable_extensions_core || is_fuchsia)
 }
 
 # Build-time WebUI code caching is only used in optimize_webui builds. When the

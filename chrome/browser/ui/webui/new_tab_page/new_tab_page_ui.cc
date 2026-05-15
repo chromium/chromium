@@ -63,10 +63,6 @@
 #include "chrome/browser/ui/webui/cr_components/searchbox/searchbox_handler.h"
 #include "chrome/browser/ui/webui/customize_buttons/customize_buttons_handler.h"
 #include "chrome/browser/ui/webui/favicon_source.h"
-#include "chrome/browser/ui/webui/new_tab_page/action_chips/action_chips_generator.h"
-#include "chrome/browser/ui/webui/new_tab_page/action_chips/action_chips_handler.h"
-#include "chrome/browser/ui/webui/new_tab_page/action_chips/action_chips_metrics.h"
-#include "chrome/browser/ui/webui/new_tab_page/action_chips/tab_id_generator.h"
 #include "chrome/browser/ui/webui/new_tab_page/composebox/variations/composebox_fieldtrial.h"
 #include "chrome/browser/ui/webui/new_tab_page/new_tab_page_handler.h"
 #include "chrome/browser/ui/webui/new_tab_page/untrusted_source.h"
@@ -141,6 +137,10 @@
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
+#include "chrome/browser/ui/webui/new_tab_page/action_chips/action_chips_generator.h"
+#include "chrome/browser/ui/webui/new_tab_page/action_chips/action_chips_handler.h"
+#include "chrome/browser/ui/webui/new_tab_page/action_chips/action_chips_metrics.h"
+#include "chrome/browser/ui/webui/new_tab_page/action_chips/tab_id_generator.h"
 #include "chrome/browser/ui/webui/new_tab_page/ntp_promo/ntp_promo_handler.h"
 #include "chrome/browser/ui/webui/page_not_available_for_guest/page_not_available_for_guest_ui.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
@@ -298,10 +298,14 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(
       "energyEffectAnimationEnabled",
       base::FeatureList::IsEnabled(ntp_features::kEnergyEffectAnimation));
 // TODO(b/502297163): Implement for Android.
+#if BUILDFLAG(IS_ANDROID)
+  source->AddBoolean("ntpNextFeaturesEnabled", false);
+#else
   source->AddBoolean(
       "ntpNextFeaturesEnabled",
       ntp_realbox::IsNtpRealboxNextEnabled(profile) &&
           base::FeatureList::IsEnabled(ntp_features::kNtpNextFeatures));
+#endif
   source->AddBoolean("ntpNextShowDismissalUIEnabled",
                      ntp_features::kNtpNextShowDismissalUIParam.Get());
   source->AddBoolean("ntpNextDisablementContextMenuEnabled",
@@ -783,6 +787,8 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(
                      ntp_composebox::kUseNtpComposeboxFork.Get());
 
   // Action Chips LoadTimeData
+// TODO(b/502297163): Implement for Android.
+#if !BUILDFLAG(IS_ANDROID)
   const auto* aim_eligibility_service =
       AimEligibilityServiceFactory::GetForProfile(profile);
   bool action_chips_eligible =
@@ -797,6 +803,10 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(
   }
   bool add_tab_upload_delay_on_action_chip_click =
       ntp_features::kAddTabUploadDelayOnActionChipClick.Get();
+#else
+  bool show_action_chips = false;
+  bool add_tab_upload_delay_on_action_chip_click = false;
+#endif  // !BUILDFLAG(IS_ANDROID)
   source->AddBoolean("addTabUploadDelayOnActionChipClick",
                      add_tab_upload_delay_on_action_chip_click);
   source->AddBoolean("actionChipsEnabled", show_action_chips);
@@ -875,8 +885,8 @@ NewTabPageUI::NewTabPageUI(content::WebUI* web_ui)
 // TODO(b/502297163): Implement for Android.
 #if !BUILDFLAG(IS_ANDROID)
       ntp_promo_handler_factory_receiver_(this),
-#endif
       action_chips_handler_factory_receiver_(this),
+#endif
       browser_command_factory_receiver_(this),
       searchbox_page_factory_receiver_(this),
       help_bubble_handler_factory_receiver_(this),
@@ -1300,7 +1310,6 @@ void NewTabPageUI::BindInterface(
   }
   ntp_promo_handler_factory_receiver_.Bind(std::move(pending_receiver));
 }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 void NewTabPageUI::BindInterface(
     mojo::PendingReceiver<action_chips::mojom::ActionChipsHandlerFactory>
@@ -1310,6 +1319,7 @@ void NewTabPageUI::BindInterface(
   }
   action_chips_handler_factory_receiver_.Bind(std::move(pending_receiver));
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 void NewTabPageUI::CreatePageHandler(
     mojo::PendingRemote<new_tab_page::mojom::Page> pending_page,
@@ -1426,7 +1436,6 @@ void NewTabPageUI::CreateNtpPromoHandler(
   ntp_promo_handler_ = NtpPromoHandler::Create(
       std::move(client), std::move(handler), web_contents());
 }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 void NewTabPageUI::CreateActionChipsHandler(
     mojo::PendingReceiver<action_chips::mojom::ActionChipsHandler> handler,
@@ -1435,6 +1444,7 @@ void NewTabPageUI::CreateActionChipsHandler(
       std::move(handler), std::move(page), profile_, web_ui(),
       std::make_unique<ActionChipsGeneratorImpl>(profile_));
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 // OnColorProviderChanged can be called during the destruction process and
 // should not directly access any member variables.
