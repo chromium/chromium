@@ -15,7 +15,7 @@
 #include "base/no_destructor.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
-#include "ui/base/interaction/framework_specific_implementation.h"
+#include "ui/base/interaction/safe_castable.h"
 #include "ui/gfx/geometry/rect.h"
 
 namespace ui {
@@ -33,7 +33,7 @@ class COMPONENT_EXPORT(UI_BASE_INTERACTION) TrackedElementMac
   // TrackedElement:
   gfx::Rect GetScreenBounds() const override;
 
-  DECLARE_FRAMEWORK_SPECIFIC_METADATA()
+  DECLARE_SAFE_CAST_TARGET()
 
  private:
   const gfx::Rect screen_bounds_;

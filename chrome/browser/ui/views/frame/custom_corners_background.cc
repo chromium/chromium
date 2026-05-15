@@ -44,7 +44,7 @@ SkVector CornerToRadiusVector(const CustomCornersBackground::Corner& corner,
 
 }  // namespace
 
-DEFINE_FRAMEWORK_SPECIFIC_METADATA(CustomCornersBackground)
+DEFINE_SAFE_CAST_TARGET(CustomCornersBackground)
 
 CustomCornersBackground::CustomCornersBackground(
     views::View& view,

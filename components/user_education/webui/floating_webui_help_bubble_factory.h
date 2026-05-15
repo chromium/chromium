@@ -22,7 +22,7 @@ class FloatingWebUIHelpBubbleFactory : public HelpBubbleFactoryViews {
   explicit FloatingWebUIHelpBubbleFactory(const HelpBubbleDelegate* delegate);
   ~FloatingWebUIHelpBubbleFactory() override;
 
-  DECLARE_FRAMEWORK_SPECIFIC_METADATA()
+  DECLARE_SAFE_CAST_TARGET()
 
   // HelpBubbleFactory:
   std::unique_ptr<HelpBubble> CreateBubble(ui::TrackedElement* element,

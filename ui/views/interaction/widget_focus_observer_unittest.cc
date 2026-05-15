@@ -9,7 +9,7 @@
 
 #include "base/functional/callback_helpers.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/base/interaction/framework_specific_implementation.h"
+#include "ui/base/interaction/safe_castable.h"
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/test/views_test_base.h"
@@ -27,7 +27,7 @@ class DummyWidgetFocusSupplier : public test::internal::WidgetFocusSupplier {
   DummyWidgetFocusSupplier() = default;
   ~DummyWidgetFocusSupplier() override = default;
 
-  DECLARE_FRAMEWORK_SPECIFIC_METADATA()
+  DECLARE_SAFE_CAST_TARGET()
 
  protected:
   Widget::Widgets GetAllWidgets() const override {
@@ -35,7 +35,7 @@ class DummyWidgetFocusSupplier : public test::internal::WidgetFocusSupplier {
   }
 };
 
-DEFINE_FRAMEWORK_SPECIFIC_METADATA(DummyWidgetFocusSupplier)
+DEFINE_SAFE_CAST_TARGET(DummyWidgetFocusSupplier)
 
 }  // namespace
 

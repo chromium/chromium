@@ -13,7 +13,7 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "components/user_education/common/user_education_context.h"
 #include "components/user_education/common/user_education_storage_service.h"
-#include "ui/base/interaction/framework_specific_implementation.h"
+#include "ui/base/interaction/safe_castable.h"
 
 class BrowserUserEducationInterfaceImpl;
 
@@ -21,7 +21,7 @@ class BrowserUserEducationInterfaceImpl;
 class BrowserUserEducationContext
     : public user_education::UserEducationContext {
  public:
-  DECLARE_FRAMEWORK_SPECIFIC_METADATA()
+  DECLARE_SAFE_CAST_TARGET()
 
   BrowserUserEducationContext(
       BrowserView& browser_view,

@@ -8,7 +8,7 @@
 #include <memory>
 
 #include "base/no_destructor.h"
-#include "ui/base/interaction/framework_specific_registration_list.h"
+#include "ui/base/interaction/implementation_list.h"
 
 namespace ui {
 
@@ -26,7 +26,7 @@ class COMPONENT_EXPORT(UI_BASE_INTERACTION) ElementHighlighter {
 
   // Provides support for TrackedElements from given framework to do
   // highlighting.
-  class Backend : public ui::FrameworkSpecificImplementation {
+  class Backend : public ui::SafeCastable {
    public:
     virtual bool CanBeHighlighted(TrackedElement& element) const = 0;
 
@@ -62,7 +62,7 @@ class COMPONENT_EXPORT(UI_BASE_INTERACTION) ElementHighlighter {
   friend class base::NoDestructor<ElementHighlighter>;
   ElementHighlighter();
 
-  ui::FrameworkSpecificRegistrationList<Backend> backends_;
+  ui::ImplementationList<Backend> backends_;
 };
 
 }  // namespace ui

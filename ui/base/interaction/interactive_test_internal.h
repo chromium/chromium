@@ -32,13 +32,13 @@
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_test_util.h"
 #include "ui/base/interaction/element_tracker.h"
-#include "ui/base/interaction/framework_specific_implementation.h"
-#include "ui/base/interaction/framework_specific_registration_list.h"
+#include "ui/base/interaction/implementation_list.h"
 #include "ui/base/interaction/interaction_sequence.h"
 #include "ui/base/interaction/interaction_test_util.h"
 #include "ui/base/interaction/interactive_test_definitions.h"
 #include "ui/base/interaction/interactive_test_temporary.h"
 #include "ui/base/interaction/polling_state_observer.h"
+#include "ui/base/interaction/safe_castable.h"
 #include "ui/base/interaction/state_observer.h"
 #include "ui/gfx/geometry/rect.h"
 
@@ -71,8 +71,7 @@ class StateObserverElement;
 
 // Represents a private test implementation for a particular framework or
 // platform.
-class InteractiveTestPrivateFrameworkBase
-    : public FrameworkSpecificImplementation {
+class InteractiveTestPrivateFrameworkBase : public SafeCastable {
  public:
   explicit InteractiveTestPrivateFrameworkBase(
       InteractiveTestPrivate& test_impl);
@@ -419,7 +418,7 @@ class InteractiveTestPrivate {
   intptr_t next_additional_context_handle_ = 1U;
   std::map<intptr_t, std::string> additional_context_data_;
 
-  FrameworkSpecificRegistrationList<InteractiveTestPrivateFrameworkBase>
+  ImplementationList<InteractiveTestPrivateFrameworkBase>
       framework_implementations_;
 
   // Safely tracks the most recent native window targeted in each context.
@@ -444,7 +443,7 @@ class StateObserverElement : public TestElementBase {
   StateObserverElement(ElementIdentifier id, ElementContext context);
   ~StateObserverElement() override;
 
-  DECLARE_FRAMEWORK_SPECIFIC_METADATA()
+  DECLARE_SAFE_CAST_TARGET()
 };
 
 // Implements an element that is shown when an observed state matches a desired

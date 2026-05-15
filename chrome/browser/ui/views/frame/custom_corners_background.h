@@ -10,7 +10,7 @@
 #include "base/types/strong_alias.h"
 #include "chrome/browser/ui/views/frame/custom_corners.h"
 #include "third_party/skia/include/core/SkPath.h"
-#include "ui/base/interaction/framework_specific_implementation.h"
+#include "ui/base/interaction/safe_castable.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_variant.h"
 #include "ui/views/background.h"
@@ -25,7 +25,7 @@ class BrowserView;
 // browser's corners or providing nice curved interfaces between elements.
 class CustomCornersBackground : public views::Background, public CustomCorners {
  public:
-  DECLARE_FRAMEWORK_SPECIFIC_METADATA()
+  DECLARE_SAFE_CAST_TARGET()
 
   // Specifies how a corner should be painted.
   enum class CornerType {

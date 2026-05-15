@@ -23,7 +23,7 @@
 #include "components/user_education/webui/help_bubble_handler.h"
 #include "components/user_education/webui/help_bubble_webui.h"
 #include "ui/base/accelerators/accelerator.h"
-#include "ui/base/interaction/framework_specific_implementation.h"
+#include "ui/base/interaction/safe_castable.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/accessible_pane_view.h"
@@ -144,7 +144,7 @@ TabWebUIHelpBubbleFactoryBrowser::CreateBubble(
   return result;
 }
 
-DEFINE_FRAMEWORK_SPECIFIC_METADATA(TabWebUIHelpBubbleFactoryBrowser)
+DEFINE_SAFE_CAST_TARGET(TabWebUIHelpBubbleFactoryBrowser)
 
 FloatingWebUIHelpBubbleFactoryBrowser::FloatingWebUIHelpBubbleFactoryBrowser(
     const user_education::HelpBubbleDelegate* delegate)
@@ -262,4 +262,4 @@ std::u16string BrowserHelpBubble::GetFocusBubbleAcceleratorText(
   return accelerator.GetShortcutText();
 }
 
-DEFINE_FRAMEWORK_SPECIFIC_METADATA(FloatingWebUIHelpBubbleFactoryBrowser)
+DEFINE_SAFE_CAST_TARGET(FloatingWebUIHelpBubbleFactoryBrowser)

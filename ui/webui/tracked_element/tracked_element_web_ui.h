@@ -10,7 +10,7 @@
 #include "base/memory/weak_ptr.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
-#include "ui/base/interaction/framework_specific_implementation.h"
+#include "ui/base/interaction/safe_castable.h"
 #include "ui/gfx/geometry/rect_f.h"
 
 namespace ui {
@@ -62,7 +62,7 @@ class TrackedElementWebUI : public ui::TrackedElement {
                       ui::ElementContext context);
   ~TrackedElementWebUI() override;
 
-  DECLARE_FRAMEWORK_SPECIFIC_METADATA()
+  DECLARE_SAFE_CAST_TARGET()
 
   TrackedElementHandler* handler() const { return handler_; }
 

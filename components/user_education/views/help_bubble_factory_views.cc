@@ -25,7 +25,7 @@
 
 namespace user_education {
 
-DEFINE_FRAMEWORK_SPECIFIC_METADATA(HelpBubbleFactoryViews)
+DEFINE_SAFE_CAST_TARGET(HelpBubbleFactoryViews)
 
 HelpBubbleFactoryViews::HelpBubbleFactoryViews(
     const HelpBubbleDelegate* delegate)

@@ -17,7 +17,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/ui/animation/browser_animation_provider_internal.h"
 #include "chrome/browser/ui/animation/browser_animation_types.h"
-#include "ui/base/interaction/framework_specific_implementation.h"
+#include "ui/base/interaction/safe_castable.h"
 #include "ui/gfx/animation/tween.h"
 
 // Convenience class for creating browser animation specifications.
@@ -29,7 +29,7 @@
 // groups all at once, see `CachingBrowserAnimationProvider`.
 //
 // See README.md for full details.
-class BrowserAnimationProvider : public ui::FrameworkSpecificImplementation {
+class BrowserAnimationProvider : public ui::SafeCastable {
  public:
   BrowserAnimationProvider() = default;
   BrowserAnimationProvider(const BrowserAnimationProvider&) = delete;

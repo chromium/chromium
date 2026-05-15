@@ -79,17 +79,17 @@ class TestElementHighlighterBase : public ui::ElementHighlighter::Backend {
 class TestElementHighlighter
     : public TestElementHighlighterBase<test::TestElement> {
  public:
-  DECLARE_FRAMEWORK_SPECIFIC_METADATA()
+  DECLARE_SAFE_CAST_TARGET()
 };
 
 class TestOtherElementHighlighter
     : public TestElementHighlighterBase<test::TestElementOtherFramework> {
  public:
-  DECLARE_FRAMEWORK_SPECIFIC_METADATA()
+  DECLARE_SAFE_CAST_TARGET()
 };
 
-DEFINE_FRAMEWORK_SPECIFIC_METADATA(TestElementHighlighter)
-DEFINE_FRAMEWORK_SPECIFIC_METADATA(TestOtherElementHighlighter)
+DEFINE_SAFE_CAST_TARGET(TestElementHighlighter)
+DEFINE_SAFE_CAST_TARGET(TestOtherElementHighlighter)
 
 }  // namespace
 

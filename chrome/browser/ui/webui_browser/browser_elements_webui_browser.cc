@@ -5,11 +5,10 @@
 #include "chrome/browser/ui/webui_browser/browser_elements_webui_browser.h"
 
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#include "ui/base/interaction/framework_specific_implementation.h"
+#include "ui/base/interaction/safe_castable.h"
 #include "ui/views/interaction/element_tracker_views.h"
 
-DEFINE_FRAMEWORK_SPECIFIC_METADATA_SUBCLASS(BrowserElementsWebUiBrowser,
-                                            BrowserElementsViews)
+DEFINE_SAFE_CAST_SUBCLASS(BrowserElementsWebUiBrowser, BrowserElementsViews)
 
 BrowserElementsWebUiBrowser::BrowserElementsWebUiBrowser(
     BrowserWindowInterface& browser)

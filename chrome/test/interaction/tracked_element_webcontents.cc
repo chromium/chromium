@@ -37,4 +37,4 @@ std::string TrackedElementWebContents::ToString() const {
   return result;
 }
 
-DEFINE_FRAMEWORK_SPECIFIC_METADATA(TrackedElementWebContents)
+DEFINE_SAFE_CAST_TARGET(TrackedElementWebContents)

@@ -27,7 +27,7 @@
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_test_util.h"
 #include "ui/base/interaction/element_tracker.h"
-#include "ui/base/interaction/framework_specific_implementation.h"
+#include "ui/base/interaction/safe_castable.h"
 #include "ui/gfx/native_ui_types.h"
 
 #if BUILDFLAG(IS_MAC)
@@ -50,7 +50,7 @@ namespace {
 class InteractiveTestPrivateFrameworkImpl
     : public InteractiveTestPrivateFrameworkBase {
  public:
-  DECLARE_FRAMEWORK_SPECIFIC_METADATA()
+  DECLARE_SAFE_CAST_TARGET()
 
   explicit InteractiveTestPrivateFrameworkImpl(
       InteractiveTestPrivate& test_impl)
@@ -66,7 +66,7 @@ class InteractiveTestPrivateFrameworkImpl
                      DebugTreeNode("Pivot element (part of test automation)"));
       } else {
         nodes.emplace_back(
-            base::StringPrintf("%s - %s at %s", el->GetImplementationName(),
+            base::StringPrintf("%s - %s at %s", el->GetSafeCastableClassName(),
                                el->identifier().GetName().c_str(),
                                DebugDumpBounds(el->GetScreenBounds())));
       }
@@ -97,7 +97,7 @@ class InteractiveTestPrivateFrameworkImpl
   }
 };
 
-DEFINE_FRAMEWORK_SPECIFIC_METADATA(InteractiveTestPrivateFrameworkImpl)
+DEFINE_SAFE_CAST_TARGET(InteractiveTestPrivateFrameworkImpl)
 
 }  // namespace
 
@@ -153,7 +153,7 @@ StateObserverElement::StateObserverElement(ElementIdentifier id,
 
 StateObserverElement::~StateObserverElement() = default;
 
-DEFINE_FRAMEWORK_SPECIFIC_METADATA(StateObserverElement)
+DEFINE_SAFE_CAST_TARGET(StateObserverElement)
 
 // static
 bool InteractiveTestPrivate::allow_interactive_test_verbs_ = false;

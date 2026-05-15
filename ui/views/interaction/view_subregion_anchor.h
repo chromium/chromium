@@ -12,7 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
-#include "ui/base/interaction/framework_specific_implementation.h"
+#include "ui/base/interaction/safe_castable.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/view.h"
 #include "ui/views/view_tracker.h"
@@ -24,7 +24,7 @@ namespace views {
 class VIEWS_EXPORT ViewSubregionAnchor : public ui::TrackedElement {
  public:
   DECLARE_CLASS_CUSTOM_ELEMENT_EVENT_TYPE(kAnchorBoundsChangedEvent);
-  DECLARE_FRAMEWORK_SPECIFIC_METADATA()
+  DECLARE_SAFE_CAST_TARGET()
 
   // Creates a synthetic help bubble anchor with identifier `id` that tracks the
   // position and visibility of `host`, maintaining a relative position inside

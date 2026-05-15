@@ -42,7 +42,7 @@ namespace internal {
 class InteractiveViewsTestPrivate
     : public ui::test::internal::InteractiveTestPrivateFrameworkBase {
  public:
-  DECLARE_FRAMEWORK_SPECIFIC_METADATA()
+  DECLARE_SAFE_CAST_TARGET()
 
   explicit InteractiveViewsTestPrivate(
       ui::test::internal::InteractiveTestPrivate& test_impl);

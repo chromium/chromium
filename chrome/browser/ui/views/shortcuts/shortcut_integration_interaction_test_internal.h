@@ -17,7 +17,7 @@ namespace shortcuts {
 class ShortcutIntegrationInteractionTestPrivate
     : public ui::test::internal::InteractiveTestPrivateFrameworkBase {
  public:
-  DECLARE_FRAMEWORK_SPECIFIC_METADATA()
+  DECLARE_SAFE_CAST_TARGET()
 
   explicit ShortcutIntegrationInteractionTestPrivate(
       ui::test::internal::InteractiveTestPrivate& test_impl);

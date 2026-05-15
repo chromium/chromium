@@ -18,7 +18,7 @@ class HelpBubbleFactoryMac : public HelpBubbleFactory {
   explicit HelpBubbleFactoryMac(const HelpBubbleDelegate* delegate);
   ~HelpBubbleFactoryMac() override;
 
-  DECLARE_FRAMEWORK_SPECIFIC_METADATA()
+  DECLARE_SAFE_CAST_TARGET()
 
   // HelpBubbleFactory:
   std::unique_ptr<HelpBubble> CreateBubble(ui::TrackedElement* element,

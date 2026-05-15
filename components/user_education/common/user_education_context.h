@@ -8,7 +8,7 @@
 #include "base/memory/ref_counted.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/interaction/element_identifier.h"
-#include "ui/base/interaction/framework_specific_implementation.h"
+#include "ui/base/interaction/safe_castable.h"
 
 namespace user_education {
 
@@ -20,7 +20,7 @@ namespace user_education {
 // Because e.g. preconditions need to reference a context whose surface or
 // window may have already gone away, these objects are refcounted, and
 // primarily passed via `UserEducationContextPtr` (see below).
-class UserEducationContext : public ui::FrameworkSpecificImplementation,
+class UserEducationContext : public ui::SafeCastable,
                              public base::RefCounted<UserEducationContext> {
  public:
   // Returns whether the information in this object can still be used.

@@ -20,7 +20,7 @@
 
 namespace ui {
 
-DEFINE_FRAMEWORK_SPECIFIC_METADATA(TrackedElementMac)
+DEFINE_SAFE_CAST_TARGET(TrackedElementMac)
 
 TrackedElementMac::TrackedElementMac(ElementIdentifier identifier,
                                      ElementContext context,

@@ -52,7 +52,7 @@ std::string TrackedElementViews::ToString() const {
   return result;
 }
 
-DEFINE_FRAMEWORK_SPECIFIC_METADATA(TrackedElementViews)
+DEFINE_SAFE_CAST_TARGET(TrackedElementViews)
 
 // Tracks views associated with a specific ui::ElementIdentifier, whether or not
 // they are visible or attached to a widget.

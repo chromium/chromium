@@ -71,7 +71,7 @@ class TabWebUIHelpBubbleFactoryBrowser
   TabWebUIHelpBubbleFactoryBrowser();
   ~TabWebUIHelpBubbleFactoryBrowser() override;
 
-  DECLARE_FRAMEWORK_SPECIFIC_METADATA()
+  DECLARE_SAFE_CAST_TARGET()
 
   // user_education::HelpBubbleFactoryWebUI:
   std::unique_ptr<user_education::HelpBubble> CreateBubble(
@@ -88,7 +88,7 @@ class FloatingWebUIHelpBubbleFactoryBrowser
       const user_education::HelpBubbleDelegate* delegate);
   ~FloatingWebUIHelpBubbleFactoryBrowser() override;
 
-  DECLARE_FRAMEWORK_SPECIFIC_METADATA()
+  DECLARE_SAFE_CAST_TARGET()
 
   // HelpBubbleFactoryWebUIViews:
   bool CanBuildBubbleForTrackedElement(

@@ -13,7 +13,7 @@
 
 #include "build/build_config.h"
 #include "third_party/skia/include/core/SkColor.h"
-#include "ui/base/interaction/framework_specific_implementation.h"
+#include "ui/base/interaction/safe_castable.h"
 #include "ui/base/themed_vector_icon.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_variant.h"
@@ -47,12 +47,11 @@ class View;
 // View::OnPaintBackground()
 //
 /////////////////////////////////////////////////////////////////////////////
-class VIEWS_EXPORT Background : public ui::FrameworkSpecificImplementation {
+class VIEWS_EXPORT Background : public ui::SafeCastable {
  public:
-  // If you need to cast safely to a specific subclass, implement framework-
-  // specific metadata for that subclass as well, so that `IsA()` and `AsA()`
-  // work for them.
-  DECLARE_FRAMEWORK_SPECIFIC_METADATA()
+  // If you need to cast safely to a specific subclass, add safe-cast metadata
+  // for that subclass as well, so that `IsA()` and `AsA()` work for them.
+  DECLARE_SAFE_CAST_TARGET()
 
   Background();
   Background(const Background&) = delete;

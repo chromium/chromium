@@ -31,7 +31,7 @@ namespace user_education {
 
 // Views-specific implementation of the help bubble.
 //
-// Because this is a FrameworkSpecificImplementation, you can use:
+// Because this is a SafeCastable, you can use:
 //   help_bubble->AsA<HelpBubbleViews>()->bubble_view()
 // to retrieve the underlying bubble view.
 class HelpBubbleViews : public HelpBubble,
@@ -40,7 +40,7 @@ class HelpBubbleViews : public HelpBubble,
  public:
   ~HelpBubbleViews() override;
 
-  DECLARE_FRAMEWORK_SPECIFIC_METADATA()
+  DECLARE_SAFE_CAST_TARGET()
 
   // HelpBubble:
   bool ToggleFocusForAccessibility() override;

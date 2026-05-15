@@ -30,7 +30,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/expect_call_in_scope.h"
-#include "ui/base/interaction/framework_specific_implementation.h"
+#include "ui/base/interaction/safe_castable.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/mojom/menu_source_type.mojom.h"
@@ -71,7 +71,7 @@ class TestHelpBubbleFactory : public user_education::HelpBubbleFactoryViews {
   TestHelpBubbleFactory() : HelpBubbleFactoryViews(GetHelpBubbleDelegate()) {}
   ~TestHelpBubbleFactory() override = default;
 
-  DECLARE_FRAMEWORK_SPECIFIC_METADATA()
+  DECLARE_SAFE_CAST_TARGET()
 
   // Returns whether the bubble owner can show a bubble for the TrackedElement.
   bool CanBuildBubbleForTrackedElement(
@@ -98,7 +98,7 @@ class TestHelpBubbleFactory : public user_education::HelpBubbleFactoryViews {
   }
 };
 
-DEFINE_FRAMEWORK_SPECIFIC_METADATA(TestHelpBubbleFactory)
+DEFINE_SAFE_CAST_TARGET(TestHelpBubbleFactory)
 
 }  // namespace
 

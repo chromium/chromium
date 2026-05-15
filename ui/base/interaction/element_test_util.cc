@@ -6,7 +6,7 @@
 
 #include "base/test/bind.h"
 #include "ui/base/interaction/element_tracker.h"
-#include "ui/base/interaction/framework_specific_implementation.h"
+#include "ui/base/interaction/safe_castable.h"
 
 namespace ui::test {
 
@@ -68,7 +68,7 @@ gfx::NativeView TestElementBase::GetNativeView() const {
   return native_view_;
 }
 
-DEFINE_FRAMEWORK_SPECIFIC_METADATA(TestElement)
-DEFINE_FRAMEWORK_SPECIFIC_METADATA(TestElementOtherFramework)
+DEFINE_SAFE_CAST_TARGET(TestElement)
+DEFINE_SAFE_CAST_TARGET(TestElementOtherFramework)
 
 }  // namespace ui::test

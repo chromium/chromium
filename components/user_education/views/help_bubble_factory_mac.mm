@@ -10,14 +10,14 @@
 #include "components/user_education/views/help_bubble_view.h"
 #include "components/user_education/views/help_bubble_views.h"
 #include "ui/base/interaction/element_tracker_mac.h"
-#include "ui/base/interaction/framework_specific_implementation.h"
+#include "ui/base/interaction/safe_castable.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/widget/widget.h"
 
 namespace user_education {
 
-DEFINE_FRAMEWORK_SPECIFIC_METADATA(HelpBubbleFactoryMac)
+DEFINE_SAFE_CAST_TARGET(HelpBubbleFactoryMac)
 
 HelpBubbleFactoryMac::HelpBubbleFactoryMac(const HelpBubbleDelegate* delegate)
     : delegate_(delegate) {}

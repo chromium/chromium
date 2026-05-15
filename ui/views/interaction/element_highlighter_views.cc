@@ -52,6 +52,6 @@ ElementHighlighterViews::AddHighlight(ui::TrackedElement& element) {
   return std::make_unique<ButtonHighlight>(button->AddAnchorHighlight());
 }
 
-DEFINE_FRAMEWORK_SPECIFIC_METADATA(ElementHighlighterViews)
+DEFINE_SAFE_CAST_TARGET(ElementHighlighterViews)
 
 }  // namespace views

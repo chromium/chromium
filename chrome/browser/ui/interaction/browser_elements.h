@@ -8,14 +8,14 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
-#include "ui/base/interaction/framework_specific_implementation.h"
+#include "ui/base/interaction/safe_castable.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
 // Provides context and retrieves elements from the current browser window.
 //
 // The full browser implementation (BrowserElementsViews) may also be retrieved
 // via its `From()` method as well, providing access to views.
-class BrowserElements : public ui::FrameworkSpecificImplementation {
+class BrowserElements : public ui::SafeCastable {
  public:
   DECLARE_USER_DATA(BrowserElements);
 

@@ -23,7 +23,7 @@ class ElementHighlighterWebUI : public ui::ElementHighlighter::Backend {
   std::unique_ptr<ui::ElementHighlighter::Highlight> AddHighlight(
       ui::TrackedElement& element) override;
 
-  DECLARE_FRAMEWORK_SPECIFIC_METADATA()
+  DECLARE_SAFE_CAST_TARGET()
 
  private:
   class Highlight;

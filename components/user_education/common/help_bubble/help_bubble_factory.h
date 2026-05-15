@@ -8,7 +8,7 @@
 #include <memory>
 
 #include "base/functional/callback_forward.h"
-#include "ui/base/interaction/framework_specific_implementation.h"
+#include "ui/base/interaction/safe_castable.h"
 
 namespace ui {
 class TrackedElement;
@@ -24,7 +24,7 @@ struct HelpBubbleParams;
 // bubbles will have their own reqirements/constraints for if/when/how to show
 // a bubble, we only call into the implementation asking it to show or hide the
 // bubble. All other state must be maintained by the caller.
-class HelpBubbleFactory : public ui::FrameworkSpecificImplementation {
+class HelpBubbleFactory : public ui::SafeCastable {
  public:
   HelpBubbleFactory() = default;
   ~HelpBubbleFactory() override = default;

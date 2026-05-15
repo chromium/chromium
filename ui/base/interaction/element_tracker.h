@@ -19,7 +19,7 @@
 #include "base/no_destructor.h"
 #include "ui/base/identifier/unique_identifier.h"
 #include "ui/base/interaction/element_identifier.h"
-#include "ui/base/interaction/framework_specific_implementation.h"
+#include "ui/base/interaction/safe_castable.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/native_ui_types.h"
 
@@ -46,7 +46,7 @@ DECLARE_UNIQUE_IDENTIFIER_TYPE(CustomElementEventType, ElementTracker);
 // track. See README.md for information on how to create your own framework
 // implementations.
 class COMPONENT_EXPORT(UI_BASE_INTERACTION) TrackedElement
-    : public FrameworkSpecificImplementation {
+    : public SafeCastable {
  public:
   ~TrackedElement() override;
 
@@ -68,7 +68,7 @@ class COMPONENT_EXPORT(UI_BASE_INTERACTION) TrackedElement
   // used as the parent window for anchoring secondary UIs.
   virtual gfx::NativeView GetNativeView() const;
 
-  // FrameworkSpecificImplementation:
+  // SafeCastable:
   std::string ToString() const override;
 
  protected:

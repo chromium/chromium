@@ -22,7 +22,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/identifier/unique_identifier.h"
 #include "ui/base/interaction/expect_call_in_scope.h"
-#include "ui/base/interaction/framework_specific_implementation.h"
+#include "ui/base/interaction/safe_castable.h"
 #include "ui/base/unowned_user_data/unowned_user_data_host.h"
 #include "ui/gfx/animation/animation_test_api.h"
 #include "ui/gfx/animation/tween.h"
@@ -52,7 +52,7 @@ DEFINE_LOCAL_UNIQUE_IDENTIFIER_VALUE(BrowserAnimationSequence,
 
 class TestAnimationProvider : public CachingBrowserAnimationProvider {
  public:
-  DECLARE_FRAMEWORK_SPECIFIC_METADATA()
+  DECLARE_SAFE_CAST_TARGET()
   GroupInfos GenerateAnimations() const override {
     return Groups(
         Group(
@@ -94,11 +94,11 @@ class TestAnimationProvider : public CachingBrowserAnimationProvider {
   }
 };
 
-DEFINE_FRAMEWORK_SPECIFIC_METADATA(TestAnimationProvider)
+DEFINE_SAFE_CAST_TARGET(TestAnimationProvider)
 
 class TestAnimationProviderOverride : public BrowserAnimationProvider {
  public:
-  DECLARE_FRAMEWORK_SPECIFIC_METADATA()
+  DECLARE_SAFE_CAST_TARGET()
 
   std::optional<MotionSpecification> GetMotionSpecificationImpl(
       BrowserAnimationGroup group,
@@ -118,7 +118,7 @@ class TestAnimationProviderOverride : public BrowserAnimationProvider {
   }
 };
 
-DEFINE_FRAMEWORK_SPECIFIC_METADATA(TestAnimationProviderOverride)
+DEFINE_SAFE_CAST_TARGET(TestAnimationProviderOverride)
 
 }  // namespace
 
@@ -604,7 +604,7 @@ namespace {
 
 class SingleGroupAnimationProvider : public CachingBrowserAnimationProvider {
  public:
-  DECLARE_FRAMEWORK_SPECIFIC_METADATA()
+  DECLARE_SAFE_CAST_TARGET()
 
   SingleGroupAnimationProvider() = default;
   ~SingleGroupAnimationProvider() override = default;
@@ -627,7 +627,7 @@ class SingleGroupAnimationProvider : public CachingBrowserAnimationProvider {
   virtual std::vector<MotionInfo> GetMotions() const = 0;
 };
 
-DEFINE_FRAMEWORK_SPECIFIC_METADATA(SingleGroupAnimationProvider)
+DEFINE_SAFE_CAST_TARGET(SingleGroupAnimationProvider)
 
 }  // namespace
 

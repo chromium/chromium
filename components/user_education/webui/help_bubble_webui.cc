@@ -6,7 +6,7 @@
 
 #include "components/user_education/webui/help_bubble_handler.h"
 #include "ui/base/interaction/element_identifier.h"
-#include "ui/base/interaction/framework_specific_implementation.h"
+#include "ui/base/interaction/safe_castable.h"
 #include "ui/webui/tracked_element/tracked_element_handler.h"
 #include "ui/webui/tracked_element/tracked_element_web_ui.h"
 
@@ -46,7 +46,7 @@ bool HelpBubbleWebUI::Close(CloseReason reason) {
   return on_close.is_valid();
 }
 
-DEFINE_FRAMEWORK_SPECIFIC_METADATA(HelpBubbleWebUI)
+DEFINE_SAFE_CAST_TARGET(HelpBubbleWebUI)
 
 HelpBubbleFactoryWebUI::HelpBubbleFactoryWebUI() = default;
 HelpBubbleFactoryWebUI::~HelpBubbleFactoryWebUI() = default;
@@ -67,6 +67,6 @@ bool HelpBubbleFactoryWebUI::CanBuildBubbleForTrackedElement(
   return false;
 }
 
-DEFINE_FRAMEWORK_SPECIFIC_METADATA(HelpBubbleFactoryWebUI)
+DEFINE_SAFE_CAST_TARGET(HelpBubbleFactoryWebUI)
 
 }  // namespace user_education

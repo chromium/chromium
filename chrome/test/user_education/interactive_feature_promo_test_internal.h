@@ -37,7 +37,7 @@ class InteractiveFeaturePromoTestPrivate
       public InteractiveFeaturePromoTestCommon,
       public ProfileObserver {
  public:
-  DECLARE_FRAMEWORK_SPECIFIC_METADATA()
+  DECLARE_SAFE_CAST_TARGET()
 
   InteractiveFeaturePromoTestPrivate(
       ui::test::internal::InteractiveTestPrivate& test_impl,

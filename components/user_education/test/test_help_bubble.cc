@@ -9,14 +9,14 @@
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_test_util.h"
 #include "ui/base/interaction/element_tracker.h"
-#include "ui/base/interaction/framework_specific_implementation.h"
+#include "ui/base/interaction/safe_castable.h"
 
 namespace user_education::test {
 
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(TestHelpBubble, kElementId);
-DEFINE_FRAMEWORK_SPECIFIC_METADATA(TestHelpBubble)
-DEFINE_FRAMEWORK_SPECIFIC_METADATA(TestHelpBubbleElement)
-DEFINE_FRAMEWORK_SPECIFIC_METADATA(TestHelpBubbleFactory)
+DEFINE_SAFE_CAST_TARGET(TestHelpBubble)
+DEFINE_SAFE_CAST_TARGET(TestHelpBubbleElement)
+DEFINE_SAFE_CAST_TARGET(TestHelpBubbleFactory)
 
 // static
 constexpr int TestHelpBubble::kNoButtonWithTextIndex;

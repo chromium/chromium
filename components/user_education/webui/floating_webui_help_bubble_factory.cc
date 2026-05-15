@@ -9,7 +9,7 @@
 #include "components/user_education/webui/help_bubble_handler.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/interaction/element_tracker.h"
-#include "ui/base/interaction/framework_specific_implementation.h"
+#include "ui/base/interaction/safe_castable.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
@@ -67,7 +67,7 @@ FloatingWebUIHelpBubbleFactory::FloatingWebUIHelpBubbleFactory(
     : HelpBubbleFactoryViews(delegate) {}
 FloatingWebUIHelpBubbleFactory::~FloatingWebUIHelpBubbleFactory() = default;
 
-DEFINE_FRAMEWORK_SPECIFIC_METADATA(FloatingWebUIHelpBubbleFactory)
+DEFINE_SAFE_CAST_TARGET(FloatingWebUIHelpBubbleFactory)
 
 std::unique_ptr<HelpBubble> FloatingWebUIHelpBubbleFactory::CreateBubble(
     ui::TrackedElement* element,

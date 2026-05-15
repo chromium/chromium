@@ -17,7 +17,7 @@ namespace views {
 DEFINE_CLASS_CUSTOM_ELEMENT_EVENT_TYPE(ViewSubregionAnchor,
                                        kAnchorBoundsChangedEvent);
 
-DEFINE_FRAMEWORK_SPECIFIC_METADATA(ViewSubregionAnchor)
+DEFINE_SAFE_CAST_TARGET(ViewSubregionAnchor)
 
 ViewSubregionAnchor::ViewSubregionAnchor(ui::ElementIdentifier id,
                                          views::View& host)

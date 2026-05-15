@@ -2,63 +2,63 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ui/base/interaction/framework_specific_registration_list.h"
+#include "ui/base/interaction/implementation_list.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/base/interaction/framework_specific_implementation.h"
+#include "ui/base/interaction/safe_castable.h"
 
 namespace ui {
 
 namespace {
 
-class SingletonBase : public FrameworkSpecificImplementation {};
+class SingletonBase : public SafeCastable {};
 
 class SingletonImpl1 : public SingletonBase {
  public:
-  DECLARE_FRAMEWORK_SPECIFIC_METADATA()
+  DECLARE_SAFE_CAST_TARGET()
 };
 
-DEFINE_FRAMEWORK_SPECIFIC_METADATA(SingletonImpl1)
+DEFINE_SAFE_CAST_TARGET(SingletonImpl1)
 
 class SingletonImpl2 : public SingletonBase {
  public:
-  DECLARE_FRAMEWORK_SPECIFIC_METADATA()
+  DECLARE_SAFE_CAST_TARGET()
 };
 
-DEFINE_FRAMEWORK_SPECIFIC_METADATA(SingletonImpl2)
+DEFINE_SAFE_CAST_TARGET(SingletonImpl2)
 
 class SubClassImpl1 : public SingletonImpl1 {
  public:
-  DECLARE_FRAMEWORK_SPECIFIC_METADATA()
+  DECLARE_SAFE_CAST_TARGET()
 };
 
-DEFINE_FRAMEWORK_SPECIFIC_METADATA_SUBCLASS(SubClassImpl1, SingletonImpl1)
+DEFINE_SAFE_CAST_SUBCLASS(SubClassImpl1, SingletonImpl1)
 
 class SubClassImpl2 : public SingletonImpl1 {
  public:
-  DECLARE_FRAMEWORK_SPECIFIC_METADATA()
+  DECLARE_SAFE_CAST_TARGET()
 };
 
-DEFINE_FRAMEWORK_SPECIFIC_METADATA_SUBCLASS(SubClassImpl2, SingletonImpl1)
+DEFINE_SAFE_CAST_SUBCLASS(SubClassImpl2, SingletonImpl1)
 
 class SubClassImpl3 : public SingletonImpl2 {
  public:
-  DECLARE_FRAMEWORK_SPECIFIC_METADATA()
+  DECLARE_SAFE_CAST_TARGET()
 };
 
-DEFINE_FRAMEWORK_SPECIFIC_METADATA_SUBCLASS(SubClassImpl3, SingletonImpl2)
+DEFINE_SAFE_CAST_SUBCLASS(SubClassImpl3, SingletonImpl2)
 
 class SubSubClass : public SubClassImpl1 {
  public:
-  DECLARE_FRAMEWORK_SPECIFIC_METADATA()
+  DECLARE_SAFE_CAST_TARGET()
 };
 
-DEFINE_FRAMEWORK_SPECIFIC_METADATA_SUBCLASS(SubSubClass, SubClassImpl1)
+DEFINE_SAFE_CAST_SUBCLASS(SubSubClass, SubClassImpl1)
 
 }  // namespace
 
 TEST(FrameworkSpecificRegistrationListTest, MaybeRegister) {
-  FrameworkSpecificRegistrationList<SingletonBase> registration_list;
+  ImplementationList<SingletonBase> registration_list;
   EXPECT_EQ(0U, registration_list.size());
 
   auto* const instance = registration_list.MaybeRegister<SingletonImpl1>();
@@ -68,7 +68,7 @@ TEST(FrameworkSpecificRegistrationListTest, MaybeRegister) {
 }
 
 TEST(FrameworkSpecificRegistrationListTest, MaybeRegister_Twice) {
-  FrameworkSpecificRegistrationList<SingletonBase> registration_list;
+  ImplementationList<SingletonBase> registration_list;
   auto* const first = registration_list.MaybeRegister<SingletonImpl1>();
   auto* const second = registration_list.MaybeRegister<SingletonImpl1>();
   EXPECT_EQ(1U, registration_list.size());
@@ -78,7 +78,7 @@ TEST(FrameworkSpecificRegistrationListTest, MaybeRegister_Twice) {
 }
 
 TEST(FrameworkSpecificRegistrationListTest, RegisterSubclassThenSuperclass) {
-  FrameworkSpecificRegistrationList<SingletonBase> registration_list;
+  ImplementationList<SingletonBase> registration_list;
   auto* const first = registration_list.MaybeRegister<SubClassImpl1>();
   auto* const second = registration_list.MaybeRegister<SingletonImpl1>();
   EXPECT_EQ(1U, registration_list.size());
@@ -89,7 +89,7 @@ TEST(FrameworkSpecificRegistrationListTest, RegisterSubclassThenSuperclass) {
 }
 
 TEST(FrameworkSpecificRegistrationListTest, MaybeRegister_TwoDifferent) {
-  FrameworkSpecificRegistrationList<SingletonBase> registration_list;
+  ImplementationList<SingletonBase> registration_list;
   auto* const first = registration_list.MaybeRegister<SingletonImpl1>();
   auto* const second = registration_list.MaybeRegister<SingletonImpl2>();
   EXPECT_NE(static_cast<SingletonBase*>(first),
@@ -100,7 +100,7 @@ TEST(FrameworkSpecificRegistrationListTest, MaybeRegister_TwoDifferent) {
 }
 
 TEST(FrameworkSpecificRegistrationListTest, Iterator) {
-  FrameworkSpecificRegistrationList<SingletonBase> registration_list;
+  ImplementationList<SingletonBase> registration_list;
   EXPECT_EQ(0U, registration_list.size());
 
   registration_list.MaybeRegister<SingletonImpl1>();
@@ -112,7 +112,7 @@ TEST(FrameworkSpecificRegistrationListTest, Iterator) {
 }
 
 TEST(FrameworkSpecificRegistrationListTest, GetImplementation) {
-  FrameworkSpecificRegistrationList<SingletonBase> registration_list;
+  ImplementationList<SingletonBase> registration_list;
   auto* const first = registration_list.MaybeRegister<SingletonImpl1>();
   auto* const second = registration_list.MaybeRegister<SingletonImpl2>();
   auto* const i1 = registration_list.GetImplementation<SingletonImpl1>();

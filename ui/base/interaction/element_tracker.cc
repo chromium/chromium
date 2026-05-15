@@ -222,7 +222,7 @@ gfx::NativeView TrackedElement::GetNativeView() const {
 
 std::string TrackedElement::ToString() const {
   std::ostringstream oss;
-  oss << GetImplementationName() << "(" << identifier() << ", " << context()
+  oss << GetSafeCastableClassName() << "(" << identifier() << ", " << context()
       << ")";
   return oss.str();
 }

@@ -12,7 +12,7 @@
 #include "components/user_education/views/toggle_tracked_element_attention_utils.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
-#include "ui/base/interaction/framework_specific_implementation.h"
+#include "ui/base/interaction/safe_castable.h"
 #include "ui/views/accessible_pane_view.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/interaction/element_tracker_views.h"
@@ -34,7 +34,7 @@ bool IsFocusInHelpBubble(const views::BubbleDialogDelegateView* bubble) {
 
 }  // namespace
 
-DEFINE_FRAMEWORK_SPECIFIC_METADATA(HelpBubbleViews)
+DEFINE_SAFE_CAST_TARGET(HelpBubbleViews)
 
 HelpBubbleViews::HelpBubbleViews(HelpBubbleViewInfo info,
                                  ui::TrackedElement* anchor_element)

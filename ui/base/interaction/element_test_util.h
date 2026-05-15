@@ -7,7 +7,7 @@
 
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
-#include "ui/base/interaction/framework_specific_implementation.h"
+#include "ui/base/interaction/safe_castable.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/native_ui_types.h"
 
@@ -50,7 +50,7 @@ class TestElementBase : public TrackedElement {
 class TestElement : public TestElementBase {
  public:
   TestElement(ElementIdentifier id, ElementContext context);
-  DECLARE_FRAMEWORK_SPECIFIC_METADATA()
+  DECLARE_SAFE_CAST_TARGET()
 };
 
 // Provides a platform-less test element in a fictional UI framework distinct
@@ -58,7 +58,7 @@ class TestElement : public TestElementBase {
 class TestElementOtherFramework : public TestElementBase {
  public:
   TestElementOtherFramework(ElementIdentifier id, ElementContext context);
-  DECLARE_FRAMEWORK_SPECIFIC_METADATA()
+  DECLARE_SAFE_CAST_TARGET()
 };
 
 // Convenience typedef for unique pointers to test elements.

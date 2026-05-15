@@ -7,12 +7,11 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/views/interaction/browser_elements_views.h"
 #include "ui/base/interaction/element_identifier.h"
-#include "ui/base/interaction/framework_specific_implementation.h"
+#include "ui/base/interaction/safe_castable.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/view.h"
 
-DEFINE_FRAMEWORK_SPECIFIC_METADATA_SUBCLASS(BrowserElementsViewsImpl,
-                                            BrowserElementsViews)
+DEFINE_SAFE_CAST_SUBCLASS(BrowserElementsViewsImpl, BrowserElementsViews)
 
 BrowserElementsViewsImpl::BrowserElementsViewsImpl(
     BrowserWindowInterface& browser)

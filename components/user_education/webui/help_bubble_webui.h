@@ -12,7 +12,7 @@
 #include "components/user_education/common/help_bubble/help_bubble_params.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
-#include "ui/base/interaction/framework_specific_implementation.h"
+#include "ui/base/interaction/safe_castable.h"
 
 namespace content {
 class WebContents;
@@ -37,7 +37,7 @@ class HelpBubbleWebUI : public HelpBubble {
   gfx::Rect GetBoundsInScreen() const override;
   ui::ElementContext GetContext() const override;
 
-  DECLARE_FRAMEWORK_SPECIFIC_METADATA()
+  DECLARE_SAFE_CAST_TARGET()
 
  private:
   friend class HelpBubbleHandlerBase;
@@ -59,7 +59,7 @@ class HelpBubbleFactoryWebUI : public HelpBubbleFactory {
   HelpBubbleFactoryWebUI();
   ~HelpBubbleFactoryWebUI() override;
 
-  DECLARE_FRAMEWORK_SPECIFIC_METADATA()
+  DECLARE_SAFE_CAST_TARGET()
 
   // HelpBubbleFactory:
   std::unique_ptr<HelpBubble> CreateBubble(ui::TrackedElement* element,

@@ -8,12 +8,12 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/user_education/browser_help_bubble_event_relay.h"
 #include "components/user_education/views/help_bubble_view.h"
-#include "ui/base/interaction/framework_specific_implementation.h"
+#include "ui/base/interaction/safe_castable.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/widget_delegate.h"
 
-DEFINE_FRAMEWORK_SPECIFIC_METADATA(AutofillHelpBubbleFactory)
+DEFINE_SAFE_CAST_TARGET(AutofillHelpBubbleFactory)
 
 namespace {
 

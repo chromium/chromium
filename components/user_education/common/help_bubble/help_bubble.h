@@ -12,7 +12,7 @@
 #include "base/memory/weak_ptr.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
-#include "ui/base/interaction/framework_specific_implementation.h"
+#include "ui/base/interaction/safe_castable.h"
 #include "ui/gfx/geometry/rect.h"
 
 namespace user_education {
@@ -20,7 +20,7 @@ namespace user_education {
 // HelpBubble is an interface for the lifecycle of an IPH or tutorial bubble.
 // it is implemented by a framework's bubble. It is returned as the result of
 // HelpBubbleFactory's CreateBubble...() method.
-class HelpBubble : public ui::FrameworkSpecificImplementation {
+class HelpBubble : public ui::SafeCastable {
  public:
   // Describes why a help bubble was closed.
   enum class CloseReason {

@@ -5,14 +5,14 @@
 #include "chrome/browser/ui/views/interaction/browser_elements_views.h"
 
 #include "ui/base/interaction/element_identifier.h"
-#include "ui/base/interaction/framework_specific_implementation.h"
+#include "ui/base/interaction/safe_castable.h"
 #include "ui/views/interaction/element_tracker_views.h"
 
 DEFINE_TYPED_IDENTIFIER_VALUE(ui::ElementIdentifier,
                               views::WebView,
                               kActiveContentsWebViewRetrievalId);
 
-DEFINE_FRAMEWORK_SPECIFIC_METADATA(BrowserElementsViews)
+DEFINE_SAFE_CAST_TARGET(BrowserElementsViews)
 
 BrowserElementsViews::BrowserElementsViews(BrowserWindowInterface& browser)
     : BrowserElements(browser) {}

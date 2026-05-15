@@ -50,7 +50,7 @@ std::optional<base::Time> CalculateNewTime(
 
 }  // namespace
 
-DEFINE_FRAMEWORK_SPECIFIC_METADATA(InteractiveFeaturePromoTestPrivate)
+DEFINE_SAFE_CAST_TARGET(InteractiveFeaturePromoTestPrivate)
 
 InteractiveFeaturePromoTestPrivate::ProfileData::ProfileData() = default;
 InteractiveFeaturePromoTestPrivate::ProfileData::ProfileData(

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ui/base/interaction/framework_specific_implementation.h"
+#include "ui/base/interaction/safe_castable.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -10,53 +10,53 @@ namespace ui {
 
 namespace {
 
-class SingletonBase : public FrameworkSpecificImplementation {};
+class SingletonBase : public SafeCastable {};
 
 class SingletonImpl1 : public SingletonBase {
  public:
-  DECLARE_FRAMEWORK_SPECIFIC_METADATA()
+  DECLARE_SAFE_CAST_TARGET()
 };
 
-DEFINE_FRAMEWORK_SPECIFIC_METADATA(SingletonImpl1)
+DEFINE_SAFE_CAST_TARGET(SingletonImpl1)
 
 class SingletonImpl2 : public SingletonBase {
  public:
-  DECLARE_FRAMEWORK_SPECIFIC_METADATA()
+  DECLARE_SAFE_CAST_TARGET()
 };
 
-DEFINE_FRAMEWORK_SPECIFIC_METADATA(SingletonImpl2)
+DEFINE_SAFE_CAST_TARGET(SingletonImpl2)
 
 class SubClassImpl1 : public SingletonImpl1 {
  public:
-  DECLARE_FRAMEWORK_SPECIFIC_METADATA()
+  DECLARE_SAFE_CAST_TARGET()
 };
 
-DEFINE_FRAMEWORK_SPECIFIC_METADATA_SUBCLASS(SubClassImpl1, SingletonImpl1)
+DEFINE_SAFE_CAST_SUBCLASS(SubClassImpl1, SingletonImpl1)
 
 class SubClassImpl2 : public SingletonImpl1 {
  public:
-  DECLARE_FRAMEWORK_SPECIFIC_METADATA()
+  DECLARE_SAFE_CAST_TARGET()
 };
 
-DEFINE_FRAMEWORK_SPECIFIC_METADATA_SUBCLASS(SubClassImpl2, SingletonImpl1)
+DEFINE_SAFE_CAST_SUBCLASS(SubClassImpl2, SingletonImpl1)
 
 class SubClassImpl3 : public SingletonImpl2 {
  public:
-  DECLARE_FRAMEWORK_SPECIFIC_METADATA()
+  DECLARE_SAFE_CAST_TARGET()
 };
 
-DEFINE_FRAMEWORK_SPECIFIC_METADATA_SUBCLASS(SubClassImpl3, SingletonImpl2)
+DEFINE_SAFE_CAST_SUBCLASS(SubClassImpl3, SingletonImpl2)
 
 class SubSubClass : public SubClassImpl1 {
  public:
-  DECLARE_FRAMEWORK_SPECIFIC_METADATA()
+  DECLARE_SAFE_CAST_TARGET()
 };
 
-DEFINE_FRAMEWORK_SPECIFIC_METADATA_SUBCLASS(SubSubClass, SubClassImpl1)
+DEFINE_SAFE_CAST_SUBCLASS(SubSubClass, SubClassImpl1)
 
 }  // namespace
 
-TEST(FrameworkSpecificImplementationTest, SubclassIsA) {
+TEST(SafeCastableTest, SubclassIsA) {
   SubClassImpl1 sub1;
   SubClassImpl2 sub2;
   SubClassImpl3 sub3;
@@ -91,7 +91,7 @@ TEST(FrameworkSpecificImplementationTest, SubclassIsA) {
   EXPECT_TRUE(subsub.IsA<SubSubClass>());
 }
 
-TEST(FrameworkSpecificImplementationTest, SubclassAsA) {
+TEST(SafeCastableTest, SubclassAsA) {
   SubClassImpl1 sub1;
   SubClassImpl2 sub2;
   SubClassImpl3 sub3;

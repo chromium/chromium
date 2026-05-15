@@ -11,7 +11,7 @@
 #include "content/public/browser/web_ui.h"
 #include "ui/base/interaction/element_events.h"
 #include "ui/base/interaction/element_tracker.h"
-#include "ui/base/interaction/framework_specific_implementation.h"
+#include "ui/base/interaction/safe_castable.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/native_ui_util.h"
 #include "ui/views/interaction/view_subregion_anchor.h"
@@ -179,6 +179,6 @@ void TrackedElementWebUI::CustomEvent(ui::CustomElementEventType event_type) {
                                                                 event_type);
 }
 
-DEFINE_FRAMEWORK_SPECIFIC_METADATA(TrackedElementWebUI)
+DEFINE_SAFE_CAST_TARGET(TrackedElementWebUI)
 
 }  // namespace ui

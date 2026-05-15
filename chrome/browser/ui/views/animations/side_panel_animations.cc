@@ -7,10 +7,10 @@
 #include "base/time/time.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "ui/base/identifier/unique_identifier.h"
-#include "ui/base/interaction/framework_specific_implementation.h"
+#include "ui/base/interaction/safe_castable.h"
 #include "ui/gfx/animation/tween.h"
 
-DEFINE_FRAMEWORK_SPECIFIC_METADATA(SidePanelAnimations)
+DEFINE_SAFE_CAST_TARGET(SidePanelAnimations)
 
 DEFINE_CLASS_BROWSER_ANIMATION_GROUP(SidePanelAnimations, kSidePanel);
 

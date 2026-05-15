@@ -15,9 +15,9 @@ component("interaction") {
     "element_identifier.h",
     "element_specifier.h",
     "element_tracker.h",
-    "framework_specific_implementation.h",
-    "framework_specific_registration_list.h",
+    "implementation_list.h",
     "interaction_sequence.h",
+    "safe_castable.h",
   ]
 
   public_deps = [ "//ui/base/identifier" ]
@@ -34,8 +34,8 @@ component("interaction") {
     "element_identifier.cc",
     "element_specifier.cc",
     "element_tracker.cc",
-    "framework_specific_implementation.cc",
     "interaction_sequence.cc",
+    "safe_castable.cc",
   ]
 
   if (is_mac) {
@@ -106,11 +106,11 @@ source_set("unit_tests") {
   sources = [
     "element_highlighter_unittest.cc",
     "element_tracker_unittest.cc",
-    "framework_specific_implementation_unittest.cc",
-    "framework_specific_registration_list_unittest.cc",
+    "implementation_list_unittest.cc",
     "interaction_sequence_unittest.cc",
     "interaction_test_util_unittest.cc",
     "interactive_test_unittest.cc",
+    "safe_castable_unittest.cc",
   ]
 
   if (is_mac) {

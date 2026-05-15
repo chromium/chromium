@@ -32,7 +32,7 @@ namespace internal {
 class InteractiveBrowserTestPrivate
     : public ui::test::internal::InteractiveTestPrivateFrameworkBase {
  public:
-  DECLARE_FRAMEWORK_SPECIFIC_METADATA()
+  DECLARE_SAFE_CAST_TARGET()
 
   explicit InteractiveBrowserTestPrivate(
       ui::test::internal::InteractiveTestPrivate& test_impl);

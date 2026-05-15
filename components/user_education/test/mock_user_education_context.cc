@@ -4,11 +4,11 @@
 
 #include "components/user_education/test/mock_user_education_context.h"
 
-#include "ui/base/interaction/framework_specific_implementation.h"
+#include "ui/base/interaction/safe_castable.h"
 
 namespace user_education::test {
 
-DEFINE_FRAMEWORK_SPECIFIC_METADATA(MockUserEducationContext)
+DEFINE_SAFE_CAST_TARGET(MockUserEducationContext)
 
 MockUserEducationContext::MockUserEducationContext() = default;
 MockUserEducationContext::~MockUserEducationContext() = default;

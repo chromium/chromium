@@ -20,7 +20,7 @@
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
-#include "ui/base/interaction/framework_specific_implementation.h"
+#include "ui/base/interaction/safe_castable.h"
 #include "ui/color/color_id.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/widget/widget.h"
@@ -44,7 +44,7 @@ class ASH_EXPORT HelpBubbleFactoryViewsAsh
       const user_education::HelpBubbleDelegate* delegate);
   ~HelpBubbleFactoryViewsAsh() override;
 
-  DECLARE_FRAMEWORK_SPECIFIC_METADATA()
+  DECLARE_SAFE_CAST_TARGET()
 
   // user_education::HelpBubbleFactory:
   std::unique_ptr<user_education::HelpBubble> CreateBubble(
@@ -67,7 +67,7 @@ class ASH_EXPORT HelpBubbleFactoryViewsAsh
 // testing purposes.
 class ASH_EXPORT HelpBubbleViewsAsh : public user_education::HelpBubbleViews {
  public:
-  DECLARE_FRAMEWORK_SPECIFIC_METADATA()
+  DECLARE_SAFE_CAST_TARGET()
 
   ~HelpBubbleViewsAsh() override;
 

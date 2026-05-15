@@ -7,9 +7,9 @@
 
 #include <memory>
 
-#include "ui/base/interaction/framework_specific_implementation.h"
 #include "ui/base/interaction/interaction_sequence.h"
 #include "ui/base/interaction/interactive_test_internal.h"
+#include "ui/base/interaction/safe_castable.h"
 #include "ui/views/interaction/mouse/interaction_test_util_mouse.h"
 
 namespace views::test {
@@ -23,7 +23,7 @@ namespace internal {
 class InteractiveMouseTestPrivate
     : public ui::test::internal::InteractiveTestPrivateFrameworkBase {
  public:
-  DECLARE_FRAMEWORK_SPECIFIC_METADATA()
+  DECLARE_SAFE_CAST_TARGET()
 
   explicit InteractiveMouseTestPrivate(
       ui::test::internal::InteractiveTestPrivate& test_impl);

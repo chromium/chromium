@@ -16,7 +16,7 @@
 #include "components/user_education/common/user_education_storage_service.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/interaction/element_identifier.h"
-#include "ui/base/interaction/framework_specific_implementation.h"
+#include "ui/base/interaction/safe_castable.h"
 
 // Forwarding precondition that releases its reference when the context is
 // invalidated or destroyed.
@@ -34,7 +34,7 @@ class BrowserUserEducationContext::ForwardingPrecondition
   base::CallbackListSubscription invalidate_subscription_;
 };
 
-DEFINE_FRAMEWORK_SPECIFIC_METADATA(BrowserUserEducationContext)
+DEFINE_SAFE_CAST_TARGET(BrowserUserEducationContext)
 
 BrowserUserEducationContext::BrowserUserEducationContext(
     BrowserView& browser_view,

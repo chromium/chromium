@@ -15,7 +15,7 @@
 #include "components/user_education/common/help_bubble/help_bubble_params.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_test_util.h"
-#include "ui/base/interaction/framework_specific_implementation.h"
+#include "ui/base/interaction/safe_castable.h"
 
 namespace ui {
 class TrackedElement;
@@ -33,7 +33,7 @@ class TestHelpBubble : public HelpBubble {
   ~TestHelpBubble() override;
 
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kElementId);
-  DECLARE_FRAMEWORK_SPECIFIC_METADATA()
+  DECLARE_SAFE_CAST_TARGET()
 
   const HelpBubbleParams& params() const { return params_; }
 
@@ -82,7 +82,7 @@ class TestHelpBubbleElement : public ui::test::TestElementBase {
                         ui::ElementContext context);
   ~TestHelpBubbleElement() override;
 
-  DECLARE_FRAMEWORK_SPECIFIC_METADATA()
+  DECLARE_SAFE_CAST_TARGET()
 
   TestHelpBubble* bubble() { return bubble_.get(); }
   const TestHelpBubble* bubble() const { return bubble_.get(); }
@@ -93,7 +93,7 @@ class TestHelpBubbleElement : public ui::test::TestElementBase {
 
 class TestHelpBubbleFactory : public HelpBubbleFactory {
  public:
-  DECLARE_FRAMEWORK_SPECIFIC_METADATA()
+  DECLARE_SAFE_CAST_TARGET()
 
   bool CanBuildBubbleForTrackedElement(
       const ui::TrackedElement* element) const override;

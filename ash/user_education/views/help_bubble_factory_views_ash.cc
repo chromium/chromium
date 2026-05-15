@@ -11,12 +11,12 @@
 #include "components/user_education/views/help_bubble_delegate.h"
 #include "components/user_education/views/help_bubble_view.h"
 #include "components/user_education/views/help_bubble_views.h"
-#include "ui/base/interaction/framework_specific_implementation.h"
+#include "ui/base/interaction/safe_castable.h"
 #include "ui/views/interaction/element_tracker_views.h"
 
 namespace ash {
 
-DEFINE_FRAMEWORK_SPECIFIC_METADATA(HelpBubbleFactoryViewsAsh)
+DEFINE_SAFE_CAST_TARGET(HelpBubbleFactoryViewsAsh)
 
 HelpBubbleFactoryViewsAsh::HelpBubbleFactoryViewsAsh(
     const user_education::HelpBubbleDelegate* delegate)
@@ -66,7 +66,7 @@ HelpBubbleFactoryViewsAsh::CreateBubbleImpl(
   return result;
 }
 
-DEFINE_FRAMEWORK_SPECIFIC_METADATA(HelpBubbleViewsAsh)
+DEFINE_SAFE_CAST_TARGET(HelpBubbleViewsAsh)
 
 HelpBubbleViewsAsh::HelpBubbleViewsAsh(user_education::HelpBubbleViewInfo info,
                                        ui::TrackedElement* anchor_element)

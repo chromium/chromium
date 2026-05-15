@@ -9,14 +9,14 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/views/interaction/browser_elements_views.h"
 #include "ui/base/interaction/element_identifier.h"
-#include "ui/base/interaction/framework_specific_implementation.h"
+#include "ui/base/interaction/safe_castable.h"
 #include "ui/views/view.h"
 
 // Implementation of BrowserElementsViews for non-Webium (i.e. normal) browsers.
 // This class should never be referenced outside of BrowserWindowFeatures.
 class BrowserElementsViewsImpl : public BrowserElementsViews {
  public:
-  DECLARE_FRAMEWORK_SPECIFIC_METADATA()
+  DECLARE_SAFE_CAST_TARGET()
 
   explicit BrowserElementsViewsImpl(BrowserWindowInterface& browser);
   ~BrowserElementsViewsImpl() override;

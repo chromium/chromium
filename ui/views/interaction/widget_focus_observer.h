@@ -9,8 +9,8 @@
 
 #include "base/callback_list.h"
 #include "base/functional/callback_forward.h"
-#include "ui/base/interaction/framework_specific_implementation.h"
-#include "ui/base/interaction/framework_specific_registration_list.h"
+#include "ui/base/interaction/implementation_list.h"
+#include "ui/base/interaction/safe_castable.h"
 #include "ui/base/interaction/state_observer.h"
 #include "ui/views/widget/widget.h"
 
@@ -25,7 +25,7 @@ namespace internal {
 //
 // Subclasses should be private to a specific Interactive[X]TestApi
 // implementation, and be registered on the test's `WidgetFocusSupplierFrame`.
-class WidgetFocusSupplier : public ui::FrameworkSpecificImplementation {
+class WidgetFocusSupplier : public ui::SafeCastable {
  public:
   WidgetFocusSupplier();
   ~WidgetFocusSupplier() override;
@@ -63,8 +63,7 @@ class WidgetFocusSupplierFrame {
   // Returns the current frame (there should only be one).
   static WidgetFocusSupplierFrame* GetCurrentFrame();
 
-  using SupplierList =
-      ui::FrameworkSpecificRegistrationList<WidgetFocusSupplier>;
+  using SupplierList = ui::ImplementationList<WidgetFocusSupplier>;
 
   SupplierList& supplier_list() { return supplier_list_; }
 

@@ -40,7 +40,7 @@ class VIEWS_EXPORT TrackedElementViews : public ui::TrackedElement {
   gfx::NativeView GetNativeView() const override;
   std::string ToString() const override;
 
-  DECLARE_FRAMEWORK_SPECIFIC_METADATA()
+  DECLARE_SAFE_CAST_TARGET()
 
  private:
   const raw_ptr<View> view_;

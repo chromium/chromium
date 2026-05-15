@@ -24,7 +24,7 @@ class VIEWS_EXPORT ElementHighlighterViews
   std::unique_ptr<ui::ElementHighlighter::Highlight> AddHighlight(
       ui::TrackedElement& element) override;
 
-  DECLARE_FRAMEWORK_SPECIFIC_METADATA()
+  DECLARE_SAFE_CAST_TARGET()
 };
 
 }  // namespace views

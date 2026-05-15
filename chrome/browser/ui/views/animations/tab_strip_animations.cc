@@ -8,9 +8,9 @@
 #include "chrome/browser/ui/animation/browser_animation_types.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "ui/base/identifier/unique_identifier.h"
-#include "ui/base/interaction/framework_specific_implementation.h"
+#include "ui/base/interaction/safe_castable.h"
 
-DEFINE_FRAMEWORK_SPECIFIC_METADATA(TabStripAnimations)
+DEFINE_SAFE_CAST_TARGET(TabStripAnimations)
 
 DEFINE_CLASS_BROWSER_ANIMATION_GROUP(TabStripAnimations, kVerticalTabStrip);
 

@@ -4,15 +4,15 @@
 
 #include "ui/views/interaction/mouse/interactive_mouse_test_internal.h"
 
-#include "ui/base/interaction/framework_specific_implementation.h"
 #include "ui/base/interaction/interaction_sequence.h"
 #include "ui/base/interaction/interactive_test_internal.h"
+#include "ui/base/interaction/safe_castable.h"
 #include "ui/gfx/native_ui_types.h"
 #include "ui/views/interaction/mouse/interaction_test_util_mouse.h"
 
 namespace views::test::internal {
 
-DEFINE_FRAMEWORK_SPECIFIC_METADATA(InteractiveMouseTestPrivate)
+DEFINE_SAFE_CAST_TARGET(InteractiveMouseTestPrivate)
 
 InteractiveMouseTestPrivate::InteractiveMouseTestPrivate(
     ui::test::internal::InteractiveTestPrivate& test_impl)

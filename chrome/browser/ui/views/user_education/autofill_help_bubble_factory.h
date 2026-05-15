@@ -25,7 +25,7 @@ class AutofillHelpBubbleFactory
       const user_education::HelpBubbleDelegate* delegate);
   ~AutofillHelpBubbleFactory() override;
 
-  DECLARE_FRAMEWORK_SPECIFIC_METADATA()
+  DECLARE_SAFE_CAST_TARGET()
 
   // HelpBubbleFactory:
   std::unique_ptr<user_education::HelpBubble> CreateBubble(

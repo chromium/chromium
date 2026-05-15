@@ -156,7 +156,7 @@ Derive from `CachingBrowserAnimationProvider` and override
 class MyAnimations : public CachingBrowserAnimationProvider {
  public:
   // Required to support retrieval.
-  DECLARE_FRAMEWORK_SPECIFIC_IMPLEMENTATION()
+  DECLARE_SAFE_CAST_TARGET()
 
   DECLARE_CLASS_BROWSER_ANIMATION_GROUP(kPanelGroup);
   DECLARE_CLASS_BROWSER_ANIMATION_GROUP(kFlyoverGroup);
@@ -173,7 +173,7 @@ class MyAnimations : public CachingBrowserAnimationProvider {
 
 // In chrome/browser/ui/views/animations/my_animation_provider.cc:
 
-DEFINE_FRAMEWORK_SPECIFIC_IMPLEMENTATION(MyAnimations)
+DEFINE_SAFE_CAST_TARGET(MyAnimations)
 
 DEFINE_CLASS_BROWSER_ANIMATION_GROUP(MyAnimations, kPanelGroup);
 DEFINE_CLASS_BROWSER_ANIMATION_GROUP(MyAnimations, kFlyoverGroup);
@@ -220,7 +220,7 @@ Example:
 class MyAnimations : public BrowserAnimationProvider {
  public:
   // Required to support retrieval.
-  DECLARE_FRAMEWORK_SPECIFIC_IMPLEMENTATION()
+  DECLARE_SAFE_CAST_TARGET()
 
   DECLARE_CLASS_BROWSER_ANIMATION_GROUP(kPanelGroup);
   DECLARE_CLASS_BROWSER_ANIMATION_GROUP(kFlyoverGroup);
@@ -238,7 +238,7 @@ class MyAnimations : public BrowserAnimationProvider {
 };
 
 // .cc file:
-DEFINE_FRAMEWORK_SPECIFIC_IMPLEMENTATION(MyAnimations)
+DEFINE_SAFE_CAST_TARGET(MyAnimations)
 
 DEFINE_CLASS_BROWSER_ANIMATION_GROUP(MyAnimations, kPanelGroup);
 DEFINE_CLASS_BROWSER_ANIMATION_GROUP(MyAnimations, kFlyoverGroup);

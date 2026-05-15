@@ -50,6 +50,6 @@ ElementHighlighterWebUI::AddHighlight(ui::TrackedElement& element) {
   return std::make_unique<Highlight>(webui_element->GetOrMakeHighlightHandle());
 }
 
-DEFINE_FRAMEWORK_SPECIFIC_METADATA(ElementHighlighterWebUI)
+DEFINE_SAFE_CAST_TARGET(ElementHighlighterWebUI)
 
 }  // namespace ui

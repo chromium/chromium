@@ -88,7 +88,7 @@ class TrackedShortcut : public ui::TrackedElement {
     ui::ElementTracker::GetFrameworkDelegate()->NotifyElementShown(this);
   }
 
-  DECLARE_FRAMEWORK_SPECIFIC_METADATA()
+  DECLARE_SAFE_CAST_TARGET()
  private:
   void ContentChanged(const base::FilePath& path, bool error) {
     EXPECT_FALSE(error);
@@ -106,11 +106,11 @@ class TrackedShortcut : public ui::TrackedElement {
   base::WeakPtrFactory<TrackedShortcut> weak_ptr_factory_{this};
 };
 
-DEFINE_FRAMEWORK_SPECIFIC_METADATA(TrackedShortcut)
+DEFINE_SAFE_CAST_TARGET(TrackedShortcut)
 
 }  // namespace
 
-DEFINE_FRAMEWORK_SPECIFIC_METADATA(ShortcutIntegrationInteractionTestPrivate)
+DEFINE_SAFE_CAST_TARGET(ShortcutIntegrationInteractionTestPrivate)
 
 // This class monitors a specified directory, creating (and destroying)
 // `TrackedShortcut` instances for any files created and removed from the

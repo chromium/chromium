@@ -8,11 +8,11 @@
 #include "chrome/browser/ui/animation/browser_animation_provider.h"
 #include "chrome/browser/ui/animation/browser_animation_types.h"
 #include "ui/base/identifier/unique_identifier.h"
-#include "ui/base/interaction/framework_specific_implementation.h"
+#include "ui/base/interaction/safe_castable.h"
 
 class SidePanelAnimations : public CachingBrowserAnimationProvider {
  public:
-  DECLARE_FRAMEWORK_SPECIFIC_METADATA()
+  DECLARE_SAFE_CAST_TARGET()
 
   SidePanelAnimations();
   ~SidePanelAnimations() override;

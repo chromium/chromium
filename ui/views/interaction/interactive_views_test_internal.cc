@@ -17,10 +17,10 @@
 #include "build/build_config.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
-#include "ui/base/interaction/framework_specific_implementation.h"
 #include "ui/base/interaction/interaction_sequence.h"
 #include "ui/base/interaction/interaction_test_util.h"
 #include "ui/base/interaction/interactive_test_internal.h"
+#include "ui/base/interaction/safe_castable.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/native_ui_types.h"
 #include "ui/views/interaction/element_tracker_views.h"
@@ -50,7 +50,7 @@ class NativeViewWidgetFocusSupplier : public WidgetFocusSupplier {
   }
   ~NativeViewWidgetFocusSupplier() override = default;
 
-  DECLARE_FRAMEWORK_SPECIFIC_METADATA()
+  DECLARE_SAFE_CAST_TARGET()
 
   void OnWidgetActivated(Widget* widget) {
     // OnAnyWidgetActivated is only called for activation, so we don't have to
@@ -67,7 +67,7 @@ class NativeViewWidgetFocusSupplier : public WidgetFocusSupplier {
   AnyWidgetObserver observer_;
 };
 
-DEFINE_FRAMEWORK_SPECIFIC_METADATA(NativeViewWidgetFocusSupplier)
+DEFINE_SAFE_CAST_TARGET(NativeViewWidgetFocusSupplier)
 
 // Takes a list of tracked `views` and massages them into a tree based on the
 // views hierarchy, with widgets at the top level. (Widget parenting may be
@@ -164,7 +164,7 @@ InteractiveViewsTestPrivate::DebugTreeNodeViews::List DebugDumpViewHierarchy(
 
 }  // namespace
 
-DEFINE_FRAMEWORK_SPECIFIC_METADATA(InteractiveViewsTestPrivate)
+DEFINE_SAFE_CAST_TARGET(InteractiveViewsTestPrivate)
 
 InteractiveViewsTestPrivate::DebugTreeNodeViews::DebugTreeNodeViews() = default;
 InteractiveViewsTestPrivate::DebugTreeNodeViews::DebugTreeNodeViews(

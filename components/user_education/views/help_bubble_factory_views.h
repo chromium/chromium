@@ -13,7 +13,7 @@
 #include "components/user_education/common/help_bubble/help_bubble_params.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
-#include "ui/base/interaction/framework_specific_implementation.h"
+#include "ui/base/interaction/safe_castable.h"
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/widget/widget.h"
 
@@ -32,7 +32,7 @@ class HelpBubbleFactoryViews : public HelpBubbleFactory {
   explicit HelpBubbleFactoryViews(const HelpBubbleDelegate* delegate);
   ~HelpBubbleFactoryViews() override;
 
-  DECLARE_FRAMEWORK_SPECIFIC_METADATA()
+  DECLARE_SAFE_CAST_TARGET()
 
   // HelpBubbleFactory:
   std::unique_ptr<HelpBubble> CreateBubble(ui::TrackedElement* element,

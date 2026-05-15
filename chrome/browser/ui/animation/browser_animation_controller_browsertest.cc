@@ -20,7 +20,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/test/browser_test.h"
 #include "ui/base/identifier/unique_identifier.h"
-#include "ui/base/interaction/framework_specific_implementation.h"
+#include "ui/base/interaction/safe_castable.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/animation/tween.h"
@@ -39,7 +39,7 @@ constexpr char kTestMotion2Name[] = "Motion2";
 
 class TestAnimationProvider : public CachingBrowserAnimationProvider {
  public:
-  DECLARE_FRAMEWORK_SPECIFIC_METADATA()
+  DECLARE_SAFE_CAST_TARGET()
 
   explicit TestAnimationProvider(bool register_group_histogram = true,
                                  bool register_motion_histogram = true) {
@@ -64,7 +64,7 @@ class TestAnimationProvider : public CachingBrowserAnimationProvider {
   }
 };
 
-DEFINE_FRAMEWORK_SPECIFIC_METADATA(TestAnimationProvider)
+DEFINE_SAFE_CAST_TARGET(TestAnimationProvider)
 
 class TestAnimationView : public views::View {
   METADATA_HEADER(TestAnimationView, views::View)

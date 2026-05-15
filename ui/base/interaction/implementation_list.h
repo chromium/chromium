@@ -2,27 +2,26 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef UI_BASE_INTERACTION_FRAMEWORK_SPECIFIC_REGISTRATION_LIST_H_
-#define UI_BASE_INTERACTION_FRAMEWORK_SPECIFIC_REGISTRATION_LIST_H_
+#ifndef UI_BASE_INTERACTION_IMPLEMENTATION_LIST_H_
+#define UI_BASE_INTERACTION_IMPLEMENTATION_LIST_H_
 
 #include <concepts>
 #include <iterator>
 #include <memory>
 #include <vector>
 
-#include "ui/base/interaction/framework_specific_implementation.h"
+#include "ui/base/interaction/safe_castable.h"
 
 namespace ui {
 
-// Holds a list of framework-specific singletons, which all derive from
-// `BaseClass` (which must in turn be derived from
-// FrameworkSpecificImplementation) and which must be default-constructible.
+// Holds a list of implementation-specific singletons, which all derive from
+// `BaseClass` (which must be SafeCastable).
 //
 // Semantically, this behaves as a very simple ordered STL collection of
 // `BaseClass`. Insertion is only done via MaybeRegister().
 template <class BaseClass>
-  requires std::derived_from<BaseClass, FrameworkSpecificImplementation>
-class FrameworkSpecificRegistrationList {
+  requires std::derived_from<BaseClass, SafeCastable>
+class ImplementationList {
  public:
   using ListType = std::vector<std::unique_ptr<BaseClass>>;
 
@@ -47,7 +46,7 @@ class FrameworkSpecificRegistrationList {
     friend bool operator==(const Iterator&, const Iterator&) = default;
 
    private:
-    friend class FrameworkSpecificRegistrationList<BaseClass>;
+    friend class ImplementationList<BaseClass>;
     explicit Iterator(It it) : it_(it) {}
 
     It it_;
@@ -64,8 +63,8 @@ class FrameworkSpecificRegistrationList {
       Iterator<typename ListType::const_reverse_iterator>;
   using size_type = typename ListType::size_type;
 
-  FrameworkSpecificRegistrationList() = default;
-  ~FrameworkSpecificRegistrationList() = default;
+  ImplementationList() = default;
+  ~ImplementationList() = default;
 
   // STL collection implementation.
   size_type size() const { return instances_.size(); }
@@ -126,4 +125,4 @@ class FrameworkSpecificRegistrationList {
 
 }  // namespace ui
 
-#endif  // UI_BASE_INTERACTION_FRAMEWORK_SPECIFIC_REGISTRATION_LIST_H_
+#endif  // UI_BASE_INTERACTION_IMPLEMENTATION_LIST_H_

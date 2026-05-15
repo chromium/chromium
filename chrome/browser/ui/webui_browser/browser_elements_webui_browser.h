@@ -8,7 +8,7 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/views/interaction/browser_elements_views.h"
 #include "ui/base/interaction/element_identifier.h"
-#include "ui/base/interaction/framework_specific_implementation.h"
+#include "ui/base/interaction/safe_castable.h"
 
 namespace views {
 class Widget;
@@ -20,7 +20,7 @@ class BrowserWindowInterface;
 // provide a context and elements for the WebUIBrowser.
 class BrowserElementsWebUiBrowser : public BrowserElementsViews {
  public:
-  DECLARE_FRAMEWORK_SPECIFIC_METADATA()
+  DECLARE_SAFE_CAST_TARGET()
 
   explicit BrowserElementsWebUiBrowser(BrowserWindowInterface& browser);
   ~BrowserElementsWebUiBrowser() override;
