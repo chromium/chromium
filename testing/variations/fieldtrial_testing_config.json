@@ -6973,6 +6973,9 @@
             "experiments": [
                 {
                     "name": "Enabled",
+                    "params": {
+                        "ContextualCueingV2UsePrivateAi": "true"
+                    },
                     "enable_features": [
                         "ContextualCueingV2",
                         "OnDeviceCategoryClassifier"
