@@ -18,7 +18,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/handlers/minimum_version_policy_handler.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/profiles/profile.h"
@@ -249,7 +248,7 @@ void MainSection::RegisterHierarchy(HierarchyGenerator* generator) const {
 void MainSection::AddChromeOSUserStrings(
     content::WebUIDataSource* html_source) {
   const user_manager::User* user =
-      ProfileHelper::Get()->GetUserByProfile(profile());
+      BrowserContextHelper::Get()->GetUserByBrowserContext(profile());
   const user_manager::User* primary_user =
       user_manager::UserManager::Get()->GetPrimaryUser();
   std::string primary_user_email = primary_user->GetDisplayEmail();

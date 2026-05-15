@@ -33,7 +33,6 @@ static_library("main") {
     "//chrome/browser/ash/browser_delegate",
     "//chrome/browser/ash/policy/core",
     "//chrome/browser/ash/policy/handlers",
-    "//chrome/browser/ash/profiles",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/resources/ash/settings:resources",
     "//chrome/browser/ui/webui/ash/settings/search",
