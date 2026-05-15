@@ -4292,10 +4292,16 @@
       <message name="IDS_IOS_LEVEL_UP_MAXIMUM_LEVEL" desc="Progress message displaying that all tasks have been completed and the user is all set. [iOS only]">
         You’re all set! Get notified when new tasks arrive.
       </message>
+      <message name="IDS_IOS_LEVEL_UP_SEE_ALL" desc="Link button to open all available level-up tasks. [iOS only]">
+        See All
+      </message>
       <message name="IDS_IOS_LEVEL_UP_TASKS_REMAINING" desc="Progress message explaining how many tasks remain to level up. [iOS only]">
         {count, plural,
           =1 {Complete 1 more task to level up}
           other {Complete {count} more tasks to level up}}
+      </message>
+      <message name="IDS_IOS_LEVEL_UP_YOUR_TASKS" desc="Title for the tasks card displaying the user's available level-up tasks. [iOS only]">
+        Your tasks
       </message>
       <message name="IDS_IOS_LINK_TO_TEXT_ERROR_DESCRIPTION" desc="Description message in the alert dialog shown when link-to-text link generation failed. [iOS only]">
         A link to the highlight can not be created.

@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/level_up/ui/level_up_view_controller.h"
 
 #import "ios/chrome/browser/level_up/ui/level_up_progress_view.h"
+#import "ios/chrome/browser/level_up/ui/level_up_tasks_view.h"
 #import "ios/chrome/browser/shared/public/commands/level_up_commands.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -21,6 +22,8 @@ const CGFloat kCardMargin = 16.0;
 @implementation LevelUpViewController {
   // Subview displaying the task progress indicator card.
   LevelUpProgressView* _progressView;
+  // Subview displaying the card list of level-up tasks.
+  LevelUpTasksView* _tasksCardView;
 }
 
 - (instancetype)init {
@@ -28,6 +31,9 @@ const CGFloat kCardMargin = 16.0;
   if (self) {
     _progressView = [[LevelUpProgressView alloc] init];
     _progressView.translatesAutoresizingMaskIntoConstraints = NO;
+
+    _tasksCardView = [[LevelUpTasksView alloc] init];
+    _tasksCardView.translatesAutoresizingMaskIntoConstraints = NO;
   }
   return self;
 }
@@ -63,28 +69,33 @@ const CGFloat kCardMargin = 16.0;
   self.navigationItem.rightBarButtonItem =
       [[UIBarButtonItem alloc] initWithCustomView:dismissButton];
 
-  [self.view addSubview:_progressView];
+  UIStackView* mainContainer = [[UIStackView alloc]
+      initWithArrangedSubviews:@[ _progressView, _tasksCardView ]];
+  mainContainer.translatesAutoresizingMaskIntoConstraints = NO;
+  mainContainer.axis = UILayoutConstraintAxisVertical;
+  mainContainer.spacing = kCardMargin;
+  mainContainer.alignment = UIStackViewAlignmentFill;
+
+  [self.view addSubview:mainContainer];
 
   [NSLayoutConstraint activateConstraints:@[
-    [_progressView.topAnchor
+    [mainContainer.topAnchor
         constraintEqualToAnchor:self.view.safeAreaLayoutGuide.topAnchor
                        constant:kCardMargin],
-    [_progressView.leadingAnchor constraintEqualToAnchor:self.view.leadingAnchor
-                                                constant:kCardMargin],
-    [_progressView.trailingAnchor
-        constraintEqualToAnchor:self.view.trailingAnchor
+    [mainContainer.leadingAnchor
+        constraintEqualToAnchor:self.view.safeAreaLayoutGuide.leadingAnchor
+                       constant:kCardMargin],
+    [mainContainer.trailingAnchor
+        constraintEqualToAnchor:self.view.safeAreaLayoutGuide.trailingAnchor
                        constant:-kCardMargin],
   ]];
 }
 
 #pragma mark - LevelUpConsumer
 
-- (void)setLevel:(NSInteger)level
-    completedTasksForLevel:(NSInteger)completedTasksForLevel
-        totalTasksForLevel:(NSInteger)totalTasksForLevel {
-  [_progressView setLevel:level
-      completedTasksForLevel:completedTasksForLevel
-          totalTasksForLevel:totalTasksForLevel];
+- (void)setLevel:(NSInteger)level tasksForLevel:(NSArray<LevelUpTask*>*)tasks {
+  [_progressView setLevel:level tasksForLevel:tasks];
+  [_tasksCardView setLevel:level tasksForLevel:tasks];
 }
 
 #pragma mark - Private

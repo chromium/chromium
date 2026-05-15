@@ -7,6 +7,10 @@ source_set("ui") {
     "level_up_consumer.h",
     "level_up_progress_view.h",
     "level_up_progress_view.mm",
+    "level_up_task.h",
+    "level_up_task.mm",
+    "level_up_tasks_view.h",
+    "level_up_tasks_view.mm",
     "level_up_view_controller.h",
     "level_up_view_controller.mm",
   ]

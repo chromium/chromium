@@ -79,12 +79,17 @@ const CGFloat kCompletionRowSpacing = 16.0;
 
 #pragma mark - LevelUpConsumer
 
-- (void)setLevel:(NSInteger)level
-    completedTasksForLevel:(NSInteger)completedTasksForLevel
-        totalTasksForLevel:(NSInteger)totalTasksForLevel {
+- (void)setLevel:(NSInteger)level tasksForLevel:(NSArray<LevelUpTask*>*)tasks {
   _levelLabel.text = l10n_util::GetNSStringF(IDS_IOS_LEVEL_UP_LEVEL_TITLE,
                                              base::NumberToString16(level));
 
+  NSInteger completedTasksForLevel = 0;
+  for (LevelUpTask* task in tasks) {
+    if (task.completed) {
+      completedTasksForLevel++;
+    }
+  }
+  NSInteger totalTasksForLevel = tasks.count;
   NSInteger tasksRemaining = totalTasksForLevel - completedTasksForLevel;
   NSString* progressMessage = nil;
   if (tasksRemaining > 0) {
@@ -232,13 +237,28 @@ const CGFloat kCompletionRowSpacing = 16.0;
             totalTasksForLevel:(NSInteger)totalTasksForLevel {
   UIView* taskView = nil;
   if (index < completedTasksForLevel) {
-    taskView = [[MultiColorGradientView alloc]
-        initWithColors:@[
-          [UIColor colorNamed:kBlueColor], [UIColor colorNamed:kBlue300Color]
-        ]
-             locations:nil
-            startPoint:CGPointMake(-index, 0.5)
-              endPoint:CGPointMake(completedTasksForLevel - index, 0.5)];
+    NSArray<UIColor*>* colors = @[
+      [UIColor colorNamed:kBlueColor], [UIColor colorNamed:kBlue300Color]
+    ];
+
+    // Each task shows a slice of one continuous gradient spanning
+    // global positions [globalStartPoint → globalEndPoint]
+    // ([0 → completedTasksForLevel]).
+    //
+    // Task `index` occupies global range [index → index + 1],
+    // but draws in its own local space [0 → 1].
+    //
+    // To map global gradient positions into this task’s local space:
+    // localPoint = globalPoint - index
+    NSInteger globalStartPoint = 0;
+    NSInteger globalEndPoint = completedTasksForLevel;
+    CGPoint localStartPoint = CGPointMake(globalStartPoint - index, 0.5);
+    CGPoint localEndPoint = CGPointMake(globalEndPoint - index, 0.5);
+
+    taskView = [[MultiColorGradientView alloc] initWithColors:colors
+                                                    locations:nil
+                                                   startPoint:localStartPoint
+                                                     endPoint:localEndPoint];
   } else {
     taskView = [[UIView alloc] init];
     taskView.backgroundColor = [UIColor colorNamed:kBlueHaloColor];

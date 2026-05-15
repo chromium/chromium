@@ -7,18 +7,15 @@
 
 #import <Foundation/Foundation.h>
 
+#import "ios/chrome/browser/level_up/ui/level_up_task.h"
+
 // Consumer for the Level Up bottom sheet.
 @protocol LevelUpConsumer
 
-// Sets the active level progress metrics.
+// Sets the active level and list of tasks.
 // - level: The user's current Chrome level number.
-// - completedTasksForLevel: The number of user-completed tasks within the
-// current active level.
-// - totalTasksForLevel: The total number of tasks required to complete the
-// current active level.
-- (void)setLevel:(NSInteger)level
-    completedTasksForLevel:(NSInteger)completedTasksForLevel
-        totalTasksForLevel:(NSInteger)totalTasksForLevel;
+// - tasks: The array of LevelUpTask objects required for this level.
+- (void)setLevel:(NSInteger)level tasksForLevel:(NSArray<LevelUpTask*>*)tasks;
 
 @end
 
