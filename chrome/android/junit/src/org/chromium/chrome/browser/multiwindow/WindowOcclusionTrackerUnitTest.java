@@ -31,6 +31,7 @@ import org.robolectric.shadows.ShadowLooper;
 import org.robolectric.shadows.ShadowSystemClock;
 import org.robolectric.shadows.ShadowView;
 
+import org.chromium.base.ActivityState;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.HistogramWatcher;
@@ -87,16 +88,23 @@ public class WindowOcclusionTrackerUnitTest {
         when(displayAndroid.getDisplayWidth()).thenReturn(DISPLAY_WIDTH);
         when(displayAndroid.getDisplayHeight()).thenReturn(DISPLAY_HEIGHT);
         when(window.getDisplay()).thenReturn(displayAndroid);
+        when(window.getActivityState()).thenReturn(ActivityState.RESUMED);
 
         return window;
+    }
+
+    private SparseArray<List<ActivityWindowAndroid>> createZOrder(
+            int displayId, ActivityWindowAndroid... windows) {
+        SparseArray<List<ActivityWindowAndroid>> zOrder = new SparseArray<>();
+        zOrder.put(displayId, Arrays.asList(windows));
+        return zOrder;
     }
 
     @Test
     public void testSingleViewVisible() {
         View view = createView(0, 0, 100, 100);
         ActivityWindowAndroid window = createWindowAndroid(view);
-        SparseArray<List<ActivityWindowAndroid>> zOrder = new SparseArray<>();
-        zOrder.put(DISPLAY_ID, Collections.singletonList(window));
+        SparseArray<List<ActivityWindowAndroid>> zOrder = createZOrder(DISPLAY_ID, window);
         when(mZOrderTracker.getWindowZOrder()).thenReturn(zOrder);
 
         mOcclusionTracker.calculateOcclusionRateLimited();
@@ -150,8 +158,7 @@ public class WindowOcclusionTrackerUnitTest {
         // View outside of display bounds
         View view = createView(DISPLAY_WIDTH + 10, 0, 100, 100);
         ActivityWindowAndroid window = createWindowAndroid(view);
-        SparseArray<List<ActivityWindowAndroid>> zOrder = new SparseArray<>();
-        zOrder.put(DISPLAY_ID, Collections.singletonList(window));
+        SparseArray<List<ActivityWindowAndroid>> zOrder = createZOrder(DISPLAY_ID, window);
         when(mZOrderTracker.getWindowZOrder()).thenReturn(zOrder);
 
         mOcclusionTracker.calculateOcclusionRateLimited();
@@ -168,8 +175,8 @@ public class WindowOcclusionTrackerUnitTest {
         ActivityWindowAndroid window2 = createWindowAndroid(view2);
 
         // view2 is on top of view1 (higher index in list)
-        SparseArray<List<ActivityWindowAndroid>> zOrder = new SparseArray<>();
-        zOrder.put(DISPLAY_ID, Arrays.asList(window1, window2));
+        SparseArray<List<ActivityWindowAndroid>> zOrder =
+                createZOrder(DISPLAY_ID, window1, window2);
         when(mZOrderTracker.getWindowZOrder()).thenReturn(zOrder);
 
         mOcclusionTracker.calculateOcclusionRateLimited();
@@ -187,8 +194,8 @@ public class WindowOcclusionTrackerUnitTest {
         View topView = createView(0, 0, 100, 100); // Covers bottomView completely
         ActivityWindowAndroid topWindow = createWindowAndroid(topView);
 
-        SparseArray<List<ActivityWindowAndroid>> zOrder = new SparseArray<>();
-        zOrder.put(DISPLAY_ID, Arrays.asList(bottomWindow, topWindow));
+        SparseArray<List<ActivityWindowAndroid>> zOrder =
+                createZOrder(DISPLAY_ID, bottomWindow, topWindow);
         when(mZOrderTracker.getWindowZOrder()).thenReturn(zOrder);
 
         mOcclusionTracker.calculateOcclusionRateLimited();
@@ -200,14 +207,41 @@ public class WindowOcclusionTrackerUnitTest {
     }
 
     @Test
+    public void testStoppedWindowSkipped() {
+        View bottomView = createView(0, 0, 100, 100);
+        ActivityWindowAndroid bottomWindow = createWindowAndroid(bottomView);
+        View topView = createView(0, 0, 100, 100); // Covers bottomView completely
+        ActivityWindowAndroid topWindow = createWindowAndroid(topView);
+        when(topWindow.getActivityState()).thenReturn(ActivityState.STOPPED);
+
+        SparseArray<List<ActivityWindowAndroid>> zOrder =
+                createZOrder(DISPLAY_ID, bottomWindow, topWindow);
+        when(mZOrderTracker.getWindowZOrder()).thenReturn(zOrder);
+
+        mOcclusionTracker.calculateOcclusionRateLimited();
+
+        verify(
+                        topWindow,
+                        org.mockito.Mockito.never()
+                                .description("Stopped top window should be skipped entirely"))
+                .setOccluded(anyBoolean(), any(), any());
+        verify(
+                        bottomWindow,
+                        description(
+                                "Bottom window should not be occluded because top window is"
+                                        + " stopped"))
+                .setOccluded(eq(false), any(), any());
+    }
+
+    @Test
     public void testTwoViewsPartialOcclusion() {
         View bottomView = createView(0, 0, 100, 100);
         ActivityWindowAndroid bottomWindow = createWindowAndroid(bottomView);
         View topView = createView(50, 50, 100, 100); // Partially covers bottomView
         ActivityWindowAndroid topWindow = createWindowAndroid(topView);
 
-        SparseArray<List<ActivityWindowAndroid>> zOrder = new SparseArray<>();
-        zOrder.put(DISPLAY_ID, Arrays.asList(bottomWindow, topWindow));
+        SparseArray<List<ActivityWindowAndroid>> zOrder =
+                createZOrder(DISPLAY_ID, bottomWindow, topWindow);
         when(mZOrderTracker.getWindowZOrder()).thenReturn(zOrder);
 
         mOcclusionTracker.calculateOcclusion();
@@ -228,8 +262,8 @@ public class WindowOcclusionTrackerUnitTest {
         View topView2 = createView(50, 0, 50, 100);
         ActivityWindowAndroid topWindow2 = createWindowAndroid(topView2);
 
-        SparseArray<List<ActivityWindowAndroid>> zOrder = new SparseArray<>();
-        zOrder.put(DISPLAY_ID, Arrays.asList(bottomWindow, topWindow1, topWindow2));
+        SparseArray<List<ActivityWindowAndroid>> zOrder =
+                createZOrder(DISPLAY_ID, bottomWindow, topWindow1, topWindow2);
         when(mZOrderTracker.getWindowZOrder()).thenReturn(zOrder);
 
         mOcclusionTracker.calculateOcclusionRateLimited();
@@ -246,8 +280,7 @@ public class WindowOcclusionTrackerUnitTest {
     public void testDisplayNotFound() {
         View view = createView(0, 0, 100, 100);
         ActivityWindowAndroid window = createWindowAndroid(view);
-        SparseArray<List<ActivityWindowAndroid>> zOrder = new SparseArray<>();
-        zOrder.put(999, Collections.singletonList(window));
+        SparseArray<List<ActivityWindowAndroid>> zOrder = createZOrder(999, window);
         when(mZOrderTracker.getWindowZOrder()).thenReturn(zOrder);
 
         mOcclusionTracker.calculateOcclusionRateLimited();
@@ -334,7 +367,6 @@ public class WindowOcclusionTrackerUnitTest {
     @Test
     public void testTrack_ViewNotFound() {
         ActivityWindowAndroid window = org.mockito.Mockito.mock(ActivityWindowAndroid.class);
-        when(mZOrderTracker.track(window)).thenReturn(true);
         // window.getWindow() returns null by default.
 
         var histogramWatcher =
@@ -350,7 +382,6 @@ public class WindowOcclusionTrackerUnitTest {
     @Test
     public void testUntrack_ViewNotFound() {
         ActivityWindowAndroid window = org.mockito.Mockito.mock(ActivityWindowAndroid.class);
-        when(mZOrderTracker.untrack(window)).thenReturn(true);
 
         var histogramWatcher =
                 HistogramWatcher.newBuilder()
@@ -369,6 +400,7 @@ public class WindowOcclusionTrackerUnitTest {
         ActivityWindowAndroid window2 = org.mockito.Mockito.mock(ActivityWindowAndroid.class);
         DisplayAndroid displayAndroid = window1.getDisplay();
         when(window2.getDisplay()).thenReturn(displayAndroid);
+        when(window2.getActivityState()).thenReturn(ActivityState.RESUMED);
 
         SparseArray<List<ActivityWindowAndroid>> zOrder = new SparseArray<>();
         zOrder.put(DISPLAY_ID, Arrays.asList(window1, window2));
@@ -397,8 +429,7 @@ public class WindowOcclusionTrackerUnitTest {
 
         View view = createView(0, 0, 100, 100);
         ActivityWindowAndroid window = createWindowAndroid(view);
-        SparseArray<List<ActivityWindowAndroid>> zOrder = new SparseArray<>();
-        zOrder.put(DISPLAY_ID, Collections.singletonList(window));
+        SparseArray<List<ActivityWindowAndroid>> zOrder = createZOrder(DISPLAY_ID, window);
         when(mZOrderTracker.getWindowZOrder()).thenReturn(zOrder);
 
         // First call should execute immediately.

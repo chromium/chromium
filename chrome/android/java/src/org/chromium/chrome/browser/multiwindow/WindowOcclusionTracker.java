@@ -14,6 +14,7 @@ import android.view.Window;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.ActivityState;
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.TimeUtils;
@@ -72,21 +73,21 @@ public class WindowOcclusionTracker implements ViewTreeObserver.OnGlobalLayoutLi
      */
     public void track(ActivityWindowAndroid windowAndroid) {
         ThreadUtils.assertOnUiThread();
-        if (mWindowZOrderTracker.track(windowAndroid)) {
-            View view = getPrimaryView(windowAndroid);
-            if (view == null) {
-                WindowOcclusionMetrics.recordTrackResult(false);
-                return;
-            }
+        mWindowZOrderTracker.track(windowAndroid);
 
-            view.getViewTreeObserver().addOnGlobalLayoutListener(this);
-            WindowOcclusionMetrics.recordTrackResult(true);
-
-            windowAndroid.setIsOcclusionTracked(true);
-
-            // No need to forward the occlusion state here, as it will be done shortly by the
-            // WindowZOrderTracker once the new window receives the initial focus change event.
+        View view = getPrimaryView(windowAndroid);
+        if (view == null) {
+            WindowOcclusionMetrics.recordTrackResult(false);
+            return;
         }
+
+        view.getViewTreeObserver().addOnGlobalLayoutListener(this);
+        WindowOcclusionMetrics.recordTrackResult(true);
+
+        windowAndroid.setIsOcclusionTracked(true);
+
+        // No need to forward the occlusion state here, as it will be done shortly by the
+        // WindowZOrderTracker once the new window receives the initial focus change event.
     }
 
     /**
@@ -96,20 +97,20 @@ public class WindowOcclusionTracker implements ViewTreeObserver.OnGlobalLayoutLi
      */
     public void untrack(ActivityWindowAndroid windowAndroid) {
         ThreadUtils.assertOnUiThread();
-        if (mWindowZOrderTracker.untrack(windowAndroid)) {
-            View view = getPrimaryView(windowAndroid);
-            if (view == null) {
-                WindowOcclusionMetrics.recordUntrackResult(false);
-                return;
-            }
+        mWindowZOrderTracker.untrack(windowAndroid);
 
-            view.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-            WindowOcclusionMetrics.recordUntrackResult(true);
-
-            // Calculate occlusion state here in case the window was removed for some reason that
-            // didn't trigger a focus change or position update (such as a crash or kill).
-            calculateOcclusionRateLimited();
+        View view = getPrimaryView(windowAndroid);
+        if (view == null) {
+            WindowOcclusionMetrics.recordUntrackResult(false);
+            return;
         }
+
+        view.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+        WindowOcclusionMetrics.recordUntrackResult(true);
+
+        // Calculate occlusion state here in case the window was removed for some reason that
+        // didn't trigger a focus change or position update (such as a crash or kill).
+        calculateOcclusionRateLimited();
     }
 
     // State listener callbacks.
@@ -159,6 +160,13 @@ public class WindowOcclusionTracker implements ViewTreeObserver.OnGlobalLayoutLi
         calculateOcclusion();
     }
 
+    private static boolean isActive(ActivityWindowAndroid window) {
+        int state = window.getActivityState();
+        return state == ActivityState.STARTED
+                || state == ActivityState.RESUMED
+                || state == ActivityState.PAUSED;
+    }
+
     @VisibleForTesting
     void calculateOcclusion() {
         WindowOcclusionMetrics.onCalculateOcclusion();
@@ -204,6 +212,13 @@ public class WindowOcclusionTracker implements ViewTreeObserver.OnGlobalLayoutLi
         // Iterate in reverse z-order (top to bottom).
         for (int i = windows.size() - 1; i >= 0; i--) {
             ActivityWindowAndroid window = windows.get(i);
+            // Skip all windows that are not currently active (such as windows that are minimized,
+            // on different desktops, or while the device is locked).
+            // Inactive windows will keep their last reported occlusion state and when they become
+            // active again will be included in the calculation.
+            if (!isActive(window)) {
+                continue;
+            }
             View view = getPrimaryView(window);
             if (view == null) {
                 window.setOccluded(false, null, null);

@@ -156,6 +156,9 @@ public abstract class AsyncInitializationActivity extends ChromeBaseAppCompatAct
         // mLifecycleDispatcher.dispatchOnDestroy() because objects subscribing to
         // mLifecycleDispatcher's onDestroy events may have references to ActivityWindowAndroid.
         if (mWindowAndroid != null) {
+            if (isSelfOcclusionTrackingEnabled()) {
+                WindowOcclusionTracker.getInstance().untrack(mWindowAndroid);
+            }
             mWindowAndroid.destroy();
             mWindowAndroid = null;
         }
@@ -449,6 +452,9 @@ public abstract class AsyncInitializationActivity extends ChromeBaseAppCompatAct
         mSavedInstanceState = savedInstanceState;
 
         mWindowAndroid = createWindowAndroid();
+        if (isSelfOcclusionTrackingEnabled()) {
+            WindowOcclusionTracker.getInstance().track(mWindowAndroid);
+        }
         mIntentRequestTracker.restoreInstanceState(getSavedInstanceState());
         mProfileProviderSupplier = createProfileProvider();
         if (getSupportedProfileType() == SupportedProfileType.OFF_THE_RECORD) {
@@ -652,10 +658,6 @@ public abstract class AsyncInitializationActivity extends ChromeBaseAppCompatAct
                             + getClass().getName()
                             + " is trying to start.");
         }
-
-        if (isSelfOcclusionTrackingEnabled()) {
-            WindowOcclusionTracker.getInstance().track(mWindowAndroid);
-        }
     }
 
     @EnsuresNonNullIf("mWindowAndroid")
@@ -700,10 +702,6 @@ public abstract class AsyncInitializationActivity extends ChromeBaseAppCompatAct
     public void onStop() {
         super.onStop();
         mNativeInitializationController.onStop();
-
-        if (isSelfOcclusionTrackingEnabled()) {
-            WindowOcclusionTracker.getInstance().untrack(mWindowAndroid);
-        }
     }
 
     @CallSuper
