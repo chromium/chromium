@@ -9362,8 +9362,6 @@ crbug.com/431938385 [ Win11-arm64 ] external/wpt/bluetooth/bidi/characteristic/r
 # Gardener 2025-07-23
 crbug.com/40253082 [ Mac14 ] virtual/controls-refresh-hc/fast/forms/color-scheme/select/select-multiple-appearance-basic.html [ Failure ]
 
-crbug.com/40811639 external/wpt/css/css-overflow/hit-test-stacking-context-parent-border-radius.html [ Failure ]
-
 # Gardener 2025-07-30
 crbug.com/434955776 external/wpt/html/infrastructure/urls/resolving-urls/query-encoding/windows-1252.html?include=loading [ Pass Timeout ]
 

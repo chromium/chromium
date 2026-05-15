@@ -3268,8 +3268,10 @@
       status: "stable",
     },
     {
-      // Removed status stable due to https://crbug.com/456164629.
+      // Fixed https://crbug.com/456164629, so this will be shipped in M150
+      // and can be removed in M152.
       name: "HitTestBorderRadiusForStackingContext",
+      status: "stable",
     },
     {
       // Use container_transform_state instead of local_transform_state when

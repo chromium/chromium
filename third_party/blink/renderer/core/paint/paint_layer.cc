@@ -2099,12 +2099,11 @@ bool PaintLayer::HitTestClippedOutByBorderRadius(
           ? *container_fragment->fragment_data
           : transform_container.GetLayoutObject().FirstFragment();
   // `hit_test_location` is relative to `transform_container`.
-  const auto& current_transform =
+  const auto& container_transform =
       container_fragment_data.LocalBorderBoxProperties().Transform();
-
-  for (const LayoutObject* current = GetLayoutObject().Container();
-       current &&
-       current->IsDescendantOf(&transform_container.GetLayoutObject());
+  const LayoutObject* container_layout_object =
+      &transform_container.GetLayoutObject();
+  for (const LayoutObject* current = GetLayoutObject().Container(); current;
        current = current->Container()) {
     const auto* properties = current->FirstFragment().PaintProperties();
     if (!properties) {
@@ -2116,11 +2115,17 @@ bool PaintLayer::HitTestClippedOutByBorderRadius(
       continue;
     }
 
-    gfx::RectF mapped_location(hit_test_location.BoundingBox());
-    GeometryMapper::SourceToDestinationRect(
-        current_transform, clip->LocalTransformSpace(), mapped_location);
-    if (!clip->PaintClipRect().IntersectsQuad(gfx::QuadF(mapped_location))) {
+    gfx::RectF hit_rect(hit_test_location.BoundingBox());
+    hit_rect.Offset(gfx::Vector2dF(container_fragment_data.PaintOffset()));
+    const gfx::Transform projection =
+        GeometryMapper::SourceToDestinationProjection(
+            container_transform, clip->LocalTransformSpace());
+    gfx::QuadF mapped_quad = projection.MapQuad(gfx::QuadF(hit_rect));
+    if (!clip->PaintClipRect().IntersectsQuad(mapped_quad)) {
       return true;
+    }
+    if (current == container_layout_object) {
+      break;
     }
   }
   return false;
