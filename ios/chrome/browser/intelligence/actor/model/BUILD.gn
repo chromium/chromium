@@ -15,6 +15,7 @@ source_set("model") {
   ]
   deps = [
     ":aggregated_journal",
+    ":snackbar_observer",
     "//base",
     "//components/keyed_service/core",
     "//components/optimization_guide/proto:optimization_guide_proto",
@@ -32,6 +33,24 @@ source_set("model") {
     "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
     "//ios/chrome/browser/shared/model/web_state_list:utils",
     "//ios/web/public",
+  ]
+}
+
+# TODO(crbug.com/512521102): Clean up this source set and its dependencies once
+# temporary snackbar notifications are removed.
+source_set("snackbar_observer") {
+  sources = [
+    "snackbar_actor_task_updates_observer.h",
+    "snackbar_actor_task_updates_observer.mm",
+  ]
+  deps = [
+    "//base",
+    "//ios/chrome/browser/intelligence/actor/public:actor_task_ui_protocols",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/browser:utils",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/public/snackbar",
   ]
 }
 
@@ -55,10 +74,12 @@ source_set("unit_tests") {
     "actor_service_unittest.mm",
     "actor_task_unittest.mm",
     "aggregated_journal_unittest.mm",
+    "snackbar_actor_task_updates_observer_unittest.mm",
   ]
   deps = [
     ":aggregated_journal",
     ":model",
+    ":snackbar_observer",
     "//base/test:test_support",
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//ios/chrome/browser/intelligence/actor/public:actor_task_ui_protocols",
@@ -73,6 +94,8 @@ source_set("unit_tests") {
     "//ios/chrome/browser/shared/model/browser/test:test_support",
     "//ios/chrome/browser/shared/model/profile/test",
     "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/public/snackbar",
     "//ios/chrome/browser/snapshots/model",
     "//ios/chrome/browser/snapshots/model:snapshot_source",
     "//ios/chrome/browser/snapshots/model:test_utils",
@@ -83,6 +106,7 @@ source_set("unit_tests") {
     "//ios/web/public/test/fakes",
     "//testing/gmock",
     "//testing/gtest",
+    "//third_party/ocmock",
     "//url",
   ]
 }

@@ -26,6 +26,9 @@
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
+#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
+#import "ios/chrome/browser/shared/public/snackbar/snackbar_message.h"
 #import "ios/chrome/browser/snapshots/model/fake_snapshot_generator_delegate.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_source_tab_helper.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
@@ -40,13 +43,16 @@
 #import "ios/web/public/test/web_task_environment.h"
 #import "ios/web/public/web_state.h"
 #import "testing/gtest/include/gtest/gtest.h"
+#import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
+#import "third_party/ocmock/OCMock/OCMock.h"
 
 namespace actor {
 
 class TestTool : public ActorTool {
  public:
-  TestTool(base::WeakPtr<web::WebState> web_state) : web_state_(web_state) {}
+  explicit TestTool(base::WeakPtr<web::WebState> web_state)
+      : web_state_(web_state) {}
   ~TestTool() override = default;
 
   void Execute(ToolExecutionCallback callback) override {
@@ -490,6 +496,77 @@ TEST_F(ActorServiceTest, PerformActions_Loading_TimeoutResolvesCallback) {
   // The callback must be resolved now due to the timeout.
   EXPECT_TRUE(callback_called);
 
+  browser_list->RemoveBrowser(test_browser.get());
+}
+
+// Test that the snackbar task updates observer installed in the service only
+// tracks the latest created task.
+TEST_F(ActorServiceTest, TracksOnlyLatestCreatedTaskObserver) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(kActorTools);
+
+  ActorService* service = ActorServiceFactory::GetForProfile(profile_.get());
+  ASSERT_NE(nullptr, service);
+
+  BrowserList* browser_list = BrowserListFactory::GetForProfile(profile_.get());
+  auto test_browser = std::make_unique<TestBrowser>(profile_.get());
+  browser_list->AddBrowser(test_browser.get());
+
+  id snackbar_commands = OCMProtocolMock(@protocol(SnackbarCommands));
+  [test_browser->GetCommandDispatcher()
+      startDispatchingToTarget:snackbar_commands
+                   forProtocol:@protocol(SnackbarCommands)];
+
+  // Expect first task registration message.
+  [[snackbar_commands expect]
+      showSnackbarMessage:[OCMArg checkWithBlock:^BOOL(
+                                      SnackbarMessage* message) {
+        return [message.title isEqualToString:@"First Task"];
+      }]];
+
+  // Create first task. This immediately emits a registration snackbar message.
+  ActorTaskId task_id1 =
+      service->CreateTask("First Task", /*allow_incognito_web_states=*/false);
+
+  [snackbar_commands verify];
+
+  // Expect second task registration message.
+  [[snackbar_commands expect]
+      showSnackbarMessage:[OCMArg checkWithBlock:^BOOL(
+                                      SnackbarMessage* message) {
+        return [message.title isEqualToString:@"Second Task"];
+      }]];
+
+  // Create second task. This replaces the observer installed in the service
+  // and emits a registration snackbar message for the second task.
+  service->CreateTask("Second Task", /*allow_incognito_web_states=*/false);
+
+  [snackbar_commands verify];
+
+  // Now trigger a state update on the first task. Since the observer tracks
+  // only the latest created task, this update should not be tracked.
+  // We verify this by ensuring the mock rejects any new messages for the first
+  // task.
+  [[snackbar_commands reject]
+      showSnackbarMessage:[OCMArg checkWithBlock:^BOOL(
+                                      SnackbarMessage* message) {
+        return [message.title isEqualToString:@"First Task"];
+      }]];
+
+  service->PerformActions(task_id1, {}, "Updating first again",
+                          base::BindOnce(^(PerformActionsResult result){
+                              // Do nothing.
+                          }));
+
+  base::RunLoop run_loop;
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, run_loop.QuitClosure());
+  run_loop.Run();
+
+  [snackbar_commands verify];
+
+  [test_browser->GetCommandDispatcher()
+      stopDispatchingToTarget:snackbar_commands];
   browser_list->RemoveBrowser(test_browser.get());
 }
 
