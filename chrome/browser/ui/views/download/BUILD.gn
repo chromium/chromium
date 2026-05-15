@@ -37,6 +37,9 @@ source_set("download") {
 
   if (!is_chromeos) {
     sources += [
+      "download_cuj_event_emitter.cc",
+      "download_cuj_event_emitter.h",
+
       # Download bubble UI is not used on ChromeOS.
       "bubble/download_bubble_contents_view.cc",
       "bubble/download_bubble_contents_view.h",

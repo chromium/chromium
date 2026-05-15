@@ -845,12 +845,6 @@ static_library("ui") {
     ]
   }
 
-  if (!is_android && !is_chromeos) {
-    # //chrome/browser/download/bubble:impl uses BrowserView in
-    # download_bubble_update_service.cc for CUJ event tracking.
-    allow_circular_includes_from += [ "//chrome/browser/download/bubble:impl" ]
-  }
-
   allow_circular_includes_from += [
     # TODO(crbug.com/503408628): Remove this circular dependency.
     "//chrome/browser/first_run:impl",

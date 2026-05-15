@@ -32,11 +32,22 @@
 #include "components/offline_items_collection/core/offline_item.h"
 #include "components/offline_items_collection/core/offline_item_state.h"
 
-#if BUILDFLAG(IS_MAC)
-#include "chrome/browser/ui/fullscreen_util_mac.h"
-#endif
-
 namespace {
+
+#if BUILDFLAG(IS_MAC)
+// Duplicate of fullscreen_utils::IsInContentFullscreen() in
+// //chrome/browser/ui/fullscreen_util_mac.h. Kept local to avoid a circular
+// dependency with //chrome/browser/ui.
+bool IsInContentFullscreen(BrowserWindowInterface* browser) {
+  ExclusiveAccessManager* const manager = browser->GetExclusiveAccessManager();
+  if (!manager) {
+    return false;
+  }
+  FullscreenController* const controller = manager->fullscreen_controller();
+  return controller && (controller->IsWindowFullscreenForTabOrPending() ||
+                        controller->IsExtensionFullscreenOrPending());
+}
+#endif
 
 using DownloadIconActive = DownloadDisplay::IconActive;
 using DownloadIconState = DownloadDisplay::IconState;
@@ -196,8 +207,7 @@ void DownloadDisplayController::OnUpdatedItem(bool is_done,
   // show the bubble. So, check our fullscreen state here and avoid showing
   // the bubble if we're in content fullscreen.
 #if BUILDFLAG(IS_MAC)
-  will_show_details =
-      will_show_details && !fullscreen_utils::IsInContentFullscreen(browser_);
+  will_show_details = will_show_details && !IsInContentFullscreen(browser_);
 #endif
 
   if (will_show_details) {

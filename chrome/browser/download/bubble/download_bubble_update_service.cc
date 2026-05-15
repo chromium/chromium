@@ -36,7 +36,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/views/download/bubble/download_toolbar_ui_controller.h"
-#include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/download/download_cuj_event_emitter.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "components/download/content/public/all_download_item_notifier.h"
 #include "components/download/public/common/download_danger_type.h"
@@ -45,8 +45,6 @@
 #include "components/offline_items_collection/core/offline_item.h"
 #include "content/public/browser/download_manager.h"
 #include "extensions/browser/extension_util.h"
-#include "ui/base/interaction/element_tracker.h"
-#include "ui/views/interaction/element_tracker_views.h"
 
 namespace {
 
@@ -883,15 +881,11 @@ void DownloadBubbleUpdateService::OnDownloadUpdated(
           // A download completion event can be completed multiple times. To
           // prevent notification spam, only send a single event for this
           // `item`.
-          if (!item->GetUserData(&kDownloadCUJEventEmittedKey)) {
-            BrowserView* browser_view =
-                BrowserView::GetBrowserViewForBrowser(browser);
-            if (browser_view) {
-              item->SetUserData(&kDownloadCUJEventEmittedKey,
-                                std::make_unique<CUJEventEmittedData>());
-              views::ElementTrackerViews::GetInstance()->NotifyCustomEvent(
-                  kDownloadEndedCustomEventId, browser_view);
-            }
+          if (!item->GetUserData(&kDownloadCUJEventEmittedKey) &&
+              download::EmitElementTrackerEvent(browser,
+                                                kDownloadEndedCustomEventId)) {
+            item->SetUserData(&kDownloadCUJEventEmittedKey,
+                              std::make_unique<CUJEventEmittedData>());
           }
         }
 
