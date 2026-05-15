@@ -1468,6 +1468,111 @@ IN_PROC_BROWSER_TEST_P(EmbeddedPermissionPromptPolicyInteractiveTest,
              u"Your administrator doesn't allow location for this site");
 }
 
+IN_PROC_BROWSER_TEST_P(EmbeddedPermissionPromptInteractiveTest,
+                       ScrimSnapsToWebContentsBounds) {
+  views::NamedWidgetShownWaiter waiter(
+      views::test::AnyWidgetTestPasskey{},
+      "EmbeddedPermissionPromptContentScrimWidget");
+
+  RunTestSequence(
+      // Setup and trigger the permission prompt.
+      InstrumentTab(kWebContentsElementId),
+      NavigateWebContents(kWebContentsElementId, GetURL()),
+      ClickOnPEPCElement("camera"),
+      InAnyContext(WaitForShow(EmbeddedPermissionPromptBaseView::kMainViewId)),
+
+      Do([&]() {
+        views::Widget* scrim_widget = waiter.WaitIfNeededAndGet();
+        ASSERT_TRUE(scrim_widget);
+
+        content::WebContents* web_contents =
+            browser()->tab_strip_model()->GetActiveWebContents();
+
+        // Change scrim's bounds to be different from web contents so it
+        // is out of sync.
+        gfx::Rect wrong_bounds(0, 0, 10, 10);
+        scrim_widget->SetBounds(wrong_bounds);
+        EXPECT_EQ(scrim_widget->GetWindowBoundsInScreen(), wrong_bounds);
+
+        auto* scrim_view =
+            static_cast<EmbeddedPermissionPromptContentScrimView*>(
+                scrim_widget->GetContentsView());
+
+        // Simulate bounds event change. Pass empty rect bounds since
+        // code does not utilize bounds parameter and uses web contents bounds
+        // instead.
+        scrim_view->OnWidgetBoundsChanged(scrim_widget, gfx::Rect());
+
+        // The scrim should update its size to match the web contents bounds.
+        EXPECT_EQ(scrim_widget->GetWindowBoundsInScreen(),
+                  web_contents->GetContainerBounds());
+      }),
+
+      // Clean up.
+      Do([this]() {
+        auto* manager = permissions::PermissionRequestManager::FromWebContents(
+            browser()->tab_strip_model()->GetActiveWebContents());
+        manager->Dismiss(/*prompt_options=*/std::monostate());
+        manager->FinalizeCurrentRequests();
+      }));
+}
+
+IN_PROC_BROWSER_TEST_P(EmbeddedPermissionPromptInteractiveTest,
+                       ScrimSnapsToBoundsOnFrameSizeChanged) {
+  views::NamedWidgetShownWaiter waiter(
+      views::test::AnyWidgetTestPasskey{},
+      "EmbeddedPermissionPromptContentScrimWidget");
+
+  RunTestSequence(
+      // Setup and trigger the permission prompt.
+      InstrumentTab(kWebContentsElementId),
+      NavigateWebContents(kWebContentsElementId, GetURL()),
+      ClickOnPEPCElement("camera"),
+      InAnyContext(WaitForShow(EmbeddedPermissionPromptBaseView::kMainViewId)),
+
+      Do([&]() {
+        views::Widget* scrim_widget = waiter.WaitIfNeededAndGet();
+        ASSERT_TRUE(scrim_widget);
+
+        content::WebContents* web_contents =
+            browser()->tab_strip_model()->GetActiveWebContents();
+
+        // Change the scrim's bounds so it is out of sync with the window size.
+        gfx::Rect wrong_bounds(0, 0, 10, 10);
+        scrim_widget->SetBounds(wrong_bounds);
+        EXPECT_EQ(scrim_widget->GetWindowBoundsInScreen(), wrong_bounds);
+
+        auto* scrim_view =
+            static_cast<EmbeddedPermissionPromptContentScrimView*>(
+                scrim_widget->GetContentsView());
+        // Simulate the window changing size by calling `FrameSizeChanged` on a
+        // misc iframe. This way, `FrameSizeChanged` does not change the size of
+        // the scrim.
+        scrim_view->FrameSizeChanged(nullptr, gfx::Size());
+        EXPECT_NE(scrim_widget->GetWindowBoundsInScreen(),
+                  web_contents->GetContainerBounds());
+
+        // Simulate the window changing size by calling `FrameSizeChanged` on
+        // the main frame. This way, `FrameSizeChanged` updates the size of the
+        // scrim.
+        scrim_view->FrameSizeChanged(web_contents->GetPrimaryMainFrame(),
+                                     gfx::Size());
+
+        // The scrim must have instantly snapped back to match the size of the
+        // window.
+        EXPECT_EQ(scrim_widget->GetWindowBoundsInScreen(),
+                  web_contents->GetContainerBounds());
+      }),
+
+      // Cleanup.
+      Do([this]() {
+        auto* manager = permissions::PermissionRequestManager::FromWebContents(
+            browser()->tab_strip_model()->GetActiveWebContents());
+        manager->Dismiss(/*prompt_options=*/std::monostate());
+        manager->FinalizeCurrentRequests();
+      }));
+}
+
 // Setting up to run all tests with two screen scale factors.
 INSTANTIATE_TEST_SUITE_P(,
                          EmbeddedPermissionPromptInteractiveTest,

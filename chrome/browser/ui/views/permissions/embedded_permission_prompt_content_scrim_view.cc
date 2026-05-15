@@ -13,14 +13,25 @@ namespace {
 constexpr char kWidgetName[] = "EmbeddedPermissionPromptContentScrimWidget";
 }
 
+// Only require web contents instance to be passed in and not widget instance
+// (for window sizing) since web contents knows which widget it belongs to.
 EmbeddedPermissionPromptContentScrimView::
     EmbeddedPermissionPromptContentScrimView(base::WeakPtr<Delegate> delegate,
-                                             views::Widget* widget,
+                                             content::WebContents* web_contents,
                                              bool should_dismiss_on_click)
-    : delegate_(std::move(delegate)),
+    : content::WebContentsObserver(web_contents),
+      delegate_(std::move(delegate)),
       should_dismiss_on_click_(should_dismiss_on_click) {
   SetProperty(views::kElementIdentifierKey, kContentScrimViewId);
-  observation_.Observe(widget);
+  // Observe the top-level widget to ensure the scrim view is resized when the
+  // OS-level window bounds change.
+  if (web_contents) {
+    views::Widget* widget = views::Widget::GetTopLevelWidgetForNativeView(
+        web_contents->GetContentNativeView());
+    if (widget) {
+      widget_observation_.Observe(widget);
+    }
+  }
 }
 
 EmbeddedPermissionPromptContentScrimView::
@@ -37,14 +48,14 @@ EmbeddedPermissionPromptContentScrimView::CreateScrimWidget(
       views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
   auto permission_prompt_delegate = delegate->GetPermissionPromptDelegate();
   CHECK(permission_prompt_delegate);
-  auto* web_content = permission_prompt_delegate->GetAssociatedWebContents();
+  auto* web_contents = permission_prompt_delegate->GetAssociatedWebContents();
   auto* top_level_widget = views::Widget::GetTopLevelWidgetForNativeView(
-      web_content->GetContentNativeView());
+      web_contents->GetContentNativeView());
   if (!top_level_widget) {
     return nullptr;
   }
   params.parent = top_level_widget->GetNativeView();
-  params.bounds = web_content->GetContainerBounds();
+  params.bounds = web_contents->GetContainerBounds();
   params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
   params.accept_events = true;
   params.activatable = should_dismiss_on_click
@@ -56,7 +67,7 @@ EmbeddedPermissionPromptContentScrimView::CreateScrimWidget(
 
   auto content_scrim_view =
       std::make_unique<EmbeddedPermissionPromptContentScrimView>(
-          delegate, top_level_widget, should_dismiss_on_click);
+          delegate, web_contents, should_dismiss_on_click);
   content_scrim_view->SetBackground(views::CreateSolidBackground(color));
   widget->SetContentsView(std::move(content_scrim_view));
   widget->SetVisibilityChangedAnimationsEnabled(false);
@@ -81,24 +92,49 @@ void EmbeddedPermissionPromptContentScrimView::OnGestureEvent(
   }
 }
 
-void EmbeddedPermissionPromptContentScrimView::OnWidgetDestroyed(
-    views::Widget* widget) {
-  DCHECK(observation_.IsObservingSource(widget));
-  observation_.Reset();
+// content::WebContentsObserver:
+// Handles internal layout changes where the OS-level window does not change
+// size, but the web page area does (example: the user drags the Side Panel or
+// DevTools).
+void EmbeddedPermissionPromptContentScrimView::FrameSizeChanged(
+    content::RenderFrameHost* render_frame_host,
+    const gfx::Size& frame_size) {
+  if (!delegate_ || !GetWidget() || !web_contents()) {
+    return;
+  }
+
+  // Ignore all iframes in the page but the main page.
+  if (render_frame_host != web_contents()->GetPrimaryMainFrame()) {
+    return;
+  }
+  GetWidget()->SetBounds(web_contents()->GetContainerBounds());
 }
 
+// views::WidgetObserver:
+// Safely unregisters the observer when the top-level window is closing.
+// This prevents use-after-free crashes if the window dies before this View
+// does.
+void EmbeddedPermissionPromptContentScrimView::OnWidgetDestroyed(
+    views::Widget* widget) {
+  widget_observation_.Reset();
+}
+
+// views::WidgetObserver:
+// Handles OS-level window changes (example: the user maximizes the Chrome
+// window or drags the outer corner to resize it).
 void EmbeddedPermissionPromptContentScrimView::OnWidgetBoundsChanged(
     views::Widget* widget,
     const gfx::Rect& new_bounds) {
-  if (!delegate_) {
+  if (!delegate_ || !GetWidget() || !web_contents()) {
     return;
   }
-  if (auto permission_prompt_delegate =
-          delegate_->GetPermissionPromptDelegate()) {
-    GetWidget()->SetBounds(
-        permission_prompt_delegate->GetAssociatedWebContents()
-            ->GetContainerBounds());
-  }
+
+  // Avoid using the `permission_prompt_delegate` since web_contents
+  // is passed in as instance to this observer class. This allows for safety
+  // check that `web_contents()` is not null while the widget is still alive.
+  // Ignore `new_bounds` since it represents the full window, but only the web
+  // page matters.
+  GetWidget()->SetBounds(web_contents()->GetContainerBounds());
 }
 
 BEGIN_METADATA(EmbeddedPermissionPromptContentScrimView)

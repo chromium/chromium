@@ -10,6 +10,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/views/permissions/embedded_permission_prompt_view_delegate.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/events/event.h"
 #include "ui/gfx/geometry/rect.h"
@@ -23,13 +24,19 @@
 // window's content view, the intention is to obscure the content UI and prevent
 // web-content interaction while the user is interacting with the permission
 // prompt.
+
 // The `EmbeddedPermissionPrompt` is responsible for managing the lifetime of
 // the scrim view and the in-progress `EmbeddedPermissionPromptBaseView`. When
 // the prompt view is destroyed, the scrim is automatically removed. Clicking on
 // this scrim view will destroy both the scrim view and the in-progress
 // `EmbeddedPermissionPromptBaseView`.
-class EmbeddedPermissionPromptContentScrimView : public views::View,
-                                                 public views::WidgetObserver {
+
+// The scrim changes size with respect to the window (`views::WidgetObserver`)
+// and any side panel or popup it is in (`WebContentsObserver`).
+class EmbeddedPermissionPromptContentScrimView
+    : public views::View,
+      public views::WidgetObserver,
+      public content::WebContentsObserver {
   METADATA_HEADER(EmbeddedPermissionPromptContentScrimView, views::View)
 
  public:
@@ -43,7 +50,7 @@ class EmbeddedPermissionPromptContentScrimView : public views::View,
   };
 
   EmbeddedPermissionPromptContentScrimView(base::WeakPtr<Delegate> delegate,
-                                           views::Widget* widget,
+                                           content::WebContents* web_contents,
                                            bool should_dismiss_on_click);
 
   ~EmbeddedPermissionPromptContentScrimView() override;
@@ -63,14 +70,18 @@ class EmbeddedPermissionPromptContentScrimView : public views::View,
   bool OnMousePressed(const ui::MouseEvent& event) override;
   void OnGestureEvent(ui::GestureEvent* event) override;
 
+  // content::WebContentsObserver
+  void FrameSizeChanged(content::RenderFrameHost* render_frame_host,
+                        const gfx::Size& frame_size) override;
+
   // views::WidgetObserver
   void OnWidgetDestroyed(views::Widget* widget) override;
   void OnWidgetBoundsChanged(views::Widget* widget,
                              const gfx::Rect& new_bounds) override;
 
  private:
-  base::ScopedObservation<views::Widget, WidgetObserver> observation_{this};
-
+  base::ScopedObservation<views::Widget, views::WidgetObserver>
+      widget_observation_{this};
   base::WeakPtr<Delegate> delegate_;
   bool should_dismiss_on_click_;
 };
