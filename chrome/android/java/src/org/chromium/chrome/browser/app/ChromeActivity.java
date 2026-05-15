@@ -1797,6 +1797,9 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
 
     @Override
     public void onStop() {
+        if (mActorTaskHelper != null) {
+            mActorTaskHelper.onStop();
+        }
         super.onStop();
 
         onActivityHidden();
@@ -3496,4 +3499,8 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
     }
 
     // === END of ThemeResourceProvider functionality ===
+
+    public void setActorTaskHelperForTesting(ActorTaskHelper actorTaskHelper) {
+        mActorTaskHelper = actorTaskHelper;
+    }
 }

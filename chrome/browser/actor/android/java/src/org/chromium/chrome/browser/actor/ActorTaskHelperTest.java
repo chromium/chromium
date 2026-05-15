@@ -7,6 +7,8 @@ package org.chromium.chrome.browser.actor;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -26,6 +28,7 @@ import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.profiles.Profile;
 
+import java.util.Arrays;
 import java.util.Collections;
 
 /** Unit tests for {@link ActorTaskHelper}. */
@@ -85,6 +88,31 @@ public class ActorTaskHelperTest {
                 (mActivity.getWindow().getAttributes().flags
                                 & WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
                         != 0);
+    }
+
+    @Test
+    public void testOnStop() {
+        ActorTask taskCreated = mock(ActorTask.class);
+        when(taskCreated.getState()).thenReturn(ActorTaskState.CREATED);
+
+        ActorTask taskActing = mock(ActorTask.class);
+        when(taskActing.getState()).thenReturn(ActorTaskState.ACTING);
+
+        ActorTask taskReflecting = mock(ActorTask.class);
+        when(taskReflecting.getState()).thenReturn(ActorTaskState.REFLECTING);
+
+        ActorTask taskPaused = mock(ActorTask.class);
+        when(taskPaused.getState()).thenReturn(ActorTaskState.PAUSED_BY_USER);
+
+        when(mActorService.getActiveTasks())
+                .thenReturn(Arrays.asList(taskCreated, taskActing, taskReflecting, taskPaused));
+
+        mActorTaskHelper.onStop();
+
+        verify(taskCreated).pause();
+        verify(taskActing).pause();
+        verify(taskReflecting).pause();
+        verify(taskPaused, never()).pause();
     }
 
     @Test

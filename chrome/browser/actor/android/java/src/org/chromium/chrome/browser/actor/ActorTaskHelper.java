@@ -52,14 +52,24 @@ public class ActorTaskHelper implements ActorKeyedService.Observer {
     }
 
     private boolean shouldKeepScreenOn() {
+        boolean[] hasActiveTask = new boolean[1];
+        forEachActiveTask(task -> hasActiveTask[0] = true);
+        return hasActiveTask[0];
+    }
+
+    /** Pauses any Actor tasks if they are in an active state. */
+    public void onStop() {
+        forEachActiveTask(task -> task.pause());
+    }
+
+    private void forEachActiveTask(Callback<ActorTask> callback) {
         ActorKeyedService service = maybeGetActorService();
-        if (service == null) return false;
+        if (service == null) return;
         for (ActorTask task : service.getActiveTasks()) {
             if (ActorUtils.isRunningState(task.getState())) {
-                return true;
+                callback.onResult(task);
             }
         }
-        return false;
     }
 
     private @Nullable ActorKeyedService maybeGetActorService() {
