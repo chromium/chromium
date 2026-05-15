@@ -452,7 +452,9 @@ void ChromeAutofillClientIOS::UpdateAutofillDataListValues(
 void ChromeAutofillClientIOS::HideAutofillSuggestions(
     SuggestionHidingReason reason) {
   [bridge_ hideAutofillPopup];
-  [commands_handler_ resetAutofillSuggestionsLoadingStates];
+  if (reason == SuggestionHidingReason::kAcceptSuggestion) {
+    [commands_handler_ resetAutofillSuggestionsLoadingStates];
+  }
 }
 
 bool ChromeAutofillClientIOS::IsAutofillEnabled() const {
