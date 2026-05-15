@@ -139,9 +139,12 @@ public class TabbedCrashRecoveryDelegate {
 
         mCrashRecoveryInProgress = true;
 
-        // TODO: Restore non-visible windows.
-
         boolean isInMultiWindowMode = hostActivity.isInMultiWindowMode();
+        for (CrashRecoveryWindowInfo nonVisibleWindow : mNonVisibleWindows) {
+            int windowId = nonVisibleWindow.windowId;
+            restoreNonVisibleWindow(hostActivity, windowId, isInMultiWindowMode);
+        }
+
         for (CrashRecoveryWindowInfo visibleWindow : mVisibleWindows) {
             int windowId = visibleWindow.windowId;
             Rect bounds = visibleWindow.bounds;
@@ -149,6 +152,27 @@ public class TabbedCrashRecoveryDelegate {
         }
 
         mCrashRecoveryInProgress = false;
+    }
+
+    private void restoreNonVisibleWindow(
+            ChromeTabbedActivity hostActivity, int windowId, boolean openAdjacently) {
+        // Clear crash recovery state for instance.
+        ChromeMultiInstancePersistentStore.writeIsRecoverable(windowId, /* isRecoverable= */ false);
+        int persistedTaskId = ChromeMultiInstancePersistentStore.readTaskId(windowId);
+        if (mPreRecoveryAppTasks.containsKey(persistedTaskId)) {
+            // Skip starting a new task because this instance already has a live task in the
+            // background.
+            return;
+        }
+
+        Intent intent =
+                MultiWindowUtils.createNewWindowIntent(
+                        hostActivity,
+                        windowId,
+                        /* preferNew= */ false,
+                        openAdjacently,
+                        NewWindowAppSource.CRASH_RECOVERY);
+        hostActivity.startActivity(intent);
     }
 
     private void restoreVisibleWindow(

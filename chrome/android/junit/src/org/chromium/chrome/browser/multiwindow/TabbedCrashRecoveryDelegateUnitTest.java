@@ -7,9 +7,11 @@ package org.chromium.chrome.browser.multiwindow;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -85,6 +87,10 @@ public class TabbedCrashRecoveryDelegateUnitTest {
         when(mHostActivity.getPackageName())
                 .thenReturn(ContextUtils.getApplicationContext().getPackageName());
         when(mHostActivity.getWindowId()).thenReturn(HOST_WINDOW_ID);
+        mCrashedWindows = new ArrayList<>();
+        // Include the recovered host window in the list of crashed windows.
+        mCrashedWindows.add(
+                new CrashRecoveryWindowInfo(HOST_WINDOW_ID, HOST_BOUNDS, /* isVisible= */ true));
         setupPreRecoveryAppTasks(HOST_WINDOW_ID);
     }
 
@@ -97,9 +103,9 @@ public class TabbedCrashRecoveryDelegateUnitTest {
     @Test
     public void testInitiateCrashRecovery_singleWindow_skipsRecoveryPrompt() {
         // Setup.
-        setupCrashedWindows(
+        setupOtherCrashedWindows(
                 /* numNonVisibleWindows= */ 0,
-                /* numDefaultDisplayWindows= */ 1,
+                /* numDefaultDisplayWindows= */ 0,
                 /* numNonDefaultDisplayWindows= */ 0);
 
         // Act.
@@ -113,9 +119,9 @@ public class TabbedCrashRecoveryDelegateUnitTest {
     @Test
     public void testInitiateCrashRecovery_allOtherWindowsHaveLiveTasks_skipsRecoveryPrompt() {
         // Setup.
-        setupCrashedWindows(
+        setupOtherCrashedWindows(
                 /* numNonVisibleWindows= */ 1,
-                /* numDefaultDisplayWindows= */ 2,
+                /* numDefaultDisplayWindows= */ 1,
                 /* numNonDefaultDisplayWindows= */ 0);
         setupPreRecoveryAppTasks(0, 1, 2);
 
@@ -130,9 +136,9 @@ public class TabbedCrashRecoveryDelegateUnitTest {
     @Test
     public void testRestoreWindows_restoresVisibleWindowsInNewTasks() {
         // Setup.
-        setupCrashedWindows(
+        setupOtherCrashedWindows(
                 /* numNonVisibleWindows= */ 0,
-                /* numDefaultDisplayWindows= */ 2,
+                /* numDefaultDisplayWindows= */ 1,
                 /* numNonDefaultDisplayWindows= */ 1);
         setupPreRecoveryAppTasks(0);
         mDelegate.initiateCrashRecovery(
@@ -147,12 +153,11 @@ public class TabbedCrashRecoveryDelegateUnitTest {
         ArgumentCaptor<Bundle> bundleCaptor = ArgumentCaptor.forClass(Bundle.class);
 
         InOrder inOrderVerifier = inOrder(mHostActivity);
+
+        // Verify: Window from default display is restored with cached bounds.
         inOrderVerifier
                 .verify(mHostActivity)
                 .startActivity(intentCaptor1.capture(), bundleCaptor.capture());
-        inOrderVerifier.verify(mHostActivity).startActivity(intentCaptor2.capture(), eq(null));
-
-        // Verify: Window from default display is restored with cached bounds.
         Intent intent1 = intentCaptor1.getValue();
         assertNotNull(intent1);
         assertEquals(1, intent1.getIntExtra(IntentHandler.EXTRA_WINDOW_ID, -1));
@@ -161,7 +166,7 @@ public class TabbedCrashRecoveryDelegateUnitTest {
                 intent1.getIntExtra(IntentHandler.EXTRA_NEW_WINDOW_APP_SOURCE, -1));
         Bundle bundle = bundleCaptor.getValue();
         assertNotNull(bundle);
-        // For windowId=1, setupCrashedWindows assigns left=10, top=10,
+        // For windowId=1, setupOtherCrashedWindows assigns left=10, top=10,
         // right=10+TEST_WINDOW_WIDTH, bottom=10+TEST_WINDOW_HEIGHT.
         assertEquals(
                 new Rect(10, 10, 10 + TEST_WINDOW_WIDTH, 10 + TEST_WINDOW_HEIGHT),
@@ -169,6 +174,7 @@ public class TabbedCrashRecoveryDelegateUnitTest {
         assertFalse(ChromeMultiInstancePersistentStore.readIsRecoverable(1));
 
         // Verify: Window from non-default display is restored without launch bounds.
+        inOrderVerifier.verify(mHostActivity).startActivity(intentCaptor2.capture(), eq(null));
         Intent intent2 = intentCaptor2.getValue();
         assertNotNull(intent2);
         assertEquals(2, intent2.getIntExtra(IntentHandler.EXTRA_WINDOW_ID, -1));
@@ -181,9 +187,9 @@ public class TabbedCrashRecoveryDelegateUnitTest {
     @Test
     public void testRestoreWindows_finishesOrphanedTask() {
         // Setup.
-        setupCrashedWindows(
+        setupOtherCrashedWindows(
                 /* numNonVisibleWindows= */ 0,
-                /* numDefaultDisplayWindows= */ 3,
+                /* numDefaultDisplayWindows= */ 2,
                 /* numNonDefaultDisplayWindows= */ 0);
         // Setup: windowId=2 has a task that sustained a crash.
         setupPreRecoveryAppTasks(0, 2);
@@ -216,13 +222,13 @@ public class TabbedCrashRecoveryDelegateUnitTest {
 
         List<Bundle> bundles = bundleCaptor.getAllValues();
         assertNotNull(bundles.get(0));
-        // For windowId=1, setupCrashedWindows assigns left=10, top=10,
+        // For windowId=1, setupOtherCrashedWindows assigns left=10, top=10,
         // right=10+TEST_WINDOW_WIDTH, bottom=10+TEST_WINDOW_HEIGHT.
         assertEquals(
                 new Rect(10, 10, 10 + TEST_WINDOW_WIDTH, 10 + TEST_WINDOW_HEIGHT),
                 ActivityOptions.fromBundle(bundles.get(0)).getLaunchBounds());
         assertNotNull(bundles.get(1));
-        // For windowId=2, setupCrashedWindows assigns left=20, top=20,
+        // For windowId=2, setupOtherCrashedWindows assigns left=20, top=20,
         // right=20+TEST_WINDOW_WIDTH, bottom=20+TEST_WINDOW_HEIGHT.
         assertEquals(
                 new Rect(20, 20, 20 + TEST_WINDOW_WIDTH, 20 + TEST_WINDOW_HEIGHT),
@@ -232,15 +238,80 @@ public class TabbedCrashRecoveryDelegateUnitTest {
         assertFalse(ChromeMultiInstancePersistentStore.readIsRecoverable(2));
     }
 
-    private void setupCrashedWindows(
+    @Test
+    public void testRestoreWindows_restoresNonVisibleWindowInNewTask() {
+        // Setup.
+        setupOtherCrashedWindows(
+                /* numNonVisibleWindows= */ 1,
+                /* numDefaultDisplayWindows= */ 1,
+                /* numNonDefaultDisplayWindows= */ 0);
+        setupPreRecoveryAppTasks(0);
+        mDelegate.initiateCrashRecovery(
+                mModalDialogManagerSupplier, mHostActivity, mCrashedWindows);
+
+        // Act.
+        mDelegate.restoreWindows(mHostActivity);
+
+        // Verify.
+        ArgumentCaptor<Intent> intentCaptor1 = ArgumentCaptor.forClass(Intent.class);
+        ArgumentCaptor<Intent> intentCaptor2 = ArgumentCaptor.forClass(Intent.class);
+
+        InOrder inOrderVerifier = inOrder(mHostActivity);
+
+        // Verify: Non-visible window is restored without launch bounds bundle.
+        inOrderVerifier.verify(mHostActivity).startActivity(intentCaptor1.capture());
+        Intent intent1 = intentCaptor1.getValue();
+        assertNotNull(intent1);
+        assertEquals(1, intent1.getIntExtra(IntentHandler.EXTRA_WINDOW_ID, -1));
+        assertEquals(
+                NewWindowAppSource.CRASH_RECOVERY,
+                intent1.getIntExtra(IntentHandler.EXTRA_NEW_WINDOW_APP_SOURCE, -1));
+        assertFalse(ChromeMultiInstancePersistentStore.readIsRecoverable(1));
+
+        // Verify: Visible window is restored with bundle.
+        inOrderVerifier.verify(mHostActivity).startActivity(intentCaptor2.capture(), any());
+        Intent intent2 = intentCaptor2.getValue();
+        assertNotNull(intent2);
+        assertEquals(2, intent2.getIntExtra(IntentHandler.EXTRA_WINDOW_ID, -1));
+        assertFalse(ChromeMultiInstancePersistentStore.readIsRecoverable(2));
+    }
+
+    @Test
+    public void testRestoreWindows_skipsNonVisibleWindowWithLiveTask() {
+        // Setup.
+        setupOtherCrashedWindows(
+                /* numNonVisibleWindows= */ 1,
+                /* numDefaultDisplayWindows= */ 1,
+                /* numNonDefaultDisplayWindows= */ 0);
+        // Setup: Non-visible window (windowId=1) has a live task.
+        setupPreRecoveryAppTasks(0, 1);
+        mDelegate.initiateCrashRecovery(
+                mModalDialogManagerSupplier, mHostActivity, mCrashedWindows);
+
+        // Act.
+        mDelegate.restoreWindows(mHostActivity);
+
+        // Verify: The live task for the non-visible window should not be finished.
+        AppTask liveTask = mPreRecoveryAppTasks.get(1);
+        verify(liveTask, never()).finishAndRemoveTask();
+
+        // Verify: Only the visible window (windowId=2) should be started.
+        ArgumentCaptor<Intent> intentCaptor = ArgumentCaptor.forClass(Intent.class);
+        verify(mHostActivity).startActivity(intentCaptor.capture(), any());
+        // Verify: No single-arg startActivity was called for the non-visible window.
+        verify(mHostActivity, never()).startActivity(any());
+
+        Intent intent = intentCaptor.getValue();
+        assertNotNull(intent);
+        assertEquals(2, intent.getIntExtra(IntentHandler.EXTRA_WINDOW_ID, -1));
+        assertFalse(ChromeMultiInstancePersistentStore.readIsRecoverable(1));
+        assertFalse(ChromeMultiInstancePersistentStore.readIsRecoverable(2));
+    }
+
+    private void setupOtherCrashedWindows(
             int numNonVisibleWindows,
             int numDefaultDisplayWindows,
             int numNonDefaultDisplayWindows) {
-        mCrashedWindows = new ArrayList<>();
-        // Include the host window in the visible window count.
-        mCrashedWindows.add(
-                new CrashRecoveryWindowInfo(HOST_WINDOW_ID, HOST_BOUNDS, /* isVisible= */ true));
-
         int start = 1;
         int end = numNonVisibleWindows + 1;
         for (int i = start; i < end; i++) {
@@ -249,7 +320,7 @@ public class TabbedCrashRecoveryDelegateUnitTest {
                     new CrashRecoveryWindowInfo(i, /* bounds= */ null, /* isVisible= */ false));
         }
         start = end;
-        end = numNonVisibleWindows + numDefaultDisplayWindows;
+        end = start + numDefaultDisplayWindows;
         for (int i = start; i < end; i++) {
             ChromeMultiInstancePersistentStore.writeIsRecoverable(i, true);
             mCrashedWindows.add(
