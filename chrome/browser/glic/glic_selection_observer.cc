@@ -709,7 +709,7 @@ void GlicSelectionObserver::RequestLinkGeneration(
   rfh->GetRemoteInterfaces()->GetInterface(
       text_fragment_remote_.BindNewPipeAndPassReceiver());
 
-  text_fragment_remote_->RequestSelector(
+  text_fragment_remote_->RequestSelectorForSelection(
       base::BindOnce(&GlicSelectionObserver::OnLinkGenerated,
                      weak_ptr_factory_.GetWeakPtr(), url));
 }
