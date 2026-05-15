@@ -30,7 +30,7 @@ public class RecyclerViewSelectionController extends SelectionController
 
     @Override
     protected int getItemCount() {
-        return mLayoutManager == null ? 0 : mLayoutManager.getItemCount();
+        return mLayoutManager.getItemCount();
     }
 
     @Override

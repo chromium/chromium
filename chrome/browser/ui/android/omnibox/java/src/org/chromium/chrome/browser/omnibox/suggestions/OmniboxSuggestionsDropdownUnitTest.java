@@ -383,15 +383,4 @@ public class OmniboxSuggestionsDropdownUnitTest {
         mListener.onLayoutChildren(null, new RecyclerView.State());
         verify(mListener, times(0)).scrollToPositionWithOffset(anyInt(), anyInt());
     }
-
-    @Test
-    public void testSetAllowParkingAtSentinel() {
-        SelectionController controller = mDropdown.getSelectionControllerForTesting();
-
-        mDropdown.setAllowParkingAtSentinel(true);
-        assertTrue(controller.isParkedAtSentinel());
-
-        mDropdown.setAllowParkingAtSentinel(false);
-        assertFalse(controller.isParkedAtSentinel());
-    }
 }

@@ -120,9 +120,6 @@ class SuggestionListViewBinder {
                     model.get(SuggestionListProperties.IS_LARGE_SCREEN));
         } else if (SuggestionListProperties.TOOLBAR_POSITION == propertyKey) {
             view.dropdown.setToolbarPosition(model.get(SuggestionListProperties.TOOLBAR_POSITION));
-        } else if (SuggestionListProperties.ALLOW_PARKING_AT_SENTINEL.equals(propertyKey)) {
-            view.dropdown.setAllowParkingAtSentinel(
-                    model.get(SuggestionListProperties.ALLOW_PARKING_AT_SENTINEL));
         }
     }
 

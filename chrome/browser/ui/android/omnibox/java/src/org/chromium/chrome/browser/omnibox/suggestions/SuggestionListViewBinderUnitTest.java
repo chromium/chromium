@@ -165,13 +165,4 @@ public class SuggestionListViewBinderUnitTest {
         mSuggestionModels.set(suggestionsList);
         verify(mDropdown).resetSelection();
     }
-
-    @Test
-    public void allowParkingAtSentinel() {
-        mListModel.set(SuggestionListProperties.ALLOW_PARKING_AT_SENTINEL, true);
-        verify(mDropdown).setAllowParkingAtSentinel(true);
-
-        mListModel.set(SuggestionListProperties.ALLOW_PARKING_AT_SENTINEL, false);
-        verify(mDropdown).setAllowParkingAtSentinel(false);
-    }
 }

@@ -551,21 +551,4 @@ public class SelectionControllerUnitTest {
         assertFalse(c.selectPreviousItem());
         verifyPositionReset(c, 1);
     }
-
-    @Test
-    public void setSelectionMode() {
-        var c = createTestController(Mode.WRAPPING);
-        c.reset();
-        verifyPositionSet(c, 0);
-
-        c.setSelectionMode(Mode.WRAPPING_WITH_SENTINEL);
-        c.reset();
-        verifyPositionReset(c, 0);
-        assertTrue(c.isParkedAtSentinel());
-
-        c.setSelectionMode(Mode.WRAPPING);
-        c.reset();
-        verifyPositionSet(c, 0);
-        assertFalse(c.isParkedAtSentinel());
-    }
 }
