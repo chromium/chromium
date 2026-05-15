@@ -167,6 +167,9 @@ void DataControlsTabHelper::ShouldAllowSearchWith(
 
   Verdict verdict = IsSearchWithAllowedByPolicy(source_url, profile);
 
+  base::UmaHistogramEnumeration(
+      kIOSWebStateDataControlsSearchWithVerdictHistogram, verdict.level());
+
   ui::ClipboardMetadata metadata{
       .size = text_length * sizeof(std::u16string::value_type),
       .format_type = ui::ClipboardFormatType::PlainTextType()};

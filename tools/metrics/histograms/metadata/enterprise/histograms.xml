@@ -2845,6 +2845,19 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Enterprise.IOS.WebState.DataControls.SearchWith.Verdict"
+    enum="EnterpriseDlpPolicyLevel" expires_after="2027-05-11">
+  <owner>anaercegovac@google.com</owner>
+  <owner>cep-se@google.com</owner>
+  <summary>
+    Records the verdict of the Data Controls policy check for a user clicking
+    the &quot;Search [Default Search Engine] with [selected text]&quot; button.
+    Increases in 'WARN' counts within this histogram indicate potential data
+    exfiltration being actioned by the policy. The 'BLOCK' bucket is expected to
+    be empty since the 'Search' item is hidden for block verdicts.
+  </summary>
+</histogram>
+
 <histogram name="Enterprise.KeySignatureVerification"
     enum="EnterpriseKeySignatureVerification" expires_after="2026-09-13">
   <owner>igorcov@chromium.org</owner>

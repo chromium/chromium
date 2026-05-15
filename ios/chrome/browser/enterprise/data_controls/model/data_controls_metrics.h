@@ -23,4 +23,8 @@ extern const char
 extern const char
     kIOSWebStateDataControlsClipboardPasteClipboardWarningBypassedHistogram[];
 
+// Name of the histogram that collects metrics of data control verdict for
+// search action.
+extern const char kIOSWebStateDataControlsSearchWithVerdictHistogram[];
+
 #endif  // IOS_CHROME_BROWSER_ENTERPRISE_DATA_CONTROLS_MODEL_DATA_CONTROLS_METRICS_H_

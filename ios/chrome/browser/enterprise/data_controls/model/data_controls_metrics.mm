@@ -14,3 +14,5 @@ extern const char
 extern const char
     kIOSWebStateDataControlsClipboardPasteClipboardWarningBypassedHistogram[] =
         "Enterprise.IOS.WebState.DataControls.Clipboard.Paste.WarningBypassed";
+extern const char kIOSWebStateDataControlsSearchWithVerdictHistogram[] =
+    "Enterprise.IOS.WebState.DataControls.SearchWith.Verdict";

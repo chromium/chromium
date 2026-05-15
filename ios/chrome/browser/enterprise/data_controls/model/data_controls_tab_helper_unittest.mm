@@ -1035,6 +1035,8 @@ TEST_F(DataControlsTabHelperTest, ShouldAllowSearchWith_FeatureDisabled) {
         run_loop.Quit();
       }));
   run_loop.Run();
+  histogram_tester_.ExpectTotalCount(
+      kIOSWebStateDataControlsSearchWithVerdictHistogram, 0);
 }
 
 // Tests that ShouldAllowSearchWith allows the action by default.
@@ -1047,6 +1049,9 @@ TEST_F(DataControlsTabHelperTest, ShouldAllowSearchWith_Default) {
         run_loop.Quit();
       }));
   run_loop.Run();
+  histogram_tester_.ExpectUniqueSample(
+      kIOSWebStateDataControlsSearchWithVerdictHistogram,
+      data_controls::Rule::Level::kNotSet, 1);
 }
 
 // Tests that ShouldAllowSearchWith blocks the action when a "BLOCK" rule
@@ -1062,6 +1067,9 @@ TEST_F(DataControlsTabHelperTest, ShouldAllowSearchWith_Blocked) {
         run_loop.Quit();
       }));
   run_loop.Run();
+  histogram_tester_.ExpectUniqueSample(
+      kIOSWebStateDataControlsSearchWithVerdictHistogram,
+      data_controls::Rule::Level::kBlock, 1);
 }
 
 // Tests that ShouldAllowSearchWith allows the action when an "ALLOW" rule
@@ -1077,6 +1085,9 @@ TEST_F(DataControlsTabHelperTest, ShouldAllowSearchWith_Allowed) {
         run_loop.Quit();
       }));
   run_loop.Run();
+  histogram_tester_.ExpectUniqueSample(
+      kIOSWebStateDataControlsSearchWithVerdictHistogram,
+      data_controls::Rule::Level::kAllow, 1);
 }
 
 // Tests that ShouldAllowSearchWith triggers a warning dialog that blocks if not
@@ -1106,6 +1117,9 @@ TEST_F(DataControlsTabHelperTest, ShouldAllowSearchWith_Warn_NotBypassed) {
 
   std::move(handler->_callback).Run(false);
   run_loop.Run();
+  histogram_tester_.ExpectUniqueSample(
+      kIOSWebStateDataControlsSearchWithVerdictHistogram,
+      data_controls::Rule::Level::kWarn, 1);
 }
 
 // Tests that ShouldAllowSearchWith triggers a warning dialog that allows if
@@ -1131,6 +1145,9 @@ TEST_F(DataControlsTabHelperTest, ShouldAllowSearchWith_Warn_Bypassed) {
 
   std::move(handler->_callback).Run(true);
   run_loop.Run();
+  histogram_tester_.ExpectUniqueSample(
+      kIOSWebStateDataControlsSearchWithVerdictHistogram,
+      data_controls::Rule::Level::kWarn, 1);
 }
 
 // Tests that ShouldAllowSearchWith includes the organization domain in the
