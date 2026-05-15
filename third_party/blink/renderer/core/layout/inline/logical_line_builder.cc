@@ -236,14 +236,10 @@ InlineBoxState* LogicalLineBuilder::HandleItemResults(
         block_scale = scale;
       }
       if (quirks_mode_) [[unlikely]] {
-        FitTextBlockScale fit_text_block_scale = {block_scale, block_scale,
-                                                  nullptr};
+        FitTextBlockScale fit_text_block_scale = {block_scale, nullptr};
         if (const auto* fit_text_scale = item_result.fit_text_scale.Get()) {
           if (const Font* scaled_font = fit_text_scale->font.Get()) {
             fit_text_block_scale.scaled_font = scaled_font;
-            fit_text_block_scale.total_scale =
-                block_scale * scaled_font->GetFontDescription().ComputedSize() /
-                item_result.item->Style()->GetFontDescription().ComputedSize();
           }
         }
         box->EnsureTextMetrics(*item.Style(), *box->font, baseline_type_,

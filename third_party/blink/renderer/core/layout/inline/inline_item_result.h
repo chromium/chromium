@@ -229,7 +229,7 @@ inline FitTextBlockScale FindTextScale(bool should_scale,
                                        wtf_size_t start_index,
                                        wtf_size_t initial_nesting_level) {
   if (!should_scale) {
-    return {1.0f, 1.0f, nullptr};
+    return {1.0f, nullptr};
   }
   return FindTextScaleInternal(line_items, start_index, initial_nesting_level);
 }

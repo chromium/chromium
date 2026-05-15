@@ -129,23 +129,13 @@ FitTextBlockScale FindTextScaleInternal(const InlineItemResults& line_items,
     } else if (item_type == InlineItem::kText) {
       if (level == 0) {
         if (const auto* fit_text_scale = line_items[i].fit_text_scale.Get()) {
-          float paint_scale = fit_text_scale->scale;
-          float font_scale = 1.0f;
-          const Font* scaled_font = fit_text_scale->font;
-          if (scaled_font) {
-            font_scale = scaled_font->GetFontDescription().ComputedSize() /
-                         line_items[i]
-                             .item->Style()
-                             ->GetFontDescription()
-                             .ComputedSize();
-          }
-          return {paint_scale, font_scale * paint_scale, scaled_font};
+          return {fit_text_scale->scale, fit_text_scale->font};
         }
         break;
       }
     }
   }
-  return {1.0f, 1.0f, nullptr};
+  return {1.0f, nullptr};
 }
 
 }  // namespace blink
