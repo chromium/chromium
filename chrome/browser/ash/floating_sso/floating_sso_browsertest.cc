@@ -26,8 +26,8 @@
 #include "chrome/browser/policy/policy_test_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chromeos/constants/pref_names.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/keyed_service/core/dependency_graph.h"
 #include "components/keyed_service/core/keyed_service_base_factory.h"
@@ -243,7 +243,7 @@ class FloatingSsoTest : public policy::PolicyTest {
   bool IsFloatingSsoSessionCookiesIncludedPolicyManaged() {
     const PrefService::Preference* floating_sso_session_cookies_pref =
         profile()->GetPrefs()->FindPreference(
-            ::prefs::kFloatingSsoSessionCookiesIncluded);
+            chromeos::prefs::kFloatingSsoSessionCookiesIncluded);
 
     return CHECK_DEREF(floating_sso_session_cookies_pref).IsManaged();
   }

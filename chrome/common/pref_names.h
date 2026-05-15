@@ -664,23 +664,6 @@ inline constexpr char kHasEverRevokedMetricsConsent[] =
 // a notification to the local user when the session was terminated.
 inline constexpr char kRemoteAdminWasPresent[] = "remote_admin_was_present";
 
-// List pref containing blocked domains of cookies that will not be moved when a
-// user switches between ChromeOS devices, when the Floating SSO Service is
-// enabled.
-inline constexpr char kFloatingSsoDomainBlocklist[] =
-    "floating_sso_domain_blocklist";
-
-// List pref containing blocklist excepted domains of cookies to be moved when a
-// user switches between ChromeOS devices, when the Floating SSO Service is
-// enabled.
-inline constexpr char kFloatingSsoDomainBlocklistExceptions[] =
-    "floating_sso_domain_blocklist_exceptions";
-
-// Boolean pref that determine whether session cookies will be included or not
-// when user switches between ChromeOS devices.
-inline constexpr char kFloatingSsoSessionCookiesIncluded[] =
-    "floating_sso_session_cookies_included";
-
 // This boolean controls whether the first window shown on first run should be
 // unconditionally maximized, overriding the heuristic that normally chooses the
 // window size.

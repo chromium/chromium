@@ -14,7 +14,6 @@
 #include "chrome/browser/ash/floating_sso/cookie_sync_conversions.h"
 #include "chrome/browser/ash/floating_sso/floating_sso_sync_bridge.h"
 #include "chrome/browser/ash/floating_workspace/floating_workspace_util.h"
-#include "chrome/common/pref_names.h"
 #include "chromeos/constants/pref_names.h"
 #include "components/google/core/common/google_util.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -80,11 +79,11 @@ void FloatingSsoService::RegisterPolicyListeners() {
   // cookies that already exist are not checked again to see if some of them are
   // no longer blocklisted.
   pref_change_registrar_->Add(
-      ::prefs::kFloatingSsoDomainBlocklist,
+      chromeos::prefs::kFloatingSsoDomainBlocklist,
       base::BindRepeating(&FloatingSsoService::UpdateUrlMatchers,
                           base::Unretained(this)));
   pref_change_registrar_->Add(
-      ::prefs::kFloatingSsoDomainBlocklistExceptions,
+      chromeos::prefs::kFloatingSsoDomainBlocklistExceptions,
       base::BindRepeating(&FloatingSsoService::UpdateUrlMatchers,
                           base::Unretained(this)));
 }
@@ -95,9 +94,9 @@ void FloatingSsoService::UpdateUrlMatchers() {
   except_url_matcher_ = std::make_unique<url_matcher::URLMatcher>();
 
   const base::ListValue& blocklist =
-      prefs_->GetList(::prefs::kFloatingSsoDomainBlocklist);
+      prefs_->GetList(chromeos::prefs::kFloatingSsoDomainBlocklist);
   const base::ListValue& blocklist_exceptions =
-      prefs_->GetList(::prefs::kFloatingSsoDomainBlocklistExceptions);
+      prefs_->GetList(chromeos::prefs::kFloatingSsoDomainBlocklistExceptions);
 
   if (!blocklist.empty()) {
     base::MatcherStringPattern::ID block_id = 0;
@@ -298,8 +297,8 @@ bool FloatingSsoService::ShouldSyncCookie(
 }
 
 bool FloatingSsoService::ShouldSyncSessionCookies() const {
-  const PrefService::Preference* session_cookies_pref =
-      prefs_->FindPreference(::prefs::kFloatingSsoSessionCookiesIncluded);
+  const PrefService::Preference* session_cookies_pref = prefs_->FindPreference(
+      chromeos::prefs::kFloatingSsoSessionCookiesIncluded);
 
   // If the pref is null or the policy isn't managed, the FWS logic applies.
   // Otherwise, the FloatingSsoSessionCookiesIncluded policy value directly

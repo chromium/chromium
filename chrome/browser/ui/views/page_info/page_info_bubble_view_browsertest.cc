@@ -1468,7 +1468,7 @@ class PageInfoBubbleViewBrowserTestCookiesSubpage
 
   void SetBlockedDomainsForCookieSync(base::ListValue domains) {
     browser()->profile()->GetPrefs()->SetList(
-        ::prefs::kFloatingSsoDomainBlocklist, std::move(domains));
+        chromeos::prefs::kFloatingSsoDomainBlocklist, std::move(domains));
   }
 #endif
 

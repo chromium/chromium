@@ -2017,10 +2017,11 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
                                 false);
   ::reporting::RegisterProfilePrefs(registry);
   registry->RegisterBooleanPref(chromeos::prefs::kFloatingSsoEnabled, false);
-  registry->RegisterListPref(prefs::kFloatingSsoDomainBlocklist);
-  registry->RegisterListPref(prefs::kFloatingSsoDomainBlocklistExceptions);
-  registry->RegisterBooleanPref(prefs::kFloatingSsoSessionCookiesIncluded,
-                                false);
+  registry->RegisterListPref(chromeos::prefs::kFloatingSsoDomainBlocklist);
+  registry->RegisterListPref(
+      chromeos::prefs::kFloatingSsoDomainBlocklistExceptions);
+  registry->RegisterBooleanPref(
+      chromeos::prefs::kFloatingSsoSessionCookiesIncluded, false);
 #if BUILDFLAG(USE_CUPS)
   extensions::PrintingAPIHandler::RegisterProfilePrefs(registry);
 #endif  // BUILDFLAG(USE_CUPS)

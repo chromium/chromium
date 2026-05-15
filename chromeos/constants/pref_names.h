@@ -60,6 +60,23 @@ inline constexpr char kFloatingWorkspaceV2Enabled[] =
 // cookies from the previous device onto another, on ChromeOS.
 inline constexpr char kFloatingSsoEnabled[] = "floating_sso_enabled";
 
+// List pref containing blocked domains of cookies that will not be moved when a
+// user switches between ChromeOS devices, when the Floating SSO Service is
+// enabled.
+inline constexpr char kFloatingSsoDomainBlocklist[] =
+    "floating_sso_domain_blocklist";
+
+// List pref containing blocklist excepted domains of cookies to be moved when a
+// user switches between ChromeOS devices, when the Floating SSO Service is
+// enabled.
+inline constexpr char kFloatingSsoDomainBlocklistExceptions[] =
+    "floating_sso_domain_blocklist_exceptions";
+
+// Boolean pref that determine whether session cookies will be included or not
+// when user switches between ChromeOS devices.
+inline constexpr char kFloatingSsoSessionCookiesIncluded[] =
+    "floating_sso_session_cookies_included";
+
 // Boolean pref that determines whether signing in on a new ChromeOS device
 // automatically signs the user out of their previous session. If the pref is
 // set to false, the automatic sign-out functionality could still be enabled if
