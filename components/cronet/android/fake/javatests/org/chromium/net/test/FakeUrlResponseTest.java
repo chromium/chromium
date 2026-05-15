@@ -195,7 +195,7 @@ public class FakeUrlResponseTest {
         // UnmodifiableList cannot be null.
         UrlResponseInfo info =
                 new UrlResponseInfoImpl(
-                        /* UrlChain */ new ArrayList<>(),
+                        /* urlChain= */ new ArrayList<>(),
                         TEST_HTTP_STATUS_CODE,
                         null,
                         mTestHeaders,

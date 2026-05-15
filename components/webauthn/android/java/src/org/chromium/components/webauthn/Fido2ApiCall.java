@@ -259,11 +259,11 @@ public final class Fido2ApiCall extends GoogleApi<ApiOptions.NoOptions> {
                                     FIRSTPARTY_API_ID),
                             FIRSTPARTY_CLIENT_KEY),
                     FIRSTPARTY_DESCRIPTOR,
-                    /* callbackDescriptor */ null,
-                    /* registerMethodId */ 0,
-                    /* signMethodId */ 0,
-                    /* isUserVerifyingPlatformAuthenticatorAvailable */ 0,
-                    /* methodInterfaces */ null);
+                    /* callbackDescriptor= */ null,
+                    /* registerMethodId= */ 0,
+                    /* signMethodId= */ 0,
+                    /* isUserVerifyingPlatformAuthenticatorAvailableMethodId= */ 0,
+                    /* methodInterfaces= */ null);
 
     private static final String PERSISTENT_DESCRIPTOR =
             "com.google.android.gms.auth.api.fido.IFidoPersistentService";
@@ -284,11 +284,11 @@ public final class Fido2ApiCall extends GoogleApi<ApiOptions.NoOptions> {
                                     PERSISTENT_API_ID),
                             PERSISTENT_CLIENT_KEY),
                     PERSISTENT_DESCRIPTOR,
-                    /* callbackDescriptor */ null,
-                    /* registerMethodId */ 0,
-                    /* signMethodId */ 0,
-                    /* isUserVerifyingPlatformAuthenticatorAvailable */ 0,
-                    /* methodInterfaces */ null);
+                    /* callbackDescriptor= */ null,
+                    /* registerMethodId= */ 0,
+                    /* signMethodId= */ 0,
+                    /* isUserVerifyingPlatformAuthenticatorAvailableMethodId= */ 0,
+                    /* methodInterfaces= */ null);
 
     private final String mDescriptor;
 

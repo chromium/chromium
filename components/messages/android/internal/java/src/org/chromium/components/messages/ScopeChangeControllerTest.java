@@ -352,7 +352,7 @@ public class ScopeChangeControllerTest {
                 /* isPrimaryMainFrameFragmentNavigation= */ false,
                 /* isDownload= */ false,
                 /* isValidSearchFormUrl= */ false,
-                /* transition */ 0,
+                /* transition= */ 0,
                 /* errorCode= */ 0,
                 /* errorDescription= */ "",
                 /* httpStatuscode= */ 0,

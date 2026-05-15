@@ -315,7 +315,7 @@ public abstract class CronetLogger {
         private final int mUid;
         private final int mNetworkInternalErrorCode;
         private final int mQuicErrorCode;
-        private final @ConnectionCloseSource int mSource;
+        private final @ConnectionCloseSource int mConnectionCloseSource;
         private final RequestFailureReason mFailureReason;
         private final boolean mSocketReused;
         private final String mCronetVersion;
@@ -347,9 +347,9 @@ public abstract class CronetLogger {
                 int uid,
                 int networkInternalErrorCode,
                 int quicErrorCode,
-                @ConnectionCloseSource int source,
+                @ConnectionCloseSource int connectionCloseSource,
                 RequestFailureReason failureReason,
-                boolean sockedReused,
+                boolean socketReused,
                 String cronetVersion,
                 CronetSource cronetSource,
                 long timeToEstablishDnsMicros,
@@ -377,9 +377,9 @@ public abstract class CronetLogger {
             mUid = uid;
             mNetworkInternalErrorCode = networkInternalErrorCode;
             mQuicErrorCode = quicErrorCode;
-            mSource = source;
+            mConnectionCloseSource = connectionCloseSource;
             mFailureReason = failureReason;
-            mSocketReused = sockedReused;
+            mSocketReused = socketReused;
             mCronetVersion = cronetVersion;
             mCronetSource = cronetSource;
             mTimeToEstablishDnsMicros = timeToEstablishDnsMicros;
@@ -479,7 +479,7 @@ public abstract class CronetLogger {
         }
 
         public @ConnectionCloseSource int getConnectionCloseSource() {
-            return mSource;
+            return mConnectionCloseSource;
         }
 
         public RequestFailureReason getFailureReason() {
