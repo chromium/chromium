@@ -24006,6 +24006,27 @@
             ]
         }
     ],
+    "UseBoringSSLForRandBytes": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "fuchsia",
+                "ios",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "UseBoringSSLForRandBytes"
+                    ]
+                }
+            ]
+        }
+    ],
     "UseCompositorClockVSyncInterval": [
         {
             "platforms": [

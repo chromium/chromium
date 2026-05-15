@@ -14,11 +14,37 @@
 
 namespace base {
 
+namespace internal {
 
+namespace {
+
+// The BoringSSl helpers are duplicated in rand_util_posix.cc and
+// rand_util_win.cc.
+std::atomic<bool> g_use_boringssl;
+
+BASE_FEATURE(kUseBoringSSLForRandBytes, FEATURE_DISABLED_BY_DEFAULT);
+
+}  // namespace
+
+void ConfigureBoringSSLBackedRandBytesFieldTrial() {
+  g_use_boringssl.store(FeatureList::IsEnabled(kUseBoringSSLForRandBytes),
+                        std::memory_order_relaxed);
+}
+
+bool UseBoringSSLForRandBytes() {
+  return g_use_boringssl.load(std::memory_order_relaxed);
+}
+
+}  // namespace internal
 
 void RandBytes(span<uint8_t> output) {
-  // BoringSSL's RAND_bytes always returns 1. Any error aborts the program.
-  (void)RAND_bytes(output.data(), output.size());
+  if (internal::UseBoringSSLForRandBytes()) {
+    // BoringSSL's RAND_bytes always returns 1. Any error aborts the program.
+    (void)RAND_bytes(output.data(), output.size());
+    return;
+  }
+
+  zx_cprng_draw(output.data(), output.size());
 }
 
 namespace internal {
