@@ -2810,6 +2810,7 @@ class AccessibilityControllerSyncablePrefsOnSigninTest
     using prefs::kAccessibilityMonoAudioEnabled;
     using prefs::kAccessibilitySpokenFeedbackEnabled;
     using prefs::kDockedMagnifierEnabled;
+    using prefs::kDockedMagnifierScale;
 
     const bool should_signin_prefs_be_copied =
         GetParam() == TestUserLoginType::kNewUser;
@@ -2827,6 +2828,8 @@ class AccessibilityControllerSyncablePrefsOnSigninTest
       EXPECT_TRUE(user_prefs->GetBoolean(kAccessibilityHighContrastEnabled));
       EXPECT_TRUE(user_prefs->GetBoolean(kAccessibilityCaretHighlightEnabled));
       EXPECT_TRUE(user_prefs->GetBoolean(kDockedMagnifierEnabled));
+      EXPECT_FLOAT_EQ(kMagnifierScale,
+                      user_prefs->GetDouble(kDockedMagnifierScale));
       EXPECT_TRUE(user_prefs->GetBoolean(kAccessibilitySpokenFeedbackEnabled));
       EXPECT_TRUE(user_prefs->GetBoolean(kAccessibilityAutoclickEnabled));
       EXPECT_TRUE(user_prefs->GetBoolean(kAccessibilityMonoAudioEnabled));
@@ -2841,6 +2844,8 @@ class AccessibilityControllerSyncablePrefsOnSigninTest
           kAccessibilityCaretHighlightEnabled, base::Value(true)));
       EXPECT_TRUE(IsPrefLockedWithValueForTesting(kDockedMagnifierEnabled,
                                                   base::Value(true)));
+      EXPECT_TRUE(IsPrefLockedWithValueForTesting(
+          kDockedMagnifierScale, base::Value(kMagnifierScale)));
       EXPECT_FALSE(IsPrefLockedWithValueForTesting(
           kAccessibilitySpokenFeedbackEnabled, std::nullopt));
       EXPECT_FALSE(IsPrefLockedWithValueForTesting(
@@ -2872,6 +2877,7 @@ class AccessibilityControllerSyncablePrefsOnSigninTest
       EXPECT_FALSE(user_prefs->GetBoolean(kAccessibilityMonoAudioEnabled));
       EXPECT_FALSE(user_prefs->GetBoolean(kAccessibilityCaretHighlightEnabled));
       EXPECT_FALSE(user_prefs->GetBoolean(kDockedMagnifierEnabled));
+      EXPECT_NE(kMagnifierScale, user_prefs->GetDouble(kDockedMagnifierScale));
       EXPECT_FALSE(
           user_prefs->GetBoolean(kAccessibilityCursorHighlightEnabled));
 
