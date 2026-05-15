@@ -103,6 +103,9 @@ const base::FeatureParam<std::string> kCsdClipboardCopyApiRemoteRunners{
 const base::FeatureParam<std::string> kCsdClipboardCopyApiDecoders{
     &kClientSideDetectionClipboardCopyApi, "Decoders",
     /*default_value=*/"base32,base64"};
+const base::FeatureParam<bool> kCSDClipboardCopyApiSuspiciousTokenFilter{
+    &kClientSideDetectionClipboardCopyApi, "SuspiciousTokenFilter",
+    /*default_value=*/false};
 
 BASE_FEATURE(kClientSideDetectionCreditCardForm,
              base::FEATURE_DISABLED_BY_DEFAULT);

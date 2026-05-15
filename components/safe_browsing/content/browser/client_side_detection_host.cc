@@ -1061,6 +1061,7 @@ void ClientSideDetectionHost::PrimaryPageChanged(content::Page& page) {
   last_request_type_ =
       ClientSideDetectionType::CLIENT_SIDE_DETECTION_TYPE_UNSPECIFIED;
   should_send_as_force_request_ = false;
+  clipboard_extracted_data_.reset();
 
   MaybeRunUserReportCallback();
 
@@ -1432,7 +1433,18 @@ void ClientSideDetectionHost::OnTextCopiedToClipboard(
     return;
   }
 
-  last_copied_text_ = copied_text;
+  if (kCSDClipboardCopyApiSuspiciousTokenFilter.Get()) {
+    ClipboardExtractedData extracted_data = ExtractClipboardData(copied_text);
+    if (extracted_data.suspicious_tokens().empty()) {
+      return;
+    }
+    clipboard_extracted_data_ =
+        std::make_unique<ClipboardExtractedData>(std::move(extracted_data));
+  } else {
+    last_copied_text_ = copied_text;
+    clipboard_extracted_data_.reset();
+  }
+
   MaybeStartPreClassification(ClientSideDetectionType::CLIPBOARD_COPY_API);
 }
 
@@ -2505,8 +2517,13 @@ void ClientSideDetectionHost::AddMiscellaneousMetadataToClientPhishingRequest(
       ClientSideDetectionType::CLIPBOARD_COPY_API) {
     if (base::FeatureList::IsEnabled(kClientSideDetectionClipboardCopyApi) &&
         kCSDClipboardCopyApiProcessPayload.Get()) {
-      *verdict->mutable_clipboard_extracted_data() =
-          ExtractClipboardData(last_copied_text_);
+      if (clipboard_extracted_data_) {
+        *verdict->mutable_clipboard_extracted_data() =
+            *clipboard_extracted_data_;
+      } else {
+        *verdict->mutable_clipboard_extracted_data() =
+            ExtractClipboardData(last_copied_text_);
+      }
     }
   }
 

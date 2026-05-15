@@ -83,6 +83,7 @@ extern const base::FeatureParam<std::string> kCsdClipboardCopyApiLoaders;
 extern const base::FeatureParam<std::string> kCsdClipboardCopyApiRunners;
 extern const base::FeatureParam<std::string> kCsdClipboardCopyApiRemoteRunners;
 extern const base::FeatureParam<std::string> kCsdClipboardCopyApiDecoders;
+extern const base::FeatureParam<bool> kCSDClipboardCopyApiSuspiciousTokenFilter;
 
 // Enables sending a CSD ping on the detection of a credit card form.
 BASE_DECLARE_FEATURE(kClientSideDetectionCreditCardForm);

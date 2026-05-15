@@ -2439,6 +2439,58 @@ TEST_F(ClientSideDetectionHostTest,
       PreClassificationCheckResult::NO_CLASSIFY_ALLOWLIST_METRIC, 1);
 }
 
+TEST_F(
+    ClientSideDetectionHostTest,
+    ClipboardCopyApiCallDoesNotProceedWithClassificationWithSuspiciousTokenFilter) {
+  feature_list_.InitAndEnableFeatureWithParameters(
+      kClientSideDetectionClipboardCopyApi,
+      {{kCsdClipboardCopyApiSampleRate.name, "1.0"},
+       {kCSDClipboardCopyApiSuspiciousTokenFilter.name, "true"}});
+
+  SetEnhancedProtectionPrefForTests(profile()->GetPrefs(), true);
+  base::HistogramTester histogram_tester;
+
+  GURL url("http://host.com/");
+  database_manager_->SetAllowlistLookupDetailsForUrl(url, /*match=*/true);
+  ExpectPreClassificationChecks(url, &kFalse, &kFalse, nullptr, nullptr,
+                                nullptr);
+  NavigateAndCommit(url);
+  WaitAndCheckPreClassificationChecks();
+
+  csd_host_->OnTextCopiedToClipboard(main_rfh(), u"normal text");
+
+  histogram_tester.ExpectTotalCount(
+      "SBClientPhishing.PreClassificationCheckResult.ClipboardCopyApi", 0);
+}
+
+TEST_F(
+    ClientSideDetectionHostTest,
+    ClipboardCopyApiCallProceedsWithClassificationWithSuspiciousTokenFilterAndMatch) {
+  feature_list_.InitAndEnableFeatureWithParameters(
+      kClientSideDetectionClipboardCopyApi,
+      {{kCsdClipboardCopyApiSampleRate.name, "1.0"},
+       {kCSDClipboardCopyApiSuspiciousTokenFilter.name, "true"}});
+
+  SetEnhancedProtectionPrefForTests(profile()->GetPrefs(), true);
+  base::HistogramTester histogram_tester;
+
+  GURL url("http://host.com/");
+  database_manager_->SetAllowlistLookupDetailsForUrl(url, /*match=*/true);
+  ExpectPreClassificationChecks(url, &kFalse, &kFalse, nullptr, nullptr,
+                                nullptr);
+  NavigateAndCommit(url);
+  WaitAndCheckPreClassificationChecks();
+
+  ExpectPreClassificationChecks(url, &kFalse, &kFalse, nullptr, nullptr,
+                                nullptr);
+  csd_host_->OnTextCopiedToClipboard(main_rfh(), u"curl example.com");
+  WaitAndCheckPreClassificationChecks();
+
+  histogram_tester.ExpectBucketCount(
+      "SBClientPhishing.PreClassificationCheckResult.ClipboardCopyApi",
+      PreClassificationCheckResult::CLASSIFY, 1);
+}
+
 TEST_F(ClientSideDetectionHostTest, NoImageEmbeddingMatchWithForcedRequest) {
   base::HistogramTester histogram_tester;
 
