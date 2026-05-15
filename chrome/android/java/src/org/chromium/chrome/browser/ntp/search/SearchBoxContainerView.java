@@ -121,9 +121,9 @@ public class SearchBoxContainerView extends LinearLayout {
         int heightDelta = Math.max(0, minTargetSize - bounds.height()) / 2;
         bounds.inset(-widthDelta, -heightDelta);
 
-        mLastTouchDelegateRect = bounds;
         if (bounds.equals(mLastTouchDelegateRect)) return;
 
+        mLastTouchDelegateRect = bounds;
         mTouchDelegate = new TouchDelegate(bounds, mPlusButton);
         setTouchDelegate(mTouchDelegate);
     }
