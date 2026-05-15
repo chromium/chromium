@@ -642,9 +642,20 @@ scoped_refptr<AudioBus> AudioBus::TryCreateBySampleRateConverting(
     return AudioBus::CreateBufferFromRange(source_bus, 0, source_bus->length());
   }
 
+  // Prevent overflow during extreme up-sampling (e.g., 100,000 samples from
+  // 1Hz to 48kHz calculates to 4,800,000,000 frames). Validate upfront against
+  // signed integer limits to guarantee fail-fast handling before attempting any
+  // buffer allocations via TryCreate.
+  double destination_length_double =
+      static_cast<double>(source_bus->length()) / sample_rate_ratio;
+  if (!base::IsValueInRangeForNumericType<int>(destination_length_double)) {
+    return nullptr;
+  }
+  int destination_length = static_cast<int>(destination_length_double);
+
   if (source_bus->IsSilent()) {
-    scoped_refptr<AudioBus> silent_bus = TryCreate(
-        number_of_source_channels, source_bus->length() / sample_rate_ratio);
+    scoped_refptr<AudioBus> silent_bus =
+        TryCreate(number_of_source_channels, destination_length);
     if (!silent_bus) {
       return nullptr;
     }
@@ -665,10 +676,6 @@ scoped_refptr<AudioBus> AudioBus::TryCreateBySampleRateConverting(
     // Directly resample without down-mixing.
     resampler_source_bus = source_bus;
   }
-
-  // Calculate destination length based on the sample-rates.
-  int source_length = resampler_source_bus->length();
-  int destination_length = source_length / sample_rate_ratio;
 
   // Create destination bus with same number of channels.
   unsigned number_of_destination_channels =
@@ -703,7 +710,7 @@ scoped_refptr<AudioBus> AudioBus::TryCreateByMixingToMono(
       return AudioBus::CreateBufferFromRange(source_bus, 0,
                                              source_bus->length());
     case 2: {
-      unsigned n = source_bus->length();
+      uint32_t n = source_bus->length();
       scoped_refptr<AudioBus> destination_bus = TryCreate(1, n);
       if (!destination_bus) {
         return nullptr;
@@ -715,7 +722,7 @@ scoped_refptr<AudioBus> AudioBus::TryCreateByMixingToMono(
           destination_bus->Channel(0)->MutableSpan();
 
       // Do the mono mixdown.
-      for (unsigned i = 0; i < n; ++i) {
+      for (uint32_t i = 0; i < n; ++i) {
         destination[i] = (source_l[i] + source_r[i]) * 0.5f;
       }
 
