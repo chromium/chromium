@@ -511,8 +511,5 @@ public class EmptyTabModel implements IncognitoTabModelInternal {
     public void deleteTabGroupCollapsed(Token tabGroupId) {}
 
     @Override
-    public void markTabStateInitialized() {}
-
-    @Override
     public void moveTabOutOfGroupInDirection(int sourceTabId, boolean trailing) {}
 }

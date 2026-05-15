@@ -149,23 +149,22 @@ public class TabModelSelectorImpl extends TabModelSelectorBase implements TabMod
         TabCreator incognitoTabCreator = getTabCreatorManager().getTabCreator(true);
         mRecentlyClosedBridge =
                 new RecentlyClosedBridge(profileProvider.getOriginalProfile(), this);
-        Supplier<@Nullable TabGroupModelFilter> regularTabGroupModelFilterSupplier =
+        Supplier<@Nullable TabModel> regularTabModelSupplier =
                 () -> getModel(/* incognito= */ false);
         TabRemover regularTabRemover =
                 mModalDialogManager != null
-                        ? new TabRemoverImpl(
-                                mContext, mModalDialogManager, regularTabGroupModelFilterSupplier)
-                        : new PassthroughTabRemover(regularTabGroupModelFilterSupplier);
+                        ? new TabRemoverImpl(mContext, mModalDialogManager, regularTabModelSupplier)
+                        : new PassthroughTabRemover(regularTabModelSupplier);
         TabUngrouperFactory tabUngrouperFactory =
                 new TabUngrouperFactory() {
                     @Override
                     public TabUngrouper create(
                             boolean isIncognitoBranded,
-                            Supplier<@Nullable TabGroupModelFilter> tabGroupModelFilterSupplier) {
+                            Supplier<@Nullable TabModel> tabModelSupplier) {
                         return (isIncognitoBranded || mModalDialogManager == null)
-                                ? new PassthroughTabUngrouper(tabGroupModelFilterSupplier)
+                                ? new PassthroughTabUngrouper(tabModelSupplier)
                                 : new TabUngrouperImpl(
-                                        mContext, mModalDialogManager, tabGroupModelFilterSupplier);
+                                        mContext, mModalDialogManager, tabModelSupplier);
                     }
                 };
         TabModelHolder normalModelHolder =

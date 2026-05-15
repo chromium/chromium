@@ -79,7 +79,6 @@ public class StubTabModelUnitTest {
                             "addDelegateModelObserver",
                             "addIncognitoObserver",
                             "removeIncognitoObserver",
-                            "markTabStateInitialized",
                             "addObserver",
                             "removeObserver",
                             "addTabGroupObserver",

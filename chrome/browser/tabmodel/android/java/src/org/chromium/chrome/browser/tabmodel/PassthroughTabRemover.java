@@ -22,14 +22,13 @@ import java.util.function.Supplier;
 @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
 @NullMarked
 public class PassthroughTabRemover implements TabRemover {
-    private final Supplier<@Nullable TabGroupModelFilter> mTabGroupModelFilterSupplier;
+    private final Supplier<@Nullable TabModel> mTabModelSupplier;
 
     /**
-     * @param tabGroupModelFilterSupplier The supplier of the {@link TabGroupModelFilter}.
+     * @param tabModelSupplier The supplier of the {@link TabModel}.
      */
-    public PassthroughTabRemover(
-            Supplier<@Nullable TabGroupModelFilter> tabGroupModelFilterSupplier) {
-        mTabGroupModelFilterSupplier = tabGroupModelFilterSupplier;
+    public PassthroughTabRemover(Supplier<@Nullable TabModel> tabModelSupplier) {
+        mTabModelSupplier = tabModelSupplier;
     }
 
     @Override
@@ -58,7 +57,7 @@ public class PassthroughTabRemover implements TabRemover {
 
     @Override
     public void forceCloseTabs(TabClosureParams tabClosureParams) {
-        doCloseTabs(getTabGroupModelFilter().getTabModel(), tabClosureParams);
+        doCloseTabs(getTabModel(), tabClosureParams);
     }
 
     @Override
@@ -66,21 +65,20 @@ public class PassthroughTabRemover implements TabRemover {
         if (listener != null) {
             listener.willPerformActionOrShowDialog(DialogType.NONE, /* willSkipDialog= */ true);
         }
-        doRemoveTab(getTabGroupModelFilter().getTabModel(), tab);
+        doRemoveTab(getTabModel(), tab);
         if (listener != null) {
             listener.onConfirmationDialogResult(
                     DialogType.NONE, ActionConfirmationResult.IMMEDIATE_CONTINUE);
         }
     }
 
-    private TabGroupModelFilter getTabGroupModelFilter() {
-        TabGroupModelFilter tabGroupModelFilter = mTabGroupModelFilterSupplier.get();
-        assert tabGroupModelFilter != null;
-        return tabGroupModelFilter;
+    private TabModel getTabModel() {
+        TabModel tabModel = mTabModelSupplier.get();
+        assert tabModel != null;
+        return tabModel;
     }
 
-    static boolean doCloseTabs(
-            TabModel tabModel, TabClosureParams tabClosureParams) {
+    static boolean doCloseTabs(TabModel tabModel, TabClosureParams tabClosureParams) {
         return ((TabModelInternal) tabModel).closeTabs(tabClosureParams);
     }
 

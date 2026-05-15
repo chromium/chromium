@@ -68,7 +68,6 @@ public class TabRemoverImplUnitTest {
 
     @Mock private Profile mProfile;
     @Mock private ActionConfirmationManager mActionConfirmationManager;
-    @Mock private TabGroupModelFilterInternal mTabGroupModelFilter;
     @Mock private TabModelRemover mTabModelRemover;
     @Mock private Runnable mUndoRunnable;
     @Mock private TabRemover mMockTabRemover;
@@ -100,8 +99,7 @@ public class TabRemoverImplUnitTest {
         when(mProfile.isOffTheRecord()).thenReturn(false);
         mTabModel = spy(new MockTabModel(mProfile, null));
         mTabModel.setTabRemoverForTesting(mMockTabRemover);
-        when(mTabGroupModelFilter.getTabModel()).thenReturn(mTabModel);
-        when(mTabModelRemover.getTabGroupModelFilter()).thenReturn(mTabGroupModelFilter);
+        when(mTabModelRemover.getTabModelInternal()).thenReturn(mTabModel);
         when(mTabModelRemover.getActionConfirmationManager())
                 .thenReturn(mActionConfirmationManager);
         mTabRemoverImpl = new TabRemoverImpl(mTabModelRemover);
@@ -227,11 +225,9 @@ public class TabRemoverImplUnitTest {
         int id = 0;
         Tab tab0 = mTabModel.addTab(id);
         tab0.setTabGroupId(TAB_GROUP_ID.tabGroupId);
-        when(mTabGroupModelFilter.getTabsInGroup(TAB_GROUP_ID.tabGroupId))
-                .thenReturn(List.of(tab0));
+        when(mTabModel.getTabsInGroup(TAB_GROUP_ID.tabGroupId)).thenReturn(List.of(tab0));
         TabClosureParams params =
-                TabClosureParams.forCloseTabGroup(mTabGroupModelFilter, TAB_GROUP_ID.tabGroupId)
-                        .build();
+                TabClosureParams.forCloseTabGroup(mTabModel, TAB_GROUP_ID.tabGroupId).build();
 
         mTabRemoverImpl.closeTabs(params, /* allowDialog= */ true, mListener);
         verify(mTabModelRemover).doTabRemovalFlow(mHandlerCaptor.capture(), eq(true));
@@ -584,7 +580,7 @@ public class TabRemoverImplUnitTest {
                         new TabModelRemover(
                                 RuntimeEnvironment.application,
                                 mModalDialogManager,
-                                () -> mTabGroupModelFilter));
+                                () -> mTabModel));
         when(realRemover.getActionConfirmationManager()).thenReturn(mActionConfirmationManager);
         TabRemoverImpl realTabRemoverImpl = new TabRemoverImpl(realRemover);
 

@@ -45,7 +45,7 @@ public class TabModelHolderFactory {
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.ENFORCE_INCOGNITO_ISOLATION)
                 && supportedProfileType == SupportedProfileType.OFF_THE_RECORD) {
             StubTabModel model = new StubTabModel(/* isIncognito= */ false, profile);
-            return new TabModelHolder(model, model);
+            return new TabModelHolder(model);
         }
 
         return createCollectionTabModelHolder(
@@ -86,7 +86,7 @@ public class TabModelHolderFactory {
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.ENFORCE_INCOGNITO_ISOLATION)
                 && supportedProfileType == SupportedProfileType.REGULAR) {
             StubTabModel model = new StubTabModel(/* isIncognito= */ true, /* profile= */ null);
-            return new IncognitoTabModelHolder(model, model);
+            return new IncognitoTabModelHolder(model);
         }
 
         return createCollectionIncognitoTabModelHolder(
@@ -107,7 +107,7 @@ public class TabModelHolderFactory {
     /** Creates an empty {@link IncognitoTabModelHolder}. */
     public static IncognitoTabModelHolder createEmptyIncognitoTabModelHolder() {
         EmptyTabModel model = EmptyTabModel.getInstance(/* isIncognito= */ true);
-        return new IncognitoTabModelHolder(model, model);
+        return new IncognitoTabModelHolder(model);
     }
 
     private static TabModelHolder createCollectionTabModelHolder(
@@ -144,7 +144,7 @@ public class TabModelHolderFactory {
                         () -> createBatch(profile),
                         supportUndo);
 
-        return new TabModelHolder(regularTabModel, regularTabModel);
+        return new TabModelHolder(regularTabModel);
     }
 
     private static IncognitoTabModelHolder createCollectionIncognitoTabModelHolder(
@@ -176,25 +176,24 @@ public class TabModelHolderFactory {
                         tabUngrouperFactory);
         IncognitoTabModelImpl incognitoTabModel = new IncognitoTabModelImpl(incognitoCreator);
 
-        return new IncognitoTabModelHolder(incognitoTabModel, incognitoTabModel);
+        return new IncognitoTabModelHolder(incognitoTabModel);
     }
 
     /**
-     * Creates a {@link TabModelHolder} for testing. The {@link TabGroupModelFilter} mostly no-ops.
-     * This is primarily intended for unit tests that use a {@link MockTabModel} and don't care
-     * about tab groups.
+     * Creates a {@link TabModelHolder} for testing. The model is mostly a no-op. This is primarily
+     * intended for unit tests that use a {@link MockTabModel} and don't care about tab groups.
      */
     public static TabModelHolder createTabModelHolderForTesting(TabModelInternal tabModelInternal) {
-        return new TabModelHolder(tabModelInternal, tabModelInternal);
+        return new TabModelHolder(tabModelInternal);
     }
 
     /**
-     * Creates a {@link IncognitoTabModelHolder} for testing. The {@link TabGroupModelFilter} mostly
-     * no-ops. This is primarily intended for unit tests that use a {@link MockTabModel} and don't
-     * care about tab groups.
+     * Creates a {@link IncognitoTabModelHolder} for testing. The model mostly no-ops. This is
+     * primarily intended for unit tests that use a {@link MockTabModel} and don't care about tab
+     * groups.
      */
     public static IncognitoTabModelHolder createIncognitoTabModelHolderForTesting(
             IncognitoTabModelInternal incognitoTabModelInternal) {
-        return new IncognitoTabModelHolder(incognitoTabModelInternal, incognitoTabModelInternal);
+        return new IncognitoTabModelHolder(incognitoTabModelInternal);
     }
 }

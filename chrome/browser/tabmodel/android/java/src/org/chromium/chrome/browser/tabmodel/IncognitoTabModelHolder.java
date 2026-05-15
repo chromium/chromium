@@ -6,17 +6,12 @@ package org.chromium.chrome.browser.tabmodel;
 
 import org.chromium.build.annotations.NullMarked;
 
-/**
- * Holds an {@link IncognitoTabModelInternal} and an incognito {@link TabGroupModelFilterInternal}.
- */
+/** Holds an {@link IncognitoTabModelInternal}. */
 @NullMarked
 /*package*/ class IncognitoTabModelHolder {
     public final IncognitoTabModelInternal tabModel;
-    public final TabGroupModelFilterInternal tabGroupModelFilter;
 
-    public IncognitoTabModelHolder(
-            IncognitoTabModelInternal tabModel, TabGroupModelFilterInternal tabGroupModelFilter) {
+    public IncognitoTabModelHolder(IncognitoTabModelInternal tabModel) {
         this.tabModel = tabModel;
-        this.tabGroupModelFilter = tabGroupModelFilter;
     }
 }

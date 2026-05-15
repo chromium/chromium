@@ -9,7 +9,6 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 import android.app.Activity;
 
 import org.chromium.base.Callback;
-import org.chromium.base.CallbackController;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ObserverList;
 import org.chromium.base.ResettersForTesting;
@@ -30,7 +29,6 @@ import org.chromium.components.tabs.TabStripCollection;
 import org.chromium.content_public.browser.LoadUrlParams;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -70,8 +68,6 @@ public abstract class TabModelSelectorBase
             mCurrentTabGroupModelFilterSupplier = ObservableSuppliers.createNullable();
     private final Callback<TabModel> mCurrentTabModelObserver = this::onCurrentTabModelChanged;
     private final List<TabModelObserver> mPendingTabModelFilterObserver = new ArrayList<>();
-    private List<TabGroupModelFilterInternal> mTabGroupModelFilters = new ArrayList<>();
-    private @Nullable CallbackController mCallbackController = new CallbackController();
 
     protected @Nullable IncognitoReauthDialogDelegate mIncognitoReauthDialogDelegate;
 
@@ -108,10 +104,16 @@ public abstract class TabModelSelectorBase
         mIncognitoTabModel = incognitoModelHolder.tabModel;
         int activeModelIndex = getModelIndex(mStartIncognito);
         assert activeModelIndex != MODEL_NOT_FOUND;
-        setupTabGroupModelFilters(
-                List.of(
-                        normalModelHolder.tabGroupModelFilter,
-                        incognitoModelHolder.tabGroupModelFilter));
+
+        // Register pending observers now that the models exist.
+        for (TabModelObserver observer : mPendingTabModelFilterObserver) {
+            for (TabModelInternal tabModel : mTabModelInternals) {
+                tabModel.addObserver(observer);
+            }
+        }
+        mPendingTabModelFilterObserver.clear();
+
+        mTabModelSupplier.addSyncObserverAndPostIfNonNull(mCurrentTabModelObserver);
 
         TabModelObserver tabModelObserver =
                 new TabModelObserver() {
@@ -401,10 +403,6 @@ public abstract class TabModelSelectorBase
         for (TabModelSelectorObserver listener : mObservers) listener.onDestroyed();
         mTabModelSupplier.removeObserver(mIncognitoReauthDialogDelegateCallback);
 
-        if (mCallbackController != null) {
-            mCallbackController.destroy();
-            mCallbackController = null;
-        }
         mPendingTabModelFilterObserver.clear();
         mTabModelSupplier.removeObserver(mCurrentTabModelObserver);
 
@@ -502,9 +500,9 @@ public abstract class TabModelSelectorBase
 
     @Override
     public @Nullable TabGroupModelFilter getTabGroupModelFilter(boolean isIncognito) {
-        for (TabGroupModelFilter filter : mTabGroupModelFilters) {
-            if (filter.getTabModel().isIncognito() == isIncognito) {
-                return filter;
+        for (TabModelInternal tabModel : mTabModelInternals) {
+            if (tabModel.isIncognito() == isIncognito) {
+                return tabModel;
             }
         }
         return null;
@@ -512,25 +510,25 @@ public abstract class TabModelSelectorBase
 
     @Override
     public void addTabGroupModelFilterObserver(TabModelObserver observer) {
-        if (mTabGroupModelFilters.isEmpty()) {
+        if (mTabModelInternals.isEmpty()) {
             mPendingTabModelFilterObserver.add(observer);
             return;
         }
 
-        for (TabGroupModelFilter filter : mTabGroupModelFilters) {
-            filter.addObserver(observer);
+        for (TabModelInternal tabModel : mTabModelInternals) {
+            tabModel.addObserver(observer);
         }
     }
 
     @Override
     public void removeTabGroupModelFilterObserver(TabModelObserver observer) {
-        if (mTabGroupModelFilters.isEmpty() && !mPendingTabModelFilterObserver.isEmpty()) {
+        if (mTabModelInternals.isEmpty() && !mPendingTabModelFilterObserver.isEmpty()) {
             mPendingTabModelFilterObserver.remove(observer);
             return;
         }
 
-        for (TabGroupModelFilter filter : mTabGroupModelFilters) {
-            filter.removeObserver(observer);
+        for (TabModelInternal tabModel : mTabModelInternals) {
+            tabModel.removeObserver(observer);
         }
     }
 
@@ -548,46 +546,19 @@ public abstract class TabModelSelectorBase
 
     @Override
     public void resetTabGroupModelFilterListForTesting() {
-        mTabGroupModelFilters = Collections.emptyList();
+        mTabModelInternals.clear();
         mCurrentTabGroupModelFilterSupplier.set(null);
         mTabModelSupplier.removeObserver(mCurrentTabModelObserver);
-        mCallbackController = new CallbackController();
-    }
-
-    private void setupTabGroupModelFilters(List<TabGroupModelFilterInternal> filters) {
-        assert mTabGroupModelFilters.isEmpty();
-        assert !filters.isEmpty();
-        mTabGroupModelFilters = Collections.unmodifiableList(filters);
-
-        // Register the pending observers
-        for (TabModelObserver observer : mPendingTabModelFilterObserver) {
-            for (TabGroupModelFilter filter : mTabGroupModelFilters) {
-                filter.addObserver(observer);
-            }
-        }
-        mPendingTabModelFilterObserver.clear();
-
-        assumeNonNull(mCallbackController);
-        TabModelUtils.runOnTabStateInitialized(
-                this,
-                mCallbackController.makeCancelable(
-                        (unusedTabModelSelector) -> {
-                            for (TabGroupModelFilterInternal filter : mTabGroupModelFilters) {
-                                filter.markTabStateInitialized();
-                            }
-                        }));
-        mTabModelSupplier.addSyncObserverAndPostIfNonNull(mCurrentTabModelObserver);
     }
 
     private void onCurrentTabModelChanged(TabModel model) {
-        for (TabGroupModelFilter filter : mTabGroupModelFilters) {
-            if (filter.getTabModel().isActiveModel()) {
-                mCurrentTabGroupModelFilterSupplier.set(filter);
+        for (TabModelInternal tabModel : mTabModelInternals) {
+            if (tabModel.isActiveModel()) {
+                mCurrentTabGroupModelFilterSupplier.set(tabModel);
                 return;
             }
         }
-        assert model == null
-                : "Non-null current TabModel should set an active TabGroupModelFilter.";
+        assert model == null : "Non-null current TabModel should set an active TabModel.";
         mCurrentTabGroupModelFilterSupplier.set(null);
     }
 }

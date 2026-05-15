@@ -101,7 +101,7 @@ class TabModelRemover {
 
     private final Context mContext;
     private final ModalDialogManager mModalDialogManager;
-    private final Supplier<@Nullable TabGroupModelFilter> mTabGroupModelFilterSupplier;
+    private final Supplier<@Nullable TabModel> mTabModelSupplier;
 
     // Lazily created objects use corresponding getters.
     private @MonotonicNonNull ActionConfirmationManager mActionConfirmationManager;
@@ -112,15 +112,15 @@ class TabModelRemover {
     /**
      * @param context The activity context.
      * @param modalDialogManager The manager to use for warning dialogs.
-     * @param tabGroupModelFilterSupplier The supplier of the {@link TabGroupModelFilter}.
+     * @param tabModelSupplier The supplier of the {@link TabModel}.
      */
     /*package*/ TabModelRemover(
             Context context,
             ModalDialogManager modalDialogManager,
-            Supplier<@Nullable TabGroupModelFilter> tabGroupModelFilterSupplier) {
+            Supplier<@Nullable TabModel> tabModelSupplier) {
         mContext = context;
         mModalDialogManager = modalDialogManager;
-        mTabGroupModelFilterSupplier = tabGroupModelFilterSupplier;
+        mTabModelSupplier = tabModelSupplier;
     }
 
     /** Returns an {@link ActionConfirmationManager}. */
@@ -133,12 +133,11 @@ class TabModelRemover {
         return mActionConfirmationManager;
     }
 
-    /** Returns the {@link TabGroupModelFilterInternal} for the regular tab model. */
-    /*package*/ TabGroupModelFilterInternal getTabGroupModelFilter() {
-        TabGroupModelFilterInternal filter =
-                (TabGroupModelFilterInternal) mTabGroupModelFilterSupplier.get();
-        assert filter != null && !filter.getTabModel().isIncognitoBranded();
-        return filter;
+    /** Returns the {@link TabModelInternal} for the regular tab model. */
+    /*package*/ TabModelInternal getTabModelInternal() {
+        TabModelInternal tabModel = (TabModelInternal) mTabModelSupplier.get();
+        assert tabModel != null && !tabModel.isIncognitoBranded();
+        return tabModel;
     }
 
     /**
@@ -187,7 +186,7 @@ class TabModelRemover {
 
     private List<Tab> doCreatePlaceholderTabsInGroups(
             TabModelRemoverFlowHandler handler, List<LocalTabGroupId> tabGroups) {
-        TabModel model = getTabGroupModelFilter().getTabModel();
+        TabModel model = getTabModelInternal();
         List<Tab> newTabs = DataSharingTabGroupUtils.createPlaceholderTabInGroups(model, tabGroups);
         handler.onPlaceholderTabsCreated(newTabs);
         return newTabs;
@@ -207,7 +206,7 @@ class TabModelRemover {
                     return;
                 case CONFIRMATION_NEGATIVE:
                     assert maybeBlockingResult.finishBlocking != null;
-                    getTabGroupModelFilter().getTabModel().commitAllTabClosures();
+                    getTabModelInternal().commitAllTabClosures();
                     leaveOrDeleteCollaboration(
                             collaborationInfo, maybeBlockingResult.finishBlocking);
                     return;
@@ -323,12 +322,12 @@ class TabModelRemover {
             return new CollaborationInfo();
         }
 
-        TabGroupModelFilter filter = getTabGroupModelFilter();
+        TabModel tabModel = getTabModelInternal();
         Token tabGroupId = savedTabGroup.localId.tabGroupId;
-        if (!filter.tabGroupExists(tabGroupId)) {
+        if (!tabModel.tabGroupExists(tabGroupId)) {
             return new CollaborationInfo();
         }
-        String title = TabGroupTitleUtils.getDisplayableTitle(mContext, filter, tabGroupId);
+        String title = TabGroupTitleUtils.getDisplayableTitle(mContext, tabModel, tabGroupId);
 
         CollaborationService collaborationService = getCollaborationService();
         if (collaborationService == null) {
@@ -371,7 +370,7 @@ class TabModelRemover {
     private void maybeSelectPlaceholderTab(Tab placeholderTab) {
         assert placeholderTab.getTabGroupId() != null;
 
-        TabModel tabModel = getTabGroupModelFilter().getTabModel();
+        TabModel tabModel = getTabModelInternal();
         if (!tabModel.isActiveModel()) return;
 
         @Nullable Tab currentTab = tabModel.getTabAt(tabModel.index());
@@ -385,7 +384,7 @@ class TabModelRemover {
     }
 
     private Profile getProfile() {
-        return assumeNonNull(getTabGroupModelFilter().getTabModel().getProfile());
+        return assumeNonNull(getTabModelInternal().getProfile());
     }
 
     private @Nullable TabGroupSyncService getTabGroupSyncService() {

@@ -741,11 +741,6 @@ class IncognitoTabModelImpl implements IncognitoTabModelInternal {
     }
 
     @Override
-    public void markTabStateInitialized() {
-        mDelegateModel.markTabStateInitialized();
-    }
-
-    @Override
     public void moveTabOutOfGroupInDirection(int sourceTabId, boolean trailing) {
         mDelegateModel.moveTabOutOfGroupInDirection(sourceTabId, trailing);
     }

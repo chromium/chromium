@@ -415,9 +415,7 @@ public class TabModelSelectorImplTest {
                         /* startIncognito= */ false,
                         SupportedProfileType.MIXED);
         MockTabModel regularTabModel = spy(new MockTabModel(mProfile, null));
-        TabGroupModelFilterInternal filter = mock(TabGroupModelFilterInternal.class);
-        when(filter.getTabModel()).thenReturn(regularTabModel);
-        TabRemover regularTabRemover = new PassthroughTabRemover(() -> filter);
+        TabRemover regularTabRemover = new PassthroughTabRemover(() -> regularTabModel);
         regularTabModel.setActive(true);
         regularTabModel.setTabRemoverForTesting(regularTabRemover);
         TabUngrouper tabUngrouper = mock(TabUngrouper.class);
@@ -436,7 +434,7 @@ public class TabModelSelectorImplTest {
         tabCreatorManager.initialize(tabModelSelector);
         tabModelSelector.onNativeLibraryReadyInternal(
                 mMockTabContentManager,
-                new TabModelHolder(regularTabModel, filter),
+                new TabModelHolder(regularTabModel),
                 TabModelHolderFactory.createIncognitoTabModelHolderForTesting(mIncognitoTabModel));
         MockTab tab0 = regularTabModel.addTab(0);
         MockTab tab1 = regularTabModel.addTab(1);

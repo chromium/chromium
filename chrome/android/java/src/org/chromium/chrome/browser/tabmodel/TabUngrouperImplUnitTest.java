@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.tabmodel;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
@@ -56,7 +57,6 @@ public class TabUngrouperImplUnitTest {
 
     @Mock private Profile mProfile;
     @Mock private ActionConfirmationManager mActionConfirmationManager;
-    @Mock private TabGroupModelFilterInternal mTabGroupModelFilter;
     @Mock private TabModelRemover mTabModelRemover;
     @Mock private TabModelActionListener mListener;
     @Mock private Callback<@ActionConfirmationResult Integer> mOnResult;
@@ -80,9 +80,8 @@ public class TabUngrouperImplUnitTest {
         when(mTabGroupSyncService.isObservingLocalChanges()).thenReturn(true);
 
         when(mProfile.isOffTheRecord()).thenReturn(false);
-        mTabModel = new MockTabModel(mProfile, null);
-        when(mTabGroupModelFilter.getTabModel()).thenReturn(mTabModel);
-        when(mTabModelRemover.getTabGroupModelFilter()).thenReturn(mTabGroupModelFilter);
+        mTabModel = spy(new MockTabModel(mProfile, null));
+        when(mTabModelRemover.getTabModelInternal()).thenReturn(mTabModel);
         when(mTabModelRemover.getActionConfirmationManager())
                 .thenReturn(mActionConfirmationManager);
         mTabUngrouperImpl = new TabUngrouperImpl(mTabModelRemover);
@@ -92,7 +91,7 @@ public class TabUngrouperImplUnitTest {
     public void testUngroupTabsHandler_NoDialog() {
         Tab tab0 = mTabModel.addTab(/* id= */ 0);
         tab0.setTabGroupId(TAB_GROUP_ID.tabGroupId);
-        when(mTabGroupModelFilter.isTabInTabGroup(tab0)).thenReturn(true);
+        when(mTabModel.isTabInTabGroup(tab0)).thenReturn(true);
 
         mTabUngrouperImpl.ungroupTabs(
                 List.of(tab0), /* trailing= */ true, /* allowDialog= */ true, mListener);
@@ -107,8 +106,7 @@ public class TabUngrouperImplUnitTest {
         handler.performAction();
         verify(mListener)
                 .willPerformActionOrShowDialog(DialogType.NONE, /* willSkipDialog= */ true);
-        verify(mTabGroupModelFilter)
-                .moveTabOutOfGroupInDirection(tab0.getId(), /* trailing= */ true);
+        verify(mTabModel).moveTabOutOfGroupInDirection(tab0.getId(), /* trailing= */ true);
         verify(mListener)
                 .onConfirmationDialogResult(
                         DialogType.NONE, ActionConfirmationResult.IMMEDIATE_CONTINUE);
@@ -122,8 +120,8 @@ public class TabUngrouperImplUnitTest {
         Tab tab0 = mTabModel.addTab(id);
         Token tabGroupId = TAB_GROUP_ID.tabGroupId;
         tab0.setTabGroupId(tabGroupId);
-        when(mTabGroupModelFilter.getTabsInGroup(tabGroupId)).thenReturn(List.of(tab0));
-        when(mTabGroupModelFilter.isTabInTabGroup(tab0)).thenReturn(true);
+        when(mTabModel.getTabsInGroup(tabGroupId)).thenReturn(List.of(tab0));
+        when(mTabModel.isTabInTabGroup(tab0)).thenReturn(true);
 
         mTabUngrouperImpl.ungroupTabGroup(
                 tabGroupId, /* trailing= */ true, /* allowDialog= */ true, mListener);
@@ -158,7 +156,7 @@ public class TabUngrouperImplUnitTest {
         verify(mOnResult).onResult(ActionConfirmationResult.IMMEDIATE_CONTINUE);
 
         handler.performAction();
-        verify(mTabGroupModelFilter).moveTabOutOfGroupInDirection(id, /* trailing= */ true);
+        verify(mTabModel).moveTabOutOfGroupInDirection(id, /* trailing= */ true);
 
         verifyNoMoreInteractions(mListener);
     }
@@ -170,8 +168,8 @@ public class TabUngrouperImplUnitTest {
         Tab tab0 = mTabModel.addTab(id);
         Token tabGroupId = TAB_GROUP_ID.tabGroupId;
         tab0.setTabGroupId(tabGroupId);
-        when(mTabGroupModelFilter.getTabsInGroup(tabGroupId)).thenReturn(List.of(tab0));
-        when(mTabGroupModelFilter.isTabInTabGroup(tab0)).thenReturn(true);
+        when(mTabModel.getTabsInGroup(tabGroupId)).thenReturn(List.of(tab0));
+        when(mTabModel.isTabInTabGroup(tab0)).thenReturn(true);
 
         mTabUngrouperImpl.ungroupTabGroup(
                 tabGroupId, /* trailing= */ true, /* allowDialog= */ true, mListener);
@@ -206,7 +204,7 @@ public class TabUngrouperImplUnitTest {
         verify(mOnResult).onResult(ActionConfirmationResult.CONFIRMATION_POSITIVE);
 
         handler.performAction();
-        verify(mTabGroupModelFilter).moveTabOutOfGroupInDirection(id, /* trailing= */ true);
+        verify(mTabModel).moveTabOutOfGroupInDirection(id, /* trailing= */ true);
 
         verifyNoMoreInteractions(mListener);
     }
@@ -217,8 +215,8 @@ public class TabUngrouperImplUnitTest {
         Tab tab0 = mTabModel.addTab(id);
         Token tabGroupId = TAB_GROUP_ID.tabGroupId;
         tab0.setTabGroupId(tabGroupId);
-        when(mTabGroupModelFilter.getTabsInGroup(tabGroupId)).thenReturn(List.of(tab0));
-        when(mTabGroupModelFilter.isTabInTabGroup(tab0)).thenReturn(true);
+        when(mTabModel.getTabsInGroup(tabGroupId)).thenReturn(List.of(tab0));
+        when(mTabModel.isTabInTabGroup(tab0)).thenReturn(true);
 
         mTabUngrouperImpl.ungroupTabGroup(
                 tabGroupId, /* trailing= */ false, /* allowDialog= */ true, mListener);
@@ -253,7 +251,7 @@ public class TabUngrouperImplUnitTest {
         verify(mOnResult).onResult(ActionConfirmationResult.IMMEDIATE_CONTINUE);
 
         handler.performAction();
-        verify(mTabGroupModelFilter).moveTabOutOfGroupInDirection(id, /* trailing= */ false);
+        verify(mTabModel).moveTabOutOfGroupInDirection(id, /* trailing= */ false);
 
         verifyNoMoreInteractions(mListener);
     }
@@ -263,7 +261,7 @@ public class TabUngrouperImplUnitTest {
         int id = 0;
         Tab tab0 = mTabModel.addTab(id);
         tab0.setTabGroupId(TAB_GROUP_ID.tabGroupId);
-        when(mTabGroupModelFilter.isTabInTabGroup(tab0)).thenReturn(true);
+        when(mTabModel.isTabInTabGroup(tab0)).thenReturn(true);
 
         mTabUngrouperImpl.ungroupTabs(
                 List.of(tab0), /* trailing= */ false, /* allowDialog= */ true, mListener);
@@ -298,7 +296,7 @@ public class TabUngrouperImplUnitTest {
         verify(mOnResult).onResult(ActionConfirmationResult.IMMEDIATE_CONTINUE);
 
         handler.performAction();
-        verify(mTabGroupModelFilter).moveTabOutOfGroupInDirection(id, /* trailing= */ false);
+        verify(mTabModel).moveTabOutOfGroupInDirection(id, /* trailing= */ false);
 
         verifyNoMoreInteractions(mListener);
     }
@@ -307,7 +305,7 @@ public class TabUngrouperImplUnitTest {
     public void testUngroupTabsHandler_Owner() {
         int id = 0;
         Tab tab0 = mTabModel.addTab(id);
-        when(mTabGroupModelFilter.isTabInTabGroup(tab0)).thenReturn(true);
+        when(mTabModel.isTabInTabGroup(tab0)).thenReturn(true);
         tab0.setTabGroupId(TAB_GROUP_ID.tabGroupId);
 
         mTabUngrouperImpl.ungroupTabs(
@@ -348,7 +346,7 @@ public class TabUngrouperImplUnitTest {
         verify(mOnMaybeBlockingResult).onResult(maybeBlockingResult);
 
         handler.performAction();
-        verify(mTabGroupModelFilter).moveTabOutOfGroupInDirection(id, /* trailing= */ true);
+        verify(mTabModel).moveTabOutOfGroupInDirection(id, /* trailing= */ true);
 
         verifyNoMoreInteractions(mListener);
     }
@@ -358,7 +356,7 @@ public class TabUngrouperImplUnitTest {
         int id = 0;
         Tab tab0 = mTabModel.addTab(id);
         tab0.setTabGroupId(TAB_GROUP_ID.tabGroupId);
-        when(mTabGroupModelFilter.isTabInTabGroup(tab0)).thenReturn(true);
+        when(mTabModel.isTabInTabGroup(tab0)).thenReturn(true);
 
         mTabUngrouperImpl.ungroupTabs(
                 List.of(tab0), /* trailing= */ true, /* allowDialog= */ true, mListener);
@@ -399,7 +397,7 @@ public class TabUngrouperImplUnitTest {
         verify(mOnMaybeBlockingResult).onResult(maybeBlockingResult);
 
         handler.performAction();
-        verify(mTabGroupModelFilter).moveTabOutOfGroupInDirection(id, /* trailing= */ true);
+        verify(mTabModel).moveTabOutOfGroupInDirection(id, /* trailing= */ true);
 
         verifyNoMoreInteractions(mListener);
     }

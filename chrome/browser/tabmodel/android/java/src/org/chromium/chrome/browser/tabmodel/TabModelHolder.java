@@ -6,15 +6,12 @@ package org.chromium.chrome.browser.tabmodel;
 
 import org.chromium.build.annotations.NullMarked;
 
-/** Holds regular versions of {@link TabModelInternal} and {@link TabGroupModelFilterInternal}. */
+/** Holds the regular version of {@link TabModelInternal}. */
 @NullMarked
 /*package*/ class TabModelHolder {
     public final TabModelInternal tabModel;
-    public final TabGroupModelFilterInternal tabGroupModelFilter;
 
-    public TabModelHolder(
-            TabModelInternal tabModel, TabGroupModelFilterInternal tabGroupModelFilter) {
+    public TabModelHolder(TabModelInternal tabModel) {
         this.tabModel = tabModel;
-        this.tabGroupModelFilter = tabGroupModelFilter;
     }
 }

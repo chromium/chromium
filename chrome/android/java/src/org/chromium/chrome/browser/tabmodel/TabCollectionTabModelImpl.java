@@ -79,7 +79,7 @@ import java.util.Set;
 import java.util.function.Supplier;
 
 /**
- * This class implements {@link TabModelInternal} and {@link TabGroupModelFilterInternal}.
+ * This class implements {@link TabModelInternal}.
  *
  * <p>The class uses the tab collection tree-like structure available in components/tabs/ to
  * organize tabs. The tabs in C++ tab collections are only cached with weak ptr references to the
@@ -92,8 +92,7 @@ import java.util.function.Supplier;
  */
 @NullMarked
 @JNINamespace("tabs")
-public class TabCollectionTabModelImpl extends TabModelJniBridge
-        implements TabGroupModelFilterInternal {
+public class TabCollectionTabModelImpl extends TabModelJniBridge {
     /** The name of the UKM event used for tab state changes. */
     private static final String UKM_METRICS_TAB_STATE_CHANGED = "Tab.StateChange";
 
@@ -1503,13 +1502,6 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
     public void deleteTabGroupCollapsed(Token tabGroupId) {
         if (!tabGroupExists(tabGroupId)) return;
         setTabGroupCollapsed(tabGroupId, false, false);
-    }
-
-    // TabGroupModelFilterInternal overrides.
-
-    @Override
-    public void markTabStateInitialized() {
-        // Intentional no-op. This is handled by mModelDelegate#isTabModelRestored().
     }
 
     @Override
