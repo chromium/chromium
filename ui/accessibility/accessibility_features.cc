@@ -129,11 +129,6 @@ bool IsImageDescriptionsAlternateRoutingEnabled() {
       ::features::kImageDescriptionsAlternateRouting);
 }
 
-BASE_FEATURE(kAutoDisableAccessibility, base::FEATURE_DISABLED_BY_DEFAULT);
-bool IsAutoDisableAccessibilityEnabled() {
-  return base::FeatureList::IsEnabled(::features::kAutoDisableAccessibility);
-}
-
 BASE_FEATURE(kEnableAccessibilityAriaVirtualContent,
              "AccessibilityAriaVirtualContent",
              base::FEATURE_DISABLED_BY_DEFAULT);

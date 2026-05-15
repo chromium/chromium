@@ -429,8 +429,6 @@ RenderWidgetHostImpl::RenderWidgetHostImpl(
   CHECK_NE(IPC::mojom::kRoutingIdNone, routing_id_);
   CHECK(base::ThreadPoolInstance::Get());
 
-  AddInputEventObserver(BrowserAccessibilityStateImpl::GetInstance());
-
   std::pair<RoutingIDWidgetMap::iterator, bool> result =
       g_routing_id_widget_map.Get().insert(std::make_pair(
           RenderWidgetHostID(

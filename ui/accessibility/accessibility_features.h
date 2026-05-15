@@ -101,11 +101,6 @@ GetAccessibilityPerformanceMeasurementExperimentGroup();
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kImageDescriptionsAlternateRouting);
 AX_BASE_EXPORT bool IsImageDescriptionsAlternateRoutingEnabled();
 
-// Disable the accessibility engine after a certain
-// number of user input events spanning a minimum amount of time with no
-// accessibility API usage in that time.
-AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAutoDisableAccessibility);
-AX_BASE_EXPORT bool IsAutoDisableAccessibilityEnabled();
 
 // Recognize "aria-virtualcontent" as a valid aria property.
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kEnableAccessibilityAriaVirtualContent);

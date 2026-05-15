@@ -16,7 +16,6 @@
 #include "content/browser/accessibility/scoped_mode_collection.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/browser_accessibility_state.h"
-#include "content/public/browser/render_widget_host.h"
 #include "ui/accessibility/ax_mode.h"
 #include "ui/accessibility/platform/assistive_tech.h"
 #include "ui/accessibility/platform/ax_platform.h"
@@ -46,7 +45,6 @@ class WebContentsImpl;
 class CONTENT_EXPORT BrowserAccessibilityStateImpl
     : public BrowserAccessibilityState,
       public ui::AXPlatform::Delegate,
-      public content::RenderWidgetHost::InputEventObserver,
       public ScopedModeCollection::Delegate {
  public:
   BrowserAccessibilityStateImpl(const BrowserAccessibilityStateImpl&) = delete;
@@ -97,22 +95,11 @@ class CONTENT_EXPORT BrowserAccessibilityStateImpl
   void OnHTMLAttributesUsed() override;
   void OnActionFromAssistiveTech() override;
 
-  // content::RenderWidgetHost::InputEventObserver:
-  void OnInputEvent(const RenderWidgetHost& widget,
-                    const blink::WebInputEvent& event,
-                    InputEventSource source) override;
 
-  // The global accessibility mode is automatically enabled based on
-  // usage of accessibility APIs. When we detect a significant amount
-  // of user inputs within a certain time period, but no accessibility
-  // API usage, we automatically disable accessibility.
-  void OnUserInputEvent();
 
   // Notifies listeners that the focused element changed inside a WebContents.
   void OnFocusChangedInPage(const FocusedNodeDetails& details);
 
-  // Return true if auto-disable should be blocked.
-  bool ShouldBlockAutoDisable();
 
   // Signal to BrowserAccessibilityState that a page navigation has occurred.
   void OnPageNavigationComplete();
@@ -176,7 +163,6 @@ class CONTENT_EXPORT BrowserAccessibilityStateImpl
   ui::AXPlatform& ax_platform() { return ax_platform_; }
 
  private:
-  void UpdateAccessibilityActivityTask();
 
   // Stops tracking `web_contents` for disabling accessibility while it is
   // hidden.
@@ -229,9 +215,6 @@ class CONTENT_EXPORT BrowserAccessibilityStateImpl
   // The process's single AXPlatform instance.
   ui::AXPlatform ax_platform_{*this};
 
-  // Whether there is a pending task to run UpdateAccessibilityActivityTask.
-  bool accessibility_update_task_pending_ = false;
-
   // Whether changes to the AXMode are allowed.
   // Changes are disallowed while running tests or when
   // --force-renderer-accessibility is used on the command line.
@@ -258,19 +241,7 @@ class CONTENT_EXPORT BrowserAccessibilityStateImpl
   // and engine first-use.
   uint32_t num_page_navs_before_first_use_ = 0;
 
-  // The time of the first user input event; if we receive multiple
-  // user input events within a 30-second period and no
-  base::TimeTicks first_user_input_event_time_;
-  int user_input_event_count_ = 0;
 
-  // The time accessibility became active, used to calculate active time.
-  base::TimeTicks accessibility_active_start_time_;
-
-  // The time accessibility became inactive, used to calculate inactive time.
-  base::TimeTicks accessibility_inactive_start_time_;
-
-  // The last time accessibility was active, used to calculate active time.
-  base::TimeTicks accessibility_last_usage_time_;
 
   base::RepeatingCallbackList<void(const FocusedNodeDetails&)>
       focus_changed_callbacks_;

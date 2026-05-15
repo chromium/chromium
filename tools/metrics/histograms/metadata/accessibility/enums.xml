@@ -1227,31 +1227,6 @@ Unknown properties are collapsed to zero. -->
 
 <!-- LINT.ThenChange(//ui/accessibility/platform/ax_platform.h:ActiveClientApi) -->
 
-<!-- LINT.IfChange(AssistiveTech)-->
-
-<enum name="AssistiveTech">
-  <summary>
-    Auto Disable can be blocked via the detection of known screen assistive
-    technologies such as screen readers.
-  </summary>
-  <int value="0" label="None"/>
-  <int value="1" label="Uninitialized"/>
-  <int value="2" label="ChromeVox"/>
-  <int value="3" label="JAWS"/>
-  <int value="4" label="Narrator"/>
-  <int value="5" label="NVDA"/>
-  <int value="6" label="Orca"/>
-  <int value="7" label="Supernova"/>
-  <int value="8" label="Talkback"/>
-  <int value="9" label="VoiceOver"/>
-  <int value="10" label="ZoomText"/>
-  <int value="11" label="ZDSR"/>
-  <int value="12" label="Generic Screen Reader"/>
-  <int value="13" label="Windows Magnifier"/>
-</enum>
-
-<!-- LINT.ThenChange(//ui/accessibility/platform/assistive_tech.h:AssistiveTech) -->
-
 <enum name="AudioPlayback">
   <int value="0" label="Can play through"/>
   <int value="1" label="Ended"/>

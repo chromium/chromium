@@ -68,17 +68,6 @@ chromium-metrics-reviews@google.com.
   <variant name="Shutdown" summary="shut down"/>
 </variants>
 
-<histogram name="Accessibility.ActiveTime" units="ms"
-    expires_after="2026-10-04">
-  <owner>lucasradaelli@google.com</owner>
-  <owner>janewman@microsoft.com</owner>
-  <owner>chrome-a11y-core@google.com</owner>
-  <summary>
-    The amount of time accessibility was enabled and actively used. Reported
-    when we switch states from active to inactive.
-  </summary>
-</histogram>
-
 <histogram
     name="Accessibility.Android.AutoDisableV2.{CurrentState}Time.{CallType}"
     units="ms" expires_after="2027-06-01">
@@ -801,33 +790,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     Tracks usage of ATK APIs on Linux Desktop. Recorded when ATK APIs that are
     supposed to trigger AX mode enabled is called.
-  </summary>
-</histogram>
-
-<histogram name="Accessibility.AutoDisabled.BlockedAfter.{EventType}"
-    enum="AssistiveTech" expires_after="2027-06-01">
-  <owner>lucasradaelli@google.com</owner>
-  <owner>chrome-a11y-core@google.com</owner>
-  <summary>
-    After an auto-disable heuristic was triggered without matching A11y API
-    calls, this is the reason it was blocked (e.g., the presence of a known
-    assistive technology).
-  </summary>
-  <token key="EventType">
-    <variant name="Focus"/>
-    <variant name="LoadComplete"/>
-    <variant name="UserInput"/>
-  </token>
-</histogram>
-
-<histogram name="Accessibility.AutoDisabled.EventCount" units="count"
-    expires_after="2027-06-01">
-  <owner>abigailbklein@google.com</owner>
-  <owner>chrome-a11y-core@google.com</owner>
-  <summary>
-    The number of user input events that were received within one time window,
-    without any accompanying accessibility API usage, that triggered
-    accessibility to be auto-disabled.
   </summary>
 </histogram>
 
@@ -1936,18 +1898,6 @@ even if they fit the naming pattern. -->
     changes. Only logged for regular profiles, Incognito profiles, and guest
     off-the-record profiles, as these are the only profiles that can display web
     content.
-  </summary>
-</histogram>
-
-<histogram name="Accessibility.InactiveTime" units="ms"
-    expires_after="2026-06-01">
-  <owner>lucasradaelli@google.com</owner>
-  <owner>abigailbklein@chromium.org</owner>
-  <owner>janewman@microsoft.com</owner>
-  <summary>
-    The amount of time accessibility was enabled but not actively used. Reported
-    when we switch states from inactive to active. This histogram will not be
-    logged if the auto-disable accessibility feature is enabled.
   </summary>
 </histogram>
 

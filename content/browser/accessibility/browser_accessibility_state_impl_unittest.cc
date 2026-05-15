@@ -42,14 +42,11 @@ class BrowserAccessibilityStateImplTest : public ::testing::Test {
 
  protected:
   void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kAutoDisableAccessibility);
     // Set the initial time to something non-zero.
     task_environment_.FastForwardBy(base::Seconds(100));
     state_ = BrowserAccessibilityStateImpl::GetInstance();
   }
 
-  base::test::ScopedFeatureList scoped_feature_list_;
   raw_ptr<BrowserAccessibilityStateImpl> state_;
   BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
@@ -58,69 +55,7 @@ class BrowserAccessibilityStateImplTest : public ::testing::Test {
   ui::TestAXNodeIdDelegate node_id_delegate_;
 };
 
-TEST_F(BrowserAccessibilityStateImplTest,
-       AddAccessibilityModeFlagsPreventsAutoDisableAccessibility) {
-  // Initially, accessibility should be disabled.
-  EXPECT_EQ(ui::AXPlatform::GetInstance().GetMode(), ui::AXMode());
 
-  // Enable accessibility.
-  ScopedAccessibilityModeOverride scoped_mode(ui::kAXModeComplete);
-  EXPECT_EQ(ui::AXPlatform::GetInstance().GetMode(), ui::kAXModeComplete);
-
-  // Send user input, wait 31 seconds, then send another user input event -
-  // but add a new accessibility mode flag.
-  state_->OnUserInputEvent();
-  state_->OnUserInputEvent();
-  task_environment_.FastForwardBy(base::Seconds(31));
-  ScopedAccessibilityModeOverride scoped_mode_2(ui::kAXModeComplete);
-  state_->OnUserInputEvent();
-
-  // Accessibility should still be enabled.
-  EXPECT_EQ(ui::AXPlatform::GetInstance().GetMode(), ui::kAXModeComplete);
-}
-
-TEST_F(BrowserAccessibilityStateImplTest,
-       GetRolePreventsAutoDisableAccessibility) {
-  // Create a bare-minimum accessibility tree so we can call GetRole().
-  ui::AXNodeData root;
-  root.id = 1;
-  root.role = ax::mojom::Role::kRootWebArea;
-
-  ui::BrowserAccessibilityManager* manager;
-#if BUILDFLAG(IS_ANDROID)
-  manager = BrowserAccessibilityManagerAndroid::Create(
-      MakeAXTreeUpdateForTesting(root), node_id_delegate_,
-      test_browser_accessibility_delegate_.get());
-#else
-  manager = ui::BrowserAccessibilityManager::Create(
-      MakeAXTreeUpdateForTesting(root), node_id_delegate_,
-      test_browser_accessibility_delegate_.get());
-#endif
-  std::unique_ptr<ui::BrowserAccessibilityManager>
-      browser_accessibility_manager(manager);
-
-  ui::BrowserAccessibility* ax_root =
-      browser_accessibility_manager->GetBrowserAccessibilityRoot();
-  ASSERT_NE(nullptr, ax_root);
-
-  // Initially, accessibility should be disabled.
-  EXPECT_EQ(ui::AXPlatform::GetInstance().GetMode(), ui::AXMode());
-
-  // Enable accessibility.
-  ScopedAccessibilityModeOverride scoped_mode(ui::kAXModeComplete);
-  EXPECT_EQ(ui::AXPlatform::GetInstance().GetMode(), ui::kAXModeComplete);
-
-  // Send user input, wait 31 seconds, then send another user input event after
-  // checking the role, which should register accessibility API usage.
-  state_->OnUserInputEvent();
-  state_->OnUserInputEvent();
-  task_environment_.FastForwardBy(base::Seconds(31));
-  ax_root->GetRole();
-  state_->OnUserInputEvent();
-
-  // Accessibility should still be enabled due to GetRole() being called.
-  EXPECT_EQ(ui::AXPlatform::GetInstance().GetMode(), ui::kAXModeComplete);
-}
 
 namespace {
 using ::testing::_;

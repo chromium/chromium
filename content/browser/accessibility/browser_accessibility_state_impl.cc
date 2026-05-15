@@ -42,17 +42,7 @@ namespace {
 
 BrowserAccessibilityStateImpl* g_instance = nullptr;
 
-// Auto-disable accessibility if this many seconds elapse with user input
-// events but no accessibility API usage.
-constexpr int kAutoDisableAccessibilityTimeSecs = 30;
 
-// Minimum number of user input events with no accessibility API usage
-// before auto-disabling accessibility.
-constexpr int kAutoDisableAccessibilityEventCount = 3;
-
-// Updating Active/Inactive time on every accessibility api calls would not be
-// good for perf. Instead, delay the update task.
-constexpr int kOnAccessibilityUsageUpdateDelaySecs = 5;
 
 // Parameter values for --force-renderer-accessibility=[bundle-name].
 const char kAXModeBundleBasic[] = "basic";
@@ -501,25 +491,6 @@ bool BrowserAccessibilityStateImpl::IsPerformanceFilteringAllowed() {
   return performance_filtering_allowed_;
 }
 
-void BrowserAccessibilityStateImpl::UpdateAccessibilityActivityTask() {
-  if (!g_instance) {
-    // There can be a race on shutdown since this is posted as a delayed task.
-    return;
-  }
-  base::TimeTicks now = ui::EventTimeForNow();
-  accessibility_last_usage_time_ = now;
-  if (accessibility_active_start_time_.is_null()) {
-    accessibility_active_start_time_ = now;
-  }
-  // If accessibility was enabled but inactive until now, log the amount
-  // of time between now and the last API usage.
-  if (!accessibility_inactive_start_time_.is_null()) {
-    base::UmaHistogramLongTimes("Accessibility.InactiveTime",
-                                now - accessibility_inactive_start_time_);
-    accessibility_inactive_start_time_ = base::TimeTicks();
-  }
-  accessibility_update_task_pending_ = false;
-}
 
 ui::AXMode BrowserAccessibilityStateImpl::GetAccessibilityMode() {
   return scoped_modes_for_process_.accessibility_mode();
@@ -532,81 +503,7 @@ ui::AXMode BrowserAccessibilityStateImpl::GetAccessibilityModeForBrowserContext(
       ModeCollectionForTarget::GetAccessibilityMode(browser_context));
 }
 
-bool BrowserAccessibilityStateImpl::ShouldBlockAutoDisable() {
-  // This condition should only occur if a known assistive tech is active.
-  // * If the assistive tech is actually still active, it indicates an error
-  // with the heuristic, and we should notify a histogram so that we can
-  // gather data and improve the heuristic's logic, as well as block the auto
-  // disable from occurring.
-  // * If the assistive tech is no longer active, then it has been unloaded
-  // and it is fine to auto-disable.
-  // Reaching here should be a rare case, and therefore we call the 'slow'
-  // code (uses system calls on Windows/Linux) to update the running active
-  // assistive tech state, before we make a determination.
-  return ActiveAssistiveTech() != ui::AssistiveTech::kNone;
-}
 
-void BrowserAccessibilityStateImpl::OnUserInputEvent() {
-  // No need to do anything if accessibility is off, or if it was forced on.
-  if (GetAccessibilityMode().is_mode_off() || !allow_ax_mode_changes_) {
-    return;
-  }
-
-  // If we get at least kAutoDisableAccessibilityEventCount user input
-  // events, more than kAutoDisableAccessibilityTimeSecs apart, with
-  // no accessibility API usage in-between disable accessibility.
-  // (See also OnAccessibilityApiUsage()).
-  // TODO(accessibility) This heuristic will possibly be removed because it's
-  // easy for user input events to occur without causing any changes to the
-  // a11y tree, or firing any events that an assistive tech would process.
-  // However, we should also consider whether to use this heuristic in addition
-  // to the focus/load complete one. Some categories of AT don't listen to focus
-  // or load complete either e.g. Select to Speak. It may not be necessary for
-  // Select-To-Speak to block auto disable if the disabling is lazy, e.g. on
-  // next page load and just for this WebContents.
-  base::TimeTicks now = ui::EventTimeForNow();
-  user_input_event_count_++;
-  if (user_input_event_count_ == 1) {
-    first_user_input_event_time_ = now;
-    return;
-  }
-
-  if (user_input_event_count_ < kAutoDisableAccessibilityEventCount) {
-    return;
-  }
-
-  if (ShouldBlockAutoDisable()) {
-    base::UmaHistogramEnumeration(
-        "Accessibility.AutoDisabled.BlockedAfter.UserInput",
-        ActiveAssistiveTech());
-    return;
-  }
-
-  if (now - first_user_input_event_time_ >
-      base::Seconds(kAutoDisableAccessibilityTimeSecs)) {
-    if (!accessibility_active_start_time_.is_null()) {
-      base::UmaHistogramLongTimes(
-          "Accessibility.ActiveTime",
-          accessibility_last_usage_time_ - accessibility_active_start_time_);
-
-      // This will help track the time accessibility spends enabled, but
-      // inactive.
-      if (!features::IsAutoDisableAccessibilityEnabled()) {
-        accessibility_inactive_start_time_ = accessibility_last_usage_time_;
-      }
-
-      accessibility_active_start_time_ = base::TimeTicks();
-    }
-
-    // Check if the feature to auto-disable accessibility is even enabled.
-    if (features::IsAutoDisableAccessibilityEnabled()) {
-      base::UmaHistogramCounts1000("Accessibility.AutoDisabled.EventCount",
-                                   user_input_event_count_);
-      // TODO(accessibility) Reimplement by making a11y dormant as opposed to
-      // turning off flags, which leads to thrashing.
-    }
-  }
-}
 
 void BrowserAccessibilityStateImpl::SetAXModeChangeAllowed(bool allowed) {
   allow_ax_mode_changes_ = allowed;
@@ -660,24 +557,6 @@ void BrowserAccessibilityStateImpl::EnableAXModeFromPlatform(
     platform_ax_mode_ =
         CreateScopedModeForProcess(new_mode | ui::AXMode::kFromPlatform);
   }
-
-  // If AXMode::kWebContent is being requested, turn off auto-disable.
-  // TODO(accessibility) Re-work the auto-disable feature.
-  // Platform accessibility API usage affects auto-disable.
-  // See OnUserInputEvent for how this is used to disable accessibility.
-  user_input_event_count_ = 0;
-
-  // See comment above kOnAccessibilityUsageUpdateDelaySecs for why we post a
-  // delayed task.
-  if (!accessibility_update_task_pending_) {
-    accessibility_update_task_pending_ = true;
-    GetUIThreadTaskRunner({})->PostDelayedTask(
-        FROM_HERE,
-        base::BindOnce(
-            &BrowserAccessibilityStateImpl::UpdateAccessibilityActivityTask,
-            base::Unretained(this)),
-        base::Seconds(kOnAccessibilityUsageUpdateDelaySecs));
-  }
 }
 
 void BrowserAccessibilityStateImpl::OnMinimalPropertiesUsed() {
@@ -712,8 +591,6 @@ void BrowserAccessibilityStateImpl::OnHTMLAttributesUsed() {
 }
 
 void BrowserAccessibilityStateImpl::OnActionFromAssistiveTech() {
-  // See OnUserInputEvent for how this is used to disable accessibility.
-  user_input_event_count_ = 0;
   if (has_recently_checked_for_screen_reader_) {
     return;
   }
@@ -841,20 +718,6 @@ void BrowserAccessibilityStateImpl::OnDisablerDestroyedForWebContents(
   CHECK(std::erase(last_hidden_, web_contents));
 }
 
-void BrowserAccessibilityStateImpl::OnInputEvent(
-    const RenderWidgetHost& widget,
-    const blink::WebInputEvent& event,
-    InputEventSource source) {
-  // |this| observer cares about user input events (specifically keyboard,
-  // mouse & touch events) to decide if the accessibility APIs can be disabled.
-  if (event.GetType() == blink::WebInputEvent::Type::kMouseDown ||
-      event.GetType() == blink::WebInputEvent::Type::kGestureTapDown ||
-      event.GetType() == blink::WebInputEvent::Type::kTouchStart ||
-      event.GetType() == blink::WebInputEvent::Type::kRawKeyDown ||
-      event.GetType() == blink::WebInputEvent::Type::kKeyDown) {
-    OnUserInputEvent();
-  }
-}
 
 std::unique_ptr<ScopedAccessibilityMode>
 BrowserAccessibilityStateImpl::CreateScopedModeForProcess(ui::AXMode mode) {
