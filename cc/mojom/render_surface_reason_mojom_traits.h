@@ -64,6 +64,8 @@ struct EnumTraits<cc::mojom::RenderSurfaceReason, cc::RenderSurfaceReason> {
       case cc::RenderSurfaceReason::k2DScaleTransformWithCompositedDescendants:
         return cc::mojom::RenderSurfaceReason::
             k2DScaleTransformWithCompositedDescendants;
+      case cc::RenderSurfaceReason::kUnboundedElement:
+        return cc::mojom::RenderSurfaceReason::kUnboundedElement;
       case cc::RenderSurfaceReason::kTest:
         return cc::mojom::RenderSurfaceReason::kTest;
     }
@@ -123,6 +125,8 @@ struct EnumTraits<cc::mojom::RenderSurfaceReason, cc::RenderSurfaceReason> {
           k2DScaleTransformWithCompositedDescendants:
         return cc::RenderSurfaceReason::
             k2DScaleTransformWithCompositedDescendants;
+      case cc::mojom::RenderSurfaceReason::kUnboundedElement:
+        return cc::RenderSurfaceReason::kUnboundedElement;
       case cc::mojom::RenderSurfaceReason::kTest:
         return cc::RenderSurfaceReason::kTest;
     }

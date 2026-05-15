@@ -70,6 +70,8 @@ const char* RenderSurfaceReasonToString(RenderSurfaceReason reason) {
       return "view transition participant";
     case RenderSurfaceReason::k2DScaleTransformWithCompositedDescendants:
       return "2D scale transform with composited descendants";
+    case RenderSurfaceReason::kUnboundedElement:
+      return "unbounded element";
     case RenderSurfaceReason::kTest:
       return "test";
   }

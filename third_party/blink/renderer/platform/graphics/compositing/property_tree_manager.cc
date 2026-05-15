@@ -1313,6 +1313,10 @@ static cc::RenderSurfaceReason RenderSurfaceReasonForEffect(
   if (effect.ViewTransitionElementResourceId().IsValid()) {
     return cc::RenderSurfaceReason::kViewTransitionParticipant;
   }
+  if (effect.RequiresCompositingForUnboundedElement()) {
+    CHECK(RuntimeEnabledFeatures::UnboundedElementEnabled());
+    return cc::RenderSurfaceReason::kUnboundedElement;
+  }
   // If the effect's transform node flattens the transform while it
   // participates in the 3d sorting context of an ancestor, cc needs a
   // render surface for correct flattening.

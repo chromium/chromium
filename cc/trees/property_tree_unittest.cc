@@ -488,6 +488,19 @@ TEST(PropertyTreeTest, TransformsWithFlattening) {
   EXPECT_TRANSFORM_EQ(rotation_about_x, grand_child_to_child);
 }
 
+TEST(PropertyTreeTest, UnboundedRenderSurfaceReason) {
+  PropertyTrees property_trees;
+  EffectTree& effect_tree = property_trees.effect_tree_mutable();
+
+  int effect_node_id = effect_tree.Insert(EffectNode(), 0);
+  effect_tree.MutableNode(effect_node_id).render_surface_reason =
+      RenderSurfaceReason::kUnboundedElement;
+
+  EXPECT_TRUE(effect_tree.Node(effect_node_id).HasRenderSurface());
+  EXPECT_EQ(RenderSurfaceReason::kUnboundedElement,
+            effect_tree.Node(effect_node_id).render_surface_reason);
+}
+
 TEST(PropertyTreeTest, MultiplicationOrder) {
   PropertyTrees property_trees;
   TransformTree& tree = property_trees.transform_tree_mutable();
