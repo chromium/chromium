@@ -115,7 +115,7 @@ void RecordFREConsentAction(IOSGeminiFREAction action);
 enum class IOSGeminiPageAvailability {
   kUnavailable = 0,
   kAvailable = 1,
-  kSearchResultPage = 2,
+  kSearchResultPage = 2,  // Deprecated
   kMaxValue = kSearchResultPage,
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/ios/enums.xml:IOSGeminiPageAvailability)

@@ -11354,27 +11354,6 @@
             ]
         }
     ],
-    "GeminiCopresence": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "GeminiCopresenceResponseReadyInterval": "7.0",
-                        "GeminiCopresenceSRPCheck": "true",
-                        "GeminiCopresenceWithFullscreenDisabler": "false"
-                    },
-                    "enable_features": [
-                        "GeminiCopresence",
-                        "GeminiResponseViewDynamicResizing"
-                    ]
-                }
-            ]
-        }
-    ],
     "GeminiWebChromeCohesion": [
         {
             "platforms": [

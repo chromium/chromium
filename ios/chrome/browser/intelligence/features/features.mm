@@ -515,7 +515,7 @@ bool IsGeminiLiveEnabled() {
   return base::FeatureList::IsEnabled(kGeminiLive);
 }
 
-BASE_FEATURE(kGeminiCopresence, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kGeminiCopresence, base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsGeminiCopresenceEnabled() {
   if (!IsPageActionMenuEnabled()) {
@@ -534,16 +534,6 @@ double GetGeminiCopresenceResponseReadyInterval() {
   return base::GetFieldTrialParamByFeatureAsDouble(
       kGeminiCopresence, kGeminiCopresenceResponseReadyInterval,
       kGeminiCopresenceResponseReadyIntervalDefault);
-}
-
-const char kGeminiCopresenceSRPCheck[] = "GeminiCopresenceSRPCheck";
-
-bool IsGeminiCopresenceSRPCheckEnabled() {
-  if (!IsPageActionMenuEnabled()) {
-    return false;
-  }
-  return base::GetFieldTrialParamByFeatureAsBool(
-      kGeminiCopresence, kGeminiCopresenceSRPCheck, /*default_value=*/true);
 }
 
 BASE_FEATURE(kGeminiChatPersistence, base::FEATURE_DISABLED_BY_DEFAULT);

@@ -278,8 +278,6 @@ double GetGeminiCopresenceResponseReadyInterval();
 
 // Feature parameter for kGeminiCopresence to skip checking for a Search
 // Related Page.
-extern const char kGeminiCopresenceSRPCheck[];
-bool IsGeminiCopresenceSRPCheckEnabled();
 
 // Returns true if the Gemini chat persistence is enabled.
 bool IsGeminiChatPersistenceEnabled();

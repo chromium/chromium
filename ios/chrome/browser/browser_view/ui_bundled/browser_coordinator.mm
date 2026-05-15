@@ -3925,11 +3925,6 @@ const char kChromeAppStoreUrl[] =
     geminiTabHelper->UpdatePresentedSource(source, /*is_presented=*/false);
     gemini::FloatyUpdateSource hideSource =
         gemini::FloatyUpdateSource::IneligibleSite;
-    const GURL& url = self.activeWebState->GetVisibleURL();
-    if (google_util::IsGoogleSearchUrl(url) &&
-        IsGeminiCopresenceSRPCheckEnabled()) {
-      hideSource = gemini::FloatyUpdateSource::SearchRelatedPage;
-    }
     geminiBrowserAgent->HideFloatyIfInvoked(animated, hideSource);
     return;
   }

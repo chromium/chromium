@@ -396,15 +396,10 @@ bool GeminiTabHelper::IsGeminiAvailableForWebState() {
 
   bool is_ntp = IsUrlNtp(url);
   bool is_aim_url = IsAimZeroStateURL(url) || IsAimURL(url);
-  bool is_srp_url = google_util::IsGoogleHomePageUrl(url) ||
-                    google_util::IsGoogleSearchUrl(url);
 
   // With copresence, AIM and NTP are ineligible, and SRP is conditionally
   // enabled.
   if (IsGeminiCopresenceEnabled()) {
-    if (IsGeminiCopresenceSRPCheckEnabled() && is_srp_url) {
-      return false;
-    }
     return !is_aim_url && !is_ntp;
   }
 
@@ -505,12 +500,7 @@ void GeminiTabHelper::DidFinishNavigation(
     if (IsGeminiAvailableForWebState()) {
       RecordGeminiPageAvailability(IOSGeminiPageAvailability::kAvailable);
     } else {
-      if (google_util::IsGoogleSearchUrl(web_state->GetVisibleURL())) {
-        RecordGeminiPageAvailability(
-            IOSGeminiPageAvailability::kSearchResultPage);
-      } else {
-        RecordGeminiPageAvailability(IOSGeminiPageAvailability::kUnavailable);
-      }
+      RecordGeminiPageAvailability(IOSGeminiPageAvailability::kUnavailable);
     }
     [gemini_commands_handler_
         updateFloatyVisibilityIfEligibleAnimated:NO

@@ -775,7 +775,7 @@ TEST_F(GeminiTabHelperTest, IsGeminiAvailableForWebState_WhenUrlIsAimUrl) {
   EXPECT_FALSE(tab_helper_->IsGeminiAvailableForWebState());
 }
 
-// Tests that Gemini is not available for a web state when the URL is the Google
+// Tests that Gemini is available for a web state when the URL is the Google
 // home page.
 TEST_F(GeminiTabHelperTest,
        IsGeminiAvailableForWebState_WhenUrlIsGoogleHomePage) {
@@ -788,10 +788,10 @@ TEST_F(GeminiTabHelperTest,
   web_state_->SetContentsMimeType("text/html");
   GeminiTabHelper::CreateForWebState(web_state_.get());
   tab_helper_ = GeminiTabHelper::FromWebState(web_state_.get());
-  EXPECT_FALSE(tab_helper_->IsGeminiAvailableForWebState());
+  EXPECT_TRUE(tab_helper_->IsGeminiAvailableForWebState());
 }
 
-// Tests that Gemini is not available for a web state when the URL is a Google
+// Tests that Gemini is available for a web state when the URL is a Google
 // Search URL but not an AIM URL.
 TEST_F(GeminiTabHelperTest,
        IsGeminiAvailableForWebState_WhenUrlIsNotAimUrlButIsGoogleSearch) {
@@ -804,7 +804,7 @@ TEST_F(GeminiTabHelperTest,
   web_state_->SetContentsMimeType("text/html");
   GeminiTabHelper::CreateForWebState(web_state_.get());
   tab_helper_ = GeminiTabHelper::FromWebState(web_state_.get());
-  EXPECT_FALSE(tab_helper_->IsGeminiAvailableForWebState());
+  EXPECT_TRUE(tab_helper_->IsGeminiAvailableForWebState());
 }
 
 // Tests that Gemini is available for a web state when the URL is not a Google
@@ -876,13 +876,11 @@ TEST_F(GeminiTabHelperTest, IsGeminiAvailableForWebState_DefaultConfig) {
 
 // Tests `IsGeminiAvailableForWebState` under Copresence configuration with SRP
 // Check enabled.
-TEST_F(GeminiTabHelperTest,
-       IsGeminiAvailableForWebState_Copresence_SRPCheckEnabled) {
+
+// Tests `IsGeminiAvailableForWebState` under Copresence configuration.
+TEST_F(GeminiTabHelperTest, IsGeminiAvailableForWebState_Copresence) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeaturesAndParameters(
-      {{kGeminiCopresence, {{"GeminiCopresenceSRPCheck", "true"}}},
-       {kPageActionMenu, {}}},
-      {});
+  scoped_feature_list.InitWithFeatures({kPageActionMenu}, {});
 
   web_state_->SetContentsMimeType("text/html");
 
@@ -899,46 +897,11 @@ TEST_F(GeminiTabHelperTest,
       GURL("https://www.google.com/search?q=test&udm=50"));
   EXPECT_FALSE(tab_helper_->IsGeminiAvailableForWebState());
 
-  // SRP URL (Google Home Page) should not be available since SRP check is
-  // enabled.
-  web_state_->SetCurrentURL(GURL("https://www.google.com"));
-  EXPECT_FALSE(tab_helper_->IsGeminiAvailableForWebState());
-
-  // SRP URL (Google Search) should not be available since SRP check is enabled.
-  web_state_->SetCurrentURL(GURL("https://www.google.com/search?q=test"));
-  EXPECT_FALSE(tab_helper_->IsGeminiAvailableForWebState());
-}
-
-// Tests `IsGeminiAvailableForWebState` under Copresence configuration with SRP
-// Check disabled.
-TEST_F(GeminiTabHelperTest,
-       IsGeminiAvailableForWebState_Copresence_SRPCheckDisabled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeaturesAndParameters(
-      {{kGeminiCopresence, {{"GeminiCopresenceSRPCheck", "false"}}},
-       {kPageActionMenu, {}}},
-      {});
-
-  web_state_->SetContentsMimeType("text/html");
-
-  // Valid HTTPS URL should be available.
-  web_state_->SetCurrentURL(GURL("https://www.example.com"));
-  EXPECT_TRUE(tab_helper_->IsGeminiAvailableForWebState());
-
-  // NTP should not be available.
-  web_state_->SetCurrentURL(GURL(kChromeUINewTabURL));
-  EXPECT_FALSE(tab_helper_->IsGeminiAvailableForWebState());
-
-  // AIM URL should not be available.
-  web_state_->SetCurrentURL(
-      GURL("https://www.google.com/search?q=test&udm=50"));
-  EXPECT_FALSE(tab_helper_->IsGeminiAvailableForWebState());
-
-  // SRP URL (Google Home Page) should be available since SRP check is disabled.
+  // SRP URL (Google Home Page) should be available.
   web_state_->SetCurrentURL(GURL("https://www.google.com"));
   EXPECT_TRUE(tab_helper_->IsGeminiAvailableForWebState());
 
-  // SRP URL (Google Search) should be available since SRP check is disabled.
+  // SRP URL (Google Search) should be available.
   web_state_->SetCurrentURL(GURL("https://www.google.com/search?q=test"));
   EXPECT_TRUE(tab_helper_->IsGeminiAvailableForWebState());
 }
