@@ -5077,6 +5077,11 @@ static_library("ui") {
       # - c/b/ui/views/digital_credentials/digital_identity_bluetooth_manual_dialog_controller.h
       # - c/b/ui/views/digital_credentials/digital_identity_multi_step_dialog.h
       "//chrome/browser/digital_credentials",
+
+      # TODO(crbug.com/512979192): Remove this circular dependency when the
+      # following headers get componentized:
+      # - c/b/ui/views/frame/browser_view.h
+      "//chrome/browser/ui/views/drive_picker_host",
     ]
 
     if (is_linux) {

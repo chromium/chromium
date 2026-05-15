@@ -12,6 +12,7 @@
 #include "ui/views/view_tracker.h"
 
 class Profile;
+class BrowserWindowInterface;
 namespace content {
 class WebContents;
 }
@@ -30,9 +31,11 @@ class WebView;
 // the third-party Drive Picker API from privileged browser bindings.
 //
 // UI Presentation:
-// It is designed to be rendered over the entire browser window contents to
-// prevent UI spoofing and ensure clear provenance of the file selection
-// interface.
+// It is designed to be rendered as a child view of BrowserView, covering the
+// entire browser window area (including top chrome and web contents). This
+// ensures strict clipping to the browser window bounds and consistent
+// cross-platform behavior by avoiding OS-level window decorations or alignment
+// issues associated with separate top-level widgets.
 //
 // Ownership and Lifetime:
 // This object is owned by the views::View hierarchy and its lifetime is
@@ -43,7 +46,9 @@ class DrivePickerHostView : public views::View {
   METADATA_HEADER(DrivePickerHostView, views::View)
 
  public:
-  explicit DrivePickerHostView(Profile* profile);
+  explicit DrivePickerHostView(
+      Profile* profile,
+      BrowserWindowInterface* browser_window_interface);
   DrivePickerHostView(const DrivePickerHostView&) = delete;
   DrivePickerHostView& operator=(const DrivePickerHostView&) = delete;
   ~DrivePickerHostView() override;
@@ -57,11 +62,16 @@ class DrivePickerHostView : public views::View {
       mojo::PendingRemote<drive_picker_host::mojom::DrivePickerResultHandler>
           result_handler);
 
+  // views::View:
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override;
+
  private:
   FRIEND_TEST_ALL_PREFIXES(DrivePickerHostViewTest, Initialization);
   FRIEND_TEST_ALL_PREFIXES(DrivePickerHostViewTest, TriggerDrivePickerHostUi);
 
   views::ViewTracker view_tracker_;
+  raw_ptr<BrowserWindowInterface> browser_window_interface_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_DRIVE_PICKER_HOST_DRIVE_PICKER_HOST_VIEW_H_

@@ -4,8 +4,7 @@
 
 #include "chrome/browser/ui/views/drive_picker_host/drive_picker_host_view.h"
 
-#include "base/memory/raw_ptr.h"
-#include "base/test/scoped_feature_list.h"
+#include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/browser/ui/webui/drive_picker_host/drive_picker_host_ui.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/testing_profile.h"
@@ -67,9 +66,13 @@ class DrivePickerHostViewTest : public ChromeViewsTestBase {
   }
 
   TestingProfile* profile() { return profile_.get(); }
+  MockBrowserWindowInterface* browser_window_interface() {
+    return &mock_browser_window_interface_;
+  }
 
  private:
   std::unique_ptr<TestingProfile> profile_;
+  MockBrowserWindowInterface mock_browser_window_interface_;
 
   // Needed because DrivePickerHostView creates a views::WebView and
   // TriggerDrivePickerHostUi test uses NavigationSimulator to "load" the
@@ -81,7 +84,8 @@ class DrivePickerHostViewTest : public ChromeViewsTestBase {
 };
 
 TEST_F(DrivePickerHostViewTest, Initialization) {
-  auto view = std::make_unique<DrivePickerHostView>(profile());
+  auto view = std::make_unique<DrivePickerHostView>(profile(),
+                                                    browser_window_interface());
 
   EXPECT_EQ(view->children().size(), 1u);
   EXPECT_FALSE(view->GetBackground());
@@ -94,7 +98,8 @@ TEST_F(DrivePickerHostViewTest, TriggerDrivePickerHostUi) {
   content::ScopedWebUIConfigRegistration registration(
       std::make_unique<MockDrivePickerHostUIConfig>());
 
-  auto view = std::make_unique<DrivePickerHostView>(profile());
+  auto view = std::make_unique<DrivePickerHostView>(profile(),
+                                                    browser_window_interface());
 
   content::WebContents* contents =
       views::AsViewClass<views::WebView>(view->view_tracker_.view())

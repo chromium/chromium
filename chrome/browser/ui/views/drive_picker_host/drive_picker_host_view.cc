@@ -5,28 +5,24 @@
 #include "chrome/browser/ui/views/drive_picker_host/drive_picker_host_view.h"
 
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/views/drive_picker_host/drive_picker_result_handler.mojom.h"
 #include "chrome/browser/ui/webui/drive_picker_host/drive_picker_host_ui.h"
 #include "chrome/common/webui_url_constants.h"
+#include "components/web_modal/web_contents_modal_dialog_host.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/base/base_window.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/view_utils.h"
 
-namespace {
-constexpr int kDefaultWidth = 800;
-constexpr int kDefaultHeight = 600;
-}  // namespace
-
-DrivePickerHostView::DrivePickerHostView(Profile* profile) {
-  // Set a default preferred size for the picker. This ensures that on
-  // initialization (and particularly on Mac), the window has a non-zero size
-  // before the WebUI content determines the final layout.
-  SetPreferredSize(gfx::Size(kDefaultWidth, kDefaultHeight));
-
+DrivePickerHostView::DrivePickerHostView(
+    Profile* profile,
+    BrowserWindowInterface* browser_window_interface)
+    : browser_window_interface_(browser_window_interface) {
   // Set the view to paint to a layer so that the view can be transparent over
   // the web contents. This allows the web contents to appear like a floating
   // dialog over the browser window.
@@ -57,6 +53,15 @@ content::WebContents* DrivePickerHostView::GetWebContents() {
   }
   return views::AsViewClass<views::WebView>(view_tracker_.view())
       ->GetWebContents();
+}
+
+gfx::Size DrivePickerHostView::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
+  if (!browser_window_interface_ || !browser_window_interface_->GetWindow()) {
+    return gfx::Size();
+  }
+
+  return browser_window_interface_->GetWindow()->GetBounds().size();
 }
 
 void DrivePickerHostView::TriggerDrivePickerHostUi(

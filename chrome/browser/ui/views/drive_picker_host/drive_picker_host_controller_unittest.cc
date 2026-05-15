@@ -45,31 +45,62 @@ TEST_F(DrivePickerHostControllerTest, ShowDrivePickerHostCreatesView) {
       remote;
   controller_->ShowDrivePickerHost(std::move(remote));
 
-  // Process any pending tasks (like widget showing or initial WebUI setup).
+  // Process any pending tasks (like view addition or initial WebUI setup).
   base::RunLoop().RunUntilIdle();
 
-  ASSERT_TRUE(controller_->widget_);
   DrivePickerHostView* view = views::AsViewClass<DrivePickerHostView>(
-      controller_->widget_->widget_delegate()->GetContentsView());
+      controller_->view_tracker_.view());
   ASSERT_TRUE(view);
+  EXPECT_EQ(browser_view(), view->parent());
   EXPECT_EQ(controller_->web_contents(), view->GetWebContents());
 }
 
-TEST_F(DrivePickerHostControllerTest, WidgetCloseResetsState) {
+TEST_F(DrivePickerHostControllerTest, PickerCoversBrowserContents) {
   mojo::PendingRemote<drive_picker_host::mojom::DrivePickerResultHandler>
       remote;
   controller_->ShowDrivePickerHost(std::move(remote));
 
   base::RunLoop().RunUntilIdle();
 
-  ASSERT_TRUE(controller_->widget_);
-  views::Widget* widget_ptr = controller_->widget_.get();
+  DrivePickerHostView* view = views::AsViewClass<DrivePickerHostView>(
+      controller_->view_tracker_.view());
+  ASSERT_TRUE(view);
 
-  // Close the widget, which should trigger ResetControllerState via the
-  // MakeCloseSynchronous callback.
-  widget_ptr->Close();
+  // The view should cover the entire BrowserView local area.
+  EXPECT_EQ(view->bounds(), browser_view()->GetLocalBounds());
+}
 
-  // ResetControllerState should have been called, clearing the widget.
-  EXPECT_FALSE(controller_->widget_);
+TEST_F(DrivePickerHostControllerTest, PickerResizesWithWindow) {
+  mojo::PendingRemote<drive_picker_host::mojom::DrivePickerResultHandler>
+      remote;
+  controller_->ShowDrivePickerHost(std::move(remote));
+
+  base::RunLoop().RunUntilIdle();
+
+  DrivePickerHostView* view = views::AsViewClass<DrivePickerHostView>(
+      controller_->view_tracker_.view());
+  ASSERT_TRUE(view);
+
+  // Resize the browser window.
+  gfx::Rect new_window_bounds(10, 10, 800, 600);
+  browser_view()->GetWidget()->SetBounds(new_window_bounds);
+
+  // The picker view should have been updated to match the new local bounds.
+  EXPECT_EQ(view->bounds(), browser_view()->GetLocalBounds());
+}
+
+TEST_F(DrivePickerHostControllerTest, ResetControllerStateClearsView) {
+  mojo::PendingRemote<drive_picker_host::mojom::DrivePickerResultHandler>
+      remote;
+  controller_->ShowDrivePickerHost(std::move(remote));
+
+  base::RunLoop().RunUntilIdle();
+
+  ASSERT_TRUE(controller_->view_tracker_.view());
+
+  controller_->ResetControllerState();
+
+  // ResetControllerState should have cleared the view.
+  EXPECT_FALSE(controller_->view_tracker_.view());
   EXPECT_FALSE(controller_->is_picker_document_loaded_);
 }
