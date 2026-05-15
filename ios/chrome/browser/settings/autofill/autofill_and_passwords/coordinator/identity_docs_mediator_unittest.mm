@@ -76,7 +76,8 @@ TEST_F(IdentityDocsMediatorTest, SelectsItemForwardsToDelegate) {
       [[FakeIdentityDocsMediatorDelegate alloc] init];
   mediator_.delegate = delegate;
 
-  AutofillAIEntityItem* item = [[AutofillAIEntityItem alloc] initWithType:0];
+  AutofillAIEntityItem* item =
+      [[AutofillAIEntityItem alloc] initWithType:kAutofillAIBaseItemTypeEntity];
   item.guid = autofill::EntityInstance::EntityId("test-id-123");
 
   [mediator_ didSelectEntityItem:item];

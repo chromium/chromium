@@ -9,6 +9,7 @@
 #import "components/autofill/core/common/autofill_features.h"
 #import "ios/chrome/browser/autofill/model/ios_autofill_entity_data_manager_factory.h"
 #import "ios/chrome/browser/settings/autofill/autofill_ai/ui/autofill_ai_entity_item.h"
+#import "ios/chrome/browser/settings/autofill/autofill_and_passwords/coordinator/autofill_ai_base_mediator_protected.h"
 #import "ios/chrome/browser/settings/autofill/autofill_and_passwords/ui/travel_info_consumer.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/webdata_services/model/web_data_service_factory.h"
@@ -76,11 +77,42 @@ TEST_F(TravelInfoMediatorTest, SelectsItemForwardsToDelegate) {
       [[FakeTravelInfoMediatorDelegate alloc] init];
   mediator_.delegate = delegate;
 
-  AutofillAIEntityItem* item = [[AutofillAIEntityItem alloc] initWithType:0];
+  AutofillAIEntityItem* item =
+      [[AutofillAIEntityItem alloc] initWithType:kAutofillAIBaseItemTypeEntity];
   item.guid = autofill::EntityInstance::EntityId("test-id-123");
 
   [mediator_ didSelectEntityItem:item];
 
   ASSERT_TRUE(delegate.lastOpenedEntityID.has_value());
   EXPECT_EQ(delegate.lastOpenedEntityID.value(), item.guid);
+}
+
+// Tests that pushing items correctly splits them by entity type and calls
+// the corresponding consumer setters.
+TEST_F(TravelInfoMediatorTest, SplitsItemsByType) {
+  AutofillAIEntityItem* ktn =
+      [[AutofillAIEntityItem alloc] initWithType:kAutofillAIBaseItemTypeEntity];
+  ktn.entityTypeName = autofill::EntityTypeName::kKnownTravelerNumber;
+
+  AutofillAIEntityItem* redress =
+      [[AutofillAIEntityItem alloc] initWithType:kAutofillAIBaseItemTypeEntity];
+  redress.entityTypeName = autofill::EntityTypeName::kRedressNumber;
+
+  AutofillAIEntityItem* vehicle =
+      [[AutofillAIEntityItem alloc] initWithType:kAutofillAIBaseItemTypeEntity];
+  vehicle.entityTypeName = autofill::EntityTypeName::kVehicle;
+
+  AutofillAIEntityItem* flight =
+      [[AutofillAIEntityItem alloc] initWithType:kAutofillAIBaseItemTypeEntity];
+  flight.entityTypeName = autofill::EntityTypeName::kFlightReservation;
+
+  OCMExpect([consumer_ setTravelInfoWithFlightReservations:@[ flight ]
+                                      knownTravelerNumbers:@[ ktn ]
+                                            redressNumbers:@[ redress ]
+                                                  vehicles:@[ vehicle ]]);
+
+  mediator_.consumer = consumer_;
+  [mediator_ pushItemsToConsumer:@[ ktn, redress, vehicle, flight ]];
+
+  [consumer_ verify];
 }

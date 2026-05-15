@@ -7,13 +7,18 @@
 #import "base/apple/foundation_util.h"
 #import "base/check.h"
 #import "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/settings/autofill/autofill_and_passwords/ui/autofill_ai_base_item_type.h"
 #import "ios/chrome/browser/settings/autofill/autofill_and_passwords/ui/autofill_ai_base_mutator.h"
+#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_header_footer_item.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
 namespace {
 enum SectionIdentifier {
-  SectionIdentifierTravelInfo = kSectionIdentifierEnumZero,
+  SectionIdentifierFlightReservations = kSectionIdentifierEnumZero,
+  SectionIdentifierKnownTravelerNumbers,
+  SectionIdentifierRedressNumbers,
+  SectionIdentifierVehicles,
 };
 
 }  // namespace
@@ -21,8 +26,12 @@ enum SectionIdentifier {
 @interface TravelInfoTableViewController ()
 @end
 
+// View controller implementation for Travel Info.
 @implementation TravelInfoTableViewController {
-  NSArray<TableViewItem*>* _travelInfoItems;
+  NSArray<TableViewItem*>* _flightReservations;
+  NSArray<TableViewItem*>* _knownTravelerNumbers;
+  NSArray<TableViewItem*>* _redressNumbers;
+  NSArray<TableViewItem*>* _vehicles;
   BOOL _settingsAreDismissed;
 }
 
@@ -43,18 +52,78 @@ enum SectionIdentifier {
   [super loadModel];
 
   TableViewModel* model = self.tableViewModel;
-  if (_travelInfoItems.count > 0) {
-    [model addSectionWithIdentifier:SectionIdentifierTravelInfo];
-    for (TableViewItem* item in _travelInfoItems) {
-      [model addItem:item toSectionWithIdentifier:SectionIdentifierTravelInfo];
+
+  if (_flightReservations.count > 0) {
+    [model addSectionWithIdentifier:SectionIdentifierFlightReservations];
+    TableViewTextHeaderFooterItem* header =
+        [[TableViewTextHeaderFooterItem alloc]
+            initWithType:kAutofillAIBaseItemTypeHeader];
+    header.text =
+        l10n_util::GetNSString(IDS_AUTOFILL_AI_FLIGHT_RESERVATIONS_TITLE);
+    [model setHeader:header
+        forSectionWithIdentifier:SectionIdentifierFlightReservations];
+    for (TableViewItem* item in _flightReservations) {
+      [model addItem:item
+          toSectionWithIdentifier:SectionIdentifierFlightReservations];
+    }
+  }
+
+  if (_knownTravelerNumbers.count > 0) {
+    [model addSectionWithIdentifier:SectionIdentifierKnownTravelerNumbers];
+    TableViewTextHeaderFooterItem* header =
+        [[TableViewTextHeaderFooterItem alloc]
+            initWithType:kAutofillAIBaseItemTypeHeader];
+    header.text = l10n_util::GetNSString(
+        IDS_AUTOFILL_AI_KNOWN_TRAVELER_NUMBER_ENTITY_NAME);
+    [model setHeader:header
+        forSectionWithIdentifier:SectionIdentifierKnownTravelerNumbers];
+    for (TableViewItem* item in _knownTravelerNumbers) {
+      [model addItem:item
+          toSectionWithIdentifier:SectionIdentifierKnownTravelerNumbers];
+    }
+  }
+
+  if (_redressNumbers.count > 0) {
+    [model addSectionWithIdentifier:SectionIdentifierRedressNumbers];
+    TableViewTextHeaderFooterItem* header =
+        [[TableViewTextHeaderFooterItem alloc]
+            initWithType:kAutofillAIBaseItemTypeHeader];
+    header.text =
+        l10n_util::GetNSString(IDS_AUTOFILL_AI_REDRESS_NUMBER_ENTITY_NAME);
+    [model setHeader:header
+        forSectionWithIdentifier:SectionIdentifierRedressNumbers];
+    for (TableViewItem* item in _redressNumbers) {
+      [model addItem:item
+          toSectionWithIdentifier:SectionIdentifierRedressNumbers];
+    }
+  }
+
+  if (_vehicles.count > 0) {
+    [model addSectionWithIdentifier:SectionIdentifierVehicles];
+    TableViewTextHeaderFooterItem* header =
+        [[TableViewTextHeaderFooterItem alloc]
+            initWithType:kAutofillAIBaseItemTypeHeader];
+    header.text = l10n_util::GetNSString(IDS_AUTOFILL_AI_VEHICLES_TITLE);
+    [model setHeader:header forSectionWithIdentifier:SectionIdentifierVehicles];
+    for (TableViewItem* item in _vehicles) {
+      [model addItem:item toSectionWithIdentifier:SectionIdentifierVehicles];
     }
   }
 }
 
 #pragma mark - TravelInfoConsumer
 
-- (void)setTravelInfoItems:(NSArray<TableViewItem*>*)travelInfoItems {
-  _travelInfoItems = travelInfoItems;
+- (void)setTravelInfoWithFlightReservations:
+            (NSArray<TableViewItem*>*)flightReservations
+                       knownTravelerNumbers:
+                           (NSArray<TableViewItem*>*)knownTravelerNumbers
+                             redressNumbers:
+                                 (NSArray<TableViewItem*>*)redressNumbers
+                                   vehicles:(NSArray<TableViewItem*>*)vehicles {
+  _flightReservations = flightReservations;
+  _knownTravelerNumbers = knownTravelerNumbers;
+  _redressNumbers = redressNumbers;
+  _vehicles = vehicles;
   if (self.isViewLoaded) {
     [self reloadData];
   }

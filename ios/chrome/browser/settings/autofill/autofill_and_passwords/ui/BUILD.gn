@@ -4,6 +4,7 @@
 
 source_set("autofill_and_passwords") {
   sources = [
+    "autofill_ai_base_item_type.h",
     "autofill_ai_base_mutator.h",
     "autofill_and_passwords_consumer.h",
     "autofill_and_passwords_table_view_controller.h",
@@ -22,6 +23,7 @@ source_set("autofill_and_passwords") {
     "//ios/chrome/browser/settings/autofill/autofill_and_passwords/utils:autofill_and_passwords_item_utils",
     "//ios/chrome/browser/settings/ui_bundled:constants",
     "//ios/chrome/browser/settings/ui_bundled:settings_root",
+    "//ios/chrome/browser/shared/ui/list_model",
     "//ios/chrome/browser/shared/ui/table_view",
     "//ios/chrome/browser/shared/ui/table_view:utils",
     "//ios/chrome/browser/shared/ui/table_view/cells",

@@ -12,8 +12,14 @@
 // Consumer protocol for the Travel Info settings page.
 @protocol TravelInfoConsumer <NSObject>
 
-// Sets the list of travel info items.
-- (void)setTravelInfoItems:(NSArray<TableViewItem*>*)travelInfoItems;
+// Sets the lists of travel information.
+- (void)setTravelInfoWithFlightReservations:
+            (NSArray<TableViewItem*>*)flightReservations
+                       knownTravelerNumbers:
+                           (NSArray<TableViewItem*>*)knownTravelerNumbers
+                             redressNumbers:
+                                 (NSArray<TableViewItem*>*)redressNumbers
+                                   vehicles:(NSArray<TableViewItem*>*)vehicles;
 
 @end
 

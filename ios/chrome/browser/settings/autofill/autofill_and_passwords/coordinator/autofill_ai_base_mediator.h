@@ -9,7 +9,9 @@
 
 #import "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #import "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
+#import "ios/chrome/browser/settings/autofill/autofill_and_passwords/ui/autofill_ai_base_item_type.h"
 #import "ios/chrome/browser/settings/autofill/autofill_and_passwords/ui/autofill_ai_base_mutator.h"
+#import "ios/chrome/browser/shared/ui/list_model/list_model.h"
 
 namespace autofill {
 class EntityDataManager;
