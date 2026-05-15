@@ -806,6 +806,12 @@
   /* Screenshot captured bubble colors. */ \
   E_CPONLY(kColorScreenshotCapturedImageBackground) \
   E_CPONLY(kColorScreenshotCapturedImageBorder) \
+  /* Settings AI History colors. */ \
+  E_CPONLY(kColorSettingsAiHistoryDescriptionHeader) \
+  /* Settings info card colors. */ \
+  E_CPONLY(kColorSettingsInfoCardBackground) \
+  /* Privacy Settings delete browsing dialog container colors. */ \
+  E_CPONLY(kColorSettingsPrivacyDbdContainerBackground) \
   /* Share-this-tab dialog colors. */ \
   E_CPONLY(kColorShareThisTabAudioToggleBackground) \
   E_CPONLY(kColorShareThisTabSourceViewBorder) \

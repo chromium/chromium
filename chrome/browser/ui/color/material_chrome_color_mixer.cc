@@ -391,6 +391,16 @@ void AddMaterialChromeColorMixer(ui::ColorProvider* provider,
   mixer[kColorOmniboxChipOnSystemBlockedActivityIndicatorForeground] = {
       ui::kColorSysError};
 
+  // Settings AI History colors.
+  mixer[kColorSettingsAiHistoryDescriptionHeader] = {ui::kColorSysPrimary};
+
+  // Settings info card colors.
+  mixer[kColorSettingsInfoCardBackground] = {ui::kColorSysBaseContainer};
+
+  // Privacy Settings delete browsing dialog container colors.
+  mixer[kColorSettingsPrivacyDbdContainerBackground] = {
+      ui::kColorSysBaseContainer};
+
   // Tabstrip tab alert colors.
   mixer[kColorTabAlertAudioPlayingActiveFrameActive] = {
       ui::kColorSysOnSurfaceSubtle};
