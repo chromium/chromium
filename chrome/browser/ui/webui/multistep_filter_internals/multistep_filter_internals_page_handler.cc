@@ -5,10 +5,13 @@
 #include "chrome/browser/ui/webui/multistep_filter_internals/multistep_filter_internals_page_handler.h"
 
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
 #include "base/notreached.h"
+#include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "components/multistep_filter/core/logging/log_entry.h"
@@ -18,53 +21,73 @@ namespace multistep_filter_internals {
 
 namespace {
 
-mojom::LogEventType ToMojoLogEventType(multistep_filter::LogEventType type) {
+std::string_view LogEventTypeToString(multistep_filter::LogEventType type) {
   switch (type) {
     case multistep_filter::LogEventType::kNavigationStarted:
-      return mojom::LogEventType::kNavigationStarted;
+      return "Navigation Started";
     case multistep_filter::LogEventType::kUrlEligibilityCheck:
-      return mojom::LogEventType::kUrlEligibilityCheck;
+      return "Url Eligibility Check";
     case multistep_filter::LogEventType::kAnnotationExtractionStarted:
-      return mojom::LogEventType::kAnnotationExtractionStarted;
+      return "Annotation Extraction Started";
     case multistep_filter::LogEventType::kAnnotationsExtracted:
-      return mojom::LogEventType::kAnnotationsExtracted;
+      return "Annotations Extracted";
     case multistep_filter::LogEventType::kSuggestionGenerationStarted:
-      return mojom::LogEventType::kSuggestionGenerationStarted;
+      return "Suggestion Generation Started";
     case multistep_filter::LogEventType::kNoSupportedTasks:
-      return mojom::LogEventType::kNoSupportedTasks;
+      return "No Supported Tasks";
     case multistep_filter::LogEventType::kNoRelevantAnnotations:
-      return mojom::LogEventType::kNoRelevantAnnotations;
+      return "No Relevant Annotations";
     case multistep_filter::LogEventType::kServerRequestSent:
-      return mojom::LogEventType::kServerRequestSent;
+      return "Server Request Sent";
     case multistep_filter::LogEventType::kServerResponseReceived:
-      return mojom::LogEventType::kServerResponseReceived;
+      return "Server Response Received";
     case multistep_filter::LogEventType::kSuggestionGenerated:
-      return mojom::LogEventType::kSuggestionGenerated;
+      return "Suggestion Generated";
     case multistep_filter::LogEventType::kSuggestionSuppressed:
-      return mojom::LogEventType::kSuggestionSuppressed;
+      return "Suggestion Suppressed";
     case multistep_filter::LogEventType::kSuggestionCleared:
-      return mojom::LogEventType::kSuggestionCleared;
+      return "Suggestion Cleared";
     case multistep_filter::LogEventType::kUiShown:
-      return mojom::LogEventType::kUiShown;
+      return "Ui Shown";
     case multistep_filter::LogEventType::kUiAccepted:
-      return mojom::LogEventType::kUiAccepted;
+      return "Ui Accepted";
     case multistep_filter::LogEventType::kUiDismissed:
-      return mojom::LogEventType::kUiDismissed;
+      return "Ui Dismissed";
     case multistep_filter::LogEventType::kServerRequestFailed:
-      return mojom::LogEventType::kServerRequestFailed;
+      return "Server Request Failed";
     case multistep_filter::LogEventType::kServerResponseMalformed:
-      return mojom::LogEventType::kServerResponseMalformed;
+      return "Server Response Malformed";
   }
   NOTREACHED();
+}
+
+std::string ConvertDetailsToString(const base::DictValue& dict) {
+  std::string result;
+  for (auto [key, value] : dict) {
+    if (!result.empty()) {
+      result += ", ";
+    }
+    if (value.is_string()) {
+      base::StrAppend(&result, {key, ": ", value.GetString()});
+    } else if (value.is_bool()) {
+      base::StrAppend(&result, {key, ": ", value.GetBool() ? "true" : "false"});
+    } else if (value.is_int()) {
+      base::StrAppend(&result,
+                      {key, ": ", base::NumberToString(value.GetInt())});
+    } else {
+      base::StrAppend(&result, {key, ": (unsupported type)"});
+    }
+  }
+  return result;
 }
 
 mojom::LogEntryPtr ConvertToMojo(const multistep_filter::LogEntry& entry) {
   mojom::LogEntryPtr mojo_entry = mojom::LogEntry::New();
   mojo_entry->timestamp = entry.timestamp;
-  mojo_entry->event_type = ToMojoLogEventType(entry.event_type);
+  mojo_entry->event_type = LogEventTypeToString(entry.event_type);
   mojo_entry->source_etld_plus_1 = entry.source_etld_plus_1;
   mojo_entry->navigation_id = entry.navigation_id;
-  mojo_entry->details = entry.details.Clone();
+  mojo_entry->details = ConvertDetailsToString(entry.details);
   return mojo_entry;
 }
 

@@ -81,9 +81,7 @@ TEST_F(MultistepFilterInternalsPageHandlerTest, ForwardsLogEntries) {
 
   ASSERT_TRUE(captured_val);
   EXPECT_EQ(captured_val->navigation_id, kTestNavigation1);
-  EXPECT_EQ(
-      captured_val->event_type,
-      multistep_filter_internals::mojom::LogEventType::kUrlEligibilityCheck);
+  EXPECT_EQ(captured_val->event_type, "Url Eligibility Check");
 }
 
 TEST_F(MultistepFilterInternalsPageHandlerTest, GetBufferedLogs_NullRouter) {
@@ -142,6 +140,9 @@ TEST_F(MultistepFilterInternalsPageHandlerTest, GetBufferedLogs_Single) {
   multistep_filter::LogEntry entry(
       kTestNavigation2, multistep_filter::LogEventType::kUrlEligibilityCheck,
       "example.com");
+  entry.details.Set("string_key", "string_val");
+  entry.details.Set("bool_key", true);
+
   log_router_.RouteLogMessage(std::move(entry));
 
   base::test::TestFuture<
@@ -155,9 +156,8 @@ TEST_F(MultistepFilterInternalsPageHandlerTest, GetBufferedLogs_Single) {
   ASSERT_TRUE(logs[0]);
 
   EXPECT_EQ(logs[0]->navigation_id, kTestNavigation2);
-  EXPECT_EQ(
-      logs[0]->event_type,
-      multistep_filter_internals::mojom::LogEventType::kUrlEligibilityCheck);
+  EXPECT_EQ(logs[0]->event_type, "Url Eligibility Check");
+  EXPECT_EQ(logs[0]->details, "bool_key: true, string_key: string_val");
 }
 
 TEST_F(MultistepFilterInternalsPageHandlerTest, GetBufferedLogs_Multiple) {
