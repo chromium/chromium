@@ -16,6 +16,7 @@ import static org.mockito.Mockito.verify;
 
 import android.app.Activity;
 import android.content.res.ColorStateList;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
@@ -423,6 +424,32 @@ public class FuseboxViewBinderUnitTest {
     }
 
     @Test
+    public void modelButtonA11y_setsContentDescription() {
+        Resources res = mActivityController.get().getResources();
+        mModel.set(
+                FuseboxProperties.POPUP_MODEL_BUTTON_DATA_LIST,
+                List.of(
+                        new PopupButtonDataBuilder()
+                                .withText("custom model")
+                                .withType(PopupButtonType.MODEL)
+                                .withSelected(true)
+                                .build()));
+        assertEquals(
+                res.getString(R.string.acc_fusebox_popup_button_selected, "custom model"),
+                getDynamicButton(0).getContentDescription());
+
+        mModel.set(
+                FuseboxProperties.POPUP_MODEL_BUTTON_DATA_LIST,
+                List.of(
+                        new PopupButtonDataBuilder()
+                                .withText("custom model")
+                                .withType(PopupButtonType.MODEL)
+                                .withSelected(false)
+                                .build()));
+        assertEquals("custom model", getDynamicButton(0).getContentDescription());
+    }
+
+    @Test
     public void sendButtonA11y_setsContentDescription() {
         var res = mActivityController.get().getResources();
 
@@ -586,6 +613,32 @@ public class FuseboxViewBinderUnitTest {
                 List.of(selectedData, notSelectedData));
         assertEndIconSelected(getDynamicToolButton(0), true);
         assertEndIconSelected(getDynamicToolButton(1), false);
+    }
+
+    @Test
+    public void toolButtonA11y_setsContentDescription() {
+        Resources res = mActivityController.get().getResources();
+        mModel.set(
+                FuseboxProperties.POPUP_TOOL_BUTTON_DATA_LIST,
+                List.of(
+                        new PopupButtonDataBuilder()
+                                .withText("custom tool")
+                                .withType(PopupButtonType.TOOL)
+                                .withSelected(true)
+                                .build()));
+        assertEquals(
+                res.getString(R.string.acc_fusebox_popup_button_selected, "custom tool"),
+                getDynamicToolButton(0).getContentDescription());
+
+        mModel.set(
+                FuseboxProperties.POPUP_TOOL_BUTTON_DATA_LIST,
+                List.of(
+                        new PopupButtonDataBuilder()
+                                .withText("custom tool")
+                                .withType(PopupButtonType.TOOL)
+                                .withSelected(false)
+                                .build()));
+        assertEquals("custom tool", getDynamicToolButton(0).getContentDescription());
     }
 
     private static class PopupButtonDataBuilder {

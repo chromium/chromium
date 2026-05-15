@@ -35,12 +35,10 @@ import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.FuseboxState;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.PopupState;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxProperties.PopupButtonData;
-import org.chromium.chrome.browser.omnibox.fusebox.FuseboxProperties.PopupButtonType;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.omnibox.AutocompleteRequestType;
 import org.chromium.components.omnibox.IconResourceIdsProto.IconResourceIds;
-import org.chromium.components.omnibox.ToolModeProto.ToolMode;
 import org.chromium.components.omnibox.ToolModeUtils;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -310,19 +308,12 @@ class FuseboxViewBinder {
         ((TextView) buttonView.findViewById(R.id.action_text)).setText(data.text);
         buttonView.setEnabled(data.enabled);
 
-        // TODO(https://crbug.com/489115052): Improve accessibility strings here.
         Resources res = buttonView.getResources();
-        if (data.type == PopupButtonType.TOOL) {
-            if (data.protoId == ToolMode.TOOL_MODE_UNSPECIFIED_VALUE) {
-                CharSequence desc =
-                        data.selected ? res.getText(R.string.acc_ai_mode_selected) : data.text;
-                buttonView.setContentDescription(desc);
-            } else if (data.protoId == ToolMode.TOOL_MODE_IMAGE_GEN_VALUE) {
-                CharSequence desc =
-                        data.selected ? res.getText(R.string.acc_create_image_selected) : data.text;
-                buttonView.setContentDescription(desc);
-            }
-        }
+        CharSequence desc =
+                data.selected
+                        ? res.getString(R.string.acc_fusebox_popup_button_selected, data.text)
+                        : data.text;
+        buttonView.setContentDescription(desc);
 
         @StyleRes
         int textAppearance = OmniboxResourceProvider.getPopupButtonTextRes(brandedColorScheme);

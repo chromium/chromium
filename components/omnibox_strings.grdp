@@ -442,11 +442,8 @@
   <message name="IDS_ACC_REMOVE_ATTACHMENT" desc="Accessibility text for the remove button of tab or file attachment, announced when the user selects a tab or file as an attachment" formatter_data="android_java">
     Remove attachment
   </message>
-  <message name="IDS_ACC_AI_MODE_SELECTED" desc="Accessibility announcement when the `AI Mode` option in the Omnibox `Add context` popup is selected." formatter_data="android_java">
-    AI Mode selected
-  </message>
-  <message name="IDS_ACC_CREATE_IMAGE_SELECTED" desc="Accessibility announcement when the `Create Image` option in the Omnibox `Add context` popup is selected." formatter_data="android_java">
-    Create image selected
+  <message name="IDS_ACC_FUSEBOX_POPUP_BUTTON_SELECTED" desc="Accessibility announcement when an option in the Omnibox `Add context` popup is selected." formatter_data="android_java">
+    <ph name="BUTTON_TEXT">%s<ex>AI Mode</ex></ph>, selected
   </message>
 
   <!-- Accessibility labels for autocomplete match types.
