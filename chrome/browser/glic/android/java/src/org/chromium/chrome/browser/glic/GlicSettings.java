@@ -45,14 +45,11 @@ import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.text.ChromeClickableSpan;
 import org.chromium.ui.text.SpanApplier;
 
-import java.util.Set;
-
 /** Fragment for Glic configurations in Chrome. */
 @NullMarked
 public class GlicSettings extends ChromeBaseSettingsFragment {
     private static final String PREFERENCE_BUTTON = "glic_button";
     private static final String PREFERENCE_BUTTON_TOGGLE = "glic_button_toggle";
-    private static final String PREF_KEY_EXTRA_INFO = "glic_custom_box_preference";
     private static final String PERMISSION_LOCATION = "permissions_location";
     private static final String PERMISSION_DEFAULT_TAB_ACCESS =
             "glic_permissions_default_tab_access";
@@ -418,19 +415,11 @@ public class GlicSettings extends ChromeBaseSettingsFragment {
                         indexData.removeEntryForKey(prefFrag, PREFERENCE_BUTTON);
                     } else {
                         indexData.removeEntryForKey(prefFrag, PREFERENCE_BUTTON_TOGGLE);
-                        if (BottomBarConfigUtils.isBottomBarEnabled(context)) {
-                            indexData.removeEntryForKey(prefFrag, PREFERENCE_BUTTON);
-                        }
                     }
                     if (!ChromeFeatureList.isEnabled(
                             ChromeFeatureList.ACTOR_LOGIN_PERMISSIONS_UI)) {
                         indexData.removeEntryForKey(prefFrag, PERMISSION_ACTOR_LOGIN);
                     }
-                }
-
-                @Override
-                public Set<String> getIgnoredKeys() {
-                    return Set.of(PREF_KEY_EXTRA_INFO);
                 }
             };
 }

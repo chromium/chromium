@@ -911,18 +911,6 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
                     if (!shouldShowSignOutPref(profile)) {
                         indexData.removeEntryForKey(frag, PREF_SIGN_OUT);
                     }
-                    SyncService syncService = SyncServiceFactory.getForProfile(profile);
-                    if (syncService == null || !syncService.isSyncDisabledByEnterprisePolicy()) {
-                        indexData.removeEntryForKey(
-                                frag, PREF_SETTINGS_SYNC_DISABLED_BY_ADMINISTRATOR);
-                    }
-                    indexData.removeEntryForKey(frag, PREF_IDENTITY_ERROR_CARD_PREFERENCE);
-                }
-
-                @Override
-                public Set<String> getIgnoredKeys() {
-                    return Set.of(
-                            PREF_BATCH_UPLOAD_CARD_PREFERENCE, PREF_IDENTITY_ERROR_CARD_PREFERENCE);
                 }
             };
 }
