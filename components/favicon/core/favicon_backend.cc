@@ -27,9 +27,6 @@
 
 namespace favicon {
 
-BASE_FEATURE(kUseLastVisitedFallbackURLFavicon,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 using RedirectList = std::vector<GURL>;
 
 namespace {
@@ -682,8 +679,7 @@ FaviconBackend::GetFaviconsFromDB(const GURL& page_url,
       // FindBestPageURLForHost() prioritizes page URLs that are not redirects.
       // Therefore, if the fallback it returns is a redirect, then all page
       // visits to the host are redirects.
-      if (fallback_for_host->second == PageUrlType::kRedirect &&
-          base::FeatureList::IsEnabled(kUseLastVisitedFallbackURLFavicon)) {
+      if (fallback_for_host->second == PageUrlType::kRedirect) {
         url::Origin page_origin = url::Origin::Create(page_url);
         fallback_page_url =
             delegate_->GetMostRecentlyVisitedURLForOrigin(page_origin);
