@@ -990,6 +990,22 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="GPU.EstablishGpuChannel.Browser.{InitOrRegular}AsyncLatency"
+    units="ms" expires_after="2027-04-24">
+  <owner>rakina@chromium.org</owner>
+  <owner>chrome-webium-product-eng@google.com</owner>
+  <summary>
+    The time it takes for the browser process to establish the GPU channel for a
+    renderer (either via Mojo invitation or standard callback). Measured from
+    the start of the GpuClient request to when the channel is successfully
+    established with the GPU process.
+  </summary>
+  <token key="InitOrRegular">
+    <variant name="Init" summary="Initial channel for a new renderer process"/>
+    <variant name="Regular" summary="Standard channel request"/>
+  </token>
+</histogram>
+
 <histogram name="GPU.EstablishGpuChannel.EarliestRequestLatency" units="ms"
     expires_after="2027-04-24">
   <owner>rakina@chromium.org</owner>
@@ -1009,6 +1025,19 @@ chromium-metrics-reviews@google.com.
     Measures the wait time for each individual request in a batch to establish
     the GPU channel. Logged for every request in the batch upon successful
     completion.
+  </summary>
+</histogram>
+
+<histogram
+    name="GPU.EstablishGpuChannel.InitialChannelBrowserToRendererLatency"
+    units="ms" expires_after="2027-04-24">
+  <owner>rakina@chromium.org</owner>
+  <owner>chrome-webium-product-eng@google.com</owner>
+  <summary>
+    The total time it takes to establish the initial GPU channel for a new
+    renderer process. Measured from the moment the browser process starts the
+    request (in GpuClient) to the moment the renderer process finishes
+    initializing the channel (including getting the GPU info).
   </summary>
 </histogram>
 

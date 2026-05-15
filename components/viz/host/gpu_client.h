@@ -84,17 +84,33 @@ class VIZ_HOST_EXPORT GpuClient : public mojom::Gpu {
     kConnectionLost
   };
   void OnError(ErrorReason reason);
+
+  enum class EstablishChannelReason {
+    // A regular channel request triggered by a client.
+    kRegular,
+    // Channel establishment for a new renderer process, using the standard
+    // connection instead of a mojo invitation. This is a fallback.
+    kInitNoInvitation,
+    // Channel establishment for a new renderer process, where the client pipe
+    // is sent via a mojo invitation.
+    kInitWithInvitation,
+  };
+  void EstablishGpuChannelWithReason(EstablishGpuChannelCallback callback,
+                                     EstablishChannelReason reason);
+
   void OnEstablishGpuChannel(
-      bool is_for_init_with_invitation,
+      EstablishChannelReason reason,
+      base::TimeTicks start_time,
       mojo::ScopedMessagePipeHandle channel_handle,
       const gpu::GPUInfo& gpu_info,
       const gpu::GpuFeatureInfo& gpu_feature_info,
       const gpu::SharedImageCapabilities& shared_image_capabilities,
       GpuHostImpl::EstablishChannelStatus status);
-  void EstablishGpuChannelInternal(bool is_for_init_with_invitation,
+  void EstablishGpuChannelInternal(EstablishChannelReason reason,
                                    GpuHostImpl* gpu_host,
                                    mojo::ScopedMessagePipeHandle service_handle,
-                                   mojo::ScopedMessagePipeHandle client_handle);
+                                   mojo::ScopedMessagePipeHandle client_handle,
+                                   base::TimeTicks start_time);
   void ClearCallback();
 
   std::unique_ptr<GpuClientDelegate> delegate_;

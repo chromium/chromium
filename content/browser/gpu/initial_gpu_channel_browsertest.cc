@@ -4,6 +4,8 @@
 
 #include <string>
 
+#include "base/command_line.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "components/viz/host/gpu_client.h"
@@ -64,6 +66,7 @@ class InitialGpuChannelBrowserTest : public ContentBrowserTest {
 IN_PROC_BROWSER_TEST_F(InitialGpuChannelBrowserTest,
                        StandardRendererUsesEarlyChannel) {
   // Navigate to a page using a standard (non-spare) renderer process.
+  base::HistogramTester histogram_tester;
   EXPECT_TRUE(
       NavigateToURL(shell(), embedded_test_server()->GetURL("/title1.html")));
 
@@ -76,6 +79,26 @@ IN_PROC_BROWSER_TEST_F(InitialGpuChannelBrowserTest,
 
   // Wait for Viz to composite the frames.
   frame_observer.WaitForNextFrameSubmission();
+
+  content::FetchHistogramsFromChildProcesses();
+
+  // Initial channel was requested (multiple renderers may be launched, e.g.
+  // spare).
+  EXPECT_FALSE(
+      histogram_tester
+          .GetAllSamples("GPU.EstablishGpuChannel.Browser.InitAsyncLatency")
+          .empty());
+  histogram_tester.ExpectTotalCount(
+      "GPU.EstablishGpuChannel.Browser.RegularAsyncLatency", 0);
+  EXPECT_FALSE(
+      histogram_tester
+          .GetAllSamples(
+              "GPU.EstablishGpuChannel.InitialChannelBrowserToRendererLatency")
+          .empty());
+  EXPECT_FALSE(
+      histogram_tester
+          .GetAllSamples("GPU.EstablishGpuChannel.InitialChannelLatency")
+          .empty());
 }
 
 IN_PROC_BROWSER_TEST_F(InitialGpuChannelBrowserTest,

@@ -179,6 +179,7 @@ CONTENT_EXPORT extern const char kRendererProcess[];
 CONTENT_EXPORT extern const char kRendererProcessLaunchTimeTicks[];
 CONTENT_EXPORT extern const char kRendererProcessLimit[];
 CONTENT_EXPORT extern const char kRendererStartupDialog[];
+CONTENT_EXPORT extern const char kGpuChannelRequestStartTimeTicks[];
 CONTENT_EXPORT extern const char kRunManualTestsFlag[];
 extern const char kSandboxIPCProcess[];
 #if !BUILDFLAG(IS_ANDROID)

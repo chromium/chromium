@@ -1913,7 +1913,9 @@ bool RenderProcessHostImpl::Init() {
     InitializeChannelProxy();
   }
 
+  base::TimeTicks gpu_channel_request_start_time;
   if (base::FeatureList::IsEnabled(features::kSendGPUChannelEarly)) {
+    gpu_channel_request_start_time = base::TimeTicks::Now();
     // Pre-establish the GPU channel and send the renderer pipe at renderer
     // launch time.
     gpu_client_->InitializeGpuChannelForNewRenderer(
@@ -2037,6 +2039,13 @@ bool RenderProcessHostImpl::Init() {
     if (!renderer_prefix.empty())
       cmd_line->PrependWrapper(renderer_prefix);
     AppendRendererCommandLine(cmd_line.get());
+
+    if (base::FeatureList::IsEnabled(features::kSendGPUChannelEarly)) {
+      cmd_line->AppendSwitchASCII(
+          switches::kGpuChannelRequestStartTimeTicks,
+          base::NumberToString(
+              gpu_channel_request_start_time.since_origin().InMicroseconds()));
+    }
 
 #if BUILDFLAG(IS_WIN)
     std::unique_ptr<SandboxedProcessLauncherDelegate> sandbox_delegate =
