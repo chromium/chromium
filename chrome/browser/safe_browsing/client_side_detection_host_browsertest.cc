@@ -404,6 +404,8 @@ IN_PROC_BROWSER_TEST_F(ClientSideDetectionHostPrerenderBrowserTest,
   fake_csd_service.SetRequestCallback(run_loop.QuitClosure());
 
   // Bypass the pre-classification checks.
+  csd_host->current_outermost_main_frame_id_ =
+      GetWebContents()->GetPrimaryMainFrame()->GetGlobalId();
   csd_host->OnPhishingPreClassificationDone(
       ClientSideDetectionType::TRIGGER_MODELS, /*should_classify=*/true,
       /*is_sample_ping=*/false, /*did_match_high_confidence_allowlist=*/false);
@@ -422,6 +424,8 @@ IN_PROC_BROWSER_TEST_F(ClientSideDetectionHostPrerenderBrowserTest,
   run_loop.Run();
 
   ASSERT_FALSE(fake_csd_service.saved_callback_is_null());
+
+  EXPECT_EQ(fake_csd_service.saved_request().http_response_code(), 200);
 
   // Expect an interstitial to be shown.
   EXPECT_CALL(*mock_ui_manager, DisplayBlockingPage(_));
@@ -636,6 +640,7 @@ IN_PROC_BROWSER_TEST_F(ClientSideDetectionHostPrerenderBrowserTest_Screenshot,
                   kScreenshotWidth, kScreenshotHeight);
   EXPECT_EQ(saved_request.client_side_detection_type(),
             ClientSideDetectionType::USER_REPORT);
+  EXPECT_EQ(saved_request.http_response_code(), 200);
 }
 
 IN_PROC_BROWSER_TEST_F(ClientSideDetectionHostPrerenderBrowserTest_Screenshot,
@@ -654,6 +659,7 @@ IN_PROC_BROWSER_TEST_F(ClientSideDetectionHostPrerenderBrowserTest_Screenshot,
                   kScreenshotWidth, kScreenshotHeight);
   EXPECT_EQ(saved_request.client_side_detection_type(),
             ClientSideDetectionType::USER_REPORT);
+  EXPECT_EQ(saved_request.http_response_code(), 200);
 }
 
 IN_PROC_BROWSER_TEST_F(ClientSideDetectionHostPrerenderBrowserTest_Screenshot,
@@ -704,6 +710,7 @@ IN_PROC_BROWSER_TEST_F(ClientSideDetectionHostPrerenderBrowserTest_Screenshot,
   EXPECT_FALSE(saved_request.visual_features().has_high_res_screenshot());
   EXPECT_EQ(saved_request.client_side_detection_type(),
             ClientSideDetectionType::USER_REPORT);
+  EXPECT_EQ(saved_request.http_response_code(), 200);
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -1415,6 +1422,8 @@ IN_PROC_BROWSER_TEST_P(ClientSideDetectionHostClipboardTest,
       "SBClientPhishing.ClientSideDetectionTypeRequest", 1);
   histogram_tester.ExpectTotalCount(
       "SBClientPhishing.ServerModelDetectsPhishing.ClipboardCopyApi", 0);
+
+  EXPECT_EQ(fake_csd_service.saved_request().http_response_code(), 200);
 
   if (ShouldProcessClipboardPayload()) {
     EXPECT_TRUE(

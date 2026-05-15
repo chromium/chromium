@@ -2512,6 +2512,16 @@ void ClientSideDetectionHost::AddMiscellaneousMetadataToClientPhishingRequest(
 
   MaybeFillScreenshotData(verdict);
 
+  content::RenderFrameHost* rfh = web_contents()->GetPrimaryMainFrame();
+  // Check the frame id as a precaution against unexpected race conditions.
+  if (rfh && rfh->GetGlobalId() == current_outermost_main_frame_id_) {
+    const network::mojom::URLResponseHead* response_head =
+        rfh->GetLastResponseHead();
+    if (response_head && response_head->headers) {
+      verdict->set_http_response_code(response_head->headers->response_code());
+    }
+  }
+
   if (IsEnhancedProtectionEnabled(*delegate_->GetPrefs())) {
     delegate_->AddReferrerChain(verdict, current_url_,
                                 current_outermost_main_frame_id_);
