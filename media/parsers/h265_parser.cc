@@ -883,6 +883,18 @@ H265Parser::Result H265Parser::ParseSPS(int* sps_id) {
 
   // If an SPS with the same id already exists, replace it.
   *sps_id = sps->sps_seq_parameter_set_id;
+
+  if (validate_extended_bitstream_) {
+    auto it = active_sps_.find(*sps_id);
+    if (it == active_sps_.end() || *(it->second) != *sps) {
+      // Invalidate dependent PPSes since their validations against the old SPS
+      // are no longer guaranteed to hold under the new SPS.
+      base::EraseIf(active_pps_, [id = *sps_id](const auto& pair) {
+        return pair.second->pps_seq_parameter_set_id == id;
+      });
+    }
+  }
+
   active_sps_[*sps_id] = std::move(sps);
 
   return res;

@@ -1078,6 +1078,18 @@ H264Parser::Result H264Parser::ParseSPS(int* sps_id) {
 
   // If an SPS with the same id already exists, replace it.
   *sps_id = sps->seq_parameter_set_id;
+
+  if (validate_extended_bitstream_) {
+    auto it = active_SPSes_.find(*sps_id);
+    if (it == active_SPSes_.end() || *(it->second) != *sps) {
+      // Invalidate dependent PPSes since their validations against the old SPS
+      // are no longer guaranteed to hold under the new SPS.
+      std::erase_if(active_PPSes_, [id = *sps_id](const auto& pair) {
+        return pair.second->seq_parameter_set_id == id;
+      });
+    }
+  }
+
   active_SPSes_[*sps_id] = std::move(sps);
 
   return kOk;

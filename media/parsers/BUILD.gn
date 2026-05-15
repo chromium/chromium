@@ -11,7 +11,8 @@ rust_static_library("safe_parsers") {
   sources = [ "parse_jpeg.rs" ]
   cxx_bindings = [ "parse_jpeg.rs" ]
 
-  # Required by Chromium policy because cxx generates unsafe code under the hood.
+  # Required by Chromium policy because cxx generates unsafe code under the
+  # hood.
   allow_unsafe = true
 }
 
@@ -109,6 +110,7 @@ source_set("unit_tests") {
   deps = [
     "//base/test:test_support",
     "//media:test_support",
+    "//media/gpu",
     "//testing/gtest",
     "//third_party/libgav1:libgav1_parser",
   ]
