@@ -65,6 +65,7 @@ suite('ComposeboxTest', () => {
       composeboxDragAndDropHint: 'Hint',
       removeSuggestion: 'Remove',
       contextManagementInComposeboxEnabled: false,
+      tabFaviconChipsToCoinsEnabled: false,
     });
 
     handler = installMock(
@@ -341,11 +342,11 @@ suite('ComposeboxTest', () => {
   });
 
   test(
-      'filters tabs from carousel when context management flag is enabled',
+      'filters tabs from carousel when tab chips to coins flag is enabled',
       async () => {
         // Override the feature flag to true before creating the component.
         loadTimeData.overrideValues({
-          contextManagementInComposeboxEnabled: true,
+          tabFaviconChipsToCoinsEnabled: true,
         });
 
         document.body.innerHTML = window.trustedTypes!.emptyHTML;
@@ -376,7 +377,7 @@ suite('ComposeboxTest', () => {
   test('does not filter tabs from carousel when flag is disabled', async () => {
     // Override the feature flag to false.
     loadTimeData.overrideValues({
-      contextManagementInComposeboxEnabled: false,
+      tabFaviconChipsToCoinsEnabled: false,
     });
 
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
@@ -463,6 +464,7 @@ suite('composeboxSharedMountAutoRepostionDefault', () => {
       composeboxDragAndDropHint: 'Hint',
       removeSuggestion: 'Remove',
       contextManagementInComposeboxEnabled: false,
+      tabFaviconChipsToCoinsEnabled: false,
     });
 
     const handler = installMock(
