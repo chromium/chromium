@@ -9,6 +9,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/no_destructor.h"
@@ -34,6 +35,7 @@
 #include "ui/gfx/gpu_extra_info.h"
 
 #if BUILDFLAG(IS_WIN)
+#include "base/win/windows_types.h"
 #include "ui/gfx/mojom/dxgi_info.mojom.h"
 #endif
 
@@ -122,6 +124,13 @@ class CONTENT_EXPORT GpuDataManagerImpl : public GpuDataManager,
   bool DirectXRequested() const;
   bool VulkanRequested() const;
   void TerminateInfoCollectionGpuProcess();
+
+  // Information to Get/Set the LUID that the GPU Process should be launched on.
+  // Predominantly used by XR, so that we can ensure the GL context is created
+  // on the GPU that the headset is actually plugged into.
+  void SetUseAdapterLuid(const CHROME_LUID& luid);
+  void ClearUseAdapterLuid();
+  std::optional<CHROME_LUID> GetUseAdapterLuid() const;
 #endif
   // Called from BrowserMainLoop::PostCreateThreads().
   // TODO(content/browser/gpu/OWNERS): This should probably use a

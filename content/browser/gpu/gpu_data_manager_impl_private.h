@@ -85,6 +85,9 @@ class CONTENT_EXPORT GpuDataManagerImplPrivate {
   bool DirectXRequested() const;
   bool VulkanRequested() const;
   void TerminateInfoCollectionGpuProcess();
+  void SetUseAdapterLuid(const CHROME_LUID& luid);
+  void ClearUseAdapterLuid();
+  std::optional<CHROME_LUID> GetUseAdapterLuid() const;
 #endif
   void PostCreateThreads();
   void UpdateDawnInfo(const std::vector<std::string>& dawn_info_list);
@@ -259,6 +262,7 @@ class CONTENT_EXPORT GpuDataManagerImplPrivate {
   bool gpu_info_vulkan_valid_ = false;
   bool gpu_info_vulkan_requested_ = false;
   bool gpu_info_vulkan_request_failed_ = false;
+  std::optional<CHROME_LUID> use_adapter_luid_;
 #endif
   // The Dawn info queried from the GPU process.
   std::vector<std::string> dawn_info_list_;
