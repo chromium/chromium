@@ -263,3 +263,17 @@ Description of the patches:
    constructor is removed in the next roll post-v33, but this patch is added
    to allow for rolling proto first without touching the 100s of places to
    patch in Chromium.
+
+- 0060-export-any.patch
+
+  Add PROTOBUF_EXPORT macros to functions used by any.proto.
+
+  The OSS version of protobuf bundles generated .pb.{cc,h} files for full
+  versions of well-known types (including any.proto) and assumes they are
+  built together with protobuf.  Chrome does not use protobuf_full in
+  production, and thus does not use the bundled WKTs, instead generating lite
+  versions.  These versions can reside in a different component, and that's why
+  those symbols need to be exported.
+
+  See go/chrome-protobuf-wkt for an overview of how protobuf WKTs are supported
+  in Chrome.
