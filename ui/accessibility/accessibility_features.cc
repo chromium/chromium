@@ -305,7 +305,7 @@ bool IsAccessibilityManifestV3EnabledForGoogleTts() {
 }
 
 BASE_FEATURE(kAccessibilityChromeVoxJapaneseBraille,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 bool IsAccessibilityChromeVoxJapaneseBrailleEnabled() {
   return base::FeatureList::IsEnabled(
       ::features::kAccessibilityChromeVoxJapaneseBraille);
