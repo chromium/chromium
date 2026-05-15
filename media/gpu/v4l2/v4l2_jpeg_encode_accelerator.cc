@@ -96,7 +96,7 @@ void V4L2JpegEncodeAccelerator::EncodedInstanceDmaBuf::DestroyTask() {
   while (!input_job_queue_.empty())
     input_job_queue_.pop();
   while (!running_job_queue_.empty())
-    running_job_queue_.pop();
+    running_job_queue_.pop_front();
 
   DestroyInputBuffers();
   DestroyOutputBuffers();
@@ -500,7 +500,7 @@ bool V4L2JpegEncodeAccelerator::EncodedInstanceDmaBuf::EnqueueInputRecord() {
   }
 
   IOCTL_OR_ERROR_RETURN_FALSE(VIDIOC_QBUF, &qbuf);
-  running_job_queue_.push(std::move(job_record));
+  running_job_queue_.push_back(std::move(job_record));
   free_input_buffers_.pop_back();
   return true;
 }
@@ -519,7 +519,7 @@ bool V4L2JpegEncodeAccelerator::EncodedInstanceDmaBuf::EnqueueOutputRecord() {
   qbuf.length = std::size(planes);
   qbuf.m.planes = planes;
 
-  auto& job_record = running_job_queue_.back();
+  auto& job_record = running_job_queue_[OutputBufferQueuedCount()];
   for (size_t i = 0; i < qbuf.length; i++) {
     UNSAFE_TODO(planes[i].m.fd = job_record->output_frame->GetDmabufFd(i));
   }
@@ -653,7 +653,7 @@ void V4L2JpegEncodeAccelerator::EncodedInstanceDmaBuf::Dequeue() {
     if (dqbuf.flags & V4L2_BUF_FLAG_ERROR) {
       VLOGF(1) << "Error in dequeued input buffer.";
       NotifyError(kInvalidBitstreamBufferId, PARSE_IMAGE_FAILED);
-      running_job_queue_.pop();
+      running_job_queue_.pop_front();
     }
   }
 
@@ -685,7 +685,7 @@ void V4L2JpegEncodeAccelerator::EncodedInstanceDmaBuf::Dequeue() {
     // Jobs are always processed in FIFO order.
     std::unique_ptr<JobRecord> job_record =
         std::move(running_job_queue_.front());
-    running_job_queue_.pop();
+    running_job_queue_.pop_front();
 
     if (dqbuf.flags & V4L2_BUF_FLAG_ERROR) {
       VLOGF(1) << "Error in dequeued output buffer.";
