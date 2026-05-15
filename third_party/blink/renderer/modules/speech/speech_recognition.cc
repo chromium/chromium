@@ -166,6 +166,7 @@ void SpeechRecognition::stopFunction() {
   if (started_ && !stopping_) {
     stopping_ = true;
     session_->StopCapture();
+    ResetAudioSink();
   }
 }
 
@@ -184,6 +185,7 @@ void SpeechRecognition::abort() {
   if (started_ && !stopping_) {
     stopping_ = true;
     session_->Abort();
+    ResetAudioSink();
   }
 }
 
@@ -406,11 +408,24 @@ void SpeechRecognition::AudioEnded() {
   DispatchEvent(*Event::Create(event_type_names::kAudioend));
 }
 
+void SpeechRecognition::ResetAudioSink() {
+  if (audio_sink_) {
+    // WebMediaStreamAudioSink is part of the Blink public API, so it expects a
+    // WebMediaStreamTrack wrapper rather than the internal MediaStreamComponent
+    // object. We create a temporary wrapper to pass the component pointer.
+    WebMediaStreamAudioSink::RemoveFromAudioTrack(
+        audio_sink_.Get(), WebMediaStreamTrack(stream_track_->Component()));
+    stream_track_->UnregisterSink(audio_sink_.Get());
+    audio_sink_ = nullptr;
+  }
+}
+
 void SpeechRecognition::Ended() {
   started_ = false;
   stopping_ = false;
   session_.reset();
   receiver_.reset();
+  ResetAudioSink();
   DispatchEvent(*Event::Create(event_type_names::kEnd));
 }
 
@@ -423,6 +438,7 @@ ExecutionContext* SpeechRecognition::GetExecutionContext() const {
 }
 
 void SpeechRecognition::ContextDestroyed() {
+  ResetAudioSink();
   controller_ = nullptr;
 }
 
@@ -579,6 +595,7 @@ void SpeechRecognition::StartInternal() {
     WebMediaStreamAudioSink::AddToAudioTrack(
         sink, WebMediaStreamTrack(stream_track_->Component()));
     stream_track_->RegisterSink(sink);
+    audio_sink_ = sink;
   } else {
     StartController(session_.BindNewPipeAndPassReceiver(task_runner));
   }
@@ -633,6 +650,7 @@ SpeechRecognition::~SpeechRecognition() = default;
 
 void SpeechRecognition::Trace(Visitor* visitor) const {
   visitor->Trace(stream_track_);
+  visitor->Trace(audio_sink_);
   visitor->Trace(grammars_);
   visitor->Trace(phrases_);
   visitor->Trace(controller_);

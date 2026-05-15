@@ -326,6 +326,15 @@ void TransferredMediaStreamTrack::RegisterSink(
   // initialized.
 }
 
+void TransferredMediaStreamTrack::UnregisterSink(
+    SpeechRecognitionMediaStreamAudioSink* sink) {
+  if (track_) {
+    track_->UnregisterSink(sink);
+  }
+  // TODO(https://crbug.com/1288839): Save and forward to track_ once it's
+  // initialized.
+}
+
 // EventTarget
 const AtomicString& TransferredMediaStreamTrack::InterfaceName() const {
   // TODO(https://crbug.com/1288839): Should TMST have its own interface name?

@@ -60,6 +60,7 @@ class LocalDOMWindow;
 class MediaStreamTrack;
 class SpeechRecognitionOptions;
 class SpeechRecognitionController;
+class SpeechRecognitionMediaStreamAudioSink;
 class V8ObservableArraySpeechRecognitionPhrase;
 
 class MODULES_EXPORT SpeechRecognition final
@@ -171,6 +172,7 @@ class MODULES_EXPORT SpeechRecognition final
   void SchedulePhrasesUpdate();
   void CheckAvailabilityAndStart(ExceptionState* exception_state);
   void StartInternal();
+  void ResetAudioSink();
   void StartController(
       mojo::PendingReceiver<media::mojom::blink::SpeechRecognitionSession>
           session_receiver,
@@ -180,6 +182,7 @@ class MODULES_EXPORT SpeechRecognition final
       std::optional<media::AudioParameters> audio_parameters = std::nullopt);
 
   Member<MediaStreamTrack> stream_track_;
+  Member<SpeechRecognitionMediaStreamAudioSink> audio_sink_;
   Member<SpeechGrammarList> grammars_;
   Member<V8ObservableArraySpeechRecognitionPhrase> phrases_;
   String lang_;

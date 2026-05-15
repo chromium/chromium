@@ -1155,6 +1155,11 @@ void MediaStreamTrackImpl::RegisterSink(
   registered_sinks_.insert(sink);
 }
 
+void MediaStreamTrackImpl::UnregisterSink(
+    SpeechRecognitionMediaStreamAudioSink* sink) {
+  registered_sinks_.erase(sink);
+}
+
 const AtomicString& MediaStreamTrackImpl::InterfaceName() const {
   return event_target_names::kMediaStreamTrack;
 }
