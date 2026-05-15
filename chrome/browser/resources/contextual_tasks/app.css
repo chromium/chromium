@@ -44,6 +44,7 @@
   --color-composebox-type-ahead-chip: #f0f2f5;
   --color-composebox-voice-lens-button: rgba(10, 10, 10, 1);
   --color-composebox-voice-button-hover-background: rgba(31, 31, 31, 0.06);
+  --color-composebox-voice-search-font: rgba(10, 10, 10, 1);
   --color-composebox-lens-active-background: rgba(225, 227, 232, 1);
   --color-composebox-zero-state-suggestions-background-hovered:
       rgba(247, 248, 250, 1);
@@ -238,6 +239,7 @@
   --color-composebox-type-ahead: #a0a2ab;
   --color-composebox-type-ahead-chip: #4e5059;
   --color-composebox-voice-lens-button: rgba(191, 191, 191, 1);
+  --color-composebox-voice-search-font: rgba(230, 232, 240, 1);
   --color-composebox-lens-active-background: rgba(42, 43, 54, 1);
   --color-composebox-zero-state-suggestions-background-hovered:
       rgba(23, 24, 31, 1);
@@ -344,6 +346,7 @@
   --color-zero-state-greeting: var(--on-surface-default-text-color);
   --color-composebox-file-chip-text: var(--on-surface-default-text-color);
   --cr-primary-text-color: var(--on-surface-default-text-color);
+  --color-composebox-voice-search-font: var(--on-surface-default-text-color);
 
   /* File chip colors */
   --color-composebox-file-chip-background:
