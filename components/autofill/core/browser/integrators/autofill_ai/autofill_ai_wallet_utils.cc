@@ -77,8 +77,9 @@ void HandleWalletUpsertResponse(
   using enum AutofillClient::AutofillAiImportPromptType;
   using enum UiAction;
 
-  CHECK(IsMaskedStorageSupported(entity.type(), entity.record_type()));
-  CHECK(entity.IsServerInstance());
+  CHECK_EQ(entity.record_type(), EntityInstance::RecordType::kServerWallet);
+  CHECK(IsMaskedStorageSupported(entity.type(),
+                                 EntityInstance::RecordType::kServerWallet));
   CHECK(!entity.IsMaskedEntity());
 
   if (!entity_manager) {
@@ -124,8 +125,8 @@ void HandleWalletUpsertResponse(
 
 std::string GetWalletManagementURL(const EntityInstance& entity) {
   CHECK_EQ(entity.record_type(), EntityInstance::RecordType::kServerWallet);
-  bool is_private_pass =
-      IsMaskedStorageSupported(entity.type(), entity.record_type());
+  bool is_private_pass = IsMaskedStorageSupported(
+      entity.type(), EntityInstance::RecordType::kServerWallet);
   // TODO(crbug.com/454899556): Implement a deep link for public passes. This is
   // not supported by the backend yet.
   if (!is_private_pass) {

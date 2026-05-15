@@ -230,7 +230,8 @@ void EntityDataManagerAndroid::AddOrUpdateEntityInstance(
                                  entity_instance.record_type());
   }
 
-  if (base::FeatureList::IsEnabled(features::kAutofillAiWalletPrivatePasses)) {
+  if (targeted_record_type == EntityInstance::RecordType::kServerWallet &&
+      base::FeatureList::IsEnabled(features::kAutofillAiWalletPrivatePasses)) {
     const bool is_masked_storage_supported = IsMaskedStorageSupported(
         entity_instance.type(), entity_instance.record_type());
     // Wallet passes are strictly read-only from the client's perspective in

@@ -151,6 +151,8 @@ IN_PROC_BROWSER_TEST_P(AutofillAiImportDataControllerImplTest,
     GTEST_SKIP() << "BubbleManager doesn't get informed of the tab changes";
   }
 
+  SetNewEntitiesOptions(
+      {.record_type = EntityInstance::RecordType::kServerWallet});
   ShowUi("SaveNewEntity");
 
   ASSERT_TRUE(controller()->IsShowingBubble());

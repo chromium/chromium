@@ -258,7 +258,8 @@ void EntityDataManager::EnforceEntityReauthRequirements() {
   // The device doesn't support re-auth. Remove all Wallet private passes.
   std::vector<EntityInstance::EntityId> entities_to_remove;
   for (const EntityInstance& entity : GetEntityInstances()) {
-    if (IsMaskedStorageSupported(entity.type(), entity.record_type())) {
+    if (entity.record_type() == EntityInstance::RecordType::kServerWallet &&
+        IsMaskedStorageSupported(entity.type(), entity.record_type())) {
       entities_to_remove.push_back(entity.guid());
     }
   }

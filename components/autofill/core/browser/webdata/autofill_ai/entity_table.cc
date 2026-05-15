@@ -668,6 +668,7 @@ std::optional<EntityInstance> EntityTable::ValidateInstance(
   const bool mask_obfuscated_attributes =
       IsMaskedStorageSupported(*entity_type, *record_type);
   if (mask_obfuscated_attributes &&
+      *record_type == EntityInstance::RecordType::kServerWallet &&
       !base::FeatureList::IsEnabled(features::kAutofillAiWalletPrivatePasses)) {
     return std::nullopt;
   }

@@ -235,6 +235,13 @@ void LogEntitySaveOrUpdate(AutofillAIEntityEditMode mode,
   BOOL isSaveAsynchronous = autofill::IsMaskedStorageSupported(
       _entityInstance->type(), _entityInstance->record_type());
 
+  if (isSaveAsynchronous) {
+    // Accessibility Annotator entities do not support saving,
+    // thus the record type must be `kServerWallet`.
+    CHECK_EQ(_entityInstance->record_type(),
+             autofill::EntityInstance::RecordType::kServerWallet);
+  }
+
   if (!isSaveAsynchronous || !_walletPassManager) {
     LogEntitySaveOrUpdate(self.consumer.mode, *_entityInstance);
     _entityDataManager->AddOrUpdateEntityInstance(*_entityInstance);
@@ -314,12 +321,10 @@ void LogEntitySaveOrUpdate(AutofillAIEntityEditMode mode,
 - (void)requestEditingWithCompletion:(ReauthenticationResultBlock)completion {
   CHECK(completion);
 
-  bool isMasked = autofill::IsMaskedStorageSupported(
-      _entityInstance->type(), _entityInstance->record_type());
   bool hasObfuscatedFields =
       std::ranges::any_of(_entityInstance->type().attributes(),
                           &autofill::AttributeType::is_obfuscated);
-  if (!isMasked && !hasObfuscatedFields) {
+  if (!_entityInstance->IsMaskedEntity() && !hasObfuscatedFields) {
     _isEditing = YES;
     [self updateTitle];
     [self updateEditItemsWithAllAttributes:YES];

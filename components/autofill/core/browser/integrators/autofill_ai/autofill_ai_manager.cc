@@ -442,16 +442,22 @@ void AutofillAiManager::HandlePromptResult(
     return;
   }
 
-  if (!IsMaskedStorageSupported(entity.type(), entity.record_type())) {
+  bool is_save_asynchronous =
+      IsMaskedStorageSupported(entity.type(), entity.record_type());
+  if (!is_save_asynchronous) {
     entity_manager.AddOrUpdateEntityInstance(std::move(entity));
     return;
   }
+
+  // Accessibility Annotator entities do not support saving,
+  // thus the record type must be `kServerWallet`.
+  CHECK_EQ(entity.record_type(), EntityInstance::RecordType::kServerWallet);
 
   base::OnceCallback<void(std::optional<EntityInstance>)> callback =
       base::BindOnce(&HandleWalletUpsertResponse,
                      client_->GetEntityDataManager()->GetWeakPtr(),
                      client_->GetWeakPtr(), prompt_type, entity);
-  // For now, asynchronous saves imply saving to Wallet.
+
   if (WalletPassAccessManager* wallet_manager =
           client_->GetWalletPassAccessManager()) {
     switch (prompt_type) {
