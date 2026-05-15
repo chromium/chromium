@@ -56,7 +56,7 @@ class MEDIA_EXPORT DecoderStreamTraits<DemuxerStream::AUDIO> {
   static scoped_refptr<OutputType> CreateEOSOutput();
 
   DecoderStreamTraits(MediaLog* media_log,
-                      ChannelLayout initial_hw_layout,
+                      ChannelLayoutConfig initial_hw_layout,
                       SampleFormat initial_hw_sample_format);
 
   void ReportStatistics(const StatisticsCB& statistics_cb, int bytes_decoded);
@@ -89,7 +89,7 @@ class MEDIA_EXPORT DecoderStreamTraits<DemuxerStream::AUDIO> {
   raw_ptr<MediaLog> media_log_;
   // HW layout at the time pipeline was started. Will not reflect possible
   // device changes.
-  ChannelLayout initial_hw_layout_;
+  ChannelLayoutConfig initial_hw_layout_;
   // HW sample format at the time pipeline was started. Will not reflect
   // possible device changes.
   SampleFormat initial_hw_sample_format_;

@@ -107,10 +107,10 @@ class MEDIA_EXPORT AudioDecoderConfig {
   // Optionally set by renderer to provide hardware layout when playback
   // starts. Intentionally not part of IsValid(). Layout is not updated for
   // device changes - use with care!
-  void set_target_output_channel_layout(ChannelLayout output_layout) {
-    target_output_channel_layout_ = output_layout;
+  void set_target_output_channel_layout(ChannelLayoutConfig channel_layout) {
+    target_output_channel_layout_ = channel_layout;
   }
-  ChannelLayout target_output_channel_layout() const {
+  const ChannelLayoutConfig& target_output_channel_layout() const {
     return target_output_channel_layout_;
   }
 
@@ -152,7 +152,7 @@ class MEDIA_EXPORT AudioDecoderConfig {
   AudioCodecProfile profile_ = AudioCodecProfile::kUnknown;
 
   // Layout of the output hardware. Optionally set. See setter comments.
-  ChannelLayout target_output_channel_layout_ = CHANNEL_LAYOUT_NONE;
+  ChannelLayoutConfig target_output_channel_layout_;
 
   // Desired output format of bitstream. Optionally set. See setter comments.
   SampleFormat target_output_sample_format_ = kUnknownSampleFormat;

@@ -8,8 +8,8 @@ import("//mojo/public/tools/bindings/mojom.gni")
 mojom("mojom") {
   generate_java = true
 
-  # TODO(crbug.com/40499115): Conditionally add source files in this list when we
-  # support EnabledIf attribute in mojom files.
+  # TODO(crbug.com/40499115): Conditionally add source files in this list when
+  # we support EnabledIf attribute in mojom files.
   sources = [
     "audio_data_pipe.mojom",
     "audio_decoder.mojom",
@@ -597,6 +597,20 @@ mojom("media_types") {
     {
       types = [
         {
+          mojom = "media.mojom.ChannelLayoutConfig"
+          cpp = "::media::ChannelLayoutConfig"
+        },
+      ]
+      traits_headers = [ "channel_layout_mojom_traits.h" ]
+      traits_sources = [ "channel_layout_mojom_traits.cc" ]
+      traits_public_deps = [
+        "//base",
+        "//media",
+      ]
+    },
+    {
+      types = [
+        {
           mojom = "media.mojom.VideoTransformation"
           cpp = "::media::VideoTransformation"
         },
@@ -1074,6 +1088,7 @@ source_set("unit_tests") {
     "audio_decoder_config_mojom_traits_unittest.cc",
     "audio_processing_mojom_traits_unittest.cc",
     "cdm_key_information_mojom_traits_unittest.cc",
+    "channel_layout_mojom_traits_unittest.cc",
     "overlay_info_mojom_traits_unittest.cc",
     "picture_in_picture_events_info_mojom_traits_unittest.cc",
     "speech_recognition_recognition_context_mojom_traits_unittest.cc",

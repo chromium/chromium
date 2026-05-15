@@ -53,7 +53,7 @@ void DecoderStreamTraits<DemuxerStream::AUDIO>::SetEncryptionType(
 
 DecoderStreamTraits<DemuxerStream::AUDIO>::DecoderStreamTraits(
     MediaLog* media_log,
-    ChannelLayout initial_hw_layout,
+    ChannelLayoutConfig initial_hw_layout,
     SampleFormat initial_hw_sample_format)
     : media_log_(media_log),
       initial_hw_layout_(initial_hw_layout),

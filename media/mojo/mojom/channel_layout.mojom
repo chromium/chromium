@@ -47,3 +47,17 @@ enum ChannelLayout {
   k5_1_4 = 36,
   k7_1_4 = 37,
 };
+
+// Expresses the channel layout of an audio stream.
+// For predefined layouts (e.g., MONO, STEREO), `predefined_layout` is used.
+// For discrete layouts (which can have arbitrary channel counts),
+// `discrete_channels` must be used instead.
+//
+// TODO(crbug.com/483461268): `predefined_layout` must never be set to
+// `ChannelLayout::kDiscrete`. That value is kept in the enum solely for legacy
+// purposes and other mojo fields using the raw `ChannelLayout` enum. It will
+// eventually be removed once those are migrated to `ChannelLayoutConfig`.
+union ChannelLayoutConfig {
+  ChannelLayout predefined_layout;
+  uint32 discrete_channels;
+};

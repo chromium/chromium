@@ -382,7 +382,7 @@ bool FFmpegAudioDecoder::ConfigureDecoder(const AudioDecoderConfig& config) {
 
     // Disable phase inversion to avoid artifacts in mono downmix. See
     // http://crbug.com/806219
-    if (config.target_output_channel_layout() == CHANNEL_LAYOUT_MONO) {
+    if (config.target_output_channel_layout() == ChannelLayoutConfig::Mono()) {
       int result = av_dict_set(&codec_options, "apply_phase_inv", "0", 0);
       DCHECK_GE(result, 0);
     }

@@ -65,7 +65,7 @@ bool StructTraits<media::mojom::AudioDecoderConfigDataView,
   if (!input.ReadProfile(&profile))
     return false;
 
-  media::ChannelLayout target_output_channel_layout;
+  media::ChannelLayoutConfig target_output_channel_layout;
   if (!input.ReadTargetOutputChannelLayout(&target_output_channel_layout))
     return false;
 

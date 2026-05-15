@@ -30,7 +30,7 @@ mojom::AudioDecoderConfigPtr CreateValidAudioDecoderConfig() {
   input->profile = AudioCodecProfile::kUnknown;
   input->codec_delay = 0;
   input->should_discard_decoder_delay = true;
-  input->target_output_channel_layout = CHANNEL_LAYOUT_STEREO;
+  input->target_output_channel_layout = ChannelLayoutConfig::Stereo();
   input->target_output_sample_format = kSampleFormatU8;
 
   return input;
@@ -112,13 +112,15 @@ TEST(AudioDecoderConfigStructTraitsTest, TargetOutputChannelLayout) {
   input.Initialize(AudioCodec::kAAC, kSampleFormatU8, kSurroundChannelLayout,
                    48000, EmptyExtraData(), EncryptionScheme::kUnencrypted,
                    base::TimeDelta(), 0);
-  input.set_target_output_channel_layout(CHANNEL_LAYOUT_5_1);
+  input.set_target_output_channel_layout(
+      ChannelLayoutConfig::FromLayout<CHANNEL_LAYOUT_5_1>());
   input.set_target_output_sample_format(kSampleFormatDts);
   std::vector<uint8_t> data = mojom::AudioDecoderConfig::Serialize(&input);
   AudioDecoderConfig output;
   EXPECT_TRUE(mojom::AudioDecoderConfig::Deserialize(std::move(data), &output));
   EXPECT_TRUE(output.Matches(input));
-  EXPECT_EQ(output.target_output_channel_layout(), CHANNEL_LAYOUT_5_1);
+  EXPECT_EQ(output.target_output_channel_layout(),
+            ChannelLayoutConfig::FromLayout<CHANNEL_LAYOUT_5_1>());
   EXPECT_EQ(output.target_output_sample_format(), kSampleFormatDts);
 }
 

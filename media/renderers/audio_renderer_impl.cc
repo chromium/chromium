@@ -486,8 +486,10 @@ void AudioRendererImpl::OnDeviceInfoReceived(
   DCHECK(current_decoder_config_.IsValidConfig());
 
   const AudioParameters& hw_params = output_device_info.output_params();
-  ChannelLayout hw_channel_layout =
-      hw_params.IsValid() ? hw_params.channel_layout() : CHANNEL_LAYOUT_NONE;
+  ChannelLayoutConfig hw_channel_layout =
+      hw_params.IsValid()
+          ? hw_params.channel_layout_config()
+          : ChannelLayoutConfig::FromLayout<CHANNEL_LAYOUT_NONE>();
 
   DVLOG(1) << __func__ << ": " << hw_params.AsHumanReadableString();
 
@@ -617,11 +619,12 @@ void AudioRendererImpl::OnDeviceInfoReceived(
     // mixer will attempt to up-mix stereo source streams to just the left/right
     // speaker of the 5.1 setup, nulling out the other channels
     // (http://crbug.com/177872).
-    hw_channel_layout = hw_params.channel_layout() == CHANNEL_LAYOUT_DISCRETE ||
-                                try_supported_channel_layouts
-                            ? CHANNEL_LAYOUT_STEREO
-                            : hw_params.channel_layout();
-    int hw_channel_count = ChannelLayoutToChannelCount(hw_channel_layout);
+    if (hw_params.channel_layout() == CHANNEL_LAYOUT_DISCRETE ||
+        try_supported_channel_layouts) {
+      hw_channel_layout = ChannelLayoutConfig::Stereo();
+    } else {
+      hw_channel_layout = hw_params.channel_layout_config();
+    }
 
     // The layout we pass to |audio_parameters_| will be used for the lifetime
     // of this audio renderer, regardless of changes to hardware and/or stream
@@ -640,12 +643,13 @@ void AudioRendererImpl::OnDeviceInfoReceived(
 
     ChannelLayout stream_channel_layout =
         stream->audio_decoder_config().channel_layout();
-    bool use_stream_channel_layout = hw_channel_count <= stream_channel_count;
+    bool use_stream_channel_layout =
+        hw_channel_layout.channels() <= stream_channel_count;
 
     ChannelLayoutConfig renderer_channel_layout_config =
         use_stream_channel_layout
             ? ChannelLayoutConfig(stream_channel_layout, stream_channel_count)
-            : ChannelLayoutConfig(hw_channel_layout, hw_channel_count);
+            : hw_channel_layout;
 
     audio_parameters_.Reset(hw_params.format(), renderer_channel_layout_config,
                             sample_rate,

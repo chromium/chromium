@@ -127,7 +127,7 @@ std::unique_ptr<WebCodecsAudioDecoderSelector::StreamTraits>
 DecoderSelector<media::DemuxerStream::AUDIO>::CreateStreamTraits() {
   // TODO(chcunningham): Consider plumbing real hw channel layout.
   return std::make_unique<DecoderSelector::StreamTraits>(
-      media_log_, media::CHANNEL_LAYOUT_NONE, media::kUnknownSampleFormat);
+      media_log_, media::ChannelLayoutConfig(), media::kUnknownSampleFormat);
 }
 
 template <>

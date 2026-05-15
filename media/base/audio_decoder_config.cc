@@ -107,7 +107,7 @@ std::string AudioDecoderConfig::AsHumanReadableString() const {
     << ", discard decoder delay: "
     << base::ToString(should_discard_decoder_delay())
     << ", target_output_channel_layout: "
-    << ChannelLayoutToString(target_output_channel_layout())
+    << ChannelLayoutToString(target_output_channel_layout().channel_layout())
     << ", target_output_sample_format: "
     << SampleFormatToString(target_output_sample_format());
   return s.str();

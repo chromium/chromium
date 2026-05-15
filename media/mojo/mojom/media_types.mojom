@@ -215,7 +215,7 @@ struct AudioDecoderConfig {
   mojo_base.mojom.TimeDelta seek_preroll;
   int32 codec_delay;
   AudioCodecProfile profile;
-  ChannelLayout target_output_channel_layout;
+  ChannelLayoutConfig target_output_channel_layout;
   SampleFormat target_output_sample_format;
   bool should_discard_decoder_delay;
 };

@@ -59,7 +59,7 @@ struct StructTraits<media::mojom::AudioDecoderConfigDataView,
     return input.profile();
   }
 
-  static media::ChannelLayout target_output_channel_layout(
+  static const media::ChannelLayoutConfig& target_output_channel_layout(
       const media::AudioDecoderConfig& input) {
     return input.target_output_channel_layout();
   }
