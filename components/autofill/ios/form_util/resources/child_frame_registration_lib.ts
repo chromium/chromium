@@ -58,6 +58,19 @@ const WATCHDOG_INITIAL_RETRY_DELAY_MS = 50;
 const REGISTRATION_LOGBOOK_MAX_CAPACITY = 100;
 
 /**
+ * Retrieves the registered 'remoteFrameRegistration' CrWebApi
+ * instance for use in this file.
+ * TODO(crbug.com/464542835): Remove gCrWeb injections and utilizations
+ * from shared library and utility files.
+ */
+function getRemoteFrameRegistrationApi(): CrWebApi {
+  if (!gCrWeb.hasRegisteredApi('remoteFrameRegistration')) {
+    gCrWeb.registerApi(new CrWebApi('remoteFrameRegistration'));
+  }
+  return gCrWeb.getRegisteredApi('remoteFrameRegistration');
+}
+
+/**
  * A logbook for remote token registration mapping each remote token to the
  * number of registration attempts done so far with the corresponding child
  * frame. Persists the information during all lifetime of the frame so no-op
@@ -66,7 +79,13 @@ const REGISTRATION_LOGBOOK_MAX_CAPACITY = 100;
  * This logbook only tracks registered child frames towards this frame. Meaning
  * that the parent frame will not be in the logbook of the child frame.
  */
-const registrationLogbook: Map<string, number> = new Map();
+function getRegistrationLogbook(): Map<string, number> {
+  const api = getRemoteFrameRegistrationApi();
+  if (!api.hasProperty('registrationLogbook')) {
+    api.addProperty('registrationLogbook', new Map<string, number>());
+  }
+  return api.getProperty('registrationLogbook') as Map<string, number>;
+}
 
 /**
  * Retrieves the registered 'autofill_form_features' CrWebApi
@@ -84,6 +103,7 @@ const autofillFormFeaturesApi =
  * @param count The new attempts count for the token.
  */
 function updateRegistrationLogbook(remoteToken: string, count: number) {
+  const registrationLogbook = getRegistrationLogbook();
   if (registrationLogbook.size >= REGISTRATION_LOGBOOK_MAX_CAPACITY) {
     return;
   }
@@ -140,14 +160,7 @@ export function processChildFrameMessage(payload: MessageEvent): void {
  *      cached or a freshly generated one.
  */
 function getRemoteIdForFrame(frame: HTMLIFrameElement): string {
-  // TODO: crbug.com/464542835 - Remove gCrWeb injections and utilizations
-  // from shared library and utility files.
-  if (!gCrWeb.hasRegisteredApi('remoteFrameRegistration')) {
-    gCrWeb.registerApi(new CrWebApi('remoteFrameRegistration'));
-  }
-
-  const remoteFrameRegistration =
-      gCrWeb.getRegisteredApi('remoteFrameRegistration');
+  const remoteFrameRegistration = getRemoteFrameRegistrationApi();
 
   if (!remoteFrameRegistration.hasProperty('remoteFrameIdRegistrar')) {
     remoteFrameRegistration.addProperty(
@@ -188,6 +201,7 @@ export function registerChildFrame(frame: HTMLIFrameElement): string {
   frame.setAttribute(CHILD_FRAME_REMOTE_TOKEN_ATTRIBUTE, remoteFrameId);
 
   const register = (delayUntilNextRetryMs: number) => {
+    const registrationLogbook = getRegistrationLogbook();
     if ((registrationLogbook.get(remoteFrameId) ?? 0) >=
             MAX_REGISTRATION_ATTEMPTS ||
         registrationLogbook.size >= REGISTRATION_LOGBOOK_MAX_CAPACITY) {
