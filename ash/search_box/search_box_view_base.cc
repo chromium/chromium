@@ -749,7 +749,7 @@ void SearchBoxViewBase::SetPreferredStyleForAutocompleteText(
 void SearchBoxViewBase::SetPreferredStyleForSearchboxText(
     const gfx::FontList& font_list,
     ui::ColorId text_color_id) {
-  search_box_->SetTextColor(text_color_id);
+  search_box_->SetTextColorId(text_color_id);
   search_box_->SetFontList(font_list);
 }
 

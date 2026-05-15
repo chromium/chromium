@@ -145,8 +145,7 @@ void NotificationInputContainer::OnThemeChanged() {
   View::OnThemeChanged();
 
   const auto* color_provider = GetColorProvider();
-  textfield_->SetTextColor(
-      color_provider->GetColor(ui::kColorNotificationInputForeground));
+  textfield_->SetTextColorId(ui::kColorNotificationInputForeground);
   StyleTextfield();
   if (ink_drop_container_)
     textfield_->SetBackgroundColor(SK_ColorTRANSPARENT);

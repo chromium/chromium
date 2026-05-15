@@ -1220,8 +1220,7 @@ bool SearchBoxView::IsValidAutocompleteText(
 }
 
 void SearchBoxView::UpdateTextColor() {
-  search_box()->SetTextColor(
-      GetColorProvider()->GetColor(cros_tokens::kCrosSysOnSurface));
+  search_box()->SetTextColorId(cros_tokens::kCrosSysOnSurface);
 }
 
 void SearchBoxView::UpdatePlaceholderTextAndAccessibleName() {

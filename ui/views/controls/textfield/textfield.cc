@@ -427,15 +427,21 @@ bool Textfield::HasSelection(bool primary_only) const {
 }
 
 SkColor Textfield::GetTextColor() const {
-  return text_color_.value_or(
-      GetColorProvider()->GetColor(TypographyProvider::Get().GetColorId(
-          style::CONTEXT_TEXTFIELD, GetTextStyle())));
+  if (text_color_id_.has_value()) {
+    return GetColorProvider()->GetColor(text_color_id_.value());
+  }
+
+  return GetColorProvider()->GetColor(TypographyProvider::Get().GetColorId(
+      style::CONTEXT_TEXTFIELD, GetTextStyle()));
 }
 
-void Textfield::SetTextColor(SkColor color) {
-  text_color_ = color;
-  if (GetWidget()) {
-    SetColor(color);
+void Textfield::SetTextColorId(std::optional<ui::ColorId> color_id) {
+  text_color_id_ = color_id;
+  if (GetWidget() && color_id.has_value()) {
+    SetColor(GetColorProvider()->GetColor(color_id.value()));
+  } else if (GetWidget() && !color_id.has_value()) {
+    SetColor(GetColorProvider()->GetColor(TypographyProvider::Get().GetColorId(
+        style::CONTEXT_TEXTFIELD, GetTextStyle())));
   }
 }
 
@@ -3482,7 +3488,9 @@ ADD_PROPERTY_METADATA(bool, ReadOnly)
 ADD_PROPERTY_METADATA(std::u16string_view, Text)
 ADD_PROPERTY_METADATA(ui::TextInputType, TextInputType)
 ADD_PROPERTY_METADATA(int, TextInputFlags)
-ADD_PROPERTY_METADATA(SkColor, TextColor, ui::metadata::SkColorConverter)
+ADD_READONLY_PROPERTY_METADATA(SkColor,
+                               TextColor,
+                               ui::metadata::SkColorConverter)
 ADD_PROPERTY_METADATA(SkColor,
                       SelectionTextColor,
                       ui::metadata::SkColorConverter)

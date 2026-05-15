@@ -119,8 +119,7 @@ void AshNotificationInputContainer::OnThemeChanged() {
   SetSendButtonHighlightPath();
   StyleTextfield();
 
-  textfield()->SetTextColor(
-      GetColorProvider()->GetColor(cros_tokens::kCrosSysOnSurface));
+  textfield()->SetTextColorId(cros_tokens::kCrosSysOnSurface);
   textfield()->SetFontList(
       ash::TypographyProvider::Get()->ResolveTypographyToken(
           ash::TypographyToken::kCrosBody2));
