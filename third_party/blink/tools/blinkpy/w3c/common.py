@@ -15,6 +15,7 @@ WPT_GH_SSH_URL_TEMPLATE = 'https://{}@github.com/%s/%s.git' % \
     (WPT_GH_ORG, WPT_GH_REPO_NAME)
 WPT_REVISION_FOOTER = 'WPT-Export-Revision: '
 CHANGE_ID_FOOTER = 'Change-Id: '
+LINK_FOOTER = 'Link: '
 EXPORT_PR_LABEL = 'chromium-export'
 PROVISIONAL_PR_LABEL = 'do not merge yet'
 

@@ -22,6 +22,8 @@ from blinkpy.w3c.common import (
     EXPORT_PR_LABEL,
     PROVISIONAL_PR_LABEL,
     LEGACY_MAIN_BRANCH_NAME,
+    CHANGE_ID_FOOTER,
+    LINK_FOOTER,
 )
 
 _log = logging.getLogger(__name__)
@@ -484,16 +486,35 @@ class GitHubRepo(object):
         """Returns a PR corresponding to the given ChromiumCommit, or None."""
         # We rely on Change-Id because Gerrit returns ToT+1 as the commit
         # positions for in-flight CLs, whereas Change-Id is permanent.
-        return self.pr_with_change_id(chromium_commit.change_id())
+        if change_id := chromium_commit.change_id():
+            return self.pr_with_change_id(change_id)
+        if link := chromium_commit.link():
+            return self.pr_with_link(link)
+        return None
 
     def pr_with_change_id(self, target_change_id):
+        if not target_change_id:
+            return None
         all_prs = self.all_pull_requests()
         for pull_request in all_prs:
             # Note: Search all 'Change-Id's so that we can manually put multiple
             # CLs in one PR. (The exporter always creates one PR for each CL.)
-            change_ids = self.extract_metadata(
-                'Change-Id: ', pull_request.body, all_matches=True)
-            if target_change_id in change_ids:
+            change_ids = self.extract_metadata(CHANGE_ID_FOOTER,
+                                               pull_request.body,
+                                               all_matches=True)
+            if change_ids and target_change_id in change_ids:
+                return pull_request
+        return None
+
+    def pr_with_link(self, target_link):
+        if not target_link:
+            return None
+        all_prs = self.all_pull_requests()
+        for pull_request in all_prs:
+            links = self.extract_metadata(LINK_FOOTER,
+                                          pull_request.body,
+                                          all_matches=True)
+            if links and target_link in links:
                 return pull_request
         return None
 

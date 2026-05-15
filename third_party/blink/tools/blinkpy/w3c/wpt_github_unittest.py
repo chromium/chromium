@@ -460,3 +460,19 @@ class WPTGitHubTest(unittest.TestCase):
             position='refs/heads/master@{#33}')
         pull_request = self.wpt_github.pr_for_chromium_commit(chromium_commit)
         self.assertEqual(pull_request.number, 1)
+
+    def test_pr_for_chromium_commit_link(self):
+        self.wpt_github.all_pull_requests = lambda: [
+            PullRequest(
+                'PR1', 1, 'body\n'
+                'Link: https://chromium-review.googlesource.com/id/I0123456789abcdef0123456789abcdef01234567',
+                'open', 'PR_kwDOADc1Vc5jhje_', []),
+        ]
+        chromium_commit = MockChromiumCommit(
+            MockHost(),
+            change_id='',
+            link=
+            'https://chromium-review.googlesource.com/id/I0123456789abcdef0123456789abcdef01234567',
+            position='refs/heads/master@{#10}')
+        pull_request = self.wpt_github.pr_for_chromium_commit(chromium_commit)
+        self.assertEqual(pull_request.number, 1)

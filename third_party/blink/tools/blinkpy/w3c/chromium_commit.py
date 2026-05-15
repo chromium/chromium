@@ -97,6 +97,10 @@ class ChromiumCommit:
         return self._git.run(['footers', '--key', 'Change-Id',
                               self.sha]).strip()
 
+    def link(self) -> str:
+        """Returns the Link footer if it is present."""
+        return self._git.run(['footers', '--key', 'Link', self.sha]).strip()
+
     def filtered_changed_files(self) -> List[str]:
         """Returns a list of modified exportable files."""
         changed_files = self._git.run([
