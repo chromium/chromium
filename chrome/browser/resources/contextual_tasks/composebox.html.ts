@@ -68,6 +68,7 @@ export function getHtml(this: ContextualTasksComposeboxElement) {
           .showVoiceSearch="${true}"
           .usePecApi="${this.usePecApi_}"
           .energyEffectAnimationEnabled="${this.energyEffectAnimationEnabled_}"
+          .energyEffectEnabled="${this.energyEffectAnimationEnabled_}"
           .isZeroState="${this.isZeroState}"
           @result-changed="${this.onSuggestionsResultChanged_}"
           @open-image-upload="${this.onOpenImageUpload_}"
