@@ -75,6 +75,73 @@ bool IncludeAlias(std::string_view alias) {
 #endif
   return true;
 }
+
+const char* GetStandardName(const char* name) {
+  UErrorCode error = U_ZERO_ERROR;
+#if !defined(USING_SYSTEM_ICU)
+  const char* primary_standard = "HTML";
+  const char* secondary_standard = "MIME";
+#else
+  const char* primary_standard = "MIME";
+  const char* secondary_standard = "IANA";
+#endif
+  const char* standard_name =
+      ucnv_getStandardName(name, primary_standard, &error);
+  if (U_FAILURE(error) || !standard_name) {
+    error = U_ZERO_ERROR;
+    // Try IANA to pick up 'windows-12xx' and other names
+    // which are not preferred MIME names but are widely used.
+    standard_name = ucnv_getStandardName(name, secondary_standard, &error);
+    if (U_FAILURE(error) || !standard_name) {
+      return nullptr;
+    }
+  }
+
+#if defined(USING_SYSTEM_ICU)
+  // A number of these aliases are handled in Chrome's copy of ICU, but
+  // Chromium can be compiled with the system ICU.
+  //
+  // 1. Treat GB2312 encoding as GBK (its more modern superset), to match other
+  //    browsers.
+  // 2. On the Web, GB2312 is encoded as EUC-CN or HZ, while ICU provides a
+  //    native encoding for encoding GB_2312-80 and several others. So, we need
+  //    to override this behavior, too.
+  if (!strcmp(standard_name, "GB2312") ||
+      !strcmp(standard_name, "GB_2312-80")) {
+    return "GBK";
+    // Similarly, EUC-KR encodings all map to an extended version, but
+    // per HTML5, the canonical name still should be EUC-KR.
+  }
+  if (!strcmp(standard_name, "EUC-KR") || !strcmp(standard_name, "KSC_5601") ||
+      !strcmp(standard_name, "cp1363")) {
+    return "EUC-KR";
+    // And so on.
+  }
+  if (EqualIgnoringAsciiCase(standard_name, "iso-8859-9")) {
+    // This name is returned in different case by ICU 3.2 and 3.6.
+    return "windows-1254";
+  }
+  if (!strcmp(standard_name, "TIS-620")) {
+    return "windows-874";
+  }
+#endif
+  return standard_name;
+}
+
+bool ShouldSkipEncoding(StringView canonical_name) {
+#if defined(USING_SYSTEM_ICU)
+  // Explicitly do not support UTF-32. https://crbug.com/417850
+  // Bundled ICU does not return these names.
+  if (canonical_name == "UTF-32" || canonical_name == "UTF-32LE" ||
+      canonical_name == "UTF-32BE") {
+    return true;
+  }
+#endif
+
+  return TextCodecCjk::IsSupported(canonical_name) ||
+         TextCodecUtf16::IsSupported(canonical_name) ||
+         TextCodecUtf8::IsSupported(canonical_name);
+}
 }  // namespace
 
 void TextCodecIcu::RegisterEncodingNames(EncodingNameRegistrar registrar) {
@@ -88,85 +155,33 @@ void TextCodecIcu::RegisterEncodingNames(EncodingNameRegistrar registrar) {
   int32_t num_encodings = ucnv_countAvailable();
   for (int32_t i = 0; i < num_encodings; ++i) {
     const char* name = ucnv_getAvailableName(i);
-    UErrorCode error = U_ZERO_ERROR;
-#if !defined(USING_SYSTEM_ICU)
-    const char* primary_standard = "HTML";
-    const char* secondary_standard = "MIME";
-#else
-    const char* primary_standard = "MIME";
-    const char* secondary_standard = "IANA";
-#endif
-    const char* standard_name =
-        ucnv_getStandardName(name, primary_standard, &error);
-    if (U_FAILURE(error) || !standard_name) {
-      error = U_ZERO_ERROR;
-      // Try IANA to pick up 'windows-12xx' and other names
-      // which are not preferred MIME names but are widely used.
-      standard_name = ucnv_getStandardName(name, secondary_standard, &error);
-      if (U_FAILURE(error) || !standard_name)
-        continue;
-    }
-
-#if defined(USING_SYSTEM_ICU)
-    // Explicitly do not support UTF-32. https://crbug.com/417850
-    // Bundled ICU does not return these names.
-    if (!strcmp(standard_name, "UTF-32") ||
-        !strcmp(standard_name, "UTF-32LE") ||
-        !strcmp(standard_name, "UTF-32BE")) {
+    const char* standard_name = GetStandardName(name);
+    if (!standard_name) {
       continue;
     }
-#endif
-    // Avoid codecs supported by other classes.
+
+    // Avoid codecs supported by other classes or explicitly unsupported by
+    // Blink.
     AtomicString canonical_name(standard_name);
-    if (TextCodecCjk::IsSupported(canonical_name) ||
-        TextCodecUtf16::IsSupported(canonical_name) ||
-        TextCodecUtf8::IsSupported(canonical_name)) {
+    if (ShouldSkipEncoding(canonical_name)) {
       continue;
     }
 
-// A number of these aliases are handled in Chrome's copy of ICU, but
-// Chromium can be compiled with the system ICU.
+    registrar(standard_name, canonical_name);
 
-// 1. Treat GB2312 encoding as GBK (its more modern superset), to match other
-//    browsers.
-// 2. On the Web, GB2312 is encoded as EUC-CN or HZ, while ICU provides a native
-//    encoding for encoding GB_2312-80 and several others. So, we need to
-//    override this behavior, too.
-#if defined(USING_SYSTEM_ICU)
-    if (!strcmp(standard_name, "GB2312") ||
-        !strcmp(standard_name, "GB_2312-80")) {
-      standard_name = "GBK";
-    // Similarly, EUC-KR encodings all map to an extended version, but
-    // per HTML5, the canonical name still should be EUC-KR.
-    } else if (!strcmp(standard_name, "EUC-KR") ||
-               !strcmp(standard_name, "KSC_5601") ||
-               !strcmp(standard_name, "cp1363")) {
-      standard_name = "EUC-KR";
-    // And so on.
-    } else if (EqualIgnoringAsciiCase(standard_name, "iso-8859-9")) {
-      // This name is returned in different case by ICU 3.2 and 3.6.
-      standard_name = "windows-1254";
-    } else if (!strcmp(standard_name, "TIS-620")) {
-      standard_name = "windows-874";
-    }
-#endif
-
-    // Avoid registering codecs registered by
-    // `TextCodecCjk::RegisterEncodingNames`.
-    if (!TextCodecCjk::IsSupported(canonical_name)) {
-      registrar(standard_name, canonical_name);
-    }
-
+    UErrorCode error = U_ZERO_ERROR;
     uint16_t num_aliases = ucnv_countAliases(name, &error);
     DCHECK(U_SUCCESS(error));
-    if (U_SUCCESS(error))
+    if (U_SUCCESS(error)) {
       for (uint16_t j = 0; j < num_aliases; ++j) {
         error = U_ZERO_ERROR;
         const char* alias = ucnv_getAlias(name, j, &error);
         DCHECK(U_SUCCESS(error));
-        if (U_SUCCESS(error) && alias != standard_name && IncludeAlias(alias))
+        if (U_SUCCESS(error) && alias != standard_name && IncludeAlias(alias)) {
           registrar(alias, canonical_name);
+        }
       }
+    }
   }
 
   // These two entries have to be added here because ICU's converter table
@@ -303,28 +318,15 @@ void TextCodecIcu::RegisterCodecs(TextCodecRegistrar registrar) {
   int32_t num_encodings = ucnv_countAvailable();
   for (int32_t i = 0; i < num_encodings; ++i) {
     const char* name = ucnv_getAvailableName(i);
-    UErrorCode error = U_ZERO_ERROR;
-    const char* standard_name = ucnv_getStandardName(name, "MIME", &error);
-    if (!U_SUCCESS(error) || !standard_name) {
-      error = U_ZERO_ERROR;
-      standard_name = ucnv_getStandardName(name, "IANA", &error);
-      if (!U_SUCCESS(error) || !standard_name)
-        continue;
-    }
-#if defined(USING_SYSTEM_ICU)
-    // Explicitly do not support UTF-32. https://crbug.com/417850
-    // Bundled ICU does not return these names.
-    if (!strcmp(standard_name, "UTF-32") ||
-        !strcmp(standard_name, "UTF-32LE") ||
-        !strcmp(standard_name, "UTF-32BE")) {
+    const char* standard_name = GetStandardName(name);
+    if (!standard_name) {
       continue;
     }
-#endif
-    // Avoid codecs supported by other classes.
+
+    // Avoid codecs supported by other classes or explicitly unsupported by
+    // Blink.
     StringView canonical_name(standard_name);
-    if (TextCodecCjk::IsSupported(canonical_name) ||
-        TextCodecUtf16::IsSupported(canonical_name) ||
-        TextCodecUtf8::IsSupported(canonical_name)) {
+    if (ShouldSkipEncoding(canonical_name)) {
       continue;
     }
     registrar(standard_name, Create);

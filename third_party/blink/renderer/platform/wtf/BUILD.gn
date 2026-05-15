@@ -376,6 +376,7 @@ source_set("wtf_unittests_sources") {
     "text/text_codec_replacement_test.cc",
     "text/text_codec_test.cc",
     "text/text_codec_utf8_test.cc",
+    "text/text_encoding_registry_test.cc",
     "text/text_encoding_test.cc",
     "text/text_offset_map_test.cc",
     "text/utf16_test.cc",
