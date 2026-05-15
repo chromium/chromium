@@ -128,17 +128,8 @@ export const PrefsMixin = dedupingMixin(
     });
 
 export interface PrefsMixinInterface {
-  // <if expr="is_chromeos">
-  // TODO(crbug.com/494464740): Fix errors in CrOS Settings and remove.
-  prefs: any;
-  getPref<T = any>(prefPath: string): chrome.settingsPrivate.PrefObject<T>;
-  // </if>
-
-  // <if expr="not is_chromeos">
   prefs: Record<string, unknown>;
   getPref<T>(prefPath: string): chrome.settingsPrivate.PrefObject<T>;
-  // </if>
-
   setPrefValue(prefPath: string, value: unknown): void;
   appendPrefListItem(key: string, item: unknown): void;
   updatePrefListItem(key: string, item: unknown, newItem: unknown): void;

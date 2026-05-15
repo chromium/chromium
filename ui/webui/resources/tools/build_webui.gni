@@ -631,11 +631,6 @@ template("build_webui") {
         "//ui/webui/resources/js",
       ]
 
-      if (is_chromeos) {
-        no_explicit_any_exceptions +=
-            [ "//chrome/browser/resources/settings_shared" ]
-      }
-
       if (is_android) {
         no_explicit_any_exceptions +=
             [ "//chrome/browser/resources/contextual_tasks" ]
