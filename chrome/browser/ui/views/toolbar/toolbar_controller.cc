@@ -292,13 +292,6 @@ ToolbarController::GetDefaultResponsiveElements(Browser* browser) {
                kToolbarBatterySaverBubbleElementId),
            /*is_section_end=*/false),
        ToolbarController::ResponsiveElementInfo(
-           ToolbarController::ElementIdInfo(kToolbarChromeLabsButtonElementId,
-                                            IDS_OVERFLOW_MENU_ITEM_TEXT_LABS,
-                                            &kScienceOldIcon,
-                                            kToolbarChromeLabsButtonElementId,
-                                            kToolbarChromeLabsBubbleElementId),
-           /*is_section_end=*/false),
-       ToolbarController::ResponsiveElementInfo(
            ToolbarController::ElementIdInfo(
                kToolbarMediaButtonElementId,
                IDS_OVERFLOW_MENU_ITEM_TEXT_MEDIA_CONTROLS,
@@ -319,10 +312,9 @@ ToolbarController::GetDefaultResponsiveElements(Browser* browser) {
 std::vector<ui::ElementIdentifier>
 ToolbarController::GetDefaultOverflowOrder() {
   return std::vector<ui::ElementIdentifier>(
-      {kToolbarHomeButtonElementId, kToolbarChromeLabsButtonElementId,
-       kToolbarMediaButtonElementId, kToolbarForwardButtonElementId,
-       kToolbarBatterySaverButtonElementId, kToolbarAvatarButtonElementId,
-       kToolbarSplitTabsToolbarButtonElementId,
+      {kToolbarHomeButtonElementId, kToolbarMediaButtonElementId,
+       kToolbarForwardButtonElementId, kToolbarBatterySaverButtonElementId,
+       kToolbarAvatarButtonElementId, kToolbarSplitTabsToolbarButtonElementId,
        ContextualTasksButton::kContextualTasksToolbarButton});
 }
 
@@ -335,7 +327,6 @@ std::string ToolbarController::GetActionNameFromElementIdentifier(
       identifier_to_action_name_map(
           {{kToolbarAvatarButtonElementId, "AvatarButton"},
            {kToolbarBatterySaverButtonElementId, "BatterySaverButton"},
-           {kToolbarChromeLabsButtonElementId, "ChromeLabsButton"},
            {kExtensionsMenuButtonElementId, "ExtensionsMenuButton"},
            {kToolbarForwardButtonElementId, "ForwardButton"},
            {kToolbarHomeButtonElementId, "HomeButton"},
