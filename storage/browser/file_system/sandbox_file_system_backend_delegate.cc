@@ -445,12 +445,6 @@ void SandboxFileSystemBackendDelegate::AddFileAccessObserver(
       access_observers_[type].AddObserver(observer, task_runner);
 }
 
-void SandboxFileSystemBackendDelegate::RemoveFileChangeObserver(
-    FileSystemType type,
-    FileChangeObserver* observer) {
-  change_observers_[type] = change_observers_[type].RemoveObserver(observer);
-}
-
 const UpdateObserverList* SandboxFileSystemBackendDelegate::GetUpdateObservers(
     FileSystemType type) const {
   auto iter = update_observers_.find(type);
