@@ -3326,6 +3326,9 @@ public class ToolbarManager
 
         Tab currentTab = mLocationBarModel.getTab();
         boolean tabCrashed = currentTab != null && SadTab.isShowing(currentTab);
+        boolean shouldShowOnToolbar =
+                HomepageManager.getInstance().shouldShowHomeButtonOnToolbar(isNewTabPage());
+        mHomepageEnabledSupplier.set(shouldShowOnToolbar);
 
         mToolbar.updateButtonVisibility();
         onBackPressStateChanged();

@@ -108,7 +108,7 @@ public class HomepageManager
      * @return Whether or not homepage is enabled.
      */
     public boolean isHomepageEnabled() {
-        if (shouldRemoveHomeButton()) {
+        if (ChromeFeatureList.sHomeButtonRemovalEverywhere.getValue()) {
             return false;
         }
         if (HomepagePolicyManager.isShowHomeButtonManaged()) {
@@ -117,9 +117,21 @@ public class HomepageManager
         return HomepagePolicyManager.isHomepageLocationManaged() || getPrefHomepageEnabled();
     }
 
-    /** Returns whether the home button should be removed. */
-    public static boolean shouldRemoveHomeButton() {
-        return ChromeFeatureList.sHomeButtonRemovalEverywhere.getValue();
+    /**
+     * Returns whether the home button should be shown on the toolbar.
+     *
+     * @param isNtp Whether the current page is the New Tab Page.
+     */
+    public boolean shouldShowHomeButtonOnToolbar(boolean isNtp) {
+        if (ChromeFeatureList.sHomeButtonRemovalKeepOnNtp.getValue() && !isNtp) {
+            return false;
+        }
+        return isHomepageEnabled();
+    }
+
+    /** Returns whether the homepage settings should be visible. */
+    public static boolean shouldShowHomepageSettings() {
+        return !ChromeFeatureList.sHomeButtonRemovalEverywhere.getValue();
     }
 
     /**

@@ -576,7 +576,7 @@ public class MainSettings extends ChromeBaseSettingsFragment
         updateAppearancePreference();
         addPreferenceIfAbsent(PREF_TABS);
 
-        if (HomepageManager.shouldRemoveHomeButton()) {
+        if (!HomepageManager.shouldShowHomepageSettings()) {
             removePreferenceIfPresent(PREF_HOMEPAGE);
         } else {
             Preference homepagePref = addPreferenceIfAbsent(PREF_HOMEPAGE);
@@ -1048,7 +1048,7 @@ public class MainSettings extends ChromeBaseSettingsFragment
                     if (!shouldShowGlicPreference(profile)) {
                         indexData.removeEntry(getUniqueId(PREF_GLIC));
                     }
-                    if (HomepageManager.shouldRemoveHomeButton()) {
+                    if (!HomepageManager.shouldShowHomepageSettings()) {
                         indexData.removeEntry(getUniqueId(PREF_HOMEPAGE));
                     }
 

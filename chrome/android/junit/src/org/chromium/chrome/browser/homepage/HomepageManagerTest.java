@@ -550,4 +550,34 @@ public class HomepageManagerTest {
                 .writeBoolean(ChromePreferenceKeys.HOMEPAGE_ENABLED, true);
         Assert.assertFalse(homepageManager.isHomepageEnabled());
     }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.HOME_BUTTON_REMOVAL + ":keep_home_button_on_ntp/true"})
+    public void testShouldShowHomeButtonOnToolbar_KeepOnNtp() {
+        HomepageManager homepageManager = HomepageManager.getInstance();
+        ChromeSharedPreferences.getInstance()
+                .writeBoolean(ChromePreferenceKeys.HOMEPAGE_ENABLED, true);
+        Assert.assertTrue(homepageManager.shouldShowHomeButtonOnToolbar(/* isNtp= */ true));
+        Assert.assertFalse(homepageManager.shouldShowHomeButtonOnToolbar(/* isNtp= */ false));
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.HOME_BUTTON_REMOVAL + ":keep_home_button_on_ntp/false"})
+    public void testShouldShowHomeButtonOnToolbar_NotKeepOnNtp() {
+        HomepageManager homepageManager = HomepageManager.getInstance();
+        ChromeSharedPreferences.getInstance()
+                .writeBoolean(ChromePreferenceKeys.HOMEPAGE_ENABLED, true);
+        Assert.assertTrue(homepageManager.shouldShowHomeButtonOnToolbar(/* isNtp= */ true));
+        Assert.assertTrue(homepageManager.shouldShowHomeButtonOnToolbar(/* isNtp= */ false));
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.HOME_BUTTON_REMOVAL + ":keep_home_button_on_ntp/true"})
+    public void testShouldShowHomeButtonOnToolbar_KeepOnNtp_IsNtp_HomepageDisabled() {
+        HomepageManager homepageManager = HomepageManager.getInstance();
+        ChromeSharedPreferences.getInstance()
+                .writeBoolean(ChromePreferenceKeys.HOMEPAGE_ENABLED, false);
+        Assert.assertFalse(homepageManager.shouldShowHomeButtonOnToolbar(/* isNtp= */ true));
+        Assert.assertFalse(homepageManager.shouldShowHomeButtonOnToolbar(/* isNtp= */ false));
+    }
 }

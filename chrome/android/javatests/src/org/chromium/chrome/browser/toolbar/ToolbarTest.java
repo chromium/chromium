@@ -76,6 +76,8 @@ import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManagerSupplier;
 import org.chromium.chrome.browser.layouts.LayoutTestUtils;
 import org.chromium.chrome.browser.layouts.LayoutType;
+import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tabbed_mode.TabbedRootUiCoordinator;
@@ -686,6 +688,26 @@ public class ToolbarTest {
                                         .initFrom(incognitoWebPage)
                                         .build());
         incognitoNtp.homeButtonElement.checkPresent();
+    }
+
+    @Test
+    @LargeTest
+    @EnableFeatures({ChromeFeatureList.HOME_BUTTON_REMOVAL + ":keep_home_button_on_ntp/true"})
+    public void testHomeButtonVisibility_KeepOnNtp() {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    ChromeSharedPreferences.getInstance()
+                            .writeBoolean(ChromePreferenceKeys.HOMEPAGE_ENABLED, true);
+                });
+
+        // Verify that the home button is NOT visible on a regular web page.
+        onView(withId(R.id.home_button)).check(matches(Matchers.not(isDisplayed())));
+
+        // Navigate to NTP.
+        RegularNewTabPageStation ntp = mPage.openNewTabFast();
+
+        // Verify that the home button IS visible on NTP.
+        onView(withId(R.id.home_button)).check(matches(isDisplayed()));
     }
 
     @Test
