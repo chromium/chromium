@@ -313,6 +313,8 @@ bool IsWebUIReloadButtonEnabled();
 
 bool IsWebUIHomeButtonEnabled();
 
+bool IsWebUIBatterySaverButtonEnabled();
+
 bool IsWebUIBackForwardButtonEnabled();
 
 bool IsWebUIPinnedToolbarActionsEnabled();
