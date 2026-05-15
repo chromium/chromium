@@ -32,7 +32,6 @@ class PasswordManagerClient;
 
 class ModelQualityLogsUploader;
 class ChangePasswordFormWaiter;
-class FormFillingHelper;
 class AnnotatedPageContentCapturer;
 
 // Helper class which fills a form, submits it and verifies submission result.
@@ -101,8 +100,6 @@ class ChangePasswordFormFillingSubmissionHelper {
     return form_manager_.get();
   }
 
-  FormFillingHelper* form_filler() { return form_filler_.get(); }
-
   AnnotatedPageContentCapturer* capturer() { return capturer_.get(); }
 #endif
   // Whether helper has submitted change password form or not.
@@ -162,8 +159,6 @@ class ChangePasswordFormFillingSubmissionHelper {
 
   // Timeout for verifying submission detection.
   base::OneShotTimer timeout_timer_;
-
-  std::unique_ptr<FormFillingHelper> form_filler_;
 
   std::unique_ptr<ButtonClickHelper> click_helper_;
 

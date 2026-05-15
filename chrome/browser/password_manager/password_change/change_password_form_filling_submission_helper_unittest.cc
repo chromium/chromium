@@ -27,7 +27,6 @@
 #include "chrome/browser/password_manager/password_change/annotated_page_content_capturer.h"
 #include "chrome/browser/password_manager/password_change/change_password_form_waiter.h"
 #include "chrome/browser/password_manager/password_change/fake_annotated_page_content_capturer.h"
-#include "chrome/browser/password_manager/password_change/form_filling_helper.h"
 #include "chrome/browser/password_manager/password_change/model_quality_logs_uploader.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
@@ -183,16 +182,11 @@ void PostResponseForUserIntervention(
 }  // namespace
 
 class ChangePasswordFormFillingSubmissionHelperTest
-    : public ChromeRenderViewHostTestHarness,
-      public testing::WithParamInterface<bool> {
+    : public ChromeRenderViewHostTestHarness {
  public:
   ChangePasswordFormFillingSubmissionHelperTest()
       : ChromeRenderViewHostTestHarness(
-            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
-    scoped_feature_list_.InitWithFeatureStates(
-        {{password_manager::features::kFillChangePasswordFormByTyping,
-          GetParam()}});
-  }
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
   ~ChangePasswordFormFillingSubmissionHelperTest() override = default;
 
   void SetUp() override {
@@ -275,22 +269,13 @@ class ChangePasswordFormFillingSubmissionHelperTest
   void CompleteFormFilling(password_manager::PasswordFormManager* manager,
                            ChangePasswordFormFillingSubmissionHelper* verifier,
                            std::optional<autofill::FormData> result) {
-    if (base::FeatureList::IsEnabled(
-            password_manager::features::kFillChangePasswordFormByTyping)) {
-      EXPECT_CALL(driver(), FillChangePasswordForm).Times(0);
-      verifier->FillChangePasswordForm(manager, kUsername, kOldPassword,
-                                       kNewPassword);
-      ASSERT_TRUE(verifier->form_filler());
-      verifier->form_filler()->SimulateFillingResult(result);
-    } else {
-      base::RunLoop run_loop;
-      EXPECT_CALL(driver(), FillChangePasswordForm)
-          .WillOnce(DoAll(Invoke(&run_loop, &base::RunLoop::Quit),
-                          base::test::RunOnceCallback<5>(result)));
-      verifier->FillChangePasswordForm(manager, kUsername, kOldPassword,
-                                       kNewPassword);
-      run_loop.Run();
-    }
+    base::RunLoop run_loop;
+    EXPECT_CALL(driver(), FillChangePasswordForm)
+        .WillOnce(DoAll(Invoke(&run_loop, &base::RunLoop::Quit),
+                        base::test::RunOnceCallback<5>(result)));
+    verifier->FillChangePasswordForm(manager, kUsername, kOldPassword,
+                                     kNewPassword);
+    run_loop.Run();
   }
 
   void WaitForFillingAndSuccessfulSubmission(
@@ -338,7 +323,6 @@ class ChangePasswordFormFillingSubmissionHelperTest
  private:
   autofill::test::AutofillUnitTestEnvironment autofill_environment_{
       {.disable_server_communication = true}};
-  base::test::ScopedFeatureList scoped_feature_list_;
   MockChromePasswordManagerClient client_;
   scoped_refptr<password_manager::MockPasswordStoreInterface> password_store_ =
       base::MakeRefCounted<password_manager::MockPasswordStoreInterface>();
@@ -352,7 +336,7 @@ class ChangePasswordFormFillingSubmissionHelperTest
 };
 
 // If the password being changed was stored, we will update it.
-TEST_P(ChangePasswordFormFillingSubmissionHelperTest,
+TEST_F(ChangePasswordFormFillingSubmissionHelperTest,
        SucceededForExistingCredential) {
   base::HistogramTester histogram_tester;
   auto* form_manager =
@@ -393,7 +377,7 @@ TEST_P(ChangePasswordFormFillingSubmissionHelperTest,
 }
 
 // If the password being changed was not stored, we will add a new credential.
-TEST_P(ChangePasswordFormFillingSubmissionHelperTest, SucceededNewCredential) {
+TEST_F(ChangePasswordFormFillingSubmissionHelperTest, SucceededNewCredential) {
   base::HistogramTester histogram_tester;
   auto* form_manager = CreateFormManager(/*credentials_to_seed=*/{});
 
@@ -417,7 +401,7 @@ TEST_P(ChangePasswordFormFillingSubmissionHelperTest, SucceededNewCredential) {
 
 // Tests that we do not overwrite the stored password during the presave phase
 // if the password used for log in doesn't match the stored password.
-TEST_P(ChangePasswordFormFillingSubmissionHelperTest,
+TEST_F(ChangePasswordFormFillingSubmissionHelperTest,
        PresaveGeneratedPasswordForDifferentInputPassword) {
   password_manager::PasswordForm* stored_form = existing_credential();
   stored_form->password_value = u"stored_password";
@@ -448,7 +432,7 @@ TEST_P(ChangePasswordFormFillingSubmissionHelperTest,
   EXPECT_EQ(presaved_generated_password_form.GetPasswordBackup(), kNewPassword);
 }
 
-TEST_P(ChangePasswordFormFillingSubmissionHelperTest,
+TEST_F(ChangePasswordFormFillingSubmissionHelperTest,
        FailsCapturingAnnotatedPageContent) {
   base::HistogramTester histogram_tester;
   auto* form_manager = CreateFormManager(/*credentials_to_seed=*/{});
@@ -475,7 +459,7 @@ TEST_P(ChangePasswordFormFillingSubmissionHelperTest,
       1);
 }
 
-TEST_P(ChangePasswordFormFillingSubmissionHelperTest, FailedDueToTimeout) {
+TEST_F(ChangePasswordFormFillingSubmissionHelperTest, FailedDueToTimeout) {
   base::HistogramTester histogram_tester;
   auto* form_manager =
       CreateFormManager(/*credentials_to_seed=*/{*existing_credential()});
@@ -496,9 +480,7 @@ TEST_P(ChangePasswordFormFillingSubmissionHelperTest, FailedDueToTimeout) {
           PasswordChangeQuality_StepQuality_SubmissionStatus_TIME_OUT);
 }
 
-
-
-TEST_P(ChangePasswordFormFillingSubmissionHelperTest, FailedFilling) {
+TEST_F(ChangePasswordFormFillingSubmissionHelperTest, FailedFilling) {
   auto* form_manager =
       CreateFormManager(/*credentials_to_seed=*/{*existing_credential()});
 
@@ -539,7 +521,7 @@ TEST_P(ChangePasswordFormFillingSubmissionHelperTest, FailedFilling) {
                 .request_latency_ms());
 }
 
-TEST_P(ChangePasswordFormFillingSubmissionHelperTest,
+TEST_F(ChangePasswordFormFillingSubmissionHelperTest,
        FailedFillingFormWaiterTimeout) {
   auto* form_manager = CreateFormManager(/*credentials_to_seed=*/{});
 
@@ -561,7 +543,7 @@ TEST_P(ChangePasswordFormFillingSubmissionHelperTest,
           PasswordChangeQuality_StepQuality_SubmissionStatus_FORM_FILLING_FAILED);
 }
 
-TEST_P(ChangePasswordFormFillingSubmissionHelperTest, ProvisionallySaveFailed) {
+TEST_F(ChangePasswordFormFillingSubmissionHelperTest, ProvisionallySaveFailed) {
   auto* form_manager =
       CreateFormManager(/*credentials_to_seed=*/{*existing_credential()});
 
@@ -584,23 +566,14 @@ TEST_P(ChangePasswordFormFillingSubmissionHelperTest, ProvisionallySaveFailed) {
   autofill::FormData filled_form = CreateFilledTestPasswordFormData();
   filled_form.set_renderer_id(new_form_data.renderer_id());
 
-  if (!base::FeatureList::IsEnabled(
-          password_manager::features::kFillChangePasswordFormByTyping)) {
-    EXPECT_CALL(driver(), FillChangePasswordForm)
-        .WillOnce(base::test::RunOnceCallback<5>(filled_form));
-  }
+  EXPECT_CALL(driver(), FillChangePasswordForm)
+      .WillOnce(base::test::RunOnceCallback<5>(filled_form));
   static_cast<password_manager::PasswordFormManagerObserver*>(
       verifier->form_waiter())
       ->OnPasswordFormParsed(new_form_manager);
 
-  if (base::FeatureList::IsEnabled(
-          password_manager::features::kFillChangePasswordFormByTyping)) {
-    ASSERT_TRUE(verifier->form_filler());
-    verifier->form_filler()->SimulateFillingResult(filled_form);
-  } else {
-    EXPECT_TRUE(base::test::RunUntil(
-        [&]() { return verifier->capturer() != nullptr; }));
-  }
+  EXPECT_TRUE(
+      base::test::RunUntil([&]() { return verifier->capturer() != nullptr; }));
 
   ASSERT_TRUE(verifier->capturer());
   static_cast<FakeAnnotatedPageContentCapturer*>(verifier->capturer())
@@ -608,7 +581,7 @@ TEST_P(ChangePasswordFormFillingSubmissionHelperTest, ProvisionallySaveFailed) {
   task_environment()->RunUntilIdle();
 }
 
-TEST_P(ChangePasswordFormFillingSubmissionHelperTest,
+TEST_F(ChangePasswordFormFillingSubmissionHelperTest,
        ClickingSubmitButtonWorks) {
   auto* form_manager = CreateFormManager(/*credentials_to_seed=*/{});
 
@@ -629,7 +602,7 @@ TEST_P(ChangePasswordFormFillingSubmissionHelperTest,
           PasswordChangeQuality_StepQuality_SubmissionStatus_ACTION_SUCCESS);
 }
 
-TEST_P(ChangePasswordFormFillingSubmissionHelperTest,
+TEST_F(ChangePasswordFormFillingSubmissionHelperTest,
        NoTimeoutAfterClickHelperCreated) {
   auto* form_manager = CreateFormManager(/*credentials_to_seed=*/{});
 
@@ -651,7 +624,7 @@ TEST_P(ChangePasswordFormFillingSubmissionHelperTest,
   EXPECT_TRUE(completion_future.Get().has_value());
 }
 
-TEST_P(ChangePasswordFormFillingSubmissionHelperTest, SubmitButtonNotFound) {
+TEST_F(ChangePasswordFormFillingSubmissionHelperTest, SubmitButtonNotFound) {
   base::test::ScopedFeatureList feature_list;
   auto* form_manager = CreateFormManager(/*credentials_to_seed=*/{});
 
@@ -679,7 +652,7 @@ TEST_P(ChangePasswordFormFillingSubmissionHelperTest, SubmitButtonNotFound) {
           PasswordChangeQuality_StepQuality_SubmissionStatus_ELEMENT_NOT_FOUND);
 }
 
-TEST_P(ChangePasswordFormFillingSubmissionHelperTest, SubmitButtonClickFailed) {
+TEST_F(ChangePasswordFormFillingSubmissionHelperTest, SubmitButtonClickFailed) {
   base::test::ScopedFeatureList feature_list;
   auto* form_manager = CreateFormManager(/*credentials_to_seed=*/{});
 
@@ -698,7 +671,7 @@ TEST_P(ChangePasswordFormFillingSubmissionHelperTest, SubmitButtonClickFailed) {
           PasswordChangeQuality_StepQuality_SubmissionStatus_ELEMENT_NOT_FOUND);
 }
 
-TEST_P(ChangePasswordFormFillingSubmissionHelperTest,
+TEST_F(ChangePasswordFormFillingSubmissionHelperTest,
        WhenFormFillingFailedHelpersLooksForNewForm) {
   auto* form_manager = CreateFormManager(/*credentials_to_seed=*/{});
 
@@ -721,23 +694,14 @@ TEST_P(ChangePasswordFormFillingSubmissionHelperTest,
   autofill::FormData filled_form = CreateFilledTestPasswordFormData();
   filled_form.set_renderer_id(new_form_data.renderer_id());
 
-  if (!base::FeatureList::IsEnabled(
-          password_manager::features::kFillChangePasswordFormByTyping)) {
-    EXPECT_CALL(driver(), FillChangePasswordForm)
-        .WillOnce(base::test::RunOnceCallback<5>(filled_form));
-  }
+  EXPECT_CALL(driver(), FillChangePasswordForm)
+      .WillOnce(base::test::RunOnceCallback<5>(filled_form));
   static_cast<password_manager::PasswordFormManagerObserver*>(
       verifier->form_waiter())
       ->OnPasswordFormParsed(new_form_manager);
 
-  if (base::FeatureList::IsEnabled(
-          password_manager::features::kFillChangePasswordFormByTyping)) {
-    ASSERT_TRUE(verifier->form_filler());
-    verifier->form_filler()->SimulateFillingResult(filled_form);
-  } else {
-    EXPECT_TRUE(base::test::RunUntil(
-        [&]() { return verifier->capturer() != nullptr; }));
-  }
+  EXPECT_TRUE(
+      base::test::RunUntil([&]() { return verifier->capturer() != nullptr; }));
 
   ASSERT_TRUE(verifier->capturer());
   static_cast<FakeAnnotatedPageContentCapturer*>(verifier->capturer())
@@ -745,7 +709,7 @@ TEST_P(ChangePasswordFormFillingSubmissionHelperTest,
   task_environment()->RunUntilIdle();
 }
 
-TEST_P(ChangePasswordFormFillingSubmissionHelperTest,
+TEST_F(ChangePasswordFormFillingSubmissionHelperTest,
        ReturnsUserInterventionNeeded) {
   auto* form_manager = CreateFormManager(/*credentials_to_seed=*/{});
 
@@ -764,7 +728,7 @@ TEST_P(ChangePasswordFormFillingSubmissionHelperTest,
   EXPECT_FALSE(verifier->click_helper());
 }
 
-TEST_P(ChangePasswordFormFillingSubmissionHelperTest,
+TEST_F(ChangePasswordFormFillingSubmissionHelperTest,
        WhenFormFillingFailedItIgnoresTheSameForm) {
   auto* form_manager = CreateFormManager(/*credentials_to_seed=*/{});
 
@@ -789,7 +753,7 @@ TEST_P(ChangePasswordFormFillingSubmissionHelperTest,
   testing::Mock::VerifyAndClearExpectations(&driver());
 }
 
-TEST_P(ChangePasswordFormFillingSubmissionHelperTest,
+TEST_F(ChangePasswordFormFillingSubmissionHelperTest,
        PasswordChangeFormInfoIsLogged) {
   auto* form_manager = CreateFormManager(/*credentials_to_seed=*/{});
 
@@ -802,7 +766,3 @@ TEST_P(ChangePasswordFormFillingSubmissionHelperTest,
       logs_uploader()->GetFinalLog().password_change_submission().quality();
   EXPECT_TRUE(quality.has_change_password_form_data());
 }
-
-INSTANTIATE_TEST_SUITE_P(,
-                         ChangePasswordFormFillingSubmissionHelperTest,
-                         testing::Bool());

@@ -112,9 +112,6 @@ BASE_FEATURE(kFetchChangePasswordUrlForPasswordChange,
 #endif
 );
 
-BASE_FEATURE(kFillChangePasswordFormByTyping,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kFillOnAccountSelect,
              "fill-on-account-select",
              base::FEATURE_DISABLED_BY_DEFAULT);

@@ -22,8 +22,6 @@ source_set("password_change") {
     "detached_web_contents.h",
     "features.cc",
     "features.h",
-    "form_filling_helper.cc",
-    "form_filling_helper.h",
     "login_state_checker.cc",
     "login_state_checker.h",
     "model_quality_logs_uploader.cc",
@@ -34,8 +32,6 @@ source_set("password_change") {
     "password_change_page_stability_waiter.h",
     "password_change_submission_verifier.cc",
     "password_change_submission_verifier.h",
-    "typing_helper.cc",
-    "typing_helper.h",
   ]
 
   deps = [
@@ -77,7 +73,6 @@ source_set("unit_tests") {
     "cross_origin_navigation_observer_unittest.cc",
     "fake_annotated_page_content_capturer.cc",
     "fake_annotated_page_content_capturer.h",
-    "form_filling_helper_unittest.cc",
     "login_state_checker_unittest.cc",
     "model_quality_logs_uploader_unittest.cc",
     "password_change_page_stability_waiter_unittest.cc",

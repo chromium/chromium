@@ -15,7 +15,6 @@
 #include "chrome/browser/password_manager/password_change/annotated_page_content_capturer.h"
 #include "chrome/browser/password_manager/password_change/button_click_helper.h"
 #include "chrome/browser/password_manager/password_change/change_password_form_waiter.h"
-#include "chrome/browser/password_manager/password_change/form_filling_helper.h"
 #include "chrome/browser/password_manager/password_change/model_quality_logs_uploader.h"
 #include "chrome/browser/password_manager/password_change/password_change_logging_util.h"
 #include "chrome/browser/password_manager/password_change/password_change_submission_verifier.h"
@@ -56,29 +55,7 @@ blink::mojom::AIPageContentOptionsPtr GetAIPageContentOptions() {
   return options;
 }
 
-FormFillingHelper::FillingTasks PrepareFormForFilling(
-    const password_manager::PasswordForm& form,
-    const std::u16string& old_password,
-    const std::u16string& new_password) {
-  FormFillingHelper::FillingTasks filling_tasks;
 
-  CHECK(form.new_password_element_renderer_id);
-  filling_tasks[{form.form_data.host_frame(),
-                 form.new_password_element_renderer_id}] = new_password;
-
-  if (form.password_element_renderer_id) {
-    filling_tasks[{form.form_data.host_frame(),
-                   form.password_element_renderer_id}] = old_password;
-  }
-
-  if (form.confirmation_password_element_renderer_id) {
-    filling_tasks[{form.form_data.host_frame(),
-                   form.confirmation_password_element_renderer_id}] =
-        new_password;
-  }
-
-  return filling_tasks;
-}
 
 ChangePasswordFormFillingSubmissionHelper::SubmissionResult LogError(
     ChangePasswordFormFillingSubmissionHelper::SubmissionResult result) {
@@ -205,25 +182,17 @@ void ChangePasswordFormFillingSubmissionHelper::TriggerFilling(
       &ChangePasswordFormFillingSubmissionHelper::ChangePasswordFormFilled,
       weak_ptr_factory_.GetWeakPtr());
 
-  if (base::FeatureList::IsEnabled(
-          password_manager::features::kFillChangePasswordFormByTyping)) {
-    form_filler_ = std::make_unique<FormFillingHelper>(
-        web_contents_, driver,
-        PrepareFormForFilling(form, login_password_, generated_password_),
-        std::move(filling_callback));
-  } else {
-    // PostTask is required because if the form is filled immediately the fields
-    // might be cleared by PasswordAutofillAgent if there were no credentials to
-    // fill during SendFillInformationToRenderer call.
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE,
-        base::BindOnce(
-            &password_manager::PasswordManagerDriver::FillChangePasswordForm,
-            driver, form.password_element_renderer_id,
-            form.new_password_element_renderer_id,
-            form.confirmation_password_element_renderer_id, login_password_,
-            generated_password_, std::move(filling_callback)));
-  }
+  // PostTask is required because if the form is filled immediately the fields
+  // might be cleared by PasswordAutofillAgent if there were no credentials to
+  // fill during SendFillInformationToRenderer call.
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          &password_manager::PasswordManagerDriver::FillChangePasswordForm,
+          driver, form.password_element_renderer_id,
+          form.new_password_element_renderer_id,
+          form.confirmation_password_element_renderer_id, login_password_,
+          generated_password_, std::move(filling_callback)));
 
   password_manager::PasswordForm form_to_save(form);
   form_to_save.username_value = username_;
@@ -237,8 +206,6 @@ void ChangePasswordFormFillingSubmissionHelper::TriggerFilling(
 
 void ChangePasswordFormFillingSubmissionHelper::ChangePasswordFormFilled(
     const std::optional<autofill::FormData>& submitted_form) {
-  form_filler_.reset();
-
   bool provisionally_saved = false;
   if (submitted_form) {
     provisionally_saved = form_manager_->ProvisionallySave(
