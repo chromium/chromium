@@ -1019,15 +1019,16 @@ bool VTVideoEncodeAccelerator::ResetCompressionSession() {
           this);
       created.has_value()) {
     compression_session_ = std::move(created.value());
+  } else if (created.error() == kVTVideoEncoderNotAvailableNowErr ||
+             created.error() == kVTCouldNotCreateInstanceErr) {
+    NotifyErrorStatus({EncoderStatus::Codes::kOutOfPlatformEncoders,
+                       "VTCompressionSessionCreate failed", "system_error",
+                       logging::DescriptionFromOSStatus(created.error())});
+    return false;
   } else {
-    EncoderStatusTraits::Codes status_code =
-        (created.error() == kVTVideoEncoderNotAvailableNowErr ||
-         created.error() == kVTCouldNotCreateInstanceErr)
-            ? EncoderStatus::Codes::kOutOfPlatformEncoders
-            : EncoderStatus::Codes::kEncoderInitializationError;
-    NotifyErrorStatus(
-        {status_code, "VTCompressionSessionCreate failed: " +
-                          logging::DescriptionFromOSStatus(created.error())});
+    NotifyErrorStatus({EncoderStatus::Codes::kEncoderInitializationError,
+                       "VTCompressionSessionCreate failed", "system_error",
+                       logging::DescriptionFromOSStatus(created.error())});
     return false;
   }
 
@@ -1217,11 +1218,8 @@ void VTVideoEncodeAccelerator::SetEncoderColorSpace() {
 
 void VTVideoEncodeAccelerator::NotifyErrorStatus(EncoderStatus status) {
   CHECK(!status.is_ok());
-  LOG(ERROR) << "Call NotifyErrorStatus(): code="
-             << static_cast<int>(status.code())
-             << ", message=" << status.message();
   if (media_log_) {
-    MEDIA_LOG(ERROR, media_log_) << status.message();
+    media_log_->NotifyError(status);
   }
   // NotifyErrorStatus() can be called without calling Initialize() in the case
   // of GetSupportedProfiles().
