@@ -37,6 +37,7 @@
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/html/blocking_attribute.h"
 #include "third_party/blink/renderer/core/html/html_style_element.h"
+#include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/loader/modulescript/module_script_creation_params.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/core/script/import_map.h"
@@ -284,9 +285,15 @@ StyleElement::ProcessingResult StyleElement::CreateSheetOrModule(
 void StyleElement::AddImportMapEntry(Element& element, const String& text) {
   CHECK(!sheet_);
 
-  // Return early if there is no specifier
-  // TODO(crbug.com/448174611) - Is this the correct behavior?
+  // A `specifier` attribute is required to register the module under a name
+  // that other code can import. Without it the element is effectively a
+  // no-op, so warn the developer.
   if (!element.hasAttribute(html_names::kSpecifierAttr)) {
+    element.GetDocument().AddConsoleMessage(
+        MakeGarbageCollected<ConsoleMessage>(
+            mojom::blink::ConsoleMessageSource::kOther,
+            mojom::blink::ConsoleMessageLevel::kWarning,
+            "<style type=module> has no `specifier` value"));
     return;
   }
 

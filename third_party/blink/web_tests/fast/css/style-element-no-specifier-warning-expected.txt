@@ -1,0 +1,4 @@
+CONSOLE WARNING: <style type=module> has no `specifier` value
+This is a testharness.js-based test.
+Harness: the test ran to completion.
+

@@ -1,0 +1,28 @@
+<!doctype html>
+<meta charset="utf-8" />
+<meta name="author" title="Kurt Catti-Schmidt" href="mailto:kschmi@microsoft.com" />
+<link rel="help" href="https://html.spec.whatwg.org/multipage/semantics.html#the-style-element" />
+<link rel="help" href="https://github.com/MicrosoftEdge/MSEdgeExplainers/blob/main/ShadowDOM/explainer.md" />
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+
+<!-- A `<style type="module">` element with no `specifier` attribute is
+     effectively a no-op, since there is no name under which other code can
+     `import` it. UA's may log a warning warning in this case; this test asserts
+     that warning via the matching -expected.txt file. -->
+<style id="no_specifier_style" type="module">
+  #test_element { color: blue }
+</style>
+
+<div id="test_element">Test content</div>
+
+<script>
+test(() => {
+  const style_element = document.getElementById("no_specifier_style");
+  assert_equals(style_element.sheet, null,
+    "Declarative <style type=module> does not expose a CSSStyleSheet.");
+  const test_element = document.getElementById("test_element");
+  assert_equals(getComputedStyle(test_element).color, "rgb(0, 0, 0)",
+    "Styles inside a declarative <style type=module> are not auto-applied.");
+}, "<style type=module> with no specifier is a no-op (warning asserted via -expected.txt).");
+</script>
