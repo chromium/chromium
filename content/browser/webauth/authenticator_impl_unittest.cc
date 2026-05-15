@@ -896,7 +896,10 @@ TEST_F(AuthenticatorImplTest, GetClientCapabilities_SignalApi) {
   ClientCapabilitiesList capabilities = AuthenticatorGetClientCapabilities();
   ExpectCapability(capabilities,
                    client_capabilities::kSignalAllAcceptedCredentials, true);
-  ExpectCapability(capabilities, client_capabilities::kRelatedOrigins, true);
+  ExpectCapability(capabilities, client_capabilities::kSignalCurrentUserDetails,
+                   true);
+  ExpectCapability(capabilities, client_capabilities::kSignalUnknownCredential,
+                   true);
 }
 
 // Parses its arguments as JSON and expects that all the keys in the first are
