@@ -22,12 +22,14 @@ class BufferContent {
   ~BufferContent();
 
   base::span<uint8_t> AsSpan() const;
+  size_t AllocatedSize() const;
 
  private:
   // TODO(https://crbug.com/40278771): Use a real hardware buffer on platforms
   // where that would be beneficial.
   const std::unique_ptr<void, base::AlignedFreeDeleter> buffer_;
   const size_t size_;
+  const size_t allocated_size_;
 };
 
 }  // namespace webnn::tflite

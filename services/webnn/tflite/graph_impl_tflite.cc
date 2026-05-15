@@ -295,7 +295,7 @@ class GraphImplTflite::ComputeResources {
       CHECK_EQ(data.size(), tensor->bytes);
 
       TfLiteStatus status = interpreter_->SetCustomAllocationForTensor(
-          tensor_idx, {data.data(), data.size()});
+          tensor_idx, {data.data(), buffer->AllocatedSize()});
       if (status != kTfLiteOk) {
         LOG(ERROR) << "Unable set custom tensor allocation: "
                    << TfLiteStatusToString(status);
