@@ -140,7 +140,7 @@ void DeviceAuthenticatorAndroid::Cancel() {
   }
   LogAuthResult(source_, DeviceAuthFinalResult::kCanceledByChrome);
 
-  callback_.Reset();
+  std::move(callback_).Run(/*success=*/false);
   bridge_->Cancel();
 }
 

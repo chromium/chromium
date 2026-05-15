@@ -48,7 +48,9 @@ void IOSDeviceAuthenticator::AuthenticateWithMessage(
 
 void IOSDeviceAuthenticator::Cancel() {
   weak_ptr_factory_.InvalidateWeakPtrs();
-  OnAuthenticationCompleted(/*succeeded=*/false);
+  if (callback_) {
+    OnAuthenticationCompleted(/*succeeded=*/false);
+  }
 }
 
 void IOSDeviceAuthenticator::OnAuthenticationCompleted(bool succeeded) {

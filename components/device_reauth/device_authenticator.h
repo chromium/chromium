@@ -85,7 +85,8 @@ class DeviceAuthenticator {
 
   // Cancels an in-progress authentication if the filling surface requesting
   // the cancelation corresponds to the one for which the ongoing auth was
-  // triggered.
+  // triggered. If there was an ongoing authentication, its callback will be
+  // invoked with a false value.
   virtual void Cancel() = 0;
 };
 

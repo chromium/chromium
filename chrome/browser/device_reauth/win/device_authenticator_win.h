@@ -32,9 +32,9 @@ class DeviceAuthenticatorWin : public DeviceAuthenticatorCommon {
   void AuthenticateWithMessage(const std::u16string& message,
                                AuthenticateCallback callback) override;
 
-  // Should be called by the object using the authenticator if the purpose
-  // for which the auth was requested becomes obsolete or the object is
-  // destroyed.
+  // Authentication on Windows is not cancellable. This should not be a problem
+  // since the authentication flow is blocking the browser UI and the user is
+  // forced to interact with it.
   void Cancel() override;
 
   // Asks Windows if user has configured and enabled biometrics on
