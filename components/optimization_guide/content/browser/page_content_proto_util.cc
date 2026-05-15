@@ -1249,6 +1249,17 @@ class Converter {
       return base::ok();
     }
 
+    if (page_content_proto().has_popup_window()) {
+      return base::ok();
+    }
+
+    if (!opener_frame_info.has_active_popup) {
+      // This could be a race condition where the popup was closed between the
+      // start of extraction and the renderer's response. We skip the popup
+      // but continue with the rest of the page content.
+      return base::ok();
+    }
+
     optimization_guide::proto::PopupWindow* popup_window =
         page_content_proto().mutable_popup_window();
 
@@ -1258,8 +1269,7 @@ class Converter {
 
     // Set the document ID to the frame which opened the popup (might be wrong,
     // because we treat a main page and its same-site iframes as the same
-    // document id). Also we don't need browser-side security check as the data
-    // all come from the same renderer.
+    // document id). We verify that the the popup is owned by the iframe.
     popup_window->mutable_opener_document_id()->set_serialized_token(
         opener_frame_info.serialized_server_token);
 
@@ -1509,6 +1519,13 @@ base::expected<void, std::string> ConvertAIPageContentToProto(
                       page_content_result);
   converter.AddRendererPasswordRedactionBoxes(*main_frame_page_content);
 
+  // Claim the singleton popup before walking child frames so the main frame
+  // wins if multiple verified frames report popup data.
+  if (main_frame_page_content->frame_data->popup) {
+    RETURN_IF_ERROR(converter.ConvertPopup(
+        *main_frame_page_content->frame_data->popup, *render_frame_info));
+  }
+
   RETURN_IF_ERROR(converter.ConvertNode(
       main_frame_token, *main_frame_page_content->root_node,
       GetAccessibilityFocusedNodeId(*main_frame_page_content->frame_data),
@@ -1548,12 +1565,6 @@ base::expected<void, std::string> ConvertAIPageContentToProto(
   page_content_result.proto.set_version(
       optimization_guide::proto::ANNOTATED_PAGE_CONTENT_VERSION_1_0);
   page_content_result.proto.set_mode(mode);
-
-  // If the page had a popup open, provide that popup to APC as well.
-  if (main_frame_page_content->frame_data->popup) {
-    RETURN_IF_ERROR(converter.ConvertPopup(
-        *main_frame_page_content->frame_data->popup, *render_frame_info));
-  }
 
   return base::ok();
 }
