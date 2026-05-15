@@ -20,6 +20,7 @@
 #include "chrome/browser/enterprise/data_controls/data_controls_dialog_factory.h"
 #include "chrome/browser/enterprise/data_protection/paste_allowed_request.h"
 #include "chrome/browser/profiles/profile.h"
+#include "components/dom_distiller/core/url_utils.h"
 #include "components/enterprise/common/files_scan_data.h"
 #include "components/enterprise/connectors/core/connectors_prefs.h"
 #include "components/enterprise/connectors/core/features.h"
@@ -634,6 +635,14 @@ void IsCopyRestrictedByDialog(
   IsCopyToOSClipboardRestricted(source, metadata, data, std::move(callback));
 }
 
+GURL GetSourceURL(content::RenderFrameHost* rfh) {
+  auto url = rfh->GetMainFrame()->GetLastCommittedURL();
+  if (dom_distiller::url_utils::IsDistilledPage(url)) {
+    url = dom_distiller::url_utils::GetOriginalUrlFromDistillerUrl(url);
+  }
+  return url;
+}
+
 content::ClipboardEndpoint MakeClipboardEndpoint(
     ui::DataTransferEndpoint dte,
     content::RenderFrameHost* rfh) {
@@ -659,7 +668,7 @@ std::optional<content::ClipboardEndpoint> GetValidURLEndpoint(
   }
 
   content::RenderFrameHost* rfh = web_contents->GetPrimaryMainFrame();
-  auto url = rfh->GetMainFrame()->GetLastCommittedURL();
+  auto url = GetSourceURL(rfh);
   if (!url.is_valid()) {
     return std::nullopt;
   }
@@ -1077,7 +1086,7 @@ void CopyTextToClipboard(content::RenderFrameHost* rfh,
   }
 
   ui::DataTransferEndpoint dte(
-      rfh->GetMainFrame()->GetLastCommittedURL(),
+      GetSourceURL(rfh),
       {.off_the_record = rfh->GetBrowserContext()->IsOffTheRecord()});
   content::ClipboardEndpoint clipboard_endpoint(
       dte,
