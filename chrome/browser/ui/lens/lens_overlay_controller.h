@@ -600,6 +600,7 @@ class LensOverlayController : public OverlayBaseController,
   void NotifyIsOverlayShowing(bool is_showing) override;
   int GetToolResourceId() override;
   ui::ElementIdentifier GetViewContainerId() override;
+  bool UsesContentsContainerView() override;
   SidePanelType GetSidePanelType() override;
   bool ShouldCloseSidePanel() override;
   void StartScreenshotFlow() override;

@@ -395,6 +395,10 @@ ui::ElementIdentifier SelectionOverlayController::GetViewContainerId() {
   return kGlicSelectionOverlayViewElementId;
 }
 
+bool SelectionOverlayController::UsesContentsContainerView() {
+  return true;
+}
+
 SidePanelType SelectionOverlayController::GetSidePanelType() {
   return SidePanelType::kContent;
 }
@@ -431,8 +435,7 @@ SelectionOverlayController::GetPreselectionBubbleConfig() {
 
 bool SelectionOverlayController::IsOverlayViewShared() const {
   // Glic's selection overlay's WebView is attached to the ContentsContainerView
-  // which cannot be shared across multiple tabs. It also means glic's selection
-  // overlay respects the split view.
+  // which cannot be shared across multiple tabs.
   return false;
 }
 
