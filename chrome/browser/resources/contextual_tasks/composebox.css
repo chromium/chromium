@@ -53,6 +53,7 @@
   --pdf-icon-size: 16px;
   --document-icon-size: 16px;
   --injected-input-icon-size: 24px;
+  --lens-submit-icon-extra-spacing: 0;
 }
 
 :host([energy-effect-enabled_]) {
@@ -85,6 +86,7 @@
   --file-thumbnail-border-radius: 6px;
   --file-chip-border-radius: 12px;
   --icon-menu-button-size: 36px;
+  --lens-submit-icon-extra-spacing: 8px;
 }
 
 :host([energy-effect-enabled_][is-zero-state]) {
@@ -447,6 +449,7 @@
 #composebox[submit-enabled]::part(lens-icon) {
   inset-inline-end: calc(var(--composebox-submit-container-size)
       + var(--icon-menu-spacing)
+      + var(--lens-submit-icon-extra-spacing)
       + var(--composebox-submit-container-inline-end));
 }
 
@@ -574,6 +577,7 @@
   inset-inline-end: calc(var(--composebox-submit-container-size)
       + var(--icon-menu-button-size)
       + 2 * var(--icon-menu-spacing)
+      + var(--lens-submit-icon-extra-spacing)
       + var(--composebox-submit-container-inline-end));
 }
 
@@ -606,6 +610,7 @@
 :host([is-side-panel][active-tool-mode='1']) #composebox[submit-enabled]::part(voice-icon) {
   inset-inline-end: calc(var(--composebox-submit-container-size)
       + var(--icon-menu-spacing)
+      + var(--lens-submit-icon-extra-spacing)
       + var(--composebox-submit-container-inline-end));
 }
 
