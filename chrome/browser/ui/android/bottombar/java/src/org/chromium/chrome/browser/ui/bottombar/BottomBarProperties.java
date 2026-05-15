@@ -14,19 +14,28 @@ import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
 public class BottomBarProperties {
     public static final WritableBooleanPropertyKey IS_VISIBLE = new WritableBooleanPropertyKey();
     public static final WritableIntPropertyKey COLOR_SCHEME = new WritableIntPropertyKey();
-    public static final WritableBooleanPropertyKey IS_HOME_BUTTON_VISIBLE =
-            new WritableBooleanPropertyKey();
     public static final WritableBooleanPropertyKey IS_NEW_TAB_BACKGROUND_VISIBLE =
             new WritableBooleanPropertyKey();
+    public static final WritableBooleanPropertyKey IS_HOME_BUTTON_VISIBLE =
+            new WritableBooleanPropertyKey();
     public static final WritableBooleanPropertyKey IS_GLIC_BUTTON_VISIBLE =
+            new WritableBooleanPropertyKey();
+    public static final WritableBooleanPropertyKey IS_NEW_TAB_BUTTON_VISIBLE =
+            new WritableBooleanPropertyKey();
+    public static final WritableBooleanPropertyKey IS_TAB_SWITCHER_BUTTON_VISIBLE =
+            new WritableBooleanPropertyKey();
+    public static final WritableBooleanPropertyKey IS_APP_MENU_BUTTON_VISIBLE =
             new WritableBooleanPropertyKey();
 
     public static final PropertyKey[] ALL_KEYS =
             new PropertyKey[] {
                 IS_VISIBLE,
                 COLOR_SCHEME,
-                IS_HOME_BUTTON_VISIBLE,
                 IS_NEW_TAB_BACKGROUND_VISIBLE,
-                IS_GLIC_BUTTON_VISIBLE
+                IS_HOME_BUTTON_VISIBLE,
+                IS_GLIC_BUTTON_VISIBLE,
+                IS_NEW_TAB_BUTTON_VISIBLE,
+                IS_TAB_SWITCHER_BUTTON_VISIBLE,
+                IS_APP_MENU_BUTTON_VISIBLE,
             };
 }

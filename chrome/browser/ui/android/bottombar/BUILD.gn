@@ -32,6 +32,7 @@ android_library("java") {
   sources = [
     "java/src/org/chromium/chrome/browser/ui/bottombar/BottomBar.java",
     "java/src/org/chromium/chrome/browser/ui/bottombar/BottomBarButtonContainer.java",
+    "java/src/org/chromium/chrome/browser/ui/bottombar/BottomBarButtonManager.java",
     "java/src/org/chromium/chrome/browser/ui/bottombar/BottomBarCoordinator.java",
     "java/src/org/chromium/chrome/browser/ui/bottombar/BottomBarHostManager.java",
     "java/src/org/chromium/chrome/browser/ui/bottombar/BottomBarMediator.java",
@@ -67,6 +68,7 @@ android_library("java") {
 robolectric_library("junit") {
   sources = [
     "java/src/org/chromium/chrome/browser/ui/bottombar/BottomBarButtonContainerUnitTest.java",
+    "java/src/org/chromium/chrome/browser/ui/bottombar/BottomBarButtonManagerUnitTest.java",
     "java/src/org/chromium/chrome/browser/ui/bottombar/BottomBarConfigUtilsUnitTest.java",
     "java/src/org/chromium/chrome/browser/ui/bottombar/BottomBarCoordinatorUnitTest.java",
     "java/src/org/chromium/chrome/browser/ui/bottombar/BottomBarHostManagerUnitTest.java",
