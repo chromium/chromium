@@ -321,8 +321,8 @@ builder.
 * [chromeos-x64-libfuzzer-asan-rel-tests](https://ci.chromium.org/p/chromium/builders/try/chromeos-x64-libfuzzer-asan-rel-tests) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""chromeos-x64-libfuzzer-asan-rel-tests""))
 
   Location filters:
-  * [`//third_party/fuzztest`](https://cs.chromium.org/chromium/src/third_party/fuzztest)
-  * [`//testing/libfuzzer`](https://cs.chromium.org/chromium/src/testing/libfuzzer)
+  * [`//testing/libfuzzer/.+`](https://cs.chromium.org/chromium/src/testing/libfuzzer/)
+  * [`//third_party/fuzztest/.+`](https://cs.chromium.org/chromium/src/third_party/fuzztest/)
 
 * [dawn-android-arm-deps-rel](https://ci.chromium.org/p/chromium/builders/try/dawn-android-arm-deps-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""dawn-android-arm-deps-rel""))
 
@@ -709,38 +709,38 @@ builder.
 * [linux-x64-centipede-asan-rel-tests](https://ci.chromium.org/p/chromium/builders/try/linux-x64-centipede-asan-rel-tests) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""linux-x64-centipede-asan-rel-tests""))
 
   Location filters:
-  * [`//third_party/fuzztest`](https://cs.chromium.org/chromium/src/third_party/fuzztest)
-  * [`//testing/libfuzzer`](https://cs.chromium.org/chromium/src/testing/libfuzzer)
+  * [`//testing/libfuzzer/.+`](https://cs.chromium.org/chromium/src/testing/libfuzzer/)
+  * [`//third_party/fuzztest/.+`](https://cs.chromium.org/chromium/src/third_party/fuzztest/)
 
 * [linux-x64-libfuzzer-asan-dbg-tests](https://ci.chromium.org/p/chromium/builders/try/linux-x64-libfuzzer-asan-dbg-tests) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""linux-x64-libfuzzer-asan-dbg-tests""))
 
   Location filters:
-  * [`//third_party/fuzztest`](https://cs.chromium.org/chromium/src/third_party/fuzztest)
-  * [`//testing/libfuzzer`](https://cs.chromium.org/chromium/src/testing/libfuzzer)
+  * [`//testing/libfuzzer/.+`](https://cs.chromium.org/chromium/src/testing/libfuzzer/)
+  * [`//third_party/fuzztest/.+`](https://cs.chromium.org/chromium/src/third_party/fuzztest/)
 
 * [linux-x64-libfuzzer-asan-rel-tests](https://ci.chromium.org/p/chromium/builders/try/linux-x64-libfuzzer-asan-rel-tests) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""linux-x64-libfuzzer-asan-rel-tests""))
 
   Location filters:
-  * [`//third_party/fuzztest`](https://cs.chromium.org/chromium/src/third_party/fuzztest)
-  * [`//testing/libfuzzer`](https://cs.chromium.org/chromium/src/testing/libfuzzer)
+  * [`//testing/libfuzzer/.+`](https://cs.chromium.org/chromium/src/testing/libfuzzer/)
+  * [`//third_party/fuzztest/.+`](https://cs.chromium.org/chromium/src/third_party/fuzztest/)
 
 * [linux-x64-libfuzzer-msan-rel-tests](https://ci.chromium.org/p/chromium/builders/try/linux-x64-libfuzzer-msan-rel-tests) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""linux-x64-libfuzzer-msan-rel-tests""))
 
   Location filters:
-  * [`//third_party/fuzztest`](https://cs.chromium.org/chromium/src/third_party/fuzztest)
-  * [`//testing/libfuzzer`](https://cs.chromium.org/chromium/src/testing/libfuzzer)
+  * [`//testing/libfuzzer/.+`](https://cs.chromium.org/chromium/src/testing/libfuzzer/)
+  * [`//third_party/fuzztest/.+`](https://cs.chromium.org/chromium/src/third_party/fuzztest/)
 
 * [linux-x64-libfuzzer-ubsan-rel-tests](https://ci.chromium.org/p/chromium/builders/try/linux-x64-libfuzzer-ubsan-rel-tests) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""linux-x64-libfuzzer-ubsan-rel-tests""))
 
   Location filters:
-  * [`//third_party/fuzztest`](https://cs.chromium.org/chromium/src/third_party/fuzztest)
-  * [`//testing/libfuzzer`](https://cs.chromium.org/chromium/src/testing/libfuzzer)
+  * [`//testing/libfuzzer/.+`](https://cs.chromium.org/chromium/src/testing/libfuzzer/)
+  * [`//third_party/fuzztest/.+`](https://cs.chromium.org/chromium/src/third_party/fuzztest/)
 
 * [linux-x86-libfuzzer-asan-rel-tests](https://ci.chromium.org/p/chromium/builders/try/linux-x86-libfuzzer-asan-rel-tests) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""linux-x86-libfuzzer-asan-rel-tests""))
 
   Location filters:
-  * [`//third_party/fuzztest`](https://cs.chromium.org/chromium/src/third_party/fuzztest)
-  * [`//testing/libfuzzer`](https://cs.chromium.org/chromium/src/testing/libfuzzer)
+  * [`//testing/libfuzzer/.+`](https://cs.chromium.org/chromium/src/testing/libfuzzer/)
+  * [`//third_party/fuzztest/.+`](https://cs.chromium.org/chromium/src/third_party/fuzztest/)
 
 * [linux_chromium_cfi_rel_ng](https://ci.chromium.org/p/chromium/builders/try/linux_chromium_cfi_rel_ng) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""linux_chromium_cfi_rel_ng""))
 
@@ -792,8 +792,8 @@ builder.
 * [mac-arm64-libfuzzer-asan-rel-tests](https://ci.chromium.org/p/chromium/builders/try/mac-arm64-libfuzzer-asan-rel-tests) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""mac-arm64-libfuzzer-asan-rel-tests""))
 
   Location filters:
-  * [`//third_party/fuzztest`](https://cs.chromium.org/chromium/src/third_party/fuzztest)
-  * [`//testing/libfuzzer`](https://cs.chromium.org/chromium/src/testing/libfuzzer)
+  * [`//testing/libfuzzer/.+`](https://cs.chromium.org/chromium/src/testing/libfuzzer/)
+  * [`//third_party/fuzztest/.+`](https://cs.chromium.org/chromium/src/third_party/fuzztest/)
 
 * [mac-enterprise-companion-try-builder-dbg](https://ci.chromium.org/p/chromium/builders/try/mac-enterprise-companion-try-builder-dbg) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""mac-enterprise-companion-try-builder-dbg""))
 
@@ -910,8 +910,8 @@ builder.
 * [win-x64-libfuzzer-asan-rel-tests](https://ci.chromium.org/p/chromium/builders/try/win-x64-libfuzzer-asan-rel-tests) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""win-x64-libfuzzer-asan-rel-tests""))
 
   Location filters:
-  * [`//third_party/fuzztest`](https://cs.chromium.org/chromium/src/third_party/fuzztest)
-  * [`//testing/libfuzzer`](https://cs.chromium.org/chromium/src/testing/libfuzzer)
+  * [`//testing/libfuzzer/.+`](https://cs.chromium.org/chromium/src/testing/libfuzzer/)
+  * [`//third_party/fuzztest/.+`](https://cs.chromium.org/chromium/src/third_party/fuzztest/)
 
 * [win11-rel](https://ci.chromium.org/p/chromium/builders/try/win11-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""win11-rel""))
 
