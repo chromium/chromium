@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/lens/lens_overlay_url_builder.h"
 #include "chrome/browser/ui/lens/lens_search_feature_flag_utils.h"
 #include "components/lens/lens_features.h"
+#include "components/lens/lens_url_utils.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/navigation_throttle_registry.h"
 #include "content/public/browser/page_navigator.h"

@@ -300,6 +300,9 @@ class TemplateURLRef {
 
     // The target locale used for image translations.
     std::string image_translate_target_locale;
+
+    // The previously submitted query within this context thread/session.
+    std::string previous_query;
   };
 
   TemplateURLRef(const TemplateURL* owner, Type type);

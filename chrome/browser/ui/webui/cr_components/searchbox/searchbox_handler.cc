@@ -1042,6 +1042,7 @@ void SearchboxHandler::QueryAutocomplete(const std::u16string& input,
   }
 
   autocomplete_input.set_input_state(GetInputState());
+  autocomplete_input.set_previous_query(GetPreviousQuery());
 
   edit_model()->SetAutocompleteInput(autocomplete_input);
   omnibox_controller()->StartAutocomplete(autocomplete_input);
@@ -1347,6 +1348,10 @@ const AutocompleteMatch* SearchboxHandler::GetMatchWithUrl(
 
 omnibox::InputState SearchboxHandler::GetInputState() const {
   return omnibox::InputState();
+}
+
+std::string SearchboxHandler::GetPreviousQuery() {
+  return std::string();
 }
 
 void SearchboxHandler::ShouldShowDriveDisclaimer(

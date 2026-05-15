@@ -62,10 +62,6 @@ GURL BuildLensSearchURL(
     lens::LensOverlayInvocationSource invocation_source,
     bool use_dark_mode);
 
-// Returns the value of the text query parameter value from the provided search
-// URL if any. Empty string otherwise.
-const std::string ExtractTextQueryParameterValue(const GURL& url);
-
 // Returns the value of the lens mode parameter value from the provided search
 // URL if any. Empty string otherwise.
 const std::string ExtractLensModeParameterValue(const GURL& url);

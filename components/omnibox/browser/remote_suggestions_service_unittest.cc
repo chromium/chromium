@@ -576,6 +576,19 @@ TEST_F(RemoteSuggestionsServiceTest,
             {"sam", "1"}});
 }
 
+TEST_F(RemoteSuggestionsServiceTest, PreviousQueryAppendedIfAvailable) {
+  auto google_template_url = CreateGoogleTemplateURL();
+
+  TemplateURLRef::SearchTermsArgs search_terms_args(u"current_query");
+  search_terms_args.previous_query = "previous_query_text";
+
+  GURL url = RemoteSuggestionsService::EndpointUrl(
+      *google_template_url, search_terms_args, SearchTermsData());
+
+  CheckUrl(url, "https://www.google.com/suggest",
+           {{"q", "current_query"}, {"pq", "previous_query_text"}});
+}
+
 TEST_F(RemoteSuggestionsServiceTest,
        LensOverlaySuggestInputsAppendedQueryParamsForContextualSearchbox) {
   // Set up a Google search provider.

@@ -196,6 +196,7 @@ class SearchboxHandler : public searchbox::mojom::PageHandler,
   const AutocompleteMatch* GetMatchWithUrl(size_t index, const GURL& url) const;
 
   virtual omnibox::InputState GetInputState() const;
+  virtual std::string GetPreviousQuery();
 
   raw_ptr<Profile> profile_;
   raw_ptr<content::WebContents> web_contents_;
