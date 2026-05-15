@@ -224,6 +224,7 @@ class ToolbarView : public views::AccessiblePaneView,
   void OnThemeChanged() override;
   bool AcceleratorPressed(const ui::Accelerator& acc) override;
   void ChildPreferredSizeChanged(views::View* child) override;
+  void ChildVisibilityChanged(View* child) override;
 
   friend class AvatarToolbarButtonBaseBrowserTest;
 

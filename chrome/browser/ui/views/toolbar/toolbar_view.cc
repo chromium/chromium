@@ -14,7 +14,7 @@
 #include "base/functional/bind.h"
 #include "base/i18n/number_formatting.h"
 #include "base/i18n/rtl.h"
-#include "base/metrics/histogram_macros.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "base/notimplemented.h"
@@ -1436,6 +1436,14 @@ void ToolbarView::ChildPreferredSizeChanged(views::View* child) {
   InvalidateLayout();
   if (size() != GetPreferredSize()) {
     PreferredSizeChanged();
+  }
+}
+
+void ToolbarView::ChildVisibilityChanged(views::View* child) {
+  if (child == home_) {
+    if (!home_->GetVisible() && show_home_button_.GetValue()) {
+      base::UmaHistogramBoolean("Toolbar.Overflow.HomeButton", true);
+    }
   }
 }
 
