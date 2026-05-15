@@ -74,4 +74,16 @@ GeminiViewMode GetCurrentMode() {
   return GeminiViewMode::kUnknown;
 }
 
+void SetLiveStopButtonHidden(bool hidden) {}
+
+bool IsLiveStopButtonHidden() {
+  return false;
+}
+
+void SetLiveCaptionsNumberOfLines(int number_of_lines) {}
+
+int GetLiveCaptionsNumberOfLines() {
+  return 0;
+}
+
 }  // namespace ios::provider

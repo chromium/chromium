@@ -225,6 +225,14 @@ GeminiClientMode GetCurrentClientMode();
 // Returns the current `GeminiPageContextAttachmentState` of the floaty.
 GeminiPageContextAttachmentState GetCurrentPageContextAttachmentState();
 
+// Sets and gets whether the stop button in Gemini Live mode is hidden.
+void SetLiveStopButtonHidden(bool hidden);
+bool IsLiveStopButtonHidden();
+
+// Sets and gets the number of caption lines in Gemini Live mode.
+void SetLiveCaptionsNumberOfLines(int number_of_lines);
+int GetLiveCaptionsNumberOfLines();
+
 }  // namespace ios::provider
 
 #endif  // IOS_PUBLIC_PROVIDER_CHROME_BROWSER_BWG_BWG_API_H_
