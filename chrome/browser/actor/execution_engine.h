@@ -238,8 +238,13 @@ class ExecutionEngine : public ToolDelegate,
   void AddWritableMainframeOrigins(
       const absl::flat_hash_set<url::Origin>& added_writable_mainframe_origins);
 
-  void SetActorLoginService(
-      std::unique_ptr<actor_login::ActorLoginService> actor_login_service);
+  // Callback to intercept and handle credential selection for actor login
+  // programmatically.
+  using CredentialSelectionOverrideCallback =
+      base::OnceCallback<void(const std::vector<actor_login::Credential>&,
+                              ToolDelegate::CredentialSelectedCallback)>;
+  void PreHandleCredentialSelectionDialog(
+      CredentialSelectionOverrideCallback callback);
 
   // Callback invoked when ConfirmCrossOriginNavigation, which spawns an IPC to
   // the web client, receives its response. This callback gets a boolean
@@ -472,6 +477,10 @@ class ExecutionEngine : public ToolDelegate,
 
   // Manages the container config settings that have been sent by the server.
   ActorContainerConfig actor_container_config_;
+
+  // For overwriting the actor login permission, currently only works for the
+  // feature `kPasswordCheckupPrototype` for automated password changes.
+  CredentialSelectionOverrideCallback credential_selection_override_callback_;
 
   // For multi-step login, this is the credential that the user has chosen to
   // allow the actor to use. The key is the

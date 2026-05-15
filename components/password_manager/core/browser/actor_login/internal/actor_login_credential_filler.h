@@ -46,7 +46,7 @@ class ActorLoginCredentialFiller {
       base::TimeTicks attempt_login_start_time,
       IsTaskInFocus is_task_in_focus,
       LoginStatusResultOrErrorReply callback);
-  virtual ~ActorLoginCredentialFiller();
+  ~ActorLoginCredentialFiller();
 
   ActorLoginCredentialFiller(const ActorLoginCredentialFiller&) = delete;
   ActorLoginCredentialFiller& operator=(const ActorLoginCredentialFiller&) =
@@ -63,31 +63,8 @@ class ActorLoginCredentialFiller {
   // properly populate the actor login MQLS logs.
   void OnPrimaryPageChanged();
 
- protected:
-  enum class FieldType { kUsername, kPassword };
-
-  // Retrieves the full data of a saved credential for the form managed
-  // by `signin_form_manager` corresponding to `credential_`.
-  virtual const password_manager::PasswordForm* GetMatchingStoredCredential(
-      const password_manager::PasswordFormManager& signin_form_manager);
-
-  virtual bool DoesStoredCredentialBelongToManager(
-      const password_manager::PasswordFormManager* manager,
-      const password_manager::PasswordForm& stored_credential);
-
-  virtual bool IsReauthBeforeFillingRequired();
-
  private:
-  // Should always be called synchronously.
-  void ProcessRetrievedForms(
-      std::vector<password_manager::PasswordFormManager*> eligible_managers);
-
-  // Fills all eligible fields with `stored_credential.password_value` and
-  // `stored_credential.username_value`.
-  void FillAllEligibleFields(
-      const password_manager::PasswordForm& stored_credential,
-      bool should_skip_iframes,
-      std::vector<password_manager::PasswordFormManager*> eligible_managers);
+  enum class FieldType { kUsername, kPassword };
 
   // Called when the affiliations for `credential_.request_origin` have been
   // retrieved. `results` contains facets affiliated with the
@@ -99,6 +76,10 @@ class ActorLoginCredentialFiller {
       base::OnceCallback<
           void(std::vector<password_manager::PasswordFormManager*>)>
           on_forms_retrieved_cb);
+
+  // Should always be called synchronously.
+  void ProcessRetrievedForms(
+      std::vector<password_manager::PasswordFormManager*> eligible_managers);
 
   // Checks if device reauthentication is required before filling.
   // If required, triggers reauthentication and, upon success, re-fetches
@@ -115,6 +96,11 @@ class ActorLoginCredentialFiller {
   // is reported via `callback_`.
   void AttemptReauth(base::OnceClosure on_reauth_cb);
 
+  // Retrieves the full data of a saved credential for the form managed
+  // by `signin_form_manager` corresponding to `credential_`.
+  const password_manager::PasswordForm* GetMatchingStoredCredential(
+      const password_manager::PasswordFormManager& signin_form_manager);
+
   // Reauthenticates the user before filling.
   void ReauthenticateAndFill(base::OnceClosure fill_form_cb);
 
@@ -122,6 +108,13 @@ class ActorLoginCredentialFiller {
   // operation. Invokes `fill_form_cb` if authentication was successful.
   void OnDeviceReauthCompleted(base::OnceClosure fill_form_cb,
                                bool authenticated);
+
+  // Fills all eligible fields with `stored_credential.password_value` and
+  // `stored_credential.username_value`.
+  void FillAllEligibleFields(
+      const password_manager::PasswordForm& stored_credential,
+      bool should_skip_iframes,
+      std::vector<password_manager::PasswordFormManager*> eligible_managers);
 
   // Fills the field of `type` identified by `field_renderer_id` within the
   // `driver`'s frame with `value`. `closure` will be called to signal
@@ -132,6 +125,7 @@ class ActorLoginCredentialFiller {
                  const std::u16string& value,
                  FieldType type,
                  base::OnceClosure closure);
+
   // Called with the success status of filling the respective field.
   void ProcessSingleFillingResult(autofill::FormGlobalId form_global_id,
                                   FieldType field_type,

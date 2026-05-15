@@ -59,6 +59,10 @@ class PasswordChangeFromCheckupDelegate {
 #endif
 
  private:
+  void AutoSelectCredential(
+      const std::vector<actor_login::Credential>& credentials,
+      actor::ToolDelegate::CredentialSelectedCallback callback);
+
   glic::GlicKeyedService* GetGlicService();
 
   void OnFindFormTaskStateChanged(actor::ActorTask& task);
@@ -71,6 +75,7 @@ class PasswordChangeFromCheckupDelegate {
   void OnVerificationTaskStateChanged(actor::ActorTask& task);
   void OnVerificationTimeout();
   void HandleMaybeSuccessfulPasswordChange();
+  void RegisterAutoSelectCredential(actor::ActorTask& task);
   void InvokeVerificationFlow(std::string post_submission_prompt);
 
   base::WeakPtr<content::WebContents> originator_;

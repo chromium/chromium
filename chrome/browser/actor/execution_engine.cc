@@ -1214,6 +1214,14 @@ void ExecutionEngine::PromptToSelectCredential(
   TRACE_EVENT0("actor", "ExecutionEngine::PromptToSelectCredential");
   CHECK(!credentials.empty());
 
+  if (credential_selection_override_callback_ &&
+      base::FeatureList::IsEnabled(
+          password_manager::features::kPasswordCheckupPrototype)) {
+    std::move(credential_selection_override_callback_)
+        .Run(credentials, std::move(callback));
+    return;
+  }
+
   if (!task_->delegate()) {
     // TODO(crbug.com/427817882): Explicit error reason (kNewLonginAttempt).
     std::move(callback).Run(/*selected_credential=*/webui::mojom::
@@ -1376,9 +1384,9 @@ void ExecutionEngine::AddWritableMainframeOrigins(
   origin_checker_.AllowNavigationTo(added_writable_mainframe_origins);
 }
 
-void ExecutionEngine::SetActorLoginService(
-    std::unique_ptr<actor_login::ActorLoginService> actor_login_service) {
-  actor_login_service_ = std::move(actor_login_service);
+void ExecutionEngine::PreHandleCredentialSelectionDialog(
+    CredentialSelectionOverrideCallback callback) {
+  credential_selection_override_callback_ = std::move(callback);
 }
 
 const ToolRequest& ExecutionEngine::GetNextAction() const {
