@@ -43,3 +43,7 @@
 #contextEntrypoint::part(entrypoint-button) {
   --cr-icon-button-size: 36px;
 }
+
+cr-composebox-tool-chip {
+  padding-inline-start: 8px;
+}
