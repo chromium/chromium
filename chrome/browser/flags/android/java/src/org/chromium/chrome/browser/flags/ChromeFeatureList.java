@@ -1171,7 +1171,10 @@ public abstract class ChromeFeatureList {
                     /* defaultValue= */ false,
                     /* defaultValueInTests= */ true);
     public static final CachedFlag sToolbarCaptureFixForSPAs =
-            newCachedFlag(TOOLBAR_CAPTURE_FIX_FOR_SPAS, /* defaultValue= */ false);
+            newCachedFlag(
+                    TOOLBAR_CAPTURE_FIX_FOR_SPAS,
+                    /* defaultValue= */ false,
+                    /* defaultValueInTests= */ true);
     public static final CachedFlag sToolbarPhoneAnimationRefactor =
             newCachedFlag(
                     TOOLBAR_PHONE_ANIMATION_REFACTOR,

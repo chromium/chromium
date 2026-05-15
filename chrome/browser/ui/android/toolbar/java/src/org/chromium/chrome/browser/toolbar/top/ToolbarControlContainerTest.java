@@ -399,7 +399,10 @@ public class ToolbarControlContainerTest {
     }
 
     @Test
-    @DisableFeatures(ChromeFeatureList.TOOLBAR_STALE_CAPTURE_BUG_FIX)
+    @DisableFeatures({
+        ChromeFeatureList.TOOLBAR_STALE_CAPTURE_BUG_FIX,
+        ChromeFeatureList.TOOLBAR_CAPTURE_FIX_FOR_SPAS
+    })
     public void testIsDirty_InMotion() {
         makeAndInitAdapter();
         mockIsReadyDifference(ToolbarSnapshotDifference.URL_TEXT);
@@ -591,7 +594,10 @@ public class ToolbarControlContainerTest {
     }
 
     @Test
-    @DisableFeatures(ChromeFeatureList.TOOLBAR_STALE_CAPTURE_BUG_FIX)
+    @DisableFeatures({
+        ChromeFeatureList.TOOLBAR_STALE_CAPTURE_BUG_FIX,
+        ChromeFeatureList.TOOLBAR_CAPTURE_FIX_FOR_SPAS
+    })
     public void testIsDirty_InMotionAndToolbarSwipe() {
         makeAndInitAdapter();
         verifyRequestsOnInMotionChange(true, false);
