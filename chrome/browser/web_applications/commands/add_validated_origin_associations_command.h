@@ -17,6 +17,10 @@
 
 namespace web_app {
 
+// The command revalidates existing origin associations,
+// effectively treating server side values as source of truth,
+// meaning previously validated items might be removed, if server
+// is no longer returning them.
 class AddValidatedOriginAssociationsCommand
     : public WebAppCommand<AppLock, AddValidatedOriginAssociationsResult> {
  public:

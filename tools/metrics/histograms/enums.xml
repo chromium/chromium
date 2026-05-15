@@ -224,7 +224,7 @@ uploading your change for review.  These are checked by presubmit scripts.
 
 <enum name="AddValidatedOriginAssociationsResult">
   <int value="0" label="Success"/>
-  <int value="1" label="NotNeeded"/>
+  <int value="1" label="(Obsolete) NotNeeded"/>
   <int value="2" label="Throttled"/>
   <int value="3" label="WebAppNotInstalled"/>
   <int value="4" label="UnvalidatedItemsRemain"/>

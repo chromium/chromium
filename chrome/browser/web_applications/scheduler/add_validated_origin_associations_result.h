@@ -14,9 +14,10 @@ enum class AddValidatedOriginAssociationsResult {
   // Origin associations were fetched succcesfully, validated and stored in
   // web_app.
   kSuccess = 0,
-  // Origin association validation is not needed because app has nothing to
-  // validate.
-  kNotNeeded = 1,
+
+  // Removed, don't reuse this value.
+  // kNotNeeded = 1,
+
   // The validation command was throttled (rate-limited). The caller needs to
   // wait for more time before revalidation can happen.
   kThrottled = 2,
