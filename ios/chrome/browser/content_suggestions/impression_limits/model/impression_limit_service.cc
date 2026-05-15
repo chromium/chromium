@@ -60,18 +60,13 @@ ImpressionLimitService::ImpressionLimitService(
   for (const auto& pref_name : GetAllowListedPrefs()) {
     RemoveEntriesOlderThan30Days(pref_name);
   }
-  // ShopCard arm 3, 4 and 5 are still experimental (only arm 1 has launched).
-  // So delete any preferences stored for those arms, unless the arm is turned
-  // on.
-  if (commerce::kShopCardVariation.Get() != commerce::kShopCardArm3) {
-    pref_service_->ClearPref(
-        tab_resumption_prefs::kTabResumptionWithPriceDropUrlImpressions);
-  }
-
-  if (commerce::kShopCardVariation.Get() != commerce::kShopCardArm5) {
-    pref_service_->ClearPref(
-        tab_resumption_prefs::kTabResumptionRegularUrlImpressions);
-  }
+  // Tab Resumption arms did not launch with impression limits. These
+  // preferences will be cleared, then removed a couple of milestones later
+  // crbug.com/513350539.
+  pref_service_->ClearPref(
+      tab_resumption_prefs::kTabResumptionWithPriceDropUrlImpressions);
+  pref_service_->ClearPref(
+      tab_resumption_prefs::kTabResumptionRegularUrlImpressions);
 }
 
 ImpressionLimitService::~ImpressionLimitService() = default;

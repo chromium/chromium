@@ -1736,10 +1736,6 @@ inline constexpr char kSharedHighlightingIOSDescription[] =
     "Adds a Link to Text option in the Edit Menu which generates URLs with a "
     "text fragment.";
 
-inline constexpr char kShopCardName[] = "Enables Tab Resumption ShopCard";
-inline constexpr char kShopCardDescription[] =
-    "Enables being able to show Tab Resumption ShopCard in the Magic Stack";
-
 inline constexpr char kShowAutofillTypePredictionsName[] =
     "Show Autofill predictions";
 inline constexpr char kShowAutofillTypePredictionsDescription[] =

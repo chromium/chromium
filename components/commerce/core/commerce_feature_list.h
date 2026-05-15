@@ -156,15 +156,7 @@ constexpr base::FeatureParam<std::string> kCheckoutPatternMapping{
     // Empty JSON string.
     ""};
 
-inline constexpr base::FeatureParam<std::string> kShopCardVariation{
-    &kTabResumptionShopCard, "ShopCardVariant", ""};
-inline constexpr base::FeatureParam<std::string> kShopCardPosition{
-    &kTabResumptionShopCard, "ShopCardPosition", ""};
-
 extern const char kShopCardArm1[];
-extern const char kShopCardArm3[];
-extern const char kShopCardArm5[];
-extern const char kShopCardFrontPosition[];
 extern const char kShopCardMaxImpressions[];
 
 // Check if a URL belongs to a partner merchant of any type of discount.

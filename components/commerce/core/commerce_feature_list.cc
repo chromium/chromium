@@ -234,12 +234,6 @@ BASE_FEATURE(kCommerceDeveloper, base::FEATURE_DISABLED_BY_DEFAULT);
 const char kRetailCouponsWithCodeParam[] = "RetailCouponsWithCodeParam";
 
 extern const char kShopCardArm1[] = "arm_1";
-extern const char kShopCardArm3[] = "arm_3";
-// Regular Tab Resumption with same impression limits as ShopCard
-// (max 3 impressions). So ShopCard variations of Tab Resumption can
-// be conclusively benchmarked against regular Tab Resumption.
-extern const char kShopCardArm5[] = "arm_5";
-extern const char kShopCardFrontPosition[] = "shop_card_front";
 extern const char kShopCardMaxImpressions[] = "max_impressions";
 
 const char kRevertIconOnFailureParam[] =

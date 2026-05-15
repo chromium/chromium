@@ -586,31 +586,7 @@ const FeatureEntry::FeatureParam kPriceTrackingPromoForceHideArm[] = {
      segmentation_platform::kPriceTrackingNotificationPromo},
 };
 
-// ShopCard variants
-const FeatureEntry::FeatureParam kPriceDropOnTabArm[] = {
-    {"ShopCardVariant", "arm_3"},
-};
 
-const FeatureEntry::FeatureParam kTabResumptionWithImpressionLimitsArm[] = {
-    {"ShopCardVariant", "arm_5"},
-};
-const FeatureEntry::FeatureParam kPriceDropOnTabFront[] = {
-    {"ShopCardVariant", "arm_3"},
-    {"ShopCardPosition", "shop_card_front"},
-};
-
-const FeatureEntry::FeatureParam kTabResumptionWithImpressionLimitsFront[] = {
-    {"ShopCardVariant", "arm_5"},
-    {"ShopCardPosition", "shop_card_front"},
-};
-const FeatureEntry::FeatureParam kPriceDropOnTabDelayedDataAcquisition[] = {
-    {"ShopCardVariant", "arm_6"},
-};
-const FeatureEntry::FeatureParam kPriceDropOnTabDelayedDataAcquisitionFront[] =
-    {
-        {"ShopCardVariant", "arm_6"},
-        {"ShopCardPosition", "shop_card_front"},
-};
 
 // Address Bar Position
 const FeatureEntry::FeatureParam kTipsAddressBarPositionForceShowArm[] = {
@@ -712,23 +688,7 @@ const FeatureEntry::FeatureParam kDefaultBrowserPromoForceHideArm[] = {
      segmentation_platform::kDefaultBrowserPromoEphemeralModule},
 };
 
-// ShopCard experiment arms
-const FeatureEntry::FeatureVariation kShopCardOverrideOptions[] = {
-    {"Card 3 Price Drop on Tab Resumption", kPriceDropOnTabArm, nullptr},
 
-    {"Card 5 Tab Resumption with Impression Limits",
-     kTabResumptionWithImpressionLimitsArm, nullptr},
-    {"Card 3 Price Drop on Tab Resumption at front of magic stack",
-     kPriceDropOnTabFront, nullptr},
-
-    {"Card 5 Tab Resumption with Impression Limits at front of magic stack",
-     kTabResumptionWithImpressionLimitsFront, nullptr},
-    {"Card 6 Price Drop on Tab Resumption with delayed data acquisition",
-     kPriceDropOnTabDelayedDataAcquisition, nullptr},
-    {"Card 6 Price Drop on Tab Resumption with delayed data acquisition at "
-     "front of magic stack",
-     kPriceDropOnTabDelayedDataAcquisitionFront, nullptr},
-};
 
 const FeatureEntry::FeatureVariation kEphemeralCardRankerCardOverrideOptions[] =
     {
@@ -1903,12 +1863,6 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
      flag_descriptions::kEnableTraitCollectionRegistrationName,
      flag_descriptions::kEnableTraitCollectionRegistrationDescription,
      flags_ui::kOsIos, FEATURE_VALUE_TYPE(kEnableTraitCollectionRegistration)},
-    {"ios-shop-card", flag_descriptions::kShopCardName,
-     flag_descriptions::kShopCardDescription, flags_ui::kOsIos,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(commerce::kTabResumptionShopCard,
-                                    kShopCardOverrideOptions,
-                                    "TabResumptionShopCard")},
-
     {"ios-segmentation-ephemeral-card-ranker",
      flag_descriptions::kSegmentationPlatformEphemeralCardRankerName,
      flag_descriptions::kSegmentationPlatformEphemeralCardRankerDescription,
