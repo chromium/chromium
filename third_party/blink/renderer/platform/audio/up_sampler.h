@@ -61,11 +61,10 @@ class PLATFORM_EXPORT UpSampler final {
   size_t LatencyFrames() const;
 
  private:
-  enum { kDefaultKernelSize = 128 };
-
   unsigned input_block_size_;
 
-  // Computes the odd sample-frames of the output.
+  // Computes the odd sample-frames of the output.  The convolution method
+  // will be selected based on the input block size.
   std::unique_ptr<DirectConvolver> direct_convolver_;
   std::unique_ptr<SimpleFFTConvolver> simple_fft_convolver_;
 

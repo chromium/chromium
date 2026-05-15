@@ -39,6 +39,8 @@ namespace blink {
 
 namespace {
 
+constexpr size_t kKernelSize = 128;
+
 // Computes ideal band-limited filter coefficients to sample in between each
 // source sample-frame.  This filter will be used to compute the odd
 // sample-frames of the output.
@@ -78,12 +80,12 @@ std::unique_ptr<AudioFloatArray> MakeKernel(size_t size) {
 UpSampler::UpSampler(unsigned input_block_size)
     : input_block_size_(input_block_size),
       temp_buffer_(input_block_size),
-      input_buffer_(input_block_size * 2) {
-  std::unique_ptr<AudioFloatArray> convolution_kernel =
-      MakeKernel(kDefaultKernelSize);
-  if (input_block_size_ <= 128) {
-    // If the input block size is small enough, use direct convolution because
-    // it is faster than FFT convolution for such input block sizes.
+      input_buffer_(kKernelSize / 2 + input_block_size) {
+  std::unique_ptr<AudioFloatArray> convolution_kernel = MakeKernel(kKernelSize);
+  if (input_block_size_ <= kKernelSize) {
+    // Use direct convolution because SimpleFFTConvolver requires the block size
+    // to be at least as large as the kernel size.  Direct convolution is also
+    // faster than FFT convolution for small input block sizes.
     direct_convolver_ = std::make_unique<DirectConvolver>(
         input_block_size_, std::move(convolution_kernel));
   } else {
@@ -105,23 +107,21 @@ void UpSampler::Process(base::span<const float> source,
 
   DCHECK_EQ(source_frames_to_process, temp_buffer_.size());
 
-  size_t half_size = convolution_kernel_size / 2;
+  size_t half_kernel_size = convolution_kernel_size / 2;
 
   DCHECK_EQ(dest.size(), source_frames_to_process * 2);
-  DCHECK_EQ(input_buffer_.size(), source_frames_to_process * 2);
-  DCHECK_LE(half_size, source_frames_to_process);
+  DCHECK_EQ(input_buffer_.size(), half_kernel_size + source_frames_to_process);
 
   base::span<float> input_buffer_span = input_buffer_.as_span();
-  base::span<float> second_half =
-      input_buffer_span.subspan(source_frames_to_process);
 
-  // Copy source samples to 2nd half of input buffer.
-  second_half.copy_from(source);
+  // Copy source samples to the end of input buffer.
+  input_buffer_span.subspan(half_kernel_size, source_frames_to_process)
+      .copy_from(source);
 
   // Copy even sample-frames 0,2,4,6... (delayed by the linear phase delay)
   // directly into dest.
-  base::span<const float> delayed_input = input_buffer_span.subspan(
-      source_frames_to_process - half_size, source_frames_to_process);
+  base::span<const float> delayed_input =
+      input_buffer_span.first(source_frames_to_process);
   for (size_t i = 0; i < source_frames_to_process; ++i) {
     dest[i * 2] = delayed_input[i];
   }
@@ -138,8 +138,10 @@ void UpSampler::Process(base::span<const float> source,
     dest[i * 2 + 1] = odd_samples[i];
   }
 
-  // Copy 2nd half of input buffer to 1st half.
-  input_buffer_span.first(source_frames_to_process).copy_from(second_half);
+  // Shift the history buffer.
+  input_buffer_span.first(half_kernel_size)
+      .copy_from(input_buffer_span.subspan(source_frames_to_process,
+                                           half_kernel_size));
 }
 
 void UpSampler::Reset() {

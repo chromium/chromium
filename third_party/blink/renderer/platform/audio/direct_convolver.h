@@ -30,12 +30,14 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_AUDIO_DIRECT_CONVOLVER_H_
 
 #include <memory>
+
 #include "third_party/blink/renderer/platform/audio/audio_array.h"
+#include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
 
-class DirectConvolver final {
+class PLATFORM_EXPORT DirectConvolver final {
   USING_FAST_MALLOC(DirectConvolver);
 
  public:

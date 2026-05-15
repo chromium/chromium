@@ -31,8 +31,11 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_AUDIO_DOWN_SAMPLER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_AUDIO_DOWN_SAMPLER_H_
 
+#include <memory>
+
 #include "base/containers/span.h"
 #include "third_party/blink/renderer/platform/audio/audio_array.h"
+#include "third_party/blink/renderer/platform/audio/direct_convolver.h"
 #include "third_party/blink/renderer/platform/audio/simple_fft_convolver.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -58,12 +61,12 @@ class PLATFORM_EXPORT DownSampler final {
   size_t LatencyFrames() const;
 
  private:
-  enum { kDefaultKernelSize = 256 };
-
   unsigned input_block_size_;
 
-  // Half-band filter for the odd output sample-frames.
-  SimpleFFTConvolver convolver_;
+  // Half-band filter for the odd output sample-frames.  One of the two
+  // convolution methods will be selected based on the input block size.
+  std::unique_ptr<DirectConvolver> direct_convolver_;
+  std::unique_ptr<SimpleFFTConvolver> simple_fft_convolver_;
 
   AudioFloatArray temp_buffer_;
 

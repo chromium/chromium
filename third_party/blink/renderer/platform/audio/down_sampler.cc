@@ -39,6 +39,8 @@ namespace blink {
 
 namespace {
 
+constexpr size_t kKernelSize = 256;
+
 // Computes ideal band-limited half-band filter coefficients.
 // In other words, filter out all frequencies higher than 0.25 * Nyquist.
 std::unique_ptr<AudioFloatArray> MakeReducedKernel(int size) {
@@ -84,10 +86,18 @@ std::unique_ptr<AudioFloatArray> MakeReducedKernel(int size) {
 
 DownSampler::DownSampler(unsigned input_block_size)
     : input_block_size_(input_block_size),
-      convolver_(input_block_size / 2,  // runs at 1/2 source sample-rate
-                 *MakeReducedKernel(kDefaultKernelSize)),
       temp_buffer_(input_block_size / 2),
-      input_buffer_(input_block_size * 2) {}
+      input_buffer_(kKernelSize / 2 + input_block_size) {
+  std::unique_ptr<AudioFloatArray> convolution_kernel =
+      MakeReducedKernel(kKernelSize);
+  if (input_block_size_ <= kKernelSize) {
+    direct_convolver_ = std::make_unique<DirectConvolver>(
+        input_block_size_ / 2, std::move(convolution_kernel));
+  } else {
+    simple_fft_convolver_ = std::make_unique<SimpleFFTConvolver>(
+        input_block_size_ / 2, *convolution_kernel);
+  }
+}
 
 void DownSampler::Process(base::span<const float> source,
                           base::span<float> dest) {
@@ -98,60 +108,70 @@ void DownSampler::Process(base::span<const float> source,
 
   DCHECK_EQ(dest.size(), dest_frames_to_process);
   DCHECK_EQ(dest_frames_to_process, temp_buffer_.size());
-  DCHECK_EQ(convolver_.ConvolutionKernelSize(),
-            static_cast<unsigned>(kDefaultKernelSize / 2));
 
-  size_t half_size = kDefaultKernelSize / 2;
+  size_t half_kernel_size = kKernelSize / 2;
 
-  // Copy source samples to 2nd half of input buffer.
-  DCHECK_EQ(input_buffer_.size(), source_frames_to_process * 2);
-  DCHECK_LE(half_size, source_frames_to_process);
+  DCHECK_EQ(input_buffer_.size(), half_kernel_size + source_frames_to_process);
 
   base::span<float> input_buffer_span = input_buffer_.as_span();
-  base::span<float> second_half =
-      input_buffer_span.subspan(source_frames_to_process);
 
-  second_half.copy_from(source);
+  // Copy source samples to the end of input buffer.
+  input_buffer_span.subspan(half_kernel_size, source_frames_to_process)
+      .copy_from(source);
 
   // Copy the odd sample-frames from source, delayed by one sample-frame
   // (destination sample-rate) to match shifting forward in time in
   // m_reducedKernel.
   base::span<float> odd_samples = temp_buffer_.as_span();
   base::span<const float> delayed_input =
-      input_buffer_span.subspan(source_frames_to_process - 1);
+      input_buffer_span.subspan(half_kernel_size - 1, source_frames_to_process);
   for (size_t i = 0; i < dest_frames_to_process; ++i) {
     odd_samples[i] = delayed_input[i * 2];
   }
 
-  // Actually process oddSamplesP with m_reducedKernel for efficiency.
+  // Actually process odd_samples with m_reducedKernel for efficiency.
   // The theoretical kernel is double this size with 0 values for even terms
   // (except center).
-  convolver_.Process(odd_samples, dest);
+  if (direct_convolver_) {
+    direct_convolver_->Process(odd_samples, dest);
+  } else {
+    simple_fft_convolver_->Process(odd_samples, dest);
+  }
 
   // Now, account for the 0.5 term right in the middle of the kernel.
-  // This amounts to a delay-line of length halfSize (at the source
+  // This amounts to a delay-line of length `half_kernel_size` (at the source
   // sample-rate), scaled by 0.5.
 
   // Sum into the destination.
   base::span<const float> delayed_half =
-      input_buffer_span.subspan(source_frames_to_process - half_size);
+      input_buffer_span.first(source_frames_to_process);
   for (size_t i = 0; i < dest_frames_to_process; ++i) {
-    dest[i] += 0.5 * delayed_half[i * 2];
+    dest[i] += 0.5f * delayed_half[i * 2];
   }
 
-  // Copy 2nd half of input buffer to 1st half.
-  input_buffer_span.first(source_frames_to_process).copy_from(second_half);
+  // Shift the history buffer.
+  input_buffer_span.first(half_kernel_size)
+      .copy_from(input_buffer_span.subspan(source_frames_to_process,
+                                           half_kernel_size));
 }
 
 void DownSampler::Reset() {
-  convolver_.Reset();
+  if (direct_convolver_) {
+    direct_convolver_->Reset();
+  }
+  if (simple_fft_convolver_) {
+    simple_fft_convolver_->Reset();
+  }
   input_buffer_.Zero();
 }
 
 size_t DownSampler::LatencyFrames() const {
+  const size_t convolution_kernel_size =
+      direct_convolver_ ? direct_convolver_->ConvolutionKernelSize()
+                        : simple_fft_convolver_->ConvolutionKernelSize();
   // Divide by two since this is a linear phase kernel and the delay is at the
   // center of the kernel.
-  return convolver_.ConvolutionKernelSize() / 2;
+  return convolution_kernel_size / 2;
 }
 
 }  // namespace blink
