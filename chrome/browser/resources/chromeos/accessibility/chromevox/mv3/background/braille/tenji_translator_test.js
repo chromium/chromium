@@ -32,6 +32,7 @@ ChromeVoxTenjiTranslatorTest = class extends ChromeVoxE2ETest {
     TenjiTranslator['pendingRequest_'] = false;
     TenjiTranslator['requestQueue_'] = [];
     TenjiTranslator['initPromise_'] = null;
+    TenjiTranslator['hasAnnouncedBackTranslateUnavailable_'] = false;
   }
 
   /** Bypasses initialization and marks the translator as ready. */
@@ -177,6 +178,14 @@ AX_TEST_F(
     'ChromeVoxTenjiTranslatorTest', 'BackTranslateReturnsNull',
     async function() {
       this.setInitialized_();
+      const messages = [];
+      const savedWithString = Output.prototype.withString;
+      const savedGo = Output.prototype.go;
+      Output.prototype.withString = function(text) {
+        messages.push(text);
+        return this;
+      };
+      Output.prototype.go = function() {};
 
       await new Promise((resolve) => {
         this.translator_.backTranslate(
@@ -185,39 +194,71 @@ AX_TEST_F(
               resolve();
             });
       });
+
+      Output.prototype.withString = savedWithString;
+      Output.prototype.go = savedGo;
+      assertEquals(1, messages.length);
+      assertEquals(
+          Msgs.getMsg('tenji_back_translate_unavailable'), messages[0]);
     });
 
 AX_TEST_F(
-    'ChromeVoxTenjiTranslatorTest', 'RequestsQueueWhileNotInitialized',
+    'ChromeVoxTenjiTranslatorTest', 'BackTranslateAnnouncesOnlyOnce',
     async function() {
-      OffscreenBridge.tenjiTranslate = (_text) => Promise.resolve({
-        value: brailleString(1),
-        textToBraille: [0],
-        brailleToText: [0],
+      this.setInitialized_();
+      const messages = [];
+      const savedWithString = Output.prototype.withString;
+      const savedGo = Output.prototype.go;
+      Output.prototype.withString = function(text) {
+        messages.push(text);
+        return this;
+      };
+      Output.prototype.go = function() {};
+
+      await new Promise((resolve) => {
+        this.translator_.backTranslate(new ArrayBuffer(1), (_text) => {
+          resolve();
+        });
+      });
+      await new Promise((resolve) => {
+        this.translator_.backTranslate(new ArrayBuffer(1), (_text) => {
+          resolve();
+        });
       });
 
+      Output.prototype.withString = savedWithString;
+      Output.prototype.go = savedGo;
+      assertEquals(1, messages.length);
+    });
+
+AX_TEST_F(
+    'ChromeVoxTenjiTranslatorTest', 'PreInitRequestsReturnEmpty',
+    async function() {
       let callbackCount = 0;
       const p1 = new Promise((resolve) => {
-        this.translator_.translate('a', [], () => {
-          callbackCount++;
-          resolve();
-        });
+        this.translator_.translate(
+            'a', [], (cells, textToBraille, brailleToText) => {
+              assertEquals(0, cells.byteLength);
+              assertEqualsJSON([], textToBraille);
+              assertEqualsJSON([], brailleToText);
+              callbackCount++;
+              resolve();
+            });
       });
       const p2 = new Promise((resolve) => {
-        this.translator_.translate('b', [], () => {
-          callbackCount++;
-          resolve();
-        });
+        this.translator_.translate(
+            'b', [], (cells, textToBraille, brailleToText) => {
+              assertEquals(0, cells.byteLength);
+              assertEqualsJSON([], textToBraille);
+              assertEqualsJSON([], brailleToText);
+              callbackCount++;
+              resolve();
+            });
       });
-
-      assertEquals(0, callbackCount);
-      assertEquals(2, TenjiTranslator['requestQueue_'].length);
-
-      TenjiTranslator['initPromise_'] = Promise.resolve();
-      void TenjiTranslator['processNextRequest_']();
 
       await Promise.all([p1, p2]);
       assertEquals(2, callbackCount);
+      assertEquals(0, TenjiTranslator['requestQueue_'].length);
     });
 
 AX_TEST_F('ChromeVoxTenjiTranslatorTest', 'InitSuccess', async function() {
@@ -227,8 +268,7 @@ AX_TEST_F('ChromeVoxTenjiTranslatorTest', 'InitSuccess', async function() {
   };
 
   assertEquals(null, TenjiTranslator['initPromise_']);
-  this.translator_.init();
-  await TenjiTranslator['initPromise_'];
+  assertTrue(await this.translator_.init());
   assertNotEquals(null, TenjiTranslator['initPromise_']);
 });
 
@@ -250,10 +290,7 @@ AX_TEST_F(
         });
       });
 
-      this.translator_.init();
-      // initPromise_ resolves (not rejects) once the failure is handled and
-      // failQueuedRequests_() has been called.
-      await TenjiTranslator['initPromise_'];
+      assertFalse(await this.translator_.init());
       await p1;
       assertEquals(1, callbackCount);
     });

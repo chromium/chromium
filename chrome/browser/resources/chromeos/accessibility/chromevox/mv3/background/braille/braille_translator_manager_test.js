@@ -67,6 +67,17 @@ FakeTranslator = class {
   }
 };
 
+function createSuccessfulTenjiTranslator() {
+  return {
+    init() {
+      return Promise.resolve(true);
+    },
+    translate() {},
+    backTranslate() {},
+    isFakeSuccessfulTenjiTranslator_: true,
+  };
+}
+
 function callOnce(callback) {
   let called = false;
   return function() {
@@ -120,9 +131,11 @@ TEST_F(
     'ChromeVoxBrailleTranslatorManagerTest', 'testRefreshWithTenjiTableId',
     function() {
       this.addChangeListener(function() {
+        this.manager.setTenjiTranslatorFactoryForTest(
+            () => createSuccessfulTenjiTranslator());
         this.addChangeListener(function() {
-          assertTrue(
-              this.manager.getDefaultTranslator() instanceof TenjiTranslator);
+          assertTrue(this.manager.getDefaultTranslator()
+                         .isFakeSuccessfulTenjiTranslator_);
           assertNotEquals(null, this.manager.getExpandingTranslator());
           assertEquals(null, this.manager.getUncontractedTranslator());
         });
@@ -134,6 +147,8 @@ TEST_F(
     'ChromeVoxBrailleTranslatorManagerTest', 'testRefreshWithTenjiTableIdAgain',
     function() {
       this.addChangeListener(function() {
+        this.manager.setTenjiTranslatorFactoryForTest(
+            () => createSuccessfulTenjiTranslator());
         this.addChangeListener(function() {
           // After switching to Tenji, refreshing with the same table id should
           // return early without firing the change listener.
@@ -150,12 +165,14 @@ TEST_F(
     'ChromeVoxBrailleTranslatorManagerTest',
     'testRefreshFromTenjiToLiblouisTable', function() {
       this.addChangeListener(function() {
+        this.manager.setTenjiTranslatorFactoryForTest(
+            () => createSuccessfulTenjiTranslator());
         this.addChangeListener(function() {
-          assertTrue(
-              this.manager.getDefaultTranslator() instanceof TenjiTranslator);
+          assertTrue(this.manager.getDefaultTranslator()
+                         .isFakeSuccessfulTenjiTranslator_);
           this.addChangeListener(function() {
-            assertFalse(
-                this.manager.getDefaultTranslator() instanceof TenjiTranslator);
+            assertFalse(!!this.manager.getDefaultTranslator()
+                              .isFakeSuccessfulTenjiTranslator_);
             assertEquals(
                 'en-ueb-g2', this.manager.getDefaultTranslator().table.id);
           });
@@ -171,13 +188,15 @@ TEST_F(
       this.addChangeListener(function() {
         // Simulate a Japanese UI locale so that refresh('') picks
         // TenjiTranslator.
+        this.manager.setTenjiTranslatorFactoryForTest(
+            () => createSuccessfulTenjiTranslator());
         const origGetMessage = chrome.i18n.getMessage;
         chrome.i18n.getMessage = (key) =>
             key === '@@ui_locale' ? 'ja' : origGetMessage(key);
         this.addChangeListener(function() {
           chrome.i18n.getMessage = origGetMessage;
-          assertTrue(
-              this.manager.getDefaultTranslator() instanceof TenjiTranslator);
+          assertTrue(this.manager.getDefaultTranslator()
+                         .isFakeSuccessfulTenjiTranslator_);
           assertEquals(null, this.manager.getUncontractedTranslator());
           assertNotEquals(null, this.manager.getExpandingTranslator());
         });
@@ -192,7 +211,27 @@ TEST_F(
         this.manager.setTenjiTranslatorFactoryForTest(
             () => ({
               init() {
-                return Promise.reject(new Error('Fake init failure'));
+                return Promise.resolve(false);
+              },
+            }));
+        this.addChangeListener(function() {
+          assertFalse(
+              this.manager.getDefaultTranslator() instanceof TenjiTranslator);
+          assertEquals(
+              'ja-kantenji', this.manager.getDefaultTranslator().table.id);
+        });
+        this.manager.refresh('ja-tenji');
+      });
+    });
+
+TEST_F(
+    'ChromeVoxBrailleTranslatorManagerTest',
+    'testTenjiInitExceptionFallsBackToJaKantenji', function() {
+      this.addChangeListener(function() {
+        this.manager.setTenjiTranslatorFactoryForTest(
+            () => ({
+              init() {
+                return Promise.reject(new Error('Fake init exception'));
               },
             }));
         this.addChangeListener(function() {

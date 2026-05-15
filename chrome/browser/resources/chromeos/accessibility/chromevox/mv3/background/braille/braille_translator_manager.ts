@@ -110,22 +110,25 @@ export class BrailleTranslatorManager {
           this.tenjiTranslatorFactory_() :
           new TenjiTranslator();
       try {
-        await tenjiTranslator.init();
-        this.defaultTableId_ = JP_BRAILLE_TENJI_TABLE.id;
-        this.defaultTranslator_ = tenjiTranslator;
-        this.expandingTranslator_ =
-            new ExpandingBrailleTranslator(tenjiTranslator, null);
-        this.uncontractedTableId_ = null;
-        this.uncontractedTranslator_ = null;
-        this.changeListeners_.forEach(listener => listener());
-        finishCallback();
-        return;
+        const initSucceeded = await tenjiTranslator.init();
+        if (initSucceeded) {
+          this.defaultTableId_ = JP_BRAILLE_TENJI_TABLE.id;
+          this.defaultTranslator_ = tenjiTranslator;
+          this.expandingTranslator_ =
+              new ExpandingBrailleTranslator(tenjiTranslator, null);
+          this.uncontractedTableId_ = null;
+          this.uncontractedTranslator_ = null;
+          this.changeListeners_.forEach(listener => listener());
+          finishCallback();
+          return;
+        }
       } catch (error) {
         console.error('Failed to initialize TenjiTranslator', error);
-        // Fall back on liblouis translator with its ja-kantenji table if Tenji
-        // translator init fails.
-        brailleTable = 'ja-kantenji';
       }
+
+      // Fall back on liblouis translator with its ja-kantenji table if Tenji
+      // translator init fails.
+      brailleTable = 'ja-kantenji';
     }
 
     // Initialize a liblouis translator.
@@ -291,7 +294,8 @@ export class BrailleTranslatorManager {
   /**
    * Overrides the TenjiTranslator factory used in refresh(). The factory is
    * invoked once per refresh() call that would normally construct a
-   * TenjiTranslator. Pass a factory whose init() rejects to simulate failures.
+   * TenjiTranslator. Pass a factory whose init() resolves to false to simulate
+   * expected failures, or rejects to simulate unexpected exceptions.
    */
   setTenjiTranslatorFactoryForTest(factory: () => TenjiTranslator): void {
     this.tenjiTranslatorFactory_ = factory;

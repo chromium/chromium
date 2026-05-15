@@ -10,7 +10,9 @@ import '../../services/tenji/sandboxed_tenji_wrapper.js';
 import {ArrayBufferUtil} from '/common/array_buffer_util.js';
 import {TestImportManager} from '/common/testing/test_import_manager.js';
 
+import {Msgs} from '../../common/msgs.js';
 import {OffscreenBridge} from '../../common/offscreen_bridge.js';
+import {Output} from '../output/output.js';
 
 import {BackTranslateCallback, BrailleTranslator, TranslateCallback} from './braille_translator.js';
 
@@ -21,30 +23,34 @@ type QueuedRequest = {
 };
 
 export class TenjiTranslator implements BrailleTranslator {
-  private static initPromise_: Promise<void>|null = null;
+  private static initPromise_: Promise<boolean>|null = null;
   private static pendingRequest_ = false;
   private static requestQueue_: QueuedRequest[] = [];
+  private static hasAnnouncedBackTranslateUnavailable_ = false;
 
-  init(): Promise<void> {
+  init(): Promise<boolean> {
     if (!TenjiTranslator.initPromise_) {
       TenjiTranslator.initPromise_ = TenjiTranslator.doInit_();
     }
 
-    return Promise.resolve();
+    return TenjiTranslator.initPromise_;
   }
 
-  private static async doInit_(): Promise<void> {
+  private static async doInit_(): Promise<boolean> {
     TenjiTranslator.pendingRequest_ = true;
     try {
       await TenjiTranslator.installTenji_();
-      void TenjiTranslator.processNextRequest_();
     } catch (error) {
       console.error('Error during tenji initialization: ' + error);
       TenjiTranslator.initPromise_ = null;
       TenjiTranslator.failQueuedRequests_();
+      return false;
     } finally {
       TenjiTranslator.pendingRequest_ = false;
     }
+
+    void TenjiTranslator.processNextRequest_();
+    return true;
   }
 
   private static installTenji_(): Promise<void> {
@@ -80,13 +86,20 @@ export class TenjiTranslator implements BrailleTranslator {
       // Tenji library doesn't support form type maps, so this parameter is
       // unused
       _formTypeMap: number[]|number, callback: TranslateCallback): void {
+    if (!TenjiTranslator.initPromise_) {
+      callback(new ArrayBuffer(0), [], []);
+      return;
+    }
+
     // Tenji library has a limit defined in terms of UTF-8 bytes on the input
     // text size, so if it exceeds the limit truncate the text without splitting
     // multi-byte characters.
     const truncatedText =
         truncateToMaxUtf8Bytes(text, MAX_TRANSLATE_TEXT_BYTES);
-    TenjiTranslator.requestQueue_.push(
-        {type: 'translate', text: truncatedText, callback});
+    const request:
+        QueuedRequest = {type: 'translate', text: truncatedText, callback};
+
+    TenjiTranslator.requestQueue_.push(request);
     if (!TenjiTranslator.pendingRequest_) {
       void TenjiTranslator.processNextRequest_();
     }
@@ -95,7 +108,19 @@ export class TenjiTranslator implements BrailleTranslator {
   backTranslate(_cells: ArrayBuffer, callback: BackTranslateCallback): void {
     // TODO(crbug.com/510816368): Back translation is not useful without full
     // IME support. Disable until that is available.
+    TenjiTranslator.notifyBackTranslateUnavailable_();
     callback(null);
+  }
+
+  private static notifyBackTranslateUnavailable_(): void {
+    if (TenjiTranslator.hasAnnouncedBackTranslateUnavailable_) {
+      return;
+    }
+
+    TenjiTranslator.hasAnnouncedBackTranslateUnavailable_ = true;
+    new Output()
+        .withString(Msgs.getMsg('tenji_back_translate_unavailable'))
+        .go();
   }
 
   private static async processNextRequest_(): Promise<void> {

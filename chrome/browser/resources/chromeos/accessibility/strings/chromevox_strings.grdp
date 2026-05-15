@@ -3399,4 +3399,7 @@
   <message desc="Short message spoken by ChromeVox screen reader when a user adds, deletes, or moves a cursor caret across a character in a password field." name="IDS_CHROMEVOX_PASSWORD_CHAR" is_accessibility_with_no_ui="true">
     bullet
   </message>
+  <message desc="Spoken and brailled when back-translation (braille input) is attempted while using the Japanese Tenji braille translator, which does not yet support back-translation." name="IDS_CHROMEVOX_TENJI_BACK_TRANSLATE_UNAVAILABLE" is_accessibility_with_no_ui="true">
+    Braille input is not yet available.
+  </message>
 </grit-part>
