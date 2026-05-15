@@ -791,7 +791,42 @@ IN_PROC_BROWSER_TEST_F(FedCmAmbientUiBrowserTest,
   // Verify that switching back did not trigger an additional impression log.
   histograms.ExpectBucketCount("Blink.FedCm.Ambient.Impression",
                                AmbientImpression::kSignUpChip, 1);
-  // TODO(crbug.com/512535342): We should not record a SignUpIcon here.
+  histograms.ExpectTotalCount("Blink.FedCm.Ambient.Impression", 1);
+}
+
+IN_PROC_BROWSER_TEST_F(FedCmAmbientUiBrowserTest,
+                       SignInNoDoubleCountingOverlap) {
+  auto* controller = browser()
+                         ->GetActiveTabInterface()
+                         ->GetTabFeatures()
+                         ->page_action_controller();
+
+  page_actions::PageActionObserver observer(kActionFederation);
+  observer.RegisterAsPageActionObserver(*controller);
+
+  base::HistogramTester histograms;
+  ShowAmbientUi(content::IdentityRequestAccount::LoginState::kSignIn,
+                content::IdentityRequestAccount::LoginState::kSignIn);
+
+  // Initially, suggestion chip is shown.
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return observer.GetCurrentPageActionState().chip_showing; }));
+
+  // Verify only kSignInChip is logged, and NO kSignInIcon is logged.
+  histograms.ExpectBucketCount("Blink.FedCm.Ambient.Impression",
+                               AmbientImpression::kSignInChip, 1);
+  histograms.ExpectBucketCount("Blink.FedCm.Ambient.Impression",
+                               AmbientImpression::kSignInIcon, 0);
+
+  // Collapse the chip into a static icon.
+  controller->HideSuggestionChip(kActionFederation);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return !observer.GetCurrentPageActionState().chip_showing; }));
+
+  // Verify that kSignInIcon is logged *only* after collapse, and total
+  // impression becomes 2.
+  histograms.ExpectBucketCount("Blink.FedCm.Ambient.Impression",
+                               AmbientImpression::kSignInIcon, 1);
   histograms.ExpectTotalCount("Blink.FedCm.Ambient.Impression", 2);
 }
 
