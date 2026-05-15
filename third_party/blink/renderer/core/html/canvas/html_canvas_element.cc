@@ -926,18 +926,9 @@ DOMMatrix* HTMLCanvasElement::getElementTransform(
     const V8UnionElementOrElementImage* element_or_image,
     DOMMatrix* draw_transform,
     ExceptionState& exception_state) {
-  if (element_or_image->IsElement()) {
-    if (!VerifyDrawElementImageEligibility(element_or_image->GetAsElement(),
-                                           "getElementTransform",
-                                           exception_state)) {
-      return nullptr;
-    }
-  } else if (element_or_image->IsElementImage()) {
-    if (!element_or_image->GetAsElementImage()->PaintRecord()) {
-      exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                        "The ElementImage has been closed.");
-      return nullptr;
-    }
+  if (!VerifyDrawElementImageEligibility(
+          element_or_image, "getElementTransform", exception_state)) {
+    return nullptr;
   }
 
   const auto* paint_state = GetCanvasChildPaintState(element_or_image);
@@ -962,9 +953,10 @@ bool HTMLCanvasElement::VerifyDrawElementImageEligibility(
     return false;
   }
   if (element->parentElement() != this) {
-    exception_state.ThrowTypeError(
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kInvalidStateError,
         "Only immediate children of the <canvas> element can be passed to " +
-        func_name + ".");
+            func_name + ".");
     return false;
   }
   if (!layoutSubtree()) {
@@ -972,6 +964,33 @@ bool HTMLCanvasElement::VerifyDrawElementImageEligibility(
         DOMExceptionCode::kInvalidStateError,
         func_name +
             " requires the canvas to have the layoutsubtree attribute.");
+    return false;
+  }
+  return true;
+}
+
+bool HTMLCanvasElement::VerifyDrawElementImageEligibility(
+    const V8UnionElementOrElementImage* element_or_image,
+    const String& func_name,
+    ExceptionState& exception_state) const {
+  if (element_or_image->IsElement()) {
+    return VerifyDrawElementImageEligibility(element_or_image->GetAsElement(),
+                                             func_name, exception_state);
+  }
+
+  const auto& record = element_or_image->GetAsElementImage()->PaintRecord();
+  if (!record) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      "The ElementImage has been closed.");
+    return false;
+  }
+
+  if (record->paint_state.canvas_node_id == kInvalidDOMNodeId ||
+      record->paint_state.canvas_node_id !=
+          const_cast<HTMLCanvasElement*>(this)->GetDomNodeId()) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kInvalidStateError,
+        "The source was captured from a different canvas.");
     return false;
   }
   return true;

@@ -344,6 +344,10 @@ class CORE_EXPORT CanvasRenderingContext
                                   const String& func_name,
                                   ExceptionState& exception_state);
 
+  bool IsDrawElementImageEligible(const V8UnionElementOrElementImage* element,
+                                  const String& func_name,
+                                  ExceptionState& exception_state);
+
   std::optional<CanvasChildPaintRecord> GetChildPaintRecord(Element* element);
 
   std::optional<cc::PaintRecord> empty_recording_;

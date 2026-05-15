@@ -355,6 +355,11 @@ class CORE_EXPORT HTMLCanvasElement final
                                          const String& func_name,
                                          ExceptionState& exception_state) const;
 
+  bool VerifyDrawElementImageEligibility(
+      const V8UnionElementOrElementImage* element,
+      const String& func_name,
+      ExceptionState& exception_state) const;
+
   ElementImage* captureElementImage(Element* element, ExceptionState&);
 
  protected:

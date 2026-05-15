@@ -24,7 +24,7 @@ promise_test(async t => {
   assert_equals(elementImage.width, 100);
   assert_equals(elementImage.height, 100);
 
-  const offscreen = new OffscreenCanvas(200, 200);
+  const offscreen = canvas.transferControlToOffscreen();
   const offscreenContext = offscreen.getContext('2d');
   let draw_transform = offscreenContext.drawElementImage(elementImage, 0, 0);
   assert_array_equals(

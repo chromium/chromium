@@ -143,6 +143,43 @@ bool CanvasRenderingContext::IsDrawElementImageEligible(
                                                            exception_state);
 }
 
+bool CanvasRenderingContext::IsDrawElementImageEligible(
+    const V8UnionElementOrElementImage* element_or_image,
+    const String& func_name,
+    ExceptionState& exception_state) {
+  if (element_or_image->IsElement()) {
+    return IsDrawElementImageEligible(element_or_image->GetAsElement(),
+                                      func_name, exception_state);
+  }
+
+  const auto& record = element_or_image->GetAsElementImage()->PaintRecord();
+  if (!record) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      "The ElementImage has been closed.");
+    return false;
+  }
+
+  DOMNodeId current_canvas_node_id = kInvalidDOMNodeId;
+  if (Host()) {
+    if (!Host()->IsOffscreenCanvas()) {
+      current_canvas_node_id =
+          static_cast<HTMLCanvasElement*>(Host())->GetDomNodeId();
+    } else {
+      current_canvas_node_id =
+          static_cast<OffscreenCanvas*>(Host())->PlaceholderCanvasId();
+    }
+  }
+
+  if (current_canvas_node_id == kInvalidDOMNodeId ||
+      record->paint_state.canvas_node_id != current_canvas_node_id) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kInvalidStateError,
+        "The source was captured from a different canvas.");
+    return false;
+  }
+  return true;
+}
+
 std::optional<CanvasChildPaintRecord>
 CanvasRenderingContext::GetChildPaintRecord(Element* element) {
   return Host()->GetCanvasChildPaintRecord(element->GetDomNodeId());
@@ -159,13 +196,13 @@ scoped_refptr<StaticBitmapImage> CanvasRenderingContext::GetElementImage(
     gpu::SharedImageUsageSet usage,
     const String& func_name,
     ExceptionState& exception_state) {
+  if (!IsDrawElementImageEligible(element, func_name, exception_state)) {
+    return nullptr;
+  }
+
   std::optional<CanvasChildPaintRecord> child_paint_record;
   if (element->IsElement()) {
-    Element* dom_element = element->GetAsElement();
-    if (!IsDrawElementImageEligible(dom_element, func_name, exception_state)) {
-      return nullptr;
-    }
-    child_paint_record = GetChildPaintRecord(dom_element);
+    child_paint_record = GetChildPaintRecord(element->GetAsElement());
   } else {
     if (const auto& record = element->GetAsElementImage()->PaintRecord()) {
       child_paint_record = *record;

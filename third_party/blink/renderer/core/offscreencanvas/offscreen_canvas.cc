@@ -363,6 +363,13 @@ DOMMatrix* OffscreenCanvas::getElementTransform(
                                         "The ElementImage has been closed.");
       return nullptr;
     }
+    if (paint_record->paint_state.canvas_node_id == kInvalidDOMNodeId ||
+        paint_record->paint_state.canvas_node_id != PlaceholderCanvasId()) {
+      exception_state.ThrowDOMException(
+          DOMExceptionCode::kInvalidStateError,
+          "The ElementImage was captured from a different canvas.");
+      return nullptr;
+    }
     gfx::Transform transform = GetElementTransform(
         paint_record->paint_state, Size(), draw_transform->Matrix());
     return MakeGarbageCollected<DOMMatrix>(transform,

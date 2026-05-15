@@ -32,7 +32,7 @@
 promise_test(async () => {
   await waitForCanvasPaint(canvas);
 
-  assert_throws_js(TypeError,
+  assert_throws_dom("InvalidStateError",
     () => canvas.getContext("2d").drawElementImage(grandchild, 20, 30),
     "Can't draw non-direct children.");
 
@@ -67,10 +67,10 @@ promise_test(async () => {
     "Can't get element transform if layoutsubtree is not specified.");
 
   // Also test wrong children exceptions
-  assert_throws_js(TypeError,
+  assert_throws_dom("InvalidStateError",
     () => canvas.captureElementImage(grandchild),
     "Can't capture non-direct children.");
-  assert_throws_js(TypeError,
+  assert_throws_dom("InvalidStateError",
     () => canvas.getElementTransform(grandchild, new DOMMatrix()),
     "Can't get transform for non-direct children.");
 });

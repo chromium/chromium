@@ -56,6 +56,7 @@
 #include "third_party/blink/renderer/core/html/canvas/text_metrics.h"
 #include "third_party/blink/renderer/core/html/canvas/unique_font_selector.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
+#include "third_party/blink/renderer/core/offscreencanvas/offscreen_canvas.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_2d_recorder_context.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_rendering_context_2d_state.h"
@@ -1372,14 +1373,14 @@ DOMMatrix* BaseRenderingContext2D::DrawElementInternal(
     return DOMMatrix::Create();
   }
 
+  if (!IsDrawElementImageEligible(element, "DrawElementImage",
+                                  exception_state)) {
+    return nullptr;
+  }
+
   std::optional<CanvasChildPaintRecord> child_paint_record;
   if (element->IsElement()) {
-    Element* dom_element = element->GetAsElement();
-    if (!IsDrawElementImageEligible(dom_element, "DrawElementImage",
-                                    exception_state)) {
-      return nullptr;
-    }
-    child_paint_record = GetChildPaintRecord(dom_element);
+    child_paint_record = GetChildPaintRecord(element->GetAsElement());
   } else if (element->IsElementImage()) {
     if (const auto& record = element->GetAsElementImage()->PaintRecord()) {
       child_paint_record = *record;
