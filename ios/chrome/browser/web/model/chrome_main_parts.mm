@@ -69,7 +69,6 @@
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/profile_dependency_manager_ios.h"
 #import "ios/chrome/browser/signin/model/signin_util.h"
-#import "ios/chrome/browser/tracing/ios_tracing_controller.h"
 #import "ios/chrome/browser/translate/model/translate_service_ios.h"
 #import "ios/chrome/browser/web/model/ios_thread_profiler.h"
 #import "ios/chrome/common/channel_info.h"
@@ -92,6 +91,10 @@
 
 #if PA_BUILDFLAG(USE_ALLOCATOR_SHIM)
 #import "components/heap_profiling/in_process/heap_profiler_controller.h"
+#endif
+
+#if !BUILDFLAG(USE_BLINK)
+#import "ios/chrome/browser/tracing/ios_tracing_controller.h"
 #endif
 
 namespace {
@@ -189,9 +192,12 @@ void IOSChromeMainParts::ApplyFeatureList() {
 }
 
 void IOSChromeMainParts::PreCreateThreads() {
+#if !BUILDFLAG(USE_BLINK)
   // Initialize Perfetto tracing before threads are spawned so the
   // TrackNameRecorder can capture and name the new background threads.
+  // For Blink, the content layer handles Perfetto initialization.
   IOSTracingController::CreateInstance();
+#endif
 
   // Create and start the stack sampling profiler if CANARY or DEV. The warning
   // below doesn't apply.

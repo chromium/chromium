@@ -26,6 +26,7 @@
 #include "base/thread_annotations.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/trace_event/typed_macros.h"
+#include "build/blink_buildflags.h"
 #include "build/build_config.h"
 #include "components/tracing/common/tracing_switches.h"
 #include "services/tracing/public/cpp/perfetto/perfetto_config.h"
@@ -81,7 +82,7 @@ class StartupTracingController::BackgroundTracer {
         output_file_(output_file),
         output_format_(output_format),
         on_tracing_finished_(std::move(default_finished_callback)) {
-#if BUILDFLAG(IS_IOS)
+#if !BUILDFLAG(USE_BLINK)
     tracing_session_ =
         perfetto::Tracing::NewTrace(perfetto::BackendType::kInProcessBackend);
 #else
