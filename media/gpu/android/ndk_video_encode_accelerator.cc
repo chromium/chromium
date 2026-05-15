@@ -900,8 +900,9 @@ void NdkVideoEncodeAccelerator::RequestEncodingParametersChange(
       AMediaCodec_setParameters(media_codec_->codec(), format.get());
 
   if (status != AMEDIA_OK) {
-    NotifyMediaCodecError(EncoderStatus::Codes::kEncoderUnsupportedConfig,
-                          status, "Failed to change bitrate and framerate");
+    NotifyErrorStatus({EncoderStatus::Codes::kEncoderUnsupportedConfig,
+                       "Failed to change bitrate and framerate", "syscode",
+                       status});
     return;
   }
   effective_framerate_ = framerate;
@@ -955,7 +956,7 @@ void NdkVideoEncodeAccelerator::OnCommandBufferHelperAvailable(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   command_buffer_helper_ = std::move(command_buffer_helper);
   if (!command_buffer_helper_) {
-    NotifyErrorStatus({EncoderStatus::Codes::kGPUCommandBufferNotAvailable});
+    NotifyErrorStatus(EncoderStatus::Codes::kGPUCommandBufferNotAvailable);
     return;
   }
   shared_image_manager_ = command_buffer_helper_->GetSharedImageManager();
@@ -1114,8 +1115,8 @@ void NdkVideoEncodeAccelerator::FeedInput() {
       pending_color_space_ = frame_cs;
       media_status_t status = SendEndOfStream();
       if (status != AMEDIA_OK) {
-        NotifyMediaCodecError(EncoderStatus::Codes::kEncoderHardwareDriverError,
-                              status, "Failed to queueInputBuffer");
+        NotifyErrorStatus({EncoderStatus::Codes::kEncoderHardwareDriverError,
+                           "Failed to queueInputBuffer", "syscode", status});
       }
       return;
     }
@@ -1131,8 +1132,8 @@ void NdkVideoEncodeAccelerator::FeedInput() {
         AMediaCodec_setParameters(media_codec_->codec(), format.get());
 
     if (status != AMEDIA_OK) {
-      NotifyMediaCodecError(EncoderStatus::Codes::kEncoderFailedEncode, status,
-                            "Failed to request a keyframe");
+      NotifyErrorStatus({EncoderStatus::Codes::kEncoderFailedEncode,
+                         "Failed to request a keyframe", "syscode", status});
       return;
     }
   }
@@ -1317,10 +1318,9 @@ scoped_refptr<VideoFrame> NdkVideoEncodeAccelerator::MapSharedImage(
       break;
     }
     default: {
-      NotifyErrorStatus(
-          {EncoderStatus::Codes::kUnsupportedFrameFormat,
-           base::StringPrintf("Unsupported AHardwareBuffer format: %d",
-                              desc.format)});
+      NotifyErrorStatus({EncoderStatus::Codes::kUnsupportedFrameFormat,
+                         "Unsupported AHardwareBuffer format", "format",
+                         desc.format});
       return nullptr;
     }
   }
@@ -1427,8 +1427,8 @@ void NdkVideoEncodeAccelerator::FeedInputBuffer(scoped_refptr<VideoFrame> frame,
       media_codec_->codec(), buffer_idx, /*offset=*/0, queued_size,
       timestamp.InMicroseconds(), flags);
   if (status != AMEDIA_OK) {
-    NotifyMediaCodecError(EncoderStatus::Codes::kEncoderHardwareDriverError,
-                          status, "Failed to queueInputBuffer");
+    NotifyErrorStatus({EncoderStatus::Codes::kEncoderHardwareDriverError,
+                       "Failed to queueInputBuffer", "syscode", status});
     return;
   }
 }
@@ -1467,20 +1467,10 @@ void NdkVideoEncodeAccelerator::FeedGLSurface(scoped_refptr<VideoFrame> frame,
   }
 }
 
-void NdkVideoEncodeAccelerator::NotifyMediaCodecError(
-    EncoderStatus encoder_status,
-    media_status_t media_codec_status,
-    std::string message) {
-  NotifyErrorStatus({encoder_status.code(),
-                     base::StringPrintf("%s MediaCodec error code: %d",
-                                        message.c_str(), media_codec_status)});
-}
-
 void NdkVideoEncodeAccelerator::NotifyErrorStatus(EncoderStatus status) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(!status.is_ok());
-  MEDIA_LOG(ERROR, log_) << EncoderStatusCodeToString(status.code()) << " "
-                         << status.message();
+  log_->NotifyError(status);
   if (!error_occurred_) {
     base::UmaHistogramEnumeration(
         GetEncoderStatusHistogramName(config_.output_profile), status.code());
@@ -1514,8 +1504,8 @@ void NdkVideoEncodeAccelerator::OnOutputAvailable() {
 
 void NdkVideoEncodeAccelerator::OnError(media_status_t error) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  NotifyMediaCodecError(EncoderStatus::Codes::kEncoderFailedEncode, error,
-                        "Async media codec error");
+  NotifyErrorStatus({EncoderStatus::Codes::kEncoderFailedEncode,
+                     "Async media codec error", "syscode", error});
 }
 
 bool NdkVideoEncodeAccelerator::DrainConfig() {

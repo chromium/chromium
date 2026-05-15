@@ -161,9 +161,6 @@ class REQUIRES_ANDROID_API(NDK_MEDIA_CODEC_MIN_API) MEDIA_GPU_EXPORT
   // chunks.
   bool DrainConfig();
 
-  void NotifyMediaCodecError(EncoderStatus encoder_status,
-                             media_status_t media_codec_status,
-                             std::string message);
   void NotifyErrorStatus(EncoderStatus status);
 
   // Generates a monotonically increasing timestamp to be used when feeding
