@@ -51,6 +51,7 @@ public class SettingsIndexData {
     private static final Pattern STRIP_ACCENTS_PATTERN = Pattern.compile("\\p{M}");
 
     private final Map<String, Entry> mEntries = new LinkedHashMap<>();
+    private final Set<String> mRemovedKeys = new HashSet<>();
     // Map from a child fragment's class name to the list of preference keys that can link to it.
     private final Map<String, List<String>> mChildFragmentToParentKeys = new HashMap<>();
 
@@ -725,6 +726,7 @@ public class SettingsIndexData {
     public void removeEntry(String id) {
         assert PreferenceParser.isId(id) : "Use getUniqueId(key) to pass a unique id.";
         mEntries.remove(id);
+        mRemovedKeys.add(id);
     }
 
     /**
@@ -773,6 +775,7 @@ public class SettingsIndexData {
      */
     public void clear() {
         mEntries.clear();
+        mRemovedKeys.clear();
         mChildFragmentToParentKeys.clear();
         sNeedsIndexing = true;
     }
@@ -1125,6 +1128,28 @@ public class SettingsIndexData {
 
     Map<String, Entry> getEntriesForTesting() {
         return mEntries;
+    }
+
+    /**
+     * Returns a set of all original preference keys currently stored in the index. This is useful
+     * for validating that the index matches the dynamically rendered UI.
+     */
+    public Set<String> getKeys() {
+        Set<String> keys = new HashSet<>();
+        for (Entry entry : mEntries.values()) {
+            if (entry.key != null) {
+                keys.add(entry.key);
+            }
+        }
+        return keys;
+    }
+
+    /**
+     * Returns a set of all unique IDs that were explicitly removed from the index. This is useful
+     * for validating that a visible preference was intentionally excluded.
+     */
+    public Set<String> getRemovedKeys() {
+        return mRemovedKeys;
     }
 
     Map<String, List<String>> getChildFragmentToParentKeysForTesting() {

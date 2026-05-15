@@ -58,7 +58,7 @@ public class BaseSearchIndexProvider implements SearchIndexProvider {
     public BaseSearchIndexProvider(String prefFragment, @XmlRes int xmlRes, boolean isSearchable) {
         mPrefFragment = prefFragment;
         mXmlRes = xmlRes;
-        mIsSearchable = isSearchable;
+        mIsSearchable = isSearchable && xmlRes != INDEX_OPT_OUT;
     }
 
     /**

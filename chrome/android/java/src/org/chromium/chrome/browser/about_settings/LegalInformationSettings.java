@@ -17,6 +17,7 @@ import org.chromium.chrome.browser.settings.search.ChromeBaseSearchIndexProvider
 import org.chromium.components.browser_ui.settings.EmbeddableSettingsPage;
 import org.chromium.components.browser_ui.settings.SettingsFragment;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
+import org.chromium.components.browser_ui.settings.search.SearchIndexValidator;
 
 /** Fragment to display legal information about Chrome. */
 @NullMarked
@@ -24,6 +25,12 @@ public class LegalInformationSettings extends ChromeBaseSettingsFragment
         implements EmbeddableSettingsPage {
     private final SettableMonotonicObservableSupplier<String> mPageTitle =
             ObservableSuppliers.createMonotonic();
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        SearchIndexValidator.validateSearchIndex(this);
+    }
 
     @Override
     public void onCreatePreferences(@Nullable Bundle savedInstanceState, @Nullable String s) {

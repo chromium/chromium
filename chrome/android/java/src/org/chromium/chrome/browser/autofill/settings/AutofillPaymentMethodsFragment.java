@@ -145,11 +145,11 @@ public class AutofillPaymentMethodsFragment extends ChromeBaseSettingsFragment
 
     @Override
     public void onStart() {
-        super.onStart();
         // Always rebuild our list of credit cards.  Although we could detect if credit cards are
         // added or deleted, the credit card summary (number) might be different.  To be safe, we
         // update all.
         rebuildPage();
+        super.onStart();
     }
 
     static boolean hasEwallets(PersonalDataManager manager) {
@@ -406,6 +406,7 @@ public class AutofillPaymentMethodsFragment extends ChromeBaseSettingsFragment
         if (shouldShowAddFirstCardPref(personalDataManager, getProfile())) {
             CardWithButtonPreference addFirstCardPref =
                     new CardWithButtonPreference(getStyledContext(), null);
+            addFirstCardPref.setKey(PREF_ADD_FIRST_CARD);
             addFirstCardPref.setTitle(R.string.autofill_create_first_credit_card_title);
             addFirstCardPref.setSummary(R.string.autofill_create_first_credit_card_summary);
             addFirstCardPref.setButtonText(

@@ -11,9 +11,29 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browser_ui.settings.search.SearchIndexProvider;
 import org.chromium.components.browser_ui.settings.search.SettingsIndexData;
 
+import java.util.Map;
+
 /** Interface for Chrome preferences that have data for indexing. */
 @NullMarked
 public interface ChromeSearchIndexProvider extends SearchIndexProvider {
+    /**
+     * Populates the search index with the static preferences associated with this provider, using
+     * the current profile.
+     *
+     * @param context The {@link Context} used to access application resources.
+     * @param profile The current {@link Profile}.
+     * @param indexData The central {@link SettingsIndexData} object to be populated.
+     * @param providerMap Map of all registered providers, keyed by Fragment Class Name. Used to
+     *     look up default extras for child fragments.
+     */
+    default void initPreferenceXml(
+            Context context,
+            Profile profile,
+            SettingsIndexData indexData,
+            Map<String, SearchIndexProvider> providerMap) {
+        initPreferenceXml(context, indexData, providerMap);
+    }
+
     /**
      * Update preferences dynamically with Profile access.
      *
