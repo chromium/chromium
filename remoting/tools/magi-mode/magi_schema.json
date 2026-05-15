@@ -5,11 +5,11 @@
       "type": "object",
       "properties": {
         "role": { "type": "string" },
-        "mandate": { "type": "string" },
+        "mandate": { "oneOf": [{ "type": "string" }, { "type": "array", "items": { "type": "string" } }] },
         "checklist": {
           "type": "object",
           "patternProperties": {
-            "^.*$": { "type": "string" }
+            "^.*$": { "oneOf": [{ "type": "string" }, { "type": "array", "items": { "type": "string" } }] }
           }
         }
       },
@@ -110,6 +110,23 @@
           "type": "string",
           "enum": ["NORMAL", "VERBOSE"]
         },
+        "context_resolved": {
+          "type": "boolean",
+          "description": "True only if all external bugs/links were successfully read and no hallucinations occurred."
+        },
+        "approach_confirmed": {
+          "type": "boolean",
+          "description": "True only if the human has explicitly approved the goal and target files."
+        },
+        "ambiguity_level": {
+          "type": "string",
+          "enum": ["LOW", "HIGH"],
+          "description": "Assessment of how prescriptive the human instructions were versus how much discovery/decision-making is required."
+        },
+        "ambiguity_rationale": {
+          "type": "string",
+          "description": "Brief explanation justifying the ambiguity_level."
+        },
         "environment": { "$ref": "#/definitions/EnvironmentDef" }
       },
       "required": [
@@ -121,6 +138,10 @@
         "next_stage",
         "paranoia_mode",
         "auditability_level",
+        "context_resolved",
+        "approach_confirmed",
+        "ambiguity_level",
+        "ambiguity_rationale",
         "environment"
       ]
     },

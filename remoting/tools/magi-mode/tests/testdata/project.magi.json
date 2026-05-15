@@ -1,5 +1,4 @@
 {
-    "checklist": {},
     "task_type": "IMPLEMENTATION",
     "goal": "Mock goal for testing.",
     "target_files": [
@@ -13,6 +12,10 @@
     "next_stage": "SCAFFOLDING",
     "paranoia_mode": false,
     "auditability_level": "NORMAL",
+    "context_resolved": true,
+    "approach_confirmed": true,
+    "ambiguity_level": "LOW",
+    "ambiguity_rationale": "Test case with direct goal.",
     "environment": {
         "repo_type": "CHROMIUM",
         "vcs": "JJ",

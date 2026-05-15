@@ -203,6 +203,43 @@ class MagiPresubmitTest(unittest.TestCase):
                 '(SIGNAL-TO-NOISE):" section' in r for r in results))
         self.assertFalse(any('must explicitly enforce' in r for r in results))
 
+    def testPersonaNamingConvention(self):
+        # Invalid persona name (with _expert suffix)
+        self.mock_input.affected_files = [
+            MockAffectedFile(
+                'remoting/tools/magi-mode/personas/core/security_expert.json')
+        ]
+        self.mock_input.files_content = {
+            'remoting/tools/magi-mode/personas/core/security_expert.json':
+            '{"checklist": {}}'
+        }
+        schema_json = '{"definitions": {"PersonaDef": {"required": []}}}'
+
+        with patch('builtins.open',
+                   unittest.mock.mock_open(read_data=schema_json)):
+            results = PRESUBMIT.CheckJsonFiles(self.mock_input,
+                                               self.mock_output)
+            self.assertTrue(
+                any('uses the redundant "_expert" suffix' in r
+                    for r in results))
+
+        # Valid persona name
+        self.mock_input.affected_files = [
+            MockAffectedFile(
+                'remoting/tools/magi-mode/personas/core/security.json')
+        ]
+        self.mock_input.files_content = {
+            'remoting/tools/magi-mode/personas/core/security.json':
+            '{"checklist": {}}'
+        }
+        with patch('builtins.open',
+                   unittest.mock.mock_open(read_data=schema_json)):
+            results = PRESUBMIT.CheckJsonFiles(self.mock_input,
+                                               self.mock_output)
+            self.assertFalse(
+                any('uses the redundant "_expert" suffix' in r
+                    for r in results))
+
     def testJsonStateBlockValidation(self):
         # Valid state block
         valid_json = (
@@ -350,7 +387,7 @@ class MagiPresubmitTest(unittest.TestCase):
                     for r in results))
 
     def testJsonStateBlockArbitraryChecklistKey(self):
-        # Arbitrary key in checklist ("check_arbitrary": true) not in security.json
+        # Arbitrary key in checklist ("checked_xyz": true, "check_arbitrary": true) not in security.json
         arbitrary_key_json = (
             '{"checklist": {"checked_xyz": true, "check_arbitrary": true}, '
             '"unlisted_issues_found": [], "iteration": 1, '
@@ -402,7 +439,9 @@ class MagiPresubmitTest(unittest.TestCase):
             '{"task_type": "IMPLEMENTATION", "unlisted_issues_found": [], '
             '"goal": "Test", "target_files": ["foo.cc"], "anti_goals": [], '
             '"edge_cases": [], "paranoia_mode": false, '
-            '"auditability_level": "NORMAL", "next_stage": "SCAFFOLDING"}')
+            '"auditability_level": "NORMAL", "context_resolved": true, '
+            '"approach_confirmed": true, "ambiguity_level": "LOW", '
+            '"ambiguity_rationale": "Test", "next_stage": "SCAFFOLDING"}')
         self.mock_input.affected_files = [
             MockAffectedFile('remoting/tools/magi-mode/project.magi.json')
         ]
@@ -414,7 +453,9 @@ class MagiPresubmitTest(unittest.TestCase):
         schema_json = (
             '{"definitions": {"ProjectSpec": {"required": ["task_type", '
             '"goal", "target_files", "anti_goals", "edge_cases", '
-            '"next_stage", "paranoia_mode", "auditability_level"], '
+            '"next_stage", "paranoia_mode", "auditability_level", '
+            '"context_resolved", "approach_confirmed", "ambiguity_level", '
+            '"ambiguity_rationale"], '
             '"properties": {"task_type": {"type": "string", "enum": '
             '["IMPLEMENTATION", "REVIEW", "AUDIT"]}, '
             '"unlisted_issues_found": {"type": "array"}, '
@@ -426,7 +467,10 @@ class MagiPresubmitTest(unittest.TestCase):
             '"TEST_FILLING", "ANALYSIS", "TPM_UPDATE", "TRAINING", '
             '"VALIDATION", "DEPLOYMENT", "DEADLOCK"]}, '
             '"auditability_level": {"type": "string", "enum": ["NORMAL", '
-            '"VERBOSE"]}}}}}')
+            '"VERBOSE"]}, "context_resolved": {"type": "boolean"}, '
+            '"approach_confirmed": {"type": "boolean"}, '
+            '"ambiguity_level": {"type": "string", "enum": ["LOW", "HIGH"]}, '
+            '"ambiguity_rationale": {"type": "string"}}}}}')
 
         with patch('builtins.open',
                    unittest.mock.mock_open(read_data=schema_json)):

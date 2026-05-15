@@ -17,6 +17,10 @@ protocol.
   "next_stage": "SCAFFOLDING",
   "paranoia_mode": false,
   "auditability_level": "NORMAL",
+  "context_resolved": true,
+  "approach_confirmed": true,
+  "ambiguity_level": "LOW",
+  "ambiguity_rationale": "Direct request to modify a specific file.",
   "environment": {
     "repo_type": "CHROMIUM",
     "vcs": "JJ",

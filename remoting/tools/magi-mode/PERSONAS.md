@@ -9,6 +9,8 @@ Orchestrator.
 
 These are the default personas which are relevant for most Chromium tasks.
 
+- **The Scoping Lead:** Investigation, codebase research, goal definition.
+  *Path:* `src/remoting/tools/magi-mode/personas/core/scoping_lead.json`
 - **The Security Expert:** Memory safety, exploit prevention, logic. *Path:*
   `src/remoting/tools/magi-mode/personas/core/security.json`
 - **The Performance Expert:** Latency, zero-copy, sequence affinity. *Path:*
@@ -52,3 +54,13 @@ Use these when modifying specific technical domains like media or networking.
   *Path:* `src/remoting/tools/magi-mode/personas/domain/webrtc.json`
 - **Codec (AV1) Expert:** `libaom` settings, bitrate adaptation, latency.
   *Path:* `src/remoting/tools/magi-mode/personas/domain/codec_av1.json`
+
+## System Meta-Reviewers
+
+Use these when auditing or modifying the MAGI protocol itself.
+
+- **LLM Behavior & Grounding Expert:** Hallucination prevention, prompt
+  engineering, state machine safety. *Path:*
+  `src/remoting/tools/magi-mode/personas/ai/llm.json`
+- **MAS Architect:** Decentralized coordination, handoff stability, consensus
+  efficiency. *Path:* `src/remoting/tools/magi-mode/personas/ai/mas.json`

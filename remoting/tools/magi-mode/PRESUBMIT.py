@@ -417,7 +417,14 @@ def CheckJsonFiles(input_api, output_api):
             active_schema = constraints_schema
         elif 'personas' in parts:
             active_schema = persona_def_schema
-            # Dummy comment to force Gerrit update.
+            # Enforce naming convention: avoid redundant "_expert" suffix.
+            if filename.endswith('_expert.json'):
+                results.append(
+                    output_api.PresubmitError(
+                        f'Persona file {f.LocalPath()} uses the redundant '
+                        '"_expert" suffix. Please use a concise name '
+                        '(e.g., "security.json" instead of '
+                        '"security_expert.json").'))
             # Enforce directory depth limit (max 5 from /personas)
             # Depth is exactly the index of 'personas' in the reversed list
             depth = parts[::-1].index('personas')
@@ -443,13 +450,23 @@ def CheckJsonFiles(input_api, output_api):
                 is_persona = active_schema is persona_def_schema
                 for k, v in checklist.items():
                     if is_persona:
-                        if not isinstance(v, str):
+                        if not isinstance(v, (str, list)):
                             results.append(
                                 output_api.PresubmitError(
                                     f'File {f.LocalPath()} persona '
                                     f'checklist key "{k}" must have a '
-                                    f'string description, got '
+                                    f'string or list description, got '
                                     f'{type(v).__name__}'))
+                        elif isinstance(v, list):
+                            for i, item in enumerate(v):
+                                if not isinstance(item, str):
+                                    results.append(
+                                        output_api.PresubmitError(
+                                            f'File {f.LocalPath()} persona '
+                                            f'checklist key "{k}" list '
+                                            f'item at index {i} must be a '
+                                            f'string, got '
+                                            f'{type(item).__name__}'))
                     else:
                         if not isinstance(v, bool):
                             results.append(

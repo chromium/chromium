@@ -152,7 +152,23 @@ next expert.
      `PREPARATION`.
    - `AUDIT`: For analyzing existing code for modernization or flaws. Sets
      `next_stage` to `PREPARATION`.
-3. **JSON Contract (`project.magi.json`):** See [EXAMPLES.md](./EXAMPLES.md) for
+3. **Context Resolution (The Stop-and-Verify Gate):** The Scoping Lead MUST
+   verify that all external context (e.g., Buganizer links, documentation URLs)
+   has been successfully retrieved and parsed. If any link returned a login
+   prompt, redirect, or error, the Scoping Lead MUST halt, report the failure to
+   the human, and request the raw text of the missing context. It MUST NOT
+   proceed with a hallucinated or "fallback" scope.
+4. **Approach Confirmation (The Dynamic Gate):** The Scoping Lead MUST assess
+   the ambiguity of the request.
+   - **Low Ambiguity:** If the human provided prescriptive instructions (e.g.,
+     "Add feature X to file Y"), the Scoping Lead sets `ambiguity_level: "LOW"`.
+   - **High Ambiguity:** If the request is exploratory, implies multiple viable
+     paths, or is underspecified, the Scoping Lead sets
+     `ambiguity_level: "HIGH"`. **The Gate:** If `ambiguity_level == "HIGH"` OR
+     `context_resolved == false`, the Orchestrator MUST pause for human
+     intervention. If `ambiguity_level == "LOW"` AND `context_resolved == true`,
+     the Orchestrator MAY auto-proceed to the next stage.
+5. **JSON Contract (`project.magi.json`):** See [EXAMPLES.md](./EXAMPLES.md) for
    a full example. *Tooling Selection:* The combination of `repo_type`, `vcs`,
    and `harness` in the `environment` block determines the exact build, test,
    and upload commands used by the agents.
