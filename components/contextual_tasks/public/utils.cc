@@ -62,9 +62,8 @@ CreateURLDeduplicationHelperForContextualTask() {
 
 GURL GetDefaultAimUrl(const std::string& locale,
                       omnibox::ChromeAimEntryPoint entry_point) {
-  GURL url = lens::AppendCommonSearchParametersToURL(
-      GURL(GetContextualTasksAiPageUrl()), locale, false);
-  return AppendAimEntryPointParams(url, entry_point);
+  return AppendAimEntryPointParams(GURL(GetContextualTasksAiPageUrl()),
+                                   entry_point);
 }
 
 GURL AppendAimEntryPointParams(GURL url,
