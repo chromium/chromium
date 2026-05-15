@@ -198,8 +198,8 @@ auto& WithNewVersion(const std::optional<FormData>& browser_form) {
   return browser_form;
 }
 
-auto& WithNewVersion(const std::vector<FormData>& browser_forms) {
-  for (const FormData& form : browser_forms) {
+std::vector<FormData> WithNewVersion(std::vector<FormData> browser_forms) {
+  for (FormData& form : browser_forms) {
     WithNewVersion(form);
   }
   return browser_forms;

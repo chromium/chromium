@@ -342,8 +342,8 @@ class MockBrowserAutofillManager : public BrowserAutofillManager {
               (override));
   MOCK_METHOD(void,
               OnFormsSeen,
-              (const std::vector<FormData>& updated_forms,
-               const std::vector<FormGlobalId>& removed_forms),
+              (std::vector<FormData> updated_forms,
+               std::vector<FormGlobalId> removed_forms),
               (override));
 };
 
@@ -443,7 +443,7 @@ class ContentAutofillDriverTest : public content::RenderViewHostTestHarness {
       target_rfh = source_rfh;
     }
     std::vector<FormData> augmented_forms;
-    EXPECT_CALL(manager(target_rfh), OnFormsSeen(_, _))
+    EXPECT_CALL(manager(target_rfh), OnFormsSeen)
         .WillOnce(SaveArg<0>(&augmented_forms));
     driver(source_rfh)
         .renderer_events()
@@ -615,7 +615,7 @@ TEST_F(ContentAutofillDriverTest,
 TEST_F(ContentAutofillDriverTest, WithNewVersion) {
   FormData form = test::CreateTestAddressFormData();
   std::vector<FormData> augmented_forms;
-  EXPECT_CALL(manager(), OnFormsSeen).WillOnce(SaveArg<0>(&augmented_forms));
+  EXPECT_CALL(manager(), OnFormsSeen).WillOnce(MoveArg<0>(&augmented_forms));
   driver().renderer_events().FormsSeen(/*updated_forms=*/{form},
                                        /*removed_forms=*/{});
   ASSERT_EQ(augmented_forms.size(), 1u);
@@ -745,7 +745,7 @@ TEST_F(ContentAutofillDriverTest, TypePredictionsSentToRendererWhenEnabled) {
   form.set_is_action_empty(false);
   form.set_submission_event(mojom::SubmissionIndicatorEvent::NONE);
   std::vector<FormData> augmented_forms;
-  EXPECT_CALL(manager(), OnFormsSeen).WillOnce(SaveArg<0>(&augmented_forms));
+  EXPECT_CALL(manager(), OnFormsSeen).WillOnce(MoveArg<0>(&augmented_forms));
   driver().renderer_events().FormsSeen(/*updated_forms=*/{form},
                                        /*removed_forms=*/{});
 

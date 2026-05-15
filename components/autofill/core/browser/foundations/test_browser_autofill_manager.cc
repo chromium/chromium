@@ -45,9 +45,10 @@ void TestBrowserAutofillManager::OnLanguageDetermined(
 }
 
 void TestBrowserAutofillManager::OnFormsSeen(
-    const std::vector<FormData>& updated_forms,
-    const std::vector<FormGlobalId>& removed_forms) {
-  AutofillManager::OnFormsSeen(updated_forms, removed_forms);
+    std::vector<FormData> updated_forms,
+    std::vector<FormGlobalId> removed_forms) {
+  AutofillManager::OnFormsSeen(std::move(updated_forms),
+                               std::move(removed_forms));
   ASSERT_TRUE(waiter_.Wait(0));
 }
 

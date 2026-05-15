@@ -266,8 +266,8 @@ class AutofillManager
   // Events triggered by the renderer.
   // See autofill_driver.mojom for documentation.
   // Some functions are virtual for testing.
-  virtual void OnFormsSeen(const std::vector<FormData>& updated_forms,
-                           const std::vector<FormGlobalId>& removed_form_ids);
+  virtual void OnFormsSeen(std::vector<FormData> updated_forms,
+                           std::vector<FormGlobalId> removed_form_ids);
   virtual void OnFormSubmitted(const FormData& form,
                                mojom::SubmissionSource source);
   virtual void OnTextFieldValueChanged(const FormData& form,
@@ -510,7 +510,7 @@ class AutofillManager
   //
   // TODO(crbug.com/40219607): Add unit tests.
   void ParseFormsAsync(
-      const std::vector<FormData>& forms,
+      std::vector<FormData> forms,
       base::OnceCallback<void(AutofillManager&, const std::vector<FormData>&)>
           callback);
 

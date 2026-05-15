@@ -197,11 +197,11 @@ class AutofillDriverRouter {
       RoutedCallback<> focus_no_longer_on_form);
   // This event is broadcast to all drivers.
   void FocusOnNonFormField(RoutedCallback<> callback, AutofillDriver& source);
-  void FormsSeen(RoutedCallback<const std::vector<FormData>&,
-                                const std::vector<FormGlobalId>&> callback,
-                 AutofillDriver& source,
-                 std::vector<FormData> updated_forms,
-                 const std::vector<FormGlobalId>& removed_forms);
+  void FormsSeen(
+      RoutedCallback<std::vector<FormData>, std::vector<FormGlobalId>> callback,
+      AutofillDriver& source,
+      std::vector<FormData> renderer_forms,
+      std::vector<FormGlobalId> removed_forms);
   void FormSubmitted(
       RoutedCallback<const FormData&, mojom::SubmissionSource> callback,
       AutofillDriver& source,

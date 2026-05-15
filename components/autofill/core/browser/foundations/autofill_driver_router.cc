@@ -42,6 +42,7 @@
 #include "components/autofill/core/common/signatures.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "ui/gfx/geometry/rect.h"
 #include "url/origin.h"
 
@@ -139,11 +140,10 @@ void AutofillDriverRouter::TriggerFormExtractionExcept(
 }
 
 void AutofillDriverRouter::FormsSeen(
-    RoutedCallback<const std::vector<FormData>&,
-                   const std::vector<FormGlobalId>&> callback,
+    RoutedCallback<std::vector<FormData>, std::vector<FormGlobalId>> callback,
     AutofillDriver& source,
     std::vector<FormData> renderer_forms,
-    const std::vector<FormGlobalId>& removed_forms) {
+    std::vector<FormGlobalId> removed_forms) {
   base::flat_set<FormGlobalId> forms_with_removed_fields =
       form_forest_.EraseForms(removed_forms);
 
@@ -161,11 +161,11 @@ void AutofillDriverRouter::FormsSeen(
   // tree.
   std::vector<FormData> browser_forms;
   browser_forms.reserve(renderer_form_ids.size());
+  absl::flat_hash_set<FormGlobalId> browser_form_ids;
   for (FormGlobalId renderer_form_id : renderer_form_ids) {
     const FormData& browser_form =
         form_forest_.GetBrowserForm(renderer_form_id);
-    if (!std::ranges::contains(browser_forms, browser_form.global_id(),
-                               &FormData::global_id)) {
+    if (browser_form_ids.insert(browser_form.global_id()).second) {
       browser_forms.push_back(browser_form);
     }
   }
@@ -174,8 +174,7 @@ void AutofillDriverRouter::FormsSeen(
 
   for (const FormGlobalId form_id : forms_with_removed_fields) {
     const FormData& browser_form = form_forest_.GetBrowserForm(form_id);
-    if (!std::ranges::contains(browser_forms, browser_form.global_id(),
-                               &FormData::global_id)) {
+    if (browser_form_ids.insert(browser_form.global_id()).second) {
       browser_forms.push_back(browser_form);
     }
   }
@@ -187,9 +186,10 @@ void AutofillDriverRouter::FormsSeen(
       return f.host_frame() == frame;
     }));
     AutofillDriver* target = DriverOfFrame(frame);
-    callback(CHECK_DEREF(target), browser_forms, removed_forms);
+    callback(CHECK_DEREF(target), std::move(browser_forms),
+             std::move(removed_forms));
   } else if (!removed_forms.empty()) {
-    callback(source, {}, removed_forms);
+    callback(source, {}, std::move(removed_forms));
   }
 }
 

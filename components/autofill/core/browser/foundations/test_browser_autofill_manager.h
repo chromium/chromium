@@ -42,8 +42,8 @@ class TestBrowserAutofillManager : public BrowserAutofillManager {
   // parsed.
   void OnLanguageDetermined(
       const translate::LanguageDetectionDetails& details) override;
-  void OnFormsSeen(const std::vector<FormData>& updated_forms,
-                   const std::vector<FormGlobalId>& removed_forms) override;
+  void OnFormsSeen(std::vector<FormData> updated_forms,
+                   std::vector<FormGlobalId> removed_forms) override;
   void OnCaretMovedInFormField(const FormData& form,
                                const FieldGlobalId& field_id,
                                const gfx::Rect& caret_bounds) override;

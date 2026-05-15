@@ -149,10 +149,11 @@ class TestAndroidAutofillManager : public AndroidAutofillManager {
   explicit TestAndroidAutofillManager(ContentAutofillDriver* driver)
       : AndroidAutofillManager(driver) {}
 
-  void OnFormsSeen(const std::vector<FormData>& updated_forms,
-                   const std::vector<FormGlobalId>& removed_forms) override {
+  void OnFormsSeen(std::vector<FormData> updated_forms,
+                   std::vector<FormGlobalId> removed_forms) override {
     TestAutofillManagerWaiter waiter(*this, {AutofillManagerEvent::kFormsSeen});
-    AutofillManager::OnFormsSeen(updated_forms, removed_forms);
+    AutofillManager::OnFormsSeen(std::move(updated_forms),
+                                 std::move(removed_forms));
     ASSERT_TRUE(waiter.Wait());
   }
 

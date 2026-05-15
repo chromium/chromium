@@ -553,9 +553,10 @@ void AutofillDriverIOS::FormsSeen(
     const std::vector<FormData>& updated_forms,
     const std::vector<FormGlobalId>& removed_forms) {
   auto callback = [](AutofillDriver& driver,
-                     const std::vector<FormData>& updated_forms,
-                     const std::vector<FormGlobalId>& removed_forms) {
-    driver.GetAutofillManager().OnFormsSeen(updated_forms, removed_forms);
+                     std::vector<FormData> updated_forms,
+                     std::vector<FormGlobalId> removed_forms) {
+    driver.GetAutofillManager().OnFormsSeen(std::move(updated_forms),
+                                            std::move(removed_forms));
   };
 
   if (IsAcrossIframesEnabled()) {
@@ -580,7 +581,7 @@ void AutofillDriverIOS::FormsSeen(
     }
     router_->FormsSeen(callback, *this, updated_forms, removed_forms);
   } else {
-    callback(*this, updated_forms, removed_forms);
+    callback(*this, std::move(updated_forms), std::move(removed_forms));
   }
 }
 
@@ -683,9 +684,10 @@ void AutofillDriverIOS::SetSelfAsParent(const autofill::FormData& form,
   // establish the relation between the child frames and their host form in the
   // forms tree.
   auto callback = [](AutofillDriver& driver,
-                     const std::vector<FormData>& updated_forms,
-                     const std::vector<FormGlobalId>& removed_forms) {
-    driver.GetAutofillManager().OnFormsSeen(updated_forms, removed_forms);
+                     std::vector<FormData> updated_forms,
+                     std::vector<FormGlobalId> removed_forms) {
+    driver.GetAutofillManager().OnFormsSeen(std::move(updated_forms),
+                                            std::move(removed_forms));
   };
   router_->FormsSeen(callback, *this, {form}, {});
 }

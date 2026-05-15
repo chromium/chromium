@@ -188,11 +188,11 @@ class TestAutofillManager : public autofill::TestBrowserAutofillManager {
     return forms_seen_waiter_.Wait(min_num_awaited_calls);
   }
 
-  void OnFormsSeen(
-      const std::vector<autofill::FormData>& updated_forms,
-      const std::vector<autofill::FormGlobalId>& removed_forms) override {
+  void OnFormsSeen(std::vector<autofill::FormData> updated_forms,
+                   std::vector<autofill::FormGlobalId> removed_forms) override {
     base::Extend(seen_forms_, updated_forms);
-    autofill::BrowserAutofillManager::OnFormsSeen(updated_forms, removed_forms);
+    autofill::BrowserAutofillManager::OnFormsSeen(std::move(updated_forms),
+                                                  std::move(removed_forms));
   }
 
   const std::vector<autofill::FormData>& seen_forms() { return seen_forms_; }

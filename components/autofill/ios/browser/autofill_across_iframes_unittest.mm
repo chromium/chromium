@@ -312,11 +312,12 @@ class TestAutofillManager : public BrowserAutofillManager {
     return text_field_did_change_forms_waiter_.Wait(min_num_awaited_calls);
   }
 
-  void OnFormsSeen(const std::vector<FormData>& updated_forms,
-                   const std::vector<FormGlobalId>& removed_forms) override {
+  void OnFormsSeen(std::vector<FormData> updated_forms,
+                   std::vector<FormGlobalId> removed_forms) override {
     base::Extend(seen_forms_, updated_forms);
     base::Extend(removed_forms_, removed_forms);
-    BrowserAutofillManager::OnFormsSeen(updated_forms, removed_forms);
+    BrowserAutofillManager::OnFormsSeen(std::move(updated_forms),
+                                        std::move(removed_forms));
   }
 
   void OnDidAutofillForm(const FormData& form) override {

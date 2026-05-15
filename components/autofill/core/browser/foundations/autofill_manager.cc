@@ -266,9 +266,8 @@ void AutofillManager::OnFormSubmitted(const FormData& form,
   NotifyObservers(&Observer::OnAfterFormSubmitted, form);
 }
 
-void AutofillManager::OnFormsSeen(
-    const std::vector<FormData>& updated_forms,
-    const std::vector<FormGlobalId>& removed_form_ids) {
+void AutofillManager::OnFormsSeen(std::vector<FormData> updated_forms,
+                                  std::vector<FormGlobalId> removed_form_ids) {
   auto erase_removed_forms = [&] {
     // Erase forms that have been removed from the DOM. This prevents
     // |form_structures_| from growing up its upper bound
@@ -315,7 +314,7 @@ void AutofillManager::OnFormsSeen(
       std::move(updated_form_ids), std::move(removed_form_ids),
       base::TimeTicks::Now());
 
-  ParseFormsAsync(updated_forms, std::move(process_parsed_forms));
+  ParseFormsAsync(std::move(updated_forms), std::move(process_parsed_forms));
 }
 
 void AutofillManager::QueryServerPredictions(
@@ -627,7 +626,7 @@ AutofillManager::GetHeuristicPredictionForForm(
 }
 
 void AutofillManager::ParseFormsAsync(
-    const std::vector<FormData>& forms,
+    std::vector<FormData> forms,
     base::OnceCallback<void(AutofillManager&, const std::vector<FormData>&)>
         callback) {
   SCOPED_UMA_HISTOGRAM_TIMER("Autofill.Timing.ParseFormsAsync");
@@ -636,35 +635,28 @@ void AutofillManager::ParseFormsAsync(
   // AutofillManager after ParseFormsAsync() and its asynchronous callees have
   // finished.
   size_t num_managed_forms = form_structures_.size();
-
-  // To be run on the main thread (accesses member variables).
-  std::vector<FormData> parseable_forms;
-  parseable_forms.reserve(forms.size());
-  for (const FormData& form : forms) {
+  std::erase_if(forms, [&](const FormData& form) {
     bool is_new_form = !form_structures_.contains(form.global_id());
     if (num_managed_forms + is_new_form > kAutofillManagerMaxFormCacheSize) {
       LOG_AF(log_manager()) << LoggingScope::kAbortParsing
                             << LogMessage::kAbortParsingTooManyForms << form;
-      continue;
+      return true;
     }
-
     if (!ShouldBeParsed(form, log_manager())) {
       LogCurrentFieldTypes(&form);
-      continue;
+      return true;
     }
-
     num_managed_forms += is_new_form;
-    parseable_forms.push_back(form);
-  }
+    return false;
+  });
 
   if (base::FeatureList::IsEnabled(
           features::kAutofillServerQueryPredictionsEarly)) {
-    QueryServerPredictions(parseable_forms, base::TimeTicks::Now());
+    QueryServerPredictions(forms, base::TimeTicks::Now());
   }
 
   ParseFormsAsyncCommon(
-      /*preserve_signatures=*/false, std::move(parseable_forms),
-      std::move(callback));
+      /*preserve_signatures=*/false, std::move(forms), std::move(callback));
 }
 
 void AutofillManager::ParseFormAsync(
