@@ -64,7 +64,7 @@ enum RequiredFieldsForAddressImport {
 // Maps country codes to address import requirements.
 // This list is comprised of countries appearing in both
 // //third_party/icu/source/data/region/en.txt and
-// //third_party/libaddressinput/src/cpp/src/region_data_constants.cc.
+// //third_party/libaddressinput/src/cpp/src/region_metadata_constants.cc.
 inline constexpr auto kCountryAddressImportRequirementsData =
     base::MakeFixedFlatMap<std::string_view, RequiredFieldsForAddressImport>(
         {{"AC", ADDRESS_REQUIRES_LINE1_CITY},
