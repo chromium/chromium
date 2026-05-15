@@ -39,18 +39,18 @@ import org.chromium.ui.widget.TextViewWithClickableSpans;
                 (ViewGroup)
                         LayoutInflater.from(context)
                                 .inflate(
-                                        R.layout.personal_context_first_run_bottom_sheet,
+                                        R.layout.accessibility_annotator_first_run_bottom_sheet,
                                         /* root= */ null);
-        mScrollView = mContentView.findViewById(R.id.personal_context_scroll_view);
-        mIcon = mContentView.findViewById(R.id.personal_context_icon);
-        mTitle = mContentView.findViewById(R.id.personal_context_title);
-        mDescription = mContentView.findViewById(R.id.personal_context_description);
+        mScrollView = mContentView.findViewById(R.id.accessibility_annotator_scroll_view);
+        mIcon = mContentView.findViewById(R.id.accessibility_annotator_icon);
+        mTitle = mContentView.findViewById(R.id.accessibility_annotator_title);
+        mDescription = mContentView.findViewById(R.id.accessibility_annotator_description);
         mLearnMoreDescription =
-                mContentView.findViewById(R.id.personal_context_learn_more_description);
-        mCard1Text = mContentView.findViewById(R.id.personal_context_card_1_text);
-        mCard2Text = mContentView.findViewById(R.id.personal_context_card_2_text);
-        mPrimaryButton = mContentView.findViewById(R.id.personal_context_primary_button);
-        mSecondaryButton = mContentView.findViewById(R.id.personal_context_secondary_button);
+                mContentView.findViewById(R.id.accessibility_annotator_learn_more_description);
+        mCard1Text = mContentView.findViewById(R.id.accessibility_annotator_card_1_text);
+        mCard2Text = mContentView.findViewById(R.id.accessibility_annotator_card_2_text);
+        mPrimaryButton = mContentView.findViewById(R.id.accessibility_annotator_primary_button);
+        mSecondaryButton = mContentView.findViewById(R.id.accessibility_annotator_secondary_button);
 
         mLearnMoreDescription.setMovementMethod(LinkMovementMethod.getInstance());
     }

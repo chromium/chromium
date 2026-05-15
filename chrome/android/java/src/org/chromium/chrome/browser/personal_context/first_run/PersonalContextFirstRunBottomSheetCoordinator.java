@@ -105,7 +105,7 @@ public class PersonalContextFirstRunBottomSheetCoordinator {
         mView.mPrimaryButton.setOnClickListener(v -> mMediator.onAcknowledgeClicked());
         mView.mSecondaryButton.setOnClickListener(v -> mMediator.onManageSettingsClicked());
 
-        mView.setAnimation(R.raw.personal_context_first_run_animation);
+        mView.setAnimation(R.raw.accessibility_annotator_first_run_animation);
     }
 
     /**
