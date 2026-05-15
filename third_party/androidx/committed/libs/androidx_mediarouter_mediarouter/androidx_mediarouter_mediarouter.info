@@ -380,7 +380,6 @@ resources = [
   "res/values-my/values-my.xml",
   "res/values-nb/values-nb.xml",
   "res/values-ne/values-ne.xml",
-  "res/values-night-v8/values-night-v8.xml",
   "res/values-nl/values-nl.xml",
   "res/values-or/values-or.xml",
   "res/values-pa/values-pa.xml",
