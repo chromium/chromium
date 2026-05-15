@@ -33,11 +33,12 @@ class FakeOnDeviceTranslationInstaller : public OnDeviceTranslationInstaller {
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;
 
- private:
   // Forces initialization to happen right away.
   void InitNow(base::RepeatingClosure on_ready_callback);
   // Forces installation to happen right away.
   void InstallLanguagePackNow(LanguagePackKey language_pack);
+
+ private:
   base::FilePath fake_install_dir_;
   bool is_init_ = false;
   std::set<LanguagePackKey> installed_lang_packs_;

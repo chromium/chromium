@@ -2,8 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/on_device_translation/service_controller_manager_factory.h"
 #include "chrome/browser/on_device_translation/test/test_util.h"
 #include "chrome/browser/policy/policy_test_utils.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -41,6 +43,9 @@ class TranslatorAPIPolicyTest : public PolicyTest {
 
     mock_component_manager_ =
         std::make_unique<MockComponentManager>(GetTempDir());
+    on_device_translation::ServiceControllerManagerFactory::GetInstance()
+        ->Get(browser()->profile())
+        ->SetInstallerForTesting(&adapter_);
     // Install the mock TranslateKit component.
     mock_component_manager_->InstallMockTranslateKitComponent();
     // Install the mock language pack.
@@ -76,6 +81,7 @@ class TranslatorAPIPolicyTest : public PolicyTest {
   base::ScopedTempDir tmp_dir_;
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<MockComponentManager> mock_component_manager_;
+  on_device_translation::TestInstallerAdapter adapter_;
 };
 
 // Test that the default value of the policy is allowed.
