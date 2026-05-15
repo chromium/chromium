@@ -614,7 +614,6 @@ buildflag_header("chromecast_buildflags") {
     "DISABLE_SECURE_FLAC_OPUS_DECODING=$disable_secure_flac_and_opus_decoding",
     "ENABLE_ASSISTANT=$enable_assistant",
     "ENABLE_EXTERNAL_MOJO_SERVICES=$enable_external_mojo_services",
-    "ENABLE_VIDEO_CAPTURE_SERVICE=$enable_video_capture_service",
     "IS_CAST_AUDIO_ONLY=$is_cast_audio_only",
     "IS_CAST_DESKTOP_BUILD=$is_cast_desktop_build",
     "USE_ANDROID_USER_AGENT=$use_android_user_agent",

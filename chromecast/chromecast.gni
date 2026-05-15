@@ -66,8 +66,6 @@ declare_args() {
   # cast CMA media backend and supporting Widevine or Playready.
   disable_secure_flac_and_opus_decoding = false
 
-  # Set to true to enable video capture service for video input and output.
-  enable_video_capture_service = false
 
   # Set to true to enable external Mojo services to communicate with services
   # within cast_shell.
