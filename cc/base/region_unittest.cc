@@ -4,6 +4,8 @@
 
 #include "cc/base/region.h"
 
+#include <vector>
+
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace cc {
@@ -433,7 +435,7 @@ TEST(RegionTest, Clear) {
   EXPECT_TRUE(r.IsEmpty());
 }
 
-TEST(RegionSwap, Swap) {
+TEST(RegionTest, Swap) {
   Region r1, r2, r3;
 
   r1 = gfx::Rect(0, 0, 50, 50);
@@ -448,6 +450,22 @@ TEST(RegionSwap, Swap) {
   r1.Swap(&r2);
   EXPECT_EQ(r1.ToString(), Region(gfx::Rect(0, 0, 50, 50)).ToString());
   EXPECT_EQ(r2.ToString(), r3.ToString());
+}
+
+TEST(RegionTest, BatchedUnion) {
+  Region r_incremental;
+  Region r_batched;
+  std::vector<SkIRect> rects;
+
+  for (int i = 0; i < 10; ++i) {
+    gfx::Rect rect(i * 10, i * 10, 5, 5);
+    rects.push_back(gfx::RectToSkIRect(rect));
+    r_incremental.Union(rect);
+  }
+
+  r_batched.Union(rects);
+
+  EXPECT_EQ(r_incremental, r_batched);
 }
 
 }  // namespace

@@ -17,7 +17,9 @@
 #include "cc/tiles/tile_index.h"
 #include "cc/tiles/tiling_coverage_iterator.h"
 #include "cc/tiles/tiling_internal.h"
+#include "third_party/abseil-cpp/absl/container/inlined_vector.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 
 namespace cc {
 
@@ -175,16 +177,20 @@ class TilingSetCoverageIterator {
     }
 
     while (true) {
+      absl::InlinedVector<SkIRect, 64> missing_batch;
       for (; tiling_iter_.IsValid(); ++tiling_iter_) {
         Tile* const tile = (**current_tiling_)->TileAt(tiling_iter_.index());
         if (tile && tile->IsReadyToDraw()) {
+          missing_region_.Union(missing_batch);
           return;
         }
         // For any tile which is not yet ready to draw, accumulate its
         // coverage back into the uncovered region so that subsequent tilings
         // may attempt to cover it.
-        missing_region_.Union(tiling_iter_.geometry_rect());
+        missing_batch.push_back(
+            gfx::RectToSkIRect(tiling_iter_.geometry_rect()));
       }
+      missing_region_.Union(missing_batch);
 
       // If the set of current rects for this tiling is done, or if this is
       // the first call at construction time, update the current tiling.

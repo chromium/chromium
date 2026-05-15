@@ -123,6 +123,16 @@ void Region::Union(const Region& region) {
   skregion_.op(region.skregion_, SkRegion::kUnion_Op);
 }
 
+void Region::Union(base::span<const SkIRect> rects) {
+  if (rects.empty()) {
+    return;
+  }
+
+  SkRegion batch_region;
+  batch_region.setRects({rects.data(), rects.size()});
+  skregion_.op(batch_region, SkRegion::kUnion_Op);
+}
+
 void Region::Intersect(const gfx::Rect& rect) {
   skregion_.op(gfx::RectToSkIRect(rect), SkRegion::kIntersect_Op);
 }

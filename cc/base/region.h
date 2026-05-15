@@ -9,6 +9,7 @@
 #include <memory>
 #include <string>
 
+#include "base/containers/span.h"
 #include "cc/base/base_export.h"
 #include "third_party/skia/include/core/SkRegion.h"
 #include "ui/gfx/geometry/rect.h"
@@ -66,6 +67,7 @@ class CC_BASE_EXPORT Region {
   void Subtract(const SimpleEnclosedRegion& region);
   void Union(const gfx::Rect& rect);
   void Union(const Region& region);
+  void Union(base::span<const SkIRect> rects);
   void Intersect(const gfx::Rect& rect);
   void Intersect(const Region& region);
 
