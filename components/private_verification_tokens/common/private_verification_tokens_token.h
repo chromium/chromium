@@ -54,6 +54,8 @@ class PrivateVerificationTokensToken {
   // the database as well.
   uint32_t version() const;
 
+  bool operator==(const PrivateVerificationTokensToken&) const = default;
+
  private:
   std::string etld_plus_one_;
   SerializedToken token_;

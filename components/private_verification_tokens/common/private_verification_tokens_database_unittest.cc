@@ -23,20 +23,6 @@
 
 namespace private_verification_tokens {
 
-bool operator==(const PrivateVerificationTokensPublicKey& lhs,
-                const PrivateVerificationTokensPublicKey& rhs) {
-  return lhs.etld_plus_one() == rhs.etld_plus_one() &&
-         lhs.public_key() == rhs.public_key() && lhs.key_id() == rhs.key_id() &&
-         lhs.expiration() == rhs.expiration() && lhs.version() == rhs.version();
-}
-
-bool operator==(const PrivateVerificationTokensToken& lhs,
-                const PrivateVerificationTokensToken& rhs) {
-  return lhs.etld_plus_one() == rhs.etld_plus_one() &&
-         lhs.token() == rhs.token() && lhs.key_id() == rhs.key_id() &&
-         lhs.expiration() == rhs.expiration() && lhs.version() == rhs.version();
-}
-
 namespace {
 
 static constexpr base::FilePath::CharType kDatabaseFileName[] =

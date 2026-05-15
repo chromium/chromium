@@ -35,6 +35,8 @@ class PrivateVerificationTokensPublicKey {
   base::Time expiration() const;
   uint32_t version() const;
 
+  bool operator==(const PrivateVerificationTokensPublicKey&) const = default;
+
  private:
   std::string etld_plus_one_;
   std::vector<uint8_t> public_key_;
