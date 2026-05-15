@@ -6,14 +6,17 @@
 
 #include <algorithm>
 #include <memory>
+#include <string>
 #include <utility>
 
 #include "base/check.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/power_monitor/power_monitor.h"
 #include "base/rand_util.h"
+#include "base/strings/strcat.h"
 #include "base/trace_event/trace_event.h"
 
 namespace viz {
@@ -70,6 +73,7 @@ ExternalBeginFrameSourceMac::ExternalBeginFrameSourceMac(
     int64_t display_id,
     OutputSurface* output_surface)
     : ExternalBeginFrameSource(this, restart_id),
+      create_time_(base::TimeTicks::Now()),
       output_surface_(output_surface) {
   VLOG(kOutputLevel) << "ExternalBeginFrameSourceMac(" << this << ")"
                      << "::ExternalBeginFrameSourceMac() ID:" << display_id;
@@ -273,6 +277,11 @@ void ExternalBeginFrameSourceMac::OnNeedsBeginFrames(bool needs_begin_frames) {
   if (needs_begin_frames_ == needs_begin_frames) {
     return;
   }
+
+  if (needs_begin_frames && first_needs_begin_frames_time_.is_null()) {
+    first_needs_begin_frames_time_ = base::TimeTicks::Now();
+  }
+
   needs_begin_frames_ = needs_begin_frames;
   just_started_begin_frame_ = true;
 
@@ -286,6 +295,7 @@ void ExternalBeginFrameSourceMac::OnNeedsBeginFrames(bool needs_begin_frames) {
 // Called on the Viz thread.
 void ExternalBeginFrameSourceMac::OnDisplayLinkCallback(
     ui::VSyncParamsMac params) {
+  RecordFirstFrameHistograms(/*is_timer=*/false);
   // If we have reached `kMaxKeepAliveCount` consecutive callbacks without
   // needing a begin frame, stop the display link.
   if (!needs_begin_frames_) {
@@ -410,6 +420,7 @@ BeginFrameArgs ExternalBeginFrameSourceMac::GetMissedBeginFrameArgs(
 
 // Timer callbacks when DisplayLink is not available.
 void ExternalBeginFrameSourceMac::OnTimerTick() {
+  RecordFirstFrameHistograms(/*is_timer=*/true);
   if (!needs_begin_frames_) {
     return;
   }
@@ -523,6 +534,51 @@ ExternalBeginFrameSourceMac::GetSupportedFrameIntervals(
   }
 
   return supported_intervals;
+}
+
+void ExternalBeginFrameSourceMac::RecordFirstFrameHistograms(bool is_timer) {
+  if (!first_callback_time_.is_null()) {
+    return;
+  }
+  first_callback_time_ = base::TimeTicks::Now();
+
+  static constexpr char kTimeFromConstruction[] =
+      "Viz.ExternalBeginFrameSourceMac.TimeFromConstructionToFirstFrame";
+  static constexpr char kTimeFromFirstNeedsBeginFrames[] =
+      "Viz.ExternalBeginFrameSourceMac."
+      "TimeFromFirstNeedsBeginFramesToFirstFrame";
+
+  const char* suffix = is_timer ? ".Timer" : ".DisplayLink";
+
+  base::TimeDelta construction_to_first_frame =
+      first_callback_time_ - create_time_;
+  base::TimeDelta min = base::Milliseconds(1);
+  base::TimeDelta max = base::Minutes(1);
+  size_t bucket_count = 50;
+
+  base::UmaHistogramCustomTimes(kTimeFromConstruction,
+                                construction_to_first_frame, min, max,
+                                bucket_count);
+  base::UmaHistogramCustomTimes(base::StrCat({kTimeFromConstruction, suffix}),
+                                construction_to_first_frame, min, max,
+                                bucket_count);
+
+  if (!first_needs_begin_frames_time_.is_null()) {
+    base::TimeDelta needs_begin_frames_to_first_frame =
+        first_callback_time_ - first_needs_begin_frames_time_;
+    base::UmaHistogramCustomTimes(kTimeFromFirstNeedsBeginFrames,
+                                  needs_begin_frames_to_first_frame, min, max,
+                                  bucket_count);
+    base::UmaHistogramCustomTimes(
+        base::StrCat({kTimeFromFirstNeedsBeginFrames, suffix}),
+        needs_begin_frames_to_first_frame, min, max, bucket_count);
+  }
+}
+
+void ExternalBeginFrameSourceMac::OnSuspend() {
+  if (first_callback_time_.is_null()) {
+    first_callback_time_ = base::TimeTicks::Max();
+  }
 }
 
 void ExternalBeginFrameSourceMac::OnResume() {

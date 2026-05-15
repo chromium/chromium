@@ -2558,6 +2558,43 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Viz.ExternalBeginFrameSourceMac.TimeFromConstructionToFirstFrame{Source}"
+    units="ms" expires_after="2027-05-14">
+  <owner>magchen@chromium.org</owner>
+  <owner>chrome-gpu-metric-alerts@chromium.org</owner>
+  <summary>
+    The time elapsed from when ExternalBeginFrameSourceMac is constructed to
+    when the first OnDisplayLinkCallback or OnTimerTick is called. This measures
+    the latency to start the first frame using {Source}. This is not recorded if
+    a power event occurs before the first frame.
+  </summary>
+  <token key="Source">
+    <variant name="" summary="DisplayLink or Timer"/>
+    <variant name=".DisplayLink" summary="DisplayLink"/>
+    <variant name=".Timer" summary="Timer"/>
+  </token>
+</histogram>
+
+<histogram
+    name="Viz.ExternalBeginFrameSourceMac.TimeFromFirstNeedsBeginFramesToFirstFrame{Source}"
+    units="ms" expires_after="2027-05-14">
+  <owner>magchen@chromium.org</owner>
+  <owner>chrome-gpu-metric-alerts@chromium.org</owner>
+  <summary>
+    The time elapsed from when the first OnNeedsBeginFrames(true) is called to
+    when the first OnDisplayLinkCallback or OnTimerTick is called. This measures
+    the latency from the first request for frames to the first frame delivery
+    using {Source}. This is not recorded if a power event occurs before the
+    first frame.
+  </summary>
+  <token key="Source">
+    <variant name="" summary="DisplayLink or Timer"/>
+    <variant name=".DisplayLink" summary="DisplayLink"/>
+    <variant name=".Timer" summary="Timer"/>
+  </token>
+</histogram>
+
 <histogram name="Viz.FileDescriptorTracking.TimeToCompute" units="microseconds"
     expires_after="2026-08-09">
   <owner>petermcneeley@chromium.org</owner>

@@ -10,6 +10,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/power_monitor/power_observer.h"
+#include "base/time/time.h"
 #include "components/viz/common/display/update_vsync_parameters_callback.h"
 #include "components/viz/common/frame_sinks/begin_frame_source.h"
 #include "components/viz/service/display/output_surface.h"
@@ -76,10 +77,17 @@ class VIZ_COMMON_EXPORT ExternalBeginFrameSourceMac
   void StartBeginFrame();
   void StopBeginFrame(bool force_stop);
 
+  void RecordFirstFrameHistograms(bool is_timer);
+
   // Implements base::PowerSuspendObserver.
+  void OnSuspend() override;
   void OnResume() override;
 
   BeginFrameArgsGenerator begin_frame_args_generator_;
+
+  const base::TimeTicks create_time_;
+  base::TimeTicks first_needs_begin_frames_time_;
+  base::TimeTicks first_callback_time_;
 
   bool needs_begin_frames_ = false;
 
