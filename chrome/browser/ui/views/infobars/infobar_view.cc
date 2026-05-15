@@ -348,19 +348,14 @@ gfx::Size InfoBarView::CalculatePreferredSize(
 void InfoBarView::OnThemeChanged() {
   views::View::OnThemeChanged();
   const auto* cp = GetColorProvider();
-  const SkColor background_color = cp->GetColor(kColorInfoBarBackground);
-  if (base::FeatureList::IsEnabled(features::kInfobarRefresh)) {
-    const SkColor background_theme_color = cp->GetColor(ui::kColorSysSurface2);
-    SetBackground(views::CreateSolidBackground(background_theme_color));
-  } else {
-    SetBackground(views::CreateSolidBackground(background_color));
-  }
+  const SkColor background_theme_color = cp->GetColor(kColorInfoBarBackground);
+  SetBackground(views::CreateSolidBackground(background_theme_color));
 
   const SkColor text_color = cp->GetColor(kColorInfoBarForeground);
   for (views::View* child : content_container_->children()) {
     auto* label = views::AsViewClass<views::Label>(child);
     if (label) {
-      label->SetBackgroundColor(background_color);
+      label->SetBackgroundColor(background_theme_color);
       if (!views::IsViewClass<views::Link>(child)) {
         label->SetEnabledColor(text_color);
         label->SetAutoColorReadabilityEnabled(false);
