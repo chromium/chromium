@@ -33,6 +33,8 @@
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_page_context.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_page_state_change_handler.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_scroll_observer.h"
+#import "ios/chrome/browser/intelligence/bwg/model/gemini_service.h"
+#import "ios/chrome/browser/intelligence/bwg/model/gemini_service_factory.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_session_delegate.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_session_handler.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_startup_configuration.h"
@@ -1338,6 +1340,11 @@ void GeminiBrowserAgent::PresentFloatyWithState(
   config.entryPoint = entry_point;
   config.imageRemixIPHShouldShow =
       entry_point == gemini::EntryPoint::ImageRemixIPH;
+  GeminiService* gemini_service =
+      GeminiServiceFactory::GetForProfile(browser_->GetProfile());
+  config.needsAccountCapabilityRestriction =
+      gemini_service && gemini_service->HasGeminiInChromeCapability() &&
+      !gemini_service->HasModelExecutionCapability();
 
   // Set the location permission state.
   // TODO(crbug.com/426207968): Populate with actual value.

@@ -106,6 +106,9 @@ class PageContext;
 // The entry point where the floaty was triggered from.
 @property(nonatomic, assign) gemini::EntryPoint entryPoint;
 
+// Whether the account requires capability-based restriction.
+@property(nonatomic, assign) BOOL needsAccountCapabilityRestriction;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_BWG_MODEL_GEMINI_CONFIGURATION_H_

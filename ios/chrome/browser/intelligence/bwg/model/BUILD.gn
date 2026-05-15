@@ -61,6 +61,8 @@ source_set("browser_agent") {
   ]
   deps = [
     ":config",
+    ":gemini_service",
+    ":gemini_service_factory",
     ":model",
     ":page_context",
     ":tab_helper",
