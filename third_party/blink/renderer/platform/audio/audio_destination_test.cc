@@ -80,7 +80,7 @@ class TestPlatform : public TestingPlatformSupport {
       const WebAudioLatencyHint& latency_hint,
       std::optional<float> context_sample_rate,
       media::AudioRendererSink::RenderCallback*) override {
-    CHECK(webaudio_device_ != nullptr)
+    CHECK(webaudio_device_)
         << "Calling CreateAudioDevice (via AudioDestination::Create) multiple "
            "times in one test is not supported.";
     return std::move(webaudio_device_);
@@ -97,7 +97,7 @@ class TestPlatform : public TestingPlatformSupport {
   }
 
   const MockWebAudioDevice& web_audio_device() {
-    CHECK(webaudio_device_ != nullptr)
+    CHECK(webaudio_device_)
         << "Finish setting up expectations before calling CreateAudioDevice "
            "(via AudioDestination::Create).";
     return *webaudio_device_;

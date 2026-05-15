@@ -742,7 +742,7 @@ void OscillatorHandler::Process(uint32_t frames_to_process) {
     ++destination_index;
     --n;
     virtual_read_index += (1 - start_frame_offset) * frequency * rate_scale;
-    DCHECK(virtual_read_index < periodic_wave_size);
+    DCHECK_LT(virtual_read_index, periodic_wave_size);
   } else if (start_frame_offset < 0) {
     virtual_read_index = -start_frame_offset * frequency * rate_scale;
   }

@@ -219,7 +219,7 @@ AudioDestinationHandler& AudioParamHandler::DestinationHandler() const {
 }
 
 void AudioParamHandler::SetCustomParamName(const String name) {
-  DCHECK(param_type_ == AudioParamType::kParamTypeAudioWorklet);
+  DCHECK_EQ(param_type_, AudioParamType::kParamTypeAudioWorklet);
   custom_param_name_ = name;
 }
 
@@ -2304,7 +2304,7 @@ void AudioParamHandler::RemoveCancelledEvents(
 
 void AudioParamHandler::RemoveOldEvents(wtf_size_t event_count) {
   wtf_size_t n_events = events_.size();
-  DCHECK(event_count <= n_events);
+  DCHECK_LE(event_count, n_events);
 
   // Always leave at least one event in the event list!
   if (n_events > 1) {
