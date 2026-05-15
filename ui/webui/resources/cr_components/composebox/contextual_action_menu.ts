@@ -181,6 +181,8 @@ export class ContextualActionMenuElement extends
         this.contextManagementInComposeboxEnabled_) {
       this.updateSharingTabsText_();
     }
+
+    this.manageShareTabsInitialFocus_(changedProperties);
   }
 
   get open(): boolean {
@@ -208,6 +210,30 @@ export class ContextualActionMenuElement extends
 
     if (this.contextManagementInComposeboxEnabled_) {
       this.updateSharingTabsText_();
+    }
+  }
+
+  private manageShareTabsInitialFocus_(
+      changedProperties: PropertyValues<this>) {
+    // Manually manage the initial keyboard focus for the "Share Tabs" menu item.
+    // Because `tabSuggestions` are fetched asynchronously, the
+    // `#shareTabsTrigger` button may not exist in the DOM at the exact moment
+    // the menu is opened. This causes the underlying <cr-action-menu> to
+    // incorrectly assign the initial focus to the next available item. To fix
+    // this, we reclaim the focus once the tab data arrives and the DOM is updated.
+    if (changedProperties.has('tabSuggestions')) {
+      const isNowPopulated =
+          this.tabSuggestions && this.tabSuggestions.length > 0;
+
+      if (isNowPopulated && this.open) {
+        requestAnimationFrame(() => {
+          const triggerBtn =
+              this.shadowRoot.querySelector<HTMLElement>('#shareTabsTrigger');
+          if (triggerBtn) {
+            triggerBtn.focus();
+          }
+        });
+      }
     }
   }
 

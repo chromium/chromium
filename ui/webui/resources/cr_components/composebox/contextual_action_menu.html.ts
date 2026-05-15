@@ -50,6 +50,7 @@ export function getHtml(this: ContextualActionMenuElement) {
             ${this.tabSuggestions.map((tab, index) => html`
               <div class="suggestion-container">
                 <button class="dropdown-item"
+                ?hidden="${!this.shareTabsFlyoutOpen_}"
                     role="${this.enableMultiTabSelection_ ?
                         'menuitemcheckbox' : 'menuitem'}"
                     aria-checked="${this.enableMultiTabSelection_ &&
