@@ -3915,11 +3915,11 @@
       status: "stable",
     },
     // ModulePreloadReferrer enables modulepreload to send proper referrer
-    // headers as specified in the HTML spec. Behind a flag for safer rollout.
+    // headers as specified in the HTML spec.
     // https://crbug.com/441933555
     {
       name: "ModulePreloadReferrer",
-      status: "experimental",
+      status: "stable",
     },
     // https://crbug.com/466888680
     {
