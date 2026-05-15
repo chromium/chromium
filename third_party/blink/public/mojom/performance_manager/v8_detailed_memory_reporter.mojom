@@ -18,6 +18,9 @@ struct PerContextV8MemoryUsage {
   // filled only for dedicated workers and it may be empty if the URL is too
   // long.
   string? url;
+  // For non-main-world contexts (e.g. isolated worlds), this is the stable ID
+  // of the world. Null for main world and worker contexts.
+  string? world_stable_id;
 };
 
 struct PerContextCanvasMemoryUsage {

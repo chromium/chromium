@@ -72,20 +72,31 @@ class FrameAssociatedMeasurementDelegate : public v8::MeasureMemoryDelegate {
         continue;
       }
       v8::Isolate* isolate = v8::Isolate::GetCurrent();
-      if (DOMWrapperWorld::World(isolate, context).GetWorldId() !=
-          DOMWrapperWorld::kMainWorldId) {
-        // TODO(crbug.com/1085129): Handle extension contexts once they get
-        // their own V8ContextToken.
-        continue;
+      DOMWrapperWorld& world = DOMWrapperWorld::World(isolate, context);
+      String stable_id;
+      if (world.GetWorldId() != DOMWrapperWorld::kMainWorldId) {
+        // Non-main-world: report with stable ID if available.
+        stable_id = world.NonMainWorldStableId();
+        if (stable_id.IsNull() || stable_id.empty()) {
+          continue;
+        }
       }
       auto context_memory_usage = mojom::blink::PerContextV8MemoryUsage::New();
       context_memory_usage->token =
           frame->DomWindow()->GetExecutionContextToken();
       context_memory_usage->memory_used = size;
+      context_memory_usage->world_stable_id = stable_id;
 #if DCHECK_IS_ON()
-      // Check that the token didn't already occur.
-      for (const auto& entry : isolate_memory_usage->contexts) {
-        DCHECK_NE(entry->token, context_memory_usage->token);
+      // Verify that each main-world context has a unique token. Non-main-world
+      // entries can share a token (same frame, different isolated worlds) and
+      // can also share world_stable_id (same extension with both content script
+      // and user script worlds), so we only check main-world uniqueness.
+      if (stable_id.IsNull()) {
+        for (const auto& entry : isolate_memory_usage->contexts) {
+          if (entry->world_stable_id.IsNull()) {
+            DCHECK_NE(entry->token, context_memory_usage->token);
+          }
+        }
       }
 #endif
       isolate_memory_usage->contexts.push_back(std::move(context_memory_usage));

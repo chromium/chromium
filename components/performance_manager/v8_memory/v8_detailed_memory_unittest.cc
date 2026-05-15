@@ -683,6 +683,76 @@ TEST_F(V8DetailedMemoryDecoratorTest, DataIsDistributed) {
                 ->detached_v8_memory_used());
 }
 
+TEST_F(V8DetailedMemoryDecoratorTest, NonMainWorldMemoryIsCollected) {
+  V8DetailedMemoryRequest memory_request(kMinTimeBetweenRequests, graph());
+
+  // Generate the frame token before creating nodes so we can build the mock
+  // data with it.
+  blink::LocalFrameToken frame1_id = blink::LocalFrameToken();
+
+  // Set up mock expectations BEFORE creating the process node, because
+  // creating the process node immediately triggers a bind + measurement.
+  MockV8DetailedMemoryReporter reporter;
+  {
+    auto data = NewPerProcessV8MemoryUsage(1);
+    data->isolates[0]->detached_memory_used = kDetachedBytes;
+    data->isolates[0]->shared_memory_used = kSharedBytes;
+
+    // Main-world entry for frame1.
+    AddIsolateMemoryUsage(frame1_id, base::ByteSize(1001),
+                          data->isolates[0].get());
+
+    // Non-main-world entry for the same frame (e.g. extension content script).
+    auto nmw = blink::mojom::PerContextV8MemoryUsage::New();
+    nmw->token = frame1_id;
+    nmw->memory_used = base::ByteSize(500);
+    nmw->world_stable_id = "ext-abc";
+    data->isolates[0]->contexts.push_back(std::move(nmw));
+
+    ExpectBindAndRespondToQuery(&reporter, std::move(data));
+  }
+
+  auto process = CreateNode<ProcessNodeImpl>(
+      RenderProcessHostProxy::CreateForTesting(kTestProcessID));
+  auto page = CreateNode<PageNodeImpl>();
+  auto frame1 = CreateNode<FrameNodeImpl>(
+      process.get(), page.get(), /*parent_frame_node=*/nullptr,
+      /*outer_document_for_fenced_frame=*/nullptr,
+      /*render_frame_id=*/1, frame1_id);
+
+  // Data should not be available until the measurement is taken.
+  EXPECT_FALSE(V8DetailedMemoryProcessData::ForProcessNode(process.get()));
+
+  // Fast-forward past the initial measurement.
+  task_env().FastForwardBy(kMinTimeBetweenRequests / 2);
+
+  Mock::VerifyAndClearExpectations(&reporter);
+
+  // Main-world data on the frame should only reflect the main-world value.
+  ASSERT_TRUE(V8DetailedMemoryExecutionContextData::ForFrameNode(frame1.get()));
+  EXPECT_EQ(base::ByteSize(1001),
+            V8DetailedMemoryExecutionContextData::ForFrameNode(frame1.get())
+                ->v8_memory_used());
+
+  // Non-main-world entries should be collected on the process data.
+  auto* process_data =
+      V8DetailedMemoryProcessData::ForProcessNode(process.get());
+  ASSERT_TRUE(process_data);
+  ASSERT_EQ(1u, process_data->non_main_world_entries().size());
+  EXPECT_EQ("ext-abc",
+            process_data->non_main_world_entries()[0].world_stable_id);
+  EXPECT_EQ(blink::ExecutionContextToken(frame1_id),
+            process_data->non_main_world_entries()[0].frame_token);
+  EXPECT_EQ(base::ByteSize(500),
+            process_data->non_main_world_entries()[0].memory_used);
+
+  // Detached bytes should not include non-main-world memory.
+  EXPECT_EQ(kDetachedBytes, process_data->detached_v8_memory_used());
+
+  // Shared bytes should be unaffected.
+  EXPECT_EQ(kSharedBytes, process_data->shared_v8_memory_used());
+}
+
 TEST_P(V8DetailedMemoryDecoratorModeTest, LazyRequests) {
   constexpr base::TimeDelta kLazyRequestLength = base::Seconds(30);
   V8DetailedMemoryRequest lazy_request(kLazyRequestLength,
