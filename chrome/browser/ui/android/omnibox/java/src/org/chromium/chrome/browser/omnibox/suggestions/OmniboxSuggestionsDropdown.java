@@ -372,6 +372,21 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
     }
 
     /**
+     * Sets whether parking at sentinel is allowed.
+     *
+     * @param allow Whether parking at sentinel is allowed.
+     */
+    public void setAllowParkingAtSentinel(boolean allow) {
+        @SelectionController.Mode
+        int mode =
+                allow
+                        ? SelectionController.Mode.WRAPPING_WITH_SENTINEL
+                        : SelectionController.Mode.WRAPPING;
+        mSelectionController.setSelectionMode(mode);
+        mSelectionController.reset();
+    }
+
+    /**
      * Translates all children by {@code translation}. This translation is applied to newly-added
      * added children as well.
      */
@@ -580,5 +595,10 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
     @Override
     public @Nullable OmniboxSuggestionsDropdownAdapter getAdapter() {
         return mAdapter;
+    }
+
+    @VisibleForTesting
+    SelectionController getSelectionControllerForTesting() {
+        return mSelectionController;
     }
 }

@@ -84,9 +84,12 @@ import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
     WritableBooleanPropertyKey ROUND_TOP_CORNERS = new WritableBooleanPropertyKey();
 
+    WritableBooleanPropertyKey ALLOW_PARKING_AT_SENTINEL = new WritableBooleanPropertyKey();
+
     PropertyKey[] ALL_KEYS =
             new PropertyKey[] {
                 ACTIVITY_WINDOW_FOCUSED,
+                ALLOW_PARKING_AT_SENTINEL,
                 ALPHA,
                 CHILD_TRANSLATION_Y,
                 COLOR_SCHEME,

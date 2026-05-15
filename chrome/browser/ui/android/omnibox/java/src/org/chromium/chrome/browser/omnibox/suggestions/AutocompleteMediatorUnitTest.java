@@ -1941,4 +1941,44 @@ public class AutocompleteMediatorUnitTest {
         assertEquals("test", siteSearchData.keyword);
         assertEquals("Test", siteSearchData.fullName); // Should fall back to ShortName "Test"
     }
+
+    @Test
+    @SmallTest
+    public void onInputChanged_setsAllowParkingAtSentinelProperty_mobile() {
+        var session = createEmptySession();
+        mMediator.beginInput(session);
+
+        var input = session.getAutocompleteInput();
+        OmniboxFeatures.setHasDesktopExperienceForTesting(false);
+
+        // ZPS -- allow parking.
+        input.setUserText("");
+        mMediator.onInputChanged();
+        assertTrue(mListModel.get(SuggestionListProperties.ALLOW_PARKING_AT_SENTINEL));
+
+        // Prefixed -- allow parking.
+        input.setUserText("test");
+        mMediator.onInputChanged();
+        assertTrue(mListModel.get(SuggestionListProperties.ALLOW_PARKING_AT_SENTINEL));
+    }
+
+    @Test
+    @SmallTest
+    public void onInputChanged_setsAllowParkingAtSentinelProperty_desktop() {
+        var session = createEmptySession();
+        mMediator.beginInput(session);
+
+        var input = session.getAutocompleteInput();
+        OmniboxFeatures.setHasDesktopExperienceForTesting(true);
+
+        // ZPS -- allow parking.
+        input.setUserText("");
+        mMediator.onInputChanged();
+        assertTrue(mListModel.get(SuggestionListProperties.ALLOW_PARKING_AT_SENTINEL));
+
+        // Prefixed -- Don't allow parking.
+        input.setUserText("test");
+        mMediator.onInputChanged();
+        assertFalse(mListModel.get(SuggestionListProperties.ALLOW_PARKING_AT_SENTINEL));
+    }
 }
