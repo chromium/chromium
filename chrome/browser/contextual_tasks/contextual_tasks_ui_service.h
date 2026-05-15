@@ -17,6 +17,7 @@
 #include "base/observer_list.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks.mojom.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_eligibility_manager.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_delegate.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
 #include "components/contextual_search/contextual_search_session_handle.h"
@@ -85,6 +86,7 @@ class ContextualTasksUiService : public KeyedService {
       contextual_tasks::ContextualTasksService* contextual_tasks_service,
       signin::IdentityManager* identity_manager,
       AimEligibilityService* aim_eligibility_service,
+      std::unique_ptr<ContextualTasksEligibilityManager> eligibility_manager,
       std::unique_ptr<ContextualTasksCookieSynchronizer> cookie_synchronizer);
   ContextualTasksUiService(const ContextualTasksUiService&) = delete;
   ContextualTasksUiService operator=(const ContextualTasksUiService&) = delete;
@@ -317,6 +319,9 @@ class ContextualTasksUiService : public KeyedService {
   // Return whether the cookie jar contains the primary account.
   virtual bool CookieJarContainsPrimaryAccount();
 
+  // Returns the eligibility manager.
+  virtual ContextualTasksEligibilityManager* GetEligibilityManager() const;
+
   // Fetches an access token for the primary account.
   using GetAccessTokenCallback = base::OnceCallback<void(const std::string&)>;
   virtual void GetAccessToken(GetAccessTokenCallback callback,
@@ -394,8 +399,8 @@ class ContextualTasksUiService : public KeyedService {
   // Runs all pending access token callbacks with the provided token.
   void RunPendingAccessTokenCallbacks(const std::string& token);
 
-  // Called when AIM eligibility changes.
-  void OnAimEligibilityChanged();
+  // Called when the contextual tasks eligibility changes.
+  void OnEligibilityChanged(bool eligible);
 
   // Focus an existing tab based on the provided URL if it exists. The URLs are
   // compared without text selection directives as they don't change the page
@@ -481,9 +486,10 @@ class ContextualTasksUiService : public KeyedService {
   // The cookie synchronizer for the isolated partition.
   std::unique_ptr<ContextualTasksCookieSynchronizer> cookie_synchronizer_;
 
-  // Subscription for AimEligibilityService changes to trigger cookie sync.
-  base::CallbackListSubscription aim_eligibility_subscription_;
-  bool is_cobrowse_eligible_ = false;
+  // Helper to manage Contextual Tasks eligibility.
+  std::unique_ptr<ContextualTasksEligibilityManager> eligibility_manager_;
+  base::CallbackListSubscription eligibility_subscription_;
+  bool is_eligible_ = false;
 
   // Map a task's ID to the URL that was used to create it, if it exists. This
   // is primarily used in init flows where the contextual tasks UI is

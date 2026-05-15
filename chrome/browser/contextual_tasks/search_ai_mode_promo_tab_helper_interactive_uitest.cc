@@ -10,6 +10,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_eligibility_manager.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_service_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_factory.h"
 #include "chrome/browser/contextual_tasks/mock_contextual_tasks_ui_service.h"
@@ -182,11 +183,17 @@ class SearchAiModePromoTabHelperInteractiveUiTestBase
   std::unique_ptr<KeyedService> BuildMockContextualTasksUiService(
       content::BrowserContext* context) {
     Profile* profile = Profile::FromBrowserContext(context);
+    auto eligibility_manager =
+        std::make_unique<ContextualTasksEligibilityManager>(
+            profile->GetPrefs(), IdentityManagerFactory::GetForProfile(profile),
+            AimEligibilityServiceFactory::GetForProfile(profile));
     auto mock_ui_service =
         std::make_unique<testing::NiceMock<MockContextualTasksUiService>>(
             profile, ContextualTasksServiceFactory::GetForProfile(profile),
             IdentityManagerFactory::GetForProfile(profile),
-            AimEligibilityServiceFactory::GetForProfile(profile));
+            AimEligibilityServiceFactory::GetForProfile(profile),
+            std::move(eligibility_manager),
+            /*cookie_synchronizer=*/nullptr);
     mock_ui_service_ = mock_ui_service.get();
     CHECK(mock_ui_service_);
 

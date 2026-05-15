@@ -52,7 +52,6 @@ class MockContextualTasksService : public ContextualTasksService {
               RemoveObserver,
               (ContextualTasksService::Observer*),
               (override));
-  MOCK_METHOD(FeatureEligibility, GetFeatureEligibility, (), (override));
   MOCK_METHOD(bool, IsInitialized, (), (override));
   MOCK_METHOD(ContextualTask, CreateTask, (), (override));
   MOCK_METHOD(ContextualTask, CreateTaskFromUrl, (const GURL&), (override));

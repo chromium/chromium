@@ -386,7 +386,8 @@ class ContextualTasksUICookieSyncBrowserTest
         profile, std::move(delegate),
         contextual_tasks::ContextualTasksServiceFactory::GetForProfile(profile),
         IdentityManagerFactory::GetForProfile(profile),
-        AimEligibilityServiceFactory::GetForProfile(profile), std::move(mock));
+        AimEligibilityServiceFactory::GetForProfile(profile),
+        /*eligibility_manager=*/nullptr, std::move(mock));
   }
 
  protected:

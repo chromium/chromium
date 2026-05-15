@@ -9,7 +9,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/no_destructor.h"
 #include "build/buildflag.h"
-#include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
 #include "chrome/browser/favicon/favicon_service_factory.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
@@ -103,7 +102,6 @@ ContextualTasksServiceFactory::ContextualTasksServiceFactory()
               .WithRegular(ProfileSelection::kOwnInstance)
               .WithGuest(ProfileSelection::kOwnInstance)
               .Build()) {
-  DependsOn(AimEligibilityServiceFactory::GetInstance());
   DependsOn(DataTypeStoreServiceFactory::GetInstance());
   DependsOn(FaviconServiceFactory::GetInstance());
   DependsOn(glic::GlicKeyedServiceFactory::GetInstance());
@@ -129,8 +127,6 @@ ContextualTasksServiceFactory::BuildServiceInstanceForBrowserContext(
   history::HistoryService* history_service =
       HistoryServiceFactory::GetForProfile(profile,
                                            ServiceAccessType::EXPLICIT_ACCESS);
-  AimEligibilityService* aim_eligibility_service =
-      AimEligibilityServiceFactory::GetForProfile(profile);
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile);
 
@@ -147,8 +143,7 @@ ContextualTasksServiceFactory::BuildServiceInstanceForBrowserContext(
           ->GetStoreFactory(),
       CreateCompositeContextDecorator(favicon_service, history_service,
                                       std::move(additional_decorators)),
-      aim_eligibility_service, identity_manager, profile->GetPrefs(),
-      supports_ephemeral_only,
+      identity_manager, profile->GetPrefs(), supports_ephemeral_only,
       base::BindRepeating(&GetNumberOfActiveTasks, profile),
       base::BindRepeating(
           [](Profile* profile) -> bool {

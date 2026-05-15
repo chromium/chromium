@@ -14,40 +14,19 @@
 class BrowserWindowInterface;
 class Profile;
 
-namespace signin {
-class PrimaryAccountChangeEvent;
-}
-
 namespace contextual_tasks {
 // Manager that determines whether the browser entry points for contextual tasks
 // are eligible to be shown.
-class EntryPointEligibilityManager : public signin::IdentityManager::Observer {
+class EntryPointEligibilityManager {
  public:
   DECLARE_USER_DATA(EntryPointEligibilityManager);
 
   explicit EntryPointEligibilityManager(
       BrowserWindowInterface* browser_window_interface);
-  ~EntryPointEligibilityManager() override;
+  ~EntryPointEligibilityManager();
 
   static EntryPointEligibilityManager* From(
       BrowserWindowInterface* browser_window_interface);
-
-  // signin::IdentityManager::Observer:
-  void OnPrimaryAccountChanged(
-      const signin::PrimaryAccountChangeEvent& event_details) override;
-  void OnRefreshTokenUpdatedForAccount(
-      const CoreAccountInfo& account_info) override;
-  void OnRefreshTokenRemovedForAccount(
-      const CoreAccountId& account_id) override;
-  void OnErrorStateOfRefreshTokenUpdatedForAccount(
-      const CoreAccountInfo& account_info,
-      const GoogleServiceAuthError& error,
-      signin_metrics::SourceForRefreshTokenOperation token_operation_source)
-      override;
-  void OnAccountsInCookieUpdated(
-      const signin::AccountsInCookieJarInfo& accounts_in_cookie_jar_info,
-      const GoogleServiceAuthError& error) override;
-  void OnAccountsCookieDeletedByUserAction() override;
 
   // Returns true if the entry points are eligible to be shown. Returns false
   // otherwise.
@@ -64,18 +43,13 @@ class EntryPointEligibilityManager : public signin::IdentityManager::Observer {
       EntryPointEligibilityChangeCallbackList::CallbackType callback);
 
  private:
-  void OnAimPolicyChanged();
-  void MaybeNotifyEntryPointEligibilityChanged();
+  void MaybeNotifyEntryPointEligibilityChanged(bool eligible);
 
   bool entry_points_are_eligible_ = false;
   raw_ptr<Profile> profile_ = nullptr;
-  IntegerPrefMember aim_policy_;
   ui::ScopedUnownedUserData<EntryPointEligibilityManager>
       scoped_unowned_user_data_;
-  base::CallbackListSubscription aim_eligibility_callback_subscription_;
-  base::ScopedObservation<signin::IdentityManager,
-                          signin::IdentityManager::Observer>
-      identity_manager_observation_{this};
+  base::CallbackListSubscription eligibility_subscription_;
   EntryPointEligibilityChangeCallbackList
       entry_point_eligibility_change_callback_list_;
 };

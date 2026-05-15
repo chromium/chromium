@@ -133,7 +133,9 @@ class SearchAiModePromoTabHelperBrowserTest : public InProcessBrowserTest {
         std::make_unique<testing::NiceMock<MockContextualTasksUiService>>(
             profile, ContextualTasksServiceFactory::GetForProfile(profile),
             IdentityManagerFactory::GetForProfile(profile),
-            AimEligibilityServiceFactory::GetForProfile(profile));
+            AimEligibilityServiceFactory::GetForProfile(profile),
+            /*eligibility_manager=*/nullptr,
+            /*cookie_synchronizer=*/nullptr);
 
     ON_CALL(*mock_ui_service, IsAiUrl(testing::_))
         .WillByDefault([this](const GURL& url) { return url == ai_url_; });

@@ -106,7 +106,11 @@ class ContextualTasksPageHandlerTest : public ChromeRenderViewHostTestHarness {
           return std::unique_ptr<KeyedService>(
               std::make_unique<NiceMock<MockContextualTasksUiService>>(
                   profile,
-                  ContextualTasksServiceFactory::GetForProfile(profile)));
+                  ContextualTasksServiceFactory::GetForProfile(profile),
+                  /*identity_manager=*/nullptr,
+                  /*aim_eligibility_service=*/nullptr,
+                  /*eligibility_manager=*/nullptr,
+                  /*cookie_synchronizer=*/nullptr));
         }));
 
     mock_panel_controller_ =

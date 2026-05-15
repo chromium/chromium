@@ -30,7 +30,6 @@
 #include "components/contextual_tasks/public/contextual_task.h"
 #include "components/contextual_tasks/public/contextual_task_context.h"
 #include "components/contextual_tasks/public/features.h"
-#include "components/omnibox/browser/aim_eligibility_service.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/sessions/core/session_id.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
@@ -53,28 +52,6 @@ using ::testing::UnorderedElementsAre;
 MATCHER_P2(UrlAttachmentEq, url, title, "") {
   return arg.GetURL() == url && base::UTF16ToUTF8(arg.GetTitle()) == title;
 }
-
-class MockAimEligibilityService : public AimEligibilityService {
- public:
-  explicit MockAimEligibilityService(PrefService* pref_service)
-      : AimEligibilityService(*pref_service,
-                              nullptr,
-                              nullptr,
-                              nullptr,
-                              "en-US",
-                              AimEligibilityService::Configuration()) {}
-  MOCK_METHOD(bool, IsAimEligible, (), (const, override));
-  MOCK_METHOD(bool, IsCobrowseEligible, (), (const, override));
-
-  // The following methods are marked as pure virtual in AimEligibilityService,
-  // as they are implemented in ChromeAimEligibilityService which is the one
-  // provided by the KeyedService factory. We therefore need to implement them
-  // in this unit test.
-  std::string GetLocaleImpl() const override { return "en-US"; }
-  variations::VariationsService* GetVariationsService() const override {
-    return nullptr;
-  }
-};
 
 class MockAiThreadSyncBridge : public AiThreadSyncBridge {
  public:
@@ -155,11 +132,8 @@ class ContextualTasksServiceImplTest : public testing::Test {
     auto mock_decorator =
         std::make_unique<testing::NiceMock<MockCompositeContextDecorator>>();
     mock_decorator_ = mock_decorator.get();
-    AimEligibilityService::RegisterProfilePrefs(pref_service_.registry());
     contextual_search::ContextualSearchService::RegisterProfilePrefs(
         pref_service_.registry());
-    mock_aim_eligibility_service_ =
-        std::make_unique<MockAimEligibilityService>(&pref_service_);
     service_ = BuildService(std::move(mock_decorator), true);
   }
 
@@ -170,7 +144,7 @@ class ContextualTasksServiceImplTest : public testing::Test {
     return std::make_unique<ContextualTasksServiceImpl>(
         version_info::Channel::UNKNOWN,
         syncer::DataTypeStoreTestUtil::FactoryForInMemoryStoreForTest(),
-        std::move(mock_decorator), mock_aim_eligibility_service_.get(),
+        std::move(mock_decorator),
         identity_test_environment_.identity_manager(), &pref_service_,
         SupportsEphemeralOnly(),
         base::BindRepeating(
@@ -265,7 +239,6 @@ class ContextualTasksServiceImplTest : public testing::Test {
   base::test::ScopedFeatureList feature_list_;
   TestingPrefServiceSimple pref_service_;
   signin::IdentityTestEnvironment identity_test_environment_;
-  std::unique_ptr<MockAimEligibilityService> mock_aim_eligibility_service_;
   std::unique_ptr<ContextualTasksServiceImpl> service_;
   raw_ptr<testing::NiceMock<MockCompositeContextDecorator>> mock_decorator_;
   testing::NiceMock<MockContextualTasksObserver> observer_;
@@ -1479,60 +1452,6 @@ TEST_F(ContextualTasksServiceImplTest, GetContextForTask_NotFound) {
   base::Uuid task_id = base::Uuid::GenerateRandomV4();
   std::unique_ptr<ContextualTaskContext> context = GetContextForTask(task_id);
   EXPECT_FALSE(context.get());
-}
-
-TEST_F(ContextualTasksServiceImplTest, GetFeatureEligibility) {
-  // Setup default pref to true for context sharing.
-  pref_service_.SetInteger(
-      contextual_search::kSearchContentSharingSettings,
-      static_cast<int>(
-          contextual_search::SearchContentSharingSettingsValue::kEnabled));
-
-  // Test case 1: All features enabled.
-  feature_list_.InitAndEnableFeature(kContextualTasks);
-  EXPECT_CALL(*mock_aim_eligibility_service_, IsAimEligible())
-      .WillOnce(Return(true));
-  EXPECT_CALL(*mock_aim_eligibility_service_, IsCobrowseEligible())
-      .WillOnce(Return(true));
-  EXPECT_TRUE(service_->GetFeatureEligibility().IsEligible());
-
-  // Test case 2: Feature flag enabled, AIM not eligible.
-  EXPECT_CALL(*mock_aim_eligibility_service_, IsAimEligible())
-      .WillOnce(Return(false));
-  EXPECT_CALL(*mock_aim_eligibility_service_, IsCobrowseEligible())
-      .WillOnce(Return(true));
-  EXPECT_FALSE(service_->GetFeatureEligibility().IsEligible());
-
-  // Test case 3: Feature flag enabled, Cobrowse not eligible.
-  EXPECT_CALL(*mock_aim_eligibility_service_, IsAimEligible())
-      .WillOnce(Return(true));
-  EXPECT_CALL(*mock_aim_eligibility_service_, IsCobrowseEligible())
-      .WillOnce(Return(false));
-  EXPECT_FALSE(service_->GetFeatureEligibility().IsEligible());
-
-  // Test case 4: Feature flag enabled, Context sharing not eligible.
-  EXPECT_CALL(*mock_aim_eligibility_service_, IsAimEligible())
-      .WillOnce(Return(true));
-  EXPECT_CALL(*mock_aim_eligibility_service_, IsCobrowseEligible())
-      .WillOnce(Return(true));
-  pref_service_.SetInteger(
-      contextual_search::kSearchContentSharingSettings,
-      static_cast<int>(
-          contextual_search::SearchContentSharingSettingsValue::kDisabled));
-  EXPECT_FALSE(service_->GetFeatureEligibility().IsEligible());
-
-  feature_list_.Reset();
-  // Test case 5: Feature flag disabled, everything else eligible.
-  pref_service_.SetInteger(
-      contextual_search::kSearchContentSharingSettings,
-      static_cast<int>(
-          contextual_search::SearchContentSharingSettingsValue::kEnabled));
-  feature_list_.InitAndDisableFeature(kContextualTasks);
-  EXPECT_CALL(*mock_aim_eligibility_service_, IsAimEligible())
-      .WillOnce(Return(true));
-  EXPECT_CALL(*mock_aim_eligibility_service_, IsCobrowseEligible())
-      .WillOnce(Return(true));
-  EXPECT_FALSE(service_->GetFeatureEligibility().IsEligible());
 }
 
 // If there are threads provided by that backend but no tasks associated with

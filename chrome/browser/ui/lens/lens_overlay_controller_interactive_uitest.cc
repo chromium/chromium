@@ -169,6 +169,7 @@ class TestingContextualTasksUiService
             contextual_tasks_service,
             identity_manager,
             aim_eligibility_service,
+            /*eligibility_manager=*/nullptr,
             std::move(cookie_synchronizer)) {}
   ~TestingContextualTasksUiService() override = default;
 

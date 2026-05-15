@@ -309,9 +309,11 @@ class AimEligibilityService
   // Callback for when the AIM policy changes.
   void OnPolicyChanged();
 
+ protected:
   // Callback for when the eligibility response changes. Notifies observers.
   void OnEligibilityResponseChanged();
 
+ private:
   // Updates `most_recent_response_` and the prefs with `response_proto`.
   void UpdateMostRecentResponse(
       const omnibox::AimEligibilityResponse& response_proto,

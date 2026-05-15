@@ -20,6 +20,7 @@
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/contextual_tasks/public/contextual_tasks_service.h"
+#include "components/contextual_tasks/public/features.h"
 #include "components/contextual_tasks/public/mock_contextual_tasks_service.h"
 #include "components/omnibox/browser/aim_eligibility_service.h"
 #include "components/omnibox/browser/mock_aim_eligibility_service.h"
@@ -44,20 +45,69 @@ using testing::ReturnRef;
 
 namespace {
 
+class FakeContextualTasksEligibilityManager
+    : public ContextualTasksEligibilityManager {
+ public:
+  FakeContextualTasksEligibilityManager(
+      PrefService* pref_service,
+      signin::IdentityManager* identity_manager,
+      AimEligibilityService* aim_eligibility_service)
+      : ContextualTasksEligibilityManager(pref_service,
+                                          identity_manager,
+                                          aim_eligibility_service) {
+    MaybeNotifyEligibilityChanged();
+  }
+  ~FakeContextualTasksEligibilityManager() override = default;
+
+  void SetEligibilityOverride(std::optional<bool> eligible) {
+    eligibility_override_ = eligible;
+    MaybeNotifyEligibilityChanged();
+  }
+
+  bool IsEligibleWithoutIdentity() const override {
+    if (eligibility_override_.has_value()) {
+      return eligibility_override_.value();
+    }
+    return ContextualTasksEligibilityManager::IsEligibleWithoutIdentity();
+  }
+
+ protected:
+  bool CalculateEligibility() const override {
+    if (eligibility_override_.has_value()) {
+      return eligibility_override_.value();
+    }
+    return ContextualTasksEligibilityManager::CalculateEligibility();
+  }
+
+ private:
+  std::optional<bool> eligibility_override_;
+};
+
 class MockContextualTasksUiService : public ContextualTasksUiService {
  public:
   MockContextualTasksUiService(Profile* profile,
                                ContextualTasksService* contextual_tasks_service,
-                               signin::IdentityManager* identity_manager)
-      : ContextualTasksUiService(profile,
-                                 /*delegate=*/nullptr,
-                                 contextual_tasks_service,
-                                 identity_manager,
-                                 /*aim_eligibility_service=*/nullptr,
-                                 /*cookie_synchronizer=*/nullptr) {}
+                               signin::IdentityManager* identity_manager,
+                               AimEligibilityService* aim_eligibility_service)
+      : ContextualTasksUiService(
+            profile,
+            /*delegate=*/nullptr,
+            contextual_tasks_service,
+            identity_manager,
+            aim_eligibility_service,
+            std::make_unique<FakeContextualTasksEligibilityManager>(
+                profile->GetPrefs(),
+                identity_manager,
+                aim_eligibility_service),
+            /*cookie_synchronizer=*/nullptr) {}
   ~MockContextualTasksUiService() override = default;
 
   MOCK_METHOD(bool, IsSignedInToBrowserWithValidCredentials, (), (override));
+
+  FakeContextualTasksEligibilityManager* GetFakeEligibilityManager() {
+    return static_cast<FakeContextualTasksEligibilityManager*>(
+        GetEligibilityManager());
+  }
 };
 
 std::unique_ptr<KeyedService> BuildTestSigninClient(
@@ -70,6 +120,9 @@ std::unique_ptr<KeyedService> BuildTestSigninClient(
 
 class EntryPointEligibilityManagerTest : public testing::Test {
  public:
+  EntryPointEligibilityManagerTest() {
+    scoped_feature_list_.InitAndEnableFeature(kContextualTasks);
+  }
   void SetUp() override {
     TestingProfile::Builder builder;
     builder.AddTestingFactories(IdentityTestEnvironmentProfileAdaptor::
@@ -122,10 +175,13 @@ class EntryPointEligibilityManagerTest : public testing::Test {
 
   std::unique_ptr<KeyedService> CreateMockUiService(
       content::BrowserContext* context) {
+    Profile* profile = Profile::FromBrowserContext(context);
+    AimEligibilityService* aim_eligibility_service =
+        AimEligibilityServiceFactory::GetForProfile(profile);
     auto mock = std::make_unique<NiceMock<MockContextualTasksUiService>>(
-        Profile::FromBrowserContext(context), mock_contextual_tasks_service_,
-        IdentityManagerFactory::GetForProfile(
-            Profile::FromBrowserContext(context)));
+        profile, mock_contextual_tasks_service_,
+        IdentityManagerFactory::GetForProfile(profile),
+        aim_eligibility_service);
     mock_ui_service_ = mock.get();
     return mock;
   }
@@ -137,6 +193,9 @@ class EntryPointEligibilityManagerTest : public testing::Test {
         *profile->GetPrefs(), nullptr, nullptr,
         IdentityManagerFactory::GetForProfile(profile));
     mock_aim_service_ = mock.get();
+
+    ON_CALL(*mock, IsCobrowseEligible()).WillByDefault(Return(true));
+
     return mock;
   }
 
@@ -147,6 +206,7 @@ class EntryPointEligibilityManagerTest : public testing::Test {
 
  protected:
   content::BrowserTaskEnvironment task_environment_;
+  base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
       identity_test_env_adaptor_;
@@ -163,22 +223,15 @@ class EntryPointEligibilityManagerTest : public testing::Test {
 TEST_F(EntryPointEligibilityManagerTest, AreEntryPointsEligible_True) {
   // Setup all conditions to true.
   auto account_info =
-      identity_test_env_adaptor_->identity_test_env()
-          ->MakePrimaryAccountAvailable("test@example.com",
-                                        signin::ConsentLevel::kSignin);
+      identity_test_env_adaptor_->identity_test_env()->MakeAccountAvailable(
+          "test@example.com");
   identity_test_env_adaptor_->identity_test_env()->SetCookieAccounts(
       {{.email = account_info.email, .gaia_id = account_info.gaia}});
+  identity_test_env_adaptor_->identity_test_env()->SetPrimaryAccount(
+      account_info.email, signin::ConsentLevel::kSignin);
 
   EXPECT_CALL(*mock_ui_service_, IsSignedInToBrowserWithValidCredentials())
       .WillRepeatedly(Return(true));
-
-  FeatureEligibility eligibility;
-  eligibility.contextual_tasks_enabled = true;
-  eligibility.cobrowse_eligible = true;
-  eligibility.aim_eligible = true;
-  eligibility.context_sharing_enabled = true;
-  EXPECT_CALL(*mock_contextual_tasks_service_, GetFeatureEligibility())
-      .WillRepeatedly(Return(eligibility));
 
   profile_->GetPrefs()->SetInteger(omnibox::kAIModeSettings, 0);  // Allowed
 
@@ -187,49 +240,6 @@ TEST_F(EntryPointEligibilityManagerTest, AreEntryPointsEligible_True) {
   EXPECT_TRUE(manager_->AreEntryPointsEligible());
 }
 
-TEST_F(EntryPointEligibilityManagerTest, AreEntryPointsEligible_NotSignedIn) {
-  // Signed out.
-  EXPECT_CALL(*mock_ui_service_, IsSignedInToBrowserWithValidCredentials())
-      .WillRepeatedly(Return(false));
-
-  FeatureEligibility eligibility;
-  eligibility.contextual_tasks_enabled = true;
-  eligibility.cobrowse_eligible = true;
-  eligibility.aim_eligible = true;
-  eligibility.context_sharing_enabled = true;
-  EXPECT_CALL(*mock_contextual_tasks_service_, GetFeatureEligibility())
-      .WillRepeatedly(Return(eligibility));
-
-  profile_->GetPrefs()->SetInteger(omnibox::kAIModeSettings, 0);
-
-  InitializeManager();
-
-  EXPECT_FALSE(manager_->AreEntryPointsEligible());
-}
-
-TEST_F(EntryPointEligibilityManagerTest, AreEntryPointsEligible_CookieMissing) {
-  // Signed in but cookie missing.
-  identity_test_env_adaptor_->identity_test_env()->MakePrimaryAccountAvailable(
-      "test@example.com", signin::ConsentLevel::kSignin);
-  // Cookie jar empty.
-
-  EXPECT_CALL(*mock_ui_service_, IsSignedInToBrowserWithValidCredentials())
-      .WillRepeatedly(Return(true));
-
-  FeatureEligibility eligibility;
-  eligibility.contextual_tasks_enabled = true;
-  eligibility.cobrowse_eligible = true;
-  eligibility.aim_eligible = true;
-  eligibility.context_sharing_enabled = true;
-  EXPECT_CALL(*mock_contextual_tasks_service_, GetFeatureEligibility())
-      .WillRepeatedly(Return(eligibility));
-
-  profile_->GetPrefs()->SetInteger(omnibox::kAIModeSettings, 0);
-
-  InitializeManager();
-
-  EXPECT_FALSE(manager_->AreEntryPointsEligible());
-}
 TEST_F(EntryPointEligibilityManagerTest,
        AreEntryPointsEligible_FeatureDisabled) {
   auto account_info =
@@ -243,42 +253,9 @@ TEST_F(EntryPointEligibilityManagerTest,
       .WillRepeatedly(Return(true));
 
   // Feature disabled.
-  FeatureEligibility eligibility;
-  eligibility.contextual_tasks_enabled = false;
-  eligibility.cobrowse_eligible = true;
-  eligibility.aim_eligible = true;
-  eligibility.context_sharing_enabled = true;
-  EXPECT_CALL(*mock_contextual_tasks_service_, GetFeatureEligibility())
-      .WillRepeatedly(Return(eligibility));
+  mock_ui_service_->GetFakeEligibilityManager()->SetEligibilityOverride(false);
 
   profile_->GetPrefs()->SetInteger(omnibox::kAIModeSettings, 0);
-
-  InitializeManager();
-
-  EXPECT_FALSE(manager_->AreEntryPointsEligible());
-}
-
-TEST_F(EntryPointEligibilityManagerTest, AreEntryPointsEligible_AimNotAllowed) {
-  auto account_info =
-      identity_test_env_adaptor_->identity_test_env()
-          ->MakePrimaryAccountAvailable("test@example.com",
-                                        signin::ConsentLevel::kSignin);
-  identity_test_env_adaptor_->identity_test_env()->SetCookieAccounts(
-      {{.email = account_info.email, .gaia_id = account_info.gaia}});
-
-  EXPECT_CALL(*mock_ui_service_, IsSignedInToBrowserWithValidCredentials())
-      .WillRepeatedly(Return(true));
-
-  FeatureEligibility eligibility;
-  eligibility.contextual_tasks_enabled = true;
-  eligibility.cobrowse_eligible = true;
-  eligibility.aim_eligible = true;
-  eligibility.context_sharing_enabled = true;
-  EXPECT_CALL(*mock_contextual_tasks_service_, GetFeatureEligibility())
-      .WillRepeatedly(Return(eligibility));
-
-  // Policy disabled.
-  profile_->GetPrefs()->SetInteger(omnibox::kAIModeSettings, 1);  // Disabled
 
   InitializeManager();
 
@@ -298,20 +275,15 @@ TEST_F(EntryPointEligibilityManagerTest,
        MAYBE_NotifyEntryPointEligibilityChanged) {
   // Start with eligible state.
   auto account_info =
-      identity_test_env_adaptor_->identity_test_env()
-          ->MakePrimaryAccountAvailable("test@example.com",
-                                        signin::ConsentLevel::kSignin);
+      identity_test_env_adaptor_->identity_test_env()->MakeAccountAvailable(
+          "test@example.com");
   identity_test_env_adaptor_->identity_test_env()->SetCookieAccounts(
       {{.email = account_info.email, .gaia_id = account_info.gaia}});
+  identity_test_env_adaptor_->identity_test_env()->SetPrimaryAccount(
+      account_info.email, signin::ConsentLevel::kSignin);
+
   EXPECT_CALL(*mock_ui_service_, IsSignedInToBrowserWithValidCredentials())
       .WillRepeatedly(Return(true));
-  FeatureEligibility eligibility;
-  eligibility.contextual_tasks_enabled = true;
-  eligibility.cobrowse_eligible = true;
-  eligibility.aim_eligible = true;
-  eligibility.context_sharing_enabled = true;
-  EXPECT_CALL(*mock_contextual_tasks_service_, GetFeatureEligibility())
-      .WillRepeatedly(Return(eligibility));
   profile_->GetPrefs()->SetInteger(omnibox::kAIModeSettings, 0);
 
   InitializeManager();
