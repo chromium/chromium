@@ -700,8 +700,7 @@ void SearchBoxViewBase::OnMouseEvent(ui::MouseEvent* event) {
 
 void SearchBoxViewBase::OnThemeChanged() {
   views::View::OnThemeChanged();
-  search_box_->SetSelectionBackgroundColor(
-      GetWidget()->GetColorProvider()->GetColor(kColorAshFocusAuraColor));
+  search_box_->SetSelectionBackgroundColorId(kColorAshFocusAuraColor);
   UpdatePlaceholderTextStyle();
 }
 

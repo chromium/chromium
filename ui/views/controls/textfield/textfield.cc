@@ -446,13 +446,21 @@ void Textfield::SetTextColorId(std::optional<ui::ColorId> color_id) {
 }
 
 SkColor Textfield::GetBackgroundColor() const {
-  return background_color_.value_or(
-      GetColorProvider()->GetColor(GetReadOnly() || !GetEnabledInViewsSubtree()
-                                       ? ui::kColorTextfieldBackgroundDisabled
-                                       : ui::kColorTextfieldBackground));
+  if (background_color_.has_value()) {
+    return background_color_->ResolveToSkColor(GetColorProvider());
+  }
+
+  return GetColorProvider()->GetColor(
+      GetReadOnly() || !GetEnabledInViewsSubtree()
+          ? ui::kColorTextfieldBackgroundDisabled
+          : ui::kColorTextfieldBackground);
 }
 
-void Textfield::SetBackgroundColor(SkColor color) {
+void Textfield::SetBackgroundColor(std::optional<ui::ColorVariant> color) {
+  if (background_color_ == color) {
+    return;
+  }
+
   background_color_ = color;
   if (GetWidget()) {
     UpdateBackgroundColor();
@@ -478,12 +486,13 @@ void Textfield::SetSelectionTextColorId(std::optional<ui::ColorId> color_id) {
 }
 
 SkColor Textfield::GetSelectionBackgroundColor() const {
-  return selection_background_color_.value_or(
-      GetColorProvider()->GetColor(ui::kColorTextfieldSelectionBackground));
+  return GetColorProvider()->GetColor(selection_background_color_id_.value_or(
+      ui::kColorTextfieldSelectionBackground));
 }
 
-void Textfield::SetSelectionBackgroundColor(SkColor color) {
-  selection_background_color_ = color;
+void Textfield::SetSelectionBackgroundColorId(
+    std::optional<ui::ColorId> color_id) {
+  selection_background_color_id_ = color_id;
   UpdateSelectionBackgroundColor();
 }
 
@@ -3496,9 +3505,9 @@ ADD_READONLY_PROPERTY_METADATA(SkColor,
                                ui::metadata::SkColorConverter)
 ADD_PROPERTY_METADATA(SkColor, BackgroundColor, ui::metadata::SkColorConverter)
 ADD_PROPERTY_METADATA(bool, BackgroundEnabled)
-ADD_PROPERTY_METADATA(SkColor,
-                      SelectionBackgroundColor,
-                      ui::metadata::SkColorConverter)
+ADD_READONLY_PROPERTY_METADATA(SkColor,
+                               SelectionBackgroundColor,
+                               ui::metadata::SkColorConverter)
 ADD_PROPERTY_METADATA(bool, CursorEnabled)
 ADD_PROPERTY_METADATA(std::u16string_view, PlaceholderText)
 ADD_PROPERTY_METADATA(bool, Invalid)
