@@ -71,23 +71,28 @@
 #define IDC_USE_SYSTEM_TITLE_BAR        34051
 #endif
 
-#if BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
 #define IDC_RESTORE_WINDOW              34052
-#endif
+#endif // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
 
-#define IDC_OPEN_IN_PWA_WINDOW          34053
-#define IDC_MOVE_TAB_TO_NEW_WINDOW      34054
-#define IDC_NEW_SPLIT_TAB               34055
-#define IDC_TOGGLE_VERTICAL_TABS        34056
-#define IDC_VERTICAL_TABS_SEND_FEEDBACK 34057
-#define IDC_TOGGLE_VERTICAL_TABS_EXPAND_ON_HOVER 34058
+#if BUILDFLAG(IS_WIN)
+#define IDC_MOVE_WINDOW                 34053
+#define IDC_SIZE_WINDOW                 34054
+#endif // BUILDFLAG(IS_WIN)
+
+#define IDC_OPEN_IN_PWA_WINDOW          34055
+#define IDC_MOVE_TAB_TO_NEW_WINDOW      34056
+#define IDC_NEW_SPLIT_TAB               34057
+#define IDC_TOGGLE_VERTICAL_TABS        34058
+#define IDC_VERTICAL_TABS_SEND_FEEDBACK 34059
+#define IDC_TOGGLE_VERTICAL_TABS_EXPAND_ON_HOVER 34060
 
 // Web app window commands
-#define IDC_COPY_URL                    34060
-#define IDC_OPEN_IN_CHROME              34061
-#define IDC_WEB_APP_SETTINGS            34062
-#define IDC_WEB_APP_MENU_APP_INFO       34063
-#define IDC_WEB_APP_UPGRADE_DIALOG      34064
+#define IDC_COPY_URL                    34061
+#define IDC_OPEN_IN_CHROME              34062
+#define IDC_WEB_APP_SETTINGS            34063
+#define IDC_WEB_APP_MENU_APP_INFO       34064
+#define IDC_WEB_APP_UPGRADE_DIALOG      34065
 
 #if BUILDFLAG(IS_CHROMEOS)
 // Move window to other user commands

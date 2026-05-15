@@ -740,6 +740,9 @@ need to be translated for each locale.-->
       <message name="IDS_APP_F1_KEY" desc="F1 key">
         F1
       </message>
+      <message name="IDS_APP_F4_KEY" desc="F4 key">
+        F4
+      </message>
       <message name="IDS_APP_F5_KEY" desc="F5 key">
         F5
       </message>

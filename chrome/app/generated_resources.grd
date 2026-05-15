@@ -15277,6 +15277,27 @@ Please help our engineers fix this problem. Tell us what happened right before y
         Set as default
       </message>
 
+      <if expr="is_win">
+        <message name="IDS_RESTORE_WINDOW_MENU_WIN" desc="The Windows browser window menu item text for restoring the window.">
+          &amp;Restore
+        </message>
+        <message name="IDS_MOVE_WINDOW_MENU_WIN" desc="The Windows browser window menu item text for moving the window.">
+          &amp;Move
+        </message>
+        <message name="IDS_SIZE_WINDOW_MENU_WIN" desc="The Windows browser window menu item text for sizing the window.">
+          &amp;Size
+        </message>
+        <message name="IDS_MINIMIZE_WINDOW_MENU_WIN" desc="The Windows browser window menu item text for minimizing the window.">
+          Mi&amp;nimize
+        </message>
+        <message name="IDS_MAXIMIZE_WINDOW_MENU_WIN" desc="The Windows browser window menu item text for maximizing the window.">
+          Ma&amp;ximize
+        </message>
+        <message name="IDS_CLOSE_WINDOW_MENU_WIN" desc="The Windows browser window menu item text for closing the window.">
+          &amp;Close
+        </message>
+      </if>
+
       <if expr="is_linux">
         <message name="IDS_MINIMIZE_WINDOW_MENU" desc="The Linux browser window menu item text for minimizing the window.">
           Minimize
