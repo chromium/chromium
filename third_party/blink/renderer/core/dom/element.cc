@@ -4583,7 +4583,8 @@ void Element::AttachLayoutTree(AttachContext& context) {
   //   - #button
   if (PseudoElement* pseudo_element =
           GetPseudoElement(kPseudoIdOverscrollAreaParent)) {
-    if (context.parent != pseudo_element->GetLayoutObject()) {
+    if (pseudo_element->GetLayoutObject() &&
+        context.parent != pseudo_element->GetLayoutObject()) {
       AttachContext overscroll_area_context(context);
       overscroll_area_context.parent = pseudo_element->GetLayoutObject();
       overscroll_area_context.previous_in_flow = nullptr;
@@ -6062,6 +6063,9 @@ void Element::RebuildTransitionLayoutTree(
 
 void Element::RebuildOverscrollAreaLayoutTree(
     WhitespaceAttacher& whitespace_attacher) {
+  if (!GetLayoutBox()) {
+    return;
+  }
   OverscrollAreaTracker* overscroll_area_tracker = GetOverscrollAreaTracker();
   if (!overscroll_area_tracker) {
     return;
@@ -6077,6 +6081,9 @@ void Element::RebuildOverscrollAreaLayoutTree(
 }
 
 void Element::AttachOverscrollPseudoElements(AttachContext& context) {
+  if (!GetLayoutBox()) {
+    return;
+  }
   OverscrollAreaTracker* overscroll_area_tracker = GetOverscrollAreaTracker();
   if (!overscroll_area_tracker) {
     return;
