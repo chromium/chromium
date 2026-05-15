@@ -55,6 +55,10 @@ constexpr char kEpsonNoFlipModels[] =
     "|AM-C550"
     "|AM-C550z"
     "|AM-C6000"
+    "|AM-M5500"
+    "|DS-1760WN"
+    "|DS-61000WN"
+    "|DS-71000WN"
     "|DS-790WN"
     "|DS-800WN"
     "|DS-900WN"
@@ -70,6 +74,7 @@ constexpr char kEpsonNoFlipModels[] =
     "|LM-C4000"
     "|LM-C5000"
     "|LM-C6000"
+    "|LM-M5500"
     "|LP-M8180A"
     "|LP-M8180F"
     "|LX-10020M"
@@ -77,6 +82,7 @@ constexpr char kEpsonNoFlipModels[] =
     "|LX-10050MF"
     "|LX-6050MF"
     "|LX-7550MF"
+    "|LX-C10060"
     "|PX-M382F"
     "|PX-M7070FX"
     "|PX-M7080FX"
@@ -115,10 +121,10 @@ constexpr char kEpsonNoFlipModels[] =
     "|WF-C878Ra"
     "|WF-C879R"
     "|WF-C879Ra"
-    "|WF-M5899"
     "|WF-M21000"
     "|WF-M21000a"
     "|WF-M21000c"
+    "|WF-M5899"
     ")\\b";
 
 // A prioritized list of scan protocols. Protocols that appear earlier in the
