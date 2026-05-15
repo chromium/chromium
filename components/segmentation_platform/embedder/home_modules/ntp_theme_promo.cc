@@ -69,6 +69,11 @@ std::map<SignalKey, FeatureQuery> NtpThemePromo::GetInputs() {
                   .tensor_length = 1,
                   .fill_policy = proto::CustomInput::FILL_FROM_INPUT_CONTEXT,
                   .name = kSupportCustomizedNtpTheme}));
+  map.emplace(kHasCustomizedNtpBackground,
+              FeatureQuery::FromCustomInput(MetadataWriter::CustomInput{
+                  .tensor_length = 1,
+                  .fill_policy = proto::CustomInput::FILL_FROM_INPUT_CONTEXT,
+                  .name = kHasCustomizedNtpBackground}));
 
   return map;
 }
@@ -102,18 +107,22 @@ CardSelectionInfo::ShowResult NtpThemePromo::ComputeCardResult(
           signals.GetSignal(kEducationalTipShownCount);
   std::optional<float> result_for_support_customized_ntp_theme =
       signals.GetSignal(kSupportCustomizedNtpTheme);
+  std::optional<float> result_for_has_customized_ntp_background =
+      signals.GetSignal(kHasCustomizedNtpBackground);
 
   if (!result_for_ntp_theme_promo_shown_count.has_value() ||
       !result_for_educational_tip_shown_count_for_ntp_theme_signal
            .has_value() ||
-      !result_for_support_customized_ntp_theme.has_value()) {
+      !result_for_support_customized_ntp_theme.has_value() ||
+      !result_for_has_customized_ntp_background.has_value()) {
     result.position = EphemeralHomeModuleRank::kNotShown;
     return result;
   }
 
   // Show the promo card if the promo card has not been shown more than 1 times
-  // in 7 days.
+  // in 7 days and the user has not customized the NTP background.
   if (*result_for_support_customized_ntp_theme &&
+      !*result_for_has_customized_ntp_background &&
       result_for_ntp_theme_promo_shown_count.value() < 1 &&
       result_for_educational_tip_shown_count_for_ntp_theme_signal.value() < 1) {
     result.position = EphemeralHomeModuleRank::kLast;

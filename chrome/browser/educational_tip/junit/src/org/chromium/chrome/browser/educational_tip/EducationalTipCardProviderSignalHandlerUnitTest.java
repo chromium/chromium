@@ -5,6 +5,8 @@
 package org.chromium.chrome.browser.educational_tip;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
@@ -28,6 +30,8 @@ import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
+import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils;
+import org.chromium.chrome.browser.ntp_customization.policy.NtpCustomizationPolicyManager;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -68,6 +72,7 @@ public class EducationalTipCardProviderSignalHandlerUnitTest {
     @Mock private IdentityManager mIdentityManagerMock;
     @Mock private TabModel mTabModel;
     @Mock private Tab mTab;
+    @Mock private NtpCustomizationPolicyManager mNtpCustomizationPolicyManager;
 
     private Context mContext;
 
@@ -87,6 +92,8 @@ public class EducationalTipCardProviderSignalHandlerUnitTest {
         when(IdentityServicesProvider.get().getIdentityManager(any()))
                 .thenReturn(mIdentityManagerMock);
         when(mIdentityManagerMock.hasPrimaryAccount()).thenReturn(false);
+        NtpCustomizationPolicyManager.setInstanceForTesting(mNtpCustomizationPolicyManager);
+        when(mNtpCustomizationPolicyManager.isNtpCustomBackgroundEnabled()).thenReturn(true);
     }
 
     @Test
@@ -299,5 +306,37 @@ public class EducationalTipCardProviderSignalHandlerUnitTest {
                 EducationalTipCardProviderSignalHandler.createInputContext(
                         ModuleType.TAB_GROUP_SYNC_PROMO, mActionDelegate, mProfile, mTracker);
         assertEquals(0, inputContext.getEntryValue("synced_tab_group_exists").floatValue, 0.01);
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures({ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2})
+    public void testCreateInputContext_NtpThemePromoCard() {
+        when(mActionDelegate.supportCustomizedNtpTheme()).thenReturn(true);
+        ChromeSharedPreferences.getInstance()
+                .writeInt(
+                        ChromePreferenceKeys.NTP_CUSTOMIZATION_BACKGROUND_TYPE,
+                        NtpCustomizationUtils.NtpBackgroundType.CHROME_COLOR);
+
+        InputContext inputContext =
+                EducationalTipCardProviderSignalHandler.createInputContext(
+                        ModuleType.NTP_THEME_PROMO, mActionDelegate, mProfile, mTracker);
+        assertEquals(3, inputContext.getSizeForTesting());
+
+        assertTrue(inputContext.getEntryValue("support_customized_ntp_theme").booleanValue);
+        assertTrue(inputContext.getEntryValue("has_customized_ntp_background").booleanValue);
+
+        when(mActionDelegate.supportCustomizedNtpTheme()).thenReturn(false);
+        ChromeSharedPreferences.getInstance()
+                .writeInt(
+                        ChromePreferenceKeys.NTP_CUSTOMIZATION_BACKGROUND_TYPE,
+                        NtpCustomizationUtils.NtpBackgroundType.DEFAULT);
+
+        inputContext =
+                EducationalTipCardProviderSignalHandler.createInputContext(
+                        ModuleType.NTP_THEME_PROMO, mActionDelegate, mProfile, mTracker);
+
+        assertFalse(inputContext.getEntryValue("support_customized_ntp_theme").booleanValue);
+        assertFalse(inputContext.getEntryValue("has_customized_ntp_background").booleanValue);
     }
 }
