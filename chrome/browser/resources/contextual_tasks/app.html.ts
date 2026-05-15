@@ -51,6 +51,38 @@ export function getHtml(this: ContextualTasksAppElement) {
       <contextual-tasks-onboarding-tooltip id="onboardingTooltip">
       </contextual-tasks-onboarding-tooltip>
     ` : ''}
+    ${this.showSmartTabSharingTryItIph_ ? html`
+      <contextual-tasks-banner-promo id="stsTryItPromo"
+          style="${this.getBannerPromoBoundsStyles_()}"
+          accept-button-text="$i18n{stsTryItTurnOn}"
+          dismiss-button-text="$i18n{stsTryItNotNow}"
+          @dismiss="${this.onStsTryItDismiss_}"
+          @accept="${this.onStsTryItAccept_}">
+        <span slot="header">$i18n{stsTryItHeader}</span>
+        <span slot="body">
+          $i18n{stsTryItBody}
+          <a href="chrome://settings/ai"
+              target="_blank">$i18n{stsTryItLink}</a>
+          $i18n{stsTryItBodyEnd}
+        </span>
+      </contextual-tasks-banner-promo>
+    ` : ''}
+    ${this.showSmartTabSharingDefaultOnIph_ ? html`
+      <contextual-tasks-banner-promo id="stsDefaultOnPromo"
+          style="${this.getBannerPromoBoundsStyles_()}"
+          accept-button-text="$i18n{stsDefaultOnTurnOn}"
+          dismiss-button-text="$i18n{stsDefaultOnNotNow}"
+          @dismiss="${this.onStsDefaultOnDismiss_}"
+          @accept="${this.onStsDefaultOnAccept_}">
+        <span slot="header">$i18n{stsDefaultOnHeader}</span>
+        <span slot="body">
+          $i18n{stsDefaultOnBody}
+          <a href="chrome://settings/ai"
+              target="_blank">$i18n{stsDefaultOnLink}</a>
+          $i18n{stsDefaultOnBodyEnd}
+        </span>
+      </contextual-tasks-banner-promo>
+    ` : ''}
     <contextual-tasks-composebox id="composebox"
           style="${this.getComposeboxBoundsStyles()}"
           ?hidden="${this.isComposeboxHidden_()}"

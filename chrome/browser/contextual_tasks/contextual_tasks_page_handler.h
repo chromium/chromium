@@ -79,6 +79,8 @@ class ContextualTasksPageHandler
   void PinSidePanel() override;
   void UnpinSidePanel() override;
   void OnContextMenuOpened() override;
+  void NotifySmartTabSharingTryItIphResult(bool accepted) override;
+  void NotifySmartTabSharingDefaultOnIphResult(bool accepted) override;
   void PostMessageToWebview(const lens::ClientToAimMessage& message);
 
   // contextual_tasks::ContextualTasksService::Observer:

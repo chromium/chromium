@@ -653,8 +653,12 @@ chromium-metrics-reviews@google.com.
                sync-to-signin migration."/>
   <variant name="IPH_SiteControls"
       summary="educating users that site controls have moved to the app menu"/>
+  <variant name="IPH_SmartTabSharingDefaultOnFeature"
+      summary="Smart Tab Sharing Default On custom UI feature"/>
   <variant name="IPH_SmartTabSharingFeature"
       summary="Smart Tab Sharing feature"/>
+  <variant name="IPH_SmartTabSharingTryItFeature"
+      summary="Smart Tab Sharing Try It custom UI feature"/>
   <variant name="IPH_SupervisedUserProfileSignin"
       summary="informing supervised users about parental controls"/>
   <variant name="IPH_TabAudioMuting" summary="muting tab audio"/>

@@ -52,9 +52,11 @@
 #include "url/gurl.h"
 
 #if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "components/feature_engagement/public/feature_constants.h"
+#include "components/feature_engagement/public/tracker.h"
 #endif
 
 namespace {
@@ -163,6 +165,22 @@ std::optional<base::UnguessableToken> FindActiveInjectedInputToken(
   }
   return std::nullopt;
 }
+
+#if !BUILDFLAG(IS_ANDROID)
+int GetSmartTabSharingFeatureActivationCount(
+    feature_engagement::Tracker* tracker) {
+  if (!tracker) {
+    return 0;
+  }
+  for (const auto& [config, count] : tracker->ListEvents(
+           feature_engagement::kIPHSmartTabSharingDefaultOnFeature)) {
+    if (config.name == "smart_tab_sharing_activated") {
+      return count;
+    }
+  }
+  return 0;
+}
+#endif
 
 }  // namespace
 
@@ -700,11 +718,51 @@ void ContextualTasksPageHandler::OnContextMenuOpened() {
   if (!contextual_tasks::GetIsSmartTabSharingEnabled()) {
     return;
   }
+  if (GetSmartTabSharingFeatureActivationCount(
+          feature_engagement::TrackerFactory::GetForBrowserContext(
+              web_ui_controller_->GetProfile())) > 0) {
+    return;
+  }
   if (auto* interface =
           BrowserUserEducationInterface::From(webui::GetBrowserWindowInterface(
               web_ui_controller_->GetWebUIWebContents()))) {
     interface->MaybeShowFeaturePromo(
         feature_engagement::kIPHSmartTabSharingFeature);
+  }
+#endif
+}
+
+void ContextualTasksPageHandler::NotifySmartTabSharingTryItIphResult(
+    bool accepted) {
+#if !BUILDFLAG(IS_ANDROID)
+  auto* tracker = feature_engagement::TrackerFactory::GetForBrowserContext(
+      web_ui_controller_->GetProfile());
+  if (tracker) {
+    if (accepted) {
+      if (auto* browser = web_ui_controller_->GetBrowser()) {
+        ui_service_->TurnOnSmartTabSharing(browser);
+      }
+
+      tracker->NotifyUsedEvent(
+          feature_engagement::kIPHSmartTabSharingTryItFeature);
+    }
+  }
+#endif
+}
+
+void ContextualTasksPageHandler::NotifySmartTabSharingDefaultOnIphResult(
+    bool accepted) {
+#if !BUILDFLAG(IS_ANDROID)
+  auto* tracker = feature_engagement::TrackerFactory::GetForBrowserContext(
+      web_ui_controller_->GetProfile());
+  if (tracker) {
+    if (accepted) {
+      web_ui_controller_->GetProfile()->GetPrefs()->SetBoolean(
+          contextual_tasks::kContextualTasksShareOpenTabsEveryThread, true);
+
+      tracker->NotifyUsedEvent(
+          feature_engagement::kIPHSmartTabSharingDefaultOnFeature);
+    }
   }
 #endif
 }

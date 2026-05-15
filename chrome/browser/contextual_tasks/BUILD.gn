@@ -333,6 +333,7 @@ source_set("ui_impl") {
     "//chrome/browser/companion/text_finder",
     "//chrome/browser/contextual_search",
     "//chrome/browser/devtools",
+    "//chrome/browser/feature_engagement",
     "//chrome/browser/feedback:feedback_enum",
     "//chrome/browser/glic/browser_ui",
     "//chrome/browser/optimization_guide",

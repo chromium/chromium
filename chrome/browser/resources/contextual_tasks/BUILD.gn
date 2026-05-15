@@ -61,6 +61,8 @@ build_webui("build") {
 
   if (!is_android) {
     ts_files += [
+      "banner_promo.html.ts",
+      "banner_promo.ts",
       "onboarding_tooltip.html.ts",
       "onboarding_tooltip.ts",
       "composebox.html.ts",
@@ -84,6 +86,7 @@ build_webui("build") {
 
   if (!is_android) {
     css_files += [
+      "banner_promo.css",
       "composebox.css",
       "onboarding_tooltip.css",
     ]

@@ -377,6 +377,7 @@ class ContextualSearchboxHandler
 
  protected:
   std::optional<bool> smart_tab_sharing_active_for_thread_;
+  bool has_incremented_sts_activation_count_ = false;
 
   // Checks eligibility and triggers the smart tab sharing IPH promo logic.
   void MaybeTriggerSmartTabSharingPromo(

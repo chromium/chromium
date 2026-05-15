@@ -479,6 +479,13 @@ DEFINE_VARIATION_PARAM(kIPHSideSearchAutoTriggeringFeature,
 DEFINE_VARIATION_PARAM(kIPHSideSearchPageActionLabelFeature,
                        "IPH_SideSearchPageActionLabel");
 
+DEFINE_VARIATION_PARAM(kIPHSmartTabSharingDefaultOnFeature,
+                       "IPH_SmartTabSharingDefaultOnFeature");
+DEFINE_VARIATION_PARAM(kIPHSmartTabSharingFeature,
+                       "IPH_SmartTabSharingFeature");
+DEFINE_VARIATION_PARAM(kIPHSmartTabSharingTryItFeature,
+                       "IPH_SmartTabSharingTryItFeature");
+
 DEFINE_VARIATION_PARAM(kIPHVerticalTabsExpandOnHoverFeature,
                        "IPH_VerticalTabsExpandOnHoverFeature");
 DEFINE_VARIATION_PARAM(kIPHVerticalTabstripTutorialFeature,
@@ -841,6 +848,9 @@ inline constexpr flags_ui::FeatureEntry::FeatureVariation
         VARIATION_ENTRY(kIPHSidePanelGenericPinnableFeature),
         VARIATION_ENTRY(kIPHSideSearchAutoTriggeringFeature),
         VARIATION_ENTRY(kIPHSideSearchPageActionLabelFeature),
+        VARIATION_ENTRY(kIPHSmartTabSharingDefaultOnFeature),
+        VARIATION_ENTRY(kIPHSmartTabSharingFeature),
+        VARIATION_ENTRY(kIPHSmartTabSharingTryItFeature),
         VARIATION_ENTRY(kIPHTabAudioMutingFeature),
         VARIATION_ENTRY(kIPHTabGroupsSharedTabChangedFeature),
         VARIATION_ENTRY(kIPHTabGroupsSharedTabFeedbackFeature),

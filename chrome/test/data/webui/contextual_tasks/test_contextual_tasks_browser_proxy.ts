@@ -45,6 +45,8 @@ class MockPage extends TestBrowserProxy implements PageInterface {
       'setInNlm',
       'setExpandButtonEnabled',
       'turnOnSmartTabSharing',
+      'showSmartTabSharingTryItIph',
+      'showSmartTabSharingDefaultOnIph',
     ]);
   }
 
@@ -170,6 +172,14 @@ class MockPage extends TestBrowserProxy implements PageInterface {
   turnOnSmartTabSharing() {
     this.methodCalled('turnOnSmartTabSharing');
   }
+
+  showSmartTabSharingTryItIph() {
+    this.methodCalled('showSmartTabSharingTryItIph');
+  }
+
+  showSmartTabSharingDefaultOnIph() {
+    this.methodCalled('showSmartTabSharingDefaultOnIph');
+  }
 }
 
 /**
@@ -219,6 +229,8 @@ class TestContextualTasksPageHandler extends TestBrowserProxy implements
       'pinSidePanel',
       'unpinSidePanel',
       'isSidePanelPinned',
+      'notifySmartTabSharingTryItIphResult',
+      'notifySmartTabSharingDefaultOnIphResult',
     ]);
 
     this.url_ = url;
@@ -415,6 +427,14 @@ class TestContextualTasksPageHandler extends TestBrowserProxy implements
 
   onContextMenuOpened() {
     this.methodCalled('onContextMenuOpened');
+  }
+
+  notifySmartTabSharingTryItIphResult(accepted: boolean) {
+    this.methodCalled('notifySmartTabSharingTryItIphResult', accepted);
+  }
+
+  notifySmartTabSharingDefaultOnIphResult(accepted: boolean) {
+    this.methodCalled('notifySmartTabSharingDefaultOnIphResult', accepted);
   }
 }
 

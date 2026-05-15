@@ -5,7 +5,9 @@
 // <if expr="not is_android">
 import './composebox.js';
 import './onboarding_tooltip.js';
+import './banner_promo.js';
 import '//resources/cr_components/composebox/contextual_entrypoint_and_menu.js';
+import '//resources/cr_elements/cr_button/cr_button.js';
 
 import type {ContextualActionMenuElement} from '//resources/cr_components/composebox/contextual_action_menu.js';
 import type {ContextualEntrypointAndMenuElement} from '//resources/cr_components/composebox/contextual_entrypoint_and_menu.js';
@@ -252,6 +254,8 @@ export class ContextualTasksAppElement extends ContextualTasksAppElementBase {
         type: Boolean,
         reflect: true,
       },
+      showSmartTabSharingTryItIph_: {type: Boolean},
+      showSmartTabSharingDefaultOnIph_: {type: Boolean},
     };
   }
 
@@ -259,6 +263,8 @@ export class ContextualTasksAppElement extends ContextualTasksAppElementBase {
       loadTimeData.getBoolean('energyEffectEnabled');
   protected accessor showOnboardingTooltip_: boolean =
       loadTimeData.getBoolean('showOnboardingTooltip');
+  protected accessor showSmartTabSharingTryItIph_: boolean = false;
+  protected accessor showSmartTabSharingDefaultOnIph_: boolean = false;
   protected accessor userName_: string =
       loadTimeData.getString('friendlyZeroStateGaiaName');
   protected accessor friendlyZeroStateTitleBeforeName_: string =
@@ -502,6 +508,12 @@ export class ContextualTasksAppElement extends ContextualTasksAppElementBase {
       }),
       callbackRouter.unlockInput.addListener(() => {
         this.isInputLocked_ = false;
+      }),
+      callbackRouter.showSmartTabSharingTryItIph.addListener(() => {
+        this.showSmartTabSharingTryItIph_ = true;
+      }),
+      callbackRouter.showSmartTabSharingDefaultOnIph.addListener(() => {
+        this.showSmartTabSharingDefaultOnIph_ = true;
       }),
     ];
 
@@ -768,9 +780,11 @@ export class ContextualTasksAppElement extends ContextualTasksAppElementBase {
 
   protected onComposeboxContextMenuOpened_() {
     // <if expr="not is_android">
-    setTimeout(() => {
+    setTimeout(async () => {
       const menu = this.getContextualActionMenu();
-      if (menu) {
+      // Since a separate IPH "Try It" promo may turn the STS feature on, make
+      // sure it is not already on before promoting with the help bubble.
+      if (menu && !menu.smartTabSharingActive) {
         const menuItem = menu.shadowRoot?.querySelector('#smartTabSharingItem');
         if (menuItem) {
           const rect = menuItem.getBoundingClientRect();
@@ -782,6 +796,10 @@ export class ContextualTasksAppElement extends ContextualTasksAppElementBase {
             floatingAnchor.style.width = `${rect.width}px`;
             floatingAnchor.style.height = `${rect.height}px`;
 
+            // This is necessary to give the floating anchor time for layout
+            // when the chrome://user-education-internals Launch button has
+            // been pressed. Without the wait, it pops too soon out of place.
+            await this.updateComplete;
             this.registerHelpBubble(
                 'ContextualTasksUI::kSmartTabSharingMenuItemElementId',
                 '#iphMenuSmartTabSharingAnchor', {
@@ -1116,6 +1134,27 @@ export class ContextualTasksAppElement extends ContextualTasksAppElementBase {
       `min-width: 0;`,
     ];
     return style.join(' ');
+  }
+
+  protected getBannerPromoBoundsStyles_() {
+    if ((this.isZeroState_ && !this.inNlm_) || !this.forcedComposeboxBounds_) {
+      return '';
+    }
+    const frameRect = this.$.threadFrame.getBoundingClientRect();
+    const relativeRectTop = frameRect.top + this.forcedComposeboxBounds_.top;
+    const relativeRectLeft = frameRect.left + this.forcedComposeboxBounds_.left;
+    const width = this.forcedComposeboxBounds_.width;
+    const bottomGap = 8;
+
+    return [
+      `position: ${this.inNlm_ ? 'fixed' : 'absolute'};`,
+      `bottom: ${window.innerHeight - relativeRectTop + bottomGap}px;`,
+      `left: ${relativeRectLeft}px;`,
+      `width: ${width}px;`,
+      `margin: 0;`,
+      `max-width: none;`,
+      `min-width: 0;`,
+    ].join(' ');
   }
 
   getThreadFrameStyles(): string {
@@ -1470,6 +1509,46 @@ export class ContextualTasksAppElement extends ContextualTasksAppElementBase {
     } else {
       document.body.style.backgroundColor = 'rgba(255, 255, 255, 1)';
     }
+  }
+
+  protected onStsTryItDismiss_() {
+    this.hideStsTryItPromo_();
+    this.browserProxy_.handler.notifySmartTabSharingTryItIphResult(false);
+  }
+
+  protected onStsTryItAccept_() {
+    this.hideStsTryItPromo_();
+    this.browserProxy_.handler.notifySmartTabSharingTryItIphResult(true);
+    // <if expr="not is_android">
+    const menu = this.getContextualActionMenu();
+    if (menu) {
+      menu.setSmartTabSharingToggle(true);
+    }
+    // </if>
+  }
+
+  private hideStsTryItPromo_() {
+    this.showSmartTabSharingTryItIph_ = false;
+  }
+
+  protected onStsDefaultOnDismiss_() {
+    this.hideStsDefaultOnPromo_();
+    this.browserProxy_.handler.notifySmartTabSharingDefaultOnIphResult(false);
+  }
+
+  protected onStsDefaultOnAccept_() {
+    this.hideStsDefaultOnPromo_();
+    this.browserProxy_.handler.notifySmartTabSharingDefaultOnIphResult(true);
+    // <if expr="not is_android">
+    const menu = this.getContextualActionMenu();
+    if (menu) {
+      menu.setSmartTabSharingToggle(true);
+    }
+    // </if>
+  }
+
+  private hideStsDefaultOnPromo_() {
+    this.showSmartTabSharingDefaultOnIph_ = false;
   }
 }
 

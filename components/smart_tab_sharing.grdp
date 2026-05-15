@@ -181,4 +181,44 @@
   <message name="IDS_STS_THREAD_PROMO_CARD_MESSAGE_BODY" desc="No implementation or screenshot yet. See http://crbug.com/490510281 for context.">
     Get faster, more tailored responses in every thread by sharing your open tabs by default. You can change this any time in Chrome settings.
   </message>
+
+  <!-- SmartTabSharingTryIt custom IPH promo -->
+  <message name="IDS_STS_IPH_TRY_IT_HEADER" desc="Header for the custom IPH promoting smart tab sharing.">
+    Automatically share open tabs for this thread?
+  </message>
+  <message name="IDS_STS_IPH_TRY_IT_BODY" desc="Body text before the link for the custom IPH promoting smart tab sharing.">
+    When on, Chrome will share all tabs in this window to help you get more relevant responses. You can turn this on for all chats in
+  </message>
+  <message name="IDS_STS_IPH_TRY_IT_LINK" desc="Link text for settings in the custom IPH promoting smart tab sharing.">
+    Settings
+  </message>
+  <message name="IDS_STS_IPH_TRY_IT_BODY_END" desc="Body text after the link for the custom IPH promoting smart tab sharing.">
+    .
+  </message>
+  <message name="IDS_STS_IPH_TRY_IT_TURN_ON" desc="Primary button to turn on tab sharing in the custom IPH promo.">
+    Turn on
+  </message>
+  <message name="IDS_STS_IPH_TRY_IT_NOT_NOW" desc="Secondary button to dismiss the custom IPH promo.">
+    Not now
+  </message>
+
+  <!-- SmartTabSharingDefaultOn custom IPH promo -->
+  <message name="IDS_STS_IPH_DEFAULT_ON_HEADER" desc="Header for the custom IPH promoting enablement of smart tab sharing by default.">
+    Automatically share open tabs in every thread?
+  </message>
+  <message name="IDS_STS_IPH_DEFAULT_ON_BODY" desc="Body text before the link for the custom IPH promoting enablement of smart tab sharing by default.">
+    Chrome will share relevant open tabs in each new thread to get better responses. Learn more about
+  </message>
+  <message name="IDS_STS_IPH_DEFAULT_ON_LINK" desc="Link text for settings in the custom IPH promoting enablement of smart tab sharing by default.">
+    sharing your tabs
+  </message>
+  <message name="IDS_STS_IPH_DEFAULT_ON_BODY_END" desc="Body text after the link for the custom IPH promoting enablement of smart tab sharing by default.">
+    .
+  </message>
+  <message name="IDS_STS_IPH_DEFAULT_ON_TURN_ON" desc="Primary button to turn on smart tab sharing by default in the custom IPH promo.">
+    Turn on
+  </message>
+  <message name="IDS_STS_IPH_DEFAULT_ON_NOT_NOW" desc="Secondary button to dismiss the custom IPH promo.">
+    Not now
+  </message>
 </grit-part>
