@@ -87,6 +87,7 @@ _ALL_LOCALES = [
     ("en-AU", "ENGLISH_AUSTRALIA"),
     ("en-CA", "ENGLISH_CANADA"),
     ("en-GB", "ENGLISH_UK"),
+    ("en-GB-oxendict", "ENGLISH_UK_OXENDICT"),
     ("en-IE", "ENGLISH_IRELAND"),
     ("en-IN", "ENGLISH_INDIA"),
     ("en-NZ", "ENGLISH_NEW_ZEALAND"),

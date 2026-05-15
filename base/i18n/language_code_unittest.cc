@@ -28,8 +28,9 @@ TEST(LanguageCodeTest, InvalidLocales) {
   EXPECT_FALSE(LanguageCodeBuilder::GetInstance()
                    .FromString("pt-longscript-BR")
                    .has_value());
-  EXPECT_FALSE(
-      LanguageCodeBuilder::GetInstance().FromString("pt-Brazil").has_value());
+  EXPECT_FALSE(LanguageCodeBuilder::GetInstance()
+                   .FromString("pt-BRA-Brazil")
+                   .has_value());
 }
 
 TEST(LanguageCodeTest, ValidButUnknowLocales) {
@@ -80,21 +81,112 @@ TEST(LanguageCodeTest, ThreeLetterLanguages) {
   EXPECT_EQ(lc_ast->ToString(), "ast-ES");
 }
 
-TEST(LanguageCodeTest, UnsupportedVariantsAndExtensions) {
-  // Locales with variants are currently rejected by policy.
-  EXPECT_FALSE(
-      LanguageCodeBuilder::GetInstance().FromString("en-GB-scuse").has_value());
-  EXPECT_FALSE(LanguageCodeBuilder::GetInstance()
-                   .FromString("en-GB-oxendict")
-                   .has_value());
+TEST(LanguageCodeTest, Variants) {
+  // Locales with variants.
+  auto lc_gb_scuse =
+      LanguageCodeBuilder::GetInstance().FromString("en-GB-scuse");
+  ASSERT_TRUE(lc_gb_scuse.has_value());
+  EXPECT_EQ(lc_gb_scuse->ToString(), "en-GB-scuse");
 
-  // Locales with extensions are currently rejected by policy.
-  EXPECT_FALSE(LanguageCodeBuilder::GetInstance()
-                   .FromString("en-US-u-ca-gregory")
-                   .has_value());
-  EXPECT_FALSE(LanguageCodeBuilder::GetInstance()
-                   .FromString("en-US-u-va-posix")
-                   .has_value());
+  auto lc_gb_oxendict =
+      LanguageCodeBuilder::GetInstance().FromString("en-GB-oxendict");
+  ASSERT_TRUE(lc_gb_oxendict.has_value());
+  EXPECT_EQ(lc_gb_oxendict->ToString(), "en-GB-oxendict");
+
+  // German with orthography variant.
+  auto lc_de_1996 = LanguageCodeBuilder::GetInstance().FromString("de-1996");
+  ASSERT_TRUE(lc_de_1996.has_value());
+  EXPECT_EQ(lc_de_1996->ToString(), "de-1996");
+}
+
+TEST(LanguageCodeTest, Extensions) {
+  // Locales with extensions.
+  auto lc_us_gregory =
+      LanguageCodeBuilder::GetInstance().FromString("en-US-u-ca-gregory");
+  ASSERT_TRUE(lc_us_gregory.has_value());
+  EXPECT_EQ(lc_us_gregory->ToString(), "en-US-u-ca-gregory");
+
+  auto lc_us_posix =
+      LanguageCodeBuilder::GetInstance().FromString("en-US-u-va-posix");
+  ASSERT_TRUE(lc_us_posix.has_value());
+  EXPECT_EQ(lc_us_posix->ToString(), "en-US-u-va-posix");
+
+  // Extension with multiple keywords.
+  auto lc_complex_ext = LanguageCodeBuilder::GetInstance().FromString(
+      "en-US-u-ca-gregory-co-emoji");
+  ASSERT_TRUE(lc_complex_ext.has_value());
+  EXPECT_EQ(lc_complex_ext->ToString(), "en-US-u-ca-gregory-co-emoji");
+
+  // Private use extensions.
+  auto lc_private =
+      LanguageCodeBuilder::GetInstance().FromString("en-US-x-private");
+  ASSERT_TRUE(lc_private.has_value());
+  EXPECT_EQ(lc_private->ToString(), "en-US-x-private");
+}
+
+TEST(LanguageCodeTest, LongBcp47Codes) {
+  // A long but valid BCP47 code that should trigger heap allocation (> 12
+  // chars). Azerbaijani in Cyrillic script as spoken in Russia with a variant
+  // and extensions. "az-Cyrl-RU-variant-u-ca-gregory-co-phonebk"
+  const std::string long_code = "az-Cyrl-RU-variant-u-ca-gregory-co-phonebk";
+  auto lc_long = LanguageCodeBuilder::GetInstance().FromString(long_code);
+  ASSERT_TRUE(lc_long.has_value());
+  EXPECT_EQ(lc_long->ToString(), long_code);
+
+  // Another long one: "en-US-u-ca-gregory-co-emoji-kb-true-hc-h24"
+  // Note: LanguageCodeBuilder canonicalizes the extensions.
+  const std::string very_long_code =
+      "en-US-u-ca-gregory-co-emoji-kb-true-hc-h24";
+  const std::string very_long_code_canonical =
+      "en-US-u-ca-gregory-co-emoji-hc-h24-kb";
+  auto lc_very_long =
+      LanguageCodeBuilder::GetInstance().FromString(very_long_code);
+  ASSERT_TRUE(lc_very_long.has_value());
+  EXPECT_EQ(lc_very_long->ToString(), very_long_code_canonical);
+}
+
+TEST(LanguageCodeTest, PrivateUseTags) {
+  // Basic private use tag.
+  auto lc_x_simple = LanguageCodeBuilder::GetInstance().FromString("en-x-test");
+  ASSERT_TRUE(lc_x_simple.has_value());
+  EXPECT_EQ(lc_x_simple->ToString(), "en-x-test");
+
+  // Long private use tag.
+  const std::string long_x = "en-US-x-this-is-a-very-long-private-use-tag";
+  auto lc_x_long = LanguageCodeBuilder::GetInstance().FromString(long_x);
+  ASSERT_TRUE(lc_x_long.has_value());
+  EXPECT_EQ(lc_x_long->ToString(), long_x);
+
+  // Private use only not allowed.
+  auto lc_x_only = LanguageCodeBuilder::GetInstance().FromString("x-private");
+  EXPECT_FALSE(lc_x_only.has_value());
+}
+
+TEST(LanguageCodeTest, CopyAndMove) {
+  auto lc_original = LanguageCodeBuilder::GetInstance().FromString("en-US");
+  ASSERT_TRUE(lc_original.has_value());
+
+  // Copy constructor
+  LanguageCode lc_copy(*lc_original);
+  EXPECT_EQ(lc_copy.ToString(), "en-US");
+  EXPECT_EQ(lc_copy, *lc_original);
+
+  // Copy assignment
+  LanguageCode lc_copy_assign = *lc_original;
+  lc_copy_assign = *lc_original;
+  EXPECT_EQ(lc_copy_assign.ToString(), "en-US");
+  EXPECT_EQ(lc_copy_assign, *lc_original);
+
+  // Move constructor
+  LanguageCode lc_move(std::move(lc_copy));
+  EXPECT_EQ(lc_move.ToString(), "en-US");
+  EXPECT_EQ(lc_move, *lc_original);
+
+  // Move assignment
+  LanguageCode lc_move_assign = *lc_original;
+  lc_move_assign = std::move(lc_move);
+  EXPECT_EQ(lc_move_assign.ToString(), "en-US");
+  EXPECT_EQ(lc_move_assign, *lc_original);
 }
 
 TEST(LanguageCodeTest, Canonicalize) {
@@ -110,15 +202,17 @@ TEST(LanguageCodeTest, Canonicalize) {
 }
 
 struct LanguageTestData {
-  const char* tag;
-  const char* name;
+  std::string tag;
+  std::string name;
   const LanguageCode& (*get_code)();
 };
 
 class LanguageCodeAllCodesTest
     : public testing::TestWithParam<LanguageTestData> {};
 
-TEST_P(LanguageCodeAllCodesTest, Verify) {
+// This test ensures that the code that generates all the constant functions
+// work as expected.
+TEST_P(LanguageCodeAllCodesTest, VerifyAllLangCodeFunctions) {
   const LanguageTestData& param = GetParam();
   auto lc = LanguageCodeBuilder::GetInstance().FromString(param.tag);
   ASSERT_TRUE(lc.has_value());

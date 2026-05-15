@@ -6,6 +6,7 @@
 
 #include "base/i18n/language_code.h"
 #include "base/i18n/language_code_builder.h"
+#include "base/no_destructor.h"
 
 namespace base::language_codes {
 namespace {
@@ -19,10 +20,10 @@ LanguageCode CreateChecked(std::string_view code) {
 
 }  // namespace
 
-#define IMPL_LANGUAGECODE_TAG_NAME(tag, name)       \
-  const base::LanguageCode& name() {                \
-    static LanguageCode kname = CreateChecked(tag); \
-    return kname;                                   \
+#define IMPL_LANGUAGECODE_TAG_NAME(tag, name)                                \
+  const base::LanguageCode& name() {                                         \
+    static const base::NoDestructor<LanguageCode> kname(CreateChecked(tag)); \
+    return *kname;                                                           \
   }
 
 #include "base/i18n/internal/canonical_language_codes.inc"

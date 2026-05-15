@@ -8,6 +8,10 @@
 
 namespace base {
 
+LanguageCode::~LanguageCode() = default;
+LanguageCode::LanguageCode(const LanguageCode&) = default;
+LanguageCode& LanguageCode::operator=(const LanguageCode&) = default;
+
 std::string LanguageCode::ToLegacyICUFormat() const {
   std::string code(ToString());
   base::ReplaceSubstringsAfterOffset(&code, 0, "-", "_");
@@ -15,7 +19,11 @@ std::string LanguageCode::ToLegacyICUFormat() const {
 }
 
 std::string_view LanguageCode::ToString() const {
-  return std::string_view(code_.data(), length_);
+  return code_.AsString();
+}
+
+LanguageCode::LanguageCode(std::string_view code) : code_(code) {
+  CHECK(code.size() >= 2);
 }
 
 }  // namespace base

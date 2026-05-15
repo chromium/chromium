@@ -34,19 +34,8 @@ impl IcuCanonicalizer {
             Err(_) => return,
         };
 
-        // Reject variants and extensions for now.
-        if !locale.id.variants.is_empty() || !locale.extensions.is_empty() {
-            return;
-        }
-
         // Canonicalize (iw -> he, en-US-POSIX -> en-US-posix, etc.)
         self.canonicalizer.canonicalize(&mut locale);
-        // After canonicalization, re-check variants/extensions (some might be
-        // added/moved).
-        if !locale.id.variants.is_empty() || !locale.extensions.is_empty() {
-            return;
-        }
-
         let s = locale.to_string();
         out.as_mut().push_str(&s);
     }

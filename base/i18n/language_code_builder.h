@@ -31,7 +31,6 @@ namespace base {
 //
 // Examples of valid and invalid language codes:
 // Valid: "en-US", "en-GB", "en-US-POSIX", "zh-Hans-CN", "und"
-// Invalid: "longlanguage", "pt-longscript-BR", ""
 class BASE_I18N_EXPORT LanguageCodeBuilder {
  public:
   LanguageCodeBuilder();

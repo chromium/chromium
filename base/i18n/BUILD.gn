@@ -38,6 +38,19 @@ source_set("canonical_language_codes") {
   visibility = [ ":*" ]
 }
 
+source_set("internal") {
+  sources = [
+    "internal/immutable_string.cc",
+    "internal/immutable_string.h",
+  ]
+  defines = [ "BASE_I18N_IMPLEMENTATION" ]
+  deps = [
+    ":base_i18n_export",
+    "//base",
+  ]
+  visibility = [ ":*" ]
+}
+
 source_set("language_code") {
   sources = [
     "language_code.cc",
@@ -54,6 +67,7 @@ source_set("language_code") {
   deps = [
     ":canonical_language_codes",
     ":i18n_icu_bridge_ffi",
+    ":internal",
     "//base",
   ]
   visibility = [

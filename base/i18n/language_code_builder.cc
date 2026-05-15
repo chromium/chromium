@@ -48,15 +48,12 @@ const LanguageCodeBuilder& LanguageCodeBuilder::GetInstance() {
 std::optional<LanguageCode> LanguageCodeBuilder::FromString(
     std::string_view code) const {
   // A valid BCP47 language code is at least 2 chars (e.g. "en")
-  if (code.size() < 2 || code.size() > 12) {
+  if (code.size() < 2) {
     return std::nullopt;
   }
 
   std::optional<std::string> canonicalized = impl_->Canonicalize(code);
   if (!canonicalized.has_value()) {
-    return std::nullopt;
-  }
-  if (canonicalized->size() > 12) {
     return std::nullopt;
   }
 
