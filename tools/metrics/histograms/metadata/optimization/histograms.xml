@@ -654,6 +654,51 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="OptimizationGuide.AIPageContent.ActiveRequestCount"
+    units="requests" expires_after="2026-10-25">
+  <owner>alexmt@chromium.org</owner>
+  <owner>khushalsagar@chromium.org</owner>
+  <summary>
+    Records the number of active concurrent page content extractions on a given
+    Page, excluding the current request. Recorded at the start of each page
+    content extraction request.
+  </summary>
+</histogram>
+
+<histogram name="OptimizationGuide.AIPageContent.ExtractionConcurrency"
+    enum="AIPageContentExtractionConcurrency" expires_after="2026-10-25">
+  <owner>alexmt@chromium.org</owner>
+  <owner>khushalsagar@chromium.org</owner>
+  <summary>
+    Records the concurrency status when a page content extraction request is
+    started on a Page. If other extractions are already in progress, the metric
+    categorizes whether any of the active extractions had matching options, or
+    whether they all had options different from the new request.
+  </summary>
+</histogram>
+
+<histogram name="OptimizationGuide.AIPageContent.ExtractionsBetweenNavigations"
+    units="extractions" expires_after="2026-10-25">
+  <owner>alexmt@chromium.org</owner>
+  <owner>khushalsagar@chromium.org</owner>
+  <summary>
+    Records the count of page content extractions that occurred on a Page in the
+    segment between navigations. Recorded upon same-document navigations and
+    when the Page is destroyed.
+  </summary>
+</histogram>
+
+<histogram name="OptimizationGuide.AIPageContent.ExtractionsPerPage"
+    units="extractions" expires_after="2026-10-25">
+  <owner>alexmt@chromium.org</owner>
+  <owner>khushalsagar@chromium.org</owner>
+  <summary>
+    Records the total cumulative count of page content extractions performed on
+    a Page over its entire lifetime. Recorded when the Page is destroyed (e.g.,
+    upon cross-document navigation).
+  </summary>
+</histogram>
+
 <histogram name="OptimizationGuide.AIPageContent.RendererLatency.{FrameType}"
     units="ms" expires_after="2026-10-25">
   <owner>khushalsagar@chromium.org</owner>
@@ -695,6 +740,17 @@ chromium-metrics-reviews@google.com.
     non-critical.
   </summary>
   <token key="FrameType" variants="FrameType"/>
+</histogram>
+
+<histogram name="OptimizationGuide.AIPageContent.TimeSinceLastExtraction"
+    units="ms" expires_after="2026-10-25">
+  <owner>alexmt@chromium.org</owner>
+  <owner>khushalsagar@chromium.org</owner>
+  <summary>
+    Records the duration since the last successful page content extraction
+    completed successfully on the current Page. Recorded when a new page content
+    extraction request is started.
+  </summary>
 </histogram>
 
 <histogram name="OptimizationGuide.AIPageContent.TotalLatency" units="ms"

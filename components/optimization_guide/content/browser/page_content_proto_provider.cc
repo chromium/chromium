@@ -4,23 +4,30 @@
 
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
 
+#include <algorithm>
+#include <cstdint>
 #include <memory>
 #include <optional>
+#include <string>
 #include <utility>
 
 #include "base/barrier_closure.h"
 #include "base/cancelable_callback.h"
 #include "base/check.h"
+#include "base/check_op.h"
+#include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/concurrent_closures.h"
 #include "base/i18n/char_iterator.h"
 #include "base/location.h"
 #include "base/memory/weak_ptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/types/expected.h"
 #include "components/optimization_guide/content/browser/autofill_annotations_provider.h"
@@ -29,6 +36,8 @@
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/media_session.h"
+#include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/page.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
@@ -40,6 +49,7 @@
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
 #include "third_party/blink/public/mojom/content_extraction/ai_page_content.mojom.h"
+#include "ui/gfx/geometry/rect.h"
 
 namespace optimization_guide {
 
@@ -528,6 +538,15 @@ void OnGotAIPageContentOrTimedOutForAllFrames(
   std::move(done_callback).Run(std::move(page_content));
 }
 
+// LINT.IfChange(AIPageContentExtractionConcurrency)
+enum class AIPageContentExtractionConcurrency {
+  kNoActiveExtraction = 0,
+  kActiveExtractionWithMatchingOptions = 1,
+  kActiveExtractionWithDifferentOptionsOnly = 2,
+  kMaxValue = kActiveExtractionWithDifferentOptionsOnly,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/optimization/enums.xml:AIPageContentExtractionConcurrency)
+
 }  // namespace
 
 AIPageContentResult::AIPageContentResult() {
@@ -566,6 +585,20 @@ void GetAIPageContent(content::WebContents* web_contents,
   }
 
   ApplyOptionsOverridesForWebContents(web_contents, *options);
+
+  auto* logger = AIPageContentMetricsLogger::GetOrCreateForPage(
+      web_contents->GetPrimaryPage());
+  base::OnceCallback<void(bool)> metrics_done_cb =
+      logger->OnExtractionStarted(*options);
+
+  auto tracking_callback = base::BindOnce(
+      [](base::OnceCallback<void(bool)> metrics_done_cb,
+         OnAIPageContentDone original_cb, AIPageContentResultOrError result) {
+        std::move(metrics_done_cb).Run(result.has_value());
+        std::move(original_cb).Run(std::move(result));
+      },
+      std::move(metrics_done_cb), std::move(done_callback));
+
   auto timeout_helper = std::make_unique<GetAIPageContentTimeoutHelper>();
 
   const auto* main_frame_rph =
@@ -647,7 +680,7 @@ void GetAIPageContent(content::WebContents* web_contents,
                      web_contents->GetPrimaryMainFrame()->GetGlobalFrameToken(),
                      web_contents->GetPrimaryMainFrame()->GetPageUkmSourceId(),
                      web_contents->GetSize(), std::move(timeout_helper),
-                     std::move(done_callback)),
+                     std::move(tracking_callback)),
       features::GetSubframeGetAIPageContentTimeout(),
       features::GetMainFrameGetAIPageContentTimeout());
 }
@@ -674,5 +707,101 @@ DocumentIdentifierUserData::DocumentIdentifierUserData(
       serialized_token_(token_.ToString()) {}
 
 DocumentIdentifierUserData::~DocumentIdentifierUserData() = default;
+
+PAGE_USER_DATA_KEY_IMPL(AIPageContentMetricsLogger);
+
+AIPageContentMetricsLogger::AIPageContentMetricsLogger(content::Page& page)
+    : content::PageUserData<AIPageContentMetricsLogger>(page),
+      content::WebContentsObserver(
+          content::WebContents::FromRenderFrameHost(&page.GetMainDocument())) {}
+
+AIPageContentMetricsLogger::~AIPageContentMetricsLogger() {
+  RecordAndResetBetweenNavigationMetric();
+  base::UmaHistogramCounts100(
+      "OptimizationGuide.AIPageContent.ExtractionsPerPage",
+      total_extractions_started_);
+}
+
+base::OnceCallback<void(bool)> AIPageContentMetricsLogger::OnExtractionStarted(
+    const blink::mojom::AIPageContentOptions& options) {
+  base::UmaHistogramCounts100(
+      "OptimizationGuide.AIPageContent.ActiveRequestCount",
+      active_extractions_count_);
+
+  AIPageContentExtractionConcurrency concurrency =
+      AIPageContentExtractionConcurrency::kNoActiveExtraction;
+  if (active_extractions_count_ > 0) {
+    // Prioritize `kActiveExtractionWithMatchingOptions` if any ongoing
+    // extraction matches the requested options to accurately track redundant
+    // extractions.
+    bool found_same_options = std::ranges::any_of(
+        active_extraction_options_,
+        [&options](
+            const std::pair<uint64_t, blink::mojom::AIPageContentOptionsPtr>&
+                pair) { return pair.second->Equals(options); });
+    concurrency = found_same_options
+                      ? AIPageContentExtractionConcurrency::
+                            kActiveExtractionWithMatchingOptions
+                      : AIPageContentExtractionConcurrency::
+                            kActiveExtractionWithDifferentOptionsOnly;
+  }
+
+  base::UmaHistogramEnumeration(
+      "OptimizationGuide.AIPageContent.ExtractionConcurrency", concurrency);
+
+  active_extractions_count_++;
+  uint64_t request_id = next_request_id_++;
+  active_extraction_options_[request_id] = options.Clone();
+  total_extractions_started_++;
+  extractions_since_last_navigation_++;
+
+  if (!last_successful_extraction_time_.is_null()) {
+    base::UmaHistogramTimes(
+        "OptimizationGuide.AIPageContent.TimeSinceLastExtraction",
+        base::TimeTicks::Now() - last_successful_extraction_time_);
+  }
+
+  return base::BindOnce(&AIPageContentMetricsLogger::OnExtractionFinished,
+                        weak_ptr_factory_.GetWeakPtr(), request_id);
+}
+
+void AIPageContentMetricsLogger::OnExtractionFinished(uint64_t request_id,
+                                                      bool success) {
+  CHECK_GT(active_extractions_count_, 0);
+  active_extractions_count_--;
+
+  auto it = active_extraction_options_.find(request_id);
+  CHECK(it != active_extraction_options_.end());
+  active_extraction_options_.erase(it);
+
+  if (success) {
+    last_successful_extraction_time_ = base::TimeTicks::Now();
+  }
+}
+
+void AIPageContentMetricsLogger::DidFinishNavigation(
+    content::NavigationHandle* navigation_handle) {
+  // This observer will still fire for the active page's navigations while this
+  // page is in the BFCache. Ensure we only track this page.
+  if (!navigation_handle->HasCommitted() ||
+      !navigation_handle->IsInPrimaryMainFrame() ||
+      &navigation_handle->GetRenderFrameHost()->GetPage() != &page()) {
+    return;
+  }
+
+  // Cross-document navigations already trigger recording this metric in the
+  // destructor during page teardown, so we only record here for same-document
+  // navigations to avoid double-logging.
+  if (navigation_handle->IsSameDocument()) {
+    RecordAndResetBetweenNavigationMetric();
+  }
+}
+
+void AIPageContentMetricsLogger::RecordAndResetBetweenNavigationMetric() {
+  base::UmaHistogramCounts100(
+      "OptimizationGuide.AIPageContent.ExtractionsBetweenNavigations",
+      extractions_since_last_navigation_);
+  extractions_since_last_navigation_ = 0;
+}
 
 }  // namespace optimization_guide

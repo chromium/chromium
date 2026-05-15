@@ -5,21 +5,30 @@
 #ifndef COMPONENTS_OPTIMIZATION_GUIDE_CONTENT_BROWSER_PAGE_CONTENT_PROTO_PROVIDER_H_
 #define COMPONENTS_OPTIMIZATION_GUIDE_CONTENT_BROWSER_PAGE_CONTENT_PROTO_PROVIDER_H_
 
+#include <cstdint>
 #include <optional>
 #include <string>
+#include <vector>
 
 #include "base/containers/flat_map.h"
 #include "base/functional/callback.h"
+#include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "base/types/expected.h"
 #include "base/unguessable_token.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "content/public/browser/document_user_data.h"
+#include "content/public/browser/page_user_data.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/weak_document_ptr.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "third_party/blink/public/mojom/content_extraction/ai_page_content.mojom-forward.h"
 #include "third_party/blink/public/mojom/content_extraction/ai_page_content_metadata.mojom.h"
+#include "ui/gfx/geometry/rect.h"
 
 namespace content {
+class NavigationHandle;
+class Page;
 class WebContents;
 }
 
@@ -51,6 +60,44 @@ class DocumentIdentifierUserData
 
   friend DocumentUserData;
   DOCUMENT_USER_DATA_KEY_DECL();
+};
+
+// A PageUserData that tracks extraction concurrency and navigation segment
+// counts for `GetAIPageContent()`.
+class AIPageContentMetricsLogger
+    : public content::PageUserData<AIPageContentMetricsLogger>,
+      public content::WebContentsObserver {
+ public:
+  explicit AIPageContentMetricsLogger(content::Page& page);
+  ~AIPageContentMetricsLogger() override;
+
+  // Called when a GetAIPageContent() extraction starts. Returns a completion
+  // callback to be run when the extraction is done.
+  [[nodiscard]] base::OnceCallback<void(bool success)> OnExtractionStarted(
+      const blink::mojom::AIPageContentOptions& options);
+
+  // content::WebContentsObserver:
+  void DidFinishNavigation(
+      content::NavigationHandle* navigation_handle) override;
+
+ private:
+  friend class content::PageUserData<AIPageContentMetricsLogger>;
+
+  void RecordAndResetBetweenNavigationMetric();
+  void OnExtractionFinished(uint64_t request_id, bool success);
+
+  int active_extractions_count_ = 0;
+  uint64_t next_request_id_ = 0;
+  base::flat_map<uint64_t, blink::mojom::AIPageContentOptionsPtr>
+      active_extraction_options_;
+  base::TimeTicks last_successful_extraction_time_;
+
+  int total_extractions_started_ = 0;
+  int extractions_since_last_navigation_ = 0;
+
+  PAGE_USER_DATA_KEY_DECL();
+
+  base::WeakPtrFactory<AIPageContentMetricsLogger> weak_ptr_factory_{this};
 };
 
 // The result of a call to GetAIPageContent.  It contains the

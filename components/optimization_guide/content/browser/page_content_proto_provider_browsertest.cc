@@ -17,6 +17,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/test/test_timeouts.h"
@@ -36,6 +37,7 @@
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_switches.h"
+#include "content/public/test/back_forward_cache_util.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
@@ -3324,6 +3326,103 @@ IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTestNoTimeouts,
   EXPECT_FALSE(c_frame_data.frame_data().has_security_origin());
   EXPECT_EQ(c_frame.children_nodes_size(), 0);
   EXPECT_FALSE(c_frame.content_attributes().is_ad_related());
+}
+
+IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTest,
+                       DuplicationMetrics) {
+  base::HistogramTester tester;
+
+  LoadPage(https_server()->GetURL("a.com", "/simple.html"), nullptr);
+
+  constexpr char kConcurrencyMetric[] =
+      "OptimizationGuide.AIPageContent.ExtractionConcurrency";
+  constexpr char kActiveCountMetric[] =
+      "OptimizationGuide.AIPageContent.ActiveRequestCount";
+  constexpr char kTimeSinceLastMetric[] =
+      "OptimizationGuide.AIPageContent.TimeSinceLastExtraction";
+
+  // 1. Verify kNoActiveExtraction and 0 active count on first request
+  {
+    base::test::TestFuture<AIPageContentResultOrError> future;
+    GetAIPageContent(web_contents(), GetAIPageContentOptions(),
+                     future.GetCallback());
+    EXPECT_TRUE(future.Wait());
+    tester.ExpectUniqueSample(kConcurrencyMetric, 0,
+                              1);  // kNoActiveExtraction = 0
+    tester.ExpectUniqueSample(kActiveCountMetric, 0, 1);
+  }
+
+  // 2. Verify TimeSinceLastExtraction on subsequent request
+  {
+    base::test::TestFuture<AIPageContentResultOrError> future;
+    GetAIPageContent(web_contents(), GetAIPageContentOptions(),
+                     future.GetCallback());
+    EXPECT_TRUE(future.Wait());
+    tester.ExpectTotalCount(kTimeSinceLastMetric, 1);
+  }
+
+  // 3. Verify concurrency detection on simultaneous requests
+  {
+    base::test::TestFuture<AIPageContentResultOrError> future1;
+    base::test::TestFuture<AIPageContentResultOrError> future2;
+    GetAIPageContent(web_contents(), GetAIPageContentOptions(),
+                     future1.GetCallback());
+    GetAIPageContent(web_contents(), GetAIPageContentOptions(),
+                     future2.GetCallback());
+    EXPECT_TRUE(future1.Wait());
+    EXPECT_TRUE(future2.Wait());
+
+    // Expect overall 4 extractions:
+    // - 1st: kNoActiveExtraction (Active count = 0)
+    // - 2nd: kNoActiveExtraction (Active count = 0)
+    // - 3rd (from parallel): kNoActiveExtraction (Active count = 0)
+    // - 4th (from parallel): kActiveExtractionWithMatchingOptions (Active count
+    // = 1)
+    tester.ExpectBucketCount(kConcurrencyMetric, 0,
+                             3);  // kNoActiveExtraction = 0
+    tester.ExpectBucketCount(kConcurrencyMetric, 1,
+                             1);  // kActiveExtractionWithMatchingOptions = 1
+    tester.ExpectBucketCount(kActiveCountMetric, 0, 3);
+    tester.ExpectBucketCount(kActiveCountMetric, 1, 1);
+  }
+}
+
+IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTest, NavigationMetrics) {
+  base::HistogramTester tester;
+  // Disable BackForwardCache so that the Page object is destroyed when
+  // navigating away, which immediately flushes destructor-based metrics
+  // like `ExtractionsPerPage`.
+  content::DisableBackForwardCacheForTesting(
+      web_contents(), content::BackForwardCache::TEST_REQUIRES_NO_CACHING);
+
+  constexpr char kBetweenNavsMetric[] =
+      "OptimizationGuide.AIPageContent.ExtractionsBetweenNavigations";
+  constexpr char kPerPageMetric[] =
+      "OptimizationGuide.AIPageContent.ExtractionsPerPage";
+
+  // LoadPage automatically triggers 1 extraction.
+  LoadPage(https_server()->GetURL("a.com", "/simple.html"));
+
+  // Same-document navigation flushes the first segment (1 extraction).
+  GURL same_doc_url = https_server()->GetURL("a.com", "/simple.html#hash");
+  content::NavigateToURLBlockUntilNavigationsComplete(web_contents(),
+                                                      same_doc_url, 1);
+  tester.ExpectUniqueSample(kBetweenNavsMetric, 1, 1);
+
+  // Run 2 more extractions in this new same-doc segment.
+  LoadData();
+  LoadData();
+
+  // Cross-document navigation destroys the Page, flushing:
+  // 1. The remaining segment metric (2 extractions).
+  // 2. The total cumulative page extractions (3 extractions).
+  LoadPage(https_server()->GetURL("a.com", "/relative_path.html"), nullptr);
+
+  tester.ExpectBucketCount(kBetweenNavsMetric, 1, 1);
+  tester.ExpectBucketCount(kBetweenNavsMetric, 2, 1);
+  tester.ExpectTotalCount(kBetweenNavsMetric, 2);
+
+  tester.ExpectUniqueSample(kPerPageMetric, 3, 1);
 }
 
 }  // namespace

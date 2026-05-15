@@ -26,6 +26,16 @@ chromium-metrics-reviews@google.com.
 
 <enums>
 
+<!-- LINT.IfChange(AIPageContentExtractionConcurrency) -->
+
+<enum name="AIPageContentExtractionConcurrency">
+  <int value="0" label="No active extraction"/>
+  <int value="1" label="Active extraction with matching options"/>
+  <int value="2" label="Active extraction with different options only"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/optimization_guide/content/browser/page_content_proto_provider.cc:AIPageContentExtractionConcurrency) -->
+
 <enum name="AIPageContentMode">
   <int value="0" label="Default"/>
   <int value="1" label="ActionableElements"/>
