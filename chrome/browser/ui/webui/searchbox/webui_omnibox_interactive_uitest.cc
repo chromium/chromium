@@ -10,6 +10,7 @@
 #include "base/path_service.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
 #include "chrome/browser/contextual_search/contextual_search_service_factory.h"
@@ -327,6 +328,8 @@ class OmniboxAimWebUiInteractiveTestBase
       response.SerializeToString(&serialized);
       service->SetEligibilityResponseForDebugging(
           base::Base64Encode(serialized));
+      ASSERT_TRUE(
+          base::test::RunUntil([&]() { return service->IsAimEligible(); }));
     });
   }
 
@@ -389,6 +392,17 @@ class OmniboxAimWebUiInteractiveTestBase
         WaitForStateChange(contents_id, submit_enabled));
   }
 
+  auto WaitForAimStateReady(const ui::ElementIdentifier& contents_id) {
+    DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kAimStateReady);
+    StateChange state_ready;
+    state_ready.event = kAimStateReady;
+    state_ready.where = {"omnibox-popup-app"};
+    state_ready.test_function =
+        "(el) => el && el.isAimPopupEligible_ && el.inputState_ && "
+        "el.inputState_.allowedTools.length > 0";
+    return WaitForStateChange(contents_id, state_ready);
+  }
+
   auto InputAimPopupText(const std::string& text) {
     // Simulate character-by-character input to ensure all 'input' events are
     // fired and processed by the WebUI. This prevents flakiness that occurs
@@ -420,10 +434,13 @@ class OmniboxAimWebUiInteractiveTest
     : public OmniboxAimWebUiInteractiveTestBase {
  public:
   OmniboxAimWebUiInteractiveTest() {
+    std::vector<base::test::FeatureRefAndParams> enabled_features =
+        GetEnabledFeatures(/*force_enable_aim=*/true);
+    enabled_features.emplace_back(omnibox::kAimUsePecApi,
+                                  base::FieldTrialParams());
     feature_list_.InitWithFeaturesAndParameters(
-        GetEnabledFeatures(/*force_enable_aim=*/true),
-        {omnibox::kAimServerEligibilityEnabled,
-         omnibox::kAimFuseboxEligibilityCheckEnabled});
+        enabled_features, {omnibox::kAimServerEligibilityEnabled,
+                           omnibox::kAimFuseboxEligibilityCheckEnabled});
   }
 
   std::unique_ptr<content::ScopedAccessibilityMode> scoped_accessibility_mode_;
@@ -477,8 +494,16 @@ IN_PROC_BROWSER_TEST_F(OmniboxAimWebUiInteractiveTest,
       CheckViewProperty(kOmniboxElementId, &views::View::HasFocus, false));
 }
 
+// TODO(crbug.com/505548434): Flaky on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_ClassicContextMenuOpensDeepSearch \
+  DISABLED_ClassicContextMenuOpensDeepSearch
+#else
+#define MAYBE_ClassicContextMenuOpensDeepSearch \
+  ClassicContextMenuOpensDeepSearch
+#endif
 IN_PROC_BROWSER_TEST_F(OmniboxAimWebUiInteractiveTest,
-                       ClassicContextMenuOpensDeepSearch) {
+                       MAYBE_ClassicContextMenuOpensDeepSearch) {
   const DeepQuery kDeepSearchChip = {"omnibox-aim-app", "cr-composebox",
                                      "cr-composebox-tool-chip"};
   RunTestSequence(
