@@ -14,6 +14,7 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_cookie_synchronizer.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_side_panel_coordinator.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_window_tracker.h"
 #include "chrome/browser/contextual_tasks/mock_contextual_tasks_panel_host.h"
 #include "chrome/browser/contextual_tasks/mock_contextual_tasks_ui_service_delegate.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
@@ -352,6 +353,43 @@ TEST_P(ContextualTasksUiServiceTestParameterized,
   EXPECT_EQ(token_future.Get(), "");
 }
 
+TEST_P(ContextualTasksUiServiceTestParameterized,
+       HandleNavigation_NewTabAllowed_TracksWindow_Timeout) {
+  if (GetParam() == base::test::TaskEnvironment::TimeSource::SYSTEM_TIME) {
+    GTEST_SKIP() << "Timeout won't work on SYSTEM_TIME";
+  }
+
+  GURL navigated_url(kTestUrl);
+  GURL host_web_content_url(chrome::kChromeUIContextualTasksURL);
+
+  auto web_contents = content::WebContentsTester::CreateTestWebContents(
+      profile_.get(), content::SiteInstance::Create(profile_.get()));
+  content::WebContentsTester::For(web_contents.get())
+      ->SetLastCommittedURL(host_web_content_url);
+
+  base::Uuid task_id = base::Uuid::GenerateRandomV4();
+  GURL source_url = net::AppendQueryParameter(
+      host_web_content_url, kTaskQueryParam, task_id.AsLowercaseString());
+  content::WebContentsTester::For(web_contents.get())
+      ->SetLastCommittedURL(source_url);
+
+  EXPECT_FALSE(service_for_nav_->HandleNavigation(
+      CreateOpenUrlParams(navigated_url, true), web_contents.get(),
+      /*is_from_embedded_page=*/true,
+      /*from_can_create_window=*/true,
+      /*is_same_site_or_from_ui=*/true));
+
+  const auto& trackers = service_for_nav_->window_trackers_for_testing();
+  ASSERT_EQ(1U, trackers.size());
+  EXPECT_EQ(task_id, trackers[0]->task_id());
+
+  // Fast forward time by 10 seconds.
+  task_environment()->FastForwardBy(base::Seconds(10));
+
+  // The tracker should be destroyed.
+  EXPECT_EQ(0U, service_for_nav_->window_trackers_for_testing().size());
+}
+
 INSTANTIATE_TEST_SUITE_P(
     All,
     ContextualTasksUiServiceTestParameterized,
@@ -669,6 +707,166 @@ TEST_F(ContextualTasksUiServiceTest, NormalLinkNotIntercepted) {
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, run_loop.QuitClosure());
   run_loop.Run();
+}
+
+TEST_F(ContextualTasksUiServiceTest,
+       HandleNavigation_NewTabAllowed_TracksWindow) {
+  GURL navigated_url(kTestUrl);
+  GURL host_web_content_url(chrome::kChromeUIContextualTasksURL);
+
+  auto web_contents = content::WebContentsTester::CreateTestWebContents(
+      profile_.get(), content::SiteInstance::Create(profile_.get()));
+  content::WebContentsTester::For(web_contents.get())
+      ->SetLastCommittedURL(host_web_content_url);
+
+  base::Uuid task_id = base::Uuid::GenerateRandomV4();
+  GURL source_url = net::AppendQueryParameter(
+      host_web_content_url, kTaskQueryParam, task_id.AsLowercaseString());
+  content::WebContentsTester::For(web_contents.get())
+      ->SetLastCommittedURL(source_url);
+
+  EXPECT_CALL(*service_for_nav_, OnThreadLinkClicked(_, _, _, _)).Times(0);
+  EXPECT_CALL(*service_for_nav_, OnNavigationToAiPageIntercepted(_, _, _))
+      .Times(0);
+
+  EXPECT_FALSE(service_for_nav_->HandleNavigation(
+      CreateOpenUrlParams(navigated_url, true), web_contents.get(),
+      /*is_from_embedded_page=*/true,
+      /*from_can_create_window=*/true,
+      /*is_same_site_or_from_ui=*/true));
+
+  const auto& trackers = service_for_nav_->window_trackers_for_testing();
+  ASSERT_EQ(1U, trackers.size());
+  EXPECT_EQ(task_id, trackers[0]->task_id());
+  EXPECT_EQ(navigated_url, trackers[0]->expected_url());
+
+  auto* tracker = trackers[0].get();
+  auto new_web_contents = content::WebContentsTester::CreateTestWebContents(
+      profile_.get(), content::SiteInstance::Create(profile_.get()));
+  content::WebContentsTester::For(new_web_contents.get())
+      ->NavigateAndCommit(navigated_url);
+
+  tabs::MockTabInterface mock_tab;
+  ON_CALL(mock_tab, GetContents).WillByDefault(Return(new_web_contents.get()));
+
+  NiceMock<MockTabListInterface> mock_tab_list;
+
+  tracker->OnTabAdded(mock_tab_list, &mock_tab, 0);
+  EXPECT_EQ(&mock_tab, tracker->tracked_tab());
+
+  tracker->OnTabRemoved(mock_tab_list, &mock_tab, TabRemovedReason::kDeleted);
+  {
+    base::RunLoop run_loop;
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, run_loop.QuitClosure());
+    run_loop.Run();
+  }
+  EXPECT_EQ(0U, service_for_nav_->window_trackers_for_testing().size());
+}
+
+TEST_F(ContextualTasksUiServiceTest,
+       HandleNavigation_NewTabAllowed_TracksWindow_TabListDestroyed) {
+  GURL navigated_url(kTestUrl);
+  GURL host_web_content_url(chrome::kChromeUIContextualTasksURL);
+
+  auto web_contents = content::WebContentsTester::CreateTestWebContents(
+      profile_.get(), content::SiteInstance::Create(profile_.get()));
+  content::WebContentsTester::For(web_contents.get())
+      ->SetLastCommittedURL(host_web_content_url);
+
+  base::Uuid task_id = base::Uuid::GenerateRandomV4();
+  GURL source_url = net::AppendQueryParameter(
+      host_web_content_url, kTaskQueryParam, task_id.AsLowercaseString());
+  content::WebContentsTester::For(web_contents.get())
+      ->SetLastCommittedURL(source_url);
+
+  EXPECT_CALL(*service_for_nav_, OnThreadLinkClicked(_, _, _, _)).Times(0);
+  EXPECT_CALL(*service_for_nav_, OnNavigationToAiPageIntercepted(_, _, _))
+      .Times(0);
+
+  EXPECT_FALSE(service_for_nav_->HandleNavigation(
+      CreateOpenUrlParams(navigated_url, true), web_contents.get(),
+      /*is_from_embedded_page=*/true,
+      /*from_can_create_window=*/true,
+      /*is_same_site_or_from_ui=*/true));
+
+  const auto& trackers = service_for_nav_->window_trackers_for_testing();
+  ASSERT_EQ(1U, trackers.size());
+
+  auto* tracker = trackers[0].get();
+  auto new_web_contents = content::WebContentsTester::CreateTestWebContents(
+      profile_.get(), content::SiteInstance::Create(profile_.get()));
+  content::WebContentsTester::For(new_web_contents.get())
+      ->NavigateAndCommit(navigated_url);
+
+  tabs::MockTabInterface mock_tab;
+  ON_CALL(mock_tab, GetContents).WillByDefault(Return(new_web_contents.get()));
+
+  NiceMock<MockTabListInterface> mock_tab_list;
+
+  tracker->OnTabAdded(mock_tab_list, &mock_tab, 0);
+  EXPECT_EQ(&mock_tab, tracker->tracked_tab());
+
+  tracker->OnTabListDestroyed(mock_tab_list);
+  {
+    base::RunLoop run_loop;
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, run_loop.QuitClosure());
+    run_loop.Run();
+  }
+  EXPECT_EQ(0U, service_for_nav_->window_trackers_for_testing().size());
+}
+
+TEST_F(
+    ContextualTasksUiServiceTest,
+    HandleNavigation_NewTabAllowed_TracksWindow_TabListDestroyed_BeforeFound) {
+  GURL navigated_url(kTestUrl);
+  GURL host_web_content_url(chrome::kChromeUIContextualTasksURL);
+
+  auto web_contents = content::WebContentsTester::CreateTestWebContents(
+      profile_.get(), content::SiteInstance::Create(profile_.get()));
+  content::WebContentsTester::For(web_contents.get())
+      ->SetLastCommittedURL(host_web_content_url);
+
+  base::Uuid task_id = base::Uuid::GenerateRandomV4();
+  GURL source_url = net::AppendQueryParameter(
+      host_web_content_url, kTaskQueryParam, task_id.AsLowercaseString());
+  content::WebContentsTester::For(web_contents.get())
+      ->SetLastCommittedURL(source_url);
+
+  EXPECT_CALL(*service_for_nav_, OnThreadLinkClicked(_, _, _, _)).Times(0);
+  EXPECT_CALL(*service_for_nav_, OnNavigationToAiPageIntercepted(_, _, _))
+      .Times(0);
+
+  EXPECT_FALSE(service_for_nav_->HandleNavigation(
+      CreateOpenUrlParams(navigated_url, true), web_contents.get(),
+      /*is_from_embedded_page=*/true,
+      /*from_can_create_window=*/true,
+      /*is_same_site_or_from_ui=*/true));
+
+  const auto& trackers = service_for_nav_->window_trackers_for_testing();
+  ASSERT_EQ(1U, trackers.size());
+
+  auto* tracker = trackers[0].get();
+
+  NiceMock<MockTabListInterface> mock_tab_list;
+  MockBrowserWindowInterface mock_browser;
+  ui::UnownedUserDataHost user_data_host;
+  EXPECT_CALL(mock_browser, GetUnownedUserDataHost())
+      .WillRepeatedly(ReturnRef(user_data_host));
+  ui::ScopedUnownedUserData<TabListInterface> scoped_user_data(
+      mock_browser.GetUnownedUserDataHost(), mock_tab_list);
+
+  tracker->OnBrowserCreated(&mock_browser);
+
+  tracker->OnTabListDestroyed(mock_tab_list);
+  {
+    base::RunLoop run_loop;
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, run_loop.QuitClosure());
+    run_loop.Run();
+  }
+  EXPECT_EQ(0U, service_for_nav_->window_trackers_for_testing().size());
 }
 
 TEST_F(ContextualTasksUiServiceTest, AiHostNotIntercepted_BadPath) {

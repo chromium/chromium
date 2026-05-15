@@ -61,6 +61,7 @@ inline constexpr char kChromeHostParam[] = "chrome_host";
 class ContextualTasksCookieSynchronizer;
 class ContextualTasksService;
 class ContextualTasksUIInterface;
+class ContextualTasksWindowTracker;
 
 // A service used to coordinate all of the side panel instances showing an AI
 // thread. Events like tab switching and Intercepted navigations from both the
@@ -336,6 +337,11 @@ class ContextualTasksUiService : public KeyedService {
   // Returns whether the provided URL is for the primary account in Chrome.
   virtual bool IsUrlForPrimaryAccount(const GURL& url);
 
+  const std::vector<std::unique_ptr<ContextualTasksWindowTracker>>&
+  window_trackers_for_testing() const {
+    return window_trackers_;
+  }
+
   base::WeakPtr<ContextualTasksUiService> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
   }
@@ -440,6 +446,9 @@ class ContextualTasksUiService : public KeyedService {
   // Returns the host override for a given task if it differs from the default.
   std::string GetHostForTask(const base::Uuid& task_id);
 
+  // Removes a window tracker from the list of trackers.
+  void RemoveWindowTracker(ContextualTasksWindowTracker* tracker);
+
  private:
   base::ObserverList<Observer> observers_;
 
@@ -498,6 +507,9 @@ class ContextualTasksUiService : public KeyedService {
   // has been added yet.
   std::map<base::Uuid, base::OnceCallback<void(const GURL&)>>
       tasks_waiting_for_url_;
+
+  // List of window trackers that are actively tracking windows for tasks.
+  std::vector<std::unique_ptr<ContextualTasksWindowTracker>> window_trackers_;
 
   base::WeakPtrFactory<ContextualTasksUiService> weak_ptr_factory_{this};
 };
