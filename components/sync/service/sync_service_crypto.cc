@@ -263,29 +263,6 @@ bool SyncServiceCrypto::SetDecryptionPassphrase(const std::string& passphrase) {
   return SetDecryptionKeyWithoutUpdatingBootstrapToken(std::move(nigori));
 }
 
-void SyncServiceCrypto::SetExplicitPassphraseDecryptionNigoriKey(
-    std::unique_ptr<Nigori> nigori) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  DCHECK(nigori);
-  if (state_.required_user_action != RequiredUserAction::kPassphraseRequired) {
-    // Passphrase not required, ignore the call.
-    return;
-  }
-
-  // Update the bootstrap token immediately, this is harmless as bootstrap token
-  // is ignored if it doesn't contain the right key.
-  delegate_->SetEncryptionBootstrapToken(
-      SerializeNigoriAsBootstrapToken(*nigori));
-
-  if (state_.engine) {
-    // Engine being initialized isn't a precondition of this method. In case
-    // it's not initialized, decryption passphrase will be set later, upon
-    // initialization.
-    SetDecryptionKeyWithoutUpdatingBootstrapToken(std::move(nigori));
-  }
-}
-
 std::unique_ptr<Nigori>
 SyncServiceCrypto::GetExplicitPassphraseDecryptionNigoriKey() const {
   CHECK(state_.engine);
