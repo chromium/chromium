@@ -30,7 +30,7 @@ from proto import Resources_pb2
 _FLAT_ARSC_HEADER = b'AAPT\x01\x00\x00\x00\x01\x00\x00\x00\x00\x00\x00\x00'
 
 
-def ProcessZip(zip_path, process_func):
+def _ProcessZip(zip_path, process_func):
   """Filters a .zip file via: new_bytes = process_func(filename, data)."""
   has_changes = False
   zip_entries = []
@@ -104,7 +104,6 @@ def _SplitLocaleResourceType(_type, allowed_resource_names):
 
 
 class _ResourceStripper:
-
   def __init__(self, partial_path, keep_predicate):
     self.partial_path = partial_path
     self.keep_predicate = keep_predicate
@@ -198,4 +197,4 @@ def StripUnwantedResources(partial_path, keep_predicate):
         data = _FlatBytesFromTable(table)
     return data
 
-  ProcessZip(partial_path, process_file)
+  _ProcessZip(partial_path, process_file)

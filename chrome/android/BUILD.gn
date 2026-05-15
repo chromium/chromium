@@ -2846,8 +2846,10 @@ if (_is_default_toolchain) {
               mapping_files + [
                 "apks/$_trichrome_library_basename_for_size",
                 "apks/$_trichrome_chrome_basename_for_size",
+                "apks/$_trichrome_chrome_bundle_for_size.unused_resources",
                 "apks/$_trichrome_chrome_bundle_for_size.R.txt",
                 "apks/$_trichrome_webview_basename_for_size",
+                "apks/$_trichrome_webview_bundle_for_size.unused_resources",
                 "apks/$_trichrome_webview_bundle_for_size.R.txt",
                 "${_symbol_dir_for_size}/libmonochrome__combined.so",
               ]

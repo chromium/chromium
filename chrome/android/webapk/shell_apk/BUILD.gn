@@ -14,8 +14,8 @@ h2o_junit_manifest_output =
 # GN breaks with a mysterious error if the target has the word "junit" in it.
 h2o_junit_manifest_target_name = "h2o_j_unit_manifest_target"
 
-# Stamped out copy of the runtime-library, used for fail-safe code in when using
-# an old copy of the runtime library.
+# Stamped out copy of the runtime-library, used for fail-safe code in when using an
+# old copy of the runtime library.
 android_library("compiled_in_runtime_library_java") {
   chromium_code = false
   sources = [ "src/org/chromium/webapk/lib/runtime_library/IWebApkApi.java" ]
@@ -40,9 +40,9 @@ mustache_pass("generate_manifest_for_upload") {
   ]
 }
 
-# |webapk_java| is split from |webapk_with_service_java| for the sake of
-# instrumentation tests. |chrome_public_test_apk| cannot depend on
-# |compiled_in_runtime_library_java| due to a class name conflict.
+# |webapk_java| is split from |webapk_with_service_java| for the sake of instrumentation tests.
+# |chrome_public_test_apk| cannot depend on |compiled_in_runtime_library_java| due to a class
+# name conflict.
 template("webapk_java") {
   android_library(target_name) {
     forward_variables_from(invoker,
@@ -278,10 +278,6 @@ template("webapk_tmpl") {
     if (!is_java_debug) {
       proguard_enabled = true
       proguard_configs = [ "//chrome/android/webapk/shell_apk/proguard.flags" ]
-    }
-    if (optimize_android_resources) {
-      resources_config_paths =
-          [ "//chrome/android/webapk/shell_apk/aapt2.config" ]
     }
   }
 }
