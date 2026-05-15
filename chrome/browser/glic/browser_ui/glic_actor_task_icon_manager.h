@@ -10,6 +10,7 @@
 
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/ui/states/actor_task_nudge_state.h"
+#include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/common/actor/task_id.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
@@ -44,7 +45,8 @@ class GlicActorTaskIconManager : public KeyedService {
 
   // Returns true if the task list bubble should be shown for the task state.
   static bool ShouldShowBubble(actor::ActorTask::State state,
-                               actor::ActorTask::TaskDuration duration);
+                               actor::ActorTask::TaskDuration duration,
+                               glic::mojom::FeatureMode feature_mode);
 
   // Register for this callback to get task nudge state change notifications.
   using TaskNudgeChangeCallback = base::RepeatingCallback<void(
@@ -82,6 +84,10 @@ class GlicActorTaskIconManager : public KeyedService {
 
   // Determines the state of a task to show in the task list bubble.
   void UpdateTaskListBubble(actor::TaskId task_id);
+
+  // Returns the feature mode for a given task, or kUnspecified if the task
+  // doesn't exist.
+  glic::mojom::FeatureMode GetFeatureMode(actor::TaskId task_id) const;
 
   std::vector<base::CallbackListSubscription> callback_subscriptions_;
 

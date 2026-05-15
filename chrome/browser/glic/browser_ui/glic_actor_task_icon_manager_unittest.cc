@@ -10,6 +10,7 @@
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/ui/actor_ui_state_manager_interface.h"
 #include "chrome/browser/actor/ui/states/actor_task_nudge_state.h"
+#include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/testing_profile.h"
@@ -349,6 +350,36 @@ TEST_F(GlicActorTaskIconManagerTest, TransientTaskDoesNotShowBubble) {
   actor_service()->StopTaskForTesting(
       task_id, actor::ActorTask::StoppedReason::kTaskComplete);
   manager()->UpdateTaskIconComponents(task_id);
+}
+
+TEST_F(GlicActorTaskIconManagerTest, ShouldShowBubble_FeatureModeRules) {
+  // 1. Experimental Triggering task in kActing state should automatically show
+  // the bubble.
+  EXPECT_TRUE(GlicActorTaskIconManager::ShouldShowBubble(
+      actor::ActorTask::State::kActing,
+      actor::ActorTask::TaskDuration::kDefault,
+      glic::mojom::FeatureMode::kExperimentalTriggering));
+
+  // 2. Experimental Triggering task in kCreated state should NOT show the
+  // bubble (it hasn't started acting yet).
+  EXPECT_FALSE(GlicActorTaskIconManager::ShouldShowBubble(
+      actor::ActorTask::State::kCreated,
+      actor::ActorTask::TaskDuration::kDefault,
+      glic::mojom::FeatureMode::kExperimentalTriggering));
+
+  // 3. Non-Experimental Triggering task in kActing state should NOT show the
+  // bubble (prevent UI noise).
+  EXPECT_FALSE(GlicActorTaskIconManager::ShouldShowBubble(
+      actor::ActorTask::State::kActing,
+      actor::ActorTask::TaskDuration::kDefault,
+      glic::mojom::FeatureMode::kUnspecified));
+
+  // 4. Non-Experimental Triggering task that needs attention should still show
+  // the bubble (fallback logic).
+  EXPECT_TRUE(GlicActorTaskIconManager::ShouldShowBubble(
+      actor::ActorTask::State::kWaitingOnUser,
+      actor::ActorTask::TaskDuration::kDefault,
+      glic::mojom::FeatureMode::kUnspecified));
 }
 
 }  // namespace glic

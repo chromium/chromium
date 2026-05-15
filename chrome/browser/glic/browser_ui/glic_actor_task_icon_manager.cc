@@ -90,7 +90,8 @@ void GlicActorTaskIconManager::UpdateTaskNudge() {
     }
 
     auto duration = manager->GetDuration(task_id);
-    if (ShouldShowBubble(*state, duration)) {
+    glic::mojom::FeatureMode feature_mode = GetFeatureMode(task_id);
+    if (ShouldShowBubble(*state, duration, feature_mode)) {
       show_bubble = true;
     }
 
@@ -156,7 +157,9 @@ void GlicActorTaskIconManager::UpdateTaskListBubble(actor::TaskId task_id) {
     actor_task_list_bubble_rows_[task_id] =
         RequiresTaskProcessing(state.value());
 
-    if (ShouldShowBubble(state.value(), duration)) {
+    glic::mojom::FeatureMode feature_mode = GetFeatureMode(task_id);
+
+    if (ShouldShowBubble(state.value(), duration, feature_mode)) {
       // Notify the bubble only if a task now requires processing. This callback
       // will open the task list bubble and make it active, in order to bring it
       // to the user's attention. This is also necessary for when a user
@@ -201,13 +204,25 @@ bool GlicActorTaskIconManager::RequiresTaskProcessing(TaskState state) {
 }
 
 // static
-bool GlicActorTaskIconManager::ShouldShowBubble(TaskState state,
-                                                TaskDuration duration) {
+bool GlicActorTaskIconManager::ShouldShowBubble(
+    TaskState state,
+    TaskDuration duration,
+    glic::mojom::FeatureMode feature_mode) {
+  if (feature_mode == glic::mojom::FeatureMode::kExperimentalTriggering &&
+      state == TaskState::kActing) {
+    return true;
+  }
   if (GlicActorTaskIconManager::RequiresAttention(state)) {
     return true;
   }
   return (state == TaskState::kFinished || state == TaskState::kFailed) &&
          duration != ActorTask::TaskDuration::kTransient;
+}
+
+glic::mojom::FeatureMode GlicActorTaskIconManager::GetFeatureMode(
+    actor::TaskId task_id) const {
+  actor::ActorTask* task = actor_service_->GetTask(task_id);
+  return task ? task->feature_mode() : glic::mojom::FeatureMode::kUnspecified;
 }
 
 }  // namespace glic
