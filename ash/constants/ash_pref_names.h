@@ -3174,6 +3174,19 @@ inline constexpr char kTPMUpdatePlannedNotificationShownTime[] =
     "tpm_auto_update.planned_notification_shown_time";
 
 //-----------------------------------------------------------------------------
+// Kcer related Prefs
+//-----------------------------------------------------------------------------
+
+// A boolean preference that is registered in user prefs to tracks that at least
+// one PKCS#12 certificate+key pair was dual written into NSS software-backed
+// slot and Chaps. This is a part of the experiment to import PKCS#12 files into
+// Chaps user slot instead of NSS and if the copy from Chaps will not work this
+// preference will be used to decide when a clean up is needed to delete
+// non-working certificates+keys.
+inline constexpr char kNssChapsDualWrittenCertsExist[] =
+    "nss_chaps_dual_written_certs_exist";
+
+//-----------------------------------------------------------------------------
 // CryptAuth related Prefs
 //-----------------------------------------------------------------------------
 

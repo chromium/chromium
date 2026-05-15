@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/kcer/kcer_factory_ash.h"
 
+#include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
@@ -15,7 +16,6 @@
 #include "chrome/browser/net/nss_service.h"
 #include "chrome/browser/net/nss_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
 #include "chromeos/ash/components/kcer/chaps/session_chaps_client.h"
 #include "chromeos/ash/components/kcer/extra_instances.h"
@@ -210,7 +210,7 @@ void KcerFactoryAsh::Initialize() {
 
 void KcerFactoryAsh::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
-  registry->RegisterBooleanPref(prefs::kNssChapsDualWrittenCertsExist,
+  registry->RegisterBooleanPref(ash::prefs::kNssChapsDualWrittenCertsExist,
                                 /*default_value=*/false);
 }
 
@@ -261,7 +261,7 @@ void KcerFactoryAsh::RecordPkcs12CertDualWrittenImpl() {
   if (!prefs) {
     return;
   }
-  prefs->SetBoolean(prefs::kNssChapsDualWrittenCertsExist, true);
+  prefs->SetBoolean(ash::prefs::kNssChapsDualWrittenCertsExist, true);
 }
 
 void KcerFactoryAsh::ClearNssTokenMapForTestingImpl() {

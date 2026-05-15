@@ -42,6 +42,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
 #include "chrome/browser/ash/kcer/kcer_factory_ash.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chromeos/ash/components/login/login_state/login_state.h"
@@ -375,8 +376,8 @@ TEST_P(ClientCertSourceWritableUnitTest, TriggerReloadOnKcerDbChange) {
 TEST_P(ClientCertSourceWritableUnitTest,
        ImportPkcs12AndGetCertificateInfosAndDelete) {
 #if BUILDFLAG(IS_CHROMEOS)
-  EXPECT_FALSE(
-      profile()->GetPrefs()->GetBoolean(prefs::kNssChapsDualWrittenCertsExist));
+  EXPECT_FALSE(profile()->GetPrefs()->GetBoolean(
+      ash::prefs::kNssChapsDualWrittenCertsExist));
 #endif
 
   ui::FakeSelectFileDialog::Factory* factory =
@@ -416,9 +417,9 @@ TEST_P(ClientCertSourceWritableUnitTest,
   // The cert should be dual written only if dual-write feature is enabled
   // and the import was not hardware backed (if it's hardware backed it
   // already gets imported to Chaps so the dual write isn't needed.)
-  EXPECT_EQ(
-      profile()->GetPrefs()->GetBoolean(prefs::kNssChapsDualWrittenCertsExist),
-      !use_hardware_backed());
+  EXPECT_EQ(profile()->GetPrefs()->GetBoolean(
+                ash::prefs::kNssChapsDualWrittenCertsExist),
+            !use_hardware_backed());
 #endif
 
   EXPECT_TRUE(NSSContainsCertWithHash(client_1_hash_hex));

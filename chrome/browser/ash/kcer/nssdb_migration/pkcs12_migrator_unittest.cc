@@ -6,13 +6,13 @@
 
 #include <memory>
 
+#include "ash/constants/ash_pref_names.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/ash/kcer/kcer_factory_ash.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/net/fake_nss_service.h"
-#include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/kcer/chaps/mock_high_level_chaps_client.h"
 #include "chromeos/ash/components/kcer/kcer.h"
@@ -138,7 +138,7 @@ class KcerPkcs12MigratorTest : public testing::Test {
     return user_manager::UserManager::Get()
         ->GetActiveUser()
         ->GetProfilePrefs()
-        ->GetBoolean(prefs::kNssChapsDualWrittenCertsExist);
+        ->GetBoolean(ash::prefs::kNssChapsDualWrittenCertsExist);
   }
 
  protected:
