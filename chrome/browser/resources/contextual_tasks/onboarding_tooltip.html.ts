@@ -11,7 +11,6 @@ export function getHtml(this: ContextualTasksOnboardingTooltipElement) {
     <cr-tooltip id="tooltip" role="dialog"
       position="top"
       offset="0"
-      fit-to-visible-bounds
       manual-mode>
       <div id="tooltipContent">
         <div class="tooltip-header">
