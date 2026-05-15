@@ -1451,6 +1451,7 @@ bool ReadAnythingAppModel::MapRenderedTextToTree(
   }
 
   text_to_ax_map_.clear();
+  occupied_ax_ranges_.clear();
   // Ensure the mapping storage size matches the input blocks.
   text_to_ax_map_.resize(blocks.size());
   should_map_rendered_text_to_tree_for_readability_ = false;
@@ -1483,11 +1484,16 @@ bool ReadAnythingAppModel::MapRenderedTextToTree(
   std::vector<AlignmentAnchor> major_anchors =
       FilterMonotonicAnchors(std::move(candidates));
 
-  // TODO: crbug.com/507461126 - Implement part2 of the algorithm. Gap substring
-  // alignment.
+  GapSubstringAlignment(blocks, index, major_anchors);
 
-  // TODO: crbug.com/507461287 - Implement part3 of the algorithm. Relative
-  // order alignment.
+  // Sort mapping segments for every block to ensure physical DOM splitting
+  // happens in sequential order in the WebUI.
+  for (auto& block_segments : text_to_ax_map_) {
+    std::sort(block_segments.begin(), block_segments.end(),
+              [](const MappingSegment& a, const MappingSegment& b) {
+                return a.start < b.start;
+              });
+  }
 
   return true;
 }
@@ -1525,7 +1531,8 @@ ReadAnythingAppModel::FindGloballyUniqueBlocks(
       }
 
       text_to_ax_map_[i] = CreateSegmentsForMatch(ax_start, ax_end, 0);
-      candidates.push_back({i, ax_start, ax_end});
+      occupied_ax_ranges_.emplace_back(ax_start, ax_end);
+      candidates.emplace_back(i, 0, block.size(), ax_start, ax_end);
     }
   }
   return candidates;
@@ -1573,13 +1580,191 @@ ReadAnythingAppModel::FilterMonotonicAnchors(
   return result;
 }
 
-void ReadAnythingAppModel::AlignGaps(const std::vector<std::u16string>& blocks,
-                                     const SuffixArray& index,
-                                     size_t block_start,
-                                     size_t block_end,
-                                     size_t ax_start,
-                                     size_t ax_end) {
-  // TODO: crbug.com/507461126 - Implement recursive gap alignment.
+void ReadAnythingAppModel::GapSubstringAlignment(
+    const std::vector<std::u16string>& blocks,
+    const SuffixArray& index,
+    const std::vector<AlignmentAnchor>& major_anchors) {
+  if (major_anchors.empty()) {
+    // If no major anchors were found, treat the whole text as one gap.
+    AlignGap(blocks, index, 0, blocks.size(), 0, global_ax_tree_text_.size());
+    return;
+  }
+
+  // Gap before the first major anchor.
+  AlignGap(blocks, index, 0, major_anchors[0].block_index, 0,
+           major_anchors[0].ax_start);
+
+  // Gaps between major anchors.
+  for (size_t i = 0; i < major_anchors.size() - 1; ++i) {
+    AlignGap(blocks, index, major_anchors[i].block_index + 1,
+             major_anchors[i + 1].block_index, major_anchors[i].ax_end,
+             major_anchors[i + 1].ax_start);
+  }
+
+  // Gap after the last major anchor.
+  AlignGap(blocks, index, major_anchors.back().block_index + 1, blocks.size(),
+           major_anchors.back().ax_end, global_ax_tree_text_.size());
+}
+
+void ReadAnythingAppModel::AlignGap(const std::vector<std::u16string>& blocks,
+                                    const SuffixArray& index,
+                                    size_t block_index_start,
+                                    size_t block_index_end,
+                                    size_t ax_start,
+                                    size_t ax_end) {
+  if (block_index_start >= block_index_end || ax_start >= ax_end) {
+    return;
+  }
+
+  // Prepare unmapped ranges for this specific gap. Only attempt to fill
+  // gaps for blocks that haven't been anchored yet.
+  std::vector<TextRange> ranges;
+  for (size_t i = block_index_start; i < block_index_end; ++i) {
+    if (!blocks[i].empty() && text_to_ax_map_[i].empty()) {
+      ranges.emplace_back(i, 0, blocks[i].size());
+    }
+  }
+
+  if (!ranges.empty()) {
+    AlignSubstring(blocks, index, std::move(ranges), ax_start, ax_end);
+  }
+}
+
+void ReadAnythingAppModel::AlignSubstring(
+    const std::vector<std::u16string>& blocks,
+    const SuffixArray& index,
+    std::vector<TextRange> distilled_ranges,
+    size_t ax_start,
+    size_t ax_end) {
+  if (distilled_ranges.empty() || ax_start >= ax_end) {
+    return;
+  }
+
+  AlignmentAnchor best_match = FindLongestLocallyUniqueSubstring(
+      blocks, index, distilled_ranges, ax_start, ax_end);
+
+  // If no sufficiently long match was found, stop recursing in this gap.
+  size_t best_match_length = best_match.block_end - best_match.block_start;
+  if (best_match_length < kMinAnchorLength) {
+    // TODO: crbug.com/507461287 - Implement part3 of the algorithm. Relative
+    // order alignment.
+    return;
+  }
+
+  // Map the found substring.
+  std::vector<MappingSegment> segments = CreateSegmentsForMatch(
+      best_match.ax_start, best_match.ax_end, best_match.block_start);
+
+  auto& block_mappings = text_to_ax_map_[best_match.block_index];
+  block_mappings.insert(block_mappings.end(), segments.begin(), segments.end());
+
+  // Split the distilled_ranges into two sets: those before and after the match.
+  std::vector<TextRange> pre_ranges;
+  std::vector<TextRange> post_ranges;
+
+  for (const auto& tr : distilled_ranges) {
+    if (tr.block_index < best_match.block_index) {
+      pre_ranges.push_back(tr);
+    } else if (tr.block_index > best_match.block_index) {
+      post_ranges.push_back(tr);
+    } else {
+      // tr is the block containing the match. Split it within the block.
+      if (best_match.block_start > tr.start) {
+        pre_ranges.emplace_back(tr.block_index, tr.start,
+                                best_match.block_start);
+      }
+      if (best_match.block_end < tr.end) {
+        post_ranges.emplace_back(tr.block_index, best_match.block_end, tr.end);
+      }
+    }
+  }
+
+  // Recurse on the remaining gaps.
+  AlignSubstring(blocks, index, std::move(pre_ranges), ax_start,
+                 best_match.ax_start);
+  AlignSubstring(blocks, index, std::move(post_ranges), best_match.ax_end,
+                 ax_end);
+}
+
+ReadAnythingAppModel::AlignmentAnchor
+ReadAnythingAppModel::FindLongestLocallyUniqueSubstring(
+    const std::vector<std::u16string>& blocks,
+    const SuffixArray& index,
+    const std::vector<TextRange>& distilled_ranges,
+    size_t ax_start,
+    size_t ax_end) {
+  AlignmentAnchor best_match = {0, 0, 0, 0, 0};
+
+  // Check unmapped blocks in the given gap range.
+  for (const auto& range : distilled_ranges) {
+    const std::u16string& block_text = blocks[range.block_index];
+
+    // Try every character position in the unmapped range as a potential
+    // anchor start.
+    for (size_t i = range.start; i < range.end; ++i) {
+      // Use binary search on the substring length to find the longest locally
+      // unique match starting at index 'i'.
+      // Only search for lengths longer than our current 'best' to
+      // prune the search space.
+      size_t low = (best_match.block_end - best_match.block_start) + 1;
+      size_t high = range.end - i;
+
+      // Skip search if remaining text in this range is shorter than minimum
+      // anchor length or shorter than the current best match.
+      size_t current_best_len = best_match.block_end - best_match.block_start;
+      if (high < kMinAnchorLength || high <= current_best_len) {
+        break;
+      }
+
+      while (low <= high) {
+        size_t mid = low + (high - low) / 2;
+        std::u16string_view query =
+            std::u16string_view(block_text).substr(i, mid);
+
+        // Find all global occurrences of the substring.
+        auto global_ax_occurrences = index.FindRange(query);
+
+        // Count how many of the global occurrences fall within our current gap
+        // that aren't overlapping with existing anchors. Update our best
+        // match if unique and longer.
+        size_t valid_count = 0;
+        size_t first_valid_ax_start = 0;
+
+        for (auto it = global_ax_occurrences.first;
+             it != global_ax_occurrences.second; ++it) {
+          size_t cand_ax_start = *it;
+          size_t cand_ax_end = cand_ax_start + mid;
+
+          if (cand_ax_start >= ax_start && cand_ax_end <= ax_end &&
+              !IsAXRangeOccupied(cand_ax_start, cand_ax_end)) {
+            valid_count++;
+            first_valid_ax_start = cand_ax_start;
+            if (valid_count > 1) {
+              break;  // Not locally unique.
+            }
+          }
+        }
+
+        if (valid_count == 1) {
+          // Found a locally unique match longer than our current best.
+          best_match = {range.block_index, i, i + mid, first_valid_ax_start,
+                        first_valid_ax_start + mid};
+          low = mid + 1;  // Try to find an even longer one.
+        } else {
+          high = mid - 1;
+        }
+      }
+    }
+  }
+  return best_match;
+}
+
+bool ReadAnythingAppModel::IsAXRangeOccupied(size_t ax_start,
+                                             size_t ax_end) const {
+  return std::any_of(occupied_ax_ranges_.begin(), occupied_ax_ranges_.end(),
+                     [ax_start, ax_end](const auto& range) {
+                       return ax_start < range.second && ax_end > range.first;
+                     });
 }
 
 // TODO: crbug.com/509578412 - Evaluate consolidating logic with existing text
