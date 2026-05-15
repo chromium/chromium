@@ -8,8 +8,6 @@
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/webshare/store_file_task.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "content/public/browser/site_instance.h"
