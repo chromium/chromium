@@ -612,6 +612,11 @@ class FedCmAccountSelectionView : public AccountSelectionView,
   // associated UI. Any uses of tab_ must be preceded by a nullptr check.
   raw_ptr<tabs::TabInterface> tab_;
 
+  // Tracks whether impressions have been recorded for the current request flow
+  // to prevent duplicate logging on tab activation/deactivation.
+  bool chip_impression_recorded_{false};
+  bool icon_impression_recorded_{false};
+
   // Holds subscriptions for TabInterface callbacks.
   std::vector<base::CallbackListSubscription> tab_subscriptions_;
 
