@@ -954,7 +954,7 @@ void NavigationURLLoaderImpl::LoaderHolder::ResetInternal() {
 
   response_loader_receiver_.reset();
   url_loader_.reset();
-  modified_headers_on_redirect_.reset();
+  headers_update_params_.reset();
 
   state_ = State::kNone;
   CheckState();
@@ -1068,7 +1068,7 @@ void NavigationURLLoaderImpl::LoaderHolder::BindReceiver(
     mojo::PendingReceiver<network::mojom::URLLoaderClient> pending_receiver,
     scoped_refptr<base::SequencedTaskRunner> task_runner) {
   // TODO(https://crbug.com/434182226): Remove DUMP_WILL_BE_.
-  DUMP_WILL_BE_CHECK(!modified_headers_on_redirect_);
+  DUMP_WILL_BE_CHECK(!headers_update_params_);
   DUMP_WILL_BE_CHECK_EQ(state_, State::kLoadingViaLoader);
   CheckState();
 
@@ -1084,7 +1084,7 @@ void NavigationURLLoaderImpl::LoaderHolder::BindReceiver(
 void NavigationURLLoaderImpl::LoaderHolder::SetLoader(
     std::unique_ptr<blink::ThrottlingURLLoader> url_loader) {
   // TODO(https://crbug.com/434182226): Remove DUMP_WILL_BE_.
-  DUMP_WILL_BE_CHECK(!modified_headers_on_redirect_);
+  DUMP_WILL_BE_CHECK(!headers_update_params_);
   DUMP_WILL_BE_CHECK_EQ(state_, State::kNone);
   CheckState();
 
@@ -1137,49 +1137,33 @@ void NavigationURLLoaderImpl::LoaderHolder::CheckState() const {
   }
 }
 
-NavigationURLLoaderImpl::LoaderHolder::ModifiedHeadersOnRedirect::
-    ModifiedHeadersOnRedirect(
-        std::vector<std::string> removed_headers,
-        net::HttpRequestHeaders modified_headers,
-        net::HttpRequestHeaders modified_cors_exempt_headers)
-    : removed_headers_(std::move(removed_headers)),
-      modified_headers_(std::move(modified_headers)),
-      modified_cors_exempt_headers_(std::move(modified_cors_exempt_headers)) {}
-
-NavigationURLLoaderImpl::LoaderHolder::ModifiedHeadersOnRedirect::
-    ~ModifiedHeadersOnRedirect() = default;
-
-void NavigationURLLoaderImpl::LoaderHolder::SetModifiedHeadersOnRedirect(
-    std::vector<std::string> removed_headers,
-    net::HttpRequestHeaders modified_headers,
-    net::HttpRequestHeaders modified_cors_exempt_headers) {
+void NavigationURLLoaderImpl::LoaderHolder::SetHeadersUpdateParamsOnRedirect(
+    network::HttpRequestHeadersUpdateParams headers_update_params) {
   // TODO(https://crbug.com/434182226): Remove DUMP_WILL_BE_.
-  DUMP_WILL_BE_CHECK(!modified_headers_on_redirect_);
-  modified_headers_on_redirect_.emplace(
-      std::move(removed_headers), std::move(modified_headers),
-      std::move(modified_cors_exempt_headers));
+  DUMP_WILL_BE_CHECK(!headers_update_params_);
+  headers_update_params_.emplace(std::move(headers_update_params));
 }
 
 void NavigationURLLoaderImpl::LoaderHolder::ResetForFollowRedirect(
     network::ResourceRequest& resource_request) {
   if (url_loader_) {
-    CHECK(modified_headers_on_redirect_);
+    CHECK(headers_update_params_);
     url_loader_->ResetForFollowRedirect(
-        resource_request, modified_headers_on_redirect_->removed_headers_,
-        modified_headers_on_redirect_->modified_headers_,
-        modified_headers_on_redirect_->modified_cors_exempt_headers_);
+        resource_request, headers_update_params_->removed_headers,
+        headers_update_params_->modified_headers,
+        headers_update_params_->modified_cors_exempt_headers);
   }
   Reset();
 }
 
 void NavigationURLLoaderImpl::LoaderHolder::FollowRedirect() {
   CHECK(url_loader_);
-  CHECK(modified_headers_on_redirect_);
+  CHECK(headers_update_params_);
   url_loader_->FollowRedirect(
-      std::move(modified_headers_on_redirect_->removed_headers_),
-      std::move(modified_headers_on_redirect_->modified_headers_),
-      std::move(modified_headers_on_redirect_->modified_cors_exempt_headers_));
-  modified_headers_on_redirect_.reset();
+      std::move(headers_update_params_->removed_headers),
+      std::move(headers_update_params_->modified_headers),
+      std::move(headers_update_params_->modified_cors_exempt_headers));
+  headers_update_params_.reset();
 }
 
 bool NavigationURLLoaderImpl::LoaderHolder::receiver_is_bound_for_check()
@@ -2340,11 +2324,17 @@ void NavigationURLLoaderImpl::FollowRedirect(
   loader_holder_.OnExclusiveTaskCompleted(
       LoaderHolder::ExclusiveTaskType::kRedirect);
 
+  network::HttpRequestHeadersUpdateParams headers_update_params;
+  headers_update_params.removed_headers = std::move(removed_headers);
+  headers_update_params.modified_headers = std::move(modified_headers);
+  headers_update_params.modified_cors_exempt_headers =
+      std::move(modified_cors_exempt_headers);
+
   // Don't send Accept: application/signed-exchange for fallback redirects.
   // This is also applied to `resource_request().headers` via
   // `net::RedirectUtil::UpdateHttpRequest()`.
   if (redirect_info_.is_signed_exchange_fallback_redirect) {
-    modified_headers.SetHeader(
+    headers_update_params.modified_headers.SetHeader(
         net::HttpRequestHeaders::kAccept,
         FrameAcceptHeaderValue(/*allow_sxg_responses=*/false,
                                browser_context_));
@@ -2362,7 +2352,8 @@ void NavigationURLLoaderImpl::FollowRedirect(
   bool should_clear_upload = false;
   net::RedirectUtil::UpdateHttpRequest(
       resource_request().url, resource_request().method, redirect_info_,
-      removed_headers, modified_headers, &resource_request_->headers,
+      headers_update_params.removed_headers,
+      headers_update_params.modified_headers, &resource_request_->headers,
       &should_clear_upload);
   if (should_clear_upload) {
     // The request body is no longer applicable.
@@ -2399,9 +2390,8 @@ void NavigationURLLoaderImpl::FollowRedirect(
 
   // Need to cache modified headers for `url_loader_` since it doesn't use
   // `resource_request()` during redirect.
-  loader_holder_.SetModifiedHeadersOnRedirect(
-      std::move(removed_headers), std::move(modified_headers),
-      std::move(modified_cors_exempt_headers));
+  loader_holder_.SetHeadersUpdateParamsOnRedirect(
+      std::move(headers_update_params));
 
   Restart();
 }

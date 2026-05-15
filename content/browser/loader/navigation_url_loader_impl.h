@@ -25,6 +25,7 @@
 #include "net/cookies/cookie_setting_override.h"
 #include "net/url_request/url_request.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
+#include "services/network/public/cpp/http_request_headers_update_params.h"
 #include "services/network/public/cpp/record_ontransfersizeupdate_utils.h"
 #include "services/network/public/cpp/single_request_url_loader_factory.h"
 #include "services/network/public/mojom/accept_ch_frame_observer.mojom.h"
@@ -443,7 +444,7 @@ class CONTENT_EXPORT NavigationURLLoaderImpl
 
     // Redirect handling: the expected sequence is:
     // 1. `NavigationURLLoaderImpl::OnReceiveRedirect()`
-    // 2. `LoaderHolder::SetModifiedHeadersOnRedirect()`
+    // 2. `LoaderHolder::SetHeadersUpdateParamsOnRedirect()`
     // 3. Either:
     //    - `LoaderHolder::FollowRedirect()`, when we want and can continue
     //      using the current `url_loader` for the next redirect leg, or
@@ -458,10 +459,8 @@ class CONTENT_EXPORT NavigationURLLoaderImpl
     // Cache the modified request headers provided by clients during redirect.
     // They will be consumed by next `FollowRedirect()` or
     // `ResetForFollowRedirect()`.
-    void SetModifiedHeadersOnRedirect(
-        std::vector<std::string> removed_headers,
-        net::HttpRequestHeaders modified_headers,
-        net::HttpRequestHeaders modified_cors_exempt_headers);
+    void SetHeadersUpdateParamsOnRedirect(
+        network::HttpRequestHeadersUpdateParams headers_update_params);
 
     // Follows the redirect using the current `url_loader_`.
     void FollowRedirect();
@@ -517,20 +516,8 @@ class CONTENT_EXPORT NavigationURLLoaderImpl
     // For now this is kept here as-is but probably can be removed.
     mojo::PendingRemote<network::mojom::URLLoader> response_url_loader_;
 
-    struct ModifiedHeadersOnRedirect final {
-      ModifiedHeadersOnRedirect(
-          std::vector<std::string> removed_headers,
-          net::HttpRequestHeaders modified_headers,
-          net::HttpRequestHeaders modified_cors_exempt_headers);
-      ModifiedHeadersOnRedirect(const ModifiedHeadersOnRedirect&) = delete;
-      ModifiedHeadersOnRedirect(ModifiedHeadersOnRedirect&&) = delete;
-      ~ModifiedHeadersOnRedirect();
-
-      std::vector<std::string> removed_headers_;
-      net::HttpRequestHeaders modified_headers_;
-      net::HttpRequestHeaders modified_cors_exempt_headers_;
-    };
-    std::optional<ModifiedHeadersOnRedirect> modified_headers_on_redirect_;
+    std::optional<network::HttpRequestHeadersUpdateParams>
+        headers_update_params_;
 
     // `NavigationURLLoaderImpl` can be waiting for a certain (possibly async)
     // "exclusive task" and can't start a new request nor receive
