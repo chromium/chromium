@@ -276,12 +276,60 @@ public class TabItemPickerCoordinatorNavigationUnitTest {
         verify(tab).addObserver(mTabObserverCaptor.capture());
         TabObserver observer = mTabObserverCaptor.getValue();
 
+        var watcher =
+                HistogramWatcher.newBuilder()
+                        .expectAnyRecord("Android.TabItemPicker.OnDemandLoadDuration.Success")
+                        .build();
+
         observer.onPageLoadFinished(tab, JUnitTestGURLs.URL_1);
 
+        watcher.assertExpected();
         verify(tab).removeObserver(observer);
         verify(mTabContentManager)
                 .cacheTabThumbnailWithCallback(eq(tab), eq(false), mCallbackCaptor.capture());
+
+        var thumbnailWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectAnyRecord("Android.TabItemPicker.OnDemandThumbnailFetchDuration")
+                        .build();
+
         mCallbackCaptor.getValue().onResult(null);
+
+        thumbnailWatcher.assertExpected();
+        verify(mTabListEditorController).setThumbnailSpinnerVisibility(tab, false);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ON_DEMAND_BACKGROUND_TAB_CONTEXT_CAPTURE)
+    public void testTabLoadFailed() {
+        int tabId = 101;
+        Tab tab = mockTabActiveState(tabId, false);
+        when(tab.getUrl()).thenReturn(JUnitTestGURLs.URL_1);
+        when(tab.loadIfNeeded(anyBoolean())).thenReturn(true);
+        when(tab.isLoading()).thenReturn(true);
+
+        captureAndSpyNavigationProvider();
+
+        TabListEditorItemSelectionId id = TabListEditorItemSelectionId.createTabId(tabId);
+        Set<TabListEditorItemSelectionId> selection = new HashSet<>();
+        selection.add(id);
+
+        mNavigationProvider.onSelectionStateChange(selection);
+
+        verify(tab).addObserver(mTabObserverCaptor.capture());
+        TabObserver observer = mTabObserverCaptor.getValue();
+
+        var watcher =
+                HistogramWatcher.newBuilder()
+                        .expectAnyRecord("Android.TabItemPicker.OnDemandLoadDuration.Failure")
+                        .build();
+
+        observer.onPageLoadFailed(tab, 0);
+
+        watcher.assertExpected();
+        verify(tab).removeObserver(observer);
+        verify(mTabContentManager, never())
+                .cacheTabThumbnailWithCallback(any(), anyBoolean(), any());
         verify(mTabListEditorController).setThumbnailSpinnerVisibility(tab, false);
     }
 

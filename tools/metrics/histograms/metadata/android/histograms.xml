@@ -6085,6 +6085,33 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.TabItemPicker.OnDemandLoadDuration.{Result}"
+    units="ms" expires_after="2026-09-20">
+  <owner>ckitagawa@chromium.org</owner>
+  <owner>madhavpruthi@google.com</owner>
+  <summary>
+    Records the time taken to load a background tab on demand for the tab
+    picker. Recorded when the tab load finishes.
+  </summary>
+  <token key="Result">
+    <variant name="Abandoned" summary="Page load abandoned on destroy"/>
+    <variant name="Crash" summary="Page crashed"/>
+    <variant name="Destroyed" summary="Page was destroyed"/>
+    <variant name="Failure" summary="Page load failed"/>
+    <variant name="Success" summary="Page load succeeded"/>
+  </token>
+</histogram>
+
+<histogram name="Android.TabItemPicker.OnDemandThumbnailFetchDuration"
+    units="ms" expires_after="2026-09-20">
+  <owner>ckitagawa@chromium.org</owner>
+  <owner>madhavpruthi@google.com</owner>
+  <summary>
+    Records the time taken to fetch a thumbnail after an on-demand tab load
+    finishes. Recorded when the thumbnail is fetched.
+  </summary>
+</histogram>
+
 <histogram name="Android.TabItemPicker.SelectableTabs.Count" units="count"
     expires_after="2026-09-20">
   <owner>haileywang@google.com</owner>

@@ -7,10 +7,12 @@ package org.chromium.chrome.browser.chrome_item_picker;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.app.Activity;
+import android.os.SystemClock;
 import android.view.ViewGroup;
 
 import androidx.activity.ComponentActivity;
 import androidx.activity.OnBackPressedCallback;
+import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
@@ -60,10 +62,14 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
 import org.chromium.url.GURL;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
@@ -365,6 +371,23 @@ public class TabItemPickerCoordinator {
 
     public static class ItemPickerNavigationProvider
             implements TabListEditorCoordinator.NavigationProvider, ItemPickerSelectionHandler {
+
+        @IntDef({
+            LoadResult.SUCCESS,
+            LoadResult.FAILURE,
+            LoadResult.CRASH,
+            LoadResult.DESTROYED,
+            LoadResult.ABANDONED
+        })
+        @Retention(RetentionPolicy.SOURCE)
+        private @interface LoadResult {
+            int SUCCESS = 0;
+            int FAILURE = 1;
+            int CRASH = 2;
+            int DESTROYED = 3;
+            int ABANDONED = 4;
+        }
+
         private final SettableNonNullObservableSupplier<Boolean> mEnableDoneButtonSupplier =
                 ObservableSuppliers.createNonNull(false);
         private final Activity mActivity;
@@ -373,29 +396,29 @@ public class TabItemPickerCoordinator {
         private final TabContentManager mTabContentManager;
         private final Set<Integer> mCachedTabIds;
         private final Set<TabListEditorItemSelectionId> mInitialSelectedTabIds;
-        private final Set<Tab> mTabsBeingLoaded = new HashSet<>();
+        private final Map<Tab, Long> mLoadingTabsToStartTimes = new HashMap<>();
         private final TabObserver mLoadObserver =
                 new EmptyTabObserver() {
                     @Override
                     public void onPageLoadFinished(Tab tab, GURL url) {
                         // TODO(crbug.com/488046553): Consider adding a delay here for the page to
                         // load more completely.
-                        onTabLoadFinished(tab);
+                        onTabLoadFinished(tab, LoadResult.SUCCESS);
                     }
 
                     @Override
                     public void onPageLoadFailed(Tab tab, int errorCode) {
-                        onTabLoadFinished(tab);
+                        onTabLoadFinished(tab, LoadResult.FAILURE);
                     }
 
                     @Override
                     public void onCrash(Tab tab) {
-                        onTabLoadFinished(tab);
+                        onTabLoadFinished(tab, LoadResult.CRASH);
                     }
 
                     @Override
                     public void onDestroyed(Tab tab) {
-                        onTabLoadFinished(tab);
+                        onTabLoadFinished(tab, LoadResult.DESTROYED);
                     }
                 };
 
@@ -459,12 +482,12 @@ public class TabItemPickerCoordinator {
             if (!tab.isLoading()) return;
 
             // Avoid double-observing the same tab if it's already being loaded.
-            if (mTabsBeingLoaded.contains(tab)) return;
+            if (mLoadingTabsToStartTimes.containsKey(tab)) return;
 
             // Clear the thumbnail to avoid showing a stale thumbnail immediately after selection.
             mTabContentManager.removeTabThumbnail(tab.getId(), /* forceRemoval= */ true);
 
-            mTabsBeingLoaded.add(tab);
+            mLoadingTabsToStartTimes.put(tab, SystemClock.elapsedRealtime());
             tab.addObserver(mLoadObserver);
 
             // Show a spinner while the thumbnail is being fetched/generated.
@@ -474,17 +497,53 @@ public class TabItemPickerCoordinator {
             }
         }
 
-        private void onTabLoadFinished(Tab tab) {
+        private static String getLoadResultString(@LoadResult int result) {
+            switch (result) {
+                case LoadResult.SUCCESS:
+                    return "Success";
+                case LoadResult.FAILURE:
+                    return "Failure";
+                case LoadResult.CRASH:
+                    return "Crash";
+                case LoadResult.DESTROYED:
+                    return "Destroyed";
+                case LoadResult.ABANDONED:
+                    return "Abandoned";
+                default:
+                    return "Unknown";
+            }
+        }
+
+        private void onTabLoadFinished(Tab tab, @LoadResult int result) {
             if (mIsDestroyed) return;
 
             tab.removeObserver(mLoadObserver);
-            if (!mTabsBeingLoaded.remove(tab)) return;
+            long startTime = assumeNonNull(mLoadingTabsToStartTimes.remove(tab));
 
+            long duration = SystemClock.elapsedRealtime() - startTime;
+            String resultStr = getLoadResultString(result);
+            RecordHistogram.recordMediumTimesHistogram(
+                    "Android.TabItemPicker.OnDemandLoadDuration." + resultStr, duration);
+
+            if (result != LoadResult.SUCCESS) {
+                var controller = mControllerSupplier.get();
+                if (controller != null) {
+                    controller.setThumbnailSpinnerVisibility(tab, /* isVisible= */ false);
+                }
+                return;
+            }
+
+            long thumbnailStartTime = SystemClock.elapsedRealtime();
             mTabContentManager.cacheTabThumbnailWithCallback(
                     tab,
                     /* returnBitmap= */ false,
                     (unused) -> {
                         if (mIsDestroyed) return;
+
+                        long thumbnailDuration = SystemClock.elapsedRealtime() - thumbnailStartTime;
+                        RecordHistogram.recordMediumTimesHistogram(
+                                "Android.TabItemPicker.OnDemandThumbnailFetchDuration",
+                                thumbnailDuration);
 
                         var controller = mControllerSupplier.get();
                         if (controller != null) {
@@ -495,10 +554,16 @@ public class TabItemPickerCoordinator {
 
         /** Cleans up observers and state. */
         public void destroy() {
-            for (Tab tab : mTabsBeingLoaded) {
+            long currentTime = SystemClock.elapsedRealtime();
+            for (var entry : mLoadingTabsToStartTimes.entrySet()) {
+                Tab tab = entry.getKey();
                 if (tab != null) tab.removeObserver(mLoadObserver);
+
+                long duration = currentTime - entry.getValue();
+                RecordHistogram.recordMediumTimesHistogram(
+                        "Android.TabItemPicker.OnDemandLoadDuration.Abandoned", duration);
             }
-            mTabsBeingLoaded.clear();
+            mLoadingTabsToStartTimes.clear();
             if (mTabContentManager != null) {
                 mTabContentManager.destroy();
             }
