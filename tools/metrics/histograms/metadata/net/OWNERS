@@ -1,5 +1,10 @@
 per-file OWNERS=file://tools/metrics/histograms/metadata/METRIC_REVIEWER_OWNERS
 
+# Extending enums by adding new buckets is allowed with any net/OWNERS review,
+# but you should add a metrics reviewer if you are changing the semantics of
+# existing buckets.
+per-file enums.xml=file://net/OWNERS
+
 # Prefer the below owners for histograms in this directory (or
 # chromium-metrics-reviews@google.com as a fallback).
 csharrison@chromium.org
