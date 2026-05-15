@@ -141,11 +141,10 @@ export class CollapsibleCardElement extends SettingsViewMixin
         },
       },
 
-      showAccessibilityAnnotatorSettingsLink_: {
+      showPersonalContextSettingsLink_: {
         type: Boolean,
         value() {
-          return loadTimeData.getBoolean(
-              'showAccessibilityAnnotatorSettingsLink');
+          return loadTimeData.getBoolean('showPersonalContextSettingsLink');
         },
       },
     };
@@ -168,7 +167,7 @@ export class CollapsibleCardElement extends SettingsViewMixin
   declare private isUserEligibleForWalletablePassDetection_: boolean;
   declare private autofillAddOtherDatatypesPrefIsEnabled_: boolean;
   declare private autofillAiAvailableByDefault_: boolean;
-  declare private showAccessibilityAnnotatorSettingsLink_: boolean;
+  declare private showPersonalContextSettingsLink_: boolean;
 
   private entityInstancesChangedListener_: EntityInstancesChangedListener|null =
       null;
@@ -217,9 +216,9 @@ export class CollapsibleCardElement extends SettingsViewMixin
     this.entityDataManager_.toggleAutofillAiReauthRequirement();
   }
 
-  private onAccessibilityAnnotatorSettingsLinkClick_() {
+  private onPersonalContextSettingsLinkClick_() {
     OpenWindowProxyImpl.getInstance().openUrl(
-        loadTimeData.getString('accessibilityAnnotatorSettingsUrl'));
+        loadTimeData.getString('personalContextSettingsUrl'));
     MetricsBrowserProxyImpl.getInstance().recordAction(
         'Autofill.Settings.AccessibilityAnnotatorSettingsLinkRowClick');
   }

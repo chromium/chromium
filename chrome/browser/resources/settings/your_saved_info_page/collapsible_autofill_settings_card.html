@@ -21,12 +21,12 @@
   </div>
 </cr-expand-button>
 <cr-collapse id="expandedContent" opened="[[expanded_]]">
-  <template is="dom-if" if="[[showAccessibilityAnnotatorSettingsLink_]]"
+  <template is="dom-if" if="[[showPersonalContextSettingsLink_]]"
       restamp>
-    <cr-link-row id="accessibilityAnnotatorSettingsLink"
-        label="$i18n{accessibilityAnnotatorSettingsTitle}"
-        sub-label="$i18n{accessibilityAnnotatorSettingsDescription}"
-        on-click="onAccessibilityAnnotatorSettingsLinkClick_"
+    <cr-link-row id="personalContextSettingsLink"
+        label="$i18n{personalContextSettingsTitle}"
+        sub-label="$i18n{personalContextSettingsDescription}"
+        on-click="onPersonalContextSettingsLinkClick_"
         external>
     </cr-link-row>
   </template>

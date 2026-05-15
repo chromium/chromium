@@ -685,14 +685,14 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
   personal_context::PersonalContextEnablementService* enablement_service =
       PersonalContextEnablementServiceFactory::GetForProfile(profile);
   html_source->AddBoolean(
-      "showAccessibilityAnnotatorSettingsLink",
+      "showPersonalContextSettingsLink",
       enablement_service &&
           enablement_service->GetEnablementState() ==
               personal_context::PersonalContextEnablementState::kEnabled);
-  html_source->AddLocalizedString("accessibilityAnnotatorSettingsTitle",
+  html_source->AddLocalizedString("personalContextSettingsTitle",
                                   IDS_ACCESSIBILITY_ANNOTATOR_SETTINGS_TITLE);
   html_source->AddLocalizedString(
-      "accessibilityAnnotatorSettingsDescription",
+      "personalContextSettingsDescription",
       IDS_ACCESSIBILITY_ANNOTATOR_SETTINGS_DESCRIPTION_DESKTOP);
 
   html_source->AddString("webuiRefresh2026", base::FeatureList::IsEnabled(

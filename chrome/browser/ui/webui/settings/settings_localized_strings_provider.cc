@@ -1868,8 +1868,9 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
                           base::FeatureList::IsEnabled(
                               autofill::features::kAutofillAiReauthRequired));
 
+  // TODO(b/511147685): Rename URL constant.
   html_source->AddString(
-      "accessibilityAnnotatorSettingsUrl",
+      "personalContextSettingsUrl",
       accessibility_annotator::kAccessibilityAnnotatorSettingsURL);
 }
 
