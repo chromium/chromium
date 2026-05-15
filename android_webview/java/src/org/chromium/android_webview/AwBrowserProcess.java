@@ -785,14 +785,12 @@ public final class AwBrowserProcess {
     public static void doNetworkInitializations(Context applicationContext) {
         try (DualTraceEvent e =
                 DualTraceEvent.scoped("AwBrowserProcess.doNetworkInitializations")) {
-            boolean forceUpdateNetworkState =
-                    !AwFeatureMap.isEnabled(
-                            AwFeatures.WEBVIEW_USE_INITIAL_NETWORK_STATE_AT_STARTUP);
             if (applicationContext.checkSelfPermission(Manifest.permission.ACCESS_NETWORK_STATE)
                     == PackageManager.PERMISSION_GRANTED) {
                 NetworkChangeNotifier.init();
                 NetworkChangeNotifier.setAutoDetectConnectivityState(
-                        new AwNetworkChangeNotifierRegistrationPolicy(), forceUpdateNetworkState);
+                        new AwNetworkChangeNotifierRegistrationPolicy(),
+                        /* forceUpdateNetworkState= */ false);
             }
         }
     }

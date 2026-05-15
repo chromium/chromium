@@ -105,11 +105,6 @@ BASE_FEATURE(kWebViewInvokeZoomPickerOnGSU, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kWebViewSkipInterceptsForPrefetch,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Whether to use initial network state during initialization to speed up
-// startup.
-BASE_FEATURE(kWebViewUseInitialNetworkStateAtStartup,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // This enables reducing webview user-agent android version and device model.
 BASE_FEATURE(kWebViewReduceUAAndroidVersionDeviceModel,
              base::FEATURE_DISABLED_BY_DEFAULT);

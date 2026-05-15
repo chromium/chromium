@@ -40,7 +40,6 @@ BASE_DECLARE_FEATURE(kWebViewStartupTasksYieldToNative);
 BASE_DECLARE_FEATURE(kWebViewUnreducedProductVersion);
 BASE_DECLARE_FEATURE(kWebViewUseStartupTasksLogic);
 BASE_DECLARE_FEATURE(kWebViewUseStartupTasksLogicP2);
-BASE_DECLARE_FEATURE(kWebViewUseInitialNetworkStateAtStartup);
 BASE_DECLARE_FEATURE(kWebViewReduceUAAndroidVersionDeviceModel);
 BASE_DECLARE_FEATURE(kWebViewEnableCrash);
 BASE_DECLARE_FEATURE(kWebViewPrefetchAheadOfPrerender);
