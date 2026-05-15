@@ -48,6 +48,7 @@ missing,net/proxy_resolution/proxy_config_service_android.cc
 
 # Desktop platform specific annotations.
 missing,components/optimization_guide/core/model_execution/model_execution_fetcher_impl.cc
+missing,components/personal_context/core/personal_context_fetcher.cc
 
 # For prototyping and will be removed (either by adding a proper traffic
 # annotation or by removing the code). b/491080183

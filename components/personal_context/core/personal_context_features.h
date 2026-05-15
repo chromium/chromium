@@ -13,6 +13,9 @@ namespace personal_context::features {
 BASE_DECLARE_FEATURE(kPersonalContext);
 BASE_DECLARE_FEATURE_PARAM(std::string, kPersonalContextEligibleTiers);
 
+// The URL for the CMS server.
+BASE_DECLARE_FEATURE_PARAM(std::string, kContextMemoryFetchContextEndpointUrl);
+
 // TODO(crbug.com/403746095): Reuse this flag when the first_run logic is moved
 // into c/personal_context.
 BASE_DECLARE_FEATURE(kPersonalContextFirstRun);

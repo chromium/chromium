@@ -29,6 +29,7 @@ message FetchContextResponse {
 // Enum for features that are supported by the service.
 enum ContextMemoryFeature {
   CONTEXT_MEMORY_FEATURE_UNSPECIFIED = 0;
+  CONTEXT_MEMORY_FEATURE_AMBIENT_AUTOFILL = 1;
 }
 
 message Any {

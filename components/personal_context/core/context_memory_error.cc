@@ -11,6 +11,12 @@ namespace personal_context {
 ContextMemoryError::ContextMemoryError(ExecutionError error) : error_(error) {}
 
 // static
+ContextMemoryError ContextMemoryError::FromExecutionError(
+    ExecutionError error) {
+  return ContextMemoryError(error);
+}
+
+// static
 ContextMemoryError ContextMemoryError::FromHttpStatusCode(
     net::HttpStatusCode response_code) {
   switch (response_code) {
@@ -35,6 +41,7 @@ bool ContextMemoryError::transient() const {
     case ExecutionError::kInvalidRequest:
     case ExecutionError::kPermissionDenied:
     case ExecutionError::kNonRetryableError:
+    case ExecutionError::kCancelled:
       return false;
     case ExecutionError::kRequestThrottled:
     case ExecutionError::kGenericFailure:

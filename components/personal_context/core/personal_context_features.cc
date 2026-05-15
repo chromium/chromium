@@ -19,6 +19,13 @@ BASE_FEATURE_PARAM(std::string,
                    "personal_context_eligible_tiers",
                    "1,2");
 
+BASE_FEATURE_PARAM(
+    std::string,
+    kContextMemoryFetchContextEndpointUrl,
+    &kPersonalContext,
+    "context_memory_fetch_context_endpoint_url",
+    "https://contextmemoryservice-pa.googleapis.com/v1:fetchContext");
+
 // Controls whether the First Run and onboarding experience for Personal Context
 // is enabled. When disabled, the service remains in a "Not Eligible" state
 // because the required user acknowledgment or setup flow cannot be triggered.

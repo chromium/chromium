@@ -10,6 +10,8 @@ source_set("core") {
     "personal_context_enablement_service.h",
     "personal_context_enablement_service_impl.cc",
     "personal_context_enablement_service_impl.h",
+    "personal_context_fetcher.cc",
+    "personal_context_fetcher.h",
     "personal_context_service.h",
     "personal_context_service_impl.cc",
     "personal_context_service_impl.h",
@@ -65,12 +67,16 @@ source_set("test_support") {
 source_set("unit_tests") {
   testonly = true
 
-  sources = [ "personal_context_enablement_service_impl_unittest.cc" ]
+  sources = [
+    "personal_context_enablement_service_impl_unittest.cc",
+    "personal_context_fetcher_unittest.cc",
+  ]
 
   deps = [
     ":core",
     ":test_support",
     "//base",
+    "//base/test:test_proto",
     "//base/test:test_support",
     "//components/account_settings",
     "//components/account_settings:test_support",
@@ -78,6 +84,7 @@ source_set("unit_tests") {
     "//components/signin/public/identity_manager:test_support",
     "//components/subscription_eligibility",
     "//components/sync_preferences:test_support",
+    "//services/network:test_support",
     "//testing/gmock",
     "//testing/gtest",
   ]

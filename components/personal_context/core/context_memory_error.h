@@ -26,11 +26,15 @@ class ContextMemoryError {
     kRetryableError = 5,
     // Non-retryable error occurred in server.
     kNonRetryableError = 6,
-    kMaxValue = kNonRetryableError,
+    // The request was cancelled.
+    kCancelled = 7,
+    kMaxValue = kCancelled,
   };
 
   static ContextMemoryError FromHttpStatusCode(
       net::HttpStatusCode response_code);
+  static ContextMemoryError FromExecutionError(ExecutionError error);
+
   ExecutionError error() const;
   // Returns whether the error is transient and may succeed if the request was
   // retried.
