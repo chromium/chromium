@@ -4787,6 +4787,8 @@ crbug.com/328483408 external/wpt/css/css-break/table/table-fragmentation-003c-pr
 crbug.com/328483408 external/wpt/css/css-break/table/table-fragmentation-003d-print.html [ Failure ]
 crbug.com/1058792 external/wpt/css/css-break/transform-007.html [ Failure ]
 crbug.com/1224888 external/wpt/css/css-break/transform-009.html [ Failure ]
+crbug.com/513276592 external/wpt/css/css-multicol/multicol-span-all-button-002.html [ Failure ]
+crbug.com/513276592 external/wpt/css/css-multicol/multicol-span-all-button-003.html [ Failure ]
 crbug.com/636055 external/wpt/css/css-multicol/multicol-span-all-margin-nested-002.xht [ Failure ]
 crbug.com/964183 external/wpt/css/css-multicol/multicol-width-005.html [ Failure ]
 crbug.com/1191124 external/wpt/css/css-multicol/spanner-fragmentation-012.html [ Failure ]
