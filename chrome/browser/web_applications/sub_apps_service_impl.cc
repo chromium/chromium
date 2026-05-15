@@ -48,6 +48,7 @@
 #include "content/public/browser/isolated_context_util.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
+#include "mojo/public/cpp/bindings/message.h"
 #include "third_party/blink/public/mojom/subapps/sub_apps_service.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/message_center/public/cpp/notification.h"
@@ -70,10 +71,6 @@ using blink::mojom::SubAppsServiceRemoveResultPtr;
 using blink::mojom::SubAppsServiceResultCode;
 
 namespace web_app {
-
-// TODO(crbug.com/40924576): Replace registrar_unsafe with Locks
-// TODO (crbug.com/40924577): Move from //c/b/ui/web_applications to
-// //c/b/web_applications
 
 namespace {
 
@@ -197,15 +194,9 @@ bool IsInstalledNonChildApp(content::RenderFrameHost& render_frame_host) {
       .AppMatches(*app_id, !WebAppFilter::IsIsolatedSubApp());
 }
 
-// Verify that the calling app has the SubApps permissions policy set and that
-// it is an installed IWA that is not a sub app itself. This check is called
-// from `CreateIfAllowed` and from each of the APIs entry points to avoid a
-// potential race between the parent app calling an API while being uninstalled.
+// Verify that the calling app is an installed IWA that is not a sub app itself.
 bool CanAccessSubAppsApi(content::RenderFrameHost& render_frame_host) {
-  return render_frame_host.IsFeatureEnabled(
-             network::mojom::PermissionsPolicyFeature::kSubApps) &&
-         content::HasIsolatedContextCapability(&render_frame_host) &&
-         IsInstalledNonChildApp(render_frame_host);
+  return IsInstalledNonChildApp(render_frame_host);
 }
 
 bool ShouldSkipUserConfirmation(content::RenderFrameHost& frame) {
@@ -285,18 +276,13 @@ void SubAppsServiceImpl::CreateIfAllowed(
     return;
   }
 
-  // Bail if Web Apps aren't enabled on current profile.
-  if (!AreWebAppsEnabled(Profile::FromBrowserContext(
-          content::WebContents::FromRenderFrameHost(render_frame_host)
-              ->GetBrowserContext()))) {
-    receiver.reset();
+  if (!content::HasIsolatedContextCapability(render_frame_host)) {
+    mojo::ReportBadMessage("No isolated context capability");
     return;
   }
-
-  // Bail if the calling app is not an Isolated Web App or is not installed or
-  // is a sub-app itself.
-  if (!CanAccessSubAppsApi(*render_frame_host)) {
-    receiver.reset();
+  if (!render_frame_host->IsFeatureEnabled(
+          network::mojom::PermissionsPolicyFeature::kSubApps)) {
+    mojo::ReportBadMessage("No subApps permission policy provided");
     return;
   }
 
@@ -308,15 +294,6 @@ void SubAppsServiceImpl::CreateIfAllowed(
 void SubAppsServiceImpl::Add(
     std::vector<SubAppsServiceAddParametersPtr> sub_apps_to_add,
     AddCallback result_callback) {
-  WebAppProvider* provider = GetWebAppProvider(render_frame_host());
-  if (!provider->on_registry_ready().is_signaled()) {
-    provider->on_registry_ready().Post(
-        FROM_HERE,
-        base::BindOnce(&SubAppsServiceImpl::Add, weak_ptr_factory_.GetWeakPtr(),
-                       std::move(sub_apps_to_add), std::move(result_callback)));
-    return;
-  }
-
   if (!CanAccessSubAppsApi(render_frame_host())) {
     ReturnAllAddsAsFailed(sub_apps_to_add, std::move(result_callback));
     return;
@@ -345,6 +322,7 @@ void SubAppsServiceImpl::Add(
   AddCallInfo& add_call_info = add_call_info_[add_call_id];
   add_call_info.mojo_callback = std::move(result_callback);
 
+  WebAppProvider* provider = GetWebAppProvider(render_frame_host());
   auto parent_manifest_id = provider->registrar_unsafe()
                                 .GetAppById(*GetAppId(render_frame_host()))
                                 ->manifest_id();
@@ -529,15 +507,6 @@ void SubAppsServiceImpl::FinishAddCall(
 }
 
 void SubAppsServiceImpl::List(ListCallback result_callback) {
-  WebAppProvider* provider = GetWebAppProvider(render_frame_host());
-  if (!provider->on_registry_ready().is_signaled()) {
-    provider->on_registry_ready().Post(
-        FROM_HERE, base::BindOnce(&SubAppsServiceImpl::List,
-                                  weak_ptr_factory_.GetWeakPtr(),
-                                  std::move(result_callback)));
-    return;
-  }
-
   if (!CanAccessSubAppsApi(render_frame_host())) {
     return std::move(result_callback)
         .Run(SubAppsServiceListResult::New(
@@ -545,6 +514,7 @@ void SubAppsServiceImpl::List(ListCallback result_callback) {
             std::vector<SubAppsServiceListResultEntryPtr>()));
   }
 
+  WebAppProvider* provider = GetWebAppProvider(render_frame_host());
   const WebAppRegistrar& registrar = provider->registrar_unsafe();
   std::vector<SubAppsServiceListResultEntryPtr> sub_apps_list;
   for (const webapps::AppId& sub_app_id :
@@ -566,16 +536,6 @@ void SubAppsServiceImpl::List(ListCallback result_callback) {
 void SubAppsServiceImpl::Remove(
     const std::vector<std::string>& manifest_id_paths,
     RemoveCallback result_callback) {
-  WebAppProvider* provider = GetWebAppProvider(render_frame_host());
-  if (!provider->on_registry_ready().is_signaled()) {
-    provider->on_registry_ready().Post(
-        FROM_HERE,
-        base::BindOnce(&SubAppsServiceImpl::Remove,
-                       weak_ptr_factory_.GetWeakPtr(), manifest_id_paths,
-                       std::move(result_callback)));
-    return;
-  }
-
   if (!CanAccessSubAppsApi(render_frame_host())) {
     std::vector<SubAppsServiceRemoveResultPtr> result;
     for (const std::string& manifest_id_path : manifest_id_paths) {
@@ -617,12 +577,12 @@ void SubAppsServiceImpl::RemoveSubApp(
       // Compromised renderer, bail immediately (this call deletes *this).
       &SubAppsServiceImpl::ReportBadMessageAndDeleteThis, this);
 
-  WebAppProvider* provider = GetWebAppProvider(render_frame_host());
-
   const webapps::AppId* parent_app_id = GetAppId(render_frame_host());
   if (!parent_app_id) {
     return ReportBadMessageAndDeleteThis("Parent app id is null");
   }
+
+  WebAppProvider* provider = GetWebAppProvider(render_frame_host());
 
   std::optional<webapps::ManifestId> parent_manifest_id =
       provider->registrar_unsafe().GetAppManifestId(*parent_app_id);

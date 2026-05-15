@@ -22,21 +22,19 @@
 #include "components/webapps/isolated_web_apps/test_support/signing_keys.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "mojo/public/cpp/test_support/fake_message_dispatch_context.h"
 #include "third_party/blink/public/common/features.h"
 
 using InstallResult =
     base::expected<web_app::InstallIsolatedWebAppCommandSuccess,
                    web_app::InstallIsolatedWebAppCommandError>;
+using blink::mojom::SubAppsService;
 
 namespace web_app {
 
 class SubAppsPermissionsPolicyBrowserTest
     : public IsolatedWebAppBrowserTestHarness {
   base::ScopedTempDir scoped_temp_dir_;
-
- protected:
-  base::test::ScopedFeatureList features_{blink::features::kSubApps};
-
  public:
   webapps::AppId parent_app_id_;
 
@@ -73,6 +71,17 @@ class SubAppsPermissionsPolicyBrowserTest
                              "untranslated_name", &WebApp::untranslated_name,
                              testing::Eq("Parent apps test app"))));
   }
+
+  void BindRemote(content::RenderFrameHost* frame) {
+    // Any navigation causes the remote to be destroyed (since the
+    // render_frame_host that owns it gets destroyed.)
+    SubAppsServiceImpl::CreateIfAllowed(frame,
+                                        remote_.BindNewPipeAndPassReceiver());
+  }
+
+ protected:
+  base::test::ScopedFeatureList features_{blink::features::kSubApps};
+  mojo::Remote<SubAppsService> remote_;
 };
 
 IN_PROC_BROWSER_TEST_F(SubAppsPermissionsPolicyBrowserTest,
@@ -90,6 +99,20 @@ IN_PROC_BROWSER_TEST_F(SubAppsPermissionsPolicyBrowserTest,
 
   EXPECT_THAT(provider().registrar_unsafe().GetAllSubAppIds(parent_app_id_),
               testing::IsEmpty());
+}
+
+IN_PROC_BROWSER_TEST_F(SubAppsPermissionsPolicyBrowserTest,
+                       MojoBadMessageIfPermissionPolicyIsMissedBypassingJS) {
+  ASSERT_NO_FATAL_FAILURE(InstallIwaApp());
+  content::RenderFrameHost* iwa_frame = OpenApp(parent_app_id_);
+
+  mojo::FakeMessageDispatchContext fake_dispatch_context;
+  mojo::test::BadMessageObserver bad_message_observer;
+
+  BindRemote(iwa_frame);
+
+  EXPECT_THAT(bad_message_observer.WaitForBadMessage(),
+              "No subApps permission policy provided");
 }
 
 }  // namespace web_app

@@ -47,6 +47,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "mojo/public/cpp/test_support/fake_message_dispatch_context.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
 #include "url/gurl.h"
@@ -382,7 +383,7 @@ IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest, AddSingle) {
   }
 }
 
-// Verify that Add works if PWA is launched as standalone window.
+// Verify that Add works if IWA is launched as standalone window.
 IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest, AddStandaloneWindow) {
   content::RenderFrameHost* iwa_frame = InstallAndOpenParentIwaApp();
   BindRemote(iwa_frame);
@@ -488,28 +489,18 @@ IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest,
                        AddFailNotInParentAppContext) {
   IsolatedWebAppUrlInfo parent_app = InstallIwaParentApp();
 
-  auto new_contents = content::WebContents::Create(
-      content::WebContents::CreateParams(profile()));
-  auto* frame = new_contents->GetPrimaryMainFrame();
-  remote_.reset();
+  // Navigate to a non-isolated page.
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GetURLFromPath("/title1.html")));
+  auto* frame = render_frame_host();
+
+  mojo::FakeMessageDispatchContext fake_dispatch_context;
+  mojo::test::BadMessageObserver bad_message_observer;
+
   BindRemote(frame);
-  browser()->tab_strip_model()->AppendWebContents(std::move(new_contents),
-                                                  /*foreground=*/true);
 
-  base::test::TestFuture<void> disconnect_handler_future;
-  remote_.set_disconnect_handler(disconnect_handler_future.GetCallback());
-
-  std::vector<SubAppsServiceAddParametersPtr> sub_apps_mojo;
-  sub_apps_mojo.emplace_back(
-      SubAppsServiceAddParameters::New(kSubAppPath, kSubAppPath));
-  remote_->Add(std::move(sub_apps_mojo),
-               base::BindLambdaForTesting(
-                   [](SubAppsServiceImpl::AddResultsMojo results) {
-                     ADD_FAILURE() << "Callback unexpectedly invoked.";
-                   }));
-
-  ASSERT_TRUE(disconnect_handler_future.Wait())
-      << "Disconnect handler not invoked.";
+  EXPECT_THAT(bad_message_observer.WaitForBadMessage(),
+              "No isolated context capability");
 }
 
 // Verify that Add call rejects a sub-app with the wrong specified app_id.
@@ -591,51 +582,32 @@ IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest, AddDoesntForceReinstall) {
 }
 
 // Add call should fail if calling app is already a sub app.
-// TODO(crbug.com/422710197): registrar.IsIsolated() must be true for subapps
-// of IWAs, otherwise the navigation to isolated-app:// will be aborted.
-IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest,
-                       DISABLED_AddFailAppIsSubApp) {
+IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest, SubAppParentIsIwaParent) {
+  // Install and open IWA (parent)
   content::RenderFrameHost* iwa_frame = InstallAndOpenParentIwaApp();
-  auto* original_provider = WebAppProvider::GetForTest(profile());
-  BindRemote(iwa_frame);
 
+  // Install sub_app_1
+  BindRemote(iwa_frame);
   ExpectCallAdd({{webapps::ManifestId(GetURLFromPath(kSubAppPath)),
                   SubAppsServiceResultCode::kSuccess}},
                 {{kSubAppPath, kSubAppPath}});
-  EXPECT_EQ(1ul, GetAllSubAppIds(parent_app_id_).size());
 
-  CloseAllBrowsers();
+  auto sub_apps = GetAllSubAppIds(parent_app_id_);
+  ASSERT_EQ(1ul, sub_apps.size());
+  webapps::AppId sub_app_1_id = sub_apps[0];
 
-  auto sub_app_id = GetAllSubAppIds(parent_app_id_)[0];
-  EXPECT_EQ(0ul, GetAllSubAppIds(sub_app_id).size());
-  content::RenderFrameHost* sub_app_iwa_frame = OpenApp(sub_app_id);
+  // Inside of frame sub_app_1, bind remote and execute install of a new
+  // sub_app_2 via Mojo.
+  content::RenderFrameHost* sub_app_1_frame = OpenApp(sub_app_1_id);
   remote_.reset();
-  BindRemote(sub_app_iwa_frame);
+  BindRemote(sub_app_1_frame);
+  ExpectCallAdd({{webapps::ManifestId(GetURLFromPath(kSubAppPath2)),
+                  SubAppsServiceResultCode::kFailure}},
+                {{kSubAppPath2, kSubAppPath2}});
 
-  base::test::TestFuture<void> disconnect_handler_future;
-  remote_.set_disconnect_handler(disconnect_handler_future.GetCallback());
-
-  std::vector<SubAppsServiceAddParametersPtr> sub_apps_mojo;
-  sub_apps_mojo.emplace_back(
-      SubAppsServiceAddParameters::New(kSubAppPath2, kSubAppPath2));
-  remote_->Add(std::move(sub_apps_mojo),
-               base::BindLambdaForTesting(
-                   [](SubAppsServiceImpl::AddResultsMojo results) {
-                     ADD_FAILURE() << "Callback unexpectedly invoked.";
-                   }));
-
-  ASSERT_TRUE(disconnect_handler_future.Wait())
-      << "Disconnect handler not invoked.";
-
-  // After the browser crashes, the profile is invalid and the call to get the
-  // provider fails. We can reuse the provider created at the beginning of the
-  // test to verify the status of installed subapps.
-  EXPECT_EQ(1ul, original_provider->registrar_unsafe()
-                     .GetAllSubAppIds(parent_app_id_)
-                     .size());
-  EXPECT_EQ(
-      0ul,
-      original_provider->registrar_unsafe().GetAllSubAppIds(sub_app_id).size());
+  // Assert that there is only 1 sub app.
+  auto all_sub_apps = GetAllSubAppIds(parent_app_id_);
+  EXPECT_EQ(1ul, all_sub_apps.size());
 }
 
 /******** Tests for the Add API call - adding multiple/zero sub-apps. ********/
