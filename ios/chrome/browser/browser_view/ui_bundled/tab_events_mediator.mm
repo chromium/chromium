@@ -103,11 +103,6 @@
 
 - (void)webState:(web::WebState*)webState didLoadPageWithSuccess:(BOOL)success {
   web::WebState* currentWebState = _webStateList->GetActiveWebState();
-  // Ignore PageLoaded events for background tabs. Only the active tab should
-  // manipulate first responder status.
-  if (webState != currentWebState) {
-    return;
-  }
 
   // If there is no first responder, try to make the NTP first responder to have
   // it answer keyboard commands (e.g. space bar to scroll). This is too late to
@@ -116,7 +111,7 @@
   // Thus, Webview will also become first responder in [BrowserViewController
   // viewDidAppear:].
   if (!GetFirstResponder() && currentWebState) {
-    if (IsVisibleURLNewTabPage(webState)) {
+    if (IsVisibleURLNewTabPage(currentWebState)) {
       // TODO(crbug.com/40233361): Stop lazy loading in NTPCoordinator and
       // remove this dependency.
       UIViewController* viewController = _ntpCoordinator.viewController;
