@@ -13,6 +13,8 @@
 
 #include "base/files/file_path.h"
 #include "base/sequence_checker.h"
+#include "base/threading/sequence_bound.h"
+#include "base/types/pass_key.h"
 #include "components/private_verification_tokens/common/private_verification_tokens_public_key.h"
 #include "components/private_verification_tokens/common/private_verification_tokens_token.h"
 #include "sql/database.h"
@@ -31,9 +33,8 @@ struct TokenWithId {
   PrivateVerificationTokensToken token;
 };
 
-// Implements PVT database operations. Database object should be created
-// off-main thread in a sequenced task runner. Constructor detaches the object
-// from the sequence it is created. All functions verify they are executed in
+// Implements PVT database operations. Constructor detaches the object
+// from the sequence it is created on. All functions verify they are executed in
 // the correct sequence using checks. All DB operation functions (private
 // functions of the class) use exclusive locks to access the sql::Database
 // object `database_`. They are executed once when initializing the
@@ -43,6 +44,23 @@ class PrivateVerificationTokensDatabase {
   // Check path and create a database object. It will return nullptr if the
   // path_to_database is empty.
   static std::unique_ptr<PrivateVerificationTokensDatabase> Create(
+      base::FilePath path_to_database);
+
+  // Creates a SequenceBound instance of this class. All database operations,
+  // including file creation and schema initialization, are performed lazily
+  // on the first operation called on the returned object.
+  static base::SequenceBound<PrivateVerificationTokensDatabase>
+  CreateSequenceBound(scoped_refptr<base::SequencedTaskRunner> task_runner,
+                      base::FilePath path_to_database);
+
+  // Detaches the object from the sequence it is created on. This allows moving
+  // this class's object to sequences other than the one on which it was
+  // created. The constructor is public only to allow base::SequenceBound (or
+  // std::make_unique in Create) to call it, but is protected from general use
+  // by the PassKey.
+  explicit PrivateVerificationTokensDatabase(
+      base::PassKey<PrivateVerificationTokensDatabase>,
+      std::unique_ptr<sql::Database> database,
       base::FilePath path_to_database);
   PrivateVerificationTokensDatabase(const PrivateVerificationTokensDatabase&) =
       delete;
@@ -87,14 +105,11 @@ class PrivateVerificationTokensDatabase {
   const base::FilePath& PathToDatabase() const;
 
  private:
-  // Detaches the object from the sequence it is created. This allows moving the
-  // PVTDatabase object to sequences other than the one it is created.
-  explicit PrivateVerificationTokensDatabase(
-      std::unique_ptr<sql::Database> database,
-      base::FilePath path_to_database);
-
   bool EnsureDBInitialized() VALID_CONTEXT_REQUIRED(sequence_checker_);
   bool InitializeDB() VALID_CONTEXT_REQUIRED(sequence_checker_);
+
+  // Creates a new sql::Database object with standard options.
+  static std::unique_ptr<sql::Database> CreateSqlDatabase();
   bool InitializeSchema(bool is_retry)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
   bool CreateSchema() VALID_CONTEXT_REQUIRED(sequence_checker_);

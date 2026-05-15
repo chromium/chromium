@@ -4,6 +4,7 @@
 
 #include "components/private_verification_tokens/common/private_verification_tokens_database.h"
 
+#include <memory>
 #include <string>
 
 #include "base/files/file_util.h"
@@ -11,6 +12,8 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/threading/sequence_bound.h"
+#include "base/types/pass_key.h"
 #include "components/private_verification_tokens/common/private_verification_tokens_token.h"
 #include "sql/database.h"
 #include "sql/error_delegate_util.h"
@@ -96,18 +99,38 @@ TokenWithId::TokenWithId(TokenWithId&&) = default;
 TokenWithId& TokenWithId::operator=(TokenWithId&&) = default;
 TokenWithId::~TokenWithId() = default;
 
+// static
+std::unique_ptr<sql::Database>
+PrivateVerificationTokensDatabase::CreateSqlDatabase() {
+  return std::make_unique<sql::Database>(sql::DatabaseOptions{},
+                                         sql::Database::Tag(kDatabaseTag));
+}
+
 std::unique_ptr<PrivateVerificationTokensDatabase>
 PrivateVerificationTokensDatabase::Create(base::FilePath path_to_database) {
   if (path_to_database.empty()) {
     return nullptr;
   }
-  auto database = std::make_unique<sql::Database>(
-      sql::DatabaseOptions{}, sql::Database::Tag(kDatabaseTag));
-  return base::WrapUnique(new PrivateVerificationTokensDatabase(
-      std::move(database), std::move(path_to_database)));
+  return std::make_unique<PrivateVerificationTokensDatabase>(
+      base::PassKey<PrivateVerificationTokensDatabase>(), CreateSqlDatabase(),
+      std::move(path_to_database));
+}
+
+// static
+base::SequenceBound<PrivateVerificationTokensDatabase>
+PrivateVerificationTokensDatabase::CreateSequenceBound(
+    scoped_refptr<base::SequencedTaskRunner> task_runner,
+    base::FilePath path_to_database) {
+  if (path_to_database.empty()) {
+    return {};
+  }
+  return base::SequenceBound<PrivateVerificationTokensDatabase>(
+      task_runner, base::PassKey<PrivateVerificationTokensDatabase>(),
+      CreateSqlDatabase(), std::move(path_to_database));
 }
 
 PrivateVerificationTokensDatabase::PrivateVerificationTokensDatabase(
+    base::PassKey<PrivateVerificationTokensDatabase>,
     std::unique_ptr<sql::Database> database,
     base::FilePath path_to_database)
     : database_(std::move(database)),

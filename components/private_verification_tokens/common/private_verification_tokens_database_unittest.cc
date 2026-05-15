@@ -13,6 +13,7 @@
 #include "base/path_service.h"
 #include "base/test/gtest_util.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "build/build_config.h"
 #include "sql/database.h"
 #include "sql/meta_table.h"
@@ -65,6 +66,7 @@ class PrivateVerificationTokensDatabaseTest : public testing::Test {
 
   void TearDown() override {
     pvt_database_.reset();
+    WaitForAllTasksPosted();
     EXPECT_TRUE(temp_dir_.Delete());
   }
 
@@ -107,6 +109,15 @@ class PrivateVerificationTokensDatabaseTest : public testing::Test {
     ASSERT_NE(pvt_database_, nullptr);
   }
 
+  // Flushes the main thread task runner by posting a task and waiting for its
+  // execution, guaranteeing that all previously posted tasks have run.
+  void WaitForAllTasksPosted() {
+    base::test::TestFuture<void> cleanup_future;
+    task_environment_.GetMainThreadTaskRunner()->PostTask(
+        FROM_HERE, cleanup_future.GetCallback());
+    EXPECT_TRUE(cleanup_future.Wait());
+  }
+
  protected:
   base::test::SingleThreadTaskEnvironment task_environment_;
   base::ScopedTempDir temp_dir_;
@@ -133,6 +144,50 @@ TEST_F(PrivateVerificationTokensDatabaseTest, Create_Unused_NoFileCreated) {
   CreateDatabase(db_path_);
   pvt_database_.reset();
   EXPECT_FALSE(base::PathExists(db_path_));
+}
+
+TEST_F(PrivateVerificationTokensDatabaseTest,
+       CreateSequenceBound_ValidPath_Success) {
+  auto maybe_database = PrivateVerificationTokensDatabase::CreateSequenceBound(
+      task_environment_.GetMainThreadTaskRunner(), db_path_);
+  EXPECT_FALSE(maybe_database.is_null());
+}
+
+TEST_F(PrivateVerificationTokensDatabaseTest,
+       CreateSequenceBound_EmptyPath_Failure) {
+  const base::FilePath database_path;
+  ASSERT_TRUE(database_path.empty());
+  auto maybe_database = PrivateVerificationTokensDatabase::CreateSequenceBound(
+      task_environment_.GetMainThreadTaskRunner(), database_path);
+  EXPECT_TRUE(maybe_database.is_null());
+}
+
+TEST_F(PrivateVerificationTokensDatabaseTest,
+       CreateSequenceBound_Unused_NoFileCreated) {
+  auto maybe_database = PrivateVerificationTokensDatabase::CreateSequenceBound(
+      task_environment_.GetMainThreadTaskRunner(), db_path_);
+  ASSERT_FALSE(maybe_database.is_null());
+
+  maybe_database.Reset();
+  WaitForAllTasksPosted();
+  EXPECT_FALSE(base::PathExists(db_path_));
+}
+
+TEST_F(PrivateVerificationTokensDatabaseTest,
+       CreateSequenceBound_Used_FileCreated) {
+  auto maybe_database = PrivateVerificationTokensDatabase::CreateSequenceBound(
+      task_environment_.GetMainThreadTaskRunner(), db_path_);
+  ASSERT_FALSE(maybe_database.is_null());
+
+  EXPECT_FALSE(base::PathExists(db_path_));
+
+  base::test::TestFuture<bool> future;
+  maybe_database.AsyncCall(&PrivateVerificationTokensDatabase::StoreKeys)
+      .WithArgs(std::vector<PrivateVerificationTokensPublicKey>{})
+      .Then(future.GetCallback());
+
+  EXPECT_TRUE(future.Get());
+  EXPECT_TRUE(base::PathExists(db_path_));
 }
 
 TEST_F(PrivateVerificationTokensDatabaseTest,
