@@ -178,6 +178,12 @@ class CONTENT_EXPORT WebBluetoothServiceImpl
                            EmulatedAdapterRemovalRestoresOriginalAdapter);
   FRIEND_TEST_ALL_PREFIXES(WebBluetoothServiceImplTest,
                            ServiceDestroyedDuringAdapterAcquisition);
+  FRIEND_TEST_ALL_PREFIXES(
+      WebBluetoothServiceImplTest,
+      RemoteDescriptorReadValue_ParentCharacteristicBlocklisted);
+  FRIEND_TEST_ALL_PREFIXES(
+      WebBluetoothServiceImplTest,
+      RemoteDescriptorWriteValue_ParentCharacteristicBlocklisted);
 
 #if PAIR_BLUETOOTH_ON_DEMAND()
   FRIEND_TEST_ALL_PREFIXES(WebBluetoothServiceImplTest,

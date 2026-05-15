@@ -1383,7 +1383,9 @@ void WebBluetoothServiceImpl::RemoteDescriptorReadValue(
   }
 
   if (BluetoothBlocklist::Get().IsExcludedFromReads(
-          query_result.descriptor->GetUUID())) {
+          query_result.descriptor->GetUUID()) ||
+      BluetoothBlocklist::Get().IsExcludedFromReads(
+          query_result.characteristic->GetUUID())) {
     std::move(callback).Run(blink::mojom::WebBluetoothResult::BLOCKLISTED_READ,
                             /*value=*/{});
     return;
@@ -1423,7 +1425,9 @@ void WebBluetoothServiceImpl::RemoteDescriptorWriteValue(
   }
 
   if (BluetoothBlocklist::Get().IsExcludedFromWrites(
-          query_result.descriptor->GetUUID())) {
+          query_result.descriptor->GetUUID()) ||
+      BluetoothBlocklist::Get().IsExcludedFromWrites(
+          query_result.characteristic->GetUUID())) {
     std::move(callback).Run(
         blink::mojom::WebBluetoothResult::BLOCKLISTED_WRITE);
     return;
