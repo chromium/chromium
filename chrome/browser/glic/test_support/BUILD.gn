@@ -8,6 +8,8 @@ import("//ui/views/features.gni")
 source_set("test_support") {
   testonly = true
   sources = [
+    "fake_contextual_cueing_service.cc",
+    "fake_contextual_cueing_service.h",
     "glic_browser_test.h",
     "glic_histogram_tester.h",
     "glic_test_environment.cc",
