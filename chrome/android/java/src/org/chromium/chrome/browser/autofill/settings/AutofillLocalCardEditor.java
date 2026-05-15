@@ -48,6 +48,7 @@ import org.chromium.chrome.browser.settings.SettingsActivity;
 import org.chromium.components.autofill.AutofillProfile;
 import org.chromium.components.browser_ui.settings.SettingsFragment;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
+import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.accessibility.AccessibilityState;
 import org.chromium.ui.text.EmptyTextWatcher;
 
@@ -151,6 +152,14 @@ public class AutofillLocalCardEditor extends AutofillCreditCardEditor
                         if (mNumberLabel.getError() != null) {
                             validateCardNumberAndUpdateError(removeSpaces(s.toString()));
                         }
+                    }
+                });
+        // Handles the issue of keyboard not appearing with #settings-single-activity flag.
+        // See crbug.com/505762141
+        mNumberText.setOnFocusChangeListener(
+                (view, hasFocus) -> {
+                    if (hasFocus) {
+                        KeyboardVisibilityDelegate.getInstance().showKeyboard(mNumberText);
                     }
                 });
 
