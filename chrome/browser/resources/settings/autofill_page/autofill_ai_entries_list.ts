@@ -27,6 +27,7 @@ import '../internal/icons.html.js';
 
 import type {SyncStatus} from '/shared/settings/people_page/sync_browser_proxy.js';
 import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
+import {CrSettingsPrefs} from '/shared/settings/prefs/prefs_types.js';
 import {AnchorAlignment} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import type {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import type {CrLazyRenderElement} from 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
@@ -466,6 +467,7 @@ export class SettingsAutofillAiEntriesListElement extends
   }
 
   private async updateOptInStatus_(): Promise<void> {
+    await CrSettingsPrefs.initialized;
     const addressPref = this.getPref<boolean>('autofill.profile_enabled');
     const autofillAiPref = this.getPref<ModelExecutionEnterprisePolicyValue>(
         AiEnterpriseFeaturePrefName.AUTOFILL_AI);

@@ -26,13 +26,11 @@ suite('AutofillAiEntriesListUiReflectsEligibilityStatus', function() {
   let entityDataManager: TestEntityDataManagerProxy;
   let settingsPrefs: SettingsPrefsElement;
 
-  suiteSetup(function() {
-    settingsPrefs = document.createElement('settings-prefs');
-    return CrSettingsPrefs.initialized;
-  });
-
-  setup(function() {
+  setup(async function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
+
+    settingsPrefs = document.createElement('settings-prefs');
+    await CrSettingsPrefs.initialized;
 
     // Ensure clean state for prefs.
     settingsPrefs.set('prefs.autofill.profile_enabled.value', true);
@@ -373,13 +371,11 @@ suite('AutofillAiEntriesListUiTest', function() {
   let testEntityTypes: chrome.autofillPrivate.EntityType[];
   let settingsPrefs: SettingsPrefsElement;
 
-  suiteSetup(function() {
-    settingsPrefs = document.createElement('settings-prefs');
-    return CrSettingsPrefs.initialized;
-  });
-
-  setup(function() {
+  setup(async function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
+
+    settingsPrefs = document.createElement('settings-prefs');
+    await CrSettingsPrefs.initialized;
     loadTimeData.overrideValues({
       userEligibleForAutofillAi: true,
       enableAutofillAiWalletPrivatePasses: true,
@@ -935,13 +931,11 @@ suite('AutofillAiEntriesListUserActionsTest', function() {
   let testEntityTypes: chrome.autofillPrivate.EntityType[];
   let settingsPrefs: SettingsPrefsElement;
 
-  suiteSetup(function() {
-    settingsPrefs = document.createElement('settings-prefs');
-    return CrSettingsPrefs.initialized;
-  });
-
-  setup(function() {
+  setup(async function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
+
+    settingsPrefs = document.createElement('settings-prefs');
+    await CrSettingsPrefs.initialized;
     loadTimeData.overrideValues({
       userEligibleForAutofillAi: true,
     });
@@ -1112,13 +1106,11 @@ suite('AutofillAiEntriesListLongLabelsUiTest', function() {
   let entriesList: SettingsAutofillAiEntriesListElement;
   let settingsPrefs: SettingsPrefsElement;
 
-  suiteSetup(function() {
-    settingsPrefs = document.createElement('settings-prefs');
-    return CrSettingsPrefs.initialized;
-  });
-
   setup(async function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
+
+    settingsPrefs = document.createElement('settings-prefs');
+    await CrSettingsPrefs.initialized;
     const entityDataManager = new TestEntityDataManagerProxy();
     EntityDataManagerProxyImpl.setInstance(entityDataManager);
 
