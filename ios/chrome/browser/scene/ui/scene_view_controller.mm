@@ -770,6 +770,7 @@ constexpr NSTimeInterval kIPHTransitionDelay = 0.5;
   }
 
   __weak __typeof(self) weakSelf = self;
+  __block BubbleViewControllerPresenter* presenter;
   CallbackWithIPHDismissalReasonType callback =
       ^(IPHDismissalReasonType reason) {
         [weakSelf.appBarHandler hideIPHBackground];
@@ -783,6 +784,7 @@ constexpr NSTimeInterval kIPHTransitionDelay = 0.5;
         } else {
           [weakSelf.mutator newIAPromoIPHDismissed];
         }
+        presenter = nil;
       };
 
   NSString* title = l10n_util::GetNSString(IDS_IOS_NEW_IA_PROMO_IPH_TITLE);
@@ -791,16 +793,15 @@ constexpr NSTimeInterval kIPHTransitionDelay = 0.5;
   BubbleViewType bubbleType =
       geminiEligible ? BubbleViewTypeRichWithNext : BubbleViewTypeRich;
 
-  BubbleViewControllerPresenter* presenter =
-      [[BubbleViewControllerPresenter alloc]
-                   initWithText:subtitle
-                          title:title
-                 arrowDirection:arrowDirection
-                      alignment:BubbleAlignmentCenter
-                     bubbleType:bubbleType
-                pageControlPage:BubblePageControlPageNone
-          customNextButtonTitle:l10n_util::GetNSString(IDS_CONTINUE)
-              dismissalCallback:callback];
+  presenter = [[BubbleViewControllerPresenter alloc]
+           initWithText:subtitle
+                  title:title
+         arrowDirection:arrowDirection
+              alignment:BubbleAlignmentCenter
+             bubbleType:bubbleType
+        pageControlPage:BubblePageControlPageNone
+  customNextButtonTitle:l10n_util::GetNSString(IDS_CONTINUE)
+      dismissalCallback:callback];
   presenter.dismissalTimerDisabled = geminiEligible;
 
   UIView* anchorView =
@@ -829,10 +830,12 @@ constexpr NSTimeInterval kIPHTransitionDelay = 0.5;
   }
 
   __weak __typeof(self) weakSelf = self;
+  __block BubbleViewControllerPresenter* presenter;
   CallbackWithIPHDismissalReasonType callback =
       ^(IPHDismissalReasonType reason) {
         [weakSelf.appBarHandler hideIPHBackground];
         [weakSelf.mutator newIAPromoIPHDismissed];
+        presenter = nil;
       };
 
   NSString* title =
@@ -840,16 +843,15 @@ constexpr NSTimeInterval kIPHTransitionDelay = 0.5;
   NSString* subtitle =
       l10n_util::GetNSString(IDS_IOS_NEW_IA_PROMO_IPH_GEMINI_TEXT);
 
-  BubbleViewControllerPresenter* presenter =
-      [[BubbleViewControllerPresenter alloc]
-                   initWithText:subtitle
-                          title:title
-                 arrowDirection:arrowDirection
-                      alignment:BubbleAlignmentTopOrLeading
-                     bubbleType:BubbleViewTypeRichWithNext
-                pageControlPage:BubblePageControlPageNone
-          customNextButtonTitle:l10n_util::GetNSString(IDS_DONE)
-              dismissalCallback:callback];
+  presenter = [[BubbleViewControllerPresenter alloc]
+               initWithText:subtitle
+                      title:title
+             arrowDirection:arrowDirection
+                  alignment:BubbleAlignmentTopOrLeading
+                 bubbleType:BubbleViewTypeRichWithNext
+            pageControlPage:BubblePageControlPageNone
+      customNextButtonTitle:l10n_util::GetNSString(IDS_DONE)
+          dismissalCallback:callback];
   presenter.dismissalTimerDisabled = YES;
 
   UIView* anchorView = [self.layoutGuideCenter
