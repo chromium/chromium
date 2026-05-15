@@ -11,6 +11,7 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/synchronization/lock.h"
@@ -153,7 +154,15 @@ void CVDisplayLinkMac::TryRecordDisplayLinkCreation(
 
   auto [it, inserted] = globals.recorded_displays.insert(display_id);
   if (inserted) {
-    RecordDisplayLinkCreation(success);
+    UMA_HISTOGRAM_BOOLEAN("Viz.DisplayLink.Create.GPU.CVDisplayLink", success);
+
+    if (!SupportsDisplayLinkMacInBrowser()) {
+      // Avoid duplicate recording in
+      // 'Viz.ExternalBeginFrameSourceMac.DisplayLink.Create2' when
+      // CADisplayLink in the Browser process is supported and recorded there
+      // instead. This is the fallback path for DisplayLinkMacInBrowser.
+      RecordDisplayLinkCreation(success);
+    }
   }
 }
 
