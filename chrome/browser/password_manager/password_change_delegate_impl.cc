@@ -224,7 +224,8 @@ PasswordChangeDelegateImpl::PasswordChangeDelegateImpl(
   // Don't show the dialog and don't start the flow if user navigates to a
   // different site instead of entering the OTP.
   navigation_observer_ = std::make_unique<CrossOriginNavigationObserver>(
-      originator_.get(), AffiliationServiceFactory::GetForProfile(profile_),
+      originator_.get(), originator_->GetURL(),
+      AffiliationServiceFactory::GetForProfile(profile_),
       base::BindOnce(
           &PasswordChangeDelegateImpl::OnCrossOriginNavigationDetected,
           weak_ptr_factory_.GetWeakPtr()));
@@ -549,7 +550,8 @@ void PasswordChangeDelegateImpl::ProceedToChangePassword() {
   auto* client = ChromePasswordManagerClient::FromWebContents(executor());
 
   navigation_observer_ = std::make_unique<CrossOriginNavigationObserver>(
-      executor(), AffiliationServiceFactory::GetForProfile(profile_),
+      executor(), change_password_url_,
+      AffiliationServiceFactory::GetForProfile(profile_),
       base::BindOnce(
           &PasswordChangeDelegateImpl::OnCrossOriginNavigationDetected,
           weak_ptr_factory_.GetWeakPtr()));

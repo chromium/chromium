@@ -16,6 +16,7 @@ class CrossOriginNavigationObserver : public content::WebContentsObserver {
  public:
   CrossOriginNavigationObserver(
       content::WebContents* web_contents,
+      const GURL& initial_url,
       affiliations::AffiliationService* affiliation_service,
       base::OnceClosure on_cross_origin_navigation_detected);
   ~CrossOriginNavigationObserver() override;
@@ -33,6 +34,9 @@ class CrossOriginNavigationObserver : public content::WebContentsObserver {
   void OnReady();
 
   const raw_ptr<content::WebContents> web_contents_;
+
+  // Host of the initial URL used during initialization.
+  std::string initial_host_;
 
   // PSL extension list. Necessary for converting `GURL`s into eTLD+1.
   base::flat_set<std::string> psl_extension_list_;

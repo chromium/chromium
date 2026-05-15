@@ -4,8 +4,8 @@
 
 #include "chrome/browser/password_manager/password_change/cross_origin_navigation_observer.h"
 
+#include "base/barrier_closure.h"
 #include "base/containers/adapters.h"
-#include "base/functional/concurrent_closures.h"
 #include "components/affiliations/core/browser/affiliation_service.h"
 #include "components/affiliations/core/browser/affiliation_utils.h"
 #include "components/password_manager/core/browser/password_form.h"
@@ -33,27 +33,33 @@ std::vector<std::string> ParseFacets(
 
 CrossOriginNavigationObserver::CrossOriginNavigationObserver(
     content::WebContents* web_contents,
+    const GURL& initial_url,
     affiliations::AffiliationService* affiliation_service,
     base::OnceClosure on_cross_origin_navigation_detected)
     : web_contents_(web_contents),
+      initial_host_(initial_url.host()),
       on_cross_origin_navigation_detected_(
           std::move(on_cross_origin_navigation_detected)) {
-  base::ConcurrentClosures concurrent;
+  std::string main_domain =
+      affiliations::GetExtendedTopLevelDomain(initial_url, {});
+  affiliated_domains_.insert(main_domain);
+
+  base::RepeatingClosure barrier = base::BarrierClosure(
+      2, base::BindOnce(&CrossOriginNavigationObserver::OnReady,
+                        weak_ptr_factory_.GetWeakPtr()));
+
   affiliation_service->GetPSLExtensions(
       base::BindOnce(&CrossOriginNavigationObserver::OnPSLExtensionsReceived,
-                     weak_ptr_factory_.GetWeakPtr(), web_contents_->GetURL())
-          .Then(concurrent.CreateClosure()));
+                     weak_ptr_factory_.GetWeakPtr(), initial_url)
+          .Then(barrier));
   affiliation_service->GetAffiliationsAndBranding(
       affiliations::FacetURI::FromPotentiallyInvalidSpec(
-          web_contents_->GetURL().GetWithEmptyPath().spec()),
+          initial_url.GetWithEmptyPath().spec()),
       base::BindOnce(&ParseFacets)
           .Then(base::BindOnce(
               &CrossOriginNavigationObserver::OnAffiliationsReceived,
               weak_ptr_factory_.GetWeakPtr()))
-          .Then(concurrent.CreateClosure()));
-  std::move(concurrent)
-      .Done(base::BindOnce(&CrossOriginNavigationObserver::OnReady,
-                           weak_ptr_factory_.GetWeakPtr()));
+          .Then(barrier));
 }
 
 CrossOriginNavigationObserver::~CrossOriginNavigationObserver() = default;
@@ -73,8 +79,14 @@ void CrossOriginNavigationObserver::NavigationEntryCommitted(
 
 bool CrossOriginNavigationObserver::IsSameOrAffiliatedDomain(
     const GURL& url) const {
-  return affiliated_domains_.contains(
-      affiliations::GetExtendedTopLevelDomain(url, psl_extension_list_));
+  std::string domain =
+      affiliations::GetExtendedTopLevelDomain(url, psl_extension_list_);
+  // An empty domain should not match anything, unless it's the exact same host
+  // as the initial URL (e.g. IP addresses where eTLD+1 is empty).
+  if (domain.empty()) {
+    return url.host() == initial_host_;
+  }
+  return affiliated_domains_.contains(domain);
 }
 
 void CrossOriginNavigationObserver::OnPSLExtensionsReceived(
