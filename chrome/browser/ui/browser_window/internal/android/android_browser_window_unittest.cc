@@ -44,8 +44,11 @@ class AndroidBrowserWindowUnitTest : public testing::Test {
   }
 
   void TearDown() override {
-    SetProfileManager(nullptr);
+    // Destroy the native AndroidBrowserWindow before resetting the
+    // ProfileManager. This matches the production destruction order, where
+    // AndroidBrowserWindow is destroyed before its associated Profile.
     InvokeJavaResetAndDestroy();
+    SetProfileManager(nullptr);
   }
 
   AndroidBrowserWindow* InvokeJavaGetOrCreateNativePtr() const {
