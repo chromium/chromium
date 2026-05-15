@@ -4,6 +4,7 @@
 
 #include "gpu/command_buffer/client/internal/mappable_buffer_shared_memory.h"
 
+#include <errno.h>
 #include <stdint.h>
 
 #include <utility>
@@ -204,7 +205,19 @@ gfx::GpuMemoryBufferHandle MappableBufferSharedMemory::CloneHandle() const {
   SCOPED_CRASH_KEY_NUMBER("MappableBufferShmem", "width", size_.width());
   SCOPED_CRASH_KEY_NUMBER("MappableBufferShmem", "height", size_.height());
 
-  gfx::GpuMemoryBufferHandle handle(shared_memory_region_.Duplicate());
+  base::UnsafeSharedMemoryRegion duped_region =
+      shared_memory_region_.Duplicate();
+  if (!duped_region.IsValid()) {
+    SCOPED_CRASH_KEY_NUMBER("MappableBufferShmem", "dup_errno", errno);
+    // This constructor call triggers a crash report since `duped_region` is
+    // invalid.
+    gfx::GpuMemoryBufferHandle handle(std::move(duped_region));
+    handle.offset = offset_;
+    handle.stride = stride_;
+    return handle;
+  }
+
+  gfx::GpuMemoryBufferHandle handle(std::move(duped_region));
   handle.offset = offset_;
   handle.stride = stride_;
   return handle;
