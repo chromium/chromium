@@ -12,6 +12,7 @@
 #include "base/containers/span.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_view_util.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
@@ -20,6 +21,7 @@
 #include "content/common/web_ui_loading_util.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/url_constants.h"
+#include "content/public/common/url_utils.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/base/mime_util.h"
@@ -55,6 +57,17 @@ ConvertConfigToSourcesMap(blink::mojom::LocalResourceLoaderConfigPtr config) {
                         std::move(mojo_source), std::move(replacement_strings));
   }
   return sources;
+}
+
+// Returns a Web UI resource path from the given URL, which is the URL path
+// (without the leading slash) with the canonicalized query appended (if any).
+std::string GetWebUIResourcePath(const GURL& url) {
+  std::string path = std::string(url.path().substr(1));
+  std::string canonical_query = GetCanonicalQuery(url);
+  if (!canonical_query.empty()) {
+    base::StrAppend(&path, {"?", canonical_query});
+  }
+  return path;
 }
 
 // Returns the mime type of the given URL. If the mime type cannot be
@@ -93,8 +106,8 @@ std::optional<std::pair<std::string_view, std::string_view>> FindResponse(
   // Check if the source corresponding to `origin` has the URL path in its
   // path_to_response_map.
   if (auto it = sources.find(origin); it != sources.end()) {
-    if (auto response_opt =
-            FindResponseInSource(it->second, url.path().substr(1))) {
+    std::string path_key = GetWebUIResourcePath(url);
+    if (auto response_opt = FindResponseInSource(it->second, path_key)) {
       return std::make_pair(*response_opt,
                             std::string_view(it->second.source->headers));
     }
@@ -181,8 +194,8 @@ bool LocalResourceURLLoaderFactory::CanServe(
 
   // Get the resource ID corresponding to the URL path.
   const blink::mojom::LocalResourceSourcePtr& source = it->second.source;
-  std::string_view path = request.url.path().substr(1);
-  auto resource_it = source->path_to_resource_map.find(std::string(path));
+  std::string path_key = GetWebUIResourcePath(request.url);
+  auto resource_it = source->path_to_resource_map.find(path_key);
   // The path-to-ID map may not have an entry for the given path. This can
   // happen for resources that are generated on-the-fly in the browser process.
   // Example: chrome://my-webui/strings.m.js
@@ -300,13 +313,13 @@ LocalResourceURLLoaderFactory::GetResource(
     const std::map<std::string, std::string>& replacement_strings,
     const std::string& mime_type) {
   // Get resource.
-  std::string_view path = url.path().substr(1);
-  auto resource_it = source->path_to_resource_map.find(std::string(path));
+  std::string path_key = GetWebUIResourcePath(url);
+  auto resource_it = source->path_to_resource_map.find(path_key);
   // CanServe should have been called before this point, which would have
   // confirmed that there exists a resource corresponding to the URL path.
   if (resource_it == source->path_to_resource_map.end()) {
     SCOPED_CRASH_KEY_STRING256("Bug470579309", "url", url.spec());
-    SCOPED_CRASH_KEY_STRING256("Bug470579309", "path", path);
+    SCOPED_CRASH_KEY_STRING256("Bug470579309", "path", path_key);
     SCOPED_CRASH_KEY_NUMBER("Bug470579309", "resource_map_size",
                             source->path_to_resource_map.size());
     NOTREACHED();

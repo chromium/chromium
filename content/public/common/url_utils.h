@@ -5,6 +5,8 @@
 #ifndef CONTENT_PUBLIC_COMMON_URL_UTILS_H_
 #define CONTENT_PUBLIC_COMMON_URL_UTILS_H_
 
+#include <string>
+
 #include "content/common/content_export.h"
 #include "url/origin.h"
 
@@ -36,6 +38,10 @@ CONTENT_EXPORT bool IsURLHandledByNetworkStack(const GURL& url);
 // Determines whether it is safe to redirect from |from_url| to |to_url|.
 CONTENT_EXPORT bool IsSafeRedirectTarget(const GURL& from_url,
                                          const GURL& to_url);
+
+// Returns a canonicalized query string where parameters are sorted by key.
+// If the URL has no query, returns an empty string.
+CONTENT_EXPORT std::string GetCanonicalQuery(const GURL& url);
 
 }  // namespace content
 

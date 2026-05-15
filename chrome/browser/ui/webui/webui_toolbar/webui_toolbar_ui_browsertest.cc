@@ -359,7 +359,8 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarUIBrowserTest,
   auto source_it = config.sources.find(theme_origin);
   ASSERT_TRUE(source_it != config.sources.end());
 
-  auto resource_it = source_it->second->path_to_resource_map.find("colors.css");
+  auto resource_it =
+      source_it->second->path_to_resource_map.find("colors.css?sets=ui,chrome");
   ASSERT_TRUE(resource_it != source_it->second->path_to_resource_map.end());
   EXPECT_TRUE(resource_it->second->is_response_body());
 }

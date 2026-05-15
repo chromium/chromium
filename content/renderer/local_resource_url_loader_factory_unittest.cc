@@ -303,6 +303,41 @@ TEST_F(LocalResourceURLLoaderFactoryTest, PathToResponseMap) {
   EXPECT_THAT(response_body, testing::HasSubstr("\"foo\":\"bar\""));
 }
 
+TEST_F(LocalResourceURLLoaderFactoryTest, QueryParametersFallBackOnMismatch) {
+  AddPathToResponse("test.txt", "cached content");
+
+  network::TestURLLoaderClient client;
+  network::ResourceRequest request;
+  request.url = GURL("chrome://sourcename/test.txt?version=1");
+  mojo::PendingRemote<network::mojom::URLLoader> loader;
+  loader_factory()->CreateLoaderAndStart(
+      loader.InitWithNewPipeAndPassReceiver(), 0, 0, request,
+      client.CreateRemote(), net::MutableNetworkTrafficAnnotationTag());
+  client.RunUntilComplete();
+
+  ASSERT_EQ(net::OK, client.completion_status().error_code);
+  std::string response_body = ReadAllData(client);
+  EXPECT_EQ("out-of-process resource", response_body);
+}
+
+TEST_F(LocalResourceURLLoaderFactoryTest, QueryParametersOrderInvariant) {
+  AddPathToResponse("test.txt?a=1&b=2", "cached content");
+
+  // Request with different query parameter order should still hit the cache.
+  network::TestURLLoaderClient client;
+  network::ResourceRequest request;
+  request.url = GURL("chrome://sourcename/test.txt?b=2&a=1");
+  mojo::PendingRemote<network::mojom::URLLoader> loader;
+  loader_factory()->CreateLoaderAndStart(
+      loader.InitWithNewPipeAndPassReceiver(), 0, 0, request,
+      client.CreateRemote(), net::MutableNetworkTrafficAnnotationTag());
+  client.RunUntilComplete();
+
+  ASSERT_EQ(net::OK, client.completion_status().error_code);
+  std::string response_body = ReadAllData(client);
+  EXPECT_EQ("cached content", response_body);
+}
+
 INSTANTIATE_TEST_SUITE_P(
     LocalResourceURLLoaderFactoryServeTest,
     LocalResourceURLLoaderFactoryServeTest,

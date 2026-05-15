@@ -4,17 +4,21 @@
 
 #include "content/public/common/url_utils.h"
 
+#include <algorithm>
 #include <set>
 #include <string>
 #include <string_view>
+#include <vector>
 
 #include "base/check_op.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/feature_list.h"
+#include "base/strings/strcat.h"
 #include "build/build_config.h"
 #include "content/common/url_schemes.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/url_constants.h"
+#include "net/base/url_util.h"
 #include "third_party/blink/public/common/chrome_debug_urls.h"
 #include "url/gurl.h"
 #include "url/url_constants.h"
@@ -104,6 +108,28 @@ bool IsSafeRedirectTarget(const GURL& from_url, const GURL& to_url) {
   if (from_url.SchemeIsFileSystem() && to_url.SchemeIsFileSystem())
     return true;
   return false;
+}
+
+std::string GetCanonicalQuery(const GURL& url) {
+  if (!url.has_query()) {
+    return "";
+  }
+  std::vector<std::pair<std::string, std::string>> params;
+  for (net::QueryIterator it(url); !it.IsAtEnd(); it.Advance()) {
+    params.emplace_back(std::string(it.GetKey()), std::string(it.GetValue()));
+  }
+  std::sort(params.begin(), params.end());
+
+  std::string canonical_query;
+  for (const auto& [key, value] : params) {
+    CHECK(!key.empty());
+    if (canonical_query.empty()) {
+      base::StrAppend(&canonical_query, {key, "=", value});
+    } else {
+      base::StrAppend(&canonical_query, {"&", key, "=", value});
+    }
+  }
+  return canonical_query;
 }
 
 }  // namespace content

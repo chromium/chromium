@@ -100,7 +100,7 @@ TEST_F(ThemeColorsSourceManagerTest,
 
   EXPECT_THAT(config,
               ContainsThemeSource(Pointee(AllOf(
-                  HasResource("colors.css", Not(IsEmpty())),
+                  HasResource("colors.css?sets=ui,chrome", Not(IsEmpty())),
                   // Implementation adds headers if requesting origin != theme
                   // origin, and chrome://webui-toolbar != chrome://theme.
                   HasHeader("Access-Control-Allow-Origin: "
@@ -128,5 +128,5 @@ TEST_F(ThemeColorsSourceManagerTest,
   EXPECT_THAT(config,
               ContainsThemeSource(Pointee(AllOf(
                   HasHeader("Access-Control-Allow-Origin: chrome://foo-bar"),
-                  HasResource("colors.css", Not(IsEmpty()))))));
+                  HasResource("colors.css?sets=ui,chrome", Not(IsEmpty()))))));
 }
