@@ -19,10 +19,6 @@ SendTabToSelfModelBridge::SendTabToSelfModelBridge(
 
 SendTabToSelfModelBridge::~SendTabToSelfModelBridge() = default;
 
-void SendTabToSelfModelBridge::SendTabToSelfModelLoaded() {
-  [observer_ sendTabToSelfModelLoaded:model_];
-}
-
 void SendTabToSelfModelBridge::EntriesAddedRemotely(
     const std::vector<const SendTabToSelfEntry*>& new_entries) {
   [observer_ sendTabToSelfModel:model_ didAddEntriesRemotely:new_entries];

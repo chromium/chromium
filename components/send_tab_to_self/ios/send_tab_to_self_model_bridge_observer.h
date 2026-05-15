@@ -16,8 +16,6 @@
 @protocol SendTabToSelfModelBridgeObserver <NSObject>
 
 @required
-- (void)sendTabToSelfModelLoaded:(send_tab_to_self::SendTabToSelfModel*)model;
-
 - (void)sendTabToSelfModel:(send_tab_to_self::SendTabToSelfModel*)model
      didAddEntriesRemotely:
          (const std::vector<const send_tab_to_self::SendTabToSelfEntry*>&)
@@ -48,7 +46,6 @@ class SendTabToSelfModelBridge : public SendTabToSelfModelObserver {
   ~SendTabToSelfModelBridge() override;
 
  private:
-  void SendTabToSelfModelLoaded() override;
   void EntriesAddedRemotely(
       const std::vector<const SendTabToSelfEntry*>&) override;
   void EntriesRemovedRemotely(const std::vector<std::string>&) override;
