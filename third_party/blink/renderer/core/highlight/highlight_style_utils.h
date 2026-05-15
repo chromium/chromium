@@ -88,13 +88,17 @@ class CORE_EXPORT HighlightStyleUtils {
       const Document& document,
       const ComputedStyle& style,
       const ComputedStyle& pseudo_style);
-  static Color HighlightBackgroundColor(const Document&,
-                                        const ComputedStyle&,
-                                        Node*,
-                                        std::optional<Color>,
-                                        PseudoId,
-                                        bool preserve_privacy,
-                                        SearchTextIsActiveMatch);
+  // `pseudo_argument` is the highlight name when `pseudo` is
+  // kPseudoIdHighlight; pass g_null_atom for other pseudos.
+  static Color HighlightBackgroundColor(
+      const Document&,
+      const ComputedStyle&,
+      Node*,
+      std::optional<Color>,
+      PseudoId,
+      bool preserve_privacy,
+      SearchTextIsActiveMatch,
+      const AtomicString& pseudo_argument = g_null_atom);
   static HighlightTextPaintStyle HighlightPaintingStyle(
       const Document&,
       const ComputedStyle& originating_style,

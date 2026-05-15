@@ -345,14 +345,16 @@ Color HighlightStyleUtils::HighlightBackgroundColor(
     std::optional<Color> current_layer_color,
     PseudoId pseudo,
     bool preserve_privacy,
-    SearchTextIsActiveMatch search_text_is_active_match) {
+    SearchTextIsActiveMatch search_text_is_active_match,
+    const AtomicString& pseudo_argument) {
   if (pseudo == kPseudoIdSelection) {
     if (node && !style.IsSelectable()) {
       return Color::kTransparent;
     }
   }
 
-  const ComputedStyle* pseudo_style = HighlightPseudoStyle(style, pseudo);
+  const ComputedStyle* pseudo_style =
+      HighlightPseudoStyle(style, pseudo, pseudo_argument);
   Color result = ResolveColor(
       document, style, pseudo_style, pseudo, GetCSSPropertyBackgroundColor(),
       current_layer_color, preserve_privacy, search_text_is_active_match);
