@@ -24,7 +24,7 @@
 namespace gl {
 
 DCompPresenter::PendingFrame::PendingFrame(PresentationCallback callback)
-    : callback(std::move(callback)) {}
+    : callback(std::move(callback)), creation_time(base::TimeTicks::Now()) {}
 DCompPresenter::PendingFrame::PendingFrame(PendingFrame&& other) = default;
 DCompPresenter::PendingFrame::~PendingFrame() = default;
 DCompPresenter::PendingFrame& DCompPresenter::PendingFrame::operator=(
@@ -211,15 +211,21 @@ void DCompPresenter::CheckPendingFrames() {
   if (pending_frames_.empty())
     return;
 
-  Microsoft::WRL::ComPtr<ID3D11DeviceContext> context;
-  d3d11_device_->GetImmediateContext(&context);
+
   while (!pending_frames_.empty()) {
     auto& frame = pending_frames_.front();
+    // Break from the loop if we encounter a pending frame that was enqueued
+    // after the last vsync since these cannot possibly be completed before
+    // they were enqueued. We will process them on subsequent vsyncs.
+    if (frame.creation_time > last_vsync_time_) {
+      break;
+    }
+    // TODO: crbug.com/513024708 - reintroduce D3D11 query based GPU work
+    // tracking so we mark a frame as presented only after its GPU work is done.
     std::move(frame.callback)
         .Run(
             gfx::PresentationFeedback(last_vsync_time_, last_vsync_interval_,
-                                      gfx::PresentationFeedback::kVSync |
-                                          gfx::PresentationFeedback::kHWClock));
+                                      gfx::PresentationFeedback::kVSync));
     pending_frames_.pop_front();
   }
 

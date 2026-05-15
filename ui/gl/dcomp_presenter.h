@@ -112,6 +112,9 @@ class GL_EXPORT DCompPresenter : public Presenter,
 
     // Presentation callback enqueued in SwapBuffers().
     PresentationCallback callback;
+
+    // Time when the frame was created.
+    base::TimeTicks creation_time;
   };
 
   void EnqueuePendingFrame(PresentationCallback callback);
