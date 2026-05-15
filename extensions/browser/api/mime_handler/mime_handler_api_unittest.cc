@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/memory/scoped_refptr.h"
+#include "base/test/values_test_util.h"
 #include "base/values.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/site_instance.h"
@@ -298,6 +299,32 @@ TEST_F(MimeHandlerApiTest, AbortAndFallbackRejectsBuiltInExtension) {
       "abortAndFallbackToNativeHandler is not available "
       "for built-in MIME handler extensions.",
       error);
+}
+
+TEST_F(MimeHandlerApiTest, GetMimeHandlerOptionsDefaultsToEnabled) {
+  // With no prior setMimeHandlerOptions call, getMimeHandlerOptions
+  // must return enabled=true by default.
+  auto function =
+      base::MakeRefCounted<MimeHandlerGetMimeHandlerOptionsFunction>();
+  std::optional<base::Value> result =
+      RunFunctionAndReturnValue(function.get(), R"(["application/pdf"])");
+  ASSERT_TRUE(result.has_value());
+  EXPECT_THAT(*result, base::test::IsJson(R"({"enabled": true})"));
+}
+
+TEST_F(MimeHandlerApiTest, SetThenGetMimeHandlerOptionsRoundTrip) {
+  // Persist enabled=false via setMimeHandlerOptions.
+  auto set_function =
+      base::MakeRefCounted<MimeHandlerSetMimeHandlerOptionsFunction>();
+  RunFunction(set_function.get(), R"(["application/pdf", {"enabled": false}])");
+
+  // Read it back via getMimeHandlerOptions and verify the value survived.
+  auto get_function =
+      base::MakeRefCounted<MimeHandlerGetMimeHandlerOptionsFunction>();
+  std::optional<base::Value> result =
+      RunFunctionAndReturnValue(get_function.get(), R"(["application/pdf"])");
+  ASSERT_TRUE(result.has_value());
+  EXPECT_THAT(*result, base::test::IsJson(R"({"enabled": false})"));
 }
 
 }  // namespace extensions

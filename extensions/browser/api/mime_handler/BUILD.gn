@@ -23,6 +23,7 @@ source_set("mime_handler") {
   deps = [
     "//content/public/browser",
     "//extensions/browser/mime_handler",
+    "//extensions/browser/mime_handler:mime_handler_registry",
     "//extensions/browser/mime_handler:stream_container",
     "//net",
   ]

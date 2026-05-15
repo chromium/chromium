@@ -20,6 +20,7 @@
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/extension_features.h"
 #include "extensions/common/features/feature_channel.h"
+#include "extensions/common/manifest_handlers/mime_types_handler.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace extensions {
@@ -192,7 +193,7 @@ TEST_F(MimeHandlerRegistryTest, GetHandlersByMimeTypeReturnsAllTypes) {
   LoadExtension(pdf_handler.get());
   LoadExtension(doc_handler.get());
 
-  const auto& all = registry()->GetHandlersByMimeType();
+  auto all = registry()->GetHandlersByMimeType();
   ASSERT_EQ(all.size(), 2u);
 
   auto pdf_it = all.find(kPdfMimeType);
@@ -304,6 +305,82 @@ TEST_F(MimeHandlerRegistryTest, FlagDisabledNoRegistration) {
   LoadExtension(ext.get());
 
   EXPECT_TRUE(registry()->GetHandlerForMimeType(kPdfMimeType).empty());
+}
+
+TEST_F(MimeHandlerRegistryTest, EnabledByDefaultUntilDisabled) {
+  auto ext =
+      CreateMimeHandlerExtension("PDF Handler", kPdfMimeType, kViewerUrl);
+  LoadExtension(ext.get());
+
+  // Default: enabled, present in every accessor.
+  EXPECT_TRUE(registry()->IsEnabledForMimeType(ext->id(), kPdfMimeType));
+  EXPECT_EQ(ext->id(), registry()->GetHandlerForMimeType(kPdfMimeType));
+  EXPECT_EQ(registry()->GetHandlersForMimeType(kPdfMimeType).size(), 1u);
+  EXPECT_EQ(registry()->GetHandlersByMimeType().count(kPdfMimeType), 1u);
+
+  // After disabling: gone from every accessor.
+  registry()->SetEnabledForMimeType(ext->id(), kPdfMimeType, false);
+  EXPECT_FALSE(registry()->IsEnabledForMimeType(ext->id(), kPdfMimeType));
+  EXPECT_TRUE(registry()->GetHandlerForMimeType(kPdfMimeType).empty());
+  EXPECT_TRUE(registry()->GetHandlersForMimeType(kPdfMimeType).empty());
+  EXPECT_EQ(registry()->GetHandlersByMimeType().count(kPdfMimeType), 0u);
+
+  // Re-enable: comes back.
+  registry()->SetEnabledForMimeType(ext->id(), kPdfMimeType, true);
+  EXPECT_EQ(ext->id(), registry()->GetHandlerForMimeType(kPdfMimeType));
+}
+
+TEST_F(MimeHandlerRegistryTest, DisableRollsBackToPreviouslyInstalledHandler) {
+  // Precedence for public handlers is "newest GetFirstInstallTime
+  // wins". Disabling the newer handler must roll the active handler
+  // back to the previously-installed one; re-enabling must restore
+  // the precedence order.
+  auto ext_old = CreateMimeHandlerExtension("Older", kPdfMimeType, "a.html");
+  auto ext_new = CreateMimeHandlerExtension("Newer", kPdfMimeType, "b.html");
+  const base::Time t0 = base::Time::Now();
+  SetFirstInstallTime(ext_old.get(), t0);
+  SetFirstInstallTime(ext_new.get(), t0 + base::Hours(1));
+  LoadExtension(ext_old.get());
+  LoadExtension(ext_new.get());
+  ASSERT_EQ(ext_new->id(), registry()->GetHandlerForMimeType(kPdfMimeType));
+
+  registry()->SetEnabledForMimeType(ext_new->id(), kPdfMimeType, false);
+  EXPECT_EQ(ext_old->id(), registry()->GetHandlerForMimeType(kPdfMimeType));
+
+  // Re-enable: ext_new wins again (newer install time beats ext_old).
+  registry()->SetEnabledForMimeType(ext_new->id(), kPdfMimeType, true);
+  EXPECT_EQ(ext_new->id(), registry()->GetHandlerForMimeType(kPdfMimeType));
+}
+
+TEST_F(MimeHandlerRegistryTest, SetEnabledForUnclaimedMimeTypeDoesNotRegister) {
+  constexpr char kPngMimeType[] = "image/png";
+  // Anchor on the actual invariant: `kPngMimeType` is not in the public
+  // allowed MIME types, so no non-allowlisted extension's manifest can
+  // claim it (the parser drops unsupported entries with an install
+  // warning). If this list ever grows to include `image/png`, pick a
+  // different MIME type for this test.
+  ASSERT_TRUE(
+      std::ranges::find(MimeTypesHandler::GetPublicAllowedMIMETypeList(),
+                        kPngMimeType) ==
+      MimeTypesHandler::GetPublicAllowedMIMETypeList().end());
+
+  auto ext =
+      CreateMimeHandlerExtension("PDF Handler", kPdfMimeType, kViewerUrl);
+  LoadExtension(ext.get());
+
+  // Sanity: extension is the active handler for the MIME type it claims,
+  // and `image/png` has no registered handler.
+  ASSERT_EQ(ext->id(), registry()->GetHandlerForMimeType(kPdfMimeType));
+  ASSERT_TRUE(registry()->GetHandlersForMimeType(kPngMimeType).empty());
+
+  // Call for a MIME type the manifest does not claim. The pref write
+  // happens unconditionally, but the in-memory registry must not gain
+  // an entry for `image/png`.
+  registry()->SetEnabledForMimeType(ext->id(), kPngMimeType, true);
+
+  EXPECT_TRUE(registry()->IsEnabledForMimeType(ext->id(), kPngMimeType));
+  EXPECT_TRUE(registry()->GetHandlersForMimeType(kPngMimeType).empty());
+  EXPECT_EQ(registry()->GetHandlersByMimeType().count(kPngMimeType), 0u);
 }
 
 }  // namespace

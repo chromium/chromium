@@ -12,6 +12,7 @@
 #include "base/strings/string_util.h"
 #include "base/types/expected.h"
 #include "content/public/browser/render_frame_host.h"
+#include "extensions/browser/mime_handler/mime_handler_registry.h"
 #include "extensions/browser/mime_handler/mime_handler_stream_manager.h"
 #include "extensions/browser/mime_handler/stream_container.h"
 #include "extensions/common/api/mime_handler.h"
@@ -124,6 +125,41 @@ MimeHandlerAbortAndFallbackToNativeHandlerFunction::Run() {
   resolved->stream_manager->AbortAndFallbackToNativeHandler(
       resolved->embedder_rfh);
   return RespondNow(NoArguments());
+}
+
+MimeHandlerSetMimeHandlerOptionsFunction::
+    MimeHandlerSetMimeHandlerOptionsFunction() = default;
+MimeHandlerSetMimeHandlerOptionsFunction::
+    ~MimeHandlerSetMimeHandlerOptionsFunction() = default;
+
+ExtensionFunction::ResponseAction
+MimeHandlerSetMimeHandlerOptionsFunction::Run() {
+  auto params =
+      api::mime_handler::SetMimeHandlerOptions::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
+
+  MimeHandlerRegistry::Get(browser_context())
+      ->SetEnabledForMimeType(extension_id(), params->mime_type,
+                              params->options.enabled);
+  return RespondNow(NoArguments());
+}
+
+MimeHandlerGetMimeHandlerOptionsFunction::
+    MimeHandlerGetMimeHandlerOptionsFunction() = default;
+MimeHandlerGetMimeHandlerOptionsFunction::
+    ~MimeHandlerGetMimeHandlerOptionsFunction() = default;
+
+ExtensionFunction::ResponseAction
+MimeHandlerGetMimeHandlerOptionsFunction::Run() {
+  auto params =
+      api::mime_handler::GetMimeHandlerOptions::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
+
+  api::mime_handler::MimeHandlerOptions idl_options;
+  idl_options.enabled =
+      MimeHandlerRegistry::Get(browser_context())
+          ->IsEnabledForMimeType(extension_id(), params->mime_type);
+  return RespondNow(WithArguments(idl_options.ToValue()));
 }
 
 }  // namespace extensions

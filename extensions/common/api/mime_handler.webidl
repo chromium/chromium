@@ -22,6 +22,12 @@ dictionary StreamInfo {
   required boolean embedded;
 };
 
+// Persisted options for a MIME handler registered for one MIME type.
+dictionary MimeHandlerOptions {
+  // Whether this handler is active for the given MIME type.
+  required boolean enabled;
+};
+
 // Use the <code>chrome.mimeHandler</code> API to handle MIME type streams
 // in third-party extensions.
 interface MimeHandler {
@@ -34,6 +40,20 @@ interface MimeHandler {
   // user agent's native handler. After this call the extension frame
   // will be torn down; callers should not expect further execution.
   static Promise<undefined> abortAndFallbackToNativeHandler();
+
+  // Sets the configuration options for a specified MIME type.
+  // |mimeType|: The MIME type to configure.
+  // |options|: The new options to use.
+  // |Returns|: Promise resolved when the configuration has been set.
+  static Promise<undefined> setMimeHandlerOptions(DOMString mimeType,
+                                                  MimeHandlerOptions options);
+
+  // Reads the persisted options for a MIME type. Returns defaults
+  // (enabled=true) if none have been stored.
+  // |mimeType|: The MIME type whose options to read.
+  // |PromiseValue|: options
+  // |Returns|: Promise resolved with the persisted options for the MIME type.
+  static Promise<MimeHandlerOptions> getMimeHandlerOptions(DOMString mimeType);
 };
 
 partial interface Browser {
