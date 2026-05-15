@@ -8,6 +8,7 @@
 #import "components/enterprise/browser/controller/fake_browser_dm_token_storage.h"
 #import "components/enterprise/connectors/core/common.h"
 #import "components/enterprise/connectors/core/connectors_prefs.h"
+#import "components/policy/core/common/policy_types.h"
 #import "components/prefs/pref_service.h"
 #import "components/safe_browsing/core/browser/realtime/chrome_enterprise_url_lookup_service.h"
 #import "components/safe_browsing/core/browser/realtime/url_lookup_service.h"

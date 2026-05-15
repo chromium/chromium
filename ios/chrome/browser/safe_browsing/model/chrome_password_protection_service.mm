@@ -18,6 +18,7 @@
 #import "components/keyed_service/core/service_access_type.h"
 #import "components/omnibox/common/omnibox_features.h"
 #import "components/password_manager/core/browser/insecure_credentials_helper.h"
+#import "components/password_manager/core/browser/password_store/password_store_interface.h"
 #import "components/password_manager/core/browser/ui/password_check_referrer.h"
 #import "components/prefs/pref_service.h"
 #import "components/safe_browsing/core/browser/safe_browsing_metrics_collector.h"
