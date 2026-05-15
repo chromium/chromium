@@ -644,7 +644,6 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                                 item(R.id.icon_row_menu_id),
                                 item(R.id.new_tab_menu_id),
                                 item(R.id.new_incognito_tab_menu_id),
-                                item(R.id.add_to_group_menu_id),
                                 item(R.id.divider_line_id),
                                 item(
                                         R.id.history_parent_menu_id,
@@ -675,7 +674,10 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                                         item(
                                                 R.id.bookmark_folder_menu_id,
                                                 item(R.id.bookmark_folder_menu_id, item(0))),
-                                        item(R.id.bookmark_folder_menu_id, item(0)))));
+                                        item(R.id.bookmark_folder_menu_id, item(0))),
+                                item(
+                                        R.id.tab_groups_parent_menu_id,
+                                        item(R.id.add_to_group_menu_id))));
 
         if (ExtensionsBuildflags.ENABLE_DESKTOP_ANDROID_EXTENSIONS) {
             expectedItems.add(
@@ -718,7 +720,6 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                                 item(R.id.icon_row_menu_id),
                                 item(R.id.new_tab_menu_id),
                                 item(R.id.new_incognito_tab_menu_id),
-                                item(R.id.add_to_group_menu_id),
                                 item(R.id.divider_line_id),
                                 item(
                                         R.id.history_parent_menu_id,
@@ -749,7 +750,10 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                                         item(
                                                 R.id.bookmark_folder_menu_id,
                                                 item(R.id.bookmark_folder_menu_id, item(0))),
-                                        item(R.id.bookmark_folder_menu_id, item(0)))));
+                                        item(R.id.bookmark_folder_menu_id, item(0))),
+                                item(
+                                        R.id.tab_groups_parent_menu_id,
+                                        item(R.id.add_to_group_menu_id))));
 
         if (ExtensionsBuildflags.ENABLE_DESKTOP_ANDROID_EXTENSIONS) {
             expectedItems.add(
@@ -798,9 +802,6 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
             expectedItems.add(item(R.id.new_incognito_tab_menu_id));
             expectedTitles.add(item(R.string.menu_new_incognito_tab));
         }
-
-        expectedItems.add(item(R.id.add_to_group_menu_id));
-        expectedTitles.add(item(R.string.menu_add_tab_to_new_group));
 
         expectedItems.add(item(R.id.divider_line_id));
         expectedTitles.add(item(0));
@@ -873,6 +874,10 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                         item(0),
                         item(R.string.menu_mobile_bookmarks, item("Partner bookmarks", item(0))),
                         item(R.string.menu_other_bookmarks, item(0))));
+
+        expectedItems.add(item(R.id.tab_groups_parent_menu_id, item(R.id.add_to_group_menu_id)));
+        expectedTitles.add(
+                item(R.string.menu_tab_groups, item(R.string.menu_add_tab_to_new_group)));
 
         if (ExtensionsBuildflags.ENABLE_DESKTOP_ANDROID_EXTENSIONS) {
             expectedItems.add(
@@ -980,9 +985,6 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         expectedItems.add(item(R.id.new_incognito_tab_menu_id));
         expectedTitles.add(item(R.string.menu_new_incognito_tab));
 
-        expectedItems.add(item(R.id.add_to_group_menu_id));
-        expectedTitles.add(item(R.string.menu_add_tab_to_new_group));
-
         expectedItems.add(item(R.id.divider_line_id));
         expectedTitles.add(item(0));
 
@@ -1046,6 +1048,10 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                         item(0),
                         item(R.string.menu_mobile_bookmarks, item("Partner bookmarks", item(0))),
                         item(R.string.menu_other_bookmarks, item(0))));
+
+        expectedItems.add(item(R.id.tab_groups_parent_menu_id, item(R.id.add_to_group_menu_id)));
+        expectedTitles.add(
+                item(R.string.menu_tab_groups, item(R.string.menu_add_tab_to_new_group)));
 
         if (ExtensionsBuildflags.ENABLE_DESKTOP_ANDROID_EXTENSIONS) {
             expectedItems.add(
@@ -1151,9 +1157,6 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         expectedItems.add(item(R.id.new_incognito_tab_menu_id));
         expectedTitles.add(item(R.string.menu_new_incognito_tab));
 
-        expectedItems.add(item(R.id.add_to_group_menu_id));
-        expectedTitles.add(item(R.string.menu_add_tab_to_new_group));
-
         expectedItems.add(item(R.id.divider_line_id));
         expectedTitles.add(item(0));
 
@@ -1223,6 +1226,10 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                         item(0),
                         item(R.string.menu_mobile_bookmarks, item("Partner bookmarks", item(0))),
                         item(R.string.menu_other_bookmarks, item(0))));
+
+        expectedItems.add(item(R.id.tab_groups_parent_menu_id, item(R.id.add_to_group_menu_id)));
+        expectedTitles.add(
+                item(R.string.menu_tab_groups, item(R.string.menu_add_tab_to_new_group)));
 
         if (ExtensionsBuildflags.ENABLE_DESKTOP_ANDROID_EXTENSIONS) {
             expectedItems.add(
@@ -1315,7 +1322,6 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                                 item(R.id.icon_row_menu_id),
                                 item(R.id.new_tab_menu_id),
                                 item(R.id.new_incognito_tab_menu_id),
-                                item(R.id.add_to_group_menu_id),
                                 item(R.id.divider_line_id),
                                 item(
                                         R.id.history_parent_menu_id,
@@ -1346,7 +1352,10 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                                         item(
                                                 R.id.bookmark_folder_menu_id,
                                                 item(R.id.bookmark_folder_menu_id, item(0))),
-                                        item(R.id.bookmark_folder_menu_id, item(0)))));
+                                        item(R.id.bookmark_folder_menu_id, item(0))),
+                                item(
+                                        R.id.tab_groups_parent_menu_id,
+                                        item(R.id.add_to_group_menu_id))));
 
         if (ExtensionsBuildflags.ENABLE_DESKTOP_ANDROID_EXTENSIONS) {
             expectedItems.add(
@@ -1396,7 +1405,6 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                                 item(R.id.update_menu_id),
                                 item(R.id.new_tab_menu_id),
                                 item(R.id.new_incognito_tab_menu_id),
-                                item(R.id.add_to_group_menu_id),
                                 item(R.id.divider_line_id),
                                 item(
                                         R.id.history_parent_menu_id,
@@ -1428,6 +1436,8 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                                                 R.id.bookmark_folder_menu_id,
                                                 item(R.id.bookmark_folder_menu_id, item(0))),
                                         item(R.id.bookmark_folder_menu_id, item(0)))));
+
+        expectedItems.add(item(R.id.tab_groups_parent_menu_id, item(R.id.add_to_group_menu_id)));
 
         if (ExtensionsBuildflags.ENABLE_DESKTOP_ANDROID_EXTENSIONS) {
             expectedItems.add(
@@ -1723,7 +1733,6 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                                 item(R.id.icon_row_menu_id),
                                 item(R.id.new_tab_menu_id),
                                 item(R.id.new_incognito_tab_menu_id),
-                                item(R.id.add_to_group_menu_id),
                                 item(R.id.divider_line_id),
                                 item(
                                         R.id.history_parent_menu_id,
@@ -1754,7 +1763,10 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                                         item(
                                                 R.id.bookmark_folder_menu_id,
                                                 item(R.id.bookmark_folder_menu_id, item(0))),
-                                        item(R.id.bookmark_folder_menu_id, item(0)))));
+                                        item(R.id.bookmark_folder_menu_id, item(0))),
+                                item(
+                                        R.id.tab_groups_parent_menu_id,
+                                        item(R.id.add_to_group_menu_id))));
 
         if (ExtensionsBuildflags.ENABLE_DESKTOP_ANDROID_EXTENSIONS) {
             expectedItems.add(
@@ -1837,7 +1849,6 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                                 item(R.id.icon_row_menu_id),
                                 item(R.id.new_tab_menu_id),
                                 item(R.id.new_incognito_tab_menu_id),
-                                item(R.id.add_to_group_menu_id),
                                 item(R.id.divider_line_id),
                                 item(
                                         R.id.history_parent_menu_id,
@@ -1868,7 +1879,10 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                                         item(
                                                 R.id.bookmark_folder_menu_id,
                                                 item(R.id.bookmark_folder_menu_id, item(0))),
-                                        item(R.id.bookmark_folder_menu_id, item(0)))));
+                                        item(R.id.bookmark_folder_menu_id, item(0))),
+                                item(
+                                        R.id.tab_groups_parent_menu_id,
+                                        item(R.id.add_to_group_menu_id))));
 
         if (ExtensionsBuildflags.ENABLE_DESKTOP_ANDROID_EXTENSIONS) {
             expectedItems.add(
@@ -1925,7 +1939,6 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                                 item(R.id.icon_row_menu_id),
                                 item(R.id.new_tab_menu_id),
                                 item(R.id.new_incognito_tab_menu_id),
-                                item(R.id.add_to_group_menu_id),
                                 item(R.id.divider_line_id),
                                 item(
                                         R.id.history_parent_menu_id,
@@ -1956,7 +1969,10 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                                         item(
                                                 R.id.bookmark_folder_menu_id,
                                                 item(R.id.bookmark_folder_menu_id, item(0))),
-                                        item(R.id.bookmark_folder_menu_id, item(0)))));
+                                        item(R.id.bookmark_folder_menu_id, item(0))),
+                                item(
+                                        R.id.tab_groups_parent_menu_id,
+                                        item(R.id.add_to_group_menu_id))));
 
         if (ExtensionsBuildflags.ENABLE_DESKTOP_ANDROID_EXTENSIONS) {
             expectedItems.add(
@@ -2907,11 +2923,35 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         setUpMocksForPageMenu();
         when(mTab.getUrl()).thenReturn(GURL.emptyGURL());
         ModelList modelList = mTabbedAppMenuPropertiesDelegate.getMenuItems();
+        assertTrue(isMenuVisible(modelList, R.id.tab_groups_parent_menu_id));
+        assertTrue(
+                isMenuVisible(
+                        createModelList(getSubmenuItems(modelList, R.id.tab_groups_parent_menu_id)),
+                        R.id.add_to_group_menu_id));
+    }
+
+    @Test
+    @DisableFeatures({ChromeFeatureList.SUBMENUS_IN_APP_MENU})
+    public void testAddToGroup_SubmenusDisabled() {
+        setUpMocksForPageMenu();
+        when(mTab.getUrl()).thenReturn(GURL.emptyGURL());
+        ModelList modelList = mTabbedAppMenuPropertiesDelegate.getMenuItems();
         assertTrue(isMenuVisible(modelList, R.id.add_to_group_menu_id));
+        assertFalse(isMenuVisible(modelList, R.id.tab_groups_parent_menu_id));
     }
 
     @Test
     public void testAddToGroup_preInit() {
+        setUpMocksForPageMenu();
+        when(mTab.getUrl()).thenReturn(GURL.emptyGURL());
+        when(mTabModelSelector.isTabStateInitialized()).thenReturn(false);
+        ModelList modelList = mTabbedAppMenuPropertiesDelegate.getMenuItems();
+        assertFalse(isMenuVisible(modelList, R.id.tab_groups_parent_menu_id));
+    }
+
+    @Test
+    @DisableFeatures({ChromeFeatureList.SUBMENUS_IN_APP_MENU})
+    public void testAddToGroup_preInit_SubmenusDisabled() {
         setUpMocksForPageMenu();
         when(mTab.getUrl()).thenReturn(GURL.emptyGURL());
         when(mTabModelSelector.isTabStateInitialized()).thenReturn(false);

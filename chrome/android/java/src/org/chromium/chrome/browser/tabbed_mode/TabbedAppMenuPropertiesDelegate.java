@@ -289,7 +289,11 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
         }
 
         // Add to Group
-        if (shouldShowAddToGroup()) modelList.add(buildAddToGroupItem(currentTab));
+        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.SUBMENUS_IN_APP_MENU)) {
+            if (shouldShowAddToGroup()) {
+                modelList.add(buildAddToGroupItem(currentTab));
+            }
+        }
 
         // New Window
         if (shouldShowNewWindow()) modelList.add(buildNewWindowItem());
@@ -342,6 +346,13 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
             modelList.add(buildBookmarksParentItem());
         } else {
             modelList.add(buildBookmarksItem());
+        }
+
+        // Tab groups
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.SUBMENUS_IN_APP_MENU)) {
+            if (shouldShowTabGroupsParentItem()) {
+                modelList.add(buildTabGroupsParentItem(currentTab));
+            }
         }
 
         // Recent Tabs
@@ -663,6 +674,29 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
                         getAddToGroupMenuItemString(
                                 currentTab != null ? currentTab.getTabGroupId() : null)));
         return new ListItem(AppMenuHandler.AppMenuItemType.STANDARD, model);
+    }
+
+    private boolean shouldShowTabGroupsParentItem() {
+        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.SUBMENUS_IN_APP_MENU)) {
+            return false;
+        }
+        return shouldShowAddToGroup();
+    }
+
+    private ListItem buildTabGroupsParentItem(@Nullable Tab currentTab) {
+        assert shouldShowTabGroupsParentItem();
+
+        List<ListItem> submenuItems = new ArrayList<>();
+        assert shouldShowAddToGroup();
+        submenuItems.add(buildAddToGroupItem(currentTab));
+
+        return new ListItem(
+                AppMenuHandler.AppMenuItemType.MENU_ITEM_WITH_SUBMENU,
+                buildModelForMenuItemWithSubmenu(
+                        R.id.tab_groups_parent_menu_id,
+                        R.string.menu_tab_groups,
+                        shouldShowIconBeforeItem() ? R.drawable.ic_widgets : Resources.ID_NULL,
+                        () -> submenuItems));
     }
 
     private ListItem buildNewWindowItem() {
