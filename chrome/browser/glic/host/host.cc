@@ -419,7 +419,6 @@ void Host::UnsetWebClient(GlicWebClientAccess* web_client) {
   }
   handler_info_->web_client = nullptr;
   instance_delegate().OnWebClientCleared();
-  observers_.Notify(&Observer::WebClientDisconnected);
 }
 
 void Host::SetWebClient(GlicWebClientAccess* web_client) {

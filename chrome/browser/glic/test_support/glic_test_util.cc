@@ -13,7 +13,6 @@
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/service/glic_instance_coordinator_impl.h"
 #include "chrome/browser/glic/service/glic_instance_impl.h"
-#include "chrome/browser/glic/test_support/test_result.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
@@ -283,55 +282,6 @@ void ReauthAccount(Profile* profile) {
       identity_manager,
       identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSignin),
       GoogleServiceAuthError::AuthErrorNone());
-}
-
-class GlicClientConnectionObserverImpl : public Host::Observer {
- public:
-  explicit GlicClientConnectionObserverImpl(
-      GlicClientConnectionObserver* parent,
-      Host* host)
-      : parent_(parent), host_(host) {
-    host->AddObserver(this);
-    // A typical use-case is to create the observer after creating the glic
-    // instance. To make this usage not flaky, we check if the client is
-    // already connected, and notify if so.
-    if (host->IsWebClientConnected()) {
-      parent_->Notify(true);
-    }
-  }
-  ~GlicClientConnectionObserverImpl() override { host_->RemoveObserver(this); }
-
-  void WebClientConnected() override { parent_->Notify(true); }
-  void WebClientDisconnected() override { parent_->Notify(false); }
-
- private:
-  raw_ptr<GlicClientConnectionObserver> parent_;
-  raw_ptr<Host> host_;
-};
-
-GlicClientConnectionObserver::GlicClientConnectionObserver(
-    GlicInstance* instance) {
-  auto* instance_impl = static_cast<GlicInstanceImpl*>(instance);
-  impl_ = std::make_unique<GlicClientConnectionObserverImpl>(
-      this, &instance_impl->host());
-}
-
-GlicClientConnectionObserver::~GlicClientConnectionObserver() = default;
-
-[[nodiscard]] TestResult<> GlicClientConnectionObserver::WaitForConnected() {
-  return waiter_.WaitUntilEqual(true);
-}
-
-[[nodiscard]] TestResult<> GlicClientConnectionObserver::WaitForDisconnected() {
-  return waiter_.WaitUntilEqual(false);
-}
-
-void GlicClientConnectionObserver::Notify(bool is_connected) {
-  waiter_.AddEvent(is_connected);
-}
-
-void GlicClientConnectionObserver::Clear() {
-  waiter_.Clear();
 }
 
 }  // namespace glic

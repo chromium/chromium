@@ -6,17 +6,13 @@
 #define CHROME_BROWSER_GLIC_TEST_SUPPORT_GLIC_TEST_UTIL_H_
 
 #include <functional>
-#include <sstream>
 
-#include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
-#include "base/test/test_future.h"
 #include "chrome/browser/glic/host/glic.mojom-forward.h"
 #include "chrome/browser/glic/public/glic_instance.h"
-#include "chrome/browser/glic/test_support/test_result.h"
 #include "components/tabs/public/tab_interface.h"
 
 class AccountCapabilitiesTestMutator;
@@ -112,88 +108,6 @@ class GlicInstanceTracker {
   bool track_only_glic_instance_ = false;
 };
 #endif  // !BUILDFLAG(IS_ANDROID)
-
-class GlicClientConnectionObserverImpl;
-
-// Queues events, and allows waiting on them.
-template <typename T>
-class EventWaiter {
- public:
-  EventWaiter() : future_(base::test::TestFutureMode::kQueue) {}
-  ~EventWaiter() { Clear(); }
-
-  // Add an event.
-  void AddEvent(T event) { future_.SetValue(std::move(event)); }
-
-  // Wait until the predicate is true for one of the events.
-  // Consume all events passed to the predicate.
-  [[nodiscard]] TestResult<> WaitUntil(
-      base::RepeatingCallback<bool(const T&)> predicate) {
-    rejected_events_.clear();
-    while (true) {
-      // Wait until there is a value or a timeout.
-      if (!future_.IsReady() && !future_.Wait()) {
-        break;
-      }
-      T event = future_.Take();
-      if (predicate.Run(event)) {
-        future_.Clear();
-        return base::ok();
-      }
-      rejected_events_.push_back(std::move(event));
-    }
-
-    std::stringstream ss;
-    ss << "Predicate not matched. Saw values: {";
-    for (const auto& value : rejected_events_) {
-      ss << value << ", ";
-    }
-    ss << "}";
-    return base::unexpected(ss.str());
-  }
-
-  [[nodiscard]] TestResult<> WaitUntilEqual(const T& expected) {
-    return WaitUntil(base::BindRepeating(
-        [](const T& expected, const T& event) { return event == expected; },
-        expected));
-  }
-
-  // Clear all buffered events.
-  void Clear() {
-    future_.Clear();
-    rejected_events_.clear();
-  }
-
- private:
-  base::test::TestFuture<T> future_;
-  std::vector<T> rejected_events_;
-};
-
-// Begins listening to client connection events for a glic instance at
-// construction, and allows the test to wait for client connection and
-// disconnection.
-class GlicClientConnectionObserver {
- public:
-  explicit GlicClientConnectionObserver(GlicInstance*);
-  ~GlicClientConnectionObserver();
-
-  // Waits until the client is connected, discarding all events to that point.
-  // Calling this twice, for example, would assert that the client was connected
-  // at least two times.
-  [[nodiscard]] TestResult<> WaitForConnected();
-  // Waits until the client is disconnected, discarding all events to that
-  // point.
-  [[nodiscard]] TestResult<> WaitForDisconnected();
-  // Clears all events received.
-  void Clear();
-
- private:
-  void Notify(bool is_connected);
-  friend class GlicClientConnectionObserverImpl;
-
-  std::unique_ptr<GlicClientConnectionObserverImpl> impl_;
-  EventWaiter<bool> waiter_;
-};
 
 // Returns the only glic instance for the given profile, or nullptr if none is
 // found. CHECK fails if there is ever more than one.
