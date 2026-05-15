@@ -14,6 +14,7 @@
 #include "ui/accelerated_widget_mac/ca_renderer_layer_tree.h"
 #include "ui/base/cocoa/animation_utils.h"
 #include "ui/base/cocoa/remote_layer_api.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/gfx/ca_layer_params.h"
 #include "ui/gfx/mac/mtl_shared_event_fence.h"
 #include "ui/gl/gl_context.h"
@@ -185,7 +186,8 @@ void CALayerTreeCoordinator::CommitPresentedFrameToCA(
   if (has_resized_since_last_swap_) {
     // Create a new CAContext at the new size. This allows new frame update at
     // the new size to be atomic with things like resizing the NSWindow.
-    if (allow_remote_layers_) {
+    if (base::FeatureList::IsEnabled(features::kCATransactionV2) &&
+        allow_remote_layers_) {
       params.ca_context_fence_mach_port.reset([ca_context_ createFencePort]);
       [ca_context_ setFencePort:params.ca_context_fence_mach_port.get()];
       ca_context_.layer = nil;
