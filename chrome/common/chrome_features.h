@@ -511,21 +511,6 @@ BASE_DECLARE_FEATURE(kGlicBindPinnedUnboundTab);
 COMPONENT_EXPORT(CHROME_FEATURES)
 BASE_DECLARE_FEATURE(kGlicExplicitBackgroundColor);
 
-// Features to experiment with resetting the panel default location.
-COMPONENT_EXPORT(CHROME_FEATURES)
-BASE_DECLARE_FEATURE(kGlicPanelResetTopChromeButton);
-COMPONENT_EXPORT(CHROME_FEATURES)
-extern const base::FeatureParam<int> kGlicPanelResetTopChromeButtonDelayMs;
-COMPONENT_EXPORT(CHROME_FEATURES)
-BASE_DECLARE_FEATURE(kGlicPanelResetOnStart);
-COMPONENT_EXPORT(CHROME_FEATURES)
-BASE_DECLARE_FEATURE(kGlicPanelSetPositionOnDrag);
-COMPONENT_EXPORT(CHROME_FEATURES)
-BASE_DECLARE_FEATURE(kGlicPanelResetOnSessionTimeout);
-COMPONENT_EXPORT(CHROME_FEATURES)
-extern const base::FeatureParam<double> kGlicPanelResetOnSessionTimeoutDelayH;
-COMPONENT_EXPORT(CHROME_FEATURES)
-BASE_DECLARE_FEATURE(kGlicPanelResetSizeAndLocationOnOpen);
 COMPONENT_EXPORT(CHROME_FEATURES)
 BASE_DECLARE_FEATURE(kGlicPersonalContext);
 COMPONENT_EXPORT(CHROME_FEATURES)

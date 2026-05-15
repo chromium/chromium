@@ -655,11 +655,6 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
       state->host_capabilities.push_back(mojom::HostCapability::kScrollToPdf);
     }
 #endif
-    if (base::FeatureList::IsEnabled(
-            features::kGlicPanelResetSizeAndLocationOnOpen)) {
-      state->host_capabilities.push_back(
-          mojom::HostCapability::kResetSizeAndLocationOnOpen);
-    }
     state->host_capabilities.push_back(mojom::HostCapability::kMultiInstance);
 
     if (GlicEnabling::IsAutoOpenForPdfEnabled(profile_)) {

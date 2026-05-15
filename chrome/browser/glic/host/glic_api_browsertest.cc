@@ -2969,12 +2969,8 @@ class GlicGetHostCapabilityApiTest : public GlicApiTestWithOneTab {
     if (GetParam().enable_scroll_to_pdf) {
       enabled_features.push_back(
           {features::kGlicScrollTo, {{"glic-scroll-to-pdf", "true"}}});
-      enabled_features.push_back(
-          {features::kGlicPanelResetSizeAndLocationOnOpen, {}});
     } else {
       disabled_features.push_back(features::kGlicScrollTo);
-      disabled_features.push_back(
-          features::kGlicPanelResetSizeAndLocationOnOpen);
     }
 
     enabled_features.push_back({features::kGlicMultiInstance, {}});

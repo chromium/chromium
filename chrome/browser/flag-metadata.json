@@ -5339,46 +5339,6 @@
     "expiry_milestone": 150
   },
   {
-    "name":"glic-panel-reset-on-session-timeout" ,
-    "owners": [
-      "perrier@chromium.org",
-      "//chrome/browser/glic/OWNERS"
-    ],
-    "expiry_milestone": 144
-  },
-  {
-    "name":"glic-panel-reset-on-start" ,
-    "owners": [
-      "perrier@chromium.org",
-      "//chrome/browser/glic/OWNERS"
-    ],
-    "expiry_milestone": 144
-  },
-  {
-    "name":"glic-panel-reset-size-and-location-on-open" ,
-    "owners": [
-      "perrier@chromium.org",
-      "//chrome/browser/glic/OWNERS"
-    ],
-    "expiry_milestone": 144
-  },
-  {
-    "name":"glic-panel-reset-top-chrome-button" ,
-    "owners": [
-      "perrier@chromium.org",
-      "//chrome/browser/glic/OWNERS"
-    ],
-    "expiry_milestone": 144
-  },
-  {
-    "name":"glic-panel-set-position-on-drag" ,
-    "owners": [
-      "perrier@chromium.org",
-      "//chrome/browser/glic/OWNERS"
-    ],
-    "expiry_milestone": 144
-  },
-  {
     "name": "glic-pdf-summarize",
     "owners": [ "erikchen@chromium.org", "//chrome/browser/glic/OWNERS" ],
     "expiry_milestone": 155

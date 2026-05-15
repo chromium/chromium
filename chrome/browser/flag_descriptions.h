@@ -1526,27 +1526,7 @@ inline constexpr char kGlicLiveModeOnlyGlowName[] = "Glic Live Mode Only Glow";
 inline constexpr char kGlicLiveModeOnlyGlowDescription[] =
     "The Gemini glow around the web contents will only appear when in live "
     "mode, rather than being always on the current page.";
-inline constexpr char kGlicPanelResetTopChromeButtonName[] =
-    "Glic Panel Reset With Top Chrome Button";
-inline constexpr char kGlicPanelResetTopChromeButtonDescription[] =
-    "Configure how the tab strip button can be used to reset the glic panel "
-    "location.";
-inline constexpr char kGlicPanelResetOnStartName[] =
-    "Glic Panel Reset On Start";
-inline constexpr char kGlicPanelResetOnStartDescription[] =
-    "Enables resetting the glic panel position on startup.";
-inline constexpr char kGlicPanelSetPositionOnDragName[] =
-    "Glic Panel Set Position On Drag";
-inline constexpr char kGlicPanelSetPositionOnDragDescription[] =
-    "Enables only saving the glic panel position after a drag.";
-inline constexpr char kGlicPanelResetOnSessionTimeoutName[] =
-    "Glic Panel Reset On Session Timeout";
-inline constexpr char kGlicPanelResetOnSessionTimeoutDescription[] =
-    "Enables resetting the panel position after a session timeout.";
-inline constexpr char kGlicPanelResetSizeAndLocationName[] =
-    "Glic Panel Reset Size and Location";
-inline constexpr char kGlicPanelResetSizeAndLocationDescription[] =
-    "Enables resetting the panel size and position on every open.";
+
 inline constexpr char kGlicPrintMenuItemName[] = "Glic Print Menu Item";
 inline constexpr char kGlicPrintMenuItemDescription[] =
     "Enables showing the Glic print contextual menu item.";

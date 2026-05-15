@@ -590,16 +590,7 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorUiTest, TestInitialBounds) {
 class GlicInstanceCoordinatorLocationMetricsUiTest
     : public GlicInstanceCoordinatorUiTest {
  public:
-  GlicInstanceCoordinatorLocationMetricsUiTest() {
-    features_.InitWithFeatures(
-        /*enabled_features=*/{},
-        /*disabled_features=*/{features::kGlicPanelResetOnSessionTimeout,
-                               features::kGlicPanelResetSizeAndLocationOnOpen});
-  }
   ~GlicInstanceCoordinatorLocationMetricsUiTest() override = default;
-
- private:
-  base::test::ScopedFeatureList features_;
 };
 
 IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorLocationMetricsUiTest,
@@ -723,13 +714,6 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorUiTest,
 class GlicInstanceCoordinatorWithPreviousPostionUiTest
     : public GlicInstanceCoordinatorUiTest {
  public:
-  GlicInstanceCoordinatorWithPreviousPostionUiTest() {
-    features_.InitWithFeatures(
-        /*enabled_features=*/{},
-        /*disabled_features=*/{features::kGlicPanelResetOnSessionTimeout,
-                               features::kGlicPanelResetSizeAndLocationOnOpen,
-                               features::kGlicPanelResetOnStart});
-  }
   void SetUpBrowserContextKeyedServices(
       content::BrowserContext* context) override {
     // Set initial bounds via pref and check that they are used.
@@ -739,9 +723,6 @@ class GlicInstanceCoordinatorWithPreviousPostionUiTest
         prefs::kGlicPreviousPositionY, 10);
     test::InteractiveGlicTest::SetUpBrowserContextKeyedServices(context);
   }
-
- private:
-  base::test::ScopedFeatureList features_;
 };
 
 IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorWithPreviousPostionUiTest,

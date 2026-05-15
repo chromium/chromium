@@ -764,19 +764,6 @@ BASE_FEATURE(kGlicBindPinnedUnboundTab, base::FEATURE_ENABLED_BY_DEFAULT);
 // glic client background color.
 BASE_FEATURE(kGlicExplicitBackgroundColor, base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Features to experiment with resetting the panel default location.
-BASE_FEATURE(kGlicPanelResetTopChromeButton, base::FEATURE_ENABLED_BY_DEFAULT);
-const base::FeatureParam<int> kGlicPanelResetTopChromeButtonDelayMs{
-    &kGlicPanelResetTopChromeButton, "glic-panel-reset-delay-ms", 2500};
-BASE_FEATURE(kGlicPanelResetOnStart, base::FEATURE_ENABLED_BY_DEFAULT);
-BASE_FEATURE(kGlicPanelSetPositionOnDrag, base::FEATURE_ENABLED_BY_DEFAULT);
-BASE_FEATURE(kGlicPanelResetOnSessionTimeout, base::FEATURE_ENABLED_BY_DEFAULT);
-const base::FeatureParam<double> kGlicPanelResetOnSessionTimeoutDelayH{
-    &kGlicPanelResetOnSessionTimeout,
-    "glic-panel-reset-session-timeout-delay-h", 1};
-BASE_FEATURE(kGlicPanelResetSizeAndLocationOnOpen,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kGlicPersonalContext, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kGlicGeminiInstructions, base::FEATURE_DISABLED_BY_DEFAULT);
 

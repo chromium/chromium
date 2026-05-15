@@ -467,8 +467,6 @@ source_set("impl") {
       "widget/glic_widget.cc",
       "widget/glic_window_animator.cc",
       "widget/glic_window_animator.h",
-      "widget/glic_window_config.cc",
-      "widget/glic_window_config.h",
       "widget/glic_window_resize_animation.cc",
       "widget/glic_window_resize_animation.h",
       "widget/inactive_view_controller.cc",
