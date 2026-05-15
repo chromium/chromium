@@ -311,6 +311,16 @@ web::WebState* ActorService::GetWebStateForID(web::WebStateID web_state_id,
   return web_state;
 }
 
+void ActorService::AddControlledWebState(ActorTaskId task_id,
+                                         web::WebState* web_state) {
+  CHECK(IsActorEnabled());
+
+  auto it = active_tasks_.find(task_id);
+  if (it != active_tasks_.end()) {
+    it->second->AddControlledWebState(web_state);
+  }
+}
+
 void ActorService::PauseTask(ActorTaskId task_id, bool from_actor) {
   // TODO(crbug.com/496163986): Implement and test.
 }

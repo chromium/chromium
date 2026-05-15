@@ -68,6 +68,19 @@ void LogTaskStateTransition(AggregatedJournal* journal,
   journal->Log(GURL(), task_id, "ActorTask::SetState", std::move(details));
 }
 
+// Logs adding a controlled WebState to the journal.
+void LogAddControlledWebState(AggregatedJournal* journal,
+                              ActorTaskId task_id,
+                              web::WebStateID web_state_id) {
+  CHECK(journal);
+
+  std::vector<JournalDetails> details = {
+      {"web_state_id", base::NumberToString(web_state_id.identifier())}};
+
+  journal->Log(GURL::EmptyGURL(), task_id, "ActorTask::AddControlledWebState",
+               std::move(details));
+}
+
 }  // namespace
 
 ActorTask::ActorTask(ActorTaskId task_id,
@@ -146,17 +159,22 @@ void ActorTask::AddControlledWebStates(
       continue;
     }
 
-    base::WeakPtr<web::WebState> web_state = action->GetTargetWebState();
-    if (!web_state) {
-      continue;
-    }
+    AddControlledWebState(action->GetTargetWebState().get());
+  }
+}
 
-    if (!std::ranges::contains(controlled_web_states_, web_state.get(),
-                               &base::WeakPtr<web::WebState>::get)) {
-      controlled_web_states_.push_back(web_state);
-      [observers_ actorTaskWithID:task_id_
-                   didAddWebState:web_state->GetUniqueIdentifier()];
-    }
+void ActorTask::AddControlledWebState(web::WebState* web_state) {
+  if (!web_state) {
+    return;
+  }
+
+  if (!std::ranges::contains(controlled_web_states_, web_state,
+                             &base::WeakPtr<web::WebState>::get)) {
+    LogAddControlledWebState(journal_, task_id_,
+                             web_state->GetUniqueIdentifier());
+    controlled_web_states_.push_back(web_state->GetWeakPtr());
+    [observers_ actorTaskWithID:task_id_
+                 didAddWebState:web_state->GetUniqueIdentifier()];
   }
 }
 

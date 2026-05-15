@@ -290,6 +290,38 @@ TEST_F(ActorServiceTest, GetWebStateForID_Controlled) {
   browser_list->RemoveBrowser(test_browser.get());
 }
 
+// Tests that AddControlledWebState correctly adds a WebState so that
+// GetWebStateForID finds it immediately before any actions are performed.
+TEST_F(ActorServiceTest, AddControlledWebState) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(kActorTools);
+
+  ActorService* service = ActorServiceFactory::GetForProfile(profile_.get());
+  ASSERT_NE(nullptr, service);
+
+  ActorTaskId task_id =
+      service->CreateTask("Test Task", /*allow_incognito_web_states=*/false);
+
+  BrowserList* browser_list = BrowserListFactory::GetForProfile(profile_.get());
+  auto test_browser = std::make_unique<TestBrowser>(profile_.get());
+  browser_list->AddBrowser(test_browser.get());
+
+  auto fake_web_state = std::make_unique<web::FakeWebState>();
+  web::WebStateID web_state_id = fake_web_state->GetUniqueIdentifier();
+  auto* fake_web_state_ptr = fake_web_state.get();
+
+  test_browser->GetWebStateList()->InsertWebState(std::move(fake_web_state));
+
+  EXPECT_EQ(nullptr, service->GetWebStateForID(web_state_id, task_id));
+
+  service->AddControlledWebState(task_id, fake_web_state_ptr);
+
+  EXPECT_EQ(fake_web_state_ptr,
+            service->GetWebStateForID(web_state_id, task_id));
+
+  browser_list->RemoveBrowser(test_browser.get());
+}
+
 // Tests that GetWebStateForID does not find a tab in an incognito browser if
 // the task does not allow incognito.
 TEST_F(ActorServiceTest, GetWebStateForID_Incognito_NotAllowed) {

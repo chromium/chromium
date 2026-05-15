@@ -291,6 +291,44 @@ TEST_F(ActorTaskTest, AddControlledWebStateNotifiesObserver) {
             observer.addedWebStateId.identifier());
 }
 
+// Tests that AddControlledWebState correctly adds a WebState to the controlled
+// list and notifies observers.
+TEST_F(ActorTaskTest, AddControlledWebState) {
+  FakeActorTaskUpdatesObserver* observer =
+      [[FakeActorTaskUpdatesObserver alloc] init];
+  task_->AddObserver(observer);
+
+  std::unique_ptr<web::FakeWebState> web_state =
+      std::make_unique<web::FakeWebState>();
+
+  observer.didAddWebStateCalled = NO;
+  task_->AddControlledWebState(web_state.get());
+
+  EXPECT_TRUE(observer.didAddWebStateCalled);
+  EXPECT_EQ(web_state->GetUniqueIdentifier().identifier(),
+            observer.addedWebStateId.identifier());
+
+  const auto& controlled_states = GetControlledWebStates();
+  EXPECT_EQ(1u, controlled_states.size());
+  EXPECT_EQ(web_state.get(), controlled_states[0].get());
+
+  std::vector<JournalEntry> logs = journal_->GetLogs();
+  ASSERT_EQ(1u, logs.size());
+  EXPECT_EQ("ActorTask::AddControlledWebState", logs[0].event);
+  ASSERT_EQ(1u, logs[0].details.size());
+  EXPECT_EQ("web_state_id", logs[0].details[0].key);
+  EXPECT_EQ(base::NumberToString(web_state->GetUniqueIdentifier().identifier()),
+            logs[0].details[0].value);
+
+  // Test adding nullptr or duplicate.
+  observer.didAddWebStateCalled = NO;
+  task_->AddControlledWebState(nullptr);
+  task_->AddControlledWebState(web_state.get());
+  EXPECT_FALSE(observer.didAddWebStateCalled);
+  EXPECT_EQ(1u, GetControlledWebStates().size());
+  EXPECT_EQ(1u, journal_->GetLogs().size());
+}
+
 // Tests that AddObserver registers the observer and immediately sends the
 // current state and controlled web states.
 TEST_F(ActorTaskTest, AddObserverTriggersImmediateSync) {

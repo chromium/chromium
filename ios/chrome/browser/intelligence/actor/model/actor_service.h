@@ -90,6 +90,9 @@ class ActorService : public KeyedService {
   web::WebState* GetWebStateForID(web::WebStateID web_state_id,
                                   ActorTaskId task_id);
 
+  // Adds a WebState to the set of controlled WebStates for the given task.
+  void AddControlledWebState(ActorTaskId task_id, web::WebState* web_state);
+
  private:
   // The profile associated with this service instance.
   raw_ptr<ProfileIOS> profile_;

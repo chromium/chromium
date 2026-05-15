@@ -126,13 +126,16 @@ TEST_F(GeminiActuationHandlerTest, PerformActions_InvalidProto) {
   EXPECT_TRUE(callback_called);
 }
 
-// Tests that performActions succeeds with an empty list of protos.
+// Tests that performActions completes with success and extracts tab observation
+// when passed an empty list of protos.
 TEST_F(GeminiActuationHandlerTest, PerformActions_EmptyProtos) {
   GeminiActuationHandler* handler = [[GeminiActuationHandler alloc]
       initWithActorService:actor_service_
               webStateList:browser_->GetWebStateList()];
   actor::ActorTaskId task_id = [handler createTaskWithTitle:@"Test Task"];
 
+  base::RunLoop run_loop;
+  base::RepeatingClosure quit_closure = run_loop.QuitClosure();
   __block BOOL callback_called = NO;
   auto completionBlock = ^(NSData* serializedActionsResult) {
     callback_called = YES;
@@ -140,15 +143,18 @@ TEST_F(GeminiActuationHandlerTest, PerformActions_EmptyProtos) {
       optimization_guide::proto::ActionsResult actions_result;
       EXPECT_TRUE(actions_result.ParseFromArray(
           [serializedActionsResult bytes], [serializedActionsResult length]));
-      EXPECT_EQ(actions_result.action_result(), 0);
-      EXPECT_EQ(actions_result.tabs_size(), 0);
+      EXPECT_EQ(actions_result.action_result(), actor::kActionResultSuccess);
+      EXPECT_EQ(actions_result.tabs_size(), 1);
+      EXPECT_EQ(actions_result.tabs(0).id(), 123);
     }
+    quit_closure.Run();
   };
 
   [handler performActionsWithTaskID:task_id
                          taskUpdate:@"Update"
              serializedActionProtos:@[]
                     completionBlock:completionBlock];
+  run_loop.Run();
   EXPECT_TRUE(callback_called);
 }
 

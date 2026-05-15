@@ -67,6 +67,9 @@ class ActorTask : public web::WebStateObserver,
            const std::string& task_update,
            ActCallback callback);
 
+  // Adds a WebState to the set of controlled WebStates.
+  void AddControlledWebState(web::WebState* web_state);
+
   // Stops the task and cancels any pending actions.
   void Stop(ActorTaskStoppedReason stop_reason);
 

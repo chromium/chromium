@@ -241,6 +241,15 @@ void InjectTabIdIntoAction(optimization_guide::proto::Action& action,
   completionBlock(data);
 }
 
+// Returns the WebStateID for the given task ID, or an invalid ID if not found.
+- (web::WebStateID)webStateIDForTaskID:(actor::ActorTaskId)taskID {
+  auto it = _taskToWebStateIDMap.find(taskID);
+  if (it == _taskToWebStateIDMap.end()) {
+    return web::WebStateID();
+  }
+  return it->second;
+}
+
 #pragma mark - GeminiActuationDelegate
 
 - (actor::ActorTaskId)createTaskWithTitle:(NSString*)title {
@@ -258,6 +267,7 @@ void InjectTabIdIntoAction(optimization_guide::proto::Action& action,
 
   taskID = _actorService->CreateTask(base::SysNSStringToUTF8(title),
                                      /*allow_incognito_web_states=*/false);
+  _actorService->AddControlledWebState(taskID, activeWebState);
   _taskToWebStateIDMap[taskID] = activeWebState->GetUniqueIdentifier();
   return taskID;
 }
@@ -277,17 +287,14 @@ void InjectTabIdIntoAction(optimization_guide::proto::Action& action,
           serializedActionProtos:(NSArray<NSData*>*)serializedActionProtos
                  completionBlock:(void (^)(NSData* serializedActionsResult))
                                      completionBlock {
-  if (!completionBlock) {
-    return;
-  }
+  CHECK(completionBlock);
 
-  auto it = _taskToWebStateIDMap.find(taskID);
-  if (it == _taskToWebStateIDMap.end()) {
+  web::WebStateID webStateId = [self webStateIDForTaskID:taskID];
+  if (!webStateId.valid()) {
     completionBlock(CreateSerializedFailureActionsResult(
         "Failed to perform actions: Task ID not found."));
     return;
   }
-  web::WebStateID webStateId = it->second;
 
   std::vector<optimization_guide::proto::Action> actions;
   for (NSData* data in serializedActionProtos) {
