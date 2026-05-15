@@ -237,7 +237,8 @@ network::mojom::URLLoaderFactoryParamsPtr
 URLLoaderFactoryParamsHelper::CreateForPrefetch(
     RenderFrameHostImpl* frame,
     network::mojom::ClientSecurityStatePtr client_security_state,
-    net::CookieSettingOverrides cookie_setting_overrides) {
+    net::CookieSettingOverrides cookie_setting_overrides,
+    const std::optional<base::UnguessableToken>& network_restrictions_id) {
   // The factory client |is_trusted| to control the |network_isolation_key| in
   // each separate request (rather than forcing the client to use the key
   // specified in URLLoaderFactoryParams).
@@ -265,8 +266,7 @@ URLLoaderFactoryParamsHelper::CreateForPrefetch(
       network::mojom::TrustTokenOperationPolicyVerdict::kForbid,
       cookie_setting_overrides, "ParamHelper::CreateForPrefetch",
       /*require_cross_site_request_for_cookies=*/false,
-      /*is_for_service_worker=*/false,
-      /*TODO(crbug.com/447954811): network_restrictions_id*/ std::nullopt);
+      /*is_for_service_worker=*/false, network_restrictions_id);
 }
 
 // static

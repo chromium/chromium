@@ -92,7 +92,8 @@ class URLLoaderFactoryParamsHelper {
   static network::mojom::URLLoaderFactoryParamsPtr CreateForPrefetch(
       RenderFrameHostImpl* frame,
       network::mojom::ClientSecurityStatePtr client_security_state,
-      net::CookieSettingOverrides cookie_setting_overrides);
+      net::CookieSettingOverrides cookie_setting_overrides,
+      const std::optional<base::UnguessableToken>& network_restrictions_id);
 
   // Creates URLLoaderFactoryParams for either fetching the worker script or for
   // fetches initiated from a worker.

@@ -10214,7 +10214,8 @@ RenderFrameHostImpl::CreateCrossOriginPrefetchLoaderFactoryBundle() {
   network::mojom::URLLoaderFactoryParamsPtr factory_params =
       URLLoaderFactoryParamsHelper::CreateForPrefetch(
           this, subresource_loader_factories_config.GetClientSecurityState(),
-          subresource_loader_factories_config.cookie_setting_overrides());
+          subresource_loader_factories_config.cookie_setting_overrides(),
+          subresource_loader_factories_config.network_restrictions_id());
 
   mojo::PendingRemote<network::mojom::URLLoaderFactory> pending_default_factory;
   bool bypass_redirect_checks = false;

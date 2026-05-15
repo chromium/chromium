@@ -912,4 +912,56 @@ IN_PROC_BROWSER_TEST_F(ConnectionAllowlistTest, UseCounterForWorker) {
           )"));
 }
 
+// TODO(crbug.com/40752428): There is a race condition which makes
+// `CreateCrossOriginPrefetchLoaderFactoryBundle()` sometimes called on the
+// previous document, before the new document is committed. Once it is fixed,
+// add a similar test to "LinkCrossOriginDocumentPrefetch" but use header
+// triggered prefetch. Otherwise that test will be flaky.
+IN_PROC_BROWSER_TEST_F(ConnectionAllowlistTest,
+                       LinkCrossOriginDocumentPrefetch) {
+  RegisterResponse(kCrossOriginAllowlistedPage,
+                   ResponseEntry("<html><body>Hello</body></html>",
+                                 {{"Connection-Allowlist",
+                                   R"((response-origin "*://b.test:*/*"))"}}));
+
+  auto server_handle = embedded_https_test_server().StartAndReturnHandle();
+  ASSERT_TRUE(server_handle);
+
+  GURL main_url = embedded_https_test_server().GetURL(
+      "a.test", kCrossOriginAllowlistedPage);
+  GURL allowed_url =
+      embedded_https_test_server().GetURL("b.test", "/allow.html");
+  GURL denied_url = embedded_https_test_server().GetURL("c.test", "/deny.html");
+
+  URLLoaderMonitor monitor;
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+
+  EXPECT_TRUE(ExecJs(shell()->web_contents(),
+                     content::JsReplace(R"(
+            var allowed_link = document.createElement('link');
+            allowed_link.href = $1;
+            allowed_link.rel = 'prefetch';
+            allowed_link.as = 'document';
+
+            var denied_link = document.createElement('link');
+            denied_link.href = $2;
+            denied_link.rel = 'prefetch';
+            denied_link.as = 'document';
+
+            document.body.appendChild(allowed_link);
+            document.body.appendChild(denied_link);
+          )",
+                                        allowed_url, denied_url)));
+
+  monitor.WaitForUrls({allowed_url, denied_url});
+  EXPECT_EQ(monitor.WaitForRequestCompletion(denied_url).error_code,
+            net::ERR_NETWORK_ACCESS_REVOKED);
+  EXPECT_EQ(monitor.WaitForRequestCompletion(allowed_url).error_code, net::OK);
+  std::optional<network::ResourceRequest> request =
+      monitor.GetRequestInfo(allowed_url);
+  ASSERT_TRUE(request.has_value());
+  EXPECT_EQ(request->resource_type,
+            static_cast<int>(blink::mojom::ResourceType::kPrefetch));
+}
+
 }  // namespace content
