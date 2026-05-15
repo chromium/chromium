@@ -83,8 +83,9 @@ export interface Bar {
   isSpawning: boolean;
   isUnspawned: boolean;
   initialScale: number;
-  currentScale: number;
-  velocity: number;
+  spawnTimeMs: number;
+  currentScaleX: number;
+  currentScaleY: number;
   jitterFactor: number;
   targetHeightPx: number;
 }
@@ -122,16 +123,18 @@ export const BAR_GAP = 7;
 // Maximum height of each bar, in px.
 const MAX_BAR_HEIGHT = 36;
 
-// Target decimal percentage of the height that the bar should end up at
-// after oscillating.
-const TARGET_SCALE = 1.0;
+// Spring constants to match Android spring behavior.
+// Force of the spring.
+const SPRING_STIFFNESS = 200.0;
 
-// Controls the stiffness of the spring oscillation movement. Higher means more
-// force and eventual velocity.
-const STIFFNESS = 0.4;
+// Friction to slow down speed of height change of pills.
+const SPRING_DAMPING_HEIGHT = 0.3;
 
-// Friction/slowing down of animation after oscillation movement.
-const DAMPING = 0.62;
+// Friction to slow down speed of width change of pills.
+const SPRING_DAMPING_WIDTH = 0.7;
+
+// Time it takes for the spring to settle to a stop.
+const SPRING_SETTLE_TIME_SECONDS = 0.65;
 
 // Value to simply increase the raw volume level in the animation (output).
 const VOLUME_MULTIPLIER = 2.2;
@@ -185,6 +188,40 @@ const lerpColor = (color1: Rgb, color2: Rgb, t: number) => ({
   b: Math.round(lerp(color1.b, color2.b, t)),
 });
 
+// Solves the closed-form analytical position of an under-damped harmonic
+// spring at continuous time t (seconds), assuming initial position 0, target
+// position 1, and initial velocity 0.
+function solveAnalyticalSpring(
+  timeSeconds: number,
+  stiffness: number,
+  dampingRatio: number,
+): number {
+  if (timeSeconds <= 0) {
+    return 0;
+  }
+  const undampedFrequency = Math.sqrt(stiffness);  // (angular frequency)
+
+  const dampedFrequency =
+      undampedFrequency * Math.sqrt(1.0 - dampingRatio * dampingRatio);
+
+  // Coefficient derived from boundary conditions.
+  // It ensures the spring starts at rest (initial velocity = 0 at t = 0).
+  // Under underdamped conditions, this scaling factor is:
+  const phaseOffsetCoefficient =
+      (dampingRatio * undampedFrequency) / dampedFrequency;
+
+  // Rate at which oscillation amplitude decays over time.
+  const decayEnvelope =
+      Math.exp(-dampingRatio * undampedFrequency * timeSeconds);
+
+  // Sinusoidal oscillation components (harmonic motion).
+  const oscillation = Math.cos(dampedFrequency * timeSeconds) +
+      phaseOffsetCoefficient * Math.sin(dampedFrequency * timeSeconds);
+
+  // Position starts at 0 and ends at 1.
+  return 1.0 - decayEnvelope * oscillation;
+}
+
 export class RecordingWaveElement extends CrLitElement {
   static get is() {
     return 'recording-wave';
@@ -211,7 +248,6 @@ export class RecordingWaveElement extends CrLitElement {
 
   private barsData_: Bar[] = [];
   private lastDrawTimestamp_: number = performance.now();
-  private lastFrameTime_: number = performance.now();
   private animationFrameId_: number|null = null;
 
   override disconnectedCallback() {
@@ -244,8 +280,9 @@ export class RecordingWaveElement extends CrLitElement {
             // been 'turned on').
             isSpawning: false,
             initialScale: 1,
-            currentScale: 0,
-            velocity: 0,
+            spawnTimeMs: 0,
+            currentScaleX: 0,
+            currentScaleY: 0,
             jitterFactor: 0,
             targetHeightPx: DEFAULT_STARTING_HEIGHT,
           });
@@ -259,7 +296,6 @@ export class RecordingWaveElement extends CrLitElement {
         }
 
         this.lastDrawTimestamp_ = performance.now();
-        this.lastFrameTime_ = performance.now();
         if (this.animationFrameId_ === null) {
           this.animationFrameId_ = requestAnimationFrame(this.animationLoop_);
         }
@@ -293,14 +329,11 @@ export class RecordingWaveElement extends CrLitElement {
 
     const now = performance.now();
 
-    // Normalize total time elapsed since last frame as a
-    // progress percentage by 33.33ms (30FPS).
-    // This is used for height/width animations, but not sliding of bars.
-    const timeDelta = (now - this.lastFrameTime_) / 33.33;
-    this.lastFrameTime_ = now;
-
-    // Time elapsed since last frame. This is used as a progress bar between
-    // frames to draw "pseudo frames" for sliding of bars.
+    // Time elapsed since the last bar was created. Note that this is used solely
+    // for deciding when to spawn a new bar and for smooth sliding/scrolling
+    // transitions of the entire wave container to the left. It is not used for
+    // the spring physics simulation of individual bars, which operates on absolute time
+    // and no longer delta time (the time since last frame).
     let elapsed = now - this.lastDrawTimestamp_;
 
     // If it is time to create a new bar:
@@ -316,8 +349,9 @@ export class RecordingWaveElement extends CrLitElement {
         isUnspawned: true,
         isSpawning: false,
         initialScale: 1,
-        currentScale: 0,
-        velocity: 0,
+        spawnTimeMs: 0,
+        currentScaleX: 0,
+        currentScaleY: 0,
         jitterFactor: jitterFactor,
         targetHeightPx: DEFAULT_STARTING_HEIGHT,
       });
@@ -379,36 +413,27 @@ export class RecordingWaveElement extends CrLitElement {
         bar.targetHeightPx =
             Math.max(Math.min(liveLevel, 1), 0.1) * MAX_BAR_HEIGHT;
         bar.initialScale = 4 / bar.targetHeightPx;
+        bar.spawnTimeMs = performance.now();
+        bar.currentScaleX = 0;
+        bar.currentScaleY = 0;
       }
       // If it has been initialized before and is 'springing' towards its goal
-      // volume height.
+      // volume height and width.
       if (bar.isSpawning) {
-        // Uses Hooke's law: F = kx (force = spring constant * displacement).
-        // Spring constant == `STIFFNESS`: higher means more stiffness means
-        // more force/movement.
-        const force = STIFFNESS * (TARGET_SCALE - bar.currentScale);
-        // Update velocity based on force using y=Ft+b, where velocity_new is
-        // `y` and velocity_old is `b`. `F` is force, and `t` is time delta.
-        // Force is used instead of acceleration since for simpler simulation
-        // purposes, mass and thus inertia are effectively ignored, as mass is
-        // assumed to be '1'. Multiply by damping to add friction.
-        bar.velocity =
-            (bar.velocity + force * timeDelta) * Math.pow(DAMPING, timeDelta);
+        const t = (performance.now() - bar.spawnTimeMs) / 1000;
+        const currentScaleY = solveAnalyticalSpring(
+            t, SPRING_STIFFNESS, SPRING_DAMPING_HEIGHT);
+        const currentScaleX = solveAnalyticalSpring(
+            t, SPRING_STIFFNESS, SPRING_DAMPING_WIDTH);
 
-        // Update progress in its oscillation, which is used to determine
-        // current height/width of bar:
-        bar.currentScale += bar.velocity * timeDelta;
+        // Check if the spring has completed its oscillation and settled (reached
+        // the mechanical noise floor). Once done, snap the scales to 1.0 and
+        // disable further physics processing to conserve CPU cycles.
+        const isDone = t > SPRING_SETTLE_TIME_SECONDS;
 
-        // If the bar is close enough to its final size and almost stopped
-        // (less velocity), snap it to exactly 1.0 and disable physics
-        // processing to save CPU. Velocity must be near 0, as position due to
-        // oscillation (repeated cycles back and forth) does not indicate purely
-        // by itself if the spring oscillation is finished.
-        if (Math.abs(TARGET_SCALE - bar.currentScale) < 0.005 &&
-            Math.abs(bar.velocity) < 0.001) {
-          bar.currentScale = TARGET_SCALE;
-          bar.isSpawning = false;
-        }
+        bar.currentScaleY = isDone ? 1.0 : currentScaleY;
+        bar.currentScaleX = isDone ? 1.0 : currentScaleX;
+        bar.isSpawning = !isDone;
       }
 
       // Determine colors (the further left, the more lavender it is).
@@ -490,9 +515,9 @@ export class RecordingWaveElement extends CrLitElement {
           // to 1.0)
           // - scaleX: Expands the width from 50% to full size.
           // - scaleY: Stretches the height from the initial 4px scale up to
-          // full size.
-          const scaleX = lerp(0.5, 1, bar.currentScale);
-          const scaleY = lerp(bar.initialScale, 1, bar.currentScale);
+          //   full size.
+          const scaleX = lerp(0.5, 1, bar.currentScaleX);
+          const scaleY = lerp(bar.initialScale, 1, bar.currentScaleY);
           pill.style.transform = `scaleX(${scaleX}) scaleY(${scaleY})`;
 
           // Redundancy check/action:
