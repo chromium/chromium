@@ -750,6 +750,14 @@
       origin_trial_feature_name: "AutoDarkMode",
     },
     {
+      // When enabled, the dark mode filter (Auto Dark / force-dark) skips
+      // applying dark mode to images entirely; all images are kept untouched
+      // as if they are in light mode.
+      // P.N. `AutoDarkMode` needs to be applied separately.
+      name: "AutoDarkModeSkipImages",
+      base_feature: "none",
+    },
+    {
       name: "Autofill",
       public: true,
       status: "test",

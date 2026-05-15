@@ -19,6 +19,7 @@
 #include "third_party/blink/renderer/platform/graphics/dark_mode_image_classifier.h"
 #include "third_party/blink/renderer/platform/graphics/dark_mode_settings.h"
 #include "third_party/blink/renderer/platform/graphics/image.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/hash_functions.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -200,6 +201,12 @@ void DarkModeFilter::ApplyFilterToImage(Image* image,
                                         const SkRect& src) {
   DCHECK(image);
   DCHECK(flags);
+
+  // When the `AutoDarkModeSkipImages` feature is enabled, never apply dark mode
+  // to images bypassing classification entirely.
+  if (RuntimeEnabledFeatures::AutoDarkModeSkipImagesEnabled()) {
+    return;
+  }
 
   // Raster-side dark mode path - Just set the dark mode on flags and dark
   // mode will be applied at compositor side during rasterization.
