@@ -635,6 +635,7 @@ SelectorChecker::FeaturelessMatch SelectorChecker::MatchesShadowHostInList(
   sub_context.is_sub_selector = true;
   sub_context.in_nested_complex_selector = true;
   sub_context.pseudo_id = kPseudoIdNone;
+  sub_context.pseudo_element = nullptr;
   FeaturelessMatch match = kFeaturelessUnknown;
   for (sub_context.selector = selector_list; sub_context.selector;
        sub_context.selector = CSSSelectorList::Next(*sub_context.selector)) {
@@ -907,6 +908,47 @@ SelectorChecker::MatchStatus SelectorChecker::MatchSelector(
     result.custom_highlight_name = std::move(sub_result.custom_highlight_name);
   }
 
+  // If we're done matching the subject, we can determine the state of
+  // matching against pseudo-elements (if any). (The outer if will also
+  // trigger for ancestors etc., but neither pseudo_id nor pseudo_element
+  // will exist for them.)
+  //
+  // TODO(sesse): Move pseudo-selectors first, so that we can check this right
+  // away.
+  if (context.selector->IsLastInComplexSelector() ||
+      (context.selector->Relation() != CSSSelector::kSubSelector &&
+       context.selector->Relation() != CSSSelector::kPseudoChild)) {
+    // TODO(sesse): Is there a reason why this cannot simply be in
+    // CheckPseudoElement()?
+    if (!RuntimeEnabledFeatures::CSSLogicalCombinationPseudoEnabled() &&
+        context.pseudo_id != kPseudoIdNone &&
+        context.pseudo_id != result.dynamic_pseudo) {
+      return kSelectorFailsCompletely;
+    }
+
+    // If matching was for a pseudo-element with a vector of ancestors,
+    // check that we really reached the end of it. E.g., when matching
+    // the selector div::column::scroll-marker against a ::column
+    // pseudo-element, the vector would be just {::column}, and the
+    // index would be 1 (meaning that the matcher found the ::column,
+    // but also went further and found the pseudo-element selector
+    // ::scroll-marker; this is fine, as we'd get dynamic_pseudo).
+    //
+    // Likewise, for the selector div::column, the index would be 0
+    // (meaning that the entire selector matched, and nothing more),
+    // which is also a match.
+    //
+    // But for the opposite, namely the selector div::column against
+    // the pseudo-element ::column::scroll-marker (with the vector
+    // {::column, ::scroll-marker}), we'd get index 0, which isn't
+    // a match.
+    if (context.pseudo_element &&
+        (result.pseudo_ancestor_index == kNotFound ||
+         result.pseudo_ancestor_index <
+             context.pseudo_element_ancestors.size() - 1)) {
+      return kSelectorFailsCompletely;
+    }
+  }
   if (context.selector->IsLastInComplexSelector()) {
     return kSelectorMatches;
   }
@@ -915,12 +957,6 @@ SelectorChecker::MatchStatus SelectorChecker::MatchSelector(
     case CSSSelector::kSubSelector:
       return MatchForSubSelector(context, result);
     default: {
-      if (!RuntimeEnabledFeatures::CSSLogicalCombinationPseudoEnabled() &&
-          context.pseudo_id != kPseudoIdNone &&
-          context.pseudo_id != result.dynamic_pseudo) {
-        return kSelectorFailsCompletely;
-      }
-
       base::AutoReset<PseudoId> dynamic_pseudo_scope(&result.dynamic_pseudo,
                                                      kPseudoIdNone);
       return MatchForRelation(context, result);
@@ -1546,6 +1582,7 @@ bool SelectorChecker::MatchesAnyInList(const SelectorCheckingContext& context,
   // won't know that we're matching for a virtual pseudo within nested lists.
   if (!RuntimeEnabledFeatures::CSSLogicalCombinationPseudoEnabled()) {
     sub_context.pseudo_id = kPseudoIdNone;
+    sub_context.pseudo_element = nullptr;
   }
   for (sub_context.selector = selector_list; sub_context.selector;
        sub_context.selector = CSSSelectorList::Next(*sub_context.selector)) {
@@ -3299,6 +3336,8 @@ bool SelectorChecker::CheckPseudoElement(const SelectorCheckingContext& context,
       sub_context.is_sub_selector = true;
       sub_context.scope = nullptr;
       sub_context.tree_scope = nullptr;
+      sub_context.pseudo_id = kPseudoIdNone;
+      sub_context.pseudo_element = nullptr;
 
       // ::slotted() only allows one compound selector.
       DCHECK(selector.SelectorList()->First());
@@ -3523,6 +3562,8 @@ bool SelectorChecker::CheckPseudoHost(const SelectorCheckingContext& context,
   SelectorCheckingContext sub_context(context);
   sub_context.is_sub_selector = true;
   sub_context.selector = selector.SelectorList()->First();
+  sub_context.pseudo_id = kPseudoIdNone;
+  sub_context.pseudo_element = nullptr;
 
   // "When evaluated in the context of a shadow tree, it matches the shadow
   //  tree’s shadow host if the shadow host, **in its normal context**,

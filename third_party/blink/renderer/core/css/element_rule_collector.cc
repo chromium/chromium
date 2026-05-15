@@ -638,37 +638,6 @@ bool ElementRuleCollector::CollectMatchingRulesForListInternal(
       if (!match) {
         continue;
       }
-
-      // If matching was for a pseudo-element with a vector of ancestors,
-      // check that we really reached the end of it. E.g., when matching
-      // the selector div::column::scroll-marker against a ::column
-      // pseudo-element, the vector would be just {::column}, and the
-      // index would be 1 (meaning that the matcher found the ::column,
-      // but also went further and found the pseudo-element selector
-      // ::scroll-marker; this is fine, as we'd get dynamic_pseudo).
-      //
-      // Likewise, for the selector div::column, the index would be 0
-      // (meaning that the entire selector matched, and nothing more),
-      // which is also a match.
-      //
-      // But for the opposite, namely the selector div::column against
-      // the pseudo-element ::column::scroll-marker (with the vector
-      // {::column, ::scroll-marker}), we'd get index 0, which isn't
-      // a match.
-      if (context.context.pseudo_element &&
-          (result.pseudo_ancestor_index == kNotFound ||
-           result.pseudo_ancestor_index <
-               context.context.pseudo_element_ancestors.size() - 1)) {
-        continue;
-      }
-
-      // If the selector matched with some dynamic pseudo-element (i.e., “this
-      // would match if we matched against ::foo”, but we're actually matching
-      // against a _different_ pseudo-element (e.g. ::bar), it's not a match.
-      if (pseudo_style_request_.pseudo_id != kPseudoIdNone &&
-          pseudo_style_request_.pseudo_id != result.dynamic_pseudo) {
-        continue;
-      }
     }
     if (stop_at_first_match) {
       return true;
