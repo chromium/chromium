@@ -44,6 +44,7 @@ class FakePageLoadMetricsObserverDelegate
   // calling |AddBackForwardCacheRestore|.
   const BackForwardCacheRestore& GetBackForwardCacheRestore(
       size_t index) const override;
+  size_t GetNumBackForwardCacheRestores() const override;
   bool StartedInForeground() const override;
   PageVisibility GetVisibilityAtActivation() const override;
   bool IsReloadAfterDiscard() const override;

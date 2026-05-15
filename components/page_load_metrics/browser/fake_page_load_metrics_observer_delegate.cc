@@ -72,6 +72,11 @@ FakePageLoadMetricsObserverDelegate::GetBackForwardCacheRestore(
   return back_forward_cache_restores_[index];
 }
 
+size_t FakePageLoadMetricsObserverDelegate::GetNumBackForwardCacheRestores()
+    const {
+  return back_forward_cache_restores_.size();
+}
+
 bool FakePageLoadMetricsObserverDelegate::StartedInForeground() const {
   return started_in_foreground_;
 }

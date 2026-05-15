@@ -116,6 +116,8 @@ class PageLoadMetricsObserverDelegate {
   // The state of index-th restore from the back-forward cache.
   virtual const BackForwardCacheRestore& GetBackForwardCacheRestore(
       size_t index) const = 0;
+  // Get the number of back-forward cache restores recognized thus far.
+  virtual size_t GetNumBackForwardCacheRestores() const = 0;
 
   // True if the page load started in the foreground.
   virtual bool StartedInForeground() const = 0;

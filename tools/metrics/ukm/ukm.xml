@@ -23183,6 +23183,13 @@ be describing additional metrics about the same event.
       Type of the soft navigation. Corresponds to the first URL change.
     </summary>
   </metric>
+  <metric name="PageLoadType">
+    <summary>
+      Indicates whether the soft navigation occurred within a PageLoad event
+      (value 1), a PrerenderPageLoad event (value 2), or a HistoryNavigation
+      event (value 3). See page_load_metrics::PageLoadType.
+    </summary>
+  </metric>
   <metric name="PaintTiming.LargestContentfulPaint">
     <summary>
       Measures the LargestContentfulPaint in milliseconds from the start time of

@@ -18,6 +18,7 @@
 #include "components/page_load_metrics/browser/observers/same_origin_page_load_metrics_observer.h"
 #include "components/page_load_metrics/browser/observers/service_worker_page_load_metrics_observer.h"
 #include "components/page_load_metrics/browser/observers/shared_storage_page_load_metrics_observer.h"
+#include "components/page_load_metrics/browser/observers/soft_navigation_page_load_metrics_observer.h"
 #include "components/page_load_metrics/browser/observers/uma_file_and_data_page_load_metrics_observer.h"
 #include "components/page_load_metrics/browser/observers/use_counter_page_load_metrics_observer.h"
 #include "components/page_load_metrics/browser/page_load_tracker.h"
@@ -53,6 +54,8 @@ void PageLoadMetricsEmbedderBase::RegisterCommonObservers(
   tracker->AddObserver(std::make_unique<EarlyHintsPageLoadMetricsObserver>());
   tracker->AddObserver(std::make_unique<FencedFramesPageLoadMetricsObserver>());
   tracker->AddObserver(std::make_unique<PrerenderPageLoadMetricsObserver>());
+  tracker->AddObserver(
+      std::make_unique<SoftNavigationPageLoadMetricsObserver>());
   tracker->AddObserver(std::make_unique<SameOriginPageLoadMetricsObserver>());
   tracker->AddObserver(std::make_unique<CrossOriginPageLoadMetricsObserver>());
   if (base::FeatureList::IsEnabled(network::features::kSharedStorageAPI)) {

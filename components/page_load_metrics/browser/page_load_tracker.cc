@@ -1221,6 +1221,9 @@ const PageLoadMetricsObserverDelegate::BackForwardCacheRestore&
 PageLoadTracker::GetBackForwardCacheRestore(size_t index) const {
   return back_forward_cache_restores_[index];
 }
+size_t PageLoadTracker::GetNumBackForwardCacheRestores() const {
+  return back_forward_cache_restores_.size();
+}
 
 bool PageLoadTracker::StartedInForeground() const {
   return started_in_foreground_;
