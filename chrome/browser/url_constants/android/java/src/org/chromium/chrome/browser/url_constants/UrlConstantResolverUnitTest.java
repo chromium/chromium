@@ -8,9 +8,8 @@ import static org.junit.Assert.assertEquals;
 
 import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNativeBookmarksUrl;
 import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNativeHistoryUrl;
-import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNativeNtpGurl;
 import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNativeNtpUrl;
-import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNonNativeNtpGurl;
+import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNtpGurl;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -21,7 +20,6 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.url_constants.UrlConstantResolver.PreNativeGurlHolder;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.url.GURL;
@@ -32,14 +30,10 @@ import org.chromium.url.GURL;
 public class UrlConstantResolverUnitTest {
     private static final String OVERRIDE_URL = "OVERRIDE";
     private UrlConstantResolver mResolver;
-    private GURL mNtpGurl;
-    private GURL mNativeNtpGurl;
 
     @Before
     public void setUp() {
         mResolver = new UrlConstantResolver();
-        mNtpGurl = new GURL("example.com");
-        mNativeNtpGurl = new GURL("native_example.com");
     }
 
     @Test
@@ -106,65 +100,18 @@ public class UrlConstantResolverUnitTest {
 
     @Test
     public void testGetNtpGurl_NoOverride() {
-        PreNativeGurlHolder holder = new PreNativeGurlHolder(mNativeNtpGurl, mNtpGurl);
-        mResolver.registerPreNativeGurl(getOriginalNativeNtpUrl(), holder);
-
-        assertEquals(mNativeNtpGurl, mResolver.getNtpGurl());
+        assertEquals(new GURL(getOriginalNativeNtpUrl()), mResolver.getNtpGurl());
     }
 
     @Test
-    public void testGetNtpGurl_WithOverride() {
-        PreNativeGurlHolder holder = new PreNativeGurlHolder(mNativeNtpGurl, mNtpGurl);
-        mResolver.registerPreNativeGurl(getOriginalNativeNtpUrl(), holder);
-        mResolver.registerOverride(getOriginalNativeNtpUrl(), () -> "some_override");
-
-        assertEquals(mNtpGurl, mResolver.getNtpGurl());
+    public void testGetNtpGurl_WithOverrideEnabled() {
+        mResolver.registerOverride(getOriginalNativeNtpUrl(), () -> "https://example.com");
+        assertEquals(new GURL("https://example.com"), mResolver.getNtpGurl());
     }
 
     @Test
-    public void testGetNtpGurl_NullGurlOverride() {
-        PreNativeGurlHolder holder = new PreNativeGurlHolder(mNativeNtpGurl, null);
-        mResolver.registerPreNativeGurl(getOriginalNativeNtpUrl(), holder);
-        mResolver.registerOverride(getOriginalNativeNtpUrl(), () -> "some_override");
-
-        assertEquals(mNativeNtpGurl, mResolver.getNtpGurl());
-    }
-
-    @Test(expected = AssertionError.class)
-    public void testGetNtpGurl_NotRegistered() {
-        mResolver.getNtpGurl();
-    }
-
-    @Test
-    public void testGetOriginalNativeNtpGurl() {
-        GURL ntpGurl;
-        try {
-            ntpGurl = getOriginalNativeNtpGurl();
-        } catch (GURL.BadSerializerVersionException be) {
-            Assert.fail(
-                    "Serialized value for native ntpGurl in UrlConstants has a stale serializer"
-                            + " version");
-            return;
-        }
-
-        Assert.assertTrue(ntpGurl.isValid());
-        Assert.assertEquals(UrlConstants.NTP_HOST, ntpGurl.getHost());
-        Assert.assertEquals(UrlConstants.CHROME_NATIVE_SCHEME, ntpGurl.getScheme());
-        Assert.assertTrue(UrlUtilities.isNtpUrl(ntpGurl));
-    }
-
-    @Test
-    public void testGetOriginalNonNativeNtpGurl() {
-        GURL ntpGurl;
-        try {
-            ntpGurl = getOriginalNonNativeNtpGurl();
-        } catch (GURL.BadSerializerVersionException be) {
-            Assert.fail(
-                    "Serialized value for non-native ntpGurl in UrlConstants has a stale serializer"
-                            + " version");
-            return;
-        }
-
+    public void testGetOriginalNtpGurl() {
+        GURL ntpGurl = getOriginalNtpGurl();
         Assert.assertTrue(ntpGurl.isValid());
         Assert.assertEquals(UrlConstants.NTP_HOST, ntpGurl.getHost());
         Assert.assertEquals(UrlConstants.CHROME_SCHEME, ntpGurl.getScheme());

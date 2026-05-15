@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.partnercustomizations;
 
-import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNonNativeNtpUrl;
+import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNtpUrl;
 
 import androidx.test.filters.SmallTest;
 
@@ -88,8 +88,7 @@ public class PartnerBrowserCustomizationsUnitTest {
                 ChromeSharedPreferences.getInstance()
                         .readString(
                                 ChromePreferenceKeys.HOMEPAGE_PARTNER_CUSTOMIZED_DEFAULT_GURL, "");
-        Assert.assertEquals(
-                getOriginalNonNativeNtpUrl(), GURL.deserialize(serializedGurl).getSpec());
+        Assert.assertEquals(getOriginalNtpUrl(), GURL.deserialize(serializedGurl).getSpec());
 
         delegate.setHomepage("about:newtab");
         partnerBrowserCustomizations.refreshHomepage(delegate);
@@ -97,8 +96,7 @@ public class PartnerBrowserCustomizationsUnitTest {
                 ChromeSharedPreferences.getInstance()
                         .readString(
                                 ChromePreferenceKeys.HOMEPAGE_PARTNER_CUSTOMIZED_DEFAULT_GURL, "");
-        Assert.assertEquals(
-                getOriginalNonNativeNtpUrl(), GURL.deserialize(serializedGurl).getSpec());
+        Assert.assertEquals(getOriginalNtpUrl(), GURL.deserialize(serializedGurl).getSpec());
 
         delegate.setHomepage("about:newtab/path#fragment");
         partnerBrowserCustomizations.refreshHomepage(delegate);
@@ -107,8 +105,7 @@ public class PartnerBrowserCustomizationsUnitTest {
                         .readString(
                                 ChromePreferenceKeys.HOMEPAGE_PARTNER_CUSTOMIZED_DEFAULT_GURL, "");
         Assert.assertEquals(
-                getOriginalNonNativeNtpUrl() + "path#fragment",
-                GURL.deserialize(serializedGurl).getSpec());
+                getOriginalNtpUrl() + "path#fragment", GURL.deserialize(serializedGurl).getSpec());
     }
 
     @SmallTest

@@ -22,7 +22,7 @@ import static org.chromium.chrome.browser.tasks.ReturnToChromeUtil.FAIL_TO_SHOW_
 import static org.chromium.chrome.browser.tasks.ReturnToChromeUtil.HOME_SURFACE_SHOWN_AT_STARTUP_UMA;
 import static org.chromium.chrome.browser.tasks.ReturnToChromeUtil.HOME_SURFACE_SHOWN_UMA;
 import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNativeNtpUrl;
-import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNonNativeNtpGurl;
+import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNtpGurl;
 
 import android.content.Context;
 import android.content.Intent;
@@ -113,7 +113,7 @@ public class ReturnToChromeUtilUnitTest {
         // HomepageManager:
         HomepageManager.setInstanceForTesting(mHomepageManager);
         doReturn(true).when(mHomepageManager).isHomepageEnabled();
-        doReturn(getOriginalNonNativeNtpGurl())
+        doReturn(getOriginalNtpGurl())
                 .when(mHomepageManager)
                 .getHomepageGurl(/* isIncognito= */ false);
 

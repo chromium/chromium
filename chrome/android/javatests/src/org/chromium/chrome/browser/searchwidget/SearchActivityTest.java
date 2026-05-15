@@ -15,7 +15,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNonNativeNtpUrl;
+import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNtpUrl;
 
 import android.app.Activity;
 import android.app.Instrumentation;
@@ -382,7 +382,7 @@ public class SearchActivityTest {
                                             mActivityTestRule.getActivity(), IntentOrigin.HUB);
                             client.requestOmniboxForResult(
                                     client.newIntentBuilder()
-                                            .setPageUrl(new GURL(getOriginalNonNativeNtpUrl()))
+                                            .setPageUrl(new GURL(getOriginalNtpUrl()))
                                             .setIncognito(true)
                                             .setResolutionType(ResolutionType.SEND_TO_CALLER)
                                             .build());
@@ -424,7 +424,7 @@ public class SearchActivityTest {
                                             mActivityTestRule.getActivity(), IntentOrigin.HUB);
                             client.requestOmniboxForResult(
                                     client.newIntentBuilder()
-                                            .setPageUrl(new GURL(getOriginalNonNativeNtpUrl()))
+                                            .setPageUrl(new GURL(getOriginalNtpUrl()))
                                             .setIncognito(true)
                                             .setResolutionType(ResolutionType.SEND_TO_CALLER)
                                             .build());

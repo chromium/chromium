@@ -18,7 +18,7 @@ import static org.chromium.chrome.browser.hub.HubToolbarProperties.SEARCH_BOX_VI
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.SEARCH_BOX_VISIBLE;
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.SEARCH_LISTENER;
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.SEARCH_LOUPE_VISIBLE;
-import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNonNativeNtpUrl;
+import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNtpUrl;
 
 import android.content.ComponentCallbacks;
 import android.content.Context;
@@ -385,7 +385,7 @@ public class HubToolbarMediator {
         mSearchActivityClient.requestOmniboxForResult(
                 mSearchActivityClient
                         .newIntentBuilder()
-                        .setPageUrl(new GURL(getOriginalNonNativeNtpUrl()))
+                        .setPageUrl(new GURL(getOriginalNtpUrl()))
                         .setIncognito(mPropertyModel.get(IS_INCOGNITO))
                         .setResolutionType(ResolutionType.OPEN_IN_CHROME)
                         .build());

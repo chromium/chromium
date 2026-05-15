@@ -114,8 +114,7 @@ public class MediaCapturePickerTabObserverTest {
         final var observer =
                 new MediaCapturePickerTabObserver(mObserverDelegate, params, mFilterDelegate);
 
-        final Tab tab =
-                createMockTab(params.webContents, UrlConstantResolver.getOriginalNativeNtpGurl());
+        final Tab tab = createMockTab(params.webContents, UrlConstantResolver.getOriginalNtpGurl());
         observer.onTabAdded(tab);
         verify(mObserverDelegate, never()).onTabAdded(tab);
         verify(tab).addObserver(any());

@@ -114,7 +114,7 @@ public class LocationBarModelTest {
                 () -> {
                     TestLocationBarModel model =
                             new TestLocationBarModel(mActivityTestRule.getActivity());
-                    model.setVisibleGurl(UrlConstantResolver.getOriginalNonNativeNtpGurl());
+                    model.setVisibleGurl(UrlConstantResolver.getOriginalNtpGurl());
                     assertDisplayAndEditText(model, "", null);
 
                     model.setVisibleGurl(JUnitTestGURLs.CHROME_ABOUT);

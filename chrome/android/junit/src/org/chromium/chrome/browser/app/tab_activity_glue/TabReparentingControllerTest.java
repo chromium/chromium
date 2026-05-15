@@ -9,7 +9,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNativeNtpUrl;
-import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNonNativeNtpUrl;
+import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNtpUrl;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -66,7 +66,7 @@ public class TabReparentingControllerTest {
 
         @Override
         public boolean isNtpUrl(GURL url) {
-            return getOriginalNonNativeNtpUrl().equals(url.getSpec())
+            return getOriginalNtpUrl().equals(url.getSpec())
                     || getOriginalNativeNtpUrl().equals(url.getSpec());
         }
     }

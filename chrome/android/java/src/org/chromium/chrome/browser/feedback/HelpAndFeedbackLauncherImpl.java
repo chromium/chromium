@@ -4,12 +4,12 @@
 
 package org.chromium.chrome.browser.feedback;
 
+import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalBookmarksUrl;
+import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalHistoryUrl;
 import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNativeBookmarksUrl;
 import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNativeHistoryUrl;
 import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNativeNtpUrl;
-import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNonNativeBookmarksUrl;
-import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNonNativeHistoryUrl;
-import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNonNativeNtpUrl;
+import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNtpUrl;
 
 import android.app.Activity;
 import android.content.Context;
@@ -172,10 +172,10 @@ public class HelpAndFeedbackLauncherImpl implements HelpAndFeedbackLauncher {
         if (TextUtils.isEmpty(url)) {
             return context.getString(R.string.help_context_general);
         } else if (url.startsWith(getOriginalNativeBookmarksUrl())
-                || url.startsWith(getOriginalNonNativeBookmarksUrl())) {
+                || url.startsWith(getOriginalBookmarksUrl())) {
             return context.getString(R.string.help_context_bookmarks);
         } else if (url.equals(getOriginalNativeHistoryUrl())
-                || url.equals(getOriginalNonNativeHistoryUrl())) {
+                || url.equals(getOriginalHistoryUrl())) {
             return context.getString(R.string.help_context_history);
         }
         // Note: For www.google.com the following function returns false.
@@ -185,8 +185,7 @@ public class HelpAndFeedbackLauncherImpl implements HelpAndFeedbackLauncher {
         // For incognito NTP, we want to show incognito help.
         else if (isIncognito) {
             return context.getString(R.string.help_context_incognito);
-        } else if (url.equals(getOriginalNativeNtpUrl())
-                || url.equals(getOriginalNonNativeNtpUrl())) {
+        } else if (url.equals(getOriginalNativeNtpUrl()) || url.equals(getOriginalNtpUrl())) {
             return context.getString(R.string.help_context_new_tab);
         }
         return context.getString(R.string.help_context_webpage);

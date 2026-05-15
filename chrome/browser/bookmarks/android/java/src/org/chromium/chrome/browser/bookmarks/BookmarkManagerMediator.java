@@ -5,8 +5,8 @@
 package org.chromium.chrome.browser.bookmarks;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
+import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalBookmarksUrl;
 import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNativeBookmarksUrl;
-import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNonNativeBookmarksUrl;
 import static org.chromium.components.browser_ui.widget.ListItemBuilder.buildSimpleMenuItem;
 
 import android.app.Activity;
@@ -963,7 +963,7 @@ class BookmarkManagerMediator
             // If a loading state is replaced by another loading state, do not notify this change.
             if (mNativePage != null) {
                 boolean replaceLastUrl =
-                        TextUtils.equals(mNativePage.getUrl(), getOriginalNonNativeBookmarksUrl())
+                        TextUtils.equals(mNativePage.getUrl(), getOriginalBookmarksUrl())
                                 || TextUtils.equals(
                                         mNativePage.getUrl(), getOriginalNativeBookmarksUrl());
                 mNativePage.onStateChange(state.mUrl, replaceLastUrl);

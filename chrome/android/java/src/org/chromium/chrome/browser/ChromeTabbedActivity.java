@@ -4378,7 +4378,7 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
             mHubSearchClient.requestOmniboxForResult(
                     mHubSearchClient
                             .newIntentBuilder()
-                            .setPageUrl(new GURL(UrlConstantResolver.getOriginalNonNativeNtpUrl()))
+                            .setPageUrl(new GURL(UrlConstantResolver.getOriginalNtpUrl()))
                             .setIncognito(mTabModelSelector.isIncognitoSelected())
                             .setResolutionType(
                                     org.chromium.chrome.browser.ui.searchactivityutils

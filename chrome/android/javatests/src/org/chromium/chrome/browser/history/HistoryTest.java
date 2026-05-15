@@ -24,8 +24,8 @@ import static org.junit.Assert.assertTrue;
 
 import static org.chromium.base.test.transit.ViewFinder.waitForNoView;
 import static org.chromium.base.test.transit.ViewFinder.waitForView;
+import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalHistoryUrl;
 import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNativeHistoryUrl;
-import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNonNativeHistoryUrl;
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
 import android.graphics.Bitmap;
@@ -125,7 +125,7 @@ public class HistoryTest {
     }
 
     /**
-     * Check that the favicons for {@link getOriginalNonNativeHistoryUrl()} and for {@link
+     * Check that the favicons for {@link getOriginalHistoryUrl()} and for {@link
      * getOriginalNativeHistoryUrl()} are identical.
      */
     @Test
@@ -135,7 +135,7 @@ public class HistoryTest {
 
         FaviconHelper helper = ThreadUtils.runOnUiThreadBlocking(FaviconHelper::new);
 
-        Bitmap nonNativeFavicon = getFavicon(helper, new GURL(getOriginalNonNativeHistoryUrl()));
+        Bitmap nonNativeFavicon = getFavicon(helper, new GURL(getOriginalHistoryUrl()));
         Bitmap nativeFavicon = getFavicon(helper, new GURL(getOriginalNativeHistoryUrl()));
 
         assertNotNull(nonNativeFavicon);
@@ -176,7 +176,7 @@ public class HistoryTest {
         String testUrl = "/chrome/test/data/android/google.html";
         mActivityTestRule.loadUrl(mActivityTestRule.getTestServer().getURL(testUrl));
 
-        mActivityTestRule.loadUrlInNewTab(getOriginalNonNativeHistoryUrl());
+        mActivityTestRule.loadUrlInNewTab(getOriginalHistoryUrl());
 
         // Verify that the promo is shown.
         waitForView(withId(R.id.signin_promo_view_container));
@@ -216,7 +216,7 @@ public class HistoryTest {
                 });
         mActivityTestRule.startOnBlankPage();
 
-        mActivityTestRule.loadUrlInNewTab(getOriginalNonNativeHistoryUrl());
+        mActivityTestRule.loadUrlInNewTab(getOriginalHistoryUrl());
 
         // Verify that the promo is shown.
         waitForView(withId(R.id.signin_promo_view_container));
@@ -300,7 +300,7 @@ public class HistoryTest {
         mActivityTestRule.loadUrl(urlOne);
         mActivityTestRule.loadUrl(urlTwo);
 
-        mActivityTestRule.loadUrlInNewTab(getOriginalNonNativeHistoryUrl());
+        mActivityTestRule.loadUrlInNewTab(getOriginalHistoryUrl());
 
         waitForView(withId(R.id.history_page_recycler_view));
         KeyboardUtils.hideAndroidSoftKeyboard(
@@ -362,7 +362,7 @@ public class HistoryTest {
         mActivityTestRule.loadUrl(urlOne);
         mActivityTestRule.loadUrl(urlTwo);
 
-        mActivityTestRule.loadUrlInNewTab(getOriginalNonNativeHistoryUrl());
+        mActivityTestRule.loadUrlInNewTab(getOriginalHistoryUrl());
 
         waitForView(withId(R.id.history_page_recycler_view));
         KeyboardUtils.hideAndroidSoftKeyboard(
@@ -418,7 +418,7 @@ public class HistoryTest {
         mActivityTestRule.loadUrl(urlOne);
         mActivityTestRule.loadUrl(urlTwo);
 
-        mActivityTestRule.loadUrlInNewTab(getOriginalNonNativeHistoryUrl());
+        mActivityTestRule.loadUrlInNewTab(getOriginalHistoryUrl());
 
         waitForView(withId(R.id.history_page_recycler_view));
         KeyboardUtils.hideAndroidSoftKeyboard(

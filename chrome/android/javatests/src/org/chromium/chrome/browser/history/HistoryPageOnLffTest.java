@@ -9,7 +9,7 @@ import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isFocused;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
-import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNonNativeHistoryUrl;
+import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalHistoryUrl;
 
 import androidx.test.filters.MediumTest;
 
@@ -60,7 +60,7 @@ public class HistoryPageOnLffTest {
         RegularNewTabPageStation historyPage = tab1Page.openNewTabFast();
 
         // 4. Load chrome://history/ in the newly opened tab.
-        String historyUrl = getOriginalNonNativeHistoryUrl();
+        String historyUrl = getOriginalHistoryUrl();
         WebPageStation historyWebPage =
                 historyPage.loadPageProgrammatically(
                         historyUrl,

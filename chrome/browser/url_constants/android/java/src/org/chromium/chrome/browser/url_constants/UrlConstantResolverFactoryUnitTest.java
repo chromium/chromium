@@ -9,12 +9,12 @@ import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.when;
 
+import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalBookmarksUrl;
+import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalHistoryUrl;
 import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNativeBookmarksUrl;
 import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNativeHistoryUrl;
 import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNativeNtpUrl;
-import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNonNativeBookmarksUrl;
-import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNonNativeHistoryUrl;
-import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNonNativeNtpUrl;
+import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNtpUrl;
 
 import org.junit.After;
 import org.junit.Before;
@@ -118,7 +118,7 @@ public class UrlConstantResolverFactoryUnitTest {
         UrlConstantResolver resolver = UrlConstantResolverFactory.getForProfile(mProfile);
 
         ExtensionsUrlOverrideRegistry.setNtpOverrideEnabled(true);
-        assertEquals(getOriginalNonNativeNtpUrl(), resolver.getNtpUrl());
+        assertEquals(getOriginalNtpUrl(), resolver.getNtpUrl());
 
         ExtensionsUrlOverrideRegistry.setNtpOverrideEnabled(false);
         assertEquals(getOriginalNativeNtpUrl(), resolver.getNtpUrl());
@@ -129,7 +129,7 @@ public class UrlConstantResolverFactoryUnitTest {
         UrlConstantResolver resolver = UrlConstantResolverFactory.getForProfile(mProfile);
 
         ExtensionsUrlOverrideRegistry.setBookmarksPageOverrideEnabled(true);
-        assertEquals(getOriginalNonNativeBookmarksUrl(), resolver.getBookmarksPageUrl());
+        assertEquals(getOriginalBookmarksUrl(), resolver.getBookmarksPageUrl());
 
         ExtensionsUrlOverrideRegistry.setBookmarksPageOverrideEnabled(false);
         assertEquals(getOriginalNativeBookmarksUrl(), resolver.getBookmarksPageUrl());
@@ -140,7 +140,7 @@ public class UrlConstantResolverFactoryUnitTest {
         UrlConstantResolver resolver = UrlConstantResolverFactory.getForProfile(mProfile);
 
         ExtensionsUrlOverrideRegistry.setHistoryPageOverrideEnabled(true);
-        assertEquals(getOriginalNonNativeHistoryUrl(), resolver.getHistoryPageUrl());
+        assertEquals(getOriginalHistoryUrl(), resolver.getHistoryPageUrl());
 
         ExtensionsUrlOverrideRegistry.setHistoryPageOverrideEnabled(false);
         assertEquals(getOriginalNativeHistoryUrl(), resolver.getHistoryPageUrl());
@@ -152,7 +152,7 @@ public class UrlConstantResolverFactoryUnitTest {
         UrlConstantResolver resolver = UrlConstantResolverFactory.getForProfile(mProfile);
 
         ExtensionsUrlOverrideRegistry.setIncognitoNtpOverrideEnabled(true);
-        assertEquals(getOriginalNonNativeNtpUrl(), resolver.getNtpUrl());
+        assertEquals(getOriginalNtpUrl(), resolver.getNtpUrl());
 
         ExtensionsUrlOverrideRegistry.setIncognitoNtpOverrideEnabled(false);
         assertEquals(getOriginalNativeNtpUrl(), resolver.getNtpUrl());
@@ -164,7 +164,7 @@ public class UrlConstantResolverFactoryUnitTest {
         UrlConstantResolver resolver = UrlConstantResolverFactory.getForProfile(mProfile);
 
         ExtensionsUrlOverrideRegistry.setIncognitoBookmarksPageOverrideEnabled(true);
-        assertEquals(getOriginalNonNativeBookmarksUrl(), resolver.getBookmarksPageUrl());
+        assertEquals(getOriginalBookmarksUrl(), resolver.getBookmarksPageUrl());
 
         ExtensionsUrlOverrideRegistry.setIncognitoBookmarksPageOverrideEnabled(false);
         assertEquals(getOriginalNativeBookmarksUrl(), resolver.getBookmarksPageUrl());
@@ -202,7 +202,7 @@ public class UrlConstantResolverFactoryUnitTest {
         UrlConstantResolver resolver = UrlConstantResolverFactory.getForProfile(mProfile);
 
         PolicyUrlOverrideRegistry.setIsNewTabPageLocationOverriddenByPolicy(true);
-        assertEquals(getOriginalNonNativeNtpUrl(), resolver.getNtpUrl());
+        assertEquals(getOriginalNtpUrl(), resolver.getNtpUrl());
 
         PolicyUrlOverrideRegistry.setIsNewTabPageLocationOverriddenByPolicy(false);
         assertEquals(getOriginalNativeNtpUrl(), resolver.getNtpUrl());
@@ -214,7 +214,7 @@ public class UrlConstantResolverFactoryUnitTest {
 
         ExtensionsUrlOverrideRegistry.setNtpOverrideEnabled(true);
         PolicyUrlOverrideRegistry.setIsNewTabPageLocationOverriddenByPolicy(true);
-        assertEquals(getOriginalNonNativeNtpUrl(), resolver.getNtpUrl());
+        assertEquals(getOriginalNtpUrl(), resolver.getNtpUrl());
 
         ExtensionsUrlOverrideRegistry.setNtpOverrideEnabled(false);
         PolicyUrlOverrideRegistry.setIsNewTabPageLocationOverriddenByPolicy(false);

@@ -1922,7 +1922,7 @@ class AutocompleteMediator
         if (!isInInputSession()) return;
 
         // Default page context to prefetch suggestions for.
-        GURL pageUrl = UrlConstantResolver.getOriginalNonNativeNtpGurl();
+        GURL pageUrl = UrlConstantResolver.getOriginalNtpGurl();
         int pageClass = PageClassification.INSTANT_NTP_WITH_OMNIBOX_AS_STARTING_FOCUS_VALUE;
 
         // Preserve current page context for Jump-start Omnibox feature.
