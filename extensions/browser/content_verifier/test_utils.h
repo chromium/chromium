@@ -78,6 +78,10 @@ class TestContentVerifySingleJobObserver {
    private:
     ~ObserverClient() override;
 
+    void JobFinishedOnCreationThread(const ExtensionId& extension_id,
+                                     const base::FilePath& relative_path,
+                                     ContentVerifyJob::FailureReason reason);
+
     void OnHashesReadyOnCreationThread(
         const ExtensionId& extension_id,
         const base::FilePath& relative_path,

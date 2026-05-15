@@ -63,14 +63,24 @@ void TestContentVerifySingleJobObserver::ObserverClient::JobFinished(
     ContentVerifyJob::FailureReason reason) {
   if (!content::BrowserThread::CurrentlyOn(creation_thread_)) {
     content::BrowserThread::GetTaskRunnerForThread(creation_thread_)
-        ->PostTask(FROM_HERE,
-                   base::BindOnce(&TestContentVerifySingleJobObserver::
-                                      ObserverClient::JobFinished,
-                                  this, extension_id, relative_path, reason));
+        ->PostTask(
+            FROM_HERE,
+            base::BindOnce(&TestContentVerifySingleJobObserver::ObserverClient::
+                               JobFinishedOnCreationThread,
+                           this, extension_id, relative_path, reason));
     return;
   }
-  if (extension_id != extension_id_ || relative_path != relative_path_)
+
+  JobFinishedOnCreationThread(extension_id, relative_path, reason);
+}
+
+void TestContentVerifySingleJobObserver::ObserverClient::
+    JobFinishedOnCreationThread(const ExtensionId& extension_id,
+                                const base::FilePath& relative_path,
+                                ContentVerifyJob::FailureReason reason) {
+  if (extension_id != extension_id_ || relative_path != relative_path_) {
     return;
+  }
   EXPECT_FALSE(failure_reason_.has_value());
   failure_reason_ = reason;
   job_finished_run_loop_.Quit();
