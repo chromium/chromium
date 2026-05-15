@@ -26,7 +26,6 @@
 #include "base/uuid.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/demo_mode/demo_mode_dimensions.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/ash/login/login_display_host.h"
 #include "chrome/browser/ui/webui/ash/login/online_login_utils.h"
 #include "chromeos/ash/components/demo_mode/utils/demo_session_utils.h"
@@ -172,10 +171,6 @@ constexpr net::NetworkTrafficAnnotationTag kCleanUpTrafficAnnotation =
               "Not implemented."
           })");
 
-scoped_refptr<network::SharedURLLoaderFactory> GetUrlLoaderFactory() {
-  return g_browser_process->shared_url_loader_factory();
-}
-
 GURL GetDemoModeServerBaseUrl() {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   return GURL(
@@ -252,6 +247,7 @@ std::unique_ptr<network::SimpleURLLoader> CreateDemoAccountURLLoader(
 // Send demo account related http requests to server. i.e. setup request,
 // cleanup request.
 void SendDemoAccountRequest(
+    network::mojom::URLLoaderFactory& url_loader_factory,
     const base::DictValue& post_data,
     network::SimpleURLLoader* url_loader,
     base::OnceCallback<void(std::optional<std::string> response_body)>
@@ -264,7 +260,7 @@ void SendDemoAccountRequest(
   CHECK(base::JSONWriter::Write(post_data, &request_string));
   url_loader->AttachStringForUpload(request_string, kContentTypeJSON);
   url_loader->SetTimeoutDuration(kDemoAccountRequestTimeout);
-  url_loader->DownloadToString(GetUrlLoaderFactory().get(), std::move(callback),
+  url_loader->DownloadToString(&url_loader_factory, std::move(callback),
                                kMaxResponseSize);
 }
 
@@ -373,11 +369,14 @@ base::DictValue GetDeviceInfo(PrefService& local_state) {
 
 DemoLoginController::DemoLoginController(
     PrefService* local_state,
+    scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
     policy::DeviceCloudPolicyManagerAsh* device_cloud_policy_manager_ash,
     base::RepeatingClosure configure_auto_login_callback)
     : local_state_(CHECK_DEREF(local_state)),
+      shared_url_loader_factory_(std::move(shared_url_loader_factory)),
       device_cloud_policy_manager_ash_(device_cloud_policy_manager_ash),
       configure_auto_login_callback_(std::move(configure_auto_login_callback)) {
+  CHECK(shared_url_loader_factory_);
   if (!device_cloud_policy_manager_ash_) {
     CHECK_IS_TEST();
     state_ = State::kReadyForLoginWithDemoAccount;
@@ -483,7 +482,7 @@ void DemoLoginController::SendSetupDemoAccountRequest() {
                                  kSetupAccountTrafficAnnotation);
 
   SendDemoAccountRequest(
-      post_data, url_loader_.get(),
+      *shared_url_loader_factory_.get(), post_data, url_loader_.get(),
       base::BindOnce(&DemoLoginController::OnSetupDemoAccountComplete,
                      weak_ptr_factory_.GetWeakPtr(), sign_in_scoped_device_id));
 }
@@ -663,7 +662,7 @@ void DemoLoginController::MaybeCleanupPreviousDemoAccount() {
                                  kCleanUpTrafficAnnotation);
 
   SendDemoAccountRequest(
-      post_data, url_loader_.get(),
+      *shared_url_loader_factory_.get(), post_data, url_loader_.get(),
       base::BindOnce(&DemoLoginController::OnCleanUpDemoAccountComplete,
                      weak_ptr_factory_.GetWeakPtr()));
 }

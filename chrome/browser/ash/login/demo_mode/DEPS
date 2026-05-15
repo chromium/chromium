@@ -26,8 +26,6 @@ include_rules = [
   "+chrome/browser/ash/settings",
   "+chrome/browser/ash/system_web_apps",
   "+chrome/browser/ash/wallpaper_handlers",
-  "+chrome/browser/browser_process.h",
-  "+chrome/browser/browser_process_platform_part.h",
   "+chrome/browser/chrome_browser_main_extra_parts.h",
   "+chrome/browser/chrome_browser_main.h",
   "+chrome/browser/chromeos/extensions/login_screen/login/cleanup",
@@ -48,12 +46,16 @@ specific_include_rules = {
   ".*test(|_.*)\\.(cc|h)": [
     "+chrome/browser/ash/browser_delegate/browser_controller_impl.h",
     "+chrome/browser/ui/browser.h",
-    "+chrome/browser/ui/browser_window/public/global_browser_collection.h",
     "+chrome/browser/ui/browser_window/public/browser_collection_observer.h",
+    "+chrome/browser/ui/browser_window/public/global_browser_collection.h",
     "+chrome/test/base",
   ],
-
+  ".*test\\.cc": [
+    "+chrome/browser/browser_process.h",
+    "+chrome/browser/browser_process_platform_part.h",
+  ],
   "demo_mode_test_helper\\.cc": [
+    "+chrome/browser/browser_process_platform_part.h",
     "+chrome/browser/global_features.h",
   ],
 }

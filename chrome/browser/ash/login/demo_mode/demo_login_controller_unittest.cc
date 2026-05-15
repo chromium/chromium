@@ -825,6 +825,8 @@ class DemoLoginControllerCloudPolicyConnectionTest : public testing::Test {
     task_environment_.emplace(
         base::test::TaskEnvironment::TimeSource::MOCK_TIME);
     DBusThreadManager::Initialize();
+    TestingBrowserProcess::GetGlobal()->SetSharedURLLoaderFactory(
+        test_url_loader_factory_.GetSafeWeakWrapper());
     auto* device_cloud_policy_manager_ash = TestingBrowserProcess::GetGlobal()
                                                 ->platform_part()
                                                 ->browser_policy_connector_ash()
@@ -832,6 +834,7 @@ class DemoLoginControllerCloudPolicyConnectionTest : public testing::Test {
     ASSERT_TRUE(device_cloud_policy_manager_ash);
     demo_login_controller_ = std::make_unique<DemoLoginController>(
         TestingBrowserProcess::GetGlobal()->local_state(),
+        TestingBrowserProcess::GetGlobal()->shared_url_loader_factory(),
         device_cloud_policy_manager_ash,
         base::BindRepeating(&DemoLoginControllerCloudPolicyConnectionTest::
                                 MockConfigureAutoLogin,
@@ -853,6 +856,7 @@ class DemoLoginControllerCloudPolicyConnectionTest : public testing::Test {
   base::test::ScopedFeatureList features_;
 
   std::optional<content::BrowserTaskEnvironment> task_environment_;
+  network::TestURLLoaderFactory test_url_loader_factory_;
   std::unique_ptr<DemoLoginController> demo_login_controller_;
   bool is_auto_login_trigger_ = false;
   base::UserActionTester user_action_tester_;

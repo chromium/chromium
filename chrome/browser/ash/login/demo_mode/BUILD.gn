@@ -42,8 +42,6 @@ static_library("demo_mode") {
     "//ash/public/cpp",
     "//base:i18n",
     "//chrome/app:generated_resources",
-    "//chrome/browser:browser_process",
-    "//chrome/browser:browser_process_platform_part",
     "//chrome/browser/ash/app_list",
     "//chrome/browser/ash/arc/auth",
     "//chrome/browser/ash/drive",
@@ -104,8 +102,6 @@ static_library("demo_mode_login") {
 
   deps = [
     "//ash/constants",
-    "//chrome/browser:browser_process",
-    "//chrome/browser:browser_process_platform_part",
     "//chrome/browser/ash/login",
     "//chrome/browser/ash/policy/core",
     "//chrome/browser/ui/ash/login",
