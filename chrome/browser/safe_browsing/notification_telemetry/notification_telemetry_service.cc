@@ -49,6 +49,9 @@ namespace {
 // Size of the stored service worker info cache.
 const int kNotificationTelemetryServiceWorkerInfoMaxCount = 20;
 
+// The probability of sending a ServiceWorkerBehavior CSBRR off device.
+const double kNotificationTelemetrySwbReportingProbability = 0.01;
+
 const char kSbIncidentReportUrl[] =
     "https://sb-ssl.google.com/safebrowsing/clientreport/incident";
 
@@ -234,8 +237,7 @@ void NotificationTelemetryService::OnPushEventFinished(
   base::flat_set<GURL> requested_urls_set(normalized_requested_urls.begin(),
                                           normalized_requested_urls.end());
   if (should_send_report_for_test_ ||
-      base::RandDouble() <
-          kNotificationTelemetrySwbReportingProbability.Get()) {
+      base::RandDouble() < kNotificationTelemetrySwbReportingProbability) {
     auto report = std::make_unique<CSBRR>();
     report->set_type(CSBRR::SERVICE_WORKER_BEHAVIOR);
     report->set_page_url(script_url.spec());

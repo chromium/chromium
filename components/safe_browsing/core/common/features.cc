@@ -356,17 +356,7 @@ BASE_FEATURE(kNoticeQueueForEsb, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kNotificationTelemetry, base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kNotificationTelemetrySwb, base::FEATURE_DISABLED_BY_DEFAULT);
-constexpr base::FeatureParam<double>
-    kNotificationTelemetrySwbReportingProbability{
-        &kNotificationTelemetrySwb,
-        "NotificationTelemetrySwbReportingProbability", /*default_value=*/1.0};
-constexpr base::FeatureParam<bool> kNotificationTelemetrySwbSendReports{
-    &kNotificationTelemetrySwb, "NotificationTelemetrySwbSendReports",
-    /*default_value=*/true};
-constexpr base::FeatureParam<int> kNotificationTelemetrySwbPollingInterval{
-    &kNotificationTelemetrySwb, "NotificationTelemetrySwbPollingInterval",
-    /*default_value=*/60};
+BASE_FEATURE(kNotificationTelemetrySwb, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kProactivePasswordProtection, base::FEATURE_DISABLED_BY_DEFAULT);
 const base::FeatureParam<double> kCsdProactivePasswordProtectionSampleRate{
