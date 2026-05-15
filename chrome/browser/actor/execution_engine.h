@@ -218,6 +218,7 @@ class ExecutionEngine : public ToolDelegate,
       base::WeakPtr<AutofillSelectionDialogEventHandler> event_handler,
       AutofillSuggestionSelectedCallback callback) override;
   void InterruptFromTool() override;
+  void InterruptFromTool(bool retain_user_control) override;
   void UninterruptFromTool() override;
   void EnqueueFollowupAction(std::unique_ptr<ToolRequest> action) override;
   void AddTab(

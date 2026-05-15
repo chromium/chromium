@@ -138,6 +138,7 @@ class ToolDelegate {
   // During tool execution, the tool becomes blocked on the user's attention.
   // The task still has control of the tab.
   virtual void InterruptFromTool() = 0;
+  virtual void InterruptFromTool(bool retain_user_control) = 0;
   virtual void UninterruptFromTool() = 0;
 
   // Enqueues an action to be performed as a followup to the current action.

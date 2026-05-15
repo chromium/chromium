@@ -1323,7 +1323,11 @@ void ExecutionEngine::RequestToShowAutofillSuggestions(
 }
 
 void ExecutionEngine::InterruptFromTool() {
-  task_->Interrupt();
+  InterruptFromTool(/*retain_user_control=*/false);
+}
+
+void ExecutionEngine::InterruptFromTool(bool retain_user_control) {
+  task_->Interrupt(retain_user_control);
 }
 
 void ExecutionEngine::UninterruptFromTool() {

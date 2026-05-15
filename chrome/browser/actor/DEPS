@@ -47,6 +47,10 @@ specific_include_rules = {
   "+chrome/browser/actor/ui/actor_ui_state_manager_interface.h",
     "+chrome/browser/actor/ui/test_support/mock_event_dispatcher.h",
   ],
+  'actor_task_unittest\.cc': [
+    "+chrome/browser/actor/ui/event_dispatcher.h",
+    "+chrome/browser/actor/ui/test_support/mock_event_dispatcher.h",
+  ],
   'actor_test_util*': [
     # This is required for unit tests.
     "+chrome/browser/actor/ui/event_dispatcher.h",

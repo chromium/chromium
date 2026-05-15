@@ -202,55 +202,6 @@ class FakeChromeRenderFrame : public chrome::mojom::ChromeRenderFrame {
   mojo::AssociatedReceiverSet<chrome::mojom::ChromeRenderFrame> receivers_;
 };
 
-class MockActorTaskDelegate : public ActorTaskDelegate {
- public:
-  MockActorTaskDelegate() = default;
-  ~MockActorTaskDelegate() override = default;
-
-  MOCK_METHOD(void,
-              OnTabAddedToTask,
-              (TaskId task_id, const tabs::TabInterface::Handle& tab_handle),
-              (override));
-
-  MOCK_METHOD(void,
-              RequestToShowCredentialSelectionDialog,
-              (TaskId task_id,
-               (const base::flat_map<std::string, gfx::Image>&)icons,
-               const std::vector<actor_login::Credential>& credentials,
-               CredentialSelectedCallback callback),
-              (override));
-
-  MOCK_METHOD(void,
-              RequestToShowUserConfirmationDialog,
-              (TaskId task_id,
-               const url::Origin& destination,
-               bool for_blocklisted_origin,
-               UserConfirmationDialogCallback callback),
-              (override));
-
-  MOCK_METHOD(void,
-              RequestToConfirmNavigation,
-              (TaskId task_id,
-               const url::Origin& destination,
-               NavigationConfirmationCallback callback),
-              (override));
-
-  MOCK_METHOD(void,
-              RequestToShowAutofillSuggestionsDialog,
-              (actor::TaskId task_id,
-               std::vector<autofill::ActorFormFillingRequest> requests,
-               base::WeakPtr<AutofillSelectionDialogEventHandler> handler,
-               AutofillSuggestionSelectedCallback callback),
-              (override));
-
-  base::WeakPtr<MockActorTaskDelegate> GetWeakPtr() {
-    return weak_factory_.GetWeakPtr();
-  }
-
- private:
-  base::WeakPtrFactory<MockActorTaskDelegate> weak_factory_{this};
-};
-
 class ExecutionEngineTest : public ChromeRenderViewHostTestHarness {
  public:
   ExecutionEngineTest()

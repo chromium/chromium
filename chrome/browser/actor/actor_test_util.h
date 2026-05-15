@@ -20,6 +20,7 @@
 #include "chrome/browser/actor/actor_proto_conversion.h"
 #include "chrome/browser/actor/actor_tab_data.h"
 #include "chrome/browser/actor/actor_task.h"
+#include "chrome/browser/actor/actor_task_delegate.h"
 #include "chrome/browser/actor/enterprise_policy_checker.h"
 #include "chrome/browser/actor/execution_engine.h"
 #include "chrome/browser/actor/tools/media_control_tool_request.h"
@@ -34,6 +35,7 @@
 #include "components/sessions/core/session_id.h"
 #include "components/tabs/public/mock_tab_interface.h"
 #include "components/tabs/public/tab_interface.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/protobuf/src/google/protobuf/descriptor.h"
 #include "ui/gfx/geometry/point.h"
 
@@ -332,6 +334,55 @@ class ScopedExecutionEngineFactory {
   explicit ScopedExecutionEngineFactory(
       ExecutionEngine::FactoryFunction factory);
   ~ScopedExecutionEngineFactory();
+};
+
+class MockActorTaskDelegate : public ActorTaskDelegate {
+ public:
+  MockActorTaskDelegate();
+  ~MockActorTaskDelegate() override;
+
+  MOCK_METHOD(void,
+              OnTabAddedToTask,
+              (TaskId task_id, const tabs::TabInterface::Handle& tab_handle),
+              (override));
+
+  MOCK_METHOD(void,
+              RequestToShowCredentialSelectionDialog,
+              (TaskId task_id,
+               (const base::flat_map<std::string, gfx::Image>&)icons,
+               const std::vector<actor_login::Credential>& credentials,
+               CredentialSelectedCallback callback),
+              (override));
+
+  MOCK_METHOD(void,
+              RequestToShowUserConfirmationDialog,
+              (TaskId task_id,
+               const url::Origin& destination,
+               bool for_blocklisted_origin,
+               UserConfirmationDialogCallback callback),
+              (override));
+
+  MOCK_METHOD(void,
+              RequestToConfirmNavigation,
+              (TaskId task_id,
+               const url::Origin& destination,
+               NavigationConfirmationCallback callback),
+              (override));
+
+  MOCK_METHOD(void,
+              RequestToShowAutofillSuggestionsDialog,
+              (actor::TaskId task_id,
+               std::vector<autofill::ActorFormFillingRequest> requests,
+               base::WeakPtr<AutofillSelectionDialogEventHandler> handler,
+               AutofillSuggestionSelectedCallback callback),
+              (override));
+
+  base::WeakPtr<MockActorTaskDelegate> GetWeakPtr() {
+    return weak_factory_.GetWeakPtr();
+  }
+
+ private:
+  base::WeakPtrFactory<MockActorTaskDelegate> weak_factory_{this};
 };
 
 class MockPolicyChecker : public EnterprisePolicyChecker {

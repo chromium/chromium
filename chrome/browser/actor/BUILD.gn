@@ -329,6 +329,7 @@ source_set("unit_tests") {
     "actor_navigation_throttle_unittest.cc",
     "actor_tab_data_unittest.cc",
     "actor_task_metadata_unittest.cc",
+    "actor_task_unittest.cc",
     "actor_test_util_unittest.cc",
     "aggregated_journal_unittest.cc",
     "execution_engine_unittest.cc",

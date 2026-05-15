@@ -845,6 +845,9 @@ ScopedExecutionEngineFactory::~ScopedExecutionEngineFactory() {
   ExecutionEngine::GetFactoryFunctionForTesting().Reset();
 }
 
+MockActorTaskDelegate::MockActorTaskDelegate() = default;
+MockActorTaskDelegate::~MockActorTaskDelegate() = default;
+
 MockPolicyChecker::MockPolicyChecker(UrlBlockReason reason,
                                      ContentValidationReason content_reason)
     : reason_(reason), content_reason_(content_reason) {}
