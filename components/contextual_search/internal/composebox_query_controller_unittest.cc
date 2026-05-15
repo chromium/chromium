@@ -1897,6 +1897,31 @@ TEST_F(ComposeboxQueryControllerTest,
   // controller.
   EXPECT_FALSE(controller().GetFileInfoForTesting(file_token));
 }
+
+TEST_F(ComposeboxQueryControllerTest,
+       CreateFileUploadRequestWithEmptyImageDataFails) {
+  auto request_id = lens::LensOverlayRequestId();
+  auto client_context = lens::LensOverlayClientContext();
+  auto client_logs =
+      base::MakeRefCounted<lens::RefCountedLensOverlayClientLogs>();
+
+  base::test::TestFuture<
+      lens::LensOverlayServerRequest,
+      std::optional<contextual_search::ContextUploadErrorType>>
+      future;
+  TestComposeboxQueryController::
+      CreateFileUploadRequestProtoWithImageDataAndContinue(
+          request_id, client_context, client_logs, future.GetCallback(),
+          /*page_url=*/std::nullopt, /*page_title=*/std::nullopt,
+          /*file_name=*/std::nullopt,
+          lens::ImageData());  // Empty image data!
+  auto [request, error_type] = future.Take();
+  EXPECT_TRUE(request.objects_request().request_context().request_id().uuid() ==
+              0);
+  EXPECT_TRUE(error_type.has_value());
+  EXPECT_EQ(*error_type,
+            contextual_search::ContextUploadErrorType::kImageProcessingError);
+}
 #endif  // !BUILDFLAG(IS_IOS)
 
 TEST_F(ComposeboxQueryControllerTest, UploadPdfFileRequestSuccessWithFileName) {
