@@ -313,6 +313,8 @@ void ActorEngine::CompleteActions(ActionResult result) {
 
   SetState(success ? State::kCompleted : State::kFailed);
 
+  action_sequence_.clear();
+
   if (completion_callback_) {
     std::move(completion_callback_).Run(std::move(action_results_));
   }
