@@ -860,8 +860,7 @@ void OmniboxViewViews::OnThemeChanged() {
   UpdatePlaceholderTextColor();
   SetSelectionBackgroundColor(
       GetColorProvider()->GetColor(kColorOmniboxSelectionBackground));
-  SetSelectionTextColor(
-      GetColorProvider()->GetColor(kColorOmniboxSelectionForeground));
+  SetSelectionTextColorId(kColorOmniboxSelectionForeground);
 
   EmphasizeURLComponents();
 }

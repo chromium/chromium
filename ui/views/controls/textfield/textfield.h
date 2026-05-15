@@ -226,7 +226,10 @@ class VIEWS_EXPORT Textfield : public View,
 
   // Gets/sets the selection text color to be used when painting the Textfield.
   SkColor GetSelectionTextColor() const;
-  void SetSelectionTextColor(SkColor color);
+  std::optional<ui::ColorId> selection_text_color_id() const {
+    return selection_text_color_id_;
+  }
+  void SetSelectionTextColorId(std::optional<ui::ColorId> color_id);
 
   // Gets/sets the selection background color to be used when painting the
   // Textfield.
@@ -800,7 +803,7 @@ class VIEWS_EXPORT Textfield : public View,
   // TODO(tluk): These should be updated to be ColorIds instead of SkColors.
   std::optional<ui::ColorId> text_color_id_;
   std::optional<SkColor> background_color_;
-  std::optional<SkColor> selection_text_color_;
+  std::optional<ui::ColorId> selection_text_color_id_;
   std::optional<SkColor> selection_background_color_;
 
   // Text to display when empty.
@@ -995,7 +998,7 @@ VIEW_BUILDER_PROPERTY(std::u16string, PlaceholderText)
 VIEW_BUILDER_PROPERTY(bool, ReadOnly)
 VIEW_BUILDER_PROPERTY(gfx::Range, SelectedRange)
 VIEW_BUILDER_PROPERTY(SkColor, SelectionBackgroundColor)
-VIEW_BUILDER_PROPERTY(SkColor, SelectionTextColor)
+VIEW_BUILDER_PROPERTY(std::optional<ui::ColorId>, SelectionTextColorId)
 VIEW_BUILDER_PROPERTY(std::u16string, Text)
 VIEW_BUILDER_PROPERTY(std::optional<ui::ColorId>, TextColorId)
 VIEW_BUILDER_PROPERTY(int, TextInputFlags)

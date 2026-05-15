@@ -468,12 +468,12 @@ void Textfield::SetBackgroundEnabled(bool enabled) {
 }
 
 SkColor Textfield::GetSelectionTextColor() const {
-  return selection_text_color_.value_or(
-      GetColorProvider()->GetColor(ui::kColorTextfieldSelectionForeground));
+  return GetColorProvider()->GetColor(selection_text_color_id_.value_or(
+      ui::kColorTextfieldSelectionForeground));
 }
 
-void Textfield::SetSelectionTextColor(SkColor color) {
-  selection_text_color_ = color;
+void Textfield::SetSelectionTextColorId(std::optional<ui::ColorId> color_id) {
+  selection_text_color_id_ = color_id;
   UpdateSelectionTextColor();
 }
 
@@ -3491,9 +3491,9 @@ ADD_PROPERTY_METADATA(int, TextInputFlags)
 ADD_READONLY_PROPERTY_METADATA(SkColor,
                                TextColor,
                                ui::metadata::SkColorConverter)
-ADD_PROPERTY_METADATA(SkColor,
-                      SelectionTextColor,
-                      ui::metadata::SkColorConverter)
+ADD_READONLY_PROPERTY_METADATA(SkColor,
+                               SelectionTextColor,
+                               ui::metadata::SkColorConverter)
 ADD_PROPERTY_METADATA(SkColor, BackgroundColor, ui::metadata::SkColorConverter)
 ADD_PROPERTY_METADATA(bool, BackgroundEnabled)
 ADD_PROPERTY_METADATA(SkColor,
