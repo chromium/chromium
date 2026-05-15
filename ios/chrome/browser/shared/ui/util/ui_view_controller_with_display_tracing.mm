@@ -32,6 +32,8 @@ enum class UIUpdatePhase {
   std::string _className;
   BOOL _phaseActive;
   UIViewControllerDisplayTracingOptions _displayTracingOptions;
+  uint64_t _flowID;
+  uint64_t _flowCounter;
 #if !BUILDFLAG(IS_IOS_MACCATALYST)
   UIUpdateLink* _updateLink;
 #endif  // !BUILDFLAG(IS_IOS_MACCATALYST)
@@ -128,23 +130,19 @@ enum class UIUpdatePhase {
         UIViewControllerDisplayTracingOptionCATransactionCommit) {
       registerPhase(UIUpdateActionPhase.beforeCATransactionCommit,
                     UIUpdatePhase::kBeforeCATransactionCommit);
-      registerPhase(UIUpdateActionPhase.afterCATransactionCommit,
-                    UIUpdatePhase::kAfterCATransactionCommit);
       registerPhase(UIUpdateActionPhase.beforeLowLatencyCATransactionCommit,
                     UIUpdatePhase::kBeforeLowLatencyCATransactionCommit);
-      registerPhase(UIUpdateActionPhase.afterLowLatencyCATransactionCommit,
-                    UIUpdatePhase::kAfterLowLatencyCATransactionCommit);
     }
+
+    // Always handle the after phases of transaction commit to reset the flow
+    // id.
+    registerPhase(UIUpdateActionPhase.afterCATransactionCommit,
+                  UIUpdatePhase::kAfterCATransactionCommit);
+    registerPhase(UIUpdateActionPhase.afterLowLatencyCATransactionCommit,
+                  UIUpdatePhase::kAfterLowLatencyCATransactionCommit);
     _updateLink.enabled = YES;
   }
 #endif  // !BUILDFLAG(IS_IOS_MACCATALYST)
-}
-
-- (void)endCurrentPhaseIfNeeded {
-  if (_phaseActive) {
-    TRACE_EVENT_END("ui");
-    _phaseActive = NO;
-  }
 }
 
 - (void)viewDidDisappear:(BOOL)animated {
@@ -159,6 +157,26 @@ enum class UIUpdatePhase {
 #endif  // !BUILDFLAG(IS_IOS_MACCATALYST)
 }
 
+#pragma mark - Private
+
+// Ends the current phase's tracing slice, if there is one.
+- (void)endCurrentPhaseIfNeeded {
+  if (_phaseActive) {
+    TRACE_EVENT_END("ui");
+    _phaseActive = NO;
+  }
+}
+
+// Returns a flow id that is unique to this view controller and its current
+// update pass.
+- (uint64_t)ensureFlowID {
+  if (_flowID == 0) {
+    _flowID = reinterpret_cast<uint64_t>(self) ^ ++_flowCounter;
+  }
+  return _flowID;
+}
+
+// Handles the beginning and end of the different update phases.
 - (void)handleUpdatePhase:(UIUpdatePhase)phaseId {
   [self endCurrentPhaseIfNeeded];
 
@@ -179,13 +197,18 @@ enum class UIUpdatePhase {
     case UIUpdatePhase::kBeforeLowLatencyCATransactionCommit:
       phaseName = "LowLatencyCATransactionCommit";
       break;
+    case UIUpdatePhase::kAfterCATransactionCommit:
+    case UIUpdatePhase::kAfterLowLatencyCATransactionCommit:
+      _flowID = 0;
+      break;
     default:
       break;
   }
 
   if (phaseName) {
-    TRACE_EVENT_BEGIN("ui", perfetto::DynamicString(phaseName), "controller",
-                      _className);
+    TRACE_EVENT_BEGIN("ui", perfetto::DynamicString(phaseName),
+                      perfetto::Flow::ProcessScoped([self ensureFlowID]),
+                      "controller", _className);
     _phaseActive = YES;
   }
 }
