@@ -779,9 +779,9 @@ suite('<settings-privacy-hub-geolocation-subpage>', () => {
 
   test('Location controls is disabled when managed by policy', async () => {
     await initPage();
-    privacyHubGeolocationSubpage.prefs.ash.user.geolocation_access_level
+    privacyHubGeolocationSubpage.getPref('ash.user.geolocation_access_level')
         .enforcement = chrome.settingsPrivate.Enforcement.ENFORCED;
-    privacyHubGeolocationSubpage.prefs.ash.user.geolocation_access_level
+    privacyHubGeolocationSubpage.getPref('ash.user.geolocation_access_level')
         .controlledBy = chrome.settingsPrivate.ControlledBy.USER_POLICY;
     privacyHubGeolocationSubpage.notifyPath(
         'prefs.ash.user.geolocation_access_level.enforcement');

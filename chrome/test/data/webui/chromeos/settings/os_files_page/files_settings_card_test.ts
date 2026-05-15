@@ -80,7 +80,7 @@ suite('<files-settings-card>', () => {
     await CrSettingsPrefs.initialized;
 
     filesSettingsCard = document.createElement('files-settings-card');
-    filesSettingsCard.prefs = prefElement.prefs;
+    filesSettingsCard.prefs = prefElement.prefs!;
     document.body.appendChild(filesSettingsCard);
     await flushTasks();
   }

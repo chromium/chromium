@@ -53,7 +53,7 @@ suite('LiveCaptionSection', () => {
     clearBody();
 
     const settingsLanguages = document.createElement('settings-languages');
-    settingsLanguages.prefs = settingsPrefs.prefs;
+    settingsLanguages.prefs = settingsPrefs.prefs!;
     fakeDataBind(settingsPrefs, settingsLanguages, 'prefs');
     document.body.appendChild(settingsLanguages);
 
@@ -61,7 +61,7 @@ suite('LiveCaptionSection', () => {
     await CrSettingsPrefs.initialized;
 
     liveCaptionSection = document.createElement('settings-live-caption');
-    liveCaptionSection.prefs = settingsPrefs.prefs;
+    liveCaptionSection.prefs = settingsPrefs.prefs!;
     fakeDataBind(settingsPrefs, liveCaptionSection, 'prefs');
     liveCaptionSection.languageHelper = settingsLanguages.languageHelper;
     fakeDataBind(settingsLanguages, liveCaptionSection, 'language-helper');
@@ -82,15 +82,16 @@ suite('LiveCaptionSection', () => {
     settingsToggle.click();
     let newToggleValue =
         liveCaptionSection
-            .getPref('accessibility.captions.live_caption_enabled')
+            .getPref<boolean>('accessibility.captions.live_caption_enabled')
             .value;
     assertTrue(newToggleValue);
 
     // Clicking on the toggle switches it to false.
     settingsToggle.click();
-    newToggleValue = liveCaptionSection
-                         .getPref('accessibility.captions.live_caption_enabled')
-                         .value;
+    newToggleValue =
+        liveCaptionSection
+            .getPref<boolean>('accessibility.captions.live_caption_enabled')
+            .value;
     assertFalse(newToggleValue);
   });
 
@@ -105,7 +106,7 @@ suite('LiveCaptionSection', () => {
     settingsToggle.click();
     const newToggleValue =
         liveCaptionSection
-            .getPref('accessibility.captions.live_caption_enabled')
+            .getPref<boolean>('accessibility.captions.live_caption_enabled')
             .value;
     assertTrue(newToggleValue);
 
@@ -222,7 +223,7 @@ suite('LiveCaptionSection', () => {
         settingsToggle.click();
         const newToggleValue =
             liveCaptionSection
-                .getPref('accessibility.captions.live_caption_enabled')
+                .getPref<boolean>('accessibility.captions.live_caption_enabled')
                 .value;
         assertTrue(newToggleValue);
 

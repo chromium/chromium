@@ -33,7 +33,7 @@ suite('<settings-select-to-speak-subpage>', () => {
 
     await CrSettingsPrefs.initialized;
     page = document.createElement('settings-select-to-speak-subpage');
-    page.prefs = prefElement.prefs;
+    page.prefs = prefElement.prefs!;
     document.body.appendChild(page);
     flush();
   });
@@ -96,7 +96,7 @@ suite('<settings-select-to-speak-subpage>', () => {
     // Toggle voice switching on, and verify voice_switching pref is enabled.
     voiceSwitchingToggle.click();
     const voiceSwitchingPref =
-        page.getPref('settings.a11y.select_to_speak_voice_switching');
+        page.getPref<boolean>('settings.a11y.select_to_speak_voice_switching');
     assertTrue(voiceSwitchingPref.value);
   });
 
@@ -112,8 +112,8 @@ suite('<settings-select-to-speak-subpage>', () => {
     // Toggle enhanced network voices on, and verify voice_switching pref is
     // enabled.
     enhancedNetworkVoicesToggle.click();
-    const enhancedNetworkVoicesPref =
-        page.getPref('settings.a11y.select_to_speak_enhanced_network_voices');
+    const enhancedNetworkVoicesPref = page.getPref<boolean>(
+        'settings.a11y.select_to_speak_enhanced_network_voices');
     assertTrue(enhancedNetworkVoicesPref.value);
   });
 
@@ -150,8 +150,8 @@ suite('<settings-select-to-speak-subpage>', () => {
     // controls are visible.
     enhancedNetworkVoicesToggle.click();
     flush();
-    const enhancedNetworkVoicesPref =
-        page.getPref('settings.a11y.select_to_speak_enhanced_network_voices');
+    const enhancedNetworkVoicesPref = page.getPref<boolean>(
+        'settings.a11y.select_to_speak_enhanced_network_voices');
     assertTrue(
         enhancedNetworkVoicesPref.value,
         'enhanced voices pref should be enabled');
@@ -419,7 +419,7 @@ suite('<settings-select-to-speak-subpage>', () => {
     // Toggle word highlighting off, and verify word_highlight pref is enabled.
     wordHighlightToggle.click();
     const wordHighlightPref =
-        page.getPref('settings.a11y.select_to_speak_word_highlight');
+        page.getPref<boolean>('settings.a11y.select_to_speak_word_highlight');
     assertFalse(wordHighlightPref.value);
   });
 
@@ -433,8 +433,8 @@ suite('<settings-select-to-speak-subpage>', () => {
 
     // Toggle background shading on, and verify pref is enabled.
     backgroundShadingToggle.click();
-    const backgroundShadingPref =
-        page.getPref('settings.a11y.select_to_speak_background_shading');
+    const backgroundShadingPref = page.getPref<boolean>(
+        'settings.a11y.select_to_speak_background_shading');
     assertTrue(backgroundShadingPref.value);
   });
 
@@ -448,8 +448,8 @@ suite('<settings-select-to-speak-subpage>', () => {
 
     // Toggle navigation controls off, and verify pref is enabled.
     navigationControlsToggle.click();
-    const navigationControlsPref =
-        page.getPref('settings.a11y.select_to_speak_navigation_controls');
+    const navigationControlsPref = page.getPref<boolean>(
+        'settings.a11y.select_to_speak_navigation_controls');
     assertFalse(navigationControlsPref.value);
   });
 

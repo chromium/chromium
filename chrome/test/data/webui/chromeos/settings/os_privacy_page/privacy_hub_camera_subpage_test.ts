@@ -148,7 +148,7 @@ suite('<settings-privacy-hub-camera-subpage>', () => {
 
       assertEquals(
           cameraToggle.checked,
-          privacyHubCameraSubpage.prefs.ash.user.camera_allowed.value);
+          privacyHubCameraSubpage.getPref('ash.user.camera_allowed').value);
     }
   });
 

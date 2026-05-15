@@ -37,7 +37,7 @@ suite('<settings-facegaze-subpage>', () => {
 
     await CrSettingsPrefs.initialized;
     faceGazeSubpage = document.createElement('settings-facegaze-subpage');
-    faceGazeSubpage.prefs = prefElement.prefs;
+    faceGazeSubpage.prefs = prefElement.prefs!;
     document.body.appendChild(faceGazeSubpage);
     flush();
   }

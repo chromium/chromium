@@ -24,7 +24,7 @@ suite('<settings-text-to-speech-subpage>', function() {
 
     await CrSettingsPrefs.initialized;
     page = document.createElement('settings-text-to-speech-subpage');
-    page.prefs = prefElement.prefs;
+    page.prefs = prefElement.prefs!;
     document.body.appendChild(page);
     flush();
   }

@@ -97,7 +97,7 @@ suite('<settings-google-drive-subpage>', function() {
 
     await CrSettingsPrefs.initialized;
     page = document.createElement('settings-google-drive-subpage');
-    page.prefs = prefElement.prefs;
+    page.prefs = prefElement.prefs!;
     document.body.appendChild(page);
     flush();
 
@@ -165,7 +165,8 @@ suite('<settings-google-drive-subpage>', function() {
 
       // Ensure after clicking the disconnect button the preference is true
       // (timeout after 5s).
-      await assertAsync(() => page.getPref('gdata.disabled').value, 5000);
+      await assertAsync(
+          () => page.getPref<boolean>('gdata.disabled').value, 5000);
     });
 
     test(
@@ -181,7 +182,8 @@ suite('<settings-google-drive-subpage>', function() {
           await clickConfirmationDialogButton('.cancel-button');
 
           // Ensure after cancelling the dialog the preference is unchanged.
-          await assertAsync(() => !page.getPref('gdata.disabled').value, 5000);
+          await assertAsync(
+              () => !page.getPref<boolean>('gdata.disabled').value, 5000);
         });
 
 
@@ -255,11 +257,11 @@ suite('<settings-google-drive-subpage>', function() {
       // Click the connect disconnect button.
       driveDisabledOverCellularToggle.click();
       await assertAsync(
-          () => page.getPref('gdata.cellular.disabled').value, 5000);
+          () => page.getPref<boolean>('gdata.cellular.disabled').value, 5000);
 
       driveDisabledOverCellularToggle.click();
       await assertAsync(
-          () => !page.getPref('gdata.cellular.disabled').value, 5000);
+          () => !page.getPref<boolean>('gdata.cellular.disabled').value, 5000);
     });
   });
 
@@ -283,8 +285,9 @@ suite('<settings-google-drive-subpage>', function() {
 
       // Once disabled the pref must be updated for both drive disabled and for
       // bulk pinning to be disabled.
-      await assertAsync(() => page.getPref('gdata.disabled').value, 5000);
-      assertFalse(page.getPref('drivefs.bulk_pinning_enabled').value);
+      await assertAsync(
+          () => page.getPref<boolean>('gdata.disabled').value, 5000);
+      assertFalse(page.getPref<boolean>('drivefs.bulk_pinning_enabled').value);
     });
 
     test(
@@ -297,7 +300,8 @@ suite('<settings-google-drive-subpage>', function() {
 
           // Ensure the bulk pinning preference is enabled (timeout after 5s).
           await assertAsync(
-              () => page.getPref('drivefs.bulk_pinning_enabled').value, 5000);
+              () => page.getPref<boolean>('drivefs.bulk_pinning_enabled').value,
+              5000);
         });
 
     test(
@@ -331,7 +335,7 @@ suite('<settings-google-drive-subpage>', function() {
           // Assert the bulk pinning pref was not enabled and the toggle was not
           // checked.
           assertFalse(
-              page.getPref('drivefs.bulk_pinning_enabled').value,
+              page.getPref<boolean>('drivefs.bulk_pinning_enabled').value,
               'Pinning pref should be false');
           assertFalse(
               bulkPinningToggle.checked, 'Pinning toggle should be false');
@@ -407,7 +411,7 @@ suite('<settings-google-drive-subpage>', function() {
 
       // Expect the preference to not be changed and the toggle to stay checked.
       assertTrue(
-          page.getPref('drivefs.bulk_pinning_enabled').value,
+          page.getPref<boolean>('drivefs.bulk_pinning_enabled').value,
           'Pinning pref should be true');
       assertTrue(bulkPinningToggle.checked, 'Pinning toggle should be true');
 
@@ -422,7 +426,7 @@ suite('<settings-google-drive-subpage>', function() {
       await clickConfirmationDialogButton('.action-button');
 
       assertFalse(
-          page.getPref('drivefs.bulk_pinning_enabled').value,
+          page.getPref<boolean>('drivefs.bulk_pinning_enabled').value,
           'Pinning pref should be false');
       assertFalse(bulkPinningToggle.checked, 'Pinning toggle should be false');
     });
@@ -465,7 +469,7 @@ suite('<settings-google-drive-subpage>', function() {
           await assertAsync(
               () => page.dialogType === ConfirmationDialogType.NONE, 5000);
           assertFalse(
-              page.getPref('drivefs.bulk_pinning_enabled').value,
+              page.getPref<boolean>('drivefs.bulk_pinning_enabled').value,
               'Pinning pref should be false');
           assertFalse(
               bulkPinningToggle.checked,
@@ -511,7 +515,7 @@ suite('<settings-google-drive-subpage>', function() {
           await assertAsync(
               () => page.dialogType === ConfirmationDialogType.NONE, 5000);
           assertFalse(
-              page.getPref('drivefs.bulk_pinning_enabled').value,
+              page.getPref<boolean>('drivefs.bulk_pinning_enabled').value,
               'Pinning pref should be false');
           assertFalse(
               bulkPinningToggle.checked,
@@ -589,7 +593,7 @@ suite('<settings-google-drive-subpage>', function() {
           await clickConfirmationDialogButton('.action-button');
 
           assertFalse(
-              page.getPref('drivefs.bulk_pinning_enabled').value,
+              page.getPref<boolean>('drivefs.bulk_pinning_enabled').value,
               'Pinning pref should be false');
           assertFalse(
               bulkPinningToggle.checked, 'Pinning toggle should be false');

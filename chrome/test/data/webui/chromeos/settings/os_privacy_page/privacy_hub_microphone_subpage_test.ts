@@ -116,7 +116,8 @@ suite('<settings-privacy-hub-microphone-subpage>', () => {
 
     assertEquals(
         microphoneToggle.checked,
-        privacyHubMicrophoneSubpage.prefs.ash.user.microphone_allowed.value);
+        privacyHubMicrophoneSubpage.getPref('ash.user.microphone_allowed')
+            .value);
     assertEquals(privacyHubMicrophoneSubpage.i18n('deviceOn'), getOnOffText());
     assertEquals(
         privacyHubMicrophoneSubpage.i18n(
@@ -141,7 +142,7 @@ suite('<settings-privacy-hub-microphone-subpage>', () => {
 
         assertEquals(
             microphoneToggle.checked,
-            privacyHubMicrophoneSubpage.prefs.ash.user.microphone_allowed
+            privacyHubMicrophoneSubpage.getPref('ash.user.microphone_allowed')
                 .value);
         assertEquals(
             privacyHubMicrophoneSubpage.i18n('deviceOff'), getOnOffText());
@@ -173,7 +174,8 @@ suite('<settings-privacy-hub-microphone-subpage>', () => {
 
       assertEquals(
           microphoneToggle.checked,
-          privacyHubMicrophoneSubpage.prefs.ash.user.microphone_allowed.value);
+          privacyHubMicrophoneSubpage.getPref('ash.user.microphone_allowed')
+              .value);
     }
   });
 

@@ -31,7 +31,7 @@ suite('<settings-search-subpage>', () => {
 
     await CrSettingsPrefs.initialized;
     page = document.createElement('settings-search-subpage');
-    page.prefs = prefElement.prefs;
+    page.prefs = prefElement.prefs!;
     document.body.appendChild(page);
     flush();
   });
@@ -130,7 +130,9 @@ suite('<settings-search-subpage>', () => {
     button.click();
     flush();
     assertTrue(button.checked);
-    assertTrue(page.getPref('settings.quick_answers.definition.enabled').value);
+    assertTrue(
+        page.getPref<boolean>('settings.quick_answers.definition.enabled')
+            .value);
   });
 
   test('toggleQuickAnswersTranslation', () => {
@@ -151,7 +153,8 @@ suite('<settings-search-subpage>', () => {
     flush();
     assertTrue(button.checked);
     assertTrue(
-        page.getPref('settings.quick_answers.translation.enabled').value);
+        page.getPref<boolean>('settings.quick_answers.translation.enabled')
+            .value);
   });
 
   test('clickLanguageSettingsLink', () => {
@@ -177,7 +180,8 @@ suite('<settings-search-subpage>', () => {
     flush();
     assertFalse(button.checked);
     assertFalse(
-        page.getPref('settings.quick_answers.translation.enabled').value);
+        page.getPref<boolean>('settings.quick_answers.translation.enabled')
+            .value);
 
     assertEquals(
         routes.OS_LANGUAGES_LANGUAGES, Router.getInstance().currentRoute);
@@ -201,7 +205,8 @@ suite('<settings-search-subpage>', () => {
     flush();
     assertTrue(button.checked);
     assertTrue(
-        page.getPref('settings.quick_answers.unit_conversion.enabled').value);
+        page.getPref<boolean>('settings.quick_answers.unit_conversion.enabled')
+            .value);
   });
 
   test('Deep link to Preferred Search Engine', async () => {

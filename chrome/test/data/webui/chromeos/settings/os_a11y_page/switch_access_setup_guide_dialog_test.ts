@@ -320,7 +320,8 @@ suite('<settings-switch-access-setup-guide-dialog>', () => {
 
     assertTrue(dialog.$.switchAccessSetupGuideDialog.open);
     assertFalse(
-        dialog.prefs.settings.a11y.switch_access.auto_scan.enabled.value);
+        dialog.getPref<boolean>('settings.a11y.switch_access.auto_scan.enabled')
+            .value);
 
     // Mock that we are on the page before auto scan is enabled.
     dialog.set('currentPageId_', /*Assign select=*/ 1);
@@ -466,7 +467,8 @@ suite('<settings-switch-access-setup-guide-dialog>', () => {
     // Simulate the user successfully assigning a switch.
     // TODO(anastasi): The change to the pref should correspond to the observer
     // being called automatically. Investigate.
-    dialog.prefs.settings.a11y.switch_access.select.device_key_codes.value = {
+    dialog.getPref('settings.a11y.switch_access.select.device_key_codes')
+        .value = {
       23: 'usb',
     };
     dialog['onSwitchAssignmentMaybeChanged_']();
@@ -488,7 +490,8 @@ suite('<settings-switch-access-setup-guide-dialog>', () => {
             .action);
 
     // Simulate the user successfully assigning a switch.
-    dialog.prefs.settings.a11y.switch_access.next.device_key_codes.value = {
+    dialog.getPref('settings.a11y.switch_access.next.device_key_codes')
+        .value = {
       101: 'bluetooth',
     };
     dialog['onSwitchAssignmentMaybeChanged_']();

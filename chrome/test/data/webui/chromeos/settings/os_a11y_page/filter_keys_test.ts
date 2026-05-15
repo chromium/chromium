@@ -33,7 +33,7 @@ suite('<filter-keys>', () => {
     await CrSettingsPrefs.initialized;
 
     page = document.createElement('settings-keyboard-and-text-input-page');
-    page.prefs = prefElement.prefs;
+    page.prefs = prefElement.prefs!;
     document.body.appendChild(page);
     flush();
   }
@@ -76,7 +76,7 @@ suite('<filter-keys>', () => {
               assertTrue(!!toggle);
               assertTrue(isVisible(toggle));
               assertFalse(toggle.checked);
-              const enabledPref = page.getPref(enabledPrefKey);
+              const enabledPref = page.getPref<boolean>(enabledPrefKey);
               assertFalse(enabledPref.value);
 
               const slider =

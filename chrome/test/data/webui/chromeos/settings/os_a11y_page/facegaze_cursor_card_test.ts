@@ -36,7 +36,7 @@ suite('<facegaze-cursor-card>', () => {
 
     await CrSettingsPrefs.initialized;
     faceGazeCursorCard = document.createElement('facegaze-cursor-card');
-    faceGazeCursorCard.prefs = prefElement.prefs;
+    faceGazeCursorCard.prefs = prefElement.prefs!;
     document.body.appendChild(faceGazeCursorCard);
     flush();
   }
@@ -76,9 +76,13 @@ suite('<facegaze-cursor-card>', () => {
   test('cursor control enabled button syncs to pref', async () => {
     await initPage();
 
-    const prefs = faceGazeCursorCard.prefs.settings.a11y.face_gaze;
 
-    assertTrue(prefs.cursor_control_enabled_sentinel.value);
+
+    assertTrue(
+        faceGazeCursorCard
+            .getPref<boolean>(
+                'settings.a11y.face_gaze.cursor_control_enabled_sentinel')
+            .value);
 
     const button = faceGazeCursorCard.shadowRoot!
                        .querySelector<SettingsToggleButtonElement>(
@@ -91,7 +95,11 @@ suite('<facegaze-cursor-card>', () => {
     flush();
 
     assertFalse(button.checked);
-    assertFalse(prefs.cursor_control_enabled_sentinel.value);
+    assertFalse(
+        faceGazeCursorCard
+            .getPref<boolean>(
+                'settings.a11y.face_gaze.cursor_control_enabled_sentinel')
+            .value);
   });
 
   test(
@@ -99,9 +107,12 @@ suite('<facegaze-cursor-card>', () => {
       async () => {
         await initPage();
 
-        const prefs = faceGazeCursorCard.prefs.settings.a11y.face_gaze;
 
-        assertFalse(prefs.adjust_speed_separately.value);
+
+        assertFalse(faceGazeCursorCard
+                        .getPref<boolean>(
+                            'settings.a11y.face_gaze.adjust_speed_separately')
+                        .value);
 
         const adjustSpeedsSeparatelyButton =
             faceGazeCursorCard.shadowRoot!
@@ -120,10 +131,26 @@ suite('<facegaze-cursor-card>', () => {
         assertEquals(combinedSlider.pref.value, DEFAULT_CURSOR_SPEED);
 
         // Speed adjustments also have default values.
-        assertEquals(prefs.cursor_speed_up.value, DEFAULT_CURSOR_SPEED);
-        assertEquals(prefs.cursor_speed_down.value, DEFAULT_CURSOR_SPEED);
-        assertEquals(prefs.cursor_speed_left.value, DEFAULT_CURSOR_SPEED);
-        assertEquals(prefs.cursor_speed_right.value, DEFAULT_CURSOR_SPEED);
+        assertEquals(
+            faceGazeCursorCard
+                .getPref('settings.a11y.face_gaze.cursor_speed_up')
+                .value,
+            DEFAULT_CURSOR_SPEED);
+        assertEquals(
+            faceGazeCursorCard
+                .getPref('settings.a11y.face_gaze.cursor_speed_down')
+                .value,
+            DEFAULT_CURSOR_SPEED);
+        assertEquals(
+            faceGazeCursorCard
+                .getPref('settings.a11y.face_gaze.cursor_speed_left')
+                .value,
+            DEFAULT_CURSOR_SPEED);
+        assertEquals(
+            faceGazeCursorCard
+                .getPref('settings.a11y.face_gaze.cursor_speed_right')
+                .value,
+            DEFAULT_CURSOR_SPEED);
 
         // Other sliders are hidden.
         let speedUpSlider =
@@ -148,7 +175,10 @@ suite('<facegaze-cursor-card>', () => {
         flush();
 
         assertTrue(adjustSpeedsSeparatelyButton.checked);
-        assertTrue(prefs.adjust_speed_separately.value);
+        assertTrue(faceGazeCursorCard
+                       .getPref<boolean>(
+                           'settings.a11y.face_gaze.adjust_speed_separately')
+                       .value);
 
         // Now the combined slider is hidden.
         assertFalse(isVisible(combinedSlider));
@@ -186,7 +216,7 @@ suite('<facegaze-cursor-card>', () => {
   test('adjusting combined cursor speed adjusts all directions', async () => {
     await initPage();
 
-    const prefs = faceGazeCursorCard.prefs.settings.a11y.face_gaze;
+
 
     const combinedSlider =
         faceGazeCursorCard.shadowRoot!.querySelector<SettingsSliderElement>(
@@ -196,10 +226,22 @@ suite('<facegaze-cursor-card>', () => {
     assertEquals(combinedSlider.pref.value, DEFAULT_CURSOR_SPEED);
 
     // Speed prefs have default value.
-    assertEquals(prefs.cursor_speed_up.value, DEFAULT_CURSOR_SPEED);
-    assertEquals(prefs.cursor_speed_down.value, DEFAULT_CURSOR_SPEED);
-    assertEquals(prefs.cursor_speed_left.value, DEFAULT_CURSOR_SPEED);
-    assertEquals(prefs.cursor_speed_right.value, DEFAULT_CURSOR_SPEED);
+    assertEquals(
+        faceGazeCursorCard.getPref('settings.a11y.face_gaze.cursor_speed_up')
+            .value,
+        DEFAULT_CURSOR_SPEED);
+    assertEquals(
+        faceGazeCursorCard.getPref('settings.a11y.face_gaze.cursor_speed_down')
+            .value,
+        DEFAULT_CURSOR_SPEED);
+    assertEquals(
+        faceGazeCursorCard.getPref('settings.a11y.face_gaze.cursor_speed_left')
+            .value,
+        DEFAULT_CURSOR_SPEED);
+    assertEquals(
+        faceGazeCursorCard.getPref('settings.a11y.face_gaze.cursor_speed_right')
+            .value,
+        DEFAULT_CURSOR_SPEED);
 
     let value = DEFAULT_CURSOR_SPEED;
     // Adjust all of the individual prefs.
@@ -207,10 +249,22 @@ suite('<facegaze-cursor-card>', () => {
 
     value += CURSOR_SPEED_STEP;
     assertEquals(value, combinedSlider.pref.value);
-    assertEquals(prefs.cursor_speed_up.value, value);
-    assertEquals(prefs.cursor_speed_down.value, value);
-    assertEquals(prefs.cursor_speed_left.value, value);
-    assertEquals(prefs.cursor_speed_right.value, value);
+    assertEquals(
+        faceGazeCursorCard.getPref('settings.a11y.face_gaze.cursor_speed_up')
+            .value,
+        value);
+    assertEquals(
+        faceGazeCursorCard.getPref('settings.a11y.face_gaze.cursor_speed_down')
+            .value,
+        value);
+    assertEquals(
+        faceGazeCursorCard.getPref('settings.a11y.face_gaze.cursor_speed_left')
+            .value,
+        value);
+    assertEquals(
+        faceGazeCursorCard.getPref('settings.a11y.face_gaze.cursor_speed_right')
+            .value,
+        value);
 
     // Showing the individual sliders shows they've taken on the value of
     // the combined slider.
@@ -257,7 +311,7 @@ suite('<facegaze-cursor-card>', () => {
       async () => {
         await initPage();
 
-        const prefs = faceGazeCursorCard.prefs.settings.a11y.face_gaze;
+
 
         const adjustSpeedsSeparatelyButton =
             faceGazeCursorCard.shadowRoot!
@@ -267,7 +321,11 @@ suite('<facegaze-cursor-card>', () => {
         adjustSpeedsSeparatelyButton.click();
         flush();
 
-        assertEquals(prefs.cursor_speed_up.value, DEFAULT_CURSOR_SPEED);
+        assertEquals(
+            faceGazeCursorCard
+                .getPref('settings.a11y.face_gaze.cursor_speed_up')
+                .value,
+            DEFAULT_CURSOR_SPEED);
         const speedUpSlider =
             faceGazeCursorCard.shadowRoot!.querySelector<SettingsSliderElement>(
                 '#speedUpSlider');
@@ -278,10 +336,16 @@ suite('<facegaze-cursor-card>', () => {
         assertEquals(
             speedUpSlider.pref.value, DEFAULT_CURSOR_SPEED + CURSOR_SPEED_STEP);
         assertEquals(
-            prefs.cursor_speed_up.value,
+            faceGazeCursorCard
+                .getPref('settings.a11y.face_gaze.cursor_speed_up')
+                .value,
             DEFAULT_CURSOR_SPEED + CURSOR_SPEED_STEP);
 
-        assertEquals(prefs.cursor_speed_down.value, DEFAULT_CURSOR_SPEED);
+        assertEquals(
+            faceGazeCursorCard
+                .getPref('settings.a11y.face_gaze.cursor_speed_down')
+                .value,
+            DEFAULT_CURSOR_SPEED);
         const speedDownSlider =
             faceGazeCursorCard.shadowRoot!.querySelector<SettingsSliderElement>(
                 '#speedDownSlider');
@@ -294,10 +358,16 @@ suite('<facegaze-cursor-card>', () => {
             speedDownSlider.pref.value,
             DEFAULT_CURSOR_SPEED - (CURSOR_SPEED_STEP * 2));
         assertEquals(
-            prefs.cursor_speed_down.value,
+            faceGazeCursorCard
+                .getPref('settings.a11y.face_gaze.cursor_speed_down')
+                .value,
             DEFAULT_CURSOR_SPEED - (CURSOR_SPEED_STEP * 2));
 
-        assertEquals(prefs.cursor_speed_left.value, DEFAULT_CURSOR_SPEED);
+        assertEquals(
+            faceGazeCursorCard
+                .getPref('settings.a11y.face_gaze.cursor_speed_left')
+                .value,
+            DEFAULT_CURSOR_SPEED);
         const speedLeftSlider =
             faceGazeCursorCard.shadowRoot!.querySelector<SettingsSliderElement>(
                 '#speedLeftSlider');
@@ -309,10 +379,16 @@ suite('<facegaze-cursor-card>', () => {
             speedLeftSlider.pref.value,
             DEFAULT_CURSOR_SPEED - CURSOR_SPEED_STEP);
         assertEquals(
-            prefs.cursor_speed_left.value,
+            faceGazeCursorCard
+                .getPref('settings.a11y.face_gaze.cursor_speed_left')
+                .value,
             DEFAULT_CURSOR_SPEED - CURSOR_SPEED_STEP);
 
-        assertEquals(prefs.cursor_speed_right.value, DEFAULT_CURSOR_SPEED);
+        assertEquals(
+            faceGazeCursorCard
+                .getPref('settings.a11y.face_gaze.cursor_speed_right')
+                .value,
+            DEFAULT_CURSOR_SPEED);
         const speedRightSlider =
             faceGazeCursorCard.shadowRoot!.querySelector<SettingsSliderElement>(
                 '#speedRightSlider');
@@ -324,7 +400,9 @@ suite('<facegaze-cursor-card>', () => {
             speedRightSlider.pref.value,
             DEFAULT_CURSOR_SPEED - CURSOR_SPEED_STEP);
         assertEquals(
-            prefs.cursor_speed_right.value,
+            faceGazeCursorCard
+                .getPref('settings.a11y.face_gaze.cursor_speed_right')
+                .value,
             DEFAULT_CURSOR_SPEED - CURSOR_SPEED_STEP);
 
         // Turning off "adjust separately" resets to defaults.
@@ -338,10 +416,26 @@ suite('<facegaze-cursor-card>', () => {
         assertTrue(isVisible(combinedSlider));
         assertEquals(combinedSlider.pref.value, DEFAULT_CURSOR_SPEED);
 
-        assertEquals(prefs.cursor_speed_up.value, DEFAULT_CURSOR_SPEED);
-        assertEquals(prefs.cursor_speed_down.value, DEFAULT_CURSOR_SPEED);
-        assertEquals(prefs.cursor_speed_left.value, DEFAULT_CURSOR_SPEED);
-        assertEquals(prefs.cursor_speed_right.value, DEFAULT_CURSOR_SPEED);
+        assertEquals(
+            faceGazeCursorCard
+                .getPref('settings.a11y.face_gaze.cursor_speed_up')
+                .value,
+            DEFAULT_CURSOR_SPEED);
+        assertEquals(
+            faceGazeCursorCard
+                .getPref('settings.a11y.face_gaze.cursor_speed_down')
+                .value,
+            DEFAULT_CURSOR_SPEED);
+        assertEquals(
+            faceGazeCursorCard
+                .getPref('settings.a11y.face_gaze.cursor_speed_left')
+                .value,
+            DEFAULT_CURSOR_SPEED);
+        assertEquals(
+            faceGazeCursorCard
+                .getPref('settings.a11y.face_gaze.cursor_speed_right')
+                .value,
+            DEFAULT_CURSOR_SPEED);
       });
 
   test('reset alert updates appropriately', async () => {
@@ -373,7 +467,7 @@ suite('<facegaze-cursor-card>', () => {
   test('reset button resets to defaults', async () => {
     await initPage();
 
-    const prefs = faceGazeCursorCard.prefs.settings.a11y.face_gaze;
+
 
     // Change the adjust speeds separately value.
     const adjustSpeedsSeparatelyButton =
@@ -383,7 +477,10 @@ suite('<facegaze-cursor-card>', () => {
     assert(adjustSpeedsSeparatelyButton);
     adjustSpeedsSeparatelyButton.click();
     flush();
-    assertTrue(prefs.adjust_speed_separately.value);
+    assertTrue(
+        faceGazeCursorCard
+            .getPref<boolean>('settings.a11y.face_gaze.adjust_speed_separately')
+            .value);
 
     // The individual sliders are all shown, change their values.
     const speedUpSlider =
@@ -391,22 +488,31 @@ suite('<facegaze-cursor-card>', () => {
             '#speedUpSlider');
     assert(speedUpSlider);
     assertTrue(isVisible(speedUpSlider));
-    assertEquals(prefs.cursor_speed_down.value, DEFAULT_CURSOR_SPEED);
+    assertEquals(
+        faceGazeCursorCard.getPref('settings.a11y.face_gaze.cursor_speed_down')
+            .value,
+        DEFAULT_CURSOR_SPEED);
     pressArrowOnSlider(speedUpSlider, /*isRight=*/ true);
     flush();
     assertEquals(
-        prefs.cursor_speed_up.value, DEFAULT_CURSOR_SPEED + CURSOR_SPEED_STEP);
+        faceGazeCursorCard.getPref('settings.a11y.face_gaze.cursor_speed_up')
+            .value,
+        DEFAULT_CURSOR_SPEED + CURSOR_SPEED_STEP);
 
     const speedDownSlider =
         faceGazeCursorCard.shadowRoot!.querySelector<SettingsSliderElement>(
             '#speedDownSlider');
     assert(speedDownSlider);
     assertTrue(isVisible(speedDownSlider));
-    assertEquals(prefs.cursor_speed_down.value, DEFAULT_CURSOR_SPEED);
+    assertEquals(
+        faceGazeCursorCard.getPref('settings.a11y.face_gaze.cursor_speed_down')
+            .value,
+        DEFAULT_CURSOR_SPEED);
     pressArrowOnSlider(speedDownSlider, /*isRight=*/ false);
     flush();
     assertEquals(
-        prefs.cursor_speed_down.value,
+        faceGazeCursorCard.getPref('settings.a11y.face_gaze.cursor_speed_down')
+            .value,
         DEFAULT_CURSOR_SPEED - CURSOR_SPEED_STEP);
 
     const speedLeftSlider =
@@ -414,11 +520,15 @@ suite('<facegaze-cursor-card>', () => {
             '#speedLeftSlider');
     assert(speedLeftSlider);
     assertTrue(isVisible(speedLeftSlider));
-    assertEquals(prefs.cursor_speed_left.value, DEFAULT_CURSOR_SPEED);
+    assertEquals(
+        faceGazeCursorCard.getPref('settings.a11y.face_gaze.cursor_speed_left')
+            .value,
+        DEFAULT_CURSOR_SPEED);
     pressArrowOnSlider(speedLeftSlider, /*isRight=*/ true);
     flush();
     assertEquals(
-        prefs.cursor_speed_left.value,
+        faceGazeCursorCard.getPref('settings.a11y.face_gaze.cursor_speed_left')
+            .value,
         DEFAULT_CURSOR_SPEED + CURSOR_SPEED_STEP);
 
     const speedRightSlider =
@@ -426,11 +536,15 @@ suite('<facegaze-cursor-card>', () => {
             '#speedRightSlider');
     assert(speedRightSlider);
     assertTrue(isVisible(speedRightSlider));
-    assertEquals(prefs.cursor_speed_right.value, DEFAULT_CURSOR_SPEED);
+    assertEquals(
+        faceGazeCursorCard.getPref('settings.a11y.face_gaze.cursor_speed_right')
+            .value,
+        DEFAULT_CURSOR_SPEED);
     pressArrowOnSlider(speedRightSlider, /*isRight=*/ false);
     flush();
     assertEquals(
-        prefs.cursor_speed_right.value,
+        faceGazeCursorCard.getPref('settings.a11y.face_gaze.cursor_speed_right')
+            .value,
         DEFAULT_CURSOR_SPEED - CURSOR_SPEED_STEP);
 
 
@@ -439,11 +553,16 @@ suite('<facegaze-cursor-card>', () => {
             '#velocityThresholdSlider');
     assert(velocityThresholdSlider);
     assertTrue(isVisible(velocityThresholdSlider));
-    assertEquals(prefs.velocity_threshold.value, DEFAULT_VELOCITY_THRESHOLD);
+    assertEquals(
+        faceGazeCursorCard.getPref('settings.a11y.face_gaze.velocity_threshold')
+            .value,
+        DEFAULT_VELOCITY_THRESHOLD);
     pressArrowOnSlider(velocityThresholdSlider, /*isRight=*/ false);
     flush();
     assertEquals(
-        prefs.velocity_threshold.value, DEFAULT_VELOCITY_THRESHOLD - 1);
+        faceGazeCursorCard.getPref('settings.a11y.face_gaze.velocity_threshold')
+            .value,
+        DEFAULT_VELOCITY_THRESHOLD - 1);
 
     const accelerationButton =
         faceGazeCursorCard.shadowRoot!
@@ -452,7 +571,10 @@ suite('<facegaze-cursor-card>', () => {
     assertTrue(isVisible(accelerationButton));
     accelerationButton.click();
     flush();
-    assertFalse(prefs.cursor_use_acceleration.value);
+    assertFalse(
+        faceGazeCursorCard
+            .getPref<boolean>('settings.a11y.face_gaze.cursor_use_acceleration')
+            .value);
 
     const precisionClickToggle =
         faceGazeCursorCard.shadowRoot!
@@ -461,11 +583,15 @@ suite('<facegaze-cursor-card>', () => {
     assert(precisionClickToggle);
     assertTrue(isVisible(precisionClickToggle));
     assertFalse(precisionClickToggle.checked);
-    assertFalse(prefs.precision_click.value);
+    assertFalse(faceGazeCursorCard
+                    .getPref<boolean>('settings.a11y.face_gaze.precision_click')
+                    .value);
     precisionClickToggle.click();
     flush();
     assertTrue(precisionClickToggle.checked);
-    assertTrue(prefs.precision_click.value);
+    assertTrue(faceGazeCursorCard
+                   .getPref<boolean>('settings.a11y.face_gaze.precision_click')
+                   .value);
 
     // Now, reset everything.
     const resetButton =
@@ -476,25 +602,56 @@ suite('<facegaze-cursor-card>', () => {
     resetButton.click();
     flush();
 
-    assertFalse(prefs.adjust_speed_separately.value);
-    assertEquals(DEFAULT_VELOCITY_THRESHOLD, prefs.velocity_threshold.value);
-    assertTrue(prefs.cursor_use_acceleration.value);
-    assertEquals(DEFAULT_CURSOR_SPEED, prefs.cursor_speed_up.value);
-    assertEquals(DEFAULT_CURSOR_SPEED, prefs.cursor_speed_down.value);
-    assertEquals(DEFAULT_CURSOR_SPEED, prefs.cursor_speed_left.value);
-    assertEquals(DEFAULT_CURSOR_SPEED, prefs.cursor_speed_right.value);
-    assertFalse(prefs.precision_click.value);
+    assertFalse(
+        faceGazeCursorCard
+            .getPref<boolean>('settings.a11y.face_gaze.adjust_speed_separately')
+            .value);
+    assertEquals(
+        DEFAULT_VELOCITY_THRESHOLD,
+        faceGazeCursorCard.getPref('settings.a11y.face_gaze.velocity_threshold')
+            .value);
+    assertTrue(
+        faceGazeCursorCard
+            .getPref<boolean>('settings.a11y.face_gaze.cursor_use_acceleration')
+            .value);
+    assertEquals(
+        DEFAULT_CURSOR_SPEED,
+        faceGazeCursorCard.getPref('settings.a11y.face_gaze.cursor_speed_up')
+            .value);
+    assertEquals(
+        DEFAULT_CURSOR_SPEED,
+        faceGazeCursorCard.getPref('settings.a11y.face_gaze.cursor_speed_down')
+            .value);
+    assertEquals(
+        DEFAULT_CURSOR_SPEED,
+        faceGazeCursorCard.getPref('settings.a11y.face_gaze.cursor_speed_left')
+            .value);
+    assertEquals(
+        DEFAULT_CURSOR_SPEED,
+        faceGazeCursorCard.getPref('settings.a11y.face_gaze.cursor_speed_right')
+            .value);
+    assertFalse(faceGazeCursorCard
+                    .getPref<boolean>('settings.a11y.face_gaze.precision_click')
+                    .value);
     assertEquals(
         DEFAULT_PRECISION_CLICK_SPEED_FACTOR,
-        prefs.precision_click_speed_factor.value);
+        faceGazeCursorCard
+            .getPref('settings.a11y.face_gaze.precision_click_speed_factor')
+            .value);
   });
 
   test('precision click toggle shows and hides dropdown', async () => {
     await initPage();
-    const prefs = faceGazeCursorCard.prefs.settings.a11y.face_gaze;
+
     // Verify default values.
-    assertFalse(prefs.precision_click.value);
-    assertEquals(50, prefs.precision_click_speed_factor.value);
+    assertFalse(faceGazeCursorCard
+                    .getPref<boolean>('settings.a11y.face_gaze.precision_click')
+                    .value);
+    assertEquals(
+        50,
+        faceGazeCursorCard
+            .getPref('settings.a11y.face_gaze.precision_click_speed_factor')
+            .value);
 
     // Toggle should be off by default.
     const precisionClickToggle =
@@ -515,7 +672,9 @@ suite('<facegaze-cursor-card>', () => {
     flush();
 
     assertTrue(precisionClickToggle.checked);
-    assertTrue(prefs.precision_click.value);
+    assertTrue(faceGazeCursorCard
+                   .getPref<boolean>('settings.a11y.face_gaze.precision_click')
+                   .value);
 
     // After enabling the toggle, the dropdown is shown and has the default
     // value.
@@ -530,7 +689,9 @@ suite('<facegaze-cursor-card>', () => {
     flush();
 
     assertFalse(precisionClickToggle.checked);
-    assertFalse(prefs.precision_click.value);
+    assertFalse(faceGazeCursorCard
+                    .getPref<boolean>('settings.a11y.face_gaze.precision_click')
+                    .value);
 
     // Dropdown should be hidden again.
     precisionClickDropDown =

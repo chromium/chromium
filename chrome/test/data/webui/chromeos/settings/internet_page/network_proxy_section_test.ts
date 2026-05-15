@@ -172,7 +172,7 @@ suite('<network-proxy-section>', () => {
   test('Proxy set by Ash extension', () => {
     assertNotVisible(getExtensionElement());
     // Configure the proxy pref with the extension data.
-    proxySection.prefs.proxy = {
+    proxySection.prefs['proxy'] = {
       type: chrome.settingsPrivate.PrefType.DICTIONARY,
       value: {},
       extensionId: kExtensionId,
@@ -281,7 +281,7 @@ suite('<network-proxy-section>', () => {
     assertNotVisible(getNetworkPolicyElement());
 
     // Configure the proxy pref with the extension data.
-    proxySection.prefs.proxy = {
+    proxySection.prefs['proxy'] = {
       type: chrome.settingsPrivate.PrefType.DICTIONARY,
       value: {},
       extensionId: kExtensionId,
@@ -306,7 +306,7 @@ suite('<network-proxy-section>', () => {
     assertNotVisible(getNetworkPolicyElement());
 
     // Remove extension settings.
-    proxySection.prefs.proxy = {};
+    proxySection.prefs['proxy'] = {};
     clearProxySettings();
 
     assertNotVisible(getNetworkPolicyElement());

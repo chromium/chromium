@@ -22,7 +22,7 @@ suite('<settings-office-page>', function() {
 
     await CrSettingsPrefs.initialized;
     page = document.createElement('settings-office-page');
-    page.prefs = prefElement.prefs;
+    page.prefs = prefElement.prefs!;
     document.body.appendChild(page);
     flush();
   });
@@ -88,7 +88,8 @@ suite('<settings-office-page>', function() {
 
     askToMove.click();
     assertTrue(askToMove.checked);
-    assertFalse(page.getPref('filebrowser.office.always_move_to_drive').value);
+    assertFalse(
+        page.getPref<boolean>('filebrowser.office.always_move_to_drive').value);
   });
 
   test('Sets OneDrive pref to false when clicked from true', function() {
@@ -104,7 +105,8 @@ suite('<settings-office-page>', function() {
     askToMove.click();
     assertTrue(askToMove.checked);
     assertFalse(
-        page.getPref('filebrowser.office.always_move_to_onedrive').value);
+        page.getPref<boolean>('filebrowser.office.always_move_to_onedrive')
+            .value);
   });
 
   test('Sets Drive pref to true when clicked from false', function() {
@@ -119,7 +121,8 @@ suite('<settings-office-page>', function() {
 
     askToMove.click();
     assertFalse(askToMove.checked);
-    assertTrue(page.getPref('filebrowser.office.always_move_to_drive').value);
+    assertTrue(
+        page.getPref<boolean>('filebrowser.office.always_move_to_drive').value);
   });
 
   test('Sets OneDrive pref to true when clicked from false', function() {
@@ -135,6 +138,7 @@ suite('<settings-office-page>', function() {
     askToMove.click();
     assertFalse(askToMove.checked);
     assertTrue(
-        page.getPref('filebrowser.office.always_move_to_onedrive').value);
+        page.getPref<boolean>('filebrowser.office.always_move_to_onedrive')
+            .value);
   });
 });

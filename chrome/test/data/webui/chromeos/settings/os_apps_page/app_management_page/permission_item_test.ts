@@ -241,7 +241,7 @@ suite('AppManagementPermissionItemTest', function() {
     // Sensor access is turned ON.
     assertEquals(
         GeolocationAccessLevel.ALLOWED,
-        permissionItem.prefs.ash.user.geolocation_access_level.value);
+        permissionItem.getPref('ash.user.geolocation_access_level').value);
   });
 
   test('Permission description updated when no sensor connected', async () => {

@@ -641,7 +641,7 @@ suite('AppsPageTests', () => {
 
       button.click();
       flush();
-      assertTrue(appsPage.prefs.arc.enabled.value);
+      assertTrue(appsPage.getPref<boolean>('arc.enabled').value);
 
       appsPage.androidAppsInfo = {
         playStoreEnabled: true,

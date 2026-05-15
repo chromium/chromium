@@ -32,7 +32,7 @@ suite('LiveTranslateSection', function() {
     clearBody();
 
     const settingsLanguages = document.createElement('settings-languages');
-    settingsLanguages.prefs = settingsPrefs.prefs;
+    settingsLanguages.prefs = settingsPrefs.prefs!;
     fakeDataBind(settingsPrefs, settingsLanguages, 'prefs');
     document.body.appendChild(settingsLanguages);
 
@@ -44,7 +44,7 @@ suite('LiveTranslateSection', function() {
     CaptionsBrowserProxyImpl.setInstance(browserProxy);
 
     liveTranslateSection = document.createElement('settings-live-translate');
-    liveTranslateSection.prefs = settingsPrefs.prefs;
+    liveTranslateSection.prefs = settingsPrefs.prefs!;
     fakeDataBind(settingsPrefs, liveTranslateSection, 'prefs');
     liveTranslateSection.languageHelper = settingsLanguages.languageHelper;
     fakeDataBind(settingsLanguages, liveTranslateSection, 'language-helper');
@@ -65,7 +65,7 @@ suite('LiveTranslateSection', function() {
     settingsToggle.click();
     let newToggleValue =
         liveTranslateSection
-            .getPref('accessibility.captions.live_translate_enabled')
+            .getPref<boolean>('accessibility.captions.live_translate_enabled')
             .value;
     assertTrue(newToggleValue);
 
@@ -73,7 +73,7 @@ suite('LiveTranslateSection', function() {
     settingsToggle.click();
     newToggleValue =
         liveTranslateSection
-            .getPref('accessibility.captions.live_translate_enabled')
+            .getPref<boolean>('accessibility.captions.live_translate_enabled')
             .value;
     assertFalse(newToggleValue);
   });

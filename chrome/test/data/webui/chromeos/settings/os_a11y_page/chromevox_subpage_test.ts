@@ -41,7 +41,7 @@ suite('<settings-chromevox-subpage>', () => {
 
     await CrSettingsPrefs.initialized;
     page = document.createElement('settings-chromevox-subpage');
-    page.prefs = prefElement.prefs;
+    page.prefs = prefElement.prefs!;
     document.body.appendChild(page);
     flush();
   });
@@ -239,7 +239,8 @@ suite('<settings-chromevox-subpage>', () => {
     await waitAfterNextRender(loggingToggle);
 
     // Get all event stream filter prefs.
-    let pref = page.getPref('settings.a11y.chromevox.event_stream_filters');
+    let pref = page.getPref<Record<string, boolean>>(
+        'settings.a11y.chromevox.event_stream_filters');
 
     // Toggle each filter, verify each pref is set.
     page.get('eventStreamFilters_').forEach((filter: string) => {
@@ -255,8 +256,9 @@ suite('<settings-chromevox-subpage>', () => {
       toggle.click();
 
       // Make sure event stream filter pref state is true.
-      pref = page.getPref('settings.a11y.chromevox.event_stream_filters');
-      assertTrue(pref.value[filter]);
+      pref = page.getPref<Record<string, boolean>>(
+          'settings.a11y.chromevox.event_stream_filters');
+      assertTrue(pref.value[filter]!);
     });
   });
 

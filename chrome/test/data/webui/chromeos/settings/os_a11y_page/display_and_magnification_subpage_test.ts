@@ -28,7 +28,7 @@ suite('<settings-display-and-magnification-subpage>', () => {
 
     await CrSettingsPrefs.initialized;
     page = document.createElement('settings-display-and-magnification-subpage');
-    page.prefs = prefElement.prefs;
+    page.prefs = prefElement.prefs!;
     document.body.appendChild(page);
     flush();
   }
@@ -90,7 +90,8 @@ suite('<settings-display-and-magnification-subpage>', () => {
     // Enabled in os_settings_v3_browsertest.js.
     await initPage();
 
-    assertFalse(page.prefs.settings.a11y.color_filtering.enabled.value);
+    assertFalse(
+        page.getPref<boolean>('settings.a11y.color_filtering.enabled').value);
 
     let colorDeficiencyDropdown =
         page.shadowRoot!.querySelector<SettingsDropdownMenuElement>(
@@ -111,7 +112,8 @@ suite('<settings-display-and-magnification-subpage>', () => {
     await waitBeforeNextRender(page);
     flush();
 
-    assertTrue(page.prefs.settings.a11y.color_filtering.enabled.value);
+    assertTrue(
+        page.getPref<boolean>('settings.a11y.color_filtering.enabled').value);
 
     // Color enhancement options options become visible.
     colorDeficiencyDropdown =
@@ -126,8 +128,10 @@ suite('<settings-display-and-magnification-subpage>', () => {
     assert(colorFilteringIntensitySlider);
     assertTrue(isVisible(colorFilteringIntensitySlider));
 
-    const amount = page.prefs.settings.a11y.color_filtering
-                       .color_vision_correction_amount.value;
+    const amount =
+        page.getPref<number>(
+                'settings.a11y.color_filtering.color_vision_correction_amount')
+            .value;
 
     // Try a keypress on the slider to ensure that it behaves OK.
     pressAndReleaseKeyOn(
@@ -138,7 +142,8 @@ suite('<settings-display-and-magnification-subpage>', () => {
     // The slider should have decreased, causing the pref to decrease.
     assertGT(
         amount,
-        page.prefs.settings.a11y.color_filtering.color_vision_correction_amount
+        page.getPref<number>(
+                'settings.a11y.color_filtering.color_vision_correction_amount')
             .value);
 
     // Try changing the color filtering type.
@@ -150,8 +155,10 @@ suite('<settings-display-and-magnification-subpage>', () => {
     // Change the filtering type.
     filterSelectElement.value = String(GREYSCALE_VALUE);
     filterSelectElement.dispatchEvent(new CustomEvent('change'));
-    const new_filter = page.prefs.settings.a11y.color_filtering
-                           .color_vision_deficiency_type.value;
+    const new_filter =
+        page.getPref(
+                'settings.a11y.color_filtering.color_vision_deficiency_type')
+            .value;
     assertEquals(new_filter, GREYSCALE_VALUE);
   });
 
@@ -160,7 +167,9 @@ suite('<settings-display-and-magnification-subpage>', () => {
 
     if (loadTimeData.getBoolean('isAccessibilityReducedAnimationsEnabled')) {
       // If the flag is enabled, check that the UI works.
-      assertFalse(page.prefs.settings.a11y.reduced_animations.enabled.value);
+      assertFalse(
+          page.getPref<boolean>('settings.a11y.reduced_animations.enabled')
+              .value);
 
       const enableReducedAnimationsToggle =
           page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
@@ -172,7 +181,9 @@ suite('<settings-display-and-magnification-subpage>', () => {
       await waitBeforeNextRender(page);
       flush();
 
-      assertTrue(page.prefs.settings.a11y.reduced_animations.enabled.value);
+      assertTrue(
+          page.getPref<boolean>('settings.a11y.reduced_animations.enabled')
+              .value);
     } else {
       // Toggle shouldn't be available if flag is disabled.
       const enableReducedAnimationsToggle =
@@ -185,7 +196,8 @@ suite('<settings-display-and-magnification-subpage>', () => {
   test('Turns on overlay scrollbars', async () => {
     await initPage();
 
-    assertFalse(page.prefs.settings.a11y.overlay_scrollbar.enabled.value);
+    assertFalse(
+        page.getPref<boolean>('settings.a11y.overlay_scrollbar.enabled').value);
 
     const enableAlwaysShowScrollbarsToggle =
       page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
@@ -197,7 +209,8 @@ suite('<settings-display-and-magnification-subpage>', () => {
     await waitBeforeNextRender(page);
     flush();
 
-    assertTrue(page.prefs.settings.a11y.overlay_scrollbar.enabled.value);
+    assertTrue(
+        page.getPref<boolean>('settings.a11y.overlay_scrollbar.enabled').value);
   });
 
   if (loadTimeData.getBoolean(
@@ -221,15 +234,19 @@ suite('<settings-display-and-magnification-subpage>', () => {
       assertTrue(isVisible(dockedMagnifierFollowsChromeVoxToggle));
       // Docked magnifier follows ChromeVox toggle should be enabled by
       // default.
-      assertTrue(page.prefs.settings.a11y
-                     .screen_magnifier_chromevox_focus_following.value);
+      assertTrue(
+          page.getPref<boolean>(
+                  'settings.a11y.screen_magnifier_chromevox_focus_following')
+              .value);
 
       dockedMagnifierFollowsChromeVoxToggle.click();
       await waitBeforeNextRender(page);
       flush();
 
-      assertFalse(page.prefs.settings.a11y
-                      .screen_magnifier_chromevox_focus_following.value);
+      assertFalse(
+          page.getPref<boolean>(
+                  'settings.a11y.screen_magnifier_chromevox_focus_following')
+              .value);
     });
   } else {
     test(
@@ -276,15 +293,19 @@ suite('<settings-display-and-magnification-subpage>', () => {
       assertTrue(isVisible(fullScreenMagnifierFollowsChromeVoxToggle));
       // Full Screen magnifier follows ChromeVox toggle should be enabled by
       // default.
-      assertTrue(page.prefs.settings.a11y
-                     .screen_magnifier_chromevox_focus_following.value);
+      assertTrue(
+          page.getPref<boolean>(
+                  'settings.a11y.screen_magnifier_chromevox_focus_following')
+              .value);
 
       fullScreenMagnifierFollowsChromeVoxToggle.click();
       await waitBeforeNextRender(page);
       flush();
 
-      assertFalse(page.prefs.settings.a11y
-                      .screen_magnifier_chromevox_focus_following.value);
+      assertFalse(
+          page.getPref<boolean>(
+                  'settings.a11y.screen_magnifier_chromevox_focus_following')
+              .value);
     });
   } else {
     test(
@@ -450,15 +471,19 @@ suite('<settings-display-and-magnification-subpage>', () => {
     assert(dockedMagnifierFollowsStsToggle);
     assertTrue(isVisible(dockedMagnifierFollowsStsToggle));
     // Docked magnifier follows STS toggle should be enabled by default.
-    assertTrue(page.prefs.settings.a11y
-                   .screen_magnifier_select_to_speak_focus_following.value);
+    assertTrue(
+        page.getPref<boolean>(
+                'settings.a11y.screen_magnifier_select_to_speak_focus_following')
+            .value);
 
     dockedMagnifierFollowsStsToggle.click();
     await waitBeforeNextRender(page);
     flush();
 
-    assertFalse(page.prefs.settings.a11y
-                    .screen_magnifier_select_to_speak_focus_following.value);
+    assertFalse(
+        page.getPref<boolean>(
+                'settings.a11y.screen_magnifier_select_to_speak_focus_following')
+            .value);
   });
 
   test('Turns off full screen magnifier follows select to speak', async () => {
@@ -481,15 +506,19 @@ suite('<settings-display-and-magnification-subpage>', () => {
     assertTrue(isVisible(fullScreenMagnifierFollowsStsToggle));
     // Full Screen magnifier follows STS toggle should be enabled by
     // default.
-    assertTrue(page.prefs.settings.a11y
-                   .screen_magnifier_select_to_speak_focus_following.value);
+    assertTrue(
+        page.getPref<boolean>(
+                'settings.a11y.screen_magnifier_select_to_speak_focus_following')
+            .value);
 
     fullScreenMagnifierFollowsStsToggle.click();
     await waitBeforeNextRender(page);
     flush();
 
-    assertFalse(page.prefs.settings.a11y
-                    .screen_magnifier_select_to_speak_focus_following.value);
+    assertFalse(
+        page.getPref<boolean>(
+                'settings.a11y.screen_magnifier_select_to_speak_focus_following')
+            .value);
   });
 
   test(

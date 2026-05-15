@@ -155,7 +155,7 @@ suite('<settings-nearby-share-subpage>', () => {
     // Ensure that these controls are enabled/disabled when the Nearby is
     // enabled/disabled.
     assertTrue(featureToggleButton.checked);
-    assertTrue(subpage.prefs.nearby_sharing.enabled.value);
+    assertTrue(subpage.getPref<boolean>('nearby_sharing.enabled').value);
     assertEquals('On', featureToggleButton.label.trim());
     subpageControlsHidden(false);
     subpageControlsDisabled(false);
@@ -164,20 +164,20 @@ suite('<settings-nearby-share-subpage>', () => {
     flush();
 
     assertFalse(featureToggleButton.checked);
-    assertFalse(subpage.prefs.nearby_sharing.enabled.value);
+    assertFalse(subpage.getPref<boolean>('nearby_sharing.enabled').value);
     assertEquals('Off', featureToggleButton.label.trim());
     subpageControlsHidden(false);
   });
 
   test('toggle row controls preference', () => {
     assertTrue(featureToggleButton.checked);
-    assertTrue(subpage.prefs.nearby_sharing.enabled.value);
+    assertTrue(subpage.getPref<boolean>('nearby_sharing.enabled').value);
     assertEquals('On', featureToggleButton.label.trim());
 
     featureToggleButton.click();
 
     assertFalse(featureToggleButton.checked);
-    assertFalse(subpage.prefs.nearby_sharing.enabled.value);
+    assertFalse(subpage.getPref<boolean>('nearby_sharing.enabled').value);
     assertEquals('Off', featureToggleButton.label.trim());
   });
 
@@ -233,7 +233,7 @@ suite('<settings-nearby-share-subpage>', () => {
   });
 
   test('update device name preference', () => {
-    assertEquals('', subpage.prefs.nearby_sharing.device_name.value);
+    assertEquals('', subpage.getPref('nearby_sharing.device_name').value);
 
     const editDeviceNameButton =
         subpage.shadowRoot!.querySelector<HTMLButtonElement>(
@@ -595,7 +595,7 @@ suite('<settings-nearby-share-subpage>', () => {
     assertTrue(!!editDataUsageButton);
 
     assertTrue(featureToggleButton.checked);
-    assertTrue(subpage.prefs.nearby_sharing.enabled.value);
+    assertTrue(subpage.getPref<boolean>('nearby_sharing.enabled').value);
     assertEquals('On', featureToggleButton.label.trim());
     assertTrue(doesElementExist('#help'));
 
@@ -633,7 +633,7 @@ suite('<settings-nearby-share-subpage>', () => {
     flush();
 
     assertFalse(featureToggleButton.checked);
-    assertFalse(subpage.prefs.nearby_sharing.enabled.value);
+    assertFalse(subpage.getPref<boolean>('nearby_sharing.enabled').value);
     assertEquals('Off', featureToggleButton.label.trim());
     assertEquals('none', subpageContent.style.display);
     assertEquals('none', helpContent.style.display);
@@ -660,7 +660,7 @@ suite('<settings-nearby-share-subpage>', () => {
     flush();
 
     assertFalse(featureToggleButton.checked);
-    assertFalse(subpage.prefs.nearby_sharing.enabled.value);
+    assertFalse(subpage.getPref<boolean>('nearby_sharing.enabled').value);
     assertEquals('Off', featureToggleButton.label.trim());
 
     subpageControlsHidden(true);
@@ -689,7 +689,7 @@ suite('<settings-nearby-share-subpage>', () => {
     flush();
 
     assertFalse(featureToggleButton.checked);
-    assertFalse(subpage.prefs.nearby_sharing.enabled.value);
+    assertFalse(subpage.getPref<boolean>('nearby_sharing.enabled').value);
     assertEquals('Off', featureToggleButton.label.trim());
 
     subpageControlsHidden(false);
@@ -701,7 +701,7 @@ suite('<settings-nearby-share-subpage>', () => {
     subpage.set('prefs.nearby_sharing.onboarding_complete.value', false);
     await flushTasks();
 
-    assertFalse(subpage.prefs.nearby_sharing.enabled.value);
+    assertFalse(subpage.getPref<boolean>('nearby_sharing.enabled').value);
     subpageControlsHidden(true);
   });
 
@@ -710,7 +710,7 @@ suite('<settings-nearby-share-subpage>', () => {
     flush();
 
     assertFalse(featureToggleButton.checked);
-    assertFalse(subpage.prefs.nearby_sharing.enabled.value);
+    assertFalse(subpage.getPref<boolean>('nearby_sharing.enabled').value);
     assertEquals('Off', featureToggleButton.label.trim());
 
     subpageControlsHidden(false);
@@ -722,7 +722,7 @@ suite('<settings-nearby-share-subpage>', () => {
     subpage.set('prefs.nearby_sharing.onboarding_complete.value', false);
     await flushTasks();
 
-    assertFalse(subpage.prefs.nearby_sharing.enabled.value);
+    assertFalse(subpage.getPref<boolean>('nearby_sharing.enabled').value);
     subpageControlsHidden(true);
   });
   });

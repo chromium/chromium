@@ -908,7 +908,7 @@ suite('<settings-power>', () => {
       // Assert dialog is closed.
       assertFalse(!!queryOptimizedChargingDialog());
       assertEquals(
-          powerSubpage.prefs.power.optimized_charging_strategy.value,
+          powerSubpage.getPref('power.optimized_charging_strategy').value,
           OptimizedChargingStrategy.STRATEGY_ADAPTIVE_CHARGING);
 
       // Reopen dialog.
@@ -940,7 +940,7 @@ suite('<settings-power>', () => {
       // Assert dialog is closed.
       assertFalse(!!queryOptimizedChargingDialog());
       assertEquals(
-          powerSubpage.prefs.power.optimized_charging_strategy.value,
+          powerSubpage.getPref('power.optimized_charging_strategy').value,
           OptimizedChargingStrategy.STRATEGY_CHARGE_LIMIT);
 
       // Reopen dialog.
@@ -991,7 +991,7 @@ suite('<settings-power>', () => {
       // Assert the dialog is gone.
       assertFalse(!!queryOptimizedChargingDialog());
       assertEquals(
-          powerSubpage.prefs.power.optimized_charging_strategy.value,
+          powerSubpage.getPref('power.optimized_charging_strategy').value,
           OptimizedChargingStrategy.STRATEGY_CHARGE_LIMIT);
 
       // Reopen the dialog.

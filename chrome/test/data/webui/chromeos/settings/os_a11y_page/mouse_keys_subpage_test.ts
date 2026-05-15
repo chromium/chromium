@@ -26,7 +26,7 @@ suite('<settings-mouse-keys-subpage>', () => {
 
     await CrSettingsPrefs.initialized;
     page = document.createElement('settings-mouse-keys-subpage');
-    page.prefs = prefElement.prefs;
+    page.prefs = prefElement.prefs!;
     document.body.appendChild(page);
     flush();
   }
@@ -64,10 +64,13 @@ suite('<settings-mouse-keys-subpage>', () => {
     });
 
     // If the flag is enabled, check that the UI works.
-    assertFalse(page.prefs.settings.a11y.mouse_keys.enabled.value);
+    assertFalse(
+        page.getPref<boolean>('settings.a11y.mouse_keys.enabled').value);
 
     // We should use primary keys by default.
-    assertTrue(page.prefs.settings.a11y.mouse_keys.use_primary_keys.value);
+    assertTrue(
+        page.getPref<boolean>('settings.a11y.mouse_keys.use_primary_keys')
+            .value);
 
     const enableMouseKeysToggle =
         page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
@@ -79,7 +82,7 @@ suite('<settings-mouse-keys-subpage>', () => {
     await waitBeforeNextRender(page);
     flush();
 
-    assertTrue(page.prefs.settings.a11y.mouse_keys.enabled.value);
+    assertTrue(page.getPref<boolean>('settings.a11y.mouse_keys.enabled').value);
 
     // kAccessibilityMouseKeysDominantHand
     // Ensure dominantHandControl exists.
@@ -116,7 +119,9 @@ suite('<settings-mouse-keys-subpage>', () => {
     flush();
 
     // kAccessibilityMouseKeysUsePrimaryKeys
-    assertFalse(page.prefs.settings.a11y.mouse_keys.use_primary_keys.value);
+    assertFalse(
+        page.getPref<boolean>('settings.a11y.mouse_keys.use_primary_keys')
+            .value);
 
     assertFalse(isVisible(dominantHandControl));
   });
@@ -141,14 +146,18 @@ suite('<settings-mouse-keys-subpage>', () => {
     assert(usePrimaryKeysToggle);
     assertTrue(isVisible(usePrimaryKeysToggle));
     // Primary keys should be default enabled.
-    assertTrue(page.prefs.settings.a11y.mouse_keys.use_primary_keys.value);
+    assertTrue(
+        page.getPref<boolean>('settings.a11y.mouse_keys.use_primary_keys')
+            .value);
 
     // Turn primary key toggle off.
     usePrimaryKeysToggle.click();
     await waitBeforeNextRender(page);
     flush();
 
-    assertFalse(page.prefs.settings.a11y.mouse_keys.use_primary_keys.value);
+    assertFalse(
+        page.getPref<boolean>('settings.a11y.mouse_keys.use_primary_keys')
+            .value);
     assertFalse(isVisible(primaryKeysKeyboardPreview));
 
     // Turn primary key toggle on.
@@ -156,7 +165,9 @@ suite('<settings-mouse-keys-subpage>', () => {
     await waitBeforeNextRender(page);
     flush();
 
-    assertTrue(page.prefs.settings.a11y.mouse_keys.use_primary_keys.value);
+    assertTrue(
+        page.getPref<boolean>('settings.a11y.mouse_keys.use_primary_keys')
+            .value);
     assertTrue(isVisible(primaryKeysKeyboardPreview));
   });
 });

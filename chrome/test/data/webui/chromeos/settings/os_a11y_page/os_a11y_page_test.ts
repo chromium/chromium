@@ -35,7 +35,7 @@ suite('<os-settings-a11y-page>', () => {
 
     await CrSettingsPrefs.initialized;
     page = document.createElement('os-settings-a11y-page');
-    page.prefs = prefElement.prefs;
+    page.prefs = prefElement.prefs!;
     document.body.appendChild(page);
     flush();
   });

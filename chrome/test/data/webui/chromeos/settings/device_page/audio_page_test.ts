@@ -103,11 +103,13 @@ suite('<settings-audio>', () => {
           assertTrue(isVisible(lowBatterySoundToggle));
 
           assertTrue(lowBatterySoundToggle.checked);
-          assertTrue(page.prefs.ash.low_battery_sound.enabled.value);
+          assertTrue(
+              page.getPref<boolean>('ash.low_battery_sound.enabled').value);
 
           lowBatterySoundToggle.click();
           assertFalse(lowBatterySoundToggle.checked);
-          assertFalse(page.prefs.ash.low_battery_sound.enabled.value);
+          assertFalse(
+              page.getPref<boolean>('ash.low_battery_sound.enabled').value);
         });
 
     test(
@@ -119,11 +121,13 @@ suite('<settings-audio>', () => {
           assertTrue(isVisible(chargingSoundsToggle));
 
           assertFalse(chargingSoundsToggle.checked);
-          assertFalse(page.prefs.ash.charging_sounds.enabled.value);
+          assertFalse(
+              page.getPref<boolean>('ash.charging_sounds.enabled').value);
 
           chargingSoundsToggle.click();
           assertTrue(chargingSoundsToggle.checked);
-          assertTrue(page.prefs.ash.charging_sounds.enabled.value);
+          assertTrue(
+              page.getPref<boolean>('ash.charging_sounds.enabled').value);
         });
 
     test(

@@ -279,9 +279,9 @@ suite('SettingsSecureDns', () => {
   });
 
   test('SecureDnsManaged', function() {
-    testElement.prefs.dns_over_https.mode.enforcement =
+    testElement.getPref('dns_over_https.mode').enforcement =
         chrome.settingsPrivate.Enforcement.ENFORCED;
-    testElement.prefs.dns_over_https.mode.controlledBy =
+    testElement.getPref('dns_over_https.mode').controlledBy =
         chrome.settingsPrivate.ControlledBy.DEVICE_POLICY;
 
     webUIListenerCallback('secure-dns-setting-changed', {
@@ -304,9 +304,9 @@ suite('SettingsSecureDns', () => {
   });
 
   test('SecureDnsManagedWithIdentifiers', function() {
-    testElement.prefs.dns_over_https.mode.enforcement =
+    testElement.getPref('dns_over_https.mode').enforcement =
         chrome.settingsPrivate.Enforcement.ENFORCED;
-    testElement.prefs.dns_over_https.mode.controlledBy =
+    testElement.getPref('dns_over_https.mode').controlledBy =
         chrome.settingsPrivate.ControlledBy.DEVICE_POLICY;
 
     const effectiveConfig = 'https://example/dns-query';
@@ -329,9 +329,9 @@ suite('SettingsSecureDns', () => {
   });
 
   test('SecureDnsManagedWithDohDomainConfig', function() {
-    testElement.prefs.dns_over_https.mode.enforcement =
+    testElement.getPref('dns_over_https.mode').enforcement =
         chrome.settingsPrivate.Enforcement.ENFORCED;
-    testElement.prefs.dns_over_https.mode.controlledBy =
+    testElement.getPref('dns_over_https.mode').controlledBy =
         chrome.settingsPrivate.ControlledBy.DEVICE_POLICY;
 
     webUIListenerCallback('secure-dns-setting-changed', {
@@ -349,9 +349,9 @@ suite('SettingsSecureDns', () => {
   });
 
   test('SecureDnsManagedWithIdentifiersAndDomainConfig', function() {
-    testElement.prefs.dns_over_https.mode.enforcement =
+    testElement.getPref('dns_over_https.mode').enforcement =
         chrome.settingsPrivate.Enforcement.ENFORCED;
-    testElement.prefs.dns_over_https.mode.controlledBy =
+    testElement.getPref('dns_over_https.mode').controlledBy =
         chrome.settingsPrivate.ControlledBy.DEVICE_POLICY;
 
     const effectiveConfig = 'https://example/dns-query';

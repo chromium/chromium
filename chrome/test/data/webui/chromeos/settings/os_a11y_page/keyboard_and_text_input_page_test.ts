@@ -27,7 +27,7 @@ suite('<settings-keyboard-and-text-input-page>', () => {
     await CrSettingsPrefs.initialized;
 
     page = document.createElement('settings-keyboard-and-text-input-page');
-    page.prefs = prefElement.prefs;
+    page.prefs = prefElement.prefs!;
     document.body.appendChild(page);
     flush();
   }
@@ -224,7 +224,7 @@ suite('<settings-keyboard-and-text-input-page>', () => {
     // Check the default synthetic pref value is what is expected.
     assertEquals(100, caretBlinkIntervalSlider.pref.value);
     // Check the actual default interval is what is expected.
-    assertEquals(500, page.prefs.settings.a11y.caret.blink_interval.value);
+    assertEquals(500, page.getPref('settings.a11y.caret.blink_interval').value);
 
     const slider =
         caretBlinkIntervalSlider.shadowRoot!.querySelector('cr-slider');
@@ -235,13 +235,13 @@ suite('<settings-keyboard-and-text-input-page>', () => {
     await flushTasks();
 
     assertEquals(110, caretBlinkIntervalSlider.pref.value);
-    assertEquals(455, page.prefs.settings.a11y.caret.blink_interval.value);
+    assertEquals(455, page.getPref('settings.a11y.caret.blink_interval').value);
 
     pressAndReleaseKeyOn(slider, 39, [], 'ArrowRight');
     await flushTasks();
 
     assertEquals(120, caretBlinkIntervalSlider.pref.value);
-    assertEquals(417, page.prefs.settings.a11y.caret.blink_interval.value);
+    assertEquals(417, page.getPref('settings.a11y.caret.blink_interval').value);
 
     // Now use the left arrow to get the minimum value, which should be "don't
     // blink", aka 0.
@@ -252,7 +252,7 @@ suite('<settings-keyboard-and-text-input-page>', () => {
     }
 
     assertEquals(40, caretBlinkIntervalSlider.pref.value);
-    assertEquals(0, page.prefs.settings.a11y.caret.blink_interval.value);
+    assertEquals(0, page.getPref('settings.a11y.caret.blink_interval').value);
   });
 
   const selectorRouteList = [
@@ -324,7 +324,7 @@ suite('<settings-keyboard-and-text-input-page>', () => {
           page.shadowRoot!.querySelector<SettingsToggleButtonElement>(`#${id}`);
       assert(toggle);
       assertFalse(toggle.checked);
-      let pref = page.getPref(prefKey);
+      let pref = page.getPref<boolean>(prefKey);
       assertFalse(pref.value);
 
       // Click the toggle. Ensure that it's:
@@ -332,7 +332,7 @@ suite('<settings-keyboard-and-text-input-page>', () => {
       // 2. The associated pref is on
       toggle.click();
       assertTrue(toggle.checked);
-      pref = page.getPref(prefKey);
+      pref = page.getPref<boolean>(prefKey);
       assertTrue(pref.value);
 
       if (cvoxTooltipId === '') {

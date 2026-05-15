@@ -71,13 +71,13 @@ suite('<os-settings-languages-page-v2>', () => {
 
     // Instantiates the data model with data bindings for prefs.
     settingsLanguages = document.createElement('settings-languages');
-    settingsLanguages.prefs = settingsPrefs.prefs;
+    settingsLanguages.prefs = settingsPrefs.prefs!;
     fakeDataBind(settingsPrefs, settingsLanguages, 'prefs');
     document.body.appendChild(settingsLanguages);
 
     // Creates page with data bindings for prefs and data model.
     languagesPage = document.createElement('os-settings-languages-page-v2');
-    languagesPage.prefs = settingsPrefs.prefs;
+    languagesPage.prefs = settingsPrefs.prefs!;
     fakeDataBind(settingsPrefs, languagesPage, 'prefs');
     languagesPage.languages = settingsLanguages.languages;
     fakeDataBind(settingsLanguages, languagesPage, 'languages');
@@ -173,7 +173,7 @@ suite('<os-settings-languages-page-v2>', () => {
 
       assertEquals(
           INITIAL_LANGUAGES,
-          languagesPage.getPref('intl.accept_languages').value);
+          languagesPage.getPref<string>('intl.accept_languages').value);
     });
 
     test('removes language when starting with 2 languages', () => {
@@ -198,13 +198,15 @@ suite('<os-settings-languages-page-v2>', () => {
       assertFalse(actionMenu.open);
 
       assertEquals(
-          'en-US', languagesPage.getPref('intl.accept_languages').value);
+          'en-US',
+          languagesPage.getPref<string>('intl.accept_languages').value);
     });
 
     test('the only translate blocked language is not removable', () => {
       //'en-US' is preconfigured to be the only translate blocked language.
       assertDeepEquals(
-          ['en-US'], languagesPage.prefs.translate_blocked_languages.value);
+          ['en-US'],
+          languagesPage.getPref('translate_blocked_languages').value);
       const items = languagesList.querySelectorAll<HTMLElement>('.list-item');
       const domRepeat = languagesList.querySelector('dom-repeat');
       assertTrue(!!domRepeat);
@@ -253,7 +255,8 @@ suite('<os-settings-languages-page-v2>', () => {
       removeMenuItem.click();
       assertFalse(actionMenu.open);
 
-      assertEquals('sw', languagesPage.getPref('intl.accept_languages').value);
+      assertEquals(
+          'sw', languagesPage.getPref<string>('intl.accept_languages').value);
     });
 
     test('single preferred language is not removable', () => {
@@ -405,7 +408,7 @@ suite('<os-settings-languages-page-v2>', () => {
           await metricsProxy.whenCalled('recordTranslateCheckboxChanged'));
       assertDeepEquals(
           ['en-US', 'sw'],
-          languagesPage.prefs.translate_blocked_languages.value);
+          languagesPage.getPref('translate_blocked_languages').value);
 
       // Menu should stay open briefly.
       assertTrue(actionMenu.open);
@@ -569,7 +572,7 @@ suite('<os-settings-languages-page-v2>', () => {
           assertEquals(
               'en-CA',
               await browserProxy.whenCalled('setProspectiveUiLanguage'));
-          assertTrue(languagesPage.getPref('intl.accept_languages')
+          assertTrue(languagesPage.getPref<string>('intl.accept_languages')
                          .value.startsWith('en-CA'));
         });
 
@@ -589,7 +592,7 @@ suite('<os-settings-languages-page-v2>', () => {
           assertEquals(
               'en-CA',
               await browserProxy.whenCalled('setProspectiveUiLanguage'));
-          assertTrue(languagesPage.getPref('intl.accept_languages')
+          assertTrue(languagesPage.getPref<string>('intl.accept_languages')
                          .value.startsWith('en-CA'));
         });
 

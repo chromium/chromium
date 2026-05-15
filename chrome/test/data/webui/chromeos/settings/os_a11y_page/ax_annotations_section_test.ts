@@ -35,7 +35,7 @@ suite('SettingsAxAnnotationsSectionTest', () => {
     document.body.appendChild(settingsPrefs);
     await CrSettingsPrefs.initialized;
 
-    testElement.prefs = settingsPrefs.prefs;
+    testElement.prefs = settingsPrefs.prefs!;
     document.body.appendChild(testElement);
     flush();
   });
@@ -53,14 +53,18 @@ suite('SettingsAxAnnotationsSectionTest', () => {
     // The main node annotations pref is off by default, so the button should be
     // toggled off.
     assertFalse(
-        testElement.getPref('settings.a11y.enable_main_node_annotations').value,
+        testElement
+            .getPref<boolean>('settings.a11y.enable_main_node_annotations')
+            .value,
         'main node annotations pref should be off by default');
     assertFalse(toggle.checked);
 
     toggle.click();
     await flushTasks();
     assertTrue(
-        testElement.getPref('settings.a11y.enable_main_node_annotations').value,
+        testElement
+            .getPref<boolean>('settings.a11y.enable_main_node_annotations')
+            .value,
         'main node annotations pref should be on');
     assertTrue(toggle.checked);
   });

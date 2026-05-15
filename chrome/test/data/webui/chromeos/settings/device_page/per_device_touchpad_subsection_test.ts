@@ -37,7 +37,7 @@ suite('<settings-per-device-touchpad-subsection>', () => {
         document.createElement('settings-per-device-touchpad-subsection');
     assert(subsection);
     subsection.set('touchpad', {...fakeTouchpads[0]});
-    subsection.prefs = prefElement.prefs;
+    subsection.prefs = prefElement.prefs!;
     document.body.appendChild(subsection);
     await flushTasks();
   });

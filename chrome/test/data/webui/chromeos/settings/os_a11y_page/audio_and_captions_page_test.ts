@@ -32,7 +32,7 @@ suite('<settings-audio-and-captions-page>', () => {
 
     await CrSettingsPrefs.initialized;
     page = document.createElement('settings-audio-and-captions-page');
-    page.prefs = prefElement.prefs;
+    page.prefs = prefElement.prefs!;
     document.body.appendChild(page);
     flush();
   }
@@ -123,14 +123,18 @@ suite('<settings-audio-and-captions-page>', () => {
 
       assertFalse(flashNotificationsToggle.checked);
       assertFalse(flashNotificationsToggle.hasAttribute('checked'));
-      assertFalse(page.prefs.settings.a11y.flash_notifications_enabled.value);
+      assertFalse(
+          page.getPref<boolean>('settings.a11y.flash_notifications_enabled')
+              .value);
 
       flashNotificationsToggle.click();
       await flushTasks();
 
       assertTrue(flashNotificationsToggle.checked);
       assertTrue(flashNotificationsToggle.hasAttribute('checked'));
-      assertTrue(page.prefs.settings.a11y.flash_notifications_enabled.value);
+      assertTrue(
+          page.getPref<boolean>('settings.a11y.flash_notifications_enabled')
+              .value);
 
       notificationColorDropdown = getNotificationColorDropdown();
     });
@@ -149,7 +153,7 @@ suite('<settings-audio-and-captions-page>', () => {
       // Default: yellow.
       assertEquals(
           NotificationColor.YELLOW,
-          page.prefs.settings.a11y.flash_notifications_color.value);
+          page.getPref('settings.a11y.flash_notifications_color').value);
       assertEquals(String(NotificationColor.YELLOW), colorSelectElement.value);
 
       // Change to pink.
@@ -157,7 +161,7 @@ suite('<settings-audio-and-captions-page>', () => {
       colorSelectElement.dispatchEvent(new CustomEvent('change'));
       assertEquals(
           NotificationColor.PINK,
-          page.prefs.settings.a11y.flash_notifications_color.value);
+          page.getPref('settings.a11y.flash_notifications_color').value);
     });
 
     test('flash notifications preview', async () => {

@@ -92,7 +92,8 @@ suite('<timezone-subpage> with logged-in user', () => {
     assert(timezoneAutodetectOn);
     timezoneAutodetectOn.click();
     assertTrue(timezoneSubpage
-                   .getPref('generated.resolve_timezone_by_geolocation_on_off')
+                   .getPref<boolean>(
+                       'generated.resolve_timezone_by_geolocation_on_off')
                    .value);
 
     // Turn timezone autodetect off by clicking the 'off' radio.
@@ -102,7 +103,8 @@ suite('<timezone-subpage> with logged-in user', () => {
     assert(timezoneAutodetectOff);
     timezoneAutodetectOff.click();
     assertFalse(timezoneSubpage
-                    .getPref('generated.resolve_timezone_by_geolocation_on_off')
+                    .getPref<boolean>(
+                        'generated.resolve_timezone_by_geolocation_on_off')
                     .value);
   });
 
@@ -179,8 +181,8 @@ suite('<timezone-subpage> with logged-in user', () => {
         timezoneSubpage.setPrefValue(
             'ash.user.geolocation_access_level',
             GeolocationAccessLevel.DISALLOWED);
-        timezoneSubpage.prefs.ash.user.geolocation_access_level.enforcement =
-            chrome.settingsPrivate.Enforcement.ENFORCED;
+        timezoneSubpage.getPref('ash.user.geolocation_access_level')
+            .enforcement = chrome.settingsPrivate.Enforcement.ENFORCED;
         timezoneSubpage.notifyPath(
             'prefs.ash.user.geolocation_access_level.enforcement',
             chrome.settingsPrivate.Enforcement.ENFORCED);

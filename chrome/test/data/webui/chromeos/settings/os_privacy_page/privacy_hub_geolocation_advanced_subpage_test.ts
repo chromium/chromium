@@ -64,10 +64,12 @@ suite('<settings-privacy-hub-geolocation-advanced-subpage>', () => {
     await initPage(/** showPrivacyHubLocationControl */ true);
     const toggle = getGeoLocationAccuracyToggle();
     assert(toggle);
-    assertTrue(page.prefs.ash.user.geolocation_accuracy_enabled.value);
+    assertTrue(
+        page.getPref<boolean>('ash.user.geolocation_accuracy_enabled').value);
     toggle.click();
     flush();
-    assertFalse(page.prefs.ash.user.geolocation_accuracy_enabled.value);
+    assertFalse(
+        page.getPref<boolean>('ash.user.geolocation_accuracy_enabled').value);
   });
 
   test('Validate toggle not shown when setting is false', async () => {

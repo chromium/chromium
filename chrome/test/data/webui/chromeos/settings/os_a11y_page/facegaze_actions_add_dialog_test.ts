@@ -51,7 +51,7 @@ suite('<facegaze-actions-add-dialog>', () => {
     await CrSettingsPrefs.initialized;
     faceGazeAddActionDialog =
         document.createElement('facegaze-actions-add-dialog');
-    faceGazeAddActionDialog.prefs = prefElement.prefs;
+    faceGazeAddActionDialog.prefs = prefElement.prefs!;
     setShortcutInputProviderForTesting(shortcutInputProvider);
     document.body.appendChild(faceGazeAddActionDialog);
 
@@ -216,8 +216,11 @@ suite('<facegaze-actions-add-dialog>', () => {
   }
 
   function isThresholdValueSetInPref(value: number): boolean {
-    const gesturesToConfidence = faceGazeAddActionDialog.prefs.settings.a11y
-                                     .face_gaze.gestures_to_confidence.value;
+    const gesturesToConfidence =
+        faceGazeAddActionDialog
+            .getPref<Record<string, number>>(
+                'settings.a11y.face_gaze.gestures_to_confidence')
+            .value;
     if (FacialGesture.BROW_INNER_UP in gesturesToConfidence) {
       return gesturesToConfidence[FacialGesture.BROW_INNER_UP] === value;
     }
@@ -1019,7 +1022,9 @@ suite('<facegaze-actions-add-dialog>', () => {
     assertFalse(!!container);
 
     // Select an already assigned gesture.
-    faceGazeAddActionDialog.prefs.settings.a11y.face_gaze.gestures_to_macros
+    faceGazeAddActionDialog
+        .getPref<Record<string, MacroName>>(
+            'settings.a11y.face_gaze.gestures_to_macros')
         .value[FacialGesture.BROW_INNER_UP] = MacroName.MOUSE_CLICK_RIGHT;
     setGesturesListSelection(FacialGesture.BROW_INNER_UP);
 
@@ -1050,9 +1055,13 @@ suite('<facegaze-actions-add-dialog>', () => {
         assertFalse(!!container);
 
         // Set gesture to macro bindings.
-        faceGazeAddActionDialog.prefs.settings.a11y.face_gaze.gestures_to_macros
+        faceGazeAddActionDialog
+            .getPref<Record<string, MacroName>>(
+                'settings.a11y.face_gaze.gestures_to_macros')
             .value[FacialGesture.MOUTH_SMILE] = MacroName.MOUSE_CLICK_RIGHT;
-        faceGazeAddActionDialog.prefs.settings.a11y.face_gaze.gestures_to_macros
+        faceGazeAddActionDialog
+            .getPref<Record<string, MacroName>>(
+                'settings.a11y.face_gaze.gestures_to_macros')
             .value[FacialGesture.MOUTH_UPPER_UP] =
             MacroName.OPEN_FACEGAZE_SETTINGS;
 
@@ -1085,7 +1094,9 @@ suite('<facegaze-actions-add-dialog>', () => {
     assertFalse(!!container);
 
     // Set gesture to macro bindings.
-    faceGazeAddActionDialog.prefs.settings.a11y.face_gaze.gestures_to_macros
+    faceGazeAddActionDialog
+        .getPref<Record<string, MacroName>>(
+            'settings.a11y.face_gaze.gestures_to_macros')
         .value[FacialGesture.MOUTH_UPPER_UP] = MacroName.OPEN_FACEGAZE_SETTINGS;
 
     // Select a gesture that has conflicts assigned.

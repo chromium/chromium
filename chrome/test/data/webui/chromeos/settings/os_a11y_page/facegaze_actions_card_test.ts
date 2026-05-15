@@ -87,8 +87,12 @@ suite('<facegaze-actions-card>', () => {
       return false;
     }
 
-    const assignedGestures = {...faceGazeActionsCard.prefs.settings.a11y
-                                  .face_gaze.gestures_to_macros.value};
+    const assignedGestures = {
+      ...faceGazeActionsCard
+          .getPref<Record<string, MacroName>>(
+              'settings.a11y.face_gaze.gestures_to_macros')
+          .value,
+    };
     return assignedGestures[expectedCommandPair.gesture] ===
         expectedCommandPair.action;
   }
@@ -99,9 +103,12 @@ suite('<facegaze-actions-card>', () => {
       return false;
     }
 
-    const assignedKeyCombos: Record<FacialGesture, string> = {
-        ...faceGazeActionsCard.prefs.settings.a11y.face_gaze
-            .gestures_to_key_combos.value};
+    const assignedKeyCombos: Record<string, FacialGesture> = {
+      ...faceGazeActionsCard
+          .getPref<Record<string, FacialGesture>>(
+              'settings.a11y.face_gaze.gestures_to_key_combos')
+          .value,
+    };
     return assignedKeyCombos[expectedCommandPair.gesture] ===
         expectedCommandPair.assignedKeyCombo.prefString;
   }
@@ -133,7 +140,7 @@ suite('<facegaze-actions-card>', () => {
 
     await CrSettingsPrefs.initialized;
     faceGazeActionsCard = document.createElement('facegaze-actions-card');
-    faceGazeActionsCard.prefs = prefElement.prefs;
+    faceGazeActionsCard.prefs = prefElement.prefs!;
     document.body.appendChild(faceGazeActionsCard);
     flush();
   }
@@ -151,8 +158,10 @@ suite('<facegaze-actions-card>', () => {
 
   test('actions enabled button syncs to pref', async () => {
     await initPage();
-    assertTrue(faceGazeActionsCard.prefs.settings.a11y.face_gaze
-                   .actions_enabled_sentinel.value);
+    assertTrue(faceGazeActionsCard
+                   .getPref<boolean>(
+                       'settings.a11y.face_gaze.actions_enabled_sentinel')
+                   .value);
 
     const button = faceGazeActionsCard.shadowRoot!
                        .querySelector<SettingsToggleButtonElement>(
@@ -165,8 +174,10 @@ suite('<facegaze-actions-card>', () => {
     flush();
 
     assertFalse(button.checked);
-    assertFalse(faceGazeActionsCard.prefs.settings.a11y.face_gaze
-                    .actions_enabled_sentinel.value);
+    assertFalse(faceGazeActionsCard
+                    .getPref<boolean>(
+                        'settings.a11y.face_gaze.actions_enabled_sentinel')
+                    .value);
   });
 
   test('actions disables controls if feature is disabled', async () => {
@@ -208,11 +219,13 @@ suite('<facegaze-actions-card>', () => {
 
     await CrSettingsPrefs.initialized;
     faceGazeActionsCard = document.createElement('facegaze-actions-card');
-    faceGazeActionsCard.prefs = prefElement.prefs;
+    faceGazeActionsCard.prefs = prefElement.prefs!;
 
     const expectedMacro: MacroName = MacroName.MOUSE_CLICK_LEFT;
     const expectedGesture: FacialGesture = FacialGesture.EYES_BLINK;
-    faceGazeActionsCard.prefs.settings.a11y.face_gaze.gestures_to_macros
+    faceGazeActionsCard
+        .getPref<Record<string, MacroName>>(
+            'settings.a11y.face_gaze.gestures_to_macros')
         .value[expectedGesture] = expectedMacro;
 
     const keyComboGesture: FacialGesture = FacialGesture.BROW_INNER_UP;
@@ -224,9 +237,13 @@ suite('<facegaze-actions-card>', () => {
       },
     };
     const keyComboPrefString = JSON.stringify(keyCombo);
-    faceGazeActionsCard.prefs.settings.a11y.face_gaze.gestures_to_macros
+    faceGazeActionsCard
+        .getPref<Record<string, MacroName>>(
+            'settings.a11y.face_gaze.gestures_to_macros')
         .value[keyComboGesture] = MacroName.CUSTOM_KEY_COMBINATION;
-    faceGazeActionsCard.prefs.settings.a11y.face_gaze.gestures_to_key_combos
+    faceGazeActionsCard
+        .getPref<Record<string, string>>(
+            'settings.a11y.face_gaze.gestures_to_key_combos')
         .value[keyComboGesture] = keyComboPrefString;
     const keyComboCommandPair = new FaceGazeCommandPair(
         MacroName.CUSTOM_KEY_COMBINATION, keyComboGesture);
@@ -257,7 +274,9 @@ suite('<facegaze-actions-card>', () => {
 
         const expectedMacro: MacroName = MacroName.MOUSE_CLICK_LEFT;
         const expectedGesture: FacialGesture = FacialGesture.EYES_BLINK;
-        faceGazeActionsCard.prefs.settings.a11y.face_gaze.gestures_to_macros
+        faceGazeActionsCard
+            .getPref<Record<string, MacroName>>(
+                'settings.a11y.face_gaze.gestures_to_macros')
             .value[expectedGesture] = expectedMacro;
         faceGazeActionsCard.set(
             'prefs.settings.a11y.face_gaze.enabled.value', true);
@@ -276,12 +295,16 @@ suite('<facegaze-actions-card>', () => {
 
         await CrSettingsPrefs.initialized;
         faceGazeActionsCard = document.createElement('facegaze-actions-card');
-        faceGazeActionsCard.prefs = prefElement.prefs;
+        faceGazeActionsCard.prefs = prefElement.prefs!;
 
-        faceGazeActionsCard.prefs.settings.a11y.face_gaze.gestures_to_macros
+        faceGazeActionsCard
+            .getPref<Record<string, MacroName>>(
+                'settings.a11y.face_gaze.gestures_to_macros')
             .value[FacialGesture.BROW_INNER_UP] =
             MacroName.CUSTOM_KEY_COMBINATION;
-        faceGazeActionsCard.prefs.settings.a11y.face_gaze.gestures_to_key_combos
+        faceGazeActionsCard
+            .getPref<Record<string, string>>(
+                'settings.a11y.face_gaze.gestures_to_key_combos')
             .value = {};
         const keyComboCommandPair = new FaceGazeCommandPair(
             MacroName.CUSTOM_KEY_COMBINATION, FacialGesture.BROW_INNER_UP);

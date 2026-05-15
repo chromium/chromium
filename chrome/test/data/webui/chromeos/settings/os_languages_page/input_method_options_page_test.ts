@@ -69,7 +69,7 @@ suite('<settings-input-method-options-page>', () => {
     optionsPage = document.createElement('settings-input-method-options-page');
     document.body.appendChild(optionsPage);
     optionsPage.languageHelper = new FakeLanguageHelper();
-    optionsPage.prefs = settingsPrefs.prefs;
+    optionsPage.prefs = settingsPrefs.prefs!;
   });
 
   function createOptionsPage(id: string) {
@@ -155,8 +155,8 @@ suite('<settings-input-method-options-page>', () => {
     assertTrue(autoCorrectToggleButton.checked);
     assertEquals(
         1,
-        optionsPage.getPref(PREFS_KEY)
-            .value['xkb:us::eng']['physicalKeyboardAutoCorrectionLevel']);
+        optionsPage.getPref<Record<string, Record<string, number>>>(PREFS_KEY)
+            .value['xkb:us::eng']!['physicalKeyboardAutoCorrectionLevel']);
 
     const soundOnKeypress = options[1]!.querySelector('.start');
     assertTrue(!!soundOnKeypress);
@@ -167,7 +167,8 @@ suite('<settings-input-method-options-page>', () => {
     soundToggleButton.click();
     await waitAfterNextRender(soundToggleButton);
     assertTrue(soundToggleButton.checked);
-    assertTrue(optionsPage.getPref(PREFS_KEY)
-                   .value['xkb:us::eng']['enableSoundOnKeypress']);
+    assertTrue(
+        optionsPage.getPref<Record<string, Record<string, boolean>>>(PREFS_KEY)
+            .value['xkb:us::eng']!['enableSoundOnKeypress']!);
   });
 });

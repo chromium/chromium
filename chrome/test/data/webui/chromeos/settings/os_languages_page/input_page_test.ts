@@ -87,13 +87,13 @@ suite('<os-settings-input-page>', () => {
 
     // Instantiate the data model with data bindings for prefs.
     settingsLanguages = document.createElement('settings-languages');
-    settingsLanguages.prefs = prefElement.prefs;
+    settingsLanguages.prefs = prefElement.prefs!;
     fakeDataBind(prefElement, settingsLanguages, 'prefs');
     document.body.appendChild(settingsLanguages);
 
     // Create page with data bindings for prefs and data model.
     inputPage = document.createElement('os-settings-input-page');
-    inputPage.prefs = prefElement.prefs;
+    inputPage.prefs = prefElement.prefs!;
     fakeDataBind(prefElement, inputPage, 'prefs');
     inputPage.languages = settingsLanguages.languages;
     fakeDataBind(settingsLanguages, inputPage, 'languages');
@@ -824,7 +824,8 @@ suite('<os-settings-input-page>', () => {
 
     test('can remove enabled language from spell check list', () => {
       assertDeepEquals(
-          ['en-US'], inputPage.prefs.spellcheck.dictionaries.value);
+          ['en-US'],
+          inputPage.getPref<string[]>('spellcheck.dictionaries').value);
       // Get remove button for en-US.
       const spellCheckLanguageToggle =
           spellCheckList[0]!.querySelector<HTMLButtonElement>('cr-icon-button');
@@ -839,7 +840,8 @@ suite('<os-settings-input-page>', () => {
       // The spell check list should just have "add languages".
       assertEquals(0 + 1, newSpellCheckList.length);
 
-      assertDeepEquals([], inputPage.prefs.spellcheck.dictionaries.value);
+      assertDeepEquals(
+          [], inputPage.getPref<string[]>('spellcheck.dictionaries').value);
     });
 
     test('can remove non-enabled language from spell check list', () => {
@@ -871,7 +873,8 @@ suite('<os-settings-input-page>', () => {
           newSpellCheckList[0]!.textContent, 'English (United States)');
 
       assertDeepEquals(
-          ['en-US'], inputPage.prefs.spellcheck.dictionaries.value);
+          ['en-US'],
+          inputPage.getPref<string[]>('spellcheck.dictionaries').value);
     });
 
     test('shows force-on spell check language turned on by user', () => {
@@ -1321,7 +1324,8 @@ suite('<os-settings-input-page>', () => {
 
       // By default, en-US should be the only enabled spell check dictionary.
       assertDeepEquals(
-          ['en-US'], inputPage.prefs.spellcheck.dictionaries.value);
+          ['en-US'],
+          inputPage.getPref<string[]>('spellcheck.dictionaries').value);
 
       swCheckbox.click();
       assertTrue(swCheckbox.checked);
@@ -1335,7 +1339,8 @@ suite('<os-settings-input-page>', () => {
 
       actionButton.click();
       assertDeepEquals(
-          ['en-US', 'sw'], inputPage.prefs.spellcheck.dictionaries.value);
+          ['en-US', 'sw'],
+          inputPage.getPref<string[]>('spellcheck.dictionaries').value);
       assertFalse(dialog.$.dialog.open);
     });
 
@@ -1343,7 +1348,8 @@ suite('<os-settings-input-page>', () => {
       const checkboxes = getAllLanguagesCheckboxes();
 
       assertDeepEquals(
-          ['en-US'], inputPage.prefs.spellcheck.dictionaries.value);
+          ['en-US'],
+          inputPage.getPref<string[]>('spellcheck.dictionaries').value);
 
       // Click en-CA and nb.
       checkboxes[0]!.click();
@@ -1355,12 +1361,14 @@ suite('<os-settings-input-page>', () => {
       // The two possible results are en-US, en-CA, nb OR en-US, nb, en-CA.
       // We do not care about the ordering of the last two, but the first one
       // should still be en-US.
-      assertEquals('en-US', inputPage.prefs.spellcheck.dictionaries.value[0]);
+      assertEquals(
+          'en-US',
+          inputPage.getPref<string[]>('spellcheck.dictionaries').value[0]);
       // Note that .sort() mutates the array, but as this is the end of the test
       // the prefs will be reset after this anyway.
       assertDeepEquals(
           ['en-CA', 'en-US', 'nb'],
-          inputPage.prefs.spellcheck.dictionaries.value.sort());
+          inputPage.getPref<string[]>('spellcheck.dictionaries').value.sort());
       assertFalse(dialog.$.dialog.open);
     });
 
