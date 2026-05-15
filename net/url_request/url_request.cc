@@ -333,10 +333,15 @@ base::DictValue URLRequest::GetStateAsValue(
 
   LoadStateWithParam load_state = GetLoadState();
   dict.Set("load_state", load_state.state);
-  if (!load_state.param.empty())
+  if (!load_state.param.empty()) {
     dict.Set("load_state_param", load_state.param);
-  if (!blocked_by_.empty())
+  }
+  if (!blocked_by_.empty()) {
     dict.Set("delegate_blocked_by", blocked_by_);
+  }
+  if (calling_delegate_) {
+    dict.Set("delegate_event", NetLogEventTypeToString(delegate_event_type_));
+  }
 
   dict.Set("method", method_);
   dict.Set("network_anonymization_key",
