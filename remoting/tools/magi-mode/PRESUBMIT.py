@@ -124,7 +124,9 @@ def CheckMarkdownFiles(input_api, output_api):
     all_markdown_files = set()
     for root, _, files in os.walk(magi_dir):
         for file in files:
-            if file.endswith('.md'):
+            # Skip README.md as it is intended for humans and not part of the
+            # agent's operational graph.
+            if file.endswith('.md') and file != 'README.md':
                 abs_path = input_api.os_path.normpath(
                     input_api.os_path.join(root, file))
                 # Skip files that are currently being deleted.

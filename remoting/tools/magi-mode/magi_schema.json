@@ -59,7 +59,8 @@
           "type": "string",
           "enum": [
             "CRITIQUE", "SCAFFOLDING", "PREPARATION", "IMPLEMENTATION",
-            "SYNTHESIS", "TRAINING", "DEADLOCK", "VALIDATION", "DEPLOYMENT"
+            "SYNTHESIS", "TEST_FILLING", "ANALYSIS", "TPM_UPDATE",
+            "TRAINING", "DEADLOCK", "VALIDATION", "DEPLOYMENT"
           ]
         },
         "review_mode": {
