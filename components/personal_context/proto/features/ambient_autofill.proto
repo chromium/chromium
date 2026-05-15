@@ -1,0 +1,24 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+edition = "2024";
+
+package personal_context.proto;
+
+import "components/personal_context/proto/features/common_data.proto";
+
+option optimize_for = LITE_RUNTIME;
+
+message ContextMemoryAmbientAutofillRequest {
+  // The domain of the current page (e.g. "amazon.com").
+  // Used to perform domain-specific filtering for temporal entities like
+  // Orders and Shipments.
+  string top_level_domain = 1;
+
+  repeated EntityType requested_types = 2;
+}
+
+message ContextMemoryAmbientAutofillResponse {
+  repeated Entity entities = 1;
+}
