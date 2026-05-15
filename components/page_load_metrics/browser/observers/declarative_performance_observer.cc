@@ -74,6 +74,8 @@ DeclarativePerformanceObserver::OnCommit(
   enabled_types_ = base::flat_set<network::mojom::PerformanceEntryType>(
       policy->entry_types.begin(), policy->entry_types.end());
 
+  navigation_start_ = navigation_handle->NavigationStart();
+
   if (enabled_types_.contains(
           network::mojom::PerformanceEntryType::kVisibilityState)) {
     base::DictValue entry;
@@ -84,6 +86,38 @@ DeclarativePerformanceObserver::OnCommit(
     AddEntryToBuffer(std::move(entry));
   }
 
+  return CONTINUE_OBSERVING;
+}
+
+page_load_metrics::PageLoadMetricsObserver::ObservePolicy
+DeclarativePerformanceObserver::OnHidden(const mojom::PageLoadTiming& timing) {
+  if (enabled_types_.contains(
+          network::mojom::PerformanceEntryType::kVisibilityState)) {
+    base::DictValue entry;
+    entry.Set("name", "hidden");
+    entry.Set("entryType", "visibility-state");
+    double start_time =
+        (base::TimeTicks::Now() - navigation_start_).InMillisecondsF();
+    entry.Set("startTime", start_time);
+    entry.Set("duration", 0.0);
+    AddEntryToBuffer(std::move(entry));
+  }
+  return CONTINUE_OBSERVING;
+}
+
+page_load_metrics::PageLoadMetricsObserver::ObservePolicy
+DeclarativePerformanceObserver::OnShown() {
+  if (enabled_types_.contains(
+          network::mojom::PerformanceEntryType::kVisibilityState)) {
+    base::DictValue entry;
+    entry.Set("name", "visible");
+    entry.Set("entryType", "visibility-state");
+    double start_time =
+        (base::TimeTicks::Now() - navigation_start_).InMillisecondsF();
+    entry.Set("startTime", start_time);
+    entry.Set("duration", 0.0);
+    AddEntryToBuffer(std::move(entry));
+  }
   return CONTINUE_OBSERVING;
 }
 

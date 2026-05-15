@@ -189,4 +189,45 @@ TEST_F(DeclarativePerformanceObserverTest,
   EXPECT_EQ(buffer.size(), 0u);
 }
 
+TEST_F(DeclarativePerformanceObserverTest, RecordsVisibilityTransitions) {
+  feature_list_.InitAndEnableFeature(
+      network::features::kDeclarativePerformanceObserver);
+
+  content::MockNavigationHandle handle;
+  auto policy = network::mojom::DeclarativePerformanceObserverPolicy::New();
+  policy->reporting_endpoint = "my-endpoint";
+  policy->entry_types.push_back(
+      network::mojom::PerformanceEntryType::kVisibilityState);
+
+  EXPECT_CALL(handle, GetDeclarativePerformanceObserverPolicy())
+      .WillRepeatedly(testing::Return(policy.get()));
+
+  EXPECT_CALL(handle, NavigationStart())
+      .WillRepeatedly(testing::Return(base::TimeTicks::Now()));
+
+  observer()->OnStart(&handle, GURL("https://example.com"), true);
+  observer()->OnCommit(&handle);
+
+  // Initial state should be recorded.
+  const base::ListValue& buffer = observer()->buffered_entries_for_testing();
+  ASSERT_EQ(buffer.size(), 1u);
+
+  // Simulate hiding.
+  mojom::PageLoadTiming timing;
+  observer()->OnHidden(timing);
+  ASSERT_EQ(buffer.size(), 2u);
+
+  const base::Value& hidden_entry = buffer[1];
+  ASSERT_TRUE(hidden_entry.is_dict());
+  EXPECT_EQ(*(hidden_entry.GetDict().FindString("name")), "hidden");
+
+  // Simulate showing.
+  observer()->OnShown();
+  ASSERT_EQ(buffer.size(), 3u);
+
+  const base::Value& shown_entry = buffer[2];
+  ASSERT_TRUE(shown_entry.is_dict());
+  EXPECT_EQ(*(shown_entry.GetDict().FindString("name")), "visible");
+}
+
 }  // namespace page_load_metrics
