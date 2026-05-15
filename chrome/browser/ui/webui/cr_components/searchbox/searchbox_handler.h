@@ -15,6 +15,7 @@
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "chrome/browser/ui/views/permissions/embedded_permission_prompt_observer.h"
 #include "components/contextual_search/contextual_search_types.h"
 #include "components/contextual_search/pref_names.h"
 #include "components/omnibox/browser/autocomplete_controller.h"
@@ -44,6 +45,10 @@ extern const char* kSearchSparkIconResourceName;
 extern const char* kReplyRotated180IconResourceName;
 }  // namespace searchbox_internal
 
+namespace gfx {
+class Size;
+}  // namespace gfx
+
 // Base class for browser-side handlers that handle bi-directional communication
 // with WebUI search boxes.
 
@@ -51,7 +56,8 @@ extern const char* kReplyRotated180IconResourceName;
 #define DECLARE_FEATURE(feature) static constinit const base::Feature feature
 
 class SearchboxHandler : public searchbox::mojom::PageHandler,
-                         public AutocompleteController::Observer {
+                         public AutocompleteController::Observer,
+                         public EmbeddedPermissionPromptObserver::Observer {
  public:
   SearchboxHandler(const SearchboxHandler&) = delete;
   SearchboxHandler& operator=(const SearchboxHandler&) = delete;
@@ -90,6 +96,10 @@ class SearchboxHandler : public searchbox::mojom::PageHandler,
   // AutocompleteController::Observer:
   void OnResultChanged(AutocompleteController* controller,
                        bool default_match_changed) override;
+
+  // EmbeddedPermissionPromptObserver::Observer:
+  void OnEmbeddedPermissionPromptChanged(bool is_showing,
+                                         const gfx::Size& prompt_size) override;
 
   // searchbox::mojom::PageHandler:
   void OnFocusChanged(bool focused) override;
@@ -199,6 +209,7 @@ class SearchboxHandler : public searchbox::mojom::PageHandler,
 
   mojo::Receiver<searchbox::mojom::PageHandler> page_handler_;
   mojo::Remote<searchbox::mojom::Page> page_;
+  base::WeakPtrFactory<SearchboxHandler> weak_ptr_factory_{this};
 
   searchbox::mojom::AutocompleteResultPtr CreateAutocompleteResult(
       const std::u16string& input,

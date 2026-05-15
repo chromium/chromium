@@ -181,6 +181,7 @@ export function getHtml(this: ComposeboxElement) {
         .liveTranscriptEnabled="${!this.voiceSearchCoherenceEnabled}"
         .submitButtonIconType="${this.submitButtonIconType}"
         .dynamicTimeoutEnabled="${false}"
+        .pageCallbackRouter="${this.searchboxCallbackRouter_}"
         exportparts="voice-close-button, voice-details-link, voice-stop-button, voice-submit-button">
     </cr-composebox-voice-search>
   ` : ''}
