@@ -38,8 +38,10 @@ export function getHtml(this: ContextualActionMenuElement) {
               @keydown="${this.onShareTabsRowKeydown_}">
             <cr-icon icon="composebox:shareTabs"></cr-icon>
             <span class="tab-title">
-              ${this.sharingTabsText_}
+              ${this.i18n('shareTabs')}
             </span>
+            <composebox-favicon-group .tabs="${this.getSelectedTabs_()}">
+            </composebox-favicon-group>
             <cr-icon class="share-tabs-arrow" icon="cr:chevron-right"></cr-icon>
           </button>
           <div class="share-tabs-flyout" role="menu"

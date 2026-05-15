@@ -4,6 +4,7 @@
 
 import './icons.html.js';
 import './composebox_tab_favicon.js';
+import './composebox_favicon_group.js';
 import '//resources/cr_elements/icons.html.js';
 import '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import '//resources/cr_elements/cr_icon/cr_icon.js';
@@ -16,7 +17,6 @@ import type {CrToggleElement} from '//resources/cr_elements/cr_toggle/cr_toggle.
 import {I18nMixinLit} from '//resources/cr_elements/i18n_mixin_lit.js';
 import {assert} from '//resources/js/assert.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
-import {PluralStringProxyImpl} from '//resources/js/plural_string_proxy.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import type {TabInfo} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
@@ -75,7 +75,6 @@ export class ContextualActionMenuElement extends
       disableAutoReposition: {type: Boolean},
       contextManagementInComposeboxEnabled_: {type: Boolean},
       shareTabsFlyoutOpen_: {type: Boolean},
-      sharingTabsText_: {type: String},
     };
   }
 
@@ -106,7 +105,6 @@ export class ContextualActionMenuElement extends
   private pointerOverTrigger_: boolean = false;
   private pointerOverFlyout_: boolean = false;
 
-  protected accessor sharingTabsText_: string = '';
   protected get supportedTools_(): Map<ToolMode, {
     icon: string,
   }> {
@@ -177,14 +175,8 @@ export class ContextualActionMenuElement extends
   override updated(changedProperties: PropertyValues<this>) {
     super.updated(changedProperties);
 
-    if (changedProperties.has('disabledTabIds') &&
-        this.contextManagementInComposeboxEnabled_) {
-      this.updateSharingTabsText_();
-    }
-
     this.manageShareTabsInitialFocus_(changedProperties);
   }
-
   get open(): boolean {
     return this.$.menu.open;
   }
@@ -207,10 +199,6 @@ export class ContextualActionMenuElement extends
       noOffset: true,
     });
     window.addEventListener('blur', this.onWindowBlur_);
-
-    if (this.contextManagementInComposeboxEnabled_) {
-      this.updateSharingTabsText_();
-    }
   }
 
   private manageShareTabsInitialFocus_(
@@ -235,20 +223,6 @@ export class ContextualActionMenuElement extends
         });
       }
     }
-  }
-
-  private updateSharingTabsText_() {
-    if (!this.contextManagementInComposeboxEnabled_ ||
-        this.disabledTabIds.size === 0) {
-      this.sharingTabsText_ = this.i18n('shareTabs');
-      return;
-    }
-
-    PluralStringProxyImpl.getInstance()
-        .getPluralString('sharingTabs', this.disabledTabIds.size)
-        .then(s => {
-          this.sharingTabsText_ = s;
-        });
   }
 
   protected isToolAllowed_(tool: ToolMode): boolean {
@@ -433,6 +407,11 @@ export class ContextualActionMenuElement extends
       return noNewContextAllowed && !isTabInContext;
     }
     return noNewContextAllowed || isTabInContext;
+  }
+
+  protected getSelectedTabs_(): TabInfo[] {
+    return this.tabSuggestions.filter(
+        tab => this.disabledTabIds.has(tab.tabId));
   }
 
   protected onSmartTabSharingToggleChange_(e: Event) {
