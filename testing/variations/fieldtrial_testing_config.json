@@ -2794,7 +2794,8 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "AutofillEnableAiBasedAmountExtraction"
+                        "AutofillEnableAiBasedAmountExtraction",
+                        "AutofillPreferBuyNowPayLaterBlocklists"
                     ]
                 }
             ]
