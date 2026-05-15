@@ -97,6 +97,7 @@ import org.chromium.components.omnibox.IconProto.Icon;
 import org.chromium.components.omnibox.IconResourceIdsProto.IconResourceIds;
 import org.chromium.components.omnibox.InputTypeProto.InputType;
 import org.chromium.components.omnibox.ModelConfigProto.ModelConfig;
+import org.chromium.components.omnibox.OmniboxCapabilities;
 import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.omnibox.OmniboxFocusReason;
 import org.chromium.components.omnibox.SectionConfigProto.SectionConfig;
@@ -439,7 +440,7 @@ public class FuseboxMediatorUnitTest {
     @Test
     public void updateFuseboxState_desktopPlatform_emptyModelList_isCompact() {
         OmniboxFeatures.sCompactFusebox.setForTesting(true);
-        OmniboxFeatures.setIsDesktopPlatformForTesting(true);
+        OmniboxCapabilities.setIsDesktopPlatformForTesting(true);
         mInput.setRequestType(AutocompleteRequestType.AI_MODE);
         recreateMediator();
 
@@ -449,7 +450,7 @@ public class FuseboxMediatorUnitTest {
     @Test
     public void updateFuseboxState_desktopPlatform_nonEmptyModelList_isExpanded() {
         OmniboxFeatures.sCompactFusebox.setForTesting(true);
-        OmniboxFeatures.setIsDesktopPlatformForTesting(true);
+        OmniboxCapabilities.setIsDesktopPlatformForTesting(true);
         recreateMediator();
 
         addAttachment("title", "token", FuseboxAttachmentType.ATTACHMENT_IMAGE);
@@ -473,7 +474,7 @@ public class FuseboxMediatorUnitTest {
     @Test
     public void updateFuseboxState_notDesktop_textWrapping_isExpanded() {
         OmniboxFeatures.sCompactFusebox.setForTesting(true);
-        OmniboxFeatures.setIsDesktopPlatformForTesting(false);
+        OmniboxCapabilities.setIsDesktopPlatformForTesting(false);
         mInput.setRequestType(AutocompleteRequestType.SEARCH);
         recreateMediator();
 
@@ -485,7 +486,7 @@ public class FuseboxMediatorUnitTest {
     @Test
     public void updateFuseboxState_notDesktop_notSearchRequest_isExpanded() {
         OmniboxFeatures.sCompactFusebox.setForTesting(true);
-        OmniboxFeatures.setIsDesktopPlatformForTesting(false);
+        OmniboxCapabilities.setIsDesktopPlatformForTesting(false);
         mInput.setRequestType(AutocompleteRequestType.AI_MODE);
         recreateMediator();
 
@@ -494,7 +495,7 @@ public class FuseboxMediatorUnitTest {
 
     @Test
     public void updateFuseboxState_setsShowRequestTypeButton_true() {
-        OmniboxFeatures.setIsDesktopPlatformForTesting(false);
+        OmniboxCapabilities.setIsDesktopPlatformForTesting(false);
         mInput.setRequestType(AutocompleteRequestType.AI_MODE);
         recreateMediator();
 
@@ -503,7 +504,7 @@ public class FuseboxMediatorUnitTest {
 
     @Test
     public void updateFuseboxState_setsShowRequestTypeButton_false_conventional() {
-        OmniboxFeatures.setIsDesktopPlatformForTesting(false);
+        OmniboxCapabilities.setIsDesktopPlatformForTesting(false);
         mInput.setRequestType(AutocompleteRequestType.SEARCH);
         recreateMediator();
 
@@ -512,7 +513,7 @@ public class FuseboxMediatorUnitTest {
 
     @Test
     public void updateFuseboxState_setsShowRequestTypeButton_false_desktopAiMode() {
-        OmniboxFeatures.setIsDesktopPlatformForTesting(true);
+        OmniboxCapabilities.setIsDesktopPlatformForTesting(true);
         mInput.setRequestType(AutocompleteRequestType.AI_MODE);
         recreateMediator();
 
@@ -592,7 +593,7 @@ public class FuseboxMediatorUnitTest {
 
     @Test
     public void testPopupShowHide_triggersScrim() {
-        OmniboxFeatures.setIsDesktopPlatformForTesting(false);
+        OmniboxCapabilities.setIsDesktopPlatformForTesting(false);
         OmniboxFeatures.setShowBottomSheetPopupForTesting(true);
         recreateMediator();
         Runnable runnable = mModel.get(FuseboxProperties.BUTTON_ADD_CLICKED);
@@ -637,7 +638,7 @@ public class FuseboxMediatorUnitTest {
 
     @Test
     public void testPopupShowHide_desktopPlatform_usesFloatingMode() {
-        OmniboxFeatures.setIsDesktopPlatformForTesting(true);
+        OmniboxCapabilities.setIsDesktopPlatformForTesting(true);
         OmniboxFeatures.setShowBottomSheetPopupForTesting(true);
         recreateMediator();
         Runnable runnable = mModel.get(FuseboxProperties.BUTTON_ADD_CLICKED);
@@ -1195,7 +1196,7 @@ public class FuseboxMediatorUnitTest {
     @Test
     public void testModelPickerVisibility_hidesInBottomSheet() {
         OmniboxFeatures.sShowModelPicker.setForTesting(true);
-        OmniboxFeatures.setIsDesktopPlatformForTesting(false);
+        OmniboxCapabilities.setIsDesktopPlatformForTesting(false);
         OmniboxFeatures.setShowBottomSheetPopupForTesting(true);
         recreateMediator();
 

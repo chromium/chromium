@@ -41,6 +41,7 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.PopupState;
+import org.chromium.components.omnibox.OmniboxCapabilities;
 import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.base.WindowAndroid;
@@ -210,7 +211,7 @@ public class FuseboxPopupUnitTest {
 
     @Test
     public void testDynamicInflation_HorizontalLayout() {
-        OmniboxFeatures.setIsDesktopPlatformForTesting(false);
+        OmniboxCapabilities.setIsDesktopPlatformForTesting(false);
         OmniboxFeatures.setShowBottomSheetPopupForTesting(true);
 
         // Re-create content view and popup to trigger new inflation logic

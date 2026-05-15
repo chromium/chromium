@@ -30,7 +30,7 @@ import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestionsDropdownEmbedder.OmniboxAlignment;
 import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionViewBinder;
 import org.chromium.components.browser_ui.widget.RoundedCornerOutlineProvider;
-import org.chromium.components.omnibox.OmniboxFeatures;
+import org.chromium.components.omnibox.OmniboxCapabilities;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.ViewUtils;
@@ -229,7 +229,7 @@ public class OmniboxSuggestionsContainer extends FrameLayout {
             mEmbedder.removeAlignmentObserver(mOmniboxAlignmentObserver);
         }
 
-        if (!OmniboxFeatures.shouldPreWarmRecyclerViewPool()) {
+        if (!OmniboxCapabilities.shouldPreWarmRecyclerViewPool()) {
             mDropdown.getRecycledViewPool().clear();
         }
     }

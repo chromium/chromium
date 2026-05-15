@@ -30,8 +30,8 @@ import org.chromium.base.test.RobolectricUtil;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
+import org.chromium.components.omnibox.OmniboxCapabilities;
 import org.chromium.components.omnibox.OmniboxFeatureList;
-import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.omnibox.suggestions.OmniboxSuggestionUiType;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
@@ -143,7 +143,7 @@ public class PreWarmingRecycledViewPoolTest {
     @EnableFeatures(OmniboxFeatureList.OMNIBOX_ASYNC_VIEW_INFLATION)
     @Test
     public void createViews_noViewsCreatedOnLowEndDevices() {
-        OmniboxFeatures.setIsLowMemoryDeviceForTesting(true);
+        OmniboxCapabilities.setIsLowMemoryDeviceForTesting(true);
         mPool.onNativeInitialized();
         ensureNoViewsCreated();
     }

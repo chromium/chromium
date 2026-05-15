@@ -15,7 +15,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilities;
-import org.chromium.components.omnibox.OmniboxFeatures;
+import org.chromium.components.omnibox.OmniboxCapabilities;
 import org.chromium.content_public.common.ContentUrlConstants;
 import org.chromium.url.GURL;
 
@@ -101,7 +101,7 @@ public class UrlBarData {
                 // Don't show the NTP URL
                 UrlUtilities.isNtpUrl(gurl)
                         // Don't show other Chrome URLs on mobile devices.
-                        || (!OmniboxFeatures.isDesktopPlatform()
+                        || (!OmniboxCapabilities.isDesktopPlatform()
                                 && NativePage.isChromePageUrl(gurl, isOffTheRecord));
 
         return !shouldSuppress;

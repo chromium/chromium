@@ -31,7 +31,7 @@ import org.chromium.chrome.test.transit.omnibox.FakeOmniboxSuggestions;
 import org.chromium.chrome.test.transit.omnibox.OmniboxEnteredTextFacility;
 import org.chromium.chrome.test.transit.omnibox.OmniboxFacility;
 import org.chromium.chrome.test.transit.page.WebPageStation;
-import org.chromium.components.omnibox.OmniboxFeatures;
+import org.chromium.components.omnibox.OmniboxCapabilities;
 import org.chromium.ui.base.DeviceFormFactor;
 
 /** Public Transit tests for Omnibox. */
@@ -59,7 +59,7 @@ public class OmniboxPTTest {
 
     @Before
     public void setUp() {
-        OmniboxFeatures.setHasDesktopExperienceForTesting(false);
+        OmniboxCapabilities.setHasDesktopExperienceForTesting(false);
         mBlankPage = mCtaTestRule.startOnBlankPage();
     }
 

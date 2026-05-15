@@ -12,11 +12,7 @@ import androidx.annotation.IntDef;
 
 import com.google.android.gms.location.Priority;
 
-import org.chromium.base.BaseSwitches;
-import org.chromium.base.CommandLine;
 import org.chromium.base.ContextUtils;
-import org.chromium.base.DeviceInfo;
-import org.chromium.base.ResettersForTesting;
 import org.chromium.base.SysUtils;
 import org.chromium.base.TimeUtils;
 import org.chromium.base.metrics.RecordHistogram;
@@ -27,7 +23,6 @@ import org.chromium.components.cached_flags.CachedFeatureParam;
 import org.chromium.components.cached_flags.CachedFlag;
 import org.chromium.components.cached_flags.IntCachedFeatureParam;
 import org.chromium.ui.base.DeviceFormFactor;
-import org.chromium.ui.base.DeviceInput;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -76,12 +71,6 @@ public class OmniboxFeatures {
     /** The timestamp representing the last time the user exited Chrome. */
     public static final String KEY_LAST_EXIT_TIMESTAMP = "last_exit_timestamp";
 
-    // Threshold for low RAM devices. We won't be showing suggestion images
-    // on devices that have less RAM than this to avoid bloat and reduce user-visible
-    // slowdown while spinning up an image decompression process.
-    // We set the threshold to 1.5GB to reduce number of users affected by this restriction.
-    private static final int LOW_MEMORY_THRESHOLD_KB = (int) (1.5 * 1024 * 1024);
-
     // Maximum number of attempts to retrieve page behind the default match per Omnibox input
     // session.
     public static final int DEFAULT_MAX_PREFETCHES_PER_OMNIBOX_SESSION = 5;
@@ -96,9 +85,6 @@ public class OmniboxFeatures {
     // Each flag created via newFlag() will be automatically added to this list.
     private static final List<CachedFlag> sCachedFlags = new ArrayList<>();
     private static final List<CachedFeatureParam<?>> sCachedParams = new ArrayList<>();
-
-    /// Holds the information whether logic should focus on preserving memory on this device.
-    private static @Nullable Boolean sIsLowMemoryDevice;
 
     public static final CachedFlag sTouchDownTriggerForPrefetch =
             newFlag(
@@ -272,12 +258,6 @@ public class OmniboxFeatures {
     public static final BooleanCachedFeatureParam sDiagInputConnection =
             newBooleanParam(sDiagnostics, "omnibox_diag_input_connection", false);
 
-    /** See {@link #setHasDesktopExperienceForTesting(boolean)}. */
-    private static @Nullable Boolean sHasDesktopExperienceForTesting;
-
-    /** See {@link #setIsDesktopPlatformForTesting(boolean)}. */
-    private static @Nullable Boolean sIsDesktopPlatformForTesting;
-
     /** When enabled, Jump Start Omnibox is activated and can engage if the feature is enabled. */
     private static @Nullable Boolean sActivateJumpStartOmnibox;
 
@@ -351,26 +331,6 @@ public class OmniboxFeatures {
     }
 
     /**
-     * Returns whether the omnibox's recycler view pool should be pre-warmed prior to initial use.
-     */
-    public static boolean shouldPreWarmRecyclerViewPool() {
-        return !isLowMemoryDevice();
-    }
-
-    /**
-     * Returns whether the device is to be considered low-end for any memory intensive operations.
-     */
-    public static boolean isLowMemoryDevice() {
-        if (sIsLowMemoryDevice == null) {
-            sIsLowMemoryDevice =
-                    (SysUtils.amountOfPhysicalMemoryKB() < LOW_MEMORY_THRESHOLD_KB
-                            && !CommandLine.getInstance()
-                                    .hasSwitch(BaseSwitches.DISABLE_LOW_END_DEVICE_MODE));
-        }
-        return sIsLowMemoryDevice;
-    }
-
-    /**
      * Returns whether a touch down event on a search suggestion should send a signal to prefetch
      * the corresponding page.
      */
@@ -386,12 +346,6 @@ public class OmniboxFeatures {
         return sTouchDownTriggerMaxPrefetchesPerSession.getValue();
     }
 
-    /** Indicate a low memory device for testing purposes. */
-    public static void setIsLowMemoryDeviceForTesting(boolean isLowMemDevice) {
-        sIsLowMemoryDevice = isLowMemDevice;
-        ResettersForTesting.register(() -> sIsLowMemoryDevice = null);
-    }
-
     /**
      * Returns whether the rich inline autocomplete URL should be shown.
      *
@@ -402,58 +356,9 @@ public class OmniboxFeatures {
         return inputCount >= DEFAULT_RICH_INLINE_MIN_CHAR;
     }
 
-    /** Modifies the output of {@link #hasDesktopExperience()} for testing. */
-    public static void setHasDesktopExperienceForTesting(Boolean hasDesktopExperience) {
-        sHasDesktopExperienceForTesting = hasDesktopExperience;
-        ResettersForTesting.register(() -> sHasDesktopExperienceForTesting = null);
-    }
-
-    /** Returns whether the device type is supported for Fusebox. */
-    public static boolean isFuseboxSupportedDeviceType() {
-        return !DeviceInfo.isAutomotive() && !DeviceInfo.isXr() && !DeviceInfo.isTV();
-    }
-
-    /**
-     * Return whether the device is in a desktop-like configuration (interacted with using physical
-     * keyboard and precision pointer).
-     *
-     * <p>We're not limiting to tablet modes here, because narrow windows on LFF devices are
-     * eligible for Desktop treatment, too.
-     *
-     * @param context the context to use to determine device form factor
-     */
-    public static boolean hasDesktopExperience(Context context) {
-        if (sHasDesktopExperienceForTesting != null) {
-            return sHasDesktopExperienceForTesting;
-        }
-
-        return DeviceFormFactor.isNonMultiDisplayContextOnTablet(context)
-                && DeviceInput.supportsAlphabeticKeyboard()
-                && DeviceInput.supportsPrecisionPointer();
-    }
-
-    /** Modifies the output of {@link #isDesktopPlatform()} for testing. */
-    public static void setIsDesktopPlatformForTesting(Boolean isDesktopPlatform) {
-        sIsDesktopPlatformForTesting = isDesktopPlatform;
-        ResettersForTesting.register(() -> sIsDesktopPlatformForTesting = null);
-    }
-
     /** Modifies the output of {@link #shouldShowBottomSheetPopup()} for testing. */
     public static void setShowBottomSheetPopupForTesting(boolean value) {
         sShowBottomSheetPopup.setForTesting(value);
-    }
-
-    /**
-     * Return whether the current platform is specifically a desktop platform.
-     *
-     * <p>This call should be used sparingly - only to gate features that are strictly Desktop
-     * specific. All other calls should defer to {@link #hasDesktopExperience()}.
-     */
-    public static boolean isDesktopPlatform() {
-        if (sIsDesktopPlatformForTesting != null) {
-            return sIsDesktopPlatformForTesting;
-        }
-        return DeviceInfo.isDesktop();
     }
 
     /**
@@ -462,7 +367,7 @@ public class OmniboxFeatures {
      * <p>This checks both the feature param and whether the platform is desktop.
      */
     public static boolean shouldShowBottomSheetPopup() {
-        return !isDesktopPlatform() && sShowBottomSheetPopup.getValue();
+        return !OmniboxCapabilities.isDesktopPlatform() && sShowBottomSheetPopup.getValue();
     }
 
     /**
@@ -474,7 +379,8 @@ public class OmniboxFeatures {
      * flag state, disabling the fusebox on unsupported device and experience configurations.
      */
     public static boolean isMultimodalInputEnabled(Context context) {
-        if (isDesktopPlatform() || hasDesktopExperience(context)) {
+        if (OmniboxCapabilities.isDesktopPlatform()
+                || OmniboxCapabilities.hasDesktopExperience(context)) {
             return sAndroidDesktopAimGate.isEnabled() && sOmniboxMultimodalInput.isEnabled();
         }
         return sOmniboxMultimodalInput.isEnabled();

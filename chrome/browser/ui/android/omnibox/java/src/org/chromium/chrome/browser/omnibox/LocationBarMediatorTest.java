@@ -116,6 +116,7 @@ import org.chromium.components.omnibox.AutocompleteInput.SiteSearchData;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.AutocompleteMatchBuilder;
 import org.chromium.components.omnibox.AutocompleteRequestType;
+import org.chromium.components.omnibox.OmniboxCapabilities;
 import org.chromium.components.omnibox.OmniboxFeatureList;
 import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.omnibox.OmniboxFocusReason;
@@ -998,7 +999,7 @@ public class LocationBarMediatorTest {
         AutocompleteInput input = mSessionState.getAutocompleteInput();
         input.setAutocompleteState(AutocompleteState.ENABLED);
         Configuration config = new Configuration();
-        OmniboxFeatures.setHasDesktopExperienceForTesting(true); // Adopt Desktop functionality.
+        OmniboxCapabilities.setHasDesktopExperienceForTesting(true); // Adopt Desktop functionality.
 
         mMediator.beginInput(input);
         mMediator.onConfigurationChanged(config);
@@ -1018,7 +1019,7 @@ public class LocationBarMediatorTest {
         input.setAutocompleteState(AutocompleteState.ENABLED);
         Configuration config = new Configuration();
 
-        OmniboxFeatures.setHasDesktopExperienceForTesting(false); // non-Desktop functionality.
+        OmniboxCapabilities.setHasDesktopExperienceForTesting(false); // non-Desktop functionality.
         mMediator.onConfigurationChanged(config);
         verify(mUrlCoordinator, never()).clearFocus();
 
@@ -1401,13 +1402,13 @@ public class LocationBarMediatorTest {
 
     @Test
     public void testOnUrlFocusChange_isNotDesktopMode() {
-        OmniboxFeatures.setHasDesktopExperienceForTesting(false);
+        OmniboxCapabilities.setHasDesktopExperienceForTesting(false);
         testOnUrlFocusChange(/* expectDesktopMode= */ false);
     }
 
     @Test
     public void testOnUrlFocusChange_hasDesktopExperience() {
-        OmniboxFeatures.setHasDesktopExperienceForTesting(true);
+        OmniboxCapabilities.setHasDesktopExperienceForTesting(true);
         testOnUrlFocusChange(/* expectDesktopMode= */ true);
     }
 
@@ -2062,7 +2063,7 @@ public class LocationBarMediatorTest {
 
     @Test
     public void testRestoringText() {
-        OmniboxFeatures.setHasDesktopExperienceForTesting(true);
+        OmniboxCapabilities.setHasDesktopExperienceForTesting(true);
         doReturn(JUnitTestGURLs.NTP_URL).when(mLocationBarDataProvider).getCurrentGurl();
         mTabletMediator.onFinishNativeInitialization();
         mProfileSupplier.set(mProfile);
@@ -2105,7 +2106,7 @@ public class LocationBarMediatorTest {
         mProfileSupplier.set(mProfile);
         RobolectricUtil.runAllBackgroundAndUi();
 
-        OmniboxFeatures.setHasDesktopExperienceForTesting(true);
+        OmniboxCapabilities.setHasDesktopExperienceForTesting(true);
         NewTabPageDelegate newTabPageDelegate = mock(NewTabPageDelegate.class);
         doReturn(newTabPageDelegate).when(mLocationBarDataProvider).getNewTabPageDelegate();
         doReturn(JUnitTestGURLs.NTP_URL).when(mLocationBarDataProvider).getCurrentGurl();
@@ -2808,14 +2809,14 @@ public class LocationBarMediatorTest {
         clearInvocations(mScrimHandler);
 
         // Show scrim on mobile devices even if there are no suggestions to show.
-        OmniboxFeatures.setHasDesktopExperienceForTesting(false);
+        OmniboxCapabilities.setHasDesktopExperienceForTesting(false);
         mMediator.onSuggestionsChanged(null, false);
         verify(mScrimHandler).setVisibility(true);
         clearInvocations(mScrimHandler);
 
         // On desktop, we show no suggestions in select cases, e.g. on the NTP where the omnibox is
         // prefocused. We don't want to show the scrim in that scenario either.
-        OmniboxFeatures.setHasDesktopExperienceForTesting(true);
+        OmniboxCapabilities.setHasDesktopExperienceForTesting(true);
         mMediator.beginInput(
                 new AutocompleteInput().setAutocompleteState(AutocompleteState.STANDBY));
         verify(mScrimHandler).setVisibility(false);

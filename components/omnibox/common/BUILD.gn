@@ -54,6 +54,7 @@ if (is_android) {
 
   android_library("features_java") {
     sources = [
+      "android/java/src/org/chromium/components/omnibox/OmniboxCapabilities.java",
       "android/java/src/org/chromium/components/omnibox/OmniboxFeatureMap.java",
       "android/java/src/org/chromium/components/omnibox/OmniboxFeatures.java",
     ]

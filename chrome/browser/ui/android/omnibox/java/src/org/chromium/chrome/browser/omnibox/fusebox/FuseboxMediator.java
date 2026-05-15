@@ -66,6 +66,7 @@ import org.chromium.components.omnibox.AutocompleteRequestType;
 import org.chromium.components.omnibox.IconResourceIdsProto.IconResourceIds;
 import org.chromium.components.omnibox.InputTypeProto.InputType;
 import org.chromium.components.omnibox.ModelConfigProto.ModelConfig;
+import org.chromium.components.omnibox.OmniboxCapabilities;
 import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.omnibox.OmniboxFocusReason;
 import org.chromium.components.omnibox.ToolConfigProto.ToolConfig;
@@ -387,7 +388,7 @@ import java.util.function.Supplier;
 
         // On Desktop, dedicated button shows in specialized modes only, and reverts to AI Mode.
         if (ToolModeUtils.isAimRequest(mInput.getRequestType())
-                && !OmniboxFeatures.isDesktopPlatform()) {
+                && !OmniboxCapabilities.isDesktopPlatform()) {
             activateSearchMode();
         } else {
             activateAiMode(
@@ -476,7 +477,7 @@ import java.util.function.Supplier;
             // Never show mode button if in Search mode.
             return false;
         } else if (mInput.getRequestType() == AutocompleteRequestType.AI_MODE
-                && OmniboxFeatures.isDesktopPlatform()) {
+                && OmniboxCapabilities.isDesktopPlatform()) {
             // Special Desktop case -> AI Mode only changes the status icon.
             return false;
         }
@@ -1204,7 +1205,7 @@ import java.util.function.Supplier;
     }
 
     private @FuseboxLayoutMode int getFuseboxLayoutMode() {
-        return OmniboxFeatures.hasDesktopExperience(mContext)
+        return OmniboxCapabilities.hasDesktopExperience(mContext)
                 ? FuseboxLayoutMode.POPOVER
                 : FuseboxLayoutMode.SEPARATED;
     }

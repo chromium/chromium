@@ -22,6 +22,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.AutocompleteRequestType;
+import org.chromium.components.omnibox.OmniboxCapabilities;
 import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.omnibox.ToolModeUtils;
 import org.chromium.content_public.browser.WebContents;
@@ -151,7 +152,7 @@ public class FuseboxSessionState implements UserData {
         // Use current URL if the Retention is active as the starting input.
         // On eligible LFF devices the Omnibox should, by default, present the
         // current page URL (if the URL is eligible for display).
-        if (OmniboxFeatures.hasDesktopExperience(context)
+        if (OmniboxCapabilities.hasDesktopExperience(context)
                 && UrlBarData.shouldShowUrl(mAutocompleteInput.getPageUrl(), false)) {
             var editUrl = UrlUtilities.stripScheme(mAutocompleteInput.getPageUrl().getSpec());
             mAutocompleteInput.setInitialUserText(editUrl);
@@ -164,7 +165,9 @@ public class FuseboxSessionState implements UserData {
             mAutocompleteInput
                     .setUserText(mAutocompleteInput.getInitialUserText())
                     .setSelection(
-                            OmniboxFeatures.hasDesktopExperience(context) ? 0 : Integer.MAX_VALUE,
+                            OmniboxCapabilities.hasDesktopExperience(context)
+                                    ? 0
+                                    : Integer.MAX_VALUE,
                             Integer.MAX_VALUE);
         }
 

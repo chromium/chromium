@@ -27,7 +27,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.dom_distiller.core.DomDistillerUrlUtils;
 import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.AutocompleteMatch;
-import org.chromium.components.omnibox.OmniboxFeatures;
+import org.chromium.components.omnibox.OmniboxCapabilities;
 import org.chromium.components.omnibox.suggestions.OmniboxSuggestionUiType;
 import org.chromium.components.ukm.UkmRecorder;
 import org.chromium.ui.base.Clipboard;
@@ -64,7 +64,7 @@ public class EditUrlSuggestionProcessor extends BaseSuggestionViewProcessor {
 
         // Fall back to the base suggestion processor when retaining omnibox on focus so as not to
         // show mobile-optimized actions in a desktop-like context.
-        if (OmniboxFeatures.hasDesktopExperience(mContext)) return false;
+        if (OmniboxCapabilities.hasDesktopExperience(mContext)) return false;
 
         Tab activeTab = mTabSupplier.get();
         if (activeTab == null

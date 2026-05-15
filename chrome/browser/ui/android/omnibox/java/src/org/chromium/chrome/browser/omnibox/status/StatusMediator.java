@@ -55,6 +55,7 @@ import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.PageClassification;
 import org.chromium.components.omnibox.AutocompleteInput.SiteSearchData;
 import org.chromium.components.omnibox.AutocompleteRequestType;
+import org.chromium.components.omnibox.OmniboxCapabilities;
 import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.omnibox.ToolModeUtils;
 import org.chromium.components.permissions.PermissionDialogController;
@@ -546,7 +547,7 @@ public class StatusMediator
         } else if (exactMatch && mExactMatchFavicon != null) {
             mPermissionStatusHandler.reset(/* shouldDismissNativePrompt= */ false);
             bitmap = mExactMatchFavicon;
-        } else if (OmniboxFeatures.isDesktopPlatform()
+        } else if (OmniboxCapabilities.isDesktopPlatform()
                 && mInputSessionState != null
                 && ToolModeUtils.isAimRequest(requestType)) {
             mPermissionStatusHandler.reset(/* shouldDismissNativePrompt= */ false);

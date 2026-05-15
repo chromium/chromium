@@ -71,7 +71,7 @@ import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.OmniboxTestUtils;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.omnibox.AutocompleteInput;
-import org.chromium.components.omnibox.OmniboxFeatures;
+import org.chromium.components.omnibox.OmniboxCapabilities;
 import org.chromium.components.omnibox.OmniboxFocusReason;
 import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.components.search_engines.TemplateUrlService;
@@ -256,7 +256,7 @@ public class LocationBarTest {
     public void testOnConfigurationChanged() {
         // Start activity in Desktop mode. Expect UrlBar to focus.
         // The DesktopMode check verifies connected peripherals, not just the Configuration change.
-        OmniboxFeatures.setHasDesktopExperienceForTesting(true);
+        OmniboxCapabilities.setHasDesktopExperienceForTesting(true);
         startActivityNormally();
         // We expect the UrlBar to be focused iff a Hardware keyboard handler does not automatically
         // call up Software keyboard (IME).
@@ -271,7 +271,7 @@ public class LocationBarTest {
                 });
 
         Configuration configuration = mActivity.getSavedConfigurationForTesting();
-        OmniboxFeatures.setHasDesktopExperienceForTesting(false);
+        OmniboxCapabilities.setHasDesktopExperienceForTesting(false);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mLocationBarMediator.onConfigurationChanged(configuration);
@@ -301,21 +301,21 @@ public class LocationBarTest {
     @Test
     @MediumTest
     public void testEditingText() {
-        OmniboxFeatures.setHasDesktopExperienceForTesting(true);
+        OmniboxCapabilities.setHasDesktopExperienceForTesting(true);
         testEditingText(/* expectDesktopMode= */ true);
     }
 
     @Test
     @MediumTest
     public void testEditingText_withDesktopModeDisabled() {
-        OmniboxFeatures.setHasDesktopExperienceForTesting(false);
+        OmniboxCapabilities.setHasDesktopExperienceForTesting(false);
         testEditingText(/* expectDesktopMode= */ false);
     }
 
     @Test
     @MediumTest
     public void testEditingText_withDesktopModeEnabled() {
-        OmniboxFeatures.setHasDesktopExperienceForTesting(true);
+        OmniboxCapabilities.setHasDesktopExperienceForTesting(true);
         testEditingText(/* expectDesktopMode= */ true);
     }
 
@@ -608,7 +608,7 @@ public class LocationBarTest {
     @DisableFeatures(SigninFeatures.PROFILE_DISC_ON_ALL_PAGES)
     @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
     public void testFocusLogic_buttonVisibilityTablet_ProfileDiscDisabled_DesktopDisabled() {
-        OmniboxFeatures.setHasDesktopExperienceForTesting(false);
+        OmniboxCapabilities.setHasDesktopExperienceForTesting(false);
         DeviceInput.setSupportsAlphabeticKeyboardForTesting(false);
         DeviceInput.setSupportsPrecisionPointerForTesting(false);
         testFocusLogic_buttonVisibilityTablet(
@@ -626,7 +626,7 @@ public class LocationBarTest {
     })
     @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
     public void testFocusLogic_buttonVisibilityTablet_ProfileDiscEnabled_DesktopDisabled() {
-        OmniboxFeatures.setHasDesktopExperienceForTesting(false);
+        OmniboxCapabilities.setHasDesktopExperienceForTesting(false);
         DeviceInput.setSupportsAlphabeticKeyboardForTesting(false);
         DeviceInput.setSupportsPrecisionPointerForTesting(false);
         testFocusLogic_buttonVisibilityTablet(
@@ -641,7 +641,7 @@ public class LocationBarTest {
     @DisableFeatures(SigninFeatures.PROFILE_DISC_ON_ALL_PAGES)
     @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
     public void testFocusLogic_buttonVisibilityTablet_ProfileDiscDisabled_DesktopEnabled() {
-        OmniboxFeatures.setHasDesktopExperienceForTesting(true);
+        OmniboxCapabilities.setHasDesktopExperienceForTesting(true);
         DeviceInput.setSupportsAlphabeticKeyboardForTesting(true);
         DeviceInput.setSupportsPrecisionPointerForTesting(true);
         testFocusLogic_buttonVisibilityTablet(
@@ -659,7 +659,7 @@ public class LocationBarTest {
     })
     @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
     public void testFocusLogic_buttonVisibilityTablet_ProfileDiscEnabled_DesktopEnabled() {
-        OmniboxFeatures.setHasDesktopExperienceForTesting(true);
+        OmniboxCapabilities.setHasDesktopExperienceForTesting(true);
         DeviceInput.setSupportsAlphabeticKeyboardForTesting(true);
         DeviceInput.setSupportsPrecisionPointerForTesting(true);
         testFocusLogic_buttonVisibilityTablet(
@@ -668,7 +668,7 @@ public class LocationBarTest {
 
     private void testFocusLogic_buttonVisibilityTablet(
             boolean expectDesktopMode, boolean profileDiscEnabled) {
-        OmniboxFeatures.setHasDesktopExperienceForTesting(expectDesktopMode);
+        OmniboxCapabilities.setHasDesktopExperienceForTesting(expectDesktopMode);
         startActivityNormally();
 
         doReturn(true).when(mVoiceRecognitionHandler).isVoiceSearchEnabled();

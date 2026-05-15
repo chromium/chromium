@@ -18,7 +18,7 @@ import org.chromium.chrome.browser.omnibox.suggestions.basic.BasicSuggestionProc
 import org.chromium.chrome.browser.omnibox.suggestions.basic.SuggestionViewProperties;
 import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.AutocompleteMatch;
-import org.chromium.components.omnibox.OmniboxFeatures;
+import org.chromium.components.omnibox.OmniboxCapabilities;
 import org.chromium.components.omnibox.OmniboxSuggestionType;
 import org.chromium.components.omnibox.suggestions.OmniboxSuggestionUiType;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -66,7 +66,7 @@ public class EntitySuggestionProcessor extends BasicSuggestionProcessor {
     @VisibleForTesting
     @Override
     public OmniboxDrawableState getFallbackIcon(AutocompleteMatch match) {
-        if (OmniboxFeatures.isLowMemoryDevice()) return super.getFallbackIcon(match);
+        if (OmniboxCapabilities.isLowMemoryDevice()) return super.getFallbackIcon(match);
 
         var colorSpec = match.getImageDominantColor();
         if (TextUtils.isEmpty(colorSpec)) return super.getFallbackIcon(match);

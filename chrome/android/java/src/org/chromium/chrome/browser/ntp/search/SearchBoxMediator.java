@@ -31,6 +31,7 @@ import org.chromium.chrome.browser.omnibox.status.StatusProperties.StatusIconRes
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.components.omnibox.AutocompleteRequestType;
+import org.chromium.components.omnibox.OmniboxCapabilities;
 import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.components.search_engines.TemplateUrlService.TemplateUrlServiceObserver;
@@ -165,7 +166,7 @@ class SearchBoxMediator implements DestroyObserver {
                 SearchBoxProperties.PLUS_BUTTON_VISIBILITY,
                 OmniboxFeatures.isMultimodalInputEnabled(mContext)
                         && OmniboxFeatures.sShowNtpPlusButton.getValue()
-                        && OmniboxFeatures.isFuseboxSupportedDeviceType()
+                        && OmniboxCapabilities.isFuseboxSupportedDeviceType()
                         && ComposeplateUtils.isComposeplateEnabled(mProfile)
                         && mTemplateUrlService.isDefaultSearchEngineGoogle());
     }

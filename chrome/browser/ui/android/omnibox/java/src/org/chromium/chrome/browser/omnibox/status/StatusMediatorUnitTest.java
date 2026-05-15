@@ -73,8 +73,8 @@ import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.PageClassification;
 import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.AutocompleteRequestType;
+import org.chromium.components.omnibox.OmniboxCapabilities;
 import org.chromium.components.omnibox.OmniboxFeatureList;
-import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.permissions.PermissionDialogController;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.search_engines.TemplateUrlService;
@@ -736,7 +736,7 @@ public final class StatusMediatorUnitTest {
     public void testFuseboxCompactMode_plusButton_allConditionsMet() {
         mFuseboxStateSupplier.set(FuseboxState.COMPACT);
         mMediator.beginInput(mFuseboxSessionState);
-        OmniboxFeatures.setIsDesktopPlatformForTesting(true);
+        OmniboxCapabilities.setIsDesktopPlatformForTesting(true);
         doReturn(AutocompleteRequestType.SEARCH).when(mAutocompleteInput).getRequestType();
 
         mMediator.updateLocationBarIcon(IconTransitionType.CROSSFADE);
@@ -769,7 +769,7 @@ public final class StatusMediatorUnitTest {
     public void testFuseboxCompactMode_fallbackToSpark_notDesktop() {
         mFuseboxStateSupplier.set(FuseboxState.COMPACT);
         mMediator.beginInput(mFuseboxSessionState);
-        OmniboxFeatures.setIsDesktopPlatformForTesting(false);
+        OmniboxCapabilities.setIsDesktopPlatformForTesting(false);
         doReturn(AutocompleteRequestType.SEARCH).when(mAutocompleteInput).getRequestType();
 
         mMediator.updateLocationBarIcon(IconTransitionType.CROSSFADE);
@@ -785,7 +785,7 @@ public final class StatusMediatorUnitTest {
     public void testFuseboxCompactMode_fallbackToSpark_notConventional() {
         mFuseboxStateSupplier.set(FuseboxState.COMPACT);
         mMediator.beginInput(mFuseboxSessionState);
-        OmniboxFeatures.setIsDesktopPlatformForTesting(true);
+        OmniboxCapabilities.setIsDesktopPlatformForTesting(true);
         doReturn(AutocompleteRequestType.AI_MODE).when(mAutocompleteInput).getRequestType();
 
         mMediator.updateLocationBarIcon(IconTransitionType.CROSSFADE);

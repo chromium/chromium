@@ -34,6 +34,7 @@ import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.Page
 import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.AutocompleteMatch.MatchClassification;
+import org.chromium.components.omnibox.OmniboxCapabilities;
 import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.omnibox.action.ActionPresentationMode;
 import org.chromium.ui.base.DeviceFormFactor;
@@ -267,7 +268,7 @@ public abstract class BaseSuggestionViewProcessor implements SuggestionProcessor
         model.set(BaseSuggestionViewProperties.TOP_PADDING, 0);
 
         if (OmniboxFeatures.isTouchDownTriggerForPrefetchEnabled()
-                && !OmniboxFeatures.isLowMemoryDevice()
+                && !OmniboxCapabilities.isLowMemoryDevice()
                 && suggestion.isSearchSuggestion()) {
             model.set(
                     BaseSuggestionViewProperties.ON_TOUCH_DOWN_EVENT,

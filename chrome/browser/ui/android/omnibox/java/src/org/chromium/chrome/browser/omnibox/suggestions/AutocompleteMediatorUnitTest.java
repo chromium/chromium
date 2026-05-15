@@ -90,6 +90,7 @@ import org.chromium.components.omnibox.AutocompleteMatchBuilder;
 import org.chromium.components.omnibox.AutocompleteRequestType;
 import org.chromium.components.omnibox.AutocompleteResult;
 import org.chromium.components.omnibox.AutocompleteStopReason;
+import org.chromium.components.omnibox.OmniboxCapabilities;
 import org.chromium.components.omnibox.OmniboxFeatureList;
 import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.omnibox.OmniboxSuggestionType;
@@ -546,7 +547,7 @@ public class AutocompleteMediatorUnitTest {
     public void setSessionState_mobileMode_emptyOmnibox() {
         // In Mobile mode, if LocationBar clears the Page URL on focus, Autocomplete requests
         // Zero-Prefix suggestions.
-        OmniboxFeatures.setHasDesktopExperienceForTesting(false);
+        OmniboxCapabilities.setHasDesktopExperienceForTesting(false);
 
         GURL url = new GURL("https://www.google.com");
         String title = "title";
@@ -561,7 +562,7 @@ public class AutocompleteMediatorUnitTest {
     public void setSessionState_mobileMode_populatedOmnibox() {
         // In Mobile mode, if LocationBar does not clear the Page URL on focus, Autocomplete
         // requests Prefixed suggestions.
-        OmniboxFeatures.setHasDesktopExperienceForTesting(false);
+        OmniboxCapabilities.setHasDesktopExperienceForTesting(false);
 
         GURL url = new GURL("https://www.google.com");
         String title = "title";
@@ -576,15 +577,15 @@ public class AutocompleteMediatorUnitTest {
 
     @Test
     public void testIsDesktopPlatform() {
-        OmniboxFeatures.setIsDesktopPlatformForTesting(true);
-        assertTrue(OmniboxFeatures.isDesktopPlatform());
+        OmniboxCapabilities.setIsDesktopPlatformForTesting(true);
+        assertTrue(OmniboxCapabilities.isDesktopPlatform());
 
-        OmniboxFeatures.setIsDesktopPlatformForTesting(false);
-        assertFalse(OmniboxFeatures.isDesktopPlatform());
+        OmniboxCapabilities.setIsDesktopPlatformForTesting(false);
+        assertFalse(OmniboxCapabilities.isDesktopPlatform());
 
-        OmniboxFeatures.setIsDesktopPlatformForTesting(null);
+        OmniboxCapabilities.setIsDesktopPlatformForTesting(null);
         // Verify it doesn't crash and returns the default value.
-        OmniboxFeatures.isDesktopPlatform();
+        OmniboxCapabilities.isDesktopPlatform();
     }
 
     public void verifyAutocompleteStart(
@@ -621,7 +622,7 @@ public class AutocompleteMediatorUnitTest {
     public void setSessionState_desktopMode() {
         // In Desktop mode, Omnibox always retains the Page URL on focus.
         // Autocomplete should continue to request the Zero-Prefix suggestions.
-        OmniboxFeatures.setHasDesktopExperienceForTesting(true);
+        OmniboxCapabilities.setHasDesktopExperienceForTesting(true);
 
         GURL url = new GURL("https://www.google.com");
         String title = "title";
@@ -925,7 +926,7 @@ public class AutocompleteMediatorUnitTest {
         // Here we don't clear the URL in the omnibox, but still require the
         // Autocomplete to issue the zero prefix suggest request.
 
-        OmniboxFeatures.setHasDesktopExperienceForTesting(true);
+        OmniboxCapabilities.setHasDesktopExperienceForTesting(true);
 
         GURL url = JUnitTestGURLs.BLUE_1;
         String title = "Title";

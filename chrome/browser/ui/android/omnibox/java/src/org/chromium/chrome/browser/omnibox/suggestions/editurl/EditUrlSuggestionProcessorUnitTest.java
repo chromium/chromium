@@ -55,7 +55,7 @@ import org.chromium.components.dom_distiller.core.DomDistillerUrlUtilsJni;
 import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.AutocompleteMatchBuilder;
-import org.chromium.components.omnibox.OmniboxFeatures;
+import org.chromium.components.omnibox.OmniboxCapabilities;
 import org.chromium.components.omnibox.OmniboxSuggestionType;
 import org.chromium.components.omnibox.action.OmniboxActionDelegate;
 import org.chromium.components.omnibox.suggestions.OmniboxSuggestionUiType;
@@ -205,7 +205,7 @@ public final class EditUrlSuggestionProcessorUnitTest {
     @Test
     public void doesProcessSuggestion_acceptMatchingWhatYouTypedWhenDesktopModeDisabled() {
         // URL_WHAT_YOU_TYPED
-        OmniboxFeatures.setHasDesktopExperienceForTesting(false);
+        OmniboxCapabilities.setHasDesktopExperienceForTesting(false);
         assertTrue(mProcessor.doesProcessSuggestion(mMatch, 0));
 
         // SEARCH_WHAT_YOU_TYPED
@@ -268,7 +268,7 @@ public final class EditUrlSuggestionProcessorUnitTest {
 
     @Test
     public void doesProcessSuggestion_rejectMatchWhenDesktopModeEnabled() {
-        OmniboxFeatures.setHasDesktopExperienceForTesting(true);
+        OmniboxCapabilities.setHasDesktopExperienceForTesting(true);
         assertFalse(mProcessor.doesProcessSuggestion(mMatch, 0));
         verifyNoMoreInteractions(mSuggestionHost, mShareDelegate, mClipboardManager);
     }

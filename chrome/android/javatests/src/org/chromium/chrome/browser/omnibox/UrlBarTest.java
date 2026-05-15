@@ -39,7 +39,7 @@ import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.ReusedCtaTransitTestRule;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.OmniboxTestUtils;
-import org.chromium.components.omnibox.OmniboxFeatures;
+import org.chromium.components.omnibox.OmniboxCapabilities;
 import org.chromium.content_public.common.ContentUrlConstants;
 import org.chromium.url.GURL;
 
@@ -681,7 +681,7 @@ public class UrlBarTest {
     public void testCopyUrl_SchemePreservation() throws Exception {
         // Force desktop mode.
         ThreadUtils.runOnUiThreadBlocking(
-                () -> OmniboxFeatures.setHasDesktopExperienceForTesting(Boolean.TRUE));
+                () -> OmniboxCapabilities.setHasDesktopExperienceForTesting(Boolean.TRUE));
 
         mOmnibox.clearFocus();
 
@@ -724,7 +724,7 @@ public class UrlBarTest {
         Assert.assertEquals("bar", clipboardText);
 
         ThreadUtils.runOnUiThreadBlocking(
-                () -> OmniboxFeatures.setHasDesktopExperienceForTesting((Boolean) null));
+                () -> OmniboxCapabilities.setHasDesktopExperienceForTesting((Boolean) null));
     }
 
     private String getClipboardText() {

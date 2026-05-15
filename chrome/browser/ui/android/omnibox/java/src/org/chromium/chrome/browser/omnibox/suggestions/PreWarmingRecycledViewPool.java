@@ -16,6 +16,7 @@ import org.chromium.base.TraceEvent;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.omnibox.OmniboxMetrics;
+import org.chromium.components.omnibox.OmniboxCapabilities;
 import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.omnibox.suggestions.OmniboxSuggestionUiType;
 
@@ -95,7 +96,7 @@ public class PreWarmingRecycledViewPool extends RecycledViewPool {
     }
 
     public void onNativeInitialized() {
-        if (OmniboxFeatures.shouldPreWarmRecyclerViewPool()) {
+        if (OmniboxCapabilities.shouldPreWarmRecyclerViewPool()) {
             startCreatingViews();
         }
     }

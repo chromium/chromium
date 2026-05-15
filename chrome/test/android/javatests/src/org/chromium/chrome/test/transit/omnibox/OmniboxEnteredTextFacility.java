@@ -11,7 +11,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.transit.Facility;
 import org.chromium.base.test.transit.Station;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.components.omnibox.OmniboxFeatures;
+import org.chromium.components.omnibox.OmniboxCapabilities;
 
 /**
  * Represents test entered into the Omnibox.
@@ -34,7 +34,7 @@ public class OmniboxEnteredTextFacility extends Facility<Station<?>> {
             boolean hasDesktopExperience =
                     ThreadUtils.runOnUiThreadBlocking(
                             () ->
-                                    OmniboxFeatures.hasDesktopExperience(
+                                    OmniboxCapabilities.hasDesktopExperience(
                                             ContextUtils.getApplicationContext()));
             if (omniboxFacility.getHostStation().isIncognito() || hasDesktopExperience) {
                 declareEnterCondition(omniboxFacility.micButtonElement.absent());

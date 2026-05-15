@@ -109,6 +109,7 @@ import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.AutocompleteInput.AutocompleteState;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.AutocompleteRequestType;
+import org.chromium.components.omnibox.OmniboxCapabilities;
 import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.omnibox.OmniboxFocusReason;
 import org.chromium.components.search_engines.TemplateUrlService;
@@ -611,7 +612,7 @@ class LocationBarMediator
         // While a hardware keyboard is connected, loading the NTP should cause the URL bar to gain
         // focus with a blinking cursor and without focus animations. Loading a non-NTP URL should
         // clear such focus if it exists.
-        if (OmniboxFeatures.hasDesktopExperience(mContext)) {
+        if (OmniboxCapabilities.hasDesktopExperience(mContext)) {
             if (onNtp) {
                 showUrlBarCursorWithoutFocusAnimations();
             } else {
@@ -1986,7 +1987,7 @@ class LocationBarMediator
      */
     @EnsuresNonNullIf("mCurrentInput")
     private boolean isUrlBarFocusedOnDesktop() {
-        return mCurrentInput != null && OmniboxFeatures.hasDesktopExperience(mContext);
+        return mCurrentInput != null && OmniboxCapabilities.hasDesktopExperience(mContext);
     }
 
     @VisibleForTesting

@@ -55,7 +55,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.AutocompleteMatchBuilder;
-import org.chromium.components.omnibox.OmniboxFeatures;
+import org.chromium.components.omnibox.OmniboxCapabilities;
 import org.chromium.components.omnibox.OmniboxSuggestionType;
 import org.chromium.components.omnibox.action.OmniboxActionDelegate;
 import org.chromium.components.omnibox.suggestions.OmniboxSuggestionUiType;
@@ -173,7 +173,7 @@ public class EntitySuggestionProcessorUnitTest {
     @Test
     @SmallTest
     public void decorationTest_validHexColor_lowMemoryDevice() {
-        OmniboxFeatures.setIsLowMemoryDeviceForTesting(true);
+        OmniboxCapabilities.setIsLowMemoryDeviceForTesting(true);
         SuggestionTestHelper suggHelper = createSuggestion("", "", "#fedcba", SEARCH_URL);
         processSuggestion(suggHelper);
 

@@ -37,6 +37,7 @@ import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.AutocompleteResult;
 import org.chromium.components.omnibox.GroupsProto.GroupConfig;
+import org.chromium.components.omnibox.OmniboxCapabilities;
 import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.omnibox.ToolModeUtils;
 import org.chromium.components.omnibox.action.OmniboxActionDelegate;
@@ -111,7 +112,7 @@ class DropdownItemViewInfoListBuilder {
         assert mPriorityOrderedSuggestionProcessors.size() == 0 : "Processors already initialized.";
 
         mImageSupplier =
-                OmniboxFeatures.isLowMemoryDevice() ? null : new OmniboxImageSupplier(context);
+                OmniboxCapabilities.isLowMemoryDevice() ? null : new OmniboxImageSupplier(context);
 
         AutocompleteUIContext uiContext =
                 createUIContext(context, host, textProvider, actionDelegate);

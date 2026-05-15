@@ -35,6 +35,7 @@ import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.OmniboxMetrics;
 import org.chromium.chrome.browser.omnibox.R;
+import org.chromium.components.omnibox.OmniboxCapabilities;
 import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.ui.base.KeyNavigationUtil;
 import org.chromium.ui.util.MotionEventUtils;
@@ -318,7 +319,7 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
 
         @SelectionController.Mode
         int mode =
-                OmniboxFeatures.hasDesktopExperience(context)
+                OmniboxCapabilities.hasDesktopExperience(context)
                         ? SelectionController.Mode.WRAPPING
                         : SelectionController.Mode.WRAPPING_WITH_SENTINEL;
         mSelectionController = new RecyclerViewSelectionController(mLayoutScrollListener, mode);

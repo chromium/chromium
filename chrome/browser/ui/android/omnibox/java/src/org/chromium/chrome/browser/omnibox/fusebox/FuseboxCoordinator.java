@@ -44,6 +44,7 @@ import org.chromium.components.browser_ui.widget.scrim.ScrimManager.ScrimClient;
 import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.PageClassification;
 import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.AutocompleteRequestType;
+import org.chromium.components.omnibox.OmniboxCapabilities;
 import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.components.search_engines.TemplateUrlService.TemplateUrlServiceObserver;
@@ -331,7 +332,7 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
         // We can't do inclusive check due to missing `isPhone()` case in `DeviceInfo`.
         // Additionally these values may change at runtime, e.g. if the user starts Chrome on phone
         // and moves to Android Auto.
-        boolean isSupportedDeviceType = OmniboxFeatures.isFuseboxSupportedDeviceType();
+        boolean isSupportedDeviceType = OmniboxCapabilities.isFuseboxSupportedDeviceType();
         boolean isSupportedPageClass =
                 switch (session.getAutocompleteInput().getRawPageClassification()) {
                     // LINT.IfChange(FuseboxSupportedPageClassifications)
