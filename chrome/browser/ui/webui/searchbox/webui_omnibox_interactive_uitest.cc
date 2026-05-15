@@ -759,13 +759,39 @@ class OmniboxAimUploadInteractiveTest
                            omnibox::kAimFuseboxEligibilityCheckEnabled});
   }
 
+  void SetUpOnMainThread() override {
+    OmniboxAimWebUiInteractiveTestBase::SetUpOnMainThread();
+    scoped_config_ =
+        std::make_unique<ntp_composebox::ScopedFeatureConfigForTesting>();
+    scoped_config_->Get().config.mutable_composebox()->set_max_num_files(5);
+    // File upload size limit: 100 MiB.
+    scoped_config_->Get()
+        .config.mutable_composebox()
+        ->mutable_attachment_upload()
+        ->set_max_size_bytes(100 * 1024 * 1024);
+    scoped_config_->Get()
+        .config.mutable_composebox()
+        ->mutable_attachment_upload()
+        ->set_mime_types_allowed(".pdf,application/pdf");
+    scoped_config_->Get()
+        .config.mutable_composebox()
+        ->mutable_image_upload()
+        ->set_downscale_max_image_size(1000 * 1000);
+    scoped_config_->Get()
+        .config.mutable_composebox()
+        ->mutable_image_upload()
+        ->set_mime_types_allowed(".png,image/png");
+  }
+
   void TearDownOnMainThread() override {
+    scoped_config_.reset();
     ui::SelectFileDialog::SetFactory(nullptr);
     OmniboxAimWebUiInteractiveTestBase::TearDownOnMainThread();
   }
 
  private:
   base::test::ScopedFeatureList feature_list_;
+  std::unique_ptr<ntp_composebox::ScopedFeatureConfigForTesting> scoped_config_;
 };
 
 INSTANTIATE_TEST_SUITE_P(
@@ -775,28 +801,37 @@ INSTANTIATE_TEST_SUITE_P(
         {
             .upload_context_menu_item_id =
                 OmniboxContextMenuController::kImageUploadMenuItemIdForTesting,
-            .file_name = "Image1.png",
+            .file_name = "handbag.png",
         },
         {
             .upload_context_menu_item_id =
                 OmniboxContextMenuController::kFileUploadMenuItemIdForTesting,
-            .file_name = "File1.pdf",
+            .file_name = "pdf/test.pdf",
         },
     }),
     [](const testing::TestParamInfo<OmniboxAimUploadInteractiveTestParams>&
            info) {
       std::string name = info.param.file_name;
-      base::ReplaceChars(name, ".", "", &name);
+      base::ReplaceChars(name, ".", "_", &name);
+      base::ReplaceChars(name, "/", "_", &name);
       std::string prefix =
           info.param.upload_context_menu_item_id ==
                   OmniboxContextMenuController::kImageUploadMenuItemIdForTesting
-              ? "ImageUpload"
-              : "FileUpload";
+              ? "ImageUpload_"
+              : "FileUpload_";
       return prefix + name;
     });
 
+// TODO(crbug.com/505527138): The tests are flaky on Mac builders.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_ClassicContextMenuUploadTriggersAimPopup \
+  DISABLED_ClassicContextMenuUploadTriggersAimPopup
+#else
+#define MAYBE_ClassicContextMenuUploadTriggersAimPopup \
+  ClassicContextMenuUploadTriggersAimPopup
+#endif  // BUILDFLAG(IS_MAC)
 IN_PROC_BROWSER_TEST_P(OmniboxAimUploadInteractiveTest,
-                       ClassicContextMenuUploadTriggersAimPopup) {
+                       MAYBE_ClassicContextMenuUploadTriggersAimPopup) {
   base::FilePath test_data_dir;
   ASSERT_TRUE(base::PathService::Get(chrome::DIR_TEST_DATA, &test_data_dir));
   base::FilePath file_path = test_data_dir.AppendASCII(GetParam().file_name);
@@ -806,6 +841,12 @@ IN_PROC_BROWSER_TEST_P(OmniboxAimUploadInteractiveTest,
           std::vector<base::FilePath>{file_path}));
 
   RunTestSequence(
+      Do([this]() {
+        browser()->profile()->GetPrefs()->SetInteger(
+            contextual_search::kSearchContentSharingSettings,
+            static_cast<int>(contextual_search::
+                                 SearchContentSharingSettingsValue::kEnabled));
+      }),
       SetAimEligibleResponse(),
       // Open the classic popup.
       AddInstrumentedTab(kNewTab, chrome::ChromeUINewTabURLAsGURL()),

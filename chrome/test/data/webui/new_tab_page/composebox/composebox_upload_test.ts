@@ -1354,6 +1354,7 @@ suite('NewTabPageComposeboxUploadContextTest', () => {
       name: 'test.jpg',
       imageDataUrl: 'data:image/jpeg;base64,...',
       mimeType: 'image/jpeg',
+      errorType: null,
     };
 
     const context = {
@@ -1386,6 +1387,8 @@ suite('NewTabPageComposeboxUploadContextTest', () => {
       name: 'test.txt',
       imageDataUrl: null,
       mimeType: 'text/plain',
+      errorType:
+          ContextUploadErrorType.kBrowserProcessingUnsupportedFileTypeError,
     };
 
     const context = {

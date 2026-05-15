@@ -40,8 +40,7 @@ import type {ComposeboxFileInputsElement} from './composebox_file_inputs.js';
 import type {ComposeboxInputElement} from './composebox_input.js';
 import {ComposeboxEmbedderMixin, VoiceSearchAction} from './composebox_mixin.js';
 import {ComposeboxProxyImpl} from './composebox_proxy.js';
-import {ContextUploadStatus, ToolMode} from './composebox_query.mojom-webui.js';
-import type {ContextUploadErrorType} from './composebox_query.mojom-webui.js';
+import {ContextUploadErrorType, ContextUploadStatus, ToolMode} from './composebox_query.mojom-webui.js';
 import type {ContextualEntrypointAndMenuElement} from './contextual_entrypoint_and_menu.js';
 import type {ErrorScrimElement} from './error_scrim.js';
 import type {ComposeboxFileCarouselElement} from './file_carousel.js';
@@ -523,6 +522,15 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
     return showActivityLink;
   }
 
+  private deleteFileContext_(
+      uuidToDelete: UnguessableToken, fromAutoSuggestedChip: boolean = false) {
+    this.files = new Map(
+        [...this.files.entries()].filter(([uuid, _]) => uuid !== uuidToDelete));
+    this.pendingUploads.delete(uuidToDelete);
+    this.fileUploadsComplete = this.pendingUploads.size === 0;
+    this.searchboxHandler_.deleteContext(uuidToDelete, fromAutoSuggestedChip);
+  }
+
   // TODO(crbug.com/486706573): Refactor this function and move the common logic
   // to the mixin class. Move embedder specific logic to the embedder class.
   override deleteFile(
@@ -566,11 +574,7 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
       recordUserAction(userActionName);
     }
 
-    this.files = new Map(
-        [...this.files.entries()].filter(([uuid, _]) => uuid !== uuidToDelete));
-    this.pendingUploads.delete(uuidToDelete);
-    this.fileUploadsComplete = this.pendingUploads.size === 0;
-    this.searchboxHandler_.deleteContext(uuidToDelete, fromAutoSuggestedChip);
+    this.deleteFileContext_(uuidToDelete, fromAutoSuggestedChip);
     this.focusInput();
     // We should not be querying autocomplete in the presence of a tab
     // with delayed upload until URL suggestions are implemented.
@@ -911,7 +915,10 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
     }
     // Query for ZPS even if there's no context.
     if (this.showZps) {
-      this.queryAutocomplete(/* clearMatches= */ false);
+      // Clear the autocomplete matches here, as failure to do so triggers a
+      // DCHECK in `ZpsSection::InitMatches()` whenever the user tries to upload
+      // a file after having uploaded an invalid file earlier in the session.
+      this.queryAutocomplete(/* clearMatches= */ true);
     }
   }
 
@@ -1035,12 +1042,41 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
         this.entrypointName === 'ContextualTasks';
   }
 
+  private mapUploadErrorToProcessFilesError_(errorType: ContextUploadErrorType):
+      ProcessFilesError {
+    switch (errorType) {
+      case ContextUploadErrorType.kBrowserProcessingFileTooLargeError:
+        return ProcessFilesError.FILE_TOO_LARGE;
+      case ContextUploadErrorType.kBrowserProcessingFileEmptyError:
+        return ProcessFilesError.FILE_EMPTY;
+      case ContextUploadErrorType.kBrowserProcessingMaxFilesExceededError:
+        return ProcessFilesError.MAX_FILES_EXCEEDED;
+      case ContextUploadErrorType.kBrowserProcessingUnsupportedFileTypeError:
+        return ProcessFilesError.INVALID_TYPE;
+      case ContextUploadErrorType.kBrowserProcessingFileUploadNotAllowedError:
+        return ProcessFilesError.FILE_UPLOAD_NOT_ALLOWED;
+      case ContextUploadErrorType.kBrowserProcessingMaxImagesExceededError:
+        return ProcessFilesError.MAX_IMAGES_EXCEEDED;
+      case ContextUploadErrorType.kBrowserProcessingMaxPdfsExceededError:
+        return ProcessFilesError.MAX_PDFS_EXCEEDED;
+      default:
+        return ProcessFilesError.NONE;
+    }
+  }
+
   // TODO(crbug.com/486707998): Move this to omnibox composebox.
   private addFileFromAttachment_(fileAttachment: FileAttachment) {
-    if (!this.isFileAllowed(fileAttachment.mimeType)) {
-      this.handleProcessFilesError(ProcessFilesError.INVALID_TYPE);
-      return;
+    const errorType = fileAttachment.errorType ?? null;
+    if (errorType) {
+      const processFilesError = this.mapUploadErrorToProcessFilesError_(
+          errorType as ContextUploadErrorType);
+      if (processFilesError !== ProcessFilesError.NONE) {
+        this.handleProcessFilesError(processFilesError);
+        this.deleteFileContext_(fileAttachment.uuid);
+        return;
+      }
     }
+
     const pendingStatus = this.files.get(fileAttachment.uuid)?.status;
     const composeboxFile = ComposeboxFile.createFromFile(
         fileAttachment.uuid as unknown as UnguessableToken,

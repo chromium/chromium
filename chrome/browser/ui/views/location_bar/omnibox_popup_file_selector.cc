@@ -183,12 +183,44 @@ void OmniboxPopupFileSelector::UpdateSearchboxContextData(
     base::expected<base::UnguessableToken,
                    contextual_search::ContextUploadErrorType> result) {
   if (!result.has_value()) {
-    return;
+    // For "browser processing" validation errors, the "error type" needs to be
+    // included as part of the file attachment, rather than aborting file
+    // attachment creation entirely, so that the front-end can display the
+    // proper "error scrim" for invalid file uploads.
+    bool is_browser_processing_validation_error = false;
+    switch (result.error()) {
+      case contextual_search::ContextUploadErrorType::
+          kBrowserProcessingFileTooLargeError:
+      case contextual_search::ContextUploadErrorType::
+          kBrowserProcessingFileEmptyError:
+      case contextual_search::ContextUploadErrorType::
+          kBrowserProcessingMaxFilesExceededError:
+      case contextual_search::ContextUploadErrorType::
+          kBrowserProcessingUnsupportedFileTypeError:
+      case contextual_search::ContextUploadErrorType::
+          kBrowserProcessingFileUploadNotAllowedError:
+      case contextual_search::ContextUploadErrorType::
+          kBrowserProcessingMaxImagesExceededError:
+      case contextual_search::ContextUploadErrorType::
+          kBrowserProcessingMaxPdfsExceededError:
+        is_browser_processing_validation_error = true;
+        break;
+      default:
+        break;
+    }
+    if (!is_browser_processing_validation_error) {
+      return;
+    }
   }
+
   auto file_attachment = searchbox::mojom::FileAttachment::New();
-  file_attachment->uuid = result.value();
+  file_attachment->uuid =
+      result.has_value() ? result.value() : base::UnguessableToken::Create();
   file_attachment->name = file_name;
   file_attachment->mime_type = mime_string;
+  if (!result.has_value()) {
+    file_attachment->error_type = result.error();
+  }
 
   if (mime_type == lens::MimeType::kImage) {
     file_attachment->image_data_url = image_data_url;
