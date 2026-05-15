@@ -1981,7 +1981,7 @@ void BrowserAutofillManager::FillOrPreviewCreditCardForm(
             /*refill_trigger_reason=*/std::nullopt, blocked_fields);
       };
 
-  // Callback when the credit was feched asynchronously.
+  // Called when fetching the credit card was successful.
   // Ultimately fills the form by calling `fill_or_preview`.
   auto on_fetched = [](base::WeakPtr<BrowserAutofillManager> self,
                        decltype(fill_or_preview) fill_or_preview,
