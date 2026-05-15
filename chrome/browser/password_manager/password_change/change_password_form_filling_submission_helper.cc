@@ -344,9 +344,7 @@ void ChangePasswordFormFillingSubmissionHelper::OnExecutionResponseCallback(
     return;
   }
 
-  if (response->submit_form_data().is_user_intervention_needed() &&
-      base::FeatureList::IsEnabled(
-          password_manager::features::kUserInterventionForPasswordChange)) {
+  if (response->submit_form_data().is_user_intervention_needed()) {
     std::move(callback_).Run(
         base::unexpected(SubmissionError::kInterventionDetected));
     return;

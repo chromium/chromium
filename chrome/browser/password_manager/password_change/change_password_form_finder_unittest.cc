@@ -737,8 +737,6 @@ TEST_P(ChangePasswordFormFinderTest, FailsWhenPageTypeIsNotSettingsPage) {
 }
 
 TEST_P(ChangePasswordFormFinderTest, InterventionNeededPageCausesFailure) {
-  base::test::ScopedFeatureList feature_list(
-      password_manager::features::kUserInterventionForPasswordChange);
   base::test::TestFuture<ChangePasswordFormFinder::ErrorCase>
       completion_callback;
   ModelQualityLogsUploader logs_uploader(web_contents(), GURL());

@@ -220,9 +220,6 @@ BASE_DECLARE_FEATURE(kTriggerPasswordResyncWhenUndecryptablePasswordsDetected);
 // that requestAnimationFrame() is not fired on a detached WebContents.
 BASE_DECLARE_FEATURE(kUseDetachedWidget);
 
-// Handles user intervention in the Password Change flow for all steps except
-// IS_LOGGED_IN_STEP.
-BASE_DECLARE_FEATURE(kUserInterventionForPasswordChange);
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)  // Desktop
 

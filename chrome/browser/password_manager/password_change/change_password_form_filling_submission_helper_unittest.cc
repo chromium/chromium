@@ -746,11 +746,7 @@ TEST_P(ChangePasswordFormFillingSubmissionHelperTest,
 }
 
 TEST_P(ChangePasswordFormFillingSubmissionHelperTest,
-       ReturnsUserInterventionNeeded_UserInterventionEnabled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      password_manager::features::kUserInterventionForPasswordChange);
-
+       ReturnsUserInterventionNeeded) {
   auto* form_manager = CreateFormManager(/*credentials_to_seed=*/{});
 
   base::test::TestFuture<SubmissionResult> completion_future;
@@ -765,28 +761,6 @@ TEST_P(ChangePasswordFormFillingSubmissionHelperTest,
 
   EXPECT_EQ(completion_future.Get().error(),
             SubmissionError::kInterventionDetected);
-  EXPECT_FALSE(verifier->click_helper());
-}
-
-TEST_P(ChangePasswordFormFillingSubmissionHelperTest,
-       IgnoresUserIntervention_UserInterventionDisabled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      password_manager::features::kUserInterventionForPasswordChange);
-  auto* form_manager = CreateFormManager(/*credentials_to_seed=*/{});
-
-  base::test::TestFuture<SubmissionResult> completion_future;
-  auto verifier = CreateVerifier(form_manager, completion_future.GetCallback());
-  EXPECT_CALL(*optimization_service(), ExecuteModel)
-      .WillOnce(WithArg<3>(&PostResponseForUserIntervention));
-
-  CompleteFormFilling(form_manager, verifier.get(),
-                      CreateFilledTestPasswordFormData());
-  ASSERT_TRUE(verifier->capturer());
-  static_cast<FakeAnnotatedPageContentCapturer*>(verifier->capturer())
-      ->SimulateResponse(optimization_guide::AIPageContentResult());
-  EXPECT_EQ(completion_future.Get().error(),
-            SubmissionError::kSubmitButtonNotFound);
   EXPECT_FALSE(verifier->click_helper());
 }
 

@@ -221,9 +221,7 @@ void ChangePasswordFormFinder::OnExecutionResponseCallback(
             response.value().open_form_data().page_type());
 
   PageType page_type = response.value().open_form_data().page_type();
-  if (page_type == kInterventionNeededPage &&
-      base::FeatureList::IsEnabled(
-          password_manager::features::kUserInterventionForPasswordChange)) {
+  if (page_type == kInterventionNeededPage) {
     std::move(failure_callback_).Run(ErrorCase::kInterruptionDetected);
     return;
   }

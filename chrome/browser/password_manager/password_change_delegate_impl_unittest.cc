@@ -336,40 +336,6 @@ TEST_F(PasswordChangeDelegateImplTest,
           PasswordChangeDelegate::CoarseFinalPasswordChangeState::kCanceled));
 }
 
-TEST_F(PasswordChangeDelegateImplTest, OtpDetectionProcessed) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      password_manager::features::kUserInterventionForPasswordChange);
-
-  SetOptimizationFeatureEnabled(true);
-  CreateDelegate();
-  base::HistogramTester histogram_tester;
-  ukm::TestAutoSetUkmRecorder test_ukm_recorder;
-  autofill::FormData form = autofill::test::CreateTestUnclassifiedFormData();
-  FakePasswordManagerClient fake_client;
-
-  delegate()->StartPasswordChangeFlow();
-  EXPECT_EQ(delegate()->GetCurrentState(),
-            PasswordChangeDelegate::State::kWaitingForChangePasswordForm);
-
-  static_cast<PasswordChangeDelegateImpl*>(delegate())->OnOtpFieldDetected();
-  EXPECT_EQ(delegate()->GetCurrentState(),
-            PasswordChangeDelegate::State::kOtpDetected);
-
-  ResetDelegate();
-  histogram_tester.ExpectUniqueSample(
-      PasswordChangeDelegateImpl::kFinalPasswordChangeStatusHistogram,
-      PasswordChangeDelegate::State::kOtpDetected, /*expected_bucket_count=*/1);
-  histogram_tester.ExpectUniqueSample(
-      PasswordChangeDelegateImpl::kCoarseFinalPasswordChangeStatusHistogram,
-      PasswordChangeDelegate::CoarseFinalPasswordChangeState::kOtpDetected,
-      /*expected_bucket_count=*/1);
-  ukm::TestUkmRecorder::ExpectEntryMetric(
-      GetUkmEntry(test_ukm_recorder),
-      UkmEntry::kCoarseFinalPasswordChangeStatusName,
-      static_cast<int>(PasswordChangeDelegate::CoarseFinalPasswordChangeState::
-                           kOtpDetected));
-}
 
 TEST_F(PasswordChangeDelegateImplTest, PasswordChangeFlowCanceled) {
   SetOptimizationFeatureEnabled(true);

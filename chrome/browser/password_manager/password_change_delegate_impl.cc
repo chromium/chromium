@@ -454,18 +454,6 @@ void PasswordChangeDelegateImpl::Stop() {
 }
 
 
-void PasswordChangeDelegateImpl::OnOtpFieldDetected() {
-  if (auto logger = GetLoggerIfAvailable(executor())) {
-    logger->LogMessage(BrowserSavePasswordProgressLogger::
-                           STRING_AUTOMATED_PASSWORD_CHANGE_OTP_DETECTED);
-  }
-  ReportFlowInterruption(
-      QualityStatus::
-          PasswordChangeQuality_StepQuality_SubmissionStatus_OTP_DETECTED);
-
-  ResetInternalState();
-  UpdateState(State::kOtpDetected);
-}
 
 void PasswordChangeDelegateImpl::OpenPasswordChangeTab() {
   content::WebContents* web_contents = executor();
@@ -486,8 +474,6 @@ void PasswordChangeDelegateImpl::OpenPasswordChangeTab() {
   }
 
   if (current_state_ == State::kOtpDetected && form_manager_) {
-    CHECK(base::FeatureList::IsEnabled(
-        password_manager::features::kUserInterventionForPasswordChange));
     // If user decided to take over control when interruption is detected we
     // assume they will complete the password change process, thus the new
     // password must be saved.
@@ -595,22 +581,6 @@ void PasswordChangeDelegateImpl::ProceedToChangePassword() {
       base::BindOnce(&PasswordChangeDelegateImpl::OnPasswordChangeFormNotFound,
                      weak_ptr_factory_.GetWeakPtr()));
 
-  // When interruptions (including OTPs) are detected on a server there is no
-  // need to use local ML model for OTP detection.
-  if (!base::FeatureList::IsEnabled(
-          password_manager::features::kUserInterventionForPasswordChange)) {
-    // Even though the user is assumed to be fully signed in by this point in
-    // time, they may still see an OTP during the password change flow, so watch
-    // for this.
-    autofill::ContentAutofillClient* autofill_client =
-        autofill::ContentAutofillClient::FromWebContents(executor());
-    autofill::OtpFieldDetector* otp_field_detector =
-        autofill_client->GetOtpFieldDetector();
-    otp_fields_detected_subscription_ =
-        otp_field_detector->RegisterOtpFieldsDetectedCallback(
-            base::BindRepeating(&PasswordChangeDelegateImpl::OnOtpFieldDetected,
-                                weak_ptr_factory_.GetWeakPtr()));
-  }
 }
 
 void PasswordChangeDelegateImpl::UpdateState(State new_state) {
@@ -798,5 +768,4 @@ void PasswordChangeDelegateImpl::ResetInternalState() {
   submission_verifier_.reset();
   form_manager_.reset();
   otp_fields_submitted_subscription_ = {};
-  otp_fields_detected_subscription_ = {};
 }

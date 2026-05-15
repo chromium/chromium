@@ -21,7 +21,6 @@
 #include "components/page_content_annotations/content/page_content_extraction_service.h"
 #include "components/page_content_annotations/core/page_content_annotations_features.h"
 #include "components/password_manager/core/browser/browser_save_password_progress_logger.h"
-#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
@@ -67,13 +66,7 @@ void RecordOutcomeMetrics(
 
     case PasswordChangeOutcome::
         PasswordChangeSubmissionData_PasswordChangeOutcome_USER_INTERVENTION_NEEDED:
-      if (base::FeatureList::IsEnabled(
-              password_manager::features::kUserInterventionForPasswordChange)) {
-        LogSubmissionOutcome(SubmissionOutcome::kUserInterventionNeeded,
-                             ukm_id);
-      } else {
-        LogSubmissionOutcome(SubmissionOutcome::kUncategorizedError, ukm_id);
-      }
+      LogSubmissionOutcome(SubmissionOutcome::kUserInterventionNeeded, ukm_id);
       return;
     default:
       break;
@@ -236,10 +229,8 @@ void PasswordChangeSubmissionVerifier::OnExecutionResponseCallback(
       response.value().outcome_data().submission_outcome();
 
   if (outcome ==
-          PasswordChangeOutcome::
-              PasswordChangeSubmissionData_PasswordChangeOutcome_USER_INTERVENTION_NEEDED &&
-      base::FeatureList::IsEnabled(
-          password_manager::features::kUserInterventionForPasswordChange)) {
+      PasswordChangeOutcome::
+          PasswordChangeSubmissionData_PasswordChangeOutcome_USER_INTERVENTION_NEEDED) {
     std::move(callback_).Run(
         SubmissionVerificationResult::kUserInterventionNeeded);
     return;
