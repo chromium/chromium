@@ -2212,7 +2212,7 @@ class AppControllerProfileObserver : public ProfileAttributesStorage::Observer,
   _historyMenuBridge = std::make_unique<HistoryMenuBridge>(_lastProfile);
   _historyMenuBridge->BuildMenu();
 
-  if (base::FeatureList::IsEnabled(features::kShowTabGroupsMacSystemMenu)) {
+  if (features::IsShowTabGroupsMacSystemMenuEnabled()) {
     auto* tab_group_service =
         tab_groups::TabGroupSyncServiceFactory::GetForProfile(_lastProfile);
     if (tab_group_service) {

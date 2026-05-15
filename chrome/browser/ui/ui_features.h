@@ -33,12 +33,20 @@ BASE_DECLARE_FEATURE(kEnableExtensionsMenuTeardownFix);
 BASE_DECLARE_FEATURE(kImportExportFlags);
 
 // All feature flags associated with Glow Up
+BASE_DECLARE_FEATURE(kDesktopGlowUp);
 BASE_DECLARE_FEATURE(kTabStripDeclutter);
 BASE_DECLARE_FEATURE(kToolbarGlowUp);
 BASE_DECLARE_FEATURE(kRoundedIcons);
 BASE_DECLARE_FEATURE(kMenuSimplification);
 BASE_DECLARE_FEATURE(kTabGroupColorRefresh);
 BASE_DECLARE_FEATURE(kWebuiRefresh2026);
+
+bool IsTabStripDeclutterEnabled();
+bool IsToolbarGlowUpEnabled();
+bool IsRoundedIconsEnabled();
+bool IsMenuSimplificationEnabled();
+bool IsTabGroupColorRefreshEnabled();
+bool IsWebuiRefresh2026Enabled();
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 
@@ -286,6 +294,7 @@ BASE_DECLARE_FEATURE(kSavePasswordsContextualUi);
 #if BUILDFLAG(IS_MAC)
 // Add tab group colours when viewing tab groups using the top mac OS menu bar.
 BASE_DECLARE_FEATURE(kShowTabGroupsMacSystemMenu);
+bool IsShowTabGroupsMacSystemMenuEnabled();
 #endif  // BUILDFLAG(IS_MAC)
 
 // If enabled, the by date history will show in the side panel.

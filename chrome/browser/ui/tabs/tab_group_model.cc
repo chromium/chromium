@@ -103,7 +103,7 @@ tab_groups::TabGroupColorId TabGroupModel::GetNextColor(
 
 // static
 std::vector<tab_groups::TabGroupColorId> TabGroupModel::GetColorOrdering() {
-  if (base::FeatureList::IsEnabled(features::kTabGroupColorRefresh)) {
+  if (features::IsTabGroupColorRefreshEnabled()) {
     return {tab_groups::TabGroupColorId::kBlue,
             tab_groups::TabGroupColorId::kPurple,
             tab_groups::TabGroupColorId::kPink,

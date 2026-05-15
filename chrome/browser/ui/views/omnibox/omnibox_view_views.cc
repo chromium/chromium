@@ -2396,7 +2396,7 @@ views::View::DropCallback OmniboxViewViews::CreateDropCallback(
 }
 
 void OmniboxViewViews::UpdateContextMenu(ui::SimpleMenuModel* menu_contents) {
-  if (base::FeatureList::IsEnabled(features::kMenuSimplification)) {
+  if (features::IsMenuSimplificationEnabled()) {
     // Remove the emoji item from the omnibox context menu.
     const std::optional<size_t> emoji_position =
         menu_contents->GetIndexOfCommandId(IDS_CONTENT_CONTEXT_EMOJI);
@@ -2428,7 +2428,7 @@ void OmniboxViewViews::UpdateContextMenu(ui::SimpleMenuModel* menu_contents) {
           ? IDS_MANAGE_SEARCH_ENGINES_AND_SHORTCUTS
           : IDS_MANAGE_SEARCH_ENGINES_AND_SITE_SEARCH);
 
-  if (base::FeatureList::IsEnabled(features::kMenuSimplification)) {
+  if (features::IsMenuSimplificationEnabled()) {
     menu_contents->AddSeparator(ui::NORMAL_SEPARATOR);
   }
 
@@ -2648,7 +2648,7 @@ void OmniboxViewViews::MaybeAddSendTabToSelfItem(
     return;
   }
 
-  if (base::FeatureList::IsEnabled(features::kMenuSimplification)) {
+  if (features::IsMenuSimplificationEnabled()) {
     return;
   }
 

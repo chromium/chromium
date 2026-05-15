@@ -244,7 +244,7 @@ void BookmarkContextMenuController::BuildMenu() {
             l10n_util::GetPluralStringFUTF16(
                 IDS_BOOKMARK_BAR_OPEN_ALL_COUNT_NEW_WINDOW, count));
 
-    if (base::FeatureList::IsEnabled(features::kMenuSimplification)) {
+    if (features::IsMenuSimplificationEnabled()) {
       AddItem(IDC_BOOKMARK_BAR_OPEN_ALL_NEW_TAB_GROUP,
               l10n_util::GetPluralStringFUTF16(
                   IDS_BOOKMARK_BAR_OPEN_ALL_COUNT_NEW_TAB_GROUP, count));

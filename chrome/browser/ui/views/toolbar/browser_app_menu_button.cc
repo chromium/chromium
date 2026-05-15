@@ -66,14 +66,14 @@ BrowserAppMenuButton::BrowserAppMenuButton(ToolbarView* toolbar_view)
                                         base::Unretained(this))),
       toolbar_view_(toolbar_view) {
   SetHorizontalAlignment(gfx::ALIGN_RIGHT);
-  SetImageLabelSpacing(base::FeatureList::IsEnabled(features::kToolbarGlowUp)
+  SetImageLabelSpacing(features::IsToolbarGlowUpEnabled()
                            ? kGlowUpImageLabelPadding
                            : kChromeRefreshImageLabelPadding);
   label()->SetPaintToLayer();
   label()->SetSkipSubpixelRenderingOpacityCheck(true);
   label()->layer()->SetFillsBoundsOpaquely(false);
   label()->SetSubpixelRenderingEnabled(false);
-  if (base::FeatureList::IsEnabled(features::kToolbarGlowUp)) {
+  if (features::IsToolbarGlowUpEnabled()) {
     SetAnimateOnStateChange(true);
     SetAnimationDuration(kAnimationDuration);
     click_animation_ = std::make_unique<gfx::ThrobAnimation>(this);
@@ -134,7 +134,7 @@ AlertMenuItem BrowserAppMenuButton::GetAlertItemForRunningTutorial() {
 }
 
 void BrowserAppMenuButton::OnMenuClosed() {
-  if (base::FeatureList::IsEnabled(features::kToolbarGlowUp)) {
+  if (features::IsToolbarGlowUpEnabled()) {
     click_animation_->Hide();
   }
   AppMenuButton::OnMenuClosed();
@@ -163,10 +163,9 @@ void BrowserAppMenuButton::UpdateIcon() {
                                     ? kBrowserToolsTouchOldIcon
                                     : kBrowserToolsChromeRefreshOldIcon;
 
-  const double click_animation_value =
-      base::FeatureList::IsEnabled(features::kToolbarGlowUp)
-          ? click_animation_->GetCurrentValue()
-          : 0;
+  const double click_animation_value = features::IsToolbarGlowUpEnabled()
+                                           ? click_animation_->GetCurrentValue()
+                                           : 0;
   const int icon_size = GetIconSize();
 
   for (auto state : kButtonStates) {
@@ -174,8 +173,8 @@ void BrowserAppMenuButton::UpdateIcon() {
     ui::ImageModel model =
         ui::ImageModel::FromVectorIcon(icon, icon_color, icon_size);
 
-    if (base::FeatureList::IsEnabled(features::kToolbarGlowUp) &&
-        click_animation_value > 0 && GetColorProvider()) {
+    if (features::IsToolbarGlowUpEnabled() && click_animation_value > 0 &&
+        GetColorProvider()) {
       if (!lottie_animation_) {
         std::optional<std::vector<uint8_t>> lottie_bytes =
             ui::ResourceBundle::GetSharedInstance().GetLottieData(
@@ -198,7 +197,7 @@ void BrowserAppMenuButton::UpdateIcon() {
 
 void BrowserAppMenuButton::AnimationProgressed(
     const gfx::Animation* animation) {
-  if (base::FeatureList::IsEnabled(features::kToolbarGlowUp) &&
+  if (features::IsToolbarGlowUpEnabled() &&
       animation == click_animation_.get()) {
     UpdateIcon();
   }
@@ -293,7 +292,7 @@ void BrowserAppMenuButton::ButtonPressed(const ui::Event& event) {
   }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-  if (base::FeatureList::IsEnabled(features::kToolbarGlowUp)) {
+  if (features::IsToolbarGlowUpEnabled()) {
     click_animation_->Show();
   }
 

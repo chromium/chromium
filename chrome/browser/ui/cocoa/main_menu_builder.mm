@@ -442,7 +442,7 @@ NSMenuItem* BuildGroupsMenu(NSApplication* nsapp,
                             const std::u16string& product_name,
                             bool is_pwa,
                             bool is_rtl) {
-  if (!base::FeatureList::IsEnabled(features::kShowTabGroupsMacSystemMenu)) {
+  if (!features::IsShowTabGroupsMacSystemMenuEnabled()) {
     return nil;
   }
 

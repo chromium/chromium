@@ -145,8 +145,8 @@ content::WebUIDataSource* CreateAndAddBookmarksUIHTMLSource(Profile* profile) {
     AddLocalizedString(source, str.name, str.id);
   }
 
-  source->AddBoolean("menuSimplification", base::FeatureList::IsEnabled(
-                                               features::kMenuSimplification));
+  source->AddBoolean("menuSimplification",
+                     features::IsMenuSimplificationEnabled());
 
   source->AddResourcePath(
       "images/batch_upload_bookmarks_promo.svg",
@@ -155,10 +155,9 @@ content::WebUIDataSource* CreateAndAddBookmarksUIHTMLSource(Profile* profile) {
       "images/batch_upload_bookmarks_promo_dark.svg",
       IDR_BOOKMARKS_IMAGES_BATCH_UPLOAD_BOOKMARKS_PROMO_DARK_SVG);
 
-  source->AddString("webuiRefresh2026",
-                    base::FeatureList::IsEnabled(features::kWebuiRefresh2026)
-                        ? "webui-refresh-2026"
-                        : "");
+  source->AddString("webuiRefresh2026", features::IsWebuiRefresh2026Enabled()
+                                            ? "webui-refresh-2026"
+                                            : "");
 
   return source;
 }

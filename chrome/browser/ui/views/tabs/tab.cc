@@ -210,7 +210,7 @@ class Tab::TabCloseButtonObserver : public views::ViewObserver {
   void OnViewFocused(views::View* observed_view) override {
     controller_->UpdateHoverCard(
         tab_, TabSlotController::HoverCardUpdateType::kFocus);
-    if (base::FeatureList::IsEnabled(features::kTabStripDeclutter)) {
+    if (features::IsTabStripDeclutterEnabled()) {
       tab_->InvalidateLayout();
     }
   }
@@ -221,7 +221,7 @@ class Tab::TabCloseButtonObserver : public views::ViewObserver {
       controller_->UpdateHoverCard(
           nullptr, TabSlotController::HoverCardUpdateType::kFocus);
     }
-    if (base::FeatureList::IsEnabled(features::kTabStripDeclutter)) {
+    if (features::IsTabStripDeclutterEnabled()) {
       tab_->InvalidateLayout();
     }
   }
@@ -443,8 +443,7 @@ void Tab::Layout(PassKey) {
     // overflow the left side of the contents_rect, in that case it will be
     // placed in the middle of the tab.
     const int visible_left =
-        (center_icon_ &&
-         base::FeatureList::IsEnabled(features::kTabStripDeclutter))
+        (center_icon_ && features::IsTabStripDeclutterEnabled())
             ? Center(width(), close_button_visible_size)
             : std::max(close_x - close_button_visible_size,
                        Center(width(), close_button_visible_size));
@@ -806,7 +805,7 @@ void Tab::OnFocus() {
   controller_->TabKeyboardFocusChangedTo(tab_handle_.Get());
   controller_->UpdateHoverCard(this,
                                TabSlotController::HoverCardUpdateType::kFocus);
-  if (base::FeatureList::IsEnabled(features::kTabStripDeclutter)) {
+  if (features::IsTabStripDeclutterEnabled()) {
     InvalidateLayout();
   }
 }
@@ -820,7 +819,7 @@ void Tab::OnBlur() {
     controller_->UpdateHoverCard(
         nullptr, TabSlotController::HoverCardUpdateType::kFocus);
   }
-  if (base::FeatureList::IsEnabled(features::kTabStripDeclutter)) {
+  if (features::IsTabStripDeclutterEnabled()) {
     InvalidateLayout();
   }
 }
@@ -1153,7 +1152,7 @@ void Tab::UpdateIconVisibility() {
     }
 
     const bool is_decluttered =
-        base::FeatureList::IsEnabled(features::kTabStripDeclutter) &&
+        features::IsTabStripDeclutterEnabled() &&
         available_width <= TabStyle::kTabStripDeclutterMaxTabWidthForCloseHide;
     showing_close_button_ =
 #if BUILDFLAG(IS_CHROMEOS)
@@ -1180,7 +1179,7 @@ void Tab::UpdateIconVisibility() {
     }
   }
 
-  if (!closing_ && base::FeatureList::IsEnabled(features::kTabStripDeclutter)) {
+  if (!closing_ && features::IsTabStripDeclutterEnabled()) {
     const int title_padding =
         showing_icon_ ? GetLayoutConstant(LayoutConstant::kTabPreTitlePadding)
                       : 0;

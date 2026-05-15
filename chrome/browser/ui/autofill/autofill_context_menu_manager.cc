@@ -470,7 +470,7 @@ void AutofillContextMenuManager::AddPasswordsManualFallbackItems(
         IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_SELECT_PASSWORD,
         IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_SELECT_PASSWORD);
 
-    if (base::FeatureList::IsEnabled(::features::kMenuSimplification)) {
+    if (::features::IsMenuSimplificationEnabled()) {
       menu_model_->SetIconForCommandId(
           IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_SELECT_PASSWORD,
           ui::ImageModel::FromVectorIcon(

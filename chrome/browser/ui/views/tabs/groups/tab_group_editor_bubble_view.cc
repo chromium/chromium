@@ -1145,7 +1145,7 @@ tab_groups::TabGroupColorId TabGroupEditorBubbleView::InitColorSet() {
 
   // In the tab group color update, the yellow and pink are better described
   // as lime and magenta. We update the tooltip accordingly.
-  if (base::FeatureList::IsEnabled(features::kTabGroupColorRefresh)) {
+  if (features::IsTabGroupColorRefreshEnabled()) {
     color_map[tab_groups::TabGroupColorId::kYellow] =
         l10n_util::GetStringUTF16(IDS_TAB_GROUP_COLOR_LIME);
 

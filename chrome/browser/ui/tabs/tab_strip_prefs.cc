@@ -93,7 +93,7 @@ void MigrateTabSearchPref(PrefService* profile_prefs) {
 }
 
 void MigrateHoverCardMemoryPref(PrefService* local_prefs) {
-  if (!base::FeatureList::IsEnabled(features::kTabStripDeclutter) ||
+  if (!features::IsTabStripDeclutterEnabled() ||
       local_prefs->GetBoolean(
           prefs::kHoverCardMemoryUsageDisableMigrationComplete)) {
     return;

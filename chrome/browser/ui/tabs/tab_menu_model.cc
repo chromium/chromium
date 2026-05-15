@@ -177,7 +177,7 @@ void TabMenuModel::AppendGlicItems(int index,
   glic_tab_sub_menu_model_ =
       std::make_unique<glic::GlicTabSubMenuModel>(tab_strip_, index);
 
-  if (base::FeatureList::IsEnabled(features::kMenuSimplification)) {
+  if (features::IsMenuSimplificationEnabled()) {
     AddSubMenuWithIcon(TabStripModel::CommandGlicShare,
                        l10n_util::GetPluralStringFUTF16(
                            IDS_TAB_CXMENU_GLIC_START_SHARE, num_tabs),
@@ -291,7 +291,7 @@ void TabMenuModel::Build(int index) {
                l10n_util::GetPluralStringFUTF16(IDS_TAB_CXMENU_ADD_TAB_TO_GROUP,
                                                 num_tabs),
                add_to_existing_group_submenu_.get());
-    if (base::FeatureList::IsEnabled(features::kMenuSimplification)) {
+    if (features::IsMenuSimplificationEnabled()) {
       SetIconForCommandId(
           TabStripModel::CommandAddToExistingGroup,
           ui::ImageModel::FromVectorIcon(
@@ -303,7 +303,7 @@ void TabMenuModel::Build(int index) {
             l10n_util::GetPluralStringFUTF16(
                 IDS_TAB_CXMENU_ADD_TAB_TO_NEW_GROUP, num_tabs));
     SetElementIdentifierAt(GetItemCount() - 1, kAddToNewGroupItemIdentifier);
-    if (base::FeatureList::IsEnabled(features::kMenuSimplification)) {
+    if (features::IsMenuSimplificationEnabled()) {
       SetIconForCommandId(
           TabStripModel::CommandAddToNewGroup,
           ui::ImageModel::FromVectorIcon(
@@ -328,7 +328,7 @@ void TabMenuModel::Build(int index) {
                l10n_util::GetPluralStringFUTF16(
                    IDS_TAB_CXMENU_MOVETOANOTHERWINDOW, num_tabs),
                add_to_existing_window_submenu_.get());
-    if (base::FeatureList::IsEnabled(features::kMenuSimplification)) {
+    if (features::IsMenuSimplificationEnabled()) {
       SetIconForCommandId(TabStripModel::CommandMoveToExistingWindow,
                           ui::ImageModel::FromVectorIcon(
                               kOpenInNewOldIcon, ui::kColorMenuIcon,
@@ -338,7 +338,7 @@ void TabMenuModel::Build(int index) {
     AddItem(TabStripModel::CommandMoveTabsToNewWindow,
             l10n_util::GetPluralStringFUTF16(
                 IDS_TAB_CXMENU_MOVE_TABS_TO_NEW_WINDOW, num_tabs));
-    if (base::FeatureList::IsEnabled(features::kMenuSimplification)) {
+    if (features::IsMenuSimplificationEnabled()) {
       SetIconForCommandId(TabStripModel::CommandMoveTabsToNewWindow,
                           ui::ImageModel::FromVectorIcon(
                               kOpenInNewOldIcon, ui::kColorMenuIcon,
@@ -358,7 +358,7 @@ void TabMenuModel::Build(int index) {
       TabStripModel::CommandTogglePinned,
       will_pin ? IDS_TAB_CXMENU_PIN_TAB : IDS_TAB_CXMENU_UNPIN_TAB);
 
-  if (base::FeatureList::IsEnabled(features::kMenuSimplification)) {
+  if (features::IsMenuSimplificationEnabled()) {
     SetIconForCommandId(
         TabStripModel::CommandTogglePinned,
         ui::ImageModel::FromVectorIcon(
@@ -373,7 +373,7 @@ void TabMenuModel::Build(int index) {
                     : l10n_util::GetPluralStringFUTF16(
                           IDS_TAB_CXMENU_SOUND_UNMUTE_SITE, num_tabs));
 
-  if (base::FeatureList::IsEnabled(features::kMenuSimplification)) {
+  if (features::IsMenuSimplificationEnabled()) {
     SetIconForCommandId(
         TabStripModel::CommandToggleSiteMuted,
         ui::ImageModel::FromVectorIcon(
@@ -386,8 +386,7 @@ void TabMenuModel::Build(int index) {
       glic::GlicEnabling::IsReadyForProfile(tab_strip_->profile()) &&
       base::FeatureList::IsEnabled(features::kGlicMITabContextMenu);
   bool glic_displayed = false;
-  if (base::FeatureList::IsEnabled(features::kMenuSimplification) &&
-      show_glic_items) {
+  if (features::IsMenuSimplificationEnabled() && show_glic_items) {
     AddSeparator(ui::NORMAL_SEPARATOR);
     AppendGlicItems(index, num_tabs, indices);
     AddSeparator(ui::NORMAL_SEPARATOR);

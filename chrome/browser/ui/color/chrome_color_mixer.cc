@@ -187,8 +187,7 @@ void AddChromeColorMixer(ui::ColorProvider* provider,
       key.color_mode == ui::ColorProviderKey::ColorMode::kDark;
   ui::ColorMixer& mixer = provider->AddMixer();
 
-  const bool use_alternate_palette =
-      base::FeatureList::IsEnabled(features::kTabGroupColorRefresh);
+  const bool use_alternate_palette = features::IsTabGroupColorRefreshEnabled();
 
   std::vector<TabGroupColorParams> tab_group_color_params_all = {
       CreateColorParams(

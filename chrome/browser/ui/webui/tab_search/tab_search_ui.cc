@@ -102,9 +102,8 @@ TabSearchUI::TabSearchUI(content::WebUI* web_ui)
   };
   source->AddLocalizedStrings(kStrings);
   source->AddBoolean("useRipples", views::PlatformStyle::kUseRipples);
-  source->AddBoolean(
-      "useTabGroupColorRefresh",
-      base::FeatureList::IsEnabled(features::kTabGroupColorRefresh));
+  source->AddBoolean("useTabGroupColorRefresh",
+                     features::IsTabGroupColorRefreshEnabled());
 
   source->AddLocalizedString("close", IDS_CLOSE);
 

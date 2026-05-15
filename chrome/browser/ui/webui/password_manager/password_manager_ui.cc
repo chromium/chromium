@@ -696,10 +696,9 @@ content::WebUIDataSource* CreateAndAddPasswordsUIHTMLSource(
 #endif  // !BUILDFLAG(IS_CHROMEOS)
   source->AddBoolean("passwordUploadUiUpdate", passwordUploadUiUpdateEnabled);
 
-  source->AddString("webuiRefresh2026",
-                    base::FeatureList::IsEnabled(features::kWebuiRefresh2026)
-                        ? "webui-refresh-2026"
-                        : "");
+  source->AddString("webuiRefresh2026", features::IsWebuiRefresh2026Enabled()
+                                            ? "webui-refresh-2026"
+                                            : "");
 
   content::URLDataSource::Add(
       profile, std::make_unique<FaviconSource>(

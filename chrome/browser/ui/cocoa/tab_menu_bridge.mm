@@ -60,7 +60,7 @@ void UpdateItemForWebContents(NSMenuItem* item,
         gfx::ElideMenuItemTitle(tab_ui_helper->GetTitle()));
   }
 
-  if (base::FeatureList::IsEnabled(features::kShowTabGroupsMacSystemMenu)) {
+  if (features::IsShowTabGroupsMacSystemMenuEnabled()) {
     std::optional<tab_groups::TabGroupColorId> tab_group_color_id;
     std::optional<tab_groups::TabGroupId> group =
         tab_strip_model->GetTabForWebContents(web_contents)->GetGroup();

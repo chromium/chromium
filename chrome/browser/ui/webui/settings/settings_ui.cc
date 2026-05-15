@@ -695,10 +695,9 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
       "personalContextSettingsDescription",
       IDS_ACCESSIBILITY_ANNOTATOR_SETTINGS_DESCRIPTION_DESKTOP);
 
-  html_source->AddString("webuiRefresh2026", base::FeatureList::IsEnabled(
-                                                 features::kWebuiRefresh2026)
-                                                 ? "webui-refresh-2026"
-                                                 : "");
+  html_source->AddString(
+      "webuiRefresh2026",
+      features::IsWebuiRefresh2026Enabled() ? "webui-refresh-2026" : "");
 
   TryShowHatsSurveyWithTimeout();
 }
