@@ -214,6 +214,23 @@ inline constexpr char kUnaffiliatedDeviceArcAllowed[] =
 // Local state prefs in lexicographical order.
 // -------------------------------------------
 
+// Boolean pref indicating whether the notification informing the user that
+// adb sideloading had been disabled by their admin was shown.
+inline constexpr char kAdbSideloadingDisallowedNotificationShown[] =
+    "adb_sideloading_disallowed_notification_shown";
+
+// Boolean pref indicating whether the notification informing the user about a
+// change in adb sideloading policy that will clear all user data was shown.
+inline constexpr char kAdbSideloadingPowerwashOnNextRebootNotificationShown[] =
+    "adb_sideloading_powerwash_on_next_reboot_notification_shown";
+
+// Int64 pref indicating the time in microseconds since Windows epoch
+// (1601-01-01 00:00:00 UTC) when the notification informing the user about a
+// change in adb sideloading policy that will clear all user data was shown.
+// If the notification was not yet shown the pref holds the value Time::Min().
+inline constexpr char kAdbSideloadingPowerwashPlannedNotificationShownTime[] =
+    "adb_sideloading_powerwash_planned_notification_shown_time";
+
 // ANR count which is currently pending, not flashed to UMA.
 inline constexpr char kAnrPendingCount[] = "arc.anr_pending_count";
 
@@ -231,6 +248,10 @@ inline constexpr char kArcSnapshotInfo[] = "arc.snapshot";
 // vmm swap out. If it never swapped out, the pref holds the default value
 // base::Time().
 inline constexpr char kArcVmmSwapOutTime[] = "arc_vmm_swap_out_time";
+
+// Indicates that the user has requested that ARC APK Sideloading be enabled.
+inline constexpr char kEnableAdbSideloadingRequested[] =
+    "EnableAdbSideloadingRequested";
 
 // A dictionary preference that keeps track of stability metric values, which is
 // maintained by StabilityMetricsManager. Persisting values in local state is

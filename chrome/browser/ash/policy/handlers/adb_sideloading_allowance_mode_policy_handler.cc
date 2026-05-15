@@ -13,9 +13,9 @@
 #include "base/timer/timer.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/screens/reset_screen.h"
-#include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "chromeos/ash/components/settings/cros_settings_provider.h"
+#include "chromeos/ash/experiences/arc/arc_prefs.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -70,12 +70,12 @@ void AdbSideloadingAllowanceModePolicyHandler::RegisterPrefs(
     PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(ash::prefs::kForceFactoryReset, false);
   registry->RegisterBooleanPref(
-      prefs::kAdbSideloadingDisallowedNotificationShown, false);
+      arc::prefs::kAdbSideloadingDisallowedNotificationShown, false);
   registry->RegisterTimePref(
-      prefs::kAdbSideloadingPowerwashPlannedNotificationShownTime,
+      arc::prefs::kAdbSideloadingPowerwashPlannedNotificationShownTime,
       base::Time::Min());
   registry->RegisterBooleanPref(
-      prefs::kAdbSideloadingPowerwashOnNextRebootNotificationShown, false);
+      arc::prefs::kAdbSideloadingPowerwashOnNextRebootNotificationShown, false);
 }
 
 AdbSideloadingAllowanceModePolicyHandler::
@@ -176,13 +176,13 @@ void AdbSideloadingAllowanceModePolicyHandler::
 bool AdbSideloadingAllowanceModePolicyHandler::
     WasDisallowedNotificationShown() {
   return local_state_->GetBoolean(
-      prefs::kAdbSideloadingDisallowedNotificationShown);
+      arc::prefs::kAdbSideloadingDisallowedNotificationShown);
 }
 
 bool AdbSideloadingAllowanceModePolicyHandler::
     WasPowerwashOnNextRebootNotificationShown() {
   return local_state_->GetBoolean(
-      prefs::kAdbSideloadingPowerwashOnNextRebootNotificationShown);
+      arc::prefs::kAdbSideloadingPowerwashOnNextRebootNotificationShown);
 }
 
 void AdbSideloadingAllowanceModePolicyHandler::MaybeShowDisallowedNotification(
@@ -193,8 +193,8 @@ void AdbSideloadingAllowanceModePolicyHandler::MaybeShowDisallowedNotification(
   if (WasDisallowedNotificationShown())
     return;
 
-  local_state_->SetBoolean(prefs::kAdbSideloadingDisallowedNotificationShown,
-                           true);
+  local_state_->SetBoolean(
+      arc::prefs::kAdbSideloadingDisallowedNotificationShown, true);
   adb_sideloading_policy_change_notification_->Show(
       NotificationType::kSideloadingDisallowed);
 }
@@ -205,13 +205,13 @@ void AdbSideloadingAllowanceModePolicyHandler::MaybeShowPowerwashNotification(
     return;
 
   base::Time notification_shown_time = local_state_->GetTime(
-      prefs::kAdbSideloadingPowerwashPlannedNotificationShownTime);
+      arc::prefs::kAdbSideloadingPowerwashPlannedNotificationShownTime);
 
   // If the time has not been set yet, set it and show the planned notification
   if (notification_shown_time.is_min()) {
     notification_shown_time = base::Time::Now();
     local_state_->SetTime(
-        prefs::kAdbSideloadingPowerwashPlannedNotificationShownTime,
+        arc::prefs::kAdbSideloadingPowerwashPlannedNotificationShownTime,
         notification_shown_time);
     adb_sideloading_policy_change_notification_->Show(
         NotificationType::kPowerwashPlanned);
@@ -247,7 +247,7 @@ void AdbSideloadingAllowanceModePolicyHandler::
     return;
 
   local_state_->SetBoolean(
-      prefs::kAdbSideloadingPowerwashOnNextRebootNotificationShown, true);
+      arc::prefs::kAdbSideloadingPowerwashOnNextRebootNotificationShown, true);
 
   // Set this right away to ensure the user is forced to powerwash on next
   // start even if they ignore the notification and do not click the button
@@ -260,15 +260,16 @@ void AdbSideloadingAllowanceModePolicyHandler::
 
 void AdbSideloadingAllowanceModePolicyHandler::
     ClearDisallowedNotificationPref() {
-  local_state_->ClearPref(prefs::kAdbSideloadingDisallowedNotificationShown);
+  local_state_->ClearPref(
+      arc::prefs::kAdbSideloadingDisallowedNotificationShown);
 }
 
 void AdbSideloadingAllowanceModePolicyHandler::
     ClearPowerwashNotificationPrefs() {
   local_state_->ClearPref(
-      prefs::kAdbSideloadingPowerwashPlannedNotificationShownTime);
+      arc::prefs::kAdbSideloadingPowerwashPlannedNotificationShownTime);
   local_state_->ClearPref(
-      prefs::kAdbSideloadingPowerwashOnNextRebootNotificationShown);
+      arc::prefs::kAdbSideloadingPowerwashOnNextRebootNotificationShown);
 }
 
 void AdbSideloadingAllowanceModePolicyHandler::ScreenIdleStateChanged(

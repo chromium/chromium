@@ -80,6 +80,7 @@
 #include "chromeos/ash/components/osauth/public/common_types.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
+#include "chromeos/ash/experiences/arc/arc_prefs.h"
 #include "components/account_id/account_id.h"
 #include "components/startup_metric_utils/common/startup_metric_utils.h"
 #include "components/user_manager/known_user.h"
@@ -325,7 +326,7 @@ void LoginDisplayHostMojo::SetUsers(const user_manager::UserList& users) {
   } else if (local_state_->GetBoolean(::prefs::kDebuggingFeaturesRequested)) {
     StartWizard(EnableDebuggingScreenView::kScreenId);
   } else if (local_state_->GetBoolean(
-                 ::prefs::kEnableAdbSideloadingRequested)) {
+                 arc::prefs::kEnableAdbSideloadingRequested)) {
     StartWizard(EnableAdbSideloadingScreenView::kScreenId);
   }
 }

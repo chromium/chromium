@@ -17,9 +17,9 @@
 #include "chrome/browser/ash/settings/stub_cros_settings_provider.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/prefs/browser_prefs.h"
-#include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
+#include "chromeos/ash/experiences/arc/arc_prefs.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "components/account_id/account_id.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
@@ -116,7 +116,8 @@ class AdbSideloadingAllowanceModePolicyHandlerTest : public testing::Test {
     // ago.
     base::Time yesterday = base::Time::Now() - base::Hours(25);
     TestingBrowserProcess::GetGlobal()->local_state()->SetTime(
-        prefs::kAdbSideloadingPowerwashPlannedNotificationShownTime, yesterday);
+        arc::prefs::kAdbSideloadingPowerwashPlannedNotificationShownTime,
+        yesterday);
   }
 
   bool is_arc_sideloading_enabled_ = false;
@@ -253,12 +254,13 @@ TEST_F(AdbSideloadingAllowanceModePolicyHandlerTest, Preferences) {
 
   // First all the preferences should have their default values
   EXPECT_FALSE(TestingBrowserProcess::GetGlobal()->local_state()->GetBoolean(
-      prefs::kAdbSideloadingDisallowedNotificationShown));
-  EXPECT_EQ(TestingBrowserProcess::GetGlobal()->local_state()->GetTime(
-                prefs::kAdbSideloadingPowerwashPlannedNotificationShownTime),
-            base::Time::Min());
+      arc::prefs::kAdbSideloadingDisallowedNotificationShown));
+  EXPECT_EQ(
+      TestingBrowserProcess::GetGlobal()->local_state()->GetTime(
+          arc::prefs::kAdbSideloadingPowerwashPlannedNotificationShownTime),
+      base::Time::Min());
   EXPECT_FALSE(TestingBrowserProcess::GetGlobal()->local_state()->GetBoolean(
-      prefs::kAdbSideloadingPowerwashOnNextRebootNotificationShown));
+      arc::prefs::kAdbSideloadingPowerwashOnNextRebootNotificationShown));
 
   EnableSideloading();
 
@@ -267,46 +269,49 @@ TEST_F(AdbSideloadingAllowanceModePolicyHandlerTest, Preferences) {
 
   // Check that the preference for this notification is set
   EXPECT_TRUE(TestingBrowserProcess::GetGlobal()->local_state()->GetBoolean(
-      prefs::kAdbSideloadingDisallowedNotificationShown));
+      arc::prefs::kAdbSideloadingDisallowedNotificationShown));
 
   SetDevicePolicyToDisallowWithPowerwash();
   base::RunLoop().RunUntilIdle();
 
   // Check that the other notification's preference is reset
   EXPECT_FALSE(TestingBrowserProcess::GetGlobal()->local_state()->GetBoolean(
-      prefs::kAdbSideloadingDisallowedNotificationShown));
+      arc::prefs::kAdbSideloadingDisallowedNotificationShown));
   // Check that the preferences for this notification are set
-  EXPECT_NE(TestingBrowserProcess::GetGlobal()->local_state()->GetTime(
-                prefs::kAdbSideloadingPowerwashPlannedNotificationShownTime),
-            base::Time::Min());
+  EXPECT_NE(
+      TestingBrowserProcess::GetGlobal()->local_state()->GetTime(
+          arc::prefs::kAdbSideloadingPowerwashPlannedNotificationShownTime),
+      base::Time::Min());
   mock_timer_ptr->Fire();
   EXPECT_TRUE(TestingBrowserProcess::GetGlobal()->local_state()->GetBoolean(
-      prefs::kAdbSideloadingPowerwashOnNextRebootNotificationShown));
+      arc::prefs::kAdbSideloadingPowerwashOnNextRebootNotificationShown));
 
   SetDevicePolicyToDisallow();
   base::RunLoop().RunUntilIdle();
 
   // Check that the preference for this notification is set
   EXPECT_TRUE(TestingBrowserProcess::GetGlobal()->local_state()->GetBoolean(
-      prefs::kAdbSideloadingDisallowedNotificationShown));
+      arc::prefs::kAdbSideloadingDisallowedNotificationShown));
   // Check that the other notification's preferences are reset
-  EXPECT_EQ(TestingBrowserProcess::GetGlobal()->local_state()->GetTime(
-                prefs::kAdbSideloadingPowerwashPlannedNotificationShownTime),
-            base::Time::Min());
+  EXPECT_EQ(
+      TestingBrowserProcess::GetGlobal()->local_state()->GetTime(
+          arc::prefs::kAdbSideloadingPowerwashPlannedNotificationShownTime),
+      base::Time::Min());
   EXPECT_FALSE(TestingBrowserProcess::GetGlobal()->local_state()->GetBoolean(
-      prefs::kAdbSideloadingPowerwashOnNextRebootNotificationShown));
+      arc::prefs::kAdbSideloadingPowerwashOnNextRebootNotificationShown));
 
   SetDevicePolicyToAllow();
   base::RunLoop().RunUntilIdle();
 
   // Check that all the preferences are reset again
   EXPECT_FALSE(TestingBrowserProcess::GetGlobal()->local_state()->GetBoolean(
-      prefs::kAdbSideloadingDisallowedNotificationShown));
-  EXPECT_EQ(TestingBrowserProcess::GetGlobal()->local_state()->GetTime(
-                prefs::kAdbSideloadingPowerwashPlannedNotificationShownTime),
-            base::Time::Min());
+      arc::prefs::kAdbSideloadingDisallowedNotificationShown));
+  EXPECT_EQ(
+      TestingBrowserProcess::GetGlobal()->local_state()->GetTime(
+          arc::prefs::kAdbSideloadingPowerwashPlannedNotificationShownTime),
+      base::Time::Min());
   EXPECT_FALSE(TestingBrowserProcess::GetGlobal()->local_state()->GetBoolean(
-      prefs::kAdbSideloadingPowerwashOnNextRebootNotificationShown));
+      arc::prefs::kAdbSideloadingPowerwashOnNextRebootNotificationShown));
 }
 
 }  // namespace policy

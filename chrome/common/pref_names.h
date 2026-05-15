@@ -2314,10 +2314,6 @@ inline constexpr char kPerformanceTracingEnabled[] =
 inline constexpr char kDebuggingFeaturesRequested[] =
     "DebuggingFeaturesRequested";
 
-// Indicates that the user has requested that ARC APK Sideloading be enabled.
-inline constexpr char kEnableAdbSideloadingRequested[] =
-    "EnableAdbSideloadingRequested";
-
 // Pref name for the policy controlling whether to enable Media Router.
 inline constexpr char kEnableMediaRouter[] = "media_router.enable_media_router";
 #if !BUILDFLAG(IS_ANDROID)
@@ -2902,23 +2898,6 @@ inline constexpr char kKnownInterceptionDisclosureInfobarLastShown[] =
 // DeviceLoginScreenPromptOnMultipleMatchingCertificates).
 inline constexpr char kPromptOnMultipleMatchingCertificates[] =
     "prompt_on_multiple_matching_certificates";
-
-#if BUILDFLAG(IS_CHROMEOS)
-// Boolean pref indicating whether the notification informing the user that
-// adb sideloading had been disabled by their admin was shown.
-inline constexpr char kAdbSideloadingDisallowedNotificationShown[] =
-    "adb_sideloading_disallowed_notification_shown";
-// Int64 pref indicating the time in microseconds since Windows epoch
-// (1601-01-01 00:00:00 UTC) when the notification informing the user about a
-// change in adb sideloading policy that will clear all user data was shown.
-// If the notification was not yet shown the pref holds the value Time::Min().
-inline constexpr char kAdbSideloadingPowerwashPlannedNotificationShownTime[] =
-    "adb_sideloading_powerwash_planned_notification_shown_time";
-// Boolean pref indicating whether the notification informing the user about a
-// change in adb sideloading policy that will clear all user data was shown.
-inline constexpr char kAdbSideloadingPowerwashOnNextRebootNotificationShown[] =
-    "adb_sideloading_powerwash_on_next_reboot_notification_shown";
-#endif
 
 // Boolean pref that indicates whether caret browsing is currently enabled.
 inline constexpr char kCaretBrowsingEnabled[] =

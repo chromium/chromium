@@ -11,7 +11,7 @@
 #include "chrome/browser/ash/login/screens/enable_adb_sideloading_screen.h"
 #include "chrome/browser/ui/ash/login/login_display_host.h"
 #include "chrome/browser/ui/webui/ash/login/enable_adb_sideloading_screen_handler.h"
-#include "chrome/common/pref_names.h"
+#include "chromeos/ash/experiences/arc/arc_prefs.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 
@@ -58,7 +58,8 @@ EnableAdbSideloadingScreen::~EnableAdbSideloadingScreen() = default;
 
 // static
 void EnableAdbSideloadingScreen::RegisterPrefs(PrefRegistrySimple* registry) {
-  registry->RegisterBooleanPref(prefs::kEnableAdbSideloadingRequested, false);
+  registry->RegisterBooleanPref(arc::prefs::kEnableAdbSideloadingRequested,
+                                false);
 }
 
 void EnableAdbSideloadingScreen::OnUserAction(const base::ListValue& args) {
@@ -89,7 +90,7 @@ void EnableAdbSideloadingScreen::OnQueryAdbSideload(
            << ", enabled=" << enabled;
 
   // Clear prefs so that the screen won't be triggered again.
-  local_state_->ClearPref(prefs::kEnableAdbSideloadingRequested);
+  local_state_->ClearPref(arc::prefs::kEnableAdbSideloadingRequested);
   local_state_->CommitPendingWrite();
 
   if (enabled) {

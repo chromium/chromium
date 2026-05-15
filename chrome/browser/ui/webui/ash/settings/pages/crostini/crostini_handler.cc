@@ -39,9 +39,9 @@
 #include "chrome/browser/ui/views/bruschetta/bruschetta_installer_view.h"
 #include "chrome/browser/ui/views/bruschetta/bruschetta_uninstaller_view.h"
 #include "chrome/browser/ui/views/crostini/crostini_uninstaller_view.h"
-#include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/login/session/session_termination_manager.h"
 #include "chromeos/ash/components/network/network_handler.h"
+#include "chromeos/ash/experiences/arc/arc_prefs.h"
 #include "components/prefs/pref_service.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -390,7 +390,7 @@ void CrostiniHandler::OnCanEnableArcAdbSideloading(
   LogEvent(CrostiniSettingsEvent::kEnableAdbSideloading);
 
   PrefService* prefs = g_browser_process->local_state();
-  prefs->SetBoolean(::prefs::kEnableAdbSideloadingRequested, true);
+  prefs->SetBoolean(arc::prefs::kEnableAdbSideloadingRequested, true);
   prefs->CommitPendingWrite();
 
   // TODO(crbug.com/479113713): Use better reason and description.
