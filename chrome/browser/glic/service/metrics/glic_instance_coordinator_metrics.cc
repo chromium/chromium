@@ -102,11 +102,11 @@ void GlicInstanceCoordinatorMetrics::RecordMemoryFootprint(
     return;
   }
 
-  auto hosts = data_provider_->GetAllUnhibernatedHosts();
-  if (hosts.empty()) {
+  auto web_contents_list = data_provider_->GetAllUnhibernatedWebContents();
+  if (web_contents_list.empty()) {
     return;
   }
-  size_t instance_count = hosts.size();
+  size_t instance_count = web_contents_list.size();
 
   uint64_t total_webui_bytes = 0;
   uint64_t total_client_bytes = 0;
@@ -115,14 +115,16 @@ void GlicInstanceCoordinatorMetrics::RecordMemoryFootprint(
   base::flat_set<content::RenderProcessHost*> unique_webui_processes;
   base::flat_set<content::RenderProcessHost*> unique_client_processes;
 
-  for (Host* host : hosts) {
-    if (auto* contents = host->webui_contents()) {
-      if (auto* process = contents->GetPrimaryMainFrame()->GetProcess()) {
+  for (const auto& item : web_contents_list) {
+    if (item.webui_contents) {
+      if (auto* process =
+              item.webui_contents->GetPrimaryMainFrame()->GetProcess()) {
         unique_webui_processes.insert(process);
       }
     }
-    if (auto* contents = host->web_client_contents()) {
-      if (auto* process = contents->GetPrimaryMainFrame()->GetProcess()) {
+    if (item.web_client_contents) {
+      if (auto* process =
+              item.web_client_contents->GetPrimaryMainFrame()->GetProcess()) {
         unique_client_processes.insert(process);
       }
     }

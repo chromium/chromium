@@ -220,7 +220,7 @@ class GlicInstanceCoordinatorImpl
   std::vector<GlicInstanceImpl*> GetSortedRecentInstances(size_t limit) const;
 
   // GlicInstanceCoordinatorMetrics::DataProvider implementation
-  std::vector<Host*> GetAllUnhibernatedHosts() override;
+  std::vector<InstanceWebContents> GetAllUnhibernatedWebContents() override;
 
   void ShowInstanceForTabs(GlicInstanceImpl* instance,
                            const std::vector<tabs::TabInterface*>& tabs,

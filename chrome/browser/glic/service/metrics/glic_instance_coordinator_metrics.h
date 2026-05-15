@@ -14,6 +14,10 @@
 #include "base/timer/timer.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 
+namespace content {
+class WebContents;
+}
+
 namespace glic {
 
 class Host;
@@ -36,9 +40,15 @@ class GlicInstanceCoordinatorMetrics {
   // GlicInstances.
   class DataProvider {
    public:
+    struct InstanceWebContents {
+      raw_ptr<content::WebContents> webui_contents;
+      raw_ptr<content::WebContents> web_client_contents;
+    };
+
     virtual ~DataProvider() = default;
 
-    virtual std::vector<Host*> GetAllUnhibernatedHosts() = 0;
+    virtual std::vector<InstanceWebContents>
+    GetAllUnhibernatedWebContents() = 0;
     virtual int GetVisibleInstanceCount() const = 0;
     virtual std::vector<glic::mojom::ConversationInfoPtr>
     GetRecentlyActiveConversations(size_t limit) = 0;

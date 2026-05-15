@@ -8,9 +8,11 @@
 #include <string_view>
 #include <vector>
 
+#include "base/location.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "components/metrics/content/subprocess_metrics_provider.h"
 #include "content/public/test/browser_test_utils.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 namespace glic {
@@ -69,6 +71,17 @@ class GlicHistogramTester {
   std::vector<base::Bucket> GetAllSamples(std::string_view name) const {
     CollectHistograms();
     return tester_.GetAllSamples(name);
+  }
+
+  void ExpectSampleValueGreaterThan(
+      std::string_view name,
+      base::HistogramBase::Sample32 threshold,
+      const base::Location& location = FROM_HERE) const {
+    CollectHistograms();
+    auto samples = tester_.GetAllSamples(name);
+    SCOPED_TRACE(location.ToString());
+    ASSERT_EQ(samples.size(), 1u);
+    EXPECT_GT(samples[0].min, threshold);
   }
 
   absl::flat_hash_map<std::string, std::vector<base::Bucket>>

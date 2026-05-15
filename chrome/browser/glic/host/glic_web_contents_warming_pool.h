@@ -15,6 +15,9 @@
 #include "base/timer/timer.h"
 
 class Profile;
+namespace content {
+class WebContents;
+}
 
 namespace glic {
 
@@ -62,6 +65,7 @@ class GlicWebContentsWarmingPool {
   bool HasWarmedContainerForTesting() const;
   base::OneShotTimer& GetDelayTimerForTesting() { return delay_timer_; }
   WebUIContentsContainer* GetWarmedContainerForTesting() const;
+  content::WebContents* GetWarmedWebContents() const;
 
  protected:
   class Metrics;

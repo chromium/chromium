@@ -24,7 +24,12 @@ using ::testing::Return;
 
 class MockDataProvider : public GlicInstanceCoordinatorMetrics::DataProvider {
  public:
-  MOCK_METHOD(std::vector<Host*>, GetAllUnhibernatedHosts, (), (override));
+  MOCK_METHOD(
+      std::vector<
+          GlicInstanceCoordinatorMetrics::DataProvider::InstanceWebContents>,
+      GetAllUnhibernatedWebContents,
+      (),
+      (override));
   MOCK_METHOD(int, GetVisibleInstanceCount, (), (const, override));
   MOCK_METHOD(std::vector<glic::mojom::ConversationInfoPtr>,
               GetRecentlyActiveConversations,

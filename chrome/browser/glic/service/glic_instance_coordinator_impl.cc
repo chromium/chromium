@@ -20,6 +20,7 @@
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/host/glic_web_contents_warming_pool.h"
+#include "chrome/browser/glic/host/guest_util.h"
 #include "chrome/browser/glic/host/host.h"
 #include "chrome/browser/glic/host/webui_contents_container.h"
 #include "chrome/browser/glic/public/features.h"
@@ -218,14 +219,24 @@ int GlicInstanceCoordinatorImpl::GetVisibleInstanceCount() const {
   return count;
 }
 
-std::vector<Host*> GlicInstanceCoordinatorImpl::GetAllUnhibernatedHosts() {
-  std::vector<Host*> hosts;
+std::vector<GlicInstanceCoordinatorMetrics::DataProvider::InstanceWebContents>
+GlicInstanceCoordinatorImpl::GetAllUnhibernatedWebContents() {
+  std::vector<GlicInstanceCoordinatorMetrics::DataProvider::InstanceWebContents>
+      result;
   for (const auto& entry : instances_) {
     if (entry.second && !entry.second->IsHibernated()) {
-      hosts.push_back(&entry.second->host());
+      result.push_back({entry.second->host().webui_contents(),
+                        entry.second->host().web_client_contents()});
     }
   }
-  return hosts;
+  if (web_contents_warming_pool_) {
+    if (auto* webui_contents =
+            web_contents_warming_pool_->GetWarmedWebContents()) {
+      result.push_back(
+          {webui_contents, GetGlicGuestWebContents(webui_contents)});
+    }
+  }
+  return result;
 }
 
 bool GlicInstanceCoordinatorImpl::IsAnyPanelShowing() const {

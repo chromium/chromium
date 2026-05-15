@@ -224,4 +224,8 @@ GlicWebContentsWarmingPool::GetWarmedContainerForTesting() const {
   return warmed_container_.get();
 }
 
+content::WebContents* GlicWebContentsWarmingPool::GetWarmedWebContents() const {
+  return warmed_container_ ? warmed_container_->web_contents() : nullptr;
+}
+
 }  // namespace glic
