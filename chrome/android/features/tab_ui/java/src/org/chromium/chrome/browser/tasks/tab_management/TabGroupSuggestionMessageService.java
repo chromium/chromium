@@ -19,7 +19,7 @@ import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.tab_group_suggestion.SuggestionMetricsService;
 import org.chromium.chrome.browser.tab_group_suggestion.SuggestionMetricsServiceFactory;
 import org.chromium.chrome.browser.tab_ui.TabSwitcherGroupSuggestionService.SuggestionLifecycleObserver;
-import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter.MergeNotificationType;
+import org.chromium.chrome.browser.tabmodel.TabGroupMergeNotificationType;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tabwindow.WindowId;
@@ -197,7 +197,7 @@ public class TabGroupSuggestionMessageService
         if (!tabs.isEmpty()) {
             Tab tab = tabs.get(0);
             tabModel.mergeListOfTabsToGroup(
-                    tabs, tab, /* notify= */ MergeNotificationType.NOTIFY_IF_NOT_NEW_GROUP);
+                    tabs, tab, /* notify= */ TabGroupMergeNotificationType.NOTIFY_IF_NOT_NEW_GROUP);
 
             SuggestionMetricsService metricsService =
                     SuggestionMetricsServiceFactory.getForProfile(tab.getProfile());

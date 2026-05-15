@@ -30,7 +30,7 @@ import org.chromium.chrome.browser.compositor.overlays.strip.StripTabModelAction
 import org.chromium.chrome.browser.compositor.overlays.strip.reorder.ReorderDelegate.ReorderType;
 import org.chromium.chrome.browser.compositor.overlays.strip.reorder.ReorderDelegate.StripUpdateDelegate;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter.MergeNotificationType;
+import org.chromium.chrome.browser.tabmodel.TabGroupMergeNotificationType;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.ui.base.LocalizationUtils;
@@ -438,7 +438,7 @@ public class MultiTabReorderStrategy extends ReorderStrategyBase {
                     convertStripTabsToTabs(mUnpinnedTabs),
                     primaryTab,
                     /* indexInGroup= */ primaryTabIndexInGroup,
-                    /* notify= */ MergeNotificationType.DONT_NOTIFY);
+                    /* notify= */ TabGroupMergeNotificationType.DONT_NOTIFY);
             if (Boolean.TRUE.equals(mHasMixedPinState)) {
                 for (StripLayoutTab tab : mPinnedTabs) {
                     mModel.moveTab(tab.getTabId(), mModel.findFirstNonPinnedTabIndex() - 1);
@@ -706,7 +706,7 @@ public class MultiTabReorderStrategy extends ReorderStrategyBase {
                 convertStripTabsToTabs(mUnpinnedTabs),
                 adjTab,
                 /* indexInGroup= */ towardEnd ? 0 : null,
-                /* notify= */ MergeNotificationType.DONT_NOTIFY);
+                /* notify= */ TabGroupMergeNotificationType.DONT_NOTIFY);
         animateGroupIndicatorForTabReorder(adjTitle, /* isMovingOutOfGroup= */ false, towardEnd);
     }
 

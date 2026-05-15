@@ -34,8 +34,8 @@ import org.chromium.chrome.browser.dragdrop.ChromeDropDataAndroid;
 import org.chromium.chrome.browser.dragdrop.ChromeTabDropDataAndroid;
 import org.chromium.chrome.browser.dragdrop.ChromeTabGroupDropDataAndroid;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tabmodel.TabGroupMergeNotificationType;
 import org.chromium.chrome.browser.tabmodel.TabGroupMetadata;
-import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter.MergeNotificationType;
 import org.chromium.chrome.browser.tasks.tab_management.TabDragHandlerBase;
 import org.chromium.ui.dragdrop.DragDropGlobalState;
 
@@ -392,7 +392,7 @@ public class ExternalViewDragDropReorderStrategyTest extends ReorderStrategyTest
                         mTabListCaptor.capture(),
                         eq(expectedPrimaryTab),
                         eq(expectedMergeIndex),
-                        eq(MergeNotificationType.DONT_NOTIFY));
+                        eq(TabGroupMergeNotificationType.DONT_NOTIFY));
         List<Tab> mergedTabs = mTabListCaptor.getValue();
         assertEquals("Unexpected number of tabs.", list.size(), mergedTabs.size());
         for (Tab tab : mergedTabs) {

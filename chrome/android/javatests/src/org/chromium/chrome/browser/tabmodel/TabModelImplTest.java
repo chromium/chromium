@@ -551,9 +551,7 @@ public class TabModelImplTest {
                 () -> {
                     List<Tab> group0 = mTabModelJni.getAllTabs();
                     tabModel.mergeListOfTabsToGroup(
-                            group0,
-                            group0.get(0),
-                            TabGroupModelFilter.MergeNotificationType.DONT_NOTIFY);
+                            group0, group0.get(0), TabGroupMergeNotificationType.DONT_NOTIFY);
                 });
         createTab();
         // Group0: 0:Tab1, 1:Tab0, 2:Tab2 | 3:Tab3
@@ -1904,9 +1902,7 @@ public class TabModelImplTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         tabModel.mergeListOfTabsToGroup(
-                                tabs,
-                                tabs.get(0),
-                                TabGroupModelFilter.MergeNotificationType.DONT_NOTIFY));
+                                tabs, tabs.get(0), TabGroupMergeNotificationType.DONT_NOTIFY));
         return tabs;
     }
 

@@ -78,7 +78,7 @@ import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab_ui.RecyclerViewPosition;
-import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
+import org.chromium.chrome.browser.tabmodel.TabGroupMergeNotificationType;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorAction.ButtonType;
@@ -316,7 +316,7 @@ public class SelectableTabListEditorTest {
                     tabModel.mergeListOfTabsToGroup(
                             tabs.subList(1, tabs.size()),
                             tabs.get(0),
-                            /* notify= */ TabGroupModelFilter.MergeNotificationType.DONT_NOTIFY);
+                            /* notify= */ TabGroupMergeNotificationType.DONT_NOTIFY);
                 });
     }
 

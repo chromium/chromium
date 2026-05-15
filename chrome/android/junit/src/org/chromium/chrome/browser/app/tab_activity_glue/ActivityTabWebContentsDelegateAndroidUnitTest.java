@@ -47,7 +47,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
-import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter.MergeNotificationType;
+import org.chromium.chrome.browser.tabmodel.TabGroupMergeNotificationType;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.util.AndroidTaskUtils;
 import org.chromium.chrome.browser.util.PictureInPictureWindowOptions;
@@ -245,7 +245,9 @@ public class ActivityTabWebContentsDelegateAndroidUnitTest {
                 null);
         verify(mTabModel)
                 .mergeListOfTabsToGroup(
-                        Arrays.asList(newTab), parentTab, MergeNotificationType.DONT_NOTIFY);
+                        Arrays.asList(newTab),
+                        parentTab,
+                        TabGroupMergeNotificationType.DONT_NOTIFY);
     }
 
     @Test

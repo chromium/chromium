@@ -41,7 +41,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncControllerImpl.TabCreationDelegate;
-import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter.MergeNotificationType;
+import org.chromium.chrome.browser.tabmodel.TabGroupMergeNotificationType;
 import org.chromium.chrome.browser.tabmodel.TabRemover;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModel;
 import org.chromium.components.tab_group_sync.ClosingSource;
@@ -146,7 +146,8 @@ public class LocalTabGroupMutationHelperUnitTest {
 
         // Verify calls to create local tab group, and update ID mappings for group and tabs.
         verify(mTabModel)
-                .mergeListOfTabsToGroup(anyList(), any(), eq(MergeNotificationType.DONT_NOTIFY));
+                .mergeListOfTabsToGroup(
+                        anyList(), any(), eq(TabGroupMergeNotificationType.DONT_NOTIFY));
         verify(mTabModel).setTabGroupColor(any(), anyInt());
         verify(mTabModel).setTabGroupTitle(any(), any());
         verify(mTabModel).setTabGroupCollapsed(any(), eq(true));
@@ -235,7 +236,7 @@ public class LocalTabGroupMutationHelperUnitTest {
                 .mergeListOfTabsToGroup(
                         anyList(),
                         argThat(tab -> tab.getId() == TAB_ID_1),
-                        eq(MergeNotificationType.DONT_NOTIFY));
+                        eq(TabGroupMergeNotificationType.DONT_NOTIFY));
         verify(mTabGroupSyncService, times(1))
                 .updateLocalTabId(eq(LOCAL_TAB_GROUP_ID_1), any(), eq(TAB_ID_1));
         inOrder.verify(mTabRemover).forceCloseTabs(argThat(params -> params.tabs.size() == 1));

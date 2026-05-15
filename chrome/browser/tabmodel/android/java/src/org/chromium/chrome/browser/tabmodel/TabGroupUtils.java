@@ -17,7 +17,6 @@ import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncFeatures;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
-import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter.MergeNotificationType;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
@@ -274,7 +273,7 @@ public class TabGroupUtils {
             tabModel.createSingleTabGroup(tab);
         } else {
             tabModel.mergeListOfTabsToGroup(
-                    tabs, tab, /* notify= */ MergeNotificationType.NOTIFY_IF_NOT_NEW_GROUP);
+                    tabs, tab, /* notify= */ TabGroupMergeNotificationType.NOTIFY_IF_NOT_NEW_GROUP);
         }
 
         Token tabGroupId = tab.getTabGroupId();
@@ -302,7 +301,7 @@ public class TabGroupUtils {
         }
 
         tabModel.mergeListOfTabsToGroup(
-                tabs, destTab, MergeNotificationType.NOTIFY_IF_NOT_NEW_GROUP);
+                tabs, destTab, TabGroupMergeNotificationType.NOTIFY_IF_NOT_NEW_GROUP);
         if (tabMovedCallback != null) {
             tabMovedCallback.onTabMoved();
         }

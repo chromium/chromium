@@ -37,7 +37,7 @@ import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutUtils;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutView;
 import org.chromium.chrome.browser.compositor.overlays.strip.reorder.ReorderDelegate.ReorderType;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter.MergeNotificationType;
+import org.chromium.chrome.browser.tabmodel.TabGroupMergeNotificationType;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -325,7 +325,10 @@ public class MultiTabReorderStrategyTest extends ReorderStrategyTestBase {
 
         verify(mModel)
                 .mergeListOfTabsToGroup(
-                        anyList(), any(Tab.class), eq(0), eq(MergeNotificationType.DONT_NOTIFY));
+                        anyList(),
+                        any(Tab.class),
+                        eq(0),
+                        eq(TabGroupMergeNotificationType.DONT_NOTIFY));
         verify(mAnimationHost, times(2)).startAnimations(anyList(), isNull());
     }
 

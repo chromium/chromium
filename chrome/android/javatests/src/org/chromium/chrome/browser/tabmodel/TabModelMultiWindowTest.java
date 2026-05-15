@@ -206,8 +206,7 @@ public class TabModelMultiWindowTest {
                         filter.mergeListOfTabsToGroup(
                                 tabs,
                                 tabs.get(0),
-                                /* notify= */ TabGroupModelFilter.MergeNotificationType
-                                        .DONT_NOTIFY));
+                                /* notify= */ TabGroupMergeNotificationType.DONT_NOTIFY));
         return tabs;
     }
 

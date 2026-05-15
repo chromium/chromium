@@ -16,7 +16,7 @@ import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter.MergeNotificationType;
+import org.chromium.chrome.browser.tabmodel.TabGroupMergeNotificationType;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
@@ -75,7 +75,7 @@ public class GroupSuggestionsPromotionMediator implements GroupSuggestionsServic
                     Tab rootTab =
                             tabs.contains(currentTab) ? assumeNonNull(currentTab) : tabs.get(0);
                     mTabModel.mergeListOfTabsToGroup(
-                            tabs, rootTab, MergeNotificationType.NOTIFY_IF_NOT_NEW_GROUP);
+                            tabs, rootTab, TabGroupMergeNotificationType.NOTIFY_IF_NOT_NEW_GROUP);
                     mBottomSheetController.hideContent(mCurrentSheetContent, true);
                     mCurrentSheetContent
                             .getUserResponseCallback()

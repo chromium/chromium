@@ -16,7 +16,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncControllerImpl.TabCreationDelegate;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
-import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter.MergeNotificationType;
+import org.chromium.chrome.browser.tabmodel.TabGroupMergeNotificationType;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.components.tab_group_sync.ClosingSource;
@@ -96,7 +96,7 @@ public class LocalTabGroupMutationHelper {
             mTabModel.createSingleTabGroup(rootTab);
         } else {
             mTabModel.mergeListOfTabsToGroup(
-                    tabs, rootTab, /* notify= */ MergeNotificationType.DONT_NOTIFY);
+                    tabs, rootTab, /* notify= */ TabGroupMergeNotificationType.DONT_NOTIFY);
         }
         Token tabGroupId = rootTab.getTabGroupId();
         assert tabGroupId != null;
@@ -242,7 +242,7 @@ public class LocalTabGroupMutationHelper {
         mTabModel.mergeListOfTabsToGroup(
                 tabsToMerge,
                 mTabModel.getTabByIdChecked(lastTabId),
-                /* notify= */ MergeNotificationType.DONT_NOTIFY);
+                /* notify= */ TabGroupMergeNotificationType.DONT_NOTIFY);
         return newTab;
     }
 

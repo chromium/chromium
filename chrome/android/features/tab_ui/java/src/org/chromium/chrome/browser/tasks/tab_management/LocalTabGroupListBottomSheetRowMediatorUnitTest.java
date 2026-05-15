@@ -22,7 +22,7 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.Token;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
+import org.chromium.chrome.browser.tabmodel.TabGroupMergeNotificationType;
 import org.chromium.chrome.browser.tabmodel.TabGroupUtils.TabMovedCallback;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabUngrouper;
@@ -117,9 +117,7 @@ public class LocalTabGroupListBottomSheetRowMediatorUnitTest {
 
         verify(mTabModel)
                 .mergeListOfTabsToGroup(
-                        tabList,
-                        mTab1,
-                        TabGroupModelFilter.MergeNotificationType.NOTIFY_IF_NOT_NEW_GROUP);
+                        tabList, mTab1, TabGroupMergeNotificationType.NOTIFY_IF_NOT_NEW_GROUP);
         verify(mTabMovedCallback).onTabMoved();
         verify(mOnClickRunnable).run();
     }
@@ -134,9 +132,7 @@ public class LocalTabGroupListBottomSheetRowMediatorUnitTest {
 
         verify(mTabModel, never())
                 .mergeListOfTabsToGroup(
-                        mTabs,
-                        mTab1,
-                        TabGroupModelFilter.MergeNotificationType.NOTIFY_IF_NOT_NEW_GROUP);
+                        mTabs, mTab1, TabGroupMergeNotificationType.NOTIFY_IF_NOT_NEW_GROUP);
         verify(mTabMovedCallback, never()).onTabMoved();
         verify(mOnClickRunnable).run();
     }
@@ -152,9 +148,7 @@ public class LocalTabGroupListBottomSheetRowMediatorUnitTest {
 
         verify(mTabModel, never())
                 .mergeListOfTabsToGroup(
-                        mTabs,
-                        mTab1,
-                        TabGroupModelFilter.MergeNotificationType.NOTIFY_IF_NOT_NEW_GROUP);
+                        mTabs, mTab1, TabGroupMergeNotificationType.NOTIFY_IF_NOT_NEW_GROUP);
         verify(mTabMovedCallback, never()).onTabMoved();
         verify(mOnClickRunnable).run();
     }

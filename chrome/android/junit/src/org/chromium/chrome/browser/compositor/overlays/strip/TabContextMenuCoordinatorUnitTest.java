@@ -90,7 +90,7 @@ import org.chromium.chrome.browser.tabmodel.SupportedProfileType;
 import org.chromium.chrome.browser.tabmodel.TabClosingSource;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
-import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter.MergeNotificationType;
+import org.chromium.chrome.browser.tabmodel.TabGroupMergeNotificationType;
 import org.chromium.chrome.browser.tabmodel.TabGroupUtils.TabGroupCreationCallback;
 import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -2003,7 +2003,7 @@ public class TabContextMenuCoordinatorUnitTest {
                 .mergeListOfTabsToGroup(
                         eq(List.of(mTab1, mTab2)),
                         eq(mTab1),
-                        eq(MergeNotificationType.NOTIFY_IF_NOT_NEW_GROUP));
+                        eq(TabGroupMergeNotificationType.NOTIFY_IF_NOT_NEW_GROUP));
         verify(mTabGroupCreationCallback, times(1)).onTabGroupCreated(TAB_GROUP_ID);
     }
 

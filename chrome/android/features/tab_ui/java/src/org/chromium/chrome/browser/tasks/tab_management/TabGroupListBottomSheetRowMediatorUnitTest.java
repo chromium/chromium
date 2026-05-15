@@ -21,7 +21,7 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.Token;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter.MergeNotificationType;
+import org.chromium.chrome.browser.tabmodel.TabGroupMergeNotificationType;
 import org.chromium.chrome.browser.tabmodel.TabGroupUtils.TabMovedCallback;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabUngrouper;
@@ -116,7 +116,8 @@ public class TabGroupListBottomSheetRowMediatorUnitTest {
         clickRunnable.run();
 
         verify(mTabModel)
-                .mergeListOfTabsToGroup(mTabs, mTab, MergeNotificationType.NOTIFY_IF_NOT_NEW_GROUP);
+                .mergeListOfTabsToGroup(
+                        mTabs, mTab, TabGroupMergeNotificationType.NOTIFY_IF_NOT_NEW_GROUP);
         verify(mTabMovedCallback).onTabMoved();
         verify(mOnClickRunnable).run();
     }
@@ -130,7 +131,8 @@ public class TabGroupListBottomSheetRowMediatorUnitTest {
         clickRunnable.run();
 
         verify(mTabModel, never())
-                .mergeListOfTabsToGroup(mTabs, mTab, MergeNotificationType.NOTIFY_IF_NOT_NEW_GROUP);
+                .mergeListOfTabsToGroup(
+                        mTabs, mTab, TabGroupMergeNotificationType.NOTIFY_IF_NOT_NEW_GROUP);
         verify(mTabMovedCallback, never()).onTabMoved();
         verify(mOnClickRunnable).run();
     }
@@ -143,7 +145,8 @@ public class TabGroupListBottomSheetRowMediatorUnitTest {
         clickRunnable.run();
 
         verify(mTabModel, never())
-                .mergeListOfTabsToGroup(mTabs, mTab, MergeNotificationType.NOTIFY_IF_NOT_NEW_GROUP);
+                .mergeListOfTabsToGroup(
+                        mTabs, mTab, TabGroupMergeNotificationType.NOTIFY_IF_NOT_NEW_GROUP);
         verify(mTabMovedCallback, never()).onTabMoved();
         verify(mOnClickRunnable).run();
     }
@@ -156,7 +159,8 @@ public class TabGroupListBottomSheetRowMediatorUnitTest {
         clickRunnable.run();
 
         verify(mTabModel, never())
-                .mergeListOfTabsToGroup(mTabs, mTab, MergeNotificationType.NOTIFY_IF_NOT_NEW_GROUP);
+                .mergeListOfTabsToGroup(
+                        mTabs, mTab, TabGroupMergeNotificationType.NOTIFY_IF_NOT_NEW_GROUP);
         verify(mTabMovedCallback, never()).onTabMoved();
         verify(mOnClickRunnable).run();
     }

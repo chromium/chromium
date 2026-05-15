@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.tabmodel;
 
-import androidx.annotation.IntDef;
-
 import org.chromium.base.Token;
 import org.chromium.base.supplier.LazyOneshotSupplier;
 import org.chromium.build.annotations.NullMarked;
@@ -14,10 +12,6 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.components.tab_groups.TabGroupColorId;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
 import java.util.List;
 import java.util.Set;
 
@@ -25,19 +19,6 @@ import java.util.Set;
 // TODO(crbug.com/463685717): Consider merging with TabModel.
 @NullMarked
 public interface TabGroupModelFilter extends SupportsTabModelObserver {
-
-    @IntDef({
-        MergeNotificationType.DONT_NOTIFY,
-        MergeNotificationType.NOTIFY_IF_NOT_NEW_GROUP,
-        MergeNotificationType.NOTIFY_ALWAYS
-    })
-    @Target(ElementType.TYPE_USE)
-    @Retention(RetentionPolicy.SOURCE)
-    @interface MergeNotificationType {
-        int DONT_NOTIFY = 0;
-        int NOTIFY_IF_NOT_NEW_GROUP = 1;
-        int NOTIFY_ALWAYS = 2;
-    }
 
     /**
      * This method adds a {@link TabGroupModelFilterObserver} to be notified on {@link
@@ -196,7 +177,7 @@ public interface TabGroupModelFilter extends SupportsTabModelObserver {
      * @param notify Whether or not to notify observers about the merging events.
      */
     default void mergeListOfTabsToGroup(
-            List<Tab> tabs, Tab destinationTab, @MergeNotificationType int notify) {
+            List<Tab> tabs, Tab destinationTab, @TabGroupMergeNotificationType int notify) {
         mergeListOfTabsToGroup(tabs, destinationTab, /* index=InGroup */ null, notify);
     }
 
@@ -220,7 +201,7 @@ public interface TabGroupModelFilter extends SupportsTabModelObserver {
             List<Tab> tabs,
             Tab destinationTab,
             @Nullable Integer indexInGroup,
-            @MergeNotificationType int notify);
+            @TabGroupMergeNotificationType int notify);
 
     /** Returns a utility interface to help with that ungrouping tabs from a tab group. */
     TabUngrouper getTabUngrouper();

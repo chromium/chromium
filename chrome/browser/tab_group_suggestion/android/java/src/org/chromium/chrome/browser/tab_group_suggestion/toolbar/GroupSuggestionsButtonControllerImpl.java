@@ -12,7 +12,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_group_suggestion.SuggestionMetricsService;
 import org.chromium.chrome.browser.tab_group_suggestion.SuggestionMetricsServiceFactory;
-import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter.MergeNotificationType;
+import org.chromium.chrome.browser.tabmodel.TabGroupMergeNotificationType;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tabwindow.WindowId;
@@ -110,7 +110,7 @@ public class GroupSuggestionsButtonControllerImpl implements GroupSuggestionsBut
                 tabsToGroup,
                 tab,
                 /* indexInGroup= */ null,
-                /* notify= */ MergeNotificationType.NOTIFY_ALWAYS);
+                /* notify= */ TabGroupMergeNotificationType.NOTIFY_ALWAYS);
 
         SuggestionMetricsService metricsService =
                 SuggestionMetricsServiceFactory.getForProfile(tab.getProfile());

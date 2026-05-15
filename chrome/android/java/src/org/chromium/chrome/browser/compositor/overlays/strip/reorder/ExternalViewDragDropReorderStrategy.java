@@ -21,7 +21,7 @@ import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutView;
 import org.chromium.chrome.browser.compositor.overlays.strip.reorder.ReorderDelegate.ReorderType;
 import org.chromium.chrome.browser.compositor.overlays.strip.reorder.ReorderDelegate.StripUpdateDelegate;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter.MergeNotificationType;
+import org.chromium.chrome.browser.tabmodel.TabGroupMergeNotificationType;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.ui.base.LocalizationUtils;
 
@@ -234,7 +234,7 @@ public class ExternalViewDragDropReorderStrategy extends ReorderStrategyBase {
                 tabsToMerge,
                 mModel.getTabByIdChecked(destinationTabId),
                 mergeIndex,
-                MergeNotificationType.DONT_NOTIFY);
+                TabGroupMergeNotificationType.DONT_NOTIFY);
 
         // 3. Animate bottom indicator. Done after merging the dragged tab group to group,
         // so that the calculated bottom indicator width will be correct.

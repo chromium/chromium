@@ -45,7 +45,7 @@ import org.chromium.chrome.browser.tab_group_suggestion.SuggestionMetricsService
 import org.chromium.chrome.browser.tab_group_suggestion.SuggestionMetricsService.GroupCreationSource;
 import org.chromium.chrome.browser.tab_group_suggestion.SuggestionMetricsServiceFactory;
 import org.chromium.chrome.browser.tab_ui.TabSwitcherGroupSuggestionService.SuggestionLifecycleObserver;
-import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
+import org.chromium.chrome.browser.tabmodel.TabGroupMergeNotificationType;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tasks.tab_management.MessageCardView.ServiceDismissActionProvider;
 import org.chromium.chrome.browser.tasks.tab_management.MessageService.MessageModelFactory;
@@ -230,9 +230,7 @@ public class TabGroupSuggestionMessageServiceUnitTest {
         verify(mSuggestionLifecycleObserver).onSuggestionAccepted();
         verify(mTabModel)
                 .mergeListOfTabsToGroup(
-                        tabs,
-                        mTab1,
-                        TabGroupModelFilter.MergeNotificationType.NOTIFY_IF_NOT_NEW_GROUP);
+                        tabs, mTab1, TabGroupMergeNotificationType.NOTIFY_IF_NOT_NEW_GROUP);
         verify(mTabGroupSuggestionMessageService).dismissMessage(any());
         verify(mSuggestionMetricsService)
                 .onSuggestionAccepted(
@@ -319,9 +317,7 @@ public class TabGroupSuggestionMessageServiceUnitTest {
                         })
                 .when(mTabModel)
                 .mergeListOfTabsToGroup(
-                        tabs,
-                        mTab1,
-                        TabGroupModelFilter.MergeNotificationType.NOTIFY_IF_NOT_NEW_GROUP);
+                        tabs, mTab1, TabGroupMergeNotificationType.NOTIFY_IF_NOT_NEW_GROUP);
 
         // Simulate animation end.
         onAnimationEndCaptor.getValue().run();
@@ -329,9 +325,7 @@ public class TabGroupSuggestionMessageServiceUnitTest {
         // After animation, tabs are grouped and message is dismissed.
         inOrder.verify(mTabModel)
                 .mergeListOfTabsToGroup(
-                        tabs,
-                        mTab1,
-                        TabGroupModelFilter.MergeNotificationType.NOTIFY_IF_NOT_NEW_GROUP);
+                        tabs, mTab1, TabGroupMergeNotificationType.NOTIFY_IF_NOT_NEW_GROUP);
         inOrder.verify(mTabGroupSuggestionMessageService).dismissMessage(any());
     }
 

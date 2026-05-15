@@ -102,9 +102,7 @@ public class TabGroupsTest {
             ThreadUtils.runOnUiThreadBlocking(
                     () -> {
                         mTabModel.mergeListOfTabsToGroup(
-                                tabs,
-                                tabs.get(0),
-                                TabGroupModelFilter.MergeNotificationType.DONT_NOTIFY);
+                                tabs, tabs.get(0), TabGroupMergeNotificationType.DONT_NOTIFY);
                     });
         }
     }

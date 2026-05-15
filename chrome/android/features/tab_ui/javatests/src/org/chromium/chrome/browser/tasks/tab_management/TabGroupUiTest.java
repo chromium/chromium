@@ -62,7 +62,7 @@ import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
-import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter.MergeNotificationType;
+import org.chromium.chrome.browser.tabmodel.TabGroupMergeNotificationType;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.toolbar.bottom.BottomControlsCoordinator;
@@ -319,7 +319,7 @@ public class TabGroupUiTest {
                     tabModel.mergeListOfTabsToGroup(
                             List.of(tab),
                             tabModel.getRepresentativeTabAt(0),
-                            /* notify= */ MergeNotificationType.DONT_NOTIFY);
+                            /* notify= */ TabGroupMergeNotificationType.DONT_NOTIFY);
                 });
         ViewUtils.waitForVisibleView(
                 allOf(
@@ -367,7 +367,7 @@ public class TabGroupUiTest {
                     tabModel.mergeListOfTabsToGroup(
                             List.of(tab),
                             tabModel.getRepresentativeTabAt(0),
-                            /* notify= */ MergeNotificationType.DONT_NOTIFY);
+                            /* notify= */ TabGroupMergeNotificationType.DONT_NOTIFY);
                 });
         ViewUtils.waitForVisibleView(
                 allOf(

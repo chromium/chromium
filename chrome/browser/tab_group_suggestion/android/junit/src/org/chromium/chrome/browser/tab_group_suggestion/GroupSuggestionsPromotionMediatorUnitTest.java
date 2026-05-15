@@ -44,7 +44,7 @@ import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter.MergeNotificationType;
+import org.chromium.chrome.browser.tabmodel.TabGroupMergeNotificationType;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
@@ -231,7 +231,7 @@ public class GroupSuggestionsPromotionMediatorUnitTest {
                 .mergeListOfTabsToGroup(
                         eq(Arrays.asList(mTab1, mTab2)),
                         eq(mTab1),
-                        eq(MergeNotificationType.NOTIFY_IF_NOT_NEW_GROUP));
+                        eq(TabGroupMergeNotificationType.NOTIFY_IF_NOT_NEW_GROUP));
         verify(mBottomSheetController).hideContent(eq(currentContent), eq(true));
         assertNull(mMediator.getCurrentSheetContent());
         assertEquals(UserResponse.ACCEPTED, userResponse.get());

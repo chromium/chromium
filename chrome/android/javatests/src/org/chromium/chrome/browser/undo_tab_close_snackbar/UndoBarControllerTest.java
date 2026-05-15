@@ -28,7 +28,7 @@ import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
-import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter.MergeNotificationType;
+import org.chromium.chrome.browser.tabmodel.TabGroupMergeNotificationType;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
@@ -166,7 +166,7 @@ public class UndoBarControllerTest {
                     mTabModel.mergeListOfTabsToGroup(
                             List.of(mTabModel.getTabAt(0), mTabModel.getTabAt(1)),
                             mTabModel.getTabAt(0),
-                            /* notify= */ MergeNotificationType.DONT_NOTIFY);
+                            /* notify= */ TabGroupMergeNotificationType.DONT_NOTIFY);
                     mTabModel.setTabGroupTitle(mTabModel.getTabAt(0).getTabGroupId(), "My group");
                 });
 
@@ -211,7 +211,7 @@ public class UndoBarControllerTest {
                     mTabModel.mergeListOfTabsToGroup(
                             List.of(mTabModel.getTabAt(0), mTabModel.getTabAt(1)),
                             mTabModel.getTabAt(0),
-                            /* notify= */ MergeNotificationType.DONT_NOTIFY);
+                            /* notify= */ TabGroupMergeNotificationType.DONT_NOTIFY);
                     mTabModel.setTabGroupTitle(mTabModel.getTabAt(0).getTabGroupId(), "");
                 });
 
@@ -256,7 +256,7 @@ public class UndoBarControllerTest {
                     mTabModel.mergeListOfTabsToGroup(
                             List.of(mTabModel.getTabAt(0), mTabModel.getTabAt(1)),
                             mTabModel.getTabAt(0),
-                            /* notify= */ MergeNotificationType.DONT_NOTIFY);
+                            /* notify= */ TabGroupMergeNotificationType.DONT_NOTIFY);
                 });
 
         assertNull(getCurrentSnackbar());
@@ -380,7 +380,7 @@ public class UndoBarControllerTest {
                                     mTabModel.getTabAt(1),
                                     mTabModel.getTabAt(2)),
                             mTabModel.getTabAt(0),
-                            /* notify= */ MergeNotificationType.DONT_NOTIFY);
+                            /* notify= */ TabGroupMergeNotificationType.DONT_NOTIFY);
                 });
 
         assertNull(getCurrentSnackbar());
@@ -494,7 +494,7 @@ public class UndoBarControllerTest {
                     mTabModel.mergeListOfTabsToGroup(
                             List.of(tab1, tab2),
                             tab1,
-                            /* notify= */ MergeNotificationType.DONT_NOTIFY);
+                            /* notify= */ TabGroupMergeNotificationType.DONT_NOTIFY);
                 });
 
         assertNull(getCurrentSnackbar());
@@ -539,7 +539,7 @@ public class UndoBarControllerTest {
                     mTabModel.mergeListOfTabsToGroup(
                             List.of(tab1, tab2),
                             tab1,
-                            /* notify= */ MergeNotificationType.DONT_NOTIFY);
+                            /* notify= */ TabGroupMergeNotificationType.DONT_NOTIFY);
                 });
 
         assertNull(getCurrentSnackbar());
@@ -588,7 +588,7 @@ public class UndoBarControllerTest {
                     mTabModel.mergeListOfTabsToGroup(
                             List.of(tab1, tab2),
                             tab1,
-                            /* notify= */ MergeNotificationType.DONT_NOTIFY);
+                            /* notify= */ TabGroupMergeNotificationType.DONT_NOTIFY);
                 });
 
         assertNull(getCurrentSnackbar());
@@ -630,7 +630,7 @@ public class UndoBarControllerTest {
                     mTabModel.mergeListOfTabsToGroup(
                             List.of(tab1, tab2),
                             tab1,
-                            /* notify= */ MergeNotificationType.DONT_NOTIFY);
+                            /* notify= */ TabGroupMergeNotificationType.DONT_NOTIFY);
                 });
 
         assertNull(getCurrentSnackbar());

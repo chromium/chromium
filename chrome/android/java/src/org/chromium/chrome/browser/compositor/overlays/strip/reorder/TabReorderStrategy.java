@@ -27,7 +27,7 @@ import org.chromium.chrome.browser.compositor.overlays.strip.StripTabModelAction
 import org.chromium.chrome.browser.compositor.overlays.strip.reorder.ReorderDelegate.ReorderType;
 import org.chromium.chrome.browser.compositor.overlays.strip.reorder.ReorderDelegate.StripUpdateDelegate;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter.MergeNotificationType;
+import org.chromium.chrome.browser.tabmodel.TabGroupMergeNotificationType;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.ui.base.LocalizationUtils;
@@ -412,7 +412,10 @@ public class TabReorderStrategy extends ReorderStrategyBase {
 
         // TODO(crbug.com/451697001): Investigate if we still need to suppress the notifications.
         mModel.mergeListOfTabsToGroup(
-                tabsToMarge, destinationTab, indexInGroup, MergeNotificationType.DONT_NOTIFY);
+                tabsToMarge,
+                destinationTab,
+                indexInGroup,
+                TabGroupMergeNotificationType.DONT_NOTIFY);
         RecordUserAction.record("MobileToolbarReorderTab.TabAddedToGroup");
 
         // Animate the group indicator after updating the tab model.

@@ -31,7 +31,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_group_suggestion.SuggestionMetricsService;
 import org.chromium.chrome.browser.tab_group_suggestion.SuggestionMetricsService.GroupCreationSource;
 import org.chromium.chrome.browser.tab_group_suggestion.SuggestionMetricsServiceFactory;
-import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter.MergeNotificationType;
+import org.chromium.chrome.browser.tabmodel.TabGroupMergeNotificationType;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.components.visited_url_ranking.url_grouping.CachedSuggestions;
 import org.chromium.components.visited_url_ranking.url_grouping.GroupSuggestion;
@@ -252,7 +252,7 @@ public class GroupSuggestionsButtonControllerImplUnitTest {
                         eq(List.of(mSecondTab, mThirdTab)),
                         eq(mMockTab),
                         eq(null),
-                        eq(MergeNotificationType.NOTIFY_ALWAYS));
+                        eq(TabGroupMergeNotificationType.NOTIFY_ALWAYS));
 
         assertEquals(UserResponse.ACCEPTED, responseMetadata.getUserResponse());
         verify(mSuggestionMetricsService)
