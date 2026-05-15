@@ -4171,11 +4171,6 @@
     "expiry_milestone": 150
   },
   {
-    "name": "enable-unsafe-swiftshader",
-    "owners": [ "geofflang@chromium.org", "chrome-gpu@google.com" ],
-    "expiry_milestone": 150
-  },
-  {
     "name": "enable-unsafe-webgpu",
     "owners": [ "//third_party/blink/renderer/modules/webgpu/OWNERS" ],
     // This flag is used by developers to test upcoming WebGPU features on

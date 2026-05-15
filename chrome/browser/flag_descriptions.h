@@ -4885,12 +4885,6 @@ inline constexpr char kUserValueDefaultBrowserStringsName[] =
 inline constexpr char kUserValueDefaultBrowserStringsDescription[] =
     "Improves the flow and the wording on the Default Browser settings page.";
 
-inline constexpr char kEnableUnsafeSwiftShaderName[] =
-    "Enable unsafe SwiftShader fallback";
-inline constexpr char kEnableUnsafeSwiftShaderDescription[] =
-    "Allow SwiftShader to be used as a fallback for software WebGL. Using this "
-    "flag is unsafe and should only be used for local development.";
-
 inline constexpr char kPredictableReportedQuotaName[] =
     "Predictable Reported Quota";
 inline constexpr char kPredictableReportedQuotaDescription[] =

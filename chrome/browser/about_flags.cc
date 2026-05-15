@@ -8705,12 +8705,6 @@ const FeatureEntry kFeatureEntries[] = {
      kOsDesktop,
      FEATURE_VALUE_TYPE(switches::kUsePrimaryAndTonalButtonsForPromos)},
 
-#if BUILDFLAG(ENABLE_SWIFTSHADER)
-    {"enable-unsafe-swiftshader",
-     flag_descriptions::kEnableUnsafeSwiftShaderName,
-     flag_descriptions::kEnableUnsafeSwiftShaderDescription, kOsAll,
-     SINGLE_VALUE_TYPE(switches::kEnableUnsafeSwiftShader)},
-#endif  // BUILDFLAG(ENABLE_SWIFTSHADER)
 
     // The entry in kFeatureEntries
     {"policy-registration-delay",
