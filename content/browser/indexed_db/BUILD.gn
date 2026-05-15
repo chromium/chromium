@@ -12,8 +12,6 @@ source_set("indexed_db") {
     "file_path_util.h",
     "file_stream_reader_to_data_pipe.cc",
     "file_stream_reader_to_data_pipe.h",
-    "inactivity_timer.cc",
-    "inactivity_timer.h",
     "indexed_db_context_impl.cc",
     "indexed_db_context_impl.h",
     "indexed_db_control_wrapper.cc",
@@ -134,7 +132,6 @@ source_set("unit_tests") {
   sources = [
     "file_path_util_unittest.cc",
     "file_stream_reader_to_data_pipe_unittest.cc",
-    "inactivity_timer_unittest.cc",
     "indexed_db_context_unittest.cc",
     "indexed_db_leveldb_coding_unittest.cc",
     "indexed_db_quota_client_unittest.cc",

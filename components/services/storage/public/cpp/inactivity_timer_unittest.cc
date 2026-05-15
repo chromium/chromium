@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/indexed_db/inactivity_timer.h"
+#include "components/services/storage/public/cpp/inactivity_timer.h"
 
 #include "base/functional/callback_helpers.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace content::indexed_db {
+namespace storage {
 namespace {
 
 class InactivityTimerTest : public testing::Test {
@@ -128,4 +128,4 @@ TEST_F(InactivityTimerTest, ExpectedFiringTime) {
 }
 
 }  // namespace
-}  // namespace content::indexed_db
+}  // namespace storage

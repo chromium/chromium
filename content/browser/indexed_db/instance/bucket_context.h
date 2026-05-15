@@ -30,10 +30,10 @@
 #include "components/services/storage/privileged/mojom/indexed_db_control_test.mojom.h"
 #include "components/services/storage/privileged/mojom/indexed_db_internals_types.mojom.h"
 #include "components/services/storage/public/cpp/buckets/bucket_info.h"
+#include "components/services/storage/public/cpp/inactivity_timer.h"
 #include "components/services/storage/public/cpp/quota_error_or.h"
 #include "components/services/storage/public/mojom/blob_storage_context.mojom.h"
 #include "components/services/storage/public/mojom/file_system_access_context.mojom.h"
-#include "content/browser/indexed_db/inactivity_timer.h"
 #include "content/browser/indexed_db/indexed_db_data_loss_info.h"
 #include "content/browser/indexed_db/indexed_db_database_error.h"
 #include "content/browser/indexed_db/indexed_db_external_object.h"
@@ -440,8 +440,8 @@ class CONTENT_EXPORT BucketContext
   bool running_tasks_ = false;
 
   ClosingState closing_stage_ = ClosingState::kNotClosing;
-  InactivityTimer idle_timer_;
-  InactivityTimer long_idle_timer_;
+  storage::InactivityTimer idle_timer_;
+  storage::InactivityTimer long_idle_timer_;
   std::optional<base::TimeTicks> last_idle_tasks_completion_time_;
   base::OneShotTimer close_timer_;
   std::unique_ptr<PartitionedLockManager> lock_manager_;

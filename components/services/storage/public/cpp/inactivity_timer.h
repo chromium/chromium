@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_BROWSER_INDEXED_DB_INACTIVITY_TIMER_H_
-#define CONTENT_BROWSER_INDEXED_DB_INACTIVITY_TIMER_H_
+#ifndef COMPONENTS_SERVICES_STORAGE_PUBLIC_CPP_INACTIVITY_TIMER_H_
+#define COMPONENTS_SERVICES_STORAGE_PUBLIC_CPP_INACTIVITY_TIMER_H_
 
+#include "base/component_export.h"
 #include "base/functional/callback.h"
 #include "base/location.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "content/common/content_export.h"
 
-namespace content::indexed_db {
+namespace storage {
 
 // A timer that fires a user action after a specified period of "inactivity"
 // (not stopping or restarting the timer). Similar to a `RetainingOneShotTimer`,
@@ -36,7 +36,7 @@ namespace content::indexed_db {
 //     }
 //     InactivityTimer timer_;
 //   };
-class CONTENT_EXPORT InactivityTimer {
+class COMPONENT_EXPORT(STORAGE_SERVICE_PUBLIC) InactivityTimer {
  public:
   InactivityTimer();
 
@@ -78,6 +78,6 @@ class CONTENT_EXPORT InactivityTimer {
   base::RepeatingTimer timer_;
 };
 
-}  // namespace content::indexed_db
+}  // namespace storage
 
-#endif  // CONTENT_BROWSER_INDEXED_DB_INACTIVITY_TIMER_H_
+#endif  // COMPONENTS_SERVICES_STORAGE_PUBLIC_CPP_INACTIVITY_TIMER_H_

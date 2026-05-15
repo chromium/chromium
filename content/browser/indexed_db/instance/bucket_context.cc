@@ -173,7 +173,7 @@ struct GetBucketSpaceRequestWrapper {
             base::unexpected(storage::QuotaError::kUnknownError)));
   }
 
-  InactivityTimer timeout;
+  storage::InactivityTimer timeout;
   base::OnceCallback<void(storage::QuotaErrorOr<int64_t>)> wrapped_callback;
   std::optional<storage::QuotaErrorOr<int64_t>> result_value;
   base::TimeTicks start_time = base::TimeTicks::Now();

@@ -9,6 +9,7 @@ component("cpp") {
     "big_io_buffer.h",
     "compression.h",
     "constants.h",
+    "inactivity_timer.h",
     "quota_client_callback_wrapper.h",
     "quota_error_or.h",
   ]
@@ -17,6 +18,7 @@ component("cpp") {
     "big_io_buffer.cc",
     "compression.cc",
     "constants.cc",
+    "inactivity_timer.cc",
     "quota_client_callback_wrapper.cc",
   ]
 
@@ -40,7 +42,10 @@ component("cpp") {
 
 source_set("tests") {
   testonly = true
-  sources = [ "compression_unittest.cc" ]
+  sources = [
+    "compression_unittest.cc",
+    "inactivity_timer_unittest.cc",
+  ]
   deps = [
     ":cpp",
     "//base/test:test_support",
