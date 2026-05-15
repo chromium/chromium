@@ -55,10 +55,8 @@ ColorProviderManager& ColorProviderManager::Get() {
   std::optional<GlobalManager>& manager = GetGlobalManager();
   if (!manager.has_value()) {
     manager.emplace();
-#if BUILDFLAG(ENABLE_WEBUI_NTP)
     manager.value().AppendColorProviderInitializer(
         base::BindRepeating(AddColorMixers));
-#endif  // BUILDFLAG(ENABLE_WEBUI_NTP)
   }
 
   return manager.value();
