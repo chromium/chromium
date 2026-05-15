@@ -250,9 +250,21 @@ void BackForwardCacheMetrics::DidCommitNavigation(
       SCOPED_CRASH_KEY_STRING256(
           "BFCacheMismatch", "previous_url",
           navigation->GetPreviousPrimaryMainFrameURL().spec());
-      // TODO(https://crbug.com/40229455): Reenable this when known cases are
-      // fixed.
-      // base::debug::DumpWithoutCrashing();
+
+      if (page_store_result_->not_restored_reasons().Has(
+              NotRestoredReason::kCacheLimit)) {
+        NavigationControllerImpl* controller =
+            &navigation->frame_tree_node()->navigator().controller();
+        BackForwardCacheImpl* bf_cache =
+            controller ? &controller->GetBackForwardCache() : nullptr;
+        SCOPED_CRASH_KEY_NUMBER("BFCacheMismatch", "cache_limit_size",
+                                bf_cache ? bf_cache->GetCacheSize() : -1);
+        SCOPED_CRASH_KEY_NUMBER("BFCacheMismatch", "cache_entries_size",
+                                bf_cache ? bf_cache->GetEntries().size() : -1);
+        // TODO(https://crbug.com/40229455): Remove this when the mismatch is
+        // fixed.
+        base::debug::DumpWithoutCrashing();
+      }
     }
 
     TRACE_EVENT1("navigation", "HistoryNavigationOutcome", "outcome",
