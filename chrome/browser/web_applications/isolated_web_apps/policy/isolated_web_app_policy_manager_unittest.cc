@@ -1521,9 +1521,8 @@ class IsolatedWebAppPolicyManagerOnDemandUpdateDownloadedTest
   }
 
   void TearDown() override {
-    IwaKeyDistributionInfoProvider::GetInstanceForTesting()
-        .SkipManagedAllowlistChecksForTesting(false);
     IsolatedWebAppTest::TearDown();
+    IwaKeyDistributionInfoProvider::DestroyInstanceForTesting();
   }
 
   IsolatedWebAppUrlInfo url_info() const {
