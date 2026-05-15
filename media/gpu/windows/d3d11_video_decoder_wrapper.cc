@@ -235,25 +235,29 @@ class ScopedD3D11DecoderBuffer : public ScopedD3DBuffer {
         decoder_->video_decoder_.Get(), type_, &size,
         reinterpret_cast<void**>(&buffer));
     if (FAILED(hr)) {
-      D3D11StatusCode status_code = D3D11StatusCode::kOk;
+      std::optional<D3D11Status> error;
       switch (type_) {
         case D3D11_VIDEO_DECODER_BUFFER_PICTURE_PARAMETERS:
-          status_code = D3D11StatusCode::kGetPicParamBufferFailed;
+          error = {D3D11StatusCode::kGetPicParamBufferFailed,
+                   "GetDecoderBufferFailed", hr};
           break;
         case D3D11_VIDEO_DECODER_BUFFER_INVERSE_QUANTIZATION_MATRIX:
-          status_code = D3D11StatusCode::kGetQuantBufferFailed;
+          error = {D3D11StatusCode::kGetQuantBufferFailed,
+                   "GetDecoderBuffer Failed", hr};
           break;
         case D3D11_VIDEO_DECODER_BUFFER_SLICE_CONTROL:
-          status_code = D3D11StatusCode::kGetSliceControlBufferFailed;
+          error = {D3D11StatusCode::kGetSliceControlBufferFailed,
+                   "GetDecoderBuffer Failed", hr};
           break;
         case D3D11_VIDEO_DECODER_BUFFER_BITSTREAM:
-          status_code = D3D11StatusCode::kGetBitstreamBufferFailed;
+          error = {D3D11StatusCode::kGetBitstreamBufferFailed,
+                   "GetDecoderBuffer Failed", hr};
           break;
         default:
           NOTREACHED();
       }
-      media_log_->NotifyError(
-          D3D11Status{status_code, "D3D11 GetDecoderBuffer failed", hr});
+      DCHECK(error.has_value());
+      media_log_->NotifyError(std::move(error).value());
       return;
     }
 
@@ -277,25 +281,29 @@ class ScopedD3D11DecoderBuffer : public ScopedD3DBuffer {
     HRESULT hr = decoder_->video_context_->ReleaseDecoderBuffer(
         decoder_->video_decoder_.Get(), type_);
     if (FAILED(hr)) {
-      D3D11StatusCode status_code = D3D11StatusCode::kOk;
+      std::optional<D3D11Status> error;
       switch (type_) {
         case D3D11_VIDEO_DECODER_BUFFER_PICTURE_PARAMETERS:
-          status_code = D3D11StatusCode::kReleasePicParamBufferFailed;
+          error = {D3D11StatusCode::kReleasePicParamBufferFailed,
+                   "ReleaseDecoderBuffer Failed", hr};
           break;
         case D3D11_VIDEO_DECODER_BUFFER_INVERSE_QUANTIZATION_MATRIX:
-          status_code = D3D11StatusCode::kReleaseQuantBufferFailed;
+          error = {D3D11StatusCode::kReleaseQuantBufferFailed,
+                   "ReleaseDecoderBuffer Failed", hr};
           break;
         case D3D11_VIDEO_DECODER_BUFFER_SLICE_CONTROL:
-          status_code = D3D11StatusCode::kReleaseSliceControlBufferFailed;
+          error = {D3D11StatusCode::kReleaseSliceControlBufferFailed,
+                   "ReleaseDecoderBuffer Failed", hr};
           break;
         case D3D11_VIDEO_DECODER_BUFFER_BITSTREAM:
-          status_code = D3D11StatusCode::kReleaseBitstreamBufferFailed;
+          error = {D3D11StatusCode::kReleaseBitstreamBufferFailed,
+                   "ReleaseDecoderBuffer Failed", hr};
           break;
         default:
           NOTREACHED();
       }
-      media_log_->NotifyError(
-          D3D11Status{status_code, "D3D11 ReleaseDecoderBuffer failed", hr});
+      DCHECK(error.has_value());
+      media_log_->NotifyError(std::move(error).value());
       return false;
     }
 
