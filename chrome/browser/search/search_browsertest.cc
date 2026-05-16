@@ -20,21 +20,30 @@
 #include "chrome/browser/signin/chrome_signin_client_factory.h"
 #include "chrome/browser/signin/chrome_signin_client_test_util.h"
 #include "chrome/browser/supervised_user/supervised_user_test_util.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
-#include "chrome/test/base/browser_with_test_window_test.h"
+#include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "chrome/test/base/search_test_utils.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chrome/test/base/ui_test_utils.h"
+#include "chrome/test/supervised_user/supervision_mixin.h"
+#include "components/prefs/pref_service.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/supervised_user/core/common/buildflags.h"
+#include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/site_instance.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/test/navigation_simulator.h"
+#include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
+#include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
+#include "content/public/test/url_loader_interceptor.h"
+#include "content/public/test/web_contents_tester.h"
+#include "services/network/test/test_url_loader_factory.h"
 #include "url/gurl.h"
 
 namespace search {
@@ -60,17 +69,42 @@ TEST(SearchURLsTest, MatchesOriginAndPath) {
                                     GURL("http://example.com/another-path")));
 }
 
-class SearchTest : public BrowserWithTestWindowTest {
+class SearchTest : public MixinBasedInProcessBrowserTest {
+ public:
+  Profile* profile() const { return browser()->profile(); }
+
  protected:
-  void SetUp() override {
-    BrowserWithTestWindowTest::SetUp();
-    TemplateURLServiceFactory::GetInstance()->SetTestingFactoryAndUse(
-        profile(),
-        base::BindRepeating(&TemplateURLServiceFactory::BuildInstanceFor));
+  void SetUpOnMainThread() override {
+    MixinBasedInProcessBrowserTest::SetUpOnMainThread();
+
+    url_loader_interceptor_ =
+        std::make_unique<content::URLLoaderInterceptor>(base::BindRepeating(
+            [](content::URLLoaderInterceptor::RequestParams* params) {
+              if (params->url_request.url.host() == "foo.com") {
+                content::URLLoaderInterceptor::WriteResponse(
+                    "HTTP/1.1 200 OK\nContent-Type: text/html\n",
+                    "<html><body>OK</body></html>", params->client.get());
+                return true;
+              }
+              if (params->url_request.url.host() == "insecure.com") {
+                content::URLLoaderInterceptor::WriteResponse(
+                    "HTTP/1.1 403 Forbidden\nContent-Type: text/html\n",
+                    "<html><body>Forbidden</body></html>",
+                    params->client.get());
+                return true;
+              }
+              return false;
+            }));
+
     TemplateURLService* template_url_service =
         TemplateURLServiceFactory::GetForProfile(profile());
     search_test_utils::WaitForTemplateURLServiceToLoad(template_url_service);
     SetSearchProvider(true, false);
+  }
+
+  void TearDownOnMainThread() override {
+    url_loader_interceptor_.reset();
+    MixinBasedInProcessBrowserTest::TearDownOnMainThread();
   }
 
   virtual void SetSearchProvider(bool set_ntp_url, bool insecure_ntp_url) {
@@ -132,13 +166,8 @@ class SearchTest : public BrowserWithTestWindowTest {
        !content::CanSameSiteMainFrameNavigationsChangeSiteInstances(), true},
   }};
 
-  // BrowserWithTestWindowTest:
-  TestingProfile::TestingFactories GetTestingFactories() override {
-    return {TestingProfile::TestingFactory{
-        ChromeSigninClientFactory::GetInstance(),
-        base::BindRepeating(&BuildChromeSigninClientWithURLLoader,
-                            test_url_loader_factory())}};
-  }
+ private:
+  std::unique_ptr<content::URLLoaderInterceptor> url_loader_interceptor_;
 };
 
 struct SearchTestCase {
@@ -147,7 +176,7 @@ struct SearchTestCase {
   const char* comment;
 };
 
-TEST_F(SearchTest, ShouldAssignURLToInstantRenderer) {
+IN_PROC_BROWSER_TEST_F(SearchTest, ShouldAssignURLToInstantRenderer) {
   // Only remote NTPs and most-visited tiles embedded in remote NTPs should be
   // assigned to Instant renderers.
   const auto kTestCases = std::to_array<SearchTestCase>({
@@ -170,7 +199,7 @@ TEST_F(SearchTest, ShouldAssignURLToInstantRenderer) {
   }
 }
 
-TEST_F(SearchTest, ShouldUseProcessPerSiteForInstantSiteURL) {
+IN_PROC_BROWSER_TEST_F(SearchTest, ShouldUseProcessPerSiteForInstantSiteURL) {
   const auto kTestCases = std::to_array<SearchTestCase>({
       {"chrome-search://remote-ntp", true, "Remote NTP"},
       {"invalid-scheme://online-ntp", false, "Invalid Online NTP URL"},
@@ -193,15 +222,16 @@ TEST_F(SearchTest, ShouldUseProcessPerSiteForInstantSiteURL) {
   }
 }
 
-TEST_F(SearchTest, ProcessIsolation) {
+IN_PROC_BROWSER_TEST_F(SearchTest, ProcessIsolation) {
   for (size_t i = 0; i < std::size(kProcessIsolationTestCases); ++i) {
     const ProcessIsolationTestCase& test = kProcessIsolationTestCases[i];
-    AddTab(browser(), GURL("chrome://blank"));
+    ASSERT_TRUE(
+        ui_test_utils::NavigateToURL(browser(), GURL("chrome://blank")));
     content::WebContents* contents =
         browser()->tab_strip_model()->GetActiveWebContents();
 
     // Navigate to start URL.
-    NavigateAndCommitActiveTab(GURL(test.start_url));
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(test.start_url)));
     EXPECT_EQ(test.start_in_instant_process, InInstantProcess(contents))
         << test.description;
 
@@ -214,7 +244,8 @@ TEST_F(SearchTest, ProcessIsolation) {
         contents->GetPrimaryMainFrame()->GetRenderViewHost();
 
     // Navigate to end URL.
-    NavigateAndCommitActiveTab(GURL(test.end_url));
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(test.end_url)));
+
     EXPECT_EQ(test.end_in_instant_process, InInstantProcess(contents))
         << test.description;
 
@@ -230,15 +261,16 @@ TEST_F(SearchTest, ProcessIsolation) {
   }
 }
 
-TEST_F(SearchTest, ProcessIsolation_RendererInitiated) {
+IN_PROC_BROWSER_TEST_F(SearchTest, ProcessIsolation_RendererInitiated) {
   for (size_t i = 0; i < std::size(kProcessIsolationTestCases); ++i) {
     const ProcessIsolationTestCase& test = kProcessIsolationTestCases[i];
-    AddTab(browser(), GURL("chrome://blank"));
+    ASSERT_TRUE(
+        ui_test_utils::NavigateToURL(browser(), GURL("chrome://blank")));
     content::WebContents* contents =
         browser()->tab_strip_model()->GetActiveWebContents();
 
     // Navigate to start URL.
-    NavigateAndCommitActiveTab(GURL(test.start_url));
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(test.start_url)));
     EXPECT_EQ(test.start_in_instant_process, InInstantProcess(contents))
         << test.description;
 
@@ -251,8 +283,10 @@ TEST_F(SearchTest, ProcessIsolation_RendererInitiated) {
         contents->GetPrimaryMainFrame()->GetRenderViewHost();
 
     // Navigate to end URL via a renderer-initiated navigation.
-    content::NavigationSimulator::NavigateAndCommitFromDocument(
-        GURL(test.end_url), contents->GetPrimaryMainFrame());
+    content::TestNavigationObserver observer(contents);
+    ASSERT_TRUE(content::ExecJs(
+        contents, content::JsReplace("location.href = $1;", test.end_url)));
+    observer.Wait();
 
     EXPECT_EQ(test.end_in_instant_process, InInstantProcess(contents))
         << test.description;
@@ -281,40 +315,45 @@ const SearchTestCase kInstantNTPTestCases[] = {
     {"chrome-search://foo", false, "Chrome-search scheme"},
     {"https://bar.com/instant", false, "Random non-search page"},
     {"https://foo.com/newtab", true, "New tab URL"},
-    {"http://foo.com/newtab", false, "Insecure New tab URL"},
+    {"http://insecure.com/newtab", false, "Insecure New tab URL"},
 };
 
-TEST_F(SearchTest, InstantNTPExtendedEnabled) {
-  AddTab(browser(), GURL("chrome://blank"));
+IN_PROC_BROWSER_TEST_F(SearchTest, InstantNTPExtendedEnabled) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("chrome://blank")));
   for (const SearchTestCase& test : kInstantNTPTestCases) {
-    NavigateAndCommitActiveTab(GURL(test.url));
-    content::WebContents* contents =
-        browser()->tab_strip_model()->GetWebContentsAt(0);
-    EXPECT_EQ(test.expected_result, IsInstantNTP(contents))
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(test.url)));
+
+    EXPECT_EQ(
+        test.expected_result,
+        IsInstantNTP(browser()->tab_strip_model()->GetActiveWebContents()))
         << test.url << " " << test.comment;
   }
 }
 
-TEST_F(SearchTest, InstantCacheableNTPNavigationEntry) {
-  AddTab(browser(), GURL("chrome://blank"));
+IN_PROC_BROWSER_TEST_F(SearchTest, InstantCacheableNTPNavigationEntry) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("chrome://blank")));
   content::WebContents* contents =
-        browser()->tab_strip_model()->GetWebContentsAt(0);
+      browser()->tab_strip_model()->GetActiveWebContents();
   content::NavigationController& controller = contents->GetController();
   // Local NTP.
-  NavigateAndCommitActiveTab(chrome::ChromeUINewTabPageURLAsGURL());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), chrome::ChromeUINewTabPageURLAsGURL()));
   EXPECT_FALSE(
       NavEntryIsInstantNTP(contents, controller.GetLastCommittedEntry()));
   // Remote NTP.
-  NavigateAndCommitActiveTab(GetNewTabPageURL(profile()));
-  EXPECT_TRUE(NavEntryIsInstantNTP(contents,
-                                   controller.GetLastCommittedEntry()));
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GetNewTabPageURL(profile())));
+  EXPECT_TRUE(
+      NavEntryIsInstantNTP(contents, controller.GetLastCommittedEntry()));
 }
 
-TEST_F(SearchTest, InstantCacheableNTPNavigationEntryNewProfile) {
+IN_PROC_BROWSER_TEST_F(SearchTest,
+                       InstantCacheableNTPNavigationEntryNewProfile) {
   SetSearchProvider(false, false);
-  AddTab(browser(), chrome::ChromeUINewTabURLAsGURL());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
+                                           chrome::ChromeUINewTabURLAsGURL()));
   content::WebContents* contents =
-        browser()->tab_strip_model()->GetWebContentsAt(0);
+      browser()->tab_strip_model()->GetActiveWebContents();
   content::NavigationController& controller = contents->GetController();
   // Test virtual url chrome://newtab for first NTP of a new profile
   EXPECT_TRUE(
@@ -327,16 +366,16 @@ TEST_F(SearchTest, InstantCacheableNTPNavigationEntryNewProfile) {
                            controller.GetLastCommittedEntry()->GetURL()));
 }
 
-TEST_F(SearchTest, NoRewriteInIncognito) {
-  TestingProfile* incognito =
-      TestingProfile::Builder().BuildIncognito(profile());
+IN_PROC_BROWSER_TEST_F(SearchTest, NoRewriteInIncognito) {
+  Profile* incognito =
+      profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true);
   EXPECT_EQ(GURL(), GetNewTabPageURL(incognito));
   GURL new_tab_url = chrome::ChromeUINewTabURLAsGURL();
   EXPECT_FALSE(HandleNewTabURLRewrite(&new_tab_url, incognito));
   EXPECT_EQ(chrome::ChromeUINewTabURLAsGURL(), new_tab_url);
 }
 
-TEST_F(SearchTest, UseLocalNTPIfNTPURLIsInsecure) {
+IN_PROC_BROWSER_TEST_F(SearchTest, UseLocalNTPIfNTPURLIsInsecure) {
   // Set an insecure new tab page URL and verify that it's ignored.
   SetSearchProvider(true, true);
   EXPECT_EQ(chrome::kChromeUINewTabPageThirdPartyURL,
@@ -346,7 +385,7 @@ TEST_F(SearchTest, UseLocalNTPIfNTPURLIsInsecure) {
   EXPECT_EQ(chrome::kChromeUINewTabPageThirdPartyURL, new_tab_url);
 }
 
-TEST_F(SearchTest, UseLocalNTPIfNTPURLIsNotSet) {
+IN_PROC_BROWSER_TEST_F(SearchTest, UseLocalNTPIfNTPURLIsNotSet) {
   // Set an insecure new tab page URL and verify that it's ignored.
   SetSearchProvider(false, true);
   EXPECT_EQ(chrome::kChromeUINewTabPageThirdPartyURL,
@@ -356,9 +395,19 @@ TEST_F(SearchTest, UseLocalNTPIfNTPURLIsNotSet) {
   EXPECT_EQ(chrome::kChromeUINewTabPageThirdPartyURL, new_tab_url);
 }
 
-TEST_F(SearchTest, UseLocalNTPIfNTPURLIsBlockedForSupervisedUser) {
+class SupervisedSearchTest : public SearchTest {
+ protected:
+  supervised_user::SupervisionMixin supervision_mixin_{
+      mixin_host_,
+      this,
+      embedded_test_server(),
+      {.sign_in_mode =
+           supervised_user::SupervisionMixin::SignInMode::kSupervised}};
+};
+
+IN_PROC_BROWSER_TEST_F(SupervisedSearchTest,
+                       UseLocalNTPIfNTPURLIsBlockedForSupervisedUser) {
   // Enable supervision, otherwise the URL filter won't be checked.
-  profile()->SetIsSupervisedProfile();
   // Block access to foo.com in the URL filter.
   supervised_user_test_util::SetManualFilterForHost(profile(), "foo.com",
                                                     /*allowlist=*/false);
@@ -370,7 +419,7 @@ TEST_F(SearchTest, UseLocalNTPIfNTPURLIsBlockedForSupervisedUser) {
   EXPECT_EQ(chrome::kChromeUINewTabPageThirdPartyURL, new_tab_url);
 }
 
-TEST_F(SearchTest, IsNTPOrRelatedURL) {
+IN_PROC_BROWSER_TEST_F(SearchTest, IsNTPOrRelatedURL) {
   GURL invalid_url;
   const GURL& ntp_url = chrome::ChromeUINewTabURLAsGURL();
 
@@ -396,7 +445,7 @@ TEST_F(SearchTest, IsNTPOrRelatedURL) {
 
 // Tests whether a |url| corresponds to a New Tab page.
 // See search::IsNTPURL(const GURL& url);
-TEST_F(SearchTest, IsNTPURL) {
+IN_PROC_BROWSER_TEST_F(SearchTest, IsNTPURL) {
   const auto kTestCases = std::to_array<SearchTestCase>({
       {"chrome-search://remote-ntp", true, "Remote NTP URL"},
       {"chrome://new-tab-page", true, "WebUI NTP"},
@@ -417,7 +466,7 @@ TEST_F(SearchTest, IsNTPURL) {
 // Regression test for https://crbug.com/40466271: Set up a search provider
 // backed by localhost on a specific port, like browsertests do.  The
 // chrome-search:// URLs generated in this mode should not have ports.
-TEST_F(SearchTest, SearchProviderWithPort) {
+IN_PROC_BROWSER_TEST_F(SearchTest, SearchProviderWithPort) {
   TemplateURLService* template_url_service =
       TemplateURLServiceFactory::GetForProfile(profile());
   TemplateURLData data;
