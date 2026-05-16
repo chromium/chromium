@@ -298,9 +298,7 @@ public class ActorPictureInPictureController
     private @Nullable RemoteAction createPauseResumeActionForState(
             @ActorTaskId int taskId, @ActorTaskState int state) {
         boolean isWorking = ActorUtils.isRunningState(state);
-
-        boolean isPaused = ActorUtils.isPausedState(state)
-                           || state == ActorTaskState.WAITING_ON_USER;
+        boolean isPaused = ActorUtils.isPausedState(state);
 
         if (!isWorking && !isPaused) return null;
 

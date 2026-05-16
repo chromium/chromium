@@ -462,6 +462,20 @@ public class ActorPictureInPictureControllerTest {
     }
 
     @Test
+    public void testUpdatePausePlayActions_WaitingOnUser_Hidden() {
+        createMockActorTask(101, "Task", ActorTaskState.WAITING_ON_USER);
+
+        mController.updatePipState();
+
+        ArgumentCaptor<PictureInPictureParams> captor =
+                ArgumentCaptor.forClass(PictureInPictureParams.class);
+        verify(mActivity).setPictureInPictureParams(captor.capture());
+
+        List<RemoteAction> actions = captor.getValue().getActions();
+        assertTrue(actions.isEmpty());
+    }
+
+    @Test
     public void testGetActiveTaskLastActedTabId() {
         // Case 1: Service is null
         ActorKeyedServiceFactory.setForTesting(null);
