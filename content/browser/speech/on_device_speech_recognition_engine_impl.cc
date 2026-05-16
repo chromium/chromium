@@ -98,16 +98,8 @@ void OnDeviceSpeechRecognitionEngine::TakeAudioChunk(const AudioChunk& data) {
                                  pcm_data_vector.begin(),
                                  pcm_data_vector.end());
 
-  // The duration of audio to accumulate before sending to the on-device
-  // service.
-  constexpr base::TimeDelta kAudioBufferDuration = base::Seconds(2);
-
-  if (media::AudioTimestampHelper::FramesToTime(
-          accumulated_audio_data_.size(), audio_parameters_.sample_rate()) >=
-      kAudioBufferDuration) {
-    if (asr_stream_.is_bound()) {
-      asr_stream_->AddAudioChunk(ConvertAccumulatedAudioData());
-    }
+  if (asr_stream_.is_bound()) {
+    asr_stream_->AddAudioChunk(ConvertAccumulatedAudioData());
   }
 }
 
