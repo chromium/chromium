@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
+#include "chrome/browser/ui/navigator/browser_navigator.h"
 #include "chrome/browser/ui/navigator/browser_navigator_params.h"
 #include "chrome/browser/ui/tabs/tab_strip_user_gesture_details.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
@@ -405,43 +406,16 @@ WebAppLaunchProcess::NavigateResult WebAppLaunchProcess::MaybeNavigateBrowser(
     const apps::ShareTarget* share_target) {
   WindowOpenDisposition navigation_disposition =
       GetNavigationDisposition(is_new_browser);
-
-  if (share_target) {
-    // TODO(crbug.com/40768956): Expose share target in the LaunchParams and
-    // don't navigate if navigate_existing_client: never is in effect.
-    NavigateParams nav_params = NavigateParamsForShareTarget(
-        browser->GetBrowserForMigrationOnly(), *share_target, *params_->intent,
-        params_->launch_files);
-    nav_params.disposition = navigation_disposition;
-    return {.web_contents = NavigateWebAppUsingParams(nav_params),
-            .did_navigate = true};
-  }
-
-  TabStripModel* const tab_strip = browser->GetFeatures().tab_strip_model();
-  if (tab_strip->empty() ||
-      navigation_disposition != WindowOpenDisposition::CURRENT_TAB) {
-    // Expected use-case for navigation capturing in Isolated Web Apps,
-    // launch_url will be queued in window.launchQueue.
-    const GURL& url_to_navigate =
-        AppBrowserController::IsIsolatedWebApp(browser) &&
-                launch_url.SchemeIsHTTPOrHTTPS()
-            ? AppBrowserController::From(browser)->GetAppStartUrl()
-            : launch_url;
-
-    NavigateParams nav_params(browser->GetBrowserForMigrationOnly(),
-                              url_to_navigate,
-                              ui::PAGE_TRANSITION_AUTO_BOOKMARK);
-    nav_params.disposition = navigation_disposition;
-    return {.web_contents = NavigateWebAppUsingParams(nav_params),
-            .did_navigate = true};
-  }
-
-  content::WebContents* existing_tab = tab_strip->GetActiveWebContents();
-  DCHECK(existing_tab);
+  content::WebContents* existing_tab =
+      browser->GetFeatures().tab_strip_model()->GetActiveWebContents();
+  bool open_in_new_window =
+      !existing_tab ||
+      navigation_disposition != WindowOpenDisposition::CURRENT_TAB;
   // In the case of prevent-close, we do not navigate but instead focus the
   // existing window
-  if (GetLaunchHandler().NeverNavigateExistingClients() ||
-      registrar_->IsPreventCloseEnabled(params_->app_id)) {
+  if (!open_in_new_window &&
+      (GetLaunchHandler().NeverNavigateExistingClients() ||
+       registrar_->IsPreventCloseEnabled(params_->app_id))) {
     if (base::ValuesEquivalent(WebAppTabHelper::FromWebContents(existing_tab)
                                    ->EnsureLaunchQueue()
                                    .GetPendingLaunchAppId(),
@@ -462,24 +436,28 @@ WebAppLaunchProcess::NavigateResult WebAppLaunchProcess::MaybeNavigateBrowser(
     }
   }
 
-  const int tab_index = tab_strip->GetIndexOfWebContents(existing_tab);
+  const GURL& url_to_navigate =
+      AppBrowserController::IsIsolatedWebApp(browser) &&
+              launch_url.SchemeIsHTTPOrHTTPS() && open_in_new_window
+          ? AppBrowserController::From(browser)->GetAppStartUrl()
+          : launch_url;
 
-  existing_tab->OpenURL(
-      content::OpenURLParams(
-          launch_url,
-          content::Referrer::SanitizeForRequest(
-              launch_url,
-              content::Referrer(existing_tab->GetURL(),
-                                network::mojom::ReferrerPolicy::kDefault)),
-          navigation_disposition, ui::PAGE_TRANSITION_AUTO_BOOKMARK,
-          /*is_renderer_initiated=*/false),
-      /*navigation_handle_callback=*/{});
+  NavigateParams nav_params =
+      share_target
+          ? NavigateParamsForShareTarget(
+                browser, *share_target, *params_->intent, params_->launch_files)
+          : NavigateParams(browser, url_to_navigate,
+                           ui::PAGE_TRANSITION_AUTO_BOOKMARK);
+  nav_params.disposition = navigation_disposition;
+  if (!open_in_new_window) {
+    nav_params.referrer = content::Referrer::SanitizeForRequest(
+        launch_url,
+        content::Referrer(existing_tab->GetURL(),
+                          network::mojom::ReferrerPolicy::kDefault));
+  }
 
-  content::WebContents* web_contents = tab_strip->GetActiveWebContents();
-  tab_strip->ActivateTabAt(
-      tab_index, TabStripUserGestureDetails(
-                     TabStripUserGestureDetails::GestureType::kOther));
-  return {.web_contents = web_contents, .did_navigate = true};
+  return {.web_contents = NavigateWebAppUsingParams(nav_params),
+          .did_navigate = true};
 }
 
 void WebAppLaunchProcess::MaybeEnqueueWebLaunchParams(

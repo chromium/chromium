@@ -64,7 +64,7 @@ std::vector<SharedField> ExtractSharedFields(
 }
 
 NavigateParams NavigateParamsForShareTarget(
-    Browser* browser,
+    BrowserWindowInterface* browser,
     const apps::ShareTarget& share_target,
     const apps::Intent& intent,
     const std::vector<base::FilePath>& launch_files) {
@@ -114,7 +114,7 @@ NavigateParams NavigateParamsForShareTarget(
 #if BUILDFLAG(IS_CHROMEOS)
       storage::FileSystemContext* file_system_context =
           file_manager::util::GetFileManagerFileSystemContext(
-              browser->profile());
+              browser->GetProfile());
       file_system_url =
           file_system_context->CrackURLInFirstPartyContext(file->url);
 #endif  // BUILDFLAG(IS_CHROMEOS)

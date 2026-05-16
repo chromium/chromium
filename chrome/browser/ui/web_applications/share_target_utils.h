@@ -11,7 +11,7 @@
 #include "chrome/browser/ui/navigator/browser_navigator_params.h"
 #include "components/services/app_service/public/cpp/intent.h"
 
-class Browser;
+class BrowserWindowInterface;
 
 namespace apps {
 struct ShareTarget;
@@ -31,7 +31,7 @@ std::vector<SharedField> ExtractSharedFields(
     const apps::Intent& intent);
 
 NavigateParams NavigateParamsForShareTarget(
-    Browser* browser,
+    BrowserWindowInterface* browser,
     const apps::ShareTarget& share_target,
     const apps::Intent& intent,
     const std::vector<base::FilePath>& launch_files);
