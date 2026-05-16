@@ -9,18 +9,29 @@
 #import "ios/chrome/browser/authentication/ui_bundled/continuation.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_coordinator.h"
 #import "ios/chrome/browser/intelligence/bwg/metrics/gemini_metrics.h"
+#import "ios/chrome/browser/intelligence/bwg/model/gemini_browser_agent.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_service.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_service_factory.h"
+#import "ios/chrome/browser/intelligence/bwg/model/gemini_tab_helper.h"
+#import "ios/chrome/browser/intelligence/bwg/utils/gemini_constants.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/public/snackbar/snackbar_message.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/grit/ios_strings.h"
+#import "ios/web/public/web_state.h"
 #import "ui/base/l10n/l10n_util.h"
 #import "url/gurl.h"
+
+// The type of ineligibility snackbar to show.
+typedef NS_ENUM(NSInteger, IneligibilitySnackbarType) {
+  kIneligibilitySnackbarTypeAccount,
+  kIneligibilitySnackbarTypePage,
+};
 
 @implementation GeminiEntryFlowCoordinator {
   // The sign-in coordinator presented when the user is signed out.
@@ -90,8 +101,7 @@
   GeminiService* geminiService =
       GeminiServiceFactory::GetForProfile(self.browser->GetProfile());
   if (geminiService && geminiService->IsProfileEligibleForGemini()) {
-    // TODO(crbug.com/507509815): Page eligibility check.
-    [self finishWithResult:kGeminiEntryFlowResultSuccess];
+    [self startGeminiIfPageEligible];
     return;
   }
 
@@ -167,13 +177,12 @@
 
   // Eligible — check page availability.
   if (!result.has_value()) {
-    // TODO(crbug.com/507509815): Page eligibility check.
-    [self finishWithResult:kGeminiEntryFlowResultSuccess];
+    [self startGeminiIfPageEligible];
     return;
   }
 
   // Ineligible — show snackbar if enabled.
-  [self showIneligibleSnackbarIfNeeded];
+  [self showSnackbarForIneligibilityType:kIneligibilitySnackbarTypeAccount];
 
   // Enterprise policy restriction.
   if (result.value().chrome_enterprise) {
@@ -192,19 +201,6 @@
   [self finishWithResult:kGeminiEntryFlowResultUnknown];
 }
 
-// Shows the ineligible account snackbar if showSnackbarOnCompletion is YES.
-- (void)showIneligibleSnackbarIfNeeded {
-  if (!_showSnackbarOnCompletion) {
-    return;
-  }
-  id<SnackbarCommands> snackbarHandler = HandlerForProtocol(
-      self.browser->GetCommandDispatcher(), SnackbarCommands);
-  SnackbarMessage* message = [[SnackbarMessage alloc]
-      initWithTitle:l10n_util::GetNSString(
-                        IDS_IOS_AI_HUB_INELIGIBLE_ACCOUNT_SNACKBAR)];
-  [snackbarHandler showSnackbarMessage:message];
-}
-
 // Presents the account menu for switching to a different account.
 - (void)presentAccountMenu {
   _accountMenuCoordinator = [[AccountMenuCoordinator alloc]
@@ -221,6 +217,61 @@
 - (void)stopAccountMenu {
   [_accountMenuCoordinator stop];
   _accountMenuCoordinator = nil;
+}
+
+// Starts the Gemini session if the current page is eligible.
+- (void)startGeminiIfPageEligible {
+  web::WebState* activeWebState =
+      self.browser->GetWebStateList()->GetActiveWebState();
+
+  // TODO(crbug.com/503013746): Support invoking from the tab grid where
+  // there is no active web state.
+  if (!activeWebState) {
+    [self showSnackbarForIneligibilityType:kIneligibilitySnackbarTypePage];
+    [self finishWithResult:kGeminiEntryFlowResultPageIneligible];
+    return;
+  }
+
+  GeminiTabHelper* tabHelper = GeminiTabHelper::FromWebState(activeWebState);
+  if (!tabHelper || !tabHelper->IsGeminiAvailableForWebState()) {
+    [self showSnackbarForIneligibilityType:kIneligibilitySnackbarTypePage];
+    [self finishWithResult:kGeminiEntryFlowResultPageIneligible];
+    return;
+  }
+
+  // All checks passed — start the Gemini session.
+  [self startGeminiSession];
+  [self finishWithResult:kGeminiEntryFlowResultSuccess];
+}
+
+// Starts the Gemini session via the GeminiBrowserAgent.
+- (void)startGeminiSession {
+  GeminiBrowserAgent* geminiBrowserAgent =
+      GeminiBrowserAgent::FromBrowser(self.browser);
+  if (geminiBrowserAgent) {
+    geminiBrowserAgent->StartGeminiFlow(self.baseViewController, _startupState);
+  }
+}
+
+// Shows an ineligibility snackbar if showSnackbarOnCompletion is set.
+- (void)showSnackbarForIneligibilityType:(IneligibilitySnackbarType)type {
+  if (!_showSnackbarOnCompletion) {
+    return;
+  }
+  int messageID;
+  switch (type) {
+    case kIneligibilitySnackbarTypeAccount:
+      messageID = IDS_IOS_AI_HUB_INELIGIBLE_ACCOUNT_SNACKBAR;
+      break;
+    case kIneligibilitySnackbarTypePage:
+      messageID = IDS_IOS_AI_HUB_PAGE_INELIGIBLE_SNACKBAR;
+      break;
+  }
+  id<SnackbarCommands> snackbarHandler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), SnackbarCommands);
+  SnackbarMessage* message =
+      [[SnackbarMessage alloc] initWithTitle:l10n_util::GetNSString(messageID)];
+  [snackbarHandler showSnackbarMessage:message];
 }
 
 @end
