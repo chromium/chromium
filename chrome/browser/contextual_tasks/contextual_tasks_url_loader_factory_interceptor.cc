@@ -15,8 +15,10 @@
 #include "components/omnibox/common/logger.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
+#include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/buildflags/buildflags.h"
+#include "google_apis/gaia/gaia_urls.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -27,6 +29,7 @@
 #include "services/network/public/cpp/cors/cors_error_status.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/self_deleting_url_loader_factory.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/url_loader_completion_status.h"
 #include "services/network/public/mojom/cors.mojom.h"
 #include "services/network/public/mojom/early_hints.mojom.h"
@@ -279,6 +282,27 @@ class ContextualTasksProxyingURLLoaderFactory
           std::move(loader), request_id, options, modified_request,
           std::move(client), traffic_annotation);
       return;
+    }
+
+    // Intercept List Accounts API request and re-issue it in the main storage
+    // partition.
+    if (modified_request.url.host() ==
+            GaiaUrls::GetInstance()->gaia_origin().host() &&
+        modified_request.url.path() ==
+            GaiaUrls::GetInstance()->ListAccountsURLWithSource("").path()) {
+      if (web_contents_) {
+        Profile* profile =
+            Profile::FromBrowserContext(web_contents_->GetBrowserContext());
+        content::StoragePartition* main_partition =
+            profile->GetDefaultStoragePartition();
+        scoped_refptr<network::SharedURLLoaderFactory> main_factory =
+            main_partition->GetURLLoaderFactoryForBrowserProcess();
+
+        main_factory->CreateLoaderAndStart(
+            std::move(loader), request_id, options, modified_request,
+            std::move(client), traffic_annotation);
+        return;
+      }
     }
 
     // If the request doesn't need the Authorization header, create the loader

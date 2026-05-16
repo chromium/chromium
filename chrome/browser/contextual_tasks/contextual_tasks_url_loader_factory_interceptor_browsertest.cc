@@ -26,6 +26,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_mock_cert_verifier.h"
+#include "google_apis/gaia/gaia_urls.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
@@ -112,6 +113,7 @@ class ContextualTasksUrlLoaderFactoryInterceptorBrowserTest
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     command_line->AppendSwitch("ignore-certificate-errors");
+    command_line->AppendSwitch("disable-crash-on-webui-js-error");
     mock_cert_verifier_.SetUpCommandLine(command_line);
   }
 
@@ -134,6 +136,8 @@ class ContextualTasksUrlLoaderFactoryInterceptorBrowserTest
     host_resolver()->AddRule(kTestHost, "127.0.0.1");
     host_resolver()->AddRule(kTestSubHost, "127.0.0.1");
     host_resolver()->AddRule(kDenylistHost, "127.0.0.1");
+    host_resolver()->AddRule(GaiaUrls::GetInstance()->gaia_origin().host(),
+                             "127.0.0.1");
     https_server_.StartAcceptingConnections();
 
     // Sign in.
@@ -168,12 +172,13 @@ class ContextualTasksUrlLoaderFactoryInterceptorBrowserTest
   std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
       const net::test_server::HttpRequest& request) {
     if (request.relative_url.find("/echoheader?Authorization") !=
-        std::string::npos) {
+            std::string::npos ||
+        request.relative_url.find("/ListAccounts") != std::string::npos) {
       if (request.method == net::test_server::METHOD_OPTIONS) {
         auto response = std::make_unique<net::test_server::BasicHttpResponse>();
         response->AddCustomHeader("Access-Control-Allow-Origin", "*");
         response->AddCustomHeader("Access-Control-Allow-Headers",
-                                  "Authorization");
+                                  "Authorization, Cookie");
         return response;
       }
 
@@ -189,7 +194,14 @@ class ContextualTasksUrlLoaderFactoryInterceptorBrowserTest
         ua_header_value = it_ua->second;
       }
 
+      auto it_cookie = request.headers.find("Cookie");
+      std::string cookie_header_value;
+      if (it_cookie != request.headers.end()) {
+        cookie_header_value = it_cookie->second;
+      }
+
       if (!auth_header_value.empty() || !ua_header_value.empty() ||
+          !cookie_header_value.empty() ||
           request.relative_url.find("onegoogle") != std::string::npos ||
           request.relative_url.find("denylist") != std::string::npos) {
         content::GetUIThreadTaskRunner({})->PostTask(
@@ -197,7 +209,8 @@ class ContextualTasksUrlLoaderFactoryInterceptorBrowserTest
             base::BindOnce(
                 &ContextualTasksUrlLoaderFactoryInterceptorBrowserTest::
                     OnHeadersCaptured,
-                base::Unretained(this), auth_header_value, ua_header_value));
+                base::Unretained(this), auth_header_value, ua_header_value,
+                cookie_header_value));
       }
       return std::make_unique<net::test_server::BasicHttpResponse>();
     }
@@ -235,9 +248,11 @@ class ContextualTasksUrlLoaderFactoryInterceptorBrowserTest
   }
 
   void OnHeadersCaptured(const std::string& auth_header,
-                         const std::string& ua_header) {
+                         const std::string& ua_header,
+                         const std::string& cookie_header) {
     captured_auth_header_ = auth_header;
     captured_ua_header_ = ua_header;
+    captured_cookie_header_ = cookie_header;
     if (header_capture_quit_closure_) {
       std::move(header_capture_quit_closure_).Run();
     }
@@ -252,6 +267,7 @@ class ContextualTasksUrlLoaderFactoryInterceptorBrowserTest
  protected:
   std::string captured_auth_header_;
   std::string captured_ua_header_;
+  std::string captured_cookie_header_;
   base::OnceClosure header_capture_quit_closure_;
   base::OnceClosure retry_test_success_closure_;
   base::test::ScopedFeatureList feature_list_;
@@ -579,6 +595,116 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksUrlLoaderFactoryInterceptorBrowserTest,
   run_loop.Run();
 
   EXPECT_TRUE(captured_auth_header_.empty());
+}
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksUrlLoaderFactoryInterceptorBrowserTest,
+                       ListAccountsIntercepted) {
+  base::RunLoop run_loop;
+  header_capture_quit_closure_ = run_loop.QuitClosure();
+
+  // Set a cookie in the main profile for the Gaia host.
+  GURL gaia_url =
+      GURL("https://" + GaiaUrls::GetInstance()->gaia_origin().host());
+
+  ASSERT_TRUE(
+      content::SetCookie(browser()->profile(), gaia_url,
+                         "test_cookie=test_value; Secure; SameSite=None"));
+
+  // Navigate to the Contextual Tasks WebUI.
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GURL(chrome::kChromeUIContextualTasksURL)));
+
+  // Wait for the WebUI to load and create the webview.
+  content::WebContents* web_ui_contents =
+      TabListInterface::From(browser())->GetActiveTab()->GetContents();
+
+  // Script to find the webview and perform a fetch to /ListAccounts.
+  // We use credentials: 'include' to ensure cookies are sent.
+  GURL fetch_url = https_server_.GetURL(
+      GaiaUrls::GetInstance()->gaia_origin().host(), "/ListAccounts");
+
+  std::string script = content::JsReplace(
+      R"(
+    (async () => {
+
+      const waitFor = (selector, scope = document) => {
+        return new Promise(resolve => {
+          if (scope.querySelector(selector)) {
+
+            return resolve(scope.querySelector(selector));
+          }
+          const observer = new MutationObserver(() => {
+            if (scope.querySelector(selector)) {
+
+              observer.disconnect();
+              resolve(scope.querySelector(selector));
+            }
+          });
+          observer.observe(scope, {childList: true, subtree: true});
+        });
+      };
+
+
+      const app = await waitFor('contextual-tasks-app');
+
+      if (!app.shadowRoot) {
+
+        await customElements.whenDefined('contextual-tasks-app');
+
+      }
+
+      const webview = await waitFor('#threadFrame', app.shadowRoot);
+
+
+      // Workaround: Reusing the existing webview for cross-origin navigation in
+      // this test triggers a Viz error: "SubmitCompositorFrame failed ...
+      // because Surface belongs to another client". This is likely due to a
+      // mismatch in surface ownership or token reuse across frame sinks when
+      // navigating across origins in the test environment. See
+      // crbug.com/499241096. Creating a new webview ensures a clean state and a
+      // new frame sink, avoiding the conflict.
+      const oldWebview = webview;
+
+      const newWebview = document.createElement('webview');
+      newWebview.style.width = '100%';
+      newWebview.style.height = '100%';
+      const targetUrl = 'data:text/html,<html><body></body></html>';
+      newWebview.src = targetUrl;
+
+      oldWebview.parentNode.replaceChild(newWebview, oldWebview);
+
+
+      // Wait for load of the new webview
+      await new Promise((resolve) => {
+        const stop = () => {
+
+            newWebview.removeEventListener('loadstop', stop);
+            resolve();
+        };
+        newWebview.addEventListener('loadstop', stop);
+      });
+
+      // Execute fetch inside new webview.
+
+      newWebview.executeScript({code: `
+        fetch($1, {credentials: 'include'});
+      `});
+
+    })();
+  )",
+      fetch_url.spec());
+
+  EXPECT_TRUE(content::ExecJs(web_ui_contents, script));
+
+  // Wait for the request to reach the server.
+
+  run_loop.Run();
+
+  // Verify the headers.
+  EXPECT_TRUE(captured_auth_header_.empty());
+  EXPECT_THAT(captured_cookie_header_,
+              testing::HasSubstr("test_cookie=test_value"));
 }
 
 }  // namespace contextual_tasks
