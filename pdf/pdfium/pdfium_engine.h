@@ -417,6 +417,10 @@ class PDFiumEngine : public DocumentLoader::Client,
                         double pdf_zoom,
                         const InkTextBoxAttributes& attributes);
 
+  // See method of the same name in PdfInkModuleClient. Virtual to support
+  // testing.
+  virtual void UpdateTextActiveAndInvalidate(InkTextId id, bool active);
+
   // Virtual to support testing.
   virtual gfx::Size GetThumbnailSize(int page_index, float device_pixel_ratio);
 

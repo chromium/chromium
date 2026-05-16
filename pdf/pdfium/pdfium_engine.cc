@@ -5237,6 +5237,39 @@ void PDFiumEngine::DrawText(int page_index,
   }
 }
 
+void PDFiumEngine::UpdateTextActiveAndInvalidate(InkTextId id, bool active) {
+  auto it = ink_text_data_.find(id);
+  CHECK(it != ink_text_data_.end());
+
+  int page_index = it->second.page_index;
+  PDFiumPage* pdfium_page = GetPage(page_index);
+  CHECK(pdfium_page);
+  FPDF_PAGE page = pdfium_page->GetPage();
+  CHECK(page);
+
+  gfx::Rect invalidate_rect;
+  for (FPDF_PAGEOBJECT page_object : it->second.page_objects) {
+    bool result = FPDFPageObj_SetIsActive(page_object, active);
+    CHECK(result);
+
+    std::optional<PdfRect> rect = GetPageObjectBounds(page_object);
+    CHECK(rect.has_value());
+    invalidate_rect.Union(pdfium_page->PageToScreen(GetVisibleRect().origin(),
+                                                    current_zoom_, rect.value(),
+                                                    GetCurrentOrientation()));
+  }
+
+  if (!invalidate_rect.IsEmpty()) {
+    // Expand the invalidation rect to account for any rounding errors that may
+    // have occurred.
+    invalidate_rect.Outset(1);
+    client_->Invalidate(invalidate_rect);
+  }
+
+  CHECK(FPDFPage_GenerateContent(page));
+  GetPage(page_index)->ReloadTextPage();
+}
+
 gfx::Size PDFiumEngine::GetThumbnailSize(int page_index,
                                          float device_pixel_ratio) {
   CHECK(PageIndexInBounds(page_index));

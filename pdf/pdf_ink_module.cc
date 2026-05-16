@@ -1626,7 +1626,10 @@ void PdfInkModule::HandleSetAnnotationModeMessage(
 
 void PdfInkModule::HandleEditTextAnnotationMessage(
     const base::DictValue& message) {
-  // TODO(crbug.com/408976049): Implement.
+  int frontend_id = message.FindInt("data").value();
+  auto it = text_id_map_.find(frontend_id);
+  CHECK(it != text_id_map_.end());
+  client_->UpdateTextActiveAndInvalidate(it->second, /*active=*/false);
 }
 
 void PdfInkModule::HandleFinishTextAnnotationMessage(

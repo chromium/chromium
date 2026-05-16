@@ -125,6 +125,11 @@ class TestPDFiumEngine : public PDFiumEngine {
                const InkTextBoxAttributes&),
               (override));
 
+  MOCK_METHOD(void,
+              UpdateTextActiveAndInvalidate,
+              (InkTextId, bool),
+              (override));
+
   MOCK_METHOD(gfx::Size, GetThumbnailSize, (int, float), (override));
 
   MOCK_METHOD(void,

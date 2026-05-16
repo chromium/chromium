@@ -3620,6 +3620,16 @@ TEST_P(PdfViewWebPluginInkTest, DrawText) {
       kPageIndex, kTextId, {}, kZoom, text_box_attributes);
 }
 
+TEST_P(PdfViewWebPluginInkTest, UpdateTextActiveAndInvalidate) {
+  static constexpr InkTextId kTextId(1);
+
+  EXPECT_CALL(*engine_ptr_,
+              UpdateTextActiveAndInvalidate(kTextId, /*active=*/false));
+
+  plugin_->ink_module_client_for_testing()->UpdateTextActiveAndInvalidate(
+      kTextId, /*active=*/false);
+}
+
 class PdfViewWebPluginInkTextHighlightTest : public PdfViewWebPluginInkTest {
  public:
   static constexpr TestAnnotationBrushMessageParams kLightGreenBrushParams{

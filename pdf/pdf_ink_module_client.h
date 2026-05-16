@@ -191,6 +191,11 @@ class PdfInkModuleClient {
   virtual void UpdateStrokeActive(int page_index, InkStrokeId id, bool active) {
   }
 
+  // Notifies that an existing text annotation identified by `id` should update
+  // its active state and then invalidate the rect that corresponds to the union
+  // of all text in the text annotation.
+  virtual void UpdateTextActiveAndInvalidate(InkTextId id, bool active) {}
+
   // Same as `PageIndexFromPoint()`, but `point` must be on a visible page,
   // otherwise returns -1.
   virtual int VisiblePageIndexFromPoint(const gfx::PointF& point) = 0;

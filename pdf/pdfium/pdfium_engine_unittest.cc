@@ -3431,6 +3431,70 @@ TEST_P(PDFiumEngineInkDrawTextTest, DrawTextAndDiscardStrokes) {
       kPageIndex));
 }
 
+TEST_P(PDFiumEngineInkDrawTextTest, UpdateTextActiveAndInvalidate) {
+  NiceMock<MockTestClient> client(/*use_skia_renderer=*/GetParam());
+  std::unique_ptr<PDFiumEngine> engine =
+      InitializeEngine(&client, FILE_PATH_LITERAL("blank.pdf"));
+  ASSERT_TRUE(engine);
+  engine->PluginSizeUpdated({500, 500});
+
+  int page_count = FPDF_GetPageCount(engine->doc());
+  ASSERT_EQ(page_count, 1);
+
+  constexpr int kPageIndex = 0;
+  PDFiumPage& page = GetPDFiumPage(*engine, kPageIndex);
+  CheckPdfRenderingIsBlank200x200(page.GetPage());
+
+  FontId font_id = AddDefaultFont(engine.get());
+  constexpr std::string_view kTextToDraw = "Hello!";
+  GlyphsAndPositions text_data =
+      GetGlyphsForText(kTextToDraw, /*font_size=*/10.0f);
+  ASSERT_FALSE(text_data.glyphs.empty());
+  ASSERT_FALSE(text_data.glyph_positions.empty());
+
+  static constexpr InkTextId kTextId(0);
+
+  // Draw some text. Use the same inputs as the DrawText test case to reuse the
+  // `kAppliedTextFilePath` expectation files.
+  engine->DrawText(
+      kPageIndex, kTextId,
+      {InkTextInfo(font_id, text_data.glyphs, text_data.glyph_positions,
+                   /*location=*/gfx::RectF(0.0f, 0.0f, 100.0f, 20.0f),
+                   /*is_horizontal=*/true)},
+      /*pdf_zoom=*/1.0, SampleInkTextBoxAttributes());
+
+  // Verify the rendering of text for in-memory PDF.
+  const gfx::Size& kPageSizeInPoints = kBlankPageSizeInPoints;
+  const base::FilePath kAppliedTextFilePath(GetInkTestDataFilePath(
+      GetTestDataPathWithPlatformSuffix("applied_text_hello.png")));
+  CheckPdfRendering(page.GetPage(), kPageSizeInPoints, kAppliedTextFilePath);
+
+  // Set the text as inactive. This should invalidate the area for the text.
+  // The font metrics differ slightly depending on platform.
+#if BUILDFLAG(IS_WIN)
+  static constexpr gfx::Rect kTextInvalidationRect(25, 25, 27, 11);
+#elif BUILDFLAG(IS_MAC)
+  static constexpr gfx::Rect kTextInvalidationRect(25, 22, 27, 11);
+#else
+  static constexpr gfx::Rect kTextInvalidationRect(25, 24, 30, 10);
+#endif
+  EXPECT_CALL(client, Invalidate(kTextInvalidationRect));
+
+  engine->UpdateTextActiveAndInvalidate(kTextId, /*active=*/false);
+  CheckPdfRenderingIsBlank200x200(page.GetPage());
+  ASSERT_NO_FATAL_FAILURE(CheckSavedPdfRenderingIsBlank200x200(engine.get()));
+
+  // Set the text as active again. This should invalidate the same text area.
+  EXPECT_CALL(client, Invalidate(kTextInvalidationRect));
+
+  engine->UpdateTextActiveAndInvalidate(kTextId, /*active=*/true);
+  CheckPdfRendering(page.GetPage(), kPageSizeInPoints, kAppliedTextFilePath);
+  std::vector<uint8_t> saved_pdf_data = engine->GetSaveData();
+  ASSERT_FALSE(saved_pdf_data.empty());
+  CheckPdfRendering(saved_pdf_data, kPageIndex, kPageSizeInPoints,
+                    kAppliedTextFilePath);
+}
+
 // Don't be concerned about any slight rendering differences in AGG vs. Skia,
 // covering one of these is sufficient for checking how data is written out.
 INSTANTIATE_TEST_SUITE_P(All,
