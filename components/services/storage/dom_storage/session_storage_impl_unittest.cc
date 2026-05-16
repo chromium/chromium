@@ -19,6 +19,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -68,8 +69,6 @@ class SessionStorageImplTestBase : public testing::Test {
       delete;
 
   ~SessionStorageImplTestBase() override {
-    // Flush all tasks to make sure the database is fully closed.
-    RunUntilIdle();
     EXPECT_TRUE(temp_dir_.Delete());
   }
 
@@ -108,9 +107,33 @@ class SessionStorageImplTestBase : public testing::Test {
 
   void ResetSessionStorage() { session_storage_.reset(); }
 
+  // Resets `session_storage_` and waits for database shutdown tasks to finish.
   void ShutDownSessionStorage() {
+    if (!session_storage_) {
+      return;
+    }
+
     remote_session_storage_.FlushForTesting();
+
+    scoped_refptr<base::SequencedTaskRunner> db_task_runner;
+    // If the database was never opened, no need to wait for it to close.
+    if (session_storage_->GetDatabaseForTesting()) {
+      base::RunLoop loop;
+      session_storage_->GetDatabaseForTesting()
+          ->database()
+          .PostTaskWithThisObject(
+              base::BindLambdaForTesting([&](DomStorageDatabase*) {
+                db_task_runner = base::SequencedTaskRunner::GetCurrentDefault();
+                loop.Quit();
+              }));
+      loop.Run();
+    }
     session_storage_.reset();
+    if (db_task_runner) {
+      base::RunLoop flush_db;
+      db_task_runner->PostTask(FROM_HERE, flush_db.QuitClosure());
+      flush_db.Run();
+    }
   }
 
   void DoTestPut(const std::string& namespace_id,
@@ -754,9 +777,6 @@ TEST_P(SessionStorageImplTest, CorruptionOnDisk) {
 
   ShutDownSessionStorage();
 
-  // Also flush Task Scheduler tasks to make sure the database is fully closed.
-  RunUntilIdle();
-
   base::FilePath db_path =
       DomStorageDatabase::GetPath(StorageType::kSessionStorage, temp_path());
   if (IsSqliteEnabled()) {
@@ -1048,7 +1068,7 @@ TEST_P(SessionStorageImplTest, DontRecreateOnRepeatedCommitFailure) {
               test::MakeStorageAreaSource(),
               base::BindOnce([](bool success) { EXPECT_TRUE(success); }));
     area.FlushForTesting();
-    RunUntilIdle();
+    WaitForDatabaseTasks();
     // And we need to flush after every change. Otherwise changes get batched up
     // and only one commit is done some time later.
     session_storage_impl()->FlushAreaForTesting(namespace_id, storage_key1);
@@ -1058,7 +1078,7 @@ TEST_P(SessionStorageImplTest, DontRecreateOnRepeatedCommitFailure) {
   }
 
   // Should still be connected after all that.
-  RunUntilIdle();
+  WaitForDatabaseTasks();
   EXPECT_TRUE(area.is_connected());
 
   // Verify recovery histogram was emitted for the first recovery.
@@ -1604,7 +1624,7 @@ TEST_P(SessionStorageImplTest, PurgeInactiveWrappers) {
             base::StringPrintf("http://example.com:%d", i));
     session_storage()->BindStorageArea(storage_key, namespace_id1,
                                        area.BindNewPipeAndPassReceiver());
-    RunUntilIdle();
+    FlushMojo();
     area.reset();
   }
 
@@ -1816,7 +1836,7 @@ TEST_P(SessionStorageImplTest, PurgeMemoryDoesNotCrashOrHang) {
 
   area_n2.reset();
 
-  RunUntilIdle();
+  FlushMojo();
 
   // Verify this doesn't crash or hang.
   session_storage_impl()->PurgeMemory();
@@ -1975,7 +1995,8 @@ TEST_P(SessionStorageImplTest, Bug1128318) {
   session_storage()->CloneNamespace(
       namespace_id2, namespace_id3,
       mojom::SessionStorageCloneType::kWaitForCloneOnNamespace);
-  RunUntilIdle();
+  EnsureDatabaseOpen();
+  FlushMojo();
 
   // At this point `namespace_id3` should be alive. It should not exist in meta
   // data yet, as that would only be populated once the actual clone happens.
