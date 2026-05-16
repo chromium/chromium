@@ -702,10 +702,17 @@ std::set<int32_t> GpuControlList::MakeDecision(
     std::string_view os_version,
     const GPUInfo& gpu_info,
     const std::vector<uint32_t>& ignored_entries) {
-  return MakeDecision(os, os_version, gpu_info, 0, ignored_entries);
+  return MakeDecisionImpl(os, os_version, gpu_info, 0, ignored_entries);
 }
 
-std::set<int32_t> GpuControlList::MakeDecision(
+std::set<int32_t> GpuControlList::MakeDecision(GpuControlList::OsType os,
+                                               std::string_view os_version,
+                                               const GPUInfo& gpu_info,
+                                               uint32_t target_test_group) {
+  return MakeDecisionImpl(os, os_version, gpu_info, target_test_group, {});
+}
+
+std::set<int32_t> GpuControlList::MakeDecisionImpl(
     GpuControlList::OsType os,
     std::string_view os_version,
     const GPUInfo& gpu_info,

@@ -91,16 +91,16 @@ TEST_P(GpuControlListTest, NeedsMoreInfo) {
   GPUInfo gpu_info;
   gpu_info.gpu.vendor_id = kNvidiaVendorId;
 
-  std::set<int> features = control_list->MakeDecision(
-      GpuControlList::kOsWin, kOsVersion, gpu_info);
+  std::set<int> features = control_list->MakeDecision(GpuControlList::kOsWin,
+                                                      kOsVersion, gpu_info, {});
   EXPECT_EMPTY_SET(features);
   EXPECT_TRUE(control_list->needs_more_info());
   std::vector<uint32_t> decision_entries = control_list->GetActiveEntries();
   EXPECT_EQ(0u, decision_entries.size());
 
   gpu_info.gpu.driver_version = "11";
-  features = control_list->MakeDecision(
-      GpuControlList::kOsWin, kOsVersion, gpu_info);
+  features = control_list->MakeDecision(GpuControlList::kOsWin, kOsVersion,
+                                        gpu_info, {});
   EXPECT_SINGLE_FEATURE(features, TEST_FEATURE_0);
   EXPECT_FALSE(control_list->needs_more_info());
   decision_entries = control_list->GetActiveEntries();
@@ -123,14 +123,14 @@ TEST_P(GpuControlListTest, NeedsMoreInfoForExceptions) {
   gpu_info.gpu.vendor_id = kIntelVendorId;
 
   // The case this entry does not apply.
-  std::set<int> features = control_list->MakeDecision(
-      GpuControlList::kOsMacosx, kOsVersion, gpu_info);
+  std::set<int> features = control_list->MakeDecision(GpuControlList::kOsMacosx,
+                                                      kOsVersion, gpu_info, {});
   EXPECT_EMPTY_SET(features);
   EXPECT_FALSE(control_list->needs_more_info());
 
   // The case this entry might apply, but need more info.
-  features = control_list->MakeDecision(
-      GpuControlList::kOsLinux, kOsVersion, gpu_info);
+  features = control_list->MakeDecision(GpuControlList::kOsLinux, kOsVersion,
+                                        gpu_info, {});
   // Ignore exceptions if main entry info matches
   EXPECT_SINGLE_FEATURE(features, TEST_FEATURE_0);
   EXPECT_TRUE(control_list->needs_more_info());
@@ -138,8 +138,8 @@ TEST_P(GpuControlListTest, NeedsMoreInfoForExceptions) {
   // The case we have full info, and the exception applies (so the entry
   // does not apply).
   gpu_info.gl_renderer = is_angle() ? "ANGLE (vendor, mesa, version)" : "mesa";
-  features = control_list->MakeDecision(
-      GpuControlList::kOsLinux, kOsVersion, gpu_info);
+  features = control_list->MakeDecision(GpuControlList::kOsLinux, kOsVersion,
+                                        gpu_info, {});
   EXPECT_EMPTY_SET(features);
   EXPECT_FALSE(control_list->needs_more_info());
 
@@ -147,7 +147,7 @@ TEST_P(GpuControlListTest, NeedsMoreInfoForExceptions) {
   gpu_info.gl_renderer =
       is_angle() ? "ANGLE (vendor, my renderer, version)" : "my renderer";
   features = control_list->MakeDecision(GpuControlList::kOsLinux, kOsVersion,
-      gpu_info);
+                                        gpu_info, {});
   EXPECT_SINGLE_FEATURE(features, TEST_FEATURE_0);
   EXPECT_FALSE(control_list->needs_more_info());
 }
@@ -164,8 +164,8 @@ TEST_P(GpuControlListTest, IgnorableEntries) {
   GPUInfo gpu_info;
   gpu_info.gpu.vendor_id = kIntelVendorId;
 
-  std::set<int> features = control_list->MakeDecision(
-      GpuControlList::kOsLinux, kOsVersion, gpu_info);
+  std::set<int> features = control_list->MakeDecision(GpuControlList::kOsLinux,
+                                                      kOsVersion, gpu_info, {});
   EXPECT_SINGLE_FEATURE(features, TEST_FEATURE_0);
   EXPECT_FALSE(control_list->needs_more_info());
 }
@@ -183,7 +183,7 @@ TEST_P(GpuControlListTest, IgnoredEntries) {
 
   // By default, both entries apply.
   std::set<int> features = control_list->MakeDecision(GpuControlList::kOsLinux,
-                                                      kOsVersion, gpu_info);
+                                                      kOsVersion, gpu_info, {});
   EXPECT_EQ(2u, features.size());
   EXPECT_EQ(1u, features.count(TEST_FEATURE_0));
   EXPECT_EQ(1u, features.count(TEST_FEATURE_1));
@@ -220,7 +220,7 @@ TEST_P(GpuControlListTest, DisabledExtensionTest) {
   std::unique_ptr<GpuControlList> control_list = Create(kEntries);
 
   GPUInfo gpu_info;
-  control_list->MakeDecision(GpuControlList::kOsWin, kOsVersion, gpu_info);
+  control_list->MakeDecision(GpuControlList::kOsWin, kOsVersion, gpu_info, {});
 
   std::vector<std::string> disabled_extensions =
       control_list->GetDisabledExtensions();
@@ -240,11 +240,11 @@ TEST_P(GpuControlListTest, LinuxKernelVersion) {
   gpu_info.gpu.vendor_id = 0x8086;
 
   std::set<int> features = control_list->MakeDecision(
-      GpuControlList::kOsLinux, "3.13.0-63-generic", gpu_info);
+      GpuControlList::kOsLinux, "3.13.0-63-generic", gpu_info, {});
   EXPECT_SINGLE_FEATURE(features, TEST_FEATURE_0);
 
   features = control_list->MakeDecision(GpuControlList::kOsLinux,
-                                        "3.19.2-1-generic", gpu_info);
+                                        "3.19.2-1-generic", gpu_info, {});
   EXPECT_EMPTY_SET(features);
 }
 
@@ -258,7 +258,7 @@ TEST_P(GpuControlListTest, TestGroup) {
 
   // Default test group.
   std::set<int> features = control_list->MakeDecision(
-      GpuControlList::kOsLinux, "3.13.2-1-generic", gpu_info);
+      GpuControlList::kOsLinux, "3.13.2-1-generic", gpu_info, 0);
   EXPECT_EMPTY_SET(features);
 
   // Test group 0, the default test group
@@ -302,24 +302,24 @@ TEST_P(GpuControlListTest, D3DFeatureLevel) {
 
   // D3D feature level 11.0. Entry requires < 12.0. So it applies.
   gpu_info.d3d11_feature_level = D3D_FEATURE_LEVEL_11_0;
-  std::set<int> features = control_list->MakeDecision(
-      GpuControlList::kOsWin, kOsVersion, gpu_info);
+  std::set<int> features = control_list->MakeDecision(GpuControlList::kOsWin,
+                                                      kOsVersion, gpu_info, {});
   EXPECT_SINGLE_FEATURE(features, TEST_FEATURE_0);
 
   gpu_info.d3d11_feature_level = D3D_FEATURE_LEVEL_11_1;
-  features = control_list->MakeDecision(
-      GpuControlList::kOsWin, kOsVersion, gpu_info);
+  features = control_list->MakeDecision(GpuControlList::kOsWin, kOsVersion,
+                                        gpu_info, {});
   EXPECT_SINGLE_FEATURE(features, TEST_FEATURE_0);
 
   // D3D feature level 12.0. Entry requires < 12.0. So it does not apply.
   gpu_info.d3d11_feature_level = D3D_FEATURE_LEVEL_12_0;
-  features = control_list->MakeDecision(
-      GpuControlList::kOsWin, kOsVersion, gpu_info);
+  features = control_list->MakeDecision(GpuControlList::kOsWin, kOsVersion,
+                                        gpu_info, {});
   EXPECT_EMPTY_SET(features);
 
   gpu_info.d3d11_feature_level = D3D_FEATURE_LEVEL_12_1;
-  features = control_list->MakeDecision(
-      GpuControlList::kOsWin, kOsVersion, gpu_info);
+  features = control_list->MakeDecision(GpuControlList::kOsWin, kOsVersion,
+                                        gpu_info, {});
   EXPECT_EMPTY_SET(features);
 }
 #endif  // BUILDFLAG(IS_WIN)

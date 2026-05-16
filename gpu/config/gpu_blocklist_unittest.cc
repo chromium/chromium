@@ -50,8 +50,8 @@ class GpuBlocklistTest : public testing::Test {
     }}};
     std::unique_ptr<GpuBlocklist> blocklist =
         GpuBlocklist::Create(kTestEntries);
-    std::set<int> type =
-        blocklist->MakeDecision(GpuBlocklist::kOsMacosx, "10.12.3", gpu_info());
+    std::set<int> type = blocklist->MakeDecision(GpuBlocklist::kOsMacosx,
+                                                 "10.12.3", gpu_info(), {});
     EXPECT_EQ(1u, type.size());
     EXPECT_EQ(1u, type.count(feature_type));
   }
