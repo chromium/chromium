@@ -201,6 +201,31 @@ composebox-favicon-group {
   display: none;
 }
 
+.share-tabs-flyout[data-position='right'] {
+  left: 100%;
+  margin-left: 4px;
+  margin-right: 0;
+  right: auto;
+  top: 0;
+}
+
+.share-tabs-flyout[data-position='left'] {
+  left: auto;
+  margin-left: 0;
+  margin-right: 4px;
+  right: 100%;
+  top: 0;
+}
+
+.share-tabs-flyout[data-position='bottom'] {
+  left: 0;
+  margin-left: 0;
+  margin-right: 0;
+  margin-top: 4px;
+  right: auto;
+  top: 100%;
+}
+
 .share-tabs-flyout .dropdown-item {
   box-sizing: border-box;
   max-width: none;

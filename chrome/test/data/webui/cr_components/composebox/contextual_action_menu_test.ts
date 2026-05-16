@@ -909,4 +909,79 @@ suite('ContextualActionMenu', () => {
         // directly on Image Upload.
         assertEquals(imageUpload, actionMenu.shadowRoot.activeElement);
       });
+
+  test('Share tabs flyout dynamic repositioning', async () => {
+    loadTimeData.overrideValues({
+      contextManagementInComposeboxEnabled: true,
+    });
+
+    actionMenu.remove();
+    actionMenu = document.createElement('cr-composebox-contextual-action-menu');
+    actionMenu.tabSuggestions = [
+      {
+        tabId: 1,
+        title: 'Tab 1',
+        url: {url: 'https://example.com'},
+        lastActiveTime: {internalValue: 0n},
+        showInCurrentTabChip: false,
+        showInPreviousTabChip: false,
+        lastActive: {internalValue: 0n},
+      } as any,
+    ];
+    actionMenu.inputState = new MockInputState({
+      allowedInputTypes: [InputType.kBrowserTab],
+    }) as any;
+    document.body.appendChild(actionMenu);
+    await microtasksFinished();
+
+    actionMenu.showAt(actionMenu);
+    await microtasksFinished();
+
+    const trigger = $$(actionMenu, '#shareTabsTrigger') as HTMLElement;
+    const flyout = $$(actionMenu, '.share-tabs-flyout') as HTMLElement;
+    assertTrue(!!trigger);
+    assertTrue(!!flyout);
+
+    Object.defineProperty(flyout, 'offsetWidth', {value: 320, configurable: true});
+
+    // Enough space to the right positions the flyout to the right.
+    trigger.getBoundingClientRect = () => ({
+      left: 10, right: 330, top: 100, bottom: 132, width: 320, height: 32,
+    } as DOMRect);
+    Object.defineProperty(window, 'innerWidth', {value: 1000, configurable: true});
+
+    trigger.dispatchEvent(new PointerEvent('pointerenter'));
+    await actionMenu.updateComplete;
+    await microtasksFinished();
+
+    assertEquals('right', flyout.getAttribute('data-position'));
+    assertEquals('', flyout.style.left);
+
+    // When blocked on the right, enough space to the left positions the flyout to the left.
+    trigger.getBoundingClientRect = () => ({
+      left: 400, right: 720, top: 100, bottom: 132, width: 320, height: 32,
+    } as DOMRect);
+    Object.defineProperty(window, 'innerWidth', {value: 800, configurable: true});
+
+    trigger.dispatchEvent(new PointerEvent('pointerenter'));
+    await actionMenu.updateComplete;
+    await microtasksFinished();
+
+    assertEquals('left', flyout.getAttribute('data-position'));
+    assertEquals('', flyout.style.left);
+
+    // When blocked on both sides in a narrow panel, the flyout positions at the bottom with a bounded indent.
+    trigger.getBoundingClientRect = () => ({
+      left: 16, right: 336, top: 100, bottom: 132, width: 320, height: 32,
+    } as DOMRect);
+    Object.defineProperty(window, 'innerWidth', {value: 380, configurable: true});
+
+    trigger.dispatchEvent(new PointerEvent('pointerenter'));
+    await actionMenu.updateComplete;
+    await microtasksFinished();
+
+    assertEquals('bottom', flyout.getAttribute('data-position'));
+    // The expected maxLeft.
+    assertEquals('32px', flyout.style.left);
+  });
 });
