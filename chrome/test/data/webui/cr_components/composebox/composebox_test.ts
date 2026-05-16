@@ -64,6 +64,7 @@ suite('ComposeboxTest', () => {
       dismissButton: 'Dismiss',
       composeboxDragAndDropHint: 'Hint',
       removeSuggestion: 'Remove',
+      contextManagementInComposeboxEnabled: false,
     });
 
     handler = installMock(
@@ -372,7 +373,8 @@ suite('composeboxSharedMountAutoRepostionDefault', () => {
       // Keys accessed by ContextualActionMenuElement class-field
       // initialization once the shared
       // `<cr-composebox-contextual-entrypoint-and-menu>` mount renders.
-      // loadTimeData.getBoolean() asserts on absent keys, so these are required.
+      // loadTimeData.getBoolean() asserts on absent keys, so these are
+      // required.
       // Not optional with defaults - when `composeboxShowContextMenu` is true.
       composeboxContextMenuEnableMultiTabSelection: false,
       composeboxShowContextMenuTabPreviews: false,
@@ -397,6 +399,7 @@ suite('composeboxSharedMountAutoRepostionDefault', () => {
       dismissButton: 'Dismiss',
       composeboxDragAndDropHint: 'Hint',
       removeSuggestion: 'Remove',
+      contextManagementInComposeboxEnabled: false,
     });
 
     const handler = installMock(

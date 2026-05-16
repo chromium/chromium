@@ -973,6 +973,8 @@ NewTabPageUI::NewTabPageUI(content::WebUI* web_ui)
   auto plural_string_handler = std::make_unique<PluralStringHandler>();
   plural_string_handler->AddLocalizedString("modulesTabGroupsTabsText",
                                             IDS_SAVED_TAB_GROUP_TABS_COUNT);
+  plural_string_handler->AddLocalizedString("sharingTabs",
+                                            IDS_COMPOSE_SHARING_TABS);
   web_ui->AddMessageHandler(std::move(plural_string_handler));
 
   content::URLDataSource::Add(profile_,
