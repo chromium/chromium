@@ -519,6 +519,133 @@ TEST(PdfInkUndoRedoModelTest, EditTextUndoRedo) {
   EXPECT_THAT(commands.removes, ElementsAre(InkTextId(0)));
 }
 
+TEST(PdfInkUndoRedoModelTest, GetUndoRedoInkTextId) {
+  PdfInkUndoRedoModel undo_redo;
+
+  // Add T1.
+  DoAddCommandsCycle(undo_redo, {InkTextId(1)});
+  EXPECT_FALSE(undo_redo.GetUndoInkTextId().has_value());
+  EXPECT_FALSE(undo_redo.GetRedoInkTextId().has_value());
+
+  undo_redo.Undo();
+  EXPECT_FALSE(undo_redo.GetUndoInkTextId().has_value());
+  EXPECT_THAT(undo_redo.GetRedoInkTextId(), Optional(InkTextId(1)));
+
+  undo_redo.Redo();
+  EXPECT_FALSE(undo_redo.GetUndoInkTextId().has_value());
+  EXPECT_FALSE(undo_redo.GetRedoInkTextId().has_value());
+
+  // "Edit" T1 to T2.
+  ASSERT_TRUE(undo_redo.Start().has_value());
+  ASSERT_TRUE(undo_redo.Remove(InkTextId(1)));
+  ASSERT_TRUE(undo_redo.Add(InkTextId(2)));
+  ASSERT_TRUE(undo_redo.Finish());
+  EXPECT_THAT(undo_redo.GetUndoInkTextId(), Optional(InkTextId(1)));
+  EXPECT_FALSE(undo_redo.GetRedoInkTextId().has_value());
+
+  undo_redo.Undo();
+  EXPECT_FALSE(undo_redo.GetUndoInkTextId().has_value());
+  EXPECT_THAT(undo_redo.GetRedoInkTextId(), Optional(InkTextId(2)));
+}
+
+TEST(PdfInkUndoRedoModelTest, BadGetUndoInkTextIdEmptyStack) {
+  PdfInkUndoRedoModel undo_redo;
+  EXPECT_FALSE(undo_redo.GetUndoInkTextId().has_value());
+}
+
+TEST(PdfInkUndoRedoModelTest, BadGetUndoInkTextIdAtBottomOfStack) {
+  PdfInkUndoRedoModel undo_redo;
+  DoAddCommandsCycle(undo_redo, {InkTextId(1)});
+  undo_redo.Undo();
+  EXPECT_FALSE(undo_redo.GetUndoInkTextId().has_value());
+}
+
+TEST(PdfInkUndoRedoModelTest, BadGetUndoInkTextIdNothingRemoved) {
+  PdfInkUndoRedoModel undo_redo;
+  DoAddCommandsCycle(undo_redo, {InkTextId(1)});
+  undo_redo.Undo();
+  undo_redo.Redo();
+  EXPECT_FALSE(undo_redo.GetUndoInkTextId().has_value());
+}
+
+TEST(PdfInkUndoRedoModelTest, BadGetUndoInkTextIdTooManyItemsRemoved) {
+  PdfInkUndoRedoModel undo_redo;
+  DoAddCommandsCycle(undo_redo, {InkTextId(1)});
+  DoAddCommandsCycle(undo_redo, {InkTextId(2)});
+  ASSERT_TRUE(undo_redo.Start().has_value());
+  ASSERT_TRUE(undo_redo.Remove(InkTextId(1)));
+  ASSERT_TRUE(undo_redo.Remove(InkTextId(2)));
+  ASSERT_TRUE(undo_redo.Finish());
+  EXPECT_FALSE(undo_redo.GetUndoInkTextId().has_value());
+}
+
+TEST(PdfInkUndoRedoModelTest, BadGetUndoInkTextIdTooManyItemsAdded) {
+  PdfInkUndoRedoModel undo_redo;
+  DoAddCommandsCycle(undo_redo, {InkTextId(10)});
+  ASSERT_TRUE(undo_redo.Start().has_value());
+  ASSERT_TRUE(undo_redo.Remove(InkTextId(10)));
+  ASSERT_TRUE(undo_redo.Add(InkTextId(11)));
+  ASSERT_TRUE(undo_redo.Add(InkTextId(12)));
+  ASSERT_TRUE(undo_redo.Finish());
+  EXPECT_FALSE(undo_redo.GetUndoInkTextId().has_value());
+}
+
+TEST(PdfInkUndoRedoModelTest, BadGetUndoInkTextIdNonText) {
+  PdfInkUndoRedoModel undo_redo;
+  DoAddCommandsCycle(undo_redo, {InkStrokeId(1)});
+  ASSERT_TRUE(undo_redo.Start().has_value());
+  ASSERT_TRUE(undo_redo.Remove(InkStrokeId(1)));
+  ASSERT_TRUE(undo_redo.Finish());
+  EXPECT_FALSE(undo_redo.GetUndoInkTextId().has_value());
+}
+
+TEST(PdfInkUndoRedoModelTest, BadGetRedoInkTextIdEmptyStack) {
+  PdfInkUndoRedoModel undo_redo;
+  EXPECT_FALSE(undo_redo.GetRedoInkTextId().has_value());
+}
+
+TEST(PdfInkUndoRedoModelTest, BadGetRedoInkTextIdAtTopOfStack) {
+  PdfInkUndoRedoModel undo_redo;
+  DoAddCommandsCycle(undo_redo, {InkTextId(1)});
+  EXPECT_FALSE(undo_redo.GetRedoInkTextId().has_value());
+}
+
+TEST(PdfInkUndoRedoModelTest, BadGetRedoInkTextIdNothingAdded) {
+  PdfInkUndoRedoModel undo_redo;
+  DoAddCommandsCycle(undo_redo, {InkStrokeId(1)});
+  ASSERT_TRUE(undo_redo.Start().has_value());
+  ASSERT_TRUE(undo_redo.Remove(InkStrokeId(1)));
+  ASSERT_TRUE(undo_redo.Finish());
+  undo_redo.Undo();
+  EXPECT_FALSE(undo_redo.GetRedoInkTextId().has_value());
+}
+
+TEST(PdfInkUndoRedoModelTest, BadGetRedoInkTextIdTooManyItemsAdded) {
+  PdfInkUndoRedoModel undo_redo;
+  DoAddCommandsCycle(undo_redo, {InkTextId(1), InkTextId(2)});
+  undo_redo.Undo();
+  EXPECT_FALSE(undo_redo.GetRedoInkTextId().has_value());
+}
+
+TEST(PdfInkUndoRedoModelTest, BadGetRedoInkTextIdTooManyItemsRemoved) {
+  PdfInkUndoRedoModel undo_redo;
+  DoAddCommandsCycle(undo_redo, {InkTextId(1), InkTextId(2)});
+  ASSERT_TRUE(undo_redo.Start().has_value());
+  ASSERT_TRUE(undo_redo.Remove(InkTextId(1)));
+  ASSERT_TRUE(undo_redo.Remove(InkTextId(2)));
+  ASSERT_TRUE(undo_redo.Add(InkTextId(3)));
+  ASSERT_TRUE(undo_redo.Finish());
+  undo_redo.Undo();
+  EXPECT_FALSE(undo_redo.GetRedoInkTextId().has_value());
+}
+
+TEST(PdfInkUndoRedoModelTest, BadGetRedoInkTextIdNonText) {
+  PdfInkUndoRedoModel undo_redo;
+  DoAddCommandsCycle(undo_redo, {InkStrokeId(1)});
+  undo_redo.Undo();
+  EXPECT_FALSE(undo_redo.GetRedoInkTextId().has_value());
+}
+
 TEST(PdfInkUndoRedoModelTest, Stress) {
 #if !defined(NDEBUG) || defined(ADDRESS_SANITIZER) ||         \
     defined(MEMORY_SANITIZER) || defined(THREAD_SANITIZER) || \

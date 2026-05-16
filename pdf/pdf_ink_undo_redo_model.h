@@ -85,6 +85,11 @@ class PdfInkUndoRedoModel {
   // be called after Start().
   [[nodiscard]] bool Finish();
 
+  // Returns the `InkTextId` to use when creating a new text annotation to
+  // satisfy an undo/redo command.
+  [[nodiscard]] std::optional<InkTextId> GetUndoInkTextId() const;
+  [[nodiscard]] std::optional<InkTextId> GetRedoInkTextId() const;
+
   // Returns the commands that needs to be applied to satisfy the undo / redo
   // request and moves the position in the commands stack without modifying the
   // commands themselves.

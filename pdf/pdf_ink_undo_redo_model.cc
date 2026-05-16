@@ -136,6 +136,42 @@ bool PdfInkUndoRedoModel::Finish() {
   return true;
 }
 
+std::optional<InkTextId> PdfInkUndoRedoModel::GetUndoInkTextId() const {
+  if (commands_stack_.empty() || stack_position_ == 0) {
+    return std::nullopt;
+  }
+
+  const auto& recorded = commands_stack_[stack_position_ - 1];
+  if (recorded.removes.size() != 1 || recorded.adds.size() > 1) {
+    return std::nullopt;
+  }
+
+  const IdType& id = *recorded.removes.begin();
+  if (!std::holds_alternative<InkTextId>(id)) {
+    return std::nullopt;
+  }
+
+  return std::get<InkTextId>(id);
+}
+
+std::optional<InkTextId> PdfInkUndoRedoModel::GetRedoInkTextId() const {
+  if (commands_stack_.empty() || stack_position_ == commands_stack_.size()) {
+    return std::nullopt;
+  }
+
+  const auto& recorded = commands_stack_[stack_position_];
+  if (recorded.adds.size() != 1 || recorded.removes.size() > 1) {
+    return std::nullopt;
+  }
+
+  const IdType& id = *recorded.adds.begin();
+  if (!std::holds_alternative<InkTextId>(id)) {
+    return std::nullopt;
+  }
+
+  return std::get<InkTextId>(id);
+}
+
 PdfInkUndoRedoModel::Commands PdfInkUndoRedoModel::Undo() {
   if (has_started_ || stack_position_ == 0) {
     // Cannot undo while adding/removing or at the bottom of the stack.
