@@ -2,6 +2,7 @@
 <title>WebMCP: executeTool on &lt;select multiple&gt; dispatches events</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
+<script src="resources/webmcp-helpers.js"></script>
 
 <!-- We'll submit the form to this frame. -->
 <iframe name=hidden_iframe style="display:none"></iframe>
@@ -22,7 +23,7 @@
 
 <script>
 promise_test(async t => {
-  assert_true(!!navigator.modelContextTesting);
+  await waitForTool('select_fruits');
 
   let fruits = document.getElementById('fruits');
   let inputEventCount = 0;

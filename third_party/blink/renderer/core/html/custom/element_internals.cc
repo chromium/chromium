@@ -163,7 +163,13 @@ String ElementInternals::ToolParamSchema() const {
 }
 
 void ElementInternals::setToolParamSchema(const String& schema) {
+  if (tool_param_schema_ == schema) {
+    return;
+  }
   tool_param_schema_ = schema;
+  if (auto* owner_form = Form()) {
+    owner_form->ScheduleWebMCPSchemaUpdate();
+  }
 }
 
 void ElementInternals::setValidity(ValidityStateFlags* flags,

@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<title>WebMCP: Form-associated custom element ceasing to be a parameter</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="resources/webmcp-helpers.js"></script>
+<script>
+  class MyParam extends HTMLElement {
+    static formAssociated = true;
+    constructor(schema) {
+      super();
+      console.log('MyParam::ctor() calling setToolParamSchema()');
+      this._internals = this.attachInternals();
+      this._internals.setToolParamSchema('{"type":"string"}');
+    }
+    stopBeingToolParameter() {
+      this._internals.setToolParamSchema(null);
+    }
+  }
+  customElements.define('my-param', MyParam);
+
+
+</script>
+<form toolname=test tooldescription="Test">
+  <my-param name="my-param"></my-param>
+</form>
+<script>
+  async function waitForFormToolSchemaToMatch(expected_schema) {
+    await new Promise(resolve => {
+      const ac = new AbortController();
+      navigator.modelContext.addEventListener('toolchange', async e => {
+        const [tool] = await navigator.modelContext.getTools();
+        if (tool && tool.inputSchema === expected_schema) {
+          resolve();
+          ac.abort();
+        }
+
+        // Otherwise, keep listening for the schema match!
+      }, {signal: ac.signal});
+    });
+  }
+
+  promise_test(async t => {
+    await waitForFormToolSchemaToMatch(`{"type":"object","properties":{"my-param":{"type":"string"}},"required":[]}`);
+
+    let myParam = document.querySelector('my-param');
+    myParam.stopBeingToolParameter();
+
+    await waitForFormToolSchemaToMatch(`{"type":"object","properties":{},"required":[]}`);
+  }, 'Form-associated custom element ceasing to be a parameter');
+</script>

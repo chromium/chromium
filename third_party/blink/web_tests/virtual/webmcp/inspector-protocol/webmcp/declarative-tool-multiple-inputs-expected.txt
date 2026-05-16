@@ -4,12 +4,6 @@ Navigating to a new page...
 Tools Added:
   Name: multi_input_tool
   Description: A tool with multiple inputs
-  Schema: {}
-Tools Removed:
-  Name: multi_input_tool
-Tools Added:
-  Name: multi_input_tool
-  Description: A tool with multiple inputs
   Schema: {
   "type": "object",
   "properties": {

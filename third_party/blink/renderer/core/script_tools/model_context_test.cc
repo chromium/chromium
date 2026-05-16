@@ -11,6 +11,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/origin_trials/scoped_test_origin_trial_policy.h"
 #include "third_party/blink/public/mojom/content_extraction/script_tools.mojom-blink.h"
@@ -60,6 +61,58 @@ class MockScriptToolHost : public mojom::blink::ScriptToolHost {
   base::RunLoop* run_loop_ = nullptr;
 };
 
+class MockModelContextHost : public mojom::blink::ModelContextHost {
+ public:
+  explicit MockModelContextHost() = default;
+
+  void Bind(mojo::ScopedMessagePipeHandle pipe) {
+    receiver_.Bind(
+        mojo::PendingReceiver<mojom::blink::ModelContextHost>(std::move(pipe)));
+  }
+
+  void BindModelContext(
+      mojo::PendingRemote<mojom::blink::ModelContext> model_context) override {
+    model_context_.Bind(std::move(model_context));
+  }
+
+  void RegisterScriptTool(mojom::blink::ScriptToolPtr tool) override {
+    registered_tools_.push_back(tool->name);
+    if (model_context_.is_bound()) {
+      model_context_->NotifyToolChange();
+    }
+  }
+
+  void UnregisterScriptTool(const String& name) override {
+    registered_tools_.erase(
+        std::remove(registered_tools_.begin(), registered_tools_.end(), name),
+        registered_tools_.end());
+    if (model_context_.is_bound()) {
+      model_context_->NotifyToolChange();
+    }
+  }
+
+  void GetScriptTools(GetScriptToolsCallback callback) override {
+    std::move(callback).Run({});
+  }
+
+  void ExecuteRemoteScriptTool(
+      const ::blink::FrameToken& tool_owner_frame_token,
+      const ::scoped_refptr<const ::blink::SecurityOrigin>&
+          expected_target_origin,
+      const ::blink::String& name,
+      const ::blink::String& input_arguments,
+      ExecuteRemoteScriptToolCallback callback) override {
+    std::move(callback).Run(String(), false);
+  }
+
+  const Vector<String>& registered_tools() const { return registered_tools_; }
+
+ private:
+  mojo::Receiver<mojom::blink::ModelContextHost> receiver_{this};
+  mojo::Remote<mojom::blink::ModelContext> model_context_;
+  Vector<String> registered_tools_;
+};
+
 class ModelContextTestBase : public SimTest {
  public:
   bool EvalJsBoolean(const char* script) {
@@ -84,6 +137,29 @@ class ModelContextTestBase : public SimTest {
         .As<v8::Integer>()
         ->Value();
   }
+
+ protected:
+  void SetUp() override {
+    SimTest::SetUp();
+    GetDocument()
+        .GetExecutionContext()
+        ->GetBrowserInterfaceBroker()
+        .SetBinderForTesting(
+            mojom::blink::ModelContextHost::Name_,
+            base::BindRepeating(&MockModelContextHost::Bind,
+                                base::Unretained(&mock_model_context_host_)));
+  }
+
+  void TearDown() override {
+    GetDocument()
+        .GetExecutionContext()
+        ->GetBrowserInterfaceBroker()
+        .SetBinderForTesting(mojom::blink::ModelContextHost::Name_,
+                             base::NullCallback());
+    SimTest::TearDown();
+  }
+
+  MockModelContextHost mock_model_context_host_;
 };
 
 class ModelContextTest : public ModelContextTestBase {
@@ -210,6 +286,7 @@ TEST_F(ModelContextTest, ExecuteDeclarativeFormTool_Navigation) {
       <input type="text" name="query">
     </form>
   )");
+  test::RunPendingTasks();
 
   auto* model_context =
       ModelContextSupplement::modelContext(*Window().navigator());
@@ -238,6 +315,7 @@ TEST_F(ModelContextTest, ExecuteDeclarativeFormTool_InvalidInput) {
       <input type="text" name="query">
     </form>
   )");
+  test::RunPendingTasks();
 
   auto* model_context =
       ModelContextSupplement::modelContext(*Window().navigator());
@@ -272,6 +350,7 @@ TEST_F(ModelContextTest, ExecuteDeclarativeFormTool_InvalidSelectValue) {
       </select>
     </form>
   )");
+  test::RunPendingTasks();
 
   auto* model_context =
       ModelContextSupplement::modelContext(*Window().navigator());
@@ -312,6 +391,7 @@ TEST_F(ModelContextTest, ExecuteDeclarativeFormTool_SPA) {
       });
     </script>
   )");
+  test::RunPendingTasks();
 
   auto* model_context =
       ModelContextSupplement::modelContext(*Window().navigator());
@@ -356,6 +436,7 @@ TEST_F(ModelContextTest, ExecuteDeclarativeFormTool_SPA_Reject) {
       });
     </script>
   )");
+  test::RunPendingTasks();
 
   auto* model_context =
       ModelContextSupplement::modelContext(*Window().navigator());
@@ -399,6 +480,7 @@ TEST_F(ModelContextTest, ExecuteDeclarativeFormTool_SPA_NoRespondWith) {
       });
     </script>
   )");
+  test::RunPendingTasks();
 
   auto* model_context =
       ModelContextSupplement::modelContext(*Window().navigator());
@@ -439,6 +521,7 @@ TEST_F(ModelContextTest, ExecuteDeclarativeFormTool_ValidationFailure) {
       <button type=submit>Submit</button>
     </form>
   )");
+  test::RunPendingTasks();
 
   auto* model_context =
       ModelContextSupplement::modelContext(*Window().navigator());
@@ -529,6 +612,7 @@ TEST_F(ModelContextValidationTest,
       <button type=submit>Submit</button>
     </form>
   )");
+  test::RunPendingTasks();
 
   auto* model_context =
       ModelContextSupplement::modelContext(*Window().navigator());
@@ -579,6 +663,7 @@ TEST_F(ModelContextTest, ExecuteDeclarativeFormTool_SPA_NoPreventDefault) {
       });
     </script>
   )");
+  test::RunPendingTasks();
 
   auto* model_context =
       ModelContextSupplement::modelContext(*Window().navigator());
@@ -655,6 +740,7 @@ TEST_F(ModelContextTest, ExecuteDeclarativeFormTool_LateRespondWithThrows) {
       });
     </script>
   )");
+  test::RunPendingTasks();
 
   auto* model_context =
       ModelContextSupplement::modelContext(*Window().navigator());
@@ -716,6 +802,7 @@ TEST_F(ModelContextTest, ExecuteDeclarativeFormTool_PseudoClasses) {
       });
     </script>
   )");
+  test::RunPendingTasks();
 
   auto* model_context =
       ModelContextSupplement::modelContext(*Window().navigator());
@@ -777,6 +864,7 @@ TEST_F(ModelContextTest, ExecuteDeclarativeFormTool_SPA_NoAutoSubmit) {
       });
     </script>
   )");
+  test::RunPendingTasks();
 
   auto* model_context =
       ModelContextSupplement::modelContext(*Window().navigator());
@@ -846,6 +934,7 @@ TEST_F(ModelContextTest, ExecuteDeclarativeFormTool_FormPopulatedAtEvent) {
       });
     </script>
   )");
+  test::RunPendingTasks();
 
   auto* model_context =
       ModelContextSupplement::modelContext(*Window().navigator());
@@ -877,6 +966,7 @@ TEST_F(ModelContextTest, ExecuteDeclarativeFormTool_PauseExecution) {
       <button type="submit">Submit</button>
     </form>
   )");
+  test::RunPendingTasks();
 
   MockScriptToolHost mock_host;
   GetDocument()
@@ -1031,6 +1121,7 @@ TEST_F(ModelContextTest, ExecuteDeclarativeFormTool_Reset_Cancels) {
       </form>
     </body>
   )");
+  test::RunPendingTasks();
 
   auto* model_context =
       ModelContextSupplement::modelContext(*Window().navigator());
@@ -1145,6 +1236,7 @@ TEST_F(ModelContextTest, ExecuteDeclarativeFormTool_FlexibleTypes) {
       });
     </script>
   )HTML");
+  test::RunPendingTasks();
 
   auto* model_context =
       ModelContextSupplement::modelContext(*Window().navigator());
@@ -1417,6 +1509,7 @@ TEST_F(ModelContextTest, BackingFormElement) {
       tooldescription="leave-feedback">
     </form>
   )");
+  test::RunPendingTasks();
 
   auto* model_context =
       ModelContextSupplement::modelContext(*Window().navigator());
@@ -1466,6 +1559,7 @@ TEST_F(ModelContextMetricsTest, RecordToolCountHistogram) {
       tooldescription="leave-feedback">
     </form>
   )");
+  test::RunPendingTasks();
 
   v8::HandleScope handle_scope(Window().GetIsolate());
   ScriptState::Scope script_scope(
@@ -1544,6 +1638,11 @@ TEST_F(ModelContextTest, ExecuteDeclarativeFormTool_ToolChangeOnNameChange) {
       </script>
     </body>
   )");
+  test::RunPendingTasks();
+
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return EvalJsInteger("window.toolchangeCount") == 1;
+  })) << "Failed on initial tool registration";
 
   int mutation_count = EvalJsInteger("window.testMutations.length");
   for (int i = 0; i < mutation_count; ++i) {
@@ -1556,7 +1655,7 @@ TEST_F(ModelContextTest, ExecuteDeclarativeFormTool_ToolChangeOnNameChange) {
     MainFrame().ExecuteScript(WebScriptSource(WebString(script)));
 
     EXPECT_TRUE(base::test::RunUntil([&]() {
-      return EvalJsInteger("window.toolchangeCount") == 1;
+      return EvalJsInteger("window.toolchangeCount") == 2;
     })) << "Failed on mutation "
         << i << ": "
         << EvalJsString(String::Format("window.testMutations[%d].script", i)
@@ -1585,6 +1684,10 @@ TEST_F(ModelContextTest,
   )");
   blink::test::RunPendingTasks();
 
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return EvalJsInteger("window.toolchangeCount") == 1;
+  })) << "Failed on initial tool registration";
+
   // Test adding an input
   MainFrame().ExecuteScript(
       WebScriptSource("window.toolchangeCount = 0;"
@@ -1595,7 +1698,7 @@ TEST_F(ModelContextTest,
                       "document.getElementById('f1').appendChild(i);"));
 
   EXPECT_TRUE(base::test::RunUntil([&]() {
-    return EvalJsInteger("window.toolchangeCount") == 1;
+    return EvalJsInteger("window.toolchangeCount") == 2;
   })) << "Failed on adding input";
 
   // Test removing an input
@@ -1605,7 +1708,7 @@ TEST_F(ModelContextTest,
                       "getElementById('new_input'));"));
 
   EXPECT_TRUE(base::test::RunUntil([&]() {
-    return EvalJsInteger("window.toolchangeCount") == 1;
+    return EvalJsInteger("window.toolchangeCount") == 2;
   })) << "Failed on removing input";
 }
 
@@ -1683,6 +1786,7 @@ TEST_F(ModelContextTest, ExecuteTool_RespondWith_And_RemoveForm) {
       });
     </script>
   )");
+  test::RunPendingTasks();
 
   auto* model_context =
       ModelContextSupplement::modelContext(*Window().navigator());
@@ -1728,6 +1832,7 @@ TEST_F(ModelContextTest, ExecuteTool_RespondWith_And_Navigate) {
       });
     </script>
   )HTML");
+  test::RunPendingTasks();
 
   auto* model_context =
       ModelContextSupplement::modelContext(*Window().navigator());
@@ -1779,6 +1884,7 @@ TEST_F(ModelContextTest, ExecuteDeclarativeFormTool_UnrelatedSubmitAndRemove) {
       }
     </script>
   )HTML");
+  test::RunPendingTasks();
   auto* model_context =
       ModelContextSupplement::modelContext(*Window().navigator());
   ASSERT_TRUE(model_context);

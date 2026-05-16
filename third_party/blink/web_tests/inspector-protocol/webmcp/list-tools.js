@@ -109,11 +109,9 @@
   await enablePromise;
 
   testRunner.log('Registering a new imperative and a new declarative tool...');
-  let addPromise = waitAdded(3);
-  let removePromise1 = waitRemoved(1);
+  let addPromise = waitAdded(2);
   await dp.Runtime.evaluate({expression: 'window.registerNewTools()'});
   await addPromise;
-  await removePromise1;
 
   testRunner.log('Unregistering one of each...');
   let removePromise = waitRemoved(2);

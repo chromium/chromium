@@ -89,29 +89,6 @@ Adding {
             description : Another declarative tool
             frameId : <string>
             inputSchema : {
-            }
-            name : new_declarative_tool
-        }
-    ]
-}
-Removing {
-    tools : [
-        [0] : {
-            frameId : <string>
-            name : new_declarative_tool
-        }
-    ]
-}
-Adding {
-    tools : [
-        [0] : {
-            annotations : {
-                autosubmit : true
-            }
-            backendNodeId : <number>
-            description : Another declarative tool
-            frameId : <string>
-            inputSchema : {
                 properties : {
                     text_name : {
                         type : string

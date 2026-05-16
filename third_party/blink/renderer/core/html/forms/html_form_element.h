@@ -36,6 +36,7 @@
 #include "third_party/blink/renderer/core/script_tools/script_tool_types.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/scheduler/public/post_cancellable_task.h"
 
 namespace blink {
 
@@ -52,6 +53,11 @@ class CORE_EXPORT HTMLFormElement final : public HTMLElement {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
+  // This method is called anytime a form control's association changes with
+  // regard to `this`, or when a control's attributes are changed. It will only
+  // queue a task to register a new tool if `this` already has an existing
+  // `active_webmcp_tool_`, and if the form control change impacts the tool's
+  // generated input schema.
   void ScheduleWebMCPSchemaUpdate();
   enum RelAttribute {
     kNone = 0,
@@ -184,6 +190,7 @@ class CORE_EXPORT HTMLFormElement final : public HTMLElement {
   InsertionNotificationRequest InsertedInto(ContainerNode&) override;
   void RemovedFrom(ContainerNode&) override;
   void FinishParsingChildren() override;
+  void ChildrenChanged(const ChildrenChange&) override;
 
   void HandleLocalEvents(Event&) override;
 
@@ -237,7 +244,8 @@ class CORE_EXPORT HTMLFormElement final : public HTMLElement {
   bool PastNamesEmpty() const;
 
   bool IsValidWebMCPForm() const;
-  void UpdateMcpDefinitionsIfNeeded();
+  void ScheduleDeclarativeWebMCPToolRegistration();
+  void RegisterDeclarativeWebMCPTool();
   void ReportInvalidMCPFormIssueIfNeeded(const String& name,
                                          const String& description);
 
@@ -292,6 +300,10 @@ class CORE_EXPORT HTMLFormElement final : public HTMLElement {
         HTMLFormControlElement** submit_button);
     String ToolName() const { return tool_name_; }
     String ToolDescription() const { return tool_description_; }
+    const String& LastComputedSchema() const { return last_computed_schema_; }
+    void SetLastComputedSchema(String schema) {
+      last_computed_schema_ = schema;
+    }
     bool IsValidTool() const { return !tool_name_.IsNull(); }
     std::optional<base::UnguessableToken> InvocationId() const {
       return invocation_id_;
@@ -317,6 +329,7 @@ class CORE_EXPORT HTMLFormElement final : public HTMLElement {
     bool is_handling_submit_ = false;
     String tool_name_;
     String tool_description_;
+    String last_computed_schema_;
     Member<HTMLFormElement> form_;
     Member<HTMLFormControlElement> active_submit_button_;
     base::OnceCallback<void(McpToolCallbackResult)> done_callback_;
@@ -342,6 +355,11 @@ class CORE_EXPORT HTMLFormElement final : public HTMLElement {
   bool has_elements_associated_by_form_attribute_ : 1;
   bool did_finish_parsing_children_ : 1;
   bool is_in_reset_function_ : 1;
+  // Because forms undergo lots of synchronous mutations during construction,
+  // each of which affects the declarative WebMCP tool's input JSON schema, we
+  // batch all such changes and postpone tool registration behind the task
+  // below, which gets queued on each mutation.
+  TaskHandle mcp_registration_task_;
 
   Member<RelList> rel_list_;
   unsigned rel_attribute_ = 0;

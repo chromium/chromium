@@ -2,6 +2,7 @@
 <title>WebMCP: Filling custom element</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
+<script src="resources/webmcp-helpers.js"></script>
 <script>
   class MyInput extends HTMLElement {
     static formAssociated = true;
@@ -43,7 +44,7 @@
 
 <script>
 promise_test(async t => {
-  assert_true(!!navigator.modelContextTesting);
+  await waitForTool('fill_text');
 
   let inputArgs = JSON.stringify({
     text: "regular text",

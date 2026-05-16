@@ -369,7 +369,6 @@ void ModelContext::registerTool(ScriptState* script_state,
       tool_data->ScriptTool().Clone());
   probe::WebMCPToolAdded(document_, *tool_data);
   MaybeRecordToolCount();
-  OnToolChange(/*force=*/true);
 }
 
 void ModelContext::UnregisterTool(const String& name) {
@@ -381,7 +380,6 @@ void ModelContext::UnregisterTool(const String& name) {
   probe::WebMCPToolRemoved(document_, *it->value);
   tool_map_.erase(it);
   model_context_host_remote_->UnregisterScriptTool(name);
-  OnToolChange(/*force=*/true);
 }
 
 std::optional<ScriptToolDeclaration> ModelContext::GetScriptToolDeclaration(
@@ -652,19 +650,19 @@ void ModelContext::RegisterDeclarativeTool(
   auto script_tool = mojom::blink::ScriptTool::New();
   script_tool->name = name;
   script_tool->description = description;
-  script_tool->input_schema = "{}";  // For now
+  script_tool->input_schema = declarative_tool->ComputeInputSchema();
   // TODO(https://crbug.com/509568047): Stop setting these two members.
   script_tool->tool_owner_frame_token = document_->GetFrame()->GetFrameToken();
   script_tool->origin = document_->GetExecutionContext()->GetSecurityOrigin();
 
   auto* tool_data = MakeGarbageCollected<ToolData>(
       base::PassKey<ModelContext>(), std::move(script_tool), declarative_tool);
+
   tool_map_.insert(name, tool_data);
   model_context_host_remote_->RegisterScriptTool(
       tool_data->ScriptTool().Clone());
   probe::WebMCPToolAdded(document_, *tool_data);
   MaybeRecordToolCount();
-  OnToolChange(/*force=*/true);
 }
 
 void ModelContext::OnToolExecuted(
@@ -684,42 +682,6 @@ void ModelContext::OnToolExecuted(
     std::move(it->value.callback).Run(base::unexpected(error));
   }
   pending_executions_.erase(it);
-}
-
-void ModelContext::MaybeNotifyToolChanged() {
-  OnToolChange(/*force=*/false);
-}
-
-void ModelContext::OnToolChange(bool force) {
-  if (!tool_change_task_pending_) {
-    tool_change_task_pending_ = true;
-    task_runner_->PostTask(
-        FROM_HERE, blink::BindOnce(&ModelContext::InvokeToolChangeClosure,
-                                   WrapWeakPersistent(this), force));
-  }
-}
-
-void ModelContext::InvokeToolChangeClosure(bool force) {
-  tool_change_task_pending_ = false;
-
-  bool should_fire = force;
-  for (auto& it : tool_map_) {
-    if (it.value->RefreshDeclarativeInputSchema()) {
-      should_fire = true;
-      // Synthesize removed/added events so that DevTools picks up the new
-      // schema. Newly registered tools may emit added/removed/added initially,
-      // but this is necessary for dynamic schema updates to propagate.
-      probe::WebMCPToolRemoved(document_, *it.value);
-      probe::WebMCPToolAdded(document_, *it.value);
-    }
-  }
-  if (should_fire && tool_change_closure_) {
-    (*tool_change_closure_).Run();
-  }
-  // The above closure can run script (it fires the `toolchange` on the
-  // `ModelContextTesting` interface while it exists. But even if it detaches
-  // the document, it is still safe to dispatch the event on `this` as well.
-  DispatchEvent(*Event::Create(event_type_names::kToolchange));
 }
 
 void ModelContext::MaybeRecordToolCount() {
@@ -749,7 +711,14 @@ void ModelContext::PauseExecution() {
 }
 
 void ModelContext::NotifyToolChange() {
-  OnToolChange(/*force=*/true);
+  if (tool_change_closure_) {
+    (*tool_change_closure_).Run();
+  }
+
+  // The above closure fires the `toolchange` on the `ModelContextTesting`
+  // interface. Even if it detaches the document, it is still safe to dispatch
+  // the event on `this` as well.
+  DispatchEvent(*Event::Create(event_type_names::kToolchange));
 }
 
 void ModelContext::ExecuteScriptTool(const String& name,
@@ -780,9 +749,6 @@ HeapVector<Member<const ToolData>> ModelContext::ListTools() const {
   for (const auto& entry : tool_map_) {
     ToolData* tool_data = entry.value;
     CHECK(tool_data);
-    // Always update the input schema of declarative tools,
-    // since the DOM might have changed.
-    tool_data->RefreshDeclarativeInputSchema();
     tools.push_back(tool_data);
   }
 

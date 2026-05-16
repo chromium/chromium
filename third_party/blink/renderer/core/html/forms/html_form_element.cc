@@ -346,8 +346,8 @@ void HTMLFormElement::ReportInvalidMCPFormIssueIfNeeded(
 
 // This gets called when a <form> is added or removed from the document, or
 // when `toolname` or `tooldescription` attributes are added, removed, or
-// changed.
-void HTMLFormElement::UpdateMcpDefinitionsIfNeeded() {
+// changed, and when the children of `this` are changed.
+void HTMLFormElement::ScheduleDeclarativeWebMCPToolRegistration() {
   if (!RuntimeEnabledFeatures::WebMCPEnabled(GetExecutionContext())) {
     return;
   }
@@ -356,20 +356,64 @@ void HTMLFormElement::UpdateMcpDefinitionsIfNeeded() {
   // declarative WebMCP inclusion.
   String name = FastGetAttribute(html_names::kToolnameAttr);
   String description = FastGetAttribute(html_names::kTooldescriptionAttr);
-  bool is_valid_mcp_form = isConnected() && name && description;
+  const bool is_valid_mcp_form = isConnected() && name && description;
+
   // Only report issues if it is not a valid mcp form and
   // at least one of name or description is present.
   // If no name or description are present, ignore.
   if (!is_valid_mcp_form && (name || description)) {
     ReportInvalidMCPFormIssueIfNeeded(name, description);
   }
-  bool name_or_description_changed =
-      is_valid_mcp_form && active_webmcp_tool_ &&
-      (active_webmcp_tool_->ToolName() != name ||
-       active_webmcp_tool_->ToolDescription() != description);
-  if (is_valid_mcp_form == IsValidWebMCPForm() &&
-      !name_or_description_changed) {
-    // No change.
+
+  // If we are unregistering/removing the tool, do so synchronously and
+  // immediately to ensure DOM safety and correct event sequence.
+  if (!is_valid_mcp_form) {
+    // Cancel the pending registration of `this`, since we no longer represent a
+    // valid tool.
+    mcp_registration_task_.Cancel();
+    if (!IsValidWebMCPForm()) {
+      return;
+    }
+
+    ModelContext* model_context = nullptr;
+    if (auto* window = GetDocument().domWindow();
+        window && window->navigator()) {
+      model_context =
+          ModelContextSupplement::modelContext(*window->navigator());
+    }
+    if (model_context) {
+      if (!active_webmcp_tool_->IsHandlingSubmit()) {
+        active_webmcp_tool_->CallDoneCallback(base::unexpected(
+            ScriptToolError(ScriptToolErrorCode::kToolCancelled,
+                            "Tool execution cancelled, since tool definition "
+                            "was updated")));
+      }
+      model_context->UnregisterTool(active_webmcp_tool_->ToolName());
+    }
+
+    active_webmcp_tool_ = nullptr;
+    return;
+  }
+
+  if (!mcp_registration_task_.IsActive()) {
+    mcp_registration_task_ = PostCancellableTask(
+        *GetDocument().GetTaskRunner(TaskType::kDOMManipulation), FROM_HERE,
+        BindOnce(&HTMLFormElement::RegisterDeclarativeWebMCPTool,
+                 WrapWeakPersistent(this)));
+  }
+}
+
+void HTMLFormElement::RegisterDeclarativeWebMCPTool() {
+  CHECK(RuntimeEnabledFeatures::WebMCPEnabled(GetExecutionContext()));
+
+  String name = FastGetAttribute(html_names::kToolnameAttr);
+  String description = FastGetAttribute(html_names::kTooldescriptionAttr);
+  // We check that `this` is "still" a valid declarative WebMCP form because
+  // last we checked when this method was queued, it was, but that could've
+  // changed.
+  const bool is_still_valid_mcp_form = isConnected() && name && description;
+
+  if (!is_still_valid_mcp_form) {
     return;
   }
 
@@ -382,8 +426,22 @@ void HTMLFormElement::UpdateMcpDefinitionsIfNeeded() {
   }
 
   if (IsValidWebMCPForm()) {
-    CHECK(!is_valid_mcp_form || name_or_description_changed);
-    // Unregister the tool to ensure any in-flight tool executions are aborted.
+    String new_schema = active_webmcp_tool_->ComputeInputSchema();
+
+    bool name_or_description_changed =
+        active_webmcp_tool_->ToolName() != name ||
+        active_webmcp_tool_->ToolDescription() != description;
+
+    bool schema_changed =
+        active_webmcp_tool_->LastComputedSchema() != new_schema;
+
+    if (!name_or_description_changed && !schema_changed) {
+      // Nothing changed; this can happen when a non-schema-affecting form
+      // control association or mutation took place.
+      return;
+    }
+
+    // Unregister the old tool to replace it.
     if (!active_webmcp_tool_->IsHandlingSubmit()) {
       active_webmcp_tool_->CallDoneCallback(base::unexpected(ScriptToolError(
           ScriptToolErrorCode::kToolCancelled,
@@ -393,12 +451,13 @@ void HTMLFormElement::UpdateMcpDefinitionsIfNeeded() {
     active_webmcp_tool_ = nullptr;
   }
 
-  if (is_valid_mcp_form) {
-    active_webmcp_tool_ =
-        MakeGarbageCollected<HTMLFormMcpTool>(*this, name, description);
-    model_context->RegisterDeclarativeTool(name, description,
-                                           active_webmcp_tool_);
-  }
+  active_webmcp_tool_ =
+      MakeGarbageCollected<HTMLFormMcpTool>(*this, name, description);
+  active_webmcp_tool_->SetLastComputedSchema(
+      active_webmcp_tool_->ComputeInputSchema());
+
+  model_context->RegisterDeclarativeTool(name, description,
+                                         active_webmcp_tool_);
 }
 
 Node::InsertionNotificationRequest HTMLFormElement::InsertedInto(
@@ -411,7 +470,7 @@ Node::InsertionNotificationRequest HTMLFormElement::InsertedInto(
     GetDocument().MarkTopLevelFormsDirty();
     GetDocument().DidChangeFormRelatedElementDynamically(
         this, WebFormRelatedChangeType::kAdd);
-    UpdateMcpDefinitionsIfNeeded();
+    ScheduleDeclarativeWebMCPToolRegistration();
   }
   return kInsertionDone;
 }
@@ -459,7 +518,7 @@ void HTMLFormElement::RemovedFrom(ContainerNode& insertion_point) {
     GetDocument().MarkTopLevelFormsDirty();
     GetDocument().DidChangeFormRelatedElementDynamically(
         this, WebFormRelatedChangeType::kRemove);
-    UpdateMcpDefinitionsIfNeeded();
+    ScheduleDeclarativeWebMCPToolRegistration();
   }
 }
 
@@ -1064,9 +1123,10 @@ void HTMLFormElement::AttributeChanged(
     const AttributeModificationParams& params) {
   const QualifiedName& name = params.name;
   HTMLElement::AttributeChanged(params);
-  if (name == html_names::kToolnameAttr ||
-      name == html_names::kTooldescriptionAttr) {
-    UpdateMcpDefinitionsIfNeeded();
+  if ((name == html_names::kToolnameAttr ||
+       name == html_names::kTooldescriptionAttr) &&
+      (params.old_value != params.new_value)) {
+    ScheduleDeclarativeWebMCPToolRegistration();
   }
 }
 
@@ -1540,6 +1600,11 @@ void HTMLFormElement::FinishParsingChildren() {
   did_finish_parsing_children_ = true;
 }
 
+void HTMLFormElement::ChildrenChanged(const ChildrenChange& change) {
+  HTMLElement::ChildrenChanged(change);
+  ScheduleDeclarativeWebMCPToolRegistration();
+}
+
 bool HTMLFormElement::HasAnyNamedProperties() const {
   const auto* elements =
       CachedCollection<HTMLFormControlsCollection>(kFormControls);
@@ -1632,14 +1697,7 @@ void HTMLFormElement::ScheduleWebMCPSchemaUpdate() {
   if (!IsValidWebMCPForm()) {
     return;
   }
-  auto* window = GetDocument().domWindow();
-  if (!window || !window->navigator()) {
-    return;
-  }
-  if (auto* context =
-          ModelContextSupplement::modelContext(*window->navigator())) {
-    context->MaybeNotifyToolChanged();
-  }
+  ScheduleDeclarativeWebMCPToolRegistration();
 }
 
 }  // namespace blink
