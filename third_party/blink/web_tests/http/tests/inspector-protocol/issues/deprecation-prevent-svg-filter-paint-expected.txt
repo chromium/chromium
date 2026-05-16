@@ -1,3 +1,3 @@
-Tests that deprecation issues are reported for svg filters on restricted content
+Tests that deprecation issues are not reported on same-origin iframes but are reports on sandboxed iframes
 Inspector issue type PreventSvgFilterPaint on url https://devtools.test:8443/inspector-protocol/issues/resources/svg-sandbox-iframe.html
 

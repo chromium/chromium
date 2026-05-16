@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<head>
+<svg width="0" height="0">
+    <filter id="svg-filter">
+        <feGaussianBlur in="SourceGraphic" stdDeviation="5" />
+    </filter>
+</svg>
+<style type="text/css">
+.svg-filter {
+    filter: url(#svg-filter);
+}
+</style>
+</head>
+<body>
+    <iframe class="svg-filter" src="/inspector-protocol/resources/empty.html"></iframe>
+</body>
+</html>
