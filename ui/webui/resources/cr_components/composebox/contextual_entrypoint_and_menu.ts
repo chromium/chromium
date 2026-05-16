@@ -74,6 +74,7 @@ export class ContextualEntrypointAndMenuElement extends
         reflect: true,
         type: Boolean,
       },
+      sharedTabs: {type: Array},
     };
   }
 
@@ -86,6 +87,7 @@ export class ContextualEntrypointAndMenuElement extends
   accessor glifAnimationState: GlifAnimationState =
       GlifAnimationState.INELIGIBLE;
   accessor uploadButtonDisabled: boolean = false;
+  accessor sharedTabs: TabInfo[] = [];
 
   accessor hasImageFiles: boolean = false;
   accessor searchboxLayoutMode: string = '';

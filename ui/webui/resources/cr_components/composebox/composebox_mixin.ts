@@ -1953,6 +1953,21 @@ export const ComposeboxEmbedderMixin =
           return filesArray;
         }
 
+        getSharedTabs(): TabInfo[] {
+          return Array.from(this.files.values())
+              .filter(file => !!file.url)
+              .map(file => ({
+                     tabId: file.tabId!,
+                     title: file.name,
+                     url: file.url!,
+                   } as TabInfo));
+        }
+
+        hasTabs(): boolean {
+          return this.tabFaviconChipsToCoinsEnabled &&
+              Array.from(this.files.values()).some(f => !!f.url);
+        }
+
         shouldShowDivider(): boolean {
           if (this.tabFaviconChipsToCoinsEnabled) {
             const hasNonTabFiles =
@@ -2113,6 +2128,7 @@ export interface ComposeboxEmbedderMixinInterface extends
   addTabContextHandleCallback(
       tabUpload: TabUpload, replaceAutoActiveTabToken?: boolean): Promise<void>;
   getFilteredCarouselFiles(): ComposeboxFile[];
+  getSharedTabs(): TabInfo[];
 
   // Common event handlers
   onContextMenuContainerMousedown(e: FocusEvent): void;
@@ -2192,6 +2208,7 @@ export interface ComposeboxEmbedderMixinInterface extends
   hasMatches(): boolean;
   selectFirstMatch(): void;
   hasFiles(): boolean;
+  hasTabs(): boolean;
   resetSmartComposeStats(): void;
   queryAutocomplete(clearMatches: boolean): void;
   clearAutocompleteMatches(): void;

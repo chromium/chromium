@@ -211,6 +211,14 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
       return false;
     }
 
+    // TODO(crbug.com/486707841): Move to the NTP embedder.
+    // Retain the divider for NTP when only tab favicons are present.
+    // Omnibox is excluded as it does not need this divider.
+    const hasNonTabFiles = Array.from(this.files.values()).some(f => !f.url);
+    if (this.entrypointName !== 'Omnibox' && this.hasTabs() &&
+        !hasNonTabFiles) {
+      return this.showDropdown;
+    }
     return super.shouldShowDivider();
   }
 
