@@ -7,6 +7,8 @@
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
 #include "third_party/blink/renderer/core/html/forms/html_option_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_select_element.h"
+#include "third_party/blink/renderer/core/html/html_menu_item_element.h"
+#include "third_party/blink/renderer/core/html/html_menu_owner_element.h"
 
 namespace blink {
 
@@ -79,7 +81,8 @@ ItemType* ElementList<OwnerType, ItemType>::FindElement(
     ItemType& element,
     ElementMatchingPredicate predicate,
     bool forward,
-    bool inclusive) {
+    bool inclusive,
+    bool wrap) {
   DCHECK_EQ(element.OwnerElementForList(), owner_);
   DCHECK(!Empty());
   ElementListIterator<OwnerType, ItemType> it = begin();
@@ -87,6 +90,7 @@ ItemType* ElementList<OwnerType, ItemType>::FindElement(
     ++it;
   }
   CHECK_EQ(*it, element);
+  ItemType* first_item_tested = nullptr;
   while (true) {
     if (!inclusive) {
       if (forward) {
@@ -96,18 +100,55 @@ ItemType* ElementList<OwnerType, ItemType>::FindElement(
       }
     }
     if (!it) {
-      return nullptr;
+      if (!wrap) {
+        return nullptr;
+      }
+      it = forward ? begin() : last();
     }
     inclusive = false;
-    if (predicate(*it)) {
-      return &*it;
+    ItemType* this_item = &*it;
+    CHECK(this_item);
+    if (first_item_tested) {
+      if (this_item == first_item_tested) {
+        // We've tested all the items and none matched.
+        return nullptr;
+      }
+    } else {
+      first_item_tested = this_item;
+    }
+    if (predicate(*this_item)) {
+      return this_item;
     }
   }
+}
+
+template <typename OwnerType, typename ItemType>
+ItemType* ElementList<OwnerType, ItemType>::NextFocusableElement(
+    ItemType& element,
+    bool inclusive,
+    bool wrap) {
+  return FindNextElement(
+      element, [](ItemType& el) -> bool { return el.IsFocusable(); }, inclusive,
+      wrap);
+}
+
+template <typename OwnerType, typename ItemType>
+ItemType* ElementList<OwnerType, ItemType>::PreviousFocusableElement(
+    ItemType& element,
+    bool inclusive,
+    bool wrap) {
+  return FindPreviousElement(
+      element, [](ItemType& el) -> bool { return el.IsFocusable(); }, inclusive,
+      wrap);
 }
 
 template class CORE_TEMPLATE_EXPORT
     ElementListIterator<HTMLSelectElement, HTMLOptionElement>;
 template class CORE_TEMPLATE_EXPORT
     ElementList<HTMLSelectElement, HTMLOptionElement>;
+template class CORE_TEMPLATE_EXPORT
+    ElementListIterator<HTMLMenuOwnerElement, HTMLMenuItemElement>;
+template class CORE_TEMPLATE_EXPORT
+    ElementList<HTMLMenuOwnerElement, HTMLMenuItemElement>;
 
 }  // namespace blink

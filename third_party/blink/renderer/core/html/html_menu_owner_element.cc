@@ -6,8 +6,10 @@
 
 #include "third_party/blink/renderer/core/dom/popover_data.h"
 #include "third_party/blink/renderer/core/events/keyboard_event.h"
+#include "third_party/blink/renderer/core/html/html_hr_element.h"
+#include "third_party/blink/renderer/core/html/html_menu_bar_element.h"
 #include "third_party/blink/renderer/core/html/html_menu_item_element.h"
-#include "third_party/blink/renderer/core/html/menu_item_list.h"
+#include "third_party/blink/renderer/core/html/html_menu_list_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
@@ -29,6 +31,13 @@ bool HTMLMenuOwnerElement::IsValidBuiltinCommand(HTMLElement& invoker,
 
 MenuItemList HTMLMenuOwnerElement::ItemList() const {
   return MenuItemList(*this);
+}
+
+bool HTMLMenuOwnerElement::ShouldIgnoreDescendantsForElementTraversals(
+    Element* element) const {
+  // TODO: fieldset owner can be a menulist.
+  return IsA<HTMLMenuBarElement>(element) ||
+         IsA<HTMLMenuListElement>(element) || IsA<HTMLHRElement>(element);
 }
 
 void HTMLMenuOwnerElement::DefaultEventHandler(Event& event) {

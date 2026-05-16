@@ -770,9 +770,6 @@ void HTMLOptionElement::DefaultEventHandlerInternal(Event& event) {
   int ignore_modifiers = WebInputEvent::kShiftKey | tab_ignore_modifiers;
   FocusParams focus_params(FocusTrigger::kUserGesture);
 
-  bool (*is_option_focusable)(HTMLOptionElement&) =
-      [](HTMLOptionElement& option) -> bool { return option.IsFocusable(); };
-
   if (keyboard_event && event.type() == event_type_names::kKeydown) {
     const AtomicString key(keyboard_event->key());
     if (!(keyboard_event->GetModifiers() & ignore_modifiers)) {
@@ -791,14 +788,13 @@ void HTMLOptionElement::DefaultEventHandlerInternal(Event& event) {
                 GetFocusDirectionFromKeyboardEvent(key)) {
           if (*direction == Direction::kPrevious) {
             if (auto* previous_option =
-                    options.FindPreviousElement(*this, is_option_focusable)) {
+                    options.PreviousFocusableElement(*this)) {
               previous_option->Focus(focus_params);
             }
             event.SetDefaultHandled();
             return;
           } else {
-            if (auto* next_option =
-                    options.FindNextElement(*this, is_option_focusable)) {
+            if (auto* next_option = options.NextFocusableElement(*this)) {
               next_option->Focus(focus_params);
             }
             event.SetDefaultHandled();
@@ -806,15 +802,15 @@ void HTMLOptionElement::DefaultEventHandlerInternal(Event& event) {
           }
         }
       } else if (key == keywords::kHome) {
-        if (auto* first_option = options.FindNextElement(
-                *options.begin(), is_option_focusable, /*inclusive*/ true)) {
+        if (auto* first_option = options.NextFocusableElement(
+                *options.begin(), /*inclusive*/ true)) {
           first_option->Focus(focus_params);
         }
         event.SetDefaultHandled();
         return;
       } else if (key == keywords::kEnd) {
-        if (auto* last_option = options.FindPreviousElement(
-                *options.last(), is_option_focusable, /*inclusive*/ true)) {
+        if (auto* last_option = options.PreviousFocusableElement(
+                *options.last(), /*inclusive*/ true)) {
           last_option->Focus(focus_params);
         }
         event.SetDefaultHandled();
@@ -825,8 +821,7 @@ void HTMLOptionElement::DefaultEventHandlerInternal(Event& event) {
           // view.
           scrollIntoViewIfNeeded(/*center_if_needed*/ false);
         } else {
-          auto* next_option =
-              options.FindNextElement(*this, is_option_focusable);
+          auto* next_option = options.NextFocusableElement(*this);
           if (next_option && !next_option->IsVisibleInViewport()) {
             // The next option isn't visible, which means we were at the very
             // bottom. Scroll the current option to the top, and then focus the
@@ -842,8 +837,7 @@ void HTMLOptionElement::DefaultEventHandlerInternal(Event& event) {
           // Then find the last option that is still in the view.
           HTMLOptionElement* next_focus = this;
           for (auto* current = this; current && current->IsVisibleInViewport();
-               current =
-                   options.FindNextElement(*current, is_option_focusable)) {
+               current = options.NextFocusableElement(*current)) {
             next_focus = current;
           }
           next_focus->Focus(focus_params);
@@ -855,8 +849,7 @@ void HTMLOptionElement::DefaultEventHandlerInternal(Event& event) {
           // view.
           scrollIntoViewIfNeeded(/*center_if_needed*/ false);
         } else {
-          auto* previous_option =
-              options.FindPreviousElement(*this, is_option_focusable);
+          auto* previous_option = options.PreviousFocusableElement(*this);
           if (previous_option && !previous_option->IsVisibleInViewport()) {
             // The previous option isn't visible, which means we were at the
             // very top. Scroll the current option to the bottom, and then focus
@@ -872,8 +865,7 @@ void HTMLOptionElement::DefaultEventHandlerInternal(Event& event) {
           // Then find the first option that is in the view.
           HTMLOptionElement* next_focus = this;
           for (auto* current = this; current && current->IsVisibleInViewport();
-               current =
-                   options.FindPreviousElement(*current, is_option_focusable)) {
+               current = options.PreviousFocusableElement(*current)) {
             next_focus = current;
           }
           next_focus->Focus(focus_params);

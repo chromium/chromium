@@ -35,7 +35,14 @@ class CORE_EXPORT HTMLMenuItemElement final : public HTMLElement {
   bool setChecked(bool);
   bool ShouldAppearChecked() const;
 
-  HTMLMenuOwnerElement* OwningMenuElement() const;
+  HTMLMenuOwnerElement* OwningMenuElement() const {
+    return owning_menu_element_;
+  }
+
+  HTMLMenuOwnerElement* OwnerElementForList() const {
+    return owning_menu_element_;
+  }
+
   HTMLFieldSetElement* NearestAncestorFieldSet() const {
     return nearest_ancestor_field_set_.Get();
   }

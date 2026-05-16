@@ -18,9 +18,9 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/html/forms/html_field_set_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_option_element.h"
+#include "third_party/blink/renderer/core/html/forms/option_list.h"
 #include "third_party/blink/renderer/core/html/html_menu_bar_element.h"
 #include "third_party/blink/renderer/core/html/html_menu_list_element.h"
-#include "third_party/blink/renderer/core/html/menu_item_list.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/keywords.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
@@ -253,27 +253,29 @@ void HTMLMenuItemElement::HandleMenuKeyboardEvents(Event& event) {
 
   if (IsA<HTMLMenuListElement>(*owning_menu_element_)) {
     if (key == keywords::kArrowUp) {
-      if (auto* previous = menuitems.PreviousFocusableMenuItem(*this)) {
+      if (auto* previous = menuitems.PreviousFocusableElement(
+              *this, /*inclusive=*/false, /*wrap=*/true)) {
         previous->Focus(focus_params);
       }
       event.SetDefaultHandled();
       return;
     } else if (key == keywords::kArrowDown) {
-      if (auto* next = menuitems.NextFocusableMenuItem(*this)) {
+      if (auto* next = menuitems.NextFocusableElement(
+              *this, /*inclusive=*/false, /*wrap=*/true)) {
         next->Focus(focus_params);
       }
       event.SetDefaultHandled();
       return;
     } else if (key == keywords::kHome) {
-      if (auto* first = menuitems.NextFocusableMenuItem(*menuitems.begin(),
-                                                        /*inclusive=*/true)) {
+      if (auto* first = menuitems.NextFocusableElement(*menuitems.begin(),
+                                                       /*inclusive=*/true)) {
         first->Focus(focus_params);
         event.SetDefaultHandled();
         return;
       }
     } else if (key == keywords::kEnd) {
-      if (auto* last = menuitems.PreviousFocusableMenuItem(
-              *menuitems.last(), /*inclusive=*/true)) {
+      if (auto* last = menuitems.PreviousFocusableElement(*menuitems.last(),
+                                                          /*inclusive=*/true)) {
         last->Focus(focus_params);
         event.SetDefaultHandled();
         return;
@@ -287,7 +289,7 @@ void HTMLMenuItemElement::HandleMenuKeyboardEvents(Event& event) {
           invoked_menulist->InvokePopover(*this);
         }
         MenuItemList invoked_menuitems = invoked_menulist->ItemList();
-        if (auto* first = invoked_menuitems.NextFocusableMenuItem(
+        if (auto* first = invoked_menuitems.NextFocusableElement(
                 *invoked_menuitems.begin(), /*inclusive=*/true)) {
           first->Focus(focus_params);
           event.SetDefaultHandled();
@@ -303,8 +305,8 @@ void HTMLMenuItemElement::HandleMenuKeyboardEvents(Event& event) {
         if (auto* invoker_menuitem = DynamicTo<HTMLMenuItemElement>(invoker)) {
           if (auto* ancestor_menubar = invoker_menuitem->OwningMenuElement()) {
             MenuItemList ancestor_menuitems = ancestor_menubar->ItemList();
-            if (auto* next = ancestor_menuitems.NextFocusableMenuItem(
-                    *invoker_menuitem)) {
+            if (auto* next = ancestor_menuitems.NextFocusableElement(
+                    *invoker_menuitem, /*inclusive=*/false, /*wrap=*/true)) {
               next->Focus(focus_params);
               event.SetDefaultHandled();
               return;
@@ -336,8 +338,8 @@ void HTMLMenuItemElement::HandleMenuKeyboardEvents(Event& event) {
                 invoker_menuitem->OwningMenuElement())) {
           // Focus on previous if it is in menubar.
           MenuItemList invoker_menuitems = invoker_menubar->ItemList();
-          if (auto* previous = invoker_menuitems.PreviousFocusableMenuItem(
-                  *invoker_menuitem)) {
+          if (auto* previous = invoker_menuitems.PreviousFocusableElement(
+                  *invoker_menuitem, /*inclusive=*/false, /*wrap=*/true)) {
             previous->Focus(focus_params);
             event.SetDefaultHandled();
             return;
@@ -358,7 +360,7 @@ void HTMLMenuItemElement::HandleMenuKeyboardEvents(Event& event) {
         // view.
         scrollIntoViewIfNeeded(/*center_if_needed=*/false);
       } else {
-        auto* previous_menuitem = menuitems.PreviousFocusableMenuItem(
+        auto* previous_menuitem = menuitems.PreviousFocusableElement(
             *this, /*inclusive=*/false, /*wrap=*/false);
         if (previous_menuitem && !previous_menuitem->IsVisibleInViewport()) {
           // The previous menuitem isn't visible, which means we were at the
@@ -375,7 +377,7 @@ void HTMLMenuItemElement::HandleMenuKeyboardEvents(Event& event) {
         // Then find the first menuitem that is in the view.
         HTMLMenuItemElement* next_focus = this;
         for (auto* current = this; current && current->IsVisibleInViewport();
-             current = menuitems.PreviousFocusableMenuItem(
+             current = menuitems.PreviousFocusableElement(
                  *current, /*inclusive=*/false, /*wrap=*/false)) {
           next_focus = current;
         }
@@ -388,7 +390,7 @@ void HTMLMenuItemElement::HandleMenuKeyboardEvents(Event& event) {
         // view.
         scrollIntoViewIfNeeded(/*center_if_needed=*/false);
       } else {
-        auto* next_menuitem = menuitems.NextFocusableMenuItem(
+        auto* next_menuitem = menuitems.NextFocusableElement(
             *this, /*inclusive=*/false, /*wrap=*/false);
         if (next_menuitem && !next_menuitem->IsVisibleInViewport()) {
           // The next menuitem isn't visible, which means we were at the very
@@ -405,7 +407,7 @@ void HTMLMenuItemElement::HandleMenuKeyboardEvents(Event& event) {
         // Then find the last menuitem that is still in the view.
         HTMLMenuItemElement* next_focus = this;
         for (auto* current = this; current && current->IsVisibleInViewport();
-             current = menuitems.NextFocusableMenuItem(
+             current = menuitems.NextFocusableElement(
                  *current, /*inclusive=*/false, /*wrap=*/false)) {
           next_focus = current;
         }
@@ -416,27 +418,29 @@ void HTMLMenuItemElement::HandleMenuKeyboardEvents(Event& event) {
   } else {
     CHECK(IsA<HTMLMenuBarElement>(*owning_menu_element_));
     if (key == keywords::kArrowLeft) {
-      if (auto* previous = menuitems.PreviousFocusableMenuItem(*this)) {
+      if (auto* previous = menuitems.PreviousFocusableElement(
+              *this, /*inclusive=*/false, /*wrap=*/true)) {
         previous->Focus(focus_params);
       }
       event.SetDefaultHandled();
       return;
     } else if (key == keywords::kArrowRight) {
-      if (auto* next = menuitems.NextFocusableMenuItem(*this)) {
+      if (auto* next = menuitems.NextFocusableElement(
+              *this, /*inclusive=*/false, /*wrap=*/true)) {
         next->Focus(focus_params);
       }
       event.SetDefaultHandled();
       return;
     } else if (key == keywords::kHome) {
-      if (auto* first = menuitems.NextFocusableMenuItem(*menuitems.begin(),
-                                                        /*inclusive=*/true)) {
+      if (auto* first = menuitems.NextFocusableElement(*menuitems.begin(),
+                                                       /*inclusive=*/true)) {
         first->Focus(focus_params);
         event.SetDefaultHandled();
         return;
       }
     } else if (key == keywords::kEnd) {
-      if (auto* last = menuitems.PreviousFocusableMenuItem(
-              *menuitems.last(), /*inclusive=*/true)) {
+      if (auto* last = menuitems.PreviousFocusableElement(*menuitems.last(),
+                                                          /*inclusive=*/true)) {
         last->Focus(focus_params);
         event.SetDefaultHandled();
         return;
@@ -450,14 +454,14 @@ void HTMLMenuItemElement::HandleMenuKeyboardEvents(Event& event) {
         }
         MenuItemList invoked_menuitems = invoked_menulist->ItemList();
         if (key == keywords::kArrowDown) {
-          if (auto* first = invoked_menuitems.NextFocusableMenuItem(
+          if (auto* first = invoked_menuitems.NextFocusableElement(
                   *invoked_menuitems.begin(), /*inclusive=*/true)) {
             first->Focus(focus_params);
             event.SetDefaultHandled();
             return;
           }
         } else if (key == keywords::kArrowUp) {
-          if (auto* last = invoked_menuitems.PreviousFocusableMenuItem(
+          if (auto* last = invoked_menuitems.PreviousFocusableElement(
                   *invoked_menuitems.last(), /*inclusive=*/true)) {
             last->Focus(focus_params);
             event.SetDefaultHandled();
@@ -559,10 +563,6 @@ void HTMLMenuItemElement::DefaultEventHandler(Event& event) {
   HandleMenuPointerEvents(event);
   HandleMenuKeyboardEvents(event);
   HTMLElement::DefaultEventHandler(event);
-}
-
-HTMLMenuOwnerElement* HTMLMenuItemElement::OwningMenuElement() const {
-  return owning_menu_element_;
 }
 
 void HTMLMenuItemElement::ResetAncestorElementCache() {
