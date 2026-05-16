@@ -929,9 +929,9 @@ chromium-metrics-reviews@google.com.
   <owner>birnie@google.com</owner>
   <summary>
     Records the source of the invocation when the Glic Floaty panel becomes
-    visible for the first time after being closed, for the new metrics behavior.
-    Recorded when detached from Side Panel, when opened directly via os button /
-    hotkey, or when the conversation is switched.
+    visible for the first time after being closed. Recorded when detached from
+    Side Panel, when opened directly via os button / hotkey, or when the
+    conversation is switched.
   </summary>
 </histogram>
 
@@ -1301,10 +1301,12 @@ chromium-metrics-reviews@google.com.
   <owner>perrier@google.com</owner>
   <summary>
     Records the source of the invocation when the Glic panel becomes visible for
-    the first time after being closed, for the new metrics behavior. Recorded
-    when first visible (for foreground and background instance creation), when
-    popped back from Floaty, for a conversation switch. It is not logged on tab
-    switches.
+    the first time after being closed. Recorded when first visible (for
+    foreground and background instance creation), when popped back from Floaty,
+    for a conversation switch. It is not logged on tab switches. This is
+    different from Glic.Instance.SidePanel.OpenSource in that this metric is
+    also recorded for background instances which the previous version did not
+    do.
   </summary>
 </histogram>
 
