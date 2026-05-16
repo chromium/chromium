@@ -670,6 +670,7 @@ suite('NewTabPageComposeboxTest', () => {
   });
 
   test('Tab behavior when focus is in input', async () => {
+    loadTimeData.overrideValues({composeboxSmartComposeEnabled: true});
     createComposeboxElement(testProxy);
     const input = testProxy.element.getInputElement().$.input;
     const matchesElement = testProxy.element.$.matches;
@@ -694,8 +695,6 @@ suite('NewTabPageComposeboxTest', () => {
     assertEquals(-1, matchesElement.selectedMatchIndex);
 
     // Verify Tab accepts the Smart Compose hint when available.
-    loadTimeData.overrideValues({composeboxSmartComposeEnabled: true});
-    (testProxy.element as any).smartComposeEnabled_ = true;
     input.value = 'tes';
     input.dispatchEvent(new Event('input'));
     const hint = 't';
@@ -719,13 +718,11 @@ suite('NewTabPageComposeboxTest', () => {
   });
 
   test('Smart Compose hint is hidden during backspacing', async () => {
+    // Enable Smart Compose.
+    loadTimeData.overrideValues({composeboxSmartComposeEnabled: true});
     createComposeboxElement(testProxy);
     const inputElement = testProxy.element.getInputElement();
     const input = inputElement.$.input;
-
-    // Enable Smart Compose.
-    loadTimeData.overrideValues({composeboxSmartComposeEnabled: true});
-    (testProxy.element as any).smartComposeEnabled_ = true;
 
     // Provide an input and a hint.
     input.value = 'tes';
@@ -757,6 +754,135 @@ suite('NewTabPageComposeboxTest', () => {
     // Verify hint is visible again.
     assertTrue(!!inputElement.shadowRoot.querySelector('#smartCompose'));
   });
+
+  test(
+      'Smart Compose hint is hidden when it wraps in the middle of a word',
+      async () => {
+        // Enable Smart Compose.
+        loadTimeData.overrideValues({composeboxSmartComposeEnabled: true});
+        createComposeboxElement(testProxy);
+        const inputElement = testProxy.element.getInputElement();
+        const input = inputElement.$.input;
+
+        // Mock Canvas measureText and clientWidth.
+        const originalMeasureText =
+            CanvasRenderingContext2D.prototype.measureText;
+        CanvasRenderingContext2D.prototype.measureText = function(
+            text: string) {
+          if (text.includes('wrap')) {
+            return {width: 150} as TextMetrics;
+          }
+          return {width: 50} as TextMetrics;
+        };
+        Object.defineProperty(
+            input, 'clientWidth', {configurable: true, get: () => 100});
+
+        // Provide an input ending with a non-space character and a hint.
+        input.value = 'tes.';
+        input.dispatchEvent(new Event('input'));
+        const hint = 'wrap';  // This will trigger width = 150
+
+        testProxy.searchboxCallbackRouterRemote.autocompleteResultChanged(
+            createAutocompleteResultForTesting({
+              input: 'tes.',
+              smartComposeInlineHint: hint,
+            }));
+        await testProxy.searchboxCallbackRouterRemote.$.flushForTesting();
+        await microtasksFinished();
+
+        // Trigger re-evaluation by requesting update.
+        inputElement.requestUpdate();
+        await microtasksFinished();
+
+        // Verify hint is hidden.
+        assertFalse(!!inputElement.shadowRoot.querySelector('#smartCompose'));
+
+        // Restore mock.
+        CanvasRenderingContext2D.prototype.measureText = originalMeasureText;
+      });
+
+  test(
+      'Smart Compose hint is NOT hidden when only full hint wraps but first word fits',
+      async () => {
+        // Enable Smart Compose.
+        loadTimeData.overrideValues({composeboxSmartComposeEnabled: true});
+        createComposeboxElement(testProxy);
+        const inputElement = testProxy.element.getInputElement();
+        const input = inputElement.$.input;
+
+        // Mock Canvas measureText and clientWidth.
+        const originalMeasureText =
+            CanvasRenderingContext2D.prototype.measureText;
+        CanvasRenderingContext2D.prototype.measureText = function(
+            text: string) {
+          if (text.includes('wraps')) {
+            return {width: 150} as TextMetrics;
+          }
+          return {width: 50} as TextMetrics;
+        };
+        Object.defineProperty(
+            input, 'clientWidth', {configurable: true, get: () => 100});
+
+        // Provide an input ending with a non-space character and a hint.
+        input.value = 'tes.';
+        input.dispatchEvent(new Event('input'));
+        const hint = 'fits wraps';
+
+        testProxy.searchboxCallbackRouterRemote.autocompleteResultChanged(
+            createAutocompleteResultForTesting({
+              input: 'tes.',
+              smartComposeInlineHint: hint,
+            }));
+        await testProxy.searchboxCallbackRouterRemote.$.flushForTesting();
+        await microtasksFinished();
+
+        // Trigger re-evaluation by requesting update.
+        inputElement.requestUpdate();
+        await microtasksFinished();
+
+        // Verify hint is visible.
+        assertTrue(!!inputElement.shadowRoot.querySelector('#smartCompose'));
+
+        // Restore mock.
+        CanvasRenderingContext2D.prototype.measureText = originalMeasureText;
+      });
+
+  test(
+      'Smart Compose hint is hidden when cursor is not at the end',
+      async () => {
+        // Enable Smart Compose.
+        loadTimeData.overrideValues({composeboxSmartComposeEnabled: true});
+        createComposeboxElement(testProxy);
+        const inputElement = testProxy.element.getInputElement();
+        const input = inputElement.$.input;
+
+        // Provide an input and a hint.
+        input.value = 'test';
+        input.dispatchEvent(new Event('input'));
+        const hint = 'a';
+
+        testProxy.searchboxCallbackRouterRemote.autocompleteResultChanged(
+            createAutocompleteResultForTesting({
+              input: 'test',
+              smartComposeInlineHint: hint,
+            }));
+        await testProxy.searchboxCallbackRouterRemote.$.flushForTesting();
+        await microtasksFinished();
+
+        // Verify hint is visible initially.
+        assertTrue(!!inputElement.shadowRoot.querySelector('#smartCompose'));
+
+        // Move cursor to the middle.
+        input.selectionStart = 2;
+        input.selectionEnd = 2;
+
+        // Trigger re-evaluation.
+        inputElement.requestUpdate();
+        await microtasksFinished();
+
+        // Verify hint is hidden.
+        assertFalse(!!inputElement.shadowRoot.querySelector('#smartCompose'));
+      });
 
   test('Tab behavior in matches list bypasses input focus check', async () => {
     createComposeboxElement(testProxy);

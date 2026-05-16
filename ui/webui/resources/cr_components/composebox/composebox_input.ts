@@ -63,11 +63,16 @@ export class ComposeboxInputElement extends I18nMixinLit
   accessor cancelButtonTitle: string = '';
   accessor isBackspacing_: boolean = false;
 
-  private caretResizeObserver_: ResizeObserver|null = null;
+  private widthResizeObserver_: ResizeObserver|null = null;
   private smartComposeResizeObserver_: ResizeObserver|null = null;
   private smartComposeHeightUpdateFrame_: number|null = null;
   private lastObservedInputWrapperWidth_: number = -1;
   private anchoredSpan_: HTMLElement|null = null;
+  private measurementContext_: CanvasRenderingContext2D|null = null;
+  private cachedPaddingLeft_: number = -1;
+  private cachedPaddingRight_: number = -1;
+  private cachedFont_: string = '';
+  private cachedContentWidth_: number = -1;
 
   get inputElement(): HTMLInputElement|HTMLTextAreaElement {
     return this.$.input;
@@ -75,7 +80,7 @@ export class ComposeboxInputElement extends I18nMixinLit
 
   override connectedCallback() {
     super.connectedCallback();
-    this.setupCaretResizeObserver_();
+    this.setupWidthResizeObserver_();
     this.smartComposeResizeObserver_ = new ResizeObserver(() => {
       this.scheduleSmartComposeHeightUpdate_();
     });
@@ -83,9 +88,9 @@ export class ComposeboxInputElement extends I18nMixinLit
 
   override disconnectedCallback() {
     super.disconnectedCallback();
-    if (this.caretResizeObserver_) {
-      this.caretResizeObserver_.disconnect();
-      this.caretResizeObserver_ = null;
+    if (this.widthResizeObserver_) {
+      this.widthResizeObserver_.disconnect();
+      this.widthResizeObserver_ = null;
     }
     if (this.smartComposeResizeObserver_) {
       this.smartComposeResizeObserver_.disconnect();
@@ -248,35 +253,101 @@ export class ComposeboxInputElement extends I18nMixinLit
   }
 
   protected showSmartComposeInlineHint_(): boolean {
-    return !!this.smartComposeInlineHint && !this.isBackspacing_;
+    // Don't show smart compose if there's no hint or the user is backspacing.
+    if (!this.smartComposeInlineHint || this.isBackspacing_) {
+      return false;
+    }
+
+    const cursorPosition = this.$.input.selectionEnd;
+    // Don't show smart compose if the cursor is not at the end of the text.
+    if (cursorPosition === null || cursorPosition !== this.input.length) {
+      return false;
+    }
+    const charBefore = this.input.charAt(cursorPosition - 1);
+    const isMidword =
+        charBefore !== ' ' && !this.smartComposeInlineHint.startsWith(' ');
+    // TODO(crbug.com/512817466): See if it is possible to return early at a
+    // certain character length.
+    if (isMidword) {
+      if (!this.measurementContext_) {
+        const canvas = document.createElement('canvas');
+        this.measurementContext_ = canvas.getContext('2d');
+      }
+      const ctx = this.measurementContext_;
+      if (ctx) {
+        const input = this.$.input;
+        // Cache the padding and width. Padding never changes and the width
+        // don't change often. Calling calling `getComputedStyle` and
+        // `clientWidth` can be expensive. This makes it so we are performing
+        // purely mathematical calculations during keystrokes which is cheaper.
+        // Width gets recomputed by resize observer below.
+        if (this.cachedPaddingLeft_ === -1) {
+          const style = window.getComputedStyle(input);
+          this.cachedPaddingLeft_ = parseFloat(style.paddingLeft);
+          this.cachedPaddingRight_ = parseFloat(style.paddingRight);
+          this.cachedFont_ = style.font;
+        }
+        ctx.font = this.cachedFont_;
+
+        if (this.cachedContentWidth_ === -1) {
+          const inputWidth = input.clientWidth;
+          this.cachedContentWidth_ =
+              inputWidth - this.cachedPaddingLeft_ - this.cachedPaddingRight_;
+        }
+        const contentWidth = this.cachedContentWidth_;
+
+        // Only care if the current word wraps onto the next line. If it does,
+        // smart compose should be suppressed.
+        const spaceIndex = this.smartComposeInlineHint.indexOf(' ');
+        const currentHintWord = spaceIndex === -1 ?
+            this.smartComposeInlineHint :
+            this.smartComposeInlineHint.substring(0, spaceIndex);
+        const fullTextWidth =
+            ctx.measureText(this.input + currentHintWord).width;
+        const inputTextWidth = ctx.measureText(this.input).width;
+
+        if (contentWidth > 0) {
+          const linesWithHint =
+              Math.max(1, Math.ceil(fullTextWidth / contentWidth));
+          const linesWithoutHint =
+              Math.max(1, Math.ceil(inputTextWidth / contentWidth));
+
+          if (linesWithHint > linesWithoutHint) {
+            return false;
+          }
+        }
+      }
+    }
+    return true;
   }
 
+  // `widthResizeObserver_` is used to update the cached content width and the
+  // caret position.
   // Recalculate the caret only when #inputWrapper's width changes.
   // The width guard skips height-only changes (e.g. field-sizing: content
   // growth Windows non-overlay scrollbar toggling) that would otherwise
   // feed back into a ResizeObserver loop.
-  private setupCaretResizeObserver_() {
-    if (this.disableCaretColorAnimation) {
-      return;
-    }
-
+  private setupWidthResizeObserver_() {
     const inputWrapper = this.shadowRoot.getElementById('inputWrapper');
     if (!inputWrapper) {
       return;
     }
 
     this.lastObservedInputWrapperWidth_ = inputWrapper.clientWidth;
-    this.caretResizeObserver_ = new ResizeObserver(() => {
+    this.widthResizeObserver_ = new ResizeObserver(() => {
       const currentWidth = inputWrapper.clientWidth;
       if (currentWidth === this.lastObservedInputWrapperWidth_) {
         return;
       }
       this.lastObservedInputWrapperWidth_ = currentWidth;
-      requestAnimationFrame(() => {
-        this.updateCaret_();
-      });
+      this.cachedContentWidth_ = -1;  // Invalidate cache
+      if (!this.disableCaretColorAnimation) {
+        requestAnimationFrame(() => {
+          this.updateCaret_();
+        });
+      }
     });
-    this.caretResizeObserver_.observe(inputWrapper);
+    this.widthResizeObserver_.observe(inputWrapper);
   }
 
   private updateMirror_() {
