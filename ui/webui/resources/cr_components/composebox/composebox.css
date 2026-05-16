@@ -16,6 +16,7 @@
   --cr-composebox-outline-hcm: solid var(--color-composebox-outline-hcm);
   --cr-composebox-submit-container-size: 40px;
   --cr-icon-button-size: 36px;
+  --cr-composebox-tool-chip-right-close-icon-color: rgba(86, 89, 94, 1);
   --input-bottom-spacing: 10px;
   --text-input-top-spacing: 10px;
   --text-input-inline-end-spacing: 80px;
@@ -85,6 +86,12 @@
       /* Fast out (start), slow in (end) box shadow transition. */
       box-shadow 500ms cubic-bezier(0.4, 0.0, 0.2, 1);
   width: var(--cr-composebox-width, 337px);
+}
+
+@media (prefers-color-scheme: dark) {
+  :host {
+    --cr-composebox-tool-chip-right-close-icon-color: rgba(173, 175, 184, 1);
+  }
 }
 
 :host(:not([searchbox-next-enabled])) {
