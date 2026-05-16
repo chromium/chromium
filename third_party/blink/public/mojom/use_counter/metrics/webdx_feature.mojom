@@ -499,6 +499,7 @@ enum WebDXFeature {
   kDigitalCredentials = 435,
   kMediaPseudos = 436,
   kGapDecorations = 437,
+  kFlexWrapBalance = 438,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

@@ -191,8 +191,13 @@ FlexLayoutAlgorithm::FlexLayoutAlgorithm(
       cross_size_adjustments_(cross_size_adjustments) {
   // TODO(layout-dev): Devtools support when there are multiple fragments.
   if (Node().GetLayoutBox()->NeedsDevtoolsInfo() &&
-      !InvolvedInBlockFragmentation(container_builder_))
+      !InvolvedInBlockFragmentation(container_builder_)) {
     layout_info_for_devtools_ = MakeGarbageCollected<DevtoolsFlexInfo>();
+  }
+  if (balance_min_line_count_) {
+    Node().GetDocument().CountWebDXFeature(
+        mojom::blink::WebDXFeature::kFlexWrapBalance);
+  }
 }
 
 void FlexLayoutAlgorithm::SetupRelayoutData(const FlexLayoutAlgorithm& previous,
