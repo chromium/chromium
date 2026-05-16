@@ -1,0 +1,15 @@
+This is a testharness.js-based test.
+[FAIL] serialization test {length: 128, name: KMAC128}
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name"
+[FAIL] serialization test {length: 160, name: KMAC128}
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name"
+[FAIL] serialization test {length: 256, name: KMAC128}
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name"
+[FAIL] serialization test {length: 128, name: KMAC256}
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name"
+[FAIL] serialization test {length: 160, name: KMAC256}
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name"
+[FAIL] serialization test {length: 256, name: KMAC256}
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': Algorithm: Unrecognized name"
+Harness: the test ran to completion.
+

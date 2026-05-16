@@ -572,7 +572,10 @@ bool V8ScriptValueSerializerForModules::WriteCryptoKey(
           break;
         }
         default:
+          // TODO(crbug.com/512509718): fix ML-KEM and ML-DSA serialization.
           DCHECK(WebCryptoAlgorithm::IsKdf(algorithm.Id()) ||
+                 WebCryptoAlgorithm::IsMlDsa(algorithm.Id()) ||
+                 WebCryptoAlgorithm::IsMlKem(algorithm.Id()) ||
                  algorithm.Id() == kWebCryptoAlgorithmIdChaCha20Poly1305);
           WriteOneByte(kNoParamsKeyTag);
           WriteUint32(AlgorithmIdForWireFormat(algorithm.Id()));

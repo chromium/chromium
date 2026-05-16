@@ -1,0 +1,15 @@
+This is a testharness.js-based test.
+[FAIL] serialization test ML-DSA-44
+  promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of null (reading 'publicKey')"
+[FAIL] serialization test {name: ML-DSA-44}
+  promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of null (reading 'publicKey')"
+[FAIL] serialization test ML-DSA-65
+  promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of null (reading 'publicKey')"
+[FAIL] serialization test {name: ML-DSA-65}
+  promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of null (reading 'publicKey')"
+[FAIL] serialization test ML-DSA-87
+  promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of null (reading 'publicKey')"
+[FAIL] serialization test {name: ML-DSA-87}
+  promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of null (reading 'publicKey')"
+Harness: the test ran to completion.
+

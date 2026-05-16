@@ -1,0 +1,9 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Post Target</title>
+
+<script>
+window.addEventListener('message', function(e) {
+  opener.postMessage(e.data);
+});
+</script>
