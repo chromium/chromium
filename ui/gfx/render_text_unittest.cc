@@ -7046,6 +7046,35 @@ TEST_F(RenderTextTest, HarfBuzz_BreakRunsByEmojiVariationSelectors) {
 #endif
 }
 
+// Verifies that text-default emoji (codepoints with the `Emoji` property but
+// not `Emoji_Presentation`) followed by VS-16 still produce a well-formed
+// run with non-zero glyphs. The native gfx::RenderText path explicitly tries
+// the platform color emoji font for these sequences (see ShapeRuns), but if
+// that font is unavailable shaping must fall through to the system text font
+// rather than producing an empty/zero-width run.
+TEST_F(RenderTextTest, HarfBuzz_TextDefaultEmojiVS16ProducesGlyphs) {
+  RenderTextHarfBuzz* render_text = GetRenderText();
+
+  // U+2666 (BLACK DIAMOND SUIT) + U+FE0F: text-default emoji + VS-16.
+  // U+00A9 (COPYRIGHT SIGN) + U+FE0F: same pattern with a BMP symbol.
+  // U+260E (BLACK TELEPHONE) + U+FE0F: covered by another test for run breaks,
+  // here we just assert glyph presence for completeness.
+  for (const char16_t* sequence :
+       {u"\u2666\uFE0F", u"\u00A9\uFE0F", u"\u260E\uFE0F"}) {
+    SCOPED_TRACE(sequence);
+    render_text->SetText(sequence);
+    render_text->SetDisplayRect(Rect(1000, 50));
+    const internal::TextRunList* run_list = GetHarfBuzzRunList();
+    ASSERT_GE(run_list->size(), 1U);
+    size_t total_glyphs = 0;
+    for (const auto& run : run_list->runs()) {
+      total_glyphs += run->shape.glyph_count;
+      EXPECT_EQ(0U, run->CountMissingGlyphs());
+    }
+    EXPECT_GT(total_glyphs, 0U);
+  }
+}
+
 TEST_F(RenderTextTest, HarfBuzz_OrphanedVariationSelector) {
   RenderTextHarfBuzz* render_text = GetRenderText();
 

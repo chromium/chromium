@@ -33,6 +33,7 @@
 #include "base/task/current_thread.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
+#include "skia/ext/codec_utils.h"
 #include "skia/ext/font_utils.h"
 #include "third_party/icu/source/common/unicode/ubidi.h"
 #include "third_party/icu/source/common/unicode/uscript.h"
@@ -106,6 +107,70 @@ bool IsEmojiRelatedCodepoint(UChar32 codepoint) {
   return u_hasBinaryProperty(codepoint, UCHAR_EMOJI) ||
          u_hasBinaryProperty(codepoint, UCHAR_EMOJI_PRESENTATION) ||
          u_hasBinaryProperty(codepoint, UCHAR_REGIONAL_INDICATOR);
+}
+
+// Variation Selector-16 (U+FE0F) is a zero-width "modifier" that follows a
+// base codepoint to request emoji presentation per Unicode UTS #51.
+constexpr UChar32 kVariationSelector16 = 0xFE0F;
+
+// Returns true if `text` contains U+FE0F (VS-16). Per Unicode UTS #51, VS-16
+// is the canonical signal that the user wants the preceding character
+// rendered with emoji presentation. Treating any VS-16 occurrence as a
+// request is intentional and conservative:
+//
+//   * If the run is `<text-default emoji> + VS-16` (e.g. "♦\uFE0F",
+//     "©\uFE0F"), the platform color emoji font has a glyph and the run is
+//     correctly rendered in color.
+//   * If the run is `<emoji-default emoji> + VS-16` (e.g. "😀\uFE0F"), the
+//     run was already going to render in color via the existing pipeline;
+//     letting it shape with the color emoji font produces the same result.
+//   * If the run only has VS-16 next to characters the color emoji font
+//     does not cover (e.g. ASCII letters with stray VS-16, or an orphaned
+//     VS-16), shaping with the color emoji font produces missing glyphs and
+//     the run falls through to the existing primary/fallback pipeline,
+//     yielding the same result as today.
+//
+// The earlier, more restrictive heuristic that required `Emoji && !
+// Emoji_Presentation` immediately before VS-16 was found to leave a real
+// rendering inconsistency: whether a tab title rendered in color depended
+// on which characters happened to be in the same run (the OS-level
+// fallback path is triggered only when shaping reports missing glyphs, so
+// a string like "©️®️‼️⁉️™️ℹ️↔️↕️…" rendered monochrome on Windows while
+// the shorter substring "ℹ️↔️↕️…" rendered in color, because some glyphs
+// in the longer string were absent from the system text font and forced a
+// fallback that incidentally colored the rest). Treating VS-16 as the
+// trigger removes that dependency on incidental font coverage and aligns
+// native UI with how Blink treats VS-16 in Web content.
+bool RunRequestsEmojiPresentation(std::u16string_view text) {
+  return text.find(kVariationSelector16) != std::u16string_view::npos;
+}
+
+// Returns true if `typeface` provides color emoji glyphs. Mirrors the table
+// set used by Blink's ColorTableLookup so native UI behavior stays aligned
+// with Web content.
+bool TypefaceHasColorEmojiTable(SkTypeface* typeface) {
+  if (!typeface) {
+    return false;
+  }
+  static constexpr SkFontTableTag kCOLR = SkSetFourByteTag('C', 'O', 'L', 'R');
+  static constexpr SkFontTableTag kCBDT = SkSetFourByteTag('C', 'B', 'D', 'T');
+  static constexpr SkFontTableTag kSbix = SkSetFourByteTag('s', 'b', 'i', 'x');
+  return typeface->getTableSize(kCOLR) > 0 ||
+         typeface->getTableSize(kCBDT) > 0 || typeface->getTableSize(kSbix) > 0;
+}
+
+// Returns the system color emoji font family name on this platform, or
+// nullptr when there is no well-defined platform color emoji font.
+const char* GetPlatformColorEmojiFontName() {
+#if BUILDFLAG(IS_WIN)
+  return "Segoe UI Emoji";
+#elif BUILDFLAG(IS_APPLE)
+  return "Apple Color Emoji";
+#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+  return "Noto Color Emoji";
+#else
+  return nullptr;
+#endif
 }
 
 // Returns true if |codepoint| is a bracket. This is used to avoid "matching"
@@ -1420,6 +1485,21 @@ RenderTextHarfBuzz::RenderTextHarfBuzz()
       update_display_run_list_(false),
       update_display_text_(false),
       locale_(internal::GetApplicationLocale()) {
+  // Bitmap/COLRv1 color emoji fonts on Linux (Noto Color Emoji via Skia's
+  // fontations backend) and Windows (Segoe UI Emoji via DirectWrite) assert
+  // that a PNG decoder is registered with Skia while building scaler
+  // contexts. Production browsers register a PNG decoder early during
+  // startup (e.g. via ui/base/resource), but stripped-down hosts such as
+  // unit-test binaries do not. Register here so that any color emoji
+  // shaping done by this RenderText (including the emoji pre-pass and the
+  // fallback path for default-emoji codepoints like U+1F600) cannot fatal
+  // in those hosts. `SkCodecs::Register` replaces any decoder with the
+  // same id, so this is a no-op in normal browser processes. The magic
+  // static ensures the registration runs at most once per process.
+  [[maybe_unused]] static const bool png_decoder_registered = [] {
+    skia::EnsurePNGDecoderRegistered();
+    return true;
+  }();
   set_truncate_length(kMaxTextLength);
 }
 
@@ -2126,6 +2206,73 @@ bool RenderTextHarfBuzz::ShapeRuns(
   // Keep a set of fonts already tried for shaping runs.
   std::set<SkTypefaceID> fallback_fonts_already_tried;
   std::vector<Font> fallback_font_candidates;
+
+  // Pre-pass for emoji-presentation runs.
+  //
+  // A "text-default emoji + VS-16" sequence (e.g. "♦\uFE0F", "☎\uFE0F",
+  // "©\uFE0F") explicitly requests emoji presentation per Unicode UTS #51.
+  // The OS-provided fallback path (GetFallbackFont, which calls
+  // CTFontCreateForString / matchFamilyStyleCharacter / fontconfig) usually
+  // returns the system *text* font for these sequences, because that font
+  // already has a monochrome glyph for the base codepoint. As a result the
+  // run shapes successfully with monochrome glyphs and never enters the
+  // fallback chain, so the user sees text-style glyphs in tab titles and
+  // other native UI surfaces that render literal Unicode text via
+  // gfx::RenderText, even though VS-16 was provided.
+  //
+  // Blink already handles this in its Web text path via HarfBuzzFace +
+  // ColorTableLookup. The native gfx::RenderText path has no equivalent,
+  // which is why bug reports describe these characters rendering in color
+  // in page content but as monochrome in the tab strip and other native
+  // UI labels.
+  //
+  // Mitigation: try shaping such runs with the platform color emoji font
+  // before the regular primary-fonts pass. If that succeeds (font available
+  // and produces non-missing glyphs) the run is removed from `runs` and the
+  // remaining pipeline is unchanged. If the color emoji font is unavailable
+  // or doesn't provide a glyph, the run falls through to the existing
+  // pipeline and we end up with the monochrome text glyph — i.e. current
+  // behavior, never worse than today.
+  if (const char* color_emoji_font_name = GetPlatformColorEmojiFontName()) {
+    std::vector<internal::TextRunHarfBuzz*> emoji_runs;
+    for (internal::TextRunHarfBuzz* run : runs) {
+      if (RunRequestsEmojiPresentation(
+              text.substr(run->range.start(), run->range.length()))) {
+        emoji_runs.push_back(run);
+      }
+    }
+    if (!emoji_runs.empty()) {
+      Font emoji_font(color_emoji_font_name, font_params.font_size);
+      internal::TextRunHarfBuzz::FontParams emoji_font_params = font_params;
+      if (emoji_font_params.SetRenderParamsOverrideSkiaFaceFromFont(
+              emoji_font, emoji_font.GetFontRenderParams()) &&
+          TypefaceHasColorEmojiTable(emoji_font_params.skia_face.get())) {
+        // Shape only the emoji-presentation runs with the color emoji font.
+        // Shaping unrelated text with a color emoji font is wasteful and
+        // would also be picked up by the cache.
+        ShapeRunsWithFont(text, emoji_font_params, &emoji_runs);
+        MarkFontAsTried(emoji_font_params.skia_face,
+                        &fallback_fonts_already_tried);
+        fallback_font_candidates.push_back(emoji_font);
+      }
+
+      // Keep run order stable for index-to-glyph mapping. Only remove emoji
+      // runs that were fully shaped in the pre-pass.
+      std::set<internal::TextRunHarfBuzz*> unresolved_emoji_runs(
+          emoji_runs.begin(), emoji_runs.end());
+      std::erase_if(runs, [&](internal::TextRunHarfBuzz* run) {
+        if (!RunRequestsEmojiPresentation(
+                text.substr(run->range.start(), run->range.length()))) {
+          return false;
+        }
+        return !unresolved_emoji_runs.contains(run);
+      });
+    }
+    if (runs.empty()) {
+      RecordShapeRunsFallback(internal::ShapeRunFallback::NO_FALLBACK);
+      return true;
+    }
+  }
 
   // Shaping with primary configured fonts from font_list().
   for (const Font& font : font_list().GetFonts()) {
