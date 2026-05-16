@@ -144,8 +144,6 @@ class VerticalTabView : public views::View,
   // Calculates the visibility of child view based on various states.
   bool IsChildVisible(const views::View* child, const int width) const;
 
-  void UpdateChildVisibilities();
-
   // views::LayoutDelegate
   views::ProposedLayout CalculateProposedLayout(
       const views::SizeBounds& size_bounds) const override;

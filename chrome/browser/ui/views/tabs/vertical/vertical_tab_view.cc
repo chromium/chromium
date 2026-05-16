@@ -268,7 +268,7 @@ void VerticalTabView::UpdateHovered(bool hovered) {
   }
 
   UpdateColors();
-  UpdateChildVisibilities();
+  InvalidateLayout();
 }
 
 bool VerticalTabView::IsHoverAnimationActive() const {
@@ -769,12 +769,6 @@ bool VerticalTabView::IsChildVisible(const views::View* child_view,
   NOTREACHED() << "Unknown tab child view";
 }
 
-void VerticalTabView::UpdateChildVisibilities() {
-  for (const auto& child : tab_children_configs_) {
-    child.view->SetVisible(IsChildVisible(child.view, width()));
-  }
-}
-
 views::ProposedLayout VerticalTabView::CalculateProposedLayout(
     const views::SizeBounds& size_bounds) const {
   const int width = size_bounds.width().value_or(
@@ -981,7 +975,7 @@ void VerticalTabView::OnTabStateChanged() {
   UpdateTabData(tab);
 
   UpdateColors();
-  UpdateChildVisibilities();
+  InvalidateLayout();
 }
 
 void VerticalTabView::OnTabDataChanged(TabChangeType change_type,
