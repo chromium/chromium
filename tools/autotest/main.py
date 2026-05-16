@@ -79,6 +79,8 @@ def main(ctx, **kwargs) -> int:
       extras.append(arg)
 
   kwargs['files'] = tuple(files_to_test)
+  if kwargs.get('device'):
+    extras.extend(['-d', kwargs['device']])
   kwargs['extras'] = extras
 
   config: AutotestConfig = AutotestConfig(**kwargs)

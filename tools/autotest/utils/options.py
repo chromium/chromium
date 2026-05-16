@@ -34,6 +34,7 @@ class AutotestConfig:
   builder: bool | None
   files: tuple[str, ...]
   gemini: bool | None
+  device: str | None
   extras: list[str] | None = None  # To hold ctx.args
 
 
@@ -104,6 +105,7 @@ def autotest_options(f):
 
   # Apply the options to the wrapper function
   options = [
+      click.option('-d', '--device', help='Target device serial'),
       click.option('--out-dir',
                    '--out_dir',
                    '--output-directory',
