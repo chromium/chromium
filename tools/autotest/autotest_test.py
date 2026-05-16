@@ -514,5 +514,33 @@ class FindRelatedTestFilesTest(TestCase):
     self.assertEqual([test_file], results)
     self.mock_run_command.assert_not_called()
 
+
+class SearchForTestsByNameTest(TestCase):
+
+  def setUp(self):
+    super().setUp()
+    self.setUpPyfakefs()
+    self.mock_run_command = mock.patch('utils.command_util.RunCommand').start()
+    self.addCleanup(mock.patch.stopall)
+
+  def test_class_method_syntax(self):
+    test_file = 'FooTest.java'
+    self.fs.create_file(test_file,
+                        contents='class FooTest { @Test void foo() {} }')
+
+    # Mock RunCommand for ripgrep to return the file
+    self.mock_run_command.return_value = test_file
+
+    files, filter = file_finder.SearchForTestsByName(['FooTest#testMethod'],
+                                                     quiet=True,
+                                                     remote_search=False)
+
+    self.assertEqual([test_file], files)
+    self.assertEqual('FooTest#testMethod', filter)
+
+    called_args = self.mock_run_command.call_args[0][0]
+    self.assertIn('(\\bFooTest\\b)', called_args)
+
+
 if __name__ == '__main__':
   unittest.main()

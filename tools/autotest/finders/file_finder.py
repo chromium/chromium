@@ -127,6 +127,8 @@ def SearchForTestsByName(terms: list[str], quiet: bool,
 
   def GetPatternForTerm(term: str) -> str:
     ANY: str = '.' if not remote_search else r'[\s\S]'
+    # Ignore method name in Class#Method syntax for file search.
+    term = term.split('#')[0]
     slash_parts: list[str] = term.split('/')
     # These are the formats, for now, just ignore the prefix and suffix here.
     # Prefix/Test.Name/Suffix  -> \bTest\b.*\bName\b
@@ -139,6 +141,9 @@ def SearchForTestsByName(terms: list[str], quiet: bool,
     return f'{ANY}*'.join(r'\b' + re.escape(p) + r'\b' for p in dot_parts)
 
   def GetFilterForTerm(term: str) -> str:
+    # Precise filter for Class#Method syntax.
+    if '#' in term:
+      return term
     # If the user supplied a '/', assume they've included the full test name.
     if '/' in term:
       return term
