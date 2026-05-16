@@ -401,7 +401,7 @@ class CORE_EXPORT HTMLSelectElement final
   // Returns true if the provided element's descendants should be skipped during
   // traversals which look for option elements inside of a select, such as <hr>
   // and <datalist> elements.
-  static bool ShouldIgnoreDescendantsForOptionTraversals(Element* element);
+  bool ShouldIgnoreDescendantsForElementTraversals(Element* element) const;
 
   HTMLOptionElement* ActiveOption() { return active_option_; }
   // Called when an input element targeting a select for filtering is focused,
