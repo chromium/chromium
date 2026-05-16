@@ -138,34 +138,53 @@ bool ExtensionCommandsGlobalRegistry::PopulateCommands(
 
   extensions::CommandService* command_service =
       extensions::CommandService::Get(browser_context_);
-  if (instance->IsRegistrationHandledExternally()) {
-    if (!command_service->GetNamedCommands(
-            extension->id(), extensions::CommandService::ALL,
-            extensions::CommandService::ANY_SCOPE, commands)) {
-      return false;
-    }
-    PrefService* prefs = user_prefs::UserPrefs::Get(browser_context_);
-    std::string profile_id = prefs->GetString(pref_names::kGlobalShortcutsUuid);
-    if (profile_id.empty()) {
-      auto uuid = base::Uuid::GenerateRandomV4();
-      profile_id = uuid.AsLowercaseString();
-      prefs->SetString(pref_names::kGlobalShortcutsUuid, profile_id);
-    }
 
-    instance->OnCommandsChanged(
-        extension->id(), profile_id, *commands,
-        GetAcceleratedWidgetForContext(browser_context_),
-        base::BindRepeating(&ExtensionCommandsGlobalRegistry::ExecuteCommand,
-                            weak_ptr_factory_.GetWeakPtr()));
+  if (!instance->IsRegistrationHandledExternally()) {
+    // Add all the active global keybindings, if any.
+    return command_service->GetNamedCommands(
+        extension->id(), extensions::CommandService::ACTIVE,
+        extensions::CommandService::GLOBAL, commands);
   }
 
-  // Add all the active global keybindings, if any.
+  // All commands should be sent to the portal so the user can manually
+  // assign them, but they must be sanitized first to prevent hijacking
+  // reserved shortcuts.
+  ui::CommandMap all_commands;
   if (!command_service->GetNamedCommands(
-          extension->id(), extensions::CommandService::ACTIVE,
-          extensions::CommandService::GLOBAL, commands)) {
+          extension->id(), extensions::CommandService::ALL,
+          extensions::CommandService::ANY_SCOPE, &all_commands)) {
     return false;
   }
-  return true;
+
+  ui::CommandMap& active_global_commands = *commands;
+  active_global_commands.clear();
+  // Do not check the return value. An empty map is expected if the extension
+  // only has rejected global commands or regular non-global commands.
+  command_service->GetNamedCommands(
+      extension->id(), extensions::CommandService::ACTIVE,
+      extensions::CommandService::GLOBAL, &active_global_commands);
+
+  for (auto& cmd_pair : all_commands) {
+    if (!active_global_commands.contains(cmd_pair.first)) {
+      cmd_pair.second.set_accelerator(ui::Accelerator());
+    }
+  }
+
+  PrefService* prefs = user_prefs::UserPrefs::Get(browser_context_);
+  std::string profile_id = prefs->GetString(pref_names::kGlobalShortcutsUuid);
+  if (profile_id.empty()) {
+    auto uuid = base::Uuid::GenerateRandomV4();
+    profile_id = uuid.AsLowercaseString();
+    prefs->SetString(pref_names::kGlobalShortcutsUuid, profile_id);
+  }
+
+  instance->OnCommandsChanged(
+      extension->id(), profile_id, all_commands,
+      GetAcceleratedWidgetForContext(browser_context_),
+      base::BindRepeating(&ExtensionCommandsGlobalRegistry::ExecuteCommand,
+                          weak_ptr_factory_.GetWeakPtr()));
+
+  return !active_global_commands.empty();
 }
 
 bool ExtensionCommandsGlobalRegistry::RegisterAccelerator(
