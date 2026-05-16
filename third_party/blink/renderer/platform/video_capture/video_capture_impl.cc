@@ -50,7 +50,7 @@
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 #if BUILDFLAG(IS_MAC)
-#include "media/base/mac/video_frame_mac.h"
+#include "ui/gfx/mac/io_surface.h"
 #endif  // BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(IS_WIN)
@@ -436,7 +436,7 @@ bool VideoCaptureImpl::ProcessBuffer(
           gmb_handle.native_pixmap_handle().supports_zero_copy_webgpu_import;
 #elif BUILDFLAG(IS_MAC)
       video_frame_init_data.is_webgpu_compatible =
-          media::IOSurfaceIsWebGPUCompatible(gmb_handle.io_surface().get());
+          gfx::IOSurfaceIsWebGPUCompatible(gmb_handle.io_surface().get());
 #elif BUILDFLAG(IS_WIN)
       video_frame_init_data.is_webgpu_compatible =
           gmb_handle.type == gfx::GpuMemoryBufferType::DXGI_SHARED_HANDLE;

@@ -63,7 +63,7 @@
 
 #if BUILDFLAG(IS_MAC)
 #include "base/mac/mac_util.h"
-#include "media/base/mac/video_frame_mac.h"
+#include "ui/gfx/mac/io_surface.h"
 #endif
 
 namespace media {
@@ -1113,7 +1113,7 @@ scoped_refptr<VideoFrame> MappableSharedImageVideoFramePool::PoolImpl::
   // TODO(crbug.com/413659843): Move this support check as part of
   // SharedImageCapabilities.
   is_webgpu_compatible =
-      media::IOSurfaceIsWebGPUCompatible(handle.io_surface().get()) &&
+      gfx::IOSurfaceIsWebGPUCompatible(handle.io_surface().get()) &&
       frame_resource->shared_image->usage().Has(
           gpu::SHARED_IMAGE_USAGE_WEBGPU_READ);
 #endif

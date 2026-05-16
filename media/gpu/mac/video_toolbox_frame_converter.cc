@@ -29,6 +29,7 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/gpu_memory_buffer_handle.h"
+#include "ui/gfx/mac/io_surface.h"
 
 namespace media {
 
@@ -230,7 +231,7 @@ void VideoToolboxFrameConverter::Convert(
 
   // Extract IOSurface webgpu compatible attribute before image is moved.
   const bool is_webgpu_compatible =
-      IOSurfaceIsWebGPUCompatible(CVPixelBufferGetIOSurface(image.get()));
+      gfx::IOSurfaceIsWebGPUCompatible(CVPixelBufferGetIOSurface(image.get()));
   gpu::SharedImageUsageSet shared_image_usage = kSharedImageUsage;
   if (is_webgpu_compatible &&
       base::FeatureList::IsEnabled(

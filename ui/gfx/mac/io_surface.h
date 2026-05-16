@@ -112,6 +112,11 @@ COMPONENT_EXPORT(GFX)
 ScopedIOSurface IOSurfaceMachPortToIOSurface(
     ScopedRefCountedIOSurfaceMachPort io_surface_mach_port);
 
+// Return true if IOSurface Pixel Format is supported by WebGPU and
+// can be imported in WebGPU.
+COMPONENT_EXPORT(GFX)
+bool IOSurfaceIsWebGPUCompatible(IOSurfaceRef io_surface);
+
 }  // namespace gfx
 
 #endif  // UI_GFX_MAC_IO_SURFACE_H_

@@ -6,6 +6,7 @@
 
 #include <Availability.h>
 #include <CoreGraphics/CoreGraphics.h>
+#include <CoreVideo/CoreVideo.h>
 #include <stddef.h>
 #include <stdint.h>
 
@@ -359,6 +360,23 @@ ScopedIOSurface IOSurfaceMachPortToIOSurface(
     return io_surface;
   }
   return io_surface;
+}
+
+bool IOSurfaceIsWebGPUCompatible(IOSurfaceRef io_surface) {
+  switch (IOSurfaceGetPixelFormat(io_surface)) {
+    case kCVPixelFormatType_64RGBAHalf:
+    case kCVPixelFormatType_TwoComponent16Half:
+    case kCVPixelFormatType_OneComponent16Half:
+    case kCVPixelFormatType_ARGB2101010LEPacked:
+    case kCVPixelFormatType_32RGBA:
+    case kCVPixelFormatType_32BGRA:
+    case kCVPixelFormatType_TwoComponent8:
+    case kCVPixelFormatType_OneComponent8:
+    case kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange:
+      return true;
+    default:
+      return false;
+  }
 }
 
 }  // namespace gfx
