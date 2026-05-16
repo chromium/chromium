@@ -699,6 +699,7 @@ suite('NewTabPageComposeboxTest', () => {
     input.dispatchEvent(new Event('input'));
     const hint = 't';
 
+    testProxy.element.haveReceivedSynchronousAutocompleteResponse = true;
     testProxy.searchboxCallbackRouterRemote.autocompleteResultChanged(
         createAutocompleteResultForTesting({
           input: 'tes',
@@ -729,6 +730,7 @@ suite('NewTabPageComposeboxTest', () => {
     input.dispatchEvent(new Event('input'));
     const hint = 't';
 
+    testProxy.element.haveReceivedSynchronousAutocompleteResponse = true;
     testProxy.searchboxCallbackRouterRemote.autocompleteResultChanged(
         createAutocompleteResultForTesting({
           input: 'tes',
@@ -782,6 +784,7 @@ suite('NewTabPageComposeboxTest', () => {
         input.dispatchEvent(new Event('input'));
         const hint = 'wrap';  // This will trigger width = 150
 
+        testProxy.element.haveReceivedSynchronousAutocompleteResponse = true;
         testProxy.searchboxCallbackRouterRemote.autocompleteResultChanged(
             createAutocompleteResultForTesting({
               input: 'tes.',
@@ -828,6 +831,7 @@ suite('NewTabPageComposeboxTest', () => {
         input.dispatchEvent(new Event('input'));
         const hint = 'fits wraps';
 
+        testProxy.element.haveReceivedSynchronousAutocompleteResponse = true;
         testProxy.searchboxCallbackRouterRemote.autocompleteResultChanged(
             createAutocompleteResultForTesting({
               input: 'tes.',
@@ -861,6 +865,7 @@ suite('NewTabPageComposeboxTest', () => {
         input.dispatchEvent(new Event('input'));
         const hint = 'a';
 
+        testProxy.element.haveReceivedSynchronousAutocompleteResponse = true;
         testProxy.searchboxCallbackRouterRemote.autocompleteResultChanged(
             createAutocompleteResultForTesting({
               input: 'test',
