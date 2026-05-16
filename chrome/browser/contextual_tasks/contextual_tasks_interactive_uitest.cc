@@ -4,10 +4,12 @@
 #include <optional>
 
 #include "base/check_deref.h"
+#include "base/path_service.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
+#include "chrome/browser/contextual_search/contextual_search_service_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_cookie_synchronizer.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_service_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service.h"
@@ -18,6 +20,8 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/contextual_search/tab_contextualization_controller.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
+#include "chrome/browser/ui/webui/searchbox/contextual_searchbox_test_utils.h"
+#include "chrome/common/chrome_paths.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/contextual_search/contextual_search_types.h"
@@ -32,6 +36,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/file_system_chooser_test_helpers.h"
 #include "net/dns/mock_host_resolver.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -118,6 +123,10 @@ class ContextualTasksInteractiveUiTest : public InteractiveBrowserTest {
             base::BindRepeating(&ContextualTasksInteractiveUiTest::
                                     BuildMockContextualTasksUiServiceInstance,
                                 base::Unretained(this)));
+
+    ContextualSearchServiceFactory::GetInstance()->SetTestingFactory(
+        context,
+        base::BindRepeating(&BuildMockContextualSearchServiceInstance));
   }
 
   std::unique_ptr<KeyedService> BuildMockAimServiceInstance(
@@ -194,6 +203,11 @@ class ContextualTasksInteractiveUiTest : public InteractiveBrowserTest {
                 }));
   }
 
+  void TearDownOnMainThread() override {
+    ui::SelectFileDialog::SetFactory(nullptr);
+    InteractiveBrowserTest::TearDownOnMainThread();
+  }
+
   static auto WaitForElementExists(const ui::ElementIdentifier& contents_id,
                                    const DeepQuery& element) {
     StateChange change;
@@ -242,8 +256,11 @@ class ContextualTasksInteractiveUiTest : public InteractiveBrowserTest {
     return WaitForStateChange(contents_id, change);
   }
 
-  auto ForceClickContextMenuItem(const ui::ElementIdentifier& contents_id,
-                                 int target_index) {
+  // Forces a click on a context menu item identified by its data-index.
+  // This is used when the menu item does not have a specific ID but can be
+  // identified by its position or index in the list.
+  auto ForceClickMenuButton(const ui::ElementIdentifier& contents_id,
+                            int target_index) {
     StateChange change;
     change.type = StateChange::Type::kExistsAndConditionTrue;
     change.where = {"contextual-tasks-app"};
@@ -264,6 +281,34 @@ class ContextualTasksInteractiveUiTest : public InteractiveBrowserTest {
         "  return false;"
         "}",
         target_index);
+    change.event = kElementExistsEvent;
+    return WaitForStateChange(contents_id, change);
+  }
+
+  // Forces a click on a context menu item identified by its ID string.
+  auto ForceClickMenuButton(const ui::ElementIdentifier& contents_id,
+                            const std::string& button_id) {
+    StateChange change;
+    change.type = StateChange::Type::kExistsAndConditionTrue;
+    change.where = {"contextual-tasks-app"};
+    change.test_function = base::StringPrintf(
+        "function(app) {"
+        "  const composebox = "
+        "app?.shadowRoot?.querySelector('#composebox')?.shadowRoot?."
+        "querySelector('#composebox');"
+        "  if (!composebox) return false;"
+        "  const menu = "
+        "composebox.shadowRoot?.querySelector('#contextEntrypoint')?."
+        "shadowRoot?.querySelector('#menu');"
+        "  if (!menu) return false;"
+        "  const btn = menu.shadowRoot?.querySelector('#%s');"
+        "  if (btn) {"
+        "    btn.click();"
+        "    return true;"
+        "  }"
+        "  return false;"
+        "}",
+        button_id.c_str());
     change.event = kElementExistsEvent;
     return WaitForStateChange(contents_id, change);
   }
@@ -289,6 +334,18 @@ class ContextualTasksInteractiveUiTest : public InteractiveBrowserTest {
                                        chrome::kChromeUIContextualTasksHost;
                               }),
                  WaitForElementExists(kPrimaryTab, {"contextual-tasks-app"}));
+  }
+
+  auto OpenContextualTasksInCurrentTab(const GURL& interception_url) {
+    return Steps(Do(base::BindLambdaForTesting([this, interception_url]() {
+                   browser()
+                       ->tab_strip_model()
+                       ->GetActiveWebContents()
+                       ->GetController()
+                       .LoadURL(interception_url, content::Referrer(),
+                                ui::PAGE_TRANSITION_TYPED, std::string());
+                 })),
+                 WaitForInterceptionAndLoad());
   }
 
  protected:
@@ -327,21 +384,11 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksInteractiveUiTest,
       // Make sure the first tab is selected.
       SelectTab(kTabStripElementId, 0),
 
-      // Trigger native navigation to AI URL and wait for redirection & load
-      // completion.
-      Do(base::BindLambdaForTesting([&]() {
-        browser()
-            ->tab_strip_model()
-            ->GetActiveWebContents()
-            ->GetController()
-            .LoadURL(kInterceptionUrl, content::Referrer(),
-                     ui::PAGE_TRANSITION_TYPED, std::string());
-      })),
-      WaitForInterceptionAndLoad(),
+      OpenContextualTasksInCurrentTab(kInterceptionUrl),
 
       // Force user action of clicking the entry point and then the tab chip.
       ForceClickAddContextEntrypoint(kPrimaryTab),
-      ForceClickContextMenuItem(kPrimaryTab, 0),
+      ForceClickMenuButton(kPrimaryTab, 0),
 
       // Verify tab chip existence and title.
       WaitForElementExists(kPrimaryTab, kTabChip),
@@ -356,6 +403,95 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksInteractiveUiTest,
 
       // Verify composebox updated files state to empty.
       WaitForComposeboxFilesCount(0));
+}
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksInteractiveUiTest,
+                       AddAndRemovePdfChipFromComposebox) {
+  const GURL kInterceptionUrl("https://www.google.com/search?udm=50");
+
+  base::FilePath test_data_dir;
+  base::PathService::Get(chrome::DIR_TEST_DATA, &test_data_dir);
+  base::FilePath file_path = test_data_dir.AppendASCII("download.pdf");
+
+  ui::SelectFileDialog::SetFactory(
+      std::make_unique<content::FakeSelectFileDialogFactory>(
+          std::vector<base::FilePath>{file_path}));
+
+  const DeepQuery kDocumentChip = {"contextual-tasks-app",
+                                   "#composebox",
+                                   "#composebox",
+                                   "#carousel",
+                                   "cr-composebox-file-thumbnail",
+                                   "#documentChip"};
+
+  const DeepQuery kRemoveDocumentButton = {"contextual-tasks-app",
+                                           "#composebox",
+                                           "#composebox",
+                                           "#carousel",
+                                           "cr-composebox-file-thumbnail",
+                                           "#removeDocumentButton"};
+
+  const DeepQuery kDocumentChipTitle = {"contextual-tasks-app",
+                                        "#composebox",
+                                        "#composebox",
+                                        "#carousel",
+                                        "cr-composebox-file-thumbnail",
+                                        "#documentTitle"};
+
+  RunTestSequence(InstrumentTab(kPrimaryTab, 0),
+                  SelectTab(kTabStripElementId, 0),
+                  OpenContextualTasksInCurrentTab(kInterceptionUrl),
+
+                  ForceClickAddContextEntrypoint(kPrimaryTab),
+                  ForceClickMenuButton(kPrimaryTab, "fileUpload"),
+
+                  WaitForElementExists(kPrimaryTab, kDocumentChip),
+                  CheckJsResultAt(kPrimaryTab, kDocumentChipTitle,
+                                  "el => el.textContent.trim()",
+                                  testing::HasSubstr("download.pdf")),
+                  WaitForComposeboxFilesCount(1),
+
+                  ClickButton(kPrimaryTab, kRemoveDocumentButton),
+                  WaitForElementDoesNotExist(kPrimaryTab, kDocumentChip),
+                  WaitForComposeboxFilesCount(0));
+}
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksInteractiveUiTest,
+                       AddAndRemoveImageChipFromComposebox) {
+  const GURL kInterceptionUrl("https://www.google.com/search?udm=50");
+
+  base::FilePath test_data_dir;
+  base::PathService::Get(chrome::DIR_TEST_DATA, &test_data_dir);
+  base::FilePath file_path = test_data_dir.AppendASCII("handbag.png");
+
+  ui::SelectFileDialog::SetFactory(
+      std::make_unique<content::FakeSelectFileDialogFactory>(
+          std::vector<base::FilePath>{file_path}));
+
+  const DeepQuery kImgChip = {
+      "contextual-tasks-app",         "#composebox", "#composebox", "#carousel",
+      "cr-composebox-file-thumbnail", "#imgChip"};
+
+  const DeepQuery kRemoveImgButton = {"contextual-tasks-app",
+                                      "#composebox",
+                                      "#composebox",
+                                      "#carousel",
+                                      "cr-composebox-file-thumbnail",
+                                      "#removeImgButton"};
+
+  RunTestSequence(InstrumentTab(kPrimaryTab, 0),
+                  SelectTab(kTabStripElementId, 0),
+                  OpenContextualTasksInCurrentTab(kInterceptionUrl),
+
+                  ForceClickAddContextEntrypoint(kPrimaryTab),
+                  ForceClickMenuButton(kPrimaryTab, "imageUpload"),
+
+                  WaitForElementExists(kPrimaryTab, kImgChip),
+                  WaitForComposeboxFilesCount(1),
+
+                  ClickButton(kPrimaryTab, kRemoveImgButton),
+                  WaitForElementDoesNotExist(kPrimaryTab, kImgChip),
+                  WaitForComposeboxFilesCount(0));
 }
 
 }  // namespace contextual_tasks
