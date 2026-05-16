@@ -318,6 +318,10 @@ svg {
   position: fixed;
 }
 
+:host([energy-effect-enabled_]) cr-composebox {
+  --cr-composebox-expanded-border-radius: 28px;
+}
+
 cr-composebox {
   --color-composebox-submit-button-background: var(
     --color-new-tab-page-composebox-submit-button-background);

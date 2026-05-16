@@ -259,6 +259,7 @@ void AddMaterialNewTabPageColorMixer(ui::ColorProvider* provider,
         kColorOmniboxAnswerIconGM3Background};
     mixer[kColorSearchboxAnswerIconForeground] = {
         kColorOmniboxAnswerIconGM3Foreground};
+    mixer[kColorSearchboxBorder] = {SkColorSetRGB(0xF0, 0xF2, 0xF5)};
     mixer[kColorSearchboxForeground] = {kColorOmniboxText};
     mixer[kColorSearchboxResultsActionChip] = {ui::kColorSysTonalOutline};
     mixer[kColorSearchboxResultsActionChipIcon] = {ui::kColorSysPrimary};
