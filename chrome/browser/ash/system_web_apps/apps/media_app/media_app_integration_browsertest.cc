@@ -53,6 +53,7 @@
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/dbus/cros_disks/cros_disks_client.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "chromeos/constants/chromeos_features.h"
@@ -1548,13 +1549,18 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, MaybeTriggerPdfHats) {
   // Notifications only fire if the device is "online". Simulate that.
   network_portal_detector_.SimulateDefaultNetworkState(
       ash::NetworkPortalDetectorMixin::NetworkStatus::kOnline);
-  message_center::MessageCenterWaiter waiter("hats_notification");
+  const user_manager::User& user = CHECK_DEREF(
+      ash::BrowserContextHelper::Get()->GetUserByBrowserContext(profile()));
+  const std::string notification_id =
+      ash::HatsNotificationController::GetMessageCenterNotificationIdForTesting(
+          user);
+  message_center::MessageCenterWaiter waiter(notification_id);
 
   EXPECT_EQ("success",
             ExtractStringInGlobalScope(web_ui, kMaybeTriggerPdfHats));
   waiter.WaitUntilAdded();
   EXPECT_TRUE(message_center::MessageCenter::Get()->FindVisibleNotificationById(
-      "hats_notification"));
+      notification_id));
 }
 
 // Tests that the Photos happiness tracking survey triggers when the monitored
@@ -1573,7 +1579,12 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, MaybeTriggerPhotosHats) {
   // Notifications only fire if the device is "online". Simulate that.
   network_portal_detector_.SimulateDefaultNetworkState(
       ash::NetworkPortalDetectorMixin::NetworkStatus::kOnline);
-  message_center::MessageCenterWaiter waiter("hats_notification");
+  const user_manager::User& user = CHECK_DEREF(
+      ash::BrowserContextHelper::Get()->GetUserByBrowserContext(profile()));
+  const std::string notification_id =
+      ash::HatsNotificationController::GetMessageCenterNotificationIdForTesting(
+          user);
+  message_center::MessageCenterWaiter waiter(notification_id);
 
   LaunchWithNoFiles();
   GlobalBrowserCollection::GetInstance()
@@ -1583,7 +1594,7 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, MaybeTriggerPhotosHats) {
 
   waiter.WaitUntilAdded();
   EXPECT_TRUE(message_center::MessageCenter::Get()->FindVisibleNotificationById(
-      "hats_notification"));
+      notification_id));
 
   // Avoid leaving a ref to the std::string about to be destroyed.
   SetPhotosExperienceSurveyTriggerAppIdForTesting("");

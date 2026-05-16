@@ -72,6 +72,7 @@ source_set("browser_tests") {
     "//chrome/browser/ui",
     "//chrome/common",
     "//chrome/test:test_support",
+    "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/components/network",
     "//components/prefs",
     "//components/session_manager/core",

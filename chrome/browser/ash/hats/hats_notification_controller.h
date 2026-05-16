@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_ASH_HATS_HATS_NOTIFICATION_CONTROLLER_H_
 #define CHROME_BROWSER_ASH_HATS_HATS_NOTIFICATION_CONTROLLER_H_
 
+#include <string>
+
 #include "base/containers/flat_map.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
@@ -19,6 +21,10 @@
 namespace message_center {
 class Notification;
 }  // namespace message_center
+
+namespace user_manager {
+class User;
+}  // namespace user_manager
 
 class Profile;
 class NetworkState;
@@ -83,6 +89,11 @@ class HatsNotificationController : public message_center::NotificationDelegate,
   // Returns true if the survey needs to be displayed for the given |profile|.
   static bool ShouldShowSurveyToProfile(Profile* profile,
                                         const HatsConfig& config);
+
+  // Returns the MessageCenter backend notification ID for `user` in tests.
+  // Production callers must not depend on this generated ID format.
+  static std::string GetMessageCenterNotificationIdForTesting(
+      const user_manager::User& user);
 
  private:
   friend class HatsNotificationControllerTest;

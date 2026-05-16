@@ -4,9 +4,12 @@
 
 #include "chrome/browser/ui/webui/ash/cloud_upload/hats_office_trigger.h"
 
+#include <string>
+
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/constants/web_app_id_constants.h"
+#include "base/check_deref.h"
 #include "base/command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
@@ -23,6 +26,7 @@
 #include "chrome/browser/safe_browsing/url_lookup_service_factory.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/ash/components/network/network_handler_test_helper.h"
 #include "components/services/app_service/public/cpp/instance.h"
@@ -113,9 +117,11 @@ class HatsOfficeTriggerTest : public HatsOfficeTriggerTestBase {
     // Remove the hats notification if it is showing. This allows the
     // scopedref-ed HatsNotificationController to get destroyed at the end of
     // the test.
-    if (IsHatsNotificationActive()) {
+    const user_manager::User& user = GetUserForProfile();
+    const std::string notification_id = GetHatsNotificationId(user);
+    if (IsHatsNotificationActive(notification_id)) {
       message_center::MessageCenter::Get()->RemoveNotification(
-          HatsNotificationController::kNotificationId, /*by_user=*/true);
+          notification_id, /*by_user=*/true);
     }
     network_handler_test_helper_.reset();
     profile_ = nullptr;
@@ -125,9 +131,19 @@ class HatsOfficeTriggerTest : public HatsOfficeTriggerTestBase {
     HatsOfficeTriggerTestBase::TearDown();
   }
 
-  bool IsHatsNotificationActive() const {
+  bool IsHatsNotificationActive(const std::string& notification_id) const {
     return message_center::MessageCenter::Get()->FindVisibleNotificationById(
-               HatsNotificationController::kNotificationId) != nullptr;
+               notification_id) != nullptr;
+  }
+
+  std::string GetHatsNotificationId(const user_manager::User& user) const {
+    return HatsNotificationController::GetMessageCenterNotificationIdForTesting(
+        user);
+  }
+
+  const user_manager::User& GetUserForProfile() const {
+    return CHECK_DEREF(
+        BrowserContextHelper::Get()->GetUserByBrowserContext(profile_));
   }
 
   void OnTrackedDocsInstance(apps::InstanceState state) {
@@ -173,15 +189,16 @@ class HatsOfficeTriggerLoginScreenTest : public HatsOfficeTriggerTestBase {
 };
 
 TEST_F(HatsOfficeTriggerTest, ShowSurveyAfterDelaySuccess) {
-  ASSERT_FALSE(IsHatsNotificationActive());
+  const user_manager::User& user = GetUserForProfile();
+  const std::string notification_id = GetHatsNotificationId(user);
+  ASSERT_FALSE(IsHatsNotificationActive(notification_id));
 
-  message_center::MessageCenterWaiter waiter(
-      HatsNotificationController::kNotificationId);
+  message_center::MessageCenterWaiter waiter(notification_id);
   hats_office_trigger_.ShowSurveyAfterDelay(
       HatsOfficeLaunchingApp::kQuickOffice);
 
   ASSERT_TRUE(IsDelayTriggerActive());
-  ASSERT_FALSE(IsHatsNotificationActive());
+  ASSERT_FALSE(IsHatsNotificationActive(notification_id));
   ASSERT_FALSE(GetHatsNotificationController());
 
   // This test previously passed incorrectly due to a latent bug. The core of
@@ -206,15 +223,16 @@ TEST_F(HatsOfficeTriggerTest, ShowSurveyAfterDelaySuccess) {
 
   ASSERT_FALSE(IsDelayTriggerActive());
   ASSERT_TRUE(GetHatsNotificationController());
-  ASSERT_TRUE(IsHatsNotificationActive());
+  ASSERT_TRUE(IsHatsNotificationActive(notification_id));
 }
 
 TEST_F(HatsOfficeTriggerTest, ShowSurveyAfterAppInactiveSuccess) {
-  ASSERT_FALSE(IsHatsNotificationActive());
+  const user_manager::User& user = GetUserForProfile();
+  const std::string notification_id = GetHatsNotificationId(user);
+  ASSERT_FALSE(IsHatsNotificationActive(notification_id));
   ASSERT_FALSE(GetHatsNotificationController());
 
-  message_center::MessageCenterWaiter waiter(
-      HatsNotificationController::kNotificationId);
+  message_center::MessageCenterWaiter waiter(notification_id);
   hats_office_trigger_.ShowSurveyAfterAppInactive(
       ash::kGoogleDocsAppId, HatsOfficeLaunchingApp::kDrive);
 
@@ -230,7 +248,7 @@ TEST_F(HatsOfficeTriggerTest, ShowSurveyAfterAppInactiveSuccess) {
       apps::InstanceState(apps::kStarted | apps::kRunning | apps::kVisible));
   task_environment_.FastForwardBy(kDebounceDelay / 2);
 
-  ASSERT_FALSE(IsHatsNotificationActive());
+  ASSERT_FALSE(IsHatsNotificationActive(notification_id));
   ASSERT_FALSE(GetHatsNotificationController());
 
   // Simulate the app being active. The survey shouldn't be triggered.
@@ -238,7 +256,7 @@ TEST_F(HatsOfficeTriggerTest, ShowSurveyAfterAppInactiveSuccess) {
                                             apps::kVisible | apps::kActive));
   task_environment_.FastForwardBy(kDebounceDelay);
 
-  ASSERT_FALSE(IsHatsNotificationActive());
+  ASSERT_FALSE(IsHatsNotificationActive(notification_id));
   ASSERT_FALSE(GetHatsNotificationController());
 
   // Simulate another update from the app that isn't tracked, it shouldn't
@@ -247,7 +265,7 @@ TEST_F(HatsOfficeTriggerTest, ShowSurveyAfterAppInactiveSuccess) {
       apps::InstanceState(apps::kStarted | apps::kRunning | apps::kVisible));
   task_environment_.FastForwardBy(kDebounceDelay);
 
-  ASSERT_FALSE(IsHatsNotificationActive());
+  ASSERT_FALSE(IsHatsNotificationActive(notification_id));
   ASSERT_FALSE(GetHatsNotificationController());
 
   // Simulate the app being no longer active, it will this time trigger the
@@ -259,12 +277,14 @@ TEST_F(HatsOfficeTriggerTest, ShowSurveyAfterAppInactiveSuccess) {
   waiter.WaitUntilAdded();
 
   ASSERT_TRUE(GetHatsNotificationController());
-  ASSERT_TRUE(IsHatsNotificationActive());
+  ASSERT_TRUE(IsHatsNotificationActive(notification_id));
 }
 
 TEST_F(HatsOfficeTriggerTest, NoAppUpdateTimeout) {
+  const user_manager::User& user = GetUserForProfile();
+  const std::string notification_id = GetHatsNotificationId(user);
   ASSERT_FALSE(IsAppStateTriggerActive());
-  ASSERT_FALSE(IsHatsNotificationActive());
+  ASSERT_FALSE(IsHatsNotificationActive(notification_id));
   ASSERT_FALSE(GetHatsNotificationController());
 
   hats_office_trigger_.ShowSurveyAfterAppInactive(
@@ -278,7 +298,7 @@ TEST_F(HatsOfficeTriggerTest, NoAppUpdateTimeout) {
   task_environment_.FastForwardBy(kFirstAppStateEventTimeout);
 
   ASSERT_FALSE(IsAppStateTriggerActive());
-  ASSERT_FALSE(IsHatsNotificationActive());
+  ASSERT_FALSE(IsHatsNotificationActive(notification_id));
   ASSERT_FALSE(GetHatsNotificationController());
 
   // Simulate receiving the expected instance updates. They shouldn't trigger
@@ -293,22 +313,23 @@ TEST_F(HatsOfficeTriggerTest, NoAppUpdateTimeout) {
   OnTrackedDocsInstance(apps::kDestroyed);
   task_environment_.FastForwardBy(kDebounceDelay);
 
-  ASSERT_FALSE(IsHatsNotificationActive());
+  ASSERT_FALSE(IsHatsNotificationActive(notification_id));
   ASSERT_FALSE(GetHatsNotificationController());
 }
 
 TEST_F(HatsOfficeTriggerTest, ShowSurveyOnlyOnce) {
-  ASSERT_FALSE(IsHatsNotificationActive());
+  const user_manager::User& user = GetUserForProfile();
+  const std::string notification_id = GetHatsNotificationId(user);
+  ASSERT_FALSE(IsHatsNotificationActive(notification_id));
 
   // Show survey once
-  message_center::MessageCenterWaiter waiter(
-      HatsNotificationController::kNotificationId);
+  message_center::MessageCenterWaiter waiter(notification_id);
 
   hats_office_trigger_.ShowSurveyAfterDelay(
       HatsOfficeLaunchingApp::kQuickOfficeClippyOff);
 
   ASSERT_TRUE(IsDelayTriggerActive());
-  ASSERT_FALSE(IsHatsNotificationActive());
+  ASSERT_FALSE(IsHatsNotificationActive(notification_id));
   ASSERT_FALSE(GetHatsNotificationController());
 
   // This test previously passed incorrectly due to a latent bug. The core of
@@ -335,7 +356,7 @@ TEST_F(HatsOfficeTriggerTest, ShowSurveyOnlyOnce) {
   const HatsNotificationController* hats_notification_controller =
       GetHatsNotificationController();
   EXPECT_NE(hats_notification_controller, nullptr);
-  ASSERT_TRUE(IsHatsNotificationActive());
+  ASSERT_TRUE(IsHatsNotificationActive(notification_id));
 
   // Trigger survey again but the controller shouldn't be a new instance.
   hats_office_trigger_.ShowSurveyAfterDelay(HatsOfficeLaunchingApp::kDrive);
@@ -351,8 +372,10 @@ TEST_F(HatsOfficeTriggerLoginScreenTest, NoActiveUser) {
 }
 
 TEST_F(HatsOfficeTriggerTest, NoSurveyForManagedProfile) {
+  const user_manager::User& user = GetUserForProfile();
+  const std::string notification_id = GetHatsNotificationId(user);
   profile_->GetProfilePolicyConnector()->OverrideIsManagedForTesting(true);
-  ASSERT_FALSE(IsHatsNotificationActive());
+  ASSERT_FALSE(IsHatsNotificationActive(notification_id));
 
   hats_office_trigger_.ShowSurveyAfterDelay(HatsOfficeLaunchingApp::kMS365);
   ASSERT_FALSE(IsDelayTriggerActive());
@@ -360,9 +383,11 @@ TEST_F(HatsOfficeTriggerTest, NoSurveyForManagedProfile) {
 }
 
 TEST_F(HatsOfficeTriggerTest, NoSurveyIfSessionNotActive) {
+  const user_manager::User& user = GetUserForProfile();
+  const std::string notification_id = GetHatsNotificationId(user);
   session_manager::SessionManager::Get()->SetSessionState(
       session_manager::SessionState::LOCKED);
-  ASSERT_FALSE(IsHatsNotificationActive());
+  ASSERT_FALSE(IsHatsNotificationActive(notification_id));
 
   hats_office_trigger_.ShowSurveyAfterDelay(HatsOfficeLaunchingApp::kMS365);
 

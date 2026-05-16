@@ -195,6 +195,7 @@ source_set("unit_tests") {
     "//chrome/browser/web_applications",
     "//chrome/common:chrome_features",
     "//chrome/test:test_support",
+    "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/components/network",
     "//chromeos/ash/components/network:test_support",
     "//components/services/app_service/public/cpp:instance_update",

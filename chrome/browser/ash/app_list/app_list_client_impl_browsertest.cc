@@ -24,6 +24,7 @@
 #include "ash/test/active_window_waiter.h"
 #include "ash/webui/settings/public/constants/routes.mojom.h"
 #include "ash/webui/settings/public/constants/routes_util.h"
+#include "base/check_deref.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
@@ -1424,19 +1425,17 @@ class AppListSurveyTriggerTest
     }
   }
 
-  bool IsHatsNotificationActive() const {
+  bool IsHatsNotificationActive(const std::string& notification_id) const {
     return message_center::MessageCenter::Get()->FindVisibleNotificationById(
-               ash::HatsNotificationController::kNotificationId) != nullptr;
+               notification_id) != nullptr;
   }
 
-  void MaybeWaitForHatsNotification() {
+  void MaybeWaitForHatsNotification(const std::string& notification_id) {
     if (!ShouldShowHatsSurvey()) {
       return;
     }
 
-    message_center::MessageCenterWaiter(
-        ash::HatsNotificationController::kNotificationId)
-        .WaitUntilAdded();
+    message_center::MessageCenterWaiter(notification_id).WaitUntilAdded();
   }
 
   const ash::HatsNotificationController* GetHatsNotificationController() const {
@@ -1447,6 +1446,16 @@ class AppListSurveyTriggerTest
   // Returns the HATS Survey that is expected to trigger.
   AppListSurveyConfiguration GetHatsConfig() const {
     return std::get<1>(GetParam());
+  }
+
+  std::string GetHatsNotificationId(const user_manager::User& user) const {
+    return ash::HatsNotificationController::
+        GetMessageCenterNotificationIdForTesting(user);
+  }
+
+  const user_manager::User& GetUserForProfile(Profile* profile) const {
+    return CHECK_DEREF(
+        ash::BrowserContextHelper::Get()->GetUserByBrowserContext(profile));
   }
 
   // Returns the experimental arm that this test was set up for AppsCollections.
@@ -1479,7 +1488,9 @@ INSTANTIATE_TEST_SUITE_P(
                         AppListSurveyConfiguration::kNone)));
 
 IN_PROC_BROWSER_TEST_P(AppListSurveyTriggerTest, ShowSurveySuccess) {
-  EXPECT_FALSE(IsHatsNotificationActive());
+  const user_manager::User& user = GetUserForProfile(browser()->profile());
+  const std::string notification_id = GetHatsNotificationId(user);
+  EXPECT_FALSE(IsHatsNotificationActive(notification_id));
 
   AppListClientImpl* client = AppListClientImpl::GetInstance();
 
@@ -1490,10 +1501,10 @@ IN_PROC_BROWSER_TEST_P(AppListSurveyTriggerTest, ShowSurveySuccess) {
       /*wait_for_opening_animation=*/false);
   EXPECT_TRUE(client->GetAppListWindow());
 
-  MaybeWaitForHatsNotification();
+  MaybeWaitForHatsNotification(notification_id);
 
   EXPECT_EQ(GetHatsNotificationController() != nullptr, ShouldShowHatsSurvey());
-  EXPECT_EQ(IsHatsNotificationActive(), ShouldShowHatsSurvey());
+  EXPECT_EQ(IsHatsNotificationActive(notification_id), ShouldShowHatsSurvey());
 }
 
 IN_PROC_BROWSER_TEST_P(AppListSurveyTriggerTest, ShowSurveyOnlyOnce) {
@@ -1501,7 +1512,9 @@ IN_PROC_BROWSER_TEST_P(AppListSurveyTriggerTest, ShowSurveyOnlyOnce) {
     return;
   }
 
-  EXPECT_FALSE(IsHatsNotificationActive());
+  const user_manager::User& user = GetUserForProfile(browser()->profile());
+  const std::string notification_id = GetHatsNotificationId(user);
+  EXPECT_FALSE(IsHatsNotificationActive(notification_id));
 
   AppListClientImpl* client = AppListClientImpl::GetInstance();
 
@@ -1512,12 +1525,12 @@ IN_PROC_BROWSER_TEST_P(AppListSurveyTriggerTest, ShowSurveyOnlyOnce) {
       /*wait_for_opening_animation=*/false);
   EXPECT_TRUE(client->GetAppListWindow());
 
-  MaybeWaitForHatsNotification();
+  MaybeWaitForHatsNotification(notification_id);
 
   const ash::HatsNotificationController* hats_notification_controller =
       GetHatsNotificationController();
   EXPECT_NE(hats_notification_controller, nullptr);
-  EXPECT_TRUE(IsHatsNotificationActive());
+  EXPECT_TRUE(IsHatsNotificationActive(notification_id));
 
   // Bring up the app list again but the controller shouldn't be a new instance.
   client->DismissView();
