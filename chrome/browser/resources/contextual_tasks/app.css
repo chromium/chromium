@@ -44,6 +44,7 @@
   --color-composebox-type-ahead-chip: #f0f2f5;
   --color-composebox-voice-lens-button: rgba(10, 10, 10, 1);
   --color-composebox-voice-button-hover-background: rgba(31, 31, 31, 0.06);
+  --color-composebox-voice-search-close-button: rgba(71, 71, 71, 1);
   --color-composebox-voice-search-font: rgba(10, 10, 10, 1);
   --color-composebox-lens-active-background: rgba(225, 227, 232, 1);
   --color-composebox-zero-state-suggestions-background-hovered:
@@ -239,6 +240,7 @@
   --color-composebox-type-ahead: #a0a2ab;
   --color-composebox-type-ahead-chip: #4e5059;
   --color-composebox-voice-lens-button: rgba(191, 191, 191, 1);
+  --color-composebox-voice-search-close-button: rgba(199, 199, 199, 1);
   --color-composebox-voice-search-font: rgba(230, 232, 240, 1);
   --color-composebox-lens-active-background: rgba(42, 43, 54, 1);
   --color-composebox-zero-state-suggestions-background-hovered:
@@ -328,6 +330,7 @@
   --on-surface-default-disabled-text-color: rgba(230, 232, 240, 0.38);
   --on-surface-emphasis-text-color: rgba(230, 232, 240, 1);
   --on-surface-de-emphasis-text-color: rgba(173, 175, 184, 1);
+  --on-surface-subtle-text-color: rgba(199, 199, 199, 1);
 
   /* Panel surface colors */
   --search-background-color: var(--surface-background-color);
@@ -364,6 +367,8 @@
   --color-composebox-hover: var(--surface-highest-container-button-hover-color);
   --color-composebox-lens-active-background:
     var(--surface-highest-container-button-hover-color);
+  --color-composebox-voice-search-close-button:
+    var(--on-surface-subtle-text-color);
   --color-searchbox-results-background-hovered:
     var(--surface-highest-container-button-hover-color);
   --color-sds-comp-input-aim-action-neutral-stratus-dark: #4e5059;

@@ -74,7 +74,7 @@
 
 #closeButton {
   --cr-icon-button-fill-color:
-      var(--color-composebox-cancel-button-light);
+      var(--color-composebox-voice-search-close-button, var(--color-composebox-cancel-button-light));
   --cr-icon-button-icon-size: 20px;
   --cr-icon-button-size: 36px;
   inset-inline-end: 12px;
