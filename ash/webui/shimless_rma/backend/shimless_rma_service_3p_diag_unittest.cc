@@ -86,7 +86,7 @@ void SetFakeCrosHealthdOemName(const std::string& oem_name) {
       ash::cros_healthd::mojom::SystemResult::NewSystemInfo(
           std::move(system_info));
   cros_healthd::FakeCrosHealthd::Get()->SetProbeTelemetryInfoResponseForTesting(
-      telemetry_info);
+      std::move(telemetry_info));
 }
 
 TEST_F(ShimlessRmaService3pDiagTest, Get3pDiagnosticsProvider) {
@@ -111,9 +111,8 @@ TEST_F(ShimlessRmaService3pDiagTest,
 TEST_F(ShimlessRmaService3pDiagTest,
        Get3pDiagnosticsProviderFailedToGetOemName) {
   // Set empty cros_healthd response.
-  auto info = ash::cros_healthd::mojom::TelemetryInfo::New();
   cros_healthd::FakeCrosHealthd::Get()->SetProbeTelemetryInfoResponseForTesting(
-      info);
+      ash::cros_healthd::mojom::TelemetryInfo::New());
 
   base::test::TestFuture<const std::optional<std::string>&> future;
   shimless_rma_provider_->Get3pDiagnosticsProvider(future.GetCallback());

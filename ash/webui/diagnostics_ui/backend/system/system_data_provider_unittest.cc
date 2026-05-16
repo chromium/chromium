@@ -7,6 +7,7 @@
 #include <cstdint>
 #include <memory>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "ash/system/diagnostics/diagnostics_log_controller.h"
@@ -79,7 +80,7 @@ void SetProbeTelemetryInfoResponse(healthd_mojom::BatteryInfoPtr battery_info,
   }
 
   cros_healthd::FakeCrosHealthd::Get()->SetProbeTelemetryInfoResponseForTesting(
-      info);
+      std::move(info));
 }
 
 void SetCrosHealthdSystemInfoResponse(const std::string& board_name,
@@ -1455,7 +1456,7 @@ TEST_F(SystemDataProviderTest, RecordProbeError_BatteryInfo) {
       CreateProbeError(healthd_mojom::ErrorType::kParseError));
   info->battery_result = std::move(battery_result);
   cros_healthd::FakeCrosHealthd::Get()->SetProbeTelemetryInfoResponseForTesting(
-      info);
+      std::move(info));
   base::RunLoop run_loop;
 
   system_data_provider_->GetBatteryInfo(
@@ -1517,9 +1518,8 @@ TEST_F(SystemDataProviderTest, RecordProbeError_CpuInfo) {
                                /*expected_service_unavailable=*/0,
                                /*expected_system_utility_error=*/0,
                                /*expected_file_read_error=*/0);
-  auto info = healthd_mojom::TelemetryInfo::New();
   cros_healthd::FakeCrosHealthd::Get()->SetProbeTelemetryInfoResponseForTesting(
-      info);
+      healthd_mojom::TelemetryInfo::New());
   timer_ptr->Fire();
   base::RunLoop().RunUntilIdle();
 
@@ -1530,9 +1530,10 @@ TEST_F(SystemDataProviderTest, RecordProbeError_CpuInfo) {
 
   auto cpu_result = healthd_mojom::CpuResult::NewError(
       CreateProbeError(healthd_mojom::ErrorType::kFileReadError));
+  auto info = healthd_mojom::TelemetryInfo::New();
   info->cpu_result = std::move(cpu_result);
   cros_healthd::FakeCrosHealthd::Get()->SetProbeTelemetryInfoResponseForTesting(
-      info);
+      std::move(info));
   timer_ptr->Fire();
   base::RunLoop().RunUntilIdle();
 
@@ -1575,7 +1576,7 @@ TEST_F(SystemDataProviderTest, RecordProbeError_MemoryInfo) {
       CreateProbeError(healthd_mojom::ErrorType::kSystemUtilityError));
   info->memory_result = std::move(memory_result);
   cros_healthd::FakeCrosHealthd::Get()->SetProbeTelemetryInfoResponseForTesting(
-      info);
+      std::move(info));
 
   timer_ptr->Fire();
   base::RunLoop().RunUntilIdle();
@@ -1602,7 +1603,7 @@ TEST_F(SystemDataProviderTest, RecordProbeError_SystemInfo) {
   auto info = healthd_mojom::TelemetryInfo::New();
   info->system_result = std::move(system_result);
   cros_healthd::FakeCrosHealthd::Get()->SetProbeTelemetryInfoResponseForTesting(
-      info);
+      std::move(info));
 
   base::RunLoop run_loop;
   system_data_provider_->GetSystemInfo(

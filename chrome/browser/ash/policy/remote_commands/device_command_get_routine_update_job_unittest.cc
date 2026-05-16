@@ -7,6 +7,7 @@
 #include <limits>
 #include <memory>
 #include <optional>
+#include <utility>
 
 #include "base/json/json_writer.h"
 #include "base/test/bind.h"
@@ -272,7 +273,7 @@ TEST_F(DeviceCommandGetRoutineUpdateJobTest,
       kProgressPercent,
       /*output=*/mojo::ScopedHandle(), update_union.Clone());
   ash::cros_healthd::FakeCrosHealthd::Get()
-      ->SetGetRoutineUpdateResponseForTesting(response);
+      ->SetGetRoutineUpdateResponseForTesting(std::move(response));
   std::unique_ptr<RemoteCommandJob> job =
       std::make_unique<DeviceCommandGetRoutineUpdateJob>();
   InitializeJob(job.get(), kUniqueID, test_start_time_, base::Seconds(30),
@@ -306,7 +307,7 @@ TEST_F(DeviceCommandGetRoutineUpdateJobTest,
       kProgressPercent,
       /*output=*/mojo::ScopedHandle(), update_union.Clone());
   ash::cros_healthd::FakeCrosHealthd::Get()
-      ->SetGetRoutineUpdateResponseForTesting(response);
+      ->SetGetRoutineUpdateResponseForTesting(std::move(response));
   std::unique_ptr<RemoteCommandJob> job =
       std::make_unique<DeviceCommandGetRoutineUpdateJob>();
   InitializeJob(job.get(), kUniqueID, test_start_time_, base::Seconds(30),

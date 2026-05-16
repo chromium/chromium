@@ -81,7 +81,7 @@ void SetProbeTelemetryInfoResponse(healthd_mojom::BatteryInfoPtr battery_info,
   }
 
   ash::cros_healthd::FakeCrosHealthd::Get()
-      ->SetProbeTelemetryInfoResponseForTesting(info);
+      ->SetProbeTelemetryInfoResponseForTesting(std::move(info));
 }
 
 void SetCrosHealthdCpuResponse(
@@ -518,7 +518,7 @@ TEST_F(SystemInfoCardProviderTest, CpuProbeError) {
       CreateProbeError(healthd_mojom::ErrorType::kFileReadError));
   info->cpu_result = std::move(cpu_result);
   ash::cros_healthd::FakeCrosHealthd::Get()
-      ->SetProbeTelemetryInfoResponseForTesting(info);
+      ->SetProbeTelemetryInfoResponseForTesting(std::move(info));
 
   StartSearch(u"cpu");
   Wait();
@@ -610,7 +610,7 @@ TEST_F(SystemInfoCardProviderTest, MemoryProbeError) {
       CreateProbeError(healthd_mojom::ErrorType::kSystemUtilityError));
   info->memory_result = std::move(memory_result);
   ash::cros_healthd::FakeCrosHealthd::Get()
-      ->SetProbeTelemetryInfoResponseForTesting(info);
+      ->SetProbeTelemetryInfoResponseForTesting(std::move(info));
 
   StartSearch(u"memory");
   Wait();
@@ -747,7 +747,7 @@ TEST_F(SystemInfoCardProviderTest, BatteryProbeError) {
       CreateProbeError(healthd_mojom::ErrorType::kParseError));
   info->battery_result = std::move(battery_result);
   ash::cros_healthd::FakeCrosHealthd::Get()
-      ->SetProbeTelemetryInfoResponseForTesting(info);
+      ->SetProbeTelemetryInfoResponseForTesting(std::move(info));
 
   const auto power_source =
       power_manager::PowerSupplyProperties_ExternalPower_AC;

@@ -150,7 +150,7 @@ std::optional<MetricData> CollectData(
     cros_healthd::ProbeCategoryEnum probe_category,
     CrosHealthdSamplerHandler::MetricType metric_type) {
   ash::cros_healthd::FakeCrosHealthd::Get()
-      ->SetProbeTelemetryInfoResponseForTesting(telemetry_info);
+      ->SetProbeTelemetryInfoResponseForTesting(std::move(telemetry_info));
   CrosHealthdMetricSampler sampler(std::move(info_handler), probe_category);
   test::TestEvent<std::optional<MetricData>> metric_collect_event;
 
@@ -448,7 +448,7 @@ TEST_F(CrosHealthdMetricSamplerTest,
                 CrosHealthdPsrSamplerHandlerForTest::kS3Counter));
 
         ash::cros_healthd::FakeCrosHealthd::Get()
-            ->SetProbeTelemetryInfoResponseForTesting(system_result);
+            ->SetProbeTelemetryInfoResponseForTesting(std::move(system_result));
       }));
   const auto optional_result = CollectData(
       std::move(handler),
