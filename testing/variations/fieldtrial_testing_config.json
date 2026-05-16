@@ -10252,6 +10252,24 @@
             ]
         }
     ],
+    "EnergyEffectVisdStudy": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Treatment",
+                    "enable_features": [
+                        "EnergyEffect"
+                    ]
+                }
+            ]
+        }
+    ],
     "EnhancedFieldsForSecOps": [
         {
             "platforms": [
