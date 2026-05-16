@@ -2,26 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {DebugSection, InstalledWebAppsData} from 'chrome://web-app-internals/web_app_internals_utils.js';
+import type {DebugData} from 'chrome://web-app-internals/web_app_internals_utils.js';
 import {filterToApp, getQuery, renderAppIndex} from 'chrome://web-app-internals/web_app_internals_utils.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
-function getInstalledSection(section: DebugSection): InstalledWebAppsData {
-  return section['InstalledWebApps'] as InstalledWebAppsData;
-}
-
+// Tests only exercise the InstalledWebApps section. Cast as DebugData since
+// other required sections are not relevant for these tests.
 function makeFakeData(
     index: Record<string, string|string[]>,
-    details: Array<Record<string, string>>): DebugSection[] {
-  return [
-    {'OtherSection': {'key': 'value'}},
-    {
-      'InstalledWebApps': {
-        '!Index': index,
-        'Details': details,
-      },
+    details: Array<{'!app_id': string, [key: string]: string}>): DebugData {
+  return {
+    InstalledWebApps: {
+      '!Index': index,
+      Details: details,
     },
-  ];
+  } as DebugData;
 }
 
 suite('WebAppInternalsUtilsTest', function() {
@@ -56,8 +51,7 @@ suite('WebAppInternalsUtilsTest', function() {
         {'!app_id': 'id2', 'name': 'App2'},
       ]);
       const result = filterToApp(data, 'id1');
-      assertEquals(1, result.length);
-      const installed = getInstalledSection(result[0]!);
+      const installed = result.InstalledWebApps;
       assertEquals(1, installed.Details.length);
       assertEquals('id1', installed.Details[0]!['!app_id']);
     });
@@ -66,14 +60,8 @@ suite('WebAppInternalsUtilsTest', function() {
       const data =
           makeFakeData({'App1': 'id1'}, [{'!app_id': 'id1', 'name': 'App1'}]);
       const result = filterToApp(data, 'id1');
-      const installed = getInstalledSection(result[0]!);
+      const installed = result.InstalledWebApps;
       assertDeepEquals({'App1': 'id1'}, installed['!Index']);
-    });
-
-    test('returns full data when InstalledWebApps section missing', function() {
-      const data: DebugSection[] = [{'OtherSection': {}}];
-      const result = filterToApp(data, 'id1');
-      assertDeepEquals(data, result);
     });
 
     test('returns full data when no app matches', function() {
@@ -90,7 +78,7 @@ suite('WebAppInternalsUtilsTest', function() {
       ]);
       filterToApp(data, 'id1');
       // Original data should still have both apps.
-      const installed = getInstalledSection(data[1]!);
+      const installed = data.InstalledWebApps;
       assertEquals(2, installed.Details.length);
     });
   });
@@ -132,12 +120,6 @@ suite('WebAppInternalsUtilsTest', function() {
       assertEquals(3, links.length);
       assertEquals('App1 (id1)', links[1]!.textContent);
       assertEquals('App1 (id2)', links[2]!.textContent);
-    });
-
-    test('handles missing InstalledWebApps section', function() {
-      const data: DebugSection[] = [{'OtherSection': {}}];
-      renderAppIndex(data, container, '');
-      assertEquals(0, container.children.length);
     });
 
     test('marks matching link as active', function() {

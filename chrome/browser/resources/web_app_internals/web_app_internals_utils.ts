@@ -3,12 +3,39 @@
 // found in the LICENSE file.
 
 /**
- * Represents a top-level section in the debug info JSON output.
- * Each section is a single-key object mapping a section name to its data.
+ * Represents the top-level debug info JSON output emitted by
+ * BuildDebugInfo() in web_app_internals_handler.cc.
  */
-export interface DebugSection {
-  [key: string]: unknown;
+export interface DebugData {
+  // Always emitted.
+  InstalledWebApps: InstalledWebAppsData;
+  LockManager: Record<string, unknown>;
+  NavigationCapturing: unknown[];
+  CommandManager: Record<string, unknown>;
+  IconErrorLog: string[]|string;
+  PreinstalledWebAppConfigs: Record<string, unknown>|string;
+  UserUninstalledPreinstalledWebAppPrefs: Record<string, unknown>;
+  WebAppPreferences: Record<string, unknown>;
+  WebAppIphPreferences: Record<string, unknown>;
+  WebAppMlPreferences: Record<string, unknown>;
+  WebAppIPHLinkCapturingPreferences: Record<string, unknown>;
+  ShouldGarbageCollectStoragePartitions: boolean;
+  IsolatedWebAppUpdateManager: Record<string, unknown>;
+  IsolatedWebAppPolicyManager: Record<string, unknown>;
+  IwaKeyDistributionInfoProvider: Record<string, unknown>;
+  WebAppDirectoryDiskState: Record<string, unknown>;
+
+  // Conditionally emitted.
+  AppShimRegistryLocalStorage?: Record<string, unknown>;  // Mac only.
+  IwaBundleCacheManager?: Record<string, unknown>;        // ChromeOS only.
+  DatabaseLog?: unknown[];  // Absent when debug recording is disabled.
 }
+
+/**
+ * Result of filterToApp(): either the full DebugData (when filtering doesn't
+ * apply) or a subset containing only the filtered InstalledWebApps section.
+ */
+export type FilteredDebugData = DebugData|Pick<DebugData, 'InstalledWebApps'>;
 
 /**
  * Typed representation of the InstalledWebApps section produced by
@@ -32,41 +59,15 @@ export function getQuery(): string {
 }
 
 /**
- * Type guard that identifies a section containing InstalledWebApps data.
- * The value shape is guaranteed by WebAppRegistrar::AsDebugValue().
- */
-function hasInstalledWebApps(section: DebugSection):
-    section is {InstalledWebApps: InstalledWebAppsData} {
-  return Object.prototype.hasOwnProperty.call(section, 'InstalledWebApps');
-}
-
-/**
- * Extracts the InstalledWebApps record from the debug data sections.
- */
-function getInstalledWebApps(data: DebugSection[]): InstalledWebAppsData|
-    undefined {
-  const section = data.find(hasInstalledWebApps);
-  if (!section) {
-    return undefined;
-  }
-  return section.InstalledWebApps;
-}
-
-/**
  * Builds a clickable index of installed web apps from the parsed debug JSON.
  * Each app name becomes a link that filters the page to that app's details.
  * The currently selected app (based on URL hash) is highlighted.
  */
 export function renderAppIndex(
-    data: DebugSection[], indexContainer: HTMLElement, query: string): void {
+    data: DebugData, indexContainer: HTMLElement, query: string): void {
   indexContainer.replaceChildren();
 
-  const installedWebApps = getInstalledWebApps(data);
-  if (!installedWebApps) {
-    return;
-  }
-
-  const appIndex = installedWebApps['!Index'];
+  const appIndex = data.InstalledWebApps['!Index'];
 
   const showAllLink = document.createElement('a');
   showAllLink.href = '#';
@@ -98,22 +99,18 @@ export function renderAppIndex(
  * matching app's details. The !Index is preserved for navigation. All other
  * sections are removed to reduce clutter.
  */
-export function filterToApp(
-    data: DebugSection[], appId: string): DebugSection[] {
-  const installedWebApps = getInstalledWebApps(data);
-  if (!installedWebApps) {
-    return data;
-  }
+export function filterToApp(data: DebugData, appId: string): FilteredDebugData {
+  const installedWebApps = data.InstalledWebApps;
 
   const details = installedWebApps['Details'];
   const filtered = details.filter(app => app['!app_id'] === appId);
   if (filtered.length === 0) {
     return data;
   }
-  return [{
-    'InstalledWebApps': {
+  return {
+    InstalledWebApps: {
       ...installedWebApps,
-      'Details': filtered,
+      Details: filtered,
     },
-  }];
+  };
 }

@@ -13,7 +13,7 @@ import type {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 
 import type {InstallIsolatedWebAppResult, IwaDevModeAppInfo, IwaDevModeLocation, ParseUpdateManifestFromUrlResult, UpdateInfo, UpdateManifest, VersionEntry} from './web_app_internals.mojom-webui.js';
 import {WebAppInternalsHandler} from './web_app_internals.mojom-webui.js';
-import type {DebugSection} from './web_app_internals_utils.js';
+import type {DebugData} from './web_app_internals_utils.js';
 import {filterToApp, getQuery, renderAppIndex} from './web_app_internals_utils.js';
 
 const webAppInternalsHandler = WebAppInternalsHandler.getRemote();
@@ -662,7 +662,7 @@ function prepareAppButtons(
  * filtering to a specific app based on the URL hash.
  */
 function renderDebugInfo(jsonString: string) {
-  let parsed: DebugSection[];
+  let parsed: DebugData;
   try {
     parsed = JSON.parse(jsonString);
   } catch {
