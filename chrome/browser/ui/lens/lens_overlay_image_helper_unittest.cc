@@ -309,6 +309,70 @@ TEST_F(LensOverlayImageHelperTest,
       ref_counted_logs->client_logs().phase_latencies_metadata().phase_size());
 }
 
+TEST_F(LensOverlayImageHelperTest,
+       DownscaleAndEncodeBitmapRegionPreservesZoomedCropMetadata) {
+  const SkBitmap bitmap = CreateNonEmptyBitmap(kImageMaxWidth, kImageMaxHeight);
+  gfx::Rect region(10, 10, 50, 50);
+  scoped_refptr<lens::RefCountedLensOverlayClientLogs> ref_counted_logs =
+      base::MakeRefCounted<lens::RefCountedLensOverlayClientLogs>();
+
+  std::optional<lens::ImageCropAndBitmap> image_crop_and_bitmap =
+      lens::DownscaleAndEncodeBitmapRegionIfNeeded(
+          bitmap, CenterBoxForRegion(region), std::nullopt, ref_counted_logs);
+
+  ASSERT_TRUE(image_crop_and_bitmap.has_value());
+  const auto& image_crop = image_crop_and_bitmap->image_crop;
+
+  // Verify spatial context contract is fulfilled.
+  EXPECT_TRUE(image_crop.has_zoomed_crop());
+  EXPECT_EQ(kImageMaxWidth, image_crop.zoomed_crop().parent_width());
+  EXPECT_EQ(kImageMaxHeight, image_crop.zoomed_crop().parent_height());
+  EXPECT_GT(image_crop.zoomed_crop().zoom(), 0.0);
+
+  // Verify normalized region coordinates are populated.
+  EXPECT_TRUE(image_crop.zoomed_crop().has_crop());
+  EXPECT_GT(image_crop.zoomed_crop().crop().width(), 0.0);
+  EXPECT_GT(image_crop.zoomed_crop().crop().height(), 0.0);
+  EXPECT_EQ(lens::CoordinateType::NORMALIZED,
+            image_crop.zoomed_crop().crop().coordinate_type());
+}
+
+TEST_F(LensOverlayImageHelperTest,
+       DownscaleAndEncodeBitmapRegionPreservesMetadataOnEncodingFailure) {
+  // Create a bitmap with valid dimensions but without allocating pixels.
+  // This causes encoding to fail gracefully while satisfying spatial
+  // preconditions.
+  SkBitmap unallocated_bitmap;
+  unallocated_bitmap.setInfo(SkImageInfo::MakeN32Premul(100, 100));
+
+  gfx::Rect region(10, 10, 50, 50);
+  scoped_refptr<lens::RefCountedLensOverlayClientLogs> ref_counted_logs =
+      base::MakeRefCounted<lens::RefCountedLensOverlayClientLogs>();
+
+  std::optional<lens::ImageCropAndBitmap> image_crop_and_bitmap =
+      lens::DownscaleAndEncodeBitmapRegionIfNeeded(
+          unallocated_bitmap, CenterBoxForRegion(region), std::nullopt,
+          ref_counted_logs);
+
+  ASSERT_TRUE(image_crop_and_bitmap.has_value());
+  const auto& image_crop = image_crop_and_bitmap->image_crop;
+
+  // Verify spatial context contract is still perfectly fulfilled.
+  EXPECT_TRUE(image_crop.has_zoomed_crop());
+  EXPECT_EQ(100, image_crop.zoomed_crop().parent_width());
+  EXPECT_EQ(100, image_crop.zoomed_crop().parent_height());
+  EXPECT_GE(image_crop.zoomed_crop().zoom(), 0.0);
+
+  // Verify normalized region coordinates are populated.
+  EXPECT_TRUE(image_crop.zoomed_crop().has_crop());
+  EXPECT_GT(image_crop.zoomed_crop().crop().width(), 0.0);
+  EXPECT_GT(image_crop.zoomed_crop().crop().height(), 0.0);
+
+  // Verify that the image payload wrapper remains unset due to encoding
+  // failure.
+  EXPECT_FALSE(image_crop.has_image());
+}
+
 TEST_F(LensOverlayImageHelperTest, DownscaleAndEncodeBitmapRegionMaxSize) {
   const SkBitmap bitmap = CreateNonEmptyBitmap(kImageMaxWidth, kImageMaxHeight);
   gfx::Rect region(0, 0, kImageMaxWidth, kImageMaxHeight);
