@@ -236,8 +236,8 @@ TEST_F(QueryContextualizerTest, Contextualize_WaitsForUploadsToFinish) {
   EXPECT_CALL(*context_controller_, RemoveObserver(testing::_));
   EXPECT_CALL(*session_handle_, CreateContextToken()).Times(2);
 
-  EXPECT_CALL(*session_handle_, StartUrlContextUploadFlow(
-                                    testing::_, GURL("https://example.com")));
+  EXPECT_CALL(*session_handle_,
+              StartUrlContextUploadFlow(testing::_, "https://example.com"));
 
   EXPECT_CALL(*delegate_, GetPageContext(tab_id, testing::_))
       .WillOnce([session_id](
@@ -346,16 +346,14 @@ TEST_F(QueryContextualizerTest, Contextualize_ExtractsUrls) {
   // Expect StartUrlContextUploadFlow to be called for each unique URL in order.
   {
     testing::InSequence s;
-    EXPECT_CALL(
-        *session_handle_,
-        StartUrlContextUploadFlow(testing::_, GURL("https://example.com!")));
+    EXPECT_CALL(*session_handle_,
+                StartUrlContextUploadFlow(testing::_, "https://example.com!"));
+    EXPECT_CALL(*session_handle_,
+                StartUrlContextUploadFlow(testing::_, "http://test.org,"));
     EXPECT_CALL(*session_handle_, StartUrlContextUploadFlow(
-                                      testing::_, GURL("http://test.org,")));
-    EXPECT_CALL(
-        *session_handle_,
-        StartUrlContextUploadFlow(testing::_, GURL("http://www.google.com.")));
-    EXPECT_CALL(*session_handle_, StartUrlContextUploadFlow(
-                                      testing::_, GURL("https://example.com")));
+                                      testing::_, "http://www.google.com."));
+    EXPECT_CALL(*session_handle_,
+                StartUrlContextUploadFlow(testing::_, "https://example.com"));
   }
 
   // Expect GetPageContext call to NOT be called since the tab is not expired
@@ -401,34 +399,34 @@ TEST_F(QueryContextualizerTest, Contextualize_WithNullService) {
 
 TEST(QueryContextualizerStaticTest, ExtractUrlsFromQuery) {
   // Test simple extraction.
-  std::vector<GURL> urls = QueryContextualizer::ExtractUrlsFromQuery(
+  std::vector<std::string> urls = QueryContextualizer::ExtractUrlsFromQuery(
       "Check out https://example.com");
   ASSERT_EQ(urls.size(), 1u);
-  EXPECT_EQ(urls[0], GURL("https://example.com"));
+  EXPECT_EQ(urls[0], "https://example.com");
 
   // Test extraction with ampersand.
   urls = QueryContextualizer::ExtractUrlsFromQuery(
       "Check out https://example.com?a=1&b=2");
   ASSERT_EQ(urls.size(), 1u);
-  EXPECT_EQ(urls[0], GURL("https://example.com?a=1&b=2"));
+  EXPECT_EQ(urls[0], "https://example.com?a=1&b=2");
 
   // Test extraction with multiple URLs.
   urls = QueryContextualizer::ExtractUrlsFromQuery(
       "https://example.com and http://test.org");
   ASSERT_EQ(urls.size(), 2u);
-  EXPECT_EQ(urls[0], GURL("https://example.com"));
-  EXPECT_EQ(urls[1], GURL("http://test.org"));
+  EXPECT_EQ(urls[0], "https://example.com");
+  EXPECT_EQ(urls[1], "http://test.org");
 
   // Test extraction with www. prefix.
   urls = QueryContextualizer::ExtractUrlsFromQuery("www.google.com");
   ASSERT_EQ(urls.size(), 1u);
-  EXPECT_EQ(urls[0], GURL("http://www.google.com"));
+  EXPECT_EQ(urls[0], "http://www.google.com");
 
   // Test deduplication.
   urls = QueryContextualizer::ExtractUrlsFromQuery(
       "https://example.com and https://example.com");
   ASSERT_EQ(urls.size(), 1u);
-  EXPECT_EQ(urls[0], GURL("https://example.com"));
+  EXPECT_EQ(urls[0], "https://example.com");
 }
 
 TEST_F(QueryContextualizerTest,

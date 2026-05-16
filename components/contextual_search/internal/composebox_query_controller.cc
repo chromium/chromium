@@ -149,7 +149,7 @@ bool IsUnresolvedUrlUpload(const contextual_search::FileInfo& file_info) {
          !file_info.input_data->viewport_screenshot.has_value() &&
          !file_info.input_data->viewport_screenshot_bytes.has_value() &&
          !file_info.input_data->context_input.has_value() &&
-         file_info.input_data->page_url.has_value();
+         file_info.input_data->parsed_url.has_value();
 }
 
 // The maximum number of times to retry fetching cluster info.
@@ -187,10 +187,11 @@ void PopulateContentMetadata(lens::Payload* payload,
                              const std::optional<std::string>& page_title,
                              const std::optional<std::string>& file_name,
                              const std::optional<std::string>& drive_id,
-                             const std::optional<std::string>& resource_key) {
+                             const std::optional<std::string>& resource_key,
+                             const std::optional<std::string>& parsed_url) {
   if (!page_title.has_value() && !file_name.has_value() &&
       !page_url.has_value() && !drive_id.has_value() &&
-      !resource_key.has_value()) {
+      !resource_key.has_value() && !parsed_url.has_value()) {
     return;
   }
   auto* content_metadata = payload->mutable_content_metadata();
@@ -200,7 +201,9 @@ void PopulateContentMetadata(lens::Payload* payload,
   if (file_name.has_value()) {
     content_metadata->set_file_name(file_name.value());
   }
-  if (page_url.has_value()) {
+  if (parsed_url.has_value() && !parsed_url->empty()) {
+    content_metadata->set_url(parsed_url.value());
+  } else if (page_url.has_value()) {
     content_metadata->set_url(page_url->spec());
   }
   if (drive_id.has_value()) {
@@ -220,11 +223,14 @@ lens::Payload CreateContentextualDataUploadPayload(
     std::optional<std::string> page_title,
     std::optional<std::string> drive_id,
     std::optional<std::string> resource_key,
-    std::optional<std::string> file_name) {
+    std::optional<std::string> file_name,
+    std::optional<std::string> parsed_url) {
   lens::Payload payload;
   auto* content = payload.mutable_content();
 
-  if (page_url.has_value() && !page_url->is_empty()) {
+  if (parsed_url.has_value() && !parsed_url->empty()) {
+    content->set_webpage_url(parsed_url.value());
+  } else if (page_url.has_value() && !page_url->is_empty()) {
     content->set_webpage_url(page_url->spec());
   }
   if (page_title.has_value() && !page_title.value().empty()) {
@@ -232,7 +238,7 @@ lens::Payload CreateContentextualDataUploadPayload(
   }
 
   PopulateContentMetadata(&payload, page_url, page_title, file_name, drive_id,
-                          resource_key);
+                          resource_key, parsed_url);
 
   for (const lens::ContextualInput& context_input : context_inputs) {
     auto* content_data = content->add_content_data();
@@ -535,7 +541,7 @@ lens::AddedInputs ComposeboxQueryController::CreateAddedInputs(
           file_info->input_data->modality_chip_props->added_input());
     } else if (IsUnresolvedUrlUpload(*file_info)) {
       lens::AimThumbnail* thumbnail = added_inputs.add_turn_title_thumbnail();
-      thumbnail->set_title(file_info->input_data->page_url.value().spec());
+      thumbnail->set_title(file_info->input_data->parsed_url.value());
       thumbnail->mutable_icon()->set_type(lens::AimIconType::ICON_TYPE_LINK);
     } else if (file_info->request_id.has_value() &&
                file_info->mime_type != lens::MimeType::kImage) {
@@ -1194,7 +1200,8 @@ void ComposeboxQueryController::
 
   PopulateContentMetadata(objects_request->mutable_payload(), page_url,
                           page_title, file_name, /*drive_id=*/std::nullopt,
-                          /*resource_key=*/std::nullopt);
+                          /*resource_key=*/std::nullopt,
+                          /*parsed_url=*/std::nullopt);
 
   objects_request->mutable_image_data()->CopyFrom(image_data);
   request.mutable_client_logs()->CopyFrom(client_logs->client_logs());
@@ -1325,7 +1332,10 @@ ComposeboxQueryController::CreateSuggestInputs(
   if (attach_page_title_and_url_to_suggest_requests_) {
     suggest_inputs->set_send_page_title_and_url(true);
     suggest_inputs->set_page_title(file_info->tab_title.value_or(""));
-    if (file_info->tab_url.has_value()) {
+    if (file_info->input_data &&
+        file_info->input_data->parsed_url.has_value()) {
+      suggest_inputs->set_page_url(file_info->input_data->parsed_url.value());
+    } else if (file_info->tab_url.has_value()) {
       suggest_inputs->set_page_url(file_info->tab_url.value().spec());
     }
   }
@@ -1864,7 +1874,8 @@ void ComposeboxQueryController::CreateUploadRequestBodiesAndContinue(
               contextual_input_data->page_title,
               contextual_input_data->drive_id,
               contextual_input_data->resource_key,
-              contextual_input_data->file_name),
+              contextual_input_data->file_name,
+              contextual_input_data->parsed_url),
           base::BindOnce(
               &CreateFileUploadRequestProtoWithPayloadAndContinue,
               file_info->request_id.value(), CreateClientContext(),

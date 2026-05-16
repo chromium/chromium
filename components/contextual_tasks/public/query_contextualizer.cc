@@ -139,7 +139,7 @@ QueryContextualizer::QueryContextualizer(ContextualTasksService* service,
 QueryContextualizer::~QueryContextualizer() = default;
 
 // static
-std::vector<GURL> QueryContextualizer::ExtractUrlsFromQuery(
+std::vector<std::string> QueryContextualizer::ExtractUrlsFromQuery(
     const std::string& query_text) {
   re2::StringPiece input(query_text);
   std::string url_str;
@@ -151,18 +151,21 @@ std::vector<GURL> QueryContextualizer::ExtractUrlsFromQuery(
   static const base::NoDestructor<re2::RE2> url_regex(
       R"((?i)((?:(?:https?|ftp)://|www\.)[\w#$&%'()*+,\-./:;!=?@\[\]_`{|}~]+))");
 
-  std::vector<GURL> extracted_urls;
+  // Use a GURL set to deduplicate URLs, but keep the URLs stored as strings to
+  // prevent them from being modified by URL canonicalization.
+  std::vector<std::string> extracted_urls;
   base::flat_set<GURL> seen_urls;
 
   while (RE2::FindAndConsume(&input, *url_regex, &url_str)) {
-    GURL url;
+    std::string url = url_str;
     if (base::StartsWith(url_str, "www.",
                          base::CompareCase::INSENSITIVE_ASCII)) {
-      url = GURL("http://" + url_str);
+      url = "http://" + url_str;
     } else {
-      url = GURL(url_str);
+      url = url_str;
     }
-    if (url.is_valid() && seen_urls.insert(url).second) {
+    GURL gurl(url);
+    if (gurl.is_valid() && seen_urls.insert(gurl).second) {
       extracted_urls.push_back(url);
     }
   }
@@ -314,7 +317,7 @@ void QueryContextualizer::OnContextRetrieved(
 
   // Extract URLs from the query text and start upload flows for them.
   if (lens::features::IsLensSendUrlsInComposeboxesEnabled()) {
-    std::vector<GURL> extracted_urls = ExtractUrlsFromQuery(query_text);
+    std::vector<std::string> extracted_urls = ExtractUrlsFromQuery(query_text);
 
     // Create the session handle if it did not already exist and there are URLs
     // to upload.
@@ -332,7 +335,7 @@ void QueryContextualizer::OnContextRetrieved(
     }
 
     if (session_handle) {
-      for (const GURL& url : extracted_urls) {
+      for (const std::string& url : extracted_urls) {
         auto context_token = session_handle->CreateContextToken();
         if (upload_tracker) {
           upload_tracker->AddToken(context_token);

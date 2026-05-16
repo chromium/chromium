@@ -44,8 +44,16 @@ struct ContextualInputData {
   std::optional<lens::MimeType> primary_content_type;
   // The mime type string of this content, if the file was uploaded manually.
   std::optional<std::string> mime_type_string;
-  // If the context is a webpage pr pdf, this is the URL associated with it.
+  // If the context is a webpage or pdf document, this is the canonicalized URL.
+  // Note: For unresolved URL uploads (where the raw URL is parsed from a
+  // composebox query), this field must be left empty, and `parsed_url` must be
+  // set instead to preserve exact raw formatting.
   std::optional<GURL> page_url;
+  // The raw parsed URL string of an unresolved URL upload (e.g., extracted from
+  // a query box query). Keeping this as a raw string avoids GURL
+  // canonicalization which adds trailing slashes to host-only URLs.
+  // Note: `page_url` and `parsed_url` are mutually exclusive.
+  std::optional<std::string> parsed_url;
   // If the context is a webpage or pdf, this is the title of it.
   std::optional<std::string> page_title;
   // If the context is a file, this is the file name.
