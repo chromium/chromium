@@ -60,8 +60,8 @@ public abstract class SelectionController {
         int WRAPPING_WITH_SENTINEL = 3;
     }
 
-    protected final @Mode int mMode;
-    protected final int mDefaultPosition;
+    protected @Mode int mMode;
+    protected int mDefaultPosition;
 
     private int mPosition;
 
@@ -71,6 +71,13 @@ public abstract class SelectionController {
      * @param mode Selection mode that defines how the controller will behave
      */
     public SelectionController(@Mode int mode) {
+        mPosition = Integer.MIN_VALUE;
+        setSelectionMode(mode);
+    }
+
+    /** Sets the selection mode that defines how the controller will behave. */
+    public void setSelectionMode(@Mode int mode) {
+        mMode = mode;
         switch (mode) {
             case Mode.SATURATING:
             case Mode.WRAPPING:
@@ -83,9 +90,6 @@ public abstract class SelectionController {
                 mDefaultPosition = Integer.MIN_VALUE; // Lower-end sentinel.
                 break;
         }
-
-        mPosition = Integer.MIN_VALUE;
-        mMode = mode;
     }
 
     /** Resets the controller, making the current position point to default item. */

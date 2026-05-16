@@ -69,6 +69,7 @@ import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.AutocompleteRequestType;
 import org.chromium.components.omnibox.AutocompleteResult;
 import org.chromium.components.omnibox.AutocompleteStopReason;
+import org.chromium.components.omnibox.OmniboxCapabilities;
 import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.omnibox.OmniboxSuggestionType;
 import org.chromium.components.omnibox.ToolModeUtils;
@@ -1078,6 +1079,9 @@ class AutocompleteMediator
         mListPropertyModel.set(SuggestionListProperties.LIST_IS_FINAL, false);
 
         boolean isInZeroPrefixContext = mAutocompleteInput.isInZeroPrefixContext();
+        boolean allowParking =
+                isInZeroPrefixContext || !OmniboxCapabilities.hasDesktopExperience(mContext);
+        mListPropertyModel.set(SuggestionListProperties.ALLOW_PARKING_AT_SENTINEL, allowParking);
         mIgnoreOmniboxItemSelection = true;
         cancelAutocompleteRequests();
 
