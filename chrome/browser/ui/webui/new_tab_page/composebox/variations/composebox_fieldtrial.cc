@@ -254,6 +254,10 @@ const base::FeatureParam<bool> kEnableThreadsRailLogo(&kNtpComposebox,
                                                       "EnableThreadsRailLogo",
                                                       false);
 
+const base::FeatureParam<bool> kUseNtpComposeboxFork(&kNtpComposebox,
+                                                     "useNtpComposeboxFork",
+                                                     false);
+
 FeatureConfig::FeatureConfig() : config(GetNTPComposeboxConfig()) {}
 
 FeatureConfig::FeatureConfig(const FeatureConfig&) = default;

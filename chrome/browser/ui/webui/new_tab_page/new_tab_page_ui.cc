@@ -795,6 +795,9 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(
   source->AddBoolean("enableThreadsRailLogo", false);
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
+  source->AddBoolean("useNtpComposeboxFork",
+                     ntp_composebox::kUseNtpComposeboxFork.Get());
+
   // Action Chips LoadTimeData
 // TODO(b/502297163): Implement for Android.
 #if !BUILDFLAG(IS_ANDROID)
