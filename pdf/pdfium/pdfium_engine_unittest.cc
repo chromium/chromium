@@ -3383,6 +3383,54 @@ TEST_P(PDFiumEngineInkDrawTextTest, DrawTextWrapsTextboxId) {
                          /*expected_textbox_id=*/1);
 }
 
+TEST_P(PDFiumEngineInkDrawTextTest, DrawTextAndDiscardStrokes) {
+  TestClient client(/*use_skia_renderer=*/GetParam());
+  std::unique_ptr<PDFiumEngine> engine =
+      InitializeEngine(&client, FILE_PATH_LITERAL("blank.pdf"));
+  ASSERT_TRUE(engine);
+  int page_count = FPDF_GetPageCount(engine->doc());
+  ASSERT_EQ(page_count, 1);
+
+  constexpr int kPageIndex = 0;
+  EXPECT_FALSE(engine->edited_pages_unload_preventers_for_testing().contains(
+      kPageIndex));
+
+  FontId font_id = AddDefaultFont(engine.get());
+  constexpr std::string_view kTextToDraw = "Hello!";
+  GlyphsAndPositions text_data =
+      GetGlyphsForText(kTextToDraw, /*font_size=*/10.0f);
+  ASSERT_FALSE(text_data.glyphs.empty());
+  ASSERT_FALSE(text_data.glyph_positions.empty());
+
+  // Draw some text. The page should not be able to unload after this.
+  engine->DrawText(
+      kPageIndex, InkTextId(0),
+      {InkTextInfo(font_id, text_data.glyphs, text_data.glyph_positions,
+                   /*location=*/gfx::RectF(0.0f, 0.0f, 100.0f, 20.0f),
+                   /*is_horizontal=*/true)},
+      /*pdf_zoom=*/1.0, SampleInkTextBoxAttributes());
+
+  EXPECT_TRUE(engine->edited_pages_unload_preventers_for_testing().contains(
+      kPageIndex));
+
+  // Draw a stroke and discard it.
+  auto brush = std::make_unique<PdfInkBrush>(PdfInkBrush::Type::kPen,
+                                             SK_ColorRED, /*size=*/4.0f);
+  constexpr auto kInputs0 = std::to_array<PdfInkInputData>({
+      {{5.0f, 5.0f}, base::Seconds(0.0f)},
+      {{50.0f, 5.0f}, base::Seconds(0.1f)},
+  });
+  std::optional<ink::StrokeInputBatch> batch = CreateInkInputBatch(kInputs0);
+  ASSERT_TRUE(batch.has_value());
+  ink::Stroke stroke0(brush->ink_brush(), batch.value());
+  constexpr InkStrokeId kStrokeId(0);
+  engine->ApplyStroke(kPageIndex, kStrokeId, stroke0);
+  engine->DiscardStroke(kPageIndex, kStrokeId);
+
+  EXPECT_TRUE(engine->edited_pages_unload_preventers_for_testing().contains(
+      kPageIndex));
+}
+
 // Don't be concerned about any slight rendering differences in AGG vs. Skia,
 // covering one of these is sufficient for checking how data is written out.
 INSTANTIATE_TEST_SUITE_P(All,

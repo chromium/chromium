@@ -1103,7 +1103,7 @@ class PdfInkModuleTextTest : public testing::Test {
   std::unique_ptr<PdfInkModule> ink_module_;
 };
 
-TEST_F(PdfInkModuleTextTest, HandleFinishTextAnnotationMessage) {
+TEST_F(PdfInkModuleTextTest, HandleFinishTextAnnotationMessageNew) {
   static constexpr int kFrontendId = 5;
   static constexpr int kPageIndex = 3;
   static constexpr FontId kFontId(123);
@@ -1128,6 +1128,150 @@ TEST_F(PdfInkModuleTextTest, HandleFinishTextAnnotationMessage) {
 
   EXPECT_TRUE(ink_module().OnMessage(
       CreateFinishTextAnnotationMessage(std::move(data))));
+}
+
+TEST_F(PdfInkModuleTextTest, HandleFinishTextAnnotationMessageNoEdit) {
+  static constexpr int kFrontendId = 5;
+  static constexpr int kPageIndex = 3;
+  static constexpr FontId kFontId(123);
+  static constexpr double kPdfZoom = 2.0;
+  static constexpr auto kTypefaceBlob =
+      std::to_array<const uint8_t>({1, 2, 3, 4});
+  static constexpr InkTextId kTextId0(0);
+
+  {
+    base::DictValue data = SampleFinishTextAnnotationData(kFrontendId, kFontId,
+                                                          kPageIndex, kPdfZoom);
+
+    base::ListValue typefaces;
+    typefaces.Append(SampleSerializedTypeface(kFontId, kTypefaceBlob));
+    data.Set("newTypefaces", std::move(typefaces));
+
+    InSequence seq;
+    EXPECT_CALL(client(), AddFont(kFontId, ElementsAreArray(kTypefaceBlob)));
+    EXPECT_CALL(client(),
+                DrawText(kPageIndex, kTextId0,
+                         ElementsAre(SampleInkTextInfoMatcher(kFontId)),
+                         kPdfZoom, SampleInkTextBoxAttributesMatcher()));
+
+    EXPECT_TRUE(ink_module().OnMessage(
+        CreateFinishTextAnnotationMessage(std::move(data))));
+    testing::Mock::VerifyAndClearExpectations(this);
+  }
+
+  {
+    base::DictValue data = SampleFinishTextAnnotationData(kFrontendId, kFontId,
+                                                          kPageIndex, kPdfZoom);
+    data.Set("isEdited", false);
+
+    EXPECT_CALL(client(), AddFont(_, _)).Times(0);
+    EXPECT_CALL(client(), DrawText(_, _, _, _, _)).Times(0);
+
+    EXPECT_TRUE(ink_module().OnMessage(
+        CreateFinishTextAnnotationMessage(std::move(data))));
+    testing::Mock::VerifyAndClearExpectations(this);
+  }
+}
+
+TEST_F(PdfInkModuleTextTest, HandleFinishTextAnnotationMessageEdit) {
+  static constexpr int kFrontendId = 5;
+  static constexpr int kPageIndex = 3;
+  static constexpr FontId kFontId(123);
+  static constexpr double kPdfZoom = 2.0;
+  static constexpr auto kTypefaceBlob =
+      std::to_array<const uint8_t>({1, 2, 3, 4});
+  static constexpr InkTextId kTextId0(0);
+  static constexpr InkTextId kTextId1(1);
+
+  {
+    base::DictValue data = SampleFinishTextAnnotationData(kFrontendId, kFontId,
+                                                          kPageIndex, kPdfZoom);
+
+    base::ListValue typefaces;
+    typefaces.Append(SampleSerializedTypeface(kFontId, kTypefaceBlob));
+    data.Set("newTypefaces", std::move(typefaces));
+
+    InSequence seq;
+    EXPECT_CALL(client(), AddFont(kFontId, ElementsAreArray(kTypefaceBlob)));
+    EXPECT_CALL(client(),
+                DrawText(kPageIndex, kTextId0,
+                         ElementsAre(SampleInkTextInfoMatcher(kFontId)),
+                         kPdfZoom, SampleInkTextBoxAttributesMatcher()));
+
+    EXPECT_TRUE(ink_module().OnMessage(
+        CreateFinishTextAnnotationMessage(std::move(data))));
+    testing::Mock::VerifyAndClearExpectations(this);
+  }
+
+  {
+    base::DictValue data = SampleFinishTextAnnotationData(kFrontendId, kFontId,
+                                                          kPageIndex, kPdfZoom);
+    data.Set("text", "ah");
+
+    // TODO(crbug.com/507508096): Expect deactivate and/or discard calls.
+    EXPECT_CALL(
+        client(),
+        DrawText(kPageIndex, kTextId1,
+                 ElementsAre(SampleInkTextInfoMatcher(kFontId)), kPdfZoom,
+                 InkTextBoxAttributesEq(
+                     /*rect=*/gfx::RectF(10.0f, 20.0f, 100.0f, 15.0f),
+                     /*color=*/SkColorSetRGB(255, 111, 99),
+                     /*css_font_size=*/12.0f,
+                     /*typeface=*/TextTypeface::kSerif,
+                     /*alignment=*/TextAlignment::kCenter,
+                     /*orientation=*/1,
+                     /*is_bold=*/true,
+                     /*is_italic=*/true,
+                     /*text=*/"ah")));
+    EXPECT_CALL(client(), AddFont(_, _)).Times(0);
+
+    EXPECT_TRUE(ink_module().OnMessage(
+        CreateFinishTextAnnotationMessage(std::move(data))));
+    testing::Mock::VerifyAndClearExpectations(this);
+  }
+}
+
+TEST_F(PdfInkModuleTextTest, HandleFinishTextAnnotationMessageDelete) {
+  static constexpr int kFrontendId = 5;
+  static constexpr int kPageIndex = 3;
+  static constexpr FontId kFontId(123);
+  static constexpr double kPdfZoom = 2.0;
+  static constexpr auto kTypefaceBlob =
+      std::to_array<const uint8_t>({1, 2, 3, 4});
+  static constexpr InkTextId kTextId(0);
+
+  {
+    base::DictValue data = SampleFinishTextAnnotationData(kFrontendId, kFontId,
+                                                          kPageIndex, kPdfZoom);
+
+    base::ListValue typefaces;
+    typefaces.Append(SampleSerializedTypeface(kFontId, kTypefaceBlob));
+    data.Set("newTypefaces", std::move(typefaces));
+
+    InSequence seq;
+    EXPECT_CALL(client(), AddFont(kFontId, ElementsAreArray(kTypefaceBlob)));
+    EXPECT_CALL(client(),
+                DrawText(kPageIndex, kTextId,
+                         ElementsAre(SampleInkTextInfoMatcher(kFontId)),
+                         kPdfZoom, SampleInkTextBoxAttributesMatcher()));
+
+    EXPECT_TRUE(ink_module().OnMessage(
+        CreateFinishTextAnnotationMessage(std::move(data))));
+    testing::Mock::VerifyAndClearExpectations(this);
+  }
+
+  {
+    base::DictValue data = SampleFinishTextAnnotationData(kFrontendId, kFontId,
+                                                          kPageIndex, kPdfZoom);
+    data.Set("text", "");
+
+    EXPECT_CALL(client(), AddFont(_, _)).Times(0);
+    EXPECT_CALL(client(), DrawText(_, _, _, _, _)).Times(0);
+
+    EXPECT_TRUE(ink_module().OnMessage(
+        CreateFinishTextAnnotationMessage(std::move(data))));
+    testing::Mock::VerifyAndClearExpectations(this);
+  }
 }
 
 class PdfInkModuleStrokeTest : public PdfInkModuleTest {

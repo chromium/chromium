@@ -1399,10 +1399,11 @@ class PDFiumEngine : public DocumentLoader::Client,
   std::vector<PDFiumRange> text_fragment_highlights_;
 
 #if BUILDFLAG(ENABLE_PDF_INK2)
-  // Map of zero-based page indices with Ink strokes to page unload preventers.
-  // Pages with Ink strokes have page references in `ink_stroke_data_`, so these
-  // unload preventers ensure those page handles stay valid by keeping the page
-  // in memory.  Use one unload preventer per page for simplicity.
+  // Map of zero-based page indices with Ink edits to page unload preventers.
+  // Pages with edits have page references in `ink_stroke_data_` and/or
+  // `ink_text_data_`, so these unload preventers ensure those page handles stay
+  // valid by keeping the page in memory. Use one unload preventer per page for
+  // simplicity.
   std::map<int, PDFiumPage::ScopedPageUnloadPreventer>
       edited_pages_unload_preventers_;
 
@@ -1457,6 +1458,23 @@ class PDFiumEngine : public DocumentLoader::Client,
   // Generating globally unique IDs is a simple and safe way to prevent
   // collisions on all pages.
   std::set<int> existing_textbox_ids_;
+
+  struct InkTextData {
+    InkTextData(int page_index, std::vector<FPDF_PAGEOBJECT> page_objects);
+    InkTextData(InkTextData&&) noexcept;
+    InkTextData& operator=(InkTextData&&) noexcept;
+    ~InkTextData();
+
+    int page_index;
+
+    // The handles for text page objects within the PDF document.
+    // `edited_pages_unload_preventers_` protects these handles from going
+    // stale.
+    std::vector<FPDF_PAGEOBJECT> page_objects;
+  };
+
+  // Data associated with text annotations, keyed by text IDs.
+  std::map<InkTextId, InkTextData> ink_text_data_;
 #endif  // BUILDFLAG(ENABLE_PDF_INK2)
 
   base::WeakPtrFactory<PDFiumEngine> weak_factory_{this};

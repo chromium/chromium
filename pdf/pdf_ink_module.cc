@@ -1632,6 +1632,35 @@ void PdfInkModule::HandleEditTextAnnotationMessage(
 void PdfInkModule::HandleFinishTextAnnotationMessage(
     const base::DictValue& message) {
   const base::DictValue& data = *message.FindDict("data");
+  const int frontend_id = data.FindInt("id").value();
+  // TODO(crbug.com/511306578): Support undo/redo.
+  const bool is_edited = data.FindBool("isEdited").value();
+  if (!is_edited) {
+    // When there are no edits, just reactivate the active text annotation.
+    // TODO(crbug.com/504697272): Implement.
+    auto it = text_id_map_.find(frontend_id);
+    CHECK(it != text_id_map_.end());
+    return;
+  }
+
+  // The edit can be one of the following, which breaks down into 1 or 2 steps:
+  // - Addition: No existing annotation to delete. Only add new annotation.
+  // - Modification: Delete existing annotation and add new annotation.
+  // - Deletion: Delete existing annotation only.
+  // First do the deletion if needed.
+  if (auto it = text_id_map_.find(frontend_id); it != text_id_map_.end()) {
+    // TODO(crbug.com/507508096): Deactivate/discard existing text annotation.
+    text_id_map_.erase(it);
+
+    // Empty text means the annotation is being deleted. Return early since
+    // there is nothing to add.
+    if (data.FindString("text")->empty()) {
+      return;
+    }
+  }
+
+  // If this is a modification or addition, then process the rest of the fields
+  // in `data` and create a new annotation.
   const base::ListValue& typefaces_value = *data.FindList("newTypefaces");
   for (const base::Value& item : typefaces_value) {
     const base::DictValue& item_as_dict = item.GetDict();
@@ -1648,15 +1677,16 @@ void PdfInkModule::HandleFinishTextAnnotationMessage(
   std::vector<InkTextInfo> ink_info = InkTextInfo::SplitTypefaceRuns(
       text_info_mojo->text_runs, text_info_mojo->effective_zoom);
 
-  int page_index = data.FindInt("pageIndex").value();
+  const int page_index = data.FindInt("pageIndex").value();
 
   // Note: `pdf_zoom` is similar to GetZoom() but GetZoom() is multiplied by
   // device scale factor while this value isn't. Additionally `pdf_zoom` comes
   // from the frontend at the exact same time as the annotation commit happens
   // to avoid any potential sync race issues between the frontend and backend.
-  double pdf_zoom = data.FindDouble("pdfZoom").value();
+  const double pdf_zoom = data.FindDouble("pdfZoom").value();
 
   InkTextId new_id = id_generator_.GetTextIdAndAdvance();
+  text_id_map_[frontend_id] = new_id;
   client_->DrawText(page_index, new_id, ink_info, pdf_zoom,
                     GetTextBoxAttributesFromDict(data));
 }
@@ -1880,7 +1910,7 @@ void PdfInkModule::ApplyUndoRedoDiscards(std::optional<IdType> lowest_discard) {
     return;
   }
 
-  // TODO(crbug.com/408976048): Support discarding text objects.
+  // TODO(crbug.com/511306578): Support discarding text objects.
   CHECK(std::holds_alternative<InkStrokeId>(lowest_discard.value()));
   InkStrokeId lowest_stroke_id = std::get<InkStrokeId>(lowest_discard.value());
 

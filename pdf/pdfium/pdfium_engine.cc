@@ -797,6 +797,7 @@ PDFiumEngine::~PDFiumEngine() {
   selection_.clear();
 #if BUILDFLAG(ENABLE_PDF_INK2)
   ink_stroke_data_.clear();
+  ink_text_data_.clear();
   edited_pages_unload_preventers_.clear();
 #endif
 
@@ -5148,13 +5149,18 @@ void PDFiumEngine::DrawText(int page_index,
                             double pdf_zoom,
                             const InkTextBoxAttributes& attributes) {
   CHECK(PageIndexInBounds(page_index));
-  FPDF_PAGE page = GetPage(page_index)->GetPage();
+  PDFiumPage* pdfium_page = GetPage(page_index);
+  CHECK(pdfium_page);
+  FPDF_PAGE page = pdfium_page->GetPage();
+  CHECK(page);
   const gfx::Transform transform = GetCanonicalToPdfTransformForPage(page);
   const SkColor color = attributes.color;
   const float pdf_font_size =
       CSSFontSizeToPdfFontSize(attributes.css_font_size);
   const int textbox_id = GetNextTextboxId();
 
+  std::vector<FPDF_PAGEOBJECT> page_objects;
+  page_objects.reserve(text_info.size());
   for (const InkTextInfo& item : text_info) {
     FPDF_FONT font = GetAddedFont(item.font_id);
     CHECK(font);
@@ -5173,6 +5179,7 @@ void PDFiumEngine::DrawText(int page_index,
     ScopedFPDFPageObject text_object(
         FPDFPageObj_CreateTextObj(doc(), font, pdf_font_size));
     CHECK(text_object);
+    page_objects.push_back(text_object.get());
     CHECK(FPDFPageObj_SetFillColor(text_object.get(), /*R=*/SkColorGetR(color),
                                    /*G=*/SkColorGetG(color),
                                    /*B=*/SkColorGetB(color),
@@ -5214,6 +5221,20 @@ void PDFiumEngine::DrawText(int page_index,
   CHECK(FPDFPage_GenerateContent(page));
   GetPage(page_index)->ReloadTextPage();
   client_->Invalidate(GetPageScreenRect(page_index));
+
+  bool inserted =
+      ink_text_data_
+          .insert({id, InkTextData(page_index, std::move(page_objects))})
+          .second;
+  CHECK(inserted);  // Text IDs should be unique when added.
+
+  // Since there are now page references in `ink_text_data_`, ensure that this
+  // page has a ScopedPageUnloadPreventer so that the references do not become
+  // stale if `PDFiumPage::Unload()` gets called.
+  if (!edited_pages_unload_preventers_.contains(page_index)) {
+    edited_pages_unload_preventers_.insert(
+        {page_index, PDFiumPage::ScopedPageUnloadPreventer(pdfium_page)});
+  }
 }
 
 gfx::Size PDFiumEngine::GetThumbnailSize(int page_index,
@@ -5316,6 +5337,8 @@ PDFiumEngine::LoadV2InkPathsForPage(int page_index) {
 
   // Should be unique due to the caller's responsibility to call
   // `LoadV2InkPathsForPage()` at most once per page.
+  // TODO(crbug.com/408926609): This will not be always true once shapes and
+  // text are both being loaded from PDFs.
   CHECK(!edited_pages_unload_preventers_.contains(page_index));
 
   // Prevent pages with existing Ink paths from unloading. Otherwise, if the
@@ -5465,7 +5488,11 @@ int PDFiumEngine::GetNextTextboxId() {
 bool PDFiumEngine::PageStillHasEdits(int page_index) const {
   CHECK(PageIndexInBounds(page_index));
   return pages_with_loaded_v2_ink_shapes_.contains(page_index) ||
-         std::ranges::any_of(ink_stroke_data_, [page_index](const auto& it) {
+         std::ranges::any_of(ink_stroke_data_,
+                             [page_index](const auto& it) {
+                               return it.second.page_index == page_index;
+                             }) ||
+         std::ranges::any_of(ink_text_data_, [page_index](const auto& it) {
            return it.second.page_index == page_index;
          });
 }
@@ -5481,6 +5508,18 @@ PDFiumEngine::InkStrokeData& PDFiumEngine::InkStrokeData::operator=(
     InkStrokeData&&) noexcept = default;
 
 PDFiumEngine::InkStrokeData::~InkStrokeData() = default;
+
+PDFiumEngine::InkTextData::InkTextData(
+    int page_index,
+    std::vector<FPDF_PAGEOBJECT> page_objects)
+    : page_index(page_index), page_objects(std::move(page_objects)) {}
+
+PDFiumEngine::InkTextData::InkTextData(InkTextData&&) noexcept = default;
+
+PDFiumEngine::InkTextData& PDFiumEngine::InkTextData::operator=(
+    InkTextData&&) noexcept = default;
+
+PDFiumEngine::InkTextData::~InkTextData() = default;
 #endif  // BUILDFLAG(ENABLE_PDF_INK2)
 
 PDFiumEngine::ProgressivePaint::ProgressivePaint(uint32_t index,

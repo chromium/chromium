@@ -551,6 +551,10 @@ class PdfInkModule {
   // A timer used for reporting metrics during multi-click text selection.
   base::OneShotTimer text_selection_click_timer_;
 
+  // Key: Frontend text annotation ID.
+  // Value: Backend text annotation ID.
+  std::map<int, InkTextId> text_id_map_;
+
   base::WeakPtrFactory<PdfInkModule> weak_factory_{this};
 };
 
