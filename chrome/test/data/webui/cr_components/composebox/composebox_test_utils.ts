@@ -5,10 +5,62 @@
 import type {InputState} from 'chrome://resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
 import {InputType, ModelMode, ToolMode} from 'chrome://resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {MockInputState} from 'chrome://webui-test/cr_components/searchbox/searchbox_test_utils.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
+// TODO(crbug.com/452983498): This is a copy of MockInputState from
+// searchbox_test_utils.ts to decouple composebox test builds from searchbox
+// and the Desktop New Tab Page bundle, which cannot be built on Android yet.
+// LINT.IfChange
+export class MockInputState implements InputState {
+  allowedTools: number[] = [];
+  disabledTools: number[] = [];
+  activeTool: number = 0;
+  toolConfigs: any[] = [
+    {
+      tool: ToolMode.kDeepSearch,
+      hintText: 'Research anything',
+      menuLabel: '',
+      chipLabel: '',
+      disableActiveModelSelection: false,
+      aimUrlParams: [],
+    },
+    {
+      tool: ToolMode.kImageGen,
+      hintText: 'Describe your image',
+      menuLabel: '',
+      chipLabel: '',
+      disableActiveModelSelection: false,
+      aimUrlParams: [],
+    },
+    {
+      tool: ToolMode.kCanvas,
+      hintText: 'Create anything',
+      menuLabel: '',
+      chipLabel: '',
+      disableActiveModelSelection: false,
+      aimUrlParams: [],
+    },
+  ];
+  toolsSectionConfig: any|null = null;
 
-export {MockInputState};
+  allowedModels: number[] = [];
+  disabledModels: number[] = [];
+  activeModel: number = 0;
+  modelConfigs: any[] = [];
+  modelSectionConfig: any|null = null;
+
+  allowedInputTypes: number[] = [];
+  disabledInputTypes: number[] = [];
+  inputTypeConfigs: any[] = [];
+  maxInputsByType: {[key: number]: number} = {};
+  maxTotalInputs: number = 0;
+
+  hintText: string = '';
+
+  constructor(overrides?: Partial<InputState>) {
+    Object.assign(this, overrides);
+  }
+}
+// LINT.ThenChange(//chrome/test/data/webui/cr_components/searchbox/searchbox_test_utils.ts)
 export type {InputState};
 
 const THOUSANDTHS = 0.001;

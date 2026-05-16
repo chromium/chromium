@@ -60,7 +60,8 @@ generate_grd("build_grdp") {
     ]
   }
 
-  if ((!is_android && !is_ios) || enable_webui_ntp) {
+  if ((!is_android && !is_ios) || enable_webui_ntp ||
+      enable_webui_contextual_tasks_composebox) {
     input_files += [
       "arrow_right.svg",
       "business.svg",

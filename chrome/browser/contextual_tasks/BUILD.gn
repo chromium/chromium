@@ -370,6 +370,7 @@ source_set("ui_impl") {
     "//google_apis",
     "//net",
     "//pdf:buildflags",
+    "//ui/webui:buildflags",
   ]
 
   if (is_android) {

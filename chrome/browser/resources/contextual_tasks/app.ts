@@ -2,8 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// <if expr="not is_android">
+// <if expr="not is_android or enable_webui_contextual_tasks_composebox">
 import './composebox.js';
+
+import type {ContextualTasksComposeboxElement} from './composebox.js';
+// </if>
+// <if expr="is_android and not enable_webui_contextual_tasks_composebox">
+// ContextualTasksComposeboxElement is not compiled on standard Android.
+type ContextualTasksComposeboxElement = any;
+// </if>
+
+// <if expr="not is_android">
+// TODO(crbug.com/511383725): Support onboarding tooltip on Android.
 import './onboarding_tooltip.js';
 import './banner_promo.js';
 import '//resources/cr_components/composebox/contextual_entrypoint_and_menu.js';
@@ -13,14 +23,9 @@ import type {ContextualActionMenuElement} from '//resources/cr_components/compos
 import type {ContextualEntrypointAndMenuElement} from '//resources/cr_components/composebox/contextual_entrypoint_and_menu.js';
 import {HelpBubbleMixinLit} from 'chrome://resources/cr_components/help_bubble/help_bubble_mixin_lit.js';
 
-import type {ContextualTasksComposeboxElement} from './composebox.js';
 import type {ContextualTasksOnboardingTooltipElement} from './onboarding_tooltip.js';
 // </if>
 
-// <if expr="is_android">
-// ContextualTasksComposeboxElement is not compiled on Android.
-type ContextualTasksComposeboxElement = any;
-// </if>
 
 import './error_dialog.js';
 import './error_page.js';
@@ -96,8 +101,14 @@ export interface ContextualTasksAppElement {
     composeboxHeader: HTMLElement,
     flexCenterContainer: HTMLElement,
     nameShimmer: HTMLElement,
-    // <if expr="not is_android">
+    // <if expr="not is_android or enable_webui_contextual_tasks_composebox">
     composebox: ContextualTasksComposeboxElement,
+    // </if>
+    // <if expr="is_android and not enable_webui_contextual_tasks_composebox">
+    composebox?: ContextualTasksComposeboxElement,
+    // </if>
+    // <if expr="not is_android">
+    // TODO(crbug.com/511383725): Support onboarding tooltip on Android.
     onboardingTooltip?: ContextualTasksOnboardingTooltipElement,
     // </if>
   };
@@ -379,10 +390,10 @@ export class ContextualTasksAppElement extends ContextualTasksAppElementBase {
     this.updateCommonSearchParams();
   }
   private get composebox_(): ContextualTasksComposeboxElement|null {
-    // <if expr="not is_android">
+    // <if expr="not is_android or enable_webui_contextual_tasks_composebox">
     return this.$.composebox || null;
     // </if>
-    // <if expr="is_android">
+    // <if expr="is_android and not enable_webui_contextual_tasks_composebox">
     return null;
     // </if>
   }

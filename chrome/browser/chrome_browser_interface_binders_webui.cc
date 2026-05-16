@@ -64,9 +64,12 @@
 #include "chrome/browser/ui/webui/new_tab_page/new_tab_page_ui.h"
 #include "ui/webui/color_change_listener/color_change_handler.h"
 #include "ui/webui/resources/cr_components/color_change_listener/color_change_listener.mojom.h"
-#include "ui/webui/resources/cr_components/composebox/composebox.mojom.h"
 #include "ui/webui/resources/cr_components/help_bubble/help_bubble.mojom.h"
 #endif  // BUILDFLAG(ENABLE_WEBUI_NTP)
+
+#if BUILDFLAG(ENABLE_WEBUI_CONTEXTUAL_TASKS_COMPOSEBOX)
+#include "ui/webui/resources/cr_components/composebox/composebox.mojom.h"
+#endif
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_DESKTOP_ANDROID)
@@ -74,7 +77,6 @@
 #include "chrome/browser/ui/webui/discards/discards_ui.h"
 #include "chrome/browser/ui/webui/discards/site_data.mojom.h"
 #endif
-
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ui/webui/skills/skills.mojom.h"
@@ -208,13 +210,28 @@ void PopulateChromeWebUIFrameBindersPartsAllPlatforms(
   // chrome_browser_interface_binders_webui_parts_desktop.cc:
   // that enables them for more pages.
   content::RegisterWebUIControllerInterfaceBinder<
-      composebox::mojom::PageHandlerFactory, NewTabPageUI>(map);
-  content::RegisterWebUIControllerInterfaceBinder<
       searchbox::mojom::PageHandlerFactory, NewTabPageUI>(map);
   content::RegisterWebUIControllerInterfaceBinder<
       help_bubble::mojom::HelpBubbleHandlerFactory, NewTabPageUI>(map);
 #endif  // BUILDFLAG(IS_ANDROID)
 #endif  // BUILDFLAG(ENABLE_WEBUI_NTP)
+
+// For the case that's !IS_ANDROID, PageHandlerFactory is registered in
+// chrome_browser_interface_binders_webui_parts_desktop.cc.
+#if BUILDFLAG(IS_ANDROID) && \
+    (BUILDFLAG(ENABLE_WEBUI_NTP) || \
+     BUILDFLAG(ENABLE_WEBUI_CONTEXTUAL_TASKS_COMPOSEBOX))
+  RegisterWebUIControllerInterfaceBinder<composebox::mojom::PageHandlerFactory
+#if BUILDFLAG(ENABLE_WEBUI_NTP)
+                                         ,
+                                         NewTabPageUI
+#endif
+#if BUILDFLAG(ENABLE_WEBUI_CONTEXTUAL_TASKS_COMPOSEBOX)
+                                         ,
+                                         ContextualTasksUI
+#endif
+                                         >(map);
+#endif  // BUILDFLAG(IS_ANDROID)
 
   // End of PopulateChromeWebUIFrameBindersPartsAllPlatforms().
   // Please do not add platform-specific logic to this function.

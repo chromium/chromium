@@ -58,13 +58,16 @@ build_webui("build") {
     "utils/clip_path.ts",
     "web_view_type.ts",
   ]
-
   if (!is_android) {
     ts_files += [
       "banner_promo.html.ts",
       "banner_promo.ts",
       "onboarding_tooltip.html.ts",
       "onboarding_tooltip.ts",
+    ]
+  }
+  if (!is_android || enable_webui_contextual_tasks_composebox) {
+    ts_files += [
       "composebox.html.ts",
       "composebox.ts",
       "window_manager.ts",
@@ -83,13 +86,14 @@ build_webui("build") {
     "sources_menu.css",
     "top_toolbar.css",
   ]
-
   if (!is_android) {
     css_files += [
       "banner_promo.css",
-      "composebox.css",
       "onboarding_tooltip.css",
     ]
+  }
+  if (!is_android || enable_webui_contextual_tasks_composebox) {
+    css_files += [ "composebox.css" ]
   }
 
   mojo_files_deps =
@@ -99,7 +103,7 @@ build_webui("build") {
     "$root_gen_dir/chrome/browser/contextual_tasks/contextual_tasks_internals.mojom-webui.ts",
     "$root_gen_dir/chrome/browser/contextual_tasks/contextual_tasks_types.mojom-webui.ts",
   ]
-  if (!is_android) {
+  if (!is_android || enable_webui_contextual_tasks_composebox) {
     mojo_files += [ "$root_gen_dir/ui/webui/resources/cr_components/composebox/composebox.mojom-webui.ts" ]
     mojo_files_deps += [ "//ui/webui/resources/cr_components/composebox:mojo_bindings_ts__generator" ]
   }
@@ -122,9 +126,11 @@ build_webui("build") {
     "//ui/webui/resources/mojo:build_ts",
   ]
   if (!is_android) {
+    ts_deps += [ "//ui/webui/resources/cr_components/help_bubble:build_ts" ]
+  }
+  if (!is_android || enable_webui_contextual_tasks_composebox) {
     ts_deps += [
       "//ui/webui/resources/cr_components/composebox:build_ts",
-      "//ui/webui/resources/cr_components/help_bubble:build_ts",
       "//ui/webui/resources/cr_components/localized_link:build_ts",
       "//ui/webui/resources/cr_components/search:build_ts",
     ]

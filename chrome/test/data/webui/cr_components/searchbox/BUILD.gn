@@ -4,6 +4,7 @@
 
 import("//chrome/test/data/webui/build_webui_tests.gni")
 
+# TODO(crbug.com/513275771): Enable for Android.
 assert(!is_android && !is_ios)
 
 build_webui_tests("build") {

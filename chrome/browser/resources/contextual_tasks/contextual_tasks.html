@@ -5,7 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>$i18n{title}</title>
     <link rel="stylesheet" href="//resources/css/text_defaults_md.css">
+    <!-- TODO(crbug.com/509722915): Re-enable this style sheet on Android once
+              themes are supported. -->
+<if expr="not is_android">
     <link rel="stylesheet" href="//theme/colors.css?sets=chrome">
+</if>
     <style>
       html, body {
         height: 100%;

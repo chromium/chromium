@@ -83,6 +83,8 @@ export function getHtml(this: ContextualTasksAppElement) {
         </span>
       </contextual-tasks-banner-promo>
     ` : ''}
+</if>
+<if expr="not is_android or enable_webui_contextual_tasks_composebox">
     <contextual-tasks-composebox id="composebox"
           style="${this.getComposeboxBoundsStyles()}"
           ?hidden="${this.isComposeboxHidden_()}"

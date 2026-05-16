@@ -104,6 +104,7 @@ chrome_grit_defines = [
   "enable_vr=$enable_vr",
 
   "enable_webui_certificate_viewer=$enable_webui_certificate_viewer",
+  "enable_webui_contextual_tasks_composebox=$enable_webui_contextual_tasks_composebox",
   "is_official_build=$is_official_build",
   "safe_browsing_mode=$safe_browsing_mode",
   "optimize_webui=$optimize_webui",

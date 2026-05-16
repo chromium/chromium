@@ -51,6 +51,10 @@ export function waitForAttributeChange(
   });
 }
 
+// TODO(crbug.com/452983498): This class is mirrored in composebox_test_utils.ts
+// to allow composebox tests to build on Android without depending on the
+// Desktop New Tab Page bundle.
+// LINT.IfChange
 export class MockInputState implements InputState {
   allowedTools: number[] = [];
   disabledTools: number[] = [];
@@ -101,3 +105,4 @@ export class MockInputState implements InputState {
     Object.assign(this, overrides);
   }
 }
+// LINT.ThenChange(//chrome/test/data/webui/cr_components/composebox/composebox_test_utils.ts)

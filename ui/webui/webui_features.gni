@@ -31,6 +31,10 @@ declare_args() {
 
   # Enable the WebUI version of the New Tab Page.
   enable_webui_ntp = !is_android && !is_ios
+
+  # Enable WebUI Contextual Tasks Composebox (Desktop and Desktop Android).
+  enable_webui_contextual_tasks_composebox =
+      (!is_android && !is_ios) || is_desktop_android
 }
 
 # Build-time WebUI code caching is only used in optimize_webui builds. When the

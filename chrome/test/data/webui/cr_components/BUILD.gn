@@ -4,7 +4,7 @@
 
 import("../build_webui_tests.gni")
 
-assert(!is_android && !is_ios)
+assert((!is_android && !is_ios) || enable_webui_contextual_tasks_composebox)
 
 build_webui_tests("build") {
   cc_test_files = [
@@ -12,16 +12,19 @@ build_webui_tests("build") {
     "cr_components_interactive_test.cc",
   ]
 
-  files = [
-    "color_change_listener_test.ts",
-    "customize_color_scheme_mode_test.ts",
-    "localized_link_test.ts",
-    "managed_dialog_test.ts",
-    "managed_footnote_test.ts",
-    "most_visited_focus_test.ts",
-    "most_visited_test.ts",
-    "most_visited_test_support.ts",
-  ]
+  files = [ "localized_link_test.ts" ]
+
+  if (!is_android) {
+    files += [
+      "color_change_listener_test.ts",
+      "customize_color_scheme_mode_test.ts",
+      "managed_dialog_test.ts",
+      "managed_footnote_test.ts",
+      "most_visited_focus_test.ts",
+      "most_visited_test.ts",
+      "most_visited_test_support.ts",
+    ]
+  }
 
   ts_definitions = [
     "//tools/typescript/definitions/chrome_event.d.ts",
@@ -29,25 +32,33 @@ build_webui_tests("build") {
   ]
 
   ts_deps = [
-    "//chrome/browser/resources/new_tab_page:build_ts",
     "//third_party/lit/v3_0:build_ts",
-    "//ui/webui/resources/cr_components/app_management:build_ts",
-    "//ui/webui/resources/cr_components/color_change_listener:build_ts",
-    "//ui/webui/resources/cr_components/customize_color_scheme_mode:build_ts",
     "//ui/webui/resources/cr_components/localized_link:build_ts",
-    "//ui/webui/resources/cr_components/managed_dialog:build_ts",
-    "//ui/webui/resources/cr_components/managed_footnote:build_ts",
-    "//ui/webui/resources/cr_components/most_visited:build_ts",
     "//ui/webui/resources/cr_elements:build_ts",
     "//ui/webui/resources/js:build_ts",
-    "//ui/webui/resources/mojo:build_ts",
   ]
+
+  if (!is_android) {
+    ts_deps += [
+      "//chrome/browser/resources/new_tab_page:build_ts",
+      "//ui/webui/resources/cr_components/app_management:build_ts",
+      "//ui/webui/resources/cr_components/color_change_listener:build_ts",
+      "//ui/webui/resources/cr_components/customize_color_scheme_mode:build_ts",
+      "//ui/webui/resources/cr_components/managed_dialog:build_ts",
+      "//ui/webui/resources/cr_components/managed_footnote:build_ts",
+      "//ui/webui/resources/cr_components/most_visited:build_ts",
+      "//ui/webui/resources/mojo:build_ts",
+    ]
+  }
 
   ts_path_mappings = [
     "chrome://customize-chrome-side-panel.top-chrome/strings.m.js|" +
         rebase_path("//tools/typescript/definitions/strings.d.ts",
                     target_gen_dir),
     "chrome://new-tab-page/strings.m.js|" +
+        rebase_path("//tools/typescript/definitions/strings.d.ts",
+                    target_gen_dir),
+    "chrome://contextual-tasks/strings.m.js|" +
         rebase_path("//tools/typescript/definitions/strings.d.ts",
                     target_gen_dir),
     "chrome://new-tab-page/*|" +
