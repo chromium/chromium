@@ -621,10 +621,9 @@ GlicInstanceImpl* GlicInstanceCoordinatorImpl::CreateGlicInstance(
   ApplyMaxAwakeInstancesLimit();
 
   auto instance = CreateInstanceImpl(instance_id);
+  instance->instance_metrics().OnInstanceCreatedWithoutWarming();
   auto* instance_ptr = instance.get();
   instances_[instance->id()] = std::move(instance);
-  // TODO(harringtond): Figure out what to do about this metric.
-  instance_ptr->instance_metrics().OnInstanceCreatedWithoutWarming();
   return instance_ptr;
 }
 
@@ -716,10 +715,16 @@ void GlicInstanceCoordinatorImpl::ToggleSidePanel(
 }
 
 void GlicInstanceCoordinatorImpl::RemoveInstance(GlicInstanceImpl* instance) {
-  if (!instances_.contains(instance->id())) {
+  auto it = instances_.find(instance->id());
+  if (it == instances_.end()) {
     // This instance has already been removed, so there's no work to do.
     return;
   }
+  // If an entry exists for this ID, it must be the specific instance we are
+  // removing. We prohibit overwriting instances in the map, so a mismatch
+  // would indicate a logic bug or state corruption (e.g., during restoration).
+  CHECK_EQ(it->second.get(), instance);
+
   OnInstanceActivationChanged(instance, false);
 
   // Remove the instance first, and then delete. This way,
@@ -1005,12 +1010,30 @@ GlicInstanceImpl* GlicInstanceCoordinatorImpl::GetOrRestoreInstanceImpl(
     return nullptr;
   }
 
-  // Prioritize finding an existing instance by conversation ID, then by
-  // instance ID.
-  if (auto* instance =
-          !instance_info.conversation_id.empty()
-              ? GetInstanceImplForConversationId(instance_info.conversation_id)
-              : GetInstanceImplFor(instance_id)) {
+  GlicInstanceImpl* instance = nullptr;
+  if (!instance_info.conversation_id.empty()) {
+    instance = GetInstanceImplForConversationId(instance_info.conversation_id);
+    if (!instance) {
+      // If lookup by conversation ID failed, but an instance with this ID
+      // already exists, it implies an attempt to associate an existing instance
+      // with a different conversation ID. Once an instance is associated with a
+      // conversation ID, it cannot change. This indicates corrupt persisted
+      // data or a logic bug. Return nullptr to avoid dangerously overwriting
+      // the instance.
+      if (GetInstanceImplFor(instance_id)) {
+        LOG(ERROR) << "Instance restoration failed for conversation "
+                   << instance_info.conversation_id
+                   << ": The requested InstanceId " << instance_info.instance_id
+                   << " already exists but is associated with a different "
+                      "conversation.";
+        return nullptr;
+      }
+    }
+  } else {
+    instance = GetInstanceImplFor(instance_id);
+  }
+
+  if (instance) {
     return instance;
   }
 

@@ -17,6 +17,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/glic/fre/glic_fre_controller.h"
 #include "chrome/browser/glic/glic_pref_names.h"
+#include "chrome/browser/glic/glic_tab_restore_data.h"
 #include "chrome/browser/glic/host/glic.mojom-shared.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/host/glic_web_client_access.h"
@@ -999,6 +1000,60 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
   // Should have reused the existing instance.
   EXPECT_EQ(bound_instance, instance);
   EXPECT_OK(WaitForEmbedderActivationOrPeek(instance, restored_tab));
+}
+
+IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
+                       TabRestoration_ConversationIdMismatchReturnsNull) {
+  // Tab 1: Keep the instance alive.
+  CreateAndActivateTab(GURL("about:blank"));
+  ASSERT_OK_AND_ASSIGN(GlicInstanceImpl * instance, OpenGlicForActiveTab());
+  auto instance_id = instance->id();
+
+  // Set a conversation ID on the instance.
+  const std::string kConvId = "test_conversation_id";
+  auto info = mojom::ConversationInfo::New();
+  info->conversation_id = kConvId;
+  instance->RegisterConversation(std::move(info), base::DoNothing());
+
+  // Create a fake restore state for a new tab.
+  // It will have the SAME instance ID but a DIFFERENT conversation ID.
+  GlicRestoredState state;
+  state.bound_instance.instance_id = instance_id.value();
+  state.bound_instance.conversation_id = "different_conversation_id";
+  state.side_panel_open = true;  // Try to open side panel, should be skipped.
+
+  // Create a WebContents manually.
+  std::unique_ptr<content::WebContents> web_contents =
+      content::WebContents::Create(
+          content::WebContents::CreateParams(GetProfile()));
+
+  // Attach the restore data.
+  GlicTabRestoreData::CreateForWebContents(web_contents.get(),
+                                           std::move(state));
+
+  // Now add it to the tab strip.
+  auto* tab_list = GetTabListInterface();
+  tabs::TabInterface* restored_tab = nullptr;
+  {
+    GlicTestTabAddedWaiter waiter(GetProfile());
+    tab_list->InsertWebContentsAt(-1, std::move(web_contents),
+                                  /*should_pin=*/false, std::nullopt);
+    restored_tab = waiter.Wait();
+  }
+  ASSERT_TRUE(restored_tab);
+
+  // Verify that the restored tab is NOT bound to the instance.
+  EXPECT_EQ(GetInstanceForTab(restored_tab), nullptr);
+
+  // Verify that the side panel is NOT open for the new tab.
+  EXPECT_OK(WaitForSidePanelState(restored_tab,
+                                  GlicSidePanelCoordinator::State::kClosed));
+
+  // Clean up the tab we created and wait for it to be destroyed to avoid
+  // race conditions during test teardown.
+  content::WebContentsDestroyedWatcher destroyer(restored_tab->GetContents());
+  tab_list->CloseTab(restored_tab->GetHandle());
+  destroyer.Wait();
 }
 
 IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
