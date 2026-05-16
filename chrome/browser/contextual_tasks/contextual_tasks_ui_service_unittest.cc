@@ -140,7 +140,8 @@ class MockUiServiceForUrlIntercept : public ContextualTasksUiService {
   MOCK_METHOD(bool, IsSignedInToBrowserWithValidCredentials, (), (override));
   MOCK_METHOD(void,
               LoadUrlInWebContents,
-              (const GURL& url, content::WebContents* web_contents),
+              (const GURL& url,
+               base::WeakPtr<content::WebContents> web_contents),
               (override));
 
   // Make the impl method public for this test.
@@ -149,10 +150,11 @@ class MockUiServiceForUrlIntercept : public ContextualTasksUiService {
                             tabs::TabInterface* tab,
                             bool is_from_embedded_page,
                             bool is_to_new_tab,
-                            bool is_same_site_or_from_ui) override {
+                            bool is_same_site_or_from_ui,
+                            bool is_mobile_ua = false) override {
     return ContextualTasksUiService::HandleNavigationImpl(
         std::move(url_params), source_contents, tab, is_from_embedded_page,
-        is_to_new_tab, is_same_site_or_from_ui);
+        is_to_new_tab, is_same_site_or_from_ui, is_mobile_ua);
   }
 };
 
@@ -442,6 +444,49 @@ TEST_F(ContextualTasksUiServiceTest,
   run_loop.Run();
 }
 
+#if !BUILDFLAG(IS_ANDROID)
+TEST_F(ContextualTasksUiServiceTest,
+       HandleNavigation_ProceedsWhenMobileUserAgent) {
+  GURL ai_url(kAiPageUrl);
+  auto web_contents = content::WebContentsTester::CreateTestWebContents(
+      profile_.get(), content::SiteInstance::Create(profile_.get()));
+
+  EXPECT_CALL(*service_for_nav_, OnNavigationToAiPageIntercepted(_, _, _))
+      .Times(0);
+
+  EXPECT_FALSE(service_for_nav_->HandleNavigation(
+      CreateOpenUrlParams(ai_url, false), web_contents.get(),
+      /*is_from_embedded_page=*/false, /*is_to_new_tab=*/false,
+      /*is_same_site_or_from_ui=*/true,
+      /*is_mobile_ua=*/true));
+}
+
+TEST_F(ContextualTasksUiServiceTest,
+       HandleNavigation_RedirectsWhenMobileUserAgentAndContextualTasksUrl) {
+  GURL webui_url(chrome::kChromeUIContextualTasksURL);
+  auto web_contents = content::WebContentsTester::CreateTestWebContents(
+      profile_.get(), content::SiteInstance::Create(profile_.get()));
+
+  base::RunLoop run_loop;
+  ON_CALL(*service_for_nav_, LoadUrlInWebContents(_, _))
+      .WillByDefault([&](const GURL& url,
+                         base::WeakPtr<content::WebContents> web_contents) {
+        EXPECT_TRUE(
+            url.spec().starts_with(kAiPageUrl) ||
+            url.spec().starts_with("https://www.google.com/search?udm=50"));
+        run_loop.Quit();
+      });
+
+  EXPECT_TRUE(service_for_nav_->HandleNavigation(
+      CreateOpenUrlParams(webui_url, false), web_contents.get(),
+      /*is_from_embedded_page=*/false, /*is_to_new_tab=*/false,
+      /*is_same_site_or_from_ui=*/true,
+      /*is_mobile_ua=*/true));
+
+  run_loop.Run();
+}
+#endif
+
 TEST_F(ContextualTasksUiServiceTest, HandleNavigation_AiPage_DebugParam) {
   GURL ai_url(kAiPageUrl);
   ai_url = net::AppendQueryParameter(ai_url, "deb", "nocobrowse1");
@@ -494,7 +539,8 @@ TEST_F(ContextualTasksUiServiceTest,
       .Times(0);
   base::RunLoop run_loop;
   ON_CALL(*service_for_nav_, LoadUrlInWebContents(_, _))
-      .WillByDefault([&](const GURL& url, content::WebContents* web_contents) {
+      .WillByDefault([&](const GURL& url,
+                         base::WeakPtr<content::WebContents> web_contents) {
         std::string value;
         EXPECT_TRUE(net::GetValueForKeyInQuery(url, "deb", &value));
         EXPECT_EQ("nocobrowse1", value);
@@ -539,7 +585,8 @@ TEST_F(ContextualTasksUiServiceTest,
       .Times(0);
   base::RunLoop run_loop;
   ON_CALL(*service_for_nav_, LoadUrlInWebContents(_, _))
-      .WillByDefault([&](const GURL& url, content::WebContents* web_contents) {
+      .WillByDefault([&](const GURL& url,
+                         base::WeakPtr<content::WebContents> web_contents) {
         EXPECT_EQ(url.spec(),
                   "https://www.google.com/search?udm=50&q=test&ncb=1");
         run_loop.Quit();
@@ -1470,16 +1517,24 @@ TEST_F(ContextualTasksUiServiceTest,
       ContextualTasksUiService::CopyParamsFromWebUIUrl(base_url, webui_url));
 }
 
-TEST_F(ContextualTasksUiServiceTest, CopyParamsFromWebUIUrl_HostOverrideFirst) {
-  GURL base_url("https://google.com/search?udm=50");
+TEST_F(ContextualTasksUiServiceTest, GetAiUrlFromWebUIUrl) {
+  GURL base_url("https://google.com/search");
+  GURL webui_url("chrome://contextual-tasks?param1=1&param2=2");
+
+  EXPECT_EQ(
+      GURL("https://google.com/search?param1=1&param2=2"),
+      ContextualTasksUiService::GetAiUrlFromWebUIUrl(base_url, webui_url));
+}
+
+TEST_F(ContextualTasksUiServiceTest, GetAiUrlFromWebUIUrl_HostOverride) {
+  GURL base_url("https://google.com/search");
   GURL webui_url(
       "chrome://"
       "contextual-tasks?param1=1&chrome_host=gws-prod.corp.google.com");
 
   EXPECT_EQ(
-      GURL("https://google.com/"
-           "search?chrome_host=gws-prod.corp.google.com&udm=50&param1=1"),
-      ContextualTasksUiService::CopyParamsFromWebUIUrl(base_url, webui_url));
+      GURL("https://gws-prod.corp.google.com/search?param1=1"),
+      ContextualTasksUiService::GetAiUrlFromWebUIUrl(base_url, webui_url));
 }
 
 // If the navigation is to sign the user out, ensure it opens outside the

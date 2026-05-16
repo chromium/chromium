@@ -824,11 +824,13 @@ bool ContextualTasksUiService::HandleNavigation(
     content::WebContents* source_contents,
     bool is_from_embedded_page,
     bool is_to_new_tab,
-    bool is_same_site_or_from_ui) {
+    bool is_same_site_or_from_ui,
+    bool is_mobile_ua) {
   return HandleNavigationImpl(
       std::move(url_params), source_contents,
       tabs::TabInterface::MaybeGetFromContents(source_contents),
-      is_from_embedded_page, is_to_new_tab, is_same_site_or_from_ui);
+      is_from_embedded_page, is_to_new_tab, is_same_site_or_from_ui,
+      is_mobile_ua);
 }
 
 void ContextualTasksUiService::GetAccessToken(
@@ -897,7 +899,8 @@ bool ContextualTasksUiService::HandleNavigationImpl(
     tabs::TabInterface* tab,
     bool is_from_embedded_page,
     bool is_to_new_tab,
-    bool is_same_site_or_from_ui) {
+    bool is_same_site_or_from_ui,
+    bool is_mobile_ua) {
   OMNIBOX_LOG("nav_trace")
       << "ContextualTasks navigation trace: HandleNavigationImpl called "
          "for URL: "
@@ -911,6 +914,25 @@ bool ContextualTasksUiService::HandleNavigationImpl(
            "returning early, not eligible";
     return false;
   }
+
+#if !BUILDFLAG(IS_ANDROID)
+  if (is_mobile_ua) {
+    // Exit cobrowsing if emulating a mobile device. Cobrowse on mobile is
+    // dependent on Android to function correctly.
+    if (IsContextualTasksUrl(url_params.url)) {
+      // Redirect contextual tasks URL to aim page URL.
+      GURL url = GetAiUrlFromWebUIUrl(GetDefaultAiPageUrl(), url_params.url);
+      // Post a task to open the URL.
+      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE,
+          base::BindOnce(&ContextualTasksUiService::LoadUrlInWebContents,
+                         weak_ptr_factory_.GetWeakPtr(), url,
+                         source_contents->GetWeakPtr()));
+      return true;
+    }
+    return false;
+  }
+#endif
 
   // If the target URL is a contextual tasks "display URL", then replace it with
   // the proper AIM URL.
@@ -1015,7 +1037,7 @@ bool ContextualTasksUiService::HandleNavigationImpl(
           FROM_HERE,
           base::BindOnce(&ContextualTasksUiService::LoadUrlInWebContents,
                          weak_ptr_factory_.GetWeakPtr(), url_params.url,
-                         source_contents));
+                         source_contents->GetWeakPtr()));
       return true;
     } else {
       return false;
@@ -1251,7 +1273,10 @@ void ContextualTasksUiService::OnBackButtonExpandsSidePanel(
 
 void ContextualTasksUiService::LoadUrlInWebContents(
     const GURL& url,
-    content::WebContents* web_contents) {
+    base::WeakPtr<content::WebContents> web_contents) {
+  if (!web_contents) {
+    return;
+  }
   content::NavigationController::LoadURLParams params(url);
   params.transition_type = ::ui::PAGE_TRANSITION_AUTO_TOPLEVEL;
   web_contents->GetController().LoadURLWithParams(params);
@@ -1803,7 +1828,6 @@ GURL ContextualTasksUiService::CopyParamsFromWebUIUrl(const GURL& base_url,
       }
     }
   }
-
   // Now add all other params from the WebUI URL.
   net::QueryIterator it(webui_url);
   while (!it.IsAtEnd()) {
@@ -1817,6 +1841,25 @@ GURL ContextualTasksUiService::CopyParamsFromWebUIUrl(const GURL& base_url,
   }
 
   return aim_url;
+}
+
+GURL ContextualTasksUiService::GetAiUrlFromWebUIUrl(const GURL& base_url,
+                                                    const GURL& webui_url) {
+  GURL url = CopyParamsFromWebUIUrl(base_url, webui_url);
+
+  std::string host_value;
+  // If there is the chrome_host param in the URL, use it to set the host of
+  // the AI url.
+  if (net::GetValueForKeyInQuery(url, kChromeHostParam, &host_value) &&
+      !host_value.empty()) {
+    GURL::Replacements replacements;
+    replacements.SetHostStr(host_value);
+    url = url.ReplaceComponents(replacements);
+  }
+
+  // Remove kChromeHostParam from the new url if it exists.
+  return net::AppendOrReplaceQueryParameter(url, kChromeHostParam,
+                                            std::nullopt);
 }
 
 void ContextualTasksUiService::OnLensOverlayStateChanged(
