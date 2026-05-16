@@ -388,6 +388,11 @@ class ContextualTasksUiService : public KeyedService {
                                 tabs::TabInterface* tab,
                                 const base::Uuid& task_id);
 
+#if !BUILDFLAG(IS_ANDROID)
+  // Called when back button expands side panel.
+  void OnBackButtonExpandsSidePanel(base::WeakPtr<tabs::TabInterface> weak_tab);
+#endif
+
   // A callback for checking whether text fragments from a URL are on a page.
   void OnTextFinderLookupComplete(
       base::WeakPtr<tabs::TabInterface> tab,

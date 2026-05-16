@@ -67,6 +67,7 @@
 #include "components/tabs/public/tab_interface.h"
 #include "components/url_formatter/url_formatter.h"
 #include "content/public/browser/navigation_controller.h"
+#include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/common/url_constants.h"
@@ -955,33 +956,8 @@ bool ContextualTasksUiService::HandleNavigationImpl(
         base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
             FROM_HERE,
             base::BindOnce(
-                [](base::WeakPtr<tabs::TabInterface> weak_tab) {
-                  if (!weak_tab) {
-                    return;
-                  }
-                  auto* browser = weak_tab->GetBrowserWindowInterface();
-                  if (!browser) {
-                    return;
-                  }
-                  auto* controller =
-                      contextual_tasks::ContextualTasksPanelController::From(
-                          browser);
-                  if (controller &&
-                      controller->IsPanelOpenForContextualTask()) {
-                    controller->MoveTaskUiToNewTab();
-                    // TODO(crbug.com/497899043): Restore history stack.
-                    auto* tab_strip_model = browser->GetTabStripModel();
-                    if (tab_strip_model) {
-                      int index =
-                          tab_strip_model->GetIndexOfTab(weak_tab.get());
-                      if (index != TabStripModel::kNoTab) {
-                        tab_strip_model->CloseWebContentsAt(
-                            index, TabCloseTypes::CLOSE_EXPAND_SIDE_PANEL);
-                      }
-                    }
-                  }
-                },
-                tab->GetWeakPtr()));
+                &ContextualTasksUiService::OnBackButtonExpandsSidePanel,
+                weak_ptr_factory_.GetWeakPtr(), tab->GetWeakPtr()));
         OMNIBOX_LOG("nav_trace")
             << "ContextualTasks navigation trace: HandleNavigationImpl "
                "closing tab and expanding side panel";
@@ -1078,7 +1054,10 @@ bool ContextualTasksUiService::HandleNavigationImpl(
   ui::PageTransition page_transition = url_params.transition;
   bool is_forward_back_link_navigation =
       (page_transition & ui::PAGE_TRANSITION_FORWARD_BACK) &&
-      ui::PageTransitionCoreTypeIs(page_transition, ui::PAGE_TRANSITION_LINK);
+      (ui::PageTransitionCoreTypeIs(page_transition,
+                                    ui::PAGE_TRANSITION_LINK) ||
+       ui::PageTransitionCoreTypeIs(page_transition,
+                                    ui::PAGE_TRANSITION_RELOAD));
 
   // Intercept any navigation where the wrapping WebContents is the WebUI host
   // unless it is the embedded page.
@@ -1221,6 +1200,54 @@ bool ContextualTasksUiService::HandleNavigationImpl(
   // Allow anything else.
   return false;
 }
+
+#if !BUILDFLAG(IS_ANDROID)
+void ContextualTasksUiService::OnBackButtonExpandsSidePanel(
+    base::WeakPtr<tabs::TabInterface> weak_tab) {
+  if (!weak_tab) {
+    return;
+  }
+  auto* browser = weak_tab->GetBrowserWindowInterface();
+  if (!browser) {
+    return;
+  }
+  auto* controller =
+      contextual_tasks::ContextualTasksPanelController::From(browser);
+  if (controller && controller->IsPanelOpenForContextualTask()) {
+    content::WebContents* side_panel_contents =
+        controller->GetActiveWebContents();
+    controller->MoveTaskUiToNewTab();
+    auto* tab_strip_model = browser->GetTabStripModel();
+    if (tab_strip_model) {
+      int index = tab_strip_model->GetIndexOfTab(weak_tab.get());
+      if (index != TabStripModel::kNoTab) {
+        // Append last committed URL of the original tab to the
+        // side panel WebContents to make the forward navigation
+        // work.
+        if (side_panel_contents) {
+          GURL last_committed_url =
+              weak_tab->GetContents()->GetLastCommittedURL();
+          if (last_committed_url.is_valid() && !last_committed_url.is_empty()) {
+            std::vector<std::unique_ptr<content::NavigationEntry>> entries;
+            entries.push_back(
+                content::NavigationController::CreateNavigationEntry(
+                    last_committed_url, content::Referrer(), std::nullopt,
+                    std::nullopt, ui::PAGE_TRANSITION_LINK, false,
+                    std::string(), browser->GetProfile(), nullptr));
+            side_panel_contents->GetController().PruneAllButLastCommitted();
+            side_panel_contents->GetController().Restore(
+                side_panel_contents->GetController()
+                    .GetLastCommittedEntryIndex(),
+                content::RestoreType::kRestored, &entries);
+          }
+        }
+        tab_strip_model->CloseWebContentsAt(
+            index, TabCloseTypes::CLOSE_EXPAND_SIDE_PANEL);
+      }
+    }
+  }
+}
+#endif
 
 void ContextualTasksUiService::LoadUrlInWebContents(
     const GURL& url,
