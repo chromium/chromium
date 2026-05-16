@@ -349,7 +349,16 @@ void HidConnectionWin::OnReadFeatureComplete(
         base::span(*buffer).subspan<1>());
   }
 
-  DCHECK_LE(bytes_transferred, buffer->size());
+  // bytes_transferred should be less than or equal to buffer->size()
+  // regardless of if the device uses a numbered report (i.e. has
+  // a leading zero byte). (crbug.com/512100839)
+  if (bytes_transferred > buffer->size()) {
+    HID_LOG(ERROR)
+        << "HID read feature report returned size larger than buffer.";
+    std::move(callback).Run(false, nullptr, 0);
+    return;
+  }
+
   std::move(callback).Run(true, buffer, bytes_transferred);
 }
 
