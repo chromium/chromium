@@ -133,6 +133,9 @@ BASE_FEATURE(kWebViewPrefetchOnRendererReuse,
 BASE_FEATURE(kWebViewPrefetchOffTheMainThread,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Kill switch for reporting `PreloadServingMetrics` for WebView.
+BASE_FEATURE(kWebViewPreloadServingMetrics, base::FEATURE_ENABLED_BY_DEFAULT);
+
 // This enables WebView's hyperlink context menu.
 BASE_FEATURE(kWebViewHyperlinkContextMenu, base::FEATURE_DISABLED_BY_DEFAULT);
 
