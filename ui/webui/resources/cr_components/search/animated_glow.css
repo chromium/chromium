@@ -19,6 +19,9 @@
   initial-value: 0deg;
 }
 
+/* Do not adjust height of ':host'. All children of ':host'
+ * inherit from the searchbox/composebox parent's height and width.
+ */
 :host {
   --color-dragging-opaque-frost-backup_: rgba(240, 242, 245, 1);
   --color-drag-placeholder-font: rgba(86, 89, 94, 1);
@@ -698,7 +701,12 @@
 /* Overlay that goes over any of the above effects
  * (background, etc.) */
 #fullContainerOverlay {
-  block-size: 100%;
   display: flex;
-  inline-size: 100%;
+  /* Since ':host' has no size or position, this is sized and
+   * positioned relative to their nearest positioned ancestor, which
+   * is from the parent 'composebox' or 'searchbox'.
+   */
+  inset: 0;
+  /* Ensure it does not take up space in composebox/searchbox layout. */
+  position: absolute;
 }

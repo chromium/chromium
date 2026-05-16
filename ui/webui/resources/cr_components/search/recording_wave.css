@@ -10,8 +10,15 @@
 :host {
   --bar-max-height: 40px;
   --color-recording-wave: #8ab4f8;
+  --recording-wave-top-padding: 10px;
+
   align-items: flex-start;
-  block-size: 100%;
+
+  /* 100% is relative to height of 'cr-composebox' (or 'cr-searchbox')
+   * since 'animated_glow' (the immediate parent) is absolutely positioned.
+   * Height of 'cr-composebox' is determined by 'div' with id 'composebox'.
+   */
+  block-size: calc(100% - var(--recording-wave-top-padding));
   display: flex;
   inline-size: 100%;
   justify-content: flex-start;
