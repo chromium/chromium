@@ -678,4 +678,73 @@ suite('ContextualActionMenu', () => {
     // Ensure flyout has max height even with many tab suggestions.
     assertEquals(144, flyout.offsetHeight);
   });
+
+  test('Share tabs flyout keyboard navigation', async () => {
+    loadTimeData.overrideValues({
+      contextManagementInComposeboxEnabled: true,
+    });
+
+    actionMenu.remove();
+    actionMenu = document.createElement('cr-composebox-contextual-action-menu');
+    actionMenu.tabSuggestions = [
+      {
+        tabId: 1,
+        title: 'Tab 1',
+        url: {url: 'https://example.com'},
+        lastActiveTime: {internalValue: 0n},
+        showInCurrentTabChip: false,
+        showInPreviousTabChip: false,
+        lastActive: {internalValue: 0n},
+      } as any,
+    ];
+    actionMenu.inputState = new MockInputState({
+                              allowedInputTypes: [InputType.kBrowserTab],
+                            }) as any;
+    document.body.appendChild(actionMenu);
+    await microtasksFinished();
+
+    // Open the main contextual action menu.
+    actionMenu.showAt(actionMenu);
+    await microtasksFinished();
+
+    // Get the trigger button and the flyout container.
+    const trigger = $$(actionMenu, '#shareTabsTrigger') as HTMLElement;
+    const flyout = $$(actionMenu, '.share-tabs-flyout') as HTMLElement;
+    assertTrue(!!trigger);
+    assertTrue(!!flyout);
+
+    // Verify that the flyout is hidden initially.
+    assertTrue(flyout.hidden);
+
+    // Simulate an ArrowRight keydown event on the trigger to expand the flyout.
+    trigger.dispatchEvent(
+        new KeyboardEvent('keydown', {key: 'ArrowRight', bubbles: true}));
+    await actionMenu.updateComplete;
+    await new Promise(resolve => requestAnimationFrame(resolve));
+    await microtasksFinished();
+
+    // Assert that the flyout is now visible.
+    assertFalse(flyout.hidden);
+
+    // Assert that the keyboard focus has successfully moved to the first button
+    // inside the flyout.
+    const firstTabItem =
+        flyout.querySelector<HTMLElement>('button.dropdown-item');
+
+    assertTrue(!!firstTabItem);
+    assertEquals(firstTabItem, actionMenu.shadowRoot.activeElement);
+
+    // Simulate an ArrowLeft keydown event on the inner item to collapse the
+    // flyout.
+    firstTabItem.dispatchEvent(
+        new KeyboardEvent('keydown', {key: 'ArrowLeft', bubbles: true}));
+    await actionMenu.updateComplete;
+    await new Promise(resolve => requestAnimationFrame(resolve));
+    await microtasksFinished();
+
+    assertTrue(flyout.hidden);
+
+    // Assert that the focus is correctly returned to the parent trigger button.
+    assertEquals(trigger, actionMenu.shadowRoot.activeElement);
+  });
 });
