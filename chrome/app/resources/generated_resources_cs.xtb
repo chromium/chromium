@@ -37,6 +37,7 @@
 <translation id="1016876401615857435">Pokud na tomto zařízení chcete používat své přístupové klíče, ověřte, že jste to vy</translation>
 <translation id="1017280919048282932">&amp;Přidat do slovníku</translation>
 <translation id="1018656279737460067">Zrušeno</translation>
+<translation id="1020008977311763380">Nominální úroveň výkonu je: <ph name="CPU_TIER" /></translation>
 <translation id="1022522674678746124">PowerPoint</translation>
 <translation id="1022669824195822609">Toto zařízení spravuje organizace <ph name="DOMAIN" />. K datům ve všech profilech v tomto zařízení mají přístup administrátoři.</translation>
 <translation id="1022719295563085177">Výchozí nastavení sítě</translation>
@@ -56,6 +57,7 @@
 <translation id="1033060461778467949">Přesunout kartu do rozděleného zobrazení</translation>
 <translation id="1033780634303702874">Přistupovat k zařízením připojeným pomocí sériového portu</translation>
 <translation id="1034484273907870301">Lišta karet s miniaturami pro režim tabletu</translation>
+<translation id="103477588607005550">CPU: <ph name="CPU_MODEL" /> (<ph name="CPU_CORES" />)</translation>
 <translation id="1035289631433631911">Nástroj Přenos obsahu</translation>
 <translation id="1035875743511577452">Kliknutím na Změnit motiv můžete prozkoumat motivy inspirované umělci, přírodou a dalšími tématy</translation>
 <translation id="1036348656032585052">Vypnout</translation>
@@ -310,6 +312,7 @@ Hesla můžete kdykoli zobrazit v nástroji <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="1197088940767939838">Oranžová</translation>
 <translation id="11978075283960463">Data uložená v aplikaci: <ph name="APP_SIZE" /></translation>
 <translation id="1198066799963193307">Řečové nástroje pro slabozraké</translation>
+<translation id="1198796216247697947">Úroveň 0: NEZNÁMÁ</translation>
 <translation id="119944043368869598">Vymazat vše</translation>
 <translation id="1199814941632954229">Probíhá zřizování certifikátů pro tyto profily certifikátů</translation>
 <translation id="120069043972472860">Nepoužitelná</translation>
@@ -491,6 +494,7 @@ Hesla můžete kdykoli zobrazit v nástroji <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="1323433172918577554">Zobrazit více</translation>
 <translation id="132539964543492755">Klávesou „x“ přepnete mezi levým, pravým a oběma tlačítky myši</translation>
 <translation id="1325611581149097457">Pište lépe</translation>
+<translation id="1325798198269334655">Další informace o udržování aktualizací Chromu</translation>
 <translation id="1325898422473267360"><ph name="PERMISSION_USAGE" /> <ph name="PERMISSION_INDICATOR_DESCRIPTION" /></translation>
 <translation id="1327272175893960498">Lístky Kerberos</translation>
 <translation id="1327495825214193325">K aktivaci ladění ADB je toto zařízení <ph name="DEVICE_TYPE" /> potřeba restartovat. K vypnutí je potřeba resetovat tovární nastavení.</translation>
@@ -2952,6 +2956,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="2991182900092497283">Zadejte důvod vložení těchto dat:</translation>
 <translation id="2992931425024192067">Zobrazovat veškerý obsah oznámení</translation>
 <translation id="2993517869960930405">O aplikaci</translation>
+<translation id="2994804273850542871">Úroveň 4: ULTRA</translation>
 <translation id="2995472388018163047">{NUM_GROUPS,plural, =1{Skupinu můžete zachovat, abyste do ní mohli přidat karty později, nebo ji můžete opustit, pokud k ní už nechcete mít přístup.}few{Skupiny můžete zachovat, abyste do nich mohli přidat karty později, nebo je můžete opustit, pokud k nim už nechcete mít přístup.}many{Skupiny můžete zachovat, abyste do nich mohli přidat karty později, nebo je můžete opustit, pokud k nim už nechcete mít přístup.}other{Skupiny můžete zachovat, abyste do nich mohli přidat karty později, nebo je můžete opustit, pokud k nim už nechcete mít přístup.}}</translation>
 <translation id="2996071302059856125">Další informace o tom, jak vaše prostředí formuje umělá inteligence a jaké Chrome nabízí ovládací prvky</translation>
 <translation id="2996108796702395498">Sériové číslo vašeho zařízení je <ph name="SERIAL_NUMBER" />. Toto číslo lze použít k aktivaci služby.</translation>
@@ -2970,6 +2975,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3003967365858406397">Telefon <ph name="PHONE_NAME" /> vytvoří soukromé připojení Wi-Fi.</translation>
 <translation id="3004385386820284928">Přizpůsobení kláves</translation>
 <translation id="300580149047131921">Nedávno použito</translation>
+<translation id="3005928441045180122">Nad sebou</translation>
 <translation id="3006881078666935414">Žádné údaje o využití</translation>
 <translation id="3007555010975143508">Tyto aplikace se budou používat k nahrávání obrazovky:</translation>
 <translation id="3007771295016901659">Duplikovat kartu</translation>
@@ -4659,6 +4665,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="4177668342649553942">Otevřít <ph name="SHORTCUT_NAME" /> – <ph name="APP_NAME" /></translation>
 <translation id="4177731895051842298">Rozšíření jsou doplňky pro Chrome, pomocí kterých si můžete uspořádat věci, zjednodušit úkoly nebo přizpůsobit prohlížení.</translation>
 <translation id="4178220097446335546">Pokud toto předplatné a jeho přidružené sítě chcete zapomenout, přejděte na stránku předplatných Passpoint a odeberte ho.</translation>
+<translation id="4181376007499455822">Nepřepisovat</translation>
 <translation id="4181602000363099176">20×</translation>
 <translation id="4181841719683918333">Jazyky</translation>
 <translation id="4182182457914031017">Za účelem nabízení návrhů a vylepšování této funkce se adresa URL a obsah celé stránky navštíveného webu sdílí s Googlem</translation>
@@ -8338,6 +8345,7 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="67862343314499040">Fialová</translation>
 <translation id="6786480815699355166">Překládat lze jen podporované jazyky okamžitých titulků</translation>
 <translation id="6786747875388722282">Rozšíření</translation>
+<translation id="6786804673213172567">Úroveň 3: VYSOKÁ</translation>
 <translation id="6787531944787756058">uživatelské jméno <ph name="USER_EMAIL" /> je uloženo pouze na tomto zařízení. Zobrazit podrobnosti</translation>
 <translation id="6787839852456839824">Klávesové zkratky</translation>
 <translation id="6788210894632713004">Rozbalené rozšíření</translation>
@@ -8484,6 +8492,7 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="686839242150793617">Povolení automaticky aktivovat režim obrazu v obraze</translation>
 <translation id="6868734951249611611">Klikněte sem pravým tlačítkem a vyberte Zobrazit karty svisle</translation>
 <translation id="6868934826811377550">Zobrazit podrobnosti</translation>
+<translation id="6869809635308708588">K posílání odkazů musí být obě zařízení přihlášena ke stejnému účtu Google.</translation>
 <translation id="6870470066213933201">Spravovat optimalizaci a zabezpečení JavaScriptu</translation>
 <translation id="6870953451576517204">Autonomní test byl úspěšný</translation>
 <translation id="6871644448911473373">Odpovídač OCSP: <ph name="LOCATION" /></translation>
@@ -8775,6 +8784,7 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="7072078320324181561">Aplikace a weby s oprávněním pro přístup k poloze a systémové služby můžou používat vaši polohu. <ph name="LINK_BEGIN" />Další informace<ph name="LINK_END" /></translation>
 <translation id="7072573590175540692">Dostupné zkratky funkcí a rozšíření</translation>
 <translation id="7074703793383805632"><ph name="SHARED_STATE" /> skupina <ph name="GROUP_NAME" /> – <ph name="OPENED_STATE" /></translation>
+<translation id="7075116338736929419">Přepsat úroveň výkonu procesoru</translation>
 <translation id="7075625805486468288">Správa certifikátů a nastavení protokolů HTTPS/SSL</translation>
 <translation id="707772989579681711">Vaše předchozí volba</translation>
 <translation id="7077751457066325012">Zobrazit a upravit klávesové zkratky</translation>
@@ -9537,6 +9547,7 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="7624337243375417909">caps lock je vypnut</translation>
 <translation id="7625568159987162309">Zobrazit oprávnění a uložená data webů</translation>
 <translation id="7625823789272218216">Nová karta vlevo</translation>
+<translation id="762730429396410864">Ručně nastavit úroveň výkonu procesoru hlášenou webům</translation>
 <translation id="7627749368210392160">Weby mohou tuto funkci použít k přístupu k dalším zařízením v místní síti</translation>
 <translation id="7628927569678398026"><ph name="LOCALE" /> (<ph name="VARIANT" />), podoba: <ph name="GRADE" /></translation>
 <translation id="762917478230183172">Vyberte akci pro každou klávesu</translation>
@@ -9815,7 +9826,9 @@ Pokud přiřazení chcete odstranit, stiskněte přiřazený přepínač nebo kl
 <translation id="7799650166313181433">S tímto zařízením mohou sdílet obsah pouze zařízení, která jsou přihlášená k účtu <ph name="USER_EMAIL" />. Sdílení mezi svými zařízeními nebudete muset povolovat.</translation>
 <translation id="7800485561443537737">Využívá mobilní data zařízení <ph name="DEVICE_TYPE" /> a operátor vám může účtovat další poplatky. Může zvýšit využití baterie. <ph name="BEGIN_LINK_LEARN_MORE" />Další informace<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7800518121066352902">Otočit &amp;proti směru hodinových ručiček</translation>
+<translation id="780254490276923052">Úroveň 2: MID</translation>
 <translation id="780301667611848630">Ne, děkuji</translation>
+<translation id="7803118804281013214">Pokud tento web opustíte, úkol se ukončí. Pokud chcete Gemini nechat dál pracovat, otevřete novou kartu.</translation>
 <translation id="7803657407897251194">Pokud chcete pokračovat v nastavování pomocí zařízení s Androidem, připojte <ph name="DEVICE_TYPE" /> k síti</translation>
 <translation id="7803714812705886512">Google používá k detekci hrozeb méně dat (například části adres URL, informace o stahování)</translation>
 <translation id="7804072833593604762">Karta zavřena</translation>
@@ -10834,6 +10847,7 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="8500044868721690197">Na tomto webu bylo zablokováno ovládání a přeprogramování vašich zařízení MIDI</translation>
 <translation id="8500123638242682652">Okno se posunulo nahoru</translation>
 <translation id="8500132602331251964">Je k dispozici aktualizace aplikace</translation>
+<translation id="850228775215800722">Úroveň 1: NÍZKÁ</translation>
 <translation id="8503813439785031346">Uživatelské jméno</translation>
 <translation id="850382998924680137">Zobrazeno dnes</translation>
 <translation id="850399339579925930">Slovníky</translation>
@@ -11249,6 +11263,7 @@ To může zahrnovat informace o nainstalovaném softwaru, souborech, prohlíže
 <translation id="8774379074441005279">Potvrzení obnovení</translation>
 <translation id="8774934320277480003">Horní okraj</translation>
 <translation id="8775144690796719618">Neplatná adresa URL</translation>
+<translation id="877515298105563553">Vedle sebe</translation>
 <translation id="8775653927968399786">{0,plural, =1{Zařízení <ph name="DEVICE_TYPE" /> se za # sekundu automaticky zamkne.
 <ph name="DOMAIN" /> vyžaduje, abyste čipovou kartu ponechali vloženou.}few{Zařízení <ph name="DEVICE_TYPE" /> se za # sekundy automaticky zamkne.
 <ph name="DOMAIN" /> vyžaduje, abyste čipovou kartu ponechali vloženou.}many{Zařízení <ph name="DEVICE_TYPE" /> se za # sekundy automaticky zamkne.
@@ -11703,6 +11718,7 @@ Informace o tom, jaká data Google shromažďuje a proč je shromažďuje, naj
 <translation id="9070342919388027491">Karta se přesunula vlevo</translation>
 <translation id="9072220108592671115">Byla nainstalována verze <ph name="VERSION" /></translation>
 <translation id="9072918088200875065">Povolili jste službě Gemini, aby se za vás mohla přihlašovat k těmto webům a dokončovat tam za vás úkoly</translation>
+<translation id="9074618195273027322">{CORE_COUNT,plural, =1{1 jádro}few{{CORE_COUNT} jádra}many{{CORE_COUNT} jádra}other{{CORE_COUNT} jader}}</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9074836595010225693">Myš s konektorem USB byla připojena</translation>
 <translation id="9075413375877487220">Vylepšené Bezpečné prohlížení tomuto rozšíření nedůvěřuje.</translation>

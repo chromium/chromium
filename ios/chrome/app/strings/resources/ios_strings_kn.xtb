@@ -178,6 +178,7 @@
 <translation id="1582732959743469162">ಇದು ನಿಮ್ಮ ಪ್ರಸ್ತುತ ಡೌನ್‌ಲೋಡ್‌ಗಾಗಿ ಎಲ್ಲಾ ಪ್ರಕ್ರಿಯೆಗಳನ್ನು ನಿಲ್ಲಿಸುತ್ತದೆ.</translation>
 <translation id="1594034544529347967">ಆರಂಭವಾಗುತ್ತದೆ</translation>
 <translation id="1598751033135758830">ಆ್ಯಪ್‌ನಲ್ಲಿ ತೆರೆಯಿರಿ…</translation>
+<translation id="1600571977391127696">ಕೆಲವು ಕಂಟೆಂಟ್ ಎಲ್ಲರಿಗೂ ಸೂಕ್ತವಲ್ಲದಿರಬಹುದು.</translation>
 <translation id="1601560923496285236">ಅನ್ವಯಿಸು</translation>
 <translation id="1603718000246404895">{COUNT,plural, =1{1 ವಿಳಾಸ}one{# ವಿಳಾಸಗಳು}other{# ವಿಳಾಸಗಳು}}</translation>
 <translation id="1605405588277479165">ಆಫ್ - ಶಿಫಾರಸು ಮಾಡಲಾಗಿಲ್ಲ</translation>
@@ -312,6 +313,7 @@
 <translation id="2012723204723845092">ಮರಳಿ ಸ್ವಾಗತ!</translation>
 <translation id="2015722694326466240">ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ವೀಕ್ಷಿಸಲು, ನೀವು ಮೊದಲು ನಿಮ್ಮ ಸಾಧನದಲ್ಲಿ ಪಾಸ್‌ವಡ್‌ ಅನ್ನು ಸೆಟ್ ಮಾಡಿ.</translation>
 <translation id="201759455285471444">ಟ್ಯಾಬ್ ಗುಂಪನ್ನು ವಿಸ್ತೃತಗೊಳಿಸಿ.</translation>
+<translation id="2031515492007104071">ಒಂದು ಹಂತ ಮೇಲಕ್ಕೆ</translation>
 <translation id="2044394949148788042">ಟ್ಯಾಬ್‌ ಗ್ರಿಡ್‌ ಅನ್ನು ತೆರೆಯಿರಿ</translation>
 <translation id="2044681667265133332">ಖಾತೆ <ph name="USER_EMAIL" /> ಅನ್ನು <ph name="HOSTED_DOMAIN" /> ನಿಂದ ನಿರ್ವಹಿಸಲಾಗುತ್ತದೆ, ಇದು ಕೆಲವು ಮಾಹಿತಿಯನ್ನು ವೀಕ್ಷಿಸಲು ಸಾಧ್ಯವಾಗಬಹುದು. <ph name="BEGIN_LINK" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">ಹೊಸ ಐಟಂ</translation>
@@ -764,6 +766,7 @@
 <translation id="372676576864368480"><ph name="LAST_DIGITS" /> ನಿಂದ ಕೊನೆಗೊಳ್ಳುವ ಕಾರ್ಡ್ ಸಂಖ್ಯೆಯನ್ನು ಆಟೋಫಿಲ್ ಮಾಡಿ</translation>
 <translation id="3738428049780661523"><ph name="DATE" /> ರಂದು ರಚಿಸಲಾಗಿದೆ</translation>
 <translation id="3742498336182910186">ಕ್ಯಾಮರಾ ರೋಲ್‌</translation>
+<translation id="3743545564993953213">ಈ ಸೈಟ್ "ಶಾರ್ಟ್‌ಕಟ್‌ಗಳು" ಆ್ಯಪ್ ಅನ್ನು ತೆರೆಯಲು ಪ್ರಯತ್ನಿಸುತ್ತಿದೆ.</translation>
 <translation id="3746269120925354434">Google Wallet ನಲ್ಲಿ ಮಾಹಿತಿಯನ್ನು ಸೇವ್ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="3750225824417196283">ಹೊಸ ಅಜ್ಞಾತ ಟ್ಯಾಬ್‌ ಪುಟ</translation>
 <translation id="3751873026576444885">Google Lens ಮೂಲಕ ನಿಮ್ಮ ಸ್ಕ್ರೀನ್‌ ಅನ್ನು ಹುಡುಕುವುದನ್ನು ನಿಲ್ಲಿಸಿ</translation>
@@ -845,6 +848,7 @@
 <translation id="3994911892367422121">ಅರ್ಥವಾಯಿತು</translation>
 <translation id="3995521777587992544">ಪುಟ ಲೋಡ್ ಪ್ರಗತಿ ಪಟ್ಟಿ, <ph name="EMAIL" /> ಅನ್ನು ಲೋಡ್ ಮಾಡಲಾಗಿದೆ.</translation>
 <translation id="3997522473364371632">ಪಾಸ್‌ವರ್ಡ್ ಹಂಚಿಕೆಯನ್ನು ನಿಮ್ಮ ನಿರ್ವಾಹಕರು ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಿದ್ದಾರೆ.</translation>
+<translation id="4000707564769984863">ವೀಕ್ಷಿಸಿ: <ph name="WATCH_LINK" /></translation>
 <translation id="4002066346123236978">ಶೀರ್ಷಿಕೆ</translation>
 <translation id="4004204301268239848">ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿ ಸೇವ್ ಮಾಡಲಾಗಿದೆ, ಇದರಿಂದ ನೀವು ಅವುಗಳನ್ನು ಯಾವುದೇ ಸಾಧನದಲ್ಲಿ ಬಳಸಬಹುದು.</translation>
 <translation id="4007463141047732631">ಗುಂಪನ್ನು ಎಡಿಟ್ ಮಾಡಿ</translation>
@@ -875,6 +879,7 @@
 <translation id="4129768137228347731"><ph name="ENTITY_TYPE" /> ಅನ್ನು ಸೇವ್ ಮಾಡಬೇಕೇ?</translation>
 <translation id="4133139945030148655">ನೀವು ಎಲ್ಲ ರೀತಿಯಲ್ಲಿಯೂ ಸಿದ್ಧರಾಗಿದ್ದೀರಿ</translation>
 <translation id="4133265950310064865">ವರ್ಧಿತ ಸುರಕ್ಷತೆ</translation>
+<translation id="4142372594294312814">ಜನರೇಟಿವ್ AI ಕುರಿತು ತಿಳಿದಿರಲೇಬೇಕಾದ 5 ಸಂಗತಿಗಳು</translation>
 <translation id="4145507240503767005"><ph name="SEARCH_ENGINE_NAME" />, <ph name="SEARCH_ENGINE_DOMAIN" /></translation>
 <translation id="4147897805161313378">Google Photos</translation>
 <translation id="4148023517926189160">ಈ ವೆಬ್‌ಸೈಟ್ ಫೈಲ್ ಅನ್ನು ಡೌನ್‌ಲೋಡ್ ಮಾಡಲು ಮತ್ತು ಅದನ್ನು ನಿಮ್ಮ ಕ್ಯಾಲೆಂಡರ್‌ಗೆ ಸೇರಿಸಲು ಬಯಸುತ್ತದೆ.</translation>
@@ -997,6 +1002,7 @@
 <translation id="456502772933839252"><ph name="PAGE_TITLE" /> ಅನ್ನು ಹಂಚಿಕೊಳ್ಳಲಾಗುತ್ತಿದೆ</translation>
 <translation id="4565377596337484307">ಪಾಸ್‌ವರ್ಡ್ ಮರೆಮಾಡಿ</translation>
 <translation id="4568230126482344545">ಇತ್ತೀಚಿನ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಮರೆಮಾಡಿ</translation>
+<translation id="4571490460651837010">ವಿಳಾಸಗಳು ಮತ್ತು ಇತ್ಯಾದಿಗಳನ್ನು ನಿರ್ವಹಿಸಿ…</translation>
 <translation id="4578835633387306383">ಆನ್ ಮಾಡಿ…</translation>
 <translation id="4580621046861724270">ಕೆಲವು ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳನ್ನು ಸೇವ್ ಮಾಡಲಾಗಿಲ್ಲ</translation>
 <translation id="4580716718466706433">"Password Manager" ಗೆ ಹೋಗಿ</translation>
@@ -1234,6 +1240,7 @@
 <translation id="5329451663851195956">ರಿಫ್ರೆಶ್ ಮಾಡಲು ನೀವು ಕೆಳಗೆ ಎಳೆಯಬಹುದು.</translation>
 <translation id="5336910966955551309">ನಿಮ್ಮ ಮೆಚ್ಚಿನ ಸೈಟ್‌ಗಳನ್ನು ಪಿನ್ ಮಾಡಲು ಟ್ಯಾಪ್ ಅಂಡ್ ಹೋಲ್ಡ್ ಮಾಡಿ</translation>
 <translation id="5338512273860059533">ಸೈನ್ ಇನ್ ಪ್ರಗತಿಯಲ್ಲಿದೆ.</translation>
+<translation id="5340148832014094861"><ph name="GOOGLE_TERMS" /> ಮತ್ತು <ph name="GEMINI_APPS_PRIVACY" /> ಅನ್ವಯವಾಗುತ್ತವೆ. Gemini ಎಂಬುದು AI ಆಗಿದ್ದು, ಜನರ ಕುರಿತಾದ ವಿಚಾರದಲ್ಲಿಯೂ ಸೇರಿದಂತೆ ತಪ್ಪುಗಳನ್ನು ಮಾಡಬಹುದು.</translation>
 <translation id="5343472494710226394">ನಿಮ್ಮ ಆಸಕ್ತಿಗಳ ಆಧಾರದ ಮೇಲೆ ಸುದ್ದಿ, ಕ್ರೀಡೆ ಮತ್ತು ಕಂಟೆಂಟ್‌.</translation>
 <translation id="5352128922772839949">ಫೈಲ್‌ ಸೇವ್‌ ಮಾಡಿ</translation>
 <translation id="5355191726083956201">ಸುಧಾರಿತ ಸಂರಕ್ಷಣೆ ಆನ್ ಆಗಿದೆ</translation>
@@ -1577,6 +1584,7 @@
 <translation id="647867789226964031">ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಬದಲಾಯಿಸಿ</translation>
 <translation id="6480363549849064919">ಕ್ಲೈಂಟ್ ದೃಢೀಕರಣ</translation>
 <translation id="6489174933860678546">ವೆಬ್‌ ಅನ್ನು ಹೆಚ್ಚು ಖಾಸಗಿಯಾಗಿ ಬ್ರೌಸ್‌ ಮಾಡಲು ಅಜ್ಞಾತ ಟ್ಯಾಬ್‌ಗಳನ್ನು ತೆರೆಯಿರಿ.</translation>
+<translation id="6489775505977274806">ಲೆವೆಲ್ ಅಪ್ ಅನ್ನು ಮರೆಮಾಡಿ</translation>
 <translation id="6494931198667773526">ಮುಕ್ತಾಯವಾಗುತ್ತದೆ</translation>
 <translation id="6503077044568424649">ಅತಿಹೆಚ್ಚು ಬಾರಿ ಸಂದರ್ಶಿಸಿರುವುದು</translation>
 <translation id="6503763061813913607">ಸುರಕ್ಷತೆಯ ಪರಿಶೀಲನೆ ನೋಟಿಫಿಕೇಶನ್‌ಗಳು</translation>

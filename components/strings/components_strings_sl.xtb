@@ -2236,6 +2236,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="443673843213245140">Uporaba strežnika proxy je onemogočena, vendar je njegova konfiguracija izrecno določena.</translation>
 <translation id="4438821706955556403">Običajna cena</translation>
 <translation id="4441832193888514600">Prezrto, ker je pravilnik mogoče nastaviti samo kot uporabniški pravilnik za oblak.</translation>
+<translation id="4444062564459679679">Že poslano v Chrome v napravi <ph name="DEVICE_NAME" /></translation>
 <translation id="4445133368066241428">Priljubljene teme</translation>
 <translation id="4445694043187340808"><ph name="STARTER_PACK_TABS_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite Enter, če želite iskati po zavihkih</translation>
 <translation id="4445964943162061557">To je preizkusna funkcija in se lahko včasih tudi zmoti.</translation>
@@ -4847,6 +4848,7 @@ Dodatne podrobnosti:
 <translation id="8511402995811232419">Upravljanje piškotkov</translation>
 <translation id="851353418319061866">Preverjanje natančnosti</translation>
 <translation id="8513580896341796021">Prenos se je začel. Za ogled pritisnite |<ph name="ACCELERATOR" />|.</translation>
+<translation id="8515544520486085367">Samodejno izpolnjevanje plačil</translation>
 <translation id="8519753333133776369">Naprava HID, ki jo je dovolil skrbnik</translation>
 <translation id="8521013008769249764">Kavči in naslanjači</translation>
 <translation id="8521812709849134608">Kuhinjski pulti</translation>

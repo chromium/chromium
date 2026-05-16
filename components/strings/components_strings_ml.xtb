@@ -1820,6 +1820,7 @@
 <translation id="380865868633614173">കാർഡ് സംരക്ഷിക്കുന്നതിന്റെ വിവരങ്ങൾ</translation>
 <translation id="3810770279996899697">Password Manager-ന് MacOS Keychain-ലേക്ക് ആക്‌സസ് ആവശ്യമാണ്</translation>
 <translation id="3810973564298564668">നിയന്ത്രിക്കൂ</translation>
+<translation id="3811328723651698330"><ph name="STRING_1" />, <ph name="STRING_2" /></translation>
 <translation id="3812398568375898177">ChromeOS-ലെ Android ആപ്പുകളുടെ പ്രകടനം മെച്ചപ്പെടുത്തുന്ന ഒരു നിർണായക അപ്‌ഡേറ്റാണിത്.</translation>
 <translation id="3814865536373139791">നിങ്ങളുടെ സ്ഥാപനം നയങ്ങൾ മാനേജ് ചെയ്യുന്നത് എങ്ങനെയാണെന്നത് സ്ട്രീംലൈൻ ചെയ്യുക</translation>
 <translation id="3815434930383843058">8 x 12 ഇഞ്ച്</translation>
@@ -2400,6 +2401,7 @@
 <translation id="4736934858538408121">വെർച്വൽ കാർഡ്</translation>
 <translation id="473775607612524610">അപ്ഡേറ്റ് ചെയ്യുക</translation>
 <translation id="4738601419177586157"><ph name="TEXT" /> തിരയൽ നിർദ്ദേശം</translation>
+<translation id="473866660302034629"><ph name="TAB_TITLE" />, തിരഞ്ഞെടുത്ത ടാബ്, <ph name="TOTAL" />-ൽ <ph name="INDEX" />-ാമത്തേത്, ടാബുകൾക്കിടയിൽ മാറാൻ ഇടത് അല്ലെങ്കിൽ വലത് അമ്പടയാളം ഉപയോഗിക്കുക</translation>
 <translation id="4742407542027196863">പാസ്‌വേഡുകൾ മാനേജ് ചെയ്യുക…</translation>
 <translation id="474270528725216349">സമന്വയിപ്പിച്ച ഉപകരണങ്ങളിലെ ഒരു സൈറ്റിൽ നിന്നെങ്കിലും</translation>
 <translation id="4743275772928623722">നിങ്ങളുടെ സിസ്റ്റം അപ്‌ഡേറ്റ് ചെയ്‌തു, എന്നാൽ നിങ്ങളുടെ ചില ആപ്പുകളും ഫയലുകളും വീണ്ടെടുക്കാനായില്ല. നിങ്ങളുടെ ആപ്പുകൾ വീണ്ടും സ്വയമേവ ഡൗൺലോഡ് ചെയ്യും.</translation>
@@ -2467,6 +2469,7 @@
 <translation id="4832961164064927107">BBQ-വും ഗ്രില്ലിംഗും</translation>
 <translation id="4835568975547260025">നിങ്ങളുടെ ചോദ്യങ്ങൾക്ക് കൂടുതൽ അനുയോജ്യമായ ഉത്തരങ്ങൾ ലഭിക്കാൻ സഹായിക്കുന്നതിന് Chrome, പ്രസക്തമായ തുറന്ന ടാബുകൾ ഡിഫോൾട്ടായി പങ്കിടും.</translation>
 <translation id="4840250757394056958">നിങ്ങളുടെ Chrome ചരിത്രം കാണുക</translation>
+<translation id="4842365697443353018">'പിന്നീട് പേ ചെയ്യുക' ഉപയോഗിക്കാൻ ഫോം മായ്ക്കുക</translation>
 <translation id="484462545196658690">സ്വയമേവ</translation>
 <translation id="4844937814014739139">പങ്കിട്ട ടാബുകൾ സ്ക്രോൾ ചെയ്യുന്നു, സൂം ചെയ്യുന്നു</translation>
 <translation id="484671803914931257"><ph name="MERCHANT_NAME" /> എന്നതിലും മറ്റും കിഴിവുകൾ നേടുക</translation>

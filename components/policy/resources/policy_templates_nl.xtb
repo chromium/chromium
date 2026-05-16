@@ -246,6 +246,29 @@ Ga naar https://support.google.com/chrome/a?p=generative_ai_settings voor meer i
 <translation id="1160479894929412407">QUIC-protocol toestaan</translation>
 <translation id="1160939557934457296">Doorgaan vanaf de Safe Browsing-waarschuwingspagina uitzetten</translation>
 <translation id="1161685818042751282">Importeer geen door de gebruiker toegevoegde TLS-servercertificaten uit truststores van het platform.</translation>
+<translation id="1162404282416180562">Hiermee stel je een lijst in met regels voor gegevensbeheer om datalekken te voorkomen.
+
+      Elke regel bestaat uit het volgende:
+- Voorwaardevelden die die regel activeren. Een regel wordt alleen geactiveerd als een gebruikersactie overeenkomt met alle ingevulde velden in de velden <ph name="DATA_CONTROLS_SOURCES" />, <ph name="DATA_CONTROLS_DESTINATIONS" />, <ph name="DATA_CONTROLS_AND" />, <ph name="DATA_CONTROLS_OR" /> en <ph name="DATA_CONTROLS_NOT" />. Voor subvelden van een lijst hoeft er maar één item overeen te komen. Zo hoeft er maar één URL-patroon overeen te komen om de regel te activeren.
+      - Een lijst met beperkingen die moeten worden toegepast. Afhankelijk van de beperking zijn misschien alleen <ph name="DATA_CONTROLS_SOURCES" />- of <ph name="DATA_CONTROLS_DESTINATIONS" />-voorwaarden beschikbaar.
+
+      Regels kunnen om deze redenen worden toegevoegd:
+- Bepalen welke klembordgegevens mogen worden gedeeld tussen de bronnen en de bestemmingen.
+      - Bepalen of screenshots worden geblokkeerd op basis van de brontabbladen.
+
+      Als het beleid <ph name="ON_SECURITY_EVENT_ENTERPRISE_CONNECTOR" /> is ingesteld op Waar, worden geactiveerde regels gemeld aan de beheerder.
+      Het beperkingsniveau kan worden ingesteld op BLOCK, WARN of REPORT.
+      - Als het beperkingsniveau is ingesteld op BLOCK, is de actie niet toegestaan.
+      - Als het beperkingsniveau is ingesteld op WARN, krijgt de gebruiker een waarschuwing en kan die ervoor kiezen door te gaan met de actie of deze te annuleren.
+      - Als het beperkingsniveau is ingesteld op REPORT, wordt de gebruikersactie niet onderbroken maar wordt er een melding gestuurd als het beleid <ph name="ON_SECURITY_EVENT_ENTERPRISE_CONNECTOR" /> aanstaat.
+
+      Opmerkingen:
+- Gebruik de volgende indeling voor de URL-patronen (https://support.google.com/chrome/a?p=url_blocklist_filter_format).
+- Zie ook het beleid <ph name="DATA_LEAK_PREVENTION_RULES_LIST" /> voor regels om datalekken te voorkomen die specifiek zijn voor <ph name="PRODUCT_OS_NAME" />.
+
+      Als je het beleid niet instelt, worden er geen beperkingen toegepast.
+
+      Dit beleid is alleen beschikbaar voor gebruikers die een <ph name="CHROME_ENTERPRISE_PREMIUM_NAME" />-licentie hebben.</translation>
 <translation id="1163080558183062209">Printertypen op blokkeerlijst uitzetten</translation>
 <translation id="1163389598183927209">Een groep beleidsregels voor <ph name="PRIVACY_SANDBOX_NAME" />. Ga naar <ph name="PRIVACY_SANDBOX_URL" /> voor meer informatie over de aanpak van <ph name="PRODUCT_NAME" /> om cookies van derden te beëindigen.</translation>
 <translation id="1165923723751466821">Toestaan dat gebruikers als gast of met een profiel inloggen bij de browser</translation>
@@ -693,6 +716,15 @@ Als dit beleid niet is ingesteld, wordt de emoji-kiezer aangezet voor normale ge
 <translation id="1509692106376861764">Dit beleid wordt niet meer gebruikt sinds <ph name="PRODUCT_NAME" /> versie 29.</translation>
 <translation id="1509839615768187049">De ingebouwde DNS-client altijd gebruiken</translation>
 <translation id="1514888685242892912"><ph name="PRODUCT_NAME" /> aanzetten</translation>
+<translation id="1514959848081381646">Met dit beleid bepaal je of integraties van de AI-modus van Google in de adresbalk en het zoekvak op de pagina Nieuw tabblad beschikbaar zijn.
+
+Voor toegang tot deze functie moet Google zijn ingesteld als de standaard zoekmachine van de gebruiker.
+
+0 = De functie is beschikbaar voor gebruikers.
+
+1 = De functie is niet beschikbaar voor gebruikers.
+
+Als je het beleid niet instelt, wordt het gedrag bepaald door het beleid <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />.</translation>
 <translation id="1515230621229117540">Hiermee wordt het zwevende toegankelijkheidsmenu aangezet</translation>
 <translation id="1515824657887788963">Hiermee wordt toegestaan dat een pagina synchrone XHR-verzoeken verstuurt tijdens de afwijzing van de pagina.</translation>
 <translation id="1516486219683984217">Systeemmeldingen niet toestaan</translation>
@@ -1961,6 +1993,18 @@ Als je het beleid niet instelt, kunnen gebruikers de lijst met vastgezette apps 
 
       Als je het beleid instelt op 'False' of niet instelt, wordt er geen knop weergegeven.</translation>
 <translation id="2294382669900758280">Er wordt geen rekening gehouden met het afspelen van video in Android-apps, zelfs niet wanneer dit beleid is ingesteld op <ph name="TRUE" /> (Waar).</translation>
+<translation id="2296529215567227994">Geeft aan of de incognitomodus moet worden vervangen door de geïsoleerde modus.
+
+De geïsoleerde modus is een kortstondige browsemodus die alleen beschikbaar is voor Enterprise en die de incognitomodus vervangt.
+In tegenstelling tot de incognitomodus biedt de geïsoleerde modus ondersteuning voor DLP-gerelateerd zakelijk beleid en afgedwongen geïnstalleerde extensies.
+
+Beleid voor de incognitomodus wordt niet toegepast op de geïsoleerde modus.
+
+Als je deze optie instelt op 1 - Aangezet, wordt de geïsoleerde modus geactiveerd en vervangt deze de incognitomodus.
+
+Als je het beleid instelt op 0 - Uitgezet of niet instelt, wordt de geïsoleerde modus uitgezet en wordt het standaardgedrag van Incognito gebruikt.
+
+Dit beleid vereist een <ph name="CHROME_ENTERPRISE_PREMIUM_NAME" />-licentie om van kracht te worden.</translation>
 <translation id="2299220924812062390">Lijst met aangezette plug-ins specificeren</translation>
 <translation id="2299815818824242485">Lookups via proxy met hogere beveiliging niet toestaan</translation>
 <translation id="2303795211377219696">Automatisch invullen aanzetten voor creditcards</translation>
@@ -8202,6 +8246,23 @@ Als je het beleid niet instelt, gebruikt <ph name="PRODUCT_OS_NAME" /> de standa
 
       Als je het beleid instelt, kunnen gebruikers het niet wijzigen. Als je het beleid niet instelt, kunnen gebruikers aangeven of de app-snelkoppeling moet worden getoond of verborgen in het contextmenu van de bookmarkbalk.</translation>
 <translation id="638003144128412430">Rapportage van tijdzone-informatie van apparaat uitzetten</translation>
+<translation id="638217866669468708">Met dit beleid bepaal je of pagina- en bestandscontent kan worden gedeeld met <ph name="GOOGLE_AI_MODE_PRODUCT_NAME" /> en <ph name="GOOGLE_LENS_PRODUCT_NAME" /> via het zijvenster of de tabbladen van <ph name="PRODUCT_NAME" />.
+
+Dit beleid heeft geen invloed op <ph name="GOOGLE_AI_MODE_PRODUCT_NAME" /> op het web. Het bepaalt alleen hoe gebruikers informatie met het product kunnen delen als ze <ph name="PRODUCT_NAME" /> gebruiken.
+
+0 = gebruikers kunnen pagina- of bestandscontent delen met <ph name="GOOGLE_AI_MODE_PRODUCT_NAME" />.
+
+1 = gebruikers kunnen pagina- of bestandscontent niet delen met <ph name="GOOGLE_AI_MODE_PRODUCT_NAME" />. De startpunten voor context delen en het zijvenster worden uitgezet of verborgen.
+
+Dit beleid wordt genegeerd als <ph name="GOOGLE_SEARCH_PRODUCT_NAME" /> niet de standaard zoekmachine van gebruikers is, omdat de functie dan uitstaat.
+
+Dit beleid is onafhankelijk van het beleid <ph name="AI_MODE_SETTINGS_POLICY_NAME" />. Het beleid <ph name="AI_MODE_SETTINGS_POLICY_NAME" /> bepaalt alleen startpunten in de omnibox of het zoekvak op de pagina Nieuw tabblad, terwijl dit beleid het delen van context via het zijvenster of tabbladen beheert.
+
+Dit beleid beheert ook niet de integratie van <ph name="GOOGLE_GEMINI_PRODUCT_NAME" />. Deze kan worden uitgezet door <ph name="GEMINI_SETTINGS_POLICY_NAME" />.
+
+Als je dit beleid niet instelt, wordt het gedrag bepaald door het beleid <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />.
+
+Ga naar https://support.google.com/chrome/a?p=generative_ai_settings voor meer informatie over gegevensverwerking voor generatieve AI-functies.</translation>
 <translation id="6382209369210116232">Niet-gepubliceerde extensies uitzetten</translation>
 <translation id="6382287177674997281">Met dit beleid kunnen gebruikers alle soorten firmware-updates starten.
 
@@ -11007,6 +11068,15 @@ URL's die overeenkomen met zowel de toelatingslijst als de blokkeerlijst, zijn t
 
 Ga naar https://support.google.com/chrome/a?p=url_blocklist_filter_format voor uitgebreide informatie over geldige URL-patronen.</translation>
 <translation id="8186911565834244165">Gebruikersfeedback toestaan</translation>
+<translation id="8190271041226151932">Met deze instelling worden Gemini-app-integraties toegestaan.
+
+0 = Gemini-integratie is beschikbaar voor gebruikers.
+
+1 = Gemini-integratie is niet beschikbaar voor gebruikers.
+
+Als je het beleid niet instelt, wordt het gedrag bepaald door het beleid <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />.
+
+Ga voor meer informatie naar het Helpcentrum-artikel https://support.google.com/chrome/a?p=gemini_in_chrome.</translation>
 <translation id="8195133650230097559">Wake lock-verzoeken voor stroombeheer negeren</translation>
 <translation id="8196558469954193908">Dit beleid staat toe dat HTTP/2-verbindingen kunnen worden samengevoegd als clientcertificaten worden gebruikt. De verbindingen kunnen alleen worden samengevoegd als zowel de hostnaam van de potentiële nieuwe verbinding als de hostnaam van een bestaande verbinding overeenkomt met een of meer patronen die in dit beleid worden beschreven. Dit beleid bestaat uit een lijst van hosts die de filterindeling '<ph name="URL_BLOCKLIST_POLICY_NAME" />' gebruiken: 'example.com' komt overeen met 'example.com' en alle subdomeinen (zoals 'sub.example.com'), terwijl '.example.net' exact overeenkomt met 'example.net'.
 

@@ -1821,6 +1821,7 @@
 <translation id="380865868633614173">Αποθήκευση πληροφοριών κάρτας</translation>
 <translation id="3810770279996899697">Η Διαχείριση κωδικών πρόσβασης χρειάζεται πρόσβαση στην Κλειδοθήκη macOS</translation>
 <translation id="3810973564298564668">Διαχείριση</translation>
+<translation id="3811328723651698330"><ph name="STRING_1" />, <ph name="STRING_2" /></translation>
 <translation id="3812398568375898177">Αυτή είναι μια σημαντική ενημέρωση που βελτιώνει την απόδοση των εφαρμογών Android στο ChromeOS.</translation>
 <translation id="3814865536373139791">Βελτιστοποιήστε τον τρόπο με τον οποίο ο οργανισμός σας διαχειρίζεται τις πολιτικές</translation>
 <translation id="3815434930383843058">8 x 12 ίντσες</translation>
@@ -2237,6 +2238,7 @@
 <translation id="443673843213245140">Η χρήση ενός διακομιστή μεσολάβησης είναι απενεργοποιημένη, αλλά έχει καθοριστεί μια ρητή διαμόρφωση διακομιστή μεσολάβησης.</translation>
 <translation id="4438821706955556403">Συνήθης τιμή</translation>
 <translation id="4441832193888514600">Έγινε παράβλεψη επειδή η πολιτική μπορεί να οριστεί μόνο ως πολιτική χρήστη cloud.</translation>
+<translation id="4444062564459679679">Έχει ήδη σταλεί στο Chrome στη συσκευή <ph name="DEVICE_NAME" /></translation>
 <translation id="4445133368066241428">Δημοφιλή θέματα</translation>
 <translation id="4445694043187340808"><ph name="STARTER_PACK_TABS_FOCUSED_FRIENDLY_MATCH_TEXT" />, πατήστε Enter για αναζήτηση στις καρτέλες</translation>
 <translation id="4445964943162061557">Αυτή είναι μια πειραματική λειτουργία η οποία δεν λειτουργεί πάντα σωστά.</translation>
@@ -2401,6 +2403,7 @@
 <translation id="4736934858538408121">Εικονική κάρτα</translation>
 <translation id="473775607612524610">Ενημέρωση</translation>
 <translation id="4738601419177586157">Πρόταση αναζήτησης <ph name="TEXT" /></translation>
+<translation id="473866660302034629"><ph name="TAB_TITLE" />, επιλεγμένη καρτέλα, <ph name="INDEX" /> από <ph name="TOTAL" />, χρησιμοποιήστε το αριστερό ή το δεξί βέλος για εναλλαγή μεταξύ των καρτελών</translation>
 <translation id="4742407542027196863">Διαχείριση κωδικών πρόσβασης…</translation>
 <translation id="474270528725216349">Από τουλάχιστον 1 ιστότοπο στις συγχρονισμένες συσκευές</translation>
 <translation id="4743275772928623722">Το σύστημά σας ενημερώθηκε αλλά δεν ήταν δυνατή η ανάκτηση ορισμένων εφαρμογών και αρχείων. Η λήψη των εφαρμογών θα επαναληφθεί αυτόματα.</translation>
@@ -2468,6 +2471,7 @@
 <translation id="4832961164064927107">Μπάρμπεκιου και ψητά</translation>
 <translation id="4835568975547260025">Το Chrome θα μοιράζεται σχετικές ανοιχτές καρτέλες από προεπιλογή, για να σας βοηθά να λαμβάνετε πιο προσαρμοσμένες απαντήσεις στις ερωτήσεις σας.</translation>
 <translation id="4840250757394056958">Προβολή του ιστορικού Chrome</translation>
+<translation id="4842365697443353018">Διαγράψτε τη φόρμα για να χρησιμοποιήσετε τη δυνατότητα πληρωμής αργότερα</translation>
 <translation id="484462545196658690">Αυτόματα</translation>
 <translation id="4844937814014739139">Κύλιση και εστίαση σε κοινόχρηστες καρτέλες</translation>
 <translation id="484671803914931257">Λάβετε έκπτωση στο κατάστημα <ph name="MERCHANT_NAME" /> και περισσότερα</translation>
@@ -4849,6 +4853,7 @@
 <translation id="8511402995811232419">Διαχείριση cookie</translation>
 <translation id="851353418319061866">Έλεγχος ακρίβειας</translation>
 <translation id="8513580896341796021">Η λήψη ξεκίνησε. Για προβολή, πατήστε |<ph name="ACCELERATOR" />|.</translation>
+<translation id="8515544520486085367">Αυτόματη συμπλήρωση πληρωμής</translation>
 <translation id="8519753333133776369">Συσκευή HID που επιτρέπεται από τον διαχειριστή σας</translation>
 <translation id="8521013008769249764">Καναπέδες και πολυθρόνες</translation>
 <translation id="8521812709849134608">Πάγκοι</translation>

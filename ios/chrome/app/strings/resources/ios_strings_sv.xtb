@@ -178,6 +178,7 @@
 <translation id="1582732959743469162">Den pågående nedladdningen avbryts.</translation>
 <translation id="1594034544529347967">Börjar</translation>
 <translation id="1598751033135758830">Öppna i appen …</translation>
+<translation id="1600571977391127696">Visst innehåll kanske inte är lämpligt för alla.</translation>
 <translation id="1601560923496285236">Verkställ</translation>
 <translation id="1603718000246404895">{COUNT,plural, =1{1 adress}other{# adresser}}</translation>
 <translation id="1605405588277479165">Av – rekommenderas inte</translation>
@@ -312,6 +313,7 @@
 <translation id="2012723204723845092">Välkommen tillbaka!</translation>
 <translation id="2015722694326466240">Du måste ställa in ett lösenord på enheten om du vill kunna se lösenorden.</translation>
 <translation id="201759455285471444">Utöka flikgruppen.</translation>
+<translation id="2031515492007104071">Level Up</translation>
 <translation id="2044394949148788042">Öppna rutnätet med flikar</translation>
 <translation id="2044681667265133332">Kontot <ph name="USER_EMAIL" /> hanteras av <ph name="HOSTED_DOMAIN" />, som kanska kan se viss information. <ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">nytt objekt</translation>
@@ -845,6 +847,7 @@
 <translation id="3994911892367422121">OK</translation>
 <translation id="3995521777587992544">Förloppsindikator för inläsning av sidor, <ph name="EMAIL" /> har lästs in.</translation>
 <translation id="3997522473364371632">Lösenordsdelning har inaktiverats av administratören.</translation>
+<translation id="4000707564769984863">Titta: <ph name="WATCH_LINK" /></translation>
 <translation id="4002066346123236978">Titel</translation>
 <translation id="4004204301268239848">Lösenorden sparas i Google-kontot så att du kan använda dem på vilken enhet som helst.</translation>
 <translation id="4007463141047732631">Redigera grupp</translation>
@@ -875,6 +878,7 @@
 <translation id="4129768137228347731">Vill du spara <ph name="ENTITY_TYPE" />?</translation>
 <translation id="4133139945030148655">Klart!</translation>
 <translation id="4133265950310064865">Förbättrat skydd</translation>
+<translation id="4142372594294312814">Fem saker du måste veta om generativ AI</translation>
 <translation id="4145507240503767005"><ph name="SEARCH_ENGINE_NAME" />, <ph name="SEARCH_ENGINE_DOMAIN" /></translation>
 <translation id="4147897805161313378">Google Foto</translation>
 <translation id="4148023517926189160">Den här webbplatsen försöker ladda ned en fil och lägga till den i din kalender.</translation>
@@ -997,6 +1001,7 @@
 <translation id="456502772933839252">Delar <ph name="PAGE_TITLE" /></translation>
 <translation id="4565377596337484307">Dölj lösenord</translation>
 <translation id="4568230126482344545">Dölj Senaste flikarna</translation>
+<translation id="4571490460651837010">Hantera adresser och annat …</translation>
 <translation id="4578835633387306383">Aktivera …</translation>
 <translation id="4580621046861724270">Vissa bokmärken har inte sparats</translation>
 <translation id="4580716718466706433">Öppna Lösenordshantering</translation>
@@ -1234,6 +1239,7 @@
 <translation id="5329451663851195956">Du kan dra nedåt för att uppdatera.</translation>
 <translation id="5336910966955551309">Tryck länge för att fästa dina favoritwebbplatser</translation>
 <translation id="5338512273860059533">Inloggning pågår.</translation>
+<translation id="5340148832014094861"><ph name="GOOGLE_TERMS" /> och <ph name="GEMINI_APPS_PRIVACY" /> gäller. Gemini är AI och den kan göra misstag, inklusive om personer.</translation>
 <translation id="5343472494710226394">Nyheter, sport och innehåll utifrån dina intressen.</translation>
 <translation id="5352128922772839949">Spara fil</translation>
 <translation id="5355191726083956201">Förbättrat skydd är aktiverat</translation>
@@ -1577,6 +1583,7 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="647867789226964031">Ändra dina lösenord</translation>
 <translation id="6480363549849064919">Klientautentisering</translation>
 <translation id="6489174933860678546">Öppna inkognitoflikar om du vill surfa mer privat på webben.</translation>
+<translation id="6489775505977274806">Dölj Level Up</translation>
 <translation id="6494931198667773526">Slutar</translation>
 <translation id="6503077044568424649">Mest besökta</translation>
 <translation id="6503763061813913607">Aviseringar från säkerhetskontroll</translation>

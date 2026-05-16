@@ -178,6 +178,7 @@
 <translation id="1582732959743469162">Энэ нь таны одоогийн татан авалтын бүх үйл явцыг зогсооно.</translation>
 <translation id="1594034544529347967">Эхэлнэ</translation>
 <translation id="1598751033135758830">Аппад нээх…</translation>
+<translation id="1600571977391127696">Зарим контент зарим хүнд тохиромжгүй байж болно.</translation>
 <translation id="1601560923496285236">Ашиглах</translation>
 <translation id="1603718000246404895">{COUNT,plural, =1{1 хаяг}other{# хаяг}}</translation>
 <translation id="1605405588277479165">Унтраалттай - Санал болгохгүй</translation>
@@ -312,6 +313,7 @@
 <translation id="2012723204723845092">Эргээд тавтай морилно уу!</translation>
 <translation id="2015722694326466240">Нууц үгийг харахын тулд та эхлээд төхөөрөмждөө нууц код тохируулах шаардлагатай.</translation>
 <translation id="201759455285471444">Табын бүлгийг дэлгэнэ үү.</translation>
+<translation id="2031515492007104071">Түвшин ахиулах</translation>
 <translation id="2044394949148788042">Табын хүснэгтийг нээх</translation>
 <translation id="2044681667265133332"><ph name="USER_EMAIL" /> бүртгэлд <ph name="HOSTED_DOMAIN" />-с тохиргоо хийсэн бөгөөд зарим мэдээллийг үзэх боломжтой байж болзошгүй. <ph name="BEGIN_LINK" />Нэмэлт мэдээлэл авах<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">шинэ зүйл</translation>
@@ -845,6 +847,7 @@
 <translation id="3994911892367422121">ОЙЛГОЛОО</translation>
 <translation id="3995521777587992544"><ph name="EMAIL" /> хуудас ачаалах явцын заалтыг ачаалсан.</translation>
 <translation id="3997522473364371632">Танай администратор нууц үг хуваалцахыг идэвхгүй болгосон.</translation>
+<translation id="4000707564769984863"><ph name="WATCH_LINK" />-г үзэх</translation>
 <translation id="4002066346123236978">Гарчиг</translation>
 <translation id="4004204301268239848">Нууц үгнүүдийr таны Google Бүртгэлд хадгалсан тул тэдгээрийг та дурын төхөөрөмжид ашиглаж болно.</translation>
 <translation id="4007463141047732631">Бүлгийг засах</translation>
@@ -875,6 +878,7 @@
 <translation id="4129768137228347731"><ph name="ENTITY_TYPE" />-г хадгалах уу?</translation>
 <translation id="4133139945030148655">Бүгд бэлэн болсон</translation>
 <translation id="4133265950310064865">Сайжруулсан хамгаалалт</translation>
+<translation id="4142372594294312814">Үүсгэгч ХОУ-ы талаарх зайлшгүй мэдэх ёстой 5 зүйл</translation>
 <translation id="4145507240503767005"><ph name="SEARCH_ENGINE_NAME" />, <ph name="SEARCH_ENGINE_DOMAIN" /></translation>
 <translation id="4147897805161313378">Google Зураг</translation>
 <translation id="4148023517926189160">Энэ вебсайт файл татаж, таны календарьт нэмэхийг хүсэж байна.</translation>
@@ -997,6 +1001,7 @@
 <translation id="456502772933839252"><ph name="PAGE_TITLE" />-г хуваалцаж байна</translation>
 <translation id="4565377596337484307">Нууц үгийг нуух</translation>
 <translation id="4568230126482344545">Саяхны табуудыг нуух</translation>
+<translation id="4571490460651837010">Хаяг болон бусад зүйлийг удирдах…</translation>
 <translation id="4578835633387306383">Асаах…</translation>
 <translation id="4580621046861724270">Зарим хавчуургыг хадгалаагүй</translation>
 <translation id="4580716718466706433">"Нууц үгний менежер" лүү очно уу</translation>
@@ -1234,6 +1239,7 @@
 <translation id="5329451663851195956">Та одоо сэргээхийн тулд доош татах боломжтой.</translation>
 <translation id="5336910966955551309">Дуртай сайтуудаа бэхлэхийн тулд товшоод удаан дарна уу</translation>
 <translation id="5338512273860059533">Нэвтэрч байна.</translation>
+<translation id="5340148832014094861"><ph name="GOOGLE_TERMS" />, <ph name="GEMINI_APPS_PRIVACY" /> хэрэгжинэ. Gemini бол ХОУ бөгөөд хүмүүсийн талаар буруу мэдээлэл өгөх зэрэг алдаа гаргаж болно.</translation>
 <translation id="5343472494710226394">Таны сонирхолд тулгуурласан мэдээ, спорт болон контент</translation>
 <translation id="5352128922772839949">Файлыг хадгалах</translation>
 <translation id="5355191726083956201">Сайжруулсан хамгаалалт асаалттай байна</translation>
@@ -1577,6 +1583,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="647867789226964031">Нууц үгнүүдээ өөрчлөх</translation>
 <translation id="6480363549849064919">Клиентийн баталгаажуулалт</translation>
 <translation id="6489174933860678546">Вебийг илүү нууцлалтайгаар үзэхийн тулд Нууцлалтай таб нээнэ үү.</translation>
+<translation id="6489775505977274806">Level Up-г нуух</translation>
 <translation id="6494931198667773526">Дуусна</translation>
 <translation id="6503077044568424649">Хамгийн олон хандалт авсан</translation>
 <translation id="6503763061813913607">Аюулгүй байдлын шалгалтын мэдэгдэл</translation>

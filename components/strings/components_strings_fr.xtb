@@ -2236,6 +2236,7 @@ Pour masquer les options de paiement différé, accédez aux <ph name="BEGIN_LIN
 <translation id="443673843213245140">L'utilisation d'un proxy est désactivée, mais une configuration de proxy explicite est spécifiée.</translation>
 <translation id="4438821706955556403">Prix habituel</translation>
 <translation id="4441832193888514600">Règle ignorée, car elle ne peut être définie que comme règle relative aux utilisateurs du cloud.</translation>
+<translation id="4444062564459679679">Déjà envoyé à Chrome sur votre <ph name="DEVICE_NAME" /></translation>
 <translation id="4445133368066241428">Thèmes populaires</translation>
 <translation id="4445694043187340808"><ph name="STARTER_PACK_TABS_FOCUSED_FRIENDLY_MATCH_TEXT" />, appuyer sur Entrée pour rechercher dans les onglets</translation>
 <translation id="4445964943162061557">Il s'agit d'une fonctionnalité expérimentale qui n'est pas infaillible.</translation>
@@ -4848,6 +4849,7 @@ Informations supplémentaires :
 <translation id="8511402995811232419">Gérer les cookies</translation>
 <translation id="851353418319061866">Vérification de la fiabilité</translation>
 <translation id="8513580896341796021">Le téléchargement a commencé. Pour le voir, appuyez sur |<ph name="ACCELERATOR" />|.</translation>
+<translation id="8515544520486085367">Saisir automatiquement le mode de paiement</translation>
 <translation id="8519753333133776369">Appareil HID autorisé par votre administrateur</translation>
 <translation id="8521013008769249764">Canapés et fauteuils</translation>
 <translation id="8521812709849134608">Plans de travail</translation>

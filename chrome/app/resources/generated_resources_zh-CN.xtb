@@ -37,6 +37,7 @@
 <translation id="1016876401615857435">若要在此设备上使用您的通行密钥，请先验证您的身份</translation>
 <translation id="1017280919048282932">添加到字典中(&amp;A)</translation>
 <translation id="1018656279737460067">已取消</translation>
+<translation id="1020008977311763380">标称性能层级为：<ph name="CPU_TIER" /></translation>
 <translation id="1022522674678746124">PowerPoint</translation>
 <translation id="1022669824195822609">您的设备由 <ph name="DOMAIN" /> 管理。管理员可访问此设备上任意个人资料名下的数据。</translation>
 <translation id="1022719295563085177">网络默认设置</translation>
@@ -56,6 +57,7 @@
 <translation id="1033060461778467949">将标签页移至拆分视图</translation>
 <translation id="1033780634303702874">访问您的串行设备</translation>
 <translation id="1034484273907870301">平板电脑模式下的缩略图标签页栏</translation>
+<translation id="103477588607005550">CPU：<ph name="CPU_MODEL" />（<ph name="CPU_CORES" />）</translation>
 <translation id="1035289631433631911">Content Transfer 工具</translation>
 <translation id="1035875743511577452">点击“更改主题”即可探索取材自艺术家作品、大自然等来源的主题</translation>
 <translation id="1036348656032585052">关闭</translation>
@@ -308,6 +310,7 @@
 <translation id="1197088940767939838">橙色</translation>
 <translation id="11978075283960463">存储在应用中的数据量：<ph name="APP_SIZE" /></translation>
 <translation id="1198066799963193307">低视力语音工具</translation>
+<translation id="1198796216247697947">第 0 层级：未知</translation>
 <translation id="119944043368869598">全部清除</translation>
 <translation id="1199814941632954229">正在为这些证书资料配置证书</translation>
 <translation id="120069043972472860">无法观看</translation>
@@ -489,6 +492,7 @@
 <translation id="1323433172918577554">展开</translation>
 <translation id="132539964543492755">按下“x”键可在选择鼠标左键、右键或同时选择左右键之间切换</translation>
 <translation id="1325611581149097457">改善写作</translation>
+<translation id="1325798198269334655">详细了解如何保持 Chrome 及时更新</translation>
 <translation id="1325898422473267360"><ph name="PERMISSION_USAGE" /> <ph name="PERMISSION_INDICATOR_DESCRIPTION" /></translation>
 <translation id="1327272175893960498">Kerberos 票据</translation>
 <translation id="1327495825214193325">要启用 ADB 调试，您必须重启此<ph name="DEVICE_TYPE" />。要停用它，则必须将此设备恢复出厂设置。</translation>
@@ -1876,7 +1880,7 @@
 <translation id="228059581448666199">左键点击鼠标</translation>
 <translation id="2282146716419988068">GPU 进程</translation>
 <translation id="228293613124499805">您访问的大多数网站很可能会将数据保存到设备上，例如保存您的偏好设置或您与网站分享的信息，这通常是为了提升您的浏览体验。我们建议您保持此设置的开启状态。</translation>
-<translation id="2283599456633275070">旅游</translation>
+<translation id="2283599456633275070">旅行</translation>
 <translation id="2285109769884538519">{COUNT,plural, =0{在新标签页组中打开全部网址(&amp;N)}=1{在新标签页组中打开 1 个网址(&amp;N)}other{在新标签页组中打开全部（{COUNT} 个）网址(&amp;N)}}</translation>
 <translation id="2285942871162473373">无法识别您的指纹。请重试。</translation>
 <translation id="2286840900796601828">快退 10 秒</translation>
@@ -2942,6 +2946,7 @@
 <translation id="2991182900092497283">请输入粘贴此数据的原因：</translation>
 <translation id="2992931425024192067">显示所有通知内容</translation>
 <translation id="2993517869960930405">应用信息</translation>
+<translation id="2994804273850542871">第 4 层级：Ultra</translation>
 <translation id="2995472388018163047">{NUM_GROUPS,plural, =1{您可以保留此分组，以便日后添加标签页；如果不再想访问它，也可以退出分组}other{您可以保留这些分组，以便日后添加标签页；如果不再想访问它们，也可以退出分组}}</translation>
 <translation id="2996071302059856125">详细了解 AI 如何影响您的体验，以及 Chrome 提供的控制功能</translation>
 <translation id="2996108796702395498">您的设备序列号为 <ph name="SERIAL_NUMBER" />。此号码可用于帮助激活服务。</translation>
@@ -2960,6 +2965,7 @@
 <translation id="3003967365858406397">您的 <ph name="PHONE_NAME" /> 将创建一个私享的 Wi-Fi 网络连接。</translation>
 <translation id="3004385386820284928">自定义键盘按键</translation>
 <translation id="300580149047131921">最近使用过</translation>
+<translation id="3005928441045180122">堆叠</translation>
 <translation id="3006881078666935414">无使用情况数据</translation>
 <translation id="3007555010975143508">系统将使用以下应用录制屏幕：</translation>
 <translation id="3007771295016901659">复制标签</translation>
@@ -4649,6 +4655,7 @@
 <translation id="4177668342649553942">打开 <ph name="SHORTCUT_NAME" /> - <ph name="APP_NAME" /></translation>
 <translation id="4177731895051842298">扩展程序是 Chrome 的插件，可帮助您保持井然有序、简化任务和自定义浏览体验</translation>
 <translation id="4178220097446335546">若要忘记此订阅及关联的网络，请前往 Passpoint 订阅页面以移除相应订阅。</translation>
+<translation id="4181376007499455822">不覆盖</translation>
 <translation id="4181602000363099176">20 倍</translation>
 <translation id="4181841719683918333">语言</translation>
 <translation id="4182182457914031017">为了提供建议和改进此功能，系统会将您访问的网站的网址和完整网页内容分享给 Google</translation>
@@ -8324,6 +8331,7 @@
 <translation id="67862343314499040">紫罗兰色</translation>
 <translation id="6786480815699355166">只能翻译支持的实时字幕语言</translation>
 <translation id="6786747875388722282">扩展程序</translation>
+<translation id="6786804673213172567">第 3 层级：高</translation>
 <translation id="6787531944787756058">用户名 <ph name="USER_EMAIL" /> 仅会保存到此设备上。查看详情</translation>
 <translation id="6787839852456839824">键盘快捷键</translation>
 <translation id="6788210894632713004">未打包的扩展程序</translation>
@@ -8470,6 +8478,7 @@
 <translation id="686839242150793617">已获准自动进入画中画模式</translation>
 <translation id="6868734951249611611">右键点击此处，然后选择“垂直显示标签页”</translation>
 <translation id="6868934826811377550">查看详情</translation>
+<translation id="6869809635308708588">如需在设备间发送链接，请确保这两台设备均已登录同一 Google 账号。</translation>
 <translation id="6870470066213933201">管理 JavaScript 优化和安全性</translation>
 <translation id="6870953451576517204">自测成功</translation>
 <translation id="6871644448911473373">OCSP 响应程序：<ph name="LOCATION" /></translation>
@@ -8761,6 +8770,7 @@
 <translation id="7072078320324181561">系统服务以及具有位置信息权限的应用和网站可以使用您的位置信息<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
 <translation id="7072573590175540692">可用的功能和扩展程序快捷字词</translation>
 <translation id="7074703793383805632"><ph name="SHARED_STATE" />“<ph name="GROUP_NAME" />”分组 - <ph name="OPENED_STATE" /></translation>
+<translation id="7075116338736929419">替换 CPU 性能层级</translation>
 <translation id="7075625805486468288">管理 HTTPS/SSL 证书和设置</translation>
 <translation id="707772989579681711">您之前的选择</translation>
 <translation id="7077751457066325012">查看和自定义键盘快捷键</translation>
@@ -9524,6 +9534,7 @@
 <translation id="7624337243375417909">已关闭大写锁定模式</translation>
 <translation id="7625568159987162309">查看各网站的权限及储存的数据</translation>
 <translation id="7625823789272218216">在左侧新增标签页</translation>
+<translation id="762730429396410864">手动设置向网站报告的 CPU 性能层级</translation>
 <translation id="7627749368210392160">网站可以使用此功能访问本地网络中的其他设备</translation>
 <translation id="7628927569678398026"><ph name="LOCALE" /> (<ph name="VARIANT" />)，等级：<ph name="GRADE" /></translation>
 <translation id="762917478230183172">为每个键选择一项操作</translation>
@@ -9802,7 +9813,9 @@
 <translation id="7799650166313181433">只有已登录账号 <ph name="USER_EMAIL" /> 的设备可与此设备分享内容。您无需批准您的设备之间的内容分享。</translation>
 <translation id="7800485561443537737">热点会使用 <ph name="DEVICE_TYPE" /> 的移动流量，所以您的运营商可能会收取额外费用。另外，热点可能会增加耗电量。<ph name="BEGIN_LINK_LEARN_MORE" />了解详情<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7800518121066352902">逆时针旋转(&amp;O)</translation>
+<translation id="780254490276923052">第 2 层级：中</translation>
 <translation id="780301667611848630">不用了</translation>
+<translation id="7803118804281013214">离开此网站将导致任务中断。请打开新标签页，以便 Gemini 继续工作。</translation>
 <translation id="7803657407897251194">如要使用 Android 设备继续设置，请将 <ph name="DEVICE_TYPE" /> 连接到网络</translation>
 <translation id="7803714812705886512">Google 采用更少数据（例如网址片段、下载信息）来检测威胁</translation>
 <translation id="7804072833593604762">已关闭标签页</translation>
@@ -10821,6 +10834,7 @@
 <translation id="8500044868721690197">此网站已被禁止控制您的 MIDI 设备以及为其重新编程</translation>
 <translation id="8500123638242682652">窗口已向上移动</translation>
 <translation id="8500132602331251964">应用有更新</translation>
+<translation id="850228775215800722">第 1 层级：低</translation>
 <translation id="8503813439785031346">用户名</translation>
 <translation id="850382998924680137">今天浏览过</translation>
 <translation id="850399339579925930">字典</translation>
@@ -11237,6 +11251,7 @@
 <translation id="8774379074441005279">确认恢复</translation>
 <translation id="8774934320277480003">上边距</translation>
 <translation id="8775144690796719618">网址无效</translation>
+<translation id="877515298105563553">并排</translation>
 <translation id="8775653927968399786">{0,plural, =1{系统将在 # 秒后自动锁定您的 <ph name="DEVICE_TYPE" />。
 <ph name="DOMAIN" /> 要求您使智能卡保持插入状态。}other{系统将在 # 秒后自动锁定您的 <ph name="DEVICE_TYPE" />。
 <ph name="DOMAIN" /> 要求您使智能卡保持插入状态。}}</translation>
@@ -11689,6 +11704,7 @@
 <translation id="9070342919388027491">此标签页已移至左侧</translation>
 <translation id="9072220108592671115">安装了版本 <ph name="VERSION" /></translation>
 <translation id="9072918088200875065">您已授权 Gemini 登录这些网站，代您完成任务</translation>
+<translation id="9074618195273027322">{CORE_COUNT,plural, =1{1 个内核}other{{CORE_COUNT} 个内核}}</translation>
 <translation id="9074739597929991885">蓝牙</translation>
 <translation id="9074836595010225693">USB鼠标已连接</translation>
 <translation id="9075413375877487220">增强型安全浏览功能不信任此扩展程序。</translation>

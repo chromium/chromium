@@ -37,6 +37,7 @@
 <translation id="1016876401615857435">このデバイスでパスキーを使用するには、本人確認を行ってください</translation>
 <translation id="1017280919048282932">辞書に追加(&amp;A)</translation>
 <translation id="1018656279737460067">キャンセルされました</translation>
+<translation id="1020008977311763380">公称のパフォーマンス ティア: <ph name="CPU_TIER" /></translation>
 <translation id="1022522674678746124">PowerPoint</translation>
 <translation id="1022669824195822609">このデバイスは <ph name="DOMAIN" /> によって管理されています。管理者はこのデバイスの任意のプロファイルのデータにアクセスできます。</translation>
 <translation id="1022719295563085177">ネットワークのデフォルト</translation>
@@ -56,6 +57,7 @@
 <translation id="1033060461778467949">タブを分割表示に切り替え</translation>
 <translation id="1033780634303702874">シリアル デバイスへのアクセス</translation>
 <translation id="1034484273907870301">タブレット モードのサムネイル タブバー</translation>
+<translation id="103477588607005550">CPU: <ph name="CPU_MODEL" />（<ph name="CPU_CORES" />）</translation>
 <translation id="1035289631433631911">コンテンツ移行ツール</translation>
 <translation id="1035875743511577452">[テーマを変更] をクリックして、アーティスト、自然などから着想を得たテーマをお探しください。</translation>
 <translation id="1036348656032585052">オフにする</translation>
@@ -308,6 +310,7 @@
 <translation id="1197088940767939838">オレンジ</translation>
 <translation id="11978075283960463">アプリに保存されたデータ: <ph name="APP_SIZE" /></translation>
 <translation id="1198066799963193307">ロービジョン音声ツール</translation>
+<translation id="1198796216247697947">ティア 0: UNKNOWN</translation>
 <translation id="119944043368869598">すべて削除</translation>
 <translation id="1199814941632954229">次の証明書プロファイルに対する証明書を準備しています</translation>
 <translation id="120069043972472860">視聴不能</translation>
@@ -489,6 +492,7 @@
 <translation id="1323433172918577554">もっと見る</translation>
 <translation id="132539964543492755">X キーを使用してマウスボタンの選択を左ボタン、右ボタン、両方の間で切り替える</translation>
 <translation id="1325611581149097457">文章作成支援</translation>
+<translation id="1325798198269334655">Chrome を最新の状態に保つ方法の詳細</translation>
 <translation id="1325898422473267360"><ph name="PERMISSION_USAGE" /> <ph name="PERMISSION_INDICATOR_DESCRIPTION" /></translation>
 <translation id="1327272175893960498">Kerberos チケット</translation>
 <translation id="1327495825214193325">ADB デバッグを有効にするには、この <ph name="DEVICE_TYPE" /> を再起動する必要があります。ADB デバッグを無効にする場合は、出荷時の設定へのリセットが必要になります。</translation>
@@ -2944,6 +2948,7 @@
 <translation id="2991182900092497283">このデータを貼り付ける理由を入力してください。</translation>
 <translation id="2992931425024192067">すべての通知内容を表示する</translation>
 <translation id="2993517869960930405">アプリ情報</translation>
+<translation id="2994804273850542871">ティア 4: ULTRA</translation>
 <translation id="2995472388018163047">{NUM_GROUPS,plural, =1{後でタブを追加できるようにこのグループを保持するか、今後使用しない場合は退出します}other{後でタブを追加できるようにこれらのグループを保持するか、今後使用しない場合は退出します}}</translation>
 <translation id="2996071302059856125">AI により Chrome の使用環境を設定する方法の詳細</translation>
 <translation id="2996108796702395498">デバイスのシリアル番号は <ph name="SERIAL_NUMBER" /> です。この番号を使用して、サービスを有効にできます。</translation>
@@ -2962,6 +2967,7 @@
 <translation id="3003967365858406397"><ph name="PHONE_NAME" /> でプライベート Wi-Fi 接続を確立します。</translation>
 <translation id="3004385386820284928">キーボードのキーをカスタマイズ</translation>
 <translation id="300580149047131921">最近使用した権限</translation>
+<translation id="3005928441045180122">縦並び</translation>
 <translation id="3006881078666935414">使用状況データはありません</translation>
 <translation id="3007555010975143508">画面の録画に使用されるアプリ:</translation>
 <translation id="3007771295016901659">タブを複製</translation>
@@ -4651,6 +4657,7 @@
 <translation id="4177668342649553942"><ph name="SHORTCUT_NAME" /> を開く　- <ph name="APP_NAME" /></translation>
 <translation id="4177731895051842298">拡張機能は Chrome に追加できるアドオンで、情報を整理したり、タスクを簡素化したり、ブラウジング環境をカスタマイズしたりできます</translation>
 <translation id="4178220097446335546">この登録とそれに関連付けられているネットワークを削除するには、Passpoint の登録ページに移動して登録を削除してください。</translation>
+<translation id="4181376007499455822">オーバーライドしない</translation>
 <translation id="4181602000363099176">20 倍</translation>
 <translation id="4181841719683918333">言語</translation>
 <translation id="4182182457914031017">候補を表示して、この機能を改善するため、アクセスしたサイトの URL とページ全体のコンテンツが Google と共有されます</translation>
@@ -8322,6 +8329,7 @@
 <translation id="67862343314499040">バイオレット</translation>
 <translation id="6786480815699355166">自動字幕起こしに対応している言語のみ翻訳できます</translation>
 <translation id="6786747875388722282">拡張機能</translation>
+<translation id="6786804673213172567">ティア 3: HIGH</translation>
 <translation id="6787531944787756058">ユーザー名 <ph name="USER_EMAIL" /> はこのデバイスのみに保存されます。詳細</translation>
 <translation id="6787839852456839824">キーボード ショートカット</translation>
 <translation id="6788210894632713004">パッケージ化されていない拡張機能</translation>
@@ -8468,6 +8476,7 @@
 <translation id="686839242150793617">ピクチャー イン ピクチャーの自動開始を許可するサイト</translation>
 <translation id="6868734951249611611">ここを右クリックすると [タブを縦方向に表示] を選択できます</translation>
 <translation id="6868934826811377550">詳細を表示</translation>
+<translation id="6869809635308708588">デバイス間でリンクを送信するには、両方のデバイスで同じ Google アカウントにログインしてください。</translation>
 <translation id="6870470066213933201">JavaScript の最適化とセキュリティを管理する</translation>
 <translation id="6870953451576517204">セルフテストに成功しました</translation>
 <translation id="6871644448911473373">OCSP レスポンダ: <ph name="LOCATION" /></translation>
@@ -8759,6 +8768,7 @@
 <translation id="7072078320324181561">位置情報へのアクセス権を持つアプリとウェブサイト、システム サービスは位置情報を使用できます。<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
 <translation id="7072573590175540692">利用可能な機能と拡張機能のショートカット</translation>
 <translation id="7074703793383805632"><ph name="SHARED_STATE" /> <ph name="GROUP_NAME" /> グループ - <ph name="OPENED_STATE" /></translation>
+<translation id="7075116338736929419">CPU のパフォーマンス ティアをオーバーライド</translation>
 <translation id="7075625805486468288">HTTPS / SSL の証明書と設定を管理します</translation>
 <translation id="707772989579681711">以前の選択</translation>
 <translation id="7077751457066325012">キーボード ショートカットの表示とカスタマイズ</translation>
@@ -9522,6 +9532,7 @@
 <translation id="7624337243375417909">CapsLock オフ</translation>
 <translation id="7625568159987162309">すべてのサイトに保存されている権限とデータを表示</translation>
 <translation id="7625823789272218216">左側の新しいタブ</translation>
+<translation id="762730429396410864">ウェブサイトに報告される CPU のパフォーマンス ティアを手動で設定します</translation>
 <translation id="7627749368210392160">サイトはこの機能を使用して、ローカル ネットワーク上の他のデバイスにアクセスできます</translation>
 <translation id="7628927569678398026"><ph name="LOCALE" />（<ph name="VARIANT" />）、グレード <ph name="GRADE" /></translation>
 <translation id="762917478230183172">キーごとに操作を選択</translation>
@@ -9799,7 +9810,9 @@
 <translation id="7799650166313181433">このデバイスと共有できるのは、<ph name="USER_EMAIL" /> にログインしているデバイスのみです。お使いのデバイス間では共有リクエストを承認する必要はありません。</translation>
 <translation id="7800485561443537737"><ph name="DEVICE_TYPE" /> のモバイルデータ通信を使用します。携帯通信会社によっては追加料金が発生する場合があります。バッテリー使用量が増える可能性があります。<ph name="BEGIN_LINK_LEARN_MORE" />詳細<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7800518121066352902">反時計回りに回転(&amp;O)</translation>
+<translation id="780254490276923052">ティア 2: MID</translation>
 <translation id="780301667611848630">利用しない</translation>
+<translation id="7803118804281013214">このサイトから移動すると、タスクは停止します。Gemini の使用を継続するには、新しいタブを開いてください。</translation>
 <translation id="7803657407897251194">Android デバイスで設定を続けるには、<ph name="DEVICE_TYPE" /> をネットワークに接続してください</translation>
 <translation id="7803714812705886512">Google で限られたデータ（URL の一部、ダウンロード情報など）を使用して、脅威を検出します</translation>
 <translation id="7804072833593604762">タブが閉じられました</translation>
@@ -10818,6 +10831,7 @@
 <translation id="8500044868721690197">このサイトでは MIDI デバイスの操作と再プログラムがブロックされています</translation>
 <translation id="8500123638242682652">ウィンドウを上に移動しました</translation>
 <translation id="8500132602331251964">アプリのアップデートをご利用いただけます</translation>
+<translation id="850228775215800722">ティア 1: LOW</translation>
 <translation id="8503813439785031346">ユーザー名</translation>
 <translation id="850382998924680137">今日表示</translation>
 <translation id="850399339579925930">辞書</translation>
@@ -11234,6 +11248,7 @@
 <translation id="8774379074441005279">復元を実行</translation>
 <translation id="8774934320277480003">上余白</translation>
 <translation id="8775144690796719618">無効なURL</translation>
+<translation id="877515298105563553">横並び</translation>
 <translation id="8775653927968399786">{0,plural, =1{<ph name="DEVICE_TYPE" /> は # 秒後に自動的にロックされます。
 <ph name="DOMAIN" /> では必ずスマートカードを挿入した状態にしてください。}other{<ph name="DEVICE_TYPE" /> は # 秒後に自動的にロックされます。
 <ph name="DOMAIN" /> では必ずスマートカードを挿入した状態にしてください。}}</translation>
@@ -11686,6 +11701,7 @@
 <translation id="9070342919388027491">タブを左に移動しました</translation>
 <translation id="9072220108592671115">バージョン <ph name="VERSION" /> をインストールしました</translation>
 <translation id="9072918088200875065">Gemini があなたの代わりにこれらのサイトにログインして、タスクを完了することを許可しました。</translation>
+<translation id="9074618195273027322">{CORE_COUNT,plural, =1{1 コア}other{{CORE_COUNT} コア}}</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9074836595010225693">USB マウスが接続されました</translation>
 <translation id="9075413375877487220">この拡張機能は、セーフ ブラウジング保護強化機能で信頼されていません。</translation>

@@ -178,6 +178,7 @@
 <translation id="1582732959743469162">Joriy yuklanma uchun barcha jarayonlar to‘xtatiladi.</translation>
 <translation id="1594034544529347967">Boshlanishi</translation>
 <translation id="1598751033135758830">Ilovada ochish…</translation>
+<translation id="1600571977391127696">Ayrim kontentlar hamma uchun mos kelmasligi mumkin.</translation>
 <translation id="1601560923496285236">Tatbiq etish</translation>
 <translation id="1603718000246404895">{COUNT,plural, =1{1 ta manzil}other{# ta manzil}}</translation>
 <translation id="1605405588277479165">Oʻchiq - Tavsiya etilmaydi</translation>
@@ -312,6 +313,7 @@
 <translation id="2012723204723845092">Xush kelibsiz!</translation>
 <translation id="2015722694326466240">Parollarni ko‘rish uchun qurilmangizni maxfiy kod bilan qulflang.</translation>
 <translation id="201759455285471444">Varaqlar guruhini yoyish.</translation>
+<translation id="2031515492007104071">Darajani oshirish</translation>
 <translation id="2044394949148788042">Varaqlar jadvalida ochish</translation>
 <translation id="2044681667265133332">Bu hisobni (<ph name="USER_EMAIL" />) <ph name="HOSTED_DOMAIN" /> boshqaradi va ayrim maʼlumotlarga ruxsat olishi mumkin. <ph name="BEGIN_LINK" />Batafsil<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">yangi element</translation>
@@ -846,6 +848,7 @@
 <translation id="3994911892367422121">OK</translation>
 <translation id="3995521777587992544">Sahifa yuklanishidagi kutish qatori: <ph name="EMAIL" /> yuklandi.</translation>
 <translation id="3997522473364371632">Parol ulashuvi administrator tomonidan faolsizlantirilgan.</translation>
+<translation id="4000707564769984863">Tomosha qilish: <ph name="WATCH_LINK" /></translation>
 <translation id="4002066346123236978">Nomi</translation>
 <translation id="4004204301268239848">Google hisobingizga saqlangan parollardan har qanday qurilmada foydalanishingiz mumkin.</translation>
 <translation id="4007463141047732631">Guruhni tahrirlash</translation>
@@ -876,6 +879,7 @@
 <translation id="4129768137228347731"><ph name="ENTITY_TYPE" /> saqlansinmi?</translation>
 <translation id="4133139945030148655">Hammasi tayyor</translation>
 <translation id="4133265950310064865">Kuchaytirilgan himoya</translation>
+<translation id="4142372594294312814">Generativ AI uchun 5 ta muhim eslatma</translation>
 <translation id="4145507240503767005"><ph name="SEARCH_ENGINE_NAME" />, <ph name="SEARCH_ENGINE_DOMAIN" /></translation>
 <translation id="4147897805161313378">Google Photos</translation>
 <translation id="4148023517926189160">Bu sayt fayl yuklab olishni va uni taqvimga qoʻshishni xohlamoqda.</translation>
@@ -998,6 +1002,7 @@
 <translation id="456502772933839252"><ph name="PAGE_TITLE" /> ulashilmoqda</translation>
 <translation id="4565377596337484307">Parolni berkitish</translation>
 <translation id="4568230126482344545">Oxirgi varaqlarni berkitish</translation>
+<translation id="4571490460651837010">Manzillar va boshqalarni boshqarish…</translation>
 <translation id="4578835633387306383">Yoqish…</translation>
 <translation id="4580621046861724270">Ayrim bukmarklar saqlanmadi</translation>
 <translation id="4580716718466706433">Parollar menejerini oching</translation>
@@ -1235,6 +1240,7 @@
 <translation id="5329451663851195956">Sahifani pastga tortib yangilang.</translation>
 <translation id="5336910966955551309">Sevimli saytlarni mahkamlash uchun ustiga bosib turing</translation>
 <translation id="5338512273860059533">Hisobga kirilmoqda.</translation>
+<translation id="5340148832014094861"><ph name="GOOGLE_TERMS" /> va <ph name="GEMINI_APPS_PRIVACY" /> amal qiladi. Gemini – bu AI va u xato qilishi mumkin, jumladan, odamlar haqida ham.</translation>
 <translation id="5343472494710226394">Qiziqishlar asosidagi yangiliklar, sport va boshqa xabarlar</translation>
 <translation id="5352128922772839949">Faylni saqlash</translation>
 <translation id="5355191726083956201">Kengaytirilgan himoya yoniq</translation>
@@ -1578,6 +1584,7 @@ Handoff funksiyasini faqatgina Chrome sozlamalarida emas, balki qurilma sozlamal
 <translation id="647867789226964031">Parollaringizni oʻzgartiring</translation>
 <translation id="6480363549849064919">Mijoz autentifikatsiyasi</translation>
 <translation id="6489174933860678546">Internetni yanada maxfiyroq kezish uchun Inkognito varaqlardan foydalaning.</translation>
+<translation id="6489775505977274806">Darajani oshirishni berkitish</translation>
 <translation id="6494931198667773526">Tugashi</translation>
 <translation id="6503077044568424649">Eng ko‘p ochilgan saytlar</translation>
 <translation id="6503763061813913607">Xavfsizlik tekshiruvi bildirishnomalari</translation>

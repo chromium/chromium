@@ -178,6 +178,7 @@
 <translation id="1582732959743469162">Ovim će se zaustaviti sav tok trenutnog preuzimanja.</translation>
 <translation id="1594034544529347967">Počinje</translation>
 <translation id="1598751033135758830">Otvaranje u aplikaciji…</translation>
+<translation id="1600571977391127696">Određeni sadržaj možda nije primjeren za sve.</translation>
 <translation id="1601560923496285236">Primijeni</translation>
 <translation id="1603718000246404895">{COUNT,plural, =1{1 adresa}one{# adresa}few{# adrese}other{# adresa}}</translation>
 <translation id="1605405588277479165">Isključeno – Ne preporučuje se</translation>
@@ -312,6 +313,7 @@
 <translation id="2012723204723845092">Dobro došli nazad!</translation>
 <translation id="2015722694326466240">Postavite šifru na uređaju da vidite lozinke.</translation>
 <translation id="201759455285471444">Proširivanje grupe kartica.</translation>
+<translation id="2031515492007104071">Sljedeći nivo</translation>
 <translation id="2044394949148788042">Otvorite mrežu kartica.</translation>
 <translation id="2044681667265133332">Računom <ph name="USER_EMAIL" /> upravlja domena <ph name="HOSTED_DOMAIN" />, koja će možda moći pregledati određene informacije. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">nova stavka</translation>
@@ -845,6 +847,7 @@
 <translation id="3994911892367422121">RAZUMIJEM</translation>
 <translation id="3995521777587992544">Traka napretka učitavanja stranice, učitano <ph name="EMAIL" />.</translation>
 <translation id="3997522473364371632">Dijeljenje lozinke je onemogućio administrator.</translation>
+<translation id="4000707564769984863">Gledajte: <ph name="WATCH_LINK" /></translation>
 <translation id="4002066346123236978">Naslov</translation>
 <translation id="4004204301268239848">Lozinke se pohranjuju na vaš Google račun da ih možete koristiti na bilo kojem uređaju.</translation>
 <translation id="4007463141047732631">Uredite grupu</translation>
@@ -875,6 +878,7 @@
 <translation id="4129768137228347731">Sačuvati stavku "<ph name="ENTITY_TYPE" />"?</translation>
 <translation id="4133139945030148655">Sve je spremno</translation>
 <translation id="4133265950310064865">Poboljšana zaštita</translation>
+<translation id="4142372594294312814">5 stvari koje morate znati o generativnom AI-ju</translation>
 <translation id="4145507240503767005"><ph name="SEARCH_ENGINE_NAME" />, <ph name="SEARCH_ENGINE_DOMAIN" /></translation>
 <translation id="4147897805161313378">Google Fotografije</translation>
 <translation id="4148023517926189160">Ova web lokacija želi preuzeti fajl i dodati ga u vaš kalendar.</translation>
@@ -997,6 +1001,7 @@
 <translation id="456502772933839252">Dijeljenje stranice <ph name="PAGE_TITLE" /></translation>
 <translation id="4565377596337484307">Sakrij lozinku</translation>
 <translation id="4568230126482344545">Sakrij nedavne kartice</translation>
+<translation id="4571490460651837010">Upravljanje adresama i drugim stavkama…</translation>
 <translation id="4578835633387306383">Uključivanje…</translation>
 <translation id="4580621046861724270">Određene oznake nisu sačuvane</translation>
 <translation id="4580716718466706433">Idite na "Upravitelj lozinki"</translation>
@@ -1234,6 +1239,7 @@
 <translation id="5329451663851195956">Možete povući nadolje da osvježite.</translation>
 <translation id="5336910966955551309">Dodirnite i zadržite da zakačite svoje omiljene web lokacije</translation>
 <translation id="5338512273860059533">Prijava je u toku.</translation>
+<translation id="5340148832014094861">Primjenjuju se <ph name="GOOGLE_TERMS" /> i <ph name="GEMINI_APPS_PRIVACY" />. Gemini je AI i može pogriješiti, uključujući informacije o osobama.</translation>
 <translation id="5343472494710226394">Vijesti, sportovi i sadržaj na osnovu vaših interesovanja.</translation>
 <translation id="5352128922772839949">Pohranjivanje fajla</translation>
 <translation id="5355191726083956201">Poboljšana zaštita je uključena</translation>
@@ -1577,6 +1583,7 @@ Također, Handoff mora biti omogućen u odjeljku Opće u Postavkama, a vaši ure
 <translation id="647867789226964031">Promijenite lozinke</translation>
 <translation id="6480363549849064919">Autentifikacija klijenta</translation>
 <translation id="6489174933860678546">Otvorite anonimne kartice da pregledate web uz veću privatnost.</translation>
+<translation id="6489775505977274806">Sakrij Sljedeći nivo</translation>
 <translation id="6494931198667773526">Završava se</translation>
 <translation id="6503077044568424649">Najposjećenija</translation>
 <translation id="6503763061813913607">Obavještenja o sigurnosnoj provjeri</translation>

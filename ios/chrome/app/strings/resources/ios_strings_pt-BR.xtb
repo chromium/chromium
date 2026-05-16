@@ -444,6 +444,7 @@
 <translation id="2496626742194544812">Ir para a primeira guia</translation>
 <translation id="2499505845365628575">Você pode conferir todo seu histórico de navegação do <ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" />.</translation>
 <translation id="2511117522375201202">Você tem <ph name="NUMBER_OF_PASSWORDS" /> senhas comprometidas que podem colocar sua segurança em risco.</translation>
+<translation id="2512709994717613803">Nível <ph name="LEVEL_NUMBER" /></translation>
 <translation id="2513103768503127042">Seus grupos de guias vão aparecer aqui</translation>
 <translation id="251837347827266434">Sua conta será desconectada, as guias serão fechadas e os dados de navegação serão excluídos</translation>
 <translation id="2520787026086861736">Para desativar, acesse <ph name="BEGIN_LINK" />Preenchimento automático e senhas<ph name="END_LINK" /></translation>
@@ -1091,6 +1092,7 @@
 <translation id="4840495572919996524">Seus favoritos, histórico, senhas e outras configurações não serão mais sincronizados com sua Conta do Google.</translation>
 <translation id="484280513275854557">Sua conta foi desconectada e os dados de navegação foram excluídos</translation>
 <translation id="484462545196658690">Automática</translation>
+<translation id="4846662396507502151">Navegue mais rápido com a nova barra de ferramentas</translation>
 <translation id="4850886885716139402">Ver</translation>
 <translation id="4854068532375923088">Permitir que o "Gemini" use sua câmera</translation>
 <translation id="4860895144060829044">Ligar</translation>
@@ -1429,6 +1431,7 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="5988097621740394599">Ver reduções no preço nas suas guias.</translation>
 <translation id="5988851877894965432">Abrir URLs no Chrome</translation>
 <translation id="599343768974649785">Texto explícito</translation>
+<translation id="6004988584831654445">Tudo pronto! Receba notificações quando novas tarefas chegarem.</translation>
 <translation id="6006672969046233841">Nova guia</translation>
 <translation id="6011308810877101166">Melhorar as sugestões de pesquisa</translation>
 <translation id="6012140227487808125">Criptografando…</translation>
@@ -1660,6 +1663,7 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="6685259053455152195">Atalhos para mudar configurações rapidamente e usar recursos da barra de endereço.</translation>
 <translation id="6689342293888598653">Cor de fundo branca</translation>
 <translation id="6689685206615181381">Apenas o modo de navegação anônima está disponível</translation>
+<translation id="6705491067826837934">Seus controles ficaram ainda mais acessíveis</translation>
 <translation id="6708501134077648845">Opções de senha</translation>
 <translation id="6709964700841491574">Modo de Bloqueio total</translation>
 <translation id="6710079714193676716">Gerenciado pela sua organização. Talvez alguns recursos estejam indisponíveis. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
@@ -1720,6 +1724,7 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="6903282483217634857">Mover para a direita</translation>
 <translation id="6903907808598579934">Ativar a sincronização</translation>
 <translation id="6906448540340261898">Garanta que você sempre possa usar as senhas na sua Conta do Google</translation>
+<translation id="6906978870282539723">Receba ajuda com suas guias e tarefas</translation>
 <translation id="6908734251759299256">Atualize o navegador</translation>
 <translation id="6913136913033237761"><ph name="FOLDER_NAME" />. Somente neste dispositivo.</translation>
 <translation id="6914583639806229067">Pesquisar imagem que você copiou</translation>
@@ -2080,6 +2085,7 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="8182037667962849780">{count,plural, =1{Para {website_1}}=2{Para {website_1}, {website_2}}=3{Para {website_1}, {website_2} e mais 1}one{Para {website_1}, {website_2} e mais {more_count}}other{Para {website_1}, {website_2} e mais {more_count}}}</translation>
 <translation id="8184895727539791845">Para permitir que o Gemini use sua câmera, ative a opção "Câmera" nas configurações do iOS</translation>
 <translation id="8185076488803799132">Importar</translation>
+<translation id="8187200657863701733">Nível atual do Chrome</translation>
 <translation id="8189615296021678665">Toque em "Salvar" para acessar essa senha com facilidade na próxima vez que fizer login.</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Seus dispositivos<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195191503358432289">Adicionar senha</translation>
@@ -2123,6 +2129,7 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="8325455175867928593">Ocultar "Avaliações com base nos seus interesses"</translation>
 <translation id="833647236762414178">Crie, salve e gerencie suas senhas e chaves de acesso para fazer login em sites e apps com facilidade. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" />.</translation>
 <translation id="8343993175958086504">Faça backup e use seus dados em qualquer dispositivo.</translation>
+<translation id="8345328955902001853">{count,plural, =1{Conclua mais 1 tarefa para avançar de nível}one{Conclua mais {count} tarefa para avançar de nível}other{Conclua mais {count} tarefas para avançar de nível}}</translation>
 <translation id="8348530355586151720">Toque no menu de três pontos.</translation>
 <translation id="8349305172487531364">Barra de favoritos</translation>
 <translation id="8361189290032177785">{count,plural, =1{{count} favorito importado}one{{count} favorito importado}other{{count} favoritos importados}}</translation>

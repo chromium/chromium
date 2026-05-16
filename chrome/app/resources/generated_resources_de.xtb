@@ -37,6 +37,7 @@
 <translation id="1016876401615857435">Bestätige deine Identität, um deine Passkeys auf diesem Gerät verwenden zu können</translation>
 <translation id="1017280919048282932">&amp;Zum Wörterbuch hinzufügen</translation>
 <translation id="1018656279737460067">Abgebrochen</translation>
+<translation id="1020008977311763380">Die nominale Leistungsstufe ist: <ph name="CPU_TIER" /></translation>
 <translation id="1022522674678746124">PowerPoint</translation>
 <translation id="1022669824195822609">Dein Gerät wird von <ph name="DOMAIN" /> verwaltet. Administratoren können auf die Daten in jedem Profil auf diesem Gerät zugreifen.</translation>
 <translation id="1022719295563085177">Netzwerkstandardeinstellung</translation>
@@ -56,6 +57,7 @@
 <translation id="1033060461778467949">Tab in geteilte Ansicht verschieben</translation>
 <translation id="1033780634303702874">Auf deine seriellen Geräte zugreifen</translation>
 <translation id="1034484273907870301">Tableiste mit Miniaturansichten für Tablet-Modus</translation>
+<translation id="103477588607005550">CPU: <ph name="CPU_MODEL" /> (<ph name="CPU_CORES" />)</translation>
 <translation id="1035289631433631911">Tool „Inhaltsübertragung“</translation>
 <translation id="1035875743511577452">Klicke auf „Design ändern“, um Designs zu entdecken, die beispielsweise von Künstlern geschaffen oder von der Natur inspiriert wurden</translation>
 <translation id="1036348656032585052">Deaktivieren</translation>
@@ -308,6 +310,7 @@ Du kannst deine Passwörter jederzeit im <ph name="GOOGLE_PASSWORD_MANAGER" /> p
 <translation id="1197088940767939838">Orange</translation>
 <translation id="11978075283960463">In App gespeicherte Daten: <ph name="APP_SIZE" /></translation>
 <translation id="1198066799963193307">Sprachausgabetools für Menschen mit eingeschränktem Sehvermögen</translation>
+<translation id="1198796216247697947">Stufe 0: UNBEKANNT</translation>
 <translation id="119944043368869598">Alle entfernen</translation>
 <translation id="1199814941632954229">Es werden Zertifikate für diese Zertifikatprofile bereitgestellt</translation>
 <translation id="120069043972472860">Ansehen nicht möglich</translation>
@@ -489,6 +492,7 @@ Du kannst deine Passwörter jederzeit im <ph name="GOOGLE_PASSWORD_MANAGER" /> p
 <translation id="1323433172918577554">Mehr anzeigen</translation>
 <translation id="132539964543492755">Verwende „x“, um zwischen der linken, der rechten und beiden Maustasten gleichzeitig zu wechseln</translation>
 <translation id="1325611581149097457">Besser schreiben</translation>
+<translation id="1325798198269334655">Weitere Informationen zum Verwalten von Chrome-Updates</translation>
 <translation id="1325898422473267360"><ph name="PERMISSION_USAGE" /> <ph name="PERMISSION_INDICATOR_DESCRIPTION" /></translation>
 <translation id="1327272175893960498">Kerberos-Tickets</translation>
 <translation id="1327495825214193325">Das Aktivieren der ADB-Fehlerbehebung erfordert einen Neustart von <ph name="DEVICE_TYPE" />. Zum Deaktivieren der ADB-Fehlerbehebung ist das Zurücksetzen auf die Werkseinstellungen erforderlich.</translation>
@@ -2947,6 +2951,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="2991182900092497283">Bitte gib einen Grund für das Einfügen dieser Daten an:</translation>
 <translation id="2992931425024192067">Gesamten Benachrichtigungsinhalt anzeigen</translation>
 <translation id="2993517869960930405">App-Info</translation>
+<translation id="2994804273850542871">Stufe 4: ULTRA</translation>
 <translation id="2995472388018163047">{NUM_GROUPS,plural, =1{Du kannst diese Gruppe beibehalten, um später Tabs hinzuzufügen, oder sie verlassen, wenn du keinen Zugriff mehr darauf haben möchtest}other{Du kannst diese Gruppen beibehalten, um später Tabs hinzuzufügen, oder sie verlassen, wenn du keinen Zugriff mehr darauf haben möchtest}}</translation>
 <translation id="2996071302059856125">Weitere Informationen dazu, wie sich KI auf deine Nutzung auswirkt und welche Einstellungen Chrome bietet</translation>
 <translation id="2996108796702395498">Die Seriennummer des Geräts lautet <ph name="SERIAL_NUMBER" />. Diese Nummer kann zur Aktivierung des Diensts verwendet werden.</translation>
@@ -2965,6 +2970,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3003967365858406397">Dein <ph name="PHONE_NAME" /> stellt eine private WLAN-Verbindung her.</translation>
 <translation id="3004385386820284928">Tasten anpassen</translation>
 <translation id="300580149047131921">Zuletzt verwendet</translation>
+<translation id="3005928441045180122">Gestapelt</translation>
 <translation id="3006881078666935414">Keine Nutzungsdaten</translation>
 <translation id="3007555010975143508">Diese Apps werden verwendet, um deinen Bildschirm aufzuzeichnen:</translation>
 <translation id="3007771295016901659">Tab duplizieren</translation>
@@ -4655,6 +4661,7 @@ Möchtest du <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4177668342649553942"><ph name="SHORTCUT_NAME" /> öffnen – <ph name="APP_NAME" /></translation>
 <translation id="4177731895051842298">Erweiterungen sind Add-ons für Chrome, mit denen du den Überblick behalten, Aufgaben vereinfachen und dein Surferlebnis individuell anpassen kannst</translation>
 <translation id="4178220097446335546">Wenn du dieses Abo und die zugehörigen Netzwerke entfernen möchtest, rufe die Passpoint-Aboseite auf, um das Abo zu entfernen.</translation>
+<translation id="4181376007499455822">Nicht überschreiben</translation>
 <translation id="4181602000363099176">20-fach</translation>
 <translation id="4181841719683918333">Sprachen</translation>
 <translation id="4182182457914031017">Damit du Vorschläge erhalten und zur Verbesserung dieser Funktion beitragen kannst, werden die URL und der gesamte Seiteninhalt der von dir besuchten Website an Google gesendet</translation>
@@ -8330,6 +8337,7 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="67862343314499040">Violett</translation>
 <translation id="6786480815699355166">Übersetzungen sind nur in die unterstützten Sprachen für automatische Untertitel möglich</translation>
 <translation id="6786747875388722282">Erweiterungen</translation>
+<translation id="6786804673213172567">Stufe 3: HOCH</translation>
 <translation id="6787531944787756058">Der Nutzername <ph name="USER_EMAIL" /> wird nur auf diesem Gerät gespeichert. Details ansehen</translation>
 <translation id="6787839852456839824">Tastenkombinationen</translation>
 <translation id="6788210894632713004">Entpackte Erweiterung</translation>
@@ -8476,6 +8484,7 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="686839242150793617">Dürfen den Bild-im-Bild-Modus automatisch aktivieren</translation>
 <translation id="6868734951249611611">Klicke mit der rechten Maustaste hier und wähle „Tabs vertikal anzeigen“ aus</translation>
 <translation id="6868934826811377550">Details ansehen</translation>
+<translation id="6869809635308708588">Wenn du Links zwischen Geräten senden möchtest, müssen beide im selben Google-Konto angemeldet sein.</translation>
 <translation id="6870470066213933201">JavaScript-Optimierung und -Sicherheit verwalten</translation>
 <translation id="6870953451576517204">Selbsttest erfolgreich</translation>
 <translation id="6871644448911473373">OCSP-Antwortdienst: <ph name="LOCATION" /></translation>
@@ -8767,6 +8776,7 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="7072078320324181561">Apps und Websites mit Berechtigung zur Standortermittlung sowie Systemdienste können deinen Standort verwenden. <ph name="LINK_BEGIN" />Weitere Informationen<ph name="LINK_END" /></translation>
 <translation id="7072573590175540692">Verfügbare Kürzel für Funktionen und Erweiterungen</translation>
 <translation id="7074703793383805632">Gruppe <ph name="SHARED_STATE" /> <ph name="GROUP_NAME" /> – <ph name="OPENED_STATE" /></translation>
+<translation id="7075116338736929419">CPU-Leistungsstufe überschreiben</translation>
 <translation id="7075625805486468288">HTTPS/SSL-Zertifikate und -Einstellungen verwalten</translation>
 <translation id="707772989579681711">Deine vorherige Auswahl</translation>
 <translation id="7077751457066325012">Tastenkombinationen ansehen und anpassen</translation>
@@ -9530,6 +9540,7 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="7624337243375417909">Feststelltaste aus</translation>
 <translation id="7625568159987162309">Nach Websites sortierte Berechtigungen und gespeicherte Daten aufrufen</translation>
 <translation id="7625823789272218216">Neuer Tab links</translation>
+<translation id="762730429396410864">CPU-Leistungsstufe, die Websites gemeldet wird, manuell festlegen</translation>
 <translation id="7627749368210392160">Websites können diese Funktion verwenden, um auf andere Geräte in deinem lokalen Netzwerk zuzugreifen</translation>
 <translation id="7628927569678398026"><ph name="LOCALE" /> (<ph name="VARIANT" />), Grad <ph name="GRADE" /></translation>
 <translation id="762917478230183172">Aktion für die jeweilige Taste auswählen</translation>
@@ -9808,7 +9819,9 @@ Drücke zum Entfernen der Zuweisung einen bereits zugewiesenen Schalter oder ein
 <translation id="7799650166313181433">Nur Geräte, die im Konto <ph name="USER_EMAIL" /> angemeldet sind, können Inhalte mit diesem Gerät teilen. Du musst das Teilen von deinen Geräten nicht genehmigen.</translation>
 <translation id="7800485561443537737">Hierfür wird die mobile Datenverbindung deines Geräts (<ph name="DEVICE_TYPE" />) verwendet und dein Mobilfunkanbieter berechnet möglicherweise zusätzliche Gebühren. Kann auch den Akkuverbrauch erhöhen. <ph name="BEGIN_LINK_LEARN_MORE" />Weitere Informationen<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7800518121066352902">&amp;Gegen den Uhrzeigersinn drehen</translation>
+<translation id="780254490276923052">Stufe 2: MITTEL</translation>
 <translation id="780301667611848630">Nein, danke</translation>
+<translation id="7803118804281013214">Wenn du diese Website verlässt, wird deine Aufgabe beendet. Öffne einen neuen Tab, damit Gemini weiterarbeiten kann.</translation>
 <translation id="7803657407897251194">Wenn du die Einrichtung mit deinem Android-Gerät fortsetzen möchtest, verbinde dein <ph name="DEVICE_TYPE" /> mit einem Netzwerk</translation>
 <translation id="7803714812705886512">Google verwendet weniger Daten (z. B. Bestandteile von URLs, Downloadinformationen), um Bedrohungen zu erkennen</translation>
 <translation id="7804072833593604762">Tab geschlossen</translation>
@@ -10827,6 +10840,7 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8500044868721690197">Diese Website darf meine MIDI-Geräte weder steuern noch neu programmieren</translation>
 <translation id="8500123638242682652">Fenster nach oben verschoben</translation>
 <translation id="8500132602331251964">App-Update verfügbar</translation>
+<translation id="850228775215800722">Stufe 1: NIEDRIG</translation>
 <translation id="8503813439785031346">Nutzername</translation>
 <translation id="850382998924680137">Heute angesehen</translation>
 <translation id="850399339579925930">Wörterbücher</translation>
@@ -11243,6 +11257,7 @@ Dazu gehören beispielsweise installierte Software, Dateien, dein Browser, das B
 <translation id="8774379074441005279">Wiederherstellung bestätigen</translation>
 <translation id="8774934320277480003">Oberer Rand</translation>
 <translation id="8775144690796719618">Ungültige URL</translation>
+<translation id="877515298105563553">Nebeneinander</translation>
 <translation id="8775653927968399786">{0,plural, =1{<ph name="DEVICE_TYPE" /> wird automatisch in # Sekunde gesperrt.
 <ph name="DOMAIN" /> erfordert, dass deine Smartcard eingesteckt ist.}other{<ph name="DEVICE_TYPE" /> wird automatisch in # Sekunden gesperrt.
 <ph name="DOMAIN" /> erfordert, dass deine Smartcard eingesteckt ist.}}</translation>
@@ -11695,6 +11710,7 @@ Informationen dazu, welche Daten von Google erhoben werden und warum, findest du
 <translation id="9070342919388027491">Tab wurde nach links verschoben</translation>
 <translation id="9072220108592671115">Installierte Version: <ph name="VERSION" /></translation>
 <translation id="9072918088200875065">Du hast Gemini die Berechtigung erteilt, sich auf diesen Websites anzumelden, um Aufgaben für dich zu erledigen</translation>
+<translation id="9074618195273027322">{CORE_COUNT,plural, =1{1 Kern}other{{CORE_COUNT} Kerne}}</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9074836595010225693">USB-Maus angeschlossen</translation>
 <translation id="9075413375877487220">Diese Erweiterung wird vom erweiterten Safe Browsing als nicht vertrauenswürdig eingestuft.</translation>

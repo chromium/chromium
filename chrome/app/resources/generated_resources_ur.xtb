@@ -785,6 +785,7 @@
 <translation id="1529769834253316556">لائن کی اونچائی</translation>
 <translation id="1529891865407786369">پاور کا ماخذ</translation>
 <translation id="1530376661400379364">‏‫Chrome نے ان ترتیبات کو ری سیٹ کیا</translation>
+<translation id="1530466164747090379">‫<ph name="FILE_NAME" /> میں حساس یا خطرناک ڈیٹا ہے</translation>
 <translation id="1531275250079031713">‏"نیا Wi-Fi شامل کریں" ڈائیلاگ دکھائیں</translation>
 <translation id="1531734061664070992"><ph name="FIRST_SWITCH" />، <ph name="SECOND_SWITCH" />، <ph name="THIRD_SWITCH" /></translation>
 <translation id="1533948060140843887">میں سمجھتا ہوں کہ اسے ڈاؤن لوڈ کرنے سے میرے کمپیوٹر کو نقصان ہوگا</translation>
@@ -2182,6 +2183,7 @@
 <translation id="2469141124738294431">‏VM کا اسٹیٹس</translation>
 <translation id="2469259292033957819">آپ کے پاس محفوظ کردہ کوئی پرنٹر نہیں ہے۔</translation>
 <translation id="2469375675106140201">املا کی جانچ کو حسب ضرورت بنائیں</translation>
+<translation id="2469406914567390938">چینل کو اپ ڈیٹ کریں</translation>
 <translation id="247051149076336810">‏فائل کے اشتراک کا URL</translation>
 <translation id="2471469610750100598">سیاہ (ڈیفالٹ)</translation>
 <translation id="2471506181342525583">مقام تک رسائی کی اجازت ہے</translation>
@@ -2513,6 +2515,7 @@
 <translation id="2695943520968279338">ایکسٹینشنز کو دریافت کریں</translation>
 <translation id="2696675923413008404">‏اس سائٹ کا مواد، بشمول اس کا URL، ‏Google کو بھیجا جاتا ہے اور اس خصوصیت کو بہتر بنانے کے لیے اسے انسانی جائزہ کاران دیکھ سکتے ہیں</translation>
 <translation id="2698147581454716013">‏یہ ایک بنڈل کردہ آلہ ہے اور اس کا Kiosk اور Signage Upgrade کے ساتھ اندراج نہیں کیا جا سکتا۔</translation>
+<translation id="269941332914175387">اپنا پروفائل ڈیٹا لوڈ کرنے اور اسے مرموز رکھنے کے لیے براؤزر کو بند کر کے دوبارہ چلائیں</translation>
 <translation id="2699911226086014512">‏کوڈ <ph name="RETRIES" /> کے ساتھ PIN کی کارروائی ناکام ہو گئی۔</translation>
 <translation id="2701330563083355633"><ph name="DEVICE_NAME" /> سے اشتراک کردہ</translation>
 <translation id="2701737434167469065">سائن ان کریں، <ph name="EMAIL" /></translation>
@@ -2741,6 +2744,7 @@
 <translation id="2844154481025280030">پالیسی کنفیگر ہو گئی۔</translation>
 <translation id="2844169650293029770">‏USB-C آلہ (بائیں طرف کا اگلا پورٹ)</translation>
 <translation id="2844809857160214557">پرنٹ جابز دیکھیں اور ان کا نظم کریں</translation>
+<translation id="284491292807422921">سائٹ ہٹائیں؟</translation>
 <translation id="2845276301195220700">‏‫Google کیلنڈر کے لیے مزید کارروائیاں</translation>
 <translation id="2845382757467349449">ہمیشہ بُک مارکس بار دکھائیں</translation>
 <translation id="284581348330507117">منفرد پاس ورڈز تخلیق کریں</translation>
@@ -3328,6 +3332,7 @@
 <translation id="3262986719682892278">بہت بڑی</translation>
 <translation id="3264544094376351444">‏Sans-serif فونٹ</translation>
 <translation id="3264582393905923483">سیاق و سباق</translation>
+<translation id="3265303262625691029">‫<ph name="VERDICT_MESSAGE" />۔ آپ کے منتظم کا کہنا ہے: "<ph name="CUSTOM_MESSAGE" />"</translation>
 <translation id="3265459715026181080">ونڈو کو بند کریں</translation>
 <translation id="3266022278425892773">‏Linux ڈیولپمنٹ ماحول</translation>
 <translation id="3266030505377585301">‏براؤزنگ ڈیٹا کو اپنے Google اکاؤنٹ میں برقرار رکھتے ہوئے، صرف اس آلہ سے اسے حذف کرنے کیلئے، <ph name="BEGIN_LINK" />سائن آؤٹ کریں<ph name="END_LINK" />۔</translation>
@@ -4447,6 +4452,7 @@
 <translation id="4010746393007464819">‏Debian 12 (کتابی کیڑا) میں اپ گریڈ دستیاب ہے</translation>
 <translation id="4010917659463429001">اپنے موبائل آلہ پر اپنے بُک مارکس حاصل کرنے کے لیے، <ph name="GET_IOS_APP_LINK" />۔</translation>
 <translation id="4011073493055408531">شہر کے اوپر، جامنی اور سبز آرورا بوریالِس کا ایک شاندار نظارہ ہے۔</translation>
+<translation id="4011897773956589748">‏اگلی بار جب Gemini کو اس اکاؤنٹ تک رسائی کی ضرورت ہوگی تو یہ آپ سے دوبارہ پوچھے گا۔</translation>
 <translation id="4012509903424054869">‏‫PDFs خود کار طور پر تبدیل ہو جاتی ہیں تاکہ آپ ٹیکسٹ کو تلاش اور منتخب کر سکیں</translation>
 <translation id="4014432863917027322">"<ph name="EXTENSION_NAME" /> کی اصلاح کریں؟</translation>
 <translation id="4015163439792426608">ایکسٹینشنز مل گئیں؟ ایک آسان مقام پر <ph name="BEGIN_LINK" />اپنے ایکسٹینشنز کا نظم کریں<ph name="END_LINK" />۔</translation>
@@ -6224,6 +6230,7 @@
 <translation id="5275084684151588738">صارف کی لغات</translation>
 <translation id="5275338516105640560">محفوظ کردہ ٹیب گروپ کا بٹن</translation>
 <translation id="5275352920323889391">کتا</translation>
+<translation id="5275946508817197540">آپ کی سیکیورٹی ترجیحات عیلحدہ کردہ ویب ایپس کی انسٹالیشن کی اجازت نہیں دیتی ہیں۔ ‫<ph name="CHANGE_PREFERENCE" />۔</translation>
 <translation id="527605719918376753">ٹیب خاموش کریں</translation>
 <translation id="527605982717517565">‏<ph name="HOST" /> پر ہمیشہ JavaScript کی اجازت دیں</translation>
 <translation id="5276357196618041410">پہلے لاگ ان کیے بغیر کنفیگریشن کو محفوظ نہیں کیا جا سکتا</translation>
@@ -8670,6 +8677,7 @@
 <translation id="6997553674029032185">سائٹ پر جائیں</translation>
 <translation id="6997642619627518301"><ph name="NAME_PH" /> - سرگرمی کا لاگ</translation>
 <translation id="6997707937646349884">آپ کے آلات پر:</translation>
+<translation id="6998036632333022623">‏‫Google کے ساتھ ٹیبز کا اشتراک کیا جا رہا ہے</translation>
 <translation id="6998793565256476099">ویڈیو کانفرنس کیلئے آلہ کا اندراج کریں</translation>
 <translation id="6999956497249459195">نیا گروپ</translation>
 <translation id="7000206553895739324"><ph name="PRINTER_NAME" /> منسلک ہے لیکن کنفیگریشن کی ضرورت ہے</translation>

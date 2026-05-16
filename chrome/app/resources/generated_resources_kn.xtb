@@ -37,6 +37,7 @@
 <translation id="1016876401615857435">ಈ ಸಾಧನದಲ್ಲಿ ನಿಮ್ಮ ಪಾಸ್‌ಕೀಗಳನ್ನು ಬಳಸಲು, ಇದು ನೀವೇ ಎಂದು ದೃಢೀಕರಿಸಬೇಕು</translation>
 <translation id="1017280919048282932">ನಿಘಂಟಿಗೆ &amp;ಸೇರಿಸಿ</translation>
 <translation id="1018656279737460067">ರದ್ದುಗೊಳಿಸಲಾಗಿದೆ</translation>
+<translation id="1020008977311763380">ನಾಮಿನಲ್ ಪರ್ಫಾರ್ಮೆನ್ಸ್ ಶ್ರೇಣಿ: <ph name="CPU_TIER" /></translation>
 <translation id="1022522674678746124">PowerPoint</translation>
 <translation id="1022669824195822609">ನಿಮ್ಮ ಸಾಧನವನ್ನು <ph name="DOMAIN" /> ನಿರ್ವಹಿಸುತ್ತಿದೆ. ನಿರ್ವಾಹಕರು ಈ ಸಾಧನದಲ್ಲಿನ ಯಾವುದೇ ಪ್ರೊಫೈಲ್‌ನಲ್ಲಿರುವ ಡೇಟಾವನ್ನು ಆ್ಯಕ್ಸೆಸ್ ಮಾಡಬಹುದು.</translation>
 <translation id="1022719295563085177">ನೆಟ್‌ವರ್ಕ್ ಡೀಫಾಲ್ಟ್</translation>
@@ -56,6 +57,7 @@
 <translation id="1033060461778467949">ಟ್ಯಾಬ್ ಅನ್ನು ಸ್ಪ್ಲಿಟ್ ವೀಕ್ಷಣೆಗೆ ಸರಿಸಿ</translation>
 <translation id="1033780634303702874">ನಿಮ್ಮ ಸರಣಿ ಸಾಧನಗಳನ್ನು ಪ್ರವೇಶಿಸಿ</translation>
 <translation id="1034484273907870301">ಟ್ಯಾಬ್ಲೆಟ್ ಮೋಡ್‌ಗಾಗಿ ಥಂಬ್‌ನೇಲ್ ಟ್ಯಾಬ್‌ ಸ್ಟ್ರೈಪ್‌</translation>
+<translation id="103477588607005550">CPU: <ph name="CPU_MODEL" /> (<ph name="CPU_CORES" />)</translation>
 <translation id="1035289631433631911">ಕಂಟೆಂಟ್ ಟ್ರಾನ್ಸ್‌ಫರ್ ಟೂಲ್</translation>
 <translation id="1035875743511577452">ಕಲಾವಿದರು, ಪ್ರಕೃತಿ ಮತ್ತು ಇತ್ಯಾದಿಗಳಿಂದ ಪ್ರೇರಿತವಾದ ಥೀಮ್‌ಗಳನ್ನು ಎಕ್ಸ್‌ಪ್ಲೋರ್ ಮಾಡಲು, "ಥೀಮ್ ಬದಲಾಯಿಸಿ" ಎಂಬುದನ್ನು ಕ್ಲಿಕ್ ಮಾಡಿ</translation>
 <translation id="1036348656032585052">ಆಫ್ ಮಾಡಿ</translation>
@@ -309,6 +311,7 @@
 <translation id="1197088940767939838">ಕಿತ್ತಳೆ</translation>
 <translation id="11978075283960463">ಆ್ಯಪ್‌ನಲ್ಲಿ ಸಂಗ್ರಹಿಸಲಾದ ಡೇಟಾ: <ph name="APP_SIZE" /></translation>
 <translation id="1198066799963193307">ದುರ್ಬಲ ದೃಷ್ಟಿ ಹೊಂದಿರುವವರಿಗಾಗಿ ಧ್ವನಿ ಟೂಲ್‌ಗಳು</translation>
+<translation id="1198796216247697947">ಶ್ರೇಣಿ 0: ಅಪರಿಚಿತ</translation>
 <translation id="119944043368869598">ಎಲ್ಲವನ್ನೂ ತೆಗೆದುಹಾಕಿ</translation>
 <translation id="1199814941632954229">ಈ ಪ್ರಮಾಣಪತ್ರ ಪ್ರೊಫೈಲ್‌ಗಳಿಗಾಗಿ ಪ್ರಮಾಣಪತ್ರಗಳನ್ನು ಒದಗಿಸಲಾಗುತ್ತಿದೆ</translation>
 <translation id="120069043972472860">ವೀಕ್ಷಿಸಲಾಗದ</translation>
@@ -490,6 +493,7 @@
 <translation id="1323433172918577554">ಇನ್ನಷ್ಟು ತೋರಿಸಿ</translation>
 <translation id="132539964543492755">ಎಡ ಬಟನ್, ಬಲ ಬಟನ್ ಮತ್ತು ಎರಡರ ನಡುವೆ ಮೌಸ್ ಬಟನ್ ಆಯ್ಕೆಯನ್ನು ಬದಲಾಯಿಸಲು “x” ಕೀಯನ್ನು ಬಳಸಿ</translation>
 <translation id="1325611581149097457">ಉತ್ತಮವಾಗಿ ಬರೆಯಿರಿ</translation>
+<translation id="1325798198269334655">Chrome ಅಪ್‌ಡೇಟ್‌ಗಳನ್ನು ನಿರ್ವಹಿಸುವ ಕುರಿತು ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ</translation>
 <translation id="1325898422473267360"><ph name="PERMISSION_USAGE" /> <ph name="PERMISSION_INDICATOR_DESCRIPTION" /></translation>
 <translation id="1327272175893960498">Kerberos ಟಿಕೆಟ್‌ಗಳು</translation>
 <translation id="1327495825214193325">ADB ಡೀಬಗ್ ಮಾಡುವಿಕೆಯನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಲು, ಈ <ph name="DEVICE_TYPE" /> ಅನ್ನು ಮರುಪ್ರಾರಂಭಿಸುವ ಅಗತ್ಯವಿದೆ. ಇದನ್ನು ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಲು, ಫ್ಯಾಕ್ಟರಿ ಸೆಟ್ಟಿಂಗ್‌ಗಳಿಗೆ ಮರುಹೊಂದಿಸಬೇಕಾಗುತ್ತದೆ.</translation>
@@ -784,6 +788,7 @@
 <translation id="1529769834253316556">ಸಾಲಿನ ಎತ್ತರ</translation>
 <translation id="1529891865407786369">ಪವರ್ ಮೂಲ</translation>
 <translation id="1530376661400379364">Chrome ಈ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ರೀಸೆಟ್ ಮಾಡುತ್ತದೆ</translation>
+<translation id="1530466164747090379"><ph name="FILE_NAME" /> ಸೂಕ್ಷ್ಮ ಅಥವಾ ಅಪಾಯಕಾರಿ ಡೇಟಾವನ್ನು ಒಳಗೊಂಡಿದೆ.</translation>
 <translation id="1531275250079031713">'ಹೊಸ ವೈ-ಫೈ ಸೇರಿಸಿ' ಡೈಲಾಗ್ ತೋರಿಸಿ</translation>
 <translation id="1531734061664070992"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /></translation>
 <translation id="1533948060140843887">ಈ ಡೌನ್‌ಲೋಡ್ ನನ್ನ ಕಂಪ್ಯೂಟರ್‌ಗೆ ಹಾನಿ ಮಾಡುತ್ತದೆ ಎಂದು ನಾನು ಅರ್ಥಮಾಡಿಕೊಂಡಿದ್ದೇನೆ</translation>
@@ -2182,6 +2187,7 @@
 <translation id="2469141124738294431">VM ಸ್ಥಿತಿ</translation>
 <translation id="2469259292033957819">ನೀವು ಯಾವುದೇ ಪ್ರಿಂಟರ್‌ಗಳನ್ನು ಉಳಿಸಿಲ್ಲ.</translation>
 <translation id="2469375675106140201">ಕಾಗುಣಿತ ಪರೀಕ್ಷೆಯನ್ನು ಕಸ್ಟಮೈಸ್ ಮಾಡಿ</translation>
+<translation id="2469406914567390938">ಚಾನಲ್ ಅನ್ನು ಅಪ್‌ಡೇಟ್ ಮಾಡಿ</translation>
 <translation id="247051149076336810">ಫೈಲ್‌ ಹಂಚಿಕೊಳ್ಳುವ URL</translation>
 <translation id="2471469610750100598">ಕಪ್ಪು (ಡೀಫಾಲ್ಟ್)</translation>
 <translation id="2471506181342525583">ಸ್ಥಳ ಪ್ರವೇಶವನ್ನುಅನುಮತಿಸಲಾಗಿದೆ</translation>
@@ -2513,6 +2519,7 @@
 <translation id="2695943520968279338">ಎಕ್ಸ್‌ಟೆನ್ಶನ್‌ಗಳನ್ನು ಅನ್ವೇಷಿಸಿ</translation>
 <translation id="2696675923413008404">ಈ ಸೈಟ್‌ನ URL ಸೇರಿದಂತೆ ಕಂಟೆಂಟ್‌ ಅನ್ನು Google ಗೆ ಕಳುಹಿಸಲಾಗುತ್ತದೆ ಮತ್ತು ಈ ಫೀಚರ್ ಅನ್ನು ಸುಧಾರಿಸಲು ಮಾನವ ರಿವ್ಯೂವರ್‌ಗಳು ಇದನ್ನು ನೋಡಬಹುದು</translation>
 <translation id="2698147581454716013">ಇದು ಸಂಯೋಜಿತ ಸಾಧನವಾಗಿವೆ ಹಾಗೂ ಕಿಯೋಸ್ಕ್ ಮತ್ತು ಸೈನೇಜ್ ಅಪ್‌ಗ್ರೇಡ್‌ನೊಂದಿಗೆ ನೋಂದಾಯಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ.</translation>
+<translation id="269941332914175387">ನಿಮ್ಮ ಪ್ರೊಫೈಲ್ ಡೇಟಾವನ್ನು ಲೋಡ್ ಮಾಡಲು ಮತ್ತು ಅದನ್ನು ಎನ್‌ಕ್ರಿಪ್ಟ್ ಆಗಿ ಇರಿಸಲು ಬ್ರೌಸರ್ ಅನ್ನು ಮರುಪ್ರಾರಂಭಿಸಿ</translation>
 <translation id="2699911226086014512">ಪಿನ್ ಕಾರ್ಯಾಚರಣೆಯು ವಿಫಲವಾಗಿದೆ ಮತ್ತು <ph name="RETRIES" /> ಕೋಡ್ ಅನ್ನು ಮರಳಿಸಿದೆ.</translation>
 <translation id="2701330563083355633"><ph name="DEVICE_NAME" /> ನಿಂದ ಹಂಚಿಕೊಳ್ಳಲಾಗಿದೆ</translation>
 <translation id="2701737434167469065">ಸೈನ್ ಇನ್ ಮಾಡಿ, <ph name="EMAIL" /></translation>
@@ -2741,6 +2748,7 @@
 <translation id="2844154481025280030">ನೀತಿಯನ್ನು ಕಾನ್ಫಿಗರ್ ಮಾಡಲಾಗಿದೆ.</translation>
 <translation id="2844169650293029770">USB-C ಸಾಧನ (ಎಡ ಭಾಗದ ಮುಂದಿನ ಪೋರ್ಟ್‌)</translation>
 <translation id="2844809857160214557">ಮುದ್ರಣ ಕಾರ್ಯಗಳನ್ನು ವೀಕ್ಷಿಸಿ ಮತ್ತು ನಿರ್ವಹಿಸಿ</translation>
+<translation id="284491292807422921">ಸೈಟ್ ತೆಗೆದುಹಾಕಬೇಕೇ?</translation>
 <translation id="2845276301195220700">Google Calendar ಗಾಗಿ ಹೆಚ್ಚಿನ ಕ್ರಮಗಳು</translation>
 <translation id="2845382757467349449">ಯಾವಾಗಲೂ ಬುಕ್‌ಮಾರ್ಕ್‌ ಪಟ್ಟಿ ತೋರಿಸು</translation>
 <translation id="284581348330507117">ಅನನ್ಯ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ರಚಿಸಿ</translation>
@@ -2956,6 +2964,7 @@
 <translation id="2991182900092497283">ಈ ಡೇಟಾವನ್ನು ಅಂಟಿಸಲು ಕಾರಣವನ್ನು ನಮೂದಿಸಿ:</translation>
 <translation id="2992931425024192067">ಎಲ್ಲಾ ನೋಟಿಫಿಕೇಶನ್ ಕಂಟೆಂಟ್‍ ಅನ್ನು ತೋರಿಸಿ</translation>
 <translation id="2993517869960930405">ಅಪ್ಲಿಕೇಶನ್ ಮಾಹಿತಿ</translation>
+<translation id="2994804273850542871">ಶ್ರೇಣಿ 4: ಅಲ್ಟ್ರಾ</translation>
 <translation id="2995472388018163047">{NUM_GROUPS,plural, =1{ಟ್ಯಾಬ್‌ಗಳನ್ನು ನಂತರ ಸೇರಿಸಲು ಈ ಗುಂಪನ್ನು ಇರಿಸಿಕೊಳ್ಳಿ ಅಥವಾ ನಿಮಗೆ ಇನ್ನು ಮುಂದೆ ಇದಕ್ಕೆ ಆ್ಯಕ್ಸೆಸ್ ಬೇಕಿಲ್ಲದಿದ್ದರೆ ಇದನ್ನು ತೊರೆಯಿರಿ}one{ಟ್ಯಾಬ್‌ಗಳನ್ನು ನಂತರ ಸೇರಿಸಲು ಈ ಗುಂಪುಗಳನ್ನು ಇರಿಸಿಕೊಳ್ಳಿ ಅಥವಾ ನಿಮಗೆ ಇನ್ನು ಮುಂದೆ ಇವುಗಳಿಗೆ ಆ್ಯಕ್ಸೆಸ್ ಬೇಕಿಲ್ಲದಿದ್ದರೆ ಇವುಗಳನ್ನು ತೊರೆಯಿರಿ}other{ಟ್ಯಾಬ್‌ಗಳನ್ನು ನಂತರ ಸೇರಿಸಲು ಈ ಗುಂಪುಗಳನ್ನು ಇರಿಸಿಕೊಳ್ಳಿ ಅಥವಾ ನಿಮಗೆ ಇನ್ನು ಮುಂದೆ ಇವುಗಳಿಗೆ ಆ್ಯಕ್ಸೆಸ್ ಬೇಕಿಲ್ಲದಿದ್ದರೆ ಇವುಗಳನ್ನು ತೊರೆಯಿರಿ}}</translation>
 <translation id="2996071302059856125">AI ನಿಮ್ಮ ಅನುಭವವನ್ನು ಹೇಗೆ ರೂಪಿಸುತ್ತದೆ ಮತ್ತು Chrome ಒದಗಿಸುವ ನಿಯಂತ್ರಣಗಳ ಕುರಿತು ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ</translation>
 <translation id="2996108796702395498">ನಿಮ್ಮ ಸಾಧನದ ಕ್ರಮ ಸಂಖ್ಯೆ <ph name="SERIAL_NUMBER" /> ಆಗಿದೆ. ಸೇವೆಯನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಲು ಸಹಾಯ ಮಾಡಲು ಈ ಸಂಖ್ಯೆಯನ್ನು ಬಳಸಬಹುದು.</translation>
@@ -2974,6 +2983,7 @@
 <translation id="3003967365858406397">ಖಾಸಗಿ ವೈ-ಫೈ ಸಂಪರ್ಕವನ್ನು ನಿಮ್ಮ <ph name="PHONE_NAME" /> ರಚಿಸುತ್ತದೆ.</translation>
 <translation id="3004385386820284928">ಕೀಬೋರ್ಡ್ ಕೀಗಳನ್ನು ಕಸ್ಟಮೈಸ್ ಮಾಡಿ</translation>
 <translation id="300580149047131921">ಇತ್ತೀಚೆಗೆ ಬಳಸಿರುವುದು</translation>
+<translation id="3005928441045180122">ಸಂಗ್ರಹಿಸಲಾಗಿದೆ</translation>
 <translation id="3006881078666935414">ಯಾವುದೇ ಬಳಕೆ ಡೇಟಾ ಇಲ್ಲ</translation>
 <translation id="3007555010975143508">ನಿಮ್ಮ ಸ್ಕ್ರೀನ್ ಅನ್ನು ರೆಕಾರ್ಡ್ ಮಾಡಲು ಈ ಆ್ಯಪ್‌ಗಳನ್ನು ಬಳಸಲಾಗುತ್ತದೆ:</translation>
 <translation id="3007771295016901659">ನಕಲಿ ಟ್ಯಾಬ್‌</translation>
@@ -3326,6 +3336,7 @@
 <translation id="3262986719682892278">ತುಂಬಾ ದೊಡ್ಡದಾಗಿದೆ</translation>
 <translation id="3264544094376351444">Sans-Serif ಫಾಂಟ್</translation>
 <translation id="3264582393905923483">ಸಂದರ್ಭ</translation>
+<translation id="3265303262625691029"><ph name="VERDICT_MESSAGE" />. ನಿಮ್ಮ ನಿರ್ವಾಹಕರು ಹೀಗೆ ಹೇಳುತ್ತಾರೆ: "<ph name="CUSTOM_MESSAGE" />"</translation>
 <translation id="3265459715026181080">ವಿಂಡೋ ಮುಚ್ಚು</translation>
 <translation id="3266022278425892773">Linux ಡೆವಲಪ್‌ಮೆಂಟ್ ಎನ್ವಿರಾನ್‌ಮೆಂಟ್</translation>
 <translation id="3266030505377585301">ನಿಮ್ಮ ಬ್ರೌಸಿಂಗ್ ಡೇಟಾವನ್ನು Google ಖಾತೆಯಲ್ಲಿ ಇರಿಸಿಕೊಂಡು, ಅದನ್ನು ಈ ಸಾಧನದಿಂದ ಮಾತ್ರ ಅಳಿಸಲು, <ph name="BEGIN_LINK" />ಸೈನ್ ಔಟ್<ph name="END_LINK" /> ಮಾಡಿ.</translation>
@@ -4446,6 +4457,7 @@
 <translation id="4010746393007464819">Debian 12 (Bookworm) ನ ಅಪ್‌ಗ್ರೇಡ್ ಲಭ್ಯವಿದೆ</translation>
 <translation id="4010917659463429001">ನಿಮ್ಮ ಮೊಬೈಲ್ ಸಾಧನದಲ್ಲಿ ನಿಮ್ಮ ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳನ್ನು ಪಡೆದುಕೊಳ್ಳಲು, <ph name="GET_IOS_APP_LINK" />.</translation>
 <translation id="4011073493055408531">ನಗರದ ಮೇಲೆ ನೇರಳೆ ಮತ್ತು ಹಸಿರು ಬಣ್ಣಗಳಲ್ಲಿ, ಅರೋರಾ ಬೋರಿಯಾಲಿಸ್ ವಿನ್ಯಾಸ ಮೂಡಿಸಿದೆ.</translation>
+<translation id="4011897773956589748">ಮುಂದಿನ ಬಾರಿ Gemini ಗೆ ಈ ಖಾತೆಗೆ ಆ್ಯಕ್ಸೆಸ್‌ನ ಅಗತ್ಯವಿದ್ದಾಗ ಅದು ನಿಮ್ಮನ್ನು ಮತ್ತೊಮ್ಮೆ ಕೇಳುತ್ತದೆ.</translation>
 <translation id="4012509903424054869">PDF ಗಳು ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಪರಿವರ್ತನೆಯಾಗುತ್ತವೆ ಆದ್ದರಿಂದ ನೀವು ಪಠ್ಯವನ್ನು ಹುಡುಕಬಹುದು ಮತ್ತು ಆಯ್ಕೆ ಮಾಡಬಹುದು</translation>
 <translation id="4014432863917027322">"<ph name="EXTENSION_NAME" />" ಸರಿಪಡಿಸಬೇಕೆ?</translation>
 <translation id="4015163439792426608">ನೀವು ವಿಸ್ತರಣೆಗಳನ್ನು ಬಳಸುತ್ತಿರುವಿರಾ? ಒಂದೇ ಸ್ಥಳದಲ್ಲಿ ಸುಲಭವಾಗಿ <ph name="BEGIN_LINK" />ನಿಮ್ಮ ವಿಸ್ತರಣೆಗಳನ್ನು ನಿರ್ವಹಿಸಿ<ph name="END_LINK" />.</translation>
@@ -4665,6 +4677,7 @@
 <translation id="4177668342649553942"><ph name="SHORTCUT_NAME" /> - <ph name="APP_NAME" /> ತೆರೆಯಿರಿ</translation>
 <translation id="4177731895051842298">ಎಕ್ಸ್‌ಟೆನ್ಶನ್‌ಗಳು Chrome ಗೆ ಆ್ಯಡ್‌-ಆನ್‌‌ಗಳಾಗಿದ್ದು, ಅವು ನಿಮಗೆ ವ್ಯವಸ್ಥಿತವಾಗಿರಲು, ಕಾರ್ಯಗಳನ್ನು ಸರಳಗೊಳಿಸಲು ಮತ್ತು ನಿಮ್ಮ ಬ್ರೌಸಿಂಗ್ ಅನ್ನು ಕಸ್ಟಮೈಸ್ ಮಾಡಲು ಸಹಾಯ ಮಾಡುತ್ತದೆ</translation>
 <translation id="4178220097446335546">ಈ ಸಬ್‌ಸ್ಕ್ರಿಪ್ಶನ್ ಮತ್ತು ಅದರ ಸಂಬಂಧಿತ ನೆಟ್‌ವರ್ಕ್‌ಗಳನ್ನು ತೆಗೆದುಹಾಕಲು, ಸಬ್‌ಸ್ಕ್ರಿಪ್ಶನ್ ಅನ್ನು ತೆಗೆದುಹಾಕಲು Passpoint ಸಬ್‌ಸ್ಕ್ರಿಪ್ಶನ್ ಪುಟಕ್ಕೆ ಹೋಗಿ.</translation>
+<translation id="4181376007499455822">ಅತಿಕ್ರಮಿಸಬೇಡಿ</translation>
 <translation id="4181602000363099176">20x</translation>
 <translation id="4181841719683918333">ಭಾಷೆಗಳು</translation>
 <translation id="4182182457914031017">ಸಲಹೆಗಳನ್ನು ನೀಡಲು ಮತ್ತು ಈ ಫೀಚರ್ ಅನ್ನು ಸುಧಾರಿಸಲು, ನೀವು ಭೇಟಿ ನೀಡುವ ಸೈಟ್‌ನ URL ಮತ್ತು ಪೂರ್ಣ ಪುಟದ ಕಂಟೆಂಟ್ ಅನ್ನು Google ಜೊತೆಗೆ ಹಂಚಿಕೊಳ್ಳಲಾಗುತ್ತದೆ</translation>
@@ -6223,6 +6236,7 @@
 <translation id="5275084684151588738">ಬಳಕೆದಾರರ ನಿಘಂಟುಗಳು</translation>
 <translation id="5275338516105640560">ಉಳಿಸಲಾದ ಟ್ಯಾಬ್ ಗುಂಪು ಬಟನ್</translation>
 <translation id="5275352920323889391">ನಾಯಿ</translation>
+<translation id="5275946508817197540">ನಿಮ್ಮ ಭದ್ರತಾ ಸೆಟ್ಟಿಂಗ್‌ಗಳು ಪ್ರತ್ಯೇಕಗೊಳಿಸಲಾದ ವೆಬ್ ಆ್ಯಪ್‌ಗಳನ್ನು ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಲು ಅನುಮತಿಸುತ್ತಿಲ್ಲ. <ph name="CHANGE_PREFERENCE" />.</translation>
 <translation id="527605719918376753">ಟ್ಯಾಬ್ ಮ್ಯೂಟ್ ಮಾಡಿ</translation>
 <translation id="527605982717517565"><ph name="HOST" /> ನಲ್ಲಿ JavaScript ಅನ್ನು ಯಾವಾಗಲೂ ಅನುಮತಿಸಿ</translation>
 <translation id="5276357196618041410">ಮೊದಲು ಲಾಗಿನ್ ಆಗದೆ ಕಾನ್ಫಿಗರೇಶನ್ ಅನ್ನು ಉಳಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ</translation>
@@ -8347,6 +8361,7 @@
 <translation id="67862343314499040">ನೇರಳೆ</translation>
 <translation id="6786480815699355166">ಬೆಂಬಲಿತ ಲೈವ್ ಕ್ಯಾಪ್ಶನ್ ಭಾಷೆಗಳನ್ನು ಮಾತ್ರ ಅನುವಾದಿಸಬಹುದು</translation>
 <translation id="6786747875388722282">ಎಕ್ಸ್‌ಟೆನ್ಷನ್‌‌ಗಳು</translation>
+<translation id="6786804673213172567">ಶ್ರೇಣಿ 3: ಅಧಿಕ</translation>
 <translation id="6787531944787756058">ಬಳಕೆದಾರರ ಹೆಸರು <ph name="USER_EMAIL" /> ಅನ್ನು ಈ ಸಾಧನಕ್ಕೆ ಮಾತ್ರ ಸೇವ್ ಮಾಡಲಾಗಿದೆ. ವಿವರಗಳನ್ನು ನೋಡಿ</translation>
 <translation id="6787839852456839824">ಕೀಬೋರ್ಡ್ ಶಾರ್ಟ್‌ಕಟ್‌ಗಳು</translation>
 <translation id="6788210894632713004">ಬಿಚ್ಚಿದ ವಿಸ್ತರಣೆ</translation>
@@ -8493,6 +8508,7 @@
 <translation id="686839242150793617">ಚಿತ್ರದಲ್ಲಿ ಚಿತ್ರ ಮೋಡ್ ಅನ್ನು ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಬಳಸಲು ಅನುಮತಿಸಲಾಗಿದೆ</translation>
 <translation id="6868734951249611611">ಇಲ್ಲಿ ಬಲ-ಕ್ಲಿಕ್ ಮಾಡಿ ಮತ್ತು "ಟ್ಯಾಬ್‌ಗಳನ್ನು ವರ್ಟಿಕಲ್ ಆಗಿ ತೋರಿಸಿ" ಎಂಬುದನ್ನು ಆಯ್ಕೆಮಾಡಿ</translation>
 <translation id="6868934826811377550">ವಿವರಗಳನ್ನು ನೋಡಿ</translation>
+<translation id="6869809635308708588">ಸಾಧನಗಳ ನಡುವೆ ಲಿಂಕ್‌ಗಳನ್ನು ಕಳುಹಿಸಲು, ಎರಡೂ ಒಂದೇ Google ಖಾತೆಗೆ ಸೈನ್ ಇನ್ ಆಗಿವೆ ಎಂದು ಖಚಿತಪಡಿಸಿಕೊಳ್ಳಿ.</translation>
 <translation id="6870470066213933201">JavaScript ಆಪ್ಟಿಮೈಸೇಷನ್‌ ಮತ್ತು ಭದ್ರತೆಯನ್ನು ನಿರ್ವಹಿಸಿ</translation>
 <translation id="6870953451576517204">ಸ್ವಯಂ ಪರೀಕ್ಷೆ ಯಶಸ್ವಿಯಾಗಿದೆ</translation>
 <translation id="6871644448911473373">OCSP ಪ್ರತಿಕ್ರಿಯೆ ನೀಡುಗ: <ph name="LOCATION" /></translation>
@@ -8671,6 +8687,7 @@
 <translation id="6997553674029032185">ಸೈಟ್‌ಗೆ ಹೋಗಿ</translation>
 <translation id="6997642619627518301"><ph name="NAME_PH" /> - ಚಟುವಟಿಕೆ ಲಾಗ್</translation>
 <translation id="6997707937646349884">ನಿಮ್ಮ ಸಾಧನಗಳಲ್ಲಿ:</translation>
+<translation id="6998036632333022623">Google ಜೊತೆಗೆ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಹಂಚಿಕೊಳ್ಳಲಾಗುತ್ತಿದೆ</translation>
 <translation id="6998793565256476099">ವೀಡಿಯೊ ಸಂವಾದ ನಡೆಸಲು ಸಾಧನವನ್ನು ನೋಂದಾಯಿಸಿ</translation>
 <translation id="6999956497249459195">ಹೊಸ ಗುಂಪು</translation>
 <translation id="7000206553895739324"><ph name="PRINTER_NAME" /> ಸಂಪರ್ಕ ಹೊಂದಿದೆ ಆದರೆ ಕಾನ್ಫಿಗರೇಶನ್ ಮಾಡಬೇಕಿದೆ</translation>
@@ -8785,6 +8802,7 @@
 <translation id="7072078320324181561">ಸ್ಥಳ ಅನುಮತಿಯಿರುವ ಆ್ಯಪ್‌ಗಳು ಮತ್ತು ವೆಬ್‌ಸೈಟ್‌ಗಳು, ಅಷ್ಟೇ ಅಲ್ಲದೇ ಸಿಸ್ಟಂ ಸರ್ವಿಸ್‌ಗಳು ನಿಮ್ಮ ಸ್ಥಳವನ್ನು ಬಳಸಬಹುದು <ph name="LINK_BEGIN" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="LINK_END" /></translation>
 <translation id="7072573590175540692">ಲಭ್ಯವಿರುವ ಫೀಚರ್ ಮತ್ತು ಎಕ್ಸ್‌ಟೆನ್ಶನ್ ಶಾರ್ಟ್‌ಕಟ್‌ಗಳು</translation>
 <translation id="7074703793383805632"><ph name="SHARED_STATE" /> <ph name="GROUP_NAME" /> ಗುಂಪು - <ph name="OPENED_STATE" /></translation>
+<translation id="7075116338736929419">CPU ಪರ್ಫಾರ್ಮೆನ್ಸ್ ಶ್ರೇಣಿಯನ್ನು ಅತಿಕ್ರಮಿಸಿ</translation>
 <translation id="7075625805486468288">HTTPS/SSL ಪ್ರಮಾಣಪತ್ರಗಳು ಮತ್ತು ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ನಿರ್ವಹಿಸಿ</translation>
 <translation id="707772989579681711">ನಿಮ್ಮ ಹಿಂದಿನ ಆಯ್ಕೆ</translation>
 <translation id="7077751457066325012">ಕೀಬೋರ್ಡ್ ಶಾರ್ಟ್‌ಕಟ್‌ಗಳನ್ನು ವೀಕ್ಷಿಸಿ ಮತ್ತು ಕಸ್ಟಮೈಸ್ ಮಾಡಿ</translation>
@@ -9547,6 +9565,7 @@
 <translation id="7624337243375417909">caps lock ಆಫ್</translation>
 <translation id="7625568159987162309">ಸೈಟ್‌ಗಳಾದ್ಯಂತ ಸಂಗ್ರಹಿಸಲಾದ ಅನುಮತಿಗಳನ್ನು ಮತ್ತು ಡೇಟಾವನ್ನು ವೀಕ್ಷಿಸಿ</translation>
 <translation id="7625823789272218216">ಎಡಭಾಗದಲ್ಲಿ ಹೊಸ ಟ್ಯಾಬ್ ತೆರೆಯಿರಿ</translation>
+<translation id="762730429396410864">ವೆಬ್‌ಸೈಟ್‌ಗಳಿಗೆ ವರದಿ ಮಾಡಲಾದ CPU ಪರ್ಫಾರ್ಮೆನ್ಸ್ ಶ್ರೇಣಿಯನ್ನು ಹಸ್ತಚಾಲಿತವಾಗಿ ಸೆಟ್ ಮಾಡಿ</translation>
 <translation id="7627749368210392160">ನಿಮ್ಮ ಸ್ಥಳೀಯ ನೆಟ್‌ವರ್ಕ್‌ನಲ್ಲಿರುವ ಇತರ ಸಾಧನಗಳನ್ನು ಆ್ಯಕ್ಸೆಸ್ ಮಾಡಲು ಸೈಟ್‌ಗಳು ಈ ಫೀಚರ್ ಅನ್ನು ಬಳಸಬಹುದು</translation>
 <translation id="7628927569678398026"><ph name="LOCALE" /> (<ph name="VARIANT" />), ಗ್ರೇಡ್‌ <ph name="GRADE" /></translation>
 <translation id="762917478230183172">ಪ್ರತಿ ಕೀಗಾಗಿ ಕ್ರಿಯೆಯನ್ನು ಆಯ್ಕೆಮಾಡಿ</translation>
@@ -9825,7 +9844,9 @@
 <translation id="7799650166313181433"><ph name="USER_EMAIL" /> ಗೆ ಸೈನ್ ಇನ್ ಆಗಿರುವ ಸಾಧನಗಳು ಮಾತ್ರ ಈ ಸಾಧನದ ಜೊತೆ ಹಂಚಿಕೊಳ್ಳಬಹುದು. ನಿಮ್ಮ ಸಾಧನಗಳ ನಡುವಿನ ಹಂಚಿಕೊಳ್ಳುವಿಕೆಯನ್ನು ನೀವು ಅನುಮೋದಿಸುವ ಅಗತ್ಯವಿಲ್ಲ.</translation>
 <translation id="7800485561443537737">ನಿಮ್ಮ <ph name="DEVICE_TYPE" /> ನ ಮೊಬೈಲ್ ಡೇಟಾವನ್ನು ಬಳಸುತ್ತದೆ ಮತ್ತು ನಿಮ್ಮ ವಾಹಕವು ಹೆಚ್ಚುವರಿ ಶುಲ್ಕವನ್ನು ವಿಧಿಸಬಹುದು. ಬ್ಯಾಟರಿ ಬಳಕೆಯನ್ನು ಹೆಚ್ಚಿಸಬಹುದು. <ph name="BEGIN_LINK_LEARN_MORE" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7800518121066352902">ಅಪ್ರ&amp;ದಕ್ಷಿಣೆಯಂತೆ ತಿರುಗಿಸಿ</translation>
+<translation id="780254490276923052">ಶ್ರೇಣಿ 2: MID</translation>
 <translation id="780301667611848630">ಬೇಡ</translation>
+<translation id="7803118804281013214">ಈ ಸೈಟ್ ಅನ್ನು ತೊರೆದರೆ ನಿಮ್ಮ ಕಾರ್ಯವು ನಿಂತುಹೋಗುತ್ತದೆ. Gemini ಕೆಲಸ ಮಾಡುವುದನ್ನು ಮುಂದುವರಿಸಲು ಹೊಸ ಟ್ಯಾಬ್ ಅನ್ನು ತೆರೆಯಿರಿ.</translation>
 <translation id="7803657407897251194">ನಿಮ್ಮ Android ಸಾಧನದೊಂದಿಗೆ ಸೆಟಪ್ ಅನ್ನು ಮುಂದುವರಿಸಲು, ನಿಮ್ಮ <ph name="DEVICE_TYPE" /> ಸಾಧನವೊಂದನ್ನು ನೆಟ್‌ವರ್ಕ್‌ಗೆ ಕನೆಕ್ಟ್ ಮಾಡಿ</translation>
 <translation id="7803714812705886512">ಬೆದರಿಕೆಗಳನ್ನು ಪತ್ತೆಹಚ್ಚಲು Google ಕಡಿಮೆ (ಉದಾಹರಣೆಗೆ, URL ಗಳ ಭಾಗಗಳು, ಡೌನ್‌ಲೋಡ್ ಮಾಹಿತಿ) ಡೇಟಾವನ್ನು ಬಳಸುತ್ತದೆ</translation>
 <translation id="7804072833593604762">ಟ್ಯಾಬ್ ಮುಚ್ಚಲಾಗಿದೆ</translation>
@@ -10841,6 +10862,7 @@
 <translation id="8500044868721690197">ನಿಮ್ಮ MIDI ಸಾಧನಗಳನ್ನು ನಿಯಂತ್ರಿಸದಂತೆ ಹಾಗೂ ಮರು ಪ್ರೋಗ್ರಾಂ ಮಾಡದಂತೆ ಈ ಸೈಟ್ ಅನ್ನು ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ</translation>
 <translation id="8500123638242682652">ವಿಂಡೋವನ್ನು ಮೇಲಕ್ಕೆ ಸರಿಸಲಾಗಿದೆ</translation>
 <translation id="8500132602331251964">ಆ್ಯಪ್ ಅಪ್‌ಡೇಟ್ ಲಭ್ಯವಿದೆ</translation>
+<translation id="850228775215800722">ಶ್ರೇಣಿ 1: ಕಡಿಮೆ</translation>
 <translation id="8503813439785031346">ಬಳಕೆದಾರರಹೆಸರು</translation>
 <translation id="850382998924680137">ಇಂದು ವೀಕ್ಷಿಸಲಾಗಿದೆ</translation>
 <translation id="850399339579925930">ನಿಘಂಟುಗಳು</translation>
@@ -11257,6 +11279,7 @@
 <translation id="8774379074441005279">ಮರುಸ್ಥಾಪನೆಯನ್ನು ದೃಢೀಕರಿಸಿ</translation>
 <translation id="8774934320277480003">ಮೇಲಿನ ಅಂಚು</translation>
 <translation id="8775144690796719618">ಅಮಾನ್ಯ URL</translation>
+<translation id="877515298105563553">ಅಕ್ಕ ಪಕ್ಕ</translation>
 <translation id="8775653927968399786">{0,plural, =1{ನಿಮ್ಮ <ph name="DEVICE_TYPE" /> # ಸೆಕೆಂಡಿನಲ್ಲಿ ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಲಾಕ್ ಆಗುತ್ತದೆ.
 <ph name="DOMAIN" />, ನಿಮ್ಮ ಸ್ಮಾರ್ಟ್ ಕಾರ್ಡ್ ಅನ್ನು ಸೇರಿಸಬೇಕೆಂದು ಬಯಸುತ್ತದೆ.}one{ನಿಮ್ಮ <ph name="DEVICE_TYPE" /> # ಸೆಕೆಂ‌ಡುಗಳಲ್ಲಿ ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಲಾಕ್ ಆಗುತ್ತದೆ.
 <ph name="DOMAIN" />, ನಿಮ್ಮ ಸ್ಮಾರ್ಟ್ ಕಾರ್ಡ್ ಅನ್ನು ಸೇರಿಸಬೇಕೆಂದು ಬಯಸುತ್ತದೆ.}other{ನಿಮ್ಮ <ph name="DEVICE_TYPE" /> # ಸೆಕೆಂ‌ಡುಗಳಲ್ಲಿ ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಲಾಕ್ ಆಗುತ್ತದೆ.
@@ -11710,6 +11733,7 @@
 <translation id="9070342919388027491">ಟ್ಯಾಬ್ ಅನ್ನು ಎಡಕ್ಕೆ ಸರಿಸಲಾಗಿದೆ</translation>
 <translation id="9072220108592671115">ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಲಾದ ಆವೃತ್ತಿ <ph name="VERSION" /></translation>
 <translation id="9072918088200875065">ನಿಮಗಾಗಿ ಕಾರ್ಯಗಳನ್ನು ಪೂರ್ಣಗೊಳಿಸಲು ಈ ಸೈಟ್‌ಗಳಿಗೆ ಸೈನ್ ಇನ್ ಮಾಡಲು ನೀವು Gemini ಗೆ ಅನುಮತಿ ನೀಡಿದ್ದೀರಿ</translation>
+<translation id="9074618195273027322">{CORE_COUNT,plural, =1{1 ಕೋರ್‌}one{{CORE_COUNT} ಕೋರ್‌ಗಳು}other{{CORE_COUNT} ಕೋರ್‌ಗಳು}}</translation>
 <translation id="9074739597929991885">ಬ್ಲೂಟೂತ್‌</translation>
 <translation id="9074836595010225693">USB ಮೌಸ್ ಸಂಪರ್ಕಗೊಂಡಿದೆ</translation>
 <translation id="9075413375877487220">ಈ ವಿಸ್ತರಣೆಯು ವರ್ಧಿತ ಸುರಕ್ಷಿತ ಬ್ರೌಸಿಂಗ್‌ಗೆ ವಿಶ್ವಾಸಾರ್ಹ ಎಂದೆನಿಸಿಲ್ಲ.‌‌</translation>

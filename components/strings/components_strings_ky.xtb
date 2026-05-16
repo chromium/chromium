@@ -1820,6 +1820,7 @@
 <translation id="380865868633614173">Картанын маалыматы сакталууда</translation>
 <translation id="3810770279996899697">Сырсөздөрдү башкаргыч MacOS Keychain'ге мүмкүнчүлүк алышы керек</translation>
 <translation id="3810973564298564668">Башкаруу</translation>
+<translation id="3811328723651698330"><ph name="STRING_1" />, <ph name="STRING_2" /></translation>
 <translation id="3812398568375898177">Бул ChromeOS тутумундагы Android колдонмолорунун майнаптуулугун жогорулата турган маанилүү жаңыртуу.</translation>
 <translation id="3814865536373139791">Уюмуңуздагы эрежелерди тескөөнү жөнөкөйлөштүрүңүз</translation>
 <translation id="3815434930383843058">8 x 12 дюйм</translation>
@@ -2400,6 +2401,7 @@
 <translation id="4736934858538408121">Виртуалдык карта</translation>
 <translation id="473775607612524610">Жаңыртуу</translation>
 <translation id="4738601419177586157"><ph name="TEXT" /> издөө сунушу</translation>
+<translation id="473866660302034629"><ph name="TAB_TITLE" />, тандалган өтмөк, <ph name="TOTAL" /> ичинен <ph name="INDEX" />, өтмөктөр арасында которулуу үчүн солго же оңго жебени колдонуңуз</translation>
 <translation id="4742407542027196863">Сырсөздөрдү башкаруу…</translation>
 <translation id="474270528725216349">Шайкештирилген түзмөктөрдө кеминде 1 сайттан</translation>
 <translation id="4743275772928623722">Системаңыз жаңырды, бирок айрым колдонмолор жана файлдар калыбына келтирилген жок. Колдонмолоруңуз автоматтык түрдө кайра жүктөлүп алынат.</translation>
@@ -2467,6 +2469,7 @@
 <translation id="4832961164064927107">Барбекю жана гриль</translation>
 <translation id="4835568975547260025">Chrome суроолоруңузга ылайыктуу жоопторду алууга жардам берүү үчүн тиешелүү ачык өтмөктөрдү демейки шартта бөлүшөт.</translation>
 <translation id="4840250757394056958">Chrome'до көрүлгөн вебсайттарды көрүү</translation>
+<translation id="4842365697443353018">Кийинчерээк төлөө үчүн форманы тазалаңыз</translation>
 <translation id="484462545196658690">Авто</translation>
 <translation id="4844937814014739139">Жалпы өтмөктөрдү сыдыруу жана чоңойтуп/кичирейтүү</translation>
 <translation id="484671803914931257"><ph name="MERCHANT_NAME" /> сайтынан жана башкалардан арзандатуу алыңыз</translation>

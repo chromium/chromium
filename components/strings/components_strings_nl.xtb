@@ -2230,6 +2230,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="443673843213245140">Er kan geen proxy worden gebruikt, maar er is wel een expliciete proxyconfiguratie opgegeven.</translation>
 <translation id="4438821706955556403">Gebruikelijke prijs</translation>
 <translation id="4441832193888514600">Genegeerd omdat het beleid alleen kan worden ingesteld als cloudgebruikersbeleid.</translation>
+<translation id="4444062564459679679">Al naar Chrome gestuurd op je <ph name="DEVICE_NAME" /></translation>
 <translation id="4445133368066241428">Populaire onderwerpen</translation>
 <translation id="4445694043187340808"><ph name="STARTER_PACK_TABS_FOCUSED_FRIENDLY_MATCH_TEXT" />, druk op Enter om tabbladen te doorzoeken</translation>
 <translation id="4445964943162061557">Dit is een experimentele functie die het niet altijd juist heeft.</translation>
@@ -4840,6 +4841,7 @@ Aanvullende informatie:
 <translation id="8511402995811232419">Cookies beheren</translation>
 <translation id="851353418319061866">Nauwkeurigheidscheck</translation>
 <translation id="8513580896341796021">Download gestart. Druk op |<ph name="ACCELERATOR" />| om deze te bekijken.</translation>
+<translation id="8515544520486085367">Betaling automatisch invullen</translation>
 <translation id="8519753333133776369">HID-apparaat toegestaan door je beheerder</translation>
 <translation id="8521013008769249764">Zitbanken en fauteuils</translation>
 <translation id="8521812709849134608">Werkbladen</translation>

@@ -2234,6 +2234,7 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="443673843213245140">Die Proxy-Nutzung ist deaktiviert, es ist jedoch eine explizite Proxy-Konfiguration festgelegt.</translation>
 <translation id="4438821706955556403">Normalpreis</translation>
 <translation id="4441832193888514600">Ignoriert, da die Richtlinie nur als Cloud-Nutzerrichtlinie festgelegt werden kann.</translation>
+<translation id="4444062564459679679">Bereits über dein Gerät (<ph name="DEVICE_NAME" />) an Chrome gesendet</translation>
 <translation id="4445133368066241428">Beliebte Themen</translation>
 <translation id="4445694043187340808"><ph name="STARTER_PACK_TABS_FOCUSED_FRIENDLY_MATCH_TEXT" /> – drücke die Eingabetaste, um nach Tabs zu suchen</translation>
 <translation id="4445964943162061557">Dies ist eine experimentelle Funktion, die manchmal fehlerhaft sein kann.</translation>
@@ -4845,6 +4846,7 @@ Weitere Details:
 <translation id="8511402995811232419">Cookies verwalten</translation>
 <translation id="851353418319061866">Richtigkeitsprüfung</translation>
 <translation id="8513580896341796021">Download gestartet. Um ihn aufzurufen, drücke |<ph name="ACCELERATOR" />|.</translation>
+<translation id="8515544520486085367">Zahlungsinformationen automatisch ausfüllen</translation>
 <translation id="8519753333133776369">HID-Geräte sind von deinem Administrator zugelassen</translation>
 <translation id="8521013008769249764">Sofas und Sessel</translation>
 <translation id="8521812709849134608">Arbeitsplatten</translation>

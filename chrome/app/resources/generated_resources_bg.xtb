@@ -37,6 +37,7 @@
 <translation id="1016876401615857435">За да използвате ключовете си за достъп на това устройство, потвърдете самоличността си</translation>
 <translation id="1017280919048282932">&amp;Добавяне в речника</translation>
 <translation id="1018656279737460067">Отказано</translation>
+<translation id="1020008977311763380">Номиналното ниво на производителност е: <ph name="CPU_TIER" /></translation>
 <translation id="1022522674678746124">PowerPoint</translation>
 <translation id="1022669824195822609">Устройството ви се управлява от <ph name="DOMAIN" />. Администраторите имат достъп до данните в потребителските профили на това устройство.</translation>
 <translation id="1022719295563085177">По подразбиране за мрежата</translation>
@@ -56,6 +57,7 @@
 <translation id="1033060461778467949">Преместване на раздела в разделен изглед</translation>
 <translation id="1033780634303702874">Достъп до серийните ви устройства</translation>
 <translation id="1034484273907870301">Лента с раздели с миниизображения в режим на таблет</translation>
+<translation id="103477588607005550">Процесор: <ph name="CPU_MODEL" /> (<ph name="CPU_CORES" />)</translation>
 <translation id="1035289631433631911">Инструментът „Прехвърляне на съдържание“</translation>
 <translation id="1035875743511577452">Кликнете върху „Промяна на темата“, за да разгледате теми, вдъхновени от различни творци, природата и др.</translation>
 <translation id="1036348656032585052">Изключване</translation>
@@ -308,6 +310,7 @@
 <translation id="1197088940767939838">оранжево</translation>
 <translation id="11978075283960463">Данни, съхранявани в приложението: <ph name="APP_SIZE" /></translation>
 <translation id="1198066799963193307">Инструменти за говор за лица със слабо зрение</translation>
+<translation id="1198796216247697947">Ниво 0: НЕИЗВЕСТНО</translation>
 <translation id="119944043368869598">Изчистване на всички</translation>
 <translation id="1199814941632954229">Сертификатите за следните профили се обезпечават</translation>
 <translation id="120069043972472860">Изключително лошо</translation>
@@ -489,6 +492,7 @@
 <translation id="1323433172918577554">Показване на още</translation>
 <translation id="132539964543492755">Използвайте клавиша x, за да промените избора на бутон на мишката между левия, десния и двата бутона</translation>
 <translation id="1325611581149097457">Писане на по-добри текстове</translation>
+<translation id="1325798198269334655">Научете повече за поддържането на актуализациите на Chrome</translation>
 <translation id="1325898422473267360"><ph name="PERMISSION_USAGE" /> <ph name="PERMISSION_INDICATOR_DESCRIPTION" /></translation>
 <translation id="1327272175893960498">Пропуски за Kerberos</translation>
 <translation id="1327495825214193325">За да активирате отстраняването на грешки през ADB, трябва да рестартирате това устройство <ph name="DEVICE_TYPE" />. За деактивирането му е необходимо да бъдат възстановени фабричните настройки.</translation>
@@ -2959,6 +2963,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2991182900092497283">Въведете причина за поставянето на тези данни:</translation>
 <translation id="2992931425024192067">Показване на цялото съдържание от известията</translation>
 <translation id="2993517869960930405">Информация за приложението</translation>
+<translation id="2994804273850542871">Ниво 4: УЛТРА</translation>
 <translation id="2995472388018163047">{NUM_GROUPS,plural, =1{Запазете тази група, за да добавяте раздели по-късно, или я напуснете, ако вече не искате достъп до нея}other{Запазете тези групи, за да добавяте раздели по-късно, или ги напуснете, ако вече не искате достъп до тях}}</translation>
 <translation id="2996071302059856125">Научете повече за това как AI оформя практическата ви работа и за контролите, предоставени от Chrome</translation>
 <translation id="2996108796702395498">Серийният номер на устройството ви е <ph name="SERIAL_NUMBER" />. Той може да се използва за активиране на услугата.</translation>
@@ -2977,6 +2982,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3003967365858406397">Устройството ви <ph name="PHONE_NAME" /> ще създаде частна Wi-Fi връзка.</translation>
 <translation id="3004385386820284928">Персонализиране на клавишите на клавиатурата</translation>
 <translation id="300580149047131921">Наскоро използвано</translation>
+<translation id="3005928441045180122">Групирано</translation>
 <translation id="3006881078666935414">Няма данни за използването</translation>
 <translation id="3007555010975143508">Тези приложения ще се използват за записване на екрана ви:</translation>
 <translation id="3007771295016901659">Дублиране на раздела</translation>
@@ -4670,6 +4676,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4177668342649553942">Отваряне на <ph name="SHORTCUT_NAME" /> – <ph name="APP_NAME" /></translation>
 <translation id="4177731895051842298">Разширенията са добавки за Chrome, които могат да ви помогнат с организирането, опростяването на задачи и персонализирането на сърфирането ви</translation>
 <translation id="4178220097446335546">За да бъде забравен този абонамент и свързаните с него мрежи, отворете страницата му в Passpoint и го премахнете.</translation>
+<translation id="4181376007499455822">Без замяна</translation>
 <translation id="4181602000363099176">20x</translation>
 <translation id="4181841719683918333">Езици</translation>
 <translation id="4182182457914031017">За да ви показваме предложения и да подобрим тази функция, URL адресът и пълното съдържание на страницата на посещавания от вас сайт се споделят с Google.</translation>
@@ -8351,6 +8358,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="67862343314499040">виолетово</translation>
 <translation id="6786480815699355166">Могат да се превеждат само поддържаните езици за надписите на живо</translation>
 <translation id="6786747875388722282">Разширения</translation>
+<translation id="6786804673213172567">Ниво 3: ВИСОКО</translation>
 <translation id="6787531944787756058">потребителското име <ph name="USER_EMAIL" /> е запазено само на това устройство. Преглед на подробностите</translation>
 <translation id="6787839852456839824">Клавишни комбинации</translation>
 <translation id="6788210894632713004">Разпакетирано разширение</translation>
@@ -8497,6 +8505,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="686839242150793617">Сайтове с разрешение за автоматично преминаване в режим „картина в картината“</translation>
 <translation id="6868734951249611611">Кликнете с десния бутон тук и изберете „Показване на разделите вертикално“</translation>
 <translation id="6868934826811377550">Преглед на подробностите</translation>
+<translation id="6869809635308708588">За да изпращате връзки между две устройства, трябва да сте влезли в един и същ профил в Google на тях.</translation>
 <translation id="6870470066213933201">Управление на оптимизирането и сигурността на JavaScript</translation>
 <translation id="6870953451576517204">Самотестването бе успешно</translation>
 <translation id="6871644448911473373">OCSP респондер: <ph name="LOCATION" /></translation>
@@ -8788,6 +8797,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="7072078320324181561">Местоположението ви може да се използва от приложенията и уебсайтовете, които имат разрешение за достъп до него, и от системните услуги. <ph name="LINK_BEGIN" />Научете повече<ph name="LINK_END" /></translation>
 <translation id="7072573590175540692">Налични преки пътища за функциите и разширенията</translation>
 <translation id="7074703793383805632">Група „<ph name="GROUP_NAME" />“ – <ph name="SHARED_STATE" /> – <ph name="OPENED_STATE" /></translation>
+<translation id="7075116338736929419">Замяна на нивото на производителност на процесора</translation>
 <translation id="7075625805486468288">Управление на настройките и HTTPS/SSL сертификатите</translation>
 <translation id="707772989579681711">Предишният ви избор</translation>
 <translation id="7077751457066325012">Преглед и персонализиране на клавишните комбинации</translation>
@@ -9551,6 +9561,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="7624337243375417909">caps lock е изключен</translation>
 <translation id="7625568159987162309">Преглед на разрешенията и данните, съхранявани в сайтовете</translation>
 <translation id="7625823789272218216">Нов раздел отляво</translation>
+<translation id="762730429396410864">Ръчно задаване на нивото на производителност на процесора, което се съобщава на уебсайтовете</translation>
 <translation id="7627749368210392160">Сайтовете могат да използват тази функция, за да осъществяват достъп до други устройства в локалната ви мрежа</translation>
 <translation id="7628927569678398026"><ph name="LOCALE" /> (<ph name="VARIANT" />), клас <ph name="GRADE" /></translation>
 <translation id="762917478230183172">Изберете действие за всеки клавиш</translation>
@@ -9829,7 +9840,9 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="7799650166313181433">Само устройствата, на които сте влезли в профила <ph name="USER_EMAIL" />, могат да споделят с това устройство. Няма да се налага да одобрявате заявките за споделяне между устройствата си.</translation>
 <translation id="7800485561443537737">Използва мобилните данни на вашия <ph name="DEVICE_TYPE" />. Операторът ви може да начисли допълнителни такси. Възможно е батерията да се изтощи по-бързо. <ph name="BEGIN_LINK_LEARN_MORE" />Научете повече<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7800518121066352902">Завъртане о&amp;братно на часовниковата стрелка</translation>
+<translation id="780254490276923052">Ниво 2: СРЕДНО</translation>
 <translation id="780301667611848630">Не, благодаря</translation>
+<translation id="7803118804281013214">Ако напуснете този сайт, задачата ви ще бъде спряна. Отворете нов раздел, за да позволите на Gemini да продължи да работи.</translation>
 <translation id="7803657407897251194">За да продължите настройването с устройството си с Android, свържете своя <ph name="DEVICE_TYPE" /> с мрежа</translation>
 <translation id="7803714812705886512">Google използва по-малко данни (например части от URL адреси, информация за изтеглянията), за да открива заплахи</translation>
 <translation id="7804072833593604762">Затворихте раздела</translation>
@@ -10848,6 +10861,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="8500044868721690197">Контролирането и препрограмирането на MIDI устройствата ви са забранени за този сайт</translation>
 <translation id="8500123638242682652">Прозорецът бе преместен нагоре</translation>
 <translation id="8500132602331251964">Налице е актуализация на приложението</translation>
+<translation id="850228775215800722">Ниво 1: НИСКО</translation>
 <translation id="8503813439785031346">Потребителско име</translation>
 <translation id="850382998924680137">Прегледано днес</translation>
 <translation id="850399339579925930">Речници</translation>
@@ -11264,6 +11278,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="8774379074441005279">Потвърждаване на възстановяването</translation>
 <translation id="8774934320277480003">Горно поле</translation>
 <translation id="8775144690796719618">Невалиден URL адрес</translation>
+<translation id="877515298105563553">Редом</translation>
 <translation id="8775653927968399786">{0,plural, =1{Вашият <ph name="DEVICE_TYPE" /> ще се заключи автоматично след # секунда.
 <ph name="DOMAIN" /> изисква да не изваждате смарткартата си.}other{Вашият <ph name="DEVICE_TYPE" /> ще се заключи автоматично след # секунди.
 <ph name="DOMAIN" /> изисква да не изваждате смарткартата си.}}</translation>
@@ -11716,6 +11731,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="9070342919388027491">Разделът бе преместен наляво</translation>
 <translation id="9072220108592671115">Инсталирана версия: <ph name="VERSION" /></translation>
 <translation id="9072918088200875065">Предоставихте на Gemini разрешение да влиза в профила ви в тези сайтове, за да изпълнява задачи вместо вас</translation>
+<translation id="9074618195273027322">{CORE_COUNT,plural, =1{1 ядро}other{{CORE_COUNT} ядра}}</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9074836595010225693">Мишката с USB е свързана</translation>
 <translation id="9075413375877487220">Подобрената защита от Безопасно сърфиране няма доверие на това разширение.</translation>

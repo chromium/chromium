@@ -178,6 +178,7 @@
 <translation id="1582732959743469162">Ընթացիկ ներբեռնումը կընդհատվի։</translation>
 <translation id="1594034544529347967">Սկիզբը՝</translation>
 <translation id="1598751033135758830">Բացել հավելվածում…</translation>
+<translation id="1600571977391127696">Որոշ բովանդակություն կարող է հարմար չլինել բոլորի համար։</translation>
 <translation id="1601560923496285236">Կիրառել</translation>
 <translation id="1603718000246404895">{COUNT,plural, =1{1 հասցե}one{# հասցե}other{# հասցե}}</translation>
 <translation id="1605405588277479165">Անջատված է (խորհուրդ չի տրվում)</translation>
@@ -312,6 +313,7 @@
 <translation id="2012723204723845092">Բարի վերադարձ</translation>
 <translation id="2015722694326466240">Գաղտնաբառերը տեսնելու համար ձեր սարքում նախ պետք է անցակոդ սահմանեք:</translation>
 <translation id="201759455285471444">Ծավալել ներդիրների խումբը։</translation>
+<translation id="2031515492007104071">Մակարդակի բարձրացում</translation>
 <translation id="2044394949148788042">Բացեք ներդիրների ցանցը</translation>
 <translation id="2044681667265133332"><ph name="USER_EMAIL" /> հաշիվը կառավարվում է <ph name="HOSTED_DOMAIN" /> տիրույթի կողմից, որին հնարավոր է, որ տեսանելի լինել որոշ տեղեկություններ։ <ph name="BEGIN_LINK" />Իմանալ ավելին<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">նոր տարր</translation>
@@ -845,6 +847,7 @@
 <translation id="3994911892367422121">ՊԱՐԶ Է</translation>
 <translation id="3995521777587992544">Էջի բեռնման ընթացագոտի, կատարված է <ph name="EMAIL" />։</translation>
 <translation id="3997522473364371632">Ադմինիստրատորն արգելել է գաղտնաբառերի փոխանցումը</translation>
+<translation id="4000707564769984863">Դիտել տեսանյութը՝ <ph name="WATCH_LINK" /></translation>
 <translation id="4002066346123236978">Վերնագիր</translation>
 <translation id="4004204301268239848">Գաղտնաբառերը պահվում են ձեր Google հաշվում, որպեսզի կարողանաք օգտագործել դրանք ցանկացած սարքում։</translation>
 <translation id="4007463141047732631">Փոփոխել խումբը</translation>
@@ -875,6 +878,7 @@
 <translation id="4129768137228347731">Պահե՞լ <ph name="ENTITY_TYPE" /> ֆայլը</translation>
 <translation id="4133139945030148655">Պատրաստ է</translation>
 <translation id="4133265950310064865">Կատարելագործված պաշտպանություն</translation>
+<translation id="4142372594294312814">5 կարևոր փաստ գեներատիվ արհեստական բանականության մասին</translation>
 <translation id="4145507240503767005"><ph name="SEARCH_ENGINE_NAME" />, <ph name="SEARCH_ENGINE_DOMAIN" /></translation>
 <translation id="4147897805161313378">Google Լուսանկարներ</translation>
 <translation id="4148023517926189160">Այս կայքն ուզում է ֆայլ ներբեռնել և այն ավելացնել ձեր օրացույցում։</translation>
@@ -997,6 +1001,7 @@
 <translation id="456502772933839252">Ցուցադրվում է <ph name="PAGE_TITLE" /> էջը</translation>
 <translation id="4565377596337484307">Թաքցնել գաղտնաբառը</translation>
 <translation id="4568230126482344545">Թաքցնել «Վերջին ներդիրները» կետը</translation>
+<translation id="4571490460651837010">Կառավարել հասցեները և այլ տվյալներ…</translation>
 <translation id="4578835633387306383">Միացնել…</translation>
 <translation id="4580621046861724270">Որոշ էջանիշներ պահված չեն</translation>
 <translation id="4580716718466706433">Անցեք «Գաղտնաբառերի կառավարիչ»</translation>
@@ -1234,6 +1239,7 @@
 <translation id="5329451663851195956">Թարմացնելու համար քաշեք էջը ներքև։</translation>
 <translation id="5336910966955551309">Հպեք և պահեք՝ ձեր ուզած կայքերն ամրացնելու համար</translation>
 <translation id="5338512273860059533">Մուտք եք գործում։</translation>
+<translation id="5340148832014094861">Գործում են հետևյալ փաստաթղթերի դրույթները՝ <ph name="GOOGLE_TERMS" /> և <ph name="GEMINI_APPS_PRIVACY" />։ Gemini-ը արհեստական բանականություն է և կարող է սխալներ թույլ տալ, այդ թվում՝ մարդկանց մասին։</translation>
 <translation id="5343472494710226394">Նորություններ, սպորտային թարմացումներ և բովանդակություն՝ ձեր հետաքրքրությունների հիման վրա</translation>
 <translation id="5352128922772839949">Պահել ֆայլը</translation>
 <translation id="5355191726083956201">Բարելավված պաշտպանությունը միացված է</translation>
@@ -1577,6 +1583,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="647867789226964031">Փոխեք ձեր գաղտնաբառերը</translation>
 <translation id="6480363549849064919">Սպասառուի իսկորոշում</translation>
 <translation id="6489174933860678546">Վեբ էջերը կոնֆիդենցիալ եղանակով դիտարկելու համար օգտագործեք ինկոգնիտո ներդիրներ։</translation>
+<translation id="6489775505977274806">Թաքցնել «Մակարդակի բարձրացում» բաժինը</translation>
 <translation id="6494931198667773526">Ավարտը՝</translation>
 <translation id="6503077044568424649">Հաճախակի այցելած</translation>
 <translation id="6503763061813913607">Անվտանգության ստուգման ծանուցումներ</translation>

@@ -2236,6 +2236,7 @@ Hiljem maksmise valikute peitmiseks avage <ph name="BEGIN_LINK" />makseseaded<ph
 <translation id="443673843213245140">Puhverserveri kasutamine on keelatud, kuid määratud on ka konkreetne puhverserveri konfigureerimine.</translation>
 <translation id="4438821706955556403">Tavaline hind</translation>
 <translation id="4441832193888514600">Eiratakse, kuna reegli saab seadistada ainult pilves olev kasutaja.</translation>
+<translation id="4444062564459679679">Juba saadetud teie seadme <ph name="DEVICE_NAME" /> Chrome'i.</translation>
 <translation id="4445133368066241428">Populaarsed teemad</translation>
 <translation id="4445694043187340808"><ph name="STARTER_PACK_TABS_FOCUSED_FRIENDLY_MATCH_TEXT" />, vajutage vahelehtedelt otsimiseks sisestusklahvi</translation>
 <translation id="4445964943162061557">See on katsejärgus funktsioon ega paku alati õigeid tulemusi.</translation>
@@ -4847,6 +4848,7 @@ Lisateave:
 <translation id="8511402995811232419">Küpsiste haldamine</translation>
 <translation id="851353418319061866">Täpsuse kontroll</translation>
 <translation id="8513580896341796021">Allalaadimine on alanud. Selle nägemiseks vajutage klahvi |<ph name="ACCELERATOR" />|.</translation>
+<translation id="8515544520486085367">Makse automaattäide</translation>
 <translation id="8519753333133776369">Administraator on HID-seadme lubanud</translation>
 <translation id="8521013008769249764">Diivanid ja tugitoolid</translation>
 <translation id="8521812709849134608">Tööpinnad</translation>

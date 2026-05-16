@@ -1856,6 +1856,7 @@ Geroago ordaintzeko aukerak ezkutatzeko, joan <ph name="BEGIN_LINK" />Ordainketa
 <translation id="3875783148670536197">Erakutsi nola</translation>
 <translation id="3877603629930976930">Ez partekatu</translation>
 <translation id="3878445208930547646">Webgune honetatik ezin da ezer kopiatu</translation>
+<translation id="3879674895057686427">Aukeratu zer hizkuntzatara itzuli nahi duzun</translation>
 <translation id="3879748587602334249">Deskargen kudeatzailea</translation>
 <translation id="3880456882942693779">Artea eta aisia</translation>
 <translation id="3880589673277376494">Internet eta telekomunikazioak</translation>
@@ -2231,6 +2232,7 @@ Geroago ordaintzeko aukerak ezkutatzeko, joan <ph name="BEGIN_LINK" />Ordainketa
 <translation id="443673843213245140">Proxya erabiltzeko aukera desgaitu da, baina proxy-konfigurazio esplizitua zehaztu da.</translation>
 <translation id="4438821706955556403">Ohiko prezioa</translation>
 <translation id="4441832193888514600">Ez ikusi egin zaio hodeiko erabiltzaile-gidalerro gisa soilik ezar daitekeelako gidalerroa.</translation>
+<translation id="4444062564459679679">Jada bidali da <ph name="DEVICE_NAME" /> gailuko Chrome-ra</translation>
 <translation id="4445133368066241428">Gai ezagunak</translation>
 <translation id="4445694043187340808"><ph name="STARTER_PACK_TABS_FOCUSED_FRIENDLY_MATCH_TEXT" />, sakatu "Sartu" fitxak bilatzeko</translation>
 <translation id="4445964943162061557">Eginbide esperimental bat da hau, eta ez du beti dena ongi egingo.</translation>
@@ -4840,6 +4842,7 @@ Xehetasun gehiago:
 <translation id="8511402995811232419">Kudeatu cookieak</translation>
 <translation id="851353418319061866">Zehaztasun-egiaztapena</translation>
 <translation id="8513580896341796021">Deskargatzen hasi da. Deskarga ikusteko, sakatu |<ph name="ACCELERATOR" />|.</translation>
+<translation id="8515544520486085367">Bete ordainketa-informazioa automatikoki</translation>
 <translation id="8519753333133776369">Administratzaileak onartutako HID gailua</translation>
 <translation id="8521013008769249764">Sofak eta besaulkiak</translation>
 <translation id="8521812709849134608">Sukalde-gainekoak</translation>

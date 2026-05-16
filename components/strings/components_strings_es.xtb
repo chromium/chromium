@@ -2237,6 +2237,7 @@ Para ocultar las opciones de pago aplazado, ve a la <ph name="BEGIN_LINK" />conf
 <translation id="443673843213245140">Se ha inhabilitado el uso de un servidor proxy, pero se han especificado ajustes de proxy explícitos.</translation>
 <translation id="4438821706955556403">Precio habitual</translation>
 <translation id="4441832193888514600">Se ignora porque la política solo se puede establecer como una política de usuarios basada en la nube.</translation>
+<translation id="4444062564459679679">Ya se ha enviado a Chrome en tu <ph name="DEVICE_NAME" /></translation>
 <translation id="4445133368066241428">Temas populares</translation>
 <translation id="4445694043187340808"><ph name="STARTER_PACK_TABS_FOCUSED_FRIENDLY_MATCH_TEXT" />, pulsa Intro para buscar pestañas</translation>
 <translation id="4445964943162061557">Se trata de una función experimental y no siempre acierta.</translation>
@@ -4850,6 +4851,7 @@ Más información:
 <translation id="8511402995811232419">Gestionar cookies</translation>
 <translation id="851353418319061866">Comprobación de la fiabilidad</translation>
 <translation id="8513580896341796021">Se ha iniciado la descarga. Para verla, pulsa |<ph name="ACCELERATOR" />|.</translation>
+<translation id="8515544520486085367">Autocompletar pago</translation>
 <translation id="8519753333133776369">Tu administrador permite el dispositivo de interfaz humana (HID)</translation>
 <translation id="8521013008769249764">Sofás y sillones</translation>
 <translation id="8521812709849134608">Encimeras</translation>

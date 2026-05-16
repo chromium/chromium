@@ -2236,6 +2236,7 @@ Pentru a ascunde opțiunile de plată mai târziu, accesează <ph name="BEGIN_LI
 <translation id="443673843213245140">Utilizarea unui proxy este dezactivată, dar o configurare proxy este specificată în mod explicit.</translation>
 <translation id="4438821706955556403">Prețul standard</translation>
 <translation id="4441832193888514600">Ignorată deoarece politica poate fi setată numai ca politică privind utilizatorii cloud.</translation>
+<translation id="4444062564459679679">S-a trimis deja la Chrome pe <ph name="DEVICE_NAME" /></translation>
 <translation id="4445133368066241428">Subiecte populare</translation>
 <translation id="4445694043187340808"><ph name="STARTER_PACK_TABS_FOCUSED_FRIENDLY_MATCH_TEXT" />, apasă pe Enter pentru a căuta în file</translation>
 <translation id="4445964943162061557">Aceasta este o funcție experimentală și nu va răspunde întotdeauna corect.</translation>
@@ -4847,6 +4848,7 @@ Detalii suplimentare:
 <translation id="8511402995811232419">Gestionează cookie-urile</translation>
 <translation id="851353418319061866">Verificarea preciziei</translation>
 <translation id="8513580896341796021">A început descărcarea. Pentru a o vedea, apasă pe |<ph name="ACCELERATOR" />|.</translation>
+<translation id="8515544520486085367">Completează automat plata</translation>
 <translation id="8519753333133776369">Dispozitiv HID permis de administrator</translation>
 <translation id="8521013008769249764">Canapele și fotolii</translation>
 <translation id="8521812709849134608">Blaturi</translation>

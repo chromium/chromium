@@ -178,6 +178,7 @@
 <translation id="1582732959743469162">Dit sal alle vordering van jou huidige aflaai staak.</translation>
 <translation id="1594034544529347967">Begin</translation>
 <translation id="1598751033135758830">Maak in app oop …</translation>
+<translation id="1600571977391127696">Sommige inhoud is dalk nie vir almal geskik nie.</translation>
 <translation id="1601560923496285236">Pas toe</translation>
 <translation id="1603718000246404895">{COUNT,plural, =1{1 adres}other{# adresse}}</translation>
 <translation id="1605405588277479165">Af – Nie aanbeveel nie</translation>
@@ -312,6 +313,7 @@
 <translation id="2012723204723845092">Welkom terug!</translation>
 <translation id="2015722694326466240">Om wagwoorde te sien, moet jy eers 'n wagkode op jou toestel stel.</translation>
 <translation id="201759455285471444">Vou oortjiegroep uit.</translation>
+<translation id="2031515492007104071">Level Up</translation>
 <translation id="2044394949148788042">Maak die oortjierooster oop</translation>
 <translation id="2044681667265133332">Die rekening <ph name="USER_EMAIL" /> word bestuur deur <ph name="HOSTED_DOMAIN" /> wat dalk sekere inligting kan bekyk. <ph name="BEGIN_LINK" />Meer inligting<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">nuwe item</translation>
@@ -845,6 +847,7 @@
 <translation id="3994911892367422121">HET DIT</translation>
 <translation id="3995521777587992544">Bladlaaivorderingsbalk, <ph name="EMAIL" /> gelaai.</translation>
 <translation id="3997522473364371632">Wagwoorddeling is deur jou administrateur deaktiveer.</translation>
+<translation id="4000707564769984863">Horlosie: <ph name="WATCH_LINK" /></translation>
 <translation id="4002066346123236978">Titel</translation>
 <translation id="4004204301268239848">Wagwoorde word in jou Google-rekening gestoor sodat jy hulle op enige toestel kan gebruik.</translation>
 <translation id="4007463141047732631">Wysig groep</translation>
@@ -875,6 +878,7 @@
 <translation id="4129768137228347731">Stoor <ph name="ENTITY_TYPE" />?</translation>
 <translation id="4133139945030148655">Alles is opgestel</translation>
 <translation id="4133265950310064865">Gevorderde Beskerming</translation>
+<translation id="4142372594294312814">5 dinge wat jy oor generatiewe KI moet weet</translation>
 <translation id="4145507240503767005"><ph name="SEARCH_ENGINE_NAME" />, <ph name="SEARCH_ENGINE_DOMAIN" /></translation>
 <translation id="4147897805161313378">Google Foto's</translation>
 <translation id="4148023517926189160">Hierdie webwerf wil ’n lêer aflaai en dit by jou kalender voeg.</translation>
@@ -997,6 +1001,7 @@
 <translation id="456502772933839252">Deel tans <ph name="PAGE_TITLE" /></translation>
 <translation id="4565377596337484307">Versteek wagwoord</translation>
 <translation id="4568230126482344545">Versteek Onlangs-oortjies</translation>
+<translation id="4571490460651837010">Bestuur adresse en meer …</translation>
 <translation id="4578835633387306383">Skakel aan …</translation>
 <translation id="4580621046861724270">Sommige boekmerke is nie gestoor nie</translation>
 <translation id="4580716718466706433">Gaan na “Wagwoordbestuurder”</translation>
@@ -1234,6 +1239,7 @@
 <translation id="5329451663851195956">Jy kan aftrek om te herlaai.</translation>
 <translation id="5336910966955551309">Tik en hou om jou gunstelingwerwe vas te speld</translation>
 <translation id="5338512273860059533">Aanmelding is aan die gang.</translation>
+<translation id="5340148832014094861"><ph name="GOOGLE_TERMS" /> en <ph name="GEMINI_APPS_PRIVACY" /> geld. Gemini is KI en kan foute maak, insluitend oor mense.</translation>
 <translation id="5343472494710226394">Nuus, sport en inhoud wat op jou belangstellings gebaseer is.</translation>
 <translation id="5352128922772839949">Stoor lêer</translation>
 <translation id="5355191726083956201">Verbeterde Beskerming is aan</translation>
@@ -1577,6 +1583,7 @@ Oorgee moet ook in die Algemene afdeling van Instellings geaktiveer word, en jou
 <translation id="647867789226964031">Verander jou wagwoorde</translation>
 <translation id="6480363549849064919">Kliëntstawing</translation>
 <translation id="6489174933860678546">Maak Incognito-oortjies oop om meer privaat deur die web te blaai.</translation>
+<translation id="6489775505977274806">Versteek Level Up</translation>
 <translation id="6494931198667773526">Eindig</translation>
 <translation id="6503077044568424649">Mees besoekte</translation>
 <translation id="6503763061813913607">Kennisgewings vir veiligheidskontrole</translation>

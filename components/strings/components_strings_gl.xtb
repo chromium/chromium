@@ -2236,6 +2236,7 @@ Para ocultar as opcións de pago aprazado, vai á <ph name="BEGIN_LINK" />config
 <translation id="443673843213245140">O uso dun proxy está desactivado, pero especifícase unha configuración de proxy explícita.</translation>
 <translation id="4438821706955556403">Prezo habitual</translation>
 <translation id="4441832193888514600">Ignorada porque a política só se pode configurar como unha política de usuario da nube.</translation>
+<translation id="4444062564459679679">Xa se enviou a Chrome no teu dispositivo (<ph name="DEVICE_NAME" />)</translation>
 <translation id="4445133368066241428">Temas populares</translation>
 <translation id="4445694043187340808"><ph name="STARTER_PACK_TABS_FOCUSED_FRIENDLY_MATCH_TEXT" />, preme Introducir para facer buscas nas pestanas</translation>
 <translation id="4445964943162061557">Esta función é experimental, polo que non sempre acerta.</translation>
@@ -4846,6 +4847,7 @@ Detalles adicionais:
 <translation id="8511402995811232419">Xestionar cookies</translation>
 <translation id="851353418319061866">Comprobación da fiabilidade</translation>
 <translation id="8513580896341796021">Iniciouse a descarga. Para vela, preme |<ph name="ACCELERATOR" />|.</translation>
+<translation id="8515544520486085367">Autocompletar pago</translation>
 <translation id="8519753333133776369">O teu administrador permite o uso do dispositivo HID</translation>
 <translation id="8521013008769249764">Sofás e sillóns</translation>
 <translation id="8521812709849134608">Mesados</translation>

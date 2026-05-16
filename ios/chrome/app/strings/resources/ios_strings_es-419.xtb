@@ -178,6 +178,7 @@
 <translation id="1582732959743469162">Esta acción detendrá el progreso de la descarga actual.</translation>
 <translation id="1594034544529347967">Comienza</translation>
 <translation id="1598751033135758830">Abrir en la app…</translation>
+<translation id="1600571977391127696">Es posible que parte del contenido no sea apto para todos los usuarios.</translation>
 <translation id="1601560923496285236">Aplicar</translation>
 <translation id="1603718000246404895">{COUNT,plural, =1{1 dirección}other{# direcciones}}</translation>
 <translation id="1605405588277479165">Desactivada (no se recomienda)</translation>
@@ -312,6 +313,7 @@
 <translation id="2012723204723845092">Te damos la bienvenida nuevamente</translation>
 <translation id="2015722694326466240">Para ver las contraseñas, primero debes establecer una en tu dispositivo.</translation>
 <translation id="201759455285471444">Expandir grupo de pestañas.</translation>
+<translation id="2031515492007104071">Subir de nivel</translation>
 <translation id="2044394949148788042">Abre la cuadrícula de pestañas</translation>
 <translation id="2044681667265133332"><ph name="HOSTED_DOMAIN" /> administra la cuenta <ph name="USER_EMAIL" />, por lo que es posible que pueda ver cierta información. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">nuevo elemento</translation>
@@ -845,6 +847,7 @@
 <translation id="3994911892367422121">ENTENDIDO</translation>
 <translation id="3995521777587992544">Barra de progreso de la carga de la página; se cargó <ph name="EMAIL" />.</translation>
 <translation id="3997522473364371632">Tu administrador desactivó el uso compartido de contraseñas.</translation>
+<translation id="4000707564769984863">Mirar: <ph name="WATCH_LINK" /></translation>
 <translation id="4002066346123236978">Título</translation>
 <translation id="4004204301268239848">Las contraseñas se guardan en tu Cuenta de Google para que puedas usarlas en cualquier dispositivo.</translation>
 <translation id="4007463141047732631">Editar grupo</translation>
@@ -875,6 +878,7 @@
 <translation id="4129768137228347731">¿Quieres guardar <ph name="ENTITY_TYPE" />?</translation>
 <translation id="4133139945030148655">La configuración está lista</translation>
 <translation id="4133265950310064865">Protección mejorada</translation>
+<translation id="4142372594294312814">5 datos que debes saber sobre la IA generativa</translation>
 <translation id="4145507240503767005"><ph name="SEARCH_ENGINE_NAME" />, <ph name="SEARCH_ENGINE_DOMAIN" /></translation>
 <translation id="4147897805161313378">Google Fotos</translation>
 <translation id="4148023517926189160">Este sitio web quiere descargar un archivo y agregarlo al calendario.</translation>
@@ -997,6 +1001,7 @@
 <translation id="456502772933839252">Compartiendo <ph name="PAGE_TITLE" /></translation>
 <translation id="4565377596337484307">Ocultar contraseña</translation>
 <translation id="4568230126482344545">Ocultar la opción Pestañas recientes</translation>
+<translation id="4571490460651837010">Administrar direcciones y más…</translation>
 <translation id="4578835633387306383">Activar…</translation>
 <translation id="4580621046861724270">No se guardaron algunos favoritos</translation>
 <translation id="4580716718466706433">Ve al "Administrador de contraseñas"</translation>
@@ -1234,6 +1239,7 @@
 <translation id="5329451663851195956">Desliza hacia abajo si quieres actualizar la pestaña.</translation>
 <translation id="5336910966955551309">Mantén presionado para fijar tus sitios favoritos</translation>
 <translation id="5338512273860059533">Acceso en curso.</translation>
+<translation id="5340148832014094861">Se aplican las <ph name="GOOGLE_TERMS" /> y el <ph name="GEMINI_APPS_PRIVACY" />. Gemini es una IA y puede cometer errores, incluso con información sobre personas.</translation>
 <translation id="5343472494710226394">Noticias, deportes y contenido según tus intereses.</translation>
 <translation id="5352128922772839949">Guardar archivo</translation>
 <translation id="5355191726083956201">Se activó la protección mejorada</translation>
@@ -1577,6 +1583,7 @@ Handoff también debe estar habilitado en la sección General de la configuraci�
 <translation id="647867789226964031">Cambia tus contraseñas</translation>
 <translation id="6480363549849064919">Autenticación de clientes</translation>
 <translation id="6489174933860678546">Abre pestañas de incógnito para navegar por la Web de forma más privada.</translation>
+<translation id="6489775505977274806">Ocultar Subir de nivel</translation>
 <translation id="6494931198667773526">Finaliza</translation>
 <translation id="6503077044568424649">Más visitados</translation>
 <translation id="6503763061813913607">Notificaciones de la Verificación de seguridad</translation>

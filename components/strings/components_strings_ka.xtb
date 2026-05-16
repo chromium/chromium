@@ -1821,6 +1821,7 @@
 <translation id="380865868633614173">მიმდინარეობს ბარათის ინფორმაციის შენახვა</translation>
 <translation id="3810770279996899697">პაროლების მმართველი საჭიროებს წვდომას MacOS Keychain-ზე</translation>
 <translation id="3810973564298564668">მართვა</translation>
+<translation id="3811328723651698330"><ph name="STRING_1" />, <ph name="STRING_2" /></translation>
 <translation id="3812398568375898177">ეს არის კრიტიკულად მნიშვნელოვანი განახლება, რომელიც აუმჯობესებს Android აპების წარმადობას ChromeOS-ზე.</translation>
 <translation id="3814865536373139791">დააჩქარეთ თქვენი ორგანიზაციის მიერ წესების მართვა</translation>
 <translation id="3815434930383843058">8 x 12 დუიმი</translation>
@@ -2236,6 +2237,7 @@
 <translation id="443673843213245140">პროქსის გამოყენება გამორთულია, მაგრამ მითითებულია პროქსის დეტალური კონფიგურაცია.</translation>
 <translation id="4438821706955556403">ტიპური ფასი</translation>
 <translation id="4441832193888514600">იგნორირებულია, რადგან წესების განსაზღვრა შესაძლებელია მხოლოდ ღრუბლოვან სამომხმარებლო წესების სახით.</translation>
+<translation id="4444062564459679679">უკვე გაიგზავნა Chrome-ში თქვენს <ph name="DEVICE_NAME" />-ზე</translation>
 <translation id="4445133368066241428">პოპულარული თემები</translation>
 <translation id="4445694043187340808"><ph name="STARTER_PACK_TABS_FOCUSED_FRIENDLY_MATCH_TEXT" />, დააჭირეთ Enter-ს ჩანართების მოსაძიებლად</translation>
 <translation id="4445964943162061557">ეს ექსპერიმენტული საშუალებაა და ის ყოველთვის არ იქნება ზუსტი.</translation>
@@ -2400,6 +2402,7 @@
 <translation id="4736934858538408121">ვირტუალური ბარათი</translation>
 <translation id="473775607612524610">განახლება</translation>
 <translation id="4738601419177586157">„<ph name="TEXT" />“-ის ძიების შემოთავაზება</translation>
+<translation id="473866660302034629"><ph name="TAB_TITLE" />, არჩეული ჩანართი, <ph name="INDEX" /> / <ph name="TOTAL" />, ჩანართებს შორის გადასართავად გამოიყენეთ მარცხენა ან მარჯვენა ისარი</translation>
 <translation id="4742407542027196863">პაროლების მართვა…</translation>
 <translation id="474270528725216349">მინიმუმ 1 საიტიდან სინქრონიზებულ მოწყობილობებში</translation>
 <translation id="4743275772928623722">თქვენი სისტემა განახლდა, თუმცა თქვენი ზოგიერთი აპისა და ფაილის აღდგენა ვერ მოხერხდა. თქვენი აპები ხელახლა ჩამოიტვირთება ავტომატურად.</translation>
@@ -2467,6 +2470,7 @@
 <translation id="4832961164064927107">ბარბექიუ და გრილი</translation>
 <translation id="4835568975547260025">Chrome ნაგულისხმევად გააზიარებს შესაბამის გახსნილ ჩანართებს, რომ დაგეხმაროთ თქვენს შეკითხვებზე უფრო მორგებული პასუხების მიღებაში.</translation>
 <translation id="4840250757394056958">თქვენი Chrome-ის ისტორიის ნახვა</translation>
+<translation id="4842365697443353018">გაასუფთავეთ ფორმა მოგვიანებით გადახდის გამოსაყენებლად</translation>
 <translation id="484462545196658690">ავტომატური</translation>
 <translation id="4844937814014739139">გაზიარებული ჩანართების მასშტაბირება და მათზე გადაადგილება</translation>
 <translation id="484671803914931257">მიიღეთ ფასდაკლება <ph name="MERCHANT_NAME" />-სა და სხვა ობიექტებში</translation>
@@ -4846,6 +4850,7 @@
 <translation id="8511402995811232419">ქუქი-ჩანაწერების მართვა</translation>
 <translation id="851353418319061866">სიზუსტის შემოწმება</translation>
 <translation id="8513580896341796021">ჩამოტვირთვა დაიწყო. მის სანახავად დააჭირეთ |<ph name="ACCELERATOR" />|-ს.</translation>
+<translation id="8515544520486085367">ავტომატური შევსებით გადახდა</translation>
 <translation id="8519753333133776369">HID მოწყობილობა დაშვებულია თქვენი ადმინისტრატორის მიერ</translation>
 <translation id="8521013008769249764">დივნები და სავარძლები</translation>
 <translation id="8521812709849134608">სამზარეულოს ზედაპირები</translation>

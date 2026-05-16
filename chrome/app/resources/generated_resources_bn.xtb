@@ -787,6 +787,7 @@
 <translation id="1529769834253316556">লাইনের উচ্চতা</translation>
 <translation id="1529891865407786369">বিদ্যুতের উৎস</translation>
 <translation id="1530376661400379364">Chrome এই সেটিংস রিসেট করেছে</translation>
+<translation id="1530466164747090379"><ph name="FILE_NAME" />-এ সংবেদনশীল বা বিপজ্জনক ডেটা আছে</translation>
 <translation id="1531275250079031713">'নতুন ওয়াই-ফাই কানেকশন যোগ করুন' ডায়ালগ বক্স খুলুন</translation>
 <translation id="1531734061664070992"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /></translation>
 <translation id="1533948060140843887">আমি বুঝতে পারছি এই ডাউনলোডটি আমার কম্পিউটারের ক্ষতি করবে</translation>
@@ -2194,6 +2195,7 @@
 <translation id="2469141124738294431">VM স্ট্যাটাস</translation>
 <translation id="2469259292033957819">আপনার কাছে আগে থেকে কোনও প্রিন্টার সেভ করা নেই।</translation>
 <translation id="2469375675106140201">বানান পরীক্ষা কাস্টমাইজ করুন</translation>
+<translation id="2469406914567390938">আপডেট চ্যানেল</translation>
 <translation id="247051149076336810">ফাইল শেয়ার করার ইউআরএল</translation>
 <translation id="2471469610750100598">কালো (ডিফল্ট)</translation>
 <translation id="2471506181342525583">লোকেশন অ্যাক্সেসের অনুমতি দেওয়া হয়নি</translation>
@@ -2525,6 +2527,7 @@
 <translation id="2695943520968279338">এক্সটেনশন ডিসকভার করুন</translation>
 <translation id="2696675923413008404">এই সাইটের URL সহ কন্টেন্ট Google-এ পাঠানো হয় এবং এই ফিচার উন্নত করার জন্য হিউম্যান রিভিউয়ার এগুলি দেখতে পারেন</translation>
 <translation id="2698147581454716013">এটি একটি বান্ডেল ডিভাইস এবং 'কিয়স্ক' ও 'সাইনেজ' আপগ্রেডের মাধ্যমে নথিভুক্ত করা যাবে না।</translation>
+<translation id="269941332914175387">আপনার প্রোফাইল ডেটা লোড করতে এবং তা এনক্রিপটেড রাখতে, ব্রাউজার আবার চালু করুন</translation>
 <translation id="2699911226086014512">পিন ভিত্তিক কাজটি সঠিকভাবে করা যায়নি, সমস্যার কোড <ph name="RETRIES" />।</translation>
 <translation id="2701330563083355633"><ph name="DEVICE_NAME" /> থেকে শেয়ার করা হয়েছে</translation>
 <translation id="2701737434167469065">সাইন-ইন করুন, <ph name="EMAIL" /></translation>
@@ -2753,6 +2756,7 @@
 <translation id="2844154481025280030">নীতি কনফিগার করা হয়েছে।</translation>
 <translation id="2844169650293029770">USB-C ডিভাইস (বাঁ দিকের সামনের পোর্ট)</translation>
 <translation id="2844809857160214557">প্রিন্ট করার কাজগুলি দেখুন ও ম্যানেজ করুন</translation>
+<translation id="284491292807422921">সাইট সরাবেন?</translation>
 <translation id="2845276301195220700">Google Calendar সংক্রান্ত আরও অ্যাকশন</translation>
 <translation id="2845382757467349449">সবসময় বুকমার্কস বার দেখান</translation>
 <translation id="284581348330507117">অনন্য পাসওয়ার্ড তৈরি করুন</translation>
@@ -3342,6 +3346,7 @@
 <translation id="3262986719682892278">খুব বড়</translation>
 <translation id="3264544094376351444">Sans-Serif হরফ</translation>
 <translation id="3264582393905923483">প্রসঙ্গ</translation>
+<translation id="3265303262625691029"><ph name="VERDICT_MESSAGE" />। আপনার অ্যাডমিনিস্ট্রেটর বলেছেন: "<ph name="CUSTOM_MESSAGE" />"</translation>
 <translation id="3265459715026181080">উইন্ডো বন্ধ করুন</translation>
 <translation id="3266022278425892773">লিনাক্স ডেভেলপমেন্ট এনভায়রনমেন্ট</translation>
 <translation id="3266030505377585301">শুধুমাত্র এই ডিভাইস থেকে ব্রাউজ করা ডেটা মুছে দিতে, তা নিজের Google অ্যাকাউন্টে রেখে দেওয়ার সময়, <ph name="BEGIN_LINK" />সাইন-আউট করুন<ph name="END_LINK" />।</translation>
@@ -4460,6 +4465,7 @@
 <translation id="4010746393007464819">Debian 12 (Bookworm)-এর আপগ্রেড উপলভ্য আছে</translation>
 <translation id="4010917659463429001">আপনার মোবাইল ডিভাইসে আপনার বুকমার্কগুলি পেতে, <ph name="GET_IOS_APP_LINK" />।</translation>
 <translation id="4011073493055408531">শহরের উপরে বেগুনি ও সবুজ রঙের সুমেরু প্রভা।</translation>
+<translation id="4011897773956589748">পরবর্তী সময়ে Gemini-র এই অ্যাকাউন্ট অ্যাক্সেস করার প্রয়োজন হলে, এটি আপনাকে আবার জিজ্ঞাসা করবে।</translation>
 <translation id="4012509903424054869">PDF অটোমেটিক রূপান্তর হয়ে যায় যাতে আপনি সার্চ করতে ও টেক্সট বেছে নিতে পারেন</translation>
 <translation id="4014432863917027322">"<ph name="EXTENSION_NAME" />" মেরামত করবেন?</translation>
 <translation id="4015163439792426608">ব্রাউজারে এক্সটেনশন ব্যবহার করছেন? একটি জায়গা থেকে সহজেই <ph name="BEGIN_LINK" />আপনার এক্সটেনশন ম্যানেজ করুন<ph name="END_LINK" />।</translation>
@@ -6239,6 +6245,7 @@
 <translation id="5275084684151588738">ব্যবহারকারী অভিধান</translation>
 <translation id="5275338516105640560">সেভ করা ট্যাব গ্রুপ বোতাম</translation>
 <translation id="5275352920323889391">কুকুর</translation>
+<translation id="5275946508817197540">আপনার বেছে নেওয়া নিরাপত্তা সম্পর্কিত পছন্দ, আইসোলেটেড ওয়েব অ্যাপ ইনস্টল করার অনুমতি দেয় না। <ph name="CHANGE_PREFERENCE" />।</translation>
 <translation id="527605719918376753">ট্যাব মিউট করুন</translation>
 <translation id="527605982717517565">সর্বদা <ph name="HOST" />-এ জাভাস্ক্রিপ্ট মঞ্জুর করুন</translation>
 <translation id="5276357196618041410">প্রথমে লগ-ইন না করে কনফিগারেশন সেভ করা যাবে না</translation>
@@ -8690,6 +8697,7 @@
 <translation id="6997553674029032185">সাইটে যান</translation>
 <translation id="6997642619627518301"><ph name="NAME_PH" /> - অ্যাক্টিভিটি লগ</translation>
 <translation id="6997707937646349884">আপনার ডিভাইসে:</translation>
+<translation id="6998036632333022623">Google-এর সাথে ট্যাব শেয়ার করা হচ্ছে</translation>
 <translation id="6998793565256476099">ভিডিও কনফারেন্সিংয়ের জন্য ডিভাইস যোগ করুন</translation>
 <translation id="6999956497249459195">নতুন গ্রুপ</translation>
 <translation id="7000206553895739324"><ph name="PRINTER_NAME" /> কানেক্ট করা হয়েছে, কিন্তু কনফিগার করতে হবে</translation>

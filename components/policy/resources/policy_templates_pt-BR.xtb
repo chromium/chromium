@@ -4658,6 +4658,13 @@ A política pode ser combinada com <ph name="POLICY_CLOUD_POLICY_OVERRIDES_PLATF
 <translation id="3928726028264020458">Ativar relatórios de informações VPD do dispositivo</translation>
 <translation id="3935592079035695061">Milissegundos desde a meia-noite.</translation>
 <translation id="3937800910397007337">Forçar a prioridade de primeiro plano para todas as guias</translation>
+<translation id="3938885528378923718">Configure como o <ph name="PRODUCT_NAME" /> baixa e usa o modelo básico da IA generativa para inferência local.
+
+Quando a política for definida como Permitida (0) ou deixada sem definição, o modelo será baixado automaticamente e usado para inferência.
+
+Se a política for definida como Desativada (1), o modelo não será baixado e o anterior (se houver) será excluído.
+
+Em plataformas para computador, também é possível desativar o download desse modelo definindo <ph name="COMPONENT_UPDATES_ENABLED_POLICY_NAME" /> como falso.</translation>
 <translation id="3941289958028934630">Desativar a resposta falada na tela de login</translation>
 <translation id="3943930334592166130">Esta política controla se o usuário receberá uma solicitação para selecionar um certificado de cliente quando a <ph name="AUTO_SELECT_CERTIFICATE_FOR_URLS_POLICY_NAME" /> corresponder a mais de um certificado.
       Se esta política for definida como "Ativada", o usuário receberá uma solicitação para selecionar um certificado de cliente sempre que a política de seleção automática corresponder a vários certificados.

@@ -178,6 +178,7 @@
 <translation id="1582732959743469162">这会全面停止您正在执行的下载任务。</translation>
 <translation id="1594034544529347967">开始日期</translation>
 <translation id="1598751033135758830">在应用中打开…</translation>
+<translation id="1600571977391127696">有些内容不一定适合所有人。</translation>
 <translation id="1601560923496285236">应用</translation>
 <translation id="1603718000246404895">{COUNT,plural, =1{1 个地址}other{# 个地址}}</translation>
 <translation id="1605405588277479165">关闭 - 不推荐</translation>
@@ -312,6 +313,7 @@
 <translation id="2012723204723845092">欢迎回来！</translation>
 <translation id="2015722694326466240">要想查看密码，您必须先在设备上设置密码。</translation>
 <translation id="201759455285471444">展开标签页分组。</translation>
+<translation id="2031515492007104071">进阶</translation>
 <translation id="2044394949148788042">打开标签页网格</translation>
 <translation id="2044681667265133332">账号 <ph name="USER_EMAIL" /> 由 <ph name="HOSTED_DOMAIN" /> 管理，后者或许可以查看某些信息。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">新项</translation>
@@ -845,6 +847,7 @@
 <translation id="3994911892367422121">知道了</translation>
 <translation id="3995521777587992544">网页加载进度条，已加载 <ph name="EMAIL" />。</translation>
 <translation id="3997522473364371632">您的管理员管理已禁用密码分享功能。</translation>
+<translation id="4000707564769984863">观看：<ph name="WATCH_LINK" /></translation>
 <translation id="4002066346123236978">标题</translation>
 <translation id="4004204301268239848">系统会将密码保存在您的 Google 账号中，以便您在任何设备上使用。</translation>
 <translation id="4007463141047732631">修改分组</translation>
@@ -875,6 +878,7 @@
 <translation id="4129768137228347731">保存<ph name="ENTITY_TYPE" />？</translation>
 <translation id="4133139945030148655">一切准备就绪</translation>
 <translation id="4133265950310064865">增强型保护</translation>
+<translation id="4142372594294312814">关于生成式 AI 必须了解的 5 个要点</translation>
 <translation id="4145507240503767005"><ph name="SEARCH_ENGINE_NAME" />，<ph name="SEARCH_ENGINE_DOMAIN" /></translation>
 <translation id="4147897805161313378">Google 相册</translation>
 <translation id="4148023517926189160">此网站想下载文件并将其添加到您的日历中。</translation>
@@ -997,6 +1001,7 @@
 <translation id="456502772933839252">正在分享“<ph name="PAGE_TITLE" />”</translation>
 <translation id="4565377596337484307">隐藏密码</translation>
 <translation id="4568230126482344545">隐藏“最近打开的标签页”</translation>
+<translation id="4571490460651837010">管理地址和其他信息…</translation>
 <translation id="4578835633387306383">开启…</translation>
 <translation id="4580621046861724270">部分书签未保存</translation>
 <translation id="4580716718466706433">前往“密码管理工具”</translation>
@@ -1234,6 +1239,7 @@
 <translation id="5329451663851195956">下拉即可刷新。</translation>
 <translation id="5336910966955551309">长按即可固定喜爱的网站</translation>
 <translation id="5338512273860059533">正在登录。</translation>
+<translation id="5340148832014094861">需遵守《<ph name="GOOGLE_TERMS" />》和《<ph name="GEMINI_APPS_PRIVACY" />》。Gemini 是一款 AI 工具，可能会出现错误（包括与人相关的信息）。</translation>
 <translation id="5343472494710226394">根据您的兴趣推送的新闻、体育赛事和内容。</translation>
 <translation id="5352128922772839949">保存文件</translation>
 <translation id="5355191726083956201">已开启增强型保护</translation>
@@ -1577,6 +1583,7 @@
 <translation id="647867789226964031">建议更改密码</translation>
 <translation id="6480363549849064919">客户端身份验证</translation>
 <translation id="6489174933860678546">打开无痕式标签页，以更私密的方式浏览网页。</translation>
+<translation id="6489775505977274806">隐藏“进阶”</translation>
 <translation id="6494931198667773526">结束日期</translation>
 <translation id="6503077044568424649">常去网站</translation>
 <translation id="6503763061813913607">安全检查通知</translation>

@@ -2233,6 +2233,7 @@ Per nascondere le opzioni di pagamento posticipato, vai alle <ph name="BEGIN_LIN
 <translation id="443673843213245140">L'utilizzo di un proxy è stato disattivato ma è stata specificata una configurazione proxy esplicita.</translation>
 <translation id="4438821706955556403">Prezzo tipico</translation>
 <translation id="4441832193888514600">Ignorata perché la policy può essere impostata solo da un utente cloud.</translation>
+<translation id="4444062564459679679">Già inviato a Chrome sul tuo <ph name="DEVICE_NAME" /></translation>
 <translation id="4445133368066241428">Argomenti popolari</translation>
 <translation id="4445694043187340808"><ph name="STARTER_PACK_TABS_FOCUSED_FRIENDLY_MATCH_TEXT" />, premi Invio per cercare nelle schede</translation>
 <translation id="4445964943162061557">Si tratta di una funzionalità sperimentale e potrebbe commettere errori.</translation>
@@ -4843,6 +4844,7 @@ Ulteriori dettagli:
 <translation id="8511402995811232419">Gestisci i cookie</translation>
 <translation id="851353418319061866">Controllo accuratezza</translation>
 <translation id="8513580896341796021">Download iniziato. Per visualizzarlo, premi |<ph name="ACCELERATOR" />|.</translation>
+<translation id="8515544520486085367">Compilazione automatica del pagamento</translation>
 <translation id="8519753333133776369">Dispositivo HID consentito dal tuo amministratore</translation>
 <translation id="8521013008769249764">Divani e poltrone</translation>
 <translation id="8521812709849134608">Piani di lavoro</translation>

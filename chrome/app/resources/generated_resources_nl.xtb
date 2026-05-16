@@ -37,6 +37,7 @@
 <translation id="1016876401615857435">Laat verifiëren dat jij het bent om je toegangssleutels op dit apparaat te gebruiken</translation>
 <translation id="1017280919048282932">Toevoegen &amp;aan woordenboek</translation>
 <translation id="1018656279737460067">Geannuleerd</translation>
+<translation id="1020008977311763380">Het nominale prestatieniveau is: <ph name="CPU_TIER" /></translation>
 <translation id="1022522674678746124">PowerPoint</translation>
 <translation id="1022669824195822609">Je apparaat wordt beheerd door <ph name="DOMAIN" />. Beheerders hebben op dit apparaat toegang tot de gegevens van elk profiel.</translation>
 <translation id="1022719295563085177">Netwerkstandaard</translation>
@@ -56,6 +57,7 @@
 <translation id="1033060461778467949">Tabblad verplaatsen naar gesplitste weergave</translation>
 <translation id="1033780634303702874">Toegang krijgen tot je seriële apparaten</translation>
 <translation id="1034484273907870301">Tabbladstrook met miniaturen voor de tabletmodus</translation>
+<translation id="103477588607005550">CPU: <ph name="CPU_MODEL" /> (<ph name="CPU_CORES" />)</translation>
 <translation id="1035289631433631911">Contentoverdracht-tool</translation>
 <translation id="1035875743511577452">Klik op Thema wijzigen om thema's te verkennen die zijn geïnspireerd door kunstenaars, de natuur en meer</translation>
 <translation id="1036348656032585052">Uitzetten</translation>
@@ -308,6 +310,7 @@ Je kunt je wachtwoorden altijd checken in <ph name="GOOGLE_PASSWORD_MANAGER" />.
 <translation id="1197088940767939838">Oranje</translation>
 <translation id="11978075283960463">Gegevens opgeslagen in app: <ph name="APP_SIZE" /></translation>
 <translation id="1198066799963193307">Spraaktools voor slechtzienden</translation>
+<translation id="1198796216247697947">Niveau 0: ONBEKEND</translation>
 <translation id="119944043368869598">Alles wissen</translation>
 <translation id="1199814941632954229">Er worden certificaten geleverd voor deze certificaatprofielen</translation>
 <translation id="120069043972472860">Niet naar te kijken</translation>
@@ -489,6 +492,7 @@ Je kunt je wachtwoorden altijd checken in <ph name="GOOGLE_PASSWORD_MANAGER" />.
 <translation id="1323433172918577554">Meer bekijken</translation>
 <translation id="132539964543492755">Gebruik x om de selectie van de muisknop te wijzigen tussen de linkerknop, de rechterknop en beide</translation>
 <translation id="1325611581149097457">Beter schrijven</translation>
+<translation id="1325798198269334655">Meer informatie over hoe je Chrome-updates onderhoudt</translation>
 <translation id="1325898422473267360"><ph name="PERMISSION_USAGE" /> <ph name="PERMISSION_INDICATOR_DESCRIPTION" /></translation>
 <translation id="1327272175893960498">Kerberos-tickets</translation>
 <translation id="1327495825214193325">Als je ADB-foutopsporing wilt aanzetten, moet je deze <ph name="DEVICE_TYPE" /> opnieuw opstarten. Je kunt ADB-foutopsporing alleen uitzetten door de fabrieksinstellingen van je apparaat te herstellen.</translation>
@@ -2950,6 +2954,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="2991182900092497283">Voer een reden in waarom je deze gegevens plakt:</translation>
 <translation id="2992931425024192067">Content van alle meldingen bekijken</translation>
 <translation id="2993517869960930405">App-informatie</translation>
+<translation id="2994804273850542871">Niveau 4: ULTRA</translation>
 <translation id="2995472388018163047">{NUM_GROUPS,plural, =1{Behoud deze groep om later tabbladen toe te voegen of verlaat de groep als je er geen toegang meer toe wilt}other{Behoud deze groepen om later tabbladen toe te voegen of verlaat de groepen als je er geen toegang meer toe wilt}}</translation>
 <translation id="2996071302059856125">Meer informatie over hoe AI van invloed is op de functionaliteit en de bedieningselementen die Chrome biedt</translation>
 <translation id="2996108796702395498">Het serienummer van je apparaat is <ph name="SERIAL_NUMBER" />. Met dit nummer kun je de service activeren.</translation>
@@ -2968,6 +2973,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="3003967365858406397">Je <ph name="PHONE_NAME" /> maakt een privé-wifi-verbinding.</translation>
 <translation id="3004385386820284928">Toetsenbordtoetsen aanpassen</translation>
 <translation id="300580149047131921">Recent gebruikt</translation>
+<translation id="3005928441045180122">Gestapeld</translation>
 <translation id="3006881078666935414">Geen gebruiksgegevens</translation>
 <translation id="3007555010975143508">Deze apps worden gebruikt om je scherm op te nemen:</translation>
 <translation id="3007771295016901659">Tabblad dupliceren</translation>
@@ -4657,6 +4663,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="4177668342649553942"><ph name="SHORTCUT_NAME" /> - <ph name="APP_NAME" /> openen</translation>
 <translation id="4177731895051842298">Extensies zijn add-ons voor Chrome waarmee je georganiseerd blijft, taken vereenvoudigt en je browsen kunt aanpassen</translation>
 <translation id="4178220097446335546">Als je dit abonnement en de bijbehorende netwerken wilt vergeten, ga je naar de Passpoint-abonnementspagina om het abonnement te verwijderen.</translation>
+<translation id="4181376007499455822">Niet negeren</translation>
 <translation id="4181602000363099176">20x</translation>
 <translation id="4181841719683918333">Talen</translation>
 <translation id="4182182457914031017">De URL en volledige paginacontent van de site die je bezoekt, worden gedeeld met Google om suggesties te bieden en deze functie te verbeteren</translation>
@@ -8332,6 +8339,7 @@ Je hebt nog # gehackte wachtwoorden. Google Wachtwoordmanager raadt je aan deze 
 <translation id="67862343314499040">Violet</translation>
 <translation id="6786480815699355166">Alleen ondersteunde talen voor Live ondertiteling kunnen worden vertaald</translation>
 <translation id="6786747875388722282">Extensies</translation>
+<translation id="6786804673213172567">Niveau 3: HOOG</translation>
 <translation id="6787531944787756058">Gebruikersnaam <ph name="USER_EMAIL" /> is alleen op dit apparaat opgeslagen. Details bekijken</translation>
 <translation id="6787839852456839824">Sneltoetsen</translation>
 <translation id="6788210894632713004">Uitgepakte extensie</translation>
@@ -8478,6 +8486,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="686839242150793617">Toestemming om automatisch scherm-in-scherm te openen</translation>
 <translation id="6868734951249611611">Klik hier met de rechtermuisknop en selecteer Tabbladen verticaal tonen</translation>
 <translation id="6868934826811377550">Details bekijken</translation>
+<translation id="6869809635308708588">Als je links tussen apparaten wilt sturen, zorg je dat beide apparaten zijn ingelogd op hetzelfde Google-account.</translation>
 <translation id="6870470066213933201">JavaScript-optimalisatie en -beveiliging beheren</translation>
 <translation id="6870953451576517204">Zelfcontrole geslaagd</translation>
 <translation id="6871644448911473373">OCSP-beantwoorder: <ph name="LOCATION" /></translation>
@@ -8769,6 +8778,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="7072078320324181561">Apps en websites met locatierechten en systeemservices kunnen je locatie gebruiken. <ph name="LINK_BEGIN" />Meer informatie<ph name="LINK_END" /></translation>
 <translation id="7072573590175540692">Beschikbare snelkoppelingen voor functies en extensies</translation>
 <translation id="7074703793383805632"><ph name="SHARED_STATE" /> <ph name="GROUP_NAME" /> groep - <ph name="OPENED_STATE" /></translation>
+<translation id="7075116338736929419">CPU-prestatieniveau overschrijven</translation>
 <translation id="7075625805486468288">HTTPS/SSL-certificaten en -instellingen beheren</translation>
 <translation id="707772989579681711">Je vorige keuze</translation>
 <translation id="7077751457066325012">Sneltoetsen bekijken en aanpassen</translation>
@@ -9531,6 +9541,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="7624337243375417909">Caps Lock uit</translation>
 <translation id="7625568159987162309">Rechten en op sites opgeslagen gegevens bekijken</translation>
 <translation id="7625823789272218216">Nieuw tabblad aan linkerkant</translation>
+<translation id="762730429396410864">Het CPU-prestatieniveau dat aan websites wordt gerapporteerd handmatig instellen</translation>
 <translation id="7627749368210392160">Sites kunnen deze functie gebruiken om toegang te krijgen tot andere apparaten in je lokale netwerk</translation>
 <translation id="7628927569678398026"><ph name="LOCALE" /> (<ph name="VARIANT" />), niveau <ph name="GRADE" /></translation>
 <translation id="762917478230183172">Selecteer een actie voor elke toets</translation>
@@ -9809,7 +9820,9 @@ Zichtbaar voor apparaten in de buurt als <ph name="QUICK_START_DEVICE_DISPLAY_NA
 <translation id="7799650166313181433">Alleen apparaten die zijn ingelogd op <ph name="USER_EMAIL" />, kunnen content delen met dit apparaat. Je hoeft deelverzoeken tussen je apparaten niet goed te keuren.</translation>
 <translation id="7800485561443537737">Gebruikt de mobiele data van je <ph name="DEVICE_TYPE" /> en je provider kan extra kosten in rekening brengen. Kan het batterijgebruik verhogen. <ph name="BEGIN_LINK_LEARN_MORE" />Meer informatie<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7800518121066352902">Links&amp;om draaien</translation>
+<translation id="780254490276923052">Niveau 2: MID</translation>
 <translation id="780301667611848630">Nee, bedankt</translation>
+<translation id="7803118804281013214">Als je deze site verlaat, wordt je taak gestopt. Open een nieuw tabblad zodat Gemini kan blijven werken.</translation>
 <translation id="7803657407897251194">Verbind je <ph name="DEVICE_TYPE" /> met een netwerk om door te gaan met instellen op je Android-apparaat</translation>
 <translation id="7803714812705886512">Google gebruikt minder gegevens (bijvoorbeeld delen van URL's, downloadinformatie) om bedreigingen te detecteren</translation>
 <translation id="7804072833593604762">Tabblad gesloten</translation>
@@ -10828,6 +10841,7 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8500044868721690197">Deze site kan je MIDI-apparaten niet bedienen en herprogrammeren</translation>
 <translation id="8500123638242682652">Venster omhoog verplaatst</translation>
 <translation id="8500132602331251964">App-update beschikbaar</translation>
+<translation id="850228775215800722">Niveau 1: LAAG</translation>
 <translation id="8503813439785031346">Gebruikersnaam</translation>
 <translation id="850382998924680137">Vandaag gezien</translation>
 <translation id="850399339579925930">Woordenboeken</translation>
@@ -11245,6 +11259,7 @@ Dit kan informatie zijn over de geïnstalleerde software, bestanden, je browser,
 <translation id="8774379074441005279">Herstel bevestigen</translation>
 <translation id="8774934320277480003">Marge bovenkant</translation>
 <translation id="8775144690796719618">Ongeldige URL</translation>
+<translation id="877515298105563553">Naast elkaar</translation>
 <translation id="8775653927968399786">{0,plural, =1{Je <ph name="DEVICE_TYPE" /> wordt over # seconde automatisch vergrendeld.
 <ph name="DOMAIN" /> vereist dat je smartcard geplaatst blijft.}other{Je <ph name="DEVICE_TYPE" /> wordt over # seconden automatisch vergrendeld.
 <ph name="DOMAIN" /> vereist dat je smartcard geplaatst blijft.}}</translation>
@@ -11697,6 +11712,7 @@ Op <ph name="BEGIN_LINK2" />policies.google.com<ph name="END_LINK2" /> vind je m
 <translation id="9070342919388027491">Tabblad naar links verplaatst</translation>
 <translation id="9072220108592671115">Versie <ph name="VERSION" /> geïnstalleerd</translation>
 <translation id="9072918088200875065">Je hebt Gemini toestemming gegeven om in te loggen op deze sites om taken voor je uit te voeren</translation>
+<translation id="9074618195273027322">{CORE_COUNT,plural, =1{1 kern}other{{CORE_COUNT} kernen}}</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9074836595010225693">USB-muis aangesloten</translation>
 <translation id="9075413375877487220">Deze extensie wordt niet vertrouwd door de uitgebreide versie van Safe Browsing.</translation>

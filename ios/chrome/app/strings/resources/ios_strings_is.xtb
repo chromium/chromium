@@ -178,6 +178,7 @@
 <translation id="1582732959743469162">Allt niðurhal sem er í gangi verður stöðvað.</translation>
 <translation id="1594034544529347967">Hefst</translation>
 <translation id="1598751033135758830">Opna í forriti…</translation>
+<translation id="1600571977391127696">Sumt efni er hugsanlega ekki við hæfi allra.</translation>
 <translation id="1601560923496285236">Nota</translation>
 <translation id="1603718000246404895">{COUNT,plural, =1{Eitt heimilisfang}one{# heimilisfang}other{# heimilisföng}}</translation>
 <translation id="1605405588277479165">Slökkt – Ekki mælt með</translation>
@@ -312,6 +313,7 @@
 <translation id="2012723204723845092">Velkomin(n) aftur!</translation>
 <translation id="2015722694326466240">Til að sjá aðgangsorð þarftu fyrst að stilla aðgangsorð á tækinu þínu.</translation>
 <translation id="201759455285471444">Stækka flipahóp.</translation>
+<translation id="2031515492007104071">Level Up</translation>
 <translation id="2044394949148788042">Opna flipayfirlit</translation>
 <translation id="2044681667265133332">Reikningnum <ph name="USER_EMAIL" /> er stjórnað af <ph name="HOSTED_DOMAIN" />, sem getur hugsanlega skoðað tilteknar upplýsingar. <ph name="BEGIN_LINK" />Nánar<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">nýtt atriði</translation>
@@ -845,6 +847,7 @@
 <translation id="3994911892367422121">ÉG SKIL</translation>
 <translation id="3995521777587992544">Framvindustika fyrir hleðslu á síðu, <ph name="EMAIL" /> hlaðið.</translation>
 <translation id="3997522473364371632">Stjórnandinn hefur slökkt á aðgangsorðadeilingu.</translation>
+<translation id="4000707564769984863">Horfa: <ph name="WATCH_LINK" /></translation>
 <translation id="4002066346123236978">Heiti</translation>
 <translation id="4004204301268239848">Aðgangsorð eru vistuð á Google reikningnum þínum til að þú getir notað þau í hvaða tæki sem er.</translation>
 <translation id="4007463141047732631">Breyta hópi</translation>
@@ -875,6 +878,7 @@
 <translation id="4129768137228347731">Vista <ph name="ENTITY_TYPE" />?</translation>
 <translation id="4133139945030148655">Allt er klappað og klárt</translation>
 <translation id="4133265950310064865">Aukin vörn</translation>
+<translation id="4142372594294312814">Fimm hlutir sem gott er að vita um skapandi gervigreind</translation>
 <translation id="4145507240503767005"><ph name="SEARCH_ENGINE_NAME" />, <ph name="SEARCH_ENGINE_DOMAIN" /></translation>
 <translation id="4147897805161313378">Google-myndir</translation>
 <translation id="4148023517926189160">Þetta vefsvæði vill sækja skrá og bæta henni við dagatalið hjá þér.</translation>
@@ -997,6 +1001,7 @@
 <translation id="456502772933839252">Deilir <ph name="PAGE_TITLE" /></translation>
 <translation id="4565377596337484307">Fela aðgangsorð</translation>
 <translation id="4568230126482344545">Fela „Nýlegir flipar“</translation>
+<translation id="4571490460651837010">Stjórna heimilisföngum og fleiru…</translation>
 <translation id="4578835633387306383">Kveikja…</translation>
 <translation id="4580621046861724270">Sum bókamerki eru ekki vistuð</translation>
 <translation id="4580716718466706433">Farðu í Aðgangsorðastjórnun</translation>
@@ -1234,6 +1239,7 @@
 <translation id="5329451663851195956">Þú getur togað niður til að endurnýja</translation>
 <translation id="5336910966955551309">Haltu inni til að festa uppáhaldsvefsvæðin þín</translation>
 <translation id="5338512273860059533">Innskráning í gangi.</translation>
+<translation id="5340148832014094861"><ph name="GOOGLE_TERMS" /> og <ph name="GEMINI_APPS_PRIVACY" /> gilda. Gemini er gervigreind og getur gert mistök, þ.m.t. um fólk.</translation>
 <translation id="5343472494710226394">Fréttir, íþróttir og efni byggt á áhugasviðum þínum.</translation>
 <translation id="5352128922772839949">Vista skrá</translation>
 <translation id="5355191726083956201">Kveikt er á aukinni vörn</translation>
@@ -1577,6 +1583,7 @@ Einnig þarf að vera kveikt á Handoff í hlutanum General í Settings og tæki
 <translation id="647867789226964031">Breyttu aðgangsorðunum þínum</translation>
 <translation id="6480363549849064919">Auðkenning biðlara</translation>
 <translation id="6489174933860678546">Opnaðu huliðsflipa til að vafra á vefnum í meira næði.</translation>
+<translation id="6489775505977274806">Fela Level Up</translation>
 <translation id="6494931198667773526">Lýkur</translation>
 <translation id="6503077044568424649">Oftast heimsótt</translation>
 <translation id="6503763061813913607">Tilkynningar fyrir öryggisathugun</translation>

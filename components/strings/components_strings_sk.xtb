@@ -1817,6 +1817,7 @@ Ak chcete skryť možnosti zaplatenia neskôr, prejdite do sekcie <ph name="BEGI
 <translation id="380865868633614173">Ukladajú sa informácie o karte</translation>
 <translation id="3810770279996899697">Správca hesiel potrebuje prístup ku Kľúčenke systému MacOS</translation>
 <translation id="3810973564298564668">Spravovať</translation>
+<translation id="3811328723651698330"><ph name="STRING_1" />, <ph name="STRING_2" /></translation>
 <translation id="3812398568375898177">Ide o kľúčovú aktualizáciu, ktorá zlepší výkon aplikácií pre Android v systéme ChromeOS.</translation>
 <translation id="3814865536373139791">Zjednodušte si správu pravidiel v organizácii</translation>
 <translation id="3815434930383843058">8 × 12 palcov</translation>
@@ -2232,6 +2233,7 @@ Ak chcete skryť možnosti zaplatenia neskôr, prejdite do sekcie <ph name="BEGI
 <translation id="443673843213245140">Použitie servera proxy je zakázané, ale je určená explicitná konfigurácia servera proxy.</translation>
 <translation id="4438821706955556403">Bežná cena</translation>
 <translation id="4441832193888514600">Ignorované, pretože pravidlá sa dajú nastaviť iba pravidlami cloudu pre používateľov.</translation>
+<translation id="4444062564459679679">Už bolo odoslané do Chromu vo vašom zariadení <ph name="DEVICE_NAME" /></translation>
 <translation id="4445133368066241428">Populárne témy</translation>
 <translation id="4445694043187340808"><ph name="STARTER_PACK_TABS_FOCUSED_FRIENDLY_MATCH_TEXT" />, ak chcete vyhľadať karty, stlačte Enter</translation>
 <translation id="4445964943162061557">Toto je experimentálna funkcia a nie vždy funguje správne.</translation>
@@ -2396,6 +2398,7 @@ Ak chcete skryť možnosti zaplatenia neskôr, prejdite do sekcie <ph name="BEGI
 <translation id="4736934858538408121">Virtuálna karta</translation>
 <translation id="473775607612524610">Aktualizovať</translation>
 <translation id="4738601419177586157">Návrh vyhľadávania <ph name="TEXT" /></translation>
+<translation id="473866660302034629"><ph name="TAB_TITLE" />, vybraná karta, <ph name="INDEX" /> z <ph name="TOTAL" />, medzi kartami môžete prepínať šípkou doľava alebo doprava</translation>
 <translation id="4742407542027196863">Spravovať heslá…</translation>
 <translation id="474270528725216349">Z minimálne jedného webu v synchronizovaných zariadeniach</translation>
 <translation id="4743275772928623722">Systém bol aktualizovaný, ale niektoré aplikácie a súbory sa nepodarilo obnoviť. Aplikácie sa znova stiahnu automaticky.</translation>
@@ -2463,6 +2466,7 @@ Ak chcete skryť možnosti zaplatenia neskôr, prejdite do sekcie <ph name="BEGI
 <translation id="4832961164064927107">Grilovanie</translation>
 <translation id="4835568975547260025">Chrome bude predvolene zdieľať relevantné otvorené karty, aby vám pomohol získať prispôsobenejšie odpovede na vaše otázky.</translation>
 <translation id="4840250757394056958">Zobraziť históriu Chromu</translation>
+<translation id="4842365697443353018">Vymazať formulár a použiť platbu neskôr</translation>
 <translation id="484462545196658690">Automaticky</translation>
 <translation id="4844937814014739139">Posúvanie a približovanie či odďaľovanie zdieľaných kariet</translation>
 <translation id="484671803914931257">Získajte zľavu u obchodníka <ph name="MERCHANT_NAME" /> a ďalších</translation>
@@ -4842,6 +4846,7 @@ Ak chcete skryť možnosti zaplatenia neskôr, prejdite do sekcie <ph name="BEGI
 <translation id="8511402995811232419">Spravovať súbory cookie</translation>
 <translation id="851353418319061866">Kontrola presnosti</translation>
 <translation id="8513580896341796021">Súbor sa začal sťahovať. Ak ho chcete zobraziť, stlačte |<ph name="ACCELERATOR" />|.</translation>
+<translation id="8515544520486085367">Automatické dopĺňanie platby</translation>
 <translation id="8519753333133776369">Zariadenie HID povolené vaším správcom</translation>
 <translation id="8521013008769249764">Pohovky a kreslá</translation>
 <translation id="8521812709849134608">Povrchové dosky</translation>

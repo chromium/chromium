@@ -1820,6 +1820,7 @@
 <translation id="380865868633614173">कार्डसंबंधित माहिती सेव्ह करत आहे</translation>
 <translation id="3810770279996899697">Password Manager ला MacOS Keychain चा अ‍ॅक्सेस आवश्यक आहे</translation>
 <translation id="3810973564298564668">व्यवस्थापित करा</translation>
+<translation id="3811328723651698330"><ph name="STRING_1" />, <ph name="STRING_2" /></translation>
 <translation id="3812398568375898177">हे ChromeOS वर Android अ‍ॅप्सचा परफॉर्मन्स सुधारणारे महत्त्वाचे अपडेट आहे.</translation>
 <translation id="3814865536373139791">तुमची संस्था धोरणे कशी व्यवस्थापित करते हे स्ट्रीमलाइन करा</translation>
 <translation id="3815434930383843058">८ x १२ इं</translation>
@@ -2400,6 +2401,7 @@
 <translation id="4736934858538408121">व्हर्च्युअल कार्ड</translation>
 <translation id="473775607612524610">अपडेट करा</translation>
 <translation id="4738601419177586157"><ph name="TEXT" /> शोध सूचना</translation>
+<translation id="473866660302034629"><ph name="TAB_TITLE" />, निवडलेला टॅब, <ph name="TOTAL" /> पैकी <ph name="INDEX" />, टॅबदरम्यान स्विच करण्यासाठी लेफ्ट किंवा राइट ॲरो वापरा</translation>
 <translation id="4742407542027196863">पासवर्ड व्यवस्थापित करा…</translation>
 <translation id="474270528725216349">सिंक केलेल्या डिव्हाइसवरील किमान १ साइटवरून</translation>
 <translation id="4743275772928623722">तुमची सिस्टीम ही अपडेट केलेली आहे, मात्र तुमची काही अ‍ॅप्स आणि फाइल या रिकव्‍हर करता आल्या नाहीत. तुम्ही अ‍ॅप्स ही आपोआप पुन्हा डाउनलोड केली जातील.</translation>
@@ -2467,6 +2469,7 @@
 <translation id="4832961164064927107">BBQ आणि ग्रिलिंग</translation>
 <translation id="4835568975547260025">तुम्हाला तुमच्या प्रश्नांची आणखी अनुकूल केलेली उत्तरे मिळवण्यात मदत करण्यासाठी Chrome हे बाय डीफॉल्ट सुसंबद्ध उघडे टॅब शेअर करेल.</translation>
 <translation id="4840250757394056958">तुमचा Chrome इतिहास पहा</translation>
+<translation id="4842365697443353018">नंतर पेमेंट करा वापरण्यासाठी फॉर्म साफ करा</translation>
 <translation id="484462545196658690">ऑटो</translation>
 <translation id="4844937814014739139">शेअर केलेले टॅब स्क्रोल करा आणि झूम करा</translation>
 <translation id="484671803914931257"><ph name="MERCHANT_NAME" /> आणि आणखी बऱ्याच गोष्टींवर सवलत मिळवा</translation>

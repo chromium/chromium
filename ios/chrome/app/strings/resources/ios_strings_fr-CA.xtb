@@ -178,6 +178,7 @@
 <translation id="1582732959743469162">Cette opération entraînera l'arrêt de la progression de votre téléchargement en cours.</translation>
 <translation id="1594034544529347967">Début</translation>
 <translation id="1598751033135758830">Ouvrir dans l'appli…</translation>
+<translation id="1600571977391127696">Certains contenus peuvent ne pas convenir à tout le monde.</translation>
 <translation id="1601560923496285236">Appliquer</translation>
 <translation id="1603718000246404895">{COUNT,plural, =1{1 adresse}one{# adresse}other{# adresses}}</translation>
 <translation id="1605405588277479165">Désactivée : Option non recommandée</translation>
@@ -312,6 +313,7 @@
 <translation id="2012723204723845092">Nous sommes ravis de vous revoir!</translation>
 <translation id="2015722694326466240">Pour afficher vos mots de passe, vous devez d'abord définir un mot de passe sur votre appareil.</translation>
 <translation id="201759455285471444">Développer le groupe d'onglets.</translation>
+<translation id="2031515492007104071">Niveau supérieur</translation>
 <translation id="2044394949148788042">Ouvrir la grille d'onglets</translation>
 <translation id="2044681667265133332">Le compte <ph name="USER_EMAIL" /> est géré par <ph name="HOSTED_DOMAIN" />, qui pourrait être en mesure de consulter certaines informations. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">nouvel élément</translation>
@@ -845,6 +847,7 @@
 <translation id="3994911892367422121">OK</translation>
 <translation id="3995521777587992544">Barre de progression du chargement de la page, chargée à <ph name="EMAIL" />.</translation>
 <translation id="3997522473364371632">Le partage de mot de passe est désactivé par votre administrateur.</translation>
+<translation id="4000707564769984863">Regarder : <ph name="WATCH_LINK" /></translation>
 <translation id="4002066346123236978">Titre</translation>
 <translation id="4004204301268239848">Les mots de passe sont enregistrés dans votre compte Google afin que vous puissiez les utiliser sur n'importe quel appareil.</translation>
 <translation id="4007463141047732631">Modifier le groupe</translation>
@@ -875,6 +878,7 @@
 <translation id="4129768137228347731">Enregistrer l'information <ph name="ENTITY_TYPE" />?</translation>
 <translation id="4133139945030148655">Vous êtes prêt</translation>
 <translation id="4133265950310064865">Protection renforcée</translation>
+<translation id="4142372594294312814">Cinq choses qu'il faut savoir sur l'IA générative</translation>
 <translation id="4145507240503767005"><ph name="SEARCH_ENGINE_NAME" />, <ph name="SEARCH_ENGINE_DOMAIN" /></translation>
 <translation id="4147897805161313378">Google Photos</translation>
 <translation id="4148023517926189160">Ce site Web souhaite télécharger un fichier et l'ajouter à votre agenda.</translation>
@@ -997,6 +1001,7 @@
 <translation id="456502772933839252">Partage de <ph name="PAGE_TITLE" /></translation>
 <translation id="4565377596337484307">Masquer le mot de passe</translation>
 <translation id="4568230126482344545">Masquer les onglets récents</translation>
+<translation id="4571490460651837010">Gérer les adresses et plus encore…</translation>
 <translation id="4578835633387306383">Activer…</translation>
 <translation id="4580621046861724270">Certains favoris n'ont pas été enregistrés</translation>
 <translation id="4580716718466706433">Accédez à « Gestionnaire de mots de passe »</translation>
@@ -1234,6 +1239,7 @@
 <translation id="5329451663851195956">Vous pouvez tirer l'écran vers le bas pour actualiser la page.</translation>
 <translation id="5336910966955551309">Maintenez le doigt sur un site favori pour l'épingler</translation>
 <translation id="5338512273860059533">Connexion en cours…</translation>
+<translation id="5340148832014094861">La <ph name="GOOGLE_TERMS" /> et la <ph name="GEMINI_APPS_PRIVACY" /> s'appliquent. Gemini est une IA et peut se tromper, même à propos de personnes.</translation>
 <translation id="5343472494710226394">Actualités, sports et contenu en fonction de vos champs d'intérêt.</translation>
 <translation id="5352128922772839949">Enregistrer le fichier</translation>
 <translation id="5355191726083956201">La protection renforcée est activée</translation>
@@ -1577,6 +1583,7 @@ La fonction de transfert doit également être activée dans la section Généra
 <translation id="647867789226964031">Modifier vos mots de passe</translation>
 <translation id="6480363549849064919">Authentification du client</translation>
 <translation id="6489174933860678546">Ouvrez des onglets de navigation privée pour naviguer sur le Web de manière plus privée.</translation>
+<translation id="6489775505977274806">Masquer le niveau supérieur</translation>
 <translation id="6494931198667773526">Fin</translation>
 <translation id="6503077044568424649">Les plus visités</translation>
 <translation id="6503763061813913607">Notifications de Vérification de sécurité</translation>

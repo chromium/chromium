@@ -178,6 +178,7 @@
 <translation id="1582732959743469162">Ова ќе го запре целиот напредок на моменталното преземање.</translation>
 <translation id="1594034544529347967">Започнува</translation>
 <translation id="1598751033135758830">Отворете во апликацијата…</translation>
+<translation id="1600571977391127696">Некои содржини може да не се соодветни за сите.</translation>
 <translation id="1601560923496285236">Примени</translation>
 <translation id="1603718000246404895">{COUNT,plural, =1{1 адреса}one{# адреса}other{# адреси}}</translation>
 <translation id="1605405588277479165">Исклучено - Не се препорачува</translation>
@@ -312,6 +313,7 @@
 <translation id="2012723204723845092">Добре дојдовте пак!</translation>
 <translation id="2015722694326466240">За да ги видите лозинките, прво мора да поставите лозинка на вашиот уред.</translation>
 <translation id="201759455285471444">Прошири ја групата картички.</translation>
+<translation id="2031515492007104071">Level Up</translation>
 <translation id="2044394949148788042">Отворете ја мрежата со картички</translation>
 <translation id="2044681667265133332">Со сметката <ph name="USER_EMAIL" /> управува <ph name="HOSTED_DOMAIN" />, што може да прегледува некои податоци. <ph name="BEGIN_LINK" />Дознајте повеќе<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">нова ставка</translation>
@@ -845,6 +847,7 @@
 <translation id="3994911892367422121">СФАТИВ</translation>
 <translation id="3995521777587992544">Лента за напредокот на вчитувањето на страницата. Вчитано: <ph name="EMAIL" />.</translation>
 <translation id="3997522473364371632">Вашиот администратор го оневозможил споделувањето лозинки</translation>
+<translation id="4000707564769984863">Часовник: <ph name="WATCH_LINK" /></translation>
 <translation id="4002066346123236978">Наслов</translation>
 <translation id="4004204301268239848">Лозинките се зачувуваат во вашата сметка на Google за да може да ги користите на кој било уред.</translation>
 <translation id="4007463141047732631">Изменете ја групата</translation>
@@ -875,6 +878,7 @@
 <translation id="4129768137228347731">Да се зачува <ph name="ENTITY_TYPE" />?</translation>
 <translation id="4133139945030148655">Подготвени сте</translation>
 <translation id="4133265950310064865">Подобрена заштита</translation>
+<translation id="4142372594294312814">5 работи што мора да ги знаете за генеративната AI</translation>
 <translation id="4145507240503767005"><ph name="SEARCH_ENGINE_NAME" />, <ph name="SEARCH_ENGINE_DOMAIN" /></translation>
 <translation id="4147897805161313378">Фотографии на Google</translation>
 <translation id="4148023517926189160">Веб-сајтов сака да преземе датотека и да ја додаде во вашиот календар.</translation>
@@ -997,6 +1001,7 @@
 <translation id="456502772933839252">Се споделува <ph name="PAGE_TITLE" /></translation>
 <translation id="4565377596337484307">Скриј ја лозинката</translation>
 <translation id="4568230126482344545">Скриј „Неодамнешни картички“</translation>
+<translation id="4571490460651837010">Управувајте со адресите и друго…</translation>
 <translation id="4578835633387306383">Вклучете…</translation>
 <translation id="4580621046861724270">Некои обележувачи не се зачувани</translation>
 <translation id="4580716718466706433">Одете во „Password Manager“</translation>
@@ -1234,6 +1239,7 @@
 <translation id="5329451663851195956">Може да повлечете надолу за да освежите.</translation>
 <translation id="5336910966955551309">Допрете и задржете за да ги закачите омилените сајтови</translation>
 <translation id="5338512273860059533">Најавувањето е во тек.</translation>
+<translation id="5340148832014094861">Важат <ph name="GOOGLE_TERMS" /> и <ph name="GEMINI_APPS_PRIVACY" />. Gemini е AI и може да прави грешки, вклучително и грешки за луѓе.</translation>
 <translation id="5343472494710226394">Вести, спорт и содржини согласно со вашите интереси.</translation>
 <translation id="5352128922772839949">Зачувајте ја датотеката</translation>
 <translation id="5355191726083956201">Вклучена е „Подобрената заштита“</translation>
@@ -1577,6 +1583,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="647867789226964031">Променете ги вашите лозинки</translation>
 <translation id="6480363549849064919">Автентикација на клиентот</translation>
 <translation id="6489174933860678546">Отворете картички „Инкогнито“ за да прелистувате на веб поприватно.</translation>
+<translation id="6489775505977274806">Скриј ја Level Up</translation>
 <translation id="6494931198667773526">Завршува</translation>
 <translation id="6503077044568424649">Најпосетени</translation>
 <translation id="6503763061813913607">Известувања за „Безбедносна проверка“</translation>

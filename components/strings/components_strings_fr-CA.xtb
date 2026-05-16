@@ -2236,6 +2236,7 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="443673843213245140">L'utilisation d'un mandataire est désactivée, mais une configuration de mandataire explicite est spécifiée.</translation>
 <translation id="4438821706955556403">Prix habituel</translation>
 <translation id="4441832193888514600">Configuration ignorée parce que la politique peut uniquement être définie en tant que politique utilisateur du nuage.</translation>
+<translation id="4444062564459679679">Déjà envoyé à Chrome sur votre <ph name="DEVICE_NAME" /></translation>
 <translation id="4445133368066241428">Sujets populaires</translation>
 <translation id="4445694043187340808"><ph name="STARTER_PACK_TABS_FOCUSED_FRIENDLY_MATCH_TEXT" />, appuyez sur Entrée pour rechercher dans les onglets</translation>
 <translation id="4445964943162061557">Il s'agit d'une fonctionnalité expérimentale qui ne donne pas toujours le bon résultat.</translation>
@@ -4846,6 +4847,7 @@ Détails supplémentaires :
 <translation id="8511402995811232419">Gérer les témoins</translation>
 <translation id="851353418319061866">Contrôle de la fiabilité</translation>
 <translation id="8513580896341796021">Le téléchargement a commencé. Pour le voir, appuyez sur |<ph name="ACCELERATOR" />|.</translation>
+<translation id="8515544520486085367">Remplissage automatique des paiements</translation>
 <translation id="8519753333133776369">Appareil HID autorisé par votre administrateur</translation>
 <translation id="8521013008769249764">Sofas et fauteuils</translation>
 <translation id="8521812709849134608">Comptoirs</translation>

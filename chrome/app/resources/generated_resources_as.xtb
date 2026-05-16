@@ -784,6 +784,7 @@
 <translation id="1529769834253316556">শাৰীৰ উচ্চতা</translation>
 <translation id="1529891865407786369">পাৱাৰৰ উৎস</translation>
 <translation id="1530376661400379364">Chromeএ এই ছেটিংসমূহ ৰিছেট কৰে</translation>
+<translation id="1530466164747090379"><ph name="FILE_NAME" />ত সংবেদনশীল বা বিপজ্জনক ডেটা আছে</translation>
 <translation id="1531275250079031713">’নতুন ৱাই-ফাই যোগ কৰক’ ডায়লগ দেখুৱাওক</translation>
 <translation id="1531734061664070992"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /></translation>
 <translation id="1533948060140843887">মই বুজি পাওঁ যে এই ডাউনল’ডটোৱে মোৰ কম্পিউটাৰৰ ক্ষতি কৰিব</translation>
@@ -2191,6 +2192,7 @@
 <translation id="2469141124738294431">VMৰ স্থিতি</translation>
 <translation id="2469259292033957819">আপোনাৰ কোনো ছেভ কৰি থোৱা প্ৰিণ্টাৰ নাই।</translation>
 <translation id="2469375675106140201">বানান পৰীক্ষক কাষ্ট'মাইজ কৰক</translation>
+<translation id="2469406914567390938">চেনেল আপডে’ট কৰক</translation>
 <translation id="247051149076336810">ফাইল শ্বেয়াৰ কৰা URL</translation>
 <translation id="2471469610750100598">ক’লা (ডিফ’ল্ট)</translation>
 <translation id="2471506181342525583">অৱস্থানৰ এক্সেছৰ অনুমতি দিয়া হৈছে</translation>
@@ -2522,6 +2524,7 @@
 <translation id="2695943520968279338">এক্সটেনশ্বন বিচাৰি পাওক</translation>
 <translation id="2696675923413008404">এই ছাইটটোৰ সমল, ইয়াৰ URLকে ধৰি, Googleলৈ পঠিওৱা হয় আৰু এই সুবিধাটো উন্নত কৰিবলৈ সেয়া মানৱ পৰ্যালোচকে চাব পাৰে</translation>
 <translation id="2698147581454716013">এইটো এটা বাণ্ডল কৰা ডিভাইচ আৰু ইয়াক কিঅ’স্ক আৰু ছাইনেজ আপগ্ৰে’ডৰ সৈতে পঞ্জীয়ন কৰিব নোৱাৰি।</translation>
+<translation id="269941332914175387">আপোনাৰ প্ৰ’ফাইল ডেটা ল’ড কৰিবলৈ আৰু সেইটো এনক্ৰিপ্ট কৰি ৰাখিবলৈ ব্ৰাউজাৰটো পুনৰ লঞ্চ কৰক</translation>
 <translation id="2699911226086014512"><ph name="RETRIES" /> ক'ডৰ সৈতে পিনৰ কাৰ্য বিফল হ'ল।</translation>
 <translation id="2701330563083355633"><ph name="DEVICE_NAME" />ৰ পৰা শ্বেয়াৰ কৰা হৈছে</translation>
 <translation id="2701737434167469065">ছাইন ইন কৰক, <ph name="EMAIL" /></translation>
@@ -2750,6 +2753,7 @@
 <translation id="2844154481025280030">নীতি কনফিগাৰ কৰা হৈছে।</translation>
 <translation id="2844169650293029770">USB-C ডিভাইচ (বাওঁফালৰ সন্মুখৰ পর্ট)</translation>
 <translation id="2844809857160214557">প্ৰিণ্টিঙৰ কাৰ্যসমূহ চাওক আৰু পৰিচালনা কৰক</translation>
+<translation id="284491292807422921">ছাইটটো আঁতৰাবনে?</translation>
 <translation id="2845276301195220700">Google Calendarৰ বাবে অধিক কাৰ্য</translation>
 <translation id="2845382757467349449">বুকমাৰ্কৰ বাৰ সদায়েই দেখুৱাওক</translation>
 <translation id="284581348330507117">অদ্বিতীয় পাছৱৰ্ড সৃষ্টি কৰক</translation>
@@ -3339,6 +3343,7 @@
 <translation id="3262986719682892278">অতি বেছি ডাঙৰ</translation>
 <translation id="3264544094376351444">Sans-serif ফ’ণ্ট</translation>
 <translation id="3264582393905923483">প্ৰসংগ</translation>
+<translation id="3265303262625691029"><ph name="VERDICT_MESSAGE" />। আপোনাৰ প্ৰশাসকে কৈছে: "<ph name="CUSTOM_MESSAGE" />"</translation>
 <translation id="3265459715026181080">ৱিণ্ড’ বন্ধ কৰক</translation>
 <translation id="3266022278425892773">Linux বিকাশৰ পৰিৱেশ</translation>
 <translation id="3266030505377585301">আপোনাৰ Google একাউণ্টত ব্ৰাউজিং ডেটা ৰাখি কেৱল এই ডিভাইচৰ পৰা সেই ডেটা মচিবলৈ <ph name="BEGIN_LINK" />ছাইন আউট কৰক<ph name="END_LINK" />।</translation>
@@ -4457,6 +4462,7 @@
 <translation id="4010746393007464819">Debian 12 (Bookworm)ৰ এটা আপগ্ৰে’ড উপলব্ধ</translation>
 <translation id="4010917659463429001">আপোনাৰ ম'বাইল ডিভাইচটোত নিজৰ বুকমার্কসমূহ পাবলৈ <ph name="GET_IOS_APP_LINK" />।</translation>
 <translation id="4011073493055408531">অৰ’ৰা ব’ৰেলিছ, এখন চহৰৰ ওপৰত বেঙুনীয়া আৰু সেউজীয়া ৰঙেৰে শৈলীকৰণ কৰা।</translation>
+<translation id="4011897773956589748">পৰৱৰ্তী সময়ত Geminiক এই একাউণ্টটোৰ এক্সেছৰ প্ৰয়োজন হ’লে ই আপোনাক পুনৰ সুধিব।</translation>
 <translation id="4012509903424054869">PDFসমূহ স্বয়ংক্ৰিয়ভাৱে কনভাৰ্ট হয় যাতে আপুনি পাঠ সন্ধান আৰু বাছনি কৰিব পাৰে</translation>
 <translation id="4014432863917027322">"<ph name="EXTENSION_NAME" />" মেৰামতি কৰিবনে?</translation>
 <translation id="4015163439792426608">এক্সটেনশ্বনসমূহ আছেনে? এক সহজ ঠাইত <ph name="BEGIN_LINK" />আপোনাৰ এক্সটেনশ্বনসমূহ পৰিচালনা কৰক<ph name="END_LINK" />।</translation>
@@ -6235,6 +6241,7 @@
 <translation id="5275084684151588738">ব্যৱহাৰকাৰীৰ অভিধানসমূহ</translation>
 <translation id="5275338516105640560">ছেভ হৈ থকা টেবৰ গোটৰ বুটাম</translation>
 <translation id="5275352920323889391">কুকুৰ</translation>
+<translation id="5275946508817197540">আপোনাৰ সুৰক্ষাৰ অগ্ৰাধিকাৰসমূহে পোনপটীয়াকৈ বিতৰণ কৰা ৱেব এপ্‌ ইনষ্টল কৰাৰ অনুমতি নিদিয়ে। <ph name="CHANGE_PREFERENCE" />।</translation>
 <translation id="527605719918376753">টেব মিউট কৰক</translation>
 <translation id="527605982717517565"><ph name="HOST" />ত সদায় JavaScriptক অনুমতি দিয়ক</translation>
 <translation id="5276357196618041410">প্ৰথমে লগইন নকৰাকৈ কনফিগাৰেশ্বন ছেভ কৰিব নোৱাৰি</translation>
@@ -8685,6 +8692,7 @@
 <translation id="6997553674029032185">ছাইটটোলৈ যাওক</translation>
 <translation id="6997642619627518301"><ph name="NAME_PH" /> - কাৰ্যকলাপৰ লগ</translation>
 <translation id="6997707937646349884">আপোনাৰ ডিভাইচসমূহত:</translation>
+<translation id="6998036632333022623">Googleৰ সৈতে টেব শ্বেয়াৰ কৰি আছে</translation>
 <translation id="6998793565256476099">ডিভাইচটো ভিডি’অ কনফাৰেন্সিঙৰ বাবে পঞ্জীয়ন কৰক</translation>
 <translation id="6999956497249459195">নতুন গোট</translation>
 <translation id="7000206553895739324"><ph name="PRINTER_NAME" />ক সংযোগ কৰা হৈছে কিন্তু কনফিগাৰেশ্বনৰ আৱশ্যক</translation>

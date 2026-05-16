@@ -2238,6 +2238,7 @@ Jei norite paslėpti mokėjimo vėliau parinktis, eikite į <ph name="BEGIN_LINK
 <translation id="443673843213245140">Įgaliotojo serverio naudojimas neleidžiamas, bet nurodyta aiški įgaliotojo serverio konfigūracija.</translation>
 <translation id="4438821706955556403">Įprasta kaina</translation>
 <translation id="4441832193888514600">Nepaisoma, nes politika gali būti nustatyta tik kaip debesies naudotojo politika.</translation>
+<translation id="4444062564459679679">Jau išsiųsta į „Chrome“ „<ph name="DEVICE_NAME" />“ įrenginyje</translation>
 <translation id="4445133368066241428">Populiarios temos</translation>
 <translation id="4445694043187340808"><ph name="STARTER_PACK_TABS_FOCUSED_FRIENDLY_MATCH_TEXT" />, paspauskite „Enter“, jei norite ieškoti skirtukuose</translation>
 <translation id="4445964943162061557">Tai eksperimentinė funkcija ir ji ne visada pateikia tinkamus atsakymus.</translation>
@@ -4851,6 +4852,7 @@ Papildoma išsami informacija:
 <translation id="8511402995811232419">Tvarkyti slapukus</translation>
 <translation id="851353418319061866">Tikslumo patikra</translation>
 <translation id="8513580896341796021">Atsisiuntimas pradėtas. Jei norite jį peržiūrėti, paspauskite |<ph name="ACCELERATOR" />|.</translation>
+<translation id="8515544520486085367">Automatinis mokėjimo pildymas</translation>
 <translation id="8519753333133776369">Administratorius leidžia naudoti HID įrenginį</translation>
 <translation id="8521013008769249764">Sofos ir foteliai</translation>
 <translation id="8521812709849134608">Paviršiai valgiui ruošti</translation>

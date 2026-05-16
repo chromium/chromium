@@ -178,6 +178,7 @@
 <translation id="1582732959743469162">Na taj način ćete potpuno zaustaviti trenutno preuzimanje.</translation>
 <translation id="1594034544529347967">Počinje</translation>
 <translation id="1598751033135758830">Otvori u aplikaciji…</translation>
+<translation id="1600571977391127696">Neki sadržaj možda nije prikladan za svakoga.</translation>
 <translation id="1601560923496285236">Primeni</translation>
 <translation id="1603718000246404895">{COUNT,plural, =1{1 adresa}one{# adresa}few{# adrese}other{# adresa}}</translation>
 <translation id="1605405588277479165">Isključeno – Ne preporučuje se</translation>
@@ -312,6 +313,7 @@
 <translation id="2012723204723845092">Dobro nam došli ponovo.</translation>
 <translation id="2015722694326466240">Da biste videli lozinke, prvo morate da podesite šifru na uređaju.</translation>
 <translation id="201759455285471444">Proširite grupu kartica.</translation>
+<translation id="2031515492007104071">Viši nivo</translation>
 <translation id="2044394949148788042">Otvorite mrežu za kartice</translation>
 <translation id="2044681667265133332">Nalogom <ph name="USER_EMAIL" /> upravlja <ph name="HOSTED_DOMAIN" />, koji može da pregleda određene informacije. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">nova stavka</translation>
@@ -845,6 +847,7 @@
 <translation id="3994911892367422121">VAŽI</translation>
 <translation id="3995521777587992544">Traka napretka učitavanja stranica, učitano je <ph name="EMAIL" />.</translation>
 <translation id="3997522473364371632">Administrator je onemogućio deljenje lozinki.</translation>
+<translation id="4000707564769984863">Pogledajte: <ph name="WATCH_LINK" /></translation>
 <translation id="4002066346123236978">Naslov</translation>
 <translation id="4004204301268239848">Lozinke se čuvaju na Google nalogu da biste mogli da ih koristite na bilo kom uređaju.</translation>
 <translation id="4007463141047732631">Izmenite grupu</translation>
@@ -875,6 +878,7 @@
 <translation id="4129768137228347731">Želite da sačuvate stavku <ph name="ENTITY_TYPE" />?</translation>
 <translation id="4133139945030148655">Spremni ste</translation>
 <translation id="4133265950310064865">Napredna zaštita</translation>
+<translation id="4142372594294312814">Pet stvari koje morate da znate o generativnoj veštačkoj inteligenciji</translation>
 <translation id="4145507240503767005"><ph name="SEARCH_ENGINE_NAME" />, <ph name="SEARCH_ENGINE_DOMAIN" /></translation>
 <translation id="4147897805161313378">Google slike</translation>
 <translation id="4148023517926189160">Ovaj veb-sajt želi da preuzme fajl i doda ga u kalendar.</translation>
@@ -997,6 +1001,7 @@
 <translation id="456502772933839252">Deli se stranica <ph name="PAGE_TITLE" /></translation>
 <translation id="4565377596337484307">Sakrij lozinku</translation>
 <translation id="4568230126482344545">Sakrij Nedavne kartice</translation>
+<translation id="4571490460651837010">Upravljaj adresama i drugim…</translation>
 <translation id="4578835633387306383">Uključi…</translation>
 <translation id="4580621046861724270">Neki obeleživači nisu sačuvani</translation>
 <translation id="4580716718466706433">Idite u Menadžer lozinki</translation>
@@ -1234,6 +1239,7 @@
 <translation id="5329451663851195956">Možete da prevučete nadole da biste osvežili.</translation>
 <translation id="5336910966955551309">Dodirnite i zadržite da biste zakačili omiljene sajtove</translation>
 <translation id="5338512273860059533">Prijavljivanje je u toku.</translation>
+<translation id="5340148832014094861">Primenjuju se <ph name="GOOGLE_TERMS" /> i <ph name="GEMINI_APPS_PRIVACY" />. Gemini je veštačka inteligencija i može da pogreši, uključujući i u vezi sa ljudima.</translation>
 <translation id="5343472494710226394">Vesti, sport i sadržaj na osnovu interesovanja.</translation>
 <translation id="5352128922772839949">Sačuvajte fajl</translation>
 <translation id="5355191726083956201">Poboljšana zaštita je uključena</translation>
@@ -1577,6 +1583,7 @@ Handoff treba da se omogući u odeljku General (Opšte) u meniju Settings (Pode
 <translation id="647867789226964031">Promenite lozinke</translation>
 <translation id="6480363549849064919">Potvrda identiteta klijenta</translation>
 <translation id="6489174933860678546">Otvorite kartice bez arhiviranja da biste privatnije pregledali veb.</translation>
+<translation id="6489775505977274806">Sakrij odeljak Viši nivo</translation>
 <translation id="6494931198667773526">Završava se</translation>
 <translation id="6503077044568424649">Najposećeniji</translation>
 <translation id="6503763061813913607">Obaveštenja Provere bezbednosti</translation>

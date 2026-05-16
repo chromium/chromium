@@ -178,6 +178,7 @@
 <translation id="1582732959743469162">Esta acción detendrá el progreso de la descarga actual.</translation>
 <translation id="1594034544529347967">De</translation>
 <translation id="1598751033135758830">Abrir en la aplicación…</translation>
+<translation id="1600571977391127696">Es posible que parte del contenido no sea adecuado para todos los usuarios.</translation>
 <translation id="1601560923496285236">Aplicar</translation>
 <translation id="1603718000246404895">{COUNT,plural, =1{1 dirección}other{# direcciones}}</translation>
 <translation id="1605405588277479165">Desactivada (no se recomienda)</translation>
@@ -312,6 +313,7 @@
 <translation id="2012723204723845092">¡Hola de nuevo!</translation>
 <translation id="2015722694326466240">Para ver las contraseñas, primero debes configurar una contraseña en tu dispositivo.</translation>
 <translation id="201759455285471444">Desplegar grupo de pestañas.</translation>
+<translation id="2031515492007104071">Subir de nivel</translation>
 <translation id="2044394949148788042">Abre la cuadrícula de pestañas</translation>
 <translation id="2044681667265133332">La cuenta <ph name="USER_EMAIL" /> la gestiona <ph name="HOSTED_DOMAIN" />, que podría ver cierta información. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">nuevo elemento</translation>
@@ -764,6 +766,7 @@
 <translation id="372676576864368480">Autocompletar el número de tarjeta que termina en <ph name="LAST_DIGITS" /></translation>
 <translation id="3738428049780661523">Creado hace <ph name="DATE" /></translation>
 <translation id="3742498336182910186">Carrete</translation>
+<translation id="3743545564993953213">Este sitio está intentando abrir la aplicación Atajos.</translation>
 <translation id="3746269120925354434">Información guardada en Google Wallet</translation>
 <translation id="3750225824417196283">Nueva página de pestaña de Incógnito</translation>
 <translation id="3751873026576444885">Deja de buscar en tu pantalla con Google Lens</translation>
@@ -845,6 +848,7 @@
 <translation id="3994911892367422121">ENTENDIDO</translation>
 <translation id="3995521777587992544">Barra de progreso de carga de la página: <ph name="EMAIL" /> cargado.</translation>
 <translation id="3997522473364371632">Tu administrador ha inhabilitado el uso compartido de contraseñas.</translation>
+<translation id="4000707564769984863">Ver: <ph name="WATCH_LINK" /></translation>
 <translation id="4002066346123236978">Título</translation>
 <translation id="4004204301268239848">Las contraseñas se guardan en tu cuenta de Google para que puedas utilizarlas en cualquier dispositivo.</translation>
 <translation id="4007463141047732631">Editar grupo</translation>
@@ -875,6 +879,7 @@
 <translation id="4129768137228347731">¿Guardar <ph name="ENTITY_TYPE" />?</translation>
 <translation id="4133139945030148655">Ya está todo preparado</translation>
 <translation id="4133265950310064865">Protección mejorada</translation>
+<translation id="4142372594294312814">5 cosas que debes saber de la IA generativa</translation>
 <translation id="4145507240503767005"><ph name="SEARCH_ENGINE_NAME" />, <ph name="SEARCH_ENGINE_DOMAIN" /></translation>
 <translation id="4147897805161313378">Google Fotos</translation>
 <translation id="4148023517926189160">Este sitio web quiere descargar un archivo y añadirlo a tu calendario.</translation>
@@ -997,6 +1002,7 @@
 <translation id="456502772933839252">Compartiendo <ph name="PAGE_TITLE" /></translation>
 <translation id="4565377596337484307">Ocultar contraseña</translation>
 <translation id="4568230126482344545">Ocultar Pestañas recientes</translation>
+<translation id="4571490460651837010">Gestionar direcciones y más…</translation>
 <translation id="4578835633387306383">Activar…</translation>
 <translation id="4580621046861724270">Algunos marcadores no se han guardado</translation>
 <translation id="4580716718466706433">Ve al Gestor de contraseñas</translation>
@@ -1234,6 +1240,7 @@
 <translation id="5329451663851195956">Puedes deslizar la pantalla hacia abajo para actualizar la página.</translation>
 <translation id="5336910966955551309">Mantén pulsado para fijar tus sitios favoritos</translation>
 <translation id="5338512273860059533">Iniciando sesión.</translation>
+<translation id="5340148832014094861">Se aplican los <ph name="GOOGLE_TERMS" /> y el <ph name="GEMINI_APPS_PRIVACY" />. Gemini es una IA y puede cometer errores, incluso sobre personas.</translation>
 <translation id="5343472494710226394">Noticias, deportes y contenido basado en tus intereses.</translation>
 <translation id="5352128922772839949">Guardar archivo</translation>
 <translation id="5355191726083956201">La protección mejorada está activada</translation>
@@ -1577,6 +1584,7 @@ Handoff también debe estar habilitado en la sección General de Ajustes del sis
 <translation id="647867789226964031">Cambia tus contraseñas</translation>
 <translation id="6480363549849064919">Autenticación de cliente</translation>
 <translation id="6489174933860678546">Abre pestañas de Incógnito para navegar por la Web de forma más privada.</translation>
+<translation id="6489775505977274806">Ocultar Subir de nivel</translation>
 <translation id="6494931198667773526">A</translation>
 <translation id="6503077044568424649">Más visitado</translation>
 <translation id="6503763061813913607">Notificaciones de Comprobación de tu estado</translation>

@@ -178,6 +178,7 @@
 <translation id="1582732959743469162">Dette stopper all fremdriften for den aktive nedlastingen.</translation>
 <translation id="1594034544529347967">Starter</translation>
 <translation id="1598751033135758830">Åpne i appen…</translation>
+<translation id="1600571977391127696">Noe innhold er kanskje ikke egnet for alle.</translation>
 <translation id="1601560923496285236">Bruk</translation>
 <translation id="1603718000246404895">{COUNT,plural, =1{1 adresse}other{# adresser}}</translation>
 <translation id="1605405588277479165">Av – anbefales ikke</translation>
@@ -312,6 +313,7 @@
 <translation id="2012723204723845092">Velkommen tilbake!</translation>
 <translation id="2015722694326466240">For å se passordene må du først angi en adgangskode på enheten din.</translation>
 <translation id="201759455285471444">Vis fanegruppen.</translation>
+<translation id="2031515492007104071">Nytt nivå</translation>
 <translation id="2044394949148788042">Åpne fanerutenettet</translation>
 <translation id="2044681667265133332">Kontoen <ph name="USER_EMAIL" /> administreres av <ph name="HOSTED_DOMAIN" />, som kan se visse typer informasjon. <ph name="BEGIN_LINK" />Finn ut mer<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">nytt element</translation>
@@ -845,6 +847,7 @@
 <translation id="3994911892367422121">GREIT</translation>
 <translation id="3995521777587992544">Fremdriftslinje for sideinnlasting, <ph name="EMAIL" /> er lastet inn.</translation>
 <translation id="3997522473364371632">Administratoren din har slått av passorddeling.</translation>
+<translation id="4000707564769984863">Se: <ph name="WATCH_LINK" /></translation>
 <translation id="4002066346123236978">Tittel</translation>
 <translation id="4004204301268239848">Passordene lagres i Google-kontoen din, slik at du kan bruke dem på alle enheter.</translation>
 <translation id="4007463141047732631">Endre gruppen</translation>
@@ -875,6 +878,7 @@
 <translation id="4129768137228347731">Vil du lagre <ph name="ENTITY_TYPE" />?</translation>
 <translation id="4133139945030148655">Da er alt klart</translation>
 <translation id="4133265950310064865">Økt beskyttelse</translation>
+<translation id="4142372594294312814">5 ting du må vite om generativ AI</translation>
 <translation id="4145507240503767005"><ph name="SEARCH_ENGINE_NAME" />, <ph name="SEARCH_ENGINE_DOMAIN" /></translation>
 <translation id="4147897805161313378">Google Foto</translation>
 <translation id="4148023517926189160">Dette nettstedet vil laste ned en fil og legge den til på kalenderen din.</translation>
@@ -997,6 +1001,7 @@
 <translation id="456502772933839252">Deler <ph name="PAGE_TITLE" /></translation>
 <translation id="4565377596337484307">Skjul passord</translation>
 <translation id="4568230126482344545">Skjul nylige faner</translation>
+<translation id="4571490460651837010">Administrer adresser med mer …</translation>
 <translation id="4578835633387306383">Slå på…</translation>
 <translation id="4580621046861724270">Noen bokmerker er ikke lagret</translation>
 <translation id="4580716718466706433">Gå til «Passordlagring»</translation>
@@ -1234,6 +1239,7 @@
 <translation id="5329451663851195956">Du kan trekke nedover for å laste inn på nytt.</translation>
 <translation id="5336910966955551309">Trykk og hold for å feste favorittnettstedene dine</translation>
 <translation id="5338512273860059533">Pålogging pågår.</translation>
+<translation id="5340148832014094861"><ph name="GOOGLE_TERMS" /> og <ph name="GEMINI_APPS_PRIVACY" /> gjelder. Gemini er AI og kan gjøre feil, også om personer.</translation>
 <translation id="5343472494710226394">Nyheter, sport og innhold basert på interessene dine.</translation>
 <translation id="5352128922772839949">Lagre fil</translation>
 <translation id="5355191726083956201">Økt beskyttelse er på</translation>
@@ -1577,6 +1583,7 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="647867789226964031">Endre passordene dine</translation>
 <translation id="6480363549849064919">Autentisering av klient</translation>
 <translation id="6489174933860678546">Åpne inkognitofaner for å surfe mer privat på nettet.</translation>
+<translation id="6489775505977274806">Skjul Nivå opp</translation>
 <translation id="6494931198667773526">Slutter</translation>
 <translation id="6503077044568424649">Mest besøkt</translation>
 <translation id="6503763061813913607">Varsler fra sikkerhetssjekk</translation>

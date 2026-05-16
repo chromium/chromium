@@ -786,6 +786,7 @@ Kebenaran yang telah anda berikan kepada apl mungkin dikenakan pada akaun ini. A
 <translation id="1529769834253316556">Tinggi baris</translation>
 <translation id="1529891865407786369">Sumber kuasa</translation>
 <translation id="1530376661400379364">Chrome menetapkan semula tetapan ini</translation>
+<translation id="1530466164747090379"><ph name="FILE_NAME" /> mengandungi data sensitif atau berbahaya</translation>
 <translation id="1531275250079031713">Tunjukkan dialog 'Tambahkan Wi-Fi baharu'</translation>
 <translation id="1531734061664070992"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /></translation>
 <translation id="1533948060140843887">Saya faham bahawa muat turun ini akan membahayakan komputer saya</translation>
@@ -2193,6 +2194,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="2469141124738294431">Status VM</translation>
 <translation id="2469259292033957819">Anda tiada pencetak yang disimpan.</translation>
 <translation id="2469375675106140201">Sesuaikan semak ejaan</translation>
+<translation id="2469406914567390938">Kemas kinikan saluran</translation>
 <translation id="247051149076336810">URL perkongsian fail</translation>
 <translation id="2471469610750100598">Hitam (lalai)</translation>
 <translation id="2471506181342525583">Akses lokasi.dibenarkan</translation>
@@ -2524,6 +2526,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="2695943520968279338">Temukan sambungan</translation>
 <translation id="2696675923413008404">Kandungan daripada laman ini, termasuk URL laman, dihantar kepada Google dan boleh dilihat oleh jurusemak untuk meningkatkan ciri ini</translation>
 <translation id="2698147581454716013">Ini ialah peranti yang dihimpunkan dan tidak boleh didaftarkan dengan Peningkatan Kios dan Papan Tanda.</translation>
+<translation id="269941332914175387">Lancarkan semula penyemak imbas untuk memuatkan data profil anda dan memastikan data tersebut disulitkan</translation>
 <translation id="2699911226086014512">Operasi PIN gagal dengan kod <ph name="RETRIES" />.</translation>
 <translation id="2701330563083355633">Dikongsi daripada <ph name="DEVICE_NAME" /></translation>
 <translation id="2701737434167469065">Log masuk, <ph name="EMAIL" /></translation>
@@ -2752,6 +2755,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="2844154481025280030">Dasar dikonfigurasikan.</translation>
 <translation id="2844169650293029770">Peranti USB-C (port depan sebelah kiri)</translation>
 <translation id="2844809857160214557">Lihat dan urus tugas cetak</translation>
+<translation id="284491292807422921">Alih keluar laman?</translation>
 <translation id="2845276301195220700">Lagi tindakan untuk Google Calendar</translation>
 <translation id="2845382757467349449">Sentiasa Paparkan Bar Penanda Halaman</translation>
 <translation id="284581348330507117">Buat kata laluan yang unik</translation>
@@ -3341,6 +3345,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="3262986719682892278">Terlalu besar</translation>
 <translation id="3264544094376351444">Fon Sans-serif</translation>
 <translation id="3264582393905923483">Konteks</translation>
+<translation id="3265303262625691029"><ph name="VERDICT_MESSAGE" />. Pentadbir anda berkata: "<ph name="CUSTOM_MESSAGE" />"</translation>
 <translation id="3265459715026181080">Tutup Tetingkap</translation>
 <translation id="3266022278425892773">Persekitaran pembangunan Linux</translation>
 <translation id="3266030505377585301">Untuk memadamkan data semakan imbas daripada peranti ini dan menyimpan data semakan imbas tersebut dalam Google Account anda, <ph name="BEGIN_LINK" />log keluar<ph name="END_LINK" />.</translation>
@@ -4460,6 +4465,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="4010746393007464819">Peningkatan kepada Debian 12 (Bookworm) tersedia</translation>
 <translation id="4010917659463429001">Untuk mendapatkan penanda halaman anda pada peranti mudah alih, <ph name="GET_IOS_APP_LINK" />.</translation>
 <translation id="4011073493055408531">Aurora Borealis, dalam warna ungu dan hijau, menyelubungi kota.</translation>
+<translation id="4011897773956589748">Pada masa hadapan, apabila Gemini memerlukan akses kepada akaun ini, Gemini akan meminta kebenaran anda sekali lagi.</translation>
 <translation id="4012509903424054869">PDF akan ditukar secara automatik supaya anda boleh membuat carian dan memilih teks</translation>
 <translation id="4014432863917027322">Baiki "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="4015163439792426608">Ada sambungan? <ph name="BEGIN_LINK" />Urus sambungan anda<ph name="END_LINK" /> di satu tempat yang mudah.</translation>
@@ -6238,6 +6244,7 @@ Gunakan Ctrl + Alt + Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="5275084684151588738">Kamus Pengguna</translation>
 <translation id="5275338516105640560">Butang Kumpulan Tab Disimpan</translation>
 <translation id="5275352920323889391">Anjing</translation>
+<translation id="5275946508817197540">Pilihan keselamatan anda tidak membenarkan pemasangan apl web terpencil. <ph name="CHANGE_PREFERENCE" />.</translation>
 <translation id="527605719918376753">Redam tab</translation>
 <translation id="527605982717517565">Sentiasa benarkan JavaScript di <ph name="HOST" /></translation>
 <translation id="5276357196618041410">Tidak boleh menyimpan konfigurasi tanpa log masuk terlebih dahulu</translation>
@@ -8686,6 +8693,7 @@ Anda mempunyai # lagi kata laluan yang terjejas. Google Password Manager mengesy
 <translation id="6997553674029032185">Pergi ke laman</translation>
 <translation id="6997642619627518301"><ph name="NAME_PH" /> - Log Aktiviti</translation>
 <translation id="6997707937646349884">Pada peranti anda:</translation>
+<translation id="6998036632333022623">Berkongsi tab dengan Google</translation>
 <translation id="6998793565256476099">Daftar peranti untuk persidangan video</translation>
 <translation id="6999956497249459195">Kumpulan baharu</translation>
 <translation id="7000206553895739324"><ph name="PRINTER_NAME" /> disambung tetapi memerlukan konfigurasi</translation>

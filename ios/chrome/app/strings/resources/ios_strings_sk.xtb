@@ -178,6 +178,7 @@
 <translation id="1582732959743469162">Tým zastavíte ďalší postup aktuálneho sťahovania.</translation>
 <translation id="1594034544529347967">Začína sa</translation>
 <translation id="1598751033135758830">Otvoriť v aplikácii…</translation>
+<translation id="1600571977391127696">Niektorý obsah nemusí byť vhodný pre všetkých.</translation>
 <translation id="1601560923496285236">Použiť</translation>
 <translation id="1603718000246404895">{COUNT,plural, =1{1 adresa}few{# adresy}many{# addresses}other{# adries}}</translation>
 <translation id="1605405588277479165">Vypnuté – neodporúča sa</translation>
@@ -312,6 +313,7 @@
 <translation id="2012723204723845092">Vitajte späť!</translation>
 <translation id="2015722694326466240">Ak si chcete zobraziť heslá, najprv musíte v zariadení nastaviť vstupný kód.</translation>
 <translation id="201759455285471444">Rozbaliť skupinu kariet</translation>
+<translation id="2031515492007104071">Level Up</translation>
 <translation id="2044394949148788042">Otvorte mriežku kariet</translation>
 <translation id="2044681667265133332">Účet <ph name="USER_EMAIL" /> spravuje doména <ph name="HOSTED_DOMAIN" />, ktorá si môže zobraziť určité informácie. <ph name="BEGIN_LINK" />Ďalšie informácie<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">nová položka</translation>
@@ -845,6 +847,7 @@
 <translation id="3994911892367422121">DOBRE</translation>
 <translation id="3995521777587992544">Ukazovateľ priebehu načítania stránky, načítané <ph name="EMAIL" />.</translation>
 <translation id="3997522473364371632">Zdieľanie hesiel zakázal správca.</translation>
+<translation id="4000707564769984863">Pozrieť: <ph name="WATCH_LINK" /></translation>
 <translation id="4002066346123236978">Názov</translation>
 <translation id="4004204301268239848">Heslá sa ukladajú do účtu Google, takže ich môžete používať v ľubovoľnom zariadení.</translation>
 <translation id="4007463141047732631">Upraviť skupinu</translation>
@@ -875,6 +878,7 @@
 <translation id="4129768137228347731">Chcete položku <ph name="ENTITY_TYPE" /> uložiť?</translation>
 <translation id="4133139945030148655">Všetko je nastavené</translation>
 <translation id="4133265950310064865">Rozšírená ochrana</translation>
+<translation id="4142372594294312814">Päť faktov, ktoré by ste mali vedieť o generatívnej umelej inteligencii</translation>
 <translation id="4145507240503767005"><ph name="SEARCH_ENGINE_NAME" />, <ph name="SEARCH_ENGINE_DOMAIN" /></translation>
 <translation id="4147897805161313378">Fotky Google</translation>
 <translation id="4148023517926189160">Tento web chce stiahnuť súbor a pridať ho do vášho kalendára.</translation>
@@ -997,6 +1001,7 @@
 <translation id="456502772933839252">Zdieľanie: <ph name="PAGE_TITLE" /></translation>
 <translation id="4565377596337484307">Skryť heslo</translation>
 <translation id="4568230126482344545">Skryť Nedávne karty</translation>
+<translation id="4571490460651837010">Spravovať adresy a ďalšie údaje…</translation>
 <translation id="4578835633387306383">Zapnúť…</translation>
 <translation id="4580621046861724270">Niektoré záložky nie sú uložené</translation>
 <translation id="4580716718466706433">Prejdite do Správcu hesiel</translation>
@@ -1234,6 +1239,7 @@
 <translation id="5329451663851195956">Obnovíte potiahnutím nadol.</translation>
 <translation id="5336910966955551309">Pridržaním pripnete svoje obľúbené weby</translation>
 <translation id="5338512273860059533">Prebieha prihlasovanie.</translation>
+<translation id="5340148832014094861">Platia <ph name="GOOGLE_TERMS" /> a <ph name="GEMINI_APPS_PRIVACY" />. Gemini je umelá inteligencia a môže robiť chyby, a to aj v súvislosti s ľuďmi.</translation>
 <translation id="5343472494710226394">Správy, šport a obsah založený na vašich záujmoch.</translation>
 <translation id="5352128922772839949">Uložiť súbor</translation>
 <translation id="5355191726083956201">Je zapnutá rozšírená ochrana</translation>
@@ -1577,6 +1583,7 @@ Funkciu Handoff musíte povoliť v nastaveniach v časti Všeobecné a vaše zar
 <translation id="647867789226964031">Zmeňte si heslá</translation>
 <translation id="6480363549849064919">Overenie klienta</translation>
 <translation id="6489174933860678546">Otvorte karty inkognito a prehliadajte internet vo väčšom súkromí.</translation>
+<translation id="6489775505977274806">Skryť Level Up</translation>
 <translation id="6494931198667773526">Končí sa</translation>
 <translation id="6503077044568424649">Najnavštevovanejšie</translation>
 <translation id="6503763061813913607">Upozornenia kontroly bezpečnosti</translation>

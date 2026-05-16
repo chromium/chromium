@@ -255,6 +255,29 @@ Per ulteriori informazioni sulla gestione dei dati per le funzionalità di AI ge
 <translation id="1160479894929412407">Consenti protocollo QUIC</translation>
 <translation id="1160939557934457296">Disattiva procedendo dalla pagina di avviso Navigazione sicura</translation>
 <translation id="1161685818042751282">Non importare i certificati del server TLS aggiunti dagli utenti dagli archivi di attendibilità della piattaforma.</translation>
+<translation id="1162404282416180562">Consente di configurare un elenco di regole di controllo dati per prevenire le fughe di dati.
+
+      Ciascuna regola prevede quanto segue:
+      - Campi delle condizioni per attivarla. Una regola viene attivata soltanto se un'azione dell'utente corrisponde a tutti i campi compilati nei relativi campi <ph name="DATA_CONTROLS_SOURCES" />, <ph name="DATA_CONTROLS_DESTINATIONS" />, <ph name="DATA_CONTROLS_AND" />, <ph name="DATA_CONTROLS_OR" /> e <ph name="DATA_CONTROLS_NOT" />. Per quanto riguarda i campi secondari dell'elenco, deve corrispondere soltanto una voce; ad esempio, deve corrispondere un solo pattern URL per attivare la regola.
+      - Un elenco di limitazioni da applicare. A seconda della limitazione, potrebbero essere disponibili solo le condizioni <ph name="DATA_CONTROLS_SOURCES" /> o <ph name="DATA_CONTROLS_DESTINATIONS" />.
+
+      È possibile aggiungere regole per:
+      - Controllare i dati degli appunti condivisi tra le origini e le destinazioni.
+      - Controllare il blocco degli screenshot in base alle schede di origine.
+
+      Se la policy <ph name="ON_SECURITY_EVENT_ENTERPRISE_CONNECTOR" /> viene impostata su True, le regole attivate vengono segnalate all'amministratore.
+      Il livello di limitazione può essere impostato su BLOCK, WARN o REPORT.
+      - Se il livello di limitazione è impostato su BLOCK, l'azione non sarà consentita.
+      - Se il livello di limitazione è impostato su WARN, l'utente verrà avvisato e potrà scegliere se continuare o annullare l'azione.
+      - Se il livello di limitazione è impostato su REPORT, l'azione dell'utente non verrà interrotta, ma verrà inviata una segnalazione se la policy <ph name="ON_SECURITY_EVENT_ENTERPRISE_CONNECTOR" /> è attivata.
+
+      Note:
+      - I pattern URL devono avere il formato indicato all'indirizzo https://support.google.com/chrome/a?p=url_blocklist_filter_format.
+      - Per conoscere le regole per la prevenzione delle fughe di dati specifiche di <ph name="PRODUCT_OS_NAME" />, vedi anche la policy <ph name="DATA_LEAK_PREVENTION_RULES_LIST" />.
+
+      Se la policy non viene configurata, non verranno applicate limitazioni.
+
+      Questa policy è disponibile solo per gli utenti a cui è stata assegnata una licenza "<ph name="CHROME_ENTERPRISE_PREMIUM_NAME" />".</translation>
 <translation id="1163080558183062209">Disattiva tipi di stampanti nell'elenco di tipi non consentiti</translation>
 <translation id="1163389598183927209">Un gruppo di policy relative a <ph name="PRIVACY_SANDBOX_NAME" />. Visita il sito <ph name="PRIVACY_SANDBOX_URL" /> per avere informazioni dettagliate sull'impegno di <ph name="PRODUCT_NAME" /> per ritirare i cookie di terze parti.</translation>
 <translation id="1165923723751466821">Consenti gli accessi come ospite al browser e gli accessi ai profili</translation>
@@ -717,6 +740,15 @@ Se non viene configurata, il selettore di emoji verrà attivato per gli utenti n
 <translation id="1509692106376861764">Questa norma non è più supportata a partire dalla versione 29 di <ph name="PRODUCT_NAME" />.</translation>
 <translation id="1509839615768187049">Utilizza sempre il client DNS integrato</translation>
 <translation id="1514888685242892912">Attiva <ph name="PRODUCT_NAME" /></translation>
+<translation id="1514959848081381646">Questa policy controlla le integrazioni di AI Mode di Google nella barra degli indirizzi e nella casella di ricerca della pagina Nuova scheda.
+
+Per accedere a questa funzionalità, è necessario impostare Google come motore di ricerca predefinito dell'utente.
+
+0 = la funzionalità sarà disponibile per gli utenti.
+
+1 = la funzionalità non sarà disponibile per gli utenti.
+
+Se la policy non viene configurata, il relativo comportamento viene determinato dalla policy <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />.</translation>
 <translation id="1515230621229117540">Attiva il menu Accessibilità mobile</translation>
 <translation id="1515824657887788963">Consenti a una pagina di fare richieste XHR sincrone durante l'uscita dalla pagina</translation>
 <translation id="1516486219683984217">Non consentire l'uso delle notifiche di sistema</translation>
@@ -2003,6 +2035,18 @@ Se la policy non viene configurata, gli utenti possono modificare l'elenco di ap
 
       Se la policy è impostata su False o se non viene configurata, non viene visualizzato alcun pulsante.</translation>
 <translation id="2294382669900758280">Il video riprodotto nelle app Android non viene considerato, anche se la norma viene impostata su <ph name="TRUE" />.</translation>
+<translation id="2296529215567227994">Specifica se sostituire la modalità Incognito con la modalità Isolata.
+
+La modalità Isolata è una modalità di navigazione temporanea disponibile solo per le aziende che sostituisce la modalità Incognito.
+A differenza della modalità Incognito, la modalità Isolata supporta le policy aziendali relative a DLP e le estensioni con installazione forzata.
+
+Tieni presente che le policy relative alla modalità Incognito non vengono applicate alla modalità Isolata.
+
+Se impostata su 1 (Attivata), la modalità Isolata viene attivata e sostituisce la modalità Incognito.
+
+Se impostata su 0 (Disattivata) o se non viene configurata, la modalità Isolata viene disattivata e viene utilizzato il comportamento standard della modalità Incognito.
+
+Per essere applicata, questa policy richiede una licenza "<ph name="CHROME_ENTERPRISE_PREMIUM_NAME" />".</translation>
 <translation id="2299220924812062390">Consente di specificare un elenco dei plug-in attivati</translation>
 <translation id="2299815818824242485">Non consentire ricerche inviate tramite proxy con una protezione maggiore</translation>
 <translation id="2303795211377219696">Attiva la Compilazione automatica per le carte di credito</translation>
@@ -8365,6 +8409,23 @@ Se la policy non viene configurata, significa che <ph name="PRODUCT_OS_NAME" /> 
 
       Se la policy è configurata, gli utenti non possono apportare modifiche. Se non è configurata, gli utenti possono decidere se mostrare o nascondere la scorciatoia per le app dal menu contestuale della barra dei Preferiti.</translation>
 <translation id="638003144128412430">Disattiva i report sulle informazioni relative al fuso orario del dispositivo</translation>
+<translation id="638217866669468708">Questa policy consente di controllare la condivisione dei contenuti di pagine e file con <ph name="GOOGLE_AI_MODE_PRODUCT_NAME" /> e <ph name="GOOGLE_LENS_PRODUCT_NAME" /> tramite il riquadro laterale o le schede di <ph name="PRODUCT_NAME" />.
+
+Tieni presente che questa policy non influisce su <ph name="GOOGLE_AI_MODE_PRODUCT_NAME" /> sul web. Controlla solo il modo in cui gli utenti possono condividere informazioni con esso quando utilizzano <ph name="PRODUCT_NAME" />.
+
+0 = gli utenti possono condividere contenuti di pagine o file con <ph name="GOOGLE_AI_MODE_PRODUCT_NAME" />.
+
+1 = gli utenti non possono condividere contenuti di pagine o file con <ph name="GOOGLE_AI_MODE_PRODUCT_NAME" />. Gli entry point per la condivisione del contesto e il riquadro laterale verranno disattivati o nascosti.
+
+Questa policy verrà ignorata quando <ph name="GOOGLE_SEARCH_PRODUCT_NAME" /> non è il motore di ricerca predefinito degli utenti in quanto la funzionalità è disattivata.
+
+Questa policy è indipendente dalla policy <ph name="AI_MODE_SETTINGS_POLICY_NAME" />. La policy <ph name="AI_MODE_SETTINGS_POLICY_NAME" /> controlla solo gli entry point nella omnibox o nella casella di ricerca della pagina Nuova scheda, mentre questa policy controlla la condivisione del contesto tramite il riquadro laterale o le schede.
+
+Questa policy non controlla l'integrazione di <ph name="GOOGLE_GEMINI_PRODUCT_NAME" />, che può essere disattivata da <ph name="GEMINI_SETTINGS_POLICY_NAME" />.
+
+Se questa policy non viene configurata, il relativo comportamento viene determinato dalla policy <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />.
+
+Per ulteriori informazioni sulla gestione dei dati per le funzionalità di AI generativa, visita la pagina https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="6382209369210116232">Disattiva le estensioni non pubblicate</translation>
 <translation id="6382287177674997281">Questa policy consente agli utenti di avviare qualsiasi tipo di aggiornamento firmware.
 
@@ -11234,6 +11295,15 @@ Gli URL che corrispondono sia alla lista consentita sia alla lista bloccata sono
 
 Per informazioni dettagliate sui pattern URL validi, visita la pagina https://support.google.com/chrome/a?p=url_blocklist_filter_format.</translation>
 <translation id="8186911565834244165">Consenti il feedback degli utenti</translation>
+<translation id="8190271041226151932">Questa impostazione consente le integrazioni delle app Gemini.
+
+0 = l'integrazione di Gemini sarà disponibile per gli utenti.
+
+1 = L'integrazione di Gemini non sarà disponibile per gli utenti.
+
+Se la policy non viene configurata, il relativo comportamento viene determinato dalla policy <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />.
+
+Per maggiori informazioni, consulta l'articolo del Centro assistenza all'indirizzo https://support.google.com/chrome/a?p=gemini_in_chrome.</translation>
 <translation id="8195133650230097559">Ignora richieste di wakelock per la gestione dell'alimentazione</translation>
 <translation id="8196558469954193908">Questa policy consente la coalescenza di connessioni HTTP/2 quando sono in uso i certificati client. Per ottenere la coalescenza delle connessioni, il nome host della nuova potenziale connessione e il nome host della connessione esistente devono corrispondere a uno o più schemi descritti da questa policy. La policy è un elenco di host che utilizzano il formato del filtro <ph name="URL_BLOCKLIST_POLICY_NAME" />: "example.com" corrisponde a "example.com" e a tutti i sottodomini (ad esempio "sub.example.com"), mentre ".example.net" corrisponde esattamente a "example.net".
 

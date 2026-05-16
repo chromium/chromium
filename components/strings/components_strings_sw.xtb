@@ -1821,6 +1821,7 @@ Ili ufiche chaguo za kulipa baadaye, nenda kwenye <ph name="BEGIN_LINK" />mipang
 <translation id="380865868633614173">Inahifadhi maelezo ya kadi</translation>
 <translation id="3810770279996899697">Kidhibiti cha Manenosiri kinahitaji idhini ya kufikia MacOS Keychain</translation>
 <translation id="3810973564298564668">Dhibiti</translation>
+<translation id="3811328723651698330"><ph name="STRING_1" />, <ph name="STRING_2" /></translation>
 <translation id="3812398568375898177">Hili ni sasisho muhimu linaloboresha utendaji wa programu za Android kwenye ChromeOS.</translation>
 <translation id="3814865536373139791">Rahisisha jinsi shirika lako linavyodhibiti sera</translation>
 <translation id="3815434930383843058">Inchi 8 x 12</translation>
@@ -2236,6 +2237,7 @@ Ili ufiche chaguo za kulipa baadaye, nenda kwenye <ph name="BEGIN_LINK" />mipang
 <translation id="443673843213245140">Matumizi ya proksi yamelemazwa lakini usanidi wa proksi wazi umebainishwa.</translation>
 <translation id="4438821706955556403">Bei ya kawaida</translation>
 <translation id="4441832193888514600">Imepuuzwa kwa sababu sera inaweza kuwekwa tu kama sera ya mtumiaji wa wingu.</translation>
+<translation id="4444062564459679679">Tayari kimetumwa kwenye Chrome katika <ph name="DEVICE_NAME" /> yako</translation>
 <translation id="4445133368066241428">Mada maarufu</translation>
 <translation id="4445694043187340808"><ph name="STARTER_PACK_TABS_FOCUSED_FRIENDLY_MATCH_TEXT" />, bonyeza Enter ili utafute vichupo</translation>
 <translation id="4445964943162061557">Hiki ni kipengele cha majaribio na hakitatoa matokeo sahihi kila wakati.</translation>
@@ -2400,6 +2402,7 @@ Ili ufiche chaguo za kulipa baadaye, nenda kwenye <ph name="BEGIN_LINK" />mipang
 <translation id="4736934858538408121">Kadi pepe</translation>
 <translation id="473775607612524610">Sasisha</translation>
 <translation id="4738601419177586157">Pendekezo la utafutajI la <ph name="TEXT" /></translation>
+<translation id="473866660302034629"><ph name="TAB_TITLE" />, umechagua kichupo, <ph name="INDEX" /> kati ya <ph name="TOTAL" />, tumia kishale cha kushoto au kulia ili ubadilishe kati ya vichupo</translation>
 <translation id="4742407542027196863">Dhibiti manenosiri…</translation>
 <translation id="474270528725216349">Kutoka katika angalau tovuti 1 kwenye vifaa vilivyosawazishwa</translation>
 <translation id="4743275772928623722">Mfumo wako umesasishwa lakini baadhi ya programu na faili zako hazikuweza kurejeshwa. Programu zako zitapakuliwa tena kiotomatiki.</translation>
@@ -2467,6 +2470,7 @@ Ili ufiche chaguo za kulipa baadaye, nenda kwenye <ph name="BEGIN_LINK" />mipang
 <translation id="4832961164064927107">Kubanika na Kuchoma Nyama</translation>
 <translation id="4835568975547260025">Kwa chaguomsingi, Chrome itaruhusu ufikiaji wa vichupo husika ulivyofungua ili ikusaidie kupata majibu yanayokufaa zaidi kwa maswali yako.</translation>
 <translation id="4840250757394056958">Angalia historia yako kwenye Chrome</translation>
+<translation id="4842365697443353018">Futa taarifa kwenye fomu ili utumie chaguo la kulipa baadaye</translation>
 <translation id="484462545196658690">Otomatiki</translation>
 <translation id="4844937814014739139">Kusogeza na kukuza vichupo vya pamoja</translation>
 <translation id="484671803914931257">Pata punguzo kwenye <ph name="MERCHANT_NAME" /> na zaidi</translation>
@@ -4843,6 +4847,7 @@ Ili ufiche chaguo za kulipa baadaye, nenda kwenye <ph name="BEGIN_LINK" />mipang
 <translation id="8511402995811232419">Dhibiti vidakuzi</translation>
 <translation id="851353418319061866">Ukaguzi wa usahihi</translation>
 <translation id="8513580896341796021">Upakuaji umeanza. Bonyeza |<ph name="ACCELERATOR" />| ili uone.</translation>
+<translation id="8515544520486085367">Jaza maelezo ya malipo kiotomatiki</translation>
 <translation id="8519753333133776369">Kifaa cha HID kinachoruhusiwa na msimamizi wako</translation>
 <translation id="8521013008769249764">Sofa na Makochi</translation>
 <translation id="8521812709849134608">Kaunta</translation>

@@ -1821,6 +1821,7 @@
 <translation id="380865868633614173">カード情報を保存しています</translation>
 <translation id="3810770279996899697">パスワード マネージャーに MacOS キーチェーンへのアクセスを許可する必要があります</translation>
 <translation id="3810973564298564668">管理</translation>
+<translation id="3811328723651698330"><ph name="STRING_1" />、<ph name="STRING_2" /></translation>
 <translation id="3812398568375898177">ChromeOS での Android アプリのパフォーマンスを改善する重要な更新です。</translation>
 <translation id="3814865536373139791">組織のポリシー管理を効率化</translation>
 <translation id="3815434930383843058">8x12 インチ</translation>
@@ -2236,6 +2237,7 @@
 <translation id="443673843213245140">プロキシの使用は無効ですが、プロキシの設定が明示的に指定されています。</translation>
 <translation id="4438821706955556403">一般的な価格</translation>
 <translation id="4441832193888514600">ポリシーは、クラウド ユーザー ポリシーとしてのみ設定可能なため無視されました。</translation>
+<translation id="4444062564459679679"><ph name="DEVICE_NAME" /> の Chrome にすでに送信されています</translation>
 <translation id="4445133368066241428">人気のトピック</translation>
 <translation id="4445694043187340808"><ph name="STARTER_PACK_TABS_FOCUSED_FRIENDLY_MATCH_TEXT" /> です。Enter キーを押すと、タブを検索します</translation>
 <translation id="4445964943162061557">これは試験運用版の機能であり、常に適切な結果が得られるとは限りません。</translation>
@@ -2400,6 +2402,7 @@
 <translation id="4736934858538408121">仮想カード</translation>
 <translation id="473775607612524610">更新</translation>
 <translation id="4738601419177586157"><ph name="TEXT" /> の検索候補</translation>
+<translation id="473866660302034629"><ph name="TAB_TITLE" />、選択したタブ、<ph name="TOTAL" /> 個中 <ph name="INDEX" /> 個目、左矢印または右矢印キーでタブを切り替えます</translation>
 <translation id="4742407542027196863">パスワードを管理…</translation>
 <translation id="474270528725216349">同期デバイスの 1 件以上のサイトから</translation>
 <translation id="4743275772928623722">システムは更新されましたが、一部のアプリやファイルを復元できませんでした。アプリは自動的に再ダウンロードされます。</translation>
@@ -2467,6 +2470,7 @@
 <translation id="4832961164064927107">バーベキュー、グリル</translation>
 <translation id="4835568975547260025">質問に対してより関連性の高い回答が得られるよう、Chrome で開いている関連タブをデフォルトで共有します。</translation>
 <translation id="4840250757394056958">Chrome 履歴を表示</translation>
+<translation id="4842365697443353018">後払いを使用するには、フォームを消去してください</translation>
 <translation id="484462545196658690">自動</translation>
 <translation id="4844937814014739139">共有タブのスクロールとズーム</translation>
 <translation id="484671803914931257"><ph name="MERCHANT_NAME" /> などの割引を取得</translation>
@@ -4847,6 +4851,7 @@
 <translation id="8511402995811232419">Cookie を管理</translation>
 <translation id="851353418319061866">正確性チェック</translation>
 <translation id="8513580896341796021">ダウンロードを開始しました。確認するには、|<ph name="ACCELERATOR" />| を押してください。</translation>
+<translation id="8515544520486085367">お支払い情報を自動入力</translation>
 <translation id="8519753333133776369">管理者が許可した HID デバイス</translation>
 <translation id="8521013008769249764">ソファ、椅子</translation>
 <translation id="8521812709849134608">調理台</translation>

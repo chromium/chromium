@@ -2235,6 +2235,7 @@ Da biste sakrili opcije plaćanja kasnije, otvorite <ph name="BEGIN_LINK" />post
 <translation id="443673843213245140">Upotreba proxy poslužitelja onemogućena je, ali određena je izričita konfiguracija proxy poslužitelja.</translation>
 <translation id="4438821706955556403">Uobičajena cijena</translation>
 <translation id="4441832193888514600">Zanemareno jer se pravilo može postaviti samo kao korisničko pravilo oblaka.</translation>
+<translation id="4444062564459679679">Već poslano u Chrome na uređaju <ph name="DEVICE_NAME" /></translation>
 <translation id="4445133368066241428">Popularne teme</translation>
 <translation id="4445694043187340808"><ph name="STARTER_PACK_TABS_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite Enter da biste pretražili kartice</translation>
 <translation id="4445964943162061557">Ovo je eksperimentalna značajka i neće uvijek biti bez pogrešaka.</translation>
@@ -4846,6 +4847,7 @@ Dodatne pojedinosti:
 <translation id="8511402995811232419">Upravljajte kolačićima</translation>
 <translation id="851353418319061866">Provjera točnosti</translation>
 <translation id="8513580896341796021">Preuzimanje je započelo. Da biste je vidjeli, pritisnite |<ph name="ACCELERATOR" />|.</translation>
+<translation id="8515544520486085367">Automatski popunite podatke o plaćanju</translation>
 <translation id="8519753333133776369">HID uređaj koji dopušta vaš administrator</translation>
 <translation id="8521013008769249764">Naslonjači i fotelje</translation>
 <translation id="8521812709849134608">Radne površine</translation>

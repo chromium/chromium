@@ -178,6 +178,7 @@
 <translation id="1582732959743469162">S tem boste prekinili trenutni prenos.</translation>
 <translation id="1594034544529347967">Se začne</translation>
 <translation id="1598751033135758830">Odpiranje v aplikaciji …</translation>
+<translation id="1600571977391127696">Nekatera vsebina morda ni primerna za vse.</translation>
 <translation id="1601560923496285236">Uporabi</translation>
 <translation id="1603718000246404895">{COUNT,plural, =1{1 naslov}one{# naslov}two{# naslova}few{# naslovi}other{# naslovov}}</translation>
 <translation id="1605405588277479165">Izklopljeno – ni priporočljivo</translation>
@@ -312,6 +313,7 @@
 <translation id="2012723204723845092">Dobrodošli nazaj!</translation>
 <translation id="2015722694326466240">Če si želite ogledati gesla, morate najprej nastaviti geslo v napravi.</translation>
 <translation id="201759455285471444">Razširitev skupine zavihkov.</translation>
+<translation id="2031515492007104071">Prehod na višjo stopnjo</translation>
 <translation id="2044394949148788042">Odprite mrežo zavihkov</translation>
 <translation id="2044681667265133332">Račun <ph name="USER_EMAIL" /> upravlja <ph name="HOSTED_DOMAIN" />, ki si lahko morda ogleda nekatere podatke. <ph name="BEGIN_LINK" />Več o tem<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">nov element</translation>
@@ -845,6 +847,7 @@
 <translation id="3994911892367422121">RAZUMEM</translation>
 <translation id="3995521777587992544">Vrstica z napredkom nalaganja strani, <ph name="EMAIL" /> naloženega.</translation>
 <translation id="3997522473364371632">Skrbnik je onemogočil deljenje gesel.</translation>
+<translation id="4000707564769984863">Ogled: <ph name="WATCH_LINK" /></translation>
 <translation id="4002066346123236978">Naslov</translation>
 <translation id="4004204301268239848">Gesla so shranjena v Google Računu, da jih lahko uporabite v kateri koli napravi.</translation>
 <translation id="4007463141047732631">Urejanje skupine</translation>
@@ -875,6 +878,7 @@
 <translation id="4129768137228347731">Želite shraniti to: <ph name="ENTITY_TYPE" />?</translation>
 <translation id="4133139945030148655">Pripravljeni ste</translation>
 <translation id="4133265950310064865">Izboljšana zaščita</translation>
+<translation id="4142372594294312814">5 stvari, ki jih morate vedeti glede generativne umetne inteligence</translation>
 <translation id="4145507240503767005"><ph name="SEARCH_ENGINE_NAME" />, <ph name="SEARCH_ENGINE_DOMAIN" /></translation>
 <translation id="4147897805161313378">Google Foto</translation>
 <translation id="4148023517926189160">To spletno mesto želi prenesti datoteko in jo dodati v vaš koledar.</translation>
@@ -997,6 +1001,7 @@
 <translation id="456502772933839252">Deljenje strani <ph name="PAGE_TITLE" /></translation>
 <translation id="4565377596337484307">Skrij geslo</translation>
 <translation id="4568230126482344545">Skrij nedavne zavihke</translation>
+<translation id="4571490460651837010">Upravljanje naslovov in drugega …</translation>
 <translation id="4578835633387306383">Vklopi …</translation>
 <translation id="4580621046861724270">Nekateri zaznamki se niso shranili</translation>
 <translation id="4580716718466706433">Odprite »Upravitelja gesel«</translation>
@@ -1234,6 +1239,7 @@
 <translation id="5329451663851195956">Če želite osvežiti, povlecite navzdol.</translation>
 <translation id="5336910966955551309">Pridržite, če želite pripeti priljubljena spletna mesta</translation>
 <translation id="5338512273860059533">Prijava poteka.</translation>
+<translation id="5340148832014094861">Veljata dokumenta <ph name="GOOGLE_TERMS" /> in <ph name="GEMINI_APPS_PRIVACY" />. Gemini je umetna inteligenca in se lahko kdaj zmoti, tudi o ljudeh.</translation>
 <translation id="5343472494710226394">Novice, šport in vsebina na podlagi vaših zanimanj.</translation>
 <translation id="5352128922772839949">Shrani datoteko</translation>
 <translation id="5355191726083956201">Izboljšana zaščita je vklopljena</translation>
@@ -1577,6 +1583,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="647867789226964031">Spremenite gesla</translation>
 <translation id="6480363549849064919">Preverjanje pristnosti odjemalca</translation>
 <translation id="6489174933860678546">Odprite anonimne zavihke za bolj zasebno brskanje po spletu.</translation>
+<translation id="6489775505977274806">Skrij prehod na višjo stopnjo</translation>
 <translation id="6494931198667773526">Se konča</translation>
 <translation id="6503077044568424649">Najpogostejše</translation>
 <translation id="6503763061813913607">Obvestila varnostnega preverjanja</translation>

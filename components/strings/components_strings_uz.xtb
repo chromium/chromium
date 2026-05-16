@@ -2232,6 +2232,7 @@ Keyinroq toʻlash usullarini berkitish uchun <ph name="BEGIN_LINK" />toʻlov soz
 <translation id="443673843213245140">Proksi-server o‘chiq, lekin uning sozlamalari aniq belgilangan.</translation>
 <translation id="4438821706955556403">Odatiy narxi</translation>
 <translation id="4441832193888514600">Parametr faqat bulutdagi foydalanuvchilar siyosati tomonidan belgilanishi mumkinligi uchun inkor etildi.</translation>
+<translation id="4444062564459679679"><ph name="DEVICE_NAME" /> qurilmasidagi Chrome brauzeriga yuborilgan</translation>
 <translation id="4445133368066241428">Ommaviy mavzular</translation>
 <translation id="4445694043187340808"><ph name="STARTER_PACK_TABS_FOCUSED_FRIENDLY_MATCH_TEXT" />, varaqlardan qidirish uchun Enter tugmasini bosing</translation>
 <translation id="4445964943162061557">Bu tajribaviy funksiya va ishlashida xatolar chiqishi mumkin.</translation>
@@ -4843,6 +4844,7 @@ Batafsil axborot:
 <translation id="8511402995811232419">Cookie fayllarni boshqarish</translation>
 <translation id="851353418319061866">Aniqlik tekshiruvi</translation>
 <translation id="8513580896341796021">Yuklab olish boshlandi. Uni koʻrish |<ph name="ACCELERATOR" />| ustiga bosing.</translation>
+<translation id="8515544520486085367">Toʻlov maʼlumotlarini avtomatik kiritish</translation>
 <translation id="8519753333133776369">HID qurilmaga administrator ruxsat bergan</translation>
 <translation id="8521013008769249764">Divan va kreslolar</translation>
 <translation id="8521812709849134608">Stol usti</translation>

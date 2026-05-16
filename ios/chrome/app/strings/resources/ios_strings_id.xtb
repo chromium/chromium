@@ -178,6 +178,7 @@
 <translation id="1582732959743469162">Ini akan menghentikan semua progres download Anda saat ini.</translation>
 <translation id="1594034544529347967">Mulai</translation>
 <translation id="1598751033135758830">Buka di aplikasi…</translation>
+<translation id="1600571977391127696">Beberapa konten mungkin tidak sesuai untuk semua orang.</translation>
 <translation id="1601560923496285236">Terapkan</translation>
 <translation id="1603718000246404895">{COUNT,plural, =1{1 alamat}other{# alamat}}</translation>
 <translation id="1605405588277479165">Nonaktif - Tidak direkomendasikan</translation>
@@ -312,6 +313,7 @@
 <translation id="2012723204723845092">Selamat datang kembali!</translation>
 <translation id="2015722694326466240">Untuk melihat sandi, Anda harus menyetel kode sandi di perangkat terlebih dahulu.</translation>
 <translation id="201759455285471444">Luaskan grup tab.</translation>
+<translation id="2031515492007104071">Level Up</translation>
 <translation id="2044394949148788042">Buka petak tab</translation>
 <translation id="2044681667265133332">Akun <ph name="USER_EMAIL" /> dikelola oleh <ph name="HOSTED_DOMAIN" />, yang mungkin dapat melihat beberapa informasi. <ph name="BEGIN_LINK" />Pelajari lebih lanjut<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">item baru</translation>
@@ -845,6 +847,7 @@
 <translation id="3994911892367422121">OKE</translation>
 <translation id="3995521777587992544">Status progres pemuatan halaman, <ph name="EMAIL" /> telah dimuat.</translation>
 <translation id="3997522473364371632">Berbagi sandi dinonaktifkan oleh administrator Anda.</translation>
+<translation id="4000707564769984863">Tonton: <ph name="WATCH_LINK" /></translation>
 <translation id="4002066346123236978">Judul</translation>
 <translation id="4004204301268239848">Sandi disimpan di Akun Google Anda agar Anda dapat menggunakannya di perangkat mana pun.</translation>
 <translation id="4007463141047732631">Edit Grup</translation>
@@ -875,6 +878,7 @@
 <translation id="4129768137228347731">Simpan <ph name="ENTITY_TYPE" />?</translation>
 <translation id="4133139945030148655">Sudah siap digunakan</translation>
 <translation id="4133265950310064865">Perlindungan yang Disempurnakan</translation>
+<translation id="4142372594294312814">5 hal yang perlu diketahui tentang AI generatif</translation>
 <translation id="4145507240503767005"><ph name="SEARCH_ENGINE_NAME" />, <ph name="SEARCH_ENGINE_DOMAIN" /></translation>
 <translation id="4147897805161313378">Google Foto</translation>
 <translation id="4148023517926189160">Situs ini ingin mendownload file dan menambahkannya ke kalender Anda.</translation>
@@ -997,6 +1001,7 @@
 <translation id="456502772933839252">Membagikan <ph name="PAGE_TITLE" /></translation>
 <translation id="4565377596337484307">Sembunyikan sandi</translation>
 <translation id="4568230126482344545">Sembunyikan Tab terbaru</translation>
+<translation id="4571490460651837010">Kelola alamat dan lainnya…</translation>
 <translation id="4578835633387306383">Aktifkan…</translation>
 <translation id="4580621046861724270">Beberapa bookmark tidak disimpan</translation>
 <translation id="4580716718466706433">Buka "Pengelola Sandi"</translation>
@@ -1234,6 +1239,7 @@
 <translation id="5329451663851195956">Anda dapat menarik ke bagian bawah layar untuk memuat ulang.</translation>
 <translation id="5336910966955551309">Sentuh lama untuk menyematkan situs favorit</translation>
 <translation id="5338512273860059533">Login dalam proses.</translation>
+<translation id="5340148832014094861"><ph name="GOOGLE_TERMS" /> dan <ph name="GEMINI_APPS_PRIVACY" /> berlaku. Gemini adalah AI dan dapat membuat kesalahan, termasuk tentang orang.</translation>
 <translation id="5343472494710226394">Berita, olahraga, dan konten berdasarkan minat Anda.</translation>
 <translation id="5352128922772839949">Simpan file</translation>
 <translation id="5355191726083956201">Perlindungan yang Ditingkatkan aktif</translation>
@@ -1577,6 +1583,7 @@ Handoff juga harus diaktifkan pada bagian General di Settings, dan perangkat And
 <translation id="647867789226964031">Ubah sandi Anda</translation>
 <translation id="6480363549849064919">Autentikasi Klien</translation>
 <translation id="6489174933860678546">Buka tab Samaran untuk menjelajahi web secara lebih pribadi.</translation>
+<translation id="6489775505977274806">Sembunyikan Level Up</translation>
 <translation id="6494931198667773526">Berakhir</translation>
 <translation id="6503077044568424649">Sering dibuka</translation>
 <translation id="6503763061813913607">Notifikasi Pemeriksaan Keamanan</translation>

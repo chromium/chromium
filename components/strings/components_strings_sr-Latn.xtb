@@ -1821,6 +1821,7 @@ Da biste sakrili opcije za kasnije plaćanje, idite u <ph name="BEGIN_LINK" />p
 <translation id="380865868633614173">Čuvaju se informacije o kartici</translation>
 <translation id="3810770279996899697">Menadžer lozinki traži pristup MacOS Keychain-u</translation>
 <translation id="3810973564298564668">Upravljaj</translation>
+<translation id="3811328723651698330"><ph name="STRING_1" />, <ph name="STRING_2" /></translation>
 <translation id="3812398568375898177">Ovo je veoma važno ažuriranje koje poboljšava učinak Android aplikacija u ChromeOS-u.</translation>
 <translation id="3814865536373139791">Pojednostavite način na koji organizacija upravlja smernicama</translation>
 <translation id="3815434930383843058">8×12 in</translation>
@@ -2236,6 +2237,7 @@ Da biste sakrili opcije za kasnije plaćanje, idite u <ph name="BEGIN_LINK" />p
 <translation id="443673843213245140">Korišćenje proksija je onemogućeno, ali je navedena eksplicitna konfiguracija proksija.</translation>
 <translation id="4438821706955556403">Uobičajena cena</translation>
 <translation id="4441832193888514600">Ignoriše se jer smernice mogu da se podese samo kao smernice za korisnika u klaudu.</translation>
+<translation id="4444062564459679679">Već je poslato u Chrome na uređaju <ph name="DEVICE_NAME" /></translation>
 <translation id="4445133368066241428">Popularne teme</translation>
 <translation id="4445694043187340808"><ph name="STARTER_PACK_TABS_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite Enter da biste pretražili kartice</translation>
 <translation id="4445964943162061557">Ovo je eksperimentalna funkcija i neće uvek raditi kako treba.</translation>
@@ -2400,6 +2402,7 @@ Da biste sakrili opcije za kasnije plaćanje, idite u <ph name="BEGIN_LINK" />p
 <translation id="4736934858538408121">Virtuelna kartica</translation>
 <translation id="473775607612524610">Ažuriraj</translation>
 <translation id="4738601419177586157">Predlog za pretragu <ph name="TEXT" /></translation>
+<translation id="473866660302034629"><ph name="TAB_TITLE" />, izabrana kartica, <ph name="INDEX" /> od <ph name="TOTAL" />, koristite strelicu nalevo ili nadesno da biste se prebacivali između kartica</translation>
 <translation id="4742407542027196863">Upravljaj lozinkama...</translation>
 <translation id="474270528725216349">Sa bar 1 sajta na sinhronizovanim uređajima</translation>
 <translation id="4743275772928623722">Sistem je ažuriran, ali ne možete da vratite neke aplikacije i fajlove. Aplikacije će se automatski ponovo preuzeti.</translation>
@@ -2467,6 +2470,7 @@ Da biste sakrili opcije za kasnije plaćanje, idite u <ph name="BEGIN_LINK" />p
 <translation id="4832961164064927107">Roštilj</translation>
 <translation id="4835568975547260025">Chrome podrazumevano deli relevantne otvorene kartice da bi vam pomogao da dobijete prilagođenije odgovore na pitanja.</translation>
 <translation id="4840250757394056958">Pregledajte istoriju Chrome-a</translation>
+<translation id="4842365697443353018">Obrišite obrazac da biste koristili opciju plaćanja kasnije</translation>
 <translation id="484462545196658690">Automatski</translation>
 <translation id="4844937814014739139">Skrolovanje i zumiranje deljenih kartica</translation>
 <translation id="484671803914931257">Ostvarite popust kod prodavca <ph name="MERCHANT_NAME" /> i drugih prodavaca</translation>
@@ -4846,6 +4850,7 @@ Dodatni detalji:
 <translation id="8511402995811232419">Upravljajte kolačićima</translation>
 <translation id="851353418319061866">Provera tačnosti</translation>
 <translation id="8513580896341796021">Preuzimanje je počelo. Da biste ga videli, pritisnite |<ph name="ACCELERATOR" />|.</translation>
+<translation id="8515544520486085367">Automatsko popunjavanje podataka o plaćanju</translation>
 <translation id="8519753333133776369">Administrator je dozvolio HID uređaj</translation>
 <translation id="8521013008769249764">Sofe i fotelje</translation>
 <translation id="8521812709849134608">Radne ploče</translation>

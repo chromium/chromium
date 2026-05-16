@@ -2236,6 +2236,7 @@ Sonra ödeme seçeneklerini gizlemek için <ph name="BEGIN_LINK" />ödeme ayarla
 <translation id="443673843213245140">Proxy kullanımı devre dışı, ancak açık bir proxy yapılandırması belirtildi.</translation>
 <translation id="4438821706955556403">Normal fiyat</translation>
 <translation id="4441832193888514600">Yalnızca bulut kullanıcı politikası olarak ayarlanabileceği için politika yoksayıldı.</translation>
+<translation id="4444062564459679679"><ph name="DEVICE_NAME" /> cihazınızdaki Chrome'a zaten gönderildi</translation>
 <translation id="4445133368066241428">Popüler konular</translation>
 <translation id="4445694043187340808"><ph name="STARTER_PACK_TABS_FOCUSED_FRIENDLY_MATCH_TEXT" />, sekme aramak için Enter tuşuna basın</translation>
 <translation id="4445964943162061557">Bu, deneysel bir özellik olduğundan her zaman doğru sonuç vermeyebilir.</translation>
@@ -4847,6 +4848,7 @@ Ek ayrıntılar:
 <translation id="8511402995811232419">Çerezleri yönet</translation>
 <translation id="851353418319061866">Doğruluk Kontrolü</translation>
 <translation id="8513580896341796021">İndirme başladı. Görüntülemek için |<ph name="ACCELERATOR" />| tuşuna basın.</translation>
+<translation id="8515544520486085367">Ödeme bilgilerini otomatik doldur</translation>
 <translation id="8519753333133776369">Yöneticiniz tarafından HID cihazlara izin verilmiştir</translation>
 <translation id="8521013008769249764">Kanapeler ve Koltuklar</translation>
 <translation id="8521812709849134608">Mutfak Tezgahları</translation>

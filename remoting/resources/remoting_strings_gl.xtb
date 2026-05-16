@@ -186,7 +186,7 @@ Se a caixa que hai a carón de <ph name="SERVICE_SCRIPT_NAME" /> xa está selecc
 <translation id="8747048596626351634">A sesión fallou ou non puido comezar. Se hai unha secuencia de comandos ~/.chrome-remote-desktop-session no ordenador remoto, asegúrate de que inicie un proceso de longa duración en primeiro plano, como un administrador de ventás ou un contorno de escritorio.</translation>
 <translation id="8804164990146287819">Política de privacidade</translation>
 <translation id="8906511416443321782">É necesario acceder ao micrófono para capturar audio e transmitirllo en tempo real ao cliente do Escritorio remoto de Chrome.</translation>
-<translation id="9111855907838866522">Tes conexión co dispositivo remoto. Para abrir o menú, toca a pantalla cos dedos.</translation>
+<translation id="9111855907838866522">Tes conexión co dispositivo remoto. Para abrir o menú, toca a pantalla con catro dedos.</translation>
 <translation id="9126115402994542723">Non volver solicitar un PIN cando te conectes a este host desde este dispositivo.</translation>
 <translation id="916856682307586697">Inicia a XSession predeterminada</translation>
 <translation id="9187628920394877737">Concede o permiso Gravación de pantalla a <ph name="PRODUCT_NAME" /></translation>

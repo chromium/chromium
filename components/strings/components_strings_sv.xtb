@@ -2236,6 +2236,7 @@ Gå till <ph name="BEGIN_LINK" />betalningsinställningarna<ph name="END_LINK" /
 <translation id="443673843213245140">Användning av proxy är inaktiverad men en explicit proxykonfiguration har angetts.</translation>
 <translation id="4438821706955556403">Normalt pris</translation>
 <translation id="4441832193888514600">Ignoreras eftersom principen bara kan ställas in som en princip för molnanvändare.</translation>
+<translation id="4444062564459679679">Har redan skickats till Chrome på din <ph name="DEVICE_NAME" /></translation>
 <translation id="4445133368066241428">Populära ämnen</translation>
 <translation id="4445694043187340808"><ph name="STARTER_PACK_TABS_FOCUSED_FRIENDLY_MATCH_TEXT" /> – tryck på Retur för att söka bland flikar</translation>
 <translation id="4445964943162061557">Det här är en experimentell funktion som inte alltid fungerar som den ska.</translation>
@@ -4847,6 +4848,7 @@ Mer information:
 <translation id="8511402995811232419">Hantera cookies</translation>
 <translation id="851353418319061866">Källkontroll</translation>
 <translation id="8513580896341796021">Nedladdning har påbörjats. Visa den genom att trycka på |<ph name="ACCELERATOR" />|.</translation>
+<translation id="8515544520486085367">Autofyll betalning</translation>
 <translation id="8519753333133776369">HID-enhet som tillåts av administratören</translation>
 <translation id="8521013008769249764">Soffor och fåtöljer</translation>
 <translation id="8521812709849134608">Köksbänkar</translation>

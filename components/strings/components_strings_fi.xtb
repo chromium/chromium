@@ -1822,6 +1822,7 @@ Jos haluat piilottaa maksa myöhemmin ‑vaihtoehdot, siirry <ph name="BEGIN_LIN
 <translation id="380865868633614173">Tallennetaan kortin tietoja</translation>
 <translation id="3810770279996899697">Salasanat tarvitsee pääsyn MacOS-avainnippuun</translation>
 <translation id="3810973564298564668">Hallinnoi</translation>
+<translation id="3811328723651698330"><ph name="STRING_1" />, <ph name="STRING_2" /></translation>
 <translation id="3812398568375898177">Tämä on tärkeä päivitys, joka parantaa Android-sovellusten toimintaa ChromeOS:llä.</translation>
 <translation id="3814865536373139791">Tehosta käytäntöjen hallinnointia organisaatiossasi</translation>
 <translation id="3815434930383843058">8 x 12 tuumaa</translation>
@@ -2237,6 +2238,7 @@ Jos haluat piilottaa maksa myöhemmin ‑vaihtoehdot, siirry <ph name="BEGIN_LIN
 <translation id="443673843213245140">Välityspalvelinta ei saa käyttää, mutta erilliset välityspalvelimen asetukset on määritetty.</translation>
 <translation id="4438821706955556403">Tyypillinen hinta</translation>
 <translation id="4441832193888514600">Ohitettu, koska käytäntö voidaan asettaa vain pilvikäyttäjäkäytäntönä.</translation>
+<translation id="4444062564459679679">Lähetetty jo Chromelle laitteella <ph name="DEVICE_NAME" /></translation>
 <translation id="4445133368066241428">Suositut aiheet</translation>
 <translation id="4445694043187340808"><ph name="STARTER_PACK_TABS_FOCUSED_FRIENDLY_MATCH_TEXT" />, hae välilehdistä painamalla Enter</translation>
 <translation id="4445964943162061557">Tämä on kokeellinen ominaisuus, joka ei ehkä osu aina oikeaan.</translation>
@@ -2401,6 +2403,7 @@ Jos haluat piilottaa maksa myöhemmin ‑vaihtoehdot, siirry <ph name="BEGIN_LIN
 <translation id="4736934858538408121">Virtuaalinen kortti</translation>
 <translation id="473775607612524610">Päivitä</translation>
 <translation id="4738601419177586157">Hakuehdotus <ph name="TEXT" /></translation>
+<translation id="473866660302034629"><ph name="TAB_TITLE" />, valittu välilehti, <ph name="INDEX" />/<ph name="TOTAL" />, vaihda välilehtiä vasemmalla tai oikealla nuolella</translation>
 <translation id="4742407542027196863">Ylläpidä salasanoja…</translation>
 <translation id="474270528725216349">Vähintään yhdeltä sivustolta synkronoiduilla laitteilla</translation>
 <translation id="4743275772928623722">Järjestelmäsi päivitettiin, mutta joitakin sovelluksia ja tiedostoja ei voitu palauttaa. Sovellukset ladataan uudelleen automaattisesti.</translation>
@@ -2468,6 +2471,7 @@ Jos haluat piilottaa maksa myöhemmin ‑vaihtoehdot, siirry <ph name="BEGIN_LIN
 <translation id="4832961164064927107">Grillaus</translation>
 <translation id="4835568975547260025">Chrome jakaa relevantit avoimet välilehdet oletuksena, jotta saat räätälöidympiä vastauksia kysymyksiisi.</translation>
 <translation id="4840250757394056958">Tarkista Chrome-historiasi</translation>
+<translation id="4842365697443353018">Tyhjennä lomake, jotta voit käyttää maksa myöhemmin ‑vaihtoehtoa</translation>
 <translation id="484462545196658690">Automaattinen</translation>
 <translation id="4844937814014739139">Jaettujen välilehtien vierittäminen ja zoomaus</translation>
 <translation id="484671803914931257"><ph name="MERCHANT_NAME" /> ja muut voivat tarjota alennuksia</translation>
@@ -4848,6 +4852,7 @@ Lisätietoja:
 <translation id="8511402995811232419">Ylläpidä evästeitä</translation>
 <translation id="851353418319061866">Täsmällisyyden tarkistaminen</translation>
 <translation id="8513580896341796021">Lataus aloitettu. Näet sen painamalla |<ph name="ACCELERATOR" />|.</translation>
+<translation id="8515544520486085367">Maksutietojen automaattinen täyttö</translation>
 <translation id="8519753333133776369">Järjestelmänvalvojan sallima HID-laite</translation>
 <translation id="8521013008769249764">Sohvat ja nojatuolit</translation>
 <translation id="8521812709849134608">Työtasot</translation>

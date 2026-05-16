@@ -1818,6 +1818,7 @@
 <translation id="380865868633614173">ಕಾರ್ಡ್ ಮಾಹಿತಿಯನ್ನು ಸೇವ್ ಮಾಡಲಾಗುತ್ತಿದೆ</translation>
 <translation id="3810770279996899697">Password Manager ಗೆ MacOS Keychain ನ ಆ್ಯಕ್ಸೆಸ್ ಅಗತ್ಯವಿದೆ</translation>
 <translation id="3810973564298564668">ನಿರ್ವಹಿಸಿ</translation>
+<translation id="3811328723651698330"><ph name="STRING_1" />, <ph name="STRING_2" /></translation>
 <translation id="3812398568375898177">ಇದು ChromeOS ನಲ್ಲಿ Android ಆ್ಯಪ್‌ಗಳ ಕಾರ್ಯಕ್ಷಮತೆಯನ್ನು ಸುಧಾರಿಸುವ ನಿರ್ಣಾಯಕ ಅಪ್‌ಡೇಟ್ ಆಗಿದೆ.</translation>
 <translation id="3814865536373139791">ನಿಮ್ಮ ಸಂಸ್ಥೆಯು ನೀತಿಗಳನ್ನು ಹೇಗೆ ನಿರ್ವಹಿಸುತ್ತದೆ ಎಂಬುದನ್ನು ಸ್ಟ್ರೀಮ್‌ಲೈನ್ ಮಾಡಿ</translation>
 <translation id="3815434930383843058">8 x 12 ಇಂಚು</translation>
@@ -2233,6 +2234,7 @@
 <translation id="443673843213245140">ಪ್ರಾಕ್ಸಿಯ ಬಳಕೆಯನ್ನು ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಲಾಗಿದೆ ಆದರೆ ಬಹಿರಂಗ ಪ್ರಾಕ್ಸಿ ಕಾನ್ಫಿಗರೇಶನ್ ಅನ್ನು ನಿರ್ದಿಷ್ಟಪಡಿಸಲಾಗಿದೆ.</translation>
 <translation id="4438821706955556403">ಸಾಮಾನ್ಯ ಬೆಲೆ</translation>
 <translation id="4441832193888514600">ನೀತಿಯನ್ನು ಕ್ಲೌಡ್ ಬಳಕೆದಾರರ ನೀತಿಯಾಗಿ ಮಾತ್ರವೇ ಹೊಂದಿಸಬಹುದಾಗಿದೆ, ಆದ್ದರಿಂದ ನಿರ್ಲಕ್ಷಿಸಲಾಗಿದೆ.</translation>
+<translation id="4444062564459679679">ನಿಮ್ಮ <ph name="DEVICE_NAME" /> ನಲ್ಲಿರುವ Chrome ಗೆ ಈಗಾಗಲೇ ಕಳುಹಿಸಲಾಗಿದೆ</translation>
 <translation id="4445133368066241428">ಜನಪ್ರಿಯ ವಿಷಯಗಳು</translation>
 <translation id="4445694043187340808"><ph name="STARTER_PACK_TABS_FOCUSED_FRIENDLY_MATCH_TEXT" />, ಟ್ಯಾಬ್‌ಗಳನ್ನು ಹುಡುಕಲು Enter ಒತ್ತಿರಿ</translation>
 <translation id="4445964943162061557">ಇದೊಂದು ಪ್ರಾಯೋಗಿಕ ಫೀಚರ್ ಆಗಿದೆ ಮತ್ತು ಇದು ಯಾವಾಗಲೂ ಸರಿಯಾದ ಕ್ರಿಯೆಗಳನ್ನೇ ಮಾಡುವುದಿಲ್ಲ.</translation>
@@ -2397,6 +2399,7 @@
 <translation id="4736934858538408121">ವರ್ಚುವಲ್ ಕಾರ್ಡ್</translation>
 <translation id="473775607612524610">ಅಪ್‌ಡೇಟ್‌‌</translation>
 <translation id="4738601419177586157"><ph name="TEXT" /> ಹುಡುಕಾಟ ಸಲಹೆ</translation>
+<translation id="473866660302034629"><ph name="TAB_TITLE" />, ಆಯ್ಕೆಮಾಡಿದ ಟ್ಯಾಬ್, <ph name="TOTAL" /> ರಲ್ಲಿ <ph name="INDEX" />, ಟ್ಯಾಬ್‌ಗಳ ನಡುವೆ ಬದಲಾಯಿಸಲು ಲೆಫ್ಟ್ ಅಥವಾ ರೈಟ್ ಗುರುತಿನ ಕೀಗಳನ್ನು ಬಳಸಿ</translation>
 <translation id="4742407542027196863">ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ನಿರ್ವಹಿಸಿ…</translation>
 <translation id="474270528725216349">ಸಿಂಕ್ ಮಾಡಿದ ಸಾಧನಗಳಲ್ಲಿ ಕನಿಷ್ಠ 1 ಸೈಟ್‌ನಿಂದ</translation>
 <translation id="4743275772928623722">ನಿಮ್ಮ ಸಿಸ್ಟಂ ಅನ್ನು ಅಪ್‌ಡೇಟ್‌ ಮಾಡಲಾಗಿದೆ ಆದರೆ ನಿಮ್ಮ ಕೆಲವು ಆ್ಯಪ್‌ಗಳು ಮತ್ತು ಫೈಲ್‌ಗಳನ್ನು ರಿಕವರ್ ಮಾಡಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ. ನಿಮ್ಮ ಆ್ಯಪ್‌ಗಳನ್ನು ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಮತ್ತೆ ಡೌನ್‌ಲೋಡ್ ಮಾಡಲಾಗುತ್ತದೆ.</translation>
@@ -2464,6 +2467,7 @@
 <translation id="4832961164064927107">BBQ ಮತ್ತು ಗ್ರಿಲ್ಲಿಂಗ್</translation>
 <translation id="4835568975547260025">ನಿಮ್ಮ ಪ್ರಶ್ನೆಗಳಿಗೆ ಹೆಚ್ಚು ಕಸ್ಟಮೈಸ್ ಮಾಡಿದ ಉತ್ತರಗಳನ್ನು ಪಡೆಯುವುದಕ್ಕೆ ನಿಮಗೆ ಸಹಾಯ ಮಾಡಲು Chrome ಡೀಫಾಲ್ಟ್ ಆಗಿ ಸೂಕ್ತವಾದ ತೆರೆದ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಹಂಚಿಕೊಳ್ಳುತ್ತದೆ.</translation>
 <translation id="4840250757394056958">ನಿಮ್ಮ Chrome ಇತಿಹಾಸವನ್ನು ವೀಕ್ಷಿಸಿ</translation>
+<translation id="4842365697443353018">ನಂತರ ಪಾವತಿಸುವ ಆಯ್ಕೆಯನ್ನು ಬಳಸಲು ಫಾರ್ಮ್ ಅನ್ನು ತೆರವುಗೊಳಿಸಿ</translation>
 <translation id="484462545196658690">ಆಟೋ</translation>
 <translation id="4844937814014739139">ಹಂಚಿಕೊಳ್ಳಲಾದ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಸ್ಕ್ರಾಲ್ ಮತ್ತು ಝೂಮ್‌ ಮಾಡುವುದು</translation>
 <translation id="484671803914931257"><ph name="MERCHANT_NAME" /> ಮತ್ತು ಇತ್ಯಾದಿಗಳ ಮೇಲೆ ರಿಯಾಯಿತಿ ಪಡೆಯಿರಿ</translation>
@@ -4843,6 +4847,7 @@
 <translation id="8511402995811232419">ಕುಕೀಗಳನ್ನು ನಿರ್ವಹಿಸಿ</translation>
 <translation id="851353418319061866">ನಿಖರತೆಯ ಪರಿಶೀಲನೆ</translation>
 <translation id="8513580896341796021">ಡೌನ್‌ಲೋಡ್ ಪ್ರಾರಂಭವಾಗಿದೆ. ಅದನ್ನು ನೋಡಲು, |<ph name="ACCELERATOR" />| ಅನ್ನು ಒತ್ತಿ.</translation>
+<translation id="8515544520486085367">ಆಟೋಫಿಲ್ ಪಾವತಿ</translation>
 <translation id="8519753333133776369">ನಿಮ್ಮ ನಿರ್ವಾಹಕರು HID ಸಾಧನವನ್ನು ಅನುಮತಿಸಿದ್ದಾರೆ</translation>
 <translation id="8521013008769249764">ಸೋಫಾಗಳು ಮತ್ತು ಆರ್ಮ್‌ಚೇರ್‌ಗಳು</translation>
 <translation id="8521812709849134608">ಕೌಂಟರ್‌ಟಾಪ್‌ಗಳು</translation>

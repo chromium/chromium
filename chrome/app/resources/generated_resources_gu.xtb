@@ -783,6 +783,7 @@
 <translation id="1529769834253316556">લાઇનની ઊંચાઈ</translation>
 <translation id="1529891865407786369">પાવર સ્રોત</translation>
 <translation id="1530376661400379364">Chrome દ્વારા આ સેટિંગ રીસેટ કરવામાં આવ્યા છે</translation>
+<translation id="1530466164747090379"><ph name="FILE_NAME" />માં સંવેદનશીલ અથવા જોખમી ડેટા છે</translation>
 <translation id="1531275250079031713">'નવું વાઇ-ફાઇ કનેક્શન ઉમેરો' સંવાદ બતાવો</translation>
 <translation id="1531734061664070992"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /></translation>
 <translation id="1533948060140843887">હું સમજું છું કે આ ડાઉનલોડથી મારા કમ્પ્યૂટરને નુકસાન પહોંચશે</translation>
@@ -2179,6 +2180,7 @@
 <translation id="2469141124738294431">VM સ્ટેટસ</translation>
 <translation id="2469259292033957819">તમારી પાસે કોઈ સાચવેલું પ્રિન્ટર નથી.</translation>
 <translation id="2469375675106140201">જોડણીની તપાસને કસ્ટમાઇઝ કરો</translation>
+<translation id="2469406914567390938">ચૅનલ અપડેટ કરો</translation>
 <translation id="247051149076336810">ફાઇલ શેર URL</translation>
 <translation id="2471469610750100598">કાળો (ડિફૉલ્ટ)</translation>
 <translation id="2471506181342525583">સ્થાન ઍક્સેસની મંજૂરી આપેલી છે</translation>
@@ -2510,6 +2512,7 @@
 <translation id="2695943520968279338">એક્સ્ટેન્શન શોધો</translation>
 <translation id="2696675923413008404">આ સુવિધાને બહેતર બનાવવા માટે, આ સાઇટના કન્ટેન્ટને, તેના URL સહિત, Googleને મોકલવામાં આવે છે અને તે માનવ રિવ્યૂઅર દ્વારા જોવામાં આવે એમ બની શકે છે</translation>
 <translation id="2698147581454716013">આ બંડલ કરેલું ડિવાઇસ છે અને તેની કિઓસ્ક અને સાઇનેજ અપગ્રેડ સાથે નોંધણી કરી શકાતી નથી.</translation>
+<translation id="269941332914175387">તમારી પ્રોફાઇલનો ડેટા લોડ કરવા અને તેને એન્ક્રિપ્ટેડ રાખવા માટે બ્રાઉઝર ફરીથી લૉન્ચ કરો</translation>
 <translation id="2699911226086014512">કોડ <ph name="RETRIES" /> સાથે પિન ઑપરેશન નિષ્ફળ થયું.</translation>
 <translation id="2701330563083355633"><ph name="DEVICE_NAME" />માંથી શેર કર્યું</translation>
 <translation id="2701737434167469065">સાઇન ઇન કરો, <ph name="EMAIL" /></translation>
@@ -2738,6 +2741,7 @@
 <translation id="2844154481025280030">પૉલિસીની ગોઠવણી કરી.</translation>
 <translation id="2844169650293029770">USB-C ઉપકરણ (ડાબી બાજુનું આગળનું પોર્ટ)</translation>
 <translation id="2844809857160214557">પ્રિન્ટ કરવાના કામો જુઓ અને મેનેજ કરો</translation>
+<translation id="284491292807422921">સાઇટને કાઢી નાખીએ?</translation>
 <translation id="2845276301195220700">Google Calendar માટે વધુ ક્રિયાઓ</translation>
 <translation id="2845382757467349449">હંમેશાં બુકમાર્ક બાર બતાવો</translation>
 <translation id="284581348330507117">વિશિષ્ટ પાસવર્ડ બનાવો</translation>
@@ -3327,6 +3331,7 @@
 <translation id="3262986719682892278">ખૂબ મોટી</translation>
 <translation id="3264544094376351444">Sans-Serif ફૉન્ટ</translation>
 <translation id="3264582393905923483">સંદર્ભ</translation>
+<translation id="3265303262625691029"><ph name="VERDICT_MESSAGE" />. તમારા ઍડમિનિસ્ટ્રેટરનું કહેવું છે: "<ph name="CUSTOM_MESSAGE" />"</translation>
 <translation id="3265459715026181080">વિંડો બંધ કરો</translation>
 <translation id="3266022278425892773">Linux ડેવલપમેન્ટ વાતાવરણ</translation>
 <translation id="3266030505377585301">તમારા Google એકાઉન્ટમાં બ્રાઉઝિંગ ડેટા રાખીને, તેને માત્ર આ ડિવાઇસમાંથી ડિલીટ કરવા માટે <ph name="BEGIN_LINK" />સાઇન આઉટ કરો<ph name="END_LINK" />.</translation>
@@ -4446,6 +4451,7 @@
 <translation id="4010746393007464819">Debian 12 (Bookworm) માટેનું અપગ્રેડ ઉપલબ્ધ છે</translation>
 <translation id="4010917659463429001">તમારા મોબાઇલ ડિવાઇસ પર તમારા બુકમાર્ક મેળવવા માટે, <ph name="GET_IOS_APP_LINK" />.</translation>
 <translation id="4011073493055408531">કોઈ શહેરની ઉપરના આકાશમાં જાંબલી અને લીલા રંગના ધ્રુવીય અરુણપ્રકાશની છટા દર્શાવતું દૃશ્ય.</translation>
+<translation id="4011897773956589748">આગલી વખતે જ્યારે Geminiને આ એકાઉન્ટના ઍક્સેસની જરૂર પડશે, ત્યારે તે તમને ફરીથી પૂછશે.</translation>
 <translation id="4012509903424054869">PDFsનું ઑટોમૅટિક રીતે રૂપાંતરણ થાય છે જેથી તમે ટેક્સ્ટ શોધી અને પસંદ કરી શકો</translation>
 <translation id="4014432863917027322">"<ph name="EXTENSION_NAME" />" ને સુધારીએ?</translation>
 <translation id="4015163439792426608">શું તમારી પાસે એક્સ્ટેંશન છે? એક અનુકૂળ જગ્યાએથી <ph name="BEGIN_LINK" />તમારા એક્સ્ટેંશનને મેનેજ કરો<ph name="END_LINK" />.</translation>
@@ -6224,6 +6230,7 @@
 <translation id="5275084684151588738">વપરાશકર્તા શબ્દકોશો</translation>
 <translation id="5275338516105640560">સાચવેલા ટૅબ ગ્રૂપનું બટન</translation>
 <translation id="5275352920323889391">કૂતરું</translation>
+<translation id="5275946508817197540">તમારી સુરક્ષા સંબંધિત પસંદગીઓ આઇસોલેટેડ વેબ ઍપના ઇન્સ્ટૉલેશનને મંજૂરી આપતી નથી. <ph name="CHANGE_PREFERENCE" />.</translation>
 <translation id="527605719918376753">ટૅબ મ્યૂટ કરો</translation>
 <translation id="527605982717517565"><ph name="HOST" /> પર JavaScript ને હંમેશા મંજૂરી આપો </translation>
 <translation id="5276357196618041410">પહેલા લૉગ ઇન કર્યા વિના કન્ફિગ્યુરેશન સાચવી શકતા નથી</translation>
@@ -8676,6 +8683,7 @@ USB ડિવાઇસ</translation>
 <translation id="6997553674029032185">સાઇટ પર જાઓ</translation>
 <translation id="6997642619627518301"><ph name="NAME_PH" /> - પ્રવૃત્તિ લૉગ</translation>
 <translation id="6997707937646349884">તમારા ઉપકરણો પર:</translation>
+<translation id="6998036632333022623">Google સાથે ટૅબ શેર કરી રહ્યાં છીએ</translation>
 <translation id="6998793565256476099">વીડિયો કૉન્ફરન્સ માટે ડિવાઇસની નોંધણી કરો</translation>
 <translation id="6999956497249459195">નવું ગ્રૂપ</translation>
 <translation id="7000206553895739324"><ph name="PRINTER_NAME" /> કનેક્ટ કરેલું છે પણ ગોઠવણી જરૂરી છે</translation>

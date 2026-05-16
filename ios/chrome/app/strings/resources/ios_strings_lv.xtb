@@ -178,6 +178,7 @@
 <translation id="1582732959743469162">Šādi tiks pārtraukta pašreizējās lejupielādes norise.</translation>
 <translation id="1594034544529347967">Sākums</translation>
 <translation id="1598751033135758830">Atvērt lietotnē…</translation>
+<translation id="1600571977391127696">Noteikts saturs var nebūt piemērots visiem.</translation>
 <translation id="1601560923496285236">Lietot</translation>
 <translation id="1603718000246404895">{COUNT,plural, =1{1 adrese}zero{# adrešu}one{# adrese}other{# adreses}}</translation>
 <translation id="1605405588277479165">Izslēgta — nav ieteicams</translation>
@@ -312,6 +313,7 @@
 <translation id="2012723204723845092">Sveicam atpakaļ!</translation>
 <translation id="2015722694326466240">Lai skatītu paroles, vispirms ierīcei ir jāiestata piekļuves kods.</translation>
 <translation id="201759455285471444">Izvērst ciļņu grupu.</translation>
+<translation id="2031515492007104071">Līmeņa paaugstināšana</translation>
 <translation id="2044394949148788042">Atveriet ciļņu režģi.</translation>
 <translation id="2044681667265133332">Kontu <ph name="USER_EMAIL" /> pārvalda domēnam <ph name="HOSTED_DOMAIN" /> atbilstošā organizācija, kas, iespējams, var skatīt noteiktu informāciju. <ph name="BEGIN_LINK" />Uzzināt vairāk<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">jauns vienums</translation>
@@ -845,6 +847,7 @@
 <translation id="3994911892367422121">LABI</translation>
 <translation id="3995521777587992544">Lapas ielādes norises josla, ielādēti <ph name="EMAIL" />.</translation>
 <translation id="3997522473364371632">Jūsu administrators ir atspējojis paroļu kopīgošanu.</translation>
+<translation id="4000707564769984863">Skatīties: <ph name="WATCH_LINK" /></translation>
 <translation id="4002066346123236978">Nosaukums</translation>
 <translation id="4004204301268239848">Paroles tiek saglabātas jūsu Google kontā, lai jūs tās varētu izmantot jebkurā ierīcē.</translation>
 <translation id="4007463141047732631">Rediģēt grupu</translation>
@@ -875,6 +878,7 @@
 <translation id="4129768137228347731">Vai saglabāt failu <ph name="ENTITY_TYPE" />?</translation>
 <translation id="4133139945030148655">Viss ir iestatīts</translation>
 <translation id="4133265950310064865">Uzlabota aizsardzība</translation>
+<translation id="4142372594294312814">Piecas lietas, kas jāņem vērā, lai izmantotu ģeneratīvo MI</translation>
 <translation id="4145507240503767005"><ph name="SEARCH_ENGINE_NAME" />, <ph name="SEARCH_ENGINE_DOMAIN" /></translation>
 <translation id="4147897805161313378">Google fotoattēli</translation>
 <translation id="4148023517926189160">Šī vietne vēlas lejupielādēt failu un pievienot to jūsu kalendāram.</translation>
@@ -997,6 +1001,7 @@
 <translation id="456502772933839252">Notiek šīs lapas kopīgošana: <ph name="PAGE_TITLE" /></translation>
 <translation id="4565377596337484307">Slēpt paroli</translation>
 <translation id="4568230126482344545">Paslēpt vienumu “Nesen atvērtās cilnes”</translation>
+<translation id="4571490460651837010">Pārvaldīt adreses un citu informāciju…</translation>
 <translation id="4578835633387306383">Ieslēgt…</translation>
 <translation id="4580621046861724270">Dažas grāmatzīmes netika saglabātas</translation>
 <translation id="4580716718466706433">Pārejiet uz sadaļu “Paroļu pārvaldnieks”.</translation>
@@ -1234,6 +1239,7 @@
 <translation id="5329451663851195956">Varat vilkt uz leju, lai atsvaidzinātu.</translation>
 <translation id="5336910966955551309">Pieskarieties un turiet, lai piespraustu savas iecienītākās vietnes.</translation>
 <translation id="5338512273860059533">Notiek pierakstīšanās.</translation>
+<translation id="5340148832014094861">Ir spēkā <ph name="GOOGLE_TERMS" /> un <ph name="GEMINI_APPS_PRIVACY" />. Gemini ir MI un var pieļaut kļūdas, tostarp par personām.</translation>
 <translation id="5343472494710226394">Ziņas, sports un jūsu interesēm atbilstošs saturs.</translation>
 <translation id="5352128922772839949">Saglabāt failu</translation>
 <translation id="5355191726083956201">Uzlabota aizsardzība ir ieslēgta</translation>
@@ -1577,6 +1583,7 @@ Funkcija Handoff ir jāiespējo arī iestatījumu sadaļā General (Vispārīgi)
 <translation id="647867789226964031">Paroļu nomaiņa</translation>
 <translation id="6480363549849064919">Klienta autentifikācija</translation>
 <translation id="6489174933860678546">Atveriet inkognito cilnes, lai pārlūkotu tīmekli ar augstāku konfidencialitātes līmeni.</translation>
+<translation id="6489775505977274806">Paslēpt sadaļu “Līmeņa paaugstināšana”</translation>
 <translation id="6494931198667773526">Beigas</translation>
 <translation id="6503077044568424649">Visapmeklētākais</translation>
 <translation id="6503763061813913607">Drošības pārbaudes paziņojumi</translation>

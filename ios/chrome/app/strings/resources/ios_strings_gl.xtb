@@ -178,6 +178,7 @@
 <translation id="1582732959743469162">Esta acción deterá o progreso da túa descarga actual.</translation>
 <translation id="1594034544529347967">Inicio</translation>
 <translation id="1598751033135758830">Abrir na aplicación…</translation>
+<translation id="1600571977391127696">É posible que algúns contidos non sexan adecuados para todo o mundo.</translation>
 <translation id="1601560923496285236">Aplicar</translation>
 <translation id="1603718000246404895">{COUNT,plural, =1{1 enderezo}other{# enderezos}}</translation>
 <translation id="1605405588277479165">Desactivada (non se recomenda)</translation>
@@ -312,6 +313,7 @@
 <translation id="2012723204723845092">Dámosche a benvida de novo!</translation>
 <translation id="2015722694326466240">Para ver os contrasinais, en primeiro lugar debes definir un código de desbloqueo no teu dispositivo.</translation>
 <translation id="201759455285471444">Despregar o grupo de pestanas.</translation>
+<translation id="2031515492007104071">Level Up</translation>
 <translation id="2044394949148788042">Abre a grade de pestanas</translation>
 <translation id="2044681667265133332"><ph name="HOSTED_DOMAIN" /> xestiona a conta <ph name="USER_EMAIL" />, polo que é posible que poida ver parte da información. <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">novo elemento</translation>
@@ -845,6 +847,7 @@
 <translation id="3994911892367422121">ENTENDIDO</translation>
 <translation id="3995521777587992544">Barra de progreso de carga de páxinas: cargouse <ph name="EMAIL" />.</translation>
 <translation id="3997522473364371632">A persoa que administra a túa conta desactivou o uso compartido de contrasinais.</translation>
+<translation id="4000707564769984863">Reloxo: <ph name="WATCH_LINK" /></translation>
 <translation id="4002066346123236978">Título</translation>
 <translation id="4004204301268239848">Os contrasinais gárdanse na túa Conta de Google para que poidas usalos en calquera dispositivo.</translation>
 <translation id="4007463141047732631">Editar grupo</translation>
@@ -875,6 +878,7 @@
 <translation id="4129768137228347731">Queres gardar <ph name="ENTITY_TYPE" />?</translation>
 <translation id="4133139945030148655">Xa está todo listo!</translation>
 <translation id="4133265950310064865">Protección mellorada</translation>
+<translation id="4142372594294312814">5 aspectos fundamentais da IA xenerativa</translation>
 <translation id="4145507240503767005"><ph name="SEARCH_ENGINE_NAME" />, <ph name="SEARCH_ENGINE_DOMAIN" /></translation>
 <translation id="4147897805161313378">Google Fotos</translation>
 <translation id="4148023517926189160">Este sitio web quere descargar un ficheiro e engadilo ao teu calendario.</translation>
@@ -997,6 +1001,7 @@
 <translation id="456502772933839252">Compartindo <ph name="PAGE_TITLE" /></translation>
 <translation id="4565377596337484307">Ocultar contrasinal</translation>
 <translation id="4568230126482344545">Ocultar Pestanas recentes</translation>
+<translation id="4571490460651837010">Xestionar enderezos e máis</translation>
 <translation id="4578835633387306383">Activar…</translation>
 <translation id="4580621046861724270">Algúns marcadores non se gardaron</translation>
 <translation id="4580716718466706433">Vai ao xestor de contrasinais</translation>
@@ -1234,6 +1239,7 @@
 <translation id="5329451663851195956">Podes arrastrar cara abaixo para actualizar a pestana.</translation>
 <translation id="5336910966955551309">Mantén premido o atallo para fixar os teus sitios favoritos</translation>
 <translation id="5338512273860059533">Inicio de sesión en curso.</translation>
+<translation id="5340148832014094861">Aplícanse as <ph name="GOOGLE_TERMS" /> e o <ph name="GEMINI_APPS_PRIVACY" />. Gemini é unha IA e pode cometer erros (mesmo no referente á información sobre persoas).</translation>
 <translation id="5343472494710226394">Noticias, deportes e contido baseado nos teus intereses.</translation>
 <translation id="5352128922772839949">Gardar o ficheiro</translation>
 <translation id="5355191726083956201">A protección mellorada está activada</translation>
@@ -1577,6 +1583,7 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="647867789226964031">Cambiar os contrasinais</translation>
 <translation id="6480363549849064919">Autenticación do cliente</translation>
 <translation id="6489174933860678546">Abre pestanas do modo de incógnito para navegar pola Web de forma máis privada.</translation>
+<translation id="6489775505977274806">Ocultar subida de nivel</translation>
 <translation id="6494931198667773526">Finaliza</translation>
 <translation id="6503077044568424649">Máis visitados</translation>
 <translation id="6503763061813913607">Notificacións de Comprobación de seguranza</translation>

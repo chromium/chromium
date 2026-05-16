@@ -178,6 +178,7 @@
 <translation id="1582732959743469162">この操作を行うと、現在進行中のダウンロードは停止します。</translation>
 <translation id="1594034544529347967">開始</translation>
 <translation id="1598751033135758830">アプリで開く…</translation>
+<translation id="1600571977391127696">一部のユーザーに適していないコンテンツがあります。</translation>
 <translation id="1601560923496285236">適用</translation>
 <translation id="1603718000246404895">{COUNT,plural, =1{1 件の住所}other{# 件の住所}}</translation>
 <translation id="1605405588277479165">オフ - 推奨されません</translation>
@@ -312,6 +313,7 @@
 <translation id="2012723204723845092">おかえりなさい。</translation>
 <translation id="2015722694326466240">パスワードを表示するには、まずデバイスにパスコードを設定する必要があります。</translation>
 <translation id="201759455285471444">タブグループを開く。</translation>
+<translation id="2031515492007104071">Level Up</translation>
 <translation id="2044394949148788042">タブグリッドを開く</translation>
 <translation id="2044681667265133332">アカウント（<ph name="USER_EMAIL" />）は <ph name="HOSTED_DOMAIN" /> によって管理されており、この組織は一部の情報を見ることができます。<ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">新しいアイテム</translation>
@@ -845,6 +847,7 @@
 <translation id="3994911892367422121">OK</translation>
 <translation id="3995521777587992544">ページ読み込み状況バー、<ph name="EMAIL" /> 読み込み完了。</translation>
 <translation id="3997522473364371632">パスワードの共有は管理者によって無効にされています。</translation>
+<translation id="4000707564769984863">視聴: <ph name="WATCH_LINK" /></translation>
 <translation id="4002066346123236978">タイトル</translation>
 <translation id="4004204301268239848">パスワードは Google アカウントに保存されるため、どのデバイスからでも使用できます。</translation>
 <translation id="4007463141047732631">グループを編集</translation>
@@ -875,6 +878,7 @@
 <translation id="4129768137228347731"><ph name="ENTITY_TYPE" /> を保存しますか？</translation>
 <translation id="4133139945030148655">設定完了</translation>
 <translation id="4133265950310064865">保護強化機能</translation>
+<translation id="4142372594294312814">生成 AI について知っておきたい 5 つのこと</translation>
 <translation id="4145507240503767005"><ph name="SEARCH_ENGINE_NAME" />、<ph name="SEARCH_ENGINE_DOMAIN" /></translation>
 <translation id="4147897805161313378">Google フォト</translation>
 <translation id="4148023517926189160">このウェブサイトがファイルをダウンロードしてカレンダーに追加する許可を求めています。</translation>
@@ -997,6 +1001,7 @@
 <translation id="456502772933839252"><ph name="PAGE_TITLE" /> の共有</translation>
 <translation id="4565377596337484307">パスワードを表示しない</translation>
 <translation id="4568230126482344545">最近使ったタブを非表示</translation>
+<translation id="4571490460651837010">住所やその他の情報を管理…</translation>
 <translation id="4578835633387306383">オンにする…</translation>
 <translation id="4580621046861724270">一部のブックマークは保存されません</translation>
 <translation id="4580716718466706433">[パスワード マネージャー] に移動します</translation>
@@ -1234,6 +1239,7 @@
 <translation id="5329451663851195956">下にスワイプして更新できます。</translation>
 <translation id="5336910966955551309">長押ししてお気に入りのサイトを固定できます</translation>
 <translation id="5338512273860059533">ログインを処理しています。</translation>
+<translation id="5340148832014094861"><ph name="GOOGLE_TERMS" /> と <ph name="GEMINI_APPS_PRIVACY" /> が適用されます。Gemini は AI であり、不正確な情報（人物に関する情報など）を表示することがあります。</translation>
 <translation id="5343472494710226394">興味や関心に基づくニュース、スポーツ、コンテンツ。</translation>
 <translation id="5352128922772839949">ファイルを保存</translation>
 <translation id="5355191726083956201">保護強化機能がオンになっています</translation>
@@ -1406,7 +1412,7 @@
 <translation id="5941711191222866238">最小化</translation>
 <translation id="5944869793365969636">QR コードのスキャン</translation>
 <translation id="5948291296578561264">フォト ライブラリに写真を保存します。</translation>
-<translation id="5948605885471592910">開いているすべてのタブを確認して管理する</translation>
+<translation id="5948605885471592910">開いているすべてのタブを表示、管理します</translation>
 <translation id="5952641243319721872">選択を解除してもよろしいですか？</translation>
 <translation id="5956112131836209882">タブグループのタブ。<ph name="TAB_INDEX_IN_GROUP" />/<ph name="NUMBER_OF_TABS_IN_GROUP" />。</translation>
 <translation id="595769230373966252"><ph name="SEARCH_PROVIDER" /> で検索</translation>
@@ -1577,6 +1583,7 @@
 <translation id="647867789226964031">パスワードを変更してください</translation>
 <translation id="6480363549849064919">クライアント認証</translation>
 <translation id="6489174933860678546">シークレット タブを開くと、プライバシーを守りながらウェブをブラウジングできます。</translation>
+<translation id="6489775505977274806">Level Up を非表示</translation>
 <translation id="6494931198667773526">終了</translation>
 <translation id="6503077044568424649">よくアクセスするページ</translation>
 <translation id="6503763061813913607">安全チェックの通知</translation>

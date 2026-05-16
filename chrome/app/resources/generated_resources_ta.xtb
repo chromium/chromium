@@ -786,6 +786,7 @@
 <translation id="1529769834253316556">வரியின் உயரம்</translation>
 <translation id="1529891865407786369">மின்சக்தி மூலம்</translation>
 <translation id="1530376661400379364">Chrome இந்த அமைப்புகளை மீட்டமைத்தது</translation>
+<translation id="1530466164747090379"><ph name="FILE_NAME" /> ஃபைலில் பாதுகாக்கவேண்டிய அல்லது ஆபத்தான தரவு உள்ளது</translation>
 <translation id="1531275250079031713">'புதிய வைஃபையை சேர்' உரையாடலைக் காட்டு</translation>
 <translation id="1531734061664070992"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /></translation>
 <translation id="1533948060140843887">இந்தப் பதிவிறக்கம் எனது கம்ப்யூட்டரைப் பாதிக்கும் என்பதைப் புரிந்துகொள்கிறேன்</translation>
@@ -2193,6 +2194,7 @@
 <translation id="2469141124738294431">VM நிலை</translation>
 <translation id="2469259292033957819">பிரிண்டர்கள் எதையும் நீங்கள் சேமிக்கவில்லை.</translation>
 <translation id="2469375675106140201">எழுத்துப்பிழைச் சரிபார்ப்பைப் பிரத்தியேகமாக்கு</translation>
+<translation id="2469406914567390938">புதுப்பிப்புக்கான சேனல்</translation>
 <translation id="247051149076336810">ஃபைல் பகிர்வு URL</translation>
 <translation id="2471469610750100598">கருப்பு (இயல்பு)</translation>
 <translation id="2471506181342525583">இருப்பிட அணுகல் அனுமதிக்கப்பட்டது</translation>
@@ -2524,6 +2526,7 @@
 <translation id="2695943520968279338">நீட்டிப்புகளைக் கண்டறி</translation>
 <translation id="2696675923413008404">இந்த அம்சத்தை மேம்படுத்த, இந்தத் தளத்தின் URL உட்பட அதன் உள்ளடக்கம் Googleளுக்கு அனுப்பப்படுவதுடன் மதிப்பாய்வாளர்களுக்கும் காட்டப்படலாம்</translation>
 <translation id="2698147581454716013">இது தொகுக்கப்பட்ட சாதனம் என்பதால் இதனைக் கியோஸ்க் மற்றும் சைனேஜ் மேம்படுத்தலுடன் பதிவுசெய்ய முடியாது.</translation>
+<translation id="269941332914175387">உங்கள் சுயவிவரத் தரவை ஏற்றி, அதை என்க்ரிப்ஷன் செய்யப்பட்ட நிலையில் வைத்திருக்க பிரவுசரை மீண்டும் தொடங்கவும்</translation>
 <translation id="2699911226086014512">பின்னை அமைக்க இயலவில்லை, பிழைக் குறியீடு: <ph name="RETRIES" />.</translation>
 <translation id="2701330563083355633"><ph name="DEVICE_NAME" /> சாதனத்தில் இருந்து பகிரப்பட்டுள்ளது</translation>
 <translation id="2701737434167469065">உள்நுழை, <ph name="EMAIL" /></translation>
@@ -2752,6 +2755,7 @@
 <translation id="2844154481025280030">கொள்கை உள்ளமைக்கப்பட்டது.</translation>
 <translation id="2844169650293029770">USB-C சாதனம் (இடது பக்கம் முன்னே இருக்கும் போர்ட்)</translation>
 <translation id="2844809857160214557">அச்சுப் பணிகளைப் பார்க்கலாம் நிர்வகிக்கலாம்</translation>
+<translation id="284491292807422921">தளத்தை அகற்றவா?</translation>
 <translation id="2845276301195220700">Google Calendarருக்கான மேலும் செயல்கள்</translation>
 <translation id="2845382757467349449">எப்பொழுதும் புக்மார்க்ஸ் பட்டியைக் காட்டு</translation>
 <translation id="284581348330507117">தனித்துவமான கடவுச்சொற்களை உருவாக்குங்கள்</translation>
@@ -3341,6 +3345,7 @@
 <translation id="3262986719682892278">மிகவும் பெரிதாக உள்ளது</translation>
 <translation id="3264544094376351444">Sans-Serif எழுத்துரு</translation>
 <translation id="3264582393905923483">சூழல்</translation>
+<translation id="3265303262625691029"><ph name="VERDICT_MESSAGE" />. உங்கள் நிர்வாகி சொல்வது: "<ph name="CUSTOM_MESSAGE" />"</translation>
 <translation id="3265459715026181080">சாளரத்தை மூடு</translation>
 <translation id="3266022278425892773">Linux டெவெலப்மெண்ட் சூழல்</translation>
 <translation id="3266030505377585301">உலாவிய தரவை உங்கள் Google கணக்கில் இருந்து நீக்காமல் இந்தச் சாதனத்தில் இருந்து மட்டும் நீக்க, <ph name="BEGIN_LINK" />வெளியேறுங்கள்<ph name="END_LINK" />.</translation>
@@ -4460,6 +4465,7 @@
 <translation id="4010746393007464819">Debian 12 (Bookworm) தொடர்பான மேம்படுத்தல் உள்ளது</translation>
 <translation id="4010917659463429001">மொபைல் சாதனத்தில் உங்கள் புத்தகக்குறிகளைப் பெற, <ph name="GET_IOS_APP_LINK" />.</translation>
 <translation id="4011073493055408531">நகரின் மேலே ஊதா மற்றும் பச்சை வண்ணத்தில் மெருகூட்டப்பட்ட துருவ ஒளி.</translation>
+<translation id="4011897773956589748">அடுத்த முறை இந்தக் கணக்கிற்கான அணுகல் Geminiக்குத் தேவைப்படும்போது உங்களிடம் மீண்டும் கேட்கும்.</translation>
 <translation id="4012509903424054869">PDFகளின் வடிவங்கள் தானாக மாற்றப்படும் என்பதால் வார்த்தைகளைத் தேடலாம் தேர்ந்தெடுக்கலாம்</translation>
 <translation id="4014432863917027322">"<ph name="EXTENSION_NAME" />"ஐப் புதுப்பிக்கவா?</translation>
 <translation id="4015163439792426608">நீட்டிப்புகள் இருக்கிறதா? ஒரே இடத்தில் எளிதாக <ph name="BEGIN_LINK" />உங்கள் நீட்டிப்புகளை நிர்வகியுங்கள்<ph name="END_LINK" />.</translation>
@@ -6238,6 +6244,7 @@
 <translation id="5275084684151588738">பயனர் அகராதிகள்</translation>
 <translation id="5275338516105640560">சேமிக்கப்பட்ட பக்கக் குழுவிற்கான பட்டன்</translation>
 <translation id="5275352920323889391">நாய்</translation>
+<translation id="5275946508817197540">தனிப்பட்ட இணைய ஆப்ஸை நிறுவுவதை உங்கள் பாதுகாப்பு விருப்பத்தேர்வுகள் அனுமதிக்கவில்லை. <ph name="CHANGE_PREFERENCE" />.</translation>
 <translation id="527605719918376753">ஒலி வேண்டாம்</translation>
 <translation id="527605982717517565"><ph name="HOST" /> இல் JavaScript ஐ எப்போதும் அனுமதி</translation>
 <translation id="5276357196618041410">உள்ளமைவைச் சேமிக்க முதலில் உள்நுழைந்திருக்க வேண்டும்</translation>
@@ -8687,6 +8694,7 @@
 <translation id="6997553674029032185">தளத்திற்குச் செல்</translation>
 <translation id="6997642619627518301"><ph name="NAME_PH" /> - செயல்பாட்டுப் பதிவு</translation>
 <translation id="6997707937646349884">உங்கள் சாதனங்களில்:</translation>
+<translation id="6998036632333022623">Googleளுடன் பக்கங்களைப் பகிர்கிறது</translation>
 <translation id="6998793565256476099">வீடியோ கான்ஃபிரன்ஸுக்குச் சாதனத்தைப் பதிவுசெய்</translation>
 <translation id="6999956497249459195">புதிய குழு</translation>
 <translation id="7000206553895739324"><ph name="PRINTER_NAME" /> இணைக்கப்பட்டுள்ளது, எனினும் உள்ளமைவு தேவைப்படுகிறது</translation>

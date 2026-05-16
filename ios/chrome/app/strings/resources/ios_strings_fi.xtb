@@ -178,6 +178,7 @@
 <translation id="1582732959743469162">Tämä keskeyttää nykyisen latauksen edistymisen.</translation>
 <translation id="1594034544529347967">Alkaa</translation>
 <translation id="1598751033135758830">Avaa sovelluksessa…</translation>
+<translation id="1600571977391127696">Osa sisällöstä ei välttämättä sovi kaikille.</translation>
 <translation id="1601560923496285236">Käytä</translation>
 <translation id="1603718000246404895">{COUNT,plural, =1{1 osoite}other{# osoitetta}}</translation>
 <translation id="1605405588277479165">Pois päältä – Ei suositeltu</translation>
@@ -312,6 +313,7 @@
 <translation id="2012723204723845092">Tervetuloa takaisin!</translation>
 <translation id="2015722694326466240">Jos haluat nähdä salasanat, sinun on ensin määritettävä tunnuskoodi laitteellesi.</translation>
 <translation id="201759455285471444">Laajenna välilehtiryhmä.</translation>
+<translation id="2031515492007104071">Tason nostaminen</translation>
 <translation id="2044394949148788042">Avaa välilehtiruudukko</translation>
 <translation id="2044681667265133332"><ph name="HOSTED_DOMAIN" /> ylläpitää tiliä <ph name="USER_EMAIL" /> ja voi nähdä joitakin tietoja. <ph name="BEGIN_LINK" />Lue lisää<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">uusi tuote</translation>
@@ -845,6 +847,7 @@
 <translation id="3994911892367422121">SELVÄ</translation>
 <translation id="3995521777587992544">Sivun lataamisen etenemispalkki, <ph name="EMAIL" /> ladattu</translation>
 <translation id="3997522473364371632">Järjestelmänvalvoja on poistanut salasanan jakamisen käytöstä.</translation>
+<translation id="4000707564769984863">Katso: <ph name="WATCH_LINK" /></translation>
 <translation id="4002066346123236978">Nimi</translation>
 <translation id="4004204301268239848">Salasanat tallennetaan Google-tilillesi, jotta voit käyttää niitä kaikilla laitteilla.</translation>
 <translation id="4007463141047732631">Muokkaa ryhmää</translation>
@@ -875,6 +878,7 @@
 <translation id="4129768137228347731">Tallennetaanko <ph name="ENTITY_TYPE" />?</translation>
 <translation id="4133139945030148655">Valmista tuli</translation>
 <translation id="4133265950310064865">Parannettu suojaus</translation>
+<translation id="4142372594294312814">Viisi tärkeää asiaa generatiivisesta tekoälystä</translation>
 <translation id="4145507240503767005"><ph name="SEARCH_ENGINE_NAME" />, <ph name="SEARCH_ENGINE_DOMAIN" /></translation>
 <translation id="4147897805161313378">Google Kuvat</translation>
 <translation id="4148023517926189160">Verkkosivusto haluaa ladata tiedoston ja lisätä sen kalenteriisi.</translation>
@@ -997,6 +1001,7 @@
 <translation id="456502772933839252">Jaetaan <ph name="PAGE_TITLE" /></translation>
 <translation id="4565377596337484307">Piilota salasana</translation>
 <translation id="4568230126482344545">Piilota "Viimeaikaiset välilehdet"</translation>
+<translation id="4571490460651837010">Hallitse osoitteita ja muita tietoja…</translation>
 <translation id="4578835633387306383">Laita päälle…</translation>
 <translation id="4580621046861724270">Joitakin kirjanmerkkejä ei tallennettu</translation>
 <translation id="4580716718466706433">Siirry Salasanoihin</translation>
@@ -1234,6 +1239,7 @@
 <translation id="5329451663851195956">Voit päivittää välilehden vetämällä alas.</translation>
 <translation id="5336910966955551309">Kiinnitä suosikkisivustosi koskettamalla pitkään</translation>
 <translation id="5338512273860059533">Kirjautuminen käynnissä.</translation>
+<translation id="5340148832014094861">Huomioi <ph name="GOOGLE_TERMS" /> ja <ph name="GEMINI_APPS_PRIVACY" />. Gemini on tekoäly ja voi tehdä virheitä, myös ihmisiin liittyen.</translation>
 <translation id="5343472494710226394">Kiinnostuksen kohteisiisi perustuvia uutisia, urheilua ja sisältöä.</translation>
 <translation id="5352128922772839949">Tallenna tiedosto</translation>
 <translation id="5355191726083956201">Parannettu suojaus on päällä</translation>
@@ -1577,6 +1583,7 @@ Handoff täytyy ottaa käyttöön myös Asetusten Yleiset-osiossa. Lisäksi mole
 <translation id="647867789226964031">Vaihda salasanasi</translation>
 <translation id="6480363549849064919">Asiakassovelluksen todennus</translation>
 <translation id="6489174933860678546">Avaa incognito-välilehtiä, niin voit selata verkkoa yksityisemmin.</translation>
+<translation id="6489775505977274806">Piilota tason nostaminen</translation>
 <translation id="6494931198667773526">Päättyy</translation>
 <translation id="6503077044568424649">Käydyimmät</translation>
 <translation id="6503763061813913607">Turvatarkistusilmoitukset</translation>

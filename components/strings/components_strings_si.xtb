@@ -2236,6 +2236,7 @@
 <translation id="443673843213245140">ප්‍රොක්සියක භාවිතය අබල කර ඇති නමුත් ප්‍රකාශිත ප්‍රොක්සි වින්‍යාසකරණයක් නිශ්චය කර ඇත.</translation>
 <translation id="4438821706955556403">නියමානුකූල මිල</translation>
 <translation id="4441832193888514600">ප්‍රතිපත්තිය ක්ලවුඩ් පරිශීලක ප්‍රතිපත්තියක් ලෙස පමණක් සැකසිය හැකි බැවින් නොසලකා හරින ලදී.</translation>
+<translation id="4444062564459679679">දැනටමත් ඔබේ <ph name="DEVICE_NAME" /> හි Chrome වෙත යවා ඇත</translation>
 <translation id="4445133368066241428">ජනප්‍රිය මාතෘකා</translation>
 <translation id="4445694043187340808"><ph name="STARTER_PACK_TABS_FOCUSED_FRIENDLY_MATCH_TEXT" />, පටිති සෙවීමට Enter ඔබන්න</translation>
 <translation id="4445964943162061557">මෙය පරීක්‍ෂණාත්මක විශේෂාංගයක් වන අතර සැම විටම නිවැරදි විය නොහැක.</translation>
@@ -4846,6 +4847,7 @@
 <translation id="8511402995811232419">කුකි කළමනාකරණය කරන්න</translation>
 <translation id="851353418319061866">නිරවද්‍යතා පරීක්ෂාව</translation>
 <translation id="8513580896341796021">බාගැනීම ආරම්භ විය. එය බැලීමට, |<ph name="ACCELERATOR" />| ඔබන්න.</translation>
+<translation id="8515544520486085367">ස්වයං පිරවුම් ගෙවීම</translation>
 <translation id="8519753333133776369">ඔබගේ පරිපාලක විසින් ඉඩ දෙන HID උපාංගය</translation>
 <translation id="8521013008769249764">සෝෆා සහ අත් පුටු</translation>
 <translation id="8521812709849134608">කවුන්ටර තල</translation>

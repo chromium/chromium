@@ -787,6 +787,7 @@
 <translation id="1529769834253316556">लाइन की लंबाई</translation>
 <translation id="1529891865407786369">पावर स्रोत</translation>
 <translation id="1530376661400379364">Chrome ने इन सेटिंग को रीसेट कर दिया है</translation>
+<translation id="1530466164747090379"><ph name="FILE_NAME" /> में संवेदनशील या असुरक्षित डेटा है</translation>
 <translation id="1531275250079031713">'नया वाई-फ़ाई जोड़ें' संवाद दिखाएं</translation>
 <translation id="1531734061664070992"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, और <ph name="THIRD_SWITCH" /></translation>
 <translation id="1533948060140843887">मुझे जानकारी है कि इसे डाउनलोड करने से, मेरे कंप्यूटर को नुकसान होगा</translation>
@@ -2194,6 +2195,7 @@
 <translation id="2469141124738294431">वीएम की स्थिति</translation>
 <translation id="2469259292033957819">आपके पास सेव किया गया कोई भी प्रिंटर नहीं है.</translation>
 <translation id="2469375675106140201">स्पेल चेक को पसंद के मुताबिक बनाएं</translation>
+<translation id="2469406914567390938">चैनल अपडेट करें</translation>
 <translation id="247051149076336810">फ़ाइल शेयर यूआरएल</translation>
 <translation id="2471469610750100598">काला (डिफ़ॉल्ट)</translation>
 <translation id="2471506181342525583">जगह की जानकारी का ऐक्सेस दिया गया है</translation>
@@ -2525,6 +2527,7 @@
 <translation id="2695943520968279338">अलग-अलग एक्सटेंशन आज़माएं</translation>
 <translation id="2696675923413008404">इस साइट में मौजूद कॉन्टेंट और इसका यूआरएल, Google को भेजा जाता है. समीक्षा करने वाले लोग इस कॉन्टेंट को देख सकते हैं, ताकि इस सुविधा को बेहतर बनाया जा सके</translation>
 <translation id="2698147581454716013">यह बंडल किया गया डिवाइस है. इसे कीऑस्क और साइनेज अपग्रेड के लिए रजिस्टर नहीं किया जा सकता.</translation>
+<translation id="269941332914175387">अपनी प्रोफ़ाइल का डेटा लोड करने और उसे एन्क्रिप्ट (सुरक्षित) रखने के लिए, ब्राउज़र को फिर से लॉन्च करें</translation>
 <translation id="2699911226086014512"><ph name="RETRIES" /> कोड के चलते पिन को सेट नहीं किया जा सका.</translation>
 <translation id="2701330563083355633"><ph name="DEVICE_NAME" /> से शेयर किया</translation>
 <translation id="2701737434167469065">साइन इन करें, <ph name="EMAIL" /></translation>
@@ -2753,6 +2756,7 @@
 <translation id="2844154481025280030">नीति कॉन्फ़िगर की गई.</translation>
 <translation id="2844169650293029770">USB-C डिवाइस (बायां सामने वाला पोर्ट)</translation>
 <translation id="2844809857160214557">प्रिंट जॉब देखें और प्रबंधित करें</translation>
+<translation id="284491292807422921">क्या साइट हटानी है?</translation>
 <translation id="2845276301195220700">Google Calendar के लिए ज़्यादा कार्रवाइयां</translation>
 <translation id="2845382757467349449">बुकमार्क बार हमेशा दिखाएं</translation>
 <translation id="284581348330507117">यूनीक पासवर्ड बनाएं</translation>
@@ -3342,6 +3346,7 @@
 <translation id="3262986719682892278">फ़ाइल बहुत बड़ी है</translation>
 <translation id="3264544094376351444">Sans-serif फ़ॉन्ट</translation>
 <translation id="3264582393905923483">प्रसंग</translation>
+<translation id="3265303262625691029"><ph name="VERDICT_MESSAGE" />. आपके एडमिन के मुताबिक: "<ph name="CUSTOM_MESSAGE" />"</translation>
 <translation id="3265459715026181080">विंडो बंद करें</translation>
 <translation id="3266022278425892773">Linux डेवलपमेंट एनवायरमेंट</translation>
 <translation id="3266030505377585301">ब्राउजिंग डेटा को सिर्फ़ इस डिवाइस से मिटाने और अपने Google खाते में सेव रखने के लिए, <ph name="BEGIN_LINK" />साइन आउट करें<ph name="END_LINK" />.</translation>
@@ -4460,6 +4465,7 @@
 <translation id="4010746393007464819">Debian 12 (Bookworm) के लिए अपग्रेड उपलब्ध है</translation>
 <translation id="4010917659463429001">अपने मोबाइल डिवाइस पर अपने बुकमार्क पाने के लिए, <ph name="GET_IOS_APP_LINK" />.</translation>
 <translation id="4011073493055408531">शहर के ऊपर, बैंगनी और हरे रंग के ऑरोरा बोरिऐलिस का शानदार नज़ारा दिख रहा है.</translation>
+<translation id="4011897773956589748">अगली बार जब Gemini को इस खाते का ऐक्सेस चाहिए होगा, तो यह आपसे फिर से अनुमति मांगेगा.</translation>
 <translation id="4012509903424054869">PDF फ़ाइलें अपने-आप टेक्स्ट में बदल जाती हैं, ताकि आप टेक्स्ट को खोज सकें और उसे चुन सकें</translation>
 <translation id="4014432863917027322">"<ph name="EXTENSION_NAME" />" को ठीक करें?</translation>
 <translation id="4015163439792426608">एक्सटेंशन मिल गए? एक ही जगह पर आसानी से अपने <ph name="BEGIN_LINK" />एक्सटेंशन प्रबंधित करें<ph name="END_LINK" />.</translation>
@@ -6237,6 +6243,7 @@
 <translation id="5275084684151588738">उपयोगकर्ता की बनाई डिक्शनरी</translation>
 <translation id="5275338516105640560">सेव किए गए टैब ग्रुप का बटन</translation>
 <translation id="5275352920323889391">श्‍वान</translation>
+<translation id="5275946508817197540">आपकी सुरक्षा प्राथमिकताएं, आइसोलेटेड वेब ऐप्लिकेशन को इंस्टॉल करने की अनुमति नहीं देती हैं. <ph name="CHANGE_PREFERENCE" />.</translation>
 <translation id="527605719918376753">टैब म्यूट करें</translation>
 <translation id="527605982717517565"><ph name="HOST" /> पर JavaScript को हमेशा अनुमति दें</translation>
 <translation id="5276357196618041410">लॉगिन किए बिना कॉन्फ़िगरेशन सेव नहीं किया जा सकता</translation>
@@ -8686,6 +8693,7 @@
 <translation id="6997553674029032185">साइट पर जाएं</translation>
 <translation id="6997642619627518301"><ph name="NAME_PH" /> - गतिविधि लॉग</translation>
 <translation id="6997707937646349884">आपके इन डिवाइस पर:</translation>
+<translation id="6998036632333022623">Google के साथ टैब शेयर किए जा रहे हैं</translation>
 <translation id="6998793565256476099">डिवाइस को वीडियो कॉन्फ़्रेंसिंग के लिए नामांकित करें</translation>
 <translation id="6999956497249459195">नया ग्रुप</translation>
 <translation id="7000206553895739324"><ph name="PRINTER_NAME" /> कनेक्ट है पर उसे कॉन्फ़िगर करने की ज़रूरत है</translation>

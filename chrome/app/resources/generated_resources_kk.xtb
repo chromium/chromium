@@ -782,6 +782,7 @@
 <translation id="1529769834253316556">Жол биіктігі</translation>
 <translation id="1529891865407786369">Қуат көзі</translation>
 <translation id="1530376661400379364">Chrome бұл параметрлерді бастапқы күйге қайтарды</translation>
+<translation id="1530466164747090379"><ph name="FILE_NAME" /> файлында құпия немесе қауіпті деректер бар.</translation>
 <translation id="1531275250079031713">"Жаңа Wi-Fi желісін қосу" диалогтік терезесін көрсету</translation>
 <translation id="1531734061664070992"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /></translation>
 <translation id="1533948060140843887">Бұл жүктеп алудың компьютеріме зиян келтіретінін білемін.</translation>
@@ -2177,6 +2178,7 @@
 <translation id="2469141124738294431">Виртуалдық машина күйі</translation>
 <translation id="2469259292033957819">Ешқандай принтер сақталмаған.</translation>
 <translation id="2469375675106140201">Емлені тексеруді реттеу</translation>
+<translation id="2469406914567390938">Жаңарту арнасы</translation>
 <translation id="247051149076336810">Ортақ каталогтің URL мекенжайы</translation>
 <translation id="2471469610750100598">Қара (әдепкі)</translation>
 <translation id="2471506181342525583">Геодерегіңізді пайдалануға рұқсат берілді</translation>
@@ -2508,6 +2510,7 @@
 <translation id="2695943520968279338">Кеңейтімдермен танысу</translation>
 <translation id="2696675923413008404">Бұл сайттағы контент, соның ішінде оның URL мекенжайы Google-ға жіберіледі. Бұл функцияны жақсарту үшін оны тексерушілер тексеруі мүмкін.</translation>
 <translation id="2698147581454716013">Бұл құрылғының лицензиясы ендірілген және ол Kiosk &amp; Signage Upgrade лицензиясына тіркелмейді.</translation>
+<translation id="269941332914175387">Профиль деректерін жүктеп, шифрланған күйінде сақтау үшін браузерді қайта іске қосыңыз.</translation>
 <translation id="2699911226086014512">PIN коды орнатылмады. Қате коды: <ph name="RETRIES" />.</translation>
 <translation id="2701330563083355633"><ph name="DEVICE_NAME" /> құрылғысынан бөлісілді.</translation>
 <translation id="2701737434167469065"><ph name="EMAIL" /> аккаунтына кіру</translation>
@@ -2736,6 +2739,7 @@
 <translation id="2844154481025280030">Саясат конфигурацияланды.</translation>
 <translation id="2844169650293029770">USB-C құрылғысы (сол жақ алдыңғы порты)</translation>
 <translation id="2844809857160214557">Баспа жұмыстарын көру және басқару</translation>
+<translation id="284491292807422921">Сайтты өшіру қажет пе?</translation>
 <translation id="2845276301195220700">Google Calendar-ға арналған басқа әрекеттер</translation>
 <translation id="2845382757467349449">Әрқашан бетбелгілер жолағын көрсету</translation>
 <translation id="284581348330507117">Бірегей құпия сөздер жасаңыз.</translation>
@@ -3323,6 +3327,7 @@
 <translation id="3262986719682892278">Тым үлкен</translation>
 <translation id="3264544094376351444">Sans-serif қаріпі</translation>
 <translation id="3264582393905923483">Мәнмәтін</translation>
+<translation id="3265303262625691029"><ph name="VERDICT_MESSAGE" />. Әкімші хабары: "<ph name="CUSTOM_MESSAGE" />"</translation>
 <translation id="3265459715026181080">Терезені жабу</translation>
 <translation id="3266022278425892773">Linux әзірлеуші ортасы</translation>
 <translation id="3266030505377585301">Браузерді пайдалану деректерін Google аккаунтында сақтай отырып, тек осы құрылғыдан жою үшін <ph name="BEGIN_LINK" />аккаунттан шығыңыз<ph name="END_LINK" />.</translation>
@@ -4442,6 +4447,7 @@
 <translation id="4010746393007464819">Debian 12 (Bookworm) жаңа нұсқасы қолжетімді.</translation>
 <translation id="4010917659463429001">Мобильдік құрылғыда бетбелгілерді алу үшін <ph name="GET_IOS_APP_LINK" />.</translation>
 <translation id="4011073493055408531">Қала аспанындағы күлгін-жасыл түсті солтүстік шұғыласы.</translation>
+<translation id="4011897773956589748">Келесі жолы Gemini-ға осы аккаунтты пайдалану рұқсаты қажет болғанда, ол сізден қайта сұрайды.</translation>
 <translation id="4012509903424054869">Мәтін іздеп, таңдауға мүмкіндік беру үшін PDF файлдары автоматты түрде түрленеді.</translation>
 <translation id="4014432863917027322">"<ph name="EXTENSION_NAME" />" жөндейсіз бе?</translation>
 <translation id="4015163439792426608">Кеңейтімдер пайдаланасыз ба? <ph name="BEGIN_LINK" />Кеңейтімдерді бір орыннан<ph name="END_LINK" /> басқарыңыз.</translation>
@@ -6219,6 +6225,7 @@
 <translation id="5275084684151588738">Пайдаланушы сөздіктері</translation>
 <translation id="5275338516105640560">"Қойындылар тобы" түймесі сақталды.</translation>
 <translation id="5275352920323889391">Ит</translation>
+<translation id="5275946508817197540">Қауіпсіздік параметрлері бойынша сізге оқшау веб-қолданбаларды орнатуға рұқсат берілмейді. <ph name="CHANGE_PREFERENCE" />.</translation>
 <translation id="527605719918376753">Қойынды дыбысын өшіру</translation>
 <translation id="527605982717517565"><ph name="HOST" /> үшін JavaScript қосуға әрдайым рұқсат беру</translation>
 <translation id="5276357196618041410">Алдымен кірмей конфигурацияны сақтау мүмкін емес</translation>
@@ -8663,6 +8670,7 @@
 <translation id="6997553674029032185">Сайтқа кіру</translation>
 <translation id="6997642619627518301"><ph name="NAME_PH" /> – Әрекеттер журналы</translation>
 <translation id="6997707937646349884">Құрылғыларыңызда:</translation>
+<translation id="6998036632333022623">Қойындылар Google-ға жіберіліп жатыр.</translation>
 <translation id="6998793565256476099">Бейнеконференция үшін құрылғыны тіркеу</translation>
 <translation id="6999956497249459195">Жаңа топ</translation>
 <translation id="7000206553895739324"><ph name="PRINTER_NAME" /> жалғанды, бірақ оны конфигурациялау қажет.</translation>

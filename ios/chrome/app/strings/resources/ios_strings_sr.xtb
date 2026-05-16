@@ -178,6 +178,7 @@
 <translation id="1582732959743469162">На тај начин ћете потпуно зауставити тренутно преузимање.</translation>
 <translation id="1594034544529347967">Почиње</translation>
 <translation id="1598751033135758830">Отвори у апликацији…</translation>
+<translation id="1600571977391127696">Неки садржај можда није прикладан за свакога.</translation>
 <translation id="1601560923496285236">Примени</translation>
 <translation id="1603718000246404895">{COUNT,plural, =1{1 адреса}one{# адреса}few{# адресе}other{# адреса}}</translation>
 <translation id="1605405588277479165">Искључено – Не препоручује се</translation>
@@ -312,6 +313,7 @@
 <translation id="2012723204723845092">Добро нам дошли поново.</translation>
 <translation id="2015722694326466240">Да бисте видели лозинке, прво морате да подесите шифру на уређају.</translation>
 <translation id="201759455285471444">Проширите групу картица.</translation>
+<translation id="2031515492007104071">Виши ниво</translation>
 <translation id="2044394949148788042">Отворите мрежу за картице</translation>
 <translation id="2044681667265133332">Налогом <ph name="USER_EMAIL" /> управља <ph name="HOSTED_DOMAIN" />, који може да прегледа одређене информације. <ph name="BEGIN_LINK" />Сазнајте више<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">нова ставка</translation>
@@ -845,6 +847,7 @@
 <translation id="3994911892367422121">ВАЖИ</translation>
 <translation id="3995521777587992544">Трака напретка учитавања страница, учитано је <ph name="EMAIL" />.</translation>
 <translation id="3997522473364371632">Администратор је онемогућио дељење лозинки.</translation>
+<translation id="4000707564769984863">Погледајте: <ph name="WATCH_LINK" /></translation>
 <translation id="4002066346123236978">Наслов</translation>
 <translation id="4004204301268239848">Лозинке се чувају на Google налогу да бисте могли да их користите на било ком уређају.</translation>
 <translation id="4007463141047732631">Измените групу</translation>
@@ -875,6 +878,7 @@
 <translation id="4129768137228347731">Желите да сачувате ставку <ph name="ENTITY_TYPE" />?</translation>
 <translation id="4133139945030148655">Спремни сте</translation>
 <translation id="4133265950310064865">Напредна заштита</translation>
+<translation id="4142372594294312814">Пет ствари које морате да знате о генеративној вештачкој интелигенцији</translation>
 <translation id="4145507240503767005"><ph name="SEARCH_ENGINE_NAME" />, <ph name="SEARCH_ENGINE_DOMAIN" /></translation>
 <translation id="4147897805161313378">Google слике</translation>
 <translation id="4148023517926189160">Овај веб-сајт жели да преузме фајл и дода га у календар.</translation>
@@ -997,6 +1001,7 @@
 <translation id="456502772933839252">Дели се страница <ph name="PAGE_TITLE" /></translation>
 <translation id="4565377596337484307">Сакриј лозинку</translation>
 <translation id="4568230126482344545">Сакриј Недавне картице</translation>
+<translation id="4571490460651837010">Управљај адресама и другим…</translation>
 <translation id="4578835633387306383">Укључи…</translation>
 <translation id="4580621046861724270">Неки обележивачи нису сачувани</translation>
 <translation id="4580716718466706433">Идите у Менаџер лозинки</translation>
@@ -1234,6 +1239,7 @@
 <translation id="5329451663851195956">Можете да превучете надоле да бисте освежили.</translation>
 <translation id="5336910966955551309">Додирните и задржите да бисте закачили омиљене сајтове</translation>
 <translation id="5338512273860059533">Пријављивање је у току.</translation>
+<translation id="5340148832014094861">Примењују се <ph name="GOOGLE_TERMS" /> и <ph name="GEMINI_APPS_PRIVACY" />. Gemini је вештачка интелигенција и може да погреши, укључујући и у вези са људима.</translation>
 <translation id="5343472494710226394">Вести, спорт и садржај на основу интересовања.</translation>
 <translation id="5352128922772839949">Сачувајте фајл</translation>
 <translation id="5355191726083956201">Побољшана заштита је укључена</translation>
@@ -1577,6 +1583,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="647867789226964031">Промените лозинке</translation>
 <translation id="6480363549849064919">Потврда идентитета клијента</translation>
 <translation id="6489174933860678546">Отворите картице без архивирања да бисте приватније прегледали веб.</translation>
+<translation id="6489775505977274806">Сакриј одељак Виши ниво</translation>
 <translation id="6494931198667773526">Завршава се</translation>
 <translation id="6503077044568424649">Најпосећенији</translation>
 <translation id="6503763061813913607">Обавештења Провере безбедности</translation>

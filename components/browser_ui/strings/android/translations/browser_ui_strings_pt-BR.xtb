@@ -20,6 +20,7 @@
 <translation id="1240190568154816272">Dicas do Chrome</translation>
 <translation id="1242008676835033345">Incorporado em <ph name="WEBSITE_URL" /></translation>
 <translation id="1263609676484797429">Toque em Apps &gt; Apps padrão.</translation>
+<translation id="1264694639515903274">Agora você pode personalizar sua página inicial</translation>
 <translation id="1272079795634619415">Parar</translation>
 <translation id="1275718070701477396">Linha selecionada</translation>
 <translation id="1289742167380433257">Para que você economize dados, as imagens desta página foram otimizadas pelo Google.</translation>
@@ -89,6 +90,7 @@
 <translation id="1915307458270490472">Desligar</translation>
 <translation id="1919950603503897840">Selecionar contatos</translation>
 <translation id="1923695749281512248"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / <ph name="FILE_SIZE_WITH_UNITS" /></translation>
+<translation id="192926679114491605">Personalizar minha página inicial</translation>
 <translation id="1939059826036755332">Picture-in-picture automático</translation>
 <translation id="1954597385941141174">Os sites podem pedir permissão para se conectar a dispositivos USB</translation>
 <translation id="1979673356880165407">Aumentar ou diminuir o texto e as imagens de todos os sites visitados</translation>
@@ -330,6 +332,7 @@
 <translation id="42981349822642051">Expandir</translation>
 <translation id="4310738531374808763">Personalize sua página inicial</translation>
 <translation id="4336219115486912529">{COUNT,plural, =1{Expira amanhã}one{Expira em # dia}other{Expira em # dias}}</translation>
+<translation id="4336371609622603229">Escolha um tema personalizado e deixe o Chrome do seu jeito</translation>
 <translation id="4338831206024587507">Todos os sites em <ph name="DOMAIN" /></translation>
 <translation id="4340799661701629185">Não permitir que os sites enviem notificações</translation>
 <translation id="4341577178275615435">Para ativar ou desativar a Caret Browsing, use o atalho F7</translation>

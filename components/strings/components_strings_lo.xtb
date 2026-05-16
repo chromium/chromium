@@ -1821,6 +1821,7 @@
 <translation id="380865868633614173">ກຳລັງບັນທຶກຂໍ້ມູນບັດ</translation>
 <translation id="3810770279996899697">ຕົວຈັດການລະຫັດຜ່ານຕ້ອງການສິດເຂົ້າເຖິງ Keychain ຂອງ MacOS</translation>
 <translation id="3810973564298564668">ຈັດການ</translation>
+<translation id="3811328723651698330"><ph name="STRING_1" />, <ph name="STRING_2" /></translation>
 <translation id="3812398568375898177">ການອັບເດດນີ້ສຳຄັນຕໍ່ການປັບປຸງປະສິດທິພາບຂອງແອັບ Android ຢູ່ ChromeOS.</translation>
 <translation id="3814865536373139791">ປັບປຸງປະສິດທິພາບວິທີທີ່ອົງກອນຂອງທ່ານຈັດການນະໂຍບາຍ</translation>
 <translation id="3815434930383843058">8 x 12 ນິ້ວ</translation>
@@ -2401,6 +2402,7 @@
 <translation id="4736934858538408121">ບັດສະເໝືອນ</translation>
 <translation id="473775607612524610">ອັບເດດ</translation>
 <translation id="4738601419177586157">ການແນະນຳການຊອກຫາ <ph name="TEXT" /></translation>
+<translation id="473866660302034629"><ph name="TAB_TITLE" />, ແຖບທີ່ເລືອກ, <ph name="INDEX" /> ຈາກທັງໝົດ <ph name="TOTAL" />, ໃຊ້ລູກສອນຊ້າຍ ຫຼື ຂວາເພື່ອສະຫຼັບໄປມາລະຫວ່າງແຖບ</translation>
 <translation id="4742407542027196863">ຈັດການລະຫັດຜ່ານ...</translation>
 <translation id="474270528725216349">ຈາກຢ່າງໜ້ອຍ 1 ເວັບໄຊໃນອຸປະກອນທີ່ຊິ້ງ</translation>
 <translation id="4743275772928623722">ອັບເດດລະບົບຂອງທ່ານແລ້ວ ແຕ່ບໍ່ສາມາດກູ້ຄືນແອັບ ແລະ ໄຟລ໌ບາງອັນຂອງທ່ານໄດ້. ແອັບຂອງທ່ານຈະຖືກດາວໂຫຼດຄືນໃໝ່ໂດຍອັດຕະໂນມັດ.</translation>
@@ -2468,6 +2470,7 @@
 <translation id="4832961164064927107">ບາບີຄິວ ແລະ ການປີ້ງ</translation>
 <translation id="4835568975547260025">Chrome ຈະແບ່ງປັນແຖບທີ່ເປີດຢູ່ເຊິ່ງກ່ຽວຂ້ອງໂດຍຄ່າເລີ່ມຕົ້ນເພື່ອຊ່ວຍໃຫ້ທ່ານໄດ້ຮັບຄຳຕອບທີ່ປັບແຕ່ງໃຫ້ເໝາະກັບທ່ານຫຼາຍຂຶ້ນສຳລັບຄຳຖາມຂອງທ່ານ.</translation>
 <translation id="4840250757394056958">ເບິ່ງປະຫວັດ Chrome ຂອງທ່ານ</translation>
+<translation id="4842365697443353018">ລຶບລ້າງແບບຟອມເພື່ອໃຊ້ຈ່າຍພາຍຫຼັງ</translation>
 <translation id="484462545196658690">ອັດຕະໂນມັດ</translation>
 <translation id="4844937814014739139">ການເລື່ອນ ແລະ ການຊູມແຖບທີ່ແບ່ງປັນ</translation>
 <translation id="484671803914931257">ຮັບສ່ວນຫຼຸດຢູ່ <ph name="MERCHANT_NAME" /> ແລະ ອື່ນໆ</translation>

@@ -782,6 +782,7 @@
 <translation id="1529769834253316556">ലൈനിന്റെ ഉയരം</translation>
 <translation id="1529891865407786369">പവർ ഉറവിടം</translation>
 <translation id="1530376661400379364">Chrome ഈ ക്രമീകരണം റീസെറ്റ് ചെയ്തു</translation>
+<translation id="1530466164747090379"><ph name="FILE_NAME" /> എന്നതിൽ സൂക്ഷ്‌മമായി കൈകാര്യം ചെയ്യേണ്ടതോ അപകടകരമായതോ ആയ ഡാറ്റയുണ്ട്</translation>
 <translation id="1531275250079031713">'പുതിയ വൈഫൈ ചേർക്കുക' ഡയലോഗ് കാണിക്കുക</translation>
 <translation id="1531734061664070992"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /></translation>
 <translation id="1533948060140843887">ഈ ഡൗൺലോഡ് എന്റെ കമ്പ്യൂട്ടറിനെ ദോഷകരമായി ബാധിക്കുമെന്ന് ഞാൻ മനസ്സിലാക്കുന്നു</translation>
@@ -2176,6 +2177,7 @@
 <translation id="2469141124738294431">VM നില</translation>
 <translation id="2469259292033957819">നിങ്ങൾക്ക് സംരക്ഷിച്ചിരിക്കുന്ന പ്രിന്ററുകളൊന്നുമില്ല.</translation>
 <translation id="2469375675106140201">സ്പെൽ ചെക്ക് ഇഷ്‌ടാനുസൃതമാക്കുക</translation>
+<translation id="2469406914567390938">ചാനൽ അപ്ഡേറ്റ് ചെയ്യുക</translation>
 <translation id="247051149076336810">ഫയൽ പങ്കിടൽ URL</translation>
 <translation id="2471469610750100598">കറുപ്പ് (ഡിഫോൾട്ട്)</translation>
 <translation id="2471506181342525583">ലൊക്കേഷൻ ആക്‌സസ് അനുവദിച്ചിരിക്കുന്നു</translation>
@@ -2507,6 +2509,7 @@
 <translation id="2695943520968279338">വിപുലീകരണങ്ങൾ കണ്ടെത്തൂ</translation>
 <translation id="2696675923413008404">ഈ സൈറ്റിൽ നിന്നുള്ള ഉള്ളടക്കം, അതിന്റെ URL ഉൾപ്പെടെ, Google-ലേക്ക് അയയ്ക്കുന്നു, ഈ ഫീച്ചർ മെച്ചപ്പെടുത്തുന്നതിനായി അവലോകനം ചെയ്യുന്നവർ അവ കാണുകയും ചെയ്‌തേക്കാം</translation>
 <translation id="2698147581454716013">ഇതൊരു ബണ്ടിൽ ചെയ്‌ത ഉപകരണമാണ്, Kiosk &amp; Signage അപ്ഗ്രേഡ് ഉപയോഗിച്ച് എൻറോൾ ചെയ്യാനാകില്ല.</translation>
+<translation id="269941332914175387">നിങ്ങളുടെ പ്രൊഫൈൽ ഡാറ്റ ലോഡ് ചെയ്യാനും അത് എൻക്രിപ്റ്റ് ചെയ്ത നിലയിൽ നിലനിർത്താനും ബ്രൗസർ വീണ്ടും ലോഞ്ച് ചെയ്യുക</translation>
 <translation id="2699911226086014512"><ph name="RETRIES" /> എന്ന കോഡ് ഉപയോഗിച്ച് പിൻ പ്രവർത്തിപ്പിക്കാനായില്ല.</translation>
 <translation id="2701330563083355633"><ph name="DEVICE_NAME" /> ഉപകരണത്തിൽ നിന്ന് പങ്കിട്ടു</translation>
 <translation id="2701737434167469065">സൈൻ ഇൻ ചെയ്യുക, <ph name="EMAIL" /></translation>
@@ -2735,6 +2738,7 @@
 <translation id="2844154481025280030">നയം കോൺഫിഗർ ചെയ്തു.</translation>
 <translation id="2844169650293029770">USB-C ഉപകരണം (ഇടത് വശത്ത് മുൻഭാഗത്തെ പോർട്ട്)</translation>
 <translation id="2844809857160214557">പ്രിന്റ് ജോലികൾ കാണുക, മാനേജ് ചെയ്യുക</translation>
+<translation id="284491292807422921">സൈറ്റ് നീക്കം ചെയ്യണോ?</translation>
 <translation id="2845276301195220700">Google Calendar-നുള്ള കൂടുതൽ പ്രവർത്തനങ്ങൾ</translation>
 <translation id="2845382757467349449">ബുക്ക്‌മാർക്ക് ബാർ എപ്പോഴും കാണിക്കുക</translation>
 <translation id="284581348330507117">തനതായ പാസ്‌വേഡുകൾ സൃഷ്‌ടിക്കുക</translation>
@@ -3324,6 +3328,7 @@
 <translation id="3262986719682892278">വളരെ വലുതാണ്</translation>
 <translation id="3264544094376351444">സാന്‍സ്-സെരിഫ് ഫോണ്ട്</translation>
 <translation id="3264582393905923483">സന്ദർഭം</translation>
+<translation id="3265303262625691029"><ph name="VERDICT_MESSAGE" />. നിങ്ങളുടെ അഡ്‌മിൻ പറയുന്നു: "<ph name="CUSTOM_MESSAGE" />"</translation>
 <translation id="3265459715026181080">വിന്‍‌ഡോ അടയ്‌ക്കുക</translation>
 <translation id="3266022278425892773">Linux വികസന പരിതസ്ഥിതി</translation>
 <translation id="3266030505377585301">നിങ്ങളുടെ Google Account-ൽ ബ്രൗസിംഗ് ഡാറ്റ നിലനിർത്തിക്കൊണ്ട് ഈ ഉപകരണത്തിൽ നിന്ന് മാത്രം അത് ഇല്ലാതാക്കാൻ, <ph name="BEGIN_LINK" />സൈൻ ഔട്ട് ചെയ്യുക<ph name="END_LINK" />.</translation>
@@ -4442,6 +4447,7 @@
 <translation id="4010746393007464819">Debian 12 (Bookworm) എന്നതിലേക്കുള്ള അപ്ഗ്രേഡ് ചെയ്യുക</translation>
 <translation id="4010917659463429001">ബുക്ക്‌മാർക്കുകൾ നിങ്ങളുടെ മൊബൈലിൽ ലഭ്യമാക്കുന്നതിന്, <ph name="GET_IOS_APP_LINK" />.</translation>
 <translation id="4011073493055408531">ഒരു നഗരത്തിന് മുകളിൽ വ്യാപിച്ച് കിടക്കുന്ന പർപ്പിൾ, പച്ച നിറങ്ങളിലുള്ള ഉത്തരധ്രുവ ദീപ്തി.</translation>
+<translation id="4011897773956589748">അടുത്ത തവണ Gemini-ക്ക് ഈ അക്കൗണ്ടിലേക്ക് ആക്‌സസ് ആവശ്യമായി വരുമ്പോൾ അത് നിങ്ങളോട് വീണ്ടും ചോദിക്കും.</translation>
 <translation id="4012509903424054869">PDF-കൾ സ്വയമേവ പരിവർത്തനം ചെയ്യുന്നതിനാൽ, നിങ്ങൾക്ക് ടെക്‌സ്റ്റ് തിരയാനും തിരഞ്ഞെടുക്കാനും കഴിയും</translation>
 <translation id="4014432863917027322">"<ph name="EXTENSION_NAME" />" റിപ്പയർ ചെയ്യണോ?</translation>
 <translation id="4015163439792426608">വിപുലീകരണങ്ങൾ ലഭിച്ചോ? എളുപ്പമുള്ള ഒരിടത്ത് നിന്ന് തന്നെ <ph name="BEGIN_LINK" />നിങ്ങളുടെ വിപുലീകരണങ്ങൾ മാനേജ് ചെയ്യുക<ph name="END_LINK" />.</translation>
@@ -6220,6 +6226,7 @@
 <translation id="5275084684151588738">ഉപയോക്തൃ നിഘണ്ടുകൾ</translation>
 <translation id="5275338516105640560">സംരക്ഷിച്ച ടാബ് ഗ്രൂപ്പ് ബട്ടൺ</translation>
 <translation id="5275352920323889391">നായ</translation>
+<translation id="5275946508817197540">ഐസൊലേറ്റഡ് വെബ് ആപ്പുകൾ ഇൻസ്റ്റാൾ ചെയ്യാൻ നിങ്ങളുടെ സുരക്ഷാ മുൻഗണനകൾ അനുവദിക്കുന്നില്ല. <ph name="CHANGE_PREFERENCE" />.</translation>
 <translation id="527605719918376753">ടാബ് മ്യൂട്ട് ചെയ്യുക</translation>
 <translation id="527605982717517565"><ph name="HOST" /> ല്‍‌ എപ്പോഴുംJavaScript അനുവദിക്കുക</translation>
 <translation id="5276357196618041410">ആദ്യം ലോഗിൻ ചെയ്യാതെ കോൺഫിഗറേഷൻ സംരക്ഷിക്കാനാകില്ല</translation>
@@ -8668,6 +8675,7 @@
 <translation id="6997553674029032185">സൈറ്റിലേക്ക് പോകുക</translation>
 <translation id="6997642619627518301"><ph name="NAME_PH" /> - ആക്‌റ്റിവിറ്റി ലോഗ്</translation>
 <translation id="6997707937646349884">നിങ്ങളുടെ ഉപകരണങ്ങളിൽ:</translation>
+<translation id="6998036632333022623">Google-മായി ടാബുകൾ പങ്കിടുന്നു</translation>
 <translation id="6998793565256476099">വീഡിയോ കോണ്‍ഫറന്‍സിംഗിനായി ഉപകരണം എൻറോൾ ചെയ്യുക</translation>
 <translation id="6999956497249459195">പുതിയ ഗ്രൂപ്പ്</translation>
 <translation id="7000206553895739324"><ph name="PRINTER_NAME" /> കണക്‌റ്റ് ചെയ്‌തെങ്കിലും കോൺഫിഗറേഷൻ ആവശ്യമുണ്ട്</translation>

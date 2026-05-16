@@ -178,6 +178,7 @@
 <translation id="1582732959743469162">Αυτό θα σταματήσει όλη την πρόοδο για την τρέχουσα λήψη.</translation>
 <translation id="1594034544529347967">Έναρξη</translation>
 <translation id="1598751033135758830">Άνοιγμα στην εφαρμογή…</translation>
+<translation id="1600571977391127696">Ορισμένο περιεχόμενο μπορεί να μην είναι κατάλληλο για όλους.</translation>
 <translation id="1601560923496285236">Εφαρμογή</translation>
 <translation id="1603718000246404895">{COUNT,plural, =1{1 διεύθυνση}other{# διευθύνσεις}}</translation>
 <translation id="1605405588277479165">Ανενεργή - Δεν συνιστάται</translation>
@@ -312,6 +313,7 @@
 <translation id="2012723204723845092">Καλώς ορίσατε και πάλι!</translation>
 <translation id="2015722694326466240">Για να δείτε τους κωδικούς πρόσβασης, θα πρέπει πρώτα να ορίσετε έναν κωδικό πρόσβασης για τη συσκευή σας.</translation>
 <translation id="201759455285471444">Ανάπτυξη ομάδας καρτελών.</translation>
+<translation id="2031515492007104071">Level Up</translation>
 <translation id="2044394949148788042">Άνοιγμα του πλέγματος καρτελών</translation>
 <translation id="2044681667265133332">Η διαχείριση του λογαριασμού <ph name="USER_EMAIL" /> γίνεται από τον τομέα <ph name="HOSTED_DOMAIN" />, ο οποίος μπορεί να βλέπει ορισμένες πληροφορίες. <ph name="BEGIN_LINK" />Μάθετε περισσότερα<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">νέο στοιχείο</translation>
@@ -845,6 +847,7 @@
 <translation id="3994911892367422121">ΤΟ ΚΑΤΑΛΑΒΑ</translation>
 <translation id="3995521777587992544">Γραμμή προόδου φόρτωσης σελίδας, φορτώθηκε το <ph name="EMAIL" />.</translation>
 <translation id="3997522473364371632">Η κοινοποίηση κωδικού πρόσβασης έχει απενεργοποιηθεί από τον διαχειριστή σας.</translation>
+<translation id="4000707564769984863">Δείτε: <ph name="WATCH_LINK" /></translation>
 <translation id="4002066346123236978">Τίτλος</translation>
 <translation id="4004204301268239848">Οι κωδικοί πρόσβασης αποθηκεύονται στον Λογαριασμό σας Google, ώστε να μπορείτε να τους χρησιμοποιήσετε σε οποιαδήποτε συσκευή.</translation>
 <translation id="4007463141047732631">Επεξεργασία ομάδας</translation>
@@ -875,6 +878,7 @@
 <translation id="4129768137228347731">Αποθήκευση <ph name="ENTITY_TYPE" />;</translation>
 <translation id="4133139945030148655">Είστε έτοιμοι</translation>
 <translation id="4133265950310064865">Βελτιωμένη ασφάλεια</translation>
+<translation id="4142372594294312814">5 πράγματα που πρέπει να γνωρίζετε για το παραγωγικό AI</translation>
 <translation id="4145507240503767005"><ph name="SEARCH_ENGINE_NAME" />, <ph name="SEARCH_ENGINE_DOMAIN" /></translation>
 <translation id="4147897805161313378">Φωτογραφίες Google</translation>
 <translation id="4148023517926189160">Αυτός ο ιστότοπος θέλει να κατεβάσει ένα αρχείο και να το προσθέσει στο ημερολόγιό σας.</translation>
@@ -997,6 +1001,7 @@
 <translation id="456502772933839252">Κοινή χρήση <ph name="PAGE_TITLE" /></translation>
 <translation id="4565377596337484307">Απόκρυψη κωδικού πρόσβασης</translation>
 <translation id="4568230126482344545">Απόκρυψη Πρόσφατων καρτελών</translation>
+<translation id="4571490460651837010">Διαχείριση διευθύνσεων και άλλων…</translation>
 <translation id="4578835633387306383">Ενεργοποίηση…</translation>
 <translation id="4580621046861724270">Ορισμένοι σελιδοδείκτες δεν έχουν αποθηκευτεί</translation>
 <translation id="4580716718466706433">Μεταβείτε στη Διαχείριση κωδικών πρόσβασης</translation>
@@ -1234,6 +1239,7 @@
 <translation id="5329451663851195956">Μπορείτε να σύρετε προς τα κάτω για ανανέωση.</translation>
 <translation id="5336910966955551309">Πατήστε παρατεταμένα για καρφίτσωμα των αγαπημένων σας ιστοτόπων</translation>
 <translation id="5338512273860059533">Σύνδεση σε εξέλιξη.</translation>
+<translation id="5340148832014094861">Ισχύουν οι <ph name="GOOGLE_TERMS" /> και η <ph name="GEMINI_APPS_PRIVACY" />. Το Gemini είναι AI και μπορεί να κάνει λάθη, συμπεριλαμβανομένων των πληροφοριών σχετικά με άτομα.</translation>
 <translation id="5343472494710226394">Ειδήσεις, αθλητικά και περιεχόμενο με βάση τα ενδιαφέροντά σας.</translation>
 <translation id="5352128922772839949">Αποθήκευση αρχείου</translation>
 <translation id="5355191726083956201">Η Βελτιωμένη προστασία είναι ενεργή</translation>
@@ -1578,6 +1584,7 @@
 <translation id="647867789226964031">Αλλαγή κωδικών πρόσβασης</translation>
 <translation id="6480363549849064919">Έλεγχος ταυτότητας εφαρμογής πελάτης</translation>
 <translation id="6489174933860678546">Ανοίξτε καρτέλες ανώνυμης περιήγησης για να περιηγηθείτε στον ιστό πιο ιδιωτικά.</translation>
+<translation id="6489775505977274806">Απόκρυψη Level Up</translation>
 <translation id="6494931198667773526">Λήξη</translation>
 <translation id="6503077044568424649">Πιο δημοφιλή</translation>
 <translation id="6503763061813913607">Ειδοποιήσεις Ελέγχου ασφαλείας</translation>

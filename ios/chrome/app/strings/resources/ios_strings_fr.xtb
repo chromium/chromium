@@ -178,6 +178,7 @@
 <translation id="1582732959743469162">Cette action arrêtera le téléchargement en cours.</translation>
 <translation id="1594034544529347967">Début</translation>
 <translation id="1598751033135758830">Ouvrir dans l'appli…</translation>
+<translation id="1600571977391127696">Certains contenus ne sont peut-être pas adaptés à tous les publics.</translation>
 <translation id="1601560923496285236">Appliquer</translation>
 <translation id="1603718000246404895">{COUNT,plural, =1{1 adresse}one{# adresse}other{# adresses}}</translation>
 <translation id="1605405588277479165">Désactivée – Non recommandé</translation>
@@ -312,11 +313,12 @@
 <translation id="2012723204723845092">Bon retour parmi nous !</translation>
 <translation id="2015722694326466240">Pour afficher les mots de passe, vous devez d'abord définir un code secret sur votre appareil.</translation>
 <translation id="201759455285471444">Développer le groupe d'onglets.</translation>
+<translation id="2031515492007104071">Level Up</translation>
 <translation id="2044394949148788042">Ouvrez la grille d'onglets</translation>
 <translation id="2044681667265133332">Le compte <ph name="USER_EMAIL" /> est géré par <ph name="HOSTED_DOMAIN" />, qui pourrait voir certaines informations. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">nouvel élément</translation>
 <translation id="2049727122989709386"><ph name="COUNT" /> comptes utilisent le même mot de passe</translation>
-<translation id="205013082884273671">Effectuez une recherche sur n'importe quel élément à l'écran</translation>
+<translation id="205013082884273671">Cherchez ce que vous voulez sur votre écran</translation>
 <translation id="2054044186557130763">Se connecter en tant que <ph name="NAME" />, <ph name="EMAIL" />, géré par votre organisation.</translation>
 <translation id="2059166748188874810">Municipalité</translation>
 <translation id="2060638295449304809">Cette adresse n'est enregistrée que sur cet appareil. Pour l'utiliser sur vos autres appareils, enregistrez-la dans votre compte Google, <ph name="USER_EMAIL" />.</translation>
@@ -533,7 +535,7 @@
 <translation id="2825777862277359739">Connectez-vous pour accéder à vos mots de passe, onglets, favoris et plus encore.</translation>
 <translation id="2827760117436553203">Séparer les données ?</translation>
 <translation id="2829172210806130158">Rechercher sur l'écran</translation>
-<translation id="2831109159746537587">Essayez d'entourer ou d'appuyer sur l'image pour y effectuer une recherche</translation>
+<translation id="2831109159746537587">Essayez d'entourer un élément de l'image ou d'appuyer dessus pour lancer une recherche</translation>
 <translation id="2834399722155632105">3. Appuyez sur "Options de mots de passe"</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" />, <ph name="URL" /></translation>
 <translation id="2841013758207633010">Heure</translation>
@@ -845,6 +847,7 @@
 <translation id="3994911892367422121">OK</translation>
 <translation id="3995521777587992544">Barre de progression du chargement de page, <ph name="EMAIL" /> chargé(s).</translation>
 <translation id="3997522473364371632">Le partage de mots de passe est désactivé par votre administrateur.</translation>
+<translation id="4000707564769984863">Regarder : <ph name="WATCH_LINK" /></translation>
 <translation id="4002066346123236978">Titre</translation>
 <translation id="4004204301268239848">Les mots de passe sont enregistrés dans votre compte Google, afin que vous puissiez les utiliser sur tous vos appareils.</translation>
 <translation id="4007463141047732631">Modifier le groupe</translation>
@@ -875,6 +878,7 @@
 <translation id="4129768137228347731">Enregistrer l'information "<ph name="ENTITY_TYPE" />" ?</translation>
 <translation id="4133139945030148655">Vous êtes fin prêt</translation>
 <translation id="4133265950310064865">Protection renforcée</translation>
+<translation id="4142372594294312814">5 choses à savoir sur l'IA générative</translation>
 <translation id="4145507240503767005"><ph name="SEARCH_ENGINE_NAME" />, <ph name="SEARCH_ENGINE_DOMAIN" /></translation>
 <translation id="4147897805161313378">Google Photos</translation>
 <translation id="4148023517926189160">Ce site Web veut télécharger un fichier et l'ajouter à votre agenda.</translation>
@@ -997,6 +1001,7 @@
 <translation id="456502772933839252">Partage de <ph name="PAGE_TITLE" />…</translation>
 <translation id="4565377596337484307">Masquer le mot de passe</translation>
 <translation id="4568230126482344545">Masquer "Onglets récents"</translation>
+<translation id="4571490460651837010">Gérer les adresses et plus encore…</translation>
 <translation id="4578835633387306383">Activer…</translation>
 <translation id="4580621046861724270">Certains favoris ne sont pas enregistrés</translation>
 <translation id="4580716718466706433">Accédez au Gestionnaire de mots de passe</translation>
@@ -1234,6 +1239,7 @@
 <translation id="5329451663851195956">Faites glisser l'écran vers le bas pour actualiser.</translation>
 <translation id="5336910966955551309">Appuyez de manière prolongée pour épingler vos sites préférés</translation>
 <translation id="5338512273860059533">Connexion en cours.</translation>
+<translation id="5340148832014094861">Les <ph name="GOOGLE_TERMS" /> et l‘<ph name="GEMINI_APPS_PRIVACY" /> s'appliquent. Gemini est une IA et peut faire des erreurs, y compris sur des personnes.</translation>
 <translation id="5343472494710226394">Actualités, sports et contenus basés sur vos centres d'intérêt.</translation>
 <translation id="5352128922772839949">Enregistrer le fichier</translation>
 <translation id="5355191726083956201">La protection renforcée est activée</translation>
@@ -1406,7 +1412,7 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="5941711191222866238">Réduire</translation>
 <translation id="5944869793365969636">Scanner le QR code</translation>
 <translation id="5948291296578561264">Cela vous permet d'enregistrer des photos dans votre bibliothèque.</translation>
-<translation id="5948605885471592910">Voir et gérer tout ce qui est ouvert</translation>
+<translation id="5948605885471592910">Consultez et gérez tout ce que vous avez ouvert</translation>
 <translation id="5952641243319721872">Voulez-vous vraiment annuler votre sélection ?</translation>
 <translation id="5956112131836209882">Onglet dans le groupe d'onglets. <ph name="TAB_INDEX_IN_GROUP" /> sur <ph name="NUMBER_OF_TABS_IN_GROUP" />.</translation>
 <translation id="595769230373966252">Rechercher avec <ph name="SEARCH_PROVIDER" /></translation>
@@ -1577,6 +1583,7 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="647867789226964031">Modifier vos mots de passe</translation>
 <translation id="6480363549849064919">Authentification du client</translation>
 <translation id="6489174933860678546">Ouvrez des onglets de navigation privée pour naviguer sur le Web de façon plus confidentielle.</translation>
+<translation id="6489775505977274806">Masquer Level Up</translation>
 <translation id="6494931198667773526">Fin</translation>
 <translation id="6503077044568424649">Les + visités</translation>
 <translation id="6503763061813913607">Notifications du contrôle de sécurité</translation>
@@ -1697,7 +1704,7 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="686831807558000905">Ne pas se connecter</translation>
 <translation id="686899695320434745">Les adresses ne sont pas chiffrées avec votre phrase secrète. Vous pourrez ainsi les utiliser dans d'autres services Google.</translation>
 <translation id="687135068089457384">Afficher les paramètres</translation>
-<translation id="6871397658902960384">Commencer la navigation</translation>
+<translation id="6871397658902960384">Commencer à explorer</translation>
 <translation id="6874328931822449112">{COUNT,plural, =1{Enregistrer le mot de passe dans le compte}one{Enregistrer le mot de passe dans le compte}other{Enregistrer les mots de passe dans le compte}}</translation>
 <translation id="6875166646976836138">Vous pouvez aussi afficher et gérer ces éléments dans les favoris, la liste de lecture ou le Gestionnaire de mots de passe.</translation>
 <translation id="6878052248816456143">Accédez à vos fichiers dans Google Drive à tout moment.</translation>

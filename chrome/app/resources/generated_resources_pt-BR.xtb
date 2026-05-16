@@ -4131,6 +4131,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3796215473395753611">alt + seta para cima</translation>
 <translation id="3796421550129770366"><ph name="LANGUAGE" />. Use a seta para a direita para ouvir uma prévia da voz</translation>
 <translation id="3796648294839530037">Redes favoritas:</translation>
+<translation id="3797330664967181051">Visualização dividida</translation>
 <translation id="3797739167230984533">Seu <ph name="BEGIN_LINK" /><ph name="DEVICE_TYPE" /> é gerenciado<ph name="END_LINK" /> pela sua organização</translation>
 <translation id="3797900183766075808">&amp;Pesquisar “<ph name="SEARCH_TERMS" />” no <ph name="SEARCH_ENGINE" /></translation>
 <translation id="3798026281364973895">Desativar o ponto de acesso instantâneo</translation>
@@ -7759,6 +7760,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="6349101878882523185">Instalar <ph name="APP_NAME" /></translation>
 <translation id="6350745006329795504">Gerenciar seus dispositivos</translation>
 <translation id="6350821834561350243">Forneça uma descrição clara do problema e as etapas necessárias para reproduzi-lo (se possível)</translation>
+<translation id="635100112331897007">Ver todas as políticas do Chrome</translation>
 <translation id="6351178441572658285">Idiomas do app</translation>
 <translation id="6352992678231622317">Guia movida para baixo</translation>
 <translation id="6355632359041940003">Assumir atividade</translation>
@@ -9350,7 +9352,7 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="7460045493116006516">Tema instalado atualmente</translation>
 <translation id="7461924472993315131">Fixar</translation>
 <translation id="746216226901520237">Na próxima vez, o smartphone desbloqueará o <ph name="DEVICE_TYPE" />. É possível desativar o Smart Lock nas configurações.</translation>
-<translation id="746329643760972486">MacOS</translation>
+<translation id="746329643760972486">macOS</translation>
 <translation id="7463985990119325874">Sua organização gerencia como os dados coletados por esses recursos podem ser usados.</translation>
 <translation id="7464645554245611385">Última atualização desta guia</translation>
 <translation id="7465635034594602553">Algo deu errado. Espere alguns minutos e abra o app <ph name="APP_NAME" /> novamente.</translation>

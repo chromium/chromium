@@ -786,6 +786,7 @@ Permissions that you've already given to apps may apply to this account. You can
 <translation id="1529769834253316556">Line height</translation>
 <translation id="1529891865407786369">Power source</translation>
 <translation id="1530376661400379364">Chrome reset these settings</translation>
+<translation id="1530466164747090379"><ph name="FILE_NAME" /> has sensitive or dangerous data</translation>
 <translation id="1531275250079031713">Show 'Add new Wi-Fi' dialogue</translation>
 <translation id="1531734061664070992"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /></translation>
 <translation id="1533948060140843887">I understand that this download will harm my computer</translation>
@@ -2193,6 +2194,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2469141124738294431">VM status</translation>
 <translation id="2469259292033957819">You have no saved printers.</translation>
 <translation id="2469375675106140201">Customise spell check</translation>
+<translation id="2469406914567390938">Update channel</translation>
 <translation id="247051149076336810">File share URL</translation>
 <translation id="2471469610750100598">Black (default)</translation>
 <translation id="2471506181342525583">Location access allowed</translation>
@@ -2524,6 +2526,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2695943520968279338">Discover extensions</translation>
 <translation id="2696675923413008404">Content from this site, including its URL, is sent to Google and may be seen by human reviewers to improve this feature</translation>
 <translation id="2698147581454716013">This is a bundled device and cannot be enrolled with Kiosk and signage upgrade.</translation>
+<translation id="269941332914175387">Relaunch the browser to load your profile data and keep it encrypted</translation>
 <translation id="2699911226086014512">PIN operation failed with code <ph name="RETRIES" />.</translation>
 <translation id="2701330563083355633">Shared from <ph name="DEVICE_NAME" /></translation>
 <translation id="2701737434167469065">Sign in, <ph name="EMAIL" /></translation>
@@ -2752,6 +2755,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2844154481025280030">Policy configured.</translation>
 <translation id="2844169650293029770">USB-C device (left side front port)</translation>
 <translation id="2844809857160214557">View and manage print jobs</translation>
+<translation id="284491292807422921">Remove site?</translation>
 <translation id="2845276301195220700">More actions for Google Calendar</translation>
 <translation id="2845382757467349449">Always Show Bookmarks Bar</translation>
 <translation id="284581348330507117">Create unique passwords</translation>
@@ -3341,6 +3345,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3262986719682892278">Too big</translation>
 <translation id="3264544094376351444">Sans-serif font</translation>
 <translation id="3264582393905923483">Context</translation>
+<translation id="3265303262625691029"><ph name="VERDICT_MESSAGE" />. Your administrator says: '<ph name="CUSTOM_MESSAGE" />'</translation>
 <translation id="3265459715026181080">Close Window</translation>
 <translation id="3266022278425892773">Linux development environment</translation>
 <translation id="3266030505377585301">To delete browsing data from this device only, while keeping it in your Google Account, <ph name="BEGIN_LINK" />sign out<ph name="END_LINK" />.</translation>
@@ -4460,6 +4465,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="4010746393007464819">An upgrade to Debian 12 (Bookworm) is available</translation>
 <translation id="4010917659463429001">To get your bookmarks on your mobile device, <ph name="GET_IOS_APP_LINK" />.</translation>
 <translation id="4011073493055408531">Aurora borealis, stylised in purple and green colours, over a city.</translation>
+<translation id="4011897773956589748">Next time Gemini needs access to this account, it will ask you again.</translation>
 <translation id="4012509903424054869">PDFs automatically get converted so that you can search and select text</translation>
 <translation id="4014432863917027322">Repair "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="4015163439792426608">Got extensions? <ph name="BEGIN_LINK" />Manage your extensions<ph name="END_LINK" /> in one easy place.</translation>
@@ -6238,6 +6244,7 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="5275084684151588738">User dictionaries</translation>
 <translation id="5275338516105640560">Saved tab group button</translation>
 <translation id="5275352920323889391">Dog</translation>
+<translation id="5275946508817197540">Your security preferences do not allow installation of isolated web apps. <ph name="CHANGE_PREFERENCE" />.</translation>
 <translation id="527605719918376753">Mute tab</translation>
 <translation id="527605982717517565">Always allow JavaScript on <ph name="HOST" /></translation>
 <translation id="5276357196618041410">Cannot save configuration without login first</translation>
@@ -8686,6 +8693,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="6997553674029032185">Go to site</translation>
 <translation id="6997642619627518301"><ph name="NAME_PH" /> – Activity Log</translation>
 <translation id="6997707937646349884">On your devices:</translation>
+<translation id="6998036632333022623">Sharing tabs with Google</translation>
 <translation id="6998793565256476099">Enrol device for video conferencing</translation>
 <translation id="6999956497249459195">New group</translation>
 <translation id="7000206553895739324"><ph name="PRINTER_NAME" /> is connected but needs configuration</translation>

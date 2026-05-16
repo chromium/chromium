@@ -837,7 +837,7 @@
 <translation id="22792995594807632">下载前需要检查</translation>
 <translation id="2283340219607151381">保存并自动填充地址</translation>
 <translation id="2283447177162560884">已删除“<ph name="PAGE_TITLE" />”页面</translation>
-<translation id="2283599456633275070">旅游</translation>
+<translation id="2283599456633275070">旅行</translation>
 <translation id="2285709459648658719">护照</translation>
 <translation id="2286383991450886080">34 x 44 英寸</translation>
 <translation id="2288422996159078444">您输入的任何内容、查看的任何网页或从事的任何其他网络活动都在被监视。网站上的内容可能会在您不知情的情况下遭到改动。</translation>
@@ -2232,6 +2232,7 @@
 <translation id="443673843213245140">已停用代理，但是指定了明确的代理配置。</translation>
 <translation id="4438821706955556403">一般价格</translation>
 <translation id="4441832193888514600">被忽略了，因为此政策只能设为云端用户政策。</translation>
+<translation id="4444062564459679679">已发送到 <ph name="DEVICE_NAME" /> 上的 Chrome</translation>
 <translation id="4445133368066241428">热门主题</translation>
 <translation id="4445694043187340808"><ph name="STARTER_PACK_TABS_FOCUSED_FRIENDLY_MATCH_TEXT" />，按 Enter 键可搜索标签页</translation>
 <translation id="4445964943162061557">这是一项实验性功能，有时可能会出错。</translation>
@@ -4842,6 +4843,7 @@
 <translation id="8511402995811232419">管理 Cookie</translation>
 <translation id="851353418319061866">准确度检查</translation>
 <translation id="8513580896341796021">已开始下载。若要查看下载的内容，请按 |<ph name="ACCELERATOR" />|。</translation>
+<translation id="8515544520486085367">自动填充支付信息</translation>
 <translation id="8519753333133776369">您的管理员允许使用的 HID 设备</translation>
 <translation id="8521013008769249764">沙发与扶手椅</translation>
 <translation id="8521812709849134608">家用台面</translation>

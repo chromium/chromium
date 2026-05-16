@@ -2237,6 +2237,7 @@
 <translation id="443673843213245140">Използването на прокси сървър е деактивирано, но е посочена изрична негова конфигурация.</translation>
 <translation id="4438821706955556403">Обичайна цена</translation>
 <translation id="4441832193888514600">Пренебрегнато, защото правилото може да бъде зададено само като правило за потребители в облака.</translation>
+<translation id="4444062564459679679">Вече е изпратено до Chrome на устройството ви <ph name="DEVICE_NAME" /></translation>
 <translation id="4445133368066241428">Популярни теми</translation>
 <translation id="4445694043187340808"><ph name="STARTER_PACK_TABS_FOCUSED_FRIENDLY_MATCH_TEXT" />. Натиснете Enter, за да търсите раздели</translation>
 <translation id="4445964943162061557">Това е експериментална функция и понякога греши.</translation>
@@ -4850,6 +4851,7 @@
 <translation id="8511402995811232419">Управление на „бисквитките“</translation>
 <translation id="851353418319061866">Проверка на точността</translation>
 <translation id="8513580896341796021">Изтеглянето започна. За да го видите, натиснете |<ph name="ACCELERATOR" />|.</translation>
+<translation id="8515544520486085367">Автоматично попълване на данни за плащане</translation>
 <translation id="8519753333133776369">HID устройство, разрешено от администратора ви</translation>
 <translation id="8521013008769249764">Канапета и кресла</translation>
 <translation id="8521812709849134608">Плотове</translation>

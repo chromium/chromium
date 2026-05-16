@@ -246,6 +246,29 @@ Weitere Informationen zur Datenverarbeitung bei auf generativer KI basierenden 
 <translation id="1160479894929412407">QUIC-Protokoll zulassen</translation>
 <translation id="1160939557934457296">Fortfahren von der Safe Browsing-Hinweisseite deaktivieren</translation>
 <translation id="1161685818042751282">Keine vom Nutzer hinzugefügten TLS-Serverzertifikate aus Plattform-Trust Stores importieren.</translation>
+<translation id="1162404282416180562">Konfiguriert eine Liste von Datenkontrollregeln zur Vermeidung von Datenlecks.
+
+      Jede Regel besteht aus den folgenden Elementen:
+      – Bedingungsfeldern zum Auslösen der Regel. Eine Regel wird nur ausgelöst, wenn eine Nutzeraktion mit allen Feldern in den Feldern „<ph name="DATA_CONTROLS_SOURCES" />“, „<ph name="DATA_CONTROLS_DESTINATIONS" />“, „<ph name="DATA_CONTROLS_AND" />“, „<ph name="DATA_CONTROLS_OR" />“ und „<ph name="DATA_CONTROLS_NOT" />“ übereinstimmt. Bei untergeordneten Feldern einer Liste muss nur ein Eintrag abgeglichen werden. Beispielsweise muss nur ein URL-Muster übereinstimmen, um die Regel auszulösen.
+      – Einer Liste der anzuwendenden Einschränkungen. Je nach Einschränkung sind möglicherweise nur „<ph name="DATA_CONTROLS_SOURCES" />“- oder „<ph name="DATA_CONTROLS_DESTINATIONS" />“-Bedingungen verfügbar.
+
+      Regeln können hinzugefügt werden, um Einschränkungen für Folgendes zu steuern:
+– Daten in der Zwischenablage, die zwischen Quellen und Zielen geteilt werden.
+      – Das Blockieren von Screenshots basierend auf den Quelltabs.
+
+      Wenn die Richtlinie „<ph name="ON_SECURITY_EVENT_ENTERPRISE_CONNECTOR" />“ auf „True“ gesetzt ist, werden die ausgelösten Regeln dem Administrator gemeldet.
+      Die Einschränkungsebene kann mit BLOCK, WARN oder REPORT festgelegt werden.
+      – Wenn die Einschränkungsebene auf BLOCK gesetzt ist, wird die Aktion nicht zugelassen.
+      – Wenn die Einschränkungsebene auf WARN gesetzt ist, erhält der Nutzer eine Warnung und kann entweder mit der Aktion fortfahren oder sie abbrechen.
+      – Wenn die Einschränkungsebene auf REPORT gesetzt ist, wird die Nutzeraktion nicht unterbrochen, aber ein Bericht wird gesendet, wenn die Richtlinie „<ph name="ON_SECURITY_EVENT_ENTERPRISE_CONNECTOR" />“ aktiviert ist.
+
+      Hinweise:
+      – Formatiere die URL-Muster gemäß diesem Format (https://support.google.com/chrome/a?p=url_blocklist_filter_format).
+      – Für Regeln zur Vermeidung von Datenlecks speziell für <ph name="PRODUCT_OS_NAME" /> kannst du dir auch die Richtlinie „<ph name="DATA_LEAK_PREVENTION_RULES_LIST" />“ ansehen.
+
+      Ist die Richtlinie nicht konfiguriert, werden keine Einschränkungen angewendet.
+
+      Diese Richtlinie ist nur für Nutzer verfügbar, denen eine <ph name="CHROME_ENTERPRISE_PREMIUM_NAME" />-Lizenz zugewiesen wurde.</translation>
 <translation id="1163080558183062209">Druckertypen auf der "Deny"-Liste deaktivieren</translation>
 <translation id="1163389598183927209">Eine Gruppe von Richtlinien in Bezug auf <ph name="PRIVACY_SANDBOX_NAME" />. Unter <ph name="PRIVACY_SANDBOX_URL" /> findest du Informationen dazu, wie Drittanbieter-Cookies durch <ph name="PRODUCT_NAME" /> eingestellt werden.</translation>
 <translation id="1165923723751466821">Profilanmeldungen und Browseranmeldungen durch Gäste zulassen</translation>
@@ -695,6 +718,15 @@ Ist die Richtlinie nicht konfiguriert, ist die Emoji-Auswahl für normale Nutzer
 <translation id="1509692106376861764">Diese Richtlinie wird ab <ph name="PRODUCT_NAME" />-Version 29 nicht mehr verwendet.</translation>
 <translation id="1509839615768187049">Integrierten DNS-Client immer verwenden</translation>
 <translation id="1514888685242892912"><ph name="PRODUCT_NAME" /> aktivieren</translation>
+<translation id="1514959848081381646">Mit dieser Richtlinie werden die KI-Modus-Integrationen von Google in der Adressleiste und im Suchfeld auf der Seite „Neuer Tab“ gesteuert.
+
+Für den Zugriff auf diese Funktion muss die Google Suche als Standardsuchmaschine des Nutzers festgelegt sein.
+
+0 = Die Funktion ist für Nutzer verfügbar.
+
+1 = Die Funktion ist für Nutzer nicht verfügbar.
+
+Wenn die Richtlinie nicht konfiguriert ist, wird das Verhalten der Funktion durch die Richtlinie „<ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />“ bestimmt.</translation>
 <translation id="1515230621229117540">Aktiviert das unverankerte Menü für Bedienungshilfen</translation>
 <translation id="1515824657887788963">Einer Seite erlauben, während des Schließens synchrone XHR-Anfragen auszuführen.</translation>
 <translation id="1516486219683984217">Verwendung von Systembenachrichtigungen nicht zulassen</translation>
@@ -1960,6 +1992,18 @@ Ist diese Richtlinie nicht konfiguriert, können Nutzer die im Launcher angepinn
 
       Ist sie auf „False“ gesetzt oder nicht konfiguriert, wird kein Button angezeigt.</translation>
 <translation id="2294382669900758280">Das Abspielen von Videos in Android-Apps wird nicht berücksichtigt, auch wenn diese Richtlinie auf <ph name="TRUE" /> gesetzt ist.</translation>
+<translation id="2296529215567227994">Gibt an, ob der Inkognitomodus durch den isolierten Modus ersetzt werden soll.
+
+Der isolierte Modus ist ein flüchtiger Browsermodus, der nur für Unternehmen verfügbar ist und den Inkognitomodus ersetzt.
+Im Gegensatz zum Inkognitomodus unterstützt der isolierte Modus auf den Schutz vor Datenverlust bezogene Unternehmensrichtlinien und zwangsinstallierte Erweiterungen.
+
+Richtlinien im Zusammenhang mit dem Inkognitomodus werden nicht auf den isolierten Modus angewendet.
+
+Wenn die Richtlinie auf „1 – Aktiviert“ gesetzt ist, ist der isolierte Modus aktiviert und ersetzt den Inkognitomodus.
+
+Wenn die Richtlinie auf „0 – Deaktiviert“ gesetzt oder nicht konfiguriert ist, ist der isolierte Modus deaktiviert und das Standardverhalten des Inkognitomodus wird verwendet.
+
+Für diese Richtlinie ist eine <ph name="CHROME_ENTERPRISE_PREMIUM_NAME" />-Lizenz erforderlich, damit sie wirksam wird.</translation>
 <translation id="2299220924812062390">Liste der aktivierten Plug-ins angeben</translation>
 <translation id="2299815818824242485">Keine weitergeleiteten Suchen mit erhöhter Sicherheit zulassen</translation>
 <translation id="2303795211377219696">Autofill für Kreditkartendaten zulassen</translation>
@@ -8231,6 +8275,23 @@ Wenn die Richtlinie nicht konfiguriert ist, verwendet <ph name="PRODUCT_OS_NAME"
 
       Wenn du diese Richtlinie konfigurierst, kann sie von Nutzern nicht geändert werden. Wenn die Richtlinie nicht konfiguriert ist, können Nutzer die Apps-Verknüpfung über das Kontextmenü der Lesezeichenleiste ein- und ausblenden.</translation>
 <translation id="638003144128412430">Melden der Zeitzoneninformationen auf Geräten deaktivieren</translation>
+<translation id="638217866669468708">Mit dieser Richtlinie wird das Teilen von Seiten- und Dateiinhalten mit <ph name="GOOGLE_AI_MODE_PRODUCT_NAME" /> und <ph name="GOOGLE_LENS_PRODUCT_NAME" /> über die Seitenleiste oder Tabs von <ph name="PRODUCT_NAME" /> gesteuert.
+
+Diese Richtlinie wirkt sich nicht auf die Webversion von <ph name="GOOGLE_AI_MODE_PRODUCT_NAME" /> aus. Sie legt nur fest, wie Nutzer Informationen teilen können, wenn sie <ph name="PRODUCT_NAME" /> verwenden.
+
+0 = Nutzer können Seiten- oder Dateiinhalte mit <ph name="GOOGLE_AI_MODE_PRODUCT_NAME" /> teilen.
+
+1 = Nutzer können keine Seiten- oder Dateiinhalte mit <ph name="GOOGLE_AI_MODE_PRODUCT_NAME" /> teilen. Die Zugangspunkte zum Teilen von Kontext und die Seitenleiste werden deaktiviert oder ausgeblendet.
+
+Diese Richtlinie wird ignoriert, wenn <ph name="GOOGLE_SEARCH_PRODUCT_NAME" /> nicht die Standardsuchmaschine der Nutzer ist, da die Funktion deaktiviert ist.
+
+Diese Richtlinie ist unabhängig von der Richtlinie „<ph name="AI_MODE_SETTINGS_POLICY_NAME" />“. Die Richtlinie „<ph name="AI_MODE_SETTINGS_POLICY_NAME" />“ steuert nur Zugangspunkte in der Omnibox oder im Suchfeld auf der Seite „Neuer Tab“, während diese Richtlinie das Teilen von Kontext über die Seitenleiste oder Tabs steuert.
+
+Diese Richtlinie steuert auch nicht die <ph name="GOOGLE_GEMINI_PRODUCT_NAME" />-Integration, die von <ph name="GEMINI_SETTINGS_POLICY_NAME" /> deaktiviert werden kann.
+
+Wenn diese Richtlinie nicht konfiguriert ist, wird das Verhalten der Funktion durch die Richtlinie „<ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />“ bestimmt.
+
+Weitere Informationen zur Datenverarbeitung bei auf generativer KI basierenden Funktionen findest du unter https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="6382209369210116232">Erweiterungen, deren Veröffentlichung zurückgezogen wurde, deaktivieren</translation>
 <translation id="6382287177674997281">Mit dieser Richtlinie können Nutzer jegliche Art von Firmware-Updates starten.
 
@@ -11030,6 +11091,15 @@ URLs, die sowohl mit der Zulassungs- als auch mit der Sperrliste übereinstimmen
 
 Weitere Informationen zu gültigen URL-Mustern findest du unter https://support.google.com/chrome/a?p=url_blocklist_filter_format.</translation>
 <translation id="8186911565834244165">Nutzerfeedback zulassen</translation>
+<translation id="8190271041226151932">Mit dieser Einstellung werden Gemini-App-Integrationen zugelassen.
+
+0 = Gemini-Integration ist für Nutzer verfügbar.
+
+1 = Gemini-Integration ist für Nutzer nicht verfügbar.
+
+Wenn die Richtlinie nicht konfiguriert ist, wird das Verhalten der Funktion durch die Richtlinie „<ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" />“ bestimmt.
+
+Weitere Informationen findest du im Hilfeartikel unter https://support.google.com/chrome/a?p=gemini_in_chrome.</translation>
 <translation id="8195133650230097559">Anfragen nach Wakelocks für die Energieverwaltung ignorieren</translation>
 <translation id="8196558469954193908">Mit dieser Richtlinie wird das Zusammenführen von HTTP/2-Verbindungen zugelassen, wenn Clientzertifikate verwendet werden. Dazu müssen der Hostname der potenziellen neuen Verbindung und der Hostname einer vorhandenen Verbindung mit einem oder mehreren Mustern übereinstimmen, die durch diese Richtlinie beschrieben werden. Die Richtlinie ist eine Liste von Hosts unter Verwendung des <ph name="URL_BLOCKLIST_POLICY_NAME" />-Filterformats: "example.com" entspricht "example.com" sowie allen Subdomains wie "sub.example.com", während ".example.net" nur "example.net" entspricht.
 

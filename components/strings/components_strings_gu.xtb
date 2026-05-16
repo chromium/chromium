@@ -1821,6 +1821,7 @@
 <translation id="380865868633614173">કાર્ડની માહિતી સાચવી રહ્યાં છીએ</translation>
 <translation id="3810770279996899697">Password Managerને MacOS કીચેનનો ઍક્સેસ હોવો જરૂરી છે</translation>
 <translation id="3810973564298564668">મેનેજ કરો</translation>
+<translation id="3811328723651698330"><ph name="STRING_1" />, <ph name="STRING_2" /></translation>
 <translation id="3812398568375898177">આ એક મહત્ત્વપૂર્ણ અપડેટ છે જે ChromeOS પર Android ઍપના પર્ફોર્મન્સને બહેતર બનાવે છે.</translation>
 <translation id="3814865536373139791">તમારી સંસ્થાની પૉલિસીઓ મેનેજ કરવાની રીત સ્ટ્રીમલાઇન કરો</translation>
 <translation id="3815434930383843058">8 x 12 ઇંચ</translation>
@@ -2401,6 +2402,7 @@
 <translation id="4736934858538408121">વર્ચ્યુઅલ કાર્ડ</translation>
 <translation id="473775607612524610">અપડેટ કરો</translation>
 <translation id="4738601419177586157"><ph name="TEXT" /> શોધ સૂચન</translation>
+<translation id="473866660302034629"><ph name="TAB_TITLE" />, પસંદ કરેલું ટૅબ, <ph name="TOTAL" />માંથી <ph name="INDEX" />, ટૅબ વચ્ચે સ્વિચ કરવા માટે ડાબી કે જમણી ઍરો કીનો ઉપયોગ કરો</translation>
 <translation id="4742407542027196863">પાસવર્ડ મેનેજ કરો…</translation>
 <translation id="474270528725216349">સિંક કરેલા ડિવાઇસ પર ઓછામાં ઓછી 1 સાઇટ તરફથી</translation>
 <translation id="4743275772928623722">તમારી સિસ્ટમ અપડેટ કરવામાં આવી હતી પરંતુ તમારી કેટલીક ઍપ અને ફાઇલો રિકવર કરી શકાઈ નથી. તમારી ઍપ ફરીથી ઑટોમૅટિક રીતે ડાઉનલોડ થશે.</translation>
@@ -2468,6 +2470,7 @@
 <translation id="4832961164064927107">BBQ અને ગ્રિલિંગ</translation>
 <translation id="4835568975547260025">તમારા પ્રશ્નોના વધુ અનુકૂળ બનાવેલા જવાબો મેળવવામાં તમારી મદદ કરવા માટે, Chrome સંબંધિત ખુલ્લા ટૅબને ડિફૉલ્ટ તરીકે શેર કરશે.</translation>
 <translation id="4840250757394056958">તમારો Chrome ઇતિહાસ જુઓ</translation>
+<translation id="4842365697443353018">પછીથી ચુકવણી કરવાના વિકલ્પનો ઉપયોગ કરવા માટે ફોર્મ સાફ કરો</translation>
 <translation id="484462545196658690">ઑટો</translation>
 <translation id="4844937814014739139">શેર કરેલા ટૅબમાં સ્ક્રોલ અને નાનું-મોટું કરવાની સુવિધા</translation>
 <translation id="484671803914931257"><ph name="MERCHANT_NAME" /> અને અન્ય ઘણા પર ડિસ્કાઉન્ટ મેળવો</translation>

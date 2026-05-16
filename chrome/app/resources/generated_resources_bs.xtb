@@ -37,6 +37,7 @@
 <translation id="1016876401615857435">Da koristite pristupne ključeve na uređaju, potvrdite identitet</translation>
 <translation id="1017280919048282932">&amp;Dodavanje u direktorij</translation>
 <translation id="1018656279737460067">Otkazano</translation>
+<translation id="1020008977311763380">Nominalni nivo performansi je: <ph name="CPU_TIER" /></translation>
 <translation id="1022522674678746124">PowerPoint</translation>
 <translation id="1022669824195822609">Vašim uređajem upravlja <ph name="DOMAIN" />. Administratori mogu pristupiti podacima na bilo kojem profilu na ovom uređaju.</translation>
 <translation id="1022719295563085177">Zadana postavka mreže</translation>
@@ -56,6 +57,7 @@
 <translation id="1033060461778467949">Prebaci karticu u podijeljeni prikaz</translation>
 <translation id="1033780634303702874">Pristup serijskim uređajima</translation>
 <translation id="1034484273907870301">Traka kartice sa sličicama za način rada tableta</translation>
+<translation id="103477588607005550">Procesor: <ph name="CPU_MODEL" /> (<ph name="CPU_CORES" />)</translation>
 <translation id="1035289631433631911">Alat Prenos sadržaja</translation>
 <translation id="1035875743511577452">Kliknite na "Promijeni temu" da istražite teme nadahnute umjetnicima, prirodnom i još mnogo toga.</translation>
 <translation id="1036348656032585052">Isključi</translation>
@@ -310,6 +312,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.}}</tra
 <translation id="1197088940767939838">Narandžasta</translation>
 <translation id="11978075283960463">Podaci pohranjeni u aplikaciji: <ph name="APP_SIZE" /></translation>
 <translation id="1198066799963193307">Govorni alati za slabovidne osobe</translation>
+<translation id="1198796216247697947">0. nivo: NEPOZNATO</translation>
 <translation id="119944043368869598">Obriši sve</translation>
 <translation id="1199814941632954229">Izdaju se certifikati za ove profile certifikata</translation>
 <translation id="120069043972472860">Ne može se gledati</translation>
@@ -491,6 +494,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.}}</tra
 <translation id="1323433172918577554">Prikaži više</translation>
 <translation id="132539964543492755">Koristite "x" da mijenjate odabir dugmeta miša između lijevog dugmeta, desnog dugmeta i oba</translation>
 <translation id="1325611581149097457">Pišite bolje</translation>
+<translation id="1325798198269334655">Saznajte više o održavanju ažuriranja Chromea</translation>
 <translation id="1325898422473267360"><ph name="PERMISSION_USAGE" /> <ph name="PERMISSION_INDICATOR_DESCRIPTION" /></translation>
 <translation id="1327272175893960498">Kerberos tiketi</translation>
 <translation id="1327495825214193325">Da omogućite otklanjanje grešaka putem ADB-a, potrebno je ponovo pokrenuti ovaj uređaj <ph name="DEVICE_TYPE" />. Onemogućavanje zahtijeva vraćanje na fabričke postavke.</translation>
@@ -2962,6 +2966,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="2991182900092497283">Unesite razlog lijepljenja ovih podataka:</translation>
 <translation id="2992931425024192067">Prikaži sav sadržaj obavještenja</translation>
 <translation id="2993517869960930405">Informacije o aplikaciji</translation>
+<translation id="2994804273850542871">4. nivo: ULTRA</translation>
 <translation id="2995472388018163047">{NUM_GROUPS,plural, =1{Zadržite ovu grupu da kasnije dodate kartice ili je napustite ako joj više ne želite pristupati}one{Zadržite ove grupe da kasnije dodate kartice ili ih napustite ako im više ne želite pristupati}few{Zadržite ove grupe da kasnije dodate kartice ili ih napustite ako im više ne želite pristupati}other{Zadržite ove grupe da kasnije dodate kartice ili ih napustite ako im više ne želite pristupati}}</translation>
 <translation id="2996071302059856125">Saznajte više o tome kako AI oblikuje vaše iskustvo i kontrole koje omogućava Chrome</translation>
 <translation id="2996108796702395498">Serijski broj uređaja je <ph name="SERIAL_NUMBER" />. Ovaj broj može pomoći prilikom aktiviranja usluge.</translation>
@@ -2980,6 +2985,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="3003967365858406397"><ph name="PHONE_NAME" /> će kreirati privatnu WiFi vezu.</translation>
 <translation id="3004385386820284928">Prilagodite tipke tastature</translation>
 <translation id="300580149047131921">Nedavno je korišteno</translation>
+<translation id="3005928441045180122">Grupisano</translation>
 <translation id="3006881078666935414">Nema podataka o korištenju</translation>
 <translation id="3007555010975143508">Ove aplikacije će se koristiti za snimanje ekrana:</translation>
 <translation id="3007771295016901659">Dupliciraj karticu</translation>
@@ -4672,6 +4678,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="4177668342649553942">Otvori <ph name="SHORTCUT_NAME" /> – <ph name="APP_NAME" /></translation>
 <translation id="4177731895051842298">Ekstenzije su programski dodaci za Chrome koji vam mogu pomoći da se organizirate, pojednostavite zadatke i prilagodite pregledanje</translation>
 <translation id="4178220097446335546">Da zaboravite ovu pretplatu i povezane mreže, idite na stranicu za pretplatu na Passpoint da uklonite pretplatu.</translation>
+<translation id="4181376007499455822">Nemoj nadjačati</translation>
 <translation id="4181602000363099176">20 x</translation>
 <translation id="4181841719683918333">Jezici</translation>
 <translation id="4182182457914031017">Da vam nudimo prijedloge i poboljšamo ovu funkciju, URL i cijeli sadržaj stranice web lokacije koju posjećujete se dijele s Googleom</translation>
@@ -8356,6 +8363,7 @@ Imate još # ugroženih lozinki. Googleov Upravitelj lozinki preporučuje da odm
 <translation id="67862343314499040">Ljubičasta</translation>
 <translation id="6786480815699355166">Mogu se prevoditi samo podržani jezici Automatskih titlova</translation>
 <translation id="6786747875388722282">Ekstenzije</translation>
+<translation id="6786804673213172567">3. nivo: VISOKO</translation>
 <translation id="6787531944787756058">korisničko ime <ph name="USER_EMAIL" /> je sačuvano samo na ovom uređaju. Prikaz detalja</translation>
 <translation id="6787839852456839824">Prečice tastature</translation>
 <translation id="6788210894632713004">Neotpakovana ekstenzija</translation>
@@ -8502,6 +8510,7 @@ Imate još # ugroženih lozinki. Googleov Upravitelj lozinki preporučuje da odm
 <translation id="686839242150793617">Dozvoljeno je automatski unositi sliku u slici</translation>
 <translation id="6868734951249611611">Izvršite desni klik ovdje i odaberite "Prikaži kartice okomito"</translation>
 <translation id="6868934826811377550">Pogledajte detalje</translation>
+<translation id="6869809635308708588">Da šaljete linkove između uređaja, provjerite jesu li oba uređaja prijavljena na isti Google račun.</translation>
 <translation id="6870470066213933201">Upravljajte optimizacijom i sigurnošću JavaScripta</translation>
 <translation id="6870953451576517204">Samotestiranje je uspjelo</translation>
 <translation id="6871644448911473373">OCSP odzivni server: <ph name="LOCATION" /></translation>
@@ -8793,6 +8802,7 @@ Imate još # ugroženih lozinki. Googleov Upravitelj lozinki preporučuje da odm
 <translation id="7072078320324181561">Vašu lokaciju mogu koristiti aplikacije i web lokacije s odobrenjem za lokaciju, kao i sistemske usluge <ph name="LINK_BEGIN" />Saznajte više<ph name="LINK_END" /></translation>
 <translation id="7072573590175540692">Dostupne prečice funkcija i ekstenzija</translation>
 <translation id="7074703793383805632"><ph name="SHARED_STATE" /> Grupa <ph name="GROUP_NAME" /> – <ph name="OPENED_STATE" /></translation>
+<translation id="7075116338736929419">Nadjačaj nivo performansi procesora</translation>
 <translation id="7075625805486468288">Upravljajte HTTPS/SSL potvrdama i postavkama</translation>
 <translation id="707772989579681711">Vaš prethodni odabir</translation>
 <translation id="7077751457066325012">Pregledajte i prilagodite prečice na tastaturi</translation>
@@ -9556,6 +9566,7 @@ Imate još # ugroženih lozinki. Googleov Upravitelj lozinki preporučuje da odm
 <translation id="7624337243375417909">velika slova su isključena</translation>
 <translation id="7625568159987162309">Pregledajte odobrenja i podatke pohranjene na web lokacijama</translation>
 <translation id="7625823789272218216">Nova kartica s lijeve strane</translation>
+<translation id="762730429396410864">Ručno postavite nivo performansi procesora koji se prijavljuje web lokacijama</translation>
 <translation id="7627749368210392160">Web lokacije mogu koristiti ovu funkciju da pristupe drugim uređajima na lokalnoj mreži</translation>
 <translation id="7628927569678398026"><ph name="LOCALE" /> (<ph name="VARIANT" />), Stepen <ph name="GRADE" /></translation>
 <translation id="762917478230183172">Odaberite radnju za svaku tipku</translation>
@@ -9834,7 +9845,9 @@ Pritisnite dodijeljeni prekidač ili tipku da uklonite dodjeljivanje.</translati
 <translation id="7799650166313181433">Samo uređaji koji su prijavljeni na račun <ph name="USER_EMAIL" /> mogu dijeliti s ovim uređajem. Nećete morati odobravati dijeljenje između vaših uređaja.</translation>
 <translation id="7800485561443537737">Koristi prijenos podataka na mobilnoj mreži uređaja <ph name="DEVICE_TYPE" /> i operater može naplatiti dodatne naknade. Može povećati potrošnju baterije. <ph name="BEGIN_LINK_LEARN_MORE" />Saznajte više<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7800518121066352902">Rotiraj u smjeru suprotnom od kazaljke na satu</translation>
+<translation id="780254490276923052">2. nivo: MID</translation>
 <translation id="780301667611848630">Ne, hvala</translation>
+<translation id="7803118804281013214">Napuštanje web lokacije će završiti zadatak. Otvorite novu karticu da omogućite Geminiju da nastavi raditi.</translation>
 <translation id="7803657407897251194">Da nastavite postavljanje putem Android uređaja, povežite uređaj <ph name="DEVICE_TYPE" /> s mrežom</translation>
 <translation id="7803714812705886512">Google koristi manje podataka (npr. dijelove URL-ova, informacije o preuzimanju) da otkrije prijetnje</translation>
 <translation id="7804072833593604762">Kartica je zatvorena</translation>
@@ -10853,6 +10866,7 @@ Fajl ključa: <ph name="KEY_FILE" />
 <translation id="8500044868721690197">Web lokaciji je blokirano da kontrolira i reprogramira MIDI uređaje</translation>
 <translation id="8500123638242682652">Prozor je pomaknut nagore</translation>
 <translation id="8500132602331251964">Dostupno je ažuriranje aplikacije</translation>
+<translation id="850228775215800722">1. nivo: NISKO</translation>
 <translation id="8503813439785031346">Korisničko ime</translation>
 <translation id="850382998924680137">Pregledano danas</translation>
 <translation id="850399339579925930">Rječnici</translation>
@@ -11269,6 +11283,7 @@ One mogu uključivati informacije o instaliranom softveru, fajlovima, preglednik
 <translation id="8774379074441005279">Potvrda vraćanja</translation>
 <translation id="8774934320277480003">Gornja margina</translation>
 <translation id="8775144690796719618">Nevažeći URL</translation>
+<translation id="877515298105563553">Jedan pored drugog</translation>
 <translation id="8775653927968399786">{0,plural, =1{<ph name="DEVICE_TYPE" /> će se automatski zaključati za # sekundu.
 Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.}one{<ph name="DEVICE_TYPE" /> će se automatski zaključati za # sekundu.
 Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.}few{<ph name="DEVICE_TYPE" /> će se automatski zaključati za # sekunde.
@@ -11723,6 +11738,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.}}</tra
 <translation id="9070342919388027491">Kartica je pomjerena ulijevo</translation>
 <translation id="9072220108592671115">Instalirana je verzija <ph name="VERSION" /></translation>
 <translation id="9072918088200875065">Dali ste Geminiju odobrenje da se prijavljuje na ove web lokacije kako bi izvršavao zadatke za vas</translation>
+<translation id="9074618195273027322">{CORE_COUNT,plural, =1{1 jezgra}one{{CORE_COUNT} jezgra}few{{CORE_COUNT} jezgre}other{{CORE_COUNT} jezgra}}</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9074836595010225693">USB miš je povezan</translation>
 <translation id="9075413375877487220">Poboljšano Sigurno pregledanje ne smatra ovu ekstenziju pouzdanom.</translation>

@@ -178,6 +178,7 @@
 <translation id="1582732959743469162">Hierdurch wird dein aktueller Download abgebrochen.</translation>
 <translation id="1594034544529347967">Beginn</translation>
 <translation id="1598751033135758830">In App öffnen…</translation>
+<translation id="1600571977391127696">Einige Inhalte sind möglicherweise nicht für alle Nutzer geeignet.</translation>
 <translation id="1601560923496285236">Übernehmen</translation>
 <translation id="1603718000246404895">{COUNT,plural, =1{1 Adresse}other{# Adressen}}</translation>
 <translation id="1605405588277479165">Aus – Nicht empfohlen</translation>
@@ -312,6 +313,7 @@
 <translation id="2012723204723845092">Willkommen zurück!</translation>
 <translation id="2015722694326466240">Um die Passwörter zu sehen, musst du zuerst einen Sicherheitscode auf deinem Gerät einrichten.</translation>
 <translation id="201759455285471444">Tabgruppe maximieren.</translation>
+<translation id="2031515492007104071">Level Up</translation>
 <translation id="2044394949148788042">Tabraster öffnen</translation>
 <translation id="2044681667265133332">Das Konto <ph name="USER_EMAIL" /> wird von <ph name="HOSTED_DOMAIN" /> verwaltet – bestimmte Informationen sind für diese Domain sichtbar. <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">neues Element</translation>
@@ -845,6 +847,7 @@
 <translation id="3994911892367422121">OK</translation>
 <translation id="3995521777587992544">Statusanzeige für den Seitenaufbau, <ph name="EMAIL" /> geladen.</translation>
 <translation id="3997522473364371632">Das Teilen von Passwörtern wurde von deinem Administrator deaktiviert.</translation>
+<translation id="4000707564769984863">Ansehen: <ph name="WATCH_LINK" /></translation>
 <translation id="4002066346123236978">Titel</translation>
 <translation id="4004204301268239848">Passwörter werden in deinem Google-Konto gespeichert, sodass du sie auf jedem Gerät verwenden kannst.</translation>
 <translation id="4007463141047732631">Gruppe bearbeiten</translation>
@@ -875,6 +878,7 @@
 <translation id="4129768137228347731">„<ph name="ENTITY_TYPE" />“ speichern?</translation>
 <translation id="4133139945030148655">Einrichtung abgeschlossen</translation>
 <translation id="4133265950310064865">Erweitertes Safe Browsing</translation>
+<translation id="4142372594294312814">5 wichtige Fakten über generative KI</translation>
 <translation id="4145507240503767005"><ph name="SEARCH_ENGINE_NAME" />, <ph name="SEARCH_ENGINE_DOMAIN" /></translation>
 <translation id="4147897805161313378">Google Fotos</translation>
 <translation id="4148023517926189160">Diese Website möchte eine Datei herunterladen und zu deinem Kalender hinzufügen.</translation>
@@ -997,6 +1001,7 @@
 <translation id="456502772933839252">„<ph name="PAGE_TITLE" />“ wird geteilt</translation>
 <translation id="4565377596337484307">Passwort ausblenden</translation>
 <translation id="4568230126482344545">„Letzte Tabs“ ausblenden</translation>
+<translation id="4571490460651837010">Adressen und andere Daten verwalten…</translation>
 <translation id="4578835633387306383">Aktivieren…</translation>
 <translation id="4580621046861724270">Einige Lesezeichen wurden nicht gespeichert</translation>
 <translation id="4580716718466706433">Rufe den Passwortmanager auf</translation>
@@ -1234,6 +1239,7 @@
 <translation id="5329451663851195956">Zum Aktualisieren nach unten ziehen.</translation>
 <translation id="5336910966955551309">Halte deine bevorzugten Websites gedrückt, um sie anzupinnen</translation>
 <translation id="5338512273860059533">Anmeldung läuft.</translation>
+<translation id="5340148832014094861">Es gelten die <ph name="GOOGLE_TERMS" /> und die <ph name="GEMINI_APPS_PRIVACY" />. Gemini ist eine KI und kann Fehler machen, auch bei Informationen über Personen.</translation>
 <translation id="5343472494710226394">Nachrichten, Sport und Inhalte, die deinen Interessen entsprechen.</translation>
 <translation id="5352128922772839949">Datei speichern</translation>
 <translation id="5355191726083956201">Erweitertes Safe Browsing ist aktiviert</translation>
@@ -1577,6 +1583,7 @@ Handoff muss auch im Abschnitt „Allgemein“ deiner Einstellungen aktiviert se
 <translation id="647867789226964031">Passwörter ändern</translation>
 <translation id="6480363549849064919">Clientauthentifizierung</translation>
 <translation id="6489174933860678546">Mit Inkognitotabs kannst du privater im Web surfen.</translation>
+<translation id="6489775505977274806">Level Up ausblenden</translation>
 <translation id="6494931198667773526">Ende</translation>
 <translation id="6503077044568424649">Meistbesucht</translation>
 <translation id="6503763061813913607">„Sicherheitscheck“-Benachrichtigungen</translation>

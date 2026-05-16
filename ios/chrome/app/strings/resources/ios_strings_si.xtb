@@ -178,6 +178,7 @@
 <translation id="1582732959743469162">මෙය ඔබගේ වර්තමාන බාගනීම්වල සියලුම ප්‍රගතිය නවතාලයි.</translation>
 <translation id="1594034544529347967">ඇරඹෙන්නේ</translation>
 <translation id="1598751033135758830">යෙදුම තුළ විවෘත කරන්න…</translation>
+<translation id="1600571977391127696">සමහර අන්තර්ගතයන් සියලු දෙනාටම සුදුසු නොවිය හැක.</translation>
 <translation id="1601560923496285236">යොදන්න</translation>
 <translation id="1603718000246404895">{COUNT,plural, =1{ලිපින 1ක්}one{ලිපින #ක්}other{ලිපින #ක්}}</translation>
 <translation id="1605405588277479165">ක්‍රියාවිරහිත - නිර්දේශ නොකෙරේ</translation>
@@ -312,6 +313,7 @@
 <translation id="2012723204723845092">ආපසු පිළිගනිමු!</translation>
 <translation id="2015722694326466240">මුරපද බැලීමට, ඔබ ප්‍රථමයෙන් ඔබේ උපාංගයේ මුරකේතයක් සැකසිය යුතුය.</translation>
 <translation id="201759455285471444">පටිති සමූහය පුළුල් කරන්න.</translation>
+<translation id="2031515492007104071">මට්ටමක් ඉහළට</translation>
 <translation id="2044394949148788042">පටිති ජාලකය විවෘත කරන්න</translation>
 <translation id="2044681667265133332"><ph name="USER_EMAIL" /> ගිණුම <ph name="HOSTED_DOMAIN" /> විසින් කළමනාකරණය කරනු ලබන අතර, සමහර තොරතුරු බැලීමට එයට හැකි විය හැක. <ph name="BEGIN_LINK" />තව දැන ගන්න<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">නව අයිතමය</translation>
@@ -845,6 +847,7 @@
 <translation id="3994911892367422121">තේරුණා</translation>
 <translation id="3995521777587992544">පිටු පූරණ ප්‍රගති තීරුව, <ph name="EMAIL" /> පූරණ කළා.</translation>
 <translation id="3997522473364371632">ඔබේ පරිපාලක විසින් මුරපද බෙදා ගැනීම අබල කර ඇත.</translation>
+<translation id="4000707564769984863">නරඹන්න: <ph name="WATCH_LINK" /></translation>
 <translation id="4002066346123236978">සිරස්තලය</translation>
 <translation id="4004204301268239848">මුරපද ඔබගේ Google ගිණුමේ සුරකිනු ලබන අතර, එම නිසා ඔබට ඒවා ඕනෑම උපාංගයක භාවිත කළ හැක</translation>
 <translation id="4007463141047732631">සමූහය සංස්කරණය කරන්න</translation>
@@ -875,6 +878,7 @@
 <translation id="4129768137228347731"><ph name="ENTITY_TYPE" /> සුරකින්න ද?</translation>
 <translation id="4133139945030148655">ඔබ සියල්ල සකසා ඇත</translation>
 <translation id="4133265950310064865">වැඩිදියුණු කළ ආරක්‍ෂාව</translation>
+<translation id="4142372594294312814">ජනන AI සඳහා දැනගත යුතුම 5</translation>
 <translation id="4145507240503767005"><ph name="SEARCH_ENGINE_NAME" />, <ph name="SEARCH_ENGINE_DOMAIN" /></translation>
 <translation id="4147897805161313378">Google ඡායාරූප</translation>
 <translation id="4148023517926189160">මෙම වෙබ් අඩවියට ගොනුවක් බාගැනීමට සහ එය ඔබගේ දින දර්ශනයට එක් කිරීමට අවශ්‍යයි.</translation>
@@ -997,6 +1001,7 @@
 <translation id="456502772933839252"><ph name="PAGE_TITLE" /> බෙදා ගනිමින්</translation>
 <translation id="4565377596337484307">මුරපදය සඟවන්න</translation>
 <translation id="4568230126482344545">මෑත පටිති සඟවන්න</translation>
+<translation id="4571490460651837010">ලිපින සහ තවත් දේ කළමනාකරණය කරන්න…</translation>
 <translation id="4578835633387306383">ක්‍රියාත්මක කරන්න…</translation>
 <translation id="4580621046861724270">සමහර පිටුසන් සුරැකෙන්නේ නැත</translation>
 <translation id="4580716718466706433">"මුරපද කළමනාකරු" වෙත යන්න</translation>
@@ -1234,6 +1239,7 @@
 <translation id="5329451663851195956">නැවුම් කිරීමට ඔබට පහළට ඇදීමට හැක.</translation>
 <translation id="5336910966955551309">ඔබේ ප්‍රියතම අඩවි ඇමිණීමට තට්ටු කර අල්ලාගෙන සිටින්න</translation>
 <translation id="5338512273860059533">පුරනය වෙමින් පවතී.</translation>
+<translation id="5340148832014094861"><ph name="GOOGLE_TERMS" /> සහ <ph name="GEMINI_APPS_PRIVACY" /> අදාළ වේ. Gemini AI වන අතර පුද්ගලයින් ගැන ඇතුළුව වැරදි සිදු විය හැක.</translation>
 <translation id="5343472494710226394">ඔබේ රුචිකත්වයන් මත පදනම් වූ පුවත්, ක්‍රීඩා සහ අන්තර්ගතය.</translation>
 <translation id="5352128922772839949">ගොනුව සුරකින්න</translation>
 <translation id="5355191726083956201">වැඩිදියුණු කළ ආරක්ෂාව සක්‍රීයයි</translation>
@@ -1577,6 +1583,7 @@
 <translation id="647867789226964031">ඔබේ මුරපද වෙනස් කරන්න</translation>
 <translation id="6480363549849064919">සේවාලාභී සත්‍යාපනය</translation>
 <translation id="6489174933860678546">වෙබය වඩාත් පෞද්ගලිකව බ්‍රවුස් කිරීමට අප්‍රකට පටිති විවෘත කරන්න.</translation>
+<translation id="6489775505977274806">මට්ටම ඉහළට සඟවන්න</translation>
 <translation id="6494931198667773526">නිමා වන්නේ</translation>
 <translation id="6503077044568424649">වැඩියෙන්ම පිවිසි</translation>
 <translation id="6503763061813913607">ආරක්ෂිත පරීක්ෂා දැනුම්දීම්</translation>

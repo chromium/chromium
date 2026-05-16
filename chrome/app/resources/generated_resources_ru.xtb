@@ -787,6 +787,7 @@
 <translation id="1529769834253316556">Высота строки</translation>
 <translation id="1529891865407786369">Источник питания</translation>
 <translation id="1530376661400379364">Эти настройки сброшены в Chrome</translation>
+<translation id="1530466164747090379">В файле "<ph name="FILE_NAME" />" содержатся конфиденциальные или опасные данные.</translation>
 <translation id="1531275250079031713">Открыть окно добавления сети Wi-Fi</translation>
 <translation id="1531734061664070992"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" /> и <ph name="THIRD_SWITCH" /></translation>
 <translation id="1533948060140843887">Я понимаю, что скачиваемый файл может навредить моему компьютеру</translation>
@@ -2182,6 +2183,7 @@
 <translation id="2469141124738294431">Статус ВМ</translation>
 <translation id="2469259292033957819">У вас нет сохраненных принтеров.</translation>
 <translation id="2469375675106140201">Настроить проверку правописания</translation>
+<translation id="2469406914567390938">Канал обновлений</translation>
 <translation id="247051149076336810">URL общей папки</translation>
 <translation id="2471469610750100598">Черный (по умолчанию)</translation>
 <translation id="2471506181342525583">Есть доступ к вашим геоданным</translation>
@@ -2513,6 +2515,7 @@
 <translation id="2695943520968279338">Доступные расширения</translation>
 <translation id="2696675923413008404">Контент на этом сайте, включая URL-адрес, отправляется в Google и может обрабатываться специалистами для улучшения функции.</translation>
 <translation id="2698147581454716013">У этого устройства встроенная лицензия, поэтому его нельзя зарегистрировать для режима киоска или цифровой вывески.</translation>
+<translation id="269941332914175387">Перезапустите браузер, чтобы загрузить данные профиля и сохранить их в зашифрованном виде</translation>
 <translation id="2699911226086014512">Не удалось установить PIN-код (ошибка <ph name="RETRIES" />).</translation>
 <translation id="2701330563083355633">С устройства "<ph name="DEVICE_NAME" />"</translation>
 <translation id="2701737434167469065">Войти в аккаунт <ph name="EMAIL" /></translation>
@@ -2741,6 +2744,7 @@
 <translation id="2844154481025280030">Правило настроено</translation>
 <translation id="2844169650293029770">Устройство USB-C (ближний порт слева)</translation>
 <translation id="2844809857160214557">Просмотр заданий печати и управление ими</translation>
+<translation id="284491292807422921">Удалить сайт?</translation>
 <translation id="2845276301195220700">Другие действия для Google Календаря</translation>
 <translation id="2845382757467349449">Всегда показывать панель закладок</translation>
 <translation id="284581348330507117">Создайте уникальные пароли</translation>
@@ -3330,6 +3334,7 @@
 <translation id="3262986719682892278">Файл слишком большой.</translation>
 <translation id="3264544094376351444">Шрифты без засечек</translation>
 <translation id="3264582393905923483">Контекст</translation>
+<translation id="3265303262625691029"><ph name="VERDICT_MESSAGE" />. Сообщение от администратора: "<ph name="CUSTOM_MESSAGE" />"</translation>
 <translation id="3265459715026181080">Закрыть окно</translation>
 <translation id="3266022278425892773">Среда разработки Linux</translation>
 <translation id="3266030505377585301">Чтобы удалить данные о работе в браузере с этого устройства, но сохранить их в аккаунте Google, <ph name="BEGIN_LINK" />выйдите из системы<ph name="END_LINK" />.</translation>
@@ -4449,6 +4454,7 @@
 <translation id="4010746393007464819">Доступно обновление до Debian 12 (Bookworm)</translation>
 <translation id="4010917659463429001">Чтобы получить доступ к закладкам на мобильном устройстве, <ph name="GET_IOS_APP_LINK" />.</translation>
 <translation id="4011073493055408531">Северное сияние в фиолетовых и зеленых оттенках над городом.</translation>
+<translation id="4011897773956589748">В следующий раз, когда Gemini потребуется доступ к этому аккаунту, он снова запросит разрешение.</translation>
 <translation id="4012509903424054869">PDF-файлы автоматически конвертируются так, чтобы в них можно было искать и выделять текст.</translation>
 <translation id="4014432863917027322">Восстановить "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="4015163439792426608">Используете расширения? <ph name="BEGIN_LINK" />Управляйте ими<ph name="END_LINK" /> в специальном разделе.</translation>
@@ -6226,6 +6232,7 @@
 <translation id="5275084684151588738">Пользовательские словари</translation>
 <translation id="5275338516105640560">Кнопка сохраненных групп вкладок</translation>
 <translation id="5275352920323889391">Собака</translation>
+<translation id="5275946508817197540">Ваши настройки безопасности запрещают установку изолированных веб-приложений. <ph name="CHANGE_PREFERENCE" />.</translation>
 <translation id="527605719918376753">Отключение звука на вкладке</translation>
 <translation id="527605982717517565">Всегда разрешать JavaScript для сайта <ph name="HOST" /></translation>
 <translation id="5276357196618041410">Для сохранения конфигурации необходимо войти в систему.</translation>
@@ -8680,6 +8687,7 @@
 <translation id="6997553674029032185">Перейти на сайт</translation>
 <translation id="6997642619627518301"><ph name="NAME_PH" /> – Журнал активности</translation>
 <translation id="6997707937646349884">На ваших устройствах:</translation>
+<translation id="6998036632333022623">Передача вкладок в Google</translation>
 <translation id="6998793565256476099">Зарегистрировать как устройство для проведения видеоконференций.</translation>
 <translation id="6999956497249459195">Новая группа</translation>
 <translation id="7000206553895739324">Принтер <ph name="PRINTER_NAME" /> подключен, но ещё не настроен.</translation>

@@ -2232,6 +2232,7 @@ Pokud chcete možnosti uhrazení na splátky skrýt, přejděte na <ph name="BEG
 <translation id="443673843213245140">Využití proxy serveru je zakázáno, je však určena explicitní konfigurace proxy serveru.</translation>
 <translation id="4438821706955556403">Obvyklá cena</translation>
 <translation id="4441832193888514600">Ignorováno, protože zásadu lze nastavit pouze jako zásadu cloudového uživatele.</translation>
+<translation id="4444062564459679679">Už odesláno do Chromu na zařízení <ph name="DEVICE_NAME" /></translation>
 <translation id="4445133368066241428">Oblíbená témata</translation>
 <translation id="4445694043187340808"><ph name="STARTER_PACK_TABS_FOCUSED_FRIENDLY_MATCH_TEXT" />, stisknutím klávesy Enter vyhledáte karty</translation>
 <translation id="4445964943162061557">Tato funkce je experimentální funkce a ne vždy bude fungovat správně.</translation>
@@ -4841,6 +4842,7 @@ Další podrobnosti:
 <translation id="8511402995811232419">Spravovat soubory cookie</translation>
 <translation id="851353418319061866">Kontrola přesnosti</translation>
 <translation id="8513580896341796021">Stahování bylo zahájeno. Stažený soubor zobrazíte stisknutím klávesy |<ph name="ACCELERATOR" />|.</translation>
+<translation id="8515544520486085367">Automaticky vyplnit platební údaje</translation>
 <translation id="8519753333133776369">Zařízení HID povolené administrátorem</translation>
 <translation id="8521013008769249764">Pohovky a křesla</translation>
 <translation id="8521812709849134608">Pracovní desky</translation>

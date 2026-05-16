@@ -2236,6 +2236,7 @@
 <translation id="443673843213245140">Оневозможена е употребата на прокси, но одредена е опширна конфигурација на прокси.</translation>
 <translation id="4438821706955556403">Стандардна цена</translation>
 <translation id="4441832193888514600">Игнорирано бидејќи правилото може да се постави само како политика за корисници во облак.</translation>
+<translation id="4444062564459679679">Веќе е испратена во Chrome на вашиот <ph name="DEVICE_NAME" /></translation>
 <translation id="4445133368066241428">Популарни теми</translation>
 <translation id="4445694043187340808"><ph name="STARTER_PACK_TABS_FOCUSED_FRIENDLY_MATCH_TEXT" />, притиснете Enter за да ги пребарате картичките</translation>
 <translation id="4445964943162061557">Ова е експериментална функција, па нема секогаш да прикажува точни информации.</translation>
@@ -4846,6 +4847,7 @@
 <translation id="8511402995811232419">Управувај со колачињата</translation>
 <translation id="851353418319061866">Проверка на точноста</translation>
 <translation id="8513580896341796021">Преземањето започна. За да го видите, притиснете |<ph name="ACCELERATOR" />|.</translation>
+<translation id="8515544520486085367">Автоматско пополнување на плаќањето</translation>
 <translation id="8519753333133776369">HID-уред дозволен од вашиот администратор</translation>
 <translation id="8521013008769249764">Софи и фотелји</translation>
 <translation id="8521812709849134608">Работни површини</translation>

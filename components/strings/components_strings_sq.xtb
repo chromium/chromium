@@ -2236,6 +2236,7 @@ Për të fshehur opsionet e "Paguaj më vonë", shko te <ph name="BEGIN_LINK" />
 <translation id="443673843213245140">Përdorimi i një përfaqësuesi është i çaktivizuar, por është specifikuar një konfigurim i qartë përfaqësuesi.</translation>
 <translation id="4438821706955556403">Çmimi tipik</translation>
 <translation id="4441832193888514600">Shpërfillur për shkak se politika mund të shtohet vetëm si politikë e përdoruesit të resë kompjuterike.</translation>
+<translation id="4444062564459679679">U dërgua tashmë te Chrome në <ph name="DEVICE_NAME" /></translation>
 <translation id="4445133368066241428">Temat më të njohura</translation>
 <translation id="4445694043187340808"><ph name="STARTER_PACK_TABS_FOCUSED_FRIENDLY_MATCH_TEXT" />, shtyp "Enter" për të kërkuar te skedat</translation>
 <translation id="4445964943162061557">Kjo është një veçori eksperimentale dhe nuk do të jetë gjithmonë e saktë.</translation>
@@ -4845,6 +4846,7 @@ Detaje shtesë:
 <translation id="8511402995811232419">Menaxho kukit</translation>
 <translation id="851353418319061866">Kontrolli i saktësisë</translation>
 <translation id="8513580896341796021">Shkarkimi filloi. Për ta parë atë, shtyp |<ph name="ACCELERATOR" />|.</translation>
+<translation id="8515544520486085367">Plotësimi automatik i pagesës</translation>
 <translation id="8519753333133776369">Pajisja HID e lejuar nga administratori yt</translation>
 <translation id="8521013008769249764">Divane dhe kolltukë</translation>
 <translation id="8521812709849134608">Syprina</translation>

@@ -37,6 +37,7 @@
 <translation id="1016876401615857435">Før du kan bruke passnøklene dine på denne enheten, må du bekrefte at du er deg</translation>
 <translation id="1017280919048282932">&amp;Legg til i ordliste</translation>
 <translation id="1018656279737460067">Avbrutt</translation>
+<translation id="1020008977311763380">Det nominelle ytelsesnivået er <ph name="CPU_TIER" /></translation>
 <translation id="1022522674678746124">PowerPoint</translation>
 <translation id="1022669824195822609">Enheten administreres av <ph name="DOMAIN" />. Administratorene har tilgang til dataene i alle profiler på denne enheten.</translation>
 <translation id="1022719295563085177">Nettverksstandard</translation>
@@ -56,6 +57,7 @@
 <translation id="1033060461778467949">Flytt fanen til delt visning</translation>
 <translation id="1033780634303702874">bruke de seriekoblede enhetene dine</translation>
 <translation id="1034484273907870301">Fanerad med miniatyrbilder for nettbrettmodus</translation>
+<translation id="103477588607005550">Prosessor: <ph name="CPU_MODEL" /> (<ph name="CPU_CORES" />)</translation>
 <translation id="1035289631433631911">Innholdsoverføring-verktøy</translation>
 <translation id="1035875743511577452">Klikk på «Bytt tema» for å utforske temaer inspirert av kunstnere, natur med mer</translation>
 <translation id="1036348656032585052">Slå av</translation>
@@ -308,6 +310,7 @@ Du kan når som helst sjekke passordene dine i <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="1197088940767939838">Oransje</translation>
 <translation id="11978075283960463">Data som er lagret i appen: <ph name="APP_SIZE" /></translation>
 <translation id="1198066799963193307">Taleverktøy for brukere med nedsatt synsevne</translation>
+<translation id="1198796216247697947">Nivå 0: UKJENT</translation>
 <translation id="119944043368869598">Fjern alle</translation>
 <translation id="1199814941632954229">Sertifikater blir levert for disse sertifikatprofilene</translation>
 <translation id="120069043972472860">Elendig</translation>
@@ -489,6 +492,7 @@ Du kan når som helst sjekke passordene dine i <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="1323433172918577554">Vis mer</translation>
 <translation id="132539964543492755">Bruk «X» for å bytte mellom venstre museknapp, høyre museknapp og begge</translation>
 <translation id="1325611581149097457">Skriv bedre</translation>
+<translation id="1325798198269334655">Finn ut mer om hvordan du vedlikeholder Chrome-oppdateringer</translation>
 <translation id="1325898422473267360"><ph name="PERMISSION_USAGE" /> <ph name="PERMISSION_INDICATOR_DESCRIPTION" /></translation>
 <translation id="1327272175893960498">Kerberos-saker</translation>
 <translation id="1327495825214193325">For å slå på ADB-feilsøking må denne <ph name="DEVICE_TYPE" />-enheten startes på nytt. Den må tilbakestilles til fabrikkstandard hvis du vil slå ADB-feilsøking av igjen.</translation>
@@ -2957,6 +2961,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2991182900092497283">Oppgi en årsak til at du laster ned disse dataene:</translation>
 <translation id="2992931425024192067">Vis alt innhold i varsler</translation>
 <translation id="2993517869960930405">Appinformasjon</translation>
+<translation id="2994804273850542871">Nivå 4: ULTRA</translation>
 <translation id="2995472388018163047">{NUM_GROUPS,plural, =1{Behold denne gruppen for å legge til faner senere, eller forlat den hvis du ikke vil ha tilgang til den lenger}other{Behold disse gruppene for å legge til faner senere, eller forlat dem hvis du ikke vil ha tilgang til dem lenger}}</translation>
 <translation id="2996071302059856125">Finn ut mer om hvordan AI former opplevelsen din, samt kontrollene som tilbys av Chrome</translation>
 <translation id="2996108796702395498">Enhetens serienummer er <ph name="SERIAL_NUMBER" />. Dette nummeret kan brukes til å aktivere tjenesten.</translation>
@@ -2975,6 +2980,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3003967365858406397"><ph name="PHONE_NAME" />-enheten din oppretter en privat Wifi-tilkobling.</translation>
 <translation id="3004385386820284928">Tilpass tastaturtaster</translation>
 <translation id="300580149047131921">Nylig brukt</translation>
+<translation id="3005928441045180122">Stablet</translation>
 <translation id="3006881078666935414">Ingen bruksdata</translation>
 <translation id="3007555010975143508">Disse appene brukes til å ta opp skjermen din:</translation>
 <translation id="3007771295016901659">Dupliser fanen</translation>
@@ -4665,6 +4671,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="4177668342649553942">Åpne <ph name="SHORTCUT_NAME" /> – <ph name="APP_NAME" /></translation>
 <translation id="4177731895051842298">Utvidelser er tillegg til Chrome som kan hjelpe deg med å holde orden, forenkle oppgaver og tilpasse nettlesingen</translation>
 <translation id="4178220097446335546">For å glemme dette abonnementet og de tilknyttede nettverkene, gå til Passpoint-abonnementsiden og fjern abonnementet.</translation>
+<translation id="4181376007499455822">Ikke overstyr</translation>
 <translation id="4181602000363099176">20x</translation>
 <translation id="4181841719683918333">Språk</translation>
 <translation id="4182182457914031017">For å kunne gi deg forslag og forbedre denne funksjonen deler nettleseren nettadressen og hele sideinnholdet på nettstedet du besøker, med Google</translation>
@@ -8342,6 +8349,7 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="67862343314499040">Fiolett</translation>
 <translation id="6786480815699355166">Bare støttede språk for direkteoversetting kan oversettes</translation>
 <translation id="6786747875388722282">Utvidelser</translation>
+<translation id="6786804673213172567">Nivå 3: HØY</translation>
 <translation id="6787531944787756058">brukernavnet <ph name="USER_EMAIL" /> er bare lagret på denne enheten. Se detaljer</translation>
 <translation id="6787839852456839824">Hurtigtaster</translation>
 <translation id="6788210894632713004">Upakket utvidelse</translation>
@@ -8488,6 +8496,7 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="686839242150793617">Nettsteder som har lov til å bruke bilde-i-bilde automatisk</translation>
 <translation id="6868734951249611611">Høyreklikk her, og velg «Vis faner vertikalt»</translation>
 <translation id="6868934826811377550">Se detaljer</translation>
+<translation id="6869809635308708588">For å sende linker mellom enheter må du sørge for at begge er logget på den samme Google-kontoen.</translation>
 <translation id="6870470066213933201">Administrer JavaScript-optimalisering og -sikkerhet</translation>
 <translation id="6870953451576517204">Selvtesten er fullført</translation>
 <translation id="6871644448911473373">OCSP-svarer: <ph name="LOCATION" /></translation>
@@ -8779,6 +8788,7 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="7072078320324181561">Apper og nettsteder med posisjonstillatelse, samt systemtjenester, kan bruke posisjonen din <ph name="LINK_BEGIN" />Finn ut mer<ph name="LINK_END" /></translation>
 <translation id="7072573590175540692">Tilgjengelige snarveier for funksjoner og utvidelser</translation>
 <translation id="7074703793383805632"><ph name="SHARED_STATE" /> <ph name="GROUP_NAME" />-gruppe – <ph name="OPENED_STATE" /></translation>
+<translation id="7075116338736929419">Overstyr ytelsesnivået for prosessoren</translation>
 <translation id="7075625805486468288">Administrer HTTPS/SSL-sertifikater og -innstillinger</translation>
 <translation id="707772989579681711">Det forrige valget ditt</translation>
 <translation id="7077751457066325012">Se og tilpass hurtigtaster</translation>
@@ -9542,6 +9552,7 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="7624337243375417909">capslock er av</translation>
 <translation id="7625568159987162309">Se tillatelser og data lagret på alle nettsteder</translation>
 <translation id="7625823789272218216">Ny fane til venstre</translation>
+<translation id="762730429396410864">Angi ytelsesnivået for prosessoren som rapporteres til nettsteder, manuelt</translation>
 <translation id="7627749368210392160">Nettsteder kan bruke denne funksjonen for å få tilgang til andre enheter på det lokale nettverket ditt</translation>
 <translation id="7628927569678398026"><ph name="LOCALE" /> (<ph name="VARIANT" />), grad <ph name="GRADE" /></translation>
 <translation id="762917478230183172">Velg en handling for hver tast</translation>
@@ -9820,7 +9831,9 @@ Trykk på en tilordnet bryter eller tast for å fjerne tilordningen.</translatio
 <translation id="7799650166313181433">Bare enheter som er logget på <ph name="USER_EMAIL" />, kan dele med denne enheten. Du trenger ikke å godkjenne deling mellom enhetene dine.</translation>
 <translation id="7800485561443537737">Bruker mobildata på <ph name="DEVICE_TYPE" />. Det kan hende at operatøren din krever ekstragebyrer. Dette kan øke batteribruken. <ph name="BEGIN_LINK_LEARN_MORE" />Finn ut mer<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7800518121066352902">Rotér m&amp;ot klokken</translation>
+<translation id="780254490276923052">Nivå 2: MEDIUM</translation>
 <translation id="780301667611848630">Nei takk</translation>
+<translation id="7803118804281013214">Hvis du forlater dette nettstedet, stoppes oppgaven. Åpne en ny fane for å la Gemini fortsette å jobbe.</translation>
 <translation id="7803657407897251194">For å fortsette konfigureringen med Android-enheten din, koble <ph name="DEVICE_TYPE" /> til et nettverk</translation>
 <translation id="7803714812705886512">Google bruker mindre data (f.eks. deler av nettadresser og nedlastingsinformasjon) for å oppdage trusler</translation>
 <translation id="7804072833593604762">Fanen er lukket</translation>
@@ -10839,6 +10852,7 @@ Oppbevar nøkkelfilen på et trygt sted. Du får bruk for den når du skal oppre
 <translation id="8500044868721690197">Dette nettstedet er blokkert fra å kontrollere og omprogrammere MIDI-enhetene dine</translation>
 <translation id="8500123638242682652">Vinduet ble flyttet opp</translation>
 <translation id="8500132602331251964">Appoppdatering er tilgjengelig</translation>
+<translation id="850228775215800722">Nivå 1: LAV</translation>
 <translation id="8503813439785031346">Brukernavn</translation>
 <translation id="850382998924680137">Sett på i dag</translation>
 <translation id="850399339579925930">Ordbøker</translation>
@@ -11255,6 +11269,7 @@ Dette kan omfatte informasjon om installert programvare, filer, nettleseren, enh
 <translation id="8774379074441005279">Bekreft gjenoppretting</translation>
 <translation id="8774934320277480003">Toppmargen</translation>
 <translation id="8775144690796719618">Ugyldig nettadresse</translation>
+<translation id="877515298105563553">Side om side</translation>
 <translation id="8775653927968399786">{0,plural, =1{<ph name="DEVICE_TYPE" /> låses automatisk om # sekund.
 <ph name="DOMAIN" /> krever at smartkortet blir stående i.}other{<ph name="DEVICE_TYPE" /> låses automatisk om # sekunder.
 <ph name="DOMAIN" /> krever at smartkortet blir stående i.}}</translation>
@@ -11707,6 +11722,7 @@ Dette kan omfatte informasjon om installert programvare, filer, nettleseren, enh
 <translation id="9070342919388027491">Fanen er flyttet til venstre</translation>
 <translation id="9072220108592671115">Installert versjon <ph name="VERSION" /></translation>
 <translation id="9072918088200875065">Du har gitt Gemini tillatelse til å logge på disse nettstedene for å utføre oppgaver for deg</translation>
+<translation id="9074618195273027322">{CORE_COUNT,plural, =1{1 kjerne}other{{CORE_COUNT} kjerner}}</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9074836595010225693">USB-mus er tilkoblet</translation>
 <translation id="9075413375877487220">Denne utvidelsen er ikke klarert av Safe Browsing med økt beskyttelse.</translation>

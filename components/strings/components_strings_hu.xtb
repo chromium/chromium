@@ -2233,6 +2233,7 @@ A későbbi fizetési lehetőségek elrejtéséhez lépjen a <ph name="BEGIN_LIN
 <translation id="443673843213245140">A proxy használata le van tiltva, de kifejezett proxykonfiguráció van megadva.</translation>
 <translation id="4438821706955556403">Átlagos ár</translation>
 <translation id="4441832193888514600">Figyelmen kívül hagyva, mert a szabályzatot csak felhőalapú felhasználói szabályzatként lehet beállítani.</translation>
+<translation id="4444062564459679679">Már elküldve a Chrome-ba a(z) <ph name="DEVICE_NAME" /> eszközön</translation>
 <translation id="4445133368066241428">Népszerű témák</translation>
 <translation id="4445694043187340808"><ph name="STARTER_PACK_TABS_FOCUSED_FRIENDLY_MATCH_TEXT" />, a lapok közötti kereséshez nyomja le az Enter billentyűt</translation>
 <translation id="4445964943162061557">Ez egy kísérleti funkció, amely nem mindig működik megfelelően.</translation>
@@ -4845,6 +4846,7 @@ További részletek:
 <translation id="8511402995811232419">Cookie-k kezelése</translation>
 <translation id="851353418319061866">Pontosság ellenőrzése</translation>
 <translation id="8513580896341796021">A letöltés megkezdődött. A megtekintéséhez nyomja meg a következő gombot: |<ph name="ACCELERATOR" />|.</translation>
+<translation id="8515544520486085367">Fizetés automatikus kitöltése</translation>
 <translation id="8519753333133776369">Rendszergazda által engedélyezett HID-eszköz</translation>
 <translation id="8521013008769249764">Kanapék és karosszékek</translation>
 <translation id="8521812709849134608">Konyhai munkalapok</translation>
