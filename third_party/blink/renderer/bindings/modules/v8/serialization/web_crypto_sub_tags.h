@@ -71,15 +71,19 @@ enum CryptoKeySubTag : uint8_t {
   // ID 3 was used by RsaKeyTag, while still behind experimental flag.
   kRsaHashedKeyTag = 4,
   kEcKeyTag = 5,
+  // New algorithms with no params should use NoParamsWithKeyTypeKeyTag.
   kNoParamsKeyTag = 6,
+  // kEd25519KeyTag and kX25519KeyTag are separate for historical reasons.
   kEd25519KeyTag = 7,
   kX25519KeyTag = 8,
+  kNoParamsWithKeyTypeKeyTag = 9,
   // Maximum allowed value is 255
 };
 
-enum AsymmetricCryptoKeyType : uint32_t {
+enum CryptoKeyType : uint32_t {
   kPublicKeyType = 1,
   kPrivateKeyType = 2,
+  kSecretKeyType = 3,
   // Maximum allowed value is 2^32-1
 };
 

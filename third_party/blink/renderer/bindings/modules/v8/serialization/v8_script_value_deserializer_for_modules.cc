@@ -218,14 +218,16 @@ bool AlgorithmIdFromWireFormat(uint32_t raw_id, WebCryptoAlgorithmId* id) {
   return false;
 }
 
-bool AsymmetricKeyTypeFromWireFormat(uint32_t raw_key_type,
-                                     WebCryptoKeyType* key_type) {
-  switch (static_cast<AsymmetricCryptoKeyType>(raw_key_type)) {
+bool KeyTypeFromWireFormat(uint32_t raw_key_type, WebCryptoKeyType* key_type) {
+  switch (static_cast<CryptoKeyType>(raw_key_type)) {
     case kPublicKeyType:
       *key_type = kWebCryptoKeyTypePublic;
       return true;
     case kPrivateKeyType:
       *key_type = kWebCryptoKeyTypePrivate;
+      return true;
+    case kSecretKeyType:
+      *key_type = kWebCryptoKeyTypeSecret;
       return true;
   }
   return false;
@@ -339,7 +341,7 @@ CryptoKey* V8ScriptValueDeserializerForModules::ReadCryptoKey() {
       WebCryptoAlgorithmId hash;
       if (!ReadUint32(&raw_id) || !AlgorithmIdFromWireFormat(raw_id, &id) ||
           !ReadUint32(&raw_key_type) ||
-          !AsymmetricKeyTypeFromWireFormat(raw_key_type, &key_type) ||
+          !KeyTypeFromWireFormat(raw_key_type, &key_type) ||
           !ReadUint32(&modulus_length_bits) ||
           !ReadUint32(&public_exponent_size) ||
           !ReadRawBytesToSpan(public_exponent_size, &public_exponent) ||
@@ -359,10 +361,11 @@ CryptoKey* V8ScriptValueDeserializerForModules::ReadCryptoKey() {
       WebCryptoNamedCurve named_curve;
       if (!ReadUint32(&raw_id) || !AlgorithmIdFromWireFormat(raw_id, &id) ||
           !ReadUint32(&raw_key_type) ||
-          !AsymmetricKeyTypeFromWireFormat(raw_key_type, &key_type) ||
+          !KeyTypeFromWireFormat(raw_key_type, &key_type) ||
           !ReadUint32(&raw_named_curve) ||
-          !NamedCurveFromWireFormat(raw_named_curve, &named_curve))
+          !NamedCurveFromWireFormat(raw_named_curve, &named_curve)) {
         return nullptr;
+      }
       algorithm = WebCryptoKeyAlgorithm::CreateEc(id, named_curve);
       break;
     }
@@ -373,8 +376,9 @@ CryptoKey* V8ScriptValueDeserializerForModules::ReadCryptoKey() {
       uint32_t raw_key_type;
       if (!ReadUint32(&raw_id) || !AlgorithmIdFromWireFormat(raw_id, &id) ||
           !ReadUint32(&raw_key_type) ||
-          !AsymmetricKeyTypeFromWireFormat(raw_key_type, &key_type))
+          !KeyTypeFromWireFormat(raw_key_type, &key_type)) {
         return nullptr;
+      }
       algorithm = raw_key_byte == kEd25519KeyTag
                       ? WebCryptoKeyAlgorithm::CreateEd25519(id)
                       : WebCryptoKeyAlgorithm::CreateX25519(id);
@@ -385,6 +389,18 @@ CryptoKey* V8ScriptValueDeserializerForModules::ReadCryptoKey() {
       WebCryptoAlgorithmId id;
       if (!ReadUint32(&raw_id) || !AlgorithmIdFromWireFormat(raw_id, &id))
         return nullptr;
+      algorithm = WebCryptoKeyAlgorithm::CreateWithoutParams(id);
+      break;
+    }
+    case kNoParamsWithKeyTypeKeyTag: {
+      uint32_t raw_id;
+      WebCryptoAlgorithmId id;
+      uint32_t raw_key_type;
+      if (!ReadUint32(&raw_id) || !AlgorithmIdFromWireFormat(raw_id, &id) ||
+          !ReadUint32(&raw_key_type) ||
+          !KeyTypeFromWireFormat(raw_key_type, &key_type)) {
+        return nullptr;
+      }
       algorithm = WebCryptoKeyAlgorithm::CreateWithoutParams(id);
       break;
     }
