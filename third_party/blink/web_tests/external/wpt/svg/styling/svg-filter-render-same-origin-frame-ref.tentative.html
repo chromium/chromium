@@ -2,10 +2,14 @@
 <html>
 <head>
 <style type="text/css">
+    .square {
+        width: 20px;
+        height: 20px;
+        background: black;
+    }
     .fake-iframe {
         width: 100px;
         height: 100px;
-        background-color: black;
     }
     .svg-filter {
         filter: url(#svg-filter);
@@ -23,7 +27,9 @@
     </div>
     <br />
     <div>
-        <div class="svg-filter fake-iframe"></div>
+        <div class="svg-filter fake-iframe">
+            <div class="square"></div>
+        </div>
     </div>
 </body>
 </html>

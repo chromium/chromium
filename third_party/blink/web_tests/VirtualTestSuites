@@ -6398,9 +6398,12 @@
       "Win"
     ],
     "bases": [
+      "external/wpt/svg/styling/svg-filter-render-cross-origin-frame-in-cross-origin-frame.tentative.sub.https.html",
       "external/wpt/svg/styling/svg-filter-render-cross-origin-frame-in-same-origin-frame.tentative.https.html",
       "external/wpt/svg/styling/svg-filter-render-cross-origin-frame.tentative.sub.https.html",
       "external/wpt/svg/styling/svg-filter-render-cross-origin-navigation-in-srcdoc-frame.tentative.sub.https.html",
+      "external/wpt/svg/styling/svg-filter-render-same-origin-frame-in-cross-origin-frame.tentative.sub.https.html",
+      "external/wpt/svg/styling/svg-filter-render-same-origin-frame-in-same-origin-frame.tentative.https.html",
       "external/wpt/svg/styling/svg-filter-render-same-origin-frame-reload-as-sandbox.tentative.https.html",
       "external/wpt/svg/styling/svg-filter-render-same-origin-frame.tentative.https.html",
       "external/wpt/svg/styling/svg-filter-render-sandbox-frame.tentative.https.html",
@@ -6410,9 +6413,12 @@
       "wpt_internal/svg"
     ],
     "exclusive_tests": [
+      "external/wpt/svg/styling/svg-filter-render-cross-origin-frame-in-cross-origin-frame.tentative.sub.https.html",
       "external/wpt/svg/styling/svg-filter-render-cross-origin-frame-in-same-origin-frame.tentative.https.html",
       "external/wpt/svg/styling/svg-filter-render-cross-origin-frame.tentative.sub.https.html",
       "external/wpt/svg/styling/svg-filter-render-cross-origin-navigation-in-srcdoc-frame.tentative.sub.https.html",
+      "external/wpt/svg/styling/svg-filter-render-same-origin-frame-in-cross-origin-frame.tentative.sub.https.html",
+      "external/wpt/svg/styling/svg-filter-render-same-origin-frame-in-same-origin-frame.tentative.https.html",
       "external/wpt/svg/styling/svg-filter-render-same-origin-frame-reload-as-sandbox.tentative.https.html",
       "external/wpt/svg/styling/svg-filter-render-same-origin-frame.tentative.https.html",
       "external/wpt/svg/styling/svg-filter-render-sandbox-frame.tentative.https.html",
