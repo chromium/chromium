@@ -1083,6 +1083,16 @@ class PdfInkModuleTextTest : public testing::Test {
                                                         FontId font_id,
                                                         int page_index,
                                                         double pdf_zoom) {
+    return SampleFinishTextAnnotationDataWithSource(
+        frontend_id, font_id, page_index, pdf_zoom, "user");
+  }
+
+  static base::DictValue SampleFinishTextAnnotationDataWithSource(
+      int frontend_id,
+      FontId font_id,
+      int page_index,
+      double pdf_zoom,
+      std::string_view source) {
     return base::DictValue()
         .Set("id", frontend_id)
         .Set("isEdited", true)
@@ -1090,6 +1100,7 @@ class PdfInkModuleTextTest : public testing::Test {
         .Set("newTypefaces", base::ListValue())
         .Set("pageIndex", page_index)
         .Set("pdfZoom", pdf_zoom)
+        .Set("source", source)
         .Set("text", "hi")
         .Set("textAttributes", SampleTextAttributesDict())
         .Set("textBoxRect", SampleTextBoxRectDict())
@@ -1107,6 +1118,17 @@ class PdfInkModuleTextTest : public testing::Test {
     return base::DictValue()
         .Set("type", "finishTextAnnotation")
         .Set("data", std::move(data));
+  }
+
+  void PerformUndo() {
+    EXPECT_TRUE(
+        ink_module().OnMessage(CreateSetAnnotationUndoRedoMessageForTesting(
+            TestAnnotationUndoRedoMessageType::kUndo)));
+  }
+  void PerformRedo() {
+    EXPECT_TRUE(
+        ink_module().OnMessage(CreateSetAnnotationUndoRedoMessageForTesting(
+            TestAnnotationUndoRedoMessageType::kRedo)));
   }
 
  private:
@@ -1331,6 +1353,255 @@ TEST_F(PdfInkModuleTextTest, HandleFinishTextAnnotationMessageDelete) {
 
     EXPECT_TRUE(ink_module().OnMessage(
         CreateFinishTextAnnotationMessage(std::move(data))));
+    testing::Mock::VerifyAndClearExpectations(this);
+  }
+}
+
+TEST_F(PdfInkModuleTextTest,
+       HandleFinishTextAnnotationMessageUndoRedoForAddEdit) {
+  static constexpr int kFrontendId = 5;
+  static constexpr int kPageIndex = 3;
+  static constexpr FontId kFontId(123);
+  static constexpr double kPdfZoom = 2.0;
+  static constexpr auto kTypefaceBlob =
+      std::to_array<const uint8_t>({1, 2, 3, 4});
+  static constexpr InkTextId kTextId0(0);
+  static constexpr InkTextId kTextId1(1);
+
+  {
+    // Draw text annotation `kTextId0`.
+    base::DictValue data = SampleFinishTextAnnotationData(kFrontendId, kFontId,
+                                                          kPageIndex, kPdfZoom);
+
+    base::ListValue typefaces;
+    typefaces.Append(SampleSerializedTypeface(kFontId, kTypefaceBlob));
+    data.Set("newTypefaces", std::move(typefaces));
+
+    InSequence seq;
+    EXPECT_CALL(client(), AddFont(kFontId, ElementsAreArray(kTypefaceBlob)));
+    EXPECT_CALL(client(),
+                DrawText(kPageIndex, kTextId0,
+                         ElementsAre(SampleInkTextInfoMatcher(kFontId)),
+                         kPdfZoom, SampleInkTextBoxAttributesMatcher()));
+    EXPECT_CALL(client(), DiscardText(_)).Times(0);
+    EXPECT_CALL(client(), UpdateTextActiveAndInvalidate(_, _)).Times(0);
+
+    EXPECT_TRUE(ink_module().OnMessage(
+        CreateFinishTextAnnotationMessage(std::move(data))));
+    testing::Mock::VerifyAndClearExpectations(this);
+  }
+
+  {
+    // Undoing the text annotation is effectively a non-user deletion of
+    // `kTextId0`.
+    base::DictValue data = SampleFinishTextAnnotationDataWithSource(
+        kFrontendId, kFontId, kPageIndex, kPdfZoom, /*source=*/"undo");
+    data.Set("text", "");
+
+    InSequence seq;
+    EXPECT_CALL(client(),
+                UpdateTextActiveAndInvalidate(kTextId0, /*active=*/false));
+    EXPECT_CALL(client(), DiscardText(kTextId0));
+    EXPECT_CALL(client(), AddFont(_, _)).Times(0);
+    EXPECT_CALL(client(), DrawText(_, _, _, _, _)).Times(0);
+
+    EXPECT_TRUE(ink_module().OnMessage(
+        CreateFinishTextAnnotationMessage(std::move(data))));
+    PerformUndo();
+    testing::Mock::VerifyAndClearExpectations(this);
+  }
+
+  {
+    // Redo is effectively a non-user addition. It reuses `kTextId0`.
+    base::DictValue data = SampleFinishTextAnnotationDataWithSource(
+        kFrontendId, kFontId, kPageIndex, kPdfZoom, /*source=*/"redo");
+
+    InSequence seq;
+    EXPECT_CALL(client(),
+                DrawText(kPageIndex, kTextId0,
+                         ElementsAre(SampleInkTextInfoMatcher(kFontId)),
+                         kPdfZoom, SampleInkTextBoxAttributesMatcher()));
+    EXPECT_CALL(client(), AddFont(_, _)).Times(0);
+    EXPECT_CALL(client(), DiscardText(_)).Times(0);
+    EXPECT_CALL(client(), UpdateTextActiveAndInvalidate(_, _)).Times(0);
+
+    EXPECT_TRUE(ink_module().OnMessage(
+        CreateFinishTextAnnotationMessage(std::move(data))));
+    PerformRedo();
+    testing::Mock::VerifyAndClearExpectations(this);
+  }
+
+  {
+    // The next edit is effectively a deletion of `kTextId0` followed by an
+    // addition. This uses the new `kTextId1`.
+    base::DictValue data = SampleFinishTextAnnotationData(kFrontendId, kFontId,
+                                                          kPageIndex, kPdfZoom);
+
+    InSequence seq;
+    EXPECT_CALL(client(),
+                UpdateTextActiveAndInvalidate(kTextId0, /*active=*/false));
+    EXPECT_CALL(client(), DiscardText(kTextId0));
+    EXPECT_CALL(client(),
+                DrawText(kPageIndex, kTextId1,
+                         ElementsAre(SampleInkTextInfoMatcher(kFontId)),
+                         kPdfZoom, SampleInkTextBoxAttributesMatcher()));
+    EXPECT_CALL(client(), AddFont(_, _)).Times(0);
+
+    EXPECT_TRUE(ink_module().OnMessage(
+        CreateFinishTextAnnotationMessage(std::move(data))));
+    testing::Mock::VerifyAndClearExpectations(this);
+  }
+
+  {
+    // Undoing the edit is effectively a non-user deletion of `kTextId1`,
+    // followed by an addition of `kTextId0`.
+    base::DictValue data = SampleFinishTextAnnotationDataWithSource(
+        kFrontendId, kFontId, kPageIndex, kPdfZoom, /*source=*/"undo");
+
+    InSequence seq;
+    EXPECT_CALL(client(),
+                UpdateTextActiveAndInvalidate(kTextId1, /*active=*/false));
+    EXPECT_CALL(client(), DiscardText(kTextId1));
+    EXPECT_CALL(client(),
+                DrawText(kPageIndex, kTextId0,
+                         ElementsAre(SampleInkTextInfoMatcher(kFontId)),
+                         kPdfZoom, SampleInkTextBoxAttributesMatcher()));
+    EXPECT_CALL(client(), AddFont(_, _)).Times(0);
+
+    EXPECT_TRUE(ink_module().OnMessage(
+        CreateFinishTextAnnotationMessage(std::move(data))));
+    PerformUndo();
+    testing::Mock::VerifyAndClearExpectations(this);
+  }
+
+  {
+    // Undoing the text annotation again is effectively another non-user
+    // deletion of `kTextId0`.
+    base::DictValue data = SampleFinishTextAnnotationDataWithSource(
+        kFrontendId, kFontId, kPageIndex, kPdfZoom, /*source=*/"undo");
+    data.Set("text", "");
+
+    InSequence seq;
+    EXPECT_CALL(client(),
+                UpdateTextActiveAndInvalidate(kTextId0, /*active=*/false));
+    EXPECT_CALL(client(), DiscardText(kTextId0));
+    EXPECT_CALL(client(), AddFont(_, _)).Times(0);
+    EXPECT_CALL(client(), DrawText(_, _, _, _, _)).Times(0);
+
+    EXPECT_TRUE(ink_module().OnMessage(
+        CreateFinishTextAnnotationMessage(std::move(data))));
+    PerformUndo();
+    testing::Mock::VerifyAndClearExpectations(this);
+  }
+
+  {
+    // Draw a new text annotation. It uses `kTextId0` again because the previous
+    // use of `kTextId0` has been discarded in the undo/redo stack. Thus the ID
+    // has been reclaimed for reuse.
+    base::DictValue data = SampleFinishTextAnnotationData(kFrontendId, kFontId,
+                                                          kPageIndex, kPdfZoom);
+
+    InSequence seq;
+    EXPECT_CALL(client(),
+                DrawText(kPageIndex, kTextId0,
+                         ElementsAre(SampleInkTextInfoMatcher(kFontId)),
+                         kPdfZoom, SampleInkTextBoxAttributesMatcher()));
+    EXPECT_CALL(client(), AddFont(_, _)).Times(0);
+    EXPECT_CALL(client(), DiscardText(_)).Times(0);
+    EXPECT_CALL(client(), UpdateTextActiveAndInvalidate(_, _)).Times(0);
+
+    EXPECT_TRUE(ink_module().OnMessage(
+        CreateFinishTextAnnotationMessage(std::move(data))));
+    testing::Mock::VerifyAndClearExpectations(this);
+  }
+}
+
+TEST_F(PdfInkModuleTextTest,
+       HandleFinishTextAnnotationMessageUndoRedoForAddDelete) {
+  static constexpr int kFrontendId = 5;
+  static constexpr int kPageIndex = 3;
+  static constexpr FontId kFontId(123);
+  static constexpr double kPdfZoom = 2.0;
+  static constexpr auto kTypefaceBlob =
+      std::to_array<const uint8_t>({1, 2, 3, 4});
+  static constexpr InkTextId kTextId0(0);
+
+  {
+    // Draw text annotation `kTextId0`.
+    base::DictValue data = SampleFinishTextAnnotationData(kFrontendId, kFontId,
+                                                          kPageIndex, kPdfZoom);
+
+    base::ListValue typefaces;
+    typefaces.Append(SampleSerializedTypeface(kFontId, kTypefaceBlob));
+    data.Set("newTypefaces", std::move(typefaces));
+
+    InSequence seq;
+    EXPECT_CALL(client(), AddFont(kFontId, ElementsAreArray(kTypefaceBlob)));
+    EXPECT_CALL(client(),
+                DrawText(kPageIndex, kTextId0,
+                         ElementsAre(SampleInkTextInfoMatcher(kFontId)),
+                         kPdfZoom, SampleInkTextBoxAttributesMatcher()));
+    EXPECT_CALL(client(), DiscardText(_)).Times(0);
+    EXPECT_CALL(client(), UpdateTextActiveAndInvalidate(_, _)).Times(0);
+
+    EXPECT_TRUE(ink_module().OnMessage(
+        CreateFinishTextAnnotationMessage(std::move(data))));
+    testing::Mock::VerifyAndClearExpectations(this);
+  }
+
+  {
+    // Delete the text annotation.
+    base::DictValue data = SampleFinishTextAnnotationData(kFrontendId, kFontId,
+                                                          kPageIndex, kPdfZoom);
+    data.Set("text", "");
+
+    InSequence seq;
+    EXPECT_CALL(client(),
+                UpdateTextActiveAndInvalidate(kTextId0, /*active=*/false));
+    EXPECT_CALL(client(), DiscardText(kTextId0));
+    EXPECT_CALL(client(), AddFont(_, _)).Times(0);
+    EXPECT_CALL(client(), DrawText(_, _, _, _, _)).Times(0);
+
+    EXPECT_TRUE(ink_module().OnMessage(
+        CreateFinishTextAnnotationMessage(std::move(data))));
+    testing::Mock::VerifyAndClearExpectations(this);
+  }
+
+  {
+    // Undoing the deletion is effectively a non-user draw of `kTextId0`.
+    base::DictValue data = SampleFinishTextAnnotationDataWithSource(
+        kFrontendId, kFontId, kPageIndex, kPdfZoom, /*source=*/"undo");
+
+    EXPECT_CALL(client(),
+                DrawText(kPageIndex, kTextId0,
+                         ElementsAre(SampleInkTextInfoMatcher(kFontId)),
+                         kPdfZoom, SampleInkTextBoxAttributesMatcher()));
+    EXPECT_CALL(client(), AddFont(_, _)).Times(0);
+    EXPECT_CALL(client(), DiscardText(_)).Times(0);
+    EXPECT_CALL(client(), UpdateTextActiveAndInvalidate(_, _)).Times(0);
+
+    EXPECT_TRUE(ink_module().OnMessage(
+        CreateFinishTextAnnotationMessage(std::move(data))));
+    PerformUndo();
+    testing::Mock::VerifyAndClearExpectations(this);
+  }
+
+  {
+    // Redoing the deletion is effectively a non-user deletion of `kTextId0`.
+    base::DictValue data = SampleFinishTextAnnotationDataWithSource(
+        kFrontendId, kFontId, kPageIndex, kPdfZoom, /*source=*/"redo");
+    data.Set("text", "");
+
+    InSequence seq;
+    EXPECT_CALL(client(),
+                UpdateTextActiveAndInvalidate(kTextId0, /*active=*/false));
+    EXPECT_CALL(client(), DiscardText(kTextId0));
+    EXPECT_CALL(client(), AddFont(_, _)).Times(0);
+    EXPECT_CALL(client(), DrawText(_, _, _, _, _)).Times(0);
+
+    EXPECT_TRUE(ink_module().OnMessage(
+        CreateFinishTextAnnotationMessage(std::move(data))));
+    PerformRedo();
     testing::Mock::VerifyAndClearExpectations(this);
   }
 }
