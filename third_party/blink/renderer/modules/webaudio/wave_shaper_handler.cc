@@ -413,7 +413,8 @@ void WaveShaperHandler::WaveShaperCurveValues(
     base::span<const float> curve_data) {
   DCHECK_LE(frames_to_process, virtual_index_.size());
   // Index into the array computed from the source value.
-  float* virtual_index = virtual_index_.Data();
+  base::span<float> virtual_index_span = virtual_index_.as_span();
+
   const size_t curve_length = curve_data.size();
 
   // virtual_index[k] =
@@ -422,15 +423,15 @@ void WaveShaperHandler::WaveShaperCurveValues(
   //           static_cast<float>(curve_length - 1))
 
   // Add 1 to source puttting result in virtual_index
-  vector_math::Vsadd(source.data(), 1.0f, virtual_index, frames_to_process);
+  vector_math::Vsadd(source, 1.0f, virtual_index_span, frames_to_process);
 
   // Scale virtual_index in place by (curve_length -1)/2
-  vector_math::Vsmul(virtual_index, 0.5 * (curve_length - 1), virtual_index,
-                     frames_to_process);
+  vector_math::Vsmul(virtual_index_span, 0.5 * (curve_length - 1),
+                     virtual_index_span, frames_to_process);
 
   // Clip virtual_index, in place.
-  vector_math::Vclip(virtual_index_.as_span(), 0, curve_length - 1,
-                     virtual_index_.as_span(), frames_to_process);
+  vector_math::Vclip(virtual_index_span, 0, curve_length - 1,
+                     virtual_index_span, frames_to_process);
 
   // index = floor(virtual_index)
   DCHECK_LE(frames_to_process, index_.size());
@@ -444,7 +445,6 @@ void WaveShaperHandler::WaveShaperCurveValues(
 
   // Interpolation factor: virtual_index - index.
   DCHECK_LE(frames_to_process, f_.size());
-  float* f = f_.Data();
 
   int max_index = curve_length - 1;
   unsigned k = 0;
@@ -456,7 +456,6 @@ void WaveShaperHandler::WaveShaperCurveValues(
     __m128i one = _mm_set1_epi32(1);
 
     // Do 4 elements at a time
-    base::span<float> virtual_index_span = virtual_index_.as_span();
     for (int loop = 0; loop < loop_limit; ++loop, k += 4) {
       // v = virtual_index[k]
       __m128 v = _mm_loadu_ps(virtual_index_span.subspan(k, 4u).data());
@@ -503,7 +502,6 @@ void WaveShaperHandler::WaveShaperCurveValues(
     int32x4_t one = vdupq_n_s32(1);
     int32x4_t max = vdupq_n_s32(max_index);
 
-    base::span<float> virtual_index_span = virtual_index_.as_span();
     for (int loop = 0; loop < loop_limit; ++loop, k += 4) {
       // v = virtual_index
       float32x4_t v = vld1q_f32(virtual_index_span.subspan(k, 4u).data());
@@ -553,7 +551,7 @@ void WaveShaperHandler::WaveShaperCurveValues(
   }
 
   // f[k] = virtual_index[k] - index[k]
-  vector_math::Vsub(virtual_index, index.data(), f, frames_to_process);
+  vector_math::Vsub(virtual_index_span, index, f_.as_span(), frames_to_process);
 
   // Do the linear interpolation of the curve data:
   // destination[k] = v1[k] + f[k]*(v2[k] - v1[k])
@@ -562,9 +560,11 @@ void WaveShaperHandler::WaveShaperCurveValues(
   // 2. v2[k] = f[k]*v2[k] = f[k]*(v2[k] - v1[k])
   // 3. destination[k] = destination[k] + v2[k]
   //                   = v1[k] + f[k]*(v2[k] - v1[k])
-  vector_math::Vsub(v2_.Data(), v1_.Data(), v2_.Data(), frames_to_process);
-  vector_math::Vmul(f, v2_.Data(), v2_.Data(), frames_to_process);
-  vector_math::Vadd(v2_.Data(), v1_.Data(), destination.data(),
+  vector_math::Vsub(v2_.as_span(), v1_.as_span(), v2_.as_span(),
+                    frames_to_process);
+  vector_math::Vmul(f_.as_span(), v2_.as_span(), v2_.as_span(),
+                    frames_to_process);
+  vector_math::Vadd(v2_.as_span(), v1_.as_span(), destination,
                     frames_to_process);
 }
 

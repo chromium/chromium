@@ -55,16 +55,15 @@ namespace impl = scalar;
 }  // namespace
 
 void PrepareFilterForConv(base::span<const float> filter,
-                          AudioFloatArray* prepared_filter) {
+                          AudioFloatArray& prepared_filter) {
   // Only contiguous convolution is implemented by all implementations.
   // Correlation (positive |filter_stride|) and support for non-contiguous
   // vectors are not implemented by all implementations.
-  DCHECK(prepared_filter);
 #if defined(ARCH_CPU_X86_FAMILY) && !BUILDFLAG(IS_MAC)
   const int filter_stride = -1;
   const float* filter_p = &filter.back();
   x86::PrepareFilterForConv(filter_p, filter_stride, filter.size(),
-                            prepared_filter);
+                            &prepared_filter);
 #endif
 }
 
@@ -72,7 +71,7 @@ void Conv(base::span<const float> source,
           base::span<const float> filter,
           base::span<float> dest,
           uint32_t frames_to_process,
-          const AudioFloatArray* prepared_filter) {
+          const AudioFloatArray& prepared_filter) {
   // Only contiguous convolution is implemented by all implementations.
   // Correlation (positive |filter_stride|) and support for non-contiguous
   // vectors are not implemented by all implementations.
@@ -81,21 +80,23 @@ void Conv(base::span<const float> source,
   const int dest_stride = 1;
   const float* filter_p = &filter.back();
   impl::Conv(source.data(), source_stride, filter_p, filter_stride, dest.data(),
-             dest_stride, frames_to_process, filter.size(), prepared_filter);
+             dest_stride, frames_to_process, filter.size(), &prepared_filter);
 }
 
-void Vadd(const float* source1p,
-          const float* source2p,
-          float* dest_p,
+void Vadd(base::span<const float> source1,
+          base::span<const float> source2,
+          base::span<float> dest,
           uint32_t frames_to_process) {
-  impl::Vadd(source1p, 1, source2p, 1, dest_p, 1, frames_to_process);
+  impl::Vadd(source1.data(), 1, source2.data(), 1, dest.data(), 1,
+             frames_to_process);
 }
 
-void Vsub(const float* source1p,
-          const float* source2p,
-          float* dest_p,
+void Vsub(base::span<const float> source1,
+          base::span<const float> source2,
+          base::span<float> dest,
           uint32_t frames_to_process) {
-  impl::Vsub(source1p, 1, source2p, 1, dest_p, 1, frames_to_process);
+  impl::Vsub(source1.data(), 1, source2.data(), 1, dest.data(), 1,
+             frames_to_process);
 }
 
 void Vclip(base::span<const float> source,
@@ -135,65 +136,60 @@ void Vclip(base::span<const float> source,
               frames_to_process);
 }
 
-void Vmaxmgv(const float* source_p,
-             float* max_p,
-             uint32_t frames_to_process) {
+float Vmaxmgv(base::span<const float> source, uint32_t frames_to_process) {
   float max = 0;
 
-  impl::Vmaxmgv(source_p, 1, &max, frames_to_process);
+  impl::Vmaxmgv(source.data(), 1, &max, frames_to_process);
 
-  DCHECK(max_p);
-  *max_p = max;
+  return max;
 }
 
-void Vmul(const float* source1p,
-          const float* source2p,
-          float* dest_p,
+void Vmul(base::span<const float> source1,
+          base::span<const float> source2,
+          base::span<float> dest,
           uint32_t frames_to_process) {
-  impl::Vmul(source1p, 1, source2p, 1, dest_p, 1, frames_to_process);
+  impl::Vmul(source1.data(), 1, source2.data(), 1, dest.data(), 1,
+             frames_to_process);
 }
 
-void Vsma(const float* source_p,
+void Vsma(base::span<const float> source,
           float scale,
-          float* dest_p,
+          base::span<float> dest,
           uint32_t frames_to_process) {
-  impl::Vsma(source_p, 1, &scale, dest_p, 1, frames_to_process);
+  impl::Vsma(source.data(), 1, &scale, dest.data(), 1, frames_to_process);
 }
 
-void Vsmul(const float* source_p,
+void Vsmul(base::span<const float> source,
            float scale,
-           float* dest_p,
+           base::span<float> dest,
            uint32_t frames_to_process) {
-  impl::Vsmul(source_p, 1, &scale, dest_p, 1, frames_to_process);
+  impl::Vsmul(source.data(), 1, &scale, dest.data(), 1, frames_to_process);
 }
 
-void Vsadd(const float* source_p,
+void Vsadd(base::span<const float> source,
            float addend,
-           float* dest_p,
+           base::span<float> dest,
            uint32_t frames_to_process) {
-  impl::Vsadd(source_p, 1, &addend, dest_p, 1, frames_to_process);
+  impl::Vsadd(source.data(), 1, &addend, dest.data(), 1, frames_to_process);
 }
 
-void Vsvesq(const float* source_p,
-            float* sum_p,
-            uint32_t frames_to_process) {
+float Vsvesq(base::span<const float> source, uint32_t frames_to_process) {
   float sum = 0;
 
-  impl::Vsvesq(source_p, 1, &sum, frames_to_process);
+  impl::Vsvesq(source.data(), 1, &sum, frames_to_process);
 
-  DCHECK(sum_p);
-  *sum_p = sum;
+  return sum;
 }
 
-void Zvmul(const float* real1p,
-           const float* imag1p,
-           const float* real2p,
-           const float* imag2p,
-           float* real_dest_p,
-           float* imag_dest_p,
+void Zvmul(base::span<const float> real1,
+           base::span<const float> imag1,
+           base::span<const float> real2,
+           base::span<const float> imag2,
+           base::span<float> real_dest,
+           base::span<float> imag_dest,
            uint32_t frames_to_process) {
-  impl::Zvmul(real1p, imag1p, real2p, imag2p, real_dest_p, imag_dest_p,
-              frames_to_process);
+  impl::Zvmul(real1.data(), imag1.data(), real2.data(), imag2.data(),
+              real_dest.data(), imag_dest.data(), frames_to_process);
 }
 
 }  // namespace blink::vector_math

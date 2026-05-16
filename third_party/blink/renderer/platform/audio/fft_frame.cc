@@ -75,9 +75,9 @@ std::unique_ptr<FFTFrame> FFTFrame::CreateInterpolatedFrame(
 }
 
 void FFTFrame::ScaleFFT(float factor) {
-  vector_math::Vsmul(real_data_.Data(), factor, real_data_.Data(),
+  vector_math::Vsmul(real_data_.as_span(), factor, real_data_.as_span(),
                      real_data_.size());
-  vector_math::Vsmul(imag_data_.Data(), factor, imag_data_.Data(),
+  vector_math::Vsmul(imag_data_.as_span(), factor, imag_data_.as_span(),
                      imag_data_.size());
 }
 
@@ -300,8 +300,8 @@ void FFTFrame::Multiply(const FFTFrame& frame) {
   DCHECK_GE(real2.size(), half_size);
   DCHECK_GE(imag2.size(), half_size);
 
-  vector_math::Zvmul(real1.Data(), imag1.Data(), real2.Data(),
-                     imag2.Data(), real1.Data(), imag1.Data(),
+  vector_math::Zvmul(real1.as_span(), imag1.as_span(), real2.as_span(),
+                     imag2.as_span(), real1.as_span(), imag1.as_span(),
                      half_size);
 
   // Multiply the packed DC/nyquist component

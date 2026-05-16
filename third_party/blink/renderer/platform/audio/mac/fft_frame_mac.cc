@@ -133,7 +133,8 @@ FFTFrame::FFTFrame(unsigned fft_size)
 }
 
 void FFTFrame::DoFFT(base::span<const float> data_span) {
-  vDSP_ctoz((const DSPComplex*)data_span.data(), 2, &frame_, 1, fft_size_ / 2);
+  vDSP_ctoz(reinterpret_cast<const DSPComplex*>(data_span.data()), 2, &frame_,
+            1, fft_size_ / 2);
   vDSP_fft_zrip(fft_setup_, &frame_, 1, log2fft_size_, FFT_FORWARD);
 
   // vDSP_FFT_zrip returns a result that is twice as large as would be expected.
@@ -143,17 +144,20 @@ void FFTFrame::DoFFT(base::span<const float> data_span) {
   // the correct scaling.
   float scale = 0.5f;
 
-  vector_math::Vsmul(frame_.realp, scale, frame_.realp, fft_size_ / 2);
-  vector_math::Vsmul(frame_.imagp, scale, frame_.imagp, fft_size_ / 2);
+  base::span<float> real_span = real_data_.as_span().first(fft_size_ / 2);
+  base::span<float> imag_span = imag_data_.as_span().first(fft_size_ / 2);
+  vector_math::Vsmul(real_span, scale, real_span, fft_size_ / 2);
+  vector_math::Vsmul(imag_span, scale, imag_span, fft_size_ / 2);
 }
 
 void FFTFrame::DoInverseFFT(base::span<float> data_span) {
   vDSP_fft_zrip(fft_setup_, &frame_, 1, log2fft_size_, FFT_INVERSE);
-  vDSP_ztoc(&frame_, 1, (DSPComplex*)data_span.data(), 2, fft_size_ / 2);
+  vDSP_ztoc(&frame_, 1, reinterpret_cast<DSPComplex*>(data_span.data()), 2,
+            fft_size_ / 2);
 
   // Do final scaling so that x == IFFT(FFT(x)).
   float scale = 1.0f / fft_size_;
-  vector_math::Vsmul(data_span.data(), scale, data_span.data(), fft_size_);
+  vector_math::Vsmul(data_span, scale, data_span, fft_size_);
 }
 
 unsigned FFTFrame::MinFFTSize() {

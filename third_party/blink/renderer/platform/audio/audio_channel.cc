@@ -59,7 +59,7 @@ void AudioChannel::Scale(float scale) {
     return;
   }
 
-  vector_math::Vsmul(Data(), scale, MutableData(), length());
+  vector_math::Vsmul(Span(), scale, MutableSpan(), length());
 }
 
 void AudioChannel::CopyFrom(const AudioChannel* source_channel) {
@@ -113,7 +113,7 @@ void AudioChannel::SumFrom(const AudioChannel* source_channel) {
   if (IsSilent()) {
     CopyFrom(source_channel);
   } else {
-    vector_math::Vadd(Data(), source_channel->Data(), MutableData(), length());
+    vector_math::Vadd(Span(), source_channel->Span(), MutableSpan(), length());
   }
 }
 
@@ -122,11 +122,7 @@ float AudioChannel::MaxAbsValue() const {
     return 0;
   }
 
-  float max = 0;
-
-  vector_math::Vmaxmgv(Data(), &max, length());
-
-  return max;
+  return vector_math::Vmaxmgv(Span(), length());
 }
 
 }  // namespace blink

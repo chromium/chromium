@@ -45,7 +45,7 @@ DirectConvolver::DirectConvolver(
   CHECK_GT(convolution_kernel_->size(), 0u);
   buffer_.Allocate(convolution_kernel_->size() - 1 + input_block_size);
   vector_math::PrepareFilterForConv(convolution_kernel_->as_span(),
-                                    &prepared_convolution_kernel_);
+                                    prepared_convolution_kernel_);
 }
 
 void DirectConvolver::Process(base::span<const float> source,
@@ -65,7 +65,7 @@ void DirectConvolver::Process(base::span<const float> source,
 
   vector_math::Conv(buffer_.as_span(), convolution_kernel_->as_span(),
                     destination, frames_to_process,
-                    &prepared_convolution_kernel_);
+                    prepared_convolution_kernel_);
 
   // Copy the last `history_size` samples to the beginning of the buffer.
   buffer_.as_span()
