@@ -47,20 +47,21 @@ constexpr char kResultDetailsKey[] = "resultDetails";
 constexpr char kTestHostname[] = "clients1.google.com";
 constexpr char kTestErrorMessage[] = "Connection refused";
 
-void SetCrosHealthdRunRoutineResponse(healthd::RunRoutineResponsePtr response) {
+void SetCrosHealthdRunRoutineResponse(
+    healthd::RunRoutineResponsePtr& response) {
   cros_healthd::FakeCrosHealthd::Get()->SetRunRoutineResponseForTesting(
-      std::move(response));
+      response);
 }
 
 void SetRunRoutineResponse(int32_t id,
                            healthd::DiagnosticRoutineStatusEnum status) {
-  SetCrosHealthdRunRoutineResponse(
-      healthd::RunRoutineResponse::New(id, status));
+  auto routine_response = healthd::RunRoutineResponse::New(id, status);
+  SetCrosHealthdRunRoutineResponse(routine_response);
 }
 
-void SetCrosHealthdRoutineUpdateResponse(healthd::RoutineUpdatePtr response) {
+void SetCrosHealthdRoutineUpdateResponse(healthd::RoutineUpdatePtr& response) {
   cros_healthd::FakeCrosHealthd::Get()->SetGetRoutineUpdateResponseForTesting(
-      std::move(response));
+      response);
 }
 
 void SetNonInteractiveRoutineUpdateResponse(
@@ -80,7 +81,7 @@ void SetNonInteractiveRoutineUpdateResponse(
   routine_update->output = std::move(output_handle);
   routine_update->routine_update_union = std::move(routine_update_union);
 
-  SetCrosHealthdRoutineUpdateResponse(std::move(routine_update));
+  SetCrosHealthdRoutineUpdateResponse(routine_update);
 }
 
 void VerifyRoutineResult(const mojom::RoutineResultInfo& result_info,

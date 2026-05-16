@@ -200,8 +200,7 @@ class ApiGuardDelegateTest
             std::move(system_info));
 
     auto* fake_cros_healthd = ash::cros_healthd::FakeCrosHealthd::Get();
-    fake_cros_healthd->SetProbeTelemetryInfoResponseForTesting(
-        std::move(telemetry_info));
+    fake_cros_healthd->SetProbeTelemetryInfoResponseForTesting(telemetry_info);
   }
 
   void OpenAppUIUrlAndSetCertificateWithStatus(net::CertStatus cert_status) {

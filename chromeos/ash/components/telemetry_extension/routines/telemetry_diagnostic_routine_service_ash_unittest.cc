@@ -117,9 +117,9 @@ TEST_F(TelemetryDiagnosticsRoutineServiceAshTest, CreateRoutine) {
 }
 
 TEST_F(TelemetryDiagnosticsRoutineServiceAshTest, IsRoutineArgumentSupported) {
+  auto status = healthd::SupportStatus::NewSupported(healthd::Supported::New());
   cros_healthd::FakeCrosHealthd::Get()
-      ->SetIsRoutineArgumentSupportedResponseForTesting(
-          healthd::SupportStatus::NewSupported(healthd::Supported::New()));
+      ->SetIsRoutineArgumentSupportedResponseForTesting(status);
 
   auto arg =
       crosapi::TelemetryDiagnosticRoutineArgument::NewUnrecognizedArgument(

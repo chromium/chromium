@@ -120,9 +120,10 @@ TEST_F(TelemetryEventServiceAshTest, AddEventObserver) {
 
 TEST_F(TelemetryEventServiceAshTest, IsEventSupported) {
   // Set the expected result in cros_healthd.
+  auto expected_result = cros_healthd::mojom::SupportStatus::NewSupported(
+      cros_healthd::mojom::Supported::New());
   cros_healthd::FakeCrosHealthd::Get()->SetIsEventSupportedResponseForTesting(
-      cros_healthd::mojom::SupportStatus::NewSupported(
-          cros_healthd::mojom::Supported::New()));
+      expected_result);
 
   base::test::TestFuture<crosapi::mojom::TelemetryExtensionSupportStatusPtr>
       future;

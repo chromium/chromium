@@ -95,7 +95,7 @@ void SetWifiInterfaceData() {
   telemetry_info->network_interface_result =
       std::move(network_interface_result);
   ::ash::cros_healthd::FakeCrosHealthd::Get()
-      ->SetProbeTelemetryInfoResponseForTesting(std::move(telemetry_info));
+      ->SetProbeTelemetryInfoResponseForTesting(telemetry_info);
 }
 
 std::string DevicePath(const std::string& interface_name) {

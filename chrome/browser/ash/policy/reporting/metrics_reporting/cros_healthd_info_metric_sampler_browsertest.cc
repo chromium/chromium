@@ -93,11 +93,10 @@ IN_PROC_BROWSER_TEST_F(BusInfoSamplerBrowserTest, Thunderbolt) {
       kHealthdSecurityLevels = {
           cros_healthd::ThunderboltSecurityLevel::kNone,
           cros_healthd::ThunderboltSecurityLevel::kSecureLevel};
+  auto thunderbolt_bus_result =
+      ::reporting::test::CreateThunderboltBusResult(kHealthdSecurityLevels);
   ::ash::cros_healthd::FakeCrosHealthd::Get()
-      ->SetProbeTelemetryInfoResponseForTesting(
-          ::reporting::test::CreateThunderboltBusResult(
-              kHealthdSecurityLevels));
-
+      ->SetProbeTelemetryInfoResponseForTesting(thunderbolt_bus_result);
   MissiveClientTestObserver observer(base::BindRepeating(&IsRecordBusInfo));
   test::MockClock::Get().Advance(metrics::kInitialCollectionDelay);
   auto [priority, record] = observer.GetNextEnqueuedRecord();
@@ -147,9 +146,9 @@ class CpuInfoSamplerBrowserTest : public policy::DevicePolicyCrosBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(CpuInfoSamplerBrowserTest, KeylockerUnsupported) {
+  auto cpu_result = ::reporting::test::CreateCpuResult(nullptr);
   ::ash::cros_healthd::FakeCrosHealthd::Get()
-      ->SetProbeTelemetryInfoResponseForTesting(
-          ::reporting::test::CreateCpuResult(nullptr));
+      ->SetProbeTelemetryInfoResponseForTesting(cpu_result);
   MissiveClientTestObserver observer(base::BindRepeating(&IsRecordCpuInfo));
   test::MockClock::Get().Advance(metrics::kInitialCollectionDelay);
   auto [priority, record] = observer.GetNextEnqueuedRecord();
@@ -165,10 +164,10 @@ IN_PROC_BROWSER_TEST_F(CpuInfoSamplerBrowserTest, KeylockerUnsupported) {
 }
 
 IN_PROC_BROWSER_TEST_F(CpuInfoSamplerBrowserTest, KeylockerConfigured) {
+  auto cpu_result = ::reporting::test::CreateCpuResult(
+      ::reporting::test::CreateKeylockerInfo(true));
   ::ash::cros_healthd::FakeCrosHealthd::Get()
-      ->SetProbeTelemetryInfoResponseForTesting(
-          ::reporting::test::CreateCpuResult(
-              ::reporting::test::CreateKeylockerInfo(true)));
+      ->SetProbeTelemetryInfoResponseForTesting(cpu_result);
   MissiveClientTestObserver observer(base::BindRepeating(&IsRecordCpuInfo));
   test::MockClock::Get().Advance(metrics::kInitialCollectionDelay);
   auto [priority, record] = observer.GetNextEnqueuedRecord();
@@ -230,15 +229,13 @@ class MemoryInfoSamplerBrowserTest
 
 IN_PROC_BROWSER_TEST_P(MemoryInfoSamplerBrowserTest, ReportMemoryInfo) {
   const auto& test_case = GetParam();
+  auto memory_result = ::reporting::test::CreateMemoryResult(
+      ::reporting::test::CreateMemoryEncryptionInfo(
+          test_case.healthd_encryption_state, test_case.max_keys,
+          test_case.key_length, test_case.healthd_encryption_algorithm));
 
   ::ash::cros_healthd::FakeCrosHealthd::Get()
-      ->SetProbeTelemetryInfoResponseForTesting(
-          ::reporting::test::CreateMemoryResult(
-              ::reporting::test::CreateMemoryEncryptionInfo(
-                  test_case.healthd_encryption_state, test_case.max_keys,
-                  test_case.key_length,
-                  test_case.healthd_encryption_algorithm)));
-
+      ->SetProbeTelemetryInfoResponseForTesting(memory_result);
   MissiveClientTestObserver observer(base::BindRepeating(&IsRecordMemoryInfo));
   test::MockClock::Get().Advance(metrics::kInitialCollectionDelay);
   AssertMemoryInfo(&observer);
@@ -314,10 +311,10 @@ IN_PROC_BROWSER_TEST_F(InputInfoSamplerBrowserTest,
   std::vector<cros_healthd::TouchscreenDevicePtr> touchscreen_devices;
   touchscreen_devices.push_back(std::move(input_device_first));
   touchscreen_devices.push_back(std::move(input_device_second));
+  auto input_result = ::reporting::test::CreateInputResult(
+      kSampleLibrary, std::move(touchscreen_devices));
   ::ash::cros_healthd::FakeCrosHealthd::Get()
-      ->SetProbeTelemetryInfoResponseForTesting(
-          ::reporting::test::CreateInputResult(kSampleLibrary,
-                                               std::move(touchscreen_devices)));
+      ->SetProbeTelemetryInfoResponseForTesting(input_result);
   MissiveClientTestObserver observer(
       base::BindRepeating(&IsRecordTouchScreenInfo));
   test::MockClock::Get().Advance(metrics::kInitialCollectionDelay);
@@ -420,7 +417,7 @@ IN_PROC_BROWSER_TEST_F(DisplayInfoSamplerBrowserTest, MultipleDisplays) {
           kInternalDisplayName, kEdidVersion3, kSerialNumber3),
       std::move(external_displays));
   ::ash::cros_healthd::FakeCrosHealthd::Get()
-      ->SetProbeTelemetryInfoResponseForTesting(std::move(display_result));
+      ->SetProbeTelemetryInfoResponseForTesting(display_result);
   MissiveClientTestObserver observer(base::BindRepeating(&IsRecordDisplayInfo));
   test::MockClock::Get().Advance(metrics::kInitialCollectionDelay);
 

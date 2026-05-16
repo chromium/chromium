@@ -118,36 +118,36 @@ class FakeCrosHealthd final : public mojom::CrosHealthdDiagnosticsService,
   // Set the list of routines that will be used in the response to any
   // GetAvailableRoutines IPCs received.
   void SetAvailableRoutinesForTesting(
-      std::vector<mojom::DiagnosticRoutineEnum> available_routines);
+      const std::vector<mojom::DiagnosticRoutineEnum>& available_routines);
 
   // Set the RunRoutine response that will be used in the response to any
   // RunSomeRoutine IPCs received.
-  void SetRunRoutineResponseForTesting(mojom::RunRoutineResponsePtr response);
+  void SetRunRoutineResponseForTesting(mojom::RunRoutineResponsePtr& response);
 
   // Set the GetRoutineUpdate response that will be used in the response to any
   // GetRoutineUpdate IPCs received.
-  void SetGetRoutineUpdateResponseForTesting(mojom::RoutineUpdatePtr response);
+  void SetGetRoutineUpdateResponseForTesting(mojom::RoutineUpdatePtr& response);
 
   // Set the TelemetryInfoPtr that will be used in the response to any
   // ProbeTelemetryInfo IPCs received.
   void SetProbeTelemetryInfoResponseForTesting(
-      mojom::TelemetryInfoPtr response_info);
+      mojom::TelemetryInfoPtr& response_info);
 
   // Set the ProcessResultPtr that will be used in the response to any
   // ProbeProcessInfo IPCs received.
-  void SetProbeProcessInfoResponseForTesting(mojom::ProcessResultPtr result);
+  void SetProbeProcessInfoResponseForTesting(mojom::ProcessResultPtr& result);
 
   // Set the MultipleProcessResultPtr that will be used in the response to any
   // ProbeMultipleProcessInfo IPCs received.
   void SetProbeMultipleProcessInfoResponseForTesting(
-      mojom::MultipleProcessResultPtr result);
+      mojom::MultipleProcessResultPtr& result);
 
   // Set the result for a call to `IsEventSupported`.
-  void SetIsEventSupportedResponseForTesting(mojom::SupportStatusPtr result);
+  void SetIsEventSupportedResponseForTesting(mojom::SupportStatusPtr& result);
 
   // Set the result for a call to `IsRoutineArgumentSupported`.
   void SetIsRoutineArgumentSupportedResponseForTesting(
-      mojom::SupportStatusPtr result);
+      mojom::SupportStatusPtr& result);
 
   // Flushes the service provider for routines.
   void FlushRoutineServiceForTesting();

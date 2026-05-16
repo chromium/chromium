@@ -51,7 +51,7 @@ TEST_F(ProbeServiceAshTest, ProbeTelemetryInfoSuccess) {
         std::move(battery_info));
 
     cros_healthd::FakeCrosHealthd::Get()
-        ->SetProbeTelemetryInfoResponseForTesting(std::move(info));
+        ->SetProbeTelemetryInfoResponseForTesting(info);
   }
 
   base::RunLoop run_loop;

@@ -67,7 +67,7 @@ class CrosHealthdMetricsProviderTest : public testing::Test {
     info->block_device_result = ash::cros_healthd::mojom::
         NonRemovableBlockDeviceResult::NewBlockDeviceInfo(std::move(devs));
     ash::cros_healthd::FakeCrosHealthd::Get()
-        ->SetProbeTelemetryInfoResponseForTesting(std::move(info));
+        ->SetProbeTelemetryInfoResponseForTesting(info);
   }
 
   ~CrosHealthdMetricsProviderTest() override {

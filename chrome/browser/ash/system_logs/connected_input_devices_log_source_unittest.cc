@@ -9,7 +9,6 @@
 #include <set>
 #include <string>
 #include <tuple>
-#include <utility>
 #include <vector>
 
 #include "ash/constants/ash_switches.h"
@@ -117,7 +116,7 @@ TEST_F(ConnectedInputDevicesLogSourceTest, Touchpad_single) {
 
   SetCrosHealthdTouchpad(telem_info, driver_name);
   ash::cros_healthd::FakeCrosHealthd::Get()
-      ->SetProbeTelemetryInfoResponseForTesting(std::move(telem_info));
+      ->SetProbeTelemetryInfoResponseForTesting(telem_info);
 
   /* Fetch log data. */
   ConnectedInputDevicesLogSource source;
@@ -160,7 +159,7 @@ TEST_F(ConnectedInputDevicesLogSourceTest, Flex_touchpad_single) {
   telem_info->input_result->get_input_info()->touchpad_library_name =
       flex_library_name;
   ash::cros_healthd::FakeCrosHealthd::Get()
-      ->SetProbeTelemetryInfoResponseForTesting(std::move(telem_info));
+      ->SetProbeTelemetryInfoResponseForTesting(telem_info);
   command_line_->GetProcessCommandLine()->AppendSwitch(
       ash::switches::kRevenBranding);
 
@@ -211,7 +210,7 @@ TEST_F(ConnectedInputDevicesLogSourceTest, Touchpad_single_other_ext) {
   // to be set
   SetCrosHealthdTouchpad(telem_info, t1_driver_name);
   ash::cros_healthd::FakeCrosHealthd::Get()
-      ->SetProbeTelemetryInfoResponseForTesting(std::move(telem_info));
+      ->SetProbeTelemetryInfoResponseForTesting(telem_info);
 
   /* Fetch log data. */
   ConnectedInputDevicesLogSource source;
@@ -258,7 +257,7 @@ TEST_F(ConnectedInputDevicesLogSourceTest, Touchpad_single_ts_ext) {
 
   SetCrosHealthdTouchpad(telem_info, driver_name);
   ash::cros_healthd::FakeCrosHealthd::Get()
-      ->SetProbeTelemetryInfoResponseForTesting(std::move(telem_info));
+      ->SetProbeTelemetryInfoResponseForTesting(telem_info);
 
   /* Fetch log data. */
   ConnectedInputDevicesLogSource source;
@@ -423,7 +422,7 @@ TEST_F(ConnectedInputDevicesLogSourceTest, Touchpad_single_touchscreen_single) {
 
   SetCrosHealthdTouchpad(telem_info, driver_name);
   ash::cros_healthd::FakeCrosHealthd::Get()
-      ->SetProbeTelemetryInfoResponseForTesting(std::move(telem_info));
+      ->SetProbeTelemetryInfoResponseForTesting(telem_info);
 
   /* Fetch log data. */
   ConnectedInputDevicesLogSource source;
@@ -466,7 +465,7 @@ TEST_F(ConnectedInputDevicesLogSourceTest, Touchpad_unknown_vendor_single) {
 
   SetCrosHealthdTouchpad(telem_info, driver_name);
   ash::cros_healthd::FakeCrosHealthd::Get()
-      ->SetProbeTelemetryInfoResponseForTesting(std::move(telem_info));
+      ->SetProbeTelemetryInfoResponseForTesting(telem_info);
 
   /* Fetch log data. */
   ConnectedInputDevicesLogSource source;

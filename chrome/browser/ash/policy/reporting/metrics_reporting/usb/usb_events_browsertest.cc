@@ -158,8 +158,9 @@ IN_PROC_BROWSER_TEST_F(UsbEventsBrowserTest,
   LoginAffiliatedUser();
 
   // Setup fake telemetry to be collected
+  auto usb_telemetry = CreateUsbTelemetry();
   cros_healthd::FakeCrosHealthd::Get()->SetProbeTelemetryInfoResponseForTesting(
-      CreateUsbTelemetry());
+      usb_telemetry);
 
   // Any USB event should trigger event driven telemetry collection
   EmitUsbAddEventForTesting();
@@ -231,8 +232,9 @@ IN_PROC_BROWSER_TEST_F(
   SetUsbPolicy(true);
 
   // Setup fake telemetry.
+  auto usb_telemetry = CreateUsbTelemetry();
   cros_healthd::FakeCrosHealthd::Get()->SetProbeTelemetryInfoResponseForTesting(
-      CreateUsbTelemetry());
+      usb_telemetry);
 
   // This triggers USB telemetry collection, a.k.a USB status updates
   LoginAffiliatedUser();
@@ -285,8 +287,9 @@ IN_PROC_BROWSER_TEST_F(
       Destination::PERIPHERAL_EVENTS);
 
   // Setup fake telemetry.
+  auto usb_telemetry = CreateUsbTelemetry();
   cros_healthd::FakeCrosHealthd::Get()->SetProbeTelemetryInfoResponseForTesting(
-      CreateUsbTelemetry());
+      usb_telemetry);
 
   SetUsbPolicy(false);
 
@@ -306,8 +309,9 @@ IN_PROC_BROWSER_TEST_F(
       Destination::PERIPHERAL_EVENTS);
 
   // Setup fake telemetry.
+  auto usb_telemetry = CreateUsbTelemetry();
   cros_healthd::FakeCrosHealthd::Get()->SetProbeTelemetryInfoResponseForTesting(
-      CreateUsbTelemetry());
+      usb_telemetry);
 
   SetUsbPolicy(false);
 

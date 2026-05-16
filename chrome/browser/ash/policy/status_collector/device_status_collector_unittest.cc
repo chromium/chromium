@@ -815,7 +815,7 @@ void SetFakeCrosHealthdData() {
   }
 
   ash::cros_healthd::FakeCrosHealthd::Get()
-      ->SetProbeTelemetryInfoResponseForTesting(std::move(telemetry_info));
+      ->SetProbeTelemetryInfoResponseForTesting(telemetry_info);
 }
 
 void GetEmptyGraphicsStatus(
@@ -3611,7 +3611,7 @@ TEST_F(DeviceStatusCollectorTest, TestCrosHealthdInfoOptional) {
   telemetry_info->backlight_result = CreateEmptyBacklightResult();
   telemetry_info->fan_result = CreateEmptyFanResult();
   ash::cros_healthd::FakeCrosHealthd::Get()
-      ->SetProbeTelemetryInfoResponseForTesting(std::move(telemetry_info));
+      ->SetProbeTelemetryInfoResponseForTesting(telemetry_info);
   GetStatus();
 
   // Verify the battery data is empty

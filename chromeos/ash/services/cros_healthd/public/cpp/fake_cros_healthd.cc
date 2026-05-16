@@ -118,33 +118,33 @@ FakeCrosHealthd* FakeCrosHealthd::Get() {
 }
 
 void FakeCrosHealthd::SetAvailableRoutinesForTesting(
-    std::vector<mojom::DiagnosticRoutineEnum> available_routines) {
-  available_routines_ = std::move(available_routines);
+    const std::vector<mojom::DiagnosticRoutineEnum>& available_routines) {
+  available_routines_ = available_routines;
 }
 
 void FakeCrosHealthd::SetRunRoutineResponseForTesting(
-    mojom::RunRoutineResponsePtr response) {
-  run_routine_response_ = std::move(response);
+    mojom::RunRoutineResponsePtr& response) {
+  run_routine_response_.Swap(&response);
 }
 
 void FakeCrosHealthd::SetGetRoutineUpdateResponseForTesting(
-    mojom::RoutineUpdatePtr response) {
-  routine_update_response_ = std::move(response);
+    mojom::RoutineUpdatePtr& response) {
+  routine_update_response_.Swap(&response);
 }
 
 void FakeCrosHealthd::SetProbeTelemetryInfoResponseForTesting(
-    mojom::TelemetryInfoPtr response_info) {
-  telemetry_response_info_ = std::move(response_info);
+    mojom::TelemetryInfoPtr& response_info) {
+  telemetry_response_info_.Swap(&response_info);
 }
 
 void FakeCrosHealthd::SetIsEventSupportedResponseForTesting(
-    mojom::SupportStatusPtr result) {
-  is_event_supported_response_ = std::move(result);
+    mojom::SupportStatusPtr& result) {
+  is_event_supported_response_.Swap(&result);
 }
 
 void FakeCrosHealthd::SetIsRoutineArgumentSupportedResponseForTesting(
-    mojom::SupportStatusPtr result) {
-  is_routine_argument_supported_response_ = std::move(result);
+    mojom::SupportStatusPtr& result) {
+  is_routine_argument_supported_response_.Swap(&result);
 }
 
 void FakeCrosHealthd::FlushRoutineServiceForTesting() {
@@ -162,13 +162,13 @@ FakeRoutineControl* FakeCrosHealthd::GetRoutineControlForArgumentTag(
 }
 
 void FakeCrosHealthd::SetProbeProcessInfoResponseForTesting(
-    mojom::ProcessResultPtr result) {
-  process_response_ = std::move(result);
+    mojom::ProcessResultPtr& result) {
+  process_response_.Swap(&result);
 }
 
 void FakeCrosHealthd::SetProbeMultipleProcessInfoResponseForTesting(
-    mojom::MultipleProcessResultPtr result) {
-  multiple_process_response_ = std::move(result);
+    mojom::MultipleProcessResultPtr& result) {
+  multiple_process_response_.Swap(&result);
 }
 
 void FakeCrosHealthd::SetExpectedLastPassedDiagnosticsParametersForTesting(
