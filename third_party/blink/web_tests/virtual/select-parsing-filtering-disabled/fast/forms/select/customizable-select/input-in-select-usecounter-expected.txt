@@ -1,0 +1,9 @@
+CONSOLE WARNING: An <input> tag was parsed within an open <select> tag which caused a </select> end tag to automatically be inserted. Please add the missing </select> end tag, since this behavior may change in future versions of this browser, possibly causing breakage on this page.
+CONSOLE WARNING: An <input> tag was parsed within an open <select> tag which caused a </select> end tag to automatically be inserted. Please add the missing </select> end tag, since this behavior may change in future versions of this browser, possibly causing breakage on this page.
+CONSOLE WARNING: An <input> tag was parsed within an open <select> tag which caused a </select> end tag to automatically be inserted. Please add the missing </select> end tag, since this behavior may change in future versions of this browser, possibly causing breakage on this page.
+CONSOLE WARNING: An <input> tag was parsed within an open <select> tag which caused a </select> end tag to automatically be inserted. Please add the missing </select> end tag, since this behavior may change in future versions of this browser, possibly causing breakage on this page.
+This is a testharness.js-based test.
+[FAIL] UseCounters and parsing behavior for <input> in <select> before <option>s
+  assert_equals: <input> should be included in <select> before <option>s. expected "<select><input><option>option</option></select>" but got "<select></select><input><option>option</option>"
+Harness: the test ran to completion.
+

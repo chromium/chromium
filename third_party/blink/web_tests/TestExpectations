@@ -6688,6 +6688,11 @@ crbug.com/40146374 external/wpt/html/semantics/forms/the-select-element/customiz
 crbug.com/458113204 virtual/selectedcontent-spec-disabled/external/wpt/html/semantics/forms/the-select-element/customizable-select/selectedcontent-nested.html [ Failure ]
 crbug.com/458113204 virtual/selectedcontent-spec-disabled/external/wpt/html/semantics/forms/the-select-element/customizable-select/selectedcontentelement-attr.tentative.html [ Failure ]
 
+crbug.com/402429384 virtual/select-parsing-filtering-disabled/external/wpt/html/semantics/forms/the-select-element/filterable-select/filterable-select-appearance.tentative.html [ Failure ]
+crbug.com/402429384 virtual/select-parsing-filtering-disabled/external/wpt/html/semantics/forms/the-select-element/filterable-select/filterable-select-filtered-pseudo.tentative.html [ Failure ]
+crbug.com/402429384 virtual/select-parsing-filtering-disabled/external/wpt/html/semantics/forms/the-select-element/filterable-select/filterable-select-keyboard-behavior.tentative.html [ Failure ]
+crbug.com/402429384 virtual/select-parsing-filtering-disabled/external/wpt/html/semantics/forms/the-select-element/filterable-select/select-beforefilter.tentative.html [ Failure ]
+
 # The height of the appearance:auto <select> button on mac is different from the reference.
 crbug.com/440471997 [ Mac ] wpt_internal/html/semantics/forms/the-select-element/select-multiple-popup-auto-appearance.html [ Failure ]
 

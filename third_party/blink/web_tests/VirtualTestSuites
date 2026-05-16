@@ -3001,6 +3001,25 @@
     "expires": "Nov 11, 2026"
   },
   {
+    "prefix": "select-parsing-filtering-disabled",
+    "platforms": [
+      "Linux"
+    ],
+    "bases": [
+      "html5lib",
+      "fast/forms/select",
+      "fast/forms/select-popup",
+      "external/wpt/html/semantics/forms/the-select-element"
+    ],
+    "args": [
+      "--disable-features=InputInSelect,FilterableSelect,CustomizableCombobox"
+    ],
+    "owners": [
+      "jarhar@chromium.org"
+    ],
+    "expires": "Feb 23, 2027"
+  },
+  {
     "prefix": "selectedcontent-spec-disabled",
     "platforms": [
       "Linux"
