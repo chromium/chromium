@@ -19,7 +19,7 @@ found in the LICENSE file.
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="16dp"
+        android:padding="@dimen/glic_extra_info_padding"
         app:backgroundStyle="card"
         app:backgroundColor="@macro/default_card_bg_color">
 
@@ -28,7 +28,7 @@ found in the LICENSE file.
             style="@style/TextAppearance.Headline2.Primary"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="@dimen/glic_extra_info_row_top_margin"
             android:text="@string/settings_ai_page_main_title" />
 
         <TextView
@@ -36,14 +36,14 @@ found in the LICENSE file.
             style="@style/TextAppearance.TextMediumThick.Primary"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
+            android:layout_marginTop="@dimen/glic_extra_info_margin"
             android:text="@string/settings_heading_consider" />
 
         <!-- Item 1 -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="@dimen/glic_extra_info_padding"
             android:orientation="horizontal"
             android:gravity="top"
             tools:ignore="UseCompoundDrawables">
@@ -59,7 +59,7 @@ found in the LICENSE file.
                 style="@style/TextAppearance.TextMedium.Secondary"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="12dp"
+                android:layout_marginStart="@dimen/glic_extra_info_text_margin_start"
                 android:text="@string/settings_ai_page_main_sublabel_1" />
         </LinearLayout>
 
@@ -67,7 +67,7 @@ found in the LICENSE file.
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="@dimen/glic_extra_info_padding"
             android:orientation="horizontal"
             android:gravity="top"
             tools:ignore="UseCompoundDrawables">
@@ -83,7 +83,7 @@ found in the LICENSE file.
                 style="@style/TextAppearance.TextMedium.Secondary"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="12dp"
+                android:layout_marginStart="@dimen/glic_extra_info_text_margin_start"
                 android:text="@string/settings_ai_page_main_sublabel_2" />
         </LinearLayout>
 
@@ -91,7 +91,7 @@ found in the LICENSE file.
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="@dimen/glic_extra_info_padding"
             android:orientation="horizontal"
             android:gravity="top"
             tools:ignore="UseCompoundDrawables">
@@ -108,7 +108,7 @@ found in the LICENSE file.
                 style="@style/TextAppearance.TextMedium.Secondary"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="12dp"
+                android:layout_marginStart="@dimen/glic_extra_info_text_margin_start"
                 android:focusable="true"
                 android:text="@string/settings_ai_page_main_managed_sublabel_3" />
         </LinearLayout>

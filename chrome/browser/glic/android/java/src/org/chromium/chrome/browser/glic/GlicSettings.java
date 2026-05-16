@@ -10,13 +10,17 @@ import android.Manifest;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.text.SpannableString;
+import android.text.Spanned;
 import android.text.method.LinkMovementMethod;
+import android.text.style.ForegroundColorSpan;
 import android.view.View;
 import android.widget.TextView;
 
 import androidx.core.content.ContextCompat;
 import androidx.preference.Preference;
 import androidx.preference.Preference.OnPreferenceChangeListener;
+import androidx.preference.TwoStatePreference;
 
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
@@ -44,6 +48,7 @@ import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.text.ChromeClickableSpan;
 import org.chromium.ui.text.SpanApplier;
+import org.chromium.ui.util.AttrUtils;
 
 /** Fragment for Glic configurations in Chrome. */
 @NullMarked
@@ -155,7 +160,8 @@ public class GlicSettings extends ChromeBaseSettingsFragment {
                         R.string
                                 .settings_glic_permissions_default_tab_access_toggle_sublabel_data_protected);
         tabAccessPref.setSummary(
-                SpanApplier.applySpans(summary, getLearnMoreSpanInfo(LEARN_MORE_AI_URL)));
+                SpanApplier.applySpans(
+                        summary, getLearnMoreSpanInfo(LEARN_MORE_AI_URL, tabAccessPref)));
 
         ChromeExpandableSwitchPreference autoBrowsePref =
                 assertNonNull(findPreference(PERMISSION_AUTO_BROWSE));
@@ -187,7 +193,8 @@ public class GlicSettings extends ChromeBaseSettingsFragment {
                 getString(R.string.settings_glic_permissions_chrome_web_actuation_toggle_sublabel);
         autoBrowsePref.setSummary(
                 SpanApplier.applySpans(
-                        autoBrowseSummary, getLearnMoreSpanInfo(AUTO_BROWSE_LEARN_MORE_URL)));
+                        autoBrowseSummary,
+                        getLearnMoreSpanInfo(AUTO_BROWSE_LEARN_MORE_URL, autoBrowsePref)));
         autoBrowsePref.setOnBindExpandedAreaListener(this::setupAutoBrowseExpandedArea);
 
         Preference actorLoginPref = findPreference(PERMISSION_ACTOR_LOGIN);
@@ -219,8 +226,54 @@ public class GlicSettings extends ChromeBaseSettingsFragment {
 
         GlicExtraInfoPreference aiInfoPref = findPreference("glic_custom_box_preference");
         if (aiInfoPref != null) {
-            aiInfoPref.setOnLearnMoreClicked(
-                    () -> customTabLauncher.openUrlInCct(getActivity(), LEARN_MORE_MANAGED_AI_URL));
+            if (GlicEnabling.isProfileManaged(getProfile())) {
+                aiInfoPref.setLayoutResource(R.layout.glic_settings_extra_info_enterprise);
+                aiInfoPref.setTextResId(
+                        R.string.glic_managed_by_organization, /* applySpan= */ false);
+                aiInfoPref.setOrder(999);
+                aiInfoPref.setOnLearnMoreClicked(
+                        () ->
+                                customTabLauncher.openUrlInCct(
+                                        getActivity(), LEARN_MORE_MANAGED_AI_URL));
+            } else {
+                aiInfoPref.setLayoutResource(R.layout.glic_settings_extra_info);
+                aiInfoPref.setOnLearnMoreClicked(
+                        () -> customTabLauncher.openUrlInCct(getActivity(), LEARN_MORE_AI_URL));
+            }
+        }
+
+        if (GlicEnabling.isDisabledByPolicy(getProfile())) {
+            String[] prefsToDisable = {
+                PREFERENCE_BUTTON,
+                PREFERENCE_BUTTON_TOGGLE,
+                PERMISSION_LOCATION,
+                PREF_KEY_GLIC_PERMISSIONS_ACTIVITY,
+                PREF_KEY_GLIC_EXTENSIONS
+            };
+            for (String key : prefsToDisable) {
+                Preference pref = findPreference(key);
+                if (pref != null) {
+                    pref.setEnabled(false);
+                    if (pref instanceof TwoStatePreference) {
+                        ((TwoStatePreference) pref).setChecked(false);
+                    }
+                }
+            }
+
+            if (tabAccessPref != null) {
+                setupDisabledPreference(
+                        tabAccessPref,
+                        R.string
+                                .settings_glic_permissions_default_tab_access_toggle_sublabel_data_protected,
+                        LEARN_MORE_AI_URL);
+            }
+
+            if (autoBrowsePref != null) {
+                setupDisabledPreference(
+                        autoBrowsePref,
+                        R.string.settings_glic_permissions_chrome_web_actuation_toggle_sublabel,
+                        AUTO_BROWSE_LEARN_MORE_URL);
+            }
         }
     }
 
@@ -357,41 +410,82 @@ public class GlicSettings extends ChromeBaseSettingsFragment {
         UserPrefs.get(getProfile()).setBoolean(GlicPrefNames.GLIC_GEOLOCATION_ENABLED, false);
     }
 
+    private void setupDisabledPreference(
+            ChromeExpandableSwitchPreference pref, int summaryResId, String url) {
+        pref.setChecked(false);
+        pref.setEnabled(false);
+        pref.setSelectable(false);
+        pref.setExpanded(true);
+
+        String summary = getString(summaryResId);
+        SpannableString spannable =
+                SpanApplier.applySpans(summary, getLearnMoreSpanInfo(url, pref));
+        spannable.setSpan(
+                new ForegroundColorSpan(pref.getDisabledColor()),
+                0,
+                spannable.length(),
+                Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        pref.setSummary(spannable);
+    }
+
     private void setupAutoBrowseExpandedArea(View expandedArea) {
         TextView consider2 =
                 expandedArea.findViewById(
                         R.id.glic_auto_browse_consider_user_responsibility_description);
         if (consider2 != null && consider2.getMovementMethod() == null) {
+            ChromeExpandableSwitchPreference autoBrowsePref =
+                    assertNonNull(findPreference(PERMISSION_AUTO_BROWSE));
             String text =
                     getString(R.string.settings_glic_permissions_web_actuation_toggle_consider_2);
             consider2.setText(
                     SpanApplier.applySpans(
                             text,
-                            createLinkSpanInfo("$1", AUTO_BROWSE_CONSIDER_SAFELY_URL),
                             createLinkSpanInfo(
-                                    "$2", AUTO_BROWSE_CONSIDER_UNEXPECTED_RESULTS_URL)));
+                                    "$1", AUTO_BROWSE_CONSIDER_SAFELY_URL, autoBrowsePref),
+                            createLinkSpanInfo(
+                                    "$2",
+                                    AUTO_BROWSE_CONSIDER_UNEXPECTED_RESULTS_URL,
+                                    autoBrowsePref)));
             consider2.setMovementMethod(LinkMovementMethod.getInstance());
+
+            if (GlicEnabling.isDisabledByPolicy(getProfile())) {
+                consider2.setTextColor(autoBrowsePref.getDisabledColor());
+                // Re-enable the view so links remain clickable, even though it looks disabled.
+                consider2.setEnabled(true);
+            }
         }
     }
 
-    private SpanApplier.SpanInfo createSpanInfo(String openTag, String url) {
+    private SpanApplier.SpanInfo createSpanInfo(
+            String openTag, String url, ChromeExpandableSwitchPreference pref) {
         SettingsCustomTabLauncher customTabLauncher = getCustomTabLauncher();
+        int color;
+        if (GlicEnabling.isDisabledByPolicy(getProfile())) {
+            color = pref.getDisabledColor();
+        } else {
+            int defaultColor = getContext().getColor(R.color.default_text_color_link_baseline);
+            color =
+                    AttrUtils.resolveColor(
+                            getContext().getTheme(), R.attr.globalClickableSpanColor, defaultColor);
+        }
         return new SpanApplier.SpanInfo(
                 openTag,
                 "</a>",
                 new ChromeClickableSpan(
-                        getContext(),
+                        color,
                         v -> {
                             customTabLauncher.openUrlInCct(getContext(), url);
                         }));
     }
 
-    private SpanApplier.SpanInfo createLinkSpanInfo(String placeholderIndex, String url) {
-        return createSpanInfo("<a href=\"" + placeholderIndex + "\" target=\"_blank\">", url);
+    private SpanApplier.SpanInfo createLinkSpanInfo(
+            String placeholderIndex, String url, ChromeExpandableSwitchPreference pref) {
+        return createSpanInfo("<a href=\"" + placeholderIndex + "\" target=\"_blank\">", url, pref);
     }
 
-    private SpanApplier.SpanInfo getLearnMoreSpanInfo(String url) {
-        return createSpanInfo("<a href=\"#\">", url);
+    private SpanApplier.SpanInfo getLearnMoreSpanInfo(
+            String url, ChromeExpandableSwitchPreference pref) {
+        return createSpanInfo("<a href=\"#\">", url, pref);
     }
 
     @Override

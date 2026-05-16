@@ -20,6 +20,13 @@ found in the LICENSE file.
     <dimen name="glic_promo_description_margin_top">8dp</dimen>
     <dimen name="glic_promo_description_margin_bottom">24dp</dimen>
     <dimen name="glic_promo_description_line_spacing">4dp</dimen>
+
+    <!-- Glic extra info dimensions -->
+    <dimen name="glic_extra_info_text_margin_start">12dp</dimen>
+    <dimen name="glic_extra_info_padding">16dp</dimen>
+    <dimen name="glic_extra_info_row_top_margin">8dp</dimen>
+    <dimen name="glic_extra_info_margin">24dp</dimen>
+
     <!-- Glic task menu dimensions -->
     <dimen name="glic_task_menu_max_width">300dp</dimen>
     <dimen name="glic_task_menu_end_offset">16dp</dimen>

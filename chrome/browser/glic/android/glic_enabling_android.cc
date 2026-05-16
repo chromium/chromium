@@ -3,8 +3,11 @@
 // found in the LICENSE file.
 #include "chrome/browser/glic/public/glic_enabling.h"
 
+#include "chrome/browser/enterprise/browser_management/browser_management_service.h"
+#include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/glic/android/jni_headers/GlicEnabling_jni.h"
 #include "chrome/browser/profiles/profile.h"
+
 namespace glic {
 bool JNI_GlicEnabling_IsEnabledByFlags(JNIEnv* env) {
   return GlicEnabling::IsEnabledByGlobalCriteria();
@@ -21,6 +24,17 @@ bool JNI_GlicEnabling_ShouldShowSettingsPage(JNIEnv* env, Profile* profile) {
 bool JNI_GlicEnabling_IsReadyForProfile(JNIEnv* env, Profile* profile) {
   return GlicEnabling::IsReadyForProfile(profile);
 }
+
+bool JNI_GlicEnabling_IsDisabledByPolicy(JNIEnv* env, Profile* profile) {
+  return GlicEnabling::EnablementForProfile(profile).DisallowedByAdmin();
+}
+
+bool JNI_GlicEnabling_IsProfileManaged(JNIEnv* env, Profile* profile) {
+  policy::ManagementService* management_service =
+      policy::ManagementServiceFactory::GetForProfile(profile);
+  return management_service && management_service->IsManaged();
+}
+
 void JNI_GlicEnabling_SetBypassEnablementChecksForTesting(JNIEnv* env,
                                                           bool bypass) {
   GlicEnabling::SetBypassEnablementChecksForTesting(bypass);

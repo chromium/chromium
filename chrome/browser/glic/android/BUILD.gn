@@ -27,6 +27,7 @@ android_resources("java_resources") {
     "java/res/layout/glic_default_tab_access.xml",
     "java/res/layout/glic_promo_bottom_sheet.xml",
     "java/res/layout/glic_settings_extra_info.xml",
+    "java/res/layout/glic_settings_extra_info_enterprise.xml",
     "java/res/layout/preference_widget_revoke.xml",
     "java/res/raw/glic_spinner.json",
     "java/res/values/dimens.xml",

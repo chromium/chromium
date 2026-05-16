@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2026 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:ignore="UnusedResources"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="@android:color/transparent" >
+
+    <org.chromium.components.browser_ui.widget.containment.ContainedLinearLayout
+        android:id="@+id/preview_section"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="@dimen/glic_extra_info_padding"
+        app:backgroundStyle="card"
+        app:backgroundColor="@macro/default_card_bg_color">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            tools:ignore="UseCompoundDrawables">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:importantForAccessibility="no"
+                android:src="@drawable/ic_domain"
+                app:tint="@macro/default_icon_color_accent1" />
+
+            <TextView
+                android:id="@+id/ai_info_managed_sublabel_3"
+                style="@style/TextAppearance.TextMedium.Secondary"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/glic_extra_info_text_margin_start"
+                android:focusable="true"
+                android:text="@string/glic_disabled_by_admin_notice_header" />
+        </LinearLayout>
+    </org.chromium.components.browser_ui.widget.containment.ContainedLinearLayout>
+
+</LinearLayout>

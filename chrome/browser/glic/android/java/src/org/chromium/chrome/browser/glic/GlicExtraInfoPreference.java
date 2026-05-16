@@ -24,9 +24,18 @@ import org.chromium.ui.text.SpanApplier;
 @NullMarked
 public class GlicExtraInfoPreference extends ChromeBasePreference {
     private @Nullable Runnable mOnLearnMoreClicked;
+    private int mTextResId = R.string.settings_ai_page_main_managed_sublabel_3;
+    private boolean mApplySpan = true;
 
     public GlicExtraInfoPreference(Context context, AttributeSet attrs) {
         super(context, attrs);
+    }
+
+    /** Sets the text resource ID and whether to apply the link span. */
+    public void setTextResId(int resId, boolean applySpan) {
+        mTextResId = resId;
+        mApplySpan = applySpan;
+        notifyChanged();
     }
 
     /** Sets the callback that should fire when the learn more link is clicked. */
@@ -43,21 +52,26 @@ public class GlicExtraInfoPreference extends ChromeBasePreference {
         if (textView == null) return;
 
         Context context = getContext();
-        String fullText = context.getString(R.string.settings_ai_page_main_managed_sublabel_3);
+        String fullText = context.getString(mTextResId);
 
-        SpanApplier.SpanInfo spanInfo =
-                new SpanApplier.SpanInfo(
-                        "<link>",
-                        "</link>",
-                        new ChromeClickableSpan(
-                                context,
-                                v -> {
-                                    if (mOnLearnMoreClicked != null) {
-                                        mOnLearnMoreClicked.run();
-                                    }
-                                }));
+        if (mApplySpan) {
+            SpanApplier.SpanInfo spanInfo =
+                    new SpanApplier.SpanInfo(
+                            "<link>",
+                            "</link>",
+                            new ChromeClickableSpan(
+                                    context,
+                                    v -> {
+                                        if (mOnLearnMoreClicked != null) {
+                                            mOnLearnMoreClicked.run();
+                                        }
+                                    }));
 
-        textView.setText(SpanApplier.applySpans(fullText, spanInfo));
-        textView.setMovementMethod(LinkMovementMethod.getInstance());
+            textView.setText(SpanApplier.applySpans(fullText, spanInfo));
+            textView.setMovementMethod(LinkMovementMethod.getInstance());
+        } else {
+            textView.setText(fullText);
+            textView.setMovementMethod(null);
+        }
     }
 }

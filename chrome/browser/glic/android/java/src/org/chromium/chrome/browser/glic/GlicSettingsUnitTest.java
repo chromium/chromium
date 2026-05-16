@@ -77,12 +77,14 @@ public class GlicSettingsUnitTest {
     @Mock private PrefChangeRegistrar.Natives mPrefChangeRegistrarJniMock;
     @Mock private GlicKeyedServiceFactory.Natives mGlicKeyedServiceFactoryJniMock;
     @Mock private GlicKeyedService mGlicKeyedServiceMock;
+    @Mock private GlicEnabling.Natives mGlicEnablingJniMock;
 
     @Before
     public void setUp() {
         UserPrefsJni.setInstanceForTesting(mUserPrefsJniMock);
         PrefChangeRegistrarJni.setInstanceForTesting(mPrefChangeRegistrarJniMock);
         GlicKeyedServiceFactoryJni.setInstanceForTesting(mGlicKeyedServiceFactoryJniMock);
+        GlicEnablingJni.setInstanceForTesting(mGlicEnablingJniMock);
 
         when(mUserPrefsJniMock.get(mProfileMock)).thenReturn(mPrefServiceMock);
         when(mGlicKeyedServiceFactoryJniMock.getForProfile(mProfileMock))
@@ -356,5 +358,18 @@ public class GlicSettingsUnitTest {
         assertFalse(
                 "Preference glic_preference_section should not be visible",
                 preferenceCategory.isVisible());
+    }
+
+    @Test
+    public void testEnterpriseMode_MovesToBottom() {
+        when(mGlicEnablingJniMock.isProfileManaged(mProfileMock)).thenReturn(true);
+        when(mGlicEnablingJniMock.isDisabledByPolicy(mProfileMock)).thenReturn(false);
+
+        GlicSettings fragment = launchFragment();
+
+        GlicExtraInfoPreference aiInfoPref = fragment.findPreference("glic_custom_box_preference");
+        assertTrue("Preference glic_custom_box_preference should exist", aiInfoPref != null);
+
+        assertEquals("Order should be 999 for enterprise", 999, aiInfoPref.getOrder());
     }
 }

@@ -16,12 +16,14 @@ import android.view.accessibility.AccessibilityEvent;
 import android.widget.TextView;
 
 import androidx.annotation.LayoutRes;
+import androidx.core.content.ContextCompat;
 import androidx.preference.PreferenceViewHolder;
 
 import com.google.android.material.materialswitch.MaterialSwitch;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.widget.CheckableImageView;
 
 /** A switch preference that can be expanded to show more details. */
@@ -64,8 +66,59 @@ public class ChromeExpandableSwitchPreference extends ChromeSwitchPreference {
     }
 
     @Override
+    public void setEnabled(boolean enabled) {
+        super.setEnabled(enabled);
+        // We rely on isEnabled() in onBindViewHolder to apply custom styling
+        // for disabled state while keeping links clickable.
+    }
+
+    @Override
     public void onBindViewHolder(PreferenceViewHolder holder) {
         super.onBindViewHolder(holder);
+
+        TextView title = (TextView) holder.findViewById(android.R.id.title);
+        TextView summary = (TextView) holder.findViewById(android.R.id.summary);
+
+        if (!isEnabled()) {
+            // Disable the whole preference view hierarchy.
+            ViewUtils.setEnabledRecursive(holder.itemView, false);
+
+            // TODO(crbug.com/513357574): Handle accessibility for disabled preferences properly.
+            // Just graying it out visually might not be enough for TalkBack.
+
+            // Re-enable the summary view specifically to allow hyperlinks within it to remain
+            // clickable, even though the rest of the preference is styled as disabled.
+            if (summary != null) {
+                summary.setEnabled(true);
+            }
+
+            // Use theme color for disabled state instead of manual alpha manipulation.
+            int disabledColor = getDisabledColor();
+
+            if (title != null) {
+                title.setTextColor(disabledColor);
+            }
+
+            if (summary != null) {
+                summary.setTextColor(disabledColor);
+            }
+        } else {
+            // Re-enable the whole preference view hierarchy.
+            ViewUtils.setEnabledRecursive(holder.itemView, true);
+
+            // Restore default text colors.
+            if (title != null) {
+                title.setTextColor(
+                        ContextCompat.getColor(getContext(), R.color.default_text_color_list));
+            }
+
+            if (summary != null) {
+                summary.setTextColor(
+                        ContextCompat.getColor(
+                                getContext(), R.color.default_text_color_secondary_list));
+            }
+        }
+
         if (mDrawable == null) {
             mDrawable = SettingsUtils.createExpandArrow(getContext());
         }
@@ -87,15 +140,20 @@ public class ChromeExpandableSwitchPreference extends ChromeSwitchPreference {
         }
         if (expandedArea != null) {
             expandedArea.setVisibility(mExpanded ? View.VISIBLE : View.GONE);
-            if (mExpanded && mOnBindExpandedAreaListener != null) {
-                mOnBindExpandedAreaListener.onBindExpandedArea(expandedArea);
-            }
             // Catch the click event on the expanded area to prevent it from propagating to the
             // parent view. This prevents the preference from toggling when the user interacts
             // with the expanded content.
             expandedArea.setOnClickListener(v -> {});
+            if (!isEnabled()) {
+                ViewUtils.setEnabledRecursive(expandedArea, false);
+            }
+            // Call the listener after setting up the view and handling disabled state,
+            // so the listener can override the enabled state of specific child views if needed.
+            if (mExpanded && mOnBindExpandedAreaListener != null) {
+                mOnBindExpandedAreaListener.onBindExpandedArea(expandedArea);
+            }
         }
-        TextView summary = (TextView) holder.findViewById(android.R.id.summary);
+
         if (summary != null) {
             summary.setVisibility(getSummary() != null ? View.VISIBLE : View.GONE);
             if (getSummary() instanceof SpannableString) {
@@ -138,6 +196,11 @@ public class ChromeExpandableSwitchPreference extends ChromeSwitchPreference {
     /** Returns whether the preference is expanded. */
     public boolean isExpanded() {
         return mExpanded;
+    }
+
+    public int getDisabledColor() {
+        // Read the disabled color from resources directly.
+        return getContext().getColor(R.color.default_text_color_disabled_list);
     }
 
     private void updatePreferenceContentDescription(View view) {
