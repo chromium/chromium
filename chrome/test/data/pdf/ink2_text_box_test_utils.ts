@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {hexToColor, Ink2Manager, PdfViewerPrivateProxyImpl, TEXT_COLORS, TextAlignment, TextStyle, TextTypeface} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
+import {hexToColor, Ink2Manager, PdfViewerPrivateProxyImpl, TEXT_COLORS, TextAlignment, TextAnnotationSource, TextStyle, TextTypeface} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 import type {TextAnnotation, TextAnnotationMessageData, TextBoxRect} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 import {keyDownOn, keyUpOn} from 'chrome://webui-test/keyboard_mock_interactions.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
@@ -144,9 +144,9 @@ export function verifyFinishTextAnnotationMessage(
   const expectedMessageData: TextAnnotationMessageData = {
     ...expectedAnnotation,
     isEdited: expectedIsEdited,
-    isUser: true,
     newTypefaces: [],
     pdfZoom: expectedPdfZoom,
+    source: TextAnnotationSource.USER,
   };
   assertDeepEquals(expectedMessageData, message.data);
 }

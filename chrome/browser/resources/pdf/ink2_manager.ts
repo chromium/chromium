@@ -6,7 +6,7 @@ import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 
 import type {AnnotationBrush, Color, Point, TextAnnotation, TextAnnotationMessageData, TextAttributes, TextBoxRect, TextStyles} from './constants.js';
-import {AnnotationBrushType, TextAlignment, TextStyle, TextTypeface} from './constants.js';
+import {AnnotationBrushType, TextAlignment, TextAnnotationSource, TextStyle, TextTypeface} from './constants.js';
 import {PluginController, PluginControllerEventType} from './controller.js';
 import {UndoRedoStack} from './undo_redo_stack.js';
 import type {Viewport, ViewportRect} from './viewport.js';
@@ -588,9 +588,9 @@ export class Ink2Manager extends EventTarget {
     const messageData: TextAnnotationMessageData = {
       ...annotation,
       isEdited,
-      isUser: true,
       newTypefaces,
       pdfZoom: this.viewport_.getZoom(),
+      source: TextAnnotationSource.USER,
     };
     this.pluginController_.finishTextAnnotation(messageData);
     this.existingAnnotationAttributes_ = null;
@@ -667,7 +667,8 @@ export class Ink2Manager extends EventTarget {
     }
 
     if (state.type === 'text') {
-      this.applyTextUndoRedo_(state.before, state.after);
+      this.applyTextUndoRedo_(
+          state.before, state.after, TextAnnotationSource.UNDO);
     }
     this.pluginController_.undo();
   }
@@ -679,13 +680,15 @@ export class Ink2Manager extends EventTarget {
     }
 
     if (state.type === 'text') {
-      this.applyTextUndoRedo_(state.after, state.before);
+      this.applyTextUndoRedo_(
+          state.after, state.before, TextAnnotationSource.REDO);
     }
     this.pluginController_.redo();
   }
 
   private applyTextUndoRedo_(
-      update: TextAnnotation|null, previous: TextAnnotation|null) {
+      update: TextAnnotation|null, previous: TextAnnotation|null,
+      source: TextAnnotationSource) {
     const isDeletion = update === null;
     // If deleting, the relevant annotation is the "previous" one, which is
     // being deleted. Otherwise, the relevant annotation is the update.
@@ -706,9 +709,9 @@ export class Ink2Manager extends EventTarget {
     const messageData: TextAnnotationMessageData = {
       ...annotation,
       isEdited: true,
-      isUser: false,
       newTypefaces: [],
       pdfZoom: this.viewport_.getZoom(),
+      source,
     };
     if (isDeletion) {
       messageData.text = '';

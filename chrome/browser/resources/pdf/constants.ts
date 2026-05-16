@@ -18,6 +18,12 @@ export enum AnnotationBrushType {
   PEN = 'pen',
 }
 
+export enum TextAnnotationSource {
+  USER = 'user',
+  UNDO = 'undo',
+  REDO = 'redo',
+}
+
 export interface Color {
   r: number;
   g: number;
@@ -52,11 +58,11 @@ export interface TextAnnotation {
 
 export interface TextAnnotationMessageData extends TextAnnotation {
   isEdited: boolean;
-  isUser: boolean;
   // Serialized SkTypeface font data that the backend needs. Only contains
   // fonts that the backend has never seen before.
   newTypefaces: Typeface[];
   pdfZoom: number;
+  source: TextAnnotationSource;
 }
 
 export enum TextAlignment {

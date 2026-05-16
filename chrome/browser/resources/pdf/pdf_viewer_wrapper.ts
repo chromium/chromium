@@ -12,7 +12,7 @@ export type {BeforeUnloadProxy} from './before_unload_proxy.js';
 export type {Bookmark} from './bookmark_type.js';
 export {BrowserApi, ZoomBehavior} from './browser_api.js';
 // <if expr="enable_pdf_ink2">
-export {AnnotationBrushType, TextAlignment, TextStyle, TextTypeface} from './constants.js';
+export {AnnotationBrushType, TextAlignment, TextAnnotationSource, TextStyle, TextTypeface} from './constants.js';
 export type {AnnotationBrush, Color, TextAnnotation, TextAnnotationMessageData, TextAttributes, TextBoxRect} from './constants.js';
 // </if>
 // <if expr="enable_pdf_ink2">
