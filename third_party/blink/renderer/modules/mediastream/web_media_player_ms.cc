@@ -1107,22 +1107,25 @@ bool WebMediaPlayerMS::DidLoadingProgress() {
 
 void WebMediaPlayerMS::Paint(cc::PaintCanvas* canvas,
                              const gfx::Rect& rect,
-                             const cc::PaintFlags& flags) {
+                             const cc::PaintFlags& flags,
+                             bool force_pixel_readback) {
   DVLOG(3) << __func__;
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
-  const scoped_refptr<media::VideoFrame> frame = compositor_->GetCurrentFrame();
+  scoped_refptr<media::VideoFrame> frame = compositor_->GetCurrentFrame();
 
   scoped_refptr<viz::RasterContextProvider> provider;
   if (frame && frame->HasSharedImage()) {
     provider = Platform::Current()->SharedMainThreadContextProvider();
     // GPU Process crashed.
-    if (!provider)
+    if (!provider) {
       return;
+    }
   }
   media::PaintCanvasVideoRenderer::PaintParams paint_params;
   paint_params.dest_rect = gfx::RectF(rect);
   paint_params.transformation = GetFrameTransformation(frame);
+  paint_params.force_pixel_readback = force_pixel_readback;
   video_renderer_.Paint(frame, canvas, flags, paint_params, provider.get());
 }
 

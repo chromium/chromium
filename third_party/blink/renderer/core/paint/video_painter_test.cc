@@ -151,8 +151,9 @@ class MockWebMediaPlayer : public StubWebMediaPlayer {
       : StubWebMediaPlayer(client) {}
   MOCK_CONST_METHOD0(HasAvailableVideoFrame, bool());
   MOCK_CONST_METHOD0(HasReadableVideoFrame, bool());
-  MOCK_METHOD3(Paint,
-               void(cc::PaintCanvas*, const gfx::Rect&, const cc::PaintFlags&));
+  MOCK_METHOD4(
+      Paint,
+      void(cc::PaintCanvas*, const gfx::Rect&, const cc::PaintFlags&, bool));
 };
 
 class TestWebFrameClientImpl : public frame_test_helpers::TestWebFrameClient {
@@ -312,7 +313,8 @@ TEST_P(VideoPaintPreviewTest, DISABLED_PosterFlagToggleFrameCapture) {
   auto* element = To<HTMLMediaElement>(GetDocument().body()->firstChild());
   MockWebMediaPlayer* player =
       static_cast<MockWebMediaPlayer*>(element->GetWebMediaPlayer());
-  EXPECT_CALL(*player, Paint(testing::_, testing::_, testing::_)).Times(0);
+  EXPECT_CALL(*player, Paint(testing::_, testing::_, testing::_, testing::_))
+      .Times(0);
   auto record = CapturePaintPreview(/*skip_accelerated_content=*/true);
 
   std::vector<std::pair<GURL, SkRect>> links;
@@ -325,7 +327,7 @@ TEST_P(VideoPaintPreviewTest, DISABLED_PosterFlagToggleFrameCapture) {
   EXPECT_EQ(1U, CountImagesOfType(record, cc::ImageType::kGIF));
 
   // Capture using video frame.
-  EXPECT_CALL(*player, Paint(testing::_, testing::_, testing::_));
+  EXPECT_CALL(*player, Paint(testing::_, testing::_, testing::_, testing::_));
   record = CapturePaintPreview(/*skip_accelerated_content=*/false);
 
   links.clear();
@@ -356,7 +358,8 @@ TEST_P(VideoPaintPreviewTest, PosterFlagToggleNoPosterFrameCapture) {
   auto* element = To<HTMLMediaElement>(GetDocument().body()->firstChild());
   MockWebMediaPlayer* player =
       static_cast<MockWebMediaPlayer*>(element->GetWebMediaPlayer());
-  EXPECT_CALL(*player, Paint(testing::_, testing::_, testing::_)).Times(0);
+  EXPECT_CALL(*player, Paint(testing::_, testing::_, testing::_, testing::_))
+      .Times(0);
 
   // Capture without poster.
   auto record = CapturePaintPreview(/*skip_accelerated_content=*/true);

@@ -564,9 +564,10 @@ void HTMLVideoElement::RequestVisibility(
 
 void HTMLVideoElement::PaintCurrentFrame(cc::PaintCanvas* canvas,
                                          const gfx::Rect& dest_rect,
-                                         const cc::PaintFlags& flags) const {
+                                         const cc::PaintFlags& flags,
+                                         bool force_pixel_readback) const {
   if (auto* wmp = GetWebMediaPlayer()) {
-    wmp->Paint(canvas, dest_rect, flags);
+    wmp->Paint(canvas, dest_rect, flags, force_pixel_readback);
   }
 }
 
@@ -672,6 +673,16 @@ unsigned HTMLVideoElement::webkitDecodedFrameCount() const {
     return wmp->DecodedFrameCount();
   }
   return 0;
+}
+
+void HTMLVideoElement::DidChangeIsCanvasOrInCanvasSubtree() {
+  HTMLMediaElement::DidChangeIsCanvasOrInCanvasSubtree();
+  if (IsCanvasOrInCanvasSubtree()) {
+    UpdateLayoutObject();
+    if (auto* wmp = GetWebMediaPlayer()) {
+      wmp->RequestVideoFrameCallback();
+    }
+  }
 }
 
 unsigned HTMLVideoElement::webkitDroppedFrameCount() const {
@@ -994,6 +1005,12 @@ void HTMLVideoElement::OnIntersectionChangedForLazyLoad(
 void HTMLVideoElement::OnWebMediaPlayerCreated() {
   if (auto* vfc_requester = VideoFrameCallbackRequester::From(*this))
     vfc_requester->OnWebMediaPlayerCreated();
+
+  if (IsCanvasOrInCanvasSubtree()) {
+    if (auto* wmp = GetWebMediaPlayer()) {
+      wmp->RequestVideoFrameCallback();
+    }
+  }
 }
 
 void HTMLVideoElement::OnWebMediaPlayerCleared() {
@@ -1034,6 +1051,15 @@ void HTMLVideoElement::AttributeChanged(
 void HTMLVideoElement::OnRequestVideoFrameCallback() {
   if (auto* vfc_requester = VideoFrameCallbackRequester::From(*this)) {
     vfc_requester->OnRequestVideoFrameCallback();
+  }
+
+  if (IsCanvasOrInCanvasSubtree()) {
+    if (GetLayoutObject()) {
+      GetLayoutObject()->SetShouldDoFullPaintInvalidation();
+    }
+    if (auto* wmp = GetWebMediaPlayer()) {
+      wmp->RequestVideoFrameCallback();
+    }
   }
 }
 

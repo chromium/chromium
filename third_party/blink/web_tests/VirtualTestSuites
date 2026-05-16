@@ -6489,5 +6489,16 @@
       "masonf@chromium.org"
     ],
     "expires": "Dec 1, 2026"
+  },
+  {
+    "prefix": "canvas-draw-element-image-hardware-video",
+    "owners": ["paint-dev@chromium.org"],
+    "platforms": ["Linux", "Mac", "Win"],
+    "bases": [
+      "wpt_internal/html/canvas/drawElementImage/video.html",
+      "wpt_internal/html/canvas/drawElementImage/video-worker.html"
+    ],
+    "args": ["--use-gpu-in-tests", "--enable-threaded-compositing"],
+    "expires": "never"
   }
 ]

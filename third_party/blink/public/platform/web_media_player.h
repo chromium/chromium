@@ -332,7 +332,8 @@ class WebMediaPlayer {
   // Renders the current frame into the provided cc::PaintCanvas.
   virtual void Paint(cc::PaintCanvas*,
                      const gfx::Rect&,
-                     const cc::PaintFlags&) = 0;
+                     const cc::PaintFlags&,
+                     bool force_pixel_readback) = 0;
 
   // Similar to Paint(), but just returns the frame directly instead of trying
   // to upload or convert it. Note: This may kick off a process to update the

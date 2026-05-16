@@ -87,7 +87,8 @@ class CORE_EXPORT HTMLVideoElement final
   // Used by canvas to gain raw pixel access.
   void PaintCurrentFrame(cc::PaintCanvas*,
                          const gfx::Rect&,
-                         const cc::PaintFlags&) const;
+                         const cc::PaintFlags&,
+                         bool force_pixel_readback) const;
 
   bool HasAvailableVideoFrame() const;
   bool HasReadableVideoFrame() const;
@@ -230,6 +231,7 @@ class CORE_EXPORT HTMLVideoElement final
   void RequestVisibility(RequestVisibilityCallback request_visibility_cb) final;
 
   void DidMoveToNewDocument(Document& old_document) override;
+  void DidChangeIsCanvasOrInCanvasSubtree() override;
 
   void UpdatePictureInPictureAvailability();
 

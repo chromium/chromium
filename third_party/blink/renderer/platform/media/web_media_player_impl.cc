@@ -1563,7 +1563,8 @@ bool WebMediaPlayerImpl::DidLoadingProgress() {
 
 void WebMediaPlayerImpl::Paint(cc::PaintCanvas* canvas,
                                const gfx::Rect& rect,
-                               const cc::PaintFlags& flags) {
+                               const cc::PaintFlags& flags,
+                               bool force_pixel_readback) {
   DCHECK(main_task_runner_->BelongsToCurrentThread());
   TRACE_EVENT0("media", "WebMediaPlayerImpl:paint");
 
@@ -1577,6 +1578,7 @@ void WebMediaPlayerImpl::Paint(cc::PaintCanvas* canvas,
   paint_params.dest_rect = gfx::RectF(rect);
   paint_params.transformation =
       pipeline_metadata_.video_decoder_config.video_transformation();
+  paint_params.force_pixel_readback = force_pixel_readback;
 
   video_renderer_.Paint(video_frame, canvas, flags, paint_params,
                         raster_context_provider_.get());

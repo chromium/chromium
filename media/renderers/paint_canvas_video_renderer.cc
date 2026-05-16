@@ -853,6 +853,10 @@ void PaintCanvasVideoRenderer::Paint(
           << "Can't render textured frames w/o viz::RasterContextProvider";
       return;  // Unable to get/create a shared main thread context.
     }
+    if (params.force_pixel_readback) {
+      video_frame = media::ReadbackTextureBackedFrameToMemorySync(
+          *video_frame, raster_context_provider->RasterInterface());
+    }
   }
 
   gfx::RectF dest_rect = params.dest_rect.value_or(
