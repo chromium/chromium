@@ -109,4 +109,18 @@ TEST_F(ContextualTasksTabVisitTrackerTest, MultipleVisits) {
   EXPECT_EQ(tracker_->GetDurationSinceLastActive(), base::Seconds(0));
 }
 
+TEST_F(ContextualTasksTabVisitTrackerTest, NullContentsDoesNotCrash) {
+  tabs::MockTabInterface null_mock_tab;
+  ui::UnownedUserDataHost host;
+  ON_CALL(null_mock_tab, GetContents()).WillByDefault(testing::Return(nullptr));
+  ON_CALL(null_mock_tab, GetUnownedUserDataHost())
+      .WillByDefault(testing::ReturnRef(host));
+
+  EXPECT_NO_FATAL_FAILURE({
+    ContextualTasksTabVisitTracker tracker(null_mock_tab);
+    EXPECT_EQ(tracker.GetDurationOfCurrentOrLastVisit(), base::TimeDelta());
+    EXPECT_EQ(tracker.GetDurationSinceLastActive(), std::nullopt);
+  });
+}
+
 }  // namespace contextual_tasks

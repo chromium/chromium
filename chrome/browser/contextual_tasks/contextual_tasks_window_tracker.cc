@@ -62,7 +62,8 @@ void ContextualTasksWindowTracker::OnTabAdded(TabListInterface& tab_list,
     return;
   }
 
-  if (tab->GetContents()->GetVisibleURL() == expected_url_) {
+  if (tab->GetContents() &&
+      tab->GetContents()->GetVisibleURL() == expected_url_) {
     tracked_tab_ = tab;
 
     OMNIBOX_LOG("window_tracking")

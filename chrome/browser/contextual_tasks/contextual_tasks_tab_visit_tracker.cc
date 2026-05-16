@@ -18,7 +18,8 @@ ContextualTasksTabVisitTracker::ContextualTasksTabVisitTracker(
     : content::WebContentsObserver(tab.GetContents()),
       scoped_unowned_user_data_(tab.GetUnownedUserDataHost(), *this),
       clock_(base::DefaultTickClock::GetInstance()) {
-  if (tab.GetContents()->GetVisibility() == content::Visibility::VISIBLE) {
+  if (tab.GetContents() &&
+      tab.GetContents()->GetVisibility() == content::Visibility::VISIBLE) {
     current_visit_start_time_ = clock_->NowTicks();
   }
 }
