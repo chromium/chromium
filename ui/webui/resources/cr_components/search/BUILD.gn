@@ -10,6 +10,7 @@ assert(!is_ios)
 build_webui("build") {
   grd_prefix = "cr_components_search"
   ts_files = [
+    "audio_levels.ts",
     "audio_processor.service.ts",
     "animated_glow.html.ts",
     "animated_glow.ts",
