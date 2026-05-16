@@ -600,6 +600,8 @@ IN_PROC_BROWSER_TEST_F(NtpRealboxInteractiveTest,
       WaitForDialogStateChange(kSearchboxContextMenuDialog,
                                /*expected_open=*/false),
       WaitForElementToRender(kNtpElementId, kComposeboxFirstTabItem),
+      CheckJsResultAt(kNtpElementId, kComposeboxFirstTabItem,
+                      "(el) => el && !el.hasAttribute('disabled')"),
       // 7. Hit `ESC` button to dismiss context menu.
       SendKeyPress(kNtpElementId, ui::VKEY_ESCAPE),
       // 8. Wait for context menu to close.

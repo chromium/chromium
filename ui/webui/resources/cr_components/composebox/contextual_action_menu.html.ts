@@ -48,9 +48,9 @@ export function getHtml(this: ContextualActionMenuElement) {
             ${this.tabSuggestions.map((tab, index) => html`
               <div class="suggestion-container">
                 <button class="dropdown-item"
-                    role="${this.isMultiTabSelectionEnabledForShareTabsMode_() ?
+                    role="${this.enableMultiTabSelection_ ?
                         'menuitemcheckbox' : 'menuitem'}"
-                    aria-checked="${this.isMultiTabSelectionEnabledForShareTabsMode_() &&
+                    aria-checked="${this.enableMultiTabSelection_ &&
                         this.disabledTabIds.has(tab.tabId)}"
                     title="${tab.title}" data-index="${index}"
                     aria-label="${this.getInputTypeLabel_(InputType.kBrowserTab)}: ${
@@ -66,7 +66,7 @@ export function getHtml(this: ContextualActionMenuElement) {
                         this.i18n('recentTabsSuffix')}</span>
                   ` : ''}
                 </span>
-                ${this.isMultiTabSelectionEnabledForShareTabsMode_() &&
+                ${this.enableMultiTabSelection_ &&
                     this.disabledTabIds.has(tab.tabId) ? html`
                   <cr-icon class="share-tabs-check" icon="cr:check"></cr-icon>
                 ` : ''}
