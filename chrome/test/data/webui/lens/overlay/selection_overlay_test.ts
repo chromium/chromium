@@ -885,7 +885,7 @@ suite('SelectionOverlay', function() {
       return waitAfterNextRender(selectionOverlayElement);
     });
 
-    test('UpdateRegionContextMenuEventDoesNotShow', async () => {
+    test('UpdateRegionContextMenuEventShows', async () => {
       // Default state of selection overlay.
       assertFalse(
           selectionOverlayElement.getShowSelectedRegionContextMenuForTesting());
@@ -896,10 +896,36 @@ suite('SelectionOverlay', function() {
 
       await dispatchUpdateSelectedRegionContextMenuEvent();
 
-      assertFalse(
+      assertTrue(
           selectionOverlayElement.getShowSelectedRegionContextMenuForTesting());
       assertTrue(selectionOverlayElement
                      .getShowDetectedTextContextMenuOptionsForTesting());
+    });
+
+    test('UpdateRegionContextMenuEventDoesNotShowIfDismissed', async () => {
+      // Default state of selection overlay.
+      assertFalse(
+          selectionOverlayElement.getShowSelectedRegionContextMenuForTesting());
+
+      // Simulate showing the menu.
+      await dispatchUpdateSelectedRegionContextMenuEvent();
+      assertTrue(
+          selectionOverlayElement.getShowSelectedRegionContextMenuForTesting());
+
+      // Simulate dismissing the menu.
+      document.dispatchEvent(
+          new CustomEvent('hide-selected-region-context-menu', {
+            bubbles: true,
+            composed: true,
+          }));
+      await flushTasks();
+      assertFalse(
+          selectionOverlayElement.getShowSelectedRegionContextMenuForTesting());
+
+      // Dispatch update again, should NOT show.
+      await dispatchUpdateSelectedRegionContextMenuEvent();
+      assertFalse(
+          selectionOverlayElement.getShowSelectedRegionContextMenuForTesting());
     });
 
     test('SelectedRegionContextMenuAppearsWithNoText', async () => {
