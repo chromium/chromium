@@ -1116,10 +1116,11 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
     // * If any other adaptive toolbar button has been used in the last 90 days.
     // * If the Glic button itself hasn't been used.
     // * Only once in its lifetime.
+    // * Other IPHs do not impact triggering.
     FeatureConfig config;
     config.valid = true;
     config.availability = Comparator(ANY, 0);
-    config.session_rate = Comparator(EQUAL, 0);
+    config.session_rate = Comparator(ANY, 0);
     config.trigger =
         EventConfig("adaptive_toolbar_glic_iph_trigger", Comparator(EQUAL, 0),
                     k10YearsInDays, k10YearsInDays);
