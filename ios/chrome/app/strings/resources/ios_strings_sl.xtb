@@ -620,6 +620,7 @@
 <translation id="31652791196570636">Opusti</translation>
 <translation id="3167868116600277716">Vir Odkrivanje</translation>
 <translation id="3169472444629675720">Discover</translation>
+<translation id="3172755898799085680">Gemini ni na voljo na tej strani</translation>
 <translation id="3174662312949010067">Shranjena gesla lahko uporabljate tudi v drugih napravah.</translation>
 <translation id="3177338796769255211">Prijavite se, da boste lahko dostopali do zaznamkov in drugih podatkov v vseh napravah</translation>
 <translation id="3181954750937456830">Varno brskanje (ščiti vas in napravo pred nevarnimi spletnimi mesti)</translation>
@@ -1745,6 +1746,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="7015418667643980944">Razdeljeni pogled</translation>
 <translation id="7016070607649558507">Imate 1 šibko geslo. Popravite ga, če se želite zavarovati.</translation>
 <translation id="7016958933495968912">Možnosti za Odkrivanje</translation>
+<translation id="7019477124580742994">Iskanje s ponudnikom <ph name="SEARCH_PROVIDER" /></translation>
 <translation id="7029809446516969842">Gesla</translation>
 <translation id="7035825883570480307">Želite vklopiti obvestila?</translation>
 <translation id="7039345315346323556">Nedavno</translation>

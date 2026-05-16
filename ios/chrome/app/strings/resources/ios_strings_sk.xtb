@@ -620,6 +620,7 @@
 <translation id="31652791196570636">Zavrieť</translation>
 <translation id="3167868116600277716">Kanál Objaviť</translation>
 <translation id="3169472444629675720">Objaviť</translation>
+<translation id="3172755898799085680">Gemini nie je na tejto stránke k dispozícii</translation>
 <translation id="3174662312949010067">Uložené heslá môžete používať aj v iných zariadeniach.</translation>
 <translation id="3177338796769255211">Prihláste sa a používajte záložky a ďalší obsah vo všetkých svojich zariadeniach</translation>
 <translation id="3181954750937456830">Bezpečné prehliadanie (chráni vás aj zariadenie pred nebezpečnými webmi)</translation>
@@ -1745,6 +1746,7 @@ Funkciu Handoff musíte povoliť v nastaveniach v časti Všeobecné a vaše zar
 <translation id="7015418667643980944">Rozdelené zobrazenie</translation>
 <translation id="7016070607649558507">Máte jedno slabé heslo. Tento problém odstráňte, aby ste boli v bezpečí.</translation>
 <translation id="7016958933495968912">Možnosti kanála Objaviť</translation>
+<translation id="7019477124580742994">Vyhľadávanie <ph name="SEARCH_PROVIDER" /></translation>
 <translation id="7029809446516969842">Heslá</translation>
 <translation id="7035825883570480307">Chcete zapnúť upozornenia?</translation>
 <translation id="7039345315346323556">Nedávne</translation>

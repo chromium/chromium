@@ -620,6 +620,7 @@
 <translation id="31652791196570636">Отхвърляне</translation>
 <translation id="3167868116600277716">Емисия Discover</translation>
 <translation id="3169472444629675720">Discover</translation>
+<translation id="3172755898799085680">Gemini не е налице на тази страница</translation>
 <translation id="3174662312949010067">Имате възможност да използвате запазените си пароли и на другите си устройства.</translation>
 <translation id="3177338796769255211">Влезте в профила си, за да имате достъп до своите отметки и др. на всичките си устройства</translation>
 <translation id="3181954750937456830">„Безопасно сърфиране“ (защитава вас и устройството ви от опасни сайтове)</translation>
@@ -1745,6 +1746,7 @@
 <translation id="7015418667643980944">Разделен изглед</translation>
 <translation id="7016070607649558507">Имате 1 ненадеждна парола. Коригирайте я сега, за да сте в безопасност.</translation>
 <translation id="7016958933495968912">Опции за Discover</translation>
+<translation id="7019477124580742994">Търсене с(ъс) <ph name="SEARCH_PROVIDER" /></translation>
 <translation id="7029809446516969842">Пароли</translation>
 <translation id="7035825883570480307">Да се включат ли известията?</translation>
 <translation id="7039345315346323556">Скорошни</translation>

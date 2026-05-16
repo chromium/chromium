@@ -620,6 +620,7 @@
 <translation id="31652791196570636">Փակել</translation>
 <translation id="3167868116600277716">Discover ֆիդ</translation>
 <translation id="3169472444629675720">Discover</translation>
+<translation id="3172755898799085680">Gemini-ը հասանելի չէ այս էջում</translation>
 <translation id="3174662312949010067">Պահված գաղտնաբառերը կարող եք նաև օգտագործել ձեր մյուս սարքերում։</translation>
 <translation id="3177338796769255211">Մուտք գործեք՝ ձեր էջանիշները և մյուս տվյալները ձեր բոլոր սարքերում օգտագործելու համար</translation>
 <translation id="3181954750937456830">Անվտանգ դիտարկում (պաշտպանում է ձեզ և ձեր սարքը վտանգավոր կայքերից)</translation>
@@ -1745,6 +1746,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="7015418667643980944">Տրոհված էկրան</translation>
 <translation id="7016070607649558507">Դուք ունեք 1 թույլ գաղտնաբառ։ Փոխեք այն՝ ձեր տվյալները պաշտպանելու համար։</translation>
 <translation id="7016958933495968912">Discover-ի կարգավորումներ</translation>
+<translation id="7019477124580742994"><ph name="SEARCH_PROVIDER" /> Որոնում</translation>
 <translation id="7029809446516969842">Գաղտնաբառեր</translation>
 <translation id="7035825883570480307">Միացնե՞լ ծանուցումները</translation>
 <translation id="7039345315346323556">Վերջինները</translation>

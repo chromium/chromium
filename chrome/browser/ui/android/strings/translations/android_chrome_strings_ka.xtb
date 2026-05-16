@@ -563,7 +563,7 @@
 <translation id="3488199663160411179">სახელი</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />შეიტყვეთ მეტი<ph name="END_LINK" /> შემოთავაზებული კონტენტის შესახებ</translation>
 <translation id="3499246418971111862">chrome_qrcode_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
-<translation id="350276055892098337">დალაგება უძველესით</translation>
+<translation id="350276055892098337">დალაგება: უძველესიდან</translation>
 <translation id="3507132249039706973">სტანდარტული დაცვა ჩართულია</translation>
 <translation id="3509330069915219067">ხაზგარეშეა. Chrome ვერ ახერხებს განახლებების შემოწმებას.</translation>
 <translation id="3513019849832307207">გაწევრიანება და გახსნა</translation>
@@ -853,7 +853,7 @@
 <translation id="4695891336199304370">{SHIPPING_OPTIONS,plural, =1{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 და <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> სხვა}other{<ph name="SHIPPING_OPTION_PREVIEW" />\u2026 და <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" /> სხვა}}</translation>
 <translation id="4698757800236023795">აქტიური (<ph name="ITEM_COUNT" />)</translation>
 <translation id="4699172675775169585">ქეშირებული სურათები და ფაილები</translation>
-<translation id="4710167854527459075">დალაგება უახლესით</translation>
+<translation id="4710167854527459075">დალაგება: უახლესიდან</translation>
 <translation id="4719927025381752090">თარგმანის შემოთავაზება</translation>
 <translation id="4720556299488643018">გამოწერის გაუქმება</translation>
 <translation id="4732120983431207637">სტეკის დამშლელი</translation>

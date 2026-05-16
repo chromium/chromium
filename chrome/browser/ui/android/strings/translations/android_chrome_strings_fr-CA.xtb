@@ -1496,7 +1496,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 téléchargement en attente}one{# téléchargement en attente}other{# téléchargements en attente}}</translation>
 <translation id="7237724030342645845">Le gestionnaire de mots de passe Google a cessé de fonctionner</translation>
 <translation id="7239496616545081903">Masquer le mode Lecture</translation>
-<translation id="72415438529550637">La suggestion de mot de passe est fermée.</translation>
+<translation id="72415438529550637">La suggestion de mot de passe est ignorée.</translation>
 <translation id="724510009481365878">Impossible d'imprimer cette page</translation>
 <translation id="7248671827512403053">Application</translation>
 <translation id="7253951228444156601">Vérification des mots de passe en cours…</translation>

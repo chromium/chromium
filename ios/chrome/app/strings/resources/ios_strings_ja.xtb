@@ -620,6 +620,7 @@
 <translation id="31652791196570636">閉じる</translation>
 <translation id="3167868116600277716">Discover フィード</translation>
 <translation id="3169472444629675720">Discover</translation>
+<translation id="3172755898799085680">このページでは Gemini をご利用いただけません</translation>
 <translation id="3174662312949010067">保存したパスワードを他のデバイスで使用することもできます。</translation>
 <translation id="3177338796769255211">ログインすると、すべてのデバイスで同じブックマークやその他の設定を使用できるようになります</translation>
 <translation id="3181954750937456830">セーフ ブラウジング（危険なサイトからユーザーとデバイスを保護します）</translation>
@@ -1406,7 +1407,7 @@
 <translation id="5938160824633642847">デバイスの空き容量が少なくなっています。空き容量を増やしてからもう一度お試しください。</translation>
 <translation id="5944869793365969636">QR コードのスキャン</translation>
 <translation id="5948291296578561264">フォト ライブラリに写真を保存します。</translation>
-<translation id="5948605885471592910">開いているすべてのタブを確認して管理する</translation>
+<translation id="5948605885471592910">開いているすべてのタブを表示、管理します</translation>
 <translation id="5952641243319721872">選択を解除してもよろしいですか？</translation>
 <translation id="5956112131836209882">タブグループのタブ。<ph name="TAB_INDEX_IN_GROUP" />/<ph name="NUMBER_OF_TABS_IN_GROUP" />。</translation>
 <translation id="595769230373966252"><ph name="SEARCH_PROVIDER" /> で検索</translation>
@@ -1745,6 +1746,7 @@
 <translation id="7015418667643980944">分割表示</translation>
 <translation id="7016070607649558507">脆弱なパスワード 1 件: 安全を確保するため、今すぐ修正してください。</translation>
 <translation id="7016958933495968912">Discover のオプション</translation>
+<translation id="7019477124580742994"><ph name="SEARCH_PROVIDER" /> 検索</translation>
 <translation id="7029809446516969842">パスワード</translation>
 <translation id="7035825883570480307">通知をオンにしますか？</translation>
 <translation id="7039345315346323556">最近使用したアイテム</translation>

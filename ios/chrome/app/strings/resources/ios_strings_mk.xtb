@@ -620,6 +620,7 @@
 <translation id="31652791196570636">Отфрли</translation>
 <translation id="3167868116600277716">Активност на Discover</translation>
 <translation id="3169472444629675720">Откриј</translation>
+<translation id="3172755898799085680">Gemini не е достапен на страницава</translation>
 <translation id="3174662312949010067">Зачуваните лозинки може да ги користите и на другите ваши уреди.</translation>
 <translation id="3177338796769255211">Најавете се за да ги добиете обележувачите и друго на сите ваши уреди</translation>
 <translation id="3181954750937456830">Безбедно прелистување (ве заштитува вас и вашиот уред од опасни сајтови)</translation>
@@ -1745,6 +1746,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="7015418667643980944">Поделен приказ</translation>
 <translation id="7016070607649558507">Имате 1 слаба лозинка. Решете го проблемот со неа сега за да се заштитите.</translation>
 <translation id="7016958933495968912">Опции за Discover</translation>
+<translation id="7019477124580742994">Пребарување на <ph name="SEARCH_PROVIDER" /></translation>
 <translation id="7029809446516969842">Лозинки</translation>
 <translation id="7035825883570480307">Да се вклучат известувањата?</translation>
 <translation id="7039345315346323556">Неодамнешно</translation>

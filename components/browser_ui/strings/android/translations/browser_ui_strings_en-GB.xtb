@@ -534,6 +534,7 @@
 <translation id="6447842834002726250">Cookies</translation>
 <translation id="6452138246455930388">Price drop on your open tab, from <ph name="OLD_PRICE" /> to <ph name="NEW_PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN_NAME" /></translation>
 <translation id="6500423977866688905">When the window is narrow, request mobile view</translation>
+<translation id="6514791408445720076">Customise your page</translation>
 <translation id="6527303717912515753">Share</translation>
 <translation id="6530703012083415527">When on, sites can use pop-ups and redirects. When off, sites can't use pop-ups and redirects.</translation>
 <translation id="6540488083026747005">You allowed third-party cookies on this site</translation>
@@ -599,6 +600,7 @@
 <translation id="7141896414559753902">Block sites from showing pop-ups and redirects (recommended)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> KB</translation>
 <translation id="7180611975245234373">Refresh</translation>
+<translation id="7180865173735832675">Customise</translation>
 <translation id="7188508872042490670">On-device site data</translation>
 <translation id="7201549776650881587">This action will clear all data and cookies stored by all sites under <ph name="ORIGIN" /> or by its app on your Home screen</translation>
 <translation id="7213166370492037743">Don't allow sites to connect to any device on your local network</translation>
@@ -713,6 +715,7 @@ Advanced Protection controls these Chrome settings:</translation>
 <translation id="83792324527827022">A site is using your camera and microphone</translation>
 <translation id="8380167699614421159">This site shows intrusive or misleading ads</translation>
 <translation id="8394832520002899662">Tap to return to the site</translation>
+<translation id="8404500559369898929">Make Chrome your own by choosing a custom background theme</translation>
 <translation id="8409345997656833551">Get notified when an article can be shown in simplified view</translation>
 <translation id="8416874502399604126">Microphone allowed this time</translation>
 <translation id="8423565414844018592">Text scaling set to <ph name="TEXT_SCALING" /></translation>

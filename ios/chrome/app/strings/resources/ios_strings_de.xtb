@@ -620,6 +620,7 @@
 <translation id="31652791196570636">Schließen</translation>
 <translation id="3167868116600277716">Discover-Feed</translation>
 <translation id="3169472444629675720">Discover</translation>
+<translation id="3172755898799085680">Gemini ist auf dieser Seite nicht verfügbar</translation>
 <translation id="3174662312949010067">Du kannst gespeicherte Passwörter auch auf deinen anderen Geräten verwenden.</translation>
 <translation id="3177338796769255211">Melde dich an, damit du deine Lesezeichen und andere Daten auf allen deinen Geräten abrufen kannst</translation>
 <translation id="3181954750937456830">Safe Browsing (mich und mein Gerät vor schädlichen Websites schützen)</translation>
@@ -1745,6 +1746,7 @@ Handoff muss auch im Abschnitt „Allgemein“ deiner Einstellungen aktiviert se
 <translation id="7015418667643980944">Geteilte Ansicht</translation>
 <translation id="7016070607649558507">Du nutzt 1 schwaches Passwort. Ändere es jetzt, um dich bestmöglich zu schützen.</translation>
 <translation id="7016958933495968912">Optionen für Discover</translation>
+<translation id="7019477124580742994"><ph name="SEARCH_PROVIDER" /> Suche</translation>
 <translation id="7029809446516969842">Passwörter</translation>
 <translation id="7035825883570480307">Benachrichtigungen aktivieren?</translation>
 <translation id="7039345315346323556">Zuletzt verwendet</translation>

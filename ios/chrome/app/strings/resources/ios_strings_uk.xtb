@@ -620,6 +620,7 @@
 <translation id="31652791196570636">Закрити</translation>
 <translation id="3167868116600277716">Стрічка рекомендацій</translation>
 <translation id="3169472444629675720">Рекомендації</translation>
+<translation id="3172755898799085680">Сервіс Gemini недоступний на цій сторінці</translation>
 <translation id="3174662312949010067">Ви також можете використовувати збережені паролі на інших своїх пристроях.</translation>
 <translation id="3177338796769255211">Увійдіть в обліковий запис, щоб отримати доступ до закладок і інших даних на всіх пристроях</translation>
 <translation id="3181954750937456830">Безпечний перегляд (захищає вас і ваш пристрій від небезпечних сайтів)</translation>
@@ -1745,6 +1746,7 @@
 <translation id="7015418667643980944">Режим розділеного екрана</translation>
 <translation id="7016070607649558507">У вас 1 ненадійний пароль. Змініть його, щоб захистити свої дані.</translation>
 <translation id="7016958933495968912">Налаштування рекомендацій</translation>
+<translation id="7019477124580742994">Пошук <ph name="SEARCH_PROVIDER" /></translation>
 <translation id="7029809446516969842">Паролі</translation>
 <translation id="7035825883570480307">Увімкнути сповіщення?</translation>
 <translation id="7039345315346323556">Останні</translation>

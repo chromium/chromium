@@ -315,7 +315,7 @@
 <translation id="2044681667265133332">Аккаунтом <ph name="USER_EMAIL" /> управляет <ph name="HOSTED_DOMAIN" />. Некоторая ваша информация может быть видна этой организации. <ph name="BEGIN_LINK" />Подробнее…<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">новый продукт</translation>
 <translation id="2049727122989709386">В нескольких аккаунтах (<ph name="COUNT" />) используется один и тот же пароль.</translation>
-<translation id="205013082884273671">Находите информацию о любом объекте на экране</translation>
+<translation id="205013082884273671">Ищите что угодно, что видите на экране</translation>
 <translation id="2054044186557130763">Войти как <ph name="NAME" />, <ph name="EMAIL" />. Аккаунтом управляет ваша организация.</translation>
 <translation id="2059166748188874810">Муниципалитет</translation>
 <translation id="2060638295449304809">Адрес сохранен только на этом устройстве. Чтобы он синхронизировался с другими устройствами, добавьте его в аккаунт Google (<ph name="USER_EMAIL" />).</translation>
@@ -331,7 +331,7 @@
 <translation id="2096716221239095980">Удалить все данные</translation>
 <translation id="2104436223719117661">Популярное</translation>
 <translation id="21133533946938348">Закрепить вкладку</translation>
-<translation id="2117650889962717098">Переключитесь в режим инкогнито, чтобы сохранять конфиденциальность при посещении сайтов.</translation>
+<translation id="2117650889962717098">Включите режим инкогнито, чтобы сохранять приватность.</translation>
 <translation id="2119636449201577317">Открыть в сервисе…</translation>
 <translation id="2119962645034852864">Некоторые сервисы недоступны для вашего аккаунта</translation>
 <translation id="2120553909046681540">В вашей организации режим инкогнито отключен.</translation>
@@ -620,6 +620,7 @@
 <translation id="31652791196570636">Закрыть</translation>
 <translation id="3167868116600277716">Лента рекомендаций</translation>
 <translation id="3169472444629675720">Рекомендации</translation>
+<translation id="3172755898799085680">Gemini недоступен на этой странице.</translation>
 <translation id="3174662312949010067">Вы также можете использовать сохраненные пароли на других своих устройствах.</translation>
 <translation id="3177338796769255211">Войдите, чтобы получить доступ к закладкам и многому другому на всех своих устройствах.</translation>
 <translation id="3181954750937456830">Безопасный просмотр (защищает вас и ваше устройство от опасных сайтов)</translation>
@@ -801,7 +802,7 @@
 <translation id="3875783148670536197">Подробнее</translation>
 <translation id="3878657761594430423">Маркер нижнего экрана</translation>
 <translation id="3885587018298784481">Вступите в семейную группу</translation>
-<translation id="3888230626190453136">Как перейти в режим инкогнито</translation>
+<translation id="3888230626190453136">Режим инкогнито</translation>
 <translation id="3888863481921783344">Эти данные будут использоваться для показа пользователей, которых можно пригласить на мероприятие.</translation>
 <translation id="3891414008432200754">Цена</translation>
 <translation id="3892144330757387737">Здесь вы найдете свою историю</translation>
@@ -1406,7 +1407,7 @@
 <translation id="5938160824633642847">Освободите место на устройстве и повторите попытку.</translation>
 <translation id="5944869793365969636">Сканирование QR-кода</translation>
 <translation id="5948291296578561264">Это позволяет вам сохранять фотографии в галерее.</translation>
-<translation id="5948605885471592910">Просматривайте все открытые вкладки и группы и управляйте ими</translation>
+<translation id="5948605885471592910">Просматривайте открытые страницы и наводите в них порядок</translation>
 <translation id="5952641243319721872">Отменить выбор?</translation>
 <translation id="5956112131836209882">Вкладка с группами вкладок. <ph name="TAB_INDEX_IN_GROUP" /> из <ph name="NUMBER_OF_TABS_IN_GROUP" />.</translation>
 <translation id="595769230373966252">Поиск в <ph name="SEARCH_PROVIDER" /></translation>
@@ -1698,7 +1699,7 @@
 <translation id="686831807558000905">Продолжить без входа</translation>
 <translation id="686899695320434745">Адреса не шифруются кодовой фразой. Поэтому вы можете использовать их в других сервисах Google.</translation>
 <translation id="687135068089457384">Показать настройки</translation>
-<translation id="6871397658902960384">Перейти в браузер</translation>
+<translation id="6871397658902960384">Начать</translation>
 <translation id="6874328931822449112">{COUNT,plural, =1{Сохранить пароль в аккаунте}one{Сохранить пароли в аккаунте}few{Сохранить пароли в аккаунте}many{Сохранить пароли в аккаунте}other{Сохранить пароли в аккаунте}}</translation>
 <translation id="6875166646976836138">Просматривать эти данные и управлять ими можно также в закладках, списке для чтения и Менеджере паролей.</translation>
 <translation id="6878052248816456143">Получайте доступ к файлам на Google Диске в любое время.</translation>
@@ -1745,6 +1746,7 @@
 <translation id="7015418667643980944">Параллельный просмотр</translation>
 <translation id="7016070607649558507">У вас есть простой пароль. Устраните проблему.</translation>
 <translation id="7016958933495968912">Параметры рекомендаций</translation>
+<translation id="7019477124580742994">Поиск <ph name="SEARCH_PROVIDER" /></translation>
 <translation id="7029809446516969842">Пароли</translation>
 <translation id="7035825883570480307">Включить уведомления?</translation>
 <translation id="7039345315346323556">Недавние</translation>

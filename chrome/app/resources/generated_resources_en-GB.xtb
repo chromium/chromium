@@ -5649,6 +5649,7 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="4865063548323785458">Save and autofill your passwords to easily sign in to sites and apps</translation>
 <translation id="486635084936119914">Open certain file types automatically after downloading</translation>
 <translation id="4867272607148176509">Parents can approve or block apps, set time limits and control web browsing. A school account can be added later to access most school resources.</translation>
+<translation id="486796517585164369">· Recent tab</translation>
 <translation id="4868284252360267853">This dialogue is not currently focused. Press Command-Shift-Option A to focus this dialogue.</translation>
 <translation id="4868351661310357223">Install apps and games from Google Play on your <ph name="DEVICE_TYPE" />.</translation>
 <translation id="4869170227080975044">Read ChromeOS network information</translation>
@@ -10146,6 +10147,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8017004049696748317">Start or stop dictation</translation>
 <translation id="8017176852978888182">Linux shared directories</translation>
 <translation id="8017679124341497925">Shortcut edited</translation>
+<translation id="8018192911041116887">Share tabs</translation>
 <translation id="8018298733481692628">Delete this profile?</translation>
 <translation id="8018313076035239964">Control what information websites can use and what content they can show you</translation>
 <translation id="802154636333426148">Download failed</translation>
@@ -11878,6 +11880,7 @@ This can include information about installed software, files, your browser, the 
 <translation id="918352324374649435">{COUNT,plural, =1{App}other{# apps}}</translation>
 <translation id="9186743636216815027">{NUM_APPS,plural,offset:2 =1{Your administrator can record your screen with <ph name="APP0_NAME" />. You will not be notified when the recording starts.}=2{Your administrator can record your screen with <ph name="APP0_NAME" /> and <ph name="APP1_NAME" />. You will not be notified when the recording starts.}=3{Your administrator can record your screen with <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> and 1 other app. You will not be notified when the recording starts.}other{Your administrator can record your screen with <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> and # other apps. You will not be notified when the recording starts.}}</translation>
 <translation id="9186963452600581158">Sign in with a child's Google Account</translation>
+<translation id="9187249589560413026">{TAB_COUNT,plural, =1{Sharing 1 tab}other{Sharing # tabs}}</translation>
 <translation id="9187967020623675250">Keys don’t match. Press any key to <ph name="RESPONSE" />.</translation>
 <translation id="9188142767272053574">Enable process isolation</translation>
 <translation id="9192019773545828776">Hear spoken feedback so that you can use your device without looking at the screen. Braille feedback is available with a connected device. Use Ctrl + Alt + Z to turn ChromeVox on and off. Use Search + Left arrow or Right arrow to navigate. Use Search + Space to select (activate).</translation>

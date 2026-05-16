@@ -746,7 +746,7 @@
 <translation id="21613918653299710">線上圖庫</translation>
 <translation id="2161656808144014275">文字</translation>
 <translation id="2162435186600002085">主要頁首標誌</translation>
-<translation id="2162535140284745414">運用 AI 即時建議，體驗全新瀏覽方式。</translation>
+<translation id="2162535140284745414">取得 AI 即時建議，體驗全新瀏覽方式。</translation>
 <translation id="2162620598375156287">「<ph name="SOURCE_WEBSITE" />」目前售價　<ph name="CURRENT_PRICE" /></translation>
 <translation id="2164510882479075877">請檢查 <ph name="HOST_NAME" /> 中是否有錯字。</translation>
 <translation id="2166049586286450108">完整管理員存取權</translation>
@@ -1460,7 +1460,7 @@
 <translation id="3261488570342242926">瞭解虛擬卡片</translation>
 <translation id="3262698603497362968">購買選項</translation>
 <translation id="3264315627780269177">無法分享這個分頁</translation>
-<translation id="3264637689694266148">即使關閉建議功能，系統仍可能會處理分頁的網頁標題和網址，以支援其他 Chrome 功能。如要管理瀏覽器存取這項資料的權限，可以前往</translation>
+<translation id="3264637689694266148">即使關閉建議功能，系統仍可能會處理分頁的標題和網址，以支援其他 Chrome 功能。如要管理瀏覽器存取這項資料的權限，可以前往</translation>
 <translation id="3266793032086590337">值 (衝突)</translation>
 <translation id="3268451620468152448">開啟的分頁</translation>
 <translation id="3270041629388773465">儲存信用卡驗證碼可加快結帳速度</translation>
@@ -4422,7 +4422,7 @@
 <translation id="7819605256207059717">遭到貴機構封鎖</translation>
 <translation id="7822611063308883975">掌上型遊戲主機</translation>
 <translation id="7825558994363763489">微波爐</translation>
-<translation id="7827688884439021871">運用 AI 即時建議，體驗全新瀏覽方式</translation>
+<translation id="7827688884439021871">取得 AI 即時建議，體驗全新瀏覽方式</translation>
 <translation id="782886543891417279">目前使用的 Wi-Fi 網路 (<ph name="WIFI_NAME" />) 可能會要求您造訪登入網頁。</translation>
 <translation id="7831993212387676366">什麼是購物清單？</translation>
 <translation id="7840103971441592723">開始擷取螢幕畫面</translation>
@@ -4810,7 +4810,7 @@
 <translation id="8449036207308062757">管理儲存空間</translation>
 <translation id="8449155699563577224">17 x 24 吋</translation>
 <translation id="8449836157089738489">在新分頁群組中開啟所有網址</translation>
-<translation id="8451518040456311377">儲存並填入身分證件</translation>
+<translation id="8451518040456311377">儲存及填入身分證件</translation>
 <translation id="84561192812921051">系統管理員可以從遠端變更你的設定檔和瀏覽器、透過報表分析瀏覽器相關資訊，以及執行其他必要工作。這部裝置上的活動也可以透過 Chrome 以外的服務管理。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="8456383681414356368">底部功能表已關閉。</translation>
 <translation id="8456775115498700722">你的「<ph name="CARD_ISSUER_NAME" />」帳戶已連結至 Google Pay，因此現在可以自動填入「<ph name="CARD_ISSUER_NAME" />」卡片的資訊。</translation>
@@ -5004,7 +5004,7 @@
 <translation id="8781278378794969337">「翻譯網頁」按鈕，啟動後即可使用 Google 翻譯來翻譯這個網頁</translation>
 <translation id="8785658048882205566">摩托車</translation>
 <translation id="8790007591277257123">重做刪除(&amp;R)</translation>
-<translation id="8790668801880409584">儲存並填入旅遊資訊</translation>
+<translation id="8790668801880409584">儲存及填入旅遊資訊</translation>
 <translation id="8792272652220298572">塑膠 (光面)</translation>
 <translation id="8792621596287649091">你可能會失去 <ph name="ORG_NAME" /> 帳戶存取權，或身分遭到冒用。Chromium 建議你立即變更密碼。</translation>
 <translation id="8792626944327216835">麥克風</translation>

@@ -204,7 +204,7 @@
 <translation id="1670861525135254448">保存车辆信息</translation>
 <translation id="1674504678466460478">从<ph name="SOURCE_LANGUAGE" />到<ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1678855624321223424">根据您所在组织的政策，此文件可能包含敏感信息</translation>
-<translation id="168389590065701766">您现在可以从地址栏打开 Google 智能镜头，并搜索您看到的任何内容</translation>
+<translation id="168389590065701766">从地址栏便捷开启 Google 智能镜头，真正实现所见即所搜</translation>
 <translation id="1689333818294560261">别名</translation>
 <translation id="169048873465870056">要移除该标签页并删除该分组吗？</translation>
 <translation id="1692115862433274081">使用其他账号</translation>
@@ -315,7 +315,7 @@
 <translation id="2044681667265133332">账号 <ph name="USER_EMAIL" /> 由 <ph name="HOSTED_DOMAIN" /> 管理，后者或许可以查看某些信息。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">新项</translation>
 <translation id="2049727122989709386">有 <ph name="COUNT" /> 个账号在使用同一密码</translation>
-<translation id="205013082884273671">搜索屏幕上的任何内容</translation>
+<translation id="205013082884273671">屏幕内容，一搜即得</translation>
 <translation id="2054044186557130763">以<ph name="NAME" /> (<ph name="EMAIL" />) 的身份登录，该账号由组织管理。</translation>
 <translation id="2059166748188874810">自治市</translation>
 <translation id="2060638295449304809">此地址仅会保存到此设备上。若要在其他设备上使用它，请将它保存到您的 Google 账号 <ph name="USER_EMAIL" /> 中</translation>
@@ -331,7 +331,7 @@
 <translation id="2096716221239095980">删除所有数据</translation>
 <translation id="2104436223719117661">热搜</translation>
 <translation id="21133533946938348">固定标签页</translation>
-<translation id="2117650889962717098">切换到无痕模式，保持浏览数据的私密性</translation>
+<translation id="2117650889962717098">切换到无痕模式，让浏览记录不留痕迹</translation>
 <translation id="2119636449201577317">打开方式…</translation>
 <translation id="2119962645034852864">您的账号无法使用部分服务</translation>
 <translation id="2120553909046681540">您的组织关闭了私密浏览功能。</translation>
@@ -536,7 +536,7 @@
 <translation id="2825777862277359739">登录即可获取您的密码、标签页、书签等。</translation>
 <translation id="2827760117436553203">要将数据分开吗？</translation>
 <translation id="2829172210806130158">在屏幕中搜索</translation>
-<translation id="2831109159746537587">请尝试圈出或点按图片进行搜索</translation>
+<translation id="2831109159746537587">圈一圈，点一点，即刻探索</translation>
 <translation id="2834399722155632105">3. 点按“密码选项”</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />，<ph name="STATE" />，<ph name="URL" /></translation>
 <translation id="2841013758207633010">时间</translation>
@@ -620,6 +620,7 @@
 <translation id="31652791196570636">关闭</translation>
 <translation id="3167868116600277716">探索信息流</translation>
 <translation id="3169472444629675720">探索</translation>
+<translation id="3172755898799085680">此页面上无法使用 Gemini</translation>
 <translation id="3174662312949010067">您还可在其他设备上使用已存密码。</translation>
 <translation id="3177338796769255211">登录即可将书签等信息同步到您的所有设备上</translation>
 <translation id="3181954750937456830">安全浏览（保护您和您的设备不受危险网站的侵害）</translation>
@@ -680,7 +681,7 @@
 <translation id="3409785640040772790">地图</translation>
 <translation id="3416023309465857378">2023 年 10 月 25 日</translation>
 <translation id="3435738964857648380">安全</translation>
-<translation id="3441673211568148613">保持浏览数据的私密性</translation>
+<translation id="3441673211568148613">让浏览记录不留痕迹</translation>
 <translation id="3443810440409579745">收到标签页。</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" />分钟</translation>
 <translation id="344589138074534176">详细了解 Google 智能镜头</translation>
@@ -801,7 +802,7 @@
 <translation id="3875783148670536197">操作步骤</translation>
 <translation id="3878657761594430423">动作条抓取器</translation>
 <translation id="3885587018298784481">加入家人群组</translation>
-<translation id="3888230626190453136">以无痕模式浏览</translation>
+<translation id="3888230626190453136">试试无痕浏览</translation>
 <translation id="3888863481921783344">这是为了向您显示有望邀请哪些人来参加您的活动。</translation>
 <translation id="3891414008432200754">价格</translation>
 <translation id="3892144330757387737">您的历史记录会显示在此处</translation>
@@ -1406,7 +1407,7 @@
 <translation id="5938160824633642847">您设备上的存储空间即将用尽，请释放空间并重试。</translation>
 <translation id="5944869793365969636">扫描二维码</translation>
 <translation id="5948291296578561264">这样，您便可将照片保存到您的照片库中。</translation>
-<translation id="5948605885471592910">查看和管理您打开的所有内容</translation>
+<translation id="5948605885471592910">在这里轻松查看和管理所有已打开的页面</translation>
 <translation id="5952641243319721872">确定要舍弃您所做的选择吗？</translation>
 <translation id="5956112131836209882">标签页分组标签页。第 <ph name="NUMBER_OF_TABS_IN_GROUP" /> 个，共 <ph name="TAB_INDEX_IN_GROUP" /> 个。</translation>
 <translation id="595769230373966252">使用 <ph name="SEARCH_PROVIDER" /> 进行搜索</translation>
@@ -1745,6 +1746,7 @@
 <translation id="7015418667643980944">拆分视图</translation>
 <translation id="7016070607649558507">您有 1 个安全系数低的密码。请立即修正它以确保安全。</translation>
 <translation id="7016958933495968912">“探索”选项</translation>
+<translation id="7019477124580742994"><ph name="SEARCH_PROVIDER" /> 搜索</translation>
 <translation id="7029809446516969842">密码</translation>
 <translation id="7035825883570480307">开启通知？</translation>
 <translation id="7039345315346323556">最近用过</translation>
@@ -1801,7 +1803,7 @@
 <translation id="7266578100016339897">这有助于您保持井井有条。您随时可以在“设置”中更改此设置。</translation>
 <translation id="7272437679830969316">无法验证您的身份。未复制密码。</translation>
 <translation id="7275307913765547631">韩国位置信息条款</translation>
-<translation id="728025568708172005">开始导览</translation>
+<translation id="728025568708172005">带我看看</translation>
 <translation id="7280980607183752256">无法导入此文件</translation>
 <translation id="7281202269687163394">您的隐私权与 Gemini。</translation>
 <translation id="7282197670900591579">香橼黄色主题</translation>
@@ -1999,7 +2001,7 @@
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939856641500914040">删除浏览数据…</translation>
 <translation id="7941578031639087549">{count,plural, =1{此页面已添加到您的账号 {email} 内的阅读清单中}other{{count} 个页面已添加到您的账号 {email} 内的阅读清单中}}</translation>
-<translation id="7952353944614086413">您打开的标签页和分组</translation>
+<translation id="7952353944614086413">标签页和分组一览</translation>
 <translation id="7952670906562503188">您即将删除 {passkey_count} 个通行密钥以及您选择一律不保存登录信息的网站和应用列表。您为网站和应用创建的任何账号都不会被删除。</translation>
 <translation id="7958575506592576831">网页安全信息</translation>
 <translation id="7961015016161918242">一律不</translation>
@@ -2299,7 +2301,7 @@
 <translation id="8915916167043355778">全部关闭</translation>
 <translation id="892185197271200809">所有人将立即失去对标签页分组“<ph name="GROUP_NAME" />”的访问权限，并且该分组将从所有设备中删除</translation>
 <translation id="8923178205567790913">密码</translation>
-<translation id="8926498511977337209">以无痕模式浏览</translation>
+<translation id="8926498511977337209">试试无痕浏览</translation>
 <translation id="892776311701544612">了解详情…</translation>
 <translation id="8928133177108699615">桌面版</translation>
 <translation id="8928426232677696166">目前选择的是 <ph name="EMAIL" />，该账号由组织管理。请选择一个账号。</translation>

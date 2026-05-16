@@ -620,6 +620,7 @@
 <translation id="31652791196570636">Nerādīt</translation>
 <translation id="3167868116600277716">Discover plūsma</translation>
 <translation id="3169472444629675720">Discover</translation>
+<translation id="3172755898799085680">Gemini nav pieejams šajā lapā.</translation>
 <translation id="3174662312949010067">Varat arī izmantot saglabātās paroles citās savās ierīcēs.</translation>
 <translation id="3177338796769255211">Pierakstieties, lai piekļūtu grāmatzīmēm un citiem datiem visās savās ierīcēs.</translation>
 <translation id="3181954750937456830">Droša pārlūkošana (aizsargā jūs un ierīci pret bīstamām vietnēm)</translation>
@@ -1745,6 +1746,7 @@ Funkcija Handoff ir jāiespējo arī iestatījumu sadaļā General (Vispārīgi)
 <translation id="7015418667643980944">Dalīts skats</translation>
 <translation id="7016070607649558507">Jums ir viena nedroša parole. Labojiet to tūlīt, lai gādātu par savu drošību.</translation>
 <translation id="7016958933495968912">Discover iespējas</translation>
+<translation id="7019477124580742994"><ph name="SEARCH_PROVIDER" /> meklēšana</translation>
 <translation id="7029809446516969842">Paroles</translation>
 <translation id="7035825883570480307">Vai ieslēgt paziņojumus?</translation>
 <translation id="7039345315346323556">Nesenie</translation>

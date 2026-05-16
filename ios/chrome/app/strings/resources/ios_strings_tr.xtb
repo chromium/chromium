@@ -620,6 +620,7 @@
 <translation id="31652791196570636">Kapat</translation>
 <translation id="3167868116600277716">Keşfet feed'i</translation>
 <translation id="3169472444629675720">Keşfet</translation>
+<translation id="3172755898799085680">Gemini bu sayfada kullanılamıyor</translation>
 <translation id="3174662312949010067">Kayıtlı şifreleri diğer cihazlarınızda da kullanabilirsiniz.</translation>
 <translation id="3177338796769255211">Yer işaretlerinize ve daha fazlasına tüm cihazlarınızdan ulaşmak için oturum açın</translation>
 <translation id="3181954750937456830">Gizli Göz Atma (sizi ve cihazınızı tehlikelerden korur)</translation>
@@ -1745,6 +1746,7 @@ Handoff'un ayrıca, Ayarlar'ın Genel bölümünde de etkinleştirilmesi ve ciha
 <translation id="7015418667643980944">Bölünmüş görünüm</translation>
 <translation id="7016070607649558507">1 tane zayıf şifreniz var. Güvende kalmak için sorunu hemen giderin.</translation>
 <translation id="7016958933495968912">Keşfet seçenekleri</translation>
+<translation id="7019477124580742994"><ph name="SEARCH_PROVIDER" /> Arama</translation>
 <translation id="7029809446516969842">Şifreler</translation>
 <translation id="7035825883570480307">Bildirimler açılsın mı?</translation>
 <translation id="7039345315346323556">En son</translation>

@@ -220,7 +220,7 @@
 <translation id="1740468249224277719">برای نصب دو ضربه سریع بزنید.</translation>
 <translation id="1740650426894359238">رفتن به نمایه‌ای دیگر</translation>
 <translation id="1741219894094057085">ساعت هوشمند</translation>
-<translation id="1743244221910283364">صرف‌نظر کردن از تغییرات</translation>
+<translation id="1743244221910283364">صرف‌نظر از تغییرات</translation>
 <translation id="1748975028205587434">انتخاب فایل</translation>
 <translation id="1749733017156547309">گذرواژه الزامی است</translation>
 <translation id="174998178145075354">{count,plural, =1{‫{count} گزینه برای نشانی در بالای صفحه‌کلید وجود دارد.}one{‫{count} گزینه برای نشانی در بالای صفحه‌کلید وجود دارد.}other{‫{count} گزینه برای نشانی در بالای صفحه‌کلید وجود دارد.}}</translation>
@@ -620,6 +620,7 @@
 <translation id="31652791196570636">بستن</translation>
 <translation id="3167868116600277716">فید «یافته‌ها»</translation>
 <translation id="3169472444629675720">کاوش</translation>
+<translation id="3172755898799085680">‏‫Gemini در این صفحه دردسترس نیست</translation>
 <translation id="3174662312949010067">همچنین می‌توانید از گذرواژه‌های ذخیره‌شده در دیگر دستگاه‌هایتان استفاده کنید.</translation>
 <translation id="3177338796769255211">به سیستم وارد شوید تا نشانک‌ها و موارد دیگر را در همه دستگاه‌هایتان دریافت کنید</translation>
 <translation id="3181954750937456830">مرور ایمن (از شما و دستگاهتان درمقابل سایت‌های خطرناک محافظت می‌کند)</translation>
@@ -1745,6 +1746,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="7015418667643980944">نمای تقسیم‌شده</translation>
 <translation id="7016070607649558507">۱ گذرواژه ضعیف دارید. همین‌حالا مشکل را برطرف کنید تا ایمن بمانید.</translation>
 <translation id="7016958933495968912">گزینه‌های «یافته‌ها»</translation>
+<translation id="7019477124580742994">جستجوی <ph name="SEARCH_PROVIDER" /></translation>
 <translation id="7029809446516969842">گذرواژه‌ها</translation>
 <translation id="7035825883570480307">اعلان‌ها روشن شود؟</translation>
 <translation id="7039345315346323556">اخیر</translation>

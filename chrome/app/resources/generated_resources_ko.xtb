@@ -5649,6 +5649,7 @@
 <translation id="4865063548323785458">비밀번호를 저장하고 자동 완성하여 사이트 및 앱에 간편하게 로그인하세요</translation>
 <translation id="486635084936119914">다운로드 후에 특정 파일 형식을 자동으로 열기</translation>
 <translation id="4867272607148176509">부모님은 앱을 승인 또는 차단하고, 시간제한을 설정하고, 웹 탐색을 제어할 수 있습니다. 나중에 학교 계정을 추가하여 대부분의 학교 리소스에 액세스할 수 있습니다.</translation>
+<translation id="486796517585164369">· 최근 탭</translation>
 <translation id="4868284252360267853">현재 이 대화상자에 포커스가 지정되지 않았습니다. Command+Shift+Option A를 눌러 이 대화상자에 포커스를 지정하세요.</translation>
 <translation id="4868351661310357223"><ph name="DEVICE_TYPE" />에서 Google Play 앱 및 게임을 설치하세요.</translation>
 <translation id="4869170227080975044">ChromeOS 네트워크 정보를 읽습니다.</translation>
@@ -10145,6 +10146,7 @@
 <translation id="8017004049696748317">음성기록 시작 또는 중지</translation>
 <translation id="8017176852978888182">Linux 공유 디렉터리</translation>
 <translation id="8017679124341497925">바로가기 수정됨</translation>
+<translation id="8018192911041116887">탭 공유</translation>
 <translation id="8018298733481692628">프로필을 삭제하시겠습니까?</translation>
 <translation id="8018313076035239964">웹사이트에서 사용할 수 있는 정보와 나에게 표시할 수 있는 콘텐츠를 컨트롤합니다.</translation>
 <translation id="802154636333426148">다운로드 실패</translation>
@@ -11877,6 +11879,7 @@
 <translation id="918352324374649435">{COUNT,plural, =1{앱}other{앱 #개}}</translation>
 <translation id="9186743636216815027">{NUM_APPS,plural,offset:2 =1{관리자가 <ph name="APP0_NAME" /> 앱으로 화면을 녹화할 수 있습니다. 녹화가 시작될 때 알림이 전송되지 않습니다.}=2{관리자가 <ph name="APP0_NAME" /> 및 <ph name="APP1_NAME" /> 앱으로 화면을 녹화할 수 있습니다. 녹화가 시작될 때 알림이 전송되지 않습니다.}=3{관리자가 <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> 외 1개 앱으로 화면을 녹화할 수 있습니다. 녹화가 시작될 때 알림이 전송되지 않습니다.}other{관리자가 <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> 외 #개 앱으로 화면을 녹화할 수 있습니다. 녹화가 시작될 때 알림이 전송되지 않습니다.}}</translation>
 <translation id="9186963452600581158">자녀의 Google 계정으로 로그인</translation>
+<translation id="9187249589560413026">{TAB_COUNT,plural, =1{탭 1개 공유 중}other{탭 #개 공유 중}}</translation>
 <translation id="9187967020623675250">키가 일치하지 않습니다. <ph name="RESPONSE" />하려면 아무 키나 누르세요.</translation>
 <translation id="9188142767272053574">프로세스 격리 사용 설정</translation>
 <translation id="9192019773545828776">음성 피드백이 제공되어 화면을 보지 않고도 기기를 사용할 수 있습니다. 연결된 기기로 점자 피드백을 사용할 수 있습니다. ChromeVox를 사용 설정 또는 중지하려면 Ctrl + Alt + Z를 사용하세요. 이동하려면 검색 + 왼쪽 화살표 또는 오른쪽 화살표를 사용하세요. 선택(활성화)하려면 검색 + 스페이스 바를 사용하세요.</translation>

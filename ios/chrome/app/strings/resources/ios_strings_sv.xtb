@@ -620,6 +620,7 @@
 <translation id="31652791196570636">Ignorera</translation>
 <translation id="3167868116600277716">Förslagsflödet</translation>
 <translation id="3169472444629675720">Discover</translation>
+<translation id="3172755898799085680">Gemini är inte tillgängligt på den här sidan</translation>
 <translation id="3174662312949010067">Du kan även använda de sparade lösenorden på andra enheter.</translation>
 <translation id="3177338796769255211">Logga in om du vill ha dina bokmärken med mera på alla dina enheter</translation>
 <translation id="3181954750937456830">Säker webbsökning (skyddar dig och enheten från skadliga webbplatser)</translation>
@@ -1745,6 +1746,7 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="7015418667643980944">Delad skärm</translation>
 <translation id="7016070607649558507">Du har 1 svagt lösenord. Åtgärda det nu för att hålla dig säker.</translation>
 <translation id="7016958933495968912">Alternativ för Förslag</translation>
+<translation id="7019477124580742994"><ph name="SEARCH_PROVIDER" /> Sök</translation>
 <translation id="7029809446516969842">Lösenord</translation>
 <translation id="7035825883570480307">Vill du aktivera aviseringar?</translation>
 <translation id="7039345315346323556">Senaste</translation>

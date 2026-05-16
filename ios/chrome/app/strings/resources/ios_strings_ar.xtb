@@ -315,7 +315,7 @@
 <translation id="2044681667265133332">يتولّى النطاق <ph name="HOSTED_DOMAIN" /> إدارة الحساب <ph name="USER_EMAIL" />، وقد يكون بإمكانه الاطّلاع على بعض البيانات. <ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">عنصر جديد</translation>
 <translation id="2049727122989709386">‫<ph name="COUNT" /> حساب يستخدم كلمة المرور نفسها</translation>
-<translation id="205013082884273671">البحث في أي محتوى يظهر على شاشتك</translation>
+<translation id="205013082884273671">ابحث في أي محتوى يظهر على شاشتك</translation>
 <translation id="2054044186557130763">تسجيل الدخول باستخدام حساب "<ph name="NAME" />" (<ph name="EMAIL" />) الذي تديره مؤسستك</translation>
 <translation id="2059166748188874810">بلدية</translation>
 <translation id="2060638295449304809">‏يتم حفظ هذا العنوان على هذا الجهاز فقط. ولاستخدامه على أجهزتك الأخرى، يمكنك حفظه في حسابك على Google (<ph name="USER_EMAIL" />)</translation>
@@ -536,7 +536,7 @@
 <translation id="2825777862277359739">يمكنك الوصول إلى كلمات المرور وعلامات التبويب والإشارات المرجعية المحفوظة وغير ذلك بتسجيل الدخول.</translation>
 <translation id="2827760117436553203">هل تريد الاحتفاظ بالبيانات منفصلة؟</translation>
 <translation id="2829172210806130158">البحث عن المحتوى الظاهر على الشاشة</translation>
-<translation id="2831109159746537587">للبحث، عليك رسم دائرة حول الصورة أو النقر عليها</translation>
+<translation id="2831109159746537587">للبحث، يكفي رسم دائرة حول الصورة أو النقر عليها</translation>
 <translation id="2834399722155632105">‏3‏. انقر على Password Options (خيارات كلمات المرور).</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />، <ph name="STATE" />، <ph name="URL" /></translation>
 <translation id="2841013758207633010">الوقت</translation>
@@ -620,6 +620,7 @@
 <translation id="31652791196570636">إغلاق</translation>
 <translation id="3167868116600277716">خلاصة ميزة "اقتراحات"</translation>
 <translation id="3169472444629675720">اقتراحات</translation>
+<translation id="3172755898799085680">‏‫Gemini غير متاح على هذه الصفحة</translation>
 <translation id="3174662312949010067">يمكنك أيضًا استخدام كلمات المرور المحفوظة على أجهزتك الأخرى.</translation>
 <translation id="3177338796769255211">يمكنك تسجيل الدخول للوصول إلى الإشارات المرجعية وغير ذلك على جميع أجهزتك</translation>
 <translation id="3181954750937456830">التصفُّح الآمن (يحميك ويحمي جهازك من المواقع الإلكترونية الضارة)</translation>
@@ -1404,7 +1405,7 @@
 <translation id="5938160824633642847">جهازك ممتلئ تقريبًا. يمكنك إخلاء بعض المساحة وإعادة المحاولة.</translation>
 <translation id="5944869793365969636">مسح رمز الاستجابة السريعة</translation>
 <translation id="5948291296578561264">يسمح لك ذلك بحفظ الصور في مكتبة صورك.</translation>
-<translation id="5948605885471592910">كيفية الاطّلاع على جميع علامات التبويب والمجموعات المفتوحة وإدارتها</translation>
+<translation id="5948605885471592910">للاطّلاع على جميع علامات التبويب والمجموعات المفتوحة وإدارتها</translation>
 <translation id="5952641243319721872">هل تريد فعلاً إلغاء الاختيار؟</translation>
 <translation id="5956112131836209882">علامة التبويب <ph name="TAB_INDEX_IN_GROUP" /> في مجموعة علامات التبويب التي تضم <ph name="NUMBER_OF_TABS_IN_GROUP" /></translation>
 <translation id="595769230373966252">البحث باستخدام "<ph name="SEARCH_PROVIDER" />"</translation>
@@ -1743,6 +1744,7 @@
 <translation id="7015418667643980944">تقسيم العرض</translation>
 <translation id="7016070607649558507">لديك كلمة مرور واحدة ضعيفة. عليك تغييرها الآن للحفاظ على أمانك.</translation>
 <translation id="7016958933495968912">خيارات ميزة "اقتراحات"</translation>
+<translation id="7019477124580742994">بحث "<ph name="SEARCH_PROVIDER" />"</translation>
 <translation id="7029809446516969842">كلمات المرور</translation>
 <translation id="7035825883570480307">هل تريد تفعيل الإشعارات؟</translation>
 <translation id="7039345315346323556">الأحدث</translation>

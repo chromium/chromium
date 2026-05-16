@@ -620,6 +620,7 @@
 <translation id="31652791196570636">Elvetés</translation>
 <translation id="3167868116600277716">Discover-feed</translation>
 <translation id="3169472444629675720">Discover</translation>
+<translation id="3172755898799085680">A Gemini nem áll rendelkezésre ezen az oldalon</translation>
 <translation id="3174662312949010067">A többi eszközén is használhatja mentett jelszavait.</translation>
 <translation id="3177338796769255211">Bejelentkezve valamennyi eszközén hozzáférhet könyvjelzőihez és egyebekhez.</translation>
 <translation id="3181954750937456830">Biztonságos Böngészés (megvédi Önt és eszközét a veszélyes webhelyekkel szemben)</translation>
@@ -1745,6 +1746,7 @@ Az Átadást engedélyezni kell a Beállítások általános részében is, és 
 <translation id="7015418667643980944">Osztott nézet</translation>
 <translation id="7016070607649558507">1 gyenge jelszava van. A biztonság megőrzése érdekében javítsa ki most.</translation>
 <translation id="7016958933495968912">A Discover beállításai</translation>
+<translation id="7019477124580742994">Keresés: <ph name="SEARCH_PROVIDER" /></translation>
 <translation id="7029809446516969842">Jelszavak</translation>
 <translation id="7035825883570480307">Bekapcsolja az értesítéseket?</translation>
 <translation id="7039345315346323556">Legutóbbiak</translation>

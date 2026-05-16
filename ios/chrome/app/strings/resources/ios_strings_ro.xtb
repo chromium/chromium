@@ -620,6 +620,7 @@
 <translation id="31652791196570636">Închide</translation>
 <translation id="3167868116600277716">Feedul Discover</translation>
 <translation id="3169472444629675720">Discover</translation>
+<translation id="3172755898799085680">Gemini nu este disponibil în această pagină</translation>
 <translation id="3174662312949010067">Poți folosi parolele salvate și pe alte dispozitive.</translation>
 <translation id="3177338796769255211">Conectează-te pentru a-ți accesa marcajele și altele pe toate dispozitivele</translation>
 <translation id="3181954750937456830">Navigare sigură (protecție împotriva site-urilor periculoase)</translation>
@@ -1745,6 +1746,7 @@ Trebuie să activezi Handoff în secțiunea General din Setări, iar dispozitive
 <translation id="7015418667643980944">Afișare împărțită</translation>
 <translation id="7016070607649558507">Ai o parolă slabă. Remediază problema acum pentru a rămâne în siguranță.</translation>
 <translation id="7016958933495968912">Opțiuni pentru Discover</translation>
+<translation id="7019477124580742994">Căutare <ph name="SEARCH_PROVIDER" /></translation>
 <translation id="7029809446516969842">Parole</translation>
 <translation id="7035825883570480307">Activezi notificările?</translation>
 <translation id="7039345315346323556">Recente</translation>

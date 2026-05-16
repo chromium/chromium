@@ -836,7 +836,7 @@
 <translation id="22792995594807632">下载前需要检查</translation>
 <translation id="2283340219607151381">保存并自动填充地址</translation>
 <translation id="2283447177162560884">已删除“<ph name="PAGE_TITLE" />”页面</translation>
-<translation id="2283599456633275070">旅游</translation>
+<translation id="2283599456633275070">旅行</translation>
 <translation id="2285709459648658719">护照</translation>
 <translation id="2286383991450886080">34 x 44 英寸</translation>
 <translation id="2288422996159078444">您输入的任何内容、查看的任何网页或从事的任何其他网络活动都在被监视。网站上的内容可能会在您不知情的情况下遭到改动。</translation>
@@ -995,7 +995,7 @@
 <translation id="2521385132275182522">钉装（右下角）</translation>
 <translation id="2521736961081452453">创建表单</translation>
 <translation id="2524461107774643265">添加更多信息</translation>
-<translation id="2524962131655207565"><ph name="BEGIN_BOLD" />系统会将结账页中的内容分享给 Google，以便提供这些选项。<ph name="END_BOLD" />支付方案需满足资格要求。如要隐藏先买后付选项，请前往<ph name="BEGIN_LINK" />支付设置<ph name="END_LINK" />。</translation>
+<translation id="2524962131655207565"><ph name="BEGIN_BOLD" />为提供以上选项，系统会将结账页中的内容分享给 Google。<ph name="END_BOLD" />付款方案需满足资格要求。如要隐藏先买后付选项，请前往<ph name="BEGIN_LINK" />支付设置<ph name="END_LINK" />。</translation>
 <translation id="2526062290525841862">如需运行此应用，请重新启用独立式 Web 应用 (IWA) 开发者模式</translation>
 <translation id="2526280916094749336">您可在各种 Google 产品中使用已保存的地址。此地址将保存到您的 Google 账号 <ph name="ACCOUNT" /> 中。</translation>
 <translation id="2527451058878391043">您的银行卡验证码 (CVC) 位于银行卡的正面，即卡号右上角的 4 位数代码。</translation>

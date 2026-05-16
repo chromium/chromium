@@ -620,6 +620,7 @@
 <translation id="31652791196570636">Lukk</translation>
 <translation id="3167868116600277716">Discover-feeden</translation>
 <translation id="3169472444629675720">Discover</translation>
+<translation id="3172755898799085680">Gemini er ikke tilgjengelig på denne siden</translation>
 <translation id="3174662312949010067">Du kan også bruke lagrede passord på de andre enhetene dine.</translation>
 <translation id="3177338796769255211">Logg på for å få blant annet bokmerkene dine på alle enhetene dine</translation>
 <translation id="3181954750937456830">Safe Browsing (beskytter deg og enheten din mot farlige nettsteder)</translation>
@@ -1745,6 +1746,7 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="7015418667643980944">Delt visning</translation>
 <translation id="7016070607649558507">Du har ett svakt passord. Løs problemet nå for å ivareta sikkerheten.</translation>
 <translation id="7016958933495968912">Alternativer for Discover</translation>
+<translation id="7019477124580742994"><ph name="SEARCH_PROVIDER" /> Søk</translation>
 <translation id="7029809446516969842">Passord</translation>
 <translation id="7035825883570480307">Vil du slå på varsler?</translation>
 <translation id="7039345315346323556">Nylige</translation>

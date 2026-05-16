@@ -534,6 +534,7 @@
 <translation id="6447842834002726250">ኩኪዎች</translation>
 <translation id="6452138246455930388">ክፍት በሆነ ትርዎ ላይ የዋጋ ቅናሽ ከ<ph name="OLD_PRICE" /> ወደ <ph name="NEW_PRICE" />፣ <ph name="PRODUCT_NAME" />፣ <ph name="DOMAIN_NAME" /></translation>
 <translation id="6500423977866688905">መስኮቱ ጠባብ ሲሆን የሞባይል ዕይታ ይጠይቁ</translation>
+<translation id="6514791408445720076">ገጽዎን ያብጁ</translation>
 <translation id="6527303717912515753">አጋራ</translation>
 <translation id="6530703012083415527">ሲበራ፣ ጣቢያዎች ብቅ-ባዮችን እና ማዞሪያዎችን መጠቀም ይችላሉ። ሲጠፋ፣ ጣቢያዎች ብቅ-ባዮችን እና ማዞሪያዎችን መጠቀም አይችሉም።</translation>
 <translation id="6540488083026747005">በዚህ ጣቢያ ላይ የሦስተኛ ወገን ኩኪዎችን ፈቅደዋል</translation>
@@ -599,6 +600,7 @@
 <translation id="7141896414559753902">ጣቢያዎች ብቅ-ባዮችን እንዳያሳዩ ያግዱ (የሚመከር)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> ኪባ</translation>
 <translation id="7180611975245234373">አድስ</translation>
+<translation id="7180865173735832675">አብጅ</translation>
 <translation id="7188508872042490670">በመሣሪያ ላይ ያለ የጣቢያ ውሂብ</translation>
 <translation id="7201549776650881587">ይህ እርምጃ <ph name="ORIGIN" /> ሥር ባሉ ሁሉም ጣቢያዎች ወይም በመነሻ ማያ ገፅዎ ላይ ባለው መተግበሪያው የተከማቹ ሁሉንም ውሂብ እና ኩኪዎች ይሰርዛል</translation>
 <translation id="7213166370492037743">ጣቢያዎች በአካባቢያዊ አውታረ መረብዎ ላይ ካለ ማንኛውም መሣሪያ ጋር እንዲገናኙ አትፍቀድ</translation>
@@ -713,6 +715,7 @@
 <translation id="83792324527827022">አንድ ጣቢያ የእርስዎን ካሜራ እና ማይክሮፎን እየተጠቀመ ነው</translation>
 <translation id="8380167699614421159">ይህ ጣቢያ ረባሽ ወይም አሳሳች ማስታወቂያዎችን ያሳያል</translation>
 <translation id="8394832520002899662">ወደ ጣቢያው ለመመለስ መታ ያድርጉ</translation>
+<translation id="8404500559369898929">ብጁ የዳራ ገጽታ በመምረጥ Chromeን የራስዎ ያድርጉት</translation>
 <translation id="8409345997656833551">አንድ ጽሁፍ ቀላል በሆነ ዕይታ ውስጥ መታየት ሲችል ማሳወቂያ ያግኙ</translation>
 <translation id="8416874502399604126">ማይክሮፎን ለዚህ ጊዜ ይፈቀዳል</translation>
 <translation id="8423565414844018592">የጽሁፍ ልኬት ወደ <ph name="TEXT_SCALING" /> ተቀናብሯል</translation>

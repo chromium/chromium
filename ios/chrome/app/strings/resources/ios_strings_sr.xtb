@@ -620,6 +620,7 @@
 <translation id="31652791196570636">Одбаци</translation>
 <translation id="3167868116600277716">Discover фид</translation>
 <translation id="3169472444629675720">Discover</translation>
+<translation id="3172755898799085680">Gemini није доступан на овој страници</translation>
 <translation id="3174662312949010067">Можете да користите сачуване лозинке и на другим уређајима.</translation>
 <translation id="3177338796769255211">Пријавите се да бисте приступали обележивачима и другом садржају на свим уређајима</translation>
 <translation id="3181954750937456830">Безбедно прегледање (штити вас и уређај од опасних сајтова)</translation>
@@ -1745,6 +1746,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="7015418667643980944">Подељени приказ</translation>
 <translation id="7016070607649558507">Имате 1 слабу лозинку. Решите проблем одмах да бисте били безбедни.</translation>
 <translation id="7016958933495968912">Опције за Discover</translation>
+<translation id="7019477124580742994"><ph name="SEARCH_PROVIDER" /> претрага</translation>
 <translation id="7029809446516969842">Лозинке</translation>
 <translation id="7035825883570480307">Желите ли да укључите обавештења?</translation>
 <translation id="7039345315346323556">Недавно</translation>

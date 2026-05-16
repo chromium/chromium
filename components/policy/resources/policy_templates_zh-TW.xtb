@@ -1827,7 +1827,7 @@ Chrome 政策的優先順序高於這項政策，例如擴充功能是否列在 
 <translation id="225340736558643885">啟用不安全表單的警告功能</translation>
 <translation id="2258126710006312594">允許遠端存取使用者向主機傳輸檔案，或從主機接收檔案</translation>
 <translation id="225830954785359083">禁止網頁在卸載時顯示彈出式視窗</translation>
-<translation id="2260635608598936994">設定篩選器，選取要納入 <ph name="PRODUCT_NAME" /> 安全性信號報告的用戶端憑證。這些報告會將瀏覽器和裝置防護機制資訊傳送到 <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />，讓管理員可用來設定<ph name="GOOGLE_CONTEXT_AWARE_ACCESS" /> 規則。
+<translation id="2260635608598936994">設定篩選器，選取要納入 <ph name="PRODUCT_NAME" /> 安全性信號報告的用戶端憑證。這些報告會將瀏覽器和裝置的安全狀態資訊傳送到 <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />，方便管理員設定<ph name="GOOGLE_CONTEXT_AWARE_ACCESS" /> 規則。
 
 你可以透過這項政策，根據用戶端憑證屬性 (例如 ISSUER 和/或 SUBJECT 辨別名稱) 定義篩選器。<ph name="PRODUCT_NAME" /> 只會在信號報告中加入符合至少一個指定篩選條件的憑證。
 
@@ -1837,15 +1837,15 @@ Chrome 政策的優先順序高於這項政策，例如擴充功能是否列在 
 
       * 如果 <ph name="SELECTOR_PLACEHOLDER" /> 包含 <ph name="ISSUER_STRING_VALUE" /> 和 <ph name="SUBJECT_STRING_VALUE" /> 區段，系統只會選取同時符合兩個條件的用戶端憑證。
 
-      * 如果 <ph name="SELECTOR_PLACEHOLDER" /> 的 <ph name="SUBJECT_STRING_VALUE" /> 區段包含 <ph name="FILTER_STRING_ORGANIZATION" /> 值，憑證至少要有一個機構符合該值，系統才會選取。
+      * 如果 <ph name="SELECTOR_PLACEHOLDER" /> 的 <ph name="SUBJECT_STRING_VALUE" /> 區段包含 <ph name="FILTER_STRING_ORGANIZATION" /> 值，憑證至少要有一個組織符合該值，系統才會選取。
 
       * 如果 <ph name="SELECTOR_PLACEHOLDER" /> 的 <ph name="SUBJECT_STRING_VALUE" /> 區段包含 <ph name="FILTER_STRING_ORGANIZATIONAL_UNIT" /> 值，憑證至少要有一個組織單位符合該值，系統才會選取。
 
-      * 如果將 <ph name="SELECTOR_PLACEHOLDER" /> 設為 <ph name="EMPTY_DICTIONARY" />，系統會忽略這項政策的空白詳細資料。
+      * 如果將 <ph name="SELECTOR_PLACEHOLDER" /> 設為 <ph name="EMPTY_DICTIONARY" />，執行這項政策時，系統會忽略空白欄位。
 
       如果未設定這項政策，系統在回報信號時不會選取用戶端憑證。
 
-*重要事項：*這項政策只有在 <ph name="USER_SECURITY_SIGNALS_REPORTING_POLICY_NAME" /> 政策啟用時才會生效。後者可控制從 Chrome 傳送安全信號的整體功能。</translation>
+*重要事項：*這項政策只有在 <ph name="USER_SECURITY_SIGNALS_REPORTING_POLICY_NAME" /> 政策啟用時才會生效。後者負責控管 Chrome 的安全信號回報功能。</translation>
 <translation id="2261648512244797294">停用已淘汰的 Privet 列印功能</translation>
 <translation id="2262701937800507517">使用 <ph name="PRODUCT_OS_NAME" /> 的預設加密演算法順序</translation>
 <translation id="2263881357524831360">允許在 <ph name="ANDROID_NAME" /> 的 <ph name="PRODUCT_NAME" /> 中使用第三方密碼管理工具</translation>

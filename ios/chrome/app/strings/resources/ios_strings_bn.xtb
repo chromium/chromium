@@ -620,6 +620,7 @@
 <translation id="31652791196570636">বাতিল করুন</translation>
 <translation id="3167868116600277716">ডিসকভার ফিড</translation>
 <translation id="3169472444629675720">আবিষ্কার করুন</translation>
+<translation id="3172755898799085680">এই পৃষ্ঠায় Gemini উপলভ্য নেই</translation>
 <translation id="3174662312949010067">এছাড়াও আপনার অন্যান্য ডিভাইসে সেভ করা পাসওয়ার্ড ব্যবহার করতে পারেন।</translation>
 <translation id="3177338796769255211">আপনার সব ডিভাইসে বুকমার্ক ও আরও অনেক কিছু পেতে সাইন-ইন করুন</translation>
 <translation id="3181954750937456830">নিরাপদ ব্রাউজিং (বিপজ্জনক সাইট থেকে আপনাকে এবং আপনার ডিভাইসকে রক্ষা করে)</translation>
@@ -1746,6 +1747,7 @@
 <translation id="7015418667643980944">স্প্লিট ভিউ</translation>
 <translation id="7016070607649558507">আপনার ১টি দুর্বল পাসওয়ার্ড আছে। নিরাপদ থাকতে এই সমস্যার সমাধান করুন।</translation>
 <translation id="7016958933495968912">ডিসকভার সংক্রান্ত বিকল্প</translation>
+<translation id="7019477124580742994"><ph name="SEARCH_PROVIDER" /> Search</translation>
 <translation id="7029809446516969842">পাসওয়ার্ড</translation>
 <translation id="7035825883570480307">বিজ্ঞপ্তি চালু করতে চান?</translation>
 <translation id="7039345315346323556">সাম্প্রতিক</translation>

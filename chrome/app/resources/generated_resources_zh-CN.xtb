@@ -1873,7 +1873,7 @@
 <translation id="228059581448666199">左键点击鼠标</translation>
 <translation id="2282146716419988068">GPU 进程</translation>
 <translation id="228293613124499805">您访问的大多数网站很可能会将数据保存到设备上，例如保存您的偏好设置或您与网站分享的信息，这通常是为了提升您的浏览体验。我们建议您保持此设置的开启状态。</translation>
-<translation id="2283599456633275070">旅游</translation>
+<translation id="2283599456633275070">旅行</translation>
 <translation id="2285109769884538519">{COUNT,plural, =0{在新标签页组中打开全部网址(&amp;N)}=1{在新标签页组中打开 1 个网址(&amp;N)}other{在新标签页组中打开全部（{COUNT} 个）网址(&amp;N)}}</translation>
 <translation id="2285942871162473373">无法识别您的指纹。请重试。</translation>
 <translation id="2286840900796601828">快退 10 秒</translation>
@@ -5624,6 +5624,7 @@
 <translation id="4865063548323785458">保存并自动填充密码，轻松登录网站和应用</translation>
 <translation id="486635084936119914">下载特定类型的文件后自动将其打开</translation>
 <translation id="4867272607148176509">家长可以批准或屏蔽应用、设置使用时限，以及控制网络浏览。日后需要时，您还可添加学校账号以用于访问大多数学校资源。</translation>
+<translation id="486796517585164369">· 最近打开的标签页</translation>
 <translation id="4868284252360267853">此对话框目前未被聚焦。按 Command+Shift+Option+A 即可聚焦于此对话框。</translation>
 <translation id="4868351661310357223">在 <ph name="DEVICE_TYPE" /> 上安装从 Google Play 下载的应用和游戏。</translation>
 <translation id="4869170227080975044">读取 ChromeOS 网络信息</translation>
@@ -10117,6 +10118,7 @@
 <translation id="8017004049696748317">开始或停止语音输入</translation>
 <translation id="8017176852978888182">Linux 共享目录</translation>
 <translation id="8017679124341497925">已修改快捷方式</translation>
+<translation id="8018192911041116887">分享标签页</translation>
 <translation id="8018298733481692628">删除这份个人资料？</translation>
 <translation id="8018313076035239964">控制网站可使用的信息以及可向您显示的内容</translation>
 <translation id="802154636333426148">下载失败</translation>
@@ -11849,6 +11851,7 @@
 <translation id="918352324374649435">{COUNT,plural, =1{应用}other{# 个应用}}</translation>
 <translation id="9186743636216815027">{NUM_APPS,plural,offset:2 =1{管理员可以使用“<ph name="APP0_NAME" />”录制您的屏幕。录制开始时，您不会收到通知。}=2{管理员可以使用“<ph name="APP0_NAME" />”和“<ph name="APP1_NAME" />”录制您的屏幕。录制开始时，您不会收到通知。}=3{管理员可以使用“<ph name="APP0_NAME" />”“<ph name="APP1_NAME" />”和另外 1 个应用录制您的屏幕。录制开始时，您不会收到通知。}other{管理员可以使用“<ph name="APP0_NAME" />”“<ph name="APP1_NAME" />”和另外 # 个应用录制您的屏幕。录制开始时，您不会收到通知。}}</translation>
 <translation id="9186963452600581158">使用孩子的 Google 账号登录</translation>
+<translation id="9187249589560413026">{TAB_COUNT,plural, =1{正在共享 1 个标签页}other{正在共享 # 个标签页}}</translation>
 <translation id="9187967020623675250">按的键不匹配。按任意键即可<ph name="RESPONSE" />。</translation>
 <translation id="9188142767272053574">启用进程隔离</translation>
 <translation id="9192019773545828776">收听语音反馈，让您无需看屏幕即可使用设备。通过已连接的设备可以获得盲文反馈。使用 Ctrl + Alt + Z 可开启和关闭 ChromeVox。使用搜索键 + 向左键或向右键可进行导航。使用搜索键 + 空格键即可选择（启用）。</translation>

@@ -620,6 +620,7 @@
 <translation id="31652791196570636">Odbaci</translation>
 <translation id="3167868116600277716">Sažetak sadržaja na Discoveru</translation>
 <translation id="3169472444629675720">Otkrijte</translation>
+<translation id="3172755898799085680">Gemini nije dostupan na ovoj stranici</translation>
 <translation id="3174662312949010067">Također možete koristiti sačuvane lozinke na drugim uređajima.</translation>
 <translation id="3177338796769255211">Prijavite se da pristupite svojim oznakama i drugom na svim uređajima</translation>
 <translation id="3181954750937456830">Sigurno pregledanje (štiti vas i vaš uređaj od opasnih web lokacija)</translation>
@@ -1745,6 +1746,7 @@ Također, Handoff mora biti omogućen u odjeljku Opće u Postavkama, a vaši ure
 <translation id="7015418667643980944">Podijeljeni prikaz</translation>
 <translation id="7016070607649558507">Imate 1 slabu lozinku. Riješite taj problem radi sigurnosti.</translation>
 <translation id="7016958933495968912">Opcije za Discover</translation>
+<translation id="7019477124580742994">Pretraživanje na usluzi <ph name="SEARCH_PROVIDER" /></translation>
 <translation id="7029809446516969842">Lozinke</translation>
 <translation id="7035825883570480307">Uključiti obavještenja?</translation>
 <translation id="7039345315346323556">Nedavno</translation>

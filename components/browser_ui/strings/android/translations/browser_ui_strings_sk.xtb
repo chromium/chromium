@@ -534,6 +534,7 @@
 <translation id="6447842834002726250">Súbory cookie</translation>
 <translation id="6452138246455930388">Pokles ceny na vašej otvorenej karte z <ph name="OLD_PRICE" /> na <ph name="NEW_PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN_NAME" /></translation>
 <translation id="6500423977866688905">Keď je okno úzke, požiadajte o zobrazenie v mobile</translation>
+<translation id="6514791408445720076">Prispôsobte si stránku</translation>
 <translation id="6527303717912515753">Zdieľať</translation>
 <translation id="6530703012083415527">Keď je táto možnosť zapnutá, weby môžu používať vyskakovacie okná a presmerovania. Keď je táto možnosť vypnutá, weby nemôžu používať vyskakovacie okná ani presmerovania.</translation>
 <translation id="6540488083026747005">Pre tento web ste povolili súbory cookie tretej strany</translation>
@@ -599,6 +600,7 @@
 <translation id="7141896414559753902">Brániť webom otvárať vyskakovacie okná a používať presmerovania (odporúčané)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> kB</translation>
 <translation id="7180611975245234373">Obnoviť</translation>
+<translation id="7180865173735832675">Prispôsobiť</translation>
 <translation id="7188508872042490670">Dáta webov v zariadení</translation>
 <translation id="7201549776650881587">Touto akciou odstránite všetky údaje a súbory cookie uložené všetkými webmi domény <ph name="ORIGIN" /> alebo jej aplikáciou na ploche</translation>
 <translation id="7213166370492037743">Nepovoliť webom pripájať sa k zariadeniam vo vašej miestnej sieti</translation>
@@ -713,6 +715,7 @@ Rozšírená ochrana ovláda tieto nastavenia Chromu:</translation>
 <translation id="83792324527827022">Váš fotoaparát a mikrofón používa nejaký web</translation>
 <translation id="8380167699614421159">Tento web zobrazuje obťažujúce alebo zavádzajúce reklamy</translation>
 <translation id="8394832520002899662">Klepnutím sa vrátite na web</translation>
+<translation id="8404500559369898929">Prispôsobte si Chrome výberom vlastného motívu pozadia</translation>
 <translation id="8409345997656833551">Dostávajte upozornenia, keď bude článok dostupný v zjednodušenom zobrazení</translation>
 <translation id="8416874502399604126">Mikrofón je momentálne povolený</translation>
 <translation id="8423565414844018592">Škálovanie textu je nastavené na <ph name="TEXT_SCALING" /></translation>

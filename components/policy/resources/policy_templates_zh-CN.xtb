@@ -2697,13 +2697,13 @@ PAC 样式的字符串：
 如果此政策已启用或未设置，用户将可以通过 Kerberos 设置页中的“Kerberos 账号”设置来添加 Kerberos 账号。用户对自己添加的账号拥有完全控制权，可以修改或移除这些账号。
 
 如果此政策已停用，用户将无法添加 Kerberos 账号。此时，只能通过“配置 Kerberos 账号”政策添加 Kerberos 账号。这一方式可以有效地锁定账号。</translation>
-<translation id="2771222727845689796">此政策允许您指定一个网址格式列表。系统会强制以前台优先级运行与这些格式匹配的后台 Web 内容。
+<translation id="2771222727845689796">此政策允许您指定一个网址格式列表。匹配这些格式的后台 Web 内容将强制以前台优先级运行。
 
 如果启用了 <ph name="FORCE_FOREGROUND_PRIORITY_FOR_ALL_TABS_POLICY_NAME" /> 政策，系统会忽略此列表，因为所有标签页都将强制以前台优先级运行。
 
-如果 <ph name="FORCE_FOREGROUND_PRIORITY_FOR_ALL_TABS_POLICY_NAME" /> 已停用或未设置，系统将仅强制执行与此列表中的格式匹配的内容。
+如果已停用或未设置 <ph name="FORCE_FOREGROUND_PRIORITY_FOR_ALL_TABS_POLICY_NAME" />，仅当内容与此列表中的格式匹配时，才会强制以前台优先级运行。
 
-如需详细了解有效<ph name="URL_LABEL" />格式，请访问 https://support.google.com/chrome/a?p=url_blocklist_filter_format。
+如需详细了解有效的<ph name="URL_LABEL" />格式，请访问 https://support.google.com/chrome/a?p=url_blocklist_filter_format。
 
 如果此列表为空或未设置，系统不会强制任何后台内容以前台优先级运行。</translation>
 <translation id="2772231477628401250">使用 HTTP 下载更新</translation>

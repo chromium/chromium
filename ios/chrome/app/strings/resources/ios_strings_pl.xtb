@@ -620,6 +620,7 @@
 <translation id="31652791196570636">Zamknij</translation>
 <translation id="3167868116600277716">Karty Discover</translation>
 <translation id="3169472444629675720">Discover</translation>
+<translation id="3172755898799085680">Gemini jest niedostępny na tej stronie</translation>
 <translation id="3174662312949010067">Z zapisanych haseł możesz też korzystać na innych urządzeniach.</translation>
 <translation id="3177338796769255211">Zaloguj się, aby mieć dostęp do zakładek oraz innych ustawień i danych na wszystkich swoich urządzeniach</translation>
 <translation id="3181954750937456830">Bezpieczne przeglądanie (chroni Ciebie i Twoje urządzenie przed niebezpiecznymi witrynami)</translation>
@@ -1745,6 +1746,7 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="7015418667643980944">Widok dzielony</translation>
 <translation id="7016070607649558507">Masz 1 słabe hasło. Dla bezpieczeństwa zmień je jak najszybciej.</translation>
 <translation id="7016958933495968912">Opcje kart Discover</translation>
+<translation id="7019477124580742994">Wyszukaj w <ph name="SEARCH_PROVIDER" /></translation>
 <translation id="7029809446516969842">Hasła</translation>
 <translation id="7035825883570480307">Włączyć powiadomienia?</translation>
 <translation id="7039345315346323556">Ostatnie</translation>

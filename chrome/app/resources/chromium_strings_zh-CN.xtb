@@ -98,7 +98,7 @@
 <translation id="2066690553719545730">始终显示 AI 模式</translation>
 <translation id="2086476982681781442">Chromium 阻止了此项下载操作，因为该文件具有欺骗性，可能会意外更改您的设备</translation>
 <translation id="208726765006323911">下次打开 Chromium iOS 时，您会看到试用<ph name="FEATURE_NAME" />的提示。</translation>
-<translation id="2090163042413910600">当您首次访问某个网站时，Chromium 会关闭 JavaScript 优化功能。
+<translation id="2090163042413910600">您在首次访问某个网站时，Chromium 会关闭 JavaScript 优化功能。
 
 如果此网页无法按预期运行，请尝试允许优化。</translation>
 <translation id="2099452623287920103">系统将从此设备中移除您已保存在 Google 账号中的密码和其他 Chromium 数据。如需在 Chromium 中重新使用这些数据，请重新登录。</translation>

@@ -620,6 +620,7 @@
 <translation id="31652791196570636">Ignora</translation>
 <translation id="3167868116600277716">Feed de Discover</translation>
 <translation id="3169472444629675720">Discover</translation>
+<translation id="3172755898799085680">Gemini no està disponible en aquesta pàgina</translation>
 <translation id="3174662312949010067">També pots utilitzar les contrasenyes desades en els teus altres dispositius.</translation>
 <translation id="3177338796769255211">Inicia la sessió per obtenir les teves adreces d'interès i més en tots els teus dispositius</translation>
 <translation id="3181954750937456830">Navegació segura (us protegeix a tu i al teu dispositiu de llocs web perillosos)</translation>
@@ -1745,6 +1746,7 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="7015418667643980944">Vista dividida</translation>
 <translation id="7016070607649558507">Tens 1 contrasenya poc segura. Corregeix el problema per protegir-te.</translation>
 <translation id="7016958933495968912">Opcions per a Discover</translation>
+<translation id="7019477124580742994">Cerca de <ph name="SEARCH_PROVIDER" /></translation>
 <translation id="7029809446516969842">Contrasenyes</translation>
 <translation id="7035825883570480307">Vols activar les notificacions?</translation>
 <translation id="7039345315346323556">Recents</translation>

@@ -620,6 +620,7 @@
 <translation id="31652791196570636">Παράβλεψη</translation>
 <translation id="3167868116600277716">Ροή Discover</translation>
 <translation id="3169472444629675720">Discover</translation>
+<translation id="3172755898799085680">Το Gemini δεν είναι διαθέσιμο σε αυτή τη σελίδα</translation>
 <translation id="3174662312949010067">Μπορείτε επίσης να αποθηκεύσετε κωδικούς πρόσβασης σε άλλες συσκευές σας.</translation>
 <translation id="3177338796769255211">Συνδεθείτε, για να έχετε στη διάθεσή σας τους σελιδοδείκτες και άλλα στοιχεία σε όλες τις συσκευές σας</translation>
 <translation id="3181954750937456830">Ασφαλής περιήγηση (προστατεύει εσάς και τη συσκευή σας από επικίνδυνους ιστοτόπους)</translation>
@@ -1746,6 +1747,7 @@
 <translation id="7015418667643980944">Προβολή διαχωρισμού οθόνης</translation>
 <translation id="7016070607649558507">Έχετε 1 ασθενή κωδικό πρόσβασης. Επιδιορθώστε τον τώρα για να παραμείνετε ασφαλείς.</translation>
 <translation id="7016958933495968912">Επιλογές για Discover</translation>
+<translation id="7019477124580742994">Αναζήτηση <ph name="SEARCH_PROVIDER" /></translation>
 <translation id="7029809446516969842">Κωδ. πρόσβασης</translation>
 <translation id="7035825883570480307">Ενεργοποίηση ειδοποιήσεων;</translation>
 <translation id="7039345315346323556">Πρόσφατα</translation>

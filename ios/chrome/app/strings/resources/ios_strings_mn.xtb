@@ -620,6 +620,7 @@
 <translation id="31652791196570636">Хаах</translation>
 <translation id="3167868116600277716">Discover-н хангамж</translation>
 <translation id="3169472444629675720">Олох</translation>
+<translation id="3172755898799085680">Gemini-г энэ хуудсан дээр ашиглах боломжгүй</translation>
 <translation id="3174662312949010067">Та мөн хадгалсан нууц үгээ бусад төхөөрөмж дээрээ ашиглах боломжтой.</translation>
 <translation id="3177338796769255211">Хавчуурга болон бусад зүйлээ бүх төхөөрөмж дээрээ авахын тулд нэвтэрнэ үү</translation>
 <translation id="3181954750937456830">Аюулгүй хөтөч (таныг болон таны төхөөрөмжийг аюултай сайтаас хамгаалдаг)</translation>
@@ -1745,6 +1746,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="7015418667643980944">Хуваасан харагдах байдал</translation>
 <translation id="7016070607649558507">Танд 1 сул нууц үг байна. Аюулгүй байхын тулд үүнийг одоо засна уу.</translation>
 <translation id="7016958933495968912">Discover-т зориулсан сонголтууд</translation>
+<translation id="7019477124580742994"><ph name="SEARCH_PROVIDER" /> Хайлт</translation>
 <translation id="7029809446516969842">Нууц үг</translation>
 <translation id="7035825883570480307">Мэдэгдлийг асаах уу?</translation>
 <translation id="7039345315346323556">Саяхны</translation>

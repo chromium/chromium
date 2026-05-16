@@ -620,6 +620,7 @@
 <translation id="31652791196570636">ປິດໄວ້</translation>
 <translation id="3167868116600277716">ຟີດ Discover</translation>
 <translation id="3169472444629675720">ຄົ້ນຫາ</translation>
+<translation id="3172755898799085680">Gemini ບໍ່ພ້ອມນຳໃຊ້ໃນໜ້ານີ້</translation>
 <translation id="3174662312949010067">ທ່ານສາມາດໃຊ້ລະຫັດຜ່ານທີ່ບັນທຶກໄວ້ຢູ່ອຸປະກອນອື່ນຂອງທ່ານໄດ້ນຳ.</translation>
 <translation id="3177338796769255211">ເຂົ້າສູ່ລະບົບເພື່ອຮັບບຸກມາກ ແລະ ຂໍ້ມູນອື່ນໆຂອງທ່ານໃນອຸປະກອນທຸກເຄື່ອງຂອງທ່ານ</translation>
 <translation id="3181954750937456830">Safe Browsing (ປົກປ້ອງທ່ານ ແລະ ອຸປະກອນຂອງທ່ານຈາກເວັບໄຊອັນຕະລາຍ)</translation>
@@ -1745,6 +1746,7 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="7015418667643980944">ມຸມມອງແບບແຍກ</translation>
 <translation id="7016070607649558507">ທ່ານມີລະຫັດຜ່ານງ່າຍ 1 ລາຍການ. ແກ້ໄຂດຽວນີ້ເພື່ອຄວາມປອດໄພ.</translation>
 <translation id="7016958933495968912">ຕົວເລືອກສຳລັບ Discover</translation>
+<translation id="7019477124580742994"><ph name="SEARCH_PROVIDER" /> ຊອກຫາ</translation>
 <translation id="7029809446516969842">ລະ​ຫັດ​ຜ່ານ</translation>
 <translation id="7035825883570480307">ເປີດການແຈ້ງເຕືອນບໍ?</translation>
 <translation id="7039345315346323556">ຫຼ້າສຸດ</translation>

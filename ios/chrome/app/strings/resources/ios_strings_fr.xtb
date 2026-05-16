@@ -315,7 +315,7 @@
 <translation id="2044681667265133332">Le compte <ph name="USER_EMAIL" /> est géré par <ph name="HOSTED_DOMAIN" />, qui pourrait voir certaines informations. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="20485545164632846">nouvel élément</translation>
 <translation id="2049727122989709386"><ph name="COUNT" /> comptes utilisent le même mot de passe</translation>
-<translation id="205013082884273671">Effectuez une recherche sur n'importe quel élément à l'écran</translation>
+<translation id="205013082884273671">Cherchez ce que vous voulez sur votre écran</translation>
 <translation id="2054044186557130763">Se connecter en tant que <ph name="NAME" />, <ph name="EMAIL" />, géré par votre organisation.</translation>
 <translation id="2059166748188874810">Municipalité</translation>
 <translation id="2060638295449304809">Cette adresse n'est enregistrée que sur cet appareil. Pour l'utiliser sur vos autres appareils, enregistrez-la dans votre compte Google, <ph name="USER_EMAIL" />.</translation>
@@ -536,7 +536,7 @@
 <translation id="2825777862277359739">Connectez-vous pour accéder à vos mots de passe, onglets, favoris et plus encore.</translation>
 <translation id="2827760117436553203">Séparer les données ?</translation>
 <translation id="2829172210806130158">Rechercher sur l'écran</translation>
-<translation id="2831109159746537587">Essayez d'entourer ou d'appuyer sur l'image pour y effectuer une recherche</translation>
+<translation id="2831109159746537587">Essayez d'entourer un élément de l'image ou d'appuyer dessus pour lancer une recherche</translation>
 <translation id="2834399722155632105">3. Appuyez sur "Options de mots de passe"</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" />, <ph name="URL" /></translation>
 <translation id="2841013758207633010">Heure</translation>
@@ -620,6 +620,7 @@
 <translation id="31652791196570636">Fermer</translation>
 <translation id="3167868116600277716">Flux Discover</translation>
 <translation id="3169472444629675720">Discover</translation>
+<translation id="3172755898799085680">Gemini n'est pas disponible sur cette page</translation>
 <translation id="3174662312949010067">Vous pouvez aussi utiliser des mots de passe enregistrés sur vos autres appareils.</translation>
 <translation id="3177338796769255211">Connectez-vous pour accéder à vos favoris et plus sur tous vos appareils</translation>
 <translation id="3181954750937456830">Navigation sécurisée (assure votre protection et celle de votre appareil contre les sites dangereux)</translation>
@@ -1406,7 +1407,7 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="5938160824633642847">Votre appareil est presque saturé. Libérez de l'espace et réessayez.</translation>
 <translation id="5944869793365969636">Scanner le QR code</translation>
 <translation id="5948291296578561264">Cela vous permet d'enregistrer des photos dans votre bibliothèque.</translation>
-<translation id="5948605885471592910">Voir et gérer tout ce qui est ouvert</translation>
+<translation id="5948605885471592910">Consultez et gérez tout ce que vous avez ouvert</translation>
 <translation id="5952641243319721872">Voulez-vous vraiment annuler votre sélection ?</translation>
 <translation id="5956112131836209882">Onglet dans le groupe d'onglets. <ph name="TAB_INDEX_IN_GROUP" /> sur <ph name="NUMBER_OF_TABS_IN_GROUP" />.</translation>
 <translation id="595769230373966252">Rechercher avec <ph name="SEARCH_PROVIDER" /></translation>
@@ -1698,7 +1699,7 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="686831807558000905">Ne pas se connecter</translation>
 <translation id="686899695320434745">Les adresses ne sont pas chiffrées avec votre phrase secrète. Vous pourrez ainsi les utiliser dans d'autres services Google.</translation>
 <translation id="687135068089457384">Afficher les paramètres</translation>
-<translation id="6871397658902960384">Commencer la navigation</translation>
+<translation id="6871397658902960384">Commencer à explorer</translation>
 <translation id="6874328931822449112">{COUNT,plural, =1{Enregistrer le mot de passe dans le compte}one{Enregistrer le mot de passe dans le compte}other{Enregistrer les mots de passe dans le compte}}</translation>
 <translation id="6875166646976836138">Vous pouvez aussi afficher et gérer ces éléments dans les favoris, la liste de lecture ou le Gestionnaire de mots de passe.</translation>
 <translation id="6878052248816456143">Accédez à vos fichiers dans Google Drive à tout moment.</translation>
@@ -1745,6 +1746,7 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="7015418667643980944">Vue fractionnée</translation>
 <translation id="7016070607649558507">Vous avez 1 mot de passe peu sécurisé. Modifiez-le pour vous protéger.</translation>
 <translation id="7016958933495968912">Options pour Discover</translation>
+<translation id="7019477124580742994">Recherche <ph name="SEARCH_PROVIDER" /></translation>
 <translation id="7029809446516969842">Mots de passe</translation>
 <translation id="7035825883570480307">Activer les notifications ?</translation>
 <translation id="7039345315346323556">Récents</translation>

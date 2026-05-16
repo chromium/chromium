@@ -620,6 +620,7 @@
 <translation id="31652791196570636">Luk</translation>
 <translation id="3167868116600277716">Discover-feed</translation>
 <translation id="3169472444629675720">Discover</translation>
+<translation id="3172755898799085680">Gemini er ikke tilgængelig på denne side</translation>
 <translation id="3174662312949010067">Du kan også bruge gemte adgangskoder på dine andre enheder.</translation>
 <translation id="3177338796769255211">Log ind for at få adgang til dine bogmærker m.m. på alle dine enheder</translation>
 <translation id="3181954750937456830">Beskyttet browsing (beskytter dig og din enhed mod farlige websites)</translation>
@@ -1745,6 +1746,7 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="7015418667643980944">Opdelt visning</translation>
 <translation id="7016070607649558507">Du har 1 svag adgangskode. Løs problemet nu for at forblive beskyttet.</translation>
 <translation id="7016958933495968912">Indstillinger for Discover</translation>
+<translation id="7019477124580742994"><ph name="SEARCH_PROVIDER" /> Søgning</translation>
 <translation id="7029809446516969842">Adgangskoder</translation>
 <translation id="7035825883570480307">Vil du aktivere notifikationer?</translation>
 <translation id="7039345315346323556">Seneste</translation>

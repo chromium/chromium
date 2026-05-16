@@ -534,6 +534,7 @@
 <translation id="6447842834002726250">Cookie</translation>
 <translation id="6452138246455930388">您打开的标签页中有降价，原价为 <ph name="OLD_PRICE" />，现价为 <ph name="NEW_PRICE" />”，<ph name="PRODUCT_NAME" />，<ph name="DOMAIN_NAME" /></translation>
 <translation id="6500423977866688905">当窗口狭窄时，请求使用移动版视图</translation>
+<translation id="6514791408445720076">自定义页面</translation>
 <translation id="6527303717912515753">分享</translation>
 <translation id="6530703012083415527">开启此设置后，网站可以使用弹出式窗口和重定向。关闭此设置后，网站无法使用弹出式窗口和重定向。</translation>
 <translation id="6540488083026747005">您已允许此网站使用第三方 Cookie</translation>
@@ -599,6 +600,7 @@
 <translation id="7141896414559753902">禁止网站显示弹出式窗口和重定向（推荐）</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> KB</translation>
 <translation id="7180611975245234373">刷新</translation>
+<translation id="7180865173735832675">自定义</translation>
 <translation id="7188508872042490670">设备端网站数据</translation>
 <translation id="7201549776650881587">此操作会删除 <ph name="ORIGIN" /> 下属所有网站或其在主屏幕中安装的应用存储的全部数据和 Cookie</translation>
 <translation id="7213166370492037743">不允许网站连接到本地网络上的任何设备</translation>
@@ -713,6 +715,7 @@
 <translation id="83792324527827022">有一个网站正在使用您的摄像头和麦克风</translation>
 <translation id="8380167699614421159">此网站会展示侵扰性或误导性广告</translation>
 <translation id="8394832520002899662">点按即可返回到网站</translation>
+<translation id="8404500559369898929">选择自定义背景主题，开启专属 Chrome 体验</translation>
 <translation id="8409345997656833551">当文章能以简化版视图显示时通知我</translation>
 <translation id="8416874502399604126">这次可以使用麦克风</translation>
 <translation id="8423565414844018592">文字缩放比例目前设为 <ph name="TEXT_SCALING" /></translation>

@@ -620,6 +620,7 @@
 <translation id="31652791196570636">ปิด</translation>
 <translation id="3167868116600277716">ฟีดสำรวจ</translation>
 <translation id="3169472444629675720">สำรวจ</translation>
+<translation id="3172755898799085680">Gemini ไม่พร้อมใช้งานในหน้านี้</translation>
 <translation id="3174662312949010067">คุณยังใช้รหัสผ่านที่บันทึกไว้ในอุปกรณ์อื่นๆ ได้ด้วย</translation>
 <translation id="3177338796769255211">ลงชื่อเข้าใช้เพื่อรับบุ๊กมาร์กและอื่นๆ ในอุปกรณ์ทุกเครื่อง</translation>
 <translation id="3181954750937456830">Google Safe Browsing (ปกป้องคุณและอุปกรณ์จากเว็บไซต์ที่เป็นอันตราย)</translation>
@@ -1745,6 +1746,7 @@
 <translation id="7015418667643980944">มุมมองแบบแยก</translation>
 <translation id="7016070607649558507">คุณมีรหัสผ่านที่ไม่รัดกุม 1 รายการ แก้ไขเลยเพื่อความปลอดภัย</translation>
 <translation id="7016958933495968912">ตัวเลือกสำหรับฟีเจอร์สำรวจ</translation>
+<translation id="7019477124580742994"><ph name="SEARCH_PROVIDER" /> Search</translation>
 <translation id="7029809446516969842">รหัสผ่าน</translation>
 <translation id="7035825883570480307">เปิดการแจ้งเตือนไหม</translation>
 <translation id="7039345315346323556">ล่าสุด</translation>
@@ -1801,7 +1803,7 @@
 <translation id="7266578100016339897">ซึ่งจะช่วยให้คุณจัดระเบียบข้อมูลได้ คุณสามารถเปลี่ยนแปลงได้ทุกเมื่อในการตั้งค่า</translation>
 <translation id="7272437679830969316">ยืนยันตัวตนของคุณไม่ได้ คัดลอกรหัสผ่านไม่สำเร็จ</translation>
 <translation id="7275307913765547631">ข้อกำหนดในการให้บริการตำแหน่งในประเทศเกาหลี</translation>
-<translation id="728025568708172005">แสดงเส้นทาง</translation>
+<translation id="728025568708172005">ทัวร์ชม Chrome</translation>
 <translation id="7280980607183752256">นำเข้าไฟล์นี้ไม่ได้</translation>
 <translation id="7281202269687163394">ความเป็นส่วนตัวของคุณกับ Gemini</translation>
 <translation id="7282197670900591579">ธีมสีเหลืองมะนาว</translation>

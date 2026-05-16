@@ -620,6 +620,7 @@
 <translation id="31652791196570636">Zavřít</translation>
 <translation id="3167868116600277716">Feed Objevit</translation>
 <translation id="3169472444629675720">Discover</translation>
+<translation id="3172755898799085680">Na téhle stránce není Gemini k dispozici</translation>
 <translation id="3174662312949010067">Uložená hesla můžete používat také na svých dalších zařízeních.</translation>
 <translation id="3177338796769255211">Přihlaste se a používejte záložky a další obsah na všech svých zařízeních</translation>
 <translation id="3181954750937456830">Bezpečné prohlížení (chrání vás a vaše zařízení před nebezpečnými weby)</translation>
@@ -1745,6 +1746,7 @@ Funkce Handoff musí být povolena také v Nastavení v sekci Obecné a zaříze
 <translation id="7015418667643980944">Rozdělené zobrazení</translation>
 <translation id="7016070607649558507">Máte jedno slabé heslo. Pokud chcete být v bezpečí, ihned to vyřešte.</translation>
 <translation id="7016958933495968912">Možnosti funkce Objevit</translation>
+<translation id="7019477124580742994">Vyhledávání <ph name="SEARCH_PROVIDER" /></translation>
 <translation id="7029809446516969842">Hesla</translation>
 <translation id="7035825883570480307">Zapnout oznámení?</translation>
 <translation id="7039345315346323556">Nedávné</translation>

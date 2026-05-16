@@ -620,6 +620,7 @@
 <translation id="31652791196570636">Loobu</translation>
 <translation id="3167868116600277716">Discoveri voog</translation>
 <translation id="3169472444629675720">Discover</translation>
+<translation id="3172755898799085680">Gemini ei ole sellel lehel saadaval.</translation>
 <translation id="3174662312949010067">Oma salvestatud paroole saate kasutada ka muudes seadmetes.</translation>
 <translation id="3177338796769255211">Logige sisse, et saada kõigis oma seadmetes juurdepääs oma järjehoidjatele ja muule</translation>
 <translation id="3181954750937456830">Ohutu sirvimine (kaitseb teid ja teie seadet ohtlike saitide eest)</translation>
@@ -1745,6 +1746,7 @@ Handoff peab olema lubatud seadete jaotises General ja seadmed peavad kasutama s
 <translation id="7015418667643980944">Poolitatud vaade</translation>
 <translation id="7016070607649558507">Teil on 1 nõrk parool. Turvalisuse tagamiseks parandage see kohe.</translation>
 <translation id="7016958933495968912">Funktsiooni Discover valikud</translation>
+<translation id="7019477124580742994">Teenusepakkuja <ph name="SEARCH_PROVIDER" /> otsing</translation>
 <translation id="7029809446516969842">Paroolid</translation>
 <translation id="7035825883570480307">Kas lülitada märguanded sisse?</translation>
 <translation id="7039345315346323556">Hiljutised</translation>

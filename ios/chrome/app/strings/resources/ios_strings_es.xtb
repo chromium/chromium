@@ -620,6 +620,7 @@
 <translation id="31652791196570636">Cerrar</translation>
 <translation id="3167868116600277716">Feed de Discover</translation>
 <translation id="3169472444629675720">Discover</translation>
+<translation id="3172755898799085680">Gemini no está disponible en esta página</translation>
 <translation id="3174662312949010067">También puedes usar las contraseñas guardadas en tus otros dispositivos.</translation>
 <translation id="3177338796769255211">Inicia sesión para acceder a tus marcadores y otras cosas en todos tus dispositivos</translation>
 <translation id="3181954750937456830">Navegación segura (te protege a ti y a tu dispositivo frente a sitios peligrosos)</translation>
@@ -1745,6 +1746,7 @@ Handoff también debe estar habilitado en la sección General de Ajustes del sis
 <translation id="7015418667643980944">Vista dividida</translation>
 <translation id="7016070607649558507">Tienes 1 contraseña poco segura. Corrige el problema para protegerte.</translation>
 <translation id="7016958933495968912">Opciones de Discover</translation>
+<translation id="7019477124580742994">Búsqueda de <ph name="SEARCH_PROVIDER" /></translation>
 <translation id="7029809446516969842">Contraseñas</translation>
 <translation id="7035825883570480307">¿Activar las notificaciones?</translation>
 <translation id="7039345315346323556">Recientes</translation>

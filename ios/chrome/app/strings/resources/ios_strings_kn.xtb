@@ -620,6 +620,7 @@
 <translation id="31652791196570636">ವಜಾಗೊಳಿಸಿ</translation>
 <translation id="3167868116600277716">ಫೀಡ್ ಅನ್ನು ಡಿಸ್ಕವರ್‌ ಮಾಡಿ</translation>
 <translation id="3169472444629675720">Discover</translation>
+<translation id="3172755898799085680">ಈ ಪುಟದಲ್ಲಿ Gemini ಲಭ್ಯವಿಲ್ಲ</translation>
 <translation id="3174662312949010067">ಇತರ ಸಾಧನಗಳಲ್ಲಿ ಉಳಿಸಲಾದ ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಸಹ ನೀವು ಬಳಸಬಹುದು.</translation>
 <translation id="3177338796769255211">ನಿಮ್ಮ ಎಲ್ಲಾ ಸಾಧನಗಳಲ್ಲಿ ನಿಮ್ಮ ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳು ಮತ್ತು ಇತ್ಯಾದಿಗಳನ್ನು ಪಡೆಯಲು ಸೈನ್ ಇನ್ ಮಾಡಿ</translation>
 <translation id="3181954750937456830">ಸುರಕ್ಷಿತ ಬ್ರೌಸಿಂಗ್ (ಅಪಾಯಕಾರಿ ಸೈಟ್‌ಗಳಿಂದ ನಿಮ್ಮನ್ನು ಮತ್ತು ನಿಮ್ಮ ಸಾಧನವನ್ನು ರಕ್ಷಿಸುತ್ತದೆ)</translation>
@@ -1745,6 +1746,7 @@
 <translation id="7015418667643980944">ವಿಭಜಿತ ವೀಕ್ಷಣೆ</translation>
 <translation id="7016070607649558507">ನೀವು 1 ದುರ್ಬಲ ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ಹೊಂದಿದ್ದೀರಿ. ಸುರಕ್ಷಿತವಾಗಿರಲು ಈಗಲೇ ಅದನ್ನು ಸರಿಪಡಿಸಿ.</translation>
 <translation id="7016958933495968912">ಡಿಸ್ಕವರ್‌ಗಾಗಿ ಆಯ್ಕೆಗಳು</translation>
+<translation id="7019477124580742994"><ph name="SEARCH_PROVIDER" /> ಹುಡುಕಾಟ</translation>
 <translation id="7029809446516969842">ಪಾಸ್‌ವರ್ಡ್‌ಗಳು</translation>
 <translation id="7035825883570480307">ನೋಟಿಫಿಕೇಶನ್‌ಗಳನ್ನು ಆನ್ ಮಾಡಬೇಕೇ?</translation>
 <translation id="7039345315346323556">ಇತ್ತೀಚಿನದು</translation>

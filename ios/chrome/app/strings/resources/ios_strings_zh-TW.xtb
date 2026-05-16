@@ -536,7 +536,7 @@
 <translation id="2825777862277359739">登入後即可存取密碼、分頁、書籤等資料。</translation>
 <translation id="2827760117436553203">要區分資料嗎？</translation>
 <translation id="2829172210806130158">搜尋畫面</translation>
-<translation id="2831109159746537587">請嘗試在圖片上圈起或輕觸要搜尋的內容</translation>
+<translation id="2831109159746537587">請試著在圖片上圈起或輕觸要搜尋的內容</translation>
 <translation id="2834399722155632105">3. 輕觸「密碼選項」</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />，<ph name="STATE" />，<ph name="URL" /></translation>
 <translation id="2841013758207633010">時間</translation>
@@ -620,6 +620,7 @@
 <translation id="31652791196570636">關閉</translation>
 <translation id="3167868116600277716">「探索」動態消息</translation>
 <translation id="3169472444629675720">探索</translation>
+<translation id="3172755898799085680">Gemini 不支援這個頁面</translation>
 <translation id="3174662312949010067">你也可以在其他裝置上使用已儲存的密碼。</translation>
 <translation id="3177338796769255211">只要在裝置上登入帳戶，即可存取書籤和其他資訊</translation>
 <translation id="3181954750937456830">安全瀏覽 (保護你和你的裝置不受危險網站攻擊)</translation>
@@ -1745,6 +1746,7 @@
 <translation id="7015418667643980944">分割畫面</translation>
 <translation id="7016070607649558507">你有 1 組低強度密碼，請立即修正以確保安全。</translation>
 <translation id="7016958933495968912">探索的選項</translation>
+<translation id="7019477124580742994"><ph name="SEARCH_PROVIDER" /> 搜尋</translation>
 <translation id="7029809446516969842">密碼</translation>
 <translation id="7035825883570480307">要開啟通知功能嗎？</translation>
 <translation id="7039345315346323556">近期存取</translation>

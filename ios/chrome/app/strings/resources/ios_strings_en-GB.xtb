@@ -620,6 +620,7 @@
 <translation id="31652791196570636">Dismiss</translation>
 <translation id="3167868116600277716">Discover feed</translation>
 <translation id="3169472444629675720">Discover</translation>
+<translation id="3172755898799085680">Gemini is not available on this page</translation>
 <translation id="3174662312949010067">You can also use saved passwords on your other devices.</translation>
 <translation id="3177338796769255211">Sign in to get your bookmarks and more on all your devices</translation>
 <translation id="3181954750937456830">Safe Browsing (protects you and your device from dangerous sites)</translation>
@@ -1745,6 +1746,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="7015418667643980944">Split view</translation>
 <translation id="7016070607649558507">You have one weak password. Fix it now to stay safe.</translation>
 <translation id="7016958933495968912">Options for discover</translation>
+<translation id="7019477124580742994"><ph name="SEARCH_PROVIDER" /> Search</translation>
 <translation id="7029809446516969842">Passwords</translation>
 <translation id="7035825883570480307">Turn on notifications?</translation>
 <translation id="7039345315346323556">Recent</translation>

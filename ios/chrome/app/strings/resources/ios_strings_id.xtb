@@ -620,6 +620,7 @@
 <translation id="31652791196570636">Tutup</translation>
 <translation id="3167868116600277716">Feed Discover</translation>
 <translation id="3169472444629675720">Discover</translation>
+<translation id="3172755898799085680">Gemini tidak tersedia di halaman ini</translation>
 <translation id="3174662312949010067">Anda juga dapat menggunakan sandi tersimpan di perangkat Anda yang lain.</translation>
 <translation id="3177338796769255211">Login untuk mendapatkan bookmark dan lainnya di semua perangkat Anda</translation>
 <translation id="3181954750937456830">Safe Browsing (melindungi Anda dan perangkat dari situs berbahaya)</translation>
@@ -1745,6 +1746,7 @@ Handoff juga harus diaktifkan pada bagian General di Settings, dan perangkat And
 <translation id="7015418667643980944">Tampilan terpisah</translation>
 <translation id="7016070607649558507">Anda memiliki 1 sandi lemah. Perbaiki sekarang agar tetap terlindungi.</translation>
 <translation id="7016958933495968912">Opsi untuk Discover</translation>
+<translation id="7019477124580742994">Penelusuran <ph name="SEARCH_PROVIDER" /></translation>
 <translation id="7029809446516969842">Sandi</translation>
 <translation id="7035825883570480307">Aktifkan notifikasi?</translation>
 <translation id="7039345315346323556">Terbaru</translation>

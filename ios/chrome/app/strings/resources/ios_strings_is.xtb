@@ -620,6 +620,7 @@
 <translation id="31652791196570636">Hunsa</translation>
 <translation id="3167868116600277716">Tillögustraumur</translation>
 <translation id="3169472444629675720">Discover</translation>
+<translation id="3172755898799085680">Gemini er ekki í boði á þessari síðu</translation>
 <translation id="3174662312949010067">Þú getur einnig notað vistuð aðgangsorð í öðrum tækjum.</translation>
 <translation id="3177338796769255211">Skráðu þig inn til að fá bókamerkin þín og fleira í öllum tækjunum þínum</translation>
 <translation id="3181954750937456830">Örugg vefnotkun (verndar þig og tækið þitt fyrir hættulegum vefsvæðum)</translation>
@@ -1745,6 +1746,7 @@ Einnig þarf að vera kveikt á Handoff í hlutanum General í Settings og tæki
 <translation id="7015418667643980944">Skiptur skjár</translation>
 <translation id="7016070607649558507">Þú ert með 1 lélegt aðgangsorð. Lagfærðu það núna til að gæta öryggis.</translation>
 <translation id="7016958933495968912">Valkostir fyrir tillögur</translation>
+<translation id="7019477124580742994"><ph name="SEARCH_PROVIDER" />-leit</translation>
 <translation id="7029809446516969842">Aðgangsorð</translation>
 <translation id="7035825883570480307">Kveikja á tilkynningum?</translation>
 <translation id="7039345315346323556">Nýlegt</translation>
