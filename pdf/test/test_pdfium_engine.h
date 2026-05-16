@@ -141,6 +141,8 @@ class TestPDFiumEngine : public PDFiumEngine {
 
   MOCK_METHOD(void, DiscardStroke, (int, InkStrokeId), (override));
 
+  MOCK_METHOD(void, DiscardText, (InkTextId), (override));
+
   MOCK_METHOD(PDFLoadedWithV2InkAnnotations,
               ContainsV2InkPath,
               (base::TimeDelta),

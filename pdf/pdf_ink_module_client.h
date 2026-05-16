@@ -77,6 +77,9 @@ class PdfInkModuleClient {
   // `page_index`.
   virtual void DiscardStroke(int page_index, InkStrokeId id) {}
 
+  // Asks the client to discard the text identified by `id`.
+  virtual void DiscardText(InkTextId id) {}
+
   // Extends the current text selection to the nearest page and character to
   // `point`. `point` must be in device coordinates.
   virtual void ExtendSelectionByPoint(const gfx::PointF& point) {}

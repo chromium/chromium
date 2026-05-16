@@ -3431,6 +3431,43 @@ TEST_P(PDFiumEngineInkDrawTextTest, DrawTextAndDiscardStrokes) {
       kPageIndex));
 }
 
+TEST_P(PDFiumEngineInkDrawTextTest, DrawTextAndDiscardText) {
+  TestClient client(/*use_skia_renderer=*/GetParam());
+  std::unique_ptr<PDFiumEngine> engine =
+      InitializeEngine(&client, FILE_PATH_LITERAL("blank.pdf"));
+  ASSERT_TRUE(engine);
+  int page_count = FPDF_GetPageCount(engine->doc());
+  ASSERT_EQ(page_count, 1);
+
+  constexpr int kPageIndex = 0;
+  PDFiumPage& page = GetPDFiumPage(*engine, kPageIndex);
+
+  FontId font_id = AddDefaultFont(engine.get());
+  constexpr std::string_view kTextToDraw = "Hello!";
+  GlyphsAndPositions text_data =
+      GetGlyphsForText(kTextToDraw, /*font_size=*/10.0f);
+  ASSERT_FALSE(text_data.glyphs.empty());
+  ASSERT_FALSE(text_data.glyph_positions.empty());
+
+  // Draw some text.
+  constexpr InkTextId kTextId(0);
+  engine->DrawText(
+      kPageIndex, kTextId,
+      {InkTextInfo(font_id, text_data.glyphs, text_data.glyph_positions,
+                   /*location=*/gfx::RectF(0.0f, 0.0f, 100.0f, 20.0f),
+                   /*is_horizontal=*/true)},
+      /*pdf_zoom=*/1.0, SampleInkTextBoxAttributes());
+
+  // Discard the text.
+  engine->DiscardText(kTextId);
+
+  // The document should not have any text data.
+  CheckPdfRenderingIsBlank200x200(page.GetPage());
+  ASSERT_NO_FATAL_FAILURE(CheckSavedPdfRenderingIsBlank200x200(engine.get()));
+  EXPECT_FALSE(engine->edited_pages_unload_preventers_for_testing().contains(
+      kPageIndex));
+}
+
 TEST_P(PDFiumEngineInkDrawTextTest, UpdateTextActiveAndInvalidate) {
   NiceMock<MockTestClient> client(/*use_skia_renderer=*/GetParam());
   std::unique_ptr<PDFiumEngine> engine =

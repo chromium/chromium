@@ -322,6 +322,8 @@ class PdfViewWebPlugin::PdfInkModuleClientImpl : public PdfInkModuleClient {
     plugin_->engine_->DiscardStroke(page_index, id);
   }
 
+  void DiscardText(InkTextId id) override { plugin_->engine_->DiscardText(id); }
+
   void DrawText(int page_index,
                 InkTextId id,
                 base::span<const InkTextInfo> text_info,

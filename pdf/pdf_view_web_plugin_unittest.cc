@@ -3599,6 +3599,14 @@ TEST_P(PdfViewWebPluginInkTest, AddFont) {
                                                     kSerializedTypeface);
 }
 
+TEST_P(PdfViewWebPluginInkTest, DiscardText) {
+  static constexpr InkTextId kTextId(1);
+
+  EXPECT_CALL(*engine_ptr_, DiscardText(kTextId));
+
+  plugin_->ink_module_client_for_testing()->DiscardText(kTextId);
+}
+
 TEST_P(PdfViewWebPluginInkTest, DrawText) {
   static constexpr int kPageIndex = 0;
   static constexpr InkTextId kTextId(1);

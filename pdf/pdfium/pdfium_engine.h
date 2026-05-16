@@ -411,6 +411,10 @@ class PDFiumEngine : public DocumentLoader::Client,
 
   // See method of the same name in PdfInkModuleClient. Virtual to support
   // testing.
+  virtual void DiscardText(InkTextId id);
+
+  // See method of the same name in PdfInkModuleClient. Virtual to support
+  // testing.
   virtual void DrawText(int page_index,
                         InkTextId id,
                         base::span<const InkTextInfo> text_info,

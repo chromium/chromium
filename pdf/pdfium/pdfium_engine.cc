@@ -5143,6 +5143,29 @@ FPDF_FONT PDFiumEngine::GetAddedFont(FontId font_id) {
   return it->second.get();
 }
 
+void PDFiumEngine::DiscardText(InkTextId id) {
+  auto it = ink_text_data_.find(id);
+  CHECK(it != ink_text_data_.end());
+
+  int page_index = it->second.page_index;
+  CHECK(PageIndexInBounds(page_index));
+  PDFiumPage* pdfium_page = GetPage(page_index);
+  CHECK(pdfium_page);
+  FPDF_PAGE page = pdfium_page->GetPage();
+  CHECK(page);
+
+  std::vector<ScopedFPDFPageObject> page_object_deleters =
+      RemovePageObjectsFromPage(page, std::move(it->second.page_objects));
+  ink_text_data_.erase(it);
+
+  CHECK(FPDFPage_GenerateContent(page));
+  pdfium_page->ReloadTextPage();
+
+  if (!PageStillHasEdits(page_index)) {
+    edited_pages_unload_preventers_.erase(page_index);
+  }
+}
+
 void PDFiumEngine::DrawText(int page_index,
                             InkTextId id,
                             base::span<const InkTextInfo> text_info,
