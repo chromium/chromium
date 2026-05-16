@@ -13,6 +13,7 @@
 :host {
   display: flex;
   flex-direction: column;
+  position: var(--cr-composebox-input-position, static);
   width: 100%;
 }
 
