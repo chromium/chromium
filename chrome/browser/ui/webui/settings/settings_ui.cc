@@ -23,6 +23,7 @@
 #include "chrome/browser/commerce/shopping_service_factory.h"
 #include "chrome/browser/compose/compose_enabling.h"
 #include "chrome/browser/contextual_cueing/features.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_context_service.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/history_embeddings/history_embeddings_utils.h"
@@ -112,6 +113,7 @@
 #include "components/compose/core/browser/compose_features.h"
 #include "components/content_settings/core/common/features.h"
 #include "components/contextual_tasks/public/features.h"
+#include "components/contextual_tasks/public/prefs.h"
 #include "components/favicon_base/favicon_url_parser.h"
 #include "components/history/core/browser/features.h"
 #include "components/metrics/metrics_reporting_choice_service.h"
@@ -632,8 +634,8 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
   html_source->AddString("aiSuggestionsHelpCenterArticleLink",
                          contextual_cueing::kHelpCenterArticleLink.Get());
 
-  const bool enable_ai_mode_search =
-      contextual_tasks::GetIsSmartTabSharingEnabled();
+  const bool enable_ai_mode_search = contextual_tasks::
+      ContextualTasksContextService::GetIsSmartTabSharingEnabled(profile);
   html_source->AddBoolean("enableAiModeSearchSetting", enable_ai_mode_search);
 
   const bool show_ai_settings_for_testing = base::FeatureList::IsEnabled(

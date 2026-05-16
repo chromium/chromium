@@ -128,6 +128,9 @@ extern const base::FeatureParam<double> kTabSelectionScoreThreshold;
 // Minimum score required for a tab to be considered visible.
 extern const base::FeatureParam<double> kContentVisibilityThreshold;
 
+// Whether Smart Tab Sharing is enabled for the ContextualTasksContext feature.
+extern const base::FeatureParam<bool> kContextualTasksContextSmartTabSharing;
+
 // Task string to use for formatting the query embedding.
 extern const base::FeatureParam<std::string> kQueryEmbeddingTask;
 
@@ -233,9 +236,6 @@ extern std::vector<std::string> GetContextualTasksSignInDomains();
 
 // Whether the suggestions are enabled for Nextbox.
 extern bool GetIsContextualTasksSuggestionsEnabled();
-
-// Whether Smart Tab Sharing is enabled for the ContextualTasksContext feature.
-extern bool GetIsSmartTabSharingEnabled();
 
 // Returns the timeout for smart tab sharing tab selection.
 extern base::TimeDelta GetSmartTabSharingTabSelectionTimeout();

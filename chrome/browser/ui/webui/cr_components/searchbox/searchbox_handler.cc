@@ -18,6 +18,7 @@
 #include "chrome/browser/autocomplete/chrome_autocomplete_scheme_classifier.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_context_service.h"
 #include "chrome/browser/preloading/autocomplete_dictionary_preload_service.h"
 #include "chrome/browser/preloading/autocomplete_dictionary_preload_service_factory.h"
 #include "chrome/browser/preloading/prefetch/search_prefetch/search_prefetch_service.h"
@@ -36,6 +37,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/contextual_tasks/public/features.h"
+#include "components/contextual_tasks/public/prefs.h"
 #include "components/omnibox/browser/aim_eligibility_service.h"
 #include "components/omnibox/browser/aim_eligibility_service_features.h"
 #include "components/omnibox/browser/autocomplete_match.h"
@@ -561,7 +563,8 @@ base::DictValue SearchboxHandler::GetWebUIDataSourceDict(
            base::FeatureList::IsEnabled(omnibox::kThinkingModelIconUpdate));
   dict.Set("composeboxSmartTabSharingVisible",
            options.is_lens ? false
-                           : contextual_tasks::GetIsSmartTabSharingEnabled());
+                           : contextual_tasks::ContextualTasksContextService::
+                                 GetIsSmartTabSharingEnabled(profile));
   dict.Set(
       "stsMegaplusShareRelevantOpenTabs",
       l10n_util::GetStringUTF16(IDS_STS_MEGAPLUS_SHARE_RELEVANT_OPEN_TABS));

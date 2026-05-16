@@ -141,6 +141,9 @@ class ContextualTasksContextService
       const ContextualTasksContextService&) = delete;
   ~ContextualTasksContextService() override;
 
+  // Returns whether smart tab sharing is enabled for `profile`.
+  static bool GetIsSmartTabSharingEnabled(const Profile* profile);
+
   // Returns the relevant tabs for `query`. Will invoke `callback` when done.
   virtual void GetRelevantTabsForQuery(
       const TabSelectionOptions& options,

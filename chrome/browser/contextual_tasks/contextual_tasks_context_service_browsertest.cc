@@ -1632,4 +1632,41 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest,
   EXPECT_TRUE(GetModelHandler() != nullptr);
 }
 
+class ContextualTasksContextServiceSmartTabSharingTest
+    : public ContextualTasksContextServiceTest {
+ protected:
+  void InitializeFeatureList() override {
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {
+            {kContextualTasksContext,
+             {{"ContextualTasksContextSmartTabSharing", "true"},
+              {"ContextualTasksContextOnlyUseTitles", "false"},
+              {"ContextualTasksContextTabSelectionScoreThreshold", "0.8"},
+              {"ContextualTasksContextContentVisibilityThreshold", "0.8"}}},
+            {kContextualTasksContextLogging, {}},
+        },
+        /*disabled_features=*/{});
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceSmartTabSharingTest,
+                       GetIsSmartTabSharingEnabled) {
+  Profile* profile = browser()->profile();
+
+  EXPECT_TRUE(
+      ContextualTasksContextService::GetIsSmartTabSharingEnabled(profile));
+
+  profile->GetPrefs()->SetInteger(
+      kContextualTasksSmartTabSharingSettings,
+      static_cast<int>(SmartTabSharingSettingsValue::kDisabled));
+  EXPECT_FALSE(
+      ContextualTasksContextService::GetIsSmartTabSharingEnabled(profile));
+
+  profile->GetPrefs()->SetInteger(
+      kContextualTasksSmartTabSharingSettings,
+      static_cast<int>(SmartTabSharingSettingsValue::kEnabled));
+  EXPECT_TRUE(
+      ContextualTasksContextService::GetIsSmartTabSharingEnabled(profile));
+}
+
 }  // namespace contextual_tasks

@@ -51,6 +51,7 @@
 #include "components/page_content_annotations/core/page_content_extraction_types.h"
 #include "components/page_content_annotations/core/page_embeddings_common.h"
 #include "components/passage_embeddings/core/passage_embeddings_types.h"
+#include "components/prefs/pref_service.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/url_constants.h"
@@ -324,6 +325,19 @@ ContextualTasksContextService::ContextualTasksContextService(
 }
 
 ContextualTasksContextService::~ContextualTasksContextService() = default;
+
+// static
+bool ContextualTasksContextService::GetIsSmartTabSharingEnabled(
+    const Profile* profile) {
+  if (profile && profile->GetPrefs() &&
+      profile->GetPrefs()->GetInteger(
+          kContextualTasksSmartTabSharingSettings) ==
+          static_cast<int>(SmartTabSharingSettingsValue::kDisabled)) {
+    return false;
+  }
+  return base::FeatureList::IsEnabled(kContextualTasksContext) &&
+         kContextualTasksContextSmartTabSharing.Get();
+}
 
 void ContextualTasksContextService::SetClockForTesting(
     const base::TickClock* tick_clock) {

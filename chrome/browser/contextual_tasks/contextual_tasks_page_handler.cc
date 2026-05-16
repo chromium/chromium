@@ -12,6 +12,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/contextual_tasks/ai_mode_context_library_converter.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks.mojom-shared.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_context_service.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_utils.h"
@@ -715,7 +716,10 @@ void ContextualTasksPageHandler::PinSidePanel() {
 
 void ContextualTasksPageHandler::OnContextMenuOpened() {
 #if !BUILDFLAG(IS_ANDROID)
-  if (!contextual_tasks::GetIsSmartTabSharingEnabled()) {
+  if (!contextual_tasks::ContextualTasksContextService::
+          GetIsSmartTabSharingEnabled(web_ui_controller_
+                                          ? web_ui_controller_->GetProfile()
+                                          : nullptr)) {
     return;
   }
   if (GetSmartTabSharingFeatureActivationCount(

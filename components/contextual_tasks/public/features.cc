@@ -479,10 +479,6 @@ bool GetIsContextualTasksSuggestionsEnabled() {
   return base::FeatureList::IsEnabled(kContextualTasksSuggestionsEnabled);
 }
 
-bool GetIsSmartTabSharingEnabled() {
-  return base::FeatureList::IsEnabled(kContextualTasksContext) &&
-         kContextualTasksContextSmartTabSharing.Get();
-}
 
 base::TimeDelta GetSmartTabSharingTabSelectionTimeout() {
   if (kSmartTabSharingTabSelectionTimeout.Get().is_positive()) {

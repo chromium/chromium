@@ -23,6 +23,7 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_auto_suggestion_manager.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_composebox_handler.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_composebox_handler_interface.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_context_service.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_context_service_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_internals_page_handler.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_page_handler.h"
@@ -613,7 +614,8 @@ ContextualTasksUI::ContextualTasksUI(content::WebUI* web_ui)
       contextual_tasks::ShouldUseStratusDarkModeColors() ? "true" : "false");
 
   source->AddBoolean("smartTabSharingEnabled",
-                     contextual_tasks::GetIsSmartTabSharingEnabled());
+                     contextual_tasks::ContextualTasksContextService::
+                         GetIsSmartTabSharingEnabled(profile));
 
   AddZeroStateStrings(source, profile);
   contextual_tasks_service_observation_.Observe(contextual_tasks_service_);

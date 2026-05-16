@@ -501,7 +501,8 @@ bool ContextualSearchboxHandler::IsSmartTabSharingActive() const {
 }
 
 void ContextualSearchboxHandler::SetSmartTabSharingActive(bool active) {
-  if (!contextual_tasks::GetIsSmartTabSharingEnabled()) {
+  if (!contextual_tasks::ContextualTasksContextService::
+          GetIsSmartTabSharingEnabled(profile_)) {
     return;
   }
   smart_tab_sharing_active_for_thread_ = active;
@@ -1310,7 +1311,8 @@ void ContextualSearchboxHandler::MaybeTriggerSmartTabSharingPromo(
 
   const bool is_eligible_for_promo =
       !IsSmartTabSharingActive() &&
-      contextual_tasks::GetIsSmartTabSharingEnabled();
+      contextual_tasks::ContextualTasksContextService::
+          GetIsSmartTabSharingEnabled(profile_);
   if (is_eligible_for_promo) {
     contextual_tasks::TabSelectionOptions tab_selection_options;
     tab_selection_options.tab_selection_timeout =
@@ -1327,7 +1329,8 @@ void ContextualSearchboxHandler::MaybeTriggerSmartTabSharingPromo(
         base::BindOnce(
             &ContextualSearchboxHandler::OnRelevantTabsReceivedToMaybeShowPromo,
             weak_ptr_factory_.GetWeakPtr()));
-  } else if (!contextual_tasks::GetIsSmartTabSharingEnabled()) {
+  } else if (!contextual_tasks::ContextualTasksContextService::
+                 GetIsSmartTabSharingEnabled(profile_)) {
     // Run dark experiment if smart tab sharing is not enabled and do not
     // block.
     contextual_tasks::TabSelectionOptions tab_selection_options;
