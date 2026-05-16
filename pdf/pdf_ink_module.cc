@@ -1640,9 +1640,10 @@ void PdfInkModule::HandleFinishTextAnnotationMessage(
   const bool is_edited = data.FindBool("isEdited").value();
   if (!is_edited) {
     // When there are no edits, just reactivate the active text annotation.
-    // TODO(crbug.com/504697272): Implement.
+    // i.e. Do the reverse of HandleEditTextAnnotationMessage().
     auto it = text_id_map_.find(frontend_id);
     CHECK(it != text_id_map_.end());
+    client_->UpdateTextActiveAndInvalidate(it->second, /*active=*/true);
     return;
   }
 
@@ -1652,7 +1653,10 @@ void PdfInkModule::HandleFinishTextAnnotationMessage(
   // - Deletion: Delete existing annotation only.
   // First do the deletion if needed.
   if (auto it = text_id_map_.find(frontend_id); it != text_id_map_.end()) {
-    // TODO(crbug.com/507508096): Deactivate/discard existing text annotation.
+    InkTextId existing_id = it->second;
+    // Make sure `existing_id` gets hidden before being discarded.
+    client_->UpdateTextActiveAndInvalidate(existing_id, /*active=*/false);
+    client_->DiscardText(existing_id);
     text_id_map_.erase(it);
 
     // Empty text means the annotation is being deleted. Return early since

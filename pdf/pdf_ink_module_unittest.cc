@@ -276,16 +276,18 @@ class FakeClient : public PdfInkModuleClient {
   FakeClient& operator=(const FakeClient&) = delete;
   ~FakeClient() override = default;
 
+  // PdfInkModuleClient:
   MOCK_METHOD(void,
               AddFont,
               (FontId font_id, base::span<const uint8_t> serialized_typeface),
               (override));
 
-  // PdfInkModuleClient:
   MOCK_METHOD(void,
               DiscardStroke,
               (int page_index, InkStrokeId id),
               (override));
+
+  MOCK_METHOD(void, DiscardText, (InkTextId id), (override));
 
   MOCK_METHOD(void,
               DrawText,
@@ -1197,6 +1199,7 @@ TEST_F(PdfInkModuleTextTest, HandleFinishTextAnnotationMessageNoEdit) {
                 DrawText(kPageIndex, kTextId0,
                          ElementsAre(SampleInkTextInfoMatcher(kFontId)),
                          kPdfZoom, SampleInkTextBoxAttributesMatcher()));
+    EXPECT_CALL(client(), DiscardText(_)).Times(0);
     EXPECT_CALL(client(), UpdateTextActiveAndInvalidate(_, _)).Times(0);
 
     EXPECT_TRUE(ink_module().OnMessage(
@@ -1209,9 +1212,11 @@ TEST_F(PdfInkModuleTextTest, HandleFinishTextAnnotationMessageNoEdit) {
                                                           kPageIndex, kPdfZoom);
     data.Set("isEdited", false);
 
+    EXPECT_CALL(client(),
+                UpdateTextActiveAndInvalidate(kTextId0, /*active=*/true));
     EXPECT_CALL(client(), AddFont(_, _)).Times(0);
+    EXPECT_CALL(client(), DiscardText(_)).Times(0);
     EXPECT_CALL(client(), DrawText(_, _, _, _, _)).Times(0);
-    EXPECT_CALL(client(), UpdateTextActiveAndInvalidate(_, _)).Times(0);
 
     EXPECT_TRUE(ink_module().OnMessage(
         CreateFinishTextAnnotationMessage(std::move(data))));
@@ -1243,6 +1248,7 @@ TEST_F(PdfInkModuleTextTest, HandleFinishTextAnnotationMessageEdit) {
                 DrawText(kPageIndex, kTextId0,
                          ElementsAre(SampleInkTextInfoMatcher(kFontId)),
                          kPdfZoom, SampleInkTextBoxAttributesMatcher()));
+    EXPECT_CALL(client(), DiscardText(_)).Times(0);
     EXPECT_CALL(client(), UpdateTextActiveAndInvalidate(_, _)).Times(0);
 
     EXPECT_TRUE(ink_module().OnMessage(
@@ -1255,7 +1261,9 @@ TEST_F(PdfInkModuleTextTest, HandleFinishTextAnnotationMessageEdit) {
                                                           kPageIndex, kPdfZoom);
     data.Set("text", "ah");
 
-    // TODO(crbug.com/507508096): Expect deactivate and/or discard calls.
+    EXPECT_CALL(client(),
+                UpdateTextActiveAndInvalidate(kTextId0, /*active=*/false));
+    EXPECT_CALL(client(), DiscardText(kTextId0));
     EXPECT_CALL(
         client(),
         DrawText(kPageIndex, kTextId1,
@@ -1271,7 +1279,6 @@ TEST_F(PdfInkModuleTextTest, HandleFinishTextAnnotationMessageEdit) {
                      /*is_italic=*/true,
                      /*text=*/"ah")));
     EXPECT_CALL(client(), AddFont(_, _)).Times(0);
-    EXPECT_CALL(client(), UpdateTextActiveAndInvalidate(_, _)).Times(0);
 
     EXPECT_TRUE(ink_module().OnMessage(
         CreateFinishTextAnnotationMessage(std::move(data))));
@@ -1302,6 +1309,7 @@ TEST_F(PdfInkModuleTextTest, HandleFinishTextAnnotationMessageDelete) {
                 DrawText(kPageIndex, kTextId,
                          ElementsAre(SampleInkTextInfoMatcher(kFontId)),
                          kPdfZoom, SampleInkTextBoxAttributesMatcher()));
+    EXPECT_CALL(client(), DiscardText(_)).Times(0);
     EXPECT_CALL(client(), UpdateTextActiveAndInvalidate(_, _)).Times(0);
 
     EXPECT_TRUE(ink_module().OnMessage(
@@ -1314,9 +1322,12 @@ TEST_F(PdfInkModuleTextTest, HandleFinishTextAnnotationMessageDelete) {
                                                           kPageIndex, kPdfZoom);
     data.Set("text", "");
 
+    InSequence seq;
+    EXPECT_CALL(client(),
+                UpdateTextActiveAndInvalidate(kTextId, /*active=*/false));
+    EXPECT_CALL(client(), DiscardText(kTextId));
     EXPECT_CALL(client(), AddFont(_, _)).Times(0);
     EXPECT_CALL(client(), DrawText(_, _, _, _, _)).Times(0);
-    EXPECT_CALL(client(), UpdateTextActiveAndInvalidate(_, _)).Times(0);
 
     EXPECT_TRUE(ink_module().OnMessage(
         CreateFinishTextAnnotationMessage(std::move(data))));
