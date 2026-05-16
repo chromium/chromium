@@ -3410,10 +3410,10 @@ void BrowserView::OnTabStripModelChanged(
     TabStripModel* tab_strip_model,
     const TabStripModelChange& change,
     const TabStripSelectionChange& selection) {
-  // When the selected tab changes, elements in the omnibox can change, which
+  // When the active tab changes, elements in the omnibox can change, which
   // can change its preferred size. Re-lay-out the toolbar to reflect the
   // possible change.
-  if (selection.selection_changed()) {
+  if (selection.active_tab_changed()) {
     toolbar_->InvalidateLayout();
 
     // Update the accessible URL when the selected tab changes. This ensures
