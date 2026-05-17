@@ -253,13 +253,8 @@ public class SelectLanguageFragment extends Fragment
     }
 
     @Override
-    public void onPause() {
-        super.onPause();
-        KeyboardUtils.hideAndroidSoftKeyboard(assumeNonNull(getView()));
-    }
-
-    @Override
     public void onDestroy() {
+        if (getView() != null) KeyboardUtils.hideAndroidSoftKeyboard(getView());
         super.onDestroy();
         if (mSearchViewObserver != null) mSearchViewObserver.onUpdated(false);
         if (mBackPressCallback != null) mBackPressCallback.remove();
