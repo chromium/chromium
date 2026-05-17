@@ -31,6 +31,7 @@
 #include <xdg-decoration-unstable-v1-server-protocol.h>
 #include <xdg-shell-server-protocol.h>
 
+#include <array>
 #include <memory>
 #include <string>
 #include <utility>
@@ -169,9 +170,9 @@ bool Server::Open() {
   // Change permissions on the socket.
   struct group wayland_group;
   struct group* wayland_group_res = nullptr;
-  char buf[10000];
-  if (HANDLE_EINTR(getgrnam_r(kWaylandSocketGroup, &wayland_group, buf,
-                              sizeof(buf), &wayland_group_res)) < 0) {
+  std::array<char, 10000> buf;
+  if (HANDLE_EINTR(getgrnam_r(kWaylandSocketGroup, &wayland_group, buf.data(),
+                              buf.size(), &wayland_group_res)) < 0) {
     PLOG(ERROR) << "getgrnam_r";
     return false;
   }
