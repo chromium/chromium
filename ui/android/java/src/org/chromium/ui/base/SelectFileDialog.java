@@ -1303,12 +1303,13 @@ public class SelectFileDialog implements WindowAndroid.IntentCallback, PhotoPick
                             return null;
                         }
                         mFilePaths[i] = mUris[i].getSchemeSpecificPart();
-                    } else {
-                        if (ContentResolver.SCHEME_CONTENT.equals(mUris[i].getScheme())
-                                && isContentUriUnderAppDir(mUris[i], mContext)) {
+                    } else if (ContentResolver.SCHEME_CONTENT.equals(mUris[i].getScheme())) {
+                        if (isContentUriUnderAppDir(mUris[i], mContext)) {
                             return null;
                         }
                         mFilePaths[i] = mUris[i].toString();
+                    } else {
+                        return null;
                     }
 
                     displayNames[i] =

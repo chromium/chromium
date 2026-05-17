@@ -960,6 +960,27 @@ public class SelectFileDialogTest {
         assertEquals("///storage/emulated/0/DCIM/Camera/IMG_1.jpg", task.mFilePaths[1].toString());
     }
 
+    @Test
+    public void testMultipleFileSelectorWithSchemelessUris() {
+        SelectFileDialog selectFileDialog = new SelectFileDialog(0);
+        Uri[] filePathArray =
+                new Uri[] {Uri.parse("/data/data/com.android.chrome/app_chrome/Default/Cookies")};
+        SelectFileDialog.GetDisplayNameTask task =
+                selectFileDialog
+                .new GetDisplayNameTask(ContextUtils.getApplicationContext(), true, filePathArray);
+        assertEquals(null, task.doInBackground());
+    }
+
+    @Test
+    public void testMultipleFileSelectorWithInvalidSchemeUris() {
+        SelectFileDialog selectFileDialog = new SelectFileDialog(0);
+        Uri[] filePathArray = new Uri[] {Uri.parse("http://example.com/test.jpg")};
+        SelectFileDialog.GetDisplayNameTask task =
+                selectFileDialog
+                .new GetDisplayNameTask(ContextUtils.getApplicationContext(), true, filePathArray);
+        assertEquals(null, task.doInBackground());
+    }
+
     private void testFilePath(
             String path, SelectFileDialog selectFileDialog, boolean expectedPass) {
         testFilePath(path, selectFileDialog, expectedPass, expectedPass);
