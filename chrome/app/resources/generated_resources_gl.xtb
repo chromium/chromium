@@ -8373,7 +8373,7 @@ Quédanche # máis. O xestor de contrasinais de Google recomenda que comprobes e
 <translation id="6824584962142919697">&amp;Inspeccionar elementos</translation>
 <translation id="6825184156888454064">Ordenar por nome</translation>
 <translation id="6827121912381363404">Permitir que todas as extensións lean e cambien o sitio <ph name="PERMITTED_SITE" /></translation>
-<translation id="6827517233063803343">As túas aplicacións e opcións de configuración sincronizaranse en todos os dispositivos Chrome OS nos que teñas a sesión iniciada na túa conta de Google. Para ver as opción de sincronización do navegador, accede á <ph name="LINK_BEGIN" />configuración de Chrome<ph name="LINK_END" />.</translation>
+<translation id="6827517233063803343">As túas aplicacións e opcións de configuración sincronizaranse en todos os dispositivos Chrome OS nos que teñas a sesión iniciada na túa conta de Google. Para ver as opcións de sincronización do navegador, accede á <ph name="LINK_BEGIN" />configuración de Chrome<ph name="LINK_END" />.</translation>
 <translation id="6827767090350758381">As versións antigas das aplicacións de Chrome non se poderán abrir nos dispositivos Windows despois de decembro de 2022. Ponte en contacto co teu administrador para actualizar esta aplicación a unha versión nova ou quitala.</translation>
 <translation id="6828182567531805778">Introduce a túa frase de acceso para sincronizar os teus datos</translation>
 <translation id="682871081149631693">QuickFix</translation>
@@ -10707,7 +10707,7 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8435951291982398331">{NUM_TABS,plural, =1{Corrixir esta pestana}other{Corrixir estas pestanas}}</translation>
 <translation id="8436800506934625875">Crear un PIN de recuperación alfanumérico para o xestor de contrasinais de Google</translation>
 <translation id="8437209419043462667">EUA</translation>
-<translation id="8438518537545182071">Grazas as eleccións dos teus pais, contarás con máis protección en liña</translation>
+<translation id="8438518537545182071">Grazas ás eleccións dos teus pais, contarás con máis protección en liña</translation>
 <translation id="8438566539970814960">Mellorar as buscas e a navegación</translation>
 <translation id="8439506636278576865">Ofrecer a tradución de páxinas neste idioma</translation>
 <translation id="8440004142066757254">Inicia a emisión de ficheiros de vídeo do teu dispositivo noutra pantalla</translation>
