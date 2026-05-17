@@ -184,6 +184,8 @@ static_library("ui") {
     "webui/omnibox/omnibox_page_handler.h",
     "webui/omnibox/omnibox_ui.cc",
     "webui/omnibox/omnibox_ui.h",
+    "webui/plural_string_handler.cc",
+    "webui/plural_string_handler.h",
     "webui/policy/policy_ui.cc",
     "webui/policy/policy_ui.h",
     "webui/policy/policy_ui_handler.cc",
@@ -5313,8 +5315,6 @@ static_library("ui") {
     sources += [
       "webui/favicon_source.cc",
       "webui/favicon_source.h",
-      "webui/plural_string_handler.cc",
-      "webui/plural_string_handler.h",
     ]
   }
 

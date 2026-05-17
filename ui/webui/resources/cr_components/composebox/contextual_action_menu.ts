@@ -17,6 +17,7 @@ import type {CrToggleElement} from '//resources/cr_elements/cr_toggle/cr_toggle.
 import {I18nMixinLit} from '//resources/cr_elements/i18n_mixin_lit.js';
 import {assert} from '//resources/js/assert.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
+import {PluralStringProxyImpl} from '//resources/js/plural_string_proxy.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import type {TabInfo} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
@@ -76,6 +77,7 @@ export class ContextualActionMenuElement extends
       contextManagementInComposeboxEnabled_: {type: Boolean},
       shareTabsFlyoutOpen_: {type: Boolean},
       shareTabsFlyoutPosition_: {type: String},
+      sharingTabsText_: {type: String},
     };
   }
 
@@ -102,6 +104,7 @@ export class ContextualActionMenuElement extends
       getLoadTimeBoolean('contextManagementInComposeboxEnabled', false);
   protected accessor shareTabsFlyoutOpen_: boolean = false;
   protected accessor shareTabsFlyoutPosition_: string = 'right';
+  protected accessor sharingTabsText_: string = '';
 
   private closeTimer_: number|null = null;
   private pointerOverTrigger_: boolean = false;
@@ -177,7 +180,11 @@ export class ContextualActionMenuElement extends
   override updated(changedProperties: PropertyValues<this>) {
     super.updated(changedProperties);
 
-    this.manageShareTabsInitialFocus_(changedProperties);
+    if (changedProperties.has('disabledTabIds') &&
+        this.contextManagementInComposeboxEnabled_) {
+      this.updateSharingTabsText_();
+      this.manageShareTabsInitialFocus_(changedProperties);
+    }
   }
   get open(): boolean {
     return this.$.menu.open;
@@ -201,6 +208,10 @@ export class ContextualActionMenuElement extends
       noOffset: true,
     });
     window.addEventListener('blur', this.onWindowBlur_);
+
+    if (this.contextManagementInComposeboxEnabled_) {
+      this.updateSharingTabsText_();
+    }
   }
 
   private manageShareTabsInitialFocus_(
@@ -225,6 +236,20 @@ export class ContextualActionMenuElement extends
         });
       }
     }
+  }
+
+  private updateSharingTabsText_() {
+    if (!this.contextManagementInComposeboxEnabled_ ||
+        this.disabledTabIds.size === 0) {
+      this.sharingTabsText_ = this.i18n('shareTabs');
+      return;
+    }
+
+    PluralStringProxyImpl.getInstance()
+        .getPluralString('sharingTabs', this.disabledTabIds.size)
+        .then(s => {
+          this.sharingTabsText_ = s;
+        });
   }
 
   protected isToolAllowed_(tool: ToolMode): boolean {
