@@ -786,6 +786,7 @@ Các quyền bạn từng cấp cho ứng dụng có thể áp dụng cho cả t
 <translation id="1529769834253316556">Chiều cao dòng</translation>
 <translation id="1529891865407786369">Nguồn điện</translation>
 <translation id="1530376661400379364">Chrome đặt lại những chế độ cài đặt này</translation>
+<translation id="1530466164747090379"><ph name="FILE_NAME" /> có chứa dữ liệu nhạy cảm hoặc nguy hiểm</translation>
 <translation id="1531275250079031713">Hiển thị hộp thoại "Thêm Wi-Fi mới"</translation>
 <translation id="1531734061664070992"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /></translation>
 <translation id="1533948060140843887">Tôi hiểu rằng tệp tải xuống này sẽ gây hại cho máy tính của tôi</translation>
@@ -2193,6 +2194,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2469141124738294431">Trạng thái máy ảo</translation>
 <translation id="2469259292033957819">Bạn chưa lưu máy in nào.</translation>
 <translation id="2469375675106140201">Tùy chỉnh tính năng kiểm tra chính tả</translation>
+<translation id="2469406914567390938">Cập nhật kênh</translation>
 <translation id="247051149076336810">URL chia sẻ tệp</translation>
 <translation id="2471469610750100598">Đen (mặc định)</translation>
 <translation id="2471506181342525583">Đã cho phép truy cập thông tin vị trí</translation>
@@ -2524,6 +2526,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2695943520968279338">Khám phá tiện ích</translation>
 <translation id="2696675923413008404">Nội dung trên trang web này (kể cả URL) được gửi đến Google và nhân viên đánh giá có thể sẽ xem xét nội dung đó nhằm cải thiện tính năng này</translation>
 <translation id="2698147581454716013">Đây là thiết bị đi kèm và bạn không thể đăng ký bằng Bản nâng cấp Kiosk &amp; Signage.</translation>
+<translation id="269941332914175387">Chạy lại trình duyệt để tải dữ liệu hồ sơ của bạn và đảm bảo dữ liệu đó được mã hoá</translation>
 <translation id="2699911226086014512">Thao tác mã PIN không thành công với mã <ph name="RETRIES" />.</translation>
 <translation id="2701330563083355633">Chia sẻ từ <ph name="DEVICE_NAME" /></translation>
 <translation id="2701737434167469065">Đăng nhập, <ph name="EMAIL" /></translation>
@@ -2752,6 +2755,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2844154481025280030">Chính sách đã được định cấu hình.</translation>
 <translation id="2844169650293029770">Thiết bị USB-C (cổng phía trước, bên trái)</translation>
 <translation id="2844809857160214557">Xem và quản lý các lệnh in</translation>
+<translation id="284491292807422921">Xoá trang web?</translation>
 <translation id="2845276301195220700">Các thao tác khác cho Lịch Google</translation>
 <translation id="2845382757467349449">Luôn Hiển thị Thanh Dấu trang</translation>
 <translation id="284581348330507117">Tạo mật khẩu khác biệt</translation>
@@ -3341,6 +3345,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3262986719682892278">Quá lớn</translation>
 <translation id="3264544094376351444">Phông chữ Sans-serif</translation>
 <translation id="3264582393905923483">Ngữ cảnh</translation>
+<translation id="3265303262625691029"><ph name="VERDICT_MESSAGE" />. Quản trị viên của bạn cho biết: "<ph name="CUSTOM_MESSAGE" />"</translation>
 <translation id="3265459715026181080">Đóng Cửa sổ</translation>
 <translation id="3266022278425892773">Môi trường phát triển Linux</translation>
 <translation id="3266030505377585301">Để xoá dữ liệu duyệt web chỉ trên thiết bị này mà không xoá trong Tài khoản Google, hãy <ph name="BEGIN_LINK" />đăng xuất<ph name="END_LINK" />.</translation>
@@ -4460,6 +4465,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="4010746393007464819">Đã có bản nâng cấp lên Debian 12 (Bookworm)</translation>
 <translation id="4010917659463429001">Để nhận dấu trang trên thiết bị di động của bạn, hãy truy cập <ph name="GET_IOS_APP_LINK" />.</translation>
 <translation id="4011073493055408531">Bắc cực quang được cách điệu bằng màu tím và màu xanh lục, bên dưới là một thành phố.</translation>
+<translation id="4011897773956589748">Vào lần tới, nếu cần truy cập vào tài khoản này, Gemini sẽ hỏi bạn lần nữa.</translation>
 <translation id="4012509903424054869">Tệp PDF tự động được chuyển đổi để bạn có thể tìm kiếm và chọn văn bản</translation>
 <translation id="4014432863917027322">Bạn muốn sửa "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="4015163439792426608">Bạn đang sử dụng tiện ích? Bạn có thể dễ dàng <ph name="BEGIN_LINK" />quản lý các tiện ích của mình<ph name="END_LINK" /> ở cùng một nơi.</translation>
@@ -6238,6 +6244,7 @@ Nhấn tổ hợp phím Ctrl + Alt + Giảm độ sáng để thu nhỏ.</transl
 <translation id="5275084684151588738">Từ điển người dùng</translation>
 <translation id="5275338516105640560">Nút Nhóm thẻ đã lưu</translation>
 <translation id="5275352920323889391">Cún</translation>
+<translation id="5275946508817197540">Lựa chọn ưu tiên về bảo mật của bạn không cho phép cài đặt các ứng dụng web tách biệt. <ph name="CHANGE_PREFERENCE" />.</translation>
 <translation id="527605719918376753">Tắt tiếng thẻ</translation>
 <translation id="527605982717517565">Luôn cho phép JavaScript trên <ph name="HOST" /></translation>
 <translation id="5276357196618041410">Không thể lưu cấu hình nếu không đăng nhập trước</translation>
@@ -8688,6 +8695,7 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="6997553674029032185">Mở trang web</translation>
 <translation id="6997642619627518301"><ph name="NAME_PH" /> - Nhật ký hoạt động</translation>
 <translation id="6997707937646349884">Trên các thiết bị của bạn:</translation>
+<translation id="6998036632333022623">Chia sẻ các thẻ với Google</translation>
 <translation id="6998793565256476099">Đăng ký thiết bị tham gia hội nghị truyền hình</translation>
 <translation id="6999956497249459195">Nhóm mới</translation>
 <translation id="7000206553895739324"><ph name="PRINTER_NAME" /> đã kết nối nhưng cần định cấu hình</translation>

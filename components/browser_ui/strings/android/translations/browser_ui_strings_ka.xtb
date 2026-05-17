@@ -20,6 +20,7 @@
 <translation id="1240190568154816272">Chrome-ის მინიშნებები</translation>
 <translation id="1242008676835033345"><ph name="WEBSITE_URL" />-ში ჩაშენებული</translation>
 <translation id="1263609676484797429">შეეხეთ: აპები  &gt; ნაგულისხმევი აპები</translation>
+<translation id="1264694639515903274">თქვენ უკვე შეგიძლიათ მოირგოთ თქვენი მთავარი გვერდი</translation>
 <translation id="1272079795634619415">შეწყვეტა</translation>
 <translation id="1275718070701477396">შერჩეული</translation>
 <translation id="1289742167380433257">მონაცემთა მოცულობის დაზოგვის მიზნით, სურათები ოპტიმიზებულია Google-ის მიერ.</translation>
@@ -89,6 +90,7 @@
 <translation id="1915307458270490472">გათიშვა</translation>
 <translation id="1919950603503897840">კონტაქტების არჩევა</translation>
 <translation id="1923695749281512248"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / <ph name="FILE_SIZE_WITH_UNITS" />დან</translation>
+<translation id="192926679114491605">ჩემი მთავარი გვერდის მორგება</translation>
 <translation id="1939059826036755332">რეჟიმში „ეკრანი ეკრანში“ ავტომატურად შესვლა</translation>
 <translation id="1954597385941141174">საიტებს შეუძლია USB მოწყობილობებთან დაკავშირების თხოვნა</translation>
 <translation id="1979673356880165407">გაზარდეთ ან შეამცირეთ ტექსტი და სურათები თქვენ მიერ მონახულებულ ყველა საიტზე</translation>
@@ -330,6 +332,7 @@
 <translation id="42981349822642051">გაშლა</translation>
 <translation id="4310738531374808763">მთავარი გვერდის მორგება</translation>
 <translation id="4336219115486912529">{COUNT,plural, =1{მოქმედების ვადა იწურება ხვალ}other{მოქმედების ვადა იწურება # დღეში}}</translation>
+<translation id="4336371609622603229">აირჩიეთ მორგებული თემა Chrome-ის პერსონალიზებისთვის</translation>
 <translation id="4338831206024587507">ყველა საიტი <ph name="DOMAIN" />-ის ფარგლებში</translation>
 <translation id="4340799661701629185">საიტებისთვის შეტყობინებების გამოგზავნის აკრძალვა</translation>
 <translation id="4341577178275615435">კურსორით დათვალიერების ჩასართავად ან გამოსართავად გამოიყენეთ F7 მალსახმობი</translation>

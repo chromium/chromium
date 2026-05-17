@@ -1822,6 +1822,7 @@
 <translation id="380865868633614173">Картын мэдээллийг хадгалж байна</translation>
 <translation id="3810770279996899697">Нууц үгний менежерт MacOS Keychain-д хандах эрх шаардлагатай</translation>
 <translation id="3810973564298564668">удирдах</translation>
+<translation id="3811328723651698330"><ph name="STRING_1" />, <ph name="STRING_2" /></translation>
 <translation id="3812398568375898177">Энэ нь ChromeOS дээрх Android аппуудын гүйцэтгэлийг сайжруулах чухал шинэчлэлт юм.</translation>
 <translation id="3814865536373139791">Танай байгууллага бодлогыг хэрхэн удирддагийг хялбарчлах</translation>
 <translation id="3815434930383843058">8 x 12 инч</translation>
@@ -2402,6 +2403,7 @@
 <translation id="4736934858538408121">Виртуал карт</translation>
 <translation id="473775607612524610">Шинэчлэх</translation>
 <translation id="4738601419177586157"><ph name="TEXT" />-н хайлтын зөвлөмж</translation>
+<translation id="473866660302034629"><ph name="TAB_TITLE" />, сонгосон таб, <ph name="TOTAL" />-н <ph name="INDEX" />, табуудын хооронд сэлгэхийн тулд зүүн эсвэл баруун сумыг ашиглана уу</translation>
 <translation id="4742407542027196863">Нууц үгийг удирдах...</translation>
 <translation id="474270528725216349">Синк хийсэн төхөөрөмжүүд дээрх дор хаяж 1 сайтаас</translation>
 <translation id="4743275772928623722">Таны системийг шинэчилсэн хэдий ч таны апп эсвэл файлуудын заримыг сэргээж чадсангүй. Таны аппуудыг автоматаар дахин татна.</translation>
@@ -2469,6 +2471,7 @@
 <translation id="4832961164064927107">BBQ, мах шарах</translation>
 <translation id="4835568975547260025">Chrome танд асуултууддаа илүү тохируулсан хариулт авахад туслахын тулд хамааралтай нээлттэй табуудыг өгөгдмөлөөр хуваалцана.</translation>
 <translation id="4840250757394056958">Chrome-н түүхээ үзэх</translation>
+<translation id="4842365697443353018">Дараа төлөхийг ашиглахын тулд маягтын мэдээллийг арилгана уу</translation>
 <translation id="484462545196658690">Автомат</translation>
 <translation id="4844937814014739139">Хуваалцсан табыг гүйлгэх, томруулах</translation>
 <translation id="484671803914931257"><ph name="MERCHANT_NAME" /> болон бусад худалдаачны хөнгөлөлт аваарай</translation>

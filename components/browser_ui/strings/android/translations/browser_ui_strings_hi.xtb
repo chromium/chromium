@@ -20,6 +20,7 @@
 <translation id="1240190568154816272">Chrome से जुड़ी सलाह</translation>
 <translation id="1242008676835033345"><ph name="WEBSITE_URL" /> पर एम्बेड किया गया</translation>
 <translation id="1263609676484797429">ऐप्लिकेशन  &gt; डिफ़ॉल्ट ऐप्लिकेशन पर टैप करें</translation>
+<translation id="1264694639515903274">अब अपने होमपेज को पसंद के मुताबिक बनाया जा सकता है</translation>
 <translation id="1272079795634619415">रोकें</translation>
 <translation id="1275718070701477396">चयनित</translation>
 <translation id="1289742167380433257">आपका डेटा बचाने के लिए, Google ने इस पेज की इमेज ऑप्टमाइज़ कर दी हैं.</translation>
@@ -89,6 +90,7 @@
 <translation id="1915307458270490472">कॉल खत्म करें</translation>
 <translation id="1919950603503897840">संपर्कों को चुनें</translation>
 <translation id="1923695749281512248"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / <ph name="FILE_SIZE_WITH_UNITS" /></translation>
+<translation id="192926679114491605">होमपेज को अपनी पसंद के मुताबिक बनाएं</translation>
 <translation id="1939059826036755332">अपने-आप 'पिक्चर में पिक्चर' मोड में जाने की सेटिंग</translation>
 <translation id="1954597385941141174">साइटें यूएसबी डिवाइस से कनेक्ट करने के लिए पूछ सकती हैं</translation>
 <translation id="1979673356880165407">इससे विज़िट की जाने वाली हर साइट के इमेज और टेक्स्ट को बड़ा या छोटा किया जा सकता है</translation>
@@ -330,6 +332,7 @@
 <translation id="42981349822642051">विस्तृत करें</translation>
 <translation id="4310738531374808763">होमपेज को पसंद के मुताबिक बनाएं</translation>
 <translation id="4336219115486912529">{COUNT,plural, =1{समयसीमा कल खत्म हो जाएगी}one{समयसीमा # दिन में खत्म हो जाएगी}other{समयसीमा # दिनों में खत्म हो जाएगी}}</translation>
+<translation id="4336371609622603229">अपनी पसंद के हिसाब थीम चुनकर Chrome को अपने मुताबिक बनाएं</translation>
 <translation id="4338831206024587507"><ph name="DOMAIN" /> की सभी साइटें</translation>
 <translation id="4340799661701629185">साइटों को सूचनाएं भेजने की अनुमति न दें</translation>
 <translation id="4341577178275615435">कैरेट ब्राउज़िंग को चालू या बंद करने के लिए, शॉर्टकट F7 का इस्तेमाल करें</translation>
