@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/with_feature_override.h"
 #include "build/buildflag.h"
@@ -15,9 +16,9 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/common/pref_names.h"
-#include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chrome/test/base/testing_profile_manager.h"
 #include "components/policy/core/browser/signin/profile_separation_policies.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/testing_pref_service.h"
@@ -49,17 +50,19 @@ const GaiaId kSignedInGaiaId("signed_in_gaia_id");
 
 }  // namespace
 
-class SigninUtilTest : public BrowserWithTestWindowTest {
+class SigninUtilTest : public testing::Test {
  public:
   void SetUp() override {
-    BrowserWithTestWindowTest::SetUp();
+    ASSERT_TRUE(profile_manager_.SetUp());
+    profile_ = profile_manager_.CreateTestingProfile("TestProfile");
     signin_util::ResetForceSigninForTesting();
   }
 
   void TearDown() override {
     signin_util::ResetForceSigninForTesting();
-    BrowserWithTestWindowTest::TearDown();
   }
+
+  TestingProfile* profile() { return profile_; }
 
   bool SeparationEnforcedByExistingProfileExpected(
       const std::string& local_policy) {
@@ -85,6 +88,10 @@ class SigninUtilTest : public BrowserWithTestWindowTest {
   }
 
  protected:
+  content::BrowserTaskEnvironment task_environment_;
+  TestingProfileManager profile_manager_{TestingBrowserProcess::GetGlobal()};
+  raw_ptr<TestingProfile> profile_ = nullptr;
+
   std::array<std::string, 6> all_policies{
       kLegacyPolicyEmpty,
       kLegacyPolicyNone,
