@@ -22,7 +22,8 @@ ActorLoginDelegate* GetOrCreateDelegate(content::WebContents* web_contents) {
   password_manager::ContentPasswordManagerDriver* driver =
       password_manager::ContentPasswordManagerDriver::GetForRenderFrameHost(
           web_contents->GetPrimaryMainFrame());
-  return ActorLoginDelegateImpl::GetOrCreate(web_contents, driver->client());
+  return ActorLoginDelegateImpl::GetOrCreate(
+      web_contents, driver ? driver->client() : nullptr);
 }
 
 void OnGetCredentialsResult(CredentialsOrErrorReply callback,

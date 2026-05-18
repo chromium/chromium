@@ -152,6 +152,7 @@ class ActorLoginDelegateImpl
   // primary main frame of the passed-in `WebContents`.
   PasswordDriverSupplierForPrimaryMainFrame driver_supplier_;
 
+  // Can be null on Android when using third-party password manager.
   raw_ptr<password_manager::PasswordManagerClient> client_ = nullptr;
 
   // Helper for recording Actor.Login metrics. The helper is created at the
