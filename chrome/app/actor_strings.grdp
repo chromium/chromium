@@ -101,12 +101,6 @@
   <message name="IDS_ACTOR_NOTIFICATION_BUTTON_VIEW_TASK" desc="Label for the notification button that takes the user to the tab where the task is running." formatter_data="android_java">
     View task
   </message>
-  <message name="IDS_ACTOR_NOTIFICATION_BUTTON_PAUSE_TASK" desc="Label for the notification button that pauses the currently running task." formatter_data="android_java">
-    Pause task
-  </message>
-  <message name="IDS_ACTOR_NOTIFICATION_BUTTON_RESUME_TASK" desc="Label for the notification button that resumes a paused task." formatter_data="android_java">
-    Resume task
-  </message>
   <message name="IDS_ACTOR_NOTIFICATION_BODY_WORKING" desc="Notification body text when the actor is working on a task." formatter_data="android_java">
     <ph name="TASK_TITLE">%s<ex>My Task</ex></ph>\nGemini is working on your task, and will let you know if more action is needed.
   </message>
