@@ -423,7 +423,8 @@ class PortalHelper {
                                dbus::ObjectPath(kFreedesktopFileManagerPath));
     }
 
-    std::vector<std::string> file_to_highlight{"file://" + full_path.value()};
+    std::vector<std::string> file_to_highlight{
+        net::FilePathToFileURL(full_path).spec()};
     dbus_utils::CallMethod<"ass", "">(
         file_manager_object_proxy_, kFreedesktopFileManagerName,
         kMethodShowItems,
