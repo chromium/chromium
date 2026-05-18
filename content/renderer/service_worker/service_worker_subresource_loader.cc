@@ -82,10 +82,6 @@ network::mojom::URLResponseHeadPtr RewriteResponseHead(
   return response_head;
 }
 
-// A feature flag to enable the speculative fix for crbug.com/463388771.
-BASE_FEATURE(kCancelPendingCallbacksBeforeFetchRestart,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // A wrapper URLLoaderClient that invokes the given RewriteHeaderCallback
 // whenever a response or redirect is received.
 class HeaderRewritingURLLoaderClient : public network::mojom::URLLoaderClient {
@@ -608,11 +604,9 @@ void ServiceWorkerSubresourceLoader::OnConnectionClosed() {
     }
   }
   fetch_request_restarted_ = true;
-  if (base::FeatureList::IsEnabled(kCancelPendingCallbacksBeforeFetchRestart)) {
-    // Invalidate weak pointers to cancel any pending callbacks from the
-    // previous fetch event dispatch.
-    weak_factory_.InvalidateWeakPtrs();
-  }
+  // Invalidate weak pointers to cancel any pending callbacks from the
+  // previous fetch event dispatch.
+  weak_factory_.InvalidateWeakPtrs();
 
   // Reset race network request related member variables and the dispatched
   // preload type to none so that the restarted fetch event won't be affected by
@@ -1526,10 +1520,6 @@ void ServiceWorkerSubresourceLoader::DidCacheStorageMatch(
 }
 
 void ServiceWorkerSubresourceLoader::ValidateResponseSentToClient() {
-  SCOPED_CRASH_KEY_BOOL("crbug463388771", "fetch_restarted",
-                        fetch_request_restarted_);
-  SCOPED_CRASH_KEY_STRING1024("crbug463388771", "response_url",
-                              resource_request_.url.spec());
   CHECK(!response_sent_to_client_);
   response_sent_to_client_ = true;
 }
