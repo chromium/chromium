@@ -26,6 +26,11 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sharing/glic_experimental_triggering/actor_log.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/ui/browser.h"  // nogncheck
+#include "chrome/browser/ui/browser_commands.h"  // nogncheck
+#include "chrome/browser/ui/browser_window.h"  // nogncheck
+#endif
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/common/chrome_features.h"
 #include "components/sharing_message/proto/sharing_message.pb.h"
@@ -187,13 +192,23 @@ class ExperimentalTriggeringUpdatesHandler
       return;
     }
 
+    // Find or create a valid browser window. On Android, or if window
+    // creation is disabled/fails, clean up and abort.
     BrowserWindowInterface* browser_window =
         message_handler_->GetBrowserWindow();
     if (!browser_window) {
-      DLOG(ERROR) << "No browser window found for Profile for "
-                     "GlicExperimentalTriggering";
-      message_handler_->OnUpdatesHandlerCleanup(context_id_);
-      return;
+      if (base::FeatureList::IsEnabled(
+              features::kGlicExperimentalTriggeringOpenWindowIfNone)) {
+#if !BUILDFLAG(IS_ANDROID)
+        browser_window = chrome::OpenEmptyWindow(message_handler_->profile_);
+#endif
+      }
+      if (!browser_window) {
+        DLOG(ERROR) << "No browser window found for Profile for "
+                       "GlicExperimentalTriggering";
+        message_handler_->OnUpdatesHandlerCleanup(context_id_);
+        return;
+      }
     }
 
     auto options = CreateInvokeOptions(request, browser_window);

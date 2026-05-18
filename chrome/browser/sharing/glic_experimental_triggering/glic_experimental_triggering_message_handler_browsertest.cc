@@ -18,6 +18,7 @@
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/test_support/glic_test_util.h"
 #include "chrome/browser/glic/test_support/new_glic_api_test.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/common/chrome_features.h"
 #include "components/policy/core/common/management/scoped_management_service_override_for_testing.h"
 #include "components/prefs/pref_service.h"
@@ -483,6 +484,50 @@ IN_PROC_BROWSER_TEST_F(GlicExperimentalTriggeringMessageHandlerBrowserTest,
   EXPECT_EQ(
       response.glic_experimental_triggering().response().task_update().data(),
       "User is not opted in to experimental triggering.");
+}
+
+class GlicExperimentalTriggeringOpenWindowTest
+    : public GlicExperimentalTriggeringMessageHandlerBrowserTest {
+ public:
+  GlicExperimentalTriggeringOpenWindowTest() {
+    open_window_feature_list_.InitAndEnableFeature(
+        features::kGlicExperimentalTriggeringOpenWindowIfNone);
+  }
+
+ private:
+  base::test::ScopedFeatureList open_window_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(GlicExperimentalTriggeringOpenWindowTest,
+                       OpensNewWindowWhenNoBrowserWindowAndFlagEnabled) {
+  OptIn();
+
+  auto mock_handler = std::make_unique<
+      testing::NiceMock<MockGlicExperimentalTriggeringMessageHandler>>(
+      GetProfile(), &mock_sharing_message_sender_);
+
+  EXPECT_CALL(*mock_handler, GetBrowserWindow())
+      .WillOnce(testing::Return(nullptr));
+
+  components_sharing_message::SharingMessage message;
+  message.mutable_server_channel_configuration()->set_configuration(
+      "test_config");
+  message.mutable_glic_experimental_triggering()
+      ->mutable_request()
+      ->mutable_trigger_actuation_request();
+
+  base::test::TestFuture<
+      std::unique_ptr<components_sharing_message::ResponseMessage>>
+      done_future;
+
+  size_t initial_browser_count = GetAllBrowserWindowInterfaces().size();
+
+  mock_handler->OnMessage(std::move(message), done_future.GetCallback());
+
+  EXPECT_TRUE(done_future.Wait());
+
+  // Verify that a new window was created.
+  EXPECT_EQ(GetAllBrowserWindowInterfaces().size(), initial_browser_count + 1);
 }
 
 }  // namespace glic

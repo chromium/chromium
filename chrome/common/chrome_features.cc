@@ -206,6 +206,8 @@ const base::FeatureParam<double> kGlicActorApcComparisonSamplingRate{
 BASE_FEATURE(kGlicExperimentalTriggering, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kGlicExperimentalTriggeringOptInBypass,
              base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kGlicExperimentalTriggeringOpenWindowIfNone,
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 const base::FeatureParam<std::string> kGlicExperimentalTriggeringOptInURL{
     &kGlicExperimentalTriggering, "glic-experimental-triggering-opt-in-url",
@@ -507,8 +509,6 @@ BASE_FEATURE(kGlicForceSimplifiedBorder, base::FEATURE_DISABLED_BY_DEFAULT);
 // cc::PaintShader::MakeSkSLCommand.
 BASE_FEATURE(kGlicForceNonSkSLBorder, base::FEATURE_DISABLED_BY_DEFAULT);
 
-
-
 const base::FeatureParam<int> kGlicInitialWidth{&kGlic, "glic-initial-width",
                                                 352};
 const base::FeatureParam<int> kGlicInitialHeight{&kGlic, "glic-initial-height",
@@ -786,7 +786,6 @@ extern const base::FeatureParam<std::string>
 
 BASE_FEATURE(kGlicRecordMemoryFootprintMetrics,
              base::FEATURE_ENABLED_BY_DEFAULT);
-
 
 BASE_FEATURE(kGlicRegionSelectionLine, base::FEATURE_DISABLED_BY_DEFAULT);
 
