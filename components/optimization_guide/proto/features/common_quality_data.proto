@@ -1175,18 +1175,6 @@ message TableRow {
   repeated ContentNode cells = 1;
 }
 
-message UserAnnotationsEntry {
-  // The row ID of this entry from the user annotations database. This is
-  // immutable except when retrieving the row from the database.
-  int64 entry_id = 1 [features = { field_presence: EXPLICIT }];
-
-  // The key for this entry. Not necessarily unique.
-  string key = 2 [features = { field_presence: EXPLICIT }];
-
-  // The value for this entry.
-  string value = 3 [features = { field_presence: EXPLICIT }];
-}
-
 message TabGroup {
   // The label that describes this tab group.
   string label = 1 [features = { field_presence: EXPLICIT }];
