@@ -653,8 +653,16 @@ public final class ProductionSupportedFlagList {
                 "AlwaysUseAudioManagerOutputFramesPerBuffer",
                 "Use buffer size from AudioManager.PROPERTY_OUTPUT_FRAMES_PER_BUFFER for "
                         + "optimal output frame size."),
-        Flag.baseFeature("AudioDecoderAudioFileReader"),
-        Flag.baseFeature("SymphoniaAudioDecoding"),
+        Flag.baseFeature("DirectOpusAudioDecoding",
+            "Enables use of the OpusAudioDecoder for decoding Opus audio files."),
+        Flag.baseFeature("SymphoniaAudioDecoding",
+            "Enables use of the SymphoniaAudioDecoder for decoding FLAC audio files."),
+        Flag.baseFeature("SymphoniaMp3Decoding",
+            "Enables use of the SymphoniaAudioDecoder for decoding MP3 audio files."),
+        Flag.baseFeature("SymphoniaPcmDecoding",
+            "Enables use of the SymphoniaAudioDecoder for decoding PCM audio files."),
+        Flag.baseFeature("SymphoniaVorbisDecoding",
+            "Enables use of the SymphoniaAudioDecoder for decoding Vorbis audio files."),
         Flag.baseFeature(
                 "AudioInputConfirmReadsViaShmem",
                 "Enables an audio input optimization that uses shared memory instead of"
