@@ -27,33 +27,30 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tabbed_mode.TabbedRootUiCoordinator;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
-import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.GlicTransitTestRule;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.transit.ui.SnackbarFacility;
 
 /** Integration test for ActorOverlay. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
+@EnableFeatures({ChromeFeatureList.GLIC, ChromeFeatureList.TAB_BOTTOM_SHEET})
 @Batch(Batch.PER_CLASS)
 public class ActorOverlayPTTest {
     @Rule
-    public AutoResetCtaTransitTestRule mActivityTestRule =
-            ChromeTransitTestRules.autoResetCtaActivityRule();
+    public final GlicTransitTestRule mTestRule = new GlicTransitTestRule();
 
     @Test
     @MediumTest
-    @EnableFeatures({ChromeFeatureList.GLIC, ChromeFeatureList.TAB_BOTTOM_SHEET})
     public void testActorOverlayIsInflated() {
-        mActivityTestRule.startOnBlankPage();
+        mTestRule.startOnBlankPage();
         onView(withId(R.id.actor_overlay)).check(matches(not(isDisplayed())));
     }
 
     @Test
     @MediumTest
-    @EnableFeatures({ChromeFeatureList.GLIC, ChromeFeatureList.TAB_BOTTOM_SHEET})
     public void testOverlayVisibility() {
-        mActivityTestRule.startOnBlankPage();
+        mTestRule.startOnBlankPage();
         showOverlay(true);
         onView(withId(R.id.actor_overlay)).check(matches(isDisplayed()));
 
@@ -63,9 +60,8 @@ public class ActorOverlayPTTest {
 
     @Test
     @MediumTest
-    @EnableFeatures({ChromeFeatureList.GLIC, ChromeFeatureList.TAB_BOTTOM_SHEET})
     public void testOverlayClickShowsSnackbar() {
-        WebPageStation page = mActivityTestRule.startOnBlankPage();
+        WebPageStation page = mTestRule.startOnBlankPage();
         showOverlay(true);
 
         // Click the overlay and wait for the snackbar to appear.
@@ -77,9 +73,8 @@ public class ActorOverlayPTTest {
 
     @Test
     @MediumTest
-    @EnableFeatures({ChromeFeatureList.GLIC, ChromeFeatureList.TAB_BOTTOM_SHEET})
     public void testBackPressShowsSnackbar() {
-        WebPageStation page = mActivityTestRule.startOnBlankPage();
+        WebPageStation page = mTestRule.startOnBlankPage();
         showOverlay(true);
 
         // Press back and wait for the snackbar to appear.
@@ -91,9 +86,7 @@ public class ActorOverlayPTTest {
                 () -> {
                     TabbedRootUiCoordinator rootUiCoordinator =
                             (TabbedRootUiCoordinator)
-                                    mActivityTestRule
-                                            .getActivity()
-                                            .getRootUiCoordinatorForTesting();
+                                    mTestRule.getActivity().getRootUiCoordinatorForTesting();
                     rootUiCoordinator
                             .getActorOverlayCoordinatorForTesting()
                             .showOverlayForTesting(visible);

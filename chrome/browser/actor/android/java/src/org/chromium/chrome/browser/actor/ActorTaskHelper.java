@@ -13,15 +13,18 @@ import org.chromium.base.Callback;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
+import org.chromium.chrome.browser.lifecycle.StartStopWithNativeObserver;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 
 /** Helper class that keeps the screen on while an Actor task is active. */
 @NullMarked
-public class ActorTaskHelper implements ActorKeyedService.Observer {
+public class ActorTaskHelper implements ActorKeyedService.Observer, StartStopWithNativeObserver {
     private final Activity mActivity;
     private final MonotonicObservableSupplier<Profile> mProfileSupplier;
     private final MonotonicObservableSupplier<TabModelSelector> mTabModelSelectorSupplier;
+    private final ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
     private final Callback<Profile> mProfileObserver = (p) -> updateKeepScreenOn();
     private @Nullable ActorKeyedService mActorService;
     private boolean mKeepScreenOn;
@@ -30,15 +33,19 @@ public class ActorTaskHelper implements ActorKeyedService.Observer {
      * @param activity The {@link Activity} to manage flags for.
      * @param profileSupplier Supplier for the current {@link Profile}.
      * @param tabModelSelectorSupplier Supplier for the current {@link TabModelSelector}.
+     * @param activityLifecycleDispatcher Dispatcher for activity lifecycle events.
      */
     public ActorTaskHelper(
             Activity activity,
             MonotonicObservableSupplier<Profile> profileSupplier,
-            MonotonicObservableSupplier<TabModelSelector> tabModelSelectorSupplier) {
+            MonotonicObservableSupplier<TabModelSelector> tabModelSelectorSupplier,
+            ActivityLifecycleDispatcher activityLifecycleDispatcher) {
         mActivity = activity;
         mProfileSupplier = profileSupplier;
         mTabModelSelectorSupplier = tabModelSelectorSupplier;
+        mActivityLifecycleDispatcher = activityLifecycleDispatcher;
         mProfileSupplier.addSyncObserverAndCallIfNonNull(mProfileObserver);
+        mActivityLifecycleDispatcher.register(this);
     }
 
     @Override
@@ -64,9 +71,11 @@ public class ActorTaskHelper implements ActorKeyedService.Observer {
         forEachActiveTask(task -> hasActiveTask[0] = true);
         return hasActiveTask[0];
     }
+    @Override
+    public void onStartWithNative() {}
 
-    /** Pauses any Actor tasks if they are in an active state and belong to this window. */
-    public void onStop() {
+@Override
+    public void onStopWithNative() {
         forEachActiveTask(
                 task -> {
                     if (isTaskInCurrentWindow(task)) {
@@ -114,6 +123,7 @@ public class ActorTaskHelper implements ActorKeyedService.Observer {
 
     /** Cleans up the helper, removing observers and clearing flags. */
     public void destroy() {
+        mActivityLifecycleDispatcher.unregister(this);
         mProfileSupplier.removeObserver(mProfileObserver);
         if (mActorService != null) {
             mActorService.removeObserver(this);

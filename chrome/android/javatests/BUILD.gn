@@ -463,6 +463,7 @@ android_library("chrome_test_java_org.chromium.chrome.browser.actor") {
   deps = [
     ":chrome_test_java_helper",
     "//chrome/browser/actor/android:java",
+    "//chrome/browser/glic/android:test_support_java",
     "//chrome/test/android:chrome_java_transit",
   ]
 }

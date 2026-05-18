@@ -3,4 +3,5 @@ include_rules = [
   "+components/browser_ui/notifications",
   "+components/browser_ui/modaldialog/android",
   "+components/browser_ui/widget",
+  "+chrome/browser/android/lifecycle",
 ]

@@ -67,6 +67,7 @@ import org.chromium.chrome.browser.download.OfflineContentAvailabilityStatusProv
 import org.chromium.chrome.browser.enterprise.util.EnterpriseInfo;
 import org.chromium.chrome.browser.firstrun.TosDialogBehaviorSharedPrefInvalidator;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.glic.GlicEnabling;
 import org.chromium.chrome.browser.history.HistoryDeletionBridge;
 import org.chromium.chrome.browser.homepage.HomepageManager;
 import org.chromium.chrome.browser.incognito.IncognitoTabLauncher;
@@ -472,7 +473,7 @@ public class ProcessInitializationHandler {
         JavalessRenderersFeatureList.setRegisterSyntheticFieldTrialCallback(
                 UmaSessionStats::registerSyntheticFieldTrial);
 
-        if (ChromeFeatureList.sGlic.isEnabled()) {
+        if (GlicEnabling.isEnabledByFlags()) {
             ActorForegroundServiceManager.initialize();
         }
     }

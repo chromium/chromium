@@ -57,6 +57,7 @@ import org.chromium.chrome.browser.ChromeInactivityTracker.InactivityObserver;
 import org.chromium.chrome.browser.SwipeRefreshHandler;
 import org.chromium.chrome.browser.ZoomController;
 import org.chromium.chrome.browser.accessibility.PageZoomIphController;
+import org.chromium.chrome.browser.actor.ActorTaskHelper;
 import org.chromium.chrome.browser.actor.ui.ActorControlCoordinator;
 import org.chromium.chrome.browser.actor.ui.ActorOverlayCoordinator;
 import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
@@ -110,6 +111,7 @@ import org.chromium.chrome.browser.gesturenav.GestureUserEducationIphController;
 import org.chromium.chrome.browser.gesturenav.HistoryNavigationCoordinator;
 import org.chromium.chrome.browser.gesturenav.NavigationSheet;
 import org.chromium.chrome.browser.gesturenav.TabbedSheetDelegate;
+import org.chromium.chrome.browser.glic.GlicEnabling;
 import org.chromium.chrome.browser.glic.GlicKeyedServiceHandler;
 import org.chromium.chrome.browser.glic.GlicNavigationUtils;
 import org.chromium.chrome.browser.glic.GlicPromoCoordinator;
@@ -369,6 +371,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     private @Nullable ContextualTasksBridge mContextualTasksBridge;
     private @Nullable ActorOverlayCoordinator mActorOverlayCoordinator;
     private @Nullable ActorControlCoordinator mActorControlCoordinator;
+    private @Nullable ActorTaskHelper mActorTaskHelper;
     private @Nullable ForcedSigninController mForcedSigninController;
 
     // Activity tab observer that updates the current tab used by various UI components.
@@ -904,6 +907,11 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             mActorControlCoordinator = null;
         }
 
+        if (mActorTaskHelper != null) {
+            mActorTaskHelper.destroy();
+            mActorTaskHelper = null;
+        }
+
         if (mGestureUserEducationIphController != null) {
             mGestureUserEducationIphController.destroy();
             mGestureUserEducationIphController = null;
@@ -1213,7 +1221,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         initiateTabBottomSheetManagers();
         initializeSideUi();
 
-        if (ChromeFeatureList.sGlic.isEnabled() && mTabBottomSheetManager != null) {
+        if (GlicEnabling.isEnabledByFlags() && mTabBottomSheetManager != null) {
             GlicNavigationUtils.setLauncher(SigninAndHistorySyncActivityLauncherImpl::get);
             mActorControlCoordinator =
                     new ActorControlCoordinator(
@@ -1281,6 +1289,15 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     protected void initProfileDependentFeatures(Profile currentlySelectedProfile) {
         super.initProfileDependentFeatures(currentlySelectedProfile);
         Profile originalProfile = currentlySelectedProfile.getOriginalProfile();
+
+        if (mActorTaskHelper == null && GlicEnabling.isEnabledByFlags()) {
+            mActorTaskHelper =
+                    new ActorTaskHelper(
+                            mActivity,
+                            mProfileSupplier,
+                            mTabModelSelectorSupplier,
+                            mActivityLifecycleDispatcher);
+        }
 
         if (ChromeFeatureList.sChromeNativeUrlOverriding.isEnabled()) {
             ExtensionsUrlOverrideRegistryManagerFactory.getForProfile(originalProfile);
@@ -1624,9 +1641,17 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     }
 
     private void maybeShowGlicPromo() {
+        Profile profile = mProfileSupplier.get();
+        if (profile == null
+                || mActivity == null
+                || mActivity.isFinishing()
+                || mActivity.isDestroyed()) {
+            return;
+        }
+
         // When the Android Bottom Bar is enabled the promo is not required as the button is
         // available by default.
-        if (!ChromeFeatureList.sGlic.isEnabled()
+        if (!GlicEnabling.isEnabledForProfile(profile)
                 || BottomBarConfigUtils.isBottomBarEnabled(mActivity)) {
             return;
         }
@@ -1635,14 +1660,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             return;
         }
         if (!Boolean.TRUE.equals(mTrackerInitializedOneshotSupplier.get())) {
-            return;
-        }
-
-        Profile profile = mProfileSupplier.get();
-        if (profile == null
-                || mActivity == null
-                || mActivity.isFinishing()
-                || mActivity.isDestroyed()) {
             return;
         }
         Tracker tracker = TrackerFactory.getTrackerForProfile(profile);

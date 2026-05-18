@@ -83,7 +83,6 @@ import org.chromium.chrome.browser.PlayServicesVersionInfo;
 import org.chromium.chrome.browser.TabStateThemeResourceProvider;
 import org.chromium.chrome.browser.WarmupManager;
 import org.chromium.chrome.browser.actor.ActorPictureInPictureController;
-import org.chromium.chrome.browser.actor.ActorTaskHelper;
 import org.chromium.chrome.browser.app.appmenu.AppMenuPropertiesDelegateImpl;
 import org.chromium.chrome.browser.app.download.DownloadMessageUiDelegate;
 import org.chromium.chrome.browser.app.metrics.LaunchCauseMetrics;
@@ -133,6 +132,7 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManagerSupplier;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
+import org.chromium.chrome.browser.glic.GlicEnabling;
 import org.chromium.chrome.browser.history.HistoryManagerUtils;
 import org.chromium.chrome.browser.hub.HubUtils;
 import org.chromium.chrome.browser.init.AsyncInitializationActivity;
@@ -405,8 +405,6 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
     private FullscreenVideoPictureInPictureController mFullscreenVideoPictureInPictureController;
 
     private ActorPictureInPictureController mActorPipController;
-
-    private ActorTaskHelper mActorTaskHelper;
 
     private final SettableMonotonicObservableSupplier<SnackbarManager> mSnackbarManagerSupplier =
             ObservableSuppliers.createMonotonic();
@@ -1428,7 +1426,7 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
      * @param preventClose whether to prevent closing the Glic UI if it's already open.
      */
     public void toggleGlic(boolean preventClose) {
-        if (!ChromeFeatureList.sGlic.isEnabled()) return;
+        if (!GlicEnabling.isEnabledByFlags()) return;
         if (mRootUiCoordinator != null) {
             mRootUiCoordinator.toggleGlic(preventClose);
         }
@@ -1436,18 +1434,26 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
 
     @VisibleForTesting
     public @Nullable ActorPictureInPictureController maybeCreateActorPipController() {
-        if (mActorPipController == null && ChromeFeatureList.sGlic.isEnabled()) {
-            mActorPipController =
-                    new ActorPictureInPictureController(
-                            this,
-                            () -> mTabModelProfileSupplier.get(),
-                            () -> findViewById(android.R.id.content),
-                            getTabModelSelectorSupplier(),
-                            this::exitOverviewModeOnActorPiPExpand,
-                            this::toggleGlic,
-                            getLastNormalSizeBeforeEnteringActorPiP(),
-                            this::onActorPictureInPictureChanged);
+        if (mActorPipController != null) {
+            return mActorPipController;
         }
+
+        if (getProfileProviderSupplier().get() == null
+                || !GlicEnabling.isProfileEligible(
+                        getProfileProviderSupplier().get().getOriginalProfile())) {
+            return null;
+        }
+
+        mActorPipController =
+                new ActorPictureInPictureController(
+                        this,
+                        () -> mTabModelProfileSupplier.get(),
+                        () -> findViewById(android.R.id.content),
+                        getTabModelSelectorSupplier(),
+                        this::exitOverviewModeOnActorPiPExpand,
+                        this::toggleGlic,
+                        getLastNormalSizeBeforeEnteringActorPiP(),
+                        this::onActorPictureInPictureChanged);
         return mActorPipController;
     }
 
@@ -1763,12 +1769,6 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
         CompositorViewHolder compositorViewHolder = mCompositorViewHolderSupplier.get();
         if (compositorViewHolder != null) compositorViewHolder.onStart();
 
-        if (mActorTaskHelper == null && ChromeFeatureList.sGlic.isEnabled()) {
-            mActorTaskHelper =
-                    new ActorTaskHelper(
-                            this, mTabModelProfileSupplier, getTabModelSelectorSupplier());
-        }
-
         mStarted = true;
     }
 
@@ -1799,9 +1799,6 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
 
     @Override
     public void onStop() {
-        if (mActorTaskHelper != null) {
-            mActorTaskHelper.onStop();
-        }
         super.onStop();
 
         onActivityHidden();
@@ -1964,11 +1961,6 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
         if (mActorPipController != null) {
             mActorPipController.destroy();
             mActorPipController = null;
-        }
-
-        if (mActorTaskHelper != null) {
-            mActorTaskHelper.destroy();
-            mActorTaskHelper = null;
         }
 
         onDestroyInternal();
@@ -3501,8 +3493,4 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
     }
 
     // === END of ThemeResourceProvider functionality ===
-
-    public void setActorTaskHelperForTesting(ActorTaskHelper actorTaskHelper) {
-        mActorTaskHelper = actorTaskHelper;
-    }
 }

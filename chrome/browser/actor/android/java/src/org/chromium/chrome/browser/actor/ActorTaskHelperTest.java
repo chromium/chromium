@@ -26,6 +26,7 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -42,6 +43,7 @@ public class ActorTaskHelperTest {
     @Mock private ActorTask mActorTask;
     @Mock private TabModelSelector mTabModelSelector;
     @Mock private Tab mTab;
+    @Mock private ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
 
     private Activity mActivity;
     private SettableMonotonicObservableSupplier<Profile> mProfileSupplier;
@@ -62,7 +64,9 @@ public class ActorTaskHelperTest {
         when(mActorTask.getTabs()).thenReturn(Collections.singleton(1));
         ActorKeyedServiceFactory.setForTesting(mActorService);
 
-        mActorTaskHelper = new ActorTaskHelper(mActivity, mProfileSupplier, mSelectorSupplier);
+        mActorTaskHelper =
+                new ActorTaskHelper(
+                        mActivity, mProfileSupplier, mSelectorSupplier, mActivityLifecycleDispatcher);
     }
 
     @Test
@@ -121,7 +125,7 @@ public class ActorTaskHelperTest {
         when(mActorService.getActiveTasks())
                 .thenReturn(Arrays.asList(taskCreated, taskActing, taskReflecting, taskPaused));
 
-        mActorTaskHelper.onStop();
+        mActorTaskHelper.onStopWithNative();
 
         verify(taskCreated).pause();
         verify(taskActing).pause();
@@ -137,6 +141,7 @@ public class ActorTaskHelperTest {
 
         mActorTaskHelper.destroy();
 
+        verify(mActivityLifecycleDispatcher).unregister(mActorTaskHelper);
         verify(mActorService, atLeastOnce()).removeObserver(mActorTaskHelper);
         assertFalse(
                 (mActivity.getWindow().getAttributes().flags
@@ -151,7 +156,9 @@ public class ActorTaskHelperTest {
                 ObservableSuppliers.createMonotonic();
         selectorSupplier.set(selector);
 
-        ActorTaskHelper helper = new ActorTaskHelper(mActivity, mProfileSupplier, selectorSupplier);
+        ActorTaskHelper helper =
+                new ActorTaskHelper(
+                        mActivity, mProfileSupplier, selectorSupplier, mActivityLifecycleDispatcher);
 
         ActorTask taskInWindow = mock(ActorTask.class);
         when(taskInWindow.getState()).thenReturn(ActorTaskState.ACTING);
@@ -167,7 +174,7 @@ public class ActorTaskHelperTest {
         when(mActorService.getActiveTasks())
                 .thenReturn(Arrays.asList(taskInWindow, taskOtherWindow));
 
-        helper.onStop();
+        helper.onStopWithNative();
 
         verify(taskInWindow).pause();
         verify(taskOtherWindow, never()).pause();
