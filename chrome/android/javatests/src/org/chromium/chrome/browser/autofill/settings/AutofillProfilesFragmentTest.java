@@ -34,6 +34,9 @@ import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import static org.chromium.components.autofill.autofill_ai.utils.TestUtils.buildGermanyPassportWithLabels;
+import static org.chromium.components.autofill.autofill_ai.utils.TestUtils.buildMercedezVehicleWithLabels;
+
 import android.app.Activity;
 import android.app.Instrumentation;
 import android.content.Context;
@@ -935,8 +938,7 @@ public class AutofillProfilesFragmentTest {
         mHelper.setProfile(sAccountProfile);
 
         assertNotNull(
-                autofillProfileFragment.findPreference(
-                        AutofillAiDelegate.DISABLED_SETTINGS_INFO));
+                autofillProfileFragment.findPreference(AutofillAiDelegate.DISABLED_SETTINGS_INFO));
     }
 
     @Test
@@ -955,8 +957,7 @@ public class AutofillProfilesFragmentTest {
         mHelper.setProfile(sAccountProfile);
 
         CardWithButtonPreference disabledSettingsInfoPref =
-                autofillProfileFragment.findPreference(
-                        AutofillAiDelegate.DISABLED_SETTINGS_INFO);
+                autofillProfileFragment.findPreference(AutofillAiDelegate.DISABLED_SETTINGS_INFO);
         assertNotNull(disabledSettingsInfoPref);
         onView(allOf(withId(R.id.icon), isDescendantOfA(withId(R.id.card_layout))))
                 .check(matches(isDisplayed()));
@@ -997,8 +998,7 @@ public class AutofillProfilesFragmentTest {
         mHelper.setProfile(sAccountProfile);
 
         CardWithButtonPreference disabledSettingsInfoPref =
-                autofillProfileFragment.findPreference(
-                        AutofillAiDelegate.DISABLED_SETTINGS_INFO);
+                autofillProfileFragment.findPreference(AutofillAiDelegate.DISABLED_SETTINGS_INFO);
         assertNotNull(disabledSettingsInfoPref);
         onView(allOf(withId(R.id.icon), isDescendantOfA(withId(R.id.card_layout))))
                 .check(matches(isDisplayed()));
@@ -1114,17 +1114,9 @@ public class AutofillProfilesFragmentTest {
     public void testAutofillAiEntities_notRenderedIfCannotListEntityInstancesInSettings()
             throws Exception {
         EntityType vehicleType = TestUtils.getVehicleEntityType();
-        EntityInstanceWithLabels entity1 =
-                new EntityInstanceWithLabels(
-                        "guid1",
-                        vehicleType,
-                        /* entityInstanceLabel= */ "Vehicle",
-                        /* entityInstanceSubLabel= */ "Mercedez",
-                        /* storedInWallet= */ false,
-                        /* walletEntityUrl= */ null);
         LinkedHashMap<EntityType, List<EntityInstanceWithLabels>> instancesMap =
                 new LinkedHashMap<>();
-        instancesMap.put(vehicleType, Arrays.asList(entity1));
+        instancesMap.put(vehicleType, Arrays.asList(buildMercedezVehicleWithLabels("guid1")));
 
         when(mEntityDataManager.getInstancesToList()).thenReturn(instancesMap);
         when(mEntityDataManager.canListEntityInstancesInSettings()).thenReturn(false);
@@ -1150,28 +1142,11 @@ public class AutofillProfilesFragmentTest {
         EntityType passportType = TestUtils.getPassportEntityType();
         EntityType nationalIdType = TestUtils.getNationalIdEntityType();
 
-        EntityInstanceWithLabels entity1 =
-                new EntityInstanceWithLabels(
-                        "guid1",
-                        vehicleType,
-                        /* entityInstanceLabel= */ "Vehicle",
-                        /* entityInstanceSubLabel= */ "Mercedez",
-                        /* storedInWallet= */ false,
-                        /* walletEntityUrl= */ null);
-
-        EntityInstanceWithLabels entity2 =
-                new EntityInstanceWithLabels(
-                        "guid2",
-                        passportType,
-                        /* entityInstanceLabel= */ "Passport",
-                        /* entityInstanceSubLabel= */ "Germany",
-                        /* storedInWallet= */ false,
-                        /* walletEntityUrl= */ null);
-
         LinkedHashMap<EntityType, List<EntityInstanceWithLabels>> instancesMap =
                 new LinkedHashMap<>();
-        instancesMap.put(vehicleType, Arrays.asList(entity1));
-        instancesMap.put(passportType, Arrays.asList(entity2));
+        instancesMap.put(vehicleType, Arrays.asList(buildMercedezVehicleWithLabels("guid1")));
+        instancesMap.put(
+                passportType, Arrays.asList(TestUtils.buildGermanyPassportWithLabels("guid2")));
         instancesMap.put(nationalIdType, Collections.emptyList());
 
         when(mEntityDataManager.getInstancesToList()).thenReturn(instancesMap);
@@ -1496,18 +1471,9 @@ public class AutofillProfilesFragmentTest {
     public void testAutofillAiEntities_opensEditorOnClick() throws Exception {
         EntityType vehicleType = TestUtils.getVehicleEntityType();
 
-        EntityInstanceWithLabels entity1 =
-                new EntityInstanceWithLabels(
-                        "guid1",
-                        vehicleType,
-                        /* entityInstanceLabel= */ "Vehicle",
-                        /* entityInstanceSubLabel= */ "Mercedez",
-                        /* storedInWallet= */ false,
-                        /* walletEntityUrl= */ null);
-
         LinkedHashMap<EntityType, List<EntityInstanceWithLabels>> instancesMap =
                 new LinkedHashMap<>();
-        instancesMap.put(vehicleType, Arrays.asList(entity1));
+        instancesMap.put(vehicleType, Arrays.asList(buildMercedezVehicleWithLabels("guid1")));
 
         when(mEntityDataManager.getInstancesToList()).thenReturn(instancesMap);
 
@@ -1740,13 +1706,8 @@ public class AutofillProfilesFragmentTest {
         String expectedUrl = "https://wallet.com/private";
 
         EntityInstanceWithLabels entity1 =
-                new EntityInstanceWithLabels(
-                        "guid1",
-                        passportType,
-                        /* entityInstanceLabel= */ "Passport",
-                        /* entityInstanceSubLabel= */ "Germany",
-                        /* storedInWallet= */ true,
-                        /* walletEntityUrl= */ expectedUrl);
+                buildGermanyPassportWithLabels(
+                        "guid1", /* storedInWallet= */ true, /* walletEntityUrl= */ expectedUrl);
 
         LinkedHashMap<EntityType, List<EntityInstanceWithLabels>> instancesMap =
                 new LinkedHashMap<>();
@@ -1784,13 +1745,8 @@ public class AutofillProfilesFragmentTest {
         EntityType passportType = TestUtils.getPassportEntityType();
 
         EntityInstanceWithLabels entity1 =
-                new EntityInstanceWithLabels(
-                        "guid1",
-                        passportType,
-                        /* entityInstanceLabel= */ "Passport",
-                        /* entityInstanceSubLabel= */ "Germany",
-                        /* storedInWallet= */ true,
-                        /* walletEntityUrl= */ "https://wallet.com/private");
+                buildGermanyPassportWithLabels(
+                        "guid1", true, /* walletEntityUrl= */ "https://wallet.com/private");
 
         LinkedHashMap<EntityType, List<EntityInstanceWithLabels>> instancesMap =
                 new LinkedHashMap<>();
@@ -1829,18 +1785,9 @@ public class AutofillProfilesFragmentTest {
     public void testAutofillAiEntities_rebuildsOnEntityChange() throws Exception {
         EntityType vehicleType = TestUtils.getVehicleEntityType();
 
-        EntityInstanceWithLabels entity1 =
-                new EntityInstanceWithLabels(
-                        "guid1",
-                        vehicleType,
-                        /* entityInstanceLabel= */ "Vehicle",
-                        /* entityInstanceSubLabel= */ "Mercedez",
-                        /* storedInWallet= */ false,
-                        /* walletEntityUrl= */ null);
-
         LinkedHashMap<EntityType, List<EntityInstanceWithLabels>> instancesMap1 =
                 new LinkedHashMap<>();
-        instancesMap1.put(vehicleType, Arrays.asList(entity1));
+        instancesMap1.put(vehicleType, Arrays.asList(buildMercedezVehicleWithLabels("guid1")));
 
         when(mEntityDataManager.getInstancesToList()).thenReturn(instancesMap1);
         EntityDataManagerFactory.setInstanceForTesting(mEntityDataManager);
@@ -1931,18 +1878,11 @@ public class AutofillProfilesFragmentTest {
     @MediumTest
     @Feature({"Preferences"})
     public void testAutofillAiEntities_opensEditorOnSuccessfulReauth() throws Exception {
-        EntityInstanceWithLabels entity1 =
-                new EntityInstanceWithLabels(
-                        "guid1",
-                        TestUtils.getVehicleEntityType(),
-                        /* entityInstanceLabel= */ "Vehicle",
-                        /* entityInstanceSubLabel= */ "Mercedez",
-                        /* storedInWallet= */ false,
-                        /* walletEntityUrl= */ null);
-
         LinkedHashMap<EntityType, List<EntityInstanceWithLabels>> instancesMap =
                 new LinkedHashMap<>();
-        instancesMap.put(TestUtils.getVehicleEntityType(), Arrays.asList(entity1));
+        instancesMap.put(
+                TestUtils.getVehicleEntityType(),
+                Arrays.asList(buildMercedezVehicleWithLabels("guid1")));
         when(mEntityDataManager.getInstancesToList()).thenReturn(instancesMap);
 
         EntityInstance entityInstance =
@@ -1980,18 +1920,11 @@ public class AutofillProfilesFragmentTest {
     @MediumTest
     @Feature({"Preferences"})
     public void testAutofillAiEntities_doesNotOpenEditorOnFailedReauth() throws Exception {
-        EntityInstanceWithLabels entity1 =
-                new EntityInstanceWithLabels(
-                        "guid1",
-                        TestUtils.getVehicleEntityType(),
-                        /* entityInstanceLabel= */ "Vehicle",
-                        /* entityInstanceSubLabel= */ "Mercedez",
-                        /* storedInWallet= */ false,
-                        /* walletEntityUrl= */ null);
-
         LinkedHashMap<EntityType, List<EntityInstanceWithLabels>> instancesMap =
                 new LinkedHashMap<>();
-        instancesMap.put(TestUtils.getVehicleEntityType(), Arrays.asList(entity1));
+        instancesMap.put(
+                TestUtils.getVehicleEntityType(),
+                Arrays.asList(buildMercedezVehicleWithLabels("guid1")));
         when(mEntityDataManager.getInstancesToList()).thenReturn(instancesMap);
 
         EntityInstance entityInstance =

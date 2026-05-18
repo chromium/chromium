@@ -4,6 +4,7 @@
 
 package org.chromium.components.autofill.autofill_ai.utils;
 
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.autofill.autofill_ai.EntityInstance;
 import org.chromium.components.autofill.autofill_ai.EntityInstanceWithLabels;
 import org.chromium.components.autofill.autofill_ai.EntityType;
@@ -101,6 +102,32 @@ public final class TestUtils {
                 label,
                 subLabel,
                 /* storedInWallet= */ true,
+                /* walletEntityUrl= */ null);
+    }
+
+    public static EntityInstanceWithLabels buildGermanyPassportWithLabels(String guid) {
+        return buildGermanyPassportWithLabels(
+                guid, /* storedInWallet= */ false, /* walletEntityUrl= */ null);
+    }
+
+    public static EntityInstanceWithLabels buildGermanyPassportWithLabels(
+            String guid, boolean storedInWallet, @Nullable String walletEntityUrl) {
+        return new EntityInstanceWithLabels(
+                guid,
+                getPassportEntityType(),
+                /* entityInstanceLabel= */ "Passport",
+                /* entityInstanceSubLabel= */ "Germany",
+                storedInWallet,
+                walletEntityUrl);
+    }
+
+    public static EntityInstanceWithLabels buildMercedezVehicleWithLabels(String guid) {
+        return new EntityInstanceWithLabels(
+                guid,
+                getVehicleEntityType(),
+                /* entityInstanceLabel= */ "Vehicle",
+                /* entityInstanceSubLabel= */ "Mercedez",
+                /* storedInWallet= */ false,
                 /* walletEntityUrl= */ null);
     }
 }
