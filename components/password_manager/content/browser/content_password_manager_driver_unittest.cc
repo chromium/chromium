@@ -530,4 +530,35 @@ TEST_F(ContentPasswordManagerDriverTest,
   base::RunLoop().RunUntilIdle();
 }
 
+TEST_F(ContentPasswordManagerDriverTest, HasCrossOriginAncestor) {
+  NavigateAndCommit(GURL("https://victim.com"));
+
+  content::RenderFrameHost* top_rfh = main_rfh();
+
+  content::RenderFrameHost* mid_rfh =
+      content::RenderFrameHostTester::For(top_rfh)->AppendChild("middle");
+  GURL mid_url("https://evil.com");
+  auto mid_navigation =
+      content::NavigationSimulator::CreateRendererInitiated(mid_url, mid_rfh);
+  mid_navigation->Commit();
+  mid_rfh = mid_navigation->GetFinalRenderFrameHost();
+
+  content::RenderFrameHost* bot_rfh =
+      content::RenderFrameHostTester::For(mid_rfh)->AppendChild("bottom");
+  GURL bot_url("https://victim.com/login");
+  auto bot_navigation =
+      content::NavigationSimulator::CreateRendererInitiated(bot_url, bot_rfh);
+  bot_navigation->Commit();
+  bot_rfh = bot_navigation->GetFinalRenderFrameHost();
+
+  ContentPasswordManagerDriver driver(bot_rfh, &password_manager_client_);
+  EXPECT_TRUE(driver.HasCrossOriginAncestor());
+
+  ContentPasswordManagerDriver top_driver(top_rfh, &password_manager_client_);
+  EXPECT_FALSE(top_driver.HasCrossOriginAncestor());
+
+  ContentPasswordManagerDriver mid_driver(mid_rfh, &password_manager_client_);
+  EXPECT_TRUE(mid_driver.HasCrossOriginAncestor());
+}
+
 }  // namespace password_manager

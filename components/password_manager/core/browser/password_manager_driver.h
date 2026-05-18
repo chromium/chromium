@@ -217,6 +217,10 @@ class PasswordManagerDriver {
   // Returns the last committed origin of the frame.
   virtual const url::Origin& GetLastCommittedOrigin() const = 0;
 
+  // Returns true if the frame has any ancestor that is cross-origin relative to
+  // this frame.
+  virtual bool HasCrossOriginAncestor() const = 0;
+
   // Annotate password related (username, password) DOM input elements with
   // corresponding HTML attributes. It is used only for debugging.
   virtual void AnnotateFieldsWithParsingResult(

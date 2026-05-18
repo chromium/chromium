@@ -63,6 +63,7 @@ class MockPasswordManagerDriver : public StubPasswordManagerDriver {
               GetLastCommittedOrigin,
               (),
               (const, override));
+  MOCK_METHOD(bool, HasCrossOriginAncestor, (), (const, override));
 };
 
 class MockPasswordManagerClient : public StubPasswordManagerClient {
@@ -510,50 +511,21 @@ TEST_F(PasswordFormFillingTest, AutofillAffiliatedWebMatch) {
 // Exclude Android and iOS, because there credentials are not filled on
 // the page load in any case.
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-TEST_F(PasswordFormFillingTest, NoFillOnPageloadInCrossOriginIframe) {
+
+TEST_F(PasswordFormFillingTest, NoFillOnPageloadWithCrossOriginAncestor) {
   base::HistogramTester histogram_tester;
 
-  observed_form_.url = GURL("https://some_website.com");
-  saved_match_.url = GURL("https://some_website.com");
-  ON_CALL(client_, GetLastCommittedOrigin)
-      .WillByDefault(
-          Return(Origin::Create(GURL("https://another_website.com"))));
-  driver_origin_ = Origin::Create(GURL("https://some_website.com"));
+  ASSERT_EQ(client_.GetLastCommittedOrigin(), driver_.GetLastCommittedOrigin());
 
-  std::vector<PasswordForm> best_matches = {saved_match_};
-  const std::vector<PasswordForm> federated_matches = {};
+  // But driver has cross-origin ancestor.
+  EXPECT_CALL(driver_, HasCrossOriginAncestor).WillOnce(Return(true));
 
-  LikelyFormFilling likely_form_filling = SendFillInformationToRenderer(
-      &client_, &driver_, observed_form_, best_matches, federated_matches,
-      &saved_match_, metrics_recorder_.get(),
-      /*webauthn_suggestions_available=*/false,
-      /*suggestion_banned_fields=*/{});
-  EXPECT_EQ(LikelyFormFilling::kFillOnAccountSelect, likely_form_filling);
-  histogram_tester.ExpectUniqueSample(
-      "PasswordManager.FirstWaitForUsernameReason",
-      PasswordFormMetricsRecorder::WaitForUsernameReason::kCrossOriginIframe,
-      1);
-}
-
-TEST_F(PasswordFormFillingTest, NoFillOnPageloadForOpaqueOrigin) {
-  base::HistogramTester histogram_tester;
-
-  observed_form_.url = GURL("https://some_website.com");
-  saved_match_.url = GURL("https://some_website.com");
-
-  url::Origin opaque_origin;
-  ON_CALL(driver_, GetLastCommittedOrigin)
-      .WillByDefault(ReturnRef(opaque_origin));
-
-  std::vector<PasswordForm> best_matches = {saved_match_};
-  const std::vector<PasswordForm> federated_matches = {};
-
-  LikelyFormFilling likely_form_filling = SendFillInformationToRenderer(
-      &client_, &driver_, observed_form_, best_matches, federated_matches,
-      &saved_match_, metrics_recorder_.get(),
-      /*webauthn_suggestions_available=*/false,
-      /*suggestion_banned_fields=*/{});
-  EXPECT_EQ(LikelyFormFilling::kFillOnAccountSelect, likely_form_filling);
+  EXPECT_EQ(LikelyFormFilling::kFillOnAccountSelect,
+            SendFillInformationToRenderer(
+                &client_, &driver_, observed_form_, {{saved_match_}},
+                federated_matches_, &saved_match_, metrics_recorder_.get(),
+                /*webauthn_suggestions_available=*/false,
+                /*suggestion_banned_fields=*/{}));
   histogram_tester.ExpectUniqueSample(
       "PasswordManager.FirstWaitForUsernameReason",
       PasswordFormMetricsRecorder::WaitForUsernameReason::kCrossOriginIframe,

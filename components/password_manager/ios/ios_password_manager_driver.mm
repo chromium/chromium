@@ -201,6 +201,10 @@ const url::Origin& IOSPasswordManagerDriver::GetLastCommittedOrigin() const {
   NOTREACHED();
 }
 
+bool IOSPasswordManagerDriver::HasCrossOriginAncestor() const {
+  NOTREACHED();
+}
+
 gfx::RectF IOSPasswordManagerDriver::TransformToRootCoordinates(
     const gfx::RectF& bounds_in_frame_coordinates) {
   NOTIMPLEMENTED();

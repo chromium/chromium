@@ -112,6 +112,10 @@ const url::Origin& StubPasswordManagerDriver::GetLastCommittedOrigin() const {
   return opaque_origin_;
 }
 
+bool StubPasswordManagerDriver::HasCrossOriginAncestor() const {
+  return false;
+}
+
 gfx::RectF StubPasswordManagerDriver::TransformToRootCoordinates(
     const gfx::RectF& bounds_in_frame_coordinates) {
   return gfx::RectF();
