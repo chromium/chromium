@@ -146,6 +146,7 @@ import org.chromium.ui.text.SpanApplier;
 import org.chromium.ui.text.SpanApplier.SpanInfo;
 
 import java.io.IOException;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Stream;
 
 /** Test for {@link MainSettings}. Main purpose is to have a quick confidence check on the xml. */
@@ -1070,6 +1071,13 @@ public class MainSettingsFragmentTest {
     public void testClickAutofillAndPasswordsLaunchesNewScreen() {
         startSettings();
 
+        // Anonymous class as fake is used instead of a mock.
+        // ProGuard/R8 sees MainSettings.Observer having single implementation, inlining the
+        // implementation instead of the interface and causing a ClassCastException using a mock.
+        AtomicBoolean selected = new AtomicBoolean(false);
+        MainSettings.Observer observer = preference -> selected.set(true);
+        mMainSettings.addObserver(observer);
+
         onView(withId(R.id.recycler_view))
                 .perform(
                         scrollTo(
@@ -1082,6 +1090,7 @@ public class MainSettingsFragmentTest {
                                 withText(R.string.autofill_and_passwords_settings_title),
                                 withParent(withId(R.id.action_bar))))
                 .check(matches(isDisplayed()));
+        assertTrue(selected.get());
     }
 
     private void startSettings() {
