@@ -54,6 +54,7 @@ public class AutofillAiSaveUpdateEntityPrompt implements EntityEditorCoordinator
     private final View mDialogView;
     private EntityEditorCoordinator mEntityEditor;
     private boolean mEditorClosingPending;
+    private boolean mPromptDismissed;
 
     /** Save prompt to confirm saving an entity imported from a form submission. */
     public AutofillAiSaveUpdateEntityPrompt(
@@ -88,12 +89,17 @@ public class AutofillAiSaveUpdateEntityPrompt implements EntityEditorCoordinator
             EntityInstance entityInstance, int descriptionStringId, int acceptButtonStringId) {
         // TODO: crbug.com/509798874 - Send the updated entity instance to C++.
         mEditorClosingPending = true;
+        maybeDismissSaveUpdatePrompt(DialogDismissalCause.ACTION_ON_CONTENT);
     }
 
     /** Shows the dialog for saving an address. */
     @CalledByNative
     @VisibleForTesting
     void show() {
+        if (mPromptDismissed) {
+            // The save/update prompt object is not intended to be reusable.
+            return;
+        }
         mModalDialogManager.showDialog(mDialogModel, ModalDialogManager.ModalDialogType.APP);
     }
 
@@ -317,10 +323,20 @@ public class AutofillAiSaveUpdateEntityPrompt implements EntityEditorCoordinator
         if (!mEditorClosingPending && mEntityEditor.isShowing()) {
             mEntityEditor.dismiss();
         }
-        mModalDialogManager.dismissDialog(mDialogModel, DialogDismissalCause.DISMISSED_BY_NATIVE);
+        maybeDismissSaveUpdatePrompt(DialogDismissalCause.DISMISSED_BY_NATIVE);
+    }
+
+    private void maybeDismissSaveUpdatePrompt(@DialogDismissalCause int dismissalCause) {
+        if (mPromptDismissed) {
+            return;
+        }
+        // `SimpleModalDialogController` doesn't allow multiple calls to `onDismiss`. Make sure to
+        // call the `ModalDialogManager#dismissDialog` only once.
+        mModalDialogManager.dismissDialog(mDialogModel, dismissalCause);
     }
 
     private void onDismiss(@DialogDismissalCause int dismissalCause) {
+        mPromptDismissed = true;
         switch (dismissalCause) {
             case DialogDismissalCause.POSITIVE_BUTTON_CLICKED:
                 mController.onUserAccepted();

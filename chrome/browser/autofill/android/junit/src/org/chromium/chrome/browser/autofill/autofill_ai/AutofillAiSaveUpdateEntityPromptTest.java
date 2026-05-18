@@ -122,6 +122,22 @@ public class AutofillAiSaveUpdateEntityPromptTest {
 
     @Test
     @SmallTest
+    public void userEdited() {
+        mPrompt.show();
+        assertNotNull(mModalDialogManager.getShownDialogModel());
+
+        EntityInstance editedEntity =
+                new EntityInstance.Builder(TestUtils.getVehicleEntityType())
+                        .setGuid("guid1")
+                        .setRecordType(RecordType.LOCAL)
+                        .build();
+        mPrompt.onDone(editedEntity, /* descriptionStringId= */ 0, /* acceptButtonStringId= */ 0);
+        verify(mPromptControllerJni)
+                .onPromptDismissed(eq(NATIVE_AUTOFILL_AI_SAVE_UPDATE_ENTITY_PROMPT_CONTROLLER));
+    }
+
+    @Test
+    @SmallTest
     public void userDeclined() {
         mPrompt.show();
         assertNotNull(mModalDialogManager.getShownDialogModel());
@@ -144,6 +160,21 @@ public class AutofillAiSaveUpdateEntityPromptTest {
         assertNull(mModalDialogManager.getShownDialogModel());
         verify(mPromptControllerJni, times(1))
                 .onPromptDismissed(eq(NATIVE_AUTOFILL_AI_SAVE_UPDATE_ENTITY_PROMPT_CONTROLLER));
+    }
+
+    @Test
+    @SmallTest
+    public void showAfterDismiss() {
+        mPrompt.show();
+        assertNotNull(mModalDialogManager.getShownDialogModel());
+
+        mPrompt.dismiss();
+        assertNull(mModalDialogManager.getShownDialogModel());
+        verify(mPromptControllerJni, times(1))
+                .onPromptDismissed(eq(NATIVE_AUTOFILL_AI_SAVE_UPDATE_ENTITY_PROMPT_CONTROLLER));
+        // No dialog should be shown after dismiss.
+        mPrompt.show();
+        assertNull(mModalDialogManager.getShownDialogModel());
     }
 
     @Test
