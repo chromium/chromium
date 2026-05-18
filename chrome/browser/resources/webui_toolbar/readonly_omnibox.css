@@ -12,7 +12,7 @@
    * the interactive <input>, we give everything here the same height. This is
    * a bit less than the height of the location bar so it can draw the focus
    * ring without us painting over it. */
-  --omnibox-height: calc(var(--location-bar-height) - 4px);
+  --omnibox-height: calc(var(--location-bar-height) - 6px);
   align-self: center;
   background-color: inherit;
   border: none;
