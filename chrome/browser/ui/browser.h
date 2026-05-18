@@ -993,8 +993,11 @@ class Browser : public TabStripModelObserver,
 
   // Handle changes to tab strip model.
   void OnTabInsertedAt(content::WebContents* contents, int index);
-  void OnTabClosing(content::WebContents* contents);
-  void OnTabDetached(content::WebContents* contents, bool was_active);
+  void OnTabClosing(tabs::TabInterface* tab, bool* had_active_modal_dialog);
+  void OnTabDetached(tabs::TabInterface* tab,
+                     bool was_active,
+                     bool had_active_modal_dialog);
+  void RestoreFocusAfterTabModalPopupClose(tabs::TabHandle active_tab_handle);
   void OnTabDeactivated(content::WebContents* contents);
   void OnActiveTabChanged(const TabStripModelChange& change,
                           const TabStripSelectionChange& selection);
