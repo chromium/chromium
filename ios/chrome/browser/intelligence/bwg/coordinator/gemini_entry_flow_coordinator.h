@@ -18,6 +18,10 @@
 @interface GeminiEntryFlowCoordinator
     : ChromeCoordinator <AccountMenuCoordinatorDelegate>
 
+// The startup state for the Gemini session. Exposed as readonly so the
+// owner can capture it before stopping the coordinator.
+@property(nonatomic, strong, readonly) GeminiStartupState* startupState;
+
 // Initializes the coordinator with all required parameters.
 // - `baseViewController`: The view controller to present UI from.
 // - `browser`: The browser instance.

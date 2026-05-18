@@ -15,6 +15,7 @@
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_service_factory.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_tab_helper.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_constants.h"
+#import "ios/chrome/browser/intelligence/bwg/utils/gemini_entry_flow_result.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/intelligence/page_action_menu/coordinator/page_action_menu_mediator.h"
 #import "ios/chrome/browser/intelligence/page_action_menu/ui/page_action_menu_content_entry_point.h"
@@ -40,6 +41,7 @@
 #import "ios/chrome/browser/shared/public/commands/reader_mode_options_commands.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/public/snackbar/snackbar_message.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -240,6 +242,63 @@ constexpr NSTimeInterval kEligibilityPollTimeout = 5.0;
 
 - (void)viewControllerDidTapSignedOutGemini:
     (PageActionMenuViewController*)viewController {
+  if (IsGeneralizedGeminiEntryFlowEnabled()) {
+    [self startGeminiEntryFlowViaCommand];
+    return;
+  }
+
+  [self startGeminiAuthFlowDirectly];
+}
+
+// Starts the Gemini entry flow via the generalized BWGCommands method.
+// Used when GeneralizedGeminiEntryFlow is enabled.
+- (void)startGeminiEntryFlowViaCommand {
+  __weak __typeof(self) weakSelf = self;
+
+  id<BWGCommands> bwgHandler =
+      HandlerForProtocol(self.browser->GetCommandDispatcher(), BWGCommands);
+
+  [bwgHandler
+      startGeminiEntryFlowWithStartupState:
+          [[GeminiStartupState alloc]
+              initWithEntryPoint:gemini::EntryPoint::AIHubSignInSheet]
+                        baseViewController:_navigationController
+                               accessPoint:signin_metrics::AccessPoint::
+                                               kIosPageActionMenu
+                  showSnackbarOnCompletion:YES
+                                completion:^(GeminiEntryFlowResult result) {
+                                  [weakSelf handleEntryFlowResult:result];
+                                }];
+}
+
+// Handles the result of the Gemini entry flow for the PAM context.
+- (void)handleEntryFlowResult:(GeminiEntryFlowResult)result {
+  switch (result) {
+    case kGeminiEntryFlowResultSuccess:
+      // Dismiss PAM. Gemini session is started by BrowserCoordinator
+      // after this completion returns.
+      [self.pageActionMenuHandler dismissPageActionMenuWithCompletion:nil];
+      break;
+    case kGeminiEntryFlowResultCancelled:
+      // User cancelled sign-in — PAM stays open.
+      break;
+    case kGeminiEntryFlowResultAccountIneligibleByGemini:
+    case kGeminiEntryFlowResultAccountIneligibleByEnterprise:
+    case kGeminiEntryFlowResultAccountCapabilityRestricted:
+    case kGeminiEntryFlowResultPageIneligible:
+    case kGeminiEntryFlowResultUnknown:
+      // Ineligible — dismiss PAM. Snackbar handled by the command.
+      [self.pageActionMenuHandler dismissPageActionMenuWithCompletion:nil];
+      break;
+    case kGeminiEntryFlowResultTimeout:
+      // Currently unreachable.
+      break;
+  }
+}
+
+// Starts the Gemini auth flow directly within the PAM coordinator.
+// Used when ChromeNextIA is not enabled.
+- (void)startGeminiAuthFlowDirectly {
   signin_metrics::PromoAction promoAction =
       signin_metrics::PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO;
   _signinCoordinator = [SigninCoordinator

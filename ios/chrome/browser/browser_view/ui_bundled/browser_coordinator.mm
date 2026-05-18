@@ -2161,11 +2161,28 @@ const char kChromeAppStoreUrl[] =
 - (void)geminiEntryFlowDidFinishWithResult:(GeminiEntryFlowResult)result
                                 completion:
                                     (GeminiEntryFlowCompletion)completion {
+  GeminiStartupState* startupState = _geminiEntryFlowCoordinator.startupState;
+
   [_geminiEntryFlowCoordinator stop];
   _geminiEntryFlowCoordinator = nil;
 
+  // Notify the caller first so they can handle their own UI.
   if (completion) {
     completion(result);
+  }
+
+  // Start the Gemini session on success.
+  if (result == kGeminiEntryFlowResultSuccess) {
+    [self startGeminiSessionWithStartupState:startupState];
+  }
+}
+
+// Starts the Gemini session directly via the browser agent.
+- (void)startGeminiSessionWithStartupState:(GeminiStartupState*)startupState {
+  GeminiBrowserAgent* geminiBrowserAgent =
+      GeminiBrowserAgent::FromBrowser(self.browser);
+  if (geminiBrowserAgent) {
+    geminiBrowserAgent->StartGeminiFlow(self.viewController, startupState);
   }
 }
 
