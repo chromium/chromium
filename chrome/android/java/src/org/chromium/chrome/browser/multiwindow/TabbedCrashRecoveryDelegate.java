@@ -14,6 +14,7 @@ import android.os.Bundle;
 import android.util.SparseIntArray;
 
 import org.chromium.base.Callback;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.TimeUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
@@ -58,8 +59,9 @@ public class TabbedCrashRecoveryDelegate {
         return sInstance;
     }
 
-    /* package */ static void resetForTesting() {
-        sInstance = null;
+    /* package */ static void setInstanceForTesting(TabbedCrashRecoveryDelegate delegate) {
+        sInstance = delegate;
+        ResettersForTesting.register(() -> sInstance = null);
     }
 
     /**
@@ -84,12 +86,14 @@ public class TabbedCrashRecoveryDelegate {
      *
      * @param modalDialogManagerSupplier Supplier for ModalDialogManager.
      * @param hostActivity The host activity where the prompt will be displayed.
+     * @param crashedWindows A list of windows that need to be recovered.
      */
     /* package */ void initiateCrashRecovery(
             MonotonicObservableSupplier<ModalDialogManager> modalDialogManagerSupplier,
             ChromeTabbedActivity hostActivity,
             List<CrashRecoveryWindowInfo> crashedWindows) {
         if (!ChromeFeatureList.sSessionRestoreAfterCrash.isEnabled()) return;
+
         if (mCrashRecoveryInProgress) return;
 
         // Reset state before processing a new crash recovery request to avoid using stale state.

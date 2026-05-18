@@ -100,7 +100,6 @@ public class TabbedCrashRecoveryDelegateUnitTest {
     @After
     public void tearDown() {
         ChromeMultiInstancePersistentStore.resetForTesting();
-        TabbedCrashRecoveryDelegate.resetForTesting();
     }
 
     @Test

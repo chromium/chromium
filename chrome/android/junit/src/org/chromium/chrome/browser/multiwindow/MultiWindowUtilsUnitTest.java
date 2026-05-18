@@ -48,6 +48,7 @@ import org.robolectric.util.ReflectionHelpers;
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ContextUtils;
+import org.chromium.base.FakeTimeTestRule;
 import org.chromium.base.FeatureOverrides;
 import org.chromium.base.SysUtils;
 import org.chromium.base.supplier.ObservableSuppliers;
@@ -97,6 +98,8 @@ public class MultiWindowUtilsUnitTest {
     @Rule
     public OverrideContextWrapperTestRule mOverrideContextWrapperTestRule =
             new OverrideContextWrapperTestRule();
+
+    @Rule public FakeTimeTestRule mFakeTimeTestRule = new FakeTimeTestRule();
 
     private static final int INSTANCE_ID_0 = 0;
     private static final int INSTANCE_ID_1 = 1;
@@ -1404,7 +1407,7 @@ public class MultiWindowUtilsUnitTest {
 
         writeInstanceInfo(oldestId, URL_1, 3, 0, TASK_ID_5);
         writeInstanceInfo(midId, URL_3, 1, 0, TASK_ID_6);
-        writeInstanceInfo(newestId, null, 0, 0, INVALID_TASK_ID);
+        writeInstanceInfo(newestId, "", 0, 0, INVALID_TASK_ID);
 
         Assert.assertEquals(
                 "The last accessed window ID should be returned.",
@@ -1665,6 +1668,10 @@ public class MultiWindowUtilsUnitTest {
             int incognitoTabCount,
             int taskId,
             @SupportedProfileType int profileType) {
+        // Advance the timestamp for each instance to update its last-accessed time, so the instance
+        // list is in chronological order.
+        mFakeTimeTestRule.advanceMillis(1);
+
         ChromeMultiInstancePersistentStore.writeActiveTabUrl(instanceId, url);
         ChromeMultiInstancePersistentStore.writeLastAccessedTime(instanceId);
         ChromeMultiInstancePersistentStore.writeTabCount(instanceId, tabCount, incognitoTabCount);

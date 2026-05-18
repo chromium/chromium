@@ -24,6 +24,7 @@ import static org.chromium.chrome.browser.tabwindow.TabWindowManager.INVALID_WIN
 
 import android.app.Activity;
 import android.app.ActivityManager.AppTask;
+import android.app.ApplicationExitInfo;
 import android.content.Intent;
 import android.os.Bundle;
 
@@ -44,6 +45,8 @@ import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.FeatureOverrides;
 import org.chromium.base.Token;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
+import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -68,6 +71,7 @@ import org.chromium.chrome.browser.util.AndroidTaskUtils;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.test.util.MockitoHelper;
 import org.chromium.url.JUnitTestGURLs;
 
@@ -77,6 +81,7 @@ import java.util.List;
 /** Unit tests for {@link MultiInstanceOrchestratorImpl}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(sdk = 31)
+@EnableFeatures(ChromeFeatureList.SESSION_RESTORE_AFTER_CRASH)
 public class MultiInstanceOrchestratorImplUnitTest {
     private static final int SOURCE_WINDOW_ID = 0;
     private static final int DEST_WINDOW_ID = 1;
@@ -91,6 +96,7 @@ public class MultiInstanceOrchestratorImplUnitTest {
     @Mock private MultiInstanceManagerApi31 mMultiInstanceManager1;
     @Mock private MultiInstanceManagerApi31 mMultiInstanceManager2;
     @Mock private TabReparentingDelegate mTabReparentingDelegate;
+    @Mock private TabbedCrashRecoveryDelegate mTabbedCrashRecoveryDelegate;
     @Mock private Tab mTab1;
     @Mock private Tab mTab2;
     @Mock private TabModel mTabModel;
@@ -99,6 +105,7 @@ public class MultiInstanceOrchestratorImplUnitTest {
     @Spy private MultiWindowUtils mMultiWindowUtils;
 
     private MultiInstanceOrchestrator mMultiInstanceOrchestrator;
+    private MonotonicObservableSupplier<ModalDialogManager> mModalDialogManagerSupplier;
     private TabGroupMetadata mTabGroupMetadata;
     private LoadUrlParams mUrlParams;
 
@@ -108,6 +115,8 @@ public class MultiInstanceOrchestratorImplUnitTest {
         MultiWindowTestUtils.enableMultiInstance();
         MultiWindowUtils.setInstanceForTesting(mMultiWindowUtils);
         MultiInstanceOrchestratorImpl.setTabReparentingDelegateForTesting(mTabReparentingDelegate);
+        TabbedCrashRecoveryDelegate.setInstanceForTesting(mTabbedCrashRecoveryDelegate);
+        mModalDialogManagerSupplier = ObservableSuppliers.createMonotonic();
         mMultiInstanceOrchestrator = MultiInstanceOrchestratorImpl.getInstance();
         mMultiInstanceOrchestrator.onInitialize(mTabbedActivity1, mMultiInstanceManager1);
         mMultiInstanceOrchestrator.onInitialize(mTabbedActivity2, mMultiInstanceManager2);
@@ -130,6 +139,8 @@ public class MultiInstanceOrchestratorImplUnitTest {
         when(mTabbedActivity1.getResources())
                 .thenReturn(ContextUtils.getApplicationContext().getResources());
         when(mTabbedActivity1.getTabModelSelector()).thenReturn(mTabModelSelector1);
+        when(mTabbedActivity1.getModalDialogManagerSupplier())
+                .thenReturn(mModalDialogManagerSupplier);
         when(mTabModelSelector1.getTotalTabCount()).thenReturn(5);
 
         MultiWindowUtils.setActivityByWindowIdForTesting(SOURCE_WINDOW_ID, mTabbedActivity1);
@@ -139,6 +150,7 @@ public class MultiInstanceOrchestratorImplUnitTest {
     @After
     public void teardown() {
         ApplicationStatus.destroyForJUnitTests();
+        MultiWindowTestUtils.resetInstanceInfo();
     }
 
     @Test
@@ -1060,8 +1072,6 @@ public class MultiInstanceOrchestratorImplUnitTest {
         MultiWindowUtils.setMultiInstanceApi31EnabledForTesting(true);
         IncognitoUtils.setShouldOpenIncognitoAsWindowForTesting(true);
 
-        // Setup: Clear existing instance state for mTabbedActivity1 and mTabbedActivity2.
-        MultiWindowTestUtils.resetInstanceInfo();
         // Create mTabbedActivity1 as a regular window and mTabbedActivity2 based on
         // otherIncognitoWindowExists.
         createActiveInstances(
@@ -1200,8 +1210,6 @@ public class MultiInstanceOrchestratorImplUnitTest {
 
     private void configureInstancesForOtherWindowTests(
             boolean isIncognito, boolean atInstanceLimit, int numOtherEligibleWindows) {
-        // Clear existing instance state for mTabbedActivity1 and mTabbedActivity2.
-        MultiWindowTestUtils.resetInstanceInfo();
         when(mTabbedActivity1.isIncognitoWindow()).thenReturn(isIncognito);
 
         int numInstances = numOtherEligibleWindows + 1;
@@ -1253,6 +1261,83 @@ public class MultiInstanceOrchestratorImplUnitTest {
                         SOURCE_WINDOW_ID,
                         PARENT_TAB_ID_1,
                         /* isGroupShared= */ false);
+    }
+
+    @Test
+    @Config(sdk = 30)
+    public void testOnForegroundBrowserProcessInitialized_NoCrash_NoOp() {
+        // Act: Initialize with a normal exit reason.
+        mMultiInstanceOrchestrator.onForegroundBrowserProcessInitialized(
+                ApplicationExitInfo.REASON_USER_REQUESTED);
+
+        // Verify: No crash recovery initiated.
+        verify(mTabbedCrashRecoveryDelegate, never()).initiateCrashRecovery(any(), any(), any());
+        assertFalse(ChromeMultiInstancePersistentStore.readIsCrashRecoveryPending());
+    }
+
+    @Test
+    @Config(sdk = 30)
+    public void testOnForegroundBrowserProcessInitialized_Crash_ImmediateRecovery() {
+        MultiWindowTestUtils.createInstance(SOURCE_WINDOW_ID, "www.example.com", 1, 1);
+        ChromeMultiInstancePersistentStore.writeIsRecoverable(SOURCE_WINDOW_ID, true);
+
+        // Clear any registered activities.
+        ((MultiInstanceOrchestratorImpl) mMultiInstanceOrchestrator).clearAssignmentsForTesting();
+
+        // Register one activity.
+        mMultiInstanceOrchestrator.onInitialize(mTabbedActivity1, mMultiInstanceManager1);
+
+        // Act: Initialize with a crash exit reason.
+        mMultiInstanceOrchestrator.onForegroundBrowserProcessInitialized(
+                ApplicationExitInfo.REASON_CRASH);
+
+        // Verify: Immediate crash recovery initiated for mTabbedActivity1.
+        verify(mTabbedCrashRecoveryDelegate)
+                .initiateCrashRecovery(
+                        eq(mModalDialogManagerSupplier), eq(mTabbedActivity1), any());
+        assertFalse(ChromeMultiInstancePersistentStore.readIsCrashRecoveryPending());
+    }
+
+    @Test
+    @Config(sdk = 30)
+    public void testOnForegroundBrowserProcessInitialized_Crash_DeferredRecovery() {
+        // Setup: One crashed window.
+        MultiWindowTestUtils.createInstance(SOURCE_WINDOW_ID, "www.example.com", 1, 1);
+        ChromeMultiInstancePersistentStore.writeIsRecoverable(SOURCE_WINDOW_ID, true);
+
+        // Clear any registered activities.
+        ((MultiInstanceOrchestratorImpl) mMultiInstanceOrchestrator).clearAssignmentsForTesting();
+
+        // Act: Initialize with a crash exit reason.
+        mMultiInstanceOrchestrator.onForegroundBrowserProcessInitialized(
+                ApplicationExitInfo.REASON_CRASH);
+
+        // Verify: Deferred crash recovery.
+        verify(mTabbedCrashRecoveryDelegate, never()).initiateCrashRecovery(any(), any(), any());
+        assertTrue(ChromeMultiInstancePersistentStore.readIsCrashRecoveryPending());
+    }
+
+    @Test
+    @Config(sdk = 30)
+    public void testOnInitialize_PendingRecovery() {
+        // Setup: One crashed window.
+        MultiWindowTestUtils.createInstance(SOURCE_WINDOW_ID, "www.example.com", 1, 1);
+        ChromeMultiInstancePersistentStore.writeIsRecoverable(SOURCE_WINDOW_ID, true);
+
+        // Clear any registered activities and trigger deferred recovery.
+        ((MultiInstanceOrchestratorImpl) mMultiInstanceOrchestrator).clearAssignmentsForTesting();
+        mMultiInstanceOrchestrator.onForegroundBrowserProcessInitialized(
+                ApplicationExitInfo.REASON_CRASH);
+        assertTrue(ChromeMultiInstancePersistentStore.readIsCrashRecoveryPending());
+
+        // Act: Initialize a new ChromeTabbedActivity.
+        mMultiInstanceOrchestrator.onInitialize(mTabbedActivity1, mMultiInstanceManager1);
+
+        // Verify: Crash recovery initiated during onInitialize.
+        verify(mTabbedCrashRecoveryDelegate)
+                .initiateCrashRecovery(
+                        eq(mModalDialogManagerSupplier), eq(mTabbedActivity1), any());
+        assertFalse(ChromeMultiInstancePersistentStore.readIsCrashRecoveryPending());
     }
 
     private void verifyNewWindowIntentForUrlLaunch(Intent intent, boolean isIncognitoWindow) {

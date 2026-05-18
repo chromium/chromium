@@ -1798,11 +1798,7 @@ public class MultiInstanceManagerApi31UnitTest {
                 ChromeMultiInstancePersistentStore.readTaskId(0));
         assertTrue(
                 "SharedPref for tracking downgrade should be updated.",
-                MultiInstanceSharedPreferences.getInstance()
-                        .readBoolean(
-                                MultiInstancePreferenceKeys
-                                        .MULTI_INSTANCE_INSTANCE_LIMIT_DOWNGRADE_TRIGGERED,
-                                false));
+                ChromeMultiInstancePersistentStore.readInstanceLimitDowngradeTriggered());
 
         // Subsequent reallocation of an instance should not trigger downgrade path to finish the
         // LRU activity task.

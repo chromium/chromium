@@ -95,6 +95,7 @@ public class MultiWindowTestUtils {
     /** Enabled multi instance. */
     public static void enableMultiInstance() {
         MultiWindowUtils.setMultiInstanceApi31EnabledForTesting(true);
+        MultiInstancePersistentStore.ensureInitialized();
     }
 
     /* package */ static void setupTabModelSelectorFactory(

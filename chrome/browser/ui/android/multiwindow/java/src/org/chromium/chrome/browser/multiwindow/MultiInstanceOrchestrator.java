@@ -35,6 +35,14 @@ public interface MultiInstanceOrchestrator {
     void onInitialize(Activity activity, MultiInstanceManager multiInstanceManager);
 
     /**
+     * Responds to foreground browser process initialization, and handles process-level tasks. For
+     * example, recovery of windows from a previous session that ended due to an unclean exit.
+     *
+     * @param previousProcessExitReason The reason why the previous process terminated.
+     */
+    void onForegroundBrowserProcessInitialized(int previousProcessExitReason);
+
+    /**
      * Creates a new ChromeTabbedActivity instance.
      *
      * @param sourceActivity The activity used to launch the intent.
