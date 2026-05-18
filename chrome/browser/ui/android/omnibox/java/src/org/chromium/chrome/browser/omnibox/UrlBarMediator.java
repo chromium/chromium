@@ -261,7 +261,7 @@ class UrlBarMediator implements UrlBarTextContextMenuDelegate {
         return gurl != null ? gurl.getOrigin() : null;
     }
 
-    private void onUrlFocusChange(boolean focus) {
+    void onUrlFocusChange(boolean focus) {
         if (mIsReparenting) return;
         mHasFocus = focus;
 

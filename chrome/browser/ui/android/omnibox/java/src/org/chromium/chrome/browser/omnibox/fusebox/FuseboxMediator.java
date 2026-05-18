@@ -38,7 +38,6 @@ import org.chromium.chrome.browser.omnibox.FuseboxSessionState;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxAttachmentModelList.FuseboxAttachmentChangeListener;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxAttachmentRecyclerViewAdapter.FuseboxAttachmentType;
-import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.FuseboxLayoutMode;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.FuseboxState;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.PopupState;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxMetrics.AiModeActivationSource;
@@ -141,7 +140,6 @@ import java.util.function.Supplier;
             FuseboxViewHolder viewHolder,
             MonotonicObservableSupplier<TabModelSelector> tabModelSelectorSupplier,
             SettableNonNullObservableSupplier<@FuseboxState Integer> fuseboxStateSupplier,
-            SettableNonNullObservableSupplier<@FuseboxLayoutMode Integer> fuseboxLayoutModeSupplier,
             SettableNonNullObservableSupplier<@PopupState Integer> popupStateSupplier,
             SnackbarManager snackbarManager,
             Clipboard clipboard,
@@ -168,8 +166,6 @@ import java.util.function.Supplier;
                         /* controller= */ null,
                         Snackbar.TYPE_NOTIFICATION,
                         Snackbar.UMA_FUSEBOX_UPLOAD_FAILED);
-
-        fuseboxLayoutModeSupplier.set(getFuseboxLayoutMode());
 
         mModel.set(FuseboxProperties.BUTTON_ADD_CLICKED, this::onPlusButtonClicked);
         mModel.set(
@@ -1202,11 +1198,5 @@ import java.util.function.Supplier;
         mInput.setModelMode(modelMode);
         // TODO(https://crbug.com/476434460): Consider replacing with wiring in session state.
         mComposeboxQueryControllerBridge.setActiveModel(modelMode);
-    }
-
-    private @FuseboxLayoutMode int getFuseboxLayoutMode() {
-        return OmniboxCapabilities.hasDesktopExperience(mContext)
-                ? FuseboxLayoutMode.POPOVER
-                : FuseboxLayoutMode.SEPARATED;
     }
 }
