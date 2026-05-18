@@ -7,10 +7,7 @@
 
 #include <stddef.h>
 
-#include "ui/display/types/display_constants.h"
-
 class Browser;
-class BrowserWindowInterface;
 class Profile;
 
 namespace content {
@@ -31,8 +28,8 @@ class WebContents;
 // There are a few functions that have valid use cases. For example, we can
 // imagine a hypothetical feature of the task manager (which is not conceptually
 // associated with any given browser window) which wants to display the number
-// of browser windows to the user. This would be a valid use case for
-// GetTotalBrowserCount().
+// of incognito browser windows to the user. This would be a valid use case for
+// GetIncognitoBrowserCount().
 //
 // More colloquial explanation:
 // There are two problems with FindBrowser(*) methods.
@@ -67,30 +64,6 @@ class WebContents;
 
 namespace chrome {
 
-// If you want to find the last active tabbed browser and create a new browser
-// if there are no tabbed browsers, use ScopedTabbedBrowserDisplayer.
-
-// Returns the last active tabbed browser with a profile matching `profile`.
-//
-// If `match_original_profiles` is true, matching is done based on the original
-// profile (e.g. profile->GetOriginalProfile() ==
-// browser->profile()->GetOriginalProfile()). This has the effect of matching
-// against both non-incognito and incognito profiles. If
-// `match_original_profiles` is false, only an exact match may be returned. If
-// `display_id` is not equal to `display::kInvalidDisplayId`, only the browsers
-// in the corresponding display may be returned. Browsers that have closed and
-// are pending deletion are not returned.
-// WARNING: Do not use this method. See comment at top of file.
-Browser* FindTabbedBrowser(const Profile* profile,
-                           bool match_original_profiles,
-                           int64_t display_id = display::kInvalidDisplayId);
-
-// Returns an existing browser window with the provided profile. Searches in the
-// order of last activation. Only browsers that have been active can be
-// returned. Returns nullptr if no such browser currently exists.
-// WARNING: Do not use this method. See comment at top of file.
-Browser* FindBrowserWithProfile(const Profile* profile);
-
 // Returns the browser containing the specified `web_contents` as a tab in that
 // browser. Returns nullptr if no such browser currently exists. `web_contents`
 // must not be nullptr.
@@ -106,32 +79,6 @@ Browser* FindBrowserWithProfile(const Profile* profile);
 // to be found via this method.
 // WARNING: Do not use this method. See comment at top of file.
 Browser* FindBrowserWithTab(const content::WebContents* web_contents);
-
-// Returns the browser owned by `profile` whose window was most recently active.
-// Returns nullptr if no such browser currently exists.
-//
-// WARNING: This returns nullptr until a browser becomes active. If during
-// startup a browser does not become active (perhaps the user launches Chrome,
-// then clicks on another app before the first browser window appears) then this
-// returns nullptr.
-//
-// WARNING #2: This will always return nullptr in unit tests run on the bots.
-BrowserWindowInterface* FindLastActiveWithProfile(Profile* profile);
-
-// Returns the browser whose window was most recently active. Returns nullptr if
-// no such browser currently exists.
-//
-// WARNING: This returns nullptr until a browser becomes active. If during
-// startup a browser does not become active (perhaps the user launches Chrome,
-// then clicks on another app before the first browser window appears) then this
-// returns nullptr.
-//
-// WARNING #2: This will always return nullptr in unit tests run on the bots.
-BrowserWindowInterface* FindLastActive();
-
-// Returns the number of browsers across all profiles. This does not include
-// pending delete browsers.
-size_t GetTotalBrowserCount();
 
 // Returns the number of browsers with the Profile `profile`.
 // Note that:

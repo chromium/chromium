@@ -6,17 +6,13 @@
 
 #include <stdint.h>
 
-#include <algorithm>
-
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/tab_contents/tab_contents_iterator.h"
 #include "components/tabs/public/tab_interface.h"
-#include "content/public/browser/navigation_controller.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 
@@ -31,10 +27,6 @@
 using content::WebContents;
 
 namespace {
-
-// Type used to indicate to match anything. This does not include browsers
-// scheduled for deletion (see `kIncludeBrowsersScheduledForDeletion`).
-const uint32_t kMatchAny = 0;
 
 // See BrowserMatches for details.
 const uint32_t kMatchOriginalProfile = 1 << 0;
@@ -146,53 +138,6 @@ bool BrowserMatches(BrowserWindowInterface* browser,
   return true;
 }
 
-// Returns the first BrowserWindowInterface that returns true from
-// |BrowserMatches|, or null if no browsers match the arguments. See
-// |BrowserMatches| for details on the arguments.
-BrowserWindowInterface* FindBrowserOrderedByActivationMatching(
-    const Profile* profile,
-    Browser::WindowFeature window_feature,
-    uint32_t match_types,
-    int64_t display_id = display::kInvalidDisplayId) {
-  BrowserWindowInterface* match = nullptr;
-  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
-      [&](BrowserWindowInterface* browser) {
-        if (BrowserMatches(browser, profile, window_feature, match_types,
-                           display_id)) {
-          match = browser;
-          return false;  // stop iterating
-        }
-        return true;  // continue iterating
-      });
-  return match;
-}
-
-BrowserWindowInterface* FindBrowserWithTabbedOrAnyType(
-    const Profile* profile,
-    bool match_tabbed,
-    bool match_original_profiles,
-    bool match_current_workspace,
-    int64_t display_id = display::kInvalidDisplayId) {
-  uint32_t match_types = kMatchAny;
-  if (match_tabbed) {
-    match_types |= kMatchNormal;
-  }
-  if (match_original_profiles) {
-    match_types |= kMatchOriginalProfile;
-  }
-  if (display_id != display::kInvalidDisplayId) {
-    match_types |= kMatchDisplayId;
-  }
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
-  if (match_current_workspace) {
-    match_types |= kMatchCurrentWorkspace;
-  }
-#endif
-
-  return FindBrowserOrderedByActivationMatching(
-      profile, Browser::WindowFeature::kFeatureNone, match_types, display_id);
-}
-
 size_t GetBrowserCountImpl(Profile* profile,
                            uint32_t match_types,
                            int64_t display_id = display::kInvalidDisplayId) {
@@ -214,22 +159,6 @@ size_t GetBrowserCountImpl(Profile* profile,
 
 namespace chrome {
 
-Browser* FindTabbedBrowser(const Profile* profile,
-                           bool match_original_profiles,
-                           int64_t display_id) {
-  BrowserWindowInterface* browser = FindBrowserWithTabbedOrAnyType(
-      profile, true, match_original_profiles,
-      /*match_current_workspace=*/true, display_id);
-  return browser ? browser->GetBrowserForMigrationOnly() : nullptr;
-}
-
-Browser* FindBrowserWithProfile(const Profile* profile) {
-  BrowserWindowInterface* browser =
-      FindBrowserWithTabbedOrAnyType(profile, false, false,
-                                     /*match_current_workspace=*/false);
-  return browser ? browser->GetBrowserForMigrationOnly() : nullptr;
-}
-
 Browser* FindBrowserWithTab(const WebContents* web_contents) {
   DCHECK(web_contents);
   Browser* found = nullptr;
@@ -240,27 +169,6 @@ Browser* FindBrowserWithTab(const WebContents* web_contents) {
     return !found;
   });
   return found;
-}
-
-BrowserWindowInterface* FindLastActiveWithProfile(Profile* profile) {
-  // We are only interested in last active browsers, so we don't fall back to
-  // all browsers like FindBrowserWith* do.
-  return FindBrowserOrderedByActivationMatching(
-      profile, Browser::WindowFeature::kFeatureNone, kMatchAny);
-}
-
-BrowserWindowInterface* FindLastActive() {
-  return GetLastActiveBrowserWindowInterfaceWithAnyProfile();
-}
-
-size_t GetTotalBrowserCount() {
-  size_t browser_count = 0;
-  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
-      [&](BrowserWindowInterface* browser) {
-        browser_count++;
-        return true;
-      });
-  return browser_count;
 }
 
 size_t GetBrowserCount(Profile* profile) {

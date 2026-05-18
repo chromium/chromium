@@ -13,11 +13,11 @@
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN) || \
     BUILDFLAG(IS_MAC)
 #include "chrome/browser/safe_browsing/security_settings_bundle_toast_helper.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/toasts/api/toast_id.h"
 #include "chrome/browser/ui/toasts/toast_controller.h"
-#include "chrome/browser/ui/views/frame/browser_view.h"
 #endif
 
 namespace safe_browsing {
@@ -69,11 +69,16 @@ ToastController* SecuritySettingsBundlePrefChangeHandler::GetToastController() {
   if (toast_controller_for_testing_) {
     return toast_controller_for_testing_;
   }
-  Browser* browser = chrome::FindBrowserWithProfile(profile_);
+  ProfileBrowserCollection* const collection =
+      ProfileBrowserCollection::GetForProfile(profile_);
+  if (!collection) {
+    return nullptr;
+  }
+  BrowserWindowInterface* const browser = collection->GetLastActiveBrowser();
   if (!browser) {
     return nullptr;
   }
-  return browser->browser_window_features()->toast_controller();
+  return browser->GetFeatures().toast_controller();
 }
 #endif
 }  // namespace safe_browsing
