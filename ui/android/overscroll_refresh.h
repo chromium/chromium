@@ -124,9 +124,9 @@ class UI_ANDROID_EXPORT OverscrollRefresh {
     kEnabled,
   } scroll_consumption_state_;
 
-  float viewport_width_;
-  float scroll_begin_x_;
-  float scroll_begin_y_;
+  float viewport_width_ = 0.f;
+  float scroll_begin_x_ = 0.f;
+  float scroll_begin_y_ = 0.f;
   const float edge_width_;  // in px
   const raw_ptr<OverscrollRefreshHandler, DanglingUntriaged> handler_;
   bool touchpad_overscroll_history_navigation_enabled_ = false;
