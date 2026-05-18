@@ -1442,6 +1442,22 @@ scoped_refptr<gfx::NativePixmap> CompoundImageBacking::GetNativePixmap() {
   return nullptr;
 }
 
+#if BUILDFLAG(IS_ANDROID)
+std::optional<VulkanYCbCrInfo> CompoundImageBacking::GetVkCbCrInfo(
+    SharedContextState* context_state) {
+  AutoLock auto_lock(this);
+  for (const auto& element : elements_) {
+    if (element.backing) {
+      auto info = element.backing->GetVkCbCrInfo(context_state);
+      if (info) {
+        return info;
+      }
+    }
+  }
+  return std::nullopt;
+}
+#endif
+
 std::unique_ptr<DawnImageRepresentation> CompoundImageBacking::ProduceDawn(
     SharedImageManager* manager,
     MemoryTypeTracker* tracker,

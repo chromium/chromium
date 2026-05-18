@@ -61,6 +61,7 @@ namespace gpu {
 class SharedContextState;
 class SharedImageManager;
 class SharedImageRepresentation;
+struct VulkanYCbCrInfo;
 class GLTextureImageRepresentation;
 class GLTexturePassthroughImageRepresentation;
 class SkiaGaneshImageRepresentation;
@@ -265,6 +266,12 @@ class GPU_GLES2_EXPORT SharedImageBacking {
 
   // Returns the GpuMemoryBufferHandle if present.
   virtual gfx::GpuMemoryBufferHandle GetGpuMemoryBufferHandle();
+
+#if BUILDFLAG(IS_ANDROID)
+  // Queries the Vulkan/Dawn YCbCr info for the backing.
+  virtual std::optional<VulkanYCbCrInfo> GetVkCbCrInfo(
+      SharedContextState* context_state);
+#endif
 
   // True for images in Ash that were imported from Exo clients.
   virtual bool IsImportedFromExo();

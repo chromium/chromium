@@ -16,9 +16,11 @@
 #include "base/memory/weak_ptr.h"
 #include "base/synchronization/lock.h"
 #include "base/threading/thread.h"
-#include "base/threading/thread_checker.h"
 #include "base/time/time.h"
 #include "gpu/config/gpu_driver_bug_workarounds.h"
+#include "gpu/vulkan/vulkan_device_queue.h"
+#include "gpu/vulkan/vulkan_implementation.h"
+#include "gpu/vulkan/vulkan_ycbcr_info.h"
 #include "media/capture/capture_export.h"
 #include "media/capture/video/video_capture_device.h"
 
@@ -231,6 +233,9 @@ class CAPTURE_EXPORT VideoCaptureDeviceAndroid : public VideoCaptureDevice {
   base::android::ScopedJavaLocalRef<jobject> j_capture_;
 
   const gpu::GpuDriverBugWorkarounds gpu_workarounds_;
+
+  std::optional<bool> need_ycbcr_info_;
+  std::optional<gpu::VulkanYCbCrInfo> ycbcr_info_;
 
   base::WeakPtrFactory<VideoCaptureDeviceAndroid> weak_ptr_factory_{this};
 };

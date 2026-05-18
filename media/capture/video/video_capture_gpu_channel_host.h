@@ -11,6 +11,10 @@
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "media/capture/capture_export.h"
 
+namespace gpu {
+class GpuChannelHost;
+}
+
 namespace media {
 
 class VideoCaptureGpuContextLostObserver : public base::CheckedObserver {
@@ -46,6 +50,9 @@ class CAPTURE_EXPORT VideoCaptureGpuChannelHost final
   // failed.
   scoped_refptr<gpu::SharedImageInterface> GetSharedImageInterface();
 
+  void SetGpuChannel(scoped_refptr<gpu::GpuChannelHost>);
+  scoped_refptr<gpu::GpuChannelHost> GetGpuChannel();
+
   // VideoCaptureGpuContextLostObserver implementation.
   void OnContextLost() override;
 
@@ -71,6 +78,8 @@ class CAPTURE_EXPORT VideoCaptureGpuChannelHost final
   // It is created by Gpu Channel Host that viz::Gpu owns.
   scoped_refptr<gpu::SharedImageInterface> shared_image_interface_
       GUARDED_BY(lock_);
+
+  scoped_refptr<gpu::GpuChannelHost> gpu_channel_host_ GUARDED_BY(lock_);
 };
 
 }  // namespace media

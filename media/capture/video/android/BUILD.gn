@@ -26,6 +26,9 @@ source_set("android") {
   deps = [
     ":capture_jni_headers",
     "//gpu/config",
+    "//gpu/ipc/client",
+    "//gpu/vulkan",
+    "//gpu/vulkan/init",
     "//media",
     "//media/capture:capture_device_specific",
     "//media/capture:capture_gpu_channel",

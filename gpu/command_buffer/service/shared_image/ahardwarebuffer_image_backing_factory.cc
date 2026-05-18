@@ -49,6 +49,7 @@
 #include "gpu/config/gpu_finch_features.h"
 #include "gpu/vulkan/vulkan_function_pointers.h"
 #include "gpu/vulkan/vulkan_image.h"
+#include "gpu/vulkan/vulkan_ycbcr_info.h"
 #include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "third_party/libyuv/include/libyuv/planar_functions.h"
 #include "third_party/skia/include/gpu/ganesh/vk/GrVkBackendSurface.h"
@@ -329,6 +330,43 @@ class AHardwareBufferImageBacking : public AndroidImageBacking {
   base::android::ScopedHardwareBufferHandle GetAhbHandle() const;
   OverlayImage* BeginOverlayAccess(gfx::GpuFenceHandle&);
   void EndOverlayAccess();
+
+  std::optional<VulkanYCbCrInfo> GetVkCbCrInfo(
+      SharedContextState* context_state) override {
+    if (!context_state || !format().PrefersExternalSampler()) {
+      return std::nullopt;
+    }
+
+    std::optional<VulkanYCbCrInfo> ycbcr_info;
+    AHardwareBuffer* ahb = GetAHardwareBuffer();
+    if (!ahb) {
+      return std::nullopt;
+    }
+#if BUILDFLAG(SKIA_USE_DAWN)
+    auto* dawn_context = context_state->dawn_context_provider();
+    if (dawn_context) {
+      wgpu::AHardwareBufferProperties ahb_properties;
+      if (dawn_context->GetDevice().GetAHardwareBufferProperties(
+              ahb, &ahb_properties)) {
+        const auto& dawn_ycbcr_info = ahb_properties.yCbCrInfo;
+        if (dawn_ycbcr_info.externalFormat) {
+          uint32_t format_features = VK_FORMAT_FEATURE_SAMPLED_IMAGE_BIT;
+          if (dawn_ycbcr_info.vkChromaFilter == wgpu::FilterMode::Linear) {
+            format_features |=
+                VK_FORMAT_FEATURE_SAMPLED_IMAGE_YCBCR_CONVERSION_LINEAR_FILTER_BIT;
+          }
+          ycbcr_info = VulkanYCbCrInfo(
+              VK_FORMAT_UNDEFINED, dawn_ycbcr_info.externalFormat,
+              dawn_ycbcr_info.vkYCbCrModel, dawn_ycbcr_info.vkYCbCrRange,
+              dawn_ycbcr_info.vkXChromaOffset, dawn_ycbcr_info.vkYChromaOffset,
+              format_features);
+        }
+      }
+    }
+#endif
+
+    return ycbcr_info;
+  }
 
  protected:
   std::unique_ptr<GLTextureImageRepresentation> ProduceGLTexture(

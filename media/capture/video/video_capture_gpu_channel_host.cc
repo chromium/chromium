@@ -4,6 +4,8 @@
 
 #include "media/capture/video/video_capture_gpu_channel_host.h"
 
+#include "gpu/ipc/client/gpu_channel_host.h"
+
 namespace media {
 
 VideoCaptureGpuChannelHost::VideoCaptureGpuChannelHost() = default;
@@ -26,6 +28,17 @@ scoped_refptr<gpu::SharedImageInterface>
 VideoCaptureGpuChannelHost::GetSharedImageInterface() {
   base::AutoLock lock(lock_);
   return shared_image_interface_;
+}
+
+void VideoCaptureGpuChannelHost::SetGpuChannel(
+    scoped_refptr<gpu::GpuChannelHost> gpu_channel_host) {
+  base::AutoLock lock(lock_);
+  gpu_channel_host_ = std::move(gpu_channel_host);
+}
+
+scoped_refptr<gpu::GpuChannelHost> VideoCaptureGpuChannelHost::GetGpuChannel() {
+  base::AutoLock lock(lock_);
+  return gpu_channel_host_;
 }
 
 void VideoCaptureGpuChannelHost::OnContextLost() {

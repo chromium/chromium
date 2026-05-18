@@ -20,6 +20,8 @@
 #include "gpu/command_buffer/service/memory_tracking.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
+#include "gpu/vulkan/vulkan_ycbcr_info.h"
+#include "third_party/skia/include/core/SkAlphaType.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -466,6 +468,13 @@ gfx::GpuMemoryBufferHandle SharedImageBacking::GetGpuMemoryBufferHandle() {
   // retrieved from the backings which supports native buffer or shared memory.
   NOTREACHED();
 }
+
+#if BUILDFLAG(IS_ANDROID)
+std::optional<VulkanYCbCrInfo> SharedImageBacking::GetVkCbCrInfo(
+    SharedContextState* context_state) {
+  return std::nullopt;
+}
+#endif
 
 bool SharedImageBacking::IsPurgeable() const {
   return false;

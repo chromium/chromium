@@ -30,6 +30,8 @@
 #include "base/system/system_monitor.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
+#include "gpu/ipc/client/gpu_channel_host.h"
+#include "gpu/vulkan/init/vulkan_factory.h"
 #include "media/base/media_switches.h"
 #include "media/capture/mojom/image_capture_types.h"
 #include "media/capture/video/android/photo_capabilities.h"
@@ -132,6 +134,43 @@ gfx::ColorSpace ColorSpaceFromADataSpace(int32_t dataspace) {
     default:
       return gfx::ColorSpace::CreateREC601();
   }
+}
+
+std::optional<gpu::VulkanYCbCrInfo> GetVulkanYCbCrInfo(
+    base::android::ScopedHardwareBufferHandle ahb_handle) {
+  auto vulkan_implementation = gpu::CreateVulkanImplementation(false, false);
+  if (!vulkan_implementation ||
+      !vulkan_implementation->InitializeVulkanInstance(
+          /*using_surface=*/true)) {
+    return std::nullopt;
+  }
+
+  auto vulkan_device_queue = gpu::CreateVulkanDeviceQueue(
+      vulkan_implementation.get(),
+      gpu::VulkanDeviceQueue::DeviceQueueOption::GRAPHICS_QUEUE_FLAG);
+  if (!vulkan_device_queue) {
+    return std::nullopt;
+  }
+
+  std::optional<gpu::VulkanYCbCrInfo> result = std::nullopt;
+  gpu::VulkanYCbCrInfo info;
+  if (vulkan_implementation->GetSamplerYcbcrConversionInfo(
+          vulkan_device_queue->GetVulkanDevice(), std::move(ahb_handle),
+          &info)) {
+    // Mimic Dawn's AHB format feature sanitization so our descriptor strictly
+    // matches the fulfillment texture descriptor generated in the GPU process.
+    uint32_t sanitized_features = VK_FORMAT_FEATURE_SAMPLED_IMAGE_BIT;
+    if (info.format_features &
+        VK_FORMAT_FEATURE_SAMPLED_IMAGE_YCBCR_CONVERSION_LINEAR_FILTER_BIT) {
+      sanitized_features |=
+          VK_FORMAT_FEATURE_SAMPLED_IMAGE_YCBCR_CONVERSION_LINEAR_FILTER_BIT;
+    }
+    info.format_features = sanitized_features;
+    result = info;
+  }
+
+  vulkan_device_queue->Destroy();
+  return result;
 }
 
 }  // anonymous namespace
@@ -412,6 +451,29 @@ void VideoCaptureDeviceAndroid::OnHardwareBufferAvailableOnMainThread(
   VideoCaptureFormat format(gfx::Size(desc.width, desc.height),
                             capture_format_.frame_rate, video_pixel_format);
 
+  if (!need_ycbcr_info_.has_value()) {
+    scoped_refptr<gpu::GpuChannelHost> gpu_channel_host =
+        VideoCaptureGpuChannelHost::GetInstance().GetGpuChannel();
+
+    if (gpu_channel_host) {
+      auto skia_backend = gpu_channel_host->gpu_info().skia_backend_type;
+      need_ycbcr_info_ =
+          (skia_backend == gpu::SkiaBackendType::kGraphiteDawnVulkan);
+    } else {
+      need_ycbcr_info_ = false;
+    }
+  }
+
+  if (*need_ycbcr_info_ && !ycbcr_info_) {
+    ycbcr_info_ = GetVulkanYCbCrInfo(ahb_handle.Clone());
+    if (!ycbcr_info_) {
+      LOG(ERROR) << "Failed to get Vulkan YCbCr info for zero-copy capture.";
+      SetErrorState(media::VideoCaptureError::kAndroidFailedToStartCapture,
+                    FROM_HERE, "Failed to get Vulkan YCbCr info.");
+      return;
+    }
+  }
+
   auto sii =
       VideoCaptureGpuChannelHost::GetInstance().GetSharedImageInterface();
   if (!sii) {
@@ -449,10 +511,13 @@ void VideoCaptureDeviceAndroid::OnHardwareBufferAvailableOnMainThread(
     return;
   }
 
+  VideoFrameMetadata metadata;
+  metadata.ycbcr_info = ycbcr_info_;
+
   client_->OnIncomingCapturedImage(std::move(shared_image), format, rotation,
                                    current_time, capture_time,
-                                   /*capture_begin_timestamp=*/{},
-                                   /*metadata=*/{});
+                                   /*capture_begin_timestamp=*/{}, metadata,
+                                   /*frame_feedback_id=*/0);
 }
 
 void VideoCaptureDeviceAndroid::OnHardwareBufferAvailable(
