@@ -117,8 +117,8 @@ bool RuntimeEnabledFeaturesBase::IsFeatureEnabledFromString(
     return feature->GetFunction();
   } else {
     // TODO(crbug.com/477806715): This will get hit for features controlled by origin trials.
-    SCOPED_CRASH_KEY_STRING64("BlinkFeatureNotFound", "name",
-                              feature->name);
+    SCOPED_CRASH_KEY_STRING64("BlinkFeatureNotFound", "name", name);
+    SCOPED_CRASH_KEY_BOOL("BlinkFeatureNotFound", "in_map", feature != std::end(kFeatures));
     base::debug::DumpWithoutCrashing();
     DCHECK(false) << " RuntimeEnabledFeature not recognized: " << name;
     return false;
