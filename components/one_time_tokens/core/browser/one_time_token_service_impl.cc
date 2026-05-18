@@ -20,7 +20,7 @@ OneTimeTokenServiceImpl::OneTimeTokenServiceImpl(
     SmsOtpBackend* sms_otp_backend,
     GmailOtpBackend* gmail_otp_backend)
     : sms_{.has_pending_request = false, .backend = sms_otp_backend},
-      gmail_{.has_pending_request = false, .backend = gmail_otp_backend},
+      gmail_{.backend = gmail_otp_backend},
       cache_(kCacheDurationForOldTokens,
              &OneTimeToken::on_device_arrival_time) {}
 OneTimeTokenServiceImpl::~OneTimeTokenServiceImpl() = default;
@@ -143,8 +143,8 @@ void OneTimeTokenServiceImpl::OnResponseFromSmsOtpBackend(
 }
 
 void OneTimeTokenServiceImpl::RetrieveGmailOtpIfNeeded() {
-  if (!gmail_.backend || gmail_.has_pending_request ||
-      !gmail_subscription_manager_.GetNumberSubscribers()) {
+  if (!gmail_.backend || !gmail_subscription_manager_.GetNumberSubscribers() ||
+      gmail_subscription_.IsAlive()) {
     return;
   }
   gmail_subscription_ = gmail_.backend->Subscribe(
@@ -152,8 +152,6 @@ void OneTimeTokenServiceImpl::RetrieveGmailOtpIfNeeded() {
       base::BindRepeating(
           &OneTimeTokenServiceImpl::OnResponseFromGmailOtpBackend,
           weakptr_factory_.GetWeakPtr()));
-
-  gmail_.has_pending_request = true;
 }
 
 void OneTimeTokenServiceImpl::OnResponseFromGmailOtpBackend(

@@ -74,7 +74,6 @@ class OneTimeTokenServiceImpl : public OneTimeTokenService,
 
   // Handles requests of the `OneTimeTokenService` to the `GmailOtpBackend`.
   struct {
-    bool has_pending_request = false;
     raw_ptr<GmailOtpBackend> backend;
   } gmail_;
 
