@@ -137,7 +137,7 @@ class OmniboxSuggestionButtonRowBrowserTest : public DialogBrowserTest {
     OmniboxPopupView* popup_view =
         BrowserView::GetBrowserViewForBrowser(browser())
             ->GetLocationBarView()
-            ->GetOmniboxPopupViewForTesting();
+            ->GetOmniboxPopupView();
     OmniboxEditModel* model =
         GetLocationBar()->GetOmniboxController()->edit_model();
 

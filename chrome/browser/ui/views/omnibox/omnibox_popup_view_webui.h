@@ -13,6 +13,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
 #include "chrome/browser/ui/omnibox/omnibox_popup_view.h"
+#include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter_base.h"
 #include "components/omnibox/browser/omnibox_popup_selection.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "ui/accessibility/ax_node_data.h"
@@ -38,7 +39,7 @@ class OmniboxPopupViewWebUI : public OmniboxPopupView,
   OmniboxPopupViewWebUI& operator=(const OmniboxPopupViewWebUI&) = delete;
   ~OmniboxPopupViewWebUI() override;
 
-  raw_ptr<OmniboxPopupPresenterBase> presenter() { return presenter_.get(); }
+  OmniboxPopupPresenterBase* presenter() override;
 
   // OmniboxPopupView:
   void InvalidateLine(size_t line) override;
@@ -69,9 +70,6 @@ class OmniboxPopupViewWebUI : public OmniboxPopupView,
   // OmniboxPopupView:
   bool IsOpen() const override;
 
-  // Time when this instance was constructed, or null after use for histogram.
-  base::TimeTicks construction_time_;
-
   // The edit view owned by `location_bar_`. May be nullptr in tests.
   raw_ptr<OmniboxView> omnibox_view_;
 
@@ -81,6 +79,9 @@ class OmniboxPopupViewWebUI : public OmniboxPopupView,
 
   // The presenter that manages its own widget and WebUI presentation.
   std::unique_ptr<OmniboxPopupPresenterBase> presenter_;
+
+  // Whether the "first shown" metrics have been logged at least once.
+  bool logged_first_shown_metric_ = false;
 
   // Observe `OmniboxEditModel` for updates that require updating the views.
   base::ScopedObservation<OmniboxEditModel, OmniboxEditModel::Observer>

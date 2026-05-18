@@ -26,6 +26,7 @@ class LocationBarModel;
 class LocationBarTesting;
 class OmniboxController;
 class OmniboxView;
+class OmniboxPopupView;
 class Profile;
 
 namespace bubble_anchor_util {
@@ -105,6 +106,8 @@ class LocationBar {
   virtual void Revert() = 0;
 
   virtual OmniboxView* GetOmniboxView() = 0;
+
+  virtual OmniboxPopupView* GetOmniboxPopupView() = 0;
 
   // Returns the OmniboxController owned by this LocationBar.
   virtual OmniboxController* GetOmniboxController() = 0;

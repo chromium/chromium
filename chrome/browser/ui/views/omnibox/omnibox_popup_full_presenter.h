@@ -47,6 +47,9 @@ class OmniboxPopupFullPresenter : public OmniboxPopupPresenterBase,
 
   base::ScopedObservation<views::Widget, views::WidgetObserver>
       widget_observation_{this};
+
+  // Whether the "first shown" metrics have been logged at least once.
+  bool logged_first_shown_metric_ = false;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_OMNIBOX_OMNIBOX_POPUP_FULL_PRESENTER_H_

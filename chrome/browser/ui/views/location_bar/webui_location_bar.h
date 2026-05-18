@@ -21,6 +21,7 @@
 
 class Browser;
 class OmniboxController;
+class OmniboxPopupView;
 class OmniboxPopupViewWebUI;
 class PermissionDashboardController;
 class WebUIPermissionDashboard;
@@ -54,6 +55,7 @@ class WebUILocationBar : public LocationBar,
   void SaveStateToContents(content::WebContents* contents) override;
   void Revert() override;
   OmniboxView* GetOmniboxView() override;
+  OmniboxPopupView* GetOmniboxPopupView() override;
   OmniboxController* GetOmniboxController() override;
   bool ShouldCloseOmniboxPopup(ui::MouseEvent* event) override;
   ChipController* GetChipController() override;
@@ -111,10 +113,6 @@ class WebUILocationBar : public LocationBar,
   views::Widget* GetLocationBarWidget() override;
   OmniboxPopupFileSelector* GetOmniboxPopupFileSelector() const override;
   OmniboxPopupAimPresenter* GetOmniboxPopupAimPresenter() const override;
-
-  OmniboxPopupViewWebUI* GetOmniboxPopupViewForTesting() {
-    return omnibox_popup_view_.get();
-  }
 
   void SetSuppressionThresholdForTesting(base::TimeDelta threshold);
 

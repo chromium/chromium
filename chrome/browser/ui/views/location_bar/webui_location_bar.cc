@@ -227,6 +227,10 @@ OmniboxView* WebUILocationBar::GetOmniboxView() {
   return omnibox_view_.get();
 }
 
+OmniboxPopupView* WebUILocationBar::GetOmniboxPopupView() {
+  return omnibox_popup_view_.get();
+}
+
 OmniboxController* WebUILocationBar::GetOmniboxController() {
   return omnibox_controller_.get();
 }

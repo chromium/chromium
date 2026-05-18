@@ -131,7 +131,7 @@ class WebUILocationBarInteractiveUiTest : public TestBase {
           BrowserView::GetBrowserViewForBrowser(browser())
               ->toolbar()
               ->location_bar());
-      return location_bar->GetOmniboxPopupViewForTesting()
+      return location_bar->GetOmniboxPopupView()
           ->presenter()
           ->GetWebUIContent();
     });

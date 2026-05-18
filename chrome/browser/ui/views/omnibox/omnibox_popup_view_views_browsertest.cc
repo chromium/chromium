@@ -1269,7 +1269,7 @@ class OmniboxPopupPermissionBrowserTest : public InProcessBrowserTest {
     auto* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
     auto* location_bar_view = browser_view->toolbar()->location_bar_view();
     auto* popup_view = static_cast<OmniboxPopupViewWebUI*>(
-        location_bar_view->GetOmniboxPopupViewForTesting());
+        location_bar_view->GetOmniboxPopupView());
     if (!popup_view || !popup_view->presenter()) {
       return nullptr;
     }
@@ -1295,7 +1295,7 @@ class OmniboxPopupPermissionBrowserTest : public InProcessBrowserTest {
     auto* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
     auto* location_bar_view = browser_view->toolbar()->location_bar_view();
     auto* popup_view = static_cast<OmniboxPopupViewWebUI*>(
-        location_bar_view->GetOmniboxPopupViewForTesting());
+        location_bar_view->GetOmniboxPopupView());
     if (popup_view && popup_view->presenter()) {
       views::Widget* popup_widget =
           popup_view->presenter()->get_widget_for_testing();

@@ -52,6 +52,11 @@ OmniboxView* WebUIStubLocationBar::GetOmniboxView() {
   return nullptr;
 }
 
+OmniboxPopupView* WebUIStubLocationBar::GetOmniboxPopupView() {
+  NOTIMPLEMENTED();
+  return nullptr;
+}
+
 OmniboxController* WebUIStubLocationBar::GetOmniboxController() {
   NOTIMPLEMENTED();
   return nullptr;

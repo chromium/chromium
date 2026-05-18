@@ -221,7 +221,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupViewWebUITest,
 
 IN_PROC_BROWSER_TEST_F(OmniboxPopupViewWebUITest, PopupLoadsAndAcceptsCalls) {
   auto* popup_view = static_cast<OmniboxPopupViewWebUI*>(
-      location_bar()->GetOmniboxPopupViewForTesting());
+      location_bar()->GetOmniboxPopupView());
   popup_view->presenter()->Show();
   popup_view->UpdatePopupAppearance();
   OmniboxPopupSelection selection(OmniboxPopupSelection::kNoMatch);

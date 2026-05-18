@@ -7,13 +7,23 @@
 #include <memory>
 
 #include "base/feature_list.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/scoped_observation.h"
+#include "base/strings/strcat.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
+#include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
 #include "chrome/browser/ui/omnibox/omnibox_popup_state_manager.h"
+#include "chrome/browser/ui/omnibox/omnibox_popup_view.h"
+#include "chrome/browser/ui/omnibox/omnibox_view.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_full_popup_webui_content.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter_base.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter_delegate.h"
+#include "chrome/browser/ui/views/omnibox/omnibox_popup_webui_base_content.h"
+#include "chrome/browser/ui/webui/omnibox_popup/omnibox_popup_ui.h"
+#include "chrome/browser/ui/webui/searchbox/webui_omnibox_handler.h"
+#include "chrome/browser/ui/webui/top_chrome/webui_contents_preload_manager.h"
+#include "chrome/browser/ui/webui/top_chrome/webui_contents_wrapper.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/permissions/permission_request_manager.h"
 #include "ui/views/focus/focus_manager.h"
@@ -30,7 +40,36 @@ OmniboxPopupFullPresenter::OmniboxPopupFullPresenter(
 OmniboxPopupFullPresenter::~OmniboxPopupFullPresenter() = default;
 
 void OmniboxPopupFullPresenter::Show() {
+  const bool was_shown = IsShown();
   OmniboxPopupPresenterBase::Show();
+  if (!was_shown) {
+    // Set the request time to now when the popup is first shown. This ensures
+    // that latency is measured from the user interaction to show, even if the
+    // WebUI was preloaded at startup.
+    WebUIContentsPreloadManager::GetInstance()->SetRequestTime(
+        GetWebUIContent()->GetWebContents(), base::TimeTicks::Now());
+
+    if (!logged_first_shown_metric_) {
+      if (auto* popup_view = location_bar()->GetOmniboxPopupView()) {
+        const base::TimeDelta delta =
+            base::TimeTicks::Now() - popup_view->construction_time();
+        logged_first_shown_metric_ = true;
+        base::UmaHistogramTimes(
+            base::StrCat(
+                {GetPopupMetricPrefix(), ".ConstructionToFirstShownDuration"}),
+            delta);
+      }
+    }
+  }
+
+  auto* controller =
+      GetWebUIContent()->contents_wrapper()->GetWebUIController();
+  auto* handler = controller ? controller->omnibox_handler() : nullptr;
+  auto* omnibox_view = location_bar()->GetOmniboxView();
+  if (handler && omnibox_view) {
+    handler->SetAimButtonVisible(omnibox_view->AimButtonVisible());
+  }
+
   if (GetWidget() && !widget_observation_.IsObserving()) {
     widget_observation_.Observe(GetWidget());
   }

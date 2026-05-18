@@ -145,7 +145,7 @@ class OmniboxWebUiInteractiveTestBase
           BrowserView::GetBrowserViewForBrowser(browser())
               ->toolbar()
               ->location_bar_view()
-              ->GetOmniboxPopupViewForTesting());
+              ->GetOmniboxPopupView());
       return popup_view->presenter()->GetWebUIContent();
     });
   }

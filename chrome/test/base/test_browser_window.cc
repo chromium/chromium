@@ -48,6 +48,10 @@ OmniboxView* TestBrowserWindow::TestLocationBar::GetOmniboxView() {
   return nullptr;
 }
 
+OmniboxPopupView* TestBrowserWindow::TestLocationBar::GetOmniboxPopupView() {
+  return nullptr;
+}
+
 OmniboxController* TestBrowserWindow::TestLocationBar::GetOmniboxController() {
   return nullptr;
 }

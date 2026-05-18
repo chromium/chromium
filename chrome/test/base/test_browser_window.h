@@ -241,6 +241,7 @@ class TestBrowserWindow : public BrowserWindow,
     void SaveStateToContents(content::WebContents* contents) override {}
     void Revert() override {}
     OmniboxView* GetOmniboxView() override;
+    OmniboxPopupView* GetOmniboxPopupView() override;
     OmniboxController* GetOmniboxController() override;
     bool ShouldCloseOmniboxPopup(ui::MouseEvent* event) override;
     ChipController* GetChipController() override;

@@ -301,6 +301,7 @@ class TestLocationBar : public LocationBar {
   void SaveStateToContents(content::WebContents* contents) override {}
   void Revert() override {}
   OmniboxView* GetOmniboxView() override { return nullptr; }
+  OmniboxPopupView* GetOmniboxPopupView() override { return nullptr; }
   OmniboxController* GetOmniboxController() override { return nullptr; }
   bool ShouldCloseOmniboxPopup(ui::MouseEvent* event) override { return false; }
   ChipController* GetChipController() override { return nullptr; }

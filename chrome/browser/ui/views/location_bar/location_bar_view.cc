@@ -362,40 +362,46 @@ void LocationBarView::Init() {
       browser_ && web_app::AppBrowserController::IsWebApp(browser_);
   const bool is_devtools = browser_ && browser_->is_type_devtools();
 
-  // Skip creating the AIM WebUI for web apps and devtools windows since it's
-  // not supported there and results in an extra Omnibox process being created.
-  if (!is_web_app && !is_devtools && omnibox::IsAimPopupFeatureEnabled()) {
-    omnibox_popup_aim_presenter_ = std::make_unique<OmniboxPopupAimPresenter>(
-        this, omnibox_controller_.get());
+  // Skip creating the WebUI presenters/views for web apps and devtools windows
+  // since they're not supported there and will result in extra Omnibox
+  // processes being created (note that the address bar is not shown in web
+  // apps).
+  if (!is_web_app && !is_devtools) {
+    if (omnibox::IsAimPopupFeatureEnabled()) {
+      omnibox_popup_aim_presenter_ = std::make_unique<OmniboxPopupAimPresenter>(
+          this, omnibox_controller_.get());
+    }
+
+    const bool web_ui_popup_dropdown_only =
+        omnibox::IsWebUIOmniboxPopupEnabled() &&
+        !omnibox::IsWebUIOmniboxFullPopupEnabled();
+
+    if ((web_ui_popup_dropdown_only &&
+         !base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxPopupDebug)) ||
+        base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxFullPopup)) {
+      omnibox_popup_view_ = std::make_unique<OmniboxPopupViewWebUI>(
+          /*omnibox_view=*/omnibox_view_,
+          /*controller=*/omnibox_controller_.get(), /*location_bar=*/this,
+          /*presenter_delegate=*/*this);
+    } else if (base::FeatureList::IsEnabled(
+                   omnibox::kWebUIOmniboxFullPopupV2)) {
+      omnibox_popup_view_ = std::make_unique<OmniboxPopupViewFullWebUI>(
+          /*omnibox_view=*/omnibox_view_,
+          /*controller=*/omnibox_controller_.get(), /*location_bar=*/this,
+          /*presenter_delegate=*/*this);
+    }
   }
 
-  const bool web_ui_popup_dropdown_only =
-      omnibox::IsWebUIOmniboxPopupEnabled() &&
-      !omnibox::IsWebUIOmniboxFullPopupEnabled();
-
-  // Default to the legacy popup view for web apps and devtools windows since
-  // creating the WebUI popup results in an extra Omnibox process being created
-  // (note that the address bar is not shown in web apps). When the legacy
-  // `OmniboxPopupViewViews` is deprecated we will need to ensure that a null
-  // `omnibox_popup_view_` doesn't cause any issues (or aim for a cleaner
-  // solution).
-  if (!is_web_app && !is_devtools &&
-      ((web_ui_popup_dropdown_only &&
-        !base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxPopupDebug)) ||
-       omnibox::IsWebUIOmniboxFullPopupEnabled())) {
-    omnibox_popup_view_ =
-        base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxFullPopupV2)
-            ? std::make_unique<OmniboxPopupViewFullWebUI>(
-                  /*omnibox_view=*/omnibox_view_, omnibox_controller_.get(),
-                  /*location_bar=*/this, /*presenter_delegate=*/*this)
-            : std::make_unique<OmniboxPopupViewWebUI>(
-                  /*omnibox_view=*/omnibox_view_, omnibox_controller_.get(),
-                  /*location_bar=*/this, /*presenter_delegate=*/*this);
-  } else {
+  // Default to the legacy popup view for web apps and devtools windows.
+  // When the legacy `OmniboxPopupViewViews` is deprecated we will need to
+  // ensure that a null `omnibox_popup_view_` doesn't cause any issues (or aim
+  // for a cleaner solution).
+  if (!omnibox_popup_view_) {
     omnibox_popup_view_ = std::make_unique<OmniboxPopupViewViews>(
         /*omnibox_view=*/omnibox_view_, omnibox_controller_.get(),
         /*location_bar_view=*/this);
   }
+
   if (omnibox::IsAimPopupFeatureEnabled()) {
     omnibox_popup_file_selector_ = std::make_unique<OmniboxPopupFileSelector>(
         GetWidget()->GetNativeWindow());
@@ -716,6 +722,10 @@ void LocationBarView::Revert() {
 
 OmniboxView* LocationBarView::GetOmniboxView() {
   return omnibox_view_;
+}
+
+OmniboxPopupView* LocationBarView::GetOmniboxPopupView() {
+  return omnibox_popup_view_.get();
 }
 
 OmniboxController* LocationBarView::GetOmniboxController() {
@@ -1942,13 +1952,17 @@ void LocationBarView::OnPopupStateChanged(OmniboxPopupState old_state,
   // Hide the old popup.
   switch (old_state) {
     case OmniboxPopupState::kClassic:
-    case OmniboxPopupState::kFull:
       // Normally, the classic/full popup hides itself in
       // `UpdatePopupAppearance()` before updating the popup state. However,
       // explicitly hide the classic/full popup for scenario of transitioning
       // from the classic/full to the aim popup.
       if (omnibox_popup_view_->IsOpen()) {
         omnibox_popup_view_->UpdatePopupAppearance();
+      }
+      break;
+    case OmniboxPopupState::kFull:
+      if (omnibox_popup_view_->presenter()) {
+        omnibox_popup_view_->presenter()->Hide();
       }
       break;
     case OmniboxPopupState::kAim:
@@ -1963,9 +1977,13 @@ void LocationBarView::OnPopupStateChanged(OmniboxPopupState old_state,
   // Show the new popup.
   switch (new_state) {
     case OmniboxPopupState::kClassic:
-    case OmniboxPopupState::kFull:
       // The classic/full popup shows itself in `UpdatePopupAppearance()` before
       // updating the popup state.
+      break;
+    case OmniboxPopupState::kFull:
+      if (omnibox_popup_view_->presenter()) {
+        omnibox_popup_view_->presenter()->Show();
+      }
       break;
     case OmniboxPopupState::kAim:
       if (omnibox_popup_aim_presenter_) {
@@ -2101,6 +2119,12 @@ void LocationBarView::OnOmniboxFocused() {
   // The AI mode page action icon view should only be visible when the omnibox
   // is focused, so if there is a change in focus, refresh the icon.
   RefreshAiModePageActionIconView();
+
+  if (base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxFullPopupV2) &&
+      !in_popup_state_transition_) {
+    GetOmniboxController()->popup_state_manager()->SetPopupState(
+        OmniboxPopupState::kFull);
+  }
 }
 
 void LocationBarView::OnOmniboxBlurred() {

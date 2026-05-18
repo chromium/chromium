@@ -66,7 +66,6 @@ OmniboxPopupViewWebUI::OmniboxPopupViewWebUI(
     OmniboxPopupPresenterDelegate& presenter_delegate,
     std::unique_ptr<OmniboxPopupPresenterBase> presenter)
     : OmniboxPopupView(controller),
-      construction_time_(base::TimeTicks::Now()),
       omnibox_view_(omnibox_view),
       location_bar_(location_bar),
       presenter_(std::move(presenter)) {
@@ -80,6 +79,10 @@ OmniboxPopupViewWebUI::~OmniboxPopupViewWebUI() {
 
 bool OmniboxPopupViewWebUI::IsOpen() const {
   return presenter_->IsShown();
+}
+
+OmniboxPopupPresenterBase* OmniboxPopupViewWebUI::presenter() {
+  return presenter_.get();
 }
 
 void OmniboxPopupViewWebUI::InvalidateLine(size_t line) {}
@@ -138,10 +141,10 @@ void OmniboxPopupViewWebUI::UpdatePopupAppearance() {
         OmniboxPopupState::kClassic);
 
     if (!was_visible) {
-      if (!construction_time_.is_null()) {
+      if (!logged_first_shown_metric_) {
         const base::TimeDelta delta =
-            base::TimeTicks::Now() - construction_time_;
-        construction_time_ = base::TimeTicks();
+            base::TimeTicks::Now() - construction_time();
+        logged_first_shown_metric_ = true;
         base::UmaHistogramTimes(
             base::StrCat({presenter_->GetPopupMetricPrefix(),
                           ".ConstructionToFirstShownDuration"}),
