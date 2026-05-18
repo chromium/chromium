@@ -1761,7 +1761,7 @@ BASE_FEATURE(kWebUISplitTabsButton, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kWebUIHomeButton, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // When enabled, the battery saver button will be replaced with WebUI loaded
-// from chrome://webui-toolbar.top-chrome. crbug.com/505317114
+// from chrome://webui-toolbar.top-chrome. crbug.com/503821930
 BASE_FEATURE(kWebUIBatterySaverButton, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // When enabled, the app menu button will be replaced with WebUI loaded from
