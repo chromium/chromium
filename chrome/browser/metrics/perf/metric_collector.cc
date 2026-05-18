@@ -32,6 +32,20 @@ base::TimeDelta RandTimeDelta(base::TimeDelta max) {
   return max.is_positive() ? base::RandTimeDeltaUpTo(max) : max;
 }
 
+template <typename T>
+void ClearUnknownFields(T* unknown_fields) {
+  // When compiled with the MessageLite runtime, `mutable_unknown_fields()`
+  // returns a `std::string*`. When compiled with the full protobuf runtime, the
+  // return type is a `google::protobuf::UnknownFieldSet*`.
+  if constexpr (std::is_same_v<T, std::string>) {
+    unknown_fields->clear();
+  } else if constexpr (std::is_same_v<T, google::protobuf::UnknownFieldSet>) {
+    unknown_fields->Clear();
+  } else {
+    static_assert(false, "Unsupported type");
+  }
+}
+
 // PerfDataProto is defined elsewhere with more fields than the definition in
 // Chromium's copy of perf_data.proto. During deserialization, the protobuf
 // data could contain fields that are defined elsewhere but not in
@@ -46,33 +60,33 @@ void RemoveUnknownFieldsFromMessagesWithStrings(PerfDataProto* proto) {
   // Clean up PerfEvent::MMapEvent and PerfEvent::CommEvent.
   for (PerfDataProto::PerfEvent& event : *proto->mutable_events()) {
     if (event.has_comm_event())
-      event.mutable_comm_event()->mutable_unknown_fields()->clear();
+      ClearUnknownFields(event.mutable_comm_event()->mutable_unknown_fields());
     if (event.has_mmap_event())
-      event.mutable_mmap_event()->mutable_unknown_fields()->clear();
+      ClearUnknownFields(event.mutable_mmap_event()->mutable_unknown_fields());
   }
   // Clean up PerfBuildID.
   for (PerfDataProto::PerfBuildID& build_id : *proto->mutable_build_ids()) {
-    build_id.mutable_unknown_fields()->clear();
+    ClearUnknownFields(build_id.mutable_unknown_fields());
   }
   // Clean up StringMetadata and StringMetadata::StringAndMd5sumPrefix.
   if (proto->has_string_metadata()) {
-    proto->mutable_string_metadata()->mutable_unknown_fields()->clear();
+    ClearUnknownFields(
+        proto->mutable_string_metadata()->mutable_unknown_fields());
     if (proto->string_metadata().has_perf_command_line_whole()) {
-      proto->mutable_string_metadata()
-          ->mutable_perf_command_line_whole()
-          ->mutable_unknown_fields()
-          ->clear();
+      ClearUnknownFields(proto->mutable_string_metadata()
+                             ->mutable_perf_command_line_whole()
+                             ->mutable_unknown_fields());
     }
   }
   for (PerfDataProto::PerfEventType& event_type :
        *proto->mutable_event_types()) {
-    event_type.mutable_unknown_fields()->clear();
+    ClearUnknownFields(event_type.mutable_unknown_fields());
   }
   for (PerfDataProto::PerfPMUMappingsMetadata& mapping :
        *proto->mutable_pmu_mappings()) {
-    mapping.mutable_unknown_fields()->clear();
+    ClearUnknownFields(mapping.mutable_unknown_fields());
   }
-  proto->mutable_unknown_fields()->clear();
+  ClearUnknownFields(proto->mutable_unknown_fields());
 }
 
 }  // namespace
