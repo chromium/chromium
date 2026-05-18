@@ -28,8 +28,12 @@ enum class ScanCardOfferToSaveAction {
 // It allows users to scan a card and then edit/confirm the details before
 // saving.
 @interface PaymentsScanSaveAndFillEditViewController
-    : ChromeTableViewController <SaveCardBottomSheetConsumer,
-                                 CreditCardScannerConsumer>
+    : UIViewController <SaveCardBottomSheetConsumer,
+                        CreditCardScannerConsumer,
+                        UITableViewDelegate>
+
+// The table view containing the card details.
+@property(nonatomic, readonly) UITableView* tableView;
 
 // Mutator for handling user actions (e.g., saving the edited card).
 @property(nonatomic, weak) id<SaveCardBottomSheetMutator> mutator;
@@ -42,6 +46,11 @@ enum class ScanCardOfferToSaveAction {
 @property(nonatomic, weak) id<SaveCardBottomSheetDataSource> dataSource;
 
 - (instancetype)init NS_DESIGNATED_INITIALIZER;
+
+- (instancetype)initWithNibName:(NSString*)nibNameOrNil
+                         bundle:(NSBundle*)nibBundleOrNil NS_UNAVAILABLE;
+
+- (instancetype)initWithCoder:(NSCoder*)coder NS_UNAVAILABLE;
 
 - (instancetype)initWithStyle:(UITableViewStyle)style NS_UNAVAILABLE;
 
