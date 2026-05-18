@@ -9,7 +9,8 @@ assert(!is_android)
 source_set("focus") {
   public = [
     "browser_focus_controller.h",
-    "browser_focus_controller_delegate_views.h",
+    "browser_focus_controller_views.h",
+    "browser_focus_controller_webui.h",
   ]
 
   public_deps = [
@@ -22,7 +23,8 @@ source_set("focus") {
 source_set("impl") {
   sources = [
     "browser_focus_controller.cc",
-    "browser_focus_controller_delegate_views.cc",
+    "browser_focus_controller_views.cc",
+    "browser_focus_controller_webui.cc",
   ]
 
   public_deps = [

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/focus/browser_focus_controller_delegate_views.h"
+#include "chrome/browser/ui/focus/browser_focus_controller_views.h"
 
 #include "base/check_deref.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
@@ -30,18 +30,20 @@
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
 
-BrowserFocusControllerDelegateViews::BrowserFocusControllerDelegateViews(
+BrowserFocusControllerViews::BrowserFocusControllerViews(
+    ui::BaseWindow* base_window,
+    ui::UnownedUserDataHost& host,
     Profile* profile,
     BrowserElements* browser_elements,
     ToolbarButtonProvider* toolbar_button_provider)
-    : profile_(CHECK_DEREF(profile)),
+    : BrowserFocusController(base_window, host),
+      profile_(CHECK_DEREF(profile)),
       browser_elements_(CHECK_DEREF(browser_elements)),
       toolbar_button_provider_(CHECK_DEREF(toolbar_button_provider)) {}
 
-BrowserFocusControllerDelegateViews::~BrowserFocusControllerDelegateViews() =
-    default;
+BrowserFocusControllerViews::~BrowserFocusControllerViews() = default;
 
-void BrowserFocusControllerDelegateViews::FocusWebContentsPane() {
+void BrowserFocusControllerViews::FocusWebContentsPane() {
   auto* multi_contents_view = views::AsViewClass<MultiContentsView>(
       GetViewForId(kMultiContentsViewElementId));
   if (multi_contents_view) {
@@ -49,7 +51,7 @@ void BrowserFocusControllerDelegateViews::FocusWebContentsPane() {
   }
 }
 
-void BrowserFocusControllerDelegateViews::FocusInactivePopupForAccessibility() {
+void BrowserFocusControllerViews::FocusInactivePopupForAccessibility() {
   if (ActivateFirstInactiveBubbleForAccessibility()) {
     return;
   }
@@ -61,7 +63,7 @@ void BrowserFocusControllerDelegateViews::FocusInactivePopupForAccessibility() {
   }
 }
 
-bool BrowserFocusControllerDelegateViews::
+bool BrowserFocusControllerViews::
     ActivateFirstInactiveBubbleForAccessibility() {
   auto* const user_education =
       UserEducationServiceFactory::GetForBrowserContext(&*profile_);
@@ -130,7 +132,7 @@ bool BrowserFocusControllerDelegateViews::
   return false;
 }
 
-views::View* BrowserFocusControllerDelegateViews::GetViewForId(
+views::View* BrowserFocusControllerViews::GetViewForId(
     ui::ElementIdentifier element_id) {
   ui::TrackedElement* element = browser_elements_->GetElement(element_id);
   if (!element) {

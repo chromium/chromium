@@ -37,10 +37,6 @@ const BrowserFocusController* BrowserFocusController::From(
       browser->GetUnownedUserDataHost());
 }
 
-void BrowserFocusController::SetDelegate(std::unique_ptr<Delegate> delegate) {
-  delegate_ = std::move(delegate);
-}
-
 void BrowserFocusController::RotatePaneFocus(bool forwards) {
   views::Widget* widget =
       views::Widget::GetWidgetForNativeWindow(base_window_->GetNativeWindow());
@@ -53,21 +49,17 @@ void BrowserFocusController::RotatePaneFocus(bool forwards) {
       views::FocusManager::FocusCycleWrapping::kEnabled);
 }
 
-void BrowserFocusController::FocusWebContentsPane() {
-  if (delegate_) {
-    delegate_->FocusWebContentsPane();
-  }
-}
+StubBrowserFocusController::StubBrowserFocusController(
+    ui::BaseWindow* base_window,
+    ui::UnownedUserDataHost& host)
+    : BrowserFocusController(base_window, host) {}
 
-void BrowserFocusController::FocusInactivePopupForAccessibility() {
-  if (delegate_) {
-    delegate_->FocusInactivePopupForAccessibility();
-  }
-}
+StubBrowserFocusController::~StubBrowserFocusController() = default;
 
-bool BrowserFocusController::ActivateFirstInactiveBubbleForAccessibility() {
-  if (delegate_) {
-    return delegate_->ActivateFirstInactiveBubbleForAccessibility();
-  }
+void StubBrowserFocusController::FocusWebContentsPane() {}
+
+void StubBrowserFocusController::FocusInactivePopupForAccessibility() {}
+
+bool StubBrowserFocusController::ActivateFirstInactiveBubbleForAccessibility() {
   return false;
 }

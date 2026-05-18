@@ -70,7 +70,8 @@
 #include "chrome/browser/ui/find_bar/find_bar.h"
 #include "chrome/browser/ui/find_bar/find_bar_controller.h"
 #include "chrome/browser/ui/focus/browser_focus_controller.h"
-#include "chrome/browser/ui/focus/browser_focus_controller_delegate_views.h"
+#include "chrome/browser/ui/focus/browser_focus_controller_views.h"
+#include "chrome/browser/ui/focus/browser_focus_controller_webui.h"
 #include "chrome/browser/ui/fullscreen/browser_window_fullscreen_controller.h"
 #include "chrome/browser/ui/lens/lens_overlay_entry_point_controller.h"
 #include "chrome/browser/ui/omnibox/ai_mode_page_action_controller.h"
@@ -570,14 +571,20 @@ void BrowserWindowFeatures::InitPostWindowConstruction(Browser* browser) {
           unload_controller_.get(), browser->window(),
           browser->GetUnownedUserDataHost());
 
-  browser_focus_controller_ =
-      GetUserDataFactory().CreateInstance<BrowserFocusController>(
-          *browser, browser->GetWindow(), browser->GetUnownedUserDataHost());
   if (browser_view) {
-    browser_focus_controller_->SetDelegate(
-        std::make_unique<BrowserFocusControllerDelegateViews>(
+    browser_focus_controller_ =
+        GetUserDataFactory().CreateInstance<BrowserFocusControllerViews>(
+            *browser, browser->GetWindow(), browser->GetUnownedUserDataHost(),
             profile, browser_elements_.get(),
-            ToolbarButtonProvider::From(browser)));
+            ToolbarButtonProvider::From(browser));
+  } else if (WebUIBrowserWindow::FromBrowser(browser)) {
+    browser_focus_controller_ =
+        GetUserDataFactory().CreateInstance<BrowserFocusControllerWebUI>(
+            *browser, browser->GetWindow(), browser->GetUnownedUserDataHost());
+  } else {
+    browser_focus_controller_ =
+        GetUserDataFactory().CreateInstance<StubBrowserFocusController>(
+            *browser, browser->GetWindow(), browser->GetUnownedUserDataHost());
   }
 
   if (WebUIBrowserWindow* webui_browser_window =
