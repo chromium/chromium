@@ -48,6 +48,7 @@
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/layout_provider.h"
+#include "ui/views/view_tracker.h"
 #include "ui/views/widget/widget.h"
 
 #if DCHECK_IS_ON()
@@ -361,6 +362,7 @@ void PopupBaseView::DoHide() {
 }
 
 void PopupBaseView::NotifyAXSelection(views::View& selected_view) {
+  views::ViewTracker selected_view_tracker(&selected_view);
   if (!is_ax_menu_start_event_fired_) {
     // Fire the menu start event once, right before the first item is selected.
     // By firing these and the matching kMenuEnd events, we are telling screen
@@ -372,6 +374,15 @@ void PopupBaseView::NotifyAXSelection(views::View& selected_view) {
 
     is_ax_menu_start_event_fired_ = true;
   }
+
+  // Ensure the selected view was not destroyed, as e.g. firing native
+  // accessibility events on Windows can synchronously re-enter the browser
+  // thread and destroy the view.
+  // TODO(crbug.com/514228954): Consider removing accessibility event calls.
+  if (!selected_view_tracker.view()) {
+    return;
+  }
+
   selected_view.GetViewAccessibility().SetPopupFocusOverride();
 #if DCHECK_IS_ON()
   constexpr auto kDerivedClasses = base::MakeFixedFlatSet<std::string_view>(
