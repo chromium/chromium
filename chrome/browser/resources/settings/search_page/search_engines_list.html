@@ -81,7 +81,8 @@
             <template is="dom-repeat" items="[[engines]]">
               <settings-search-engine-entry engine="[[item]]"
                   show-query-url="[[showQueryUrl]]"
-                  show-shortcut="[[showShortcut]]">
+                  show-shortcut="[[showShortcut]]"
+                  prefs="[[prefs]]">
               </settings-search-engine-entry>
             </template>
           </div>
@@ -96,7 +97,8 @@
             <template is="dom-repeat" items="[[visibleEngines]]">
               <settings-search-engine-entry engine="[[item]]"
                   show-shortcut="[[showShortcut]]"
-                  show-query-url="[[showQueryUrl]]">
+                  show-query-url="[[showQueryUrl]]"
+                  prefs="[[prefs]]">
               </settings-search-engine-entry>
             </template>
           </div>
@@ -111,7 +113,8 @@
               <template is="dom-repeat" items="[[collapsedEngines]]">
                 <settings-search-engine-entry engine="[[item]]"
                     show-shortcut="[[showShortcut]]"
-                    show-query-url="[[showQueryUrl]]">
+                    show-query-url="[[showQueryUrl]]"
+                    prefs="[[prefs]]">
                 </settings-search-engine-entry>
               </template>
             </div>

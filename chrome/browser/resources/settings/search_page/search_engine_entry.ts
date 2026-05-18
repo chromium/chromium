@@ -19,6 +19,7 @@ import './search_engine_icon.js';
 
 import {ExtensionControlBrowserProxyImpl} from '/shared/settings/extension_control_browser_proxy.js';
 import type {ExtensionControlBrowserProxy} from '/shared/settings/extension_control_browser_proxy.js';
+import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import {AnchorAlignment} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {assert} from 'chrome://resources/js/assert.js';
@@ -30,7 +31,8 @@ import {getTemplate} from './search_engine_entry.html.js';
 import type {SearchEngine, SearchEnginesBrowserProxy} from './search_engines_browser_proxy.js';
 import {ChoiceMadeLocation, SearchEnginesBrowserProxyImpl} from './search_engines_browser_proxy.js';
 
-const SettingsSearchEngineEntryElementBase = I18nMixin(PolymerElement);
+const SettingsSearchEngineEntryElementBase =
+    I18nMixin(PrefsMixin(PolymerElement));
 
 export class SettingsSearchEngineEntryElement extends
     SettingsSearchEngineEntryElementBase {
@@ -68,7 +70,8 @@ export class SettingsSearchEngineEntryElement extends
 
       disableDots_: {
         type: Boolean,
-        computed: 'computeDisableDots_(engine)',
+        computed: 'computeDisableDots_(engine,' +
+            'prefs.default_search_provider_data.template_url_data.value)',
       },
 
       turnOnLabel: {
@@ -108,6 +111,17 @@ export class SettingsSearchEngineEntryElement extends
     this.shadowRoot!.querySelector('cr-action-menu')!.close();
   }
 
+  private isDefaultEngineManagedByExtension_(): boolean {
+    if (!this.engine.extension || this.engine.isOmniboxExtension) {
+      return false;
+    }
+
+    const extensionId =
+        this.getPref('default_search_provider_data.template_url_data')
+            .extensionId;
+    return !!extensionId && extensionId === this.engine.extension.id;
+  }
+
   private showEditOption_(): boolean {
     // Hide the edit option for extension shortcuts except if they are the
     // current default (e.g. by policy).
@@ -144,6 +158,10 @@ export class SettingsSearchEngineEntryElement extends
   private computeDisableDots_(): boolean {
     // Disable the dots if none of the options are available for the engine.
     if (this.searchSettingsUpdateEnabled_) {
+      if (this.isDefaultEngineManagedByExtension_()) {
+        return true;
+      }
+
       return !this.showEditOption_() && !this.engine.canBeActivated &&
           !this.engine.canBeDeactivated && !this.engine.canBeRemoved &&
           !this.engine.canBeDefault;
@@ -194,7 +212,8 @@ export class SettingsSearchEngineEntryElement extends
 
   private showDisableExtensionOption_(): boolean {
     assert(this.searchSettingsUpdateEnabled_);
-    return !!this.engine.extension && this.engine.extension.canBeDisabled;
+    return this.engine.isOmniboxExtension && !!this.engine.extension &&
+        this.engine.extension.canBeDisabled;
   }
 
   private showControlledIndicator_(): boolean {

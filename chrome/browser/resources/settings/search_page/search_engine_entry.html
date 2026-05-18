@@ -141,7 +141,8 @@
                 $i18n{searchDisableExtension}
               </button>
               <button class="dropdown-item" on-click="onManageClick_"
-                  hidden$="[[!engine.extension]]" id="manageExtensionOption">
+                  hidden$="[[!engine.isOmniboxExtension]]"
+                  id="manageExtensionOption">
                 $i18n{searchManageExtension}
                 <div id="externalIcon" class="cr-icon icon-external"></div>
               </button>
