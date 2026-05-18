@@ -1392,7 +1392,8 @@ class AutocompleteMediator
      *     URL will be loaded in a new window. If {@code false}, The URL will be loaded in the
      *     current window.
      */
-    private void loadUrlForOmniboxMatch(
+    @VisibleForTesting
+    /* package */ void loadUrlForOmniboxMatch(
             int matchIndex,
             AutocompleteMatch suggestion,
             GURL url,
