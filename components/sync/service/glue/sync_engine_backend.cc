@@ -228,11 +228,9 @@ void SyncEngineBackend::DoStartSyncing(base::Time last_poll_time) {
 }
 
 void SyncEngineBackend::DoSetEncryptionPassphrase(
-    const std::string& passphrase,
-    const KeyDerivationParams& key_derivation_params) {
+    const std::string& passphrase) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  sync_manager_->GetEncryptionHandler()->SetEncryptionPassphrase(
-      passphrase, key_derivation_params);
+  sync_manager_->GetEncryptionHandler()->SetEncryptionPassphrase(passphrase);
 }
 
 void SyncEngineBackend::DoAddTrustedVaultDecryptionKeys(

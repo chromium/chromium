@@ -32,7 +32,6 @@ namespace syncer {
 
 class EngineComponentsFactory;
 class HttpPostProviderFactory;
-class KeyDerivationParams;
 class Nigori;
 class SyncEngineHost;
 struct SyncStatus;
@@ -120,9 +119,7 @@ class SyncEngine : public DataTypeConfigurer {
   // error to call SetEncryptionPassphrase under the following circumstances:
   // - An explicit passphrase has already been set
   // - We have pending keys.
-  virtual void SetEncryptionPassphrase(
-      const std::string& passphrase,
-      const KeyDerivationParams& key_derivation_params) = 0;
+  virtual void SetEncryptionPassphrase(const std::string& passphrase) = 0;
 
   // Use the provided decryption key to asynchronously attempt decryption. If
   // new encrypted keys arrive during the asynchronous call,

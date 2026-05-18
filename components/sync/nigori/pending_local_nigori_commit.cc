@@ -9,6 +9,7 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
+#include "components/sync/base/custom_passphrase_bootstrap_token.h"
 #include "components/sync/engine/nigori/cross_user_sharing_public_key.h"
 #include "components/sync/engine/nigori/cross_user_sharing_public_private_key_pair.h"
 #include "components/sync/engine/nigori/key_derivation_params.h"
@@ -48,11 +49,10 @@ void InitNewOrFixCorruptedKeyPair(
 
 class CustomPassphraseSetter : public PendingLocalNigoriCommit {
  public:
-  explicit CustomPassphraseSetter(
-      const std::string& passphrase,
-      const KeyDerivationParams& key_derivation_params)
+  explicit CustomPassphraseSetter(const std::string& passphrase)
       : passphrase_(passphrase),
-        key_derivation_params_(key_derivation_params) {}
+        key_derivation_params_(KeyDerivationParams::CreateForScrypt(
+            Nigori::GenerateScryptSalt())) {}
 
   CustomPassphraseSetter(const CustomPassphraseSetter&) = delete;
   CustomPassphraseSetter& operator=(const CustomPassphraseSetter&) = delete;
@@ -109,7 +109,10 @@ class CustomPassphraseSetter : public PendingLocalNigoriCommit {
                                           /*has_pending_keys=*/false);
     observer->OnEncryptedTypesChanged(state.GetEncryptedTypes(),
                                       /*encrypt_everything=*/true);
-    observer->OnPassphraseAccepted();
+    CustomPassphraseBootstrapToken token =
+        CustomPassphraseBootstrapToken::FromProto(
+            state.cryptographer->ExportDefaultKey());
+    observer->OnPassphraseAccepted(token);
   }
 
   void OnFailure(SyncEncryptionHandler::Observer* observer) override {}
@@ -240,10 +243,8 @@ class CrossUserSharingPublicPrivateKeyInitializer
 // static
 std::unique_ptr<PendingLocalNigoriCommit>
 PendingLocalNigoriCommit::ForSetCustomPassphrase(
-    const std::string& passphrase,
-    const KeyDerivationParams& key_derivation_params) {
-  return std::make_unique<CustomPassphraseSetter>(passphrase,
-                                                  key_derivation_params);
+    const std::string& passphrase) {
+  return std::make_unique<CustomPassphraseSetter>(passphrase);
 }
 
 // static

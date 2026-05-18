@@ -23,6 +23,7 @@ class NigoriSpecifics_TrustedVaultDebugInfo;
 namespace syncer {
 
 class Cryptographer;
+class CustomPassphraseBootstrapToken;
 class KeystoreKeysHandler;
 class Nigori;
 enum class PassphraseType;
@@ -52,8 +53,10 @@ class SyncEncryptionHandler {
     // Called when the passphrase provided by the user has been accepted and is
     // now used to encrypt sync data. This gets invoked last, relative to other
     // relevant notifications corresponding to the same event, e.g.
-    // OnCryptographerStateChanged().
-    virtual void OnPassphraseAccepted() = 0;
+    // OnCryptographerStateChanged(). `bootstrap_token` contains the newly
+    // derived or decrypted Nigori keys.
+    virtual void OnPassphraseAccepted(
+        const CustomPassphraseBootstrapToken& bootstrap_token) = 0;
 
     // Called when decryption keys are required in order to decrypt pending
     // Nigori keys and resume sync, for the TRUSTED_VAULT_PASSPHRASE case. This
@@ -113,9 +116,7 @@ class SyncEncryptionHandler {
   // and triggers re-encryption as appropriate. If an explicit password has been
   // set previously, we drop subsequent requests to set a passphrase.
   // `passphrase` shouldn't be empty.
-  virtual void SetEncryptionPassphrase(
-      const std::string& passphrase,
-      const KeyDerivationParams& key_derivation_params) = 0;
+  virtual void SetEncryptionPassphrase(const std::string& passphrase) = 0;
 
   // Provides a key for decrypting the user's existing sync data.
   // Notifies observers of the result of the operation via

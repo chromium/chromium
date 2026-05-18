@@ -106,7 +106,8 @@ class SyncServiceCrypto : public SyncEncryptionHandler::Observer,
   void OnPassphraseRequired(
       const KeyDerivationParams& key_derivation_params,
       const sync_pb::EncryptedData& pending_keys) override;
-  void OnPassphraseAccepted() override;
+  void OnPassphraseAccepted(
+      const CustomPassphraseBootstrapToken& bootstrap_token) override;
   void OnTrustedVaultKeyRequired() override;
   void OnTrustedVaultKeyAccepted() override;
   void OnEncryptedTypesChanged(DataTypeSet encrypted_types,
@@ -191,12 +192,14 @@ class SyncServiceCrypto : public SyncEncryptionHandler::Observer,
   bool SetDecryptionKeyWithoutUpdatingBootstrapToken(
       std::unique_ptr<Nigori> nigori);
 
-  // Similar to SetDecryptionPassphrase(), but uses bootstrap token instead of
-  // user provided passphrase. Resolves the kPassphraseRequired state on
-  // successful attempt.
+  // Resolves the kPassphraseRequired state from bootstrap token on successful
+  // attempt.
   void MaybeSetDecryptionKeyFromBootstrapToken();
 
-
+  // Called when a passphrase successfully resolves pending keys. Clears cached
+  // pending keys, transitions required user action to kNone, and triggers
+  // data type reconfiguration.
+  void ResolvePendingKeysRequiredState();
 
   const raw_ptr<Delegate> delegate_;
 

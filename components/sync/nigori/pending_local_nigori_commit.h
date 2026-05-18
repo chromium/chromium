@@ -12,7 +12,6 @@
 
 namespace syncer {
 
-class KeyDerivationParams;
 struct NigoriState;
 
 // Interface representing an intended local change to the Nigori state that
@@ -20,8 +19,7 @@ struct NigoriState;
 class PendingLocalNigoriCommit {
  public:
   static std::unique_ptr<PendingLocalNigoriCommit> ForSetCustomPassphrase(
-      const std::string& passphrase,
-      const KeyDerivationParams& key_derivation_params);
+      const std::string& passphrase);
 
   static std::unique_ptr<PendingLocalNigoriCommit> ForKeystoreInitialization();
 

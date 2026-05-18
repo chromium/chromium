@@ -23,6 +23,7 @@
 #include "base/test/values_test_util.h"
 #include "base/values.h"
 #include "components/sync/base/client_tag_hash.h"
+#include "components/sync/base/custom_passphrase_bootstrap_token.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/base/extensions_activity.h"
 #include "components/sync/engine/cancelation_signal.h"
@@ -115,7 +116,10 @@ class SyncEncryptionHandlerObserverMock
               OnPassphraseRequired,
               (const KeyDerivationParams&, const sync_pb::EncryptedData&),
               (override));
-  MOCK_METHOD(void, OnPassphraseAccepted, (), (override));
+  MOCK_METHOD(void,
+              OnPassphraseAccepted,
+              (const CustomPassphraseBootstrapToken&),
+              (override));
   MOCK_METHOD(void, OnTrustedVaultKeyRequired, (), (override));
   MOCK_METHOD(void, OnTrustedVaultKeyAccepted, (), (override));
   MOCK_METHOD(void, OnEncryptedTypesChanged, (DataTypeSet, bool), (override));

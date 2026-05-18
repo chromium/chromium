@@ -55,7 +55,8 @@ void DebugInfoEventListener::OnPassphraseRequired(
   CreateAndAddEvent(sync_pb::SyncEnums::PASSPHRASE_REQUIRED);
 }
 
-void DebugInfoEventListener::OnPassphraseAccepted() {
+void DebugInfoEventListener::OnPassphraseAccepted(
+    const CustomPassphraseBootstrapToken& bootstrap_token) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CreateAndAddEvent(sync_pb::SyncEnums::PASSPHRASE_ACCEPTED);
 }

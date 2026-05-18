@@ -235,13 +235,11 @@ void SyncEngineImpl::StartHandlingInvalidations() {
   UpdateStandaloneInvalidationsState();
 }
 
-void SyncEngineImpl::SetEncryptionPassphrase(
-    const std::string& passphrase,
-    const KeyDerivationParams& key_derivation_params) {
+void SyncEngineImpl::SetEncryptionPassphrase(const std::string& passphrase) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   sync_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&SyncEngineBackend::DoSetEncryptionPassphrase,
-                                backend_, passphrase, key_derivation_params));
+                                backend_, passphrase));
 }
 
 void SyncEngineImpl::SetExplicitPassphraseDecryptionKey(

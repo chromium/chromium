@@ -158,7 +158,8 @@ void DataTypeRegistry::OnPassphraseRequired(
     const KeyDerivationParams& key_derivation_params,
     const sync_pb::EncryptedData& pending_keys) {}
 
-void DataTypeRegistry::OnPassphraseAccepted() {}
+void DataTypeRegistry::OnPassphraseAccepted(
+    const CustomPassphraseBootstrapToken& bootstrap_token) {}
 
 void DataTypeRegistry::OnTrustedVaultKeyRequired() {}
 

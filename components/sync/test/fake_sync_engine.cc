@@ -86,9 +86,7 @@ void FakeSyncEngine::StartHandlingInvalidations() {
   started_handling_invalidations_ = true;
 }
 
-void FakeSyncEngine::SetEncryptionPassphrase(
-    const std::string& passphrase,
-    const KeyDerivationParams& key_derivation_params) {}
+void FakeSyncEngine::SetEncryptionPassphrase(const std::string& passphrase) {}
 
 void FakeSyncEngine::SetExplicitPassphraseDecryptionKey(
     std::unique_ptr<Nigori> key) {}

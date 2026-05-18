@@ -23,6 +23,8 @@ enum SyncEnums_SingletonDebugEventType : int;
 
 namespace syncer {
 
+class CustomPassphraseBootstrapToken;
+
 // Listens to events and records them in a queue. And passes the events to
 // syncer when requested.
 // This class is not thread safe and should only be accessed on the sync thread.
@@ -55,7 +57,8 @@ class DebugInfoEventListener : public SyncManager::Observer,
   void OnPassphraseRequired(
       const KeyDerivationParams& key_derivation_params,
       const sync_pb::EncryptedData& pending_keys) override;
-  void OnPassphraseAccepted() override;
+  void OnPassphraseAccepted(
+      const CustomPassphraseBootstrapToken& bootstrap_token) override;
   void OnTrustedVaultKeyRequired() override;
   void OnTrustedVaultKeyAccepted() override;
   void OnEncryptedTypesChanged(DataTypeSet encrypted_types,

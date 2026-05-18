@@ -13,6 +13,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/observer_list.h"
+#include "components/sync/base/custom_passphrase_bootstrap_token.h"
 #include "components/sync/base/passphrase_enums.h"
 #include "components/sync/base/time.h"
 #include "components/sync/engine/nigori/cross_user_sharing_public_key.h"
@@ -300,9 +301,10 @@ class NigoriSyncBridgeImpl::BroadcastingObserver
     }
   }
 
-  void OnPassphraseAccepted() override {
+  void OnPassphraseAccepted(
+      const CustomPassphraseBootstrapToken& bootstrap_token) override {
     for (Observer& observer : observers_) {
-      observer.OnPassphraseAccepted();
+      observer.OnPassphraseAccepted(bootstrap_token);
     }
   }
 
@@ -469,12 +471,11 @@ PassphraseType NigoriSyncBridgeImpl::GetPassphraseType() {
 }
 
 void NigoriSyncBridgeImpl::SetEncryptionPassphrase(
-    const std::string& passphrase,
-    const KeyDerivationParams& key_derivation_params) {
+    const std::string& passphrase) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  QueuePendingLocalCommit(PendingLocalNigoriCommit::ForSetCustomPassphrase(
-      passphrase, key_derivation_params));
+  QueuePendingLocalCommit(
+      PendingLocalNigoriCommit::ForSetCustomPassphrase(passphrase));
 }
 
 void NigoriSyncBridgeImpl::SetExplicitPassphraseDecryptionKey(
@@ -518,7 +519,10 @@ void NigoriSyncBridgeImpl::SetExplicitPassphraseDecryptionKey(
   storage_->StoreData(SerializeAsNigoriLocalData());
   broadcasting_observer_->OnCryptographerStateChanged(
       state_.cryptographer.get(), state_.pending_keys.has_value());
-  broadcasting_observer_->OnPassphraseAccepted();
+  CustomPassphraseBootstrapToken token =
+      CustomPassphraseBootstrapToken::FromProto(
+          state_.cryptographer->ExportDefaultKey());
+  broadcasting_observer_->OnPassphraseAccepted(token);
 }
 
 void NigoriSyncBridgeImpl::AddTrustedVaultDecryptionKeys(
@@ -617,7 +621,8 @@ bool NigoriSyncBridgeImpl::SetKeystoreKeys(
     if (!state_.pending_keys.has_value()) {
       broadcasting_observer_->OnCryptographerStateChanged(
           state_.cryptographer.get(), state_.pending_keys.has_value());
-      broadcasting_observer_->OnPassphraseAccepted();
+      broadcasting_observer_->OnPassphraseAccepted(
+          CustomPassphraseBootstrapToken());
     }
   }
 
@@ -792,7 +797,8 @@ std::optional<ModelError> NigoriSyncBridgeImpl::UpdateLocalState(
   if (!state_.pending_keys.has_value() && had_pending_keys_before_update) {
     // Guaranteed by BuildDecryptionKeyBagForRemoteKeybag() logic.
     DCHECK_EQ(state_.passphrase_type, NigoriSpecifics::KEYSTORE_PASSPHRASE);
-    broadcasting_observer_->OnPassphraseAccepted();
+    broadcasting_observer_->OnPassphraseAccepted(
+        CustomPassphraseBootstrapToken());
   }
 
   MaybeNotifyOfPendingKeys();

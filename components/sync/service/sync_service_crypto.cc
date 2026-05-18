@@ -44,11 +44,16 @@ class SyncEncryptionObserverProxy : public SyncEncryptionHandler::Observer {
                        observer_, key_derivation_params, pending_keys));
   }
 
-  void OnPassphraseAccepted() override {
+  void OnPassphraseAccepted(
+      const CustomPassphraseBootstrapToken& bootstrap_token) override {
+    // `base::BindOnce` stores `bootstrap_token` by value, which invokes its
+    // copy constructor. The token's underlying protobuf message performs a deep
+    // copy of all internal heap-allocated string/bytes fields, ensuring
+    // thread-safe cross-thread posting.
     task_runner_->PostTask(
         FROM_HERE,
         base::BindOnce(&SyncEncryptionHandler::Observer::OnPassphraseAccepted,
-                       observer_));
+                       observer_, bootstrap_token));
   }
 
   void OnTrustedVaultKeyRequired() override {
@@ -245,17 +250,7 @@ void SyncServiceCrypto::SetEncryptionPassphrase(const std::string& passphrase) {
   DCHECK(!IsExplicitPassphrase(
       GetPassphraseType().value_or(PassphraseType::kKeystorePassphrase)));
 
-  const auto key_derivation_params =
-      KeyDerivationParams::CreateForScrypt(Nigori::GenerateScryptSalt());
-  state_.engine->SetEncryptionPassphrase(passphrase, key_derivation_params);
-
-  // Immediately store new bootstrap token.
-  std::unique_ptr<Nigori> nigori =
-      Nigori::CreateByDerivation(key_derivation_params, passphrase);
-  DCHECK(nigori);
-  CHECK(encryptor_);
-  delegate_->SetEncryptionBootstrapToken(BootstrapTokenFromNigori(*nigori),
-                                         *encryptor_);
+  state_.engine->SetEncryptionPassphrase(passphrase);
 }
 
 bool SyncServiceCrypto::SetDecryptionPassphrase(const std::string& passphrase) {
@@ -421,7 +416,17 @@ void SyncServiceCrypto::OnPassphraseRequired(
   MaybeSetDecryptionKeyFromBootstrapToken();
 }
 
-void SyncServiceCrypto::OnPassphraseAccepted() {
+void SyncServiceCrypto::OnPassphraseAccepted(
+    const CustomPassphraseBootstrapToken& bootstrap_token) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!bootstrap_token.IsEmpty()) {
+    CHECK(encryptor_);
+    delegate_->SetEncryptionBootstrapToken(bootstrap_token, *encryptor_);
+  }
+  ResolvePendingKeysRequiredState();
+}
+
+void SyncServiceCrypto::ResolvePendingKeysRequiredState() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // Clear our cache of the cryptographer's pending keys.
@@ -804,7 +809,7 @@ bool SyncServiceCrypto::SetDecryptionKeyWithoutUpdatingBootstrapToken(
   // pending. This scenario is a valid race, and
   // SetExplicitPassphraseDecryptionKey() can trigger a new
   // OnPassphraseRequired() if it needs to.
-  OnPassphraseAccepted();
+  ResolvePendingKeysRequiredState();
   return true;
 }
 

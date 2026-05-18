@@ -67,9 +67,7 @@ class SyncEngineImpl : public SyncEngine,
   void StartConfiguration() override;
   void StartSyncingWithServer() override;
   void StartHandlingInvalidations() override;
-  void SetEncryptionPassphrase(
-      const std::string& passphrase,
-      const KeyDerivationParams& key_derivation_params) override;
+  void SetEncryptionPassphrase(const std::string& passphrase) override;
   void SetExplicitPassphraseDecryptionKey(std::unique_ptr<Nigori> key) override;
   void AddTrustedVaultDecryptionKeys(
       const std::vector<std::vector<uint8_t>>& keys,

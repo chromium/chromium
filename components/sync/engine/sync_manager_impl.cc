@@ -212,7 +212,8 @@ void SyncManagerImpl::OnPassphraseRequired(
   // Does nothing.
 }
 
-void SyncManagerImpl::OnPassphraseAccepted() {
+void SyncManagerImpl::OnPassphraseAccepted(
+    const CustomPassphraseBootstrapToken& bootstrap_token) {
   // Does nothing.
 }
 
