@@ -1127,7 +1127,37 @@ void Tab::UpdateIconVisibility() {
     // Close button is shown on active tabs regardless of the size.
     showing_close_button_ = true;
 #endif  // BUILDFLAG(IS_CHROMEOS)
-    available_width -= close_button_width;
+
+    if (features::IsTabStripDeclutterEnabled() && showing_close_button_) {
+      const bool alert_fits_without_close =
+          has_alert_icon && alert_icon_width <= available_width;
+      const bool favicon_fits_without_close =
+          has_favicon &&
+          favicon_width <= (available_width -
+                            (alert_fits_without_close ? alert_icon_width : 0));
+
+      const int width_with_close = available_width - close_button_width;
+      const bool alert_fits_with_close =
+          has_alert_icon && alert_icon_width <= width_with_close;
+      const bool favicon_fits_with_close =
+          has_favicon &&
+          favicon_width <= (width_with_close -
+                            (alert_fits_with_close ? alert_icon_width : 0));
+
+      const bool alert_hidden_by_close =
+          alert_fits_without_close && !alert_fits_with_close;
+      const bool favicon_hidden_by_close =
+          favicon_fits_without_close && !favicon_fits_with_close;
+
+      if (alert_hidden_by_close || favicon_hidden_by_close) {
+        showing_close_button_ = mouse_hovered_ || HasFocus() ||
+                                (close_button_ && close_button_->HasFocus());
+      }
+    }
+
+    if (showing_close_button_) {
+      available_width -= close_button_width;
+    }
 
     showing_alert_indicator_ =
         has_alert_icon && alert_icon_width <= available_width;

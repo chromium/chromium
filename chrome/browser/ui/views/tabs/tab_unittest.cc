@@ -750,11 +750,64 @@ TEST_F(TabTest, CloseButtonVisibilityInDeclutteredState) {
   LayoutTab(tab);
   EXPECT_FALSE(close->GetVisible());
 
-  // Active tab should always show close button, even at decluttered width.
+  // Active tab should show close button at decluttered width.
   controller->set_active_tab(tab);
   tab->InvalidateLayout();
   LayoutTab(tab);
   EXPECT_TRUE(close->GetVisible());
+}
+
+TEST_F(TabTest, ActiveTabFaviconSwapWithCloseOnHover) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kTabStripDeclutter);
+
+  auto controller = std::make_unique<FakeTabSlotController>();
+  std::unique_ptr<views::Widget> widget =
+      CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+  Tab* tab = widget->SetContentsView(
+      std::make_unique<Tab>(tabs::TabHandle(1), controller.get()));
+  controller->set_active_tab(tab);
+
+  tabs::TabData data;
+  data.should_display_favicon = true;
+  tab->SetDataForTesting(data);
+
+  const int close_button_width =
+      GetLayoutConstant(LayoutConstant::kTabCloseButtonSize) +
+      GetLayoutConstant(LayoutConstant::kTabAfterTitlePadding);
+  const int favicon_width = gfx::kFaviconSize;
+
+  // Set width such that it can fit favicon OR close button, but not both.
+  const int insets_width = tab->tab_style_views()->GetContentsInsets().width();
+  const int available_width = favicon_width + close_button_width - 1;
+  const int total_width = available_width + insets_width;
+
+  widget->SetBounds(gfx::Rect(0, 0, total_width, 50));
+  tab->InvalidateLayout();
+  LayoutTab(tab);
+
+  const views::View* close = GetCloseButton(tab);
+  const views::View* icon = GetTabIcon(tab);
+
+  // Active tab should show favicon and hide close button when space is limited.
+  EXPECT_FALSE(close->GetVisible());
+  EXPECT_TRUE(icon->GetVisible());
+
+  // On hover, it should show close button and hide favicon.
+  tab->OnMouseEntered(ui::MouseEvent(ui::EventType::kMouseMoved, gfx::Point(),
+                                     gfx::Point(), base::TimeTicks(), 0, 0));
+  tab->InvalidateLayout();
+  LayoutTab(tab);
+  EXPECT_TRUE(close->GetVisible());
+  EXPECT_FALSE(icon->GetVisible());
+
+  // On exit, it should swap back.
+  tab->OnMouseExited(ui::MouseEvent(ui::EventType::kMouseMoved, gfx::Point(),
+                                    gfx::Point(), base::TimeTicks(), 0, 0));
+  tab->InvalidateLayout();
+  LayoutTab(tab);
+  EXPECT_FALSE(close->GetVisible());
+  EXPECT_TRUE(icon->GetVisible());
 }
 
 TEST_F(TabTest, ExtraLeftPaddingShownOnSiteWithoutFavicon) {
@@ -1194,6 +1247,9 @@ TEST_F(TabTest, SingleElementCentering) {
     tab->ActiveStateChanged();
     // Width small enough that favicon/alert wouldn't fit, and title is hidden.
     tab->SetBounds(0, 0, 40, 50);
+    tab->OnMouseEntered(ui::MouseEvent(ui::EventType::kMouseMoved, gfx::Point(),
+                                       gfx::Point(), base::TimeTicks(), 0, 0));
+    tab->InvalidateLayout();
     LayoutTab(tab);
     EXPECT_TRUE(tab->IsActive());
     EXPECT_FALSE(tab->showing_icon());
