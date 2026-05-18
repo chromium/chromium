@@ -379,8 +379,8 @@ CompositorFilterOperations FilterEffectBuilder::BuildFilterOperations(
     switch (op->GetType()) {
       case FilterOperation::OperationType::kReference: {
         auto& reference_operation = To<ReferenceFilterOperation>(*op);
-        Filter* reference_filter =
-            BuildReferenceFilter(reference_operation, nullptr);
+        Filter* reference_filter = BuildReferenceFilter(
+            reference_operation, nullptr, nullptr, filters.OriginTainted());
         if (reference_filter && reference_filter->LastEffect()) {
           // Set the interpolation space for the source of the (sub)filter to
           // match that of the previous primitive (or input).
@@ -478,6 +478,9 @@ CompositorFilterOperations FilterEffectBuilder::BuildFilterOperations(
         filters.AppendDropShadowFilter(
             floored_offset, radius,
             shadow.GetColor().Resolve(current_color_, color_scheme_));
+        if (shadow.GetColor().IsCurrentColor()) {
+          filters.SetOriginTainted();
+        }
         break;
       }
       case FilterOperation::OperationType::kBoxReflect: {
@@ -511,7 +514,8 @@ CompositorFilterOperations FilterEffectBuilder::BuildFilterOperations(
 Filter* FilterEffectBuilder::BuildReferenceFilter(
     const ReferenceFilterOperation& reference_operation,
     FilterEffect* previous_effect,
-    SVGFilterGraphNodeMap* node_map) const {
+    SVGFilterGraphNodeMap* node_map,
+    bool input_tainted) const {
   SVGResource* resource = reference_operation.Resource();
   auto* filter_element =
       DynamicTo<SVGFilterElement>(resource ? resource->Target() : nullptr);
@@ -543,6 +547,10 @@ Filter* FilterEffectBuilder::BuildReferenceFilter(
   // region) should match.
   if (filter_region.IsEmpty()) {
     return result;
+  }
+
+  if (input_tainted || (previous_effect && previous_effect->OriginTainted())) {
+    result->GetSourceGraphic()->SetOriginTainted();
   }
 
   if (!previous_effect)

@@ -56,7 +56,8 @@ class CORE_EXPORT FilterEffectBuilder final {
 
   Filter* BuildReferenceFilter(const ReferenceFilterOperation&,
                                FilterEffect* previous_effect,
-                               SVGFilterGraphNodeMap* = nullptr) const;
+                               SVGFilterGraphNodeMap* = nullptr,
+                               bool input_tainted = false) const;
 
   FilterEffect* BuildFilterEffect(const FilterOperations&,
                                   bool input_tainted = false) const;
