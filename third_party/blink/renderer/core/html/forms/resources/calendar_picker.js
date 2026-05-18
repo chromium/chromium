@@ -3771,10 +3771,13 @@ class DayCell extends ListCell {
    * @param {!boolean} selected
    */
   setIsToday(selected) {
-    if (selected)
+    if (selected) {
       this.element.classList.add(DayCell.ClassNameToday);
-    else
+      this.element.setAttribute('aria-current', 'date');
+    } else {
       this.element.classList.remove(DayCell.ClassNameToday);
+      this.element.removeAttribute('aria-current');
+    }
   }
 
   /**

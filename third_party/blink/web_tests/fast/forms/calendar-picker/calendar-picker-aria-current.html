@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<meta name=fuzzy content="maxDifference=0-3; totalPixels=0-1000">
+<script src="../../../resources/js-test.js"></script>
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+<script src="../../../resources/testdriver.js"></script>
+<script src="../../../resources/testdriver-vendor.js"></script>
+<script src="../resources/common.js"></script>
+<script src="../resources/picker-common.js"></script>
+<script src="resources/calendar-picker-common.js"></script>
+
+<input type="date" id="date1">
+
+<script>
+promise_test(() => {
+  let date1 = document.getElementById('date1');
+
+  return openPicker(date1).then(() => {
+    let popupDoc = internals.pagePopupWindow.document;
+
+    // Verify Day Picker
+    let dayCells = popupDoc.querySelectorAll('.day-cell:not(.hidden)');
+    let foundToday = false;
+
+    dayCells.forEach(cell => {
+      if (cell.classList.contains('today')) {
+        assert_equals(cell.getAttribute('aria-current'), 'date', "Today cell should have aria-current='date'");
+        foundToday = true;
+      } else {
+        assert_false(cell.hasAttribute('aria-current'), "Non-today cell should not have aria-current");
+      }
+    });
+
+    assert_true(foundToday, "Should have found a today cell in day picker");
+
+  });
+}, 'Tests that only the today cell in date picker has aria-current="date".');
+</script>
