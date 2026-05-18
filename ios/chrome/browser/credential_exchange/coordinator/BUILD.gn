@@ -86,6 +86,8 @@ source_set("export_coordinator") {
     "//ios/chrome/browser/settings/ui_bundled/password:ui",
     "//ios/chrome/browser/shared/coordinator/alert",
     "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/sync/model",
     "//ios/chrome/browser/webauthn/coordinator",

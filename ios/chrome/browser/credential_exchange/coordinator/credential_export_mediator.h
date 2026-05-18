@@ -73,6 +73,9 @@ class FaviconLoader;
 
 - (instancetype)init NS_UNAVAILABLE;
 
+// Cancels the password export flow.
+- (void)exportFlowCancelled;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_CREDENTIAL_EXCHANGE_COORDINATOR_CREDENTIAL_EXPORT_MEDIATOR_H_

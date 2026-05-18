@@ -243,4 +243,8 @@ const CGFloat kMinFaviconSize = 16.0;
   [_delegate showGenericError];
 }
 
+- (void)exportFlowCancelled {
+  [_passwordExporter cancelExport];
+}
+
 @end

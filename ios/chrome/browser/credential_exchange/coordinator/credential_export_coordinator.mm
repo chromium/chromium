@@ -29,6 +29,10 @@
 #import "ios/chrome/browser/settings/ui_bundled/password/create_password_manager_title_view.h"
 #import "ios/chrome/browser/shared/coordinator/alert/alert_coordinator.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
+#import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
+#import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/webauthn/coordinator/passkey_welcome_screen_coordinator.h"
@@ -233,28 +237,100 @@
 }
 
 - (void)showExportErrorAlertWithLocalizedReason:(NSString*)localizedReason {
-  // TODO(crbug.com/470440092): Implement alerts to be displayed when exporting
-  // selected passwords to csv.
+  UIAlertController* alertController = [UIAlertController
+      alertControllerWithTitle:l10n_util::GetNSString(
+                                   IDS_IOS_EXPORT_PASSWORDS_FAILED_ALERT_TITLE)
+                       message:localizedReason
+                preferredStyle:UIAlertControllerStyleAlert];
+  UIAlertAction* okAction =
+      [UIAlertAction actionWithTitle:l10n_util::GetNSString(IDS_OK)
+                               style:UIAlertActionStyleDefault
+                             handler:nil];
+  [alertController addAction:okAction];
+  [self presentViewControllerForExportFlow:alertController];
 }
 
 - (void)showPreparingPasswordsAlert {
-  // TODO(crbug.com/470440092): Implement alerts to be displayed when exporting
-  // selected passwords to csv.
+  _preparingPasswordsAlert = [UIAlertController
+      alertControllerWithTitle:
+          l10n_util::GetNSString(IDS_IOS_EXPORT_PASSWORDS_PREPARING_ALERT_TITLE)
+                       message:nil
+                preferredStyle:UIAlertControllerStyleAlert];
+  __weak __typeof(self) weakSelf = self;
+  UIAlertAction* cancelAction =
+      [UIAlertAction actionWithTitle:l10n_util::GetNSString(
+                                         IDS_IOS_EXPORT_PASSWORDS_CANCEL_BUTTON)
+                               style:UIAlertActionStyleCancel
+                             handler:^(UIAlertAction*) {
+                               [weakSelf onExportFlowCancelled];
+                             }];
+  [_preparingPasswordsAlert addAction:cancelAction];
+  [self presentViewControllerForExportFlow:_preparingPasswordsAlert];
 }
 
 - (void)showSetPasscodeForPasswordExportDialog {
-  // TODO(crbug.com/470440092): Implement alerts to be displayed when exporting
-  // selected passwords to csv.
+  UIAlertController* alertController = [UIAlertController
+      alertControllerWithTitle:l10n_util::GetNSString(
+                                   IDS_IOS_SETTINGS_SET_UP_SCREENLOCK_TITLE)
+                       message:
+                           l10n_util::GetNSString(
+                               IDS_IOS_SETTINGS_EXPORT_PASSWORDS_SET_UP_SCREENLOCK_CONTENT)
+                preferredStyle:UIAlertControllerStyleAlert];
+
+  __weak __typeof(self) weakSelf = self;
+  UIAlertAction* learnAction = [UIAlertAction
+      actionWithTitle:l10n_util::GetNSString(
+                          IDS_IOS_SETTINGS_SET_UP_SCREENLOCK_LEARN_HOW)
+                style:UIAlertActionStyleDefault
+              handler:^(UIAlertAction*) {
+                [weakSelf showPasscodeHelp];
+              }];
+  [alertController addAction:learnAction];
+  UIAlertAction* okAction =
+      [UIAlertAction actionWithTitle:l10n_util::GetNSString(IDS_OK)
+                               style:UIAlertActionStyleDefault
+                             handler:nil];
+  [alertController addAction:okAction];
+  alertController.preferredAction = okAction;
+  [self presentViewControllerForExportFlow:alertController];
 }
 
 #pragma mark - Private
 
 - (void)presentViewControllerForExportFlow:(UIViewController*)viewController {
-  // TODO(crbug.com/470440092): Once showPreparingPasswordsAlert is implemented,
-  // check here if _preparingPasswordsAlert needs dismissal.
-  [_viewController presentViewController:viewController
-                                animated:YES
-                              completion:nil];
+  if (_preparingPasswordsAlert.presentingViewController) {
+    __weak __typeof(self) weakSelf = self;
+    [_preparingPasswordsAlert
+        dismissViewControllerAnimated:YES
+                           completion:^{
+                             [weakSelf handlePreparingPasswordsAlertDismissal:
+                                           viewController];
+                           }];
+  } else {
+    [_viewController presentViewController:viewController
+                                  animated:YES
+                                completion:nil];
+  }
+}
+
+// Clears `_preparingPasswordsAlert` and presents the `viewController`.
+- (void)handlePreparingPasswordsAlertDismissal:
+    (UIViewController*)viewController {
+  _preparingPasswordsAlert = nil;
+  [self presentViewControllerForExportFlow:viewController];
+}
+
+- (void)onExportFlowCancelled {
+  [_mediator exportFlowCancelled];
+}
+
+// Closes the settings and load the passcode help article in a new tab.
+- (void)showPasscodeHelp {
+  GURL URL = GURL(kPasscodeArticleURL);
+  OpenNewTabCommand* command = [OpenNewTabCommand commandWithURLFromChrome:URL];
+  id<SceneCommands> handler =
+      HandlerForProtocol(self.browser->GetCommandDispatcher(), SceneCommands);
+  [handler closePresentedViewsAndOpenURL:command];
 }
 
 // Called when fetching trusted vault keys for passkeys finishes. If there are
