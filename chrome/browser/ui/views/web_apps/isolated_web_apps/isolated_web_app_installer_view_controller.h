@@ -120,6 +120,7 @@ class IsolatedWebAppInstallerViewController
   void OnChildDialogCanceled() override;
   void OnChildDialogAccepted() override;
   void OnChildDialogDestroying() override;
+  void OnUpdateChannelSelected(std::optional<UpdateChannel> channel) override;
 
   // `IsolatedWebAppInstallerModel::Observer`:
   void OnStepChanged() override;

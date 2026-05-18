@@ -213,8 +213,13 @@ IwaBundleIdToUpdateOptionsMap GetIsolatedWebAppsWithOnlyUserManagement(
       continue;
     }
 
+    UpdateChannel update_channel =
+        iwa.isolation_data()->update_channel().value_or(
+            UpdateChannel::default_channel());
     result[url_info->web_bundle_id()] = IsolatedWebAppUpdateOptions(
-        *iwa.isolation_data()->update_manifest_url());
+        *iwa.isolation_data()->update_manifest_url(), update_channel,
+        /*allow_downgrades=*/false,
+        /*pinned_version=*/std::nullopt);
   }
   return result;
 }

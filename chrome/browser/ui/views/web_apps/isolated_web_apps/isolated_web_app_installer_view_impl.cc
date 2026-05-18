@@ -228,7 +228,8 @@ class UpdateSettingsPane : public views::BoxLayoutView {
   METADATA_HEADER(UpdateSettingsPane, views::BoxLayoutView)
 
  public:
-  UpdateSettingsPane() {
+  explicit UpdateSettingsPane(IsolatedWebAppInstallerView::Delegate* delegate)
+      : delegate_(delegate) {
     views::LayoutProvider* provider = views::LayoutProvider::Get();
 
     auto chevron = CreateUpdateSettingsToggle();
@@ -266,10 +267,6 @@ class UpdateSettingsPane : public views::BoxLayoutView {
     combobox_->SetModel(combobox_model_.get());
 
     combobox_->SetEnabled(channels.size() > 1);
-  }
-
-  const std::optional<UpdateChannel>& GetSelectedChannel() const {
-    return selected_channel_;
   }
 
  private:
@@ -348,20 +345,19 @@ class UpdateSettingsPane : public views::BoxLayoutView {
   }
 
   void OnUpdateChannelChanged() {
-    if (combobox_model_ && combobox_->GetSelectedIndex().has_value()) {
-      selected_channel_ =
-          combobox_model_->GetChannelAt(combobox_->GetSelectedIndex().value())
-              .channel();
-    } else {
-      selected_channel_ = std::nullopt;
+    std::optional<UpdateChannel> channel;
+    if (combobox_->GetSelectedIndex()) {
+      channel = combobox_model_->GetChannelAt(*combobox_->GetSelectedIndex())
+                    .channel();
     }
+    delegate_->OnUpdateChannelSelected(channel);
   }
 
+  raw_ptr<IsolatedWebAppInstallerView::Delegate> delegate_;
   raw_ptr<views::ToggleImageButton> chevron_;
   raw_ptr<views::BoxLayoutView> settings_container_;
   std::unique_ptr<UpdateChannelComboboxModel> combobox_model_;
   raw_ptr<views::Combobox> combobox_;
-  std::optional<UpdateChannel> selected_channel_;
 };
 BEGIN_METADATA(UpdateSettingsPane)
 END_METADATA
@@ -566,7 +562,7 @@ class ShowMetadataView : public InstallerDialogView {
 
     if (base::FeatureList::IsEnabled(kIwaUpdateChannelsInInstaller)) {
       update_settings_pane_ = contents_container->AddChildView(
-          std::make_unique<UpdateSettingsPane>());
+          std::make_unique<UpdateSettingsPane>(delegate));
     }
 
     SetContentsView(std::move(contents_container),
@@ -583,15 +579,6 @@ class ShowMetadataView : public InstallerDialogView {
     if (update_settings_pane_) {
       update_settings_pane_->SetUpdateChannels(channels);
     }
-  }
-
-  const std::optional<UpdateChannel>& GetSelectedChannel() const {
-    if (update_settings_pane_) {
-      return update_settings_pane_->GetSelectedChannel();
-    }
-    static const base::NoDestructor<std::optional<UpdateChannel>>
-        default_option(UpdateChannel::default_channel());
-    return *default_option;
   }
 
  private:
@@ -895,11 +882,6 @@ views::Widget* IsolatedWebAppInstallerViewImpl::ShowDialog(
                 std::nullopt);
           }},
       dialog);
-}
-
-const std::optional<UpdateChannel>&
-IsolatedWebAppInstallerViewImpl::GetSelectedUpdateChannel() const {
-  return show_metadata_view_->GetSelectedChannel();
 }
 
 views::Widget* IsolatedWebAppInstallerViewImpl::ShowChildDialog(

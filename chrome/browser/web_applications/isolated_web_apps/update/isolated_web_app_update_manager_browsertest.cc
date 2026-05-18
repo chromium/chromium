@@ -14,6 +14,7 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/callback_helpers.h"
+#include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
@@ -33,6 +34,9 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/views/web_apps/isolated_web_apps/isolated_web_app_installer_coordinator.h"
+#include "chrome/browser/ui/views/web_apps/isolated_web_apps/isolated_web_app_installer_view_controller.h"
+#include "chrome/browser/ui/views/web_apps/isolated_web_apps/test_isolated_web_app_installer_model_observer.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
 #include "chrome/browser/web_applications/isolated_web_apps/commands/cleanup_orphaned_isolated_web_apps_command.h"
@@ -55,6 +59,7 @@
 #include "chrome/browser/web_applications/test/web_app_test_observers.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/browser/web_applications/web_app_registry_update.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -79,6 +84,16 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/base/models/combobox_model.h"
+#include "ui/views/controls/combobox/combobox.h"
+#include "ui/views/test/dialog_test.h"
+#include "ui/views/widget/widget.h"
+#include "ui/views/widget/widget_delegate.h"
+#include "ui/views/window/dialog_delegate.h"
+
+#if BUILDFLAG(IS_CHROMEOS)
+#include "ash/constants/ash_pref_names.h"
+#endif
 
 namespace web_app {
 namespace {
@@ -1122,6 +1137,131 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerBrowserTest,
   histogram_tester.ExpectTotalCount("WebApp.Isolated.UpdateError",
                                     /*expected_count=*/0);
 }
+
+#if BUILDFLAG(IS_CHROMEOS)
+class IsolatedWebAppUpdateManagerUserInstallBrowserTest
+    : public IsolatedWebAppUpdateManagerBrowserTest {
+ public:
+  IsolatedWebAppUpdateManagerUserInstallBrowserTest() {
+    user_install_scoped_feature_list_.InitAndEnableFeature(
+        features::kIsolatedWebAppUnmanagedInstall);
+  }
+
+  void SetUpOnMainThread() override {
+    IsolatedWebAppUpdateManagerBrowserTest::SetUpOnMainThread();
+    profile()->GetPrefs()->SetBoolean(ash::prefs::kIsolatedWebAppsEnabled,
+                                      true);
+  }
+
+ private:
+  base::test::ScopedFeatureList user_install_scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerUserInstallBrowserTest,
+                       SucceedsWithNonDefaultChannelForUserInstalledApp) {
+  base::HistogramTester histogram_tester;
+
+  GURL update_manifest_url =
+      iwa_test_update_server_.GetUpdateManifestUrl(GetWebBundleId());
+
+  auto app = IsolatedWebAppBuilder(
+                 ManifestBuilder().SetVersion("1.0.0").SetUpdateManifestUrl(
+                     update_manifest_url))
+                 .BuildBundle(GetWebBundleId(), {kKeyPair1});
+  app->TrustSigningKey();
+
+  data_provider_->Update([&](auto& update) {
+    update.AddToUserInstallAllowlist(
+        app->web_bundle_id(),
+        ChromeIwaRuntimeDataProvider::UserInstallAllowlistItemData(
+            /*enterprise_name=*/"fancy comp"));
+  });
+
+  // Start installation using IsolatedWebAppInstallerCoordinator
+  base::test::TestFuture<void> on_closed_future;
+  IsolatedWebAppInstallerCoordinator* coordinator =
+      IsolatedWebAppInstallerCoordinator::CreateAndStart(
+          profile(), app->path(), on_closed_future.GetCallback());
+
+  IsolatedWebAppInstallerModel* model = coordinator->GetModelForTesting();
+  ASSERT_TRUE(model);
+
+  IsolatedWebAppInstallerViewController* controller =
+      coordinator->GetControllerForTesting();
+  ASSERT_TRUE(controller);
+
+  // Wait for the step to change to kShowMetadata
+  TestIsolatedWebAppInstallerModelObserver model_observer(model);
+  model_observer.WaitForStepChange(
+      IsolatedWebAppInstallerModel::Step::kShowMetadata);
+
+  // Force set the channel in the model to simulate user selection.
+  model->SetSelectedChannel(kBetaChannel);
+
+  views::Widget* main_widget = controller->GetWidgetForTesting();
+  ASSERT_TRUE(main_widget);
+
+  // Simulate accepting the metadata screen to move to confirmation dialog
+  main_widget->widget_delegate()->AsDialogDelegate()->AcceptDialog();
+
+  // Simulate accepting the confirmation dialog to start install
+  views::Widget* child_widget = controller->GetChildWidgetForTesting();
+  ASSERT_TRUE(child_widget);
+  views::test::AcceptDialog(child_widget);
+
+  // Wait for the install to complete
+  model_observer.WaitForStepChange(
+      IsolatedWebAppInstallerModel::Step::kInstallSuccess);
+
+  // Wait for any pending tasks (like the asynchronous DB update) to complete.
+  base::RunLoop().RunUntilIdle();
+
+  // Verify that the app is installed and has the channel set in DB by the
+  // installer
+  const WebApp* web_app = GetIsolatedWebApp(model->bundle_metadata().app_id());
+  ASSERT_TRUE(web_app);
+  EXPECT_EQ(web_app->isolation_data()->update_channel(), kBetaChannel);
+
+  // Add new version to update server on that channel
+  AddNewBundleToUpdateServer("app-2.0.0", "2.0.0", {{kBetaChannel}});
+
+  // Trigger update and verify
+  UpdateDiscoveryTaskFuture future;
+  UpdateDiscoveryTaskResultWaiter waiter(provider(), web_app->app_id(),
+                                         future.GetCallback());
+
+  WebAppTestManifestUpdatedObserver manifest_updated_observer(
+      &provider().install_manager());
+  manifest_updated_observer.BeginListening({web_app->app_id()});
+
+  EXPECT_THAT(provider().isolated_web_app_update_manager().DiscoverUpdatesNow(),
+              Eq(1ul));
+  EXPECT_THAT(future.Take(),
+              ValueIs(IsolatedWebAppUpdateDiscoveryTask::Success::
+                          kUpdateFoundAndSavedInDatabase));
+
+  manifest_updated_observer.Wait();
+  EXPECT_THAT(GetIsolatedWebApp(web_app->app_id()),
+              test::IwaIs(Eq("app-2.0.0"),
+                          test::IsolationDataIs(
+                              Property("variant",
+                                       &IsolatedWebAppStorageLocation::variant,
+                                       VariantWith<IwaStorageOwnedBundle>(_)),
+                              Eq(*IwaVersion::Create("2.0.0")),
+                              /*controlled_frame_partitions=*/_,
+                              /*pending_update_info=*/Eq(std::nullopt),
+                              /*integrity_block_data=*/_)));
+
+  histogram_tester.ExpectBucketCount("WebApp.Isolated.UpdateSuccess",
+                                     /*sample=*/true, /*expected_count=*/1);
+  histogram_tester.ExpectTotalCount("WebApp.Isolated.UpdateError",
+                                    /*expected_count=*/0);
+
+  // Cleanup installer
+  views::test::AcceptDialog(main_widget);  // Closes the success screen
+  ASSERT_TRUE(on_closed_future.Wait());
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerBrowserTest,
                        NoUpdatesOnCurrentChannel) {

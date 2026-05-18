@@ -62,8 +62,6 @@ class IsolatedWebAppInstallerViewImpl : public IsolatedWebAppInstallerView {
       const IsolatedWebAppInstallerModel::Dialog& dialog,
       const views::DialogDelegate* dialog_delegate) override;
 
-  const std::optional<UpdateChannel>& GetSelectedUpdateChannel() const override;
-
  private:
   template <class T, class... Args>
   T* MakeAndAddChildView(Args&&... args) {

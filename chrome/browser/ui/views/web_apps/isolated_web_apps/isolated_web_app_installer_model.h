@@ -92,6 +92,13 @@ class IsolatedWebAppInstallerModel {
     available_channels_ = std::move(channels);
   }
 
+  const std::optional<UpdateChannel>& selected_channel() const {
+    return selected_channel_;
+  }
+  void SetSelectedChannel(std::optional<UpdateChannel> selected_channel) {
+    selected_channel_ = std::move(selected_channel);
+  }
+
  private:
   base::ObserverList<Observer> observers_;
   IwaSourceBundleWithMode source_;
@@ -99,6 +106,7 @@ class IsolatedWebAppInstallerModel {
   std::optional<SignedWebBundleMetadata> bundle_metadata_;
   std::optional<Dialog> dialog_;
   std::vector<UpdateManifest::ChannelMetadata> available_channels_;
+  std::optional<UpdateChannel> selected_channel_;
 };
 
 }  // namespace web_app

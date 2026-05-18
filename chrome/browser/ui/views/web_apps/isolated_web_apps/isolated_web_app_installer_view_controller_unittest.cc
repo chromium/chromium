@@ -88,7 +88,6 @@ using ::testing::VariantWith;
 using Step = IsolatedWebAppInstallerModel::Step;
 
 constexpr std::string_view kIconPath = "/icon.png";
-const std::optional<UpdateChannel> kNoChannelSelected = std::nullopt;
 
 MATCHER_P3(WithMetadata, app_id, app_name, version, "") {
   return ExplainMatchResult(
@@ -148,10 +147,7 @@ class MockView : public IsolatedWebAppInstallerView {
       (const SignedWebBundleMetadata& bundle_metadata,
        const std::vector<UpdateManifest::ChannelMetadata>& available_channels),
       (override));
-  MOCK_METHOD(const std::optional<UpdateChannel>&,
-              GetSelectedUpdateChannel,
-              (),
-              (const, override));
+
   MOCK_METHOD(void,
               ShowInstallScreen,
               (const SignedWebBundleMetadata& bundle_metadata),
@@ -462,8 +458,6 @@ TEST_F(IsolatedWebAppInstallerViewControllerTest,
 
   EXPECT_CALL(view, UpdateInstallProgress(_)).Times(AnyNumber());
   EXPECT_CALL(view, ShowInstallScreen(metadata));
-  EXPECT_CALL(view, GetSelectedUpdateChannel())
-      .WillOnce(testing::ReturnRef(kNoChannelSelected));
   EXPECT_CALL(view, ShowInstallSuccessScreen(metadata));
 
   controller.OnChildDialogAccepted();
@@ -500,8 +494,6 @@ TEST_F(IsolatedWebAppInstallerViewControllerTest, CanLaunchAppAfterInstall) {
   controller.SetViewForTesting(&view);
 
   EXPECT_CALL(view, ShowInstallScreen(metadata));
-  EXPECT_CALL(view, GetSelectedUpdateChannel())
-      .WillOnce(testing::ReturnRef(kNoChannelSelected));
   EXPECT_CALL(view, UpdateInstallProgress(_)).Times(AnyNumber());
   EXPECT_CALL(view, ShowInstallSuccessScreen(metadata));
 

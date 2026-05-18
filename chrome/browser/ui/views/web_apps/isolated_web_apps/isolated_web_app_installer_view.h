@@ -50,6 +50,8 @@ class IsolatedWebAppInstallerView : public views::View {
     virtual void OnChildDialogCanceled() = 0;
     virtual void OnChildDialogAccepted() = 0;
     virtual void OnChildDialogDestroying() = 0;
+    virtual void OnUpdateChannelSelected(
+        std::optional<UpdateChannel> channel) = 0;
   };
 
   // Configures the buttons of the given DialogDelegate.
@@ -80,9 +82,6 @@ class IsolatedWebAppInstallerView : public views::View {
   virtual views::Widget* ShowDialog(
       const IsolatedWebAppInstallerModel::Dialog& dialog,
       const views::DialogDelegate* dialog_delegate) = 0;
-
-  virtual const std::optional<UpdateChannel>& GetSelectedUpdateChannel()
-      const = 0;
 };
 
 }  // namespace web_app

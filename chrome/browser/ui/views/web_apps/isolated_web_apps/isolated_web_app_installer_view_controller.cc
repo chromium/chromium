@@ -585,7 +585,7 @@ void IsolatedWebAppInstallerViewController::StoreIwaUpdateChannel(
   if (result.has_value()) {
     if (base::FeatureList::IsEnabled(kIwaUpdateChannelsInInstaller)) {
       std::optional<UpdateChannel> selected_channel =
-          view_->GetSelectedUpdateChannel();
+          model_->selected_channel();
 
       if (selected_channel.has_value()) {
         web_app_provider_->scheduler().ScheduleCallback(
@@ -605,6 +605,11 @@ void IsolatedWebAppInstallerViewController::StoreIwaUpdateChannel(
 
 void IsolatedWebAppInstallerViewController::OnShowMetadataLearnMoreClicked() {
   // TODO(crbug.com/40280769): Implement
+}
+
+void IsolatedWebAppInstallerViewController::OnUpdateChannelSelected(
+    std::optional<UpdateChannel> channel) {
+  model_->SetSelectedChannel(std::move(channel));
 }
 
 void IsolatedWebAppInstallerViewController::OnSettingsLinkClicked() {
