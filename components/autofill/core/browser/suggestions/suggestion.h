@@ -403,6 +403,7 @@ struct Suggestion {
     kSaveAndFill,
     kAndroidMessages,
     kSpark,
+    kSadTab,
   };
 
   // This enum is used to control filtration of suggestions (see it's used in

@@ -379,6 +379,7 @@ int CreditCard::IconResourceId(Suggestion::Icon icon) {
     case Suggestion::Icon::kAndroidMessages:
     case Suggestion::Icon::kFlight:
     case Suggestion::Icon::kSpark:
+    case Suggestion::Icon::kSadTab:
       NOTREACHED();
   }
   NOTREACHED();

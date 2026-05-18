@@ -195,6 +195,7 @@ std::u16string GetIconAccessibleName(Suggestion::Icon icon) {
     case Suggestion::Icon::kUndo:
     case Suggestion::Icon::kAndroidMessages:
     case Suggestion::Icon::kSpark:
+    case Suggestion::Icon::kSadTab:
       return std::u16string();
   }
   NOTREACHED();
@@ -423,6 +424,8 @@ std::optional<ui::ImageModel> GetIconImageModelFromIcon(Suggestion::Icon icon) {
     case Suggestion::Icon::kError:
       return ui::ImageModel::FromVectorIcon(vector_icons::kErrorOldIcon,
                                             ui::kColorSysError, kIconSize);
+    case Suggestion::Icon::kSadTab:
+      return ImageModelFromVectorIcon(kSadTabOldIcon, kIconSize);
     case Suggestion::Icon::kFlight:
       return ImageModelFromVectorIcon(vector_icons::kFlightOldIcon,
                                       kChromeRefreshIconSize);

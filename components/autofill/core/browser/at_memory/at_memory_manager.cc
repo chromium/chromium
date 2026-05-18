@@ -319,6 +319,7 @@ Suggestion CreateNoConnectionSuggestion() {
   suggestion.acceptability =
       Suggestion::Acceptability::kUnacceptableWithDeactivatedStyle;
   suggestion.filtration_policy = Suggestion::FiltrationPolicy::kStatic;
+  suggestion.icon = Suggestion::Icon::kSadTab;
   return suggestion;
 }
 

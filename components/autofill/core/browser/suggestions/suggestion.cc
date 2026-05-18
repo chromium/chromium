@@ -182,6 +182,8 @@ std::string_view ConvertIconToPrintableString(Suggestion::Icon icon) {
       return "kSaveAndFill";
     case Suggestion::Icon::kAndroidMessages:
       return "kAndroidMessages";
+    case Suggestion::Icon::kSadTab:
+      return "kSadTab";
   }
   NOTREACHED();
 }

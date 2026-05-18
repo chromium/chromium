@@ -1334,6 +1334,7 @@ TEST_P(AutofillExternalDelegateAtMemoryErrorTest, AtMemoryRemoteQuery_NoConnecti
                     IDS_AUTOFILL_AT_MEMORY_NO_CONNECTION)),
                 testing::Field(&Suggestion::type,
                                SuggestionType::kAtMemoryNoConnection),
+                testing::Field(&Suggestion::icon, Suggestion::Icon::kSadTab),
                 testing::Field(&Suggestion::acceptability,
                                Suggestion::Acceptability::
                                    kUnacceptableWithDeactivatedStyle))));
