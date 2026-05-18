@@ -14,6 +14,7 @@
 #include "base/metrics/user_metrics.h"
 #include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/shell_integration.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -37,6 +38,8 @@
 #include "chrome/browser/web_applications/web_app_screenshot_fetcher.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/grit/branded_strings.h"
+#include "chrome/grit/browser_resources.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/webapps/browser/banners/app_banner_manager.h"
 #include "components/webapps/browser/banners/web_app_banner_data.h"
@@ -47,6 +50,13 @@
 #include "components/webapps/browser/installable/ml_installability_promoter.h"
 #include "components/webapps/browser/web_app_url_config.h"
 #include "content/public/browser/navigation_entry.h"
+#include "ui/base/l10n/l10n_util.h"
+#include "ui/base/models/image_model.h"
+#include "ui/base/resource/resource_bundle.h"
+
+#if BUILDFLAG(IS_MAC)
+#include "chrome/browser/web_applications/os_integration/mac/icon_utils.h"
+#endif
 
 #if BUILDFLAG(IS_CHROMEOS)
 // TODO(crbug.com/40147906): Enable gn check once it handles conditional
@@ -88,7 +98,6 @@ void OnWebAppInstallShowInstallDialog(
   os_type = InstallOsType::kWin;
 #endif
 
-
   switch (flow) {
     case WebAppInstallFlow::kInstallSite: {
       web_app_info->user_display_mode = mojom::UserDisplayMode::kStandalone;
@@ -108,13 +117,24 @@ void OnWebAppInstallShowInstallDialog(
         } else if (web_app_info->is_diy_app) {
           install_type = kDiy;
         }
+
+        std::optional<ui::ImageModel> folder_image_model;
+        std::optional<std::u16string> folder_label;
+#if BUILDFLAG(IS_MAC)
+        // TODO(crbug.com/513676704): Move image manipulation to the thread
+        // pool.
+        folder_image_model = ui::ImageModel::FromImageSkia(
+            GetMacAppsFolderImage(kLargeImageSize).AsImageSkia());
+        folder_label = shell_integration::GetAppShortcutsSubdirName();
+#endif
         auto progress_delay = std::make_unique<ProgressDelay>(
             kProgressDelay, kProgressDelaySteps);
         WebAppInstallFlowDialogDelegate::Show(
             initiator_web_contents, std::move(web_app_info),
             std::move(install_tracker), std::move(web_app_acceptance_callback),
             iph_state, std::move(screenshot_fetcher), show_initiating_origin,
-            install_type, os_type, std::move(progress_delay));
+            install_type, os_type, std::move(progress_delay),
+            folder_image_model, folder_label);
         return;
       }
 

@@ -31,6 +31,10 @@ namespace webapps {
 class MlInstallOperationTracker;
 }
 
+namespace ui {
+class ImageModel;
+}
+
 namespace web_app {
 
 class ProgressDelay;
@@ -85,7 +89,9 @@ class WebAppInstallFlowDialogDelegate : public WebAppModalDialogDelegate {
       bool show_initiating_origin,
       InstallDialogType dialog_type,
       InstallOsType os_type,
-      std::unique_ptr<ProgressDelay> progress_delay);
+      std::unique_ptr<ProgressDelay> progress_delay,
+      std::optional<ui::ImageModel> folder_image_model,
+      std::optional<std::u16string> folder_label);
 
   void SetProgressView(base::WeakPtr<WebAppInstallProgressView> progress_view) {
     progress_view_ = std::move(progress_view);

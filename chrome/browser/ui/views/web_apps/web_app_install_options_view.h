@@ -6,25 +6,21 @@
 #define CHROME_BROWSER_UI_VIEWS_WEB_APPS_WEB_APP_INSTALL_OPTIONS_VIEW_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/views/web_apps/web_app_install_flow_dialog_delegate.h"
-#include "ui/base/interaction/element_identifier.h"
+#include "ui/base/models/image_model.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/views/view.h"
+#include "url/gurl.h"
 
 namespace views {
 class Checkbox;
 class ImageView;
 }  // namespace views
-
-namespace gfx {
-class ImageSkia;
-}
-
-class GURL;
 
 namespace web_app {
 
@@ -37,13 +33,27 @@ class WebAppInstallOptionsView : public views::View {
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kCreateShortcutCheckboxId);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kPinToTaskbarCheckboxId);
 
+  // Encapsulates the parameters required to construct a
+  // WebAppInstallOptionsView.
+  struct OptionsData {
+    OptionsData();
+    OptionsData(OptionsData&&) noexcept;
+    OptionsData(const OptionsData&) = delete;
+    OptionsData& operator=(const OptionsData&) = delete;
+    ~OptionsData();
+
+    InstallOsType os_type = InstallOsType::kOther;
+    std::u16string title;
+    gfx::ImageSkia icon_image;
+    gfx::ImageSkia large_icon_image;
+    bool is_maskable = false;
+    GURL start_url;
+    std::optional<ui::ImageModel> folder_image_model;
+    std::optional<std::u16string> folder_label;
+  };
+
   static std::unique_ptr<WebAppInstallOptionsView> Create(
-      InstallOsType os_type,
-      const std::u16string& title,
-      const gfx::ImageSkia& icon_image,
-      const gfx::ImageSkia& large_icon_image,
-      bool is_maskable,
-      const GURL& start_url);
+      OptionsData options_data);
   ~WebAppInstallOptionsView() override;
 
   WebAppInstallOptionsView(const WebAppInstallOptionsView&) = delete;
@@ -69,12 +79,7 @@ class WebAppInstallOptionsView : public views::View {
   base::WeakPtr<WebAppInstallOptionsView> GetWeakPtr();
 
  private:
-  WebAppInstallOptionsView(InstallOsType os_type,
-                           const std::u16string& title,
-                           const gfx::ImageSkia& icon_image,
-                           const gfx::ImageSkia& large_icon_image,
-                           bool is_maskable,
-                           const GURL& start_url);
+  explicit WebAppInstallOptionsView(OptionsData options_data);
   void MaybeApplyOsIconMasking(const gfx::ImageSkia& icon_image,
                                bool is_maskable);
   void OnIconMaskingCompleteWithShadow(SkBitmap masked_bitmap);

@@ -23,7 +23,6 @@
 #include "base/metrics/user_metrics_action.h"
 #include "base/task/sequenced_task_runner.h"
 #include "build/build_config.h"
-#include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/apps/app_service/app_icon/app_icon_factory.h"
 #include "chrome/browser/apps/icon_standardizer.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
@@ -56,7 +55,6 @@
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/browser_resources.h"
 #include "chrome/grit/generated_resources.h"
-#include "chrome/grit/theme_resources.h"
 #include "components/constrained_window/constrained_window_views.h"
 #include "components/feature_engagement/public/event_constants.h"
 #include "components/feature_engagement/public/tracker.h"
@@ -73,6 +71,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/dialog_model.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
+#include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_rep.h"
 #include "ui/gfx/text_elider.h"
@@ -260,6 +259,8 @@ bool WebAppInstallFlowDialogDelegate::AdvanceToNextStepOrClose() {
   // Update install dialog step.
   switch (current_step_) {
     case InstallDialogStep::kInstallDialog:
+      // The installer options view is not available on other OSes apart from
+      // Windows, Mac and ChromeOS, so skip that here.
       if (os_type_ == InstallOsType::kOther) {
         current_step_ = InstallDialogStep::kProgress;
       } else {
@@ -650,7 +651,9 @@ WebAppInstallFlowDialogDelegate::Show(
     bool show_initiating_origin,
     InstallDialogType install_type,
     InstallOsType os_type,
-    std::unique_ptr<ProgressDelay> progress_delay) {
+    std::unique_ptr<ProgressDelay> progress_delay,
+    std::optional<ui::ImageModel> folder_image_model,
+    std::optional<std::u16string> folder_label) {
   auto* browser_context = web_contents->GetBrowserContext();
   Profile* profile = Profile::FromBrowserContext(browser_context);
   PrefService* prefs = profile->GetPrefs();
@@ -687,10 +690,27 @@ WebAppInstallFlowDialogDelegate::Show(
           delegate_weak_ptr));
   views::View* intro_focusable_view = intro_view->textfield();
 
-  auto options_view = WebAppInstallOptionsView::Create(
-      os_type, title, icon_image_32, icon_image_80,
-      dialog_image_info.is_maskable, start_url);
-  delegate->options_view_ = options_view->GetWeakPtr();
+  // kInstallerOptions
+  std::unique_ptr<WebAppInstallOptionsView> web_app_options_view;
+  if (os_type != InstallOsType::kOther) {
+    WebAppInstallOptionsView::OptionsData options_data;
+    options_data.os_type = os_type;
+    options_data.title = title;
+    options_data.icon_image = icon_image_32;
+    options_data.large_icon_image = icon_image_80;
+    options_data.is_maskable = dialog_image_info.is_maskable;
+    options_data.start_url = start_url;
+    options_data.folder_image_model = std::move(folder_image_model);
+    options_data.folder_label = std::move(folder_label);
+    web_app_options_view =
+        WebAppInstallOptionsView::Create(std::move(options_data));
+    delegate->options_view_ = web_app_options_view->GetWeakPtr();
+  }
+  // Not needed for kOther. This is skipped in AdvanceToNextStepOrClose.
+  std::unique_ptr<views::View> options_view =
+      web_app_options_view
+          ? std::unique_ptr<views::View>(std::move(web_app_options_view))
+          : std::make_unique<views::View>();
 
   auto progress_view = std::make_unique<WebAppInstallProgressView>();
   auto progress_view_weak_ptr = progress_view->GetWeakPtr();

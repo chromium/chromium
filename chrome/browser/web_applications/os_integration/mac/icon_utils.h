@@ -23,6 +23,10 @@ namespace web_app {
 // design templates.
 gfx::Image CreateAppleMaskedAppIcon(const gfx::Image& base_icon);
 
+// Creates an image of the macOS apps folder (NSImageNameFolder)
+// with the Chrome Apps launcher logo overlaid on it.
+gfx::Image GetMacAppsFolderImage(int size);
+
 #ifdef __OBJC__
 // Check if an icon has a solid color border
 bool HasSolidColorBorder(const gfx::Image& icon);
