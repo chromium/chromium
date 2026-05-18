@@ -216,10 +216,6 @@ void ChromeBrowserFieldTrials::RegisterFeatureOverrides(
   // factors.
   feature_overrides.EnableFeature(
       autofill::features::kAutofillAndroidDesktopKeyboardAccessoryRevamp);
-  // Enable by default for desktop platforms, pending a tablet rollout using the
-  // same flag.
-  // TODO(crbug.com/445475304): Remove when tablet rollout is complete.
-  feature_overrides.EnableFeature(feed::kAndroidOpenIncognitoAsWindow);
 
   // Enable ANGLE/Vulkan features.
   // TODO (crbug.com//376280554): Enable these features with runtime checks
