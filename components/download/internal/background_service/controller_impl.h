@@ -145,6 +145,9 @@ class ControllerImpl : public Controller,
   // internal state initialization.
   void AttemptToFinalizeSetup();
 
+  // Posts a task to execute AttemptToFinalizeSetup().
+  void PostAttemptToFinalizeSetup();
+
   // Called when setup and recovery failed.  Shuts down the service and notifies
   // the Clients.
   void HandleUnrecoverableSetup();

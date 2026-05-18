@@ -456,13 +456,13 @@ void ControllerImpl::HandleTaskFinished(DownloadTaskType task_type,
 void ControllerImpl::OnDriverReady(bool success) {
   DCHECK(!startup_status_.driver_ok.has_value());
   startup_status_.driver_ok = success;
-  AttemptToFinalizeSetup();
+  PostAttemptToFinalizeSetup();
 }
 
 void ControllerImpl::OnDriverHardRecoverComplete(bool success) {
   DCHECK(!startup_status_.driver_ok.has_value());
   startup_status_.driver_ok = success;
-  AttemptToFinalizeSetup();
+  PostAttemptToFinalizeSetup();
 }
 
 void ControllerImpl::OnDownloadCreated(const DriverEntry& download) {
@@ -568,25 +568,25 @@ void ControllerImpl::OnUploadProgress(const std::string& guid,
 void ControllerImpl::OnFileMonitorReady(bool success) {
   DCHECK(!startup_status_.file_monitor_ok.has_value());
   startup_status_.file_monitor_ok = success;
-  AttemptToFinalizeSetup();
+  PostAttemptToFinalizeSetup();
 }
 
 void ControllerImpl::OnFileMonitorHardRecoverComplete(bool success) {
   DCHECK(!startup_status_.file_monitor_ok.has_value());
   startup_status_.file_monitor_ok = success;
-  AttemptToFinalizeSetup();
+  PostAttemptToFinalizeSetup();
 }
 
 void ControllerImpl::OnModelReady(bool success) {
   DCHECK(!startup_status_.model_ok.has_value());
   startup_status_.model_ok = success;
-  AttemptToFinalizeSetup();
+  PostAttemptToFinalizeSetup();
 }
 
 void ControllerImpl::OnModelHardRecoverComplete(bool success) {
   DCHECK(!startup_status_.model_ok.has_value());
   startup_status_.model_ok = success;
-  AttemptToFinalizeSetup();
+  PostAttemptToFinalizeSetup();
 }
 
 void ControllerImpl::OnItemAdded(bool success,
@@ -695,7 +695,7 @@ void ControllerImpl::OnDeviceStatusChanged(const DeviceStatus& device_status) {
   ActivateMoreDownloads();
 }
 
-void ControllerImpl::AttemptToFinalizeSetup() {
+void ControllerImpl::PostAttemptToFinalizeSetup() {
   DCHECK(controller_state_ == State::INITIALIZING ||
          controller_state_ == State::RECOVERING);
 
@@ -721,6 +721,14 @@ void ControllerImpl::AttemptToFinalizeSetup() {
     return;
   }
 
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(&ControllerImpl::AttemptToFinalizeSetup,
+                                weak_ptr_factory_.GetWeakPtr()));
+}
+
+void ControllerImpl::AttemptToFinalizeSetup() {
+  bool in_recovery = controller_state_ == State::RECOVERING;
+
   device_status_listener_->SetObserver(this);
   device_status_listener_->Start(config_->network_startup_delay);
   PollActiveDriverDownloads();
@@ -733,6 +741,7 @@ void ControllerImpl::AttemptToFinalizeSetup() {
 
   controller_state_ = State::READY;
 
+  log_sink_->OnServiceStatusChanged();
   log_sink_->OnServiceDownloadsAvailable();
 
   UpdateDriverStates();
