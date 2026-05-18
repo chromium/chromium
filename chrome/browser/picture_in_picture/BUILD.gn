@@ -6,6 +6,13 @@ import("//chrome/common/features.gni")
 
 assert(is_win || is_mac || is_linux || is_chromeos || is_android)
 
+# The window occlusion logic is currently for desktop only, and the
+# WebContentsObserver-based implementation does not work on Linux
+# since it depends on aura::WindowOcclusionTracker which is not
+# supported on Linux.
+use_web_contents_occlusion_helper = is_win || is_chromeos || is_mac
+use_stub_occlusion_helper = is_android || is_linux
+
 source_set("picture_in_picture") {
   sources = [
     "picture_in_picture_bounds_cache.h",
@@ -62,6 +69,11 @@ source_set("picture_in_picture") {
       "//chrome/browser/ui/android/tab_model",
     ]
   }
+
+  if (use_web_contents_occlusion_helper) {
+    sources +=
+        [ "auto_picture_in_picture_window_occlusion_helper_web_contents.h" ]
+  }
 }
 
 source_set("impl") {
@@ -74,7 +86,6 @@ source_set("impl") {
     "auto_picture_in_picture_tab_helper.cc",
     "auto_picture_in_picture_tab_observer_helper_base.cc",
     "auto_picture_in_picture_window_occlusion_helper_base.cc",
-    "auto_picture_in_picture_window_occlusion_helper_stub.cc",
     "auto_pip_setting_helper.cc",
   ]
 
@@ -145,6 +156,15 @@ source_set("impl") {
       "//ui/views",
     ]
   }
+
+  if (use_web_contents_occlusion_helper) {
+    sources +=
+        [ "auto_picture_in_picture_window_occlusion_helper_web_contents.cc" ]
+  }
+  if (use_stub_occlusion_helper) {
+    sources += [ "auto_picture_in_picture_window_occlusion_helper_stub.cc" ]
+  }
+
   if (use_ozone) {
     deps += [ "//ui/ozone" ]
   }
@@ -273,9 +293,28 @@ if (!is_android) {
       deps += [ "//ui/ozone" ]
     }
   }
-}
 
-if (!is_android) {
+  source_set("interactive_ui_tests") {
+    testonly = true
+
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+    if (use_stub_occlusion_helper) {
+      sources = []
+    } else {
+      sources =
+          [ "auto_picture_in_picture_window_occlusion_interactive_uitest.cc" ]
+    }
+
+    deps = [
+      ":picture_in_picture",
+      ":test_support_ui",
+      "//base/test:test_support",
+      "//chrome/browser/ui",
+      "//testing/gtest",
+    ]
+  }
+
   source_set("test_support_ui") {
     testonly = true
     sources = [

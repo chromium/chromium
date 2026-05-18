@@ -11453,6 +11453,7 @@ if (!is_android && !is_chromeos_device) {
       "//chrome/browser/permissions",
       "//chrome/browser/permissions:interactive_ui_tests",
       "//chrome/browser/picture_in_picture",
+      "//chrome/browser/picture_in_picture:interactive_ui_tests",
       "//chrome/browser/policy:test_support",
       "//chrome/browser/prefs",
       "//chrome/browser/prefs:util",
