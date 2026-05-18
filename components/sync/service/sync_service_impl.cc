@@ -38,6 +38,7 @@
 #include "components/signin/public/identity_manager/identity_utils.h"
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
 #include "components/sync/base/command_line_switches.h"
+#include "components/sync/base/custom_passphrase_bootstrap_token.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/base/data_type_histogram.h"
 #include "components/sync/base/features.h"
@@ -1424,15 +1425,17 @@ std::optional<PassphraseType> SyncServiceImpl::GetPassphraseType() const {
 }
 
 void SyncServiceImpl::SetEncryptionBootstrapToken(
-    const std::string& bootstrap_token) {
+    const CustomPassphraseBootstrapToken& bootstrap_token,
+    const os_crypt_async::Encryptor& encryptor) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  user_settings_->SetEncryptionBootstrapToken(bootstrap_token);
+  user_settings_->SetEncryptionBootstrapToken(bootstrap_token, encryptor);
   SendExplicitPassphraseToPlatformClient();
 }
 
-std::string SyncServiceImpl::GetEncryptionBootstrapToken() const {
+CustomPassphraseBootstrapToken SyncServiceImpl::GetEncryptionBootstrapToken(
+    const os_crypt_async::Encryptor& encryptor) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return user_settings_->GetEncryptionBootstrapToken();
+  return user_settings_->GetEncryptionBootstrapToken(encryptor);
 }
 
 bool SyncServiceImpl::IsCustomPassphraseAllowed() const {
@@ -2180,17 +2183,14 @@ void SyncServiceImpl::SendExplicitPassphraseToPlatformClientImpl() {
     return;
   }
 
-  std::unique_ptr<syncer::Nigori> nigori_key =
-      crypto_.GetExplicitPassphraseDecryptionNigoriKey();
-  if (!nigori_key) {
+  CHECK(crypto_.GetEncryptor());
+  CustomPassphraseBootstrapToken token =
+      user_settings_->GetEncryptionBootstrapToken(*crypto_.GetEncryptor());
+  if (token.IsEmpty()) {
     return;
   }
 
-  sync_pb::NigoriKey proto;
-  proto.set_deprecated_name(nigori_key->GetKeyName());
-  nigori_key->ExportKeys(proto.mutable_deprecated_user_key(),
-                         proto.mutable_encryption_key(),
-                         proto.mutable_mac_key());
+  const sync_pb::NigoriKey& proto = token.ToProto();
   int32_t byte_size = proto.ByteSizeLong();
   std::vector<uint8_t> bytes(byte_size);
   proto.SerializeToArray(bytes.data(), byte_size);

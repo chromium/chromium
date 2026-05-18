@@ -62,6 +62,7 @@ class OSCryptAsync;
 namespace syncer {
 
 class BackendMigrator;
+class CustomPassphraseBootstrapToken;
 class SyncFeatureStatusForMigrationsRecorder;
 class SyncPrefsPolicyHandler;
 
@@ -207,8 +208,11 @@ class SyncServiceImpl : public SyncService,
   void ReconfigureDataTypesDueToCrypto() override;
   void PassphraseTypeChanged(PassphraseType passphrase_type) override;
   std::optional<PassphraseType> GetPassphraseType() const override;
-  void SetEncryptionBootstrapToken(const std::string& bootstrap_token) override;
-  std::string GetEncryptionBootstrapToken() const override;
+  void SetEncryptionBootstrapToken(
+      const CustomPassphraseBootstrapToken& bootstrap_token,
+      const os_crypt_async::Encryptor& encryptor) override;
+  CustomPassphraseBootstrapToken GetEncryptionBootstrapToken(
+      const os_crypt_async::Encryptor& encryptor) const override;
 
   // SyncUserSettingsImpl::Delegate implementation.
   bool IsCustomPassphraseAllowed() const override;

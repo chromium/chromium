@@ -13,6 +13,7 @@
 #include "components/signin/public/base/gaia_id_hash.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_info.h"
+#include "components/sync/base/custom_passphrase_bootstrap_token.h"
 #include "components/sync/base/features.h"
 #include "components/sync/base/passphrase_enums.h"
 #include "components/sync/base/user_selectable_type.h"
@@ -420,16 +421,19 @@ bool SyncUserSettingsImpl::IsEncryptedDatatypePreferred() const {
   return !Intersection(preferred_types, encrypted_types).empty();
 }
 
-std::string SyncUserSettingsImpl::GetEncryptionBootstrapToken() const {
+CustomPassphraseBootstrapToken
+SyncUserSettingsImpl::GetEncryptionBootstrapToken(
+    const os_crypt_async::Encryptor& encryptor) const {
   const GaiaId& gaia_id = delegate_->GetSyncAccountInfoForPrefs().gaia;
   if (gaia_id.empty()) {
-    return std::string();
+    return CustomPassphraseBootstrapToken();
   }
-  return prefs_->GetEncryptionBootstrapTokenForAccount(gaia_id);
+  return prefs_->GetEncryptionBootstrapTokenForAccount(encryptor, gaia_id);
 }
 
 void SyncUserSettingsImpl::SetEncryptionBootstrapToken(
-    const std::string& token) {
+    const CustomPassphraseBootstrapToken& token,
+    const os_crypt_async::Encryptor& encryptor) {
   const GaiaId& gaia_id = delegate_->GetSyncAccountInfoForPrefs().gaia;
   if (gaia_id.empty()) {
     // The user must be signed in, so the only legit scenario where SyncService
@@ -437,7 +441,7 @@ void SyncUserSettingsImpl::SetEncryptionBootstrapToken(
     CHECK(prefs_->IsLocalSyncEnabled());
     return;
   }
-  prefs_->SetEncryptionBootstrapTokenForAccount(token, gaia_id);
+  prefs_->SetEncryptionBootstrapTokenForAccount(token, encryptor, gaia_id);
 }
 
 bool SyncUserSettingsImpl::IsSyncClientDisabledByPolicy() const {

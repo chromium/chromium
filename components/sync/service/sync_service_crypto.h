@@ -28,6 +28,8 @@ class Encryptor;
 
 namespace syncer {
 
+class CustomPassphraseBootstrapToken;
+
 // This class functions as mostly independent component of SyncService that
 // handles things related to encryption, including holding lots of state and
 // encryption communications with the sync thread.
@@ -44,8 +46,10 @@ class SyncServiceCrypto : public SyncEncryptionHandler::Observer,
     virtual void PassphraseTypeChanged(PassphraseType passphrase_type) = 0;
     virtual std::optional<PassphraseType> GetPassphraseType() const = 0;
     virtual void SetEncryptionBootstrapToken(
-        const std::string& bootstrap_token) = 0;
-    virtual std::string GetEncryptionBootstrapToken() const = 0;
+        const CustomPassphraseBootstrapToken& bootstrap_token,
+        const os_crypt_async::Encryptor& encryptor) = 0;
+    virtual CustomPassphraseBootstrapToken GetEncryptionBootstrapToken(
+        const os_crypt_async::Encryptor& encryptor) const = 0;
   };
 
   // `delegate` and `trusted_vault_client` must not be null and must outlive
@@ -91,8 +95,9 @@ class SyncServiceCrypto : public SyncEncryptionHandler::Observer,
   void SetSyncEngine(const CoreAccountInfo& account_info, SyncEngine* engine);
 
   // Must be called once an encryptor is available, before any method that
-  // encrypts/decrypts is called. May be called with nullptr.
+  // encrypts/decrypts is called. `encryptor` must not be null.
   void SetEncryptor(std::unique_ptr<os_crypt_async::Encryptor> encryptor);
+  const os_crypt_async::Encryptor* GetEncryptor() const;
 
   // Creates a proxy observer object that will post calls to this thread.
   std::unique_ptr<SyncEncryptionHandler::Observer> GetEncryptionObserverProxy();
@@ -191,14 +196,7 @@ class SyncServiceCrypto : public SyncEncryptionHandler::Observer,
   // successful attempt.
   void MaybeSetDecryptionKeyFromBootstrapToken();
 
-  // Reads Nigori from bootstrap token. Returns nullptr if bootstrap token empty
-  // or corrupted.
-  std::unique_ptr<Nigori> ReadNigoriFromBootstrapToken(
-      const std::string& bootstrap_token) const;
 
-  // Serializes `nigori` as bootstrap token. Returns empty string in case of
-  // crypto/serialization failures.
-  std::string SerializeNigoriAsBootstrapToken(const Nigori& nigori);
 
   const raw_ptr<Delegate> delegate_;
 

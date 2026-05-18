@@ -15,6 +15,7 @@
 #include "components/os_crypt/async/browser/test_utils.h"
 #include "components/os_crypt/async/common/encryptor.h"
 #include "components/signin/public/identity_manager/account_info.h"
+#include "components/sync/base/custom_passphrase_bootstrap_token.h"
 #include "components/sync/base/time.h"
 #include "components/sync/engine/nigori/key_derivation_params.h"
 #include "components/sync/engine/nigori/nigori.h"
@@ -61,23 +62,17 @@ CoreAccountInfo MakeAccountInfoWithGaia(const GaiaId& gaia) {
   return result;
 }
 
-std::string CreateBootstrapToken(const std::string& passphrase,
-                                 const KeyDerivationParams& derivation_params,
-                                 const os_crypt_async::Encryptor& encryptor) {
+CustomPassphraseBootstrapToken CreateBootstrapToken(
+    const std::string& passphrase,
+    const KeyDerivationParams& derivation_params) {
   std::unique_ptr<Nigori> nigori =
       Nigori::CreateByDerivation(derivation_params, passphrase);
 
   sync_pb::NigoriKey proto;
+  proto.set_deprecated_name(nigori->GetKeyName());
   nigori->ExportKeys(proto.mutable_deprecated_user_key(),
                      proto.mutable_encryption_key(), proto.mutable_mac_key());
-
-  const std::string serialized_key = proto.SerializeAsString();
-  EXPECT_FALSE(serialized_key.empty());
-
-  std::string encrypted_key;
-  EXPECT_TRUE(encryptor.EncryptString(serialized_key, &encrypted_key));
-
-  return base::Base64Encode(encrypted_key);
+  return CustomPassphraseBootstrapToken::FromProto(std::move(proto));
 }
 
 MATCHER(IsScryptKeyDerivationParams, "") {
@@ -86,26 +81,15 @@ MATCHER(IsScryptKeyDerivationParams, "") {
          !params.scrypt_salt().empty();
 }
 
-MATCHER_P3(BootstrapTokenDerivedFrom,
+MATCHER_P2(BootstrapTokenDerivedFrom,
            expected_passphrase,
            expected_derivation_params,
-           encryptor,
            "") {
-  const std::string& given_bootstrap_token = arg;
-  std::string decoded_key;
-  if (!base::Base64Decode(given_bootstrap_token, &decoded_key)) {
+  const CustomPassphraseBootstrapToken& given_token = arg;
+  if (given_token.IsEmpty()) {
     return false;
   }
-
-  std::string decrypted_key;
-  if (!encryptor.get().DecryptString(decoded_key, &decrypted_key)) {
-    return false;
-  }
-
-  sync_pb::NigoriKey given_key;
-  if (!given_key.ParseFromString(decrypted_key)) {
-    return false;
-  }
+  const sync_pb::NigoriKey& given_key = given_token.ToProto();
 
   std::unique_ptr<Nigori> expected_nigori = Nigori::CreateByDerivation(
       expected_derivation_params, expected_passphrase);
@@ -132,9 +116,13 @@ class MockDelegate : public SyncServiceCrypto::Delegate {
               (const override));
   MOCK_METHOD(void,
               SetEncryptionBootstrapToken,
-              (const std::string&),
+              (const CustomPassphraseBootstrapToken&,
+               const os_crypt_async::Encryptor&),
               (override));
-  MOCK_METHOD(std::string, GetEncryptionBootstrapToken, (), (const override));
+  MOCK_METHOD(CustomPassphraseBootstrapToken,
+              GetEncryptionBootstrapToken,
+              (const os_crypt_async::Encryptor&),
+              (const override));
 };
 
 class SyncServiceCryptoTest : public testing::Test {
@@ -217,7 +205,7 @@ TEST_F(SyncServiceCryptoTest, ShouldSetUpNewCustomPassphrase) {
   ASSERT_THAT(crypto_.GetPassphraseType(),
               Ne(PassphraseType::kCustomPassphrase));
 
-  EXPECT_CALL(delegate_, SetEncryptionBootstrapToken(Not(IsEmpty())));
+  EXPECT_CALL(delegate_, SetEncryptionBootstrapToken(_, _));
   EXPECT_CALL(engine_, SetEncryptionPassphrase(kTestPassphrase,
                                                IsScryptKeyDerivationParams()));
   crypto_.SetEncryptionPassphrase(kTestPassphrase);
@@ -271,9 +259,10 @@ TEST_F(SyncServiceCryptoTest, ShouldExposePassphraseRequired) {
   // the engine confirms with OnPassphraseAccepted().
   EXPECT_CALL(delegate_, ReconfigureDataTypesDueToCrypto()).Times(2);
   EXPECT_CALL(delegate_,
-              SetEncryptionBootstrapToken(BootstrapTokenDerivedFrom(
-                  kTestPassphrase, KeyDerivationParams::CreateForPbkdf2(),
-                  std::ref(*encryptor_))));
+              SetEncryptionBootstrapToken(
+                  BootstrapTokenDerivedFrom(
+                      kTestPassphrase, KeyDerivationParams::CreateForPbkdf2()),
+                  _));
   EXPECT_TRUE(crypto_.SetDecryptionPassphrase(kTestPassphrase));
   EXPECT_FALSE(crypto_.IsPassphraseRequired());
 }
@@ -303,9 +292,10 @@ TEST_F(SyncServiceCryptoTest,
   // GetExplicitPassphraseDecryptionNigoriKey() can be called.
   testing::InSequence seq;
   EXPECT_CALL(delegate_,
-              SetEncryptionBootstrapToken(BootstrapTokenDerivedFrom(
-                  kTestPassphrase, KeyDerivationParams::CreateForPbkdf2(),
-                  std::ref(*encryptor_))));
+              SetEncryptionBootstrapToken(
+                  BootstrapTokenDerivedFrom(
+                      kTestPassphrase, KeyDerivationParams::CreateForPbkdf2()),
+                  _));
   // The current implementation issues two reconfigurations: one immediately
   // after checking the passphrase in the UI thread and a second time later when
   // the engine confirms with OnPassphraseAccepted().
@@ -320,10 +310,9 @@ TEST_F(SyncServiceCryptoTest, ShouldSetupDecryptionWithBootstrapToken) {
   ASSERT_FALSE(crypto_.IsPassphraseRequired());
 
   // Mimic passphrase stored in bootstrap token.
-  ON_CALL(delegate_, GetEncryptionBootstrapToken())
+  ON_CALL(delegate_, GetEncryptionBootstrapToken(_))
       .WillByDefault(Return(CreateBootstrapToken(
-          kTestPassphrase, KeyDerivationParams::CreateForPbkdf2(),
-          *encryptor_)));
+          kTestPassphrase, KeyDerivationParams::CreateForPbkdf2())));
 
   // Expect setting decryption key without waiting till user enters the
   // passphrase.
@@ -348,10 +337,9 @@ TEST_F(SyncServiceCryptoTest,
   ASSERT_FALSE(crypto_.IsPassphraseRequired());
 
   // Mimic passphrase stored in bootstrap token.
-  ON_CALL(delegate_, GetEncryptionBootstrapToken())
+  ON_CALL(delegate_, GetEncryptionBootstrapToken(_))
       .WillByDefault(Return(CreateBootstrapToken(
-          kTestPassphrase, KeyDerivationParams::CreateForPbkdf2(),
-          *encryptor_)));
+          kTestPassphrase, KeyDerivationParams::CreateForPbkdf2())));
 
   // Mimic the engine determining that a passphrase is required. Note that
   // `crypto_` isn't yet aware of engine initialization - this is a legitimate
@@ -380,11 +368,9 @@ TEST_F(SyncServiceCryptoTest, ShouldIgnoreNotMatchingBootstrapToken) {
   crypto_.SetSyncEngine(CoreAccountInfo(), &engine_);
   ASSERT_FALSE(crypto_.IsPassphraseRequired());
 
-  // Mimic wrong passphrase stored in bootstrap token.
-  ON_CALL(delegate_, GetEncryptionBootstrapToken())
+  ON_CALL(delegate_, GetEncryptionBootstrapToken(_))
       .WillByDefault(Return(CreateBootstrapToken(
-          "wrongpassphrase", KeyDerivationParams::CreateForPbkdf2(),
-          *encryptor_)));
+          "wrongpassphrase", KeyDerivationParams::CreateForPbkdf2())));
 
   // Mimic the engine determining that a passphrase is required.
   EXPECT_CALL(delegate_, ReconfigureDataTypesDueToCrypto());
@@ -415,9 +401,8 @@ TEST_F(SyncServiceCryptoTest, ShouldIgnoreCorruptedBootstrapToken) {
   crypto_.SetSyncEngine(CoreAccountInfo(), &engine_);
   ASSERT_FALSE(crypto_.IsPassphraseRequired());
 
-  // Mimic storing corrupted bootstrap token.
-  ON_CALL(delegate_, GetEncryptionBootstrapToken())
-      .WillByDefault(Return("corrupted_token"));
+  ON_CALL(delegate_, GetEncryptionBootstrapToken(_))
+      .WillByDefault(Return(CustomPassphraseBootstrapToken()));
 
   // Mimic the engine determining that a passphrase is required.
   EXPECT_CALL(delegate_, ReconfigureDataTypesDueToCrypto());
@@ -445,11 +430,9 @@ TEST_F(SyncServiceCryptoTest, ShouldIgnoreCorruptedBootstrapToken) {
 TEST_F(SyncServiceCryptoTest, ShouldGetDecryptionKeyFromBootstrapToken) {
   const std::string kTestPassphrase = "somepassphrase";
 
-  // Mimic passphrase being stored in bootstrap token.
   ON_CALL(delegate_, GetEncryptionBootstrapToken)
       .WillByDefault(Return(CreateBootstrapToken(
-          kTestPassphrase, KeyDerivationParams::CreateForPbkdf2(),
-          *encryptor_)));
+          kTestPassphrase, KeyDerivationParams::CreateForPbkdf2())));
 
   std::unique_ptr<Nigori> expected_nigori = Nigori::CreateByDerivation(
       KeyDerivationParams::CreateForPbkdf2(), kTestPassphrase);
@@ -483,9 +466,8 @@ TEST_F(SyncServiceCryptoTest,
 
 TEST_F(SyncServiceCryptoTest,
        ShouldGetNullDecryptionKeyFromCorruptedBootstrapToken) {
-  // Mimic corrupted bootstrap token being stored.
   ON_CALL(delegate_, GetEncryptionBootstrapToken)
-      .WillByDefault(Return("corrupted_token"));
+      .WillByDefault(Return(CustomPassphraseBootstrapToken()));
   crypto_.SetSyncEngine(CoreAccountInfo(), &engine_);
   EXPECT_THAT(crypto_.GetExplicitPassphraseDecryptionNigoriKey(), IsNull());
 }

@@ -26,6 +26,8 @@ static_library("base") {
     "collaboration_id.h",
     "command_line_switches.cc",
     "command_line_switches.h",
+    "custom_passphrase_bootstrap_token.cc",
+    "custom_passphrase_bootstrap_token.h",
     "data_type.cc",
     "data_type.h",
     "data_type_histogram.cc",
@@ -74,6 +76,7 @@ static_library("base") {
   deps = [
     "//base",
     "//base:i18n",
+    "//components/os_crypt/async/common",
     "//components/pref_registry",
     "//components/prefs",
     "//components/signin/public/base",

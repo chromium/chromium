@@ -20,6 +20,7 @@
 
 namespace syncer {
 
+class CustomPassphraseBootstrapToken;
 class SyncServiceCrypto;
 
 class SyncUserSettingsImpl : public SyncUserSettings, public SyncPrefObserver {
@@ -55,8 +56,10 @@ class SyncUserSettingsImpl : public SyncUserSettings, public SyncPrefObserver {
   bool IsEncryptedDatatypePreferred() const;
   // The encryption bootstrap token is used for explicit passphrase users
   // (usually custom passphrase) and represents a user-entered passphrase.
-  std::string GetEncryptionBootstrapToken() const;
-  void SetEncryptionBootstrapToken(const std::string& token);
+  CustomPassphraseBootstrapToken GetEncryptionBootstrapToken(
+      const os_crypt_async::Encryptor& encryptor) const;
+  void SetEncryptionBootstrapToken(const CustomPassphraseBootstrapToken& token,
+                                   const os_crypt_async::Encryptor& encryptor);
   bool IsSyncClientDisabledByPolicy() const;
 
 #if BUILDFLAG(IS_CHROMEOS)

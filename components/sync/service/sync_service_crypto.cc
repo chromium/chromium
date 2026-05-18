@@ -14,6 +14,7 @@
 #include "base/strings/to_string.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/os_crypt/async/common/encryptor.h"
+#include "components/sync/base/custom_passphrase_bootstrap_token.h"
 #include "components/sync/base/passphrase_enums.h"
 #include "components/sync/engine/nigori/nigori.h"
 #include "components/sync/engine/sync_string_conversions.h"
@@ -112,6 +113,24 @@ bool CheckNigoriAgainstPendingKeys(const Nigori& nigori,
   return decrypt_result;
 }
 
+CustomPassphraseBootstrapToken BootstrapTokenFromNigori(const Nigori& nigori) {
+  sync_pb::NigoriKey proto;
+  proto.set_deprecated_name(nigori.GetKeyName());
+  nigori.ExportKeys(proto.mutable_deprecated_user_key(),
+                    proto.mutable_encryption_key(), proto.mutable_mac_key());
+  return CustomPassphraseBootstrapToken::FromProto(std::move(proto));
+}
+
+std::unique_ptr<Nigori> NigoriFromBootstrapToken(
+    const CustomPassphraseBootstrapToken& token) {
+  if (token.IsEmpty()) {
+    return nullptr;
+  }
+  const sync_pb::NigoriKey& proto = token.ToProto();
+  return Nigori::CreateByImport(proto.deprecated_user_key(),
+                                proto.encryption_key(), proto.mac_key());
+}
+
 }  // namespace
 
 SyncServiceCrypto::State::State() = default;
@@ -135,6 +154,11 @@ void SyncServiceCrypto::SetEncryptor(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   encryptor_ = std::move(encryptor);
   CHECK(encryptor_);
+}
+
+const os_crypt_async::Encryptor* SyncServiceCrypto::GetEncryptor() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return encryptor_.get();
 }
 
 void SyncServiceCrypto::Reset() {
@@ -229,8 +253,9 @@ void SyncServiceCrypto::SetEncryptionPassphrase(const std::string& passphrase) {
   std::unique_ptr<Nigori> nigori =
       Nigori::CreateByDerivation(key_derivation_params, passphrase);
   DCHECK(nigori);
-  delegate_->SetEncryptionBootstrapToken(
-      SerializeNigoriAsBootstrapToken(*nigori));
+  CHECK(encryptor_);
+  delegate_->SetEncryptionBootstrapToken(BootstrapTokenFromNigori(*nigori),
+                                         *encryptor_);
 }
 
 bool SyncServiceCrypto::SetDecryptionPassphrase(const std::string& passphrase) {
@@ -254,11 +279,12 @@ bool SyncServiceCrypto::SetDecryptionPassphrase(const std::string& passphrase) {
   std::unique_ptr<Nigori> nigori = Nigori::CreateByDerivation(
       state_.passphrase_key_derivation_params, passphrase);
   DCHECK(nigori);
+  CHECK(encryptor_);
 
   // Update the bootstrap token immediately, this is harmless as bootstrap token
   // is ignored if it doesn't contain the right key.
-  delegate_->SetEncryptionBootstrapToken(
-      SerializeNigoriAsBootstrapToken(*nigori));
+  delegate_->SetEncryptionBootstrapToken(BootstrapTokenFromNigori(*nigori),
+                                         *encryptor_);
 
   return SetDecryptionKeyWithoutUpdatingBootstrapToken(std::move(nigori));
 }
@@ -267,7 +293,9 @@ std::unique_ptr<Nigori>
 SyncServiceCrypto::GetExplicitPassphraseDecryptionNigoriKey() const {
   CHECK(state_.engine);
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return ReadNigoriFromBootstrapToken(delegate_->GetEncryptionBootstrapToken());
+  CHECK(encryptor_);
+  return NigoriFromBootstrapToken(
+      delegate_->GetEncryptionBootstrapToken(*encryptor_));
 }
 
 bool SyncServiceCrypto::IsTrustedVaultKeyRequiredStateKnown() const {
@@ -786,67 +814,14 @@ void SyncServiceCrypto::MaybeSetDecryptionKeyFromBootstrapToken() {
     // initialization.
     return;
   }
-  std::unique_ptr<Nigori> nigori =
-      ReadNigoriFromBootstrapToken(delegate_->GetEncryptionBootstrapToken());
+  CHECK(encryptor_);
+  std::unique_ptr<Nigori> nigori = NigoriFromBootstrapToken(
+      delegate_->GetEncryptionBootstrapToken(*encryptor_));
   if (!nigori) {
     return;
   }
 
   SetDecryptionKeyWithoutUpdatingBootstrapToken(std::move(nigori));
-}
-
-std::unique_ptr<Nigori> SyncServiceCrypto::ReadNigoriFromBootstrapToken(
-    const std::string& bootstrap_token) const {
-  if (bootstrap_token.empty()) {
-    return nullptr;
-  }
-
-  std::string decoded_key;
-  if (!base::Base64Decode(bootstrap_token, &decoded_key)) {
-    return nullptr;
-  }
-
-  std::string decrypted_key;
-  CHECK(encryptor_);
-  bool decryption_result =
-      encryptor_->DecryptString(decoded_key, &decrypted_key);
-  base::UmaHistogramBoolean("Sync.BootstrapTokenDecryptionResult",
-                            decryption_result);
-  if (!decryption_result) {
-    return nullptr;
-  }
-
-  sync_pb::NigoriKey key;
-  if (!key.ParseFromString(decrypted_key)) {
-    return nullptr;
-  }
-
-  return Nigori::CreateByImport(key.deprecated_user_key(), key.encryption_key(),
-                                key.mac_key());
-}
-
-std::string SyncServiceCrypto::SerializeNigoriAsBootstrapToken(
-    const Nigori& nigori) {
-  sync_pb::NigoriKey proto;
-  nigori.ExportKeys(proto.mutable_deprecated_user_key(),
-                    proto.mutable_encryption_key(), proto.mutable_mac_key());
-
-  const std::string serialized_key = proto.SerializeAsString();
-  if (serialized_key.empty()) {
-    return std::string();
-  }
-
-  std::string encrypted_key;
-  CHECK(encryptor_);
-  bool encryption_result =
-      encryptor_->EncryptString(serialized_key, &encrypted_key);
-  base::UmaHistogramBoolean("Sync.BootstrapTokenEncryptionResult",
-                            encryption_result);
-  if (!encryption_result) {
-    return std::string();
-  }
-
-  return base::Base64Encode(encrypted_key);
 }
 
 }  // namespace syncer

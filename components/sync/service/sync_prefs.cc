@@ -28,6 +28,7 @@
 #include "components/signin/public/base/signin_prefs.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/sync/base/account_pref_utils.h"
+#include "components/sync/base/custom_passphrase_bootstrap_token.h"
 #include "components/sync/base/features.h"
 #include "components/sync/base/passphrase_enums.h"
 #include "components/sync/base/pref_names.h"
@@ -631,24 +632,32 @@ void SyncPrefs::ClearAllEncryptionBootstrapTokens() {
   }
 }
 
-std::string SyncPrefs::GetEncryptionBootstrapTokenForAccount(
+CustomPassphraseBootstrapToken SyncPrefs::GetEncryptionBootstrapTokenForAccount(
+    const os_crypt_async::Encryptor& encryptor,
     const GaiaId& gaia_id) const {
   if (gaia_id.empty()) {
-    return std::string();
+    return CustomPassphraseBootstrapToken();
   }
   const std::string* account_passphrase =
       pref_service_
           ->GetDict(prefs::internal::kSyncEncryptionBootstrapTokenPerAccount)
           .FindString(signin::GaiaIdHash::FromGaiaId(gaia_id).ToBase64());
-  return account_passphrase ? *account_passphrase : std::string();
+  if (!account_passphrase) {
+    return CustomPassphraseBootstrapToken();
+  }
+  return CustomPassphraseBootstrapToken::FromEncryptedPref(*account_passphrase,
+                                                           encryptor);
 }
 
-void SyncPrefs::SetEncryptionBootstrapTokenForAccount(const std::string& token,
-                                                      const GaiaId& gaia_id) {
+void SyncPrefs::SetEncryptionBootstrapTokenForAccount(
+    const CustomPassphraseBootstrapToken& token,
+    const os_crypt_async::Encryptor& encryptor,
+    const GaiaId& gaia_id) {
   CHECK(!gaia_id.empty());
   SetAccountKeyedPrefValue(
       pref_service_, prefs::internal::kSyncEncryptionBootstrapTokenPerAccount,
-      signin::GaiaIdHash::FromGaiaId(gaia_id), base::Value(token));
+      signin::GaiaIdHash::FromGaiaId(gaia_id),
+      base::Value(token.ToEncryptedPref(encryptor)));
 }
 
 void SyncPrefs::ClearEncryptionBootstrapTokenForAccount(const GaiaId& gaia_id) {

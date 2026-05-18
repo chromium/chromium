@@ -25,11 +25,17 @@ class PrefRegistrySimple;
 class PrefService;
 class PrefValueMap;
 
+namespace os_crypt_async {
+class Encryptor;
+}  // namespace os_crypt_async
+
 namespace sync_pb {
 class TrustedVaultAutoUpgradeExperimentGroup;
 }  // namespace sync_pb
 
 namespace syncer {
+
+class CustomPassphraseBootstrapToken;
 
 class SyncPrefObserver : public base::CheckedObserver {
  public:
@@ -218,10 +224,13 @@ class SyncPrefs {
   void ClearAllEncryptionBootstrapTokens();
   // The encryption bootstrap token per account. Used for explicit passphrase
   // users (usually custom passphrase) and represents a user-entered passphrase.
-  std::string GetEncryptionBootstrapTokenForAccount(
+  CustomPassphraseBootstrapToken GetEncryptionBootstrapTokenForAccount(
+      const os_crypt_async::Encryptor& encryptor,
       const GaiaId& gaia_id) const;
-  void SetEncryptionBootstrapTokenForAccount(const std::string& token,
-                                             const GaiaId& gaia_id);
+  void SetEncryptionBootstrapTokenForAccount(
+      const CustomPassphraseBootstrapToken& token,
+      const os_crypt_async::Encryptor& encryptor,
+      const GaiaId& gaia_id);
   void ClearEncryptionBootstrapTokenForAccount(const GaiaId& gaia_id);
 
   // Muting mechanism for passphrase prompts, used on Android.
