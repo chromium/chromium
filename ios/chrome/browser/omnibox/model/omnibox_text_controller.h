@@ -55,6 +55,9 @@ class OmniboxClientIOS;
 /// Returns whether the omnibox is first responder.
 - (BOOL)isOmniboxFirstResponder;
 
+/// Returns whether the omnibox has focus.
+- (BOOL)hasFocus;
+
 /// Focuses the omnibox.
 - (void)focusOmnibox;
 

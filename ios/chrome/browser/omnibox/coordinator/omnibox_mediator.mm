@@ -539,11 +539,15 @@ using base::UserMetricsAction;
   // autocomplete suggestions to include potential new clipboard data.
   __weak __typeof(self) weakSelf = self;
 
+  if (![_omniboxTextController hasFocus]) {
+    return;
+  }
+
   // Clipboard suggestions are only shown when the text is empty; no need to
   // refresh otherwise. The `clipboardTypes` also don't need to be updated
   // as they should remain in sync with the visually displayed suggestion.
   BOOL hasText = _omniboxTextController.textInput.text.length != 0;
-  if (!hasText) {
+  if (hasText) {
     return;
   }
 
