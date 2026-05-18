@@ -6514,6 +6514,9 @@ Keep your key file in a safe place. You will need it to create new versions of y
         <message name="IDS_EXTENSIONS_REQUEST_ACCESS_BUTTON" desc="The text of the request acces button that appears on the toolbar when an extension requests access to the site" formatter_data="android_java">
           Allow <ph name="EXTENSIONS_REQUESTING_ACCESS_COUNT">$1<ex>3</ex></ph>?
         </message>
+        <message name="IDS_EXTENSIONS_REQUEST_ACCESS_BUTTON_ACCESSIBLE_NAME" desc="Combined label and description for the request access button used by screen readers." formatter_data="android_java">
+          <ph name="BUTTON_TEXT">%1$s<ex>Allow 1</ex></ph>, <ph name="TOOLTIP_TEXT">%2$s<ex>Click to allow on google.com: Extension Name</ex></ph>
+        </message>
         <message name="IDS_EXTENSIONS_REQUEST_ACCESS_BUTTON_DISMISSED_TEXT" desc="The text of the button that appears on the toolbar after the user grants access to an extension that requested access to the current site." formatter_data="android_java">
           Allowed
         </message>

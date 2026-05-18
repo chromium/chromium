@@ -35,9 +35,16 @@ class ExtensionAccessControlButtonViewBinder {
             text = text.replace("$1", String.valueOf(count));
             ((TextView) view).setText(text);
         } else if (key == REQUEST_ACCESS_BUTTON_CONTENT_DESCRIPTION) {
-            String text = model.get(REQUEST_ACCESS_BUTTON_CONTENT_DESCRIPTION);
-            view.setContentDescription(text);
-            TooltipCompat.setTooltipText(view, text);
+            String tooltipText = model.get(REQUEST_ACCESS_BUTTON_CONTENT_DESCRIPTION);
+            String buttonText = ((TextView) view).getText().toString();
+            String combinedText =
+                    view.getContext()
+                            .getString(
+                                    R.string.extensions_request_access_button_accessible_name,
+                                    buttonText,
+                                    tooltipText);
+            view.setContentDescription(combinedText);
+            TooltipCompat.setTooltipText(view, tooltipText);
         } else if (key == REQUEST_ACCESS_BUTTON_CLICK_LISTENER) {
             View.OnClickListener listener = model.get(REQUEST_ACCESS_BUTTON_CLICK_LISTENER);
             view.setOnClickListener(listener);
