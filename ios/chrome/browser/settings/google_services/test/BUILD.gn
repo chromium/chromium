@@ -10,7 +10,9 @@ source_set("eg_app_support+eg2") {
     "google_services_settings_app_interface.mm",
   ]
   deps = [
+    "//components/metrics",
     "//ios/chrome/app:app_internal",
+    "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/tabs/model",
     "//ios/chrome/test/app:test_support",
@@ -61,10 +63,6 @@ source_set("eg2_tests") {
     "//ios/chrome/browser/policy/model:eg_test_support+eg2",
     "//ios/chrome/browser/policy/model:policy_util",
     "//ios/chrome/browser/reading_list/ui_bundled:eg_test_support+eg2",
-    "//ios/chrome/browser/settings/google_services/bulk_upload/public",
-    "//ios/chrome/browser/settings/google_services/manage_accounts/public",
-    "//ios/chrome/browser/settings/google_services/manage_sync/public",
-    "//ios/chrome/browser/settings/google_services/manage_sync/test:eg2_tests",
     "//ios/chrome/browser/settings/google_services/public",
     "//ios/chrome/browser/settings/ui_bundled:constants",
     "//ios/chrome/browser/settings/ui_bundled:eg_test_support+eg2",

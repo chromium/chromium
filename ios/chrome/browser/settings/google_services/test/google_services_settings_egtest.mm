@@ -19,7 +19,6 @@
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
 #import "ios/chrome/browser/policy/model/policy_earl_grey_utils.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
-#import "ios/chrome/browser/settings/google_services/manage_sync/public/manage_sync_settings_constants.h"
 #import "ios/chrome/browser/settings/google_services/public/google_services_settings_constants.h"
 #import "ios/chrome/browser/settings/google_services/test/google_services_settings_app_interface.h"
 #import "ios/chrome/browser/settings/ui_bundled/settings_table_view_controller_constants.h"
@@ -133,7 +132,8 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
 }
 
 // Opens the Google services settings view, and closes it.
-- (void)testOpenGoogleServicesSettings {
+// TODO(crbug.com/512425968): Fix this flaky test.
+- (void)FLAKY_testOpenGoogleServicesSettings {
   [self openGoogleServicesSettings];
 
   // Assert title and accessibility.
@@ -173,7 +173,8 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
 
 // Tests that disabling the "Allow Chrome sign-in" blocks the user from signing
 // in to Chrome through settings until it is re-enabled.
-- (void)testToggleAllowChromeSignin {
+// TODO(crbug.com/512425968): Fix this flaky test.
+- (void)FLAKY_testToggleAllowChromeSignin {
   // User is signed-in.
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
@@ -239,7 +240,8 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
 
 // Similar to `testToggleAllowChromeSignin`, but also verifies that an
 // informational message about data loss will be added in the prompt.
-- (void)testToggleAllowChromeSigninForManagedUser {
+// TODO(crbug.com/512425968): Fix this flaky test.
+- (void)FLAKY_testToggleAllowChromeSigninForManagedUser {
   // Sign in with a managed identity.
   FakeSystemIdentity* fakeManagedIdentity =
       [FakeSystemIdentity fakeManagedIdentity];
@@ -282,7 +284,8 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
 
 // Tests that canceling the "Allow Chrome sign-in" option does not change the
 // user's sign-in state.
-- (void)testCancelAllowChromeSignin {
+// TODO(crbug.com/512425968): Fix this flaky test.
+- (void)FLAKY_testCancelAllowChromeSignin {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
@@ -306,7 +309,8 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
 
 // Tests that the "Allow Chrome sign-in" option is disabled for supervised
 // users.
-- (void)testAllowChromeSigninDisabledForSupervisedUsers {
+// TODO(crbug.com/512425968): Fix this flaky test.
+- (void)FLAKY_testAllowChromeSigninDisabledForSupervisedUsers {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity
                  withCapabilities:@{
@@ -332,7 +336,8 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
 }
 
 // Tests that the sign-in cell can't be used when sign-in is disabled by policy.
-- (void)testSigninDisabledByPolicy {
+// TODO(crbug.com/512425968): Fix this flaky test.
+- (void)FLAKY_testSigninDisabledByPolicy {
   // Disable browser sign-in.
   SetSigninEnterprisePolicyValue(BrowserSigninMode::kDisabled);
 
