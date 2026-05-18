@@ -33,6 +33,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/ash/components/policy/policy_blocklist_service/ash_policy_blocklist_service_factory.h"
+#include "components/policy/core/browser/url_list/url_list_policy_pref_names.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/services/app_service/public/cpp/app.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"

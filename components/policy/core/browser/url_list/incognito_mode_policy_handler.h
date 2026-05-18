@@ -6,6 +6,7 @@
 #define COMPONENTS_POLICY_CORE_BROWSER_URL_LIST_INCOGNITO_MODE_POLICY_HANDLER_H_
 
 #include "components/policy/core/browser/configuration_policy_handler.h"
+#include "components/policy/core/browser/url_list/url_list_policy_pref_names.h"
 #include "components/policy/core/common/policy_pref_names.h"
 
 class PrefValueMap;

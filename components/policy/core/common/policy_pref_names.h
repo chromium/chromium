@@ -84,12 +84,6 @@ inline constexpr char kSystemFeaturesDisableList[] =
 inline constexpr char kSystemFeaturesDisableMode[] =
     "policy.system_features_disable_mode";
 
-// Blocks access to the listed host patterns.
-inline constexpr char kUrlBlocklist[] = "policy.url_blocklist";
-
-// Allows access to the listed host patterns, as exceptions to the blacklist.
-inline constexpr char kUrlAllowlist[] = "policy.url_allowlist";
-
 // Integer that specifies the policy refresh rate for user-policy in
 // milliseconds. Not all values are meaningful, so it is clamped to a sane range
 // by the cloud policy subsystem.
@@ -243,14 +237,6 @@ inline constexpr char kFloatingWorkspaceEnabled[] =
 // A boolean value indicating whether the built-in AI APIs are enabled.
 inline constexpr char kBuiltInAIAPIsEnabled[] =
     "policy.built_in_ai_apis_enabled";
-
-// Blocks access to the listed host patterns for incognito mode.
-inline constexpr char kIncognitoModeUrlBlocklist[] =
-    "policy.incognito_mode_url_blocklist";
-
-// Allows access to the listed host patterns for incognito mode.
-inline constexpr char kIncognitoModeUrlAllowlist[] =
-    "policy.incognito_mode_url_allowlist";
 
 // A boolean pref indicating whether to default allow Local Network
 // Access permissions policy features.

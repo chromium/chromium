@@ -7,6 +7,7 @@
 #include "chrome/browser/ash/boca/boca_manager_factory.h"
 #include "chrome/browser/ash/boca/on_task/on_task_locked_session_window_tracker.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
+#include "components/policy/core/browser/url_list/url_list_policy_pref_names.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_prefs/user_prefs.h"

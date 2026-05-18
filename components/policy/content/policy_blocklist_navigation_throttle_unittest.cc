@@ -17,6 +17,7 @@
 #include "components/policy/core/browser/url_list/policy_blocklist_service.h"
 #include "components/policy/core/browser/url_list/url_blocklist_manager.h"
 #include "components/policy/core/browser/url_list/url_blocklist_policy_handler.h"
+#include "components/policy/core/browser/url_list/url_list_policy_pref_names.h"
 #include "components/policy/core/common/features.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/safe_search_api/stub_url_checker.h"

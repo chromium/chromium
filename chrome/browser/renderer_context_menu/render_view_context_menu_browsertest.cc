@@ -108,6 +108,7 @@
 #include "components/lens/lens_metadata.mojom.h"
 #include "components/lens/lens_testing_utils.h"
 #include "components/pdf/browser/pdf_frame_util.h"
+#include "components/policy/core/browser/url_list/url_list_policy_pref_names.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/policy/core/common/policy_service.h"
 #include "components/prefs/pref_service.h"

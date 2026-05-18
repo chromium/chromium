@@ -43,6 +43,7 @@
 #import "components/policy/core/browser/url_list/incognito_mode_policy_handler.h"
 #import "components/policy/core/browser/url_list/url_allowlist_policy_handler.h"
 #import "components/policy/core/browser/url_list/url_blocklist_policy_handler.h"
+#import "components/policy/core/browser/url_list/url_list_policy_pref_names.h"
 #import "components/policy/core/common/policy_pref_names.h"
 #import "components/policy/policy_constants.h"
 #import "components/safe_browsing/core/common/safe_browsing_policy_handler.h"

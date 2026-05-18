@@ -17,6 +17,7 @@
 #include "components/policy/core/browser/configuration_policy_handler.h"  // nogncheck http://crbug.com/1227148
 #include "components/policy/core/browser/url_list/url_allowlist_policy_handler.h"  // nogncheck http://crbug.com/1227148
 #include "components/policy/core/browser/url_list/url_blocklist_policy_handler.h"  // nogncheck http://crbug.com/1227148
+#include "components/policy/core/browser/url_list/url_list_policy_pref_names.h"
 #include "components/policy/core/common/async_policy_provider.h"  // nogncheck http://crbug.com/1227148
 #include "components/policy/core/common/management/platform_management_service.h"
 #include "components/policy/core/common/policy_logger.h"

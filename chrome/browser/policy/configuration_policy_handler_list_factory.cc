@@ -113,6 +113,7 @@
 #include "components/policy/core/browser/gen_ai_default_settings_policy_handler.h"
 #include "components/policy/core/browser/url_list/url_allowlist_policy_handler.h"
 #include "components/policy/core/browser/url_list/url_blocklist_policy_handler.h"
+#include "components/policy/core/browser/url_list/url_list_policy_pref_names.h"
 #include "components/policy/core/browser/url_list/url_scheme_list_policy_handler.h"
 #include "components/policy/core/common/policy_details.h"
 #include "components/policy/core/common/policy_map.h"

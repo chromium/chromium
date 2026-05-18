@@ -162,6 +162,7 @@
 #include "components/personal_context/core/personal_context_prefs.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/policy/core/browser/url_list/url_blocklist_manager.h"
+#include "components/policy/core/browser/url_list/url_list_policy_pref_names.h"
 #include "components/policy/core/common/local_test_policy_provider.h"
 #include "components/policy/core/common/management/management_service.h"
 #include "components/policy/core/common/policy_pref_names.h"

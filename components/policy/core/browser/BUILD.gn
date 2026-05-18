@@ -51,6 +51,7 @@ source_set("internal") {
     "url_list/url_blocklist_manager.h",
     "url_list/url_blocklist_policy_handler.cc",
     "url_list/url_blocklist_policy_handler.h",
+    "url_list/url_list_policy_pref_names.h",
     "url_list/url_scheme_list_policy_handler.cc",
     "url_list/url_scheme_list_policy_handler.h",
     "webui/json_generation.cc",

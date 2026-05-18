@@ -59,6 +59,7 @@
 #import "components/payments/core/payment_prefs.h"
 #import "components/policy/core/browser/browser_policy_connector.h"
 #import "components/policy/core/browser/url_list/url_blocklist_manager.h"
+#import "components/policy/core/browser/url_list/url_list_policy_pref_names.h"
 #import "components/policy/core/common/local_test_policy_provider.h"
 #import "components/policy/core/common/policy_pref_names.h"
 #import "components/policy/core/common/policy_statistics_collector.h"

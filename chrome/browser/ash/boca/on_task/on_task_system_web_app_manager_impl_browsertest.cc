@@ -32,6 +32,7 @@
 #include "chromeos/ash/components/boca/on_task/on_task_session_manager.h"
 #include "chromeos/ash/components/boca/proto/roster.pb.h"
 #include "chromeos/ui/wm/window_util.h"
+#include "components/policy/core/browser/url_list/url_list_policy_pref_names.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "content/public/test/browser_test.h"

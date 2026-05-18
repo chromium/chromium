@@ -10,6 +10,7 @@
 #import "base/json/json_writer.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
+#import "components/policy/core/browser/url_list/url_list_policy_pref_names.h"
 #import "components/policy/core/common/policy_pref_names.h"
 #import "components/policy/policy_constants.h"
 #import "components/strings/grit/components_strings.h"

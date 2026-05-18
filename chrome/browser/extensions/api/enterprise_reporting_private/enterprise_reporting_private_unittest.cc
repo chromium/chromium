@@ -32,6 +32,7 @@
 #include "components/enterprise/browser/controller/fake_browser_dm_token_storage.h"
 #include "components/enterprise/browser/identifiers/profile_id_service.h"
 #include "components/enterprise/connectors/core/connectors_prefs.h"
+#include "components/policy/core/browser/url_list/url_list_policy_pref_names.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/policy/core/common/policy_types.h"
 #include "components/prefs/pref_service.h"

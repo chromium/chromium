@@ -7,6 +7,7 @@
 
 #include "base/values.h"
 #include "components/policy/core/browser/configuration_policy_pref_store_test.h"
+#include "components/policy/core/browser/url_list/url_list_policy_pref_names.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_pref_names.h"
 
