@@ -99,6 +99,7 @@ def headers(os):
       Header('sys/cdefs.h', textual=not is_android),
       Header('sys/select.h'),
       Header('sys/stat.h', exists=is_win),
+      Header('sys/time.h'),
       Header('sys/types.h'),
       Header('sys/ucontext.h'),
       Header('time.h'),
