@@ -30,14 +30,4 @@ void ImmersiveContextAsh::OnEnteringOrExitingImmersive(
     Shelf::ForWindow(root_window)->UpdateVisibilityState();
 }
 
-gfx::Rect ImmersiveContextAsh::GetDisplayBoundsInScreen(views::Widget* widget) {
-  display::Display display = display::Screen::Get()->GetDisplayNearestWindow(
-      widget->GetNativeWindow());
-  return display.bounds();
-}
-
-bool ImmersiveContextAsh::DoesAnyWindowHaveCapture() {
-  return window_util::GetCaptureWindow() != nullptr;
-}
-
 }  // namespace ash

@@ -13,7 +13,6 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
-#include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/top_container_view.h"
 #include "chrome/browser/ui/views/interaction/browser_elements_views.h"
@@ -94,23 +93,9 @@ ImmersiveModeControllerChromeos::~ImmersiveModeControllerChromeos() = default;
 void ImmersiveModeControllerChromeos::Init(BrowserView* browser_view) {
   browser_view_ = browser_view;
   controller_.Init(this, browser_view_->browser_widget(),
-                   browser_view_->top_container(),
-                   GetHorizontalTabStripViewIfEnabled());
+                   browser_view_->top_container());
 
   window_observation_.Observe(browser_view_->GetNativeWindow());
-}
-
-void ImmersiveModeControllerChromeos::OnTabStripLayoutChanged() {
-  controller_.UpdateTabStrip(GetHorizontalTabStripViewIfEnabled());
-}
-
-views::View*
-ImmersiveModeControllerChromeos::GetHorizontalTabStripViewIfEnabled() {
-  auto* controller =
-      tabs::VerticalTabStripStateController::From(browser_view_->browser());
-  return controller && controller->ShouldDisplayVerticalTabs()
-             ? nullptr
-             : browser_view_->tab_strip_view();
 }
 
 void ImmersiveModeControllerChromeos::SetEnabled(bool enabled) {

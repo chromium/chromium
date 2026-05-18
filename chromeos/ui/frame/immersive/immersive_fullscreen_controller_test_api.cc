@@ -48,6 +48,11 @@ void ImmersiveFullscreenControllerTestApi::EndAnimation() {
   immersive_fullscreen_controller_->animation_->End();
 }
 
+const gfx::SlideAnimation* ImmersiveFullscreenControllerTestApi::GetAnimation()
+    const {
+  return immersive_fullscreen_controller_->animation_.get();
+}
+
 ImmersiveFullscreenControllerTestApi::GlobalAnimationDisabler::
     GlobalAnimationDisabler() {
   // Nesting isn't supported.

@@ -789,7 +789,11 @@ TEST_F(FrameViewAshTest, WideFrame) {
   ImmersiveFullscreenController::EnableForWidget(widget.get(), true);
   EXPECT_TRUE(header_view->in_immersive_mode());
   EXPECT_TRUE(wide_header_view->in_immersive_mode());
-  EXPECT_TRUE(header_view->GetVisible());
+
+  // The animation is disabled, therefore the frame is unrevealed immediately.
+  EXPECT_FALSE(header_view->GetVisible());
+  EXPECT_FALSE(controller.IsRevealed());
+
   // The height should be ~(33 *.5)
   wide_header_view->SetVisibleFraction(0.5);
   EXPECT_NEAR(16, wide_header_view->GetPreferredOnScreenHeight(), 1);

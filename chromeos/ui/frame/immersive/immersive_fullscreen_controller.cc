@@ -15,6 +15,7 @@
 #include "chromeos/ui/frame/immersive/immersive_focus_watcher.h"
 #include "chromeos/ui/frame/immersive/immersive_fullscreen_controller_delegate.h"
 #include "ui/aura/client/aura_constants.h"
+#include "ui/aura/client/capture_client.h"
 #include "ui/aura/client/cursor_client.h"
 #include "ui/aura/env.h"
 #include "ui/aura/window.h"
@@ -63,6 +64,10 @@ class ImmersiveWindowTargeter : public aura::WindowTargeter {
   }
 };
 
+bool DoesAnyWindowHaveCapture(aura::Window* window) {
+  return aura::client::GetCaptureWindow(window) != nullptr;
+}
+
 // The delay in milliseconds between the mouse stopping at the top edge of the
 // screen and the top-of-window views revealing.
 const int kMouseRevealDelayMs = 200;
@@ -108,8 +113,7 @@ ImmersiveFullscreenController::~ImmersiveFullscreenController() {
 void ImmersiveFullscreenController::Init(
     ImmersiveFullscreenControllerDelegate* delegate,
     views::Widget* widget,
-    views::View* top_container,
-    views::View* tab_strip) {
+    views::View* top_container) {
   // This function may be called more than once (e.g. by
   // ClientControlledShellSurface).
   EnableWindowObservers(false);
@@ -118,7 +122,6 @@ void ImmersiveFullscreenController::Init(
 
   delegate_ = delegate;
   top_container_ = top_container;
-  tab_strip_ = tab_strip;
   animation_notifier_ = std::make_unique<
       gfx::AnimationDelegateNotifier<views::AnimationDelegateViews>>(
       this, top_container);
@@ -135,16 +138,6 @@ void ImmersiveFullscreenController::Init(
   }
 
   EnableWindowObservers(true);
-}
-
-void ImmersiveFullscreenController::UpdateTabStrip(views::View* tab_strip) {
-  if (tab_strip_) {
-    tab_strip_->RemoveObserver(this);
-  }
-  tab_strip_ = tab_strip;
-  if (tab_strip_) {
-    tab_strip_->AddObserver(this);
-  }
 }
 
 bool ImmersiveFullscreenController::IsEnabled() const {
@@ -249,11 +242,8 @@ void ImmersiveFullscreenController::OnViewBoundsChanged(
 
 void ImmersiveFullscreenController::OnViewIsDeleting(
     views::View* observed_view) {
-  if (observed_view == top_container_) {
-    top_container_ = nullptr;
-  } else if (observed_view == tab_strip_) {
-    tab_strip_ = nullptr;
-  }
+  CHECK_EQ(observed_view, top_container_);
+  top_container_ = nullptr;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -305,8 +295,7 @@ void ImmersiveFullscreenController::UnlockRevealedState() {
 
 bool ImmersiveFullscreenController::ShouldRevealTopChrome(views::View* view) {
   DCHECK(view);
-  if (top_container_->Contains(view) ||
-      (tab_strip_ && tab_strip_->Contains(view))) {
+  if (top_container_->Contains(view)) {
     return true;
   }
 
@@ -355,18 +344,11 @@ ImmersiveFullscreenController* ImmersiveFullscreenController::Get(
 void ImmersiveFullscreenController::EnableWindowObservers(bool enable) {
   if (enable) {
     top_container_->AddObserver(this);
-    if (tab_strip_) {
-      tab_strip_->AddObserver(this);
-    }
     widget_->GetNativeWindow()->AddObserver(this);
   } else {
     if (top_container_) {
       top_container_->RemoveObserver(this);
       top_container_ = nullptr;
-    }
-    if (tab_strip_) {
-      tab_strip_->RemoveObserver(this);
-      tab_strip_ = nullptr;
     }
     if (widget_) {
       widget_->GetNativeWindow()->RemoveObserver(this);
@@ -458,8 +440,9 @@ void ImmersiveFullscreenController::UpdateTopEdgeHoverTimer(
 
   // Mouse hover should not initiate revealing the top-of-window views while a
   // window has mouse capture.
-  if (ImmersiveContext::Get()->DoesAnyWindowHaveCapture())
+  if (DoesAnyWindowHaveCapture(widget_->GetNativeWindow())) {
     return;
+  }
 
   if (ShouldIgnoreMouseEventAtLocation(location_in_screen))
     return;
@@ -515,8 +498,9 @@ void ImmersiveFullscreenController::UpdateLocatedEventRevealedLock(
 
   // Ignore all events while a window has capture. This keeps the top-of-window
   // views revealed during a drag.
-  if (ImmersiveContext::Get()->DoesAnyWindowHaveCapture())
+  if (DoesAnyWindowHaveCapture(widget_->GetNativeWindow())) {
     return;
+  }
 
   if ((!event || event->IsMouseEvent()) &&
       ShouldIgnoreMouseEventAtLocation(location_in_screen)) {
@@ -776,7 +760,9 @@ bool ImmersiveFullscreenController::ShouldHandleGestureEvent(
 }
 
 gfx::Rect ImmersiveFullscreenController::GetDisplayBoundsInScreen() const {
-  return ImmersiveContext::Get()->GetDisplayBoundsInScreen(widget_);
+  display::Display display = display::Screen::Get()->GetDisplayNearestWindow(
+      widget_->GetNativeWindow());
+  return display.bounds();
 }
 
 bool ImmersiveFullscreenController::IsTargetForWidget(
@@ -800,11 +786,15 @@ void ImmersiveFullscreenController::UpdateEnabled() {
   }
   enabled_ = enabled;
 
-  EnableEventObservers(enabled_);
-
+  // Update Shell State:
   ImmersiveContext::Get()->OnEnteringOrExitingImmersive(this, enabled);
 
   if (enabled_) {
+    //  Make sure UI is updated before checking reveal lock.
+    delegate_->OnImmersiveFullscreenEntered();
+
+    EnableEventObservers(true);
+
     // Animate enabling immersive mode by sliding out the top-of-window views.
     // No animation occurs if a lock is holding the top-of-window views open.
 
@@ -815,23 +805,21 @@ void ImmersiveFullscreenController::UpdateEnabled() {
     // required state in case the animation cannot run because of a lock holding
     // the top-of-window views open.)
     MaybeStartReveal(ANIMATE_NO);
-
     // Reset the located event so that it does not affect whether the
     // top-of-window views are hidden.
     located_event_revealed_lock_.reset();
-
     // Try doing the animation.
     MaybeEndReveal(ANIMATE_SLOW);
 
     if (reveal_state_ == REVEALED) {
       // Reveal was unsuccessful. Reacquire the revealed locks if appropriate.
       UpdateLocatedEventRevealedLock();
-      if (immersive_focus_watcher_)
+      if (immersive_focus_watcher_) {
         immersive_focus_watcher_->UpdateFocusRevealedLock();
+      }
     }
-
-    delegate_->OnImmersiveFullscreenEntered();
   } else {
+    EnableEventObservers(false);
     // Stop cursor-at-top tracking.
     top_edge_hover_timer_.Stop();
     reveal_state_ = CLOSED;

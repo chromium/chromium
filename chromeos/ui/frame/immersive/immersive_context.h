@@ -7,14 +7,6 @@
 
 #include "base/component_export.h"
 
-namespace gfx {
-class Rect;
-}
-
-namespace views {
-class Widget;
-}
-
 namespace chromeos {
 
 class ImmersiveFullscreenController;
@@ -34,12 +26,6 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) ImmersiveContext {
   virtual void OnEnteringOrExitingImmersive(
       ImmersiveFullscreenController* controller,
       bool entering) = 0;
-
-  // Returns the bounds of the display the widget is on, in screen coordinates.
-  virtual gfx::Rect GetDisplayBoundsInScreen(views::Widget* widget) = 0;
-
-  // Returns true if any window has capture.
-  virtual bool DoesAnyWindowHaveCapture() = 0;
 
  protected:
   ImmersiveContext();

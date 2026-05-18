@@ -123,7 +123,32 @@ IN_PROC_BROWSER_TEST_P(ImmersiveModeBrowserViewTest,
       ImmersiveModeController::From(browser());
 
   EnterImmersiveFullscreenMode(browser());
-  // Animation is disabled, so it is not revealed when entered.
+
+  aura::Window* window = browser()->window()->GetNativeWindow();
+
+  auto* immersive_fullscreen_controller =
+      static_cast<ImmersiveModeControllerChromeos*>(immersive_mode_controller)
+          ->controller();
+
+  // In order for the reveal gesture to work, the animation on the frame has to
+  // be completely stopped. If this fails, investigate if the
+  // kGestureBeginScroll event is consumed by ash::ToplevelWindowEventHandler.
+  auto wait_for_unreveal_animation_complete = [immersive_fullscreen_controller,
+                                               window]() {
+    auto* animation = chromeos::ImmersiveFullscreenControllerTestApi(
+                          immersive_fullscreen_controller)
+                          .GetAnimation();
+    ASSERT_TRUE(base::test::RunUntil(
+        [animation]() { return animation->GetCurrentValue() == 0.0; }));
+
+    // Wait for the next begin frame after all animations are completed.
+    auto* compositor = window->layer()->GetCompositor();
+    ASSERT_TRUE(base::test::RunUntil(
+        [compositor]() { return !compositor->IsAnimating(); }));
+  };
+
+  wait_for_unreveal_animation_complete();
+  //  Animation is disabled, so it is not revealed when entered.
   EXPECT_FALSE(immersive_mode_controller->IsRevealed());
 
   enum EventType { kMouse, kTouch };
@@ -132,7 +157,6 @@ IN_PROC_BROWSER_TEST_P(ImmersiveModeBrowserViewTest,
 
     ImmersiveModeTester tester(browser());
 
-    aura::Window* window = browser()->window()->GetNativeWindow();
     ui::test::EventGenerator event_generator(window->GetRootWindow());
     gfx::Point point(std::roundl(window->bounds().width() / 2), 0);
 
@@ -156,12 +180,8 @@ IN_PROC_BROWSER_TEST_P(ImmersiveModeBrowserViewTest,
       event_generator.PressTouch(point);
       event_generator.ReleaseTouch();
     }
-    // In order for the reveal gesture to work, the animation on the frame has
-    // to be completely stopped.
-    auto* compositor = window->layer()->GetCompositor();
-    ASSERT_TRUE(base::test::RunUntil(
-        [compositor]() { return !compositor->IsAnimating(); }));
 
+    wait_for_unreveal_animation_complete();
     EXPECT_FALSE(immersive_mode_controller->IsRevealed());
   }
 }

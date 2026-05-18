@@ -1502,12 +1502,6 @@ void BrowserView::OnVerticalTabStripModeChanged(
 
   GetFrameView()->OnTabStripStateChanged();
 
-  auto* const immersive_mode_controller =
-      ImmersiveModeController::From(browser());
-  if (immersive_mode_controller) {
-    immersive_mode_controller->OnTabStripLayoutChanged();
-  }
-
   UpdateTabSearchBubbleHost();
   InvalidateLayout();
 }

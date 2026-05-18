@@ -51,11 +51,8 @@ class ImmersiveModeControllerChromeos
   int GetMinimumContentOffset() const override;
   int GetExtraInfobarOffset() const override;
   void OnContentFullscreenChanged(bool is_content_fullscreen) override;
-  void OnTabStripLayoutChanged() override;
 
  private:
-  views::View* GetHorizontalTabStripViewIfEnabled();
-
   // Updates the browser root view's layout including window caption controls.
   void LayoutBrowserRootView();
 

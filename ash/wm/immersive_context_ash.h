@@ -23,8 +23,6 @@ class ASH_EXPORT ImmersiveContextAsh : public chromeos::ImmersiveContext {
   void OnEnteringOrExitingImmersive(
       chromeos::ImmersiveFullscreenController* controller,
       bool entering) override;
-  gfx::Rect GetDisplayBoundsInScreen(views::Widget* widget) override;
-  bool DoesAnyWindowHaveCapture() override;
 };
 
 }  // namespace ash
