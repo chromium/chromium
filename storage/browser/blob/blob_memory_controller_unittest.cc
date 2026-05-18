@@ -11,12 +11,10 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
-#include "base/memory_coordinator/memory_coordinator_features.h"
 #include "base/memory_coordinator/test_memory_consumer_registry.h"
 #include "base/memory_coordinator/utils.h"
 #include "base/run_loop.h"
 #include "base/system/sys_info.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_simple_task_runner.h"
 #include "base/threading/thread_restrictions.h"
@@ -1130,10 +1128,7 @@ TEST_F(BlobMemoryControllerTest, DiskSpaceUnknown) {
   EXPECT_FALSE(controller.limits().IsDiskSpaceConstrained());
 }
 
-TEST_F(BlobMemoryControllerTest, StatelessMemoryPressure) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(base::kStatefulMemoryPressure);
-
+TEST_F(BlobMemoryControllerTest, OnMemoryPressure) {
   BlobMemoryController controller(temp_dir_.GetPath(), file_runner_);
   SetTestMemoryLimits(&controller);
   AssertEnoughDiskSpace();
@@ -1205,107 +1200,6 @@ TEST_F(BlobMemoryControllerTest, LowMemoryDevice) {
   controller.CallWhenStorageLimitsAreKnown(loop.QuitClosure());
   loop.Run();
   EXPECT_TRUE(controller.limits().IsValid());
-}
-
-TEST_F(BlobMemoryControllerTest, StatefulMemoryPressure) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(base::kStatefulMemoryPressure);
-
-  BlobMemoryController controller(temp_dir_.GetPath(), file_runner_);
-  SetTestMemoryLimits(&controller);
-  AssertEnoughDiskSpace();
-
-  // Let the async registration complete.
-  {
-    base::RunLoop run_loop;
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, run_loop.QuitClosure());
-    run_loop.Run();
-  }
-
-  std::string kData(100, 'e');
-
-  std::vector<scoped_refptr<ShareableBlobDataItem>> items;
-  for (int i = 0; i < 4; ++i) {
-    BlobDataBuilder builder("fake");
-    builder.AppendData(kData);
-    std::vector<scoped_refptr<ShareableBlobDataItem>> builder_items =
-        CreateSharedDataItems(builder);
-    base::WeakPtr<QuotaAllocationTask> memory_task =
-        controller.ReserveMemoryQuota(builder_items,
-                                      GetMemoryRequestCallback());
-    EXPECT_FALSE(memory_task);
-    builder_items[0]->set_state(ItemState::POPULATED_WITH_QUOTA);
-    items.insert(items.end(), builder_items.begin(), builder_items.end());
-  }
-  controller.NotifyMemoryItemsUsed(items);
-  EXPECT_FALSE(file_runner_->HasPendingTask());
-  EXPECT_EQ(400u, controller.memory_usage());
-
-  // Trigger stateful limit update to 50% (moderate pressure threshold).
-  {
-    base::RunLoop run_loop;
-    registry_.NotifyUpdateMemoryLimitAsync(
-        base::kModerateMemoryPressureThreshold, run_loop.QuitClosure());
-    run_loop.Run();
-  }
-
-  EXPECT_EQ(400u, controller.limits().max_blob_in_memory_space);
-  EXPECT_FALSE(file_runner_->HasPendingTask());
-
-  // Now trigger OnReleaseMemory().
-  {
-    base::RunLoop run_loop;
-    registry_.NotifyReleaseMemoryAsync(run_loop.QuitClosure());
-    run_loop.Run();
-  }
-
-  EXPECT_EQ(250u, controller.limits().max_blob_in_memory_space);
-  EXPECT_TRUE(file_runner_->HasPendingTask());
-
-  RunFileThreadTasks();
-
-  // Let the eviction complete.
-  {
-    base::RunLoop run_loop;
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, run_loop.QuitClosure());
-    run_loop.Run();
-  }
-
-  EXPECT_EQ(0u, controller.memory_usage());
-  EXPECT_EQ(400ull, controller.disk_usage());
-
-  // Set limit back to 100% (none pressure).
-  {
-    base::RunLoop run_loop;
-    registry_.NotifyUpdateMemoryLimitAsync(100, base::DoNothing());
-    registry_.NotifyReleaseMemoryAsync(run_loop.QuitClosure());
-    run_loop.Run();
-  }
-
-  EXPECT_EQ(500u, controller.limits().max_blob_in_memory_space);
-  EXPECT_EQ(0u, controller.memory_usage());
-
-  // Verify we can allocate more memory now that the limit is restored to 500.
-  // Allocate 300 bytes.
-  std::vector<scoped_refptr<ShareableBlobDataItem>> new_items;
-  for (int i = 0; i < 3; ++i) {
-    BlobDataBuilder builder2("new_fake");
-    builder2.AppendData(kData);
-    std::vector<scoped_refptr<ShareableBlobDataItem>> builder_items =
-        CreateSharedDataItems(builder2);
-    base::WeakPtr<QuotaAllocationTask> memory_task =
-        controller.ReserveMemoryQuota(builder_items,
-                                      GetMemoryRequestCallback());
-    EXPECT_FALSE(memory_task);
-    builder_items[0]->set_state(ItemState::POPULATED_WITH_QUOTA);
-    new_items.insert(new_items.end(), builder_items.begin(),
-                     builder_items.end());
-  }
-  controller.NotifyMemoryItemsUsed(new_items);
-  EXPECT_FALSE(file_runner_->HasPendingTask());
-  EXPECT_EQ(300u, controller.memory_usage());
 }
 
 }  // namespace storage
