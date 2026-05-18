@@ -28,6 +28,7 @@
 #include "extensions/browser/mime_handler/mime_handler_stream_manager.h"
 #include "extensions/browser/mime_handler/stream_container.h"
 #include "pdf/buildflags.h"
+#include "pdf/pdf_features.h"
 #include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/url_constants.h"
@@ -314,6 +315,19 @@ ExtensionFunction::ResponseAction PdfViewerPrivateGlicSummarizeFunction::Run() {
   content::WebContents* contents = GetSenderWebContents();
   if (!contents) {
     return RespondNow(Error("No web contents."));
+  }
+
+  // When the PDF viewer is hosted in a MimeHandlerViewGuest (legacy GuestView,
+  // e.g. on ChromeOS where kPdfOopif is disabled), the sender WebContents is
+  // the inner guest contents which has no TabInterface attached. Walk up to
+  // the embedder WebContents so the tab lookup succeeds.
+  if (!chrome_pdf::features::IsOopifPdfEnabled()) {
+    if (auto* guest = MimeHandlerViewGuest::FromWebContents(contents)) {
+      contents = guest->embedder_web_contents();
+      if (!contents) {
+        return RespondNow(Error("No web contents."));
+      }
+    }
   }
 
   tabs::TabInterface* tab_interface =

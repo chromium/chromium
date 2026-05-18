@@ -461,6 +461,21 @@ bool ShouldShowGlicSummarizeButton(content::WebContents* web_contents) {
     return false;
   }
 
+  // When the PDF viewer is hosted in a MimeHandlerViewGuest (legacy GuestView,
+  // e.g. on ChromeOS where kPdfOopif is disabled), `web_contents` is the inner
+  // guest contents which has no TabInterface attached. Walk up to the embedder
+  // so the tab lookup below matches the click handler in
+  // PdfViewerPrivateGlicSummarizeFunction::Run().
+  if (!chrome_pdf::features::IsOopifPdfEnabled()) {
+    if (auto* guest =
+            extensions::MimeHandlerViewGuest::FromWebContents(web_contents)) {
+      web_contents = guest->embedder_web_contents();
+      if (!web_contents) {
+        return false;
+      }
+    }
+  }
+
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
   if (!glic::GlicEnabling::IsEnabledForProfile(profile)) {
