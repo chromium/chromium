@@ -90,7 +90,7 @@ signin::Tribool AccountCapabilities::GetCapabilityByName(
 }
 
 // clang-format off
-// keep-sorted start newline_separated=yes sticky_prefixes=#if group_prefixes=AccountCapabilities,#endif block=yes
+// keep-sorted start newline_separated=yes sticky_prefixes=#if,BUILDFLAG group_prefixes=AccountCapabilities,#endif block=yes
 // clang-format on
 signin::Tribool AccountCapabilities::can_fetch_family_member_info() const {
   return GetCapabilityByName(kCanFetchFamilyMemberInfoCapabilityName);
@@ -145,7 +145,8 @@ signin::Tribool AccountCapabilities::can_sign_in_to_chrome() const {
 }
 #endif
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_IOS)
 signin::Tribool AccountCapabilities::can_submit_feedback() const {
   return GetCapabilityByName(kCanSubmitFeedbackInChromeCapabilityName);
 }

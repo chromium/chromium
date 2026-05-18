@@ -42,7 +42,7 @@
 // found at go/capability-alias (eg. go/capability-alias/ge2dinbnmnqxa).
 
 // clang-format off
-// keep-sorted start newline_separated=yes sticky_prefixes=#if group_prefixes=#endif
+// keep-sorted start newline_separated=yes sticky_prefixes=#if,BUILDFLAG group_prefixes=#endif
 // clang-format on
 ACCOUNT_CAPABILITY(kCanFetchFamilyMemberInfoCapabilityName,
                    CAN_FETCH_FAMILY_MEMBER_INFO_CAPABILITY_NAME,
@@ -71,7 +71,8 @@ ACCOUNT_CAPABILITY(
     CAN_SHOW_HISTORY_SYNC_OPT_INS_WITHOUT_MINOR_MODE_RESTRICTIONS_CAPABILITY_NAME,
     "accountcapabilities/gi2tklldmfya")
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_IOS)
 ACCOUNT_CAPABILITY(kCanSubmitFeedbackInChromeCapabilityName,
                    CAN_SUBMIT_FEEDBACK_IN_CHROME_CAPABILITY_NAME,
                    "accountcapabilities/gizdqmrnmnqxa")

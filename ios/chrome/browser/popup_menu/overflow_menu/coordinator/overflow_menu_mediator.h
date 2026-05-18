@@ -18,11 +18,14 @@ class BookmarkModel;
 namespace feature_engagement {
 class Tracker;
 }
-namespace web {
-class WebState;
+namespace signin {
+class IdentityManager;
 }
 namespace syncer {
 class SyncService;
+}
+namespace web {
+class WebState;
 }
 
 @protocol ActivityServiceCommands;
@@ -150,6 +153,9 @@ class WebStateList;
 
 // The AuthenticationService to get sign-in info.
 @property(nonatomic, assign) AuthenticationService* authenticationService;
+
+// The IdentityManager to check account capabilities.
+@property(nonatomic, assign) signin::IdentityManager* identityManager;
 
 // The TabBasedIPHBrowserAgent to handle tab based in-product help bubbles.
 @property(nonatomic, assign) TabBasedIPHBrowserAgent* tabBasedIPHBrowserAgent;

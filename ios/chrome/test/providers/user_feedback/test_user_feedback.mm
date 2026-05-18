@@ -11,7 +11,7 @@ namespace ios {
 namespace provider {
 
 bool IsUserFeedbackSupported() {
-  return false;
+  return true;
 }
 
 void UploadAllPendingUserFeedback() {

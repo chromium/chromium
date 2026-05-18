@@ -79,6 +79,7 @@
 #import "ios/chrome/browser/shared/ui/util/util_swift.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
+#import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/supervised_user/model/supervised_user_service_factory.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
@@ -329,6 +330,8 @@ using base::UserMetricsAction;
   // ProfileIOS as the incognito one doesn't have that service.
   mediator.authenticationService = AuthenticationServiceFactory::GetForProfile(
       profile->GetOriginalProfile());
+  mediator.identityManager =
+      IdentityManagerFactory::GetForProfile(profile->GetOriginalProfile());
   mediator.tabBasedIPHBrowserAgent =
       TabBasedIPHBrowserAgent::FromBrowser(browser);
   mediator.hasSettingsBlueDot =

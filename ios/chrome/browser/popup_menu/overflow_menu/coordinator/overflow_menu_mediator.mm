@@ -28,6 +28,7 @@
 #import "components/reading_list/ios/reading_list_model_bridge_observer.h"
 #import "components/search_engines/template_url_service.h"
 #import "components/send_tab_to_self/features.h"
+#import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/supervised_user/core/common/features.h"
 #import "components/supervised_user/core/common/supervised_user_constants.h"
 #import "components/sync/service/sync_service.h"
@@ -1717,7 +1718,7 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
   NSMutableArray<OverflowMenuAction*>* helpActions =
       [[NSMutableArray alloc] init];
 
-  if (ios::provider::IsUserFeedbackSupported()) {
+  if (ios::provider::IsUserFeedbackSupported() && [self canSubmitFeedback]) {
     [helpActions addObject:self.reportIssueAction];
   }
 
@@ -2606,6 +2607,27 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
   RecordAction(UserMetricsAction("MobileMenuTextZoom"));
   [self dismissMenu];
   [self.textZoomHandler openTextZoom];
+}
+
+// Returns whether the user can submit feedback based on capabilities.
+// TODO(crbug.com/512043635): Should always call the feedback UI once migrated
+// to Aloha feedback. Aloha feedback is responsible for checking the capability.
+- (BOOL)canSubmitFeedback {
+  if (!IsFeedbackEntryPointsRequireCanSubmitFeedbackCapabilityEnabled()) {
+    return YES;
+  }
+  if (!self.identityManager) {
+    return YES;
+  }
+  CoreAccountInfo primaryAccount = self.identityManager->GetPrimaryAccountInfo(
+      signin::ConsentLevel::kSignin);
+  if (primaryAccount.IsEmpty()) {
+    return YES;
+  }
+  AccountInfo accountInfo =
+      self.identityManager->FindExtendedAccountInfo(primaryAccount);
+  return accountInfo.capabilities.can_submit_feedback() !=
+         signin::Tribool::kFalse;
 }
 
 // Dismisses the menu and opens the Report an Issue screen.

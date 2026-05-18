@@ -34,6 +34,7 @@
 #import "components/send_tab_to_self/features.h"
 #import "components/signin/public/base/consent_level.h"
 #import "components/signin/public/base/signin_metrics.h"
+#import "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/signin/public/identity_manager/identity_test_utils.h"
 #import "components/supervised_user/test_support/supervised_user_signin_test_utils.h"
@@ -556,6 +557,119 @@ TEST_F(OverflowMenuMediatorTest, TestMenuItemsCount) {
     // Feedback/help actions.
     @(number_of_help_items),
   ]);
+}
+
+// Tests that the Report an Issue item is hidden when the capability is false.
+TEST_F(OverflowMenuMediatorTest, TestFeedbackItemHiddenWhenCapabilityFalse) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      kFeedbackEntryPointsRequireCanSubmitFeedbackCapability);
+
+  const FakeSystemIdentity* identity = [FakeSystemIdentity fakeIdentity1];
+  fake_system_identity_manager()->AddIdentityWithUnknownCapabilities(identity);
+  AuthenticationServiceFactory::GetForProfile(profile_.get())
+      ->SignIn(identity, signin_metrics::AccessPoint::kStartPage);
+
+  CoreAccountInfo core_account_info =
+      identity_manager()->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
+  AccountInfo account_info =
+      identity_manager()->FindExtendedAccountInfo(core_account_info);
+
+  AccountCapabilitiesTestMutator mutator(&account_info.capabilities);
+  mutator.set_can_submit_feedback(false);
+
+  signin::UpdateAccountInfoForAccount(identity_manager(), account_info);
+
+  CreateMediator(/*incognito=*/NO);
+  mediator_.identityManager = identity_manager();
+  SetUpActiveWebState();
+  mediator_.webStateList = browser_->GetWebStateList();
+
+  // Force model update.
+  mediator_.model = model_;
+
+  bool found = false;
+  for (OverflowMenuActionGroup* group in model_.actionGroups) {
+    for (OverflowMenuAction* action in group.actions) {
+      if (action.accessibilityIdentifier == kToolsMenuReportAnIssueId) {
+        found = true;
+      }
+    }
+  }
+  EXPECT_FALSE(found);
+}
+
+// Tests that the Report an Issue item is shown when the capability is true.
+TEST_F(OverflowMenuMediatorTest, TestFeedbackItemShownWhenCapabilityTrue) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      kFeedbackEntryPointsRequireCanSubmitFeedbackCapability);
+
+  const FakeSystemIdentity* identity = [FakeSystemIdentity fakeIdentity1];
+  fake_system_identity_manager()->AddIdentityWithUnknownCapabilities(identity);
+  AuthenticationServiceFactory::GetForProfile(profile_.get())
+      ->SignIn(identity, signin_metrics::AccessPoint::kStartPage);
+
+  CoreAccountInfo core_account_info =
+      identity_manager()->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
+  AccountInfo account_info =
+      identity_manager()->FindExtendedAccountInfo(core_account_info);
+
+  AccountCapabilitiesTestMutator mutator(&account_info.capabilities);
+  mutator.set_can_submit_feedback(true);
+
+  signin::UpdateAccountInfoForAccount(identity_manager(), account_info);
+
+  CreateMediator(/*incognito=*/NO);
+  mediator_.identityManager = identity_manager();
+  SetUpActiveWebState();
+  mediator_.webStateList = browser_->GetWebStateList();
+
+  // Force model update.
+  mediator_.model = model_;
+
+  bool found = false;
+  for (OverflowMenuActionGroup* group in model_.actionGroups) {
+    for (OverflowMenuAction* action in group.actions) {
+      if (action.accessibilityIdentifier == kToolsMenuReportAnIssueId) {
+        found = true;
+      }
+    }
+  }
+  EXPECT_TRUE(found);
+}
+
+// Tests that the Report an Issue item is shown when the user is signed out
+// but has an identity with the capability set to true.
+TEST_F(OverflowMenuMediatorTest,
+       TestFeedbackItemShownWhenSignedOutAndCapabilityTrue) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      kFeedbackEntryPointsRequireCanSubmitFeedbackCapability);
+
+  const FakeSystemIdentity* identity = [FakeSystemIdentity fakeIdentity1];
+  fake_system_identity_manager()->AddIdentityWithUnknownCapabilities(identity);
+  fake_system_identity_manager()
+      ->GetPendingCapabilitiesMutator(identity)
+      ->set_can_submit_feedback(true);
+
+  CreateMediator(/*incognito=*/NO);
+  mediator_.identityManager = identity_manager();
+  SetUpActiveWebState();
+  mediator_.webStateList = browser_->GetWebStateList();
+
+  // Force model update.
+  mediator_.model = model_;
+
+  bool found = false;
+  for (OverflowMenuActionGroup* group in model_.actionGroups) {
+    for (OverflowMenuAction* action in group.actions) {
+      if (action.accessibilityIdentifier == kToolsMenuReportAnIssueId) {
+        found = true;
+      }
+    }
+  }
+  EXPECT_TRUE(found);
 }
 
 // Tests that the items returned by the mediator are correctly enabled on a

@@ -48,6 +48,7 @@ include_rules = [
   "+ios/chrome/browser/sharing/ui_bundled",
   "+ios/chrome/browser/signin/model/authentication_service.h",
   "+ios/chrome/browser/signin/model/authentication_service_factory.h",
+  "+ios/chrome/browser/signin/model/identity_manager_factory.h",
   "+ios/chrome/browser/supervised_user/model/supervised_user_capabilities.h",
   "+ios/chrome/browser/supervised_user/model/supervised_user_service_factory.h",
   "+ios/chrome/browser/sync/model/sync_service_factory.h",
