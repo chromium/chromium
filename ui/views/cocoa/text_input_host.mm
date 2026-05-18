@@ -231,7 +231,9 @@ bool TextInputHost::HasInputContext(bool* out_has_input_context) {
   // If a cocoa menu is active but it is not triggered from the focused
   // views::View (hence "unrelated"), disable text input. This prevents macOS
   // from adding "AutoFill" to the menu.
-  if (HasActiveUnrelatedCocoaMenu()) {
+  if (HasActiveUnrelatedCocoaMenu() ||
+      (!pending_text_input_client_->SupportsAutoFill() &&
+       ui::GetActiveCocoaMenuAnchorLocation().has_value())) {
     return true;
   }
 

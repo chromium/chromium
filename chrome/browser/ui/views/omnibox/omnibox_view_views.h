@@ -188,6 +188,12 @@ class OmniboxViewViews
   void RemovedFromWidget() override;
   std::u16string GetLabelForCommandId(int command_id) const override;
   bool IsCommandIdEnabled(int command_id) const override;
+  bool SupportsEmoji() const override;
+#if BUILDFLAG(IS_MAC)
+  bool SupportsEditableContextMenuItems() const override;
+  bool SupportsLookUp() const override;
+  bool SupportsAutoFill() const override;
+#endif
 
  protected:
   // OmniboxView:

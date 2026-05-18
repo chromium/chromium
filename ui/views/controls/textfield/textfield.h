@@ -527,6 +527,17 @@ class VIEWS_EXPORT Textfield : public View,
   [[nodiscard]] base::CallbackListSubscription AddTextChangedCallback(
       views::PropertyChangedCallback callback);
 
+  // Returns true if this textfield supports the system-wide Emoji menu item.
+  virtual bool SupportsEmoji() const;
+
+#if BUILDFLAG(IS_MAC)
+  // Returns true if this textfield should show editable context menu items.
+  virtual bool SupportsEditableContextMenuItems() const;
+
+  // Returns true if this textfield should support the "Look Up" menu item.
+  virtual bool SupportsLookUp() const;
+#endif
+
  protected:
   TextfieldModel* textfield_model() { return model_.get(); }
 

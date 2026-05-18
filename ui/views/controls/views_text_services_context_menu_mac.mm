@@ -64,7 +64,7 @@ ViewsTextServicesContextMenuMac::ViewsTextServicesContextMenuMac(
     : ViewsTextServicesContextMenuBase(menu, client) {
   // Insert the "Look up" item in the first position.
   const std::u16string_view text = GetSelectedText();
-  if (!text.empty()) {
+  if (!text.empty() && client->SupportsLookUp()) {
     menu->InsertSeparatorAt(0, ui::NORMAL_SEPARATOR);
     // Truncate the selected text to prevent overly long menu item titles.
     const std::u16string truncated_text =
@@ -76,7 +76,9 @@ ViewsTextServicesContextMenuMac::ViewsTextServicesContextMenuMac(
     text_services_menu_.AppendToContextMenu(menu);
   }
 
-  text_services_menu_.AppendEditableItems(menu);
+  if (client->SupportsEditableContextMenuItems()) {
+    text_services_menu_.AppendEditableItems(menu);
+  }
 }
 
 bool ViewsTextServicesContextMenuMac::IsCommandIdChecked(int command_id) const {

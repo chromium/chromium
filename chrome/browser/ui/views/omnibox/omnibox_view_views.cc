@@ -158,6 +158,10 @@ bool IsClipboardDataMarkedAsConfidential() {
       ->IsMarkedByOriginatorAsConfidential();
 }
 
+bool IsMenuSimplificationEnabled() {
+  return base::FeatureList::IsEnabled(features::kMenuSimplification);
+}
+
 // This function provides a logging implementation that aligns with the original
 // definition of the `DEPRECATED_UMA_HISTOGRAM_MEDIUM_TIMES()` macro, which is
 // currently being used to log the `FocusToOpenTimeAnyPopupState3` Omnibox
@@ -1877,6 +1881,24 @@ bool OmniboxViewViews::IsCommandIdEnabled(int command_id) const {
           location_bar_view_->command_updater()->IsCommandEnabled(command_id));
 }
 
+bool OmniboxViewViews::SupportsEmoji() const {
+  return !IsMenuSimplificationEnabled();
+}
+
+#if BUILDFLAG(IS_MAC)
+bool OmniboxViewViews::SupportsEditableContextMenuItems() const {
+  return !IsMenuSimplificationEnabled();
+}
+
+bool OmniboxViewViews::SupportsLookUp() const {
+  return !IsMenuSimplificationEnabled();
+}
+
+bool OmniboxViewViews::SupportsAutoFill() const {
+  return !IsMenuSimplificationEnabled();
+}
+#endif  // BUILDFLAG(IS_MAC)
+
 void OmniboxViewViews::PasteSelectionClipboard(
     base::OnceCallback<void(bool)> callback) {
   ui::Clipboard::GetForCurrentThread()->ReadText(
@@ -2396,21 +2418,6 @@ views::View::DropCallback OmniboxViewViews::CreateDropCallback(
 }
 
 void OmniboxViewViews::UpdateContextMenu(ui::SimpleMenuModel* menu_contents) {
-  if (features::IsMenuSimplificationEnabled()) {
-    // Remove the emoji item from the omnibox context menu.
-    const std::optional<size_t> emoji_position =
-        menu_contents->GetIndexOfCommandId(IDS_CONTENT_CONTEXT_EMOJI);
-    if (emoji_position.has_value()) {
-      menu_contents->RemoveItemAt(emoji_position.value());
-      // If the next item is a separator, remove it too.
-      if (emoji_position.value() < menu_contents->GetItemCount() &&
-          menu_contents->GetTypeAt(emoji_position.value()) ==
-              ui::MenuModel::ItemType::TYPE_SEPARATOR) {
-        menu_contents->RemoveItemAt(emoji_position.value());
-      }
-    }
-  }
-
   MaybeAddSendTabToSelfItem(menu_contents);
 
   const std::optional<size_t> paste_position =

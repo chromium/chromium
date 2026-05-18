@@ -18,6 +18,12 @@ bool TextInputClient::CanInsertImage() {
   return false;
 }
 
+#if BUILDFLAG(IS_MAC)
+bool TextInputClient::SupportsAutoFill() const {
+  return true;
+}
+#endif  // BUILDFLAG(IS_MAC)
+
 #if BUILDFLAG(IS_CHROMEOS)
 void TextInputClient::ExtendSelectionAndReplace(
     size_t length_before_selection,

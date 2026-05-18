@@ -2685,6 +2685,20 @@ ui::TextEditCommand Textfield::GetCommandForKeyEvent(
   }
 }
 
+bool Textfield::SupportsEmoji() const {
+  return true;
+}
+
+#if BUILDFLAG(IS_MAC)
+bool Textfield::SupportsEditableContextMenuItems() const {
+  return true;
+}
+
+bool Textfield::SupportsLookUp() const {
+  return true;
+}
+#endif  // BUILDFLAG(IS_MAC)
+
 ////////////////////////////////////////////////////////////////////////////////
 // Textfield, private:
 
