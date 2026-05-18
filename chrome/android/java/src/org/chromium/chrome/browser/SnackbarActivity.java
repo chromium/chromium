@@ -47,7 +47,8 @@ public abstract class SnackbarActivity extends SynchronousInitializationActivity
             getProfileSupplier()
                     .runSyncOrOnAvailable(
                             (profile) -> {
-                                GlicHelper.maybeShowGlicTaskInProgressSnackbar(this, profile, this);
+                                GlicHelper.maybeShowGlicTaskInProgressSnackbar(
+                                        this, profile, this, GlicHelper.Caller.SNACKBAR_ACTIVITY);
                             });
         }
     }

@@ -5,7 +5,9 @@
 package org.chromium.chrome.browser.glic;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -50,7 +52,10 @@ public class GlicHelperUnitTest {
         when(mActorServiceMock.getActiveTasksCount()).thenReturn(1);
 
         GlicHelper.maybeShowGlicTaskInProgressSnackbar(
-                mSnackbarManageableMock, mProfileMock, mContextMock);
+                mSnackbarManageableMock,
+                mProfileMock,
+                mContextMock,
+                GlicHelper.Caller.SETTINGS_ACTIVITY);
 
         verify(mSnackbarManagerMock).showSnackbar(any(Snackbar.class));
     }
@@ -61,7 +66,10 @@ public class GlicHelperUnitTest {
         when(mActorServiceMock.getActiveTasksCount()).thenReturn(0);
 
         GlicHelper.maybeShowGlicTaskInProgressSnackbar(
-                mSnackbarManageableMock, mProfileMock, mContextMock);
+                mSnackbarManageableMock,
+                mProfileMock,
+                mContextMock,
+                GlicHelper.Caller.SETTINGS_ACTIVITY);
 
         verify(mSnackbarManagerMock, never()).showSnackbar(any(Snackbar.class));
     }
@@ -73,8 +81,68 @@ public class GlicHelperUnitTest {
         when(mActorServiceMock.getActiveTasksCount()).thenReturn(1);
 
         GlicHelper.maybeShowGlicTaskInProgressSnackbar(
-                mSnackbarManageableMock, mProfileMock, mContextMock);
+                mSnackbarManageableMock,
+                mProfileMock,
+                mContextMock,
+                GlicHelper.Caller.SETTINGS_ACTIVITY);
 
         verify(mSnackbarManagerMock, never()).showSnackbar(any(Snackbar.class));
+    }
+
+    @Test
+    public void testMaybeShowSnackbar_OncePerInstance() {
+        when(mProfileMock.isOffTheRecord()).thenReturn(false);
+        when(mActorServiceMock.getActiveTasksCount()).thenReturn(1);
+
+        GlicHelper.maybeShowGlicTaskInProgressSnackbar(
+                mSnackbarManageableMock,
+                mProfileMock,
+                mContextMock,
+                GlicHelper.Caller.SETTINGS_ACTIVITY);
+        GlicHelper.maybeShowGlicTaskInProgressSnackbar(
+                mSnackbarManageableMock,
+                mProfileMock,
+                mContextMock,
+                GlicHelper.Caller.SETTINGS_ACTIVITY);
+
+        verify(mSnackbarManagerMock, times(1)).showSnackbar(any(Snackbar.class));
+    }
+
+    @Test
+    public void testMaybeShowSnackbar_MultipleInstances() {
+        when(mProfileMock.isOffTheRecord()).thenReturn(false);
+        when(mActorServiceMock.getActiveTasksCount()).thenReturn(1);
+
+        SnackbarManageable secondInstance = mock(SnackbarManageable.class);
+        when(secondInstance.getSnackbarManager()).thenReturn(mSnackbarManagerMock);
+
+        GlicHelper.maybeShowGlicTaskInProgressSnackbar(
+                mSnackbarManageableMock,
+                mProfileMock,
+                mContextMock,
+                GlicHelper.Caller.SETTINGS_ACTIVITY);
+        GlicHelper.maybeShowGlicTaskInProgressSnackbar(
+                secondInstance, mProfileMock, mContextMock, GlicHelper.Caller.SETTINGS_ACTIVITY);
+
+        verify(mSnackbarManagerMock, times(2)).showSnackbar(any(Snackbar.class));
+    }
+
+    @Test
+    public void testMaybeShowSnackbar_NewTabPageException() {
+        when(mProfileMock.isOffTheRecord()).thenReturn(false);
+        when(mActorServiceMock.getActiveTasksCount()).thenReturn(1);
+
+        GlicHelper.maybeShowGlicTaskInProgressSnackbar(
+                mSnackbarManageableMock,
+                mProfileMock,
+                mContextMock,
+                GlicHelper.Caller.NEW_TAB_PAGE);
+        GlicHelper.maybeShowGlicTaskInProgressSnackbar(
+                mSnackbarManageableMock,
+                mProfileMock,
+                mContextMock,
+                GlicHelper.Caller.NEW_TAB_PAGE);
+
+        verify(mSnackbarManagerMock, times(2)).showSnackbar(any(Snackbar.class));
     }
 }

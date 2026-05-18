@@ -970,7 +970,8 @@ public class NewTabPage
         mLastShownTimeNs = System.nanoTime();
         RecordUserAction.record("MobileNTPShown");
         SuggestionsMetrics.recordSurfaceVisible();
-        GlicHelper.maybeShowGlicTaskInProgressSnackbar(this, mTab.getProfile(), mActivity);
+        GlicHelper.maybeShowGlicTaskInProgressSnackbar(
+                this, mTab.getProfile(), mActivity, GlicHelper.Caller.NEW_TAB_PAGE);
     }
 
     /** Records UMA for the NTP being hidden and the time spent on it. */
