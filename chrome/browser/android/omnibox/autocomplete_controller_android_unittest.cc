@@ -129,3 +129,21 @@ TEST_F(AutocompleteControllerAndroidTest, GetTemplateUrlForText_NotFound) {
       controller()->GetTemplateUrlForText(env, u"nonexistent_keyword");
   EXPECT_TRUE(result.is_null());
 }
+
+TEST_F(AutocompleteControllerAndroidTest, Start_InKeywordMode) {
+  using OEP = metrics::OmniboxEventProto;
+
+  GURL url("https://site.biz/");
+  JNIEnv* env = base::android::AttachCurrentThread();
+
+  EXPECT_CALL(
+      *mock(),
+      Start(AllOf(Property(&AutocompleteInput::text, Eq(u"query")),
+                  Property(&AutocompleteInput::current_url, Eq(url)),
+                  Property(&AutocompleteInput::prefer_keyword, Eq(true)),
+                  Property(&AutocompleteInput::in_keyword_mode, Eq(true)))));
+
+  controller()->Start(env, nullptr, u"query", -1, "", url, OEP::OTHER,
+                      omnibox::TOOL_MODE_UNSPECIFIED, false, true, true, false,
+                      true);
+}

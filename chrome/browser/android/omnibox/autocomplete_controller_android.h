@@ -49,6 +49,7 @@ class AutocompleteControllerAndroid : public AutocompleteController::Observer,
       omnibox::ToolMode tool_mode,
       bool prevent_inline_autocomplete,
       bool prefer_keyword,
+      bool in_keyword_mode,
       bool allow_exact_keyword_match,
       bool want_asynchronous_matches);
   void StartPrefetch(

@@ -128,7 +128,8 @@ public class AutocompleteController {
                         input.getPageClassification(),
                         input.getToolMode(),
                         preventInlineAutocomplete,
-                        input.getSiteSearchData() != null,
+                        /* preferKeyword= */ input.getSiteSearchData() != null,
+                        /* inKeywordMode= */ input.getSiteSearchData() != null,
                         input.allowExactKeywordMatch(),
                         true);
     }
@@ -469,6 +470,7 @@ public class AutocompleteController {
                 @JniType("omnibox::ToolMode") int toolMode,
                 boolean preventInlineAutocomplete,
                 boolean preferKeyword,
+                boolean inKeywordMode,
                 boolean allowExactKeywordMatch,
                 boolean wantAsynchronousMatches);
 
