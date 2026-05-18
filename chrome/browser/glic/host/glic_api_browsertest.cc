@@ -176,7 +176,7 @@ std::vector<std::string> GetTestSuiteNames() {
       "GlicApiTestWithFastTimeout",
       "GlicApiTestSystemSettingsTest",
       "GlicApiTestWithOneTabAndCachedUserProfile",
-      "GlicApiTestWithOneTabAndContextualCueing",
+
       "DISABLED_GlicApiTestWithOneTabAndPreloading",
       "GlicApiTestUserStatusCheckTest",
       "GlicApiTestWithOneTabMoreDebounceDelay",
@@ -472,68 +472,6 @@ class DISABLED_GlicApiTestWithOneTabAndPreloading
   base::test::ScopedFeatureList features_;
 };
 
-class GlicApiTestWithOneTabAndContextualCueing : public GlicApiTestWithOneTab {
- public:
-  GlicApiTestWithOneTabAndContextualCueing() {
-    contextual_cueing_features_.InitWithFeaturesAndParameters(
-        /*enabled_features=*/
-        {{features::kGlic,
-          {
-              {"glic-default-hotkey", "Ctrl+G"},
-          }},
-         {features::kGlicWebClientLoadTimes,
-          {
-              // Shorten load timeouts.
-              {features::kGlicPreLoadingTimeMs.name, "20"},
-              {features::kGlicMinLoadingTimeMs.name, "40"},
-          }},
-         {features::kGlicApiActivationGating, {}},
-         {kGlicZeroStateSuggestions, {}},
-         {mojom::features::kZeroStateSuggestionsV2, {}}},
-        /*disabled_features=*/
-        {
-            features::kGlicWarming,
-        });
-  }
-  // Create the mock service.
-  void SetUpBrowserContextKeyedServices(
-      content::BrowserContext* browser_context) override {
-#if BUILDFLAG(IS_CHROMEOS)
-    // ChromeOS may create profiles other than regular profile (signin profile
-    // and its primary OTR profiles). Skip those profiles.
-    if (!ash::IsUserBrowserContext(browser_context)) {
-      return;
-    }
-#endif
-    mock_cueing_service_ =
-        static_cast<testing::NiceMock<MockContextualCueingService>*>(
-            ContextualCueingServiceFactory::GetInstance()
-                ->SetTestingFactoryAndUse(
-                    browser_context,
-                    base::BindRepeating([](content::BrowserContext* context)
-                                            -> std::unique_ptr<KeyedService> {
-                      return std::make_unique<
-                          testing::NiceMock<MockContextualCueingService>>();
-                    })));
-
-    GlicApiTestWithOneTab::SetUpBrowserContextKeyedServices(browser_context);
-  }
-
-  void TearDownOnMainThread() override {
-    mock_cueing_service_ = nullptr;
-    GlicApiTestWithOneTab::TearDownOnMainThread();
-  }
-
-  MockContextualCueingService* mock_cueing_service() {
-    return mock_cueing_service_.get();
-  }
-
- private:
-  base::CallbackListSubscription active_instance_subscription_;
-  raw_ptr<testing::NiceMock<MockContextualCueingService>> mock_cueing_service_;
-  base::test::ScopedFeatureList contextual_cueing_features_;
-};
-
 class GlicApiTestWithFastTimeout : public GlicApiTest {
  public:
   GlicApiTestWithFastTimeout() {
@@ -691,173 +629,6 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab,
 #endif
 IN_PROC_BROWSER_TEST_P(GlicApiTest, MAYBE_testAllTestsAreRegistered) {
   AssertAllTestsRegistered(GetTestSuiteNames());
-}
-
-// TODO(crbug.com/409042450): This is a flaky on MSAN.
-#if defined(SLOW_BINARY)
-#define MAYBE_testReload DISABLED_testReload
-#else
-#define MAYBE_testReload testReload
-#endif
-IN_PROC_BROWSER_TEST_P(GlicApiTest, MAYBE_testReload) {
-  RunTestSequence(OpenGlic(GlicInstrumentMode::kNone));
-  WebUIStateListener listener(GetHost());
-  ExecuteJsTest({
-      .params = base::Value(
-          base::DictValue().Set("failWith", "reloadAfterInitialize")),
-  });
-  listener.WaitForWebUiState(mojom::WebUiState::kReady);
-  listener.WaitForWebUiState(mojom::WebUiState::kBeginLoad);
-  ExecuteJsTest({
-      .params = base::Value(base::DictValue().Set("failWith", "none")),
-  });
-}
-
-// The client navigates to the 'sorry' page before it finishes initialize().
-// Chrome should show this page.
-IN_PROC_BROWSER_TEST_P(GlicApiTest, testSorryPageBeforeInitialize) {
-  RunTestSequence(OpenGlic(GlicInstrumentMode::kNone));
-  WebUIStateListener listener(GetHost());
-  ExecuteJsTest({
-      .params = base::Value(base::DictValue().Set(
-          "failWith", "navigateToSorryPageBeforeInitialize")),
-  });
-  listener.WaitForWebUiState(mojom::WebUiState::kGuestError);
-  RunTestSequence(CheckControllerShowing(true));
-
-  // Simulate completing a captcha, navigating back.
-  ASSERT_EQ(true,
-            content::EvalJs(FindGlicGuestMainFrame(),
-                            std::string("(()=>{window.location = '") +
-                                GetGuestURL().spec() + "'; return true;})()"));
-
-  listener.WaitForWebUiState(mojom::WebUiState::kBeginLoad);
-  ExecuteJsTest({
-      .params = base::Value(base::DictValue().Set("failWith", "none")),
-  });
-}
-
-IN_PROC_BROWSER_TEST_P(GlicApiTest, testSorryPageAfterInitialize) {
-  RunTestSequence(OpenGlic(GlicInstrumentMode::kNone));
-  WebUIStateListener listener(GetHost());
-  ExecuteJsTest({
-      .params = base::Value(base::DictValue().Set(
-          "failWith", "navigateToSorryPageAfterInitialize")),
-  });
-  listener.WaitForWebUiState(mojom::WebUiState::kGuestError);
-  RunTestSequence(CheckControllerShowing(true));
-
-  // Simulate completing a captcha, navigating back.
-  ASSERT_EQ(true,
-            content::EvalJs(FindGlicGuestMainFrame(),
-                            std::string("(()=>{window.location = '") +
-                                GetGuestURL().spec() + "'; return true;})()"));
-
-  listener.WaitForWebUiState(mojom::WebUiState::kBeginLoad);
-  ExecuteJsTest({
-      .params = base::Value(base::DictValue().Set("failWith", "none")),
-  });
-}
-
-IN_PROC_BROWSER_TEST_P(GlicApiTest, testInitializeFailsAfterReload) {
-  RunTestSequence(OpenGlic(GlicInstrumentMode::kNone));
-  WebUIStateListener listener(GetHost());
-  ExecuteJsTest({
-      .params = base::Value(
-          base::DictValue().Set("failWith", "reloadAfterInitialize")),
-  });
-  listener.WaitForWebUiState(mojom::WebUiState::kReady);
-  listener.WaitForWebUiState(mojom::WebUiState::kBeginLoad);
-  ExecuteJsTest({
-      .params = base::Value(base::DictValue().Set("failWith", "error")),
-  });
-  listener.WaitForWebUiState(mojom::WebUiState::kError);
-}
-
-// TODO(crbug.com/469210106): Re-enable this test on ChromeOS.
-#if BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_testNoClientCreated DISABLED_testNoClientCreated
-#else
-#define MAYBE_testNoClientCreated testNoClientCreated
-#endif
-IN_PROC_BROWSER_TEST_P(GlicApiTestWithFastTimeout, MAYBE_testNoClientCreated) {
-#if defined(SLOW_BINARY)
-  GTEST_SKIP() << "skip timeout test for slow binary";
-#else
-  GlicHistogramTester histogram_tester;
-  RunTestSequence(OpenGlic(GlicInstrumentMode::kNone));
-  WebUIStateListener listener(GetHost());
-  ExecuteJsTest();
-  listener.WaitForWebUiState(mojom::WebUiState::kError);
-  // Note that the client does receive the bootstrap message, but never calls
-  // back, so from the host's perspective bootstrapping is still pending.
-  // There may be warmed contents that also receive this error, so expect at
-  // least one count.
-  EXPECT_GT(histogram_tester.GetBucketCount(
-                "Glic.Host.WebClientState.OnDestroy", 0 /*BOOTSTRAP_PENDING*/),
-            0);
-#endif
-}
-
-// In this test, the client page does not initiate the bootstrap process, so no
-// client connects.
-IN_PROC_BROWSER_TEST_P(GlicApiTestWithFastTimeout, testNoBootstrap) {
-#if defined(SLOW_BINARY)
-  GTEST_SKIP() << "skip timeout test for slow binary";
-#else
-  GlicHistogramTester histogram_tester;
-  RunTestSequence(OpenGlic(GlicInstrumentMode::kNone));
-  WebUIStateListener listener(GetHost());
-  ExecuteJsTest();
-  listener.WaitForWebUiState(mojom::WebUiState::kError);
-  // May have more than one sample because there can be a warmed contents.
-  EXPECT_GT(histogram_tester.GetBucketCount(
-                "Glic.Host.WebClientState.OnDestroy", 0 /*BOOTSTRAP_PENDING*/),
-            0);
-#endif
-}
-
-// TODO(https:  // crbug.com/512642226): Fix flakes.
-#if BUILDFLAG(IS_CHROMEOS) && !defined(NDEBUG)
-#define MAYBE_testInitializeTimesOut DISABLED_testInitializeTimesOut
-#else
-#define MAYBE_testInitializeTimesOut testInitializeTimesOut
-#endif
-IN_PROC_BROWSER_TEST_P(GlicApiTestWithFastTimeout,
-                       MAYBE_testInitializeTimesOut) {
-#if defined(SLOW_BINARY)
-  GTEST_SKIP() << "skip timeout test for slow binary";
-#else
-  GlicHistogramTester histogram_tester;
-  RunTestSequence(OpenGlic(GlicInstrumentMode::kNone));
-  WebUIStateListener listener(GetHost());
-  ExecuteJsTest({
-      .params = base::Value(base::DictValue().Set("failWith", "timeout")),
-  });
-  listener.WaitForWebUiState(mojom::WebUiState::kError);
-  // There may be warmed contents that also receive this error, so expect at
-  // least one count.
-  EXPECT_GT(
-      histogram_tester.GetBucketCount("Glic.Host.WebClientState.OnDestroy",
-                                      3 /*WEB_CLIENT_NOT_INITIALIZED*/),
-      0);
-  histogram_tester.ExpectTotalCount("Glic.PanelWebUiState.Error", 1);
-  histogram_tester.ExpectBucketCount("Glic.PanelWebUiState.Error",
-                                     5 /*TIMEOUT_WARMED*/, 1);
-#endif
-}
-
-IN_PROC_BROWSER_TEST_P(GlicApiTest, testInitializeFails) {
-  GlicHistogramTester histogram_tester;
-  RunTestSequence(OpenGlic(GlicInstrumentMode::kNone));
-  WebUIStateListener listener(GetHost());
-  ExecuteJsTest({
-      .params = base::Value(base::DictValue().Set("failWith", "error")),
-  });
-  listener.WaitForWebUiState(mojom::WebUiState::kError);
-  EXPECT_GT(histogram_tester.GetBucketCount("Glic.PanelWebUiState.Error",
-                                            6 /*CLIENT_ERROR*/),
-            0);
 }
 
 IN_PROC_BROWSER_TEST_P(GlicApiTest, testCookieSyncFails) {
@@ -1661,15 +1432,6 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithMqlsIdGetterDisabled,
   ExecuteJsTest();
 }
 
-IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTabAndContextualCueing,
-                       testGetZeroStateSuggestionsForFocusedTabApi) {
-  EXPECT_CALL(*mock_cueing_service(),
-              GetContextualGlicZeroStateSuggestionsForFocusedTab(_, _, _, _))
-      .Times(1);
-
-  ExecuteJsTest();
-}
-
 class GlicOnboardingApiTest : public GlicApiTestWithOneTab {
  public:
   GlicOnboardingApiTest()
@@ -1728,86 +1490,6 @@ IN_PROC_BROWSER_TEST_P(GlicOnboardingApiTest, testSetOnboardingCompleted) {
 
   EXPECT_EQ(1, user_action_tester->GetActionCount("Glic.Fre.Accept"));
 
-  ContinueJsTest();
-}
-
-IN_PROC_BROWSER_TEST_P(
-    GlicApiTestWithOneTabAndContextualCueing,
-    testGetZeroStateSuggestionsForFocusedTabFailsWhenHidden) {
-  EXPECT_CALL(*mock_cueing_service(),
-              GetContextualGlicZeroStateSuggestionsForFocusedTab(_, _, _, _))
-      .Times(0);
-
-  ExecuteJsTest();
-}
-
-IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTabAndContextualCueing,
-                       testGetZeroStateSuggestionsApi) {
-  EXPECT_CALL(*mock_cueing_service(),
-              GetContextualGlicZeroStateSuggestionsForPinnedTabs(_, _, _, _, _))
-      .Times(testing::AtLeast(1));
-  // TODO(b/451618836): This is currently called 4 times, but should only be
-  // called once.
-
-  ExecuteJsTest();
-}
-
-// TODO(crbug.com/449897870): Flaky on Win-asan.
-#if BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER)
-#define MAYBE_testGetZeroStateSuggestionsMultipleNavigations \
-  DISABLED_testGetZeroStateSuggestionsMultipleNavigations
-#else
-#define MAYBE_testGetZeroStateSuggestionsMultipleNavigations \
-  testGetZeroStateSuggestionsMultipleNavigations
-#endif
-IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTabAndContextualCueing,
-                       MAYBE_testGetZeroStateSuggestionsMultipleNavigations) {
-  // TODO: zero state suggestions not yet implemented for multi-instance.
-  SKIP_TEST_FOR_MULTI_INSTANCE();
-  EXPECT_CALL(*mock_cueing_service(),
-              GetContextualGlicZeroStateSuggestionsForFocusedTab(_, _, _, _))
-      .Times(1);
-  ExecuteJsTest();
-
-  // Navigate to another page in the existing tab.
-  std::vector<std::string> suggestions = {"suggestion1", "suggestion2",
-                                          "suggestion3"};
-  // This gets called once for the primary page change and once for the title
-  // change. This is fine. In the actual cueing service implementation, it
-  // coalesces the calls for the same page if there is already an existing
-  // request for the page in flight.
-  EXPECT_CALL(*mock_cueing_service(),
-              GetContextualGlicZeroStateSuggestionsForFocusedTab(_, _, _, _))
-      .WillRepeatedly(RunOnceCallbackRepeatedly<3>(suggestions));
-  RunTestSequence(NavigateWebContents(
-      kFirstTab, InProcessBrowserTest::embedded_test_server()->GetURL(
-                     "/scrollable_page_with_content.html")));
-
-  // Confirm that the observer is notified through getZeroStateSuggestions of
-  // the second page navigation.
-  ContinueJsTest();
-}
-
-IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTabAndContextualCueing,
-                       testGetZeroStateSuggestionsFailsWhenHidden) {
-  // TODO: zero state suggestions not yet implemented for multi-instance.
-  SKIP_TEST_FOR_MULTI_INSTANCE();
-  // Initial state.
-  EXPECT_CALL(*mock_cueing_service(),
-              GetContextualGlicZeroStateSuggestionsForFocusedTab(_, _, _, _))
-      .Times(1);
-  ExecuteJsTest();
-
-  testing::Mock::VerifyAndClearExpectations(mock_cueing_service());
-
-  // Navigate to another page in the existing tab. Panel should be closed here
-  // so should not get suggestions for tab.
-  EXPECT_CALL(*mock_cueing_service(),
-              GetContextualGlicZeroStateSuggestionsForFocusedTab(_, _, _, _))
-      .Times(0);
-  RunTestSequence(NavigateWebContents(
-      kFirstTab, InProcessBrowserTest::embedded_test_server()->GetURL(
-                     "/scrollable_page_with_content.html")));
   ContinueJsTest();
 }
 
@@ -2253,18 +1935,6 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab,
       return trial.name == expected.name && trial.group == expected.group;
     });
   }));
-}
-
-#if BUILDFLAG(IS_CHROMEOS) && defined(MEMORY_SANITIZER)
-#define MAYBE_testCloseAndOpenWhileOpening DISABLED_testCloseAndOpenWhileOpening
-#else
-#define MAYBE_testCloseAndOpenWhileOpening testCloseAndOpenWhileOpening
-#endif
-IN_PROC_BROWSER_TEST_P(GlicApiTest, MAYBE_testCloseAndOpenWhileOpening) {
-  RunTestSequence(OpenGlic(GlicInstrumentMode::kNone));
-  ExecuteJsTest();
-  RunTestSequence(OpenGlic(GlicInstrumentMode::kNone));
-  ContinueJsTest();
 }
 
 IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab,
@@ -3620,10 +3290,6 @@ INSTANTIATE_TEST_SUITE_P(
     // TODO(harringtond): Test setup fails w/ multi instance.
     testing::Values(TestParams{}),
     &WithTestParams::PrintTestVariant);
-INSTANTIATE_TEST_SUITE_P(,
-                         GlicApiTestWithOneTabAndContextualCueing,
-                         DefaultTestParamSet(),
-                         &WithTestParams::PrintTestVariant);
 INSTANTIATE_TEST_SUITE_P(,
                          GlicApiTestWithFastTimeout,
                          DefaultTestParamSet(),

@@ -404,8 +404,15 @@ class GlicApiBrowserTestMixin : public T {
 
   base::expected<base::Value, std::string> CommandNavigateTab(
       const internal::NavigateTabCommand& command) {
-    bool ok = content::NavigateToURL(command.tab_handle.Get()->GetContents(),
-                                     GURL(command.url));
+    auto handle = command.tab_handle;
+    if (handle == tabs::TabHandle::Null()) {
+      if (!T::GetTabListInterface()->GetActiveTab()) {
+        return base::unexpected("NavigateTab(): No active tab found");
+      }
+      handle = T::GetTabListInterface()->GetActiveTab()->GetHandle();
+    }
+    bool ok =
+        content::NavigateToURL(handle.Get()->GetContents(), GURL(command.url));
     return base::ok(base::Value(ok));
   }
 
