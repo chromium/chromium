@@ -58,6 +58,11 @@ PROJECTS = {
             '//third_party/webrtc/modules/audio_coding:neteq_unittest_proto',
         ],
     },
+    'angle': {
+        'compile_dirs': 'third_party/angle',
+        'tool_arg': '--project=angle',
+        'build_targets': ['//third_party/angle:angle'],
+    },
 }
 
 # Standard GN arguments common to most platforms for spanification.
