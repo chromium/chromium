@@ -15,6 +15,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/gfx/color_palette.h"
@@ -480,14 +481,20 @@ void NotificationHeaderView::UpdateColors() {
 
   if (expand_button_) {
     expand_button_->SetImage(ui::ImageModel::FromVectorIcon(
-        is_expanded_ ? kNotificationExpandLessOldIcon
-                     : kNotificationExpandMoreOldIcon,
+        is_expanded_ ? (features::IsRoundedIconsEnabled()
+                            ? kKeyboardArrowUpIcon
+                            : kNotificationExpandLessOldIcon)
+                     : (features::IsRoundedIconsEnabled()
+                            ? kKeyboardArrowDownIcon
+                            : kNotificationExpandMoreOldIcon),
         actual_color, kExpandIconSize));
   }
 
   if (using_default_app_icon_ && app_icon_view_) {
     app_icon_view_->SetImage(ui::ImageModel::FromVectorIcon(
-        kProductOldIcon, actual_color, kSmallImageSizeMD));
+        features::IsRoundedIconsEnabled() ? kChromeProductIcon
+                                          : kProductOldIcon,
+        actual_color, kSmallImageSizeMD));
   }
 }
 

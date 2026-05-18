@@ -19,6 +19,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/color/color_provider.h"
 #include "ui/compositor/layer.h"
@@ -101,9 +102,11 @@ class StackedNotificationBar::StackedNotificationBarIcon
         accent_color);
 
     if (masked_small_icon.IsEmpty()) {
-      SetImage(ui::ImageModel::FromVectorIcon(message_center::kProductOldIcon,
-                                              accent_color,
-                                              kStackedNotificationIconSize));
+      SetImage(ui::ImageModel::FromVectorIcon(
+          ::features::IsRoundedIconsEnabled()
+              ? message_center::kChromeProductIcon
+              : message_center::kProductOldIcon,
+          accent_color, kStackedNotificationIconSize));
     } else {
       SetImage(ui::ImageModel::FromImage(masked_small_icon));
     }

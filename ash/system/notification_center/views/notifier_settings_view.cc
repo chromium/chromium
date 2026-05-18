@@ -36,6 +36,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/color/color_id.h"
 #include "ui/compositor/layer.h"
@@ -611,8 +612,9 @@ void NotifierSettingsView::NotifierButton::UpdateIconImage(
     const gfx::ImageSkia& icon) {
   if (icon.isNull()) {
     icon_view_->SetImage(ui::ImageModel::FromVectorIcon(
-        message_center::kProductOldIcon, cros_tokens::kIconColorPrimary,
-        kEntryIconSize));
+        ::features::IsRoundedIconsEnabled() ? message_center::kChromeProductIcon
+                                            : message_center::kProductOldIcon,
+        cros_tokens::kIconColorPrimary, kEntryIconSize));
   } else {
     icon_view_->SetImage(ui::ImageModel::FromImageSkia(icon));
     icon_view_->SetImageSize(gfx::Size(kEntryIconSize, kEntryIconSize));

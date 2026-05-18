@@ -14,6 +14,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/image/image.h"
@@ -66,9 +67,11 @@ class NotificationHeaderViewTest : public views::ViewsTestBase {
   }
 
   bool MatchesAppIconColor(SkColor color) {
-    SkBitmap expected =
-        *gfx::CreateVectorIcon(kProductOldIcon, kSmallImageSizeMD, color)
-             .bitmap();
+    SkBitmap expected = *gfx::CreateVectorIcon(features::IsRoundedIconsEnabled()
+                                                   ? kChromeProductIcon
+                                                   : kProductOldIcon,
+                                               kSmallImageSizeMD, color)
+                             .bitmap();
     SkBitmap actual =
         *notification_header_view_->app_icon_for_testing().bitmap();
     return gfx::test::AreBitmapsEqual(expected, actual);
@@ -76,9 +79,12 @@ class NotificationHeaderViewTest : public views::ViewsTestBase {
 
   bool MatchesExpandIconColor(SkColor color) {
     constexpr int kExpandIconSize = 8;
-    SkBitmap expected = *gfx::CreateVectorIcon(kNotificationExpandMoreOldIcon,
-                                               kExpandIconSize, color)
-                             .bitmap();
+    SkBitmap expected =
+        *gfx::CreateVectorIcon(features::IsRoundedIconsEnabled()
+                                   ? kKeyboardArrowDownIcon
+                                   : kNotificationExpandMoreOldIcon,
+                               kExpandIconSize, color)
+             .bitmap();
     SkBitmap actual =
         *notification_header_view_->expand_button()->GetImage().bitmap();
     return gfx::test::AreBitmapsEqual(expected, actual);

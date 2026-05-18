@@ -19,6 +19,7 @@
 #include "ash/system/notification_center/metrics_utils.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/geometry/insets.h"
@@ -97,7 +98,9 @@ OngoingProcessView::OngoingProcessView(
                   .SetID(VIEW_ID_ONGOING_PROCESS_ICON)
                   .SetImage(ui::ImageModel::FromVectorIcon(
                       notification.vector_small_image().is_empty()
-                          ? message_center::kProductOldIcon
+                          ? ::features::IsRoundedIconsEnabled()
+                                ? message_center::kChromeProductIcon
+                                : message_center::kProductOldIcon
                           : notification.vector_small_image(),
                       cros_tokens::kCrosSysOnSurface, kIconSize)),
               views::Builder<views::BoxLayoutView>()

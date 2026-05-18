@@ -260,17 +260,26 @@ SkColor NotificationControlButtonsView::DetermineButtonIconColor() const {
 
 const gfx::VectorIcon& NotificationControlButtonsView::GetCloseButtonIcon()
     const {
-  return close_button_icon_ ? *close_button_icon_ : kDefaultCloseIcon;
+  const gfx::VectorIcon& default_icon = features::IsRoundedIconsEnabled()
+                                            ? kDefaultCloseIcon
+                                            : kDefaultCloseOldIcon;
+  return close_button_icon_ ? *close_button_icon_ : default_icon;
 }
 
 const gfx::VectorIcon& NotificationControlButtonsView::GetSettingsButtonIcon()
     const {
-  return settings_button_icon_ ? *settings_button_icon_ : kDefaultSettingsIcon;
+  const gfx::VectorIcon& default_icon = features::IsRoundedIconsEnabled()
+                                            ? kDefaultSettingsIcon
+                                            : kDefaultSettingsOldIcon;
+  return settings_button_icon_ ? *settings_button_icon_ : default_icon;
 }
 
 const gfx::VectorIcon& NotificationControlButtonsView::GetSnoozeButtonIcon()
     const {
-  return snooze_button_icon_ ? *snooze_button_icon_ : kDefaultSnoozeIcon;
+  const gfx::VectorIcon& default_icon = features::IsRoundedIconsEnabled()
+                                            ? kDefaultSnoozeIcon
+                                            : kDefaultSnoozeOldIcon;
+  return snooze_button_icon_ ? *snooze_button_icon_ : default_icon;
 }
 
 BEGIN_METADATA(NotificationControlButtonsView)

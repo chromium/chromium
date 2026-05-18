@@ -11,6 +11,10 @@ aggregate_vector_icons("message_center_vector_icons") {
   icon_directory = "vector_icons"
 
   sources = [
+    "chrome_product.icon",
+    "close.icon",
+    "keyboard_arrow_down.icon",
+    "keyboard_arrow_up.icon",
     "notification_close_button_old.icon",
     "notification_expand_less_old.icon",
     "notification_expand_more_old.icon",
@@ -18,6 +22,9 @@ aggregate_vector_icons("message_center_vector_icons") {
     "notification_settings_button_old.icon",
     "notification_snooze_button_old.icon",
     "product_old.icon",
+    "schedule.icon",
+    "send_filled.icon",
+    "settings_filled.icon",
   ]
 }
 
@@ -87,9 +94,10 @@ component("message_center") {
     }
 
     if (toolkit_views) {
-      # TODO(crbug.com/257291597): Skip the sources that are unused on is_chromeos
-      # (e.g. notification_view.cc). This will require refactoring to break
-      # dependencies (e.g. MessagePopupCollection must become an interface).
+      # TODO(crbug.com/257291597): Skip the sources that are unused on
+      # is_chromeos (e.g. notification_view.cc). This will require refactoring
+      # to break dependencies (e.g. MessagePopupCollection must become an
+      # interface).
       sources += [
         "views/desktop_message_popup_collection.cc",
         "views/desktop_message_popup_collection.h",

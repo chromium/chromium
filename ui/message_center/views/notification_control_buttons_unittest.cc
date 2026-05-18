@@ -2,11 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ui/message_center/views/notification_control_buttons_view.h"
-
 #include "base/memory/raw_ptr.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_unittest_util.h"
@@ -15,6 +14,7 @@
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/vector_icons.h"
 #include "ui/message_center/views/message_view.h"
+#include "ui/message_center/views/notification_control_buttons_view.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/test/views_test_base.h"
@@ -90,11 +90,20 @@ class NotificationControlButtonsTest : public views::ViewsTestBase {
 
   void ExpectIconColor(SkColor color) {
     EXPECT_TRUE(MatchesIcon(buttons_view()->close_button(),
-                            kNotificationCloseButtonOldIcon, color));
+                            features::IsRoundedIconsEnabled()
+                                ? kCloseIcon
+                                : kNotificationCloseButtonOldIcon,
+                            color));
     EXPECT_TRUE(MatchesIcon(buttons_view()->settings_button(),
-                            kNotificationSettingsButtonOldIcon, color));
+                            features::IsRoundedIconsEnabled()
+                                ? kSettingsFilledIcon
+                                : kNotificationSettingsButtonOldIcon,
+                            color));
     EXPECT_TRUE(MatchesIcon(buttons_view()->snooze_button(),
-                            kNotificationSnoozeButtonOldIcon, color));
+                            features::IsRoundedIconsEnabled()
+                                ? kScheduleIcon
+                                : kNotificationSnoozeButtonOldIcon,
+                            color));
   }
 
  private:
@@ -167,21 +176,31 @@ TEST_F(NotificationControlButtonsTest, SetIcons) {
   // Verify that the default control buttons are using their default icons.
   const SkColor default_icon_color =
       buttons_view()->GetColorProvider()->GetColor(ui::kColorIcon);
-  EXPECT_TRUE(MatchesIcon(buttons_view()->close_button(),
-                          NotificationControlButtonsView::kDefaultCloseIcon,
-                          default_icon_color));
-  EXPECT_TRUE(MatchesIcon(buttons_view()->settings_button(),
-                          NotificationControlButtonsView::kDefaultSettingsIcon,
-                          default_icon_color));
-  EXPECT_TRUE(MatchesIcon(buttons_view()->snooze_button(),
-                          NotificationControlButtonsView::kDefaultSnoozeIcon,
-                          default_icon_color));
+  EXPECT_TRUE(
+      MatchesIcon(buttons_view()->close_button(),
+                  features::IsRoundedIconsEnabled()
+                      ? NotificationControlButtonsView::kDefaultCloseIcon
+                      : NotificationControlButtonsView::kDefaultCloseOldIcon,
+                  default_icon_color));
+  EXPECT_TRUE(
+      MatchesIcon(buttons_view()->settings_button(),
+                  features::IsRoundedIconsEnabled()
+                      ? NotificationControlButtonsView::kDefaultSettingsIcon
+                      : NotificationControlButtonsView::kDefaultSettingsOldIcon,
+                  default_icon_color));
+  EXPECT_TRUE(
+      MatchesIcon(buttons_view()->snooze_button(),
+                  features::IsRoundedIconsEnabled()
+                      ? NotificationControlButtonsView::kDefaultSnoozeIcon
+                      : NotificationControlButtonsView::kDefaultSnoozeOldIcon,
+                  default_icon_color));
 
   // Set the control buttons to have custom, non-default icons.
   buttons_view()->ShowCloseButton(false);
   buttons_view()->ShowSettingsButton(false);
   buttons_view()->ShowSnoozeButton(false);
-  const gfx::VectorIcon& test_icon = kProductOldIcon;
+  const gfx::VectorIcon& test_icon =
+      features::IsRoundedIconsEnabled() ? kChromeProductIcon : kProductOldIcon;
   buttons_view()->SetCloseButtonIcon(test_icon);
   buttons_view()->SetSettingsButtonIcon(test_icon);
   buttons_view()->SetSnoozeButtonIcon(test_icon);
@@ -210,15 +229,24 @@ TEST_F(NotificationControlButtonsTest, IconSize) {
   buttons_view()->ShowSnoozeButton(true);
   const SkColor default_icon_color =
       buttons_view()->GetColorProvider()->GetColor(ui::kColorIcon);
-  EXPECT_TRUE(MatchesIcon(buttons_view()->close_button(),
-                          NotificationControlButtonsView::kDefaultCloseIcon,
-                          default_icon_color, custom_size));
-  EXPECT_TRUE(MatchesIcon(buttons_view()->settings_button(),
-                          NotificationControlButtonsView::kDefaultSettingsIcon,
-                          default_icon_color, custom_size));
-  EXPECT_TRUE(MatchesIcon(buttons_view()->snooze_button(),
-                          NotificationControlButtonsView::kDefaultSnoozeIcon,
-                          default_icon_color, custom_size));
+  EXPECT_TRUE(
+      MatchesIcon(buttons_view()->close_button(),
+                  features::IsRoundedIconsEnabled()
+                      ? NotificationControlButtonsView::kDefaultCloseIcon
+                      : NotificationControlButtonsView::kDefaultCloseOldIcon,
+                  default_icon_color, custom_size));
+  EXPECT_TRUE(
+      MatchesIcon(buttons_view()->settings_button(),
+                  features::IsRoundedIconsEnabled()
+                      ? NotificationControlButtonsView::kDefaultSettingsIcon
+                      : NotificationControlButtonsView::kDefaultSettingsOldIcon,
+                  default_icon_color, custom_size));
+  EXPECT_TRUE(
+      MatchesIcon(buttons_view()->snooze_button(),
+                  features::IsRoundedIconsEnabled()
+                      ? NotificationControlButtonsView::kDefaultSnoozeIcon
+                      : NotificationControlButtonsView::kDefaultSnoozeOldIcon,
+                  default_icon_color, custom_size));
 
   // Show the same control buttons with a different custom size.
   buttons_view()->ShowCloseButton(false);
@@ -231,15 +259,24 @@ TEST_F(NotificationControlButtonsTest, IconSize) {
   buttons_view()->ShowSnoozeButton(true);
 
   // Verify that the control buttons are using the new custom size.
-  EXPECT_TRUE(MatchesIcon(buttons_view()->close_button(),
-                          NotificationControlButtonsView::kDefaultCloseIcon,
-                          default_icon_color, custom_size));
-  EXPECT_TRUE(MatchesIcon(buttons_view()->settings_button(),
-                          NotificationControlButtonsView::kDefaultSettingsIcon,
-                          default_icon_color, custom_size));
-  EXPECT_TRUE(MatchesIcon(buttons_view()->snooze_button(),
-                          NotificationControlButtonsView::kDefaultSnoozeIcon,
-                          default_icon_color, custom_size));
+  EXPECT_TRUE(
+      MatchesIcon(buttons_view()->close_button(),
+                  features::IsRoundedIconsEnabled()
+                      ? NotificationControlButtonsView::kDefaultCloseIcon
+                      : NotificationControlButtonsView::kDefaultCloseOldIcon,
+                  default_icon_color, custom_size));
+  EXPECT_TRUE(
+      MatchesIcon(buttons_view()->settings_button(),
+                  features::IsRoundedIconsEnabled()
+                      ? NotificationControlButtonsView::kDefaultSettingsIcon
+                      : NotificationControlButtonsView::kDefaultSettingsOldIcon,
+                  default_icon_color, custom_size));
+  EXPECT_TRUE(
+      MatchesIcon(buttons_view()->snooze_button(),
+                  features::IsRoundedIconsEnabled()
+                      ? NotificationControlButtonsView::kDefaultSnoozeIcon
+                      : NotificationControlButtonsView::kDefaultSnoozeOldIcon,
+                  default_icon_color, custom_size));
 }
 
 // Tests spacing between control buttons.

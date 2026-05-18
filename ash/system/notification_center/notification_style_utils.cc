@@ -14,6 +14,7 @@
 #include "ash/system/notification_center/message_center_constants.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
@@ -50,7 +51,9 @@ gfx::ImageSkia CreateNotificationAppIcon(
 
   gfx::ImageSkia app_icon =
       masked_small_icon.IsEmpty()
-          ? gfx::CreateVectorIcon(message_center::kProductOldIcon,
+          ? gfx::CreateVectorIcon(::features::IsRoundedIconsEnabled()
+                                      ? message_center::kChromeProductIcon
+                                      : message_center::kProductOldIcon,
                                   kNotificationAppIconImageSize, icon_color)
           : masked_small_icon.AsImageSkia();
 
@@ -72,7 +75,9 @@ gfx::ImageSkia CreateNotificationItemIcon(
   // hardcoded chrome icon as a default icon.
   return gfx::ImageSkiaOperations::CreateImageWithCircleBackground(
       kNotificationAppIconViewSize / 2, SK_ColorRED,
-      gfx::CreateVectorIcon(message_center::kProductOldIcon,
+      gfx::CreateVectorIcon(::features::IsRoundedIconsEnabled()
+                                ? message_center::kChromeProductIcon
+                                : message_center::kProductOldIcon,
                             kNotificationAppIconImageSize, SK_ColorBLACK));
 }
 
