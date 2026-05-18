@@ -712,6 +712,9 @@ TemplateUrlServiceAndroid::GetDisabledStarterPackIds() {
     disabled_ids.Put(template_url_starter_pack_data::StarterPackId::kGemini);
   }
 
+  // Skip @bookmarks.
+  disabled_ids.Put(template_url_starter_pack_data::StarterPackId::kBookmarks);
+
   return disabled_ids;
 }
 
