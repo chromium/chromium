@@ -62,6 +62,7 @@ class GPU_COMMAND_BUFFER_CLIENT_EXPORT MappableBufferDXGI
   int stride(size_t plane) const override;
   gfx::GpuMemoryBufferType GetType() const override;
   gfx::GpuMemoryBufferHandle CloneHandle() const override;
+  bool SupportsZeroCopyWebGPUImport() const override;
 
   // This method allows clients to explicitly specify that it wants to use the
   // |premapped_memory_| which is internally created by this class from the GMB

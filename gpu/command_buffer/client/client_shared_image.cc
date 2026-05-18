@@ -550,6 +550,14 @@ void ClientSharedImage::MapAsync(
                                   std::move(result_cb));
 }
 
+gfx::GpuMemoryBufferType ClientSharedImage::GetGpuMemoryBufferType() const {
+  return mappable_buffer_ ? mappable_buffer_->GetType() : gfx::EMPTY_BUFFER;
+}
+
+bool ClientSharedImage::SupportsZeroCopyWebGPUImport() const {
+  return mappable_buffer_ && mappable_buffer_->SupportsZeroCopyWebGPUImport();
+}
+
 gfx::GpuMemoryBufferHandle ClientSharedImage::CloneGpuMemoryBufferHandle()
     const {
   // Supported only if this ClientSI is backed by a MappableBuffer that is

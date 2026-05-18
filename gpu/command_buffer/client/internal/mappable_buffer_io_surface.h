@@ -54,6 +54,7 @@ class GPU_COMMAND_BUFFER_CLIENT_EXPORT MappableBufferIOSurface
   int stride(size_t plane) const override;
   gfx::GpuMemoryBufferType GetType() const override;
   gfx::GpuMemoryBufferHandle CloneHandle() const override;
+  bool SupportsZeroCopyWebGPUImport() const override;
 
  private:
   friend ClientSharedImage;

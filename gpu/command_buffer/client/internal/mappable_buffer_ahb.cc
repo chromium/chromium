@@ -187,6 +187,10 @@ gfx::GpuMemoryBufferHandle MappableBufferAHB::CloneHandle() const {
   return handle_.Clone();
 }
 
+bool MappableBufferAHB::SupportsZeroCopyWebGPUImport() const {
+  return false;
+}
+
 void MappableBufferAHB::AssertMapped() {
 #if DCHECK_IS_ON()
   base::AutoLock auto_lock(map_lock_);

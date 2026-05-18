@@ -63,7 +63,6 @@
 
 #if BUILDFLAG(IS_MAC)
 #include "base/mac/mac_util.h"
-#include "ui/gfx/mac/io_surface.h"
 #endif
 
 namespace media {
@@ -1097,11 +1096,11 @@ scoped_refptr<VideoFrame> MappableSharedImageVideoFramePool::PoolImpl::
   // MappableSI and copy to it after mapping didn't fail.
   CHECK(frame_resource->shared_image);
 
-  auto handle = frame_resource->shared_image->CloneGpuMemoryBufferHandle();
+  const auto gmb_type = frame_resource->shared_image->GetGpuMemoryBufferType();
 
   // Log software/hardware backed MappableSI's
   // `output_format_` used to create the shared image.
-  auto name = (handle.type == gfx::GpuMemoryBufferType::SHARED_MEMORY_BUFFER)
+  auto name = (gmb_type == gfx::GpuMemoryBufferType::SHARED_MEMORY_BUFFER)
                   ? std::string("Media.GPU.OutputFormatSoftwareGmb")
                   : std::string("Media.GPU.OutputFormatHardwareGmb");
   base::UmaHistogramEnumeration(name, output_format_);
@@ -1113,7 +1112,7 @@ scoped_refptr<VideoFrame> MappableSharedImageVideoFramePool::PoolImpl::
   // TODO(crbug.com/413659843): Move this support check as part of
   // SharedImageCapabilities.
   is_webgpu_compatible =
-      gfx::IOSurfaceIsWebGPUCompatible(handle.io_surface().get()) &&
+      frame_resource->shared_image->SupportsZeroCopyWebGPUImport() &&
       frame_resource->shared_image->usage().Has(
           gpu::SHARED_IMAGE_USAGE_WEBGPU_READ);
 #endif
@@ -1123,13 +1122,13 @@ scoped_refptr<VideoFrame> MappableSharedImageVideoFramePool::PoolImpl::
   // TOOD(crbug.com/425634684, crbug.com/413659843): Check for webgpu support
   // from SharedImageCapabilities, once this metadata is compatible.
   bool native_pixmap_supports_zero_copy =
-      handle.type == gfx::NATIVE_PIXMAP &&
-      handle.native_pixmap_handle().supports_zero_copy_webgpu_import;
+      gmb_type == gfx::GpuMemoryBufferType::NATIVE_PIXMAP &&
+      frame_resource->shared_image->SupportsZeroCopyWebGPUImport();
 
   SupportZeroCopyImportType type = SupportZeroCopyImportType::kEmptyBuffer;
-  if (handle.type == gfx::GpuMemoryBufferType::SHARED_MEMORY_BUFFER) {
+  if (gmb_type == gfx::GpuMemoryBufferType::SHARED_MEMORY_BUFFER) {
     type = SupportZeroCopyImportType::kSharedMemory;
-  } else if (handle.type == gfx::GpuMemoryBufferType::NATIVE_PIXMAP) {
+  } else if (gmb_type == gfx::GpuMemoryBufferType::NATIVE_PIXMAP) {
     if (native_pixmap_supports_zero_copy) {
       type = SupportZeroCopyImportType::kNativePixmapSupported;
     } else {

@@ -266,6 +266,10 @@ gfx::GpuMemoryBufferHandle MappableBufferDXGI::CloneHandle() const {
   return handle;
 }
 
+bool MappableBufferDXGI::SupportsZeroCopyWebGPUImport() const {
+  return false;
+}
+
 void MappableBufferDXGI::SetUsePreMappedMemory(bool use_premapped_memory) {
   use_premapped_memory_ = use_premapped_memory;
 }

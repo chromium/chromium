@@ -53,6 +53,7 @@ class GPU_COMMAND_BUFFER_CLIENT_EXPORT MappableBufferSharedMemory
   int stride(size_t plane) const override;
   gfx::GpuMemoryBufferType GetType() const override;
   gfx::GpuMemoryBufferHandle CloneHandle() const override;
+  bool SupportsZeroCopyWebGPUImport() const override;
 #if BUILDFLAG(IS_WIN)
   void SetUsePreMappedMemory(bool use_premapped_memory) override {}
 #endif

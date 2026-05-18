@@ -68,6 +68,9 @@ class GPU_COMMAND_BUFFER_CLIENT_EXPORT MappableBuffer {
   // Returns the type of this buffer.
   virtual gfx::GpuMemoryBufferType GetType() const = 0;
 
+  // Whether the underlying buffer supports zero-copy import into WebGPU.
+  virtual bool SupportsZeroCopyWebGPUImport() const = 0;
+
   // Returns a platform specific handle for this buffer which in particular can
   // be sent over IPC. This duplicates file handles as appropriate, so that a
   // caller takes ownership of the returned handle.
