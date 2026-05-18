@@ -17,6 +17,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "ui/views/controls/button/label_button.h"
+#include "ui/views/test/widget_test.h"
 
 namespace ash {
 
@@ -78,9 +79,9 @@ TEST_F(VirtualTrackpadTest, ToggleShowHide) {
   ToggleVirtualTrackpad();
   EXPECT_TRUE(GetWidget());
 
+  views::test::WidgetDestroyedWaiter widget_destroyed_waiter(GetWidget());
   ToggleVirtualTrackpad();
-  // Toggle to close uses `views::Widget::Close()` which uses a post task.
-  base::RunLoop().RunUntilIdle();
+  widget_destroyed_waiter.Wait();
   EXPECT_FALSE(GetWidget());
 }
 
