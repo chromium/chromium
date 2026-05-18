@@ -523,7 +523,10 @@ DlpContentManager::DlpContentManager() {
   ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
       [this](BrowserWindowInterface* browser_window_interface) {
         // TODO(crbug.com/452120900): TabStripModel auto-unregistered by dtor
-        browser_window_interface->GetTabStripModel()->AddObserver(this);
+        TabStripModel* tab_strip_model =
+            browser_window_interface->GetTabStripModel();
+        CHECK(observed_tab_strip_models_.insert(tab_strip_model).second);
+        tab_strip_model->AddObserver(this);
         return true;
       });
   if (auto* browser_controller = ash::BrowserController::GetInstance()) {
@@ -608,8 +611,14 @@ void DlpContentManager::OnWebContentsDestroyed(
 void DlpContentManager::OnBrowserCreated(ash::BrowserDelegate* browser) {
   // DlpContentManager is a singleton that outlives any browser instance. When a
   // browser gets destroyed, its tab strip model gets destroyed too, so there's
-  // no need to unregister the observer.
-  browser->GetBrowser().GetTabStripModel()->AddObserver(this);
+  // no need to unregister the observer. However, it gets lazily created, which
+  // can happen inside BrowserController's OnBrowserCreated notification loop.
+  // Hence we must guard against trying to observe the same tab strip model
+  // twice.
+  TabStripModel* tab_strip_model = browser->GetBrowser().GetTabStripModel();
+  if (observed_tab_strip_models_.insert(tab_strip_model).second) {
+    tab_strip_model->AddObserver(this);
+  }
 }
 
 void DlpContentManager::OnTabStripModelChanged(
@@ -621,6 +630,11 @@ void DlpContentManager::OnTabStripModelChanged(
   if (change.type() == TabStripModelChange::kSelectionOnly) {
     TabLocationMaybeChanged(selection.new_contents);
   }
+}
+
+void DlpContentManager::OnTabStripModelDestroyed(
+    TabStripModel* tab_strip_model) {
+  observed_tab_strip_models_.erase(tab_strip_model);
 }
 
 void DlpContentManager::RemoveFromConfidential(

@@ -11,6 +11,7 @@
 #include <utility>
 
 #include "base/containers/flat_map.h"
+#include "base/containers/flat_set.h"
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -336,6 +337,7 @@ class DlpContentManager : public DlpContentObserver,
       TabStripModel* tab_strip_model,
       const TabStripModelChange& change,
       const TabStripSelectionChange& selection) override;
+  void OnTabStripModelDestroyed(TabStripModel* tab_strip_model) override;
 
   // Called when tab was probably moved, but without change of the visibility.
   virtual void TabLocationMaybeChanged(content::WebContents* web_contents) = 0;
@@ -462,6 +464,10 @@ class DlpContentManager : public DlpContentObserver,
   base::ScopedObservation<ash::BrowserController,
                           ash::BrowserController::Observer>::
       LeakedDanglingUntriaged browser_controller_observation_{this};
+
+  // Set of currently observed tab strip models to prevent duplicate
+  // observation attempt.
+  base::flat_set<TabStripModel*> observed_tab_strip_models_;
 
   // A helper structure that contains web contents which were reported during
   // the current screen share.
