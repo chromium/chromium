@@ -216,6 +216,63 @@ TEST_F(SqlBackendImplTest, InitWithFakeIndexFile) {
                                       FakeIndexFileError::kOkExisting, 1);
 }
 
+TEST_F(SqlBackendImplTest, SerialInit) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      net::features::kDiskCacheBackendExperiment,
+      {{"SqlDiskCacheSerialInitialize", "true"},
+       {"SqlDiskCacheShardCount", "2"}});
+
+  auto backend = CreateBackend();
+  base::test::TestFuture<int> future;
+  base::HistogramTester histogram_tester;
+  backend->Init(future.GetCallback());
+  ASSERT_EQ(future.Get(), net::OK);
+
+  histogram_tester.ExpectTotalCount("Net.SqlDiskCache.Init.SuccessTime", 1);
+  histogram_tester.ExpectTotalCount("Net.SqlDiskCache.Init.FailureTime", 0);
+}
+
+TEST_F(SqlBackendImplTest, SerialInitShardFail) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      net::features::kDiskCacheBackendExperiment,
+      {{"SqlDiskCacheSerialInitialize", "true"},
+       {"SqlDiskCacheShardCount", "2"}});
+
+  auto backend = CreateBackend();
+  // Fail the second shard.
+  backend->GetSqlStoreForTest()->SetSimulateDbShardFailureForTesting(1, true);
+
+  base::test::TestFuture<int> future;
+  base::HistogramTester histogram_tester;
+  backend->Init(future.GetCallback());
+  ASSERT_EQ(future.Get(), net::ERR_FAILED);
+
+  histogram_tester.ExpectTotalCount("Net.SqlDiskCache.Init.SuccessTime", 0);
+  histogram_tester.ExpectTotalCount("Net.SqlDiskCache.Init.FailureTime", 1);
+}
+
+TEST_F(SqlBackendImplTest, SerialInitFail) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      net::features::kDiskCacheBackendExperiment,
+      {{"SqlDiskCacheSerialInitialize", "true"}});
+
+  auto backend = CreateBackend();
+  // Make fake index file check fail by creating a directory where the file
+  // should be.
+  base::CreateDirectory(
+      temp_dir_.GetPath().Append(kSqlBackendFakeIndexFileName));
+
+  base::test::TestFuture<int> future;
+  base::HistogramTester histogram_tester;
+  backend->Init(future.GetCallback());
+  ASSERT_EQ(future.Get(), net::ERR_FAILED);
+  histogram_tester.ExpectTotalCount("Net.SqlDiskCache.Init.SuccessTime", 0);
+  histogram_tester.ExpectTotalCount("Net.SqlDiskCache.Init.FailureTime", 1);
+}
+
 TEST_F(SqlBackendImplTest, InitWithCorruptedFakeIndexFile) {
   std::string corrupted_contents = GetExpectedFakeIndexContents();
   base::span<uint8_t> corrupted_contents_span =

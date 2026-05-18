@@ -536,6 +536,11 @@ BASE_FEATURE_PARAM(bool,
                    "SqlDiskCacheSerialCheckpoint",
                    true);
 BASE_FEATURE_PARAM(bool,
+                   kSqlDiskCacheSerialInitialize,
+                   &kDiskCacheBackendExperiment,
+                   "SqlDiskCacheSerialInitialize",
+                   false);
+BASE_FEATURE_PARAM(bool,
                    kSqlDiskCacheSizeAndPriorityAwareEviction,
                    &kDiskCacheBackendExperiment,
                    "SqlDiskCacheSizeAndPriorityAwareEviction",

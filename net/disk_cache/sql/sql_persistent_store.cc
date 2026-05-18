@@ -134,6 +134,12 @@ SqlPersistentStore::SqlPersistentStore(
 SqlPersistentStore::~SqlPersistentStore() = default;
 
 void SqlPersistentStore::Initialize(ErrorCallback callback) {
+  if (net::features::kSqlDiskCacheSerialInitialize.Get()) {
+    std::vector<InitResultOrError> results;
+    results.reserve(GetSizeOfShards());
+    InitializeNextShard(std::move(callback), std::move(results));
+    return;
+  }
   auto barrier_callback = base::BarrierCallback<InitResultOrError>(
       GetSizeOfShards(),
       base::BindOnce(&SqlPersistentStore::OnInitializeFinished,
@@ -141,6 +147,32 @@ void SqlPersistentStore::Initialize(ErrorCallback callback) {
   for (const auto& backend_shard : backend_shards_) {
     backend_shard->Initialize(user_max_bytes_, barrier_callback);
   }
+}
+
+void SqlPersistentStore::InitializeNextShard(
+    ErrorCallback callback,
+    std::vector<InitResultOrError> results) {
+  if (results.size() == GetSizeOfShards()) {
+    OnInitializeFinished(std::move(callback), std::move(results));
+    return;
+  }
+  const size_t shard_index = results.size();
+  backend_shards_[shard_index]->Initialize(
+      user_max_bytes_, base::BindOnce(&SqlPersistentStore::OnShardInitialized,
+                                      weak_factory_.GetWeakPtr(),
+                                      std::move(callback), std::move(results)));
+}
+
+void SqlPersistentStore::OnShardInitialized(
+    ErrorCallback callback,
+    std::vector<InitResultOrError> results,
+    InitResultOrError result) {
+  if (!result.has_value()) {
+    std::move(callback).Run(result.error());
+    return;
+  }
+  results.push_back(std::move(result));
+  InitializeNextShard(std::move(callback), std::move(results));
 }
 
 void SqlPersistentStore::OpenOrCreateEntry(const CacheEntryKey& key,
@@ -627,6 +659,14 @@ void SqlPersistentStore::SetSimulateDbFailureForTesting(bool fail) {
   for (const auto& backend_shard : backend_shards_) {
     backend_shard->SetSimulateDbFailureForTesting(fail);  // IN-TEST
   }
+}
+
+void SqlPersistentStore::SetSimulateDbShardFailureForTesting(  // IN-TEST
+    size_t shard_index,
+    bool fail) {
+  CHECK_LT(shard_index, backend_shards_.size());
+  backend_shards_[shard_index]->SetSimulateDbFailureForTesting(  // IN-TEST
+      fail);
 }
 
 void SqlPersistentStore::RazeAndPoisonForTesting() {

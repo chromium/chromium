@@ -408,9 +408,23 @@ SqlBackendImpl::SqlBackendImpl(const base::FilePath& path,
 SqlBackendImpl::~SqlBackendImpl() = default;
 
 void SqlBackendImpl::Init(CompletionOnceCallback callback) {
+  if (net::features::kSqlDiskCacheSerialInitialize.Get()) {
+    base::ThreadPool::PostTaskAndReplyWithResult(
+        FROM_HERE,
+        {base::MayBlock(), base::TaskPriority::USER_BLOCKING,
+         base::TaskShutdownBehavior::BLOCK_SHUTDOWN},
+        base::BindOnce(&CheckFakeIndexFile, path_),
+        base::BindOnce(&SqlBackendImpl::OnCheckFakeIndexFileFinished,
+                       weak_factory_.GetWeakPtr(),
+                       std::move(callback).Then(OnceClosureWithBoundArgs(
+                           async_task_manager_.StartTask())),
+                       base::ElapsedTimer()));
+    return;
+  }
   auto barrier_callback = base::BarrierCallback<bool>(
-      2, base::BindOnce(&SqlBackendImpl::OnInitialized,
-                        weak_factory_.GetWeakPtr(), std::move(callback)));
+      2,
+      base::BindOnce(&SqlBackendImpl::OnInitialized, weak_factory_.GetWeakPtr(),
+                     std::move(callback), base::ElapsedTimer()));
 
   store_->Initialize(base::BindOnce([](SqlPersistentStore::Error result) {
                        return result == SqlPersistentStore::Error::kOk;
@@ -425,10 +439,38 @@ void SqlBackendImpl::Init(CompletionOnceCallback callback) {
           .Then(OnceClosureWithBoundArgs(async_task_manager_.StartTask())));
 }
 
+void SqlBackendImpl::OnCheckFakeIndexFileFinished(
+    CompletionOnceCallback callback,
+    base::ElapsedTimer init_start_time,
+    bool success) {
+  if (!success) {
+    OnInitialized(std::move(callback), init_start_time, {false});
+    return;
+  }
+  store_->Initialize(base::BindOnce(&SqlBackendImpl::OnStoreInitialized,
+                                    weak_factory_.GetWeakPtr(),
+                                    std::move(callback), init_start_time));
+}
+
+void SqlBackendImpl::OnStoreInitialized(CompletionOnceCallback callback,
+                                        base::ElapsedTimer init_start_time,
+                                        SqlPersistentStore::Error error) {
+  OnInitialized(std::move(callback), init_start_time,
+                {error == SqlPersistentStore::Error::kOk});
+}
+
 void SqlBackendImpl::OnInitialized(CompletionOnceCallback callback,
+                                   base::ElapsedTimer init_start_time,
                                    const std::vector<bool>& results) {
+  CHECK_EQ(results.size(),
+           net::features::kSqlDiskCacheSerialInitialize.Get() ? 1u : 2u);
   const bool success = std::all_of(results.begin(), results.end(),
                                    [](bool result) { return result; });
+  base::UmaHistogramMicrosecondsTimes(
+      base::StrCat(
+          {"Net.SqlDiskCache.Init.", success ? "Success" : "Failure", "Time"}),
+      init_start_time.Elapsed());
+
   if (success) {
     // Schedule a one-time task to load in-memory index and clean up doomed
     // entries from previous sessions. This runs after a delay to avoid

@@ -588,6 +588,8 @@ NET_EXPORT BASE_DECLARE_FEATURE_PARAM(int,
 NET_EXPORT BASE_DECLARE_FEATURE_PARAM(int, kSqlDiskCacheMaxReadBufferTotalSize);
 // Execute the checkpoint serially.
 NET_EXPORT BASE_DECLARE_FEATURE_PARAM(bool, kSqlDiskCacheSerialCheckpoint);
+// Execute the initialization serially.
+NET_EXPORT BASE_DECLARE_FEATURE_PARAM(bool, kSqlDiskCacheSerialInitialize);
 // Whether to use size and priority aware eviction for the SQL disk cache.
 NET_EXPORT BASE_DECLARE_FEATURE_PARAM(
     bool,

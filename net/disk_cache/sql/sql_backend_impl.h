@@ -18,6 +18,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
+#include "base/timer/elapsed_timer.h"
 #include "base/types/expected.h"
 #include "base/types/strong_alias.h"
 #include "net/base/net_errors.h"
@@ -279,7 +280,14 @@ class NET_EXPORT_PRIVATE SqlBackendImpl final : public Backend {
   };
 
   void OnInitialized(CompletionOnceCallback callback,
+                     base::ElapsedTimer init_start_time,
                      const std::vector<bool>& results);
+  void OnCheckFakeIndexFileFinished(CompletionOnceCallback callback,
+                                    base::ElapsedTimer init_start_time,
+                                    bool success);
+  void OnStoreInitialized(CompletionOnceCallback callback,
+                          base::ElapsedTimer init_start_time,
+                          SqlPersistentStore::Error error);
   void RunDelayedPostInitializationTasks();
 
   SqlEntryImpl* GetActiveEntry(const CacheEntryKey& key);

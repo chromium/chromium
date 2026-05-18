@@ -8575,6 +8575,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Net.SqlDiskCache.Init.{SuccessOrFailure}Time"
+    units="microseconds" expires_after="2026-09-13">
+  <owner>horo@chromium.org</owner>
+  <owner>src/net/OWNERS</owner>
+  <summary>
+    Measures the total duration of the SQL disk cache initialization. Recorded
+    when the initialization completes {SuccessOrFailure}. The histogram is not
+    reported on Windows machines without high resolution clocks.
+  </summary>
+  <token key="SuccessOrFailure">
+    <variant name="Failure" summary="with an error"/>
+    <variant name="Success" summary="successfully"/>
+  </token>
+</histogram>
+
 <histogram name="Net.SqlDiskCache.NormalOperationDelay" units="microseconds"
     expires_after="2026-09-13">
   <owner>horo@chromium.org</owner>

@@ -577,6 +577,9 @@ class NET_EXPORT_PRIVATE SqlPersistentStore {
   // Sets a flag to simulate database operation failures for testing.
   void SetSimulateDbFailureForTesting(bool fail);
 
+  // Sets a flag to simulate database operation failure for a specific shard.
+  void SetSimulateDbShardFailureForTesting(size_t shard_index, bool fail);
+
   // Raze the Database and the poison the database handle for testing. This is
   // useful for testing the behavior after a catastrophic error.
   void RazeAndPoisonForTesting();
@@ -622,6 +625,12 @@ class NET_EXPORT_PRIVATE SqlPersistentStore {
 
   void OnInitializeFinished(ErrorCallback callback,
                             std::vector<InitResultOrError> results);
+
+  void InitializeNextShard(ErrorCallback callback,
+                           std::vector<InitResultOrError> results);
+  void OnShardInitialized(ErrorCallback callback,
+                          std::vector<InitResultOrError> results,
+                          InitResultOrError result);
 
   void OnLoadInMemoryIndexFinished(Error result);
   void StartEvictionInternal(

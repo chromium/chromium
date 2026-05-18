@@ -779,6 +779,43 @@ TEST_P(SqlPersistentStoreTest, InitExisting) {
   EXPECT_EQ(Init(), SqlPersistentStore::Error::kOk);
 }
 
+TEST_P(SqlPersistentStoreTest, SerialInitialize) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      net::features::kDiskCacheBackendExperiment,
+      {{"SqlDiskCacheSerialInitialize", "true"}});
+
+  // Use multiple shards to test serial initialization of shards.
+  background_task_runners_.clear();
+  for (int i = 0; i < 3; ++i) {
+    background_task_runners_.emplace_back(
+        base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()}));
+  }
+
+  CreateStore();
+  EXPECT_EQ(Init(), SqlPersistentStore::Error::kOk);
+}
+
+TEST_P(SqlPersistentStoreTest, SerialInitializeShardFailure) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      net::features::kDiskCacheBackendExperiment,
+      {{"SqlDiskCacheSerialInitialize", "true"}});
+
+  // Use multiple shards to test serial initialization of shards.
+  background_task_runners_.clear();
+  for (int i = 0; i < 3; ++i) {
+    background_task_runners_.emplace_back(
+        base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()}));
+  }
+
+  CreateStore();
+  // Fail the second shard.
+  store_->SetSimulateDbShardFailureForTesting(1, true);
+
+  EXPECT_EQ(Init(), SqlPersistentStore::Error::kFailedForTesting);
+}
+
 // Tests that a database with a future (incompatible) version is razed
 // (deleted and recreated).
 TEST_P(SqlPersistentStoreTest, InitRazedTooNew) {
