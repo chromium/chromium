@@ -18,6 +18,15 @@ using CapabilityFetchCompletionCallback =
     base::OnceCallback<void(signin::Tribool)>;
 }  // namespace signin
 
+// LINT.IfChange(CanSignInToChromeCapabilityResult)
+enum class CanSignInToChromeCapabilityResult {
+  kFalse = 0,
+  kTrue = 1,
+  kTimeout = 2,
+  kMaxValue = kTimeout,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/signin/enums.xml:CanSignInToChromeCapabilityResult)
+
 @interface AgeMismatchCapabilitiesFetcher : NSObject
 
 - (instancetype)init NS_UNAVAILABLE;

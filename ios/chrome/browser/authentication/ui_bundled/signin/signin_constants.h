@@ -180,6 +180,10 @@ extern const char* const kUMASSORecallPromoSeenCount;
 inline constexpr base::TimeDelta kMinorModeRestrictionsFetchDeadline =
     base::Milliseconds(500);
 
+// Default timeout to wait for fetching the CanSignInToChrome capability.
+inline constexpr base::TimeDelta kCanSignInToChromeCapabilityFetchTimeout =
+    base::Milliseconds(500);
+
 // URL to the learn more screen about managed profiles.
 extern NSString* const kManagedProfileLearnMoreURL;
 

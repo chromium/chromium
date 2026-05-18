@@ -4,7 +4,9 @@
 
 #import "ios/chrome/browser/authentication/age_mismatch_signout/coordinator/age_mismatch_signout_mediator.h"
 
+#import "base/test/metrics/histogram_tester.h"
 #import "components/signin/public/identity_manager/identity_test_utils.h"
+#import "ios/chrome/browser/authentication/age_mismatch_signout/coordinator/age_mismatch_signout_constants.h"
 #import "ios/chrome/browser/authentication/age_mismatch_signout/ui/age_mismatch_signout_consumer.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
@@ -45,7 +47,8 @@ class AgeMismatchSignoutMediatorTest : public PlatformTest {
 
 // Tests that the mediator notifies the consumer to hide the button when signed
 // in.
-TEST_F(AgeMismatchSignoutMediatorTest, TestUpdateConsumerHideButton) {
+TEST_F(AgeMismatchSignoutMediatorTest, UpdateConsumerHideButton) {
+  base::HistogramTester histogram_tester;
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile_.get());
 
@@ -68,11 +71,16 @@ TEST_F(AgeMismatchSignoutMediatorTest, TestUpdateConsumerHideButton) {
                                            managed:NO]);
   mediator.consumer = consumer_mock_;
   EXPECT_OCMOCK_VERIFY(consumer_mock_);
+
+  histogram_tester.ExpectBucketCount(
+      kAgeMismatchSignoutStaySignedOutButtonHistogram,
+      AgeMismatchStaySignedOutButtonState::kHidden, 1);
 }
 
 // Tests that the mediator does not notify the consumer to hide the button when
 // not signed in.
-TEST_F(AgeMismatchSignoutMediatorTest, TestUpdateConsumerDoNotHideButton) {
+TEST_F(AgeMismatchSignoutMediatorTest, UpdateConsumerDoNotHideButton) {
+  base::HistogramTester histogram_tester;
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile_.get());
   signin::AvatarProvider* avatar_provider =
@@ -90,6 +98,10 @@ TEST_F(AgeMismatchSignoutMediatorTest, TestUpdateConsumerDoNotHideButton) {
                                            managed:NO]);
   mediator.consumer = consumer_mock_;
   EXPECT_OCMOCK_VERIFY(consumer_mock_);
+
+  histogram_tester.ExpectBucketCount(
+      kAgeMismatchSignoutStaySignedOutButtonHistogram,
+      AgeMismatchStaySignedOutButtonState::kShown, 1);
 }
 
 }  // namespace
