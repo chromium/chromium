@@ -104,7 +104,7 @@ class SharingService : public KeyedService,
       SharingMessageSender::ResponseCallback callback);
 
   // Unencrypted message counterpart to the above function.
-  virtual base::OnceClosure SendUnencryptedMessageToDevice(
+  virtual base::OnceClosure SendIosPushMessageToDevice(
       const SharingTargetDeviceInfo& device,
       sync_pb::UnencryptedSharingMessage message,
       SharingMessageSender::ResponseCallback callback);

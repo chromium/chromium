@@ -14,8 +14,8 @@
 #include "components/gcm_driver/gcm_driver.h"
 #include "components/sharing_message/features.h"
 #include "components/sharing_message/proto/sharing_message_type.pb.h"
+#include "components/sharing_message/sharing_channel_sender.h"
 #include "components/sharing_message/sharing_constants.h"
-#include "components/sharing_message/sharing_fcm_sender.h"
 #include "components/sharing_message/sharing_handler_registry.h"
 #include "components/sharing_message/sharing_message_handler.h"
 #include "components/sharing_message/sharing_metrics.h"
@@ -57,11 +57,11 @@ std::string GetStrippedMessageId(const std::string& message_id) {
 SharingFCMHandler::SharingFCMHandler(
     gcm::GCMDriver* gcm_driver,
     syncer::DeviceInfoTracker* device_info_tracker,
-    SharingFCMSender* sharing_fcm_sender,
+    SharingChannelSender* sharing_channel_sender,
     SharingHandlerRegistry* handler_registry)
     : gcm_driver_(gcm_driver),
       device_info_tracker_(device_info_tracker),
-      sharing_fcm_sender_(sharing_fcm_sender),
+      sharing_channel_sender_(sharing_channel_sender),
       handler_registry_(handler_registry) {}
 
 SharingFCMHandler::~SharingFCMHandler() {
@@ -210,7 +210,7 @@ void SharingFCMHandler::SendAckMessage(
   }
 
   if (server_channel) {
-    sharing_fcm_sender_->SendMessageToServerTarget(
+    sharing_channel_sender_->SendMessageToServerTarget(
         *server_channel, std::move(sharing_message),
         base::BindOnce(&SharingFCMHandler::OnAckMessageSent,
                        weak_ptr_factory_.GetWeakPtr(),
@@ -219,7 +219,7 @@ void SharingFCMHandler::SendAckMessage(
     return;
   }
 
-  sharing_fcm_sender_->SendMessageToFcmTarget(
+  sharing_channel_sender_->SendMessageToFcmTarget(
       *fcm_channel, kSharingAckMessageTTL, std::move(sharing_message),
       base::BindOnce(&SharingFCMHandler::OnAckMessageSent,
                      weak_ptr_factory_.GetWeakPtr(),

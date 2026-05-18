@@ -1,8 +1,8 @@
-// Copyright 2019 The Chromium Authors
+// Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/sharing_message/sharing_fcm_sender.h"
+#include "components/sharing_message/sharing_channel_sender.h"
 
 #include <memory>
 
@@ -112,7 +112,7 @@ class FakeSharingMessageBridge : public SharingMessageBridge {
       sync_pb::SharingMessageCommitError::NONE;
 };
 
-class SharingFCMSenderTest : public testing::Test {
+class SharingChannelSenderTest : public testing::Test {
  public:
   void OnMessageSent(SharingSendMessageResult* result_out,
                      std::optional<std::string>* message_id_out,
@@ -126,9 +126,9 @@ class SharingFCMSenderTest : public testing::Test {
   }
 
  protected:
-  SharingFCMSenderTest()
+  SharingChannelSenderTest()
       : sync_prefs_(&prefs_, &fake_device_info_sync_service_),
-        sharing_fcm_sender_(
+        sharing_channel_sender_(
             &fake_sharing_message_bridge_,
             &sync_prefs_,
             &fake_gcm_driver_,
@@ -148,10 +148,10 @@ class SharingFCMSenderTest : public testing::Test {
   syncer::TestSyncService test_sync_service_;
   base::MockCallback<syncer::SyncableService::StartSyncFlare> mock_sync_flare_;
 
-  SharingFCMSender sharing_fcm_sender_;
+  SharingChannelSender sharing_channel_sender_;
 };
 
-TEST_F(SharingFCMSenderTest, NoFcmRegistration) {
+TEST_F(SharingChannelSenderTest, NoFcmRegistration) {
   sync_prefs_.ClearFCMRegistration();
 
   // Do not populate sender ID channel.
@@ -162,9 +162,9 @@ TEST_F(SharingFCMSenderTest, NoFcmRegistration) {
   SharingChannelType channel_type;
   components_sharing_message::SharingMessage sharing_message;
   sharing_message.mutable_ack_message();
-  sharing_fcm_sender_.SendMessageToFcmTarget(
+  sharing_channel_sender_.SendMessageToFcmTarget(
       fcm_channel, base::Seconds(kTtlSeconds), std::move(sharing_message),
-      base::BindOnce(&SharingFCMSenderTest::OnMessageSent,
+      base::BindOnce(&SharingChannelSenderTest::OnMessageSent,
                      base::Unretained(this), &result, &message_id,
                      &channel_type));
 
@@ -173,7 +173,7 @@ TEST_F(SharingFCMSenderTest, NoFcmRegistration) {
   EXPECT_EQ(SharingChannelType::kUnknown, channel_type);
 }
 
-TEST_F(SharingFCMSenderTest, NoChannelsSpecified) {
+TEST_F(SharingChannelSenderTest, NoChannelsSpecified) {
   sync_prefs_.SetFCMRegistration(
       SharingSyncPreference::FCMRegistration(base::Time::Now()));
 
@@ -185,9 +185,9 @@ TEST_F(SharingFCMSenderTest, NoChannelsSpecified) {
   SharingChannelType channel_type;
   components_sharing_message::SharingMessage sharing_message;
   sharing_message.mutable_ack_message();
-  sharing_fcm_sender_.SendMessageToFcmTarget(
+  sharing_channel_sender_.SendMessageToFcmTarget(
       fcm_channel, base::Seconds(kTtlSeconds), std::move(sharing_message),
-      base::BindOnce(&SharingFCMSenderTest::OnMessageSent,
+      base::BindOnce(&SharingChannelSenderTest::OnMessageSent,
                      base::Unretained(this), &result, &message_id,
                      &channel_type));
 
@@ -196,7 +196,7 @@ TEST_F(SharingFCMSenderTest, NoChannelsSpecified) {
   EXPECT_EQ(SharingChannelType::kUnknown, channel_type);
 }
 
-TEST_F(SharingFCMSenderTest, PreferSync) {
+TEST_F(SharingChannelSenderTest, PreferSync) {
   sync_prefs_.SetFCMRegistration(
       SharingSyncPreference::FCMRegistration(base::Time::Now()));
 
@@ -213,9 +213,9 @@ TEST_F(SharingFCMSenderTest, PreferSync) {
   SharingChannelType channel_type;
   components_sharing_message::SharingMessage sharing_message;
   sharing_message.mutable_ping_message();
-  sharing_fcm_sender_.SendMessageToFcmTarget(
+  sharing_channel_sender_.SendMessageToFcmTarget(
       fcm_channel, base::Seconds(kTtlSeconds), std::move(sharing_message),
-      base::BindOnce(&SharingFCMSenderTest::OnMessageSent,
+      base::BindOnce(&SharingChannelSenderTest::OnMessageSent,
                      base::Unretained(this), &result, &message_id,
                      &channel_type));
 
@@ -258,11 +258,11 @@ struct CommitErrorCodeTestData {
     {sync_pb::SharingMessageCommitError::SYNC_TIMEOUT,
      SharingSendMessageResult::kCommitTimeout}};
 
-class SharingFCMSenderCommitErrorCodeTest
-    : public SharingFCMSenderTest,
+class SharingChannelSenderCommitErrorCodeTest
+    : public SharingChannelSenderTest,
       public testing::WithParamInterface<CommitErrorCodeTestData> {};
 
-TEST_P(SharingFCMSenderCommitErrorCodeTest, ErrorCodeTest) {
+TEST_P(SharingChannelSenderCommitErrorCodeTest, ErrorCodeTest) {
   fake_sharing_message_bridge_.set_error_code(GetParam().commit_error_code);
 
   components_sharing_message::FCMChannelConfiguration fcm_channel;
@@ -275,9 +275,9 @@ TEST_P(SharingFCMSenderCommitErrorCodeTest, ErrorCodeTest) {
   SharingChannelType channel_type;
   components_sharing_message::SharingMessage sharing_message;
   sharing_message.mutable_ping_message();
-  sharing_fcm_sender_.SendMessageToFcmTarget(
+  sharing_channel_sender_.SendMessageToFcmTarget(
       fcm_channel, base::Seconds(kTtlSeconds), std::move(sharing_message),
-      base::BindOnce(&SharingFCMSenderTest::OnMessageSent,
+      base::BindOnce(&SharingChannelSenderTest::OnMessageSent,
                      base::Unretained(this), &result, &message_id,
                      &channel_type));
 
@@ -306,10 +306,10 @@ TEST_P(SharingFCMSenderCommitErrorCodeTest, ErrorCodeTest) {
 }
 
 INSTANTIATE_TEST_SUITE_P(All,
-                         SharingFCMSenderCommitErrorCodeTest,
+                         SharingChannelSenderCommitErrorCodeTest,
                          testing::ValuesIn(kCommitErrorCodeTestData));
 
-TEST_F(SharingFCMSenderTest, ServerTarget) {
+TEST_F(SharingChannelSenderTest, ServerTarget) {
   fake_sharing_message_bridge_.set_error_code(
       sync_pb::SharingMessageCommitError::NONE);
 
@@ -323,9 +323,9 @@ TEST_F(SharingFCMSenderTest, ServerTarget) {
   SharingChannelType channel_type;
   components_sharing_message::SharingMessage sharing_message;
   sharing_message.mutable_ping_message();
-  sharing_fcm_sender_.SendMessageToServerTarget(
+  sharing_channel_sender_.SendMessageToServerTarget(
       server_channel, std::move(sharing_message),
-      base::BindOnce(&SharingFCMSenderTest::OnMessageSent,
+      base::BindOnce(&SharingChannelSenderTest::OnMessageSent,
                      base::Unretained(this), &result, &message_id,
                      &channel_type));
 
@@ -349,7 +349,7 @@ TEST_F(SharingFCMSenderTest, ServerTarget) {
   EXPECT_EQ(SharingChannelType::kServer, channel_type);
 }
 
-TEST_F(SharingFCMSenderTest, ShouldPostponeSendingMessageViaSync) {
+TEST_F(SharingChannelSenderTest, ShouldPostponeSendingMessageViaSync) {
   // Make sync unavailable to simulate browser startup.
   test_sync_service_.SetFailedDataTypes({syncer::SHARING_MESSAGE});
   sync_prefs_.SetFCMRegistration(
@@ -360,16 +360,14 @@ TEST_F(SharingFCMSenderTest, ShouldPostponeSendingMessageViaSync) {
   fcm_channel.set_sender_id_p256dh(kSenderIdP256dh);
   fcm_channel.set_sender_id_auth_secret(kSenderIdAuthSecret);
 
-  base::MockCallback<
-      SharingMessageSender::SendMessageDelegate::SendMessageCallback>
-      callback;
+  base::MockCallback<SharingChannelSender::SendMessageCallback> callback;
   EXPECT_CALL(callback, Run).Times(0);
 
   // Sync flare should be called to speed up sync start.
   EXPECT_CALL(mock_sync_flare_, Run(syncer::SHARING_MESSAGE));
   components_sharing_message::SharingMessage sharing_message;
   sharing_message.mutable_ack_message();
-  sharing_fcm_sender_.SendMessageToFcmTarget(
+  sharing_channel_sender_.SendMessageToFcmTarget(
       fcm_channel, base::Seconds(kTtlSeconds), std::move(sharing_message),
       callback.Get());
   testing::Mock::VerifyAndClearExpectations(&callback);
@@ -381,7 +379,7 @@ TEST_F(SharingFCMSenderTest, ShouldPostponeSendingMessageViaSync) {
   test_sync_service_.FireStateChanged();
 }
 
-TEST_F(SharingFCMSenderTest, ShouldClearPendingMessages) {
+TEST_F(SharingChannelSenderTest, ShouldClearPendingMessages) {
   // Make sync unavailable to simulate browser startup.
   test_sync_service_.SetFailedDataTypes({syncer::SHARING_MESSAGE});
   sync_prefs_.SetFCMRegistration(
@@ -392,19 +390,17 @@ TEST_F(SharingFCMSenderTest, ShouldClearPendingMessages) {
   fcm_channel.set_sender_id_p256dh(kSenderIdP256dh);
   fcm_channel.set_sender_id_auth_secret(kSenderIdAuthSecret);
 
-  base::MockCallback<
-      SharingMessageSender::SendMessageDelegate::SendMessageCallback>
-      callback;
+  base::MockCallback<SharingChannelSender::SendMessageCallback> callback;
   EXPECT_CALL(callback, Run).Times(0);
   components_sharing_message::SharingMessage sharing_message;
   sharing_message.mutable_ack_message();
-  sharing_fcm_sender_.SendMessageToFcmTarget(
+  sharing_channel_sender_.SendMessageToFcmTarget(
       fcm_channel, base::Seconds(kTtlSeconds), std::move(sharing_message),
       callback.Get());
 
   // Clear any pending messages and verify that nothing is sent once
   // SHARING_MESSAGE becomes active (the `callback` above should not be called).
-  sharing_fcm_sender_.ClearPendingMessages();
+  sharing_channel_sender_.ClearPendingMessages();
 
   test_sync_service_.SetFailedDataTypes({});
   test_sync_service_.FireStateChanged();

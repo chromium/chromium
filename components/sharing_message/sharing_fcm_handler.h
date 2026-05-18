@@ -30,7 +30,7 @@ enum MessageType : int;
 }  // namespace sharing_message
 
 enum class SharingChannelType;
-class SharingFCMSender;
+class SharingChannelSender;
 class SharingHandlerRegistry;
 
 enum class SharingDevicePlatform;
@@ -41,7 +41,7 @@ class SharingFCMHandler : public gcm::GCMAppHandler {
  public:
   SharingFCMHandler(gcm::GCMDriver* gcm_driver,
                     syncer::DeviceInfoTracker* device_info_tracker,
-                    SharingFCMSender* sharing_fcm_sender,
+                    SharingChannelSender* sharing_channel_sender,
                     SharingHandlerRegistry* handler_registry);
 
   SharingFCMHandler(const SharingFCMHandler&) = delete;
@@ -106,7 +106,7 @@ class SharingFCMHandler : public gcm::GCMAppHandler {
 
   const raw_ptr<gcm::GCMDriver, AcrossTasksDanglingUntriaged> gcm_driver_;
   raw_ptr<syncer::DeviceInfoTracker, DanglingUntriaged> device_info_tracker_;
-  raw_ptr<SharingFCMSender, DanglingUntriaged> sharing_fcm_sender_;
+  raw_ptr<SharingChannelSender, DanglingUntriaged> sharing_channel_sender_;
   raw_ptr<SharingHandlerRegistry, DanglingUntriaged> handler_registry_;
 
   bool is_listening_ = false;

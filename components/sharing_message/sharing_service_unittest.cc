@@ -27,11 +27,11 @@
 #include "components/sharing_message/mock_sharing_device_source.h"
 #include "components/sharing_message/mock_sharing_message_sender.h"
 #include "components/sharing_message/proto/sharing_message.pb.h"
+#include "components/sharing_message/sharing_channel_sender.h"
 #include "components/sharing_message/sharing_constants.h"
 #include "components/sharing_message/sharing_device_registration.h"
 #include "components/sharing_message/sharing_device_registration_result.h"
 #include "components/sharing_message/sharing_fcm_handler.h"
-#include "components/sharing_message/sharing_fcm_sender.h"
 #include "components/sharing_message/sharing_handler_registry.h"
 #include "components/sharing_message/sharing_message_handler.h"
 #include "components/sharing_message/sharing_sync_preference.h"
@@ -98,7 +98,7 @@ class MockSharingFCMHandler : public SharingFCMHandler {
   MockSharingFCMHandler()
       : SharingFCMHandler(/*gcm_driver=*/nullptr,
                           /*device_info_tracker=*/nullptr,
-                          /*sharing_fcm_sender=*/nullptr,
+                          /*sharing_channel_sender=*/nullptr,
                           /*handler_registry=*/nullptr) {}
   ~MockSharingFCMHandler() override = default;
 
@@ -304,7 +304,6 @@ TEST_F(SharingServiceTest, SendMessageToDeviceSuccess) {
   auto run_callback = [&](const SharingTargetDeviceInfo& device_info,
                           base::TimeDelta response_timeout,
                           components_sharing_message::SharingMessage message,
-                          SharingMessageSender::DelegateType delegate_type,
                           SharingMessageSender::ResponseCallback callback) {
     std::unique_ptr<components_sharing_message::ResponseMessage>
         response_message =
@@ -316,8 +315,7 @@ TEST_F(SharingServiceTest, SendMessageToDeviceSuccess) {
   };
 
   ON_CALL(*sharing_message_sender_,
-          SendMessageToDevice(testing::_, testing::_, testing::_, testing::_,
-                              testing::_))
+          SendMessageToDevice(testing::_, testing::_, testing::_, testing::_))
       .WillByDefault(run_callback);
 
   GetSharingService()->SendMessageToDevice(
@@ -367,9 +365,8 @@ TEST_F(SharingServiceTest, SendTabEntryAddedLocally) {
   push_notification_entry->set_entry_unique_guid(guid);
 
   EXPECT_CALL(*sharing_message_sender_,
-              SendUnencryptedMessageToDevice(testing::_,
-                                             base::test::EqualsProto(message),
-                                             testing::_, testing::_));
+              SendIosPushMessageToDevice(
+                  testing::_, base::test::EqualsProto(message), testing::_));
 
   send_tab_to_self::SendTabToSelfEntry entry =
       send_tab_to_self::SendTabToSelfEntry(
@@ -393,8 +390,7 @@ TEST_F(SharingServiceTest, SendTabEntryAddedLocally_NonIOSDevice) {
                                        /*last_updated_timestamp=*/base::Time());
       });
 
-  EXPECT_CALL(*sharing_message_sender_, SendUnencryptedMessageToDevice)
-      .Times(0);
+  EXPECT_CALL(*sharing_message_sender_, SendIosPushMessageToDevice).Times(0);
 
   send_tab_to_self::SendTabToSelfEntry entry =
       send_tab_to_self::SendTabToSelfEntry(

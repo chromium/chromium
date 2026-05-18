@@ -157,7 +157,7 @@ void IOSPromoTriggerService::SetReminderForIOSDevice(
     std::optional<SharingTargetDeviceInfo> device_info =
         sharing_service->GetDeviceByGuid(device_guid);
     if (device_info) {
-      sharing_service->SendUnencryptedMessageToDevice(
+      sharing_service->SendIosPushMessageToDevice(
           *device_info, CreateNotificationPayload(promo_type, device_guid),
           base::DoNothing());
     }

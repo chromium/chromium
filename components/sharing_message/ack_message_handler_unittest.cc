@@ -9,7 +9,7 @@
 #include "base/test/mock_callback.h"
 #include "components/sharing_message/mock_sharing_message_sender.h"
 #include "components/sharing_message/proto/sharing_message.pb.h"
-#include "components/sharing_message/sharing_fcm_sender.h"
+#include "components/sharing_message/sharing_channel_sender.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

@@ -229,7 +229,7 @@ TEST_F(IOSPromoTriggerServiceTest, SetReminderForIOSDevice) {
 
   EXPECT_CALL(
       *GetMockSharingService(),
-      SendUnencryptedMessageToDevice(
+      SendIosPushMessageToDevice(
           testing::Property(&SharingTargetDeviceInfo::guid, "test_guid"), _, _))
       .Times(1);
 

@@ -320,7 +320,6 @@ class ExperimentalTriggeringUpdatesHandler
     if (message_sender_) {
       message_sender_->SendMessageToServerTarget(
           server_channel_, kUpdateMessageTimeout, std::move(message),
-          SharingMessageSender::DelegateType::kFCM,
           base::BindOnce([](SharingSendMessageResult result,
                             std::unique_ptr<
                                 components_sharing_message::ResponseMessage>

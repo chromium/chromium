@@ -16,12 +16,11 @@
 #import "components/gcm_driver/instance_id/instance_id_profile_service.h"
 #import "components/keyed_service/core/service_access_type.h"
 #import "components/send_tab_to_self/send_tab_to_self_sync_service.h"
-#import "components/sharing_message/ios_push/sharing_ios_push_sender.h"
+#import "components/sharing_message/sharing_channel_sender.h"
 #import "components/sharing_message/sharing_constants.h"
 #import "components/sharing_message/sharing_device_registration.h"
 #import "components/sharing_message/sharing_device_source_sync.h"
 #import "components/sharing_message/sharing_fcm_handler.h"
-#import "components/sharing_message/sharing_fcm_sender.h"
 #import "components/sharing_message/sharing_message_sender.h"
 #import "components/sharing_message/sharing_service.h"
 #import "components/sharing_message/sharing_sync_preference.h"
@@ -118,22 +117,16 @@ std::unique_ptr<KeyedService> IOSSharingServiceFactory::BuildServiceInstanceFor(
       device_info_sync_service->GetDeviceInfoTracker();
   syncer::LocalDeviceInfoProvider* local_device_info_provider =
       device_info_sync_service->GetLocalDeviceInfoProvider();
-  auto fcm_sender = std::make_unique<SharingFCMSender>(
+  auto channel_sender = std::make_unique<SharingChannelSender>(
       message_bridge, sync_prefs.get(), gcm_driver, device_info_tracker,
       local_device_info_provider, sync_service,
       ios::sync_start_util::GetFlareForSyncableService(profile));
-  SharingFCMSender* fcm_sender_ptr = fcm_sender.get();
+  SharingChannelSender* channel_sender_ptr = channel_sender.get();
 
   scoped_refptr<base::SingleThreadTaskRunner> task_runner =
       web::GetUIThreadTaskRunner({});
   auto sharing_message_sender = std::make_unique<SharingMessageSender>(
-      local_device_info_provider, task_runner);
-  auto ios_push_sender =
-      std::make_unique<sharing_message::SharingIOSPushSender>(
-          message_bridge, device_info_tracker, local_device_info_provider,
-          sync_service);
-  sharing_message_sender->RegisterSendDelegate(
-      SharingMessageSender::DelegateType::kIOSPush, std::move(ios_push_sender));
+      std::move(channel_sender), local_device_info_provider, task_runner);
 
   auto device_source = std::make_unique<SharingDeviceSourceSync>(
       sync_service, local_device_info_provider, device_info_tracker);
@@ -142,7 +135,8 @@ std::unique_ptr<KeyedService> IOSSharingServiceFactory::BuildServiceInstanceFor(
       sharing_message_sender.get());
 
   auto fcm_handler = std::make_unique<SharingFCMHandler>(
-      gcm_driver, device_info_tracker, fcm_sender_ptr, handler_registry.get());
+      gcm_driver, device_info_tracker, channel_sender_ptr,
+      handler_registry.get());
 
   send_tab_to_self::SendTabToSelfModel* send_tab_model =
       SendTabToSelfSyncServiceFactory::GetForProfile(profile)

@@ -4,8 +4,11 @@
 
 #include "components/sharing_message/mock_sharing_message_sender.h"
 
+#include "components/sharing_message/sharing_channel_sender.h"
+
 MockSharingMessageSender::MockSharingMessageSender()
     : SharingMessageSender(
+          /*channel_sender=*/nullptr,
           /*local_device_info_provider=*/nullptr,
           /*task_ruunner=*/nullptr) {}
 

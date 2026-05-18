@@ -24,9 +24,9 @@
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
 #include "components/gcm_driver/fake_gcm_profile_service.h"
 #include "components/sharing_message/proto/sharing_message.pb.h"
+#include "components/sharing_message/sharing_channel_sender.h"
 #include "components/sharing_message/sharing_device_registration_result.h"
 #include "components/sharing_message/sharing_device_source_sync.h"
-#include "components/sharing_message/sharing_fcm_sender.h"
 #include "components/sharing_message/sharing_message_sender.h"
 #include "components/sharing_message/sharing_utils.h"
 #include "components/sync/model/client_tag_based_data_type_processor.h"
@@ -80,9 +80,10 @@ void SharingBrowserTest::Init(
 
   sharing_service_ = SharingServiceFactory::GetForBrowserContext(GetProfile(0));
 
-  SharingFCMSender* sharing_fcm_sender =
-      sharing_service_->GetMessageSenderForTesting()->GetFCMSenderForTesting();
-  sharing_fcm_sender->SetSharingMessageBridgeForTesting(
+  SharingChannelSender* sharing_channel_sender =
+      sharing_service_->GetMessageSenderForTesting()
+          ->GetChannelSenderForTesting();
+  sharing_channel_sender->SetSharingMessageBridgeForTesting(
       &fake_sharing_message_bridge_);
 
   SetUpDevices(first_device_feature, second_device_feature);

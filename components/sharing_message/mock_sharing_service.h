@@ -35,7 +35,7 @@ class MockSharingService : public SharingService {
                         SharingMessageSender::ResponseCallback callback));
 
   MOCK_METHOD3(
-      SendUnencryptedMessageToDevice,
+      SendIosPushMessageToDevice,
       base::OnceClosure(const SharingTargetDeviceInfo& device,
                         sync_pb::UnencryptedSharingMessage message,
                         SharingMessageSender::ResponseCallback callback));

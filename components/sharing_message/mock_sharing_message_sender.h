@@ -23,20 +23,18 @@ class MockSharingMessageSender : public SharingMessageSender {
   MockSharingMessageSender& operator=(const MockSharingMessageSender&) = delete;
   ~MockSharingMessageSender() override;
 
-  MOCK_METHOD5(SendMessageToDevice,
+  MOCK_METHOD4(SendMessageToDevice,
                base::OnceClosure(const SharingTargetDeviceInfo&,
                                  base::TimeDelta,
                                  components_sharing_message::SharingMessage,
-                                 DelegateType,
                                  ResponseCallback));
 
-  MOCK_METHOD5(
+  MOCK_METHOD4(
       SendMessageToServerTarget,
       base::OnceClosure(
           const components_sharing_message::ServerChannelConfiguration&,
           base::TimeDelta,
           components_sharing_message::SharingMessage,
-          DelegateType,
           ResponseCallback));
 
   MOCK_METHOD2(OnAckReceived,
@@ -44,10 +42,9 @@ class MockSharingMessageSender : public SharingMessageSender {
                     std::unique_ptr<components_sharing_message::ResponseMessage>
                         response));
 
-  MOCK_METHOD4(SendUnencryptedMessageToDevice,
+  MOCK_METHOD3(SendIosPushMessageToDevice,
                base::OnceClosure(const SharingTargetDeviceInfo&,
                                  sync_pb::UnencryptedSharingMessage,
-                                 DelegateType,
                                  ResponseCallback));
 };
 

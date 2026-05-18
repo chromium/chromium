@@ -1,9 +1,9 @@
-// Copyright 2019 The Chromium Authors
+// Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_SHARING_MESSAGE_SHARING_FCM_SENDER_H_
-#define COMPONENTS_SHARING_MESSAGE_SHARING_FCM_SENDER_H_
+#ifndef COMPONENTS_SHARING_MESSAGE_SHARING_CHANNEL_SENDER_H_
+#define COMPONENTS_SHARING_MESSAGE_SHARING_CHANNEL_SENDER_H_
 
 #include <memory>
 #include <optional>
@@ -17,8 +17,8 @@
 #include "base/time/time.h"
 #include "components/sharing_message/proto/sharing_message.pb.h"
 #include "components/sharing_message/sharing_constants.h"
-#include "components/sharing_message/sharing_message_sender.h"
 #include "components/sharing_message/sharing_send_message_result.h"
+#include "components/sharing_message/sharing_target_device_info.h"
 #include "components/sync/model/syncable_service.h"
 #include "components/sync/protocol/sharing_message_specifics.pb.h"
 #include "components/sync/protocol/unencrypted_sharing_message.pb.h"
@@ -44,9 +44,9 @@ enum class SharingChannelType;
 class SharingMessageBridge;
 class SharingSyncPreference;
 
-// Responsible for sending FCM messages within Sharing infrastructure.
-class SharingFCMSender : public SharingMessageSender::SendMessageDelegate,
-                         public syncer::SyncServiceObserver {
+// Responsible for sending Sharing messages over the available delivery
+// channels (FCM and iOS/Chime push).
+class SharingChannelSender : public syncer::SyncServiceObserver {
  public:
   using SharingMessage = components_sharing_message::SharingMessage;
   using SendMessageCallback =
@@ -54,7 +54,7 @@ class SharingFCMSender : public SharingMessageSender::SendMessageDelegate,
                               std::optional<std::string> message_id,
                               SharingChannelType channel_type)>;
 
-  SharingFCMSender(
+  SharingChannelSender(
       SharingMessageBridge* sharing_message_bridge,
       SharingSyncPreference* sync_preference,
       gcm::GCMDriver* gcm_driver,
@@ -62,9 +62,23 @@ class SharingFCMSender : public SharingMessageSender::SendMessageDelegate,
       const syncer::LocalDeviceInfoProvider* local_device_info_provider,
       syncer::SyncService* sync_service,
       syncer::SyncableService::StartSyncFlare start_sync_flare);
-  SharingFCMSender(const SharingFCMSender&) = delete;
-  SharingFCMSender& operator=(const SharingFCMSender&) = delete;
-  ~SharingFCMSender() override;
+  SharingChannelSender(const SharingChannelSender&) = delete;
+  SharingChannelSender& operator=(const SharingChannelSender&) = delete;
+  ~SharingChannelSender() override;
+
+  // Sends an encrypted |message| to |device|. |callback| will be invoked with
+  // the send result.
+  virtual void SendFcmMessageToDevice(const SharingTargetDeviceInfo& device,
+                                      base::TimeDelta time_to_live,
+                                      SharingMessage message,
+                                      SendMessageCallback callback);
+
+  // Sends an unencrypted |message| to |device| via iOS/Chime push. |callback|
+  // will be invoked with the send result.
+  virtual void SendIosPushMessageToDevice(
+      const SharingTargetDeviceInfo& device,
+      sync_pb::UnencryptedSharingMessage message,
+      SendMessageCallback callback);
 
   // Sends a |message| to device identified by |fcm_configuration|, which
   // expires after |time_to_live| seconds. |callback| will be invoked with
@@ -88,31 +102,15 @@ class SharingFCMSender : public SharingMessageSender::SendMessageDelegate,
 
   // Removes any pending messages that are waiting for the sync service to
   // initialize. This must be called if the device is unregistered.
-  void ClearPendingMessages() override;
+  void ClearPendingMessages();
 
   // syncer::SyncServiceObserver overrides.
   void OnStateChanged(syncer::SyncService* sync_service) override;
   void OnSyncShutdown(syncer::SyncService* sync_service) override;
 
-  // Used to inject fake SharingMessageBridge in integration tests.
+  // Used to inject a fake SharingMessageBridge in integration tests.
   void SetSharingMessageBridgeForTesting(
       SharingMessageBridge* sharing_message_bridge);
-
- protected:
-  // SharingMessageSender::SendMessageDelegate:
-  void DoSendMessageToDevice(const SharingTargetDeviceInfo& device,
-                             base::TimeDelta time_to_live,
-                             SharingMessage message,
-                             SendMessageCallback callback) override;
-  void DoSendUnencryptedMessageToDevice(
-      const SharingTargetDeviceInfo& device,
-      sync_pb::UnencryptedSharingMessage message,
-      SendMessageCallback callback) override;
-  void DoSendMessageToServerTarget(
-      const components_sharing_message::ServerChannelConfiguration&
-          server_channel_config,
-      SharingMessage message,
-      SendMessageCallback callback) override;
 
  private:
   using MessageSender = base::OnceCallback<void(std::string message,
@@ -146,6 +144,10 @@ class SharingFCMSender : public SharingMessageSender::SendMessageDelegate,
 
   bool SetMessageSenderInfo(SharingMessage* message);
 
+  // Returns whether an unencrypted SendTab push message can be delivered to
+  // |target_device_info| via iOS push.
+  bool CanSendSendTabPushMessage(const syncer::DeviceInfo& target_device_info);
+
   raw_ptr<SharingMessageBridge> sharing_message_bridge_;
   const raw_ptr<SharingSyncPreference> sync_preference_;
   const raw_ptr<gcm::GCMDriver, AcrossTasksDanglingUntriaged> gcm_driver_;
@@ -154,7 +156,7 @@ class SharingFCMSender : public SharingMessageSender::SendMessageDelegate,
       local_device_info_provider_;
   const raw_ptr<syncer::SyncService> sync_service_;
   syncer::SyncableService::StartSyncFlare start_sync_flare_;
-  base::ScopedObservation<syncer::SyncService, SharingFCMSender>
+  base::ScopedObservation<syncer::SyncService, SharingChannelSender>
       sync_service_observation_{this};
 
   // Pending messages that are waiting for the sync service to initialize.
@@ -180,7 +182,7 @@ class SharingFCMSender : public SharingMessageSender::SendMessageDelegate,
   };
   std::vector<PendingMessage> pending_messages_;
 
-  base::WeakPtrFactory<SharingFCMSender> weak_ptr_factory_{this};
+  base::WeakPtrFactory<SharingChannelSender> weak_ptr_factory_{this};
 };
 
-#endif  // COMPONENTS_SHARING_MESSAGE_SHARING_FCM_SENDER_H_
+#endif  // COMPONENTS_SHARING_MESSAGE_SHARING_CHANNEL_SENDER_H_

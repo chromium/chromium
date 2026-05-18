@@ -37,7 +37,7 @@ class UnencryptedSharingMessage;
 }  // namespace sync_pb
 
 enum class SharingChannelType;
-class SharingFCMSender;
+class SharingChannelSender;
 enum class SharingDevicePlatform;
 enum class SharingSendMessageResult;
 
@@ -47,40 +47,8 @@ class SharingMessageSender {
       SharingSendMessageResult,
       std::unique_ptr<components_sharing_message::ResponseMessage>)>;
 
-  // Delegate class used to swap the actual message sending implementation.
-  class SendMessageDelegate {
-   public:
-    using SendMessageCallback =
-        base::OnceCallback<void(SharingSendMessageResult result,
-                                std::optional<std::string> message_id,
-                                SharingChannelType channel_type)>;
-    virtual ~SendMessageDelegate() = default;
-
-    virtual void DoSendMessageToDevice(
-        const SharingTargetDeviceInfo& device,
-        base::TimeDelta time_to_live,
-        components_sharing_message::SharingMessage message,
-        SendMessageCallback callback) = 0;
-
-    virtual void DoSendMessageToServerTarget(
-        const components_sharing_message::ServerChannelConfiguration&
-            server_target,
-        components_sharing_message::SharingMessage message,
-        SendMessageCallback callback) = 0;
-
-    virtual void DoSendUnencryptedMessageToDevice(
-        const SharingTargetDeviceInfo& device,
-        sync_pb::UnencryptedSharingMessage message,
-        SendMessageCallback callback) = 0;
-
-    virtual void ClearPendingMessages() = 0;
-  };
-
-  // Delegate type used to send a message.
-  // TODO(crbug.com/502086601): Consider removing delegate types.
-  enum class DelegateType { kFCM, kWebRtc, kIOSPush };
-
   SharingMessageSender(
+      std::unique_ptr<SharingChannelSender> channel_sender,
       syncer::LocalDeviceInfoProvider* local_device_info_provider,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner);
   SharingMessageSender(const SharingMessageSender&) = delete;
@@ -91,13 +59,11 @@ class SharingMessageSender {
       const SharingTargetDeviceInfo& device,
       base::TimeDelta response_timeout,
       components_sharing_message::SharingMessage message,
-      DelegateType delegate_type,
       ResponseCallback callback);
 
-  virtual base::OnceClosure SendUnencryptedMessageToDevice(
+  virtual base::OnceClosure SendIosPushMessageToDevice(
       const SharingTargetDeviceInfo& device,
       sync_pb::UnencryptedSharingMessage message,
-      DelegateType delegate_type,
       ResponseCallback callback);
 
   virtual base::OnceClosure SendMessageToServerTarget(
@@ -105,23 +71,17 @@ class SharingMessageSender {
           server_channel,
       base::TimeDelta response_timeout,
       components_sharing_message::SharingMessage message,
-      DelegateType delegate_type,
       ResponseCallback callback);
 
   virtual void OnAckReceived(
       const std::string& message_id,
       std::unique_ptr<components_sharing_message::ResponseMessage> response);
 
-  // Registers the given |delegate| to send messages when SendMessageToDevice is
-  // called with |type|.
-  void RegisterSendDelegate(DelegateType type,
-                            std::unique_ptr<SendMessageDelegate> delegate);
-
-  // Clears all pending messages for all delegates.
+  // Clears all pending messages.
   void ClearPendingMessages();
 
-  // Returns SharingFCMSender for testing.
-  SharingFCMSender* GetFCMSenderForTesting() const;
+  // Returns SharingChannelSender for testing.
+  SharingChannelSender* GetChannelSenderForTesting() const;
 
  private:
   struct SentMessageMetadata {
@@ -156,7 +116,6 @@ class SharingMessageSender {
       std::unique_ptr<components_sharing_message::ResponseMessage> response);
 
   base::OnceClosure SendMessageToTarget(
-      DelegateType delegate_type,
       base::TimeDelta response_timeout,
       components_sharing_message::SharingMessage message,
       std::variant<
@@ -173,6 +132,8 @@ class SharingMessageSender {
           const components_sharing_message::ServerChannelConfiguration*>
           target);
 
+  std::unique_ptr<SharingChannelSender> channel_sender_;
+
   raw_ptr<syncer::LocalDeviceInfoProvider> local_device_info_provider_;
 
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
@@ -185,9 +146,6 @@ class SharingMessageSender {
   std::map<std::string,
            std::unique_ptr<components_sharing_message::ResponseMessage>>
       cached_ack_response_messages_;
-
-  // Registered delegates to send messages.
-  std::map<DelegateType, std::unique_ptr<SendMessageDelegate>> send_delegates_;
 
   base::WeakPtrFactory<SharingMessageSender> weak_ptr_factory_{this};
 };

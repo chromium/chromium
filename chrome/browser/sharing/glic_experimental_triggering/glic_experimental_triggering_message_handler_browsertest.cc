@@ -124,13 +124,12 @@ IN_PROC_BROWSER_TEST_F(GlicExperimentalTriggeringMessageHandlerBrowserTest,
                          components_sharing_message::SharingMessage>
       future;
   EXPECT_CALL(mock_sharing_message_sender_,
-              SendMessageToServerTarget(_, _, _, _, _))
+              SendMessageToServerTarget(_, _, _, _))
       .WillOnce(
           [&](const components_sharing_message::ServerChannelConfiguration&
                   server_channel,
               base::TimeDelta timeout,
               components_sharing_message::SharingMessage message,
-              SharingMessageSender::DelegateType delegate_type,
               SharingMessageSender::ResponseCallback callback) {
             future.SetValue(server_channel, std::move(message));
             return base::OnceClosure();
@@ -218,12 +217,11 @@ IN_PROC_BROWSER_TEST_F(GlicExperimentalTriggeringMessageHandlerBrowserTest,
   base::test::TestFuture<components_sharing_message::SharingMessage> future(
       base::test::TestFutureMode::kQueue);
   EXPECT_CALL(mock_sharing_message_sender_,
-              SendMessageToServerTarget(_, _, _, _, _))
+              SendMessageToServerTarget(_, _, _, _))
       .WillRepeatedly(
           [&](const components_sharing_message::ServerChannelConfiguration&,
               base::TimeDelta,
               components_sharing_message::SharingMessage message,
-              SharingMessageSender::DelegateType,
               SharingMessageSender::ResponseCallback) {
             future.SetValue(std::move(message));
             return base::OnceClosure();
@@ -280,12 +278,11 @@ IN_PROC_BROWSER_TEST_F(GlicExperimentalTriggeringMessageHandlerBrowserTest,
 
   base::test::TestFuture<components_sharing_message::SharingMessage> future;
   EXPECT_CALL(mock_sharing_message_sender_,
-              SendMessageToServerTarget(_, _, _, _, _))
+              SendMessageToServerTarget(_, _, _, _))
       .WillOnce(
           [&](const components_sharing_message::ServerChannelConfiguration&,
               base::TimeDelta,
               components_sharing_message::SharingMessage message,
-              SharingMessageSender::DelegateType,
               SharingMessageSender::ResponseCallback) {
             future.SetValue(std::move(message));
             return base::OnceClosure();
@@ -347,12 +344,11 @@ IN_PROC_BROWSER_TEST_F(GlicExperimentalTriggeringMessageHandlerBrowserTest,
 
   base::test::TestFuture<components_sharing_message::SharingMessage> future;
   EXPECT_CALL(mock_sharing_message_sender_,
-              SendMessageToServerTarget(_, _, _, _, _))
+              SendMessageToServerTarget(_, _, _, _))
       .WillRepeatedly(
           [&](const components_sharing_message::ServerChannelConfiguration&,
               base::TimeDelta,
               components_sharing_message::SharingMessage message,
-              SharingMessageSender::DelegateType,
               SharingMessageSender::ResponseCallback) {
             future.SetValue(std::move(message));
             return base::OnceClosure();
@@ -417,7 +413,7 @@ IN_PROC_BROWSER_TEST_F(
       done_future;
 
   EXPECT_CALL(mock_sharing_message_sender_,
-              SendMessageToServerTarget(_, _, _, _, _))
+              SendMessageToServerTarget(_, _, _, _))
       .Times(0);
 
   handler_->OnMessage(std::move(message), done_future.GetCallback());
@@ -450,12 +446,11 @@ IN_PROC_BROWSER_TEST_F(GlicExperimentalTriggeringMessageHandlerBrowserTest,
 
   base::test::TestFuture<components_sharing_message::SharingMessage> future;
   EXPECT_CALL(mock_sharing_message_sender_,
-              SendMessageToServerTarget(_, _, _, _, _))
+              SendMessageToServerTarget(_, _, _, _))
       .WillOnce(
           [&](const components_sharing_message::ServerChannelConfiguration&,
               base::TimeDelta,
               components_sharing_message::SharingMessage message,
-              SharingMessageSender::DelegateType,
               SharingMessageSender::ResponseCallback) {
             future.SetValue(std::move(message));
             return base::OnceClosure();
