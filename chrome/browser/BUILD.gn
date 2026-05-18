@@ -1220,6 +1220,7 @@ source_set("core") {
       "//chrome/browser/extensions",
       "//chrome/browser/extensions:chrome_extensions_browser_client",
       "//chrome/browser/guest_view",
+      "//ui/webui/resources/cr_components/color_change_listener:mojom",
     ]
   } else if (is_android) {
     deps += [ "//chrome/browser/android/guest_view" ]

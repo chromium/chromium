@@ -18,6 +18,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/permissions_url_constants.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/favicon_source.h"
 #include "chrome/browser/ui/webui/managed_ui_handler.h"
 #include "chrome/browser/ui/webui/metrics_handler.h"
@@ -513,6 +514,11 @@ content::WebUIDataSource* CreateAndAddExtensionsSource(Profile* profile,
           l10n_util::GetStringUTF16(IDS_SHORT_PRODUCT_OS_NAME)));
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+  source->AddString("webuiRefresh2026",
+                    base::FeatureList::IsEnabled(features::kWebuiRefresh2026)
+                        ? "webui-refresh-2026"
+                        : "");
+
   return source;
 }
 
@@ -534,7 +540,8 @@ ExtensionsUIConfig::CreateWebUIController(content::WebUI* web_ui,
   return std::make_unique<ExtensionsUI>(web_ui);
 }
 
-ExtensionsUI::ExtensionsUI(content::WebUI* web_ui) : WebUIController(web_ui) {
+ExtensionsUI::ExtensionsUI(content::WebUI* web_ui)
+    : ui::MojoWebUIController(web_ui, /*enable_chrome_send=*/true) {
   Profile* profile = Profile::FromWebUI(web_ui);
   content::WebUIDataSource* source = nullptr;
 
