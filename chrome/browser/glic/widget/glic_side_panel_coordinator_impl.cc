@@ -175,10 +175,8 @@ std::unique_ptr<views::View> GlicSidePanelCoordinatorImpl::CreateView(
   // Provide the side panel with an empty container View so that different
   // `GlicUiEmbedder`s can update its contents as needed.
   auto glic_container = std::make_unique<views::View>();
-  if (base::FeatureList::IsEnabled(features::kGlicUseToolbarHeightSidePanel)) {
-    glic_container->SetPaintToLayer();
-    glic_container->layer()->SetFillsBoundsOpaquely(false);
-  }
+  glic_container->SetPaintToLayer();
+  glic_container->layer()->SetFillsBoundsOpaquely(false);
   glic_container->SetLayoutManager(std::make_unique<views::FillLayout>());
   glic_container_tracker_.SetView(glic_container.get());
 
