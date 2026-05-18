@@ -175,7 +175,8 @@ OutputStream::OutputStream(
     const media::AudioParameters& params,
     LoopbackCoordinator* coordinator,
     const base::UnguessableToken& loopback_group_id)
-    : delete_callback_(std::move(delete_callback)),
+    : id_(base::UnguessableToken::Create()),
+      delete_callback_(std::move(delete_callback)),
       receiver_(this, std::move(stream_receiver)),
       device_switch_receiver_(this, std::move(device_switch_receiver)),
       observer_(std::move(observer)),
@@ -464,12 +465,12 @@ void OutputStream::OnAudibleStateChanged(bool is_audible) {
 }
 
 void OutputStream::SendLogMessage(const std::string& message) {
-  if (!log_)
+  if (!log_) {
     return;
-  log_->OnLogMessage(
-      "audio::OS::" + message +
-      base::StringPrintf(" [controller=0x%" PRIXPTR "]",
-                         reinterpret_cast<uintptr_t>(&controller_)));
+  }
+  log_->OnLogMessage(base::StringPrintf(
+      "audio::OS::%s [id=%s] [controller_id=%s]", message.c_str(),
+      id_.ToString().c_str(), controller_.id().ToString().c_str()));
 }
 
 // Static

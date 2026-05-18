@@ -142,6 +142,8 @@ class OutputController : public media::AudioOutputStream::AudioSourceCallback,
 
   ~OutputController() override;
 
+  const base::UnguessableToken& id() const { return id_; }
+
   // Methods to control playback of the stream.
 
   // Creates the audio output stream. This must be called before Play(). Returns
@@ -299,6 +301,8 @@ class OutputController : public media::AudioOutputStream::AudioSourceCallback,
   // a new stream, and then transition back to an equivalent state prior to
   // being called.
   void ProcessDeviceChange();
+
+  const base::UnguessableToken id_;
 
   const raw_ptr<media::AudioManager> audio_manager_;
   const media::AudioParameters params_;

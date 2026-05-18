@@ -15,6 +15,7 @@
 #include "base/sequence_checker.h"
 #include "base/sync_socket.h"
 #include "base/timer/timer.h"
+#include "base/unguessable_token.h"
 #include "media/mojo/mojom/audio_data_pipe.mojom.h"
 #include "media/mojo/mojom/audio_logging.mojom.h"
 #include "media/mojo/mojom/audio_output_stream.mojom.h"
@@ -123,6 +124,8 @@ class OutputStream final : public media::mojom::AudioOutputStream,
   void SendLogMessage(const std::string& message);
 
   SEQUENCE_CHECKER(owning_sequence_);
+
+  const base::UnguessableToken id_;
 
   base::CancelableSyncSocket foreign_socket_;
   DeleteCallback delete_callback_;

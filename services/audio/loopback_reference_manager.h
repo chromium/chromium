@@ -10,6 +10,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
+#include "base/unguessable_token.h"
 #include "media/audio/audio_manager.h"
 #include "services/audio/reference_signal_provider.h"
 

@@ -110,7 +110,8 @@ class LoopbackReferenceManagerCore
       media::AudioManager* audio_manager,
       LoopbackReferenceStreamIdProvider* stream_id_provider,
       ErrorCallback on_error_callback)
-      : audio_manager_(audio_manager),
+      : id_(base::UnguessableToken::Create()),
+        audio_manager_(audio_manager),
         glitch_reporter_(
             media::SystemGlitchReporter::StreamType::kLoopbackReference),
         task_runner_(base::SequencedTaskRunner::GetCurrentDefault()),
@@ -141,8 +142,8 @@ class LoopbackReferenceManagerCore
     }
 
     audio_log_->OnLogMessage(base::StringPrintf(
-        "LRMC::%s [id=%u] [this=0x%" PRIXPTR "]", message.c_str(),
-        stream_id_provider_->GetId(), reinterpret_cast<uintptr_t>(this)));
+        "LRMC::%s [stream_id=%u] [id=%s]", message.c_str(),
+        stream_id_provider_->GetId(), id_.ToString().c_str()));
   }
 
   void ReportAndResetGlitchStats() {
@@ -287,6 +288,7 @@ class LoopbackReferenceManagerCore
     audio_log_.reset();
   }
 
+  const base::UnguessableToken id_;
   const raw_ptr<media::AudioManager> audio_manager_;
   media::SystemGlitchReporter glitch_reporter_;
   const scoped_refptr<base::SequencedTaskRunner> task_runner_;

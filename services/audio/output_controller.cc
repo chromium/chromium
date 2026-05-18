@@ -167,7 +167,8 @@ OutputController::OutputController(
     SyncReader* sync_reader,
     ManagedDeviceOutputStreamCreateCallback
         managed_device_output_stream_create_callback)
-    : audio_manager_(audio_manager),
+    : id_(base::UnguessableToken::Create()),
+      audio_manager_(audio_manager),
       params_(params),
       managed_device_output_stream_create_callback_(
           std::move(managed_device_output_stream_create_callback)),
@@ -534,11 +535,11 @@ int OutputController::OnMoreData(base::TimeDelta delay,
 }
 
 void OutputController::SendLogMessage(const std::string& message) {
-  if (!handler_)
+  if (!handler_) {
     return;
-  handler_->OnLog(base::StringPrintf("AOC::%s [this=0x%" PRIXPTR "]",
-                                     message.c_str(),
-                                     reinterpret_cast<uintptr_t>(this)));
+  }
+  handler_->OnLog(base::StringPrintf("AOC::%s [id=%s]", message.c_str(),
+                                     id_.ToString().c_str()));
 }
 
 void OutputController::LogAudioPowerLevel(const char* call_name) {

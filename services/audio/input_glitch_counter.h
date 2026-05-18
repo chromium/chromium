@@ -7,8 +7,10 @@
 
 #include <cstddef>
 #include <vector>
+
 #include "base/functional/callback.h"
 #include "base/time/time.h"
+#include "base/unguessable_token.h"
 namespace audio {
 
 // Class for logging audio glitch data at 10 second intervals, for use by
@@ -67,6 +69,8 @@ class InputGlitchCounter {
     size_t trailing_missed_read_deadline_count_ = 0;
     size_t trailing_dropped_data_count_ = 0;
   } global_sample_;
+
+  const base::UnguessableToken id_;
 
   base::RepeatingCallback<void(const std::string&)> log_callback_;
 

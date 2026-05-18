@@ -15,6 +15,7 @@
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/sync_socket.h"
 #include "base/time/time.h"
+#include "base/unguessable_token.h"
 #include "build/build_config.h"
 #include "input_glitch_counter.h"
 #include "media/base/audio_bus.h"
@@ -107,6 +108,8 @@ class InputSyncWriter final : public InputController::SyncWriter {
 
   // Helper method for creating internal log messages prefixed with "AISW::".
   PRINTF_FORMAT(2, 3) void SendLogMessage(const char* format, ...);
+
+  const base::UnguessableToken id_;
 
   const base::RepeatingCallback<void(const std::string&)> log_callback_;
 
