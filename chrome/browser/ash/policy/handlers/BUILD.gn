@@ -10,8 +10,6 @@ static_library("handlers") {
   sources = [
     "adb_sideloading_allowance_mode_policy_handler.cc",
     "adb_sideloading_allowance_mode_policy_handler.h",
-    "app_launch_automation_policy_handler.cc",
-    "app_launch_automation_policy_handler.h",
     "bluetooth_policy_handler.cc",
     "bluetooth_policy_handler.h",
     "camera_save_location_policy_handler.cc",
