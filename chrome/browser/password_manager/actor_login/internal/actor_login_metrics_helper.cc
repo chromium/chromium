@@ -85,14 +85,11 @@ void ActorLoginMetricsHelper::RecordFederatedContinuationShown() {
 }
 
 void ActorLoginMetricsHelper::RecordFederatedLoginResult(
-    content::webid::FederatedLoginResult result) {
-  if (result == content::webid::FederatedLoginResult::kContinuation) {
-    return;
-  }
+    ActorLoginFederatedLoginResult result) {
+  // TODO(crbug.com/514241802): Use ActorLoginFederatedLoginResult enum
+  // directly.
   builder_.SetFederatedLoginResult(static_cast<int64_t>(result));
-  base::UmaHistogramEnumeration(
-      "Actor.Login.Federated.LoginResult",
-      static_cast<ActorLoginFederatedLoginResult>(result));
+  base::UmaHistogramEnumeration("Actor.Login.Federated.LoginResult", result);
 }
 
 void ActorLoginMetricsHelper::RecordFederatedHangingFedCmRequestExists(

@@ -57,7 +57,37 @@ AttemptLoginOutcomeMqls FromFederatedLoginResultToMqls(
   }
 }
 
-LoginStatusResult FromFederatedLoginResult(
+ActorLoginFederatedLoginResult FromFederatedLoginResultToMetrics(
+    content::webid::FederatedLoginResult result) {
+  switch (result) {
+    case content::webid::FederatedLoginResult::kSuccess:
+      return ActorLoginFederatedLoginResult::kSuccess;
+    case content::webid::FederatedLoginResult::kContinuation:
+      NOTREACHED();  // Handled explicitly by caller.
+    case content::webid::FederatedLoginResult::kAccountNotLoggedIn:
+      return ActorLoginFederatedLoginResult::kAccountNotLoggedIn;
+    case content::webid::FederatedLoginResult::kAccountIsSignUp:
+      return ActorLoginFederatedLoginResult::kAccountIsSignUp;
+    case content::webid::FederatedLoginResult::kAccountNotAvailable:
+      return ActorLoginFederatedLoginResult::kAccountNotAvailable;
+    case content::webid::FederatedLoginResult::kIdpReturnedError:
+      return ActorLoginFederatedLoginResult::kIdpReturnedError;
+    case content::webid::FederatedLoginResult::kIdpNetworkError:
+      return ActorLoginFederatedLoginResult::kIdpNetworkError;
+    case content::webid::FederatedLoginResult::kTokenRequestAborted:
+      return ActorLoginFederatedLoginResult::kTokenRequestAborted;
+    case content::webid::FederatedLoginResult::kFrameNotActive:
+      return ActorLoginFederatedLoginResult::kFrameNotActive;
+    case content::webid::FederatedLoginResult::kExpectedAccountNotPresent:
+      return ActorLoginFederatedLoginResult::kExpectedAccountNotPresent;
+    case content::webid::FederatedLoginResult::kTimeout:
+      return ActorLoginFederatedLoginResult::kTimeout;
+    case content::webid::FederatedLoginResult::kTimeoutByEmbedder:
+      return ActorLoginFederatedLoginResult::kTimeoutByEmbedder;
+  }
+}
+
+LoginStatusResult FromFederatedLoginResultToLoginStatus(
     content::webid::FederatedLoginResult result) {
   switch (result) {
     case content::webid::FederatedLoginResult::kSuccess:
@@ -205,7 +235,8 @@ void ActorLoginSiwgController::OnFederatedLoginResultReceived(
     if (result == content::webid::FederatedLoginResult::kContinuation) {
       metrics_helper->RecordFederatedContinuationShown();
     } else {
-      metrics_helper->RecordFederatedLoginResult(result);
+      metrics_helper->RecordFederatedLoginResult(
+          FromFederatedLoginResultToMetrics(result));
     }
   }
 
@@ -217,7 +248,7 @@ void ActorLoginSiwgController::OnFederatedLoginResultReceived(
   }
 
   LogFederatedLoginResult(result);
-  LoginStatusResult status = FromFederatedLoginResult(result);
+  LoginStatusResult status = FromFederatedLoginResultToLoginStatus(result);
   if (action_sequence_delegate_) {
     action_sequence_delegate_->OnFederatedLoginOutcome(status);
   }

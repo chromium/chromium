@@ -11,7 +11,6 @@
 #include "base/time/time.h"
 #include "components/password_manager/core/browser/actor_login/internal/actor_login_metrics.h"
 #include "components/password_manager/core/browser/actor_login/internal/actor_login_metrics_helper_interface.h"
-#include "content/public/browser/webid/identity_credential_source.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 
@@ -61,7 +60,7 @@ class ActorLoginMetricsHelper : public ActorLoginMetricsHelperInterface {
   void RecordFederatedContinuationShown();
 
   // Records the result of a federated actor login request.
-  void RecordFederatedLoginResult(content::webid::FederatedLoginResult result);
+  void RecordFederatedLoginResult(ActorLoginFederatedLoginResult result);
 
   // Records whether a hanging FedCM request exists during an actor login
   // request.
