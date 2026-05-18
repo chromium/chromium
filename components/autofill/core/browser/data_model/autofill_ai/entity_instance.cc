@@ -410,13 +410,13 @@ std::ostream& operator<<(std::ostream& os,
                          const EntityInstance::RecordType& t) {
   switch (t) {
     case EntityInstance::RecordType::kLocal:
-      os << "kLocal" << std::endl;
+      os << "kLocal";
       break;
     case EntityInstance::RecordType::kServerWallet:
-      os << "kServerWallet" << std::endl;
+      os << "kServerWallet";
       break;
     case EntityInstance::RecordType::kPersonalContext:
-      os << "kPersonalContext" << std::endl;
+      os << "kPersonalContext";
       break;
   }
   return os;
