@@ -38,12 +38,17 @@ import android.os.Looper;
 import android.view.ActionMode;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.MeasureSpec;
 import android.view.View.OnClickListener;
 import android.view.View.OnLongClickListener;
+import android.widget.FrameLayout;
+import android.widget.FrameLayout.LayoutParams;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
 import androidx.appcompat.content.res.AppCompatResources;
+import androidx.browser.customtabs.CustomTabsIntent;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -82,6 +87,7 @@ import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbar.
 import org.chromium.chrome.browser.dom_distiller.ReaderModeManager;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.CustomTabProfileType;
+import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.omnibox.UrlBarData;
 import org.chromium.chrome.browser.omnibox.status.PageInfoIphController;
 import org.chromium.chrome.browser.tab.Tab;
@@ -401,6 +407,105 @@ public class CustomTabToolbarUnitTest {
                 "The url bar should show about:blank",
                 ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL,
                 mUrlBar.getText().toString());
+    }
+
+    @Test
+    public void testMaximizeButton() {
+        assertFalse(mToolbar.isMaximizeButtonEnabledForTesting());
+        mToolbar.initSideSheetMaximizeButton(/* maximizedOnInit= */ false, () -> true);
+        assertTrue(mToolbar.isMaximizeButtonEnabledForTesting());
+        var maximizeButton = mToolbar.findViewById(R.id.custom_tabs_sidepanel_maximize);
+
+        mToolbar.onFinishInflate();
+        View titleUrlContainer = Mockito.mock(View.class);
+        mLocationBar.setTitleUrlContainerForTesting(titleUrlContainer);
+        int maximizeButtonWidth =
+                mActivity
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.location_bar_action_icon_width);
+        int titleUrlPaddingEnd =
+                mActivity.getResources().getDimensionPixelSize(R.dimen.toolbar_edge_padding);
+        int threshold = maximizeButtonWidth * 2 - titleUrlPaddingEnd;
+
+        when(titleUrlContainer.getWidth()).thenReturn(threshold + 10);
+        when(titleUrlContainer.getLayoutParams())
+                .thenReturn(
+                        new FrameLayout.LayoutParams(
+                                LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
+        mToolbar.onMeasure(MeasureSpec.UNSPECIFIED, MeasureSpec.UNSPECIFIED);
+
+        when(titleUrlContainer.getWidth()).thenReturn(threshold - 10);
+        mToolbar.onMeasure(MeasureSpec.UNSPECIFIED, MeasureSpec.UNSPECIFIED);
+        mToolbar.setToolbarWidthForTesting(48 * 2 + 68);
+        assertEquals("Maximize button should be hidden", View.GONE, maximizeButton.getVisibility());
+
+        mToolbar.removeSideSheetMaximizeButton();
+        assertEquals("Maximize button should be hidden", View.GONE, maximizeButton.getVisibility());
+
+        mToolbar.removeSideSheetMaximizeButton();
+        assertFalse(mToolbar.isMaximizeButtonEnabledForTesting());
+    }
+
+    @Test
+    public void testMinimizeButtonEnabled() {
+        MinimizedFeatureUtils.setDeviceEligibleForMinimizedCustomTabForTesting(true);
+        setup();
+        ImageButton minimizeButton = mToolbar.findViewById(R.id.custom_tabs_minimize_button);
+        View titleUrlContainer = Mockito.mock(View.class);
+        when(titleUrlContainer.getLayoutParams())
+                .thenReturn(
+                        new FrameLayout.LayoutParams(
+                                LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
+        mLocationBar.setTitleUrlContainerForTesting(titleUrlContainer);
+        // Button on left side
+        assertEquals(
+                "Minimize button should be visible", View.VISIBLE, minimizeButton.getVisibility());
+        assertEquals(
+                "Minimize button should be on the left side of the toolbar",
+                mToolbar.getChildAt(1),
+                minimizeButton);
+
+        // Button on right side
+        mToolbar.setCloseButtonPosition(CustomTabsIntent.CLOSE_BUTTON_POSITION_END);
+        mToolbar.onMeasure(MeasureSpec.UNSPECIFIED, MeasureSpec.UNSPECIFIED);
+        assertEquals(
+                "Minimize button should be visible", View.VISIBLE, minimizeButton.getVisibility());
+        assertEquals(
+                "Minimize button should still be on the left side of the toolbar",
+                mToolbar.getChildAt(1),
+                minimizeButton);
+
+        // No space for minimize button
+        when(titleUrlContainer.getWidth()).thenReturn(60);
+        mToolbar.onMeasure(MeasureSpec.UNSPECIFIED, MeasureSpec.UNSPECIFIED);
+        mToolbar.setToolbarWidthForTesting(48 + 68);
+        assertEquals("Minimize button should be hidden", View.GONE, minimizeButton.getVisibility());
+    }
+
+    @Test
+    public void testMinimizeButtonEnabled_MultiWindowMode() {
+        MinimizedFeatureUtils.setDeviceEligibleForMinimizedCustomTabForTesting(true);
+        setup();
+        // Not in multi-window, show minimize button.
+        MultiWindowUtils.getInstance().setIsInMultiWindowModeForTesting(false);
+        ImageButton minimizeButton = mToolbar.findViewById(R.id.custom_tabs_minimize_button);
+        ImageButton closeButton = mToolbar.findViewById(R.id.close_button);
+
+        mToolbar.onMeasure(MeasureSpec.UNSPECIFIED, MeasureSpec.UNSPECIFIED);
+        assertEquals("Close button should be visible", View.VISIBLE, closeButton.getVisibility());
+        assertEquals(
+                "Minimize button should be visible", View.VISIBLE, minimizeButton.getVisibility());
+
+        MinimizedFeatureUtils.setDeviceEligibleForMinimizedCustomTabForTesting(true);
+        setup();
+        minimizeButton = mToolbar.findViewById(R.id.custom_tabs_minimize_button);
+        closeButton = mToolbar.findViewById(R.id.close_button);
+        // In multi-window, hide minimize button visibility.
+        MultiWindowUtils.getInstance().setIsInMultiWindowModeForTesting(true);
+        mToolbar.onMeasure(MeasureSpec.UNSPECIFIED, MeasureSpec.UNSPECIFIED);
+        assertEquals(
+                "Minimize button should NOT be visible", View.GONE, minimizeButton.getVisibility());
+        assertEquals("Close button should be visible", View.VISIBLE, closeButton.getVisibility());
     }
 
     @Test
