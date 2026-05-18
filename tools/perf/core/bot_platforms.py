@@ -1000,6 +1000,12 @@ PLATFORM_INFO = {
         'platform_os': 'android',
         'is_fyi': False
     },
+    'android-pixel10_webview-perf': {
+        'description': 'Android B',
+        'num_shards': 23,
+        'platform_os': 'android',
+        'is_fyi': False
+    },
     'fuchsia-perf-nsn': {
         'description': '',
         'num_shards': 1,

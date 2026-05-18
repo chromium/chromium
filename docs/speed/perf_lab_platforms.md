@@ -16,6 +16,7 @@
  * [android-pixel-fold-perf](https://ci.chromium.org/p/chrome/builders/ci/android-pixel-fold-perf): Android U.
  * [android-pixel-tangor-perf](https://ci.chromium.org/p/chrome/builders/ci/android-pixel-tangor-perf): Android U.
  * [android-pixel10-perf](https://ci.chromium.org/p/chrome/builders/ci/android-pixel10-perf): Android B.
+ * [android-pixel10_webview-perf](https://ci.chromium.org/p/chrome/builders/ci/android-pixel10_webview-perf): Android B.
  * [android-pixel25-ultra-perf](https://ci.chromium.org/p/chrome/builders/ci/android-pixel25-ultra-perf): Android B.
  * [android-pixel25-ultra-xl-perf](https://ci.chromium.org/p/chrome/builders/ci/android-pixel25-ultra-xl-perf): Android B.
  * [android-pixel4-perf](https://ci.chromium.org/p/chrome/builders/ci/android-pixel4-perf): Android R.
