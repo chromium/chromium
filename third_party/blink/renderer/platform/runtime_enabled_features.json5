@@ -2176,7 +2176,7 @@
     },
     {
       name: "DesktopPWAsAdditionalWindowingControls",
-      status: "test",
+      status: "experimental",
     },
     {
       name: "DesktopPWAsAdditionalWindowingControlsOnMove",
