@@ -30,7 +30,6 @@ namespace content {
 // Returns std::nullopt if the process does not exist or is not a bundled
 // application, or if `pid` is a PWA, and there are no, or more than one,
 // running apps with the PWA's browser Bundle ID.
-// TODO(crbug.com/507803904): Add RTC logs.
 CONTENT_EXPORT std::optional<desktop_capture::ApplicationAudioCaptureId>
 GetApplicationAudioCaptureIdForProcess(pid_t pid);
 
