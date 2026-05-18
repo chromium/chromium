@@ -103,8 +103,7 @@ export class ReloadButtonElement extends CrLitElement {
     this.browserProxy_ = BrowserProxyImpl.getInstance();
     this.metricsRecorder_ = new MetricsRecorder(this.browserProxy_);
     this.pressHandler_ = new PressHandler(
-        this.onLongPress_.bind(this), this.onShortPress_.bind(this),
-        /*enableMacContextClick=*/ false);
+        this.onLongPress_.bind(this), this.onShortPress_.bind(this));
     ColorChangeUpdater.forDocument().start();
   }
 
