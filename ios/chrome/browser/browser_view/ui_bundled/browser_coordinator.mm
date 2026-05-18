@@ -884,6 +884,10 @@ const char kChromeAppStoreUrl[] =
         [LayoutGuideCenterForBrowser(self.browser)
             referencedViewUnderName:kTabGridBottomToolbarGuide];
     if (IsChromeNextIaEnabled()) {
+      // On iPad, the bottom toolbar is not present so return 0 offset.
+      if (!IsSplitToolbarMode(self.viewController)) {
+        return 0;
+      }
       CGPoint originOfBottomToolbar =
           [tabGridBottomToolbarView convertPoint:CGPointZero toView:nil];
       return windowHeight - originOfBottomToolbar.y;
@@ -922,6 +926,10 @@ const char kChromeAppStoreUrl[] =
   UIView* bottomToolbar = [LayoutGuideCenterForBrowser(self.browser)
       referencedViewUnderName:kSecondaryToolbarGuide];
   if (IsChromeNextIaEnabled()) {
+    // On iPad, the bottom toolbar is not present so return 0 offset.
+    if (!IsSplitToolbarMode(self.viewController)) {
+      return 0;
+    }
     CGPoint originOfBottomToolbar = [bottomToolbar convertPoint:CGPointZero
                                                          toView:nil];
     return windowHeight - originOfBottomToolbar.y;
