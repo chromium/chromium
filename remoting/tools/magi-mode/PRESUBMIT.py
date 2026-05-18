@@ -433,6 +433,30 @@ def CheckJsonFiles(input_api, output_api):
                     output_api.PresubmitError(
                         f'File {f.LocalPath()} exceeds maximum persona '
                         f'directory depth of 5 (current depth: {depth})'))
+
+            # Cold Logic Static Analysis: Enforce imperative mandates
+            mandate = content.get('mandate')
+            if isinstance(mandate, list) and mandate:
+                first_line = mandate[0]
+                if not first_line.startswith('MANDATE:'):
+                    results.append(
+                        output_api.PresubmitError(
+                            f'File {f.LocalPath()} mandate must start with '
+                            '"MANDATE:" in accordance with Cold Logic.'))
+
+                # Check for conversational filler or role-playing
+                filler_patterns = [
+                    r'\bI am\b', r'\bAs a\b', r'\bMy role\b', r'\bYour goal\b',
+                    r'\bYou are\b', r'\bPlease\b', r'\bThank you\b'
+                ]
+                combined_mandate = " ".join(mandate)
+                for pattern in filler_patterns:
+                    if re.search(pattern, combined_mandate, re.IGNORECASE):
+                        results.append(
+                            output_api.PresubmitError(
+                                f'File {f.LocalPath()} contains conversational '
+                                f'filler or role-playing vestige: "{pattern}"')
+                        )
         else:
             continue
 
@@ -489,10 +513,24 @@ def CheckJsonFiles(input_api, output_api):
                                 ))
 
         # 4. Decision Graph Validation
-        review_mode = content.get('review_mode')
         next_p = content.get('next_stage')
 
         if filename.startswith('state_block'):
+            # Oscillation and Conflict Report Validation
+            oscillation = content.get('oscillation_detected')
+            conflict_report = content.get('conflict_report', [])
+            if oscillation is True:
+                if not conflict_report:
+                    results.append(
+                        output_api.PresubmitError(
+                            f'File {f.LocalPath()} has oscillation_detected: '
+                            'true but conflict_report is empty.'))
+                if next_p != 'ESCALATION':
+                    results.append(
+                        output_api.PresubmitError(
+                            f'File {f.LocalPath()} has oscillation_detected: '
+                            'true but next_stage is not ESCALATION.'))
+
             # Cross-file validation for state_transport
             state_transport = content.get('state_transport')
             if state_transport in ('EPHEMERAL', 'EPHEMERAL_WITH_LOGS'):
@@ -585,11 +623,13 @@ def CheckJsonFiles(input_api, output_api):
                             ))
 
         elif filename.startswith('constraints'):
-            if next_p and next_p not in ['SYNTHESIS', 'TRAINING']:
+            if next_p and next_p not in [
+                    'SYNTHESIS', 'TRAINING', 'ESCALATION'
+            ]:
                 results.append(
                     output_api.PresubmitError(
                         f'File {f.LocalPath()} must signal '
-                        f'SYNTHESIS or TRAINING, not {next_p}'))
+                        f'SYNTHESIS, TRAINING, or ESCALATION, not {next_p}'))
 
     return results
 

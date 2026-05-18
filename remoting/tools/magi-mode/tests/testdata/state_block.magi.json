@@ -9,10 +9,11 @@
         "signal_strategy_listener": true
     },
     "iteration": 1,
-    "stall_count": 0,
+    "oscillation_detected": false,
+    "conflict_report": [],
     "active_constraints": [],
     "resolved_constraints": [],
+    "ignored_constraints": [],
     "next_stage": "CRITIQUE",
-    "review_mode": "CONSENSUS",
     "state_transport": "FILE_IO"
 }

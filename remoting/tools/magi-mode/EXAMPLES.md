@@ -38,15 +38,16 @@ protocol.
 {
   "$schema": "./magi_schema.json#definitions/StateBlock",
   "checklist": {
-    "[Merged keys from selected personas]": false
+    "[Merged keys from selected rulesets]": false
   },
   "iteration": 1,
-  "stall_count": 0,
+  "oscillation_detected": false,
+  "conflict_report": [],
   "active_constraints": [],
   "resolved_constraints": [],
+  "ignored_constraints": [],
   "unlisted_issues_found": [],
   "next_stage": "[Determined by task type]",
-  "review_mode": "[SUPERVISOR/CONSENSUS]",
   "state_transport": "[FILE_IO/EPHEMERAL/EPHEMERAL_WITH_LOGS]"
 }
 ```

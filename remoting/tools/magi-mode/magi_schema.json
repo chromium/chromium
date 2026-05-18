@@ -44,7 +44,11 @@
           "items": { "type": "string" }
         },
         "iteration": { "type": "integer" },
-        "stall_count": { "type": "integer" },
+        "oscillation_detected": { "type": "boolean" },
+        "conflict_report": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
         "active_constraints": {
           "type": "array",
           "items": { "type": "string" }
@@ -53,17 +57,24 @@
           "type": "array",
           "items": { "type": "string" }
         },
+        "ignored_constraints": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "constraint": { "type": "string" },
+              "rationale": { "type": "string" }
+            },
+            "required": ["constraint", "rationale"]
+          }
+        },
         "next_stage": {
           "type": "string",
           "enum": [
             "CRITIQUE", "SCAFFOLDING", "PREPARATION", "IMPLEMENTATION",
             "SYNTHESIS", "TEST_FILLING", "ANALYSIS",
-            "TRAINING", "DEADLOCK", "VALIDATION", "DEPLOYMENT"
+            "TRAINING", "ESCALATION", "VALIDATION", "DEPLOYMENT"
           ]
-        },
-        "review_mode": {
-          "type": "string",
-          "enum": ["SUPERVISOR", "CONSENSUS"]
         },
         "state_transport": {
           "type": "string",
@@ -73,10 +84,9 @@
       "required": [
         "checklist",
         "iteration",
-        "stall_count",
+        "oscillation_detected",
         "active_constraints",
         "resolved_constraints",
-        "review_mode",
         "state_transport",
         "next_stage"
       ]
@@ -189,21 +199,22 @@
           "items": { "type": "string" }
         },
         "iteration": { "type": "integer" },
+        "oscillation_detected": { "type": "boolean" },
+        "conflict_report": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
         "constraints": { "type": "array", "items": { "type": "string" } },
         "next_stage": {
           "type": "string",
-          "enum": ["SYNTHESIS", "TRAINING"]
-        },
-        "review_mode": {
-          "type": "string",
-          "enum": ["SUPERVISOR", "CONSENSUS"]
+          "enum": ["SYNTHESIS", "TRAINING", "ESCALATION"]
         }
       },
       "required": [
         "checklist",
         "iteration",
+        "oscillation_detected",
         "constraints",
-        "review_mode",
         "next_stage"
       ]
     }

@@ -1,7 +1,7 @@
 {
     "$schema": "./magi_test_schemas.json#/definitions/Scenario",
-    "name": "Review & Consensus",
-    "description": "Verify review consolidation and consensus logic.",
+    "name": "Review & Verification",
+    "description": "Verify review consolidation and technical validation logic.",
     "base_inputs": {
         "project_spec": "testdata/project.magi.json",
         "state_block": "testdata/state_block.magi.json"
@@ -9,7 +9,7 @@
     "cases": [
         {
             "stage": "Refine", "step": 1,
-            "name": "Consensus Logical AND",
+            "name": "Invariant Logical AND",
             "override_inputs": {
                 "mock_reviews": [
                     {

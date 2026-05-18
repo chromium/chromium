@@ -261,11 +261,10 @@ class MagiPresubmitTest(unittest.TestCase):
         # Valid state block
         valid_json = (
             '{"checklist": {"checked_xyz": true}, "unlisted_issues_found": [], '
-            '"iteration": 1, "stall_count": 0, "active_constraints": [], '
-            '"resolved_constraints": [],'
-            '"personas": ['
-            '"src/remoting/tools/magi-mode/personas/core/security.json"], '
-            '"review_mode": "SUPERVISOR", "state_transport": "EPHEMERAL", '
+            '"iteration": 1, "oscillation_detected": false, '
+            '"active_constraints": [], "resolved_constraints": [], '
+            '"conflict_report": [], '
+            '"state_transport": "EPHEMERAL", '
             '"next_stage": "CRITIQUE"}')
         self.mock_input.affected_files = [
             MockAffectedFile('remoting/tools/magi-mode/state_block.magi.json'),
@@ -284,20 +283,21 @@ class MagiPresubmitTest(unittest.TestCase):
             '{"definitions": {"ChecklistObject": {"type": "object", '
             '"patternProperties": {"^.*$": {"type": "boolean"}}}, '
             '"StateBlock": {"required": ["checklist", "iteration", '
-            '"stall_count", "active_constraints", "resolved_constraints", '
-            '"personas", "review_mode", "state_transport", "next_stage"], '
+            '"oscillation_detected", "active_constraints", '
+            '"resolved_constraints", "conflict_report", '
+            '"state_transport", "next_stage"], '
             '"properties": {"checklist": '
             '{"$ref": "#/definitions/ChecklistObject"}, '
             '"unlisted_issues_found": {"type": "array"}, "iteration": '
-            '{"type": "integer"}, "stall_count": {"type": "integer"}, '
+            '{"type": "integer"}, "oscillation_detected": '
+            '{"type": "boolean"}, '
             '"active_constraints": {"type": "array"}, "resolved_constraints": '
-            '{"type": "array"}, "personas": {"type": "array"}, '
+            '{"type": "array"}, "conflict_report": {"type": "array"}, '
+            '"ignored_constraints": {"type": "array"}, '
             '"next_stage": {"type": "string", "enum": ["CRITIQUE", '
             '"SCAFFOLDING", "PREPARATION", "IMPLEMENTATION", "SYNTHESIS", '
             '"TEST_FILLING", "ANALYSIS", "TRAINING", '
-            '"VALIDATION", "DEPLOYMENT", "DEADLOCK"]}, '
-            '"review_mode": {"type": "string", "enum": '
-            '["SUPERVISOR", "CONSENSUS"]}, '
+            '"VALIDATION", "DEPLOYMENT", "ESCALATION"]}, '
             '"state_transport": {"type": "string", "enum": '
             '["FILE_IO", "EPHEMERAL", "EPHEMERAL_WITH_LOGS"]}}}}}')
         schema_path = os.path.normpath(
@@ -324,9 +324,10 @@ class MagiPresubmitTest(unittest.TestCase):
         # Invalid next_stage for state block
         invalid_stage_json = (
             '{"checklist": {}, "unlisted_issues_found": [], '
-            '"iteration": 1, "stall_count": 0, "active_constraints": [], '
-            '"resolved_constraints": [], "personas": [], '
-            '"review_mode": "SUPERVISOR", "state_transport": "EPHEMERAL", '
+            '"iteration": 1, "oscillation_detected": false, '
+            '"active_constraints": [], "resolved_constraints": [], '
+            '"conflict_report": [], '
+            '"state_transport": "EPHEMERAL", '
             '"next_stage": "INVALID_STAGE"}')
         self.mock_input.files_content = {
             'remoting/tools/magi-mode/state_block.magi.json':
@@ -341,9 +342,10 @@ class MagiPresubmitTest(unittest.TestCase):
 
         # Wrong type
         wrong_type_json = (
-            '{"iteration": "1", "stall_count": 0, "active_constraints": [], '
-            '"resolved_constraints": [], "personas": [], '
-            '"review_mode": "SUPERVISOR", "state_transport": "EPHEMERAL", '
+            '{"iteration": "1", "oscillation_detected": false, '
+            '"active_constraints": [], "resolved_constraints": [], '
+            '"conflict_report": [], '
+            '"state_transport": "EPHEMERAL", '
             '"next_stage": "CRITIQUE"}')
         self.mock_input.files_content = {
             'remoting/tools/magi-mode/state_block.magi.json': wrong_type_json
@@ -360,10 +362,9 @@ class MagiPresubmitTest(unittest.TestCase):
         invalid_checklist_json = (
             '{"checklist": {"checked_xyz": "not_a_boolean"}, '
             '"unlisted_issues_found": [], "iteration": 1, '
-            '"stall_count": 0, "active_constraints": [], '
-            '"resolved_constraints": [], "personas": '
-            '["src/remoting/tools/magi-mode/personas/core/security.json"], '
-            '"review_mode": "SUPERVISOR", "state_transport": "EPHEMERAL", '
+            '"oscillation_detected": false, "active_constraints": [], '
+            '"resolved_constraints": [], "conflict_report": [], '
+            '"state_transport": "EPHEMERAL", '
             '"next_stage": "CRITIQUE"}')
         self.mock_input.affected_files = [
             MockAffectedFile('remoting/tools/magi-mode/state_block.magi.json'),
@@ -380,17 +381,17 @@ class MagiPresubmitTest(unittest.TestCase):
             '{"definitions": {"ChecklistObject": {"type": "object", '
             '"patternProperties": {"^.*$": {"type": "boolean"}}}, '
             '"StateBlock": {"required": ["checklist", "iteration", '
-            '"stall_count", "active_constraints", "resolved_constraints", '
-            '"personas", "review_mode", "state_transport", "next_stage"], '
+            '"oscillation_detected", "active_constraints", '
+            '"resolved_constraints", "conflict_report", '
+            '"state_transport", "next_stage"], '
             '"properties": {"checklist": '
             '{"$ref": "#/definitions/ChecklistObject"}, '
             '"unlisted_issues_found": {"type": "array"}, "iteration": '
-            '{"type": "integer"}, "stall_count": {"type": "integer"}, '
+            '{"type": "integer"}, "oscillation_detected": '
+            '{"type": "boolean"}, '
             '"active_constraints": {"type": "array"}, "resolved_constraints": '
-            '{"type": "array"}, "personas": {"type": "array"}, '
+            '{"type": "array"}, "conflict_report": {"type": "array"}, '
             '"next_stage": {"type": "string"}, '
-            '"review_mode": {"type": "string", "enum": '
-            '["SUPERVISOR", "CONSENSUS"]}, '
             '"state_transport": {"type": "string", "enum": '
             '["FILE_IO", "EPHEMERAL", "EPHEMERAL_WITH_LOGS"]}}}}}')
 
@@ -430,12 +431,12 @@ class MagiPresubmitTest(unittest.TestCase):
             '["IMPLEMENTATION", "REVIEW", "AUDIT"]}, '
             '"unlisted_issues_found": {"type": "array"}, '
             '"goal": {"type": "string"}, "target_files": {"type": "array"}, '
-            '"anti_goals": {"type": "array"}, "edge_cases": '
-            '{"type": "array"}, "paranoia_mode": {"type": "boolean"}, '
+            '"anti_goals": {"type": "array"}, "edge_cases": {"type": "array"}, '
+            '"paranoia_mode": {"type": "boolean"}, '
             '"next_stage": {"type": "string", "enum": ["CRITIQUE", '
             '"SCAFFOLDING", "PREPARATION", "IMPLEMENTATION", "SYNTHESIS", '
             '"TEST_FILLING", "ANALYSIS", "TRAINING", '
-            '"VALIDATION", "DEPLOYMENT", "DEADLOCK"]}, '
+            '"VALIDATION", "DEPLOYMENT", "ESCALATION"]}, '
             '"auditability_level": {"type": "string", "enum": ["NORMAL", '
             '"VERBOSE"]}, "context_resolved": {"type": "boolean"}, '
             '"approach_confirmed": {"type": "boolean"}, '
@@ -519,7 +520,7 @@ class MagiPresubmitTest(unittest.TestCase):
             '"next_stage": {"type": "string", "enum": ["CRITIQUE", '
             '"SCAFFOLDING", "PREPARATION", "IMPLEMENTATION", "SYNTHESIS", '
             '"TEST_FILLING", "ANALYSIS", "TRAINING", '
-            '"VALIDATION", "DEPLOYMENT", "DEADLOCK"]}}}}}')
+            '"VALIDATION", "DEPLOYMENT", "ESCALATION"]}}}}}')
 
         with patch('builtins.open',
                    unittest.mock.mock_open(read_data=schema_json)):
@@ -543,9 +544,9 @@ class MagiPresubmitTest(unittest.TestCase):
 
     def testJsonConstraintsValidation(self):
         # Valid constraints
-        valid_json = (
-            '{"iteration": 2, "constraints": ["Rule 1", "Rule 2"], '
-            '"review_mode": "SUPERVISOR", "next_stage": "SYNTHESIS"}')
+        valid_json = ('{"iteration": 2, "constraints": ["Rule 1", "Rule 2"], '
+                      '"oscillation_detected": false, "conflict_report": [], '
+                      '"next_stage": "SYNTHESIS"}')
         self.mock_input.affected_files = [
             MockAffectedFile(
                 'remoting/tools/magi-mode/constraints.magi.2.json')
@@ -556,14 +557,16 @@ class MagiPresubmitTest(unittest.TestCase):
 
         schema_json = (
             '{"definitions": {"Constraints": {"required": ["iteration", '
-            '"constraints", "review_mode", "next_stage"], '
+            '"constraints", "oscillation_detected", "conflict_report", '
+            '"next_stage"], '
             '"properties": {"iteration": {"type": "integer"}, '
             '"constraints": {"type": "array"}, '
-            '"review_mode": {"type": "string", "enum": ["SUPERVISOR", "CONSENSUS"]}, '
+            '"oscillation_detected": {"type": "boolean"}, '
+            '"conflict_report": {"type": "array"}, '
             '"next_stage": {"type": "string", "enum": ["CRITIQUE", '
             '"SCAFFOLDING", "PREPARATION", "IMPLEMENTATION", "SYNTHESIS", '
             '"TEST_FILLING", "ANALYSIS", "TRAINING", '
-            '"VALIDATION", "DEPLOYMENT", "DEADLOCK"]}}}}}')
+            '"VALIDATION", "DEPLOYMENT", "ESCALATION"]}}}}}')
 
         with patch('builtins.open',
                    unittest.mock.mock_open(read_data=schema_json)):
@@ -607,8 +610,9 @@ class MagiPresubmitTest(unittest.TestCase):
 
         # Invalid handoff for constraints
         invalid_constraints = (
-            '{"iteration": 1, "constraints": [], "review_mode": '
-            '"SUPERVISOR", "next_stage": "CRITIQUE"}')
+            '{"iteration": 1, "constraints": [], '
+            '"oscillation_detected": false, "conflict_report": [], '
+            '"next_stage": "CRITIQUE"}')
         self.mock_input.affected_files = [
             MockAffectedFile(
                 'remoting/tools/magi-mode/constraints.magi.1.json')
@@ -619,27 +623,29 @@ class MagiPresubmitTest(unittest.TestCase):
         }
         schema_json = (
             '{"definitions": {"Constraints": {"required": ["iteration", '
-            '"constraints", "review_mode"], "properties": {"iteration": '
+            '"constraints", "oscillation_detected", "conflict_report"], '
+            '"properties": {"iteration": '
             '{"type": "integer"}, "constraints": {"type": "array"}, '
-            '"review_mode": {"type": "string"}, "next_stage": {"type": '
-            '"string"}}}}}')
+            '"oscillation_detected": {"type": "boolean"}, '
+            '"conflict_report": {"type": "array"}, '
+            '"next_stage": {"type": "string"}}}}}')
         with patch('builtins.open',
                    unittest.mock.mock_open(read_data=schema_json)):
             results = PRESUBMIT.CheckJsonFiles(self.mock_input,
                                                self.mock_output)
             self.assertTrue(
-                any('must signal SYNTHESIS or TRAINING' in r for r in results))
+                any('must signal SYNTHESIS, TRAINING, or ESCALATION' in r
+                    for r in results))
 
     def testCrossFileValidation(self):
         schema_json = '{"definitions": {}}'
 
-        state_json = (
-            '{"checklist": {}, "unlisted_issues_found": [], '
-            '"iteration": 1, "stall_count": 0, "active_constraints": [], '
-            '"resolved_constraints": [], "personas": '
-            '["src/remoting/tools/magi-mode/personas/core/security.json"], '
-            '"review_mode": "SUPERVISOR", "state_transport": "EPHEMERAL", '
-            '"next_stage": "CRITIQUE"}')
+        state_json = ('{"checklist": {}, "unlisted_issues_found": [], '
+                      '"iteration": 1, "oscillation_detected": false, '
+                      '"active_constraints": [], "resolved_constraints": [], '
+                      '"conflict_report": [], '
+                      '"state_transport": "EPHEMERAL", '
+                      '"next_stage": "CRITIQUE"}')
 
         proj_paranoia = '{"paranoia_mode": true}'
         proj_verbose = '{"auditability_level": "VERBOSE"}'
@@ -899,7 +905,7 @@ class MagiPresubmitTest(unittest.TestCase):
                                                self.mock_output)
         self.assertTrue(any('contains invalid property' in r for r in results))
 
-    def testCheckTempDirectory(self):
+    def testJsonTempDirectory(self):
         self.mock_input.affected_files = [
             MockAffectedFile('remoting/tools/magi-mode/.temp/log.json')
         ]
@@ -907,6 +913,74 @@ class MagiPresubmitTest(unittest.TestCase):
                                                self.mock_output)
         self.assertTrue(any('is in the .temp/ directory' in r
                             for r in results))
+
+    def testColdLogicStaticAnalysis(self):
+        # Missing MANDATE: prefix
+        invalid_mandate = '{"role": "R", "mandate": ["Bad"], "checklist": {}}'
+        self.mock_input.affected_files = [
+            MockAffectedFile('remoting/tools/magi-mode/personas/test.json')
+        ]
+        self.mock_input.files_content = {
+            'remoting/tools/magi-mode/personas/test.json': invalid_mandate
+        }
+        schema_json = '{"definitions": {"PersonaDef": {"required": []}}}'
+        with patch('builtins.open',
+                   unittest.mock.mock_open(read_data=schema_json)):
+            results = PRESUBMIT.CheckJsonFiles(self.mock_input,
+                                               self.mock_output)
+            self.assertTrue(
+                any('must start with "MANDATE:"' in r for r in results))
+
+        # Conversational filler
+        filler_json = (
+            '{"role": "R", "mandate": ["MANDATE: X", "Please do Y"], '
+            '"checklist": {}}')
+        self.mock_input.files_content = {
+            'remoting/tools/magi-mode/personas/test.json': filler_json
+        }
+        with patch('builtins.open',
+                   unittest.mock.mock_open(read_data=schema_json)):
+            results = PRESUBMIT.CheckJsonFiles(self.mock_input,
+                                               self.mock_output)
+            self.assertTrue(
+                any('contains conversational filler' in r for r in results))
+
+    def testOscillationDetection(self):
+        # Oscillation but no report
+        invalid_json = (
+            '{"checklist": {}, "iteration": 1, '
+            '"oscillation_detected": true, "conflict_report": [], '
+            '"active_constraints": [], "resolved_constraints": [], '
+            '"state_transport": "FILE_IO", "next_stage": "ESCALATION"}')
+        self.mock_input.affected_files = [
+            MockAffectedFile('remoting/tools/magi-mode/state_block.magi.json')
+        ]
+        self.mock_input.files_content = {
+            'remoting/tools/magi-mode/state_block.magi.json': invalid_json
+        }
+        schema_json = '{"definitions": {"StateBlock": {"required": []}}}'
+        with patch('builtins.open',
+                   unittest.mock.mock_open(read_data=schema_json)):
+            results = PRESUBMIT.CheckJsonFiles(self.mock_input,
+                                               self.mock_output)
+            self.assertTrue(
+                any('conflict_report is empty' in r for r in results))
+
+        # Oscillation but wrong stage
+        wrong_stage_json = (
+            '{"checklist": {}, "iteration": 1, '
+            '"oscillation_detected": true, "conflict_report": ["Conflict"], '
+            '"active_constraints": [], "resolved_constraints": [], '
+            '"state_transport": "FILE_IO", "next_stage": "SYNTHESIS"}')
+        self.mock_input.files_content = {
+            'remoting/tools/magi-mode/state_block.magi.json': wrong_stage_json
+        }
+        with patch('builtins.open',
+                   unittest.mock.mock_open(read_data=schema_json)):
+            results = PRESUBMIT.CheckJsonFiles(self.mock_input,
+                                               self.mock_output)
+            self.assertTrue(
+                any('next_stage is not ESCALATION' in r for r in results))
 
 
 if __name__ == '__main__':

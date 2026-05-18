@@ -62,5 +62,6 @@ Use these when auditing or modifying the MAGI protocol itself.
 - **LLM Behavior & Grounding Expert:** Hallucination prevention, prompt
   engineering, state machine safety. *Path:*
   `src/remoting/tools/magi-mode/personas/ai/llm.json`
-- **MAS Architect:** Decentralized coordination, handoff stability, consensus
-  efficiency. *Path:* `src/remoting/tools/magi-mode/personas/ai/mas.json`
+- **MAS Architect:** Multi-agent system architecture, handoff stability,
+  verification loop efficiency. *Path:*
+  `src/remoting/tools/magi-mode/personas/ai/mas.json`

@@ -2,9 +2,9 @@
 
 This skill implements the "Lean MAGI" protocol, a high-efficiency multi-agent
 framework designed to resolve complex, high-stakes, or ambiguous software
-engineering problems. It eliminates management overhead (TPMs, Supervisors) by
-centralizing coordination in the main Orchestrator while delegating heavy
-technical lifting to specialized sub-agents.
+engineering problems. It utilizes a **"Verification Loop"** of specialized
+technical modules to enforce invariants, detect conflicts, and synthesize code
+without human management overhead.
 
 ## The Two-Path Model
 
@@ -211,16 +211,13 @@ successor.
      plus any relevant domain modules.
 2. **State Initialization:** The Orchestrator writes the initial State Block to
    `state_block.magi.json`. The `checklist` field is initialized with the
-   **Union Set** of all checklist keys from every selected persona, set to
+   **Union Set** of all checklist keys from every selected ruleset, set to
    `false`.
-3. **Review Mode Selection:** The Orchestrator selects the `review_mode`:
-   - **SUPERVISOR:** Default for `FAST_PATH`.
-   - **CONSENSUS:** Default for `RIGOR_PATH`.
-4. **State Transport Selection:** The Orchestrator selects `state_transport`
+3. **State Transport Selection:** The Orchestrator selects `state_transport`
    based on the risk score (Scanner Count * Target Files):
    - **FILE_IO:** Use if risk score > 15.
    - **EPHEMERAL_WITH_LOGS:** Default for standard tasks.
-5. **JSON Contract (`state_block.magi.json`):** See [EXAMPLES.md](./EXAMPLES.md)
+4. **JSON Contract (`state_block.magi.json`):** See [EXAMPLES.md](./EXAMPLES.md)
    for a full example.
 
 #### Step 4: Implement (Implementation Modules)
@@ -256,12 +253,14 @@ successor.
 2. **Hardening Audit:** Synthesis MUST perform a final audit against the
    **Production Hardening Checklist** during synthesis to ensure merged code
    maintains architectural integrity.
-3. **Synthesis Build:** If `build_targets` are defined in `project.magi.json`,
-   Synthesis MUST run the local build/test suite on "Draft A". The Orchestrator
-   MUST verify that the scaffold compiles and that the tests still fail with
-   "NOT IMPLEMENTED" (as Domain Experts only added stubbed tests). Synthesis
-   MUST attach the build logs to the synthesis report before signaling
-   `next_stage: TEST_FILLING`.
+3. **Synthesis Build (Empirical Gate):** If `build_targets` are defined in
+   `project.magi.json`, Synthesis MUST run the local build/test suite on "Draft
+   A".
+   - **Failure:** If the code fails to compile, Synthesis MUST loop back to
+     internal refinement and fix the syntax/link errors. It MUST NOT signal
+     `next_stage: TEST_FILLING` or `ANALYSIS` until the build is green.
+   - **Success:** Once the build is verified, Synthesis MUST attach the build
+     logs to the synthesis report before signaling `next_stage: TEST_FILLING`.
 
 #### Step 6: Implement Tests (The Test Expert)
 
@@ -294,11 +293,20 @@ successor.
    sub-agent to consolidate multiple scanner reports. Consolidation performs a
    **Logical AND** across all checklists and generates a prioritized list of
    Actionable Constraints in `constraints.magi.[iteration].json`.
-3. **Common Convergence:**
+3. **Conflict Detection (Oscillation):** Consolidation MUST proactively detect
+   mutually exclusive requirements.
+   - **Oscillation:** If a checklist key toggles state (`True -> False -> True`)
+     across iterations, or if the `active_constraints` list is identical across
+     two iterations, Consolidation MUST signal `next_stage: ESCALATION`.
+   - **Conflict Report:** In the event of an oscillation, Consolidation MUST
+     produce a structured `conflict_report` in the State Block, identifying the
+     specific modules and constraints that are in conflict.
+4. **Common Convergence:**
    - **Convergence & Iteration:** Synthesis reads `state_block.magi.json` and
      `constraints.magi.[iteration].json` to generate the next iteration.
-   - **Deadlock:** If the stall count (iterations with no checklist progress)
-     exceeds 3, the Orchestrator MUST halt and request human intervention.
+   - **Escalation Gate:** If `oscillation_detected == true`, the Orchestrator
+     MUST halt and present the `conflict_report` to the human for a strategic
+     decision.
 
 #### Step 3: Train (Training)
 

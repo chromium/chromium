@@ -12,7 +12,7 @@ within your local workspace.
 ## What is MAGI?
 
 Unlike a standard chat interface where a single AI tries to do everything (often
-losing context or hallucinating), MAGI utilizes a **"Consensus Loop"** of
+losing context or hallucinating), MAGI utilizes a **"Verification Loop"** of
 specialized technical modules. It follows a "Lean" architecture that eliminates
 management overhead and focuses on high-efficiency execution.
 
@@ -93,7 +93,7 @@ the protocol:
 - `tests/magi_stage_generate_tests.json`: Scenarios for scaffolding, TDD, and
   implementation.
 - `tests/magi_stage_refine_tests.json`: Scenarios for review, consolidation, and
-  the consensus loop.
+  the verification loop.
 - `tests/testdata/`: A collection of files with intentional flaws (e.g.,
   Use-After-Free, Deadlocks, Memory Leaks) used to verify that the Domain
   Experts can accurately detect real-world issues.
