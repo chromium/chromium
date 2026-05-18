@@ -43,17 +43,23 @@ class TabsFromOtherDevicesSidePanelMetrics : public SidePanelEntryObserver {
   void OnEntryShown(SidePanelEntry* entry) override;
   void OnEntryHidden(SidePanelEntry* entry) override;
 
-  void RecordTabOpened();
+  bool HasRecordedTabCount() const;
+  void RecordTabCountOnOpen(size_t device_count,
+                            size_t total_tab_count,
+                            size_t active_device_tab_count);
+
+  void RecordTabOpened(size_t device_index);
 
   base::WeakPtr<TabsFromOtherDevicesSidePanelMetrics> GetWeakPtr();
 
  private:
-  std::string GetHistogramPrefix() const;
+  const std::string histogram_prefix_;
 
   base::ScopedObservation<SidePanelEntry, SidePanelEntryObserver> observation_{
       this};
 
   base::TimeTicks opened_timestamp_;
+  bool has_recorded_tab_count_ = false;
   bool tab_opened_ = false;
 
   base::WeakPtrFactory<TabsFromOtherDevicesSidePanelMetrics> weak_ptr_factory_{

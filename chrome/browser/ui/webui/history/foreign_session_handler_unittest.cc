@@ -435,6 +435,98 @@ TEST_F(ForeignSessionHandlerSidePanelTest, RecordMetricsOnTabOpen) {
 
   histogram_tester.ExpectTotalCount(
       "Sync.TabsFromOtherDevicesSidePanel.List.TimeToFirstTab", 1);
+
+  histogram_tester.ExpectUniqueSample(
+      "Sync.TabsFromOtherDevicesSidePanel.List.OpenedTabDeviceIndex", 0, 1);
+}
+
+TEST_F(ForeignSessionHandlerSidePanelTest,
+       RecordMetricsOnTabOpen_SecondDevice) {
+  CreateSidePanelUI();
+
+  TabsFromOtherDevicesSidePanelMetrics metrics;
+  metrics.OnEntryShown(nullptr);
+  side_panel_ui_->SetMetricsRecorder(metrics.GetWeakPtr());
+
+  // Add a foreign session with a recent modified time so it appears first
+  // (index 0).
+  session_sync_service()->GetOpenTabsUIDelegate()->AddForeignSession(
+      "first_session_tag", base::Time::Now());
+
+  // Add a foreign session with an older modified time so it appears second
+  // (index 1).
+  session_sync_service()->GetOpenTabsUIDelegate()->AddForeignSession(
+      "second_session_tag", base::Time::Now() - base::Seconds(1));
+
+  sessions::SessionTab* tab =
+      session_sync_service()->GetOpenTabsUIDelegate()->AddTabToForeignSession(
+          "second_session_tag", GURL("https://www.google.com"));
+
+  base::HistogramTester histogram_tester;
+
+  handler_->OpenForeignSessionTab("second_session_tag", tab->tab_id.id(),
+                                  ui::mojom::ClickModifiers::New());
+
+  histogram_tester.ExpectBucketCount(
+      "Sync.TabsFromOtherDevicesSidePanel.List.Events", 3,
+      1);  // 3 is kTabOpened
+
+  histogram_tester.ExpectTotalCount(
+      "Sync.TabsFromOtherDevicesSidePanel.List.TimeToFirstTab", 1);
+
+  histogram_tester.ExpectUniqueSample(
+      "Sync.TabsFromOtherDevicesSidePanel.List.OpenedTabDeviceIndex", 1, 1);
+}
+
+TEST_F(ForeignSessionHandlerSidePanelTest, RecordMetricsOnGetForeignSessions) {
+  CreateSidePanelUI();
+
+  TabsFromOtherDevicesSidePanelMetrics metrics;
+  metrics.OnEntryShown(nullptr);
+  side_panel_ui_->SetMetricsRecorder(metrics.GetWeakPtr());
+
+  // Create two foreign sessions with tabs.
+  // First session has 2 tabs.
+  session_sync_service()->GetOpenTabsUIDelegate()->AddForeignSession(
+      "tag1", base::Time::Now());
+  session_sync_service()
+      ->GetOpenTabsUIDelegate()
+      ->AddTabToForeignSession("tag1", GURL("https://www.google.com"))
+      ->current_navigation_index = 0;
+  session_sync_service()
+      ->GetOpenTabsUIDelegate()
+      ->AddTabToForeignSession("tag1", GURL("https://www.google.com"))
+      ->current_navigation_index = 0;
+
+  // Second session has 1 tab.
+  session_sync_service()->GetOpenTabsUIDelegate()->AddForeignSession(
+      "tag2", base::Time::Now() - base::Seconds(1));
+  session_sync_service()
+      ->GetOpenTabsUIDelegate()
+      ->AddTabToForeignSession("tag2", GURL("https://www.google.com"))
+      ->current_navigation_index = 0;
+
+  base::HistogramTester histogram_tester;
+
+  base::MockCallback<ForeignSessionHandler::GetForeignSessionsCallback>
+      callback;
+
+  EXPECT_CALL(callback, Run);
+  handler_->GetForeignSessions(callback.Get());
+
+  histogram_tester.ExpectUniqueSample(
+      "Sync.TabsFromOtherDevicesSidePanel.List.DeviceCountOnOpen", 2, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Sync.TabsFromOtherDevicesSidePanel.List.TabCountOnOpen.Total", 3, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Sync.TabsFromOtherDevicesSidePanel.List.TabCountOnOpen.ActiveDevice", 2,
+      1);
+
+  // Calling GetForeignSessions again should not record metrics a second time.
+  EXPECT_CALL(callback, Run);
+  handler_->GetForeignSessions(callback.Get());
+  histogram_tester.ExpectUniqueSample(
+      "Sync.TabsFromOtherDevicesSidePanel.List.DeviceCountOnOpen", 2, 1);
 }
 
 TEST_F(ForeignSessionHandlerSidePanelTest,

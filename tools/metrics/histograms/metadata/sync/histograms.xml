@@ -2657,6 +2657,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Sync.TabsFromOtherDevicesSidePanel.{Version}.DeviceCountOnOpen"
+    units="devices" expires_after="2027-05-07">
+  <owner>treib@chromium.org</owner>
+  <owner>src/components/sync/OWNERS</owner>
+  <summary>
+    Records the number of synced devices shown when the TabsFromOtherDevices
+    side panel ({Version}) is opened. Recorded once when the side panel is
+    opened and data is loaded.
+  </summary>
+  <token key="Version" variants="TabsFromOtherDevicesVersion"/>
+</histogram>
+
 <histogram name="Sync.TabsFromOtherDevicesSidePanel.{Version}.Events"
     enum="TabsFromOtherDevicesSidePanelEvent" expires_after="2027-05-07">
   <owner>treib@chromium.org</owner>
@@ -2664,6 +2677,44 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records events for the TabsFromOtherDevices side panel ({Version}). Recorded
     when the side panel is created, opened, closed, or a tab is opened from it.
+  </summary>
+  <token key="Version" variants="TabsFromOtherDevicesVersion"/>
+</histogram>
+
+<histogram
+    name="Sync.TabsFromOtherDevicesSidePanel.{Version}.OpenedTabDeviceIndex"
+    units="index" expires_after="2027-05-07">
+  <owner>treib@chromium.org</owner>
+  <owner>src/components/sync/OWNERS</owner>
+  <summary>
+    Records the 0-based index of the device from which a tab is opened in the
+    TabsFromOtherDevices side panel ({Version}). Recorded when a tab is opened.
+  </summary>
+  <token key="Version" variants="TabsFromOtherDevicesVersion"/>
+</histogram>
+
+<histogram
+    name="Sync.TabsFromOtherDevicesSidePanel.{Version}.TabCountOnOpen.ActiveDevice"
+    units="tabs" expires_after="2027-05-07">
+  <owner>treib@chromium.org</owner>
+  <owner>src/components/sync/OWNERS</owner>
+  <summary>
+    Records the number of tabs on the initially active/selected device shown
+    when the TabsFromOtherDevices side panel ({Version}) is opened. Recorded
+    once when the side panel is opened and data is loaded.
+  </summary>
+  <token key="Version" variants="TabsFromOtherDevicesVersion"/>
+</histogram>
+
+<histogram
+    name="Sync.TabsFromOtherDevicesSidePanel.{Version}.TabCountOnOpen.Total"
+    units="tabs" expires_after="2027-05-07">
+  <owner>treib@chromium.org</owner>
+  <owner>src/components/sync/OWNERS</owner>
+  <summary>
+    Records the total number of synced tabs across all devices shown when the
+    TabsFromOtherDevices side panel ({Version}) is opened. Recorded once when
+    the side panel is opened and data is loaded.
   </summary>
   <token key="Version" variants="TabsFromOtherDevicesVersion"/>
 </histogram>
