@@ -727,4 +727,13 @@ bool TestPlugin::IsSupportedMimeType(const blink::WebString& mime_type) {
          mime_type == PluginPersistsMimeType();
 }
 
+void TestPlugin::Paint(cc::PaintCanvas* canvas, const gfx::Rect& rect) {
+  cc::PaintFlags flags;
+  flags.setColor(
+      SkColorSetARGB(scene_.opacity * 255, scene_.background_color[0],
+                     scene_.background_color[1], scene_.background_color[2]));
+  flags.setStyle(cc::PaintFlags::kFill_Style);
+  canvas->drawRect(gfx::RectToSkRect(rect), flags);
+}
+
 }  // namespace content

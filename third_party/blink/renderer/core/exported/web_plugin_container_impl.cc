@@ -176,6 +176,12 @@ void WebPluginContainerImpl::Paint(const PaintInfo& paint_info,
 
   GraphicsContext& context = paint_info.context;
 
+  if ((paint_info.GetPaintFlags() & PaintFlag::kPrivacyPreserving) &&
+      !element_->GetExecutionContext()->GetSecurityOrigin()->CanReadContent(
+          element_->GetDocument().CompleteURL(element_->Url()))) {
+    return;
+  }
+
   if (WantsWheelEvents()) {
     context.GetPaintController().RecordHitTestData(
         *GetLayoutEmbeddedContent(), visual_rect, TouchAction::kAuto,
@@ -195,7 +201,7 @@ void WebPluginContainerImpl::Paint(const PaintInfo& paint_info,
         *GetLayoutEmbeddedContent(), visual_rect, *sub_rects);
   }
 
-  if (layer_) {
+  if (layer_ && !paint_info.ShouldOmitCompositingInfo()) {
     layer_->SetBounds(Size());
     layer_->SetIsDrawable(true);
     layer_->SetHitTestable(true);

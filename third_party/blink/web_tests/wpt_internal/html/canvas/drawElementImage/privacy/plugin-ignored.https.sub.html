@@ -1,0 +1,56 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <title>drawElementImage does not draw cross-origin plugins</title>
+  <link rel="help" href="https://github.com/WICG/html-in-canvas">
+  <script src='/resources/testharness.js'></script>
+  <script src='/resources/testharnessreport.js'></script>
+  <script src='../support/getPixel.js'></script>
+  <script src="/wpt_internal/resources/canvas-draw-element/waitForCanvasPaint.js"></script>
+  <style>
+    #child {
+      width: 100px;
+      height: 200px;
+      background: blue;
+    }
+    #sameOrigin {
+      position: absolute;
+      left: 0px;
+      top: 0px;
+    }
+    #crossOrigin {
+      position: absolute;
+      left: 0px;
+      top: 100px;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="canvas" width="100" height="200" layoutsubtree>
+    <div id="child">
+      <embed id="sameOrigin" type="application/x-webkit-test-webplugin" width="100" height="100" src="https://{{location[host]}}/wpt_internal/html/canvas/drawElementImage/resources/green-100x100.png" background-color="green"></embed>
+      <embed id="crossOrigin" type="application/x-webkit-test-webplugin" width="100" height="100" src="https://{{hosts[alt][www]}}:{{ports[https][0]}}/wpt_internal/html/canvas/drawElementImage/resources/red-100x100.png" background-color="red"></embed>
+    </div>
+  </canvas>
+
+  <script>
+    window.onload = () => {
+      promise_test(async function(t) {
+        await waitForCanvasPaint(canvas);
+        const context = canvas.getContext("2d");
+
+        context.drawElementImage(child, 0, 0);
+
+        // Fetch all pixel data once to avoid multiple slow readbacks.
+        const imgData = context.getImageData(0, 0, canvas.width, canvas.height);
+
+        let pixel = getPixel(imgData, 50, 50);
+        assert_array_equals(pixel, [0, 255, 0, 255], "Same origin plugin should be drawn");
+
+        pixel = getPixel(imgData, 50, 150);
+        assert_array_equals(pixel, [0, 0, 255, 255], "Cross origin plugin should not be drawn");
+      });
+    };
+  </script>
+</body>
+</html>
