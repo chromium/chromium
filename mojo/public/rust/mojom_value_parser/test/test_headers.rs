@@ -24,6 +24,8 @@ use mojom_value_parser::{
 };
 use rust_gtest_interop::prelude::*;
 
+use crate::helpers::{deserialize_exact, serialize};
+
 // These structs represent exactly the contents of a header of the given
 // version. The MojomParse derivation will output almost exactly the right
 // serialized format, except the version number will always be 0.
@@ -65,7 +67,7 @@ struct HeaderV3 {
 
 impl HeaderV1 {
     fn serialize(self) -> Vec<u8> {
-        let (mut serialized, _) = mojom_value_parser::serialize(self);
+        let (mut serialized, _) = serialize(self);
         // Byte 4 contains the version number. It will be 0 since the mojom
         // value parser doesn't handle versioning.
         serialized[4] = 1;
@@ -74,33 +76,33 @@ impl HeaderV1 {
 
     fn deserialize(bytes: &mut [u8]) -> ParsingResult<Self> {
         bytes[4] = 0;
-        mojom_value_parser::deserialize_exact(bytes, &mut [])
+        deserialize_exact(bytes, &mut [])
     }
 }
 
 impl HeaderV2 {
     fn serialize(self) -> Vec<u8> {
-        let (mut serialized, _) = mojom_value_parser::serialize(self);
+        let (mut serialized, _) = serialize(self);
         serialized[4] = 2;
         serialized
     }
 
     fn deserialize(bytes: &mut [u8]) -> ParsingResult<Self> {
         bytes[4] = 0;
-        mojom_value_parser::deserialize_exact(bytes, &mut [])
+        deserialize_exact(bytes, &mut [])
     }
 }
 
 impl HeaderV3 {
     fn serialize(self) -> Vec<u8> {
-        let (mut serialized, _) = mojom_value_parser::serialize(self);
+        let (mut serialized, _) = serialize(self);
         serialized[4] = 3;
         serialized
     }
 
     fn deserialize(bytes: &mut [u8]) -> ParsingResult<Self> {
         bytes[4] = 0;
-        mojom_value_parser::deserialize_exact(bytes, &mut [])
+        deserialize_exact(bytes, &mut [])
     }
 }
 

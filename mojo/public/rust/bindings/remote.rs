@@ -308,25 +308,22 @@ impl<T: DynMojomInterface + ?Sized> PartialEq for PendingRemote<T> {
 
 impl<T: DynMojomInterface + ?Sized> Eq for PendingRemote<T> {}
 
-impl<T: DynMojomInterface + ?Sized> From<PendingRemote<T>> for MojomValue {
-    fn from(val: PendingRemote<T>) -> MojomValue {
-        MojomValue::PendingRemote(val.into_endpoint())
+impl<Context, T> mojom_value_parser::MojomParse<Context> for PendingRemote<T>
+where
+    T: DynMojomInterface + ?Sized + 'static,
+{
+    fn mojom_type() -> MojomType {
+        MojomType::PendingRemote
     }
-}
 
-impl<T: DynMojomInterface + ?Sized> TryFrom<MojomValue> for PendingRemote<T> {
-    type Error = anyhow::Error;
+    fn into_mojom_value(self, _context: &Context) -> MojomValue {
+        MojomValue::PendingRemote(self.into_endpoint())
+    }
 
-    fn try_from(value: MojomValue) -> Result<Self, Self::Error> {
+    fn try_from_mojom_value(value: MojomValue, _context: &Context) -> anyhow::Result<Self> {
         match value {
             MojomValue::PendingRemote(handle) => Ok(PendingRemote::new(handle)),
             _ => anyhow::bail!("Expected PendingRemote, got {:?}", value),
         }
-    }
-}
-
-impl<T: DynMojomInterface + ?Sized + 'static> mojom_value_parser::MojomParse for PendingRemote<T> {
-    fn mojom_type() -> MojomType {
-        MojomType::PendingRemote
     }
 }

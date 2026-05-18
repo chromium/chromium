@@ -43,7 +43,7 @@ use crate::helpers::*;
 // //mojo/public/cpp/bindings/tests/validation_test_input_parser.h
 fn validate_parsing<T>(value: T, data: &str) -> anyhow::Result<()>
 where
-    T: MojomParse + PartialEq + std::fmt::Debug,
+    T: MojomParse<()> + PartialEq + std::fmt::Debug,
 {
     // We have to compute this eagerly since `value ` will get consumed by the test
     let err_str = format!("\nRust value: {value:?}\nWire Data: {data}");
@@ -60,12 +60,15 @@ where
         // googletest that return a result, if we get access to them.
         expect_eq!(
             &value,
-            &parse_single_value_for_testing(wire_data.as_ref(), &mut [], T::wire_type())?
-                .try_into()?
+            &try_from_mojom_value(parse_single_value_for_testing(
+                wire_data.as_ref(),
+                &mut [],
+                T::wire_type()
+            )?)?
         );
         expect_eq!(
             wire_data.as_ref(),
-            *deparse_single_value_for_testing(value.into(), T::wire_type())?
+            *deparse_single_value_for_testing(into_mojom_value(value), T::wire_type())?
         );
         Ok(())
     };
@@ -81,7 +84,7 @@ where
 // after parsing (comparing the parsed `MojomValue` instead of the parsed `T`).
 fn validate_parsing_with_handles<T>(value: T, data: &str, num_handles: usize) -> anyhow::Result<()>
 where
-    T: MojomParse + PartialEq + std::fmt::Debug,
+    T: MojomParse<()> + PartialEq + std::fmt::Debug,
 {
     // We have to compute this eagerly since `value ` will get consumed by the test
     let err_str = format!("\nRust value: {value:?}\nWire Data: {data}");
@@ -94,7 +97,7 @@ where
             // We currently don't do anything with handles, so only look at the data field
             .data;
 
-        let mojom_value: MojomValue = value.into();
+        let mojom_value = into_mojom_value(value);
         let mut handles = (0..num_handles).map(|_| Some(dummy_handle())).collect::<Vec<_>>();
 
         // TODO(crbug.com/456214728): It would be nice to use the `verify_` macros from
@@ -120,7 +123,7 @@ where
 /// Check that we correctly fail to parse mismatching data.
 fn validate_parsing_failure<T>(data: &str) -> anyhow::Result<()>
 where
-    T: MojomParse + PartialEq + std::fmt::Debug,
+    T: MojomParse<()> + PartialEq + std::fmt::Debug,
 {
     validate_parsing_failure_with_handles::<T>(data, 0)
 }
@@ -128,7 +131,7 @@ where
 /// Check that we correctly fail to parse mismatching data...with handles!
 fn validate_parsing_failure_with_handles<T>(data: &str, num_handles: usize) -> anyhow::Result<()>
 where
-    T: MojomParse + PartialEq + std::fmt::Debug,
+    T: MojomParse<()> + PartialEq + std::fmt::Debug,
 {
     let wire_data = validation_parser::parse(data).map_err(anyhow::Error::msg)?.data;
     let mut handles = (0..num_handles).map(|_| Some(dummy_handle())).collect::<Vec<_>>();

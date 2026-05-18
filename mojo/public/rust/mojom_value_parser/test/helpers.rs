@@ -6,11 +6,35 @@
 
 chromium::import! {
     "//mojo/public/rust/mojom_value_parser:mojom_value_parser_core";
+    "//mojo/public/rust/mojom_value_parser:mojom_value_parser";
     "//mojo/public/rust/system";
 }
 
-use mojom_value_parser_core::MojomValue;
+use mojom_value_parser_core::{MojomParse, MojomValue};
 use system::mojo_types::UntypedHandle;
+
+/// Serialize a Rust struct with no context.
+pub(crate) fn serialize<T: MojomParse<()>>(value: T) -> (Vec<u8>, Vec<UntypedHandle>) {
+    mojom_value_parser::serialize(value, &())
+}
+
+/// Deserialize a Rust struct with no context.
+pub(crate) fn deserialize_exact<T: MojomParse<()>>(
+    data_slice: &[u8],
+    handles: &mut [Option<UntypedHandle>],
+) -> mojom_value_parser::ParsingResult<T> {
+    mojom_value_parser::deserialize_exact(data_slice, handles, &())
+}
+
+/// Convert to MojomValue with no context.
+pub(crate) fn into_mojom_value<T: MojomParse<()>>(value: T) -> MojomValue {
+    value.into_mojom_value(&())
+}
+
+/// Convert from MojomValue with no context.
+pub(crate) fn try_from_mojom_value<T: MojomParse<()>>(value: MojomValue) -> anyhow::Result<T> {
+    T::try_from_mojom_value(value, &())
+}
 
 /// This functions allows us to create a dummy handle value for testing
 /// purposes. It created and returns a valid but otherwise unspecified handle.

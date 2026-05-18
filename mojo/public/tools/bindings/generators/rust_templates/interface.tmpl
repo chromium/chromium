@@ -32,7 +32,7 @@
 
 impl {{args_struct(method)}} {
   fn serialize_from_parts({{typed_fields(method.param_struct.fields)}}) -> bindings::message::MojomMessage {
-    let (payload, handles) = mojom_value_parser::serialize(Self { {{field_names(method.param_struct.fields)}} } );
+    let (payload, handles) = mojom_value_parser::serialize(Self { {{field_names(method.param_struct.fields)}} }, &());
     {%- if method.response_parameters %}
     let flags = bindings::message_header::MessageHeaderFlags::EXPECTS_RESPONSE;
     {%- else %}
@@ -52,7 +52,7 @@ impl {{args_struct(method)}} {
 
 impl {{response_struct(method)}} {
   fn serialize_from_parts({{typed_fields(method.response_param_struct.fields)}}) -> bindings::message::MojomMessage {
-    let (payload, handles) = mojom_value_parser::serialize(Self { {{field_names(method.response_param_struct.fields)}} } );
+    let (payload, handles) = mojom_value_parser::serialize(Self { {{field_names(method.response_param_struct.fields)}} }, &());
     let flags = bindings::message_header::MessageHeaderFlags::IS_RESPONSE;
     bindings::message::MojomMessage {
       header: bindings::message_header::MessageHeader::new(
@@ -97,7 +97,7 @@ pub trait {{interface.name}} : bindings::interface::internal::ImplementThisViaMa
       {%- for method in interface.methods %}
       {{method.ordinal}} => {
         let {{"_" if not method.parameters}}parsed: {{args_struct(method)}} =
-          mojom_value_parser::deserialize_exact(&message.payload, &mut handles)
+          mojom_value_parser::deserialize_exact(&message.payload, &mut handles, &())
           .expect("Associated interfaces are not yet supported (crbug.com/493274453)");
         {%- if method.response_parameters %}
         let callback = move |{{typed_fields(method.response_param_struct.fields)}}| {
@@ -139,7 +139,7 @@ impl bindings::interface::MojomInterface for dyn {{interface.name}} {
       {%- for method in interface.methods if method.response_parameters %}
       ({{method.ordinal}}, {{callback_ty_name}}::{{method.name}}(callback)) => {
         let parsed: {{response_struct(method)}} =
-          mojom_value_parser::deserialize_exact(&message.payload, &mut handles)
+          mojom_value_parser::deserialize_exact(&message.payload, &mut handles, &())
           .expect("Associated interfaces are not yet supported (crbug.com/493274453)");
         callback(
           {%- for field in method.response_param_struct.fields -%}

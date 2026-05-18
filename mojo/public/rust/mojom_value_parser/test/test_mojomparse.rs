@@ -142,7 +142,7 @@ impl TestType {
     /// (1) T's associated MojomType and MojomWireType match ours, and
     /// (2) The input value of type T can be converted to and from the input
     ///     MojomValue
-    fn validate_mojomparse<T: MojomParse + std::fmt::Debug + Clone + PartialEq>(
+    fn validate_mojomparse<T: MojomParse<()> + std::fmt::Debug + Clone + PartialEq>(
         &self,
         rust_val: T,
         mojom_val: MojomValue,
@@ -164,14 +164,14 @@ impl TestType {
         );
 
         // Test conversion to/from MojomValues
-        expect_eq!(&mojom_val, &rust_val.clone().into());
-        expect_eq!(rust_val, mojom_val.try_into().unwrap());
+        expect_eq!(&mojom_val, &into_mojom_value(rust_val.clone()));
+        expect_eq!(rust_val, try_from_mojom_value(mojom_val).unwrap());
     }
 
     /// Similar to `validate_mojomparse`, but for types which contain handles.
     /// Since no two different handle values will ever be equal, it uses a
     /// special comparison operator that ignores handles.
-    fn validate_mojomparse_handles<T: MojomParse + std::fmt::Debug + PartialEq>(
+    fn validate_mojomparse_handles<T: MojomParse<()> + std::fmt::Debug + PartialEq>(
         &self,
         rust_val: T,
         get_mojom_val: impl Fn() -> MojomValue,
@@ -190,14 +190,14 @@ impl TestType {
             self.type_name
         );
 
-        expect_true!(equivalent_value(&get_mojom_val(), &rust_val.into()));
+        expect_true!(equivalent_value(&get_mojom_val(), &into_mojom_value(rust_val)));
         // Unfortunately, we don't have `equivalent_value` for rust types.
         // We could write a bunch of them if we _really_ wanted to, but for now
         // we satisfy ourselves by checking round-trip conversions.
         expect_true!(equivalent_value(
             &get_mojom_val(),
-            // The function we really want to test here is T::try_from
-            &T::try_from(get_mojom_val()).unwrap().into()
+            // The function we really want to test here is T::try_from_mojom_value
+            &into_mojom_value(try_from_mojom_value::<T>(get_mojom_val()).unwrap())
         ));
     }
 }
@@ -705,18 +705,18 @@ fn test_bad_conversion() {
     // arbitrary scattershot approach so we have _some_ coverage.
     // TODO(crbug.com/456214728) Replace with matchers from the googletest crate
     // if we switch to it.
-    expect_true!(FourInts::try_from(four_ints_reversed).is_err());
-    expect_true!(FourInts::try_from(once_nested()).is_err());
-    expect_true!(FourInts::try_from(empty).is_err());
+    expect_true!(try_from_mojom_value::<FourInts>(four_ints_reversed).is_err());
+    expect_true!(try_from_mojom_value::<FourInts>(once_nested()).is_err());
+    expect_true!(try_from_mojom_value::<FourInts>(empty).is_err());
 
-    expect_true!(TenBoolsAndAByte::try_from(ten_bools_bytes).is_err());
-    expect_true!(TenBoolsAndAByte::try_from(four_ints_intermixed).is_err());
+    expect_true!(try_from_mojom_value::<TenBoolsAndAByte>(ten_bools_bytes).is_err());
+    expect_true!(try_from_mojom_value::<TenBoolsAndAByte>(four_ints_intermixed).is_err());
 
-    expect_true!(OnceNested::try_from(twice_nested).is_err());
-    expect_true!(OnceNested::try_from(ten_bools_byte()).is_err());
+    expect_true!(try_from_mojom_value::<OnceNested>(twice_nested).is_err());
+    expect_true!(try_from_mojom_value::<OnceNested>(ten_bools_byte()).is_err());
 
-    expect_true!(Empty::try_from(ten_bools_byte()).is_err());
-    expect_true!(Empty::try_from(four_ints).is_err());
+    expect_true!(try_from_mojom_value::<Empty>(ten_bools_byte()).is_err());
+    expect_true!(try_from_mojom_value::<Empty>(four_ints).is_err());
 }
 
 // Mojom Definition:
@@ -1050,10 +1050,16 @@ fn test_unions() {
     );
     BASE_UNION_TY.validate_mojomparse(BaseUnion::fl(3.14), base_union_mojom_fl(3.14));
 
-    expect_true!(BaseUnion::try_from(MojomValue::Union(99, Box::new(MojomValue::Int8(0)))).is_err());
-    expect_true!(
-        BaseUnion::try_from(MojomValue::Union(0, Box::new(MojomValue::UInt64(0)))).is_err()
-    );
+    expect_true!(try_from_mojom_value::<BaseUnion>(MojomValue::Union(
+        99,
+        Box::new(MojomValue::Int8(0))
+    ))
+    .is_err());
+    expect_true!(try_from_mojom_value::<BaseUnion>(MojomValue::Union(
+        0,
+        Box::new(MojomValue::UInt64(0))
+    ))
+    .is_err());
 
     NESTED_UNION_TY.validate_mojomparse(NestedUnion::n(60), nested_union_mojom_n(60));
     NESTED_UNION_TY.validate_mojomparse(
@@ -1192,7 +1198,7 @@ static ARRAY_UNION_TY: LazyLock<TestType> = LazyLock::new(|| TestType {
 });
 
 fn array_union_mojom(elts: Vec<BaseUnion>) -> MojomValue {
-    MojomValue::Array(elts.into_iter().map(MojomValue::from).collect())
+    MojomValue::Array(elts.into_iter().map(into_mojom_value).collect())
 }
 
 // Mojom Definition:
@@ -1204,7 +1210,7 @@ static ARRAY_UNION_NESTED_TY: LazyLock<TestType> = LazyLock::new(|| TestType {
 });
 
 fn array_union_nested_mojom(elts: Vec<NestedUnion>) -> MojomValue {
-    MojomValue::Array(elts.into_iter().map(MojomValue::from).collect())
+    MojomValue::Array(elts.into_iter().map(into_mojom_value).collect())
 }
 
 // Mojom Definition:
@@ -1216,7 +1222,7 @@ static ARRAY_FOURINTS_TY: LazyLock<TestType> = LazyLock::new(|| TestType {
 });
 
 fn array_fourints_mojom(elts: Vec<FourInts>) -> MojomValue {
-    MojomValue::Array(elts.into_iter().map(MojomValue::from).collect())
+    MojomValue::Array(elts.into_iter().map(into_mojom_value).collect())
 }
 
 // Mojom Definition:
@@ -1429,10 +1435,10 @@ fn test_arrays() {
     );
 
     let array_val = array_int16_mojom(vec![]);
-    expect_true!(FourInts::try_from(array_val).is_err());
+    expect_true!(try_from_mojom_value::<FourInts>(array_val).is_err());
 
-    expect_true!(<Vec<i16>>::try_from(empty_mojom()).is_err());
-    expect_true!(<[u64; 3]>::try_from(empty_mojom()).is_err());
+    expect_true!(try_from_mojom_value::<Vec<i16>>(empty_mojom()).is_err());
+    expect_true!(try_from_mojom_value::<[u64; 3]>(empty_mojom()).is_err());
 
     ARRAYS_TY.validate_mojomparse(
         Arrays {
@@ -1542,7 +1548,7 @@ static MAP_I8_FOURINTS_TY: LazyLock<TestType> = LazyLock::new(|| TestType {
 
 fn map_i8_fourints_mojom(elts: HashMap<i8, FourInts>) -> MojomValue {
     MojomValue::Map(
-        elts.into_iter().map(|(k, v)| (MojomValue::Int8(k), MojomValue::from(v))).collect(),
+        elts.into_iter().map(|(k, v)| (MojomValue::Int8(k), into_mojom_value(v))).collect(),
     )
 }
 
@@ -1556,7 +1562,7 @@ static MAP_I8_NESTEDUNION_TY: LazyLock<TestType> = LazyLock::new(|| TestType {
 
 fn map_i8_nestedunion_mojom(elts: HashMap<i8, NestedUnion>) -> MojomValue {
     MojomValue::Map(
-        elts.into_iter().map(|(k, v)| (MojomValue::Int8(k), MojomValue::from(v))).collect(),
+        elts.into_iter().map(|(k, v)| (MojomValue::Int8(k), into_mojom_value(v))).collect(),
     )
 }
 
@@ -1573,7 +1579,7 @@ static MAP_I8_MAP_I16_U32_TY: LazyLock<TestType> = LazyLock::new(|| TestType {
 
 fn map_i8_map_i16_u32_mojom(elts: HashMap<i8, HashMap<i16, u32>>) -> MojomValue {
     MojomValue::Map(
-        elts.into_iter().map(|(k, v)| (MojomValue::Int8(k), MojomValue::from(v))).collect(),
+        elts.into_iter().map(|(k, v)| (MojomValue::Int8(k), into_mojom_value(v))).collect(),
     )
 }
 
@@ -2055,7 +2061,7 @@ static ARRAY_NULL_EMPTY_TY: LazyLock<TestType> = LazyLock::new(|| TestType {
 
 fn array_null_empty_mojom(elts: Vec<Option<Empty>>) -> MojomValue {
     MojomValue::Array(
-        elts.into_iter().map(|elt| nullable_val!(elt.map(MojomValue::from))).collect(),
+        elts.into_iter().map(|elt| nullable_val!(elt.map(into_mojom_value))).collect(),
     )
 }
 
@@ -2088,7 +2094,7 @@ static ARRAY_NULL_UNION_TY: LazyLock<TestType> = LazyLock::new(|| TestType {
 
 fn array_null_union_mojom(elts: Vec<Option<BaseUnion>>) -> MojomValue {
     MojomValue::Array(
-        elts.into_iter().map(|elt| nullable_val!(elt.map(MojomValue::from))).collect(),
+        elts.into_iter().map(|elt| nullable_val!(elt.map(into_mojom_value))).collect(),
     )
 }
 

@@ -203,16 +203,16 @@ const _: () = {
         }
     }
 
-    impl From<MessageHeaderFlags> for MojomValue {
-        fn from(value: MessageHeaderFlags) -> MojomValue {
-            MojomValue::UInt32(value.bits())
+    impl<Context> mojom_value_parser::MojomParse<Context> for MessageHeaderFlags {
+        fn mojom_type() -> MojomType {
+            MojomType::UInt32
         }
-    }
 
-    impl TryFrom<MojomValue> for MessageHeaderFlags {
-        type Error = anyhow::Error;
+        fn into_mojom_value(self, _context: &Context) -> MojomValue {
+            MojomValue::UInt32(self.bits())
+        }
 
-        fn try_from(value: MojomValue) -> anyhow::Result<Self> {
+        fn try_from_mojom_value(value: MojomValue, _context: &Context) -> anyhow::Result<Self> {
             let bits: u32 = if let MojomValue::UInt32(bits) = value {
                 bits
             } else {
@@ -229,12 +229,6 @@ const _: () = {
                 }
                 Some(flags) => Ok(flags),
             }
-        }
-    }
-
-    impl mojom_value_parser::MojomParse for MessageHeaderFlags {
-        fn mojom_type() -> MojomType {
-            MojomType::UInt32
         }
     }
 };
