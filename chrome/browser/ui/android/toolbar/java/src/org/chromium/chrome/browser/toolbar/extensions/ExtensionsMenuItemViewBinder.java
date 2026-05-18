@@ -108,12 +108,22 @@ public class ExtensionsMenuItemViewBinder {
             View enterpriseIcon =
                     view.findViewById(R.id.extensions_menu_item_site_permissions_enterprise_icon);
 
-            layout.setVisibility(status == Status.HIDDEN ? View.GONE : View.VISIBLE);
+            layout.setVisibility(View.VISIBLE);
             boolean isEnabled = status == Status.ENABLED;
             layout.setEnabled(isEnabled);
             button.setEnabled(isEnabled);
             icon.setEnabled(isEnabled);
             enterpriseIcon.setEnabled(isEnabled);
+
+            boolean isEnterprise = model.get(ExtensionsMenuItemProperties.IS_ENTERPRISE);
+            boolean shouldHideArrow = (status == Status.HIDDEN) || (status == Status.DISABLED);
+            if (shouldHideArrow) {
+                icon.setVisibility(View.GONE);
+            } else {
+                icon.setVisibility(isEnterprise ? View.GONE : View.VISIBLE);
+            }
+            enterpriseIcon.setVisibility(isEnterprise ? View.VISIBLE : View.GONE);
+
             // Force the view to be focusable for accessibility even when disabled,
             // so screen readers can navigate to it.
             ViewCompat.setAccessibilityDelegate(layout, sForceFocusableDelegate);
@@ -126,10 +136,18 @@ public class ExtensionsMenuItemViewBinder {
                     model.get(ExtensionsMenuItemProperties.SITE_PERMISSIONS_BUTTON_TOOLTIP));
         } else if (key == ExtensionsMenuItemProperties.IS_ENTERPRISE) {
             boolean isEnterprise = model.get(ExtensionsMenuItemProperties.IS_ENTERPRISE);
+            @Status
+            int status = model.get(ExtensionsMenuItemProperties.SITE_PERMISSIONS_BUTTON_STATUS);
             View icon = view.findViewById(R.id.extensions_menu_item_site_permissions_icon);
-            icon.setVisibility(isEnterprise ? View.GONE : View.VISIBLE);
             View enterpriseIcon =
                     view.findViewById(R.id.extensions_menu_item_site_permissions_enterprise_icon);
+
+            boolean shouldHideArrow = (status == Status.HIDDEN) || (status == Status.DISABLED);
+            if (shouldHideArrow) {
+                icon.setVisibility(View.GONE);
+            } else {
+                icon.setVisibility(isEnterprise ? View.GONE : View.VISIBLE);
+            }
             enterpriseIcon.setVisibility(isEnterprise ? View.VISIBLE : View.GONE);
         }
     }
