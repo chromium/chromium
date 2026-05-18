@@ -332,6 +332,9 @@ HRESULT GetSampleBuffer(const DWORD required_size,
   }
 
   if (need_buffer_allocation) {
+    if (buffer_count > 0) {
+      RETURN_IF_FAILED(sample->RemoveAllBuffers());
+    }
     RETURN_IF_FAILED(
         MFCreateAlignedMemoryBuffer(required_size, buffer_alignment, &buffer));
     RETURN_IF_FAILED(sample->AddBuffer(buffer.Get()));
