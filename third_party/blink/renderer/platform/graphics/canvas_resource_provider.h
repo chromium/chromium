@@ -615,6 +615,14 @@ class PLATFORM_EXPORT CanvasNon2DResourceProviderSharedImage
   bool IsSoftware() const { return is_software_; }
   bool IsGpuContextLost() const override;
 
+  // CanvasSnapshotProvider implementation:
+  gfx::Size Size() const override { return size_; }
+  viz::SharedImageFormat GetSharedImageFormat() const override {
+    return format_;
+  }
+  gfx::ColorSpace GetColorSpace() const override { return color_space_; }
+  SkAlphaType GetAlphaType() const override { return alpha_type_; }
+
   // WebGraphicsContext3DProviderWrapper::DestructionObserver implementation.
   void OnContextDestroyed() override;
 
