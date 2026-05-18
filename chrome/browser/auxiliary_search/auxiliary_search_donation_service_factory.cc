@@ -10,6 +10,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/no_destructor.h"
 #include "chrome/browser/auxiliary_search/auxiliary_search_donation_service.h"
+#include "chrome/browser/auxiliary_search/auxiliary_search_donation_service_bridge.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/page_content_annotations/page_content_annotations_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -61,9 +62,7 @@ AuxiliarySearchDonationServiceFactory::BuildServiceInstanceForBrowserContext(
       visited_url_ranking::VisitedURLRankingServiceFactory::GetForProfile(
           profile),
       profile->GetPrefs(),
-      // TODO: https://crbug.com/432359106 - Use AuxiliarySearchDonor to donate
-      // the entries.
-      /*donate_callback=*/base::DoNothing());
+      AuxiliarySearchDonationServiceBridge::CreateDonationCallback());
 }
 
 bool AuxiliarySearchDonationServiceFactory::ServiceIsCreatedWithBrowserContext()

@@ -12,12 +12,14 @@ assert(is_android)
 source_set("auxiliary_search") {
   sources = [
     "auxiliary_search_donation_service.h",
+    "auxiliary_search_donation_service_bridge.h",
     "auxiliary_search_donation_service_factory.h",
     "auxiliary_search_provider.h",
     "auxiliary_search_top_site_provider_bridge.h",
     "fetch_and_rank_helper.h",
   ]
   public_deps = [
+    ":jni_headers",
     "//base",
     "//chrome/browser/ntp_tiles",
     "//chrome/browser/profiles:profile",
@@ -31,6 +33,7 @@ source_set("auxiliary_search") {
 source_set("impl") {
   sources = [
     "auxiliary_search_donation_service.cc",
+    "auxiliary_search_donation_service_bridge.cc",
     "auxiliary_search_donation_service_factory.cc",
     "auxiliary_search_provider.cc",
     "auxiliary_search_top_site_provider_bridge.cc",
@@ -108,6 +111,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/auxiliary_search/AuxiliarySearchControllerFactory.java",
     "java/src/org/chromium/chrome/browser/auxiliary_search/AuxiliarySearchControllerImpl.java",
     "java/src/org/chromium/chrome/browser/auxiliary_search/AuxiliarySearchDataEntry.java",
+    "java/src/org/chromium/chrome/browser/auxiliary_search/AuxiliarySearchDonationServiceBridge.java",
     "java/src/org/chromium/chrome/browser/auxiliary_search/AuxiliarySearchDonor.java",
     "java/src/org/chromium/chrome/browser/auxiliary_search/AuxiliarySearchHooks.java",
     "java/src/org/chromium/chrome/browser/auxiliary_search/AuxiliarySearchMetrics.java",
@@ -168,6 +172,7 @@ android_library("java") {
 generate_jni("jni_headers") {
   sources = [
     "java/src/org/chromium/chrome/browser/auxiliary_search/AuxiliarySearchBridge.java",
+    "java/src/org/chromium/chrome/browser/auxiliary_search/AuxiliarySearchDonationServiceBridge.java",
     "java/src/org/chromium/chrome/browser/auxiliary_search/AuxiliarySearchTopSiteProviderBridge.java",
     "java/src/org/chromium/chrome/browser/auxiliary_search/FetchAndRankHelper.java",
   ]
@@ -195,6 +200,7 @@ robolectric_library("junit") {
     "junit/src/org/chromium/chrome/browser/auxiliary_search/AuxiliarySearchConfigManagerUnitTest.java",
     "junit/src/org/chromium/chrome/browser/auxiliary_search/AuxiliarySearchControllerFactoryUnitTest.java",
     "junit/src/org/chromium/chrome/browser/auxiliary_search/AuxiliarySearchControllerImplUnitTest.java",
+    "junit/src/org/chromium/chrome/browser/auxiliary_search/AuxiliarySearchDonationServiceBridgeUnitTest.java",
     "junit/src/org/chromium/chrome/browser/auxiliary_search/AuxiliarySearchDonorUnitTest.java",
     "junit/src/org/chromium/chrome/browser/auxiliary_search/AuxiliarySearchMetricsUnitTest.java",
     "junit/src/org/chromium/chrome/browser/auxiliary_search/AuxiliarySearchMultiDataControllerImplUnitTest.java",
