@@ -25,7 +25,7 @@
             },
             {
                 "domain": "DOM",
-                "include": ["setFileInputFiles"],
+                "include": ["setFileInputFiles", "getFileInfo"],
                 "include_events": []
             },
             {

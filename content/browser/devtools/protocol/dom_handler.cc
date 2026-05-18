@@ -32,6 +32,13 @@ Response DOMHandler::Disable() {
   return Response::Success();
 }
 
+Response DOMHandler::GetFileInfo(const std::string& object_id,
+                                 std::string* path) {
+  if (!allow_file_access_)
+    return Response::ServerError("Not allowed");
+  return Response::FallThrough();
+}
+
 Response DOMHandler::SetFileInputFiles(
     std::unique_ptr<protocol::Array<std::string>> files,
     std::optional<DOM::NodeId> node_id,

@@ -36,6 +36,9 @@ class DOMHandler : public DevToolsDomainHandler,
       std::optional<DOM::BackendNodeId> backend_node_id,
       std::optional<String> in_object_id) override;
 
+  Response GetFileInfo(const std::string& object_id,
+                       std::string* path) override;
+
  private:
   raw_ptr<RenderFrameHostImpl> host_;
   bool allow_file_access_;

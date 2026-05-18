@@ -1874,6 +1874,32 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest,
 #endif
 
 IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest,
+                       DOMGetFileInfoRequiresFileAccess) {
+  NavigateToURLBlockUntilNavigationsComplete(shell(), GURL("about:blank"), 1);
+  Attach();
+
+  base::DictValue params;
+  params.Set("objectId", "dummy-object-id");
+
+  // Should succeed in browser-side check and fall through to renderer,
+  // which will return an error about invalid objectId.
+  ASSERT_FALSE(SendCommandSync("DOM.getFileInfo", params.Clone()));
+  EXPECT_NE(*error()->FindString("message"), "Not allowed");
+
+  Detach();
+  SetMayReadLocalFiles(false);
+
+  Attach();
+
+  // It should fail now in the browser-side check.
+  ASSERT_FALSE(SendCommandSync("DOM.getFileInfo", std::move(params)));
+  EXPECT_THAT(
+      error()->FindInt("code"),
+      testing::Optional(static_cast<int>(crdtp::DispatchCode::SERVER_ERROR)));
+  EXPECT_EQ(*error()->FindString("message"), "Not allowed");
+}
+
+IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest,
                        DispatchDragEventWithFileUrlRequiresFileAccess) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL test_url = embedded_test_server()->GetURL("/devtools/navigation.html");
