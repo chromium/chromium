@@ -708,6 +708,37 @@ TEST_F(AppShimManagerTest, LaunchAppNotEnabled) {
   NormalLaunch(bootstrap_aa_, std::move(host_aa_unique_));
 }
 
+// Regression test for crbug.com/513128608.
+TEST_F(AppShimManagerTest, DisallowedProtocolCancelsLaunchReentrancy) {
+  // OnAppDeactivated -> apps_.empty() -> MaybeTerminate(). Mock it as a no-op.
+  EXPECT_CALL(*manager_, MaybeTerminate()).Times(testing::AnyNumber());
+
+  // When the delegate's LaunchApp is invoked (synchronously, from inside
+  // LoadAndLaunchApp_OnProfilesAndAppReady), simulate the production
+  // disallowed-protocol fast-path: synchronously call OnAppLaunchCancelled,
+  // which frees the just-created ProfileState before control returns to the
+  // caller that still holds a bare pointer to it.
+  EXPECT_CALL(*delegate_, LaunchApp(&profile_a_, kTestAppIdA, _, _, _, _, _))
+      .WillOnce(WithArgs<6>([this](base::OnceClosure finished) {
+        // Mirrors the following flow: cancel app launch ->
+        // AppShimManager::Get()->OnAppLaunchCancelled()
+        manager_->OnAppLaunchCancelled(&profile_a_, kTestAppIdA);
+        std::move(finished).Run();
+      }));
+
+  // Launch with a non-empty `urls` vector so params.HasFilesOrURLs() is true
+  // and delegate_->LaunchApp is called from
+  // LoadAndLaunchApp_LaunchIfAppropriate.
+  //
+  // ASAN: heap-use-after-free fires inside this call at
+  // OnShimProcessConnectedAndAllLaunchesDone -> profile_state->GetHost().
+  DoShimLaunch(bootstrap_aa_, std::move(host_aa_unique_),
+               chrome::mojom::AppShimLaunchType::kNormal,
+               /*files=*/std::vector<base::FilePath>(),
+               /*urls=*/std::vector<GURL>{GURL("web+evil://x")},
+               chrome::mojom::AppShimLoginItemRestoreState::kNone);
+}
+
 TEST_F(AppShimManagerTest, LaunchAndCloseShim) {
   // Normal startup.
   NormalLaunch(bootstrap_aa_, std::move(host_aa_unique_));
@@ -794,8 +825,9 @@ TEST_F(AppShimManagerTest, AppLaunchCancelled) {
   EXPECT_EQ(host_bb_.get(), manager_->FindHost(&profile_b_, kTestAppIdB));
   EXPECT_CALL(*manager_, MaybeTerminate()).WillOnce(Return());
   manager_->OnAppLaunchCancelled(&profile_b_, kTestAppIdB);
-  EXPECT_FALSE(manager_->FindHost(&profile_b_, kTestAppIdB));
-  EXPECT_EQ(host_bb_.get(), nullptr);
+  EXPECT_TRUE(base::test::RunUntil([&] {
+    return !host_bb_ && !manager_->FindHost(&profile_b_, kTestAppIdB);
+  }));
 
   // Validate that if a browser is registered during a launch
   // that OnAppLaunchCancelled is an no-op

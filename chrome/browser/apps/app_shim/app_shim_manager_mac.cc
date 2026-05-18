@@ -1849,9 +1849,14 @@ void AppShimManager::OnAppLaunchCancelled(content::BrowserContext* context,
 
   // If there are no browser windows open, then close the ProfileState
   // (and potentially the shim as well).
+  // Do this asynchronously to prevent reentrancy issues so that
+  // `OnShimProcessConnectedAndAllLaunchesDone()` can access the ProfileState
+  // without it being destroyed.
   ProfileState* profile_state = found_profile->second.get();
   if (profile_state->browsers.empty()) {
-    OnAppDeactivated(context, app_id);
+    content::GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE, base::BindOnce(&AppShimManager::OnAppDeactivated,
+                                  weak_factory_.GetWeakPtr(), context, app_id));
   }
 }
 
