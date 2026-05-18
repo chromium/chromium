@@ -68,6 +68,7 @@ class EmbeddedPermissionPromptBaseView : public PermissionPromptBaseView,
 
   void Show();
   void UpdateAnchor(views::Widget* widget);
+
   void ClosingPermission();
   virtual void PrepareToClose();
   permissions::feature_params::PermissionElementPromptPosition
@@ -81,6 +82,7 @@ class EmbeddedPermissionPromptBaseView : public PermissionPromptBaseView,
   void OnWidgetBoundsChanged(views::Widget* widget,
                              const gfx::Rect& new_bounds) override;
   void OnWidgetDestroying(views::Widget* widget) override;
+  void OnWidgetVisibilityChanged(views::Widget* widget, bool visible) override;
 
  protected:
   enum class ButtonType {
@@ -135,6 +137,7 @@ class EmbeddedPermissionPromptBaseView : public PermissionPromptBaseView,
   gfx::Rect GetBubbleBounds() override;
   gfx::Rect element_rect_;
   base::WeakPtr<EmbeddedPermissionPromptViewDelegate> delegate_;
+  base::WeakPtr<content::WebContents> web_contents_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PERMISSIONS_EMBEDDED_PERMISSION_PROMPT_BASE_VIEW_H_

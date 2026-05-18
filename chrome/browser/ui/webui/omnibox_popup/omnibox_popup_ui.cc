@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/omnibox/omnibox_view.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter_base.h"
 #include "chrome/browser/ui/webui/favicon_source.h"
 #include "chrome/browser/ui/webui/metrics_reporter/metrics_reporter_service.h"
 #include "chrome/browser/ui/webui/omnibox_popup/omnibox_popup_aim_handler.h"
@@ -285,6 +286,15 @@ void OmniboxPopupUI::CreatePageHandler(
                           base::Unretained(this)),
       base::BindRepeating(&OmniboxPopupUI::ClearContextualSessionHandle,
                           base::Unretained(this)));
+
+  // If presenter delegate is connected, set the delegate in the handler so the
+  // handler can notify the delegate when there are embedded permissions prompt
+  // changes. Otherwise, once the presenter delegate connects itself, connect
+  // the two there instead. `composebox_handler_` is used since composebox page
+  // handler is where PEPC mojo call lives.
+  if (presenter_delegate_) {
+    composebox_handler_->set_delegate(presenter_delegate_);
+  }
 }
 
 contextual_search::ContextualSearchSessionHandle*
@@ -306,4 +316,17 @@ OmniboxPopupUI::GetOrCreateContextualSessionHandle() {
 
 void OmniboxPopupUI::ClearContextualSessionHandle() {
   shared_session_handle_.reset();
+}
+
+void OmniboxPopupUI::SetPresenterDelegate(OmniboxPopupPresenterBase* delegate) {
+  presenter_delegate_ = delegate;
+
+  // If the handler is initialized already, set the delegate in the handler so
+  // the handler can notify the delegate when there are embedded permissions
+  // prompt changes. Otherwise, once the handler is initialized, connect the two
+  // there instead. `composebox_handler_` is used since composebox page handler
+  // is where PEPC mojo call lives.
+  if (composebox_handler_) {
+    composebox_handler_->set_delegate(presenter_delegate_);
+  }
 }

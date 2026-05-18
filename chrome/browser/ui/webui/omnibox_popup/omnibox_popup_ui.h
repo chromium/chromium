@@ -9,6 +9,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
+#include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter_base.h"
 #include "chrome/browser/ui/webui/omnibox_popup/mojom/omnibox_popup.mojom.h"
 #include "chrome/browser/ui/webui/omnibox_popup/mojom/omnibox_popup_aim.mojom.h"
 #include "chrome/browser/ui/webui/top_chrome/top_chrome_web_ui_controller.h"
@@ -113,6 +114,8 @@ class OmniboxPopupUI : public TopChromeWebUIController,
 
   void ClearContextualSessionHandle();
 
+  void SetPresenterDelegate(OmniboxPopupPresenterBase* delegate);
+
  private:
   raw_ptr<Profile> profile_;
 
@@ -135,6 +138,8 @@ class OmniboxPopupUI : public TopChromeWebUIController,
 
   mojo::Receiver<searchbox::mojom::PageHandlerFactory>
       searchbox_page_factory_receiver_{this};
+
+  raw_ptr<OmniboxPopupPresenterBase> presenter_delegate_ = nullptr;
 
   WEB_UI_CONTROLLER_TYPE_DECL();
 };

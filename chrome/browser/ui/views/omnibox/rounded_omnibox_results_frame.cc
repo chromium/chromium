@@ -351,6 +351,10 @@ void RoundedOmniboxResultsFrame::Layout(PassKey) {
   gfx::Rect results_bounds(contents_host_->GetContentsBounds());
   results_bounds.Inset(GetContentInsets());
 
+  // Align webview horizontal bounds and positioning with the outer view.
+  results_bounds.set_x(0);
+  results_bounds.set_width(contents_host_->GetContentsBounds().width());
+
   // Workaround for 1px visual artifact. The WebUI requests a 1px minimum height
   // when empty, creating a visual artifact. Clamping to 0 hides the widget and
   // breaks future resize events. Instead, clamp to a 1x1 centered rect to keep

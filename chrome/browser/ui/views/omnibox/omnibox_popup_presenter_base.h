@@ -13,6 +13,7 @@
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
+#include "chrome/browser/ui/webui/cr_components/searchbox/searchbox_handler.h"
 #include "chrome/browser/ui/webui/searchbox/webui_omnibox_handler.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "ui/gfx/geometry/rect.h"
@@ -41,7 +42,8 @@ extern const void* kOmniboxWebUIPopupWidgetId;
 // this class is presentation only, i.e. Views and Widgets.  For omnibox logic
 // concerns and communication between native omnibox code and the WebUI code,
 // work with OmniboxPopupViewWebUI directly.
-class OmniboxPopupPresenterBase {
+class OmniboxPopupPresenterBase : public content::WebContentsObserver,
+                                  public SearchboxHandler::Delegate {
  public:
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kRoundedResultsFrame);
   // Arguments must outlast this.
@@ -52,7 +54,7 @@ class OmniboxPopupPresenterBase {
   OmniboxPopupPresenterBase(const OmniboxPopupPresenterBase&) = delete;
   OmniboxPopupPresenterBase& operator=(const OmniboxPopupPresenterBase&) =
       delete;
-  virtual ~OmniboxPopupPresenterBase();
+  ~OmniboxPopupPresenterBase() override;
 
   // Show or hide the popup widget with web view.
   virtual void Show();
@@ -64,6 +66,9 @@ class OmniboxPopupPresenterBase {
   // Caches the height of the WebUI content, which is then used to compute the
   // popup widget bounds.
   void OnContentHeightChanged(int content_height);
+
+  // Synchronize the popup widget's bounds to its anchor (location bar view).
+  void SynchronizePopupBounds();
 
   // Returns the currently "active" Popup content, whichever one is visible or
   // going to be visible within the popup.
@@ -82,6 +87,20 @@ class OmniboxPopupPresenterBase {
   OmniboxPopupPresenterDelegate& delegate() const {
     return *presenter_delegate_;
   }
+  // content::WebContentsObserver
+  void PrimaryPageChanged(content::Page& page) override;
+
+  // SearchboxHandler::Delegate:
+  void OnEmbeddedPermissionDialogChanged(bool is_showing,
+                                         const gfx::Size& prompt_size) override;
+
+  views::Widget* get_widget_for_testing() { return widget_.get(); }
+
+  void set_widget_for_testing(std::unique_ptr<views::Widget> widget) {
+    widget_ = std::move(widget);
+  }
+
+  const gfx::Size& get_minimum_size() const { return minimum_size_; }
 
   // Outermost view in the hierarchy; used for hit testing.
   views::View* GetOuterView();
@@ -124,9 +143,6 @@ class OmniboxPopupPresenterBase {
  private:
   friend class OmniboxPopupViewWebUITest;
   friend class OmniboxWebUiInteractiveTest;
-
-  // Synchronize the popup widget's bounds to its anchor (location bar view).
-  void SynchronizePopupBounds();
 
   void OnWidgetClosed(views::Widget::ClosedReason closed_reason);
 
@@ -183,6 +199,9 @@ class OmniboxPopupPresenterBase {
   // opened.
   // This should be reset at the beginning of the Show() method.
   bool has_logged_content_ready_since_open_ = false;
+
+  // Minimum size bounds of omnibox popup.
+  gfx::Size minimum_size_;
 
   base::WeakPtrFactory<OmniboxPopupPresenterBase> weak_factory_{this};
 };

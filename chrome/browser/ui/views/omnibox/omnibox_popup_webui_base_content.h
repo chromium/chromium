@@ -139,6 +139,19 @@ class OmniboxPopupWebUIBaseContent : public views::WebView,
   // Debounces the resize events to avoid flickering.
   base::OneShotTimer debounce_resize_timer_;
 
+  // True if a bounds synchronization task is already posted and pending.
+  // Used to avoid overwriting a user resize task with the lower priority task
+  // of updating popup bounds to match location bar bounds change.
+  bool has_pending_synchronize_ = false;
+
+  // The last known width of the location bar. Used to detect width changes,
+  // and if there are width changes, it implies the browser window has resized.
+  int last_location_bar_width_ = 0;
+
+  // If the browser window is currently being resized. If so, ignore bouncer for
+  // delay.
+  bool is_window_resizing_ = false;
+
   base::WeakPtrFactory<OmniboxPopupWebUIBaseContent> weak_factory_{this};
 };
 

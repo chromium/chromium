@@ -10528,6 +10528,7 @@ test("unit_tests") {
       "../browser/ui/views/media_router/cast_dialog_view_unittest.cc",
       "../browser/ui/views/media_router/web_contents_display_observer_view_unittest.cc",
       "../browser/ui/views/omnibox/omnibox_match_cell_view_unittest.cc",
+      "../browser/ui/views/omnibox/omnibox_popup_presenter_base_unittest.cc",
       "../browser/ui/views/omnibox/omnibox_result_view_unittest.cc",
       "../browser/ui/views/omnibox/omnibox_view_views_unittest.cc",
       "../browser/ui/views/omnibox/webui_readonly_omnibox_unittest.cc",

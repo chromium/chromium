@@ -227,6 +227,16 @@ void OmniboxPopupPresenterBase::OnContentHeightChanged(int content_height) {
 
 void OmniboxPopupPresenterBase::SynchronizePopupBounds() {
   if (widget_) {
+    // In unit tests, `location_bar_` may be null.
+    if (!location_bar_) {
+      gfx::Rect widget_bounds = widget_->GetRestoredBounds();
+      widget_bounds.set_width(
+          std::max(minimum_size_.width(), widget_bounds.width()));
+      widget_bounds.set_height(
+          std::max(minimum_size_.height(), widget_bounds.height()));
+      widget_->SetBounds(widget_bounds);
+      return;
+    }
     // The width is known, and is the basis for consistent web content rendering
     // so width is specified exactly; then only height adjusts dynamically.
     gfx::Rect widget_bounds = location_bar_->BoundsInScreen();
@@ -238,6 +248,14 @@ void OmniboxPopupPresenterBase::SynchronizePopupBounds() {
       widget_bounds.set_height(
           std::max(content_height_, widget_bounds.height()));
     }
+
+    // Set width and height to at least their minimums, or if larger,
+    // their calculated versions.
+    widget_bounds.set_width(
+        std::max(minimum_size_.width(), widget_bounds.width()));
+    widget_bounds.set_height(
+        std::max(minimum_size_.height(), widget_bounds.height()));
+
     widget_bounds.Inset(-RoundedOmniboxResultsFrame::GetShadowInsets());
     widget_->SetBounds(widget_bounds);
   }
@@ -263,6 +281,8 @@ void OmniboxPopupPresenterBase::SetWebUIContent(
     std::unique_ptr<OmniboxPopupWebUIBaseContent> webui_content) {
   omnibox_popup_webui_content_ =
       GetUIContainer()->AddChildView(std::move(webui_content));
+
+  Observe(omnibox_popup_webui_content_->GetWebContents());
   EnsureWidgetCreated();
 }
 
@@ -336,4 +356,43 @@ RoundedOmniboxResultsFrame* OmniboxPopupPresenterBase::GetResultsFrame() const {
 
 OmniboxController* OmniboxPopupPresenterBase::controller() const {
   return controller_;
+}
+
+// Avoid initialization order 'race conditions' by only interacting with WebUI
+// controller once it is connected (which is when the web contents updates/is
+// created).
+void OmniboxPopupPresenterBase::PrimaryPageChanged(content::Page& page) {
+  if (auto* content = GetWebUIContent()) {
+    auto* wrapper = content->contents_wrapper();
+    auto* webui_controller = wrapper ? wrapper->GetWebUIController() : nullptr;
+
+    if (webui_controller) {
+      webui_controller->SetPresenterDelegate(this);
+    }
+  }
+}
+
+void OmniboxPopupPresenterBase::OnEmbeddedPermissionDialogChanged(
+    bool is_showing,
+    const gfx::Size& prompt_size) {
+  gfx::Size new_minimum_size = is_showing ? prompt_size : gfx::Size();
+
+  if (minimum_size_ == new_minimum_size) {
+    return;
+  }
+
+  minimum_size_ = new_minimum_size;
+
+  // Use a PostTask to ensure the Mojo call stack is cleared
+  // to avoid 'reentrancy' error since having 2 `OnLocationBarBoundsChanged`
+  // on the call stack triggers that error.
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          [](base::WeakPtr<OmniboxPopupPresenterBase> presenter) {
+            if (presenter && presenter->GetWebUIContent()) {
+              presenter->GetWebUIContent()->OnLocationBarBoundsChanged();
+            }
+          },
+          weak_factory_.GetWeakPtr()));
 }

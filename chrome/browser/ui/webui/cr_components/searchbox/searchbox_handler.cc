@@ -83,6 +83,8 @@ const char* kReplyRotated180IconResourceName =
 }  // namespace searchbox_internal
 
 namespace {
+constexpr int kPromptHeightBuffer = 40;
+constexpr int kPromptWidthBuffer = 40;
 
 // TODO(niharm): convert back to constexpr char[] once feature is cleaned up
 const char* kAnswerCurrencyIconResourceName =
@@ -1327,7 +1329,18 @@ void SearchboxHandler::OnResultChanged(AutocompleteController* controller,
 void SearchboxHandler::OnEmbeddedPermissionPromptChanged(
     bool is_showing,
     const gfx::Size& prompt_size) {
+  gfx::Size size_with_buffer;
+  if (is_showing) {
+    size_with_buffer = gfx::Size(prompt_size.width() + kPromptWidthBuffer,
+                                 prompt_size.height() + kPromptHeightBuffer);
+  }
+
   page_->OnEmbeddedPermissionPromptChanged(is_showing, prompt_size);
+
+  if (omnibox_delegate_) {
+    omnibox_delegate_->OnEmbeddedPermissionDialogChanged(is_showing,
+                                                         size_with_buffer);
+  }
 }
 
 const AutocompleteMatch* SearchboxHandler::GetMatchWithUrl(
