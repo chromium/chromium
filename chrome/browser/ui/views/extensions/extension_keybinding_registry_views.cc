@@ -15,12 +15,12 @@
 
 ExtensionKeybindingRegistryViews::ExtensionKeybindingRegistryViews(
     Profile* profile,
-    views::FocusManager* focus_manager,
+    TabListInterface* tab_list_interface,
     ExtensionFilter extension_filter,
-    std::unique_ptr<Delegate> delegate)
+    views::FocusManager* focus_manager)
     : ExtensionKeybindingRegistry(profile,
-                                  extension_filter,
-                                  std::move(delegate)),
+                                  tab_list_interface,
+                                  extension_filter),
       profile_(profile),
       focus_manager_(focus_manager) {
   Init();

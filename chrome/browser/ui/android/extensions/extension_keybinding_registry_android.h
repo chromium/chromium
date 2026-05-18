@@ -9,6 +9,8 @@
 #include "chrome/browser/ui/extensions/extensions_toolbar_view_model.h"
 #include "ui/base/accelerators/accelerator.h"
 
+class TabListInterface;
+
 namespace content {
 class BrowserContext;
 }
@@ -26,6 +28,7 @@ class ExtensionKeybindingRegistryAndroid : public ExtensionKeybindingRegistry {
  public:
   explicit ExtensionKeybindingRegistryAndroid(
       content::BrowserContext* context,
+      TabListInterface* tab_list_interface,
       ExtensionsToolbarViewModel* toolbar_view_model);
 
   ExtensionKeybindingRegistryAndroid(

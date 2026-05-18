@@ -12,6 +12,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/extensions/extension_view_host.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/browser/ui/android/extensions/extension_action_delegate_android.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
@@ -56,6 +57,7 @@ ExtensionsToolbarAndroid::ExtensionsToolbarAndroid(
                                            *toolbar_view_model_),
       keybinding_registry_(std::make_unique<ExtensionKeybindingRegistryAndroid>(
           browser_->GetProfile(),
+          TabListInterface::From(browser),
           toolbar_view_model_.get())),
       java_object_(java_object) {
   toolbar_view_model_observation_.Observe(toolbar_view_model_.get());

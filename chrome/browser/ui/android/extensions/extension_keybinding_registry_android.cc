@@ -21,49 +21,14 @@
 #include "ui/events/platform_event.h"
 
 namespace extensions {
-namespace {
-
-class ExtensionKeybindingRegistryDelegateAndroid
-    : public ExtensionKeybindingRegistry::Delegate {
- public:
-  explicit ExtensionKeybindingRegistryDelegateAndroid(
-      content::BrowserContext* context)
-      : context_(context) {}
-
-  ExtensionKeybindingRegistryDelegateAndroid(
-      const ExtensionKeybindingRegistryDelegateAndroid& other) = delete;
-  ExtensionKeybindingRegistryDelegateAndroid& operator=(
-      const ExtensionKeybindingRegistryDelegateAndroid& other) = delete;
-
-  ~ExtensionKeybindingRegistryDelegateAndroid() override = default;
-
-  content::WebContents* GetWebContentsForExtension() override {
-    for (const TabModel* model : TabModelList::models()) {
-      if (model->GetProfile() != context_) {
-        continue;
-      }
-      if (model->IsActiveModel()) {
-        return model->GetActiveWebContents();
-      }
-    }
-
-    return nullptr;
-  }
-
- private:
-  const raw_ptr<content::BrowserContext> context_;
-};
-
-}  // namespace
 
 ExtensionKeybindingRegistryAndroid::ExtensionKeybindingRegistryAndroid(
     content::BrowserContext* context,
+    TabListInterface* tab_list_interface,
     ExtensionsToolbarViewModel* toolbar_view_model)
-    : ExtensionKeybindingRegistry(
-          context,
-          ExtensionFilter::ALL_EXTENSIONS,
-          std::make_unique<ExtensionKeybindingRegistryDelegateAndroid>(
-              context)),
+    : ExtensionKeybindingRegistry(context,
+                                  tab_list_interface,
+                                  ExtensionFilter::ALL_EXTENSIONS),
       toolbar_view_model_(toolbar_view_model) {
   Init();
 }

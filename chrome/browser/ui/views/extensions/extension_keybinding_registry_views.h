@@ -10,6 +10,7 @@
 #include "ui/base/accelerators/accelerator.h"
 
 class Profile;
+class TabListInterface;
 
 namespace extensions {
 class Extension;
@@ -30,9 +31,9 @@ class ExtensionKeybindingRegistryViews
       public ui::AcceleratorTarget {
  public:
   ExtensionKeybindingRegistryViews(Profile* profile,
-                                   views::FocusManager* focus_manager,
+                                   TabListInterface* tab_list_interface,
                                    ExtensionFilter extension_filter,
-                                   std::unique_ptr<Delegate> delegate);
+                                   views::FocusManager* focus_manager);
 
   ExtensionKeybindingRegistryViews(const ExtensionKeybindingRegistryViews&) =
       delete;

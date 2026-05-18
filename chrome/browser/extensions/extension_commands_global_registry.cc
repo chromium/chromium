@@ -67,8 +67,8 @@ gfx::AcceleratedWidget GetAcceleratedWidgetForContext(
 ExtensionCommandsGlobalRegistry::ExtensionCommandsGlobalRegistry(
     content::BrowserContext* context)
     : ExtensionKeybindingRegistry(context,
-                                  ExtensionKeybindingRegistry::ALL_EXTENSIONS,
-                                  nullptr),
+                                  /*tab_list_interface=*/nullptr,
+                                  ExtensionKeybindingRegistry::ALL_EXTENSIONS),
       browser_context_(context),
       registry_for_active_window_(nullptr) {
   Init();

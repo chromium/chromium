@@ -413,8 +413,9 @@ void ChromeNativeAppWindowViews::InitializeWindow(
   extension_keybinding_registry_ =
       std::make_unique<ExtensionKeybindingRegistryViews>(
           Profile::FromBrowserContext(app_window->browser_context()),
-          widget()->GetFocusManager(),
-          extensions::ExtensionKeybindingRegistry::PLATFORM_APPS_ONLY, nullptr);
+          /*tab_list_interface=*/nullptr,
+          extensions::ExtensionKeybindingRegistry::PLATFORM_APPS_ONLY,
+          widget()->GetFocusManager());
 }
 
 gfx::Image ChromeNativeAppWindowViews::GetCustomImage() {

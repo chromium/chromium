@@ -21,9 +21,10 @@
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
+class TabListInterface;
+
 namespace content {
 class BrowserContext;
-class WebContents;
 }
 
 namespace ui {
@@ -46,19 +47,13 @@ class ExtensionKeybindingRegistry : public CommandService::Observer,
     PLATFORM_APPS_ONLY
   };
 
-  class Delegate {
-   public:
-    virtual ~Delegate() = default;
-
-    // Returns the currently active WebContents, or nullptr if there is none.
-    virtual content::WebContents* GetWebContentsForExtension() = 0;
-  };
-
   // If `extension_filter` is not ALL_EXTENSIONS, only keybindings by
   // by extensions that match the filter will be registered.
+  // `tab_list_interface` is the one for the connected browser window
+  // instance. It must outlive this instance.
   ExtensionKeybindingRegistry(content::BrowserContext* context,
-                              ExtensionFilter extension_filter,
-                              std::unique_ptr<Delegate> delegate);
+                              TabListInterface* tab_list_interface,
+                              ExtensionFilter extension_filter);
 
   ExtensionKeybindingRegistry(const ExtensionKeybindingRegistry&) = delete;
   ExtensionKeybindingRegistry& operator=(const ExtensionKeybindingRegistry&) =
@@ -176,10 +171,10 @@ class ExtensionKeybindingRegistry : public CommandService::Observer,
 
   raw_ptr<content::BrowserContext> browser_context_;
 
+  const raw_ptr<TabListInterface> tab_list_interface_;
+
   // What extensions to register keybindings for.
   ExtensionFilter extension_filter_;
-
-  std::unique_ptr<Delegate> delegate_;
 
   // Maps an accelerator to a list of string pairs (extension id, command name)
   // for commands that have been registered. This keeps track of the targets for

@@ -230,31 +230,6 @@
 #include "chrome/browser/ui/overscroll_pref_manager.h"
 #endif  // defined(USE_AURA)
 
-namespace {
-
-class ExtensionKeybindingRegistryDelegateTabStrip final
-    : public extensions::ExtensionKeybindingRegistry::Delegate {
- public:
-  explicit ExtensionKeybindingRegistryDelegateTabStrip(
-      TabStripModel& tab_strip_model)
-      : tab_strip_model_(tab_strip_model) {}
-  ~ExtensionKeybindingRegistryDelegateTabStrip() override = default;
-
-  ExtensionKeybindingRegistryDelegateTabStrip(
-      const ExtensionKeybindingRegistryDelegateTabStrip& other) = delete;
-  ExtensionKeybindingRegistryDelegateTabStrip& operator=(
-      const ExtensionKeybindingRegistryDelegateTabStrip& other) = delete;
-
-  content::WebContents* GetWebContentsForExtension() override {
-    return tab_strip_model_->GetActiveWebContents();
-  }
-
- private:
-  const raw_ref<TabStripModel> tab_strip_model_;
-};
-
-}  // namespace
-
 BrowserWindowFeatures::BrowserWindowFeatures() = default;
 BrowserWindowFeatures::~BrowserWindowFeatures() = default;
 
@@ -825,10 +800,9 @@ void BrowserWindowFeatures::InitPostWindowConstruction(Browser* browser) {
   if (focus_manager) {
     extension_keybinding_registry_ =
         std::make_unique<ExtensionKeybindingRegistryViews>(
-            profile, focus_manager,
+            profile, TabListInterface::From(browser),
             extensions::ExtensionKeybindingRegistry::ALL_EXTENSIONS,
-            std::make_unique<ExtensionKeybindingRegistryDelegateTabStrip>(
-                *browser->GetTabStripModel()));
+            focus_manager);
   }
 
   // Initialize post-window dependent embedder features last.

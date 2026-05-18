@@ -12,6 +12,7 @@
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/extensions/tab_helper.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/tab_list/tab_list_interface.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/media_keys_listener_manager.h"
 #include "content/public/browser/web_contents.h"
@@ -40,11 +41,11 @@ namespace extensions {
 
 ExtensionKeybindingRegistry::ExtensionKeybindingRegistry(
     content::BrowserContext* context,
-    ExtensionFilter extension_filter,
-    std::unique_ptr<Delegate> delegate)
+    TabListInterface* tab_list_interface,
+    ExtensionFilter extension_filter)
     : browser_context_(context),
+      tab_list_interface_(tab_list_interface),
       extension_filter_(extension_filter),
-      delegate_(std::move(delegate)),
       shortcut_handling_suspended_(false) {
   extension_registry_observation_.Observe(
       ExtensionRegistry::Get(browser_context_));
@@ -185,12 +186,13 @@ void ExtensionKeybindingRegistry::CommandExecuted(
   args.Append(command);
 
   base::Value tab_value;
-  if (delegate_) {
+  if (tab_list_interface_) {
+    auto* active_tab = tab_list_interface_->GetActiveTab();
     content::WebContents* web_contents =
-        delegate_->GetWebContentsForExtension();
+        active_tab ? active_tab->GetContents() : nullptr;
     // Grant before sending the event so that the permission is granted before
     // the extension acts on the command. NOTE: The Global Commands handler does
-    // not set the delegate as it deals only with named commands (not
+    // not set the TabListInterface as it deals only with named commands (not
     // page/browser actions that are associated with the current page directly).
     ActiveTabPermissionGranter* granter =
         web_contents ? ActiveTabPermissionGranter::FromWebContents(web_contents)
