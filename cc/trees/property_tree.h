@@ -118,14 +118,16 @@ class CC_EXPORT PropertyTree {
   }
   T* MutableFindNodeFromElementId(ElementId id) {
     auto iterator = element_id_to_node_index_.find(id);
-    if (iterator == element_id_to_node_index_.end()) {
+    if (iterator == element_id_to_node_index_.end() ||
+        iterator->second == kInvalidPropertyNodeId) {
       return nullptr;
     }
     return &MutableNode(iterator->second);
   }
   const T* FindNodeFromElementId(ElementId id) const {
     auto iterator = element_id_to_node_index_.find(id);
-    if (iterator == element_id_to_node_index_.end()) {
+    if (iterator == element_id_to_node_index_.end() ||
+        iterator->second == kInvalidPropertyNodeId) {
       return nullptr;
     }
     return &Node(iterator->second);

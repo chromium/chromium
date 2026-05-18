@@ -2006,6 +2006,10 @@ gfx::PointF ScrollTree::GetScrollOffsetForScrollTimeline(
     }
   }
 
+  if (scroll_node.transform_id == kInvalidPropertyNodeId) {
+    return offset;
+  }
+
   const TransformNode& transform_node =
       property_trees()->transform_tree().Node(scroll_node.transform_id);
 

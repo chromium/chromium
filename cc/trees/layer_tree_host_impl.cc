@@ -5790,11 +5790,11 @@ void LayerTreeHostImpl::SetTreeLayerScrollOffsetMutated(
   }
 
   PropertyTrees* property_trees = tree->property_trees();
-  DCHECK_EQ(1u, property_trees->scroll_tree().element_id_to_node_index().count(
-                    element_id));
   const ScrollNode* scroll_node =
       property_trees->scroll_tree().FindNodeFromElementId(element_id);
-  CHECK(scroll_node);
+  if (!scroll_node) {
+    return;
+  }
   property_trees->scroll_tree_mutable().OnScrollOffsetAnimated(
       element_id, scroll_node->id, scroll_offset, tree);
 }

@@ -872,6 +872,22 @@ TEST(ScrollTreeTest, GetScrollOffsetForScrollTimelineNegativeOffset) {
   EXPECT_EQ(offset.y(), 0);
 }
 
+TEST(ScrollTreeTest, GetScrollOffsetForScrollTimelineInvalidTransform) {
+  PropertyTrees property_trees;
+  ScrollTree& scroll_tree = property_trees.scroll_tree_mutable();
+
+  ElementId element_id(5);
+  int scroll_node_id = scroll_tree.Insert(ScrollNode(), 0);
+  scroll_tree.MutableNode(scroll_node_id).transform_id = kInvalidPropertyNodeId;
+  scroll_tree.MutableNode(scroll_node_id).element_id = element_id;
+
+  scroll_tree.SetScrollOffset(element_id, gfx::PointF(0, 10));
+
+  gfx::PointF offset = scroll_tree.GetScrollOffsetForScrollTimeline(
+      scroll_tree.Node(scroll_node_id));
+  EXPECT_EQ(offset.y(), 10);
+}
+
 // Verify that when fractional scroll delta is turned off, that the remaining
 // fractional delta does not cause additional property changes.
 TEST(ScrollTreeTest, PushScrollUpdatesFromMainThreadIntegerDelta) {

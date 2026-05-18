@@ -446,6 +446,13 @@ TEST_P(LayerTreeHostImplTest, ScrollDeltaNoLayers) {
   ASSERT_EQ(commit_data->scrolls.size(), 0u);
 }
 
+TEST_P(LayerTreeHostImplTest, SetElementScrollOffsetMutatedNonExistentElement) {
+  ElementId element_id(12345);
+  // This should not crash even if the element doesn't exist in the scroll tree.
+  host_impl_->SetElementScrollOffsetMutated(element_id, ElementListType::ACTIVE,
+                                            gfx::PointF(10, 10));
+}
+
 TEST_P(LayerTreeHostImplTest, ScrollDeltaTreeButNoChanges) {
   LayerImpl* root = SetupDefaultRootLayer(gfx::Size(10, 10));
   {
