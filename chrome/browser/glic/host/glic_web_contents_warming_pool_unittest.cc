@@ -301,6 +301,13 @@ TEST_F(GlicWebContentsWarmingPoolTest, WarmedContainerFate_Used) {
 }
 
 TEST_F(GlicWebContentsWarmingPoolTest, WarmedContainerFate_Expired) {
+#if BUILDFLAG(IS_MAC)
+  // TODO(crbug.com/434660312): Re-enable on macOS 26 once issues with
+  // unexpected test timeout failures are resolved.
+  if (base::mac::MacOSMajorVersion() == 26) {
+    GTEST_SKIP() << "Disabled on macOS Tahoe.";
+  }
+#endif
   base::test::ScopedFeatureList local_feature_list;
   local_feature_list.InitAndDisableFeature(kGlicReloadWebContentsAfterExpiry);
 
