@@ -45,20 +45,16 @@ std::string AXOptional<id>::ToString() const {
   LOG(ERROR) << "Failed to parse " << property_node.name_or_value \
              << " to UIElement: " << msg;
 
+#define DICTIONARY_FAIL(property_node, msg)                       \
+  LOG(ERROR) << "Failed to parse " << property_node.name_or_value \
+             << " to NSDictionary: " << msg;
+
 #define TEXTMARKER_FAIL(property_node, msg)                                    \
   LOG(ERROR) << "Failed to parse " << property_node.name_or_value              \
              << " to AXTextMarker: " << msg                                    \
              << ". Expected format: {anchor, offset, affinity}, where anchor " \
                 "is :line_num, offset is integer, affinity is either down, "   \
                 "up or none";
-
-#define TEXTOPERATION_FAIL(property_node, msg)                                \
-  LOG(ERROR) << "Failed to parse " << property_node.name_or_value             \
-             << " to AXTextOperation dictionary: " << msg                     \
-             << ". Expected format: {type, ranges, [strings|string]}, where " \
-                "type the AXTextOperationType string, ranges is an array of " \
-                "text marker ranges and optionally strings is an array of "   \
-                "strings or string is a string.";
 
 AXCallStatementInvoker::AXCallStatementInvoker(
     const AXTreeIndexerMac* indexer,
@@ -71,7 +67,8 @@ AXCallStatementInvoker::AXCallStatementInvoker(id node,
 
 AXOptionalNSObject AXCallStatementInvoker::Invoke(
     const AXPropertyNode& property_node,
-    bool no_object_parse) const {
+    bool no_object_parse,
+    bool log_failure) const {
   // TODO(alexs): failing the tests when filters are incorrect is a good idea,
   // however crashing ax_dump tools on wrong input might be not. Figure out
   // a working solution that works nicely in both cases. Use LOG(ERROR) for now
@@ -123,8 +120,10 @@ AXOptionalNSObject AXCallStatementInvoker::Invoke(
     // attribute should be called for all nodes in the tree.
     if (IsDumpingTree()) {
       if (property_node.IsTarget()) {
-        LOG(ERROR) << "Failed to parse '" << property_node.name_or_value
-                   << "' target in '" << property_node.ToFlatString() << "'";
+        if (log_failure) {
+          LOG(ERROR) << "Failed to parse '" << property_node.name_or_value
+                     << "' target in '" << property_node.ToFlatString() << "'";
+        }
         return AXOptionalNSObject::Error();
       }
     } else if (no_object_parse) {
@@ -133,8 +132,10 @@ AXOptionalNSObject AXCallStatementInvoker::Invoke(
       // Object or scalar case.
       target = PropertyNodeToNSObject(property_node);
       if (!target) {
-        LOG(ERROR) << "Failed to parse '" << property_node.ToFlatString()
-                   << "' to NSObject";
+        if (log_failure) {
+          LOG(ERROR) << "Failed to parse '" << property_node.ToFlatString()
+                     << "' to NSObject";
+        }
         return AXOptionalNSObject::Error();
       }
     }
@@ -523,9 +524,11 @@ AXOptionalNSObject AXCallStatementInvoker::ParamFrom(
         PropertyNodeToTextMarkerRange(argument));
   }
 
-  if (attribute == "AXTextOperation") {  // Text operation params dictionary.
+  if (attribute == "AXTextOperation" ||
+      attribute == "AXSearchTextWithCriteria" ||
+      attribute == "AXSelectTextWithCriteria") {  // NSDictionary
     return AXOptionalNSObject::NotNullOrError(
-        PropertyNodeToTextOperationDictionary(argument));
+        PropertyNodeToDictionary(argument));
   }
 
   return AXOptionalNSObject::NotApplicable();
@@ -544,7 +547,7 @@ id AXCallStatementInvoker::PropertyNodeToNSObject(
     return value;
 
   // TextMarker
-  value = PropertyNodeToTextMarker(property_node, true);
+  value = PropertyNodeToTextMarker(property_node, false);
   if (value)
     return value;
 
@@ -554,7 +557,11 @@ id AXCallStatementInvoker::PropertyNodeToNSObject(
     return value;
 
   // Object array
-  return PropertyNodeToObjectArray(property_node, false);
+  value = PropertyNodeToObjectArray(property_node, false);
+  if (value)
+    return value;
+
+  return PropertyNodeToStringArray(property_node, false);
 }
 
 // NSNumber. Format: integer.
@@ -640,7 +647,8 @@ NSArray* AXCallStatementInvoker::PropertyNodeToObjectArray(
   NSMutableArray* array =
       [[NSMutableArray alloc] initWithCapacity:arraynode.arguments.size()];
   for (const auto& paramnode : arraynode.arguments) {
-    AXOptionalNSObject object = Invoke(paramnode);
+    AXOptionalNSObject object =
+        Invoke(paramnode, /* no_object_parse= */ false, log_failure);
     if (!object.IsNotNull()) {
       if (log_failure)
         ARRAY_FAIL(arraynode,
@@ -794,74 +802,42 @@ id AXCallStatementInvoker::PropertyNodeToTextMarkerRange(
   return AXTextMarkerRangeFrom(anchor_textmarker, focus_textmarker);
 }
 
-NSDictionary* AXCallStatementInvoker::PropertyNodeToTextOperationDictionary(
+// NSDictionary with string keys. Format: {key_1: value_1, key_2: value_2}
+NSDictionary* AXCallStatementInvoker::PropertyNodeToDictionary(
     const AXPropertyNode& dictnode,
     bool log_failure) const {
-  NSMutableDictionary* text_operation = [[NSMutableDictionary alloc] init];
   if (!dictnode.IsDict()) {
     if (log_failure) {
-      TEXTOPERATION_FAIL(dictnode, "dictionary is expected")
+      DICTIONARY_FAIL(dictnode, "dictionary is expected")
     }
     return nil;
   }
 
-  const AXPropertyNode* typenode = dictnode.FindKey("type");
-  if (!typenode) {
-    if (log_failure) {
-      TEXTOPERATION_FAIL(dictnode, "no type")
-    }
-    return nil;
-  }
-  NSString* type = PropertyNodeToString(*typenode);
-  if (!type) {
-    if (log_failure) {
-      TEXTOPERATION_FAIL(dictnode, "failed to parse type")
-    }
-    return nil;
-  }
-  text_operation[@"AXTextOperationType"] = type;
+  NSMutableDictionary* params = [[NSMutableDictionary alloc] init];
 
-  const AXPropertyNode* rangesnode = dictnode.FindKey("ranges");
-  if (!rangesnode) {
-    if (log_failure) {
-      TEXTOPERATION_FAIL(dictnode, "no ranges")
-    }
-    return nil;
-  }
-  NSArray* ranges = PropertyNodeToObjectArray(*rangesnode);
-  if (!ranges) {
-    if (log_failure) {
-      TEXTOPERATION_FAIL(dictnode, "failed to parse ranges")
-    }
-    return nil;
-  }
-  text_operation[@"AXTextOperationMarkerRanges"] = ranges;
+  for (const auto& paramnode : dictnode.arguments) {
+    NSString* key = base::SysUTF8ToNSString(paramnode.key);
 
-  const AXPropertyNode* stringsnode = dictnode.FindKey("strings");
-  if (stringsnode) {
-    NSArray* strings = PropertyNodeToStringArray(*stringsnode);
-    if (!strings) {
+    id value = PropertyNodeToNSObject(paramnode);
+    if (!value) {
+      value = PropertyNodeToInt(paramnode, /* log_failure= */ false);
+    }
+    if (!value) {
+      value = PropertyNodeToString(paramnode, /* log_failure= */ false);
+    }
+
+    if (!value) {
       if (log_failure) {
-        TEXTOPERATION_FAIL(dictnode, "failed to parse replacement strings")
+        DICTIONARY_FAIL(dictnode,
+                        "failed to parse value for key: " + paramnode.key);
       }
       return nil;
     }
-    text_operation[@"AXTextOperationIndividualReplacementStrings"] = strings;
-  } else {
-    const AXPropertyNode* stringnode = dictnode.FindKey("string");
-    if (stringnode) {
-      NSString* replacement_string = PropertyNodeToString(*stringnode);
-      if (!replacement_string) {
-        if (log_failure) {
-          TEXTOPERATION_FAIL(dictnode, "failed to parse replacement string")
-        }
-        return nil;
-      }
-      text_operation[@"AXTextOperationReplacementString"] = replacement_string;
-    }
+
+    params[key] = value;
   }
 
-  return text_operation;
+  return params;
 }
 
 }  // namespace ui

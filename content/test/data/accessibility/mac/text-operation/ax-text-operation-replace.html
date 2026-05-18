@@ -12,7 +12,7 @@
   ce1.AXValue
   range_1:= span1.AXTextMarkerRangeForUIElement(span1)
   range_2:= span2.AXTextMarkerRangeForUIElement(span2)
-  ce1.accessibilityAttributeValue(AXTextOperation, {type: TextOperationReplace, ranges: [range_2, range_1], strings: [Sleeping, HOPS]})
+  ce1.accessibilityAttributeValue(AXTextOperation, {AXTextOperationType: TextOperationReplace, AXTextOperationMarkerRanges: [range_2, range_1], AXTextOperationIndividualReplacementStrings: [Sleeping, HOPS]})
   wait for AXSelectedTextChanged on AXTextArea
   ce1.AXSelectedTextMarkerRange
   ce1.AXValue
@@ -30,7 +30,7 @@
   ce2.AXValue
   range_1:= span1.AXTextMarkerRangeForUIElement(span3)
   range_2:= span2.AXTextMarkerRangeForUIElement(span4)
-  ce2.accessibilityAttributeValue(AXTextOperation, {type: TextOperationReplace, ranges: [range_2, range_1], string: replaced})
+  ce2.accessibilityAttributeValue(AXTextOperation, {AXTextOperationType: TextOperationReplace, AXTextOperationMarkerRanges: [range_2, range_1], AXTextOperationReplacementString: replaced})
   wait for AXSelectedTextChanged on AXTextArea
   ce2.AXSelectedTextMarkerRange
   ce2.AXValue
@@ -47,7 +47,7 @@
   start:= textarea.AXTextMarkerRangeForUIElement(textarea).anchor
   end:= textarea.AXNextWordEndTextMarkerForTextMarker(start)
   range:= textarea.AXTextMarkerRangeForUnorderedTextMarkers([start, end])
-  textarea.accessibilityAttributeValue(AXTextOperation, {type: TextOperationReplace, ranges: [range], string: Hey})
+  textarea.accessibilityAttributeValue(AXTextOperation, {AXTextOperationType: TextOperationReplace, AXTextOperationMarkerRanges: [range], AXTextOperationReplacementString: Hey})
   wait for AXSelectedTextChanged on AXTextArea
   textarea.AXSelectedTextMarkerRange
   textarea.AXValue
@@ -64,7 +64,7 @@
   end:= input.AXTextMarkerRangeForUIElement(input).focus
   start:= input.AXPreviousWordStartTextMarkerForTextMarker(end)
   range:= input.AXTextMarkerRangeForUnorderedTextMarkers([start, end])
-  input.accessibilityAttributeValue(AXTextOperation, {type: TextOperationReplace, ranges: [range], strings: [GHI]})
+  input.accessibilityAttributeValue(AXTextOperation, {AXTextOperationType: TextOperationReplace, AXTextOperationMarkerRanges: [range], AXTextOperationIndividualReplacementStrings: [GHI]})
   wait for AXSelectedTextChanged on AXTextField
   input.AXSelectedTextMarkerRange
   input.AXValue

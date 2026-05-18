@@ -9,7 +9,7 @@
   contenteditable.AXValue
   range_1:= span1.AXTextMarkerRangeForUIElement(span1)
   range_2:= span2.AXTextMarkerRangeForUIElement(span2)
-  contenteditable.accessibilityAttributeValue(AXTextOperation, {type: Capitalize, ranges: [range_2, range_1]})
+  contenteditable.accessibilityAttributeValue(AXTextOperation, {AXTextOperationType: Capitalize, AXTextOperationMarkerRanges: [range_2, range_1]})
   wait for AXSelectedTextChanged on AXTextArea
   contenteditable.AXSelectedTextMarkerRange
   contenteditable.AXValue
@@ -23,7 +23,7 @@
   start:= textarea.AXTextMarkerRangeForUIElement(textarea).anchor
   end:= textarea.AXNextWordEndTextMarkerForTextMarker(start)
   range:= textarea.AXTextMarkerRangeForUnorderedTextMarkers([start, end])
-  textarea.accessibilityAttributeValue(AXTextOperation, {type: Capitalize, ranges: [range]})
+  textarea.accessibilityAttributeValue(AXTextOperation, {AXTextOperationType: Capitalize, AXTextOperationMarkerRanges: [range]})
   wait for AXSelectedTextChanged on AXTextArea
   textarea.AXSelectedTextMarkerRange
   textarea.AXValue
@@ -37,7 +37,7 @@
   end:= input.AXTextMarkerRangeForUIElement(input).focus
   start:= input.AXPreviousWordStartTextMarkerForTextMarker(end)
   range:= input.AXTextMarkerRangeForUnorderedTextMarkers([start, end])
-  input.accessibilityAttributeValue(AXTextOperation, {type: Capitalize, ranges: [range]})
+  input.accessibilityAttributeValue(AXTextOperation, {AXTextOperationType: Capitalize, AXTextOperationMarkerRanges: [range]})
   wait for AXSelectedTextChanged on AXTextField
   input.AXSelectedTextMarkerRange
   input.AXValue

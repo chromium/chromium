@@ -7,7 +7,7 @@ contenteditable.accessibilityParameterizedAttributeNames.has(AXTextOperation)='y
 contenteditable.AXValue='The quick brown fox Jumps over the Lazy dog'
 range_1={anchor: {:5, 0, down}, focus: {:5, 5, down}}
 range_2={anchor: {:8, 0, down}, focus: {:8, 4, down}}
-contenteditable.accessibilityAttributeValue(AXTextOperation, {type: Lowercase, ranges: [range_2, range_1]})=['lazy', 'jumps']
+contenteditable.accessibilityAttributeValue(AXTextOperation, {AXTextOperationType: Lowercase, AXTextOperationMarkerRanges: [range_2, range_1]})=['lazy', 'jumps']
 AXSelectedTextChanged on AXTextArea AXValue='The quick brown fox jumps over the lazy dog' AXTextSelectionDirection=AXTextSelectionDirectionUnknown AXTextSelectionGranularity=AXTextSelectionGranularityUnknown AXTextStateChangeType=AXTextStateChangeTypeSelectionMove
 contenteditable.AXSelectedTextMarkerRange={anchor: {:6, 5, down}, focus: {:6, 5, down}}
 contenteditable.AXValue='The quick brown fox jumps over the lazy dog'
@@ -19,7 +19,7 @@ textarea.AXValue='Hello, World!'
 start={:11, 0, down}
 end={:11, 5, down}
 range={anchor: {:11, 0, down}, focus: {:11, 5, down}}
-textarea.accessibilityAttributeValue(AXTextOperation, {type: Lowercase, ranges: [range]})=['hello']
+textarea.accessibilityAttributeValue(AXTextOperation, {AXTextOperationType: Lowercase, AXTextOperationMarkerRanges: [range]})=['hello']
 AXSelectedTextChanged on AXTextArea AXValue='hello, World!' AXTextSelectionDirection=AXTextSelectionDirectionUnknown AXTextSelectionGranularity=AXTextSelectionGranularityUnknown AXTextStateChangeType=AXTextStateChangeTypeSelectionMove
 textarea.AXSelectedTextMarkerRange={anchor: {:11, 5, down}, focus: {:11, 5, down}}
 textarea.AXValue='hello, World!'
@@ -31,7 +31,7 @@ input.AXValue='abc dEf'
 end={:12, 7, down}
 start={:12, 4, down}
 range={anchor: {:12, 4, down}, focus: {:12, 7, down}}
-input.accessibilityAttributeValue(AXTextOperation, {type: Lowercase, ranges: [range]})=['def']
+input.accessibilityAttributeValue(AXTextOperation, {AXTextOperationType: Lowercase, AXTextOperationMarkerRanges: [range]})=['def']
 AXSelectedTextChanged on AXTextField AXValue='abc def' AXTextSelectionDirection=AXTextSelectionDirectionUnknown AXTextSelectionGranularity=AXTextSelectionGranularityUnknown AXTextStateChangeType=AXTextStateChangeTypeSelectionMove
 input.AXSelectedTextMarkerRange={anchor: {:12, 7, down}, focus: {:12, 7, down}}
 input.AXValue='abc def'

@@ -10,7 +10,7 @@ ce1.accessibilityParameterizedAttributeNames.has(AXTextOperation)='yes'
 ce1.AXValue='The quick brown fox jumps over the lazy dog'
 range_1={anchor: {:5, 0, down}, focus: {:5, 5, down}}
 range_2={anchor: {:8, 0, down}, focus: {:8, 4, down}}
-ce1.accessibilityAttributeValue(AXTextOperation, {type: TextOperationReplace, ranges: [range_2, range_1], strings: [Sleeping, HOPS]})=['sleeping', 'HOPS']
+ce1.accessibilityAttributeValue(AXTextOperation, {AXTextOperationType: TextOperationReplace, AXTextOperationMarkerRanges: [range_2, range_1], AXTextOperationIndividualReplacementStrings: [Sleeping, HOPS]})=['sleeping', 'HOPS']
 AXSelectedTextChanged on AXTextArea AXValue='The quick brown fox HOPS over the sleeping dog' AXTextSelectionDirection=AXTextSelectionDirectionUnknown AXTextSelectionGranularity=AXTextSelectionGranularityUnknown AXTextStateChangeType=AXTextStateChangeTypeSelectionMove
 ce1.AXSelectedTextMarkerRange={anchor: {:6, 4, down}, focus: {:6, 4, down}}
 ce1.AXValue='The quick brown fox HOPS over the sleeping dog'
@@ -26,7 +26,7 @@ ce2.accessibilityParameterizedAttributeNames.has(AXTextOperation)='yes'
 ce2.AXValue='The quick brown fox jumps over the lazy dog'
 range_1={anchor: {:13, 0, down}, focus: {:13, 3, down}}
 range_2={anchor: {:16, 0, down}, focus: {:16, 3, down}}
-ce2.accessibilityAttributeValue(AXTextOperation, {type: TextOperationReplace, ranges: [range_2, range_1], string: replaced})=['replaced', 'Replaced']
+ce2.accessibilityAttributeValue(AXTextOperation, {AXTextOperationType: TextOperationReplace, AXTextOperationMarkerRanges: [range_2, range_1], AXTextOperationReplacementString: replaced})=['replaced', 'Replaced']
 AXSelectedTextChanged on AXTextArea AXValue='Replaced quick brown replaced jumps over the lazy dog' AXTextSelectionDirection=AXTextSelectionDirectionUnknown AXTextSelectionGranularity=AXTextSelectionGranularityUnknown AXTextStateChangeType=AXTextStateChangeTypeSelectionMove
 ce2.AXSelectedTextMarkerRange={anchor: {:14, 8, down}, focus: {:14, 8, down}}
 ce2.AXValue='Replaced quick brown replaced jumps over the lazy dog'
@@ -41,7 +41,7 @@ textarea.AXValue='Hello, World!'
 start={:19, 0, down}
 end={:19, 5, down}
 range={anchor: {:19, 0, down}, focus: {:19, 5, down}}
-textarea.accessibilityAttributeValue(AXTextOperation, {type: TextOperationReplace, ranges: [range], string: Hey})=['Hey']
+textarea.accessibilityAttributeValue(AXTextOperation, {AXTextOperationType: TextOperationReplace, AXTextOperationMarkerRanges: [range], AXTextOperationReplacementString: Hey})=['Hey']
 AXSelectedTextChanged on AXTextArea AXValue='Hey, World!' AXTextSelectionDirection=AXTextSelectionDirectionUnknown AXTextSelectionGranularity=AXTextSelectionGranularityUnknown AXTextStateChangeType=AXTextStateChangeTypeSelectionMove
 textarea.AXSelectedTextMarkerRange={anchor: {:19, 3, down}, focus: {:19, 3, down}}
 textarea.AXValue='Hey, World!'
@@ -56,7 +56,7 @@ input.AXValue='abc def'
 end={:20, 7, down}
 start={:20, 4, down}
 range={anchor: {:20, 4, down}, focus: {:20, 7, down}}
-input.accessibilityAttributeValue(AXTextOperation, {type: TextOperationReplace, ranges: [range], strings: [GHI]})=['GHI']
+input.accessibilityAttributeValue(AXTextOperation, {AXTextOperationType: TextOperationReplace, AXTextOperationMarkerRanges: [range], AXTextOperationIndividualReplacementStrings: [GHI]})=['GHI']
 AXSelectedTextChanged on AXTextField AXValue='abc GHI' AXTextSelectionDirection=AXTextSelectionDirectionUnknown AXTextSelectionGranularity=AXTextSelectionGranularityUnknown AXTextStateChangeType=AXTextStateChangeTypeSelectionMove
 input.AXSelectedTextMarkerRange={anchor: {:20, 7, down}, focus: {:20, 7, down}}
 input.AXValue='abc GHI'

@@ -30,7 +30,8 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXCallStatementInvoker final {
 
   // Invokes an attribute matching a property filter.
   AXOptionalNSObject Invoke(const AXPropertyNode& property_node,
-                            bool no_object_parse = false) const;
+                            bool no_object_parse = false,
+                            bool log_failure = true) const;
 
  private:
   // Returns true if the invoker is instantiated to invoke an ax_script
@@ -106,9 +107,8 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXCallStatementInvoker final {
   id PropertyNodeToTextMarkerRange(const AXPropertyNode&,
                                    bool log_failure = true) const;
 
-  NSDictionary* PropertyNodeToTextOperationDictionary(
-      const AXPropertyNode&,
-      bool log_failure = true) const;
+  NSDictionary* PropertyNodeToDictionary(const AXPropertyNode&,
+                                         bool log_failure = true) const;
 
   gfx::NativeViewAccessible LineIndexToNode(
       const std::u16string line_index) const;
