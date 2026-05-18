@@ -10,6 +10,7 @@
 #include "base/test/bind.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -382,7 +383,16 @@ IN_PROC_BROWSER_TEST_F(WebUIBrowserSurfaceEmbedPixelTest,
   }));
 }
 
-IN_PROC_BROWSER_TEST_F(WebUIBrowserTest, CloseTabDoesNotMakeRemainingTabBlank) {
+// TODO(crbug.com/513867973): Re-enable this test once the bug is fixed.
+#if BUILDFLAG(IS_LINUX) && defined(MEMORY_SANITIZER)
+#define MAYBE_CloseTabDoesNotMakeRemainingTabBlank \
+  DISABLED_CloseTabDoesNotMakeRemainingTabBlank
+#else
+#define MAYBE_CloseTabDoesNotMakeRemainingTabBlank \
+  CloseTabDoesNotMakeRemainingTabBlank
+#endif
+IN_PROC_BROWSER_TEST_F(WebUIBrowserTest,
+                       MAYBE_CloseTabDoesNotMakeRemainingTabBlank) {
   auto* window = browser()->window();
   ASSERT_TRUE(window);
 
