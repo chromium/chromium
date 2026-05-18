@@ -323,8 +323,8 @@ TEST_P(AutofillAiMayPerformActionTest, SignInPending) {
       .identity_test_environment()
       .UpdatePersistentErrorOfRefreshTokenForAccount(
           account.account_id,
-          GoogleServiceAuthError(
-              GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS));
+          GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
+              GoogleServiceAuthError::InvalidGaiaCredentialsReason::UNKNOWN));
 
   std::string debug_message;
   const bool is_allowed =

@@ -111,8 +111,9 @@ TEST_F(UserInfoFetcherTest, FetchResponseNotParsableToJSON) {
 
   // Fake a successful fetch - should result in the data being parsed and
   // the values passed off to the success callback.
-  EXPECT_CALL(delegate, OnGetUserInfoFailure(GoogleServiceAuthError(
-                            GoogleServiceAuthError::CONNECTION_FAILED)));
+  EXPECT_CALL(delegate,
+              OnGetUserInfoFailure(GoogleServiceAuthError::FromConnectionError(
+                  net::ERR_FAILED)));
   EXPECT_TRUE(loader_factory_.SimulateResponseForPendingRequest(
       kUserInfoUrl, "<content>not json</content>"));
   histogram_tester.ExpectUniqueSample(
@@ -132,8 +133,9 @@ TEST_F(UserInfoFetcherTest, FetchResponseNotDict) {
 
   // Fake a successful fetch - should result in the data being parsed and
   // the values passed off to the success callback.
-  EXPECT_CALL(delegate, OnGetUserInfoFailure(GoogleServiceAuthError(
-                            GoogleServiceAuthError::CONNECTION_FAILED)));
+  EXPECT_CALL(delegate,
+              OnGetUserInfoFailure(GoogleServiceAuthError::FromConnectionError(
+                  net::ERR_FAILED)));
   EXPECT_TRUE(loader_factory_.SimulateResponseForPendingRequest(kUserInfoUrl,
                                                                 "[1, 2, 3]"));
   histogram_tester.ExpectUniqueSample(

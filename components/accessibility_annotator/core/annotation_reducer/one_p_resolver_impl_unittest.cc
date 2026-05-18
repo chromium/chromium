@@ -105,7 +105,7 @@ class OnePResolverImplTest : public ::testing::Test {
   void IssueTokenError() {
     identity_test_environment_
         .WaitForAccessTokenRequestIfNecessaryAndRespondWithError(
-            GoogleServiceAuthError(GoogleServiceAuthError::CONNECTION_FAILED));
+            GoogleServiceAuthError::FromConnectionError(net::ERR_FAILED));
   }
 
   void ExpectModelExecution(

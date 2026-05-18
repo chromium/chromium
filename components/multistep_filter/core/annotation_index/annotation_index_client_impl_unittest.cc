@@ -604,7 +604,7 @@ TEST_F(AnnotationIndexClientImplTest, ExecuteRequest_OAuthFailure) {
       kTestNavigationId, kTestDomain);
 
   identity_test_env_.WaitForAccessTokenRequestIfNecessaryAndRespondWithError(
-      GoogleServiceAuthError(GoogleServiceAuthError::CONNECTION_FAILED));
+      GoogleServiceAuthError::FromConnectionError(net::ERR_FAILED));
 
   // Should fail after token fetch failure, without sending request.
   EXPECT_EQ(test_url_loader_factory_.NumPending(), 0);

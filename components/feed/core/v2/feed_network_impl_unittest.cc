@@ -616,8 +616,8 @@ TEST_F(FeedNetworkTest, ShouldIncludeAPIKeyForAuthError) {
                                    GetTestFeedRequest(), account_info(),
                                    receiver.Bind());
   identity_env()->WaitForAccessTokenRequestIfNecessaryAndRespondWithError(
-      GoogleServiceAuthError(
-          GoogleServiceAuthError::State::INVALID_GAIA_CREDENTIALS));
+      GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
+          GoogleServiceAuthError::InvalidGaiaCredentialsReason::UNKNOWN));
 
   network::ResourceRequest resource_request =
       RespondToQueryRequest(GetTestFeedResponse(), net::HTTP_OK);

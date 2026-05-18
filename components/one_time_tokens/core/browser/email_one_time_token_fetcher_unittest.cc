@@ -64,7 +64,7 @@ class EmailOneTimeTokenFetcherTest : public testing::Test {
 
   void WaitForAccessTokenRequestAndRespondWithError() {
     identity_test_env_->WaitForAccessTokenRequestIfNecessaryAndRespondWithError(
-        GoogleServiceAuthError(GoogleServiceAuthError::CONNECTION_FAILED));
+        GoogleServiceAuthError::FromConnectionError(net::ERR_FAILED));
   }
 
   std::string CreateValidResponseString() {
