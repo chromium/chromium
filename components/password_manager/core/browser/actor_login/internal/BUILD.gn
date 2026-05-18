@@ -19,6 +19,8 @@ source_set("delegate") {
     "actor_login_get_credentials_helper.h",
     "actor_login_metrics.cc",
     "actor_login_metrics.h",
+    "actor_login_metrics_helper.cc",
+    "actor_login_metrics_helper.h",
     "actor_login_metrics_helper_interface.h",
     "actor_login_password_credentials_fetcher.cc",
     "actor_login_password_credentials_fetcher.h",
@@ -42,6 +44,7 @@ source_set("delegate") {
     "//components/strings:components_strings",
     "//components/url_formatter",
     "//services/metrics/public/cpp:metrics_cpp",
+    "//services/metrics/public/cpp:ukm_builders",
     "//third_party/re2",
     "//url",
   ]

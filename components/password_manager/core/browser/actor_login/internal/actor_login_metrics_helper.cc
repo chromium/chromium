@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/password_manager/actor_login/internal/actor_login_metrics_helper.h"
+#include "components/password_manager/core/browser/actor_login/internal/actor_login_metrics_helper.h"
 
 #include "base/metrics/histogram_functions.h"
 #include "services/metrics/public/cpp/metrics_utils.h"

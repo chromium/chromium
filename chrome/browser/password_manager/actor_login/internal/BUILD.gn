@@ -9,8 +9,6 @@ source_set("internal") {
     "actor_login_delegate_impl.h",
     "actor_login_federated_credentials_fetcher.cc",
     "actor_login_federated_credentials_fetcher.h",
-    "actor_login_metrics_helper.cc",
-    "actor_login_metrics_helper.h",
     "actor_login_siwg_controller.cc",
     "actor_login_siwg_controller.h",
   ]
