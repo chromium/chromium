@@ -21,6 +21,57 @@
   outline: none;
 }
 
+:host-context([webui-refresh-2026]) {
+  --controlled-by-active-color: var(--cr-primary-text-color);
+  --controlled-by-active-link-color: var(--cr-link-color);
+  --controlled-by-inactive-color: var(--cr-secondary-text-color);
+
+  #date {
+    color: var(--cr-primary-text-color);
+  }
+
+  #action-icon-buttons {
+    --iron-icon-fill-color: var(--cr-secondary-text-color);
+  }
+
+  #content.is-active {
+    background-color: var(--color-download-manager-item-background);
+  }
+
+  #fileLink {
+    color: var(--cr-link-color);
+  }
+
+  #content:not(.is-active) {
+    background-color: var(--color-download-manager-item-background-inactive);
+    border: none;
+    color: var(--color-download-manager-item-inactive);
+  }
+
+  #details {
+    border: none;
+  }
+
+  #tag {
+    color: var(--cr-secondary-text-color);
+  }
+
+  .description,
+  .is-active .description[icon-color=''] {
+    color: var(--cr-primary-text-color);
+  }
+
+  #file-icon-wrapper cr-icon[icon-color='red'],
+  .description[description-color='red'] {
+    color: var(--color-download-manager-item-error);
+  }
+
+  #progress {
+    --cr-progress-active-color: var(--color-download-manager-progress);
+    --cr-progress-container-color: var(--md-background-color);
+  }
+}
+
 @media (prefers-color-scheme: dark) {
   :host {
     --controlled-by-active-color: inherit;
@@ -146,10 +197,6 @@ cr-button {
 
 #file-icon-wrapper cr-icon[icon-color='red'] {
   color: var(--google-red-700);
-}
-
-#file-icon-wrapper cr-icon[icon-color='yellow'] {
-  color: var(--google-yellow-500);
 }
 
 @media (prefers-color-scheme: dark) {

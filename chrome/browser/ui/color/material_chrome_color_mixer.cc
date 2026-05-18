@@ -104,6 +104,13 @@ void AddMaterialChromeColorMixer(ui::ColorProvider* provider,
   mixer[kColorDownloadToolbarButtonAnimationForeground] =
       AdjustHighlightColorForContrast(ui::kColorSysPrimary, ui::kColorSysBase);
 
+  // Download History WebUI colors.
+  mixer[kColorDownloadManagerItemError] = {ui::kColorSysError};
+  mixer[kColorDownloadManagerItemBackground] = {ui::kColorSysSurface};
+  mixer[kColorDownloadManagerItemBackgroundInactive] = {
+      ui::kColorSysStateDisabledContainer};
+  mixer[kColorDownloadManagerProgress] = {ui::kColorSysPrimary};
+
   // Extensions colors.
   mixer[kColorExtensionsMenuText] = {ui::kColorSysOnSurface};
   mixer[kColorExtensionsMenuSecondaryText] = {ui::kColorSysOnSurfaceSubtle};

@@ -127,7 +127,7 @@
   E_CPONLY(kColorDesktopMediaTabListPreviewBackground) \
   /* Desktop to iOS promo bubble. */ \
   E_CPONLY(kColorDesktopToIOSPromoFooterSubtitleLabel) \
-  /* Download bubble and toolbar button colors. */\
+  /* Download bubble and toolbar button colors. */ \
   E_CPONLY(kColorDownloadItemIconDangerous) \
   E_CPONLY(kColorDownloadItemTextDangerous) \
   E_CPONLY(kColorDownloadItemIconWarning) \
@@ -142,6 +142,11 @@
   E_CPONLY(kColorDownloadToolbarButtonAnimationForeground) \
   E_CPONLY(kColorDownloadToolbarButtonInactive) \
   E_CPONLY(kColorDownloadToolbarButtonRingBackground) \
+  /* Download History WebUI colors. */ \
+  E_CPONLY(kColorDownloadManagerItemError) \
+  E_CPONLY(kColorDownloadManagerItemBackground) \
+  E_CPONLY(kColorDownloadManagerItemBackgroundInactive) \
+  E_CPONLY(kColorDownloadManagerProgress) \
   /* Extension colors. */ \
   E_CPONLY(kColorExtensionDialogBackground) \
   E_CPONLY(kColorExtensionIconBadgeBackgroundDefault) \

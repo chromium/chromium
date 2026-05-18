@@ -59,6 +59,12 @@ cr-toast-manager {
   display: none;
 }
 
+:host-context([webui-refresh-2026]) {
+  #no-downloads {
+    color: var(--cr-secondary-text-color);
+  }
+}
+
 #no-downloads {
   align-items: center;
   color: #6e6e6e;
