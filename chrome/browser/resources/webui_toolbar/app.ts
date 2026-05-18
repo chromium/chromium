@@ -25,7 +25,6 @@ import {BrowserProxyImpl, INVALID_NAVIGATION_CONTROLS_STATE_LISTENER_HANDLE} fro
 import type {BrowserProxy, IconUpdate, NavigationControlsState, NavigationControlsStateListenerHandle} from './browser_proxy.js';
 import {IconTable} from './icon_table.js';
 import {MetricsRecorder} from './metrics_recorder.js';
-import {SplitTabActiveLocation} from './toolbar_ui_api_data_model.mojom-webui.js';
 // clang-format off
 // Helper so tests can find what they needed when optimization is on.
 // This should probably be a separate file, but rollup support only
@@ -35,13 +34,18 @@ import {
   IconType,
   LhsChipIdentifier,
   OmniboxTextColor,
+  PermissionAction,
+  PermissionChipTheme,
+  PermissionPromptStyle,
+  SplitTabActiveLocation,
 } from './toolbar_ui_api_data_model.mojom-webui.js';
-import type {LocationBarState, OmniboxAction} from './toolbar_ui_api_data_model.mojom-webui.js';
+import type {OmniboxAction, LocationBarState, PermissionChipState} from './toolbar_ui_api_data_model.mojom-webui.js';
 import {ContentSettingIconElement} from './content_setting_icon.js';
 import {ContentSettingsIconsElement} from './content_settings_icons.js';
 import type {IconFromTableElement} from './icon_from_table.js';
 import {LocationBarElement} from './location_bar.js';
 import {LocationIconElement} from './location_icon.js';
+import {PermissionChipElement} from './permission_chip.js';
 import {ReadonlyOmniboxElement} from './readonly_omnibox.js';
 
 export {
@@ -55,6 +59,10 @@ export {
   LocationBarElement,
   LocationIconElement,
   OmniboxTextColor,
+  PermissionAction,
+  PermissionChipElement,
+  PermissionChipTheme,
+  PermissionPromptStyle,
   ReadonlyOmniboxElement,
   TrackedElementManager,
 };
@@ -62,6 +70,7 @@ export type {
   IconFromTableElement,
   LocationBarState,
   OmniboxAction,
+  PermissionChipState,
 };
 // clang-format on
 

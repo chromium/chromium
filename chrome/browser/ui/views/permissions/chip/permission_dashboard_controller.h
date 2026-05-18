@@ -9,10 +9,12 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
+#include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ui/views/location_bar/content_setting_image_view.h"
 #include "chrome/browser/ui/views/permissions/chip/permission_chip_interface.h"
 #include "content/public/browser/global_routing_id.h"
+#include "ui/views/mouse_constants.h"
 #include "ui/views/view_tracker.h"
 
 class LocationBar;
@@ -73,6 +75,8 @@ class PermissionDashboardController : public PermissionChipInterface::Observer {
 
   void HideIndicatorsForTesting() { HideIndicators(); }
 
+  void SetSuppressionThresholdForTesting(base::TimeDelta threshold);
+
  private:
   void StartCollapseTimer();
   void Collapse(bool hide);
@@ -114,6 +118,11 @@ class PermissionDashboardController : public PermissionChipInterface::Observer {
   // again. This flag is necessary because the bubble gets dismissed before the
   // button handles the mouse release event.
   bool should_suppress_reopening_page_info_ = false;
+
+  base::TimeTicks last_page_info_bubble_close_time_;
+
+  base::TimeDelta suppression_threshold_ =
+      views::kMinimumTimeBetweenButtonClicks;
 
   base::ScopedObservation<PermissionChipInterface,
                           PermissionChipInterface::Observer>

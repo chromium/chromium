@@ -191,11 +191,28 @@ void WebUILocationBar::UpdateContentSettingsIcons() {
   if (!web_contents) {
     return;
   }
+
+  bool permission_dashboard_changed = false;
+  if (base::FeatureList::IsEnabled(
+          content_settings::features::kLeftHandSideActivityIndicators)) {
+    ContentSettingImageModel* media_stream_model =
+        content_setting_image_control_.GetModel(
+            ContentSettingImageModel::ImageType::kMediaStream);
+    if (media_stream_model) {
+      permission_dashboard_changed |=
+          permission_dashboard_controller_->Update(media_stream_model);
+    }
+  }
+
   if (!toolbar_delegate_) {
     return;
   }
   toolbar_delegate_->OnContentSettingChanged(
       content_setting_image_control_.ProcessContentSettingState(web_contents));
+
+  if (permission_dashboard_changed) {
+    UpdateLhsChipsState();
+  }
 }
 
 void WebUILocationBar::SaveStateToContents(content::WebContents* contents) {
@@ -479,7 +496,7 @@ void WebUILocationBar::OnLhsChipMousePressed(
         (PageInfoBubbleView::GetShownBubbleType() !=
          PageInfoBubbleView::BUBBLE_NONE) ||
         (base::TimeTicks::Now() - last_page_info_bubble_close_time_ <
-         views::kMinimumTimeBetweenButtonClicks);
+         suppression_threshold_);
   } else if (identifier ==
              toolbar_ui_api::mojom::LhsChipIdentifier::kPermissionRequest) {
     permission_dashboard_->request_chip()->OnMousePressed();
@@ -560,6 +577,11 @@ void WebUILocationBar::ShowPageInfoBubble() {
       PageInfoBubbleView::CreatePageInfoBubble(std::move(specification));
   bubble->SetHighlightedElement(kLocationIconElementId);
   bubble->GetWidget()->Show();
+}
+
+void WebUILocationBar::SetSuppressionThresholdForTesting(
+    base::TimeDelta threshold) {
+  suppression_threshold_ = threshold;
 }
 
 void WebUILocationBar::OnLhsChipPointerEntered(

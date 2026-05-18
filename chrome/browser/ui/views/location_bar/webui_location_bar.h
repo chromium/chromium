@@ -17,6 +17,7 @@
 #include "components/browser_apis/ui_controllers/toolbar/icon_handle.h"
 #include "components/browser_apis/ui_controllers/toolbar/toolbar_ui_api_data_model.mojom.h"
 #include "ui/base/interaction/element_tracker.h"
+#include "ui/views/mouse_constants.h"
 
 class Browser;
 class OmniboxController;
@@ -115,6 +116,12 @@ class WebUILocationBar : public LocationBar,
     return omnibox_popup_view_.get();
   }
 
+  void SetSuppressionThresholdForTesting(base::TimeDelta threshold);
+
+  PermissionDashboardController* permission_dashboard_controller() {
+    return permission_dashboard_controller_.get();
+  }
+
  private:
   friend class WebUILocationBarTest;
 
@@ -154,6 +161,15 @@ class WebUILocationBar : public LocationBar,
   ui::ElementTracker::Subscription moved_subscription_;
   ui::ElementTracker::Subscription shown_subscription_;
 
+  // Must be declared before `permission_dashboard_controller_` because the
+  // `permission_dashboard_controller_` depends on models owned by
+  // `content_setting_image_control_` during teardown.
+  WebUIContentSettingImageControl content_setting_image_control_;
+
+  // Threshold for suppressing LHS chip clicks after bubble closing.
+  base::TimeDelta suppression_threshold_ =
+      views::kMinimumTimeBetweenButtonClicks;
+
   std::unique_ptr<WebUIPermissionDashboard> permission_dashboard_;
   std::unique_ptr<PermissionDashboardController>
       permission_dashboard_controller_;
@@ -161,8 +177,6 @@ class WebUILocationBar : public LocationBar,
   std::unique_ptr<OmniboxController> omnibox_controller_;
   std::unique_ptr<WebUIReadOnlyOmnibox> omnibox_view_;
   std::unique_ptr<OmniboxPopupViewWebUI> omnibox_popup_view_;
-
-  WebUIContentSettingImageControl content_setting_image_control_;
 
   bool is_initialized_ = false;
 
