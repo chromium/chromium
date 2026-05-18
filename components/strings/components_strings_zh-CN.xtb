@@ -1670,7 +1670,6 @@
 <translation id="3600246354004376029"><ph name="TITLE" />，<ph name="DOMAIN" />，<ph name="TIME" /></translation>
 <translation id="3600492954573979888">“管理 Google 隐私设置”按钮，激活它即可访问您的 Google 账号隐私设置</translation>
 <translation id="3603507503523709">已被您的管理员禁用的应用</translation>
-<translation id="3605082766859363473">已选择“AI 模式”</translation>
 <translation id="3605899229568538311">5 x 5 英寸</translation>
 <translation id="3606917451836803637">电视节目</translation>
 <translation id="3608932978122581043">送纸方向</translation>
@@ -2016,7 +2015,6 @@
 <translation id="411918202192379658">自动填充功能变得更智能了</translation>
 <translation id="4121428309786185360">截止日期</translation>
 <translation id="4123572138124678573">三孔（底部）</translation>
-<translation id="4125597496726375563">已选择“制作图片”</translation>
 <translation id="412601465078863288">上传超时</translation>
 <translation id="4127317221386336246">服装配饰</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{1 项其他内容}other{# 项其他内容}}</translation>
@@ -3086,6 +3084,7 @@
 <translation id="5784606427469807560">确认您的信用卡时出现问题。请检查您的互联网连接，然后重试。</translation>
 <translation id="5785756445106461925">而且，此页中包含其他不安全的资源。他人能在这些资源传输过程中进行查看，攻击者也可以修改这些资源，从而改变此页的外观。</translation>
 <translation id="5787146423283493983">密钥协议</translation>
+<translation id="5789643057113097023">.</translation>
 <translation id="5793317771769868848">此付款方式将从本设备中删除</translation>
 <translation id="5794065675298686371">开启价格跟踪通知</translation>
 <translation id="5797984091151707075">已被管理员政策屏蔽</translation>
@@ -3749,7 +3748,6 @@
 <translation id="6820143000046097424">串行端口</translation>
 <translation id="6820686453637990663">CVC</translation>
 <translation id="6820949753458790123">轻松分期付款</translation>
-<translation id="6822745163454377107">允许本次对话访问您已打开的标签页，即可获得更快速、更贴合需求的回答。</translation>
 <translation id="6825578344716086703">您尝试访问的是 <ph name="DOMAIN" />，但是服务器出示的证书是使用弱签名算法（例如 SHA-1）签署的。这意味着服务器出示的安全凭据可能是伪造的，因此这可能并不是您想要访问的服务器（您可能正在与攻击者进行通信）。</translation>
 <translation id="6826993739343257035">允许 AR？</translation>
 <translation id="6828150717884939426">致电</translation>
@@ -5266,7 +5264,6 @@
 <translation id="9204089334327209740">上传完成后，您可以在<ph name="CLOUD_PROVIDER" />中修改文件。本地存储空间（包括回收站中的所有文件）将被自动移除。</translation>
 <translation id="9205078245616868884">您的数据已使用您的同步密码加密。输入该密码即可开始同步。</translation>
 <translation id="920643408853370361">旅行保险</translation>
-<translation id="9206639970165643781">是否要分享已打开的相关标签页，以便在此对话中获得更优质的回答？</translation>
 <translation id="9207861905230894330">无法添加文章。</translation>
 <translation id="9209339767782560829">使用您的登录证书时出现问题。</translation>
 <translation id="9210152531668884481">保存</translation>

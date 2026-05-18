@@ -1527,7 +1527,6 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse all
 <translation id="2030803782168502207">Rimuovi abbonamento dal dispositivo</translation>
 <translation id="2031487800375552010">Le skill ti consentono di riutilizzare facilmente i prompt per le attività ripetitive</translation>
 <translation id="2031914984822377766">Aggiungi le tue <ph name="LINK_BEGIN" />lingue per i siti web<ph name="LINK_END" /> preferite. Per le traduzioni verrà usata la lingua in cima all'elenco.</translation>
-<translation id="2032837042715970520">OTP obbligatoria</translation>
 <translation id="2034346955588403444">Aggiungi un'altra rete Wi-Fi</translation>
 <translation id="2037445849770872822">La supervisione è configurata per questo Account Google. Per configurare altre funzioni di Controllo genitori, seleziona Continua.
 
@@ -3608,7 +3607,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3462413494201477527">Annullare la creazione dell'account?</translation>
 <translation id="346298925039590474">Questa rete mobile sarà disponibile per tutti gli utenti su questo dispositivo</translation>
 <translation id="3464145797867108663">Aggiungi profilo di lavoro</translation>
-<translation id="34673353983913587">Prima di salvare la nuova password, il sito richiede una verifica aggiuntiva</translation>
 <translation id="3468298837301810372">Etichetta</translation>
 <translation id="3468999815377931311">Telefono Android</translation>
 <translation id="3469583217479686109">Strumento Selezione</translation>
@@ -4010,7 +4008,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3732108843630241049">Questo dispositivo non riceve più aggiornamenti software automatici. Attiva gli aggiornamenti della sicurezza estesi per mantenere sicurezza, stabilità e prestazioni. Alcune funzionalità saranno limitate. <ph name="LINK_BEGIN" />Scopri di più<ph name="LINK_END" /></translation>
 <translation id="3732414796052961578">Continua come <ph name="ACCOUNT_NAME" /></translation>
 <translation id="3732530910372558017">Il PIN deve contenere massimo 63 caratteri</translation>
-<translation id="3732706448780793442">Intervieni manualmente</translation>
 <translation id="3733296813637058299">Le app verranno installate automaticamente. Puoi trovare altre app per il tuo dispositivo <ph name="DEVICE_TYPE" /> nel Play Store.</translation>
 <translation id="3734547157266039796">Risaia</translation>
 <translation id="3735039640698208086">Durante la riproduzione audio...</translation>
@@ -8315,7 +8312,6 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="6772103682557559072">Altre opzioni per l'indirizzo di lavoro <ph name="ADDRESS_SUMMARY" /></translation>
 <translation id="6772974422346500939">Apri e modifica</translation>
 <translation id="6773595613448852535">Chrome Root Store</translation>
-<translation id="677394079035748956">Il sito richiede una password monouso</translation>
 <translation id="6774710250118040929">Aggiungi nuova password</translation>
 <translation id="6775163072363532304">I dispositivi disponibili verranno mostrati qui.</translation>
 <translation id="677646486571529447">Aggiungi una nota</translation>
@@ -10027,7 +10023,6 @@ Premi un sensore o un tasto assegnato per rimuovere l'assegnazione.</translation
 <translation id="7943311690198910993">Metodo di accesso aggiornato</translation>
 <translation id="7943368935008348579">Scarica PDF</translation>
 <translation id="7943837619101191061">Aggiungi posizione...</translation>
-<translation id="7944173382284143968">Il sito web richiede la conferma dell'OTP prima di salvare la nuova password. Intervieni manualmente per completare la modifica.</translation>
 <translation id="79446453817422139">Questo file potrebbe essere pericoloso</translation>
 <translation id="7944772052836377867">La sincronizzazione deve verificare la tua identità</translation>
 <translation id="7944847494038629732">Scollega il cavo USB dello scanner e ricollegalo per riprovare</translation>

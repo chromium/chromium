@@ -607,7 +607,6 @@
 <translation id="3132345256151444894">حفظ رقم التعويض</translation>
 <translation id="3132584647087998639">استيراد بياناتك</translation>
 <translation id="313283613037595347">إنشاء علامة تبويب جديدة في وضع التصفُّح المتخفي</translation>
-<translation id="3136739222562075778">تعرض هذه البطاقة انخفاضات الأسعار على المنتجات في علامات التبويب المفتوحة</translation>
 <translation id="3138611310073113613">تجاهل الاختيار</translation>
 <translation id="3140825265190223781">كلمات المرور ومفاتيح المرور المحفوظة</translation>
 <translation id="3143515551205905069">إلغاء المزامنة</translation>
@@ -766,6 +765,7 @@
 <translation id="372676576864368480">الملء التلقائي لرقم البطاقة التي تنتهي بالأرقام <ph name="LAST_DIGITS" /></translation>
 <translation id="3738428049780661523">‏تاريخ الإنشاء: ‎<ph name="DATE" /></translation>
 <translation id="3742498336182910186">ألبوم الكاميرا</translation>
+<translation id="3743545564993953213">‏يحاول هذا الموقع الإلكتروني فتح تطبيق Shortcuts.</translation>
 <translation id="3746269120925354434">‏تم حفظ المعلومات في "محفظة Google"</translation>
 <translation id="3750225824417196283">صفحة علامة تبويب جديدة في وضع التصفّح المتخفي</translation>
 <translation id="3751873026576444885">‏إيقاف البحث عن محتوى شاشتك باستخدام "عدسة Google"</translation>

@@ -1529,7 +1529,6 @@ Load, mille olete juba rakendustele andnud, võivad selle konto puhul kehtida. S
 <translation id="2030803782168502207">Tellimuse seadmest eemaldamine</translation>
 <translation id="2031487800375552010">Oskused võimaldavad päringuid korduvate ülesannete jaoks hõlpsasti taaskasutada.</translation>
 <translation id="2031914984822377766">Lisage oma eelistatud <ph name="LINK_BEGIN" />veebisaidikeeled<ph name="LINK_END" />. Loendi kõige esimest keelt kasutatakse tõlgete jaoks.</translation>
-<translation id="2032837042715970520">Ühekordne parool on nõutav</translation>
 <translation id="2034346955588403444">Muu WiFi-võrgu lisamine</translation>
 <translation id="2037445849770872822">Selle Google'i konto jaoks on seadistatud järelevalve. Kui soovite veel vanemliku järelevalve funktsioone seadistada, valige käsk Jätka.
 
@@ -3613,7 +3612,6 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="3462413494201477527">Kas tühistada konto seadistamine?</translation>
 <translation id="346298925039590474">See mobiilsidevõrk on saadaval kõigile selle seadme kasutajatele</translation>
 <translation id="3464145797867108663">Lisa tööprofiil</translation>
-<translation id="34673353983913587">Enne uue parooli salvestamist nõuab sait täiendavat kinnitust</translation>
 <translation id="3468298837301810372">Silt</translation>
 <translation id="3468999815377931311">Android-telefon</translation>
 <translation id="3469583217479686109">Valikutööriist</translation>
@@ -4015,7 +4013,6 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="3732108843630241049">See seade ei saa enam automaatseid tarkvaravärskendusi. Turvalisuse, stabiilsuse ja toimivuse jätkuvaks tagamiseks lülitage sisse pikendatud värskendused. Mõned funktsioonid on piiratud. <ph name="LINK_BEGIN" />Lisateave<ph name="LINK_END" /></translation>
 <translation id="3732414796052961578">Jätkake kasutajana <ph name="ACCOUNT_NAME" /></translation>
 <translation id="3732530910372558017">PIN-koodi pikkus tohib olla kuni 63 tähemärki</translation>
-<translation id="3732706448780793442">Jätka käsitsi</translation>
 <translation id="3733296813637058299">Installime need rakendused teie eest. Play poest leiate oma seadme <ph name="DEVICE_TYPE" /> jaoks rohkem rakendusi.</translation>
 <translation id="3734547157266039796">Riisipõld</translation>
 <translation id="3735039640698208086">Heli esitamisel …</translation>
@@ -8324,7 +8321,6 @@ Teil on veel # ohustatud parooli. Google'i paroolihaldur soovitab kohe neid paro
 <translation id="6772103682557559072">Töökoha aadressi <ph name="ADDRESS_SUMMARY" /> lisavalikud</translation>
 <translation id="6772974422346500939">Ava ja muuda</translation>
 <translation id="6773595613448852535">Chrome Root Store</translation>
-<translation id="677394079035748956">Sait vajab ühekordset parooli</translation>
 <translation id="6774710250118040929">Uue parooli lisamine</translation>
 <translation id="6775163072363532304">Saadaolevad seadmed kuvatakse siin.</translation>
 <translation id="677646486571529447">Märkuse lisamine</translation>
@@ -10036,7 +10032,6 @@ Määrangu eemaldamiseks vajutage määratud lülitit või klahvi.</translation>
 <translation id="7943311690198910993">Sisselogimismeetodit värskendati</translation>
 <translation id="7943368935008348579">Laadi PDF-id alla</translation>
 <translation id="7943837619101191061">Lisa asukoht ...</translation>
-<translation id="7944173382284143968">Veebisait nõuab enne uue parooli salvestamist ühekordse parooli kinnitamist. Muudatuse lõpuleviimiseks jätkake protsessi käsitsi.</translation>
 <translation id="79446453817422139">Fail võib olla ohtlik</translation>
 <translation id="7944772052836377867">Sünkroonimisfunktsioon peab teie isiku kinnitama</translation>
 <translation id="7944847494038629732">Ühendage skanneri USB-kaabel lahti ja ühendage uuesti proovimiseks</translation>

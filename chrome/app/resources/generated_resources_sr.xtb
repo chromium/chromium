@@ -784,6 +784,7 @@
 <translation id="1529769834253316556">Висина линије</translation>
 <translation id="1529891865407786369">Извор напајања</translation>
 <translation id="1530376661400379364">Chrome је ресетовао ова подешавања</translation>
+<translation id="1530466164747090379"><ph name="FILE_NAME" /> садржи осетљиве или опасне податке</translation>
 <translation id="1531275250079031713">Прикажи дијалог „Додај нову WiFi мрежу“</translation>
 <translation id="1531734061664070992"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" /> <ph name="THIRD_SWITCH" /></translation>
 <translation id="1533948060140843887">Разумем да је ово преузимање штетно за рачунар</translation>
@@ -1526,7 +1527,6 @@
 <translation id="2030803782168502207">Уклоните претплату са уређаја</translation>
 <translation id="2031487800375552010">Вештине вам омогућавају да лако поново користите упите за задатке који се понављају</translation>
 <translation id="2031914984822377766">Додајте жељене <ph name="LINK_BEGIN" />језике за веб-сајт<ph name="LINK_END" />. Први језик са листе ће се користити за преводе.</translation>
-<translation id="2032837042715970520">OTP је обавезан</translation>
 <translation id="2034346955588403444">Додај другу WiFi мрежу</translation>
 <translation id="2037445849770872822">Надзор је подешен за овај Google налог. Да бисте подесили додатни родитељски надзор, изаберите Настави.
 
@@ -2178,6 +2178,7 @@
 <translation id="2469141124738294431">Статус виртуелне машине</translation>
 <translation id="2469259292033957819">Немате сачуваних штампача.</translation>
 <translation id="2469375675106140201">Прилагодите проверу правописа</translation>
+<translation id="2469406914567390938">Ажурирај канал</translation>
 <translation id="247051149076336810">URL за дељење датотека</translation>
 <translation id="2471469610750100598">Црна (подразумевано)</translation>
 <translation id="2471506181342525583">Дозвољен је приступ локацији</translation>
@@ -2509,6 +2510,7 @@
 <translation id="2695943520968279338">Откријте додатке</translation>
 <translation id="2696675923413008404">Садржај са овог сајта, укључујући URL, шаље се Google-у и особе које прегледају могу да га виде ради побољшања ове функције</translation>
 <translation id="2698147581454716013">Ово је уређај у оквиру пакета и не може да се региструје за надоградњу киоска или уређаја за пријављивање.</translation>
+<translation id="269941332914175387">Поново покрените прегледач да бисте учитали податке профила и задржали њихово шифровање</translation>
 <translation id="2699911226086014512">PIN операција није успела, кôд грешке <ph name="RETRIES" />.</translation>
 <translation id="2701330563083355633">Дељено са: <ph name="DEVICE_NAME" /></translation>
 <translation id="2701737434167469065">Пријавите се, <ph name="EMAIL" /></translation>
@@ -2737,6 +2739,7 @@
 <translation id="2844154481025280030">Смернице су конфигурисане.</translation>
 <translation id="2844169650293029770">Уређај са USB прикључком типа C (леви предњи порт)</translation>
 <translation id="2844809857160214557">Прегледајте задатке штампања и управљајте њима</translation>
+<translation id="284491292807422921">Желите да уклоните сајт?</translation>
 <translation id="2845276301195220700">Још радњи за Google календар</translation>
 <translation id="2845382757467349449">Увек приказуј траку са обележивачима</translation>
 <translation id="284581348330507117">Направите јединствене лозинке</translation>
@@ -3326,6 +3329,7 @@
 <translation id="3262986719682892278">Превелико</translation>
 <translation id="3264544094376351444">Фонт Sans-serif</translation>
 <translation id="3264582393905923483">Контекст</translation>
+<translation id="3265303262625691029"><ph name="VERDICT_MESSAGE" />. Администратор каже: <ph name="CUSTOM_MESSAGE" /></translation>
 <translation id="3265459715026181080">Затвори прозор</translation>
 <translation id="3266022278425892773">Linux окружење за програмирање</translation>
 <translation id="3266030505377585301">Да бисте избрисали податке прегледања само са овог уређаја, али не и са Google налога, <ph name="BEGIN_LINK" />одјавите се<ph name="END_LINK" />.</translation>
@@ -3607,7 +3611,6 @@
 <translation id="3462413494201477527">Желите ли да откажете подешавање налога?</translation>
 <translation id="346298925039590474">Ова мобилна мрежа ће бити доступна свим корисницима на овом уређају</translation>
 <translation id="3464145797867108663">Додај пословни профил</translation>
-<translation id="34673353983913587">Сајт захтева додатну верификацију пре него што сачува нову лозинку</translation>
 <translation id="3468298837301810372">Ознака</translation>
 <translation id="3468999815377931311">Android телефон</translation>
 <translation id="3469583217479686109">Алатка за бирање</translation>
@@ -4009,7 +4012,6 @@
 <translation id="3732108843630241049">Овај уређај више не прима аутоматска ажурирања софтвера. Укључите додатна безбедносна ажурирања ради сталне безбедности, стабилности и учинка. Неке функције ће бити ограничене. <ph name="LINK_BEGIN" />Сазнајте више<ph name="LINK_END" /></translation>
 <translation id="3732414796052961578">Настави као <ph name="ACCOUNT_NAME" /></translation>
 <translation id="3732530910372558017">PIN сме да садржи највише 63 знака</translation>
-<translation id="3732706448780793442">Доврши ручно</translation>
 <translation id="3733296813637058299">Инсталираћемо вам те апликације. Још апликација за <ph name="DEVICE_TYPE" /> можете да пронађете у Play продавници.</translation>
 <translation id="3734547157266039796">Поље пиринча</translation>
 <translation id="3735039640698208086">Док се репродукује звук…</translation>
@@ -4445,6 +4447,7 @@
 <translation id="4010746393007464819">Доступна је надоградња на DNS 12 (Bookworm)</translation>
 <translation id="4010917659463429001">Да би вам обележивачи били доступни на мобилном уређају, <ph name="GET_IOS_APP_LINK" />.</translation>
 <translation id="4011073493055408531">Аурора бореалис, стилизована љубичастом и зеленом бојом, изнад града.</translation>
+<translation id="4011897773956589748">Када следећи пут Gemini-ју буде потребан приступ овом налогу, поново ће затражити дозволу.</translation>
 <translation id="4012509903424054869">PDF-ови се аутоматски конвертују да бисте могли да претражујете и бирате текст</translation>
 <translation id="4014432863917027322">Желите ли да поправите „<ph name="EXTENSION_NAME" />“?</translation>
 <translation id="4015163439792426608">Имате додатке? <ph name="BEGIN_LINK" />Управљајте додацима<ph name="END_LINK" /> на једном практичном месту.</translation>
@@ -6223,6 +6226,7 @@
 <translation id="5275084684151588738">Кориснички речници</translation>
 <translation id="5275338516105640560">Дугме сачуване групе картица</translation>
 <translation id="5275352920323889391">Пас</translation>
+<translation id="5275946508817197540">Безбедносна подешавања не дозвољавају инсталацију изолованих веб-апликација. <ph name="CHANGE_PREFERENCE" />.</translation>
 <translation id="527605719918376753">Искључи звук картице</translation>
 <translation id="527605982717517565">Увек дозволи JavaScript на сајту <ph name="HOST" /></translation>
 <translation id="5276357196618041410">Не можете да сачувате конфигурацију без пријављивања</translation>
@@ -8321,7 +8325,6 @@
 <translation id="6772103682557559072">Још опција за адресу на послу <ph name="ADDRESS_SUMMARY" /></translation>
 <translation id="6772974422346500939">Отвори и измени</translation>
 <translation id="6773595613448852535">Chrome Root Store</translation>
-<translation id="677394079035748956">Сајт захтева једнократну лозинку</translation>
 <translation id="6774710250118040929">Додајте нову лозинку</translation>
 <translation id="6775163072363532304">Доступни уређаји се приказују овде.</translation>
 <translation id="677646486571529447">Додај белешку</translation>
@@ -8674,6 +8677,7 @@
 <translation id="6997553674029032185">Иди на сајт</translation>
 <translation id="6997642619627518301"><ph name="NAME_PH" /> – Евиденција активности</translation>
 <translation id="6997707937646349884">На уређајима:</translation>
+<translation id="6998036632333022623">Деле се картице са Google-ом</translation>
 <translation id="6998793565256476099">Региструј уређај за видео позиве</translation>
 <translation id="6999956497249459195">Нова група</translation>
 <translation id="7000206553895739324">Штампач <ph name="PRINTER_NAME" /> је повезан, али треба да се конфигурише</translation>
@@ -10033,7 +10037,6 @@
 <translation id="7943311690198910993">Начин пријављивања је ажуриран</translation>
 <translation id="7943368935008348579">Преузимајте PDF-ове</translation>
 <translation id="7943837619101191061">Додај локацију...</translation>
-<translation id="7944173382284143968">Веб-сајт захтева OTP потврду пре чувања нове лозинке. Довршите поступак ручно да бисте довршили промену.</translation>
 <translation id="79446453817422139">Овај фајл може да буде опасан</translation>
 <translation id="7944772052836377867">Синхронизација мора да потврди да сте то ви</translation>
 <translation id="7944847494038629732">Искључите USB кабл скенера и поново га укључите да бисте пробали поново</translation>

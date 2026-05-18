@@ -784,6 +784,7 @@ Dozvole koje ste već dali aplikacijama mogu da važe za ovaj nalog. Možete da
 <translation id="1529769834253316556">Visina linije</translation>
 <translation id="1529891865407786369">Izvor napajanja</translation>
 <translation id="1530376661400379364">Chrome je resetovao ova podešavanja</translation>
+<translation id="1530466164747090379"><ph name="FILE_NAME" /> sadrži osetljive ili opasne podatke</translation>
 <translation id="1531275250079031713">Prikaži dijalog „Dodaj novu WiFi mrežu“</translation>
 <translation id="1531734061664070992"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" /> <ph name="THIRD_SWITCH" /></translation>
 <translation id="1533948060140843887">Razumem da je ovo preuzimanje štetno za računar</translation>
@@ -1526,7 +1527,6 @@ Dozvole koje ste već dali aplikacijama mogu da važe za ovaj nalog. Možete da
 <translation id="2030803782168502207">Uklonite pretplatu sa uređaja</translation>
 <translation id="2031487800375552010">Veštine vam omogućavaju da lako ponovo koristite upite za zadatke koji se ponavljaju</translation>
 <translation id="2031914984822377766">Dodajte željene <ph name="LINK_BEGIN" />jezike za veb-sajt<ph name="LINK_END" />. Prvi jezik sa liste će se koristiti za prevode.</translation>
-<translation id="2032837042715970520">OTP je obavezan</translation>
 <translation id="2034346955588403444">Dodaj drugu WiFi mrežu</translation>
 <translation id="2037445849770872822">Nadzor je podešen za ovaj Google nalog. Da biste podesili dodatni roditeljski nadzor, izaberite Nastavi.
 
@@ -2178,6 +2178,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="2469141124738294431">Status virtuelne mašine</translation>
 <translation id="2469259292033957819">Nemate sačuvanih štampača.</translation>
 <translation id="2469375675106140201">Prilagodite proveru pravopisa</translation>
+<translation id="2469406914567390938">Ažuriraj kanal</translation>
 <translation id="247051149076336810">URL za deljenje datoteka</translation>
 <translation id="2471469610750100598">Crna (podrazumevano)</translation>
 <translation id="2471506181342525583">Dozvoljen je pristup lokaciji</translation>
@@ -2509,6 +2510,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="2695943520968279338">Otkrijte dodatke</translation>
 <translation id="2696675923413008404">Sadržaj sa ovog sajta, uključujući URL, šalje se Google-u i osobe koje pregledaju mogu da ga vide radi poboljšanja ove funkcije</translation>
 <translation id="2698147581454716013">Ovo je uređaj u okviru paketa i ne može da se registruje za nadogradnju kioska ili uređaja za prijavljivanje.</translation>
+<translation id="269941332914175387">Ponovo pokrenite pregledač da biste učitali podatke profila i zadržali njihovo šifrovanje</translation>
 <translation id="2699911226086014512">PIN operacija nije uspela, kôd greške <ph name="RETRIES" />.</translation>
 <translation id="2701330563083355633">Deljeno sa: <ph name="DEVICE_NAME" /></translation>
 <translation id="2701737434167469065">Prijavite se, <ph name="EMAIL" /></translation>
@@ -2737,6 +2739,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="2844154481025280030">Smernice su konfigurisane.</translation>
 <translation id="2844169650293029770">Uređaj sa USB priključkom tipa C (levi prednji port)</translation>
 <translation id="2844809857160214557">Pregledajte zadatke štampanja i upravljajte njima</translation>
+<translation id="284491292807422921">Želite da uklonite sajt?</translation>
 <translation id="2845276301195220700">Još radnji za Google kalendar</translation>
 <translation id="2845382757467349449">Uvek prikazuj traku sa obeleživačima</translation>
 <translation id="284581348330507117">Napravite jedinstvene lozinke</translation>
@@ -3326,6 +3329,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="3262986719682892278">Preveliko</translation>
 <translation id="3264544094376351444">Font Sans-serif</translation>
 <translation id="3264582393905923483">Kontekst</translation>
+<translation id="3265303262625691029"><ph name="VERDICT_MESSAGE" />. Administrator kaže: <ph name="CUSTOM_MESSAGE" /></translation>
 <translation id="3265459715026181080">Zatvori prozor</translation>
 <translation id="3266022278425892773">Linux okruženje za programiranje</translation>
 <translation id="3266030505377585301">Da biste izbrisali podatke pregledanja samo sa ovog uređaja, ali ne i sa Google naloga, <ph name="BEGIN_LINK" />odjavite se<ph name="END_LINK" />.</translation>
@@ -3607,7 +3611,6 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="3462413494201477527">Želite li da otkažete podešavanje naloga?</translation>
 <translation id="346298925039590474">Ova mobilna mreža će biti dostupna svim korisnicima na ovom uređaju</translation>
 <translation id="3464145797867108663">Dodaj poslovni profil</translation>
-<translation id="34673353983913587">Sajt zahteva dodatnu verifikaciju pre nego što sačuva novu lozinku</translation>
 <translation id="3468298837301810372">Oznaka</translation>
 <translation id="3468999815377931311">Android telefon</translation>
 <translation id="3469583217479686109">Alatka za biranje</translation>
@@ -4009,7 +4012,6 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="3732108843630241049">Ovaj uređaj više ne prima automatska ažuriranja softvera. Uključite dodatna bezbednosna ažuriranja radi stalne bezbednosti, stabilnosti i učinka. Neke funkcije će biti ograničene. <ph name="LINK_BEGIN" />Saznajte više<ph name="LINK_END" /></translation>
 <translation id="3732414796052961578">Nastavi kao <ph name="ACCOUNT_NAME" /></translation>
 <translation id="3732530910372558017">PIN sme da sadrži najviše 63 znaka</translation>
-<translation id="3732706448780793442">Dovrši ručno</translation>
 <translation id="3733296813637058299">Instaliraćemo vam te aplikacije. Još aplikacija za <ph name="DEVICE_TYPE" /> možete da pronađete u Play prodavnici.</translation>
 <translation id="3734547157266039796">Polje pirinča</translation>
 <translation id="3735039640698208086">Dok se reprodukuje zvuk…</translation>
@@ -4445,6 +4447,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="4010746393007464819">Dostupna je nadogradnja na DNS 12 (Bookworm)</translation>
 <translation id="4010917659463429001">Da bi vam obeleživači bili dostupni na mobilnom uređaju, <ph name="GET_IOS_APP_LINK" />.</translation>
 <translation id="4011073493055408531">Aurora borealis, stilizovana ljubičastom i zelenom bojom, iznad grada.</translation>
+<translation id="4011897773956589748">Kada sledeći put Gemini-ju bude potreban pristup ovom nalogu, ponovo će zatražiti dozvolu.</translation>
 <translation id="4012509903424054869">PDF-ovi se automatski konvertuju da biste mogli da pretražujete i birate tekst</translation>
 <translation id="4014432863917027322">Želite li da popravite „<ph name="EXTENSION_NAME" />“?</translation>
 <translation id="4015163439792426608">Imate dodatke? <ph name="BEGIN_LINK" />Upravljajte dodacima<ph name="END_LINK" /> na jednom praktičnom mestu.</translation>
@@ -6223,6 +6226,7 @@ Koristite Ctrl + Alt + taster za smanjivanje osvetljenosti da biste umanjili pri
 <translation id="5275084684151588738">Korisnički rečnici</translation>
 <translation id="5275338516105640560">Dugme sačuvane grupe kartica</translation>
 <translation id="5275352920323889391">Pas</translation>
+<translation id="5275946508817197540">Bezbednosna podešavanja ne dozvoljavaju instalaciju izolovanih veb-aplikacija. <ph name="CHANGE_PREFERENCE" />.</translation>
 <translation id="527605719918376753">Isključi zvuk kartice</translation>
 <translation id="527605982717517565">Uvek dozvoli JavaScript na sajtu <ph name="HOST" /></translation>
 <translation id="5276357196618041410">Ne možete da sačuvate konfiguraciju bez prijavljivanja</translation>
@@ -8321,7 +8325,6 @@ Imate još # ugroženih lozinki. Google menadžer lozinki preporučuje da odmah 
 <translation id="6772103682557559072">Još opcija za adresu na poslu <ph name="ADDRESS_SUMMARY" /></translation>
 <translation id="6772974422346500939">Otvori i izmeni</translation>
 <translation id="6773595613448852535">Chrome Root Store</translation>
-<translation id="677394079035748956">Sajt zahteva jednokratnu lozinku</translation>
 <translation id="6774710250118040929">Dodajte novu lozinku</translation>
 <translation id="6775163072363532304">Dostupni uređaji se prikazuju ovde.</translation>
 <translation id="677646486571529447">Dodaj belešku</translation>
@@ -8674,6 +8677,7 @@ Imate još # ugroženih lozinki. Google menadžer lozinki preporučuje da odmah 
 <translation id="6997553674029032185">Idi na sajt</translation>
 <translation id="6997642619627518301"><ph name="NAME_PH" /> – Evidencija aktivnosti</translation>
 <translation id="6997707937646349884">Na uređajima:</translation>
+<translation id="6998036632333022623">Dele se kartice sa Google-om</translation>
 <translation id="6998793565256476099">Registruj uređaj za video pozive</translation>
 <translation id="6999956497249459195">Nova grupa</translation>
 <translation id="7000206553895739324">Štampač <ph name="PRINTER_NAME" /> je povezan, ali treba da se konfiguriše</translation>
@@ -10033,7 +10037,6 @@ Pritisnite dodeljeni prekidač ili taster da biste uklonili dodelu.</translation
 <translation id="7943311690198910993">Način prijavljivanja je ažuriran</translation>
 <translation id="7943368935008348579">Preuzimajte PDF-ove</translation>
 <translation id="7943837619101191061">Dodaj lokaciju...</translation>
-<translation id="7944173382284143968">Veb-sajt zahteva OTP potvrdu pre čuvanja nove lozinke. Dovršite postupak ručno da biste dovršili promenu.</translation>
 <translation id="79446453817422139">Ovaj fajl može da bude opasan</translation>
 <translation id="7944772052836377867">Sinhronizacija mora da potvrdi da ste to vi</translation>
 <translation id="7944847494038629732">Isključite USB kabl skenera i ponovo ga uključite da biste probali ponovo</translation>

@@ -1673,7 +1673,6 @@ I guddio opsiynau talu'n ddiweddarach, ewch i'r <ph name="BEGIN_LINK" />gosodiad
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
 <translation id="3600492954573979888">Botwm rheoli gosodiadau preifatrwydd Google, gweithredwch i fynd i osodiadau preifatrwydd eich Cyfrif Google</translation>
 <translation id="3603507503523709">Mae'r ap wedi'i rwystro gan eich gweinyddwr</translation>
-<translation id="3605082766859363473">Wedi dewis Modd AI</translation>
 <translation id="3605899229568538311">5 x 5 modfedd</translation>
 <translation id="3606917451836803637">Rhaglenni Teledu</translation>
 <translation id="3608932978122581043">Cyfeiriadaeth ffrydio</translation>
@@ -2020,7 +2019,6 @@ I guddio opsiynau talu'n ddiweddarach, ewch i'r <ph name="BEGIN_LINK" />gosodiad
 <translation id="411918202192379658">Mae Awtolenwi newydd wella</translation>
 <translation id="4121428309786185360">Yn Darfod ar</translation>
 <translation id="4123572138124678573">Tri thwll ar y gwaelod</translation>
-<translation id="4125597496726375563">Wedi dewis Creu llun</translation>
 <translation id="412601465078863288">Mae uwchlwytho wedi cymryd gormod o amser</translation>
 <translation id="4127317221386336246">Ategolion Dillad</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{1 arall}zero{# arall}two{# arall}few{# arall}many{# arall}other{# arall}}</translation>
@@ -3090,6 +3088,7 @@ I guddio opsiynau talu'n ddiweddarach, ewch i'r <ph name="BEGIN_LINK" />gosodiad
 <translation id="5784606427469807560">Bu problem wrth gadarnhau eich cerdyn. Gwiriwch eich cysylltiad rhyngrwyd a rhowch gynnig arall arni.</translation>
 <translation id="5785756445106461925">Ymhellach, mae'r dudalen hon yn cynnwys adnoddau eraill nad ydynt yn ddiogel. Gall eraill weld yr adnoddau hyn wrth iddynt gael eu trosglwyddo, a gall ymosodwr eu haddasu i newid golwg y dudalen.</translation>
 <translation id="5787146423283493983">Cytundeb Allweddol</translation>
+<translation id="5789643057113097023">.</translation>
 <translation id="5793317771769868848">Bydd y dull talu hwn yn cael ei ddileu o'r ddyfais hon</translation>
 <translation id="5794065675298686371">Trowch hysbysiadau olrhain prisiau ymlaen</translation>
 <translation id="5797984091151707075">Wedi'i rwystro gan bolisi gweinyddwr</translation>
@@ -3754,7 +3753,6 @@ I guddio opsiynau talu'n ddiweddarach, ewch i'r <ph name="BEGIN_LINK" />gosodiad
 <translation id="6820143000046097424">pyrth cyfresol</translation>
 <translation id="6820686453637990663">CVC</translation>
 <translation id="6820949753458790123">Talu mewn rhandaliadau hawdd</translation>
-<translation id="6822745163454377107">Cael ymatebion cyflymach, wedi'u teilwra trwy rannu'ch tabiau agored gyda'r trywydd hwn.</translation>
 <translation id="6825578344716086703">Gwnaethoch geisio cyrraedd <ph name="DOMAIN" />, ond cyflwynodd y gweinydd dystysgrif sydd wedi'i llofnodi gan ddefnyddio algorithm llofnodion gwan (megis SHA-1). Mae hyn yn golygu y gallai'r manylion diogelwch a gyflwynwyd gan y gweinydd fod wedi'u ffugio, ac mae'n bosib nad y gweinydd yw'r gweinydd yr oeddech yn ei ddisgwyl (mae'n bosib eich bod yn cyfathrebu ag ymosodwr).</translation>
 <translation id="6826993739343257035">Caniatáu AR?</translation>
 <translation id="6828150717884939426">Galw</translation>
@@ -5270,7 +5268,6 @@ Manylion ychwanegol:
 <translation id="9204089334327209740">Unwaith y bydd y llwythiad wedi'i gwblhau, gallwch chi addasu'ch ffeiliau yn <ph name="CLOUD_PROVIDER" />. Bydd storfa leol, gan gynnwys unrhyw ffeiliau yn y Sbwriel, yn cael eu tynnu'n awtomatig.</translation>
 <translation id="9205078245616868884">Mae eich data wedi'u hamgryptio â'ch cyfrinymadrodd cysoni. Rhowch eich cyfrinymadrodd i ddechrau cysoni.</translation>
 <translation id="920643408853370361">Yswiriant Teithio</translation>
-<translation id="9206639970165643781">Rhannu tabiau agored perthnasol ar gyfer ymatebion gwell yn y trywydd hwn?</translation>
 <translation id="9207861905230894330">Wedi methu ag ychwanegu erthygl.</translation>
 <translation id="9209339767782560829">Bu problem wrth ddefnyddio'ch tystysgrif mewngofnodi.</translation>
 <translation id="9210152531668884481">Iawn</translation>

@@ -1529,7 +1529,6 @@ Les autorisations que vous avez déjà accordées aux applis peuvent s'appliquer
 <translation id="2030803782168502207">Supprimer l'abonnement de l'appareil</translation>
 <translation id="2031487800375552010">Les compétences vous permettent de réutiliser facilement des prompts pour les tâches répétitives</translation>
 <translation id="2031914984822377766">Ajoutez vos <ph name="LINK_BEGIN" />langues favorites pour les sites Web<ph name="LINK_END" />. La première langue de la liste sera utilisée pour les traductions.</translation>
-<translation id="2032837042715970520">Veuillez saisir un OTP</translation>
 <translation id="2034346955588403444">Ajouter un réseau Wi-Fi</translation>
 <translation id="2037445849770872822">La supervision est configurée pour ce compte Google. Pour configurer des paramètres de contrôle parental supplémentaires, sélectionnez "Continuer".
 
@@ -3608,7 +3607,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3462413494201477527">Annuler la configuration du compte ?</translation>
 <translation id="346298925039590474">Ce réseau mobile sera accessible à tous les utilisateurs de cet appareil</translation>
 <translation id="3464145797867108663">Ajouter un profil professionnel</translation>
-<translation id="34673353983913587">Avant d'enregistrer votre nouveau mot de passe, le site exige une validation supplémentaire</translation>
 <translation id="3468298837301810372">Libellé</translation>
 <translation id="3468999815377931311">Téléphone Android</translation>
 <translation id="3469583217479686109">Outil Sélection</translation>
@@ -4010,7 +4008,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3732108843630241049">Cet appareil ne reçoit plus de mises à jour logicielles automatiques. Activez les mises à jour de sécurité étendues pour prolonger la sécurité, la stabilité et les performances. Certaines fonctionnalités seront limitées. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
 <translation id="3732414796052961578">Continuer en tant que <ph name="ACCOUNT_NAME" /></translation>
 <translation id="3732530910372558017">Le code doit comporter 63 caractères au maximum</translation>
-<translation id="3732706448780793442">Continuer manuellement</translation>
 <translation id="3733296813637058299">Nous allons installer ces applis pour vous. D'autres applis sont disponibles pour votre <ph name="DEVICE_TYPE" /> sur le Play Store.</translation>
 <translation id="3734547157266039796">Rizière</translation>
 <translation id="3735039640698208086">Lors de la lecture audio…</translation>
@@ -8320,7 +8317,6 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="6772103682557559072">Plus d'options pour l'adresse professionnelle de <ph name="ADDRESS_SUMMARY" /></translation>
 <translation id="6772974422346500939">Ouvrir et modifier</translation>
 <translation id="6773595613448852535">Chrome Root Store</translation>
-<translation id="677394079035748956">Le site nécessite un mot de passe à usage unique</translation>
 <translation id="6774710250118040929">Ajouter un mot de passe</translation>
 <translation id="6775163072363532304">Les périphériques disponibles s'afficheront ici.</translation>
 <translation id="677646486571529447">Ajouter une note</translation>
@@ -10032,7 +10028,6 @@ Appuyez sur un contacteur ou une touche associé(e) pour supprimer l'association
 <translation id="7943311690198910993">Méthode de connexion mise à jour</translation>
 <translation id="7943368935008348579">Télécharger les PDF</translation>
 <translation id="7943837619101191061">Ajouter un emplacement…</translation>
-<translation id="7944173382284143968">Le site Web exige une confirmation par OTP avant d'enregistrer le nouveau mot de passe. Veuillez continuer le processus manuellement pour finaliser la modification.</translation>
 <translation id="79446453817422139">Ce fichier est peut-être dangereux</translation>
 <translation id="7944772052836377867">La synchronisation doit confirmer votre identité</translation>
 <translation id="7944847494038629732">Débranchez le câble USB du scanner, puis rebranchez-le pour réessayer</translation>

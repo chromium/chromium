@@ -1673,7 +1673,6 @@
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
 <translation id="3600492954573979888">‏הכפתור לניהול הגדרות הפרטיות ב-Google, מפעילים אותו כדי להיכנס להגדרות הפרטיות בחשבון Google</translation>
 <translation id="3603507503523709">האפליקציה נחסמה על ידי מנהל המערכת</translation>
-<translation id="3605082766859363473">‏מצב AI נבחר</translation>
 <translation id="3605899229568538311">‏5x5 אינץ'</translation>
 <translation id="3606917451836803637">תוכניות וסדרות טלוויזיה</translation>
 <translation id="3608932978122581043">כיוון הזנה</translation>
@@ -2020,7 +2019,6 @@
 <translation id="411918202192379658">המילוי האוטומטי השתפר</translation>
 <translation id="4121428309786185360">בתוקף עד </translation>
 <translation id="4123572138124678573">3 ניקובים בחלק התחתון</translation>
-<translation id="4125597496726375563">נבחרה האפשרות "יצירת תמונה"</translation>
 <translation id="412601465078863288">פג הזמן שהוקצב להעלאה</translation>
 <translation id="4127317221386336246">אביזרי הלבשה</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{אחד נוסף}one{# נוספים}two{שניים נוספים}other{# נוספים}}</translation>
@@ -2236,6 +2234,7 @@
 <translation id="443673843213245140">‏השימוש בשרת Proxy הושבת, אך צוינה תצורת שרת Proxy מפורשת.</translation>
 <translation id="4438821706955556403">מחיר רגיל</translation>
 <translation id="4441832193888514600">המערכת מתעלמת מהמדיניות כי ניתן להגדיר אותה רק כמדיניות משתמש בענן.</translation>
+<translation id="4444062564459679679">‏הכרטיסייה כבר נשלחה ל-Chrome במכשיר <ph name="DEVICE_NAME" /></translation>
 <translation id="4445133368066241428">נושאים פופולריים</translation>
 <translation id="4445694043187340808">‏‫<ph name="STARTER_PACK_TABS_FOCUSED_FRIENDLY_MATCH_TEXT" />, אפשר להקיש על Enter כדי לחפש בכרטיסיות</translation>
 <translation id="4445964943162061557">התכונה הזאת היא ניסיונית והתוצאות שלה לא תמיד מדויקות.</translation>
@@ -3094,6 +3093,7 @@ Del</translation>
 <translation id="5784606427469807560">הייתה בעיה באישור הכרטיס. יש לבדוק את החיבור לאינטרנט ולנסות שוב.</translation>
 <translation id="5785756445106461925">כמו כן, דף זה כולל משאבים נוספים שאינם מאובטחים. גורמים אחרים עלולים לראות את המשאבים האלה במהלך העברתם, ותוקף עלול לשנות אותם באופן שישנה את מראה הדף.</translation>
 <translation id="5787146423283493983">הסכם מפתח</translation>
+<translation id="5789643057113097023">.</translation>
 <translation id="5793317771769868848">אמצעי התשלום הזה יימחק מהמכשיר הזה</translation>
 <translation id="5794065675298686371">הפעלת התראות על מעקב מחירים</translation>
 <translation id="5797984091151707075">התוכן נחסם בגלל מדיניות האדמין</translation>
@@ -3758,7 +3758,6 @@ Del</translation>
 <translation id="6820143000046097424">יציאות טוריות</translation>
 <translation id="6820686453637990663">CVC</translation>
 <translation id="6820949753458790123">לשלם בתשלומים נוחים</translation>
-<translation id="6822745163454377107">כדי לקבל תשובות מהירות ואישיות יותר, אפשר לשתף את הכרטיסיות הפתוחות עם השרשור הזה.</translation>
 <translation id="6825578344716086703">‏ניסית להגיע אל <ph name="DOMAIN" />, אבל השרת הציג אישור שנחתם באמצעות אלגוריתם חתימה חלש (כמו SHA-1). המשמעות היא שפרטי האבטחה שהוצגו על-ידי השרת עלולים להיות מזויפים, וייתכן שהשרת הוא לא השרת שציפית לו (ייתכן שנוצר קשר בינך לבין התוקף).</translation>
 <translation id="6826993739343257035">‏להתיר AR?</translation>
 <translation id="6828150717884939426">שיחה</translation>
@@ -4852,6 +4851,7 @@ Del</translation>
 <translation id="8511402995811232419">‏ניהול קובצי Cookie</translation>
 <translation id="851353418319061866">בדיקת דיוק</translation>
 <translation id="8513580896341796021">ההורדה התחילה. כדי להציג אותה, צריך להקיש על |<ph name="ACCELERATOR" />|.</translation>
+<translation id="8515544520486085367">מילוי אוטומטי של פרטי התשלום</translation>
 <translation id="8519753333133776369">‏מכשיר HID שאושר על ידי האדמין</translation>
 <translation id="8521013008769249764">ספות וכורסאות</translation>
 <translation id="8521812709849134608">דלפקים</translation>
@@ -5274,7 +5274,6 @@ Del</translation>
 <translation id="9204089334327209740">אחרי שההעלאה תסתיים, אפשר יהיה לשנות את הקבצים ב-<ph name="CLOUD_PROVIDER" />. הקבצים באחסון המקומי, כולל הקבצים באשפה, יוסרו באופן אוטומטי.</translation>
 <translation id="9205078245616868884">הנתונים שלך מוצפנים באמצעות ביטוי הסיסמה לסנכרון. יש להזין אותו כדי להתחיל בסנכרון.</translation>
 <translation id="920643408853370361">ביטוח נסיעות</translation>
-<translation id="9206639970165643781">רוצה לשתף כרטיסיות פתוחות רלוונטיות כדי לקבל תשובות טובות יותר בשרשור הזה?</translation>
 <translation id="9207861905230894330">הוספת הפריט נכשלה.</translation>
 <translation id="9209339767782560829">הייתה בעיה בשימוש באישור ההתחברות שלך.</translation>
 <translation id="9210152531668884481">אני בעניין</translation>

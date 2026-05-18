@@ -1674,7 +1674,6 @@ Jos haluat piilottaa maksa myöhemmin ‑vaihtoehdot, siirry <ph name="BEGIN_LIN
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
 <translation id="3600492954573979888">Tarkista Googlen yksityisyysasetukset ‑painike, aktivoi siirtyäksesi Google-tilisi yksityisyysasetuksiin</translation>
 <translation id="3603507503523709">Järjestelmänvalvoja esti sovelluksen</translation>
-<translation id="3605082766859363473">Tekoälytila valittu</translation>
 <translation id="3605899229568538311">5 x 5 tuumaa</translation>
 <translation id="3606917451836803637">TV-ohjelmat</translation>
 <translation id="3608932978122581043">Syöttösuunta</translation>
@@ -2022,7 +2021,6 @@ Jos haluat piilottaa maksa myöhemmin ‑vaihtoehdot, siirry <ph name="BEGIN_LIN
 <translation id="411918202192379658">Automaattinen täyttö on entistä parempi</translation>
 <translation id="4121428309786185360">Vanhenee</translation>
 <translation id="4123572138124678573">Kolme reikää alareunassa</translation>
-<translation id="4125597496726375563">Luo kuva valittu</translation>
 <translation id="412601465078863288">Lataus aikakatkaistu</translation>
 <translation id="4127317221386336246">Asusteet</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{1 muu}other{# muuta}}</translation>
@@ -3094,6 +3092,7 @@ Jos haluat piilottaa maksa myöhemmin ‑vaihtoehdot, siirry <ph name="BEGIN_LIN
 <translation id="5784606427469807560">Korttia vahvistettaessa tapahtui virhe. Tarkista internetyhteys ja yritä uudelleen.</translation>
 <translation id="5785756445106461925">Tällä sivulla on kuitenkin muita osia, jotka eivät ole suojattuja. Muut voivat tarkastella näitä osia siirron aikana, ja hyökkääjä voi muuttaa sivun ulkoasua muokkaamalla näitä osia.</translation>
 <translation id="5787146423283493983">Avainsopimus</translation>
+<translation id="5789643057113097023">,</translation>
 <translation id="5793317771769868848">Tämä maksutapa poistetaan tältä laitteelta</translation>
 <translation id="5794065675298686371">Hintaseurantailmoitusten laittaminen päälle</translation>
 <translation id="5797984091151707075">Järjestelmänvalvojan käytännön estämä</translation>
@@ -3758,7 +3757,6 @@ Jos haluat piilottaa maksa myöhemmin ‑vaihtoehdot, siirry <ph name="BEGIN_LIN
 <translation id="6820143000046097424">sarjaportit</translation>
 <translation id="6820686453637990663">CVC</translation>
 <translation id="6820949753458790123">Maksa helposti erissä</translation>
-<translation id="6822745163454377107">Saat nopeampia ja räätälöidympiä vastauksia jakamalla avoimet välilehdet tähän viestiketjuun.</translation>
 <translation id="6825578344716086703"><ph name="DOMAIN" />-palvelin, johon yritit muodostaa yhteyden, esitti heikkoa allekirjoitusalgoritmia käyttävän varmenteen (esim. SHA-1). Tästä syystä palvelimen esittämät tunnistetiedot saattavat olla väärennettyjä. Palvelin ei siis välttämättä ole tavoittelemasi palvelin, vaan saatat viestiä hakkerin kanssa.</translation>
 <translation id="6826993739343257035">Sallitaanko AR?</translation>
 <translation id="6828150717884939426">Soita</translation>
@@ -5276,7 +5274,6 @@ Lisätietoja:
 <translation id="9204089334327209740">Kun lataus on valmis, voit muokata tiedostoja täällä: <ph name="CLOUD_PROVIDER" />. Paikallisen tallennustilan sisältö, myös roskakorissa olevat tiedostot, poistetaan automaattisesti.</translation>
 <translation id="9205078245616868884">Tietosi on salattu synkronoinnin tunnuslauseesi avulla. Aloita synkronointi antamalla tunnuslause.</translation>
 <translation id="920643408853370361">Matkavakuutukset</translation>
-<translation id="9206639970165643781">Haluatko jakaa relevantit avoimet välilehdet, jotta saat parempia vastauksia tähän viestiketjuun?</translation>
 <translation id="9207861905230894330">Artikkelin lisääminen epäonnistui.</translation>
 <translation id="9209339767782560829">Kirjautumisvarmenteen käytössä oli ongelma.</translation>
 <translation id="9210152531668884481">Laita päälle</translation>

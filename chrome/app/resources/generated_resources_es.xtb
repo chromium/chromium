@@ -1529,7 +1529,6 @@ Los permisos que hayas dado a aplicaciones se pueden aplicar a esta cuenta. Pued
 <translation id="2030803782168502207">Quitar suscripción del dispositivo</translation>
 <translation id="2031487800375552010">Las habilidades te permiten reutilizar fácilmente peticiones para tareas repetitivas</translation>
 <translation id="2031914984822377766">Añade tus <ph name="LINK_BEGIN" />idiomas preferidos para los sitios web<ph name="LINK_END" />. Para las traducciones, se usará el primer idioma de la lista.</translation>
-<translation id="2032837042715970520">OTP obligatoria</translation>
 <translation id="2034346955588403444">Añadir otra red Wi-Fi</translation>
 <translation id="2037445849770872822">Se ha configurado la supervisión de esta cuenta de Google. Si quieres configurar más controles parentales, selecciona Continuar.
 
@@ -3615,7 +3614,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3462413494201477527">¿Quieres cancelar la configuración de la cuenta?</translation>
 <translation id="346298925039590474">Esta red móvil estará disponible para todos los usuarios de este dispositivo</translation>
 <translation id="3464145797867108663">Añadir perfil de trabajo</translation>
-<translation id="34673353983913587">Antes de guardar tu nueva contraseña, el sitio requiere una verificación adicional</translation>
 <translation id="3468298837301810372">Etiqueta</translation>
 <translation id="3468999815377931311">Teléfono Android</translation>
 <translation id="3469583217479686109">Herramienta de selección</translation>
@@ -4017,7 +4015,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3732108843630241049">Este dispositivo ya no recibe actualizaciones de software automáticas. Activa las actualizaciones de seguridad ampliadas para mantener la seguridad, la estabilidad y el rendimiento. Algunas funciones estarán limitadas. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
 <translation id="3732414796052961578">Continuar como <ph name="ACCOUNT_NAME" /></translation>
 <translation id="3732530910372558017">El PIN debe tener 63 caracteres como máximo</translation>
-<translation id="3732706448780793442">Controlar manualmente</translation>
 <translation id="3733296813637058299">Vamos a instalarte algunas aplicaciones. Puedes buscar más aplicaciones para tu <ph name="DEVICE_TYPE" /> en Play Store.</translation>
 <translation id="3734547157266039796">Arrozal</translation>
 <translation id="3735039640698208086">Al reproducir el audio...</translation>
@@ -8325,7 +8322,6 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="6772103682557559072">Más opciones para la dirección de trabajo <ph name="ADDRESS_SUMMARY" /></translation>
 <translation id="6772974422346500939">Abrir y editar</translation>
 <translation id="6773595613448852535">Chrome Root Store</translation>
-<translation id="677394079035748956">El sitio necesita una contraseña de un solo uso</translation>
 <translation id="6774710250118040929">Añadir nueva contraseña</translation>
 <translation id="6775163072363532304">Aquí aparecerán los dispositivos disponibles.</translation>
 <translation id="677646486571529447">Añadir una nota</translation>
@@ -10038,7 +10034,6 @@ Pulsa un interruptor o una tecla con una acción asignada para quitársela.</tra
 <translation id="7943311690198910993">Método de inicio de sesión actualizado</translation>
 <translation id="7943368935008348579">Descargar archivos PDF</translation>
 <translation id="7943837619101191061">Añadir ubicación...</translation>
-<translation id="7944173382284143968">El sitio web requiere una confirmación de OTP antes de guardar la nueva contraseña. Toma el control del proceso manualmente para completar el cambio.</translation>
 <translation id="79446453817422139">Este archivo puede ser peligroso</translation>
 <translation id="7944772052836377867">Verifica tu identidad para usar la sincronización</translation>
 <translation id="7944847494038629732">Desconecta el cable USB del escáner y vuelve a conectarlo para intentarlo de nuevo</translation>

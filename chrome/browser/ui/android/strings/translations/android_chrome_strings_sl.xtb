@@ -705,6 +705,7 @@ Vaše šifrirane podatke lahko bere samo oseba, ki ima vaše geslo. Geslo ni pos
 <translation id="4084712963632273211">Vsebino objavil <ph name="PUBLISHER_ORIGIN" /> – <ph name="BEGIN_DEEMPHASIZED" />prikazuje jo Google<ph name="END_DEEMPHASIZED" /></translation>
 <translation id="4092709865241032354">Če želite Googlovemu upravitelju gesel pomagati shraniti podatke za prijavo, dodajte uporabniško ime za to spletno mesto</translation>
 <translation id="4095146165863963773">Izbris podatkov aplikacije?</translation>
+<translation id="4095483462103784441">Ustvarjanje nove skupine zavihkov</translation>
 <translation id="4096227151372679484">Postopek shranjevanja zaznamka, odprt pri polovični višini</translation>
 <translation id="4105527135143631701">Odprto okno za posodobitev Googlovega upravitelja gesel</translation>
 <translation id="4113030288477039509">Upravlja skrbnik</translation>
@@ -1639,6 +1640,7 @@ Nekatera spletna mesta se lahko na primer na zahtevo odzovejo tako, da prikažej
 <translation id="7821130663268546430">Vse odprte zavihke najdete v preklopu med zavihki</translation>
 <translation id="7822705602465980873">Ko ste prijavljeni, so ti podatki povezani z vašim računom Google, da vas zaščitijo v Googlovih storitvah, na primer za povečanje zaščite v Gmailu po varnostnem dogodku.</translation>
 <translation id="7824665136384946951">Vaša organizacija je izklopila Varno brskanje</translation>
+<translation id="7825973332242257878">Skupine zavihkov</translation>
 <translation id="7826342993930002256">Vaš Chrome povsod</translation>
 <translation id="7846161022626028328">Prišlo je do napake. Poskusite znova.</translation>
 <translation id="7846296061357476882">Googlove storitve</translation>

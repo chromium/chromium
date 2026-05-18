@@ -1524,7 +1524,6 @@
 <translation id="2030803782168502207">デバイスから登録を削除する</translation>
 <translation id="2031487800375552010">スキルを使用すると、繰り返し行うタスクのプロンプトを簡単に再利用できます</translation>
 <translation id="2031914984822377766">翻訳する<ph name="LINK_BEGIN" />ウェブサイトの言語<ph name="LINK_END" />を追加してください。リストの一番上の言語が翻訳に使用されます。</translation>
-<translation id="2032837042715970520">OTP が必要</translation>
 <translation id="2034346955588403444">他の Wi-Fi ネットワークを追加</translation>
 <translation id="2037445849770872822">管理機能がこの Google アカウントに設定されました。保護者による使用制限をさらに設定するには、[続行] を選択してください。
 
@@ -3601,7 +3600,6 @@
 <translation id="3462413494201477527">アカウントの設定をキャンセルしますか？</translation>
 <translation id="346298925039590474">このデバイスのすべてのユーザーがこのモバイル ネットワークを使用できます</translation>
 <translation id="3464145797867108663">仕事用プロファイルを追加</translation>
-<translation id="34673353983913587">新しいパスワードを保存する前に、サイトで追加認証を行う必要があります</translation>
 <translation id="3468298837301810372">ラベル</translation>
 <translation id="3468999815377931311">Android スマートフォン</translation>
 <translation id="3469583217479686109">選択ツール</translation>
@@ -4002,7 +4000,6 @@
 <translation id="3732108843630241049">このデバイスでは自動のソフトウェア アップデートは行われなくなります。セキュリティ アップデートの延長を有効にすると、引き続きセキュリティ、安定性、パフォーマンスを確保できます。なお、一部の機能は制限されます。<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
 <translation id="3732414796052961578"><ph name="ACCOUNT_NAME" /> として続行</translation>
 <translation id="3732530910372558017">PIN は 63 文字以内で指定してください</translation>
-<translation id="3732706448780793442">手動のプロセスに切り替え</translation>
 <translation id="3733296813637058299">これらのアプリをインストールします。Play ストアでは他にもご利用の <ph name="DEVICE_TYPE" /> 用のアプリを探すことができます。</translation>
 <translation id="3734547157266039796">水田</translation>
 <translation id="3735039640698208086">音声の再生方法:</translation>
@@ -8303,7 +8300,6 @@
 <translation id="6772103682557559072">「<ph name="ADDRESS_SUMMARY" />」の職場の住所に関するその他のオプション</translation>
 <translation id="6772974422346500939">開いて編集</translation>
 <translation id="6773595613448852535">Chrome Root Store</translation>
-<translation id="677394079035748956">このサイトではワンタイム パスワードが必要です</translation>
 <translation id="6774710250118040929">新しいパスワードを追加</translation>
 <translation id="6775163072363532304">利用可能なデバイスはここに表示されます。</translation>
 <translation id="677646486571529447">メモを追加</translation>
@@ -10013,7 +10009,6 @@
 <translation id="7943311690198910993">ログイン方法を更新しました</translation>
 <translation id="7943368935008348579">PDF をダウンロードする</translation>
 <translation id="7943837619101191061">位置情報を追加...</translation>
-<translation id="7944173382284143968">このウェブサイトでは、新しいパスワードを保存する前に OTP の確認が必要です。手動のプロセスに切り替えて、変更を完了してください。</translation>
 <translation id="79446453817422139">このファイルは危険な可能性があります</translation>
 <translation id="7944772052836377867">同期するには本人確認が必要です</translation>
 <translation id="7944847494038629732">スキャナの USB ケーブルを外し、もう一度差し込んでみてください</translation>

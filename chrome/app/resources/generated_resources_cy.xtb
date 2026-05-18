@@ -1541,7 +1541,6 @@ Mae'n bosib y bydd caniatadau rydych eisoes wedi'u rhoi i apiau yn berthnasol i'
 <translation id="2030803782168502207">Tynnu'r tanysgrifiad o'r ddyfais</translation>
 <translation id="2031487800375552010">Mae sgiliau'n caniatáu i chi ailddefnyddio anogwyr yn hawdd ar gyfer tasgau ailadroddus</translation>
 <translation id="2031914984822377766">Ychwanegu eich <ph name="LINK_BEGIN" />ieithoedd gwefan<ph name="LINK_END" /> a ffefrir. Defnyddir yr iaith o frig y rhestr ar gyfer cyfieithiadau.</translation>
-<translation id="2032837042715970520">Mae Angen OTP</translation>
 <translation id="2034346955588403444">Ychwanegu rhwydwaith Wi-Fi arall</translation>
 <translation id="2037445849770872822">Mae goruchwyliaeth wedi'i gosod ar gyfer y Cyfrif Google hwn. I osod rhagor o reolaethau rhieni, dewiswch Parhau.
 
@@ -3625,7 +3624,6 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.</t
 <translation id="3462413494201477527">Canslo gosod cyfrif?</translation>
 <translation id="346298925039590474">Bydd y rhwydwaith symudol hwn ar gael i'r holl ddefnyddwyr ar y ddyfais hon</translation>
 <translation id="3464145797867108663">Ychwanegu proffil gwaith</translation>
-<translation id="34673353983913587">Cyn cadw eich cyfrinair newydd, mae angen dilysu ychwanegol ar y wefan</translation>
 <translation id="3468298837301810372">Label</translation>
 <translation id="3468999815377931311">Ffôn Android</translation>
 <translation id="3469583217479686109">Offeryn Dewis</translation>
@@ -4027,7 +4025,6 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.</t
 <translation id="3732108843630241049">Nid yw'r ddyfais hon bellach yn derbyn diweddariadau meddalwedd awtomatig. Trowch ddiweddariadau diogelwch estynedig ymlaen ar gyfer diogelwch, sefydlogrwydd a pherfformiad parhaus. Bydd rhai swyddogaethau'n gyfyngedig. <ph name="LINK_BEGIN" />Dysgu rhagor<ph name="LINK_END" /></translation>
 <translation id="3732414796052961578">Parhau fel <ph name="ACCOUNT_NAME" /></translation>
 <translation id="3732530910372558017">Rhaid i'r PIN fod yn 63 nod ar y mwyaf</translation>
-<translation id="3732706448780793442">Cymryd drosodd eich hun</translation>
 <translation id="3733296813637058299">Byddwn yn gosod yr apiau hynny i chi. Gallwch ddod o hyd i ragor o apiau ar gyfer eich <ph name="DEVICE_TYPE" /> yn Play Store.</translation>
 <translation id="3734547157266039796">Cae reis</translation>
 <translation id="3735039640698208086">Wrth chwarae sain...</translation>
@@ -8344,7 +8341,6 @@ Mae gennych # cyfrinair arall sydd wedi'u darganfod. Mae Rheolwr Cyfrineiriau Go
 <translation id="6772103682557559072">Rhagor o opsiynau ar gyfer cyfeiriad gwaith <ph name="ADDRESS_SUMMARY" /></translation>
 <translation id="6772974422346500939">Agor a golygu</translation>
 <translation id="6773595613448852535">Storfa Tystysgrifau Chrome</translation>
-<translation id="677394079035748956">Mae angen cyfrinair untro ar y wefan</translation>
 <translation id="6774710250118040929">Ychwanegu cyfrinair newydd</translation>
 <translation id="6775163072363532304">Bydd y dyfeisiau sydd ar gael yn ymddangos yma.</translation>
 <translation id="677646486571529447">Ychwanegu Nodyn</translation>
@@ -10055,7 +10051,6 @@ Pwyswch switsh neu fysell a aseiniwyd i dynnu aseiniad.</translation>
 <translation id="7943311690198910993">Diweddarwyd y dull mewngofnodi</translation>
 <translation id="7943368935008348579">Lawrlwytho ffeiliau PDF</translation>
 <translation id="7943837619101191061">Ychwanegu Lleoliad...</translation>
-<translation id="7944173382284143968">Mae'r wefan angen cadarnhad OTP cyn cadw'r cyfrinair newydd. Cymerwch y broses drosodd eich hun i gwblhau'r newid.</translation>
 <translation id="79446453817422139">Gallai'r ffeil hon fod yn beryglus</translation>
 <translation id="7944772052836377867">Mae angen i gysoni gadarnhau mai chi sydd yno</translation>
 <translation id="7944847494038629732">Dadblygiwch gebl USB y sganiwr a'i ail-blygio i roi cynnig arall arni</translation>

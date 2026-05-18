@@ -1674,7 +1674,6 @@ Para ocultar las opciones de pago más tarde, ve a la <ph name="BEGIN_LINK" />co
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
 <translation id="3600492954573979888">Botón Administrar la configuración de privacidad de Google: actívalo para visitar la configuración de privacidad de tu Cuenta de Google</translation>
 <translation id="3603507503523709">El administrador bloqueó la aplicación</translation>
-<translation id="3605082766859363473">Se seleccionó el Modo IA</translation>
 <translation id="3605899229568538311">12.7 × 12.7 cm (5 × 5 in)</translation>
 <translation id="3606917451836803637">Programas de TV</translation>
 <translation id="3608932978122581043">Orientación de la entrada</translation>
@@ -2021,7 +2020,6 @@ Para ocultar las opciones de pago más tarde, ve a la <ph name="BEGIN_LINK" />co
 <translation id="411918202192379658">Autocompletar ahora es mejor</translation>
 <translation id="4121428309786185360">Vence el</translation>
 <translation id="4123572138124678573">Perforación triple en la parte inferior</translation>
-<translation id="4125597496726375563">Se seleccionó la opción Crear imagen</translation>
 <translation id="412601465078863288">Se agotó el tiempo de espera para subir tus archivos</translation>
 <translation id="4127317221386336246">Accesorios de vestir</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{1 más}other{# más}}</translation>
@@ -3091,6 +3089,7 @@ Para ocultar las opciones de pago más tarde, ve a la <ph name="BEGIN_LINK" />co
 <translation id="5784606427469807560">Se produjo un problema al confirmar tu tarjeta. Comprueba tu conexión a Internet y vuelve a intentarlo.</translation>
 <translation id="5785756445106461925">Además, esta página incluye otros recursos que no son seguros. Otras personas pueden ver estos recursos mientras se encuentran en tránsito, y un atacante puede modificarlos para cambiar la apariencia de la página.</translation>
 <translation id="5787146423283493983">Acuerdo de claves</translation>
+<translation id="5789643057113097023">.</translation>
 <translation id="5793317771769868848">Se borrará esta forma de pago de este dispositivo.</translation>
 <translation id="5794065675298686371">Activa las notificaciones de seguimiento de precios</translation>
 <translation id="5797984091151707075">Un política del administrador bloqueó este contenido</translation>
@@ -3755,7 +3754,6 @@ Para ocultar las opciones de pago más tarde, ve a la <ph name="BEGIN_LINK" />co
 <translation id="6820143000046097424">puertos en serie</translation>
 <translation id="6820686453637990663">CVC</translation>
 <translation id="6820949753458790123">Paga en cuotas sencillas</translation>
-<translation id="6822745163454377107">Comparte tus pestañas abiertas con este hilo para obtener respuestas más rápidas y personalizadas.</translation>
 <translation id="6825578344716086703">Intentaste acceder a <ph name="DOMAIN" />, pero el servidor presentó un certificado firmado con un algoritmo de firma no seguro (como SHA-1). Esto significa que podrían haberse falsificado las credenciales de seguridad presentadas por el servidor y que este no sea el servidor esperado (es posible que hayas establecido comunicación con un atacante).</translation>
 <translation id="6826993739343257035">¿Queres permitir la RA?</translation>
 <translation id="6828150717884939426">Llamar</translation>
@@ -5273,7 +5271,6 @@ Detalles adicionales:
 <translation id="9204089334327209740">Una vez que se complete la carga, podrás modificar tus archivos en <ph name="CLOUD_PROVIDER" />. El almacenamiento local, que incluye los archivos de la papelera, se quitará automáticamente.</translation>
 <translation id="9205078245616868884">Tus datos están encriptados con tu frase de contraseña para sincronización. Debes ingresarla para iniciar la sincronización.</translation>
 <translation id="920643408853370361">Seguro de viaje</translation>
-<translation id="9206639970165643781">¿Quieres compartir las pestañas abiertas pertinentes para obtener mejores respuestas en este hilo?</translation>
 <translation id="9207861905230894330">Error al agregar artículo</translation>
 <translation id="9209339767782560829">Se produjo un error al usar tu certificado de acceso.</translation>
 <translation id="9210152531668884481">Aceptar</translation>

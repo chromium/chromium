@@ -1671,7 +1671,6 @@
 <translation id="3600246354004376029"><ph name="TITLE" />，<ph name="DOMAIN" />，<ph name="TIME" /></translation>
 <translation id="3600492954573979888">「管理 Google 隱私權設定」按鈕，啟動後即可前往 Google 帳戶隱私權設定</translation>
 <translation id="3603507503523709">已遭系統管理員封鎖的應用程式</translation>
-<translation id="3605082766859363473">已選取 AI 模式</translation>
 <translation id="3605899229568538311">5 x 5 吋</translation>
 <translation id="3606917451836803637">電視表演與節目</translation>
 <translation id="3608932978122581043">送紙方向</translation>
@@ -1819,6 +1818,7 @@
 <translation id="380865868633614173">正在儲存卡片資訊</translation>
 <translation id="3810770279996899697">密碼管理工具需要 macOS 鑰匙圈存取權</translation>
 <translation id="3810973564298564668">管理</translation>
+<translation id="3811328723651698330"><ph name="STRING_1" />，<ph name="STRING_2" /></translation>
 <translation id="3812398568375898177">這是重大更新，可以改善 ChromeOS 上 Android 應用程式的效能。</translation>
 <translation id="3814865536373139791">簡化貴機構的政策管理流程</translation>
 <translation id="3815434930383843058">8 x 12 吋</translation>
@@ -2018,7 +2018,6 @@
 <translation id="411918202192379658">自動填入功能再進化</translation>
 <translation id="4121428309786185360">到期日</translation>
 <translation id="4123572138124678573">三孔 (底部)</translation>
-<translation id="4125597496726375563">生成所選圖片</translation>
 <translation id="412601465078863288">上傳作業逾時</translation>
 <translation id="4127317221386336246">服飾配件</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{以及另外 1 項表單資料}other{以及另外 # 項表單資料}}</translation>
@@ -2399,6 +2398,7 @@
 <translation id="4736934858538408121">虛擬卡片</translation>
 <translation id="473775607612524610">更新</translation>
 <translation id="4738601419177586157">「<ph name="TEXT" />」搜尋建議</translation>
+<translation id="473866660302034629"><ph name="TAB_TITLE" />，已選取的分頁，第 <ph name="INDEX" /> 個，共 <ph name="TOTAL" /> 個，使用向左鍵或向右鍵可切換分頁</translation>
 <translation id="4742407542027196863">管理密碼…</translation>
 <translation id="474270528725216349">來自已同步裝置上的至少 1 個網站</translation>
 <translation id="4743275772928623722">系統已完成更新，但部分應用程式和檔案無法復原。系統會自動再次下載應用程式。</translation>
@@ -2466,6 +2466,7 @@
 <translation id="4832961164064927107">烤肉與燒烤</translation>
 <translation id="4835568975547260025">Chrome 預設會分享已開啟的相關分頁，協助你取得更貼近需求的解答。</translation>
 <translation id="4840250757394056958">查看 Chrome 歷史記錄</translation>
+<translation id="4842365697443353018">請清除表單內容，才能使用「先買後付」選項</translation>
 <translation id="484462545196658690">自動</translation>
 <translation id="4844937814014739139">捲動及縮放已分享的分頁</translation>
 <translation id="484671803914931257">取得 <ph name="MERCHANT_NAME" /> 和其他商家的折扣</translation>
@@ -3088,6 +3089,7 @@
 <translation id="5784606427469807560">驗證您的信用卡時發生問題。請檢查網際網路連線，然後再試一次。</translation>
 <translation id="5785756445106461925">此外，這個網頁含有其他不安全的資源。其他人可能會在資源傳輸期間檢視這些資源，攻擊者也可能會修改這些資源，進而變更網頁外觀。</translation>
 <translation id="5787146423283493983">金鑰協議</translation>
+<translation id="5789643057113097023">.</translation>
 <translation id="5793317771769868848">這個付款方式將從這部裝置上刪除</translation>
 <translation id="5794065675298686371">開啟價格追蹤通知</translation>
 <translation id="5797984091151707075">已遭管理員政策封鎖</translation>
@@ -3752,7 +3754,6 @@
 <translation id="6820143000046097424">序列埠</translation>
 <translation id="6820686453637990663">信用卡驗證碼</translation>
 <translation id="6820949753458790123">輕鬆分期付款</translation>
-<translation id="6822745163454377107">將開啟的分頁分享給這個對話，加快取得更貼近需求的回覆。</translation>
 <translation id="6825578344716086703">你嘗試連上 <ph name="DOMAIN" />，但伺服器的憑證是以防護力薄弱的簽章演算法 (例如 SHA-1) 進行簽署。這代表伺服器提供的安全憑證可能遭到偽造，而且這個伺服器可能並不是你的目標伺服器 (你的連線對象可能是攻擊者的電腦)。</translation>
 <translation id="6826993739343257035">要允許 AR 嗎？</translation>
 <translation id="6828150717884939426">撥號</translation>
@@ -5268,7 +5269,6 @@
 <translation id="9204089334327209740">上傳完成後，你可以在 <ph name="CLOUD_PROVIDER" /> 中修改檔案。系統會自動移除本機儲存空間中的檔案 (包括垃圾桶中的所有檔案)。</translation>
 <translation id="9205078245616868884">您已使用同步通關密語對資料進行加密，請輸入通關密語開始進行同步。</translation>
 <translation id="920643408853370361">旅遊保險</translation>
-<translation id="9206639970165643781">是否要分享相關的已開啟分頁，在此對話中取得更實用的回覆？</translation>
 <translation id="9207861905230894330">無法新增文章。</translation>
 <translation id="9209339767782560829">使用登入憑證時發生問題。</translation>
 <translation id="9210152531668884481">我同意</translation>

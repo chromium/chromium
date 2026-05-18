@@ -705,6 +705,7 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="4084712963632273211">Fra <ph name="PUBLISHER_ORIGIN" /> – <ph name="BEGIN_DEEMPHASIZED" />leveret af Google<ph name="END_DEEMPHASIZED" /></translation>
 <translation id="4092709865241032354">Tilføj dit brugernavn for dette website for at hjælpe Google Adgangs­kode­admin­istrator med at gemme dine loginoplysninger</translation>
 <translation id="4095146165863963773">Vil du slette appdata?</translation>
+<translation id="4095483462103784441">Opret ny fanegruppe</translation>
 <translation id="4096227151372679484">Flow til lagring af bogmærker er åbnet i halv højde</translation>
 <translation id="4105527135143631701">Opdateringen af Google Adgangskodeadministrator blev åbnet</translation>
 <translation id="4113030288477039509">Administreres af din administrator</translation>
@@ -1639,6 +1640,7 @@ Du kan ændre denne indstilling ved at <ph name="BEGIN_LINK" />slette Chrome-dat
 <translation id="7821130663268546430">Du kan finde alle åbne faner i Faneskift</translation>
 <translation id="7822705602465980873">Når du er logget ind, knyttes disse data til din Google-konto for at beskytte dig i Google-tjenester, f.eks. ved at øge beskyttelsen i Gmail efter en sikkerhedshændelse.</translation>
 <translation id="7824665136384946951">Din organisation har deaktiveret Beskyttet browsing</translation>
+<translation id="7825973332242257878">Fanegrupper</translation>
 <translation id="7826342993930002256">Dit Chrome – overalt</translation>
 <translation id="7846161022626028328">Der opstod en fejl. Prøv igen.</translation>
 <translation id="7846296061357476882">Google-tjenester</translation>

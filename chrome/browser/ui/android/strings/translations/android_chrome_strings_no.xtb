@@ -705,6 +705,7 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="4084712963632273211">Fra <ph name="PUBLISHER_ORIGIN" /> – <ph name="BEGIN_DEEMPHASIZED" />levert av Google<ph name="END_DEEMPHASIZED" /></translation>
 <translation id="4092709865241032354">For å hjelpe Google Passordlagring med å lagre påloggingsinformasjonen din, legg til brukernavnet ditt for dette nettstedet</translation>
 <translation id="4095146165863963773">Slette appdataene?</translation>
+<translation id="4095483462103784441">Opprett en ny fanegruppe</translation>
 <translation id="4096227151372679484">Flyt for lagring av bokmerke er åpnet i halv høyde</translation>
 <translation id="4105527135143631701">Oppdatering av Google Passordlagring er åpnet</translation>
 <translation id="4113030288477039509">Styres av administratoren din</translation>
@@ -1639,6 +1640,7 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />slett Chrome-dataene i
 <translation id="7821130663268546430">Du finner alle åpne faner i fanevelgeren</translation>
 <translation id="7822705602465980873">Når du er logget på, blir disse dataene knyttet til Google-kontoen din for å beskytte deg på alle Google-tjenester, for eksempel ved at beskyttelsen i Gmail økes etter sikkerhetshendelser.</translation>
 <translation id="7824665136384946951">Organisasjonen din har slått av Safe Browsing</translation>
+<translation id="7825973332242257878">Fanegrupper</translation>
 <translation id="7826342993930002256">Din egen Chrome, overalt</translation>
 <translation id="7846161022626028328">Det oppsto en feil. Prøv på nytt.</translation>
 <translation id="7846296061357476882">Google-tjenester</translation>

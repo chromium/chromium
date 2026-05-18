@@ -1673,7 +1673,6 @@ Ili ufiche chaguo za kulipa baadaye, nenda kwenye <ph name="BEGIN_LINK" />mipang
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
 <translation id="3600492954573979888">Kitufe cha 'Dhibiti mipangilio ya Faragha kwenye Google', washa ili uende kwenye mipangilio ya faragha ya Akaunti yako ya Google</translation>
 <translation id="3603507503523709">Programu imezuiwa na msimamizi wako</translation>
-<translation id="3605082766859363473">Umechagua Modi ya AI</translation>
 <translation id="3605899229568538311">Inchi 5 x 5</translation>
 <translation id="3606917451836803637">Vipindi na Maonyesho ya TV</translation>
 <translation id="3608932978122581043">Weka mkao</translation>
@@ -2021,7 +2020,6 @@ Ili ufiche chaguo za kulipa baadaye, nenda kwenye <ph name="BEGIN_LINK" />mipang
 <translation id="411918202192379658">Kipengele cha kujaza kiotomatiki kimeboreshwa</translation>
 <translation id="4121428309786185360">Muda Wake Unakwisha</translation>
 <translation id="4123572138124678573">Toboa mara tatu chini</translation>
-<translation id="4125597496726375563">Umechagua kubuni picha</translation>
 <translation id="412601465078863288">Muda wa kupakia umeisha</translation>
 <translation id="4127317221386336246">Vifuasi vya Mavazi</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{Nyingine 1 }other{Nyingine #}}</translation>
@@ -3093,6 +3091,7 @@ Ili ufiche chaguo za kulipa baadaye, nenda kwenye <ph name="BEGIN_LINK" />mipang
 <translation id="5784606427469807560">Kulikuwa na tatizo wakati wa kuthibitisha kadi yako. Angalia muunganisho wako wa intaneti kisha ujaribu tena.</translation>
 <translation id="5785756445106461925">Mbali na hayo, ukurasa huu una rasilimali nyingine zisizo salama. Rasilimali hizi zinaweza kuangaliwa na watu wengine wanaosafiri, na zinaweza kurekebishwa na mvamizi kubadilisha mwonekano wa ukurasa.</translation>
 <translation id="5787146423283493983">Makubaliano ya Funguo</translation>
+<translation id="5789643057113097023">.</translation>
 <translation id="5793317771769868848">Njia hii ya kulipa itafutwa kwenye kifaa hiki</translation>
 <translation id="5794065675298686371">Washa arifa za ufuatiliaji wa bei</translation>
 <translation id="5797984091151707075">Yamezuiwa na sera ya msimamizi</translation>
@@ -3757,7 +3756,6 @@ Ili ufiche chaguo za kulipa baadaye, nenda kwenye <ph name="BEGIN_LINK" />mipang
 <translation id="6820143000046097424">milango inayosambaza biti moja moja ya data</translation>
 <translation id="6820686453637990663">CVC</translation>
 <translation id="6820949753458790123">Lipa kwa malipo rahisi ya poleploe</translation>
-<translation id="6822745163454377107">Pata majibu ya haraka na yaliyowekewa mapendeleo zaidi kwa kuruhusu mazungumzo haya yafikie vichupo ulivyofungua.</translation>
 <translation id="6825578344716086703">Umejaribu kufikia <ph name="DOMAIN" />, lakini seva iliwasilisha cheti kilichotiwa sahihi na kanuni duni. Hii inamaanisha kuwa stakabadhi za usalama zilizowasilishwa na seva hiyo huenda ni bandia na seva hiyo huenda ikawa si ile uliyotarajia (unaweza kuwa unawasiliana na mvamizi).</translation>
 <translation id="6826993739343257035">Ungependa kuruhusu AR?</translation>
 <translation id="6828150717884939426">Piga simu</translation>
@@ -5271,7 +5269,6 @@ Ili ufiche chaguo za kulipa baadaye, nenda kwenye <ph name="BEGIN_LINK" />mipang
 <translation id="9204089334327209740">Baada ya kukamilisha kupakia, unaweza kurekebisha faili zako kwenye <ph name="CLOUD_PROVIDER" />. Hifadhi ya kifaa, ikiwa ni pamoja na faili zozote zilizo kwenye Tupio, zitaondolewa kiotomatiki.</translation>
 <translation id="9205078245616868884">Data yako imesimbwa kwa njia fiche kwa kauli yako ya siri ya kusawazisha. Iweke ile uanze kusawazisha.</translation>
 <translation id="920643408853370361">Bima ya Safari</translation>
-<translation id="9206639970165643781">Ungependa kuruhusu vichupo husika ulivyofungua vifikiwe ili upate majibu bora zaidi katika mazungumzo haya?</translation>
 <translation id="9207861905230894330">Haikufaulu kuongeza makala.</translation>
 <translation id="9209339767782560829">Hitilafu fulani imetokea wakati wa kutumia cheti chako cha kuingia katika akaunti.</translation>
 <translation id="9210152531668884481">Ninakubali</translation>

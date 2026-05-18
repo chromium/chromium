@@ -1673,7 +1673,6 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
 <translation id="3600492954573979888">Manage Google privacy settings button, activate to visit your Google Account privacy settings</translation>
 <translation id="3603507503523709">Application blocked by your administrator</translation>
-<translation id="3605082766859363473">AI Mode selected</translation>
 <translation id="3605899229568538311">5 in x 5 in</translation>
 <translation id="3606917451836803637">TV shows and programmes</translation>
 <translation id="3608932978122581043">Feed orientation</translation>
@@ -2021,7 +2020,6 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="411918202192379658">Autofill just got better</translation>
 <translation id="4121428309786185360">Expires On</translation>
 <translation id="4123572138124678573">Triple punch bottom</translation>
-<translation id="4125597496726375563">Create image selected</translation>
 <translation id="412601465078863288">Uploading timed out</translation>
 <translation id="4127317221386336246">Clothing Accessories</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{1 other}other{# others}}</translation>
@@ -3093,6 +3091,7 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="5784606427469807560">There was a problem confirming your card. Check your Internet connection and try again.</translation>
 <translation id="5785756445106461925">Further, this page includes other resources which are not secure. These resources can be viewed by others while in transit, and can be modified by an attacker to change the look of the page.</translation>
 <translation id="5787146423283493983">Key Agreement</translation>
+<translation id="5789643057113097023">.</translation>
 <translation id="5793317771769868848">This payment method will be deleted from this device</translation>
 <translation id="5794065675298686371">Turn on price tracking notifications</translation>
 <translation id="5797984091151707075">Blocked by admin policy</translation>
@@ -3757,7 +3756,6 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="6820143000046097424">serial ports</translation>
 <translation id="6820686453637990663">CVC</translation>
 <translation id="6820949753458790123">Pay in easy instalments</translation>
-<translation id="6822745163454377107">Get faster, more tailored responses by sharing your open tabs with this thread.</translation>
 <translation id="6825578344716086703">You attempted to reach <ph name="DOMAIN" />, but the server presented a certificate signed using a weak signature algorithm (such as SHA-1). This means that the security credentials that the server presented could have been forged, and the server may not be the server that you expected (you may be communicating with an attacker).</translation>
 <translation id="6826993739343257035">Allow AR?</translation>
 <translation id="6828150717884939426">Call</translation>
@@ -5274,7 +5272,6 @@ Additional details:
 <translation id="9204089334327209740">Once the upload is complete, you can modify your files in <ph name="CLOUD_PROVIDER" />. Local storage, including any files in Trash, will be automatically removed.</translation>
 <translation id="9205078245616868884">Your data is encrypted with your sync passphrase. Enter it to start sync.</translation>
 <translation id="920643408853370361">Travel insurance</translation>
-<translation id="9206639970165643781">Share relevant open tabs for better responses in this thread?</translation>
 <translation id="9207861905230894330">Failed to add article.</translation>
 <translation id="9209339767782560829">There was a problem using your login certificate.</translation>
 <translation id="9210152531668884481">I'm in</translation>

@@ -1520,7 +1520,6 @@ Comprova les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_MANAGE
 <translation id="2030803782168502207">Suprimeix la subscripció del dispositiu</translation>
 <translation id="2031487800375552010">Les habilitats et permeten reutilitzar fàcilment les indicacions per a tasques repetitives</translation>
 <translation id="2031914984822377766">Afegeix els teus <ph name="LINK_BEGIN" />idiomes preferits per als llocs web<ph name="LINK_END" />. S'utilitzarà el primer idioma de la llista per a les traduccions.</translation>
-<translation id="2032837042715970520">Cal introduir l'OTP</translation>
 <translation id="2034346955588403444">Afegeix una altra xarxa Wi-Fi</translation>
 <translation id="2037445849770872822">S'ha configurat la supervisió d'aquest Compte de Google. Per configurar més controls parentals, selecciona Continua.
 
@@ -3595,7 +3594,6 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="3462413494201477527">Voleu cancel·lar la configuració del compte?</translation>
 <translation id="346298925039590474">Aquesta xarxa mòbil estarà disponible per a tots els usuaris d'aquest dispositiu</translation>
 <translation id="3464145797867108663">Afegeix un perfil de treball</translation>
-<translation id="34673353983913587">Abans de desar la contrasenya nova, el lloc web requereix una verificació addicional</translation>
 <translation id="3468298837301810372">Etiqueta</translation>
 <translation id="3468999815377931311">Telèfon Android</translation>
 <translation id="3469583217479686109">Eina de selecció</translation>
@@ -3997,7 +3995,6 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="3732108843630241049">Aquest dispositiu ja no rep actualitzacions de programari automàtiques. Activa les actualitzacions de seguretat ampliades per mantenir la seguretat, l'estabilitat i el rendiment. Una part de la funcionalitat estarà limitada. <ph name="LINK_BEGIN" />Més informació<ph name="LINK_END" /></translation>
 <translation id="3732414796052961578">Continua com a <ph name="ACCOUNT_NAME" /></translation>
 <translation id="3732530910372558017">El PIN pot tenir com a màxim 63 caràcters</translation>
-<translation id="3732706448780793442">Controla manualment</translation>
 <translation id="3733296813637058299">T'instal·larem aquestes aplicacions. Pots trobar més aplicacions per al teu <ph name="DEVICE_TYPE" /> a Play Store.</translation>
 <translation id="3734547157266039796">Arrossar</translation>
 <translation id="3735039640698208086">En reproduir àudio…</translation>
@@ -8298,7 +8295,6 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="6772103682557559072">Més opcions per a l'adreça de la feina <ph name="ADDRESS_SUMMARY" /></translation>
 <translation id="6772974422346500939">Obre i edita</translation>
 <translation id="6773595613448852535">Chrome Root Store</translation>
-<translation id="677394079035748956">El lloc web necessita una contrasenya d'un sol ús</translation>
 <translation id="6774710250118040929">Afegeix una contrasenya nova</translation>
 <translation id="6775163072363532304">Els dispositius disponibles es mostraran aquí.</translation>
 <translation id="677646486571529447">Afegeix una nota</translation>
@@ -10004,7 +10000,6 @@ Prem un interruptor o una tecla assignats per suprimir una assignació.</transla
 <translation id="7943311690198910993">S'ha actualitzat el mètode d'inici de sessió</translation>
 <translation id="7943368935008348579">Baixa els fitxers PDF</translation>
 <translation id="7943837619101191061">Afegeix una ubicació...</translation>
-<translation id="7944173382284143968">El lloc web requereix la confirmació d'OTP abans de desar la contrasenya nova. Assumeix el procés manualment per completar el canvi.</translation>
 <translation id="79446453817422139">Aquest fitxer pot ser perillós</translation>
 <translation id="7944772052836377867">La sincronització ha de verificar la teva identitat</translation>
 <translation id="7944847494038629732">Desendolla el cable USB de l'escàner i torna a endollar-lo per provar-ho de nou</translation>

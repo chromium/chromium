@@ -1673,7 +1673,6 @@ Para ocultar as opcións de pago aprazado, vai á <ph name="BEGIN_LINK" />config
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
 <translation id="3600492954573979888">Botón para xestionar a configuración de privacidade de Google. Actívao para acceder á configuración de privacidade da túa Conta de Google</translation>
 <translation id="3603507503523709">O administrador bloqueou a aplicación</translation>
-<translation id="3605082766859363473">Seleccionouse o modo IA</translation>
 <translation id="3605899229568538311">5 x 5 polgadas</translation>
 <translation id="3606917451836803637">Series e programas de televisión</translation>
 <translation id="3608932978122581043">Orientación da alimentación</translation>
@@ -2020,7 +2019,6 @@ Para ocultar as opcións de pago aprazado, vai á <ph name="BEGIN_LINK" />config
 <translation id="411918202192379658">A función de autocompletar agora é mellor</translation>
 <translation id="4121428309786185360">Data de caducidade</translation>
 <translation id="4123572138124678573">Tres perforacións na parte inferior</translation>
-<translation id="4125597496726375563">Crear imaxe seleccionada</translation>
 <translation id="412601465078863288">Esgotouse o tempo de espera para a carga</translation>
 <translation id="4127317221386336246">Accesorios de moda</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{1 máis}other{# máis}}</translation>
@@ -3090,6 +3088,7 @@ Para ocultar as opcións de pago aprazado, vai á <ph name="BEGIN_LINK" />config
 <translation id="5784606427469807560">Produciuse un problema ao confirmar a túa tarxeta. Comproba a túa conexión a Internet e téntao de novo.</translation>
 <translation id="5785756445106461925">Ademais, esta páxina inclúe outros recursos que non son seguros. Outros usuarios poden ver estes recursos mentres se desprazan e un atacante pode cambiar o aspecto da páxina.</translation>
 <translation id="5787146423283493983">Acordo de claves</translation>
+<translation id="5789643057113097023">.</translation>
 <translation id="5793317771769868848">Este método de pago eliminarase do dispositivo</translation>
 <translation id="5794065675298686371">Activar as notificacións de seguimento de prezos</translation>
 <translation id="5797984091151707075">Bloqueouse debido á política de administración</translation>
@@ -3754,7 +3753,6 @@ Para ocultar as opcións de pago aprazado, vai á <ph name="BEGIN_LINK" />config
 <translation id="6820143000046097424">portos de serie</translation>
 <translation id="6820686453637990663">CVC</translation>
 <translation id="6820949753458790123">Paga en cómodos prazos</translation>
-<translation id="6822745163454377107">Comparte as pestanas abertas con este fío de mensaxes para obter respostas máis rápidas e personalizadas.</translation>
 <translation id="6825578344716086703">Tentaches acceder a <ph name="DOMAIN" />, pero o servidor presentou un certificado asinado cun algoritmo de sinatura pouco seguro (como SHA-1). Unha posible causa deste problema é que se falsificasen as credenciais de seguranza presentadas polo servidor e que o servidor non sexa o que esperas. É probable que te comuniques cun pirata informático.</translation>
 <translation id="6826993739343257035">Queres permitir realidade aumentada?</translation>
 <translation id="6828150717884939426">Chamar</translation>
@@ -5270,7 +5268,6 @@ Detalles adicionais:
 <translation id="9204089334327209740">Cando se complete a carga, poderás modificar os ficheiros en <ph name="CLOUD_PROVIDER" />. O almacenamento local (incluídos os ficheiros da papeleira) quitarase automaticamente.</translation>
 <translation id="9205078245616868884">Os teus datos encriptáronse co teu contrasinal de sincronización. Introdúceo para comezar a sincronización.</translation>
 <translation id="920643408853370361">Seguros de viaxe</translation>
-<translation id="9206639970165643781">Queres compartir as pestanas abertas relevantes para obter mellores respostas neste fío de mensaxes?</translation>
 <translation id="9207861905230894330">Non se puido engadir o artigo.</translation>
 <translation id="9209339767782560829">Produciuse un problema ao usar o teu certificado de inicio de sesión.</translation>
 <translation id="9210152531668884481">Acepto</translation>

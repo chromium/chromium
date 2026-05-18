@@ -1673,7 +1673,6 @@ Gå till <ph name="BEGIN_LINK" />betalningsinställningarna<ph name="END_LINK" /
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
 <translation id="3600492954573979888">Knappen Hantera Googles integritetsinställningar: aktivera om du vill öppna Google-kontots integritetsinställningar</translation>
 <translation id="3603507503523709">Appen blockeras av administratören</translation>
-<translation id="3605082766859363473">AI-läge har valts</translation>
 <translation id="3605899229568538311">5 x 5 tum</translation>
 <translation id="3606917451836803637">Tv-serier och tv-program</translation>
 <translation id="3608932978122581043">Ställa in riktning</translation>
@@ -2020,7 +2019,6 @@ Gå till <ph name="BEGIN_LINK" />betalningsinställningarna<ph name="END_LINK" /
 <translation id="411918202192379658">Autofyll har nu blivit ännu bättre</translation>
 <translation id="4121428309786185360">Giltig till</translation>
 <translation id="4123572138124678573">Tre hål längst ned</translation>
-<translation id="4125597496726375563">Skapa bild har valts</translation>
 <translation id="412601465078863288">Tidsgränsen för uppladdning överskreds</translation>
 <translation id="4127317221386336246">Accessoarer</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{1 till}other{# till}}</translation>
@@ -3090,6 +3088,7 @@ Gå till <ph name="BEGIN_LINK" />betalningsinställningarna<ph name="END_LINK" /
 <translation id="5784606427469807560">Det gick inte att bekräfta kortet. Kontrollera internetanslutningen och försök igen.</translation>
 <translation id="5785756445106461925">Den här sidan innehåller emellertid andra resurser som inte är säkra. Andra kan se resurserna när de överförs och hackare kan ändra resurserna så att sidan får ett annat utseende.</translation>
 <translation id="5787146423283493983">Nyckelavtal</translation>
+<translation id="5789643057113097023">,</translation>
 <translation id="5793317771769868848">Den här betalningsmetoden raderas från enheten</translation>
 <translation id="5794065675298686371">Aktivera aviseringar om prisbevakning</translation>
 <translation id="5797984091151707075">Blockeras av administratörspolicyn</translation>
@@ -3754,7 +3753,6 @@ Gå till <ph name="BEGIN_LINK" />betalningsinställningarna<ph name="END_LINK" /
 <translation id="6820143000046097424">serieportar</translation>
 <translation id="6820686453637990663">CVC</translation>
 <translation id="6820949753458790123">Enkla avbetalningar</translation>
-<translation id="6822745163454377107">Få snabbare och mer anpassade svar genom att dela dina öppna flikar i den här diskussionen.</translation>
 <translation id="6825578344716086703">Du försökte besöka <ph name="DOMAIN" />, men servern skickade ett certifikat som signerats med en svag signaturalgoritm (t.ex. SHA-1). Det innebär att säkerhetsuppgifterna som servern uppgav kan vara förfalskade och att servern kanske inte är den server du tror (du kanske kommunicerar med en skadlig server).</translation>
 <translation id="6826993739343257035">Vill du tillåta AR?</translation>
 <translation id="6828150717884939426">Ring</translation>
@@ -5272,7 +5270,6 @@ Mer information:
 <translation id="9204089334327209740">När uppladdningen är klar kan du ändra filerna i <ph name="CLOUD_PROVIDER" />. Lokal lagring, inklusive filer i papperskorgen, tas bort automatiskt.</translation>
 <translation id="9205078245616868884">Din data har krypterats med din lösenfras för synkronisering. Ange den om du vill starta synkroniseringen.</translation>
 <translation id="920643408853370361">Reseförsäkringar</translation>
-<translation id="9206639970165643781">Vill du dela relevanta öppna flikar för att få bättre svar i den här diskussionen?</translation>
 <translation id="9207861905230894330">Det gick inte att lägga till artikeln.</translation>
 <translation id="9209339767782560829">Det gick inte att använda ditt inloggningscertifikat.</translation>
 <translation id="9210152531668884481">Ja gärna</translation>

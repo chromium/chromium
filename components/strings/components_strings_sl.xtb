@@ -1673,7 +1673,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
 <translation id="3600492954573979888">Gumb za upravljanje nastavitev zasebnosti v Googlu, aktivirajte, če želite odpreti nastavitve zasebnosti v računu Google</translation>
 <translation id="3603507503523709">Aplikacijo je blokiral skrbnik</translation>
-<translation id="3605082766859363473">Izbran je način umetne inteligence</translation>
 <translation id="3605899229568538311">5 x 5 palcev</translation>
 <translation id="3606917451836803637">TV-oddaje in programi</translation>
 <translation id="3608932978122581043">Usmerjenost podajanja</translation>
@@ -2020,7 +2019,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="411918202192379658">Samodejno izpolnjevanje je zdaj še boljše</translation>
 <translation id="4121428309786185360">Velja do</translation>
 <translation id="4123572138124678573">Trojno luknjanje spodaj</translation>
-<translation id="4125597496726375563">Ustvarjanje izbrane slike</translation>
 <translation id="412601465078863288">Časovna omejitev za nalaganje je potekla</translation>
 <translation id="4127317221386336246">Modni dodatki</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{in še 1 drug}one{in še # drug}two{in še # druga}few{in še # drugi}other{in še # drugih}}</translation>
@@ -3090,6 +3088,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="5784606427469807560">Težava pri potrditvi kartice. Preverite internetno povezavo in poskusite znova.</translation>
 <translation id="5785756445106461925">Poleg tega so na tej strani druga sredstva, ki niso varna. Ta sredstva lahko med prenosom pregledujejo drugi, morebitni napadalec pa jih lahko spremeni, tako da se spremeni videz strani.</translation>
 <translation id="5787146423283493983">Pogodba o ključu</translation>
+<translation id="5789643057113097023">.</translation>
 <translation id="5793317771769868848">To plačilno sredstvo bo izbrisano iz te naprave.</translation>
 <translation id="5794065675298686371">Vklop obvestil za spremljanje cen</translation>
 <translation id="5797984091151707075">Blokiral skrbniški pravilnik</translation>
@@ -3754,7 +3753,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="6820143000046097424">serijska vrata</translation>
 <translation id="6820686453637990663">CVC</translation>
 <translation id="6820949753458790123">Plačujte v preprostih obrokih</translation>
-<translation id="6822745163454377107">Delite odprte zavihke s to nitjo in prejmite hitrejše, bolj prilagojene odgovore.</translation>
 <translation id="6825578344716086703">Poskusili ste dostopati do domene <ph name="DOMAIN" />, vendar ima strežnik potrdilo, podpisano s šibkim podpisnim algoritmom (kot je SHA-1). To pomeni, da so varnostne poverilnice, ki jih je poslal strežnik, morda ponarejene in strežnik morda ni tisti, ki ga pričakujete (morda komunicirate z napadalcem).</translation>
 <translation id="6826993739343257035">Želite omogočiti RR?</translation>
 <translation id="6828150717884939426">Klic</translation>
@@ -5271,7 +5269,6 @@ Dodatne podrobnosti:
 <translation id="9204089334327209740">Ko je nalaganje končano, lahko datoteke spreminjate v storitvi <ph name="CLOUD_PROVIDER" />. Lokalna shramba, vključno z datotekami v smetnjaku, bo samodejno odstranjena.</translation>
 <translation id="9205078245616868884">Podatki so šifrirani z vašim geslom za sinhronizacijo. Vnesite ga, če želite začeti sinhronizacijo.</translation>
 <translation id="920643408853370361">Potovalno zavarovanje</translation>
-<translation id="9206639970165643781">Želite deliti ustrezne odprte zavihke za boljše odgovore v tej niti?</translation>
 <translation id="9207861905230894330">Članka ni bilo mogoče dodati.</translation>
 <translation id="9209339767782560829">Težava pri uporabi potrdila za prijavo.</translation>
 <translation id="9210152531668884481">Sem za</translation>

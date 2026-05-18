@@ -705,6 +705,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="4084712963632273211">발신자: <ph name="PUBLISHER_ORIGIN" /> – <ph name="BEGIN_DEEMPHASIZED" />Google 제공<ph name="END_DEEMPHASIZED" /></translation>
 <translation id="4092709865241032354">Google 비밀번호 관리자에서 로그인 정보를 저장하도록 이 사이트의 사용자 이름을 추가하세요.</translation>
 <translation id="4095146165863963773">앱 데이터를 삭제하시겠습니까?</translation>
+<translation id="4095483462103784441">새 탭 그룹 만들기</translation>
 <translation id="4096227151372679484">북마크 저장 흐름이 절반 높이로 열림</translation>
 <translation id="4105527135143631701">Google 비밀번호 관리자 업데이트가 열렸습니다.</translation>
 <translation id="4113030288477039509">관리자가 관리합니다.</translation>
@@ -1639,6 +1640,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="7821130663268546430">탭 전환 도구에서 열려 있는 모든 탭을 확인할 수 있습니다.</translation>
 <translation id="7822705602465980873">사용자가 로그인하면 이 데이터는 사용자의 Google 계정에 연결되어 Google 서비스 전반에서 사용자를 보호합니다(예: 보안 사고 발생 후 Gmail의 보안 강화).</translation>
 <translation id="7824665136384946951">조직에서 세이프 브라우징을 사용 중지했습니다.</translation>
+<translation id="7825973332242257878">탭 그룹</translation>
 <translation id="7826342993930002256">어디에서나 나만의 Chrome을 사용하세요</translation>
 <translation id="7846161022626028328">오류가 발생했습니다. 다시 시도하세요.</translation>
 <translation id="7846296061357476882">Google 서비스</translation>

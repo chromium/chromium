@@ -1524,7 +1524,6 @@ Lejet që u ke dhënë tashmë sajteve të uebit dhe aplikacioneve mund të zbat
 <translation id="2030803782168502207">Hiq abonimet nga pajisja</translation>
 <translation id="2031487800375552010">Aftësitë të lejojnë të ripërdorësh me lehtësi kërkesat për detyrat e përsëritura</translation>
 <translation id="2031914984822377766">Shto gjuhët e tua të preferuara për <ph name="LINK_BEGIN" />uebsajtet<ph name="LINK_END" />. Gjuha kryesore nga lista do të përdoret për përkthimet.</translation>
-<translation id="2032837042715970520">Kërkohet fjalëkalimi OTP</translation>
 <translation id="2034346955588403444">Shto një rrjet tjetër WiFi</translation>
 <translation id="2037445849770872822">Mbikëqyrja është konfiguruar për këtë "Llogari të Google". Për të konfiguruar kontrolle të tjera prindërore, zgjidh "Vazhdo".
 
@@ -3606,7 +3605,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3462413494201477527">Të anulohet konfigurimi i llogarisë?</translation>
 <translation id="346298925039590474">Ky rrjet celular do të ofrohet për të gjithë përdoruesit e kësaj pajisjeje</translation>
 <translation id="3464145797867108663">Shto profilin e punës</translation>
-<translation id="34673353983913587">Para se të ruash fjalëkalimin e ri, sajti kërkon verifikim shtesë</translation>
 <translation id="3468298837301810372">Etiketa</translation>
 <translation id="3468999815377931311">Telefon me Android</translation>
 <translation id="3469583217479686109">Vegla e përzgjedhjes</translation>
@@ -4008,7 +4006,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3732108843630241049">Kjo pajisje nuk merr më përditësimet automatike të softuerit. Aktivizo përditësimet e sigurisë për një periudhë të zgjatur për të pasur siguri, qëndrueshmëri dhe performancë të vazhdueshme. Disa funksionalitete mund të jenë të kufizuara. <ph name="LINK_BEGIN" />Mëso më shumë<ph name="LINK_END" /></translation>
 <translation id="3732414796052961578">Vazhdo si <ph name="ACCOUNT_NAME" /></translation>
 <translation id="3732530910372558017">Kodi PIN duhet të ketë maksimumi 63 karaktere</translation>
-<translation id="3732706448780793442">Vazhdo në mënyrë manuale</translation>
 <translation id="3733296813637058299">Do t'i instalojmë ato aplikacione për ty. Mund të gjesh më shumë aplikacione për pajisjen tënde <ph name="DEVICE_TYPE" /> në "Dyqanin e Play".</translation>
 <translation id="3734547157266039796">Orizore</translation>
 <translation id="3735039640698208086">Kur luan audio...</translation>
@@ -8315,7 +8312,6 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="6772103682557559072">Më shumë opsione për adresën e punës: <ph name="ADDRESS_SUMMARY" /></translation>
 <translation id="6772974422346500939">Hap dhe modifiko</translation>
 <translation id="6773595613448852535">Chrome Root Store</translation>
-<translation id="677394079035748956">Sajti ka nevojë për një fjalëkalim njëpërdorimësh</translation>
 <translation id="6774710250118040929">Shto një fjalëkalim të ri</translation>
 <translation id="6775163072363532304">Pajisjet e ofruara do të shfaqen këtu.</translation>
 <translation id="677646486571529447">Shto një shënim</translation>
@@ -10026,7 +10022,6 @@ Shtyp një çelës ose tast të caktuar për të hequr detyrën.</translation>
 <translation id="7943311690198910993">Metoda e identifikimit u përditësua</translation>
 <translation id="7943368935008348579">Shkarko PDF-të</translation>
 <translation id="7943837619101191061">Shto një vendndodhje...</translation>
-<translation id="7944173382284143968">Uebsajti kërkon konfirmimin e fjalëkalimit OTP para se të ruhet fjalëkalimi i ri. Vazhdoje në mënyrë manuale procesin për të përfunduar ndryshimin.</translation>
 <translation id="79446453817422139">Ky skedar mund të jetë i rrezikshëm</translation>
 <translation id="7944772052836377867">Sinkronizimi ka nevojë të verifikojë që je ti</translation>
 <translation id="7944847494038629732">Shkëput kabllon USB të skanerit dhe rilidhe për ta provuar përsëri</translation>

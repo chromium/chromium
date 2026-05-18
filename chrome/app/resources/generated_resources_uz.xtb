@@ -1528,7 +1528,6 @@ Ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Android ilovala
 <translation id="2030803782168502207">Obunani qurilmadan olib tashlash</translation>
 <translation id="2031487800375552010">Koʻnikmalar takroriy vazifalar uchun promptlarni oson qayta ishlatish imkonini beradi</translation>
 <translation id="2031914984822377766"><ph name="LINK_BEGIN" />Vebsayt<ph name="LINK_END" /> uchun afzal tillarni kiriting. Tarjimalarda roʻyxat boshidagi til ishlatiladi.</translation>
-<translation id="2032837042715970520">OTP (bir martalik parol) zarur</translation>
 <translation id="2034346955588403444">Boshqa WiFi tarmoq qo‘shish</translation>
 <translation id="2037445849770872822">Bu Google hisobi uchun nazorat sozlangan. Ota-ona nazoratini chuqurroq sozlash uchun Davom etish tugmasini bosing.
 
@@ -3614,7 +3613,6 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="3462413494201477527">Hisobni sozlash bekor qilinsinmi?</translation>
 <translation id="346298925039590474">Bu mobil tarmoqdan qurilmadagi barcha foydalanuvchilar foydalana oladi</translation>
 <translation id="3464145797867108663">Ish profilini kiritish</translation>
-<translation id="34673353983913587">Yangi parolni saqlashdan oldin sayt qoʻshimcha tasdiqlashni talab qiladi</translation>
 <translation id="3468298837301810372">Yorliq</translation>
 <translation id="3468999815377931311">Android telefon</translation>
 <translation id="3469583217479686109">Tanlash vositasi</translation>
@@ -4016,7 +4014,6 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="3732108843630241049">Bu qurilma endi avtomatik dasturiy yangilanishlar olmaydi. Xavfsizlik, barqarorlik va unumdorlikni davom ettirish uchun kengaytirilgan xavfsizlik yangilanishlarini yoqing. Ayrim funksiyalar ishlashi cheklanishi mumkin. <ph name="LINK_BEGIN" />Batafsil<ph name="LINK_END" /></translation>
 <translation id="3732414796052961578"><ph name="ACCOUNT_NAME" /> sifatida davom etish</translation>
 <translation id="3732530910372558017">PIN kod kamida 63 ta belgidan iborat boʻlsin</translation>
-<translation id="3732706448780793442">Mustaqil bajarish</translation>
 <translation id="3733296813637058299">Bu ilovalarni siz uchun oʻrnatib beramiz. <ph name="DEVICE_TYPE" /> qurilmangiz uchun yana boshqa ilovalarni Play Marketdan topishingiz mumkin.</translation>
 <translation id="3734547157266039796">Sholi dalasi</translation>
 <translation id="3735039640698208086">Audio ijro etilayotganda...</translation>
@@ -8326,7 +8323,6 @@ Yana # ta oshkor qilingan parollaringiz bor. Google Parollar menejeri ularni hoz
 <translation id="6772103682557559072"><ph name="ADDRESS_SUMMARY" /> ishxona manzili uchun boshqa parametrlar</translation>
 <translation id="6772974422346500939">Ochish va tahrirlash</translation>
 <translation id="6773595613448852535">Chrome Root Store</translation>
-<translation id="677394079035748956">Bu saytga bir martalik parol kerak</translation>
 <translation id="6774710250118040929">Yangi parol kiritish</translation>
 <translation id="6775163072363532304">Ulangan qurilmalar shu yerda chiqadi.</translation>
 <translation id="677646486571529447">Qayd kiritish</translation>
@@ -10038,7 +10034,6 @@ Tayinlovni bekor qilish uchun belgilangan kalit yoki tugmani bosing.</translatio
 <translation id="7943311690198910993">Hisobga kirish usuli yangilandi</translation>
 <translation id="7943368935008348579">PDF fayllarni yuklab olish</translation>
 <translation id="7943837619101191061">Joylashuv jildini qo‘shish...</translation>
-<translation id="7944173382284143968">Sayt yangi parolni saqlashdan oldin OTP (bir martalik parol) orqali tasdiqlashni talab qiladi. Buni yakunlash uchun jarayon amallarini mustaqil bajaring.</translation>
 <translation id="79446453817422139">Bu fayl xavfli boʻlishi mumkin</translation>
 <translation id="7944772052836377867">Sinxronizatsiya uchun shaxsingizni tasdiqlang</translation>
 <translation id="7944847494038629732">Skaner USB kabelini uzing va qayta suqing, keyin qaytadan urining</translation>

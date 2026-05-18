@@ -1673,7 +1673,6 @@ Gå til <ph name="BEGIN_LINK" />betalingsinnstillingene<ph name="END_LINK" /> fo
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
 <translation id="3600492954573979888">Knappen «Administrer Google-personverninnstillinger» – aktiver for å åpne personverninnstillingene for Google-kontoen din</translation>
 <translation id="3603507503523709">Programmet er blokkert av administratoren din</translation>
-<translation id="3605082766859363473">AI-modus er valgt</translation>
 <translation id="3605899229568538311">5 x 5 tommer</translation>
 <translation id="3606917451836803637">TV-serier og -programmer</translation>
 <translation id="3608932978122581043">Feed-retning</translation>
@@ -2021,7 +2020,6 @@ Gå til <ph name="BEGIN_LINK" />betalingsinnstillingene<ph name="END_LINK" /> fo
 <translation id="411918202192379658">Autofyll er blitt enda bedre</translation>
 <translation id="4121428309786185360">Utløper </translation>
 <translation id="4123572138124678573">Tre hull bunn</translation>
-<translation id="4125597496726375563">Lag bilde valgt</translation>
 <translation id="412601465078863288">Opplastingen ble tidsavbrutt</translation>
 <translation id="4127317221386336246">Tilbehør til klær</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{1 til}other{# til}}</translation>
@@ -3093,6 +3091,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsinnstillingene<ph name="END_LINK" /> fo
 <translation id="5784606427469807560">Det oppsto et problem under forsøket på å bekrefte kortet ditt. Kontroller Internett-tilkoblingen din, og prøv igjen.</translation>
 <translation id="5785756445106461925">Denne siden inneholder i tillegg andre ressurser som ikke er sikre. Disse ressursene er synlige for andre mens de sendes frem og tilbake, og eventuelle angripere kan modifisere dem for å endre på utseendet til siden.</translation>
 <translation id="5787146423283493983">Nøkkelavtale</translation>
+<translation id="5789643057113097023">.</translation>
 <translation id="5793317771769868848">Denne betalingsmåten blir slettet fra denne enheten</translation>
 <translation id="5794065675298686371">Slå på varsler for prissporing</translation>
 <translation id="5797984091151707075">Blokkert av administratorregler</translation>
@@ -3757,7 +3756,6 @@ Gå til <ph name="BEGIN_LINK" />betalingsinnstillingene<ph name="END_LINK" /> fo
 <translation id="6820143000046097424">serielle porter</translation>
 <translation id="6820686453637990663">CVC</translation>
 <translation id="6820949753458790123">Betal enkelt med avdrag</translation>
-<translation id="6822745163454377107">Få raskere og mer skreddersydde svar ved å dele de åpne fanene dine med denne tråden.</translation>
 <translation id="6825578344716086703">Du prøvde å gå til <ph name="DOMAIN" />, men tjeneren presenterte et sertifikat som er signert med en svak signaturalgoritme (for eksempel SHA-1). Dette betyr at sikkerhetslegitimasjonen tjeneren presenterte, kan være forfalsket. Tjeneren kan med andre ord være en annen tjener enn du tror (og du kommuniserer kanskje med en angriper).</translation>
 <translation id="6826993739343257035">Vil du tillate AR?</translation>
 <translation id="6828150717884939426">Ring</translation>
@@ -5273,7 +5271,6 @@ Mer informasjon:
 <translation id="9204089334327209740">Når opplastingen er fullført, kan du endre filene dine i <ph name="CLOUD_PROVIDER" />. Lokal lagring, inkludert eventuelle filer i papirkurven, fjernes automatisk.</translation>
 <translation id="9205078245616868884">Dataene dine er kryptert med passordfrasen din for synkronisering. Skriv den inn for å starte synkroniseringen.</translation>
 <translation id="920643408853370361">Reiseforsikring</translation>
-<translation id="9206639970165643781">Vil du dele relevante åpne faner for å få bedre svar i denne tråden?</translation>
 <translation id="9207861905230894330">Kunne ikke legge til artikkelen.</translation>
 <translation id="9209339767782560829">Det var et problem med påloggingssertifikatet ditt.</translation>
 <translation id="9210152531668884481">Jeg er med</translation>

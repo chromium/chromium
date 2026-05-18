@@ -1529,7 +1529,6 @@ Permisiunile pe care le-ai acordat deja aplicațiilor se pot aplica acestui cont
 <translation id="2030803782168502207">Elimină abonamentul de pe dispozitiv</translation>
 <translation id="2031487800375552010">Cu ajutorul abilităților, poți să refolosești cu ușurință solicitările pentru activități repetitive</translation>
 <translation id="2031914984822377766">Adaugă <ph name="LINK_BEGIN" />limbile preferate pentru site-uri<ph name="LINK_END" />. Prima limbă din listă va fi folosită pentru traduceri.</translation>
-<translation id="2032837042715970520">Este necesară parola valabilă o singură dată</translation>
 <translation id="2034346955588403444">Adaugă altă rețea Wi-Fi</translation>
 <translation id="2037445849770872822">S-a configurat supravegherea pentru acest Cont Google. Ca să configurezi în continuare controlul parental, selectează Continuă.
 
@@ -3609,7 +3608,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3462413494201477527">Anulezi configurarea contului?</translation>
 <translation id="346298925039590474">Rețeaua mobilă va fi disponibilă tuturor utilizatorilor acestui dispozitiv</translation>
 <translation id="3464145797867108663">Adaugă un profil de serviciu</translation>
-<translation id="34673353983913587">Înainte de a salva noua parolă, site-ul necesită o verificare suplimentară</translation>
 <translation id="3468298837301810372">Etichetă</translation>
 <translation id="3468999815377931311">Telefon Android</translation>
 <translation id="3469583217479686109">Instrument de selecție</translation>
@@ -4011,7 +4009,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3732108843630241049">Acest dispozitiv nu mai primește actualizări automate de software. Activează actualizările de securitate extinse pentru securitate, stabilitate și performanță continue. Unele funcții vor fi limitate. <ph name="LINK_BEGIN" />Află mai multe<ph name="LINK_END" /></translation>
 <translation id="3732414796052961578">Continuă ca <ph name="ACCOUNT_NAME" /></translation>
 <translation id="3732530910372558017">Codul PIN trebuie să aibă maximum 63 de caractere</translation>
-<translation id="3732706448780793442">Preia manual</translation>
 <translation id="3733296813637058299">Vom instala aceste aplicații pentru tine. Poți găsi mai multe aplicații pentru <ph name="DEVICE_TYPE" /> în Magazinul Play.</translation>
 <translation id="3734547157266039796">Câmp de orez</translation>
 <translation id="3735039640698208086">Când se redă conținut audio...</translation>
@@ -8320,7 +8317,6 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="6772103682557559072">Mai multe opțiuni pentru adresa de serviciu pentru <ph name="ADDRESS_SUMMARY" /></translation>
 <translation id="6772974422346500939">Deschide și editează</translation>
 <translation id="6773595613448852535">Magazin Chrome de încredere</translation>
-<translation id="677394079035748956">Site-ul are nevoie de o parolă valabilă o singură dată</translation>
 <translation id="6774710250118040929">Adaugă o parolă nouă</translation>
 <translation id="6775163072363532304">Dispozitivele disponibile vor apărea aici.</translation>
 <translation id="677646486571529447">Adaugă o notă</translation>
@@ -10032,7 +10028,6 @@ Apasă un comutator sau o tastă atribuită pentru a elimina atribuirea</transla
 <translation id="7943311690198910993">Metoda de conectare a fost actualizată</translation>
 <translation id="7943368935008348579">Descarcă fișiere PDF</translation>
 <translation id="7943837619101191061">Adăugați o locație...</translation>
-<translation id="7944173382284143968">Site-ul necesită confirmarea parolei valabile o singură dată înainte de a salva noua parolă. Preia manual procesul pentru a face modificarea.</translation>
 <translation id="79446453817422139">Acest fișier poate fi periculos</translation>
 <translation id="7944772052836377867">Sincronizarea trebuie să-ți confirme identitatea</translation>
 <translation id="7944847494038629732">Deconectează cablul USB al scanerului și reconectează-l pentru a încerca din nou</translation>

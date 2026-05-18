@@ -705,6 +705,7 @@ Samo neko ko ima pristupnu frazu može da čita šifrovane podatke. Pristupna fr
 <translation id="4084712963632273211">Od objavljivača <ph name="PUBLISHER_ORIGIN" /> – <ph name="BEGIN_DEEMPHASIZED" />prikazuje Google<ph name="END_DEEMPHASIZED" /></translation>
 <translation id="4092709865241032354">Da biste pomogli Google menadžeru lozinki da čuva informacije o prijavljivanju, dodajte korisničko ime za ovaj sajt</translation>
 <translation id="4095146165863963773">Želite li da izbrišete podatke aplikacije?</translation>
+<translation id="4095483462103784441">Napravi novu grupu kartica</translation>
 <translation id="4096227151372679484">Tok čuvanja obeleživača je otvoren do polovine ekrana</translation>
 <translation id="4105527135143631701">Ažuriranje Google menadžera lozinki je otvoreno</translation>
 <translation id="4113030288477039509">Ovim upravlja administrator</translation>
@@ -1452,6 +1453,7 @@ Na primer, neki veb-sajtovi mogu da odgovore na ovaj zahtev prikazivanjem oglasa
 <translation id="7080145768121641840"><ph name="TAB_TITLE" />, izabrana zakačena kartica sa isključenim zvukom</translation>
 <translation id="7084115944294706056">Odaberite mesto trake za adresu</translation>
 <translation id="7085332316435785646">Odaberite da li ćete uvrstiti istoriju Chrome-a radi personalizovanijih doživljaja u Google uslugama</translation>
+<translation id="7087066066828635014">Obaveštenja o savetima su uključena</translation>
 <translation id="7088681679121566888">Chrome je ažuriran</translation>
 <translation id="7098100324909062850"><ph name="TAB_TITLE" />, višestruko izabrana kartica bez arhiviranja sa isključenim zvukom</translation>
 <translation id="7106762743910369165">Organizacija upravlja pregledačem</translation>
@@ -1639,6 +1641,7 @@ Da biste promenili ovo podešavanje, <ph name="BEGIN_LINK" />izbrišite Chrome p
 <translation id="7821130663268546430">Sve otvorene kartice možete da pronađete u prebacivaču kartica</translation>
 <translation id="7822705602465980873">Kada ste prijavljeni, ovi podaci su povezani sa vašim Google nalogom da bismo vas zaštitili u svim Google uslugama, na primer, povećanjem zaštite u Gmail-u posle bezbednosnog incidenta.</translation>
 <translation id="7824665136384946951">Organizacija je isključila Bezbedno pregledanje</translation>
+<translation id="7825973332242257878">Grupe kartica</translation>
 <translation id="7826342993930002256">Vaš Chrome, svuda</translation>
 <translation id="7846161022626028328">Došlo je do greške. Probajte ponovo.</translation>
 <translation id="7846296061357476882">Google usluge</translation>

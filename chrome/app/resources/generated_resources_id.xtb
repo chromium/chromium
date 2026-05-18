@@ -1537,7 +1537,6 @@ Izin yang telah Anda berikan ke aplikasi dapat berlaku untuk akun ini. Anda dapa
 <translation id="2030803782168502207">Hapus langganan dari perangkat</translation>
 <translation id="2031487800375552010">Keahlian memungkinkan Anda menggunakan kembali perintah dengan mudah untuk tugas berulang</translation>
 <translation id="2031914984822377766">Tambahkan <ph name="LINK_BEGIN" />bahasa situs<ph name="LINK_END" /> pilihan Anda. Bahasa di bagian teratas daftar akan digunakan untuk terjemahan.</translation>
-<translation id="2032837042715970520">OTP Diperlukan</translation>
 <translation id="2034346955588403444">Tambahkan jaringan Wi-Fi lainnya</translation>
 <translation id="2037445849770872822">Pengawasan disiapkan untuk Akun Google ini. Untuk menyiapkan kontrol orang tua lain, pilih Lanjutkan.
 
@@ -3621,7 +3620,6 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="3462413494201477527">Batalkan penyiapan akun?</translation>
 <translation id="346298925039590474">Jaringan seluler ini akan tersedia untuk semua pengguna di perangkat ini</translation>
 <translation id="3464145797867108663">Tambahkan profil kerja</translation>
-<translation id="34673353983913587">Sebelum menyimpan sandi baru Anda, situs memerlukan verifikasi tambahan</translation>
 <translation id="3468298837301810372">Label</translation>
 <translation id="3468999815377931311">Ponsel Android</translation>
 <translation id="3469583217479686109">Alat Pemilih</translation>
@@ -4023,7 +4021,6 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="3732108843630241049">Perangkat ini tidak lagi menerima update software otomatis. Aktifkan update keamanan yang diperpanjang untuk keamanan, stabilitas, dan performa yang berkelanjutan. Beberapa fungsi akan dibatasi. <ph name="LINK_BEGIN" />Pelajari lebih lanjut<ph name="LINK_END" /></translation>
 <translation id="3732414796052961578">Lanjutkan sebagai <ph name="ACCOUNT_NAME" /></translation>
 <translation id="3732530910372558017">PIN harus berisi maksimal 63 karakter</translation>
-<translation id="3732706448780793442">Ambil alih secara manual</translation>
 <translation id="3733296813637058299">Kami akan menginstal aplikasi tersebut untuk Anda. Anda dapat menemukan aplikasi lainnya untuk <ph name="DEVICE_TYPE" /> di Play Store.</translation>
 <translation id="3734547157266039796">Sawah</translation>
 <translation id="3735039640698208086">Saat memutar audio...</translation>
@@ -8332,7 +8329,6 @@ Anda memiliki # sandi lainnya yang telah dibobol. Pengelola Sandi Google merekom
 <translation id="6772103682557559072">Opsi lainnya untuk alamat kantor <ph name="ADDRESS_SUMMARY" /></translation>
 <translation id="6772974422346500939">Buka dan edit</translation>
 <translation id="6773595613448852535">Chrome Root Store</translation>
-<translation id="677394079035748956">Situs ini memerlukan sandi sekali pakai</translation>
 <translation id="6774710250118040929">Tambahkan sandi baru</translation>
 <translation id="6775163072363532304">Perangkat yang tersedia akan muncul di sini.</translation>
 <translation id="677646486571529447">Tambahkan Catatan</translation>
@@ -10043,7 +10039,6 @@ Tekan tombol akses atau tombol keyboard yang telah ditetapkan untuk menghapus pe
 <translation id="7943311690198910993">Metode login diperbarui</translation>
 <translation id="7943368935008348579">Download PDF</translation>
 <translation id="7943837619101191061">Tambahkan Lokasi...</translation>
-<translation id="7944173382284143968">Situs memerlukan konfirmasi OTP sebelum menyimpan sandi baru. Ambil alih proses secara manual untuk menyelesaikan perubahan.</translation>
 <translation id="79446453817422139">File ini mungkin berbahaya</translation>
 <translation id="7944772052836377867">Sinkronisasi perlu memverifikasi diri Anda</translation>
 <translation id="7944847494038629732">Cabut kabel USB pemindai, lalu colokkan kembali untuk mencoba lagi</translation>

@@ -1669,7 +1669,6 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
 <translation id="3600492954573979888">Knop Google-privacyinstellingen beheren. Activeer deze om naar de privacyinstellingen van je Google-account te gaan.</translation>
 <translation id="3603507503523709">App geblokkeerd door je beheerder</translation>
-<translation id="3605082766859363473">AI-modus geselecteerd</translation>
 <translation id="3605899229568538311">5 x 5 inch</translation>
 <translation id="3606917451836803637">Tv-programma's</translation>
 <translation id="3608932978122581043">Invoerrichting</translation>
@@ -2014,7 +2013,6 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="411918202192379658">Automatisch invullen is nu nog beter</translation>
 <translation id="4121428309786185360">Verloopt op</translation>
 <translation id="4123572138124678573">Drie perforaties onder</translation>
-<translation id="4125597496726375563">Afbeelding maken geselecteerd</translation>
 <translation id="412601465078863288">Time-out bij uploaden</translation>
 <translation id="4127317221386336246">Kledingaccessoires</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{1 andere persoon}other{# andere mensen}}</translation>
@@ -3084,6 +3082,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="5784606427469807560">Er is een probleem opgetreden bij het bevestigen van je creditcard. Controleer je internetverbinding en probeer het opnieuw.</translation>
 <translation id="5785756445106461925">Bovendien bevat deze pagina bronnen die niet beveiligd zijn. Deze bronnen kunnen tijdens verzending door anderen worden bekeken en kunnen door een aanvaller worden gewijzigd om het uiterlijk van de pagina aan te passen.</translation>
 <translation id="5787146423283493983">Sleutelovereenkomst</translation>
+<translation id="5789643057113097023">.</translation>
 <translation id="5793317771769868848">Deze betaalmethode wordt verwijderd van dit apparaat</translation>
 <translation id="5794065675298686371">Meldingen voor prijzen volgen aanzetten</translation>
 <translation id="5797984091151707075">Geblokkeerd door beheerdersbeleid</translation>
@@ -3747,7 +3746,6 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="6820143000046097424">seriële poorten</translation>
 <translation id="6820686453637990663">CVC</translation>
 <translation id="6820949753458790123">Betaal in makkelijke termijnen</translation>
-<translation id="6822745163454377107">Krijg snellere, meer op maat gemaakte reacties door je geopende tabbladen te delen met dit gesprek.</translation>
 <translation id="6825578344716086703">Je probeert <ph name="DOMAIN" /> te bereiken. De server heeft echter een certificaat geretourneerd dat een zwak ondertekeningsalgoritme (zoals SHA-1) gebruikt. Dit houdt in dat de betrouwbaarheidsverklaring van de server kan zijn vervalst. Het is mogelijk dat de server zelf een imitatie is (wellicht een server die je schade probeert te berokkenen).</translation>
 <translation id="6826993739343257035">AR toestaan?</translation>
 <translation id="6828150717884939426">Bellen</translation>
@@ -5263,7 +5261,6 @@ Aanvullende informatie:
 <translation id="9204089334327209740">Nadat de upload is afgerond, kun je je bestanden aanpassen in <ph name="CLOUD_PROVIDER" />. Lokale opslag, inclusief bestanden in de prullenbak, wordt automatisch verwijderd.</translation>
 <translation id="9205078245616868884">Je gegevens zijn versleuteld met je wachtwoordzin voor synchronisatie. Geef deze op om de synchronisatie te starten.</translation>
 <translation id="920643408853370361">Reisverzekeringen</translation>
-<translation id="9206639970165643781">Relevante geopende tabbladen delen voor betere reacties in dit gesprek?</translation>
 <translation id="9207861905230894330">Kan artikel niet toevoegen.</translation>
 <translation id="9209339767782560829">Er is een probleem opgetreden bij het gebruik van je inlogcertificaat.</translation>
 <translation id="9210152531668884481">Ja, graag</translation>

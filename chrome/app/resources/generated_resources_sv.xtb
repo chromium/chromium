@@ -1538,7 +1538,6 @@ Behörigheter som du redan har gett appar kan gälla för det här kontot. Du ka
 <translation id="2030803782168502207">Ta bort prenumerationen från enheten</translation>
 <translation id="2031487800375552010">Med färdigheter kan du enkelt återanvända promptar för repetitiva uppgifter</translation>
 <translation id="2031914984822377766">Lägg till önskade <ph name="LINK_BEGIN" />språk för webbplatser<ph name="LINK_END" />. Det första språket på listan används för översättningar.</translation>
-<translation id="2032837042715970520">Engångslösenord krävs</translation>
 <translation id="2034346955588403444">Lägg till ett annat wifi-nätverk</translation>
 <translation id="2037445849770872822">Kontroll har konfigurerats för det här Google-kontot. Välj Fortsätt om du vill konfigurera fler föräldrakontroller.
 
@@ -3622,7 +3621,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3462413494201477527">Vill du avbryta konfigurationen av kontot?</translation>
 <translation id="346298925039590474">Det här mobilnätverket blir tillgängligt för alla som använder den här enheten</translation>
 <translation id="3464145797867108663">Lägg till jobbprofil</translation>
-<translation id="34673353983913587">Webbplatsen kräver extra verifiering innan det nya lösenordet sparas</translation>
 <translation id="3468298837301810372">Etikett</translation>
 <translation id="3468999815377931311">Android-mobil</translation>
 <translation id="3469583217479686109">Urvalsverktyg</translation>
@@ -4024,7 +4022,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3732108843630241049">Enheten får inte längre automatiska mjukvaruuppdateringar. Aktivera utökade säkerhetsuppdateringar för säkerhet, stabilitet och prestanda även i fortsättningen. Vissa funktioner begränsas. <ph name="LINK_BEGIN" />Läs mer<ph name="LINK_END" /></translation>
 <translation id="3732414796052961578">Fortsätt som <ph name="ACCOUNT_NAME" /></translation>
 <translation id="3732530910372558017">Pinkoden får högst innehålla 63 tecken</translation>
-<translation id="3732706448780793442">Ta över manuellt</translation>
 <translation id="3733296813637058299">Vi installerar apparna åt dig. Du hittar fler appar för <ph name="DEVICE_TYPE" /> i Play Butik.</translation>
 <translation id="3734547157266039796">Risfält</translation>
 <translation id="3735039640698208086">Vid ljuduppspelning …</translation>
@@ -8333,7 +8330,6 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="6772103682557559072">Fler alternativ för jobbadressen <ph name="ADDRESS_SUMMARY" /></translation>
 <translation id="6772974422346500939">Öppna och redigera</translation>
 <translation id="6773595613448852535">Chrome Root Store</translation>
-<translation id="677394079035748956">Webbplatsen behöver ett engångslösenord</translation>
 <translation id="6774710250118040929">Lägg till nytt lösenord</translation>
 <translation id="6775163072363532304">Tillgängliga enheter visas här.</translation>
 <translation id="677646486571529447">Lägg till anteckning</translation>
@@ -10045,7 +10041,6 @@ Tryck på en brytare eller tangent som redan tilldelats en åtgärd om du vill t
 <translation id="7943311690198910993">Inloggningsmetoden har uppdaterats</translation>
 <translation id="7943368935008348579">Ladda ned PDF-filer</translation>
 <translation id="7943837619101191061">Lägg till plats ...</translation>
-<translation id="7944173382284143968">Webbplatsen kräver en bekräftelse med engångslösenord innan det nya lösenordet sparas. Ta över processen manuellt för att slutföra ändringen.</translation>
 <translation id="79446453817422139">Den här filen kan vara farlig</translation>
 <translation id="7944772052836377867">Verifiera din identitet för synkronisering</translation>
 <translation id="7944847494038629732">Försök igen genom att koppla från skannerns USB-kabel och sätta i den igen</translation>

@@ -1673,7 +1673,6 @@
 <translation id="3600246354004376029"><ph name="TITLE" />、<ph name="DOMAIN" />、<ph name="TIME" /></translation>
 <translation id="3600492954573979888">[Google のプライバシー設定を管理] ボタンです。実行すると Google アカウントのプライバシー設定に移動できます</translation>
 <translation id="3603507503523709">アプリケーションは管理者によってブロックされています</translation>
-<translation id="3605082766859363473">AI モードを選択しました</translation>
 <translation id="3605899229568538311">5x5 インチ</translation>
 <translation id="3606917451836803637">テレビ番組</translation>
 <translation id="3608932978122581043">給紙方向</translation>
@@ -2021,7 +2020,6 @@
 <translation id="411918202192379658">自動入力がさらに便利に</translation>
 <translation id="4121428309786185360">有効期限</translation>
 <translation id="4123572138124678573">3 穴パンチ（下）</translation>
-<translation id="4125597496726375563">選択した画像を作成</translation>
 <translation id="412601465078863288">アップロードがタイムアウトしました</translation>
 <translation id="4127317221386336246">服飾雑貨</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{他 1 件}other{他 # 件}}</translation>
@@ -3093,6 +3091,7 @@
 <translation id="5784606427469807560">カードの確認中に問題が発生しました。インターネット接続を確認してもう一度お試しください。</translation>
 <translation id="5785756445106461925">加えて、このページには安全でない他のリソースが含まれています。このリソースは送信中に他のユーザーから見られる可能性があります。また、悪意のあるユーザーによって改変されページの見た目が変わる可能性もあります。</translation>
 <translation id="5787146423283493983">キー合意</translation>
+<translation id="5789643057113097023">.</translation>
 <translation id="5793317771769868848">このお支払い方法はこのデバイスから削除されます</translation>
 <translation id="5794065675298686371">価格トラッキングの通知をオンにする</translation>
 <translation id="5797984091151707075">管理者ポリシーによりブロックされています</translation>
@@ -3757,7 +3756,6 @@
 <translation id="6820143000046097424">シリアルポート</translation>
 <translation id="6820686453637990663">CVC</translation>
 <translation id="6820949753458790123">簡単に分割払い</translation>
-<translation id="6822745163454377107">開いているタブをこのスレッドと共有すると、より関連性の高い回答をすばやく取得できます。</translation>
 <translation id="6825578344716086703"><ph name="DOMAIN" /> にアクセスしようとしましたが、脆弱な署名アルゴリズム（SHA-1 など）を使用して署名された証明書がサーバーから提示されました。このセキュリティ認証情報は偽装されたものである可能性があり、アクセスしようとしたサーバーとは別のサーバーが応答している可能性があります（悪意のあるユーザーと通信している可能性があります）。</translation>
 <translation id="6826993739343257035">AR を許可しますか？</translation>
 <translation id="6828150717884939426">電話</translation>
@@ -5274,7 +5272,6 @@
 <translation id="9204089334327209740">アップロードが完了したら、<ph name="CLOUD_PROVIDER" /> でファイルを変更できます。ゴミ箱内のファイルを含め、ローカル ストレージは自動的に削除されます。</translation>
 <translation id="9205078245616868884">データは同期パスフレーズで暗号化されます。同期を開始するには、同期パスフレーズを入力してください。</translation>
 <translation id="920643408853370361">旅行保険</translation>
-<translation id="9206639970165643781">開いている関連タブを共有して、このスレッドで関連性の高い回答を取得できるようにしますか？</translation>
 <translation id="9207861905230894330">記事を追加できませんでした。</translation>
 <translation id="9209339767782560829">ログイン証明書の使用中に問題が発生しました。</translation>
 <translation id="9210152531668884481">保存</translation>

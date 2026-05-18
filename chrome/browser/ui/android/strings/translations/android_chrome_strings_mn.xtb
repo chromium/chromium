@@ -705,6 +705,7 @@
 <translation id="4084712963632273211"><ph name="PUBLISHER_ORIGIN" />-с – <ph name="BEGIN_DEEMPHASIZED" />Google-с хүргэсэн<ph name="END_DEEMPHASIZED" /></translation>
 <translation id="4092709865241032354">Google Password Manager-т таны нэвтрэх мэдээллийг хадгалахад туслахын тулд энэ сайтын хэрэглэгчийн нэрээ нэмнэ үү</translation>
 <translation id="4095146165863963773">Апп-н өгөгдлийг устгах уу?</translation>
+<translation id="4095483462103784441">Шинэ табын бүлэг үүсгэх</translation>
 <translation id="4096227151372679484">Хавчуурганы хадгалах урсгалыг тал өндөртэйгээр нээсэн</translation>
 <translation id="4105527135143631701">Google Нууц үгний менежерийн шинэчлэлтийг нээсэн</translation>
 <translation id="4113030288477039509">Администратор хариуцаж байна</translation>
@@ -1452,6 +1453,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="7080145768121641840"><ph name="TAB_TITLE" />, Сонгогдож, бэхлэгдсэн, дууг нь хаасан таб</translation>
 <translation id="7084115944294706056">Хаяг оруулах хэсгийн байр сонго</translation>
 <translation id="7085332316435785646">Google-н үйлчилгээнүүдэд илүү хувийн болгосон туршлага авахын тулд Chrome-н түүхийг багтаах эсэхээ сонгоно уу</translation>
+<translation id="7087066066828635014">Зөвлөгөөний мэдэгдлийг асаасан</translation>
 <translation id="7088681679121566888">Chrome шинэчлэгдсэн байна</translation>
 <translation id="7098100324909062850"><ph name="TAB_TITLE" />, Олноороо сонгогдож, дууг нь хаасан нууцлалтай таб</translation>
 <translation id="7106762743910369165">Танай байгууллага таны хөтчийг удирддаг</translation>
@@ -1639,6 +1641,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="7821130663268546430">Таб хооронд шилжүүлэгчээс та бүх нээлттэй табыг олох боломжтой</translation>
 <translation id="7822705602465980873">Таныг нэвтэрсэн үед аюулгүй байдалтай холбоотой тохиолдлын дараа Gmail-д хамгаалалтыг нэмэх зэргээр таныг Google-н үйлчилгээнүүдэд хамгаалахын тулд энэ өгөгдлийг Google Бүртгэлтэй тань холбодог.</translation>
 <translation id="7824665136384946951">Танай байгууллага Safe Browsing-г унтраасан</translation>
+<translation id="7825973332242257878">Табын бүлгүүд</translation>
 <translation id="7826342993930002256">Таны Chrome, дурын газраас нэвтрээрэй</translation>
 <translation id="7846161022626028328">Алдаа гарлаа. Дахин оролдоно уу.</translation>
 <translation id="7846296061357476882">Google-н үйлчилгээнүүд</translation>

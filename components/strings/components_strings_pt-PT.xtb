@@ -1673,7 +1673,6 @@ Para ocultar as opções para pagar depois, aceda às <ph name="BEGIN_LINK" />de
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
 <translation id="3600492954573979888">Botão Gerir definições de privacidade no Google; ative para aceder às definições de privacidade da sua Conta Google</translation>
 <translation id="3603507503523709">App bloqueada pelo seu administrador</translation>
-<translation id="3605082766859363473">Modo IA selecionado</translation>
 <translation id="3605899229568538311">5 x 5 pol.</translation>
 <translation id="3606917451836803637">Espetáculos e programas de TV</translation>
 <translation id="3608932978122581043">Guiar a orientação</translation>
@@ -2021,7 +2020,6 @@ Para ocultar as opções para pagar depois, aceda às <ph name="BEGIN_LINK" />de
 <translation id="411918202192379658">O preenchimento automático ficou ainda melhor</translation>
 <translation id="4121428309786185360">Expira em</translation>
 <translation id="4123572138124678573">Perfuração tripla na parte inferior</translation>
-<translation id="4125597496726375563">Criar imagem selecionada</translation>
 <translation id="412601465078863288">O carregamento excedeu o tempo limite</translation>
 <translation id="4127317221386336246">Acessórios de vestuário</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{1 outro}other{# outros}}</translation>
@@ -3093,6 +3091,7 @@ Para ocultar as opções para pagar depois, aceda às <ph name="BEGIN_LINK" />de
 <translation id="5784606427469807560">Ocorreu um erro ao confirmar o cartão. Verifique a sua ligação à Internet e tente novamente.</translation>
 <translation id="5785756445106461925">Além disso, esta página inclui outros recursos que não são seguros. Estes recursos podem ser vistos por outros utilizadores em trânsito e modificados por um utilizador mal intencionado com o intuito de alterar o aspeto da página.</translation>
 <translation id="5787146423283493983">Acordo de chaves</translation>
+<translation id="5789643057113097023">.</translation>
 <translation id="5793317771769868848">Este método de pagamento vai ser eliminado deste dispositivo</translation>
 <translation id="5794065675298686371">Ative as notificações de acompanhamento de preço</translation>
 <translation id="5797984091151707075">Bloqueado pela política do administrador</translation>
@@ -3757,7 +3756,6 @@ Para ocultar as opções para pagar depois, aceda às <ph name="BEGIN_LINK" />de
 <translation id="6820143000046097424">portas de série</translation>
 <translation id="6820686453637990663">Código de segurança</translation>
 <translation id="6820949753458790123">Pague em prestações suaves</translation>
-<translation id="6822745163454377107">Partilhe os seus separadores abertos com esta discussão para receber respostas mais rápidas e personalizadas.</translation>
 <translation id="6825578344716086703">Tentou aceder a <ph name="DOMAIN" />, mas o servidor apresentou um certificado assinado utilizando um algoritmo de assinatura fraco (como SHA-1). Isto significa que as credenciais de segurança apresentadas pelo servidor podem ter sido falsificadas e que o servidor pode não ser aquele que quer (pode estar a comunicar com um utilizador mal intencionado).</translation>
 <translation id="6826993739343257035">Permitir a realidade aumentada?</translation>
 <translation id="6828150717884939426">Ligar</translation>
@@ -5274,7 +5272,6 @@ Detalhes adicionais:
 <translation id="9204089334327209740">Quando o carregamento estiver concluído, pode modificar os seus ficheiros no <ph name="CLOUD_PROVIDER" />. O armazenamento local, incluindo os ficheiros no Lixo, vai ser removido automaticamente.</translation>
 <translation id="9205078245616868884">Os dados estão encriptados com a sua frase de acesso de sincronização. Introduza-a para iniciar a sincronização.</translation>
 <translation id="920643408853370361">Seguro de viagem</translation>
-<translation id="9206639970165643781">Partilhar separadores abertos relevantes para receber melhores respostas nesta discussão?</translation>
 <translation id="9207861905230894330">Falha ao adicionar o artigo.</translation>
 <translation id="9209339767782560829">Ocorreu um problema ao usar o seu certificado de início de sessão.</translation>
 <translation id="9210152531668884481">Aceito</translation>

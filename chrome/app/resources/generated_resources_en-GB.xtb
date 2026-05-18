@@ -1539,7 +1539,6 @@ Permissions that you've already given to apps may apply to this account. You can
 <translation id="2030803782168502207">Remove subscription from device</translation>
 <translation id="2031487800375552010">Skills allow you to easily reuse prompts for repetitive tasks</translation>
 <translation id="2031914984822377766">Add your preferred <ph name="LINK_BEGIN" />website languages<ph name="LINK_END" />. The top language from the list will be used for translations.</translation>
-<translation id="2032837042715970520">OTP required</translation>
 <translation id="2034346955588403444">Add other Wi-Fi network</translation>
 <translation id="2037445849770872822">Supervision is set up for this Google account. To set up more parental controls, select Continue.
 
@@ -3627,7 +3626,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3462413494201477527">Cancel account setup?</translation>
 <translation id="346298925039590474">This mobile network will be available to all users on this device</translation>
 <translation id="3464145797867108663">Add work profile</translation>
-<translation id="34673353983913587">Before saving your new password, the site requires extra verification</translation>
 <translation id="3468298837301810372">Label</translation>
 <translation id="3468999815377931311">Android phone</translation>
 <translation id="3469583217479686109">Selection tool</translation>
@@ -4029,7 +4027,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3732108843630241049">This device is no longer receiving automatic software updates. Turn on extended security updates for continued security, stability and performance. Some functionality will be limited. <ph name="LINK_BEGIN" />Learn more<ph name="LINK_END" /></translation>
 <translation id="3732414796052961578">Continue as <ph name="ACCOUNT_NAME" /></translation>
 <translation id="3732530910372558017">PIN must be at most 63 characters</translation>
-<translation id="3732706448780793442">Take over manually</translation>
 <translation id="3733296813637058299">We'll install those apps for you. You can find more apps for your <ph name="DEVICE_TYPE" /> in the Play Store.</translation>
 <translation id="3734547157266039796">Rice paddy</translation>
 <translation id="3735039640698208086">When playing audio...</translation>
@@ -8340,7 +8337,6 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="6772103682557559072">More options for <ph name="ADDRESS_SUMMARY" /> work address</translation>
 <translation id="6772974422346500939">Open and edit</translation>
 <translation id="6773595613448852535">Chrome Root Store</translation>
-<translation id="677394079035748956">The site needs a one-time password</translation>
 <translation id="6774710250118040929">Add new password</translation>
 <translation id="6775163072363532304">Available devices will appear here.</translation>
 <translation id="677646486571529447">Add a note</translation>
@@ -10053,7 +10049,6 @@ Press an assigned switch or key to remove assignment.</translation>
 <translation id="7943311690198910993">Sign-in method updated</translation>
 <translation id="7943368935008348579">Download PDFs</translation>
 <translation id="7943837619101191061">Add Location...</translation>
-<translation id="7944173382284143968">The website requires OTP confirmation before saving the new password. Please take over the process manually to complete the change.</translation>
 <translation id="79446453817422139">This file may be dangerous</translation>
 <translation id="7944772052836377867">Sync needs to verify that it's you</translation>
 <translation id="7944847494038629732">Unplug the scanner's USB cable and plug it in again to retry</translation>

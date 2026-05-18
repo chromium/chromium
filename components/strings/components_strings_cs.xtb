@@ -1670,7 +1670,6 @@ Pokud chcete možnosti uhrazení na splátky skrýt, přejděte na <ph name="BEG
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
 <translation id="3600492954573979888">Tlačítko správy nastavení soukromí na Googlu, aktivací přejdete do nastavení soukromí účtu Google</translation>
 <translation id="3603507503523709">Aplikace je blokována administrátorem</translation>
-<translation id="3605082766859363473">Je vybrán režim AI</translation>
 <translation id="3605899229568538311">5 × 5″</translation>
 <translation id="3606917451836803637">Televizní pořady a programy</translation>
 <translation id="3608932978122581043">Orientace podávání</translation>
@@ -2016,7 +2015,6 @@ Pokud chcete možnosti uhrazení na splátky skrýt, přejděte na <ph name="BEG
 <translation id="411918202192379658">Automatické vyplňování je teď lepší</translation>
 <translation id="4121428309786185360">Konec platnosti</translation>
 <translation id="4123572138124678573">Tři otvory dole</translation>
-<translation id="4125597496726375563">Je vybrána možnost Vytvořit obrázek</translation>
 <translation id="412601465078863288">Časový limit nahrávání vypršel</translation>
 <translation id="4127317221386336246">Oděvní doplňky</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{1 další}few{# další}many{# další}other{# dalších}}</translation>
@@ -3086,6 +3084,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="5784606427469807560">Při ověřování vaší karty došlo k problému. Zkontrolujte připojení k internetu a zkuste to znovu.</translation>
 <translation id="5785756445106461925">Tato stránka obsahuje ještě další nezabezpečené zdroje. Tyto zdroje budou během přenosu moci zobrazit jiní uživatelé a případní útočníci je mohou upravit a změnit tak vzhled stránky.</translation>
 <translation id="5787146423283493983">Smlouva o klíči</translation>
+<translation id="5789643057113097023">,</translation>
 <translation id="5793317771769868848">Tato platební metoda bude z tohoto zařízení smazána</translation>
 <translation id="5794065675298686371">Zapněte oznámení o sledování cen</translation>
 <translation id="5797984091151707075">Blokováno zásadami administrátora</translation>
@@ -3749,7 +3748,6 @@ Kontaktujte administrátora systému.</translation>
 <translation id="6820143000046097424">sériové porty</translation>
 <translation id="6820686453637990663">Bezpečnostní kód platební karty (CVC)</translation>
 <translation id="6820949753458790123">Zaplatit jednoduše na splátky</translation>
-<translation id="6822745163454377107">Sdílejte s tímto vláknem otevřené karty. Získáte tak rychlejší a přizpůsobenější odpovědi.</translation>
 <translation id="6825578344716086703">Pokusili jste se přejít na web <ph name="DOMAIN" />, server však předložil certifikát podepsaný slabým algoritmem (například SHA-1). To znamená, že bezpečnostní pověření předložená serverem mohou být falešná a může se jednat o úplně jiný server, než předpokládáte (můžete komunikovat s útočníkem).</translation>
 <translation id="6826993739343257035">Povolit rozšířenou realitu?</translation>
 <translation id="6828150717884939426">Zavolat</translation>
@@ -5265,7 +5263,6 @@ Další podrobnosti:
 <translation id="9204089334327209740">Po dokončení nahrávání můžete své soubory upravit ve službě <ph name="CLOUD_PROVIDER" />. Místní úložiště, včetně všech souborů v koši, bude automaticky odstraněno.</translation>
 <translation id="9205078245616868884">Vaše data jsou šifrována pomocí heslové fráze pro synchronizaci. Chcete-li zahájit synchronizaci, zadejte ji.</translation>
 <translation id="920643408853370361">Cestovní pojištění</translation>
-<translation id="9206639970165643781">Sdílet relevantní otevřené karty pro lepší odpovědi v tomto vláknu?</translation>
 <translation id="9207861905230894330">Přidání článku se nezdařilo.</translation>
 <translation id="9209339767782560829">Při používání vašeho přihlašovacího certifikátu došlo k problému.</translation>
 <translation id="9210152531668884481">Ano</translation>

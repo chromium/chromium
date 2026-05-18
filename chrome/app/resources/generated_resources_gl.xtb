@@ -1527,7 +1527,6 @@ Pode que se lle apliquen a esta conta os permisos que xa lles concedeses ás apl
 <translation id="2030803782168502207">Quitar a subscrición do dispositivo</translation>
 <translation id="2031487800375552010">Skills permíteche volver usar facilmente as solicitudes para as tarefas repetitivas</translation>
 <translation id="2031914984822377766">Engade os teus <ph name="LINK_BEGIN" />idiomas preferidos para os sitios web<ph name="LINK_END" />. O primeiro da lista será o que se utilice para as traducións.</translation>
-<translation id="2032837042715970520">Contrasinal dun só uso obrigatorio</translation>
 <translation id="2034346955588403444">Engadir outra rede wifi</translation>
 <translation id="2037445849770872822">Configurouse a supervisión para esta Conta de Google. Se queres configurar máis controis parentais, selecciona Continuar.
 
@@ -3608,7 +3607,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="3462413494201477527">Queres cancelar a configuración da conta?</translation>
 <translation id="346298925039590474">Esta rede de telefonía móbil estará dispoñible para todos os usuarios deste dispositivo</translation>
 <translation id="3464145797867108663">Engadir perfil de traballo</translation>
-<translation id="34673353983913587">Antes de gardar o teu novo contrasinal, é necesario que volvas verificar a túa identidade no sitio</translation>
 <translation id="3468298837301810372">Etiqueta</translation>
 <translation id="3468999815377931311">Teléfono Android</translation>
 <translation id="3469583217479686109">Ferramenta de selección</translation>
@@ -4013,7 +4011,6 @@ https://allthings.how/content/images/wordpress/2023/02/allthings.how-how-to-make
 <translation id="3732108843630241049">Este dispositivo xa non recibe actualizacións de software automáticas. Activa as actualizacións de seguranza ampliadas para manter a seguranza, a estabilidade e o rendemento. Algunhas funcións estarán limitadas. <ph name="LINK_BEGIN" />Máis información<ph name="LINK_END" /></translation>
 <translation id="3732414796052961578">Continuar como <ph name="ACCOUNT_NAME" /></translation>
 <translation id="3732530910372558017">O PIN debe ter como máximo 63 caracteres</translation>
-<translation id="3732706448780793442">Proceder manualmente</translation>
 <translation id="3733296813637058299">Encargarémonos de instalar esas aplicacións. Podes buscar máis aplicacións para o teu <ph name="DEVICE_TYPE" /> en Play Store.</translation>
 <translation id="3734547157266039796">Arrozal</translation>
 <translation id="3735039640698208086">Ao reproducir audio...</translation>
@@ -8319,7 +8316,6 @@ Quédanche # máis. O xestor de contrasinais de Google recomenda que comprobes e
 <translation id="6772103682557559072">Máis opción para o enderezo do traballo de <ph name="ADDRESS_SUMMARY" /></translation>
 <translation id="6772974422346500939">Abrir e editar</translation>
 <translation id="6773595613448852535">Chrome Root Store</translation>
-<translation id="677394079035748956">O sitio necesita un contrasinal dun só uso</translation>
 <translation id="6774710250118040929">Engadir un contrasinal novo</translation>
 <translation id="6775163072363532304">Os dispositivos dispoñibles aparecerán aquí.</translation>
 <translation id="677646486571529447">Engadir unha nota</translation>
@@ -10030,7 +10026,6 @@ Para quitar unha asignación, preme un interruptor ou unha tecla que teñan unha
 <translation id="7943311690198910993">Actualizouse o método de inicio de sesión</translation>
 <translation id="7943368935008348579">Descargar PDF</translation>
 <translation id="7943837619101191061">Engadir localización...</translation>
-<translation id="7944173382284143968">Para que o sitio web poida gardar o novo contrasinal, é necesario confirmar o contrasinal dun só uso. Completa o proceso de cambio de maneira manual.</translation>
 <translation id="79446453817422139">Este ficheiro pode ser perigoso</translation>
 <translation id="7944772052836377867">A sincronización necesita verificar a túa identidade</translation>
 <translation id="7944847494038629732">Desenchufa o cable USB do escáner e volve enchufalo para tentalo de novo</translation>

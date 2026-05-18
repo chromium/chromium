@@ -1529,7 +1529,6 @@ As autorizações que já concedeu às apps podem aplicar-se a esta conta. Pode 
 <translation id="2030803782168502207">Remova a subscrição do dispositivo</translation>
 <translation id="2031487800375552010">As competências permitem-lhe reutilizar facilmente comandos para tarefas repetitivas</translation>
 <translation id="2031914984822377766">Adicione os seus <ph name="LINK_BEGIN" />idiomas de Website<ph name="LINK_END" /> preferidos. O idioma principal da lista será utilizado para as traduções.</translation>
-<translation id="2032837042715970520">PUU necessária</translation>
 <translation id="2034346955588403444">Adicionar outra rede Wi-Fi</translation>
 <translation id="2037445849770872822">A supervisão está configurada para esta Conta Google. Para configurar mais controlos parentais, selecione Continuar.
 
@@ -3615,7 +3614,6 @@ Quer pará-lo?</translation>
 <translation id="3462413494201477527">Quer cancelar a configuração da conta?</translation>
 <translation id="346298925039590474">Esta rede móvel ficará acessível a todos os utilizadores neste dispositivo</translation>
 <translation id="3464145797867108663">Adicionar perfil de trabalho</translation>
-<translation id="34673353983913587">Antes de guardar a sua nova palavra-passe, o site requer uma validação adicional</translation>
 <translation id="3468298837301810372">Etiqueta</translation>
 <translation id="3468999815377931311">Telemóvel Android</translation>
 <translation id="3469583217479686109">Ferramenta de seleção</translation>
@@ -4017,7 +4015,6 @@ Quer pará-lo?</translation>
 <translation id="3732108843630241049">Este dispositivo já não está a receber atualizações de software automáticas. Ative as atualizações de segurança alargadas para ter segurança, estabilidade e desempenho contínuos. Algumas funcionalidades são limitadas. <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
 <translation id="3732414796052961578">Continuar como <ph name="ACCOUNT_NAME" /></translation>
 <translation id="3732530910372558017">O PIN tem de ter, pelo menos, 63 carateres.</translation>
-<translation id="3732706448780793442">Assumir controlo manualmente</translation>
 <translation id="3733296813637058299">Vamos instalar essas apps por si. Pode encontrar mais apps para o seu dispositivo <ph name="DEVICE_TYPE" /> na Play Store.</translation>
 <translation id="3734547157266039796">Arrozal</translation>
 <translation id="3735039640698208086">Ao reproduzir áudio…</translation>
@@ -8331,7 +8328,6 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="6772103682557559072">Mais opções para a morada do trabalho de <ph name="ADDRESS_SUMMARY" /></translation>
 <translation id="6772974422346500939">Abrir e editar</translation>
 <translation id="6773595613448852535">Chrome Root Store</translation>
-<translation id="677394079035748956">O site precisa de uma palavra-passe de utilização única</translation>
 <translation id="6774710250118040929">Adicione uma nova palavra-passe</translation>
 <translation id="6775163072363532304">Os dispositivos disponíveis aparecem aqui.</translation>
 <translation id="677646486571529447">Adicionar nota</translation>
@@ -10044,7 +10040,6 @@ Prima uma tecla ou um interruptor atribuído para remover a atribuição.</trans
 <translation id="7943311690198910993">Método de início de sessão atualizado</translation>
 <translation id="7943368935008348579">Transferir PDFs</translation>
 <translation id="7943837619101191061">Adicionar Localização...</translation>
-<translation id="7944173382284143968">O Website requer a confirmação da PUU antes de guardar a nova palavra-passe. Assuma o controlo do processo manualmente para concluir a alteração.</translation>
 <translation id="79446453817422139">Este ficheiro pode ser perigoso</translation>
 <translation id="7944772052836377867">A sincronização precisa de validar a sua identidade</translation>
 <translation id="7944847494038629732">Desligue o cabo USB do leitor e volte a ligá-lo para tentar novamente</translation>

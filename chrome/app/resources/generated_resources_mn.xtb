@@ -783,6 +783,7 @@
 <translation id="1529769834253316556">Мөрийн өндөр</translation>
 <translation id="1529891865407786369">Эрчим хүчний эх үүсвэр</translation>
 <translation id="1530376661400379364">Chrome эдгээр тохиргоог шинэчилсэн</translation>
+<translation id="1530466164747090379"><ph name="FILE_NAME" /> эмзэг эсвэл аюултай өгөгдөлтэй байна</translation>
 <translation id="1531275250079031713">'Шинэ Wi-Fi нэмэх' харилцах цонхыг харуулах</translation>
 <translation id="1531734061664070992"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /></translation>
 <translation id="1533948060140843887">Би энэ татан авалт нь миний компьютерыг гэмтээнэ гэдгийг ойлгож байна</translation>
@@ -1534,7 +1535,6 @@
 <translation id="2030803782168502207">Захиалгыг төхөөрөмжөөс хасах</translation>
 <translation id="2031487800375552010">Ур чадвар нь танд давтагдах ажлуудад зориулсан зааврыг хялбархан дахин ашиглах боломжийг олгодог</translation>
 <translation id="2031914984822377766">Сонгосон <ph name="LINK_BEGIN" />вебсайтын хэлнүүдээ<ph name="LINK_END" /> нэмнэ үү. Жагсаалтын эхний хэлийг орчуулгад ашиглана.</translation>
-<translation id="2032837042715970520">Нэг удаагийн нууц үг (OTP) шаардлагатай</translation>
 <translation id="2034346955588403444">Бусад WiFi сүлжээ нэмэх</translation>
 <translation id="2037445849770872822">Энэ Google Бүртгэлд зориулж хяналтыг тохируулсан. Эцэг эхийн бусад хяналтыг тохируулахын тулд Үргэлжлүүлэхийг сонгоно уу.
 
@@ -2189,6 +2189,7 @@
 <translation id="2469141124738294431">VM-н төлөв</translation>
 <translation id="2469259292033957819">Танд хадгалсан хэвлэгч байхгүй байна.</translation>
 <translation id="2469375675106140201">Зөв бичгийн алдаа шалгахыг өөрчлөх</translation>
+<translation id="2469406914567390938">Сувгийг шинэчлэх</translation>
 <translation id="247051149076336810">Файл хуваалцах URL</translation>
 <translation id="2471469610750100598">Хар (өгөгдмөл)</translation>
 <translation id="2471506181342525583">Байршилд хандахыг зөвшөөрсөн</translation>
@@ -2520,6 +2521,7 @@
 <translation id="2695943520968279338">Өргөтгөлтэй танилцах</translation>
 <translation id="2696675923413008404">Энэ сайтын контентыг URL-нх нь хамт Google рүү илгээдэг бөгөөд энэ онцлогийг сайжруулахын тулд тухайн контентыг хянагч хүн харж болзошгүй</translation>
 <translation id="2698147581454716013">Энэ нь багцалсан төхөөрөмж бөгөөд Kiosk болон Пайзны сайжруулалтаар бүртгүүлэх боломжгүй.</translation>
+<translation id="269941332914175387">Профайлын өгөгдлөө ачаалж, шифрлэгдсэн байлгахын тулд хөтчийг дахин эхлүүлнэ үү</translation>
 <translation id="2699911226086014512">ПИН-г тохируулж чадсангүй. Алдааны код <ph name="RETRIES" />.</translation>
 <translation id="2701330563083355633"><ph name="DEVICE_NAME" />-с хуваалцсан</translation>
 <translation id="2701737434167469065">Нэвтрэх, <ph name="EMAIL" /></translation>
@@ -2748,6 +2750,7 @@
 <translation id="2844154481025280030">Бодлогыг тохируулсан.</translation>
 <translation id="2844169650293029770">USB-C төхөөрөмж (урд талын портын зүүн тал)</translation>
 <translation id="2844809857160214557">Хэвлэх ажлуудыг харах болон удирдах</translation>
+<translation id="284491292807422921">Сайтыг хасах уу?</translation>
 <translation id="2845276301195220700">Google Календарийн бусад үйлдэл</translation>
 <translation id="2845382757467349449">Хавчуургын мөрийг байнга харуулах</translation>
 <translation id="284581348330507117">Өвөрмөц нууц үгнүүд үүсгэнэ үү</translation>
@@ -3337,6 +3340,7 @@
 <translation id="3262986719682892278">Хэт том байна</translation>
 <translation id="3264544094376351444">Sans-serif фонт</translation>
 <translation id="3264582393905923483">Хам сэдэв</translation>
+<translation id="3265303262625691029"><ph name="VERDICT_MESSAGE" />. Танай администратор "<ph name="CUSTOM_MESSAGE" />" гэж хэлсэн</translation>
 <translation id="3265459715026181080">Цонхыг хаах</translation>
 <translation id="3266022278425892773">Linux-н хөгжүүлэлтийн орчин</translation>
 <translation id="3266030505377585301">Интернэтээр үзсэн өгөгдлийг Google Бүртгэлдээ үлдээнгээ зөвхөн энэ төхөөрөмжөөс устгахын тулд <ph name="BEGIN_LINK" />гарна уу<ph name="END_LINK" />.</translation>
@@ -3618,7 +3622,6 @@
 <translation id="3462413494201477527">Бүртгэлийн тохиргоог цуцлах уу?</translation>
 <translation id="346298925039590474">Энэ хөдөлгөөнт холбооны сүлжээ нь энэ төхөөрөмж дээрх бүх хэрэглэгчид боломжтой болно</translation>
 <translation id="3464145797867108663">Ажлын профайл нэмэх</translation>
-<translation id="34673353983913587">Таны шинэ нууц үгийг хадгалахаас өмнө сайт нэмэлт баталгаажуулалт шаарддаг</translation>
 <translation id="3468298837301810372">Шошго</translation>
 <translation id="3468999815377931311">Android утас</translation>
 <translation id="3469583217479686109">Сонголтын хэрэгсэл</translation>
@@ -4020,7 +4023,6 @@
 <translation id="3732108843630241049">Энэ төхөөрөмж цаашид программ хангамжийн автомат шинэчлэлт хүлээн авахгүй. Аюулгүй байдал, тогтвортой байдал болон гүйцэтгэлийг үргэлжлүүлэн авахын тулд аюулгүй байдлын өргөтгөсөн шинэчлэлтийг асаана уу. Зарим функцийг хязгаарлана. <ph name="LINK_BEGIN" />Нэмэлт мэдээлэл авах<ph name="LINK_END" /></translation>
 <translation id="3732414796052961578"><ph name="ACCOUNT_NAME" />-р үргэлжлүүлэх</translation>
 <translation id="3732530910372558017">ПИН хамгийн ихдээ 63 тэмдэгттэй байх ёстой</translation>
-<translation id="3732706448780793442">Гар аргаар хянах</translation>
 <translation id="3733296813637058299">Бид эдгээр аппыг танд суулгаж өгнө. Та <ph name="DEVICE_TYPE" />-д суулгаж болох бусад аппыг Play Store-с олох боломжтой.</translation>
 <translation id="3734547157266039796">Тутрагын талбай</translation>
 <translation id="3735039640698208086">Аудио тоглуулж байх үед...</translation>
@@ -4455,6 +4457,7 @@
 <translation id="4010746393007464819">Debian 12 (Bookworm) луу сайжруулах боломжтой байна</translation>
 <translation id="4010917659463429001">Хавчуургаа хөдөлгөөнт төхөөрөмждөө авахын тулд, <ph name="GET_IOS_APP_LINK" />.</translation>
 <translation id="4011073493055408531">Хотын дээгүүрх нил ягаан, ногоон өнгөөр стильжүүлсэн туйлын туяа.</translation>
+<translation id="4011897773956589748">Дараагийн удаа Gemini энэ бүртгэлд хандах эрх шаардлагатай болоход танаас дахин асууна.</translation>
 <translation id="4012509903424054869">PDF-г автоматаар хөрвүүлэх тул та текст хайж, сонгох боломжтой</translation>
 <translation id="4014432863917027322">Та "<ph name="EXTENSION_NAME" />-г" засварлах уу?</translation>
 <translation id="4015163439792426608">Өргөтгөлтэй болсон уу? Хялбарчилсан нэг газраас <ph name="BEGIN_LINK" />өргөтгөлүүдээ удирдаарай<ph name="END_LINK" />.</translation>
@@ -6233,6 +6236,7 @@
 <translation id="5275084684151588738">Хэрэглэгчийн толь бичиг</translation>
 <translation id="5275338516105640560">Хадгалсан табын бүлгийн товчлуур</translation>
 <translation id="5275352920323889391">Нохой</translation>
+<translation id="5275946508817197540">Таны аюулгүй байдлын сонголтууд тусгаарласан веб аппуудыг суулгахыг зөвшөөрдөггүй. <ph name="CHANGE_PREFERENCE" />.</translation>
 <translation id="527605719918376753">Дууг хаах таб</translation>
 <translation id="527605982717517565"><ph name="HOST" />-д байгаа JavaScript-ийг үргэлж зөвшөөрөх</translation>
 <translation id="5276357196618041410">Эхлээд нэвтрэхгүйгээр тохируулгыг хадгалах боломжгүй</translation>
@@ -8328,7 +8332,6 @@
 <translation id="6772103682557559072"><ph name="ADDRESS_SUMMARY" /> ажлын хаягийн бусад сонголт</translation>
 <translation id="6772974422346500939">Нээх, засах</translation>
 <translation id="6773595613448852535">Chrome Root Store</translation>
-<translation id="677394079035748956">Сайтад нэг удаагийн нууц үг шаардлагатай</translation>
 <translation id="6774710250118040929">Шинэ нууц үг нэмэх</translation>
 <translation id="6775163072363532304">Боломжтой байгаа төхөөрөмжүүд энд харагдана.</translation>
 <translation id="677646486571529447">Тэмдэглэл нэмэх</translation>
@@ -8681,6 +8684,7 @@
 <translation id="6997553674029032185">Сайт руу очих</translation>
 <translation id="6997642619627518301"><ph name="NAME_PH" /> - Үйл ажиллагааны лог</translation>
 <translation id="6997707937646349884">Taны төхөөрөмжид:</translation>
+<translation id="6998036632333022623">Google-тэй табууд хуваалцаж байна</translation>
 <translation id="6998793565256476099">Видео хуралд төхөөрөмж элсүүлэх</translation>
 <translation id="6999956497249459195">Шинэ бүлэг</translation>
 <translation id="7000206553895739324"><ph name="PRINTER_NAME" /> холбогдсон, гэхдээ тохируулга хийх шаардлагатай</translation>
@@ -10039,7 +10043,6 @@
 <translation id="7943311690198910993">Нэвтрэх аргыг шинэчилсэн</translation>
 <translation id="7943368935008348579">PDF татах</translation>
 <translation id="7943837619101191061">Байрлалыг нэм...</translation>
-<translation id="7944173382284143968">Вебсайт шинэ нууц үгийг хадгалахаас өмнө Нэг удаагийн нууц үгээр (OTP) баталгаажуулахыг шаарддаг. Өөрчлөлтийг дуусгахын тулд явцыг гар аргаар хянана уу.</translation>
 <translation id="79446453817422139">Энэ файл аюултай байж магадгүй</translation>
 <translation id="7944772052836377867">Синк таныг мөн болохыг баталгаажуулах шаардлагатай байна</translation>
 <translation id="7944847494038629732">Дахин оролдохын тулд сканнерын USB кабелийг салгаад, дахин залгана уу</translation>

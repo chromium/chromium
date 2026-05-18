@@ -1529,7 +1529,6 @@ Les autorisations que vous avez déjà accordées à des applications peuvent s'
 <translation id="2030803782168502207">Supprimer l'abonnement de l'appareil</translation>
 <translation id="2031487800375552010">Les compétences vous permettent de réutiliser facilement des requêtes pour des tâches répétitives</translation>
 <translation id="2031914984822377766">Ajoutez vos <ph name="LINK_BEGIN" />langues de site Web favorites<ph name="LINK_END" />. La langue dans la partie supérieure de la liste sera utilisée pour effectuer les traductions.</translation>
-<translation id="2032837042715970520">Mot de passe à usage unique requis</translation>
 <translation id="2034346955588403444">Ajouter un autre réseau Wi-Fi</translation>
 <translation id="2037445849770872822">La supervision est configurée pour ce compte Google. Si vous souhaitez configurer davantage de contrôles parentaux, sélectionnez Continuer.
 
@@ -3612,7 +3611,6 @@ l‘<ph name="BEGIN_LINK" />
 <translation id="3462413494201477527">Annuler la configuration du compte?</translation>
 <translation id="346298925039590474">Ce réseau cellulaire sera accessible à tous les utilisateurs sur cet appareil</translation>
 <translation id="3464145797867108663">Ajouter un profil professionnel</translation>
-<translation id="34673353983913587">Avant d'enregistrer votre nouveau mot de passe, le site nécessite une vérification supplémentaire</translation>
 <translation id="3468298837301810372">Étiquette</translation>
 <translation id="3468999815377931311">Téléphone Android</translation>
 <translation id="3469583217479686109">Sélection</translation>
@@ -4014,7 +4012,6 @@ l‘<ph name="BEGIN_LINK" />
 <translation id="3732108843630241049">Cet appareil ne reçoit plus de mises à jour logicielles automatiques. Activez les mises à jour de sécurité étendues pour une sécurité, une stabilité et des performances continues. Certaines fonctionnalités seront limitées. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
 <translation id="3732414796052961578">Continuer en tant que <ph name="ACCOUNT_NAME" /></translation>
 <translation id="3732530910372558017">La longueur maximale pour le NIP est de 63 caractères</translation>
-<translation id="3732706448780793442">Prendre le relais manuellement</translation>
 <translation id="3733296813637058299">Nous allons installer ces applications pour vous. Vous pouvez trouver d'autres applications pour votre <ph name="DEVICE_TYPE" /> dans la boutique Play Store.</translation>
 <translation id="3734547157266039796">Rizière</translation>
 <translation id="3735039640698208086">Lors de la lecture d'un contenu audio…</translation>
@@ -8323,7 +8320,6 @@ Vous avez # autres mots de passe compromis. Le gestionnaire de mots de passe de
 <translation id="6772103682557559072">Plus d'options pour l'adresse professionnelle <ph name="ADDRESS_SUMMARY" /></translation>
 <translation id="6772974422346500939">Ouvrir et modifier</translation>
 <translation id="6773595613448852535">Chrome Root Store</translation>
-<translation id="677394079035748956">Le site nécessite un mot de passe à usage unique</translation>
 <translation id="6774710250118040929">Ajouter un nouveau mot de passe</translation>
 <translation id="6775163072363532304">Les appareils accessibles s'afficheront ici.</translation>
 <translation id="677646486571529447">Ajouter une note</translation>
@@ -10034,7 +10030,6 @@ Appuyez sur un commutateur attribué ou une touche du clavier pour retirer l'att
 <translation id="7943311690198910993">Méthode de connexion mise à jour</translation>
 <translation id="7943368935008348579">Télécharger les PDF</translation>
 <translation id="7943837619101191061">Ajouter un dossier...</translation>
-<translation id="7944173382284143968">Le site Web nécessite une confirmation par mot de passe à usage unique avant d'enregistrer le nouveau mot de passe. Veuillez reprendre le processus manuellement pour terminer le changement.</translation>
 <translation id="79446453817422139">Ce fichier pourrait être dangereux</translation>
 <translation id="7944772052836377867">La synchronisation doit vérifier qu'il s'agit bien de vous</translation>
 <translation id="7944847494038629732">Débranchez le câble USB du numériseur et rebranchez-le pour réessayer</translation>

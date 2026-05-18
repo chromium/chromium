@@ -444,6 +444,7 @@
 <translation id="2496626742194544812">Անցնել առաջին ներդիր</translation>
 <translation id="2499505845365628575">Ձեր այցելությունների ամբողջ պատմությունը տեսնելու համար ընտրեք <ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" />։</translation>
 <translation id="2511117522375201202">Դուք ունեք <ph name="NUMBER_OF_PASSWORDS" /> կոտրված գաղտնաբառ, որոնք կարող են վտանգել ձեր անվտանգությունը։</translation>
+<translation id="2512709994717613803">Մակարդակ <ph name="LEVEL_NUMBER" /></translation>
 <translation id="2513103768503127042">Այստեղ կգտնեք ձեր ներդիրների խմբերը</translation>
 <translation id="251837347827266434">Դուք դուրս կգաք հաշվից, ներդիրները կփակվեն, այցելությունների պատմությունը կջնջվի</translation>
 <translation id="2520787026086861736">Անջատելու համար անցեք <ph name="BEGIN_LINK" />Ինքնալրացում և գաղտնաբառեր<ph name="END_LINK" /></translation>
@@ -607,7 +608,6 @@
 <translation id="3132345256151444894">Պահել Redress Number-ը</translation>
 <translation id="3132584647087998639">Տվյալների ներմուծում</translation>
 <translation id="313283613037595347">Ստեղծել նոր ինկոգնիտո ներդիր</translation>
-<translation id="3136739222562075778">Այս քարտը ցուցադրում է ձեր բաց ներդիրների ապրանքների գնիջեցումները</translation>
 <translation id="3138611310073113613">Չեղարկել ընտրությունը</translation>
 <translation id="3140825265190223781">Պահված գաղտնաբառեր և մուտքի բանալիներ</translation>
 <translation id="3143515551205905069">Չեղարկել համաժամացումը</translation>
@@ -1090,6 +1090,7 @@
 <translation id="4840495572919996524">Ձեր էջանիշները, պատմությունը, գաղտնաբառերն ու այլ կարգավորումներ կհամաժամացվեն ձեր Google հաշվի հետ:</translation>
 <translation id="484280513275854557">Դուք դուրս եկաք հաշվից, այցելությունների պատմությունը ջնջվեց</translation>
 <translation id="484462545196658690">Ավտոմատ</translation>
+<translation id="4846662396507502151">Ավելի արագ դիտարկեք նոր գործիքագոտու օգնությամբ</translation>
 <translation id="4850886885716139402">Տեսք</translation>
 <translation id="4854068532375923088">Թույլատրեք Gemini-ին օգտագործել ձեր տեսախցիկը</translation>
 <translation id="4860895144060829044">Զանգել</translation>
@@ -1428,6 +1429,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="5988097621740394599">Դիտեք ձեր ներդիրներում գների իջեցման մասին ծանուցումները։</translation>
 <translation id="5988851877894965432">Բացել URL-ները Chrome-ում</translation>
 <translation id="599343768974649785">Մեծահասակների համար նախատեսված տեքստ</translation>
+<translation id="6004988584831654445">Պատրա՛ստ է։ Ստացեք ծանուցումներ նոր առաջադրանքների մասին։</translation>
 <translation id="6006672969046233841">Նոր ներդիր</translation>
 <translation id="6011308810877101166">Բարելավել որոնման առաջարկները</translation>
 <translation id="6012140227487808125">Գաղտնագրում…</translation>
@@ -1659,6 +1661,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="6685259053455152195">Դյուրանցումներ՝ կարգավորումներն արագ փոփոխելու և գործառույթները հասցեագոտուց օգտագործելու համար։</translation>
 <translation id="6689342293888598653">Սպիտակ ֆոն</translation>
 <translation id="6689685206615181381">Հասանելի է միայն ինկոգնիտո ռեժիմը</translation>
+<translation id="6705491067826837934">Կառավարման տարրեր՝ անհրաժեշտ վայրերում</translation>
 <translation id="6708501134077648845">Գաղտնաբառերի կարգավորումներ</translation>
 <translation id="6709964700841491574">Արգելափակման ռեժիմ</translation>
 <translation id="6710079714193676716">Կառավարվում է ձեր կազմակերպության կողմից։ Որոշ գործառույթներ կարող են հասանելի չլինել։ <ph name="BEGIN_LINK" />Իմանալ ավելին<ph name="END_LINK" /></translation>
@@ -1719,6 +1722,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="6903282483217634857">Տեղափոխել աջ</translation>
 <translation id="6903907808598579934">Միացնել համաժամացումը</translation>
 <translation id="6906448540340261898">Համոզվեք, որ միշտ կարող եք օգտվել գաղտնաբառերից ձեր Google հաշվում</translation>
+<translation id="6906978870282539723">Օգնություն՝ կապված ներդիրների և առաջադրանքների հետ</translation>
 <translation id="6908734251759299256">Թարմացրեք ձեր դիտարկիչը</translation>
 <translation id="6913136913033237761"><ph name="FOLDER_NAME" />։ Միայն այս սարքում։</translation>
 <translation id="6914583639806229067">Որոնեք ձեր պատճենած պատկերը</translation>
@@ -2079,6 +2083,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="8182037667962849780">{count,plural, =1{{website_1} կայքի համար}=2{{website_1} և {website_2} կայքերի համար}=3{{website_1}, {website_2} ու ևս 1 կայքի համար}one{{website_1}, {website_2} ու ևս {more_count} կայքի համար}other{{website_1}, {website_2} ու ևս {more_count} կայքի համար}}</translation>
 <translation id="8184895727539791845">Որպեսզի Gemini-ին հասանելի դարձնեք ձեր տեսախցիկը, այն միացրեք iOS-ի կարգավորումներում</translation>
 <translation id="8185076488803799132">Ներմուծել</translation>
+<translation id="8187200657863701733">Chrome-ի ընթացիկ մակարդակը</translation>
 <translation id="8189615296021678665">Հպեք «Պահել»՝ հաջորդ անգամ մուտք գործելիս այս գաղտնաբառը հեշտությամբ լրացնելու համար։</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Ձեր սարքերը<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195191503358432289">Գաղտնաբառի ավելացում</translation>
@@ -2122,6 +2127,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="8325455175867928593">Թաքցնել «Կարծիքներ՝ հիմնված ձեր հետաքրքրությունների վրա» քարտը</translation>
 <translation id="833647236762414178">Ստեղծեք, պահեք և կառավարեք ձեր գաղտնաբառերն ու մուտքի բանալիները, որպեսզի հեշտությամբ մուտք գործեք կայքեր և հավելվածներ։ <ph name="BEGIN_LINK" />Իմանալ ավելին<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">Պահուստավորեք ձեր տվյալները և օգտագործեք դրանք ցանկացած սարքում։</translation>
+<translation id="8345328955902001853">{count,plural, =1{Կատարեք ևս 1 առաջադրանք՝ հաջորդ մակարդակ անցնելու համար}one{Կատարեք ևս {count} առաջադրանք՝ հաջորդ մակարդակ անցնելու համար}other{Կատարեք ևս {count} առաջադրանք՝ հաջորդ մակարդակ անցնելու համար}}</translation>
 <translation id="8348530355586151720">Հպեք եռակետ ընտրացանկին</translation>
 <translation id="8349305172487531364">Էջանիշների գոտի</translation>
 <translation id="8361189290032177785">{count,plural, =1{Ներմուծվել է {count} էջանիշ}one{Ներմուծվել է {count} էջանիշ}other{Ներմուծվել է {count} էջանիշ}}</translation>

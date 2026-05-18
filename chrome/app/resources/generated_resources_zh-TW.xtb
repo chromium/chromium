@@ -785,6 +785,7 @@
 <translation id="1529769834253316556">行高</translation>
 <translation id="1529891865407786369">電源</translation>
 <translation id="1530376661400379364">Chrome 已重設這些設定</translation>
+<translation id="1530466164747090379">「<ph name="FILE_NAME" />」含有機密或危險的資料</translation>
 <translation id="1531275250079031713">顯示「新增 Wi-Fi」對話方塊</translation>
 <translation id="1531734061664070992"><ph name="FIRST_SWITCH" />、<ph name="SECOND_SWITCH" />、<ph name="THIRD_SWITCH" /></translation>
 <translation id="1533948060140843887">我瞭解這個下載項目可能損害我的電腦</translation>
@@ -1528,7 +1529,6 @@
 <translation id="2030803782168502207">從裝置上移除訂閱項目</translation>
 <translation id="2031487800375552010">技能可讓你輕鬆沿用提示詞，處理重複性工作</translation>
 <translation id="2031914984822377766">新增偏好的<ph name="LINK_BEGIN" />網站語言<ph name="LINK_END" />。系統會將文字翻譯成清單頂端的語言。</translation>
-<translation id="2032837042715970520">必須輸入動態密碼</translation>
 <translation id="2034346955588403444">新增其他 WiFi 網路</translation>
 <translation id="2037445849770872822">你已設定這個 Google 帳戶的監護功能。如要設定更多家長監護功能，請選取 [繼續]。
 
@@ -2180,6 +2180,7 @@
 <translation id="2469141124738294431">VM 狀態</translation>
 <translation id="2469259292033957819">沒有已儲存的印表機。</translation>
 <translation id="2469375675106140201">自訂拼字檢查</translation>
+<translation id="2469406914567390938">更新版本</translation>
 <translation id="247051149076336810">檔案共用網址</translation>
 <translation id="2471469610750100598">黑色 (預設)</translation>
 <translation id="2471506181342525583">已允許存取位置資訊</translation>
@@ -2511,6 +2512,7 @@
 <translation id="2695943520968279338">瀏覽擴充功能</translation>
 <translation id="2696675923413008404">這個網站的內容 (包括網址) 會傳送給 Google，並可能交由專人審查，以改進這項功能</translation>
 <translation id="2698147581454716013">這是隨附裝置，因此無法註冊 Kiosk &amp; Signage 升級版。</translation>
+<translation id="269941332914175387">重新啟動瀏覽器即可載入設定檔資料，維持資料加密狀態</translation>
 <translation id="2699911226086014512">PIN 碼作業失敗，錯誤代碼為 <ph name="RETRIES" />。</translation>
 <translation id="2701330563083355633">透過 <ph name="DEVICE_NAME" /> 分享</translation>
 <translation id="2701737434167469065">登入，<ph name="EMAIL" /></translation>
@@ -2739,6 +2741,7 @@
 <translation id="2844154481025280030">已設定政策。</translation>
 <translation id="2844169650293029770">USB-C 裝置 (左前方連接埠)</translation>
 <translation id="2844809857160214557">查看及管理列印工作</translation>
+<translation id="284491292807422921">要移除網站嗎？</translation>
 <translation id="2845276301195220700">可對 Google 日曆執行的其他動作</translation>
 <translation id="2845382757467349449">永遠顯示書籤列</translation>
 <translation id="284581348330507117">設定不同的密碼</translation>
@@ -3325,6 +3328,7 @@
 <translation id="3262986719682892278">檔案過大</translation>
 <translation id="3264544094376351444">Sans-serif 字型</translation>
 <translation id="3264582393905923483">內容</translation>
+<translation id="3265303262625691029"><ph name="VERDICT_MESSAGE" />。管理員訊息：「<ph name="CUSTOM_MESSAGE" />」</translation>
 <translation id="3265459715026181080">關閉視窗</translation>
 <translation id="3266022278425892773">Linux 開發環境</translation>
 <translation id="3266030505377585301">如果只要刪除這部裝置上的瀏覽資料，但保留 Google 帳戶中的資料，請先<ph name="BEGIN_LINK" />登出<ph name="END_LINK" />。</translation>
@@ -3606,7 +3610,6 @@
 <translation id="3462413494201477527">取消設定帳戶？</translation>
 <translation id="346298925039590474">這部裝置的使用者都將可以存取這個行動網路</translation>
 <translation id="3464145797867108663">新增工作資料夾</translation>
-<translation id="34673353983913587">網站要求先完成額外驗證程序，才能儲存新密碼</translation>
 <translation id="3468298837301810372">標籤</translation>
 <translation id="3468999815377931311">Android 手機</translation>
 <translation id="3469583217479686109">選取工具</translation>
@@ -4008,7 +4011,6 @@
 <translation id="3732108843630241049">這部裝置不會再收到自動軟體更新。啟用延長安全性更新，可持續享有安全性、穩定性和效能。部分功能會受到限制。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="3732414796052961578">以「<ph name="ACCOUNT_NAME" />」的身分繼續</translation>
 <translation id="3732530910372558017">PIN 碼不能超過 63 個字元</translation>
-<translation id="3732706448780793442">接手處理</translation>
 <translation id="3733296813637058299">系統將為你安裝這些應用程式。你可以在 Play 商店中發掘更多適用於 <ph name="DEVICE_TYPE" /> 的應用程式。</translation>
 <translation id="3734547157266039796">稻田</translation>
 <translation id="3735039640698208086">播放音訊時...</translation>
@@ -4443,6 +4445,7 @@
 <translation id="4010746393007464819">現在可以升級至 Debian 12 (Bookworm)</translation>
 <translation id="4010917659463429001">如要在行動裝置上取得你的書籤，請<ph name="GET_IOS_APP_LINK" />。</translation>
 <translation id="4011073493055408531">城市上空閃耀著紫色和綠色的北極光。</translation>
+<translation id="4011897773956589748">下次 Gemini 需要存取這個帳戶時，會再次請求授權。</translation>
 <translation id="4012509903424054869">自動轉換 PDF 檔案，方便搜尋及選取文字</translation>
 <translation id="4014432863917027322">修復「<ph name="EXTENSION_NAME" />」？</translation>
 <translation id="4015163439792426608">你有使用擴充功能嗎？<ph name="BEGIN_LINK" />集中管理擴充功能<ph name="END_LINK" />，輕鬆又方便。</translation>
@@ -6217,6 +6220,7 @@
 <translation id="5275084684151588738">使用者字典</translation>
 <translation id="5275338516105640560">「已儲存至分頁群組」按鈕</translation>
 <translation id="5275352920323889391">狗</translation>
+<translation id="5275946508817197540">根據安全性偏好設定，你無法安裝隔離網頁應用程式。<ph name="CHANGE_PREFERENCE" />。</translation>
 <translation id="527605719918376753">關閉分頁音訊</translation>
 <translation id="527605982717517565">永遠允許在 <ph name="HOST" /> 執行 JavaScript</translation>
 <translation id="5276357196618041410">請先登入才能儲存設定</translation>
@@ -8307,7 +8311,6 @@
 <translation id="6772103682557559072">「<ph name="ADDRESS_SUMMARY" />」公司地址的其他選項</translation>
 <translation id="6772974422346500939">開啟並編輯</translation>
 <translation id="6773595613448852535">Chrome Root Store</translation>
-<translation id="677394079035748956">網站需要動態密碼</translation>
 <translation id="6774710250118040929">新增密碼</translation>
 <translation id="6775163072363532304">可用的裝置會顯示在這裡。</translation>
 <translation id="677646486571529447">新增附註</translation>
@@ -8660,6 +8663,7 @@
 <translation id="6997553674029032185">前往網站</translation>
 <translation id="6997642619627518301"><ph name="NAME_PH" /> - 活動記錄</translation>
 <translation id="6997707937646349884">在你的裝置上：</translation>
+<translation id="6998036632333022623">正在將分頁內容分享給 Google</translation>
 <translation id="6998793565256476099">註冊視訊會議裝置</translation>
 <translation id="6999956497249459195">新群組</translation>
 <translation id="7000206553895739324"><ph name="PRINTER_NAME" /> 已連接，請進行設定</translation>
@@ -10018,7 +10022,6 @@
 <translation id="7943311690198910993">登入方式已更新</translation>
 <translation id="7943368935008348579">下載 PDF</translation>
 <translation id="7943837619101191061">新增位置...</translation>
-<translation id="7944173382284143968">網站要求先確認動態密碼，才能儲存新密碼。請接手處理這項程序，以完成變更。</translation>
 <translation id="79446453817422139">這個檔案可能含有危險內容</translation>
 <translation id="7944772052836377867">同步功能需要驗證你的身分</translation>
 <translation id="7944847494038629732">請拔下掃描器的 USB 傳輸線並重新插上，然後再試一次</translation>

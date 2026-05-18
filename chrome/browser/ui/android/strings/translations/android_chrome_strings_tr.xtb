@@ -705,6 +705,7 @@ Sadece parolanıza sahip olan kişiler şifrelenmiş verilerinizi okuyabilir. Pa
 <translation id="4084712963632273211"><ph name="PUBLISHER_ORIGIN" /> web sitesinden - <ph name="BEGIN_DEEMPHASIZED" />Google tarafından yayınlandı<ph name="END_DEEMPHASIZED" /></translation>
 <translation id="4092709865241032354">Google Şifre Yöneticisi'nin oturum açma bilgilerinizi kaydetmesini sağlamak için bu sitedeki kullanıcı adınızı ekleyin</translation>
 <translation id="4095146165863963773">Uygulama verileri silinsin mi?</translation>
+<translation id="4095483462103784441">Yeni sekme grubu oluştur</translation>
 <translation id="4096227151372679484">Yer işareti kaydetme akışı ekranın yarısına kadar açıldı</translation>
 <translation id="4105527135143631701">Google Şifre Yöneticisi güncellemesi açıldı</translation>
 <translation id="4113030288477039509">Yöneticiniz tarafından yönetiliyor</translation>
@@ -1639,6 +1640,7 @@ Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />hesabınızdaki Chrome ver
 <translation id="7821130663268546430">Açık sekmelerin tümünü, sekme değiştiricide bulabilirsiniz</translation>
 <translation id="7822705602465980873">Oturum açtığınızda bu veriler, Google hizmetlerinde korunmanızı sağlamak için Google Hesabınıza bağlanır. Örneğin, bir güvenlik olayından sonra Gmail'deki koruma artırılır.</translation>
 <translation id="7824665136384946951">Kuruluşunuz, Güvenli Tarama'yı devre dışı bıraktı</translation>
+<translation id="7825973332242257878">Sekme grupları</translation>
 <translation id="7826342993930002256">Kendi Chrome'unuz, her yerde</translation>
 <translation id="7846161022626028328">Hata oluştu. Tekrar deneyin.</translation>
 <translation id="7846296061357476882">Google hizmetleri</translation>

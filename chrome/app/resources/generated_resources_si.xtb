@@ -1526,7 +1526,6 @@
 <translation id="2030803782168502207">උපාංගයෙන් ග්‍රාහකත්වය ඉවත් කරන්න</translation>
 <translation id="2031487800375552010">පුනරාවර්තන කාර්යයන් සඳහා ප්‍රේරක පහසුවෙන් නැවත භාවිත කිරීමට කුසලතා ඔබට ඉඩ දෙයි</translation>
 <translation id="2031914984822377766">ඔබ වඩා කැමති <ph name="LINK_BEGIN" />වෙබ් අඩවි භාෂා<ph name="LINK_END" /> එක් කරන්න ලැයිස්තුවේ ඉහළම භාෂාව පරිවර්තන සඳහා භාවිත කරනු ඇත.</translation>
-<translation id="2032837042715970520">OTP අවශ්‍යයි</translation>
 <translation id="2034346955588403444">වෙනත් WiFi ජාල එක් කරන්න</translation>
 <translation id="2037445849770872822">මෙම Google ගිණුම සඳහා අධීක්‍ෂණය සකසා ඇත. තවත් මාපිය පාලන සැකසීමට, 'ඉදිරියට යන්න' තෝරන්න.
 
@@ -3608,7 +3607,6 @@
 <translation id="3462413494201477527">ගිණුම පිහිටුවීම අවලංගු කරන්නද?</translation>
 <translation id="346298925039590474">මෙම ජංගම ජාලය මෙම උපාංගයේ සියලු පරිශීලකයින්ට ලබා ගත හැකිය</translation>
 <translation id="3464145797867108663">කාර්යාල පැතිකඩ එක් කරන්න</translation>
-<translation id="34673353983913587">ඔබේ නව මුරපදය සුරැකීමට පෙර, අඩවියට අමතර සත්‍යාපනයක් අවශ්‍ය වේ</translation>
 <translation id="3468298837301810372">ලේබලය</translation>
 <translation id="3468999815377931311">Android දුරකථනය</translation>
 <translation id="3469583217479686109">තේරීම් මෙවලම</translation>
@@ -4010,7 +4008,6 @@
 <translation id="3732108843630241049">මෙම උපාංගය තවදුරටත් ස්වයංක්‍රීය මෘදුකාංග යාවත්කාලීන නොලබයි. අඛණ්ඩ ආරක්‍ෂාව, ස්ථායිතාව, සහ කාර්යසාධනය සඳහා දීර්ඝ කළ ආරක්‍ෂක යාවත්කාලීන සක්‍රීය කරන්න. සමහර කාර්ය සීමා කරනු ලැබේ. <ph name="LINK_BEGIN" />තව දැන ගන්න<ph name="LINK_END" /></translation>
 <translation id="3732414796052961578"><ph name="ACCOUNT_NAME" /> ලෙස ඉදිරියට යන්න</translation>
 <translation id="3732530910372558017">රහස් අංකය උපරිමයෙන් අනුලකුණු 63 ක් විය යුතුමයි</translation>
-<translation id="3732706448780793442">හස්තීයව පවරා ගන්න</translation>
 <translation id="3733296813637058299">ඔබ වෙනුවෙන් අපි එම යෙදුම් ස්ථාපනය කරන්නෙමු. ඔබට ඔබගේ <ph name="DEVICE_TYPE" /> සඳහා තවත් යෙදුම් Play Store හි සොයා ගත හැකිය.</translation>
 <translation id="3734547157266039796">බත් වී</translation>
 <translation id="3735039640698208086">ශ්‍රව්‍ය වාදනය කරන විට...</translation>
@@ -8320,7 +8317,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="6772103682557559072"><ph name="ADDRESS_SUMMARY" /> කාර්යාලයේ ලිපිනය සඳහා තවත් විකල්ප</translation>
 <translation id="6772974422346500939">විවෘත කර සංස්කරණය කරන්න</translation>
 <translation id="6773595613448852535">Chrome මූල ගබඩාව</translation>
-<translation id="677394079035748956">අඩවියට එක් වරක් පමණක් භාවිතා කළ හැකි මුරපදයක් අවශ්‍යයි</translation>
 <translation id="6774710250118040929">නව මුරපදය එක් කරන්න</translation>
 <translation id="6775163072363532304">ලද හැකි උපාංග මෙහි දිස් වෙති.</translation>
 <translation id="677646486571529447">සටහනක් එක් කරන්න</translation>
@@ -10031,7 +10027,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="7943311690198910993">පුරනය වීමේ ක්‍රමය යාවත්කාලීන කරන ලදි</translation>
 <translation id="7943368935008348579">PDF බාගන්න</translation>
 <translation id="7943837619101191061">පිහිටීම එක් කරන්න...</translation>
-<translation id="7944173382284143968">නව මුරපදය සුරැකීමට පෙර වෙබ් අඩවියට OTP තහවුරු කිරීම අවශ්‍ය වේ. වෙනස සම්පූර්ණ කිරීම සඳහා ක්‍රියාවලිය හස්තීයව භාර ගන්න.</translation>
 <translation id="79446453817422139">මෙම ගොනුව අනතුරුදායක විය හැක</translation>
 <translation id="7944772052836377867">ඒ ඔබ බව සත්‍යාපනය කිරීමට සමමුහුර්තයට අවශ්‍යයි</translation>
 <translation id="7944847494038629732">ස්කෑනරයේ USB කේබලය විසන්ධි කර යළි උත්සාහ කිරීමට එය නැවත පේනුගත කරන්න</translation>

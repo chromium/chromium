@@ -1674,7 +1674,6 @@ Jei norite paslėpti mokėjimo vėliau parinktis, eikite į <ph name="BEGIN_LINK
 <translation id="3600246354004376029">„<ph name="TITLE" />“, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
 <translation id="3600492954573979888">Mygtukas „Tvarkyti „Google“ privatumo nustatymus“; suaktyvinkite, kad apsilankytumėte „Google“ paskyros privatumo nustatymų skiltyje</translation>
 <translation id="3603507503523709">Programą užblokavo administratorius</translation>
-<translation id="3605082766859363473">Pasirinktas DI režimas</translation>
 <translation id="3605899229568538311">5 x 5 col.</translation>
 <translation id="3606917451836803637">TV laidos ir programos</translation>
 <translation id="3608932978122581043">Pateikti orientaciją</translation>
@@ -2022,7 +2021,6 @@ Jei norite paslėpti mokėjimo vėliau parinktis, eikite į <ph name="BEGIN_LINK
 <translation id="411918202192379658">Automatinis pildymas dabar dar geresnis</translation>
 <translation id="4121428309786185360">Galiojimo laikas baigiasi</translation>
 <translation id="4123572138124678573">Trys skylės apačioje</translation>
-<translation id="4125597496726375563">Sukurti pasirinktą vaizdą</translation>
 <translation id="412601465078863288">Baigėsi įkėlimo skirtasis laikas</translation>
 <translation id="4127317221386336246">Drabužių priedai</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{Dar 1}one{Dar #}few{Dar #}many{Dar #}other{Dar #}}</translation>
@@ -3094,6 +3092,7 @@ Jei norite paslėpti mokėjimo vėliau parinktis, eikite į <ph name="BEGIN_LINK
 <translation id="5784606427469807560">Patvirtinant kortelę kilo problema. Patikrinkite interneto ryšį ir bandykite dar kartą.</translation>
 <translation id="5785756445106461925">Be to, šiame puslapyje yra kitų nesaugių išteklių. Perduodant duomenis šiuos išteklius gali peržiūrėti kiti asmenys ir keisti atakuojanti programa, siekianti pakeisti puslapio išvaizdą.</translation>
 <translation id="5787146423283493983">Sutartis dėl rakto</translation>
+<translation id="5789643057113097023">.</translation>
 <translation id="5793317771769868848">Šis mokėjimo metodas bus ištrintas iš šio įrenginio</translation>
 <translation id="5794065675298686371">Įjunkite kainų stebėjimo pranešimus</translation>
 <translation id="5797984091151707075">Užblokuota vadovaujantis administratoriaus politika</translation>
@@ -3758,7 +3757,6 @@ Jei norite paslėpti mokėjimo vėliau parinktis, eikite į <ph name="BEGIN_LINK
 <translation id="6820143000046097424">nuoseklieji prievadai</translation>
 <translation id="6820686453637990663">CVC</translation>
 <translation id="6820949753458790123">Mokėkite nedidelėmis dalimis</translation>
-<translation id="6822745163454377107">Gaukite greitesnių ir labiau pritaikytų atsakymų bendrindami atidarytus skirtukus su šia grupe.</translation>
 <translation id="6825578344716086703">Bandėte pasiekti <ph name="DOMAIN" />, bet serveris pateikė sertifikatą, kuris pasirašytas naudojant nesudėtingą parašo algoritmą (pvz., SHA-1). Tai reiškia, kad serverio pateikti saugos prisijungimo duomenys galėjo būti suklastoti ir serveris gali būti ne tas, kurio tikėjotės (gali būti, kad bendraujate su užpuoliku).</translation>
 <translation id="6826993739343257035">Leisti AR?</translation>
 <translation id="6828150717884939426">Skambinti</translation>
@@ -5276,7 +5274,6 @@ Papildoma išsami informacija:
 <translation id="9204089334327209740">Kai įkėlimas bus baigtas, galėsite keisti failus „<ph name="CLOUD_PROVIDER" />“. Vietinė saugykla, įskaitant visus šiukšliadėžėje esančius failus, bus automatiškai pašalinta.</translation>
 <translation id="9205078245616868884">Duomenys užšifruoti naudojant sinchronizavimo slaptafrazę. Įveskite ją, kad pradėtumėte sinchronizuoti.</translation>
 <translation id="920643408853370361">Kelionių draudimas</translation>
-<translation id="9206639970165643781">Bendrinti atitinkamus atidarytus skirtukus, kad gautumėte geresnių atsakymų šioje grupėje?</translation>
 <translation id="9207861905230894330">Nepavyko pridėti straipsnio.</translation>
 <translation id="9209339767782560829">Naudojant jūsų prisijungimo sertifikatą iškilo problema.</translation>
 <translation id="9210152531668884481">Sutinku</translation>

@@ -1540,7 +1540,6 @@ De tilladelser, du har givet til apps, gælder muligvis for denne konto. Du kan 
 <translation id="2030803782168502207">Fjern abonnementet fra enheden</translation>
 <translation id="2031487800375552010">Færdigheder giver dig mulighed for nemt at genbruge prompter til gentagne opgaver</translation>
 <translation id="2031914984822377766">Tilføj dine foretrukne <ph name="LINK_BEGIN" />sprog for websites<ph name="LINK_END" />. De øverste sprog på listen anvendes til oversættelser.</translation>
-<translation id="2032837042715970520">OTP påkrævet</translation>
 <translation id="2034346955588403444">Tilføj andre Wi-Fi-netværk</translation>
 <translation id="2037445849770872822">Forældrestyring er konfigureret for denne Google-konto. Hvis du vil konfigurere yderligere forældrestyring, skal du vælge Fortsæt.
 
@@ -3624,7 +3623,6 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3462413494201477527">Vil du annullere konfigurationen af kontoen?</translation>
 <translation id="346298925039590474">Dette mobilnetværk vil være tilgængeligt for alle brugere på denne enhed</translation>
 <translation id="3464145797867108663">Tilføj arbejdsprofil</translation>
-<translation id="34673353983913587">Websitet kræver ekstra verificering, før din nye adgangskode gemmes</translation>
 <translation id="3468298837301810372">Etiket</translation>
 <translation id="3468999815377931311">Android-telefon</translation>
 <translation id="3469583217479686109">Opmærkningsværktøj</translation>
@@ -4026,7 +4024,6 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3732108843630241049">Denne enhed modtager ikke længere automatiske softwareopdateringer. Aktivér udvidede sikkerhedsopdateringer for at sikre sikkerhed, stabilitet og ydeevne fremover. Nogle funktioner er begrænsede. <ph name="LINK_BEGIN" />Få flere oplysninger<ph name="LINK_END" /></translation>
 <translation id="3732414796052961578">Fortsæt som <ph name="ACCOUNT_NAME" /></translation>
 <translation id="3732530910372558017">Pinkoden må ikke fylde mere end 63 tegn</translation>
-<translation id="3732706448780793442">Overtag manuelt</translation>
 <translation id="3733296813637058299">Vi installerer disse apps for dig. Du kan finde flere apps til din <ph name="DEVICE_TYPE" /> i Play Butik.</translation>
 <translation id="3734547157266039796">Rismarker</translation>
 <translation id="3735039640698208086">Når du afspiller lyd...</translation>
@@ -8337,7 +8334,6 @@ Du har # andre kompromitterede adgangskoder. Google Adgangs­kode­admin­istrat
 <translation id="6772103682557559072">Flere valgmuligheder for arbejdsadressen <ph name="ADDRESS_SUMMARY" /></translation>
 <translation id="6772974422346500939">Åbn og rediger</translation>
 <translation id="6773595613448852535">Chrome Root Store</translation>
-<translation id="677394079035748956">Websitet kræver en engangskode</translation>
 <translation id="6774710250118040929">Tilføj en ny adgangskode</translation>
 <translation id="6775163072363532304">Tilgængelige enheder vises her.</translation>
 <translation id="677646486571529447">Tilføj en note</translation>
@@ -10049,7 +10045,6 @@ Tryk på en kontakt eller tast, der er tildelt en handling, for at fjerne tildel
 <translation id="7943311690198910993">Loginmetoden er opdateret</translation>
 <translation id="7943368935008348579">Download PDF-filer</translation>
 <translation id="7943837619101191061">Tilføj placering...</translation>
-<translation id="7944173382284143968">Websitet kræver bekræftelse via OTP, før den nye adgangskode gemmes. Gennemfør processen manuelt for at gennemføre ændringen.</translation>
 <translation id="79446453817422139">Denne fil kan være skadelig</translation>
 <translation id="7944772052836377867">Synkronisering skal verificere din identitet</translation>
 <translation id="7944847494038629732">Træk scannerens USB-kabel ud, og sæt det i igen for at prøve igen</translation>

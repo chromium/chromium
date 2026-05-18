@@ -1530,7 +1530,6 @@ Dopuštenja koja ste već dali aplikacijama mogu se primijeniti na ovaj račun. 
 <translation id="2030803782168502207">Uklanjanje pretplate s uređaja</translation>
 <translation id="2031487800375552010">Vještine vam omogućuju jednostavnu ponovnu upotrebu upita za ponavljajuće zadatke</translation>
 <translation id="2031914984822377766">Dodajte željene <ph name="LINK_BEGIN" />jezike web-lokacije<ph name="LINK_END" />. Za prijevode će se upotrebljavati prvi jezik na popisu.</translation>
-<translation id="2032837042715970520">Potreban je OTP</translation>
 <translation id="2034346955588403444">Dodavanje druge Wi-Fi mreže</translation>
 <translation id="2037445849770872822">Postavljen je nadzor za ovaj Google račun. Da biste postavili više opcija roditeljskog nadzora, odaberite Nastavi.
 
@@ -3611,7 +3610,6 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="3462413494201477527">Želite li otkazati izradu računa?</translation>
 <translation id="346298925039590474">Ta će mobilna mreža biti dostupna svim korisnicima na ovom uređaju</translation>
 <translation id="3464145797867108663">Dodaj poslovni profil</translation>
-<translation id="34673353983913587">Prije spremanja nove zaporke web-lokacija zahtijeva dodatnu potvrdu</translation>
 <translation id="3468298837301810372">Oznaka</translation>
 <translation id="3468999815377931311">Android telefon</translation>
 <translation id="3469583217479686109">Alat za odabir</translation>
@@ -4013,7 +4011,6 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="3732108843630241049">Ovaj uređaj više ne prima automatska softverska ažuriranja. Uključite proširena sigurnosna ažuriranja radi kontinuirane sigurnosti, stabilnosti i izvedbe. Neke će funkcije biti ograničene. <ph name="LINK_BEGIN" />Saznajte više<ph name="LINK_END" /></translation>
 <translation id="3732414796052961578">Nastavite kao <ph name="ACCOUNT_NAME" /></translation>
 <translation id="3732530910372558017">PIN ne smije biti dulji od 63 znaka</translation>
-<translation id="3732706448780793442">Izvrši ručno</translation>
 <translation id="3733296813637058299">Instalirat ćemo te aplikacije za vas. Više aplikacija za svoj uređaj <ph name="DEVICE_TYPE" /> možete pronaći u Trgovini Play.</translation>
 <translation id="3734547157266039796">Polje riže</translation>
 <translation id="3735039640698208086">Pri reprodukciji zvuka...</translation>
@@ -8321,7 +8318,6 @@ Imate još # ugroženih zaporki. Google upravitelj zaporki preporučuje da odmah
 <translation id="6772103682557559072">Više opcija za poslovnu adresu <ph name="ADDRESS_SUMMARY" /></translation>
 <translation id="6772974422346500939">Otvori i uredi</translation>
 <translation id="6773595613448852535">Chrome trgovina korijenskih certifikata</translation>
-<translation id="677394079035748956">Web-lokacija treba jednokratnu zaporku</translation>
 <translation id="6774710250118040929">Dodavanje nove zaporke</translation>
 <translation id="6775163072363532304">Ovdje će se pojaviti dostupni uređaji.</translation>
 <translation id="677646486571529447">Dodaj napomenu</translation>
@@ -10033,7 +10029,6 @@ Pritisnite dodijeljeni prekidač ili tipku da biste uklonili dodjelu.</translati
 <translation id="7943311690198910993">Način prijave je ažuriran</translation>
 <translation id="7943368935008348579">Preuzmite PDF-ove</translation>
 <translation id="7943837619101191061">Dodaj lokaciju...</translation>
-<translation id="7944173382284143968">Web-lokacija zahtijeva potvrdu OTP-a prije spremanja nove zaporke. Ručno izvršite proces da biste dovršili promjenu.</translation>
 <translation id="79446453817422139">Ova je datoteka možda opasna</translation>
 <translation id="7944772052836377867">Sinkronizacija treba potvrditi da ste to vi</translation>
 <translation id="7944847494038629732">Iskopčajte USB kabel skenera i ponovo ga ukopčajte da biste pokušali ponovo</translation>

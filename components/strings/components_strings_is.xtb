@@ -1673,7 +1673,6 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
 <translation id="3600492954573979888">Hnappurinn „Stjórna persónuverndarstillingum Google“, virkjaðu til að opna persónuverndarstillingar Google-reikningsins</translation>
 <translation id="3603507503523709">Kerfisstjóri hefur lokað á þetta forrit</translation>
-<translation id="3605082766859363473">Gervigreindarstilling valin</translation>
 <translation id="3605899229568538311">5 x 5 to.</translation>
 <translation id="3606917451836803637">Sjónvarpsþættir og -dagskrár</translation>
 <translation id="3608932978122581043">Inntaksstefna</translation>
@@ -1821,6 +1820,7 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="380865868633614173">Vistar kortaupplýsingar</translation>
 <translation id="3810770279996899697">Aðgangsorðastjórnun þarf aðgang að MacOS Keychain</translation>
 <translation id="3810973564298564668">Stjórna</translation>
+<translation id="3811328723651698330"><ph name="STRING_1" />, <ph name="STRING_2" /></translation>
 <translation id="3812398568375898177">Þetta er mikilvæg uppfærsla sem bætir afköst Android-forrita í ChromeOS.</translation>
 <translation id="3814865536373139791">Einfaldaðu hvernig fyrirtækið þitt stjórnar reglum</translation>
 <translation id="3815434930383843058">8 x 12 to.</translation>
@@ -2020,7 +2020,6 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="411918202192379658">Sjálfvirk útfylling er orðin betri</translation>
 <translation id="4121428309786185360">Rennur út</translation>
 <translation id="4123572138124678573">Þrjú göt neðst</translation>
-<translation id="4125597496726375563">„Búa til mynd“ valið</translation>
 <translation id="412601465078863288">Upphleðsla rann út á tíma</translation>
 <translation id="4127317221386336246">Fylgihlutir fatnaðar</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{1 í viðbót}one{# í viðbót}other{# í viðbót}}</translation>
@@ -2401,6 +2400,7 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="4736934858538408121">Sýndarkort</translation>
 <translation id="473775607612524610">Uppfæra</translation>
 <translation id="4738601419177586157"><ph name="TEXT" /> leitartillaga</translation>
+<translation id="473866660302034629"><ph name="TAB_TITLE" />, valinn flipi, <ph name="INDEX" /> af <ph name="TOTAL" />, notaðu örina til vinstri eða hægri til að skipta á milli flipa</translation>
 <translation id="4742407542027196863">Stjórna aðgangsorðum…</translation>
 <translation id="474270528725216349">Frá a.m.k. einu vefsvæði í samstilltum tækjum</translation>
 <translation id="4743275772928623722">Kerfið var uppfært en ekki tókst að endurheimta sum forrit og skrár. Forritin verða sótt aftur sjálfkrafa.</translation>
@@ -2468,6 +2468,7 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="4832961164064927107">Grill</translation>
 <translation id="4835568975547260025">Chrome mun sjálfkrafa deila viðeigandi opnum flipum til að hjálpa þér að fá sérsniðnari svör við spurningum þínum.</translation>
 <translation id="4840250757394056958">Skoða Chrome ferilinn þinn</translation>
+<translation id="4842365697443353018">Hreinsa eyðublað til að nota greiðslufrestun</translation>
 <translation id="484462545196658690">Sjálfvirkt</translation>
 <translation id="4844937814014739139">Skoða og stækka/minnka samnýtta flipa</translation>
 <translation id="484671803914931257">Fáðu afslátt hjá <ph name="MERCHANT_NAME" /> og fleirum</translation>
@@ -3090,6 +3091,7 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="5784606427469807560">Vandamál kom upp við að staðfesta kortið þitt. Athugaðu tenginguna við internetið og reyndu aftur.</translation>
 <translation id="5785756445106461925">Aukinheldur inniheldur þessi síða önnir tilföng sem ekki er hægt að treysta. Þessi tilföng kunna að vera skoðuð af öðrum á meðan þau eru í umferð, og tölvuþrjótur gæti breytt þeim til þess að reyna að breyta útliti síðunnar.</translation>
 <translation id="5787146423283493983">Lykilsamningur</translation>
+<translation id="5789643057113097023">.</translation>
 <translation id="5793317771769868848">Greiðslumátanum verður eytt úr tækinu</translation>
 <translation id="5794065675298686371">Kveiktu á tilkynningum verðrakningar</translation>
 <translation id="5797984091151707075">Lokað af stjórnandareglu</translation>
@@ -3754,7 +3756,6 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="6820143000046097424">raðtengi</translation>
 <translation id="6820686453637990663">CVC</translation>
 <translation id="6820949753458790123">Borgaðu í auðveldum afborgunum</translation>
-<translation id="6822745163454377107">Fáðu hraðari og sérsniðnari svör með því að deila opnum flipum með þessum þræði.</translation>
 <translation id="6825578344716086703">Þú reyndir að ná í <ph name="DOMAIN" /> en þjónninn gaf upp vottorð sem er undirritað með ótraustu undirritunarreikniriti (eins og SHA-1). Þetta merkir að öryggisskilríkin sem þjónninn gaf upp gætu verið fölsuð og að þjónninn gæti verð annar sem sá sem þú reiknaðir með (þú gætir verið í samskiptum við tölvuþrjót).</translation>
 <translation id="6826993739343257035">Viltu leyfa AR?</translation>
 <translation id="6828150717884939426">Hringja</translation>
@@ -5270,7 +5271,6 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="9204089334327209740">Þegar upphleðslunni er lokið geturðu breytt skránum í <ph name="CLOUD_PROVIDER" />. Staðbundna geymslurýminu verður sjálfkrafa eytt, þ.m.t. öllum skrám í ruslinu.</translation>
 <translation id="9205078245616868884">Gögnin þín eru dulkóðuð með aðgangsorði samstillingar. Sláðu það inn til að hefja samstillingu.</translation>
 <translation id="920643408853370361">Ferðatrygging</translation>
-<translation id="9206639970165643781">Deila viðeigandi opnum flipum til að fá betri svör í þessum þræði?</translation>
 <translation id="9207861905230894330">Ekki tókst að bæta greininni við.</translation>
 <translation id="9209339767782560829">Vandamál kom upp við að nota innskráningarvottorðið þitt.</translation>
 <translation id="9210152531668884481">Ég er með</translation>

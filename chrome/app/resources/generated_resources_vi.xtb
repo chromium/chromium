@@ -1539,7 +1539,6 @@ Các quyền bạn từng cấp cho ứng dụng có thể áp dụng cho cả t
 <translation id="2030803782168502207">Xoá gói thuê bao khỏi thiết bị</translation>
 <translation id="2031487800375552010">Các kỹ năng cho phép bạn dễ dàng sử dụng lại câu lệnh cho các nhiệm vụ lặp lại</translation>
 <translation id="2031914984822377766">Thêm <ph name="LINK_BEGIN" />các ngôn ngữ ưu tiên cho trang web<ph name="LINK_END" />. Ngôn ngữ hàng đầu trong danh sách này sẽ được dùng cho các bản dịch.</translation>
-<translation id="2032837042715970520">Phải có OTP</translation>
 <translation id="2034346955588403444">Thêm mạng Wi-Fi khác</translation>
 <translation id="2037445849770872822">Tính năng giám sát đã được thiết lập cho Tài khoản Google này. Để thiết lập thêm quyền kiểm soát của cha mẹ, hãy chọn Tiếp tục.
 
@@ -3627,7 +3626,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3462413494201477527">Hủy thiết lập tài khoản?</translation>
 <translation id="346298925039590474">Tất cả người dùng trên thiết bị này đều có thể sử dụng mạng di động này</translation>
 <translation id="3464145797867108663">Thêm hồ sơ công việc</translation>
-<translation id="34673353983913587">Trang web cần xác minh thêm trước khi lưu mật khẩu mới của bạn</translation>
 <translation id="3468298837301810372">Nhãn</translation>
 <translation id="3468999815377931311">Điện thoại Android</translation>
 <translation id="3469583217479686109">Công cụ lựa chọn</translation>
@@ -4029,7 +4027,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3732108843630241049">Thiết bị này không còn nhận được bản cập nhật phần mềm tự động. Bật tính năng cập nhật bảo mật mở rộng để duy trì tính bảo mật, độ ổn định và hiệu suất. Một số chức năng sẽ bị hạn chế. <ph name="LINK_BEGIN" />Tìm hiểu thêm<ph name="LINK_END" /></translation>
 <translation id="3732414796052961578">Tiếp tục bằng tài khoản <ph name="ACCOUNT_NAME" /></translation>
 <translation id="3732530910372558017">Mã PIN chỉ được dài tối đa 63 ký tự</translation>
-<translation id="3732706448780793442">Thực hiện theo cách thủ công</translation>
 <translation id="3733296813637058299">Chúng tôi sẽ cài đặt các ứng dụng đó cho bạn. Bạn có thể tìm thêm ứng dụng cho <ph name="DEVICE_TYPE" /> của mình trong Cửa hàng Play.</translation>
 <translation id="3734547157266039796">Cánh đồng lúa</translation>
 <translation id="3735039640698208086">Khi phát âm thanh...</translation>
@@ -8340,7 +8337,6 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="6772103682557559072">Các lựa chọn khác cho địa chỉ nơi làm việc <ph name="ADDRESS_SUMMARY" /></translation>
 <translation id="6772974422346500939">Mở và chỉnh sửa</translation>
 <translation id="6773595613448852535">Chrome Root Store</translation>
-<translation id="677394079035748956">Trang web này cần mật khẩu một lần</translation>
 <translation id="6774710250118040929">Thêm mật khẩu mới</translation>
 <translation id="6775163072363532304">Các thiết bị hiện có sẽ xuất hiện ở đây.</translation>
 <translation id="677646486571529447">Thêm ghi chú</translation>
@@ -10055,7 +10051,6 @@ Nhấn một công tắc hoặc phím đã gán để xóa.</translation>
 <translation id="7943311690198910993">Đã cập nhật phương thức đăng nhập</translation>
 <translation id="7943368935008348579">Tải tệp PDF xuống</translation>
 <translation id="7943837619101191061">Thêm vị trí...</translation>
-<translation id="7944173382284143968">Trang web yêu cầu xác nhận bằng OTP trước khi lưu mật khẩu mới. Vui lòng thực hiện quy trình theo cách thủ công để hoàn tất thay đổi.</translation>
 <translation id="79446453817422139">Tệp này có thể nguy hiểm</translation>
 <translation id="7944772052836377867">Tính năng đồng bộ hóa cần xác minh danh tính của bạn</translation>
 <translation id="7944847494038629732">Rút cáp USB của máy quét rồi cắm lại để thử lại</translation>

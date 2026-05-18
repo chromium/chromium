@@ -1536,7 +1536,6 @@ Izimvume ozinikezile ama-app kakade zingase zisebenze kule akhawunti. Ungakwazi 
 <translation id="2030803782168502207">Susa okubhaliselwe kudivayisi</translation>
 <translation id="2031487800375552010">Amakhono akuvumela ukuthi usebenzise kalula ama-prompt emisebenzi ephindayo</translation>
 <translation id="2031914984822377766">Engeza izilimi zakho <ph name="LINK_BEGIN" />zewebhusayithi ezincanyelwayo<ph name="LINK_END" />. Ulimi oluphezulu kusuka kulolu hlu luzosetshenziselwa ukuhunyushwa.</translation>
-<translation id="2032837042715970520">Kudingeka I-OTP</translation>
 <translation id="2034346955588403444">Engeza enye inethiwekhi ye-WiFi</translation>
 <translation id="2037445849770872822">Ukugadwa kuzosethelwa le akhawunti ye-Google. Ukuze usethe izilawuli zomzali eziningi, khetha okuthi Qhubeka.
 
@@ -3622,7 +3621,6 @@ I-<ph name="DOMAIN" /> idinga ukuba ugcine ikhadi lakho elimsathi lifakiwe.</tra
 <translation id="3462413494201477527">Khansela ukusetha kwe-akhawunti?</translation>
 <translation id="346298925039590474">Le nethiwekhi yeselula izotholakala kubo bonke abasebenzisi kule divayisi</translation>
 <translation id="3464145797867108663">Engeza iphrofayela yomsebenzi</translation>
-<translation id="34673353983913587">Ngaphambi kokulondoloza iphasiwedi yakho entsha, isayithi idinga ukuqinisekiswa okwengeziwe</translation>
 <translation id="3468298837301810372">Ilebula</translation>
 <translation id="3468999815377931311">Ifoni ye-Android</translation>
 <translation id="3469583217479686109">Ithuluzi Lokukhetha</translation>
@@ -4024,7 +4022,6 @@ I-<ph name="DOMAIN" /> idinga ukuba ugcine ikhadi lakho elimsathi lifakiwe.</tra
 <translation id="3732108843630241049">Le divayisi ayisatholi izibuyekezo zesofthiwe ezizenzekelayo. Vula izibuyekezo ezinwetshiwe zokuphepha ukuze uthole ukuphepha, ukuzinza, nokusebenza okuqhubekayo. Okunye ukusebenza kuzokhawulelwa. <ph name="LINK_BEGIN" />Funda kabanzi<ph name="LINK_END" /></translation>
 <translation id="3732414796052961578">Qhubeka njengo-<ph name="ACCOUNT_NAME" /></translation>
 <translation id="3732530910372558017">I-PIN kufanele okungenani ibe izinhlamvu ezingu-63</translation>
-<translation id="3732706448780793442">Qhubeka ngokusebenza ngesandla</translation>
 <translation id="3733296813637058299">Sizokufakela lawo ma-app. Ungathola ama-app amaningi we-<ph name="DEVICE_TYPE" /> yakho ku-Google Play Isitolo.</translation>
 <translation id="3734547157266039796">Irice paddy</translation>
 <translation id="3735039640698208086">Uma idlala umsindo...</translation>
@@ -8335,7 +8332,6 @@ Unamaphasiwedi onakalisiwe angu-# ngokwengeziwe. Umphathi Wephasiwedi Ye-Google 
 <translation id="6772103682557559072">Ongakukhetha okuningi kwekekheli lasemsebenzini <ph name="ADDRESS_SUMMARY" /></translation>
 <translation id="6772974422346500939">Vula futhi uhlele</translation>
 <translation id="6773595613448852535">Isitolo SeChrome Root</translation>
-<translation id="677394079035748956">Isayithi idinga iphasiwedi yesikhathi esisodwa</translation>
 <translation id="6774710250118040929">Engeza iphasiwedi entsha</translation>
 <translation id="6775163072363532304">Amadivayisi atholakalayo azobonakala lapha.</translation>
 <translation id="677646486571529447">Engeza Inothi</translation>
@@ -10046,7 +10042,6 @@ Cindezela iswishi enikeziwe noma ukhiye ukuze ususe umsebenzi ozokwenziwa</trans
 <translation id="7943311690198910993">Indlela yokungena ngemvume ibuyekeziwe</translation>
 <translation id="7943368935008348579">Dawuniloda ama-PDF</translation>
 <translation id="7943837619101191061">Engeza indawo...</translation>
-<translation id="7944173382284143968">Iwebhusayithi idinga i-OTP eqinisekisayo ngaphambi kokulondoloza iphasiwedi entsha. Sicela uqhubeke nokushicilela ngesandla ukuze uqedele ushintsho.</translation>
 <translation id="79446453817422139">Leli fayela lingase libe yingozi</translation>
 <translation id="7944772052836377867">Ukuvumelanisa kudinga ukuqinisekisa ukuthi nguwe</translation>
 <translation id="7944847494038629732">Khipha ikhebuli ye-USB yeskena bese uyixhuma kabusha ukuze uzame futhi</translation>

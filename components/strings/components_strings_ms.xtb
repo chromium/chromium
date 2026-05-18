@@ -1673,7 +1673,6 @@ Untuk menyembunyikan pilihan bayar kemudian, akses <ph name="BEGIN_LINK" />tetap
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
 <translation id="3600492954573979888">Butang urus tetapan Privasi Google, aktifkan untuk mengakses tetapan privasi Google Account anda</translation>
 <translation id="3603507503523709">Aplikasi disekat oleh pentadbir anda</translation>
-<translation id="3605082766859363473">AI Mode dipilih</translation>
 <translation id="3605899229568538311">5 x 5 in</translation>
 <translation id="3606917451836803637">Rancangan &amp; Program TV</translation>
 <translation id="3608932978122581043">Orientasi suapan</translation>
@@ -2022,7 +2021,6 @@ Untuk menyembunyikan pilihan bayar kemudian, akses <ph name="BEGIN_LINK" />tetap
 <translation id="411918202192379658">Autolengkap telah ditingkatkan</translation>
 <translation id="4121428309786185360">Tamat Tempoh Pada</translation>
 <translation id="4123572138124678573">Tiga tebukan bawah</translation>
-<translation id="4125597496726375563">Buat imej yang dipilih</translation>
 <translation id="412601465078863288">Muat naik tamat masa</translation>
 <translation id="4127317221386336246">Aksesori Pakaian</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{1 yang lain}other{# yang lain}}</translation>
@@ -3094,6 +3092,7 @@ Untuk menyembunyikan pilihan bayar kemudian, akses <ph name="BEGIN_LINK" />tetap
 <translation id="5784606427469807560">Terdapat masalah mengesahkan kad anda. Semak sambungan Internet anda dan cuba lagi.</translation>
 <translation id="5785756445106461925">Selain itu, halaman ini mengandungi sumber lain yang tidak selamat. Sumber ini boleh dilihat oleh orang lain semasa dalam transit dan boleh diubah oleh penyerang untuk menukar penampilan halaman.</translation>
 <translation id="5787146423283493983">Perjanjian Penting</translation>
+<translation id="5789643057113097023">.</translation>
 <translation id="5793317771769868848">Kaedah pembayaran ini akan dipadamkan daripada peranti ini</translation>
 <translation id="5794065675298686371">Hidupkan pemberitahuan penjejakan harga</translation>
 <translation id="5797984091151707075">Disekat oleh dasar pentadbir</translation>
@@ -3758,7 +3757,6 @@ Untuk menyembunyikan pilihan bayar kemudian, akses <ph name="BEGIN_LINK" />tetap
 <translation id="6820143000046097424">port bersiri</translation>
 <translation id="6820686453637990663">CVC</translation>
 <translation id="6820949753458790123">Bayar dengan ansuran mudah</translation>
-<translation id="6822745163454377107">Dapatkan respons yang lebih pantas dan lebih disesuaikan dengan berkongsi tab anda yang terbuka dengan urutan ini.</translation>
 <translation id="6825578344716086703">Anda cuba untuk mencapai <ph name="DOMAIN" />, tetapi pelayan memberikan sijil yang ditandatangani menggunakan algoritma tandatangan yang lemah (seperti SHA-1). Ini bermakna bahawa bukti kelayakan keselamatan yang diberi pelayan mungkin dipalsukan dan pelayan tersebut bukan seperti yang anda jangkakan (anda mungkin berkomunikasi dengan penyerang).</translation>
 <translation id="6826993739343257035">Benarkan AR?</translation>
 <translation id="6828150717884939426">Panggilan</translation>
@@ -5276,7 +5274,6 @@ Butiran tambahan:
 <translation id="9204089334327209740">Setelah muat naik selesai, anda boleh mengubah suai fail anda dalam <ph name="CLOUD_PROVIDER" />. Storan setempat, termasuk sebarang fail dalam Sampah, akan dialih keluar secara automatik.</translation>
 <translation id="9205078245616868884">Data anda disulitkan dengan ungkapan laluan segerak anda. Masukkannya untuk memulakan penyegerakan.</translation>
 <translation id="920643408853370361">Insurans Perjalanan</translation>
-<translation id="9206639970165643781">Kongsi tab terbuka yang berkaitan untuk mendapatkan respons yang lebih baik dalam urutan ini?</translation>
 <translation id="9207861905230894330">Gagal menambahkan artikel.</translation>
 <translation id="9209339767782560829">Terdapat masalah semasa menggunakan sijil log masuk anda.</translation>
 <translation id="9210152531668884481">Saya mahu</translation>

@@ -1537,7 +1537,6 @@ da li    proksi server funkcionira. Ako smatrate da ne trebate koristiti
 <translation id="2030803782168502207">Uklonite pretplatu s uređaja</translation>
 <translation id="2031487800375552010">Vještine vam omogućavaju da lako ponovo koristite upite za ponavljajuće zadatke</translation>
 <translation id="2031914984822377766">Dodajte preferirane <ph name="LINK_BEGIN" />jezike web lokacije<ph name="LINK_END" />. Prvi jezik na listi će se koristiti za prijevode.</translation>
-<translation id="2032837042715970520">Potreban je OTP</translation>
 <translation id="2034346955588403444">Dodajte novu WiFi mrežu</translation>
 <translation id="2037445849770872822">Nadzor je postavljen za ovaj Google račun. Da postavite još opcija roditeljskog nadzora, odaberite Nastavi.
 
@@ -3621,7 +3620,6 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="3462413494201477527">Otkazati postavljanje računa?</translation>
 <translation id="346298925039590474">Ova mobilna mreža će biti dostupna svim korisnicima na ovom uređaju</translation>
 <translation id="3464145797867108663">Dodaj radni profil</translation>
-<translation id="34673353983913587">Prije nego što sačuva novu lozinku, web lokacija zahtijeva dodatnu potvrdu</translation>
 <translation id="3468298837301810372">Oznaka</translation>
 <translation id="3468999815377931311">Android telefon</translation>
 <translation id="3469583217479686109">Alat za odabir</translation>
@@ -4023,7 +4021,6 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="3732108843630241049">Uređaj više ne prima automatska ažuriranja softvera. Uključite proširena sigurnosna ažuriranja za trajnu sigurnost, stabilnost i performanse. Neke funkcije će biti ograničene. <ph name="LINK_BEGIN" />Saznajte više<ph name="LINK_END" /></translation>
 <translation id="3732414796052961578">Nastavite kao <ph name="ACCOUNT_NAME" /></translation>
 <translation id="3732530910372558017">PIN mora sadržavati najviše 63 znakova.</translation>
-<translation id="3732706448780793442">Izvršite ručno</translation>
 <translation id="3733296813637058299">Instalirat ćemo te aplikacije za vas. Više aplikacija za uređaj <ph name="DEVICE_TYPE" /> možete pronaći u Play trgovini.</translation>
 <translation id="3734547157266039796">Rižino polje</translation>
 <translation id="3735039640698208086">Prilikom reproduciranja zvuka...</translation>
@@ -8336,7 +8333,6 @@ Imate još # ugroženih lozinki. Googleov Upravitelj lozinki preporučuje da odm
 <translation id="6772103682557559072">Više opcija za poslovnu adresu <ph name="ADDRESS_SUMMARY" /></translation>
 <translation id="6772974422346500939">Otvori i uredi</translation>
 <translation id="6773595613448852535">Chrome Root Store</translation>
-<translation id="677394079035748956">Za web lokaciju je potrebna jednokratna lozinka</translation>
 <translation id="6774710250118040929">Dodajte novu lozinku</translation>
 <translation id="6775163072363532304">Ovdje će se prikazati dostupni uređaji.</translation>
 <translation id="677646486571529447">Dodaj napomenu</translation>
@@ -10048,7 +10044,6 @@ Pritisnite dodijeljeni prekidač ili tipku da uklonite dodjeljivanje.</translati
 <translation id="7943311690198910993">Način prijave je ažuriran</translation>
 <translation id="7943368935008348579">Preuzimaj PDF-ove</translation>
 <translation id="7943837619101191061">Dodaj lokaciju...</translation>
-<translation id="7944173382284143968">Web lokacija zahtijeva potvrdu OTP-a prije pohranjivanja nove lozinke. Ručno izvršite postupak da završite promjenu.</translation>
 <translation id="79446453817422139">Fajl je možda opasan</translation>
 <translation id="7944772052836377867">Sinhronizacija mora potvrditi da ste to vi</translation>
 <translation id="7944847494038629732">Iskopčajte i ponovo priključite USB kabl skenera da pokušate ponovo</translation>

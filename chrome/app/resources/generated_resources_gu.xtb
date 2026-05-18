@@ -1527,7 +1527,6 @@
 <translation id="2030803782168502207">ડિવાઇસમાંથી સબ્સ્ક્રિપ્શન કાઢી નાખો</translation>
 <translation id="2031487800375552010">કૌશલ્યો તમને રિપીટ થતા કાર્યો માટે પ્રૉમ્પ્ટનો સરળતાથી ફરીથી ઉપયોગ કરવાની મંજૂરી આપે છે</translation>
 <translation id="2031914984822377766">તમારી પસંદગીની <ph name="LINK_BEGIN" />વેબસાઇટની ભાષાઓ<ph name="LINK_END" /> ઉમેરો. આ સૂચિમાંની સૌથી ઉપરની ભાષાનો ઉપયોગ અનુવાદ માટે કરવામાં આવશે.</translation>
-<translation id="2032837042715970520">OTP દાખલ કરવો જરૂરી છ</translation>
 <translation id="2034346955588403444">અન્ય WiFi નેટવર્ક ઉમેરો</translation>
 <translation id="2037445849770872822">આ Google એકાઉન્ટ માટે નિરીક્ષણ સેટ કરવામાં આવ્યું છે. વધુ પેરેંટલ કન્ટ્રોલ સેટ અપ કરવા માટે, ચાલુ રાખો પસંદ કરો.
 
@@ -3613,7 +3612,6 @@
 <translation id="3462413494201477527">એકાઉન્ટ સેટઅપ રદ કરીએ?</translation>
 <translation id="346298925039590474">આ મોબાઇલ નેટવર્ક, આ ડિવાઇસ પરના બધા વપરાશકર્તાઓ માટે ઉપલબ્ધ રહેશે</translation>
 <translation id="3464145797867108663">ઑફિસની પ્રોફાઇલ ઉમેરો</translation>
-<translation id="34673353983913587">તમારો નવો પાસવર્ડ સાચવતા પહેલાં, સાઇટ માટે વધારાની ચકાસણી આવશ્યક છે</translation>
 <translation id="3468298837301810372">લેબલ</translation>
 <translation id="3468999815377931311">Android ફોન</translation>
 <translation id="3469583217479686109">પસંદગી ટૂલ</translation>
@@ -4015,7 +4013,6 @@
 <translation id="3732108843630241049">આ ડિવાઇસ હવે સૉફ્ટવેર અપડેટ ઑટોમૅટિક રીતે મેળવતું નથી. નિરંતર સુરક્ષા, સ્થિરતા અને પર્ફોર્મન્સ માટે વધારેલી સુરક્ષા અપડેટ ચાલુ કરો. અમુક કાર્યક્ષમતાઓને મર્યાદિત કરવામાં આવશે. <ph name="LINK_BEGIN" />વધુ જાણો<ph name="LINK_END" /></translation>
 <translation id="3732414796052961578"><ph name="ACCOUNT_NAME" /> તરીકે ચાલુ રાખો</translation>
 <translation id="3732530910372558017">પિનમાં વધુમા વધુ 63 અક્ષર હોવા જોઈએ</translation>
-<translation id="3732706448780793442">મેન્યુઅલી હાથ ધરો</translation>
 <translation id="3733296813637058299">અમે તમારા માટે તે ઍપ ઇન્સ્ટૉલ કરીશું. તમે Play સ્ટોરમાં તમારા <ph name="DEVICE_TYPE" /> માટે વધુ ઍપ શોધી શકો છો.</translation>
 <translation id="3734547157266039796">ચોખાનું ખેતર</translation>
 <translation id="3735039640698208086">ઑડિઓ ચલાવતી વખતે...</translation>
@@ -8330,7 +8327,6 @@ USB ડિવાઇસ</translation>
 <translation id="6772103682557559072"><ph name="ADDRESS_SUMMARY" /> ઑફિસના સરનામા માટે વધુ વિકલ્પો</translation>
 <translation id="6772974422346500939">ખોલો અને ફેરફાર કરો</translation>
 <translation id="6773595613448852535">Chrome Root Store</translation>
-<translation id="677394079035748956">સાઇટને એક-વખત વપરાશના પાસવર્ડની જરૂર છે</translation>
 <translation id="6774710250118040929">નવો પાસવર્ડ ઉમેરો</translation>
 <translation id="6775163072363532304">ઉપલબ્ધ ડિવાઇસ અહીં દેખાશે.</translation>
 <translation id="677646486571529447">કોઈ નોંધ ઉમેરો</translation>
@@ -10043,7 +10039,6 @@ USB ડિવાઇસ</translation>
 <translation id="7943311690198910993">સાઇન-ઇન કરવાની પદ્ધતિ અપડેટ કરી</translation>
 <translation id="7943368935008348579">PDFs ડાઉનલોડ કરો</translation>
 <translation id="7943837619101191061">સ્થાન ઉમેરો...</translation>
-<translation id="7944173382284143968">વેબસાઇટ પર નવો પાસવર્ડ સાચવતા પહેલાં OTP કન્ફર્મેશન જરૂરી છે. ફેરફાર પૂર્ણ કરવા માટે કૃપા કરીને મેન્યુઅલી પ્રક્રિયા હાથ ધરો.</translation>
 <translation id="79446453817422139">આ ફાઇલ જોખમી હોઈ શકે છે</translation>
 <translation id="7944772052836377867">સિંકને તમારી ઓળખની ચકાસણી કરવાની જરૂર પડે છે</translation>
 <translation id="7944847494038629732">ફરીથી પ્રયાસ કરવા માટે સ્કૅનરનો USB કેબલ અનપ્લગ કરીને ફરીથી પ્લગ કરો</translation>

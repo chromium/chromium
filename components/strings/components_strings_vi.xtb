@@ -1673,7 +1673,6 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
 <translation id="3600492954573979888">Nút Quản lý chế độ cài đặt quyền riêng tư của Google, hãy nhấn nút này để vào phần cài đặt quyền riêng tư của Tài khoản Google</translation>
 <translation id="3603507503523709">Quản trị viên đã chặn ứng dụng</translation>
-<translation id="3605082766859363473">Đã chọn Chế độ AI</translation>
 <translation id="3605899229568538311">5 x 5 inch</translation>
 <translation id="3606917451836803637">Chương trình truyền hình và các chương trình khác</translation>
 <translation id="3608932978122581043">Hướng nạp giấy</translation>
@@ -2021,7 +2020,6 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="411918202192379658">Tính năng tự động điền đã được cải tiến</translation>
 <translation id="4121428309786185360">Hết hạn Vào</translation>
 <translation id="4123572138124678573">Đục 3 lỗ dưới cùng</translation>
-<translation id="4125597496726375563">Đã chọn tạo hình ảnh</translation>
 <translation id="412601465078863288">Đã hết thời gian tải lên</translation>
 <translation id="4127317221386336246">Phụ kiện quần áo</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{1 mục khác}other{# mục khác}}</translation>
@@ -3093,6 +3091,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="5784606427469807560">Đã xảy ra sự cố khi xác nhận thẻ của bạn. Hãy kiểm tra kết nối Internet của bạn và thử lại.</translation>
 <translation id="5785756445106461925">Ngoài ra, trang này bao gồm các tài nguyên khác không an toàn. Những tài nguyên này có thể bị người khác xem khi đang gửi và có thể bị kẻ tấn công sửa đổi nhằm thay đổi giao diện của trang.</translation>
 <translation id="5787146423283493983">Thoả thuận về Khoá</translation>
+<translation id="5789643057113097023">.</translation>
 <translation id="5793317771769868848">Phương thức thanh toán này sẽ bị xoá khỏi thiết bị này</translation>
 <translation id="5794065675298686371">Bật thông báo theo dõi giá</translation>
 <translation id="5797984091151707075">Bị chặn theo chính sách của quản trị viên</translation>
@@ -3757,7 +3756,6 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="6820143000046097424">cổng nối tiếp</translation>
 <translation id="6820686453637990663">CVC</translation>
 <translation id="6820949753458790123">Thanh toán theo hình thức trả góp phù hợp với khả năng chi trả</translation>
-<translation id="6822745163454377107">Chia sẻ các thẻ đang mở với chuỗi này để nhận được câu trả lời nhanh hơn và phù hợp hơn.</translation>
 <translation id="6825578344716086703">Bạn đã cố gắng truy cập vào <ph name="DOMAIN" /> nhưng máy chủ xuất trình một chứng chỉ được ký bằng một thuật toán chữ ký yếu (chẳng hạn như SHA-1). Điều này có nghĩa là thông tin đăng nhập bảo mật mà máy chủ xuất trình có thể đã bị giả mạo và máy chủ đó có thể không phải là máy chủ mà bạn mong đợi (bạn có thể đang kết nối với kẻ tấn công).</translation>
 <translation id="6826993739343257035">Cho phép môi trường Thực tế tăng cường?</translation>
 <translation id="6828150717884939426">Gọi</translation>
@@ -5275,7 +5273,6 @@ Thông tin chi tiết bổ sung:
 <translation id="9204089334327209740">Sau khi tải lên xong, bạn có thể sửa đổi các tệp của mình trong <ph name="CLOUD_PROVIDER" />. Bộ nhớ cục bộ, bao gồm mọi tệp trong Thùng rác, đều sẽ tự động bị xoá.</translation>
 <translation id="9205078245616868884">Dữ liệu của bạn đã được mã hóa bằng cụm mật khẩu đồng bộ hóa. Nhập cụm mật khẩu đó để bắt đầu đồng bộ hóa.</translation>
 <translation id="920643408853370361">Bảo hiểm du lịch</translation>
-<translation id="9206639970165643781">Chia sẻ các thẻ đang mở có liên quan để nhận được câu trả lời phù hợp hơn trong chuỗi này?</translation>
 <translation id="9207861905230894330">Không thêm được bài viết.</translation>
 <translation id="9209339767782560829">Đã xảy ra sự cố khi sử dụng chứng chỉ đăng nhập của bạn.</translation>
 <translation id="9210152531668884481">Tôi đồng ý</translation>

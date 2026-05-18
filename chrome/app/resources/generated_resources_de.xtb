@@ -1525,7 +1525,6 @@ Berechtigungen, die du Apps bereits gewährt hast, gelten möglicherweise für d
 <translation id="2030803782168502207">Abo vom Gerät entfernen</translation>
 <translation id="2031487800375552010">Mit Skills kannst du Prompts für wiederkehrende Aufgaben einfach wiederverwenden</translation>
 <translation id="2031914984822377766">Füge die gewünschten <ph name="LINK_BEGIN" />Website-Sprachen<ph name="LINK_END" /> hinzu. Die erste Sprache auf der Liste wird für Übersetzungen verwendet.</translation>
-<translation id="2032837042715970520">OTP erforderlich</translation>
 <translation id="2034346955588403444">Anderes WLAN hinzufügen</translation>
 <translation id="2037445849770872822">Für dieses Google-Konto wurde die Elternaufsicht eingerichtet. Wenn du zusätzliche Jugendschutzeinstellungen konfigurieren möchtest, wähle "Weiter" aus.
 
@@ -3604,7 +3603,6 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3462413494201477527">Kontoeinrichtung abbrechen?</translation>
 <translation id="346298925039590474">Dieses Mobilfunknetz steht nun allen Nutzern auf diesem Gerät zur Verfügung</translation>
 <translation id="3464145797867108663">Arbeitsprofil hinzufügen</translation>
-<translation id="34673353983913587">Bevor dein neues Passwort gespeichert werden kann, ist eine zusätzliche Bestätigung auf der Website erforderlich</translation>
 <translation id="3468298837301810372">Label</translation>
 <translation id="3468999815377931311">Android-Smartphone</translation>
 <translation id="3469583217479686109">Auswahltool</translation>
@@ -4006,7 +4004,6 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3732108843630241049">Dieses Gerät erhält keine automatischen Softwareupdates mehr. Aktiviere erweiterte Sicherheitsupdates, um weiterhin Sicherheits-, Stabilitäts- und Leistungsupdates zu erhalten. Einige Funktionen werden eingeschränkt. <ph name="LINK_BEGIN" />Weitere Informationen<ph name="LINK_END" /></translation>
 <translation id="3732414796052961578">Als „<ph name="ACCOUNT_NAME" />“ fortfahren</translation>
 <translation id="3732530910372558017">PIN darf maximal 63 Zeichen lang sein</translation>
-<translation id="3732706448780793442">Manuell durchführen</translation>
 <translation id="3733296813637058299">Wir installieren diese Apps für dich. Im Play Store findest du weitere Apps für dein <ph name="DEVICE_TYPE" />.</translation>
 <translation id="3734547157266039796">Reisfeld</translation>
 <translation id="3735039640698208086">Bei der Wiedergabe von Audio…</translation>
@@ -8310,7 +8307,6 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="6772103682557559072">Weitere Optionen für die Arbeitsadresse „<ph name="ADDRESS_SUMMARY" />“</translation>
 <translation id="6772974422346500939">Öffnen und bearbeiten</translation>
 <translation id="6773595613448852535">Chrome Root Store</translation>
-<translation id="677394079035748956">Für die Website ist ein Einmalpasswort erforderlich</translation>
 <translation id="6774710250118040929">Neues Passwort hinzufügen</translation>
 <translation id="6775163072363532304">Verfügbare Geräte werden hier angezeigt.</translation>
 <translation id="677646486571529447">Notiz hinzufügen</translation>
@@ -10022,7 +10018,6 @@ Drücke zum Entfernen der Zuweisung einen bereits zugewiesenen Schalter oder ein
 <translation id="7943311690198910993">Anmeldemethode aktualisiert</translation>
 <translation id="7943368935008348579">PDFs herunterladen</translation>
 <translation id="7943837619101191061">Speicherort hinzufügen...</translation>
-<translation id="7944173382284143968">Die Website erfordert eine OTP-Bestätigung, bevor das neue Passwort gespeichert werden kann. Bitte führe den Vorgang manuell durch, um die Änderung abzuschließen.</translation>
 <translation id="79446453817422139">Diese Datei könnte gefährlich sein</translation>
 <translation id="7944772052836377867">Zur Synchronisierung muss deine Identität bestätigt werden</translation>
 <translation id="7944847494038629732">Ziehe das USB‑Kabel des Scanners ab und schließe es wieder an, um es noch einmal zu versuchen</translation>

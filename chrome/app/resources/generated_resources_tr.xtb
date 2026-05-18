@@ -1528,7 +1528,6 @@ Uygulamalara vermiş olduğunuz izinler bu hesap için geçerli olabilir. Androi
 <translation id="2030803782168502207">Aboneliği cihazdan kaldır</translation>
 <translation id="2031487800375552010">Beceriler, tekrarlanan görevlerle ilgili istemleri kolayca yeniden kullanmanıza olanak tanır</translation>
 <translation id="2031914984822377766">Tercih ettiğiniz <ph name="LINK_BEGIN" />web sitesi dillerini<ph name="LINK_END" /> ekleyin. Çeviriler için listede ilk sırada bulunan dil kullanılır.</translation>
-<translation id="2032837042715970520">Tek Kullanımlık Şifre Gerekiyor</translation>
 <translation id="2034346955588403444">Başka kablosuz ağ ekle</translation>
 <translation id="2037445849770872822">Bu Google Hesabı için denetim kuruldu. Diğer ebeveyn denetimlerini kurmak için Devam'ı seçin.
 
@@ -3605,7 +3604,6 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="3462413494201477527">Hesap kurulumu iptal edilsin mi?</translation>
 <translation id="346298925039590474">Bu mobil ağ, bu cihazdaki tüm kullanıcılar tarafından kullanılabilir</translation>
 <translation id="3464145797867108663">Çalışma profili ekle</translation>
-<translation id="34673353983913587">Site, yeni şifrenizi kaydetmeden önce ek doğrulama yapılmasını zorunlu kılıyor</translation>
 <translation id="3468298837301810372">Etiket</translation>
 <translation id="3468999815377931311">Android telefon</translation>
 <translation id="3469583217479686109">Seçim Aracı</translation>
@@ -4007,7 +4005,6 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="3732108843630241049">Bu cihaz artık otomatik yazılım güncellemeleri almıyor. Güvenlik, kararlılık ve performansın kesintisiz bir şekilde sağlanabilmesi için genişletilmiş güvenlik güncellemelerini etkinleştirin. Bazı işlevler sınırlıdır. <ph name="LINK_BEGIN" />Daha fazla bilgi<ph name="LINK_END" /></translation>
 <translation id="3732414796052961578"><ph name="ACCOUNT_NAME" /> olarak devam et</translation>
 <translation id="3732530910372558017">PIN en fazla 63 karakter olmalı</translation>
-<translation id="3732706448780793442">Manuel olarak devam et</translation>
 <translation id="3733296813637058299">Bu uygulamaları sizin için yükleyeceğiz. Play Store'da <ph name="DEVICE_TYPE" /> cihazınız için daha fazla uygulama bulabilirsiniz.</translation>
 <translation id="3734547157266039796">Pirinç tarlası</translation>
 <translation id="3735039640698208086">Ses çalarken...</translation>
@@ -8316,7 +8313,6 @@ Sızdırılmış # şifreniz daha var. Google Şifre Yöneticisi bu şifreleri h
 <translation id="6772103682557559072"><ph name="ADDRESS_SUMMARY" /> iş adresi için diğer seçenekler</translation>
 <translation id="6772974422346500939">Aç ve düzenle</translation>
 <translation id="6773595613448852535">Chrome Root Store</translation>
-<translation id="677394079035748956">Site için tek kullanımlık şifre gerekiyor</translation>
 <translation id="6774710250118040929">Yeni şifre ekleyin</translation>
 <translation id="6775163072363532304">Kullanılabilir cihazlar burada görünür.</translation>
 <translation id="677646486571529447">Not ekleyin</translation>
@@ -10027,7 +10023,6 @@ Atamayı kaldırmak için atanmış bir anahtara veya tuşa basın.</translation
 <translation id="7943311690198910993">Oturum açma yöntemi güncellendi</translation>
 <translation id="7943368935008348579">PDF'leri indir</translation>
 <translation id="7943837619101191061">Konum Ekle...</translation>
-<translation id="7944173382284143968">Web sitesi, yeni şifreyi kaydetmeden önce tek kullanımlık şifre onayını zorunlu kılıyor. Değişikliği tamamlamak için lütfen işleme manuel olarak devam edin.</translation>
 <translation id="79446453817422139">Bu dosya tehlikeli olabilir</translation>
 <translation id="7944772052836377867">Senkronizasyonun, kimliğinizi doğrulaması gerekiyor</translation>
 <translation id="7944847494038629732">Tarayıcının USB kablosunu çıkarıp tekrar takın ve yeniden deneyin</translation>

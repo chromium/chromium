@@ -1671,7 +1671,6 @@ Ukuze ufihle okungakhethwa kukho kokukhokha kamuva, iya <ph name="BEGIN_LINK" />
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
 <translation id="3600492954573979888">Phatha inkinobho yamasethingi Wobumfihlo we-Google, yenza kusebenze ukuze uvakashele amasethingi wakho wokugodliwe we-Google Account</translation>
 <translation id="3603507503523709">Uhlelo lokusebenza luvinjwe ngumlawuli wakho</translation>
-<translation id="3605082766859363473">Imodi ye-AI ikhethiwe</translation>
 <translation id="3605899229568538311">U-5 x 5 phakathi</translation>
 <translation id="3606917451836803637">Imidlalo ye-TV Nezinhlelo</translation>
 <translation id="3608932978122581043">Umumo wokuphakelayo</translation>
@@ -2017,7 +2016,6 @@ Ukuze ufihle okungakhethwa kukho kokukhokha kamuva, iya <ph name="BEGIN_LINK" />
 <translation id="411918202192379658">Ukuzigcwalisela kusanda kuba ngcono</translation>
 <translation id="4121428309786185360">Kuphelelwa isikhathi ngo-</translation>
 <translation id="4123572138124678573">Ukushaya kathathu phansi</translation>
-<translation id="4125597496726375563">Sungula isithombe esikhethiwe</translation>
 <translation id="412601465078863288">Ukulayisha kuphelelwe yisikhathi</translation>
 <translation id="4127317221386336246">Izinsiza Zezimpahla</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{1 enye}one{# ezinye}other{# ezinye}}</translation>
@@ -3087,6 +3085,7 @@ Ukuze ufihle okungakhethwa kukho kokukhokha kamuva, iya <ph name="BEGIN_LINK" />
 <translation id="5784606427469807560">Kune nenkinga yokuqinisekisa ikhadi lakho. Hlola ukuxhumeka kwakho kwe-inthanethi uphinde uzame futhi.</translation>
 <translation id="5785756445106461925">Ngokuqhubekayo, leli khasi lifaka ezinye izisetshenziswa ezingavikelekile. Lezi zisetshenziswa zingabukwa ngabanye ngenkathi ikwezokuthutha, futhi zingalungiswa yisihlaseli ukuze kuguqulwe ukubukeka kwekhasi.</translation>
 <translation id="5787146423283493983">Isivumelwano sokhiye</translation>
+<translation id="5789643057113097023">.</translation>
 <translation id="5793317771769868848">Le ndlela yokukhokha izosulwa kule divayisi</translation>
 <translation id="5794065675298686371">Vula izaziso zokulandelela intengo</translation>
 <translation id="5797984091151707075">Ivinjwe yinqubomgomo yomphathi</translation>
@@ -3751,7 +3750,6 @@ Ukuze ufihle okungakhethwa kukho kokukhokha kamuva, iya <ph name="BEGIN_LINK" />
 <translation id="6820143000046097424">izimbobo ze-serial</translation>
 <translation id="6820686453637990663">I-CVC</translation>
 <translation id="6820949753458790123">Khokha ngezitolimende ezilula</translation>
-<translation id="6822745163454377107">Thola izimpendulo ezisheshayo, ezenziwe ngokwezifiso ngokwabelana ngamathebhu akho avuliwe ngalolu chungechunge.</translation>
 <translation id="6825578344716086703">Uzame ukufika ku-<ph name="DOMAIN" />, kodwa iseva iphrezente isitifiketi esisayiniwe kusetshenziswa i-algorithm yesiginesha ebuthaka. Lokhu kusho ukuthi izifakazelo zokuvikela eziphrezentwe yiseva kungenzeka zenziwe ngomkhonyovu, futhi iseva kungenzeka kungabi yiseva oyilindele (kungenzeka ukuthi uxhumeka nomhlaseli).</translation>
 <translation id="6826993739343257035">Vumela i-AR?</translation>
 <translation id="6828150717884939426">Fona</translation>
@@ -5267,7 +5265,6 @@ Imininingwane engeziwe:
 <translation id="9204089334327209740">Uma ukulayisha sekuphelile, ungalungisa amafayela akho ku-<ph name="CLOUD_PROVIDER" />. Isitoreji sendawo, kufaka phakathi noma yimaphi amafayela Akudoti, azosuswa ngokuzenzakalelayo.</translation>
 <translation id="9205078245616868884">Idatha yakho ibethelwe ngomushwana wakho wokungena wokuvumelanisa. Wufake lapha ukuze uqale ukuvumelanisa.</translation>
 <translation id="920643408853370361">Umshwalense Wokuhamba</translation>
-<translation id="9206639970165643781">Wabelana ngamathebhu avuliwe ahambisanayo ukuze uthole izimpendulo ezingcono kulolu chungechunge?</translation>
 <translation id="9207861905230894330">Yehlulekile ukungeza i-athikili.</translation>
 <translation id="9209339767782560829">Kube nenkinga ekusebenziseni isitifiketi sakho sokungena ngemvume.</translation>
 <translation id="9210152531668884481">Ngingenile</translation>

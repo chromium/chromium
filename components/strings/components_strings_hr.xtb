@@ -1673,7 +1673,6 @@ Da biste sakrili opcije plaćanja kasnije, otvorite <ph name="BEGIN_LINK" />post
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
 <translation id="3600492954573979888">Gumb Upravljaj postavkama privatnosti na Googleu, aktivirajte ga da biste otvorili postavke privatnosti svojeg Google računa</translation>
 <translation id="3603507503523709">Administrator je blokirao aplikaciju</translation>
-<translation id="3605082766859363473">Odabran je AI način</translation>
 <translation id="3605899229568538311">5 x 5 in</translation>
 <translation id="3606917451836803637">TV emisije i programi</translation>
 <translation id="3608932978122581043">Usmjerenje umetanja</translation>
@@ -2019,7 +2018,6 @@ Da biste sakrili opcije plaćanja kasnije, otvorite <ph name="BEGIN_LINK" />post
 <translation id="411918202192379658">Automatsko popunjavanje upravo je postalo još bolje</translation>
 <translation id="4121428309786185360">Ističe</translation>
 <translation id="4123572138124678573">Trostruko bušenje pri dnu</translation>
-<translation id="4125597496726375563">Odabrana je opcija Izradi sliku</translation>
 <translation id="412601465078863288">Prijenos je istekao</translation>
 <translation id="4127317221386336246">Modni detalji</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{1 druga stavka}one{# druga stavka}few{# druge stavke}other{# drugih stavki}}</translation>
@@ -3089,6 +3087,7 @@ Da biste sakrili opcije plaćanja kasnije, otvorite <ph name="BEGIN_LINK" />post
 <translation id="5784606427469807560">Pojavio se problem prilikom potvrđivanja kartice. Provjerite internetsku vezu i pokušajte ponovo.</translation>
 <translation id="5785756445106461925">Nadalje, ova stranica sadrži druge resurse koji nisu sigurni. Te resurse mogu vidjeti drugi tijekom prijenosa i napadač ih može izmijeniti kako bi promijenio izgled stranice.</translation>
 <translation id="5787146423283493983">Sporazum ključa</translation>
+<translation id="5789643057113097023">.</translation>
 <translation id="5793317771769868848">Taj će se način plaćanja izbrisati s ovog uređaja</translation>
 <translation id="5794065675298686371">Uključivanje obavijesti o praćenju cijena</translation>
 <translation id="5797984091151707075">Blokirano pravilima administratora</translation>
@@ -3753,7 +3752,6 @@ Da biste sakrili opcije plaćanja kasnije, otvorite <ph name="BEGIN_LINK" />post
 <translation id="6820143000046097424">serijski priključci</translation>
 <translation id="6820686453637990663">CVC</translation>
 <translation id="6820949753458790123">Platite u više obroka</translation>
-<translation id="6822745163454377107">Dijelite otvorene kartice s ovom niti da biste dobili brže i prilagođenije odgovore.</translation>
 <translation id="6825578344716086703">Pokušali ste doseći domenu <ph name="DOMAIN" />, ali poslužitelj je predstavio certifikat potpisan slabim algoritmom potpisa (kao što je SHA-1). Znači da su sigurnosne vjerodajnice koje je poslužitelj predstavio možda krivotvorene, a poslužitelj možda nije poslužitelj koji očekujete (možda ste u komunikaciji s napadačem).</translation>
 <translation id="6826993739343257035">Dopustiti virtualnu stvarnost?</translation>
 <translation id="6828150717884939426">Poziv</translation>
@@ -5271,7 +5269,6 @@ i netočne vjerodajnice. To može značiti da se neki napadač pokušava predsta
 <translation id="9204089334327209740">Nakon dovršetka prijenosa možete izmijeniti datoteke na usluzi <ph name="CLOUD_PROVIDER" />. Lokalna pohrana, uključujući sve datoteke u otpadu, automatski će se ukloniti.</translation>
 <translation id="9205078245616868884">Vaši su podaci šifrirani vašom šifrom za sinkronizaciju. Unesite je da biste pokrenuli sinkronizaciju.</translation>
 <translation id="920643408853370361">Putno osiguranje</translation>
-<translation id="9206639970165643781">Želite li podijeliti relevantne otvorene kartice da biste dobili bolje odgovore u ovoj niti?</translation>
 <translation id="9207861905230894330">Dodavanje članka nije uspjelo.</translation>
 <translation id="9209339767782560829">Došlo je do problema s korištenjem vašeg certifikata za prijavu.</translation>
 <translation id="9210152531668884481">U redu</translation>

@@ -1670,7 +1670,6 @@ Sonra ödəmə seçimlərini gizlətmək üçün <ph name="BEGIN_LINK" />ödəni
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
 <translation id="3600492954573979888">"Google Məxfilik ayarlarını idarə edin" düyməsi, aktivləşdirərək Google Hesabının məxfilik ayarlarına daxil olun</translation>
 <translation id="3603507503523709">Tətbiq admin tərəfindən bloklanıb</translation>
-<translation id="3605082766859363473">Sİ rejimi seçildi</translation>
 <translation id="3605899229568538311">5 x 5 düym</translation>
 <translation id="3606917451836803637">TV Şouları və Proqramları</translation>
 <translation id="3608932978122581043">İstiqaməti tənzimləyin</translation>
@@ -2016,7 +2015,6 @@ Sonra ödəmə seçimlərini gizlətmək üçün <ph name="BEGIN_LINK" />ödəni
 <translation id="411918202192379658">Avto-doldurma təkmilləşdi</translation>
 <translation id="4121428309786185360">Köhnəlmə vaxtı:</translation>
 <translation id="4123572138124678573">Aşağıdan üçlü deşik açın</translation>
-<translation id="4125597496726375563">Şəkil yaradın göstərişi seçildi</translation>
 <translation id="412601465078863288">Yükləmə vaxtı bitdi</translation>
 <translation id="4127317221386336246">Geyim aksesuarları</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{digər 1}other{digər #}}</translation>
@@ -3086,6 +3084,7 @@ Sonra ödəmə seçimlərini gizlətmək üçün <ph name="BEGIN_LINK" />ödəni
 <translation id="5784606427469807560">Kartı təsdiq edərkən problem oldu. Internet bağlantınızı yoxlayın və yenidən cəhd edin.</translation>
 <translation id="5785756445106461925">Bundan əlavə, bu səhifəyə təhlükəsiz olmayan başqa resurslar daxildir. Bu resurslar keçid zamanı başqaları tərəfindən görüntülən bilər və hücumçu tərəfindən səhifə görünüşünün dəyişdirilməsi üçün modifikasiya edilə bilər.</translation>
 <translation id="5787146423283493983">Açar Anlaşması</translation>
+<translation id="5789643057113097023">.</translation>
 <translation id="5793317771769868848">Bu ödəniş metodu bu cihazdan silinəcək</translation>
 <translation id="5794065675298686371">Qiymət izləmə bildirişlərini yandırın</translation>
 <translation id="5797984091151707075">Admin siyasəti tərəfindən bloklanıb</translation>
@@ -3750,7 +3749,6 @@ Sonra ödəmə seçimlərini gizlətmək üçün <ph name="BEGIN_LINK" />ödəni
 <translation id="6820143000046097424">ardıcıl portlar</translation>
 <translation id="6820686453637990663">CVC</translation>
 <translation id="6820949753458790123">Asan taksitlərlə ödəyin</translation>
-<translation id="6822745163454377107">Açıq tablarınızı bu mövzu ilə paylaşmaqla daha sürətli və fərdiləşdirilmiş cavablar əldə edin.</translation>
 <translation id="6825578344716086703"><ph name="DOMAIN" /> domeninə daxil olmağa cəhd etdiniz, amma server zəif imza alqoritmi ilə daxil olan sertifikat təqdim etdi. Bu o deməkdir ki, serverin təqdim etdiyi təhlükəsizlik mandatı saxtalaşdırıla bilər və server gözlədiyiniz server olmaya bilər (Siz hücumçu ilə ünsiyyətdə ola bilərsiniz).</translation>
 <translation id="6826993739343257035">AR üçün icazə verilsin?</translation>
 <translation id="6828150717884939426">Zəng</translation>
@@ -5266,7 +5264,6 @@ Sonra ödəmə seçimlərini gizlətmək üçün <ph name="BEGIN_LINK" />ödəni
 <translation id="9204089334327209740">Yüklənmə tamamlandıqdan sonra faylları <ph name="CLOUD_PROVIDER" /> buludunda dəyişə bilərsiniz. Zibil qutusundakı fayllar daxil olmaqla yerli yaddaş avtomatik olaraq silinəcək.</translation>
 <translation id="9205078245616868884">Datanız sinxronizasiya parol sözü ilə şifrələnib. Sinxronizasiyanı başlamaq üçün onu daxil edin.</translation>
 <translation id="920643408853370361">Səyahət Sığortası</translation>
-<translation id="9206639970165643781">Bu mövzuda daha yaxşı cavablar əldə etmək üçün müvafiq açıq tablar paylaşılmalıdır?</translation>
 <translation id="9207861905230894330">Məqalə əlavə etmək olmadı.</translation>
 <translation id="9209339767782560829">Giriş sertifikatınızı istifadə edərkən problem oldu.</translation>
 <translation id="9210152531668884481">Razıyam</translation>

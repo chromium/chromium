@@ -1670,7 +1670,6 @@ Per nascondere le opzioni di pagamento posticipato, vai alle <ph name="BEGIN_LIN
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
 <translation id="3600492954573979888">Pulsante Gestisci le impostazioni della privacy di Google, attiva per andare alle impostazioni della privacy del tuo Account Google</translation>
 <translation id="3603507503523709">Applicazione bloccata dal tuo amministratore</translation>
-<translation id="3605082766859363473">AI Mode selezionata</translation>
 <translation id="3605899229568538311">5 x 5 in</translation>
 <translation id="3606917451836803637">Programmi e spettacoli TV</translation>
 <translation id="3608932978122581043">Fornisci orientamento</translation>
@@ -2017,7 +2016,6 @@ Per nascondere le opzioni di pagamento posticipato, vai alle <ph name="BEGIN_LIN
 <translation id="411918202192379658">La compilazione automatica è migliorata</translation>
 <translation id="4121428309786185360">Scade in data</translation>
 <translation id="4123572138124678573">Tripla perforatura in basso</translation>
-<translation id="4125597496726375563">Crea immagine selezionata</translation>
 <translation id="412601465078863288">Timeout del caricamento</translation>
 <translation id="4127317221386336246">Accessori di abbigliamento</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{1 altro}other{# altri}}</translation>
@@ -3087,6 +3085,7 @@ Per nascondere le opzioni di pagamento posticipato, vai alle <ph name="BEGIN_LIN
 <translation id="5784606427469807560">Si è verificato un problema durante la conferma della carta. Controlla la connessione Internet e riprova.</translation>
 <translation id="5785756445106461925">Inoltre, questa pagina include altre risorse che non sono sicure. Queste risorse possono essere visualizzate da altri durante il transito dei dati e possono essere modificate da un attaccante al fine di modificare l'aspetto della pagina.</translation>
 <translation id="5787146423283493983">Chiave concordata</translation>
+<translation id="5789643057113097023">.</translation>
 <translation id="5793317771769868848">Questo metodo di pagamento verrà eliminato dal dispositivo</translation>
 <translation id="5794065675298686371">Attiva le notifiche per il monitoraggio dei prezzi</translation>
 <translation id="5797984091151707075">Bloccato dalla policy dell'amministratore</translation>
@@ -3750,7 +3749,6 @@ Per nascondere le opzioni di pagamento posticipato, vai alle <ph name="BEGIN_LIN
 <translation id="6820143000046097424">porte seriali</translation>
 <translation id="6820686453637990663">CVC</translation>
 <translation id="6820949753458790123">Paga in rate semplici</translation>
-<translation id="6822745163454377107">Ricevi risposte più rapide e personalizzate condividendo le schede aperte con questo thread.</translation>
 <translation id="6825578344716086703">Hai tentato di accedere al sito <ph name="DOMAIN" />, ma il server ha presentato un certificato firmato utilizzando un algoritmo di firma debole (ad esempio SHA-1). Ciò significa che le credenziali di sicurezza presentate dal server potrebbero essere state falsificate e il server potrebbe non essere quello previsto (è possibile che tu stia comunicando con un attaccante).</translation>
 <translation id="6826993739343257035">Consentire AR?</translation>
 <translation id="6828150717884939426">Chiama</translation>
@@ -5266,7 +5264,6 @@ Ulteriori dettagli:
 <translation id="9204089334327209740">Al termine del caricamento, puoi modificare i file in <ph name="CLOUD_PROVIDER" />. Lo spazio di archiviazione locale, inclusi i file nel cestino, verrà rimosso automaticamente.</translation>
 <translation id="9205078245616868884">I tuoi dati vengono criptati con la tua passphrase di sincronizzazione. Inseriscila per avviare la sincronizzazione.</translation>
 <translation id="920643408853370361">Assicurazione per viaggi</translation>
-<translation id="9206639970165643781">Condividere le schede aperte pertinenti per ricevere risposte migliori in questo thread?</translation>
 <translation id="9207861905230894330">Impossibile aggiungere l'articolo.</translation>
 <translation id="9209339767782560829">Si è verificato un problema durante l'utilizzo del certificato di accesso.</translation>
 <translation id="9210152531668884481">Accetto</translation>

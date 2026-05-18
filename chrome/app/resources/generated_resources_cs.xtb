@@ -1530,7 +1530,6 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili aplik
 <translation id="2030803782168502207">Odebrat předplatné ze zařízení</translation>
 <translation id="2031487800375552010">Dovednosti umožňují snadno používat pokyny opakovaně pro opakující se úkoly</translation>
 <translation id="2031914984822377766">Přidejte preferované <ph name="LINK_BEGIN" />jazyky webu<ph name="LINK_END" />. První jazyk v seznamu se bude používat pro překlady.</translation>
-<translation id="2032837042715970520">Je vyžadováno jednorázové heslo</translation>
 <translation id="2034346955588403444">Přidat jinou síť Wi-Fi</translation>
 <translation id="2037445849770872822">V tomto účtu Google je nastaven dohled. Chcete-li nastavit další rodičovskou kontrolu, vyberte Pokračovat.
 
@@ -3609,7 +3608,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3462413494201477527">Zrušit nastavení účtu?</translation>
 <translation id="346298925039590474">Tato mobilní síť bude k dispozici všem uživatelům tohoto zařízení</translation>
 <translation id="3464145797867108663">Přidat pracovní profil</translation>
-<translation id="34673353983913587">Před uložením nového hesla potřebuje web dodatečné ověření</translation>
 <translation id="3468298837301810372">Štítek</translation>
 <translation id="3468999815377931311">Telefon Android</translation>
 <translation id="3469583217479686109">Nástroj Výběr</translation>
@@ -4011,7 +4009,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3732108843630241049">Toto zařízení již nedostává automatické aktualizace softwaru. Pokud chcete mít i nadále nejnovější zabezpečení, stabilitu a výkon, zapněte rozšířené aktualizace zabezpečení. Některé funkce budou omezeny. <ph name="LINK_BEGIN" />Další informace<ph name="LINK_END" /></translation>
 <translation id="3732414796052961578">Pokračovat jako <ph name="ACCOUNT_NAME" /></translation>
 <translation id="3732530910372558017">PIN smí mít maximálně 63 znaků</translation>
-<translation id="3732706448780793442">Pokračovat ručně</translation>
 <translation id="3733296813637058299">Tyto aplikace vám nainstalujeme. Další aplikace pro zařízení <ph name="DEVICE_TYPE" /> najdete v Obchodě Play.</translation>
 <translation id="3734547157266039796">Rýžové pole</translation>
 <translation id="3735039640698208086">Při přehrávání zvuku...</translation>
@@ -8318,7 +8315,6 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="6772103682557559072">Další možnosti pro adresu do práce <ph name="ADDRESS_SUMMARY" /></translation>
 <translation id="6772974422346500939">Otevřít a upravit</translation>
 <translation id="6773595613448852535">Chrome Root Store</translation>
-<translation id="677394079035748956">Web vyžaduje jednorázové heslo</translation>
 <translation id="6774710250118040929">Přidání nového hesla</translation>
 <translation id="6775163072363532304">Zde se budou zobrazovat dostupná zařízení.</translation>
 <translation id="677646486571529447">Přidat poznámku</translation>
@@ -10029,7 +10025,6 @@ Pokud přiřazení chcete odstranit, stiskněte přiřazený přepínač nebo kl
 <translation id="7943311690198910993">Metoda přihlášení byla aktualizována</translation>
 <translation id="7943368935008348579">Stahování souborů PDF</translation>
 <translation id="7943837619101191061">Přidat umístění...</translation>
-<translation id="7944173382284143968">Před uložením nového hesla vyžaduje web potvrzení jednorázovým heslem. Změnu dokončete ručně.</translation>
 <translation id="79446453817422139">Tento soubor může být nebezpečný.</translation>
 <translation id="7944772052836377867">Synchronizace potřebuje ověřit vaši totožnost</translation>
 <translation id="7944847494038629732">Odpojte kabel USB skeneru, znovu ho připojte a zkuste to znovu</translation>

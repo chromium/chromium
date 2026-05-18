@@ -1672,7 +1672,6 @@
 <translation id="3600246354004376029"><ph name="TITLE" />፣ <ph name="DOMAIN" />፣ <ph name="TIME" /></translation>
 <translation id="3600492954573979888">የGoogle ግላዊነት ቅንብሮችን ቁልፍ አዝራርን ያስተዳድሩ፣ የGoogle መለያዎን የግላዊነት ቅንብሮች ለመጎብኘት ያግብሩ</translation>
 <translation id="3603507503523709">መተግበሪያ በእርስዎ አስተዳዳሪ ታግዷል</translation>
-<translation id="3605082766859363473">የሰው ሠራሽ አስተውሎት ሁነታ ተመርጧል</translation>
 <translation id="3605899229568538311">5 x 5 ኢንች</translation>
 <translation id="3606917451836803637">የቴሌቪዥን ትርዒቶች እና ፕሮግራሞች</translation>
 <translation id="3608932978122581043">የምገባ አቀማመጥ</translation>
@@ -2019,7 +2018,6 @@
 <translation id="411918202192379658">ራስ-ሙላ አሁን ይበልጥ የተሻለ ሆኗል</translation>
 <translation id="4121428309786185360">ጊዜው የሚያልፍበት</translation>
 <translation id="4123572138124678573">ከታች ሦስቴ ብስ</translation>
-<translation id="4125597496726375563">የተመረጠ ምስል ፍጠር</translation>
 <translation id="412601465078863288">የእረፍት ጊዜን በመስቀል ላይ</translation>
 <translation id="4127317221386336246">የአልባሳት መለዋወጫዎች</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{1 ሌላ}one{# ሌሎች}other{# ሌሎች}}</translation>
@@ -3089,6 +3087,7 @@
 <translation id="5784606427469807560">የእርስዎን ካርድ ማረጋገጥ ላይ አንድ ችግር ነበር። የበይነመረብ ግንኙነትዎን ይፈትሹት እና እንደገና ይሞክሩ።</translation>
 <translation id="5785756445106461925">በተጨማሪ፣ ይህ ገፅ ደህንነታቸው ያልተጠበቀ ሌሎች ንብረቶችን አካትቷል። እነዚህ ንብረቶች በሽግግር ወቅት በሌሎች ሊታዩ ይችላሉ፣ እናም የገጹን መልክ ለመለወጥ በአጥቂዎች ሊቀየሩ ይችላሉ።</translation>
 <translation id="5787146423283493983">ቁልፍ ስምምነት</translation>
+<translation id="5789643057113097023">.</translation>
 <translation id="5793317771769868848">ይህ የመክፈያ ዘዴ ከዚህ መሣሪያ ላይ ይሰረዛል</translation>
 <translation id="5794065675298686371">የዋጋ ክትትል ማሳወቂያዎችን ያብሩ</translation>
 <translation id="5797984091151707075">በአስተዳዳሪ መመሪያ ታግዷል</translation>
@@ -3753,7 +3752,6 @@
 <translation id="6820143000046097424">ተከታታይ ወደቦች</translation>
 <translation id="6820686453637990663">CVC</translation>
 <translation id="6820949753458790123">በቀላል ተከታታይ ክፍያዎች ይክፈሉ</translation>
-<translation id="6822745163454377107">የእርስዎን ክፍት ትሮች ለዚህ ተከታታይ በማጋራት ይበልጥ ፈጣን እና የተበጁ ምላሾችን ያግኙ።</translation>
 <translation id="6825578344716086703">እርስዎ <ph name="DOMAIN" />ን ለመድረስ ሞክረዋል፣ ነገር ግን አገልጋዩ ደካማ የፊርማ ስልተ-ቀመር (እንደ SHA-1 ያለ) በመጠቀም የተፈረመ የዕውቅና ማረጋገጫ ነው ያቀረበው። ይህ ማለት አገልጋዩ ያቀረበው የደህንነት ምስክርነቶች የተጭበረበሩ ሊሆኑ ይችላሉ፣ እናም አገልጋዩ እርስዎ የሚጠብቁት አገልጋይ ላይሆን ይችላል (ከአጥቂ ጋር እየተገናኙ ሊሆን ይችላል)።</translation>
 <translation id="6826993739343257035">የላቀ ዕውነታ ይፈቀድ?</translation>
 <translation id="6828150717884939426">ደውል</translation>
@@ -5271,7 +5269,6 @@
 <translation id="9204089334327209740">አንዴ ሰቀላ ከተጠናቀቀ በኋላ ፋይሎችዎን <ph name="CLOUD_PROVIDER" /> ውስጥ ማስተካከል ይችላሉ። መጣያ ውስጥ ያሉ ማናቸውም ፋይሎችን ጨምሮ አካባቢያዊ ማከማቻ በራስ-ሰር ይወገዳል።</translation>
 <translation id="9205078245616868884">የእርስዎ ውሂብ በእርስዎ የስምረት የይለፍ ቃል ተመስጥሯል። ስምረትን ለመጀመር ያስገቡት።</translation>
 <translation id="920643408853370361">የጉዞ መድህን</translation>
-<translation id="9206639970165643781">በዚህ ተከታታይ ውስጥ ለተሻሉ ምላሾች አግባብነት ያላቸውን ክፍት ትሮች ይጋሩ?</translation>
 <translation id="9207861905230894330">ጽሁፍ ማከል አልተቻለም።</translation>
 <translation id="9209339767782560829">የመግቢያ የዕውቅና ማረጋገጫዎን በመጠቀም ላይ ስህተት ነበር።</translation>
 <translation id="9210152531668884481">ገብቼያለሁ</translation>

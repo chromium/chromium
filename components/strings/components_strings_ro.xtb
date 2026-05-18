@@ -1673,7 +1673,6 @@ Pentru a ascunde opțiunile de plată mai târziu, accesează <ph name="BEGIN_LI
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
 <translation id="3600492954573979888">Butonul Gestionează setările de confidențialitate Google, activează pentru a accesa setările de confidențialitate ale Contului Google</translation>
 <translation id="3603507503523709">Aplicația a fost blocată de administrator</translation>
-<translation id="3605082766859363473">Modul AI a fost selectat.</translation>
 <translation id="3605899229568538311">5 x 5 in</translation>
 <translation id="3606917451836803637">Seriale și programe</translation>
 <translation id="3608932978122581043">Orientarea alimentării</translation>
@@ -2020,7 +2019,6 @@ Pentru a ascunde opțiunile de plată mai târziu, accesează <ph name="BEGIN_LI
 <translation id="411918202192379658">Completarea automată a fost îmbunătățită</translation>
 <translation id="4121428309786185360">Expiră la</translation>
 <translation id="4123572138124678573">Perforare triplă în partea de jos</translation>
-<translation id="4125597496726375563">Opțiunea Creează imaginea a fost selectată.</translation>
 <translation id="412601465078863288">Încărcarea a expirat</translation>
 <translation id="4127317221386336246">Accesorii pentru îmbrăcăminte</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{încă 1}few{încă #}other{încă #}}</translation>
@@ -3090,6 +3088,7 @@ Pentru a ascunde opțiunile de plată mai târziu, accesează <ph name="BEGIN_LI
 <translation id="5784606427469807560">A apărut o eroare la confirmarea cardului. Verifică conexiunea la internet și încearcă din nou.</translation>
 <translation id="5785756445106461925">În plus, această pagină include alte resurse care nu sunt securizate. Aceste resurse sunt vizibile pentru alți utilizatori în cursul transferului și pot fi modificate de un atacator pentru a schimba aspectul paginii.</translation>
 <translation id="5787146423283493983">Acord privind cheia</translation>
+<translation id="5789643057113097023">.</translation>
 <translation id="5793317771769868848">Metoda de plată se va șterge de pe acest dispozitiv</translation>
 <translation id="5794065675298686371">Activează notificările de urmărire a prețurilor</translation>
 <translation id="5797984091151707075">Blocat de politica administratorului</translation>
@@ -3754,7 +3753,6 @@ Pentru a ascunde opțiunile de plată mai târziu, accesează <ph name="BEGIN_LI
 <translation id="6820143000046097424">Porturi seriale</translation>
 <translation id="6820686453637990663">CVC</translation>
 <translation id="6820949753458790123">Plătește în rate simple</translation>
-<translation id="6822745163454377107">Primește răspunsuri mai rapide și mai bine personalizate permițând accesul la filele deschise în acest fir.</translation>
 <translation id="6825578344716086703">Ai încercat să accesezi <ph name="DOMAIN" />, dar serverul a prezentat un certificat semnat folosind un algoritm de semnare slab (cum ar fi SHA-1). Acest lucru înseamnă că este posibil ca datele de conectare de securitate prezentate de server să fie falsificate sau ca serverul să nu fie cel așteptat (este posibil să comunici cu un atacator).</translation>
 <translation id="6826993739343257035">Permiți RA?</translation>
 <translation id="6828150717884939426">Apelează</translation>
@@ -5272,7 +5270,6 @@ Detalii suplimentare:
 <translation id="9204089334327209740">După finalizarea încărcării, poți să modifici fișierele în <ph name="CLOUD_PROVIDER" />. Spațiul de stocare local se va elimina automat, inclusiv fișierele din coșul de gunoi.</translation>
 <translation id="9205078245616868884">Datele sunt criptate cu expresia de acces pentru sincronizare. Introdu-o pentru a începe sincronizarea.</translation>
 <translation id="920643408853370361">Asigurări de călătorie</translation>
-<translation id="9206639970165643781">Permiți accesul la filele deschise relevante pentru răspunsuri mai bune în acest fir?</translation>
 <translation id="9207861905230894330">Articolul nu a fost adăugat.</translation>
 <translation id="9209339767782560829">A apărut o problemă la folosirea certificatului de conectare.</translation>
 <translation id="9210152531668884481">Accept</translation>

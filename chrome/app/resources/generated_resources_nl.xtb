@@ -1528,7 +1528,6 @@ Dit is niet van invloed op apps of content op andere apparaten.</translation>
 <translation id="2030803782168502207">Abonnement van apparaat verwijderen</translation>
 <translation id="2031487800375552010">Met vaardigheden kun je prompts makkelijk hergebruiken voor repetitieve taken</translation>
 <translation id="2031914984822377766">Voeg de gewenste <ph name="LINK_BEGIN" />talen voor websites<ph name="LINK_END" /> toe. De bovenste taal in de lijst wordt gebruikt voor vertalingen.</translation>
-<translation id="2032837042715970520">Eenmalig wachtwoord vereist</translation>
 <translation id="2034346955588403444">Ander wifi-netwerk toevoegen</translation>
 <translation id="2037445849770872822">Toezicht is ingesteld voor dit Google-account. Selecteer Doorgaan om meer opties voor ouderlijk toezicht in te stellen.
 
@@ -3607,7 +3606,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="3462413494201477527">Accountconfiguratie annuleren?</translation>
 <translation id="346298925039590474">Dit mobiele netwerk is beschikbaar voor alle gebruikers op dit apparaat</translation>
 <translation id="3464145797867108663">Werkprofiel toevoegen</translation>
-<translation id="34673353983913587">De site vereist extra verificatie voordat je je nieuwe wachtwoord kunt opslaan</translation>
 <translation id="3468298837301810372">Label</translation>
 <translation id="3468999815377931311">Android-telefoon</translation>
 <translation id="3469583217479686109">Tool Selectie</translation>
@@ -4009,7 +4007,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="3732108843630241049">Dit apparaat krijgt geen automatische software-updates meer. Zet uitgebreide beveiligingsupdates aan voor doorlopende beveiliging, stabiliteit en prestaties. Sommige functies zijn beperkt. <ph name="LINK_BEGIN" />Meer informatie<ph name="LINK_END" /></translation>
 <translation id="3732414796052961578">Doorgaan als <ph name="ACCOUNT_NAME" /></translation>
 <translation id="3732530910372558017">Pincode mag maximaal 63 tekens lang zijn</translation>
-<translation id="3732706448780793442">Handmatig overnemen</translation>
 <translation id="3733296813637058299">We installeren deze apps voor je. In de Play Store vind je nog meer apps voor je <ph name="DEVICE_TYPE" />.</translation>
 <translation id="3734547157266039796">Rijstveld</translation>
 <translation id="3735039640698208086">Tijdens het afspelen van audio...</translation>
@@ -8312,7 +8309,6 @@ Je hebt nog # gehackte wachtwoorden. Google Wachtwoordmanager raadt je aan deze 
 <translation id="6772103682557559072">Meer opties voor het werkadres van <ph name="ADDRESS_SUMMARY" /></translation>
 <translation id="6772974422346500939">Openen en bewerken</translation>
 <translation id="6773595613448852535">Chrome Root Store</translation>
-<translation id="677394079035748956">De site heeft een eenmalig wachtwoord nodig</translation>
 <translation id="6774710250118040929">Nieuw wachtwoord toevoegen</translation>
 <translation id="6775163072363532304">Beschikbare apparaten zie je hier.</translation>
 <translation id="677646486571529447">Notitie toevoegen</translation>
@@ -10023,7 +10019,6 @@ Zichtbaar voor apparaten in de buurt als <ph name="QUICK_START_DEVICE_DISPLAY_NA
 <translation id="7943311690198910993">Inlogmethode aangepast</translation>
 <translation id="7943368935008348579">Pdf's downloaden</translation>
 <translation id="7943837619101191061">Locatie toevoegen...</translation>
-<translation id="7944173382284143968">De website vereist een bevestiging van een eenmalig wachtwoord voordat het nieuwe wachtwoord wordt opgeslagen. Neem het proces handmatig over om de wijziging af te ronden.</translation>
 <translation id="79446453817422139">Dit bestand kan gevaarlijk zijn</translation>
 <translation id="7944772052836377867">Synchronisatie moet bevestigen dat jij het bent</translation>
 <translation id="7944847494038629732">Koppel de USB-kabel van de scanner los en sluit deze opnieuw aan om het opnieuw te proberen</translation>

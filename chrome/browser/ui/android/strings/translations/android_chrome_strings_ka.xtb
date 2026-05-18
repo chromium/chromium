@@ -705,6 +705,7 @@
 <translation id="4084712963632273211">წყარო: <ph name="PUBLISHER_ORIGIN" /> — <ph name="BEGIN_DEEMPHASIZED" />უზრუნველყოფს Google<ph name="END_DEEMPHASIZED" /></translation>
 <translation id="4092709865241032354">Google პაროლების მმართველს სისტემაში შესვლის მონაცემების შენახვაში რომ დაეხმაროთ, დაამატეთ თქვენი მომხმარებლის სახელი ამ საიტისთვის</translation>
 <translation id="4095146165863963773">წაიშალოს აპების მონაცემები?</translation>
+<translation id="4095483462103784441">ჩანართების ახალი ჯგუფის შექმნა</translation>
 <translation id="4096227151372679484">სანიშნეების შენახვის ნაკადი გახსნილია ნახევარ სიმაღლეზე</translation>
 <translation id="4105527135143631701">Google პაროლების მმართველის განახლება გაიხსნა</translation>
 <translation id="4113030288477039509">თქვენი ადმინისტრატორის მიერ მართული</translation>
@@ -1640,6 +1641,7 @@
 <translation id="7821130663268546430">ყველა გახსნილი ჩანართის პოვნა ჩანართების გადამრთველში შეგიძლიათ</translation>
 <translation id="7822705602465980873">როცა სისტემაში შესული ხართ, ეს მონაცემები მიებმება თქვენს Google ანგარიშს, რომ დაცული იყოთ Google სერვისების ფარგლებში, მაგალითად, უსაფრთხოებასთან დაკავშირებული ინციდენტის შემდეგ გაძლიერდება დაცვა Gmail-ში.</translation>
 <translation id="7824665136384946951">თქვენმა ორგანიზაციამ გამორთო Safe Browsing</translation>
+<translation id="7825973332242257878">ჩანართების ჯგუფები</translation>
 <translation id="7826342993930002256">თქვენი Chrome, ყველგან</translation>
 <translation id="7846161022626028328">შეცდომა მოხდა. ცადეთ ხელახლა.</translation>
 <translation id="7846296061357476882">Google სერვისები</translation>

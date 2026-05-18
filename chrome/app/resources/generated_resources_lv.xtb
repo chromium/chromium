@@ -1530,7 +1530,6 @@ Uz šo kontu var attiekties atļaujas, ko esat jau piešķīris lietotnēm. Vara
 <translation id="2030803782168502207">Abonementa noņemšana no ierīces</translation>
 <translation id="2031487800375552010">Prasmes ļauj ērti atkārtoti izmantot uzvednes atkārtotiem uzdevumiem.</translation>
 <translation id="2031914984822377766">Pievienojiet vēlamās <ph name="LINK_BEGIN" />vietņu valodas<ph name="LINK_END" />. Saraksta augšējā valoda tiks izmantota tulkojumiem.</translation>
-<translation id="2032837042715970520">Jāievada VRP</translation>
 <translation id="2034346955588403444">Pievienot citu Wi-Fi tīklu</translation>
 <translation id="2037445849770872822">Šim Google kontam ir iestatīta uzraudzība. Lai iestatītu citas vecāku kontroles iespējas, atlasiet Turpināt.
 
@@ -3609,7 +3608,6 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="3462413494201477527">Vai atcelt konta iestatīšanu?</translation>
 <translation id="346298925039590474">Šis mobilais tīkls būs pieejams visiem šīs ierīces lietotājiem</translation>
 <translation id="3464145797867108663">Pievienot darba profilu</translation>
-<translation id="34673353983913587">Pirms jaunās paroles saglabāšanas vietnē ir jāveic papildu verifikācija.</translation>
 <translation id="3468298837301810372">Iezīme</translation>
 <translation id="3468999815377931311">Android tālrunis</translation>
 <translation id="3469583217479686109">Atlases rīks</translation>
@@ -4011,7 +4009,6 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="3732108843630241049">Šī ierīce vairs nesaņem automātiskus programmatūras atjauninājumus. Ieslēdziet paplašinātos drošības atjauninājumus, lai arī turpmāk saņemtu drošības, stabilitātes un veiktspējas risinājumus. Dažas funkcijas tiks ierobežotas. <ph name="LINK_BEGIN" />Uzzināt vairāk<ph name="LINK_END" /></translation>
 <translation id="3732414796052961578">Turpināt kā: <ph name="ACCOUNT_NAME" /></translation>
 <translation id="3732530910372558017">PIN ir jābūt ne vairāk kā 63 rakstzīmēm</translation>
-<translation id="3732706448780793442">Manuāli pārņemt</translation>
 <translation id="3733296813637058299">Mēs instalēsim jums šīs lietotnes. Vairāk lietotņu savai <ph name="DEVICE_TYPE" /> ierīcei varat atrast Play veikalā.</translation>
 <translation id="3734547157266039796">Rīsu lauks</translation>
 <translation id="3735039640698208086">Kad tiek atskaņots audio…</translation>
@@ -8320,7 +8317,6 @@ Jums ir vēl # uzlauztas paroles. Google paroļu pārvaldnieks iesaka nekavējot
 <translation id="6772103682557559072">Vairāk opciju šai darbavietas adresei: <ph name="ADDRESS_SUMMARY" /></translation>
 <translation id="6772974422346500939">Atvērt un rediģēt</translation>
 <translation id="6773595613448852535">Chrome Root Store</translation>
-<translation id="677394079035748956">Šai vietnei ir nepieciešama vienreizēja parole</translation>
 <translation id="6774710250118040929">Jaunas paroles pievienošana</translation>
 <translation id="6775163072363532304">Šeit tiks parādītas pieejamās ierīces.</translation>
 <translation id="677646486571529447">Pievienot piezīmi</translation>
@@ -10032,7 +10028,6 @@ Lai noņemtu piešķīrumu, nospiediet piešķirto slēdzi vai taustiņu.</trans
 <translation id="7943311690198910993">Pierakstīšanās metode ir atjaunināta</translation>
 <translation id="7943368935008348579">Lejupielādēt PDF failus</translation>
 <translation id="7943837619101191061">Pievienot atrašanās vietu...</translation>
-<translation id="7944173382284143968">Pirms jaunās paroles saglabāšanas vietnē ir jāievada VRP. Lūdzu, pārņemiet procesu manuāli, lai pabeigtu izmaiņu veikšanu.</translation>
 <translation id="79446453817422139">Šis fails var būt bīstams.</translation>
 <translation id="7944772052836377867">Sinhronizēšanai nepieciešams apstiprināt jūsu identitāti</translation>
 <translation id="7944847494038629732">Atvienojiet un atkārtoti pievienojiet skenera USB vadu, lai mēģinātu vēlreiz.</translation>

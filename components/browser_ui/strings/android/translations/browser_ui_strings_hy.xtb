@@ -20,6 +20,7 @@
 <translation id="1240190568154816272">Chrome-ին վերաբերող խորհուրդներ</translation>
 <translation id="1242008676835033345">Զետեղված է <ph name="WEBSITE_URL" /> կայքում</translation>
 <translation id="1263609676484797429">Հպեք «Հավելվածներ»  &gt; «Կանխադրված հավելվածներ»</translation>
+<translation id="1264694639515903274">Այժմ դուք կարող եք անհատականացնել ձեր գլխավոր էջը</translation>
 <translation id="1272079795634619415">Դադարեցնել</translation>
 <translation id="1275718070701477396">Ընտրված</translation>
 <translation id="1289742167380433257">Թրաֆիկը խնայելու համար այս էջի պատկերները Google-ի կողմից օպտիմալացվել են։</translation>
@@ -89,6 +90,7 @@
 <translation id="1915307458270490472">Փակել</translation>
 <translation id="1919950603503897840">Ընտրեք կոնտակտներ</translation>
 <translation id="1923695749281512248"><ph name="BYTES_DOWNLOADED_WITH_UNITS" />/<ph name="FILE_SIZE_WITH_UNITS" /></translation>
+<translation id="192926679114491605">Անհատականացնել իմ գլխավոր էջը</translation>
 <translation id="1939059826036755332">«Նկար նկարի մեջ» պատուհանի ավտոմատ ցուցադրում</translation>
 <translation id="1954597385941141174">Կայքերը կարող են USB սարքերին միանալու թույլտվություն հայցել</translation>
 <translation id="1979673356880165407">Մեծացրեք կամ փոքրացրեք տեքստը և պատկերները ձեր այցելած կայքերում</translation>
@@ -329,6 +331,7 @@
 <translation id="42981349822642051">Ընդարձակել</translation>
 <translation id="4310738531374808763">Անհատականացրեք ձեր գլխավոր էջը</translation>
 <translation id="4336219115486912529">{COUNT,plural, =1{Գործողության ժամկետը սպառվում է վաղը}one{Գործողության ժամկետը սպառվում է # օրից}other{Գործողության ժամկետը սպառվում է # օրից}}</translation>
+<translation id="4336371609622603229">Անհատականացրեք Chrome-ը՝ ընտրելով հատուկ թեմա</translation>
 <translation id="4338831206024587507"><ph name="DOMAIN" /> տիրույթով բոլոր կայքերը</translation>
 <translation id="4340799661701629185">Թույլ չտալ կայքերին ծանուցումներ ուղարկել</translation>
 <translation id="4341577178275615435">Ստեղնային դիտարկումը միացնելու/անջատելու համար օգտագործեք F7 դյուրանցումը</translation>

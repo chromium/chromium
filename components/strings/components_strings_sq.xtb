@@ -1673,7 +1673,6 @@ Për të fshehur opsionet e "Paguaj më vonë", shko te <ph name="BEGIN_LINK" />
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
 <translation id="3600492954573979888">Butoni "Menaxho cilësimet e privatësisë të Google". Aktivizoje për të vizituar cilësimet e privatësisë të "Llogarisë sate të Google"</translation>
 <translation id="3603507503523709">Aplikacioni u bllokua nga administratori yt</translation>
-<translation id="3605082766859363473">U zgjodh "Modaliteti i IA-së"</translation>
 <translation id="3605899229568538311">5 x 5 inç</translation>
 <translation id="3606917451836803637">Shfaqje dhe programe televizive</translation>
 <translation id="3608932978122581043">Orientimi i furnizimit</translation>
@@ -2020,7 +2019,6 @@ Për të fshehur opsionet e "Paguaj më vonë", shko te <ph name="BEGIN_LINK" />
 <translation id="411918202192379658">Plotësimi automatik sapo u përmirësua</translation>
 <translation id="4121428309786185360">Skadon në</translation>
 <translation id="4123572138124678573">Tri shpime poshtë</translation>
-<translation id="4125597496726375563">U zgjodh "Krijo imazh"</translation>
 <translation id="412601465078863288">Koha e ngarkimit skadoi</translation>
 <translation id="4127317221386336246">Aksesorë veshjesh</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{1 tjetër}other{# të tjerë}}</translation>
@@ -3090,6 +3088,7 @@ Për të fshehur opsionet e "Paguaj më vonë", shko te <ph name="BEGIN_LINK" />
 <translation id="5784606427469807560">Kishte një problem me konfirmimin e kartës tënde. Kontrollo lidhjen e internetit dhe provo përsëri.</translation>
 <translation id="5785756445106461925">Për më tepër, kjo faqe përfshin burime të tjera që nuk janë të sigurta. Këto burime mund të shikohen nga të tjerët kur janë në procesin e kalimit dhe mund të modifikohen nga ndonjë sulmues për të ndryshuar pamjen e faqes.</translation>
 <translation id="5787146423283493983">Marrëveshja kryesore</translation>
+<translation id="5789643057113097023">.</translation>
 <translation id="5793317771769868848">Kjo mënyrë pagese do të fshihet nga kjo pajisje</translation>
 <translation id="5794065675298686371">Aktivizo njoftimet për monitorimin e çmimeve</translation>
 <translation id="5797984091151707075">Bllokuar nga politika e administratorit</translation>
@@ -3753,7 +3752,6 @@ Për të fshehur opsionet e "Paguaj më vonë", shko te <ph name="BEGIN_LINK" />
 <translation id="6820143000046097424">portat seriale</translation>
 <translation id="6820686453637990663">CVC</translation>
 <translation id="6820949753458790123">Paguaj me këste të lehta</translation>
-<translation id="6822745163454377107">Merr përgjigje më të shpejta dhe më të personalizuara duke ndarë skedat e tua të hapura me këtë bashkëbisedim.</translation>
 <translation id="6825578344716086703">U përpoqe të gjeje <ph name="DOMAIN" />, por serveri paraqiti një certifikatë të nënshkruar duke përdorur një algoritëm të dobët nënshkrimi. Kjo do të thotë se kredencialet e sigurisë që paraqiti serveri mund të jenë të falsifikuara dhe serveri mund të mos jetë ai që prisje (mund të jesh duke komunikuar me një sulmues).</translation>
 <translation id="6826993739343257035">Të lejohet AR?</translation>
 <translation id="6828150717884939426">Telefono</translation>
@@ -5269,7 +5267,6 @@ Detaje shtesë:
 <translation id="9204089334327209740">Pasi ngarkimi të ketë përfunduar, mund të modifikosh skedarët në <ph name="CLOUD_PROVIDER" />. Hapësira ruajtëse lokale, duke përfshirë çdo skedar te "Koshi", do të hiqet automatikisht.</translation>
 <translation id="9205078245616868884">Të dhënat e tua janë koduar me frazën e kalimit për sinkronizimin. Fute atë për të nisur sinkronizmin.</translation>
 <translation id="920643408853370361">Sigurimi i udhëtimit</translation>
-<translation id="9206639970165643781">Të ndahen skedat e hapura përkatëse për përgjigje më të mira në këtë bashkëbisedim?</translation>
 <translation id="9207861905230894330">Dështoi në shtimin e artikullit.</translation>
 <translation id="9209339767782560829">Pati një problem me përdorimin e certifikatës së identifikimit.</translation>
 <translation id="9210152531668884481">Pranoj</translation>

@@ -1521,7 +1521,6 @@
 <translation id="2030803782168502207">从设备中移除订阅</translation>
 <translation id="2031487800375552010">借助技能，您可以便捷地重复使用提示，轻松完成重复性任务</translation>
 <translation id="2031914984822377766">添加您首选的<ph name="LINK_BEGIN" />网站语言<ph name="LINK_END" />。列表中的第一种语言将被用作翻译时的目标语言。</translation>
-<translation id="2032837042715970520">必须输入动态密码</translation>
 <translation id="2034346955588403444">添加其他 Wi-Fi 网络</translation>
 <translation id="2037445849770872822">此 Google 账号的监管功能已设置完毕。要设置更多家长控制，请选择“继续”。
 
@@ -3599,7 +3598,6 @@
 <translation id="3462413494201477527">要取消账号设置吗？</translation>
 <translation id="346298925039590474">该移动网络将可供此设备上的所有用户使用</translation>
 <translation id="3464145797867108663">添加工作资料</translation>
-<translation id="34673353983913587">在保存新密码之前，该网站需要进行额外的验证</translation>
 <translation id="3468298837301810372">标签</translation>
 <translation id="3468999815377931311">Android 手机</translation>
 <translation id="3469583217479686109">选择工具</translation>
@@ -4001,7 +3999,6 @@
 <translation id="3732108843630241049">此设备不再接收自动软件更新。开启延长安全更新，持续获得安全性、稳定性和高性能体验。部分功能会受到限制。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
 <translation id="3732414796052961578">以<ph name="ACCOUNT_NAME" />的身份继续</translation>
 <translation id="3732530910372558017">PIN 码不得超过 63 个字符</translation>
-<translation id="3732706448780793442">手动接管</translation>
 <translation id="3733296813637058299">我们将为您安装这些应用。您可在 Play 商店中找到更多适用于您的 <ph name="DEVICE_TYPE" /> 的应用。</translation>
 <translation id="3734547157266039796">稻田</translation>
 <translation id="3735039640698208086">播放音频时…</translation>
@@ -8304,7 +8301,6 @@
 <translation id="6772103682557559072">工作地址“<ph name="ADDRESS_SUMMARY" />”的更多选项</translation>
 <translation id="6772974422346500939">打开并修改</translation>
 <translation id="6773595613448852535">Chrome 根存储区</translation>
-<translation id="677394079035748956">该网站需要动态密码</translation>
 <translation id="6774710250118040929">添加新密码</translation>
 <translation id="6775163072363532304">可用设备将会显示在此处。</translation>
 <translation id="677646486571529447">添加备注</translation>
@@ -10016,7 +10012,6 @@
 <translation id="7943311690198910993">登录方法已更新</translation>
 <translation id="7943368935008348579">下载 PDF 文件</translation>
 <translation id="7943837619101191061">添加位置…</translation>
-<translation id="7944173382284143968">该网站要求先确认动态密码，然后才能保存新密码。请手动接管此流程以完成更改。</translation>
 <translation id="79446453817422139">这可能是个危险文件</translation>
 <translation id="7944772052836377867">同步功能需要验证您的身份</translation>
 <translation id="7944847494038629732">请拔下扫描仪的 USB 线，然后重新插上并重试</translation>

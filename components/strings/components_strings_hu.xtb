@@ -1671,7 +1671,6 @@ A későbbi fizetési lehetőségek elrejtéséhez lépjen a <ph name="BEGIN_LIN
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
 <translation id="3600492954573979888">A Google-lal kapcsolatos adatvédelmi beállítások kezelése gomb. A gombot megnyomva megnyithatja Google-fiókja adatvédelmi beállításait.</translation>
 <translation id="3603507503523709">A rendszergazda letiltotta az alkalmazást</translation>
-<translation id="3605082766859363473">AI-mód kiválasztva</translation>
 <translation id="3605899229568538311">5 × 5 hüvelyk</translation>
 <translation id="3606917451836803637">Tévéműsorok és programok</translation>
 <translation id="3608932978122581043">Adagolás tájolása</translation>
@@ -2017,7 +2016,6 @@ A későbbi fizetési lehetőségek elrejtéséhez lépjen a <ph name="BEGIN_LIN
 <translation id="411918202192379658">Még jobb lett az automatikus kitöltés</translation>
 <translation id="4121428309786185360">Lejár:</translation>
 <translation id="4123572138124678573">Három lyuk alul</translation>
-<translation id="4125597496726375563">Kép létrehozása kiválasztva</translation>
 <translation id="412601465078863288">Időtúllépés történt a feltöltés során</translation>
 <translation id="4127317221386336246">Ruházati kiegészítők</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{1 egyéb}other{# egyéb}}</translation>
@@ -3087,6 +3085,7 @@ A későbbi fizetési lehetőségek elrejtéséhez lépjen a <ph name="BEGIN_LIN
 <translation id="5784606427469807560">A kártya ellenőrzése során hiba történt. Ellenőrizze az internetkapcsolatot, majd próbálkozzon újra.</translation>
 <translation id="5785756445106461925">Emellett az oldal azonban más forrásokat is tartalmaz, amelyek nem biztonságosak. Ezeket a forrásokat mások is megtekinthetik átvitel közben, és megváltoztatásukkal a támadók módosíthatják az oldal viselkedését.</translation>
 <translation id="5787146423283493983">Kulcsmegegyezés</translation>
+<translation id="5789643057113097023">.</translation>
 <translation id="5793317771769868848">Ez a fizetési mód törölve lesz erről az eszközről.</translation>
 <translation id="5794065675298686371">Az árfigyelési értesítések bekapcsolása</translation>
 <translation id="5797984091151707075">Rendszergazdai házirend által letiltva</translation>
@@ -3751,7 +3750,6 @@ A későbbi fizetési lehetőségek elrejtéséhez lépjen a <ph name="BEGIN_LIN
 <translation id="6820143000046097424">soros portok</translation>
 <translation id="6820686453637990663">CVC</translation>
 <translation id="6820949753458790123">Fizetés egyszerű részletfizetéssel</translation>
-<translation id="6822745163454377107">Gyorsabb és személyre szabottabb válaszokat kaphat, ha megosztja a megnyitott lapokat ezzel a témaszállal.</translation>
 <translation id="6825578344716086703">Megpróbálta elérni a(z) <ph name="DOMAIN" /> webhelyet, de a szerver gyenge aláírási algoritmust használó tanúsítványt mutatott be. Ez alapján elképzelhető, hogy a szerver által megadott biztonsági tanúsítványt meghamisították, és a szerver nem az, amelyikre számított (lehet, hogy éppen valamilyen támadóval kommunikál).</translation>
 <translation id="6826993739343257035">Engedélyezi az AR-t?</translation>
 <translation id="6828150717884939426">Hívás</translation>
@@ -5270,7 +5268,6 @@ További részletek:
 <translation id="9204089334327209740">A feltöltés végeztével a(z) <ph name="CLOUD_PROVIDER" /> szolgáltatásban módosíthatja a fájlokat. A helyi tárhely, beleértve a kukában lévő fájlokat is, automatikusan eltávolításra kerül.</translation>
 <translation id="9205078245616868884">Adatai az összetett szinkronizálási jelszavával vannak titkosítva. Adja meg a jelszót a szinkronizálás megkezdéséhez.</translation>
 <translation id="920643408853370361">Utazási biztosítás</translation>
-<translation id="9206639970165643781">Megosztja a releváns megnyitott lapokat, hogy jobb válaszokat kaphasson ebben a témaszálban?</translation>
 <translation id="9207861905230894330">A cikk hozzáadása sikertelen.</translation>
 <translation id="9209339767782560829">Hiba történt a bejelentkezési tanúsítvány használata során.</translation>
 <translation id="9210152531668884481">Benne vagyok</translation>

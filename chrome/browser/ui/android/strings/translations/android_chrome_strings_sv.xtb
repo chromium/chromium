@@ -706,6 +706,7 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="4084712963632273211">Från <ph name="PUBLISHER_ORIGIN" /> – <ph name="BEGIN_DEEMPHASIZED" />via Google<ph name="END_DEEMPHASIZED" /></translation>
 <translation id="4092709865241032354">Hjälp Google Lösenordshantering att spara dina inloggningsuppgifter genom att lägga till ditt användarnamn för den här webbplatsen</translation>
 <translation id="4095146165863963773">Vill du ta bort appdata?</translation>
+<translation id="4095483462103784441">Skapa en ny flikgrupp</translation>
 <translation id="4096227151372679484">Flöde för att spara bokmärken har öppnats över halva skärmen</translation>
 <translation id="4105527135143631701">Uppdatering av Google Lösenordshantering har öppnats</translation>
 <translation id="4113030288477039509">Hanteras av administratören</translation>
@@ -1640,6 +1641,7 @@ Om du vill ändra den här inställningen <ph name="BEGIN_LINK" />raderar du Chr
 <translation id="7821130663268546430">Du hittar alla öppna flikar i flikbytaren</translation>
 <translation id="7822705602465980873">När du är inloggad kopplas denna data till ditt Google-konto för att skydda dig i Googles tjänster, till exempel genom att öka skyddet i Gmail efter en säkerhetsincident.</translation>
 <translation id="7824665136384946951">Organisationen har inaktiverat Säker webbsökning</translation>
+<translation id="7825973332242257878">Flikgrupper</translation>
 <translation id="7826342993930002256">Chrome på ditt sätt, överallt</translation>
 <translation id="7846161022626028328">Något gick fel. Försök igen.</translation>
 <translation id="7846296061357476882">Googles tjänster</translation>

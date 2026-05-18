@@ -607,7 +607,6 @@
 <translation id="3132345256151444894">Сачувајте број обештећења</translation>
 <translation id="3132584647087998639">Увезите податке</translation>
 <translation id="313283613037595347">Направи нову картицу без архивирања.</translation>
-<translation id="3136739222562075778">Ова картица приказује падове цена за производе на отвореним картицама</translation>
 <translation id="3138611310073113613">Одбаци избор</translation>
 <translation id="3140825265190223781">Сачуване лозинке и приступни кључеви</translation>
 <translation id="3143515551205905069">Откажи синхронизацију</translation>
@@ -766,6 +765,7 @@
 <translation id="372676576864368480">Аутоматски попуните број картице која се завршава на <ph name="LAST_DIGITS" /></translation>
 <translation id="3738428049780661523">Направљено <ph name="DATE" /></translation>
 <translation id="3742498336182910186">Са уређаја</translation>
+<translation id="3743545564993953213">Овај сајт покушава да отвори апликацију Пречице.</translation>
 <translation id="3746269120925354434">Информације су сачуване у Google новчанику</translation>
 <translation id="3750225824417196283">Нова страница на картици без архивирања</translation>
 <translation id="3751873026576444885">Зауставите претрагу екрана помоћу Google објектива</translation>

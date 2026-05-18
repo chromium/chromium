@@ -1537,7 +1537,6 @@ Sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä. Voit päättä
 <translation id="2030803782168502207">Poista tilaus laitteelta</translation>
 <translation id="2031487800375552010">Taitojen avulla voit helposti käyttää kehotteita uudelleen toistuvissa tehtävissä</translation>
 <translation id="2031914984822377766">Lisää <ph name="LINK_BEGIN" />sivustojen ensisijaiset kielet<ph name="LINK_END" />. Käännöksiin käytetään listan ensimmäistä kieltä.</translation>
-<translation id="2032837042715970520">OTP tarvitaan</translation>
 <translation id="2034346955588403444">Lisää muu Wi-Fi-verkko</translation>
 <translation id="2037445849770872822">Tälle Google-tilille on määritetty valvonta. Jos haluat määrittää lisää lapsilukkoja, valitse Jatka.
 
@@ -3621,7 +3620,6 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="3462413494201477527">Perutaanko tilin luominen?</translation>
 <translation id="346298925039590474">Mobiiliverkko on kaikkien laitteen käyttäjien saatavilla</translation>
 <translation id="3464145797867108663">Lisää työprofiili</translation>
-<translation id="34673353983913587">Sivusto edellyttää lisätodennusta ennen uuden salasanan tallentamista</translation>
 <translation id="3468298837301810372">Tunniste</translation>
 <translation id="3468999815377931311">Android-puhelin</translation>
 <translation id="3469583217479686109">Valintatyökalu</translation>
@@ -4023,7 +4021,6 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="3732108843630241049">Tämä laite ei enää saa automaattisia ohjelmistopäivityksiä. Laita laajennetut tietoturvapäivitykset päälle, jotta tietoturva, vakaus ja suorituskyky eivät keskeydy. Joitakin toimintoja rajoitetaan. <ph name="LINK_BEGIN" />Lue lisää<ph name="LINK_END" /></translation>
 <translation id="3732414796052961578">Jatka käyttäjänä <ph name="ACCOUNT_NAME" /></translation>
 <translation id="3732530910372558017">PIN-koodissa täytyy olla ainakin 63 merkkiä</translation>
-<translation id="3732706448780793442">Viimeistele manuaalisesti</translation>
 <translation id="3733296813637058299">Asennamme nämä sovellukset puolestasi. Play Kaupasta löydät lisää sovelluksia laitteellesi (<ph name="DEVICE_TYPE" />).</translation>
 <translation id="3734547157266039796">Riisipelto</translation>
 <translation id="3735039640698208086">Kun audiota toistetaan:</translation>
@@ -8329,7 +8326,6 @@ Sinulla on vielä # vaarantunutta salasanaa. Google Salasanat suosittelee, että
 <translation id="6772103682557559072">Lisää vaihtoehtoja työpaikan osoitteelle (<ph name="ADDRESS_SUMMARY" />)</translation>
 <translation id="6772974422346500939">Avaa ja muokkaa</translation>
 <translation id="6773595613448852535">Chrome Root Store</translation>
-<translation id="677394079035748956">Sivusto tarvitsee kertakäyttöisen salasanan</translation>
 <translation id="6774710250118040929">Lisää uusi salasana</translation>
 <translation id="6775163072363532304">Käytettävissä olevat laitteet tulevat näkyviin tähän.</translation>
 <translation id="677646486571529447">Lisää muistiinpano</translation>
@@ -10041,7 +10037,6 @@ Poista määritys painamalla määritettyä kytkintä tai näppäintä.</transla
 <translation id="7943311690198910993">Kirjautumistapa päivitetty</translation>
 <translation id="7943368935008348579">Lataa PDF-tiedostot</translation>
 <translation id="7943837619101191061">Lisää sijainti…</translation>
-<translation id="7944173382284143968">Verkkosivusto edellyttää OTP-vahvistusta ennen uuden salasanan tallentamista. Viimeistele muutos manuaalisesti.</translation>
 <translation id="79446453817422139">Tiedosto voi olla vaarallinen</translation>
 <translation id="7944772052836377867">Synkronoinnin on vahvistettava henkilöllisyytesi</translation>
 <translation id="7944847494038629732">Yritä uudelleen irrottamalla skannerin USB-johto ja kytkemällä se takaisin.</translation>

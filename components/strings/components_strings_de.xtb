@@ -1672,7 +1672,6 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
 <translation id="3600492954573979888">Button „Datenschutzeinstellungen des Google-Kontos verwalten“ – aktivieren, um die Datenschutzeinstellungen deines Google-Kontos aufzurufen</translation>
 <translation id="3603507503523709">App durch Administrator blockiert</translation>
-<translation id="3605082766859363473">„KI-Modus“ ausgewählt</translation>
 <translation id="3605899229568538311">5 × 5 Zoll</translation>
 <translation id="3606917451836803637">Fernsehsendungen</translation>
 <translation id="3608932978122581043">Einzugsausrichtung</translation>
@@ -2018,7 +2017,6 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="411918202192379658">Autofill ist jetzt noch hilfreicher</translation>
 <translation id="4121428309786185360">Gültig bis</translation>
 <translation id="4123572138124678573">Dreifache Lochung unten</translation>
-<translation id="4125597496726375563">„Bild erstellen“ ausgewählt</translation>
 <translation id="412601465078863288">Zeitüberschreitung beim Hochladen</translation>
 <translation id="4127317221386336246">Accessoires</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{1 weiterer}other{# weitere}}</translation>
@@ -3088,6 +3086,7 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="5784606427469807560">Beim Bestätigen deiner Karte ist ein Problem aufgetreten. Überprüfe deine Internetverbindung und versuche es noch einmal.</translation>
 <translation id="5785756445106461925">Außerdem enthält diese Seite andere, nicht sichere Ressourcen. Diese Ressourcen können während der Übertragung von anderen Nutzern angezeigt und von Angreifern bearbeitet werden, die das Layout der Seite verändern.</translation>
 <translation id="5787146423283493983">Schlüsselvereinbarung</translation>
+<translation id="5789643057113097023">.</translation>
 <translation id="5793317771769868848">Diese Zahlungsmethode wird von diesem Gerät gelöscht</translation>
 <translation id="5794065675298686371">Benachrichtigungen zum Preis-Tracking aktivieren</translation>
 <translation id="5797984091151707075">Durch Administratorrichtlinie blockiert</translation>
@@ -3752,7 +3751,6 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="6820143000046097424">Serielle Schnittstellen</translation>
 <translation id="6820686453637990663">CVC</translation>
 <translation id="6820949753458790123">In Raten zahlen</translation>
-<translation id="6822745163454377107">Wenn du deine geöffneten Tabs mit diesem Thread teilst, erhältst du schnellere und besser auf dich zugeschnittene Antworten.</translation>
 <translation id="6825578344716086703">Du hast versucht, auf <ph name="DOMAIN" /> zuzugreifen, der Server hat jedoch ein Zertifikat übermittelt, das einen schwachen Signaturalgorithmus verwendet, zum Beispiel SHA-1. Das bedeutet, dass die vom Server übermittelten Sicherheitsinformationen gefälscht sein könnten und es sich möglicherweise gar nicht um den erwarteten Server handelt, sondern du mit einem Hacker kommunizierst.</translation>
 <translation id="6826993739343257035">AR zulassen?</translation>
 <translation id="6828150717884939426">Anrufen</translation>
@@ -5270,7 +5268,6 @@ Weitere Details:
 <translation id="9204089334327209740">Sobald der Upload abgeschlossen ist, kannst du deine Dateien in <ph name="CLOUD_PROVIDER" /> bearbeiten. Der lokale Speicher, einschließlich aller Dateien im Papierkorb, wird automatisch deaktiviert.</translation>
 <translation id="9205078245616868884">Deine Daten sind mit deiner Synchronisierungspassphrase verschlüsselt. Gib diese ein, um die Synchronisierung zu starten.</translation>
 <translation id="920643408853370361">Reiseversicherung</translation>
-<translation id="9206639970165643781">Relevante geöffnete Tabs teilen, um bessere Antworten in diesem Thread zu erhalten?</translation>
 <translation id="9207861905230894330">Der Artikel konnte nicht hinzugefügt werden.</translation>
 <translation id="9209339767782560829">Beim Verwenden deines Anmeldezertifikats ist ein Problem aufgetreten.</translation>
 <translation id="9210152531668884481">Ja, bitte</translation>

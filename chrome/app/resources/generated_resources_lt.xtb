@@ -1542,7 +1542,6 @@ Leidimai, kuriuos jau esate suteikę programoms, gali būti taikomi šiai paskyr
 <translation id="2030803782168502207">Prenumeratos pašalinimas iš įrenginio</translation>
 <translation id="2031487800375552010">Įgūdžiai supaprastina pakartotinį užklausų naudojimą pasikartojančioms užduotims</translation>
 <translation id="2031914984822377766">Pridėkite pageidaujamas <ph name="LINK_BEGIN" />svetainės kalbas<ph name="LINK_END" />. Bus verčiama į sąrašo viršuje nurodytą kalbą.</translation>
-<translation id="2032837042715970520">Būtina pateikti vienkartinį slaptažodį</translation>
 <translation id="2034346955588403444">Pridėti kitą „WiFi“ tinklą</translation>
 <translation id="2037445849770872822">Šioje „Google“ paskyroje nustatyta priežiūra. Jei norite nustatyti daugiau tėvų kontrolės nustatymų, pasirinkite „Tęsti“.
 
@@ -3630,7 +3629,6 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="3462413494201477527">Atšaukti paskyros sąranką?</translation>
 <translation id="346298925039590474">Šis mobiliojo ryšio tinklas bus pasiekiamas visiems šio įrenginio naudotojams</translation>
 <translation id="3464145797867108663">Pridėti darbo profilį</translation>
-<translation id="34673353983913587">Prieš išsaugant naują slaptažodį, svetainė reikalauja papildomo patvirtinimo</translation>
 <translation id="3468298837301810372">Etiketė</translation>
 <translation id="3468999815377931311">„Android“ telefonas</translation>
 <translation id="3469583217479686109">Pasirinkimo įrankis</translation>
@@ -4032,7 +4030,6 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="3732108843630241049">Šis įrenginys nebegauna automatinių programinės įrangos naujinių. Įjunkite išplėstinius saugos naujinius, kad užtikrintumėte nuolatinę saugą, stabilumą ir našumą. Kai kurios funkcijos bus apribotos. <ph name="LINK_BEGIN" />Sužinokite daugiau<ph name="LINK_END" /></translation>
 <translation id="3732414796052961578">Tęsti kaip <ph name="ACCOUNT_NAME" /></translation>
 <translation id="3732530910372558017">PIN kodą turi sudaryti daugiausia 63 simboliai</translation>
-<translation id="3732706448780793442">Perimti neautomatiškai</translation>
 <translation id="3733296813637058299">Įdiegsime jums šias programas. Daugiau programų „<ph name="DEVICE_TYPE" />“ įrenginiui galite rasti „Play“ parduotuvėje.</translation>
 <translation id="3734547157266039796">Ryžių laukas</translation>
 <translation id="3735039640698208086">Kai leidžiamas garso įrašas...</translation>
@@ -8350,7 +8347,6 @@ Turite dar # pažeistų slaptažodžių. „Google“ slaptažodžių tvarkyklė
 <translation id="6772103682557559072">Daugiau <ph name="ADDRESS_SUMMARY" /> darbo adreso parinkčių</translation>
 <translation id="6772974422346500939">Atidaryti ir redaguoti</translation>
 <translation id="6773595613448852535">Chrome Root Store</translation>
-<translation id="677394079035748956">Svetainėje reikia vienkartinio slaptažodžio</translation>
 <translation id="6774710250118040929">Naujo slaptažodžio pridėjimas</translation>
 <translation id="6775163072363532304">Pasiekiami įrenginiai bus rodomi čia.</translation>
 <translation id="677646486571529447">Pridėti pastabą</translation>
@@ -10063,7 +10059,6 @@ Paspauskite priskirtą jungiklį ar klavišą, kad pašalintumėte priskyrimą</
 <translation id="7943311690198910993">Prisijungimo metodas atnaujintas</translation>
 <translation id="7943368935008348579">Atsisiųsti PDF failus</translation>
 <translation id="7943837619101191061">Pridėti vietą...</translation>
-<translation id="7944173382284143968">Svetainėje reikia patvirtinti vienkartinį slaptažodį prieš išsaugant naują slaptažodį. Atlikite procesą neautomatiškai, kad užbaigtumėte pakeitimą.</translation>
 <translation id="79446453817422139">Šis failas gali būti pavojingas</translation>
 <translation id="7944772052836377867">Sinchronizuojant reikia patvirtinti jūsų tapatybę</translation>
 <translation id="7944847494038629732">Atjunkite skaitytuvo USB laidą ir vėl prijunkite, kad galėtumėte bandyti dar kartą</translation>

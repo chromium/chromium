@@ -705,6 +705,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="4084712963632273211">De <ph name="PUBLISHER_ORIGIN" />: <ph name="BEGIN_DEEMPHASIZED" />veiculado pelo Google<ph name="END_DEEMPHASIZED" /></translation>
 <translation id="4092709865241032354">Para ajudar o Gerenciador de senhas do Google a salvar suas informações de login, adicione seu nome de usuário desse site</translation>
 <translation id="4095146165863963773">Excluir dados de apps?</translation>
+<translation id="4095483462103784441">Criar novo grupo de guias</translation>
 <translation id="4096227151372679484">Fluxo para adicionar aos favoritos aberto na metade da altura</translation>
 <translation id="4105527135143631701">A atualização do Gerenciador de senhas do Google foi aberta</translation>
 <translation id="4113030288477039509">Gerenciado pelo seu administrador</translation>
@@ -1641,6 +1642,7 @@ Para mudar essa configuração, <ph name="BEGIN_LINK" />exclua os dados do Chrom
 <translation id="7821130663268546430">Todas as guias abertas ficam no seletor de guias</translation>
 <translation id="7822705602465980873">Quando sua Conta do Google está conectada, esses dados são vinculados a ela para proteger você nos Serviços do Google, por exemplo, aumentando a proteção no Gmail após um incidente de segurança.</translation>
 <translation id="7824665136384946951">Sua organização desativou a Navegação Segura</translation>
+<translation id="7825973332242257878">Grupos de guias</translation>
 <translation id="7826342993930002256">Seu Google Chrome, em qualquer lugar</translation>
 <translation id="7846161022626028328">Ocorreu um erro. Tente de novo.</translation>
 <translation id="7846296061357476882">Serviços do Google</translation>

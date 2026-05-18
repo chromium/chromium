@@ -1528,7 +1528,6 @@ Hazırda tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna bilər. And
 <translation id="2030803782168502207">Abunəni cihazdan silin</translation>
 <translation id="2031487800375552010">Bacarıqlar təkrarlanan tapşırıqlar üçün göstərişləri asanlıqla təkrar istifadə etməyə imkan verir</translation>
 <translation id="2031914984822377766">Tərcih etdiyiniz <ph name="LINK_BEGIN" />vebsayt dillərini<ph name="LINK_END" /> əlavə edin. Siyahıda ilk sıradakı dil tərcümələr üçün istifadə olunacaq.</translation>
-<translation id="2032837042715970520">OTP tələb olunur</translation>
 <translation id="2034346955588403444">Digər WiFi şəbəkəsi əlavə edin</translation>
 <translation id="2037445849770872822">Bu Google Hesabında nəzarət ayarlanıb. Daha çox valideyn nəzarəti ayarlamaq üçün "Davam edin" seçiminə klikləyin.
 
@@ -3612,7 +3611,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3462413494201477527">Hesab quraşdırması ləğv edilsin?</translation>
 <translation id="346298925039590474">Bu mobil şəbəkə bu cihazdakı bütün istifadəçilər üçün əlçatan olacaqdır</translation>
 <translation id="3464145797867108663">İş profili əlavə edin</translation>
-<translation id="34673353983913587">Yeni parolu saxlamazdan əvvəl sayt əlavə doğrulama tələb edir</translation>
 <translation id="3468298837301810372">Etiket</translation>
 <translation id="3468999815377931311">Android telefonu</translation>
 <translation id="3469583217479686109">Seçim Aləti</translation>
@@ -4014,7 +4012,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3732108843630241049">Bu cihaz artıq avtomatik proqram təminatı güncəlləmələri almır. Davamlı təhlükəsizlik, sabitlik və performans üçün genişləndirilmiş təhlükəsizlik güncəlləmələrini aktiv edin. Bəzi funksiyalar məhdud olacaq. <ph name="LINK_BEGIN" />Ətraflı məlumat<ph name="LINK_END" /></translation>
 <translation id="3732414796052961578"><ph name="ACCOUNT_NAME" /> kimi davam edin</translation>
 <translation id="3732530910372558017">PIN maksimum 63 simvoldan ibarət olmalıdır</translation>
-<translation id="3732706448780793442">Manual qaydada davam edin</translation>
 <translation id="3733296813637058299">Həmin tətbiqləri sizin üçün quraşdıracağıq. Play Marketdə <ph name="DEVICE_TYPE" /> cihazınız üçün daha çox tətbiq tapa bilərsiniz.</translation>
 <translation id="3734547157266039796">Düyü çəltiyi</translation>
 <translation id="3735039640698208086">Audio oxudulan zaman...</translation>
@@ -8319,7 +8316,6 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="6772103682557559072"><ph name="ADDRESS_SUMMARY" /> iş ünvanı üçün daha çox seçim</translation>
 <translation id="6772974422346500939">Açıb, redaktə edin</translation>
 <translation id="6773595613448852535">Chrome Root Store</translation>
-<translation id="677394079035748956">Sayt birdəfəlik parol tələb edir</translation>
 <translation id="6774710250118040929">Yeni parol əlavə edin</translation>
 <translation id="6775163072363532304">Əlçatan cihazlar burada görünəcək.</translation>
 <translation id="677646486571529447">Qeyd əlavə edin</translation>
@@ -10030,7 +10026,6 @@ Təyinatı silmək üçün təyin edilmiş keçirici və ya düyməni basın.</t
 <translation id="7943311690198910993">Giriş metodu güncəlləndi</translation>
 <translation id="7943368935008348579">PDF endirin</translation>
 <translation id="7943837619101191061">Məkan əlavə edin...</translation>
-<translation id="7944173382284143968">Veb-sayt yeni parolu yadda saxlamazdan əvvəl OTP təsdiqi tələb edir. Dəyişikliyi tamamlamaq üçün manual qaydada davam edin.</translation>
 <translation id="79446453817422139">Bu fayl təhlükəli ola bilər</translation>
 <translation id="7944772052836377867">Sinxronizasiya kimliyinizi təsdiqləməlidir</translation>
 <translation id="7944847494038629732">Təkrar cəhd etmək üçün skanerin USB kabelini ayırın və yenidən taxın</translation>

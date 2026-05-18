@@ -1534,7 +1534,6 @@
 <translation id="2030803782168502207">Премахване на абонамента от устройството</translation>
 <translation id="2031487800375552010">Уменията ви дават възможност лесно да използвате едни и същи подкани за повтарящи се задачи</translation>
 <translation id="2031914984822377766">Добавете предпочитаните от вас <ph name="LINK_BEGIN" />езици за уебсайтове<ph name="LINK_END" />. Най-горният език в списъка ще се използва за преводи.</translation>
-<translation id="2032837042715970520">Изисква се еднократна парола</translation>
 <translation id="2034346955588403444">Добавяне на друга Wi-Fi мрежа</translation>
 <translation id="2037445849770872822">Контролирането е настроено за този профил в Google. Ако искате да конфигурирате още родителски контроли, изберете „Напред“.
 
@@ -3618,7 +3617,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3462413494201477527">Да се анулира ли настройването на профила?</translation>
 <translation id="346298925039590474">Тази мобилна мрежа ще бъде налице за всички потребители на устройството</translation>
 <translation id="3464145797867108663">Добавяне на служебен потребителски профил</translation>
-<translation id="34673353983913587">Преди да запазите новата си парола, сайтът изисква допълнително потвърждаване</translation>
 <translation id="3468298837301810372">Етикет</translation>
 <translation id="3468999815377931311">Телефон с Android</translation>
 <translation id="3469583217479686109">Инструмент за избиране</translation>
@@ -4020,7 +4018,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3732108843630241049">Това устройство вече не получава автоматични софтуерни актуализации. Включете удължените актуализации за сигурност, за да продължите да получавате актуализации за сигурност, стабилност и ефективност. Някои функции ще бъдат ограничени. <ph name="LINK_BEGIN" />Научете повече<ph name="LINK_END" /></translation>
 <translation id="3732414796052961578">Продължаване като <ph name="ACCOUNT_NAME" /></translation>
 <translation id="3732530910372558017">ПИН кодът трябва да е с дължина най-много 63 знака</translation>
-<translation id="3732706448780793442">Продължаване ръчно</translation>
 <translation id="3733296813637058299">Ще инсталираме тези приложения за вас. В Google Play Магазин можете да намерите още приложения за устройството си <ph name="DEVICE_TYPE" />.</translation>
 <translation id="3734547157266039796">Оризище</translation>
 <translation id="3735039640698208086">При възпроизвеждане на звук...</translation>
@@ -8331,7 +8328,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="6772103682557559072">Още опции за служебния адрес <ph name="ADDRESS_SUMMARY" /></translation>
 <translation id="6772974422346500939">Отваряне и редактиране</translation>
 <translation id="6773595613448852535">Chrome Root Store</translation>
-<translation id="677394079035748956">За сайта е необходима еднократна парола</translation>
 <translation id="6774710250118040929">Добавяне на нова парола</translation>
 <translation id="6775163072363532304">Наличните устройства ще се показват тук.</translation>
 <translation id="677646486571529447">Добавяне на бележка</translation>
@@ -10043,7 +10039,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="7943311690198910993">Методът за вход в профила е актуализиран</translation>
 <translation id="7943368935008348579">Изтегляне на PDF файловете</translation>
 <translation id="7943837619101191061">Добавяне на местоположение...</translation>
-<translation id="7944173382284143968">Уебсайтът изисква потвърждаване с еднократна парола, преди новата парола да бъде запазена. Моля, продължете процеса ръчно, за да завършите промяната.</translation>
 <translation id="79446453817422139">Този файл може да е опасен</translation>
 <translation id="7944772052836377867">Синхронизирането трябва да потвърди, че това сте вие</translation>
 <translation id="7944847494038629732">Извадете USB кабела на скенера и пак го включете, за да опитате отново</translation>

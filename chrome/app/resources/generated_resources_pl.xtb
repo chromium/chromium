@@ -1528,7 +1528,6 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane wcześniej aplikacjom. U
 <translation id="2030803782168502207">Usuń subskrypcję z urządzenia</translation>
 <translation id="2031487800375552010">Umiejętności pozwalają łatwo ponownie wykorzystywać prompty do powtarzalnych zadań</translation>
 <translation id="2031914984822377766">Dodaj preferowane <ph name="LINK_BEGIN" />języki stron<ph name="LINK_END" />. Język znajdujący się na samej górze listy będzie wykorzystywany do tłumaczeń.</translation>
-<translation id="2032837042715970520">Wymagane hasło jednorazowe</translation>
 <translation id="2034346955588403444">Dodaj inną sieć Wi-Fi</translation>
 <translation id="2037445849770872822">To konto Google ma ustawiony nadzór. Jeśli chcesz skonfigurować dodatkowe ustawienia kontroli rodzicielskiej, kliknij Dalej.
 
@@ -3590,7 +3589,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3462413494201477527">Anulować konfigurowanie konta?</translation>
 <translation id="346298925039590474">Ta sieć komórkowa będzie dostępna dla wszystkich użytkowników urządzenia</translation>
 <translation id="3464145797867108663">Dodaj profil służbowy</translation>
-<translation id="34673353983913587">Przed zapisaniem nowego hasła witryna wymaga dodatkowej weryfikacji</translation>
 <translation id="3468298837301810372">Etykieta</translation>
 <translation id="3468999815377931311">Telefon z Androidem</translation>
 <translation id="3469583217479686109">Narzędzie do zaznaczania</translation>
@@ -3992,7 +3990,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3732108843630241049">To urządzenie nie otrzymuje już automatycznych aktualizacji oprogramowania. Włącz rozszerzone aktualizacje zabezpieczeń, aby zapewnić sobie nieprzerwane bezpieczeństwo, stabilność i wydajność. Niektóre funkcje będą ograniczone. <ph name="LINK_BEGIN" />Więcej informacji<ph name="LINK_END" /></translation>
 <translation id="3732414796052961578">Kontynuuj jako <ph name="ACCOUNT_NAME" /></translation>
 <translation id="3732530910372558017">Kod PIN może mieć maksymalnie 63 znaki</translation>
-<translation id="3732706448780793442">Przejmij ręcznie</translation>
 <translation id="3733296813637058299">Zainstalujemy te aplikacje dla Ciebie. Więcej aplikacji na swoje urządzenie <ph name="DEVICE_TYPE" /> znajdziesz w Sklepie Play.</translation>
 <translation id="3734547157266039796">Pole ryżowe</translation>
 <translation id="3735039640698208086">Podczas odtwarzania dźwięku...</translation>
@@ -8300,7 +8297,6 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="6772103682557559072">Więcej opcji dotyczących adresu służbowego (<ph name="ADDRESS_SUMMARY" />)</translation>
 <translation id="6772974422346500939">Otwórz i edytuj</translation>
 <translation id="6773595613448852535">Chrome Root Store</translation>
-<translation id="677394079035748956">Strona wymaga hasła jednorazowego</translation>
 <translation id="6774710250118040929">Dodaj nowe hasło</translation>
 <translation id="6775163072363532304">Tu pojawią się dostępne urządzenia.</translation>
 <translation id="677646486571529447">Dodaj notatkę</translation>
@@ -10009,7 +10005,6 @@ Aby usunąć przypisanie, naciśnij przypisany przełącznik lub klawisz.</trans
 <translation id="7943311690198910993">Metoda logowania została zaktualizowana</translation>
 <translation id="7943368935008348579">Pobieranie plików PDF</translation>
 <translation id="7943837619101191061">Dodaj lokalizację...</translation>
-<translation id="7944173382284143968">Przed zapisaniem nowego hasła witryna wymaga potwierdzenia jednorazowego hasła. Przejmij proces ręcznie, aby dokończyć zmianę.</translation>
 <translation id="79446453817422139">Ten plik może być niebezpieczny</translation>
 <translation id="7944772052836377867">Synchronizacja musi potwierdzić Twoją tożsamość</translation>
 <translation id="7944847494038629732">Odłącz kabel USB skanera i podłącz go ponownie, aby spróbować jeszcze raz</translation>

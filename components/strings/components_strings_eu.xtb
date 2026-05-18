@@ -1669,7 +1669,6 @@ Geroago ordaintzeko aukerak ezkutatzeko, joan <ph name="BEGIN_LINK" />Ordainketa
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" /> (<ph name="TIME" />)</translation>
 <translation id="3600492954573979888">Google-ren pribatutasun-ezarpenak kudeatzeko botoia: aktiba ezazu Google-ko kontuaren pribatutasun-ezarpenetara joateko</translation>
 <translation id="3603507503523709">Administratzaileak aplikazioa blokeatu du</translation>
-<translation id="3605082766859363473">AA moduaren aukera hautatuta</translation>
 <translation id="3605899229568538311">12,7 × 12,7 cm (5 × 5 in)</translation>
 <translation id="3606917451836803637">Saioak eta programak</translation>
 <translation id="3608932978122581043">Papera sartzeko orientazioa</translation>
@@ -2016,7 +2015,6 @@ Geroago ordaintzeko aukerak ezkutatzeko, joan <ph name="BEGIN_LINK" />Ordainketa
 <translation id="411918202192379658">Betetze automatikoa hobetu berri da</translation>
 <translation id="4121428309786185360">Iraungitze data:</translation>
 <translation id="4123572138124678573">Hiru zulo behean</translation>
-<translation id="4125597496726375563">Irudia sortzeko aukera hautatuta</translation>
 <translation id="412601465078863288">Kargatzeko denbora-muga gainditu da</translation>
 <translation id="4127317221386336246">Jantzien osagarriak</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{Beste 1}other{Beste #}}</translation>
@@ -3086,6 +3084,7 @@ Geroago ordaintzeko aukerak ezkutatzeko, joan <ph name="BEGIN_LINK" />Ordainketa
 <translation id="5784606427469807560">Arazo bat izan da txartela berrestean. Egiaztatu Internetera konektatuta zaudela eta saiatu berriro.</translation>
 <translation id="5785756445106461925">Gainera, orri honetan seguruak ez diren beste baliabide batzuk daude. Bidean dauden bitartean, beste pertsonek baliabide horiek ikus ditzakete eta erasotzaileek aldatu egin ditzakete orriaren portaera aldatzeko.</translation>
 <translation id="5787146423283493983">Gakoei buruzko akordioa</translation>
+<translation id="5789643057113097023">.</translation>
 <translation id="5793317771769868848">Ordainketa-metodoa gailutik ezabatuko da</translation>
 <translation id="5794065675298686371">Aktibatu prezioen jarraipenari buruzko jakinarazpenak</translation>
 <translation id="5797984091151707075">Administratzaile-gidalerroek blokeatu dute</translation>
@@ -3749,7 +3748,6 @@ Geroago ordaintzeko aukerak ezkutatzeko, joan <ph name="BEGIN_LINK" />Ordainketa
 <translation id="6820143000046097424">serie-atakak</translation>
 <translation id="6820686453637990663">CVCa</translation>
 <translation id="6820949753458790123">Ordaindu epe erosoetan</translation>
-<translation id="6822745163454377107">Lortu erantzun bizkorragoak eta pertsonalizatuagoak irekitako fitxak elkarrizketa-hari honekin partekatuta.</translation>
 <translation id="6825578344716086703"><ph name="DOMAIN" /> domeinura konektatzen saiatu zara, baina zerbitzariak aurkeztu duen sinadura-algoritmoa ez da segurua (adibidez, SHA-1). Horrek esan nahi du zerbitzariak aurkeztutako segurtasun-kredentzialak faltsuak direla eta balitekeela zerbitzaria ez izatea zuk espero zenuena, hau da, posible dela erasotzaile batekin komunikatzen ari izatea.</translation>
 <translation id="6826993739343257035">EA erabiltzeko baimena eman nahi duzu?</translation>
 <translation id="6828150717884939426">Deitu</translation>
@@ -5264,7 +5262,6 @@ Xehetasun gehiago:
 <translation id="9204089334327209740">Karga osatu ostean, fitxategiak <ph name="CLOUD_PROVIDER" /> zerbitzuan alda ditzakezu. Gailuko biltegiratzea, zaborrontziko fitxategiak barne, automatikoki kenduko da.</translation>
 <translation id="9205078245616868884">Sinkronizatzeko pasaesaldiaren bidez daude enkriptatuta datuak. Idatz ezazu sinkronizatzen hasteko.</translation>
 <translation id="920643408853370361">Bidaia-aseguruak</translation>
-<translation id="9206639970165643781">Elkarrizketa-hari honetan erantzun hobeak lortzeko, irekitako fitxa egokiak partekatu nahi dituzu?</translation>
 <translation id="9207861905230894330">Ezin izan da artikulua gehitu.</translation>
 <translation id="9209339767782560829">Arazo bat izan da saioa hasteko ziurtagiria erabiltzean.</translation>
 <translation id="9210152531668884481">Ados</translation>

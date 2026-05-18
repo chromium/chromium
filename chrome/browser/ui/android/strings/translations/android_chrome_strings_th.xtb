@@ -705,6 +705,7 @@
 <translation id="4084712963632273211">จาก <ph name="PUBLISHER_ORIGIN" /> - <ph name="BEGIN_DEEMPHASIZED" />แสดงโดย Google<ph name="END_DEEMPHASIZED" /></translation>
 <translation id="4092709865241032354">เพิ่มชื่อผู้ใช้สำหรับเว็บไซต์นี้เพื่อช่วยเครื่องมือจัดการรหัสผ่านบน Google บันทึกข้อมูลการลงชื่อเข้าใช้</translation>
 <translation id="4095146165863963773">ลบข้อมูลแอปไหม</translation>
+<translation id="4095483462103784441">สร้างกลุ่มแท็บใหม่</translation>
 <translation id="4096227151372679484">ขั้นตอนการบันทึกบุ๊กมาร์กเปิดอยู่ที่ระดับความสูงครึ่งหนึ่ง</translation>
 <translation id="4105527135143631701">การอัปเดตเครื่องมือจัดการรหัสผ่านบน Google เปิดอยู่</translation>
 <translation id="4113030288477039509">มีการจัดการโดยผู้ดูแลระบบ</translation>
@@ -1639,6 +1640,7 @@
 <translation id="7821130663268546430">คุณค้นหาแท็บที่เปิดอยู่ทั้งหมดในตัวสลับแท็บได้</translation>
 <translation id="7822705602465980873">เมื่อลงชื่อเข้าใช้ ข้อมูลนี้จะลิงก์กับบัญชี Google ของคุณเพื่อปกป้องคุณในบริการต่างๆ ของ Google เช่น เพิ่มการปกป้องใน Gmail หลังจากเกิดเหตุการณ์ด้านความปลอดภัย</translation>
 <translation id="7824665136384946951">องค์กรปิด Google Safe Browsing ไว้</translation>
+<translation id="7825973332242257878">กลุ่มแท็บ</translation>
 <translation id="7826342993930002256">Chrome ของคุณในทุกๆ ที่</translation>
 <translation id="7846161022626028328">เกิดข้อผิดพลาด โปรดลองอีกครั้ง</translation>
 <translation id="7846296061357476882">บริการของ Google</translation>

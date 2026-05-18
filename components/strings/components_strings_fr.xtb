@@ -1673,7 +1673,6 @@ Pour masquer les options de paiement différé, accédez aux <ph name="BEGIN_LIN
 <translation id="3600246354004376029">"<ph name="TITLE" />", <ph name="DOMAIN" />, <ph name="TIME" /></translation>
 <translation id="3600492954573979888">Bouton "Gérer les paramètres de confidentialité du compte Google" à activer pour accéder aux paramètres de confidentialité de votre compte Google</translation>
 <translation id="3603507503523709">Application bloquée par votre administrateur</translation>
-<translation id="3605082766859363473">Mode IA sélectionné</translation>
 <translation id="3605899229568538311">5 x 5 pouces</translation>
 <translation id="3606917451836803637">Programmes et émissions TV</translation>
 <translation id="3608932978122581043">Orientation de l'alimentation</translation>
@@ -2020,7 +2019,6 @@ Pour masquer les options de paiement différé, accédez aux <ph name="BEGIN_LIN
 <translation id="411918202192379658">La saisie automatique s'est encore améliorée</translation>
 <translation id="4121428309786185360">Expire le</translation>
 <translation id="4123572138124678573">Triple perforation en bas</translation>
-<translation id="4125597496726375563">Créer l'image sélectionnée</translation>
 <translation id="412601465078863288">Délai d'importation dépassé</translation>
 <translation id="4127317221386336246">Accessoires vestimentaires</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{1 autre}one{# autre}other{# autres}}</translation>
@@ -3090,6 +3088,7 @@ Pour masquer les options de paiement différé, accédez aux <ph name="BEGIN_LIN
 <translation id="5784606427469807560">Un problème est survenu lors de la validation de votre carte. Vérifiez votre connexion Internet, puis réessayez.</translation>
 <translation id="5785756445106461925">De plus, cette page inclut d'autres ressources qui ne sont pas sécurisées. Ces ressources peuvent être consultées par des tiers pendant leur transfert, et modifiées par un pirate informatique dans le but de changer l'aspect de cette page.</translation>
 <translation id="5787146423283493983">Accord de la clé</translation>
+<translation id="5789643057113097023">.</translation>
 <translation id="5793317771769868848">Ce mode de paiement sera supprimé de cet appareil</translation>
 <translation id="5794065675298686371">Activer les notifications de suivi des prix</translation>
 <translation id="5797984091151707075">Bloqué par une règle d'administration</translation>
@@ -3754,7 +3753,6 @@ Pour masquer les options de paiement différé, accédez aux <ph name="BEGIN_LIN
 <translation id="6820143000046097424">ports série</translation>
 <translation id="6820686453637990663">CVC</translation>
 <translation id="6820949753458790123">Payez facilement par versements</translation>
-<translation id="6822745163454377107">Obtenez des réponses plus rapides et personnalisées en partageant vos onglets ouverts avec ce fil de discussion.</translation>
 <translation id="6825578344716086703">Vous avez tenté d'accéder à <ph name="DOMAIN" />, mais le serveur a présenté un certificat signé à l'aide d'un algorithme de signature faible (par exemple, SHA-1). Il est possible que le certificat fourni par le serveur ait été falsifié. Il se peut donc que le serveur ne soit pas celui auquel vous souhaitez accéder, et qu'il s'agisse d'une tentative de piratage.</translation>
 <translation id="6826993739343257035">Autoriser la RA ?</translation>
 <translation id="6828150717884939426">Appeler</translation>
@@ -5271,7 +5269,6 @@ Informations supplémentaires :
 <translation id="9204089334327209740">Une fois l'importation terminée, vous pourrez modifier vos fichiers dans <ph name="CLOUD_PROVIDER" />. L'espace de stockage local, y compris les fichiers dans la corbeille, sera automatiquement supprimé.</translation>
 <translation id="9205078245616868884">Vos données sont chiffrées avec votre phrase secrète de synchronisation. Saisissez-la pour lancer la synchronisation.</translation>
 <translation id="920643408853370361">Assurance voyage</translation>
-<translation id="9206639970165643781">Partager les onglets ouverts pertinents pour obtenir de meilleures réponses dans ce fil de discussion ?</translation>
 <translation id="9207861905230894330">Échec de l'ajout de l'article.</translation>
 <translation id="9209339767782560829">Un problème est survenu avec votre certificat de connexion.</translation>
 <translation id="9210152531668884481">J'accepte</translation>

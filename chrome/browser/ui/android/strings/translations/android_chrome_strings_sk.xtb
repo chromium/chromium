@@ -705,6 +705,7 @@
 <translation id="4084712963632273211">Od: <ph name="PUBLISHER_ORIGIN" /> – <ph name="BEGIN_DEEMPHASIZED" />doručené Googlom<ph name="END_DEEMPHASIZED" /></translation>
 <translation id="4092709865241032354">Ak chcete pomôcť Správcovi hesiel Google ukladať vaše prihlasovacie údaje, pridajte si používateľské meno pre tento web</translation>
 <translation id="4095146165863963773">Odstrániť dáta aplikácie?</translation>
+<translation id="4095483462103784441">Vytvoriť novú skupinu kariet</translation>
 <translation id="4096227151372679484">Postup uloženia záložky je otvorený na polovičnú výšku</translation>
 <translation id="4105527135143631701">Bolo otvorené oznámenie o aktualizácii Správcu hesiel Google</translation>
 <translation id="4113030288477039509">Spravované vaším správcom</translation>
@@ -1639,6 +1640,7 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />odstráňte údaje Ch
 <translation id="7821130663268546430">Všetky otvorené karty nájdete v prepínači kariet</translation>
 <translation id="7822705602465980873">Keď sa prihlásite, tieto údaje sú pripojené k vášmu účtu Google, aby vás chránili v službách Googlu (napríklad zvýšenie ochrany v Gmaile po bezpečnostnom incidente).</translation>
 <translation id="7824665136384946951">Vaša organizácia vypla Bezpečné prehliadanie</translation>
+<translation id="7825973332242257878">Skupiny kariet</translation>
 <translation id="7826342993930002256">Váš Chrome, všade</translation>
 <translation id="7846161022626028328">Vyskytla sa chyba. Skúste to znova.</translation>
 <translation id="7846296061357476882">Služby Googlu</translation>

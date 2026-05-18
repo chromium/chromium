@@ -705,6 +705,7 @@
 <translation id="4084712963632273211">發佈者：<ph name="PUBLISHER_ORIGIN" /> – <ph name="BEGIN_DEEMPHASIZED" />由 Google 提供<ph name="END_DEEMPHASIZED" /></translation>
 <translation id="4092709865241032354">請新增你在此網站的使用者名稱，「Google 密碼管理工具」才能儲存登入資料</translation>
 <translation id="4095146165863963773">要刪除應用程式資料嗎？</translation>
+<translation id="4095483462103784441">建立新分頁群組</translation>
 <translation id="4096227151372679484">書籤儲存流程宜家顯示喺畫面下半部</translation>
 <translation id="4105527135143631701">打開咗「Google 密碼管理工具」更新</translation>
 <translation id="4113030288477039509">由管理員管理</translation>
@@ -1452,6 +1453,7 @@
 <translation id="7080145768121641840"><ph name="TAB_TITLE" />，揀咗已經靜音嘅固定分頁</translation>
 <translation id="7084115944294706056">選擇網址列位置</translation>
 <translation id="7085332316435785646">選擇是否包含 Chrome 記錄，以便在 Google 服務中享有更個人化的體驗</translation>
+<translation id="7087066066828635014">「提示」通知已開啟</translation>
 <translation id="7088681679121566888">Chrome 目前是最新版本</translation>
 <translation id="7098100324909062850"><ph name="TAB_TITLE" />，複選咗已經靜音嘅無痕式分頁</translation>
 <translation id="7106762743910369165">您的瀏覽器由組織管理</translation>
@@ -1639,6 +1641,7 @@
 <translation id="7821130663268546430">你可在分頁切換工具中查看所有開啟的分頁</translation>
 <translation id="7822705602465980873">當你登入後，這類資料會連結至 Google 帳戶，保護你在各項 Google 服務中的安全，例如在安全事件發生後提升 Gmail 的保護功能。</translation>
 <translation id="7824665136384946951">你的機構已關閉「安全瀏覽」功能</translation>
+<translation id="7825973332242257878">分頁群組</translation>
 <translation id="7826342993930002256">Chrome 是你的隨身幫手</translation>
 <translation id="7846161022626028328">發生錯誤，請再試一次。</translation>
 <translation id="7846296061357476882">Google 服務</translation>

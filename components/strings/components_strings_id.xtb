@@ -1673,7 +1673,6 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
 <translation id="3600492954573979888">Tombol Kelola setelan Privasi Google, aktifkan untuk membuka setelan privasi Akun Google Anda</translation>
 <translation id="3603507503523709">Aplikasi diblokir oleh administrator Anda</translation>
-<translation id="3605082766859363473">Mode AI dipilih</translation>
 <translation id="3605899229568538311">5 x 5 inci (12 x 12 cm)</translation>
 <translation id="3606917451836803637">Program &amp; Acara TV</translation>
 <translation id="3608932978122581043">Feed orientasi</translation>
@@ -2020,7 +2019,6 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="411918202192379658">Isi otomatis kini lebih baik</translation>
 <translation id="4121428309786185360">Kedaluwarsa pada</translation>
 <translation id="4123572138124678573">Tiga lubang di bawah</translation>
-<translation id="4125597496726375563">Buat gambar yang dipilih</translation>
 <translation id="412601465078863288">Waktu upload habis</translation>
 <translation id="4127317221386336246">Aksesori Pakaian</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{1 lainnya}other{# lainnya}}</translation>
@@ -3090,6 +3088,7 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="5784606427469807560">Terjadi error saat mengonfirmasi kartu. Periksa koneksi internet Anda dan coba lagi.</translation>
 <translation id="5785756445106461925">Selain itu, halaman ini berisi sumber daya lainnya yang tidak aman. Sumber daya ini dapat dilihat oleh orang lain saat transit dan dapat dimodifikasi oleh penyerang untuk mengubah tampilan perangkat.</translation>
 <translation id="5787146423283493983">Perjanjian Kunci</translation>
+<translation id="5789643057113097023">:</translation>
 <translation id="5793317771769868848">Metode pembayaran ini akan dihapus dari perangkat ini</translation>
 <translation id="5794065675298686371">Aktifkan notifikasi pemantauan harga</translation>
 <translation id="5797984091151707075">Diblokir oleh kebijakan admin</translation>
@@ -3754,7 +3753,6 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="6820143000046097424">port serial</translation>
 <translation id="6820686453637990663">CVC</translation>
 <translation id="6820949753458790123">Bayar dengan cicilan mudah</translation>
-<translation id="6822745163454377107">Dapatkan respons yang lebih cepat dan lebih disesuaikan dengan membagikan tab yang terbuka ke rangkaian pesan ini.</translation>
 <translation id="6825578344716086703">Anda berusaha menjangkau <ph name="DOMAIN" />, tetapi server menyajikan sertifikat yang ditandatangani menggunakan algoritme tanda tangan yang lemah (seperti SHA-1). Hal ini berarti kredensial keamanan yang disajikan server mungkin telah dipalsukan, dan server tersebut mungkin bukan yang diharapkan (Anda mungkin sedang berkomunikasi dengan penyerang).</translation>
 <translation id="6826993739343257035">Izinkan AR?</translation>
 <translation id="6828150717884939426">Telepon</translation>
@@ -5267,7 +5265,6 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="9204089334327209740">Setelah upload selesai, Anda dapat mengubah file di <ph name="CLOUD_PROVIDER" />. Penyimpanan lokal, termasuk semua file di Sampah, akan otomatis dihapus.</translation>
 <translation id="9205078245616868884">Data Anda dienkripsi dengan frasa sandi sinkronisasi. Masukkan frasa sandi untuk memulai sinkronisasi.</translation>
 <translation id="920643408853370361">Asuransi Perjalanan</translation>
-<translation id="9206639970165643781">Bagikan tab terbuka yang relevan untuk mendapatkan respons yang lebih baik dalam rangkaian pesan ini?</translation>
 <translation id="9207861905230894330">Gagal menambahkan artikel.</translation>
 <translation id="9209339767782560829">Terjadi masalah saat menggunakan sertifikat login Anda.</translation>
 <translation id="9210152531668884481">Aktifkan</translation>
