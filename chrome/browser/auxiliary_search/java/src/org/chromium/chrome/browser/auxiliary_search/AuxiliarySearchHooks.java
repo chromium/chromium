@@ -4,9 +4,14 @@
 
 package org.chromium.chrome.browser.auxiliary_search;
 
+import androidx.appsearch.app.PackageIdentifier;
+
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchDonor.SetDocumentClassVisibilityForPackageCallback;
+
+import java.util.Collections;
+import java.util.Set;
 
 /** Provides access to internal AuxiliarySearch implementation parts, if they are available. */
 @NullMarked
@@ -21,6 +26,11 @@ public interface AuxiliarySearchHooks {
      */
     default void setSchemaTypeVisibilityForPackage(
             SetDocumentClassVisibilityForPackageCallback callback) {}
+
+    /** Returns the package identifiers of apps for which browsing data is visible. */
+    default Set<PackageIdentifier> getPackagesForBrowsingDataVisibility() {
+        return Collections.emptySet();
+    }
 
     /** Returns whether the sharing Tabs with the system is enabled by default on the device. */
     default boolean isSettingDefaultEnabledByOs() {

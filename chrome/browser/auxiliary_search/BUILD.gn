@@ -104,6 +104,7 @@ android_library("java") {
     ":jni_headers",
   ]
   sources = [
+    "java/src/org/chromium/chrome/browser/auxiliary_search/AppSearchStorageFactory.java",
     "java/src/org/chromium/chrome/browser/auxiliary_search/AuxiliarySearchBackgroundTask.java",
     "java/src/org/chromium/chrome/browser/auxiliary_search/AuxiliarySearchBridge.java",
     "java/src/org/chromium/chrome/browser/auxiliary_search/AuxiliarySearchConfigManager.java",
@@ -222,6 +223,7 @@ robolectric_library("junit") {
     "//base:base_junit_test_support",
     "//base:base_shared_preferences_java",
     "//base:callback_java",
+    "//base:service_loader_java",
     "//base:time_utils_java",
     "//chrome/browser/android/lifecycle:java",
     "//chrome/browser/auxiliary_search/proto:proto_java",
