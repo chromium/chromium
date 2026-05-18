@@ -17,6 +17,7 @@ import org.chromium.chrome.browser.commerce.ShoppingServiceFactory;
 import org.chromium.chrome.browser.download.DownloadUtils;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils;
 import org.chromium.chrome.browser.offlinepages.OfflinePageBridge;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.CurrentTabObserver;
@@ -186,7 +187,12 @@ public class ToolbarButtonInProductHelpController {
         if (!ChromeFeatureList.isEnabled(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2)) {
             return;
         }
-        if (tab.isIncognitoBranded() || !UrlUtilities.isNtpUrl(tab.getUrl())) return;
+        if (tab.isIncognitoBranded()
+                || !UrlUtilities.isNtpUrl(tab.getUrl())
+                || NtpCustomizationUtils.getNtpBackgroundType()
+                        != NtpCustomizationUtils.NtpBackgroundType.DEFAULT) {
+            return;
+        }
 
         showNewTabPageThemeCustomizationIph();
     }
