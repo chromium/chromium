@@ -6,6 +6,7 @@
 
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
+#include "base/check_op.h"
 #include "base/compiler_specific.h"
 #include "net/base/net_errors.h"
 
@@ -15,17 +16,11 @@ namespace {
 net::SHA256HashValue ByteArrayToSHA256(
     JNIEnv* env,
     const base::android::JavaRef<jbyteArray>& jdictionary_sha256_hash) {
-  const auto dictionary_sha256_hash_size =
-      base::android::SafeGetArrayLength(env, jdictionary_sha256_hash);
-  CHECK_EQ(dictionary_sha256_hash_size, sizeof(net::SHA256HashValue));
   net::SHA256HashValue dictionary_sha256_hash;
-  void* const bytes = env->GetPrimitiveArrayCritical(
-      jdictionary_sha256_hash.obj(), /*isCopy=*/nullptr);
-  CHECK(bytes);
-  UNSAFE_TODO(memcpy(dictionary_sha256_hash.data(), bytes,
-                     dictionary_sha256_hash_size));
-  env->ReleasePrimitiveArrayCritical(jdictionary_sha256_hash.obj(), bytes,
-                                     JNI_ABORT);
+  CHECK_EQ(
+      base::android::JavaByteArrayToByteSpan(
+          env, jdictionary_sha256_hash, base::span(dictionary_sha256_hash)),
+      sizeof(net::SHA256HashValue));
   return dictionary_sha256_hash;
 }
 
