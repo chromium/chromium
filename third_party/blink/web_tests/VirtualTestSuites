@@ -1499,7 +1499,7 @@
       "wpt_internal/printing"
     ],
     "args": [ "--enable-blink-features=FragmentedOofInCb" ],
-    "expires": "May 17, 2026"
+    "expires": "Nov 14, 2026"
   },
   {
     "prefix": "fsa-incognito",
