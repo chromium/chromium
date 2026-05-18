@@ -13,7 +13,6 @@
 #include "content/browser/client_hints/client_hints.h"
 #include "content/browser/client_hints/critical_client_hints_throttle.h"
 #include "content/browser/origin_trials/critical_origin_trials_throttle.h"
-#include "content/browser/preloading/prefetch/cancel_unrelated_prefetch_url_loader_throttle.h"
 #include "content/browser/preloading/prerender/prerender_url_loader_throttle.h"
 #include "content/browser/reduce_accept_language/reduce_accept_language_throttle.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
@@ -128,11 +127,6 @@ CreateContentBrowserURLLoaderThrottles(
 
   if (auto throttle =
           PrerenderURLLoaderThrottle::MaybeCreate(frame_tree_node_id)) {
-    throttles.push_back(std::move(throttle));
-  }
-
-  if (auto throttle = CancelUnrelatedPrefetchURLLoaderThrottle::MaybeCreate(
-          frame_tree_node_id)) {
     throttles.push_back(std::move(throttle));
   }
 

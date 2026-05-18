@@ -112,9 +112,6 @@ CONTENT_EXPORT extern const base::FeatureParam<size_t>
 // To enable this, also enable `kPrefetchOffTheMainThread`.
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrefetchOffTheMainThreadForceForTesting);
 
-// Cancels unrelated prefetch when a navigation is started.
-CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrefetchCancelUnrelatedPrefetch);
-
 }  // namespace features
 
 #endif  // CONTENT_BROWSER_PRELOADING_PREFETCH_PREFETCH_FEATURES_H_

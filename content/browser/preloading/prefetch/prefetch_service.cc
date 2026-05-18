@@ -599,7 +599,6 @@ bool PrefetchService::IsPrefetchAttemptFailedOrDiscardedInternal(
     case PrefetchStatus::kPrefetchEvictedAfterCandidateRemoved:
     case PrefetchStatus::kPrefetchEvictedForNewerPrefetch:
     case PrefetchStatus::kPrefetchEvictedAfterBrowsingDataRemoved:
-    case PrefetchStatus::kPrefetchCancelledOnUserNavigation:
       return true;
   }
 }
@@ -1972,46 +1971,6 @@ void PrefetchService::EvictPrefetchesForBrowsingDataRemoval(
   }
 
   ResetPrefetchContainersAndProgressAsync(std::move(prefetches_to_reset));
-}
-
-void PrefetchService::CancelUnrelatedPrefetchForNavigation() {
-  CHECK(
-      base::FeatureList::IsEnabled(features::kPrefetchCancelUnrelatedPrefetch));
-
-  std::vector<base::WeakPtr<PrefetchContainer>> prefetches_to_reset;
-  for (const auto& it : owned_prefetches()) {
-    auto& prefetch_container = it.second;
-    // Cancel prefetches not yet servable, which may compete with the navigation
-    // for network bandwidth.
-    //
-    // Note that `!is_maybe_servable` implies the navigation is not trying to
-    // use the prefetch, because this method is called from
-    // `CancelUnrelatedPrefetchURLLoaderThrottle` and prefetch matching is
-    // already passed; prefetch matching blocks until the using prefetch becomes
-    // `PrefetchMatchResolverAction::ActionKind::kMaybeServable`.
-    const bool is_maybe_servable =
-        prefetch_container->GetLoadState() ==
-            PrefetchContainer::LoadState::kDeterminedHead ||
-        prefetch_container->GetLoadState() ==
-            PrefetchContainer::LoadState::kCompleted;
-    if (!is_maybe_servable) {
-      prefetch_container->SetPrefetchStatus(
-          PrefetchStatus::kPrefetchCancelledOnUserNavigation);
-      prefetches_to_reset.push_back(prefetch_container->GetWeakPtr());
-    }
-  }
-
-  ResetPrefetchContainersAndProgressAsync(std::move(prefetches_to_reset));
-}
-
-const PrefetchContainer* PrefetchService::GetPrefetchContainerForTesting(
-    const PrefetchKey& key) const {
-  auto it = owned_prefetches_.find(key);
-  if (it == owned_prefetches_.end()) {
-    return nullptr;
-  }
-
-  return it->second.get();
 }
 
 }  // namespace content

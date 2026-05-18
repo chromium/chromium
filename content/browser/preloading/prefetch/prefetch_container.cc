@@ -145,7 +145,6 @@ std::optional<PreloadingTriggeringOutcome> TriggeringOutcomeFromStatus(
         kPrefetchIneligibleSameSiteCrossOriginPrefetchRequiredProxy:
     case PrefetchStatus::kPrefetchIneligiblePrefetchProxyNotAvailable:
     case PrefetchStatus::kPrefetchEvictedAfterBrowsingDataRemoved:
-    case PrefetchStatus::kPrefetchCancelledOnUserNavigation:
       return PreloadingTriggeringOutcome::kFailure;
     case PrefetchStatus::kPrefetchHeldback:
     case PrefetchStatus::kPrefetchNotStarted:
@@ -162,8 +161,7 @@ bool StatusUpdateIsPossibleAfterFailure(PrefetchStatus status) {
     case PrefetchStatus::kPrefetchEvictedAfterCandidateRemoved:
     case PrefetchStatus::kPrefetchIsStale:
     case PrefetchStatus::kPrefetchEvictedForNewerPrefetch:
-    case PrefetchStatus::kPrefetchEvictedAfterBrowsingDataRemoved:
-    case PrefetchStatus::kPrefetchCancelledOnUserNavigation: {
+    case PrefetchStatus::kPrefetchEvictedAfterBrowsingDataRemoved: {
       CHECK(TriggeringOutcomeFromStatus(status) ==
             PreloadingTriggeringOutcome::kFailure);
       return true;
@@ -536,7 +534,6 @@ void PrefetchContainer::SetTriggeringOutcomeAndFailureReasonFromStatus(
       case PrefetchStatus::kPrefetchEvictedForNewerPrefetch:
       case PrefetchStatus::kPrefetchIsStale:
       case PrefetchStatus::kPrefetchEvictedAfterBrowsingDataRemoved:
-      case PrefetchStatus::kPrefetchCancelledOnUserNavigation:
         request().attempt()->SetFailureReason(
             ToPreloadingFailureReason(new_prefetch_status));
         break;

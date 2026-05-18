@@ -255,14 +255,6 @@ class CONTENT_EXPORT PrefetchService : public PrefetchContainerObserver {
   CreateIsolatedNetworkContextForTesting(
       bool is_proxy_required_when_cross_origin);
 
-  // Cancels unrelated prefetches.
-  //
-  // See `CancelUnrelatedPrefetchURLLoaderThrottle`.
-  void CancelUnrelatedPrefetchForNavigation();
-
-  const PrefetchContainer* GetPrefetchContainerForTesting(
-      const PrefetchKey& key) const;
-
   base::WeakPtr<PrefetchService> GetWeakPtr();
 
  private:

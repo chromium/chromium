@@ -258,7 +258,6 @@ experimental domain Preload
       # The prefetch finished successfully but was never used.
       PrefetchSuccessfulButNotUsed
       PrefetchNotUsedProbeFailed
-      PrefetchCancelledOnUserNavigation
 
   # Fired when a prefetch attempt is updated.
   event prefetchStatusUpdated

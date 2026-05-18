@@ -248,12 +248,8 @@ enum class PrefetchStatus {
   // The prefetch canceled by clearing cache from browsing data removal.
   kPrefetchEvictedAfterBrowsingDataRemoved = 55,
 
-  // The prefetch canceled to prevent network congestion with user-initiated
-  // navigation.
-  kPrefetchCancelledOnUserNavigation = 56,
-
   // The max value of the PrefetchStatus. Update this when new enums are added.
-  kMaxValue = kPrefetchCancelledOnUserNavigation,
+  kMaxValue = kPrefetchEvictedAfterBrowsingDataRemoved,
 };
 // LINT.ThenChange(/tools/metrics/histograms/enums.xml)
 

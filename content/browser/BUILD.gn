@@ -1618,8 +1618,6 @@ source_set("browser") {
     "preloading/preconnector.h",
     "preloading/prefetch/assert_prefetch_container_observer.cc",
     "preloading/prefetch/assert_prefetch_container_observer.h",
-    "preloading/prefetch/cancel_unrelated_prefetch_url_loader_throttle.cc",
-    "preloading/prefetch/cancel_unrelated_prefetch_url_loader_throttle.h",
     "preloading/prefetch/contamination_delay_navigation_throttle.cc",
     "preloading/prefetch/contamination_delay_navigation_throttle.h",
     "preloading/prefetch/no_vary_search_helper.cc",
