@@ -1247,7 +1247,7 @@ constexpr CGFloat kBannerPromoVerticalSpacing = 8;
       HandlerForProtocol(dispatcher, SceneCommands);
   toolbarViewController.toolbarHeightDelegate = self.toolbarHeightDelegate;
   toolbarViewController.layoutGuideCenter =
-      LayoutGuideCenterForScene(browser->GetSceneState());
+      LayoutGuideCenterForBrowser(browser);
   toolbarViewController.locationBarViewController = locationBar;
   toolbarViewController.bannerPromoDelegate = mediator;
 

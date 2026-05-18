@@ -376,45 +376,46 @@
   if (_topPosition || !_bottomOmniboxEnabled.value) {
     return;
   }
-  // Whether to cleanup the location indication previously shown for web
-  // content.
-  BOOL hideLocationIndicator =
-      !shouldConstraintToKeyboard && _locationBarIndicatorActive;
 
-  // Whether to show the secondary toolbar as a location indicator when keyboard
-  // is active for web content. Bottom omnibox exclusive.
-  BOOL keyboardActiveForWebContent = [self keyboardIsActiveForWebContent];
-  BOOL showLocationIndicator = shouldConstraintToKeyboard &&
-                               keyboardActiveForWebContent &&
-                               !_locationBarIndicatorActive;
+  // Determine if the toolbar should currently be pinned above the keyboard.
+  BOOL targetIndicatorActive =
+      shouldConstraintToKeyboard && [self keyboardIsActiveForWebContent];
 
-  BOOL shouldAnimateOmniboxMovement =
-      showLocationIndicator || hideLocationIndicator;
-  if (!shouldAnimateOmniboxMovement) {
+  // Early return if the indicator is inactive and should remain inactive.
+  // If active, we continue so the UI consumer can process frame updates.
+  if (!targetIndicatorActive && !_locationBarIndicatorActive) {
     return;
   }
 
-  _locationBarIndicatorActive = showLocationIndicator;
+  BOOL stateChanged = (targetIndicatorActive != _locationBarIndicatorActive);
+  _locationBarIndicatorActive = targetIndicatorActive;
 
-  FullscreenModeTransitionTrigger trigger =
-      FullscreenModeTransitionTrigger::kForcedByCode;
+  // Only transition fullscreen modes if the indicator state is actually
+  // changing. This prevents continuous frame updates from looping the
+  // animation.
+  if (stateChanged) {
+    FullscreenModeTransitionTrigger trigger =
+        FullscreenModeTransitionTrigger::kForcedByCode;
 
-  if (IsFullscreenRefactoringEnabled()) {
-    if (showLocationIndicator) {
-      [self.fullscreenCommands enterFullscreenWithTrigger:trigger animated:YES];
-    } else {
-      [self.fullscreenCommands exitFullscreenWithTrigger:trigger animated:YES];
-    }
-  } else if (_fullscreenController) {
-    if (showLocationIndicator) {
-      _fullscreenController->EnterForceFullscreenMode(
-          /* insets_update_enabled */ false, trigger);
-    } else {
-      _fullscreenController->ExitForceFullscreenMode(trigger);
+    if (IsFullscreenRefactoringEnabled()) {
+      if (targetIndicatorActive) {
+        [self.fullscreenCommands enterFullscreenWithTrigger:trigger
+                                                   animated:YES];
+      } else {
+        [self.fullscreenCommands exitFullscreenWithTrigger:trigger
+                                                  animated:YES];
+      }
+    } else if (_fullscreenController) {
+      if (targetIndicatorActive) {
+        _fullscreenController->EnterForceFullscreenMode(
+            /* insets_update_enabled= */ false, trigger);
+      } else {
+        _fullscreenController->ExitForceFullscreenMode(trigger);
+      }
     }
   }
 
-  [self.consumer setLocationIndicatorVisible:showLocationIndicator
+  [self.consumer setLocationIndicatorVisible:targetIndicatorActive
                              forNotification:notification];
 }
 
