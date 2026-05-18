@@ -536,7 +536,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling agents-internal
   # and whatever else without interference from each other.
-  'agents_internal_revision': 'fd63cf1b680bc7d826ce5d1edb6d8650f64a20dd',
+  'agents_internal_revision': 'a64948916653913a007025c8b448f927c0e641c6',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling agents-public
   # and whatever else without interference from each other.
