@@ -223,7 +223,8 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
                         .setPreferredHorizontalOrientation(HorizontalOrientation.LAYOUT_DIRECTION)
                         .setViewportRectProvider(mViewportRectProvider)
                         .setHorizontalOverlapAnchor(true)
-                        .setVerticalOverlapAnchor(true);
+                        .setVerticalOverlapAnchor(true)
+                        .setAllowNonTouchableSize(true);
 
         var popup =
                 new FuseboxPopup(
