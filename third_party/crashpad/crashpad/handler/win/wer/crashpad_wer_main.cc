@@ -37,8 +37,10 @@ HRESULT OutOfProcessExceptionEventCallback(
     PDWORD pchSize,
     PDWORD pdwSignatureCount) {
   static constexpr DWORD wanted_exceptions[] = {
-      0xC0000602,  // STATUS_FAIL_FAST_EXCEPTION
+      0xC0000005,  // STATUS_ACCESS_VIOLATION
+      0xC000001D,  // STATUS_ILLEGAL_INSTRUCTION
       0xC0000409,  // STATUS_STACK_BUFFER_OVERRUN
+      0xC0000602,  // STATUS_FAIL_FAST_EXCEPTION
   };
   // Default to not-claiming as bailing out is easier.
   *pbOwnershipClaimed = FALSE;
