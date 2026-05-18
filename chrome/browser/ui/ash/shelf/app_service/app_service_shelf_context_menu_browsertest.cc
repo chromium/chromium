@@ -44,6 +44,7 @@
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "third_party/blink/public/common/features.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/display/display.h"
 #include "ui/menus/simple_menu_model.h"
 #include "ui/views/vector_icons.h"
@@ -109,11 +110,14 @@ class AppServiceShelfContextMenuWebAppBrowserTest
 
   const gfx::VectorIcon& GetExpectedLaunchNewIcon(int command_id) {
     if (command_id == ash::USE_LAUNCH_TYPE_REGULAR) {
-      return views::kNewTabOldIcon;
+      return features::IsRoundedIconsEnabled() ? views::kTabIcon
+                                               : views::kNewTabOldIcon;
     } else if (command_id == ash::USE_LAUNCH_TYPE_WINDOW) {
-      return views::kNewWindowOldIcon;
+      return features::IsRoundedIconsEnabled() ? views::kNewWindowIcon
+                                               : views::kNewWindowOldIcon;
     } else {
-      return views::kOpenOldIcon;
+      return features::IsRoundedIconsEnabled() ? views::kArrowOutwardIcon
+                                               : views::kOpenOldIcon;
     }
   }
 
@@ -410,7 +414,8 @@ IN_PROC_BROWSER_TEST_F(AppServiceShelfContextMenuCrostiniAppBrowserTest,
   EXPECT_EQ(menu_section->menu_model->GetIconAt(menu_section->command_index)
                 .GetVectorIcon()
                 .vector_icon(),
-            &views::kOpenOldIcon);
+            &(features::IsRoundedIconsEnabled() ? views::kArrowOutwardIcon
+                                                : views::kOpenOldIcon));
 }
 
 IN_PROC_BROWSER_TEST_F(AppServiceShelfContextMenuCrostiniAppBrowserTest,

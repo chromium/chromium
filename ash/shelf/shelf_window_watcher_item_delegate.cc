@@ -19,6 +19,7 @@
 #include "ui/aura/window.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/mojom/window_show_state.mojom.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/events/types/event_type.h"
 #include "ui/views/vector_icons.h"
 #include "ui/wm/core/window_animations.h"
@@ -64,7 +65,9 @@ void ShelfWindowWatcherItemDelegate::GetContextMenu(
   // Show a default context menu with just an extra close item.
   menu->AddItemWithStringIdAndIcon(
       CommandId::MENU_CLOSE, IDS_CLOSE,
-      ui::ImageModel::FromVectorIcon(views::kCloseOldIcon,
+      ui::ImageModel::FromVectorIcon(::features::IsRoundedIconsEnabled()
+                                         ? views::kCancelIcon
+                                         : views::kCloseOldIcon,
                                      ui::kColorAshSystemUIMenuIcon));
   std::move(callback).Run(std::move(menu));
 }

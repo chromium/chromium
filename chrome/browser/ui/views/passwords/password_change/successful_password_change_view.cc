@@ -18,6 +18,7 @@
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/gfx/favicon_size.h"
 #include "ui/gfx/image/image.h"
 #include "ui/views/controls/button/image_button.h"
@@ -118,10 +119,16 @@ std::unique_ptr<views::View> CreateUsernamePasswordWithEyeIcon(
   eye_icon->SetToggledTooltipText(
       l10n_util::GetStringUTF16(IDS_MANAGE_PASSWORDS_HIDE_PASSWORD));
   eye_icon->SetImageVerticalAlignment(views::ImageButton::ALIGN_MIDDLE);
-  views::SetImageFromVectorIconWithColor(eye_icon, views::kEyeOldIcon,
+  views::SetImageFromVectorIconWithColor(eye_icon,
+                                         features::IsRoundedIconsEnabled()
+                                             ? views::kVisibilityFilledIcon
+                                             : views::kEyeOldIcon,
                                          {ui::kColorIcon, ui::kColorIcon});
   views::SetToggledImageFromVectorIconWithColor(
-      eye_icon, views::kEyeCrossedOldIcon, {ui::kColorIcon, ui::kColorIcon});
+      eye_icon,
+      features::IsRoundedIconsEnabled() ? views::kVisibilityOffFilledIcon
+                                        : views::kEyeCrossedOldIcon,
+      {ui::kColorIcon, ui::kColorIcon});
 
   base::RepeatingCallback<void(bool)> auth_result_callback =
       base::BindRepeating(
@@ -167,7 +174,9 @@ std::unique_ptr<views::View> CreateManagePasswordsView(
       /*subtitle_text=*/std::u16string(),
       /*action_image_icon=*/
       ui::ImageModel::FromVectorIcon(
-          vector_icons::kLaunchOldIcon, ui::kColorIconSecondary,
+          features::IsRoundedIconsEnabled() ? views::kOpenInNewIcon
+                                            : vector_icons::kLaunchOldIcon,
+          ui::kColorIconSecondary,
           GetLayoutConstant(LayoutConstant::kPageInfoIconSize)));
   manage_passwords_button->SetID(
       SuccessfulPasswordChangeView::kManagePasswordsButtonId);

@@ -6,6 +6,7 @@
 #include "ash/public/cpp/app_menu_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/menus/simple_menu_model.h"
@@ -34,9 +35,11 @@ void IsolatedWebAppInstallerContextMenu::GetMenuModel(
   std::unique_ptr<ui::SimpleMenuModel> menu =
       std::make_unique<ui::SimpleMenuModel>(this);
 
-  menu->AddItemWithStringIdAndIcon(ash::MENU_CLOSE,
-                                   IDS_SHELF_CONTEXT_MENU_CLOSE,
-                                   GetMenuItemIcon(views::kCloseOldIcon));
+  menu->AddItemWithStringIdAndIcon(
+      ash::MENU_CLOSE, IDS_SHELF_CONTEXT_MENU_CLOSE,
+      GetMenuItemIcon(features::IsRoundedIconsEnabled()
+                          ? views::kCancelIcon
+                          : views::kCloseOldIcon));
 
   std::move(callback).Run(std::move(menu));
 }

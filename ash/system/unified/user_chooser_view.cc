@@ -31,6 +31,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/color/color_id.h"
 #include "ui/strings/grit/ui_strings.h"
@@ -251,7 +252,9 @@ UserItemButton::UserItemButton(PressedCallback callback,
         base::BindRepeating(
             &UserChooserDetailedViewController::TransitionToMainView,
             base::Unretained(controller)),
-        IconButton::Type::kMedium, &views::kIcCloseOldIcon,
+        IconButton::Type::kMedium,
+        &(::features::IsRoundedIconsEnabled() ? views::kCloseIcon
+                                              : views::kIcCloseOldIcon),
         IDS_APP_ACCNAME_CLOSE));
   }
 

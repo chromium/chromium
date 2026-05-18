@@ -9,6 +9,7 @@
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -48,8 +49,12 @@ gfx::ImageSkia RadioButton::GetImage(ButtonState for_state) const {
 
 const gfx::VectorIcon& RadioButton::GetVectorIcon() const {
   if (icon_type_ == IconType::kCircle) {
-    return selected() ? views::kRadioButtonActiveOldIcon
-                      : views::kRadioButtonNormalOldIcon;
+    return selected() ? ::features::IsRoundedIconsEnabled()
+                            ? views::kRadioButtonCheckedIcon
+                            : views::kRadioButtonActiveOldIcon
+           : ::features::IsRoundedIconsEnabled()
+               ? views::kCircleIcon
+               : views::kRadioButtonNormalOldIcon;
   }
   return kHollowCheckCircleIcon;
 }

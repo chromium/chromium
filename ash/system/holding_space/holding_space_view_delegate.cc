@@ -37,6 +37,7 @@
 #include "ui/base/dragdrop/os_exchange_data_provider.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/mojom/menu_source_type.mojom.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
 #include "ui/display/screen.h"
 #include "ui/display/tablet_state.h"
@@ -683,12 +684,16 @@ ui::SimpleMenuModel* HoldingSpaceViewDelegate::BuildMenuModel() {
       menu_sections.back().emplace_back(
           MenuItemModel{.command_id = HoldingSpaceCommandId::kPinItem,
                         .label_id = IDS_ASH_HOLDING_SPACE_CONTEXT_MENU_PIN,
-                        .icon = raw_ref(views::kPinOldIcon)});
+                        .icon = raw_ref(::features::IsRoundedIconsEnabled()
+                                            ? views::kKeepIcon
+                                            : views::kPinOldIcon)});
     } else {
       menu_sections.back().emplace_back(
           MenuItemModel{.command_id = HoldingSpaceCommandId::kUnpinItem,
                         .label_id = IDS_ASH_HOLDING_SPACE_CONTEXT_MENU_UNPIN,
-                        .icon = raw_ref(views::kUnpinOldIcon)});
+                        .icon = raw_ref(::features::IsRoundedIconsEnabled()
+                                            ? views::kKeepFilledIcon
+                                            : views::kUnpinOldIcon)});
     }
   }
 

@@ -12,6 +12,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/size.h"
@@ -37,7 +38,9 @@ class CloseFullscreenButton : public views::Button {
     std::unique_ptr<views::ImageView> close_image_view =
         std::make_unique<views::ImageView>();
     close_image_view->SetImage(ui::ImageModel::FromVectorIcon(
-        views::kIcCloseOldIcon, SK_ColorWHITE, kCloseIconSize));
+        features::IsRoundedIconsEnabled() ? views::kCloseIcon
+                                          : views::kIcCloseOldIcon,
+        SK_ColorWHITE, kCloseIconSize));
     // Not focusable by default, only for accessibility.
     SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
     GetViewAccessibility().SetName(

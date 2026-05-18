@@ -31,6 +31,7 @@
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/dialog_model.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/views/bubble/bubble_border.h"
@@ -363,7 +364,9 @@ PasswordChangeUIController::GetDialogOrToastConfiguration(
       return ToastOptions(
           l10n_util::GetStringUTF16(
               IDS_PASSWORD_MANAGER_UI_PASSWORD_CHANGED_TITLE),
-          views::kMenuCheckOldIcon, std::move(cancel_toast_callback),
+          features::IsRoundedIconsEnabled() ? views::kCheckIcon
+                                            : views::kMenuCheckOldIcon,
+          std::move(cancel_toast_callback),
           l10n_util::GetStringUTF16(
               IDS_PASSWORD_MANAGER_UI_VIEW_DETAILS_BUTTON),
           base::BindOnce(&PasswordChangeUIController::ShowPasswordDetails,
@@ -380,7 +383,9 @@ PasswordChangeUIController::GetDialogOrToastConfiguration(
       return ToastOptions(
           l10n_util::GetStringUTF16(
               IDS_PASSWORD_MANAGER_UI_PASSWORD_CHANGE_TOAST_SIGN_IN_TO_CONTINUE),
-          views::kInfoChromeRefreshOldIcon, std::move(cancel_toast_callback),
+          features::IsRoundedIconsEnabled() ? views::kInfoIcon
+                                            : views::kInfoChromeRefreshOldIcon,
+          std::move(cancel_toast_callback),
           l10n_util::GetStringUTF16(
               IDS_PASSWORD_MANAGER_UI_PASSWORD_CHANGE_TOAST_RETRY_BUTTON),
           base::BindOnce(&PasswordChangeUIController::RetryLoginCheck,

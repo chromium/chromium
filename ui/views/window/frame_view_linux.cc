@@ -12,6 +12,7 @@
 #include "ui/base/hit_test.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/gfx/canvas.h"
@@ -23,6 +24,7 @@
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/layout/layout_provider.h"
+#include "ui/views/vector_icons.h"
 #include "ui/views/views_delegate.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
@@ -86,23 +88,31 @@ void FrameViewLinux::CreateCaptionButtons() {
   close_button_ = create_button(
       base::BindRepeating(&Widget::CloseWithReason, base::Unretained(widget_),
                           Widget::ClosedReason::kCloseButtonClicked),
-      CAPTION_BUTTON_ICON_CLOSE, HTCLOSE, kWindowControlCloseOldIcon,
+      CAPTION_BUTTON_ICON_CLOSE, HTCLOSE,
+      features::IsRoundedIconsEnabled() ? kCloseIcon
+                                        : kWindowControlCloseOldIcon,
       IDS_APP_ACCNAME_CLOSE);
 
   minimize_button_ = create_button(
       base::BindRepeating(&Widget::Minimize, base::Unretained(widget_)),
-      CAPTION_BUTTON_ICON_MINIMIZE, HTMINBUTTON, kWindowControlMinimizeOldIcon,
+      CAPTION_BUTTON_ICON_MINIMIZE, HTMINBUTTON,
+      features::IsRoundedIconsEnabled() ? kChromeMinimizeIcon
+                                        : kWindowControlMinimizeOldIcon,
       IDS_APP_ACCNAME_MINIMIZE);
 
   maximize_button_ = create_button(
       base::BindRepeating(&Widget::Maximize, base::Unretained(widget_)),
       CAPTION_BUTTON_ICON_MAXIMIZE_RESTORE, HTMAXBUTTON,
-      kWindowControlMaximizeOldIcon, IDS_APP_ACCNAME_MAXIMIZE);
+      features::IsRoundedIconsEnabled() ? kChromeMaximizeIcon
+                                        : kWindowControlMaximizeOldIcon,
+      IDS_APP_ACCNAME_MAXIMIZE);
 
   restore_button_ = create_button(
       base::BindRepeating(&Widget::Restore, base::Unretained(widget_)),
       CAPTION_BUTTON_ICON_MAXIMIZE_RESTORE, HTMAXBUTTON,
-      kWindowControlRestoreOldIcon, IDS_APP_ACCNAME_RESTORE);
+      features::IsRoundedIconsEnabled() ? kChromeRestoreFilledIcon
+                                        : kWindowControlRestoreOldIcon,
+      IDS_APP_ACCNAME_RESTORE);
 }
 
 FrameViewLinux::~FrameViewLinux() {

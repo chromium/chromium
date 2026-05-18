@@ -14,6 +14,7 @@
 #include "base/functional/bind.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -74,14 +75,18 @@ END_METADATA
 void SetMinimizeIconToButton(views::ImageButton* button) {
   button->SetImageModel(
       views::Button::ButtonState::STATE_NORMAL,
-      ui::ImageModel::FromVectorIcon(views::kWindowControlMinimizeOldIcon,
+      ui::ImageModel::FromVectorIcon(::features::IsRoundedIconsEnabled()
+                                         ? views::kChromeMinimizeIcon
+                                         : views::kWindowControlMinimizeOldIcon,
                                      kHUDDefaultColor, kMinMaxButtonIconSize));
 }
 
 void SetRestoreIconToButton(views::ImageButton* button) {
   button->SetImageModel(
       views::Button::ButtonState::STATE_NORMAL,
-      ui::ImageModel::FromVectorIcon(views::kWindowControlRestoreOldIcon,
+      ui::ImageModel::FromVectorIcon(::features::IsRoundedIconsEnabled()
+                                         ? views::kChromeRestoreFilledIcon
+                                         : views::kWindowControlRestoreOldIcon,
                                      kHUDDefaultColor, kMinMaxButtonIconSize));
 }
 

@@ -32,6 +32,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/color/color_provider.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_palette.h"
@@ -168,10 +169,12 @@ class ClosePromoButton : public views::ImageButton {
     SetTooltipText(accessible_name);
 
     constexpr int kIconSize = 16;
-    SetImageModel(views::ImageButton::STATE_NORMAL,
-                  ui::ImageModel::FromVectorIcon(
-                      views::kIcCloseOldIcon,
-                      delegate_->GetHelpBubbleForegroundColorId(), kIconSize));
+    SetImageModel(
+        views::ImageButton::STATE_NORMAL,
+        ui::ImageModel::FromVectorIcon(
+            features::IsRoundedIconsEnabled() ? views::kCloseIcon
+                                              : views::kIcCloseOldIcon,
+            delegate_->GetHelpBubbleForegroundColorId(), kIconSize));
 
     constexpr float kCloseButtonFocusRingHaloThickness = 1.25f;
     views::FocusRing::Get(this)->SetHaloThickness(

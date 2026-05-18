@@ -28,6 +28,7 @@
 #include "components/user_education/common/feature_promo/feature_promo_result.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/views/vector_icons.h"
 
 namespace {
@@ -114,8 +115,11 @@ int GetLabelForStatus(CookieControlsState controls_state) {
 
 const gfx::VectorIcon& GetVectorIcon(CookieControlsState controls_state) {
   return controls_state == CookieControlsState::kBlocked3pc
-             ? views::kEyeCrossedRefreshOldIcon
-             : views::kEyeRefreshOldIcon;
+             ? features::IsRoundedIconsEnabled()
+                   ? views::kVisibilityOffIcon
+                   : views::kEyeCrossedRefreshOldIcon
+         : features::IsRoundedIconsEnabled() ? views::kVisibilityIcon
+                                             : views::kEyeRefreshOldIcon;
 }
 }  // namespace
 

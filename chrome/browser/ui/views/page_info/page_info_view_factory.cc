@@ -39,6 +39,7 @@
 #include "components/strings/grit/privacy_sandbox_strings.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/vector_icon_types.h"
@@ -502,7 +503,9 @@ const ui::ImageModel PageInfoViewFactory::GetPermissionIcon(
       icon = &vector_icons::kCodeOldIcon;
       break;
     case ContentSettingsType::POPUPS:
-      icon = &vector_icons::kLaunchOldIcon;
+      icon =
+          &(features::IsRoundedIconsEnabled() ? views::kOpenInNewIcon
+                                              : vector_icons::kLaunchOldIcon);
       break;
     case ContentSettingsType::GEOLOCATION:
       icon = &vector_icons::kLocationOnOldIcon;
@@ -676,7 +679,8 @@ const gfx::VectorIcon& PageInfoViewFactory::GetAboutThisSiteVectorIcon() {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   return vector_icons::kPageInsightsIcon;
 #else
-  return views::kInfoChromeRefreshOldIcon;
+  return features::IsRoundedIconsEnabled() ? views::kInfoIcon
+                                           : views::kInfoChromeRefreshOldIcon;
 #endif  // !BUILDFLAG(GOOGLE_CHROME_BRANDING)
 }
 

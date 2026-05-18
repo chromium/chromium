@@ -9,6 +9,7 @@
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
@@ -32,7 +33,8 @@ LoginTooltipView::LoginTooltipView(const std::u16string& message,
     : LoginBaseBubbleView(std::move(anchor_view)) {
   info_icon_ = AddChildView(std::make_unique<views::ImageView>());
   info_icon_->SetImage(ui::ImageModel::FromVectorIcon(
-      views::kInfoOldIcon,
+      ::features::IsRoundedIconsEnabled() ? views::kInfoIcon
+                                          : views::kInfoOldIcon,
       static_cast<ui::ColorId>(cros_tokens::kCrosSysOnSurface),
       kInfoIconSizeDp));
 

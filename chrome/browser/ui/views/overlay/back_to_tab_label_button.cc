@@ -10,6 +10,7 @@
 #include "ui/base/cursor/cursor.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
@@ -43,9 +44,10 @@ BackToTabLabelButton::BackToTabLabelButton(PressedCallback callback)
   SetElideBehavior(gfx::ElideBehavior::ELIDE_HEAD);
 
   SetImageModel(views::Button::STATE_NORMAL,
-                ui::ImageModel::FromVectorIcon(views::kLaunchOldIcon,
-                                               kColorPipWindowForeground,
-                                               kBackToTabImageSize));
+                ui::ImageModel::FromVectorIcon(
+                    features::IsRoundedIconsEnabled() ? views::kOpenInNewIcon
+                                                      : views::kLaunchOldIcon,
+                    kColorPipWindowForeground, kBackToTabImageSize));
 
   // Prevent DCHECKing for our non-opaque background.
   SetTextSubpixelRenderingEnabled(false);

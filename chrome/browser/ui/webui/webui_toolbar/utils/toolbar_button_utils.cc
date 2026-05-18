@@ -16,6 +16,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/actions/actions.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/views/vector_icons.h"
 
 namespace webui_toolbar {
@@ -260,7 +261,9 @@ ActionItemToPinnedToolbarAction(actions::ActionItem* item) {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
       CHECK_EQ(icon, &vector_icons::kPageInsightsIcon);
 #else
-      CHECK_EQ(icon, &views::kInfoChromeRefreshOldIcon);
+      CHECK_EQ(icon, &(features::IsRoundedIconsEnabled()
+                           ? views::kInfoIcon
+                           : views::kInfoChromeRefreshOldIcon));
 #endif  // !BUILDFLAG(GOOGLE_CHROME_BRANDING)
       return toolbar_ui_api::mojom::PinnedToolbarAction::
           kSidePanelShowAboutThisSite;

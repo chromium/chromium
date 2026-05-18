@@ -58,6 +58,7 @@
 #include "content/public/browser/web_contents.h"
 #include "extensions/buildflags/buildflags.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/views/vector_icons.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -362,7 +363,10 @@ void TabMenuModel::Build(int index) {
     SetIconForCommandId(
         TabStripModel::CommandTogglePinned,
         ui::ImageModel::FromVectorIcon(
-            will_pin ? views::kPinOldIcon : views::kUnpinOldIcon,
+            will_pin ? features::IsRoundedIconsEnabled() ? views::kKeepIcon
+                                                         : views::kPinOldIcon
+            : features::IsRoundedIconsEnabled() ? views::kKeepFilledIcon
+                                                : views::kUnpinOldIcon,
             ui::kColorMenuIcon, ui::SimpleMenuModel::kDefaultIconSize));
   }
 

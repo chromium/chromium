@@ -10,6 +10,7 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/menu_separator_types.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image.h"
@@ -95,8 +96,10 @@ void NotificationOverflowView::AddIcon(
 
   if (image_views_.size() > kMaxOverflowIcons) {
     if (!overflow_icon_) {
-      auto icon = ui::ImageModel::FromVectorIcon(views::kOptionsOldIcon,
-                                                 ui::kColorIcon, kIconSize);
+      auto icon = ui::ImageModel::FromVectorIcon(
+          ::features::IsRoundedIconsEnabled() ? views::kMoreHorizIcon
+                                              : views::kOptionsOldIcon,
+          ui::kColorIcon, kIconSize);
       auto overflow_icon =
           std::make_unique<message_center::ProportionalImageView>(
               gfx::Size(kIconSize, kIconSize));

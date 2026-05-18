@@ -32,18 +32,16 @@ BASE_DECLARE_FEATURE(kEnableExtensionsMenuTeardownFix);
 
 BASE_DECLARE_FEATURE(kImportExportFlags);
 
-// All feature flags associated with Glow Up
-BASE_DECLARE_FEATURE(kDesktopGlowUp);
+// All feature flags associated with Glow Up, apart from those in
+// ui_base_features.h
 BASE_DECLARE_FEATURE(kTabStripDeclutter);
 BASE_DECLARE_FEATURE(kToolbarGlowUp);
-BASE_DECLARE_FEATURE(kRoundedIcons);
 BASE_DECLARE_FEATURE(kMenuSimplification);
 BASE_DECLARE_FEATURE(kTabGroupColorRefresh);
 BASE_DECLARE_FEATURE(kWebuiRefresh2026);
 
 bool IsTabStripDeclutterEnabled();
 bool IsToolbarGlowUpEnabled();
-bool IsRoundedIconsEnabled();
 bool IsMenuSimplificationEnabled();
 bool IsTabGroupColorRefreshEnabled();
 bool IsWebuiRefresh2026Enabled();

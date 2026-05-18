@@ -20,6 +20,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/webapps/common/web_app_id.h"
 #include "content/public/test/browser_test.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/menus/simple_menu_model.h"
 #include "ui/views/vector_icons.h"
 #include "url/gurl.h"
@@ -31,11 +32,14 @@ class AppServiceContextMenuBrowserTest : public InProcessBrowserTest {
 
   const gfx::VectorIcon& GetExpectedLaunchNewIcon(int command_id) {
     if (command_id == ash::USE_LAUNCH_TYPE_REGULAR)
-      return views::kNewTabOldIcon;
+      return features::IsRoundedIconsEnabled() ? views::kTabIcon
+                                               : views::kNewTabOldIcon;
     else if (command_id == ash::USE_LAUNCH_TYPE_WINDOW)
-      return views::kNewWindowOldIcon;
+      return features::IsRoundedIconsEnabled() ? views::kNewWindowIcon
+                                               : views::kNewWindowOldIcon;
     else
-      return views::kLaunchOldIcon;
+      return features::IsRoundedIconsEnabled() ? views::kOpenInNewIcon
+                                               : views::kLaunchOldIcon;
   }
 };
 

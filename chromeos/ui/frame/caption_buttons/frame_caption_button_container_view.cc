@@ -33,6 +33,7 @@
 #include "ui/base/hit_test.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/display/screen.h"
 #include "ui/events/event_sink.h"
 #include "ui/gfx/animation/slide_animation.h"
@@ -47,6 +48,7 @@
 #include "ui/views/background.h"
 #include "ui/views/border.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/vector_icons.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
@@ -294,9 +296,13 @@ FrameCaptionButtonContainerView::FrameCaptionButtonContainerView(
   // TODO(hewer): Resolve this so two float icons are no longer needed.
   SetButtonImage(views::CAPTION_BUTTON_ICON_MENU, chromeos::kFloatWindowIcon);
   SetButtonImage(views::CAPTION_BUTTON_ICON_MINIMIZE,
-                 views::kWindowControlMinimizeOldIcon);
+                 ::features::IsRoundedIconsEnabled()
+                     ? views::kChromeMinimizeIcon
+                     : views::kWindowControlMinimizeOldIcon);
   SetButtonImage(views::CAPTION_BUTTON_ICON_CLOSE,
-                 views::kWindowControlCloseOldIcon);
+                 ::features::IsRoundedIconsEnabled()
+                     ? views::kCloseIcon
+                     : views::kWindowControlCloseOldIcon);
 
   // The float button relies on minimum size to know if it can be floated, which
   // can only be checked after the widget has been initialized.
@@ -629,11 +635,15 @@ void FrameCaptionButtonContainerView::UpdateSizeButton() {
 
   const gfx::VectorIcon& restore_icon =
       use_zoom_icons ? chromeos::kWindowControlDezoomIcon
-                     : views::kWindowControlRestoreOldIcon;
+      : ::features::IsRoundedIconsEnabled()
+          ? views::kChromeRestoreFilledIcon
+          : views::kWindowControlRestoreOldIcon;
   const gfx::VectorIcon& maximize_icon =
       use_zoom_icons ? chromeos::kWindowControlZoomIcon
                      : (floated ? chromeos::kUnfloatButtonIcon
-                                : views::kWindowControlMaximizeOldIcon);
+                        : ::features::IsRoundedIconsEnabled()
+                            ? views::kChromeMaximizeIcon
+                            : views::kWindowControlMaximizeOldIcon);
 
   const bool use_restore_frame = chromeos::ShouldUseRestoreFrame(widget_);
   SetButtonImage(views::CAPTION_BUTTON_ICON_MAXIMIZE_RESTORE,

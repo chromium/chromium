@@ -26,6 +26,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
@@ -145,7 +146,9 @@ CalendarEventListView::CalendarEventListView(
           views::Button::PressedCallback(
               base::BindRepeating(&CalendarViewController::CloseEventListView,
                                   base::Unretained(calendar_view_controller))),
-          IconButton::Type::kMediumFloating, &views::kIcCloseOldIcon,
+          IconButton::Type::kMediumFloating,
+          &(::features::IsRoundedIconsEnabled() ? views::kCloseIcon
+                                                : views::kIcCloseOldIcon),
           IDS_ASH_CLOSE_BUTTON_ACCESSIBLE_DESCRIPTION));
 
   scroll_view_->SetAllowKeyboardScrolling(false);

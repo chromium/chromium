@@ -14,6 +14,7 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/scoped_canvas.h"
@@ -268,12 +269,15 @@ void ButtonExample::CreateExampleView(View* container) {
           .Build();
   md_icon_text_button_->SetImageModel(
       views::Button::ButtonState::STATE_NORMAL,
-      ui::ImageModel::FromVectorIcon(views::kInfoOldIcon));
+      ui::ImageModel::FromVectorIcon(
+          features::IsRoundedIconsEnabled() ? kInfoIcon : views::kInfoOldIcon));
 
   view->AddChildView(ImageButton::CreateIconButton(
       base::BindRepeating(&ButtonExample::ImageButtonPressed,
                           base::Unretained(this)),
-      views::kLaunchOldIcon, u"Icon button"));
+      features::IsRoundedIconsEnabled() ? kOpenInNewIcon
+                                        : views::kLaunchOldIcon,
+      u"Icon button"));
   view->AddChildView(std::make_unique<views::MdTextButtonWithDownArrow>(
       base::BindRepeating(&ButtonExample::ImageButtonPressed,
                           base::Unretained(this)),

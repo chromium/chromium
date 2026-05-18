@@ -193,7 +193,9 @@ std::unique_ptr<Button> BubbleFrameView::CreateCloseButton(
 std::unique_ptr<Button> BubbleFrameView::CreateMinimizeButton(
     Button::PressedCallback callback) {
   auto minimize_button = CreateVectorImageButtonWithNativeTheme(
-      std::move(callback), kWindowControlMinimizeOldIcon);
+      std::move(callback), features::IsRoundedIconsEnabled()
+                               ? kChromeMinimizeIcon
+                               : kWindowControlMinimizeOldIcon);
   minimize_button->SetTooltipText(
       l10n_util::GetStringUTF16(IDS_APP_ACCNAME_MINIMIZE));
   minimize_button->GetViewAccessibility().SetName(

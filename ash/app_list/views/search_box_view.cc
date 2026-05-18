@@ -69,6 +69,7 @@
 #include "ui/base/models/image_model.h"
 #include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider_manager.h"
@@ -209,7 +210,11 @@ std::u16string GetCategoryName(SearchResult* search_result) {
 // Returns the check box icon that is shown on the category filter menu item.
 ui::ImageModel GetCheckboxImage(bool checked) {
   return ui::ImageModel::FromVectorIcon(
-      checked ? views::kCheckboxActiveOldIcon : views::kCheckboxNormalOldIcon,
+      checked ? ::features::IsRoundedIconsEnabled()
+                    ? views::kCheckBoxFilledIcon
+                    : views::kCheckboxActiveOldIcon
+      : ::features::IsRoundedIconsEnabled() ? views::kCheckBoxOutlineBlankIcon
+                                            : views::kCheckboxNormalOldIcon,
       checked ? cros_tokens::kCrosSysPrimary : cros_tokens::kCrosSysSecondary,
       kAppContextMenuIconSize);
 }
@@ -759,8 +764,10 @@ void SearchBoxView::OnThemeChanged() {
       GetColorProvider()->GetColor(kColorAshButtonIconColor);
   close_button()->SetImageModel(
       views::ImageButton::STATE_NORMAL,
-      ui::ImageModel::FromVectorIcon(views::kIcCloseOldIcon, button_icon_color,
-                                     GetSearchBoxIconSize()));
+      ui::ImageModel::FromVectorIcon(
+          ::features::IsRoundedIconsEnabled() ? views::kCloseIcon
+                                              : views::kIcCloseOldIcon,
+          button_icon_color, GetSearchBoxIconSize()));
   // Update the icon of the Sunfish-session button.
   SunfishButtonVisibilityChanged();
 

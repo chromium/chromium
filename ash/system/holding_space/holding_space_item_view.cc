@@ -27,6 +27,7 @@
 #include "ui/base/dragdrop/os_exchange_data.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_palette.h"
@@ -370,7 +371,9 @@ views::Builder<views::View> HoldingSpaceItemView::CreatePrimaryActionBuilder(
               .SetImageModel(
                   views::Button::STATE_NORMAL,
                   ui::ImageModel::FromVectorIcon(
-                      views::kUnpinOldIcon,
+                      ::features::IsRoundedIconsEnabled()
+                          ? views::kKeepFilledIcon
+                          : views::kUnpinOldIcon,
                       apply_accent_colors
                           ? static_cast<ui::ColorId>(
                                 cros_tokens::kCrosSysSystemOnPrimaryContainer)
@@ -382,9 +385,10 @@ views::Builder<views::View> HoldingSpaceItemView::CreatePrimaryActionBuilder(
                       : nullptr)
               .SetToggledImageModel(
                   views::Button::STATE_NORMAL,
-                  ui::ImageModel::FromVectorIcon(views::kPinOldIcon,
-                                                 kColorAshButtonIconColor,
-                                                 kHoldingSpaceIconSize))
+                  ui::ImageModel::FromVectorIcon(
+                      ::features::IsRoundedIconsEnabled() ? views::kKeepIcon
+                                                          : views::kPinOldIcon,
+                      kColorAshButtonIconColor, kHoldingSpaceIconSize))
               .SetImageHorizontalAlignment(HorizontalAlignment::ALIGN_CENTER)
               .SetImageVerticalAlignment(VerticalAlignment::ALIGN_MIDDLE)
               .SetPreferredSize(preferred_size)

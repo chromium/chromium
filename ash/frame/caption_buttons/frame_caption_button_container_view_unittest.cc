@@ -20,11 +20,13 @@
 #include "chromeos/ui/vector_icons/vector_icons.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/test/test_views.h"
 #include "ui/views/test/views_test_utils.h"
+#include "ui/views/vector_icons.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
 #include "ui/views/window/caption_button_layout_constants.h"
@@ -84,7 +86,9 @@ class FrameCaptionButtonContainerViewTest : public AshTestBase {
         views::CaptionButtonLayoutSize::kNonBrowserCaption));
     for (int icon = 0; icon < views::CAPTION_BUTTON_ICON_COUNT; ++icon) {
       container->SetButtonImage(static_cast<views::CaptionButtonIcon>(icon),
-                                views::kWindowControlCloseOldIcon);
+                                ::features::IsRoundedIconsEnabled()
+                                    ? views::kCloseIcon
+                                    : views::kWindowControlCloseOldIcon);
     }
     container->SizeToPreferredSize();
   }

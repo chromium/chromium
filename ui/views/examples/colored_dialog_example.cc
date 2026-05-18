@@ -14,6 +14,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/gfx/native_ui_types.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -154,7 +155,7 @@ ColoredDialogChooser::ColoredDialogChooser() {
       base::BindRepeating(&ColoredDialogChooser::ButtonPressed,
                           base::Unretained(this)),
       l10n_util::GetStringUTF16(IDS_COLORED_DIALOG_CHOOSER_BUTTON),
-      views::kInfoOldIcon));
+      features::IsRoundedIconsEnabled() ? kInfoIcon : views::kInfoOldIcon));
 
   confirmation_label_ = AddChildView(
       std::make_unique<views::Label>(std::u16string(), style::CONTEXT_LABEL));

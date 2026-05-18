@@ -11,6 +11,7 @@ aggregate_vector_icons("window_control_vector_icons") {
     "chrome_maximize.icon",
     "chrome_minimize.icon",
     "chrome_restore.icon",
+    "chrome_restore_filled.icon",
     "window_control_close_old.icon",
     "window_control_maximize_old.icon",
     "window_control_minimize_old.icon",

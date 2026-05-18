@@ -57,7 +57,9 @@ void MdTextButtonWithDownArrow::StateChanged(ButtonState old_state) {
 void MdTextButtonWithDownArrow::SetDropArrowImage() {
   SkColor drop_arrow_color = label()->GetEnabledColor();
   auto drop_arrow_image = ui::ImageModel::FromVectorIcon(
-      kArrowDropDownOldIcon, drop_arrow_color, kDropdownArrowSize);
+      features::IsRoundedIconsEnabled() ? kArrowDropDownIcon
+                                        : kArrowDropDownOldIcon,
+      drop_arrow_color, kDropdownArrowSize);
   SetImageModel(Button::STATE_NORMAL, drop_arrow_image);
 }
 

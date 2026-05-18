@@ -41,6 +41,7 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "ui/base/interaction/interaction_sequence.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/views/controls/button/md_text_button_with_spinner.h"
 #include "ui/views/controls/button/toggle_button.h"
 #include "ui/views/vector_icons.h"
@@ -147,7 +148,10 @@ class CookieControlsInteractiveTestBase : public InteractiveFeaturePromoTest {
                 IDS_TRACKING_PROTECTION_BUBBLE_PERMANENT_ALLOWED_DESCRIPTION)),
         CheckViewProperty(CookieControlsContentView::kToggleButton,
                           &views::ToggleButton::GetIsOn, true),
-        CheckIcon(RichControlsContainerView::kIcon, views::kEyeRefreshOldIcon));
+        CheckIcon(RichControlsContainerView::kIcon,
+                  features::IsRoundedIconsEnabled()
+                      ? views::kVisibilityIcon
+                      : views::kEyeRefreshOldIcon));
   }
 
   auto CheckStateForNoException() {
@@ -163,7 +167,9 @@ class CookieControlsInteractiveTestBase : public InteractiveFeaturePromoTest {
             l10n_util::GetStringUTF16(
                 IDS_COOKIE_CONTROLS_BUBBLE_SITE_NOT_WORKING_DESCRIPTION)),
         CheckIcon(RichControlsContainerView::kIcon,
-                  views::kEyeCrossedRefreshOldIcon));
+                  features::IsRoundedIconsEnabled()
+                      ? views::kVisibilityOffIcon
+                      : views::kEyeCrossedRefreshOldIcon));
   }
 
   auto CheckFeedbackButtonVisible(bool visible) {

@@ -25,6 +25,7 @@
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/geometry/insets.h"
@@ -190,7 +191,9 @@ void ActiveSessionAuthView::AddHeaderAndCloseButton(
       .SetEnabled(true)
       .SetCallback(base::BindRepeating(&ActiveSessionAuthView::Close,
                                        base::Unretained(this)))
-      .SetVectorIcon(&views::kIcCloseOldIcon);
+      .SetVectorIcon(&(::features::IsRoundedIconsEnabled()
+                           ? views::kCloseIcon
+                           : views::kIcCloseOldIcon));
 
   close_button_ = close_button_view->AddChildView(builder.Build());
 }

@@ -24,6 +24,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/views/vector_icons.h"
 
 using DownloadUIModelPtr = DownloadUIModel::DownloadUIModelPtr;
@@ -179,7 +180,8 @@ TEST_F(DownloadBubbleSecurityViewInfoTestGM3, InterruptedInfo) {
        false,
        "Your organization blocked this file because it didn't meet a security "
        "policy",
-       &views::kInfoChromeRefreshOldIcon,
+       &(features::IsRoundedIconsEnabled() ? views::kInfoIcon
+                                           : views::kInfoChromeRefreshOldIcon),
        std::optional<DownloadCommands::Command>()},
       {{download::DOWNLOAD_INTERRUPT_REASON_FILE_NAME_TOO_LONG},
        false,

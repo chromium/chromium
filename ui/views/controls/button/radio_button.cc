@@ -128,7 +128,11 @@ void RadioButton::SetChecked(bool checked) {
 }
 
 const gfx::VectorIcon& RadioButton::GetVectorIcon() const {
-  return GetChecked() ? kRadioButtonActiveOldIcon : kRadioButtonNormalOldIcon;
+  return GetChecked()                        ? features::IsRoundedIconsEnabled()
+                                                   ? kRadioButtonCheckedIcon
+                                                   : kRadioButtonActiveOldIcon
+         : features::IsRoundedIconsEnabled() ? kCircleIcon
+                                             : kRadioButtonNormalOldIcon;
 }
 
 gfx::ImageSkia RadioButton::GetImage(ButtonState for_state) const {

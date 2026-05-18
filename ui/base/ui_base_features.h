@@ -326,11 +326,18 @@ BASE_DECLARE_FEATURE_PARAM(int, kCompensationAcceptableLatencyMs);
 COMPONENT_EXPORT(UI_BASE_FEATURES)
 BASE_DECLARE_FEATURE(kSplitViewLinkOpen);
 
+// All feature flags associated with Glow Up, apart from those in ui_features.h
+COMPONENT_EXPORT(UI_BASE_FEATURES)
+BASE_DECLARE_FEATURE(kDesktopGlowUp);
 COMPONENT_EXPORT(UI_BASE_FEATURES)
 BASE_DECLARE_FEATURE(kGlassFrame);
+COMPONENT_EXPORT(UI_BASE_FEATURES)
+BASE_DECLARE_FEATURE(kRoundedIcons);
 
 COMPONENT_EXPORT(UI_BASE_FEATURES)
 bool IsGlassFrameEnabled();
+COMPONENT_EXPORT(UI_BASE_FEATURES)
+bool IsRoundedIconsEnabled();
 
 }  // namespace features
 

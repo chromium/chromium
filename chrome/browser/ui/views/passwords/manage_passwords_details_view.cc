@@ -29,6 +29,7 @@
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/controls/button/image_button.h"
@@ -240,9 +241,14 @@ std::unique_ptr<views::View> CreatePasswordLabelWithEyeIconView(
   eye_icon->SetID(
       static_cast<int>(ManagePasswordsViewIDs::kRevealPasswordButton));
   views::SetImageFromVectorIconWithColor(
-      eye_icon, views::kEyeOldIcon, {ui::kColorIcon, ui::kColorIconDisabled});
+      eye_icon,
+      features::IsRoundedIconsEnabled() ? views::kVisibilityFilledIcon
+                                        : views::kEyeOldIcon,
+      {ui::kColorIcon, ui::kColorIconDisabled});
   views::SetToggledImageFromVectorIconWithColor(
-      eye_icon, views::kEyeCrossedOldIcon,
+      eye_icon,
+      features::IsRoundedIconsEnabled() ? views::kVisibilityOffFilledIcon
+                                        : views::kEyeCrossedOldIcon,
       {ui::kColorIcon, ui::kColorIconDisabled});
   views::InstallCircleHighlightPathGenerator(eye_icon);
   eye_icon->SetCallback(
@@ -485,7 +491,9 @@ std::unique_ptr<RichHoverButton> CreateManagePasswordRow(
       /*subtitle_text=*/std::u16string(),
       /*action_image_icon=*/
       ui::ImageModel::FromVectorIcon(
-          vector_icons::kLaunchOldIcon, ui::kColorIconSecondary,
+          features::IsRoundedIconsEnabled() ? views::kOpenInNewIcon
+                                            : vector_icons::kLaunchOldIcon,
+          ui::kColorIconSecondary,
           GetLayoutConstant(LayoutConstant::kPageInfoIconSize)));
   manage_password_row->SetID(static_cast<int>(
       password_manager::ManagePasswordsViewIDs::kManagePasswordButton));

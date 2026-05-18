@@ -49,6 +49,7 @@
 #include "ui/base/dragdrop/os_exchange_data.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
@@ -173,7 +174,9 @@ std::unique_ptr<views::ImageView> CreateDropTargetIcon(
       gfx::Size(kHoldingSpaceIconSize, kHoldingSpaceIconSize));
   icon->SetPaintToLayer();
   icon->layer()->SetFillsBoundsOpaquely(false);
-  icon->SetImage(CreateForegroundImageModel(tray, views::kUnpinOldIcon));
+  icon->SetImage(CreateForegroundImageModel(
+      tray, ::features::IsRoundedIconsEnabled() ? views::kKeepFilledIcon
+                                                : views::kUnpinOldIcon));
   return icon;
 }
 

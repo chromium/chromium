@@ -498,7 +498,9 @@ BASE_FEATURE_PARAM(int,
 
 BASE_FEATURE(kSplitViewLinkOpen, base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kDesktopGlowUp, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kGlassFrame, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kRoundedIcons, base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsGlassFrameEnabled() {
 #if BUILDFLAG(IS_MAC)
@@ -507,6 +509,11 @@ bool IsGlassFrameEnabled() {
 #else
   return false;
 #endif
+}
+
+bool IsRoundedIconsEnabled() {
+  return base::FeatureList::IsEnabled(kDesktopGlowUp) ||
+         base::FeatureList::IsEnabled(kRoundedIcons);
 }
 
 }  // namespace features

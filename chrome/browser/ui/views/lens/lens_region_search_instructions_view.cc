@@ -13,6 +13,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/gfx/font_list.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
@@ -108,7 +109,10 @@ void LensRegionSearchInstructionsView::Init() {
   views::InstallCircleHighlightPathGenerator(close_button_.get());
   constructed_close_button_ = AddChildView(std::move(close_button_));
   views::SetImageFromVectorIconWithColor(
-      constructed_close_button_, views::kIcCloseOldIcon, kCloseButtonSize,
+      constructed_close_button_,
+      ::features::IsRoundedIconsEnabled() ? views::kCloseIcon
+                                          : views::kIcCloseOldIcon,
+      kCloseButtonSize,
       {kColorFeatureLensPromoBubbleForeground,
        kColorFeatureLensPromoBubbleForeground});
 }

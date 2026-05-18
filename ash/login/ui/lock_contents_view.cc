@@ -77,6 +77,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/base/user_activity/user_activity_detector.h"
 #include "ui/base/user_activity/user_activity_observer.h"
 #include "ui/chromeos/devicetype_utils.h"
@@ -252,7 +253,9 @@ class UserAddingScreenIndicator : public views::View {
     info_icon_ = AddChildView(std::make_unique<views::ImageView>());
     info_icon_->SetPreferredSize(gfx::Size(kInfoIconSizeDp, kInfoIconSizeDp));
     info_icon_->SetImage(ui::ImageModel::FromVectorIcon(
-        views::kInfoOldIcon, kColorAshIconColorPrimary));
+        ::features::IsRoundedIconsEnabled() ? views::kInfoIcon
+                                            : views::kInfoOldIcon,
+        kColorAshIconColorPrimary));
 
     std::u16string message =
         l10n_util::GetStringUTF16(IDS_ASH_LOGIN_USER_ADDING_BANNER);

@@ -20,6 +20,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/button/image_button_factory.h"
@@ -121,7 +122,10 @@ RelatedAppRowView::RelatedAppRowView(
 
   auto* app_settings_page_link = uninstall_button_container->AddChildView(
       views::CreateVectorImageButtonWithNativeTheme(
-          std::move(callback), views::kLaunchOldIcon, kLinkIconSize));
+          std::move(callback),
+          features::IsRoundedIconsEnabled() ? views::kOpenInNewIcon
+                                            : views::kLaunchOldIcon,
+          kLinkIconSize));
 
   views::InstallCircleHighlightPathGenerator(app_settings_page_link);
   app_settings_page_link->SetTooltipText(l10n_util::GetStringUTF16(

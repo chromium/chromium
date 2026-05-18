@@ -34,6 +34,7 @@
 #include "cookie_controls_bubble_coordinator.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/vector_icons.h"
@@ -316,8 +317,11 @@ views::BubbleDialogDelegate* CookieControlsIconView::GetBubble() const {
 
 const gfx::VectorIcon& CookieControlsIconView::GetVectorIcon() const {
   return controls_state_ == CookieControlsState::kBlocked3pc
-             ? views::kEyeCrossedRefreshOldIcon
-             : views::kEyeRefreshOldIcon;
+             ? features::IsRoundedIconsEnabled()
+                   ? views::kVisibilityOffIcon
+                   : views::kEyeCrossedRefreshOldIcon
+         : features::IsRoundedIconsEnabled() ? views::kVisibilityIcon
+                                             : views::kEyeRefreshOldIcon;
 }
 
 void CookieControlsIconView::UpdateTooltipForFocus() {}

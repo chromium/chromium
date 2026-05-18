@@ -20,6 +20,7 @@
 #include "chrome/browser/ash/app_list/chrome_app_list_model_updater.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/views/vector_icons.h"
@@ -115,24 +116,36 @@ const gfx::VectorIcon& AppContextMenu::GetMenuItemVectorIcon(int command_id,
   switch (command_id) {
     case ash::LAUNCH_NEW:
       if (string_id == IDS_APP_LIST_CONTEXT_MENU_NEW_WINDOW)
-        return views::kNewWindowOldIcon;
+        return features::IsRoundedIconsEnabled() ? views::kNewWindowIcon
+                                                 : views::kNewWindowOldIcon;
       if (string_id == IDS_APP_LIST_CONTEXT_MENU_NEW_TAB)
-        return views::kNewTabOldIcon;
+        return features::IsRoundedIconsEnabled() ? views::kTabIcon
+                                                 : views::kNewTabOldIcon;
       // The LAUNCH_NEW command is for an ARC app.
-      return views::kLaunchOldIcon;
+      return features::IsRoundedIconsEnabled() ? views::kOpenInNewIcon
+                                               : views::kLaunchOldIcon;
     case ash::TOGGLE_PIN:
-      return string_id == IDS_APP_LIST_CONTEXT_MENU_PIN ? views::kPinOldIcon
-                                                        : views::kUnpinOldIcon;
+      return string_id == IDS_APP_LIST_CONTEXT_MENU_PIN
+                 ? features::IsRoundedIconsEnabled() ? views::kKeepIcon
+                                                     : views::kPinOldIcon
+             : features::IsRoundedIconsEnabled() ? views::kKeepFilledIcon
+                                                 : views::kUnpinOldIcon;
     case ash::SHOW_APP_INFO:
-      return views::kInfoOldIcon;
+      return features::IsRoundedIconsEnabled() ? views::kInfoIcon
+                                               : views::kInfoOldIcon;
     case ash::OPTIONS:
-      return views::kOptionsOldIcon;
+      return features::IsRoundedIconsEnabled() ? views::kMoreHorizIcon
+                                               : views::kOptionsOldIcon;
     case ash::UNINSTALL:
-      return views::kUninstallOldIcon;
+      return features::IsRoundedIconsEnabled() ? views::kDeleteIcon
+                                               : views::kUninstallOldIcon;
     case ash::APP_CONTEXT_MENU_NEW_WINDOW:
-      return views::kNewWindowOldIcon;
+      return features::IsRoundedIconsEnabled() ? views::kNewWindowIcon
+                                               : views::kNewWindowOldIcon;
     case ash::APP_CONTEXT_MENU_NEW_INCOGNITO_WINDOW:
-      return views::kNewIncognitoWindowOldIcon;
+      return features::IsRoundedIconsEnabled()
+                 ? views::kIncognitoIcon
+                 : views::kNewIncognitoWindowOldIcon;
     case ash::INSTALL:
       // Deprecated.
       return gfx::VectorIcon::EmptyIcon();

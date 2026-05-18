@@ -15,6 +15,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/button/image_button_factory.h"
 #include "ui/views/controls/editable_combobox/editable_combobox.h"
@@ -54,10 +55,16 @@ std::unique_ptr<views::View> CreatePasswordLabelWithEyeIconView(
   eye_icon->SetToggledTooltipText(
       l10n_util::GetStringUTF16(IDS_MANAGE_PASSWORDS_HIDE_PASSWORD));
   eye_icon->SetImageVerticalAlignment(views::ImageButton::ALIGN_MIDDLE);
-  views::SetImageFromVectorIconWithColor(eye_icon, views::kEyeOldIcon,
+  views::SetImageFromVectorIconWithColor(eye_icon,
+                                         features::IsRoundedIconsEnabled()
+                                             ? views::kVisibilityFilledIcon
+                                             : views::kEyeOldIcon,
                                          {ui::kColorIcon, ui::kColorIcon});
   views::SetToggledImageFromVectorIconWithColor(
-      eye_icon, views::kEyeCrossedOldIcon, {ui::kColorIcon, ui::kColorIcon});
+      eye_icon,
+      features::IsRoundedIconsEnabled() ? views::kVisibilityOffFilledIcon
+                                        : views::kEyeCrossedOldIcon,
+      {ui::kColorIcon, ui::kColorIcon});
   eye_icon->SetCallback(base::BindRepeating(
       [](views::ToggleImageButton* toggle_button,
          views::Label* password_label) {

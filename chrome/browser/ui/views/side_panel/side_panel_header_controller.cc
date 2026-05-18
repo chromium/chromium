@@ -34,6 +34,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/mojom/menu_source_type.mojom.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/image_button.h"
@@ -221,10 +222,11 @@ SidePanelHeaderController::CreateCloseButton() {
   CHECK(!close_button_);
   CHECK(side_panel_entry_);
 
-  auto button =
-      CreateImageButton(base::BindRepeating(&SidePanelHeaderController::Close,
-                                            base::Unretained(this)),
-                        views::kIcCloseOldIcon);
+  auto button = CreateImageButton(
+      base::BindRepeating(&SidePanelHeaderController::Close,
+                          base::Unretained(this)),
+      features::IsRoundedIconsEnabled() ? views::kCloseIcon
+                                        : views::kIcCloseOldIcon);
   button->SetTooltipText(
       l10n_util::GetStringUTF16(IDS_ACCNAME_SIDE_PANEL_CLOSE));
   button->SetProperty(views::kElementIdentifierKey,

@@ -17,6 +17,7 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/combobox_model.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/render_text.h"
 #include "ui/views/border.h"
@@ -51,10 +52,14 @@ std::unique_ptr<ToggleImageButton> CreateEye(
   // Add the outset for the focus ring to match the behavior of the `Arrow`
   // element in `EditableCombobox`.
   views::FocusRing::Get(button.get())->SetOutsetFocusRingDisabled(false);
-  SetImageFromVectorIconWithColor(button.get(), kEyeOldIcon,
-                                  {ui::kColorIcon, ui::kColorIconDisabled});
+  SetImageFromVectorIconWithColor(
+      button.get(),
+      features::IsRoundedIconsEnabled() ? kVisibilityFilledIcon : kEyeOldIcon,
+      {ui::kColorIcon, ui::kColorIconDisabled});
   SetToggledImageFromVectorIconWithColor(
-      button.get(), kEyeCrossedOldIcon,
+      button.get(),
+      features::IsRoundedIconsEnabled() ? kVisibilityOffFilledIcon
+                                        : kEyeCrossedOldIcon,
       {ui::kColorIcon, ui::kColorIconDisabled});
 
   ConfigureComboboxButtonInkDrop(button.get());

@@ -25,6 +25,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/layer.h"
 #include "ui/display/screen.h"
@@ -259,8 +260,10 @@ PinRequestView::PinRequestView(PinRequest request, Delegate* delegate)
       gfx::Size(kBackButtonSizeDp, kBackButtonSizeDp));
   back_button_->SetImageModel(
       views::Button::STATE_NORMAL,
-      ui::ImageModel::FromVectorIcon(views::kIcCloseOldIcon, icon_color_id,
-                                     kCrossSizeDp));
+      ui::ImageModel::FromVectorIcon(::features::IsRoundedIconsEnabled()
+                                         ? views::kCloseIcon
+                                         : views::kIcCloseOldIcon,
+                                     icon_color_id, kCrossSizeDp));
   back_button_->SetImageHorizontalAlignment(views::ImageButton::ALIGN_CENTER);
   back_button_->SetImageVerticalAlignment(views::ImageButton::ALIGN_MIDDLE);
   back_button_->GetViewAccessibility().SetName(

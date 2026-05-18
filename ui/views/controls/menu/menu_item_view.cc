@@ -1623,12 +1623,16 @@ void MenuItemView::UpdateSelectionBasedState(bool paint_as_selected) {
   MenuDelegate* delegate = GetDelegate();
   if (type_ == Type::kCheckbox && delegate &&
       delegate->IsItemChecked(GetCommand())) {
-    radio_check_image_view_->SetImage(
-        ui::ImageModel::FromVectorIcon(kMenuCheckOldIcon, colors.icon_color));
+    radio_check_image_view_->SetImage(ui::ImageModel::FromVectorIcon(
+        features::IsRoundedIconsEnabled() ? kCheckIcon : kMenuCheckOldIcon,
+        colors.icon_color));
   } else if (type_ == Type::kRadio) {
     const bool toggled = delegate && delegate->IsItemChecked(GetCommand());
     const gfx::VectorIcon& radio_icon =
-        toggled ? kMenuRadioSelectedOldIcon : kMenuRadioEmptyOldIcon;
+        toggled ? features::IsRoundedIconsEnabled() ? kRadioButtonCheckedIcon
+                                                    : kMenuRadioSelectedOldIcon
+        : features::IsRoundedIconsEnabled() ? kCircleIcon
+                                            : kMenuRadioEmptyOldIcon;
     const SkColor radio_icon_color = GetColorProvider()->GetColor(
         toggled ? ui::kColorRadioButtonForegroundChecked
                 : ui::kColorRadioButtonForegroundUnchecked);

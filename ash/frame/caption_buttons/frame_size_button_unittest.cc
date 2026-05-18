@@ -41,12 +41,14 @@
 #include "chromeos/ui/vector_icons/vector_icons.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/display/test/display_manager_test_api.h"
 #include "ui/events/gesture_detection/gesture_configuration.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/gfx/vector_icon_types.h"
+#include "ui/views/vector_icons.h"
 #include "ui/views/widget/any_widget_observer.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
@@ -117,11 +119,16 @@ class FrameSizeButtonTestWidgetDelegate : public views::WidgetDelegateView {
               views::CaptionButtonLayoutSize::kNonBrowserCaption));
       caption_button_container_->SetButtonImage(
           views::CAPTION_BUTTON_ICON_MINIMIZE,
-          views::kWindowControlMinimizeOldIcon);
+          ::features::IsRoundedIconsEnabled()
+              ? views::kChromeMinimizeIcon
+              : views::kWindowControlMinimizeOldIcon);
       caption_button_container_->SetButtonImage(views::CAPTION_BUTTON_ICON_MENU,
                                                 chromeos::kFloatWindowIcon);
       caption_button_container_->SetButtonImage(
-          views::CAPTION_BUTTON_ICON_CLOSE, views::kWindowControlCloseOldIcon);
+          views::CAPTION_BUTTON_ICON_CLOSE,
+          ::features::IsRoundedIconsEnabled()
+              ? views::kCloseIcon
+              : views::kWindowControlCloseOldIcon);
       caption_button_container_->SetButtonImage(
           views::CAPTION_BUTTON_ICON_LEFT_TOP_SNAPPED,
           chromeos::kWindowControlLeftSnappedIcon);
@@ -130,7 +137,9 @@ class FrameSizeButtonTestWidgetDelegate : public views::WidgetDelegateView {
           chromeos::kWindowControlRightSnappedIcon);
       caption_button_container()->SetButtonImage(
           views::CAPTION_BUTTON_ICON_MAXIMIZE_RESTORE,
-          views::kWindowControlMaximizeOldIcon);
+          ::features::IsRoundedIconsEnabled()
+              ? views::kChromeMaximizeIcon
+              : views::kWindowControlMaximizeOldIcon);
 
       AddChildViewRaw(caption_button_container_.get());
     }

@@ -9,6 +9,7 @@
 #include "chrome/browser/ui/ash/input_method/suggestion_details.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/chromeos/styles/cros_styles.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -103,7 +104,8 @@ void GrammarSuggestionWindow::OnThemeChanged() {
   ignore_button_->SetImageModel(
       views::Button::ButtonState::STATE_NORMAL,
       ui::ImageModel::FromVectorIcon(
-          views::kCloseOldIcon,
+          features::IsRoundedIconsEnabled() ? views::kCancelIcon
+                                            : views::kCloseOldIcon,
           ResolveSemanticColor(cros_styles::ColorName::kTextColorPrimary)));
 
   BubbleDialogDelegateView::OnThemeChanged();

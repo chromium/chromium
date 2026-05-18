@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/views/accessibility/non_accessible_image_view.h"
 #include "chrome/browser/ui/views/webauthn/ring_progress_bar.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/vector_icons.h"
 
@@ -56,7 +57,9 @@ AuthenticatorBioEnrollmentSheetView::BuildStepSpecificContent() {
   auto image_view = std::make_unique<NonAccessibleImageView>();
   image_view->SetVerticalAlignment(views::ImageView::Alignment::kCenter);
   image_view->SetImage(ui::ImageModel::FromVectorIcon(
-      target >= 1 ? views::kMenuCheckOldIcon : kFingerprintOldIcon,
+      target >= 1 ? features::IsRoundedIconsEnabled() ? views::kCheckIcon
+                                                      : views::kMenuCheckOldIcon
+                  : kFingerprintOldIcon,
       ui::kColorAccent, kFingerprintSize));
   animation_container->AddChildView(std::move(image_view));
 

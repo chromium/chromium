@@ -32,6 +32,7 @@
 #include "components/sessions/core/session_id.h"
 #include "ui/actions/actions.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/views/vector_icons.h"
 
 namespace tabs {
@@ -368,7 +369,9 @@ void VerticalTabStripStateController::UpdateCollapseActionItem() {
       GetCollapseState() != VerticalTabStripCollapseState::kExpanded;
 
   const gfx::VectorIcon& icon = (is_collapsed == base::i18n::IsRTL())
-                                    ? views::kMenuOpenOldIcon
+                                    ? features::IsRoundedIconsEnabled()
+                                          ? views::kMenuOpenIcon
+                                          : views::kMenuOpenOldIcon
                                     : views::kMenuCloseIcon;
 
   const auto& text =
