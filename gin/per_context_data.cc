@@ -20,19 +20,19 @@ PerContextData::PerContextData(ContextHolder* context_holder,
                                v8::Local<v8::Context> context)
     : context_holder_(context_holder) {
   context->SetAlignedPointerInEmbedderData(kGinPerContextDataIndex, this,
-                                           kGinPerContextDataIndex);
+                                           gin::kGinPerContextData);
 }
 
 PerContextData::~PerContextData() {
   context_holder_->context()->SetAlignedPointerInEmbedderData(
-      kGinPerContextDataIndex, nullptr, kGinPerContextDataIndex);
+      kGinPerContextDataIndex, nullptr, gin::kGinPerContextData);
 }
 
 // static
 PerContextData* PerContextData::From(v8::Local<v8::Context> context) {
   return static_cast<PerContextData*>(
       context->GetAlignedPointerFromEmbedderData(kGinPerContextDataIndex,
-                                                 kGinPerContextDataIndex));
+                                                 gin::kGinPerContextData));
 }
 
 }  // namespace gin
