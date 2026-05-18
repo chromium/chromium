@@ -18,6 +18,7 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/trace_event/trace_event.h"
 #include "base/win/win_util.h"
 #include "base/win/windows_version.h"
@@ -105,7 +106,8 @@ void UpdateMouseLockRegion(aura::Window* window, bool locked) {
 
 }  // namespace
 
-DEFINE_UI_CLASS_PROPERTY_KEY(aura::Window*, kContentWindowForRootWindow, NULL)
+DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(base::WeakPtr<aura::Window>,
+                                   kContentWindowForRootWindow)
 
 // Identifies the DesktopWindowTreeHostWin associated with the
 // WindowEventDispatcher.
@@ -146,7 +148,12 @@ aura::Window* DesktopWindowTreeHostWin::GetContentWindowForHWND(HWND hwnd) {
   // are not associated with WindowTreeHost instances.
   aura::WindowTreeHost* host =
       aura::WindowTreeHost::GetForAcceleratedWidget(hwnd);
-  return host ? host->window()->GetProperty(kContentWindowForRootWindow) : NULL;
+  if (!host) {
+    return nullptr;
+  }
+  base::WeakPtr<aura::Window>* weak_ptr =
+      host->window()->GetProperty(kContentWindowForRootWindow);
+  return weak_ptr ? weak_ptr->get() : nullptr;
 }
 
 void DesktopWindowTreeHostWin::StartTouchDrag(gfx::Point screen_point) {
@@ -236,7 +243,8 @@ void DesktopWindowTreeHostWin::OnNativeWidgetCreated(
     is_cursor_visible_ = cursor_client->IsCursorVisible();
   }
 
-  window()->SetProperty(kContentWindowForRootWindow, content_window());
+  window()->SetProperty(kContentWindowForRootWindow,
+                        content_window()->GetWeakPtrAsWindow());
   window()->SetProperty(kDesktopWindowTreeHostKey, this);
 
   should_animate_window_close_ =
