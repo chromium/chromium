@@ -27,7 +27,6 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.ui.default_browser_promo.DefaultBrowserPromoMetrics;
 import org.chromium.chrome.browser.ui.default_browser_promo.DefaultBrowserPromoUtils;
 import org.chromium.chrome.browser.ui.default_browser_promo.DefaultBrowserPromoUtils.DefaultBrowserPromoEntryPoint;
 import org.chromium.chrome.browser.ui.signin.SigninUtils;
@@ -262,10 +261,6 @@ public class DefaultBrowserPromoFirstRunFragment extends Fragment implements Fir
                             pageDelegate.recordFreProgressHistogram(
                                     MobileFreProgress.DEFAULT_BROWSER_PROMO_ACCEPTED);
                             triggerRoleManagerDialog();
-
-                            DefaultBrowserPromoMetrics.recordPromoClick(
-                                    DefaultBrowserPromoMetrics.DefaultBrowserPromoSourceType
-                                            .FRE_PROMO);
                         });
         view.getDismissButtonView()
                 .setOnClickListener(

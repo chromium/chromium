@@ -28,7 +28,7 @@ public class DefaultBrowserPromoMetrics {
         DefaultBrowserPromoSourceType.MESSAGES_PROMO,
         DefaultBrowserPromoSourceType.SETTING_CARD_PROMO,
         DefaultBrowserPromoSourceType.EDUCATIONAL_TIP_PROMO,
-        DefaultBrowserPromoSourceType.FRE_PROMO,
+        // Deprecated: DefaultBrowserPromoSourceType.FRE_PROMO,
         DefaultBrowserPromoSourceType.APP_MENU_DEEPLINK,
         DefaultBrowserPromoSourceType.SETTINGS_ROW_DEEPLINK
     })
@@ -37,7 +37,7 @@ public class DefaultBrowserPromoMetrics {
         int MESSAGES_PROMO = 0;
         int SETTING_CARD_PROMO = 1;
         int EDUCATIONAL_TIP_PROMO = 2;
-        int FRE_PROMO = 3;
+        // Deprecated: int FRE_PROMO = 3;
         int APP_MENU_DEEPLINK = 4;
         int SETTINGS_ROW_DEEPLINK = 5;
 
