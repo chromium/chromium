@@ -318,9 +318,13 @@ void NativeViewHostAura::CreateClippingWindow() {
 
 void NativeViewHostAura::AddClippingWindow() {
   RemoveClippingWindow();
-
-  host_->native_view()->SetProperty(aura::client::kHostWindowKey,
-                                    host_->GetWidget()->GetNativeView());
+  if (host_->GetWidget()->GetNativeView()) {
+    host_->native_view()->SetProperty(
+        aura::client::kHostWindowKey,
+        host_->GetWidget()->GetNativeView()->GetWeakPtrAsWindow());
+  } else {
+    host_->native_view()->ClearProperty(aura::client::kHostWindowKey);
+  }
   Widget::ReparentNativeView(host_->native_view(), clipping_window_.get());
   if (host_->GetWidget()->GetNativeView()) {
     Widget::ReparentNativeView(clipping_window_.get(),

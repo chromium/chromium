@@ -156,7 +156,7 @@ TEST_F(NativeViewHostAuraTest, HostViewPropertyKey) {
   aura::Window* child_win = child()->GetNativeView();
   EXPECT_EQ(host(), child_win->GetProperty(views::kHostViewKey));
   EXPECT_EQ(host()->GetWidget()->GetNativeView(),
-            child_win->GetProperty(aura::client::kHostWindowKey));
+            child_win->GetProperty(aura::client::kHostWindowKey)->get());
   EXPECT_EQ(host(), clipping_window()->GetProperty(views::kHostViewKey));
 
   host()->Detach();
@@ -167,7 +167,7 @@ TEST_F(NativeViewHostAuraTest, HostViewPropertyKey) {
   host()->Attach(child_win);
   EXPECT_EQ(host(), child_win->GetProperty(views::kHostViewKey));
   EXPECT_EQ(host()->GetWidget()->GetNativeView(),
-            child_win->GetProperty(aura::client::kHostWindowKey));
+            child_win->GetProperty(aura::client::kHostWindowKey)->get());
   EXPECT_EQ(host(), clipping_window()->GetProperty(views::kHostViewKey));
 
   DestroyHost();

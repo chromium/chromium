@@ -104,7 +104,8 @@ AURA_EXPORT extern const WindowProperty<gfx::Rect*>* const kHeadlessBoundsKey;
 
 // A property key to store the host window of a window. This lets
 // WebContentsViews find the windows that should constrain NPAPI plugins.
-AURA_EXPORT extern const WindowProperty<Window*>* const kHostWindowKey;
+AURA_EXPORT extern const WindowProperty<base::WeakPtr<Window>*>* const
+    kHostWindowKey;
 
 // The modal parent of a child modal window.
 AURA_EXPORT extern const WindowProperty<Window*>* const kChildModalParentKey;

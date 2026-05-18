@@ -364,11 +364,13 @@ GlobalRoutingID GetRenderViewHostID(RenderViewHost* rvh) {
                          rvh->GetRoutingID());
 }
 
-// Returns the host window for |window|, or nullpr if it has no host window.
+// Returns the host window for |window|, or nullptr if it has no host window.
 aura::Window* GetHostWindow(aura::Window* window) {
-  aura::Window* host_window = window->GetProperty(aura::client::kHostWindowKey);
-  if (host_window)
-    return host_window;
+  base::WeakPtr<aura::Window>* host_window_ptr =
+      window->GetProperty(aura::client::kHostWindowKey);
+  if (host_window_ptr && *host_window_ptr) {
+    return host_window_ptr->get();
+  }
   return window->parent();
 }
 
