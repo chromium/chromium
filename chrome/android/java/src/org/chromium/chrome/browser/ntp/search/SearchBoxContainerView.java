@@ -53,6 +53,10 @@ public class SearchBoxContainerView extends LinearLayout {
         mVoiceSearchButton = findViewById(R.id.voice_search_button);
         mLensButton = findViewById(R.id.lens_camera_button);
         mPlusButton = findViewById(R.id.search_box_plus_button);
+        mPlusButton.addOnLayoutChangeListener(
+                (v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) -> {
+                    updateTouchDelegate();
+                });
 
         Typeface typeface = Typeface.create("google-sans-medium", Typeface.NORMAL);
         mHintTextView.setTypeface(typeface);
@@ -122,6 +126,7 @@ public class SearchBoxContainerView extends LinearLayout {
         bounds.inset(-widthDelta, -heightDelta);
 
         if (bounds.equals(mLastTouchDelegateRect)) return;
+        mLastTouchDelegateRect = bounds;
 
         mLastTouchDelegateRect = bounds;
         mTouchDelegate = new TouchDelegate(bounds, mPlusButton);
