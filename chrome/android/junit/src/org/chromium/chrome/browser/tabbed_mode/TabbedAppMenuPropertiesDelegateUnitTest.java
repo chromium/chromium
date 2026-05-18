@@ -55,6 +55,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.DeviceInfo;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.Token;
 import org.chromium.base.UserDataHost;
 import org.chromium.base.supplier.LazyOneshotSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
@@ -139,6 +140,7 @@ import org.chromium.components.power_bookmarks.PowerBookmarkMeta;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.sync.SyncService;
+import org.chromium.components.tab_groups.TabGroupsFeatureMap;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.components.user_prefs.UserPrefsJni;
 import org.chromium.components.webapps.AppBannerManager;
@@ -177,7 +179,8 @@ import java.util.function.BiConsumer;
     DomDistillerFeatures.READER_MODE_IMPROVEMENTS,
     DomDistillerFeatures.READER_MODE_DISTILL_IN_APP,
     // TODO(crbug.com/504757384): Add test for three dot menu flag.
-    ChromeFeatureList.THREE_DOT_MENU_BACK_BUTTON
+    ChromeFeatureList.THREE_DOT_MENU_BACK_BUTTON,
+    TabGroupsFeatureMap.UPDATE_TAB_GROUP_COLORS
 })
 @EnableFeatures({
     ChromeFeatureList.SUBMENUS_IN_APP_MENU,
@@ -3674,6 +3677,46 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
 
         verify(mBookmarkImageFetcher).fetchFaviconForBookmark(eq(bookmarkItem), any());
         assertEquals(mockFavicon, iconSupplier.get());
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.SUBMENUS_IN_APP_MENU})
+    public void testTabGroupsSubmenu_WithGroups() {
+        TabModel tabModelWithFilter = Mockito.mock(TabModel.class);
+        when(mTabModelSelector.getCurrentModel()).thenReturn(tabModelWithFilter);
+        when(mTabModelSelector.getModel(false)).thenReturn(tabModelWithFilter);
+        when(tabModelWithFilter.getProfile()).thenReturn(mProfile);
+
+        Token token1 = new Token(1L, 1L);
+        when(tabModelWithFilter.getAllTabGroupIds()).thenReturn(java.util.Set.of(token1));
+        when(tabModelWithFilter.getTabGroupTitle(token1)).thenReturn("Group 1");
+        when(tabModelWithFilter.getTabGroupColorWithFallback(token1))
+                .thenReturn(org.chromium.components.tab_groups.TabGroupColorId.BLUE);
+
+        setUpMocksForPageMenu();
+        when(mTab.getUrl()).thenReturn(JUnitTestGURLs.EXAMPLE_URL);
+
+        ListItem tabGroupsParent =
+                findItemById(
+                        mTabbedAppMenuPropertiesDelegate.getMenuItems(),
+                        R.id.tab_groups_parent_menu_id);
+        assertNotNull(tabGroupsParent);
+
+        List<ListItem> subItems =
+                tabGroupsParent.model.get(AppMenuItemWithSubmenuProperties.SUBMENU_PROVIDER).get();
+
+        List<MenuItem> expectedSubItems =
+                Arrays.asList(
+                        item(R.id.add_to_group_menu_id),
+                        item(R.id.create_new_tab_group_menu_id),
+                        item(R.id.divider_line_id),
+                        item(R.id.tab_group_menu_item_id));
+
+        assertMenuItemsAreEqual(subItems, expectedSubItems);
+
+        ListItem groupItem = findItemById(subItems, R.id.tab_group_menu_item_id);
+        assertNotNull(groupItem);
+        assertEquals("Group 1", groupItem.model.get(AppMenuItemProperties.TITLE));
     }
 
     private static MenuItem item(Object id, MenuItem... subItems) {

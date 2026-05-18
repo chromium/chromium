@@ -9,6 +9,8 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.GradientDrawable;
+import android.text.TextUtils;
 import android.util.SparseArray;
 import android.view.View;
 
@@ -21,6 +23,7 @@ import androidx.core.graphics.drawable.DrawableCompat;
 
 import org.chromium.base.CallbackController;
 import org.chromium.base.DeviceInfo;
+import org.chromium.base.Token;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.LazyOneshotSupplier;
 import org.chromium.base.supplier.LazyOneshotSupplierImpl;
@@ -60,6 +63,8 @@ import org.chromium.chrome.browser.readaloud.ReadAloudController;
 import org.chromium.chrome.browser.share.ShareUtils;
 import org.chromium.chrome.browser.supervised_user.SupervisedUserServiceBridge;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
+import org.chromium.chrome.browser.tabmodel.TabGroupTitleUtils;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuItemState;
@@ -86,6 +91,7 @@ import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.image_fetcher.ImageFetcherConfig;
 import org.chromium.components.image_fetcher.ImageFetcherFactory;
+import org.chromium.components.tab_groups.TabGroupColorPickerUtils;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.browser.ContentFeatureMap;
@@ -106,6 +112,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 import java.util.function.BiFunction;
 import java.util.function.Supplier;
 
@@ -696,6 +703,16 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
     private ListItem buildTabGroupsParentItem(@Nullable Tab currentTab) {
         assert shouldShowTabGroupsParentItem(currentTab);
 
+        return new ListItem(
+                AppMenuHandler.AppMenuItemType.MENU_ITEM_WITH_SUBMENU,
+                buildModelForMenuItemWithSubmenu(
+                        R.id.tab_groups_parent_menu_id,
+                        R.string.menu_tab_groups,
+                        shouldShowIconBeforeItem() ? R.drawable.ic_widgets : Resources.ID_NULL,
+                        () -> getTabGroupsSubmenuItems(currentTab)));
+    }
+
+    private List<ListItem> getTabGroupsSubmenuItems(@Nullable Tab currentTab) {
         List<ListItem> submenuItems = new ArrayList<>();
         if (shouldShowAddToGroup()) {
             submenuItems.add(buildAddToGroupItem(currentTab));
@@ -704,13 +721,48 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
             submenuItems.add(buildCreateNewTabGroupItem());
         }
 
-        return new ListItem(
-                AppMenuHandler.AppMenuItemType.MENU_ITEM_WITH_SUBMENU,
-                buildModelForMenuItemWithSubmenu(
-                        R.id.tab_groups_parent_menu_id,
-                        R.string.menu_tab_groups,
-                        shouldShowIconBeforeItem() ? R.drawable.ic_widgets : Resources.ID_NULL,
-                        () -> submenuItems));
+        TabGroupModelFilter filter = mTabModelSelector.getCurrentModel();
+        Set<Token> groupIds = filter.getAllTabGroupIds();
+        if (groupIds.isEmpty()) {
+            return submenuItems;
+        }
+
+        submenuItems.add(
+                new ListItem(
+                        AppMenuHandler.AppMenuItemType.DIVIDER,
+                        buildModelForDivider(R.id.divider_line_id)));
+
+        // TODO(crbug.com/509065807): Observe TabModel to update this while the menu is open.
+        for (Token groupId : groupIds) {
+            String title = filter.getTabGroupTitle(groupId);
+            if (TextUtils.isEmpty(title)) {
+                title =
+                        TabGroupTitleUtils.getDefaultTitle(
+                                mContext, filter.getTabCountForGroup(groupId));
+            }
+
+            GradientDrawable drawable = new GradientDrawable();
+            drawable.setShape(GradientDrawable.OVAL);
+            drawable.setColor(
+                    TabGroupColorPickerUtils.getTabGroupColorPickerItemColor(
+                            mContext,
+                            filter.getTabGroupColorWithFallback(groupId),
+                            isIncognitoShowing()));
+            int size =
+                    mContext.getResources()
+                            .getDimensionPixelSize(R.dimen.compositor_tab_title_favicon_size);
+            drawable.setSize(size, size);
+
+            PropertyModel model =
+                    buildBaseModelForTextItem(R.id.tab_group_menu_item_id)
+                            .with(AppMenuItemProperties.TITLE, title)
+                            .with(AppMenuItemProperties.ICON, drawable)
+                            .with(AppMenuItemProperties.ICON_NO_TINT, true)
+                            .build();
+            submenuItems.add(new ListItem(AppMenuHandler.AppMenuItemType.STANDARD, model));
+        }
+
+        return submenuItems;
     }
 
     private ListItem buildNewWindowItem() {
