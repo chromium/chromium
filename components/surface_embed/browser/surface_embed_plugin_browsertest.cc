@@ -446,6 +446,48 @@ IN_PROC_BROWSER_TEST_F(SurfaceEmbedBrowserTest, EmbedPixelTest) {
   EXPECT_EQ(last_bitmap.getColor(1, 1), SK_ColorWHITE);
 }
 
+IN_PROC_BROWSER_TEST_F(SurfaceEmbedBrowserTest, VisibilityHiddenPropagates) {
+  auto child_contents = SetupHarnessAndChild();
+  AttachChildToEmbed(child_contents.get());
+
+  EXPECT_EQ(content::Visibility::VISIBLE, child_contents->GetVisibility());
+
+  ASSERT_TRUE(content::ExecJs(
+      web_contents(), "document.embeds[0].style.visibility = 'hidden';"));
+
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return child_contents->GetVisibility() == content::Visibility::HIDDEN;
+  }));
+
+  ASSERT_TRUE(content::ExecJs(
+      web_contents(), "document.embeds[0].style.visibility = 'visible';"));
+
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return child_contents->GetVisibility() == content::Visibility::VISIBLE;
+  }));
+}
+
+IN_PROC_BROWSER_TEST_F(SurfaceEmbedBrowserTest, DisplayNonePropagates) {
+  auto child_contents = SetupHarnessAndChild();
+  AttachChildToEmbed(child_contents.get());
+
+  EXPECT_EQ(content::Visibility::VISIBLE, child_contents->GetVisibility());
+
+  ASSERT_TRUE(content::ExecJs(web_contents(),
+                              "document.embeds[0].style.display = 'none';"));
+
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return child_contents->GetVisibility() == content::Visibility::HIDDEN;
+  }));
+
+  ASSERT_TRUE(content::ExecJs(web_contents(),
+                              "document.embeds[0].style.display = 'block';"));
+
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return child_contents->GetVisibility() == content::Visibility::VISIBLE;
+  }));
+}
+
 IN_PROC_BROWSER_TEST_F(SurfaceEmbedBrowserTest,
                        EmbedMultipleTagsCreatesMultiplePlugins) {
   constexpr size_t kMultipleEmbedCount = 2;
