@@ -166,7 +166,7 @@ class CORE_EXPORT SVGElement : public Element {
   virtual void BuildPendingResource() {}
   virtual bool HaveLoadedRequiredResources();
 
-  SVGAnimatedString* className() { return class_name_.Get(); }
+  SVGAnimatedString* className() { return &EnsureClassName(); }
 
   bool InUseShadowTree() const;
 
@@ -283,8 +283,10 @@ class CORE_EXPORT SVGElement : public Element {
   void SynchronizeAttributeInShadowInstances(const QualifiedName& name,
                                              const AtomicString& value);
 
+  SVGAnimatedString& EnsureClassName() const;
+
   Member<SVGElementRareData> svg_rare_data_;
-  Member<SVGAnimatedString> class_name_;
+  mutable Member<SVGAnimatedString> class_name_;
 };
 
 template <typename InvalidationFunction>

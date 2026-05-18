@@ -76,13 +76,17 @@ namespace blink {
 SVGElement::SVGElement(const QualifiedName& tag_name,
                        Document& document,
                        ConstructionType construction_type)
-    : Element(tag_name, &document, construction_type),
-      svg_rare_data_(nullptr),
-      class_name_(
-          MakeGarbageCollected<SVGAnimatedString>(this,
-                                                  html_names::kClassAttr)) {
+    : Element(tag_name, &document, construction_type), svg_rare_data_(nullptr) {
   // For WillRecalcStyle()
   SetHasCustomStyleCallbacks();
+}
+
+SVGAnimatedString& SVGElement::EnsureClassName() const {
+  if (!class_name_) {
+    class_name_ = MakeGarbageCollected<SVGAnimatedString>(
+        const_cast<SVGElement*>(this), html_names::kClassAttr);
+  }
+  return *class_name_;
 }
 
 void SVGElement::DetachLayoutTree(bool performing_reattach) {
@@ -516,7 +520,7 @@ void SVGElement::ParseAttribute(const AttributeModificationParams& params) {
 SVGAnimatedPropertyBase* SVGElement::PropertyFromAttribute(
     const QualifiedName& attribute_name) const {
   if (attribute_name == html_names::kClassAttr) {
-    return class_name_.Get();
+    return &EnsureClassName();
   } else {
     return nullptr;
   }
@@ -745,7 +749,7 @@ void SVGElement::BaseValueChanged(const SVGAnimatedPropertyBase& property) {
   EnsureUniqueElementData().SetSvgAttributesAreDirty(true);
   SvgAttributeChanged({property, property.AttributeName(),
                        AttributeModificationReason::kDirectly});
-  if (class_name_ == &property) {
+  if (class_name_ && class_name_ == &property) {
     UpdateClassList(g_null_atom,
                     AtomicString(class_name_->BaseValue()->Value()));
   }
@@ -764,7 +768,7 @@ void SVGElement::SynchronizeSVGAttribute(const QualifiedName& name) const {
 void SVGElement::SynchronizeAllSVGAttributes() const {
   DCHECK(HasElementData());
   DCHECK(GetElementData()->svg_attributes_are_dirty());
-  if (class_name_->NeedsSynchronizeAttribute()) {
+  if (class_name_ && class_name_->NeedsSynchronizeAttribute()) {
     class_name_->SynchronizeAttribute();
   }
   GetElementData()->SetSvgAttributesAreDirty(false);
