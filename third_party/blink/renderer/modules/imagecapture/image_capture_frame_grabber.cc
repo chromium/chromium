@@ -4,21 +4,16 @@
 
 #include "third_party/blink/renderer/modules/imagecapture/image_capture_frame_grabber.h"
 
-#include "base/compiler_specific.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/thread_annotations.h"
 #include "base/time/time.h"
-#include "cc/paint/skia_paint_canvas.h"
 #include "components/viz/common/gpu/raster_context_provider.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_types.h"
 #include "media/base/video_util.h"
-#include "skia/ext/legacy_display_globals.h"
-#include "skia/ext/platform_canvas.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/core/imagebitmap/image_bitmap.h"
-#include "third_party/blink/renderer/platform/graphics/canvas_non2d_snapshot_provider_bitmap.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource_provider.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
 #include "third_party/blink/renderer/platform/graphics/video_frame_image_util.h"
@@ -33,8 +28,6 @@
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/thread_safe_ref_counted.h"
 #include "third_party/libyuv/include/libyuv.h"
-#include "third_party/skia/include/core/SkImage.h"
-#include "third_party/skia/include/core/SkSurface.h"
 
 namespace blink {
 
@@ -170,11 +163,6 @@ void ImageCaptureFrameGrabber::GrabFrame(
       MediaStreamVideoSink::UsesAlpha::kDefault);
 }
 
-// Killswitch guarding ImageCaptureFrameGrabber not caching the SkSurface used
-// for VideoFrame->StaticBitmapImage software draws.
-BASE_FEATURE(kImageCaptureFrameGrabberDrawCacheSkSurface,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 void ImageCaptureFrameGrabber::OnVideoFrame(
     media::VideoFrame* frame,
     ScriptPromiseResolver<ImageBitmap>* resolver) {
@@ -185,7 +173,6 @@ void ImageCaptureFrameGrabber::OnVideoFrame(
   if (!cached_draw_info_ ||
       !required_provider_info.Matches(*cached_draw_info_)) {
     cached_draw_info_.reset();
-    sw_draw_surface_.reset();
     snapshot_provider_.reset();
     if (ShouldCreateAcceleratedImages(GetRasterContextProvider().get())) {
       snapshot_provider_ = CanvasNon2DResourceProviderSharedImage::Create(
@@ -197,11 +184,6 @@ void ImageCaptureFrameGrabber::OnVideoFrame(
         cached_draw_info_ = required_provider_info;
       }
     } else {
-      if (base::FeatureList::IsEnabled(
-              kImageCaptureFrameGrabberDrawCacheSkSurface)) {
-        sw_draw_surface_ = CanvasNon2DSnapshotProviderBitmap::CreateSurface(
-            required_provider_info);
-      }
       cached_draw_info_ = required_provider_info;
     }
   }
@@ -214,7 +196,7 @@ void ImageCaptureFrameGrabber::OnVideoFrame(
           frame, snapshot_provider_.get(), &video_renderer_);
     } else {
       image = CreateUnacceleratedImageFromVideoFrame(
-          frame, required_provider_info, sw_draw_surface_, &video_renderer_);
+          frame, required_provider_info, nullptr, &video_renderer_);
     }
   }
 
