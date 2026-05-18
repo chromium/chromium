@@ -24,7 +24,7 @@ import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.Acces
 import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.AccessibilityActionCompat.ACTION_FOCUS;
 import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.AccessibilityActionCompat.ACTION_NEXT_AT_MOVEMENT_GRANULARITY;
 import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.AccessibilityActionCompat.ACTION_NEXT_HTML_ELEMENT;
-import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.AccessibilityActionCompat.ACTION_PAGE_UP;
+import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.AccessibilityActionCompat.ACTION_PAGE_DOWN;
 import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.AccessibilityActionCompat.ACTION_PASTE;
 import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.AccessibilityActionCompat.ACTION_PREVIOUS_AT_MOVEMENT_GRANULARITY;
 import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.AccessibilityActionCompat.ACTION_PREVIOUS_HTML_ELEMENT;
@@ -917,6 +917,53 @@ public class WebContentsAccessibilityTest {
         performHistogramActions();
 
         histogramWatcher.assertExpected();
+    }
+
+    @Test
+    @SmallTest
+    public void testAccessibilityFocusOnscreenDoesNotScroll() throws Throwable {
+        // Build a simple page with a button at the top (fully onscreen).
+        setupTestWithHTML("<button id='button'>Target Button</button>");
+
+        int buttonVvid = waitForNodeMatching(sViewIdResourceNameMatcher, "button");
+
+        // Perform accessibility focus action.
+        performActionOnUiThread(buttonVvid, ACTION_ACCESSIBILITY_FOCUS, null);
+
+        mActivityTestRule.sendEndOfTestSignal();
+
+        String results = mActivityTestRule.getTrackerResults();
+        // We expect focus events but NO scroll events!
+        Assert.assertFalse(
+                "Focusing an onscreen node should not trigger scrolling:\n" + results,
+                results.contains("TYPE_VIEW_SCROLLED"));
+    }
+
+    @Test
+    @SmallTest
+    public void testAccessibilityFocusDoesNotScrollToTop() throws Throwable {
+        // Build a very tall page with a button at the bottom.
+        setupTestWithHTML(
+                """
+                <div style="height: 2000px;"></div>
+                <button id="button">Request Samsung Pay notification</button>
+                """);
+
+        int buttonVvid = waitForNodeMatching(sViewIdResourceNameMatcher, "button");
+
+        // Initial scroll Y should be 0.
+        Assert.assertEquals(0f, mActivityTestRule.mWcax.getScrollYForTesting(), 0.01f);
+
+        // Perform accessibility focus action.
+        performActionOnUiThread(buttonVvid, ACTION_ACCESSIBILITY_FOCUS, null);
+
+        // Poll until scroll Y is updated. If it over-scrolls to top, scroll Y will remain 0.
+        // If it scrolls correctly to make visible, scroll Y will become > 0.
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    return mActivityTestRule.mWcax.getScrollYForTesting() > 0f;
+                },
+                "Expected view to scroll down to make button visible.");
     }
 
     /**
@@ -2582,20 +2629,37 @@ public class WebContentsAccessibilityTest {
                 },
                 NODE_TIMEOUT_ERROR);
 
-        // Focus the scroll container.
-        focusNode(vvIdDiv);
+        // Find the root WebView node.
+        int rootVvid = waitForNodeMatching(sClassNameMatcher, "android.webkit.WebView");
 
-        // Send a scroll event so some elements will be offscreen and poll for results.
-        performActionOnUiThread(
-                vvIdDiv,
-                ACTION_PAGE_UP,
-                null,
+        // Request accessibility focus on the root WebView node directly to prevent auto-focus
+        // scrollback loops.
+        performActionOnUiThread(rootVvid, ACTION_ACCESSIBILITY_FOCUS, null);
+        CriteriaHelper.pollUiThreadLongTimeout(
+                "Timed out waiting for root WebView to acquire accessibility focus.",
                 () -> {
-                    return createAccessibilityNodeInfo(vvIdDiv).getExtras() != null
-                            && createAccessibilityNodeInfo(vvIdDiv)
-                                            .getExtras()
-                                            .getInt(EXTRAS_KEY_UNCLIPPED_TOP, 1)
-                                    < 0;
+                    Criteria.checkThat(
+                            createAccessibilityNodeInfo(rootVvid).isAccessibilityFocused(),
+                            Matchers.is(true));
+                });
+
+        // Send scroll down events on the root WebView so the container moves offscreen at the top.
+        // We perform two page downs to ensure it scrolls past the container's initial top offset
+        // even on high-density emulators with small CSS viewports.
+        performActionOnUiThread(rootVvid, ACTION_PAGE_DOWN, null);
+        CriteriaHelper.pollUiThread(
+                () -> mActivityTestRule.mWcax.getScrollYForTesting() > 0f,
+                "Timed out waiting for first page scroll to complete.");
+
+        performActionOnUiThread(rootVvid, ACTION_PAGE_DOWN, null);
+        CriteriaHelper.pollUiThreadLongTimeout(
+                "Timed out waiting for container to scroll offscreen.",
+                () -> {
+                    AccessibilityNodeInfoCompat info = createAccessibilityNodeInfo(vvIdDiv);
+                    Criteria.checkThat(
+                            info.getExtras() != null
+                                    && info.getExtras().getInt(EXTRAS_KEY_UNCLIPPED_TOP, 1) < 0,
+                            Matchers.is(true));
                 });
 
         // Signal end of test.
@@ -2723,37 +2787,37 @@ public class WebContentsAccessibilityTest {
         int vvIdText1 = waitForNodeMatching(sTextMatcher, "1");
         int vvIdText2 = waitForNodeMatching(sTextMatcher, "6");
         int vvIdText3 = waitForNodeMatching(sTextMatcher, "9");
-        AccessibilityNodeInfoCompat mNodeInfo1 = createAccessibilityNodeInfo(vvIdText1);
-        AccessibilityNodeInfoCompat mNodeInfo2 = createAccessibilityNodeInfo(vvIdText2);
-        AccessibilityNodeInfoCompat mNodeInfo3 = createAccessibilityNodeInfo(vvIdText3);
-        Assert.assertNotNull(NODE_TIMEOUT_ERROR, mNodeInfo1);
-        Assert.assertNotNull(NODE_TIMEOUT_ERROR, mNodeInfo2);
-        Assert.assertNotNull(NODE_TIMEOUT_ERROR, mNodeInfo3);
+        AccessibilityNodeInfoCompat nodeInfo1 = createAccessibilityNodeInfo(vvIdText1);
+        AccessibilityNodeInfoCompat nodeInfo2 = createAccessibilityNodeInfo(vvIdText2);
+        AccessibilityNodeInfoCompat nodeInfo3 = createAccessibilityNodeInfo(vvIdText3);
+        Assert.assertNotNull(NODE_TIMEOUT_ERROR, nodeInfo1);
+        Assert.assertNotNull(NODE_TIMEOUT_ERROR, nodeInfo2);
+        Assert.assertNotNull(NODE_TIMEOUT_ERROR, nodeInfo3);
 
         // Signal end of test.
         mActivityTestRule.sendEndOfTestSignal();
 
         // Check visibility of each element, all text nodes should be visible.
-        Assert.assertTrue(VISIBLE_TO_USER_ERROR, mNodeInfo1.isVisibleToUser());
-        Assert.assertTrue(VISIBLE_TO_USER_ERROR, mNodeInfo2.isVisibleToUser());
-        Assert.assertTrue(VISIBLE_TO_USER_ERROR, mNodeInfo3.isVisibleToUser());
+        Assert.assertTrue(VISIBLE_TO_USER_ERROR, nodeInfo1.isVisibleToUser());
+        Assert.assertTrue(VISIBLE_TO_USER_ERROR, nodeInfo2.isVisibleToUser());
+        Assert.assertTrue(VISIBLE_TO_USER_ERROR, nodeInfo3.isVisibleToUser());
 
         // Check for offscreen Bundle extra, the second two texts should contain.
         Assert.assertFalse(
                 OFFSCREEN_BUNDLE_EXTRA_ERROR,
-                mNodeInfo1.getExtras().containsKey(EXTRAS_KEY_OFFSCREEN));
+                nodeInfo1.getExtras().containsKey(EXTRAS_KEY_OFFSCREEN));
         Assert.assertTrue(
                 OFFSCREEN_BUNDLE_EXTRA_ERROR,
-                mNodeInfo2.getExtras().containsKey(EXTRAS_KEY_OFFSCREEN));
+                nodeInfo2.getExtras().containsKey(EXTRAS_KEY_OFFSCREEN));
         Assert.assertTrue(
                 OFFSCREEN_BUNDLE_EXTRA_ERROR,
-                mNodeInfo2.getExtras().getBoolean(EXTRAS_KEY_OFFSCREEN));
+                nodeInfo2.getExtras().getBoolean(EXTRAS_KEY_OFFSCREEN));
         Assert.assertTrue(
                 OFFSCREEN_BUNDLE_EXTRA_ERROR,
-                mNodeInfo3.getExtras().containsKey(EXTRAS_KEY_OFFSCREEN));
+                nodeInfo3.getExtras().containsKey(EXTRAS_KEY_OFFSCREEN));
         Assert.assertTrue(
                 OFFSCREEN_BUNDLE_EXTRA_ERROR,
-                mNodeInfo3.getExtras().getBoolean(EXTRAS_KEY_OFFSCREEN));
+                nodeInfo3.getExtras().getBoolean(EXTRAS_KEY_OFFSCREEN));
     }
 
     /** Test that occluded views are not visible to accessibility. */
@@ -3656,10 +3720,10 @@ public class WebContentsAccessibilityTest {
         // Find the relevant nodes.
         int vvid1 = waitForNodeMatching(sViewIdResourceNameMatcher, "id1");
         int vvid2 = waitForNodeMatching(sViewIdResourceNameMatcher, "id2");
-        AccessibilityNodeInfoCompat mNodeInfo1 = createAccessibilityNodeInfo(vvid1);
-        AccessibilityNodeInfoCompat mNodeInfo2 = createAccessibilityNodeInfo(vvid2);
-        Assert.assertNotNull(NODE_TIMEOUT_ERROR, mNodeInfo1);
-        Assert.assertNotNull(NODE_TIMEOUT_ERROR, mNodeInfo2);
+        AccessibilityNodeInfoCompat nodeInfo1 = createAccessibilityNodeInfo(vvid1);
+        AccessibilityNodeInfoCompat nodeInfo2 = createAccessibilityNodeInfo(vvid2);
+        Assert.assertNotNull(NODE_TIMEOUT_ERROR, nodeInfo1);
+        Assert.assertNotNull(NODE_TIMEOUT_ERROR, nodeInfo2);
 
         // Focus our first node.
         focusNode(vvid1);
@@ -3683,12 +3747,12 @@ public class WebContentsAccessibilityTest {
 
         // Send of test signal and update node.
         mActivityTestRule.sendEndOfTestSignal();
-        mNodeInfo1 = createAccessibilityNodeInfo(vvid1);
-        mNodeInfo2 = createAccessibilityNodeInfo(vvid2);
+        nodeInfo1 = createAccessibilityNodeInfo(vvid1);
+        nodeInfo2 = createAccessibilityNodeInfo(vvid2);
 
         // Verify results.
-        Assert.assertFalse(PERFORM_ACTION_ERROR, mNodeInfo1.isAccessibilityFocused());
-        Assert.assertTrue(PERFORM_ACTION_ERROR, mNodeInfo2.isAccessibilityFocused());
+        Assert.assertFalse(PERFORM_ACTION_ERROR, nodeInfo1.isAccessibilityFocused());
+        Assert.assertTrue(PERFORM_ACTION_ERROR, nodeInfo2.isAccessibilityFocused());
     }
 
     /** Test that the performAction for ACTION_SET_SELECTION works properly with accessibility. */
@@ -3701,10 +3765,10 @@ public class WebContentsAccessibilityTest {
         // Find the relevant nodes.
         int vvid1 = waitForNodeMatching(sViewIdResourceNameMatcher, "id1");
         int vvid2 = waitForNodeMatching(sViewIdResourceNameMatcher, "id2");
-        AccessibilityNodeInfoCompat mNodeInfo1 = createAccessibilityNodeInfo(vvid1);
-        AccessibilityNodeInfoCompat mNodeInfo2 = createAccessibilityNodeInfo(vvid2);
-        Assert.assertNotNull(NODE_TIMEOUT_ERROR, mNodeInfo1);
-        Assert.assertNotNull(NODE_TIMEOUT_ERROR, mNodeInfo2);
+        AccessibilityNodeInfoCompat nodeInfo1 = createAccessibilityNodeInfo(vvid1);
+        AccessibilityNodeInfoCompat nodeInfo2 = createAccessibilityNodeInfo(vvid2);
+        Assert.assertNotNull(NODE_TIMEOUT_ERROR, nodeInfo1);
+        Assert.assertNotNull(NODE_TIMEOUT_ERROR, nodeInfo2);
 
         // Focus our second node.
         focusNode(vvid2);
@@ -3728,12 +3792,12 @@ public class WebContentsAccessibilityTest {
 
         // Send of test signal and update node.
         mActivityTestRule.sendEndOfTestSignal();
-        mNodeInfo1 = createAccessibilityNodeInfo(vvid1);
-        mNodeInfo2 = createAccessibilityNodeInfo(vvid2);
+        nodeInfo1 = createAccessibilityNodeInfo(vvid1);
+        nodeInfo2 = createAccessibilityNodeInfo(vvid2);
 
         // Verify results.
-        Assert.assertTrue(PERFORM_ACTION_ERROR, mNodeInfo1.isAccessibilityFocused());
-        Assert.assertFalse(PERFORM_ACTION_ERROR, mNodeInfo2.isAccessibilityFocused());
+        Assert.assertTrue(PERFORM_ACTION_ERROR, nodeInfo1.isAccessibilityFocused());
+        Assert.assertFalse(PERFORM_ACTION_ERROR, nodeInfo2.isAccessibilityFocused());
     }
 
     /**
@@ -3748,10 +3812,10 @@ public class WebContentsAccessibilityTest {
         // Find the relevant nodes.
         int vvid1 = waitForNodeMatching(sViewIdResourceNameMatcher, "id1");
         int vvid2 = waitForNodeMatching(sViewIdResourceNameMatcher, "id2");
-        AccessibilityNodeInfoCompat mNodeInfo1 = createAccessibilityNodeInfo(vvid1);
-        AccessibilityNodeInfoCompat mNodeInfo2 = createAccessibilityNodeInfo(vvid2);
-        Assert.assertNotNull(NODE_TIMEOUT_ERROR, mNodeInfo1);
-        Assert.assertNotNull(NODE_TIMEOUT_ERROR, mNodeInfo2);
+        AccessibilityNodeInfoCompat nodeInfo1 = createAccessibilityNodeInfo(vvid1);
+        AccessibilityNodeInfoCompat nodeInfo2 = createAccessibilityNodeInfo(vvid2);
+        Assert.assertNotNull(NODE_TIMEOUT_ERROR, nodeInfo1);
+        Assert.assertNotNull(NODE_TIMEOUT_ERROR, nodeInfo2);
 
         // Send an action and poll for update.
         Assert.assertTrue(
@@ -3762,10 +3826,10 @@ public class WebContentsAccessibilityTest {
                         () -> createAccessibilityNodeInfo(vvid1).isAccessibilityFocused()));
 
         // Update nodes and verify results.
-        mNodeInfo1 = createAccessibilityNodeInfo(vvid1);
-        mNodeInfo2 = createAccessibilityNodeInfo(vvid2);
-        Assert.assertTrue(PERFORM_ACTION_ERROR, mNodeInfo1.isAccessibilityFocused());
-        Assert.assertFalse(PERFORM_ACTION_ERROR, mNodeInfo2.isAccessibilityFocused());
+        nodeInfo1 = createAccessibilityNodeInfo(vvid1);
+        nodeInfo2 = createAccessibilityNodeInfo(vvid2);
+        Assert.assertTrue(PERFORM_ACTION_ERROR, nodeInfo1.isAccessibilityFocused());
+        Assert.assertFalse(PERFORM_ACTION_ERROR, nodeInfo2.isAccessibilityFocused());
     }
 
     /**
@@ -3781,10 +3845,10 @@ public class WebContentsAccessibilityTest {
         // Find the relevant nodes.
         int vvid1 = waitForNodeMatching(sViewIdResourceNameMatcher, "id1");
         int vvid2 = waitForNodeMatching(sViewIdResourceNameMatcher, "id2");
-        AccessibilityNodeInfoCompat mNodeInfo1 = createAccessibilityNodeInfo(vvid1);
-        AccessibilityNodeInfoCompat mNodeInfo2 = createAccessibilityNodeInfo(vvid2);
-        Assert.assertNotNull(NODE_TIMEOUT_ERROR, mNodeInfo1);
-        Assert.assertNotNull(NODE_TIMEOUT_ERROR, mNodeInfo2);
+        AccessibilityNodeInfoCompat nodeInfo1 = createAccessibilityNodeInfo(vvid1);
+        AccessibilityNodeInfoCompat nodeInfo2 = createAccessibilityNodeInfo(vvid2);
+        Assert.assertNotNull(NODE_TIMEOUT_ERROR, nodeInfo1);
+        Assert.assertNotNull(NODE_TIMEOUT_ERROR, nodeInfo2);
 
         // Send an action and poll for update.
         Assert.assertTrue(
@@ -3795,10 +3859,10 @@ public class WebContentsAccessibilityTest {
                         () -> createAccessibilityNodeInfo(vvid1).isAccessibilityFocused()));
 
         // Update nodes and verify results.
-        mNodeInfo1 = createAccessibilityNodeInfo(vvid1);
-        mNodeInfo2 = createAccessibilityNodeInfo(vvid2);
-        Assert.assertTrue(PERFORM_ACTION_ERROR, mNodeInfo1.isAccessibilityFocused());
-        Assert.assertFalse(PERFORM_ACTION_ERROR, mNodeInfo2.isAccessibilityFocused());
+        nodeInfo1 = createAccessibilityNodeInfo(vvid1);
+        nodeInfo2 = createAccessibilityNodeInfo(vvid2);
+        Assert.assertTrue(PERFORM_ACTION_ERROR, nodeInfo1.isAccessibilityFocused());
+        Assert.assertFalse(PERFORM_ACTION_ERROR, nodeInfo2.isAccessibilityFocused());
 
         // Clear accessibility focus from the node and verify.
         Assert.assertTrue(
@@ -3808,10 +3872,10 @@ public class WebContentsAccessibilityTest {
                         null,
                         () -> !createAccessibilityNodeInfo(vvid1).isAccessibilityFocused()));
 
-        mNodeInfo1 = createAccessibilityNodeInfo(vvid1);
-        mNodeInfo2 = createAccessibilityNodeInfo(vvid2);
-        Assert.assertFalse(PERFORM_ACTION_ERROR, mNodeInfo1.isAccessibilityFocused());
-        Assert.assertFalse(PERFORM_ACTION_ERROR, mNodeInfo2.isAccessibilityFocused());
+        nodeInfo1 = createAccessibilityNodeInfo(vvid1);
+        nodeInfo2 = createAccessibilityNodeInfo(vvid2);
+        Assert.assertFalse(PERFORM_ACTION_ERROR, nodeInfo1.isAccessibilityFocused());
+        Assert.assertFalse(PERFORM_ACTION_ERROR, nodeInfo2.isAccessibilityFocused());
     }
 
     /** Test that the performAction for ACTION_FOCUS works properly with accessibility. */
@@ -3824,10 +3888,10 @@ public class WebContentsAccessibilityTest {
         // Find the relevant nodes.
         int vvid1 = waitForNodeMatching(sViewIdResourceNameMatcher, "id1");
         int vvid2 = waitForNodeMatching(sViewIdResourceNameMatcher, "id2");
-        AccessibilityNodeInfoCompat mNodeInfo1 = createAccessibilityNodeInfo(vvid1);
-        AccessibilityNodeInfoCompat mNodeInfo2 = createAccessibilityNodeInfo(vvid2);
-        Assert.assertNotNull(NODE_TIMEOUT_ERROR, mNodeInfo1);
-        Assert.assertNotNull(NODE_TIMEOUT_ERROR, mNodeInfo2);
+        AccessibilityNodeInfoCompat nodeInfo1 = createAccessibilityNodeInfo(vvid1);
+        AccessibilityNodeInfoCompat nodeInfo2 = createAccessibilityNodeInfo(vvid2);
+        Assert.assertNotNull(NODE_TIMEOUT_ERROR, nodeInfo1);
+        Assert.assertNotNull(NODE_TIMEOUT_ERROR, nodeInfo2);
 
         // Send an action and poll for update.
         Assert.assertTrue(
@@ -3838,10 +3902,10 @@ public class WebContentsAccessibilityTest {
                         () -> createAccessibilityNodeInfo(vvid1).isFocused()));
 
         // Update nodes and verify results.
-        mNodeInfo1 = createAccessibilityNodeInfo(vvid1);
-        mNodeInfo2 = createAccessibilityNodeInfo(vvid2);
-        Assert.assertTrue(PERFORM_ACTION_ERROR, mNodeInfo1.isFocused());
-        Assert.assertFalse(PERFORM_ACTION_ERROR, mNodeInfo2.isFocused());
+        nodeInfo1 = createAccessibilityNodeInfo(vvid1);
+        nodeInfo2 = createAccessibilityNodeInfo(vvid2);
+        Assert.assertTrue(PERFORM_ACTION_ERROR, nodeInfo1.isFocused());
+        Assert.assertFalse(PERFORM_ACTION_ERROR, nodeInfo2.isFocused());
     }
 
     /** Test that the findFocus method works properly with accessibility. */
@@ -3854,10 +3918,10 @@ public class WebContentsAccessibilityTest {
         // Find the relevant nodes.
         int vvid1 = waitForNodeMatching(sViewIdResourceNameMatcher, "id1");
         int vvid2 = waitForNodeMatching(sViewIdResourceNameMatcher, "id2");
-        AccessibilityNodeInfoCompat mNodeInfo1 = createAccessibilityNodeInfo(vvid1);
-        AccessibilityNodeInfoCompat mNodeInfo2 = createAccessibilityNodeInfo(vvid2);
-        Assert.assertNotNull(NODE_TIMEOUT_ERROR, mNodeInfo1);
-        Assert.assertNotNull(NODE_TIMEOUT_ERROR, mNodeInfo2);
+        AccessibilityNodeInfoCompat nodeInfo1 = createAccessibilityNodeInfo(vvid1);
+        AccessibilityNodeInfoCompat nodeInfo2 = createAccessibilityNodeInfo(vvid2);
+        Assert.assertNotNull(NODE_TIMEOUT_ERROR, nodeInfo1);
+        Assert.assertNotNull(NODE_TIMEOUT_ERROR, nodeInfo2);
 
         // Send an action to focus the first input using ACTION_ACCESSIBILITY_FOCUS
         Assert.assertTrue(
@@ -3905,10 +3969,10 @@ public class WebContentsAccessibilityTest {
         // Find the relevant nodes.
         int vvid1 = waitForNodeMatching(sViewIdResourceNameMatcher, "id1");
         int vvid2 = waitForNodeMatching(sViewIdResourceNameMatcher, "id2");
-        AccessibilityNodeInfoCompat mNodeInfo1 = createAccessibilityNodeInfo(vvid1);
-        AccessibilityNodeInfoCompat mNodeInfo2 = createAccessibilityNodeInfo(vvid2);
-        Assert.assertNotNull(NODE_TIMEOUT_ERROR, mNodeInfo1);
-        Assert.assertNotNull(NODE_TIMEOUT_ERROR, mNodeInfo2);
+        AccessibilityNodeInfoCompat nodeInfo1 = createAccessibilityNodeInfo(vvid1);
+        AccessibilityNodeInfoCompat nodeInfo2 = createAccessibilityNodeInfo(vvid2);
+        Assert.assertNotNull(NODE_TIMEOUT_ERROR, nodeInfo1);
+        Assert.assertNotNull(NODE_TIMEOUT_ERROR, nodeInfo2);
 
         // Send an action and poll for update.
         Assert.assertTrue(
@@ -3919,10 +3983,10 @@ public class WebContentsAccessibilityTest {
                         () -> createAccessibilityNodeInfo(vvid1).isFocused()));
 
         // Update nodes and verify results.
-        mNodeInfo1 = createAccessibilityNodeInfo(vvid1);
-        mNodeInfo2 = createAccessibilityNodeInfo(vvid2);
-        Assert.assertTrue(PERFORM_ACTION_ERROR, mNodeInfo1.isFocused());
-        Assert.assertFalse(PERFORM_ACTION_ERROR, mNodeInfo2.isFocused());
+        nodeInfo1 = createAccessibilityNodeInfo(vvid1);
+        nodeInfo2 = createAccessibilityNodeInfo(vvid2);
+        Assert.assertTrue(PERFORM_ACTION_ERROR, nodeInfo1.isFocused());
+        Assert.assertFalse(PERFORM_ACTION_ERROR, nodeInfo2.isFocused());
 
         // Clear focus from the node and verify.
         Assert.assertTrue(
@@ -3932,10 +3996,10 @@ public class WebContentsAccessibilityTest {
                         null,
                         () -> !createAccessibilityNodeInfo(vvid1).isFocused()));
 
-        mNodeInfo1 = createAccessibilityNodeInfo(vvid1);
-        mNodeInfo2 = createAccessibilityNodeInfo(vvid2);
-        Assert.assertFalse(PERFORM_ACTION_ERROR, mNodeInfo1.isFocused());
-        Assert.assertFalse(PERFORM_ACTION_ERROR, mNodeInfo2.isFocused());
+        nodeInfo1 = createAccessibilityNodeInfo(vvid1);
+        nodeInfo2 = createAccessibilityNodeInfo(vvid2);
+        Assert.assertFalse(PERFORM_ACTION_ERROR, nodeInfo1.isFocused());
+        Assert.assertFalse(PERFORM_ACTION_ERROR, nodeInfo2.isFocused());
     }
 
     /** Test that the performAction for ACTION_SHOW_ON_SCREEN works properly with accessibility. */
@@ -4922,12 +4986,12 @@ public class WebContentsAccessibilityTest {
         int vvId1 = waitForNodeMatching(sTextMatcher, "This is a test 1");
         int vvId2 = waitForNodeMatching(sTextMatcher, "This is a test 2");
         int vvId3 = waitForNodeMatching(sTextMatcher, "This is a test 3");
-        AccessibilityNodeInfoCompat mNodeInfo1 = createAccessibilityNodeInfo(vvId1);
-        AccessibilityNodeInfoCompat mNodeInfo2 = createAccessibilityNodeInfo(vvId2);
-        AccessibilityNodeInfoCompat mNodeInfo3 = createAccessibilityNodeInfo(vvId3);
-        Assert.assertNotNull(NODE_TIMEOUT_ERROR, mNodeInfo1);
-        Assert.assertNotNull(NODE_TIMEOUT_ERROR, mNodeInfo2);
-        Assert.assertNotNull(NODE_TIMEOUT_ERROR, mNodeInfo3);
+        AccessibilityNodeInfoCompat nodeInfo1 = createAccessibilityNodeInfo(vvId1);
+        AccessibilityNodeInfoCompat nodeInfo2 = createAccessibilityNodeInfo(vvId2);
+        AccessibilityNodeInfoCompat nodeInfo3 = createAccessibilityNodeInfo(vvId3);
+        Assert.assertNotNull(NODE_TIMEOUT_ERROR, nodeInfo1);
+        Assert.assertNotNull(NODE_TIMEOUT_ERROR, nodeInfo2);
+        Assert.assertNotNull(NODE_TIMEOUT_ERROR, nodeInfo3);
 
         // Focus each node in turn to generate events.
         focusNode(vvId1);

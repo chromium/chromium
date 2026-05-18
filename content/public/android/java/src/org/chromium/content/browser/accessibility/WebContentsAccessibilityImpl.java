@@ -702,6 +702,10 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
         ResettersForTesting.register(() -> mTracker = oldValue);
     }
 
+    public float getScrollYForTesting() {
+        return mDelegate.getAccessibilityCoordinates().getScrollY();
+    }
+
     public void setIsAutoDisableAccessibilityCandidateForTesting(
             boolean isAutoDisableAccessibilityCandidate) {
         mIsAutoDisableAccessibilityCandidate = isAutoDisableAccessibilityCandidate;

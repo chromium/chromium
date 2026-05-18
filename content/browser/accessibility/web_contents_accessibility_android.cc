@@ -2133,8 +2133,12 @@ void WebContentsAccessibilityAndroid::ScrollToMakeNodeVisible(
     int32_t unique_id) {
   BrowserAccessibilityAndroid* node = GetAXFromUniqueID(unique_id);
   if (node) {
-    node->manager()->ScrollToMakeVisible(
-        *node, gfx::Rect(node->GetUnclippedFrameBoundsRect().size()));
+    // Passing an empty gfx::Rect() signals to Blink to scroll the element's
+    // natural layout bounds into view. Explicitly deriving and passing
+    // absolute-sized target rects can miscalculate scroll destinations for
+    // elements nested inside positioned layers or web components, leading to
+    // unexpected page over-scrolling.
+    node->manager()->ScrollToMakeVisible(*node, gfx::Rect());
   }
 }
 
