@@ -197,12 +197,6 @@ bool LinkCapturingNavigationThrottle::MaybeCreateAndAdd(
   return true;
 }
 
-LinkCapturingNavigationThrottle::LaunchCallbackForTesting&
-LinkCapturingNavigationThrottle::GetLinkCaptureLaunchCallbackForTesting() {
-  static base::NoDestructor<LaunchCallbackForTesting> callback;
-  return *callback;
-}
-
 LinkCapturingNavigationThrottle::~LinkCapturingNavigationThrottle() = default;
 
 const char* LinkCapturingNavigationThrottle::GetNameForLogging() {
@@ -319,7 +313,6 @@ ThrottleCheckResult LinkCapturingNavigationThrottle::HandleRequest() {
   // if we wait until after the launch completes to close the tab, then it will
   // cause the old window to come to the front hiding the newly launched app
   // window.
-  bool closed_web_contents = false;
   std::unique_ptr<ScopedKeepAlive> browser_keep_alive;
   std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive;
   if (IsEmptyDanglingWebContentsAfterLinkCapture(handle)) {
@@ -330,22 +323,14 @@ ThrottleCheckResult LinkCapturingNavigationThrottle::HandleRequest() {
           profile, ProfileKeepAliveOrigin::kAppWindow);
     }
     web_contents->ClosePage();
-    closed_web_contents = true;
   }
 
   // Note: This callback currently serves to own the "keep alive" objects
   // until the launch is complete.
   base::OnceClosure launch_callback = base::BindOnce(
       [](std::unique_ptr<ScopedKeepAlive> browser_keep_alive,
-         std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive,
-         bool closed_web_contents) {
-        if (GetLinkCaptureLaunchCallbackForTesting()) {        // IN-TEST
-          std::move(GetLinkCaptureLaunchCallbackForTesting())  // IN-TEST
-              .Run(closed_web_contents);                       // IN-TEST
-        }
-      },
-      std::move(browser_keep_alive), std::move(profile_keep_alive),
-      closed_web_contents);
+         std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive) {},
+      std::move(browser_keep_alive), std::move(profile_keep_alive));
 
   // The tab may have been closed, which runs async and causes the browser
   // window to be refocused. Post a task to launch the app to ensure launching

@@ -51,6 +51,10 @@
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom-shared.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom.h"
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/apps/link_capturing/chromeos_reimpl_navigation_capturing_throttle.h"
+#endif
+
 using content::RenderFrameHost;
 using content::WebContents;
 using content::test::PrerenderHostObserver;
@@ -385,25 +389,21 @@ IN_PROC_BROWSER_TEST_P(WebAppLinkCapturingBrowserTest,
 
   ExpectTabs(browser(), {about_blank_});
   BrowserDestroyedObserver browser_destroyed_observer(browser());
-
-  base::test::TestFuture<bool /*closed_web_contents*/> future;
-  apps::LinkCapturingNavigationThrottle::
-      GetLinkCaptureLaunchCallbackForTesting() = future.GetCallback();
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  content::WebContentsDestroyedWatcher watcher(web_contents);
 
   // Navigate an about:blank page using JavaScript.
   BrowserCreatedObserver browser_created_observer;
   ASSERT_TRUE(content::ExecJs(
-      browser()->tab_strip_model()->GetActiveWebContents(),
+      web_contents,
       base::StringPrintf("location = '%s';", in_scope_1.spec().c_str())));
   Browser* app_browser = browser_created_observer.Wait();
   ExpectTabs(app_browser, {in_scope_1});
 
   // Old about:blank page cleaned up.
   browser_destroyed_observer.Wait();
-
-  // Must wait for link capturing launch to complete so that its keep alives go
-  // out of scope.
-  EXPECT_TRUE(future.Get<bool /*closed_web_contents*/>());
+  watcher.Wait();
 }
 
 IN_PROC_BROWSER_TEST_P(WebAppLinkCapturingBrowserTest,

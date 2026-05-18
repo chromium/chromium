@@ -588,19 +588,8 @@ ThrottleCheckResult ChromeOsReimplNavigationCapturingThrottle::HandleRequest() {
   }
   base::OnceClosure launch_callback = base::BindOnce(
       [](std::unique_ptr<ScopedKeepAlive> browser_keep_alive,
-         std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive,
-         bool closed_web_contents) {
-        // TODO(https://crbug.com/400473923): Move this to this class when we
-        // remove v1, as we'll still keep the tests that use this.
-        if (LinkCapturingNavigationThrottle::
-                GetLinkCaptureLaunchCallbackForTesting()) {  // IN-TEST
-          std::move(LinkCapturingNavigationThrottle::
-                        GetLinkCaptureLaunchCallbackForTesting())  // IN-TEST
-              .Run(closed_web_contents);
-        }
-      },
-      std::move(browser_keep_alive), std::move(profile_keep_alive),
-      closed_web_contents);
+         std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive) {},
+      std::move(browser_keep_alive), std::move(profile_keep_alive));
 
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,

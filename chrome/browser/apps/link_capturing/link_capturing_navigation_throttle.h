@@ -70,10 +70,6 @@ class LinkCapturingNavigationThrottle : public content::NavigationThrottle {
   static bool MaybeCreateAndAdd(content::NavigationThrottleRegistry& registry,
                                 std::unique_ptr<Delegate> delegate);
 
-  using LaunchCallbackForTesting =
-      base::OnceCallback<void(bool closed_web_contents)>;
-  static LaunchCallbackForTesting& GetLinkCaptureLaunchCallbackForTesting();
-
   LinkCapturingNavigationThrottle(const LinkCapturingNavigationThrottle&) =
       delete;
   LinkCapturingNavigationThrottle& operator=(
