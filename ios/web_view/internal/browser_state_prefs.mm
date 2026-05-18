@@ -13,6 +13,7 @@
 #import "components/pref_registry/pref_registry_syncable.h"
 #import "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #import "components/signin/public/base/signin_prefs.h"
+#import "components/sync/service/device_statistics_scheduler.h"
 #import "components/sync/service/glue/sync_transport_data_prefs.h"
 #import "components/sync/service/sync_prefs.h"
 #import "components/sync_device_info/device_info_prefs.h"
@@ -39,6 +40,7 @@ void RegisterBrowserStatePrefs(
   syncer::SyncPrefs::RegisterProfilePrefs(pref_registry);
   syncer::SyncTransportDataPrefs::RegisterProfilePrefs(pref_registry);
   syncer::DeviceInfoPrefs::RegisterProfilePrefs(pref_registry);
+  syncer::DeviceStatisticsScheduler::RegisterProfilePrefs(pref_registry);
   safe_browsing::RegisterProfilePrefs(pref_registry);
   unified_consent::UnifiedConsentService::RegisterPrefs(pref_registry);
   ios_web_view::RegisterCWVAutofillPrefs(pref_registry);
