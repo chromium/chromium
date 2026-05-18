@@ -4728,6 +4728,11 @@
     "expiry_milestone": 149
   },
   {
+    "name": "feedback-entry-points-require-can-submit-feedback-capability",
+    "owners": [ "jlebel@google.com", "chrome-signin-team@google.com" ],
+    "expiry_milestone": 160
+  },
+  {
     "name": "field-classification-model-caching",
     "owners": [ "kazinova@google.com", "lamort@google.com", "chrome-password-manager-team@google.com" ],
     "expiry_milestone": 146

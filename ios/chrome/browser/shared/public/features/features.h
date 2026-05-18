@@ -937,7 +937,21 @@ BASE_DECLARE_FEATURE(kAimCobrowse);
 // Returns true if the AimCobrowse feature is enabled.
 bool IsAimCobrowseEnabled();
 
-// Enables the DisableU18FeedbackIos feature.
+// Removes or disables feedback entry points from Chrome UI for signed in users
+// who do not have the `can_submit_feedback` Account Capability.
+BASE_DECLARE_FEATURE(kFeedbackEntryPointsRequireCanSubmitFeedbackCapability);
+
+// Returns true if the kFeedbackEntryPointsRequireCanSubmitFeedbackCapability
+// feature is enabled.
+bool IsFeedbackEntryPointsRequireCanSubmitFeedbackCapabilityEnabled();
+
+// Provides the primary identity of the user to FeedbackKit and enables the
+// check for `can_submit_feedback` capability for the account.
+// The identity is not included in feedback reports.
+// This should only be enabled with the newer version of FeedbackKit, which
+// enables this functionality.
+// This feature is irrelevant if
+// kFeedbackEntryPointsRequireCanSubmitFeedbackCapability feature is enabled.
 BASE_DECLARE_FEATURE(kDisableU18FeedbackIos);
 
 // Returns true if the DisableU18FeedbackIos feature is enabled.

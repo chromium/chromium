@@ -741,6 +741,14 @@ inline constexpr char kFeedSwipeInProductHelpName[] = "Enable Feed Swipe IPH";
 inline constexpr char kFeedSwipeInProductHelpDescription[] =
     "Presents an in-product help on the NTP to promote swiping on the Feed";
 
+inline constexpr char
+    kFeedbackEntryPointsRequireCanSubmitFeedbackCapabilityName[] =
+        "Feedback Entry Points Require Can Submit Feedback Capability";
+inline constexpr char
+    kFeedbackEntryPointsRequireCanSubmitFeedbackCapabilityDescription[] =
+        "When enabled, feedback entry points require the can_submit_feedback "
+        "capability. The entry points are either removed or ignored.";
+
 inline constexpr char kForceStartupSigninPromoName[] =
     "Display the startup sign-in promo";
 inline constexpr char kForceStartupSigninPromoDescription[] =

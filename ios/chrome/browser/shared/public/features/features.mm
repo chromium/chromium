@@ -1165,6 +1165,14 @@ bool IsAimCobrowseEnabled() {
          base::FeatureList::IsEnabled(kAimCobrowse);
 }
 
+BASE_FEATURE(kFeedbackEntryPointsRequireCanSubmitFeedbackCapability,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsFeedbackEntryPointsRequireCanSubmitFeedbackCapabilityEnabled() {
+  return base::FeatureList::IsEnabled(
+      kFeedbackEntryPointsRequireCanSubmitFeedbackCapability);
+}
+
 BASE_FEATURE(kDisableU18FeedbackIos, base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsDisableU18FeedbackIosEnabled() {
