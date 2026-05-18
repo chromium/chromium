@@ -215,21 +215,28 @@ void V5UpdateProtocolManager::OnURLLoaderComplete(
     response_code = request_->ResponseInfo()->headers->response_code();
   }
 
-  ParsedResponse result = OnURLLoaderCompleteInternal(
-      request_->NetError(), response_code, std::move(response_body),
-      list_identifier_to_version_mapping);
+  base::expected<ParsedResponse, V5OperationResult> result =
+      OnURLLoaderCompleteInternal(request_->NetError(), response_code,
+                                  std::move(response_body),
+                                  list_identifier_to_version_mapping);
 
   request_.reset();
-  // Set the next update interval based on the minimum wait duration
-  // across lists.
-  next_update_interval_ = result.minimum_wait_duration;
-  // The caller should update its state now based on the parsed response.
-  // The callback must call `ScheduleNextUpdate()` at the end to resume
-  // downloading updates.
-  update_callback_.Run(std::move(result.hash_list_map));
+  if (result.has_value()) {
+    // Set the next update interval based on the minimum wait duration
+    // across lists.
+    next_update_interval_ = result.value().minimum_wait_duration;
+    // The caller should update its state now based on the parsed response.
+    // The callback must call `ScheduleNextUpdate()` at the end to resume
+    // downloading updates.
+    update_callback_.Run(std::move(result.value().hash_list_map));
+  } else {
+    ScheduleNextUpdateInternal(
+        /*back_off=*/true, std::move(list_identifier_to_version_mapping));
+  }
 }
 
-V5UpdateProtocolManager::ParsedResponse
+base::expected<V5UpdateProtocolManager::ParsedResponse,
+               V5UpdateProtocolManager::V5OperationResult>
 V5UpdateProtocolManager::OnURLLoaderCompleteInternal(
     int net_error,
     int response_code,
@@ -240,27 +247,39 @@ V5UpdateProtocolManager::OnURLLoaderCompleteInternal(
   last_response_code_ = response_code;
   last_response_time_ = base::Time::Now();
 
-  if (net_error == net::OK && response_code == net::HTTP_OK) {
-    ResetUpdateErrors();
-    ParsedResponse parsed_response =
-        ParseUpdateResponse(response_body, list_identifier_to_version_mapping);
-    return parsed_response;
+  // Return early if hit a net error or an http error.
+  if (net_error != net::OK) {
+    return base::unexpected(V5OperationResult::kNetworkError);
+  }
+  if (response_code != net::HTTP_OK) {
+    return base::unexpected(V5OperationResult::kHttpError);
   }
 
-  // TODO(crbug.com/362791941): failed responses
-  ParsedResponse failed_response;
-  return failed_response;
+  ResetUpdateErrors();
+  base::expected<ParsedResponse, V5ParseResult> parsed_response =
+      ParseUpdateResponse(response_body, list_identifier_to_version_mapping);
+  if (!parsed_response.has_value()) {
+    return base::unexpected(V5OperationResult::kParseError);
+  }
+  return std::move(parsed_response.value());
 }
 
-V5UpdateProtocolManager::ParsedResponse
+base::expected<V5UpdateProtocolManager::ParsedResponse,
+               V5UpdateProtocolManager::V5ParseResult>
 V5UpdateProtocolManager::ParseUpdateResponse(
     const std::optional<std::string>& response_body,
     const std::vector<ListIdentifierAndVersion>&
         list_identifier_to_version_mapping) {
   V5::BatchGetHashListsResponse server_response;
-  server_response.ParseFromString(response_body.value());
-  // TODO(crbug.com/362791941): failed parsing - including confirming response #
-  // lists matches request # lists
+  if (!response_body.has_value() || response_body.value().empty() ||
+      !server_response.ParseFromString(response_body.value())) {
+    return base::unexpected(V5ParseResult::kParseFromStringError);
+  }
+
+  if (static_cast<int>(list_identifier_to_version_mapping.size()) !=
+      server_response.hash_lists_size()) {
+    return base::unexpected(V5ParseResult::kMismatchedSizeError);
+  }
   std::map<ListIdentifier, V5::HashList> parsed_response;
   // TODO(crbug.com/362791941): consider non-optional + initialize to max time
   std::optional<base::TimeDelta> overall_minimum_wait_duration;
@@ -270,14 +289,34 @@ V5UpdateProtocolManager::ParseUpdateResponse(
     ListIdentifier list_identifier =
         list_identifier_to_version_mapping[i].list_identifier;
 
+    if (hash_list.name().empty() ||
+        hash_list.name() != GetV5ListName(list_identifier)) {
+      return base::unexpected(V5ParseResult::kMismatchedNameError);
+    }
+
+    PrefixSize expected_hash_prefix_lengths =
+        GetV5ListPrefixSize(list_identifier);
+    if ((hash_list.has_additions_four_bytes() &&
+         expected_hash_prefix_lengths != 4) ||
+        (hash_list.has_additions_eight_bytes() &&
+         expected_hash_prefix_lengths != 8) ||
+        (hash_list.has_additions_sixteen_bytes() &&
+         expected_hash_prefix_lengths != 16) ||
+        (hash_list.has_additions_thirty_two_bytes() &&
+         expected_hash_prefix_lengths != 32)) {
+      return base::unexpected(V5ParseResult::kMismatchedPrefixLengthError);
+    }
+
     // Save off the smallest minimum_wait_duration across lists and use that to
     // determine when next to trigger an update request.
     std::optional<base::TimeDelta> list_minimum_wait_duration;
     if (hash_list.has_minimum_wait_duration()) {
-      // TODO(crbug.com/362791941): fail if invalid duration (negative)
       const auto& duration = hash_list.minimum_wait_duration();
       list_minimum_wait_duration = base::Seconds(duration.seconds()) +
                                    base::Nanoseconds(duration.nanos());
+      if (list_minimum_wait_duration->is_negative()) {
+        return base::unexpected(V5ParseResult::kNegativeDurationError);
+      }
     } else {
       // If minimum_wait_duration is unset (or 0, handled above), clients are
       // expected to fetch immediately. Note that this is not expected to happen
