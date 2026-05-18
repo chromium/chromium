@@ -12,6 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/types/expected.h"
 #include "base/values.h"
 #include "chrome/browser/extensions/chrome_extension_function_details.h"
 #include "chrome/browser/extensions/window_controller.h"
@@ -191,15 +192,15 @@ class WindowsCreateFunction : public ExtensionFunction {
   ResponseAction Run() override;
   DECLARE_EXTENSION_FUNCTION("windows.create", WINDOWS_CREATE)
 
+  // Ensures the tab for the window is valid.
+  static base::expected<void, std::string> ValidateTab(
+      WindowController* source_window,
+      Profile* window_profile,
+      content::WebContents* web_contents,
+      bool is_locked_fullscreen = false);
+
  private:
   ~WindowsCreateFunction() override;
-
-  // Ensures the tab for the window is valid. Returns an error string, or the
-  // empty string if the tab is valid.
-  static std::string ValidateTab(WindowController* source_window,
-                                 Profile* window_profile,
-                                 content::WebContents* web_contents,
-                                 bool is_locked_fullscreen);
 
   // Uses `create_data` to set the window position and size in `window_bounds`.
   // Returns an error string, or the empty string if the bounds are valid.

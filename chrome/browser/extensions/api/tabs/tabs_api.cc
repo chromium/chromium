@@ -11,6 +11,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/thread_pool.h"
+#include "base/types/expected.h"
 #include "base/types/expected_macros.h"
 #include "base/types/optional_util.h"
 #include "chrome/browser/devtools/devtools_window.h"
@@ -131,8 +132,8 @@ constexpr char kWindowCreateCannotParseIwaUrlError[] =
 constexpr char kWindowCreateCannotUseTabIdWithIwaError[] =
     "Creating a new window for an Isolated Web App does not support adding a "
     "tab by its ID.";
-constexpr char kWindowCreateCannotMoveIwaTabError[] =
-    "The tab of an Isolated Web App cannot be moved to a new window.";
+constexpr char kCannotMoveIwaTabError[] =
+    "The tab of an Isolated Web App cannot be moved.";
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
@@ -403,17 +404,20 @@ int MoveTabToWindow(ExtensionFunction* function,
                     bool allow_other_window_types,
                     std::string* error) {
   WindowController* source_window = nullptr;
+  content::WebContents* web_contents = nullptr;
   int source_index = -1;
   if (!tabs_internal::GetTabById(tab_id, function->browser_context(),
                                  function->include_incognito_information(),
-                                 &source_window, nullptr, &source_index,
+                                 &source_window, &web_contents, &source_index,
                                  error) ||
       !source_window) {
     return -1;
   }
 
-  if (!ExtensionTabUtil::IsTabStripEditable(*source_window->profile())) {
-    *error = ExtensionTabUtil::kTabStripNotEditableError;
+  auto validation_result = WindowsCreateFunction::ValidateTab(
+      source_window, target_browser->GetProfile(), web_contents);
+  if (!validation_result.has_value()) {
+    *error = std::move(validation_result.error());
     return -1;
   }
 
@@ -423,11 +427,6 @@ int MoveTabToWindow(ExtensionFunction* function,
   if (!allow_other_window_types &&
       target_browser->GetType() != BrowserWindowInterface::TYPE_NORMAL) {
     *error = ExtensionTabUtil::kCanOnlyMoveTabsWithinNormalWindowsError;
-    return -1;
-  }
-
-  if (target_browser->GetProfile() != source_window->profile()) {
-    *error = ExtensionTabUtil::kCanOnlyMoveTabsWithinSameProfileError;
     return -1;
   }
 
@@ -463,10 +462,7 @@ int MoveTabToWindow(ExtensionFunction* function,
 
   BrowserWindowInterface* source_browser =
       source_window->GetBrowserWindowInterface();
-  if (!source_browser) {
-    *error = ExtensionTabUtil::kCanOnlyMoveTabsWithinNormalWindowsError;
-    return -1;
-  }
+  CHECK(source_browser);
 
   TabListInterface* source_tab_list = TabListInterface::From(source_browser);
   ::tabs::TabInterface* tab = source_tab_list->GetTab(source_index);
@@ -997,10 +993,10 @@ ExtensionFunction::ResponseAction WindowsCreateFunction::Run() {
     }
 
     // Validate the tab information. Return an error if it's not valid.
-    std::string tab_error = ValidateTab(source_window, window_profile,
-                                        web_contents, is_locked_fullscreen);
-    if (!tab_error.empty()) {
-      return RespondNow(Error(std::move(tab_error)));
+    auto tab_validation = ValidateTab(source_window, window_profile,
+                                      web_contents, is_locked_fullscreen);
+    if (!tab_validation.has_value()) {
+      return RespondNow(Error(std::move(tab_validation.error())));
     }
   }
 
@@ -1385,39 +1381,40 @@ ExtensionFunction::ResponseValue WindowsCreateFunction::OnBrowserWindowCreated(
 }
 
 // static
-std::string WindowsCreateFunction::ValidateTab(
+base::expected<void, std::string> WindowsCreateFunction::ValidateTab(
     WindowController* source_window,
     Profile* window_profile,
     content::WebContents* web_contents,
     bool is_locked_fullscreen) {
   if (!source_window) {
     // The source window can be null for prerender tabs.
-    return tabs_constants::kInvalidWindowStateError;
+    return base::unexpected(tabs_constants::kInvalidWindowStateError);
   }
-
   if (!source_window->GetBrowserWindowInterface()) {
-    return ExtensionTabUtil::kCanOnlyMoveTabsWithinNormalWindowsError;
+    return base::unexpected(
+        ExtensionTabUtil::kCanOnlyMoveTabsWithinNormalWindowsError);
   }
-
 #if !BUILDFLAG(IS_ANDROID)
   Browser* source_browser = source_window->GetBrowser();
+  CHECK(source_browser);
   if (web_app::AppBrowserController* controller =
           source_browser->app_controller();
       controller && controller->IsIsolatedWebApp()) {
-    return kWindowCreateCannotMoveIwaTabError;
+    return base::unexpected(kCannotMoveIwaTabError);
   }
 #endif
 
-  if (!ExtensionTabUtil::IsTabStripEditable(*window_profile)) {
-    return ExtensionTabUtil::kTabStripNotEditableError;
+  if (!ExtensionTabUtil::IsTabStripEditable(*source_window->profile())) {
+    return base::unexpected(ExtensionTabUtil::kTabStripNotEditableError);
   }
 
   if (source_window->profile() != window_profile) {
-    return ExtensionTabUtil::kCanOnlyMoveTabsWithinSameProfileError;
+    return base::unexpected(
+        ExtensionTabUtil::kCanOnlyMoveTabsWithinSameProfileError);
   }
 
   if (DevToolsWindow::IsDevToolsWindow(web_contents)) {
-    return tabs_constants::kNotAllowedForDevToolsError;
+    return base::unexpected(tabs_constants::kNotAllowedForDevToolsError);
   }
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -1425,11 +1422,12 @@ std::string WindowsCreateFunction::ValidateTab(
   // locked fullscreen on ChromeOS.
   if (is_locked_fullscreen &&
       ash::features::IsBocaOnTaskLockedQuizMigrationEnabled()) {
-    return ExtensionTabUtil::kCanOnlyMoveTabsWithinNormalWindowsError;
+    return base::unexpected(
+        ExtensionTabUtil::kCanOnlyMoveTabsWithinNormalWindowsError);
   }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-  return std::string();  // No error.
+  return {};
 }
 
 // static

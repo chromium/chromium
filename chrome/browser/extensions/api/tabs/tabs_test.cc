@@ -1397,12 +1397,9 @@ struct ExtensionWindowCreateIwaParam {
   std::string args;
 };
 
-// Test that `windows.create` functions correctly for Isolated Web Apps.
-class ExtensionWindowCreateIwaTest
-    : public InProcessBrowserTest,
-      public testing::WithParamInterface<ExtensionWindowCreateIwaParam> {
+class ExtensionIwaTestBase : public InProcessBrowserTest {
  public:
-  ExtensionWindowCreateIwaTest() {
+  ExtensionIwaTestBase() {
     scoped_feature_list_.InitAndEnableFeature(features::kIsolatedWebApps);
     set_open_about_blank_on_browser_launch(false);
   }
@@ -1450,6 +1447,14 @@ class ExtensionWindowCreateIwaTest
   base::test::ScopedFeatureList scoped_feature_list_;
   web_app::OsIntegrationManager::ScopedSuppressForTesting os_hooks_suppress_;
   base::ScopedTempDir scoped_temp_dir_;
+};
+
+// Test that `windows.create` functions correctly for Isolated Web Apps.
+class ExtensionWindowCreateIwaTest
+    : public ExtensionIwaTestBase,
+      public testing::WithParamInterface<ExtensionWindowCreateIwaParam> {
+ public:
+  ExtensionWindowCreateIwaTest() = default;
 };
 
 IN_PROC_BROWSER_TEST_P(ExtensionWindowCreateIwaTest, CreateWindowForIwa) {
@@ -1559,6 +1564,80 @@ INSTANTIATE_TEST_SUITE_P(
           }])"}),
     [](const testing::TestParamInfo<ExtensionWindowCreateIwaTest::ParamType>&
            info) { return info.param.test_name; });
+
+class ExtensionApiTabsIwaMoveTest : public ExtensionIwaTestBase {
+ public:
+  ExtensionApiTabsIwaMoveTest() = default;
+
+ protected:
+  BrowserWindowInterface* OpenIwa(
+      const web_app::IsolatedWebAppUrlInfo& url_info) {
+    scoped_refptr<const Extension> extension =
+        ExtensionBuilder("IwaOpenerExtension").Build();
+    auto function = base::MakeRefCounted<WindowsCreateFunction>();
+    function->set_extension(extension);
+
+    std::string args = base::StringPrintf(
+        R"([{"url": "%s"}])", url_info.origin().GetURL().spec().c_str());
+
+    bool result = api_test_utils::RunFunction(
+        function.get(), args, profile(), api_test_utils::FunctionMode::kNone);
+    EXPECT_TRUE(result) << function->GetError();
+
+    BrowserWindowInterface* iwa_browser =
+        GetLastActiveBrowserWindowInterfaceWithAnyProfile();
+    EXPECT_TRUE(iwa_browser);
+    return iwa_browser;
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(ExtensionApiTabsIwaMoveTest, CannotMoveIwaTab) {
+  auto url_info = InstallAndTrustBundle();
+  BrowserWindowInterface* iwa_browser = OpenIwa(url_info);
+
+  TabListInterface* iwa_tab_list = TabListInterface::From(iwa_browser);
+  ASSERT_EQ(iwa_tab_list->GetTabCount(), 1);
+  int iwa_tab_id =
+      ExtensionTabUtil::GetTabId(iwa_tab_list->GetTab(0)->GetContents());
+
+  Browser* normal_browser = CreateBrowser(profile());
+  int target_window_id = ExtensionTabUtil::GetWindowId(normal_browser);
+
+  auto function = base::MakeRefCounted<TabsMoveFunction>();
+
+  std::string args = base::StringPrintf(
+      R"([%d, {"windowId": %d, "index": -1}])", iwa_tab_id, target_window_id);
+
+  std::string error = api_test_utils::RunFunctionAndReturnError(
+      function.get(), args, profile());
+
+  EXPECT_EQ(error, "The tab of an Isolated Web App cannot be moved.");
+}
+
+IN_PROC_BROWSER_TEST_F(ExtensionApiTabsIwaMoveTest,
+                       CannotGroupIwaTabToOtherWindow) {
+  auto url_info = InstallAndTrustBundle();
+  BrowserWindowInterface* iwa_browser = OpenIwa(url_info);
+
+  TabListInterface* iwa_tab_list = TabListInterface::From(iwa_browser);
+  ASSERT_EQ(iwa_tab_list->GetTabCount(), 1);
+  int iwa_tab_id =
+      ExtensionTabUtil::GetTabId(iwa_tab_list->GetTab(0)->GetContents());
+
+  Browser* normal_browser = CreateBrowser(profile());
+  int target_window_id = ExtensionTabUtil::GetWindowId(normal_browser);
+
+  auto function = base::MakeRefCounted<TabsGroupFunction>();
+
+  std::string args = base::StringPrintf(
+      R"([{"tabIds": [%d], "createProperties": {"windowId": %d}}])", iwa_tab_id,
+      target_window_id);
+
+  std::string error = api_test_utils::RunFunctionAndReturnError(
+      function.get(), args, profile());
+
+  EXPECT_EQ(error, "The tab of an Isolated Web App cannot be moved.");
+}
 
 IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, DuplicateTab) {
   content::OpenURLParams params(GURL(url::kAboutBlankURL), content::Referrer(),
