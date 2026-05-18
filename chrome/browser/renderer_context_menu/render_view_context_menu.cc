@@ -1919,7 +1919,7 @@ void RenderViewContextMenu::AppendLinkItems() {
           }
 
           const int open_link_in_profiles_string =
-              base::FeatureList::IsEnabled(features::kMenuSimplification)
+              features::IsMenuSimplificationEnabled()
                   ? IDS_CONTENT_CONTEXT_OPENLINKINPROFILES_V2
                   : IDS_CONTENT_CONTEXT_OPENLINKINPROFILES;
           menu_model_.AddSubMenuWithStringId(

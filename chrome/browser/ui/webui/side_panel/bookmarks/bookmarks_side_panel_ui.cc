@@ -209,8 +209,8 @@ BookmarksSidePanelUI::BookmarksSidePanelUI(content::WebUI* web_ui)
       "isBookmarksMigrationUiChanges",
       base::FeatureList::IsEnabled(switches::kBookmarksMigrateUiChanges));
 
-  source->AddBoolean("menuSimplification", base::FeatureList::IsEnabled(
-                                               features::kMenuSimplification));
+  source->AddBoolean("menuSimplification",
+                     features::IsMenuSimplificationEnabled());
 
   source->AddInteger(
       "sortOrder",

@@ -1318,8 +1318,7 @@ class AppControllerProfileObserver : public ProfileAttributesStorage::Observer,
       .sessionHandler = self;
 
   [MenuControllerCocoa
-      initializeWithNewMenuIconScheme:base::FeatureList::IsEnabled(
-                                          features::kMenuSimplification)];
+      initializeWithNewMenuIconScheme:features::IsMenuSimplificationEnabled()];
 }
 
 - (void)observeValueForKeyPath:(NSString*)keyPath

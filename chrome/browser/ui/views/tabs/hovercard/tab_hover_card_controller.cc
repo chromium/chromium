@@ -165,7 +165,7 @@ bool IsBrowserForSystemWebApp(
 
 views::WidgetFadeAnimator::SlideDirection ComputeSlideDirection(
     const BrowserWindowInterface* browser) {
-  if (!base::FeatureList::IsEnabled(features::kTabStripDeclutter)) {
+  if (!features::IsTabStripDeclutterEnabled()) {
     return views::WidgetFadeAnimator::SlideDirection::kNone;
   }
 
