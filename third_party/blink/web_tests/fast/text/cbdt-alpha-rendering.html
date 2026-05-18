@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<!--
+  Exercises Skia's Fontations backend rasterization of non-PNG CBDT (Color
+  Bitmap Data Table) alpha bitmap glyphs across all four supported formats:
+    fmt 1: byte-aligned, with per-glyph metrics
+    fmt 2: bit-aligned,  with per-glyph metrics
+    fmt 6: byte-aligned, strike metrics only
+    fmt 7: bit-aligned,  strike metrics only
+
+  Each font ships a CBDT strike at ppem 64, so rendering at font-size: 64px
+  selects that strike and hits the non-PNG bitmap decode path.
+
+  Bug: crbug.com/388557912
+-->
+<meta charset="utf-8">
+<title>CBDT alpha bitmap rendering (fmt 1, 2, 6, 7)</title>
+<style>
+  @font-face {
+    font-family: 'CbdtAlphaFmt1';
+    src: url('../../third_party/CbdtAlpha/cbdt_fmt1.ttf') format('truetype');
+  }
+  @font-face {
+    font-family: 'CbdtAlphaFmt2';
+    src: url('../../third_party/CbdtAlpha/cbdt_fmt2.ttf') format('truetype');
+  }
+  @font-face {
+    font-family: 'CbdtAlphaFmt6';
+    src: url('../../third_party/CbdtAlpha/cbdt_fmt6.ttf') format('truetype');
+  }
+  @font-face {
+    font-family: 'CbdtAlphaFmt7';
+    src: url('../../third_party/CbdtAlpha/cbdt_fmt7.ttf') format('truetype');
+  }
+  body { margin: 0; background: #ffffff; }
+  .row { font-size: 64px; line-height: 80px; margin: 0; }
+  .fmt1 { font-family: 'CbdtAlphaFmt1'; }
+  .fmt2 { font-family: 'CbdtAlphaFmt2'; }
+  .fmt6 { font-family: 'CbdtAlphaFmt6'; }
+  .fmt7 { font-family: 'CbdtAlphaFmt7'; }
+</style>
+<script>
+  if (window.testRunner) {
+    testRunner.waitUntilDone();
+  }
+  document.fonts.ready.then(() => {
+    if (window.testRunner) {
+      testRunner.notifyDone();
+    }
+  });
+</script>
+<div class="row fmt1">&#x1F600;&#x2662;</div>
+<div class="row fmt2">&#x1F600;&#x2662;</div>
+<div class="row fmt6">&#x1F600;&#x2662;</div>
+<div class="row fmt7">&#x1F600;&#x2662;</div>
