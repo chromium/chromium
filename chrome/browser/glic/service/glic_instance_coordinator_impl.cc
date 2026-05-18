@@ -12,6 +12,7 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/rand_util.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -551,6 +552,13 @@ GlicInstanceCoordinatorImpl::GetOrCreateGlicInstanceImplForTab(
     return instance;
   }
 
+  if (last_active_instance_) {
+    base::UmaHistogramCustomTimes(
+        "Glic.Instance.TimeSinceLastInstanceActiveOnOpen",
+        last_active_instance_->GetTimeSinceLastActive(), base::Seconds(1),
+        base::Hours(24), 50);
+  }
+
   if (base::FeatureList::IsEnabled(
           features::kGlicDefaultToLastActiveConversation) &&
       last_active_instance_ &&
@@ -658,6 +666,13 @@ void GlicInstanceCoordinatorImpl::ShowInstanceForTabs(
 GlicInstanceImpl*
 GlicInstanceCoordinatorImpl::GetOrCreateInstanceImplForFloaty() {
   auto* floaty_instance = GetInstanceWithFloaty();
+  if (!floaty_instance && last_active_instance_) {
+    base::UmaHistogramCustomTimes(
+        "Glic.Instance.TimeSinceLastInstanceActiveOnOpen",
+        last_active_instance_->GetTimeSinceLastActive(), base::Seconds(1),
+        base::Hours(24), 50);
+  }
+
   if (!floaty_instance && last_active_instance_ &&
       last_active_instance_->GetTimeSinceLastActive() < kFloatyMaxRecency) {
     floaty_instance = last_active_instance_;

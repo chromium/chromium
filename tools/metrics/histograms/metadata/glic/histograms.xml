@@ -1372,6 +1372,16 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Glic.Instance.TimeSinceLastInstanceActiveOnOpen" units="ms"
+    expires_after="2026-11-20">
+  <owner>birnie@google.com</owner>
+  <owner>perrier@google.com</owner>
+  <summary>
+    Records the time elapsed since the last active Glic instance was active.
+    Recorded when Glic is opened and a previous active instance exists.
+  </summary>
+</histogram>
+
 <histogram name="Glic.Instance.TotalActiveDuration" units="ms"
     expires_after="2026-11-01">
   <owner>birnie@google.com</owner>

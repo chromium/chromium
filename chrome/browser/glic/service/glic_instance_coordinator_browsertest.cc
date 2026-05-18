@@ -1819,6 +1819,9 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorDefaultToLastActiveBrowserTest,
                 "Glic.Instance.DaisyChain.LastActiveInstance.Success"),
             1);
 
+  histogram_tester.ExpectTotalCount(
+      "Glic.Instance.TimeSinceLastInstanceActiveOnOpen", 1);
+
   // Simulate user input to trigger first action metric.
   instance2->instance_metrics().OnUserInputSubmitted(
       mojom::WebClientMode::kText);
@@ -1915,6 +1918,9 @@ IN_PROC_BROWSER_TEST_F(
   // Verify that no metric was logged since we did not default to last active.
   histogram_tester.ExpectTotalCount(
       "Glic.Instance.AutoOpenedPanel.FirstAction.LastActiveInstance", 0);
+
+  histogram_tester.ExpectTotalCount(
+      "Glic.Instance.TimeSinceLastInstanceActiveOnOpen", 1);
 }
 
 class GlicInstanceCoordinatorNoWarmingTest
