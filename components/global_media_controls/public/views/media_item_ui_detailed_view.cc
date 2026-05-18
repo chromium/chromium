@@ -26,6 +26,7 @@
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/text_constants.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -223,7 +224,9 @@ MediaItemUIDetailedView::MediaItemUIDetailedView(
   if (media_display_page_ == MediaDisplayPage::kQuickSettingsMediaView) {
     chevron_icon_ = title_row->AddChildView(
         std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
-            media_message_center::kChevronRightOldIcon,
+            features::IsRoundedIconsEnabled()
+                ? media_message_center::kChevronRightIcon
+                : media_message_center::kChevronRightOldIcon,
             theme_.secondary_foreground_color_id, kChevronIconSize)));
     chevron_icon_->SetFlipCanvasOnPaintForRTLUI(true);
   }
@@ -256,7 +259,9 @@ MediaItemUIDetailedView::MediaItemUIDetailedView(
   // Create the play/pause button.
   play_pause_button_ = CreateMediaActionButton(
       controls_column, static_cast<int>(MediaSessionAction::kPlay),
-      media_message_center::kPlayArrowOldIcon,
+      features::IsRoundedIconsEnabled()
+          ? media_message_center::kPlayArrowFilledIcon
+          : media_message_center::kPlayArrowOldIcon,
       IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_ACTION_PLAY);
   play_pause_button_->SetBackground(
       views::CreateRoundedRectBackground(theme_.play_button_container_color_id,
@@ -275,7 +280,9 @@ MediaItemUIDetailedView::MediaItemUIDetailedView(
   // Create the previous track button.
   CreateMediaActionButton(
       button_container_, static_cast<int>(MediaSessionAction::kPreviousTrack),
-      media_message_center::kMediaPreviousTrackOldIcon,
+      features::IsRoundedIconsEnabled()
+          ? media_message_center::kSkipPreviousFilledIcon
+          : media_message_center::kMediaPreviousTrackOldIcon,
       IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_ACTION_PREVIOUS_TRACK);
 
   // Create the progress view.
@@ -319,11 +326,15 @@ MediaItemUIDetailedView::MediaItemUIDetailedView(
   // Create the next track button.
   CreateMediaActionButton(
       button_container_, static_cast<int>(MediaSessionAction::kNextTrack),
-      media_message_center::kMediaNextTrackOldIcon,
+      features::IsRoundedIconsEnabled()
+          ? media_message_center::kSkipNextFilledIcon
+          : media_message_center::kMediaNextTrackOldIcon,
       IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_ACTION_NEXT_TRACK);
 
   const gfx::VectorIcon* devices_icon =
-      &media_message_center::kMediaCastStartOldIcon;
+      &(features::IsRoundedIconsEnabled()
+            ? media_message_center::kCastIcon
+            : media_message_center::kMediaCastStartOldIcon);
 
 #if BUILDFLAG(IS_CHROMEOS)
   if (base::FeatureList::IsEnabled(media::kBackgroundListening)) {
@@ -358,7 +369,9 @@ MediaItemUIDetailedView::MediaItemUIDetailedView(
   picture_in_picture_button_ = CreateMediaActionButton(
       button_container_,
       static_cast<int>(MediaSessionAction::kEnterPictureInPicture),
-      media_message_center::kMediaEnterPipOldIcon,
+      features::IsRoundedIconsEnabled()
+          ? media_message_center::kPipIcon
+          : media_message_center::kMediaEnterPipOldIcon,
       IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_ACTION_ENTER_PIP);
 
   // Create the stop casting button. It will only show up when this media item
@@ -399,7 +412,9 @@ void MediaItemUIDetailedView::UpdateWithMediaSessionInfo(
   if (playing) {
     play_pause_button_->Update(
         static_cast<int>(MediaSessionAction::kPause),
-        media_message_center::kPauseOldIcon,
+        features::IsRoundedIconsEnabled()
+            ? media_message_center::kPauseFilledIcon
+            : media_message_center::kPauseOldIcon,
         IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_ACTION_PAUSE,
         theme_.pause_button_foreground_color_id);
     play_pause_button_->SetBackground(views::CreateRoundedRectBackground(
@@ -408,7 +423,9 @@ void MediaItemUIDetailedView::UpdateWithMediaSessionInfo(
   } else {
     play_pause_button_->Update(
         static_cast<int>(MediaSessionAction::kPlay),
-        media_message_center::kPlayArrowOldIcon,
+        features::IsRoundedIconsEnabled()
+            ? media_message_center::kPlayArrowFilledIcon
+            : media_message_center::kPlayArrowOldIcon,
         IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_ACTION_PLAY,
         theme_.play_button_foreground_color_id);
     play_pause_button_->SetBackground(views::CreateRoundedRectBackground(
@@ -423,13 +440,17 @@ void MediaItemUIDetailedView::UpdateWithMediaSessionInfo(
   if (in_picture_in_picture_) {
     picture_in_picture_button_->Update(
         static_cast<int>(MediaSessionAction::kExitPictureInPicture),
-        media_message_center::kMediaExitPipOldIcon,
+        features::IsRoundedIconsEnabled()
+            ? media_message_center::kPipExitIcon
+            : media_message_center::kMediaExitPipOldIcon,
         IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_ACTION_EXIT_PIP,
         theme_.primary_foreground_color_id);
   } else {
     picture_in_picture_button_->Update(
         static_cast<int>(MediaSessionAction::kEnterPictureInPicture),
-        media_message_center::kMediaEnterPipOldIcon,
+        features::IsRoundedIconsEnabled()
+            ? media_message_center::kPipIcon
+            : media_message_center::kMediaEnterPipOldIcon,
         IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_ACTION_ENTER_PIP,
         theme_.primary_foreground_color_id);
   }

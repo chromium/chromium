@@ -9,6 +9,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/views/background.h"
 #include "ui/views/layout/box_layout.h"
 
@@ -38,7 +39,9 @@ class StopCastingButton : public views::LabelButton {
     SetTooltipText(text);
     SetImageModel(views::Button::STATE_NORMAL,
                   ui::ImageModel::FromVectorIcon(
-                      media_message_center::kMediaCastStopOldIcon,
+                      features::IsRoundedIconsEnabled()
+                          ? media_message_center::kStopCircleIcon
+                          : media_message_center::kMediaCastStopOldIcon,
                       foreground_color_id, kIconSize));
 
     SetEnabledTextColors(foreground_color_id);
