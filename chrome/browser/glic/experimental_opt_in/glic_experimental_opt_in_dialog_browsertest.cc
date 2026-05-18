@@ -2,8 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/functional/callback_helpers.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/extensions/chrome_extension_web_contents_observer.h"
 #include "chrome/browser/extensions/tab_helper.h"
 #include "chrome/browser/glic/experimental_opt_in/glic_experimental_opt_in_controller.h"
@@ -75,12 +77,13 @@ class GlicExperimentalOptInTest : public GlicBrowserTest {
   }
 
   views::Widget* ShowDialogAndWait(
-      content::WebContents* web_contents = nullptr) {
+      content::WebContents* web_contents = nullptr,
+      base::OnceCallback<void(bool)> callback = base::DoNothing()) {
     if (!web_contents) {
       web_contents = browser()->tab_strip_model()->GetActiveWebContents();
     }
-    views::Widget* widget =
-        service()->opt_in_controller().ShowDialog(web_contents);
+    views::Widget* widget = service()->opt_in_controller().ShowDialog(
+        web_contents, std::move(callback));
     if (!widget) {
       return nullptr;
     }
@@ -122,7 +125,7 @@ class GlicExperimentalOptInTest : public GlicBrowserTest {
     expected_url = DecorateGlicFreUrl(browser()->profile(), expected_url);
     EXPECT_EQ(actual_url, expected_url);
 
-    service()->opt_in_controller().CloseDialog();
+    service()->opt_in_controller().CloseDialog(false);
   }
 
  private:
@@ -161,7 +164,7 @@ IN_PROC_BROWSER_TEST_F(GlicExperimentalOptInTest, OpensDialog) {
   EXPECT_EQ(dialog_contents->GetLastCommittedURL(),
             GURL(chrome::kChromeUIGlicExperimentalOptInURL));
 
-  service()->opt_in_controller().CloseDialog();
+  service()->opt_in_controller().CloseDialog(false);
 }
 
 IN_PROC_BROWSER_TEST_F(GlicExperimentalOptInTest, TabModality) {
@@ -191,7 +194,7 @@ IN_PROC_BROWSER_TEST_F(GlicExperimentalOptInTest, TabModality) {
   EXPECT_TRUE(widget->IsVisible());
 
   // Cleanup.
-  service()->opt_in_controller().CloseDialog();
+  service()->opt_in_controller().CloseDialog(false);
 }
 
 IN_PROC_BROWSER_TEST_F(GlicExperimentalOptInTest, WebviewURL_GlicOptInState) {
@@ -232,9 +235,11 @@ IN_PROC_BROWSER_TEST_F(GlicExperimentalOptInTest, WebviewURL_OptInNotNeeded) {
   // Verify ShowDialog returns nullptr since opt-in is already complete!
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
-  views::Widget* widget =
-      service()->opt_in_controller().ShowDialog(web_contents);
+  base::test::TestFuture<bool> future;
+  views::Widget* widget = service()->opt_in_controller().ShowDialog(
+      web_contents, future.GetCallback());
   EXPECT_FALSE(widget);
+  EXPECT_TRUE(future.Get());
 }
 
 IN_PROC_BROWSER_TEST_F(GlicExperimentalOptInTest, ResizesToContent) {
@@ -275,7 +280,7 @@ IN_PROC_BROWSER_TEST_F(GlicExperimentalOptInTest, ResizesToContent) {
                                "512x400! Current preferred size: "
                             << web_view->GetPreferredSize().ToString();
 
-  service()->opt_in_controller().CloseDialog();
+  service()->opt_in_controller().CloseDialog(false);
 }
 
 IN_PROC_BROWSER_TEST_F(GlicExperimentalOptInTest,
@@ -339,13 +344,14 @@ IN_PROC_BROWSER_TEST_F(GlicExperimentalOptInTest, TabDraggedToAnotherWindow) {
   browser()->tab_strip_model()->AppendWebContents(std::move(detached_contents),
                                                   true);
 }
-
 IN_PROC_BROWSER_TEST_F(GlicExperimentalOptInTest, AcceptOptInGlic) {
   // Set required state to Glic.
   service()->enabling().SetCompletedFre(glic::prefs::FreStatus::kIncomplete);
   ASSERT_FALSE(service()->enabling().HasConsented());
 
-  views::Widget* widget = ShowDialogAndWait();
+  base::test::TestFuture<bool> opt_in_result;
+  views::Widget* widget =
+      ShowDialogAndWait(nullptr, opt_in_result.GetCallback());
   ASSERT_TRUE(widget);
 
   content::WebContents* guest_contents = WaitForGuestContents();
@@ -358,6 +364,8 @@ IN_PROC_BROWSER_TEST_F(GlicExperimentalOptInTest, AcceptOptInGlic) {
   // Wait for the widget to close.
   views::test::WidgetDestroyedWaiter(widget).Wait();
 
+  EXPECT_TRUE(opt_in_result.Get());
+
   // Verify that Glic is consented, Actuation is enabled, AND Experimental is
   // enabled (3 opt-ins).
   EXPECT_TRUE(service()->enabling().HasConsented());
@@ -369,7 +377,9 @@ IN_PROC_BROWSER_TEST_F(GlicExperimentalOptInTest, RejectOptIn) {
   service()->enabling().SetCompletedFre(glic::prefs::FreStatus::kIncomplete);
   ASSERT_FALSE(service()->enabling().HasConsented());
 
-  views::Widget* widget = ShowDialogAndWait();
+  base::test::TestFuture<bool> opt_in_result;
+  views::Widget* widget =
+      ShowDialogAndWait(nullptr, opt_in_result.GetCallback());
   ASSERT_TRUE(widget);
 
   content::WebContents* guest_contents = WaitForGuestContents();
@@ -382,6 +392,8 @@ IN_PROC_BROWSER_TEST_F(GlicExperimentalOptInTest, RejectOptIn) {
   // Wait for the widget to close.
   views::test::WidgetDestroyedWaiter(widget).Wait();
 
+  EXPECT_FALSE(opt_in_result.Get());
+
   // Verify Glic is still not consented.
   EXPECT_FALSE(service()->enabling().HasConsented());
 }
@@ -392,7 +404,9 @@ IN_PROC_BROWSER_TEST_F(GlicExperimentalOptInTest, AcceptOptInActuation) {
   service()->enabling().SetUserEnabledActuationOnWeb(false);
   ASSERT_TRUE(service()->enabling().HasConsented());
 
-  views::Widget* widget = ShowDialogAndWait();
+  base::test::TestFuture<bool> opt_in_result;
+  views::Widget* widget =
+      ShowDialogAndWait(nullptr, opt_in_result.GetCallback());
   ASSERT_TRUE(widget);
 
   content::WebContents* guest_contents = WaitForGuestContents();
@@ -403,6 +417,8 @@ IN_PROC_BROWSER_TEST_F(GlicExperimentalOptInTest, AcceptOptInActuation) {
       content::ExecJs(guest_contents, "window.location.hash = '#continue';"));
 
   views::test::WidgetDestroyedWaiter(widget).Wait();
+
+  EXPECT_TRUE(opt_in_result.Get());
 
   // Verify Glic remains complete, and Actuation AND Experimental are enabled (2
   // opt-ins).
@@ -418,7 +434,9 @@ IN_PROC_BROWSER_TEST_F(GlicExperimentalOptInTest, AcceptOptInExperimental) {
   service()->enabling().SetUserEnabledActuationOnWeb(true);
   service()->enabling().SetExperimentalTriggeringEnabled(false);
 
-  views::Widget* widget = ShowDialogAndWait();
+  base::test::TestFuture<bool> opt_in_result;
+  views::Widget* widget =
+      ShowDialogAndWait(nullptr, opt_in_result.GetCallback());
   ASSERT_TRUE(widget);
 
   content::WebContents* guest_contents = WaitForGuestContents();
@@ -430,11 +448,52 @@ IN_PROC_BROWSER_TEST_F(GlicExperimentalOptInTest, AcceptOptInExperimental) {
 
   views::test::WidgetDestroyedWaiter(widget).Wait();
 
+  EXPECT_TRUE(opt_in_result.Get());
+
   // Verify Glic is consented, Actuation remains enabled, and Experimental is
   // enabled (1 opt-in).
   EXPECT_TRUE(service()->enabling().HasConsented());
   EXPECT_TRUE(service()->enabling().GetUserEnabledActuationOnWeb());
   EXPECT_TRUE(service()->enabling().GetExperimentalTriggeringEnabled());
+}
+
+IN_PROC_BROWSER_TEST_F(GlicExperimentalOptInTest, MultipleOptInRequests) {
+  auto* service =
+      GlicKeyedServiceFactory::GetGlicKeyedService(browser()->profile());
+  service->enabling().SetCompletedFre(glic::prefs::FreStatus::kIncomplete);
+  ASSERT_FALSE(service->enabling().HasConsented());
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  base::test::TestFuture<bool> future(base::test::TestFutureMode::kQueue);
+
+  views::Widget* widget1 = service->opt_in_controller().ShowDialog(
+      web_contents, future.GetCallback());
+  ASSERT_TRUE(widget1);
+
+  // Second request should return the same widget and queue callbacks.
+  views::Widget* widget2 = service->opt_in_controller().ShowDialog(
+      web_contents, future.GetCallback());
+  EXPECT_EQ(widget1, widget2);
+
+  views::test::WidgetVisibleWaiter(widget1).Wait();
+  EXPECT_TRUE(widget1->IsVisible());
+
+  auto* guest_view = GetGuestViewManager()->WaitForSingleGuestViewCreated();
+  ASSERT_TRUE(guest_view);
+  content::WebContents* guest_contents = guest_view->web_contents();
+  ASSERT_TRUE(guest_contents);
+  EXPECT_TRUE(content::WaitForLoadStop(guest_contents));
+
+  // Accept opt-in.
+  ASSERT_TRUE(
+      content::ExecJs(guest_contents, "window.location.hash = '#continue';"));
+
+  views::test::WidgetDestroyedWaiter(widget1).Wait();
+
+  EXPECT_TRUE(future.Take());
+  EXPECT_TRUE(future.Take());
 }
 
 }  // namespace glic

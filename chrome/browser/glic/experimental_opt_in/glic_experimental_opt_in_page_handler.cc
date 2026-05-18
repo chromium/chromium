@@ -50,11 +50,11 @@ void GlicExperimentalOptInPageHandler::Accept() {
       break;
   }
 
-  service->opt_in_controller().CloseDialog();
+  service->opt_in_controller().CloseDialog(true);
 }
 
 void GlicExperimentalOptInPageHandler::Reject() {
-  GetGlicService()->opt_in_controller().CloseDialog();
+  GetGlicService()->opt_in_controller().CloseDialog(false);
 }
 
 }  // namespace glic

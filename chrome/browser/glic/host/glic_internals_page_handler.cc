@@ -7,6 +7,7 @@
 #include <cstdio>
 
 #include "base/command_line.h"
+#include "base/functional/callback_helpers.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -305,7 +306,7 @@ void GlicInternalsPageHandler::ShowExperimentalOptIn() {
     return;
   }
 
-  service->opt_in_controller().ShowDialog(webui_contents_);
+  service->opt_in_controller().ShowDialog(webui_contents_, base::DoNothing());
 #endif
 }
 

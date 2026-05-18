@@ -40,6 +40,7 @@ source_set("browser_tests") {
     ":impl",
     "//base/test:test_support",
     "//chrome/browser/glic",
+    "//chrome/browser/glic:impl",
     "//chrome/browser/glic/test_support",
     "//chrome/test:test_support",
     "//components/sharing_message:test_support",

@@ -428,7 +428,8 @@ void GlicExperimentalTriggeringMessageHandler::OnMessage(
   if (request.request().has_device_opt_in_request()) {
     tabs::TabInterface* active_tab = GetActiveTab();
     if (active_tab) {
-      ProcessDeviceOptInRequest(active_tab);
+      ProcessDeviceOptInRequest(active_tab,
+                                message.server_channel_configuration());
     } else {
       DLOG(ERROR) << "No active tab found for Profile for "
                      "GlicExperimentalTriggering";
@@ -486,15 +487,47 @@ void GlicExperimentalTriggeringMessageHandler::OnMessage(
   std::move(done_callback).Run(nullptr);
 }
 
+void GlicExperimentalTriggeringMessageHandler::SendDeviceOptInResult(
+    components_sharing_message::ServerChannelConfiguration server_channel,
+    bool accepted) {
+  components_sharing_message::SharingMessage message;
+  auto* triggering = message.mutable_glic_experimental_triggering();
+  triggering->mutable_response()->set_device_opt_in_result(
+      accepted ? components_sharing_message::GlicExperimentalTriggering::
+                     ExperimentalTriggeringResponse::ACCEPTED
+               : components_sharing_message::GlicExperimentalTriggering::
+                     ExperimentalTriggeringResponse::DECLINED);
+
+  message_sender_->SendMessageToServerTarget(
+      server_channel, kUpdateMessageTimeout, std::move(message),
+      base::BindOnce(
+          [](SharingSendMessageResult result,
+             std::unique_ptr<components_sharing_message::ResponseMessage>
+                 response) {
+            if (result != SharingSendMessageResult::kSuccessful) {
+              DLOG(ERROR) << "Failed to send device opt-in result to server: "
+                          << static_cast<int>(result);
+            }
+          }));
+}
+
 void GlicExperimentalTriggeringMessageHandler::ProcessDeviceOptInRequest(
-    tabs::TabInterface* active_tab) {
+    tabs::TabInterface* active_tab,
+    components_sharing_message::ServerChannelConfiguration server_channel) {
 #if !BUILDFLAG(IS_ANDROID)
-  if (!opt_in_controller_) {
-    opt_in_controller_ =
-        std::make_unique<glic::GlicExperimentalOptInController>(profile_);
+  glic::GlicKeyedService* glic_service =
+      glic::GlicKeyedServiceFactory::GetGlicKeyedService(profile_,
+                                                         /*create=*/false);
+  if (!glic_service) {
+    return;
   }
 
-  opt_in_controller_->ShowDialog(active_tab->GetContents());
+  auto callback = base::BindOnce(
+      &GlicExperimentalTriggeringMessageHandler::SendDeviceOptInResult,
+      weak_ptr_factory_.GetWeakPtr(), server_channel);
+
+  glic_service->opt_in_controller().ShowDialog(active_tab->GetContents(),
+                                               std::move(callback));
 #endif
 }
 

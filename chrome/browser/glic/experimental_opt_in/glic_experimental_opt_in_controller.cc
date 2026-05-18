@@ -5,7 +5,9 @@
 #include "chrome/browser/glic/experimental_opt_in/glic_experimental_opt_in_controller.h"
 
 #include <memory>
+#include <utility>
 
+#include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/glic/experimental_opt_in/glic_experimental_opt_in_dialog_view.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
@@ -26,7 +28,25 @@ GlicExperimentalOptInController::GlicExperimentalOptInController(
 GlicExperimentalOptInController::~GlicExperimentalOptInController() = default;
 
 views::Widget* GlicExperimentalOptInController::ShowDialog(
-    content::WebContents* web_contents) {
+    content::WebContents* web_contents,
+    base::OnceCallback<void(bool)> callback) {
+  GlicKeyedService* service =
+      GlicKeyedServiceFactory::GetGlicKeyedService(profile_);
+  if (!service) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), false));
+    return nullptr;
+  }
+
+  if (service->enabling().GetRequiredExperimentalOptIn() ==
+      RequiredExperimentalOptIn::kNotNeeded) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), true));
+    return nullptr;
+  }
+
+  callbacks_.push_back(std::move(callback));
+
   if (dialog_widget_) {
     dialog_widget_->Show();
     return dialog_widget_.get();
@@ -35,13 +55,7 @@ views::Widget* GlicExperimentalOptInController::ShowDialog(
   tabs::TabInterface* tab_interface =
       tabs::TabInterface::MaybeGetFromContents(web_contents);
   if (!tab_interface) {
-    return nullptr;
-  }
-
-  GlicKeyedService* service =
-      GlicKeyedServiceFactory::GetGlicKeyedService(profile_);
-  if (!service || service->enabling().GetRequiredExperimentalOptIn() ==
-                      RequiredExperimentalOptIn::kNotNeeded) {
+    CloseDialog(false);
     return nullptr;
   }
 
@@ -63,12 +77,19 @@ views::Widget* GlicExperimentalOptInController::ShowDialog(
   return dialog_widget_.get();
 }
 
-void GlicExperimentalOptInController::CloseDialog() {
-  CloseWidget(views::Widget::ClosedReason::kUnspecified);
+void GlicExperimentalOptInController::CloseDialog(bool accepted) {
+  CloseWidget(accepted ? views::Widget::ClosedReason::kAcceptButtonClicked
+                       : views::Widget::ClosedReason::kCancelButtonClicked);
 }
 
 void GlicExperimentalOptInController::CloseWidget(
     views::Widget::ClosedReason reason) {
+  bool accepted = (reason == views::Widget::ClosedReason::kAcceptButtonClicked);
+  for (auto& callback : std::exchange(callbacks_, {})) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), accepted));
+  }
+
   dialog_widget_.reset();
   dialog_view_.reset();
 }
