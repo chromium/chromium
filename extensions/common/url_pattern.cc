@@ -699,7 +699,17 @@ std::optional<URLPattern> URLPattern::CreateIntersection(
       }
       URLPattern result(intersection_schemes);
       ParseResult parse_result = result.Parse(copy_source->GetAsString());
-      CHECK_EQ(ParseResult::kSuccess, parse_result);
+      // It is possible for parsing to fail if the intersected scheme mask
+      // excludes the scheme present in `copy_source`. For example, this happens
+      // when taking the intersection of policy-allowed hosts and the hosts on
+      // the extension's permissions data, and the policy pattern corresponds
+      // to a scheme that isn't present in the intersected schemes (like an
+      // extension without extension scheme access intersecting with a policy
+      // allowing an extension scheme URL). In this case, the intersection is
+      // empty.
+      if (parse_result != ParseResult::kSuccess) {
+        return std::nullopt;
+      }
       return result;
     }
   }

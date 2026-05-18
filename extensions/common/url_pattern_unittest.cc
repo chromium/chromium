@@ -12,6 +12,7 @@
 #include "content/public/common/url_constants.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/common/constants.h"
+#include "extensions/common/extension.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -1326,6 +1327,22 @@ TEST(ExtensionURLPatternTest, WhitespaceHostParsing) {
     EXPECT_TRUE(match_subdomains_pattern.MatchesURL(subdomain_url))
         << subdomain_url;
   }
+}
+
+// Verifies that intersecting two patterns where one pattern's scheme is
+// excluded from the other pattern's valid scheme mask results in an empty
+// intersection (std::nullopt) rather than a crash.
+TEST(ExtensionURLPatternTest, ValidSchemeAndPatternIntersection) {
+  URLPattern pattern1(URLPattern::GetValidSchemeMaskForExtensions(),
+                      "chrome-extension://abcdefghijklmnoabcdefghijklmno/*");
+  int pattern2_schemes = extensions::Extension::kValidHostPermissionSchemes;
+  URLPattern pattern2(pattern2_schemes, "<all_urls>");
+  std::optional<URLPattern> intersection1 =
+      pattern1.CreateIntersection(pattern2);
+  std::optional<URLPattern> intersection2 =
+      pattern2.CreateIntersection(pattern1);
+  EXPECT_EQ(std::nullopt, intersection1);
+  EXPECT_EQ(std::nullopt, intersection2);
 }
 
 }  // namespace

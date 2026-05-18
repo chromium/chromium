@@ -8,6 +8,7 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/callback_helpers.h"
+#include "base/json/json_reader.h"
 #include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
@@ -23,6 +24,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/chrome_content_verifier_delegate.h"
+#include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/extensions/component_loader.h"
 #include "chrome/browser/extensions/corrupted_extension_reinstaller.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
@@ -89,6 +91,7 @@
 #include "extensions/common/mojom/view_type.mojom.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "extensions/common/verifier_formats.h"
+#include "extensions/test/test_extension_dir.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
 #include "third_party/blink/public/common/switches.h"
@@ -2375,6 +2378,43 @@ IN_PROC_BROWSER_TEST_F(ExtensionPolicyTest, ExtensionBlockedHostWhenDisabled) {
 
   EXPECT_FALSE(
       extension->permissions_data()->CanAccessPage(test_url, tab_id, error));
+}
+
+// Regression test for https://crbug.com/513089253.
+// Verifies that intersecting an enterprise policy allowing an extension scheme
+// URL with an extension requesting <all_urls> (but lacking extension scheme
+// permissions) results in an empty intersection rather than a crash.
+IN_PROC_BROWSER_TEST_F(ExtensionPolicyTest, ValidSchemeAndPatternIntersection) {
+  std::string json = R"({
+    "*": {
+      "installation_mode": "allowed",
+      "runtime_allowed_hosts": [
+        "chrome-extension://abcdefghijklmnoabcdefghijklmno"
+      ]
+    }
+  })";
+  std::optional<base::Value> settings =
+      base::JSONReader::Read(json, base::JSON_PARSE_RFC);
+  ASSERT_TRUE(settings);
+
+  PolicyMap policies;
+  policies.Set(key::kExtensionSettings, POLICY_LEVEL_MANDATORY,
+               POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD,
+               std::move(settings.value()), nullptr);
+  UpdateProviderPolicy(policies);
+
+  extensions::TestExtensionDir test_dir;
+  test_dir.WriteManifest(R"({
+    "name": "All URLs Extension",
+    "version": "1.0",
+    "manifest_version": 3,
+    "host_permissions": ["<all_urls>"]
+  })");
+
+  extensions::ChromeTestExtensionLoader loader(profile());
+  scoped_refptr<const extensions::Extension> extension =
+      loader.LoadExtension(test_dir.UnpackedPath());
+  ASSERT_TRUE(extension);
 }
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
