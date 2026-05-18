@@ -866,6 +866,13 @@
       type_name: "bool",
       default_value: "false",
     },
+    // Should be set if we need our children blockified for non-display reasons.
+    {
+      name: "ForcesBlockifiesChildren",
+      field_template: "monotonic_flag",
+      field_group: "*",
+      default_value: "false",
+    },
     // Plugins require accelerated compositing for reasons external to blink.
     // In which case, we need to update the ComputedStyle on the
     // LayoutEmbeddedObject, so store this bit so that the style actually changes

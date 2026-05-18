@@ -86,6 +86,7 @@
 #include "third_party/blink/renderer/core/layout/layout_theme.h"
 #include "third_party/blink/renderer/core/layout/list/list_marker.h"
 #include "third_party/blink/renderer/core/mathml/mathml_element.h"
+#include "third_party/blink/renderer/core/mathml/mathml_table_cell_element.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/style/computed_style_base_constants.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
@@ -1176,7 +1177,13 @@ void StyleAdjuster::AdjustComputedStyle(StyleResolverState& state,
       builder.SetDisplay(EquivalentBlockDisplay(builder.Display()));
     }
 
-    // math display values on non-MathML elements compute to flow display
+    // A <mtd> element creates an anonymous mrow. All children within MahtML
+    // objects must be blockified.
+    if (IsA<MathMLTableCellElement>(element) &&
+        builder.Display() == EDisplay::kTableCell) {
+      builder.SetForcesBlockifiesChildren();
+    }
+    // "math" display values on non-MathML elements compute to flow display
     // values.
     if (!IsA<MathMLElement>(element) && builder.IsDisplayMath()) {
       builder.SetDisplay(builder.Display() == EDisplay::kBlockMath

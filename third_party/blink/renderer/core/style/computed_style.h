@@ -1790,7 +1790,8 @@ class ComputedStyle final : public ComputedStyleBase {
   bool BlockifiesChildren() const {
     return IsDisplayFlex() || IsDisplayWebkitBox() || IsDisplayGrid() ||
            IsDisplayGridLanes() || IsDisplayMath() || IsDisplayLayoutCustom() ||
-           (Display() == EDisplay::kContents && IsInBlockifyingDisplay());
+           (Display() == EDisplay::kContents && IsInBlockifyingDisplay()) ||
+           ForcesBlockifiesChildren();
   }
 
   bool InlinifiesChildren() const {
