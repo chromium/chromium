@@ -46,6 +46,7 @@ source_set("skills") {
     "//chrome/browser/signin",
     "//chrome/browser/skills",
     "//chrome/browser/skills:public",
+    "//chrome/browser/ui:ui_features",
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/webui",
     "//chrome/browser/ui/webui/sanitized_image:sanitized_image_source",

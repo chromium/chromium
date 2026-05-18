@@ -9,37 +9,39 @@
  * #include=cr-nav-menu-item-style-lit
  * #css_wrapper_metadata_end */
 
-.cr-nav-menu-item {
-  display: flex;
-  padding-bottom: 14px;
-  padding-inline-end: 16px;
-  padding-inline-start: 24px;
-  padding-top: 14px;
-}
-
-/* Remove default focus ring in non-tabbing navigation */
-.cr-nav-menu-item:focus:not(:focus-visible) {
-  outline: none;
-}
-
-/* Light Mode - Soft pastel background, colored text */
-.cr-nav-menu-item[selected] {
-  background-color: var(--color-sys-primary-container);
-  color: var(--color-sys-primary);
-  --iron-icon-fill-color: var(--color-sys-primary);
-}
-
-/* Dark Mode - Light pastel background, dark text */
-@media (prefers-color-scheme: dark) {
-  .cr-nav-menu-item[selected] {
-    background-color: var(--color-sys-primary);
-    color: var(--color-sys-on-primary);
-    --iron-icon-fill-color: var(--color-sys-on-primary);
+:host-context(html:not([webui-refresh-2026])) {
+  .cr-nav-menu-item {
+    display: flex;
+    padding-bottom: 14px;
+    padding-inline-end: 16px;
+    padding-inline-start: 24px;
+    padding-top: 14px;
   }
-}
 
-.cr-nav-menu-item:not([selected]):hover {
-  background-color: var(--color-sys-state-hover-on-subtle);
+  /* Remove default focus ring in non-tabbing navigation */
+  .cr-nav-menu-item:focus:not(:focus-visible) {
+    outline: none;
+  }
+
+  /* Light Mode - Soft pastel background, colored text */
+  .cr-nav-menu-item[selected] {
+    background-color: var(--color-sys-primary-container);
+    color: var(--color-sys-primary);
+    --iron-icon-fill-color: var(--color-sys-primary);
+  }
+
+  /* Dark Mode - Light pastel background, dark text */
+  @media (prefers-color-scheme: dark) {
+    .cr-nav-menu-item[selected] {
+      background-color: var(--color-sys-primary);
+      color: var(--color-sys-on-primary);
+      --iron-icon-fill-color: var(--color-sys-on-primary);
+    }
+  }
+
+  .cr-nav-menu-item:not([selected]):hover {
+    background-color: var(--color-sys-state-hover-on-subtle);
+  }
 }
 
 .separator {
@@ -68,6 +70,12 @@
 @media (prefers-color-scheme: dark) {
   .branding {
     color: #A8C7FA;
+  }
+}
+
+:host-context([webui-refresh-2026]) {
+  .branding {
+    color: var(--color-sys-primary);
   }
 }
 

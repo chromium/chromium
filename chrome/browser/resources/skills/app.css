@@ -16,9 +16,12 @@
   --sidebar-width: 250px;
   /* Controls the size of the search bar contained within cr-toolbar */
   --cr-toolbar-field-width: 680px;
-  --cr-toolbar-search-field-background: var(--color-sys-surface4);
   --cr-toolbar-search-field-input-text-color: var(--color-sys-on-surface-subtle);
   --cr-toolbar-search-field-prompt-color: var(--color-sys-on-surface-subtle);
+}
+
+:host-context(html:not([webui-refresh-2026])) {
+  --cr-toolbar-search-field-background: var(--color-sys-surface4);
 }
 
 #content {
