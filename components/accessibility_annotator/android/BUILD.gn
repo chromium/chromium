@@ -5,37 +5,52 @@
 import("//build/config/android/rules.gni")
 import("//build/config/chrome_build.gni")
 
-copy("accessibility_annotator_first_run_animation_resource") {
+# TODO(b/512056182): Rename accessibility_annotator path names when file names
+# are changed.
+
+copy("personal_context_first_run_animation_resource") {
   if (is_internal_chrome_branded) {
     sources = [ "../core/resources/internal/assets/animations/accessibility_annotator_first_run_animation.json" ]
   } else {
     sources = [ "../core/resources/assets/animations/accessibility_annotator_first_run_animation.json" ]
   }
-  outputs = [
-    "$target_gen_dir/res/raw/accessibility_annotator_first_run_animation.json",
-  ]
+  outputs = [ "$target_gen_dir/animation_res/raw/personal_context_first_run_animation.json" ]
 }
 
-android_resources("accessibility_annotator_icon_resources") {
+if (is_internal_chrome_branded) {
+  copy("personal_context_first_run_card_1_resource") {
+    sources = [ "../core/resources/internal/android/java/res/drawable/accessibility_annotator_first_run_card_1.xml" ]
+    outputs = [ "$target_gen_dir/icon_res/drawable/personal_context_first_run_card_1.xml" ]
+  }
+
+  copy("personal_context_first_run_card_2_resource") {
+    sources = [ "../core/resources/internal/android/java/res/drawable/accessibility_annotator_first_run_card_2.xml" ]
+    outputs = [ "$target_gen_dir/icon_res/drawable/personal_context_first_run_card_2.xml" ]
+  }
+}
+
+android_resources("personal_context_icon_resources") {
   if (is_internal_chrome_branded) {
     sources = [
-      "../core/resources/internal/android/java/res/drawable/accessibility_annotator_first_run_card_1.xml",
-      "../core/resources/internal/android/java/res/drawable/accessibility_annotator_first_run_card_2.xml",
+      "$target_gen_dir/icon_res/drawable/personal_context_first_run_card_1.xml",
+      "$target_gen_dir/icon_res/drawable/personal_context_first_run_card_2.xml",
+    ]
+    deps = [
+      ":personal_context_first_run_card_1_resource",
+      ":personal_context_first_run_card_2_resource",
     ]
   } else {
     sources = [
-      "java/res/drawable/accessibility_annotator_first_run_card_1.xml",
-      "java/res/drawable/accessibility_annotator_first_run_card_2.xml",
+      "java/res/drawable/personal_context_first_run_card_1.xml",
+      "java/res/drawable/personal_context_first_run_card_2.xml",
     ]
   }
 }
 
-android_resources("accessibility_annotator_java_resources") {
-  sources = [
-    "$target_gen_dir/res/raw/accessibility_annotator_first_run_animation.json",
-  ]
+android_resources("personal_context_java_resources") {
+  sources = [ "$target_gen_dir/animation_res/raw/personal_context_first_run_animation.json" ]
   deps = [
-    ":accessibility_annotator_first_run_animation_resource",
-    ":accessibility_annotator_icon_resources",
+    ":personal_context_first_run_animation_resource",
+    ":personal_context_icon_resources",
   ]
 }
