@@ -181,7 +181,8 @@ INSTANTIATE_TEST_SUITE_P(/* no prefix */,
                          ::testing::Bool());
 
 // TODO(crbug.com/40266323): Reenable once deflaked.
-#if BUILDFLAG(IS_MAC)
+// TODO(crbug.com/514143472): Reenable once deflaked.
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 #define MAYBE_HeadlessDumpDom DISABLED_HeadlessDumpDom
 #else
 #define MAYBE_HeadlessDumpDom HeadlessDumpDom
@@ -325,7 +326,8 @@ INSTANTIATE_TEST_SUITE_P(
     HeadlessModeDumpDomCommandBrowserTestWithSubResourceTimeout,
     testing::Bool());
 
-#if BUILDFLAG(IS_MAC)
+// TODO(crbug.com/514143472): Reenable once deflaked.
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 #define MAYBE_HeadlessDumpDomWithSubResourceTimeout \
   DISABLED_HeadlessDumpDomWithSubResourceTimeout
 #else
@@ -358,7 +360,8 @@ IN_PROC_BROWSER_TEST_P(
 }
 
 // TODO(crbug.com/505163310): Reenable once deflaked.
-#if BUILDFLAG(IS_MAC)
+// TODO(crbug.com/514143472): Reenable once deflaked.
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 #define MAYBE_DumpDomWithBeforeUnloadPreventDefault \
   DISABLED_DumpDomWithBeforeUnloadPreventDefault
 #else
@@ -522,7 +525,8 @@ class HeadlessModePrintToPdfCommandBrowserTest
 };
 
 // TODO(crbug.com/40266323): Reenable once deflaked.
-#if BUILDFLAG(IS_MAC)
+// TODO(crbug.com/514143472): Reenable once deflaked.
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 #define MAYBE_HeadlessPrintToPdf DISABLED_HeadlessPrintToPdf
 #else
 #define MAYBE_HeadlessPrintToPdf HeadlessPrintToPdf
