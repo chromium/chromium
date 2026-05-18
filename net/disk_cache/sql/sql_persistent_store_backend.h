@@ -338,11 +338,12 @@ class SqlPersistentStore::Backend {
   // Selects a list of eviction candidates from the `resources` table.
   // Entries in `high_priority_res_ids` are less likely to be selected as
   // candidates if prioritized caching is enabled.
-  EvictionCandidateList SelectEvictionCandidates(
+  base::expected<EvictionCandidateList, Error> SelectEvictionCandidates(
       int64_t size_to_be_removed,
       base::flat_set<ResId> excluded_res_ids,
       std::vector<ResId> high_priority_res_ids,
-      bool is_idle_time_eviction);
+      bool is_idle_time_eviction,
+      size_t& scanned_count);
   // Called by the `EvictionCandidateAggregator` to evict a list of selected
   // entries.
   void EvictEntries(

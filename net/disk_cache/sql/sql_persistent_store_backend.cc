@@ -2309,36 +2309,58 @@ void SqlPersistentStore::Backend::StartEviction(
                        dict.Add("high_priority_res_ids",
                                 high_priority_res_ids.size());
                      });
-  auto candidates = SelectEvictionCandidates(
+  base::ElapsedTimer timer;
+  size_t scanned_count = 0;
+  auto result = SelectEvictionCandidates(
       size_to_be_removed, std::move(excluded_res_ids),
-      std::move(high_priority_res_ids), is_idle_time_eviction);
+      std::move(high_priority_res_ids), is_idle_time_eviction, scanned_count);
+  const std::string_view eviction_type =
+      !is_idle_time_eviction ? "RunEviction" : "RunEvictionOnIdleTime";
+  const std::string_view result_type =
+      result.has_value()
+          ? "Success"
+          : (result.error() == Error::kAborted ? "Abort" : "Failure");
+  base::UmaHistogramMicrosecondsTimes(
+      base::StrCat({kSqlDiskCacheBackendHistogramPrefix, eviction_type,
+                    ".TimeToSelectEntries.", result_type}),
+      timer.Elapsed());
+  base::UmaHistogramCounts1M(
+      base::StrCat({kSqlDiskCacheBackendHistogramPrefix, eviction_type,
+                    ".ScannedEntriesCount.", result_type}),
+      scanned_count);
+
   TRACE_EVENT_END1("disk_cache", "SqlBackend.StartEviction", "result",
                    [&](perfetto::TracedValue trace_context) {
                      auto dict = std::move(trace_context).WriteDictionary();
-                     dict.Add("candidates_size", candidates.size());
+                     if (result.has_value()) {
+                       dict.Add("candidates_size", result->size());
+                     } else {
+                       dict.Add("error", static_cast<int>(result.error()));
+                     }
                    });
   aggregator->OnCandidate(
-      shard_id_, std::move(candidates),
+      shard_id_,
+      result.has_value() ? std::move(*result) : EvictionCandidateList(),
       base::BindOnce(&Backend::EvictEntries, weak_factory_.GetWeakPtr(),
                      std::move(callback), is_idle_time_eviction,
                      std::move(abort_flag),
                      std::move(remaining_mandatory_size)));
 }
 
-SqlPersistentStore::Backend::EvictionCandidateList
+base::expected<SqlPersistentStore::Backend::EvictionCandidateList,
+               SqlPersistentStore::Error>
 SqlPersistentStore::Backend::SelectEvictionCandidates(
     int64_t size_to_be_removed,
     base::flat_set<ResId> excluded_res_ids,
     std::vector<ResId> high_priority_res_ids,
-    bool is_idle_time_eviction) {
+    bool is_idle_time_eviction,
+    size_t& scanned_count) {
   if (is_idle_time_eviction && !IsBrowserIdle()) {
-    return {};
+    return base::unexpected(Error::kAborted);
   }
   if (auto db_error = CheckDatabaseStatus(); db_error != Error::kOk) {
-    return {};
+    return base::unexpected(db_error);
   }
-
-  base::ElapsedTimer timer;
 
   const bool size_and_priority_aware_eviction =
       net::features::kSqlDiskCacheSizeAndPriorityAwareEviction.Get();
@@ -2361,13 +2383,16 @@ SqlPersistentStore::Backend::SelectEvictionCandidates(
 
   EvictionCandidateList candidates;
   const base::Time now = base::Time::Now();
+  const std::string_view eviction_type =
+      !is_idle_time_eviction ? "RunEviction" : "RunEvictionOnIdleTime";
   {
     sql::Statement statement(db_.GetCachedStatement(
         SQL_FROM_HERE, GetQuery(Query::kStartEviction_SelectLiveResources)));
     base::ClampedNumeric<int64_t> candidates_total_size = 0;
     while (statement.Step()) {
+      scanned_count++;
       if (is_idle_time_eviction && !IsBrowserIdle()) {
-        return {};
+        return base::unexpected(Error::kAborted);
       }
       const ResId res_id = ResId(statement.ColumnInt64(0));
       if (excluded_res_ids.contains(res_id)) {
@@ -2396,38 +2421,37 @@ SqlPersistentStore::Backend::SelectEvictionCandidates(
           // kStartEviction_SelectLiveResources query, for LRU eviction that is
           // not size and priority aware, there is no need to read more once
           // the total size exceeds `size_to_be_removed`.
-          break;
+          return candidates;
         }
       }
     }
+    const int sqlite_error = db_.GetErrorCode();
+    if (sqlite_error != static_cast<int>(sql::SqliteResultCode::kDone)) {
+      base::UmaHistogramSparse(
+          base::StrCat({kSqlDiskCacheBackendHistogramPrefix, eviction_type,
+                        ".SelectEntriesSqlError"}),
+          sqlite_error);
+      return base::unexpected(Error::kFailedToExecute);
+    }
+  }
+  if (!size_and_priority_aware_eviction) {
+    return candidates;
   }
 
   // For size and priority aware eviction, all entry information is included in
   // `candidates` at this point. Since we don't need more than
   // `size_to_be_removed`, we remove unnecessary candidates before passing them
   // to the aggregator.
-  if (size_and_priority_aware_eviction) {
-    // Sort candidates by sort_value
-    std::sort(candidates.begin(), candidates.end(),
-              [](const auto& a, const auto& b) {
-                return a.sort_value > b.sort_value;
-              });
-    base::ClampedNumeric<int64_t> candidates_total_size = 0;
-    auto it = candidates.begin();
-    while (it != candidates.end() &&
-           size_to_be_removed > candidates_total_size) {
-      candidates_total_size += it->entry_size_with_overhead;
-      ++it;
-    }
-    candidates.erase(it, candidates.end());
+  std::sort(
+      candidates.begin(), candidates.end(),
+      [](const auto& a, const auto& b) { return a.sort_value > b.sort_value; });
+  base::ClampedNumeric<int64_t> candidates_total_size = 0;
+  auto it = candidates.begin();
+  while (it != candidates.end() && size_to_be_removed > candidates_total_size) {
+    candidates_total_size += it->entry_size_with_overhead;
+    ++it;
   }
-
-  base::UmaHistogramMicrosecondsTimes(
-      base::StrCat(
-          {kSqlDiskCacheBackendHistogramPrefix,
-           !is_idle_time_eviction ? "RunEviction" : "RunEvictionOnIdleTime",
-           ".TimeToSelectEntries"}),
-      timer.Elapsed());
+  candidates.erase(it, candidates.end());
   return candidates;
 }
 
