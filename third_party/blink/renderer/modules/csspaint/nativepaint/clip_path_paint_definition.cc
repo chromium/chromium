@@ -196,13 +196,18 @@ class ClipPathPaintWorkletInput : public PaintWorkletInput {
 BasicShape* CreateBasicShape(
     BasicShape::ShapeType type,
     const InterpolableValue& interpolable_value,
-    const NonInterpolableValue& untyped_non_interpolable_value) {
+    const NonInterpolableValue& untyped_non_interpolable_value,
+    const Element* element) {
   if (type == BasicShape::kStylePathType) {
     return PathInterpolationFunctions::AppliedValue(
         interpolable_value, untyped_non_interpolable_value);
   }
 
-  CSSToLengthConversionData conversion_data(/*element=*/nullptr);
+  DCHECK(element);
+  DCHECK(element->GetLayoutObject());
+  CSSToLengthConversionData conversion_data(element);
+  conversion_data.SetZoom(
+      element->GetLayoutObject()->StyleRef().EffectiveZoom());
   if (type == BasicShape::kStyleShapeType) {
     return CSSShapeInterpolationType::CreateShape(
         interpolable_value, untyped_non_interpolable_value, conversion_data);
@@ -289,7 +294,7 @@ BasicShape* GetAnimatedShapeFromKeyframe(const PropertySpecificKeyframe* frame,
               : BasicShape::kBasicShapeCircleType;
       return CreateBasicShape(
           type, *keyframe->GetValue()->Value().interpolable_value.Get(),
-          *non_interpolable_value);
+          *non_interpolable_value, element);
     }
   }
 }
