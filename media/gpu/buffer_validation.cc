@@ -58,8 +58,8 @@ bool VerifyGpuMemoryBufferHandle(
     return false;
   }
   if (!media::VideoFrame::IsValidCodedSize(coded_size)) {
-    VLOG(1) << "Coded size is beyond allowed dimensions: "
-            << coded_size.ToString();
+    LOG(ERROR) << "Coded size is beyond allowed dimensions: "
+               << coded_size.ToString();
     return false;
   }
   // YV12 is used by ARC++ on MTK8173. Consider removing it.
@@ -67,15 +67,15 @@ bool VerifyGpuMemoryBufferHandle(
       pixel_format != PIXEL_FORMAT_NV12 &&
       pixel_format != PIXEL_FORMAT_P010LE &&
       pixel_format != PIXEL_FORMAT_ARGB) {
-    VLOG(1) << "Unsupported: " << pixel_format;
+    LOG(ERROR) << "Unsupported: " << pixel_format;
     return false;
   }
   const size_t num_planes = media::VideoFrame::NumPlanes(pixel_format);
   const auto& native_pixmap_handle = gmb_handle.native_pixmap_handle();
   if (num_planes != native_pixmap_handle.planes.size() || num_planes == 0) {
-    VLOG(1) << "Invalid number of dmabuf planes passed: "
-            << gmb_handle.native_pixmap_handle().planes.size()
-            << ", expected: " << num_planes;
+    LOG(ERROR) << "Invalid number of dmabuf planes passed: "
+               << gmb_handle.native_pixmap_handle().planes.size()
+               << ", expected: " << num_planes;
     return false;
   }
 
@@ -83,6 +83,11 @@ bool VerifyGpuMemoryBufferHandle(
   for (size_t i = 1; i < num_planes; i++) {
     if (native_pixmap_handle.planes[i - 1].stride <
         native_pixmap_handle.planes[i].stride) {
+      LOG(ERROR) << "Strides do not monotonically decrease: "
+                 << "plane " << i - 1
+                 << " stride: " << native_pixmap_handle.planes[i - 1].stride
+                 << ", plane " << i
+                 << " stride: " << native_pixmap_handle.planes[i].stride;
       return false;
     }
   }
@@ -97,6 +102,7 @@ bool VerifyGpuMemoryBufferHandle(
       file_size_in_bytes = file_size_cb_for_testing.Run();
     } else if (!plane.fd.is_valid() ||
                !GetFileSize(plane.fd.get(), &file_size_in_bytes)) {
+      LOG(ERROR) << "Failed to get the file size for plane " << i;
       return false;
     }
     const size_t plane_height =
@@ -105,10 +111,19 @@ bool VerifyGpuMemoryBufferHandle(
         base::CheckMul(base::strict_cast<size_t>(plane.stride), plane_height);
     const size_t plane_pixel_width =
         media::VideoFrame::RowBytes(i, pixel_format, coded_size.width());
-    if (!min_plane_size.IsValid<uint64_t>() ||
-        min_plane_size.ValueOrDie<uint64_t>() > plane.size ||
-        base::strict_cast<size_t>(plane.stride) < plane_pixel_width) {
-      VLOG(1) << "Invalid strides/sizes";
+    if (!min_plane_size.IsValid()) {
+      LOG(ERROR) << "Invalid plane size";
+      return false;
+    }
+    if (min_plane_size.ValueOrDie<uint64_t>() > plane.size) {
+      LOG(ERROR) << "Invalid plane size: " << plane.size
+                 << ", expected minimum: "
+                 << static_cast<uint64_t>(min_plane_size.ValueOrDie());
+      return false;
+    }
+    if (base::strict_cast<size_t>(plane.stride) < plane_pixel_width) {
+      LOG(ERROR) << "Invalid stride: " << plane.stride
+                 << ", expected minimum: " << plane_pixel_width;
       return false;
     }
 
@@ -117,10 +132,16 @@ bool VerifyGpuMemoryBufferHandle(
     // referred by |fd|.
     base::CheckedNumeric<uint64_t> min_buffer_size =
         base::CheckAdd(plane.offset, plane.size);
-    if (!min_buffer_size.IsValid() ||
-        min_buffer_size.ValueOrDie() >
-            base::strict_cast<uint64_t>(file_size_in_bytes)) {
-      VLOG(1) << "Invalid strides/offsets";
+    if (!min_buffer_size.IsValid()) {
+      LOG(ERROR) << "Invalid plane offset and size";
+      return false;
+    }
+    if (min_buffer_size.ValueOrDie<uint64_t>() >
+        base::strict_cast<uint64_t>(file_size_in_bytes)) {
+      LOG(ERROR) << "Invalid buffer size: "
+                 << "min_buffer_size="
+                 << static_cast<uint64_t>(min_buffer_size.ValueOrDie())
+                 << ", file_size_in_bytes=" << file_size_in_bytes;
       return false;
     }
   }
