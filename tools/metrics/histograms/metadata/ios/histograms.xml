@@ -952,7 +952,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.CredentialExchange.CredentialExportScreenAction"
-    enum="CredentialExportScreenAction" expires_after="2026-07-01">
+    enum="CredentialExportScreenAction" expires_after="2027-02-01">
   <owner>rgod@google.com</owner>
   <owner>sinhasourav@google.com</owner>
   <owner>bling-transactions@google.com</owner>
@@ -963,7 +963,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.CredentialExchange.CredentialsReceivedCount.{Type}"
-    units="count" expires_after="2026-07-01">
+    units="count" expires_after="2027-02-01">
   <owner>rgod@google.com</owner>
   <owner>sinhasourav@google.com</owner>
   <owner>bling-transactions@google.com</owner>
