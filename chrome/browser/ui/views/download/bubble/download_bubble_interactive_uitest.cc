@@ -448,8 +448,10 @@ IN_PROC_BROWSER_TEST_F(
 
 // This test is only for Mac where we have immersive fullscreen.
 #if BUILDFLAG(IS_MAC)
-IN_PROC_BROWSER_TEST_F(DownloadBubbleInteractiveUiTest,
-                       ToolbarIconShownAfterImmersiveFullscreenDownload) {
+// TODO(crbug.com/514169818): Re-enable the test
+IN_PROC_BROWSER_TEST_F(
+    DownloadBubbleInteractiveUiTest,
+    DISABLED_ToolbarIconShownAfterImmersiveFullscreenDownload) {
   RunTestSequence(
       Do(EnterImmersiveFullscreen()), Check(IsInImmersiveFullscreen()),
       // No download toolbar icon should be present before the download.

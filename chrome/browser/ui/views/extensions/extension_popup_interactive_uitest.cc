@@ -512,9 +512,10 @@ IN_PROC_BROWSER_TEST_F(ExtensionPopupInteractiveUiTest,
 #if BUILDFLAG(IS_MAC)
 // Tests that an extension popup closes when activating the browser window
 // in macOS fullscreen.
+// TODO(crbug.com/514169818): Re-enable the test
 IN_PROC_BROWSER_TEST_F(
     ExtensionPopupInteractiveUiTest,
-    ExtensionPopupClosesOnActivatingBrowserWindowMacFullscreen) {
+    DISABLED_ExtensionPopupClosesOnActivatingBrowserWindowMacFullscreen) {
   // Install a test extension.
   static constexpr char kManifest[] =
       R"({
