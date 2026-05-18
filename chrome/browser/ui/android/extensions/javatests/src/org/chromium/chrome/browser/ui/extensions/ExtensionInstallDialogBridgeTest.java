@@ -351,6 +351,23 @@ public class ExtensionInstallDialogBridgeTest {
         verify(mNativeMock, times(0)).onDialogCanceled(anyLong());
     }
 
+    /** Tests that tapjacking protections are correctly applied to the dialog model. */
+    @Test
+    @SmallTest
+    public void testTapjackingProtections() {
+        buildAndShowDialog();
+        PropertyModel dialogModel = mModalDialogManager.getShownDialogModel();
+
+        Assert.assertNotNull("Dialog model should not be null", dialogModel);
+        Assert.assertTrue(
+                "FILTER_TOUCH_FOR_SECURITY should be true",
+                dialogModel.get(ModalDialogProperties.FILTER_TOUCH_FOR_SECURITY));
+        Assert.assertEquals(
+                "BUTTON_TAP_PROTECTION_PERIOD_MS should match",
+                org.chromium.ui.UiUtils.PROMPT_INPUT_PROTECTION_SHORT_DELAY_MS,
+                dialogModel.get(ModalDialogProperties.BUTTON_TAP_PROTECTION_PERIOD_MS));
+    }
+
     /**
      * Tests that clicking on the dialog's cancel button triggers the onDialogAccepted() and
      * destroy() callbacks.
