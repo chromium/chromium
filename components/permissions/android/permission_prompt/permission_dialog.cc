@@ -39,17 +39,30 @@ PermissionPromptDisposition PermissionDialog::GetPromptDisposition() const {
   return PermissionPromptDisposition::MODAL_DIALOG;
 }
 
+bool PermissionDialog::IsUpgradeToPrecise() const {
+  return GetGeolocationPromptType() == GeolocationPromptType::kUpgradeToPrecise;
+}
+
 std::u16string PermissionDialog::GetPositiveButtonText(bool is_one_time) const {
+  if (IsUpgradeToPrecise()) {
+    return l10n_util::GetStringUTF16(IDS_GEOLOCATION_UPGRADE_CHANGE_TO_PRECISE);
+  }
   return is_one_time
              ? l10n_util::GetStringUTF16(IDS_PERMISSION_ALLOW_WHILE_VISITING)
              : l10n_util::GetStringUTF16(IDS_PERMISSION_ALLOW);
 }
 std::u16string PermissionDialog::GetNegativeButtonText(bool is_one_time) const {
+  if (IsUpgradeToPrecise()) {
+    return l10n_util::GetStringUTF16(IDS_GEOLOCATION_UPGRADE_KEEP_APPROXIMATE);
+  }
   return is_one_time ? l10n_util::GetStringUTF16(IDS_PERMISSION_NEVER_ALLOW)
                      : l10n_util::GetStringUTF16(IDS_PERMISSION_DENY);
 }
 std::u16string PermissionDialog::GetPositiveEphemeralButtonText(
     bool is_one_time) const {
+  if (IsUpgradeToPrecise()) {
+    return l10n_util::GetStringUTF16(IDS_PERMISSION_ALLOW_THIS_TIME);
+  }
   return is_one_time ? l10n_util::GetStringUTF16(IDS_PERMISSION_ALLOW_THIS_TIME)
                      : std::u16string();
 }

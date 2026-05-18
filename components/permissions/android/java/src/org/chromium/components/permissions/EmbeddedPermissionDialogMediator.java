@@ -44,12 +44,12 @@ public class EmbeddedPermissionDialogMediator extends PermissionDialogMediator
             requestAndroidPermissionsIfNecessary();
             return;
         }
-        setupLocationPrecisionChooser(view);
         showDialogInternal(view);
     }
 
     public void showDialogInternal(View view) {
         assert mState == State.NOT_SHOWING || mState == State.SHOW_SYSTEM_PROMPT;
+        setupLocationPrecisionChooser(view);
         mDialogModel = createModalDialogModel(view);
         assumeNonNull(mModalDialogManager)
                 .showDialog(mDialogModel, ModalDialogManager.ModalDialogType.TAB);

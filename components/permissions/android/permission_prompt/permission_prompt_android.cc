@@ -128,6 +128,16 @@ std::u16string PermissionPromptAndroid::GetPositiveEphemeralButtonText(
   return std::u16string();
 }
 
+std::optional<GeolocationPromptType>
+PermissionPromptAndroid::GetGeolocationPromptType() const {
+  CHECK(!requests_.empty());
+  if (requests_[0]->GetGeolocationPromptType().has_value()) {
+    CHECK_EQ(requests_.size(), 1u);
+    return requests_[0]->GetGeolocationPromptType();
+  }
+  return std::nullopt;
+}
+
 size_t PermissionPromptAndroid::PermissionCount() const {
   return Requests().size();
 }

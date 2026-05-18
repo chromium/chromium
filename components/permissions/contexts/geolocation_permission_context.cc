@@ -17,6 +17,8 @@
 #include "components/content_settings/core/common/features.h"
 #include "components/permissions/features.h"
 #include "components/permissions/permission_context_base.h"
+#include "components/permissions/permission_decision.h"
+#include "components/permissions/permission_prompt_decision.h"
 #include "components/permissions/permission_request_id.h"
 #include "components/permissions/permissions_client.h"
 #include "components/permissions/resolvers/geolocation_permission_resolver.h"

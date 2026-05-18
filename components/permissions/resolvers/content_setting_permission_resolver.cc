@@ -46,9 +46,10 @@ ContentSettingPermissionResolver::DeterminePermissionStatus(
 }
 
 PermissionSetting
-ContentSettingPermissionResolver::ComputePermissionDecisionResult(
+ContentSettingPermissionResolver::ComputePermissionDecisionResultInternal(
     const PermissionSetting& previous_setting,
-    const PermissionPromptDecision& decision) const {
+    const PermissionPromptDecision& decision,
+    std::optional<GeolocationPromptType> prompt_type) const {
   CHECK(std::holds_alternative<std::monostate>(decision.prompt_options));
   return PermissionUtil::PermissionDecisionToContentSetting(
       decision.overall_decision);

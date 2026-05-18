@@ -10,5 +10,9 @@ public final class LocationProviderOverrider {
         LocationProviderFactory.setLocationProviderImpl(provider);
     }
 
+    public static void clearCachedGeopositionsForTesting() {
+        LocationProviderFactory.clearCachedGeopositionsForTesting(); // IN-TEST
+    }
+
     private LocationProviderOverrider() {}
 }

@@ -124,6 +124,8 @@ public class RuntimePermissionTestUtils {
     public static void setupGeolocationSystemMock(boolean enabled) {
         LocationSettingsTestUtil.setSystemLocationSettingEnabled(enabled);
         LocationProviderOverrider.setLocationProviderImpl(new MockLocationProvider());
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> LocationProviderOverrider.clearCachedGeopositionsForTesting());
     }
 
     public static void setupGeolocationSystemMock() {

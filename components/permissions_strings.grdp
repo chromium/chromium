@@ -12,6 +12,15 @@
     <message name="IDS_GEOLOCATION_APPROXIMATE_INFOBAR_TEXT" desc="Mobile: Text requesting permission for a site to access the user's approximate location">
       <ph name="URL">$1<ex>maps.google.com</ex></ph> wants to use your approximate location
     </message>
+    <message name="IDS_GEOLOCATION_UPGRADE_INFOBAR_TEXT" desc="Mobile: Text requesting to upgrade location access from approximate to precise.">
+      <ph name="URL">$1<ex>maps.google.com</ex></ph> wants to change location access from approximate to precise
+    </message>
+    <message name="IDS_GEOLOCATION_UPGRADE_CHANGE_TO_PRECISE" desc="Label on button to upgrade location access from approximate to precise.">
+      Change to precise
+    </message>
+    <message name="IDS_GEOLOCATION_UPGRADE_KEEP_APPROXIMATE" desc="Label on button to keep approximate location access instead of upgrading to precise.">
+      Keep approximate location
+    </message>
     <message name="IDS_ACCESSIBILITY_EVENTS_INFOBAR_TEXT" desc="Text requesting permission for a site to listen to accessibility events, for example if the user has a screen reader or braille device enabled">
       <ph name="URL">$1<ex>maps.google.com</ex></ph> wants to respond to accessibility events
     </message>

@@ -34,6 +34,9 @@ class PermissionDialog : public PermissionPromptAndroid {
   std::u16string GetNegativeButtonText(bool is_one_time) const override;
   std::u16string GetPositiveEphemeralButtonText(
       bool is_one_time) const override;
+
+ private:
+  bool IsUpgradeToPrecise() const;
 };
 
 }  // namespace permissions

@@ -89,15 +89,18 @@ public class ApproximateGeolocationTest {
         mTestServer = mActivityTestRule.getTestServer();
         RuntimePermissionTestUtils.setupGeolocationSystemMock();
         mActivityTestRule.startOnBlankPage();
-        mActivityTestRule.loadUrl(mTestServer.getURL(TEST_FILE));
         setNativeContentSetting();
         setPermissionDelegate();
+        mActivityTestRule.loadUrl(mTestServer.getURL(TEST_FILE));
     }
 
     /** Sets native ContentSetting value to ASK for geolocation. */
     private void setNativeContentSetting() {
+        setGeolocationContentSetting(ContentSetting.ASK, ContentSetting.ASK);
+    }
+
+    private void setGeolocationContentSetting(int approximate, int precise) {
         final String origin = mTestServer.getURL(TEST_FILE);
-        final int value = ContentSetting.ASK;
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     WebsitePreferenceBridgeJni.get()
@@ -106,8 +109,8 @@ public class ApproximateGeolocationTest {
                                     ContentSettingsType.GEOLOCATION_WITH_OPTIONS,
                                     origin,
                                     origin,
-                                    value,
-                                    value);
+                                    approximate,
+                                    precise);
                 });
     }
 
@@ -188,13 +191,17 @@ public class ApproximateGeolocationTest {
     }
 
     private void checkAccuracyMode(boolean precise) throws Exception {
-        String accuracyMode =
+        String result =
                 JavaScriptUtils.runJavascriptWithAsyncResult(
                         mActivityTestRule.getWebContents(),
                         "getAccuracyModeResult().then(result =>"
-                                + " domAutomationController.send(result))");
+                                + " domAutomationController.send(result)).catch(error =>"
+                                + " domAutomationController.send('error: ' + error.message))");
+        if (result.contains("error:")) {
+            Assert.fail("Geolocation request failed: " + result);
+        }
         String expected = precise ? "precise" : "approximate";
-        Assert.assertEquals(expected, accuracyMode.replace("\"", "").trim());
+        Assert.assertEquals(expected, result.replace("\"", "").trim());
     }
 
     @Test
@@ -226,5 +233,81 @@ public class ApproximateGeolocationTest {
                 PermissionTestRule.PromptDecision.ALLOW, mActivityTestRule.getActivity());
         checkPermission(precise);
         checkAccuracyMode(precise);
+    }
+
+    @Test
+    @MediumTest
+    public void testUpgradeFlow_Strings() throws Exception {
+        setGeolocationContentSetting(ContentSetting.ALLOW, ContentSetting.ASK);
+        clickGetLocationButton();
+        waitOnLatch(2);
+
+        // Verify strings
+        CriteriaHelper.pollInstrumentationThread(
+                () -> {
+                    try {
+                        androidx.test.espresso.Espresso.onView(
+                                        androidx.test.espresso.matcher.ViewMatchers.withText(
+                                                "Change to precise"))
+                                .check(
+                                        androidx.test.espresso.assertion.ViewAssertions.matches(
+                                                androidx.test.espresso.matcher.ViewMatchers
+                                                        .isDisplayed()));
+                        return true;
+                    } catch (androidx.test.espresso.NoMatchingViewException e) {
+                        return false;
+                    }
+                },
+                "Dialog with 'Change to precise' not found");
+
+        // Clean up dialog for subsequent tests
+        PermissionTestRule.replyToDialog(
+                PermissionTestRule.PromptDecision.DENY, mActivityTestRule.getActivity());
+    }
+
+    @Test
+    @MediumTest
+    public void testUpgradeFlow_ChangeToPrecise() throws Exception {
+        setGeolocationContentSetting(ContentSetting.ALLOW, ContentSetting.ASK);
+        clickGetLocationButton();
+        waitOnLatch(2);
+
+        PermissionTestRule.replyToDialog(
+                PermissionTestRule.PromptDecision.ALLOW, mActivityTestRule.getActivity());
+
+        checkPermission(/* precise= */ true);
+        checkAccuracyMode(/* precise= */ true);
+    }
+
+    @Test
+    @MediumTest
+    public void testUpgradeFlow_AllowThisTime() throws Exception {
+        setGeolocationContentSetting(ContentSetting.ALLOW, ContentSetting.ASK);
+        clickGetLocationButton();
+        waitOnLatch(2);
+
+        PermissionTestRule.replyToDialog(
+                PermissionTestRule.PromptDecision.ALLOW_ONCE, mActivityTestRule.getActivity());
+
+        // After "Allow this time", both should be ALLOW in the current session.
+        checkPermission(/* precise= */ true);
+        checkAccuracyMode(/* precise= */ true);
+    }
+
+    @Test
+    @MediumTest
+    public void testUpgradeFlow_KeepApproximate() throws Exception {
+        setGeolocationContentSetting(ContentSetting.ALLOW, ContentSetting.ASK);
+        clickGetLocationButton();
+        waitOnLatch(2);
+
+        PermissionTestRule.replyToDialog(
+                PermissionTestRule.PromptDecision.DENY, mActivityTestRule.getActivity());
+
+        // Precise should be BLOCK, Approximate remains ALLOW.
+        checkPermission(/* precise= */ false);
+
+        // The initial request (for precise) should have succeeded with approximate accuracy.
+        checkAccuracyMode(/* precise= */ false);
     }
 }

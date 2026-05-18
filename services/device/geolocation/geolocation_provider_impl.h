@@ -96,6 +96,7 @@ class GeolocationProviderImpl
   // called on the UI thread so that the GeolocationProviderImpl is always
   // instantiated on the same thread. Ownership is NOT returned.
   static GeolocationProviderImpl* GetInstance();
+  static GeolocationProviderImpl* GetInstanceIfExistsForTesting();
 
   GeolocationProviderImpl(const GeolocationProviderImpl&) = delete;
   GeolocationProviderImpl& operator=(const GeolocationProviderImpl&) = delete;
@@ -136,6 +137,12 @@ class GeolocationProviderImpl
 
   void clear_user_did_opt_into_location_services_for_testing() {
     user_did_opt_into_location_services_ = false;
+  }
+
+  void clear_cached_positions_for_testing() {
+    result_.reset();
+    high_accuracy_result_.reset();
+    low_accuracy_result_.reset();
   }
 
   bool is_running_precise_for_testing() const { return is_running_precise_; }

@@ -72,6 +72,7 @@ class PermissionPromptAndroid : public PermissionPrompt {
   virtual std::u16string GetPositiveButtonText(bool is_one_time) const;
   virtual std::u16string GetNegativeButtonText(bool is_one_time) const;
   virtual std::u16string GetPositiveEphemeralButtonText(bool is_one_time) const;
+  virtual std::optional<GeolocationPromptType> GetGeolocationPromptType() const;
 
   // We show one permission at a time except for grouped mic+camera, for which
   // we still have a single icon and message text.

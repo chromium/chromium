@@ -20,6 +20,8 @@ namespace permissions {
 
 struct PermissionPromptDecision;
 
+enum class GeolocationPromptType;
+
 // Interface that allows implementing a permission resolver. Subclasses should
 // implement logic for one or more permission types. Each object of subclasses
 // should capture all information of a particular permission request information
@@ -47,9 +49,13 @@ class PermissionResolver {
 
   // Determines the user's new permission state given a user decision for the
   // request.
-  virtual PermissionSetting ComputePermissionDecisionResult(
+  PermissionSetting ComputePermissionDecisionResult(
       const PermissionSetting& previous_setting,
-      const PermissionPromptDecision& decision) const = 0;
+      const PermissionPromptDecision& decision,
+      std::optional<GeolocationPromptType> prompt_type = std::nullopt) const {
+    return ComputePermissionDecisionResultInternal(previous_setting, decision,
+                                                   prompt_type);
+  }
 
   // Determines the `PromptParameters` for the current request given the
   // `current_setting_state` which is the fully coalesced current settings
@@ -73,6 +79,11 @@ class PermissionResolver {
  protected:
   explicit PermissionResolver(ContentSettingsType content_settings_type);
   explicit PermissionResolver(RequestType request_type);
+
+  virtual PermissionSetting ComputePermissionDecisionResultInternal(
+      const PermissionSetting& previous_setting,
+      const PermissionPromptDecision& decision,
+      std::optional<GeolocationPromptType> prompt_type) const = 0;
 
  private:
   std::optional<ContentSettingsType> content_settings_type_;

@@ -9,6 +9,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.metrics.RecordHistogram;
@@ -49,6 +50,10 @@ public class LocationProviderFactory {
         sProviderImpl = provider;
     }
 
+    public static void clearCachedGeopositionsForTesting() {
+        LocationProviderFactoryJni.get().clearCachedGeopositionsForTesting(); // IN-TEST
+    }
+
     @CalledByNative
     public static void useGmsCoreLocationProvider() {
         sUseGmsCoreLocationProvider = true;
@@ -74,5 +79,10 @@ public class LocationProviderFactory {
                     LocationProviderType.COUNT);
         }
         return sProviderImpl;
+    }
+
+    @NativeMethods
+    interface Natives {
+        void clearCachedGeopositionsForTesting(); // IN-TEST
     }
 }

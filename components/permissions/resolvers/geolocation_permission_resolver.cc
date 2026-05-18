@@ -14,6 +14,7 @@
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/permissions/permission_prompt_decision.h"
+#include "components/permissions/permission_request_data.h"
 #include "components/permissions/permission_util.h"
 #include "components/permissions/resolvers/permission_prompt_options.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
@@ -66,9 +67,10 @@ GeolocationPermissionResolver::DeterminePermissionStatus(
 }
 
 PermissionSetting
-GeolocationPermissionResolver::ComputePermissionDecisionResult(
+GeolocationPermissionResolver::ComputePermissionDecisionResultInternal(
     const PermissionSetting& previous_setting,
-    const PermissionPromptDecision& decision) const {
+    const PermissionPromptDecision& decision,
+    std::optional<GeolocationPromptType> prompt_type) const {
   auto setting = std::get<GeolocationSetting>(previous_setting);
 
   switch (decision.overall_decision) {
@@ -77,18 +79,22 @@ GeolocationPermissionResolver::ComputePermissionDecisionResult(
       setting.approximate = PermissionOption::kAllowed;
 
       if (requested_precise_) {
-        CHECK(std::holds_alternative<GeolocationPromptOptions>(
-            decision.prompt_options));
-        switch (std::get<GeolocationPromptOptions>(decision.prompt_options)
-                    .selected_accuracy) {
-          case GeolocationAccuracy::kPrecise:
-            setting.precise = PermissionOption::kAllowed;
-            break;
-          case GeolocationAccuracy::kApproximate:
-            // If the user downgraded the request, we consider precise as
-            // blocked.
-            setting.precise = PermissionOption::kDenied;
-            break;
+        if (prompt_type == GeolocationPromptType::kUpgradeToPrecise) {
+          setting.precise = PermissionOption::kAllowed;
+        } else {
+          CHECK(std::holds_alternative<GeolocationPromptOptions>(
+              decision.prompt_options));
+          switch (std::get<GeolocationPromptOptions>(decision.prompt_options)
+                      .selected_accuracy) {
+            case GeolocationAccuracy::kPrecise:
+              setting.precise = PermissionOption::kAllowed;
+              break;
+            case GeolocationAccuracy::kApproximate:
+              // If the user downgraded the request, we consider precise as
+              // blocked.
+              setting.precise = PermissionOption::kDenied;
+              break;
+          }
         }
       } else {
         CHECK(std::holds_alternative<std::monostate>(decision.prompt_options) ||
@@ -99,11 +105,35 @@ GeolocationPermissionResolver::ComputePermissionDecisionResult(
     case PermissionDecision::kNone:
       break;
     case PermissionDecision::kDeny:
-      setting.approximate = PermissionOption::kDenied;
+      if (prompt_type != GeolocationPromptType::kUpgradeToPrecise) {
+        setting.approximate = PermissionOption::kDenied;
+      }
       setting.precise = PermissionOption::kDenied;
+      break;
   }
 
   return setting;
+}
+
+GeolocationPromptType GeolocationPermissionResolver::GetGeolocationPromptType(
+    bool is_embedded_permission_element_initiated,
+    const PermissionSetting& current_setting_state) const {
+  if (!requested_precise_) {
+    return GeolocationPromptType::kApproximateOnly;
+  }
+  if (is_embedded_permission_element_initiated) {
+    // TODO(crbug.com/417894145): <geolocation> does not support upgrade prompt
+    // yet.
+    return GeolocationPromptType::kApproximateOrPrecise;
+  }
+  const GeolocationSetting* geolocation_setting =
+      std::get_if<GeolocationSetting>(&current_setting_state);
+  CHECK(geolocation_setting);
+  if (geolocation_setting->approximate == PermissionOption::kAllowed &&
+      geolocation_setting->precise == PermissionOption::kAsk) {
+    return GeolocationPromptType::kUpgradeToPrecise;
+  }
+  return GeolocationPromptType::kApproximateOrPrecise;
 }
 
 GeolocationPermissionResolver::PromptParameters

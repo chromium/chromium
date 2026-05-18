@@ -118,9 +118,9 @@ PermissionRequest::GetDialogAnnotatedMessageText(
           case GeolocationPromptType::kApproximateOnly:
             message_id = IDS_GEOLOCATION_APPROXIMATE_INFOBAR_TEXT;
             break;
-          // TODO(crbug.com/417894145): Add support for the upgrade to precise
-          // prompt.
           case GeolocationPromptType::kUpgradeToPrecise:
+            message_id = IDS_GEOLOCATION_UPGRADE_INFOBAR_TEXT;
+            break;
           default:
             NOTREACHED();
         }

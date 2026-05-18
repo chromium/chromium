@@ -51,6 +51,7 @@
 #include "components/permissions/permissions_client.h"
 #include "components/permissions/request_type.h"
 #include "components/permissions/resolvers/content_setting_permission_resolver.h"
+#include "components/permissions/resolvers/geolocation_permission_resolver.h"
 #include "components/permissions/resolvers/permission_prompt_options.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/global_routing_id.h"
@@ -262,16 +263,14 @@ void PermissionContextBase::RequestPermission(
   }
   // Status is either {ASK} or it's {GRANT/DENY and ignorable}.
   if (content_settings_type_ == ContentSettingsType::GEOLOCATION_WITH_OPTIONS) {
-    std::optional<GeolocationAccuracy> requested_geolocation_accuracy =
-        request_data->GetRequestedGeolocationAccuracy();
-    CHECK(requested_geolocation_accuracy.has_value());
-    if (*requested_geolocation_accuracy == GeolocationAccuracy::kApproximate) {
-      request_data->WithGeolocationPromptType(
-          GeolocationPromptType::kApproximateOnly);
-    } else {
-      request_data->WithGeolocationPromptType(
-          GeolocationPromptType::kApproximateOrPrecise);
-    }
+    std::unique_ptr<PermissionResolver> resolver =
+        CreatePermissionResolver(request_data->permission_descriptor);
+    CHECK(result.retrieved_permission_setting.has_value());
+    request_data->WithGeolocationPromptType(
+        static_cast<GeolocationPermissionResolver*>(resolver.get())
+            ->GetGeolocationPromptType(
+                request_data->IsEmbeddedPermissionElementInitiated(),
+                result.retrieved_permission_setting.value()));
   }
   PermissionUmaUtil::RecordPermissionRequestedFromFrame(content_settings_type_,
                                                         rfh);
@@ -792,11 +791,10 @@ content::PermissionResult PermissionContextBase::ComputeNewPermissionResult(
       rfh, request_data.requesting_origin, request_data.embedding_origin);
   std::unique_ptr<PermissionResolver> resolver =
       CreatePermissionResolver(request_data.permission_descriptor);
-  PermissionSetting new_value =
-      resolver->ComputePermissionDecisionResult(previous_value, decision);
+  PermissionSetting new_value = resolver->ComputePermissionDecisionResult(
+      previous_value, decision, request_data.geolocation_prompt_type);
   return content::PermissionResult(
-      PermissionUtil::PermissionDecisionToPermissionStatus(
-          decision.overall_decision),
+      resolver->DeterminePermissionStatus(new_value),
       content::PermissionStatusSource::UNSPECIFIED, new_value);
 }
 
@@ -824,10 +822,8 @@ void PermissionContextBase::NotifyPermissionSet(
       request_data.id.global_render_frame_host_id());
 
   if (decision.is_final) {
-    UpdateTabContext(
-        request_data,
-        decision.overall_decision == PermissionDecision::kAllow ||
-            decision.overall_decision == PermissionDecision::kAllowThisTime);
+    UpdateTabContext(request_data, new_permission_result.status ==
+                                       blink::mojom::PermissionStatus::GRANTED);
     if (rfh && decision.overall_decision == PermissionDecision::kAllow) {
       PermissionUmaUtil::RecordPermissionsUsageSourceAndPolicyConfiguration(
           content_settings_type_, rfh);

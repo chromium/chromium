@@ -26,14 +26,20 @@ class GeolocationPermissionResolver : public PermissionResolver {
   blink::mojom::PermissionStatus DeterminePermissionStatus(
       const PermissionSetting& setting) const override;
 
-  PermissionSetting ComputePermissionDecisionResult(
-      const PermissionSetting& previous_setting,
-      const PermissionPromptDecision& decision) const override;
+  GeolocationPromptType GetGeolocationPromptType(
+      bool is_embedded_permission_element_initiated,
+      const PermissionSetting& current_setting_state) const;
 
   PromptParameters GetPromptParameters(
       const PermissionSetting& current_setting_state) const override;
 
   bool requested_precise() { return requested_precise_; }
+
+ protected:
+  PermissionSetting ComputePermissionDecisionResultInternal(
+      const PermissionSetting& previous_setting,
+      const PermissionPromptDecision& decision,
+      std::optional<GeolocationPromptType> prompt_type) const override;
 
  private:
   bool requested_precise_;

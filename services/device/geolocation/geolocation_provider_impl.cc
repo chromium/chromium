@@ -172,8 +172,9 @@ void GeolocationProviderImpl::OnLocationUpdate(
     mojom::GeopositionResultPtr result) {
   DCHECK(OnGeolocationThread());
   // Will be true only in testing.
-  if (ignore_location_updates_)
+  if (ignore_location_updates_) {
     return;
+  }
   main_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&GeolocationProviderImpl::NotifyClients,
                                 base::Unretained(this), std::move(result)));
@@ -182,6 +183,12 @@ void GeolocationProviderImpl::OnLocationUpdate(
 // static
 GeolocationProviderImpl* GeolocationProviderImpl::GetInstance() {
   return base::Singleton<GeolocationProviderImpl>::get();
+}
+
+// static
+GeolocationProviderImpl*
+GeolocationProviderImpl::GetInstanceIfExistsForTesting() {
+  return base::Singleton<GeolocationProviderImpl>::GetIfExists();
 }
 
 void GeolocationProviderImpl::BindGeolocationControlReceiver(
@@ -204,8 +211,9 @@ void GeolocationProviderImpl::UserDidOptIntoLocationServices() {
   DCHECK(main_task_runner_->BelongsToCurrentThread());
   bool was_permission_granted = user_did_opt_into_location_services_;
   user_did_opt_into_location_services_ = true;
-  if (IsRunning() && !was_permission_granted)
+  if (IsRunning() && !was_permission_granted) {
     InformProvidersPermissionGranted();
+  }
 }
 
 GeolocationProviderImpl::GeolocationProviderImpl()
@@ -276,8 +284,9 @@ void GeolocationProviderImpl::OnClientsChanged() {
       options.message_pump_type = base::MessagePumpType::NS_RUNLOOP;
 #endif
       StartWithOptions(std::move(options));
-      if (user_did_opt_into_location_services_)
+      if (user_did_opt_into_location_services_) {
         InformProvidersPermissionGranted();
+      }
     }
 #if BUILDFLAG(OS_LEVEL_GEOLOCATION_PERMISSION_SUPPORTED)
     // Handle system permission states:
@@ -619,5 +628,14 @@ void GeolocationProviderImpl::DoStartProvidersOnGeolocationThread() {
 }  // namespace device
 
 #if BUILDFLAG(IS_ANDROID)
+static void
+JNI_LocationProviderFactory_ClearCachedGeopositionsForTesting(  // IN-TEST
+    JNIEnv* env) {
+  auto* provider = device::GeolocationProviderImpl::
+      GetInstanceIfExistsForTesting();  // IN-TEST
+  if (provider) {
+    provider->clear_cached_positions_for_testing();  // IN-TEST
+  }
+}
 DEFINE_JNI(LocationProviderFactory)
 #endif

@@ -87,12 +87,22 @@ PermissionStatusToEmbeddedPermissionControlResult(PermissionStatus status) {
 // Helper wraps `RequestPageEmbeddedPermissionCallback` to
 // `RequestPermissionsCallback`.
 void EmbeddedPermissionRequestCallbackWrapper(
+    PermissionStatus initial_status,
     base::OnceCallback<void(EmbeddedPermissionControlResult)> callback,
     const std::vector<PermissionResult>& results) {
   DCHECK(!results.empty());
   DCHECK(std::ranges::all_of(results, [&](auto const& result) {
     return results[0].status == result.status;
   }));
+
+  if (initial_status == results[0].status) {
+    // If the permission status did not change, the user dismissed the prompt
+    // (e.g. clicking 'Continue not allowing' on PREVIOUSLY_DENIED, or
+    // 'Continue allowing' on PREVIOUSLY_GRANTED).
+    std::move(callback).Run(EmbeddedPermissionControlResult::kDismissed);
+    return;
+  }
+
   std::move(callback).Run(
       PermissionStatusToEmbeddedPermissionControlResult(results[0].status));
 }
@@ -313,12 +323,15 @@ void PermissionServiceImpl::RequestPageEmbeddedPermission(
       return;
     }
 
+    PermissionStatus initial_status =
+        GetPermissionResultForCurrentContext(permissions[0]).status;
+
     RequestPermissionsInternal(
         browser_context,
         PermissionRequestDescription(std::move(permissions),
                                      std::move(descriptor)),
         base::BindOnce(&EmbeddedPermissionRequestCallbackWrapper,
-                       std::move(callback)));
+                       initial_status, std::move(callback)));
   }
 }
 

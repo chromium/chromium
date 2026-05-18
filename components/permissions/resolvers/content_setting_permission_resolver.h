@@ -25,14 +25,16 @@ class ContentSettingPermissionResolver : public PermissionResolver {
   blink::mojom::PermissionStatus DeterminePermissionStatus(
       const PermissionSetting& setting) const override;
 
-  PermissionSetting ComputePermissionDecisionResult(
-      const PermissionSetting& previous_setting,
-      const PermissionPromptDecision& decision) const override;
-
   PromptParameters GetPromptParameters(
       const PermissionSetting& current_setting_state) const override;
 
   ContentSetting default_value_ = CONTENT_SETTING_DEFAULT;
+
+ protected:
+  PermissionSetting ComputePermissionDecisionResultInternal(
+      const PermissionSetting& previous_setting,
+      const PermissionPromptDecision& decision,
+      std::optional<GeolocationPromptType> prompt_type) const override;
 };
 
 }  // namespace permissions
