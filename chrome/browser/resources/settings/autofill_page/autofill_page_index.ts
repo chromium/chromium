@@ -57,7 +57,7 @@ export class SettingsAutofillPageIndexElement extends
     };
   }
 
-  declare prefs: {[key: string]: any};
+  declare prefs: Record<string, unknown>;
   declare private autofillAiAvailable_: boolean;
 
   override currentRouteChanged(newRoute: Route, oldRoute?: Route) {

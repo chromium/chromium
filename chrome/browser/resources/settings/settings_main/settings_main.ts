@@ -124,7 +124,7 @@ export class SettingsMainElement extends SettingsMainElementBase {
     };
   }
 
-  declare prefs: {[key: string]: any};
+  declare prefs: Record<string, unknown>;
   declare private pageVisibility_: PageVisibility;
   declare private lastRoute_: Route|null;
   declare private routes_: SettingsRoutes;

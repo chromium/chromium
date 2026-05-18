@@ -132,7 +132,7 @@ export class SettingsAccountCardElement extends SettingsAccountCardElementBase {
     };
   }
 
-  declare prefs: {[key: string]: any};
+  declare prefs: Record<string, unknown>;
   declare private signinAllowed_: boolean;
   declare syncStatus: SyncStatus|null;
 

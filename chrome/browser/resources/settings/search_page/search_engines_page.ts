@@ -151,7 +151,7 @@ export class SettingsSearchEnginesPageElement extends
     return ['extensionsChanged_(extensions, showExtensionsList_)'];
   }
 
-  declare prefs: {[key: string]: any};
+  declare prefs: Record<string, unknown>;
   declare defaultEngines: SearchEngine[];
   declare activeEngines: SearchEngine[];
   declare otherEngines: SearchEngine[];

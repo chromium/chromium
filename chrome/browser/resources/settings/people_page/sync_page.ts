@@ -221,7 +221,7 @@ export class SettingsSyncPageElement extends SettingsSyncPageElementBase {
     ];
   }
 
-  declare prefs: {[key: string]: any};
+  declare prefs: Record<string, unknown>;
   declare focusConfig: FocusConfig;
   declare private pageStatus_: PageStatus;
   declare syncPrefs?: SyncPrefs;

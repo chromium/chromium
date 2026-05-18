@@ -101,7 +101,7 @@ export class SettingsUiElement extends SettingsUiElementBase {
     };
   }
 
-  declare prefs: {[key: string]: any};
+  declare prefs: Record<string, unknown>;
   declare private toolbarSpinnerActive_: boolean;
   declare private narrow_: boolean;
   declare private lastSearchQuery_: string;

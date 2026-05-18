@@ -55,7 +55,7 @@ export class SettingsPerformancePageIndexElement extends
     };
   }
 
-  declare prefs: {[key: string]: any};
+  declare prefs: Record<string, unknown>;
   declare private showBatterySettings_: boolean;
 
   private showDefaultViews_() {

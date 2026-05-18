@@ -275,7 +275,7 @@ export class SettingsSecurityKeysSetPinDialogElement extends
         });
   }
 
-  private fire_(eventName: string, detail?: any) {
+  private fire_(eventName: string, detail?: unknown) {
     this.dispatchEvent(
         new CustomEvent(eventName, {bubbles: true, composed: true, detail}));
   }

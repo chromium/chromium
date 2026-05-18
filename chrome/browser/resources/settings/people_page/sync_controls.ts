@@ -136,7 +136,7 @@ export class SettingsSyncControlsElement extends
   declare syncStatus: SyncStatus|null;
   private syncBrowserProxy_: SyncBrowserProxy =
       SyncBrowserProxyImpl.getInstance();
-  private cachedSyncPrefs_: {[key: string]: any}|null;
+  private cachedSyncPrefs_: Record<string, unknown>|null;
   declare showSyncDisabledInformation: boolean;
   declare private isAccountSettingsPage_: boolean;
   // <if expr="not is_chromeos">
@@ -332,7 +332,7 @@ export class SettingsSyncControlsElement extends
       for (const dataType of syncPrefsIndividualDataTypes) {
         // These are all booleans, so this shallow copy is sufficient.
         this.cachedSyncPrefs_[dataType] =
-            (this.syncPrefs as {[key: string]: any})[dataType];
+            this.syncPrefs![dataType as keyof SyncPrefs];
 
         this.set(['syncPrefs', dataType], true);
       }

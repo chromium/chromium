@@ -196,7 +196,7 @@ export class SettingsPrivacyPageIndexElement extends
     ];
   }
 
-  declare prefs: {[key: string]: any};
+  declare prefs: Record<string, unknown>;
   declare private pageVisibility_: PageVisibility;
   declare private routes_: SettingsRoutes;
   declare private showPrivacyGuidePromo_: boolean;

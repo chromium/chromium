@@ -244,7 +244,7 @@ export class PrivacyGuideHistorySyncFragmentElement extends
       return false;
     }
     for (const datatype of syncPrefsIndividualDataTypes) {
-      if ((this.syncPrefs_ as {[key: string]: any})[datatype]) {
+      if (this.syncPrefs_[datatype as keyof SyncPrefs]) {
         continue;
       }
       if (datatype === 'wifiConfigurationsSynced' &&

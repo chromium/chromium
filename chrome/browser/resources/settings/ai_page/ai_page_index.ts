@@ -95,7 +95,7 @@ export class SettingsAiPageIndexElement extends SettingsAiPageIndexElementBase
     };
   }
 
-  declare prefs: {[key: string]: any};
+  declare prefs: Record<string, unknown>;
   declare private routes_: SettingsRoutes;
   declare private showGlicSettings_: boolean;
   declare private showAiPageAiFeatureSection_: boolean;

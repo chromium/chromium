@@ -182,7 +182,7 @@ export class SettingsCreditCardEditDialogElement extends
     };
   }
 
-  declare prefs: {[key: string]: any};
+  declare prefs: Record<string, unknown>;
   declare creditCard: chrome.autofillPrivate.CreditCardEntry;
   declare private title_: string;
   declare private monthList_: string[];
