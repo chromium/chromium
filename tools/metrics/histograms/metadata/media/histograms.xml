@@ -1887,14 +1887,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Media.Audio.Output.Win.{AudioOutputMethod}Error"
-    enum="Hresult" expires_after="2026-09-20">
+<histogram name="Media.Audio.Output.Win.{AudioOutputMethod}Error2"
+    enum="Hresult" expires_after="2027-05-15">
+  <owner>henrika@chromium.org</owner>
   <owner>dalecurtis@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <owner>webrtc-audio-uma@google.com</owner>
   <summary>
     Errors from various methods on WASAPIAudioOutputStream. Recorded upon a
-    failure being returned from a call into WASAPI.
+    failure being returned from a call into WASAPI. This is version 2 of the
+    metric. Version 1 previously mixed raw Win32 errors with HRESULTs. This new
+    version strictly logs HRESULTs.
   </summary>
   <token key="AudioOutputMethod">
     <variant name="Open"/>

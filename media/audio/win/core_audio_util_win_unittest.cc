@@ -284,10 +284,12 @@ TEST_F(CoreAudioUtilWinTest, CreateClient) {
   EDataFlow data[] = {eRender, eCapture};
 
   for (size_t i = 0; i < std::size(data); ++i) {
+    HRESULT hr = S_FALSE;
     ComPtr<IAudioClient> client =
         CoreAudioUtil::CreateClient(AudioDeviceDescription::kDefaultDeviceId,
-                                    UNSAFE_TODO(data[i]), eConsole);
+                                    UNSAFE_TODO(data[i]), eConsole, hr);
     EXPECT_TRUE(client.Get());
+    EXPECT_HRESULT_SUCCEEDED(hr);
     EXPECT_FALSE(CoreAudioUtil::IsClientInitialized(client.Get()));
   }
 }
@@ -529,8 +531,10 @@ TEST_F(CoreAudioUtilWinTest, SharedModeInitializeWithoutOffload) {
                                        eRender, eConsole);
   EXPECT_TRUE(client.Get());
   format.Format.nSamplesPerSec = format.Format.nSamplesPerSec + 1;
+  HRESULT hr_fs = S_OK;
   EXPECT_FALSE(CoreAudioUtil::IsFormatSupported(
-      client.Get(), AUDCLNT_SHAREMODE_SHARED, &format));
+      client.Get(), AUDCLNT_SHAREMODE_SHARED, &format, hr_fs));
+  EXPECT_TRUE(hr_fs == S_FALSE || hr_fs == AUDCLNT_E_UNSUPPORTED_FORMAT);
   hr = CoreAudioUtil::SharedModeInitialize(client.Get(), &format, NULL, 0,
                                            &endpoint_buffer_size, NULL);
   EXPECT_TRUE(FAILED(hr));
@@ -649,26 +653,32 @@ TEST_F(CoreAudioUtilWinTest, CreateRenderAndCaptureClients) {
     if (UNSAFE_TODO(data[i]) == eRender) {
       // It is not possible to create a render client using an uninitialized
       // client interface.
-      render_client = CoreAudioUtil::CreateRenderClient(client.Get());
+      HRESULT hr = S_OK;
+      render_client = CoreAudioUtil::CreateRenderClient(client.Get(), hr);
       EXPECT_FALSE(render_client.Get());
+      EXPECT_EQ(hr, AUDCLNT_E_NOT_INITIALIZED);
 
       // Do a proper initialization and verify that it works this time.
       CoreAudioUtil::SharedModeInitialize(client.Get(), &format, NULL, 0,
                                           &endpoint_buffer_size, NULL);
-      render_client = CoreAudioUtil::CreateRenderClient(client.Get());
+      render_client = CoreAudioUtil::CreateRenderClient(client.Get(), hr);
       EXPECT_TRUE(render_client.Get());
+      EXPECT_HRESULT_SUCCEEDED(hr);
       EXPECT_GT(endpoint_buffer_size, 0u);
     } else if (UNSAFE_TODO(data[i]) == eCapture) {
       // It is not possible to create a capture client using an uninitialized
       // client interface.
-      capture_client = CoreAudioUtil::CreateCaptureClient(client.Get());
+      HRESULT hr = S_OK;
+      capture_client = CoreAudioUtil::CreateCaptureClient(client.Get(), hr);
       EXPECT_FALSE(capture_client.Get());
+      EXPECT_EQ(hr, AUDCLNT_E_NOT_INITIALIZED);
 
       // Do a proper initialization and verify that it works this time.
       CoreAudioUtil::SharedModeInitialize(client.Get(), &format, NULL, 0,
                                           &endpoint_buffer_size, NULL);
-      capture_client = CoreAudioUtil::CreateCaptureClient(client.Get());
+      capture_client = CoreAudioUtil::CreateCaptureClient(client.Get(), hr);
       EXPECT_TRUE(capture_client.Get());
+      EXPECT_HRESULT_SUCCEEDED(hr);
       EXPECT_GT(endpoint_buffer_size, 0u);
     }
   }
@@ -704,7 +714,7 @@ TEST_F(CoreAudioUtilWinTest, FillRenderEndpointBufferWithSilence) {
   // It is not possible to verify that the actual data consists of zeros
   // since we can't access data that has already been sent to the endpoint
   // buffer.
-  EXPECT_TRUE(CoreAudioUtil::FillRenderEndpointBufferWithSilence(
+  EXPECT_HRESULT_SUCCEEDED(CoreAudioUtil::FillRenderEndpointBufferWithSilence(
       client.Get(), render_client.Get()));
   client->GetCurrentPadding(&num_queued_frames);
   EXPECT_EQ(num_queued_frames, endpoint_buffer_size);
