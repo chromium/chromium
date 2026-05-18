@@ -6,6 +6,7 @@
 #include <memory>
 #include <string>
 
+#include "base/containers/heap_array.h"
 #include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
@@ -1100,6 +1101,42 @@ TEST_P(SVCVideoEncoderTest, ChangeLayers) {
   encoder_->Flush(ValidateStatusThenQuitCB());
   RunUntilQuit();
   EXPECT_EQ(chunks.size(), total_frames_count);
+}
+
+TEST_P(SoftwareVideoEncoderTest, EncodeFrameWithMismatchedStrides) {
+  VideoEncoder::Options options = CreateDefaultOptions();
+  options.frame_size = gfx::Size(64, 64);
+
+  encoder_->Initialize(profile_, options, /*info_cb=*/base::DoNothing(),
+                       /*output_cb=*/base::DoNothing(),
+                       ValidateStatusThenQuitCB());
+  RunUntilQuit();
+
+  // Create a frame with mismatched strides
+  gfx::Size size(64, 64);
+  size_t y_stride = 64;
+  size_t u_stride = 65536;  // Large U stride
+  size_t v_stride = 32;
+
+  // We allocate memory for the data. To cause an OOB read crash if the U
+  // stride is used for the V plane, we allocate a small buffer for the V plane.
+  auto y_data = base::HeapArray<uint8_t>::WithSize(y_stride * size.height());
+  auto u_data =
+      base::HeapArray<uint8_t>::WithSize(u_stride * (size.height() / 2));
+  auto v_data =
+      base::HeapArray<uint8_t>::WithSize(v_stride * (size.height() / 2));
+
+  auto frame = VideoFrame::WrapExternalYuvData(
+      PIXEL_FORMAT_I420, size, gfx::Rect(size), size, y_stride, u_stride,
+      v_stride, y_data, u_data, v_data, base::TimeDelta());
+  frame->AddDestructionObserver(
+      base::BindOnce([](base::HeapArray<uint8_t>, base::HeapArray<uint8_t>,
+                        base::HeapArray<uint8_t>) {},
+                     std::move(y_data), std::move(u_data), std::move(v_data)));
+
+  encoder_->Encode(std::move(frame), VideoEncoder::EncodeOptions(false),
+                   ValidateStatusThenQuitCB());
+  RunUntilQuit();
 }
 
 TEST_P(SoftwareVideoEncoderTest, ReconfigureWithResizingNumberOfThreads) {
