@@ -631,6 +631,7 @@ class PLATFORM_EXPORT CanvasNon2DResourceProviderSharedImage
   void OnDestroyResource() override { --num_inflight_resources_; }
   base::ByteSize EstimatedSizeInBytes() const override;
   void OnMemoryDump(base::trace_event::ProcessMemoryDump* pmd) override;
+  size_t GetSize() const override;
 
   void EnsureWriteAccess();
   void EndWriteAccess();

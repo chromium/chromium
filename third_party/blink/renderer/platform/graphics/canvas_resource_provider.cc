@@ -2419,10 +2419,26 @@ base::ByteSize CanvasNon2DResourceProviderSharedImage::EstimatedSizeInBytes()
 void CanvasNon2DResourceProviderSharedImage::OnMemoryDump(
     base::trace_event::ProcessMemoryDump* pmd) {
   if (IsSoftware()) {
-    // This class creates software SharedImages only on demand and might not
-    // have one here - invoke the base class implementation of this method
-    // instead.
-    CanvasResourceProvider::OnMemoryDump(pmd);
+    if (!surface_) {
+      return;
+    }
+
+    std::string dump_name =
+        base::StringPrintf("canvas/ResourceProvider/SkSurface/0x%" PRIXPTR,
+                           reinterpret_cast<uintptr_t>(surface_.get()));
+    auto* dump = pmd->CreateAllocatorDump(dump_name);
+
+    dump->AddScalar(base::trace_event::MemoryAllocatorDump::kNameSize,
+                    base::trace_event::MemoryAllocatorDump::kUnitsBytes,
+                    GetSize());
+    dump->AddScalar(base::trace_event::MemoryAllocatorDump::kNameObjectCount,
+                    base::trace_event::MemoryAllocatorDump::kUnitsObjects, 1);
+
+    if (const char* system_allocator_name =
+            base::trace_event::MemoryDumpManager::GetInstance()
+                ->system_allocator_pool_name()) {
+      pmd->AddSuballocation(dump->guid(), system_allocator_name);
+    }
     return;
   }
 
@@ -2433,6 +2449,14 @@ void CanvasNon2DResourceProviderSharedImage::OnMemoryDump(
 
   std::string cached_path = path + "/cached";
   image_pool_->OnMemoryDump(pmd, cached_path);
+}
+
+size_t CanvasNon2DResourceProviderSharedImage::GetSize() const {
+  if (!surface_) {
+    return 0;
+  }
+  SkImageInfo info = surface_->imageInfo();
+  return info.computeByteSize(info.minRowBytes());
 }
 
 gpu::raster::RasterInterface*
