@@ -178,8 +178,11 @@ class SyncServiceImplStartupTest : public testing::Test {
     return controller_map_[type];
   }
 
-  void FastForwardUntilNoTasksRemain() {
-    task_environment_.FastForwardUntilNoTasksRemain();
+  void FastForwardThroughSyncStartup() {
+    // Fast-forward by a generous amount of time, so that all conceivable
+    // startup delays are covered. Note that this can *not* be
+    // FastForwardUntilNoTasksRemain(), since there may be some recurring tasks.
+    task_environment_.FastForwardBy(base::Hours(1));
   }
 
  protected:
@@ -261,7 +264,7 @@ TEST_F(SyncServiceImplStartupTest, StartNoCredentials) {
   SetSyncFeatureEnabledPrefs();
 
   CreateSyncService();
-  FastForwardUntilNoTasksRemain();
+  FastForwardThroughSyncStartup();
 
   if (base::FeatureList::IsEnabled(kSyncDetermineAccountManagedStatus)) {
     // Without refresh tokens, SyncServiceImpl can't determine whether the
@@ -328,7 +331,7 @@ TEST_F(SyncServiceImplStartupTest, WebSignoutDuringDeferredStartup) {
   sync_service()->AddObserver(&observer);
   SimulateWebSignout();
   sync_service()->RemoveObserver(&observer);
-  FastForwardUntilNoTasksRemain();
+  FastForwardThroughSyncStartup();
 
   // SyncServiceImpl should now be in the paused state. The deferred task was
   // a no-op.
@@ -386,7 +389,7 @@ TEST_F(SyncServiceImplStartupTest, StartInvalidCredentials) {
 
   CreateSyncService();
 
-  FastForwardUntilNoTasksRemain();
+  FastForwardThroughSyncStartup();
   // Simulate an auth error while downloading control types.
   engine()->TriggerInitializationCompletion(/*success=*/false);
 
@@ -456,7 +459,7 @@ TEST_F(SyncServiceImplStartupTest, ResetSyncViaDashboard) {
   SignInWithSyncConsent();
   CreateSyncService();
 
-  FastForwardUntilNoTasksRemain();
+  FastForwardThroughSyncStartup();
   ASSERT_TRUE(sync_service()->IsSyncFeatureActive());
   ASSERT_EQ(SyncService::TransportState::ACTIVE,
             sync_service()->GetTransportState());
@@ -505,7 +508,7 @@ TEST_F(SyncServiceImplStartupTest, ResetSyncViaDashboard) {
   // On ChromeOS, test clearing the dashboard error, which should start
   // sync-the-feature and start BOOKMARKS.
   sync_service()->GetUserSettings()->ClearSyncFeatureDisabledViaDashboard();
-  FastForwardUntilNoTasksRemain();
+  FastForwardThroughSyncStartup();
   EXPECT_TRUE(sync_service()->IsSyncFeatureActive());
   EXPECT_TRUE(sync_service()->GetActiveDataTypes().Has(BOOKMARKS));
 #endif  // BUILDFLAG(IS_CHROMEOS)
@@ -556,7 +559,7 @@ TEST_F(SyncServiceImplStartupTest, SwitchManaged) {
   CreateSyncService();
 
   // Wait for deferred startup.
-  FastForwardUntilNoTasksRemain();
+  FastForwardThroughSyncStartup();
   EXPECT_TRUE(sync_service()->IsEngineInitialized());
   EXPECT_EQ(SyncService::DisableReasonSet(),
             sync_service()->GetDisableReasons());
@@ -624,7 +627,7 @@ TEST_F(SyncServiceImplStartupTest, StartDownloadFailed) {
   ASSERT_FALSE(sync_prefs()->IsInitialSyncFeatureSetupComplete());
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
-  FastForwardUntilNoTasksRemain();
+  FastForwardThroughSyncStartup();
 
   // Simulate a failure while downloading control types.
   engine()->TriggerInitializationCompletion(/*success=*/false);
@@ -743,7 +746,7 @@ TEST_F(SyncServiceImplStartupTest, FullStartupSequenceNthTime) {
   EXPECT_EQ(nullptr, engine());
 
   // Cause the deferred startup timer to expire.
-  FastForwardUntilNoTasksRemain();
+  FastForwardThroughSyncStartup();
 
   // The Sync service should start initializing the engine.
   EXPECT_EQ(SyncService::TransportState::INITIALIZING,
@@ -794,7 +797,7 @@ TEST_F(SyncServiceImplStartupTest, DeferredStartInterruptedByDataType) {
   EXPECT_EQ(1u, histogram_tester.GetAllSamples(kTimeDeferredHistogram).size());
 
   // There's still a deferred task scheduled. Let it run.
-  FastForwardUntilNoTasksRemain();
+  FastForwardThroughSyncStartup();
 
   // The task should be a no-op.
   EXPECT_EQ(sync_service()->GetTransportState(),
@@ -813,7 +816,7 @@ TEST_F(SyncServiceImplStartupTest, UserTriggeredStartIsNotDeferredStart) {
   // happen during FRE.
   SignInWithSyncConsent();
   sync_service()->GetUserSettings()->SetInitialSyncFeatureSetupComplete();
-  FastForwardUntilNoTasksRemain();
+  FastForwardThroughSyncStartup();
 
   // This should not be recorded as a deferred startup.
   EXPECT_EQ(sync_service()->GetTransportState(),
@@ -850,7 +853,7 @@ TEST_F(SyncServiceImplStartupTest,
   engine_factory()->AllowFakeEngineInitCompletion(false);
 
   CreateSyncService(/*registered_types=*/{BOOKMARKS, READING_LIST});
-  FastForwardUntilNoTasksRemain();
+  FastForwardThroughSyncStartup();
 
   // Simulate opening sync settings before engine init is over.
   std::unique_ptr<SyncSetupInProgressHandle> setup_in_progress_handle =
@@ -878,7 +881,7 @@ TEST_F(SyncServiceImplStartupTest,
   engine_factory()->AllowFakeEngineInitCompletion(false);
 
   CreateSyncService(/*registered_types=*/{BOOKMARKS, READING_LIST});
-  FastForwardUntilNoTasksRemain();
+  FastForwardThroughSyncStartup();
 
   // Simulate opening sync settings before engine init is over.
   std::unique_ptr<SyncSetupInProgressHandle> setup_in_progress_handle =
@@ -926,7 +929,7 @@ TEST_F(SyncServiceImplStartupWithDetermineAccountTypeTest,
 
   SetSyncFeatureEnabledPrefs();
   CreateSyncService();
-  FastForwardUntilNoTasksRemain();
+  FastForwardThroughSyncStartup();
 
   // The service should become active without further info, i.e. without the
   // account type being determined explicitly.
@@ -952,7 +955,7 @@ TEST_F(SyncServiceImplStartupWithDetermineAccountTypeTest,
 
   SetSyncFeatureEnabledPrefs();
   CreateSyncService();
-  FastForwardUntilNoTasksRemain();
+  FastForwardThroughSyncStartup();
 
   // The service should remain waiting for the account type to be determined.
   EXPECT_EQ(SyncService::TransportState::INITIALIZING,
@@ -966,7 +969,7 @@ TEST_F(SyncServiceImplStartupWithDetermineAccountTypeTest,
   ASSERT_EQ(account_info.IsManaged(), signin::Tribool::kTrue);
 
   // The service should now become active.
-  FastForwardUntilNoTasksRemain();
+  FastForwardThroughSyncStartup();
   EXPECT_EQ(SyncService::TransportState::ACTIVE,
             sync_service()->GetTransportState());
 
