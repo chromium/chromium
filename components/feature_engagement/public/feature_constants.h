@@ -380,6 +380,12 @@ FEATURE_CONSTANTS_DECLARE_FEATURE(kIPHiOSGeminiExternalAppStoreEvent);
 // FET feature flag that enables AI Hub "New" badge.
 FEATURE_CONSTANTS_DECLARE_FEATURE(kIPHiOSAIHubNewBadge);
 
+// FET feature flag that enables Gemini Live "New" badge.
+FEATURE_CONSTANTS_DECLARE_FEATURE(kIPHiOSGeminiLiveNewBadgeFeature);
+
+// FET feature flag that enables Gemini Live IPH.
+FEATURE_CONSTANTS_DECLARE_FEATURE(kIPHiOSGeminiLiveIPHFeature);
+
 // FET feature flag that enabled the Gemini fullscreen promo.
 FEATURE_CONSTANTS_DECLARE_FEATURE(kIPHiOSGeminiFullscreenPromoFeature);
 

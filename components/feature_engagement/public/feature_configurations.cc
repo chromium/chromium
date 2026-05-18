@@ -3205,6 +3205,65 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
     return config;
   }
 
+  if (kIPHiOSGeminiLiveNewBadgeFeature.name == feature->name) {
+    FeatureConfig config;
+    config.valid = true;
+    config.availability = Comparator(ANY, 0);
+    config.session_rate = Comparator(ANY, 0);
+
+    config.session_rate_impact.type = SessionRateImpact::Type::NONE;
+    config.blocked_by.type = BlockedBy::Type::NONE;
+    config.blocking.type = Blocking::Type::NONE;
+
+    config.trigger =
+        EventConfig(events::kIOSGeminiLiveNewBadgeTriggered, Comparator(ANY, 0),
+                    feature_engagement::kMaxStoragePeriod,
+                    feature_engagement::kMaxStoragePeriod);
+    config.used = EventConfig(events::kIOSGeminiLiveUsed, Comparator(EQUAL, 0),
+                              feature_engagement::kMaxStoragePeriod,
+                              feature_engagement::kMaxStoragePeriod);
+
+    // After the user has seen the Live 1st-time IPH (at least 1 time in last 14
+    // days).
+    config.event_configs.insert(
+        EventConfig(events::kIOSGeminiLiveIPHTriggered,
+                    Comparator(GREATER_THAN_OR_EQUAL, 1), 14,
+                    feature_engagement::kMaxStoragePeriod));
+    // Show the "new" badge the next day (0 times today).
+    config.event_configs.insert(
+        EventConfig(events::kIOSGeminiLiveIPHTriggered, Comparator(EQUAL, 0), 1,
+                    feature_engagement::kMaxStoragePeriod));
+    return config;
+  }
+
+  if (kIPHiOSGeminiLiveIPHFeature.name == feature->name) {
+    FeatureConfig config;
+    config.valid = true;
+    config.availability = Comparator(ANY, 0);
+    config.session_rate = Comparator(EQUAL, 0);
+
+    config.trigger =
+        EventConfig(events::kIOSGeminiLiveIPHTriggered, Comparator(EQUAL, 0),
+                    feature_engagement::kMaxStoragePeriod,
+                    feature_engagement::kMaxStoragePeriod);
+    config.used = EventConfig(events::kIOSGeminiLiveUsed, Comparator(EQUAL, 0),
+                              feature_engagement::kMaxStoragePeriod,
+                              feature_engagement::kMaxStoragePeriod);
+
+    // Seen Gemini Image Remix (Nano Banana) IPH at least once in the past.
+    config.event_configs.insert(
+        EventConfig(events::kIOSGeminiImageRemixIPHTrigger,
+                    Comparator(GREATER_THAN_OR_EQUAL, 1),
+                    feature_engagement::kMaxStoragePeriod,
+                    feature_engagement::kMaxStoragePeriod));
+    // After 3 days since they've seen Gemini Image Remix IPH (0 times in the
+    // last 3 days).
+    config.event_configs.insert(EventConfig(
+        events::kIOSGeminiImageRemixIPHTrigger, Comparator(EQUAL, 0), 3,
+        feature_engagement::kMaxStoragePeriod));
+    return config;
+  }
+
   if (kIPHiOSPinMostVisitedSiteFeature.name == feature->name) {
     // Show the in-product help if 1) it has never been triggered, and 2) user
     // has not pinned any site to the most visited tile.

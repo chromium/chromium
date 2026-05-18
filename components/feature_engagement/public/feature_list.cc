@@ -178,6 +178,8 @@ const base::Feature* const kAllFeatures[] = {
     &kIPHiOSGeminiExternalAppStoreEvent,
     &kIPHiOSGeminiFullscreenPromoFeature,
     &kIPHiOSGeminiImageRemixFeature,
+    &kIPHiOSGeminiLiveIPHFeature,
+    &kIPHiOSGeminiLiveNewBadgeFeature,
     &kIPHiOSHistoryOnOverflowMenuFeature,
     &kIPHiOSHomepageCustomizationNewBadge,
     &kIPHiOSHomepageLensNewBadge,

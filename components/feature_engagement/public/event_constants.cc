@@ -210,6 +210,10 @@ const char kIOSGeminiFullscreenPromoTriggered[] =
 const char kIOSGeminiFlowStartedNonPromo[] =
     "ios_gemini_flow_started_non_promo";
 const char kIOSGeminiConsentGiven[] = "ios_gemini_consent_given";
+const char kIOSGeminiLiveUsed[] = "ios_gemini_live_used";
+const char kIOSGeminiLiveNewBadgeTriggered[] =
+    "ios_gemini_live_new_badge_triggered";
+const char kIOSGeminiLiveIPHTriggered[] = "ios_gemini_live_iph_triggered";
 const char kIOSGeminiImageRemixIPHTrigger[] =
     "ios_gemini_image_remix_iph_trigger";
 const char kIOSPinMVTSiteUsed[] = "ios_pin_mvt_site_used";

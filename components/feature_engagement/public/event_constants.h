@@ -415,6 +415,15 @@ extern const char kIOSGeminiFlowStartedNonPromo[];
 // Event fired when the Gemini consent is given.
 extern const char kIOSGeminiConsentGiven[];
 
+// Event fired when the user successfully switches to Gemini Live mode.
+extern const char kIOSGeminiLiveUsed[];
+
+// Event fired when the Gemini Live "New" badge is triggered.
+extern const char kIOSGeminiLiveNewBadgeTriggered[];
+
+// Event fired when the Gemini Live 1st-time IPH is triggered.
+extern const char kIOSGeminiLiveIPHTriggered[];
+
 // Event fired when the user pins a site to the most visited tile.
 extern const char kIOSPinMVTSiteUsed[];
 

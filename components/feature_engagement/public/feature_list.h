@@ -367,6 +367,10 @@ DEFINE_VARIATION_PARAM(kIPHiOSHomepageLensNewBadge,
 DEFINE_VARIATION_PARAM(kIPHiOSHomepageCustomizationNewBadge,
                        "IPH_iOSHomepageCustomizationNewBadge");
 DEFINE_VARIATION_PARAM(kIPHiOSAIHubNewBadge, "IPH_iOSAIHubNewBadge");
+DEFINE_VARIATION_PARAM(kIPHiOSGeminiLiveNewBadgeFeature,
+                       "IPHiOSGeminiLiveNewBadgeFeature");
+DEFINE_VARIATION_PARAM(kIPHiOSGeminiLiveIPHFeature,
+                       "IPHiOSGeminiLiveIPHFeature");
 DEFINE_VARIATION_PARAM(kIPHiOSGeminiContextualCueChip,
                        "IPH_iOSGeminiContextualCueChip");
 DEFINE_VARIATION_PARAM(kIPHiOSGeminiExternalAppStoreEvent,
@@ -749,6 +753,8 @@ inline constexpr flags_ui::FeatureEntry::FeatureVariation
         VARIATION_ENTRY(kIPHiOSGeminiExternalAppStoreEvent),
         VARIATION_ENTRY(kIPHiOSGeminiFullscreenPromoFeature),
         VARIATION_ENTRY(kIPHiOSGeminiImageRemixFeature),
+        VARIATION_ENTRY(kIPHiOSGeminiLiveIPHFeature),
+        VARIATION_ENTRY(kIPHiOSGeminiLiveNewBadgeFeature),
         VARIATION_ENTRY(kIPHiOSHistoryOnOverflowMenuFeature),
         VARIATION_ENTRY(kIPHiOSLensKeyboardFeature),
         VARIATION_ENTRY(kIPHiOSLensOverlayEntrypointTipFeature),
