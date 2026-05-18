@@ -9,7 +9,6 @@
 #include "base/apple/foundation_util.h"
 #include "base/auto_reset.h"
 #include "base/check.h"
-#include "base/containers/adapters.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
 #include "base/mac/mac_util.h"
@@ -151,9 +150,6 @@ struct NSEdgeAndCornerThicknesses {
 - (ViewsNSWindowDelegate*)viewsNSWindowDelegate;
 - (BOOL)hasViewsMenuActive;
 - (id<NSAccessibility>)rootAccessibilityObject;
-
-// The child window with the highest z-order that is visible and modal, if any.
-- (NSWindow*)topmostVisibleChildModalWindow;
 
 // Private API on NSWindow, determines whether the title is drawn on the title
 // bar. The title is still visible in menus, Expose, etc.
@@ -449,25 +445,6 @@ struct NSEdgeAndCornerThicknesses {
   return !shouldShowWindowTitle;
 }
 
-- (NSWindow*)topmostVisibleChildModalWindow {
-  if (!_bridge) {
-    return nil;
-  }
-
-  for (remote_cocoa::NativeWidgetNSWindowBridge* child_bridge :
-       base::Reversed(_bridge->child_windows())) {
-    if (child_bridge->modal_type() == ui::mojom::ModalType::kNone) {
-      continue;
-    }
-    NSWindow* child_ns_window = child_bridge->ns_window();
-    if ([child_ns_window isVisible]) {
-      return child_ns_window;
-    }
-  }
-
-  return nil;
-}
-
 // The base implementation returns YES if the window's frame view is a custom
 // class, which causes undesirable changes in behavior. AppKit NSWindow
 // subclasses are known to override it and return NO.
@@ -611,32 +588,6 @@ struct NSEdgeAndCornerThicknesses {
   } else if (type == NSEventTypeRightMouseUp) {
     if ([[self contentView] hitTest:event.locationInWindow] == nil) {
       [[self contentView] rightMouseUp:event];
-      return;
-    }
-  } else if (type == NSEventTypeLeftMouseDown) {
-    // Check whether the click was in the web contents via a hit test.
-    bool was_web_contents_hit = false;
-    if (_bridge) {
-      NSView* content_view = [self contentView];
-      NSPoint point_in_view = [content_view convertPoint:event.locationInWindow
-                                                fromView:nil];
-      gfx::Point flipped_point(
-          point_in_view.x, NSHeight([content_view frame]) - point_in_view.y);
-      remote_cocoa::mojom::HitTestResult hit_test_result =
-          remote_cocoa::mojom::HitTestResult::kOther;
-      _bridge->host()->GetHitTestResult(flipped_point, &hit_test_result);
-      was_web_contents_hit =
-          hit_test_result == remote_cocoa::mojom::HitTestResult::kSubView;
-    }
-
-    NSWindow* child_modal_window = [self topmostVisibleChildModalWindow];
-    // If the click was in the web contents and we're displaying a child modal
-    // window, swallow the event to prevent the web contents from processing it
-    // (and potentially triggering new dialogs).
-    if (was_web_contents_hit && child_modal_window) {
-      if (![child_modal_window isKeyWindow]) {
-        [child_modal_window makeKeyWindow];
-      }
       return;
     }
   } else if ([self hasViewsMenuActive]) {
