@@ -56,32 +56,32 @@ public class EdgeToEdgeStateProviderUnitTest {
 
     @Test
     public void acquireAndRelease() {
-        int token1 = mEdgeToEdgeStateProvider.acquireSetDecorFitsSystemWindowToken();
+        int token1 = mEdgeToEdgeStateProvider.acquireEdgeToEdgeToken();
         verify(mWindow).setDecorFitsSystemWindows(false);
         assertTrue(
                 "Should start drawing edge to edge",
                 mEdgeToEdgeStateProvider.isEdgeToEdgeEnabled());
 
-        mEdgeToEdgeStateProvider.releaseSetDecorFitsSystemWindowToken(token1);
+        mEdgeToEdgeStateProvider.releaseEdgeToEdgeToken(token1);
         verify(mWindow).setDecorFitsSystemWindows(true);
         assertFalse("Edge to edge released.", mEdgeToEdgeStateProvider.isEdgeToEdgeEnabled());
     }
 
     @Test
     public void acquireAndReleaseByMultipleClients() {
-        int token1 = mEdgeToEdgeStateProvider.acquireSetDecorFitsSystemWindowToken();
+        int token1 = mEdgeToEdgeStateProvider.acquireEdgeToEdgeToken();
         verify(mWindow).setDecorFitsSystemWindows(false);
         assertTrue("Drawing edge to edge.", mEdgeToEdgeStateProvider.isEdgeToEdgeEnabled());
 
-        int token2 = mEdgeToEdgeStateProvider.acquireSetDecorFitsSystemWindowToken();
+        int token2 = mEdgeToEdgeStateProvider.acquireEdgeToEdgeToken();
 
-        mEdgeToEdgeStateProvider.releaseSetDecorFitsSystemWindowToken(token1);
+        mEdgeToEdgeStateProvider.releaseEdgeToEdgeToken(token1);
         verify(mWindow, times(0)).setDecorFitsSystemWindows(true);
         assertTrue(
                 "Token not empty, still drawing edge to edge.",
                 mEdgeToEdgeStateProvider.isEdgeToEdgeEnabled());
 
-        mEdgeToEdgeStateProvider.releaseSetDecorFitsSystemWindowToken(token2);
+        mEdgeToEdgeStateProvider.releaseEdgeToEdgeToken(token2);
         verify(mWindow).setDecorFitsSystemWindows(true);
         assertFalse(
                 "All token released, exit edge to edge.",

@@ -82,6 +82,35 @@ public class EdgeToEdgeManager {
             OneshotSupplier<SystemBarColorHelper> systemBarColorHelperSupplier,
             boolean shouldDrawEdgeToEdge,
             boolean canColorStatusBarColor) {
+        this(
+                activity,
+                edgeToEdgeStateProvider,
+                systemBarColorHelperSupplier,
+                shouldDrawEdgeToEdge,
+                canColorStatusBarColor,
+                /* canSetTransparentStatusBarWithoutDelegate= */ false);
+    }
+
+    /**
+     * Creates an EdgeToEdgeManager for managing central edge-to-edge functionality.
+     *
+     * @param activity The {@link Activity} hosting the current window.
+     * @param edgeToEdgeStateProvider The {@link EdgeToEdgeStateProvider} for drawing edge-to-edge.
+     * @param systemBarColorHelperSupplier Supplies the {@link SystemBarColorHelper} that should be
+     *     used to color the system bars when edge to edge is enabled.
+     * @param shouldDrawEdgeToEdge Whether the host activity intends to draw edge-to-edge by
+     *     default.
+     * @param canColorStatusBarColor Whether the status bar color is able to be changed.
+     * @param canSetTransparentStatusBarWithoutDelegate Whether the status bar can be made
+     *     transparent when no delegate helper is available.
+     */
+    public EdgeToEdgeManager(
+            Activity activity,
+            EdgeToEdgeStateProvider edgeToEdgeStateProvider,
+            OneshotSupplier<SystemBarColorHelper> systemBarColorHelperSupplier,
+            boolean shouldDrawEdgeToEdge,
+            boolean canColorStatusBarColor,
+            boolean canSetTransparentStatusBarWithoutDelegate) {
         mContentFitsWindowInsetsSupplier = ObservableSuppliers.createNonNull(!shouldDrawEdgeToEdge);
         mEdgeToEdgeStateProvider = edgeToEdgeStateProvider;
         mEdgeToEdgeSystemBarColorHelper =
@@ -89,17 +118,18 @@ public class EdgeToEdgeManager {
                         activity.getWindow(),
                         getContentFitsWindowInsetsSupplier(),
                         systemBarColorHelperSupplier,
-                        canColorStatusBarColor);
+                        canColorStatusBarColor,
+                        canSetTransparentStatusBarWithoutDelegate);
 
         if (shouldDrawEdgeToEdge) {
-            mEdgeToEdgeToken = mEdgeToEdgeStateProvider.acquireSetDecorFitsSystemWindowToken();
+            mEdgeToEdgeToken = mEdgeToEdgeStateProvider.acquireEdgeToEdgeToken();
         }
     }
 
     /** Destroys this instance and removes its dependencies. */
     public void destroy() {
         if (mEdgeToEdgeStateProvider != null) {
-            mEdgeToEdgeStateProvider.releaseSetDecorFitsSystemWindowToken(mEdgeToEdgeToken);
+            mEdgeToEdgeStateProvider.releaseEdgeToEdgeToken(mEdgeToEdgeToken);
             mEdgeToEdgeToken = TokenHolder.INVALID_TOKEN;
             mEdgeToEdgeStateProvider = null;
         }

@@ -72,7 +72,7 @@ public class EdgeToEdgeStateProvider {
      *
      * @return A token to release the edge to edge state
      */
-    public int acquireSetDecorFitsSystemWindowToken() {
+    public int acquireEdgeToEdgeToken() {
         return mTokenHolder.acquireToken();
     }
 
@@ -80,8 +80,18 @@ public class EdgeToEdgeStateProvider {
      * Release a token to edge to edge. When the token holder is empty, trigger a call to {@code
      * Window.setDecorFitsSystemWindows(true)}.
      */
-    public void releaseSetDecorFitsSystemWindowToken(int token) {
+    public void releaseEdgeToEdgeToken(int token) {
         mTokenHolder.releaseToken(token);
+    }
+
+    /** Backward-compatible alias for callers not yet migrated to edge-to-edge naming. */
+    public int acquireSetDecorFitsSystemWindowToken() {
+        return acquireEdgeToEdgeToken();
+    }
+
+    /** Backward-compatible alias for callers not yet migrated to edge-to-edge naming. */
+    public void releaseSetDecorFitsSystemWindowToken(int token) {
+        releaseEdgeToEdgeToken(token);
     }
 
     private void onTokenUpdate() {

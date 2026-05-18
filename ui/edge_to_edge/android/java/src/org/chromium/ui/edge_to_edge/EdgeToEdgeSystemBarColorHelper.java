@@ -6,6 +6,7 @@ package org.chromium.ui.edge_to_edge;
 
 import android.graphics.Color;
 import android.view.Window;
+import android.view.WindowManager;
 
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.NonNullObservableSupplier;
@@ -31,6 +32,7 @@ public class EdgeToEdgeSystemBarColorHelper extends BaseSystemBarColorHelper {
 
     protected boolean mIsActivityEdgeToEdge;
     protected boolean mCanColorStatusBarColor;
+    private final boolean mCanSetTransparentStatusBarWithoutDelegate;
 
     /**
      * @param window Window from {@link android.app.Activity#getWindow()}.
@@ -45,11 +47,36 @@ public class EdgeToEdgeSystemBarColorHelper extends BaseSystemBarColorHelper {
             NonNullObservableSupplier<Boolean> doesContentFitWindowSupplier,
             OneshotSupplier<SystemBarColorHelper> delegateHelperSupplier,
             boolean canColorStatusBarColor) {
+        this(
+                window,
+                doesContentFitWindowSupplier,
+                delegateHelperSupplier,
+                canColorStatusBarColor,
+                /* canSetTransparentStatusBarWithoutDelegate= */ false);
+    }
+
+    /**
+     * @param window Window from {@link android.app.Activity#getWindow()}.
+     * @param doesContentFitWindowSupplier Supplier of whether the activity content fits the window
+     *     insets.
+     * @param delegateHelperSupplier Delegate helper that colors the bar when edge to edge.
+     * @param canColorStatusBarColor Value of the EdgeToEdgeEverywhere flag. Determines whether the
+     *     status bar color could be colored.
+     * @param canSetTransparentStatusBarWithoutDelegate Whether the status bar can be made
+     *     transparent when no delegate helper is available.
+     */
+    public EdgeToEdgeSystemBarColorHelper(
+            Window window,
+            NonNullObservableSupplier<Boolean> doesContentFitWindowSupplier,
+            OneshotSupplier<SystemBarColorHelper> delegateHelperSupplier,
+            boolean canColorStatusBarColor,
+            boolean canSetTransparentStatusBarWithoutDelegate) {
         mWindow = window;
         mDoesContentFitWindowSupplier = doesContentFitWindowSupplier;
         mEdgeToEdgeDelegateHelperSupplier = delegateHelperSupplier;
         mWindowColorHelper = new WindowSystemBarColorHelper(window);
         mCanColorStatusBarColor = canColorStatusBarColor;
+        mCanSetTransparentStatusBarWithoutDelegate = canSetTransparentStatusBarWithoutDelegate;
 
         // Initial values. By default, read the values from window.
         mIsActivityEdgeToEdge = !doesContentFitWindowSupplier.get();
@@ -99,6 +126,7 @@ public class EdgeToEdgeSystemBarColorHelper extends BaseSystemBarColorHelper {
     private void updateNavBarColors() {
         int windowNavColor = mIsActivityEdgeToEdge ? Color.TRANSPARENT : mNavBarColor;
         int windowNavDividerColor = mIsActivityEdgeToEdge ? Color.TRANSPARENT : mNavBarDividerColor;
+        ensureTransparencyWindowFlags();
         mWindowColorHelper.setNavigationBarColor(windowNavColor);
         mWindowColorHelper.setNavigationBarDividerColor(windowNavDividerColor);
         // When setting a transparent navbar for drawing toEdge, the system navbar contrast
@@ -122,13 +150,16 @@ public class EdgeToEdgeSystemBarColorHelper extends BaseSystemBarColorHelper {
         // In ChromeTabbedActivity the delegate is null because native has not initialized. Prevents
         // setting the window status bar to transparent when the delegate is null.
         int windowStatusBarColor = mStatusBarColor;
-        if (mIsActivityEdgeToEdge
-                && delegateHelper != null
-                && delegateHelper.canSetStatusBarColor()) {
-            delegateHelper.setStatusBarColor(mStatusBarColor);
-            windowStatusBarColor = Color.TRANSPARENT;
+        if (mIsActivityEdgeToEdge) {
+            if (delegateHelper != null && delegateHelper.canSetStatusBarColor()) {
+                delegateHelper.setStatusBarColor(mStatusBarColor);
+                windowStatusBarColor = Color.TRANSPARENT;
+            } else if (mCanSetTransparentStatusBarWithoutDelegate) {
+                windowStatusBarColor = Color.TRANSPARENT;
+            }
         }
 
+        ensureTransparencyWindowFlags();
         mWindowColorHelper.setStatusBarColor(windowStatusBarColor);
         mWindowColorHelper.setStatusBarContrastEnforced(!mIsActivityEdgeToEdge);
 
@@ -137,6 +168,16 @@ public class EdgeToEdgeSystemBarColorHelper extends BaseSystemBarColorHelper {
         } else {
             updateStatusBarIconColor(mWindow.getDecorView(), mStatusBarColor);
         }
+    }
+
+    private void ensureTransparencyWindowFlags() {
+        if (!shouldOwnBarsWithoutDelegate()) return;
+        // Legacy webapp themes can set translucent system bar flags, which forces the platform to
+        // draw gradients regardless of explicit system bar colors. Clear them so transparency
+        // wins for activities that opted into transparent-without-delegate.
+        mWindow.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
+        mWindow.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+        mWindow.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
     }
 
     public WindowSystemBarColorHelper getWindowHelperForTesting() {
@@ -154,5 +195,9 @@ public class EdgeToEdgeSystemBarColorHelper extends BaseSystemBarColorHelper {
     @Override
     public boolean canSetStatusBarColor() {
         return mCanColorStatusBarColor;
+    }
+
+    private boolean shouldOwnBarsWithoutDelegate() {
+        return mIsActivityEdgeToEdge && mCanSetTransparentStatusBarWithoutDelegate;
     }
 }

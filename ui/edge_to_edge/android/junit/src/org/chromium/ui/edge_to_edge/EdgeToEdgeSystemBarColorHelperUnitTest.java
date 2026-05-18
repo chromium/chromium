@@ -112,6 +112,21 @@ public class EdgeToEdgeSystemBarColorHelperUnitTest {
     }
 
     @Test
+    public void initWhenEdgeToEdge_WithoutDelegateHelperTransparentAllowed_WindowTransparent() {
+        doReturn(Color.BLUE).when(mWindow).getStatusBarColor();
+        mEdgeToEdgeColorHelper =
+                new EdgeToEdgeSystemBarColorHelper(
+                        mWindow,
+                        mShouldContentFitsWindowInsetsSupplier,
+                        mDelegateHelperSupplier,
+                        /* canColorStatusBarColor= */ true,
+                        /* canSetTransparentStatusBarWithoutDelegate= */ true);
+
+        mEdgeToEdgeColorHelper.setStatusBarColor(Color.RED);
+        verify(mWindow).setStatusBarColor(Color.TRANSPARENT);
+    }
+
+    @Test
     public void initWhenEdgeToEdge_WithDelegateHelper_UseDelegateHelper() {
         mDelegateHelperSupplier.set(mDelegateColorHelper);
         initEdgeToEdgeColorHelper();

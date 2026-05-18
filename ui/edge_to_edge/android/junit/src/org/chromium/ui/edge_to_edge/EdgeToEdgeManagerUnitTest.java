@@ -81,14 +81,14 @@ public class EdgeToEdgeManagerUnitTest {
     @Test
     public void testShouldDrawEdgeToEdge() {
         mEdgeToEdgeManager = createEdgeToEdgeManager(/* shouldDrawEdgeToEdge= */ true);
-        verify(mEdgeToEdgeStateProvider, atLeastOnce()).acquireSetDecorFitsSystemWindowToken();
+        verify(mEdgeToEdgeStateProvider, atLeastOnce()).acquireEdgeToEdgeToken();
         assertFalse(mEdgeToEdgeManager.shouldContentFitsWindowInsets());
     }
 
     @Test
     public void testShouldNotDrawEdgeToEdge() {
         mEdgeToEdgeManager = createEdgeToEdgeManager(/* shouldDrawEdgeToEdge= */ false);
-        verify(mEdgeToEdgeStateProvider, never()).acquireSetDecorFitsSystemWindowToken();
+        verify(mEdgeToEdgeStateProvider, never()).acquireEdgeToEdgeToken();
         assertTrue(mEdgeToEdgeManager.shouldContentFitsWindowInsets());
     }
 
@@ -168,7 +168,6 @@ public class EdgeToEdgeManagerUnitTest {
         mEdgeToEdgeManager = createEdgeToEdgeManager(/* shouldDrawEdgeToEdge= */ true);
 
         mEdgeToEdgeManager.destroy();
-        verify(mEdgeToEdgeStateProvider, atLeastOnce())
-                .releaseSetDecorFitsSystemWindowToken(anyInt());
+        verify(mEdgeToEdgeStateProvider, atLeastOnce()).releaseEdgeToEdgeToken(anyInt());
     }
 }

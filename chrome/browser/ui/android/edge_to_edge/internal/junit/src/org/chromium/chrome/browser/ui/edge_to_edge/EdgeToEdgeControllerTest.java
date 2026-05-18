@@ -270,9 +270,7 @@ public class EdgeToEdgeControllerTest {
         when(mTab.getWebContents()).thenReturn(mWebContents);
         when(mKeyNativePage.supportsEdgeToEdge()).thenReturn(true);
 
-        doReturn(EDGE_TO_EDGE_STATUS_TOKEN)
-                .when(mEdgeToEdgeStateProvider)
-                .acquireSetDecorFitsSystemWindowToken();
+        doReturn(EDGE_TO_EDGE_STATUS_TOKEN).when(mEdgeToEdgeStateProvider).acquireEdgeToEdgeToken();
         doReturn(mEdgeToEdgeStateProvider).when(mEdgeToEdgeManager).getEdgeToEdgeStateProvider();
         doNothing().when(mOsWrapper).setPadding(any(), anyInt(), anyInt(), anyInt(), anyInt());
         doNothing()
@@ -292,7 +290,7 @@ public class EdgeToEdgeControllerTest {
                         mBrowserControlsStateProvider,
                         mLayoutManagerSupplier,
                         mFullscreenManager);
-        verify(mEdgeToEdgeStateProvider, times(1)).acquireSetDecorFitsSystemWindowToken();
+        verify(mEdgeToEdgeStateProvider, times(1)).acquireEdgeToEdgeToken();
 
         if (!EdgeToEdgeUtils.isEdgeToEdgeEverywhereEnabled()) {
             verify(mOsWrapper, times(1))
