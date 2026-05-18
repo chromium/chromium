@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/toolbar/mock_webui_toolbar_control_delgate.h"
+#include "chrome/browser/ui/views/toolbar/mock_webui_toolbar_control_delegate.h"
 
 MockWebUIToolbarControlDelegate::MockWebUIToolbarControlDelegate()
     : icon_table_(this) {}
