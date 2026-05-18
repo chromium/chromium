@@ -341,16 +341,6 @@ std::vector<CreditCard> FetchCards(
 - (void)onFullCardRequestSucceeded:(const CreditCard&)card
                          fieldType:(manual_fill::PaymentFieldType)fieldType
                        forWebState:(web::WebState*)webState {
-  // If we successfully retrieved an unmasked virtual card, cache it for this
-  // WebState.
-  if (webState && card.record_type() == CreditCard::RecordType::kVirtualCard) {
-    // CreateForWebState ensures the cache exists (lazy initialization).
-    ManualFillVirtualCardCache::CreateForWebState(webState);
-    url::Origin origin = ManualFillVirtualCardCache::FromWebState(webState)
-                             ->GetUnmaskingOrigin();
-    ManualFillVirtualCardCache::FromWebState(webState)->CacheUnmaskedCard(
-        card, origin);
-  }
   // Credit card are not shown as 'Secure'.
   ManualFillCreditCard* manualFillCreditCard = [[ManualFillCreditCard alloc]
       initWithCreditCard:card

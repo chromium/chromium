@@ -482,7 +482,8 @@ void ChromePaymentsAutofillClient::VirtualCardEnrollCompleted(
 }
 
 void ChromePaymentsAutofillClient::OnCardDataAvailable(
-    const FilledCardInformationBubbleOptions& options) {
+    const FilledCardInformationBubbleOptions& options,
+    const url::Origin& origin) {
 #if BUILDFLAG(IS_ANDROID)
   // Note that currently the snackbar is displayed only for virtual cards or
   // cards enrolled in card info retrieval. In the case for BNPL, it is a

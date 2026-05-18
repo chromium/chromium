@@ -805,10 +805,8 @@ TEST_F(IOSChromePaymentsAutofillClientTest,
 
   url::Origin test_origin = url::Origin::Create(GURL("https://example.com"));
   ManualFillVirtualCardCache::CreateForWebState(web_state_.get());
-  ManualFillVirtualCardCache::FromWebState(web_state_.get())
-      ->SetUnmaskingOrigin(test_origin);
 
-  payments_client()->OnCardDataAvailable(options);
+  payments_client()->OnCardDataAvailable(options, test_origin);
 
   ManualFillVirtualCardCache* cache =
       ManualFillVirtualCardCache::FromWebState(web_state_.get());

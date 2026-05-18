@@ -29,7 +29,6 @@
 #import "ios/chrome/browser/autofill/model/features.h"
 #import "ios/chrome/browser/autofill/model/form_input_navigator.h"
 #import "ios/chrome/browser/autofill/model/form_input_suggestions_provider.h"
-#import "ios/chrome/browser/autofill/model/manual_fill_virtual_card_cache.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
@@ -567,20 +566,6 @@ bool IsRequestDedupingAllowed() {
   // sheet dismiss count to 0.
   if (provider.type == SuggestionProviderTypePassword) {
     [self resetCredentialBottomSheetDismissCount];
-  }
-
-  if (suggestion.type == autofill::SuggestionType::kVirtualCreditCardEntry) {
-    if (_webState) {
-      ManualFillVirtualCardCache::CreateForWebState(_webState);
-      web::WebFrame* frame =
-          autofill::AutofillJavaScriptFeature::GetInstance()
-              ->GetWebFramesManager(_webState)
-              ->GetFrameWithId(suggestionState.frame_identifier);
-      if (frame) {
-        ManualFillVirtualCardCache::FromWebState(_webState)->SetUnmaskingOrigin(
-            frame->GetSecurityOrigin());
-      }
-    }
   }
 
   // Send the suggestion to the provider. Upon completion advance the cursor

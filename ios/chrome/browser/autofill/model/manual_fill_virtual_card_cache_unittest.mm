@@ -135,5 +135,4 @@ TEST_F(ManualFillVirtualCardCacheTest, OriginIsolated) {
   // Verify retrieval with Origin B returns null (isolated).
   EXPECT_EQ(nullptr, cache()->GetUnmaskedCard("test_server_id", origin_b));
 }
-
 }  // namespace
