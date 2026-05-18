@@ -106,7 +106,7 @@ ALIGNMENT_ORDER = [
     'Color',
     'StyleHyphenateLimitChars',
     'LayoutUnit',
-    'LineClampValue',
+    'MaxLinesData',
     'OutlineValue',
     'unsigned',
     'size_t',

@@ -218,6 +218,8 @@ class CORE_EXPORT BlockLayoutAlgorithm
                               : child_percentage_size_;
   }
 
+  NOINLINE void SetupLineClamp();
+
   BoxStrut CalculateMargins(LayoutInputNode child,
                             bool is_new_fc,
                             LayoutUnit* additional_line_offset);

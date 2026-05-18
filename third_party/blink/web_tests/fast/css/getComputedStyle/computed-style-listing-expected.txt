@@ -292,7 +292,7 @@ math-style: normal
 max-block-size: none
 max-height: none
 max-inline-size: none
-max-lines: none
+max-lines: auto
 max-width: none
 min-block-size: 0px
 min-height: 0px

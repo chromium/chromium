@@ -8570,14 +8570,6 @@ crbug.com/40336192 virtual/disable-css-line-clamp-line-breaking-ellipsis/externa
 crbug.com/40336192 virtual/disable-css-line-clamp-line-breaking-ellipsis/external/wpt/css/css-text/white-space/text-wrap-balance-line-clamp-003.html [ Failure ]
 crbug.com/40336192 virtual/disable-css-line-clamp-line-breaking-ellipsis/external/wpt/css/css-text/white-space/text-wrap-balance-line-clamp-004.html [ Failure ]
 crbug.com/40336192 virtual/disable-css-line-clamp-line-breaking-ellipsis/external/wpt/css/css-text/white-space/text-wrap-balance-line-clamp-007.html [ Failure ]
-# css-line-clamp-lines-and-height
-crbug.com/40336192 virtual/css-line-clamp-lines-and-height/external/wpt/css/css-overflow/line-clamp/line-clamp-011.html [ Failure ]
-crbug.com/40336192 virtual/css-line-clamp-lines-and-height/external/wpt/css/css-overflow/line-clamp/line-clamp-035.html [ Failure ]
-crbug.com/40336192 virtual/css-line-clamp-lines-and-height/external/wpt/css/css-overflow/line-clamp/line-clamp-with-floats-005.html [ Failure ]
-crbug.com/40336192 virtual/css-line-clamp-lines-and-height/external/wpt/css/css-overflow/line-clamp/line-clamp-with-floats-006.html [ Failure ]
-crbug.com/40336192 virtual/css-line-clamp-lines-and-height/external/wpt/css/css-overflow/line-clamp/line-clamp-with-floats-007.html [ Failure ]
-crbug.com/40336192 virtual/css-line-clamp-lines-and-height/external/wpt/css/css-overflow/line-clamp/line-clamp-with-floats-010.html [ Failure ]
-crbug.com/40336192 virtual/css-line-clamp-lines-and-height/external/wpt/css/css-overflow/line-clamp/webkit-line-clamp-with-max-height.html [ Failure ]
 # disable-css-line-clamp
 crbug.com/40336192 virtual/disable-css-line-clamp/external/wpt/css/css-overflow/line-clamp/webkit-line-clamp-024.html [ Failure ]
 crbug.com/40336192 virtual/disable-css-line-clamp/external/wpt/css/css-overflow/line-clamp/webkit-line-clamp-035.html [ Pass ]
@@ -8619,6 +8611,8 @@ crbug.com/40336192 virtual/disable-css-line-clamp/external/wpt/css/css-overflow/
 crbug.com/40336192 virtual/disable-css-line-clamp/external/wpt/css/css-overflow/line-clamp/line-clamp-033.html [ Failure ]
 crbug.com/40336192 virtual/disable-css-line-clamp/external/wpt/css/css-overflow/line-clamp/line-clamp-035.html [ Failure ]
 crbug.com/40336192 virtual/disable-css-line-clamp/external/wpt/css/css-overflow/line-clamp/line-clamp-036.html [ Failure ]
+crbug.com/40336192 virtual/disable-css-line-clamp/external/wpt/css/css-overflow/line-clamp/line-clamp-041.html [ Failure ]
+crbug.com/40336192 virtual/disable-css-line-clamp/external/wpt/css/css-overflow/line-clamp/line-clamp-042.html [ Failure ]
 crbug.com/40336192 virtual/disable-css-line-clamp/external/wpt/css/css-overflow/line-clamp/line-clamp-auto-001.html [ Failure ]
 crbug.com/40336192 virtual/disable-css-line-clamp/external/wpt/css/css-overflow/line-clamp/line-clamp-auto-002.tentative.html [ Failure ]
 crbug.com/40336192 virtual/disable-css-line-clamp/external/wpt/css/css-overflow/line-clamp/line-clamp-auto-003.tentative.html [ Failure ]

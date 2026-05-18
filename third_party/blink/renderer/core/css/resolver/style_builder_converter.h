@@ -48,6 +48,7 @@
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/core/style/flow_tolerance.h"
 #include "third_party/blink/renderer/core/style/grid_area.h"
+#include "third_party/blink/renderer/core/style/max_lines_data.h"
 #include "third_party/blink/renderer/core/style/named_grid_lines_map.h"
 #include "third_party/blink/renderer/core/style/ordered_named_grid_lines.h"
 #include "third_party/blink/renderer/core/style/scroll_marker_group.h"
@@ -469,6 +470,7 @@ class StyleBuilderConverter {
   static FitText ConvertFitText(StyleResolverState&, const CSSValue&);
   static TextOverflowData ConvertTextOverflow(StyleResolverState&,
                                               const CSSValue&);
+  static MaxLinesData ConvertMaxLines(StyleResolverState&, const CSSValue&);
 
   static ScopedCSSNameList* ConvertTimelineTriggerName(StyleResolverState&,
                                                        const CSSValue&);

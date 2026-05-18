@@ -3431,24 +3431,21 @@ String StylePropertySerializer::LineClampValue(
     if (max_lines->IsIdentifierValue() &&
         block_ellipsis->GetValueID() == CSSValueID::kNoEllipsis) {
       DCHECK_EQ(To<CSSIdentifierValue>(max_lines)->GetValueID(),
-                CSSValueID::kNone);
+                CSSValueID::kAuto);
       return "none";
     }
     return g_empty_string;
   }
 
   CSSValueList* list = CSSValueList::CreateSpaceSeparated();
-  if (max_lines->IsNumericLiteralValue()) {
-    list->Append(*max_lines);
-  } else {
-    DCHECK_EQ(To<CSSIdentifierValue>(max_lines)->GetValueID(),
-              CSSValueID::kNone);
-    if (is_webkit_line_clamp) {
+  if (!max_lines->IsIdentifierValue() ||
+      block_ellipsis->GetValueID() == CSSValueID::kEllipsis) {
+    if (!max_lines->IsNumericLiteralValue() && is_webkit_line_clamp) {
       return g_empty_string;
     }
-    if (block_ellipsis->GetValueID() == CSSValueID::kEllipsis) {
-      list->Append(*CSSIdentifierValue::Create(CSSValueID::kAuto));
-    }
+    list->Append(*max_lines);
+  } else if (is_webkit_line_clamp) {
+    return g_empty_string;
   }
 
   if (block_ellipsis->GetValueID() != CSSValueID::kEllipsis) {

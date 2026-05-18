@@ -4284,6 +4284,27 @@ TextOverflowData StyleBuilderConverter::ConvertTextOverflow(
   return TextOverflowData(TextOverflowData::Type::kClip);
 }
 
+MaxLinesData StyleBuilderConverter::ConvertMaxLines(StyleResolverState& state,
+                                                    const CSSValue& value) {
+  if (const auto* ident = DynamicTo<CSSIdentifierValue>(value)) {
+    DCHECK_EQ(ident->GetValueID(), CSSValueID::kAuto);
+    return MaxLinesData(0, true);
+  }
+
+  const CSSValue* num_lines_value = &value;
+  bool has_auto = false;
+  if (const auto* pair = DynamicTo<CSSValuePair>(value)) {
+    DCHECK_EQ(To<CSSIdentifierValue>(pair->Second()).GetValueID(),
+              CSSValueID::kAuto);
+    has_auto = true;
+    num_lines_value = &pair->First();
+  }
+  uint16_t num_lines =
+      To<CSSPrimitiveValue>(num_lines_value)
+          ->ConvertTo<uint16_t>(state.CssToLengthConversionData());
+  return MaxLinesData(num_lines, has_auto);
+}
+
 ScopedCSSNameList* StyleBuilderConverter::ConvertTimelineTriggerName(
     StyleResolverState& state,
     const CSSValue& value) {

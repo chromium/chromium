@@ -50,6 +50,7 @@ blink_core_sources_style = [
   "position_area.h",
   "list_style_type_data.cc",
   "list_style_type_data.h",
+  "max_lines_data.h",
   "member_copy.h",
   "named_grid_lines_map.h",
   "nine_piece_image.cc",

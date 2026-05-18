@@ -666,7 +666,7 @@ class ComputedStyle final : public ComputedStyleBase {
         return WebkitLineClamp();
       }
     } else if (IsEffectiveContinueCollapse()) {
-      return MaxLines();
+      return MaxLines().Lines();
     }
     return 0;
   }
