@@ -34,9 +34,10 @@ public class SendTabToSelfGestureDetector implements SensorEventListener {
 
     // Acceleration threshold values (m/s^2) for different sensitivity levels.
     // Higher sensitivity requires less force (lower threshold) to trigger.
-    private static final float THRESHOLD_LOW_SENSITIVITY = 20.0f;
-    private static final float THRESHOLD_MEDIUM_SENSITIVITY = 15.0f;
-    private static final float THRESHOLD_HIGH_SENSITIVITY = 10.0f;
+    private static final float THRESHOLD_LOW_SENSITIVITY = 15.0f;
+    private static final float THRESHOLD_MEDIUM_SENSITIVITY = 10.0f;
+    private static final float THRESHOLD_HIGH_SENSITIVITY = 5.0f;
+    private static final float THRESHOLD_VERY_HIGH_SENSITIVITY = 2.0f;
 
     private final SensorManager mSensorManager;
     private final @Nullable Sensor mAccelerometer;
@@ -165,9 +166,10 @@ public class SendTabToSelfGestureDetector implements SensorEventListener {
 
     private static float getAccelerationThreshold() {
         // Map gesture sensitivity parameters to acceleration thresholds (m/s^2).
-        // - "low": harder to trigger, requires sharp tap (20 m/s^2)
-        // - "medium" (or default): standard trigger threshold (15 m/s^2)
-        // - "high": easier to trigger, requires light tap (10 m/s^2)
+        // - "low": harder to trigger, requires sharp tap (15 m/s^2)
+        // - "medium" (or default): standard trigger threshold (10 m/s^2)
+        // - "high": easier to trigger, requires light tap (5 m/s^2)
+        // - "very_high": extremely sensitive, triggers on very light tap (2 m/s^2)
         String sensitivity =
                 ChromeFeatureList.getFieldTrialParamByFeature(
                         ChromeFeatureList.SEND_TAB_TO_SELF_GESTURE, "sensitivity");
@@ -175,6 +177,8 @@ public class SendTabToSelfGestureDetector implements SensorEventListener {
             return THRESHOLD_LOW_SENSITIVITY;
         } else if ("high".equals(sensitivity)) {
             return THRESHOLD_HIGH_SENSITIVITY;
+        } else if ("very_high".equals(sensitivity)) {
+            return THRESHOLD_VERY_HIGH_SENSITIVITY;
         }
         return THRESHOLD_MEDIUM_SENSITIVITY;
     }

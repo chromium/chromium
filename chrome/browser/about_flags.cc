@@ -4560,17 +4560,18 @@ const FeatureEntry::FeatureVariation kGestureUserEducationVariations[] = {
     {"8000ms delay", kGestureUserEducationPageDelay8Seconds, nullptr},
     {"10000ms delay", kGestureUserEducationPageDelay10Seconds, nullptr},
 };
-const FeatureEntry::FeatureParam kSendTabToSelfGestureLow[] = {
-    {"sensitivity", "low"}};
-const FeatureEntry::FeatureParam kSendTabToSelfGestureMedium[] = {
-    {"sensitivity", "medium"}};
-const FeatureEntry::FeatureParam kSendTabToSelfGestureHigh[] = {
-    {"sensitivity", "high"}};
-
-const FeatureEntry::FeatureVariation kSendTabToSelfGestureVariations[] = {
-    {"Low Sensitivity", kSendTabToSelfGestureLow, nullptr},
-    {"Medium Sensitivity", kSendTabToSelfGestureMedium, nullptr},
-    {"High Sensitivity", kSendTabToSelfGestureHigh, nullptr},
+const FeatureEntry::Choice kSendTabToSelfGestureChoices[] = {
+    {flags_ui::kGenericExperimentChoiceDefault, "", ""},
+    {flags_ui::kGenericExperimentChoiceDisabled, switches::kDisableFeatures,
+     "SendTabToSelfGesture"},
+    {"Enabled Low Sensitivity", switches::kEnableFeatures,
+     "SendTabToSelfGesture:sensitivity/low"},
+    {"Enabled Medium Sensitivity", switches::kEnableFeatures,
+     "SendTabToSelfGesture:sensitivity/medium"},
+    {"Enabled High Sensitivity", switches::kEnableFeatures,
+     "SendTabToSelfGesture:sensitivity/high"},
+    {"Enabled Very High Sensitivity", switches::kEnableFeatures,
+     "SendTabToSelfGesture:sensitivity/very_high"},
 };
 #endif  // BUILDFLAG(IS_ANDROID)
 
@@ -12925,9 +12926,7 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(chrome::android::kLongScreenshotsLenientMemoryCheck)},
     {"send-tab-to-self-gesture", flag_descriptions::kSendTabToSelfGestureName,
      flag_descriptions::kSendTabToSelfGestureDescription, kOsAndroid,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(send_tab_to_self::kSendTabToSelfGesture,
-                                    kSendTabToSelfGestureVariations,
-                                    "SendTabToSelfGesture")},
+     MULTI_VALUE_TYPE(kSendTabToSelfGestureChoices)},
 #endif  // BUILDFLAG(IS_ANDROID)
     {"enable-cancel-upload-on-content-analysis",
      flag_descriptions::kEnableCancelUploadOnContentAnalysisName,
