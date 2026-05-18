@@ -333,7 +333,7 @@ void ActorLoginDelegateImpl::OnFederatedLoginCompletedPostButtonClick(
     return;
   }
   if (success && found_conflicting_permissions_ &&
-      siwg_controller_->should_store_permission()) {
+      siwg_controller_->ShouldStorePermission()) {
     ClearConflictingPermissions();
   }
 
@@ -437,7 +437,7 @@ void ActorLoginDelegateImpl::ProcessFederatedResult(
   if (result.has_value() &&
       result.value() == LoginStatusResult::kSuccessFederated &&
       found_conflicting_permissions_ &&
-      siwg_controller_->should_store_permission()) {
+      siwg_controller_->ShouldStorePermission()) {
     ClearConflictingPermissions();
   }
   // This is the end of the federated login flow if it didn't require a button

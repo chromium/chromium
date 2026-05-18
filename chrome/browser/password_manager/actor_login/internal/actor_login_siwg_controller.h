@@ -17,6 +17,7 @@
 #include "components/password_manager/core/browser/actor_login/actor_login_quality_logger_interface.h"
 #include "components/password_manager/core/browser/actor_login/actor_login_types.h"
 #include "components/password_manager/core/browser/actor_login/internal/actor_login_metrics_helper.h"
+#include "components/password_manager/core/browser/actor_login/internal/actor_login_siwg_controller_interface.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
@@ -35,7 +36,8 @@ namespace actor_login {
 // Controller for Sign-in with Google interaction.
 // This class manages the federated login flow when user selects a federated
 // credential.
-class ActorLoginSiwgController : public content::WebContentsObserver {
+class ActorLoginSiwgController : public ActorLoginSiwgControllerInterface,
+                                 public content::WebContentsObserver {
  public:
   using GetPageContentProvider =
       base::RepeatingCallback<void(content::WebContents*,
@@ -72,17 +74,13 @@ class ActorLoginSiwgController : public content::WebContentsObserver {
   ActorLoginSiwgController(const ActorLoginSiwgController&) = delete;
   ActorLoginSiwgController& operator=(const ActorLoginSiwgController&) = delete;
 
-  bool should_store_permission() const { return should_store_permission_; }
+  bool ShouldStorePermission() const override;
 
   // Starts the federated login flow. This will notify FedCM API that an
   // automated login is in progress, and then start the button detection and
   // click flow.
   void StartFederatedLogin(
-      std::unique_ptr<ActorLoginMetricsHelper> metrics_helper);
-
-  // Starts the detection process for SiwG buttons on the current page and
-  // clicks the first one found.
-  void ClickSiwgButton();
+      std::unique_ptr<ActorLoginMetricsHelper> metrics_helper) override;
 
   // Calls `OnFedCmFederatedLogin` on `popup_observer_`.
   // TODO(crbug.com/508169237): Utilize `WebContentsTester` instead.

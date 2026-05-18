@@ -193,6 +193,10 @@ ActorLoginSiwgController::ActorLoginSiwgController(
 
 ActorLoginSiwgController::~ActorLoginSiwgController() = default;
 
+bool ActorLoginSiwgController::ShouldStorePermission() const {
+  return should_store_permission_;
+}
+
 void ActorLoginSiwgController::StartFederatedLogin(
     std::unique_ptr<ActorLoginMetricsHelper> metrics_helper) {
   CHECK(credential_.federation_detail);

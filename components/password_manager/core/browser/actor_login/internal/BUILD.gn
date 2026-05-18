@@ -24,6 +24,7 @@ source_set("delegate") {
     "actor_login_metrics_helper_interface.h",
     "actor_login_password_credentials_fetcher.cc",
     "actor_login_password_credentials_fetcher.h",
+    "actor_login_siwg_controller_interface.h",
   ]
 
   visibility = [

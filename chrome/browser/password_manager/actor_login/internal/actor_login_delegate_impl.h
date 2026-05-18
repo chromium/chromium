@@ -9,9 +9,9 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_task.h"
-#include "chrome/browser/password_manager/actor_login/internal/actor_login_siwg_controller.h"
 #include "components/password_manager/core/browser/actor_login/actor_login_quality_logger_interface.h"
 #include "components/password_manager/core/browser/actor_login/internal/actor_login_delegate.h"
+#include "components/password_manager/core/browser/actor_login/internal/actor_login_siwg_controller_interface.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_driver.h"
 #include "components/password_manager/core/browser/password_manager_interface.h"
@@ -78,7 +78,9 @@ class ActorLoginDelegateImpl
 
 #if defined(UNIT_TEST)
   // TODO(crbug.com/508169237): Utilize `WebContentsTester` instead.
-  ActorLoginSiwgController* siwg_controller() { return siwg_controller_.get(); }
+  ActorLoginSiwgControllerInterface* siwg_controller() {
+    return siwg_controller_.get();
+  }
 #endif
 
  private:
@@ -169,7 +171,7 @@ class ActorLoginDelegateImpl
   // and click the SiwG button. After the prototype, the click will be done
   // through `ExecutionEngine`.
   // Scoped to one `AttemptLogin` request.
-  std::unique_ptr<ActorLoginSiwgController> siwg_controller_;
+  std::unique_ptr<ActorLoginSiwgControllerInterface> siwg_controller_;
 
   // Track the currently acting task to know when we can remove the
   // FederatedEmbedderLoginRequest from the `WebContents`. This is needed to

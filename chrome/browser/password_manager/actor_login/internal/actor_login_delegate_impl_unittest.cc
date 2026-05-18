@@ -18,6 +18,7 @@
 #include "chrome/browser/actor/actor_keyed_service_fake.h"
 #include "chrome/browser/password_manager/actor_login/actor_login_permission_cleaning_service_factory.h"
 #include "chrome/browser/password_manager/actor_login/actor_login_permission_service_factory.h"
+#include "chrome/browser/password_manager/actor_login/internal/actor_login_siwg_controller.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
@@ -1594,7 +1595,8 @@ TEST_F(ActorLoginDelegateImplTest,
   EXPECT_CALL(*mock_cleaning_service,
               ClearConflictingPermissions(Eq(credential), _, _));
 
-  static_cast<content::WebContentsObserver*>(delegate_->siwg_controller())
+  static_cast<content::WebContentsObserver*>(
+      static_cast<ActorLoginSiwgController*>(delegate_->siwg_controller()))
       ->OnFedCmFederatedLogin(true);
 }
 
