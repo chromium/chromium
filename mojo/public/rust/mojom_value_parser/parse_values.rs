@@ -53,84 +53,88 @@ fn parse_leaf_element(
                 Err(ParsingError::invalid_discriminant(data.bytes_parsed() - 4, value))
             }
         }
-        // TODO(crbug.com/493274453): The code for parsing Handle, PendingReceiver, and
-        // PendingRemote is very similar and could be unified. However, there are
-        // discrepancies (like the extra version field for remotes) and it's unclear what
-        // complications associated remotes/receivers will add. We should revisit this when
-        // we have the full picture.
-        PackedLeafType::Handle => {
-            // On the wire, handles are represented as a 32-bit index into the
-            // message's attached handle array, which is part of `data`.
-            let idx_u32 = parse_u32(data)?;
-            let idx: usize = idx_u32.try_into().unwrap();
+        PackedLeafType::Handle => parse_endpoint(
+            data,
+            is_nullable,
+            /* is_remote = */ false,
+            ParserData::take_handle,
+            MojomValue::Handle,
+        ),
+        PackedLeafType::PendingReceiver => parse_endpoint(
+            data,
+            is_nullable,
+            /* is_remote = */ false,
+            ParserData::take_handle,
+            MojomValue::PendingReceiver,
+        ),
+        PackedLeafType::PendingRemote => parse_endpoint(
+            data,
+            is_nullable,
+            /* is_remote = */ true,
+            ParserData::take_handle,
+            MojomValue::PendingRemote,
+        ),
+    }
+}
 
-            // This value indicates the handle is `None`.
-            if idx_u32 == 0xffffffff {
-                if is_nullable {
-                    return Ok(MojomValue::Nullable(None));
-                } else {
-                    return Err(ParsingError::invalid_handle_index(data.bytes_parsed() - 4, idx));
-                }
-            };
+/// Parse a handle or associated interface ID into the requested Mojom type
+///
+/// This function is a helper for `parse_leaf_element`, and unifies the parsing
+/// branches for all the various types of endpoint: typed and untyped handles,
+/// pending remotes/receivers, and pending _associated_ remotes and receivers.
+///
+/// The endpoints are each represented on the wire as a 32-bit index into an
+/// array containing the real data. That array is contained within `data`, and
+/// is accessed by one of its methods (`lookup`). That data is then passed to
+/// `constructor` to create the actual `MojomValue`.
+///
+/// The scary signature here abstracts over the fact that there are two
+/// different arrays, for associated vs. non-associated endpoints, which contain
+/// different types (handles for non-associated, ID numbers for associated).
+/// Furthermore, constructors take different types, e.g. `MojomValue::Handle`
+/// takes an `UntypedHandle` but `PendingRemote` takes a `MessageEndpoint`, so
+/// we need to have different types for the output of `lookup` and the input of
+/// `constructor`.
+///
+/// Fortunately, the compiler figures out all the types for us.
+///
+/// The `is_remote` argument tells us this corresponds to a pending remote or
+/// associated remote, in which case there will be an extra 4-byte version
+/// number we need to skip over.
+fn parse_endpoint<'a, T1, T2>(
+    data: &mut ParserData<'a>,
+    is_nullable: bool,
+    is_remote: bool,
+    lookup: fn(&mut ParserData<'a>, usize) -> Option<T1>,
+    constructor: fn(T2) -> MojomValue,
+) -> ParsingResult<MojomValue>
+where
+    T1: Into<T2>,
+{
+    // On the wire, endpoints are represented
+    let idx_u32 = parse_u32(data)?;
+    if is_remote {
+        // Remotes have a version number follow the index.
+        let _version = parse_u32(data)?;
+    }
+    let idx: usize = idx_u32.try_into().unwrap();
 
-            let handle = data
-                .take_handle(idx)
-                .ok_or_else(|| ParsingError::invalid_handle_index(data.bytes_parsed() - 4, idx))?;
-            let handle_val = MojomValue::Handle(handle);
-
-            if is_nullable {
-                return Ok(MojomValue::Nullable(Some(Box::new(handle_val))));
-            } else {
-                return Ok(handle_val);
-            }
+    if idx_u32 == 0xffffffff {
+        if is_nullable {
+            return Ok(MojomValue::Nullable(None));
+        } else {
+            return Err(ParsingError::invalid_handle_index(data.bytes_parsed() - 8, idx));
         }
-        PackedLeafType::PendingReceiver => {
-            let idx_u32 = parse_u32(data)?;
-            let idx: usize = idx_u32.try_into().unwrap();
+    };
 
-            if idx_u32 == 0xffffffff {
-                if is_nullable {
-                    return Ok(MojomValue::Nullable(None));
-                } else {
-                    return Err(ParsingError::invalid_handle_index(data.bytes_parsed() - 4, idx));
-                }
-            };
+    let retrieved = lookup(data, idx)
+        .ok_or_else(|| ParsingError::invalid_handle_index(data.bytes_parsed() - 8, idx))?;
+    let retrieved = constructor(retrieved.into());
 
-            let handle = data
-                .take_handle(idx)
-                .ok_or_else(|| ParsingError::invalid_handle_index(data.bytes_parsed() - 4, idx))?;
-            let handle_val = MojomValue::PendingReceiver(handle.into());
-
-            if is_nullable {
-                return Ok(MojomValue::Nullable(Some(Box::new(handle_val))));
-            } else {
-                return Ok(handle_val);
-            }
-        }
-        PackedLeafType::PendingRemote => {
-            let idx_u32 = parse_u32(data)?;
-            let _version = parse_u32(data)?;
-            let idx: usize = idx_u32.try_into().unwrap();
-
-            if idx_u32 == 0xffffffff {
-                if is_nullable {
-                    return Ok(MojomValue::Nullable(None));
-                } else {
-                    return Err(ParsingError::invalid_handle_index(data.bytes_parsed() - 8, idx));
-                }
-            };
-
-            let handle = data
-                .take_handle(idx)
-                .ok_or_else(|| ParsingError::invalid_handle_index(data.bytes_parsed() - 8, idx))?;
-            let handle_val = MojomValue::PendingRemote(handle.into());
-
-            if is_nullable {
-                return Ok(MojomValue::Nullable(Some(Box::new(handle_val))));
-            } else {
-                return Ok(handle_val);
-            }
-        }
+    if is_nullable {
+        return Ok(MojomValue::Nullable(Some(Box::new(retrieved))));
+    } else {
+        return Ok(retrieved);
     }
 }
 
