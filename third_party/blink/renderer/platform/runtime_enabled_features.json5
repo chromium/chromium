@@ -5866,6 +5866,10 @@
       status: "stable",
     },
     {
+      name: "TextBoxTrimForNestedList",
+      status: "stable",
+    },
+    {
       name: "TextDetector",
       status: "experimental",
     },
