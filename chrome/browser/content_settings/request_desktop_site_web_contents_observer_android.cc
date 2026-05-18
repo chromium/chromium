@@ -55,9 +55,10 @@ RequestDesktopSiteWebContentsObserverAndroid::
 void RequestDesktopSiteWebContentsObserverAndroid::DidStartNavigation(
     content::NavigationHandle* navigation_handle) {
   // A webpage could contain multiple frames, which will trigger this observer
-  // multiple times. Only need to override user agent for the main frame of the
-  // webpage; since the child iframes inherit from the main frame.
-  if (!navigation_handle->IsInMainFrame()) {
+  // multiple times. Only need to override user agent for outermost main frames
+  // of the webpage; since child iframes inherit from the main frame, and fenced
+  // frames should maintain a privacy boundary.
+  if (!navigation_handle->IsInOutermostMainFrame()) {
     return;
   }
 
