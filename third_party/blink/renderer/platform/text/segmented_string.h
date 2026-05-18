@@ -273,12 +273,16 @@ class PLATFORM_EXPORT SegmentedString {
     return Advance();
   }
 
-  ALWAYS_INLINE UChar AdvanceAndASSERT(UChar expected_character) {
+  // Check the current character is `expected_character` with DCHECK(), then
+  // Advance().
+  ALWAYS_INLINE UChar AdvanceExpecting(UChar expected_character) {
     DCHECK_EQ(expected_character, CurrentChar());
     return Advance();
   }
 
-  ALWAYS_INLINE UChar AdvanceAndASSERTIgnoringCase(UChar expected_character) {
+  // Check the current character is `expected_character` case insensitively with
+  // DCHECK(), then Advance().
+  ALWAYS_INLINE UChar AdvanceExpectingIgnoringCase(UChar expected_character) {
     DCHECK_EQ(unicode::FoldCase(CurrentChar()),
               unicode::FoldCase(expected_character));
     return Advance();

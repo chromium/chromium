@@ -1232,8 +1232,8 @@ bool HTMLTokenizer::NextTokenImpl(SegmentedString& source) {
         SegmentedString::LookAheadResult result =
             source.LookAhead(html_tokenizer_names::kDashDash);
         if (result == SegmentedString::kDidMatch) {
-          source.AdvanceAndASSERT('-');
-          source.AdvanceAndASSERT('-');
+          source.AdvanceExpecting('-');
+          source.AdvanceExpecting('-');
           token_.BeginComment();
           HTML_SWITCH_TO(kCommentStartState);
         } else if (result == SegmentedString::kNotEnoughCharacters)
@@ -1242,7 +1242,7 @@ bool HTMLTokenizer::NextTokenImpl(SegmentedString& source) {
         SegmentedString::LookAheadResult result =
             source.LookAheadIgnoringCase(html_tokenizer_names::kDoctype);
         if (result == SegmentedString::kDidMatch) {
-          AdvanceStringAndASSERTIgnoringCase(source, "doctype");
+          AdvanceStringExpectingIgnoringCase(source, "doctype");
           HTML_SWITCH_TO(kDOCTYPEState);
         } else if (result == SegmentedString::kNotEnoughCharacters)
           return HaveBufferedCharacterToken();
@@ -1250,7 +1250,7 @@ bool HTMLTokenizer::NextTokenImpl(SegmentedString& source) {
         SegmentedString::LookAheadResult result =
             source.LookAhead(html_tokenizer_names::kCdata);
         if (result == SegmentedString::kDidMatch) {
-          AdvanceStringAndASSERT(source, "[CDATA[");
+          AdvanceStringExpecting(source, "[CDATA[");
           HTML_SWITCH_TO(kCDATASectionState);
         } else if (result == SegmentedString::kNotEnoughCharacters)
           return HaveBufferedCharacterToken();
@@ -1429,7 +1429,7 @@ bool HTMLTokenizer::NextTokenImpl(SegmentedString& source) {
           SegmentedString::LookAheadResult result =
               source.LookAheadIgnoringCase(html_tokenizer_names::kPublic);
           if (result == SegmentedString::kDidMatch) {
-            AdvanceStringAndASSERTIgnoringCase(source, "public");
+            AdvanceStringExpectingIgnoringCase(source, "public");
             HTML_SWITCH_TO(kAfterDOCTYPEPublicKeywordState);
           } else if (result == SegmentedString::kNotEnoughCharacters)
             return HaveBufferedCharacterToken();
@@ -1437,7 +1437,7 @@ bool HTMLTokenizer::NextTokenImpl(SegmentedString& source) {
           SegmentedString::LookAheadResult result =
               source.LookAheadIgnoringCase(html_tokenizer_names::kSystem);
           if (result == SegmentedString::kDidMatch) {
-            AdvanceStringAndASSERTIgnoringCase(source, "system");
+            AdvanceStringExpectingIgnoringCase(source, "system");
             HTML_SWITCH_TO(kAfterDOCTYPESystemKeywordState);
           } else if (result == SegmentedString::kNotEnoughCharacters)
             return HaveBufferedCharacterToken();
@@ -1797,7 +1797,7 @@ bool HTMLTokenizer::EmitData(SegmentedString& source, UChar cc) {
     switch (cc) {
       case '&':
         state_ = kCharacterReferenceInDataState;
-        source.AdvanceAndASSERT('&');
+        source.AdvanceExpecting('&');
         if (!ProcessEntity(source))
           return true;
         state_ = kDataState;

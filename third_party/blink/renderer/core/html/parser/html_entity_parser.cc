@@ -88,7 +88,7 @@ bool ConsumeNamedEntity(SegmentedString& source,
     if (!entity_search.IsEntityPrefix())
       break;
     consumed_characters.push_back(cc);
-    source.AdvanceAndASSERT(cc);
+    source.AdvanceExpecting(cc);
   }
   // Character reference ends in ';', so if the last character is ';' then
   // don't treat it as not enough characters (because no additional characters
@@ -118,7 +118,7 @@ bool ConsumeNamedEntity(SegmentedString& source,
       cc = source.CurrentChar();
       DCHECK_EQ(cc, reference[i]);
       consumed_characters.push_back(cc);
-      source.AdvanceAndASSERT(cc);
+      source.AdvanceExpecting(cc);
       DCHECK(!source.IsEmpty());
     }
     cc = source.CurrentChar();
@@ -229,7 +229,7 @@ bool ConsumeHTMLEntity(SegmentedString& source,
           if (result != kInvalidUnicode)
             result = result * 16 + ToAsciiHexValue(cc);
         } else if (cc == ';') {
-          source.AdvanceAndASSERT(cc);
+          source.AdvanceExpecting(cc);
           AppendLegalEntityFor(result, decoded_entity);
           return true;
         } else {
@@ -243,7 +243,7 @@ bool ConsumeHTMLEntity(SegmentedString& source,
           if (result != kInvalidUnicode)
             result = result * 10 + cc - '0';
         } else if (cc == ';') {
-          source.AdvanceAndASSERT(cc);
+          source.AdvanceExpecting(cc);
           AppendLegalEntityFor(result, decoded_entity);
           return true;
         } else {
@@ -262,7 +262,7 @@ bool ConsumeHTMLEntity(SegmentedString& source,
       result = kInvalidUnicode;
 
     consumed_characters.push_back(cc);
-    source.AdvanceAndASSERT(cc);
+    source.AdvanceExpecting(cc);
   }
   DCHECK(source.IsEmpty());
   not_enough_characters = true;

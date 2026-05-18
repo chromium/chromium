@@ -39,17 +39,17 @@ inline bool IsTokenizerWhitespace(UChar cc) {
   return cc == ' ' || cc == '\x0A' || cc == '\x09' || cc == '\x0C';
 }
 
-inline void AdvanceStringAndASSERTIgnoringCase(
+inline void AdvanceStringExpectingIgnoringCase(
     SegmentedString& source,
     const char* expected_characters) {
   while (*expected_characters)
-    source.AdvanceAndASSERTIgnoringCase(UNSAFE_TODO(*expected_characters++));
+    source.AdvanceExpectingIgnoringCase(UNSAFE_TODO(*expected_characters++));
 }
 
-inline void AdvanceStringAndASSERT(SegmentedString& source,
+inline void AdvanceStringExpecting(SegmentedString& source,
                                    const char* expected_characters) {
   while (*expected_characters)
-    source.AdvanceAndASSERT(UNSAFE_TODO(*expected_characters++));
+    source.AdvanceExpecting(UNSAFE_TODO(*expected_characters++));
 }
 
 #if defined(COMPILER_MSVC)
