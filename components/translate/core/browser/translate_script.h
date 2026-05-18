@@ -56,6 +56,13 @@ class TranslateScript {
  private:
   friend class TranslateScriptTest;
   FRIEND_TEST_ALL_PREFIXES(TranslateScriptTest, CheckScriptParameters);
+  FRIEND_TEST_ALL_PREFIXES(TranslateScriptTest,
+                           CheckScriptParameters_SimplifiedHindiDisabled);
+  FRIEND_TEST_ALL_PREFIXES(TranslateScriptTest,
+                           CheckScriptParameters_ElementExperimentFeatures);
+  FRIEND_TEST_ALL_PREFIXES(
+      TranslateScriptTest,
+      CheckScriptParameters_ElementExperimentFeaturesCoexistence);
   FRIEND_TEST_ALL_PREFIXES(TranslateScriptTest, CheckScriptURL);
 
   static const char kScriptURL[];
@@ -78,6 +85,9 @@ class TranslateScript {
   // function name.
   static const char kJavascriptLoaderCallbackQueryName[];
   static const char kJavascriptLoaderCallbackQueryValue[];
+
+  // Returns the active element features as a comma-separated string.
+  static std::string GetActiveElementFeatures();
 
   // The callback when the script is fetched or a server error occured.
   void OnScriptFetchComplete(bool success, const std::string& data);

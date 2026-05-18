@@ -84,6 +84,23 @@ void TranslateScript::Request(RequestCallback callback, bool is_incognito) {
 }
 
 // static
+std::string TranslateScript::GetActiveElementFeatures() {
+  std::vector<std::string> active_element_features;
+  if (base::FeatureList::IsEnabled(translate::kTranslateSimplifiedHindi)) {
+    active_element_features.push_back(kExperimentFilterQueryValue);
+  }
+  if (base::FeatureList::IsEnabled(
+          translate::kTranslateElementExperimentFeatures)) {
+    std::string ef_param =
+        translate::kTranslateElementExperimentFeaturesParam.Get();
+    if (!ef_param.empty()) {
+      active_element_features.emplace_back(std::move(ef_param));
+    }
+  }
+  return base::JoinString(active_element_features, ",");
+}
+
+// static
 GURL TranslateScript::GetTranslateScriptURL() {
   GURL translate_script_url;
   // Check if command-line contains an alternative URL for translate service.
@@ -110,10 +127,11 @@ GURL TranslateScript::GetTranslateScriptURL() {
 
   translate_script_url = net::AppendQueryParameter(
       translate_script_url, kCallbackQueryName, kCallbackQueryValue);
-  if (base::FeatureList::IsEnabled(translate::kTranslateSimplifiedHindi)) {
+
+  std::string ef_value = GetActiveElementFeatures();
+  if (!ef_value.empty()) {
     translate_script_url = net::AppendQueryParameter(
-        translate_script_url, kExperimentFilterQueryName,
-        kExperimentFilterQueryValue);
+        translate_script_url, kExperimentFilterQueryName, ef_value);
   }
   translate_script_url = net::AppendQueryParameter(
       translate_script_url, kCssLoaderCallbackQueryName,
