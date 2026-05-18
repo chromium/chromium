@@ -126,6 +126,7 @@ export class PowerBookmarksListElement extends PolymerElement implements
       renamingId: {
         type: String,
         value: '',
+        notify: true,
       },
 
       hasLoadedData_: {
