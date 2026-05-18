@@ -137,6 +137,12 @@ bool EntityDataManagerAndroid::IsEligibleToAutofillAi(JNIEnv* env) {
                                        /*entity_type=*/std::nullopt);
 }
 
+bool EntityDataManagerAndroid::IsEligibleToAutofillAiForType(JNIEnv* env,
+                                                              int entity_type) {
+  EntityType type(static_cast<EntityTypeName>(entity_type));
+  return RunMayPerformAutofillAiAction(AutofillAiAction::kOptIn, type);
+}
+
 bool EntityDataManagerAndroid::GetAutofillAiOptInStatus(JNIEnv* env) {
   return autofill::GetAutofillAiOptInStatus(prefs_, identity_manager_);
 }
@@ -363,6 +369,13 @@ bool EntityDataManagerAndroid::GetIsAutofillAiAllowedByEnterprisePolicy(
 bool EntityDataManagerAndroid::CanEnableOrDisableAutofillAi(JNIEnv* env) {
   return RunMayPerformAutofillAiAction(AutofillAiAction::kEnableOrDisable,
                                        /*entity_type=*/std::nullopt);
+}
+
+bool EntityDataManagerAndroid::CanEnableOrDisableAutofillAiForType(
+    JNIEnv* env, int entity_type) {
+  EntityType type(static_cast<EntityTypeName>(entity_type));
+  return RunMayPerformAutofillAiAction(AutofillAiAction::kEnableOrDisable,
+                                       type);
 }
 
 bool EntityDataManagerAndroid::CanListEntityInstancesInSettings(JNIEnv* env) {

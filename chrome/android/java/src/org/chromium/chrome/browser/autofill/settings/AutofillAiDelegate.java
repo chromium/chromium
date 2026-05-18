@@ -360,7 +360,7 @@ public class AutofillAiDelegate {
 
     private Preference createAddEntityButton(
             EntityDataManager entityDataManager, EntityType entityType) {
-        boolean buttonEnabled = isAddButtonEnabled(entityDataManager);
+        boolean buttonEnabled = isAddButtonEnabled(entityDataManager, entityType);
 
         Preference pref = new Preference(getStyledContext());
         Drawable plusIcon =
@@ -394,14 +394,22 @@ public class AutofillAiDelegate {
         return pref;
     }
 
-    private boolean isAddButtonEnabled(EntityDataManager entityDataManager) {
-        return isEligibleToAddEntities(entityDataManager)
+    private boolean isAddButtonEnabled(EntityDataManager entityDataManager, EntityType entityType) {
+        return isEligibleToAddEntities(entityDataManager, entityType)
                 && !disabledSettingsInThirdPartyMode(mFragment.getProfile());
     }
 
-    private static boolean isEligibleToAddEntities(EntityDataManager entityDataManager) {
-        // TODO (crbug.com/482994257): We will use per entity type logic once Autofill and Passwords
-        // screen is enabled.
+    private static boolean isEligibleToAddEntities(
+            EntityDataManager entityDataManager, EntityType entityType) {
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID)) {
+            if (ChromeFeatureList.isEnabled(ChromeFeatureList.AUTOFILL_AI_AVAILABLE_BY_DEFAULT)) {
+                return entityDataManager.canEnableOrDisableAutofillAiForType(entityType.getTypeName());
+            } else {
+                return entityDataManager.isEligibleToAutofillAiForType(entityType.getTypeName())
+                        && entityDataManager.getAutofillAiOptInStatus();
+            }
+        }
+
         return (ChromeFeatureList.isEnabled(ChromeFeatureList.AUTOFILL_AI_AVAILABLE_BY_DEFAULT)
                 ? entityDataManager.canEnableOrDisableAutofillAi()
                 : entityDataManager.isEligibleToAutofillAi()

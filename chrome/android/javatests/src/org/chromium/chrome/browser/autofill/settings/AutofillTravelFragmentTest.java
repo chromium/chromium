@@ -99,6 +99,8 @@ public class AutofillTravelFragmentTest {
         when(mEntityDataManager.canListEntityInstancesInSettings()).thenReturn(true);
         when(mEntityDataManager.isEligibleToAutofillAi()).thenReturn(true);
         when(mEntityDataManager.canEnableOrDisableAutofillAi()).thenReturn(true);
+        when(mEntityDataManager.canEnableOrDisableAutofillAiForType(anyInt())).thenReturn(true);
+        when(mEntityDataManager.isEligibleToAutofillAiForType(anyInt())).thenReturn(true);
     }
 
     @Test

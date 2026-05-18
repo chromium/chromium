@@ -19,6 +19,7 @@ import static com.google.common.truth.Truth.assertThat;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.mock;
@@ -69,6 +70,7 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.autofill.autofill_ai.EntityInstance;
 import org.chromium.components.autofill.autofill_ai.EntityInstanceWithLabels;
 import org.chromium.components.autofill.autofill_ai.EntityType;
+import org.chromium.components.autofill.autofill_ai.EntityTypeName;
 import org.chromium.components.autofill.autofill_ai.RecordType;
 import org.chromium.components.autofill.autofill_ai.utils.TestUtils;
 import org.chromium.components.browser_ui.settings.search.SettingsIndexData;
@@ -85,7 +87,7 @@ import java.util.List;
 @EnableFeatures({
     ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID,
     ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA,
-    ChromeFeatureList.AUTOFILL_AI_AVAILABLE_BY_DEFAULT
+    ChromeFeatureList.AUTOFILL_AI_AVAILABLE_BY_DEFAULT,
 })
 public class AutofillIdentityDocsFragmentTest {
     @Rule
@@ -112,6 +114,8 @@ public class AutofillIdentityDocsFragmentTest {
         when(mEntityDataManager.getEntitiesWithLabels()).thenReturn(Collections.emptyList());
         when(mEntityDataManager.canListEntityInstancesInSettings()).thenReturn(true);
         when(mEntityDataManager.canEnableOrDisableAutofillAi()).thenReturn(true);
+        when(mEntityDataManager.canEnableOrDisableAutofillAiForType(anyInt())).thenReturn(true);
+        when(mEntityDataManager.isEligibleToAutofillAiForType(anyInt())).thenReturn(true);
         when(mMockReauthenticatorBridge.getBiometricAvailabilityStatus())
                 .thenReturn(BiometricStatus.BIOMETRICS_AVAILABLE);
     }
@@ -303,6 +307,49 @@ public class AutofillIdentityDocsFragmentTest {
                             "Add National ID button should exist in category",
                             addNationalId,
                             Matchers.notNullValue());
+                });
+    }
+
+    @Test
+    @MediumTest
+    public void testAutofillAiEntities_addButtonNotEnabledWhenPassportDisabled() {
+        EntityType passportType = TestUtils.getPassportEntityType();
+        EntityInstanceWithLabels entity1 =
+                new EntityInstanceWithLabels(
+                        "guid1",
+                        passportType,
+                        /* entityInstanceLabel= */ "Passport",
+                        /* entityInstanceSubLabel= */ "Germany",
+                        /* storedInWallet= */ false,
+                        /* walletEntityUrl= */ null);
+
+        LinkedHashMap<EntityType, List<EntityInstanceWithLabels>> instancesMap =
+                new LinkedHashMap<>();
+        instancesMap.put(passportType, Arrays.asList(entity1));
+        when(mEntityDataManager.getInstancesToList()).thenReturn(instancesMap);
+        when(mEntityDataManager.canEnableOrDisableAutofillAiForType(EntityTypeName.PASSPORT))
+                .thenReturn(false);
+
+        mSettingsActivityTestRule.startSettingsActivity();
+
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    AutofillIdentityDocsFragment fragment = mSettingsActivityTestRule.getFragment();
+                    Preference passportCategory = fragment.findPreference("Passport");
+                    Criteria.checkThat(
+                            "Passport entity category should exist",
+                            passportCategory,
+                            Matchers.notNullValue());
+                    PreferenceGroup passportGroup = (PreferenceGroup) passportCategory;
+                    Preference passportEntity = fragment.findPreference("guid1");
+                    Criteria.checkThat(
+                            "Passport entity should exist",
+                            passportEntity,
+                            Matchers.notNullValue());
+
+                    Preference addPassport = passportGroup.findPreference("Passport Add");
+                    assertThat(addPassport).isNotNull();
+                    assertThat(addPassport.isEnabled()).isFalse();
                 });
     }
 

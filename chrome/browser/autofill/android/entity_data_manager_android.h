@@ -67,6 +67,9 @@ class EntityDataManagerAndroid : public autofill::EntityDataManager::Observer {
   // Returns whether the user is eligible for Autofill AI.
   bool IsEligibleToAutofillAi(JNIEnv* env);
 
+  // Returns whether the user is eligible for Autofill AI for a given type.
+  bool IsEligibleToAutofillAiForType(JNIEnv* env, int entity_type);
+
   // Returns the opt-in status for Autofill AI.
   bool GetAutofillAiOptInStatus(JNIEnv* env);
 
@@ -124,6 +127,9 @@ class EntityDataManagerAndroid : public autofill::EntityDataManager::Observer {
 
   // See `AutofillAiAction::kEnableOrDisable` for details.
   bool CanEnableOrDisableAutofillAi(JNIEnv* env);
+
+  // See `AutofillAiAction::kEnableOrDisable` for details.
+  bool CanEnableOrDisableAutofillAiForType(JNIEnv* env, int entity_type);
 
   // Returns whether the user might perform
   // `AutofillAiAction::kListEntityInstancesInSettings`.

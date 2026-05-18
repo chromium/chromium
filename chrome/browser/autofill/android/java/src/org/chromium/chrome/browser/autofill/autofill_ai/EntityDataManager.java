@@ -20,6 +20,7 @@ import org.chromium.components.autofill.autofill_ai.AutofillAiOptInStatus;
 import org.chromium.components.autofill.autofill_ai.EntityInstance;
 import org.chromium.components.autofill.autofill_ai.EntityInstanceWithLabels;
 import org.chromium.components.autofill.autofill_ai.EntityType;
+import org.chromium.components.autofill.autofill_ai.EntityTypeName;
 
 import java.text.Collator;
 import java.util.ArrayList;
@@ -199,8 +200,24 @@ public class EntityDataManager implements Destroyable {
     }
 
     /**
-     * Returns whether the user might perform `AutofillAiAction::kListEntityInstancesInSettings`.
+     * When default availability is on, this checks whether the user is eligible for Autofill AI
+     * features, such as to opt-into identity docs, travel etc. It runs high level checks such as
+     * address pref state, policies etc. for a given type.
      */
+    public boolean canEnableOrDisableAutofillAiForType(@EntityTypeName int entityType) {
+        ThreadUtils.assertOnUiThread();
+        return EntityDataManagerJni.get()
+                .canEnableOrDisableAutofillAiForType(mNativeEntityDataManagerAndroid, entityType);
+    }
+
+    /** Returns whether the user is eligible for Autofill AI for a given type. */
+    public boolean isEligibleToAutofillAiForType(@EntityTypeName int entityType) {
+        ThreadUtils.assertOnUiThread();
+        return EntityDataManagerJni.get()
+                .isEligibleToAutofillAiForType(mNativeEntityDataManagerAndroid, entityType);
+    }
+
+    /** Returns whether the user might perform `AutofillAiAction::kListEntityInstancesInSettings`. */
     public boolean canListEntityInstancesInSettings() {
         ThreadUtils.assertOnUiThread();
         return EntityDataManagerJni.get()
@@ -265,6 +282,12 @@ public class EntityDataManager implements Destroyable {
         boolean isEligibleToAutofillAi(long nativeEntityDataManagerAndroid);
 
         boolean canEnableOrDisableAutofillAi(long nativeEntityDataManagerAndroid);
+
+        boolean canEnableOrDisableAutofillAiForType(
+                long nativeEntityDataManagerAndroid, @EntityTypeName int entityType);
+
+        boolean isEligibleToAutofillAiForType(
+                long nativeEntityDataManagerAndroid, @EntityTypeName int entityType);
 
         boolean canListEntityInstancesInSettings(long nativeEntityDataManagerAndroid);
 

@@ -30,6 +30,7 @@ import org.chromium.components.autofill.autofill_ai.AutofillAiOptInStatus;
 import org.chromium.components.autofill.autofill_ai.EntityInstance;
 import org.chromium.components.autofill.autofill_ai.EntityInstanceWithLabels;
 import org.chromium.components.autofill.autofill_ai.EntityType;
+import org.chromium.components.autofill.autofill_ai.EntityTypeName;
 import org.chromium.components.autofill.autofill_ai.utils.TestUtils;
 
 import java.util.ArrayList;
@@ -258,6 +259,22 @@ public class EntityDataManagerTest {
         when(mEntityDataManagerJniMock.isWalletPublicPassStorageEnabled(NATIVE_PTR))
                 .thenReturn(true);
         assertTrue(mEntityDataManager.isWalletPublicPassStorageEnabled());
+    }
+
+    @Test
+    public void testIsEligibleToAutofillAiForType() {
+        when(mEntityDataManagerJniMock.isEligibleToAutofillAiForType(
+                        NATIVE_PTR, EntityTypeName.VEHICLE))
+                .thenReturn(true);
+        assertTrue(mEntityDataManager.isEligibleToAutofillAiForType(EntityTypeName.VEHICLE));
+    }
+
+    @Test
+    public void testCanEnableOrDisableAutofillAiForType() {
+        when(mEntityDataManagerJniMock.canEnableOrDisableAutofillAiForType(
+                        NATIVE_PTR, EntityTypeName.PASSPORT))
+                .thenReturn(true);
+        assertTrue(mEntityDataManager.canEnableOrDisableAutofillAiForType(EntityTypeName.PASSPORT));
     }
 
     @Test
