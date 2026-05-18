@@ -96,11 +96,6 @@ public class SelectPopup
         WindowEventObserverManager.from(mWebContents).addObserver(this);
     }
 
-    /** Close popup. Called when {@link WindowAndroid} is updated. */
-    public void close() {
-        mPopupView = null;
-    }
-
     // HideablePopup
 
     @Override
@@ -122,7 +117,10 @@ public class SelectPopup
 
     @Override
     public void onWindowAndroidChanged(@Nullable WindowAndroid windowAndroid) {
-        close();
+        if (mPopupView == null) return;
+        mPopupView.hide(true);
+        mPopupView = null;
+        assert mNativeSelectPopupSourceFrame == 0;
     }
 
     /**
