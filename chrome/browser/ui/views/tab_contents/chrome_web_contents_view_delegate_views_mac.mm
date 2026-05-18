@@ -68,6 +68,17 @@ ChromeWebContentsViewDelegateViewsMac::GetDragDestDelegate() {
 void ChromeWebContentsViewDelegateViewsMac::ShowContextMenu(
     content::RenderFrameHost& render_frame_host,
     const content::ContextMenuParams& params) {
+  BuildMenuAsync(
+      render_frame_host, params,
+      base::BindOnce(&ChromeWebContentsViewDelegateViewsMac::ShowMenu,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void ChromeWebContentsViewDelegateViewsMac::BuildMenuAsync(
+    content::RenderFrameHost& render_frame_host,
+    const content::ContextMenuParams& params,
+    base::OnceCallback<void(std::unique_ptr<RenderViewContextMenuBase>)>
+        callback) {
   // MacOS doesn't activate the `WebContents` on click by default so it must be
   // manually configured.
   tabs::TabInterface* tab_interface =
@@ -92,13 +103,15 @@ void ChromeWebContentsViewDelegateViewsMac::ShowContextMenu(
           &ChromeWebContentsViewDelegateViewsMac::OnReadAvailableTypes,
           weak_ptr_factory_.GetWeakPtr(), render_frame_host.GetGlobalId(),
           AddContextMenuParamsPropertiesFromPreferences(web_contents_, params),
-          data_dst));
+          data_dst, std::move(callback)));
 }
 
 void ChromeWebContentsViewDelegateViewsMac::OnReadAvailableTypes(
     content::GlobalRenderFrameHostId render_frame_host_id,
     const content::ContextMenuParams& params,
     std::optional<ui::DataTransferEndpoint> data_dst,
+    base::OnceCallback<void(std::unique_ptr<RenderViewContextMenuBase>)>
+        callback,
     std::vector<std::u16string> types) {
   is_paste_enabled_ = !types.empty();
 
@@ -106,12 +119,15 @@ void ChromeWebContentsViewDelegateViewsMac::OnReadAvailableTypes(
       ui::ClipboardBuffer::kCopyPaste, std::move(data_dst),
       base::BindOnce(
           &ChromeWebContentsViewDelegateViewsMac::OnGetAllAvailableFormats,
-          weak_ptr_factory_.GetWeakPtr(), render_frame_host_id, params));
+          weak_ptr_factory_.GetWeakPtr(), render_frame_host_id, params,
+          std::move(callback)));
 }
 
 void ChromeWebContentsViewDelegateViewsMac::OnGetAllAvailableFormats(
     content::GlobalRenderFrameHostId render_frame_host_id,
     const content::ContextMenuParams& params,
+    base::OnceCallback<void(std::unique_ptr<RenderViewContextMenuBase>)>
+        callback,
     base::flat_set<ui::ClipboardFormatType> formats) {
   is_paste_and_match_style_enabled_ =
       formats.contains(ui::ClipboardFormatType::PlainTextType());
@@ -119,10 +135,11 @@ void ChromeWebContentsViewDelegateViewsMac::OnGetAllAvailableFormats(
   content::RenderFrameHost* render_frame_host =
       content::RenderFrameHost::FromID(render_frame_host_id);
   if (!render_frame_host) {
+    std::move(callback).Run(nullptr);
     return;
   }
 
-  ShowMenu(BuildMenu(*render_frame_host, params));
+  std::move(callback).Run(BuildMenu(*render_frame_host, params));
 }
 
 void ChromeWebContentsViewDelegateViewsMac::StoreFocus() {

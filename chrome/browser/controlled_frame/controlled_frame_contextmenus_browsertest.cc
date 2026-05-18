@@ -51,6 +51,26 @@ class ControlledFrameContextMenusTest : public ControlledFrameTestBase {
     return id;
   }
 
+  void WaitForJsVar(content::RenderFrameHost* app_frame,
+                    const std::string& var_name,
+                    int expected_value) {
+    auto wait_script = content::JsReplace(
+        "new Promise((resolve) => {"
+        "  const check = () => {"
+        "    if (" +
+            var_name +
+            " === $1) {"
+            "      resolve(true);"
+            "    } else {"
+            "      setTimeout(check, 50);"
+            "    }"
+            "  };"
+            "  check();"
+            "});",
+        expected_value);
+    ASSERT_EQ(true, content::EvalJs(app_frame, wait_script));
+  }
+
   void ExpectMenuItemWithIdAndTitle(
       const extensions::MenuItem::ExtensionKey& extension_key,
       const std::string& expected_id,
@@ -179,7 +199,8 @@ IN_PROC_BROWSER_TEST_F(ControlledFrameContextMenusTest, CreateShowContextClick) 
 // Add JS with test open and click handlers
   auto add_handler_script = content::JsReplace(
       R"(
-    document.onShowHandler = function() {
+    document.onShowHandler = function(e) {
+      e.preventDefault();
       document.onShowCount = (document.onShowCount ?? 0) + 1;
     };
 
@@ -207,7 +228,8 @@ IN_PROC_BROWSER_TEST_F(ControlledFrameContextMenusTest, CreateShowContextClick) 
       });
       resolve('SUCCESS');
     });
-  )", kEvalSuccessStr, kItemID);
+  )",
+      kEvalSuccessStr, kItemID);
 
   ASSERT_EQ(content::EvalJs(app_frame, add_handler_script), kEvalSuccessStr);
   extensions::WebViewGuest* web_view_guest = GetWebViewGuest(app_frame);
@@ -218,11 +240,11 @@ IN_PROC_BROWSER_TEST_F(ControlledFrameContextMenusTest, CreateShowContextClick) 
 
   // Simulate right click and expect the listener to be triggered.
   SimulateOpenContextMenu(controlled_frame);
-  ASSERT_EQ(content::EvalJs(app_frame, "document.onShowCount"), 1);
+  WaitForJsVar(app_frame, "document.onShowCount", 1);
 
   // Simulate the click on an item expect click and item id be registered
   SimulateClickContextMenuItem(controlled_frame);
-  EXPECT_EQ(content::EvalJs(app_frame, "document.globalOnClickedCount"), 1);
+  WaitForJsVar(app_frame, "document.globalOnClickedCount", 1);
   EXPECT_THAT(content::EvalJs(app_frame, "document.clickedMenuItemId")
                   .TakeValue()
                   .TakeList(),
@@ -373,7 +395,8 @@ IN_PROC_BROWSER_TEST_F(ControlledFrameContextMenusTest, MAYBE_ShowEvent) {
 
   auto add_handler_script = content::JsReplace(
       R"(
-document.onShowHandler = function() {
+document.onShowHandler = function(e) {
+  e.preventDefault();
   document.onShowCount = (document.onShowCount ?? 0) + 1;
 };
 
@@ -399,7 +422,7 @@ document.onShowHandler = function() {
       web_view_guest->GetGuestMainFrame();
   ASSERT_TRUE(controlled_frame);
   SimulateOpenContextMenu(controlled_frame);
-  ASSERT_EQ(content::EvalJs(app_frame, "document.onShowCount"), 1);
+  WaitForJsVar(app_frame, "document.onShowCount", 1);
 
   auto remove_handler_script = content::JsReplace(
       R"(
@@ -420,7 +443,7 @@ document.onShowHandler = function() {
   ASSERT_EQ(content::EvalJs(app_frame, remove_handler_script), kEvalSuccessStr);
 
   SimulateOpenContextMenu(controlled_frame);
-  ASSERT_EQ(content::EvalJs(app_frame, "document.onShowCount"), 1);
+  WaitForJsVar(app_frame, "document.onShowCount", 1);
 }
 
 IN_PROC_BROWSER_TEST_F(ControlledFrameContextMenusTest, NoLegacyOnShowEvent) {

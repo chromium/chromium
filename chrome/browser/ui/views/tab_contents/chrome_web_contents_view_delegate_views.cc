@@ -103,6 +103,16 @@ void ChromeWebContentsViewDelegateViews::ShowMenu(
 void ChromeWebContentsViewDelegateViews::ShowContextMenu(
     content::RenderFrameHost& render_frame_host,
     const content::ContextMenuParams& params) {
+  BuildMenuAsync(render_frame_host, params,
+                 base::BindOnce(&ChromeWebContentsViewDelegateViews::ShowMenu,
+                                weak_ptr_factory_.GetWeakPtr()));
+}
+
+void ChromeWebContentsViewDelegateViews::BuildMenuAsync(
+    content::RenderFrameHost& render_frame_host,
+    const content::ContextMenuParams& params,
+    base::OnceCallback<void(std::unique_ptr<RenderViewContextMenuBase>)>
+        callback) {
   std::optional<ui::DataTransferEndpoint> data_dst;
   if (params.page_url.is_valid()) {
     data_dst.emplace(
@@ -119,13 +129,15 @@ void ChromeWebContentsViewDelegateViews::ShowContextMenu(
           &ChromeWebContentsViewDelegateViews::OnReadAvailableTypes,
           weak_ptr_factory_.GetWeakPtr(), render_frame_host.GetGlobalId(),
           AddContextMenuParamsPropertiesFromPreferences(web_contents_, params),
-          data_dst));
+          data_dst, std::move(callback)));
 }
 
 void ChromeWebContentsViewDelegateViews::OnReadAvailableTypes(
     content::GlobalRenderFrameHostId render_frame_host_id,
     const content::ContextMenuParams& params,
     std::optional<ui::DataTransferEndpoint> data_dst,
+    base::OnceCallback<void(std::unique_ptr<RenderViewContextMenuBase>)>
+        callback,
     std::vector<std::u16string> types) {
   is_paste_enabled_ = !types.empty();
 
@@ -133,12 +145,15 @@ void ChromeWebContentsViewDelegateViews::OnReadAvailableTypes(
       ui::ClipboardBuffer::kCopyPaste, std::move(data_dst),
       base::BindOnce(
           &ChromeWebContentsViewDelegateViews::OnGetAllAvailableFormats,
-          weak_ptr_factory_.GetWeakPtr(), render_frame_host_id, params));
+          weak_ptr_factory_.GetWeakPtr(), render_frame_host_id, params,
+          std::move(callback)));
 }
 
 void ChromeWebContentsViewDelegateViews::OnGetAllAvailableFormats(
     content::GlobalRenderFrameHostId render_frame_host_id,
     const content::ContextMenuParams& params,
+    base::OnceCallback<void(std::unique_ptr<RenderViewContextMenuBase>)>
+        callback,
     base::flat_set<ui::ClipboardFormatType> formats) {
   is_paste_and_match_style_enabled_ =
       formats.contains(ui::ClipboardFormatType::PlainTextType());
@@ -146,10 +161,11 @@ void ChromeWebContentsViewDelegateViews::OnGetAllAvailableFormats(
   content::RenderFrameHost* render_frame_host =
       content::RenderFrameHost::FromID(render_frame_host_id);
   if (!render_frame_host) {
+    std::move(callback).Run(nullptr);
     return;
   }
 
-  ShowMenu(BuildMenu(*render_frame_host, params));
+  std::move(callback).Run(BuildMenu(*render_frame_host, params));
 }
 
 void ChromeWebContentsViewDelegateViews::ExecuteCommandForTesting(

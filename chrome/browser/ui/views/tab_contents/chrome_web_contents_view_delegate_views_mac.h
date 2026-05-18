@@ -63,6 +63,11 @@ class ChromeWebContentsViewDelegateViewsMac
   std::unique_ptr<RenderViewContextMenuBase> BuildMenu(
       content::RenderFrameHost& render_frame_host,
       const content::ContextMenuParams& params) override;
+  void BuildMenuAsync(
+      content::RenderFrameHost& render_frame_host,
+      const content::ContextMenuParams& params,
+      base::OnceCallback<void(std::unique_ptr<RenderViewContextMenuBase>)>
+          callback) override;
   void ShowMenu(std::unique_ptr<RenderViewContextMenuBase> menu) override;
 
  private:
@@ -70,11 +75,15 @@ class ChromeWebContentsViewDelegateViewsMac
       content::GlobalRenderFrameHostId render_frame_host_id,
       const content::ContextMenuParams& params,
       std::optional<ui::DataTransferEndpoint> data_dst,
+      base::OnceCallback<void(std::unique_ptr<RenderViewContextMenuBase>)>
+          callback,
       std::vector<std::u16string> types);
 
   void OnGetAllAvailableFormats(
       content::GlobalRenderFrameHostId render_frame_host_id,
       const content::ContextMenuParams& params,
+      base::OnceCallback<void(std::unique_ptr<RenderViewContextMenuBase>)>
+          callback,
       base::flat_set<ui::ClipboardFormatType> formats);
 
   content::RenderWidgetHostView* GetActiveRenderWidgetHostView() const;
