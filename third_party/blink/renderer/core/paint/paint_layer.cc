@@ -1221,11 +1221,9 @@ static bool IsHitCandidateForDepthOrder(
           child_z_offset = pt3.z();
         }
       }
-      if (child_z_offset >= 0) {
-        *z_offset = child_z_offset;
-        return true;
+      if (child_z_offset < 0) {
+        return false;
       }
-      return false;
     } else {
       // This is actually computing our z, but that's OK because the hitLayer is
       // coplanar with us.
