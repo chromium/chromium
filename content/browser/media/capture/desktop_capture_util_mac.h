@@ -5,11 +5,19 @@
 #ifndef CONTENT_BROWSER_MEDIA_CAPTURE_DESKTOP_CAPTURE_UTIL_MAC_H_
 #define CONTENT_BROWSER_MEDIA_CAPTURE_DESKTOP_CAPTURE_UTIL_MAC_H_
 
+#include <memory>
+
+#include "content/browser/media/capture/pip_screen_capture_coordinator_proxy.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/desktop_capture.h"
 #include "content/public/browser/desktop_media_id.h"
 
+namespace media {
+class VideoCaptureDevice;
+}  // namespace media
+
 namespace content {
+class WebContents;
 
 // Retrieves the ApplicationAudioCaptureId for the process identified by `pid`.
 //
@@ -41,6 +49,19 @@ GetApplicationAudioCaptureIdForProcess(pid_t pid);
 CONTENT_EXPORT void GetApplicationAudioCaptureIdInternal(
     DesktopMediaID desktop_media_id,
     desktop_capture::GetApplicationAudioCaptureIdCallback callback);
+
+std::unique_ptr<media::VideoCaptureDevice> CONTENT_EXPORT
+CreateScreenCaptureKitDeviceMac(
+    const DesktopMediaID& source,
+    bool is_native_picker,
+    std::unique_ptr<PipScreenCaptureCoordinatorProxy>
+        pip_screen_capture_coordinator_proxy);
+
+// Returns the windowNumber property of the window associated to
+// |web_contents| if there is an associated window with a positive
+// windowNumber, or nullopt otherwise.
+std::optional<DesktopMediaID::Id> GetNativeWindowIdMac(
+    WebContents& web_contents);
 
 }  // namespace content
 

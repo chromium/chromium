@@ -7,7 +7,7 @@
 #include "base/feature_list.h"
 #include "base/no_destructor.h"
 #include "build/build_config.h"
-#include "content/browser/media/capture/capture_util_mac.h"
+#include "content/browser/media/capture/desktop_capture_util_mac.h"
 #include "content/browser/media/capture/pip_screen_capture_coordinator_proxy_impl.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/desktop_media_id.h"
