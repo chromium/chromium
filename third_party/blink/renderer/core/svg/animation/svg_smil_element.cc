@@ -47,6 +47,8 @@
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
+#include "third_party/blink/renderer/platform/wtf/text/code_point_iterator.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_to_number.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
@@ -518,6 +520,46 @@ SMILTime SVGSMILElement::ParseClockValue(const StringView& data) {
   return SMILTime::FromTimeDelta(result);
 }
 
+namespace {
+
+wtf_size_t FindUnescapedDot(StringView string) {
+  wtf_size_t index = 0;
+  bool escaped = false;
+  for (UChar c : string) {
+    if (escaped) {
+      escaped = false;
+    } else if (c == '\\') {
+      escaped = true;
+    } else if (c == '.') {
+      return index;
+    }
+    index++;
+  }
+  return kNotFound;
+}
+
+AtomicString UnescapeSMILIdentifier(StringView string) {
+  if (!string.contains('\\')) {
+    return string.ToAtomicString();
+  }
+
+  StringBuilder builder;
+  bool escaped = false;
+  for (UChar c : string) {
+    if (escaped) {
+      builder.Append(c);
+      escaped = false;
+    } else if (c == '\\') {
+      escaped = true;
+    } else {
+      builder.Append(c);
+    }
+  }
+  return builder.ToAtomicString();
+}
+
+}  // namespace
+
 bool SVGSMILElement::ParseCondition(const StringView& value,
                                     BeginOrEnd begin_or_end) {
   StringView parse_string = value.StripWhiteSpace();
@@ -543,18 +585,23 @@ bool SVGSMILElement::ParseCondition(const StringView& value,
   }
   if (condition_string.empty())
     return false;
-  pos = condition_string.find('.');
+  wtf_size_t dot_index = FindUnescapedDot(condition_string);
 
   StringView base_id;
   StringView name_string;
-  if (pos == kNotFound) {
+  if (dot_index == kNotFound) {
     name_string = condition_string;
   } else {
-    base_id = condition_string.substr(0, pos);
-    name_string = condition_string.substr(pos + 1);
+    base_id = condition_string.substr(0, dot_index);
+    name_string = condition_string.substr(dot_index + 1);
   }
   if (name_string.empty())
     return false;
+
+  AtomicString resolved_base_id;
+  if (dot_index != kNotFound) {
+    resolved_base_id = UnescapeSMILIdentifier(base_id);
+  }
 
   Condition::Type type;
   int repeat = -1;
@@ -568,8 +615,9 @@ bool SVGSMILElement::ParseCondition(const StringView& value,
     name_string = "repeat";
     type = Condition::kSyncBase;
   } else if (name_string == "begin" || name_string == "end") {
-    if (base_id.empty())
+    if (resolved_base_id.empty()) {
       return false;
+    }
     UseCounter::Count(&GetDocument(),
                       WebFeature::kSVGSMILBeginOrEndSyncbaseValue);
     type = Condition::kSyncBase;
@@ -582,8 +630,8 @@ bool SVGSMILElement::ParseCondition(const StringView& value,
   }
 
   conditions_.push_back(MakeGarbageCollected<Condition>(
-      type, begin_or_end, base_id.ToAtomicString(),
-      name_string.ToAtomicString(), offset, repeat));
+      type, begin_or_end, resolved_base_id, name_string.ToAtomicString(),
+      offset, repeat));
 
   if (begin_or_end == kEnd) {
     has_end_attribute_specified_ = true;
