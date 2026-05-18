@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/certificate_manager/certificate_manager_utils.h"
 #include "chrome/browser/ui/webui/certificate_manager/client_cert_sources.h"
 #include "chrome/browser/ui/webui/plural_string_handler.h"
@@ -153,6 +154,11 @@ void AddCertificateManagerV2Strings(content::WebUIDataSource* html_source) {
        IDS_CERTIFICATE_MANAGER_V2_LIST_EXPAND_ARIA_LABEL},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
+
+  html_source->AddString("webuiRefresh2026", base::FeatureList::IsEnabled(
+                                                 features::kWebuiRefresh2026)
+                                                 ? "webui-refresh-2026"
+                                                 : "");
 }
 
 }  // namespace

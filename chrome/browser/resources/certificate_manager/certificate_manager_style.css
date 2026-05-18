@@ -33,3 +33,7 @@
 .cr-centered-card-container {
   padding-bottom: 20px;
 }
+
+a {
+  color: var(--cr-link-color);
+}

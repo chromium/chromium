@@ -29,6 +29,7 @@ import '//resources/cr_elements/icons.html.js';
 import '//resources/cr_elements/cr_page_selector/cr_page_selector.js';
 import '//resources/cr_elements/cr_menu_selector/cr_menu_selector.js';
 
+import {ColorChangeUpdater, COLORS_CSS_SELECTOR} from '//resources/cr_components/color_change_listener/colors_css_updater.js';
 import type {CrPageSelectorElement} from '//resources/cr_elements/cr_page_selector/cr_page_selector.js';
 import type {CrToastElement} from '//resources/cr_elements/cr_toast/cr_toast.js';
 import {assert, assertNotReached} from '//resources/js/assert.js';
@@ -245,6 +246,16 @@ export class CertificateManagerElement extends CertificateManagerElementBase {
   private confirmationDialogResolver_: PromiseResolver<ConfirmationResult>|
       null = null;
 
+  override connectedCallback() {
+    super.connectedCallback();
+    const enableWebuiRefresh2026 =
+        loadTimeData.getString('webuiRefresh2026') !== '';
+    if (enableWebuiRefresh2026) {
+      this.addThemedColors_();
+      ColorChangeUpdater.forDocument().start();
+    }
+  }
+
   override firstUpdated() {
     const proxy = CertificatesBrowserProxy.getInstance();
     proxy.callbackRouter.askForImportPassword.addListener(
@@ -451,6 +462,14 @@ export class CertificateManagerElement extends CertificateManagerElementBase {
     proxy.handler.showNativeManageCertificates();
   }
   // </if>
+
+  private addThemedColors_() {
+    assert(document.body.querySelector(COLORS_CSS_SELECTOR) === null);
+    const link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.href = 'chrome://theme/colors.css?sets=ui,chrome';
+    document.body.appendChild(link);
+  }
 }
 
 declare global {
