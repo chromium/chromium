@@ -22392,6 +22392,28 @@
             ]
         }
     ],
+    "SmartRestartLockScreen": [
+        {
+            "platforms": [
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "disruption_threshold": "2",
+                        "restart_delay": "5m",
+                        "tab_threshold": "-1"
+                    },
+                    "enable_features": [
+                        "SmartRestartLockScreen"
+                    ]
+                }
+            ]
+        }
+    ],
     "SmartZoom": [
         {
             "platforms": [
