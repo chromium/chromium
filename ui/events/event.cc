@@ -83,6 +83,26 @@ std::string ScrollEventPhaseToString(ScrollEventPhase phase) {
   }
 }
 
+std::vector<std::string_view> EventResultsNames(int event_results) {
+  std::vector<std::string_view> names;
+  if (event_results & ER_HANDLED) {
+    names.push_back("ER_HANDLED");
+  }
+  if (event_results & ER_CONSUMED) {
+    names.push_back("ER_CONSUMED");
+  }
+  if (event_results & ER_DISABLE_SYNC_HANDLING) {
+    names.push_back("ER_DISABLE_SYNC_HANDLING");
+  }
+  if (event_results & ER_FORCE_PROCESS_GESTURE) {
+    names.push_back("ER_FORCE_PROCESS_GESTURE");
+  }
+  if (event_results & ER_SKIPPED) {
+    names.push_back("ER_SKIPPED");
+  }
+  return names;
+}
+
 #if BUILDFLAG(IS_OZONE)
 uint32_t ScanCodeFromNative(const PlatformEvent& native_event) {
   const KeyEvent* event = static_cast<const KeyEvent*>(native_event);
@@ -247,10 +267,15 @@ void Event::SetFlags(int flags) {
 }
 
 std::string Event::ToString() const {
-  return base::StrCat(
-      {GetName(), " time_stamp=",
-       base::NumberToString(time_stamp_.since_origin().InSecondsF()),
-       " source_device_id=", base::NumberToString(source_device_id_)});
+  return base::StrCat({
+      GetName(),
+      " time_stamp=",
+      base::NumberToString(time_stamp_.since_origin().InSecondsF()),
+      " source_device_id=",
+      base::NumberToString(source_device_id_),
+      " results=",
+      base::JoinString(EventResultsNames(result_), "|"),
+  });
 }
 
 Event::Event(EventType type, base::TimeTicks time_stamp, int flags)
