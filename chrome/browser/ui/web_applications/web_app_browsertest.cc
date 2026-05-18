@@ -447,15 +447,15 @@ IN_PROC_BROWSER_TEST_F(WebAppWebDXManifestBrowserTest, InvalidNotMeasured) {
                                      blink::mojom::WebDXFeature::kManifest, 0);
 }
 
-// A dedicated test fixture for Borderless, which requires a command
-// line switch to enable manifest parsing.
-class WebAppBrowserTest_Borderless : public WebAppBrowserTest {
+// A dedicated test fixture for unframed, which requires a command line switch
+// to enable manifest parsing.
+class WebAppBrowserTest_Unframed : public WebAppBrowserTest {
  public:
-  WebAppBrowserTest_Borderless() = default;
+  WebAppBrowserTest_Unframed() = default;
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_{
-      blink::features::kWebAppBorderless};
+      blink::features::kUnframedIwa};
 };
 
 // A dedicated test fixture for tabbed display override, which requires a
@@ -2656,10 +2656,10 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, ManifestWithDisplayStandalone) {
                    blink::mojom::WebFeature::kWebAppManifestDisplayStandalone));
 }
 
-IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_Borderless, Borderless) {
+IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_Unframed, Unframed) {
   GURL test_url = embedded_https_test_server().GetURL(
       "/banners/"
-      "manifest_test_page.html?manifest=manifest_borderless.json");
+      "manifest_test_page.html?manifest=manifest_unframed.json");
   NavigateViaLinkClickToURLAndWait(browser(), test_url);
 
   const webapps::AppId app_id = test::InstallPwaForCurrentUrl(browser());

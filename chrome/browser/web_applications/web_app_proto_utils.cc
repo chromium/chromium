@@ -323,7 +323,7 @@ blink::mojom::DisplayMode ToMojomDisplayMode(
       return blink::mojom::DisplayMode::kWindowControlsOverlay;
     case proto::WebApp::DISPLAY_MODE_TABBED:
       return blink::mojom::DisplayMode::kTabbed;
-    case proto::WebApp::DISPLAY_MODE_BORDERLESS:
+    case proto::WebApp::DISPLAY_MODE_UNFRAMED:
       return blink::mojom::DisplayMode::kUnframed;
     case proto::WebApp::DISPLAY_MODE_PICTURE_IN_PICTURE:
       return blink::mojom::DisplayMode::kPictureInPicture;
@@ -348,7 +348,7 @@ proto::WebApp::DisplayMode ToWebAppProtoDisplayMode(
     case blink::mojom::DisplayMode::kTabbed:
       return proto::WebApp::DISPLAY_MODE_TABBED;
     case blink::mojom::DisplayMode::kUnframed:
-      return proto::WebApp::DISPLAY_MODE_BORDERLESS;
+      return proto::WebApp::DISPLAY_MODE_UNFRAMED;
     case blink::mojom::DisplayMode::kPictureInPicture:
       return proto::WebApp::DISPLAY_MODE_PICTURE_IN_PICTURE;
   }

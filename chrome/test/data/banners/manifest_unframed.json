@@ -1,5 +1,5 @@
 {
-  "name": "Manifest with Borderless",
+  "name": "Manifest with Unframed",
   "icons": [
     {
       "src": "launcher-icon-4x.png",
@@ -9,5 +9,5 @@
   ],
   "start_url": "manifest_test_page.html",
   "display": "standalone",
-  "display_override": [ "borderless" ]
+  "display_override": [ "unframed" ]
 }

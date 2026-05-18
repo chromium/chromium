@@ -1562,7 +1562,7 @@ TEST_F(WebAppDatabaseSerializationTest,
       CreateWebAppProtoForTesting("Test App", GURL("https://example.com/"));
 
   auto* override_item = proto.add_display_overrides();
-  override_item->set_display_mode(proto::WebApp::DISPLAY_MODE_BORDERLESS);
+  override_item->set_display_mode(proto::WebApp::DISPLAY_MODE_UNFRAMED);
 
   proto.add_display_mode_override_deprecated(
       proto::WebApp::DISPLAY_MODE_MINIMAL_UI);
@@ -1581,7 +1581,7 @@ TEST_F(WebAppDatabaseSerializationTest,
       CreateWebAppProtoForTesting("Test App", GURL("https://example.com/"));
 
   auto* override_item = proto.add_display_overrides();
-  override_item->set_display_mode(proto::WebApp::DISPLAY_MODE_BORDERLESS);
+  override_item->set_display_mode(proto::WebApp::DISPLAY_MODE_UNFRAMED);
   auto* pattern = override_item->add_url_patterns();
   auto* part = pattern->add_pathname();
   // `PART_TYPE_UNSPECIFIED` causes `ToUrlPattern` to fail.
@@ -1608,7 +1608,7 @@ TEST_F(WebAppDatabaseSerializationTest,
       CreateWebAppProtoForTesting("Test App", GURL("https://example.com/"));
 
   auto* override_item = proto.add_display_overrides();
-  override_item->set_display_mode(proto::WebApp::DISPLAY_MODE_BORDERLESS);
+  override_item->set_display_mode(proto::WebApp::DISPLAY_MODE_UNFRAMED);
   auto* pattern_proto = override_item->add_url_patterns();
   auto* part = pattern_proto->add_pathname();
   part->set_part_type(proto::UrlPatternPart::PART_TYPE_FULL_WILDCARD);
@@ -1627,7 +1627,7 @@ TEST_F(WebAppDatabaseSerializationTest,
   std::unique_ptr<proto::WebApp> round_trip_proto = WebAppToProto(*web_app);
   ASSERT_THAT(round_trip_proto, NotNull());
   ASSERT_EQ(1, round_trip_proto->display_overrides_size());
-  EXPECT_EQ(proto::WebApp::DISPLAY_MODE_BORDERLESS,
+  EXPECT_EQ(proto::WebApp::DISPLAY_MODE_UNFRAMED,
             round_trip_proto->display_overrides(0).display_mode());
   ASSERT_EQ(1, round_trip_proto->display_overrides(0).url_patterns_size());
 }

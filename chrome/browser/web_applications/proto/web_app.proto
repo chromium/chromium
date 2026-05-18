@@ -266,7 +266,7 @@ message WebApp {
     DISPLAY_MODE_FULLSCREEN = 4;
     DISPLAY_MODE_WINDOW_CONTROLS_OVERLAY = 5;
     DISPLAY_MODE_TABBED = 6;
-    DISPLAY_MODE_BORDERLESS = 7;
+    DISPLAY_MODE_UNFRAMED = 7;
     DISPLAY_MODE_PICTURE_IN_PICTURE = 8;
   }
 
@@ -278,7 +278,7 @@ message WebApp {
     // The URL patterns where this override should apply. Empty means it applies
     // in all URLs.
     //
-    // Currently only parsed when `display_mode` is DISPLAY_MODE_BORDERLESS.
+    // Currently only parsed when `display_mode` is DISPLAY_MODE_UNFRAMED.
     repeated UrlPattern url_patterns = 2;
   }
 

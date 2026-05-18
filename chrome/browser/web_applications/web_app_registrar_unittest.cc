@@ -1096,7 +1096,7 @@ TEST_F(WebAppRegistrarTest,
 }
 
 TEST_F(WebAppRegistrarTest,
-       IsolatedWebAppsGetDisplayModeBorderlessRegardlessOfUserSettings) {
+       IsolatedWebAppsGetDisplayModeUnframedRegardlessOfUserSettings) {
   base::test::ScopedFeatureList scoped_feature_list(features::kIsolatedWebApps);
   StartWebAppProvider();
 
@@ -2042,7 +2042,7 @@ INSTANTIATE_TEST_SUITE_P(All,
                              case DisplayMode::kFullscreen:
                                return "Fullscreen";
                              case DisplayMode::kUnframed:
-                               return "Borderless";
+                               return "Unframed";
                              case DisplayMode::kPictureInPicture:
                                return "PictureInPicture";
                              case DisplayMode::kWindowControlsOverlay:
