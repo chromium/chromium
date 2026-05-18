@@ -2030,7 +2030,7 @@ class RenderFrameHostImpl::SubresourceLoaderFactoriesConfig {
             : frame.GetPageUkmSourceId());
 
     result.network_restrictions_id_ =
-        frame.document_associated_data_->network_restrictions_id();
+        frame.document_associated_data_->NetworkRestrictionsId();
 
     result.cookie_setting_overrides_ =
         frame.document_associated_data_->cookie_setting_overrides();
@@ -4345,9 +4345,14 @@ void RenderFrameHostImpl::InitializePolicyContainerHost(
   // requests from the iframe also get subjected to the CA of the creator.
   // Their fetch requests already get subjected because they use the creator's
   // URLloader factory.
+  // The id is shared via ref-counting: the initial empty document holds a
+  // reference to the creator's id. If the child navigates, the navigation
+  // throttle assigns a new id, replacing the shared reference. The creator's
+  // id is only cleared from the network service when the last document
+  // holding a reference is destroyed.
   if (creator_rfh) {
-    document_associated_data_->set_network_restrictions_id(
-        creator_rfh->GetNetworkRestrictionsID());
+    document_associated_data_->ShareNetworkRestrictionsId(
+        creator_rfh->document_associated_data_->NetworkRestrictionsIdHandle());
   }
 
   // The initial empty documents sandbox flags is the union from:
@@ -16156,7 +16161,7 @@ bool RenderFrameHostImpl::DidCommitNavigationInternal(
         navigation_request->navigation_confidence());
     document_associated_data_->set_devtools_navigation_token(
         navigation_request->devtools_navigation_token());
-    document_associated_data_->set_network_restrictions_id(
+    document_associated_data_->SetNetworkRestrictionsId(
         navigation_request->network_restrictions_id());
     // Stores fetch keepalive FactoryContext created before committing into
     // document-associated data, such that it can be referenced later when

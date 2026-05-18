@@ -16,6 +16,7 @@
 #include "content/browser/renderer_host/frame_tree.h"
 #include "content/browser/renderer_host/page_factory.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
+#include "content/browser/storage_partition_impl.h"
 #include "content/public/browser/document_service.h"
 #include "content/public/browser/document_service_internal.h"
 #include "content/public/browser/render_frame_host.h"
@@ -44,7 +45,6 @@ DocumentAssociatedData::DocumentAssociatedData(
     RenderFrameHostImpl& document,
     const blink::DocumentToken& token)
     : token_(token),
-      network_restrictions_id_(std::nullopt),
       weak_factory_(&document) {
   auto [_, inserted] = GetDocumentTokenMap().insert({token_, &document});
   CHECK(inserted);
@@ -83,12 +83,15 @@ DocumentAssociatedData::~DocumentAssociatedData() {
     owned_page_->ClearAllUserData();
   }
 
-  // Remove any network restrictions for this document from the network service
-  if (network_restrictions_id_.has_value()) {
+  // Remove any network restrictions for this document from the network service.
+  // The network_restrictions_id is ref-counted: multiple documents may share
+  // the same id (e.g. initial empty documents inherit their creator's id).
+  // Only the last document holding a reference should schedule the clearing.
+  if (network_restrictions_id_ && network_restrictions_id_->HasOneRef()) {
     StoragePartitionImpl* storage_partition =
         GetWeakPtr()->GetStoragePartition();
     storage_partition->ClearNetworkRestrictionsAfterDelay({
-        network_restrictions_id_.value(),
+        network_restrictions_id_->data,
     });
   }
 
@@ -100,6 +103,37 @@ DocumentAssociatedData::~DocumentAssociatedData() {
 void DocumentAssociatedData::set_navigation_or_document_handle(
     scoped_refptr<NavigationOrDocumentHandle> handle) {
   navigation_or_document_handle_ = std::move(handle);
+}
+
+void DocumentAssociatedData::SetNetworkRestrictionsId(
+    std::optional<base::UnguessableToken> network_restrictions_id) {
+  // Wrap in a new RefCountedData so this document owns its own ref.
+  if (network_restrictions_id.has_value()) {
+    network_restrictions_id_ =
+        base::MakeRefCounted<base::RefCountedData<base::UnguessableToken>>(
+            network_restrictions_id.value());
+  } else {
+    network_restrictions_id_ = nullptr;
+  }
+}
+
+void DocumentAssociatedData::ShareNetworkRestrictionsId(
+    scoped_refptr<base::RefCountedData<base::UnguessableToken>>
+        network_restrictions_id) {
+  network_restrictions_id_ = std::move(network_restrictions_id);
+}
+
+std::optional<base::UnguessableToken>
+DocumentAssociatedData::NetworkRestrictionsId() const {
+  if (network_restrictions_id_) {
+    return network_restrictions_id_->data;
+  }
+  return std::nullopt;
+}
+
+const scoped_refptr<base::RefCountedData<base::UnguessableToken>>&
+DocumentAssociatedData::NetworkRestrictionsIdHandle() const {
+  return network_restrictions_id_;
 }
 
 void DocumentAssociatedData::AddService(
