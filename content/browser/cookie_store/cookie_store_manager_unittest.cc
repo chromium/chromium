@@ -1864,6 +1864,37 @@ TEST_P(CookieStoreManagerTest, GetSubscriptionsFromWrongOrigin) {
   EXPECT_EQ("Invalid service worker", bad_mesage_observer.WaitForBadMessage());
 }
 
+TEST_P(CookieStoreManagerTest, GetSubscriptionsWrongStorageKey) {
+  int64_t example_registration_id =
+      RegisterServiceWorker(kExampleScope, kExampleWorkerScript);
+  ASSERT_NE(example_registration_id, kInvalidRegistrationId);
+
+  CookieStoreSync::Subscriptions subscriptions;
+  subscriptions.emplace_back(blink::mojom::CookieChangeSubscription::New());
+  subscriptions.back()->name = "cookie_name_prefix";
+  subscriptions.back()->match_type =
+      ::network::mojom::CookieMatchType::STARTS_WITH;
+  subscriptions.back()->url = GURL(kExampleScope);
+
+  EXPECT_TRUE(example_service_->AddSubscriptions(example_registration_id,
+                                                 std::move(subscriptions)));
+
+  std::optional<CookieStoreSync::Subscriptions> all_subscriptions_opt =
+      example_service_->GetSubscriptions(example_registration_id);
+  ASSERT_TRUE(all_subscriptions_opt.has_value());
+  EXPECT_EQ(1u, all_subscriptions_opt.value().size());
+
+  if (reset_context_during_test()) {
+    ResetServiceWorkerContext();
+  }
+
+  mojo::test::BadMessageObserver bad_mesage_observer;
+  std::optional<CookieStoreSync::Subscriptions> wrong_subscriptions_opt =
+      third_party_service_->GetSubscriptions(example_registration_id);
+  EXPECT_FALSE(wrong_subscriptions_opt.has_value());
+  EXPECT_EQ("Invalid service worker", bad_mesage_observer.WaitForBadMessage());
+}
+
 TEST_F(CookieStoreManagerTest, UnTrustworthyOrigin) {
   mojo::Remote<blink::mojom::CookieStore> untrustworthy_service_remote;
 
