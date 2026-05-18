@@ -833,6 +833,10 @@ TEST_F(RenderViewContextMenuPrefsTest, ContextMenu2026VideoOrder) {
 
   ASSERT_TRUE(route_media_item.has_value());
   EXPECT_EQ(pip_item->second + 1, route_media_item->second);
+  // Ensure they have icons.
+  EXPECT_FALSE(pip_item->first->GetIconAt(pip_item->second).IsEmpty());
+  EXPECT_FALSE(
+      route_media_item->first->GetIconAt(route_media_item->second).IsEmpty());
   // Ensure there is a separator after them.
   EXPECT_EQ(ui::MenuModel::TYPE_SEPARATOR,
             pip_item->first->GetTypeAt(route_media_item->second + 1));

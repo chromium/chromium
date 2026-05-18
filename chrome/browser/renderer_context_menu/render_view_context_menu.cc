@@ -2180,12 +2180,14 @@ void RenderViewContextMenu::AppendVideoItems() {
       base::FeatureList::IsEnabled(media::kContextMenu2026);
 
   if (use_submenu) {
-    menu_model_.AddCheckItemWithStringId(IDC_CONTENT_CONTEXT_PICTUREINPICTURE,
-                                         IDS_CONTENT_CONTEXT_PICTUREINPICTURE);
+    menu_model_.AddItemWithStringId(IDC_CONTENT_CONTEXT_PICTUREINPICTURE,
+                                    IDS_CONTENT_CONTEXT_PICTUREINPICTURE);
 
     if (media_router::MediaRouterEnabled(browser_context_)) {
-      menu_model_.AddItemWithStringId(IDC_ROUTE_MEDIA,
-                                      IDS_MEDIA_ROUTER_MENU_ITEM_TITLE);
+      menu_model_.AddItemWithStringIdAndIcon(
+          IDC_ROUTE_MEDIA, IDS_MEDIA_ROUTER_MENU_ITEM_TITLE,
+          ui::ImageModel::FromVectorIcon(kCastChromeRefreshOldIcon,
+                                         ui::kColorMenuIcon, kTabMenuIconSize));
     }
 
     menu_model_.AddSeparator(ui::NORMAL_SEPARATOR);
@@ -3257,6 +3259,36 @@ bool RenderViewContextMenu::IsCommandIdChecked(int id) const {
   }
 
   return false;
+}
+
+bool RenderViewContextMenu::IsItemForCommandIdDynamic(int command_id) const {
+  if (command_id == IDC_CONTENT_CONTEXT_PICTUREINPICTURE &&
+      base::FeatureList::IsEnabled(media::kContextMenu2026)) {
+    return true;
+  }
+  return RenderViewContextMenuBase::IsItemForCommandIdDynamic(command_id);
+}
+
+std::u16string RenderViewContextMenu::GetLabelForCommandId(
+    int command_id) const {
+  if (command_id == IDC_CONTENT_CONTEXT_PICTUREINPICTURE &&
+      base::FeatureList::IsEnabled(media::kContextMenu2026)) {
+    return l10n_util::GetStringUTF16(IDS_CONTENT_CONTEXT_PICTUREINPICTURE);
+  }
+  return RenderViewContextMenuBase::GetLabelForCommandId(command_id);
+}
+
+ui::ImageModel RenderViewContextMenu::GetIconForCommandId(
+    int command_id) const {
+  if (command_id == IDC_CONTENT_CONTEXT_PICTUREINPICTURE &&
+      base::FeatureList::IsEnabled(media::kContextMenu2026)) {
+    return ui::ImageModel::FromVectorIcon(
+        IsCommandIdChecked(IDC_CONTENT_CONTEXT_PICTUREINPICTURE)
+            ? vector_icons::kPipExitOldIcon
+            : vector_icons::kPictureInPictureOldIcon,
+        ui::kColorMenuIcon, kTabMenuIconSize);
+  }
+  return RenderViewContextMenuBase::GetIconForCommandId(command_id);
 }
 
 bool RenderViewContextMenu::IsCommandIdVisible(int id) const {

@@ -146,6 +146,9 @@ class RenderViewContextMenu
   bool IsCommandIdVisible(int command_id) const override;
   bool IsCommandIdEnabled(int command_id) const override;
   void ExecuteCommand(int command_id, int event_flags) override;
+  bool IsItemForCommandIdDynamic(int command_id) const override;
+  std::u16string GetLabelForCommandId(int command_id) const override;
+  ui::ImageModel GetIconForCommandId(int command_id) const override;
   void AddSpellCheckServiceItem(bool is_checked) override;
   void AddAccessibilityLabelsServiceItem(bool is_checked) override;
 
