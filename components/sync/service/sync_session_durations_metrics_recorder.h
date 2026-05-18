@@ -101,8 +101,12 @@ class SyncSessionDurationsMetricsRecorder
 
   void HandleSyncAndAccountChange();
 
-  // Determines the signin status.
-  SigninStatus DetermineSigninStatus() const;
+  // Determines the cookie signin status.
+  FeatureState DetermineCookieSigninStatus(
+      const signin::AccountsInCookieJarInfo& accounts_in_cookie_jar_info) const;
+
+  // Determines the browser signin status.
+  SigninStatus DetermineBrowserSigninStatus() const;
 
   // Determines the sync status.
   FeatureState DetermineSyncStatus() const;

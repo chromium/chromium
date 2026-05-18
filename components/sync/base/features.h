@@ -249,6 +249,11 @@ BASE_DECLARE_FEATURE(kAlwaysRegisterSessionsInvalidationsAndroid);
 BASE_DECLARE_FEATURE(kEstimateNewSignInUsersWithFinchAvailablePopulation);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+// If enabled, computes the web sign-in status based on account in cookies
+// values even if they are stale. This ensures that we log the last known cookie
+// sign-in status for short-lived sessions instead of the default OFF value.
+BASE_DECLARE_FEATURE(kSyncFixWebSigninSessionDurationForShortLivedSessions);
+
 }  // namespace syncer
 
 #endif  // COMPONENTS_SYNC_BASE_FEATURES_H_

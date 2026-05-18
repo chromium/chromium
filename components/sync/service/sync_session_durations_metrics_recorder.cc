@@ -13,6 +13,7 @@
 #include "base/time/time.h"
 #include "components/metrics/profile_metrics_service.h"
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
+#include "components/sync/base/features.h"
 
 namespace syncer {
 
@@ -65,7 +66,7 @@ SyncSessionDurationsMetricsRecorder::SyncSessionDurationsMetricsRecorder(
 
   // Since this is created after the profile itself is created, we need to
   // handle the initial state.
-  signin_status_ = DetermineSigninStatus();
+  signin_status_ = DetermineBrowserSigninStatus();
   sync_status_ = DetermineSyncStatus();
 
   // Check if we already know the signed in cookies. This will trigger a fetch
@@ -158,22 +159,15 @@ void SyncSessionDurationsMetricsRecorder::OnAccountsInCookieUpdated(
   }
 
   DCHECK(accounts_in_cookie_jar_info.AreAccountsFresh());
-  if (accounts_in_cookie_jar_info.GetPotentiallyInvalidSignedInAccounts()
-          .empty()) {
-    // No signed in account.
-    if (cookie_signin_status_ == FeatureState::ON && signin_session_timer_) {
-      LogSigninDuration(signin_session_timer_->Elapsed());
-      signin_session_timer_.emplace();
-    }
-    cookie_signin_status_ = FeatureState::OFF;
-  } else {
-    // There is a signed in account.
-    if (cookie_signin_status_ == FeatureState::OFF && signin_session_timer_) {
-      LogSigninDuration(signin_session_timer_->Elapsed());
-      signin_session_timer_.emplace();
-    }
-    cookie_signin_status_ = FeatureState::ON;
+  FeatureState new_cookie_signin_status =
+      DetermineCookieSigninStatus(accounts_in_cookie_jar_info);
+  if (cookie_signin_status_ != FeatureState::UNKNOWN &&
+      new_cookie_signin_status != cookie_signin_status_ &&
+      signin_session_timer_) {
+    LogSigninDuration(signin_session_timer_->Elapsed());
+    signin_session_timer_.emplace();
   }
+  cookie_signin_status_ = new_cookie_signin_status;
 }
 
 void SyncSessionDurationsMetricsRecorder::OnIdentityManagerShutdown(
@@ -253,7 +247,8 @@ void SyncSessionDurationsMetricsRecorder::UpdateSyncAndAccountStatus(
 }
 
 void SyncSessionDurationsMetricsRecorder::HandleSyncAndAccountChange() {
-  UpdateSyncAndAccountStatus(DetermineSyncStatus(), DetermineSigninStatus());
+  UpdateSyncAndAccountStatus(DetermineSyncStatus(),
+                             DetermineBrowserSigninStatus());
 }
 
 // static
@@ -265,19 +260,33 @@ constexpr int SyncSessionDurationsMetricsRecorder::GetFeatureStates(
 
 void SyncSessionDurationsMetricsRecorder::LogSigninDuration(
     base::TimeDelta session_length) {
-  switch (cookie_signin_status_) {
+  FeatureState cookie_status_to_log = cookie_signin_status_;
+  if (cookie_status_to_log == FeatureState::UNKNOWN) {
+    if (base::FeatureList::IsEnabled(
+            kSyncFixWebSigninSessionDurationForShortLivedSessions)) {
+      // Compute the cookie signin status even if the accounts in the cookie jar
+      // are stale. This ensures that we log the last known cookie signin status
+      // for short-lived sessions.
+      cookie_status_to_log = DetermineCookieSigninStatus(
+          identity_manager_->GetAccountsInCookieJar());
+    } else {
+      // Since the feature wasn't working for the user if we didn't know its
+      // state, log the status as off.
+      cookie_status_to_log = FeatureState::OFF;
+    }
+  }
+
+  switch (cookie_status_to_log) {
     case FeatureState::ON:
       LogDuration("WithAccount", session_length,
                   profile_metrics_service_.get());
       break;
-    case FeatureState::UNKNOWN:
-      // Since the feature wasn't working for the user if we didn't know its
-      // state, log the status as off.
-      [[fallthrough]];
     case FeatureState::OFF:
       LogDuration("WithoutAccount", session_length,
                   profile_metrics_service_.get());
       break;
+    case FeatureState::UNKNOWN:
+      NOTREACHED() << "cookie_status_to_log should be ON or OFF.";
   }
 }
 
@@ -321,8 +330,17 @@ void SyncSessionDurationsMetricsRecorder::LogSyncAndAccountDuration(
   }
 }
 
+SyncSessionDurationsMetricsRecorder::FeatureState
+SyncSessionDurationsMetricsRecorder::DetermineCookieSigninStatus(
+    const signin::AccountsInCookieJarInfo& accounts_in_cookie_jar_info) const {
+  return accounts_in_cookie_jar_info.GetPotentiallyInvalidSignedInAccounts()
+                 .empty()
+             ? FeatureState::OFF
+             : FeatureState::ON;
+}
+
 SyncSessionDurationsMetricsRecorder::SigninStatus
-SyncSessionDurationsMetricsRecorder::DetermineSigninStatus() const {
+SyncSessionDurationsMetricsRecorder::DetermineBrowserSigninStatus() const {
   if (!identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
     return SigninStatus::kSignedOut;
   }

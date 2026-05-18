@@ -9,10 +9,12 @@
 #include <vector>
 
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/timer/timer.h"
 #include "components/metrics/profile_metrics_service.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
+#include "components/sync/base/features.h"
 #include "components/sync/test/test_sync_service.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "services/network/test/test_url_loader_factory.h"
@@ -144,6 +146,40 @@ TEST_F(SyncSessionDurationsMetricsRecorderTest, WebSignedIn) {
 
   ExpectOneSessionWithDuration(ht, {"WithAccount"}, kSessionTime);
   ExpectNoSession(ht, {"WithoutAccount"});
+}
+
+TEST_F(SyncSessionDurationsMetricsRecorderTest,
+       WebSignedIn_StaleCookie_FeatureEnabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      kSyncFixWebSigninSessionDurationForShortLivedSessions);
+
+  identity_test_env_.SetCookieAccounts(
+      {{"foo@gmail.com", GaiaId("foo_gaia_id")}});
+  identity_test_env_.SetFreshnessOfAccountsInGaiaCookie(false);
+
+  base::HistogramTester ht;
+  StartAndEndSession(kSessionTime);
+
+  ExpectOneSessionWithDuration(ht, {"WithAccount"}, kSessionTime);
+  ExpectNoSession(ht, {"WithoutAccount"});
+}
+
+TEST_F(SyncSessionDurationsMetricsRecorderTest,
+       WebSignedIn_StaleCookie_FeatureDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      kSyncFixWebSigninSessionDurationForShortLivedSessions);
+
+  identity_test_env_.SetCookieAccounts(
+      {{"foo@gmail.com", GaiaId("foo_gaia_id")}});
+  identity_test_env_.SetFreshnessOfAccountsInGaiaCookie(false);
+
+  base::HistogramTester ht;
+  StartAndEndSession(kSessionTime);
+
+  ExpectOneSessionWithDuration(ht, {"WithoutAccount"}, kSessionTime);
+  ExpectNoSession(ht, {"WithAccount"});
 }
 
 TEST_F(SyncSessionDurationsMetricsRecorderTest, NotOptedInToSync_SignedOut) {
