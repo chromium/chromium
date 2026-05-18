@@ -197,6 +197,8 @@ class TemplateUrlServiceAndroid : public TemplateURLServiceObserver {
                            FilterUserSelectableTemplateUrls);
   FRIEND_TEST_ALL_PREFIXES(TemplateUrlServiceAndroidUnitTest,
                            FilterTemplateUrlsByCategory);
+  FRIEND_TEST_ALL_PREFIXES(TemplateUrlServiceAndroidUnitTest,
+                           GetDisabledStarterPackIds);
 
   bool IsDefaultSearchEngineGoogle();
 
@@ -214,6 +216,8 @@ class TemplateUrlServiceAndroid : public TemplateURLServiceObserver {
       const std::vector<raw_ptr<TemplateURL, VectorExperimental>>&
           template_urls,
       TemplateUrlCategory category);
+
+  template_url_starter_pack_data::StarterPackIdSet GetDisabledStarterPackIds();
 
   base::android::ScopedJavaGlobalRef<jobject> java_ref_;
 

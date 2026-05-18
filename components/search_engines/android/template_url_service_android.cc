@@ -25,6 +25,8 @@
 #include "base/strings/utf_ostream_operators.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/google/core/common/google_util.h"
+#include "components/omnibox/common/omnibox_feature_configs.h"
+#include "components/omnibox/common/omnibox_features.h"
 #include "components/search_engines/android/template_url_android.h"
 #include "components/search_engines/search_engine_choice/search_engine_choice_utils.h"
 #include "components/search_engines/search_engines_switches.h"
@@ -655,7 +657,14 @@ TemplateUrlServiceAndroid::FilterTemplateUrlsByCategory(
     const std::vector<raw_ptr<TemplateURL, VectorExperimental>>& template_urls,
     TemplateUrlServiceAndroid::TemplateUrlCategory category) {
   std::vector<const TemplateURL*> result;
+  template_url_starter_pack_data::StarterPackIdSet disabled_starter_pack_ids =
+      GetDisabledStarterPackIds();
+
   for (TemplateURL* turl : template_urls) {
+    if (disabled_starter_pack_ids.Has(turl->starter_pack_id())) {
+      continue;
+    }
+
     bool is_default = template_url_service_->ShowInDefaultList(turl);
     bool is_extension = turl->type() == TemplateURL::OMNIBOX_API_EXTENSION;
     bool is_active = template_url_service_->ShowInActivesList(turl);
@@ -687,6 +696,23 @@ TemplateUrlServiceAndroid::FilterTemplateUrlsByCategory(
     }
   }
   return result;
+}
+
+template_url_starter_pack_data::StarterPackIdSet
+TemplateUrlServiceAndroid::GetDisabledStarterPackIds() {
+  // TODO(crbug.com/512766345): Add profile check for aimode and gemini
+  template_url_starter_pack_data::StarterPackIdSet disabled_ids;
+  // Skip @page if feature disabled.
+  if (!omnibox_feature_configs::ContextualSearch::Get().starter_pack_page) {
+    disabled_ids.Put(template_url_starter_pack_data::StarterPackId::kPage);
+  }
+
+  // Skip @gemini if feature disabled.
+  if (!base::FeatureList::IsEnabled(omnibox::kStarterPackExpansion)) {
+    disabled_ids.Put(template_url_starter_pack_data::StarterPackId::kGemini);
+  }
+
+  return disabled_ids;
 }
 
 std::vector<const TemplateURL*>

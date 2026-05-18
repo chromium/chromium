@@ -12,6 +12,9 @@
 #include "base/command_line.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
+#include "components/omnibox/common/omnibox_feature_configs.h"
+#include "components/omnibox/common/omnibox_features.h"
 #include "components/regional_capabilities/regional_capabilities_switches.h"
 #include "components/search_engines/search_engine_choice/search_engine_choice_utils.h"
 #include "components/search_engines/search_engines_pref_names.h"
@@ -484,4 +487,40 @@ TEST_F(TemplateUrlServiceAndroidUnitTest, GetTemplateUrlsByCategory_Sorting) {
   EXPECT_EQ(filtered_result[1], t_d);
   EXPECT_EQ(filtered_result[2], t_a);
   EXPECT_EQ(filtered_result[3], t_c);
+}
+
+TEST_F(TemplateUrlServiceAndroidUnitTest, GetDisabledStarterPackIds) {
+  // Enable features
+  {
+    omnibox_feature_configs::ScopedConfigForTesting<
+        omnibox_feature_configs::ContextualSearch>
+        scoped_config;
+    scoped_config.Get().starter_pack_page = true;
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndEnableFeature(omnibox::kStarterPackExpansion);
+
+    auto disabled_ids =
+        template_url_service_android().GetDisabledStarterPackIds();
+    EXPECT_FALSE(
+        disabled_ids.Has(template_url_starter_pack_data::StarterPackId::kPage));
+    EXPECT_FALSE(disabled_ids.Has(
+        template_url_starter_pack_data::StarterPackId::kGemini));
+  }
+
+  // Disable features
+  {
+    omnibox_feature_configs::ScopedConfigForTesting<
+        omnibox_feature_configs::ContextualSearch>
+        scoped_config;
+    scoped_config.Get().starter_pack_page = false;
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndDisableFeature(omnibox::kStarterPackExpansion);
+
+    auto disabled_ids =
+        template_url_service_android().GetDisabledStarterPackIds();
+    EXPECT_TRUE(
+        disabled_ids.Has(template_url_starter_pack_data::StarterPackId::kPage));
+    EXPECT_TRUE(disabled_ids.Has(
+        template_url_starter_pack_data::StarterPackId::kGemini));
+  }
 }
