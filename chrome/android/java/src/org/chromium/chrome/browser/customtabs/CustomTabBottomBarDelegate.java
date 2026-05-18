@@ -172,6 +172,9 @@ public class CustomTabBottomBarDelegate
         }
 
         if (mBottomBarContentView != null) {
+            // Set all views' ids to be View.NO_ID to prevent them clashing with
+            // chrome's resource ids. See http://crbug.com/513508305
+            transformViewIds(mBottomBarContentView);
             getBottomBarView().addView(mBottomBarContentView);
             mBottomBarContentView.addOnLayoutChangeListener(
                     new OnLayoutChangeListener() {
