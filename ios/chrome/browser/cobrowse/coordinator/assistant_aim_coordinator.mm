@@ -288,6 +288,11 @@ class AssistantAIMUIStateProvider
   }
 }
 
+- (void)assistantContainerDidRequestDismissal:
+    (AssistantContainerViewController*)container {
+  [self dismissAssistantContainerAnimated:YES];
+}
+
 #pragma mark - AssistantAIMMediatorDelegate
 
 - (void)assistantAIMMediatorDidLoadQuery:(AssistantAIMMediator*)mediator {

@@ -73,6 +73,11 @@ enum class AssistantPresentationContext;
 - (BOOL)assistantContainer:(AssistantContainerViewController*)container
     shouldInterceptPanGesture:(UIPanGestureRecognizer*)gesture;
 
+// Called when the container receives an accessibility escape gesture while
+// already in the minimized detent.
+- (void)assistantContainerDidRequestDismissal:
+    (AssistantContainerViewController*)container;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_ASSISTANT_UI_ASSISTANT_CONTAINER_DELEGATE_H_

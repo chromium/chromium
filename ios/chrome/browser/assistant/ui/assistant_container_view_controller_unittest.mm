@@ -6,6 +6,8 @@
 
 #import "ios/chrome/browser/assistant/ui/assistant_container_delegate.h"
 #import "ios/chrome/browser/assistant/ui/assistant_container_detent.h"
+#import "ios/chrome/browser/keyboard/ui_bundled/UIKeyCommand+Chrome.h"
+#import "ios/chrome/browser/keyboard/ui_bundled/key_command_actions.h"
 #import "ios/chrome/browser/shared/coordinator/scene/state/layout_state.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/test/app/uikit_test_util.h"
@@ -337,6 +339,79 @@ TEST_F(AssistantContainerViewControllerTest, UpdatesLayoutOnLayoutStateChange) {
   // Should switch to panel mode.
   EXPECT_EQ(view_controller_.presentationContext,
             AssistantPresentationContext::kPanel);
+}
+
+// Tests that performing accessibility escape when in the large detent moves
+// the container to the minimized detent.
+TEST_F(AssistantContainerViewControllerTest,
+       AccessibilityPerformEscapeToMinimized) {
+  [view_controller_ setDetents:{AssistantContainerDetent::kMinimized,
+                                AssistantContainerDetent::kLarge}];
+
+  [view_controller_ animateToDetent:AssistantContainerDetent::kLarge
+                           duration:0.0
+                              curve:UIViewAnimationCurveEaseInOut];
+
+  BOOL handled = [view_controller_ accessibilityPerformEscape];
+  EXPECT_TRUE(handled);
+  [window_ layoutIfNeeded];
+
+  EXPECT_EQ(view_controller_.heightConstraint.constant,
+            static_cast<CGFloat>(kAssistantContainerMinimizedDetentHeight));
+}
+
+// Tests that performing accessibility escape when in the minimized detent
+// requests dismissal from the delegate.
+TEST_F(AssistantContainerViewControllerTest,
+       AccessibilityPerformEscapeRequestsDismissal) {
+  [view_controller_ setDetents:{AssistantContainerDetent::kMinimized,
+                                AssistantContainerDetent::kLarge}];
+
+  [view_controller_ animateToDetent:AssistantContainerDetent::kMinimized
+                           duration:0.0
+                              curve:UIViewAnimationCurveEaseInOut];
+
+  id delegate_mock = OCMProtocolMock(@protocol(AssistantContainerDelegate));
+  view_controller_.delegate = delegate_mock;
+
+  OCMExpect(
+      [delegate_mock assistantContainerDidRequestDismissal:view_controller_]);
+
+  BOOL handled = [view_controller_ accessibilityPerformEscape];
+  EXPECT_TRUE(handled);
+
+  EXPECT_OCMOCK_VERIFY(delegate_mock);
+}
+
+// Tests that keyCommands contains the escape key command and
+// canBecomeFirstResponder is YES.
+TEST_F(AssistantContainerViewControllerTest, KeyCommandsAndFirstResponder) {
+  EXPECT_TRUE(view_controller_.canBecomeFirstResponder);
+
+  NSArray<UIKeyCommand*>* commands = view_controller_.keyCommands;
+  ASSERT_EQ(1u, commands.count);
+  UIKeyCommand* escapeCommand = commands.firstObject;
+  EXPECT_TRUE(
+      [escapeCommand.input isEqualToString:UIKeyCommand.cr_close.input]);
+  EXPECT_EQ(escapeCommand.modifierFlags, UIKeyCommand.cr_close.modifierFlags);
+  EXPECT_EQ(escapeCommand.action, @selector(keyCommand_close));
+}
+
+// Tests that performing accessibility escape when kMinimized is already active
+// and no delegate is set returns NO.
+TEST_F(AssistantContainerViewControllerTest,
+       AccessibilityPerformEscapeNotHandledWithoutDelegate) {
+  [view_controller_ setDetents:{AssistantContainerDetent::kMinimized,
+                                AssistantContainerDetent::kLarge}];
+
+  [view_controller_ animateToDetent:AssistantContainerDetent::kMinimized
+                           duration:0.0
+                              curve:UIViewAnimationCurveEaseInOut];
+
+  view_controller_.delegate = nil;
+
+  BOOL handled = [view_controller_ accessibilityPerformEscape];
+  EXPECT_FALSE(handled);
 }
 
 }  // namespace

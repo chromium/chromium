@@ -15,6 +15,7 @@
 #import "ios/chrome/browser/assistant/ui/assistant_container_layout_utils.h"
 #import "ios/chrome/browser/assistant/ui/assistant_container_view.h"
 #import "ios/chrome/browser/assistant/ui/assistant_grabber_button.h"
+#import "ios/chrome/browser/keyboard/ui_bundled/UIKeyCommand+Chrome.h"
 #import "ios/chrome/browser/shared/coordinator/scene/state/layout_state.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/chrome_overlay_window/chrome_overlay_container_view.h"
@@ -1124,6 +1125,48 @@ NSInteger GetMediumDetentHeight(NSInteger absoluteMax) {
   [self animateToDetent:detent
                duration:kAssistantSheetSpringDuration
                   curve:UIViewAnimationCurveEaseInOut];
+}
+
+#pragma mark - UIResponder
+
+- (BOOL)accessibilityPerformEscape {
+  if (self.presentationContext != AssistantPresentationContext::kSheet) {
+    return NO;
+  }
+
+  std::vector<AssistantContainerDetent> currentDetents = self.detents;
+  if (currentDetents.front() == AssistantContainerDetent::kMinimized) {
+    AssistantContainerDetent currentDetent =
+        _activeDetent.value_or(currentDetents.front());
+    if (currentDetent != AssistantContainerDetent::kMinimized) {
+      [self animateToDetent:AssistantContainerDetent::kMinimized
+                   duration:kAssistantSheetSpringDuration
+                      curve:UIViewAnimationCurveEaseInOut];
+      return YES;
+    }
+  }
+
+  if ([self.delegate respondsToSelector:@selector
+                     (assistantContainerDidRequestDismissal:)]) {
+    [self.delegate assistantContainerDidRequestDismissal:self];
+    return YES;
+  }
+
+  return NO;
+}
+
+- (BOOL)canBecomeFirstResponder {
+  return YES;
+}
+
+#pragma mark - Key Commands
+
+- (NSArray<UIKeyCommand*>*)keyCommands {
+  return @[ UIKeyCommand.cr_close ];
+}
+
+- (void)keyCommand_close {
+  [self accessibilityPerformEscape];
 }
 
 @end
