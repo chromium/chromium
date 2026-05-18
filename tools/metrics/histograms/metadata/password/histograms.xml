@@ -4818,6 +4818,30 @@ useful for Chirp alerts (go/crca-alerts). -->
   </summary>
 </histogram>
 
+<histogram
+    name="PasswordProtection.Verdict.{TriggerType}.SiteEngagementScore.{VerdictType}"
+    units="score" expires_after="2027-05-15">
+  <owner>nwokedi@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    The site engagement score of the site for which a password protection
+    verdict of type {VerdictType} was received for trigger {TriggerType}. Logged
+    whenever a verdict is received from the Safe Browsing server.
+  </summary>
+  <token key="TriggerType">
+    <variant name="OtpFieldDetected" summary="OTP_FIELD_DETECTED"/>
+    <variant name="PasswordReuseEvent" summary="PASSWORD_REUSE_EVENT"/>
+    <variant name="UnfamiliarLoginPage" summary="UNFAMILIAR_LOGIN_PAGE"/>
+    <variant name="Unspecified" summary="TRIGGER_TYPE_UNSPECIFIED"/>
+  </token>
+  <token key="VerdictType">
+    <variant name="LowReputation" summary="LOW_REPUTATION"/>
+    <variant name="Phishing" summary="PHISHING"/>
+    <variant name="Safe" summary="SAFE"/>
+    <variant name="Unspecified" summary="VERDICT_TYPE_UNSPECIFIED"/>
+  </token>
+</histogram>
+
 <histogram name="PasswordProtection.VisualFeatureExtractionDuration" units="ms"
     expires_after="2027-02-10">
   <owner>andysjlim@chromium.org</owner>

@@ -256,6 +256,12 @@ class ChromePasswordProtectionService
       const std::vector<password_manager::MatchingReusedCredential>&
           matching_reused_credentials) override;
 
+  // PasswordProtectionServiceBase overrides.
+  void RequestFinished(
+      PasswordProtectionRequest* request,
+      RequestOutcome outcome,
+      std::unique_ptr<LoginReputationClientResponse> response) override;
+
 #if BUILDFLAG(IS_ANDROID)
   ReferringAppInfo GetReferringAppInfo(
       content::WebContents* web_contents) override;
@@ -551,6 +557,13 @@ class ChromePasswordProtectionService
       RequestOutcome outcome,
       LoginReputationClientResponse::VerdictType verdict_type,
       const std::string& verdict_token);
+
+  // Records site engagement score for the site for which a verdict was
+  // received.
+  void RecordSiteEngagementScore(
+      const GURL& url,
+      LoginReputationClientRequest::TriggerType trigger_type,
+      LoginReputationClientResponse::VerdictType verdict_type);
 
   // Add the bypass event to pref when the user ignore the modal warning.
   void AddModelWarningBypasstoPref();
