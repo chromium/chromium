@@ -982,6 +982,7 @@ void FormFiller::FillOrPreviewForm(
 
   RefillContext* refill_context = GetRefillContext(form_structure.global_id());
   const bool may_refill_in_future =
+      action_persistence == mojom::ActionPersistence::kFill &&
       augmented_filling_payload.supports_refills() &&
       refill_context != nullptr && !refill_context->attempted_refill &&
       !refill_trigger_reason;
