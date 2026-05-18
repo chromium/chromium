@@ -309,7 +309,8 @@ class NavigationPredictorPreconnectClientBrowserTestWithSearch
 };
 
 // TODO(crbug.com/40702352): Re-enable this test.
-#if BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER)
+// TODO(crbug.com/497095357): Re-enable on Linux.
+#if (BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER)) || BUILDFLAG(IS_LINUX)
 #define MAYBE_PreconnectSearchWithFeature DISABLED_PreconnectSearchWithFeature
 #else
 #define MAYBE_PreconnectSearchWithFeature PreconnectSearchWithFeature
