@@ -1013,4 +1013,64 @@ TEST_F(ContextMenuJsFindElementAtPointTest, LinkOfTextWithCalloutOverride) {
   CheckElementResult(@"link", expected_value);
 }
 
+// Tests that `findElementAtPoint` finds a link inside an iframe.
+TEST_F(ContextMenuJsFindElementAtPointTest, LinkInsideIframe) {
+  // Use a server file in the iframe.
+  GURL iframe_url = test_server_.GetURL("/link.html");
+  NSString* iframe_src = base::SysUTF8ToNSString(iframe_url.spec());
+
+  NSString* body = [NSString
+      stringWithFormat:@"<div style='position:relative;left:40px;top:40px;'>"
+                       @"<iframe id='iframe' src='%@' "
+                       @"style='position:absolute;left:40px;top:40px;width:"
+                       @"100px;height:100px;border:none;'></iframe>"
+                       @"</div>",
+                       iframe_src];
+  NSString* html = GetHtmlForPage(nil, body);
+
+  // Use web::test::LoadHtml to set the same origin for the page and the iframe
+  // so iframe elements can be accessed.
+  ASSERT_TRUE(web::test::LoadHtml(
+      web_view(), html, net::NSURLWithGURL(test_server_.GetURL("/"))));
+
+  // Wait for the iframe and the link inside the iframe to load.
+  EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^{
+    id iframe_exists = web::test::ExecuteJavaScript(
+        web_view(), @"document.getElementById('iframe') !== null");
+    if (![iframe_exists boolValue]) {
+      return NO;
+    }
+    // zoomScale starts at 1.0 before being set to its final value.
+    // As the correct zoomScale is required to find the element, wait until it
+    // has its final value.
+    if (web_view().scrollView.zoomScale == 1.0) {
+      return NO;
+    }
+    id link_exists = web::test::ExecuteJavaScript(
+        web_view(), @"var iframe = document.getElementById('iframe');"
+                    @"iframe && iframe.contentDocument && "
+                    @"iframe.contentDocument.getElementById('link') !== null");
+    return [link_exists boolValue];
+  }));
+
+  std::string expected_href = test_server_.GetURL("/pony.html").spec();
+  auto expected_value = base::DictValue()
+                            .Set(kContextMenuElementRequestId, kRequestId)
+                            .Set(kContextMenuElementInnerText, "Link")
+                            .Set(kContextMenuElementReferrerPolicy, "default")
+                            .Set(kContextMenuElementHyperlink, expected_href)
+                            .Set(kContextMenuElementTagName, "a");
+
+  // Retrieve and scale tap coordinate relative to the iframe's position.
+  // Position of the tap:
+  // 40 for the div position
+  // 40 for the iframe position
+  // 40 for the link position
+  // 5 to tap the center of the link
+  CGFloat scale = web_view().scrollView.zoomScale;
+  CGPoint tap_point = CGPointMake(125 * scale, 125 * scale);
+
+  CheckElementResult(tap_point, expected_value);
+}
+
 }  // namespace web
