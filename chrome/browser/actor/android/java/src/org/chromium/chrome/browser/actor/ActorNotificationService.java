@@ -78,6 +78,18 @@ public class ActorNotificationService {
     }
 
     /**
+     * Reposts a cached notification as a regular background notification.
+     *
+     * @param taskId The ID of the task whose notification should be reposted.
+     */
+    public void repostNotification(int taskId) {
+        NotificationWrapper wrapper = mNotificationCache.get(taskId);
+        if (wrapper != null) {
+            mNotificationManager.notify(wrapper);
+        }
+    }
+
+    /**
      * Retrieves the cached notification for a task, or creates a new one if it doesn't exist.
      *
      * @param taskId The ID of the task.
