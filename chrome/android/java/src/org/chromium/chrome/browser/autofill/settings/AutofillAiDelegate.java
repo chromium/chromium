@@ -292,15 +292,6 @@ public class AutofillAiDelegate {
         Map<EntityType, List<EntityInstanceWithLabels>> instancesToList =
                 entityDataManager.getInstancesToList();
 
-        boolean isEligibleToAddEntities =
-                (ChromeFeatureList.isEnabled(ChromeFeatureList.AUTOFILL_AI_AVAILABLE_BY_DEFAULT)
-                        ? entityDataManager.canEnableOrDisableAutofillAi()
-                        : entityDataManager.isEligibleToAutofillAi()
-                                && entityDataManager.getAutofillAiOptInStatus());
-        boolean addButtonEnabled =
-                isEligibleToAddEntities
-                        && !disabledSettingsInThirdPartyMode(mFragment.getProfile());
-
         for (Map.Entry<EntityType, List<EntityInstanceWithLabels>> entry :
                 instancesToList.entrySet()) {
             EntityType type = entry.getKey();
@@ -362,25 +353,28 @@ public class AutofillAiDelegate {
             }
 
             if (shouldHaveAddButton) {
-                category.addPreference(createAddEntityButton(type, !addButtonEnabled));
+                category.addPreference(createAddEntityButton(entityDataManager, type));
             }
         }
     }
 
-    private Preference createAddEntityButton(EntityType entityType, boolean disabled) {
+    private Preference createAddEntityButton(
+            EntityDataManager entityDataManager, EntityType entityType) {
+        boolean buttonEnabled = isAddButtonEnabled(entityDataManager);
+
         Preference pref = new Preference(getStyledContext());
         Drawable plusIcon =
                 ApiCompatibilityUtils.getDrawable(mFragment.getResources(), R.drawable.plus);
         plusIcon.mutate();
         plusIcon.setColorFilter(
-                disabled
-                        ? SemanticColorUtils.getDefaultIconColorSecondary(mFragment.getContext())
-                        : SemanticColorUtils.getDefaultControlColorActive(mFragment.getContext()),
+                buttonEnabled
+                        ? SemanticColorUtils.getDefaultControlColorActive(mFragment.getContext())
+                        : SemanticColorUtils.getDefaultIconColorSecondary(mFragment.getContext()),
                 PorterDuff.Mode.SRC_IN);
         pref.setIcon(plusIcon);
         pref.setTitle(entityType.getAddEntityTypeString());
         pref.setKey(entityType.getTypeNameAsString() + " Add"); // For testing.
-        pref.setEnabled(!disabled);
+        pref.setEnabled(buttonEnabled);
         pref.setOnPreferenceClickListener(
                 preference -> {
                     long currentDate = TimeUtils.currentTimeMillis();
@@ -398,6 +392,20 @@ public class AutofillAiDelegate {
                     return true;
                 });
         return pref;
+    }
+
+    private boolean isAddButtonEnabled(EntityDataManager entityDataManager) {
+        return isEligibleToAddEntities(entityDataManager)
+                && !disabledSettingsInThirdPartyMode(mFragment.getProfile());
+    }
+
+    private static boolean isEligibleToAddEntities(EntityDataManager entityDataManager) {
+        // TODO (crbug.com/482994257): We will use per entity type logic once Autofill and Passwords
+        // screen is enabled.
+        return (ChromeFeatureList.isEnabled(ChromeFeatureList.AUTOFILL_AI_AVAILABLE_BY_DEFAULT)
+                ? entityDataManager.canEnableOrDisableAutofillAi()
+                : entityDataManager.isEligibleToAutofillAi()
+                        && entityDataManager.getAutofillAiOptInStatus());
     }
 
     private void editEntity(EntityInstance entityInstance) {
