@@ -168,10 +168,28 @@ NSSavePanel* __weak g_last_created_panel_for_testing = nil;
 
 }  // namespace
 
-// A bridge class to act as the modal delegate to the save/open sheet and send
-// the results to the C++ class.
+// ----- SelectFileDialogDelegate -----
+
 @interface SelectFileDialogDelegate : NSObject <NSOpenSavePanelDelegate>
 @end
+
+@implementation SelectFileDialogDelegate
+
+- (BOOL)panel:(id)sender validateURL:(NSURL*)url error:(NSError**)outError {
+  // Refuse to accept users closing the dialog with a key repeat, since the key
+  // may have been first pressed while the user was looking at insecure content.
+  // See https://crbug.com/40085079 and https://crbug.com/514070501.
+  auto currentEvent = NSApp.currentEvent;
+  if (currentEvent.type == NSEventTypeKeyDown && currentEvent.ARepeat) {
+    return NO;
+  }
+
+  return YES;
+}
+
+@end
+
+// ----- ExtensionDropdownHandler -----
 
 // Target for NSPopupButton control in file dialog's accessory view.
 @interface ExtensionDropdownHandler : NSObject {
@@ -190,22 +208,6 @@ NSSavePanel* __weak g_last_created_panel_for_testing = nil;
                 (NSArray<NSArray<NSString*>*>*)fileExtensionLists;
 
 - (void)popupAction:(id)sender;
-@end
-
-@implementation SelectFileDialogDelegate
-
-- (BOOL)panel:(id)sender validateURL:(NSURL*)url error:(NSError**)outError {
-  // Refuse to accept users closing the dialog with a key repeat, since the key
-  // may have been first pressed while the user was looking at insecure content.
-  // See https://crbug.com/40085079.
-  if (NSApp.currentEvent.type == NSEventTypeKeyDown &&
-      NSApp.currentEvent.ARepeat) {
-    return NO;
-  }
-
-  return YES;
-}
-
 @end
 
 @implementation ExtensionDropdownHandler
@@ -426,9 +428,6 @@ void SelectFileDialogBridge::Show(
       open_dialog.canChooseFiles = YES;
       open_dialog.canChooseDirectories = NO;
     }
-
-    delegate_ = [[SelectFileDialogDelegate alloc] init];
-    open_dialog.delegate = delegate_;
   }
   if (default_dir) {
     panel_.directoryURL = [NSURL fileURLWithPath:default_dir];
@@ -436,6 +435,11 @@ void SelectFileDialogBridge::Show(
   if (default_filename) {
     panel_.nameFieldStringValue = default_filename;
   }
+
+  // Ensure that key-repeat events do not trigger the dialog. See the class
+  // comment on |SelectFileDialogDelegate|.
+  delegate_ = [[SelectFileDialogDelegate alloc] init];
+  panel_.delegate = delegate_;
 
   // Ensure that |callback| (rather than |this|) be retained by the block.
   auto ended_callback = base::BindRepeating(
