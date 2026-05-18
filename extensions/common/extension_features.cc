@@ -176,9 +176,6 @@ BASE_FEATURE(kSafeBrowsingCrxAllowlistAutoDisable,
 
 BASE_FEATURE(kStructuredCloningForMessaging, base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kTelemetryExtensionPendingApprovalApi,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // TODO(https://crbug.com/328494022): Disable this on ChromeOS, too, and then
 // eventually remove it.
 BASE_FEATURE(kWebstoreHostedApp,

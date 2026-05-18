@@ -34,7 +34,6 @@ const base::Feature* kFeatureFlags[] = {
     &extensions_features::kApiProxyOverrideRulesPrivate,
     &extensions_features::kExperimentalOmniboxLabs,
     &extensions_features::kExtensionIconVariants,
-    &extensions_features::kTelemetryExtensionPendingApprovalApi,
     &extensions_features::
         kApiEnterpriseReportingPrivateOnDataMaskingRulesTriggered,
     &extensions_features::kWebstoreInstallerUserGestureKillSwitch,

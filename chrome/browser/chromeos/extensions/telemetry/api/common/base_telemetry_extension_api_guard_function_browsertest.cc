@@ -6,7 +6,6 @@
 #include <string>
 
 #include "base/strings/string_util.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/test/regular_logged_in_browser_test_mixin.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/common/api_guard_delegate.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/common/base_telemetry_extension_browser_test.h"
@@ -18,7 +17,6 @@
 #include "chromeos/crosapi/cpp/telemetry/fake_probe_service.h"
 #include "chromeos/crosapi/mojom/probe_service.mojom.h"
 #include "content/public/test/browser_test.h"
-#include "extensions/common/extension_features.h"
 #include "net/base/net_errors.h"
 #include "net/cert/x509_certificate.h"
 #include "net/dns/mock_host_resolver.h"
@@ -711,18 +709,7 @@ std::string GetServiceWorkerForError(const std::string& error) {
 
 }  // namespace
 
-class TelemetryExtensionApiGuardBrowserTest
-    : public BaseTelemetryExtensionBrowserTest {
- public:
-  TelemetryExtensionApiGuardBrowserTest() {
-    // Include unreleased APIs.
-    feature_list_.InitAndEnableFeature(
-        extensions_features::kTelemetryExtensionPendingApprovalApi);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
+using TelemetryExtensionApiGuardBrowserTest = BaseTelemetryExtensionBrowserTest;
 
 IN_PROC_BROWSER_TEST_F(TelemetryExtensionApiGuardBrowserTest,
                        CanAccessApiReturnsError) {

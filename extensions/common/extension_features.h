@@ -230,11 +230,6 @@ BASE_DECLARE_FEATURE(kSafeBrowsingCrxAllowlistAutoDisable);
 // messaging hosts.
 BASE_DECLARE_FEATURE(kStructuredCloningForMessaging);
 
-// If enabled, APIs of the Telemetry Extension platform that have pending
-// approval will be enabled. Read more about the platform here:
-// https://chromium.googlesource.com/chromium/src/+/master/docs/telemetry_extension/README.md.
-BASE_DECLARE_FEATURE(kTelemetryExtensionPendingApprovalApi);
-
 // Controls whether the component webstore hosted app is loaded.
 BASE_DECLARE_FEATURE(kWebstoreHostedApp);
 
