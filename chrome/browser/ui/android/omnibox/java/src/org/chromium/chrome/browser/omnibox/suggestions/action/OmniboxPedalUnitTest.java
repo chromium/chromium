@@ -104,8 +104,8 @@ public class OmniboxPedalUnitTest {
     @Test
     public void safeCasting_successWithFactoryBuiltAction() {
         OmniboxPedal.from(
-                OmniboxActionFactoryImpl.get()
-                        .buildOmniboxPedal(0, "hint", "accessibility", OmniboxPedalId.NONE));
+                OmniboxActionFactory.buildOmniboxPedal(
+                        0, "hint", "accessibility", OmniboxPedalId.NONE));
     }
 
     @Test

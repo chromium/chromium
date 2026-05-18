@@ -152,15 +152,14 @@ public class OmniboxActionInSuggestUnitTest {
     @Test
     public void safeCasting_successWithFactoryBuiltAction() {
         OmniboxActionInSuggest.from(
-                OmniboxActionFactoryImpl.get()
-                        .buildActionInSuggest(
-                                0,
-                                "hint",
-                                "accessibility",
-                                SuggestTemplateInfo.TemplateAction.ActionType.REVIEWS_VALUE,
-                                "",
-                                /* tabId= */ 0,
-                                ActionPresentationMode.CHIP));
+                OmniboxActionFactory.buildActionInSuggest(
+                        0,
+                        "hint",
+                        "accessibility",
+                        SuggestTemplateInfo.TemplateAction.ActionType.REVIEWS_VALUE,
+                        "",
+                        /* tabId= */ 0,
+                        ActionPresentationMode.CHIP));
     }
 
     /** Create Action in Suggest with a supplied definition. */

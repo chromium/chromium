@@ -4,56 +4,31 @@
 
 package org.chromium.chrome.browser.omnibox.suggestions.action;
 
+import org.jni_zero.CalledByNative;
+import org.jni_zero.JniType;
+
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.omnibox.SuggestTemplateInfoProto.SuggestTemplateInfo;
 import org.chromium.components.omnibox.action.ActionPresentationMode;
 import org.chromium.components.omnibox.action.OmniboxAction;
-import org.chromium.components.omnibox.action.OmniboxActionFactory;
-import org.chromium.components.omnibox.action.OmniboxActionFactoryJni;
 import org.chromium.components.omnibox.action.OmniboxPedalId;
 
 /** A factory creating the OmniboxAction instances. */
 @NullMarked
-public class OmniboxActionFactoryImpl implements OmniboxActionFactory {
-    private static @Nullable OmniboxActionFactoryImpl sFactory;
-    private boolean mDialerAvailable;
+public class OmniboxActionFactory {
+    private static boolean sDialerAvailable;
 
     /** Private constructor to suppress direct instantiation of this class. */
-    private OmniboxActionFactoryImpl() {}
+    private OmniboxActionFactory() {}
 
     /** Initialize the factory. Called before native code is ready. */
-    public OmniboxActionFactoryImpl setDialerAvailable(boolean dialerAvailable) {
-        mDialerAvailable = dialerAvailable;
-        return this;
+    public static void setDialerAvailable(boolean dialerAvailable) {
+        sDialerAvailable = dialerAvailable;
     }
 
-    /**
-     * Creates (if not already created) and returns the App-wide instance of the
-     * OmniboxActionFactory.
-     */
-    public static OmniboxActionFactoryImpl get() {
-        if (sFactory == null) {
-            sFactory = new OmniboxActionFactoryImpl();
-        }
-        return sFactory;
-    }
-
-    /**
-     * Initialize (if not already done) and return the instance of the OmniboxActionFactory to be
-     * used until application is destroyed.
-     */
-    public void initNativeFactory() {
-        OmniboxActionFactoryJni.get().setFactory(this);
-    }
-
-    /** Destroy the OmniboxActionFactory if previously created. */
-    public void destroyNativeFactory() {
-        OmniboxActionFactoryJni.get().setFactory(null);
-    }
-
-    @Override
-    public @Nullable OmniboxAction buildOmniboxPedal(
+    @CalledByNative
+    public static @Nullable OmniboxAction buildOmniboxPedal(
             long nativeInstance,
             String hint,
             String accessibilityHint,
@@ -61,14 +36,17 @@ public class OmniboxActionFactoryImpl implements OmniboxActionFactory {
         return new OmniboxPedal(nativeInstance, hint, accessibilityHint, pedalId);
     }
 
-    @Override
-    public @Nullable OmniboxAction buildSiteSearchAction(
-            long nativeInstance, String hint, String accessibilityHint, String keyword) {
+    @CalledByNative
+    public static @Nullable OmniboxAction buildSiteSearchAction(
+            long nativeInstance,
+            @JniType("std::u16string") String hint,
+            @JniType("std::u16string") String accessibilityHint,
+            @JniType("std::u16string") String keyword) {
         return new SiteSearchAction(nativeInstance, hint, accessibilityHint, keyword);
     }
 
-    @Override
-    public @Nullable OmniboxAction buildActionInSuggest(
+    @CalledByNative
+    public static @Nullable OmniboxAction buildActionInSuggest(
             long nativeInstance,
             String hint,
             String accessibilityHint,
@@ -77,7 +55,7 @@ public class OmniboxActionFactoryImpl implements OmniboxActionFactory {
             int tabId,
             @ActionPresentationMode int presentationMode) {
         if (actionType == SuggestTemplateInfo.TemplateAction.ActionType.CALL_VALUE
-                && !mDialerAvailable) {
+                && !sDialerAvailable) {
             return null;
         }
 
