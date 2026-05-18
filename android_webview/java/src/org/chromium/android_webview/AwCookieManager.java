@@ -18,6 +18,7 @@ import org.jni_zero.NativeMethods;
 import org.chromium.base.Callback;
 import org.chromium.base.library_loader.LibraryLoader;
 
+import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.List;
 
@@ -92,8 +93,7 @@ public final class AwCookieManager {
 
     /** Synchronous version of setCookie. */
     public void setCookie(String url, String value) {
-        UrlValue pair = fixupUrlValue(url, value);
-        AwCookieManagerJni.get().setCookieSync(mNativeCookieManager, pair.mUrl, pair.mValue);
+        AwCookieManagerJni.get().setCookieSync(mNativeCookieManager, url, value);
     }
 
     /** Deprecated synchronous version of removeSessionCookies. */
@@ -107,22 +107,18 @@ public final class AwCookieManager {
     }
 
     /**
-     * Set cookie for a given url. The old cookie with same host/path/name will
-     * be removed. The new cookie will be added if it is not expired or it does
-     * not have expiration which implies it is session cookie.
+     * Set cookie for a given url. The old cookie with same host/path/name will be removed. The new
+     * cookie will be added if it is not expired or it does not have expiration which implies it is
+     * session cookie.
+     *
      * @param url The url which cookie is set for.
      * @param value The value for set-cookie: in http response header.
      * @param callback A callback called with the success status after the cookie is set.
      */
     public void setCookie(final String url, final String value, final Callback<Boolean> callback) {
         try {
-            UrlValue pair = fixupUrlValue(url, value);
             AwCookieManagerJni.get()
-                    .setCookie(
-                            mNativeCookieManager,
-                            pair.mUrl,
-                            pair.mValue,
-                            new CookieCallback(callback));
+                    .setCookie(mNativeCookieManager, url, value, new CookieCallback(callback));
         } catch (IllegalStateException e) {
             throw new IllegalStateException(
                     "SetCookie must be called on a thread with a running Looper.");
@@ -139,6 +135,33 @@ public final class AwCookieManager {
         String cookie = AwCookieManagerJni.get().getCookie(mNativeCookieManager, url);
         // Return null if the string is empty to match legacy behavior
         return cookie == null || cookie.trim().isEmpty() ? null : cookie;
+    }
+
+    /** Set cookie for a given url, after applying compatibility fixups to the URL. */
+    public void setCookieWithUrlFixup(final String url, final String value)
+            throws URISyntaxException {
+        UrlValue pair = fixupUrlValue(url, value);
+        setCookie(pair.mUrl, pair.mValue);
+    }
+
+    /** Set cookie for a given url, after applying compatibility fixups to the URL. */
+    public void setCookieWithUrlFixup(
+            final String url, final String value, final Callback<Boolean> callback)
+            throws URISyntaxException {
+        UrlValue pair = fixupUrlValue(url, value);
+        setCookie(pair.mUrl, pair.mValue, callback);
+    }
+
+    /** Get cookie(s) for a given url, after applying compatibility fixups to the URL. */
+    public String getCookieWithUrlFixup(final String url) throws URISyntaxException {
+        // WebAddressParser is a copy of the  private API WebAddress in the android framework and a
+        // "quirk" of the Classic WebView implementation that allowed embedders to be relaxed about
+        // what URLs they passed into the CookieManager, so we do the same normalisation.
+        //
+        // The implementation of WebAddressParser isn't ideal, we should remove its usage and
+        // replace it with UrlFormatter or similar URL parser.
+        String fixedUrl = new WebAddressParser(url).toString();
+        return getCookie(fixedUrl);
     }
 
     /**
@@ -278,7 +301,15 @@ public final class AwCookieManager {
         return value + "; Domain=" + domain;
     }
 
-    private static UrlValue fixupUrlValue(String url, String value) {
+    private static UrlValue fixupUrlValue(String url, String value) throws URISyntaxException {
+        // WebAddressParser is a copy of the  private API WebAddress in the android framework and a
+        // "quirk" of the Classic WebView implementation that allowed embedders to be relaxed about
+        // what URLs they passed into the CookieManager, so we do the same normalisation.
+        //
+        // The implementation of WebAddressParser isn't ideal, we should remove its usage and
+        // replace it with UrlFormatter or similar URL parser.
+        url = new WebAddressParser(url).toString();
+
         final String leadingHttpTripleSlashDot = "http:///.";
 
         // The app passed a domain instead of a real URL (and the glue layer "fixed" it into this

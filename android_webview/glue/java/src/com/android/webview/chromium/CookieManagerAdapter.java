@@ -12,7 +12,6 @@ import com.android.webview.chromium.WebViewChromium.ApiCall;
 import com.android.webview.chromium.WebViewChromium.ApiCallUserAction;
 
 import org.chromium.android_webview.AwCookieManager;
-import org.chromium.android_webview.WebAddressParser;
 import org.chromium.base.Log;
 import org.chromium.base.TraceEvent;
 
@@ -95,7 +94,7 @@ public class CookieManagerAdapter extends CookieManager {
                 WebViewChromium.recordWebViewApiCall(
                         ApiCall.COOKIE_MANAGER_SET_COOKIE,
                         ApiCallUserAction.COOKIE_MANAGER_SET_COOKIE);
-                mChromeCookieManager.setCookie(fixupUrl(url), value);
+                mChromeCookieManager.setCookieWithUrlFixup(url, value);
             }
         } catch (URISyntaxException e) {
             Log.e(TAG, "Not setting cookie due to error parsing URL: %s", url, e);
@@ -115,8 +114,8 @@ public class CookieManagerAdapter extends CookieManager {
                 WebViewChromium.recordWebViewApiCall(
                         ApiCall.COOKIE_MANAGER_SET_COOKIE,
                         ApiCallUserAction.COOKIE_MANAGER_SET_COOKIE);
-                mChromeCookieManager.setCookie(
-                        fixupUrl(url), value, CallbackConverter.fromValueCallback(callback));
+                mChromeCookieManager.setCookieWithUrlFixup(
+                        url, value, CallbackConverter.fromValueCallback(callback));
             }
         } catch (URISyntaxException e) {
             Log.e(TAG, "Not setting cookie due to error parsing URL: %s", url, e);
@@ -131,7 +130,7 @@ public class CookieManagerAdapter extends CookieManager {
                 WebViewChromium.recordWebViewApiCall(
                         ApiCall.COOKIE_MANAGER_GET_COOKIE,
                         ApiCallUserAction.COOKIE_MANAGER_GET_COOKIE);
-                return mChromeCookieManager.getCookie(fixupUrl(url));
+                return mChromeCookieManager.getCookieWithUrlFixup(url);
             }
         } catch (URISyntaxException e) {
             Log.e(TAG, "Unable to get cookies due to error parsing URL: %s", url, e);
@@ -251,16 +250,5 @@ public class CookieManagerAdapter extends CookieManager {
                     ApiCallUserAction.COOKIE_MANAGER_SET_ACCEPT_FILE_SCHEME_COOKIES);
             mChromeCookieManager.setAcceptFileSchemeCookies(accept);
         }
-    }
-
-    private static String fixupUrl(String url) throws URISyntaxException {
-        // WebAddressParser is a copy of the  private API WebAddress in the android framework and a
-        // "quirk" of the Classic WebView implementation that allowed embedders to be relaxed about
-        // what URLs they passed into the CookieManager, so we do the same normalisation before
-        // entering the chromium stack.
-        //
-        // The implementation of WebAddressParser isn't ideal, we should remove its usage and
-        // replace it with UrlFormatter or similar URL parser.
-        return new WebAddressParser(url).toString();
     }
 }
