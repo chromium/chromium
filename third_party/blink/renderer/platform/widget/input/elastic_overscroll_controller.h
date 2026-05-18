@@ -213,7 +213,9 @@ class PLATFORM_EXPORT ElasticOverscrollController {
   void UpdateVelocity(OverscrollEntry&,
                       const gfx::Vector2dF& event_delta,
                       const base::TimeTicks& event_timestamp);
-  void Overscroll(OverscrollEntry&, const gfx::Vector2dF& overscroll_delta);
+  void Overscroll(OverscrollEntry&,
+                  const gfx::Vector2dF& overscroll_delta,
+                  const gfx::Vector2dF& event_delta);
   void EnterStateMomentumAnimated(
       OverscrollEntry&,
       const base::TimeTicks& triggering_event_timestamp);

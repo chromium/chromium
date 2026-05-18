@@ -2449,6 +2449,12 @@
       status: "stable",
     },
     {
+      // Uses the original event delta to choose the initial elastic overscroll
+      // axis.
+      name: "ElasticOverscrollUseEventDeltaForAxisSelection",
+      status: "stable",
+    },
+    {
       public: true,
       name: "ElementCapture",
       status: {"Android": "experimental", "iOS": "", "default": "stable"},

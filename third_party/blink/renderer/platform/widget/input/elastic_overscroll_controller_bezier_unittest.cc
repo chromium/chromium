@@ -12,6 +12,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/common/input/web_mouse_wheel_event.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "ui/gfx/geometry/vector2d_conversions.h"
 
 namespace blink {
@@ -88,10 +89,19 @@ class ElasticOverscrollControllerBezierTest : public testing::Test {
 
   void SendGestureScrollUpdate(PhaseState inertialPhase,
                                const Vector2dF& unused_scroll_delta) {
+    SendGestureScrollUpdate(inertialPhase, unused_scroll_delta,
+                            unused_scroll_delta);
+  }
+
+  void SendGestureScrollUpdate(PhaseState inertialPhase,
+                               const Vector2dF& unused_scroll_delta,
+                               const Vector2dF& event_delta) {
     blink::WebGestureEvent event(WebInputEvent::Type::kGestureScrollUpdate,
                                  WebInputEvent::kNoModifiers, base::TimeTicks(),
                                  blink::WebGestureDevice::kTouchpad);
     event.data.scroll_update.inertial_phase = inertialPhase;
+    event.data.scroll_update.delta_x = -event_delta.x();
+    event.data.scroll_update.delta_y = -event_delta.y();
     cc::InputHandlerScrollResult scroll_result;
     scroll_result.did_overscroll_root = !unused_scroll_delta.IsZero();
     scroll_result.unused_scroll_delta = unused_scroll_delta;
@@ -141,6 +151,21 @@ TEST_F(ElasticOverscrollControllerBezierTest, OverscrollStretch) {
   SendGestureScrollUpdate(PhaseState::kNonMomentum, Vector2dF(100, 0));
   EXPECT_EQ(Vector2dF(0, 0), helper_.StretchAmount(cc::ElementId()));
   SendGestureScrollEnd();
+}
+
+TEST_F(ElasticOverscrollControllerBezierTest,
+       EventDeltaSelectsInitialOverscrollAxis) {
+  ScopedElasticOverscrollUseEventDeltaForAxisSelectionForTest scoped_feature(
+      /*enabled=*/true);
+  SendGestureScrollBegin(PhaseState::kNonMomentum);
+
+  // A mostly vertical scroll can produce an unused horizontal delta when the
+  // target cannot scroll horizontally. Do not start horizontal rubber-band
+  // stretch from that incidental cross-axis delta.
+  SendGestureScrollUpdate(PhaseState::kNonMomentum, Vector2dF(-100, 0),
+                          Vector2dF(-10, -100));
+
+  EXPECT_EQ(Vector2dF(0, 0), helper_.StretchAmount(cc::ElementId()));
 }
 
 // Verify that synthetic gesture events do not trigger an overscroll.
