@@ -775,16 +775,22 @@ TEST_F(AppBarMediatorTest, TestAssistantButtonTappedLens) {
 }
 
 // Tests that tapping the assistant button in the ask state dispatches the
-// Gemini command.
+// Gemini entry flow command when ChromeNextIa is enabled.
 TEST_F(AppBarMediatorTest, TestAssistantButtonTappedEligible) {
   SignInAndSetCapability(true);
   [mediator_ updateAssistantButton];
 
   OCMExpect([mock_gemini_handler_
-      startGeminiFlowWithStartupState:[OCMArg checkWithBlock:^BOOL(
-                                                  GeminiStartupState* state) {
+      startGeminiEntryFlowWithStartupState:[OCMArg checkWithBlock:^BOOL(
+                                                       GeminiStartupState*
+                                                           state) {
         return state.entryPoint == gemini::EntryPoint::AppBar;
-      }]]);
+      }]
+                        baseViewController:[OCMArg any]
+                               accessPoint:signin_metrics::AccessPoint::
+                                               kIosAppBar
+                  showSnackbarOnCompletion:YES
+                                completion:[OCMArg any]]);
   [mediator_ assistantButtonTappedWithState:AppBarAssistantButtonState::kAsk];
   EXPECT_OCMOCK_VERIFY(mock_gemini_handler_);
 }
