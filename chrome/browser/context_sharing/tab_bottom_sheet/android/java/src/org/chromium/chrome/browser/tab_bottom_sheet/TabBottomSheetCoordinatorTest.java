@@ -97,14 +97,7 @@ public class TabBottomSheetCoordinatorTest {
     public ActivityScenarioRule<TestActivity> mActivityScenarioRule =
             new ActivityScenarioRule<>(TestActivity.class);
 
-    private final SheetEventsCallback mSheetEventsCallback =
-            new SheetEventsCallback() {
-                @Override
-                public void onBottomSheetClosed() {}
-
-                @Override
-                public void onBottomSheetOpened(boolean isExpanded) {}
-            };
+    @Mock private SheetEventsCallback mMockSheetEventsCallback;
 
     @Mock private BottomSheetController mMockBottomSheetController;
     @Mock private Window mMockWindow;
@@ -176,7 +169,7 @@ public class TabBottomSheetCoordinatorTest {
                         mMockBottomSheetController,
                         mMockTouchEventProvider,
                         mCoBrowseViews,
-                        mSheetEventsCallback);
+                        mMockSheetEventsCallback);
 
         mCoordinatorModel = mCoordinator.getModelForTesting();
     }
@@ -772,7 +765,7 @@ public class TabBottomSheetCoordinatorTest {
                         mMockBottomSheetController,
                         mMockTouchEventProvider,
                         mCoBrowseViews,
-                        mSheetEventsCallback);
+                        mMockSheetEventsCallback);
 
         BottomSheetObserver observer = simulateShowSuccessAndGetObserver();
 
@@ -835,7 +828,7 @@ public class TabBottomSheetCoordinatorTest {
                         mMockBottomSheetController,
                         mMockTouchEventProvider,
                         mCoBrowseViews,
-                        mSheetEventsCallback);
+                        mMockSheetEventsCallback);
 
         BottomSheetObserver observer = simulateShowSuccessAndGetObserver();
 
@@ -874,5 +867,38 @@ public class TabBottomSheetCoordinatorTest {
         observer.onSheetContentChanged(null);
         stateWatcher.assertExpected();
         reasonWatcher.assertExpected();
+    }
+
+    @Test
+    public void testSheetEventsCallback_onBottomSheetOpened_SuppressedDuringHide() {
+        BottomSheetObserver observer = simulateShowSuccessAndGetObserver();
+
+        // 1. Initial show should trigger onBottomSheetOpened(true).
+        verify(mMockSheetEventsCallback).onBottomSheetOpened(true);
+
+        // 2. Transition to hiding.
+        when(mMockBottomSheetController.isSheetHiding()).thenReturn(true);
+
+        // 3. Call onSheetStateChanged to SCROLLING (part of hiding flow).
+        observer.onSheetStateChanged(SheetState.SCROLLING, StateChangeReason.NONE);
+
+        // 4. Verify onBottomSheetOpened was NOT called again.
+        verify(mMockSheetEventsCallback, times(1)).onBottomSheetOpened(anyBoolean());
+    }
+
+    @Test
+    public void testSheetEventsCallback_onBottomSheetOpened_NotSuppressedDuringNormalTransition() {
+        BottomSheetObserver observer = simulateShowSuccessAndGetObserver();
+
+        // Initial show triggers onBottomSheetOpened(true).
+        verify(mMockSheetEventsCallback).onBottomSheetOpened(true);
+
+        // Transitioning to SCROLLING but NOT hiding (e.g. manual user drag or normal expansion
+        // animation).
+        when(mMockBottomSheetController.isSheetHiding()).thenReturn(false);
+        observer.onSheetStateChanged(SheetState.SCROLLING, StateChangeReason.NONE);
+
+        // Verify onBottomSheetOpened was called with true (expanded).
+        verify(mMockSheetEventsCallback, times(2)).onBottomSheetOpened(true);
     }
 }

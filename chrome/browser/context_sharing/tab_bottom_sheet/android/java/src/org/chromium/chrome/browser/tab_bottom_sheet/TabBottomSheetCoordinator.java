@@ -405,8 +405,13 @@ public class TabBottomSheetCoordinator {
                         || mSheetEventsCallback == null
                         || !mIsShowingTabBottomSheet) return;
                 mMediator.onSheetStateChanged(state);
-                if (state != SheetState.HIDDEN) {
-                    mSheetEventsCallback.onBottomSheetOpened(state != SheetState.PEEK);
+                // We only send the opened notification when the sheet is not hidden and not in the
+                // middle of a closing/hiding flow.
+                if (state != SheetState.HIDDEN && !mBottomSheetController.isSheetHiding()) {
+                    // The sheet is considered expanded if it's in HALF, FULL, or SCROLLING above
+                    // peek.
+                    boolean isExpanded = state != SheetState.PEEK;
+                    mSheetEventsCallback.onBottomSheetOpened(isExpanded);
                 }
 
                 if (state == SheetState.HALF || state == SheetState.FULL) {
