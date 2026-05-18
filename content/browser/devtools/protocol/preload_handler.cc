@@ -195,6 +195,8 @@ Preload::PrerenderFinalStatus PrerenderFinalStatusToProtocol(
       return Preload::PrerenderFinalStatusEnum::PrerenderHostReused;
     case PrerenderFinalStatus::kFormSubmitWhenPrerendering:
       return Preload::PrerenderFinalStatusEnum::FormSubmitWhenPrerendering;
+    case PrerenderFinalStatus::kCrossDocumentRestart:
+      return Preload::PrerenderFinalStatusEnum::CrossDocumentRestart;
   }
 }
 
