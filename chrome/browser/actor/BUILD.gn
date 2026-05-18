@@ -353,6 +353,9 @@ source_set("unit_tests") {
     "//components/tabs:test_support",
     "//testing/gtest",
   ]
+  if (use_fuzzing_engine) {
+    deps += [ "//third_party/fuzztest" ]
+  }
   data = [ "//tools/metrics/histograms/metadata/actor/histograms.xml" ]
 }
 

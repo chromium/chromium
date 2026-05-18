@@ -10,6 +10,10 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
+#if BUILDFLAG(USE_FUZZING_ENGINE)
+#include "third_party/fuzztest/src/fuzztest/fuzztest.h"  // nogncheck
+#endif
+
 namespace actor {
 
 using optimization_guide::proto::AgentContainerConfig;
@@ -1147,5 +1151,15 @@ TEST_F(ActorContainerConfigTest, WssOrigin) {
   EXPECT_FALSE(config.IsActuationAllowed(kCrossSiteWsOrigin));
   EXPECT_FALSE(config.IsNavigationAllowed(kWssOrigin, kCrossSiteWssOrigin));
 }
+
+#if BUILDFLAG(USE_FUZZING_ENGINE)
+void CanParseAnyProto(
+    const optimization_guide::proto::AgentContainerConfig& config_proto) {
+  ActorContainerConfig config;
+  config.Assign(config_proto);
+}
+
+FUZZ_TEST(ActorContainerConfigFuzzTest, CanParseAnyProto);
+#endif
 
 }  // namespace actor

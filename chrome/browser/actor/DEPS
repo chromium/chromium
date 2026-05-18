@@ -67,4 +67,7 @@ specific_include_rules = {
   'attempt_otp_filling_tool_browsertest\.cc': [
     "+components/one_time_tokens/core/browser",
   ],
+  '.*test.cc': [
+    "+third_party/fuzztest",
+  ],
 }

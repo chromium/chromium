@@ -10754,8 +10754,10 @@ test("unit_tests") {
   # enable the diagnostic by removing this line.
   configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 
-  fuzztests =
-      [ "SearchBoxUtilFuzzTest.ParseFrameTokenAndRestrictedIdDoesNotCrash" ]
+  fuzztests = [
+    "ActorContainerConfigFuzzTest.CanParseAnyProto",
+    "SearchBoxUtilFuzzTest.ParseFrameTokenAndRestrictedIdDoesNotCrash",
+  ]
 }
 
 static_library("test_support_unit") {

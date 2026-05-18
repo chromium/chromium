@@ -3,13 +3,14 @@
 # found in the LICENSE file.
 
 import("//components/proto_extras/proto_extras.gni")
+import("//third_party/libprotobuf-mutator/fuzzable_proto_library.gni")
 import("//third_party/protobuf/proto_library.gni")
 
 if (is_android) {
   import("//build/config/android/rules.gni")
 }
 
-proto_library("optimization_guide_proto") {
+fuzzable_proto_library("optimization_guide_proto") {
   proto_in_dir = "//"
   sources = [
     "autocomplete_scoring_model_metadata.proto",
@@ -121,6 +122,7 @@ proto_extras("optimization_guide_proto_extras") {
   deps = [ ":optimization_guide_proto" ]
   extras_deps = [ "//third_party/metrics_proto:metrics_proto_with_extension_and_system_extras" ]
   import_dirs = [ "//third_party/metrics_proto/" ]
+  protobuf_full_support = true
 }
 
 if (is_android) {
