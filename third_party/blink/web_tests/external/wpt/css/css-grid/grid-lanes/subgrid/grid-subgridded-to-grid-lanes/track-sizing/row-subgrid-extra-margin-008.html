@@ -31,30 +31,28 @@
 <!--
   Grid lanes container height = 104px (2 rows of 52px each).
 
-  Each leaf is a span-1 subgrid nested two levels deep (leaf inside
-  inner1 or inner2 inside outer). The padding from every level of the
-  chain contributes to the leaf's margin. The leaf with the largest
-  total margin contribution ends up at:
-    leaf's pad-T (11) + inner's pad-T (11) + outer's pad-T (11) on
-    the start side, plus leaf's pad-B (9) and half of outer's
-    row-gap (20/2 = 10) on the end side, for a total of 52.
+  Same layout and padding as row-006, but inner1/inner2 use explicit
+  positions (grid-row: 1 / span 2) instead of the auto-placed
+  `span 2` form. Per the WG resolution at
+  https://github.com/w3c/csswg-drafts/issues/10926, when a subgrid
+  is auto-placed in a grid-lanes container, all subgrids nested
+  inside it are also treated as auto-placed for margin
+  accommodation, regardless of any explicit position they specify.
+  As a result the per-track sizing is identical to row-006: every
+  row grows to the dominant leaf's 52px contribution and the
+  container ends up at 2 rows * 52px = 104px.
 
-  Per the WG resolution at
-  https://github.com/w3c/csswg-drafts/issues/10926, every subgrid in
-  an auto-placed grid-lanes chain must accommodate its margin
-  contribution at every row it could land in. Every row ends up
-  sized to the dominant leaf's 52px:
-    2 rows * 52px = 104px.
+  See row-006 for how the dominant leaf's 52px is computed.
 -->
   <div class="grid-lanes">
     <div class="subgrid" style="grid-row: span 2; gap: 20px 10px">
-      <div class="subgrid" style="grid-row: span 2;">
+      <div class="subgrid" style="grid-row: 1 / span 2;">
         <div class="subgrid"></div>
         <div class="subgrid"></div>
         <div class="subgrid"></div>
         <div class="subgrid"></div>
       </div>
-      <div class="subgrid" style="grid-row: span 2;">
+      <div class="subgrid" style="grid-row: 1 / span 2;">
         <div class="subgrid"></div>
         <div class="subgrid"></div>
         <div class="subgrid"></div>

@@ -21,7 +21,7 @@
   grid-template: subgrid / auto;
   grid-template-columns: auto auto auto;
   background: green;
-  padding: 11px 3px 9px 7px;
+  padding: 9px 3px 11px 7px;
 }
 </style>
 </head>
@@ -31,19 +31,19 @@
 <!--
   Grid lanes container height = 104px (2 rows of 52px each).
 
-  Each leaf is a span-1 subgrid nested two levels deep (leaf inside
-  inner1 or inner2 inside outer). The padding from every level of the
-  chain contributes to the leaf's margin. The leaf with the largest
-  total margin contribution ends up at:
-    leaf's pad-T (11) + inner's pad-T (11) + outer's pad-T (11) on
-    the start side, plus leaf's pad-B (9) and half of outer's
-    row-gap (20/2 = 10) on the end side, for a total of 52.
+  Same nested structure as row-006 but with pad-T and pad-B swapped
+  (pad-T = 9, pad-B = 11). The dominant leaf is the mirror leaf:
+    leaf's pad-B (11) + inner's pad-B (11) + outer's pad-B (11) on
+    the end side, plus leaf's pad-T (9) and half of outer's row-gap
+    (20/2 = 10) on the start side, for a total of 52.
 
   Per the WG resolution at
-  https://github.com/w3c/csswg-drafts/issues/10926, every subgrid in
-  an auto-placed grid-lanes chain must accommodate its margin
-  contribution at every row it could land in. Every row ends up
-  sized to the dominant leaf's 52px:
+  https://github.com/w3c/csswg-drafts/issues/10926, in a grid-lanes
+  container every subgrid in an auto-placed chain must accommodate
+  its margin contribution at every row it could land in. Because the
+  dominant leaf's total is invariant under pad-T/pad-B swap (the
+  chain is symmetric), this test produces the same uniform per-row
+  size as row-006:
     2 rows * 52px = 104px.
 -->
   <div class="grid-lanes">
