@@ -317,23 +317,7 @@ TEST(AlpsDecoderTest, UnknownFrame) {
   EXPECT_EQ(0, decoder.settings_frame_count());
 }
 
-class AlpsDecoderTestWithFeature : public ::testing::TestWithParam<bool> {
- public:
-  bool ShouldKillSessionOnAcceptChMalformed() { return GetParam(); }
-
- private:
-  void SetUp() override {
-    feature_list_.InitWithFeatureState(
-        features::kShouldKillSessionOnAcceptChMalformed,
-        ShouldKillSessionOnAcceptChMalformed());
-  }
-
-  base::test::ScopedFeatureList feature_list_;
-};
-
-INSTANTIATE_TEST_SUITE_P(All, AlpsDecoderTestWithFeature, testing::Bool());
-
-TEST_P(AlpsDecoderTestWithFeature, MalformedAcceptChFrame) {
+TEST(AlpsDecoderTest, MalformedAcceptChFrame) {
   // Correct, complete payload.
   std::string payload = HexDecode(
       "0017"  // origin length
@@ -359,17 +343,10 @@ TEST_P(AlpsDecoderTestWithFeature, MalformedAcceptChFrame) {
 
     AlpsDecoder decoder;
     AlpsDecoder::Error error = decoder.Decode(frame);
-    if (ShouldKillSessionOnAcceptChMalformed()) {
-      EXPECT_EQ(AlpsDecoder::Error::kAcceptChMalformed, error);
-      histogram_tester.ExpectUniqueSample(
-          "Net.SpdySession.AlpsDecoderStatus.Bypassed",
-          static_cast<int>(AlpsDecoder::Error::kNoError), 1);
-    } else {
-      EXPECT_EQ(AlpsDecoder::Error::kNoError, error);
-      histogram_tester.ExpectUniqueSample(
-          "Net.SpdySession.AlpsDecoderStatus.Bypassed",
-          static_cast<int>(AlpsDecoder::Error::kAcceptChMalformed), 1);
-    }
+    EXPECT_EQ(AlpsDecoder::Error::kNoError, error);
+    histogram_tester.ExpectUniqueSample(
+        "Net.SpdySession.AlpsDecoderStatus.Bypassed",
+        static_cast<int>(AlpsDecoder::Error::kAcceptChMalformed), 1);
   }
 }
 

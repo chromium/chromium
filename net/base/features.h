@@ -321,9 +321,6 @@ NET_EXPORT BASE_DECLARE_FEATURE(kAlpsParsing);
 // Whether ALPS parsing is on for client hint parsing specifically.
 NET_EXPORT BASE_DECLARE_FEATURE(kAlpsClientHintParsing);
 
-// Whether to kill the session on Error::kAcceptChMalformed.
-NET_EXPORT BASE_DECLARE_FEATURE(kShouldKillSessionOnAcceptChMalformed);
-
 NET_EXPORT BASE_DECLARE_FEATURE(kEnableWebsocketsOverHttp3);
 
 #if BUILDFLAG(IS_WIN)

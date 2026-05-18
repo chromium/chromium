@@ -152,16 +152,9 @@ void AlpsDecoder::AcceptChParser::OnFramePayload(const char* data, size_t len) {
     std::string_view value;
     if (!ReadUint16PrefixedStringPiece(&payload, &origin) ||
         !ReadUint16PrefixedStringPiece(&payload, &value)) {
-      if (base::FeatureList::IsEnabled(
-              features::kShouldKillSessionOnAcceptChMalformed)) {
-        // This causes a session termination.
-        error_ = Error::kAcceptChMalformed;
-        return;
-      } else {
-        // This logs that a session termination was bypassed.
-        error_bypass_ = Error::kAcceptChMalformed;
-        return;
-      }
+      // This logs that a session termination was bypassed.
+      error_bypass_ = Error::kAcceptChMalformed;
+      return;
     }
     accept_ch_.emplace_back(std::string(origin), std::string(value));
   }
