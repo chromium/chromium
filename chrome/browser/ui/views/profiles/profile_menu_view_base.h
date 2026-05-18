@@ -24,6 +24,7 @@
 #include "ui/base/models/image_model.h"
 #include "ui/color/color_id.h"
 #include "ui/gfx/vector_icon_types.h"
+#include "ui/views/bubble/bubble_anchor.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/flex_layout_view.h"
@@ -38,7 +39,6 @@ class Button;
 
 namespace ui {
 class ColorProvider;
-class TrackedElement;
 }  // namespace ui
 
 // This class provides the UI for different menus that are created by user
@@ -152,7 +152,7 @@ class ProfileMenuViewBase : public content::WebContentsDelegate,
   static constexpr int kOtherProfileImageSize = 16;
 
   // `browser` must not be nullptr.
-  ProfileMenuViewBase(ui::TrackedElement* anchor_element, Browser* browser);
+  ProfileMenuViewBase(views::BubbleAnchor anchor_element, Browser* browser);
   ~ProfileMenuViewBase() override;
 
   ProfileMenuViewBase(const ProfileMenuViewBase&) = delete;

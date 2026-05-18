@@ -10,6 +10,7 @@
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/signin/signin_promo_util.h"
+#include "ui/views/bubble/bubble_anchor.h"
 #include "ui/views/view_tracker.h"
 
 class BrowserWindowInterface;
@@ -43,6 +44,8 @@ class ProfileMenuCoordinator {
  private:
   BrowserWindowInterface* GetBrowser();
   Profile* GetProfile();
+
+  views::BubbleAnchor GetAvatarToolbarButton();
 
   void ShowWithPromoResults(bool is_source_accelerator,
                             bool from_avatar_promo

@@ -28,8 +28,9 @@
 #include "ui/base/models/image_model.h"
 #include "ui/color/color_id.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/bubble/bubble_anchor.h"
 
-IncognitoMenuView::IncognitoMenuView(ui::TrackedElement* anchor_element,
+IncognitoMenuView::IncognitoMenuView(views::BubbleAnchor anchor_element,
                                      Browser* browser)
     : ProfileMenuViewBase(anchor_element, browser) {
   CHECK(profile().IsIncognitoProfile());

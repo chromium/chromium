@@ -189,6 +189,10 @@ class ToolbarView : public views::AccessiblePaneView,
   PinnedActionToolbarButton* tab_search_button() const {
     return tab_search_button_;
   }
+
+  // TODO(crbug.com/513238408): Remove this once toolbar layout/overflow is
+  // fixed.
+  AvatarToolbarButton* avatar_toolbar_button() { return avatar_; }
   AppMenuIconController* app_menu_icon_controller() {
     return &app_menu_icon_controller_;
   }

@@ -161,7 +161,7 @@ std::u16string GetProfileIdentifier(const ProfileAttributesEntry& entry) {
 bool ProfileMenuView::close_on_deactivate_for_testing_ = true;
 
 ProfileMenuView::ProfileMenuView(
-    ui::TrackedElement* anchor_element,
+    views::BubbleAnchor anchor_element,
     Browser* browser,
     signin::ProfileMenuAvatarButtonPromoInfo promo_info,
     bool from_avatar_promo)

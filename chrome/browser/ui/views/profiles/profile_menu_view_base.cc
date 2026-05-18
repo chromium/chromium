@@ -35,6 +35,7 @@
 #include "components/signin/public/base/signin_switches.h"
 #include "components/supervised_user/core/browser/family_link_user_capabilities.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/base/interaction/element_tracker.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -377,22 +378,24 @@ class ProfileMenuViewBase::AXMenuWidgetObserver : public views::WidgetObserver {
       this};
 };
 
-ProfileMenuViewBase::ProfileMenuViewBase(ui::TrackedElement* anchor_element,
+ProfileMenuViewBase::ProfileMenuViewBase(views::BubbleAnchor anchor_element,
                                          Browser* browser)
-    : BubbleDialogDelegateView(views::BubbleAnchor(anchor_element),
-                               views::BubbleBorder::TOP_RIGHT),
+    : BubbleDialogDelegateView(anchor_element, views::BubbleBorder::TOP_RIGHT),
       profile_(raw_ref<Profile>::from_ptr(browser->profile())),
       close_bubble_helper_(this, browser->tab_strip_model()) {
   SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
   set_margins(gfx::Insets(0));
-  DCHECK(anchor_element);
+  DCHECK(!anchor_element.IsNull());
 
-  if (anchor_element->IsA<views::TrackedElementViews>()) {
+  if (ui::TrackedElement* tracked_element = anchor_element.GetIfElement();
+      tracked_element && tracked_element->IsA<views::TrackedElementViews>()) {
     anchor_view_.SetView(
-        anchor_element->AsA<views::TrackedElementViews>()->view());
-    views::InkDrop::Get(anchor_view_.view())
-        ->AnimateToState(views::InkDropState::ACTIVATED, nullptr);
+        tracked_element->AsA<views::TrackedElementViews>()->view());
+  } else if (views::View* anchor_view = anchor_element.GetIfView()) {
+    anchor_view_.SetView(anchor_view);
   }
+  views::InkDrop::Get(anchor_view_.view())
+      ->AnimateToState(views::InkDropState::ACTIVATED, nullptr);
 
   SetEnableArrowKeyTraversal(true);
 

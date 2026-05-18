@@ -25,18 +25,11 @@
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/sync/service/local_data_description.h"
 #include "components/sync/service/sync_service.h"
+#include "ui/views/bubble/bubble_anchor.h"
 #include "ui/views/controls/styled_label.h"
 
 namespace signin_metrics {
 enum class AccessPoint;
-}
-
-namespace ui {
-class TrackedElement;
-}  // namespace ui
-
-namespace views {
-class Button;
 }
 
 struct CoreAccountInfo;
@@ -54,7 +47,7 @@ class Browser;
 class ProfileMenuView : public ProfileMenuViewBase {
  public:
   // `browser` must not be nullptr.
-  ProfileMenuView(ui::TrackedElement* anchor_element,
+  ProfileMenuView(views::BubbleAnchor anchor_element,
                   Browser* browser,
                   signin::ProfileMenuAvatarButtonPromoInfo promo_info,
                   bool from_avatar_promo);
