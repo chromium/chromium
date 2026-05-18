@@ -15,6 +15,8 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
+import android.app.Activity;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -74,6 +76,7 @@ public class ToolbarTabControllerImplTest {
     @Mock private Supplier<Tab> mTabSupplier;
     @Mock private Tab mTab;
     @Mock private Tab mTab2;
+    @Mock private Activity mActivity;
     @Mock private BottomControlsCoordinator mBottomControlsCoordinator;
     @Mock private Tracker mTracker;
     @Mock private Supplier<Tracker> mTrackerSupplier;
@@ -303,6 +306,7 @@ public class ToolbarTabControllerImplTest {
         doReturn(mTab2)
                 .when(mTabCreator)
                 .createTabWithHistory(mTab, TabLaunchType.FROM_HISTORY_NAVIGATION_BACKGROUND);
+        doReturn(mActivity).when(mTab2).getContext();
         InOrder inOrder = inOrder(mTabCreator, mTab2, mMultiInstanceOrchestrator);
 
         // Call backInNewWindow.
@@ -314,6 +318,7 @@ public class ToolbarTabControllerImplTest {
         inOrder.verify(mTab2).goBack();
         inOrder.verify(mMultiInstanceOrchestrator)
                 .moveTabsToNewWindow(
+                        mActivity,
                         Collections.singletonList(mTab2),
                         /* finalizeCallback= */ null,
                         NewWindowAppSource.KEYBOARD_SHORTCUT);
@@ -365,6 +370,7 @@ public class ToolbarTabControllerImplTest {
         doReturn(mTab2)
                 .when(mTabCreator)
                 .createTabWithHistory(mTab, TabLaunchType.FROM_HISTORY_NAVIGATION_BACKGROUND);
+        doReturn(mActivity).when(mTab2).getContext();
         InOrder inOrder = inOrder(mTabCreator, mTab2, mMultiInstanceOrchestrator);
 
         // Call forwardInNewWindow.
@@ -376,6 +382,7 @@ public class ToolbarTabControllerImplTest {
         inOrder.verify(mTab2).goForward();
         inOrder.verify(mMultiInstanceOrchestrator)
                 .moveTabsToNewWindow(
+                        mActivity,
                         Collections.singletonList(mTab2),
                         /* finalizeCallback= */ null,
                         NewWindowAppSource.KEYBOARD_SHORTCUT);

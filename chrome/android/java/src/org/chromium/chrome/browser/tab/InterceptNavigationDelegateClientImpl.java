@@ -232,6 +232,7 @@ public class InterceptNavigationDelegateClientImpl implements InterceptNavigatio
                 () ->
                         MultiInstanceOrchestratorFactory.getInstance()
                                 .moveTabsToNewWindow(
+                                        getActivity(),
                                         Collections.singletonList(mTab),
                                         cleanupPendingTabClosure(),
                                         NewWindowAppSource.EXTERNAL_NAVIGATION));

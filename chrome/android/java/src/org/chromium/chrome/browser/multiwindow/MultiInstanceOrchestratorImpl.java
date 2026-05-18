@@ -198,10 +198,12 @@ import java.util.Set;
 
     @Override
     public void moveTabsToNewWindow(
-            List<Tab> tabs, @Nullable Runnable finalizeCallback, @NewWindowAppSource int source) {
+            @Nullable Activity sourceActivity,
+            List<Tab> tabs,
+            @Nullable Runnable finalizeCallback,
+            @NewWindowAppSource int source) {
         if (!MultiWindowUtils.isMultiInstanceApi31Enabled()) return;
         if (tabs.isEmpty()) return;
-        Activity sourceActivity = TabUtils.getActivity(tabs.get(0));
         if (sourceActivity == null) return;
 
         if (!MultiWindowUtils.isWithinInstanceLimit()) {
@@ -214,7 +216,7 @@ import java.util.Set;
 
         boolean openAdjacently = shouldMoveTabsInAdjacentWindow(sourceActivity, tabs.size());
         mTabReparentingDelegate.reparentTabsToNewWindow(
-                tabs, INVALID_WINDOW_ID, openAdjacently, finalizeCallback, source);
+                sourceActivity, tabs, INVALID_WINDOW_ID, openAdjacently, finalizeCallback, source);
     }
 
     @Override
@@ -256,6 +258,7 @@ import java.util.Set;
                     sourceActivity != null
                             && shouldMoveTabsInAdjacentWindow(sourceActivity, tabs.size());
             mTabReparentingDelegate.reparentTabsToNewWindow(
+                    tabs.get(0).getContext(),
                     tabs,
                     destWindowId,
                     openAdjacently,
@@ -284,7 +287,7 @@ import java.util.Set;
         Activity sourceActivity = TabUtils.getActivity(tabs.get(0));
         MultiInstanceManager multiInstanceManager = getMultiInstanceManager(sourceActivity);
         if (instanceCount <= 1) {
-            moveTabsToNewWindow(tabs, /* finalizeCallback= */ null, source);
+            moveTabsToNewWindow(sourceActivity, tabs, /* finalizeCallback= */ null, source);
 
             // Close the source instance window, if needed.
             if (multiInstanceManager != null) {

@@ -85,13 +85,17 @@ public interface MultiInstanceOrchestrator {
     /**
      * Moves the specified tabs to a new ChromeTabbedActivity instance.
      *
+     * @param sourceActivity The activity that should be used to launch the intent.
      * @param tabs The list of tabs to move.
      * @param finalizeCallback A runnable that will be invoked after the tabs have finished
      *     reparenting to the new window.
      * @param source The new window creation source used for metrics.
      */
     void moveTabsToNewWindow(
-            List<Tab> tabs, @Nullable Runnable finalizeCallback, @NewWindowAppSource int source);
+            @Nullable Activity sourceActivity,
+            List<Tab> tabs,
+            @Nullable Runnable finalizeCallback,
+            @NewWindowAppSource int source);
 
     /**
      * Moves the specified tabs to the specified ChromeTabbedActivity instance. This accepts inputs

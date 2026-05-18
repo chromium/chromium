@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.toolbar;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.build.annotations.NullMarked;
@@ -121,6 +122,7 @@ public class ToolbarTabControllerImpl implements ToolbarTabController {
             newTab.goBack();
             // Move tab to a new window.
             mMultiInstanceOrchestrator.moveTabsToNewWindow(
+                    ContextUtils.activityFromContext(newTab.getContext()),
                     Collections.singletonList(newTab),
                     /* finalizeCallback= */ null,
                     NewWindowAppSource.KEYBOARD_SHORTCUT);
@@ -163,6 +165,7 @@ public class ToolbarTabControllerImpl implements ToolbarTabController {
             newTab.goForward();
             // Move tab to a new window.
             mMultiInstanceOrchestrator.moveTabsToNewWindow(
+                    ContextUtils.activityFromContext(newTab.getContext()),
                     Collections.singletonList(newTab),
                     /* finalizeCallback= */ null,
                     NewWindowAppSource.KEYBOARD_SHORTCUT);
@@ -267,6 +270,7 @@ public class ToolbarTabControllerImpl implements ToolbarTabController {
 
         // Move tab to a new window.
         mMultiInstanceOrchestrator.moveTabsToNewWindow(
+                ContextUtils.activityFromContext(newTab.getContext()),
                 Collections.singletonList(newTab),
                 /* finalizeCallback= */ null,
                 NewWindowAppSource.KEYBOARD_SHORTCUT);

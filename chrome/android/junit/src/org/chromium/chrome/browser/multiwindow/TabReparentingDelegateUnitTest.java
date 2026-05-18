@@ -138,6 +138,7 @@ public class TabReparentingDelegateUnitTest {
 
         // Act.
         mDelegate.reparentTabsToNewWindow(
+                mCurrentActivity,
                 tabs,
                 INVALID_WINDOW_ID,
                 openAdjacently,

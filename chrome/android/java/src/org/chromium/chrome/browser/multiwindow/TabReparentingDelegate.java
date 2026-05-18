@@ -47,13 +47,13 @@ import java.util.List;
     private static @Nullable TabPersistentStore sPersistentStoreForTesting;
 
     /* package */ void reparentTabsToNewWindow(
+            Context context,
             List<Tab> tabs,
             int windowId,
             boolean openAdjacently,
             @Nullable Runnable finalizeCallback,
             @NewWindowAppSource int source) {
         if (tabs.isEmpty()) return;
-        Context context = tabs.get(0).getContext();
         Intent intent =
                 MultiWindowUtils.createNewWindowIntent(
                         context,

@@ -1054,7 +1054,10 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
                 mMultiInstanceManager,
                 () ->
                         mMultiInstanceOrchestrator.moveTabsToNewWindow(
-                                tabs, /* finalizeCallback= */ null, NewWindowAppSource.MENU));
+                                mActivity,
+                                tabs,
+                                /* finalizeCallback= */ null,
+                                NewWindowAppSource.MENU));
     }
 
     @Override

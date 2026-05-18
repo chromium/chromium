@@ -345,11 +345,15 @@ public class MultiInstanceOrchestratorImplUnitTest {
 
         // Act.
         mMultiInstanceOrchestrator.moveTabsToNewWindow(
-                tabs, /* finalizeCallback= */ null, NewWindowAppSource.KEYBOARD_SHORTCUT);
+                mTabbedActivity1,
+                tabs,
+                /* finalizeCallback= */ null,
+                NewWindowAppSource.KEYBOARD_SHORTCUT);
 
         // Verify.
         verify(mTabReparentingDelegate)
                 .reparentTabsToNewWindow(
+                        mTabbedActivity1,
                         tabs,
                         INVALID_WINDOW_ID,
                         /* openAdjacently= */ true,
@@ -369,11 +373,15 @@ public class MultiInstanceOrchestratorImplUnitTest {
 
         // Act.
         mMultiInstanceOrchestrator.moveTabsToNewWindow(
-                tabs, /* finalizeCallback= */ null, NewWindowAppSource.KEYBOARD_SHORTCUT);
+                mTabbedActivity1,
+                tabs,
+                /* finalizeCallback= */ null,
+                NewWindowAppSource.KEYBOARD_SHORTCUT);
 
         // Verify.
         verify(mTabReparentingDelegate)
                 .reparentTabsToNewWindow(
+                        mTabbedActivity1,
                         tabs,
                         INVALID_WINDOW_ID,
                         /* openAdjacently= */ false,
@@ -393,11 +401,15 @@ public class MultiInstanceOrchestratorImplUnitTest {
 
         // Act.
         mMultiInstanceOrchestrator.moveTabsToNewWindow(
-                tabs, /* finalizeCallback= */ null, NewWindowAppSource.KEYBOARD_SHORTCUT);
+                mTabbedActivity1,
+                tabs,
+                /* finalizeCallback= */ null,
+                NewWindowAppSource.KEYBOARD_SHORTCUT);
 
         // Verify.
         verify(mTabReparentingDelegate)
                 .reparentTabsToNewWindow(
+                        mTabbedActivity1,
                         tabs,
                         INVALID_WINDOW_ID,
                         /* openAdjacently= */ false,
@@ -417,11 +429,15 @@ public class MultiInstanceOrchestratorImplUnitTest {
 
         // Act.
         mMultiInstanceOrchestrator.moveTabsToNewWindow(
-                tabs, /* finalizeCallback= */ null, NewWindowAppSource.KEYBOARD_SHORTCUT);
+                mTabbedActivity1,
+                tabs,
+                /* finalizeCallback= */ null,
+                NewWindowAppSource.KEYBOARD_SHORTCUT);
 
         // Verify.
         verify(mTabReparentingDelegate)
                 .reparentTabsToNewWindow(
+                        mTabbedActivity1,
                         tabs,
                         INVALID_WINDOW_ID,
                         /* openAdjacently= */ false,
@@ -439,11 +455,14 @@ public class MultiInstanceOrchestratorImplUnitTest {
 
         // Act.
         mMultiInstanceOrchestrator.moveTabsToNewWindow(
-                tabs, /* finalizeCallback= */ null, NewWindowAppSource.KEYBOARD_SHORTCUT);
+                mTabbedActivity1,
+                tabs,
+                /* finalizeCallback= */ null,
+                NewWindowAppSource.KEYBOARD_SHORTCUT);
 
         // Verify that tab reparenting is not initiated, and a message is shown.
         verify(mTabReparentingDelegate, never())
-                .reparentTabsToNewWindow(any(), anyInt(), anyBoolean(), any(), anyInt());
+                .reparentTabsToNewWindow(any(), any(), anyInt(), anyBoolean(), any(), anyInt());
         verify(mMultiInstanceManager1).showInstanceCreationLimitMessage();
     }
 
@@ -458,11 +477,14 @@ public class MultiInstanceOrchestratorImplUnitTest {
 
         // Act.
         mMultiInstanceOrchestrator.moveTabsToNewWindow(
-                tabs, /* finalizeCallback= */ null, NewWindowAppSource.KEYBOARD_SHORTCUT);
+                mActivity,
+                tabs,
+                /* finalizeCallback= */ null,
+                NewWindowAppSource.KEYBOARD_SHORTCUT);
 
         // Verify that tab reparenting is not initiated, and a message is shown.
         verify(mTabReparentingDelegate, never())
-                .reparentTabsToNewWindow(any(), anyInt(), anyBoolean(), any(), anyInt());
+                .reparentTabsToNewWindow(any(), any(), anyInt(), anyBoolean(), any(), anyInt());
         verify(mMultiInstanceManager1, never()).showInstanceCreationLimitMessage();
     }
 
@@ -553,6 +575,7 @@ public class MultiInstanceOrchestratorImplUnitTest {
         // Verify.
         verify(mTabReparentingDelegate)
                 .reparentTabsToNewWindow(
+                        eq(mTabbedActivity1),
                         eq(tabs),
                         eq(DEST_WINDOW_ID),
                         eq(true),
@@ -583,6 +606,7 @@ public class MultiInstanceOrchestratorImplUnitTest {
         // Verify.
         verify(mTabReparentingDelegate)
                 .reparentTabsToNewWindow(
+                        eq(mTabbedActivity1),
                         eq(tabs),
                         eq(DEST_WINDOW_ID),
                         eq(false),
@@ -1127,6 +1151,7 @@ public class MultiInstanceOrchestratorImplUnitTest {
         if (!eligibleOtherWindowExists) {
             verify(mTabReparentingDelegate)
                     .reparentTabsToNewWindow(
+                            mTabbedActivity1,
                             tabs,
                             INVALID_WINDOW_ID,
                             /* openAdjacently= */ true,
@@ -1204,6 +1229,7 @@ public class MultiInstanceOrchestratorImplUnitTest {
         WebContents webContents = mock(WebContents.class);
         WindowAndroid windowAndroid = mock(WindowAndroid.class);
         when(tab.getWebContents()).thenReturn(webContents);
+        when(tab.getContext()).thenReturn(activity);
         when(webContents.getTopLevelNativeWindow()).thenReturn(windowAndroid);
         when(windowAndroid.getActivity()).thenReturn(new WeakReference<>(activity));
     }
