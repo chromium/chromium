@@ -289,7 +289,8 @@ android_library("javatests") {
 
 android_library("test_support_java") {
   testonly = true
-  sources = [ "java/src/org/chromium/chrome/test/transit/GlicTransitTestRule.java" ]
+  sources =
+      [ "java/src/org/chromium/chrome/test/transit/GlicTransitTestRule.java" ]
   deps = [
     "//chrome/browser/glic:public_java",
     "//chrome/test/android:chrome_java_transit",

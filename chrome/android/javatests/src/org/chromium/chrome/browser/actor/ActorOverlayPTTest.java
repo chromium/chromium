@@ -37,8 +37,7 @@ import org.chromium.chrome.test.transit.ui.SnackbarFacility;
 @EnableFeatures({ChromeFeatureList.GLIC, ChromeFeatureList.TAB_BOTTOM_SHEET})
 @Batch(Batch.PER_CLASS)
 public class ActorOverlayPTTest {
-    @Rule
-    public final GlicTransitTestRule mTestRule = new GlicTransitTestRule();
+    @Rule public final GlicTransitTestRule mTestRule = new GlicTransitTestRule();
 
     @Test
     @MediumTest

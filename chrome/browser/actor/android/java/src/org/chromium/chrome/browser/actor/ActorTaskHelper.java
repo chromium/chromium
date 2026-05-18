@@ -71,10 +71,11 @@ public class ActorTaskHelper implements ActorKeyedService.Observer, StartStopWit
         forEachActiveTask(task -> hasActiveTask[0] = true);
         return hasActiveTask[0];
     }
+
     @Override
     public void onStartWithNative() {}
 
-@Override
+    @Override
     public void onStopWithNative() {
         forEachActiveTask(
                 task -> {

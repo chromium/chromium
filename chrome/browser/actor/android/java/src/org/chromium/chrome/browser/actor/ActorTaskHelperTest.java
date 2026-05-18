@@ -66,7 +66,10 @@ public class ActorTaskHelperTest {
 
         mActorTaskHelper =
                 new ActorTaskHelper(
-                        mActivity, mProfileSupplier, mSelectorSupplier, mActivityLifecycleDispatcher);
+                        mActivity,
+                        mProfileSupplier,
+                        mSelectorSupplier,
+                        mActivityLifecycleDispatcher);
     }
 
     @Test
@@ -158,7 +161,10 @@ public class ActorTaskHelperTest {
 
         ActorTaskHelper helper =
                 new ActorTaskHelper(
-                        mActivity, mProfileSupplier, selectorSupplier, mActivityLifecycleDispatcher);
+                        mActivity,
+                        mProfileSupplier,
+                        selectorSupplier,
+                        mActivityLifecycleDispatcher);
 
         ActorTask taskInWindow = mock(ActorTask.class);
         when(taskInWindow.getState()).thenReturn(ActorTaskState.ACTING);
