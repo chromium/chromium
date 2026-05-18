@@ -195,8 +195,11 @@ enum class SuggestionType {
   // Suggestion to open Gemini in the sidebar.
   kOpenGemini = 82,
 
-  // Next ID: 83
-  kMaxValue = kOpenGemini
+  // Suggestion to display when @memory search fails to connect to the server.
+  kAtMemoryNoConnection = 83,
+
+  // Next ID: 84
+  kMaxValue = kAtMemoryNoConnection
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/autofill/enums.xml:SuggestionType)
 

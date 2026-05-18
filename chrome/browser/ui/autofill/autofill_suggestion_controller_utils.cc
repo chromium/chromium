@@ -101,6 +101,7 @@ bool IsFooterSuggestionType(SuggestionType type) {
     case SuggestionType::kLoadingThrobber:
     case SuggestionType::kAtMemoryInactivityNudge:
     case SuggestionType::kOpenGemini:
+    case SuggestionType::kAtMemoryNoConnection:
       return false;
     case SuggestionType::kWebauthnSignInWithAnotherDevice:
       // The hybrid item is reintroduced as a footer.

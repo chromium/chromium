@@ -733,6 +733,7 @@ bool HasGuid(const Suggestion::Payload& payload) {
       case SuggestionType::kBnplFootnote:
       case SuggestionType::kAutocompleteAtMemoryButton:
       case SuggestionType::kOpenGemini:
+      case SuggestionType::kAtMemoryNoConnection:
         break;
     }
 

@@ -310,6 +310,18 @@ Suggestion CreateNoDataSuggestion() {
   return suggestion;
 }
 
+// Creates a suggestion to display when @memory search fails to connect to the
+// server.
+Suggestion CreateNoConnectionSuggestion() {
+  Suggestion suggestion(
+      l10n_util::GetStringUTF16(IDS_AUTOFILL_AT_MEMORY_NO_CONNECTION),
+      SuggestionType::kAtMemoryNoConnection);
+  suggestion.acceptability =
+      Suggestion::Acceptability::kUnacceptableWithDeactivatedStyle;
+  suggestion.filtration_policy = Suggestion::FiltrationPolicy::kStatic;
+  return suggestion;
+}
+
 }  // namespace
 
 AtMemoryManager::AtMemoryManager(BrowserAutofillManager* manager)
@@ -501,9 +513,11 @@ void AtMemoryManager::OnSearchResultsReceived(
       suggestions.push_back(CreateNoDataSuggestion());
       break;
     case accessibility_annotator::MemorySearchStatus::kPartialResponseSuccess:
+      break;
     case accessibility_annotator::MemorySearchStatus::kInferenceFailure:
     case accessibility_annotator::MemorySearchStatus::kDataFetchFailure:
     case accessibility_annotator::MemorySearchStatus::kInternalFailure:
+      suggestions.push_back(CreateNoConnectionSuggestion());
       break;
   }
   update_callback_.Run(std::move(suggestions), trigger_source_);

@@ -1098,6 +1098,7 @@ bool IsCreditCardFooterSuggestion(
     case SuggestionType::kAtMemorySearchResult:
     case SuggestionType::kAtMemoryInactivityNudge:
     case SuggestionType::kOpenGemini:
+    case SuggestionType::kAtMemoryNoConnection:
     case SuggestionType::kAddressFieldByFieldFilling:
     case SuggestionType::kAutocompleteEntry:
     case SuggestionType::kComposeResumeNudge:

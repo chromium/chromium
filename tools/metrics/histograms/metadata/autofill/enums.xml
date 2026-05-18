@@ -5679,6 +5679,7 @@ Called by update_autofill_enums.py.-->
   <int value="80" label="AtMemory inactivity nudge"/>
   <int value="81" label="Autocomplete AtMemory button"/>
   <int value="82" label="Open Gemini"/>
+  <int value="83" label="AtMemory no connection"/>
 </enum>
 
 <!-- LINT.ThenChange(/components/autofill/core/browser/suggestions/suggestion_type.h:SuggestionType) -->

@@ -1300,6 +1300,48 @@ TEST_F(AutofillExternalDelegateTest, AtMemoryRemoteQuery_NoData) {
   external_delegate().OnSearchSubmitted(u"shoe size");
 }
 
+class AutofillExternalDelegateAtMemoryErrorTest
+    : public AutofillExternalDelegateTest,
+      public testing::WithParamInterface<accessibility_annotator::MemorySearchStatus> {};
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    AutofillExternalDelegateAtMemoryErrorTest,
+    testing::Values(accessibility_annotator::MemorySearchStatus::kDataFetchFailure,
+                    accessibility_annotator::MemorySearchStatus::kInferenceFailure,
+                    accessibility_annotator::MemorySearchStatus::kInternalFailure));
+
+// Tests that when a remote query returns no entries and an error status
+// (fetch, inference, or internal failure), the delegate shows a "No server connection" suggestion.
+TEST_P(AutofillExternalDelegateAtMemoryErrorTest, AtMemoryRemoteQuery_NoConnection) {
+  StartAtMemorySession();
+
+  SetupMockAccessibilityQueryService(
+      u"shoe size",
+      {GetParam(), {}},
+      /*full_search=*/true);
+
+  EXPECT_CALL(autofill_client(), UpdateAutofillSuggestions)
+      .WillOnce(testing::Return())
+      .WillOnce([this](const std::vector<Suggestion>& suggestions,
+                       FillingProduct product,
+                       AutofillSuggestionTriggerSource source,
+                       AutofillSuggestionsIgnoreFocusLoss ignore) {
+        EXPECT_THAT(
+            suggestions,
+            testing::ElementsAre(testing::AllOf(
+                HasMainText(l10n_util::GetStringUTF16(
+                    IDS_AUTOFILL_AT_MEMORY_NO_CONNECTION)),
+                testing::Field(&Suggestion::type,
+                               SuggestionType::kAtMemoryNoConnection),
+                testing::Field(&Suggestion::acceptability,
+                               Suggestion::Acceptability::
+                                   kUnacceptableWithDeactivatedStyle))));
+      });
+
+  external_delegate().OnSearchSubmitted(u"shoe size");
+}
+
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 // Tests that when the "Open Gemini" suggestion is accepted, it triggers
 // opening Gemini in the sidebar.
