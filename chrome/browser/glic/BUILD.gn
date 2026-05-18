@@ -415,6 +415,7 @@ source_set("impl") {
     "//components/feature_engagement/public:feature_constants",
     "//components/feedback",
     "//components/feedback/content",
+    "//components/google/core/common",
     "//components/guest_view/buildflags",
     "//components/language/core/common",
     "//components/metrics",
