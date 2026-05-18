@@ -482,8 +482,9 @@ IN_PROC_BROWSER_TEST_P(TabUsageScenarioTrackerDiscardBrowserTest, TabDiscard) {
             interval_data.source_id_for_longest_visible_origin_duration);
 }
 
+// TODO(crbug.com/507054999): Flaky on multiple platforms.
 IN_PROC_BROWSER_TEST_P(TabUsageScenarioTrackerDiscardBrowserTest,
-                       VisibleTabVideoDiscarded) {
+                       DISABLED_VisibleTabVideoDiscarded) {
   // Start a video in a tab and discard it while it's playing, ensure that
   // things are tracked properly.
   EXPECT_TRUE(
@@ -529,8 +530,9 @@ IN_PROC_BROWSER_TEST_P(TabUsageScenarioTrackerDiscardBrowserTest,
             interval_data.source_id_for_longest_visible_origin_duration);
 }
 
+// TODO(crbug.com/507054999): Flaky on multiple platforms.
 IN_PROC_BROWSER_TEST_P(TabUsageScenarioTrackerDiscardBrowserTest,
-                       FullScreenVideoDiscarded) {
+                       DISABLED_FullScreenVideoDiscarded) {
   // Play full screen video in a tab and discard it while it's playing, ensure
   // that things are tracked properly.
   EXPECT_TRUE(
@@ -804,8 +806,9 @@ IN_PROC_BROWSER_TEST_F(TabUsageScenarioTrackerBrowserTest,
             interval_data.source_id_for_longest_visible_origin_duration);
 }
 
+// TODO(crbug.com/507054999): Flaky on multiple platforms.
 IN_PROC_BROWSER_TEST_F(TabUsageScenarioTrackerBrowserTest,
-                       InitialVisibleNotification) {
+                       DISABLED_InitialVisibleNotification) {
 #if defined(MEMORY_SANITIZER)
   if (base::FeatureList::IsEnabled(features::kInitialWebUI)) {
     GTEST_SKIP() << "Skipping test on MSAN with InitialWebUI enabled. "
