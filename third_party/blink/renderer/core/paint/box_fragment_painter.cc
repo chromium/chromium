@@ -1482,13 +1482,13 @@ void BoxFragmentPainter::PaintGapDecorations(
   // This boils down to only creating one when we are in overflow: hidden, which
   // is when GapDecorations need it but background doesn't
   if (layout_box.IsScrollContainer() && !contents_paint_state) {
-    // For the case where we are painting the decorations in the contents
-    // space, we need to include the entire overflow rect.
-    paint_rect = layout_box.ScrollableOverflowRect();
-
     contents_paint_state_for_hidden.emplace(
         paint_info, paint_offset, layout_box, box_fragment_.GetFragmentData());
-    paint_rect.Move(contents_paint_state_for_hidden->PaintOffset());
+
+    // For the case where we are painting the decorations in the contents
+    // space, we need to use the overflow rect size for the scrollable extent.
+    paint_rect.size = layout_box.ScrollableOverflowRect().size;
+    paint_rect.offset = contents_paint_state_for_hidden->PaintOffset();
 
     visual_rect = layout_box.GetScrollableArea()->ScrollingBackgroundVisualRect(
         paint_offset);
