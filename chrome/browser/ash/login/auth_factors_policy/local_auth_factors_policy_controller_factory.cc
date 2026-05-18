@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/login/auth_factors_policy/local_auth_factors_policy_controller_factory.h"
 
+#include "base/logging.h"
 #include "chrome/browser/ash/login/auth_factors_policy/local_auth_factors_policy_controller.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
@@ -14,11 +15,25 @@
 #include "components/account_id/account_id.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
-#include "components/keyed_service/core/keyed_service.h"
+#include "components/user_manager/known_user.h"
 #include "components/user_manager/user.h"
 #include "content/public/browser/browser_context.h"
 
 namespace ash {
+
+namespace {
+
+// Returns `true` if the given Profile/User is enterprise managed.
+bool IsUserEnterpriseManaged(const user_manager::User& user) {
+  if (user.is_managed() == true) {
+    return true;
+  }
+  // Fallback to KnownUser, which is often populated earlier in tests.
+  user_manager::KnownUser known_user(g_browser_process->local_state());
+  return known_user.GetIsEnterpriseManaged(user.GetAccountId());
+}
+
+}  // namespace
 
 LocalAuthFactorsPolicyController*
 LocalAuthFactorsPolicyControllerFactory::GetForProfile(Profile* profile) {
@@ -63,6 +78,11 @@ LocalAuthFactorsPolicyControllerFactory::BuildServiceInstanceForBrowserContext(
   if (!ash::UserDataAuthClient::Get()) {
     LOG(WARNING)
         << "UserDataAuthClient was null not building service instance.";
+    return nullptr;
+  }
+
+  if (!IsUserEnterpriseManaged(*user)) {
+    LOG(WARNING) << "User was not managed, not building service instance.";
     return nullptr;
   }
 

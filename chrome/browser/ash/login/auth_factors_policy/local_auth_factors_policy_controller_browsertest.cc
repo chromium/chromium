@@ -9,6 +9,7 @@
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/login_screen_test_api.h"
 #include "ash/public/cpp/reauth_reason.h"
+#include "base/logging.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_future.h"
@@ -142,10 +143,13 @@ class LocalAuthFactorsPolicyControllerTest : public LoginManagerTest {
   void PerformLoginAndVerifyPolicyEnforcement(
       const LoginManagerMixin::TestUserInfo& user,
       ReauthReason expected_reason) {
-    LoginUser(user.account_id);
-    ClearPendingPrefProcessedCallback();
     DisableAllAllowedAuthFactorsPolicy();
-    WaitForPrefProcessedCallback();
+    ClearPendingPrefProcessedCallback();
+    LoginUser(user.account_id);
+    if (LocalAuthFactorsPolicyControllerFactory::GetForProfile(
+            GetProfile(user.account_id))) {
+      WaitForPrefProcessedCallback();
+    }
     AssertReauthReason(user.account_id, expected_reason);
   }
 
@@ -185,6 +189,11 @@ class LocalAuthFactorsPolicyControllerTest : public LoginManagerTest {
   const LoginManagerMixin::TestUserInfo saml_user_{
       LoginManagerMixin::CreateEnterpriseAccountId(6),
       UserAuthConfig::Create({AshAuthFactor::kLocalPassword})
+          .RequireReauth(/*require_reauth=*/false)};
+
+  const LoginManagerMixin::TestUserInfo unmanaged_user_{
+      LoginManagerMixin::CreateConsumerAccountId(7),
+      UserAuthConfig::Create({AshAuthFactor::kGaiaPassword})
           .RequireReauth(/*require_reauth=*/false)};
 
   base::test::TestFuture<void> on_pref_processed_future_;
@@ -290,6 +299,27 @@ IN_PROC_BROWSER_TEST_F(LocalAuthFactorsPolicyControllerTest,
                        NoForceReauthForGaiaPassword) {
   EXPECT_FALSE(
       LoginScreenTestApi::IsForcedOnlineSignin(gaia_password_user_.account_id));
+}
+
+IN_PROC_BROWSER_TEST_F(LocalAuthFactorsPolicyControllerTest,
+                       PRE_NoForceReauthForUnmanagedGaiaPassword) {
+  base::HistogramTester histogram_tester;
+  PerformLoginAndVerifyPolicyEnforcement(unmanaged_user_, ReauthReason::kNone);
+  histogram_tester.ExpectBucketCount(
+      "Enterprise.LocalAuthFactorsPolicy.ForcedReauth", false, 0);
+  histogram_tester.ExpectBucketCount(
+      "Enterprise.LocalAuthFactorsPolicy.ForcedReauth", true, 0);
+}
+
+IN_PROC_BROWSER_TEST_F(LocalAuthFactorsPolicyControllerTest,
+                       NoForceReauthForUnmanagedGaiaPassword) {
+  // Reauth might be forced for other reasons (e.g. invalid tokens in tests),
+  // but it should NOT be ReauthReason::kForcedByLocalAuthFactorsPolicy.
+  auto known_user = user_manager::KnownUser(g_browser_process->local_state());
+  auto actual_reason = static_cast<ReauthReason>(
+      known_user.FindReauthReason(unmanaged_user_.account_id)
+          .value_or(static_cast<int>(ReauthReason::kNone)));
+  EXPECT_NE(actual_reason, ReauthReason::kForcedByLocalAuthFactorsPolicy);
 }
 
 IN_PROC_BROWSER_TEST_F(LocalAuthFactorsPolicyControllerTest,
