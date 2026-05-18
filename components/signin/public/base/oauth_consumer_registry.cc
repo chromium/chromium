@@ -498,7 +498,8 @@ OAuthConsumer OAuthConsumerRegistry::GetOAuthConsumerFromId(
     case OAuthConsumerId::kComposeboxQueryController:
       return OAuthConsumer(
           /*name=*/kComposeboxQueryControllerName,
-          /*scopes=*/{GaiaConstants::kLensOAuth2Scope});
+          /*scopes=*/{GaiaConstants::kLensOAuth2Scope,
+                      kDriveReadOnlyOAuth2Scope});
     case OAuthConsumerId::kDocumentSuggestionsService:
       return OAuthConsumer(
           /*name=*/kDocumentSuggestionsServiceName,
