@@ -194,6 +194,11 @@ source_set("browser_tests") {
         "chromeos/boca_ui/boca_app_browsertest.cc",
         "chromeos/projector_app/untrusted_projector_browser_proxy_browsertest.cc",
       ]
+      deps += [
+        "//chrome/browser/ash/boca",
+        "//chromeos/ash/components/boca/proto",
+        "//chromeos/ash/components/boca/session_api",
+      ]
     }
   } else if (!is_android) {
     sources += [
