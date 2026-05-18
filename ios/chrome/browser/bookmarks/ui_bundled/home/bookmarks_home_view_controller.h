@@ -60,6 +60,7 @@ class BookmarkNode;
 @property(nonatomic, weak) id<SnackbarCommands> snackbarCommandsHandler;
 
 // The bookmark folder currently being displayed.
+// Nil if the view controller is being dismissed.
 @property(nonatomic, assign) const bookmarks::BookmarkNode* displayedFolderNode;
 
 // Initializers.

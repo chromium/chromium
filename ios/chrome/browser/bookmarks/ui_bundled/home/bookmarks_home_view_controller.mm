@@ -264,6 +264,8 @@ BookmarkNodeIDSet GetBookmarkNodeIDSet(
   SigninCoordinator* _signinCoordinator;
   // Whether the UI is disabled.
   BOOL _UIDisabled;
+  // The bookmark folder currently being displayed.
+  raw_ptr<const bookmarks::BookmarkNode> _displayedFolderNode;
 }
 
 @synthesize editingFolderCell = _editingFolderCell;
@@ -300,6 +302,7 @@ BookmarkNodeIDSet GetBookmarkNodeIDSet(
   [self stopBookmarksEditorCoordinator];
   [self stopBookmarksFolderEditorCoordinator];
   [self.mediator disconnect];
+  _displayedFolderNode = nullptr;
   self.mediator.consumer = nil;
   self.mediator = nil;
   _browser = nullptr;
@@ -335,6 +338,8 @@ BookmarkNodeIDSet GetBookmarkNodeIDSet(
   // associated with the root node.
   CHECK(_bookmarkModel->loaded());
   CHECK([self isDisplayingBookmarkRoot], base::NotFatalUntil::M152);
+  // The displayed node is the root node, so it must still exists.
+  CHECK(self.displayedFolderNode, base::NotFatalUntil::M152);
 
   NSMutableArray<BookmarksHomeViewController*>* stack = [NSMutableArray array];
   // Configure the root controller Navigationbar at this time when
@@ -399,6 +404,15 @@ BookmarkNodeIDSet GetBookmarkNodeIDSet(
     [self.searchController.searchBar endEditing:YES];
   }
   [self willDismiss];
+}
+
+- (const bookmarks::BookmarkNode*)displayedFolderNode {
+  return _displayedFolderNode;
+}
+
+- (void)setDisplayedFolderNode:
+    (const bookmarks::BookmarkNode*)displayedFolderNode {
+  _displayedFolderNode = displayedFolderNode;
 }
 
 #pragma mark - UIViewController
@@ -545,7 +559,10 @@ BookmarkNodeIDSet GetBookmarkNodeIDSet(
 #pragma mark - Protected
 
 - (void)loadBookmarkViews {
-  CHECK(self.displayedFolderNode, base::NotFatalUntil::M152);
+  if (!self.displayedFolderNode) {
+    // The view is being dismissed before being loaded, so let’s not load it.
+    return;
+  }
   [self loadModel];
 
   self.dragDropHandler = [[TableViewURLDragDropHandler alloc] init];
@@ -604,6 +621,11 @@ BookmarkNodeIDSet GetBookmarkNodeIDSet(
 #pragma mark - BookmarksHomeConsumer
 
 - (void)closeThisFolder {
+  if (!self.displayedFolderNode) {
+    // The view is being dismissed before being loaded, so no need to close it
+    // again.
+    return;
+  }
   [self jumpToFolder:self.displayedFolderNode->parent()];
 }
 
@@ -1163,6 +1185,13 @@ BookmarkNodeIDSet GetBookmarkNodeIDSet(
   auto completion = ^{
     [weakSelf searchControllerDismissCallbackWithStack:stack];
   };
+  NSArray<__kindof UIViewController*>* previousStack =
+      self.navigationController.viewControllers;
+  for (UIViewController* controller in previousStack) {
+    BookmarksHomeViewController* bookmarksHomeViewController =
+        base::apple::ObjCCastStrict<BookmarksHomeViewController>(controller);
+    bookmarksHomeViewController.displayedFolderNode = nullptr;
+  }
 
   [self.searchController dismissViewControllerAnimated:YES
                                             completion:completion];
@@ -1238,16 +1267,6 @@ BookmarkNodeIDSet GetBookmarkNodeIDSet(
   }
 
   NOTREACHED(base::NotFatalUntil::M152);
-}
-
-- (void)handleMoveNode:(const BookmarkNode*)node toPosition:(size_t)position {
-  SnackbarMessage* snackbarMessage =
-      bookmark_utils_ios::UpdateBookmarkPositionWithUndoSnackbar(
-          node, self.displayedFolderNode, position, _bookmarkModel.get(),
-          self.profile);
-  if (snackbarMessage) {
-    [self.snackbarCommandsHandler showSnackbarMessage:snackbarMessage];
-  }
 }
 
 - (void)handleRefreshContextBar {
@@ -2976,7 +2995,8 @@ BookmarkNodeIDSet GetBookmarkNodeIDSet(
     moveRowAtIndexPath:(NSIndexPath*)sourceIndexPath
            toIndexPath:(NSIndexPath*)destinationIndexPath {
   if (sourceIndexPath.row == destinationIndexPath.row ||
-      self.mediator.currentlyShowingSearchResults) {
+      self.mediator.currentlyShowingSearchResults ||
+      !self.displayedFolderNode) {
     return;
   }
   const BookmarkNode* node = [self nodeAtIndexPath:sourceIndexPath];
@@ -2991,7 +3011,14 @@ BookmarkNodeIDSet GetBookmarkNodeIDSet(
   size_t newPosition = sourceIndexPath.row < destinationIndexPath.row
                            ? destinationIndexPath.row + 1
                            : destinationIndexPath.row;
-  [self handleMoveNode:node toPosition:newPosition];
+
+  SnackbarMessage* snackbarMessage =
+      bookmark_utils_ios::UpdateBookmarkPositionWithUndoSnackbar(
+          node, self.displayedFolderNode, newPosition, _bookmarkModel.get(),
+          self.profile);
+  if (snackbarMessage) {
+    [self.snackbarCommandsHandler showSnackbarMessage:snackbarMessage];
+  }
 }
 
 #pragma mark - UITableViewDataSource Helper
@@ -3207,6 +3234,10 @@ BookmarkNodeIDSet GetBookmarkNodeIDSet(
 - (void)tableView:(UITableView*)tableView
        didDropURL:(const GURL&)URL
       atIndexPath:(NSIndexPath*)indexPath {
+  if (!self.displayedFolderNode) {
+    // If the view is being closed, let’s not add the URL.
+    return;
+  }
   NSUInteger index = base::checked_cast<NSUInteger>(indexPath.item);
 
   [self.snackbarCommandsHandler
