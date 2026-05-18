@@ -34,9 +34,6 @@ extern const char kStartupNonBlockingWebViewConstructor[];
 extern const char kPostChromiumStartupInWebViewConstructor[];
 extern const char kWebViewStaticMethodsNotTriggerStartup[];
 extern const char kWebViewOptInToGmsBindServiceOptimization[];
-extern const char kWebViewRendererLibraryPrefetch[];
-extern const char kWebViewRendererLibraryPrefetchDisabled[];
-extern const char kWebViewRendererLibraryPrefetchEnabled[];
 extern const char kWebViewReduceUserAgentMinorVersion[];
 extern const char kWebViewReduceUAAndroidVersionDeviceModel[];
 

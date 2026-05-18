@@ -367,8 +367,6 @@ public class WebViewChromiumAwInit {
         CallSite.STATIC_GET_SAFE_BROWSING_PRIVACY_POLICY_URL,
         CallSite.STATIC_IS_MULTI_PROCESS_ENABLED,
         CallSite.STATIC_GET_VARIATIONS_HEADER,
-        CallSite.STATIC_SET_RENDERER_LIBRARY_PREFETCH_MODE,
-        CallSite.STATIC_GET_RENDERER_LIBRARY_PREFETCH_MODE,
         CallSite.GET_DEFAULT_COOKIE_MANAGER,
         CallSite.GET_PROFILE_STORE,
         CallSite.WEBVIEW_INSTANCE_GET_SETTINGS,
@@ -480,9 +478,8 @@ public class WebViewChromiumAwInit {
         int STATIC_GET_SAFE_BROWSING_PRIVACY_POLICY_URL = 100;
         int STATIC_IS_MULTI_PROCESS_ENABLED = 101;
         int STATIC_GET_VARIATIONS_HEADER = 102;
-        // Values 103 and 104 were used for traffic stats, which no longer start up chromium.
-        int STATIC_SET_RENDERER_LIBRARY_PREFETCH_MODE = 105;
-        int STATIC_GET_RENDERER_LIBRARY_PREFETCH_MODE = 106;
+        // Values 103 and 104 were used for traffic stats, which no longer start up Chromium.
+        // Values 105 and 106 were used for {get,set}RendererLibraryPrefetchMode.
         int GET_DEFAULT_COOKIE_MANAGER = 107;
         int GET_PROFILE_STORE = 108;
         int WEBVIEW_INSTANCE_GET_SETTINGS = 109;

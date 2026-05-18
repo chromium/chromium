@@ -77,25 +77,9 @@ void AwContentRendererClient::RenderThreadStarted() {
       blink::Platform::Current()->GetBrowserInterfaceBroker();
 
 #if BUILDFLAG(SUPPORTS_CODE_ORDERING)
-  // Default behavior.
   bool shouldPrefetchNativeLibrary =
       base::FeatureList::IsEnabled(features::kWebViewPrefetchNativeLibrary) &&
       features::kWebViewPrefetchFromRenderer.Get();
-
-  // The new API can override the default.
-  if (base::FeatureList::IsEnabled(
-          features::kWebViewConfigurableLibraryPrefetch)) {
-    base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-    if (command_line->HasSwitch(switches::kWebViewRendererLibraryPrefetch)) {
-      std::string value = command_line->GetSwitchValueASCII(
-          switches::kWebViewRendererLibraryPrefetch);
-      if (value == switches::kWebViewRendererLibraryPrefetchEnabled) {
-        shouldPrefetchNativeLibrary = true;
-      } else if (value == switches::kWebViewRendererLibraryPrefetchDisabled) {
-        shouldPrefetchNativeLibrary = false;
-      }
-    }
-  }
 
   if (shouldPrefetchNativeLibrary) {
     base::ThreadPool::PostTask(

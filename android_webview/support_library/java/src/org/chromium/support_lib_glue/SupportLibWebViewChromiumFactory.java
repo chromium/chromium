@@ -129,7 +129,6 @@ public class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryB
                 Features.HYPERLINK_CONTEXT_MENU_ITEMS + Features.DEV_SUFFIX,
                 Features.ASYNC_WEBVIEW_STARTUP_ASYNC_STARTUP_LOCATIONS,
                 Features.CUSTOM_REQUEST_HEADERS,
-                Features.RENDERER_LIBRARY_PREFETCH_MODE + Features.DEV_SUFFIX,
                 Features.ASYNC_WEBVIEW_STARTUP_V2,
                 Features.WEB_VIEW_NAVIGATION_LISTENER_V1,
                 Features.ADD_QUIC_HINTS_V1,
@@ -511,8 +510,8 @@ public class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryB
         @Deprecated int PAGE_IS_PRERENDERING = 161;
         int ADD_ORIGIN_MATCHED_HEADER = 162;
         int GET_ORIGIN_MATCHED_HEADERS = 163;
-        int SET_RENDERER_LIBRARY_PREFETCH_MODE = 164;
-        int GET_RENDERER_LIBRARY_PREFETCH_MODE = 165;
+        @Deprecated int SET_RENDERER_LIBRARY_PREFETCH_MODE = 164;
+        @Deprecated int GET_RENDERER_LIBRARY_PREFETCH_MODE = 165;
         int BACK_FORWARD_CACHE_SETTINGS_SET_TIMEOUT_IN_SECONDS = 166;
         int BACK_FORWARD_CACHE_SETTINGS_SET_MAX_PAGES_IN_CACHE = 167;
         int ADD_NAVIGATION_LISTENER = 168;
@@ -687,25 +686,6 @@ public class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryB
             }
         }
 
-        @Override
-        public void setRendererLibraryPrefetchMode(int mode) {
-            try (TraceEvent event =
-                    TraceEvent.scoped(
-                            "WebView.APICall.AndroidX.SET_RENDERER_LIBRARY_PREFETCH_MODE")) {
-                recordApiCall(ApiCall.SET_RENDERER_LIBRARY_PREFETCH_MODE);
-                mSharedStatics.setRendererLibraryPrefetchMode(mode);
-            }
-        }
-
-        @Override
-        public int getRendererLibraryPrefetchMode() {
-            try (TraceEvent event =
-                    TraceEvent.scoped(
-                            "WebView.APICall.AndroidX.GET_RENDERER_LIBRARY_PREFETCH_MODE")) {
-                recordApiCall(ApiCall.GET_RENDERER_LIBRARY_PREFETCH_MODE);
-                return mSharedStatics.getRendererLibraryPrefetchMode();
-            }
-        }
     }
 
     @Override

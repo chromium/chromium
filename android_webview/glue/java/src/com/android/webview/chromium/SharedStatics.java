@@ -88,8 +88,8 @@ public class SharedStatics {
         int GET_GEOLOCATION_PERMISSIONS = 11;
         int SET_DEFAULT_TRAFFICSTATS_TAG = 12;
         int SET_DEFAULT_TRAFFICSTATS_UID = 13;
-        int SET_RENDERER_LIBRARY_PREFETCH_MODE = 14;
-        int GET_RENDERER_LIBRARY_PREFETCH_MODE = 15;
+        @Deprecated int SET_RENDERER_LIBRARY_PREFETCH_MODE = 14;
+        @Deprecated int GET_RENDERER_LIBRARY_PREFETCH_MODE = 15;
         // Remember to update WebViewApiCallStatic in enums.xml when adding new values here
         int COUNT = 16;
     }
@@ -321,23 +321,5 @@ public class SharedStatics {
             recordStaticApiCall(ApiCall.SET_DEFAULT_TRAFFICSTATS_UID);
             AwContentsStatics.setDefaultTrafficStatsUid(uid);
         }
-    }
-
-    // TODO(b/428680502): This method should be removed as we decided that this will not be shipped.
-    public void setRendererLibraryPrefetchMode(int mode) {
-        mAwInit.triggerAndWaitForChromiumStarted(
-                WebViewChromiumAwInit.CallSite.STATIC_SET_RENDERER_LIBRARY_PREFETCH_MODE);
-        // Not a framework API. AndroidX metrics and trace scopes are handled by the caller.
-        recordStaticApiCall(ApiCall.SET_RENDERER_LIBRARY_PREFETCH_MODE);
-        AwContentsStatics.setRendererLibraryPrefetchMode(mode);
-    }
-
-    // TODO(b/428680502): This method should be removed as we decided that this will not be shipped.
-    public int getRendererLibraryPrefetchMode() {
-        mAwInit.triggerAndWaitForChromiumStarted(
-                WebViewChromiumAwInit.CallSite.STATIC_GET_RENDERER_LIBRARY_PREFETCH_MODE);
-        // Not a framework API. AndroidX metrics and trace scopes are handled by the caller.
-        recordStaticApiCall(ApiCall.GET_RENDERER_LIBRARY_PREFETCH_MODE);
-        return AwContentsStatics.getRendererLibraryPrefetchMode();
     }
 }

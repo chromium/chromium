@@ -722,8 +722,10 @@ chromium-metrics-reviews@google.com.
   <int value="161" label="Page.isPrerendering (deprecated)"/>
   <int value="162" label="Profile.addCustomHeader"/>
   <int value="163" label="Profile.getCustomHeaders"/>
-  <int value="164" label="WebSettingsCompat.setRendererLibraryPrefetchMode"/>
-  <int value="165" label="WebSettingsCompat.getRendererLibraryPrefetchMode"/>
+  <int value="164"
+      label="(Obsolete) WebSettingsCompat.setRendererLibraryPrefetchMode"/>
+  <int value="165"
+      label="(Obsolete) WebSettingsCompat.getRendererLibraryPrefetchMode"/>
   <int value="166" label="BackForwardCacheSettings.setTimeoutInSec"/>
   <int value="167" label="BackForwardCacheSettings.setMaxPagesInCache"/>
   <int value="168" label="WebSettingsCompat.addWebNavigationListener"/>
@@ -1678,12 +1680,6 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Used on Search Suggestion in both contexts"/>
 </enum>
 
-<enum name="RendererLibraryPrefetchMode">
-  <int value="0" label="Default"/>
-  <int value="1" label="Disabled"/>
-  <int value="2" label="Enabled"/>
-</enum>
-
 <enum name="RestoreTabsOnFREDeviceRestoredFrom">
   <int value="0" label="User restored tabs from the default selected device"/>
   <int value="1"
@@ -2504,8 +2500,10 @@ chromium-metrics-reviews@google.com.
   <int value="11" label="GeoLocationPermissions.getInstance"/>
   <int value="12" label="WebView.setDefaultTrafficStatsTag"/>
   <int value="13" label="WebView.setDefaultTrafficStatsUid"/>
-  <int value="14" label="WebViewCompat.setRendererLibraryPrefetchMode"/>
-  <int value="15" label="WebViewCompat.getRendererLibraryPrefetchMode"/>
+  <int value="14"
+      label="(Obsolete) WebViewCompat.setRendererLibraryPrefetchMode"/>
+  <int value="15"
+      label="(Obsolete) WebViewCompat.getRendererLibraryPrefetchMode"/>
 <!-- LINT.ThenChange(/android_webview/glue/java/src/com/android/webview/chromium/SharedStatics.java:ApiCall) -->
 
 </enum>
@@ -2886,8 +2884,8 @@ chromium-metrics-reviews@google.com.
   <int value="102" label="staticGetVariationsHeader"/>
   <int value="103" label="(Obsolete) staticSetDefaultTrafficStatsTag"/>
   <int value="104" label="(Obsolete) staticSetDefaultTrafficStatsUid"/>
-  <int value="105" label="staticSetRendererLibraryPrefetchMode"/>
-  <int value="106" label="staticGetRendererLibraryPrefetchMode"/>
+  <int value="105" label="(Obsolete) staticSetRendererLibraryPrefetchMode"/>
+  <int value="106" label="(Obsolete) staticGetRendererLibraryPrefetchMode"/>
   <int value="107" label="getDefaultCookieManager"/>
   <int value="108" label="getProfileStore"/>
   <int value="109" label="webViewInstanceGetSettings"/>

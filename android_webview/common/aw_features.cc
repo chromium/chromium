@@ -26,9 +26,6 @@ BASE_FEATURE(kWebViewBackForwardCache, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kWebViewBypassHttpCacheForPrefetchFromHeader,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Allow apps to configure the renderer library prefetching behaviour.
-BASE_FEATURE(kWebViewConfigurableLibraryPrefetch,
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables content restriction support in WebView.
 BASE_FEATURE(kWebViewContentRestrictionSupport,
