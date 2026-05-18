@@ -145,7 +145,6 @@ source_set("common") {
     "//base",
     "//build/config/linux/libdrm",
     "//media",
-    "//media/gpu:buffer_validation",
     "//media/gpu:common",
     "//media/gpu/chromeos:fourcc",
     "//ui/gfx/geometry",
