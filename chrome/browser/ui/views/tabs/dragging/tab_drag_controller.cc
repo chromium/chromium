@@ -532,6 +532,18 @@ TabDragController::Liveness TabDragController::Init(
       std::make_unique<DraggedTabsClosedTracker>(
           ref->source_context_->GetTabStripModel(), this);
 
+  // To support immersive fullscreen on macOS, get the top-level widget, which
+  // is the browser widget. In immersive fullscreen there are other
+  // intermediate widgets that host the toolbar and tab strip; getting their
+  // restored bounds is not helpful. Getting the top-level widget in the
+  // non-immersive fullscreen case is a essentially a NOP, so use it
+  // unconditionally here for all platforms.
+  const views::Widget* source_top_level_widget =
+      ref->source_context_->GetWidget()->GetTopLevelWidget();
+  CHECK(source_top_level_widget);
+  ref->initial_window_size_ =
+      source_top_level_widget->GetRestoredBounds().size();
+
   ///////// DO NOT ADD INITIALIZATION CODE BELOW THIS LINE ////////
   // We need to be initialized at this point because SetCapture may reenter this
   // TabDragController and we do not want to deal with a partially-uninitialized
@@ -2435,14 +2447,7 @@ void TabDragController::RestoreAttachedWindowForDrag() {
 
 gfx::Size TabDragController::CalculateDraggedWindowSize(
     TabDragContext* source) {
-  // To support immersive fullscreen on macOS get the top level widget, which
-  // will be the browser widget. In immersive fullscreen there are other
-  // intermediate widgets that host the toolbar and tab strip, getting their
-  // restored bounds is not helpful. Getting the top level widget in the
-  // non-immersive fullscreen case is a essentially a NOP, so use it
-  // unconditionally here for all platforms.
-  gfx::Size new_size(
-      source->GetWidget()->GetTopLevelWidget()->GetRestoredBounds().size());
+  gfx::Size new_size(initial_window_size_);
 
   // Limit the window size to the current display's size, less some insets.
   const gfx::Size work_area =

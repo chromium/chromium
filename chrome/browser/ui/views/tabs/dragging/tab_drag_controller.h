@@ -588,6 +588,10 @@ class TabDragController : public views::WidgetObserver,
   // DraggedTabView is constructed.
   gfx::Point start_point_in_screen_;
 
+  // The restored bounds size of the source window at the start of the drag
+  // session. Used to calculate the dragged window size.
+  gfx::Size initial_window_size_;
+
   // Used to track the view that had focus in the window containing
   // `source_view_`. This is saved so that focus can be restored properly when
   // a drag begins and ends within this same window.
