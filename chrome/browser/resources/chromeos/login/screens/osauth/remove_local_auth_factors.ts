@@ -33,6 +33,7 @@ enum UserAction {
 enum RemoveLocalAuthFactorsScreenState {
   SUCCESS = 'success',
   PROGRESS = 'progress',
+  DONE = 'done',
 }
 
 class RemoveLocalAuthFactorsScreen extends
@@ -48,7 +49,7 @@ class RemoveLocalAuthFactorsScreen extends
   static get properties(): PolymerElementProperties {
     return {
       // User email address.
-      email: {type: String, value: ''}
+      email: {type: String, value: ''},
     };
   }
 
@@ -81,10 +82,19 @@ class RemoveLocalAuthFactorsScreen extends
     this.initializeLoginScreen('RemoveLocalAuthFactorsScreen');
   }
 
+  private isSuccessStep(uiStep: RemoveLocalAuthFactorsScreenState) {
+    return uiStep === RemoveLocalAuthFactorsScreenState.SUCCESS;
+  }
+
   /**
-   * Next button click handler.
+   * Done button click handler, Done button is only shown when the screen is in
+   * SUCCESS state.
    */
   private onDoneClicked(): void {
+    if (this.uiStep !== RemoveLocalAuthFactorsScreenState.SUCCESS) {
+      return;
+    }
+    this.setUIStep(RemoveLocalAuthFactorsScreenState.DONE);
     this.userActed(UserAction.DONE);
   }
 
