@@ -63,6 +63,8 @@ struct ExtendedRestartabilityState {
   ~ExtendedRestartabilityState();
 
   // Specific reasons why a restart might be disruptive.
+  //
+  // LINT.IfChange(SmartRestartBlocker)
   enum class SmartRestartBlocker {
     // --- Baseline Checks (Session-level or Global) ---
     kIncognito = 0,
@@ -115,6 +117,7 @@ struct ExtendedRestartabilityState {
 
     kMaxValue = kLensShared
   };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/session/enums.xml:SmartRestartBlocker)
 
   // Perceived impact level of a restart, mapped directly to UMA outcomes.
   enum class SmartRestartDisruptionLevel {

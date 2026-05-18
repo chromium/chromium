@@ -363,6 +363,12 @@ const char kHideCrashRestoreBubble[] = "hide-crash-restore-bubble";
 const char kHomePage[] = "homepage";
 
 #if !BUILDFLAG(IS_ANDROID)
+// Causes the browser to simulate a screen lock event shortly after startup.
+// Optional value specifies the delay in seconds (defaults to 5).
+// Used for manual testing of Smart Restart.
+const char kSimulateLockScreenSmartRestart[] =
+    "simulate-lock-screen-smart-restart";
+
 // Triggers the import of passwords on startup.
 const char kImportPasswords[] = "import-passwords";
 #endif

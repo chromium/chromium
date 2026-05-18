@@ -38,6 +38,13 @@ chromium-metrics-reviews@google.com.
   <variant name="Encrypted"/>
 </variants>
 
+<variants name="SmartRestartTabCount">
+  <variant name="" summary="all sessions"/>
+  <variant name=".HighTab" summary="sessions with more than 20 tabs"/>
+  <variant name=".LowTab" summary="sessions with 1-5 tabs"/>
+  <variant name=".MediumTab" summary="sessions with 6-20 tabs"/>
+</variants>
+
 <histogram name="Session.Android.TabbedSessionContainedGoogleSearch"
     enum="Boolean" expires_after="2026-09-06">
   <owner>nafisabedin@google.com</owner>
@@ -310,6 +317,50 @@ chromium-metrics-reviews@google.com.
         summary="turning off session restore from browser restart"/>
     <variant name="TurnOnSessionRestore" summary="turning on session restore"/>
   </token>
+</histogram>
+
+<histogram name="Session.SmartRestart.Lock.ExecutionOutcome{TabCount}"
+    enum="SmartRestartExtendedExecutionOutcome" expires_after="2026-10-01">
+  <owner>victortan@chromium.org</owner>
+  <owner>chrome-analysis-team@google.com</owner>
+  <summary>
+    The final outcome of a Smart Restart attempt triggered by an OS Lock event,
+    segmented by {TabCount}.
+  </summary>
+  <token key="TabCount" variants="SmartRestartTabCount"/>
+</histogram>
+
+<histogram name="Session.SmartRestart.Lock.ProtectionReason{TabCount}"
+    enum="SmartRestartBlocker" expires_after="2026-10-01">
+  <owner>victortan@chromium.org</owner>
+  <owner>chrome-analysis-team@google.com</owner>
+  <summary>
+    Specific reasons that contributed to the restart protection or disallowance
+    during an OS Lock event, segmented by {TabCount}. Multiple reasons may be
+    logged per session.
+  </summary>
+  <token key="TabCount" variants="SmartRestartTabCount"/>
+</histogram>
+
+<histogram name="Session.SmartRestart.Lock.RemainingTimeAtCancellation"
+    units="ms" expires_after="2026-10-01">
+  <owner>victortan@chromium.org</owner>
+  <owner>chrome-analysis-team@google.com</owner>
+  <summary>
+    The amount of time remaining in the grace period when a smart restart was
+    cancelled by the user unlocking the screen. Helps identify close calls.
+  </summary>
+</histogram>
+
+<histogram name="Session.SmartRestart.Lock.TimeSinceUpgradeDetected"
+    units="minutes" expires_after="2026-10-01">
+  <owner>victortan@chromium.org</owner>
+  <owner>chrome-analysis-team@google.com</owner>
+  <summary>
+    The duration from when an upgrade was first detected until a smart restart
+    was successfully executed on an OS Lock event. Recorded in minutes. Captures
+    gaps up to 30 days.
+  </summary>
 </histogram>
 
 <histogram name="Session.SmartRestart.ZeroWindow.ExecutionOutcome"

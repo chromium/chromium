@@ -26,12 +26,51 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
+#include "components/performance_manager/public/decorators/page_live_state_decorator.h"
+#include "components/performance_manager/public/graph/page_node.h"
+#include "components/performance_manager/public/performance_manager.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
+#include "ui/events/keycodes/dom/dom_code.h"
 
 namespace smart_restart {
 
 namespace {
+
+using Blocker = ExtendedRestartabilityState::SmartRestartBlocker;
+
+class PageNodeInteractionWaiter : public performance_manager::PageNodeObserver {
+ public:
+  explicit PageNodeInteractionWaiter(content::WebContents* contents)
+      : target_contents_(contents) {
+    observation_.Observe(performance_manager::PerformanceManager::GetGraph());
+  }
+
+  void Wait() {
+    auto page_node = performance_manager::PerformanceManager::
+        GetPrimaryPageNodeForWebContents(target_contents_);
+    if (page_node && page_node->HadFormInteraction()) {
+      return;
+    }
+    run_loop_.Run();
+  }
+
+  void OnHadFormInteractionChanged(
+      const performance_manager::PageNode* page_node) override {
+    if (page_node->GetWebContents().get() == target_contents_ &&
+        page_node->HadFormInteraction() && run_loop_.running()) {
+      run_loop_.Quit();
+    }
+  }
+
+ private:
+  const raw_ptr<content::WebContents> target_contents_;
+  base::RunLoop run_loop_;
+  base::ScopedObservation<performance_manager::Graph,
+                          performance_manager::PageNodeObserver>
+      observation_{this};
+};
 
 class FakeUpgradeDetector : public UpgradeDetector {
  public:
@@ -52,13 +91,7 @@ class FakeUpgradeDetector : public UpgradeDetector {
 
 }  // namespace
 
-class SmartRestartManagerBrowserTest : public InProcessBrowserTest {
- public:
-  SmartRestartManagerBrowserTest() {
-    feature_list_.InitAndEnableFeatureWithParameters(features::kSmartRestart,
-                                                     {{"restart_delay", "1s"}});
-  }
-
+class SmartRestartManagerTestBase : public InProcessBrowserTest {
  protected:
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
@@ -75,6 +108,16 @@ class SmartRestartManagerBrowserTest : public InProcessBrowserTest {
   base::test::ScopedFeatureList feature_list_;
   FakeUpgradeDetector fake_upgrade_detector_;
   std::unique_ptr<SmartRestartManager> manager_;
+};
+
+class SmartRestartManagerBrowserTest : public SmartRestartManagerTestBase {
+ public:
+  SmartRestartManagerBrowserTest() {
+    feature_list_.InitWithFeaturesAndParameters(
+        {{features::kSmartRestart, {{"restart_delay", "1s"}}},
+         {features::kSmartRestartLockScreen, {{"restart_delay", "1s"}}}},
+        {});
+  }
 };
 
 #if BUILDFLAG(IS_MAC)
@@ -102,7 +145,7 @@ IN_PROC_BROWSER_TEST_F(SmartRestartManagerBrowserTest,
 
   histogram_tester.ExpectUniqueSample(
       "Session.SmartRestart.ZeroWindow.ExecutionOutcome",
-      SmartRestartManager::ExecutionOutcome::kExecuted, 1);
+      ExecutionOutcome::kExecuted, 1);
 
   histogram_tester.ExpectTotalCount(
       "Session.SmartRestart.ZeroWindow.TimeSinceUpgradeDetected", 1);
@@ -146,7 +189,7 @@ IN_PROC_BROWSER_TEST_F(SmartRestartManagerBrowserTest,
 
   histogram_tester.ExpectUniqueSample(
       "Session.SmartRestart.ZeroWindow.ExecutionOutcome",
-      SmartRestartManager::ExecutionOutcome::kCancelledByUser, 1);
+      ExecutionOutcome::kCancelledByUser, 1);
 
   histogram_tester.ExpectTotalCount(
       "Session.SmartRestart.ZeroWindow.RemainingTimeAtCancellation", 1);
@@ -177,6 +220,289 @@ IN_PROC_BROWSER_TEST_F(SmartRestartManagerBrowserTest,
   // open.
   EXPECT_FALSE(local_state->GetBoolean(prefs::kRestartInBackgroundOnShutdown));
 }
-#endif
+
+IN_PROC_BROWSER_TEST_F(SmartRestartManagerBrowserTest,
+                       HandlesOverlappingTimers_LockThenZeroWindow) {
+  base::HistogramTester histogram_tester;
+
+  // 1. Keep the browser process alive even when all windows close.
+  ScopedKeepAlive keep_alive(KeepAliveOrigin::BROWSER,
+                             KeepAliveRestartOption::DISABLED);
+  ScopedProfileKeepAlive profile_keep_alive(
+      browser()->profile(), ProfileKeepAliveOrigin::kBrowserWindow);
+
+  // 2. Setup: 1 window open and a pending update.
+  fake_upgrade_detector_.SetUpgradeAvailable();
+
+  // 2. Action 1: Simulate Lock. (Starts Lock Screen timer).
+  manager_->SetLockedStateForTesting(true);
+
+  // 3. Action 2: Close the last window. (Starts Zero Window timer).
+  CloseBrowserSynchronously(browser());
+
+  // 4. Wait for both timers to fire (both have 1s delay in tests).
+  base::RunLoop run_loop;
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE, run_loop.QuitClosure(), base::Seconds(2));
+  run_loop.Run();
+
+  // 5. Verify that only ONE restart was executed.
+  int zero_window_executions = histogram_tester.GetBucketCount(
+      "Session.SmartRestart.ZeroWindow.ExecutionOutcome",
+      static_cast<int>(ExecutionOutcome::kExecuted));
+
+  int lock_screen_executions = histogram_tester.GetBucketCount(
+      "Session.SmartRestart.Lock.ExecutionOutcome",
+      static_cast<int>(ExtendedExecutionOutcome::kExecuted));
+
+  EXPECT_EQ(1, zero_window_executions + lock_screen_executions);
+
+  // Cleanup to prevent actual restart during teardown.
+  PrefService* local_state = g_browser_process->local_state();
+  browser_shutdown::SetTryingToQuit(false);
+  local_state->SetBoolean(prefs::kRestartLastSessionOnShutdown, false);
+  local_state->SetBoolean(prefs::kRestartInBackgroundOnShutdown, false);
+}
+#endif  // BUILDFLAG(IS_MAC)
+
+#if !BUILDFLAG(IS_CHROMEOS)
+IN_PROC_BROWSER_TEST_F(SmartRestartManagerBrowserTest,
+                       TriggersRestartOnLockScreen) {
+  base::HistogramTester histogram_tester;
+  // 1. Setup: Pending update.
+  fake_upgrade_detector_.SetUpgradeAvailable();
+
+  // 2. Action: Simulate Lock.
+  PrefService* local_state = g_browser_process->local_state();
+  EXPECT_FALSE(local_state->GetBoolean(prefs::kRestartInBackgroundOnShutdown));
+
+  manager_->SetLockedStateForTesting(true);
+
+  // 3. Verification: Wait for the 1-second grace period timer to fire.
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return local_state->GetBoolean(prefs::kRestartLastSessionOnShutdown);
+  }));
+
+  histogram_tester.ExpectUniqueSample(
+      "Session.SmartRestart.Lock.ExecutionOutcome",
+      static_cast<int>(ExtendedExecutionOutcome::kExecuted), 1);
+
+  histogram_tester.ExpectUniqueSample(
+      "Session.SmartRestart.Lock.ExecutionOutcome.LowTab",
+      static_cast<int>(ExtendedExecutionOutcome::kExecuted), 1);
+
+  histogram_tester.ExpectTotalCount(
+      "Session.SmartRestart.Lock.TimeSinceUpgradeDetected", 1);
+
+  // Cleanup.
+  browser_shutdown::SetTryingToQuit(false);
+  local_state->SetBoolean(prefs::kRestartLastSessionOnShutdown, false);
+  local_state->SetBoolean(prefs::kRestartInBackgroundOnShutdown, false);
+}
+
+IN_PROC_BROWSER_TEST_F(SmartRestartManagerBrowserTest,
+                       BlockOnLockScreenHighDisruption) {
+  base::HistogramTester histogram_tester;
+  // 1. Setup: Pending update and a "High Disruption" blocker (e.g. Incognito).
+  fake_upgrade_detector_.SetUpgradeAvailable();
+  CreateIncognitoBrowser(browser()->profile());
+
+  // 2. Action: Simulate Lock.
+  PrefService* local_state = g_browser_process->local_state();
+  manager_->SetLockedStateForTesting(true);
+
+  // 3. Verification: Wait for 2 seconds (longer than the 1s delay).
+  base::RunLoop run_loop;
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE, run_loop.QuitClosure(), base::Seconds(2));
+  run_loop.Run();
+
+  // The restart should NOT have been triggered.
+  EXPECT_FALSE(local_state->GetBoolean(prefs::kRestartLastSessionOnShutdown));
+
+  histogram_tester.ExpectUniqueSample(
+      "Session.SmartRestart.Lock.ExecutionOutcome",
+      static_cast<int>(ExtendedExecutionOutcome::kBlockedByDisruptionLevel), 1);
+
+  histogram_tester.ExpectUniqueSample(
+      "Session.SmartRestart.Lock.ExecutionOutcome.LowTab",
+      static_cast<int>(ExtendedExecutionOutcome::kBlockedByDisruptionLevel), 1);
+}
+
+IN_PROC_BROWSER_TEST_F(SmartRestartManagerBrowserTest, CancelsRestartOnUnlock) {
+  base::HistogramTester histogram_tester;
+
+  // 1. Setup: Pending update.
+  fake_upgrade_detector_.SetUpgradeAvailable();
+
+  // 2. Action: Simulate Lock.
+  manager_->SetLockedStateForTesting(true);
+
+  // Wait for 500ms (the grace period in tests is 1s).
+  base::RunLoop run_loop;
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE, run_loop.QuitClosure(), base::Milliseconds(500));
+  run_loop.Run();
+
+  // 3. Action: Simulate Unlock.
+  manager_->SetLockedStateForTesting(false);
+
+  // 4. Verification: Telemetry.
+  histogram_tester.ExpectUniqueSample(
+      "Session.SmartRestart.Lock.ExecutionOutcome",
+      static_cast<int>(ExtendedExecutionOutcome::kCancelledByUser), 1);
+
+  // Verify that the remaining time was logged!
+  histogram_tester.ExpectTotalCount(
+      "Session.SmartRestart.Lock.RemainingTimeAtCancellation", 1);
+}
+
+class SmartRestartManagerConservativeBrowserTest
+    : public SmartRestartManagerTestBase {
+ public:
+  SmartRestartManagerConservativeBrowserTest() {
+    feature_list_.InitWithFeaturesAndParameters(
+        {{features::kSmartRestartLockScreen,
+          {{"disruption_threshold", "0"}, {"restart_delay", "1s"}}}},
+        {});
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(SmartRestartManagerConservativeBrowserTest,
+                       BlockOnLockScreen_TabBlockers) {
+  base::HistogramTester histogram_tester;
+
+  // 1. Setup Tab 1: Pinned.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
+  browser()->tab_strip_model()->SetTabPinned(0, true);
+
+  // 2. Setup Tab 2: PDF Mime Type.
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), GURL("data:application/pdf,test"),
+      WindowOpenDisposition::NEW_BACKGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+
+  fake_upgrade_detector_.SetUpgradeAvailable();
+  manager_->SetLockedStateForTesting(true);
+
+  base::RunLoop run_loop;
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE, run_loop.QuitClosure(), base::Seconds(2));
+  run_loop.Run();
+
+  // 4. Verify metrics.
+  histogram_tester.ExpectUniqueSample(
+      "Session.SmartRestart.Lock.ExecutionOutcome",
+      static_cast<int>(ExtendedExecutionOutcome::kBlockedByDisruptionLevel), 1);
+
+  histogram_tester.ExpectUniqueSample(
+      "Session.SmartRestart.Lock.ExecutionOutcome.LowTab",
+      static_cast<int>(ExtendedExecutionOutcome::kBlockedByDisruptionLevel), 1);
+
+  histogram_tester.ExpectBucketCount(
+      "Session.SmartRestart.Lock.ProtectionReason",
+      static_cast<int>(Blocker::kPinnedTab), 1);
+
+  histogram_tester.ExpectBucketCount(
+      "Session.SmartRestart.Lock.ProtectionReason.LowTab",
+      static_cast<int>(Blocker::kPinnedTab), 1);
+
+  histogram_tester.ExpectBucketCount(
+      "Session.SmartRestart.Lock.ProtectionReason",
+      static_cast<int>(Blocker::kPdf), 1);
+
+  histogram_tester.ExpectBucketCount(
+      "Session.SmartRestart.Lock.ProtectionReason.LowTab",
+      static_cast<int>(Blocker::kPdf), 1);
+}
+
+IN_PROC_BROWSER_TEST_F(SmartRestartManagerConservativeBrowserTest,
+                       BlockOnLockScreen_PageNodeBlockers) {
+  base::HistogramTester histogram_tester;
+
+  // 1. Setup session: Navigate to a page with an input field.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(),
+      GURL("data:text/html,<html><body><input id='t'></body></html>")));
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  PageNodeInteractionWaiter waiter(web_contents);
+
+  // 2. Simulate form interaction.
+  ASSERT_TRUE(
+      content::ExecJs(web_contents, "document.getElementById('t').focus();"));
+  content::SimulateKeyPress(web_contents, ui::DomKey::FromCharacter('a'),
+                            ui::DomCode::US_A, ui::VKEY_A, false, false, false,
+                            false);
+
+  waiter.Wait();
+
+  // 3. Simulate Lock.
+  fake_upgrade_detector_.SetUpgradeAvailable();
+  manager_->SetLockedStateForTesting(true);
+
+  base::RunLoop run_loop;
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE, run_loop.QuitClosure(), base::Seconds(2));
+  run_loop.Run();
+
+  // 4. Verify metrics.
+  histogram_tester.ExpectUniqueSample(
+      "Session.SmartRestart.Lock.ExecutionOutcome",
+      static_cast<int>(ExtendedExecutionOutcome::kBlockedByDisruptionLevel), 1);
+
+  histogram_tester.ExpectUniqueSample(
+      "Session.SmartRestart.Lock.ExecutionOutcome.LowTab",
+      static_cast<int>(ExtendedExecutionOutcome::kBlockedByDisruptionLevel), 1);
+
+  histogram_tester.ExpectBucketCount(
+      "Session.SmartRestart.Lock.ProtectionReason",
+      static_cast<int>(Blocker::kFormInteractions), 1);
+
+  histogram_tester.ExpectBucketCount(
+      "Session.SmartRestart.Lock.ProtectionReason.LowTab",
+      static_cast<int>(Blocker::kFormInteractions), 1);
+}
+
+IN_PROC_BROWSER_TEST_F(SmartRestartManagerConservativeBrowserTest,
+                       BlockOnLockScreen_OpportunityMetrics) {
+  base::HistogramTester histogram_tester;
+
+  // 1. Setup session: 1 tab, simulate video capture (High Disruption).
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GURL("data:text/html,<html><body>Capturing</body></html>")));
+  performance_manager::PageLiveStateDecorator::OnIsCapturingVideoChanged(
+      browser()->tab_strip_model()->GetActiveWebContents(), true);
+
+  // 2. Simulate Lock.
+  fake_upgrade_detector_.SetUpgradeAvailable();
+  manager_->SetLockedStateForTesting(true);
+
+  // Wait for timer...
+  base::RunLoop run_loop;
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE, run_loop.QuitClosure(), base::Seconds(2));
+  run_loop.Run();
+
+  // 3. Verify metrics.
+  histogram_tester.ExpectUniqueSample(
+      "Session.SmartRestart.Lock.ExecutionOutcome",
+      static_cast<int>(ExtendedExecutionOutcome::kBlockedByDisruptionLevel), 1);
+
+  histogram_tester.ExpectUniqueSample(
+      "Session.SmartRestart.Lock.ExecutionOutcome.LowTab",
+      static_cast<int>(ExtendedExecutionOutcome::kBlockedByDisruptionLevel), 1);
+
+  // Verify specific blocker is present.
+  histogram_tester.ExpectBucketCount(
+      "Session.SmartRestart.Lock.ProtectionReason",
+      static_cast<int>(Blocker::kCapturingVideo), 1);
+
+  histogram_tester.ExpectBucketCount(
+      "Session.SmartRestart.Lock.ProtectionReason.LowTab",
+      static_cast<int>(Blocker::kCapturingVideo), 1);
+}
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace smart_restart

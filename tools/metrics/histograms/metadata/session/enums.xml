@@ -135,11 +135,61 @@ chromium-metrics-reviews@google.com.
       label="Active download, Active media, Total Browser Count Zero"/>
 </enum>
 
+<!-- LINT.IfChange(SmartRestartBlocker) -->
+
+<enum name="SmartRestartBlocker">
+  <int value="0" label="Incognito"/>
+  <int value="1" label="BeforeUnloadHandler"/>
+  <int value="2" label="Download"/>
+  <int value="3" label="Media"/>
+  <int value="4" label="AppWindow"/>
+  <int value="5" label="NoMainFrame"/>
+  <int value="6" label="Visible"/>
+  <int value="7" label="Audible"/>
+  <int value="8" label="PictureInPicture"/>
+  <int value="9" label="Pdf"/>
+  <int value="10" label="NotWebOrInternal"/>
+  <int value="11" label="InvalidURL"/>
+  <int value="12" label="NotificationsEnabled"/>
+  <int value="13" label="ExtensionProtected"/>
+  <int value="14" label="CapturingVideo"/>
+  <int value="15" label="CapturingAudio"/>
+  <int value="16" label="BeingMirrored"/>
+  <int value="17" label="CapturingWindow"/>
+  <int value="18" label="CapturingDisplay"/>
+  <int value="19" label="ConnectedToBluetooth"/>
+  <int value="20" label="ConnectedToUSB"/>
+  <int value="21" label="ActiveTab"/>
+  <int value="22" label="PinnedTab"/>
+  <int value="23" label="DevToolsOpen"/>
+  <int value="24" label="BackgroundActivity"/>
+  <int value="25" label="FormInteractions"/>
+  <int value="26" label="UserEdits"/>
+  <int value="27" label="GlicShared"/>
+  <int value="28" label="WebApp"/>
+  <int value="29" label="VisiblePausedMedia"/>
+  <int value="30" label="LensShared"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/lifetime/restartability_monitor.h:SmartRestartBlocker) -->
+
 <enum name="SmartRestartExecutionOutcome">
   <int value="0" label="Executed"/>
   <int value="1" label="Cancelled by user"/>
   <int value="2" label="Blocked by policy"/>
 </enum>
+
+<!-- LINT.IfChange(SmartRestartExtendedExecutionOutcome) -->
+
+<enum name="SmartRestartExtendedExecutionOutcome">
+  <int value="0" label="Executed"/>
+  <int value="1" label="Cancelled by user (Unlock)"/>
+  <int value="2" label="Blocked by policy (Picker/Startup)"/>
+  <int value="3" label="Blocked by tab threshold"/>
+  <int value="4" label="Blocked by disruption level"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/lifetime/smart_restart_policy.h:ExtendedExecutionOutcome) -->
 
 </enums>
 

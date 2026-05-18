@@ -1301,6 +1301,18 @@ COMPONENT_EXPORT(CHROME_FEATURES) BASE_DECLARE_FEATURE(kSmartRestart);
 // zero windows) before executing the restart.
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::FeatureParam<base::TimeDelta> kSmartRestartDelay;
+
+COMPONENT_EXPORT(CHROME_FEATURES)
+BASE_DECLARE_FEATURE(kSmartRestartLockScreen);
+
+COMPONENT_EXPORT(CHROME_FEATURES)
+extern const base::FeatureParam<int> kSmartRestartLockScreenTabThreshold;
+
+COMPONENT_EXPORT(CHROME_FEATURES)
+extern const base::FeatureParam<int> kSmartRestartLockScreenDisruptionThreshold;
+
+COMPONENT_EXPORT(CHROME_FEATURES)
+extern const base::FeatureParam<base::TimeDelta> kSmartRestartLockScreenDelay;
 #endif  // BUILDFLAG(IS_ANDROID)
 
 bool PrefServiceEnabled();

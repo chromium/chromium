@@ -127,6 +127,7 @@ extern const char kForceWhatsNew[];
 extern const char kHideCrashRestoreBubble[];
 extern const char kHomePage[];
 #if !BUILDFLAG(IS_ANDROID)
+extern const char kSimulateLockScreenSmartRestart[];
 extern const char kImportPasswords[];
 #endif
 extern const char kIncognito[];

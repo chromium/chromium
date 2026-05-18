@@ -13,16 +13,16 @@ TEST(SmartRestartPolicyTest, ProceedWhenSafe) {
   RestartabilityState state;
   state.total_browser_count_is_zero = true;
 
-  EXPECT_TRUE(
-      SmartRestartPolicy::ShouldRestart(state, TriggerType::kZeroWindow));
+  EXPECT_EQ(ExecutionOutcome::kExecuted,
+            SmartRestartPolicy::ShouldRestart(state));
 }
 
 TEST(SmartRestartPolicyTest, BlockWhenWindowExists) {
   RestartabilityState state;
   state.total_browser_count_is_zero = false;
 
-  EXPECT_FALSE(
-      SmartRestartPolicy::ShouldRestart(state, TriggerType::kZeroWindow));
+  EXPECT_EQ(ExecutionOutcome::kBlockedByPolicy,
+            SmartRestartPolicy::ShouldRestart(state));
 }
 
 TEST(SmartRestartPolicyTest, BlockWhenDownloading) {
@@ -30,8 +30,8 @@ TEST(SmartRestartPolicyTest, BlockWhenDownloading) {
   state.total_browser_count_is_zero = true;
   state.download_count = 1;
 
-  EXPECT_FALSE(
-      SmartRestartPolicy::ShouldRestart(state, TriggerType::kZeroWindow));
+  EXPECT_EQ(ExecutionOutcome::kBlockedByPolicy,
+            SmartRestartPolicy::ShouldRestart(state));
 }
 
 TEST(SmartRestartPolicyTest, BlockWhenMediaPlaying) {
@@ -39,8 +39,8 @@ TEST(SmartRestartPolicyTest, BlockWhenMediaPlaying) {
   state.total_browser_count_is_zero = true;
   state.is_audio_playing = true;
 
-  EXPECT_FALSE(
-      SmartRestartPolicy::ShouldRestart(state, TriggerType::kZeroWindow));
+  EXPECT_EQ(ExecutionOutcome::kBlockedByPolicy,
+            SmartRestartPolicy::ShouldRestart(state));
 }
 
 TEST(SmartRestartPolicyTest, BlockWhenIncognitoOpen) {
@@ -48,8 +48,8 @@ TEST(SmartRestartPolicyTest, BlockWhenIncognitoOpen) {
   state.total_browser_count_is_zero = true;
   state.has_incognito = true;
 
-  EXPECT_FALSE(
-      SmartRestartPolicy::ShouldRestart(state, TriggerType::kZeroWindow));
+  EXPECT_EQ(ExecutionOutcome::kBlockedByPolicy,
+            SmartRestartPolicy::ShouldRestart(state));
 }
 
 }  // namespace smart_restart

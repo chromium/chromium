@@ -1827,6 +1827,17 @@ BASE_FEATURE(kSmartRestart, base::FEATURE_DISABLED_BY_DEFAULT);
 
 const base::FeatureParam<base::TimeDelta> kSmartRestartDelay{
     &kSmartRestart, "restart_delay", base::Minutes(5)};
+
+BASE_FEATURE(kSmartRestartLockScreen, base::FEATURE_DISABLED_BY_DEFAULT);
+
+const base::FeatureParam<int> kSmartRestartLockScreenTabThreshold{
+    &kSmartRestartLockScreen, "tab_threshold", -1};
+
+const base::FeatureParam<int> kSmartRestartLockScreenDisruptionThreshold{
+    &kSmartRestartLockScreen, "disruption_threshold", 2};
+
+const base::FeatureParam<base::TimeDelta> kSmartRestartLockScreenDelay{
+    &kSmartRestartLockScreen, "restart_delay", base::Minutes(5)};
 #endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace features
