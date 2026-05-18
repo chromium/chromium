@@ -3771,6 +3771,12 @@ deps = {
       'condition': 'checkout_src_internal',
   },
 
+  'src/components/personal_context/core/resources/internal': {
+      'url': Var('chrome_git') + '/chrome/components/personal_context/core/resources/internal.git' + '@' +
+        'c901bb10e5eead4fb1754cdafd9627c3393f7384',
+      'condition': 'checkout_src_internal',
+  },
+
   'src/components/plus_addresses/core/browser/resources/internal': {
       'url': Var('chrome_git') + '/chrome/components/plus_addresses/resources.git' + '@' +
         '32ee8b65a346a72e8692d112ba9304d6344e3dd6',
