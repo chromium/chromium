@@ -28,7 +28,9 @@
 #include "ui/gfx/gpu_memory_buffer_handle.h"
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-#include <fcntl.h>
+#include <linux/memfd.h>
+#include <sys/mman.h>
+#include <unistd.h>
 #endif
 
 #if BUILDFLAG(IS_FUCHSIA)
@@ -440,10 +442,16 @@ TestSharedImageInterface::CreateNativePixmapBackedSharedImage(
     size_t stride =
         viz::SharedMemoryRowSizeForSharedImageFormat(format, i, size.width())
             .value();
+
+    // Placeholder plane fd.
+    const uint64_t plane_size =
+        base::CheckMul(height_in_pixels, stride).ValueOrDie<uint64_t>();
+    base::ScopedFD fd(memfd_create("test_shared_image", MFD_CLOEXEC));
+    CHECK(fd.is_valid());
+    CHECK_EQ(ftruncate(fd.get(), plane_size), 0);
+
     native_pixmap_handle.planes.emplace_back(
-        base::checked_cast<uint32_t>(stride), 0,
-        base::CheckMul(height_in_pixels, stride).ValueOrDie<uint64_t>(),
-        base::ScopedFD(open("/dev/zero", O_RDWR)));
+        base::checked_cast<uint32_t>(stride), 0, plane_size, std::move(fd));
   }
 
   return CreateSharedImage(

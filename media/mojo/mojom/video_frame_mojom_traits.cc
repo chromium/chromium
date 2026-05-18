@@ -378,6 +378,23 @@ bool StructTraits<media::mojom::VideoFrameDataView,
 
     bool is_mappable = shared_image_data.is_mappable();
     if (is_mappable) {
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+      // TODO(crbug.com/513289253): Avoid CloneGpuMemoryBufferHandle() only for
+      // validation.
+      const auto video_pixel_format =
+          media::SharedImageFormatToVideoPixelFormat(shared_image->format());
+      if (video_pixel_format) {
+        auto gmb_handle = shared_image->CloneGpuMemoryBufferHandle();
+        if (!gmb_handle.is_null() && gmb_handle.type == gfx::NATIVE_PIXMAP) {
+          if (!media::VerifyGpuMemoryBufferHandle(*video_pixel_format,
+                                                  coded_size, gmb_handle)) {
+            LOG(ERROR)
+                << "Invalid GpuMemoryBufferHandle for mappable SharedImage";
+            return false;
+          }
+        }
+      }
+#endif
       // VideoFrame should have buffer usage if its SI is mappable.
       // NOTE: This isn't exactly correct for software SharedImages can be
       // mappable but do not have buffer usage. But since, such software

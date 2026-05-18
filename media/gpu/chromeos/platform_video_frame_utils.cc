@@ -549,14 +549,11 @@ gfx::GpuMemoryBufferHandle CreateGpuMemoryBufferHandle(
   CHECK_EQ(handle.type, gfx::NATIVE_PIXMAP);
   if (video_frame->format() == PIXEL_FORMAT_MJPEG)
     return handle;
-#if DCHECK_IS_ON()
-  const bool is_handle_valid =
-      !handle.is_null() &&
-      VerifyGpuMemoryBufferHandle(video_frame->format(),
-                                  video_frame->coded_size(), handle);
-  DLOG_IF(WARNING, !is_handle_valid)
-      << __func__ << "(): Created GpuMemoryBufferHandle is invalid";
-#endif  // DCHECK_IS_ON()
+  if (!VerifyGpuMemoryBufferHandle(video_frame->format(),
+                                   video_frame->coded_size(), handle)) {
+    LOG(ERROR) << __func__ << "(): Created GpuMemoryBufferHandle is invalid";
+    return gfx::GpuMemoryBufferHandle();
+  }
   return handle;
 }
 
