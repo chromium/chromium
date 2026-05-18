@@ -9778,5 +9778,8 @@ crbug.com/491563468 [ Mac15 ] virtual/web-bluetooth-new-permissions-backend/exte
 crbug.com/491563468 virtual/web-bluetooth-new-permissions-backend/external/wpt/bluetooth/bidi/getDevices/granted-devices-with-services.https.window.html [ Failure Pass Timeout ]
 crbug.com/491563468 virtual/web-bluetooth-new-permissions-backend/external/wpt/bluetooth/bidi/requestDevice/acceptAllDevices/optional-services-missing.https.window.html [ Failure Pass ]
 
+# [WebAudio] Expected to crash until Configurable Render Quantum is fully launched.
+crbug.com/502311300 webaudio/MediaStreamAudioSource/mediastreamaudiosourcenode-rendersizehint.https.html [ Crash Timeout ]
+
 # Gardener 2026-05-18
 crbug.com/514075904 [ Win11-arm64 ] virtual/text-antialias/emphasis-complex.html [ Failure Pass ]

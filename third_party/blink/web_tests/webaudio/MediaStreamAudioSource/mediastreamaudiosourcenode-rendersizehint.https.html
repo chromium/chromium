@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>
+      Test MediaStreamAudioSourceNode with renderSizeHint
+    </title>
+    <script src="../../resources/testharness.js"></script>
+    <script src="../../resources/testharnessreport.js"></script>
+    <script src="../resources/rendersizehint-probe.js"></script>
+  </head>
+  <body>
+    <script>
+      const processorPath = '../resources/rendersizehint-processor.js';
+      const RENDER_SIZE_HINT = 256;
+
+      let mediaStream = null;
+
+      promise_setup(async () => {
+        mediaStream =
+            await navigator.mediaDevices.getUserMedia({audio: true});
+      });
+
+      // Verify MediaStreamAudioSourceNode with custom renderSizeHint.
+      // This ensures that WebAudioMediaStreamAudioSink correctly accommodates
+      // custom render quantum sizes (e.g., 256 frames) when pulling data from
+      // a live getUserMedia stream, preventing hardcoded buffer size mismatches
+      // (Bug 502311300) and ensuring stable audio processing without glitches.
+      promise_test(async (t) => {
+        const context = new AudioContext({renderSizeHint: RENDER_SIZE_HINT});
+        t.add_cleanup(() => context.close());
+
+        const source =
+            new MediaStreamAudioSourceNode(context, {mediaStream});
+        const result =
+            await probeRenderSizeHint(context, source, processorPath);
+
+        assert_equals(
+            result.probedRenderQuantumSize,
+            RENDER_SIZE_HINT,
+            'Render quantum size in GlobalScope should match hint');
+
+        assert_equals(
+            result.processBlockSize,
+            RENDER_SIZE_HINT,
+            'Process block size should match negotiated size');
+      }, 'MediaStreamAudioSourceNode block size matches custom renderSizeHint');
+    </script>
+  </body>
+</html>
