@@ -7,13 +7,7 @@
 
 #include <stddef.h>
 
-#include "base/functional/callback_forward.h"
-#include "base/functional/callback_helpers.h"
 #include "ui/display/types/display_constants.h"
-
-namespace base {
-class FilePath;
-}
 
 class Browser;
 class BrowserWindowInterface;
@@ -72,9 +66,6 @@ class WebContents;
 // TabInterface->GetBrowserWindowInterface()->GetUserEducation()
 
 namespace chrome {
-
-using ProfileBrowsersCloseCallback =
-    base::RepeatingCallback<void(const base::FilePath&)>;
 
 // If you want to find the last active tabbed browser and create a new browser
 // if there are no tabbed browsers, use ScopedTabbedBrowserDisplayer.
@@ -159,11 +150,6 @@ size_t GetBrowserCount(Profile* profile);
 // Returns the number of incognito browsers excluding devtools windows.
 size_t GetIncognitoBrowserCount();
 
-// Closes all browsers whose original profile matches `profile`. Uses
-// BrowserCollection::Order::kCreation to mirror the prior BrowserList
-// behavior.
-void CloseAllBrowsersWithProfile(Profile* profile);
-
 // Returns the number of off-the-record browser windows associated with
 // `profile`, excluding DevTools windows.
 size_t GetOffTheRecordBrowsersActiveForProfile(Profile* profile);
@@ -174,21 +160,6 @@ bool IsOffTheRecordBrowserInUse(Profile* profile);
 
 // Returns the number of Guest browsers excluding DevTools windows.
 size_t GetGuestBrowserCount();
-
-// Closes all browsers for `profile` across all desktops. Uses
-// ProfileBrowserCollection and triggers any OnBeforeUnload events unless
-// `skip_beforeunload` is true. See the BrowserList variant for more details.
-void CloseAllBrowsersWithProfile(
-    Profile* profile,
-    bool skip_beforeunload,
-    const ProfileBrowsersCloseCallback& on_close_success = base::NullCallback(),
-    const ProfileBrowsersCloseCallback& on_close_aborted =
-        base::NullCallback());
-
-// Closes all browsers for the off-the-record `profile` without touching
-// browsers that use the original profile.
-void CloseAllBrowsersWithIncognitoProfile(Profile* profile,
-                                          bool skip_beforeunload = true);
 
 }  // namespace chrome
 

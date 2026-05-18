@@ -6,8 +6,11 @@
 
 #include <optional>
 
+#include "base/auto_reset.h"
 #include "base/callback_list.h"
+#include "base/files/file_path.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/no_destructor.h"
 #include "base/process/process.h"
 #include "base/threading/hang_watcher.h"
@@ -25,10 +28,15 @@
 #include "chrome/browser/metrics/shutdown_watcher_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/sessions/app_session_service_factory.h"
 #include "chrome/browser/sessions/exit_type_service.h"
+#include "chrome/browser/sessions/session_service_factory.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_collection.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
+#include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/unload_controller.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/pref_names.h"
@@ -37,6 +45,7 @@
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "ui/base/base_window.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/boot_times_recorder/boot_times_recorder.h"
@@ -63,6 +72,99 @@ base::RepeatingCallbackList<void(bool)>& GetClosingAllBrowsersCallbackList() {
   static base::NoDestructor<base::RepeatingCallbackList<void(bool)>>
       callback_list;
   return *callback_list;
+}
+
+// Forward declaration.
+void TryToCloseBrowsersForProfile(
+    Profile* original_profile,
+    bool match_original_profile,
+    const ProfileBrowsersCloseCallback& on_close_success,
+    const ProfileBrowsersCloseCallback& on_close_aborted,
+    const base::FilePath& profile_path,
+    bool skip_beforeunload);
+
+void PostTryToCloseBrowsersForProfile(
+    Profile* original_profile,
+    bool match_original_profile,
+    const ProfileBrowsersCloseCallback& on_close_success,
+    const ProfileBrowsersCloseCallback& on_close_aborted,
+    const base::FilePath& profile_path,
+    bool skip_beforeunload,
+    bool tab_close_confirmed) {
+  static bool resetting_handlers = false;
+
+  if (tab_close_confirmed) {
+    TryToCloseBrowsersForProfile(original_profile, match_original_profile,
+                                 on_close_success, on_close_aborted,
+                                 profile_path, skip_beforeunload);
+  } else if (!resetting_handlers) {
+    base::AutoReset<bool> resetting_handlers_scoper(&resetting_handlers, true);
+    GlobalBrowserCollection::GetInstance()->ForEach(
+        [original_profile,
+         match_original_profile](BrowserWindowInterface* browser) {
+          bool matches = match_original_profile
+                             ? browser->GetProfile()->GetOriginalProfile() ==
+                                   original_profile
+                             : browser->GetProfile() == original_profile;
+          if (matches) {
+            browser->GetBrowserForMigrationOnly()->ResetTryToCloseWindow();
+          }
+          return true;
+        });
+    if (on_close_aborted) {
+      on_close_aborted.Run(profile_path);
+    }
+  }
+}
+
+void TryToCloseBrowsersForProfile(
+    Profile* original_profile,
+    bool match_original_profile,
+    const ProfileBrowsersCloseCallback& on_close_success,
+    const ProfileBrowsersCloseCallback& on_close_aborted,
+    const base::FilePath& profile_path,
+    bool skip_beforeunload) {
+  auto matches_profile = [original_profile, match_original_profile](
+                             BrowserWindowInterface* browser) {
+    return match_original_profile
+               ? browser->GetProfile()->GetOriginalProfile() == original_profile
+               : browser->GetProfile() == original_profile;
+  };
+
+  bool waiting_for_close = false;
+
+  GlobalBrowserCollection::GetInstance()->ForEach(
+      [&](BrowserWindowInterface* browser) {
+        if (!matches_profile(browser)) {
+          return true;
+        }
+        if (browser->GetBrowserForMigrationOnly()->TryToCloseWindow(
+                skip_beforeunload,
+                base::BindRepeating(&PostTryToCloseBrowsersForProfile,
+                                    original_profile, match_original_profile,
+                                    on_close_success, on_close_aborted,
+                                    profile_path, skip_beforeunload))) {
+          waiting_for_close = true;
+          return false;
+        }
+        return true;
+      });
+
+  if (waiting_for_close) {
+    return;
+  }
+
+  if (on_close_success) {
+    on_close_success.Run(profile_path);
+  }
+
+  GlobalBrowserCollection::GetInstance()->ForEach(
+      [&](BrowserWindowInterface* browser) {
+        if (matches_profile(browser) && browser->GetWindow()) {
+          browser->GetWindow()->Close();
+        }
+        return true;
+      });
 }
 
 using IgnoreUnloadHandlers =
@@ -337,6 +439,59 @@ bool AreAllBrowsersCloseable() {
         return all_closeable;
       });
   return all_closeable;
+}
+
+void CloseAllBrowsersWithProfile(Profile* profile) {
+  ProfileBrowserCollection* browser_collection =
+      ProfileBrowserCollection::GetForProfile(profile);
+  if (!browser_collection) {
+    return;
+  }
+
+  browser_collection->ForEach([profile](BrowserWindowInterface* browser) {
+    if (browser->GetProfile()->GetOriginalProfile() ==
+        profile->GetOriginalProfile()) {
+      browser->GetWindow()->Close();
+    }
+    return true;
+  });
+}
+
+void CloseAllBrowsersWithProfile(
+    Profile* profile,
+    bool skip_beforeunload,
+    const ProfileBrowsersCloseCallback& on_close_success,
+    const ProfileBrowsersCloseCallback& on_close_aborted) {
+  SessionServiceFactory::ShutdownForProfile(profile);
+  AppSessionServiceFactory::ShutdownForProfile(profile);
+
+  TryToCloseBrowsersForProfile(profile->GetOriginalProfile(),
+                               /*match_original_profile=*/true,
+                               on_close_success, on_close_aborted,
+                               profile->GetPath(), skip_beforeunload);
+}
+
+void CloseAllBrowsersWithIncognitoProfile(Profile* profile,
+                                          bool skip_beforeunload) {
+  CHECK(profile->IsOffTheRecord());
+
+  // If any matching browser is devtools, we can't skip beforeunload.
+  if (skip_beforeunload) {
+    GlobalBrowserCollection::GetInstance()->ForEach(
+        [profile, &skip_beforeunload](BrowserWindowInterface* browser) {
+          if (browser->GetProfile() == profile &&
+              browser->GetType() ==
+                  BrowserWindowInterface::Type::TYPE_DEVTOOLS) {
+            skip_beforeunload = false;
+            return false;
+          }
+          return true;
+        });
+  }
+
+  TryToCloseBrowsersForProfile(profile, /*match_original_profile=*/false,
+                               base::NullCallback(), base::NullCallback(),
+                               profile->GetPath(), skip_beforeunload);
 }
 
 }  // namespace chrome

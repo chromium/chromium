@@ -19,8 +19,8 @@ include_rules = [
   "+chrome/browser/browser_process_platform_part.h",
   "+chrome/browser/browsing_data",
   "+chrome/browser/extensions/component_loader.h",
+  "+chrome/browser/lifetime/application_lifetime_desktop.h",
   "+chrome/browser/profiles",
-  "+chrome/browser/ui/browser_finder.h",
   "+chrome/common/chrome_constants.h",
   "+chrome/common/chrome_switches.h",
 ]

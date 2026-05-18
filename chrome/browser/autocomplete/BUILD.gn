@@ -82,6 +82,7 @@ source_set("impl") {
     "//chrome/browser/history",
     "//chrome/browser/history_clusters",
     "//chrome/browser/history_embeddings",
+    "//chrome/browser/lifetime",
     "//chrome/browser/omnibox",
     "//chrome/browser/optimization_guide",
     "//chrome/browser/prefs",

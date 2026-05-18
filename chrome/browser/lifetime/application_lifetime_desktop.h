@@ -7,10 +7,20 @@
 
 #include "base/callback_list.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
+
+namespace base {
+class FilePath;
+}
+
+class Profile;
 
 static_assert(!BUILDFLAG(IS_ANDROID), "For non-Android Chrome only");
 
 namespace chrome {
+
+using ProfileBrowsersCloseCallback =
+    base::RepeatingCallback<void(const base::FilePath&)>;
 
 // The mode for a relaunch.
 enum class RelaunchMode {
@@ -68,6 +78,28 @@ bool AreAllBrowsersCloseable();
 
 // Starts a user-initiated restart process with the given mode.
 void AttemptRestartWithMode(RelaunchMode mode);
+
+// Closes all browsers whose original profile matches `profile`. Uses
+// BrowserCollection::Order::kCreation to mirror the prior BrowserList
+// behavior. The close is asynchronous and does not run beforeunload handlers
+// or trigger session-service shutdown; callers that need those semantics
+// should use the four-argument overload below.
+void CloseAllBrowsersWithProfile(Profile* profile);
+
+// Closes all browsers for `profile` across all desktops. Uses
+// ProfileBrowserCollection and triggers any OnBeforeUnload events unless
+// `skip_beforeunload` is true.
+void CloseAllBrowsersWithProfile(
+    Profile* profile,
+    bool skip_beforeunload,
+    const ProfileBrowsersCloseCallback& on_close_success = base::NullCallback(),
+    const ProfileBrowsersCloseCallback& on_close_aborted =
+        base::NullCallback());
+
+// Closes all browsers for the off-the-record `profile` without touching
+// browsers that use the original profile.
+void CloseAllBrowsersWithIncognitoProfile(Profile* profile,
+                                          bool skip_beforeunload = true);
 
 }  // namespace chrome
 

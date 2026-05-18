@@ -16,6 +16,7 @@
 #include "base/strings/string_util.h"
 #include "base/test/test_file_util.h"
 #include "base/threading/thread_restrictions.h"
+#include "chrome/browser/lifetime/application_lifetime_desktop.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_test_util.h"

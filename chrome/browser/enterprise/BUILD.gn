@@ -509,6 +509,7 @@ source_set("impl") {
       "signals/device_info_fetcher.cc",
     ]
     deps += [
+      "//chrome/browser/lifetime",
       "//chrome/browser/search_engine_choice",
       "//chrome/browser/sync",
       "//chrome/browser/themes",

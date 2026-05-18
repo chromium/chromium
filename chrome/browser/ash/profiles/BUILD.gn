@@ -42,6 +42,7 @@ static_library("signin_profile_handler") {
     "//chrome/browser/ash/login/signin",
     "//chrome/browser/browsing_data:constants",
     "//chrome/browser/extensions",
+    "//chrome/browser/lifetime",
     "//chrome/browser/profiles:profile",
     "//chromeos/ash/components/browser_context_helper",
     "//components/crx_file",

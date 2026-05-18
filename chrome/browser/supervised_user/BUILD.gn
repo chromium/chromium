@@ -186,6 +186,7 @@ source_set("impl") {
       "supervised_user_verification_controller_client.cc",
     ]
     deps += [
+      "//chrome/browser/lifetime",
       "//chrome/browser/profiles:profile",
       "//components/security_interstitials/content:security_interstitial_page",
     ]
