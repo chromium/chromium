@@ -82,8 +82,9 @@ const std::array<BulkUploadModelItem, 3> GetUploadModelItems() {
   std::map<syncer::DataType, syncer::LocalDataDescription> _map;
   // Provides the face id or password authentication. It is required to bulk
   // upload passwords.
-  // _reauthenticationModule needs to be retained until the callback is called.
   ReauthenticationModule* _reauthenticationModule;
+  // Whether the saving process is in progress.
+  BOOL _isSaving;
 }
 
 - (instancetype)initWithSyncService:(syncer::SyncService*)syncService
@@ -111,6 +112,7 @@ const std::array<BulkUploadModelItem, 3> GetUploadModelItems() {
 - (void)disconnect {
   _identityObserverBridge.reset();
   _syncService = nullptr;
+  _reauthenticationModule = nil;
 }
 
 - (void)setConsumer:(id<BulkUploadConsumer>)consumer {
@@ -152,6 +154,7 @@ const std::array<BulkUploadModelItem, 3> GetUploadModelItems() {
                                 "count", count, "email", email))
 
   ];
+  _isSaving = NO;
   [self.delegate mediatorWantsToBeDismissed:self];
 }
 
@@ -219,6 +222,11 @@ const std::array<BulkUploadModelItem, 3> GetUploadModelItems() {
 }
 
 - (void)requestSave {
+  if (_isSaving) {
+    return;
+  }
+
+  _isSaving = YES;
   base::RecordAction(base::UserMetricsAction("Signin_BulkUpload_Save"));
   // The user must authenticate if and only if they request to upload passwords.
   syncer::DataTypeSet selectedDataTypes = [self selectedDataTypeEnumSet];
@@ -230,8 +238,10 @@ const std::array<BulkUploadModelItem, 3> GetUploadModelItems() {
   if (![_reauthenticationModule canAttemptReauth]) {
     base::RecordAction(
         base::UserMetricsAction("Signin_BulkUpload_FaceID_CannotBeStarted"));
+    _isSaving = NO;
     return;
   }
+
   __weak BulkUploadMediator* weakSelf = self;
   // The message to request authentification must mention the app will upload
   // passwords. If there are other types, they also get mentionned, even if they
@@ -279,8 +289,6 @@ const std::array<BulkUploadModelItem, 3> GetUploadModelItems() {
 // Called when `_reauthenticationModule` is finished.
 - (void)reauthenticationModuleDidFinishWithResult:
     (ReauthenticationResult)result {
-  CHECK(_reauthenticationModule);
-  _reauthenticationModule = nil;
   switch (result) {
     case ReauthenticationResult::kSuccess: {
       base::RecordAction(
@@ -289,6 +297,7 @@ const std::array<BulkUploadModelItem, 3> GetUploadModelItems() {
       break;
     }
     case ReauthenticationResult::kFailure: {
+      _isSaving = NO;
       base::RecordAction(
           base::UserMetricsAction("Signin_BulkUpload_FaceID_Failed"));
       // TODO(crbug.com/40071049): Warns the user.
