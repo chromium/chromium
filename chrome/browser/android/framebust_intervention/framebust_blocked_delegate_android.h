@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ANDROID_FRAMEBUST_INTERVENTION_FRAMEBUST_BLOCKED_DELEGATE_ANDROID_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
@@ -15,6 +16,7 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 class HostContentSettingsMap;
 
@@ -45,6 +47,7 @@ class FramebustBlockedMessageDelegate
   typedef base::OnceCallback<void(InterventionOutcome)> OutcomeCallback;
 
   bool ShowMessage(const GURL& blocked_url,
+                   const std::optional<url::Origin>& initiator_origin,
                    HostContentSettingsMap* settings_map,
                    OutcomeCallback intervention_callback);
 
@@ -71,6 +74,7 @@ class FramebustBlockedMessageDelegate
   OutcomeCallback intervention_callback_;
   std::unique_ptr<messages::MessageWrapper> message_;
   GURL blocked_url_;
+  std::optional<url::Origin> initiator_origin_;
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };
 

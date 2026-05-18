@@ -112,7 +112,8 @@ bool FramebustBlockedMessageDelegateTest::EnqueueMessage(GURL url) {
       .WillOnce(testing::Return(true));
   auto intervention_outcome =
       [](FramebustBlockedMessageDelegate::InterventionOutcome outcome) {};
-  return GetDelegate()->ShowMessage(url, settings_map(),
+  return GetDelegate()->ShowMessage(url, url::Origin::Create(url),
+                                    settings_map(),
                                     base::BindOnce(intervention_outcome));
 }
 
@@ -148,8 +149,9 @@ TEST_F(FramebustBlockedMessageDelegateTest, MessagePropertyValues) {
   // The description should be updated after ShowMessage is called with a
   // new blocked URL.
   // #EnqueueMessage ensure message is enqueued only once.
-  GetDelegate()->ShowMessage(GURL("b.test"), settings_map(),
-                             base::NullCallback());
+  GetDelegate()->ShowMessage(GURL("b.test"),
+                             url::Origin::Create(GURL("b.test")),
+                             settings_map(), base::NullCallback());
   EXPECT_EQ(
       url_formatter::FormatUrlForSecurityDisplay(
           GURL("b.test"), url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC),

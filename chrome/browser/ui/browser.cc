@@ -1781,6 +1781,8 @@ bool Browser::ShouldAllowRunningInsecureContent(
 void Browser::OnDidBlockNavigation(
     content::WebContents* web_contents,
     const GURL& blocked_url,
+    const GURL& initiator_url,
+    const url::Origin& initiator_origin,
     blink::mojom::NavigationBlockedReason reason) {
   if (reason ==
       blink::mojom::NavigationBlockedReason::kRedirectWithNoUserGesture) {
@@ -1792,7 +1794,8 @@ void Browser::OnDidBlockNavigation(
             blocked_content::GetListItemPositionFromDistance(index,
                                                              total_elements));
       };
-      framebust_helper->AddBlockedUrl(blocked_url, base::BindOnce(on_click));
+      framebust_helper->AddBlockedUrl(blocked_url, initiator_origin,
+                                      base::BindOnce(on_click));
     }
   }
 }

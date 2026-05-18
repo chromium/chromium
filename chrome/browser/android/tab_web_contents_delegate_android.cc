@@ -141,7 +141,8 @@ JNI_TabWebContentsDelegateAndroidImpl_CreateJavaPictureInPictureWindowOptions(
 }
 
 void ShowFramebustBlockMessageInternal(content::WebContents* web_contents,
-                                       const GURL& url) {
+                                       const GURL& url,
+                                       const url::Origin& initiator_origin) {
   auto intervention_outcome =
       [](blocked_content::FramebustBlockedMessageDelegate::InterventionOutcome
              outcome) {
@@ -155,7 +156,7 @@ void ShowFramebustBlockMessageInternal(content::WebContents* web_contents,
           blocked_content::FramebustBlockedMessageDelegate::FromWebContents(
               web_contents);
   framebust_blocked_message_delegate->ShowMessage(
-      url,
+      url, initiator_origin,
       HostContentSettingsMapFactory::GetForProfile(
           web_contents->GetBrowserContext()),
       base::BindOnce(intervention_outcome));
@@ -498,8 +499,11 @@ WebContents* TabWebContentsDelegateAndroid::AddNewContents(
 void TabWebContentsDelegateAndroid::OnDidBlockNavigation(
     content::WebContents* web_contents,
     const GURL& blocked_url,
+    const GURL& initiator_url,
+    const url::Origin& initiator_origin,
     blink::mojom::NavigationBlockedReason reason) {
-  ShowFramebustBlockMessageInternal(web_contents, blocked_url);
+  ShowFramebustBlockMessageInternal(web_contents, blocked_url,
+                                    initiator_origin);
 }
 
 void TabWebContentsDelegateAndroid::UpdateUserGestureCarryoverInfo(

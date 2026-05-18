@@ -172,7 +172,7 @@ IN_PROC_BROWSER_TEST_F(FramebustBlockBrowserTest, ModelAllowsRedirection) {
   // Signal that a blocked redirection happened.
   auto* helper = GetFramebustTabHelper();
   for (const GURL& url : blocked_urls) {
-    helper->AddBlockedUrl(url,
+    helper->AddBlockedUrl(url, url::Origin::Create(url),
                           base::BindOnce(&FramebustBlockBrowserTest::OnClick,
                                          base::Unretained(this)));
   }
@@ -203,14 +203,59 @@ IN_PROC_BROWSER_TEST_F(FramebustBlockBrowserTest, ModelAllowsRedirection) {
   EXPECT_EQ(blocked_urls[1], GetWebContents()->GetLastCommittedURL());
 }
 
+IN_PROC_BROWSER_TEST_F(FramebustBlockBrowserTest,
+                       EndToEndInitiatorVerification) {
+  const GURL redirect_url =
+      embedded_test_server()->GetURL("b.com", "/title1.html");
+  EXPECT_TRUE(ExecuteAndCheckBlockedRedirection(redirect_url));
+
+  auto* helper = GetFramebustTabHelper();
+  EXPECT_TRUE(helper->HasBlockedUrls());
+  EXPECT_EQ(1u, helper->blocked_urls().size());
+
+  ContentSettingFramebustBlockBubbleModel framebust_block_bubble_model(
+      browser()->GetFeatures().content_setting_bubble_model_delegate(),
+      GetWebContents());
+
+  class InitiatorObserver : public content::WebContentsObserver {
+   public:
+    explicit InitiatorObserver(content::WebContents* web_contents)
+        : content::WebContentsObserver(web_contents) {}
+
+    void DidStartNavigation(
+        content::NavigationHandle* navigation_handle) override {
+      initiator_origin_ = navigation_handle->GetInitiatorOrigin();
+    }
+
+    std::optional<url::Origin> initiator_origin_;
+  };
+
+  InitiatorObserver init_observer(GetWebContents());
+  content::TestNavigationObserver observer(GetWebContents());
+
+  ui::MouseEvent click_event(ui::EventType::kMousePressed, gfx::Point(),
+                             gfx::Point(), ui::EventTimeForNow(),
+                             ui::EF_LEFT_MOUSE_BUTTON,
+                             ui::EF_LEFT_MOUSE_BUTTON);
+  framebust_block_bubble_model.OnListItemClicked(/* index = */ 0, click_event);
+  observer.Wait();
+
+  EXPECT_EQ(redirect_url, GetWebContents()->GetLastCommittedURL());
+  EXPECT_TRUE(init_observer.initiator_origin_.has_value());
+  EXPECT_EQ(url::Origin::Create(
+                embedded_test_server()->GetURL("a.com", "/title1.html")),
+            init_observer.initiator_origin_.value());
+}
+
 IN_PROC_BROWSER_TEST_F(FramebustBlockBrowserTest, AllowRadioButtonSelected) {
   const GURL url = embedded_test_server()->GetURL("/iframe.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   // Signal that a blocked redirection happened.
   auto* helper = GetFramebustTabHelper();
-  helper->AddBlockedUrl(url, base::BindOnce(&FramebustBlockBrowserTest::OnClick,
-                                            base::Unretained(this)));
+  helper->AddBlockedUrl(url, url::Origin::Create(url),
+                        base::BindOnce(&FramebustBlockBrowserTest::OnClick,
+                                       base::Unretained(this)));
   EXPECT_TRUE(helper->HasBlockedUrls());
 
   HostContentSettingsMap* settings_map =
@@ -240,8 +285,9 @@ IN_PROC_BROWSER_TEST_F(FramebustBlockBrowserTest, DisallowRadioButtonSelected) {
 
   // Signal that a blocked redirection happened.
   auto* helper = GetFramebustTabHelper();
-  helper->AddBlockedUrl(url, base::BindOnce(&FramebustBlockBrowserTest::OnClick,
-                                            base::Unretained(this)));
+  helper->AddBlockedUrl(url, url::Origin::Create(url),
+                        base::BindOnce(&FramebustBlockBrowserTest::OnClick,
+                                       base::Unretained(this)));
   EXPECT_TRUE(helper->HasBlockedUrls());
 
   HostContentSettingsMap* settings_map =
@@ -282,8 +328,9 @@ IN_PROC_BROWSER_TEST_F(FramebustBlockBrowserTest, MAYBE_ManageButtonClicked) {
 
   // Signal that a blocked redirection happened.
   auto* helper = GetFramebustTabHelper();
-  helper->AddBlockedUrl(url, base::BindOnce(&FramebustBlockBrowserTest::OnClick,
-                                            base::Unretained(this)));
+  helper->AddBlockedUrl(url, url::Origin::Create(url),
+                        base::BindOnce(&FramebustBlockBrowserTest::OnClick,
+                                       base::Unretained(this)));
   EXPECT_TRUE(helper->HasBlockedUrls());
 
   // Create a content bubble and simulate clicking on the second radio button

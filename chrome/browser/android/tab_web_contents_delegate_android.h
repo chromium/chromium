@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ANDROID_TAB_WEB_CONTENTS_DELEGATE_ANDROID_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/scoped_multi_source_observation.h"
 #include "components/embedder_support/android/delegate/web_contents_delegate_android.h"
@@ -14,6 +15,7 @@
 #include "components/paint_preview/buildflags/buildflags.h"
 #include "printing/buildflags/buildflags.h"
 #include "third_party/blink/public/mojom/frame/blocked_navigation_types.mojom.h"
+#include "url/origin.h"
 
 namespace content {
 struct FileChooserParams;
@@ -108,6 +110,8 @@ class TabWebContentsDelegateAndroid
   void OnDidBlockNavigation(
       content::WebContents* web_contents,
       const GURL& blocked_url,
+      const GURL& initiator_url,
+      const url::Origin& initiator_origin,
       blink::mojom::NavigationBlockedReason reason) override;
   void UpdateUserGestureCarryoverInfo(
       content::WebContents* web_contents) override;

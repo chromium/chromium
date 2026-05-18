@@ -55,6 +55,8 @@ class CONTENT_EXPORT PrerenderWebContentsDelegate : public WebContentsDelegate {
   void OnDidBlockNavigation(
       WebContents* web_contents,
       const GURL& blocked_url,
+      const GURL& initiator_url,
+      const url::Origin& initiator_origin,
       blink::mojom::NavigationBlockedReason reason) override;
   bool ShouldAllowRunningInsecureContent(WebContents* web_contents,
                                          bool allowed_per_prefs,

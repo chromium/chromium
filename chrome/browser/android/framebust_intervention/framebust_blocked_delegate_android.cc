@@ -20,10 +20,12 @@ namespace blocked_content {
 
 bool FramebustBlockedMessageDelegate::ShowMessage(
     const GURL& blocked_url,
+    const std::optional<url::Origin>& initiator_origin,
     HostContentSettingsMap* settings_map,
     OutcomeCallback intervention_callback) {
   if (message_ != nullptr) {  // update description only
     blocked_url_ = blocked_url;
+    initiator_origin_ = initiator_origin;
     message_->SetDescription(url_formatter::FormatUrlForSecurityDisplay(
         blocked_url, url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC));
     return false;
@@ -32,6 +34,7 @@ bool FramebustBlockedMessageDelegate::ShowMessage(
   intervention_callback_ = std::move(intervention_callback);
   url_ = GetWebContents().GetLastCommittedURL();
   blocked_url_ = blocked_url;
+  initiator_origin_ = initiator_origin;
 
   // Unretained is safe because |this| will always outlive |message_| which owns
   // the callback.
@@ -115,11 +118,12 @@ void FramebustBlockedMessageDelegate::HandleClick() {
 }
 
 void FramebustBlockedMessageDelegate::HandleOpenLink() {
-  GetWebContents().OpenURL(
-      content::OpenURLParams(blocked_url_, content::Referrer(),
-                             WindowOpenDisposition::CURRENT_TAB,
-                             ui::PAGE_TRANSITION_LINK, false),
-      /*navigation_handle_callback=*/{});
+  content::OpenURLParams params(blocked_url_, content::Referrer(),
+                                WindowOpenDisposition::CURRENT_TAB,
+                                ui::PAGE_TRANSITION_LINK,
+                                /*is_renderer_initiated=*/true);
+  params.initiator_origin = initiator_origin_;
+  GetWebContents().OpenURL(params, /*navigation_handle_callback=*/{});
 
   if (intervention_callback_)
     std::move(intervention_callback_)

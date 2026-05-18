@@ -159,14 +159,15 @@ void TabUnderNavigationThrottle::ShowUI() {
           blocked_content::FramebustBlockedMessageDelegate::FromWebContents(
               web_contents);
   framebust_blocked_message_delegate->ShowMessage(
-      url,
+      url, navigation_handle()->GetInitiatorOrigin(),
       HostContentSettingsMapFactory::GetForProfile(
           web_contents->GetBrowserContext()),
       base::NullCallback());
 #else
   if (auto* tab_helper =
           FramebustBlockTabHelper::FromWebContents(web_contents)) {
-    tab_helper->AddBlockedUrl(url, base::NullCallback());
+    tab_helper->AddBlockedUrl(url, navigation_handle()->GetInitiatorOrigin(),
+                              base::NullCallback());
   }
 #endif
 }
