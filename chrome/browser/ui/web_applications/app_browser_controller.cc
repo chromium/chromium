@@ -520,6 +520,10 @@ bool AppBrowserController::IsPreventCloseEnabled() const {
   return provider->registrar_unsafe().IsPreventCloseEnabled(app_id());
 }
 
+bool AppBrowserController::IsWindowCaptureHandleAllowed() const {
+  return false;
+}
+
 #if !BUILDFLAG(IS_CHROMEOS)
 bool AppBrowserController::HasProfileMenuButton() const {
   return false;

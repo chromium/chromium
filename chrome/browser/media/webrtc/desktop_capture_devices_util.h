@@ -35,4 +35,7 @@ void GetDevicesForDesktopCapture(
                             std::unique_ptr<content::MediaStreamUI>)>
         on_media_stream_capture_indicator_ui_created_callback);
 
+content::WebContents* GetWebContentsFromWindowIfCaptureHandleAllowed(
+    gfx::NativeWindow native_window);
+
 #endif  // CHROME_BROWSER_MEDIA_WEBRTC_DESKTOP_CAPTURE_DEVICES_UTIL_H_
