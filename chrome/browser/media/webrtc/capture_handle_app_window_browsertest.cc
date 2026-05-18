@@ -832,8 +832,9 @@ class CaptureHandleSystemWebAppBrowserTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
+// TODO(crbug.com/514395138):  Reenable once flakiness is fixed.
 IN_PROC_BROWSER_TEST_F(CaptureHandleSystemWebAppBrowserTest,
-                       IgnoresHandleFromSystemWebApp) {
+                       DISABLED_IgnoresHandleFromSystemWebApp) {
   WaitForTestSystemAppInstall();
   content::WebContents* swa_contents =
       LaunchApp(ash::SystemWebAppType::SETTINGS);
