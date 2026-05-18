@@ -998,6 +998,18 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Non-PDF main doc; PDF not found"/>
 </enum>
 
+<!-- LINT.IfChange(PdfTextExtractionStatus) -->
+
+<enum name="PdfTextExtractionStatus">
+  <int value="0" label="Success"/>
+  <int value="1" label="EmptyText"/>
+  <int value="2" label="NotPdf"/>
+  <int value="3" label="PdfExtractionNotAvailable"/>
+  <int value="4" label="PdfDocumentNotLoaded"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/page_content_annotations/content/page_context_fetcher_metrics.h:PdfTextExtractionStatus) -->
+
 <!-- LINT.IfChange(ShareImageResult) -->
 
 <enum name="ShareImageResult">

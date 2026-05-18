@@ -33,6 +33,7 @@
 #include "components/optimization_guide/content/browser/page_content_proto_util.h"
 #include "components/optimization_guide/content/browser/page_context_eligibility.h"
 #include "components/page_content_annotations/content/page_content_screenshot_service.h"
+#include "components/page_content_annotations/content/page_context_fetcher_metrics.h"
 #include "components/paint_preview/common/mojom/paint_preview_types.mojom.h"
 #include "components/paint_preview/common/redaction_params.h"
 #include "components/pdf/common/constants.h"
@@ -497,6 +498,18 @@ void PageContextFetcher::FetchPdfContent(const PdfOptions& options) {
         break;
       }
     }
+  } else if (options.format() == PdfOptions::Format::kText) {
+    // The PDF text extraction is requested but not executed, record failure
+    // status.
+    if (!is_pdf_document) {
+      RecordPdfTextExtractionStatus(PdfTextExtractionStatus::kNotPdf);
+    } else if (!pdf_helper) {
+      RecordPdfTextExtractionStatus(
+          PdfTextExtractionStatus::kPdfExtractionNotAvailable);
+    } else if (!pdf_helper->IsDocumentLoadComplete()) {
+      RecordPdfTextExtractionStatus(
+          PdfTextExtractionStatus::kPdfDocumentNotLoaded);
+    }
   }
 }
 
@@ -528,6 +541,17 @@ void PageContextFetcher::ReceivedPdfText(url::Origin pdf_origin,
                                          const std::u16string& text) {
   pdf_done_ = true;
 
+  base::UmaHistogramTimes(kPdfTextExtractionLatencyHistogram,
+                          elapsed_timer_.Elapsed());
+
+  if (text.empty()) {
+    // Note an empty text does not necessarily imply there is something wrong
+    // with the extraction. It is possible that the PDF is blank.
+    RecordPdfTextExtractionStatus(PdfTextExtractionStatus::kEmptyText);
+  } else {
+    RecordPdfTextExtractionStatus(PdfTextExtractionStatus::kSuccess);
+  }
+
   // Create a UTF-16 string view that contains at most `text_byte_limit` number
   // of chars. There is no need to convert the UTF-16 chars beyond this view
   // since they cannot be within the byte limit, as one char occupies at least
@@ -539,6 +563,7 @@ void PageContextFetcher::ReceivedPdfText(url::Origin pdf_origin,
 
   // Convert to UTF-8 string.
   std::string utf8_text = base::UTF16ToUTF8(text_view);
+  base::UmaHistogramCounts1M(kPdfTextExtractionSizeHistogram, utf8_text.size());
 
   // Truncate the `utf8_text` to the `text_byte_limit`.
   bool size_exceeded = TruncateUTF8ToByteLimit(utf8_text, text_byte_limit);

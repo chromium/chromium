@@ -29,6 +29,7 @@
 #include "components/history/core/browser/features.h"
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
 #include "components/optimization_guide/content/browser/page_context_eligibility.h"
+#include "components/page_content_annotations/content/annotate_page_content_request_metrics.h"
 #include "components/page_content_annotations/content/browser/page_settled_monitor.h"
 #include "components/page_content_annotations/content/page_content_extraction_service.h"
 #include "components/page_content_annotations/content/page_context_fetcher.h"
@@ -481,12 +482,15 @@ void AnnotatedPageContentRequest::StartExtraction(
   if (IsPdf()) {
 #if BUILDFLAG(ENABLE_PDF)
     if (is_pdf_text_extraction_enabled_) {
+      RecordRequestType(ExtractionRequestType::kPDFText);
       RequestPdfText(trigger_source);
     } else {
+      RecordRequestType(ExtractionRequestType::kPDFPageCount);
       RequestPdfPageCount();
     }
 #endif  // BUILDFLAG(ENABLE_PDF)
   } else {
+    RecordRequestType(ExtractionRequestType::kAnnotatedPageContent);
     RequestAnnotatedPageContentSync(trigger_source);
   }
 }

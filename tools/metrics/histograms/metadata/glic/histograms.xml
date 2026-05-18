@@ -1740,6 +1740,40 @@ chromium-metrics-reviews@google.com.
   <summary>Recorded when a page gets screenshot error from Viz.</summary>
 </histogram>
 
+<histogram name="Glic.PageContextFetcher.PdfTextExtraction.Size" units="bytes"
+    expires_after="2027-05-05">
+  <owner>xiaochenzh@chromium.org</owner>
+  <owner>sophiechang@chromium.org</owner>
+  <owner>chrome-intelligence-core@google.com</owner>
+  <summary>
+    Records the byte size of the extracted PDF text before any truncation.
+    Recorded once per successful PDF text extraction.
+  </summary>
+</histogram>
+
+<histogram name="Glic.PageContextFetcher.PdfTextExtraction.Status"
+    enum="PdfTextExtractionStatus" expires_after="2027-05-05">
+  <owner>xiaochenzh@chromium.org</owner>
+  <owner>sophiechang@chromium.org</owner>
+  <owner>chrome-intelligence-core@google.com</owner>
+  <summary>
+    Records the status of PDF text extraction requests. Tracks whether the
+    extraction was successful or failed due to reasons such as the PDF load is
+    not complete. Recorded once per PDF text extraction request.
+  </summary>
+</histogram>
+
+<histogram name="Glic.PageContextFetcher.PdfTextExtraction.Time" units="ms"
+    expires_after="2027-05-05">
+  <owner>xiaochenzh@chromium.org</owner>
+  <owner>sophiechang@chromium.org</owner>
+  <owner>chrome-intelligence-core@google.com</owner>
+  <summary>
+    Records the time taken for PDF text extraction. Recorded once per successful
+    PDF text extraction.
+  </summary>
+</histogram>
+
 <histogram name="Glic.PageContextFetcher.ScreenshotRedacted" enum="Boolean"
     expires_after="2026-11-05">
   <owner>linnan@google.com</owner>

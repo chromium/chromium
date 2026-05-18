@@ -237,6 +237,7 @@ if (is_android) {
       "//components/optimization_guide/core:test_support",
       "//components/optimization_guide/proto:optimization_guide_proto",
       "//components/page_content_annotations/content",
+      "//components/page_content_annotations/content:metrics",
       "//components/page_content_annotations/core",
       "//components/passage_embeddings/core:test_support",
       "//components/ukm:test_support",

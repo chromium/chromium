@@ -3201,6 +3201,7 @@ if (!is_android) {
       "//components/optimization_guide/proto:optimization_guide_proto",
       "//components/origin_trials:browser",
       "//components/origin_trials/test",
+      "//components/page_content_annotations/content:metrics",
       "//components/page_content_annotations/core",
       "//components/page_content_annotations/core:test_support",
       "//components/page_load_metrics/browser",

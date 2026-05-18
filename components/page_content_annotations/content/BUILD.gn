@@ -4,6 +4,16 @@
 
 import("//pdf/features.gni")
 
+source_set("metrics") {
+  sources = [
+    "annotate_page_content_request_metrics.cc",
+    "annotate_page_content_request_metrics.h",
+    "page_context_fetcher_metrics.cc",
+    "page_context_fetcher_metrics.h",
+  ]
+  deps = [ "//base" ]
+}
+
 source_set("content") {
   sources = [
     "annotate_page_content_request.cc",
@@ -36,6 +46,7 @@ source_set("content") {
   ]
 
   deps = [
+    ":metrics",
     "//components/continuous_search/browser",
     "//components/optimization_guide/content/browser:page_context_eligibility",
     "//components/page_content_annotations/core",
@@ -113,6 +124,7 @@ source_set("unit_tests") {
   ]
   deps = [
     ":content",
+    ":metrics",
     ":page_embeddings",
     "//components/feature_engagement/public:feature_constants",
     "//components/feature_engagement/test:test_support",

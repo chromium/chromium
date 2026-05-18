@@ -2384,6 +2384,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="OptimizationGuide.PageContentExtraction.RequestType"
+    enum="PageContentExtractionRequestType" expires_after="2027-05-05">
+  <owner>xiaochenzh@chromium.org</owner>
+  <owner>sophiechang@chromium.org</owner>
+  <owner>chrome-intelligence-core@google.com</owner>
+  <summary>
+    Records whether page content extraction requests the AnnotatedPageContent,
+    the PDF text, or the PDF page count. Recorded once per extraction request.
+  </summary>
+</histogram>
+
 <histogram name="OptimizationGuide.PageContentExtraction.TriggerSource"
     enum="OptimizationGuidePageContentExtractionTriggerSource"
     expires_after="2026-09-16">
