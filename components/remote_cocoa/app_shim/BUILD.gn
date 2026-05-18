@@ -30,6 +30,8 @@ component("app_shim") {
     "browser_native_widget_window_mac.mm",
     "context_menu_runner.h",
     "context_menu_runner.mm",
+    "cr_application.h",
+    "cr_application.mm",
     "drag_drop_client.h",
     "immersive_mode_controller_cocoa.h",
     "immersive_mode_controller_cocoa.mm",

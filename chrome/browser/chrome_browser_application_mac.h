@@ -12,9 +12,9 @@
 
 #import "base/mac/scoped_sending_event.h"
 #import "base/message_loop/message_pump_apple.h"
+#import "components/remote_cocoa/app_shim/cr_application.h"
 
-@interface BrowserCrApplication
-    : NSApplication <CrAppProtocol, CrAppControlProtocol>
+@interface BrowserCrApplication : CrApplication
 
 // Our implementation of |-terminate:| only attempts to terminate the
 // application, i.e., begins a process which may lead to termination. This

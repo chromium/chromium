@@ -8,17 +8,7 @@
 #include "chrome/app_shim/app_shim_delegate.h"
 #include "chrome/common/mac/app_shim.mojom.h"
 
-@implementation AppShimApplication {
-  BOOL _handlingSendEvent;
-}
-
-- (BOOL)isHandlingSendEvent {
-  return _handlingSendEvent;
-}
-
-- (void)setHandlingSendEvent:(BOOL)handlingSendEvent {
-  _handlingSendEvent = handlingSendEvent;
-}
+@implementation AppShimApplication
 
 - (void)enableScreenReaderCompleteModeAfterDelay:(BOOL)enable {
   [NSObject cancelPreviousPerformRequestsWithTarget:self
@@ -55,31 +45,6 @@
     }
   }
   return [super accessibilitySetValue:value forAttribute:attribute];
-}
-
-- (BOOL)sendAction:(SEL)anAction to:(id)aTarget from:(id)sender {
-  // The Dock menu contains an automagic section where you can select
-  // amongst open windows.  If a window is closed via JavaScript while
-  // the menu is up, the menu item for that window continues to exist.
-  // When a window is selected this method is called with the
-  // now-freed window as |aTarget|.  Short-circuit the call if
-  // |aTarget| is not a valid window.
-  if (anAction == @selector(_selectWindow:)) {
-    // Not using -[NSArray containsObject:] because |aTarget| may be a
-    // freed object.
-    BOOL found = NO;
-    for (NSWindow* window in [self windows]) {
-      if (window == aTarget) {
-        found = YES;
-        break;
-      }
-    }
-    if (!found) {
-      return NO;
-    }
-  }
-
-  return [super sendAction:anAction to:aTarget from:sender];
 }
 
 - (NSAccessibilityRole)accessibilityRole {
