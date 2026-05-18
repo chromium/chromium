@@ -546,24 +546,30 @@ export class PowerBookmarksListElement extends PolymerElement implements
         list => this.bookmarksService_.refreshDataForBookmarks(list));
     this.updateListScrollOffset_();
 
-    if (this.recordCountMetricsOnNextUpdate_ && this.hasLoadedData_) {
-      this.recordBookmarkCountMetrics_();
-    }
+
 
     // After the lists are updated and all children updates are complete,
     // notify iron-list to resize.
     afterNextRender(this, () => {
       const children =
           [...this.shadowRoot!.querySelectorAll('power-bookmark-row')];
+
+      const onChildrenUpdated = () => {
+        this.notifyBookmarksListResize_();
+
+        // Make sure the keyboard navigation tree is rebuilt whenever the
+        // iron-list is updated.
+        this.rebuildNavigationElements_();
+
+        if (this.recordCountMetricsOnNextUpdate_ && this.hasLoadedData_) {
+          this.recordBookmarkCountMetrics_();
+        }
+      };
       if (children.length > 0) {
         Promise.all(children.map(el => el.updateComplete))
-            .then(() => {
-              this.notifyBookmarksListResize_();
-
-              // Make sure the keyboard navigation tree is rebuilt whenever the
-              // iron-list is updated.
-              this.rebuildNavigationElements_();
-            });
+            .then(onChildrenUpdated);
+      } else {
+        onChildrenUpdated();
       }
     });
   }
