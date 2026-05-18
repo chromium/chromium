@@ -2586,10 +2586,6 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(
          autofill::features::kAutofillEnableBottomSheetScanCardAndFill)},
-    {"gemini-response-view-dynamic-resizing",
-     flag_descriptions::kGeminiResponseViewDynamicResizingName,
-     flag_descriptions::kGeminiResponseViewDynamicResizingDescription,
-     flags_ui::kOsIos, FEATURE_VALUE_TYPE(kGeminiResponseViewDynamicResizing)},
     {"fs-no-broadcast-experiment",
      flag_descriptions::kSmoothScrollingUseDelegateName,
      flag_descriptions::kSmoothScrollingUseDelegateDescription,

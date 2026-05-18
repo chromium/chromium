@@ -5075,14 +5075,6 @@
     "expiry_milestone": 160
   },
   {
-    "name": "gemini-response-view-dynamic-resizing",
-    "owners": [
-      "joemerramos@google.com",
-      "bling-alchemy-eng@google.com"
-    ],
-    "expiry_milestone": 160
-  },
-  {
     "name": "gemini-rich-apc-extraction",
     "owners": [
       "nicolasmacbeth@google.com",

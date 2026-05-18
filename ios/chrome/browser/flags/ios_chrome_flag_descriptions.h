@@ -834,11 +834,6 @@ inline constexpr char kGeminiPreciseLocationName[] = "BWG Precise Location";
 inline constexpr char kGeminiPreciseLocationDescription[] =
     "When enabled, the precise location row is shown in BWG settings.";
 
-inline constexpr char kGeminiResponseViewDynamicResizingName[] =
-    "Gemini Response View Dynamic Resizing";
-inline constexpr char kGeminiResponseViewDynamicResizingDescription[] =
-    "Enables dynamic resizing for the Gemini response view.";
-
 inline constexpr char kGeminiRichAPCExtractionName[] =
     "Gemini Rich APC Extraction";
 inline constexpr char kGeminiRichAPCExtractionDescription[] =
