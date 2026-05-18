@@ -25,6 +25,7 @@
 TopContainerView::TopContainerView(BrowserView* browser_view)
     : browser_view_(browser_view) {
   SetProperty(views::kElementIdentifierKey, kTopContainerElementId);
+  SetProperty(views::kViewDoesNotLayOutChildren, true);
 
   // Note: The colors will be set during layout, so these don't matter.
   auto background = std::make_unique<CustomCornersBackground>(

@@ -145,6 +145,8 @@ class MultiContentsView
   void SetTargetContentBounds(
       std::optional<TargetContentBounds> target_content_bounds);
 
+  void SetIsAnimatingContent(bool is_animating);
+
   // If the split view is being resized.
   bool IsSplitResizing() const {
     return initial_start_width_on_resize_.has_value();

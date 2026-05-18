@@ -1015,6 +1015,12 @@ BrowserViewTabbedLayoutImpl::CalculateProposedLayout(
       !suppress_top_separator &&
       top_separator_type == TopSeparatorType::kMultiContents);
 
+  // Update the multi-contents view about if we will be animating content
+  // bounds. This is to make optimizations during animations e.g. avoid
+  // repositioning status bubble.
+  views().multi_contents_view->SetIsAnimatingContent(
+      side_panel_is_animating || vertical_tab_strip_animation.current_motion);
+
   // Lay out contents container. The contents container contains the multi-
   // contents view when multi-contents are enabled. The checks here are to
   // force the logic to be updated when multi-contents is fully rolled-out.

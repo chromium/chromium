@@ -97,6 +97,10 @@ VIEWS_EXPORT extern const ui::ClassProperty<LayoutAlignment*>* const
 VIEWS_EXPORT extern const ui::ClassProperty<bool>* const
     kViewIgnoredByLayoutKey;
 
+// Property indicating whether a view should not lay out its own children.
+VIEWS_EXPORT extern const ui::ClassProperty<bool>* const
+    kViewDoesNotLayOutChildren;
+
 // Tag for the view associated with ui::ElementTracker.
 VIEWS_EXPORT extern const ui::ClassProperty<ui::ElementIdentifier>* const
     kElementIdentifierKey;

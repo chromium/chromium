@@ -359,6 +359,13 @@ void MultiContentsView::SetTargetContentBounds(
   InvalidateLayout(/*avoid_propagate_during_layout=*/true);
 }
 
+void MultiContentsView::SetIsAnimatingContent(bool is_animating) {
+  for (auto* contents_container_view : contents_container_views_) {
+    contents_container_view->contents_view()->SetIsAnimatingBounds(
+        is_animating);
+  }
+}
+
 std::vector<views::View*> MultiContentsView::GetAccessiblePanes() {
   std::vector<views::View*> accessible_panes;
   for (auto* contents_container_view : contents_container_views_) {

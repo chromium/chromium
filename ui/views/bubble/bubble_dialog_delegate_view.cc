@@ -231,6 +231,14 @@ class BubbleDialogDelegate::AnchorViewObserver : public ViewObserver {
 
   View* anchor_view() const { return anchor_view_; }
 
+  void UpdateBubbleVisibility(bool visible) {
+    bubble_widget_visible_ = visible;
+    if (visible && update_bounds_when_visible_) {
+      parent_->OnAnchorBoundsChanged();
+      update_bounds_when_visible_ = false;
+    }
+  }
+
   // ViewObserver:
   void OnViewIsDeleting(View* observed_view) override {
     // The anchor is being deleted, make sure the parent bubble no longer
@@ -242,7 +250,11 @@ class BubbleDialogDelegate::AnchorViewObserver : public ViewObserver {
 
   void OnViewVisibleBoundsChanged(View* observed_view) override {
     DCHECK_EQ(anchor_view_, observed_view);
-    parent_->OnAnchorBoundsChanged();
+    if (bubble_widget_visible_) {
+      parent_->OnAnchorBoundsChanged();
+    } else {
+      update_bounds_when_visible_ = true;
+    }
   }
 
   // TODO(pbos): Consider observing View visibility changes and only updating
@@ -277,6 +289,8 @@ class BubbleDialogDelegate::AnchorViewObserver : public ViewObserver {
       scoped_notify_;
   const raw_ptr<BubbleDialogDelegate> parent_;
   const raw_ptr<View> anchor_view_;
+  bool bubble_widget_visible_ = true;
+  bool update_bounds_when_visible_ = false;
 };
 
 // This class is responsible for observing events on a BubbleDialogDelegate's
@@ -1268,6 +1282,10 @@ void BubbleDialogDelegate::OnBubbleWidgetVisibilityChanged(bool visible) {
       bubble_shown_duration_ += base::TimeTicks::Now() - *bubble_shown_time_;
       bubble_shown_time_.reset();
     }
+  }
+
+  if (anchor_view_observer_) {
+    anchor_view_observer_->UpdateBubbleVisibility(visible);
   }
 
   UpdateHighlightedButton(visible);
