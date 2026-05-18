@@ -174,6 +174,10 @@ void AskBeforeHttpDialogController::ShowDialog(
     const GURL& request_url,
     ukm::SourceId navigation_source_id,
     security_interstitials::https_only_mode::FallbackReason fallback_reason) {
+  if (!web_contents) {
+    return;
+  }
+  Observe(web_contents);
   // Track the source ID for the navigation that triggered the dialog.
   navigation_source_id_ = navigation_source_id;
   fallback_reason_ = fallback_reason;
@@ -461,12 +465,17 @@ void AskBeforeHttpDialogController::OnHelpCenterLinkClicked(
   metrics_helper_->RecordUserInteraction(
       security_interstitials::MetricsHelper::SHOW_LEARN_MORE);
 
+  content::WebContents* contents = web_contents();
+  if (!contents) {
+    return;
+  }
+
   content::OpenURLParams params(
       GURL(kLearnMoreLink), content::Referrer(),
       ui::DispositionFromEventFlags(event.flags(),
                                     WindowOpenDisposition::NEW_FOREGROUND_TAB),
       ui::PAGE_TRANSITION_LINK, false);
-  web_contents()->OpenURL(params, /*navigation_handle_callback=*/{});
+  contents->OpenURL(params, /*navigation_handle_callback=*/{});
 }
 
 void AskBeforeHttpDialogController::OnGoBackButtonClicked() {
@@ -485,7 +494,11 @@ void AskBeforeHttpDialogController::OnGoBackButtonClicked() {
   }
 
   // LINT.IfChange(HttpsFirstModeGoBackLogic)
-  auto& controller = web_contents()->GetController();
+  content::WebContents* contents = web_contents();
+  if (!contents) {
+    return;
+  }
+  auto& controller = contents->GetController();
   if (controller.CanGoBack()) {
     controller.GoBack();
   } else {
@@ -514,6 +527,9 @@ void AskBeforeHttpDialogController::OnContinueButtonClicked(
 
   // LINT.IfChange(HttpsFirstModeProceedLogic)
   content::WebContents* web_contents_ptr = web_contents();
+  if (!web_contents_ptr) {
+    return;
+  }
   Profile* profile =
       Profile::FromBrowserContext(web_contents_ptr->GetBrowserContext());
   StatefulSSLHostStateDelegate* state =

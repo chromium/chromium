@@ -65,6 +65,9 @@ void ClearHttpAllowlistForHostnamesForTesting(PrefService* prefs) {
 
 security_interstitials::https_only_mode::HttpInterstitialState
 ComputeInterstitialState(content::WebContents* web_contents, const GURL& url) {
+  if (!web_contents) {
+    return {};
+  }
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
   PrefService* prefs = profile->GetPrefs();
