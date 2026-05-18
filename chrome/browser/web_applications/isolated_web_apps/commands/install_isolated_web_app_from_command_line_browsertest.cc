@@ -103,8 +103,15 @@ class InstallIsolatedWebAppFromCommandLineFromUrlBrowserTest
   GURL GetAppUrl() const { return embedded_test_server()->base_url(); }
 };
 
+// TODO(crbug.com/513729021): Re-enable the test
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_UrlAppFromCommandLineIsInstalled \
+  DISABLED_UrlAppFromCommandLineIsInstalled
+#else
+#define MAYBE_UrlAppFromCommandLineIsInstalled UrlAppFromCommandLineIsInstalled
+#endif
 IN_PROC_BROWSER_TEST_F(InstallIsolatedWebAppFromCommandLineFromUrlBrowserTest,
-                       UrlAppFromCommandLineIsInstalled) {
+                       MAYBE_UrlAppFromCommandLineIsInstalled) {
   webapps::AppId id = GetInstalledAppId();
 
   EXPECT_TRUE(
