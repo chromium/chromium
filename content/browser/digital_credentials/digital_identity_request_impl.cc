@@ -20,6 +20,9 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/trace_event/trace_event.h"
 #include "base/values.h"
+#include "content/browser/digital_credentials/digital_credential_environment.h"
+#include "content/browser/digital_credentials/virtual_wallet.h"
+#include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/webid/delegation/sd_jwt.h"
 #include "content/browser/webid/flags.h"
 #include "content/public/browser/browser_thread.h"
@@ -373,13 +376,67 @@ DigitalIdentityRequestImpl::DigitalIdentityRequestImpl(
 
 DigitalIdentityRequestImpl::~DigitalIdentityRequestImpl() = default;
 
+std::optional<VirtualWallet::Behavior>
+DigitalIdentityRequestImpl::GetVirtualWalletBehavior() {
+  VirtualWallet* wallet =
+      DigitalCredentialEnvironment::GetInstance()->MaybeGetVirtualWallet(
+          FrameTreeNode::From(&render_frame_host()));
+  if (!wallet) {
+    return std::nullopt;
+  }
+  return wallet->behavior();
+}
+
+bool DigitalIdentityRequestImpl::HandleVirtualWalletBehavior() {
+  std::optional<VirtualWallet::Behavior> behavior = GetVirtualWalletBehavior();
+  if (!behavior) {
+    return false;
+  }
+
+  VirtualWallet* wallet =
+      DigitalCredentialEnvironment::GetInstance()->MaybeGetVirtualWallet(
+          FrameTreeNode::From(&render_frame_host()));
+
+  RequestDigitalIdentityStatus status;
+  std::optional<DigitalIdentityProvider::DigitalCredential> credential;
+
+  switch (*behavior) {
+    case VirtualWallet::Behavior::kRespond:
+      credential = wallet->GetCredential();
+      status = credential ? RequestDigitalIdentityStatus::kSuccess
+                          : RequestDigitalIdentityStatus::kError;
+      break;
+    case VirtualWallet::Behavior::kDecline:
+      status = RequestDigitalIdentityStatus::kErrorUserDeclined;
+      break;
+    case VirtualWallet::Behavior::kWait:
+      // Leave the request's promise pending.
+      return true;
+  }
+
+  GetUIThreadTaskRunner()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&DigitalIdentityRequestImpl::CompleteRequestWithStatus,
+                     weak_ptr_factory_.GetWeakPtr(), status,
+                     std::move(credential)));
+  return true;
+}
+
 void DigitalIdentityRequestImpl::CompleteRequest(
     base::expected<DigitalIdentityProvider::DigitalCredential,
                    RequestStatusForMetrics> response) {
-  RequestDigitalIdentityStatus status =
-      response.has_value() ? RequestDigitalIdentityStatus::kSuccess
-                           : ToRequestDigitalIdentityStatus(response.error());
-  CompleteRequestWithStatus(status, std::move(response));
+  base::UmaHistogramEnumeration("Blink.DigitalIdentityRequest.Status",
+                                response.has_value()
+                                    ? RequestStatusForMetrics::kSuccess
+                                    : response.error());
+
+  if (response.has_value()) {
+    CompleteRequestWithStatus(RequestDigitalIdentityStatus::kSuccess,
+                              std::move(response.value()));
+  } else {
+    CompleteRequestWithStatus(ToRequestDigitalIdentityStatus(response.error()),
+                              std::nullopt);
+  }
 }
 
 void DigitalIdentityRequestImpl::CompleteRequestWithError(
@@ -389,8 +446,7 @@ void DigitalIdentityRequestImpl::CompleteRequestWithError(
 
 void DigitalIdentityRequestImpl::CompleteRequestWithStatus(
     RequestDigitalIdentityStatus status,
-    base::expected<DigitalIdentityProvider::DigitalCredential,
-                   RequestStatusForMetrics> response) {
+    std::optional<DigitalIdentityProvider::DigitalCredential> response) {
   // `provider_.reset()` can synchronously close UI which (via activation
   // observers) may destroy the hosting WebContents and therefore `this`.
   // Guard with a WeakPtr and bail out if that happens. Weak pointers must be
@@ -404,12 +460,7 @@ void DigitalIdentityRequestImpl::CompleteRequestWithStatus(
   weak_ptr_factory_.InvalidateWeakPtrs();
   update_interstitial_on_abort_callback_.Reset();
 
-  base::UmaHistogramEnumeration("Blink.DigitalIdentityRequest.Status",
-                                response.has_value()
-                                    ? RequestStatusForMetrics::kSuccess
-                                    : response.error());
-
-  if (response.has_value()) {
+  if (response) {
     std::move(callback_).Run(status, response->protocol,
                              std::move(response->data));
   } else {
@@ -489,6 +540,10 @@ void DigitalIdentityRequestImpl::Get(
       WebContents::FromRenderFrameHost(&render_frame_host());
   if (!web_contents) {
     CompleteRequestWithError(RequestStatusForMetrics::kErrorOther);
+    return;
+  }
+
+  if (HandleVirtualWalletBehavior()) {
     return;
   }
 
@@ -589,6 +644,10 @@ void DigitalIdentityRequestImpl::Create(
     return;
   }
 
+  if (HandleVirtualWalletBehavior()) {
+    return;
+  }
+
   // Store the protocol to return it in tests when no digital wallet is
   // available. Pick the first one arbitrarily since it covers most of the tests
   // that send only one request.
@@ -640,9 +699,7 @@ void DigitalIdentityRequestImpl::Abort() {
     std::move(update_interstitial_on_abort_callback_).Run();
   }
 
-  CompleteRequestWithStatus(
-      RequestDigitalIdentityStatus::kErrorCanceled,
-      base::unexpected(RequestStatusForMetrics::kErrorAborted));
+  CompleteRequestWithError(RequestStatusForMetrics::kErrorAborted);
 }
 
 void DigitalIdentityRequestImpl::OnInterstitialDone(

@@ -14,8 +14,8 @@ namespace content {
 
 class CONTENT_EXPORT VirtualWallet {
  public:
-  // Controls the simulated wallet behaviour for WebDriver flows.
-  enum class Mode {
+  // Controls the simulated wallet behavior for WebDriver flows.
+  enum class Behavior {
     kRespond,
     kWait,
     kDecline,
@@ -32,20 +32,21 @@ class CONTENT_EXPORT VirtualWallet {
   void SetCredential(DigitalIdentityProvider::DigitalCredential credential);
 
   // Returns a copy of the currently stored credential (if any).
-  std::optional<DigitalIdentityProvider::DigitalCredential> GetCredential();
+  std::optional<DigitalIdentityProvider::DigitalCredential> GetCredential()
+      const;
 
-  // Clears the stored credential and mode.
+  // Clears the stored credential and behavior.
   void Clear();
 
-  // Sets the wallet mode.
-  void set_mode(Mode mode) { mode_ = mode; }
+  // Sets the wallet behavior.
+  void set_behavior(Behavior behavior) { behavior_ = behavior; }
 
-  // Returns the current wallet mode (if any).
-  std::optional<Mode> mode() const { return mode_; }
+  // Returns the current wallet behavior (if any).
+  std::optional<Behavior> behavior() const { return behavior_; }
 
  private:
   std::optional<DigitalIdentityProvider::DigitalCredential> stored_credential_;
-  std::optional<Mode> mode_;
+  std::optional<Behavior> behavior_;
 };
 
 }  // namespace content

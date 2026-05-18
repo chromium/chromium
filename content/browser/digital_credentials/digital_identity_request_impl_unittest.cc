@@ -13,6 +13,9 @@
 #include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
+#include "content/browser/digital_credentials/digital_credential_environment.h"
+#include "content/browser/digital_credentials/virtual_wallet.h"
+#include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/webid/test/mock_digital_identity_provider.h"
 #include "content/browser/webid/test/stub_digital_identity_provider.h"
 #include "content/public/browser/content_browser_client.h"
@@ -810,7 +813,7 @@ class DigitalIdentityRequestImplTest : public RenderViewHostTestHarness {
         *web_contents()->GetPrimaryMainFrame(),
         request_remote_.BindNewPipeAndPassReceiver());
 
-    // Tests in this fixture don't test the dialog behaviour.
+    // Tests in this fixture don't test the dialog behavior.
     scoped_feature_list_.InitAndEnableFeatureWithParameters(
         features::kWebIdentityDigitalCredentials, {{"dialog", "no_dialog"}});
   }
@@ -1051,7 +1054,7 @@ TEST_F(DigitalIdentityRequestImplTest,
 }
 
 // A DigitalIdentityProvider whose destructor runs an arbitrary closure. This
-// models the production behaviour where ~DigitalIdentityProviderDesktop tears
+// models the production behavior where ~DigitalIdentityProviderDesktop tears
 // down a views::Widget, which can synchronously fire activation/visibility
 // observers. If one of those observers destroys the hosting WebContents (e.g. a
 // transient bubble that closes on focus loss), DigitalIdentityRequestImpl is
@@ -1301,6 +1304,181 @@ TEST_F(DigitalIdentityRequestImplPermissionsPolicyTest,
   request_remote()->Create(MakeCreateRequests(), base::DoNothing());
   EXPECT_EQ("digital-credentials-create permissions policy is not enabled.",
             bad_message_observer.WaitForBadMessage());
+}
+
+class DigitalIdentityRequestImplVirtualWalletTest
+    : public RenderViewHostTestHarness {
+ public:
+  void SetUp() override {
+    RenderViewHostTestHarness::SetUp();
+    scoped_feature_list_.InitWithFeatures(
+        {features::kWebIdentityDigitalCredentials,
+         features::kWebIdentityDigitalCredentialsCreation},
+        {});
+    digital_identity_request_impl_ = DigitalIdentityRequestImpl::CreateInstance(
+        *web_contents()->GetPrimaryMainFrame(),
+        request_remote_.BindNewPipeAndPassReceiver());
+  }
+
+  void TearDown() override {
+    digital_identity_request_impl_ = nullptr;
+    DigitalCredentialEnvironment::GetInstance()->Reset();
+    RenderViewHostTestHarness::TearDown();
+  }
+
+  DigitalIdentityRequestImpl* digital_identity_request_impl() {
+    return digital_identity_request_impl_.get();
+  }
+
+  VirtualWallet* GetOrCreateVirtualWallet() {
+    FrameTreeNode* node =
+        FrameTreeNode::From(web_contents()->GetPrimaryMainFrame());
+    return DigitalCredentialEnvironment::GetInstance()
+        ->GetOrCreateVirtualWallet(node);
+  }
+
+  std::vector<DigitalCredentialGetRequestPtr> MakeGetRequests() {
+    DigitalCredentialGetRequestPtr request = DigitalCredentialGetRequest::New();
+    request->protocol = "protocol_in_request";
+    request->data = GenerateOnlyAgeOpenid4VpRequestWithDCQL();
+    std::vector<DigitalCredentialGetRequestPtr> requests;
+    requests.push_back(std::move(request));
+    return requests;
+  }
+
+  std::vector<DigitalCredentialCreateRequestPtr> MakeCreateRequests() {
+    DigitalCredentialCreateRequestPtr request =
+        DigitalCredentialCreateRequest::New();
+    request->protocol = "protocol_in_request";
+    base::DictValue request_data;
+    request_data.Set("data", "create request data");
+    request->data = base::Value(std::move(request_data));
+    std::vector<DigitalCredentialCreateRequestPtr> requests;
+    requests.push_back(std::move(request));
+    return requests;
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+  mojo::Remote<blink::mojom::DigitalIdentityRequest> request_remote_;
+  base::WeakPtr<DigitalIdentityRequestImpl> digital_identity_request_impl_;
+};
+
+TEST_F(DigitalIdentityRequestImplVirtualWalletTest, GetRespond) {
+  const std::string kProtocolInWallet = "protocol_in_wallet";
+  const base::Value kResponseData(
+      base::DictValue().Set("token", "virtual-wallet-data"));
+
+  VirtualWallet* wallet = GetOrCreateVirtualWallet();
+  wallet->set_behavior(VirtualWallet::Behavior::kRespond);
+  wallet->SetCredential(
+      DigitalCredential(kProtocolInWallet, kResponseData.Clone()));
+
+  base::RunLoop run_loop;
+  base::MockCallback<GetCallback> mock_callback;
+  EXPECT_CALL(mock_callback, Run(RequestDigitalIdentityStatus::kSuccess,
+                                 Optional(kProtocolInWallet), _))
+      .WillOnce(base::test::RunOnceClosure(run_loop.QuitClosure()));
+  digital_identity_request_impl()->Get(MakeGetRequests(), mock_callback.Get());
+  run_loop.Run();
+}
+
+TEST_F(DigitalIdentityRequestImplVirtualWalletTest, GetDecline) {
+  VirtualWallet* wallet = GetOrCreateVirtualWallet();
+  wallet->set_behavior(VirtualWallet::Behavior::kDecline);
+
+  base::RunLoop run_loop;
+  base::MockCallback<GetCallback> mock_callback;
+  EXPECT_CALL(mock_callback,
+              Run(RequestDigitalIdentityStatus::kErrorUserDeclined,
+                  Eq(std::nullopt), _))
+      .WillOnce(base::test::RunOnceClosure(run_loop.QuitClosure()));
+  digital_identity_request_impl()->Get(MakeGetRequests(), mock_callback.Get());
+  run_loop.Run();
+}
+
+TEST_F(DigitalIdentityRequestImplVirtualWalletTest, GetWaitIsAbortable) {
+  VirtualWallet* wallet = GetOrCreateVirtualWallet();
+  wallet->set_behavior(VirtualWallet::Behavior::kWait);
+
+  base::RunLoop run_loop;
+  base::MockCallback<GetCallback> mock_callback;
+  EXPECT_CALL(mock_callback, Run(RequestDigitalIdentityStatus::kErrorCanceled,
+                                 Eq(std::nullopt), _))
+      .WillOnce(base::test::RunOnceClosure(run_loop.QuitClosure()));
+  digital_identity_request_impl()->Get(MakeGetRequests(), mock_callback.Get());
+  digital_identity_request_impl()->Abort();
+  run_loop.Run();
+}
+
+TEST_F(DigitalIdentityRequestImplVirtualWalletTest, CreateRespond) {
+  const std::string kProtocolInWallet = "protocol_in_wallet";
+  const base::Value kResponseData(
+      base::DictValue().Set("token", "virtual-wallet-data"));
+
+  VirtualWallet* wallet = GetOrCreateVirtualWallet();
+  wallet->set_behavior(VirtualWallet::Behavior::kRespond);
+  wallet->SetCredential(
+      DigitalCredential(kProtocolInWallet, kResponseData.Clone()));
+
+  base::RunLoop run_loop;
+  base::MockCallback<DigitalIdentityRequestImpl::CreateCallback> mock_callback;
+  EXPECT_CALL(mock_callback, Run(RequestDigitalIdentityStatus::kSuccess,
+                                 Optional(kProtocolInWallet), _))
+      .WillOnce(base::test::RunOnceClosure(run_loop.QuitClosure()));
+  digital_identity_request_impl()->Create(MakeCreateRequests(),
+                                          mock_callback.Get());
+  run_loop.Run();
+}
+
+TEST_F(DigitalIdentityRequestImplVirtualWalletTest, CreateDecline) {
+  VirtualWallet* wallet = GetOrCreateVirtualWallet();
+  wallet->set_behavior(VirtualWallet::Behavior::kDecline);
+
+  base::RunLoop run_loop;
+  base::MockCallback<DigitalIdentityRequestImpl::CreateCallback> mock_callback;
+  EXPECT_CALL(mock_callback,
+              Run(RequestDigitalIdentityStatus::kErrorUserDeclined,
+                  Eq(std::nullopt), _))
+      .WillOnce(base::test::RunOnceClosure(run_loop.QuitClosure()));
+  digital_identity_request_impl()->Create(MakeCreateRequests(),
+                                          mock_callback.Get());
+  run_loop.Run();
+}
+
+TEST_F(DigitalIdentityRequestImplVirtualWalletTest, CreateWaitIsAbortable) {
+  VirtualWallet* wallet = GetOrCreateVirtualWallet();
+  wallet->set_behavior(VirtualWallet::Behavior::kWait);
+
+  base::RunLoop run_loop;
+  base::MockCallback<DigitalIdentityRequestImpl::CreateCallback> mock_callback;
+  EXPECT_CALL(mock_callback, Run(RequestDigitalIdentityStatus::kErrorCanceled,
+                                 Eq(std::nullopt), _))
+      .WillOnce(base::test::RunOnceClosure(run_loop.QuitClosure()));
+  digital_identity_request_impl()->Create(MakeCreateRequests(),
+                                          mock_callback.Get());
+  digital_identity_request_impl()->Abort();
+  run_loop.Run();
+}
+
+TEST_F(DigitalIdentityRequestImplVirtualWalletTest, GetNoBehaviorFallsThrough) {
+  GetOrCreateVirtualWallet();
+
+  base::MockCallback<GetCallback> mock_callback;
+  EXPECT_CALL(mock_callback,
+              Run(RequestDigitalIdentityStatus::kError, Eq(std::nullopt), _));
+  digital_identity_request_impl()->Get(MakeGetRequests(), mock_callback.Get());
+}
+
+TEST_F(DigitalIdentityRequestImplVirtualWalletTest,
+       CreateNoBehaviorFallsThrough) {
+  GetOrCreateVirtualWallet();
+
+  base::MockCallback<DigitalIdentityRequestImpl::CreateCallback> mock_callback;
+  EXPECT_CALL(mock_callback,
+              Run(RequestDigitalIdentityStatus::kError, Eq(std::nullopt), _));
+  digital_identity_request_impl()->Create(MakeCreateRequests(),
+                                          mock_callback.Get());
 }
 
 }  // namespace content
