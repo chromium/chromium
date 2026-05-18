@@ -633,6 +633,9 @@ class PLATFORM_EXPORT CanvasNon2DResourceProviderSharedImage
   void OnMemoryDump(base::trace_event::ProcessMemoryDump* pmd) override;
   size_t GetSize() const override;
 
+  // MemoryManagedPaintRecorder::Client implementation.
+  void RecordingCleared() override;
+
   void EnsureWriteAccess();
   void EndWriteAccess();
 

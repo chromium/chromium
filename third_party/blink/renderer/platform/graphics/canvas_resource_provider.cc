@@ -2459,6 +2459,8 @@ size_t CanvasNon2DResourceProviderSharedImage::GetSize() const {
   return info.computeByteSize(info.minRowBytes());
 }
 
+void CanvasNon2DResourceProviderSharedImage::RecordingCleared() {}
+
 gpu::raster::RasterInterface*
 CanvasNon2DResourceProviderSharedImage::RasterInterface() const {
   if (!ContextProviderWrapper()) {
