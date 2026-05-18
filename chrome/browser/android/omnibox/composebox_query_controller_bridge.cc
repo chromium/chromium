@@ -402,7 +402,6 @@ void ComposeboxQueryControllerBridge::GetAimUrlFromInputState(
   if (input_state_model_) {
     for (const auto& [key, value] :
          input_state_model_->GetAdditionalQueryParams()) {
-      DCHECK(!search_url_request_info->additional_params.contains(key));
       search_url_request_info->additional_params[key] = value;
     }
   }
