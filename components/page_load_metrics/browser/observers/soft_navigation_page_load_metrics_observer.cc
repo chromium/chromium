@@ -158,9 +158,20 @@ SoftNavigationPageLoadMetricsObserver::OnShown() {
 }
 
 void SoftNavigationPageLoadMetricsObserver::OnSoftNavigation() {
-  // Emit the previous soft navigation, and note the next one as pending.
-  RecordSoftNavigationEventIfPending();
-  pending_soft_navigation_ = true;
+  // It's possible that the OnSoftNavigation event arrives late - after a page
+  // lifecycle event (esp. OnEnterBackForwardCache) that would have ended soft
+  // navigation recording, because detected navigations are sent with page load
+  // metrics with buffering from the renderer. At that point we're no longer in
+  // a good position to record the soft navigation, so we ignore it, as flipping
+  // pending_soft_navigation_ to true could cause crashes when the page (later)
+  // gets evicted from the back-forward cache or the app moves to the
+  // background.  See also crbug.com/513856242 and crbug.com/513789479.
+  if (state_ == State::kStarted || state_ == State::kPrerenderActivated ||
+      state_ == State::kRestoredFromBackForwardCache) {
+    // Emit the previous soft navigation, and note the next one as pending.
+    RecordSoftNavigationEventIfPending();
+    pending_soft_navigation_ = true;
+  }
 }
 
 bool SoftNavigationPageLoadMetricsObserver::
