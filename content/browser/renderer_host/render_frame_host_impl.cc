@@ -13545,12 +13545,23 @@ bool RenderFrameHostImpl::IsSameSiteInstance(
 }
 
 void RenderFrameHostImpl::UpdateAccessibilityMode() {
+  ui::AXMode ax_mode = delegate_->GetAccessibilityMode();
+
+  if (!ax_mode.has_mode(ui::kAXModeBasic.flags()) &&
+      browser_accessibility_manager_) {
+    // Missing kWebContents and/or kNativeAPIs, so BrowserAccessibilityManager
+    // is no longer necessary.
+    browser_accessibility_manager_->DetachFromParentManager();
+    browser_accessibility_manager_.reset();
+    // Retain ax_unique_ids_ so that if browser accessibility is re-enabled, the
+    // platform nodes corresponding to the blink nodes will have the same IDs.
+  }
+
   // Don't update accessibility mode for a frame that hasn't been created yet.
   if (!IsRenderFrameLive()) {
     return;
   }
 
-  ui::AXMode ax_mode = delegate_->GetAccessibilityMode();
   last_ax_mode_ = ax_mode;
 
   if (ax_mode.has_mode(ui::AXMode::kWebContents)) {
@@ -13567,16 +13578,6 @@ void RenderFrameHostImpl::UpdateAccessibilityMode() {
     // Resetting the Remote signals the renderer to shutdown accessibility
     // in the renderer.
     render_accessibility_.reset();
-  }
-
-  if (!ax_mode.has_mode(ui::kAXModeBasic.flags()) &&
-      browser_accessibility_manager_) {
-    // Missing either kWebContents and kNativeAPIs, so
-    // BrowserAccessibilityManager is no longer necessary.
-    browser_accessibility_manager_->DetachFromParentManager();
-    browser_accessibility_manager_.reset();
-    // Retain ax_unique_ids_ so that if browser accessibility is re-enabled, the
-    // platform nodes corresponding to the blink nodes will have the same IDs.
   }
 }
 
@@ -13660,9 +13661,7 @@ RenderFrameHostImpl::GetOrCreateBrowserAccessibilityManager() {
   // At least basic mode is required; it contains kWebContents and KNativeAPIs.
   ui::AXMode accessibility_mode = delegate_->GetAccessibilityMode();
   if (!accessibility_mode.has_mode(ui::AXMode::kNativeAPIs)) {
-    // TODO(https://crbug.com/497761255): CHECK-exclusion: Convert to CHECK once
-    // we are sure this isn't hit.
-    DCHECK(!browser_accessibility_manager_);
+    CHECK(!browser_accessibility_manager_);
     return nullptr;
   }
 
