@@ -101,6 +101,9 @@ class FontSettingsGetFontListFunction : public ExtensionFunction {
   ResponseAction Run() override;
 
  private:
+#if BUILDFLAG(IS_ANDROID)
+  static base::ListValue GetAndroidFontFamilyList();
+#endif
   void FontListHasLoaded(base::ListValue list);
   ResponseValue CopyFontsToResult(const base::ListValue& fonts);
 };
