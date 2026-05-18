@@ -782,6 +782,14 @@ class ReadAnythingAppModel {
                       size_t ax_start,
                       size_t ax_end);
 
+  // Sequentially maps the longest possible substrings for any remaining text
+  // within a gap.
+  void AlignRelativeOrder(const std::vector<std::u16string>& blocks,
+                          const SuffixArray& index,
+                          std::vector<TextRange> distilled_ranges,
+                          size_t ax_start,
+                          size_t ax_end);
+
   // Searches for the Longest Locally Unique Common Substring (LULCS) that
   // appears exactly once in the AXTree gap [ax_start, ax_end).
   //
@@ -988,6 +996,10 @@ class ReadAnythingAppModel {
   // The minimum number of characters required for a substring to be considered
   // an anchor during GapSubstringAlignment mapping.
   static constexpr size_t kMinAnchorLength = 15;
+
+  // The minimum number of characters required for a substring to be considered
+  // valid during RelativeOrderAlignment mapping.
+  static constexpr size_t kMinSequentialMatchLength = 5;
 
   // The distillation method that will be used for the next content update.
   DistillationMethod next_distillation_method_;

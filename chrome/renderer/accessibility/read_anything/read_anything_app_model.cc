@@ -1646,8 +1646,8 @@ void ReadAnythingAppModel::AlignSubstring(
   // If no sufficiently long match was found, stop recursing in this gap.
   size_t best_match_length = best_match.block_end - best_match.block_start;
   if (best_match_length < kMinAnchorLength) {
-    // TODO: crbug.com/507461287 - Implement part3 of the algorithm. Relative
-    // order alignment.
+    AlignRelativeOrder(blocks, index, std::move(distilled_ranges), ax_start,
+                       ax_end);
     return;
   }
 
@@ -1757,6 +1757,63 @@ ReadAnythingAppModel::FindLongestLocallyUniqueSubstring(
     }
   }
   return best_match;
+}
+
+void ReadAnythingAppModel::AlignRelativeOrder(
+    const std::vector<std::u16string>& blocks,
+    const SuffixArray& index,
+    std::vector<TextRange> distilled_ranges,
+    size_t ax_start,
+    size_t ax_end) {
+  size_t current_ax_cursor = ax_start;
+
+  for (const auto& range : distilled_ranges) {
+    if (current_ax_cursor >= ax_end) {
+      break;
+    }
+
+    const std::u16string& block_text = blocks[range.block_index];
+
+    // The search length is bounded by the remaining AXTree gap. Adjust it to
+    // ensure candidates can physically fit within [current_ax_cursor, ax_end).
+    size_t max_possible_len = ax_end - current_ax_cursor;
+    size_t start_len = std::min(range.length(), max_possible_len);
+
+    // Attempt to find the largest substring of the current block range that
+    // exists in the remaining AXtree gap.
+    for (size_t len = start_len; len >= kMinSequentialMatchLength; --len) {
+      std::u16string_view query =
+          std::u16string_view(block_text).substr(range.start, len);
+      auto occurrences = index.FindRange(query);
+      size_t best_cand_ax_start = std::numeric_limits<size_t>::max();
+
+      for (auto it = occurrences.first; it != occurrences.second; ++it) {
+        size_t cand_ax_start = *it;
+        size_t cand_ax_end = cand_ax_start + len;
+
+        // Verify the occurrence is within the search gap and track the
+        // earliest (chronological) candidate to maintain sequential integrity.
+        if (cand_ax_start >= current_ax_cursor && cand_ax_end <= ax_end &&
+            !IsAXRangeOccupied(cand_ax_start, cand_ax_end)) {
+          if (cand_ax_start < best_cand_ax_start) {
+            best_cand_ax_start = cand_ax_start;
+          }
+        }
+      }
+      // Map the match and advance the cursor for the next sequential block.
+      if (best_cand_ax_start != std::numeric_limits<size_t>::max()) {
+        size_t cand_ax_end = best_cand_ax_start + len;
+        auto segments = CreateSegmentsForMatch(best_cand_ax_start, cand_ax_end,
+                                               range.start);
+        auto& block_mappings = text_to_ax_map_[range.block_index];
+        block_mappings.insert(block_mappings.end(), segments.begin(),
+                              segments.end());
+
+        current_ax_cursor = cand_ax_end;
+        break;
+      }
+    }
+  }
 }
 
 bool ReadAnythingAppModel::IsAXRangeOccupied(size_t ax_start,
