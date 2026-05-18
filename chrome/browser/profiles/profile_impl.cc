@@ -1113,9 +1113,22 @@ void ProfileImpl::OnLocaleReady(CreateMode create_mode) {
   CHECK(!ReadingListModelFactory::HasModel(this));
 #if !BUILDFLAG(IS_ANDROID)
   CHECK(!ThemeServiceFactory::GetForProfileIfExists(this));
-#endif  // !BUILDFLAG(IS_ANDROID)
-  browser_sync::MaybeMigrateSyncingUserToSignedIn(GetPath(), GetPrefs());
 
+  if (create_mode == CreateMode::kAsynchronous) {
+    browser_sync::MaybeMigrateSyncingUserToSignedInAsync(
+        GetPath(), GetPrefs(),
+        base::BindOnce(&ProfileImpl::OnSyncToSigninMigrationMaybeCompleted,
+                       weak_ptr_factory_.GetWeakPtr(), create_mode));
+  } else
+#endif  // !BUILDFLAG(IS_ANDROID)
+  {
+    browser_sync::MaybeMigrateSyncingUserToSignedIn(GetPath(), GetPrefs());
+    OnSyncToSigninMigrationMaybeCompleted(create_mode);
+  }
+}
+
+void ProfileImpl::OnSyncToSigninMigrationMaybeCompleted(
+    CreateMode create_mode) {
 #if BUILDFLAG(IS_CHROMEOS)
   // If this is a kiosk profile, reset some of its prefs which should not
   // persist between sessions.

@@ -80,6 +80,16 @@ enum class SyncToSigninMigrationType {
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/sync/enums.xml:SyncToSigninMigrationType)
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(SyncToSigninMigrationExecutionMode)
+enum class SyncToSigninMigrationExecutionMode {
+  kSynchronous = 0,
+  kAsynchronous = 1,
+  kMaxValue = kAsynchronous
+};
+// LINT.ThenChange(/tools/metrics/histograms/metadata/sync/enums.xml:SyncToSigninMigrationExecutionMode)
+
 #if !BUILDFLAG(IS_CHROMEOS)
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
@@ -495,6 +505,11 @@ void MaybeMigrateSyncingUserToSignedInInternal(
   if (!doing_migration) {
     return;
   }
+
+  base::UmaHistogramEnumeration(
+      "Sync.SyncToSigninMigrationExecutionMode",
+      is_blocking_allowed ? SyncToSigninMigrationExecutionMode::kSynchronous
+                          : SyncToSigninMigrationExecutionMode::kAsynchronous);
 
   // =========================
   // Global (prefs) migration.

@@ -2563,6 +2563,18 @@ chromium-metrics-reviews@google.com.
       variants="SyncDataTypeForSyncToSigninMigration"/>
 </histogram>
 
+<histogram name="Sync.SyncToSigninMigrationExecutionMode"
+    enum="SyncToSigninMigrationExecutionMode" expires_after="2027-05-15">
+  <owner>ankushkush@google.com</owner>
+  <owner>treib@chromium.org</owner>
+  <owner>src/components/sync/OWNERS</owner>
+  <summary>
+    Records the execution mode (Synchronous vs Asynchronous) of the
+    Sync-to-Signin migration. Recorded upon profile creation/startup iff the
+    migration is happening.
+  </summary>
+</histogram>
+
 <histogram name="Sync.SyncToSigninMigrationOutcome" enum="BooleanSuccess"
     expires_after="2026-12-05">
   <owner>treib@chromium.org</owner>

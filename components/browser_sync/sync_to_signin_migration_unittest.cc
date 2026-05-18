@@ -672,13 +672,21 @@ TEST_P(SyncToSigninMigrationMetricsTest, SyncAndAllDataTypesActive) {
   histograms.ExpectUniqueSample(
       "Sync.SyncToSigninMigration.MigrationType",
       IsMigrationEnabled() ? /*kMigrated*/ 1 : /*kNotMigratedYet*/ 3, 1);
+
   if (IsMigrationEnabled()) {
     histograms.ExpectTotalCount("Sync.SyncToSigninMigrationOutcome", 1);
     histograms.ExpectTotalCount("Sync.SyncToSigninMigrationTime", 1);
+    histograms.ExpectUniqueSample(
+        "Sync.SyncToSigninMigrationExecutionMode",
+        IsBlockingAllowed()
+            ? /*SyncToSigninMigrationExecutionMode::kSynchronous*/ 0
+            : /*SyncToSigninMigrationExecutionMode::kAsynchronous*/ 1,
+        1);
 
   } else {
     histograms.ExpectTotalCount("Sync.SyncToSigninMigrationOutcome", 0);
     histograms.ExpectTotalCount("Sync.SyncToSigninMigrationTime", 0);
+    histograms.ExpectTotalCount("Sync.SyncToSigninMigrationExecutionMode", 0);
   }
   // All the data type migrations should run - in "DryRun" mode if the feature
   // flag is disabled.

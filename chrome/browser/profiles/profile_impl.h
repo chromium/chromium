@@ -192,6 +192,12 @@ class ProfileImpl : public Profile {
   // Does final prefs initialization and calls Init().
   void OnLocaleReady(CreateMode create_mode);
 
+  // Sync-to-signin migration is triggered from OnLocaleReady() but needs to be
+  // completed before the rest of the profile initialization process. This
+  // method is called once the migration is completed and resumes the
+  // initialization.
+  void OnSyncToSigninMigrationMaybeCompleted(CreateMode create_mode);
+
 #if BUILDFLAG(ENABLE_SESSION_SERVICE)
   void StopCreateSessionServiceTimer();
 
@@ -295,6 +301,8 @@ class ProfileImpl : public Profile {
   // components/keyed_service/content/browser_context_keyed_service_factory.*
 
   raw_ptr<Profile::Delegate> delegate_;
+
+  base::WeakPtrFactory<ProfileImpl> weak_ptr_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_PROFILES_PROFILE_IMPL_H_

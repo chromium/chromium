@@ -1785,6 +1785,15 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(/components/browser_sync/sync_to_signin_migration.cc:SyncToSigninMigrationDecision) -->
 
+<!-- LINT.IfChange(SyncToSigninMigrationExecutionMode) -->
+
+<enum name="SyncToSigninMigrationExecutionMode">
+  <int value="0" label="Synchronous"/>
+  <int value="1" label="Asynchronous"/>
+</enum>
+
+<!-- LINT.ThenChange(/components/browser_sync/sync_to_signin_migration.cc:SyncToSigninMigrationExecutionMode) -->
+
 <!-- LINT.IfChange(SyncToSigninMigrationExtensionsStep) -->
 
 <enum name="SyncToSigninMigrationExtensionsStep">
