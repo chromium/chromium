@@ -29,6 +29,7 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/loader/resource/xsl_style_sheet_resource.h"
+#include "third_party/blink/renderer/core/xml/parser/xml_document_parser.h"
 #include "third_party/blink/renderer/core/xml/parser/xml_document_parser_scope.h"
 #include "third_party/blink/renderer/core/xml/parser/xml_parser_input.h"
 #include "third_party/blink/renderer/core/xml/xsl_style_sheet.h"
@@ -120,9 +121,13 @@ void XSLStyleSheet::ClearDocuments() {
 }
 
 bool XSLStyleSheet::ParseString(const String& source) {
+  XMLDocumentParser::EnsureLibXMLInitialized();
+
   // Parse in a single chunk into an xmlDocPtr
-  if (!stylesheet_doc_taken_)
+  if (!stylesheet_doc_taken_) {
     xmlFreeDoc(stylesheet_doc_);
+    stylesheet_doc_ = nullptr;
+  }
   stylesheet_doc_taken_ = false;
 
   FrameConsole* console = nullptr;

@@ -85,6 +85,8 @@ class XMLDocumentParser final : public ScriptableDocumentParser,
   ~XMLDocumentParser() override;
   void Trace(Visitor*) const override;
 
+  static void EnsureLibXMLInitialized();
+
   // Exposed for callbacks:
   void HandleError(XMLErrors::ErrorType, const char* message, TextPosition);
 
