@@ -228,7 +228,7 @@ textarea::placeholder {
 }
 
 .buttons-group cr-button:first-child {
-  margin-right: auto;
+  margin-inline-end: auto;
 }
 
 #deleteButton {
