@@ -249,6 +249,7 @@ source_set("impl") {
       "web_app_profile_switcher.cc",
     ]
     deps += [
+      "//chrome/browser/password_manager/actor_login:service_impl",
       "//chrome/browser/password_manager/password_change",
       "//chrome/browser/ui/passwords",
       "//chrome/browser/ui/passwords:impl",

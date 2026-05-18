@@ -21,6 +21,7 @@
 #include "chrome/browser/glic/public/glic_invoke_options.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_passkeys.h"
+#include "chrome/browser/password_manager/actor_login/password_change_from_checkup_actor_login_service.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/password_manager/password_change/change_password_form_waiter.h"
 #include "chrome/browser/password_manager/password_change/model_quality_logs_uploader.h"
@@ -57,10 +58,6 @@ std::unique_ptr<Logger> GetLoggerIfAvailable(
     return std::make_unique<Logger>(client->GetCurrentLogManager());
   }
   return nullptr;
-}
-
-bool IsValidUrl(const GURL& url) {
-  return url.is_valid() && url.SchemeIsHTTPOrHTTPS();
 }
 
 std::optional<actor::TaskId> CreateDummyTaskAndTiedTab(
@@ -101,18 +98,6 @@ void RemoveActuationTabFromTask(std::optional<actor::TaskId> task_id,
   actor::ActorTask* task = actor_service->GetTask(*task_id);
   CHECK(task);
   task->RemoveTab(actuation_tab->GetHandle());
-}
-
-bool IsSameOrigin(const std::u16string& credential_source_site_or_app,
-                  const GURL& credential_target_url) {
-  GURL source_url(credential_source_site_or_app);
-
-  if (!IsValidUrl(credential_target_url) || !IsValidUrl(source_url)) {
-    return false;
-  }
-
-  return url::Origin::Create(source_url)
-      .IsSameOriginWith(url::Origin::Create(credential_target_url));
 }
 
 std::string GetReachFormPrompt(const std::string& domain,
@@ -287,46 +272,6 @@ void PasswordChangeFromCheckupDelegate::StartPasswordChangeFlow(
   }
 }
 
-void PasswordChangeFromCheckupDelegate::AutoSelectCredential(
-    const std::vector<actor_login::Credential>& credentials,
-    actor::ToolDelegate::CredentialSelectedCallback callback) {
-  if (!actuation_web_contents_) {
-    std::move(callback).Run(
-        actor::webui::mojom::SelectCredentialDialogResponse::New());
-    return;
-  }
-
-  for (const auto& cred : credentials) {
-    // Discard credentials that are not passwords.
-    if (cred.type != actor_login::CredentialType::kPassword ||
-        cred.username != username_) {
-      continue;
-    }
-
-    if (IsSameOrigin(cred.source_site_or_app, credential_url_)) {
-      if (auto logger = GetLoggerIfAvailable(client_)) {
-        logger->LogMessage(
-            Logger::STRING_PASSWORD_CHANGE_FROM_CHECKUP_CREDENTIAL_OVERRIDDEN);
-      }
-      auto response =
-          actor::webui::mojom::SelectCredentialDialogResponse::New();
-      response->selected_credential_id = cred.id.value();
-      response->permission_duration =
-          actor::webui::mojom::UserGrantedPermissionDuration::kOneTime;
-      std::move(callback).Run(std::move(response));
-      return;
-    }
-  }
-
-  if (auto logger = GetLoggerIfAvailable(client_)) {
-    logger->LogMessage(
-        Logger::STRING_PASSWORD_CHANGE_FROM_CHECKUP_NO_CREDENTIAL_FOUND);
-  }
-
-  std::move(callback).Run(
-      actor::webui::mojom::SelectCredentialDialogResponse::New());
-}
-
 glic::GlicKeyedService* PasswordChangeFromCheckupDelegate::GetGlicService() {
   if (!originator_) {
     return nullptr;
@@ -346,7 +291,10 @@ void PasswordChangeFromCheckupDelegate::OnFindFormTaskStateChanged(
   if (!find_form_task_id_) {
     if (task.GetTabs().contains(actuation_tab->GetHandle())) {
       find_form_task_id_ = task.id();
-      RegisterAutoSelectCredential(task);
+      task.GetExecutionEngine().SetActorLoginService(
+          std::make_unique<
+              actor_login::PasswordChangeFromCheckupActorLoginService>(
+              username_, current_password_, credential_url_));
     } else {
       return;
     }
@@ -479,6 +427,10 @@ void PasswordChangeFromCheckupDelegate::OnVerificationTaskStateChanged(
     if (task.GetTabs().contains(actuation_tab->GetHandle())) {
       verification_task_id_ = task.id();
       verification_task_created_ = true;
+      task.GetExecutionEngine().SetActorLoginService(
+          std::make_unique<
+              actor_login::PasswordChangeFromCheckupActorLoginService>(
+              username_, current_password_, credential_url_));
       if (auto logger = GetLoggerIfAvailable(client_)) {
         logger->LogMessage(
             Logger::STRING_PASSWORD_CHANGE_FROM_CHECKUP_VERIFICATION_CREATED);
@@ -539,12 +491,6 @@ void PasswordChangeFromCheckupDelegate::HandleMaybeSuccessfulPasswordChange() {
     saved_form_manager_->Save();
     saved_form_manager_.reset();
   }
-}
-void PasswordChangeFromCheckupDelegate::RegisterAutoSelectCredential(
-    actor::ActorTask& task) {
-  task.GetExecutionEngine().PreHandleCredentialSelectionDialog(
-      base::BindOnce(&PasswordChangeFromCheckupDelegate::AutoSelectCredential,
-                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void PasswordChangeFromCheckupDelegate::InvokeVerificationFlow(
