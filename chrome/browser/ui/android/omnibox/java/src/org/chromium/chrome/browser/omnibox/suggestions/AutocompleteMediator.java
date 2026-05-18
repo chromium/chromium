@@ -1443,7 +1443,10 @@ class AutocompleteMediator
                                 finalTransition);
                     };
 
-            String rawQuery = mAutocompleteInput.getUserText();
+            // The url's q= parameter may strip certain useful characters, like '://' in https://
+            // This string should maintain those characters, allowing the url to be properly
+            // contextualized in the AIM chat.
+            String suggestionDisplayText = suggestion.getDisplayText();
 
             if (OmniboxFeatures.sShowModelPicker.getValue()) {
                 @AutocompleteRequestType int requestType = mAutocompleteInput.getRequestType();
@@ -1453,16 +1456,16 @@ class AutocompleteMediator
                     assert ToolModeUtils.isAimRequest(requestType);
                     ComposeboxQueryControllerBridge bridge =
                             assumeNonNull(mSessionState.getComposeboxQueryControllerBridge());
-                    bridge.getAimUrlFromInputState(url, rawQuery, onUrlReady);
+                    bridge.getAimUrlFromInputState(url, suggestionDisplayText, onUrlReady);
                 }
             } else {
                 switch (mAutocompleteInput.getRequestType()) {
                     case AutocompleteRequestType.AI_MODE ->
                             assumeNonNull(mSessionState.getComposeboxQueryControllerBridge())
-                                    .getAimUrl(url, rawQuery, onUrlReady);
+                                    .getAimUrl(url, suggestionDisplayText, onUrlReady);
                     case AutocompleteRequestType.IMAGE_GENERATION ->
                             assumeNonNull(mSessionState.getComposeboxQueryControllerBridge())
-                                    .getImageGenerationUrl(url, rawQuery, onUrlReady);
+                                    .getImageGenerationUrl(url, suggestionDisplayText, onUrlReady);
                     default -> onUrlReady.onResult(url);
                 }
             }
