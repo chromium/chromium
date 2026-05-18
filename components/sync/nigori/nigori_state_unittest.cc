@@ -170,7 +170,7 @@ TEST(
       CrossUserSharingPublicPrivateKeyPair::GenerateNewKeyPair(), 6);
   ASSERT_TRUE(cryptographer->HasKeyPair(5));
   ASSERT_TRUE(cryptographer->HasKeyPair(6));
-  *nigori_model.mutable_cryptographer_data() = cryptographer->ToProto();
+  *nigori_model.mutable_cryptographer_data() = cryptographer->ToLocalProto();
 
   const auto raw_public_key =
       cryptographer->GetCrossUserSharingKeyPair(/*version=*/5)
@@ -201,7 +201,7 @@ TEST(NigoriStateTest,
       CrossUserSharingPublicPrivateKeyPair::GenerateNewKeyPair(), 6);
   ASSERT_TRUE(cryptographer->HasKeyPair(5));
   ASSERT_TRUE(cryptographer->HasKeyPair(6));
-  *nigori_model.mutable_cryptographer_data() = cryptographer->ToProto();
+  *nigori_model.mutable_cryptographer_data() = cryptographer->ToLocalProto();
 
   NigoriState state = NigoriState::CreateFromLocalProto(nigori_model);
 

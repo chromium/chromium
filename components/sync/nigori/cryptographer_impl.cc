@@ -37,7 +37,7 @@ std::unique_ptr<CryptographerImpl> CryptographerImpl::FromSingleKeyForTesting(
 }
 
 // static
-std::unique_ptr<CryptographerImpl> CryptographerImpl::FromProto(
+std::unique_ptr<CryptographerImpl> CryptographerImpl::FromLocalProto(
     const sync_pb::CryptographerData& proto) {
   NigoriKeyBag key_bag = NigoriKeyBag::CreateFromProto(proto.key_bag());
   // TODO(crbug.com/40141634): An invalid local state should be handled in the
@@ -70,12 +70,27 @@ CryptographerImpl::CryptographerImpl(
 
 CryptographerImpl::~CryptographerImpl() = default;
 
-sync_pb::CryptographerData CryptographerImpl::ToProto() const {
+sync_pb::CryptographerData CryptographerImpl::ToLocalProto() const {
   sync_pb::CryptographerData proto;
   *proto.mutable_key_bag() = key_bag_.ToProto();
   proto.set_default_key_name(default_encryption_key_name_);
   *proto.mutable_cross_user_sharing_keys() = cross_user_sharing_keys_.ToProto();
   return proto;
+}
+
+sync_pb::EncryptedData CryptographerImpl::ExportEncryptedKeyBag() const {
+  CHECK(CanEncrypt());
+
+  sync_pb::EncryptionKeys keys_for_encryption;
+  *keys_for_encryption.mutable_cross_user_sharing_private_key() =
+      cross_user_sharing_keys_.ToProto().private_key();
+
+  *keys_for_encryption.mutable_key() = key_bag_.ToProto().key();
+
+  sync_pb::EncryptedData encrypted;
+  const bool success = Encrypt(keys_for_encryption, &encrypted);
+  CHECK(success);
+  return encrypted;
 }
 
 std::string CryptographerImpl::EmplaceKey(

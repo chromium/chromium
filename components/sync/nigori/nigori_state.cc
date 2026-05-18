@@ -54,25 +54,6 @@ KeyDerivationParams CustomPassphraseKeyDerivationParamsFromProto(
   NOTREACHED();
 }
 
-// `encrypted` must not be null.
-bool EncryptEncryptionKeys(const CryptographerImpl& cryptographer,
-                           sync_pb::EncryptedData* encrypted) {
-  DCHECK(encrypted);
-  DCHECK(cryptographer.CanEncrypt());
-
-  sync_pb::CryptographerData proto = cryptographer.ToProto();
-  DCHECK(!proto.key_bag().key().empty());
-
-  sync_pb::EncryptionKeys keys_for_encryption;
-
-  keys_for_encryption.mutable_key()->CopyFrom(proto.key_bag().key());
-  keys_for_encryption.mutable_cross_user_sharing_private_key()->CopyFrom(
-      proto.cross_user_sharing_keys().private_key());
-
-  // Encrypt the bag with the default Nigori.
-  return cryptographer.Encrypt(keys_for_encryption, encrypted);
-}
-
 void UpdateSpecificsFromKeyDerivationParams(
     const KeyDerivationParams& params,
     sync_pb::NigoriSpecifics* specifics) {
@@ -153,7 +134,7 @@ NigoriState NigoriState::CreateFromLocalProto(
   NigoriState state;
 
   state.cryptographer =
-      CryptographerImpl::FromProto(proto.cryptographer_data());
+      CryptographerImpl::FromLocalProto(proto.cryptographer_data());
 
   if (proto.has_pending_keys()) {
     state.pending_keys = proto.pending_keys();
@@ -220,7 +201,7 @@ NigoriState& NigoriState::operator=(NigoriState&& other) = default;
 
 sync_pb::NigoriModel NigoriState::ToLocalProto() const {
   sync_pb::NigoriModel proto;
-  *proto.mutable_cryptographer_data() = cryptographer->ToProto();
+  *proto.mutable_cryptographer_data() = cryptographer->ToLocalProto();
   if (pending_keys.has_value()) {
     *proto.mutable_pending_keys() = *pending_keys;
   }
@@ -278,8 +259,8 @@ sync_pb::NigoriModel NigoriState::ToLocalProto() const {
 sync_pb::NigoriSpecifics NigoriState::ToSpecificsProto() const {
   sync_pb::NigoriSpecifics specifics;
   if (cryptographer->CanEncrypt()) {
-    EncryptEncryptionKeys(*cryptographer,
-                          specifics.mutable_encryption_keybag());
+    *specifics.mutable_encryption_keybag() =
+        cryptographer->ExportEncryptedKeyBag();
   } else if (pending_keys.has_value()) {
     // This case is reachable only from bridge's GetDataForDebugging(),
     // since currently commit is never issued while bridge has `pending_keys_`.

@@ -156,8 +156,8 @@ sync_pb::NigoriSpecifics BuildTrustedVaultNigoriSpecifics(
       TimeToProtoTime(migration_time));
   specifics.mutable_trusted_vault_debug_info()->set_key_version(2);
 
-  EXPECT_TRUE(cryptographer->Encrypt(cryptographer->ToProto().key_bag(),
-                                     specifics.mutable_encryption_keybag()));
+  *specifics.mutable_encryption_keybag() =
+      cryptographer->ExportEncryptedKeyBag();
   return specifics;
 }
 
@@ -198,10 +198,7 @@ sync_pb::NigoriSpecifics BuildCustomPassphraseNigoriSpecifics(
     cryptographer->EmplaceKey(old_key_params->password,
                               old_key_params->derivation_params);
   }
-  sync_pb::CryptographerData proto = cryptographer->ToProto();
-  bool encrypt_result = cryptographer->Encrypt(
-      proto.key_bag(), nigori.mutable_encryption_keybag());
-  DCHECK(encrypt_result);
+  *nigori.mutable_encryption_keybag() = cryptographer->ExportEncryptedKeyBag();
 
   return nigori;
 }

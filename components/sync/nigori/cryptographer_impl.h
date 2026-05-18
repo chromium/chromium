@@ -41,7 +41,7 @@ class CryptographerImpl : public Cryptographer {
       const KeyDerivationParams& derivation_params =
           KeyDerivationParams::CreateForPbkdf2());
   // Returns null in case of error (e.g. default key not present in keybag).
-  static std::unique_ptr<CryptographerImpl> FromProto(
+  static std::unique_ptr<CryptographerImpl> FromLocalProto(
       const sync_pb::CryptographerData& proto);
 
   CryptographerImpl& operator=(const CryptographerImpl&) = delete;
@@ -49,7 +49,12 @@ class CryptographerImpl : public Cryptographer {
   ~CryptographerImpl() override;
 
   // Serialization.
-  sync_pb::CryptographerData ToProto() const;
+  // Serializes the full cryptographer state for local persistence.
+  sync_pb::CryptographerData ToLocalProto() const;
+
+  // Exports the current keybag, encrypted with the default key, for exposure
+  // to the Sync protocol.
+  sync_pb::EncryptedData ExportEncryptedKeyBag() const;
 
   // Creates and registers a new key after deriving Nigori keys. Returns the
   // name of the key, or an empty string in case of error. Note that emplacing

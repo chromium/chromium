@@ -23,6 +23,11 @@ namespace {
 using testing::Eq;
 using testing::Ne;
 using testing::NotNull;
+using testing::UnorderedElementsAre;
+
+MATCHER_P(HasKeyName, name, "") {
+  return arg && arg->GetKeyName() == name;
+}
 
 }  // namespace
 
@@ -191,7 +196,7 @@ TEST(CryptographerImplTest, ShouldSerializeToAndFromProto) {
 
   // Restore a new cryptographer from proto.
   std::unique_ptr<CryptographerImpl> restored_cryptographer =
-      CryptographerImpl::FromProto(original_cryptographer->ToProto());
+      CryptographerImpl::FromLocalProto(original_cryptographer->ToLocalProto());
   ASSERT_THAT(restored_cryptographer, NotNull());
   EXPECT_TRUE(restored_cryptographer->CanEncrypt());
   EXPECT_TRUE(restored_cryptographer->HasKeyPair(0));
@@ -450,6 +455,75 @@ TEST(CryptographerImplTest, ShouldCloneDefaultCrossUserSharingKeyVersion) {
               .GetRawPublicKey());
 
   EXPECT_TRUE(encrypted_message.has_value());
+}
+
+TEST(CryptographerImplTest, ShouldSerializeToLocalProto) {
+  std::unique_ptr<CryptographerImpl> original =
+      CryptographerImpl::CreateEmpty();
+  const std::string key_name =
+      original->EmplaceKey("password", KeyDerivationParams::CreateForPbkdf2());
+  original->SelectDefaultEncryptionKey(key_name);
+
+  sync_pb::CryptographerData proto = original->ToLocalProto();
+  EXPECT_THAT(proto.default_key_name(), Eq(key_name));
+  EXPECT_TRUE(proto.key_bag().key_size() > 0);
+
+  std::unique_ptr<CryptographerImpl> restored =
+      CryptographerImpl::FromLocalProto(proto);
+  ASSERT_THAT(restored, NotNull());
+  EXPECT_THAT(restored->GetDefaultEncryptionKeyName(), Eq(key_name));
+  EXPECT_TRUE(restored->CanEncrypt());
+}
+
+TEST(CryptographerImplTest, ShouldExportEncryptedKeyBagWithOneKey) {
+  std::unique_ptr<CryptographerImpl> cryptographer =
+      CryptographerImpl::CreateEmpty();
+
+  const std::string key_name = cryptographer->EmplaceKey(
+      "password", KeyDerivationParams::CreateForPbkdf2());
+  cryptographer->SelectDefaultEncryptionKey(key_name);
+
+  sync_pb::EncryptedData exported = cryptographer->ExportEncryptedKeyBag();
+  EXPECT_TRUE(exported.has_blob());
+  EXPECT_THAT(exported.key_name(), Eq(key_name));
+
+  sync_pb::EncryptionKeys decrypted_keys_proto;
+  ASSERT_TRUE(cryptographer->Decrypt(exported, &decrypted_keys_proto));
+
+  ASSERT_EQ(decrypted_keys_proto.key_size(), 1);
+  std::unique_ptr<Nigori> decrypted_key =
+      Nigori::CreateByImport(decrypted_keys_proto.key(0).deprecated_user_key(),
+                             decrypted_keys_proto.key(0).encryption_key(),
+                             decrypted_keys_proto.key(0).mac_key());
+  EXPECT_THAT(decrypted_key, HasKeyName(key_name));
+}
+
+TEST(CryptographerImplTest, ShouldExportEncryptedKeyBagWithMultipleKeys) {
+  std::unique_ptr<CryptographerImpl> cryptographer =
+      CryptographerImpl::CreateEmpty();
+
+  const std::string key_name1 = cryptographer->EmplaceKey(
+      "password1", KeyDerivationParams::CreateForPbkdf2());
+  const std::string key_name2 = cryptographer->EmplaceKey(
+      "password2", KeyDerivationParams::CreateForPbkdf2());
+  cryptographer->SelectDefaultEncryptionKey(key_name2);
+
+  sync_pb::EncryptedData exported = cryptographer->ExportEncryptedKeyBag();
+  EXPECT_TRUE(exported.has_blob());
+  EXPECT_THAT(exported.key_name(), Eq(key_name2));
+
+  sync_pb::EncryptionKeys decrypted_keys_proto;
+  ASSERT_TRUE(cryptographer->Decrypt(exported, &decrypted_keys_proto));
+
+  std::vector<std::unique_ptr<Nigori>> decrypted_keys;
+  for (const sync_pb::NigoriKey& decrypted_key : decrypted_keys_proto.key()) {
+    decrypted_keys.push_back(Nigori::CreateByImport(
+        decrypted_key.deprecated_user_key(), decrypted_key.encryption_key(),
+        decrypted_key.mac_key()));
+  }
+
+  EXPECT_THAT(decrypted_keys, UnorderedElementsAre(HasKeyName(key_name1),
+                                                   HasKeyName(key_name2)));
 }
 
 }  // namespace syncer

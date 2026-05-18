@@ -419,9 +419,8 @@ TEST_F(NigoriSyncBridgeImplTest, ShouldAcceptKeysFromImplicitPassphraseNigori) {
   EntityData entity_data;
   *entity_data.specifics.mutable_nigori() =
       sync_pb::NigoriSpecifics::default_instance();
-  ASSERT_TRUE(temp_cryptographer->Encrypt(
-      temp_cryptographer->ToProto().key_bag(),
-      entity_data.specifics.mutable_nigori()->mutable_encryption_keybag()));
+  *entity_data.specifics.mutable_nigori()->mutable_encryption_keybag() =
+      temp_cryptographer->ExportEncryptedKeyBag();
 
   EXPECT_CALL(*observer(), OnCryptographerStateChanged(
                                NotNull(), /*has_pending_keys=*/true));

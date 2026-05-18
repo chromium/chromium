@@ -468,8 +468,8 @@ IN_PROC_BROWSER_TEST_P(SingleClientNigoriSyncTest,
   std::unique_ptr<syncer::CryptographerImpl> cryptographer =
       syncer::CryptographerImpl::FromSingleKeyForTesting(
           kKeyParams.password, kKeyParams.derivation_params);
-  ASSERT_TRUE(cryptographer->Encrypt(cryptographer->ToProto().key_bag(),
-                                     specifics.mutable_encryption_keybag()));
+  *specifics.mutable_encryption_keybag() =
+      cryptographer->ExportEncryptedKeyBag();
   SetNigoriInFakeServer(specifics, GetFakeServer());
 
   const password_manager::PasswordForm password_form =
@@ -674,8 +674,8 @@ IN_PROC_BROWSER_TEST_P(
       syncer::CryptographerImpl::FromSingleKeyForTesting(
           kPassphraseKeyParams.password,
           kPassphraseKeyParams.derivation_params);
-  ASSERT_TRUE(cryptographer->Encrypt(cryptographer->ToProto().key_bag(),
-                                     specifics.mutable_encryption_keybag()));
+  *specifics.mutable_encryption_keybag() =
+      cryptographer->ExportEncryptedKeyBag();
   SetNigoriInFakeServer(specifics, GetFakeServer());
 
   // Mimic passwords encrypted with implicit passphrase stored by the server.
@@ -740,8 +740,8 @@ IN_PROC_BROWSER_TEST_P(
       syncer::CryptographerImpl::FromSingleKeyForTesting(
           kPassphraseKeyParams.password,
           kPassphraseKeyParams.derivation_params);
-  ASSERT_TRUE(cryptographer->Encrypt(cryptographer->ToProto().key_bag(),
-                                     specifics.mutable_encryption_keybag()));
+  *specifics.mutable_encryption_keybag() =
+      cryptographer->ExportEncryptedKeyBag();
   SetNigoriInFakeServer(specifics, GetFakeServer());
 
   // Mimic passwords encrypted with implicit passphrase stored by the server.
@@ -873,8 +873,8 @@ IN_PROC_BROWSER_TEST_P(
   std::unique_ptr<syncer::CryptographerImpl> cryptographer =
       syncer::CryptographerImpl::FromSingleKeyForTesting(
           kKeyParams.password, kKeyParams.derivation_params);
-  ASSERT_TRUE(cryptographer->Encrypt(cryptographer->ToProto().key_bag(),
-                                     specifics.mutable_encryption_keybag()));
+  *specifics.mutable_encryption_keybag() =
+      cryptographer->ExportEncryptedKeyBag();
   SetNigoriInFakeServer(specifics, GetFakeServer());
 
   const password_manager::PasswordForm password_form =
@@ -925,8 +925,8 @@ IN_PROC_BROWSER_TEST_P(
   std::unique_ptr<syncer::CryptographerImpl> cryptographer =
       syncer::CryptographerImpl::FromSingleKeyForTesting(
           kKeyParams.password, kKeyParams.derivation_params);
-  ASSERT_TRUE(cryptographer->Encrypt(cryptographer->ToProto().key_bag(),
-                                     specifics.mutable_encryption_keybag()));
+  *specifics.mutable_encryption_keybag() =
+      cryptographer->ExportEncryptedKeyBag();
   SetNigoriInFakeServer(specifics, GetFakeServer());
 
   ASSERT_TRUE(SetupSync());
