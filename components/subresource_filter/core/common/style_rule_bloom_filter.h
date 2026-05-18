@@ -17,8 +17,8 @@ namespace subresource_filter {
 // A simple bloom filter builder and reader over a byte span.
 // It uses two indices per lookup, from a uint32_t hash in which only the first
 // 24 bits are expected to be meaningful (as they come from blink AtomicString).
-// It uses the first 16 bits for the first index and then mixes the full 24
-// bits with a FNV-1a 32-bit prime to get the 16 bits for the second index.
+// It uses the low order bits for the first index and then mixes the full 24
+// bits with a FNV-1a 32-bit prime to get the bits for the second index.
 
 // The reader class.
 class StyleRuleBloomFilter {

@@ -13,8 +13,8 @@ namespace {
 std::pair<size_t, size_t> GetIndices(uint32_t hash, size_t num_bits) {
   size_t index1 = hash % num_bits;
   // 16777619u is the FNV-1a 32-bit prime, used here to generate a second hash.
-  size_t index2 =
-      static_cast<size_t>((static_cast<uint64_t>(hash) * 16777619u) % num_bits);
+  size_t index2 = static_cast<size_t>(
+      ((static_cast<uint64_t>(hash) * 16777619u) >> 8) % num_bits);
   return {index1, index2};
 }
 
