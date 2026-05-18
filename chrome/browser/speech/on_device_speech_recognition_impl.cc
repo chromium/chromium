@@ -213,7 +213,29 @@ void OnDeviceSpeechRecognitionImpl::Install(
         base::BindOnce(&OnDeviceSpeechRecognitionImpl::OnModelClientAvailable,
                        weak_ptr_factory_.GetWeakPtr()));
   } else {
-    language_installation_callbacks_[language_names_key].push_back(
+    std::set<std::string> pending_languages;
+    if (!speech::SodaInstaller::GetInstance()->IsSodaBinaryInstalled()) {
+      pending_languages.insert("");
+    }
+
+    const std::set<speech::LanguageCode> installed_languages =
+        speech::SodaInstaller::GetInstance()->InstalledLanguages();
+
+    for (std::string_view language : language_names_key) {
+      if (!installed_languages.contains(speech::GetLanguageCode(language))) {
+        pending_languages.insert(std::string(language));
+      }
+    }
+
+    if (pending_languages.empty()) {
+      for (std::string_view language : language_names_key) {
+        SetOnDeviceLanguageDownloaded(language);
+      }
+      std::move(callback).Run(true);
+      return;
+    }
+
+    language_installation_callbacks_[pending_languages].push_back(
         std::move(callback));
 
     // `InstallSoda` will only install the SODA binary if it is not already
@@ -279,6 +301,17 @@ void OnDeviceSpeechRecognitionImpl::ProcessLanguageInstallationUpdate(
   for (auto it = language_installation_callbacks_.begin();
        it != language_installation_callbacks_.end();) {
     std::set<std::string> pending_languages_key = it->first;
+
+    // If the SODA binary (empty language string) failed, fail all pending
+    // installations.
+    if (language.empty() && !installation_success) {
+      std::list<InstallCallback> moved_callbacks = std::move(it->second);
+      it = language_installation_callbacks_.erase(it);
+      for (auto& callback : moved_callbacks) {
+        std::move(callback).Run(false);
+      }
+      continue;
+    }
 
     if (pending_languages_key.count(std::string(language))) {
       // This callback group was waiting for the processed `language`.

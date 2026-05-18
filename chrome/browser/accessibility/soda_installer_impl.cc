@@ -56,7 +56,8 @@ base::FilePath SodaInstallerImpl::GetLanguagePath(
 }
 
 void SodaInstallerImpl::InstallSoda(PrefService* global_prefs) {
-  if (soda_binary_installed_ || never_download_soda_for_testing_) {
+  if (soda_binary_installed_ || is_soda_downloading_ ||
+      never_download_soda_for_testing_) {
     return;
   }
 
@@ -77,9 +78,16 @@ void SodaInstallerImpl::InstallSoda(PrefService* global_prefs) {
 
 void SodaInstallerImpl::InstallLanguage(std::string_view language,
                                         PrefService* global_prefs) {
-  if (never_download_soda_for_testing_)
+  if (never_download_soda_for_testing_) {
     return;
+  }
+
   speech::LanguageCode locale = speech::GetLanguageCode(language);
+  if (installed_languages_.contains(locale) ||
+      language_pack_progress_.contains(locale)) {
+    return;
+  }
+
   language_pack_progress_.insert({locale, 0.0});
   SodaInstaller::RegisterLanguage(language, global_prefs);
   component_updater::RegisterSodaLanguageComponent(

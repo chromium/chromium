@@ -3547,12 +3547,10 @@ crbug.com/421629752 [ Win10.20h2 ] external/wpt/html/cross-origin-opener-policy/
 crbug.com/421629752 [ Win10.20h2 ] external/wpt/html/cross-origin-opener-policy/reporting/access-reporting/report-to-both_coop-ro.https.html [ Crash ]
 crbug.com/421653974 [ Win10.20h2 ] external/wpt/nav-tracking-mitigations/stateful-client-bounce.sub.https.html [ Crash Timeout ]
 crbug.com/421653974 [ Win10.20h2 ] external/wpt/nav-tracking-mitigations/stateless-client-bounce.sub.https.html [ Crash Timeout ]
-crbug.com/421653408 [ Win11 ] external/wpt/speech-api/SpeechRecognition-installOnDevice.https.html [ Timeout ]
 crbug.com/420740180 [ Mac14 ] external/wpt/html/cross-origin-opener-policy/historical/popup-same-site-with-same-site.https.html [ Crash ]
 crbug.com/420740180 [ Mac12 ] external/wpt/html/cross-origin-opener-policy/historical/popup-same-site-with-same-site.https.html [ Crash ]
 crbug.com/419167522 [ Win10.20h2 ] external/wpt/html/cross-origin-opener-policy/coep-with-same-site.https.html [ Crash ]
 crbug.com/419167522 [ Win10.20h2 ] external/wpt/html/cross-origin-opener-policy/popup-same-origin-with-same-origin.https.html [ Crash ]
-crbug.com/418370871 [ Win11 ] virtual/speech-with-unified-autoplay/external/wpt/speech-api/SpeechRecognition-installOnDevice.https.html [ Timeout ]
 crbug.com/418175808 [ Mac12 ] external/wpt/html/cross-origin-embedder-policy/credentialless/reporting-subresource-corp.https.window.html [ Skip Timeout ]
 crbug.com/417940356 [ Win11 ] external/wpt/page-lifecycle/child-display-none.tentative.html [ Timeout ]
 crbug.com/417940356 [ Win11-arm64 ] external/wpt/page-lifecycle/child-display-none.tentative.html [ Pass Timeout ]
@@ -3590,8 +3588,6 @@ crbug.com/417940356 [ Mac13 ] external/wpt/page-lifecycle/worker-dispay-none.ten
 crbug.com/417940356 [ Mac12-arm64 ] external/wpt/page-lifecycle/worker-dispay-none.tentative.html [ Timeout ]
 crbug.com/417940356 [ Mac12 ] external/wpt/page-lifecycle/worker-dispay-none.tentative.html [ Timeout ]
 crbug.com/417940356 [ Linux ] external/wpt/page-lifecycle/worker-dispay-none.tentative.html [ Timeout ]
-crbug.com/415666471 [ Mac ] external/wpt/speech-api/SpeechRecognition-installOnDevice.https.html [ Failure Timeout ]
-crbug.com/415666471 [ Mac ] virtual/speech-with-unified-autoplay/external/wpt/speech-api/SpeechRecognition-installOnDevice.https.html [ Failure Timeout ]
 crbug.com/417576322 [ Mac14 ] external/wpt/scroll-animations/css/animation-timeline-view-functional-notation.tentative.html [ Timeout ]
 crbug.com/40275016 external/wpt/long-animation-frame/loaf-iframe-self.html [ Skip Timeout ]
 crbug.com/40275016 [ Mac ] virtual/threaded/external/wpt/long-animation-frame/loaf-iframe-self.html [ Skip Timeout ]
@@ -9300,8 +9296,6 @@ crbug.com/415870039 external/wpt/web-animations/interfaces/Animation/finished.ht
 crbug.com/449920603 external/wpt/css/css-view-transitions/scoped/crashtests/implicit-stacking-context.html [ Crash Pass Timeout ]
 
 # Gardener 2025-06-06
-crbug.com/415666471 [ Linux ] external/wpt/speech-api/SpeechRecognition-installOnDevice.https.html [ Failure Pass Timeout ]
-crbug.com/415666471 [ Linux ] virtual/speech-with-unified-autoplay/external/wpt/speech-api/SpeechRecognition-installOnDevice.https.html [ Failure Pass Timeout ]
 
 # Gardener 2025-06-10
 crbug.com/423416578 [ Linux ] custom-elements/form-validation-bubble-appearance.html [ Crash Failure Pass ]
@@ -9772,10 +9766,6 @@ crbug.com/485661974 [ Mac ] external/wpt/client-hints/critical-ch/request-count.
 crbug.com/485661974 [ Mac ] external/wpt/client-hints/critical-ch/unsafe-method.https.window.html [ Failure ]
 crbug.com/507309053 [ Mac ] external/wpt/html/semantics/permission-element/usermedia/set-constraints-combinations.tentative.https.html [ Failure Timeout ]
 crbug.com/506273267 virtual/permission-element/external/wpt/html/semantics/permission-element/usermedia/set-constraints-combinations.tentative.https.html [ Failure Pass Timeout ]
-
-# Gardener 2026-05-07
-crbug.com/510507820 [ Win10.20h2 ] external/wpt/speech-api/SpeechRecognition-installOnDevice.https.html [ Failure Pass Timeout ]
-crbug.com/510507820 [ Win10.20h2 ] virtual/speech-with-unified-autoplay/external/wpt/speech-api/SpeechRecognition-installOnDevice.https.html [ Failure Pass Timeout ]
 
 # Gardener 2026-05-11
 crbug.com/511249206 [ Mac ] virtual/compositor-timeline-trigger/external/wpt/scroll-animations/animation-trigger/animation-trigger-multiple-animations.tentative.html [ Failure Pass ]

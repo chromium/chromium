@@ -227,6 +227,21 @@ IN_PROC_BROWSER_TEST_F(OnDeviceSpeechRecognitionImplBrowserTest, Install) {
                      media::mojom::AvailabilityStatus::kDownloadable));
 }
 
+IN_PROC_BROWSER_TEST_F(OnDeviceSpeechRecognitionImplBrowserTest,
+                       InstallBinaryFailure) {
+  NavigateToUrl("foo.com");
+
+  // Verify that a SODA binary installation failure fails the installation
+  // callback.
+  on_device_speech_recognition()->Install(
+      {kEnglishLanguageCode}, media::mojom::SpeechRecognitionQuality::kCommand,
+      base::BindOnce(&OnDeviceSpeechRecognitionImplBrowserTest::InstallCallback,
+                     base::Unretained(this), false));
+
+  speech::SodaInstaller::GetInstance()->NotifySodaErrorForTesting(
+      speech::LanguageCode::kNone);
+}
+
 // Verify that the `Available()` and `Install()` methods can handle multiple
 // languages.
 IN_PROC_BROWSER_TEST_F(OnDeviceSpeechRecognitionImplBrowserTest,
