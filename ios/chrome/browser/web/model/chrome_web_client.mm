@@ -90,6 +90,7 @@
 #import "ios/chrome/browser/web/model/choose_file/choose_file_java_script_feature.h"
 #import "ios/chrome/browser/web/model/choose_file/choose_file_tab_helper.h"
 #import "ios/chrome/browser/web/model/chrome_main_parts.h"
+#import "ios/chrome/browser/web/model/dark_mode_detection/dark_mode_detection_java_script_feature.h"
 #import "ios/chrome/browser/web/model/error_page_util.h"
 #import "ios/chrome/browser/web/model/font_size/font_size_java_script_feature.h"
 #import "ios/chrome/browser/web/model/image_fetch/image_fetch_java_script_feature.h"
@@ -436,6 +437,9 @@ std::vector<web::JavaScriptFeature*> ChromeWebClient::GetJavaScriptFeatures(
   features.push_back(WebPerformanceMetricsJavaScriptFeature::GetInstance());
   features.push_back(ChooseFileJavaScriptFeature::GetInstance());
   features.push_back(PageContextExtractorJavaScriptFeature::GetInstance());
+  if (IsIOSDarkModeDetectionEnabled()) {
+    features.push_back(DarkModeDetectionJavaScriptFeature::GetInstance());
+  }
 
   if (base::FeatureList::IsEnabled(kActorTools)) {
     features.push_back(actor::ActionTargetJavaScriptFeature::GetInstance());

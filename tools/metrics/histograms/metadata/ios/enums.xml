@@ -412,6 +412,17 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//components/desktop_to_mobile_promos/promos_types.h:PromoType) -->
 
+<!-- LINT.IfChange(IOSDarkModeDetectionCrossedState) -->
+
+<enum name="IOSDarkModeDetectionCrossedState">
+  <int value="0" label="Not supported, Light mode"/>
+  <int value="1" label="Not supported, Dark mode"/>
+  <int value="2" label="Supported, Light mode"/>
+  <int value="3" label="Supported, Dark mode"/>
+</enum>
+
+<!-- LINT.ThenChange(/ios/chrome/browser/web/model/dark_mode_detection/dark_mode_detection_java_script_feature.mm:DarkModeDetectionCrossedState) -->
+
 <!-- LINT.IfChange(IOSDataProtectionScreenshotBlockSource) -->
 
 <enum name="IOSDataProtectionScreenshotBlockSource">

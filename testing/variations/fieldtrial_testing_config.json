@@ -13245,6 +13245,21 @@
             ]
         }
     ],
+    "IOSDarkModeDetection": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "IOSDarkModeDetection"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSDefaultBrowserOffCyclePromo": [
         {
             "platforms": [

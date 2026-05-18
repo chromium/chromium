@@ -1262,3 +1262,9 @@ bool IsAssistantAimMinimizedStateEnabled() {
 
 BASE_FEATURE(kUseUIGraphicsImageRendererForFallbackIcons,
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kIOSDarkModeDetection, base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsIOSDarkModeDetectionEnabled() {
+  return base::FeatureList::IsEnabled(kIOSDarkModeDetection);
+}
