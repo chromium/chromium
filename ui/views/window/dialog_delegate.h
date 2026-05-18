@@ -382,7 +382,7 @@ class VIEWS_EXPORT DialogDelegate : public WidgetDelegate {
   static std::unique_ptr<FrameView> CreateDialogFrameView(Widget* widget);
 
   // TODO(crbug.com/431219296): Deprecate after API migration.
-  const gfx::Insets& margins() const { return margins_.contents.value(); }
+  const gfx::Insets& margins() const { return margins_.contents; }
 
   void set_margins(const gfx::Insets& margins) {
     set_frame_margins({.contents = margins});
@@ -397,6 +397,14 @@ class VIEWS_EXPORT DialogDelegate : public WidgetDelegate {
   // The margins between the content and the inside of the border.
   // Also includes title and footnote margins.
   struct FrameMargins {
+    gfx::Insets contents;
+    gfx::Insets title;
+    gfx::Insets footnote;
+  };
+
+  // Parameter object for set_frame_margins.  Fields are optional to allow
+  // set_frame_margins to be used without having to specify all three fields.
+  struct FrameMarginsParams {
     std::optional<gfx::Insets> contents;
     std::optional<gfx::Insets> title;
     std::optional<gfx::Insets> footnote;
@@ -404,7 +412,8 @@ class VIEWS_EXPORT DialogDelegate : public WidgetDelegate {
   const FrameMargins& frame_margins() const { return margins_; }
   // Set the content, title, and/or footnote margins. Note this is not a direct
   // replacement, only non-empty fields will be updated.
-  void set_frame_margins(const FrameMargins& margins);
+  // Example: set_frame_margins({.contents = gfx::Insets()});
+  void set_frame_margins(const FrameMarginsParams& margins);
 
   // Set a fixed width for the dialog. Used by DialogClientView.
   void set_fixed_width(int fixed_width) { fixed_width_ = fixed_width; }
@@ -632,7 +641,9 @@ class VIEWS_EXPORT DialogDelegate : public WidgetDelegate {
       std::variant<base::OnceClosure, base::RepeatingCallback<bool()>>&
           callback);
 
-  FrameMargins margins_;
+  FrameMargins margins_ = {.contents = gfx::Insets(),
+                           .title = gfx::Insets(),
+                           .footnote = gfx::Insets()};
 
   // Use a fixed dialog width for dialog. Used by DialogClientView.
   int fixed_width_ = 0;
@@ -871,7 +882,8 @@ VIEW_BUILDER_PROPERTY(int, DefaultButton)
 VIEW_BUILDER_METHOD(SetButtonLabel, ui::mojom::DialogButton, std::u16string)
 VIEW_BUILDER_METHOD(SetButtonEnabled, ui::mojom::DialogButton, bool)
 VIEW_BUILDER_METHOD(set_margins, gfx::Insets)
-VIEW_BUILDER_METHOD(set_frame_margins, const DialogDelegateView::FrameMargins&)
+VIEW_BUILDER_METHOD(set_frame_margins,
+                    const DialogDelegate::FrameMarginsParams&)
 VIEW_BUILDER_METHOD(set_use_round_corners, bool)
 VIEW_BUILDER_METHOD(set_corner_radius, int)
 VIEW_BUILDER_METHOD(set_draggable, bool)

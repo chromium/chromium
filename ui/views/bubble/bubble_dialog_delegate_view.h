@@ -478,9 +478,7 @@ class VIEWS_EXPORT BubbleDialogDelegate : public DialogDelegate {
   void SetBackgroundColor(ui::ColorVariant color);
 
   // TODO(crbug.com/431219296): Deprecate after API migration.
-  gfx::Insets footnote_margins() const {
-    return frame_margins().footnote.value_or(gfx::Insets());
-  }
+  gfx::Insets footnote_margins() const { return frame_margins().footnote; }
 
   // Sets the content margins to a default picked for smaller bubbles.
   void UseCompactMargins();
@@ -968,7 +966,8 @@ VIEW_BUILDER_PROPERTY(int, DefaultButton)
 VIEW_BUILDER_METHOD(SetButtonLabel, ui::mojom::DialogButton, std::u16string)
 VIEW_BUILDER_METHOD(SetButtonEnabled, ui::mojom::DialogButton, bool)
 VIEW_BUILDER_METHOD(set_margins, gfx::Insets)
-VIEW_BUILDER_METHOD(set_frame_margins, const DialogDelegate::FrameMargins&)
+VIEW_BUILDER_METHOD(set_frame_margins,
+                    const DialogDelegate::FrameMarginsParams&)
 VIEW_BUILDER_METHOD(set_use_round_corners, bool)
 VIEW_BUILDER_METHOD(set_corner_radius, int)
 VIEW_BUILDER_METHOD(set_draggable, bool)
