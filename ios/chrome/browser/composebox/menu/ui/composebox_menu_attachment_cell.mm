@@ -11,6 +11,20 @@
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 
+namespace {
+
+// The ammount of padding added on the highlight of the pointer insteraction.
+const CGFloat kPointerInteractionPadding = 8.0;
+
+// The corner radius of the pointer highlight.
+const CGFloat kPointerInteractionRadius = 20.0;
+
+}  // namespace
+
+@interface ComposeboxMenuAttachmentCell () <UIPointerInteractionDelegate>
+
+@end
+
 @implementation ComposeboxMenuAttachmentCell {
   ComposeboxMenuAttachmentView* _attachmentView;
 }
@@ -21,6 +35,10 @@
     _attachmentView = [[ComposeboxMenuAttachmentView alloc] init];
     _attachmentView.translatesAutoresizingMaskIntoConstraints = NO;
     _attachmentView.userInteractionEnabled = NO;
+
+    UIPointerInteraction* pointerInteraction =
+        [[UIPointerInteraction alloc] initWithDelegate:self];
+    [self addInteraction:pointerInteraction];
 
     [self.contentView addSubview:_attachmentView];
     AddSameConstraints(_attachmentView, self.contentView);
@@ -58,6 +76,30 @@
     self.accessibilityTraits &= ~UIAccessibilityTraitNotEnabled;
     self.isAccessibilityElement = YES;
   }
+}
+
+#pragma mark - UIPointerInteractionDelegate
+
+- (UIPointerStyle*)pointerInteraction:(UIPointerInteraction*)interaction
+                       styleForRegion:(UIPointerRegion*)region {
+  // The preview APIs require the view to be in a window. Ensure they are before
+  // proceeding.
+  if (!self.window) {
+    return nil;
+  }
+
+  UITargetedPreview* preview =
+      [[UITargetedPreview alloc] initWithView:_attachmentView];
+  UIPointerHighlightEffect* effect =
+      [UIPointerHighlightEffect effectWithPreview:preview];
+
+  CGRect highlightRegion =
+      CGRectInset(_attachmentView.frame, -kPointerInteractionPadding,
+                  -kPointerInteractionPadding);
+  UIPointerShape* shape =
+      [UIPointerShape shapeWithRoundedRect:highlightRegion
+                              cornerRadius:kPointerInteractionRadius];
+  return [UIPointerStyle styleWithEffect:effect shape:shape];
 }
 
 @end
