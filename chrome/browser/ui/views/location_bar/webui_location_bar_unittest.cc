@@ -20,6 +20,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/base/unowned_user_data/unowned_user_data_host.h"
 #include "ui/gfx/paint_vector_icon.h"
 
@@ -146,7 +147,8 @@ TEST_F(WebUILocationBarTest, StateManagement_PermissionChip) {
   WebUIPermissionChip chip(location_bar_);
 
   chip.SetVisible(true);
-  chip.SetChipIcon(kCameraOldIcon);
+  chip.SetChipIcon(features::IsRoundedIconsEnabled() ? kPhotoCameraIcon
+                                                     : kCameraOldIcon);
   chip.SetMessage(u"Camera in use");
   chip.SetTooltipText(u"Tooltip");
   chip.SetTheme(PermissionChipTheme::kInUseActivityIndicator);
@@ -158,7 +160,9 @@ TEST_F(WebUILocationBarTest, StateManagement_PermissionChip) {
 
   auto state = chip.GetState();
   EXPECT_TRUE(state->is_visible);
-  EXPECT_EQ(state->icon_name, "kCameraOldIcon");
+  EXPECT_EQ(state->icon_name, features::IsRoundedIconsEnabled()
+                                  ? kPhotoCameraIcon.name
+                                  : kCameraOldIcon.name);
   EXPECT_EQ(state->message, u"Camera in use");
   EXPECT_EQ(state->tooltip, u"Tooltip");
   EXPECT_EQ(

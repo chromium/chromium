@@ -475,8 +475,10 @@ void BrowserActions::InitializePageActionIconActions() {
           .SetTooltipText(l10n_util::GetStringUTF16(
               IDS_AUTOFILL_OFFERS_REMINDER_ICON_TOOLTIP_TEXT))
           .SetImage(ui::ImageModel::FromVectorIcon(
-              kLocalOfferFlippedRefreshOldIcon, ui::kColorIcon,
-              ui::SimpleMenuModel::kDefaultIconSize))
+              features::IsRoundedIconsEnabled()
+                  ? kShoppingmodeIcon
+                  : kLocalOfferFlippedRefreshOldIcon,
+              ui::kColorIcon, ui::SimpleMenuModel::kDefaultIconSize))
           .Build());
 
   // TODO(crbug.com/435220196): Ideally this action would have

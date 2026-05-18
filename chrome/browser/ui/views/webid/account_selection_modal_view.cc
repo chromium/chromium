@@ -444,7 +444,8 @@ void AccountSelectionModalView::ShowAccounts(
     }
   } else {
     idp_brand_icon_->SetImage(ui::ImageModel::FromVectorIcon(
-        kWebidGlobeOldIcon, ui::kColorIconSecondary, kModalIdpIconSize));
+        features::IsRoundedIconsEnabled() ? kGlobeIcon : kWebidGlobeOldIcon,
+        ui::kColorIconSecondary, kModalIdpIconSize));
   }
   idp_brand_icon_->SetVisible(/*visible=*/true);
 
@@ -668,7 +669,8 @@ void AccountSelectionModalView::ShowRequestPermissionDialog(
       }
     } else {
       idp_brand_icon_->SetImage(ui::ImageModel::FromVectorIcon(
-          kWebidGlobeOldIcon, ui::kColorIconSecondary, kModalIdpIconSize));
+          features::IsRoundedIconsEnabled() ? kGlobeIcon : kWebidGlobeOldIcon,
+          ui::kColorIconSecondary, kModalIdpIconSize));
     }
     idp_brand_icon_->SetVisible(/*visible=*/true);
   }
@@ -825,7 +827,8 @@ AccountSelectionModalView::CreateCombinedIconsView() {
   std::unique_ptr<views::ImageView> arrow_icon_image_view =
       std::make_unique<views::ImageView>();
   arrow_icon_image_view->SetImage(ui::ImageModel::FromVectorIcon(
-      kWebidArrowOldIcon, ui::kColorIconSecondary, kModalCombinedIconSize));
+      features::IsRoundedIconsEnabled() ? kArrowRangeIcon : kWebidArrowOldIcon,
+      ui::kColorIconSecondary, kModalCombinedIconSize));
 
   // Create RP brand icon image view.
   auto rp_brand_icon_image_view =

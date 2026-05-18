@@ -20,6 +20,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
 #include "ui/gfx/text_constants.h"
 #include "ui/gfx/vector_icon_types.h"
@@ -117,7 +118,7 @@ AuthenticatorHybridAndSecurityKeySheetView::BuildStepSpecificContent() {
                 : IDS_WEBAUTHN_USE_YOUR_PHONE_OR_TABLET_SIGN_IN_DESCRIPTION,
       rp_id)};
   container->AddChildView(CreateMechanismDescriptionWithIcon(
-      kCameraOldIcon,
+      features::IsRoundedIconsEnabled() ? kPhotoCameraIcon : kCameraOldIcon,
       l10n_util::GetStringUTF16(IDS_WEBAUTHN_USE_YOUR_PHONE_OR_TABLET),
       qr_labels));
 
@@ -137,7 +138,8 @@ AuthenticatorHybridAndSecurityKeySheetView::BuildStepSpecificContent() {
       security_key_labels.push_back(attestation_warning.value());
     }
     container->AddChildView(CreateMechanismDescriptionWithIcon(
-        kUsbSecurityKeyOldIcon,
+        features::IsRoundedIconsEnabled() ? kSecurityKeyIcon
+                                          : kUsbSecurityKeyOldIcon,
         l10n_util::GetStringUTF16(IDS_WEBAUTHN_USE_YOUR_SECURITY_KEY),
         security_key_labels));
   }
