@@ -1,5 +1,7 @@
 {
     "task_type": "IMPLEMENTATION",
+    "execution_path": "RIGOR_PATH",
+    "complexity_level": "MEDIUM",
     "goal": "Mock goal for testing.",
     "target_files": [
         "testdata/file1.cc"

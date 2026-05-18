@@ -53,13 +53,11 @@
           "type": "array",
           "items": { "type": "string" }
         },
-        "implementors": { "type": "array", "items": { "type": "string" } },
-        "reviewers": { "type": "array", "items": { "type": "string" } },
         "next_stage": {
           "type": "string",
           "enum": [
             "CRITIQUE", "SCAFFOLDING", "PREPARATION", "IMPLEMENTATION",
-            "SYNTHESIS", "TEST_FILLING", "ANALYSIS", "TPM_UPDATE",
+            "SYNTHESIS", "TEST_FILLING", "ANALYSIS",
             "TRAINING", "DEADLOCK", "VALIDATION", "DEPLOYMENT"
           ]
         },
@@ -78,8 +76,6 @@
         "stall_count",
         "active_constraints",
         "resolved_constraints",
-        "implementors",
-        "reviewers",
         "review_mode",
         "state_transport",
         "next_stage"
@@ -91,6 +87,14 @@
         "task_type": {
           "type": "string",
           "enum": ["IMPLEMENTATION", "REVIEW", "AUDIT"]
+        },
+        "execution_path": {
+          "type": "string",
+          "enum": ["FAST_PATH", "RIGOR_PATH"]
+        },
+        "complexity_level": {
+          "type": "string",
+          "enum": ["LOW", "MEDIUM", "HIGH"]
         },
         "unlisted_issues_found": {
           "type": "array",
@@ -131,6 +135,8 @@
       },
       "required": [
         "task_type",
+        "execution_path",
+        "complexity_level",
         "goal",
         "target_files",
         "anti_goals",
@@ -186,7 +192,7 @@
         "constraints": { "type": "array", "items": { "type": "string" } },
         "next_stage": {
           "type": "string",
-          "enum": ["SYNTHESIS", "TRAINING", "TPM_UPDATE"]
+          "enum": ["SYNTHESIS", "TRAINING"]
         },
         "review_mode": {
           "type": "string",

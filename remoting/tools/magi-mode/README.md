@@ -1,4 +1,4 @@
-# MAGI Mode (Multi-Agent Guided Iteration)
+# MAGI Mode (Modular Automated Guided Iteration)
 
 Welcome to **MAGI Mode**, an advanced multi-agent protocol designed to tackle
 complex, high-stakes, or highly ambiguous architectural problems in large
@@ -6,29 +6,28 @@ codebases.
 
 When you encounter a problem where standard AI agents get stuck, face
 conflicting platform requirements, or need to make critical security and
-performance trade-offs, MAGI Mode brings an entire virtual engineering team to
-your local workspace.
+performance trade-offs, MAGI Mode triggers a **Multi-Agent Consensus System**
+within your local workspace.
 
 ## What is MAGI?
 
 Unlike a standard chat interface where a single AI tries to do everything (often
-losing context or hallucinating), MAGI utilizes a **"Consensus Loop"** of highly
-specialized sub-agents.
+losing context or hallucinating), MAGI utilizes a **"Consensus Loop"** of
+specialized technical modules. It follows a "Lean" architecture that eliminates
+management overhead and focuses on high-efficiency execution.
 
-Think of it like a real-world software engineering pipeline:
+Think of it as a multi-threaded validation pipeline:
 
-1. A **Scoping Lead** investigates the bug and writes a strict spec.
-2. An **Architect** builds the scaffolding and interfaces.
-3. A **Test Expert** sets up Test-Driven Development (TDD) boundaries that
-   intentionally fail.
-4. An **Engineering Manager** dynamically recruits specialized **Domain
-   Experts** (e.g., Security, Performance, Platform) to implement the code in
-   parallel.
-5. A **Synthesizing Architect** merges the parallel work.
-6. A panel of **Reviewers** blindly audits the work against strict checklists.
-7. A **Technical Program Manager (TPM)** consolidates the feedback into
-   actionable constraints.
-8. A **Release Engineer** cleans up the workspace and uploads the changes.
+1. **Scoping** investigates the bug and writes a strict spec.
+2. The Orchestrator selects **Scanners** (Auditors) and an execution path (FAST
+   or RIGOR).
+3. **Synthesis** (via an Architect) scaffolds the classes and GN targets.
+4. **Implementors** (e.g., Security, Performance) parallel-implement the
+   internal logic.
+5. **Synthesis** merges the parallel work.
+6. A panel of **Scanners** audit the work against strict checklists.
+7. If flaws are found, **Consolidation** generates constraints and we loop.
+8. **Release** cleans up the workspace and uploads the changes.
 
 ## Why use MAGI?
 
@@ -40,8 +39,8 @@ Think of it like a real-world software engineering pipeline:
   domain-specific checklists.
 - **Built-in TDD:** Code isn't written until failing tests are established and
   verified to fail.
-- **Self-Improving:** If the team misses a bug, a **Trainer** agent analyzes the
-  failure and permanently upgrades the relevant expert's checklist for future
+- **Self-Improving:** If the team misses a bug, **Training** analyzes the
+  failure and permanently upgrades the relevant Scanner checklists for future
   runs.
 - **Deterministic Verification:** Progress is measured by a strict Boolean state
   machine. Code doesn't ship until all experts flip their checklist items to
@@ -64,6 +63,7 @@ milestone.
 - `magi_schema.json`: The strict JSON data contracts that agents use to
   communicate.
 - `SKILL.md`: The core execution logic and protocol rules.
+- `PERSONAS.md`: The routing catalog for the Orchestrator.
 - `.temp/`: A transient directory used by agents to store drafts and reviews
   without dirtying your git tree.
 

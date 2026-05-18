@@ -9,6 +9,8 @@ protocol.
 {
   "$schema": "./magi_schema.json#definitions/ProjectSpec",
   "task_type": "IMPLEMENTATION",
+  "execution_path": "RIGOR_PATH",
+  "complexity_level": "MEDIUM",
   "goal": "A one-sentence summary of the fix/feature.",
   "target_files": ["Absolute paths to the files that must be modified."],
   "anti_goals": ["What should explicitly NOT be changed."],
@@ -43,8 +45,6 @@ protocol.
   "active_constraints": [],
   "resolved_constraints": [],
   "unlisted_issues_found": [],
-  "implementors": ["[Selected Implementors]"],
-  "reviewers": ["[Selected Reviewers]"],
   "next_stage": "[Determined by task type]",
   "review_mode": "[SUPERVISOR/CONSENSUS]",
   "state_transport": "[FILE_IO/EPHEMERAL/EPHEMERAL_WITH_LOGS]"

@@ -538,91 +538,6 @@ def CheckJsonFiles(input_api, output_api):
                             'EPHEMERAL but project.magi.json has '
                             'auditability_level: VERBOSE. Consider using '
                             'EPHEMERAL_WITH_LOGS instead.'))
-
-            # Cross-file validation for checklist union merge
-            personas = content.get('personas')
-            state_checklist = content.get('checklist')
-            if isinstance(personas, list) and isinstance(
-                    state_checklist, dict):
-                repo_root = input_api.change.RepositoryRoot()
-                union_checklist_keys = set()
-
-                for persona_path in personas:
-                    if not isinstance(persona_path, str):
-                        results.append(
-                            output_api.PresubmitError(
-                                f'File {f.LocalPath()} personas list contains a non-string '
-                                f'element: {persona_path}'))
-                        continue
-                    if persona_path.startswith('src/'):
-                        persona_path = persona_path[4:]
-                    elif persona_path.startswith('src\\'):
-                        persona_path = persona_path[4:]
-
-                    abs_persona_path = input_api.os_path.normpath(
-                        input_api.os_path.join(repo_root, persona_path))
-
-                    if abs_persona_path not in persona_content_cache:
-                        persona_content_str = None
-                        is_present = False
-
-                        if abs_persona_path in affected_files_map:
-                            persona_content_str = input_api.ReadFile(
-                                affected_files_map[abs_persona_path])
-                            is_present = True
-
-                        if not is_present:
-                            if input_api.os_path.exists(abs_persona_path):
-                                try:
-                                    with open(abs_persona_path,
-                                              'r',
-                                              encoding='utf-8') as pf:
-                                        persona_content_str = pf.read()
-                                        is_present = True
-                                except IOError:
-                                    pass
-                        if is_present and persona_content_str:
-                            persona_content_cache[
-                                abs_persona_path] = persona_content_str
-
-                    persona_content_str = persona_content_cache.get(
-                        abs_persona_path)
-                    is_present = persona_content_str is not None
-
-                    if not is_present:
-                        results.append(
-                            output_api.PresubmitError(
-                                f'File {f.LocalPath()} references a non-existent persona '
-                                f'file: {persona_path}'))
-
-                    if persona_content_str:
-                        try:
-                            persona_json = json.loads(persona_content_str)
-                            if isinstance(persona_json, dict):
-                                persona_checklist = persona_json.get(
-                                    'checklist', {})
-                                if isinstance(persona_checklist, dict):
-                                    union_checklist_keys.update(
-                                        persona_checklist.keys())
-                        except ValueError:
-                            pass
-
-                state_checklist_keys = set(state_checklist.keys())
-                missing_in_state = union_checklist_keys - state_checklist_keys
-                extra_in_state = state_checklist_keys - union_checklist_keys
-
-                if missing_in_state:
-                    results.append(
-                        output_api.PresubmitError(
-                            f'File {f.LocalPath()} checklist is missing keys defined in '
-                            f"selected personas: {', '.join(sorted(missing_in_state))}"
-                        ))
-                if extra_in_state:
-                    results.append(
-                        output_api.PresubmitError(
-                            f'File {f.LocalPath()} checklist contains arbitrary keys not '
-                            f'defined in selected personas: '
-                            f"{', '.join(sorted(extra_in_state))}"))
         elif filename.startswith('project'):
 
             if 'environment' in content:
@@ -670,18 +585,11 @@ def CheckJsonFiles(input_api, output_api):
                             ))
 
         elif filename.startswith('constraints'):
-            if review_mode == 'SUPERVISOR':
-                if next_p and next_p not in ['SYNTHESIS', 'TRAINING']:
-                    results.append(
-                        output_api.PresubmitError(
-                            f'File {f.LocalPath()} (SUPERVISOR) must signal '
-                            f'SYNTHESIS or TRAINING, not {next_p}'))
-            elif review_mode == 'CONSENSUS':
-                if next_p and next_p != 'TPM_UPDATE':
-                    results.append(
-                        output_api.PresubmitError(
-                            f'File {f.LocalPath()} (CONSENSUS) must signal '
-                            f'TPM_UPDATE, not {next_p}'))
+            if next_p and next_p not in ['SYNTHESIS', 'TRAINING']:
+                results.append(
+                    output_api.PresubmitError(
+                        f'File {f.LocalPath()} must signal '
+                        f'SYNTHESIS or TRAINING, not {next_p}'))
 
     return results
 

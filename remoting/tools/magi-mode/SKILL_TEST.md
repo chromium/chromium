@@ -1,8 +1,8 @@
 # MAGI Test Protocol (SKILL_TEST.md)
 
-This document describes the protocol used to validate the MAGI sub-agents and
-prevent regressions in the protocol execution. It defines "unit" tests for each
-stage of the MAGI protocol.
+This document describes the protocol used to validate the MAGI (Modular
+Automated Guided Iteration) sub-agents and prevent regressions in the protocol
+execution. It defines "unit" tests for each stage of the MAGI protocol.
 
 ## Objective
 

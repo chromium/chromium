@@ -187,9 +187,24 @@ class MagiPresubmitTest(unittest.TestCase):
             any('must explicitly enforce "Zero Preamble/'
                 'Postamble" and "Artifacts Only"' in r for r in results))
 
-        # Valid
+        # Missing TDD mandate
+        content_no_tdd = ('TONE MANDATE (SIGNAL-TO-NOISE):\n'
+                          'Zero Preamble/Postamble\nArtifacts Only\n')
+        self.mock_input.files_content = {
+            'remoting/tools/magi-mode/SKILL.md': content_no_tdd
+        }
+        with patch('os.walk', return_value=[(magi_dir, [], ['SKILL.md'])]), \
+                patch('os.path.getsize', return_value=100):
+            results = PRESUBMIT.CheckMarkdownFiles(self.mock_input,
+                                                   self.mock_output)
+
+        self.assertTrue(
+            any('must contain the TDD mandate' in r for r in results))
+
+        # Valid (with TDD mandate)
         content_valid = ('TONE MANDATE (SIGNAL-TO-NOISE):\n'
-                         'Zero Preamble/Postamble\nArtifacts Only\n')
+                         'Zero Preamble/Postamble\nArtifacts Only\n'
+                         'ADD_FAILURE("NOT IMPLEMENTED");\n')
         self.mock_input.files_content = {
             'remoting/tools/magi-mode/SKILL.md': content_valid
         }
@@ -202,6 +217,8 @@ class MagiPresubmitTest(unittest.TestCase):
             any('must contain the "TONE MANDATE '
                 '(SIGNAL-TO-NOISE):" section' in r for r in results))
         self.assertFalse(any('must explicitly enforce' in r for r in results))
+        self.assertFalse(
+            any('must contain the TDD mandate' in r for r in results))
 
     def testPersonaNamingConvention(self):
         # Invalid persona name (with _expert suffix)
@@ -277,7 +294,7 @@ class MagiPresubmitTest(unittest.TestCase):
             '{"type": "array"}, "personas": {"type": "array"}, '
             '"next_stage": {"type": "string", "enum": ["CRITIQUE", '
             '"SCAFFOLDING", "PREPARATION", "IMPLEMENTATION", "SYNTHESIS", '
-            '"TEST_FILLING", "ANALYSIS", "TPM_UPDATE", "TRAINING", '
+            '"TEST_FILLING", "ANALYSIS", "TRAINING", '
             '"VALIDATION", "DEPLOYMENT", "DEADLOCK"]}, '
             '"review_mode": {"type": "string", "enum": '
             '["SUPERVISOR", "CONSENSUS"]}, '
@@ -309,7 +326,6 @@ class MagiPresubmitTest(unittest.TestCase):
             '{"checklist": {}, "unlisted_issues_found": [], '
             '"iteration": 1, "stall_count": 0, "active_constraints": [], '
             '"resolved_constraints": [], "personas": [], '
-            '"implementors": [], "reviewers": [], '
             '"review_mode": "SUPERVISOR", "state_transport": "EPHEMERAL", '
             '"next_stage": "INVALID_STAGE"}')
         self.mock_input.files_content = {
@@ -386,53 +402,6 @@ class MagiPresubmitTest(unittest.TestCase):
                 any('checklist key "checked_xyz" must be a boolean' in r
                     for r in results))
 
-    def testJsonStateBlockArbitraryChecklistKey(self):
-        # Arbitrary key in checklist ("checked_xyz": true, "check_arbitrary": true) not in security.json
-        arbitrary_key_json = (
-            '{"checklist": {"checked_xyz": true, "check_arbitrary": true}, '
-            '"unlisted_issues_found": [], "iteration": 1, '
-            '"stall_count": 0, "active_constraints": [], '
-            '"resolved_constraints": [], "personas": '
-            '["src/remoting/tools/magi-mode/personas/core/security.json"], '
-            '"review_mode": "SUPERVISOR", "state_transport": "EPHEMERAL", '
-            '"next_stage": "CRITIQUE"}')
-        self.mock_input.affected_files = [
-            MockAffectedFile('remoting/tools/magi-mode/state_block.magi.json'),
-            MockAffectedFile(
-                'remoting/tools/magi-mode/personas/core/security.json')
-        ]
-        self.mock_input.files_content = {
-            'remoting/tools/magi-mode/state_block.magi.json':
-            (arbitrary_key_json),
-            'remoting/tools/magi-mode/personas/core/security.json':
-            ('{"checklist": {"checked_xyz": "Desc"}}')
-        }
-        schema_json = (
-            '{"definitions": {"ChecklistObject": {"type": "object", '
-            '"patternProperties": {"^.*$": {"type": "boolean"}}}, '
-            '"StateBlock": {"required": ["checklist", "iteration", '
-            '"stall_count", "active_constraints", "resolved_constraints", '
-            '"personas", "review_mode", "state_transport", "next_stage"], '
-            '"properties": {"checklist": '
-            '{"$ref": "#/definitions/ChecklistObject"}, '
-            '"unlisted_issues_found": {"type": "array"}, "iteration": '
-            '{"type": "integer"}, "stall_count": {"type": "integer"}, '
-            '"active_constraints": {"type": "array"}, "resolved_constraints": '
-            '{"type": "array"}, "personas": {"type": "array"}, '
-            '"next_stage": {"type": "string"}, '
-            '"review_mode": {"type": "string", "enum": '
-            '["SUPERVISOR", "CONSENSUS"]}, '
-            '"state_transport": {"type": "string", "enum": '
-            '["FILE_IO", "EPHEMERAL", "EPHEMERAL_WITH_LOGS"]}}}}}')
-
-        with patch('builtins.open',
-                   unittest.mock.mock_open(read_data=schema_json)):
-            results = PRESUBMIT.CheckJsonFiles(self.mock_input,
-                                               self.mock_output)
-            self.assertTrue(
-                any('checklist contains arbitrary keys not defined in selected '
-                    'personas: check_arbitrary' in r for r in results))
-
     def testJsonProjectSpecValidation(self):
         # Valid project spec
         valid_json = (
@@ -441,7 +410,8 @@ class MagiPresubmitTest(unittest.TestCase):
             '"edge_cases": [], "paranoia_mode": false, '
             '"auditability_level": "NORMAL", "context_resolved": true, '
             '"approach_confirmed": true, "ambiguity_level": "LOW", '
-            '"ambiguity_rationale": "Test", "next_stage": "SCAFFOLDING"}')
+            '"ambiguity_rationale": "Test", "execution_path": "RIGOR_PATH", '
+            '"complexity_level": "MEDIUM", "next_stage": "SCAFFOLDING"}')
         self.mock_input.affected_files = [
             MockAffectedFile('remoting/tools/magi-mode/project.magi.json')
         ]
@@ -455,7 +425,7 @@ class MagiPresubmitTest(unittest.TestCase):
             '"goal", "target_files", "anti_goals", "edge_cases", '
             '"next_stage", "paranoia_mode", "auditability_level", '
             '"context_resolved", "approach_confirmed", "ambiguity_level", '
-            '"ambiguity_rationale"], '
+            '"ambiguity_rationale", "execution_path", "complexity_level"], '
             '"properties": {"task_type": {"type": "string", "enum": '
             '["IMPLEMENTATION", "REVIEW", "AUDIT"]}, '
             '"unlisted_issues_found": {"type": "array"}, '
@@ -464,13 +434,15 @@ class MagiPresubmitTest(unittest.TestCase):
             '{"type": "array"}, "paranoia_mode": {"type": "boolean"}, '
             '"next_stage": {"type": "string", "enum": ["CRITIQUE", '
             '"SCAFFOLDING", "PREPARATION", "IMPLEMENTATION", "SYNTHESIS", '
-            '"TEST_FILLING", "ANALYSIS", "TPM_UPDATE", "TRAINING", '
+            '"TEST_FILLING", "ANALYSIS", "TRAINING", '
             '"VALIDATION", "DEPLOYMENT", "DEADLOCK"]}, '
             '"auditability_level": {"type": "string", "enum": ["NORMAL", '
             '"VERBOSE"]}, "context_resolved": {"type": "boolean"}, '
             '"approach_confirmed": {"type": "boolean"}, '
             '"ambiguity_level": {"type": "string", "enum": ["LOW", "HIGH"]}, '
-            '"ambiguity_rationale": {"type": "string"}}}}}')
+            '"ambiguity_rationale": {"type": "string"}, '
+            '"execution_path": {"type": "string"}, '
+            '"complexity_level": {"type": "string"}}}}}')
 
         with patch('builtins.open',
                    unittest.mock.mock_open(read_data=schema_json)):
@@ -546,7 +518,7 @@ class MagiPresubmitTest(unittest.TestCase):
             '"comments": {"type": "array"}, '
             '"next_stage": {"type": "string", "enum": ["CRITIQUE", '
             '"SCAFFOLDING", "PREPARATION", "IMPLEMENTATION", "SYNTHESIS", '
-            '"TEST_FILLING", "ANALYSIS", "TPM_UPDATE", "TRAINING", '
+            '"TEST_FILLING", "ANALYSIS", "TRAINING", '
             '"VALIDATION", "DEPLOYMENT", "DEADLOCK"]}}}}}')
 
         with patch('builtins.open',
@@ -590,7 +562,7 @@ class MagiPresubmitTest(unittest.TestCase):
             '"review_mode": {"type": "string", "enum": ["SUPERVISOR", "CONSENSUS"]}, '
             '"next_stage": {"type": "string", "enum": ["CRITIQUE", '
             '"SCAFFOLDING", "PREPARATION", "IMPLEMENTATION", "SYNTHESIS", '
-            '"TEST_FILLING", "ANALYSIS", "TPM_UPDATE", "TRAINING", '
+            '"TEST_FILLING", "ANALYSIS", "TRAINING", '
             '"VALIDATION", "DEPLOYMENT", "DEADLOCK"]}}}}}')
 
         with patch('builtins.open',
@@ -633,17 +605,17 @@ class MagiPresubmitTest(unittest.TestCase):
             self.assertTrue(
                 any("key 'next_stage' must be one of" in r for r in results))
 
-        # Invalid handoff for SUPERVISOR constraints
-        invalid_supervisor = (
+        # Invalid handoff for constraints
+        invalid_constraints = (
             '{"iteration": 1, "constraints": [], "review_mode": '
-            '"SUPERVISOR", "next_stage": "TPM_UPDATE"}')
+            '"SUPERVISOR", "next_stage": "CRITIQUE"}')
         self.mock_input.affected_files = [
             MockAffectedFile(
                 'remoting/tools/magi-mode/constraints.magi.1.json')
         ]
         self.mock_input.files_content = {
             'remoting/tools/magi-mode/constraints.magi.1.json':
-            invalid_supervisor
+            invalid_constraints
         }
         schema_json = (
             '{"definitions": {"Constraints": {"required": ["iteration", '
@@ -657,27 +629,6 @@ class MagiPresubmitTest(unittest.TestCase):
                                                self.mock_output)
             self.assertTrue(
                 any('must signal SYNTHESIS or TRAINING' in r for r in results))
-
-        # Invalid handoff for CONSENSUS constraints
-        invalid_consensus = (
-            '{"checklist": {}, "unlisted_issues_found": [], '
-            '"iteration": 1, "constraints": [], "review_mode": '
-            '"CONSENSUS", "next_stage": "SYNTHESIS"}')
-        self.mock_input.affected_files = [
-            MockAffectedFile(
-                'remoting/tools/magi-mode/constraints.magi.1.json')
-        ]
-        self.mock_input.files_content = {
-            'remoting/tools/magi-mode/constraints.magi.1.json':
-            invalid_consensus
-        }
-        with patch('builtins.open',
-                   unittest.mock.mock_open(read_data=schema_json)):
-            results = PRESUBMIT.CheckJsonFiles(self.mock_input,
-                                               self.mock_output)
-            self.assertTrue(
-                any('must signal TPM_UPDATE, not SYNTHESIS' in r
-                    for r in results))
 
     def testCrossFileValidation(self):
         schema_json = '{"definitions": {}}'

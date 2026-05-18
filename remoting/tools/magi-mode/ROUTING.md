@@ -1,28 +1,30 @@
-# MAGI Persona Index
+# MAGI Module Routing Index
 
-This file acts as a routing catalog for the **Recruiter** sub-agent. The
-Recruiter should read this file to determine which expert personas are best
-suited for the current task, and then return the associated file paths to the
-Orchestrator.
+This file acts as a routing catalog for the Orchestrator. It identifies the
+technical rulesets and implementation modules available for execution and
+auditing.
 
-## Core Ideators (The Big Three)
+## Execution Agents
 
-These are the default personas which are relevant for most Chromium tasks.
+These modules are responsible for investigation, scaffolding, and code
+synthesis.
 
-- **The Scoping Lead:** Investigation, codebase research, goal definition.
-  *Path:* `src/remoting/tools/magi-mode/personas/core/scoping_lead.json`
-- **The Security Expert:** Memory safety, exploit prevention, logic. *Path:*
+- **Scoping:** Investigation, codebase research, goal definition. *Path:*
+  `src/remoting/tools/magi-mode/personas/core/scoping.json`
+- **Synthesis:** Maintainability, Chromium idioms, `//base` primitives, and
+  final code synthesis. *Path:*
+  `src/remoting/tools/magi-mode/personas/core/architect.json`
+
+## Scanners (Auditors)
+
+Specialized experts who perform rigorous, boolean-checklist-based audits.
+
+- **The Security Scanner:** Memory safety, exploit prevention, logic. *Path:*
   `src/remoting/tools/magi-mode/personas/core/security.json`
-- **The Performance Expert:** Latency, zero-copy, sequence affinity. *Path:*
+- **The Performance Scanner:** Latency, zero-copy, sequence affinity. *Path:*
   `src/remoting/tools/magi-mode/personas/core/performance.json`
-- **The Architect:** Maintainability, Chromium idioms, `//base` primitives.
+- **The Architect Scanner:** Consistency with existing patterns and idioms.
   *Path:* `src/remoting/tools/magi-mode/personas/core/architect.json`
-
-## Auxiliary Reviewers (Expanded Panel)
-
-These personas can be swapped in during Ideation, or added during the Expanded
-Review cycle.
-
 - **The Test Expert:** Testability, edge-cases, framework usage. *Path:*
   `src/remoting/tools/magi-mode/personas/auxiliary/test.json`
 - **The Concurrency Expert:** `base::PostTask` safety, preventing deadlocks.
@@ -31,8 +33,6 @@ Review cycle.
   `src/remoting/tools/magi-mode/personas/auxiliary/privacy.json`
 - **The Build Expert:** `DEPS` compliance, `#include` bloat, GN boundaries.
   *Path:* `src/remoting/tools/magi-mode/personas/auxiliary/build.json`
-- **The I18n & A11y Expert:** Translations and screen-reader support. *Path:*
-  `src/remoting/tools/magi-mode/personas/auxiliary/i18n.json`
 - **The Readability Expert:** Clean code, naming, cognitive complexity. *Path:*
   `src/remoting/tools/magi-mode/personas/auxiliary/readability.json`
 
@@ -55,7 +55,7 @@ Use these when modifying specific technical domains like media or networking.
 - **Codec (AV1) Expert:** `libaom` settings, bitrate adaptation, latency.
   *Path:* `src/remoting/tools/magi-mode/personas/domain/codec_av1.json`
 
-## System Meta-Reviewers
+## System Meta-Scanners
 
 Use these when auditing or modifying the MAGI protocol itself.
 

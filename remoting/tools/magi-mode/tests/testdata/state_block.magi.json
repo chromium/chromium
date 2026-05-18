@@ -12,13 +12,6 @@
     "stall_count": 0,
     "active_constraints": [],
     "resolved_constraints": [],
-    "implementors": [
-        "remoting/tools/magi-mode/personas/core/security.json"
-    ],
-    "reviewers": [
-        "remoting/tools/magi-mode/personas/core/security.json",
-        "remoting/tools/magi-mode/personas/domain/signaling.json"
-    ],
     "next_stage": "CRITIQUE",
     "review_mode": "CONSENSUS",
     "state_transport": "FILE_IO"
