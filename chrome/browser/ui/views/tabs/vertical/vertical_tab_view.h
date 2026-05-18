@@ -34,9 +34,13 @@ class TabCollectionNode;
 class TabIcon;
 class TabTitle;
 
+namespace base {
+class TimeDelta;
+}  // namespace base
+
 namespace glic {
 class TabUnderlineView;
-}
+}  // namespace glic
 
 // The view class for the tab. It is responsible for painting the
 // tab background and displaying the favicon, title, alert indicators and close
@@ -52,6 +56,9 @@ class VerticalTabView : public views::View,
   METADATA_HEADER(VerticalTabView, views::View)
 
  public:
+  static constexpr base::TimeDelta kGlowHoverAnimationDuration =
+      base::Milliseconds(50);
+
   explicit VerticalTabView(TabCollectionNode* collection_node);
   VerticalTabView(const VerticalTabView&) = delete;
   VerticalTabView& operator=(const VerticalTabView&) = delete;

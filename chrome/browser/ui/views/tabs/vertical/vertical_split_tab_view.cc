@@ -7,6 +7,7 @@
 #include <numeric>
 #include <vector>
 
+#include "base/time/time.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/tabs/tab_style.h"
@@ -32,7 +33,9 @@
 VerticalSplitTabView::VerticalSplitTabView(TabCollectionNode* collection_node)
     : collection_node_(collection_node),
       hover_controller_(gfx::Animation::ShouldRenderRichAnimation()
-                            ? std::make_unique<GlowHoverController>(this)
+                            ? std::make_unique<GlowHoverController>(
+                                  this,
+                                  VerticalTabView::kGlowHoverAnimationDuration)
                             : nullptr) {
   SetLayoutManager(std::make_unique<views::DelegatingLayoutManager>(this));
 
