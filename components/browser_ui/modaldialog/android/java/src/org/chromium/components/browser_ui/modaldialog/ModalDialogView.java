@@ -92,7 +92,7 @@ public class ModalDialogView extends BoundedLinearLayout implements View.OnClick
     // displayed to prevent potentially unintentional user interactions. A value of zero turns off
     // this kind of tap-jacking protection.
     private long mButtonTapProtectionDurationMs;
-    private boolean mBlockTouchInput;
+    private boolean mBlockInput;
 
     private int mHorizontalMargin = NOT_SPECIFIED;
     private int mVerticalMargin = NOT_SPECIFIED;
@@ -680,16 +680,16 @@ public class ModalDialogView extends BoundedLinearLayout implements View.OnClick
      * @param shouldBlockInputs Whether all inputs on the modal dialog should be blocked.
      */
     void blockInputs(boolean shouldBlockInputs) {
-        mBlockTouchInput = shouldBlockInputs;
+        mBlockInput = shouldBlockInputs;
     }
 
     public boolean isBlockInputForTesting() {
-        return mBlockTouchInput;
+        return mBlockInput;
     }
 
     @Override
     public boolean dispatchTouchEvent(MotionEvent e) {
-        if (mBlockTouchInput) return true;
+        if (mBlockInput) return true;
 
         return super.dispatchTouchEvent(e);
     }
@@ -793,6 +793,14 @@ public class ModalDialogView extends BoundedLinearLayout implements View.OnClick
 
     @Override
     public boolean dispatchKeyEvent(KeyEvent event) {
+        if (mBlockInput) {
+            // Do not block system keys
+            if (event.isSystem()) {
+                return super.dispatchKeyEvent(event);
+            }
+            return true;
+        }
+
         if (mOnEscapeCallback != null
                 && event.getKeyCode() == KeyEvent.KEYCODE_ESCAPE
                 && event.getAction() == KeyEvent.ACTION_DOWN
