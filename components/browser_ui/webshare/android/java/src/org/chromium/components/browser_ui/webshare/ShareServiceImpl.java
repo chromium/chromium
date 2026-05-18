@@ -24,8 +24,10 @@ import org.chromium.build.annotations.NullUnmarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.share.ShareImageFileUtils;
 import org.chromium.components.browser_ui.share.ShareParams;
+import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.mojo.system.MojoException;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.url.GURL;
 import org.chromium.url.mojom.Url;
 import org.chromium.webshare.mojom.ShareError;
 import org.chromium.webshare.mojom.ShareService;
@@ -129,6 +131,13 @@ public class ShareServiceImpl implements ShareService {
          * @return The current {@link WindowAndroid} used to perform sharing.
          */
         WindowAndroid getWindowAndroid();
+
+        /**
+         * Kills the renderer process when it is detected to have made a bad request.
+         *
+         * @param reason The BadMessageReason code from content::bad_message::BadMessageReason.
+         */
+        void terminateRendererDueToBadMessage(int reason);
     }
 
     public ShareServiceImpl(WebShareDelegate delegate) {
@@ -157,6 +166,16 @@ public class ShareServiceImpl implements ShareService {
                     WEBSHARE_OUTCOME_UNKNOWN_FAILURE,
                     WEBSHARE_OUTCOME_COUNT);
             callback.call(ShareError.INTERNAL_ERROR);
+            return;
+        }
+
+        GURL shareUrl = new GURL(url.url);
+        boolean hasAllowedSchemes =
+                UrlConstants.HTTPS_SCHEME.equals(shareUrl.getScheme())
+                        || UrlConstants.HTTP_SCHEME.equals(shareUrl.getScheme());
+        if (GURL.isEmptyOrInvalid(shareUrl) || !hasAllowedSchemes) {
+            callback.call(ShareError.PERMISSION_DENIED);
+            mDelegate.terminateRendererDueToBadMessage(11 /* RFH_INVALID_WEB_FRAME_URL */);
             return;
         }
 

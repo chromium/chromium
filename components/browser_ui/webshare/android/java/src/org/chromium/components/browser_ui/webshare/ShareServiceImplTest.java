@@ -12,6 +12,11 @@ import org.junit.runner.RunWith;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.components.browser_ui.share.ShareParams;
+import org.chromium.ui.base.WindowAndroid;
+import org.chromium.url.mojom.Url;
+import org.chromium.webshare.mojom.ShareError;
+import org.chromium.webshare.mojom.ShareService;
 
 /** Unit tests for {@link ShareServiceImpl}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -96,5 +101,54 @@ public class ShareServiceImplTest {
         Assert.assertFalse(ShareServiceImpl.isDangerousMimeType("text/csv"));
         Assert.assertFalse(ShareServiceImpl.isDangerousMimeType("text/plain"));
         Assert.assertFalse(ShareServiceImpl.isDangerousMimeType("video/mpeg"));
+    }
+
+    @Test
+    @SmallTest
+    public void testInvalidScheme() {
+        // Using 1-element arrays to allow anonymous inner classes (WebShareDelegate and
+        // Share_Response) to modify local state, as captured variables must be effectively final.
+        int[] badMessageReason = new int[1];
+        int[] shareError = new int[1];
+
+        ShareServiceImpl.WebShareDelegate mockDelegate =
+                new ShareServiceImpl.WebShareDelegate() {
+                    @Override
+                    public boolean canShare() {
+                        return true;
+                    }
+
+                    @Override
+                    public void share(ShareParams params) {}
+
+                    @Override
+                    public WindowAndroid getWindowAndroid() {
+                        return null;
+                    }
+
+                    @Override
+                    public void terminateRendererDueToBadMessage(int reason) {
+                        badMessageReason[0] = reason;
+                    }
+                };
+
+        ShareServiceImpl shareService = new ShareServiceImpl(mockDelegate);
+        Url url = new Url();
+        url.url = "javascript:alert(1)";
+
+        shareService.share(
+                "title",
+                "text",
+                url,
+                null,
+                new ShareService.Share_Response() {
+                    @Override
+                    public void call(int error) {
+                        shareError[0] = error;
+                    }
+                });
+
+        Assert.assertEquals(ShareError.PERMISSION_DENIED, shareError[0]);
+        Assert.assertEquals(11 /* RFH_INVALID_WEB_FRAME_URL */, badMessageReason[0]);
     }
 }
