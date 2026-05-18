@@ -135,6 +135,7 @@ NigoriState NigoriState::CreateFromLocalProto(
 
   state.cryptographer =
       CryptographerImpl::FromLocalProto(proto.cryptographer_data());
+  CHECK(state.cryptographer);
 
   if (proto.has_pending_keys()) {
     state.pending_keys = proto.pending_keys();

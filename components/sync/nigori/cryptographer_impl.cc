@@ -39,12 +39,11 @@ std::unique_ptr<CryptographerImpl> CryptographerImpl::FromSingleKeyForTesting(
 // static
 std::unique_ptr<CryptographerImpl> CryptographerImpl::FromLocalProto(
     const sync_pb::CryptographerData& proto) {
-  NigoriKeyBag key_bag = NigoriKeyBag::CreateFromProto(proto.key_bag());
-  // TODO(crbug.com/40141634): An invalid local state should be handled in the
-  // caller instead of CHECK-ing here, e.g. by resetting the local state.
-  CHECK(proto.default_key_name().empty() ||
-        key_bag.HasKey(proto.default_key_name()));
+  if (!IsLocalProtoValid(proto)) {
+    return nullptr;
+  }
 
+  NigoriKeyBag key_bag = NigoriKeyBag::CreateFromProto(proto.key_bag());
   CrossUserSharingKeys cross_user_sharing_keys =
       CrossUserSharingKeys::CreateFromProto(proto.cross_user_sharing_keys());
 
@@ -52,6 +51,16 @@ std::unique_ptr<CryptographerImpl> CryptographerImpl::FromLocalProto(
       std::move(key_bag), proto.default_key_name(),
       std::move(cross_user_sharing_keys),
       /*default_cross_user_sharing_key_version=*/std::nullopt));
+}
+
+// static
+bool CryptographerImpl::IsLocalProtoValid(
+    const sync_pb::CryptographerData& proto) {
+  if (proto.default_key_name().empty()) {
+    return true;
+  }
+  return NigoriKeyBag::CreateFromProto(proto.key_bag())
+      .HasKey(proto.default_key_name());
 }
 
 CryptographerImpl::CryptographerImpl(

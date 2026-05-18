@@ -18,6 +18,7 @@
 #include "components/sync/base/time.h"
 #include "components/sync/engine/nigori/cross_user_sharing_public_key.h"
 #include "components/sync/engine/nigori/nigori.h"
+#include "components/sync/nigori/cryptographer_impl.h"
 #include "components/sync/nigori/keystore_keys_cryptographer.h"
 #include "components/sync/nigori/nigori_storage.h"
 #include "components/sync/nigori/pending_local_nigori_commit.h"
@@ -233,6 +234,12 @@ bool IsValidLocalData(const sync_pb::NigoriLocalData& local_data) {
   }
 
   const sync_pb::NigoriModel& nigori_model = local_data.nigori_model();
+
+  if (!CryptographerImpl::IsLocalProtoValid(
+          nigori_model.cryptographer_data())) {
+    return false;
+  }
+
   switch (nigori_model.passphrase_type()) {
     case NigoriSpecifics::UNKNOWN:
       // The only legit way to persist UNKNOWN passphrase type is to not

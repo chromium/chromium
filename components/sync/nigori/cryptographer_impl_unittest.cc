@@ -21,6 +21,7 @@ namespace syncer {
 namespace {
 
 using testing::Eq;
+using testing::IsNull;
 using testing::Ne;
 using testing::NotNull;
 using testing::UnorderedElementsAre;
@@ -473,6 +474,16 @@ TEST(CryptographerImplTest, ShouldSerializeToLocalProto) {
   ASSERT_THAT(restored, NotNull());
   EXPECT_THAT(restored->GetDefaultEncryptionKeyName(), Eq(key_name));
   EXPECT_TRUE(restored->CanEncrypt());
+}
+
+TEST(CryptographerImplTest, ShouldReturnNullOnInvalidLocalProto) {
+  sync_pb::CryptographerData proto;
+  proto.set_default_key_name("non_existent_key");
+  // The key bag is empty, so "non_existent_key" is missing.
+
+  std::unique_ptr<CryptographerImpl> restored =
+      CryptographerImpl::FromLocalProto(proto);
+  EXPECT_THAT(restored, IsNull());
 }
 
 TEST(CryptographerImplTest, ShouldExportEncryptedKeyBagWithOneKey) {

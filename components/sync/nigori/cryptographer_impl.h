@@ -40,9 +40,14 @@ class CryptographerImpl : public Cryptographer {
       const std::string& passphrase,
       const KeyDerivationParams& derivation_params =
           KeyDerivationParams::CreateForPbkdf2());
-  // Returns null in case of error (e.g. default key not present in keybag).
+
+  // Returns null in case of error (see IsLocalProtoValid()).
   static std::unique_ptr<CryptographerImpl> FromLocalProto(
       const sync_pb::CryptographerData& proto);
+
+  // Returns true if `proto` is a valid CryptographerData (e.g. default key not
+  // present in keybag).
+  static bool IsLocalProtoValid(const sync_pb::CryptographerData& proto);
 
   CryptographerImpl& operator=(const CryptographerImpl&) = delete;
 
