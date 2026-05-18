@@ -126,6 +126,9 @@
   <message name="IDS_SETTINGS_GLIC_PERMISSIONS_SECTION" desc="Heading on settings page for permissions-related preferences." formatter_data="android_java">
     Permissions
   </message>
+  <message name="IDS_SETTINGS_GLIC_AUTO_BROWSE_SECTION" desc="Heading on settings page for auto browse preferences.">
+    Auto Browse
+  </message>
   <message name="IDS_SETTINGS_GLIC_BUTTON_TOGGLE" desc="Name of the toggle that controls whether the Gemini icon is shown in the tabstrip.">
     Show Gemini at the top of the browser
   </message>

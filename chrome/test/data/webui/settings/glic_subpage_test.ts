@@ -853,7 +853,7 @@ suite('GlicSubpage', function() {
       loadTimeData.overrideValues({
         showGlicExperimentalTriggering: true,
       });
-      await createGlicPage('⌃A');
+      await createGlicPage('⌃A', true);
       const toggle = $<SettingsToggleButtonElement>('glicExperimentalTriggeringToggle');
       assertTrue(!!toggle);
       assertTrue(isVisible(toggle));
@@ -864,7 +864,7 @@ suite('GlicSubpage', function() {
       loadTimeData.overrideValues({
         showGlicExperimentalTriggering: false,
       });
-      await createGlicPage('⌃A');
+      await createGlicPage('⌃A', true);
       const toggle = $<SettingsToggleButtonElement>('glicExperimentalTriggeringToggle');
       assertFalse(isVisible(toggle));
     });

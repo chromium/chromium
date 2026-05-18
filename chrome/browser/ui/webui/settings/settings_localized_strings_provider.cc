@@ -777,6 +777,7 @@ void AddGlicStrings(content::WebUIDataSource* html_source, Profile* profile) {
       {"glicPolicyDisabledMessage", IDS_SETTINGS_GLIC_POLICY_DISABLED_MESSAGE},
       {"glicPreferencesSection", IDS_SETTINGS_GLIC_PREFERENCES_SECTION},
       {"glicDataSection", IDS_SETTINGS_GLIC_PERMISSIONS_SECTION},
+      {"glicAutoBrowseSection", IDS_SETTINGS_GLIC_AUTO_BROWSE_SECTION},
       {"glicTabstripButtonToggle", IDS_SETTINGS_GLIC_BUTTON_TOGGLE},
       {"glicTabstripButtonToggleSublabel",
        IDS_SETTINGS_GLIC_BUTTON_TOGGLE_SUBLABEL},
