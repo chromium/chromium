@@ -87,4 +87,36 @@ TEST_F(RestartabilityMonitorTest, HasAnyActiveBlockers_Multiple) {
   EXPECT_TRUE(state.HasAnyActiveBlockers());
 }
 
+// Tests for ExtendedRestartabilityState
+TEST_F(RestartabilityMonitorTest, ExtendedState_AddBlockerUpdatesLevel) {
+  ExtendedRestartabilityState extended_state;
+  using Blocker = ExtendedRestartabilityState::SmartRestartBlocker;
+  using Level = ExtendedRestartabilityState::SmartRestartDisruptionLevel;
+
+  // Verify it starts at kNoDisruption.
+  EXPECT_EQ(Level::kNoDisruption, extended_state.max_disruption_level);
+
+  // Upgrade to Level 1 (Protected)
+  extended_state.AddBlocker(Blocker::kVisible);
+  EXPECT_EQ(Level::kLowDisruption, extended_state.max_disruption_level);
+
+  // Upgrade to Level 2 (Disallowed)
+  extended_state.AddBlocker(Blocker::kCapturingVideo);
+  EXPECT_EQ(Level::kHighDisruption, extended_state.max_disruption_level);
+
+  // Adding a lower level blocker doesn't downgrade
+  extended_state.AddBlocker(Blocker::kPinnedTab);
+  EXPECT_EQ(Level::kHighDisruption, extended_state.max_disruption_level);
+}
+
+TEST_F(RestartabilityMonitorTest, ExtendedState_EnumSetDeduplication) {
+  ExtendedRestartabilityState extended_state;
+  using Blocker = ExtendedRestartabilityState::SmartRestartBlocker;
+
+  extended_state.AddBlocker(Blocker::kVisible);
+  extended_state.AddBlocker(Blocker::kVisible);  // Duplicate
+
+  EXPECT_EQ(1u, extended_state.blockers.size());
+}
+
 }  // namespace smart_restart
