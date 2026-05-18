@@ -184,7 +184,7 @@ enum NSWindowLiveResizeEdge {
   // For live-resize, reject the automatic resize. Instead, tell the compositor
   // to produce a frame of the new size, and then call -[NSWindow setFrame:]
   // when the new frame is ready.
-  if (base::FeatureList::IsEnabled(features::kCATransactionV2) &&
+  if (base::FeatureList::IsEnabled(features::kAsyncLiveResize) &&
       [_parent->ns_window() inLiveResize]) {
     NSRect newWindowFrame = windowFrame;
     newWindowFrame.size = size;

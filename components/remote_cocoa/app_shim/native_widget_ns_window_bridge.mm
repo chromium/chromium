@@ -2144,7 +2144,7 @@ void NativeWidgetNSWindowBridge::UpdateWindowGeometry() {
   CheckAndNotifyAllWorkspacesStateChanged();
 
   if (content_resized && !ca_transaction_sync_suppressed_ &&
-      !base::FeatureList::IsEnabled(features::kCATransactionV2)) {
+      !base::FeatureList::IsEnabled(features::kAsyncLiveResize)) {
     ui::CATransactionCoordinator::Get().Synchronize();
   }
 
