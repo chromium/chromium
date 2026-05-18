@@ -37,6 +37,9 @@ WARNING_SECTION = 'com.apple.actool.document.warnings'
 # App icon asset type.
 APP_ICON_ASSET_TYPE = '.appiconset'
 
+# Brand assets type (tvOS-specific).
+BRAND_ASSETS_TYPE = '.brandassets'
+
 # Map special type of asset catalog to the corresponding command-line
 # parameter that need to be passed to actool.
 ACTOOL_FLAG_FOR_ASSET_TYPE = {
@@ -253,10 +256,11 @@ def CompileAssetCatalog(output, target_os, target_environment, product_type,
 
             asset_name, asset_type = os.path.splitext(file_or_dir_name)
 
-            # If the asset is an app icon, and the caller has specified an app
-            # icon to use, then skip this asset as it will be included in the
-            # app icon set. Otherwise, add the asset to the command-line.
-            if asset_type == APP_ICON_ASSET_TYPE:
+            # If the asset is either an app icon or a brand asset, and the
+            # caller has specified an app icon to use, then skip this asset as
+            # it will be included in the app icon set. Otherwise, add the asset
+            # to the command-line.
+            if asset_type in (APP_ICON_ASSET_TYPE, BRAND_ASSETS_TYPE):
                 if app_icon:
                     continue
                 else:
