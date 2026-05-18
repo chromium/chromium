@@ -7,7 +7,67 @@
  * #scheme=relative
  * #css_wrapper_metadata_end */
 
+:host {
+  --child-max-height: 500px;
+  --child-max-width: 500px;
+  --content-gap: 24px;
+  --content-width: calc(2 * var(--child-max-width) + var(--content-gap));
+}
+
 #viewManager {
   height: 100vh;
   width: 100vw;
+}
+
+@media screen and ((max-width: 870px) or (max-height: 680px)) {
+  .animation {
+    display: none;
+  }
+}
+
+#rightAnimation {
+  position: fixed;
+  top: 50%;
+  right: 0;
+  height: 40%;
+  width: auto;
+  aspect-ratio: 608 / 716;
+  z-index: -1;
+  /* The image starts shrinking when space between the image and content is
+  equal to 50% of image's width. It pushes away the image 1px for every 2px of
+  smaller screen size. Part "max(0px, calc(...))" prevents the image from being
+  driven away to the left from the right edge */
+  transform: translate(
+    max(0px, calc(50% - (50vw - var(--content-width) / 2) / 2)),
+    -50%);
+}
+
+#bottomAnimation {
+  aspect-ratio: 816 / 584;
+  bottom: -5px;
+  left: 75%;
+  position: fixed;
+  width: 25%;
+  z-index: -1;
+  /* Same as above, but start point is 40% as we have more space vertically */
+  transform: translate(
+    -50%,
+    max(0px, calc(40% - (50vh - var(--child-max-height) / 2) / 2)));
+}
+
+/* For RTL languages, flip the direction */
+:host-context([dir='rtl']) #rightAnimation {
+  left: 0;
+  right: auto;
+  transform: scaleX(-1) translate(
+    max(0px, calc(50% - (50vw - var(--content-width) / 2) / 2)),
+    -50%);
+}
+
+:host-context([dir='rtl']) #bottomAnimation {
+  left: auto;
+  right: 75%;
+  transform: scaleX(-1) translate(
+    -50%,
+    max(0px, calc(40% - (50vh - var(--child-max-height) / 2) / 2)));
 }

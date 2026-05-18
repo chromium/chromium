@@ -21,6 +21,7 @@
 #include "components/signin/public/base/signin_switches.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
+#include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "ui/webui/webui_util.h"
 
 namespace {
@@ -69,6 +70,10 @@ FeatureShowcaseUI::FeatureShowcaseUI(content::WebUI* web_ui)
 
   webui::SetupWebUIDataSource(source, kFeatureShowcaseResources,
                               IDR_FEATURE_SHOWCASE_FEATURE_SHOWCASE_HTML);
+
+  source->OverrideContentSecurityPolicy(
+      network::mojom::CSPDirectiveName::WorkerSrc,
+      "worker-src blob: chrome://resources 'self';");
 
   AddDefaultBrowserStepResources(source);
 }

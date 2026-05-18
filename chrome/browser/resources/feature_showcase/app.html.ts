@@ -9,6 +9,15 @@ import type {FeatureShowcaseAppElement} from './app.js';
 export function getHtml(this: FeatureShowcaseAppElement) {
   // clang-format off
   return html`<!--_html_template_start_-->
+<cr-lottie class="animation" id="rightAnimation"
+    animation-url="${this.getAnimationUrl_('right')}"
+    single-loop>
+</cr-lottie>
+<cr-lottie class="animation" id="bottomAnimation"
+    animation-url="${this.getAnimationUrl_('bottom')}"
+    single-loop>
+</cr-lottie>
+
 <cr-view-manager id="viewManager">
   ${this.hasStep_('example') ? html`
       <feature-showcase-example-step id="example" slot="view"

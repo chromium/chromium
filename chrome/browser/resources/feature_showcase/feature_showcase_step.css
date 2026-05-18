@@ -9,9 +9,6 @@
  * #css_wrapper_metadata_end */
 
 :host {
-  --child-max-height_: 500px;
-  --child-max-width_: 500px;
-  --content-gap_: 24px;
   --showcase-text-gap_: 24px;
   --showcase-text-padding-top_: 24px;
   --subtitle-font-size_: 16px;
@@ -21,7 +18,7 @@
   color: var(--cr-primary-text-color);
   display: flex;
   flex-direction: row;
-  gap: var(--content-gap_);
+  gap: var(--content-gap);
   height: 100%;
   justify-content: center;
   margin: 0;
@@ -42,8 +39,8 @@
   display: flex;
   flex: 1;
   height: 60%;
-  max-height: var(--child-max-height_);
-  max-width: var(--child-max-width_);
+  max-height: var(--child-max-height);
+  max-width: var(--child-max-width);
   width: 60%;
 }
 

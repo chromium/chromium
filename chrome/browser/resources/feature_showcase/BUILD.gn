@@ -9,7 +9,13 @@ assert(enable_dice_support)
 build_webui("build") {
   grd_prefix = "feature_showcase"
 
-  static_files = [ "feature_showcase.html" ]
+  static_files = [
+    "animations/showcase_transition_bottom.json",
+    "animations/showcase_transition_bottom_dark.json",
+    "animations/showcase_transition_right.json",
+    "animations/showcase_transition_right_dark.json",
+    "feature_showcase.html",
+  ]
 
   ts_files = [
     "app.ts",
