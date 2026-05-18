@@ -16,6 +16,9 @@ BASE_DECLARE_FEATURE(kContextualCueingV2EnforceAgeRestriction);
 
 extern const base::FeatureParam<double> kEduClassifierThreshold;
 extern const base::FeatureParam<double> kShoppingClassifierThreshold;
+
+// If true, discard shopping PDFs from being eligible for cues.
+extern const base::FeatureParam<bool> kDiscardShoppingPdfs;
 extern const base::FeatureParam<int> kMaxNumBackgroundTabs;
 
 // If true, disable the cue backoff logic.

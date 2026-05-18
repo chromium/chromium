@@ -67,6 +67,7 @@ source_set("impl") {
     "//components/infobars/content",
     "//components/keyed_service/core",
     "//components/optimization_guide/proto:optimization_guide_proto",
+    "//components/pdf/common:constants",
     "//components/strings:components_strings",
     "//components/sync/service",
     "//components/vector_icons",
@@ -107,6 +108,7 @@ if (!is_android) {
       "//chrome/test:test_support",
       "//components/infobars/content",
       "//content/public/browser",
+      "//pdf:buildflags",
       "//testing/gmock",
       "//testing/gtest",
     ]

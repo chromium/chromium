@@ -45,6 +45,7 @@
 #include "components/optimization_guide/core/optimization_guide_common.mojom.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/proto/features/contextual_cueing.pb.h"
+#include "components/pdf/common/constants.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/signin/public/identity_manager/account_capabilities.h"
@@ -231,21 +232,28 @@ void ContextualCueingController::OnPageContentAnnotated(
   }
 
   // Check classification to see if we should proceed to next step.
-  bool is_supported_category = false;
+  bool passes_edu = false;
+  bool passes_shopping = false;
   for (const page_content_annotations::Category& category :
        result.GetCategoryResults()) {
     if (category.category_type ==
             page_content_annotations::CategoryType::kEducation &&
         category.score > kEduClassifierThreshold.Get()) {
-      is_supported_category = true;
-      break;
+      passes_edu = true;
     }
     if (category.category_type ==
             page_content_annotations::CategoryType::kShopping &&
         category.score > kShoppingClassifierThreshold.Get()) {
-      is_supported_category = true;
-      break;
+      passes_shopping = true;
     }
+  }
+
+  bool is_supported_category = false;
+  if (kDiscardShoppingPdfs.Get() &&
+      active_web_contents->GetContentsMimeType() == pdf::kPDFMimeType) {
+    is_supported_category = passes_edu && !passes_shopping;
+  } else {
+    is_supported_category = passes_edu || passes_shopping;
   }
 
   if (!is_supported_category) {
