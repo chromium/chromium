@@ -20,6 +20,7 @@
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "build/build_config.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/navigation_simulator.h"
@@ -435,6 +436,64 @@ TEST_F(ClipboardHostImplWriteTest, WriteSvg_Empty) {
 
   EXPECT_TRUE(future.Take().empty());
   ValidateClipboardSource();
+}
+
+// Regression coverage for crbug.com/495504337: a valid URL still round-trips
+// through WriteBookmark after the invalid-URL guard was added.
+TEST_F(ClipboardHostImplWriteTest, WriteBookmark_ValidUrl) {
+  const std::string kUrl = "https://example.com/page";
+  const std::u16string kTitle = u"Example Page";
+  ASSERT_TRUE(GURL(kUrl).is_valid());
+
+  clipboard_host_impl()->WriteBookmark(kUrl, kTitle);
+  clipboard_host_impl()->CommitWrite();
+
+  std::u16string title;
+  std::string url;
+  ui::clipboard_test_util::ReadBookmark(system_clipboard(),
+                                        /*data_dst=*/nullptr, &title, &url);
+  EXPECT_EQ(kUrl, url);
+#if !BUILDFLAG(IS_WIN)
+  EXPECT_EQ(kTitle, title);
+#else
+  // ClipboardWin::ReadURL does not round-trip the title.
+  EXPECT_TRUE(title.empty()) << "Got title='" << title << "'";
+#endif
+  // ValidateClipboardSource() is intentionally not called: WriteBookmark does
+  // not go through IsClipboardCopyAllowedByPolicy, so no SourceRFHToken is
+  // pickled into the clipboard.
+}
+
+// Regression test for crbug.com/495504337: "http://[" canonicalizes to
+// is_valid_=false with a non-empty spec_, which is exactly what GURL::spec()
+// CHECKs on. With the fix the IPC is silently dropped at the trust boundary.
+TEST_F(ClipboardHostImplWriteTest, WriteBookmark_InvalidUrl_DoesNotCrash) {
+  const std::string kInvalidUrl = "http://[";
+  ASSERT_FALSE(GURL(kInvalidUrl).is_valid());
+  ASSERT_FALSE(GURL(kInvalidUrl).possibly_invalid_spec().empty());
+
+  clipboard_host_impl()->WriteBookmark(kInvalidUrl, u"some title");
+  clipboard_host_impl()->CommitWrite();
+
+  std::u16string title;
+  std::string url;
+  ui::clipboard_test_util::ReadBookmark(system_clipboard(),
+                                        /*data_dst=*/nullptr, &title, &url);
+  EXPECT_TRUE(url.empty()) << "Got url='" << url << "'";
+  EXPECT_TRUE(title.empty()) << "Got title='" << title << "'";
+}
+
+// Pins the silent-drop behavior for empty URLs (via ShouldSkipBookmark).
+TEST_F(ClipboardHostImplWriteTest, WriteBookmark_EmptyUrl) {
+  clipboard_host_impl()->WriteBookmark(std::string(), u"some title");
+  clipboard_host_impl()->CommitWrite();
+
+  std::u16string title;
+  std::string url;
+  ui::clipboard_test_util::ReadBookmark(system_clipboard(),
+                                        /*data_dst=*/nullptr, &title, &url);
+  EXPECT_TRUE(url.empty());
+  EXPECT_TRUE(title.empty());
 }
 
 TEST_F(ClipboardHostImplWriteTest, WriteBitmap) {
