@@ -172,6 +172,8 @@ class MultiContentsView
   void OnDragAndDropPrefStateChange();
 
   void SetShouldShowTopSeparator(bool should_show);
+  void SetSplitViewInsets(gfx::Insets start_contents_view_inset,
+                          gfx::Insets end_contents_view_inset);
 
   void set_min_contents_width_for_testing(int width) {
     min_contents_width_for_testing_ = std::make_optional(width);
