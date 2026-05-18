@@ -123,9 +123,9 @@
 }
 
 .toolbar-container {
-  --cr-icon-button-fill-color-default: var(--color-sys-on-surface-subtle);
-  --play-pause-icon-color: var(--color-sys-primary);
-  --rate-button-text-color: var(--color-sys-on-surface-subtle);
+  --cr-icon-button-fill-color-default: var(--legacy-toolbar-icon-color);
+  --play-pause-icon-color: var(--legacy-audio-player-icon-color);
+  --rate-button-text-color: var(--legacy-toolbar-icon-color);
   --audio-controls-icon-color-internal: var(--color-sys-on-surface-subtle);
   display: flex;
   flex-direction: row;

@@ -245,6 +245,39 @@ suite('AppContent', () => {
     assertFalse(app.$.lineFocus.hasAttribute('hidden'));
   });
 
+  test(
+      'onContentStateChange updates line focus style when enabled and ' +
+          'has content',
+      async () => {
+        chrome.readingMode.isLineFocusEnabled = true;
+        emitEvent(
+            app, ToolbarEvent.LINE_FOCUS_STYLE,
+            {detail: {data: LineFocusStyle.UNDERLINE}});
+        await microtasksFinished();
+
+        contentController.setState(ContentType.HAS_CONTENT);
+        await microtasksFinished();
+
+        assertEquals(
+            'block', app.style.getPropertyValue('--line-focus-display'));
+      });
+
+  test(
+      'onContentStateChange disables line focus style when no content',
+      async () => {
+        chrome.readingMode.isLineFocusEnabled = true;
+        emitEvent(
+            app, ToolbarEvent.LINE_FOCUS_STYLE,
+            {detail: {data: LineFocusStyle.UNDERLINE}});
+        await microtasksFinished();
+
+        contentController.setState(ContentType.NO_CONTENT);
+        await microtasksFinished();
+
+        assertEquals(
+            'none', app.style.getPropertyValue('--line-focus-display'));
+      });
+
   test('showLoading shows spinner', async () => {
     const spinner = 'throbber';
 

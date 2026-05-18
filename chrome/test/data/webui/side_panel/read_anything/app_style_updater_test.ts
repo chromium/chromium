@@ -154,6 +154,74 @@ suite('AppStyleUpdater', () => {
     assertNotEquals('0px', computeLineFocusStyle('right'));
   });
 
+  test(
+      'setLineFocusStyle does not update toolbar colors if line focus is ' +
+          'disabled',
+      () => {
+        chrome.readingMode.isLineFocusEnabled = false;
+        updater.setLineFocusStyle(LineFocusType.WINDOW);
+        assertEquals('', app.style.getPropertyValue('--toolbar-icon-color'));
+        assertEquals(
+            '', app.style.getPropertyValue('--legacy-toolbar-icon-color'));
+        assertEquals(
+            '', app.style.getPropertyValue('--legacy-audio-player-icon-color'));
+      });
+
+  test(
+      'setLineFocusStyle sets dark toolbar icon color in immersive mode for ' +
+          'window line focus',
+      () => {
+        chrome.readingMode.isLineFocusEnabled = true;
+        chrome.readingMode.isImmersiveEnabled = true;
+        updater.setLineFocusStyle(LineFocusType.WINDOW);
+        assertEquals(
+            'var(--color-read-anything-toolbar-icon-dark)',
+            app.style.getPropertyValue('--toolbar-icon-color'));
+      });
+
+  test(
+      'setLineFocusStyle sets themed toolbar icon color in immersive mode ' +
+          'for non-window line focus',
+      () => {
+        chrome.readingMode.isLineFocusEnabled = true;
+        chrome.readingMode.isImmersiveEnabled = true;
+        chrome.readingMode.colorTheme = chrome.readingMode.yellowTheme;
+        updater.setLineFocusStyle(LineFocusType.LINE);
+        assertEquals(
+            'var(--color-read-anything-toolbar-icon-yellow)',
+            app.style.getPropertyValue('--toolbar-icon-color'));
+      });
+
+  test(
+      'setLineFocusStyle sets dark legacy toolbar icon colors for window ' +
+          'line focus',
+      () => {
+        chrome.readingMode.isLineFocusEnabled = true;
+        chrome.readingMode.isImmersiveEnabled = false;
+        updater.setLineFocusStyle(LineFocusType.WINDOW);
+        assertEquals(
+            'var(--color-read-anything-toolbar-icon-dark)',
+            app.style.getPropertyValue('--legacy-toolbar-icon-color'));
+        assertEquals(
+            'var(--color-read-anything-line-focus-dark)',
+            app.style.getPropertyValue('--legacy-audio-player-icon-color'));
+      });
+
+  test(
+      'setLineFocusStyle sets default legacy toolbar icon colors for ' +
+          'non-window line focus',
+      () => {
+        chrome.readingMode.isLineFocusEnabled = true;
+        chrome.readingMode.isImmersiveEnabled = false;
+        updater.setLineFocusStyle(LineFocusType.LINE);
+        assertEquals(
+            'var(--color-sys-on-surface-subtle)',
+            app.style.getPropertyValue('--legacy-toolbar-icon-color'));
+        assertEquals(
+            'var(--color-sys-primary)',
+            app.style.getPropertyValue('--legacy-audio-player-icon-color'));
+      });
+
   test('setLineFocusPos sets y position', () => {
     const pos = 123;
 
@@ -807,6 +875,43 @@ suite('AppStyleUpdater', () => {
         expectedLowContrastDarkToolbarIcon,
         computeStyle('--toolbar-icon-color'));
   });
+
+  test(
+      'setTheme does not update toolbar icon color if line focus is enabled ' +
+          'and visible',
+      () => {
+        chrome.readingMode.isLineFocusEnabled = true;
+        app.style.setProperty('--line-focus-display', 'block');
+
+        const initialColor = 'rgb(255, 0, 0)';
+        app.style.setProperty('--toolbar-icon-color', initialColor);
+
+        chrome.readingMode.colorTheme = chrome.readingMode.darkTheme;
+        updater.setTheme();
+
+        // Should not change
+        assertEquals(initialColor, computeStyle('--toolbar-icon-color'));
+      });
+
+  test(
+      'setTheme updates toolbar icon color if line focus is enabled but ' +
+          'display is none',
+      () => {
+        chrome.readingMode.isLineFocusEnabled = true;
+        app.style.setProperty('--line-focus-display', 'none');
+
+        const expectedDarkToolbarIcon = 'rgb(3, 3, 3)';
+        updateStyles({
+          '--color-read-anything-toolbar-icon-dark': expectedDarkToolbarIcon,
+        });
+
+        chrome.readingMode.colorTheme = chrome.readingMode.darkTheme;
+        updater.setTheme();
+
+        // Should change
+        assertEquals(
+            expectedDarkToolbarIcon, computeStyle('--toolbar-icon-color'));
+      });
 
   test('on player focus outline colors change with theme', () => {
     const expectedDefault = 'rgb(1, 1, 1)';

@@ -49,6 +49,9 @@ const ON_AUDIO_PLAYER_FOCUS_OUTLINE =
     'var(--color-read-anything-on-audio-player-focus-outline';
 const AUDIO_CONTROLS_ICON = 'var(--color-read-anything-audio-controls-icon';
 const FULL_PAGE_SCROLLBAR = 'var(--color-read-anything-full-page-scrollbar';
+// Toolbar icon colors for when the immersive flag is disabled.
+const LEGACY_TOOLBAR_ICON = 'var(--color-sys-on-surface-subtle)';
+const LEGACY_PLAYPAUSE_ICON = 'var(--color-sys-primary)';
 // Line focus styles.
 // Determined by experimentation to balance visibility without risking
 // obstructing any text.
@@ -111,6 +114,7 @@ export class AppStyleUpdater {
   }
 
   setLineFocusStyle(type?: LineFocusType) {
+    this.setToolbarIconColorForLineFocus_(type);
     if (type === undefined || !chrome.readingMode.isLineFocusEnabled ||
         type === LineFocusType.NONE) {
       this.setStyle_('--line-focus-display', 'none');
@@ -133,6 +137,30 @@ export class AppStyleUpdater {
         '--line-focus-side-padding',
         isWindow ? LINE_FOCUS_SIDE_PADDING_WINDOW :
                    LINE_FOCUS_SIDE_PADDING_LINE);
+  }
+
+  private setToolbarIconColorForLineFocus_(type?: LineFocusType) {
+    if (!chrome.readingMode.isLineFocusEnabled) {
+      return;
+    }
+
+    // Since the window line focus scrim goes into the toolbar area, update the
+    // toolbar icons as needed to maintain visibility on top of the dark scrim.
+    const isWindow = type === LineFocusType.WINDOW;
+    if (chrome.readingMode.isImmersiveEnabled) {
+      const colorSuffix =
+          isWindow ? ColorSuffix.DARK : this.getCurrentColorSuffix_();
+      this.setStyle_(
+          '--toolbar-icon-color', this.getToolbarIconColor_(colorSuffix));
+    } else {
+      const iconColor = isWindow ? this.getToolbarIconColor_(ColorSuffix.DARK) :
+                                   LEGACY_TOOLBAR_ICON;
+      this.setStyle_('--legacy-toolbar-icon-color', iconColor);
+      const playPauseColor = isWindow ?
+          this.getLineFocusColor_(ColorSuffix.DARK) :
+          LEGACY_PLAYPAUSE_ICON;
+      this.setStyle_('--legacy-audio-player-icon-color', playPauseColor);
+    }
   }
 
   setLineFocusHeight() {
@@ -226,8 +254,15 @@ export class AppStyleUpdater {
     this.setStyle_(
         '--audio-player-icon-color',
         this.getAudioPlayerIconColor_(colorSuffix));
-    this.setStyle_(
-        '--toolbar-icon-color', this.getToolbarIconColor_(colorSuffix));
+
+    // When line focus window mode is enabled, the toolbar icons are on top of
+    // a dark scrim, so they should not change color when the theme changes.
+    const lineFocusDisplay =
+        this.app_.style.getPropertyValue('--line-focus-display');
+    if (!chrome.readingMode.isLineFocusEnabled || lineFocusDisplay === 'none') {
+      this.setStyle_(
+          '--toolbar-icon-color', this.getToolbarIconColor_(colorSuffix));
+    }
     this.setStyle_(
         '--toolbar-icon-hover-background-color',
         this.getToolbarIconHoverBackgroundColor_(colorSuffix));
