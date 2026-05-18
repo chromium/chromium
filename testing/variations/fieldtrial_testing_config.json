@@ -1407,23 +1407,6 @@
             ]
         }
     ],
-    "AndroidSmsOtpFilling": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AndroidSmsOtpFilling",
-                        "FieldClassificationModelCaching",
-                        "PasswordFormClientsideClassifier"
-                    ]
-                }
-            ]
-        }
-    ],
     "AndroidSpareRendererCreation_V3": [
         {
             "platforms": [

@@ -1019,7 +1019,12 @@ BASE_FEATURE(kAutofillWebDataBackendImplRaceConditionFix,
 // TODO(crbug.com/371933424). Clean up when launched, if not used for Autofill
 // experiments.
 BASE_FEATURE(kFieldClassificationModelCaching,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+#if BUILDFLAG(IS_ANDROID)
+             base::FEATURE_ENABLED_BY_DEFAULT
+#else
+             base::FEATURE_DISABLED_BY_DEFAULT
+#endif
+);
 
 // When enabled, a HaTS survey is shown after the user visited "Contact info"
 // settings page.
