@@ -28,6 +28,13 @@ class ScreenSecurityControllerBrowserTest : public LoginManagerTest {
 
   ~ScreenSecurityControllerBrowserTest() override = default;
 
+  void SetUpOnMainThread() override {
+    LoginManagerTest::SetUpOnMainThread();
+    Shell::Get()
+        ->screen_switch_check_controller()
+        ->set_skip_cancel_dialog_for_testing(true);
+  }
+
  protected:
   base::test::ScopedFeatureList scoped_feature_list_;
   LoginManagerMixin login_mixin_{&mixin_host_};
@@ -56,17 +63,34 @@ IN_PROC_BROWSER_TEST_F(ScreenSecurityControllerBrowserTest,
 
   EXPECT_FALSE(stop_callback_called);
 
-  // Allow tests to skip the cancellation dialog and automatically stop screen
-  // share.
-  Shell::Get()
-      ->screen_switch_check_controller()
-      ->set_skip_cancel_dialog_for_testing(true);
-
   // Switch to the second user.
   SessionControllerClientImpl::Get()->SwitchActiveUser(
       login_mixin_.users()[1].account_id);
 
   // The screen share should be stopped during the user switch.
+  EXPECT_TRUE(stop_callback_called);
+}
+
+IN_PROC_BROWSER_TEST_F(ScreenSecurityControllerBrowserTest,
+                       ScreenShareStopsOnNewUserLoginWithVcEnabled) {
+  // Login as the first user.
+  LoginUser(login_mixin_.users()[0].account_id);
+
+  // Start screen sharing.
+  bool stop_callback_called = false;
+  auto stop_callback = base::BindRepeating([](bool* called) { *called = true; },
+                                           &stop_callback_called);
+
+  Shell::Get()->system_tray_notifier()->NotifyScreenAccessStart(
+      stop_callback, base::RepeatingClosure(), std::u16string());
+
+  EXPECT_FALSE(stop_callback_called);
+
+  // Switch to the second user to add them to the session.
+  UserAddingScreen::Get()->Start();
+  AddUser(login_mixin_.users()[1].account_id);
+
+  // The screen share should be stopped when the new user signs in.
   EXPECT_TRUE(stop_callback_called);
 }
 

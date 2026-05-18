@@ -5,13 +5,15 @@
 #ifndef ASH_SYSTEM_PRIVACY_SCREEN_SWITCH_CHECK_CONTROLLER_H_
 #define ASH_SYSTEM_PRIVACY_SCREEN_SWITCH_CHECK_CONTROLLER_H_
 
+#include "ash/public/cpp/session/session_observer.h"
 #include "ash/system/privacy/screen_security_observer.h"
 
 namespace ash {
 
 // Controller of a dialog that confirms the user wants to stop screen share/cast
 // on user profile switching.
-class ScreenSwitchCheckController : public ScreenSecurityObserver {
+class ScreenSwitchCheckController : public ScreenSecurityObserver,
+                                    public SessionObserver {
  public:
   ScreenSwitchCheckController();
 
@@ -31,6 +33,9 @@ class ScreenSwitchCheckController : public ScreenSecurityObserver {
   void CanSwitchAwayFromActiveUser(base::OnceCallback<void(bool)> callback);
 
  private:
+  // SessionObserver:
+  void OnActiveUserSessionChanged(const AccountId& account_id) override;
+
   // ScreenSecurityObserver:
   void OnScreenAccessStart(base::OnceClosure stop_callback,
                            const base::RepeatingClosure& source_callback,
