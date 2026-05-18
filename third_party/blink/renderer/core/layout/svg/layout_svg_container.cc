@@ -56,9 +56,7 @@ SVGLayoutResult LayoutSVGContainer::UpdateSVGLayout(
   // TODO: Inherit `LayoutSVGViewportContainer` from
   // `LayoutSVGTransformableContainer` so below condition can be simplified.
   if (layout_info.viewport_changed && HasViewportDependence() &&
-      (IsSVGTransformableContainer() ||
-       (IsSVGViewportContainer() &&
-        RuntimeEnabledFeatures::SvgTransformOnNestedSvgElementEnabled()))) {
+      (IsSVGTransformableContainer() || IsSVGViewportContainer())) {
     // TODO: This will be called if any descendant has a viewport dependency,
     // not just if this container has one.
     SetNeedsTransformUpdate();

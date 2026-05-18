@@ -5741,10 +5741,6 @@
       status: "stable",
     },
     {
-      name: "SvgTransformOnNestedSvgElement",
-      status: "stable",
-    },
-    {
       name: "SvgUseNestedResourceDocuments",
       status: "stable",
     },
