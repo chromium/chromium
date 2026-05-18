@@ -140,12 +140,6 @@ const CGFloat kIconPointSize = 16.0;
       search_engines::SupportsSearchByImage(self.templateURLService);
   self.searchEngineSupportsLens =
       search_engines::SupportsSearchImageWithLens(self.templateURLService);
-
-  NSString* placeholderText = @"";
-  if (self.placeholderService) {
-    placeholderText = self.placeholderService->GetCurrentPlaceholderText();
-  }
-  [self.consumer setPlaceholderText:placeholderText];
 }
 
 #pragma mark - Setters
@@ -161,6 +155,7 @@ const CGFloat kIconPointSize = 16.0;
   [consumer setLensImageEnabled:self.searchEngineSupportsLens];
   [self updatePlaceholderType];
   [self searchEngineChanged];
+  [self placeholderTextUpdated];
   [self placeholderImageUpdated];
 }
 
@@ -188,6 +183,8 @@ const CGFloat kIconPointSize = 16.0;
   _placeholderServiceObserver =
       std::make_unique<PlaceholderServiceObserverBridge>(self,
                                                          placeholderService);
+  [self placeholderTextUpdated];
+  [self placeholderImageUpdated];
 }
 
 - (void)setSearchEngineSupportsSearchByImage:
@@ -243,6 +240,14 @@ const CGFloat kIconPointSize = 16.0;
 }
 
 #pragma mark - PlaceholderServiceObserving
+
+- (void)placeholderTextUpdated {
+  NSString* placeholderText = @"";
+  if (self.placeholderService) {
+    placeholderText = self.placeholderService->GetCurrentPlaceholderText();
+  }
+  [self.consumer setPlaceholderText:placeholderText];
+}
 
 - (void)placeholderImageUpdated {
   __weak __typeof(self) weakSelf = self;

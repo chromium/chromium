@@ -113,3 +113,31 @@ TEST_F(LocationBarMediatorTest, SetConsumerUpdatesPlaceholderIconImmediately) {
 
   EXPECT_OCMOCK_VERIFY(mock_consumer);
 }
+
+// Tests that the consumer is updated with the placeholder text when the
+// placeholder service is set AFTER the consumer.
+TEST_F(LocationBarMediatorTest, SetPlaceholderServiceUpdatesConsumer) {
+  // Re-create mediator without placeholder service set initially
+  [mediator_ disconnect];
+  mediator_ = [[LocationBarMediator alloc] initWithURLLoadingBrowsingAgent:nil
+                                                               isIncognito:NO];
+  mediator_.templateURLService = template_url_service_;
+
+  id mock_consumer = OCMProtocolMock(@protocol(LocationBarConsumer));
+
+  // Setting consumer when service is nil should set empty placeholder
+  OCMExpect([mock_consumer setPlaceholderText:@""]);
+  [mediator_ setConsumer:mock_consumer];
+  EXPECT_OCMOCK_VERIFY(mock_consumer);
+
+  // Setting placeholder service should now update the consumer with correct
+  // text and icon
+  NSString* expectedPlaceholder = l10n_util::GetNSStringF(
+      IDS_OMNIBOX_EMPTY_HINT_WITH_DSE_NAME, kTestProviderName);
+  OCMExpect([mock_consumer setPlaceholderText:expectedPlaceholder]);
+  OCMExpect(
+      [mock_consumer setPlaceholderDefaultSearchEngineIcon:[OCMArg isNotNil]]);
+
+  mediator_.placeholderService = placeholder_service_.get();
+  EXPECT_OCMOCK_VERIFY(mock_consumer);
+}

@@ -142,6 +142,9 @@ const CGFloat kShareIconBalancingHeightPadding = 1;
 // Type of the current placeholder view.
 @property(nonatomic, assign) LocationBarPlaceholderType placeholderType;
 
+// The icon for the default search engine.
+@property(nonatomic, strong) UIImage* placeholderDefaultSearchEngineIcon;
+
 // Starts voice search, updating the layout guide to be constrained to the
 // trailing button.
 - (void)startVoiceSearch;
@@ -362,6 +365,10 @@ const CGFloat kShareIconBalancingHeightPadding = 1;
   _defaultSearchEngineIconView = [[UIImageView alloc] init];
   _defaultSearchEngineIconView.translatesAutoresizingMaskIntoConstraints = NO;
   _defaultSearchEngineIconView.contentMode = UIViewContentModeCenter;
+  _defaultSearchEngineIconView.image = self.placeholderDefaultSearchEngineIcon;
+  if (self.placeholderDefaultSearchEngineIcon) {
+    _defaultSearchEngineIconView.accessibilityIdentifier = @"DSEIconNonEmpty";
+  }
   AddSizeConstraints(
       _defaultSearchEngineIconView,
       CGSizeMake(kOmniboxLeadingImageSize + 12.0f, kOmniboxLeadingImageSize));
@@ -422,11 +429,14 @@ const CGFloat kShareIconBalancingHeightPadding = 1;
 }
 
 - (void)setPlaceholderDefaultSearchEngineIcon:(UIImage*)icon {
-  _defaultSearchEngineIconView.image = icon;
-  if (icon) {
-    _defaultSearchEngineIconView.accessibilityIdentifier = @"DSEIconNonEmpty";
-  } else {
-    _defaultSearchEngineIconView.accessibilityIdentifier = nil;
+  _placeholderDefaultSearchEngineIcon = icon;
+  if (_defaultSearchEngineIconView) {
+    _defaultSearchEngineIconView.image = icon;
+    if (icon) {
+      _defaultSearchEngineIconView.accessibilityIdentifier = @"DSEIconNonEmpty";
+    } else {
+      _defaultSearchEngineIconView.accessibilityIdentifier = nil;
+    }
   }
 }
 
