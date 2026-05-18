@@ -132,8 +132,6 @@ class Host : public GlicSharingManagerProvider {
    public:
     // Called when Glic is connected to the WebClient.
     virtual void WebClientConnected() {}
-    // Called when Glic is disconnected from the WebClient.
-    virtual void WebClientDisconnected() {}
 
     // Called when the client is ready to show, invoked sometime after
     // `Host::PanelWillOpen()` is called.

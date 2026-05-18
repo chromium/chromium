@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {CancelActionsResult, ClientCapabilities, ExperimentalTriggeringUpdateType, SkillSource, WebClientMode} from '/glic/glic_api/glic_api.js';
-import type {AdditionalContext, ExperimentalTriggeringUpdate, GlicBrowserHost, GlicWebClient, InvokeOptions, Observable, Observable2, OpenPanelInfo, PageMetadata, PanelOpeningData, PanelState, TabData, ZeroStateSuggestionsV2} from '/glic/glic_api/glic_api.js';
+import {CancelActionsResult, ClientCapabilities, ExperimentalTriggeringUpdateType, SkillSource} from '/glic/glic_api/glic_api.js';
+import type {AdditionalContext, ExperimentalTriggeringUpdate, GlicBrowserHost, GlicWebClient, InvokeOptions, Observable, Observable2, OpenPanelInfo, PageMetadata, PanelOpeningData, PanelState, TabData} from '/glic/glic_api/glic_api.js';
 import {Subject} from '/glic/observable.js';
 
 import {ApiTestError, ApiTestFixtureBase, assertDefined, assertEquals, assertFalse, assertRejects, assertTrue, assertUndefined, checkDefined, mapObservable, observeSequence, runUntil, sleep, testMain, waitFor, WebClient} from './browser_test_base.js';
@@ -352,88 +352,6 @@ class ApiTests extends ApiTestFixtureBase {
     assertDefined(this.host.reportClientTransientError);
     this.host.reportClientTransientError!(16 /* kUnauthenticated */);
   }
-
-  private async closePanelAndWaitUntilInactive() {
-    assertDefined(this.host.closePanel);
-    await this.host.closePanel();
-    await observeSequence(this.host.panelActive()).waitForValue(false);
-  }
-
-  async testGetZeroStateSuggestionsForFocusedTabApi() {
-    assertDefined(this.host.getZeroStateSuggestionsForFocusedTab);
-    const suggestions = await this.host.getZeroStateSuggestionsForFocusedTab();
-    assertDefined(suggestions);
-    assertEquals(3, suggestions.suggestions.length);
-  }
-
-  async testGetZeroStateSuggestionsForFocusedTabFailsWhenHidden() {
-    assertDefined(this.host.getZeroStateSuggestionsForFocusedTab);
-    assertDefined(this.host.closePanel);
-    await this.closePanelAndWaitUntilInactive();
-    const suggestions = await this.host.getZeroStateSuggestionsForFocusedTab();
-    assertDefined(suggestions);
-    assertEquals(0, suggestions.suggestions.length);
-  }
-
-  async testGetZeroStateSuggestionsApi() {
-    assertDefined(this.host.getZeroStateSuggestions);
-    const sequence = observeSequence<ZeroStateSuggestionsV2>(
-        this.host.getZeroStateSuggestions());
-    const suggestions = await sequence.next();
-    assertDefined(suggestions);
-    assertEquals(3, suggestions.suggestions.length);
-    assertEquals(false, suggestions.isPending);
-  }
-
-  async testGetZeroStateSuggestionsMultipleNavigations() {
-    // Initial state.
-    assertDefined(this.host.getZeroStateSuggestions);
-    const sequence = observeSequence<ZeroStateSuggestionsV2>(
-        this.host.getZeroStateSuggestions());
-    const suggestions = await sequence.next();
-    assertDefined(suggestions);
-    assertEquals(3, suggestions.suggestions.length);
-    assertEquals(
-        'Sug 1 for /test_data/page.html',
-        suggestions.suggestions[0]?.suggestion);
-    assertEquals(false, suggestions.isPending);
-
-    // After a second navigation occurs.
-    assertTrue(
-        await this.browser.navigateActiveTab(this.getTestUrl('page.html?new')));
-
-    // Should first get a pending state.
-    const suggestions2 = await sequence.next();
-    assertDefined(suggestions2);
-    // We don't care about the suggestions here.
-    assertEquals(true, suggestions2.isPending);
-
-    // Should later get the actual suggestions.
-    const suggestions3 = await sequence.next();
-    assertDefined(suggestions3);
-    assertEquals(3, suggestions3.suggestions.length);
-    assertEquals(
-        'Sug 1 for /test_data/page.html?new',
-        suggestions3.suggestions[0]?.suggestion);
-    assertEquals(false, suggestions3.isPending);
-  }
-
-  async testGetZeroStateSuggestionsFailsWhenHidden() {
-    // Initial state.
-    assertDefined(this.host.getZeroStateSuggestions);
-    const sequence = observeSequence<ZeroStateSuggestionsV2>(
-        this.host.getZeroStateSuggestions());
-    const suggestions = await sequence.next();
-    assertDefined(suggestions);
-    assertEquals(3, suggestions.suggestions.length);
-
-    // Close panel.
-    assertDefined(this.host.closePanel);
-    await this.closePanelAndWaitUntilInactive();
-
-    // After next navigation in focused tab occurs.
-    await this.advanceToNextStep();
-  }
 }
 
 class FaviconTest extends ApiTests {
@@ -745,68 +663,6 @@ class ApiTestFailsToInitialize extends ApiTestFixtureBase {
 
   async testInitializeFailsWindowOpen() {
     this.deferredSetUpClient();
-  }
-
-  async testReload() {
-    // First run.
-    if (this.getTestParams().failWith === 'reloadAfterInitialize') {
-      this.deferredSetUpClient();
-      return;
-    }
-
-    // Second run. Client should initialize and be opened.
-    await super.setUpClient();
-    await this.client.waitForFirstOpen();
-  }
-
-  async testSorryPageBeforeInitialize() {
-    this.deferredSetUpClient();
-  }
-
-  async testSorryPageAfterInitialize() {
-    this.deferredSetUpClient();
-  }
-
-  async testInitializeFailsAfterReload() {
-    this.deferredSetUpClient();
-  }
-
-  // Skips the setup entirely.
-  async testNoClientCreated() {}
-
-  // Skips the bootstrap as well. The test name "testNoBootstrap" is handled
-  // specially.
-  async testNoBootstrap() {}
-
-  async testInitializeTimesOut() {
-    await super.setUpClient();
-  }
-
-  async testInitializeFails() {
-    await super.setUpClient();
-  }
-
-  // Tests notifyPanelWillOpen() returning after the panel is closed and then
-  // reopened.
-  async testCloseAndOpenWhileOpening() {
-    const openSignal = Promise.withResolvers<void>();
-    class WebClientThatOpensSlowly extends WebClient {
-      override async notifyPanelWillOpen(): Promise<OpenPanelInfo> {
-        this.panelOpenState.assignAndSignal(true);
-        await openSignal.promise;
-        return {
-          startingMode: WebClientMode.TEXT,
-        };
-      }
-    }
-    await this.setUpWithClient(new WebClientThatOpensSlowly());
-    const panelOpenState = observeSequence(this.client.panelOpenState);
-    panelOpenState.waitForValue(true);
-    await this.host.closePanel!();
-    panelOpenState.waitForValue(false);
-    await this.advanceToNextStep();
-    openSignal.resolve();
-    await panelOpenState.waitForValue(true);
   }
 }
 

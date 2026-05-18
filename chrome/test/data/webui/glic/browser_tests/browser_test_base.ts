@@ -221,7 +221,8 @@ export type BrowserCommand = {
   script: string,
 }|{
   command: 'navigate-tab',
-  tabId?: string, url: string,
+  tabId: string,
+  url: string,
 };
 
 export class BrowserControl {
@@ -239,10 +240,6 @@ export class BrowserControl {
 
   async navigateTab(tabId: string, url: string): Promise<boolean> {
     return this.testStepper.doCommand({command: 'navigate-tab', tabId, url}) as
-        Promise<boolean>;
-  }
-  async navigateActiveTab(url: string): Promise<boolean> {
-    return this.testStepper.doCommand({command: 'navigate-tab', url}) as
         Promise<boolean>;
   }
 }
@@ -316,11 +313,6 @@ export class ApiTestFixtureBase {
 
   getStepCount(): number {
     return this.testStepCount;
-  }
-
-  getTestUrl(path: string): string {
-    return new URL('/test_data/' + path, this.initData!.embeddedTestServerUrl)
-        .href;
   }
 
   async testAllTestsAreRegistered() {

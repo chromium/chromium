@@ -4,8 +4,6 @@
 
 #include "chrome/browser/glic/test_support/new_glic_api_test.h"
 
-#include "base/types/expected_macros.h"
-
 namespace glic::internal {
 namespace {
 base::expected<tabs::TabHandle, std::string> ParseTabId(
@@ -25,15 +23,6 @@ base::expected<tabs::TabHandle, std::string> ParseTabId(
   }
   return base::ok(handle);
 }
-
-base::expected<tabs::TabHandle, std::string> ParseOptionalTabId(
-    const base::DictValue& command) {
-  if (!command.FindString("tabId")) {
-    return base::ok(tabs::TabHandle());
-  }
-  return ParseTabId(command);
-}
-
 }  // namespace
 
 base::expected<Command, std::string> DeserializeCommand(
@@ -60,7 +49,7 @@ base::expected<Command, std::string> DeserializeCommand(
     if (!url) {
       return base::unexpected("Missing url");
     }
-    ASSIGN_OR_RETURN(tabs::TabHandle tab_handle, ParseOptionalTabId(dict));
+    ASSIGN_OR_RETURN(tabs::TabHandle tab_handle, ParseTabId(dict));
     return NavigateTabCommand{tab_handle, *url};
   }
   return base::unexpected(base::StrCat({"Unknown command: ", *command_field}));
