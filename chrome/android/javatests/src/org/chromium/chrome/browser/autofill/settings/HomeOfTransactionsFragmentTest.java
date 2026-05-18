@@ -28,7 +28,6 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 
-import androidx.preference.Preference;
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.espresso.matcher.ViewMatchers.Visibility;
 import androidx.test.filters.MediumTest;
@@ -50,6 +49,8 @@ import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.PayloadCallbackHelper;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.autofill.autofill_ai.EntityDataManager;
+import org.chromium.chrome.browser.autofill.autofill_ai.EntityDataManagerFactory;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -93,6 +94,7 @@ public class HomeOfTransactionsFragmentTest {
 
     @Mock private SettingsIndexData mSearchIndexDataMock;
     @Mock private Profile mProfileMock;
+    @Mock private EntityDataManager mEntityDataManager;
     @Mock private PasswordManagerUtilBridge.Natives mPasswordManagerUtilBridgeJniMock;
     @Mock private HelpAndFeedbackLauncher mHelpAndFeedbackLauncher;
     @Mock private SigninAndHistorySyncActivityLauncher mSigninLauncher;
@@ -106,6 +108,7 @@ public class HomeOfTransactionsFragmentTest {
 
     @Before
     public void setUp() {
+        EntityDataManagerFactory.setInstanceForTesting(mEntityDataManager);
         PasswordManagerUtilBridgeJni.setInstanceForTesting(mPasswordManagerUtilBridgeJniMock);
         when(mPasswordManagerUtilBridgeJniMock.isPasswordManagerAvailable(anyBoolean()))
                 .thenReturn(true);
@@ -358,25 +361,10 @@ public class HomeOfTransactionsFragmentTest {
     }
 
     @Test
-    @MediumTest
-    @EnableFeatures({ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID})
-    public void testHomeOfTransactionsFormsAiPreferencesVisible() {
-        mSettingsActivityTestRule.startSettingsActivity();
-        HomeOfTransactionsFragment fragment = mSettingsActivityTestRule.getFragment();
-
-        Preference identityDocsPref =
-                fragment.findPreference(HomeOfTransactionsFragment.PREF_AUTOFILL_IDENTITY_DOCS);
-        assertTrue(identityDocsPref.isVisible());
-
-        Preference travelPref =
-                fragment.findPreference(HomeOfTransactionsFragment.PREF_AUTOFILL_TRAVEL);
-        assertTrue(travelPref.isVisible());
-    }
-
-    @Test
     @SmallTest
     @EnableFeatures(ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID)
     public void testSearchIndexWhenAllEnabled() {
+        when(mEntityDataManager.canListEntityInstancesInSettings()).thenReturn(true);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     HomeOfTransactionsFragment.SEARCH_INDEX_DATA_PROVIDER.updateDynamicPreferences(
@@ -477,6 +465,7 @@ public class HomeOfTransactionsFragmentTest {
         ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA
     })
     public void testClickIdentityDocsLaunchesIdentityDocs() {
+        when(mEntityDataManager.canListEntityInstancesInSettings()).thenReturn(true);
         mSettingsActivityTestRule.startSettingsActivity();
 
         onView(withText(R.string.autofill_identity_docs_title)).perform(click());
@@ -487,17 +476,36 @@ public class HomeOfTransactionsFragmentTest {
 
     @Test
     @SmallTest
+    public void testIdentityDocsNotVisibleWhenCannotListEntities() {
+        when(mEntityDataManager.canListEntityInstancesInSettings()).thenReturn(false);
+        mSettingsActivityTestRule.startSettingsActivity();
+
+        onView(withText(R.string.autofill_identity_docs_title)).check(doesNotExist());
+    }
+
+    @Test
+    @SmallTest
     @EnableFeatures({
         ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID,
         ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA
     })
     public void testClickTravelLaunchesTravel() {
+        when(mEntityDataManager.canListEntityInstancesInSettings()).thenReturn(true);
         mSettingsActivityTestRule.startSettingsActivity();
 
         onView(withText(R.string.autofill_travel_title)).perform(click());
 
         onView(withText(R.string.autofill_travel_opt_in_toggle_label))
                 .check(matches(isDisplayed()));
+    }
+
+    @Test
+    @SmallTest
+    public void testTravelNotVisibleWhenCannotListEntities() {
+        when(mEntityDataManager.canListEntityInstancesInSettings()).thenReturn(false);
+        mSettingsActivityTestRule.startSettingsActivity();
+
+        onView(withText(R.string.autofill_travel_title)).check(doesNotExist());
     }
 
     private static void signInPromoDeclined(boolean value) {

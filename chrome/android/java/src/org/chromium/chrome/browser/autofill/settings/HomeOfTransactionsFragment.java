@@ -21,6 +21,8 @@ import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.autofill.autofill_ai.EntityDataManager;
+import org.chromium.chrome.browser.autofill.autofill_ai.EntityDataManagerFactory;
 import org.chromium.chrome.browser.autofill.options.AutofillOptionsFragment;
 import org.chromium.chrome.browser.autofill.options.AutofillOptionsFragment.AutofillOptionsReferrer;
 import org.chromium.chrome.browser.device_lock.DeviceLockActivityLauncherImpl;
@@ -106,13 +108,13 @@ public class HomeOfTransactionsFragment extends ChromeBaseSettingsFragment {
                                         getActivity()));
 
         Preference identityDocsPref = findPreference(PREF_AUTOFILL_IDENTITY_DOCS);
-        identityDocsPref.setVisible(shouldShowIdentityDocs());
+        identityDocsPref.setVisible(shouldShowIdentityDocs(getProfile()));
         identityDocsPref.setOnPreferenceClickListener(
                 preference ->
                         SettingsNavigationHelper.showAutofillIdentityDocsSettings(getActivity()));
 
         Preference travelPref = findPreference(PREF_AUTOFILL_TRAVEL);
-        travelPref.setVisible(shouldShowTravel());
+        travelPref.setVisible(shouldShowTravel(getProfile()));
         travelPref.setOnPreferenceClickListener(
                 preference -> SettingsNavigationHelper.showAutofillTravelSettings(getActivity()));
 
@@ -205,14 +207,19 @@ public class HomeOfTransactionsFragment extends ChromeBaseSettingsFragment {
         return AnimationType.PROPERTY;
     }
 
-    private static boolean shouldShowIdentityDocs() {
-        // TODO(crbug.com/482994257): Implement visibility logic for identity docs.
-        return true;
+    private static boolean shouldShowIdentityDocs(Profile profile) {
+        return shouldShowAutofillAiSettings(profile);
     }
 
-    private static boolean shouldShowTravel() {
-        // TODO(crbug.com/482994258): Implement visibility logic for travel.
-        return true;
+    private static boolean shouldShowTravel(Profile profile) {
+        return shouldShowAutofillAiSettings(profile);
+    }
+
+    private static boolean shouldShowAutofillAiSettings(Profile profile) {
+        EntityDataManager entityDataManager = EntityDataManagerFactory.getForProfile(profile);
+
+        // Feature flags are checked as part of the EntityDataManager checks.
+        return entityDataManager != null && entityDataManager.canListEntityInstancesInSettings();
     }
 
     private ManagedPreferenceDelegate createManagedPreferenceDelegate() {
@@ -261,10 +268,10 @@ public class HomeOfTransactionsFragment extends ChromeBaseSettingsFragment {
                         indexData.removeEntry(getUniqueId(PREF_AUTOFILL_IDENTITY_DOCS));
                         indexData.removeEntry(getUniqueId(PREF_AUTOFILL_TRAVEL));
                     } else {
-                        if (!shouldShowIdentityDocs()) {
+                        if (!shouldShowIdentityDocs(profile)) {
                             indexData.removeEntry(getUniqueId(PREF_AUTOFILL_IDENTITY_DOCS));
                         }
-                        if (!shouldShowTravel()) {
+                        if (!shouldShowTravel(profile)) {
                             indexData.removeEntry(getUniqueId(PREF_AUTOFILL_TRAVEL));
                         }
                     }
