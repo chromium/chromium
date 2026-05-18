@@ -1009,13 +1009,16 @@ public class CustomTabsConnection {
             CustomTabsSessionToken session, String message, @Nullable Bundle extras) {
         var sessionHolder = new SessionHolder<>(session);
         int result;
-        if (!mWarmupHasBeenCalled.get()) result = CustomTabsService.RESULT_FAILURE_DISALLOWED;
-        if (!isCallerForegroundOrSelf() && !mSessionDataHolder.isActiveSession(sessionHolder)) {
+        if (!mWarmupHasBeenCalled.get()) {
             result = CustomTabsService.RESULT_FAILURE_DISALLOWED;
+        } else if (!isCallerForegroundOrSelf()
+                && !mSessionDataHolder.isActiveSession(sessionHolder)) {
+            result = CustomTabsService.RESULT_FAILURE_DISALLOWED;
+        } else {
+            // If called before a validatePostMessageOrigin, the post message origin will be invalid
+            // and will return a failure result here.
+            result = mClientManager.postMessage(sessionHolder, message);
         }
-        // If called before a validatePostMessageOrigin, the post message origin will be invalid and
-        // will return a failure result here.
-        result = mClientManager.postMessage(sessionHolder, message);
         logCall("postMessage", result);
         return result;
     }
