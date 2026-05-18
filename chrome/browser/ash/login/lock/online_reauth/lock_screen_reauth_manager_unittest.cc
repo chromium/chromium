@@ -8,7 +8,6 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_login_pref_names.h"
-#include "ash/constants/ash_pref_names.h"
 #include "ash/login/mock_login_screen_client.h"
 #include "ash/public/cpp/reauth_reason.h"
 #include "ash/test/ash_test_helper.h"
@@ -21,7 +20,6 @@
 #include "chrome/browser/ash/login/saml/mock_lock_handler.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
@@ -236,7 +234,7 @@ TEST_F(LockScreenReauthManagerTest, ReauthenticateRequiredByTimelimitPolicy) {
 
 TEST_F(LockScreenReauthManagerTest, ReauthenticateResetByToken) {
   primary_profile_->GetPrefs()->SetBoolean(
-      prefs::kLockScreenReauthenticationEnabled, true);
+      ash::prefs::kLockScreenReauthenticationEnabled, true);
   CreateLockScreenReauthManager();
   fake_user_manager_->SaveForceOnlineSignin(saml_login_account_id1_, true);
   MaybeForceReauthOnLockScreen(
@@ -246,7 +244,7 @@ TEST_F(LockScreenReauthManagerTest, ReauthenticateResetByToken) {
 
 TEST_F(LockScreenReauthManagerTest, ReauthenticateSetOnLock) {
   primary_profile_->GetPrefs()->SetBoolean(
-      prefs::kLockScreenReauthenticationEnabled, true);
+      ash::prefs::kLockScreenReauthenticationEnabled, true);
   CreateLockScreenReauthManager();
   EXPECT_CALL(lock_handler_,
               SetAuthType(saml_login_account_id1_,
@@ -263,7 +261,7 @@ TEST_F(LockScreenReauthManagerTest, ReauthenticateSetOnLock) {
 // user who locked the screen. As a result screen remains locked.
 TEST_F(LockScreenReauthManagerTest, AuthenticateWithIncorrectUser) {
   primary_profile_->GetPrefs()->SetBoolean(
-      prefs::kLockScreenReauthenticationEnabled, true);
+      ash::prefs::kLockScreenReauthenticationEnabled, true);
   CreateLockScreenReauthManager();
   EXPECT_CALL(lock_handler_,
               SetAuthType(saml_login_account_id1_,
@@ -361,7 +359,7 @@ TEST_F(LockScreenReauthManagerTest, FlowTriggeredByPolicyAndInvalidToken) {
 
 TEST_F(LockScreenReauthManagerTest, PolicySetToFalse) {
   primary_profile_->GetPrefs()->SetBoolean(
-      prefs::kLockScreenReauthenticationEnabled, false);
+      ash::prefs::kLockScreenReauthenticationEnabled, false);
   CreateLockScreenReauthManager();
   EXPECT_FALSE(manager_->ShouldPasswordSyncTriggerReauth());
 }
@@ -373,7 +371,7 @@ TEST_F(LockScreenReauthManagerTest, PolicyNotSet) {
 
 TEST_F(LockScreenReauthManagerTest, ReauthWithLocalPasswordEnabled) {
   primary_profile_->GetPrefs()->SetBoolean(
-      prefs::kLockScreenReauthenticationEnabled, true);
+      ash::prefs::kLockScreenReauthenticationEnabled, true);
   // Remove the online password as an auth factor to test local password only.
   ClearAuthFactors(saml_login_account_id1_);
   SetCryptohomePassword(saml_login_account_id1_,
@@ -388,7 +386,7 @@ TEST_F(LockScreenReauthManagerTest, ReauthWithLocalPasswordEnabled) {
 
 TEST_F(LockScreenReauthManagerTest, ReauthWithGaiaPasswordEnabled) {
   primary_profile_->GetPrefs()->SetBoolean(
-      prefs::kLockScreenReauthenticationEnabled, true);
+      ash::prefs::kLockScreenReauthenticationEnabled, true);
   // Online Password is already added as a factor.
   CreateLockScreenReauthManager();
   LockScreen();
@@ -400,7 +398,7 @@ TEST_F(LockScreenReauthManagerTest, ReauthWithGaiaPasswordEnabled) {
 
 TEST_F(LockScreenReauthManagerTest, ReauthWithPinAndGaiaPasswordEnabled) {
   primary_profile_->GetPrefs()->SetBoolean(
-      prefs::kLockScreenReauthenticationEnabled, true);
+      ash::prefs::kLockScreenReauthenticationEnabled, true);
   // Online Password is already added as a factor.
   SetCryptohomePin(saml_login_account_id1_);
   CreateLockScreenReauthManager();
@@ -413,7 +411,7 @@ TEST_F(LockScreenReauthManagerTest, ReauthWithPinAndGaiaPasswordEnabled) {
 
 TEST_F(LockScreenReauthManagerTest, ReauthWithPinEnabled) {
   primary_profile_->GetPrefs()->SetBoolean(
-      prefs::kLockScreenReauthenticationEnabled, true);
+      ash::prefs::kLockScreenReauthenticationEnabled, true);
   // Remove the online password as an auth factor to test pin only.
   ClearAuthFactors(saml_login_account_id1_);
   SetCryptohomePin(saml_login_account_id1_);
@@ -448,7 +446,7 @@ TEST_P(AutoStartLockScreenReauthManagerTest,
        ForceOnlineReauthOnSessionStateChanged) {
   const bool is_auto_start_enabled = GetParam();
   primary_profile_->GetPrefs()->SetBoolean(
-      ::prefs::kLockScreenAutoStartOnlineReauth, is_auto_start_enabled);
+      ash::prefs::kLockScreenAutoStartOnlineReauth, is_auto_start_enabled);
   CreateLockScreenReauthManager();
   MaybeForceReauthOnLockScreen(ReauthReason::kSamlLockScreenReauthPolicy);
   EXPECT_CALL(lock_handler_,

@@ -4,6 +4,7 @@
 
 #include <string>
 
+#include "ash/constants/ash_login_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
@@ -24,7 +25,6 @@
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
-#include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/dbus/dbus_thread_manager.h"
 #include "chromeos/ash/components/dbus/debug_daemon/debug_daemon_client.h"
 #include "chromeos/ash/components/dbus/debug_daemon/fake_debug_daemon_client.h"
@@ -394,7 +394,7 @@ class EnableDebuggingRequestedTest : public EnableDebuggingDevTest {
   // EnableDebuggingDevTest overrides:
   bool SetUpUserDataDirectory() override {
     base::DictValue local_state_dict;
-    local_state_dict.Set(prefs::kDebuggingFeaturesRequested, true);
+    local_state_dict.Set(ash::prefs::kDebuggingFeaturesRequested, true);
 
     base::FilePath user_data_dir;
     CHECK(base::PathService::Get(chrome::DIR_USER_DATA, &user_data_dir));

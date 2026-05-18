@@ -453,10 +453,6 @@ inline constexpr char kDocumentScanAPITrustedExtensions[] =
 inline constexpr char kInsightsExtensionEnabled[] =
     "insights_extension_enabled";
 
-// Boolean controlling whether showing Sync Consent during sign-in is enabled.
-// Controlled by policy.
-inline constexpr char kEnableSyncConsent[] = "sync_consent.enabled";
-
 // A boolean pref which turns on Advanced Filesystem
 // (USB support, SD card, etc).
 inline constexpr char kLabsAdvancedFilesystemEnabled[] =
@@ -474,14 +470,6 @@ inline constexpr char kShowMobileDataNotification[] =
 // A string pref that contains version where "What's new" promo was shown.
 inline constexpr char kChromeOSReleaseNotesVersion[] =
     "settings.release_notes.version";
-
-// Automatically open online re-authentication window on the lock screen.
-inline constexpr char kLockScreenAutoStartOnlineReauth[] =
-    "lock_screen_auto_start_online_reauth";
-
-// The URL from which the Terms of Service can be downloaded. The value is only
-// honored for public accounts.
-inline constexpr char kTermsOfServiceURL[] = "terms_of_service.url";
 
 // A boolean preference indicating whether user has seen first-run tutorial
 // already.
@@ -523,12 +511,6 @@ inline constexpr char kPinUnlockFeatureNotificationShown[] =
 // current user about the fingerprint unlock feature.
 inline constexpr char kFingerprintUnlockFeatureNotificationShown[] =
     "fingerprint_unlock_feature_notification_shown";
-
-// A boolean pref that controls whether the PIN autosubmit feature is enabled.
-// This feature, when enabled, exposes the user's PIN length by showing how many
-// digits are necessary to unlock the device. Can be recommended.
-inline constexpr char kPinUnlockAutosubmitEnabled[] =
-    "pin_unlock_autosubmit_enabled";
 
 // Boolean pref indicating whether someone can cast to the device.
 inline constexpr char kCastReceiverEnabled[] = "cast_receiver.enabled";
@@ -2300,10 +2282,6 @@ inline constexpr char kDiskCacheSize[] = "browser.disk_cache_size";
 
 inline constexpr char kPerformanceTracingEnabled[] =
     "feedback.performance_tracing_enabled";
-
-// Indicates that debugging features were requested from oobe screen.
-inline constexpr char kDebuggingFeaturesRequested[] =
-    "DebuggingFeaturesRequested";
 
 // Pref name for the policy controlling whether to enable Media Router.
 inline constexpr char kEnableMediaRouter[] = "media_router.enable_media_router";

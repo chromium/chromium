@@ -36,7 +36,6 @@
 #include "chrome/browser/ui/ash/login/login_screen_client_impl.h"
 #include "chrome/browser/ui/webui/ash/login/l10n_util.h"
 #include "chrome/browser/ui/webui/ash/login/welcome_screen_handler.h"
-#include "chrome/common/pref_names.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/components/quick_start/quick_start_metrics.h"
@@ -383,7 +382,7 @@ void WelcomeScreen::ShowImpl() {
   }
 
   // TODO(crbug.com/1105387): Part of initial screen logic.
-  if (local_state_->GetBoolean(::prefs::kDebuggingFeaturesRequested)) {
+  if (local_state_->GetBoolean(ash::prefs::kDebuggingFeaturesRequested)) {
     OnEnableDebugging();
     return;
   }

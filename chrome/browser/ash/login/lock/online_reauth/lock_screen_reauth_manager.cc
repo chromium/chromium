@@ -29,7 +29,6 @@
 #include "chrome/browser/ash/login/saml/in_session_password_sync_manager.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ui/webui/ash/lock_screen_reauth/lock_screen_reauth_dialogs.h"
-#include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/login/auth/auth_session_authenticator.h"
 #include "chromeos/ash/components/login/auth/password_update_flow.h"
 #include "chromeos/ash/components/login/auth/public/authentication_error.h"
@@ -92,7 +91,7 @@ LockScreenReauthManager::~LockScreenReauthManager() {
 
 bool LockScreenReauthManager::ShouldPasswordSyncTriggerReauth() {
   return primary_profile_->GetPrefs()->GetBoolean(
-      prefs::kLockScreenReauthenticationEnabled);
+      ash::prefs::kLockScreenReauthenticationEnabled);
 }
 
 void LockScreenReauthManager::MaybeForceReauthOnLockScreen(
@@ -214,7 +213,7 @@ void LockScreenReauthManager::ForceOnlineReauth() {
       account_id, proximity_auth::mojom::AuthType::ONLINE_SIGN_IN, u"");
 
   const bool auto_start_reauth = primary_profile_->GetPrefs()->GetBoolean(
-      ::prefs::kLockScreenAutoStartOnlineReauth);
+      ash::prefs::kLockScreenAutoStartOnlineReauth);
   if (auto_start_reauth) {
     SYSLOG(INFO) << "(LOGIN) LoginScreenReauthManager::ForceOnlineReauth "
                     "ShowGaiaSignin()";
@@ -231,7 +230,7 @@ void LockScreenReauthManager::ResetOnlineReauth() {
   known_user.SetLastOnlineSignin(primary_user_->GetAccountId(), current_time);
   // Also adding this information to prefs, because ephemeral users cannot
   // access local state properly.
-  primary_profile_->GetPrefs()->SetTime(prefs::kLastOnlineSignInTime,
+  primary_profile_->GetPrefs()->SetTime(ash::prefs::kLastOnlineSignInTime,
                                         current_time);
 }
 

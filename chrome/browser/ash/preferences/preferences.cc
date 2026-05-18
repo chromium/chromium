@@ -379,7 +379,7 @@ void Preferences::RegisterProfilePrefs(
   // Don't sync the note-taking app; it may not be installed on other devices.
   registry->RegisterStringPref(ash::prefs::kNoteTakingAppId, std::string());
 
-  registry->RegisterBooleanPref(::prefs::kLockScreenAutoStartOnlineReauth,
+  registry->RegisterBooleanPref(ash::prefs::kLockScreenAutoStartOnlineReauth,
                                 false);
 
   registry->RegisterBooleanPref(::prefs::kShowMobileDataNotification, true);
@@ -392,7 +392,7 @@ void Preferences::RegisterProfilePrefs(
 
   ::disks::prefs::RegisterProfilePrefs(registry);
 
-  registry->RegisterStringPref(::prefs::kTermsOfServiceURL, "");
+  registry->RegisterStringPref(ash::prefs::kTermsOfServiceURL, "");
 
   registry->RegisterBooleanPref(::prefs::kTouchVirtualKeyboardEnabled, false);
   registry->RegisterBooleanPref(::prefs::kVirtualKeyboardSmartVisibilityEnabled,

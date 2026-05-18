@@ -84,9 +84,18 @@ inline constexpr char kSamlInSessionPasswordChangeEnabled[] =
 inline constexpr char kSamlPasswordExpirationAdvanceWarningDays[] =
     "saml.password_expiration_advance_warning_days";
 
+// Automatically open online re-authentication window on the lock screen.
+inline constexpr char kLockScreenAutoStartOnlineReauth[] =
+    "lock_screen_auto_start_online_reauth";
+
 // Enable online signin on the lock screen.
 inline constexpr char kLockScreenReauthenticationEnabled[] =
     "lock_screen_reauthentication_enabled";
+
+// This feature, when enabled, exposes the user's PIN length by showing how many
+// digits are necessary to unlock the device. Can be recommended.
+inline constexpr char kPinUnlockAutosubmitEnabled[] =
+    "pin_unlock_autosubmit_enabled";
 
 inline constexpr char kActivityTimeAfterOnboarding[] =
     "oobe.activity_time_after_onboarding";
@@ -110,6 +119,14 @@ inline constexpr char kOobeDisplaySizeFactorDeferred[] =
 // List of categories selected from the CategoriesSelection screen.
 // This list is used to filter the apps in the new recommended apps screen.
 inline constexpr char kOobeCategoriesSelected[] = "oobe.categories_selected";
+
+// Boolean controlling whether showing Sync Consent during sign-in is enabled.
+// Controlled by policy.
+inline constexpr char kEnableSyncConsent[] = "sync_consent.enabled";
+
+// The URL from which the Terms of Service can be downloaded. The value is only
+// honored for public accounts.
+inline constexpr char kTermsOfServiceURL[] = "terms_of_service.url";
 
 // *************** OOBE LOCAL STATE PREFS ***************
 
@@ -198,6 +215,11 @@ inline constexpr char kLastOnlineSignInTime[] = "last_online_sign_in_time";
 // auto enrollment check was bypassed.
 inline constexpr char kAutoEnrollmentCheckExited[] =
     "AutoEnrollmentCheckExited";
+
+// Indicates that debugging features were requested from oobe screen.
+inline constexpr char kDebuggingFeaturesRequested[] =
+    "DebuggingFeaturesRequested";
+
 }  // namespace ash::prefs
 
 #endif  // ASH_CONSTANTS_ASH_LOGIN_PREF_NAMES_H_

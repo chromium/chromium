@@ -652,7 +652,8 @@ bool MaybeStartManagementTransition(Profile* profile) {
 bool MaybeShowManagedTermsOfService(Profile* profile) {
   user_manager::UserManager* user_manager = user_manager::UserManager::Get();
   if (user_manager->IsCurrentUserNew() ||
-      !profile->GetPrefs()->IsManagedPreference(::prefs::kTermsOfServiceURL)) {
+      !profile->GetPrefs()->IsManagedPreference(
+          ash::prefs::kTermsOfServiceURL)) {
     return false;
   }
 

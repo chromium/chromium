@@ -79,6 +79,7 @@
 #include "extensions/common/extension.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
+#include "ash/constants/ash_login_pref_names.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/ambient/ambient_prefs.h"
@@ -172,7 +173,7 @@ bool IsSettingReadOnly(const std::string& pref_name) {
   // enable_screen_lock and pin_unlock_autosubmit_enabled
   // must be changed through the quickUnlockPrivate API.
   if (pref_name == ash::prefs::kEnableAutoScreenLock ||
-      pref_name == ::prefs::kPinUnlockAutosubmitEnabled) {
+      pref_name == ash::prefs::kPinUnlockAutosubmitEnabled) {
     return true;
   }
 
@@ -649,7 +650,7 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
   (*s_allowlist)[ash::prefs::kEnableAutoScreenLock] =
       settings_api::PrefType::kBoolean;
   // kPinUnlockAutosubmitEnabled is read-only.
-  (*s_allowlist)[::prefs::kPinUnlockAutosubmitEnabled] =
+  (*s_allowlist)[ash::prefs::kPinUnlockAutosubmitEnabled] =
       settings_api::PrefType::kBoolean;
   (*s_allowlist)[ash::prefs::kMessageCenterLockScreenMode] =
       settings_api::PrefType::kString;

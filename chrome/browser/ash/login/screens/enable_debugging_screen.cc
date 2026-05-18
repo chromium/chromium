@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/login/screens/enable_debugging_screen.h"
 
+#include "ash/constants/ash_login_pref_names.h"
 #include "base/check.h"
 #include "base/check_deref.h"
 #include "base/check_op.h"
@@ -12,7 +13,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/login/login_display_host.h"
 #include "chrome/browser/ui/ash/login/login_web_dialog.h"
-#include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/components/dbus/debug_daemon/debug_daemon_client.h"
 #include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
@@ -110,7 +110,7 @@ void EnableDebuggingScreen::OnRemoveRootfsVerification(bool success) {
     return;
   }
 
-  local_state_->SetBoolean(prefs::kDebuggingFeaturesRequested, true);
+  local_state_->SetBoolean(ash::prefs::kDebuggingFeaturesRequested, true);
   local_state_->CommitPendingWrite();
   chromeos::PowerManagerClient::Get()->RequestRestart(
       power_manager::REQUEST_RESTART_OTHER,
@@ -202,7 +202,7 @@ void EnableDebuggingScreen::UpdateUIState(
   if (state == EnableDebuggingScreenView::kUIStateSetup ||
       state == EnableDebuggingScreenView::kUIStateError ||
       state == EnableDebuggingScreenView::kUIStateDone) {
-    local_state_->ClearPref(prefs::kDebuggingFeaturesRequested);
+    local_state_->ClearPref(ash::prefs::kDebuggingFeaturesRequested);
     local_state_->CommitPendingWrite();
   }
   if (view_)

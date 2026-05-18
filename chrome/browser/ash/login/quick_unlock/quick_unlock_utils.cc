@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_login_pref_names.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "base/check.h"
@@ -18,7 +19,6 @@
 #include "base/time/time.h"
 #include "chrome/browser/ash/login/quick_unlock/pin_backend.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/common/pref_names.h"
 #include "chrome/grit/browser_resources.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/components/osauth/public/auth_policy_utils.h"
@@ -227,7 +227,7 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(prefs::kPinUnlockMaximumLength, 0);
   registry->RegisterBooleanPref(prefs::kPinUnlockWeakPinsAllowed, true);
 
-  registry->RegisterBooleanPref(::prefs::kPinUnlockAutosubmitEnabled, true);
+  registry->RegisterBooleanPref(ash::prefs::kPinUnlockAutosubmitEnabled, true);
 }
 
 bool IsPinDisabledByPolicy(PrefService* pref_service, Purpose purpose) {

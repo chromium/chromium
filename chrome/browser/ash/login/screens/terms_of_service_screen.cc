@@ -7,6 +7,7 @@
 #include <string>
 #include <utility>
 
+#include "ash/constants/ash_login_pref_names.h"
 #include "base/check.h"
 #include "base/check_deref.h"
 #include "base/files/file_util.h"
@@ -25,7 +26,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/webui/ash/login/terms_of_service_screen_handler.h"
-#include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/storage_partition.h"
@@ -133,7 +133,7 @@ bool TermsOfServiceScreen::MaybeSkip(WizardContext& context) {
   // immediately.
   if (context.skip_post_login_screens_for_tests ||
       !ProfileManager::GetActiveUserProfile()->GetPrefs()->IsManagedPreference(
-          prefs::kTermsOfServiceURL)) {
+          ash::prefs::kTermsOfServiceURL)) {
     exit_callback_.Run(Result::NOT_APPLICABLE);
     return true;
   }
@@ -179,7 +179,7 @@ void TermsOfServiceScreen::StartDownload() {
   // If an URL from which the Terms of Service can be downloaded has not been
   // set, show an error message to the user.
   std::string terms_of_service_url =
-      prefs->GetString(prefs::kTermsOfServiceURL);
+      prefs->GetString(ash::prefs::kTermsOfServiceURL);
   if (terms_of_service_url.empty()) {
     if (view_)
       view_->OnLoadError();

@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_login_pref_names.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/login/login_screen_controller.h"
@@ -323,7 +324,8 @@ void LoginDisplayHostMojo::SetUsers(const user_manager::UserList& users) {
   // is in turn blocked on the 'login-prompt-visible' signal.
   if (local_state_->GetBoolean(ash::prefs::kFactoryResetRequested)) {
     StartWizard(ResetView::kScreenId);
-  } else if (local_state_->GetBoolean(::prefs::kDebuggingFeaturesRequested)) {
+  } else if (local_state_->GetBoolean(
+                 ash::prefs::kDebuggingFeaturesRequested)) {
     StartWizard(EnableDebuggingScreenView::kScreenId);
   } else if (local_state_->GetBoolean(
                  arc::prefs::kEnableAdbSideloadingRequested)) {

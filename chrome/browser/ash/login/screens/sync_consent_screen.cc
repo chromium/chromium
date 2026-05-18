@@ -7,6 +7,7 @@
 #include <string>
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_login_pref_names.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/constants/chrome_webui_url_constants.h"
@@ -330,8 +331,9 @@ SyncConsentScreen::SyncScreenBehavior SyncConsentScreen::GetSyncScreenBehavior(
 
   // Skip if the sync consent screen is disabled by policy, for example, in
   // education scenarios. https://crbug.com/41387934
-  if (!profile_->GetPrefs()->GetBoolean(::prefs::kEnableSyncConsent))
+  if (!profile_->GetPrefs()->GetBoolean(ash::prefs::kEnableSyncConsent)) {
     return SyncScreenBehavior::kSkipAndEnableScreenPolicy;
+  }
 
   // Skip if sync-the-feature is disabled by policy.
   if (IsProfileSyncDisabledByPolicy())

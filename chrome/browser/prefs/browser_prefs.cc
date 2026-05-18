@@ -9,6 +9,7 @@
 #include <string>
 #include <string_view>
 
+#include "ash/constants/ash_login_pref_names.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/json/values_util.h"
@@ -2009,7 +2010,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   registry->RegisterBooleanPref(ash::prefs::kEssentialSearchEnabled, false);
   registry->RegisterBooleanPref(ash::prefs::kLastEssentialSearchValue, false);
   // By default showing Sync Consent is set to true. It can changed by policy.
-  registry->RegisterBooleanPref(prefs::kEnableSyncConsent, true);
+  registry->RegisterBooleanPref(ash::prefs::kEnableSyncConsent, true);
   registry->RegisterListPref(
       chromeos::prefs::kKeepFullscreenWithoutNotificationUrlAllowList,
       PrefRegistry::PUBLIC);
