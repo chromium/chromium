@@ -20,7 +20,9 @@ TEST(LocationBarModelUtilTest, GetSecurityVectorIconWithNoneLevel) {
       security_state::MALICIOUS_CONTENT_STATUS_NONE;
   const gfx::VectorIcon& icon = location_bar_model::GetSecurityVectorIcon(
       security_state::SecurityLevel::NONE, &visible_security_state);
-  EXPECT_EQ(icon.name, omnibox::kHttpChromeRefreshOldIcon.name);
+  EXPECT_EQ(icon.name, features::IsRoundedIconsEnabled()
+                           ? omnibox::kInfoIcon.name
+                           : omnibox::kHttpChromeRefreshOldIcon.name);
 }
 
 TEST(LocationBarModelUtilTest, GetSecurityVectorIconWithSecureLevel) {
@@ -29,7 +31,9 @@ TEST(LocationBarModelUtilTest, GetSecurityVectorIconWithSecureLevel) {
       security_state::MALICIOUS_CONTENT_STATUS_NONE;
   const gfx::VectorIcon& icon = location_bar_model::GetSecurityVectorIcon(
       security_state::SecurityLevel::SECURE, &visible_security_state);
-  EXPECT_EQ(icon.name, omnibox::kSecurePageInfoChromeRefreshOldIcon.name);
+  EXPECT_EQ(icon.name, features::IsRoundedIconsEnabled()
+                           ? omnibox::kPageInfoIcon.name
+                           : omnibox::kSecurePageInfoChromeRefreshOldIcon.name);
 }
 
 TEST(LocationBarModelUtilTest, GetSecurityVectorIconWithDangerousLevel) {

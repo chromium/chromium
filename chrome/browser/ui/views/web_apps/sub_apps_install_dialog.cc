@@ -36,6 +36,7 @@
 #include "ui/base/models/image_model.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/mojom/ui_base_types.mojom.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/image/image_skia.h"
@@ -60,7 +61,9 @@ constexpr int kSubAppIconSize = 32;
 
 ui::ImageModel GetInstallAppIcon() {
   return ui::ImageModel::FromVectorIcon(
-      omnibox::kInstallDesktopOldIcon, ui::kColorIcon,
+      features::IsRoundedIconsEnabled() ? omnibox::kInstallDesktopIcon
+                                        : omnibox::kInstallDesktopOldIcon,
+      ui::kColorIcon,
       views::LayoutProvider::Get()->GetDistanceMetric(
           views::DISTANCE_BUBBLE_HEADER_VECTOR_ICON_SIZE));
 }

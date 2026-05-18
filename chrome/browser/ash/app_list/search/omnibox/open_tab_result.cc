@@ -22,6 +22,7 @@
 #include "components/omnibox/browser/vector_icons.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/base/window_open_disposition_utils.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -162,7 +163,9 @@ void OpenTabResult::UpdateIcon() {
 void OpenTabResult::SetGenericIcon() {
   uses_generic_icon_ = true;
   SetIcon(IconInfo(
-      ui::ImageModel::FromVectorIcon(omnibox::kSwitchOldIcon,
+      ui::ImageModel::FromVectorIcon(features::IsRoundedIconsEnabled()
+                                         ? omnibox::kTabIcon
+                                         : omnibox::kSwitchOldIcon,
                                      kGenericIconColorId, kSystemIconDimension),
       kSystemIconDimension));
 }

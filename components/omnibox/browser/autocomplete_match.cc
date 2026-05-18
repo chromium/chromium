@@ -54,6 +54,7 @@
 #include "third_party/omnibox_proto/types.pb.h"
 #include "ui/base/device_form_factor.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "url/third_party/mozilla/url_parse.h"
 #include "url/url_util.h"
@@ -491,17 +492,27 @@ const gfx::VectorIcon& AutocompleteMatch::AnswerTypeToAnswerIcon(
     omnibox::AnswerType type) {
   switch (type) {
     case omnibox::ANSWER_TYPE_CURRENCY:
-      return omnibox::kAnswerCurrencyChromeRefreshOldIcon;
+      return features::IsRoundedIconsEnabled()
+                 ? omnibox::kAutorenewIcon
+                 : omnibox::kAnswerCurrencyChromeRefreshOldIcon;
     case omnibox::ANSWER_TYPE_DICTIONARY:
-      return omnibox::kAnswerDictionaryChromeRefreshOldIcon;
+      return features::IsRoundedIconsEnabled()
+                 ? omnibox::kBookIcon
+                 : omnibox::kAnswerDictionaryChromeRefreshOldIcon;
     case omnibox::ANSWER_TYPE_FINANCE:
-      return omnibox::kAnswerFinanceChromeRefreshOldIcon;
+      return features::IsRoundedIconsEnabled()
+                 ? omnibox::kSwapVertIcon
+                 : omnibox::kAnswerFinanceChromeRefreshOldIcon;
     case omnibox::ANSWER_TYPE_SUNRISE_SUNSET:
-      return omnibox::kAnswerSunriseChromeRefreshOldIcon;
+      return features::IsRoundedIconsEnabled()
+                 ? omnibox::kWbSunnyIcon
+                 : omnibox::kAnswerSunriseChromeRefreshOldIcon;
     case omnibox::ANSWER_TYPE_TRANSLATION:
-      return omnibox::kAnswerTranslationChromeRefreshOldIcon;
+      return features::IsRoundedIconsEnabled()
+                 ? omnibox::kTranslateIcon
+                 : omnibox::kAnswerTranslationChromeRefreshOldIcon;
     default:
-      return omnibox::kAnswerDefaultOldIcon;
+      return omnibox::kAnswerDefaultIcon;
   }
 }
 
@@ -519,15 +530,21 @@ const gfx::VectorIcon& AutocompleteMatch::GetVectorIcon(
       case omnibox::SuggestTemplateInfo::HISTORY:
         return vector_icons::kHistoryChromeRefreshOldIcon;
       case omnibox::SuggestTemplateInfo::NOTES_SPARK:
-        return omnibox::kNotesSparkOldIcon;
+        return features::IsRoundedIconsEnabled() ? omnibox::kNotesSparkIcon
+                                                 : omnibox::kNotesSparkOldIcon;
       case omnibox::SuggestTemplateInfo::SEARCH_LOOP:
         return vector_icons::kSearchChromeRefreshOldIcon;
       case omnibox::SuggestTemplateInfo::SEARCH_LOOP_WITH_SPARKLE:
-        return omnibox::kSearchSparkOldIcon;
+        return features::IsRoundedIconsEnabled() ? omnibox::kSearchSparkIcon
+                                                 : omnibox::kSearchSparkOldIcon;
       case omnibox::SuggestTemplateInfo::TRENDING:
-        return omnibox::kTrendingUpChromeRefreshOldIcon;
+        return features::IsRoundedIconsEnabled()
+                   ? omnibox::kTrendingUpIcon
+                   : omnibox::kTrendingUpChromeRefreshOldIcon;
       case omnibox::SuggestTemplateInfo::SUB_ARROW_RIGHT:
-        return omnibox::kSubdirectoryArrowRightOldIcon;
+        return features::IsRoundedIconsEnabled()
+                   ? omnibox::kSubdirectoryArrowRightIcon
+                   : omnibox::kSubdirectoryArrowRightOldIcon;
       default:
         // Out of range value defaults to search loupe.
         return vector_icons::kSearchChromeRefreshOldIcon;
@@ -537,7 +554,9 @@ const gfx::VectorIcon& AutocompleteMatch::GetVectorIcon(
   // Some match types should retain their traditional icon even when bookmarked.
   if (is_bookmark && type != Type::HISTORY_EMBEDDINGS_ANSWER &&
       type != Type::STARTER_PACK) {
-    return omnibox::kBookmarkChromeRefreshOldIcon;
+    return features::IsRoundedIconsEnabled()
+               ? omnibox::kStarIcon
+               : omnibox::kBookmarkChromeRefreshOldIcon;
   }
 
   if (answer_type != omnibox::ANSWER_TYPE_UNSPECIFIED) {
@@ -561,14 +580,21 @@ const gfx::VectorIcon& AutocompleteMatch::GetVectorIcon(
     case Type::TILE_MOST_VISITED_SITE:
     case Type::OPEN_TAB:
     case Type::HISTORY_EMBEDDINGS:
-      return omnibox::kPageChromeRefreshOldIcon;
+      return features::IsRoundedIconsEnabled()
+                 ? omnibox::kPublicIcon
+                 : omnibox::kPageChromeRefreshOldIcon;
 
     case Type::SEARCH_SUGGEST:
-      return IsTrendSuggestion() ? omnibox::kTrendingUpChromeRefreshOldIcon
+      return IsTrendSuggestion()
+                 ? features::IsRoundedIconsEnabled()
+                       ? omnibox::kTrendingUpIcon
+                       : omnibox::kTrendingUpChromeRefreshOldIcon
              : (IsContextualSearchSuggestion() &&
                 omnibox_feature_configs::ContextualSearch::Get()
                     .contextual_zero_suggest_lens_fulfillment)
-                 ? omnibox::kSubdirectoryArrowRightOldIcon
+                 ? features::IsRoundedIconsEnabled()
+                       ? omnibox::kSubdirectoryArrowRightIcon
+                       : omnibox::kSubdirectoryArrowRightOldIcon
                  : vector_icons::kSearchChromeRefreshOldIcon;
 
     case Type::PEDAL:
@@ -578,7 +604,9 @@ const gfx::VectorIcon& AutocompleteMatch::GetVectorIcon(
     case Type::SEARCH_OTHER_ENGINE:
       if (provider != nullptr &&
           provider->type() == AutocompleteProvider::TYPE_UNSCOPED_EXTENSION) {
-        return omnibox::kExtensionAppOldIcon;
+        return features::IsRoundedIconsEnabled()
+                   ? omnibox::kExtensionFilledIcon
+                   : omnibox::kExtensionAppOldIcon;
       }
       return vector_icons::kSearchChromeRefreshOldIcon;
 
@@ -599,10 +627,13 @@ const gfx::VectorIcon& AutocompleteMatch::GetVectorIcon(
       return vector_icons::kHistoryChromeRefreshOldIcon;
 
     case Type::EXTENSION_APP_DEPRECATED:
-      return omnibox::kExtensionAppOldIcon;
+      return features::IsRoundedIconsEnabled() ? omnibox::kExtensionFilledIcon
+                                               : omnibox::kExtensionAppOldIcon;
 
     case Type::CALCULATOR:
-      return omnibox::kCalculatorChromeRefreshOldIcon;
+      return features::IsRoundedIconsEnabled()
+                 ? omnibox::kEqualIcon
+                 : omnibox::kCalculatorChromeRefreshOldIcon;
 
     case Type::NULL_RESULT_MESSAGE:
       // Select the icon according to the type of IPH. Otherwise (for No Results
@@ -614,7 +645,9 @@ const gfx::VectorIcon& AutocompleteMatch::GetVectorIcon(
           return omnibox::kSparkIcon;
         case IphType::kFeaturedEnterpriseSiteSearch:
         case IphType::kEnterpriseSearchAggregator:
-          return omnibox::kEnterpriseOldIcon;
+          return features::IsRoundedIconsEnabled()
+                     ? omnibox::kDomainIcon
+                     : omnibox::kEnterpriseOldIcon;
         case IphType::kHistoryEmbeddingsSettingsPromo:
           return omnibox::kSparkIcon;
         case IphType::kHistoryEmbeddingsDisclaimer:
@@ -650,30 +683,42 @@ const gfx::VectorIcon& AutocompleteMatch::GetVectorIcon(
         case DocumentType::DRIVE_OTHER:
           return omnibox::kDriveLogoIcon;
         default:
-          return omnibox::kPageChromeRefreshOldIcon;
+          return features::IsRoundedIconsEnabled()
+                     ? omnibox::kPublicIcon
+                     : omnibox::kPageChromeRefreshOldIcon;
       }
 
     case Type::HISTORY_CLUSTER:
-      return omnibox::kJourneysChromeRefreshOldIcon;
+      return features::IsRoundedIconsEnabled()
+                 ? omnibox::kConversionPathIcon
+                 : omnibox::kJourneysChromeRefreshOldIcon;
 
     case Type::STARTER_PACK:
       if (turl) {
         switch (turl->GetBuiltinEngineType()) {
           case KEYWORD_MODE_STARTER_PACK_BOOKMARKS:
-            return omnibox::kStarActiveChromeRefreshOldIcon;
+            return features::IsRoundedIconsEnabled()
+                       ? omnibox::kStarFilledIcon
+                       : omnibox::kStarActiveChromeRefreshOldIcon;
           case KEYWORD_MODE_STARTER_PACK_HISTORY:
             return vector_icons::kHistoryChromeRefreshOldIcon;
           case KEYWORD_MODE_STARTER_PACK_TABS:
-            return omnibox::kProductChromeRefreshOldIcon;
+            return features::IsRoundedIconsEnabled()
+                       ? omnibox::kChromeProductIcon
+                       : omnibox::kProductChromeRefreshOldIcon;
           case KEYWORD_MODE_STARTER_PACK_GEMINI:
             return omnibox::kSparkIcon;
           case KEYWORD_MODE_STARTER_PACK_AI_MODE:
-            return omnibox::kSearchSparkOldIcon;
+            return features::IsRoundedIconsEnabled()
+                       ? omnibox::kSearchSparkIcon
+                       : omnibox::kSearchSparkOldIcon;
           default:
             break;
         }
       }
-      return omnibox::kProductChromeRefreshOldIcon;
+      return features::IsRoundedIconsEnabled()
+                 ? omnibox::kChromeProductIcon
+                 : omnibox::kProductChromeRefreshOldIcon;
 
     case Type::FEATURED_ENTERPRISE_SEARCH:
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -683,13 +728,17 @@ const gfx::VectorIcon& AutocompleteMatch::GetVectorIcon(
                    : vector_icons::kGoogleAgentspaceMonochromeLogoIcon;
       }
 #endif
-      return omnibox::kPageChromeRefreshOldIcon;
+      return features::IsRoundedIconsEnabled()
+                 ? omnibox::kPublicIcon
+                 : omnibox::kPageChromeRefreshOldIcon;
 
     case Type::NUM_TYPES:
       NOTREACHED() << "Unexpected AutocompleteMatchType value: "
                    << static_cast<int>(type);
     default:
-      return omnibox::kPageChromeRefreshOldIcon;
+      return features::IsRoundedIconsEnabled()
+                 ? omnibox::kPublicIcon
+                 : omnibox::kPageChromeRefreshOldIcon;
   }
 }
 #endif

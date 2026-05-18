@@ -40,6 +40,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -277,7 +278,8 @@ TEST_F(OmniboxResultTest, Metrics) {
   const auto bookmarked_result = CreateOmniboxResult(
       "https://example.com", AutocompleteMatchType::HISTORY_URL);
   EXPECT_EQ(ash::OMNIBOX_BOOKMARK, bookmarked_result->metrics_type());
-  EXPECT_EQ(&omnibox::kBookmarkOldIcon,
+  EXPECT_EQ(&(features::IsRoundedIconsEnabled() ? omnibox::kStarsFilledIcon
+                                                : omnibox::kBookmarkOldIcon),
             bookmarked_result->icon().icon.GetVectorIcon().vector_icon());
 
   // Unbookmarked URLs belong to the general "recently visited" category and

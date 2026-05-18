@@ -17,6 +17,7 @@
 #include "components/omnibox/browser/vector_icons.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/ui_base_features.h"
 
 // static
 infobars::InfoBar* DefaultBrowserInfoBarDelegate::Create(
@@ -43,7 +44,9 @@ DefaultBrowserInfoBarDelegate::GetIdentifier() const {
 }
 
 const gfx::VectorIcon& DefaultBrowserInfoBarDelegate::GetVectorIcon() const {
-  return dark_mode() ? omnibox::kProductChromeRefreshOldIcon
+  return dark_mode() ? features::IsRoundedIconsEnabled()
+                           ? omnibox::kChromeProductIcon
+                           : omnibox::kProductChromeRefreshOldIcon
                      : vector_icons::kProductRefreshIcon;
 }
 

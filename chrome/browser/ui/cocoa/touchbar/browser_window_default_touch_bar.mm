@@ -40,6 +40,7 @@
 #import "ui/base/cocoa/touch_bar_util.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/l10n/l10n_util_mac.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/image/image.h"
@@ -647,7 +648,9 @@ class TouchBarNotificationBridge : public CommandObserver,
 
 + (NSImage*)starDefaultIcon {
   static __strong NSImage* starDefaultIcon = CreateNSImageFromIcon(
-      omnibox::kStarChromeRefreshOldIcon, kTouchBarDefaultIconColor);
+      features::IsRoundedIconsEnabled() ? omnibox::kStarIcon
+                                        : omnibox::kStarChromeRefreshOldIcon,
+      kTouchBarDefaultIconColor);
   return starDefaultIcon;
 }
 
@@ -657,7 +660,9 @@ class TouchBarNotificationBridge : public CommandObserver,
 
 + (NSImage*)starActiveIcon {
   static __strong NSImage* starActiveIcon = []() {
-    return CreateNSImageFromIcon(omnibox::kStarActiveChromeRefreshOldIcon,
+    return CreateNSImageFromIcon(features::IsRoundedIconsEnabled()
+                                     ? omnibox::kStarFilledIcon
+                                     : omnibox::kStarActiveChromeRefreshOldIcon,
                                  kTouchBarStarActiveColor);
   }();
   return starActiveIcon;

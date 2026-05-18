@@ -5,6 +5,7 @@
 #include "components/omnibox/browser/test_location_bar_model.h"
 
 #include "base/strings/utf_string_conversions.h"
+#include "ui/base/ui_base_features.h"
 
 #if defined(TOOLKIT_VIEWS)
 #include "components/omnibox/browser/vector_icons.h"  // nogncheck
@@ -13,7 +14,8 @@
 TestLocationBarModel::TestLocationBarModel()
     : security_level_(security_state::NONE),
 #if defined(TOOLKIT_VIEWS)
-      icon_(&omnibox::kHttpOldIcon),
+      icon_(&(features::IsRoundedIconsEnabled() ? omnibox::kInfoIcon
+                                                : omnibox::kHttpOldIcon)),
 #endif
       should_display_url_(true) {
 }

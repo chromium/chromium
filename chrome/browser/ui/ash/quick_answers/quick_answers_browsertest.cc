@@ -55,6 +55,7 @@
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_event.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
@@ -940,7 +941,9 @@ IN_PROC_BROWSER_TEST_P(RichAnswersBrowserTest,
   // Check that the shown result type icon on the QuickAnswersView
   // correctly corresponds to the definition result type.
   ui::ImageModel expected_image_model = ui::ImageModel::FromVectorIcon(
-      omnibox::kAnswerDictionaryOldIcon, ui::kColorSysBaseContainerElevated,
+      features::IsRoundedIconsEnabled() ? omnibox::kBookIcon
+                                        : omnibox::kAnswerDictionaryOldIcon,
+      ui::kColorSysBaseContainerElevated,
       /*icon_size=*/kQuickAnswersResultTypeIconSizeDip);
 
   views::Widget* rich_answers_view_widget =
@@ -970,7 +973,9 @@ IN_PROC_BROWSER_TEST_P(RichAnswersBrowserTest,
   // Check that the shown result type icon on the QuickAnswersView
   // correctly corresponds to the translation result type.
   ui::ImageModel expected_image_model = ui::ImageModel::FromVectorIcon(
-      omnibox::kAnswerTranslationOldIcon, ui::kColorSysBaseContainerElevated,
+      features::IsRoundedIconsEnabled() ? omnibox::kTranslateIcon
+                                        : omnibox::kAnswerTranslationOldIcon,
+      ui::kColorSysBaseContainerElevated,
       /*icon_size=*/kQuickAnswersResultTypeIconSizeDip);
 
   views::Widget* rich_answers_view_widget =
@@ -981,7 +986,9 @@ IN_PROC_BROWSER_TEST_P(RichAnswersBrowserTest,
   RichAnswersView* rich_answers_view = static_cast<RichAnswersView*>(
       rich_answers_view_widget->GetContentsView());
   expected_image_model = ui::ImageModel::FromVectorIcon(
-      omnibox::kAnswerTranslationOldIcon, ui::kColorSysBaseContainerElevated,
+      features::IsRoundedIconsEnabled() ? omnibox::kTranslateIcon
+                                        : omnibox::kAnswerTranslationOldIcon,
+      ui::kColorSysBaseContainerElevated,
       /*icon_size=*/kRichAnswersResultTypeIconSizeDip);
   EXPECT_TRUE(rich_answers_view->GetIconImageModelForTesting() ==
               expected_image_model);
@@ -1000,7 +1007,9 @@ IN_PROC_BROWSER_TEST_P(RichAnswersBrowserTest,
   // Check that the shown result type icon on the QuickAnswersView
   // correctly corresponds to the unit conversion result type.
   ui::ImageModel expected_image_model = ui::ImageModel::FromVectorIcon(
-      omnibox::kAnswerCalculatorOldIcon, ui::kColorSysBaseContainerElevated,
+      features::IsRoundedIconsEnabled() ? omnibox::kEqualIcon
+                                        : omnibox::kAnswerCalculatorOldIcon,
+      ui::kColorSysBaseContainerElevated,
       /*icon_size=*/kQuickAnswersResultTypeIconSizeDip);
 
   views::Widget* rich_answers_view_widget =
@@ -1011,7 +1020,9 @@ IN_PROC_BROWSER_TEST_P(RichAnswersBrowserTest,
   RichAnswersView* rich_answers_view = static_cast<RichAnswersView*>(
       rich_answers_view_widget->GetContentsView());
   expected_image_model = ui::ImageModel::FromVectorIcon(
-      omnibox::kAnswerCalculatorOldIcon, ui::kColorSysBaseContainerElevated,
+      features::IsRoundedIconsEnabled() ? omnibox::kEqualIcon
+                                        : omnibox::kAnswerCalculatorOldIcon,
+      ui::kColorSysBaseContainerElevated,
       /*icon_size=*/kRichAnswersResultTypeIconSizeDip);
   EXPECT_TRUE(rich_answers_view->GetIconImageModelForTesting() ==
               expected_image_model);

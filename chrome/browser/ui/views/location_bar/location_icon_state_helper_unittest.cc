@@ -14,6 +14,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/vector_icon_types.h"
 
@@ -138,8 +139,9 @@ TEST_F(SecurityChipStateHelperTest, MaybeGetGradientGoogleSuperGIcon) {
   ui::ImageModel empty_icon = ui::ImageModel();
   EXPECT_FALSE(location_bar::MaybeGetGradientGoogleSuperGIcon(empty_icon));
 
-  ui::ImageModel vector_icon =
-      ui::ImageModel::FromVectorIcon(omnibox::kHttpOldIcon);
+  ui::ImageModel vector_icon = ui::ImageModel::FromVectorIcon(
+      features::IsRoundedIconsEnabled() ? omnibox::kInfoIcon
+                                        : omnibox::kHttpOldIcon);
   EXPECT_FALSE(location_bar::MaybeGetGradientGoogleSuperGIcon(vector_icon));
 
   gfx::ImageSkia target_16 =

@@ -34,6 +34,7 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/pointer/touch_ui_controller.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/color/color_provider.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/insets.h"
@@ -289,7 +290,9 @@ void OmniboxMatchCellView::OnMatchUpdate(const OmniboxResultView* result_view,
             icon)));
   };
   if (match.type == AutocompleteMatchType::CALCULATOR) {
-    apply_vector_icon(omnibox::kAnswerCalculatorOldIcon);
+    apply_vector_icon(features::IsRoundedIconsEnabled()
+                          ? omnibox::kEqualIcon
+                          : omnibox::kAnswerCalculatorOldIcon);
     separator_view_->SetSize(gfx::Size());
   } else if (layout_style_ != LayoutStyle::SEARCH_SUGGESTION_WITH_IMAGE) {
     answer_image_view_->SetImage(ui::ImageModel());

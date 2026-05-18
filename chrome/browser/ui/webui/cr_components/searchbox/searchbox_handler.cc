@@ -63,6 +63,7 @@
 #include "third_party/omnibox_proto/searchbox_config.pb.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/base/window_open_disposition_utils.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/vector_icon_types.h"
@@ -585,24 +586,44 @@ std::string SearchboxHandler::AutocompleteIconToResourceName(
   // - `omnibox::kB`
   // - `vector_icons::kA`
 
-  if (icon.name == omnibox::kAnswerCurrencyChromeRefreshOldIcon.name) {
+  if (icon.name == (features::IsRoundedIconsEnabled()
+                        ? omnibox::kAutorenewIcon.name
+                        : omnibox::kAnswerCurrencyChromeRefreshOldIcon.name)) {
     return kAnswerCurrencyIconResourceName;
-  } else if (icon.name == omnibox::kAnswerDefaultOldIcon.name) {
+  } else if (icon.name == omnibox::kAnswerDefaultIcon.name) {
     return kAnswerDefaultIconResourceName;
-  } else if (icon.name == omnibox::kAnswerDictionaryChromeRefreshOldIcon.name) {
+  } else if (icon.name ==
+             (features::IsRoundedIconsEnabled()
+                  ? omnibox::kBookIcon.name
+                  : omnibox::kAnswerDictionaryChromeRefreshOldIcon.name)) {
     return kAnswerDictionaryIconResourceName;
-  } else if (icon.name == omnibox::kAnswerFinanceChromeRefreshOldIcon.name) {
+  } else if (icon.name ==
+             (features::IsRoundedIconsEnabled()
+                  ? omnibox::kSwapVertIcon.name
+                  : omnibox::kAnswerFinanceChromeRefreshOldIcon.name)) {
     return kAnswerFinanceIconResourceName;
-  } else if (icon.name == omnibox::kAnswerSunriseChromeRefreshOldIcon.name) {
+  } else if (icon.name ==
+             (features::IsRoundedIconsEnabled()
+                  ? omnibox::kWbSunnyIcon.name
+                  : omnibox::kAnswerSunriseChromeRefreshOldIcon.name)) {
     return kAnswerSunriseIconResourceName;
   } else if (icon.name ==
-             omnibox::kAnswerTranslationChromeRefreshOldIcon.name) {
+             (features::IsRoundedIconsEnabled()
+                  ? omnibox::kTranslateIcon.name
+                  : omnibox::kAnswerTranslationChromeRefreshOldIcon.name)) {
     return kAnswerTranslationIconResourceName;
-  } else if (icon.name == omnibox::kBookmarkChromeRefreshOldIcon.name) {
+  } else if (icon.name == (features::IsRoundedIconsEnabled()
+                               ? omnibox::kStarIcon.name
+                               : omnibox::kBookmarkChromeRefreshOldIcon.name)) {
     return kBookmarkIconResourceName;
-  } else if (icon.name == omnibox::kCalculatorChromeRefreshOldIcon.name) {
+  } else if (icon.name ==
+             (features::IsRoundedIconsEnabled()
+                  ? omnibox::kEqualIcon.name
+                  : omnibox::kCalculatorChromeRefreshOldIcon.name)) {
     return kCalculatorIconResourceName;
-  } else if (icon.name == omnibox::kDinoCr2023OldIcon.name) {
+  } else if (icon.name == (features::IsRoundedIconsEnabled()
+                               ? omnibox::kOfflineDinoIcon.name
+                               : omnibox::kDinoCr2023OldIcon.name)) {
     return kDinoIconResourceName;
   } else if (icon.name == omnibox::kDriveDocsIcon.name) {
     return kDriveDocsIconResourceName;
@@ -622,35 +643,64 @@ std::string SearchboxHandler::AutocompleteIconToResourceName(
     return kDriveSlidesIconResourceName;
   } else if (icon.name == omnibox::kDriveVideoIcon.name) {
     return kDriveVideoIconResourceName;
-  } else if (icon.name == omnibox::kEnterpriseOldIcon.name) {
+  } else if (icon.name == (features::IsRoundedIconsEnabled()
+                               ? omnibox::kDomainIcon.name
+                               : omnibox::kEnterpriseOldIcon.name)) {
     return kEnterpriseIconResourceName;
-  } else if (icon.name == omnibox::kExtensionAppOldIcon.name) {
+  } else if (icon.name == (features::IsRoundedIconsEnabled()
+                               ? omnibox::kExtensionFilledIcon.name
+                               : omnibox::kExtensionAppOldIcon.name)) {
     return kExtensionAppIconResourceName;
-  } else if (icon.name == omnibox::kIncognitoCr2023OldIcon.name) {
+  } else if (icon.name == (features::IsRoundedIconsEnabled()
+                               ? omnibox::kIncognitoIcon.name
+                               : omnibox::kIncognitoCr2023OldIcon.name)) {
     return kIncognitoIconResourceName;
-  } else if (icon.name == omnibox::kJourneysChromeRefreshOldIcon.name) {
+  } else if (icon.name == (features::IsRoundedIconsEnabled()
+                               ? omnibox::kConversionPathIcon.name
+                               : omnibox::kJourneysChromeRefreshOldIcon.name)) {
     return kJourneysIconResourceName;
-  } else if (icon.name == omnibox::kJourneysOldIcon.name) {
+  } else if (icon.name == (features::IsRoundedIconsEnabled()
+                               ? omnibox::kConversionPathIcon.name
+                               : omnibox::kJourneysOldIcon.name)) {
     return kJourneysIconResourceName;
-  } else if (icon.name == omnibox::kNotesSparkOldIcon.name) {
+  } else if (icon.name == (features::IsRoundedIconsEnabled()
+                               ? omnibox::kNotesSparkIcon.name
+                               : omnibox::kNotesSparkOldIcon.name)) {
     return kNotesSparkIconResourceName;
-  } else if (icon.name == omnibox::kPageChromeRefreshOldIcon.name) {
+  } else if (icon.name == (features::IsRoundedIconsEnabled()
+                               ? omnibox::kPublicIcon.name
+                               : omnibox::kPageChromeRefreshOldIcon.name)) {
     return kPageIconResourceName;
-  } else if (icon.name == omnibox::kProductChromeRefreshOldIcon.name) {
+  } else if (icon.name == (features::IsRoundedIconsEnabled()
+                               ? omnibox::kChromeProductIcon.name
+                               : omnibox::kProductChromeRefreshOldIcon.name)) {
     return kPedalsIconResourceName;
   } else if (icon.name == omnibox::kReplyRotated180Icon.name) {
     return searchbox_internal::kReplyRotated180IconResourceName;
-  } else if (icon.name == omnibox::kSearchSparkOldIcon.name) {
+  } else if (icon.name == (features::IsRoundedIconsEnabled()
+                               ? omnibox::kSearchSparkIcon.name
+                               : omnibox::kSearchSparkOldIcon.name)) {
     return searchbox_internal::kSearchSparkIconResourceName;
   } else if (icon.name == omnibox::kSparkIcon.name) {
     return kSparkIconResourceName;
-  } else if (icon.name == omnibox::kStarActiveChromeRefreshOldIcon.name) {
+  } else if (icon.name ==
+             (features::IsRoundedIconsEnabled()
+                  ? omnibox::kStarFilledIcon.name
+                  : omnibox::kStarActiveChromeRefreshOldIcon.name)) {
     return kStarActiveIconResourceName;
-  } else if (icon.name == omnibox::kSubdirectoryArrowRightOldIcon.name) {
+  } else if (icon.name ==
+             (features::IsRoundedIconsEnabled()
+                  ? omnibox::kSubdirectoryArrowRightIcon.name
+                  : omnibox::kSubdirectoryArrowRightOldIcon.name)) {
     return kSubdirectoryArrowRightResourceName;
-  } else if (icon.name == omnibox::kSwitchCr2023OldIcon.name) {
+  } else if (icon.name == (features::IsRoundedIconsEnabled()
+                               ? omnibox::kTabIcon.name
+                               : omnibox::kSwitchCr2023OldIcon.name)) {
     return kTabIconResourceName;
-  } else if (icon.name == omnibox::kTrendingUpChromeRefreshOldIcon.name) {
+  } else if (icon.name ==
+             (features::IsRoundedIconsEnabled()
+                  ? omnibox::kTrendingUpIcon.name
+                  : omnibox::kTrendingUpChromeRefreshOldIcon.name)) {
     return kTrendingUpIconResourceName;
   } else if (icon.name == vector_icons::kHistoryChromeRefreshOldIcon.name) {
     return kHistoryIconResourceName;
@@ -686,19 +736,27 @@ std::string SearchboxHandler::AutocompleteIconToResourceName(
 #endif
 
 #if BUILDFLAG(IS_MAC)
-  if (icon.name == omnibox::kShareMacChromeRefreshOldIcon.name) {
+  if (icon.name == (features::IsRoundedIconsEnabled()
+                        ? omnibox::kIosShareIcon.name
+                        : omnibox::kShareMacChromeRefreshOldIcon.name)) {
     return kMacShareIconResourceName;
   }
 #elif BUILDFLAG(IS_WIN)
-  if (icon.name == omnibox::kShareWinChromeRefreshOldIcon.name) {
+  if (icon.name == (features::IsRoundedIconsEnabled()
+                        ? omnibox::kShareWindowsIcon.name
+                        : omnibox::kShareWinChromeRefreshOldIcon.name)) {
     return kWinShareIconResourceName;
   }
 #elif BUILDFLAG(IS_LINUX)
-  if (icon.name == omnibox::kShareLinuxChromeRefreshOldIcon.name) {
+  if (icon.name == (features::IsRoundedIconsEnabled()
+                        ? omnibox::kSendIcon.name
+                        : omnibox::kShareLinuxChromeRefreshOldIcon.name)) {
     return kLinuxShareIconResourceName;
   }
 #else
-  if (icon.name == omnibox::kShareChromeRefreshOldIcon.name) {
+  if (icon.name == (features::IsRoundedIconsEnabled()
+                        ? omnibox::kShareIcon.name
+                        : omnibox::kShareChromeRefreshOldIcon.name)) {
     return kShareIconResourceName;
   }
 #endif

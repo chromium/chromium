@@ -10,6 +10,7 @@
 #include "components/omnibox/browser/omnibox_client.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/ui_base_features.h"
 
 #if defined(SUPPORT_PEDALS_VECTOR_ICONS)
 #include "components/omnibox/browser/vector_icons.h"  // nogncheck
@@ -110,7 +111,9 @@ bool OmniboxAction::IsReadyToTrigger(
 #if defined(SUPPORT_PEDALS_VECTOR_ICONS)
 const gfx::VectorIcon& OmniboxAction::GetVectorIcon() const {
   // TODO(tommycli): Replace with real icon.
-  return omnibox::kProductChromeRefreshOldIcon;
+  return features::IsRoundedIconsEnabled()
+             ? omnibox::kChromeProductIcon
+             : omnibox::kProductChromeRefreshOldIcon;
 }
 #endif
 

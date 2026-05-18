@@ -17,6 +17,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/sessions/core/session_id.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
+#include "ui/base/ui_base_features.h"
 #include "url/gurl.h"
 
 namespace {
@@ -130,7 +131,9 @@ std::string LensSearchboxHandler::AutocompleteIconToResourceName(
   // The default icon for contextual suggestions is the subdirectory arrow right
   // icon. For the Lens searchbox, we want to stay consistent with the search
   // spark loupe instead.
-  if (icon.name == omnibox::kSubdirectoryArrowRightOldIcon.name) {
+  if (icon.name == (features::IsRoundedIconsEnabled()
+                        ? omnibox::kSubdirectoryArrowRightIcon.name
+                        : omnibox::kSubdirectoryArrowRightOldIcon.name)) {
     return searchbox_internal::kSearchSparkIconResourceName;
   }
 

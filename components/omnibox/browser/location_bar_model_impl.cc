@@ -27,6 +27,7 @@
 #include "net/cert/x509_certificate.h"
 #include "net/ssl/ssl_connection_status_flags.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/gfx/text_elider.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "url/gurl.h"
@@ -265,7 +266,8 @@ const gfx::VectorIcon& LocationBarModelImpl::GetVectorIcon() const {
     return *icon_override;
 
   if (IsOfflinePage())
-    return omnibox::kOfflinePinOldIcon;
+    return features::IsRoundedIconsEnabled() ? omnibox::kOfflinePinFilledIcon
+                                             : omnibox::kOfflinePinOldIcon;
 #endif
 
   return location_bar_model::GetSecurityVectorIcon(

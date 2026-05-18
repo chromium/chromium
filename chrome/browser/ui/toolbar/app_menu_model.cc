@@ -144,6 +144,7 @@
 #include "ui/base/models/image_model.h"
 #include "ui/base/models/menu_separator_types.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/gfx/color_palette.h"
@@ -2251,8 +2252,11 @@ bool AppMenuModel::AddDefaultBrowserMenuItems() {
     AddItemWithIcon(
         IDC_SET_BROWSER_AS_DEFAULT,
         l10n_util::GetStringUTF16(IDS_SET_BROWSER_AS_DEFAULT_MENU_ITEM),
-        ui::ImageModel::FromVectorIcon(omnibox::kProductChromeRefreshOldIcon,
-                                       ui::kColorMenuIcon, kDefaultIconSize));
+        ui::ImageModel::FromVectorIcon(
+            features::IsRoundedIconsEnabled()
+                ? omnibox::kChromeProductIcon
+                : omnibox::kProductChromeRefreshOldIcon,
+            ui::kColorMenuIcon, kDefaultIconSize));
     SetElementIdentifierAt(GetItemCount() - 1,
                            AppMenuModel::kSetBrowserAsDefaultMenuItem);
     return true;

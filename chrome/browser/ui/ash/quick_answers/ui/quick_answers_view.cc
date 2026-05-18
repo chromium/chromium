@@ -45,6 +45,7 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
@@ -127,16 +128,20 @@ const gfx::Insets GetIconInsets(Design design) {
 
 const gfx::VectorIcon& GetVectorIcon(std::optional<Intent> intent) {
   if (!intent) {
-    return omnibox::kAnswerDefaultOldIcon;
+    return omnibox::kAnswerDefaultIcon;
   }
 
   switch (intent.value()) {
     case Intent::kDefinition:
       return chromeos::kDictionaryIcon;
     case Intent::kTranslation:
-      return omnibox::kAnswerTranslationOldIcon;
+      return features::IsRoundedIconsEnabled()
+                 ? omnibox::kTranslateIcon
+                 : omnibox::kAnswerTranslationOldIcon;
     case Intent::kUnitConversion:
-      return omnibox::kAnswerCalculatorOldIcon;
+      return features::IsRoundedIconsEnabled()
+                 ? omnibox::kEqualIcon
+                 : omnibox::kAnswerCalculatorOldIcon;
   }
 
   NOTREACHED() << "Invalid intent enum value specified";

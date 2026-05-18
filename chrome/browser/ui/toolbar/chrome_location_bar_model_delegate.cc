@@ -37,6 +37,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/url_constants.h"
 #include "extensions/common/constants.h"
+#include "ui/base/ui_base_features.h"
 #include "url/gurl.h"
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -190,7 +191,9 @@ const gfx::VectorIcon* ChromeLocationBarModelDelegate::GetVectorIconOverride()
   }
 
   if (url.SchemeIs(content::kChromeUIScheme)) {
-    return &omnibox::kProductChromeRefreshOldIcon;
+    return &(features::IsRoundedIconsEnabled()
+                 ? omnibox::kChromeProductIcon
+                 : omnibox::kProductChromeRefreshOldIcon);
   }
 
   if (url.SchemeIs(extensions::kExtensionScheme)) {

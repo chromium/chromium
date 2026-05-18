@@ -34,6 +34,7 @@
 #include "net/cookies/cookie_util.h"
 #include "third_party/metrics_proto/omnibox_focus_type.pb.h"
 #include "third_party/omnibox_proto/types.pb.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/base/webui/resource_path.h"
 #include "ui/base/window_open_disposition_utils.h"
 
@@ -102,7 +103,9 @@ std::string RealboxHandler::AutocompleteIconToResourceName(
   // The default icon for contextual suggestions is the subdirectory arrow right
   // icon. For the Lens composebox and realbox, we want to stay consistent with
   // the search spark loupe instead.
-  if (icon.name == omnibox::kSubdirectoryArrowRightOldIcon.name) {
+  if (icon.name == (features::IsRoundedIconsEnabled()
+                        ? omnibox::kSubdirectoryArrowRightIcon.name
+                        : omnibox::kSubdirectoryArrowRightOldIcon.name)) {
     return searchbox_internal::kSearchSparkIconResourceName;
   }
 

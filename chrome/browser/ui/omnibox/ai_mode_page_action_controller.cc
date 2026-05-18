@@ -29,6 +29,7 @@
 #include "components/tabs/public/tab_interface.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/view.h"
@@ -54,7 +55,9 @@ void SetPageActionVisibility(
         ui::ImageModel::FromImageGenerator(
             base::BindRepeating([](const ui::ColorProvider* color_provider) {
               return gfx::CreateVectorIcon(
-                  omnibox::kSearchSparkOldIcon,
+                  features::IsRoundedIconsEnabled()
+                      ? omnibox::kSearchSparkIcon
+                      : omnibox::kSearchSparkOldIcon,
                   GetLayoutConstant(LayoutConstant::kLocationBarChipIconSize),
                   color_provider->GetColor(kColorOmniboxIconForegroundTonal));
             }),

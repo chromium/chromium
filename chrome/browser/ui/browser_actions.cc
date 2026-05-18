@@ -615,7 +615,9 @@ void BrowserActions::InitializePageActionIconActions() {
           .SetActionId(kActionFind)
           .SetTooltipText(l10n_util::GetStringUTF16(IDS_TOOLTIP_FIND))
           .SetImage(ui::ImageModel::FromVectorIcon(
-              omnibox::kFindInPageChromeRefreshOldIcon))
+              features::IsRoundedIconsEnabled()
+                  ? omnibox::kFindInPageIcon
+                  : omnibox::kFindInPageChromeRefreshOldIcon))
           .Build());
 
   root_action_item_->AddChild(
@@ -1370,8 +1372,9 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
           .SetText(l10n_util::GetStringUTF16(IDS_AI_MODE_ENTRYPOINT_LABEL))
           .SetTooltipText(l10n_util::GetStringUTF16(
               IDS_STARTER_PACK_AI_MODE_ACTION_SUGGESTION_CONTENTS))
-          .SetImage(
-              ui::ImageModel::FromVectorIcon(omnibox::kSearchSparkOldIcon))
+          .SetImage(ui::ImageModel::FromVectorIcon(
+              features::IsRoundedIconsEnabled() ? omnibox::kSearchSparkIcon
+                                                : omnibox::kSearchSparkOldIcon))
           .SetProperty(actions::kActionItemPinnableKey, false)
           .Build());
 

@@ -17,6 +17,7 @@
 #include "components/omnibox/resources/grit/omnibox_pedal_synonyms.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/ui_base_features.h"
 
 #if defined(SUPPORT_PEDALS_VECTOR_ICONS)
 #include "components/omnibox/browser/vector_icons.h"  // nogncheck
@@ -252,7 +253,9 @@ void OmniboxPedal::SetNavigationUrl(const GURL& url) {
 #if defined(SUPPORT_PEDALS_VECTOR_ICONS)
 // static
 const gfx::VectorIcon& OmniboxPedal::GetDefaultVectorIcon() {
-  return omnibox::kProductChromeRefreshOldIcon;
+  return features::IsRoundedIconsEnabled()
+             ? omnibox::kChromeProductIcon
+             : omnibox::kProductChromeRefreshOldIcon;
 }
 
 const gfx::VectorIcon& OmniboxPedal::GetVectorIcon() const {

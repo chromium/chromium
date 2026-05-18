@@ -10,6 +10,7 @@
 #include "components/search_engines/template_url_starter_pack_data.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/ui_base_features.h"
 
 #if defined(SUPPORT_PEDALS_VECTOR_ICONS)
 #include "build/branding_buildflags.h"                // nogncheck
@@ -165,7 +166,9 @@ void StarterPackBookmarksAction::Execute(ExecutionContext& context) const {
 
 #if defined(SUPPORT_PEDALS_VECTOR_ICONS)
 const gfx::VectorIcon& StarterPackBookmarksAction::GetVectorIcon() const {
-  return omnibox::kStarActiveChromeRefreshOldIcon;
+  return features::IsRoundedIconsEnabled()
+             ? omnibox::kStarFilledIcon
+             : omnibox::kStarActiveChromeRefreshOldIcon;
 }
 #endif  // defined(SUPPORT_PEDALS_VECTOR_ICONS)
 
@@ -229,7 +232,9 @@ void StarterPackTabsAction::Execute(ExecutionContext& context) const {
 
 #if defined(SUPPORT_PEDALS_VECTOR_ICONS)
 const gfx::VectorIcon& StarterPackTabsAction::GetVectorIcon() const {
-  return omnibox::kProductChromeRefreshOldIcon;
+  return features::IsRoundedIconsEnabled()
+             ? omnibox::kChromeProductIcon
+             : omnibox::kProductChromeRefreshOldIcon;
 }
 #endif  // defined(SUPPORT_PEDALS_VECTOR_ICONS)
 
@@ -261,7 +266,8 @@ void StarterPackAiModeAction::Execute(ExecutionContext& context) const {
 
 #if defined(SUPPORT_PEDALS_VECTOR_ICONS)
 const gfx::VectorIcon& StarterPackAiModeAction::GetVectorIcon() const {
-  return omnibox::kSearchSparkOldIcon;
+  return features::IsRoundedIconsEnabled() ? omnibox::kSearchSparkIcon
+                                           : omnibox::kSearchSparkOldIcon;
 }
 #endif  // defined(SUPPORT_PEDALS_VECTOR_ICONS)
 

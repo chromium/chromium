@@ -24,6 +24,7 @@
 #include "components/omnibox/browser/autocomplete_result.h"
 #include "components/strings/grit/components_strings.h"
 #include "net/base/url_util.h"
+#include "ui/base/ui_base_features.h"
 
 #if defined(SUPPORT_PEDALS_VECTOR_ICONS)
 #include "components/omnibox/browser/vector_icons.h"  // nogncheck
@@ -135,7 +136,8 @@ OmniboxActionId HistoryClustersAction::ActionId() const {
 
 #if defined(SUPPORT_PEDALS_VECTOR_ICONS)
 const gfx::VectorIcon& HistoryClustersAction::GetVectorIcon() const {
-  return omnibox::kJourneysOldIcon;
+  return features::IsRoundedIconsEnabled() ? omnibox::kConversionPathIcon
+                                           : omnibox::kJourneysOldIcon;
 }
 #endif
 

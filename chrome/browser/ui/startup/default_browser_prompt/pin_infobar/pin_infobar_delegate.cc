@@ -19,6 +19,7 @@
 #include "components/omnibox/browser/vector_icons.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/ui_base_features.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "chrome/browser/win/taskbar_manager.h"
@@ -97,7 +98,9 @@ infobars::InfoBarDelegate::InfoBarIdentifier PinInfoBarDelegate::GetIdentifier()
 }
 
 const gfx::VectorIcon& PinInfoBarDelegate::GetVectorIcon() const {
-  return dark_mode() ? omnibox::kProductChromeRefreshOldIcon
+  return dark_mode() ? features::IsRoundedIconsEnabled()
+                           ? omnibox::kChromeProductIcon
+                           : omnibox::kProductChromeRefreshOldIcon
                      : vector_icons::kProductRefreshIcon;
 }
 

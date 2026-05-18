@@ -26,6 +26,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/url_constants.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
 namespace {
@@ -141,8 +142,12 @@ void BookmarkPageActionController::SetStarred(bool starred) {
   page_action_controller_->OverrideImage(
       kActionBookmarkThisTab,
       ui::ImageModel::FromVectorIcon(
-          starred ? omnibox::kStarActiveChromeRefreshOldIcon
-                  : omnibox::kStarChromeRefreshOldIcon),
+          starred ? features::IsRoundedIconsEnabled()
+                        ? omnibox::kStarFilledIcon
+                        : omnibox::kStarActiveChromeRefreshOldIcon
+          : features::IsRoundedIconsEnabled()
+              ? omnibox::kStarIcon
+              : omnibox::kStarChromeRefreshOldIcon),
       starred ? page_actions::PageActionColorSource::kCascadingAccent
               : page_actions::PageActionColorSource::kForeground);
 }

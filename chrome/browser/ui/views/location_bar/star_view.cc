@@ -37,6 +37,7 @@
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -129,8 +130,12 @@ views::BubbleDialogDelegate* StarView::GetBubble() const {
 }
 
 const gfx::VectorIcon& StarView::GetVectorIcon() const {
-  return GetActive() ? omnibox::kStarActiveChromeRefreshOldIcon
-                     : omnibox::kStarChromeRefreshOldIcon;
+  return GetActive() ? features::IsRoundedIconsEnabled()
+                           ? omnibox::kStarFilledIcon
+                           : omnibox::kStarActiveChromeRefreshOldIcon
+         : features::IsRoundedIconsEnabled()
+             ? omnibox::kStarIcon
+             : omnibox::kStarChromeRefreshOldIcon;
 }
 
 std::u16string StarView::GetTextForTooltipAndAccessibleName() const {

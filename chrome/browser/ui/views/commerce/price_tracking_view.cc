@@ -19,6 +19,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/geometry/insets_outsets_base.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -65,9 +66,11 @@ PriceTrackingView::PriceTrackingView(Profile* profile,
 
   // Icon column
   auto* icon = AddChildView(std::make_unique<views::ImageView>());
-  icon->SetImage(
-      ui::ImageModel::FromVectorIcon(omnibox::kPriceTrackingDisabledOldIcon,
-                                     kColorBookmarkDialogTrackPriceIcon));
+  icon->SetImage(ui::ImageModel::FromVectorIcon(
+      features::IsRoundedIconsEnabled()
+          ? omnibox::kNotificationAddIcon
+          : omnibox::kPriceTrackingDisabledOldIcon,
+      kColorBookmarkDialogTrackPriceIcon));
   icon->SetImageSize(GetIconSize());
   icon->SetProperty(views::kMarginsKey,
                     gfx::Insets::TLBR(0, 0, 0, GetIconMargin()));

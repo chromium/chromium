@@ -44,6 +44,7 @@
 #include "ui/base/models/image_model.h"
 #include "ui/base/models/image_model_utils.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider_manager.h"
 #include "ui/gfx/canvas.h"
@@ -482,7 +483,10 @@ std::optional<ui::ImageModel> GetIconImageModelFromIcon(Suggestion::Icon icon) {
     case Suggestion::Icon::kSaveAndFill:
       return ImageModelFromVectorIcon(kCreditCardOldIcon, kIconSize);
     case Suggestion::Icon::kSettings:
-      return ImageModelFromVectorIcon(omnibox::kProductOldIcon, kIconSize);
+      return ImageModelFromVectorIcon(::features::IsRoundedIconsEnabled()
+                                          ? omnibox::kChromeProductIcon
+                                          : omnibox::kProductOldIcon,
+                                      kIconSize);
     case Suggestion::Icon::kUndo:
       return ImageModelFromVectorIcon(vector_icons::kUndoOldIcon, kIconSize);
     case Suggestion::Icon::kGooglePasswordManager:

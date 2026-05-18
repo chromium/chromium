@@ -30,7 +30,7 @@ aggregate_vector_icons("omnibox_vector_icons") {
     "answer_calculator_old.icon",
     "answer_currency_chrome_refresh_old.icon",
     "answer_currency_old.icon",
-    "answer_default_old.icon",
+    "answer_default.icon",
     "answer_dictionary_chrome_refresh_old.icon",
     "answer_dictionary_old.icon",
     "answer_finance_chrome_refresh_old.icon",
@@ -39,12 +39,18 @@ aggregate_vector_icons("omnibox_vector_icons") {
     "answer_sunrise_old.icon",
     "answer_translation_chrome_refresh_old.icon",
     "answer_translation_old.icon",
+    "autorenew.icon",
+    "backspace_filled.icon",
+    "book.icon",
     "bookmark_chrome_refresh_old.icon",
     "bookmark_old.icon",
     "calculator_chrome_refresh_old.icon",
     "calculator_old.icon",
+    "chrome_product.icon",
     "clear_old.icon",
+    "conversion_path.icon",
     "dino_cr2023_old.icon",
+    "domain.icon",
     "drive_docs.icon",
     "drive_folder.icon",
     "drive_forms.icon",
@@ -55,44 +61,78 @@ aggregate_vector_icons("omnibox_vector_icons") {
     "drive_slides.icon",
     "drive_video.icon",
     "enterprise_old.icon",
+    "equal.icon",
     "extension_app_old.icon",
+    "extension_filled.icon",
+    "find_in_page.icon",
     "find_in_page_chrome_refresh_old.icon",
     "http_chrome_refresh_old.icon",
     "http_old.icon",
+    "incognito.icon",
     "incognito_cr2023_old.icon",
+    "info.icon",
+    "install_desktop.icon",
     "install_desktop_old.icon",
     "journeys_chrome_refresh_old.icon",
     "journeys_old.icon",
+    "notes_spark.icon",
     "notes_spark_old.icon",
+    "notification_add.icon",
+    "offline_dino.icon",
+    "offline_pin_filled.icon",
     "offline_pin_old.icon",
     "page_chrome_refresh_old.icon",
+    "page_info.icon",
     "price_tracking_disabled_old.icon",
     "product_chrome_refresh_old.icon",
     "product_old.icon",
+    "public.icon",
     "reply_rotated180.icon",
+    "search_spark.icon",
     "search_spark_old.icon",
     "secure_page_info_chrome_refresh_old.icon",
+    "share.icon",
     "share_chrome_refresh_old.icon",
     "spark.icon",
+    "star.icon",
     "star_active_chrome_refresh_old.icon",
     "star_chrome_refresh_old.icon",
+    "star_filled.icon",
+    "stars_filled.icon",
+    "subdirectory_arrow_right.icon",
     "subdirectory_arrow_right_old.icon",
+    "summarize_auto.icon",
     "summarize_auto_old.icon",
+    "swap_vert.icon",
     "switch_cr2023_old.icon",
     "switch_old.icon",
+    "tab.icon",
+    "translate.icon",
+    "trending_up.icon",
     "trending_up_chrome_refresh_old.icon",
+    "wb_sunny.icon",
+    "wb_sunny_filled.icon",
   ]
 
   if (is_mac) {
-    sources += [ "share_mac_chrome_refresh_old.icon" ]
+    sources += [
+      "ios_share.icon",
+      "share_mac_chrome_refresh_old.icon",
+    ]
   }
 
   if (is_win) {
-    sources += [ "share_win_chrome_refresh_old.icon" ]
+    sources += [
+      "share_win_chrome_refresh_old.icon",
+      "share_windows.icon",
+    ]
   }
 
   if (is_linux) {
-    sources += [ "share_linux_chrome_refresh_old.icon" ]
+    sources += [
+      "send.icon",
+      "share_linux_chrome_refresh_old.icon",
+    ]
   }
 }
 

@@ -54,6 +54,7 @@
 #include "third_party/omnibox_proto/searchbox_config.pb.h"
 #include "third_party/omnibox_proto/tool_config.pb.h"
 #include "third_party/omnibox_proto/tool_mode.pb.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/base/unowned_user_data/unowned_user_data_host.h"
 #include "ui/base/webui/web_ui_util.h"
 
@@ -547,7 +548,9 @@ TEST_F(LensSearchboxHandlerTest, Lens_AutocompleteController_Start) {
     const char search_icon[] =
         "//resources/cr_components/searchbox/icons/search_spark.svg";
     const std::string& svg_name = handler_->AutocompleteIconToResourceName(
-        omnibox::kSubdirectoryArrowRightOldIcon);
+        features::IsRoundedIconsEnabled()
+            ? omnibox::kSubdirectoryArrowRightIcon
+            : omnibox::kSubdirectoryArrowRightOldIcon);
 
     EXPECT_EQ(svg_name, search_icon);
   }

@@ -21,6 +21,7 @@
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/gfx/native_ui_types.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -131,7 +132,9 @@ infobars::InfoBarDelegate::InfoBarIdentifier PdfInfoBarDelegate::GetIdentifier()
 }
 
 const gfx::VectorIcon& PdfInfoBarDelegate::GetVectorIcon() const {
-  return dark_mode() ? omnibox::kProductChromeRefreshOldIcon
+  return dark_mode() ? features::IsRoundedIconsEnabled()
+                           ? omnibox::kChromeProductIcon
+                           : omnibox::kProductChromeRefreshOldIcon
                      : vector_icons::kProductRefreshIcon;
 }
 

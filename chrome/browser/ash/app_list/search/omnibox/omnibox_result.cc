@@ -29,6 +29,7 @@
 #include "extensions/common/image_util.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/base/window_open_disposition_utils.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "url/gurl.h"
@@ -217,11 +218,13 @@ void OmniboxResult::SetGenericIcon() {
   // If this is neither a rich entity nor eligible for a favicon, use either
   // the generic bookmark or another generic icon as appropriate.
   if (search_result_->omnibox_type == OmniboxResultType::kBookmark) {
-    SetIcon(IconInfo(ui::ImageModel::FromVectorIcon(omnibox::kBookmarkOldIcon,
-                                                    kGenericIconColorId,
-                                                    kSystemIconDimension),
+    SetIcon(IconInfo(
+        ui::ImageModel::FromVectorIcon(
+            features::IsRoundedIconsEnabled() ? omnibox::kStarsFilledIcon
+                                              : omnibox::kBookmarkOldIcon,
+            kGenericIconColorId, kSystemIconDimension),
 
-                     kSystemIconDimension));
+        kSystemIconDimension));
   } else {
     SetIcon(IconInfo(ui::ImageModel::FromVectorIcon(
                          TypeToVectorIcon(search_result_->omnibox_type),

@@ -31,9 +31,13 @@ const gfx::VectorIcon& GetSecurityVectorIcon(
 
   switch (security_level) {
     case security_state::NONE:
-      return omnibox::kHttpChromeRefreshOldIcon;
+      return features::IsRoundedIconsEnabled()
+                 ? omnibox::kInfoIcon
+                 : omnibox::kHttpChromeRefreshOldIcon;
     case security_state::SECURE:
-      return omnibox::kSecurePageInfoChromeRefreshOldIcon;
+      return features::IsRoundedIconsEnabled()
+                 ? omnibox::kPageInfoIcon
+                 : omnibox::kSecurePageInfoChromeRefreshOldIcon;
     case security_state::WARNING:
       if (base::FeatureList::IsEnabled(
               security_interstitials::features::kHttpsFirstDialogUi) &&

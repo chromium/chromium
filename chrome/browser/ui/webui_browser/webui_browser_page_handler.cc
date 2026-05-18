@@ -38,6 +38,7 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/interaction/element_tracker.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/views/controls/menu/menu_model_adapter.h"
 #include "ui/views/controls/menu/menu_runner.h"
@@ -120,9 +121,13 @@ class WebUIBrowserGuestHandler
                       .location_bar_model()
                       ->GetVectorIcon();
     webui_browser::mojom::SecurityIcon icon_type;
-    if (icon == &omnibox::kHttpChromeRefreshOldIcon) {
+    if (icon == &(features::IsRoundedIconsEnabled()
+                      ? omnibox::kInfoIcon
+                      : omnibox::kHttpChromeRefreshOldIcon)) {
       icon_type = webui_browser::mojom::SecurityIcon::HttpChromeRefresh;
-    } else if (icon == &omnibox::kSecurePageInfoChromeRefreshOldIcon) {
+    } else if (icon == &(features::IsRoundedIconsEnabled()
+                             ? omnibox::kPageInfoIcon
+                             : omnibox::kSecurePageInfoChromeRefreshOldIcon)) {
       icon_type =
           webui_browser::mojom::SecurityIcon::SecurePageInfoChromeRefresh;
     } else if (icon == &vector_icons::kNoEncryptionOldIcon) {
@@ -134,11 +139,15 @@ class WebUIBrowserGuestHandler
       icon_type = webui_browser::mojom::SecurityIcon::BusinessChromeRefresh;
     } else if (icon == &vector_icons::kDangerousChromeRefreshOldIcon) {
       icon_type = webui_browser::mojom::SecurityIcon::DangerousChromeRefresh;
-    } else if (icon == &omnibox::kProductChromeRefreshOldIcon) {
+    } else if (icon == &(features::IsRoundedIconsEnabled()
+                             ? omnibox::kChromeProductIcon
+                             : omnibox::kProductChromeRefreshOldIcon)) {
       icon_type = webui_browser::mojom::SecurityIcon::ProductChromeRefresh;
     } else if (icon == &vector_icons::kExtensionChromeRefreshOldIcon) {
       icon_type = webui_browser::mojom::SecurityIcon::ExtensionChromeRefresh;
-    } else if (icon == &omnibox::kOfflinePinOldIcon) {
+    } else if (icon == &(features::IsRoundedIconsEnabled()
+                             ? omnibox::kOfflinePinFilledIcon
+                             : omnibox::kOfflinePinOldIcon)) {
       icon_type = webui_browser::mojom::SecurityIcon::OfflinePin;
     } else {
       CHECK(false) << "Add new icon to webui_browsers's browser.mojom and "

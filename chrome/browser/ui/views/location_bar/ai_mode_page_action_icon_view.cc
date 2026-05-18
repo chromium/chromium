@@ -28,6 +28,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/events/event.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -79,7 +80,8 @@ views::BubbleDialogDelegate* AiModePageActionIconView::GetBubble() const {
 }
 
 const gfx::VectorIcon& AiModePageActionIconView::GetVectorIcon() const {
-  return omnibox::kSearchSparkOldIcon;
+  return features::IsRoundedIconsEnabled() ? omnibox::kSearchSparkIcon
+                                           : omnibox::kSearchSparkOldIcon;
 }
 
 void AiModePageActionIconView::UpdateIconImage() {

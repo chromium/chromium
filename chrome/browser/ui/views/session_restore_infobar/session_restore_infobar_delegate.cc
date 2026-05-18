@@ -24,6 +24,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/gfx/vector_icon_types.h"
 
 namespace session_restore_infobar {
@@ -141,7 +142,9 @@ SessionRestoreInfoBarDelegate::GetIdentifier() const {
 }
 
 const gfx::VectorIcon& SessionRestoreInfoBarDelegate::GetVectorIcon() const {
-  return dark_mode() ? omnibox::kProductChromeRefreshOldIcon
+  return dark_mode() ? features::IsRoundedIconsEnabled()
+                           ? omnibox::kChromeProductIcon
+                           : omnibox::kProductChromeRefreshOldIcon
                      : vector_icons::kProductRefreshIcon;
 }
 
