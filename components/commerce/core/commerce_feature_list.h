@@ -41,8 +41,6 @@ extern const char kPriceInsightsUseCacheParam[];
 extern const base::FeatureParam<bool> kPriceInsightsUseCache;
 BASE_DECLARE_FEATURE(kTabResumptionShopCard);
 
-std::string ShopCardExperiment();
-
 BASE_DECLARE_FEATURE(kShoppingList);
 BASE_DECLARE_FEATURE(kPriceTrackingSubscriptionServiceLocaleKey);
 BASE_DECLARE_FEATURE(kShoppingPageTypes);
@@ -155,9 +153,6 @@ constexpr base::FeatureParam<std::string> kCheckoutPatternMapping{
     &ntp_features::kNtpChromeCartModule, "checkout-pattern-mapping",
     // Empty JSON string.
     ""};
-
-extern const char kShopCardArm1[];
-extern const char kShopCardMaxImpressions[];
 
 // Check if a URL belongs to a partner merchant of any type of discount.
 bool IsPartnerMerchant(const GURL& url);

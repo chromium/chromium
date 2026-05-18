@@ -233,9 +233,6 @@ BASE_FEATURE(kCommerceDeveloper, base::FEATURE_DISABLED_BY_DEFAULT);
 
 const char kRetailCouponsWithCodeParam[] = "RetailCouponsWithCodeParam";
 
-extern const char kShopCardArm1[] = "arm_1";
-extern const char kShopCardMaxImpressions[] = "max_impressions";
-
 const char kRevertIconOnFailureParam[] =
     "shopping-list-revert-page-action-icon-on-failure";
 const base::FeatureParam<bool> kRevertIconOnFailure{
