@@ -150,7 +150,7 @@ class GlicInstanceImpl : public GlicInstance,
 
   bool HasActiveEmbedder() const;
   bool IsDetached();
-  bool IsActuating() const;
+  bool IsActuating() const override;
   bool IsLiveMode();
 
   glic::mojom::ConversationInfoPtr GetConversationInfo() const;
