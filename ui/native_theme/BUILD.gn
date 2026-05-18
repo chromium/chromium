@@ -5,6 +5,11 @@
 import("//build/config/ui.gni")
 import("//testing/test.gni")
 
+if (is_android) {
+  import("//build/config/android/rules.gni")
+  import("//third_party/jni_zero/jni_zero.gni")
+}
+
 component("native_theme") {
   sources = [
     "caption_style.cc",
@@ -51,7 +56,10 @@ component("native_theme") {
       "os_settings_provider_android.h",
     ]
 
-    deps += [ "//ui/accessibility:ax_base_android" ]
+    deps += [
+      ":jni_headers",
+      "//ui/accessibility:ax_base_android",
+    ]
   }
 
   if (is_android || is_ios) {
@@ -165,5 +173,24 @@ test("native_theme_unittests") {
 
   if (is_win || is_linux) {
     sources += [ "native_theme_fluent_unittest.cc" ]
+  }
+
+  if (is_android) {
+    sources += [ "os_settings_provider_android_unittest.cc" ]
+  }
+}
+
+if (is_android) {
+  android_library("os_settings_provider_android_bridge_java") {
+    sources = [ "android/java/src/org/chromium/ui/native_theme/OsSettingsProviderAndroidBridge.java" ]
+    deps = [
+      "//base:base_java",
+      "//third_party/jni_zero:jni_zero_java",
+    ]
+    srcjar_deps = [ ":jni_headers" ]
+  }
+
+  generate_jni("jni_headers") {
+    sources = [ "android/java/src/org/chromium/ui/native_theme/OsSettingsProviderAndroidBridge.java" ]
   }
 }

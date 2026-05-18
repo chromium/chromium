@@ -855,6 +855,7 @@ if (_is_default_toolchain) {
       "//ui/base/mojom:mojom_java",
       "//ui/edge_to_edge:java",
       "//ui/gfx/geometry/mojom:mojom_java",
+      "//ui/native_theme:os_settings_provider_android_bridge_java",
       "//url:gurl_java",
       "//url/mojom:url_mojom_gurl_java",
       "//url/mojom:url_mojom_origin_java",
