@@ -20,20 +20,20 @@ build_webui("resources") {
   grd_prefix = "accessibility_annotator_info"
 
   static_files = [
-    "accessibility_annotator_info.html",
+    "personal_context_notice.html",
     "keyboard.svg",
   ]
 
-  css_files = [ "accessibility_annotator_info.css" ]
+  css_files = [ "personal_context_notice.css" ]
 
   ts_files = [
-    "accessibility_annotator_info.ts",
-    "accessibility_annotator_info.html.ts",
+    "personal_context_notice.ts",
+    "personal_context_notice.html.ts",
     "browser_proxy.ts",
   ]
 
   mojo_files_deps = [ "//chrome/browser/ui/webui/accessibility_annotator:mojo_bindings_ts__generator" ]
-  mojo_files = [ "$root_gen_dir/chrome/browser/ui/webui/accessibility_annotator/accessibility_annotator_info.mojom-webui.ts" ]
+  mojo_files = [ "$root_gen_dir/chrome/browser/ui/webui/accessibility_annotator/personal_context_notice.mojom-webui.ts" ]
 
   ts_composite = true
   ts_deps = [

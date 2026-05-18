@@ -3,16 +3,16 @@ import("//mojo/public/tools/bindings/mojom.gni")
 assert(!is_android)
 
 mojom("mojo_bindings") {
-  sources = [ "accessibility_annotator_info.mojom" ]
+  sources = [ "personal_context_notice.mojom" ]
   webui_module_path = "/"
 }
 
 source_set("accessibility_annotator") {
   sources = [
-    "accessibility_annotator_info_page_handler.cc",
-    "accessibility_annotator_info_page_handler.h",
-    "accessibility_annotator_info_ui.cc",
-    "accessibility_annotator_info_ui.h",
+    "personal_context_notice_page_handler.cc",
+    "personal_context_notice_page_handler.h",
+    "personal_context_notice_ui.cc",
+    "personal_context_notice_ui.h",
   ]
 
   public_deps = [ ":mojo_bindings" ]
@@ -40,7 +40,7 @@ source_set("accessibility_annotator") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "accessibility_annotator_info_page_handler_unittest.cc" ]
+  sources = [ "personal_context_notice_page_handler_unittest.cc" ]
   deps = [
     ":accessibility_annotator",
     "//base/test:test_support",

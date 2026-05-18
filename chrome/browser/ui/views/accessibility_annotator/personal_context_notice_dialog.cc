@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/accessibility_annotator/accessibility_annotator_info_dialog.h"
+#include "chrome/browser/ui/views/accessibility_annotator/personal_context_notice_dialog.h"
 
 #include <utility>
 
@@ -12,15 +12,15 @@
 #include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/views/controls/webview/webview.h"
 
-namespace accessibility_annotator::info {
+namespace personal_context::notice {
 
 namespace {
 constexpr int kBubbleWidth = 448;
 }  // namespace
 
-AccessibilityAnnotatorInfoDialog::AccessibilityAnnotatorInfoDialog(
+PersonalContextNoticeDialog::PersonalContextNoticeDialog(
     views::View* anchor_view,
-    std::unique_ptr<WebUIContentsWrapperT<AccessibilityAnnotatorInfoUI>>
+    std::unique_ptr<WebUIContentsWrapperT<PersonalContextNoticeUI>>
         contents_wrapper)
     : WebUIBubbleDialogView(anchor_view,
                             contents_wrapper->GetWeakPtr(),
@@ -34,9 +34,9 @@ AccessibilityAnnotatorInfoDialog::AccessibilityAnnotatorInfoDialog(
   set_margins(gfx::Insets());
 }
 
-AccessibilityAnnotatorInfoDialog::~AccessibilityAnnotatorInfoDialog() = default;
+PersonalContextNoticeDialog::~PersonalContextNoticeDialog() = default;
 
-BEGIN_METADATA(AccessibilityAnnotatorInfoDialog)
+BEGIN_METADATA(PersonalContextNoticeDialog)
 END_METADATA
 
-}  // namespace accessibility_annotator::info
+}  // namespace personal_context::notice

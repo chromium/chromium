@@ -4,10 +4,10 @@ assert(is_win || is_mac || is_linux || is_chromeos)
 
 source_set("accessibility_annotator") {
   sources = [
-    "accessibility_annotator_info_dialog.cc",
-    "accessibility_annotator_info_dialog.h",
-    "accessibility_annotator_info_dialog_controller.cc",
-    "accessibility_annotator_info_dialog_controller.h",
+    "personal_context_notice_dialog.cc",
+    "personal_context_notice_dialog.h",
+    "personal_context_notice_dialog_controller.cc",
+    "personal_context_notice_dialog_controller.h",
   ]
 
   deps = [
@@ -32,7 +32,7 @@ source_set("browser_tests") {
 
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
-  sources = [ "accessibility_annotator_info_dialog_browsertest.cc" ]
+  sources = [ "personal_context_notice_dialog_browsertest.cc" ]
 
   deps = [
     ":accessibility_annotator",

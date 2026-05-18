@@ -6,14 +6,14 @@
 #include "chrome/test/base/web_ui_mocha_browser_test.h"
 #include "content/public/test/browser_test.h"
 
-class AccessibilityAnnotatorInfoTest : public WebUIMochaBrowserTest {
+class PersonalContextNoticeTest : public WebUIMochaBrowserTest {
  protected:
-  AccessibilityAnnotatorInfoTest() {
+  PersonalContextNoticeTest() {
     set_test_loader_host("accessibility-annotator-info");
   }
 };
 
-IN_PROC_BROWSER_TEST_F(AccessibilityAnnotatorInfoTest, App) {
-  RunTest("accessibility_annotator_info/accessibility_annotator_info_test.js",
+IN_PROC_BROWSER_TEST_F(PersonalContextNoticeTest, App) {
+  RunTest("accessibility_annotator_info/personal_context_notice_test.js",
           "mocha.run()");
 }

@@ -8,16 +8,16 @@ import '/strings.m.js';
 import {I18nMixinLit} from '//resources/cr_elements/i18n_mixin_lit.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
-import {getCss} from './accessibility_annotator_info.css.js';
-import {getHtml} from './accessibility_annotator_info.html.js';
-import {AccessibilityAnnotatorInfoBrowserProxy} from './browser_proxy.js';
+import {PersonalContextNoticeBrowserProxy} from './browser_proxy.js';
+import {getCss} from './personal_context_notice.css.js';
+import {getHtml} from './personal_context_notice.html.js';
 
-const AccessibilityAnnotatorInfoElementBase = I18nMixinLit(CrLitElement);
+const PersonalContextNoticeElementBase = I18nMixinLit(CrLitElement);
 
-export class AccessibilityAnnotatorInfoElement extends
-    AccessibilityAnnotatorInfoElementBase {
+export class PersonalContextNoticeElement extends
+    PersonalContextNoticeElementBase {
   static get is() {
-    return 'accessibility-annotator-info';
+    return 'personal-context-notice';
   }
 
   static override get styles() {
@@ -40,19 +40,19 @@ export class AccessibilityAnnotatorInfoElement extends
 
   override connectedCallback() {
     super.connectedCallback();
-    AccessibilityAnnotatorInfoBrowserProxy.getInstance()
+    PersonalContextNoticeBrowserProxy.getInstance()
         .handler.getAccountInfo()
         .then(response => {
           if (response.info) {
             this.email_ = response.info.email;
             this.avatarUrl_ = response.info.avatarUrl;
           }
-          AccessibilityAnnotatorInfoBrowserProxy.getInstance().handler.showUi();
+          PersonalContextNoticeBrowserProxy.getInstance().handler.showUi();
         });
   }
 
   protected onManageSettingsClick_() {
-    AccessibilityAnnotatorInfoBrowserProxy.getInstance()
+    PersonalContextNoticeBrowserProxy.getInstance()
         .handler.onManageSettingsClicked();
   }
 
@@ -60,22 +60,22 @@ export class AccessibilityAnnotatorInfoElement extends
     const target = e.target as HTMLElement;
     if (target.tagName === 'A') {
       e.preventDefault();
-      AccessibilityAnnotatorInfoBrowserProxy.getInstance()
+      PersonalContextNoticeBrowserProxy.getInstance()
           .handler.onLearnMoreClicked();
     }
   }
 
   protected onGotItClick_() {
-    AccessibilityAnnotatorInfoBrowserProxy.getInstance()
+    PersonalContextNoticeBrowserProxy.getInstance()
         .handler.onInfoAcknowledged();
   }
 }
 
 declare global {
   interface HTMLElementTagNameMap {
-    'accessibility-annotator-info': AccessibilityAnnotatorInfoElement;
+    'personal-context-notice': PersonalContextNoticeElement;
   }
 }
 
 customElements.define(
-    AccessibilityAnnotatorInfoElement.is, AccessibilityAnnotatorInfoElement);
+    PersonalContextNoticeElement.is, PersonalContextNoticeElement);

@@ -5,11 +5,11 @@
 import("../build_webui_tests.gni")
 
 build_webui_tests("build") {
-  cc_test_files = [ "accessibility_annotator_info_browsertest.cc" ]
+  cc_test_files = [ "personal_context_notice_browsertest.cc" ]
 
   files = [
-    "accessibility_annotator_info_test.ts",
-    "test_accessibility_annotator_info_browser_proxy.ts",
+    "personal_context_notice_test.ts",
+    "test_personal_context_notice_browser_proxy.ts",
   ]
 
   ts_path_mappings = [ "chrome://accessibility-annotator-info/*|" + rebase_path(

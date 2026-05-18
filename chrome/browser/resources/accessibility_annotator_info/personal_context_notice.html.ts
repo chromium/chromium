@@ -4,9 +4,9 @@
 
 import {html} from '//resources/lit/v3_0/lit.rollup.js';
 
-import type {AccessibilityAnnotatorInfoElement} from './accessibility_annotator_info.js';
+import type {PersonalContextNoticeElement} from './personal_context_notice.js';
 
-export function getHtml(this: AccessibilityAnnotatorInfoElement) {
+export function getHtml(this: PersonalContextNoticeElement) {
   // clang-format off
   return html`<!--_html_template_start_-->
 <div id="container">

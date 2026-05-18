@@ -2,34 +2,34 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://accessibility-annotator-info/accessibility_annotator_info.js';
+import 'chrome://accessibility-annotator-info/personal_context_notice.js';
 
-import type {AccessibilityAnnotatorInfoElement} from 'chrome://accessibility-annotator-info/accessibility_annotator_info.js';
-import {AccessibilityAnnotatorInfoBrowserProxy} from 'chrome://accessibility-annotator-info/browser_proxy.js';
+import {PersonalContextNoticeBrowserProxy} from 'chrome://accessibility-annotator-info/browser_proxy.js';
+import type {PersonalContextNoticeElement} from 'chrome://accessibility-annotator-info/personal_context_notice.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
-import {TestAccessibilityAnnotatorInfoBrowserProxy} from './test_accessibility_annotator_info_browser_proxy.js';
+import {TestPersonalContextNoticeBrowserProxy} from './test_personal_context_notice_browser_proxy.js';
 
 suite('AccessibilityAnnotatorInfoTest', function() {
-  let accessibilityAnnotatorInfoElement: AccessibilityAnnotatorInfoElement;
-  let browserProxy: TestAccessibilityAnnotatorInfoBrowserProxy;
+  let personalContextNoticeElement: PersonalContextNoticeElement;
+  let browserProxy: TestPersonalContextNoticeBrowserProxy;
 
   setup(async function() {
-    browserProxy = new TestAccessibilityAnnotatorInfoBrowserProxy();
-    AccessibilityAnnotatorInfoBrowserProxy.setInstance(browserProxy);
+    browserProxy = new TestPersonalContextNoticeBrowserProxy();
+    PersonalContextNoticeBrowserProxy.setInstance(browserProxy);
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    accessibilityAnnotatorInfoElement =
-        document.createElement('accessibility-annotator-info');
-    document.body.appendChild(accessibilityAnnotatorInfoElement);
+    personalContextNoticeElement =
+        document.createElement('personal-context-notice');
+    document.body.appendChild(personalContextNoticeElement);
     await microtasksFinished();
   });
 
   test('ManageSettingsClick', async function() {
     const manageSettingsButton =
-        accessibilityAnnotatorInfoElement.shadowRoot
-            ?.querySelector<HTMLElement>('#manageSettings');
+        personalContextNoticeElement.shadowRoot?.querySelector<HTMLElement>(
+            '#manageSettings');
     assertTrue(!!manageSettingsButton);
     manageSettingsButton.click();
     await browserProxy.handler.whenCalled('onManageSettingsClicked');
@@ -38,8 +38,9 @@ suite('AccessibilityAnnotatorInfoTest', function() {
   });
 
   test('GotItClick', async function() {
-    const gotItButton = accessibilityAnnotatorInfoElement.shadowRoot
-                            ?.querySelector<HTMLElement>('#gotIt');
+    const gotItButton =
+        personalContextNoticeElement.shadowRoot?.querySelector<HTMLElement>(
+            '#gotIt');
     assertTrue(!!gotItButton);
     gotItButton.click();
     await browserProxy.handler.whenCalled('onInfoAcknowledged');
@@ -54,46 +55,50 @@ suite('AccessibilityAnnotatorInfoTest', function() {
       avatarUrl: testAvatarUrl,
     });
 
-    accessibilityAnnotatorInfoElement =
-        document.createElement('accessibility-annotator-info');
-    document.body.appendChild(accessibilityAnnotatorInfoElement);
+    personalContextNoticeElement =
+        document.createElement('personal-context-notice');
+    document.body.appendChild(personalContextNoticeElement);
 
     await browserProxy.handler.whenCalled('getAccountInfo');
     await microtasksFinished();
 
-    const emailElement = accessibilityAnnotatorInfoElement.shadowRoot
-                             ?.querySelector<HTMLElement>('#email');
+    const emailElement =
+        personalContextNoticeElement.shadowRoot?.querySelector<HTMLElement>(
+            '#email');
     assertTrue(!!emailElement);
     assertEquals(testEmail, emailElement.textContent);
 
-    const avatarElement = accessibilityAnnotatorInfoElement.shadowRoot
+    const avatarElement = personalContextNoticeElement.shadowRoot
                               ?.querySelector<HTMLImageElement>('#avatar');
     assertTrue(!!avatarElement);
     assertEquals(testAvatarUrl, avatarElement.src);
 
-    const accountInfoDiv = accessibilityAnnotatorInfoElement.shadowRoot
-                               ?.querySelector<HTMLElement>('.account-info');
+    const accountInfoDiv =
+        personalContextNoticeElement.shadowRoot?.querySelector<HTMLElement>(
+            '.account-info');
     assertTrue(!!accountInfoDiv);
     assertFalse(accountInfoDiv.hidden);
   });
 
   test('HidesAccountInfoWhenEmpty', async function() {
-    accessibilityAnnotatorInfoElement =
-        document.createElement('accessibility-annotator-info');
-    document.body.appendChild(accessibilityAnnotatorInfoElement);
+    personalContextNoticeElement =
+        document.createElement('personal-context-notice');
+    document.body.appendChild(personalContextNoticeElement);
 
     await browserProxy.handler.whenCalled('getAccountInfo');
     await microtasksFinished();
 
-    const accountInfoDiv = accessibilityAnnotatorInfoElement.shadowRoot
-                               ?.querySelector<HTMLElement>('.account-info');
+    const accountInfoDiv =
+        personalContextNoticeElement.shadowRoot?.querySelector<HTMLElement>(
+            '.account-info');
     assertTrue(!!accountInfoDiv);
     assertTrue(accountInfoDiv.hidden);
   });
 
   test('RendersTriggerCard', function() {
-    const triggerCard = accessibilityAnnotatorInfoElement.shadowRoot
-                            ?.querySelector<HTMLElement>('#triggerCard');
+    const triggerCard =
+        personalContextNoticeElement.shadowRoot?.querySelector<HTMLElement>(
+            '#triggerCard');
     assertTrue(!!triggerCard);
 
     // Assert the formatting is there.

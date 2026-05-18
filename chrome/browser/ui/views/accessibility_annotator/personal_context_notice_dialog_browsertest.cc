@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/accessibility_annotator/accessibility_annotator_info_dialog.h"
+#include "chrome/browser/ui/views/accessibility_annotator/personal_context_notice_dialog.h"
 
 #include "base/functional/callback_helpers.h"
 #include "base/strings/stringprintf.h"
@@ -12,7 +12,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/browser/ui/views/accessibility_annotator/accessibility_annotator_info_dialog_controller.h"
+#include "chrome/browser/ui/views/accessibility_annotator/personal_context_notice_dialog_controller.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -28,18 +28,19 @@
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_utils.h"
 
-namespace accessibility_annotator::info {
+namespace personal_context::notice {
+using accessibility_annotator::InfoShowRequestResult;
 
 namespace {
 // This script is used to click a button in the dialog. The script waits for
-// the accessibility-annotator-info element and its shadow root button to
+// the personal-context-notice element and its shadow root button to
 // exist before clicking it using a Promise and a polling loop (e.g.
 // `setTimeout`).
 constexpr char kClickButtonScriptTemplate[] = R"(
   new Promise((resolve) => {
     const interval = setInterval(() => {
       const annotatorInfo =
-          document.querySelector('accessibility-annotator-info');
+          document.querySelector('personal-context-notice');
       if (annotatorInfo && annotatorInfo.shadowRoot) {
         const button = annotatorInfo.shadowRoot.querySelector('%s');
         if (button) {
@@ -54,18 +55,17 @@ constexpr char kClickButtonScriptTemplate[] = R"(
 
 }  // namespace
 
-class AccessibilityAnnotatorInfoDialogBrowserTest
-    : public InProcessBrowserTest {
+class PersonalContextNoticeDialogBrowserTest : public InProcessBrowserTest {
  public:
-  AccessibilityAnnotatorInfoDialogBrowserTest() = default;
-  ~AccessibilityAnnotatorInfoDialogBrowserTest() override = default;
+  PersonalContextNoticeDialogBrowserTest() = default;
+  ~PersonalContextNoticeDialogBrowserTest() override = default;
 
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
   }
 };
 
-IN_PROC_BROWSER_TEST_F(AccessibilityAnnotatorInfoDialogBrowserTest,
+IN_PROC_BROWSER_TEST_F(PersonalContextNoticeDialogBrowserTest,
                        InvokeUi_default) {
   base::HistogramTester histogram_tester;
   std::string histogram_name = "PersonalContext.NoticeInteractions";
@@ -75,7 +75,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityAnnotatorInfoDialogBrowserTest,
   Profile* profile = browser()->profile();
 
   auto controller =
-      std::make_unique<AccessibilityAnnotatorInfoDialogController>(profile);
+      std::make_unique<PersonalContextNoticeDialogController>(profile);
 
   content::TestNavigationObserver navigation_observer(
       GURL("chrome://accessibility-annotator-info/"));
@@ -99,14 +99,14 @@ IN_PROC_BROWSER_TEST_F(AccessibilityAnnotatorInfoDialogBrowserTest,
   controller->CloseDialog();
 }
 
-IN_PROC_BROWSER_TEST_F(AccessibilityAnnotatorInfoDialogBrowserTest,
+IN_PROC_BROWSER_TEST_F(PersonalContextNoticeDialogBrowserTest,
                        ManageSettingsClickOpensNewTab) {
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   Profile* profile = browser()->profile();
 
   auto controller =
-      std::make_unique<AccessibilityAnnotatorInfoDialogController>(profile);
+      std::make_unique<PersonalContextNoticeDialogController>(profile);
 
   content::TestNavigationObserver navigation_observer(
       GURL("chrome://accessibility-annotator-info/"));
@@ -120,7 +120,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityAnnotatorInfoDialogBrowserTest,
   navigation_observer.Wait();
   views::test::WidgetVisibleWaiter(widget).Wait();
 
-  auto* dialog_view = static_cast<AccessibilityAnnotatorInfoDialog*>(
+  auto* dialog_view = static_cast<PersonalContextNoticeDialog*>(
       widget->widget_delegate()->AsBubbleDialogDelegate());
   content::WebContents* dialog_web_contents =
       dialog_view->web_view()->web_contents();
@@ -136,14 +136,14 @@ IN_PROC_BROWSER_TEST_F(AccessibilityAnnotatorInfoDialogBrowserTest,
             GURL(accessibility_annotator::kAccessibilityAnnotatorSettingsURL));
 }
 
-IN_PROC_BROWSER_TEST_F(AccessibilityAnnotatorInfoDialogBrowserTest,
+IN_PROC_BROWSER_TEST_F(PersonalContextNoticeDialogBrowserTest,
                        LearnMoreClickOpensNewTab) {
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   Profile* profile = browser()->profile();
 
   auto controller =
-      std::make_unique<AccessibilityAnnotatorInfoDialogController>(profile);
+      std::make_unique<PersonalContextNoticeDialogController>(profile);
 
   content::TestNavigationObserver navigation_observer(
       GURL("chrome://accessibility-annotator-info/"));
@@ -157,7 +157,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityAnnotatorInfoDialogBrowserTest,
   navigation_observer.Wait();
   views::test::WidgetVisibleWaiter(widget).Wait();
 
-  auto* dialog_view = static_cast<AccessibilityAnnotatorInfoDialog*>(
+  auto* dialog_view = static_cast<PersonalContextNoticeDialog*>(
       widget->widget_delegate()->AsBubbleDialogDelegate());
   content::WebContents* dialog_web_contents =
       dialog_view->web_view()->web_contents();
@@ -173,7 +173,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityAnnotatorInfoDialogBrowserTest,
             GURL(accessibility_annotator::kAccessibilityAnnotatorLearnMoreURL));
 }
 
-IN_PROC_BROWSER_TEST_F(AccessibilityAnnotatorInfoDialogBrowserTest,
+IN_PROC_BROWSER_TEST_F(PersonalContextNoticeDialogBrowserTest,
                        GotItClickDismissesDialog) {
   base::HistogramTester histogram_tester;
   std::string histogram_name = "PersonalContext.NoticeInteractions";
@@ -183,7 +183,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityAnnotatorInfoDialogBrowserTest,
   Profile* profile = browser()->profile();
 
   auto controller =
-      std::make_unique<AccessibilityAnnotatorInfoDialogController>(profile);
+      std::make_unique<PersonalContextNoticeDialogController>(profile);
 
   content::TestNavigationObserver navigation_observer(
       GURL("chrome://accessibility-annotator-info/"));
@@ -197,7 +197,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityAnnotatorInfoDialogBrowserTest,
   navigation_observer.Wait();
   views::test::WidgetVisibleWaiter(widget).Wait();
 
-  auto* dialog_view = static_cast<AccessibilityAnnotatorInfoDialog*>(
+  auto* dialog_view = static_cast<PersonalContextNoticeDialog*>(
       widget->widget_delegate()->AsBubbleDialogDelegate());
   content::WebContents* dialog_web_contents =
       dialog_view->web_view()->web_contents();
@@ -221,7 +221,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityAnnotatorInfoDialogBrowserTest,
 #else
 #define MAYBE_ClickOutsideDismissesDialog ClickOutsideDismissesDialog
 #endif
-IN_PROC_BROWSER_TEST_F(AccessibilityAnnotatorInfoDialogBrowserTest,
+IN_PROC_BROWSER_TEST_F(PersonalContextNoticeDialogBrowserTest,
                        MAYBE_ClickOutsideDismissesDialog) {
   base::HistogramTester histogram_tester;
   std::string histogram_name = "PersonalContext.NoticeInteractions";
@@ -231,7 +231,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityAnnotatorInfoDialogBrowserTest,
   Profile* profile = browser()->profile();
 
   auto controller =
-      std::make_unique<AccessibilityAnnotatorInfoDialogController>(profile);
+      std::make_unique<PersonalContextNoticeDialogController>(profile);
 
   content::TestNavigationObserver navigation_observer(
       GURL("chrome://accessibility-annotator-info/"));
@@ -269,4 +269,4 @@ IN_PROC_BROWSER_TEST_F(AccessibilityAnnotatorInfoDialogBrowserTest,
   EXPECT_FALSE(controller->GetWidgetForTesting());
 }
 
-}  // namespace accessibility_annotator::info
+}  // namespace personal_context::notice

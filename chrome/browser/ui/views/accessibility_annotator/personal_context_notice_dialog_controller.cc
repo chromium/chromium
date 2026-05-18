@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/accessibility_annotator/accessibility_annotator_info_dialog_controller.h"
+#include "chrome/browser/ui/views/accessibility_annotator/personal_context_notice_dialog_controller.h"
 
 #include <utility>
 
@@ -11,8 +11,8 @@
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/views/accessibility_annotator/accessibility_annotator_info_dialog.h"
-#include "chrome/browser/ui/webui/accessibility_annotator/accessibility_annotator_info_ui.h"
+#include "chrome/browser/ui/views/accessibility_annotator/personal_context_notice_dialog.h"
+#include "chrome/browser/ui/webui/accessibility_annotator/personal_context_notice_ui.h"
 #include "chrome/browser/ui/webui/top_chrome/webui_contents_wrapper.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "components/constrained_window/constrained_window_views.h"
@@ -20,48 +20,47 @@
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/widget/widget.h"
 
-namespace accessibility_annotator::info {
+namespace personal_context::notice {
 
-const char AccessibilityAnnotatorInfoDialogController::kUserDataKey[] =
-    "AccessibilityAnnotatorInfoDialogController";
+const char PersonalContextNoticeDialogController::kUserDataKey[] =
+    "PersonalContextNoticeDialogController";
 
-AccessibilityAnnotatorInfoDialogController::
-    AccessibilityAnnotatorInfoDialogController(
-        content::BrowserContext* browser_context)
+PersonalContextNoticeDialogController::PersonalContextNoticeDialogController(
+    content::BrowserContext* browser_context)
     : browser_context_(browser_context) {}
 
-AccessibilityAnnotatorInfoDialogController::
-    ~AccessibilityAnnotatorInfoDialogController() {
+PersonalContextNoticeDialogController::
+    ~PersonalContextNoticeDialogController() {
   CloseDialog();
 }
 
-void AccessibilityAnnotatorInfoDialogController::ShowDialog(
+void PersonalContextNoticeDialogController::ShowDialog(
     content::WebContents* web_contents,
-    base::OnceCallback<void(InfoDialogResult)> callback) {
+    base::OnceCallback<void(NoticeDialogResult)> callback) {
   if (dialog_widget_) {
     // Dialog is already open, focus it or ignore.
     dialog_widget_->Show();
     if (callback) {
-      std::move(callback).Run(InfoDialogResult::kDismissed);
+      std::move(callback).Run(NoticeDialogResult::kDismissed);
     }
     return;
   }
 
   auto contents_wrapper =
-      std::make_unique<WebUIContentsWrapperT<AccessibilityAnnotatorInfoUI>>(
+      std::make_unique<WebUIContentsWrapperT<PersonalContextNoticeUI>>(
           GURL("chrome://accessibility-annotator-info/"),
           Profile::FromBrowserContext(browser_context_),
           0, /* task_manager_string_id */
           /*esc_closes_ui=*/true,
           /*supports_draggable_regions=*/false);
 
-  if (AccessibilityAnnotatorInfoUI* info_ui =
+  if (PersonalContextNoticeUI* info_ui =
           contents_wrapper->GetWebUIController()) {
     // Wrap the callback to close the bubble when executed.
     auto wrapped_callback = base::BindOnce(
-        [](base::WeakPtr<AccessibilityAnnotatorInfoDialogController> controller,
-           base::OnceCallback<void(InfoDialogResult)> user_callback,
-           InfoDialogResult result) {
+        [](base::WeakPtr<PersonalContextNoticeDialogController> controller,
+           base::OnceCallback<void(NoticeDialogResult)> user_callback,
+           NoticeDialogResult result) {
           if (controller) {
             controller->CloseDialog();
           }
@@ -73,7 +72,7 @@ void AccessibilityAnnotatorInfoDialogController::ShowDialog(
 
     info_ui->SetDialogCallback(std::move(wrapped_callback));
   } else if (callback) {
-    std::move(callback).Run(InfoDialogResult::kDismissed);
+    std::move(callback).Run(NoticeDialogResult::kDismissed);
   }
 
   if (web_contents) {
@@ -84,7 +83,7 @@ void AccessibilityAnnotatorInfoDialogController::ShowDialog(
     }
   }
 
-  auto dialog_view = std::make_unique<AccessibilityAnnotatorInfoDialog>(
+  auto dialog_view = std::make_unique<PersonalContextNoticeDialog>(
       nullptr, std::move(contents_wrapper));
 
   dialog_view->SetOwnershipOfNewWidget(
@@ -106,16 +105,16 @@ void AccessibilityAnnotatorInfoDialogController::ShowDialog(
   // Ensure that the dialog is closed synchronously when the widget is
   // destroyed.
   dialog_widget_->MakeCloseSynchronous(
-      base::IgnoreArgs<views::Widget::ClosedReason>(base::BindOnce(
-          &AccessibilityAnnotatorInfoDialogController::CloseDialog,
-          weak_factory_.GetWeakPtr())));
+      base::IgnoreArgs<views::Widget::ClosedReason>(
+          base::BindOnce(&PersonalContextNoticeDialogController::CloseDialog,
+                         weak_factory_.GetWeakPtr())));
 }
 
-void AccessibilityAnnotatorInfoDialogController::CloseDialog() {
+void PersonalContextNoticeDialogController::CloseDialog() {
   if (dialog_widget_) {
     base::SingleThreadTaskRunner::GetCurrentDefault()->DeleteSoon(
         FROM_HERE, dialog_widget_.release());
   }
 }
 
-}  // namespace accessibility_annotator::info
+}  // namespace personal_context::notice

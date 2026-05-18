@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {AccountInfo, PageHandlerInterface} from 'chrome://accessibility-annotator-info/accessibility_annotator_info.mojom-webui.js';
-import type {AccessibilityAnnotatorInfoBrowserProxy} from 'chrome://accessibility-annotator-info/browser_proxy.js';
+import type {PersonalContextNoticeBrowserProxy} from 'chrome://accessibility-annotator-info/browser_proxy.js';
+import type {AccountInfo, PageHandlerInterface} from 'chrome://accessibility-annotator-info/personal_context_notice.mojom-webui.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
-class TestAccessibilityAnnotatorInfoPageHandler extends TestBrowserProxy
-    implements PageHandlerInterface {
+class TestPersonalContextNoticePageHandler extends TestBrowserProxy implements
+    PageHandlerInterface {
   private accountInfo_: AccountInfo|null = null;
 
   constructor() {
@@ -51,8 +51,8 @@ class TestAccessibilityAnnotatorInfoPageHandler extends TestBrowserProxy
   }
 }
 
-export class TestAccessibilityAnnotatorInfoBrowserProxy implements
-    AccessibilityAnnotatorInfoBrowserProxy {
-  handler: TestAccessibilityAnnotatorInfoPageHandler =
-      new TestAccessibilityAnnotatorInfoPageHandler();
+export class TestPersonalContextNoticeBrowserProxy implements
+    PersonalContextNoticeBrowserProxy {
+  handler: TestPersonalContextNoticePageHandler =
+      new TestPersonalContextNoticePageHandler();
 }

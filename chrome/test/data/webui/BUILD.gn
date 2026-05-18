@@ -50,7 +50,7 @@ source_set("browser_tests") {
     sources += [
       "about_sys/about_sys_browsertest.cc",
       "access_code_cast/access_code_cast_browsertest.cc",
-      "accessibility_annotator_info/accessibility_annotator_info_browsertest.cc",
+      "accessibility_annotator_info/personal_context_notice_browsertest.cc",
       "actor_overlay/actor_overlay_browsertest.cc",
       "bookmarks/bookmarks_browsertest.cc",
       "chrome_apis/chrome_histograms_browsertest.cc",

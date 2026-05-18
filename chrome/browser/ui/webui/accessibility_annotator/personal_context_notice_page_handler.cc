@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/accessibility_annotator/accessibility_annotator_info_page_handler.h"
+#include "chrome/browser/ui/webui/accessibility_annotator/personal_context_notice_page_handler.h"
 
 #include <utility>
 
@@ -23,21 +23,21 @@
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/base/window_open_disposition.h"
 
-namespace accessibility_annotator::info {
+namespace personal_context::notice {
+using accessibility_annotator::InfoShowRequestResult;
 
-AccessibilityAnnotatorInfoPageHandler::AccessibilityAnnotatorInfoPageHandler(
-    mojo::PendingReceiver<accessibility_annotator::info::mojom::PageHandler>
+PersonalContextNoticePageHandler::PersonalContextNoticePageHandler(
+    mojo::PendingReceiver<personal_context::notice::mojom::PageHandler>
         receiver,
-    base::OnceCallback<void(InfoDialogResult)> callback,
-    AccessibilityAnnotatorInfoUI& info_ui,
+    base::OnceCallback<void(NoticeDialogResult)> callback,
+    PersonalContextNoticeUI& info_ui,
     content::WebContents* web_contents)
     : receiver_(this, std::move(receiver)),
       callback_(std::move(callback)),
       info_ui_(info_ui),
       web_contents_(web_contents) {}
 
-AccessibilityAnnotatorInfoPageHandler::
-    ~AccessibilityAnnotatorInfoPageHandler() {
+PersonalContextNoticePageHandler::~PersonalContextNoticePageHandler() {
   if (callback_) {
     // If the callback hasn't run, the user dismissed the dialog without
     // acknowledging it (e.g., by clicking outside or pressing Esc).
@@ -45,10 +45,9 @@ AccessibilityAnnotatorInfoPageHandler::
   }
 }
 
-void AccessibilityAnnotatorInfoPageHandler::GetAccountInfo(
+void PersonalContextNoticePageHandler::GetAccountInfo(
     GetAccountInfoCallback callback) {
-  auto account_info_mojom =
-      accessibility_annotator::info::mojom::AccountInfo::New();
+  auto account_info_mojom = personal_context::notice::mojom::AccountInfo::New();
 
   if (web_contents_) {
     Profile* profile =
@@ -79,25 +78,25 @@ void AccessibilityAnnotatorInfoPageHandler::GetAccountInfo(
   std::move(callback).Run(std::move(account_info_mojom));
 }
 
-void AccessibilityAnnotatorInfoPageHandler::OnInfoAcknowledged() {
+void PersonalContextNoticePageHandler::OnInfoAcknowledged() {
   base::UmaHistogramEnumeration("PersonalContext.NoticeInteractions",
                                 InfoShowRequestResult::kAccepted);
 
   if (callback_) {
-    std::move(callback_).Run(InfoDialogResult::kAcknowledged);
+    std::move(callback_).Run(NoticeDialogResult::kAcknowledged);
   }
 }
 
-void AccessibilityAnnotatorInfoPageHandler::OnInfoDismissed() {
+void PersonalContextNoticePageHandler::OnInfoDismissed() {
   base::UmaHistogramEnumeration("PersonalContext.NoticeInteractions",
                                 InfoShowRequestResult::kDismissed);
 
   if (callback_) {
-    std::move(callback_).Run(InfoDialogResult::kDismissed);
+    std::move(callback_).Run(NoticeDialogResult::kDismissed);
   }
 }
 
-void AccessibilityAnnotatorInfoPageHandler::OnManageSettingsClicked() {
+void PersonalContextNoticePageHandler::OnManageSettingsClicked() {
   base::RecordAction(
       base::UserMetricsAction("PersonalContext.Notice.SettingsLinkClick"));
   auto* browser_window_interface =
@@ -114,7 +113,7 @@ void AccessibilityAnnotatorInfoPageHandler::OnManageSettingsClicked() {
   }
 }
 
-void AccessibilityAnnotatorInfoPageHandler::OnLearnMoreClicked() {
+void PersonalContextNoticePageHandler::OnLearnMoreClicked() {
   base::RecordAction(
       base::UserMetricsAction("PersonalContext.Notice.LearnMoreLinkClick"));
 
@@ -132,11 +131,11 @@ void AccessibilityAnnotatorInfoPageHandler::OnLearnMoreClicked() {
   }
 }
 
-void AccessibilityAnnotatorInfoPageHandler::ShowUi() {
+void PersonalContextNoticePageHandler::ShowUi() {
   info_ui_->ShowUI();
 
   base::UmaHistogramEnumeration("PersonalContext.NoticeInteractions",
                                 InfoShowRequestResult::kShown);
 }
 
-}  // namespace accessibility_annotator::info
+}  // namespace personal_context::notice

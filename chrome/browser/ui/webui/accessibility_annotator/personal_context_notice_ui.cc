@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/accessibility_annotator/accessibility_annotator_info_ui.h"
+#include "chrome/browser/ui/webui/accessibility_annotator/personal_context_notice_ui.h"
 
 #include <memory>
 #include <utility>
 
-#include "chrome/browser/ui/webui/accessibility_annotator/accessibility_annotator_info_page_handler.h"
+#include "chrome/browser/ui/webui/accessibility_annotator/personal_context_notice_page_handler.h"
 #include "chrome/grit/accessibility_annotator_info_resources.h"
 #include "chrome/grit/accessibility_annotator_info_resources_map.h"
 #include "chrome/grit/generated_resources.h"
@@ -20,23 +20,22 @@
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/webui/webui_util.h"
 
-namespace accessibility_annotator::info {
+namespace personal_context::notice {
 
-AccessibilityAnnotatorInfoUIConfig::AccessibilityAnnotatorInfoUIConfig()
+PersonalContextNoticeUIConfig::PersonalContextNoticeUIConfig()
     : DefaultTopChromeWebUIConfig(content::kChromeUIScheme,
                                   "accessibility-annotator-info") {}
 
-bool AccessibilityAnnotatorInfoUIConfig::IsWebUIEnabled(
+bool PersonalContextNoticeUIConfig::IsWebUIEnabled(
     content::BrowserContext* browser_context) {
   return true;
 }
 
-bool AccessibilityAnnotatorInfoUIConfig::ShouldAutoResizeHost() {
+bool PersonalContextNoticeUIConfig::ShouldAutoResizeHost() {
   return true;
 }
 
-AccessibilityAnnotatorInfoUI::AccessibilityAnnotatorInfoUI(
-    content::WebUI* web_ui)
+PersonalContextNoticeUI::PersonalContextNoticeUI(content::WebUI* web_ui)
     : TopChromeWebUIController(web_ui) {
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       web_ui->GetWebContents()->GetBrowserContext(),
@@ -44,7 +43,7 @@ AccessibilityAnnotatorInfoUI::AccessibilityAnnotatorInfoUI(
 
   webui::SetupWebUIDataSource(
       source, kAccessibilityAnnotatorInfoResources,
-      IDR_ACCESSIBILITY_ANNOTATOR_INFO_ACCESSIBILITY_ANNOTATOR_INFO_HTML);
+      IDR_ACCESSIBILITY_ANNOTATOR_INFO_PERSONAL_CONTEXT_NOTICE_HTML);
   source->AddLocalizedString("accessibilityAnnotatorInfoTitle",
                              IDS_ACCESSIBILITY_ANNOTATOR_INFO_TITLE);
   source->AddLocalizedString(
@@ -66,31 +65,31 @@ AccessibilityAnnotatorInfoUI::AccessibilityAnnotatorInfoUI(
       accessibility_annotator::kAccessibilityAnnotatorTriggerText);
 }
 
-AccessibilityAnnotatorInfoUI::~AccessibilityAnnotatorInfoUI() {
+PersonalContextNoticeUI::~PersonalContextNoticeUI() {
   if (dialog_callback_) {
-    std::move(dialog_callback_).Run(InfoDialogResult::kDismissed);
+    std::move(dialog_callback_).Run(NoticeDialogResult::kDismissed);
   }
 }
 
-void AccessibilityAnnotatorInfoUI::BindInterface(
-    mojo::PendingReceiver<accessibility_annotator::info::mojom::PageHandler>
+void PersonalContextNoticeUI::BindInterface(
+    mojo::PendingReceiver<personal_context::notice::mojom::PageHandler>
         receiver) {
-  page_handler_ = std::make_unique<AccessibilityAnnotatorInfoPageHandler>(
+  page_handler_ = std::make_unique<PersonalContextNoticePageHandler>(
       std::move(receiver), std::move(dialog_callback_), *this,
       web_ui()->GetWebContents());
 }
 
-void AccessibilityAnnotatorInfoUI::ShowUI() {
+void PersonalContextNoticeUI::ShowUI() {
   if (embedder()) {
     embedder()->ShowUI();
   }
 }
 
-void AccessibilityAnnotatorInfoUI::SetDialogCallback(
-    base::OnceCallback<void(InfoDialogResult)> callback) {
+void PersonalContextNoticeUI::SetDialogCallback(
+    base::OnceCallback<void(NoticeDialogResult)> callback) {
   dialog_callback_ = std::move(callback);
 }
 
-WEB_UI_CONTROLLER_TYPE_IMPL(AccessibilityAnnotatorInfoUI)
+WEB_UI_CONTROLLER_TYPE_IMPL(PersonalContextNoticeUI)
 
-}  // namespace accessibility_annotator::info
+}  // namespace personal_context::notice

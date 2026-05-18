@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/accessibility_annotator/accessibility_annotator_info_page_handler.h"
+#include "chrome/browser/ui/webui/accessibility_annotator/personal_context_notice_page_handler.h"
 
 #include <memory>
 #include <string>
@@ -13,7 +13,7 @@
 #include "base/test/metrics/user_action_tester.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
-#include "chrome/browser/ui/webui/accessibility_annotator/accessibility_annotator_info_ui.h"
+#include "chrome/browser/ui/webui/accessibility_annotator/personal_context_notice_ui.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/accessibility_annotator/core/url_constants.h"
@@ -31,13 +31,14 @@
 #include "ui/gfx/image/image.h"
 #include "url/gurl.h"
 
-namespace accessibility_annotator::info {
+namespace personal_context::notice {
+using accessibility_annotator::InfoShowRequestResult;
 namespace {
 
 constexpr char kDialogResultHistogramName[] =
     "PersonalContext.NoticeInteractions";
 
-class AccessibilityAnnotatorInfoPageHandlerTest
+class PersonalContextNoticePageHandlerTest
     : public ChromeRenderViewHostTestHarness {
  public:
   void SetUp() override {
@@ -48,12 +49,12 @@ class AccessibilityAnnotatorInfoPageHandlerTest
     test_web_ui_.set_web_contents(web_contents());
     webui::SetBrowserWindowInterface(web_contents(), &mock_browser_interface_);
 
-    info_ui_ = std::make_unique<AccessibilityAnnotatorInfoUI>(&test_web_ui_);
+    info_ui_ = std::make_unique<PersonalContextNoticeUI>(&test_web_ui_);
 
-    handler_ = std::make_unique<AccessibilityAnnotatorInfoPageHandler>(
+    handler_ = std::make_unique<PersonalContextNoticePageHandler>(
         page_handler_.BindNewPipeAndPassReceiver(),
         base::BindLambdaForTesting(
-            [this](InfoDialogResult result) { result_ = result; }),
+            [this](NoticeDialogResult result) { result_ = result; }),
         *info_ui_, test_web_ui_.GetWebContents());
   }
 
@@ -74,16 +75,16 @@ class AccessibilityAnnotatorInfoPageHandlerTest
   std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
       identity_test_env_adaptor_;
   testing::NiceMock<MockBrowserWindowInterface> mock_browser_interface_;
-  mojo::Remote<accessibility_annotator::info::mojom::PageHandler> page_handler_;
-  std::unique_ptr<AccessibilityAnnotatorInfoUI> info_ui_;
-  std::unique_ptr<AccessibilityAnnotatorInfoPageHandler> handler_;
-  std::optional<InfoDialogResult> result_;
+  mojo::Remote<personal_context::notice::mojom::PageHandler> page_handler_;
+  std::unique_ptr<PersonalContextNoticeUI> info_ui_;
+  std::unique_ptr<PersonalContextNoticePageHandler> handler_;
+  std::optional<NoticeDialogResult> result_;
   base::UserActionTester user_action_tester_;
   base::HistogramTester histogram_tester_;
   content::TestWebUI test_web_ui_;
 };
 
-TEST_F(AccessibilityAnnotatorInfoPageHandlerTest, GetAccountInfo) {
+TEST_F(PersonalContextNoticePageHandlerTest, GetAccountInfo) {
   auto* identity_test_env = identity_test_env_adaptor_->identity_test_env();
   AccountInfo account_info = identity_test_env->MakePrimaryAccountAvailable(
       "test@example.com", signin::ConsentLevel::kSignin);
@@ -99,7 +100,7 @@ TEST_F(AccessibilityAnnotatorInfoPageHandlerTest, GetAccountInfo) {
 
   bool callback_called = false;
   handler_->GetAccountInfo(base::BindLambdaForTesting(
-      [&](accessibility_annotator::info::mojom::AccountInfoPtr info) {
+      [&](personal_context::notice::mojom::AccountInfoPtr info) {
         callback_called = true;
         ASSERT_TRUE(info);
         EXPECT_EQ("test@example.com", info->email);
@@ -109,10 +110,10 @@ TEST_F(AccessibilityAnnotatorInfoPageHandlerTest, GetAccountInfo) {
   EXPECT_TRUE(callback_called);
 }
 
-TEST_F(AccessibilityAnnotatorInfoPageHandlerTest, GetAccountInfoSignedOut) {
+TEST_F(PersonalContextNoticePageHandlerTest, GetAccountInfoSignedOut) {
   bool callback_called = false;
   handler_->GetAccountInfo(base::BindLambdaForTesting(
-      [&](accessibility_annotator::info::mojom::AccountInfoPtr info) {
+      [&](personal_context::notice::mojom::AccountInfoPtr info) {
         callback_called = true;
         ASSERT_TRUE(info);
         EXPECT_TRUE(info->email.empty());
@@ -122,7 +123,7 @@ TEST_F(AccessibilityAnnotatorInfoPageHandlerTest, GetAccountInfoSignedOut) {
   EXPECT_TRUE(callback_called);
 }
 
-TEST_F(AccessibilityAnnotatorInfoPageHandlerTest, OnInfoAcknowledged) {
+TEST_F(PersonalContextNoticePageHandlerTest, OnInfoAcknowledged) {
   // Check callback was not run yet.
   EXPECT_FALSE(result_.has_value());
   histogram_tester_.ExpectTotalCount(kDialogResultHistogramName, 0);
@@ -132,7 +133,7 @@ TEST_F(AccessibilityAnnotatorInfoPageHandlerTest, OnInfoAcknowledged) {
 
   // Check callback returned kAccepted and corresponding metrics were recorded.
   EXPECT_TRUE(result_.has_value());
-  EXPECT_EQ(InfoDialogResult::kAcknowledged, result_);
+  EXPECT_EQ(NoticeDialogResult::kAcknowledged, result_);
   histogram_tester_.ExpectUniqueSample(kDialogResultHistogramName,
                                        InfoShowRequestResult::kAccepted, 1);
 }
@@ -140,8 +141,7 @@ TEST_F(AccessibilityAnnotatorInfoPageHandlerTest, OnInfoAcknowledged) {
 // TODO(crbug.com/506117669): If no UI element for dismissal is added: delete
 // this test and simplify the name of `OnInfoDismissedOnFrameworkClosure` test.
 // Otherwise: use this test and drop this todo.
-TEST_F(AccessibilityAnnotatorInfoPageHandlerTest,
-       OnInfoDismissedByExplicitCall) {
+TEST_F(PersonalContextNoticePageHandlerTest, OnInfoDismissedByExplicitCall) {
   // Check callback was not run yet.
   EXPECT_FALSE(result_.has_value());
   histogram_tester_.ExpectTotalCount(kDialogResultHistogramName, 0);
@@ -151,12 +151,12 @@ TEST_F(AccessibilityAnnotatorInfoPageHandlerTest,
 
   // Check callback returned kDismissed and corresponding metrics were recorded.
   EXPECT_TRUE(result_.has_value());
-  EXPECT_EQ(InfoDialogResult::kDismissed, result_);
+  EXPECT_EQ(NoticeDialogResult::kDismissed, result_);
   histogram_tester_.ExpectUniqueSample(kDialogResultHistogramName,
                                        InfoShowRequestResult::kDismissed, 1);
 }
 
-TEST_F(AccessibilityAnnotatorInfoPageHandlerTest,
+TEST_F(PersonalContextNoticePageHandlerTest,
        OnInfoDismissedOnFrameworkClosure) {
   // Check callback was not run yet.
   EXPECT_FALSE(result_.has_value());
@@ -167,15 +167,14 @@ TEST_F(AccessibilityAnnotatorInfoPageHandlerTest,
 
   // Check callback returned kDismissed and corresponding metrics were recorded.
   EXPECT_TRUE(result_.has_value());
-  EXPECT_EQ(InfoDialogResult::kDismissed, result_);
+  EXPECT_EQ(NoticeDialogResult::kDismissed, result_);
   histogram_tester_.ExpectUniqueSample(kDialogResultHistogramName,
                                        InfoShowRequestResult::kDismissed, 1);
 }
 
-TEST_F(AccessibilityAnnotatorInfoPageHandlerTest, OnLearnMoreClicked) {
+TEST_F(PersonalContextNoticePageHandlerTest, OnLearnMoreClicked) {
   EXPECT_EQ(0, user_action_tester_.GetActionCount(
                    "PersonalContext.Notice.LearnMoreLinkClick"));
-
   EXPECT_CALL(
       mock_browser_interface_,
       OpenURL(testing::Field(&content::OpenURLParams::url,
@@ -190,7 +189,7 @@ TEST_F(AccessibilityAnnotatorInfoPageHandlerTest, OnLearnMoreClicked) {
                    "PersonalContext.Notice.LearnMoreLinkClick"));
 }
 
-TEST_F(AccessibilityAnnotatorInfoPageHandlerTest, OnManageSettingsClicked) {
+TEST_F(PersonalContextNoticePageHandlerTest, OnManageSettingsClicked) {
   EXPECT_EQ(0, user_action_tester_.GetActionCount(
                    "PersonalContext.Notice.SettingsLinkClick"));
 
@@ -211,4 +210,4 @@ TEST_F(AccessibilityAnnotatorInfoPageHandlerTest, OnManageSettingsClicked) {
 }
 
 }  // namespace
-}  // namespace accessibility_annotator::info
+}  // namespace personal_context::notice
