@@ -201,6 +201,60 @@ TEST(LanguageCodeTest, Canonicalize) {
   EXPECT_EQ(lc_cmn, language_codes::CHINESE());
 }
 
+TEST(LanguageCodeTest, GetRegionCode) {
+  // Simple case.
+  auto lc_en_us = LanguageCodeBuilder::GetInstance().FromString("en-US");
+  ASSERT_TRUE(lc_en_us.has_value());
+  auto region_en_us = lc_en_us->GetRegionCode();
+  ASSERT_TRUE(region_en_us.has_value());
+  EXPECT_EQ(region_en_us->ToString(), "US");
+
+  // No region.
+  auto lc_en = LanguageCodeBuilder::GetInstance().FromString("en");
+  ASSERT_TRUE(lc_en.has_value());
+  EXPECT_FALSE(lc_en->GetRegionCode().has_value());
+
+  // Language, Script, Region.
+  auto lc_zh_hant_tw =
+      LanguageCodeBuilder::GetInstance().FromString("zh-Hant-TW");
+  ASSERT_TRUE(lc_zh_hant_tw.has_value());
+  auto region_zh_hant_tw = lc_zh_hant_tw->GetRegionCode();
+  ASSERT_TRUE(region_zh_hant_tw.has_value());
+  EXPECT_EQ(region_zh_hant_tw->ToString(), "TW");
+
+  // Numeric region.
+  auto lc_es_419 = LanguageCodeBuilder::GetInstance().FromString("es-419");
+  ASSERT_TRUE(lc_es_419.has_value());
+  auto region_es_419 = lc_es_419->GetRegionCode();
+  ASSERT_TRUE(region_es_419.has_value());
+  EXPECT_EQ(region_es_419->ToString(), "419");
+
+  // Script but no region.
+  auto lc_sr_latn = LanguageCodeBuilder::GetInstance().FromString("sr-Latn");
+  ASSERT_TRUE(lc_sr_latn.has_value());
+  EXPECT_FALSE(lc_sr_latn->GetRegionCode().has_value());
+
+  // Complex case with extensions.
+  auto lc_complex =
+      LanguageCodeBuilder::GetInstance().FromString("en-US-u-ca-gregory");
+  ASSERT_TRUE(lc_complex.has_value());
+  auto region_complex = lc_complex->GetRegionCode();
+  ASSERT_TRUE(region_complex.has_value());
+  EXPECT_EQ(region_complex->ToString(), "US");
+
+  // Extension but no region.
+  auto lc_ext_no_region =
+      LanguageCodeBuilder::GetInstance().FromString("en-u-ca-gregory");
+  ASSERT_TRUE(lc_ext_no_region.has_value());
+  EXPECT_FALSE(lc_ext_no_region->GetRegionCode().has_value());
+
+  // Script + Extension but no region.
+  auto lc_script_ext_no_region =
+      LanguageCodeBuilder::GetInstance().FromString("sr-Latn-u-ca-gregory");
+  ASSERT_TRUE(lc_script_ext_no_region.has_value());
+  EXPECT_FALSE(lc_script_ext_no_region->GetRegionCode().has_value());
+}
+
 struct LanguageTestData {
   std::string tag;
   std::string name;

@@ -20,6 +20,7 @@
 namespace base {
 
 class BASE_I18N_EXPORT LanguageCodeBuilder;
+class BASE_I18N_EXPORT RegionCode;
 // A type-safe wrapper for BCP47 language codes (locales).
 //
 // Supported Format Specification:
@@ -60,6 +61,14 @@ class BASE_I18N_EXPORT LanguageCode {
   // underscores (e.g., "en_US", "zh_CN").
   std::string ToLegacyICUFormat() const;
 
+  // Returns the region subtag in the language code if present.
+  // Examples:
+  // - "en-US" -> "US"
+  // - "zh-Hant-TW" -> "TW"
+  // - "en" -> std::nullopt
+  // - "sr-Latn" -> std::nullopt
+  std::optional<RegionCode> GetRegionCode() const;
+
  private:
   friend class LanguageCodeBuilder;
 
@@ -72,6 +81,34 @@ class BASE_I18N_EXPORT LanguageCode {
   ImmutableStringType code_;
 };
 
+// Represents the code for a region extracted from a LanguageCode.
+class RegionCode {
+ public:
+  std::string_view ToString() const;
+  friend bool operator==(const RegionCode& lhs, const RegionCode& rhs) {
+    return lhs.ToString() == rhs.ToString();
+  }
+  friend bool operator<(const RegionCode& lhs, const RegionCode& rhs) {
+    return lhs.ToString() < rhs.ToString();
+  }
+  friend std::ostream& operator<<(std::ostream& os, const RegionCode& rc) {
+    return os << rc.ToString();
+  }
+  friend std::ostream& operator<<(std::ostream& os,
+                                  const std::optional<RegionCode>& opt) {
+    return opt ? os << *opt : os << "nullopt";
+  }
+
+ private:
+  friend class LanguageCode;
+
+  // Only LanguageCode can construct it.
+  explicit RegionCode(std::string_view code);
+
+  std::array<char, 3> code_;
+  uint8_t size_;
+};
+
 }  // namespace base
 
 namespace std {
@@ -80,6 +117,13 @@ template <>
 struct hash<base::LanguageCode> {
   std::size_t operator()(const base::LanguageCode& lc) const {
     return std::hash<std::string_view>()(lc.ToString());
+  }
+};
+
+template <>
+struct hash<base::RegionCode> {
+  std::size_t operator()(const base::RegionCode& rc) const {
+    return std::hash<std::string_view>()(rc.ToString());
   }
 };
 
