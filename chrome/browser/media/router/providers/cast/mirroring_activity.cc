@@ -387,6 +387,12 @@ MirroringActivity::~MirroringActivity() {
       target_playout_delay_.has_value()
           ? target_playout_delay_->InMilliseconds()
           : media::cast::kDefaultTargetPlayoutDelay.InMilliseconds();
+  if (VLOG_IS_ON(2)) {
+    std::string stats_json;
+    if (base::JSONWriter::Write(most_recent_mirroring_stats_, &stats_json)) {
+      VLOG(2) << "Final Mirroring Stats: " << stats_json;
+    }
+  }
   RecordCastStreamingSenderUma(
       most_recent_mirroring_stats_,
       media::cast::StatsEventSubscriber::kAudioStatsDictKey,
