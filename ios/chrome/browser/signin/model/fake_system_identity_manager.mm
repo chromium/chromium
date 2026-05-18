@@ -238,8 +238,10 @@ void FakeSystemIdentityManager::SetPersistentAuthErrorForAccount(
       });
   details.getAccessTokenRequestCallback =
       base::BindRepeating([](AccessTokenRequestCallback callback) {
-        std::move(callback).Run(base::unexpected(GoogleServiceAuthError(
-            GoogleServiceAuthError::State::INVALID_GAIA_CREDENTIALS)));
+        std::move(callback).Run(base::unexpected(
+            GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
+                GoogleServiceAuthError::InvalidGaiaCredentialsReason::
+                    UNKNOWN)));
       });
   FakeSystemIdentity* identity = details.fakeIdentity;
   identity.hasValidAuth = NO;

@@ -28,23 +28,19 @@ GoogleServiceAuthError GoogleServiceAuthErrorFromError(CWVIdentity* identity,
                                                identity:identity];
   switch (sync_error) {
     case CWVSyncErrorInvalidGAIACredentials:
-      return GoogleServiceAuthError(
-          GoogleServiceAuthError::State::INVALID_GAIA_CREDENTIALS);
+      return GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
+          GoogleServiceAuthError::InvalidGaiaCredentialsReason::UNKNOWN);
     case CWVSyncErrorUserNotSignedUp:
-      return GoogleServiceAuthError(
-          GoogleServiceAuthError::State::ACCOUNT_NOT_FOUND);
+      return GoogleServiceAuthError::CreateAccountNotFound();
     case CWVSyncErrorConnectionFailed:
       return GoogleServiceAuthError::FromConnectionError(net::ERR_FAILED);
     case CWVSyncErrorServiceUnavailable:
-      return GoogleServiceAuthError(
-          GoogleServiceAuthError::State::SERVICE_UNAVAILABLE);
+      return GoogleServiceAuthError::FromServiceUnavailable("");
     case CWVSyncErrorRequestCanceled:
-      return GoogleServiceAuthError(
-          GoogleServiceAuthError::State::REQUEST_CANCELED);
+      return GoogleServiceAuthError::CreateRequestCanceled();
     case CWVSyncErrorUnexpectedServiceResponse:
     default:
-      return GoogleServiceAuthError(
-          GoogleServiceAuthError::State::UNEXPECTED_SERVICE_RESPONSE);
+      return GoogleServiceAuthError::FromUnexpectedServiceResponse("");
   }
 }
 

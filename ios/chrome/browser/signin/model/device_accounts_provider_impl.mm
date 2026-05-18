@@ -62,8 +62,7 @@ GoogleServiceAuthError GoogleServiceAuthErrorFromError(
 
   switch (ios::provider::GetSigninErrorCategory(error)) {
     case ios::provider::SigninErrorCategory::kUnknownError:
-      return GoogleServiceAuthError(
-          GoogleServiceAuthError::State::UNEXPECTED_SERVICE_RESPONSE);
+      return GoogleServiceAuthError::FromUnexpectedServiceResponse("");
     case ios::provider::SigninErrorCategory::kAuthorizationError:
       return GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
           GoogleServiceAuthError::InvalidGaiaCredentialsReason::
