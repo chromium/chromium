@@ -34,7 +34,6 @@
 #include "pdf/pdf_annotation_agent.h"
 #include "pdf/pdf_caret.h"
 #include "pdf/pdf_caret_client.h"
-#include "pdf/pdf_ink_text.h"
 #include "pdf/pdf_rect.h"
 #include "pdf/pdfium/pdfium_engine_client.h"
 #include "pdf/pdfium/pdfium_form_filler.h"
@@ -1433,8 +1432,8 @@ class PDFiumEngine : public DocumentLoader::Client,
   std::map<InkStrokeId, InkStrokeData> ink_stroke_data_;
 
   // Tracks the pages which need to be regenerated before saving due to Ink
-  // stroke changes.
-  std::set<int> ink_stroked_pages_needing_regeneration_;
+  // changes.
+  std::set<int> ink_edited_pages_needing_regeneration_;
 
   // Stores the 0-based page indices for pages that have loaded shapes.
   // Unlike `ink_stroke_data_`, which is dynamic, the loaded shapes data is

@@ -5158,7 +5158,7 @@ void PDFiumEngine::DiscardText(InkTextId id) {
       RemovePageObjectsFromPage(page, std::move(it->second.page_objects));
   ink_text_data_.erase(it);
 
-  CHECK(FPDFPage_GenerateContent(page));
+  ink_edited_pages_needing_regeneration_.insert(page_index);
   pdfium_page->ReloadTextPage();
 
   if (!PageStillHasEdits(page_index)) {
@@ -5241,7 +5241,7 @@ void PDFiumEngine::DrawText(int page_index,
     CHECK(FPDFPage_InsertObject(page, text_object.release()));
   }
 
-  CHECK(FPDFPage_GenerateContent(page));
+  ink_edited_pages_needing_regeneration_.insert(page_index);
   GetPage(page_index)->ReloadTextPage();
   client_->Invalidate(GetPageScreenRect(page_index));
 
@@ -5289,7 +5289,7 @@ void PDFiumEngine::UpdateTextActiveAndInvalidate(InkTextId id, bool active) {
     client_->Invalidate(invalidate_rect);
   }
 
-  CHECK(FPDFPage_GenerateContent(page));
+  ink_edited_pages_needing_regeneration_.insert(page_index);
   GetPage(page_index)->ReloadTextPage();
 }
 
@@ -5311,7 +5311,7 @@ void PDFiumEngine::ApplyStroke(int page_index,
 
   std::vector<FPDF_PAGEOBJECT> page_objects = WriteStrokeToPage(page, stroke);
   CHECK(!page_objects.empty());
-  ink_stroked_pages_needing_regeneration_.insert(page_index);
+  ink_edited_pages_needing_regeneration_.insert(page_index);
 
   bool inserted =
       ink_stroke_data_
@@ -5338,7 +5338,7 @@ void PDFiumEngine::UpdateStrokeActive(int page_index,
     bool result = FPDFPageObj_SetIsActive(page_object, active);
     CHECK(result);
   }
-  ink_stroked_pages_needing_regeneration_.insert(page_index);
+  ink_edited_pages_needing_regeneration_.insert(page_index);
 }
 
 void PDFiumEngine::DiscardStroke(int page_index, InkStrokeId id) {
@@ -5444,16 +5444,16 @@ void PDFiumEngine::UpdateShapeActive(int page_index,
   CHECK(it != ink_modeled_shape_map_.end());
   bool result = FPDFPageObj_SetIsActive(it->second, active);
   CHECK(result);
-  ink_stroked_pages_needing_regeneration_.insert(page_index);
+  ink_edited_pages_needing_regeneration_.insert(page_index);
 }
 
 void PDFiumEngine::RegenerateContents() {
-  for (int page_index : ink_stroked_pages_needing_regeneration_) {
+  for (int page_index : ink_edited_pages_needing_regeneration_) {
     FPDF_PAGE page = GetPage(page_index)->GetPage();
     bool result = FPDFPage_GenerateContent(page);
     CHECK(result);
   }
-  ink_stroked_pages_needing_regeneration_.clear();
+  ink_edited_pages_needing_regeneration_.clear();
 }
 
 bool PDFiumEngine::ExtendSelectionByPoint(const gfx::PointF& point) {
