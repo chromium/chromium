@@ -333,6 +333,7 @@
 <translation id="4290791284969893584">Bir sayfa kapatıldıktan sonra, başladığınız görevler tamamlanmayabilir</translation>
 <translation id="429312253194641664">Bir site medya oynatıyor</translation>
 <translation id="42981349822642051">Genişlet</translation>
+<translation id="4310738531374808763">Ana sayfanızı özelleştirin</translation>
 <translation id="4336219115486912529">{COUNT,plural, =1{Süresi yarın dolacak}other{Süresi # gün içinde dolacak}}</translation>
 <translation id="4338831206024587507"><ph name="DOMAIN" /> altındaki tüm siteler</translation>
 <translation id="4340799661701629185">Sitelerin bildirim göndermesine izin verme</translation>
@@ -524,6 +525,7 @@
 <translation id="6262279340360821358"><ph name="PERMISSION_1" /> ve <ph name="PERMISSION_2" /> engellendi</translation>
 <translation id="6270391203985052864">Siteler bildirim gönderme izni isteyebilir</translation>
 <translation id="6295158916970320988">Tüm siteler</translation>
+<translation id="6305257382500066042">Şimdi dene</translation>
 <translation id="6320088164292336938">Titreşim</translation>
 <translation id="6367753977865761591">Belirli bir sitede üçüncü taraf oturum açmayı engelleyin.</translation>
 <translation id="6398765197997659313">Tam ekrandan çık</translation>
@@ -534,7 +536,6 @@
 <translation id="6447842834002726250">Çerezler</translation>
 <translation id="6452138246455930388"><ph name="DOMAIN_NAME" /> adresinin açık olduğu sekmenizde <ph name="PRODUCT_NAME" /> ürününün <ph name="OLD_PRICE" /> olan fiyatı düştü ve <ph name="NEW_PRICE" /> oldu</translation>
 <translation id="6500423977866688905">Pencere küçükse mobil görünümü iste</translation>
-<translation id="6514791408445720076">Sayfanızı özelleştirin</translation>
 <translation id="6527303717912515753">Paylaş</translation>
 <translation id="6530703012083415527">Bu düğme açıkken siteler, pop-up'ları ve yönlendirmeleri kullanabilir. Düğme kapalıyken siteler, pop-up'ları ve yönlendirmeleri kullanamaz.</translation>
 <translation id="6540488083026747005">Bu sitede üçüncü taraf çerezlerine izin verdiniz</translation>
@@ -600,7 +601,6 @@
 <translation id="7141896414559753902">Sitelerin pop-up göstermesini ve yönlendirme yapmasını engelle (önerilir)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> KB</translation>
 <translation id="7180611975245234373">Yenile</translation>
-<translation id="7180865173735832675">Özelleştir</translation>
 <translation id="7188508872042490670">Cihaz üzerindeki site verileri</translation>
 <translation id="7201549776650881587">Bu işlem, <ph name="ORIGIN" /> altındaki tüm siteler veya ana ekranınızdaki uygulaması tarafından depolanan verilerin ve çerezlerin tamamını temizler</translation>
 <translation id="7213166370492037743">Sitelerin yerel ağımdaki cihazlara bağlanmasına izin verme</translation>
@@ -715,7 +715,6 @@ Gelişmiş Koruma, şu Chrome ayarlarını kontrol eder:</translation>
 <translation id="83792324527827022">Bir site kameranızı ve mikrofonunuzu kullanıyor</translation>
 <translation id="8380167699614421159">Bu site, araya giren veya yanıltıcı reklamlar gösteriyor</translation>
 <translation id="8394832520002899662">Siteye dönmek için dokunun</translation>
-<translation id="8404500559369898929">Özel bir arka plan teması seçerek Chrome'u kişiselleştirin</translation>
 <translation id="8409345997656833551">Makaleler basitleştirilmiş görünümde gösterilebiliyorsa bilgilendirilirsiniz</translation>
 <translation id="8416874502399604126">Şu anda mikrofona izin veriliyor</translation>
 <translation id="8423565414844018592">Metin ölçeklendirme <ph name="TEXT_SCALING" /> olarak ayarlandı</translation>

@@ -333,6 +333,7 @@
 <translation id="4290791284969893584">ਕਿਸੇ ਪੰਨੇ ਨੂੰ ਬੰਦ ਕਰਨ ਤੋਂ ਬਾਅਦ, ਤੁਹਾਡੇ ਵੱਲੋਂ ਸ਼ੁਰੂ ਕੀਤੇ ਕਾਰਜ ਸ਼ਾਇਦ ਮੁਕੰਮਲ ਨਾ ਹੋਣ</translation>
 <translation id="429312253194641664">ਕੋਈ ਸਾਈਟ ਮੀਡੀਆ ਫ਼ਾਈਲ ਨੂੰ ਚਲਾ ਰਹੀ ਹੈ</translation>
 <translation id="42981349822642051">ਵਿਸਤਾਰ ਕਰੋ</translation>
+<translation id="4310738531374808763">ਆਪਣੇ ਹੋਮਪੇਜ ਨੂੰ ਵਿਉਂਤਬੱਧ ਕਰੋ</translation>
 <translation id="4336219115486912529">{COUNT,plural, =1{ਮਿਆਦ ਕੱਲ੍ਹ ਨੂੰ ਸਮਾਪਤ ਹੋ ਜਾਵੇਗੀ}one{ਮਿਆਦ # ਦਿਨ ਵਿੱਚ ਸਮਾਪਤ ਹੋ ਜਾਵੇਗੀ}other{ਮਿਆਦ # ਦਿਨਾਂ ਵਿੱਚ ਸਮਾਪਤ ਹੋ ਜਾਵੇਗੀ}}</translation>
 <translation id="4338831206024587507"><ph name="DOMAIN" /> ਅਧੀਨ ਸਾਰੀਆਂ ਸਾਈਟਾਂ</translation>
 <translation id="4340799661701629185">ਸਾਈਟਾਂ ਨੂੰ ਸੂਚਨਾਵਾਂ ਭੇਜਣ ਦੀ ਇਜਾਜ਼ਤ ਨਾ ਦਿਓ</translation>
@@ -524,6 +525,7 @@
 <translation id="6262279340360821358"><ph name="PERMISSION_1" /> ਅਤੇ <ph name="PERMISSION_2" /> ਨੂੰ ਬਲਾਕ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="6270391203985052864">ਸਾਈਟਾਂ ਸੂਚਨਾਵਾਂ ਭੇਜਣ ਲਈ ਪੁੱਛ ਸਕਦੀਆਂ ਹਨ</translation>
 <translation id="6295158916970320988">ਸਾਰੀਆਂ ਸਾਈਟਾਂ</translation>
+<translation id="6305257382500066042">ਹੁਣੇ ਅਜ਼ਮਾਓ</translation>
 <translation id="6320088164292336938">ਵਾਈਬ੍ਰੇਟ ਕਰੋ</translation>
 <translation id="6367753977865761591">ਕਿਸੇ ਖਾਸ ਸਾਈਟ ਲਈ ਤੀਜੀ-ਧਿਰ ਦੇ ਸਾਈਨ-ਇਨ ਨੂੰ ਬਲਾਕ ਕਰੋ।</translation>
 <translation id="6398765197997659313">ਪੂਰੀ ਸਕ੍ਰੀਨ ਤੋਂ ਬਾਹਰ ਜਾਓ</translation>
@@ -534,7 +536,6 @@
 <translation id="6447842834002726250">ਕੁਕੀਜ਼</translation>
 <translation id="6452138246455930388">ਤੁਹਾਡੀ ਖੁੱਲ੍ਹੀ ਟੈਬ 'ਤੇ ਕੀਮਤ ਵਿੱਚ <ph name="OLD_PRICE" /> ਤੋਂ <ph name="NEW_PRICE" /> ਤੱਕ ਕਮੀ, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN_NAME" /></translation>
 <translation id="6500423977866688905">ਵਿੰਡੋ ਛੋਟੀ ਹੋਣ 'ਤੇ, ਮੋਬਾਈਲ ਦ੍ਰਿਸ਼ ਲਈ ਬੇਨਤੀ ਕਰੋ</translation>
-<translation id="6514791408445720076">ਆਪਣੇ ਪੰਨੇ ਨੂੰ ਵਿਉਂਤਬੱਧ ਕਰੋ</translation>
 <translation id="6527303717912515753">ਸ਼ੇਅਰ ਕਰੋ</translation>
 <translation id="6530703012083415527">ਚਾਲੂ ਹੋਣ 'ਤੇ, ਸਾਈਟਾਂ ਪੌਪ-ਅੱਪ ਅਤੇ ਰੀਡਾਇਰੈਕਟ ਦੀ ਵਰਤੋਂ ਕਰ ਸਕਦੀਆਂ ਹਨ। ਬੰਦ ਹੋਣ 'ਤੇ, ਸਾਈਟਾਂ ਪੌਪ-ਅੱਪ ਅਤੇ ਰੀਡਾਇਰੈਕਟ ਦੀ ਵਰਤੋਂ ਨਹੀਂ ਕਰ ਸਕਦੀਆਂ ਹਨ।</translation>
 <translation id="6540488083026747005">ਤੁਸੀਂ ਇਸ ਸਾਈਟ ਲਈ ਤੀਜੀ-ਧਿਰ ਦੀਆਂ ਕੁਕੀਜ਼ ਦੀ ਆਗਿਆ ਦਿੱਤੀ ਹੈ</translation>
@@ -600,7 +601,6 @@
 <translation id="7141896414559753902">ਸਾਈਟਾਂ ਨੂੰ ਪੌਪ-ਅੱਪ ਅਤੇ ਰੀਡਾਇਰੈਕਟ ਦਿਖਾਉਣ ਤੋਂ ਬਲਾਕ ਕਰੋ (ਸਿਫ਼ਾਰਸ਼ੀ)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> KB</translation>
 <translation id="7180611975245234373">ਰਿਫ੍ਰੈਸ਼ ਕਰੋ</translation>
-<translation id="7180865173735832675">ਵਿਉਂਤਬੱਧ ਕਰੋ</translation>
 <translation id="7188508872042490670">ਵਰਤੋਂਕਾਰ ਦੇ ਡੀਵਾਈਸ 'ਤੇ ਸਾਈਟ ਡਾਟਾ</translation>
 <translation id="7201549776650881587">ਇਹ ਕਾਰਵਾਈ ਤੁਹਾਡੀ ਹੋਮ ਸਕ੍ਰੀਨ 'ਤੇ <ph name="ORIGIN" /> ਦੇ ਅਧੀਨ ਸਾਰੀਆਂ ਸਾਈਟਾਂ ਜਾਂ ਉਸਦੀ ਐਪ ਵੱਲੋਂ ਸਟੋਰ ਕੀਤੇ ਸਾਰੇ ਡਾਟੇ ਅਤੇ ਕੁਕੀਜ਼ ਨੂੰ ਮਿਟਾ ਦੇਵੇਗੀ</translation>
 <translation id="7213166370492037743">ਸਾਈਟਾਂ ਨੂੰ ਆਪਣੇ ਸਥਾਨਕ ਨੈੱਟਵਰਕ 'ਤੇ ਕਿਸੇ ਵੀ ਡੀਵਾਈਸ ਨਾਲ ਕਨੈਕਟ ਕਰਨ ਦੀ ਆਗਿਆ ਨਾ ਦਿਓ</translation>
@@ -715,7 +715,6 @@
 <translation id="83792324527827022">ਕੋਈ ਸਾਈਟ ਤੁਹਾਡਾ ਕੈਮਰਾ ਅਤੇ ਮਾਈਕ੍ਰੋਫ਼ੋਨ ਵਰਤ ਰਹੀ ਹੈ</translation>
 <translation id="8380167699614421159">ਇਹ ਸਾਈਟ ਦਖਲਅੰਦਾਜ਼ੀ ਜਾਂ ਗੁਮਰਾਹ ਕਰਨ ਵਾਲੇ ਵਿਗਿਆਪਨ ਦਿਖਾਉਂਦੀ ਹੈ</translation>
 <translation id="8394832520002899662">ਸਾਈਟ 'ਤੇ ਵਾਪਸ ਜਾਣ ਲਈ ਟੈਪ ਕਰੋ</translation>
-<translation id="8404500559369898929">ਵਿਉਂਤਬੱਧ ਬੈਕਗ੍ਰਾਊਂਡ ਥੀਮ ਚੁਣ ਕੇ Chrome ਨੂੰ ਆਪਣਾ ਬਣਾਓ</translation>
 <translation id="8409345997656833551">ਕਿਸੇ ਲੇਖ ਲਈ ਸਰਲੀਕਿਰਤ ਦ੍ਰਿਸ਼ ਦੀ ਸੁਵਿਧਾ ਉਪਲਬਧ ਹੋਣ 'ਤੇ ਸੂਚਨਾ ਪ੍ਰਾਪਤ ਕਰੋ</translation>
 <translation id="8416874502399604126">ਇਸ ਸਮੇਂ ਮਾਈਕ੍ਰੋਫ਼ੋਨ ਦੀ ਆਗਿਆ ਹੈ</translation>
 <translation id="8423565414844018592">ਲਿਖਤ ਸਕੇਲਿੰਗ ਨੂੰ <ph name="TEXT_SCALING" /> 'ਤੇ ਸੈੱਟ ਕੀਤਾ ਗਿਆ</translation>

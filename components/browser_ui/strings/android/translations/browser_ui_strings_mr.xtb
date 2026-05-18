@@ -290,6 +290,7 @@
 <translation id="3843916486309149084">Chrome आज पुन्हा कुकी ब्लॉक करेल</translation>
 <translation id="385051799172605136">मागील</translation>
 <translation id="3859306556332390985">पुढे शोधा</translation>
+<translation id="3870711497942672548">तुमच्या होमपेजसाठी कस्टम रंग आणि इमेज वापरून Chrome ला तुमच्या आवडीनुसार बनवा</translation>
 <translation id="389521680295183045">तुम्ही तुमचे डिव्हाइस सक्रियपणे कधी वापरता त्याबद्दल जाणून घेण्यासाठी साइट विचारू शकतात</translation>
 <translation id="3895926599014793903">झूम सुरू करण्याची सक्ती</translation>
 <translation id="3903738175795615004">फुल स्क्रीनमधून बाहेर पडण्यासाठी सर्वात वरून ड्रॅग करा किंवा एस्केप की प्रेस करा.</translation>
@@ -333,6 +334,7 @@
 <translation id="4290791284969893584">पेज बंद केल्यानंतर, तुम्ही सुरू केलेली टास्क कदाचित पूर्ण होणार नाहीत</translation>
 <translation id="429312253194641664">साइट मीडिया प्ले करत आहे</translation>
 <translation id="42981349822642051">विस्तृत करा</translation>
+<translation id="4310738531374808763">तुमचे होमपेज कस्टमाइझ करा</translation>
 <translation id="4336219115486912529">{COUNT,plural, =1{उद्या एक्स्पायर होईल}other{# दिवसांमध्ये एक्स्पायर होईल}}</translation>
 <translation id="4338831206024587507"><ph name="DOMAIN" /> अंतर्गत सर्व साइट</translation>
 <translation id="4340799661701629185">साइटना सूचना पाठवण्याची अनुमती देऊ नका</translation>
@@ -524,6 +526,7 @@
 <translation id="6262279340360821358"><ph name="PERMISSION_1" /> आणि <ph name="PERMISSION_2" /> ला ब्लॉक केले</translation>
 <translation id="6270391203985052864">साइट सूचना पाठवण्यास सांगू शकतात</translation>
 <translation id="6295158916970320988">सर्व साइट</translation>
+<translation id="6305257382500066042">आता वापरून पहा</translation>
 <translation id="6320088164292336938">कंपन</translation>
 <translation id="6367753977865761591">विशिष्ट साइटसाठी तृतीय पक्ष साइन-इन ब्लॉक करा.</translation>
 <translation id="6398765197997659313">पूर्ण स्क्रीनमधून निर्गमन करा</translation>
@@ -534,7 +537,6 @@
 <translation id="6447842834002726250">कुकीज</translation>
 <translation id="6452138246455930388">तुमच्या उघड्या असलेल्या टॅबवरील किमतीमध्ये <ph name="OLD_PRICE" /> वरून <ph name="NEW_PRICE" /> वर घट झाली आहे, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN_NAME" /></translation>
 <translation id="6500423977866688905">विंडो अरुंद असते, तेव्हा मोबाइल दृश्याची विनंती करा</translation>
-<translation id="6514791408445720076">तुमचे पेज कस्टमाइझ करा</translation>
 <translation id="6527303717912515753">शेअर करा</translation>
 <translation id="6530703012083415527">सुरू असताना, साइट पॉप-अप आणि रीडिरेक्ट वापरू शकतात. बंद असताना, साइट पॉप-अप आणि रीडिरेक्ट वापरू शकत नाहीत.</translation>
 <translation id="6540488083026747005">तुम्ही या साइटवर तृतीय पक्ष कुकीना अनुमती दिली आहे</translation>
@@ -600,7 +602,6 @@
 <translation id="7141896414559753902">साइट पॉप-अप आणि रीडिरेक्ट दाखवण्यापासून ब्लॉक करा (शिफारस केलेले)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> KB</translation>
 <translation id="7180611975245234373">रिफ्रेश करा</translation>
-<translation id="7180865173735832675">कस्टमाइझ करा</translation>
 <translation id="7188508872042490670">डिव्‍हाइसवरील साइट डेटा</translation>
 <translation id="7201549776650881587">ही कृती <ph name="ORIGIN" /> अंतर्गत किंवा तुमच्या होम स्क्रीनवर त्याच्या अ‍ॅपने सर्व साइटनी स्टोअर केलेला सर्व डेटा आणि कुकी हटवेल</translation>
 <translation id="7213166370492037743">साइटना तुमच्या स्थानिक नेटवर्कवरील कोणत्याही डिव्हाइससोबत कनेक्ट करण्याची अनुमती देऊ नका</translation>
@@ -715,7 +716,6 @@
 <translation id="83792324527827022">साइट तुमचा कॅमेरा आणि मायक्रोफोन वापरत आहे</translation>
 <translation id="8380167699614421159">ही साइट अनाहूत किंवा दिशाभूल करणाऱ्या जाहिराती दाखवते</translation>
 <translation id="8394832520002899662">साइटवर परत जाण्यासाठी टॅप करा</translation>
-<translation id="8404500559369898929">कस्टम बॅकग्राउंड थीम निवडून Chrome हे तुमच्या आवडीनुसार बनवा</translation>
 <translation id="8409345997656833551">एखादा लेख हा सुलभ दृश्यात दाखवला जाऊ शकत असल्यास, सूचना मिळवा</translation>
 <translation id="8416874502399604126">यावेळी मायक्रोफोनला अनुमती दिली आहे</translation>
 <translation id="8423565414844018592">मजकूर स्केलिंग <ph name="TEXT_SCALING" /> वर सेट केले आहे</translation>

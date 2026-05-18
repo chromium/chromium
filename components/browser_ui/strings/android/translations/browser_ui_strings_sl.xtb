@@ -333,6 +333,7 @@
 <translation id="4290791284969893584">Ko zaprete stran, se začeta opravila morda ne bodo dokončala.</translation>
 <translation id="429312253194641664">Spletno mesto predvaja predstavnost</translation>
 <translation id="42981349822642051">Razširi</translation>
+<translation id="4310738531374808763">Prilagajanje začetne strani</translation>
 <translation id="4336219115486912529">{COUNT,plural, =1{Poteče jutri}one{Poteče čez # dan}two{Poteče čez # dneva}few{Poteče čez # dni}other{Poteče čez # dni}}</translation>
 <translation id="4338831206024587507">Vsa spletna mesta v domeni <ph name="DOMAIN" />.</translation>
 <translation id="4340799661701629185">Spletnim mestom ni dovoljeno pošiljati obvestil.</translation>
@@ -524,6 +525,7 @@
 <translation id="6262279340360821358">Blokirano: <ph name="PERMISSION_1" /> in <ph name="PERMISSION_2" /></translation>
 <translation id="6270391203985052864">Spletna mesta vas lahko vprašajo, ali želite, da vam pošiljajo obvestila</translation>
 <translation id="6295158916970320988">Vsa spletna mesta</translation>
+<translation id="6305257382500066042">Preizkusite</translation>
 <translation id="6320088164292336938">Vibriranje</translation>
 <translation id="6367753977865761591">Blokiranje prijave prek zunanjih ponudnikov za določeno spletno mesto.</translation>
 <translation id="6398765197997659313">Izhod iz celozaslonskega načina</translation>
@@ -534,7 +536,6 @@
 <translation id="6447842834002726250">Piškotki</translation>
 <translation id="6452138246455930388">Znižanje cene na odprtem zavihku s cene <ph name="OLD_PRICE" /> na <ph name="NEW_PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN_NAME" /></translation>
 <translation id="6500423977866688905">Če je okno omejeno, zahtevajte pogled za mobilno napravo</translation>
-<translation id="6514791408445720076">Prilagajanje strani</translation>
 <translation id="6527303717912515753">Skupna raba</translation>
 <translation id="6530703012083415527">Če je ta možnost vklopljena, spletna mesta lahko uporabljajo pojavna okna in preusmeritve. Če je ta možnost izklopljena, spletna mesta ne smejo uporabljati pojavnih oken in preusmeritev.</translation>
 <translation id="6540488083026747005">Na tem spletnem mestu ste dovolili piškotke tretjih oseb</translation>
@@ -600,7 +601,6 @@
 <translation id="7141896414559753902">Preprečevanje, da spletna mesta prikazujejo pojavna okna in preusmeritve (priporočeno)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> KB</translation>
 <translation id="7180611975245234373">Osveži</translation>
-<translation id="7180865173735832675">Prilagodi</translation>
 <translation id="7188508872042490670">Podatki spletnih mest v napravi</translation>
 <translation id="7201549776650881587">To dejanje bo izbrisalo vse podatke in piškotke, ki so jih shranila vsa spletna mesta v skupini <ph name="ORIGIN" /> ali z njo povezana aplikacija na začetnem zaslonu.</translation>
 <translation id="7213166370492037743">Spletnim mestom ni dovoljeno vzpostavljanje povezav z napravami v lokalnem omrežju</translation>
@@ -715,7 +715,6 @@ Dodatna zaščita upravlja te nastavitve za Chrome:</translation>
 <translation id="83792324527827022">Spletno mesto uporablja kamero in mikrofon</translation>
 <translation id="8380167699614421159">To spletno mesto prikazuje vsiljive ali zavajajoče oglase</translation>
 <translation id="8394832520002899662">Dotaknite se, če se želite vrniti na spletno mesto</translation>
-<translation id="8404500559369898929">Izberite temo ozadja po meri in prilagodite Chrome po svoje</translation>
 <translation id="8409345997656833551">Prejmite obvestilo, ko je članek lahko prikazan v poenostavljenem pogledu.</translation>
 <translation id="8416874502399604126">Mikrofon je tokrat dovoljen</translation>
 <translation id="8423565414844018592">Prilagajanje velikosti besedila je nastavljeno na <ph name="TEXT_SCALING" /></translation>

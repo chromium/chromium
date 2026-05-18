@@ -290,6 +290,7 @@
 <translation id="3843916486309149084">Chrome mun aftur loka fyrir fótspor í dag</translation>
 <translation id="385051799172605136">Til baka</translation>
 <translation id="3859306556332390985">Leita áfram</translation>
+<translation id="3870711497942672548">Gerðu Chrome að þínu eigin með sérsniðnum litum og myndum fyrir heimasíðuna þína</translation>
 <translation id="389521680295183045">Vefsvæði geta beðið um að fá að vita hvenær þú notar tækið þitt</translation>
 <translation id="3895926599014793903">Þvinga fram aðdrátt</translation>
 <translation id="3903738175795615004">Strjúktu niður frá efsta hluta skjásins eða ýttu á Esc-lykilinn til að hætta að nota allan skjáinn.</translation>
@@ -333,6 +334,7 @@
 <translation id="4290791284969893584">Þegar þú lokar síðu er óvíst að verkefnum sem þú byrjaðir á verði lokið</translation>
 <translation id="429312253194641664">Vefsvæði er að spila efni</translation>
 <translation id="42981349822642051">Stækka</translation>
+<translation id="4310738531374808763">Sérsníddu heimasíðuna þína</translation>
 <translation id="4336219115486912529">{COUNT,plural, =1{Rennur út á morgun}one{Rennur út eftir # dag}other{Rennur út eftir # daga}}</translation>
 <translation id="4338831206024587507">Öll vefsvæði undir <ph name="DOMAIN" /></translation>
 <translation id="4340799661701629185">Ekki leyfa vefsvæðum að senda tilkynningar</translation>
@@ -524,6 +526,7 @@
 <translation id="6262279340360821358">Lokað er fyrir <ph name="PERMISSION_1" /> og <ph name="PERMISSION_2" /></translation>
 <translation id="6270391203985052864">Vefsvæði geta óskað eftir því að senda tilkynningar</translation>
 <translation id="6295158916970320988">Öll vefsvæði</translation>
+<translation id="6305257382500066042">Prófa núna</translation>
 <translation id="6320088164292336938">Titringur</translation>
 <translation id="6367753977865761591">Loka á innskráningu þriðja aðila á tilteknu vefsvæði.</translation>
 <translation id="6398765197997659313">Hætta að nota allan skjáinn</translation>
@@ -534,7 +537,6 @@
 <translation id="6447842834002726250">Fótspor</translation>
 <translation id="6452138246455930388">Verðlækkun í opnum flipa, úr <ph name="OLD_PRICE" /> í <ph name="NEW_PRICE" />, <ph name="PRODUCT_NAME" /> <ph name="DOMAIN_NAME" /></translation>
 <translation id="6500423977866688905">Þegar glugginn er mjór skaltu biðja um símaútgáfu</translation>
-<translation id="6514791408445720076">Sérsníddu síðuna þína</translation>
 <translation id="6527303717912515753">Deila</translation>
 <translation id="6530703012083415527">Þegar kveikt er á þessu geta vefsvæði notað sprettiglugga og framsendingar. Þegar slökkt er á þessu geta vefsvæði ekki notað sprettiglugga og framsendingar.</translation>
 <translation id="6540488083026747005">Þú leyfðir fótspor þriðju aðila á þessu vefsvæði</translation>
@@ -600,7 +602,6 @@
 <translation id="7141896414559753902">Banna síðum að birta sprettiglugga og framsendingar (ráðlagt)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> KB</translation>
 <translation id="7180611975245234373">Endurnýja</translation>
-<translation id="7180865173735832675">Sérsníða</translation>
 <translation id="7188508872042490670">Vefsvæðagögn í tækinu</translation>
 <translation id="7201549776650881587">Þessi aðgerð eyðir öllum gögnum og fótsporum sem eru vistuð á öllum vefsvæðum undir <ph name="ORIGIN" /> eða í forriti þess á heimaskjánum hjá þér</translation>
 <translation id="7213166370492037743">Vefsvæði mega ekki tengjast neinu tæki á staðarnetinu þínu.</translation>
@@ -715,7 +716,6 @@
 <translation id="83792324527827022">Vefsvæði er að nota myndavélina þína og hljóðnemann</translation>
 <translation id="8380167699614421159">Þetta vefsvæði sýnir ágengar eða villandi auglýsingar</translation>
 <translation id="8394832520002899662">Ýttu til að fara aftur á vefsvæðið</translation>
-<translation id="8404500559369898929">Gerðu Chrome að þínum eigin með því að velja sérsniðið bakgrunnsþema</translation>
 <translation id="8409345997656833551">Fá tilkynningu þegar hægt er að birta grein í einfaldaðri útgáfu</translation>
 <translation id="8416874502399604126">Hljóðnemi leyfður í þetta skipti</translation>
 <translation id="8423565414844018592">Textastærð er stillt á <ph name="TEXT_SCALING" /></translation>

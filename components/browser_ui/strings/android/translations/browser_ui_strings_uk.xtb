@@ -333,6 +333,7 @@
 <translation id="4290791284969893584">Після того, як ви закриєте сторінку, виконання розпочатих завдань може не завершитися</translation>
 <translation id="429312253194641664">Сайт відтворює медіа-вміст</translation>
 <translation id="42981349822642051">Розгорнути</translation>
+<translation id="4310738531374808763">Налаштуйте домашню сторінку</translation>
 <translation id="4336219115486912529">{COUNT,plural, =1{Строк дії закінчується завтра}one{Строк дії закінчується через # день}few{Строк дії закінчується через # дні}many{Строк дії закінчується через # днів}other{Строк дії закінчується через # дня}}</translation>
 <translation id="4338831206024587507">Усі сайти домену <ph name="DOMAIN" /></translation>
 <translation id="4340799661701629185">Заборонити сайтам надсилати сповіщення</translation>
@@ -524,6 +525,7 @@
 <translation id="6262279340360821358">Заблоковано: "<ph name="PERMISSION_1" />" і "<ph name="PERMISSION_2" />"</translation>
 <translation id="6270391203985052864">Сайти можуть просити дозвіл надсилати сповіщення</translation>
 <translation id="6295158916970320988">Усі сайти</translation>
+<translation id="6305257382500066042">Спробувати</translation>
 <translation id="6320088164292336938">Вібросигнал</translation>
 <translation id="6367753977865761591">Заблокувати вхід через сторонні сервіси для певного сайту.</translation>
 <translation id="6398765197997659313">Вийти з повноекранного режиму</translation>
@@ -534,7 +536,6 @@
 <translation id="6447842834002726250">Файли cookie</translation>
 <translation id="6452138246455930388">Зниження ціни на відкритій вкладці з <ph name="OLD_PRICE" /> до <ph name="NEW_PRICE" /> (<ph name="PRODUCT_NAME" />, <ph name="DOMAIN_NAME" />)</translation>
 <translation id="6500423977866688905">Коли вікно завузьке, показувати мобільну версію</translation>
-<translation id="6514791408445720076">Налаштуйте сторінку</translation>
 <translation id="6527303717912515753">Надіслати</translation>
 <translation id="6530703012083415527">Якщо цей параметр увімкнено, сайти можуть використовувати спливаючі вікна й переспрямування. Якщо його вимкнено, сайти не можуть використовувати спливаючі вікна й переспрямування.</translation>
 <translation id="6540488083026747005">Ви дозволили сторонні файли cookie на цьому сайті</translation>
@@ -600,7 +601,6 @@
 <translation id="7141896414559753902">Блокувати спливаючі вікна та переадресацію на сайтах (рекомендовано)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> КБ</translation>
 <translation id="7180611975245234373">Оновити</translation>
-<translation id="7180865173735832675">Налаштувати</translation>
 <translation id="7188508872042490670">Дані сайтів на пристрої</translation>
 <translation id="7201549776650881587">У результаті буде видалено всі дані й файли cookie, збережені сайтами в групі сайту <ph name="ORIGIN" /> або додатками на головному екрані</translation>
 <translation id="7213166370492037743">Заборонити сайтам підключатися до пристроїв у вашій локальній мережі</translation>
@@ -715,7 +715,6 @@
 <translation id="83792324527827022">Сайт використовує камеру та мікрофон</translation>
 <translation id="8380167699614421159">Цей сайт показує нав’язливі чи оманливі оголошення</translation>
 <translation id="8394832520002899662">Натисніть, щоб повернутися на сайт</translation>
-<translation id="8404500559369898929">Персоналізуйте Chrome, вибравши власну фонову тему</translation>
 <translation id="8409345997656833551">Отримувати сповіщення, коли статтю можна показати в режимі спрощеного перегляду</translation>
 <translation id="8416874502399604126">Надано разовий доступ до мікрофона</translation>
 <translation id="8423565414844018592">Масштаб тексту: <ph name="TEXT_SCALING" /></translation>

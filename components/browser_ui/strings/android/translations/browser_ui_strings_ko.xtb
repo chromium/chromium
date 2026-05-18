@@ -333,6 +333,7 @@
 <translation id="4290791284969893584">페이지를 닫으면 시작한 작업이 완료되지 않을 수 있습니다</translation>
 <translation id="429312253194641664">사이트에서 미디어 재생 중</translation>
 <translation id="42981349822642051">펼치기</translation>
+<translation id="4310738531374808763">홈페이지 맞춤설정</translation>
 <translation id="4336219115486912529">{COUNT,plural, =1{내일 만료됨}other{#일 후에 만료됨}}</translation>
 <translation id="4338831206024587507"><ph name="DOMAIN" />의 모든 사이트</translation>
 <translation id="4340799661701629185">사이트에서 알림을 전송하도록 허용하지 않음</translation>
@@ -524,6 +525,7 @@
 <translation id="6262279340360821358"><ph name="PERMISSION_1" /> 및 <ph name="PERMISSION_2" /> 차단됨</translation>
 <translation id="6270391203985052864">사이트에서 알림 전송 허용을 요청할 수 있음</translation>
 <translation id="6295158916970320988">모든 사이트</translation>
+<translation id="6305257382500066042">지금 사용해 보기</translation>
 <translation id="6320088164292336938">진동</translation>
 <translation id="6367753977865761591">특정 사이트에 대해 서드 파티 로그인을 차단합니다.</translation>
 <translation id="6398765197997659313">전체화면 닫기</translation>
@@ -534,7 +536,6 @@
 <translation id="6447842834002726250">쿠키</translation>
 <translation id="6452138246455930388">열려 있는 탭의 가격 인하(<ph name="OLD_PRICE" />~<ph name="NEW_PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN_NAME" />)</translation>
 <translation id="6500423977866688905">창이 좁은 경우 모바일 뷰 요청</translation>
-<translation id="6514791408445720076">페이지 맞춤설정하기</translation>
 <translation id="6527303717912515753">공유</translation>
 <translation id="6530703012083415527">사용 설정하면 사이트에서 팝업 및 리디렉션을 사용할 수 있습니다. 사용 중지하면 사이트에서 팝업 및 리디렉션을 사용할 수 없습니다.</translation>
 <translation id="6540488083026747005">이 사이트에서 서드 파티 쿠키를 허용했습니다</translation>
@@ -600,7 +601,6 @@
 <translation id="7141896414559753902">사이트에서 팝업 및 리디렉션을 표시하지 못하도록 차단(권장)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" />KB</translation>
 <translation id="7180611975245234373">새로고침</translation>
-<translation id="7180865173735832675">맞춤설정</translation>
 <translation id="7188508872042490670">기기 내 사이트 데이터</translation>
 <translation id="7201549776650881587">이 작업을 실행하면 <ph name="ORIGIN" />의 모든 하위 사이트 또는 홈 화면에 있는 앱에서 저장한 데이터와 쿠키가 모두 삭제됩니다.</translation>
 <translation id="7213166370492037743">사이트에서 로컬 네트워크의 모든 기기에 연결하도록 허용하지 않음</translation>
@@ -715,7 +715,6 @@
 <translation id="83792324527827022">사이트에서 카메라와 마이크를 사용 중입니다.</translation>
 <translation id="8380167699614421159">이 사이트에서는 방해가 되거나 사용자를 현혹하는 광고를 표시합니다.</translation>
 <translation id="8394832520002899662">탭하여 사이트로 돌아가기</translation>
-<translation id="8404500559369898929">맞춤형 배경 테마를 선택하여 나만의 Chrome을 만들어 보세요.</translation>
 <translation id="8409345997656833551">기사를 간단히 보기로 표시할 수 있을 때 알림 받기</translation>
 <translation id="8416874502399604126">현재 마이크 허용됨</translation>
 <translation id="8423565414844018592">텍스트 크기 조정이 <ph name="TEXT_SCALING" />로 설정됩니다</translation>

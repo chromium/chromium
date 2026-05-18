@@ -333,6 +333,7 @@
 <translation id="4290791284969893584">Pasi të mbyllësh një faqe, detyrat që ke nisur mund të mos përfundojnë</translation>
 <translation id="429312253194641664">Një sajt po luan media</translation>
 <translation id="42981349822642051">Zgjero</translation>
+<translation id="4310738531374808763">Personalizo faqen tënde kryesore</translation>
 <translation id="4336219115486912529">{COUNT,plural, =1{Skadon nesër}other{Skadon për # ditë}}</translation>
 <translation id="4338831206024587507">Të gjitha sajtet nën domenin <ph name="DOMAIN" /></translation>
 <translation id="4340799661701629185">Mos lejo që sajtet të dërgojnë njoftime</translation>
@@ -524,6 +525,7 @@
 <translation id="6262279340360821358"><ph name="PERMISSION_1" /> dhe <ph name="PERMISSION_2" /> të bllokuara</translation>
 <translation id="6270391203985052864">Sajtet mund të kërkojnë të dërgojnë njoftime</translation>
 <translation id="6295158916970320988">Të gjitha sajtet</translation>
+<translation id="6305257382500066042">Provoje tani</translation>
 <translation id="6320088164292336938">Dridhja</translation>
 <translation id="6367753977865761591">Blloko identifikimin e palëve të treta për një sajt specifik.</translation>
 <translation id="6398765197997659313">Dil nga ekrani i plotë</translation>
@@ -534,7 +536,6 @@
 <translation id="6447842834002726250">Kukit</translation>
 <translation id="6452138246455930388">Ulje çmimi në skedën tënde të hapur, nga <ph name="OLD_PRICE" /> deri në <ph name="NEW_PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN_NAME" /></translation>
 <translation id="6500423977866688905">Kur dritarja është e ngushtë, kërko pamjen për celular</translation>
-<translation id="6514791408445720076">Personalizo faqen tënde</translation>
 <translation id="6527303717912515753">Ndaj</translation>
 <translation id="6530703012083415527">Kur cilësimi është aktiv, sajtet mund të përdorin dritaret kërcyese dhe ridrejtimet. Kur cilësimi është joaktiv, sajtet nuk mund të përdorin dritaret kërcyese dhe ridrejtimet.</translation>
 <translation id="6540488083026747005">Ke lejuar kukit e palëve të treta në këtë sajt</translation>
@@ -600,7 +601,6 @@
 <translation id="7141896414559753902">Blloko që sajtet të shfaqin dritare kërcyese dhe ridrejtime (rekomandohet)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> KB</translation>
 <translation id="7180611975245234373">Rifresko</translation>
-<translation id="7180865173735832675">Personalizo</translation>
 <translation id="7188508872042490670">Të dhënat e sajteve në pajisje</translation>
 <translation id="7201549776650881587">Ky veprim do të fshijë të gjitha të dhënat dhe kukit e ruajtura nga të gjitha sajtet nën <ph name="ORIGIN" /> ose nga aplikacioni përkatës në ekranin bazë</translation>
 <translation id="7213166370492037743">Mos i lejo sajtet të lidhen me asnjë pajisje në rrjetin tënd lokal</translation>
@@ -715,7 +715,6 @@
 <translation id="83792324527827022">Një sajt po përdor kamerën dhe mikrofonin tënd</translation>
 <translation id="8380167699614421159">Ky sajt shfaq reklama ndërhyrëse ose mashtruese</translation>
 <translation id="8394832520002899662">Trokit për t'u kthyer në sajt</translation>
-<translation id="8404500559369898929">Bëje Chrome tëndin duke zgjedhur një temë të personalizuar sfondi</translation>
 <translation id="8409345997656833551">Merr njoftime kur një artikull mund të shfaqet në pamje të thjeshtuar</translation>
 <translation id="8416874502399604126">Mikrofoni lejohet këtë herë</translation>
 <translation id="8423565414844018592">Shkallëzimi i tekstit është caktuar në <ph name="TEXT_SCALING" /></translation>

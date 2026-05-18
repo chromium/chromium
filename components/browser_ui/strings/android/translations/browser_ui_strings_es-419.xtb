@@ -333,6 +333,7 @@
 <translation id="4290791284969893584">Después de cerrar una página, es posible que no puedas completar las tareas que empezaste.</translation>
 <translation id="429312253194641664">Un sitio está reproduciendo contenido multimedia</translation>
 <translation id="42981349822642051">Expandir</translation>
+<translation id="4310738531374808763">Personaliza la página principal</translation>
 <translation id="4336219115486912529">{COUNT,plural, =1{Vence mañana}other{Vence dentro de # días}}</translation>
 <translation id="4338831206024587507">Todos los sitios en <ph name="DOMAIN" /></translation>
 <translation id="4340799661701629185">No permitir que los sitios envíen notificaciones</translation>
@@ -524,6 +525,7 @@
 <translation id="6262279340360821358">Bloqueados: <ph name="PERMISSION_1" /> y <ph name="PERMISSION_2" /></translation>
 <translation id="6270391203985052864">Los sitios pueden preguntarte si quieres recibir notificaciones</translation>
 <translation id="6295158916970320988">Todos los sitios</translation>
+<translation id="6305257382500066042">Probar ahora</translation>
 <translation id="6320088164292336938">Vibrar</translation>
 <translation id="6367753977865761591">Bloquea el acceso de terceros a un sitio específico.</translation>
 <translation id="6398765197997659313">Salir de pantalla completa</translation>
@@ -534,7 +536,6 @@
 <translation id="6447842834002726250">Cookies</translation>
 <translation id="6452138246455930388">Reducción de precio en la pestaña abierta, de <ph name="OLD_PRICE" /> a <ph name="NEW_PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN_NAME" /></translation>
 <translation id="6500423977866688905">Cuando la ventana sea angosta, solicitar la vista para dispositivos móviles</translation>
-<translation id="6514791408445720076">Personaliza tu página</translation>
 <translation id="6527303717912515753">Compartir</translation>
 <translation id="6530703012083415527">Cuando esta opción está activada, los sitios pueden usar ventanas emergentes y redireccionamientos. Cuando está desactivada, los sitios no pueden usar ventanas emergentes ni redireccionamientos.</translation>
 <translation id="6540488083026747005">Permitiste las cookies de terceros en este sitio</translation>
@@ -600,7 +601,6 @@
 <translation id="7141896414559753902">Bloquea las ventanas emergentes y los redireccionamientos en los sitios (recomendado)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> KB</translation>
 <translation id="7180611975245234373">Actualizar</translation>
-<translation id="7180865173735832675">Personalizar</translation>
 <translation id="7188508872042490670">Datos de sitios en el dispositivo</translation>
 <translation id="7201549776650881587">Esta acción borrará todos los datos y cookies que almacenaron todos los sitios secundarios de <ph name="ORIGIN" /> o su app en la pantalla principal</translation>
 <translation id="7213166370492037743">No permitir que los sitios se conecten a ningún dispositivo de tu red local</translation>
@@ -715,7 +715,6 @@ La Protección avanzada controla estos parámetros de configuración de Chrome:<
 <translation id="83792324527827022">Un sitio está utilizando la cámara y el micrófono</translation>
 <translation id="8380167699614421159">Este sitio muestra anuncios intrusivos o engañosos</translation>
 <translation id="8394832520002899662">Presiona para volver al sitio</translation>
-<translation id="8404500559369898929">Elige un tema de fondo personalizado para que Chrome sea tuyo</translation>
 <translation id="8409345997656833551">Recibe una notificación cada vez que se pueda mostrar la vista simplificada de un artículo</translation>
 <translation id="8416874502399604126">Se permite el micrófono esta vez</translation>
 <translation id="8423565414844018592">Se estableció el escalamiento de texto al <ph name="TEXT_SCALING" /></translation>

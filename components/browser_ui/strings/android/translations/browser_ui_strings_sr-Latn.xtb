@@ -290,6 +290,7 @@
 <translation id="3843916486309149084">Chrome će danas ponovo blokirati kolačiće</translation>
 <translation id="385051799172605136">Nazad</translation>
 <translation id="3859306556332390985">Premotaj unapred</translation>
+<translation id="3870711497942672548">Personalizujte Chrome pomoću prilagođenih boja i slika za početnu stranicu</translation>
 <translation id="389521680295183045">Sajtovi mogu da zatraže da znaju kada aktivno koristite uređaj</translation>
 <translation id="3895926599014793903">Prinudno omogući zumiranje</translation>
 <translation id="3903738175795615004">Prevucite od vrha ili pritisnite taster Esc da biste izašli iz režima celog ekrana.</translation>
@@ -333,6 +334,7 @@
 <translation id="4290791284969893584">Posle zatvaranja stranice zadaci koje ste započeli se možda neće dovršiti</translation>
 <translation id="429312253194641664">Sajt pušta medijski sadržaj</translation>
 <translation id="42981349822642051">Proširite</translation>
+<translation id="4310738531374808763">Prilagodite stranicu Početna</translation>
 <translation id="4336219115486912529">{COUNT,plural, =1{Ističe sutra}one{Ističe za # dan}few{Ističe za # dana}other{Ističe za # dana}}</translation>
 <translation id="4338831206024587507">Svi sajtovi u okviru domena <ph name="DOMAIN" /></translation>
 <translation id="4340799661701629185">Ne dozvoljavaj sajtovima da šalju obaveštenja</translation>
@@ -524,6 +526,7 @@
 <translation id="6262279340360821358">Dozvole <ph name="PERMISSION_1" /> i <ph name="PERMISSION_2" /> su blokirane</translation>
 <translation id="6270391203985052864">Sajtovi mogu da traže da šalju obaveštenja</translation>
 <translation id="6295158916970320988">Svi sajtovi</translation>
+<translation id="6305257382500066042">Isprobajte</translation>
 <translation id="6320088164292336938">Vibracija</translation>
 <translation id="6367753977865761591">Blokirajte prijavljivanje trećih strana za određeni sajt.</translation>
 <translation id="6398765197997659313">Izađi iz režima celog ekrana</translation>
@@ -534,7 +537,6 @@
 <translation id="6447842834002726250">Kolačići</translation>
 <translation id="6452138246455930388">Sniženje na otvorenoj kartici, sa <ph name="OLD_PRICE" /> na <ph name="NEW_PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN_NAME" /></translation>
 <translation id="6500423977866688905">Kada je prozor uzak, zahtevaj prikaz za mobilne uređaje</translation>
-<translation id="6514791408445720076">Prilagodite stranicu</translation>
 <translation id="6527303717912515753">Deli</translation>
 <translation id="6530703012083415527">Kada je uključeno, sajtovi mogu da koriste iskačuće prozore i preusmeravanja. Kada je isključeno, sajtovi ne mogu da koriste iskačuće prozore i preusmeravanja.</translation>
 <translation id="6540488083026747005">Dozvolili ste kolačiće treće strane za ovaj sajt</translation>
@@ -600,7 +602,6 @@
 <translation id="7141896414559753902">Blokiraj prikazivanje iskačućih prozora i preusmeravanja na sajtovima (preporučeno)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> kB</translation>
 <translation id="7180611975245234373">Osveži</translation>
-<translation id="7180865173735832675">Prilagodi</translation>
 <translation id="7188508872042490670">Podaci o sajtovima na uređaju</translation>
 <translation id="7201549776650881587">Ova radnja će obrisati sve podatke i kolačiće koje čuvaju svi sajtovi u okviru domena <ph name="ORIGIN" /> ili koje čuva povezana aplikacija na početnom ekranu</translation>
 <translation id="7213166370492037743">Ne dozvoljavaj sajtovima da se povezuju sa bilo kojim uređajem na lokalnoj mreži</translation>
@@ -715,7 +716,6 @@ Napredna zaštita upravlja ovim Chrome podešavanjima:</translation>
 <translation id="83792324527827022">Sajt koristi kameru i mikrofon</translation>
 <translation id="8380167699614421159">Ovaj sajt prikazuje oglase koji ometaju aktivnosti ili obmanjujuće oglase</translation>
 <translation id="8394832520002899662">Dodirnite da biste se vratili na sajt</translation>
-<translation id="8404500559369898929">Personalizujte Chrome tako što ćete izabrati prilagođene teme pozadine</translation>
 <translation id="8409345997656833551">Dobijte obaveštenje kada je pojednostavljeni prikaz dostupan za članak</translation>
 <translation id="8416874502399604126">Mikrofon je dozvoljen ovaj put</translation>
 <translation id="8423565414844018592">Promena veličine teksta je podešena na <ph name="TEXT_SCALING" /></translation>

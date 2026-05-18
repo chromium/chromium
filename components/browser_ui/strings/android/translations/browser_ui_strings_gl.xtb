@@ -333,6 +333,7 @@
 <translation id="4290791284969893584">Ao pechar unha páxina, as tarefas iniciadas poderían non finalizar</translation>
 <translation id="429312253194641664">Un sitio está reproducindo contido multimedia</translation>
 <translation id="42981349822642051">Ampliar</translation>
+<translation id="4310738531374808763">Personaliza a páxina de inicio</translation>
 <translation id="4336219115486912529">{COUNT,plural, =1{Caduca mañá}other{Caduca dentro de # días}}</translation>
 <translation id="4338831206024587507">Todos os sitios do dominio <ph name="DOMAIN" /></translation>
 <translation id="4340799661701629185">Non permitir que os sitios envíen notificacións</translation>
@@ -524,6 +525,7 @@
 <translation id="6262279340360821358"><ph name="PERMISSION_1" /> e <ph name="PERMISSION_2" /> (bloqueados)</translation>
 <translation id="6270391203985052864">Os sitios poden pedir permiso para enviar notificacións</translation>
 <translation id="6295158916970320988">Todos os sitios</translation>
+<translation id="6305257382500066042">Probar agora</translation>
 <translation id="6320088164292336938">Vibrar</translation>
 <translation id="6367753977865761591">Bloquea o inicio de sesión de terceiros para un sitio específico.</translation>
 <translation id="6398765197997659313">Saír do modo de pantalla completa</translation>
@@ -534,7 +536,6 @@
 <translation id="6447842834002726250">Cookies</translation>
 <translation id="6452138246455930388">Baixada de prezo na pestana aberta, de <ph name="OLD_PRICE" /> a <ph name="NEW_PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN_NAME" /></translation>
 <translation id="6500423977866688905">Solicitar vista para dispositivos móbiles cando a ventá sexa estreita</translation>
-<translation id="6514791408445720076">Personaliza a túa páxina</translation>
 <translation id="6527303717912515753">Compartir</translation>
 <translation id="6530703012083415527">Cando esta opción está activada, os sitios poden utilizar ventás emerxentes e redireccións. Cando esta opción está desactivada, os sitios non poden utilizar ventás emerxentes nin redireccións.</translation>
 <translation id="6540488083026747005">Permitiches o uso de cookies de terceiros neste sitio</translation>
@@ -600,7 +601,6 @@
 <translation id="7141896414559753902">Non permite que os sitios mostren ventás emerxentes nin redireccións (recomendado)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> kB</translation>
 <translation id="7180611975245234373">Actualizar</translation>
-<translation id="7180865173735832675">Personalizar</translation>
 <translation id="7188508872042490670">Datos dos sitios no dispositivo</translation>
 <translation id="7201549776650881587">Ao realizar esta acción, eliminaranse todos os datos e as cookies que almacenasen os subsitios de <ph name="ORIGIN" /> ou a súa aplicación na túa pantalla de inicio</translation>
 <translation id="7213166370492037743">Non permitir que os sitios se conecten a calquera dispositivo da túa rede local</translation>
@@ -715,7 +715,6 @@ A Protección avanzada controla estas opcións de Chrome:</translation>
 <translation id="83792324527827022">Un sitio está utilizando a cámara e o micrófono</translation>
 <translation id="8380167699614421159">Este sitio mostra anuncios intrusivos ou enganosos</translation>
 <translation id="8394832520002899662">Toca para volver ao sitio</translation>
-<translation id="8404500559369898929">Escolle un tema de fondo personalizado para darlle a Chrome un toque persoal</translation>
 <translation id="8409345997656833551">Recibe notificacións cando se poida mostrar un artigo na vista simplificada</translation>
 <translation id="8416874502399604126">Permítese o uso do micrófono esta vez</translation>
 <translation id="8423565414844018592">Tamaño de texto definido en <ph name="TEXT_SCALING" /></translation>

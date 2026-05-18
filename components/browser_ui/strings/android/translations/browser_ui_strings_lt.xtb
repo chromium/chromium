@@ -290,6 +290,7 @@
 <translation id="3843916486309149084">„Chrome“ vėl užblokuos slapukus šiandien</translation>
 <translation id="385051799172605136">Atgal</translation>
 <translation id="3859306556332390985">Eiti pirmyn</translation>
+<translation id="3870711497942672548">Suasmeninkite „Chrome“ naudodami tinkintas pagrindinio puslapio spalvas ir vaizdus</translation>
 <translation id="389521680295183045">Svetainės gali prašyti leisti sužinoti, kada aktyviai naudojate įrenginį</translation>
 <translation id="3895926599014793903">Priverstinai įgalinti mastelio keitimą</translation>
 <translation id="3903738175795615004">Vilkite nuo viršaus arba paspauskite „Esc“, kad išeitumėte iš viso ekrano režimo.</translation>
@@ -333,6 +334,7 @@
 <translation id="4290791284969893584">Uždarius puslapį, pradėtos užduotys gali likti nebaigtos</translation>
 <translation id="429312253194641664">Svetainėje leidžiama medija</translation>
 <translation id="42981349822642051">Išskleisti</translation>
+<translation id="4310738531374808763">Tinkinkite pagrindinį puslapį</translation>
 <translation id="4336219115486912529">{COUNT,plural, =1{Galiojimo laikas baigsis rytoj}one{Galiojimo laikas baigsis po # dienos}few{Galiojimo laikas baigsis po # dienų}many{Galiojimo laikas baigsis po # dienos}other{Galiojimo laikas baigsis po # dienų}}</translation>
 <translation id="4338831206024587507">Visos svetainės su domenu <ph name="DOMAIN" /></translation>
 <translation id="4340799661701629185">Neleisti svetainėms siųsti pranešimų</translation>
@@ -524,6 +526,7 @@
 <translation id="6262279340360821358">Užblokuota: <ph name="PERMISSION_1" /> ir <ph name="PERMISSION_2" /></translation>
 <translation id="6270391203985052864">Svetainės gali prašyti siųsti pranešimus</translation>
 <translation id="6295158916970320988">Visos svetainės</translation>
+<translation id="6305257382500066042">Išbandykite dabar</translation>
 <translation id="6320088164292336938">Vibruoti</translation>
 <translation id="6367753977865761591">Blokuoti trečiosios šalies prisijungimą prie konkrečios svetainės.</translation>
 <translation id="6398765197997659313">Išeiti iš viso ekrano režimo</translation>
@@ -534,7 +537,6 @@
 <translation id="6447842834002726250">Slapukai</translation>
 <translation id="6452138246455930388">Sumažinta kaina atidarytame skirtuke: iš <ph name="OLD_PRICE" /> į <ph name="NEW_PRICE" />, „<ph name="PRODUCT_NAME" />“, <ph name="DOMAIN_NAME" /></translation>
 <translation id="6500423977866688905">Kai langas bus siauras, pateikite užklausą dėl rodinio versijos mobiliesiems</translation>
-<translation id="6514791408445720076">Tinkinkite puslapį</translation>
 <translation id="6527303717912515753">Bendrinti</translation>
 <translation id="6530703012083415527">Įjungus svetainėse galima naudoti iššokančiuosius langus ir peradresavimus. Išjungus svetainėse negalima naudoti iššokančiųjų langų ir peradresavimų.</translation>
 <translation id="6540488083026747005">Leidote trečiųjų šalių slapukus šioje svetainėje</translation>
@@ -600,7 +602,6 @@
 <translation id="7141896414559753902">Blokuoti, kad svetainėse nebūtų rodomi iššokantieji langai ir peradresavimai (rekomenduojama)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> KB</translation>
 <translation id="7180611975245234373">Atnaujinti</translation>
-<translation id="7180865173735832675">Tinkinti</translation>
 <translation id="7188508872042490670">Įrenginyje esantys svetainių duomenys</translation>
 <translation id="7201549776650881587">Atlikus šį veiksmą bus ištrinti visi duomenys ir slapukai, kuriuos visos domeno <ph name="ORIGIN" /> svetainės arba jo programa saugo jūsų pagrindiniame ekrane</translation>
 <translation id="7213166370492037743">Neleisti svetainėms prisijungti prie bet kurio įrenginio vietiniame tinkle</translation>
@@ -715,7 +716,6 @@ Naudojant Papildomą apsaugą valdomi toliau nurodyti „Chrome“ nustatymai.</
 <translation id="83792324527827022">Svetainėje naudojamas jūsų fotoaparatas ir mikrofonas</translation>
 <translation id="8380167699614421159">Šioje svetainėje rodomi nepageidaujami arba klaidinantys skelbimai</translation>
 <translation id="8394832520002899662">Norėdami grįžti į svetainę, palieskite</translation>
-<translation id="8404500559369898929">Suasmeninkite „Chrome“ pasirinkdami tinkintą fono temą</translation>
 <translation id="8409345997656833551">Gaukite pranešimą, kai galima rodyti supaprastinto rodinio straipsnį</translation>
 <translation id="8416874502399604126">Mikrofonas leidžiamas šį kartą</translation>
 <translation id="8423565414844018592">Teksto mastelio keitimas nustatytas į <ph name="TEXT_SCALING" /></translation>

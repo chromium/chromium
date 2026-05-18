@@ -333,6 +333,7 @@
 <translation id="4290791284969893584">Orri bat ixten baduzu, baliteke hasitako zereginak ez amaitzea</translation>
 <translation id="429312253194641664">Webgune bat multimedia-edukia erreproduzitzen ari da</translation>
 <translation id="42981349822642051">Zabaldu</translation>
+<translation id="4310738531374808763">Pertsonalizatu orri nagusia</translation>
 <translation id="4336219115486912529">{COUNT,plural, =1{Bihar iraungiko da}other{# egun barru iraungiko da}}</translation>
 <translation id="4338831206024587507"><ph name="DOMAIN" /> domeinuko webgune guztiak</translation>
 <translation id="4340799661701629185">Ez eman jakinarazpenak bidaltzeko baimena webguneei</translation>
@@ -524,6 +525,7 @@
 <translation id="6262279340360821358"><ph name="PERMISSION_1" /> eta <ph name="PERMISSION_2" /> blokeatu egin dira</translation>
 <translation id="6270391203985052864">Webguneek jakinarazpenak bidaltzea eska dezakete</translation>
 <translation id="6295158916970320988">Webgune guztiak</translation>
+<translation id="6305257382500066042">Probatu</translation>
 <translation id="6320088164292336938">Dardara</translation>
 <translation id="6367753977865761591">Blokeatu webgune jakin batean saioa hasteko aukera hirugarrenei.</translation>
 <translation id="6398765197997659313">Irten pantaila osoko modutik</translation>
@@ -534,7 +536,6 @@
 <translation id="6447842834002726250">Cookieak</translation>
 <translation id="6452138246455930388">Prezio-jaitsiera irekitako fitxan. Lehen <ph name="OLD_PRICE" />, orain <ph name="NEW_PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN_NAME" />.</translation>
 <translation id="6500423977866688905">Leihoa estua denean, eskatu mugikorretarako ikuspegia</translation>
-<translation id="6514791408445720076">Pertsonalizatu orria</translation>
 <translation id="6527303717912515753">Partekatu</translation>
 <translation id="6530703012083415527">Aktibatuta dagoenean, webguneek leiho gainerakorrak eta birbideratzeak erabil ditzakete. Desaktibatuta dagoenean, webguneek ezin dute erabili leiho gainerakorrik, ezta birbideratzerik ere.</translation>
 <translation id="6540488083026747005">Webgune honetan hirugarrenen cookieak erabiltzeko baimena eman duzu</translation>
@@ -600,7 +601,6 @@
 <translation id="7141896414559753902">Ez utzi webguneei leiho gainerakorrak eta birbideratzeak erakusten (gomendatua)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> kB</translation>
 <translation id="7180611975245234373">Freskatu</translation>
-<translation id="7180865173735832675">Pertsonalizatu</translation>
 <translation id="7188508872042490670">Gailuan gordetako webguneetako datuak</translation>
 <translation id="7201549776650881587"><ph name="ORIGIN" /> webgunearen mendeko webgune guztiek edo hari dagokion orri nagusiko aplikazioak gorde dituzten datu eta cookie guztiak ezabatuko dira</translation>
 <translation id="7213166370492037743">Ez eman sare lokaleko ezein gailutara konektatzeko baimenik webguneei</translation>
@@ -715,7 +715,6 @@ Babes aurreratua programak Chrome-ren ezarpen hauek kontrolatzen ditu:</translat
 <translation id="83792324527827022">Webgune bat kamera eta mikrofonoa erabiltzen ari da</translation>
 <translation id="8380167699614421159">Webgune honek iragarki oztopatzaile edo iruzurrezkoak erakusten ditu</translation>
 <translation id="8394832520002899662">Sakatu hau webgunera itzultzeko</translation>
-<translation id="8404500559369898929">Pertsonalizatu Chrome atzeko planorako gai pertsonalizatu bat aukeratuz</translation>
 <translation id="8409345997656833551">Jaso jakinarazpen bat artikulu bat ikuspegi sinplifikatuan erakuts daitekeenean</translation>
 <translation id="8416874502399604126">Mikrofonoa erabil daiteke une honetan</translation>
 <translation id="8423565414844018592">Testuaren tamaina <ph name="TEXT_SCALING" /> da</translation>

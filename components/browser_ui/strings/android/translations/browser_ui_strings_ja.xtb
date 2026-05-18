@@ -333,6 +333,7 @@
 <translation id="4290791284969893584">ページを閉じると、開始したタスクが完了できなくなります</translation>
 <translation id="429312253194641664">サイトでメディアが再生されています</translation>
 <translation id="42981349822642051">展開</translation>
+<translation id="4310738531374808763">ホームページをカスタマイズ</translation>
 <translation id="4336219115486912529">{COUNT,plural, =1{明日で期限切れ}other{あと # 日で期限切れ}}</translation>
 <translation id="4338831206024587507"><ph name="DOMAIN" /> のすべてのサイト</translation>
 <translation id="4340799661701629185">サイトに通知の送信を許可しない</translation>
@@ -524,6 +525,7 @@
 <translation id="6262279340360821358"><ph name="PERMISSION_1" />、<ph name="PERMISSION_2" />をブロック</translation>
 <translation id="6270391203985052864">通知を送信するかどうかの確認をサイトに許可する</translation>
 <translation id="6295158916970320988">すべてのサイト</translation>
+<translation id="6305257382500066042">今すぐ試す</translation>
 <translation id="6320088164292336938">バイブレーション</translation>
 <translation id="6367753977865761591">特定のサイトのサードパーティのログインをブロックします。</translation>
 <translation id="6398765197997659313">全画面表示を終了</translation>
@@ -534,7 +536,6 @@
 <translation id="6447842834002726250">Cookie</translation>
 <translation id="6452138246455930388">開いているタブの値下げ情報（<ph name="OLD_PRICE" /> から <ph name="NEW_PRICE" />、<ph name="PRODUCT_NAME" />、<ph name="DOMAIN_NAME" />）</translation>
 <translation id="6500423977866688905">ウィンドウが狭い場合はモバイルビューをリクエストする</translation>
-<translation id="6514791408445720076">ページをカスタマイズ</translation>
 <translation id="6527303717912515753">共有</translation>
 <translation id="6530703012083415527">オンにすると、サイトはポップアップとリダイレクトを使用できます。オフにすると、サイトはポップアップとリダイレクトを使用できません。</translation>
 <translation id="6540488083026747005">このサイトのサードパーティ Cookie を許可しました</translation>
@@ -600,7 +601,6 @@
 <translation id="7141896414559753902">サイトでのポップアップ表示とリダイレクトをブロックする（推奨）</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> KB</translation>
 <translation id="7180611975245234373">更新</translation>
-<translation id="7180865173735832675">カスタマイズ</translation>
 <translation id="7188508872042490670">デバイス上のサイトデータ</translation>
 <translation id="7201549776650881587">この操作を行うと、<ph name="ORIGIN" /> とそのドメインの全サイトまたはホーム画面の同アプリにより保存されたデータと Cookie がすべて削除されます</translation>
 <translation id="7213166370492037743">サイトにローカル ネットワーク上のデバイスへの接続を許可しない</translation>
@@ -715,7 +715,6 @@
 <translation id="83792324527827022">サイトでカメラとマイクが使用されています</translation>
 <translation id="8380167699614421159">このサイトでは煩わしい広告や誤解を招く広告が表示されます</translation>
 <translation id="8394832520002899662">タップしてサイトに戻る</translation>
-<translation id="8404500559369898929">カスタムの背景テーマを選択して Chrome を自分仕様にすることができます</translation>
 <translation id="8409345997656833551">記事を簡易表示できる場合に通知する</translation>
 <translation id="8416874502399604126">一時的にマイクを許可しました</translation>
 <translation id="8423565414844018592">テキストの表示倍率を <ph name="TEXT_SCALING" /> に設定しました</translation>

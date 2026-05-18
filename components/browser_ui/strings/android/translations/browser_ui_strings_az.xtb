@@ -333,6 +333,7 @@
 <translation id="4290791284969893584">Bir səhifəni bağladıqdan sonra başlatdığınız tapşırıqlar başa çatmaya bilər</translation>
 <translation id="429312253194641664">Sayt media oxudur</translation>
 <translation id="42981349822642051">Genişləndirin</translation>
+<translation id="4310738531374808763">Əsas səhifəni fərdiləşdirin</translation>
 <translation id="4336219115486912529">{COUNT,plural, =1{Sabah vaxtı bitir}other{# gün sonra vaxtı bitir}}</translation>
 <translation id="4338831206024587507"><ph name="DOMAIN" /> domenindəki bütün saytlar</translation>
 <translation id="4340799661701629185">Saytlara bildirişlər göndərmək icazəsi verməyin</translation>
@@ -524,6 +525,7 @@
 <translation id="6262279340360821358"><ph name="PERMISSION_1" /> və <ph name="PERMISSION_2" /> bloklanıb</translation>
 <translation id="6270391203985052864">Saytlar bildiriş göndərilməsini tələb edə bilər</translation>
 <translation id="6295158916970320988">Bütün saytlar</translation>
+<translation id="6305257382500066042">Elə indi sınayın</translation>
 <translation id="6320088164292336938">Vibrasiya</translation>
 <translation id="6367753977865761591">Müəyyən bir sayt üçün üçüncü tərəfin girişini bloklayın.</translation>
 <translation id="6398765197997659313">Tam ekrandan çıxın</translation>
@@ -534,7 +536,6 @@
 <translation id="6447842834002726250">Kukilər</translation>
 <translation id="6452138246455930388">Açıq tabda qiymət <ph name="OLD_PRICE" /> məbləğindən <ph name="NEW_PRICE" /> məbləğinə düşdü: <ph name="PRODUCT_NAME" />, <ph name="DOMAIN_NAME" /></translation>
 <translation id="6500423977866688905">Pəncərə dar olduqda mobil görünüş tələb edin</translation>
-<translation id="6514791408445720076">Səhifənizi fərdiləşdirin</translation>
 <translation id="6527303717912515753">Paylaşın</translation>
 <translation id="6530703012083415527">Aktiv ediləndə saytlar popap və yönləndirmələrdən istifadə edə bilər. Deaktiv ediləndə saytlar popap və yönləndirmələrdən istifadə edə bilməz.</translation>
 <translation id="6540488083026747005">Bu saytda üçüncü tərəf kukilərinə icazə verdiniz</translation>
@@ -600,7 +601,6 @@
 <translation id="7141896414559753902">Saytların popapları və yönləndirmələri göstərməyini blok edin (tövsiyə olunur)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> KB</translation>
 <translation id="7180611975245234373">Yeniləyin</translation>
-<translation id="7180865173735832675">Fərdiləşdirin</translation>
 <translation id="7188508872042490670">Cihazda olan sayt məlumatları</translation>
 <translation id="7201549776650881587">Bu əməliyyat ilə Əsas ekranda <ph name="ORIGIN" /> saytları və ya tətbiqi tərəfindən saxlanan data və kukilər silinəcək</translation>
 <translation id="7213166370492037743">Saytlara lokal şəbəkənizdəki hər hansı cihaza qoşulmaq icazəsi verməyin</translation>
@@ -715,7 +715,6 @@ Qabaqcıl Qoruma bu Chrome ayarlarına nəzarət edir:</translation>
 <translation id="83792324527827022">Sayt kamera və mikrofonunuzdan istifadə edir</translation>
 <translation id="8380167699614421159">Bu sayt inadçı və ya aldadıcı reklamlar göstərir</translation>
 <translation id="8394832520002899662">Sayta qayıtmaq üçün toxunun</translation>
-<translation id="8404500559369898929">Fərdi arxa fon teması seçməklə Chrome-u fərdiləşdirin</translation>
 <translation id="8409345997656833551">Məqalə sadələşdirilmiş görünüşdə göstərilə bildikdə bildiriş alın</translation>
 <translation id="8416874502399604126">Bu dəfə üçün mikrofona icazə verilib</translation>
 <translation id="8423565414844018592">Mətn miqyası <ph name="TEXT_SCALING" /> olaraq ayarlanıb</translation>

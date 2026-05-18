@@ -290,6 +290,7 @@
 <translation id="3843916486309149084">Chrome akan menyekat kuki lagi hari ini</translation>
 <translation id="385051799172605136">Kembali</translation>
 <translation id="3859306556332390985">Cari ke hadapan</translation>
+<translation id="3870711497942672548">Peribadikan Chrome mengikut cita rasa anda dengan warna dan imej tersuai untuk halaman utama anda</translation>
 <translation id="389521680295183045">Laman boleh meminta untuk mengetahui waktu anda aktif menggunakan peranti</translation>
 <translation id="3895926599014793903">Zum didaya paksa</translation>
 <translation id="3903738175795615004">Seret daripada bahagian atas atau tekan kekunci Esc untuk keluar daripada skrin penuh.</translation>
@@ -333,6 +334,7 @@
 <translation id="4290791284969893584">Selepas menutup halaman, tugas yang anda mulakan mungkin tidak selesai</translation>
 <translation id="429312253194641664">Tapak sedang memainkan media</translation>
 <translation id="42981349822642051">Kembangkan</translation>
+<translation id="4310738531374808763">Sesuaikan halaman utama anda</translation>
 <translation id="4336219115486912529">{COUNT,plural, =1{Tamat tempoh esok}other{Tamat tempoh dalam masa # hari}}</translation>
 <translation id="4338831206024587507">Semua laman di bawah <ph name="DOMAIN" /></translation>
 <translation id="4340799661701629185">Jangan benarkan laman menghantar pemberitahuan</translation>
@@ -524,6 +526,7 @@
 <translation id="6262279340360821358"><ph name="PERMISSION_1" /> dan <ph name="PERMISSION_2" /> disekat</translation>
 <translation id="6270391203985052864">Tapak boleh membuat permintaan untuk menghantar pemberitahuan</translation>
 <translation id="6295158916970320988">Semua tapak</translation>
+<translation id="6305257382500066042">Cubalah sekarang</translation>
 <translation id="6320088164292336938">Getar</translation>
 <translation id="6367753977865761591">Sekat log masuk pihak ketiga untuk laman tertentu.</translation>
 <translation id="6398765197997659313">Keluar daripada skrin penuh</translation>
@@ -534,7 +537,6 @@
 <translation id="6447842834002726250">Kuki</translation>
 <translation id="6452138246455930388">Penurunan harga pada tab terbuka anda, daripada <ph name="OLD_PRICE" /> kepada <ph name="NEW_PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN_NAME" /></translation>
 <translation id="6500423977866688905">Apabila tetingkap sempit, minta paparan mudah alih</translation>
-<translation id="6514791408445720076">Sesuaikan halaman anda</translation>
 <translation id="6527303717912515753">Kongsi</translation>
 <translation id="6530703012083415527">Apabila dihidupkan, laman dapat menggunakan tetingkap timbul dan mengubah hala. Apabila dimatikan, laman tidak dapat menggunakan tetingkap timbul dan mengubah hala.</translation>
 <translation id="6540488083026747005">Anda membenarkan kuki pihak ketiga pada laman ini</translation>
@@ -600,7 +602,6 @@
 <translation id="7141896414559753902">Sekat tapak daripada memaparkan tetingkap timbul dan ubah hala (disyorkan)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> KB</translation>
 <translation id="7180611975245234373">Muat semula</translation>
-<translation id="7180865173735832675">Peribadikan</translation>
 <translation id="7188508872042490670">Data laman pada peranti</translation>
 <translation id="7201549776650881587">Tindakan ini akan memadamkan semua data dan kuki yang disimpan oleh semua laman di bawah <ph name="ORIGIN" /> atau disimpan oleh apl laman tersebut pada Skrin utama anda</translation>
 <translation id="7213166370492037743">Jangan benarkan laman menyambung kepada mana-mana peranti pada rangkaian setempat anda</translation>
@@ -715,7 +716,6 @@ Perlindungan Lanjutan mengawal tetapan Chrome ini:</translation>
 <translation id="83792324527827022">Suatu tapak sedang menggunakan kamera dan mikrofon anda</translation>
 <translation id="8380167699614421159">Tapak ini menyiarkan iklan yang mengganggu atau mengelirukan</translation>
 <translation id="8394832520002899662">Ketik untuk kembali ke tapak</translation>
-<translation id="8404500559369898929">Peribadikan Chrome mengikut cita rasa anda dengan memilih tema latar tersuai</translation>
 <translation id="8409345997656833551">Dapatkan pemberitahuan apabila artikel boleh ditunjukkan dalam paparan ringkas</translation>
 <translation id="8416874502399604126">Mikrofon dibenarkan pada masa ini</translation>
 <translation id="8423565414844018592">Penskalaan teks ditetapkan kepada <ph name="TEXT_SCALING" /></translation>

@@ -290,6 +290,7 @@
 <translation id="3843916486309149084">Chrome cookie fayllarni bugundan yana bloklaydi</translation>
 <translation id="385051799172605136">Orqaga</translation>
 <translation id="3859306556332390985">Oldinga surish</translation>
+<translation id="3870711497942672548">Bosh sahifa uchun maxsus ranglar va rasmlarni tanlab, Chromeni oʻzingizga moslang</translation>
 <translation id="389521680295183045">Saytlarga qurilmadan foydalanishga oid axborotlarni soʻrashga ruxsat berish</translation>
 <translation id="3895926599014793903">Hajmni majburiy o‘zgartirish funksiyasini yoqish</translation>
 <translation id="3903738175795615004">Butun ekrandan chiqish uchun tepadan pastga torting yoki Esc tugmasini bosing.</translation>
@@ -333,6 +334,7 @@
 <translation id="4290791284969893584">Sahifani yopgandan keyin siz boshlagan vazifalar tamomlanmasligi mumkin</translation>
 <translation id="429312253194641664">Saytda media-fayl ijro etilmoqda</translation>
 <translation id="42981349822642051">Kengaytirish</translation>
+<translation id="4310738531374808763">Bosh sahifani moslang</translation>
 <translation id="4336219115486912529">{COUNT,plural, =1{Muddati ertaga tugaydi}other{# kundan keyin muddati tugaydi}}</translation>
 <translation id="4338831206024587507">Barcha saytlar <ph name="DOMAIN" /> ostida</translation>
 <translation id="4340799661701629185">Saytlarga bildirishnoma yuborishni taqiqlash</translation>
@@ -524,6 +526,7 @@
 <translation id="6262279340360821358">Bloklandi: <ph name="PERMISSION_1" /> va <ph name="PERMISSION_2" /></translation>
 <translation id="6270391203985052864">Saytlar bildirishnoma chiqarishga ruxsat soʻray oladi</translation>
 <translation id="6295158916970320988">Barcha saytlar</translation>
+<translation id="6305257382500066042">Hoziroq sinang</translation>
 <translation id="6320088164292336938">Tebranish</translation>
 <translation id="6367753977865761591">Muayyan sayt uchun tashqi xizmatga kirishni bloklang.</translation>
 <translation id="6398765197997659313">To‘liq ekran rejimidan chiqish</translation>
@@ -534,7 +537,6 @@
 <translation id="6447842834002726250">Cookie fayllari</translation>
 <translation id="6452138246455930388">Ochiq varaqda narx pasaydi: <ph name="OLD_PRICE" />dan <ph name="NEW_PRICE" />ga, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN_NAME" /></translation>
 <translation id="6500423977866688905">Oyna kichkina boʻlsa, mobil versiyani soʻrang</translation>
-<translation id="6514791408445720076">Sahifani moslang</translation>
 <translation id="6527303717912515753">Ulashish</translation>
 <translation id="6530703012083415527">Yoqilsa, qalqib chiquvchi oyna va yoʻnaltirishlardan foydalana oladi. Oʻchirilsa, foydalana olmaydi.</translation>
 <translation id="6540488083026747005">Bu sayt uchun tashqi cookie fayllarga ruxsat bergansiz</translation>
@@ -600,7 +602,6 @@
 <translation id="7141896414559753902">Saytlarga qalqib chiquvchi oynalarni ochishni taqiqlash (tavsiya etiladi)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> KB</translation>
 <translation id="7180611975245234373">Yangilash</translation>
-<translation id="7180865173735832675">Sozlash</translation>
 <translation id="7188508872042490670">Qurilmada saqlangan sayt maʼlumotlari</translation>
 <translation id="7201549776650881587"><ph name="ORIGIN" /> saytiga bogʻlangan saytlar yoki ularning bosh ekrandagi ilovasi saqlangan barcha maʼlumotlar va cookie fayllari oʻchirib tashlanadi.</translation>
 <translation id="7213166370492037743">Saytlarga mahalliy tarmoqdagi istalgan qurilmaga ulanishni taqiqlash</translation>
@@ -715,7 +716,6 @@ Kuchaytirilgan himoya boshqaruvida quyidagi Chrome sozlamalari mavjud:</translat
 <translation id="83792324527827022">Sayt kamera va mikrofondan foydalanmoqda</translation>
 <translation id="8380167699614421159">Bu saytda yoqimsiz yoki befoyda reklamalar chiqadi</translation>
 <translation id="8394832520002899662">Saytga qaytish uchun bosing</translation>
-<translation id="8404500559369898929">Maxsus fon mavzusini tanlash orqali Chrome'ni oʻzingizga moslang</translation>
 <translation id="8409345997656833551">Maqolani soddalashgan shaklda koʻrish mumkin boʻlganda xabar berilsin</translation>
 <translation id="8416874502399604126">Mikrofonga shu safar ruxsat berildi</translation>
 <translation id="8423565414844018592">Matn oʻlchami sozlandi: <ph name="TEXT_SCALING" /></translation>

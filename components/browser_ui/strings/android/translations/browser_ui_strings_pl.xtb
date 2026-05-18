@@ -333,6 +333,7 @@
 <translation id="4290791284969893584">Po zamknięciu strony rozpoczęte zadania mogą nie zostać ukończone</translation>
 <translation id="429312253194641664">Strona odtwarza multimedia</translation>
 <translation id="42981349822642051">Rozwiń</translation>
+<translation id="4310738531374808763">Dostosowywanie strony głównej</translation>
 <translation id="4336219115486912529">{COUNT,plural, =1{Wygasa jutro}few{Wygasa za # dni}many{Wygasa za # dni}other{Wygasa za # dnia}}</translation>
 <translation id="4338831206024587507">Wszystkie witryny w domenie <ph name="DOMAIN" /></translation>
 <translation id="4340799661701629185">Nie zezwalaj witrynom na wysyłanie powiadomień</translation>
@@ -524,6 +525,7 @@
 <translation id="6262279340360821358">Zablokowane: <ph name="PERMISSION_1" /> i <ph name="PERMISSION_2" /></translation>
 <translation id="6270391203985052864">Witryny mogą prosić o zgodę na wysyłanie powiadomień</translation>
 <translation id="6295158916970320988">Wszystkie witryny</translation>
+<translation id="6305257382500066042">Wypróbuj</translation>
 <translation id="6320088164292336938">Wibracje</translation>
 <translation id="6367753977865761591">Blokowanie logowania przez usługę zewnętrzną w określonej witrynie.</translation>
 <translation id="6398765197997659313">Zamknij pełny ekran</translation>
@@ -534,7 +536,6 @@
 <translation id="6447842834002726250">Pliki cookie</translation>
 <translation id="6452138246455930388">Obniżka ceny na otwartej karcie. Poprzednio: <ph name="OLD_PRICE" />, teraz: <ph name="NEW_PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN_NAME" /></translation>
 <translation id="6500423977866688905">Jeśli okno jest wąskie, poproś o wersję na urządzenia mobilne</translation>
-<translation id="6514791408445720076">Dostosuj stronę</translation>
 <translation id="6527303717912515753">Udostępnij</translation>
 <translation id="6530703012083415527">Gdy ta opcja jest włączona, strony internetowe mogą używać wyskakujących okienek i przekierowań. Gdy jest wyłączona, nie mają tej możliwości.</translation>
 <translation id="6540488083026747005">W przypadku tej witryny zezwalasz na pliki cookie innych firm</translation>
@@ -600,7 +601,6 @@
 <translation id="7141896414559753902">Blokuj wyskakujące okienka i przekierowania na stronach (zalecane)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> KB</translation>
 <translation id="7180611975245234373">Odśwież</translation>
-<translation id="7180865173735832675">Dostosuj</translation>
 <translation id="7188508872042490670">Dane witryn na urządzeniu</translation>
 <translation id="7201549776650881587">Spowoduje to usunięcie wszystkich danych i plików cookie zapisanych przez strony internetowe w grupie <ph name="ORIGIN" /> lub jej aplikację na ekranie głównym</translation>
 <translation id="7213166370492037743">Nie zezwalaj witrynom na łączenie się z żadnym urządzeniem w sieci lokalnej</translation>
@@ -715,7 +715,6 @@ Ochrona zaawansowana kontroluje te ustawienia Chrome:</translation>
 <translation id="83792324527827022">Strona używa kamery i mikrofonu</translation>
 <translation id="8380167699614421159">Na tej stronie wyświetlają się uciążliwe lub wprowadzające w błąd reklamy</translation>
 <translation id="8394832520002899662">Kliknij, by wrócić na tę stronę</translation>
-<translation id="8404500559369898929">Dostosuj Chrome, wybierając niestandardowy motyw tła</translation>
 <translation id="8409345997656833551">Otrzymuj powiadomienia, gdy artykuł można wyświetlić w widoku uproszczonym</translation>
 <translation id="8416874502399604126">Przyznano jednorazowy dostęp do mikrofonu</translation>
 <translation id="8423565414844018592">Skalowanie tekstu ustawione na <ph name="TEXT_SCALING" /></translation>

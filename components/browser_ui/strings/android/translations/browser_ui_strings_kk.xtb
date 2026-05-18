@@ -290,6 +290,7 @@
 <translation id="3843916486309149084">Chrome бүгін cookie файлдарын қайта блоктайды.</translation>
 <translation id="385051799172605136">Артқа</translation>
 <translation id="3859306556332390985">Алға</translation>
+<translation id="3870711497942672548">Негізгі бетке арналған арнаулы түстер мен суреттерді таңдап, Chrome-ды өзіңізге бейімдеңіз.</translation>
 <translation id="389521680295183045">Сайттар құрылғыңызды белсенді пайдаланатын уақытыңыз туралы білу рұқсатын сұрай алады</translation>
 <translation id="3895926599014793903">Масштабтауды мәжбүрлі түрде қосу</translation>
 <translation id="3903738175795615004">Толық экраннан шығу үшін жоғарыдан жүргізіңіз немесе Esc пернесін басыңыз.</translation>
@@ -333,6 +334,7 @@
 <translation id="4290791284969893584">Бетті жапқан соң, басталған тапсырмалар аяқталмауы мүмкін.</translation>
 <translation id="429312253194641664">Сайтта мультимедиа ойнатылуда</translation>
 <translation id="42981349822642051">Жаю</translation>
+<translation id="4310738531374808763">Негізгі бетті бейімдеңіз</translation>
 <translation id="4336219115486912529">{COUNT,plural, =1{Мерзімі ертең аяқталады}other{Мерзімі # күннен кейін аяқталады}}</translation>
 <translation id="4338831206024587507"><ph name="DOMAIN" /> доменіндегі барлық сайт</translation>
 <translation id="4340799661701629185">Сайттардың хабарландырулар жіберуіне рұқсат бермеу</translation>
@@ -524,6 +526,7 @@
 <translation id="6262279340360821358"><ph name="PERMISSION_1" /> және <ph name="PERMISSION_2" /> үшін тыйым салынған.</translation>
 <translation id="6270391203985052864">Сайттар хабарландырулар жіберу рұқсатын сұрай алады</translation>
 <translation id="6295158916970320988">Барлық сайттар</translation>
+<translation id="6305257382500066042">Байқап көру</translation>
 <translation id="6320088164292336938">Діріл</translation>
 <translation id="6367753977865761591">Белгілі бір сайт үшін бөгде қызметтер арқылы кіруді бөгеу.</translation>
 <translation id="6398765197997659313">Толық экраннан шығу</translation>
@@ -534,7 +537,6 @@
 <translation id="6447842834002726250">Cookie файлдары</translation>
 <translation id="6452138246455930388">Ашық қойындыда баға төмендеді: <ph name="OLD_PRICE" /> &gt; <ph name="NEW_PRICE" /> (<ph name="PRODUCT_NAME" />, <ph name="DOMAIN_NAME" />)</translation>
 <translation id="6500423977866688905">Терезе тар болғанда, мобильді нұсқаны сұраңыз</translation>
-<translation id="6514791408445720076">Бетті бейімдеңіз</translation>
 <translation id="6527303717912515753">Бөлісу</translation>
 <translation id="6530703012083415527">Қосылса, сайттар қалқымалы терезелер мен бағыттау функциясын пайдалана алады. Өшірілсе, пайдалана алмайды.</translation>
 <translation id="6540488083026747005">Сіз осы сайтта үшінші тарап cookie файлдарына рұқсат еттіңіз.</translation>
@@ -600,7 +602,6 @@
 <translation id="7141896414559753902">Сайттардың қалқымалы терезе көрсетуіне және бағыттауына тыйым салу (ұсынылады)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> КБ</translation>
 <translation id="7180611975245234373">Жаңарту</translation>
-<translation id="7180865173735832675">Реттеу</translation>
 <translation id="7188508872042490670">Құрылғыдағы сайт деректері</translation>
 <translation id="7201549776650881587"><ph name="ORIGIN" /> доменіндегі барлық сайт немесе негізгі экрандағы оның қолданбасы сақтаған барлық дерек пен cookie файлы жойылады.</translation>
 <translation id="7213166370492037743">Сайттарға жергілікті желідегі құрылғыларға қосылуға рұқсат бермеу</translation>
@@ -715,7 +716,6 @@
 <translation id="83792324527827022">Сайт камера мен микрофонды пайдаланып жатыр.</translation>
 <translation id="8380167699614421159">Бұл сайтта мазалайтын немесе жалған ақпаратты жарнамалар көрсетіледі</translation>
 <translation id="8394832520002899662">Сайтқа оралу үшін түртіңіз.</translation>
-<translation id="8404500559369898929">Chrome-ды өзіңізге бейімдеу үшін арнаулы фондық тақырыпты таңдаңыз.</translation>
 <translation id="8409345997656833551">Мақала үшін қарапайым көрініс қолжетімді болған кезде хабарлау</translation>
 <translation id="8416874502399604126">Бұл жолы микрофонға рұқсат берілген.</translation>
 <translation id="8423565414844018592">Мәтін масштабы <ph name="TEXT_SCALING" /> күйіне орнатылған</translation>

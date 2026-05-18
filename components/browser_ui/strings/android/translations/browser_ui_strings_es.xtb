@@ -290,6 +290,7 @@
 <translation id="3843916486309149084">Chrome volverá a bloquear las cookies hoy</translation>
 <translation id="385051799172605136">Volver</translation>
 <translation id="3859306556332390985">Buscar hacia delante</translation>
+<translation id="3870711497942672548">Personaliza Chrome con colores e imágenes personalizados para tu página principal</translation>
 <translation id="389521680295183045">Los sitios pueden preguntarte cuándo usas activamente tu dispositivo</translation>
 <translation id="3895926599014793903">Forzar zoom</translation>
 <translation id="3903738175795615004">Arrastra desde arriba o pulsa la tecla Esc para salir de la pantalla completa.</translation>
@@ -333,6 +334,7 @@
 <translation id="4290791284969893584">Después de que cierres una página, es posible que no se completen las tareas que hayas iniciado</translation>
 <translation id="429312253194641664">Un sitio web está reproduciendo elementos multimedia</translation>
 <translation id="42981349822642051">Mostrar</translation>
+<translation id="4310738531374808763">Personaliza tu página principal</translation>
 <translation id="4336219115486912529">{COUNT,plural, =1{Caduca mañana}other{Caduca dentro de # días}}</translation>
 <translation id="4338831206024587507">Todos los sitios de <ph name="DOMAIN" /></translation>
 <translation id="4340799661701629185">No permitir que los sitios envíen notificaciones</translation>
@@ -524,6 +526,7 @@
 <translation id="6262279340360821358"><ph name="PERMISSION_1" /> y <ph name="PERMISSION_2" /> bloqueados</translation>
 <translation id="6270391203985052864">Los sitios pueden preguntarte si quieres que te envíen notificaciones</translation>
 <translation id="6295158916970320988">Todos los sitios</translation>
+<translation id="6305257382500066042">Probar ahora</translation>
 <translation id="6320088164292336938">Vibrar</translation>
 <translation id="6367753977865761591">Bloquea el inicio de sesión de terceros en un sitio específico.</translation>
 <translation id="6398765197997659313">Salir del modo de pantalla completa</translation>
@@ -534,7 +537,6 @@
 <translation id="6447842834002726250">Cookies</translation>
 <translation id="6452138246455930388">Bajada de precio en tu pestaña abierta de <ph name="OLD_PRICE" /> a <ph name="NEW_PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN_NAME" /></translation>
 <translation id="6500423977866688905">Cuando la ventana es estrecha, solicitar vista para móvil</translation>
-<translation id="6514791408445720076">Personaliza tu página</translation>
 <translation id="6527303717912515753">Compartir</translation>
 <translation id="6530703012083415527">Cuando esta opción está activada, los sitios pueden usar ventanas emergentes y redirecciones. Si está desactivada, los sitios no pueden usar ventanas emergentes ni redirecciones.</translation>
 <translation id="6540488083026747005">Has permitido el uso de cookies de terceros en este sitio</translation>
@@ -600,7 +602,6 @@
 <translation id="7141896414559753902">Impide que los sitios muestren ventanas emergentes y redirecciones (recomendado)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> kB</translation>
 <translation id="7180611975245234373">Actualizar</translation>
-<translation id="7180865173735832675">Personalizar</translation>
 <translation id="7188508872042490670">Datos de sitios en el dispositivo</translation>
 <translation id="7201549776650881587">Esta acción eliminará todos los datos y las cookies almacenados por todos los sitios que <ph name="ORIGIN" /> incluya o por su aplicación en tu pantalla de inicio.</translation>
 <translation id="7213166370492037743">No permitir que los sitios se conecten a ningún dispositivo de tu red local</translation>
@@ -715,7 +716,6 @@ Protección Avanzada controla estos ajustes de Chrome:</translation>
 <translation id="83792324527827022">Un sitio web está usando tu cámara y tu micrófono</translation>
 <translation id="8380167699614421159">El sitio web muestra anuncios invasivos o engañosos</translation>
 <translation id="8394832520002899662">Toca para volver al sitio web</translation>
-<translation id="8404500559369898929">Personaliza Chrome eligiendo un tema de fondo personalizado</translation>
 <translation id="8409345997656833551">Recibe una notificación cuando un artículo pueda mostrarse en vista simplificada</translation>
 <translation id="8416874502399604126">Micrófono permitido esta vez</translation>
 <translation id="8423565414844018592">Ajuste de texto establecido en <ph name="TEXT_SCALING" /></translation>

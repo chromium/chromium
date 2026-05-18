@@ -333,6 +333,7 @@
 <translation id="4290791284969893584">Nach dem Schließen einer Seite werden Aufgaben, die du gestartet hast, möglicherweise nicht abgeschlossen</translation>
 <translation id="429312253194641664">Eine Website gibt Medien wieder</translation>
 <translation id="42981349822642051">Maximieren</translation>
+<translation id="4310738531374808763">Startseite anpassen</translation>
 <translation id="4336219115486912529">{COUNT,plural, =1{Läuft morgen ab}other{Läuft in # Tagen ab}}</translation>
 <translation id="4338831206024587507">Alle Websites unter <ph name="DOMAIN" /></translation>
 <translation id="4340799661701629185">Websites dürfen keine Benachrichtigungen senden</translation>
@@ -524,6 +525,7 @@
 <translation id="6262279340360821358"><ph name="PERMISSION_1" /> und <ph name="PERMISSION_2" /> blockiert</translation>
 <translation id="6270391203985052864">Websites können fragen, ob du Benachrichtigungen erhalten möchtest</translation>
 <translation id="6295158916970320988">Alle Websites</translation>
+<translation id="6305257382500066042">Jetzt ausprobieren</translation>
 <translation id="6320088164292336938">Vibrieren</translation>
 <translation id="6367753977865761591">Hier kannst du Websites angeben, für die die Anmeldung über Drittanbieter blockiert werden soll.</translation>
 <translation id="6398765197997659313">Vollbildmodus beenden</translation>
@@ -534,7 +536,6 @@
 <translation id="6447842834002726250">Cookies</translation>
 <translation id="6452138246455930388">Preissenkung auf dem geöffneten Tab von <ph name="OLD_PRICE" /> auf <ph name="NEW_PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN_NAME" /></translation>
 <translation id="6500423977866688905">Mobile Ansicht anfordern, wenn das Fenster schmal ist</translation>
-<translation id="6514791408445720076">Seite anpassen</translation>
 <translation id="6527303717912515753">Teilen</translation>
 <translation id="6530703012083415527">Wenn dieser Schalter aktiviert ist, können Websites Pop-ups und Weiterleitungen verwenden. Wenn er deaktiviert ist, können Websites keine Pop-ups und Weiterleitungen verwenden.</translation>
 <translation id="6540488083026747005">Du hast Drittanbieter-Cookies auf dieser Website zugelassen</translation>
@@ -600,7 +601,6 @@
 <translation id="7141896414559753902">Anzeige von Pop-ups und Weiterleitungen für Websites blockieren (empfohlen)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> KB</translation>
 <translation id="7180611975245234373">Aktualisieren</translation>
-<translation id="7180865173735832675">Anpassen</translation>
 <translation id="7188508872042490670">Websitedaten auf dem Gerät</translation>
 <translation id="7201549776650881587">Durch diese Aktion werden alle Daten und Cookies gelöscht, die von allen Websites unter <ph name="ORIGIN" /> oder von der zugehörigen App auf dem Startbildschirm gespeichert wurden</translation>
 <translation id="7213166370492037743">Websites nicht erlauben, eine Verbindung zu Geräten in deinem lokalen Netzwerk herzustellen</translation>
@@ -715,7 +715,6 @@ Diese Chrome-Einstellungen werden durch das erweiterte Sicherheitsprogramm geste
 <translation id="83792324527827022">Eine Website verwendet deine Kamera und dein Mikrofon</translation>
 <translation id="8380167699614421159">Diese Website zeigt aufdringliche oder irreführende Werbung an</translation>
 <translation id="8394832520002899662">Tippen, um zur Website zurückzukehren</translation>
-<translation id="8404500559369898929">Du kannst Chrome personalisieren, indem du ein benutzerdefiniertes Hintergrunddesign auswählst</translation>
 <translation id="8409345997656833551">Benachrichtigen, wenn ein Artikel in der vereinfachten Ansicht angezeigt werden kann</translation>
 <translation id="8416874502399604126">Mikrofonberechtigung einmal gewährt</translation>
 <translation id="8423565414844018592">Textskalierung auf <ph name="TEXT_SCALING" /> festgelegt</translation>

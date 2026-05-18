@@ -333,6 +333,7 @@
 <translation id="4290791284969893584">Előfordulhat, hogy az adott oldal bezárása után az elkezdett feladatok nem fejeződnek be</translation>
 <translation id="429312253194641664">Az egyik webhely médiatartalmat játszik le</translation>
 <translation id="42981349822642051">Kibontás</translation>
+<translation id="4310738531374808763">A kezdőlap személyre szabása</translation>
 <translation id="4336219115486912529">{COUNT,plural, =1{Holnap jár le}other{# nap múlva jár le}}</translation>
 <translation id="4338831206024587507">Minden <ph name="DOMAIN" /> alatti webhely</translation>
 <translation id="4340799661701629185">A webhelyek nem küldhetnek értesítéseket</translation>
@@ -524,6 +525,7 @@
 <translation id="6262279340360821358"><ph name="PERMISSION_1" /> és <ph name="PERMISSION_2" /> letiltva</translation>
 <translation id="6270391203985052864">A webhelyek rákérdezhetnek, hogy küldjenek-e Önnek értesítéseket</translation>
 <translation id="6295158916970320988">Az összes webhely</translation>
+<translation id="6305257382500066042">Próbálja ki most</translation>
 <translation id="6320088164292336938">Rezgés</translation>
 <translation id="6367753977865761591">Letilthatja a harmadik félen keresztüli bejelentkezést adott webhelyeken.</translation>
 <translation id="6398765197997659313">Kilépés a teljes képernyős módból</translation>
@@ -534,7 +536,6 @@
 <translation id="6447842834002726250">Cookie-k</translation>
 <translation id="6452138246455930388">Árcsökkenés a megnyitott lapon: <ph name="OLD_PRICE" /> helyett <ph name="NEW_PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN_NAME" /></translation>
 <translation id="6500423977866688905">Ha az ablak keskeny, kérjen mobilnézetet</translation>
-<translation id="6514791408445720076">Az oldal személyre szabása</translation>
 <translation id="6527303717912515753">Megosztás</translation>
 <translation id="6530703012083415527">Ha be van kapcsolva, a webhelyek használhatnak előugró ablakokat és átirányításokat. Ha ki van kapcsolva, a webhelyek nem használhatnak előugró ablakokat és átirányításokat.</translation>
 <translation id="6540488083026747005">Engedélyezte a harmadik féltől származó cookie-kat ezen a webhelyen</translation>
@@ -600,7 +601,6 @@
 <translation id="7141896414559753902">Előugró ablakok és átirányítások letiltása a webhelyeken (ajánlott)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> kB</translation>
 <translation id="7180611975245234373">Frissítés</translation>
-<translation id="7180865173735832675">Testreszabás</translation>
 <translation id="7188508872042490670">Eszközön tárolt webhelyadatok</translation>
 <translation id="7201549776650881587">A művelet törli a(z) <ph name="ORIGIN" /> alatti összes webhelyen tárolt és az eredetnek az Ön kezdőképernyőjén található alkalmazása által tárolt összes adatot és cookie-t.</translation>
 <translation id="7213166370492037743">A webhelyek nem csatlakozhatnak a helyi hálózaton lévő eszközökhöz</translation>
@@ -715,7 +715,6 @@ A Speciális védelem a következő Chrome-beállításokat vezérli:</translati
 <translation id="83792324527827022">Egy webhely használja az Ön kameráját és mikrofonját</translation>
 <translation id="8380167699614421159">Ez a webhely tolakodó vagy félrevezető hirdetéseket jelenít meg</translation>
 <translation id="8394832520002899662">Koppintson a webhelyre való visszatéréshez</translation>
-<translation id="8404500559369898929">Személyre szabhatja a Chrome-ot egyéni háttértéma kiválasztásával.</translation>
 <translation id="8409345997656833551">Értesítés megjelenítése, ha az adott cikk megjeleníthető egyszerűsített négyzetben</translation>
 <translation id="8416874502399604126">A mikrofon erre az alkalomra engedélyezve van</translation>
 <translation id="8423565414844018592">Szöveg mérete beállítva a következőre: <ph name="TEXT_SCALING" /></translation>

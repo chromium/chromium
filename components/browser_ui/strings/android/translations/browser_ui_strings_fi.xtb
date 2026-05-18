@@ -333,6 +333,7 @@
 <translation id="4290791284969893584">Kun sivu on suljettu, aloittamiasi tehtäviä ei välttämättä suoriteta loppuun</translation>
 <translation id="429312253194641664">Sivusto toistaa mediaa</translation>
 <translation id="42981349822642051">Laajenna</translation>
+<translation id="4310738531374808763">Etusivun räätälöinti</translation>
 <translation id="4336219115486912529">{COUNT,plural, =1{Vanhenee huomenna}other{Vanhenee # päivän kuluttua}}</translation>
 <translation id="4338831206024587507">Kaikki sivustot, jotka kuuluvat verkkotunnukseen <ph name="DOMAIN" /></translation>
 <translation id="4340799661701629185">Älä salli sivustojen lähettää ilmoituksia</translation>
@@ -524,6 +525,7 @@
 <translation id="6262279340360821358"><ph name="PERMISSION_1" /> ja <ph name="PERMISSION_2" /> estetty</translation>
 <translation id="6270391203985052864">Sivustot saavat pyytää lupaa lähettää ilmoituksia</translation>
 <translation id="6295158916970320988">Kaikki sivustot</translation>
+<translation id="6305257382500066042">Kokeile nyt</translation>
 <translation id="6320088164292336938">Värinä</translation>
 <translation id="6367753977865761591">Estä kolmannen osapuolen sisäänkirjautuminen tietylle sivustolle.</translation>
 <translation id="6398765197997659313">Poistu koko näytön tilasta</translation>
@@ -534,7 +536,6 @@
 <translation id="6447842834002726250">Evästeet</translation>
 <translation id="6452138246455930388">Hinnanalennus avoimella välilehdellä, vanha hinta <ph name="OLD_PRICE" />, nyt <ph name="NEW_PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN_NAME" /></translation>
 <translation id="6500423977866688905">Kun ikkuna on kapea, pyydä mobiilinäkymää</translation>
-<translation id="6514791408445720076">Muokkaa sivua</translation>
 <translation id="6527303717912515753">Jaa</translation>
 <translation id="6530703012083415527">Kun tämä on päällä, sivustot voivat käyttää ponnahdusikkunoita ja uudelleenohjauksia. Kun tämä on pois päältä, sivustot eivät voi käyttää ponnahdusikkunoita tai uudelleenohjauksia.</translation>
 <translation id="6540488083026747005">Olet sallinut kolmannen osapuolen evästeet tällä sivustolla</translation>
@@ -600,7 +601,6 @@
 <translation id="7141896414559753902">Estä ponnahdusikkunoiden näyttäminen sivustoilla (suositus)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> kt</translation>
 <translation id="7180611975245234373">Päivitä</translation>
-<translation id="7180865173735832675">Muokkaa</translation>
 <translation id="7188508872042490670">Laitepohjainen sivustodata</translation>
 <translation id="7201549776650881587">Tämä toiminto poistaa kaiken datan ja kaikki evästeet sivuston <ph name="ORIGIN" /> alla olevilta sivustoilta tai sen sovelluksesta aloitusnäytöllä</translation>
 <translation id="7213166370492037743">Älä salli sivustojen yhdistää mihinkään paikallisessa verkossa olevaan laitteeseen</translation>
@@ -715,7 +715,6 @@ Lisäsuojaus ohjaa näitä Chromen asetuksia:</translation>
 <translation id="83792324527827022">Sivusto käyttää kameraasi ja mikrofoniasi</translation>
 <translation id="8380167699614421159">Tällä sivustolla on häiritseviä tai harhaanjohtavia mainoksia</translation>
 <translation id="8394832520002899662">Palaa sivustolle napauttamalla</translation>
-<translation id="8404500559369898929">Tee Chromesta näköisesi valitsemalla oma taustateema</translation>
 <translation id="8409345997656833551">Saat ilmoituksen, kun artikkelissa voidaan käyttää yksinkertaistettua näkymää</translation>
 <translation id="8416874502399604126">Mikrofoni sallittu tällä kertaa</translation>
 <translation id="8423565414844018592">Tekstin skaalaukseksi valittu <ph name="TEXT_SCALING" /></translation>

@@ -290,6 +290,7 @@
 <translation id="3843916486309149084">‏Chrome آج دوبارہ کوکیز کو مسدود کر دے گا</translation>
 <translation id="385051799172605136">پیچھے</translation>
 <translation id="3859306556332390985">آگے لے جائیں</translation>
+<translation id="3870711497942672548">‏اپنے ہوم پیج کے لیے حسب ضرورت رنگوں اور تصاویر کے ساتھ Chrome کو اپنی مرضی کے مطابق بنائیں</translation>
 <translation id="389521680295183045">آپ اپنے آلے کا فعال طور پر استعمال کب کر رہے ہیں یہ جاننے کے لیے سائٹس پوچھ سکتی ہیں</translation>
 <translation id="3895926599014793903">زوم کو زبردستی فعال کریں</translation>
 <translation id="3903738175795615004">‏فُل اسکرین سے باہر نکلنے کے لیے اوپر سے گھسیٹیں یا Esc دبائیں۔</translation>
@@ -333,6 +334,7 @@
 <translation id="4290791284969893584">صفحہ بند کرنے کے بعد، آپ کی شروع کردہ ٹاسکس شاید مکمل نہ ہوں</translation>
 <translation id="429312253194641664">سائٹ پر میڈیا چل رہا ہے</translation>
 <translation id="42981349822642051">پھیلائیں</translation>
+<translation id="4310738531374808763">اپنے ہوم پیج کو حسب ضرورت بنائیں</translation>
 <translation id="4336219115486912529">{COUNT,plural, =1{میعاد کل ختم ہو جائے گی}other{# دن میں میعاد ختم ہو جائے گی}}</translation>
 <translation id="4338831206024587507"><ph name="DOMAIN" /> کے ماتحت سبھی سائٹس</translation>
 <translation id="4340799661701629185">سائٹس کو اطلاعات بھیجنے کی اجازت نہ دیں</translation>
@@ -524,6 +526,7 @@
 <translation id="6262279340360821358"><ph name="PERMISSION_1" /> اور <ph name="PERMISSION_2" /> کو مسدود کیا گیا</translation>
 <translation id="6270391203985052864">سائٹس اطلاعات بھیجنے کے لیے کہہ سکتی ہیں</translation>
 <translation id="6295158916970320988">سبھی سائٹس</translation>
+<translation id="6305257382500066042">اسے ابھی آزمائیں</translation>
 <translation id="6320088164292336938">وائبریٹ کریں</translation>
 <translation id="6367753977865761591">کسی مخصوص سائٹ کیلئے فریق ثالث سائن ان کو بلاک کریں۔</translation>
 <translation id="6398765197997659313">پوری سکرین سے خارج ہوں</translation>
@@ -534,7 +537,6 @@
 <translation id="6447842834002726250">کوکیز</translation>
 <translation id="6452138246455930388"><ph name="PRODUCT_NAME" />، <ph name="DOMAIN_NAME" /> پر آپ کے کھلے ٹیب پر <ph name="OLD_PRICE" /> سے <ph name="NEW_PRICE" /> تک قیمت میں کمی</translation>
 <translation id="6500423977866688905">جب ونڈو تنگ ہو تو موبائل منظر کی درخواست کریں</translation>
-<translation id="6514791408445720076">اپنے صفحہ کو حسب ضرورت بنائیں</translation>
 <translation id="6527303717912515753">اشتراک کریں</translation>
 <translation id="6530703012083415527">آن ہونے پر، سائٹس پاپ اپس اور ری ڈائریکٹ کا استعمال کر سکتی ہیں۔ آف ہونے پر، سائٹس پاپ اپس اور ری ڈائریکٹس کا استعمال نہیں کر سکتی ہیں۔</translation>
 <translation id="6540488083026747005">آپ نے اس سائٹ پر فریق ثالث کوکیز کی اجازت دی ہے</translation>
@@ -600,7 +602,6 @@
 <translation id="7141896414559753902">سائٹس کو پاپ اپس اور ری ڈائریکٹس دکھانے سے مسدود کریں (تجویز کردہ)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> KB</translation>
 <translation id="7180611975245234373">ریفریش کریں</translation>
-<translation id="7180865173735832675">حسب ضرورت بنائیں</translation>
 <translation id="7188508872042490670">آلہ پر موجود سائٹ کا ڈیٹا</translation>
 <translation id="7201549776650881587">اس کارروائی سے آپ کی ہوم اسکرین پر موجود <ph name="ORIGIN" /> کے تحت یا اس کی ایپ کے ذریعے سبھی سائٹس کے ذریعے اسٹور کردہ سبھی ڈیٹا اور کوکیز حذف ہو جائیں گی</translation>
 <translation id="7213166370492037743">سائٹس کو اپنے مقامی نیٹ ورک پر کسی آلے سے منسلک ہونے کی اجازت نہ دیں</translation>
@@ -715,7 +716,6 @@
 <translation id="83792324527827022">ایک سائٹ آپ کا کیمرا اور مائیکروفون استعمال کر رہی ہے</translation>
 <translation id="8380167699614421159">یہ سائٹ دخل انداز یا گمراہ کن اشتہارات دکھاتی ہے</translation>
 <translation id="8394832520002899662">سائٹ پر واپس جانے کے لیے تھپتھپائیں</translation>
-<translation id="8404500559369898929">‏حسب ضرورت پس منظر کی تھیم کا انتخاب کر کے Chrome کو اپنا بنائیں</translation>
 <translation id="8409345997656833551">جب کوئی مضمون آسان منظر میں دکھایا جا سکتا ہے تو مطلع کریں</translation>
 <translation id="8416874502399604126">اس بار مائیکروفون کی اجازت ہے</translation>
 <translation id="8423565414844018592">ٹیکسٹ اسکیلنگ کو <ph name="TEXT_SCALING" /> پر سیٹ کیا گیا</translation>
