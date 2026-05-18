@@ -26,6 +26,7 @@
 #include "third_party/blink/renderer/core/animation/css/css_animations.h"
 #include "third_party/blink/renderer/core/css/css_crossfade_value.h"
 #include "third_party/blink/renderer/core/css/css_gradient_value.h"
+#include "third_party/blink/renderer/core/css/css_identifier_value.h"
 #include "third_party/blink/renderer/core/css/css_image_set_value.h"
 #include "third_party/blink/renderer/core/css/css_light_dark_value_pair.h"
 #include "third_party/blink/renderer/core/css/css_property_value_set.h"
@@ -74,6 +75,22 @@ Element* ComputeStyledElement(const StyleRequest& style_request,
         style_request.pseudo_id, style_request.pseudo_argument);
   }
   return styled_element;
+}
+
+// image(transparent) is used to substitute 'none' inside light-dark() image
+// values per CSS Color 5.
+// https://drafts.csswg.org/css-color-5/#valdef-light-dark-none
+cssvalue::CSSColorImageValue& TransparentImage() {
+  DEFINE_STATIC_LOCAL(
+      Persistent<cssvalue::CSSColorImageValue>, image,
+      (MakeGarbageCollected<cssvalue::CSSColorImageValue>(
+          CSSIdentifierValue::Create(CSSValueID::kTransparent))));
+  return *image;
+}
+
+bool IsNoneValue(const CSSValue& value) {
+  const auto* ident = DynamicTo<CSSIdentifierValue>(value);
+  return ident && ident->GetValueID() == CSSValueID::kNone;
 }
 
 }  // namespace
@@ -426,7 +443,14 @@ const CSSValue& StyleResolverState::ResolveLightDarkPair(
 
 const CSSValue& StyleResolverState::ResolveGradients(
     const CSSValue& value) const {
+  const bool was_light_dark_pair = IsA<CSSLightDarkValuePair>(value);
   const CSSValue& resolved_value = ResolveLightDarkPair(value);
+  // Per CSS Color 5: 'none' inside a light-dark() image value computes to
+  // image(transparent).
+  // https://drafts.csswg.org/css-color-5/#valdef-light-dark-none
+  if (was_light_dark_pair && IsNoneValue(resolved_value)) {
+    return TransparentImage();
+  }
   if (const auto* gradient_value =
           DynamicTo<cssvalue::CSSGradientValue>(resolved_value)) {
     return gradient_value->ResolveValuesIfNeeded(*this);
@@ -443,7 +467,11 @@ const CSSValue& StyleResolverState::ResolveGradients(
 }
 
 CSSValue& StyleResolverState::ResolveGradients(CSSValue& value) const {
+  const bool was_light_dark_pair = IsA<CSSLightDarkValuePair>(value);
   CSSValue& resolved_value = const_cast<CSSValue&>(ResolveLightDarkPair(value));
+  if (was_light_dark_pair && IsNoneValue(resolved_value)) {
+    return TransparentImage();
+  }
   if (auto* gradient_value =
           DynamicTo<cssvalue::CSSGradientValue>(resolved_value)) {
     return gradient_value->ResolveValuesIfNeeded(*this);

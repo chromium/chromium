@@ -1233,8 +1233,6 @@ crbug.com/329106317 external/wpt/css/css-color/lch-010.html [ Failure ]
 crbug.com/329106317 external/wpt/css/css-color/oklch-009.html [ Failure ]
 crbug.com/329106317 external/wpt/css/css-color/oklch-010.html [ Failure ]
 crbug.com/358210825 external/wpt/css/css-color/color-layers-no-blend-mode.html [ Failure ]
-crbug.com/491829958 external/wpt/css/css-color/light-dark-image-none.html [ Failure ]
-crbug.com/491829958 external/wpt/css/css-color/light-dark-image-none-interpolation.html [ Failure ]
 
 # css-conditional
 crbug.com/1269580 external/wpt/css/css-conditional/at-supports-namespace-001.html [ Failure ]

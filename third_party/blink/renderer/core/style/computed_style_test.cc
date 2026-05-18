@@ -982,7 +982,10 @@ TEST_F(ComputedStyleTest, ApplyLightDarkBackgroundImage) {
       light_declaration, /*env_bindings=*/nullptr,
       {.origin = CascadeOrigin::kAuthor});
   cascade2.Apply();
-  EXPECT_FALSE(state.TakeStyle()->HasBackgroundImage());
+  // 'none' in light-dark() computes to image(transparent), which is a
+  // transparent background image.
+  // https://drafts.csswg.org/css-color-5/#valdef-light-dark-none
+  EXPECT_TRUE(state.TakeStyle()->HasBackgroundImage());
 }
 
 TEST_F(ComputedStyleTest, StrokeWidthZoomAndCalc) {
