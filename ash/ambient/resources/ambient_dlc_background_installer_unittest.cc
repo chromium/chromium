@@ -97,5 +97,19 @@ TEST_F(AmbientDlcBackgroundInstallerTest, InstallsOnlyOnce) {
   EXPECT_EQ(GetNumTimeOfDayInstallRequests(), 1u);
 }
 
+TEST_F(AmbientDlcBackgroundInstallerTest, DoesNotInstallWhenFeatureDisabled) {
+  feature_list_.Reset();
+  feature_list_.InitWithFeatures(
+      {}, {features::kFeatureManagementTimeOfDayScreenSaver});
+
+  cros_network_config_helper_.network_state_helper().SetServiceProperty(
+      wifi_device_path_, shill::kStateProperty,
+      base::Value(shill::kStateOnline));
+
+  AmbientBackgroundDlcInstaller installer;
+  task_environment_.RunUntilIdle();
+  EXPECT_FALSE(IsTimeOfDayDlcInstalled());
+}
+
 }  // namespace
 }  // namespace ash

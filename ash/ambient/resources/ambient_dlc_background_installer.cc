@@ -5,6 +5,7 @@
 #include "ash/ambient/resources/ambient_dlc_background_installer.h"
 
 #include "ash/ambient/util/time_of_day_utils.h"
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/network_config_service.h"
 #include "base/check.h"
 #include "base/functional/bind.h"
@@ -70,13 +71,15 @@ void AmbientBackgroundDlcInstaller::TryExecuteInstall(
   // Stop observing network changes.
   cros_network_config_observer_.reset();
 
-  // Dbus calls for dlc installations must be performed on the main thread or
-  // a crash occurs. Post a dummy `BEST_EFFORT` task as a signal that resources
-  // are ready for background tasks, and then run the install back on the main
-  // thread.
-  base::ThreadPool::PostTaskAndReply(
-      FROM_HERE, {base::TaskPriority::BEST_EFFORT}, base::DoNothing(),
-      base::BindOnce(&InstallAmbientVideoDlcInBackground));
+  if (features::IsTimeOfDayScreenSaverEnabled()) {
+    // Dbus calls for dlc installations must be performed on the main thread or
+    // a crash occurs. Post a dummy `BEST_EFFORT` task as a signal that
+    // resources are ready for background tasks, and then run the install back
+    // on the main thread.
+    base::ThreadPool::PostTaskAndReply(
+        FROM_HERE, {base::TaskPriority::BEST_EFFORT}, base::DoNothing(),
+        base::BindOnce(&InstallAmbientVideoDlcInBackground));
+  }
 }
 
 }  // namespace ash
