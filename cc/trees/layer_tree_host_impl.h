@@ -938,23 +938,6 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
 
   void RenewTreePriority();
 
-  // The function is called to update state on the sync tree after a commit
-  // finishes or after the sync tree was created to invalidate content on the
-  // impl thread.
-  void UpdateSyncTreeAfterCommitOrImplSideInvalidation();
-
-  // Returns a job map for all 'dirty' PaintWorklets, e.g. PaintWorkletInputs
-  // that do not map to a PaintRecord.
-  PaintWorkletJobMap GatherDirtyPaintWorklets(PaintImageIdFlatSet*) const;
-
-  // Called when all PaintWorklet results are ready (i.e. have been painted) for
-  // the current pending tree.
-  void OnPaintWorkletResultsReady(PaintWorkletJobMap results);
-
-  // Called when the pending tree has been fully painted, i.e. all required data
-  // is available to raster the tree.
-  void NotifyPendingTreeFullyPainted();
-
   void UpdateRasterCapabilities();
 
   bool AnimatePageScale(base::TimeTicks monotonic_time);
