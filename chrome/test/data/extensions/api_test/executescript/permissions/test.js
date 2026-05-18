@@ -25,8 +25,8 @@ chrome.test.runTests([
   // mistake), but not actually do anything.
   function testRace() {
     const testFile = `${RELATIVE_PATH}empty.html`;
-    const openUrl = `${fixPort('http://c.com:PORT/')}testFile`;
-    const executeUrl = `${fixPort('http://a.com:PORT/')}testFile`;
+    const openUrl = `${fixPort('http://c.com:PORT/')}${testFile}`;
+    const executeUrl = `${fixPort('http://a.com:PORT/')}${testFile}`;
     const expectedError = `Cannot access contents of url "${openUrl}". ` +
         'Extension manifest must request permission to access this host.';
 
