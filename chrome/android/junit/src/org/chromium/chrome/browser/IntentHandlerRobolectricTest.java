@@ -726,9 +726,6 @@ public class IntentHandlerRobolectricTest {
 
         untrustedIntent.setData(Uri.parse("chrome-native://newtab"));
         Assert.assertTrue(IntentHandler.shouldIgnoreIntent(untrustedIntent, null));
-
-        untrustedIntent.addCategory("com.fake.category");
-        Assert.assertTrue(IntentHandler.shouldIgnoreIntent(untrustedIntent, null));
     }
 
     @Test

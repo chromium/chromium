@@ -555,8 +555,7 @@ public class StartupLoadingMetricsTest {
 
         // Load another URL in a tabbed activity and check that startup metrics are still not
         // recorded.
-        runAndWaitForPageLoadMetricsRecorded(
-                () -> mTabbedActivityTestRule.startOnUrl(getTestPage2()));
+        runAndWaitForPageLoadMetricsRecorded(() -> mTabbedActivityTestRule.startOnUrl(TEST_PAGE_2));
         assertMainIntentLaunchColdStartHistogramRecorded(0);
         waitForHistogram(ntpColdStartWatcher);
         assertHistogramsRecordedAsExpected(0, TABBED_SUFFIX);

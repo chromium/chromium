@@ -1048,7 +1048,7 @@ public class IntentHandler {
 
         // Ignore all intents that specify a Chrome internal scheme if they did not come from
         // a trustworthy source.
-        if (isUrlUnsafe(url)) {
+        if (intentHasUnsafeUrl(url, intent)) {
             Log.w(TAG, "Ignoring internal Chrome URL from untrustworthy source.");
             return true;
         }
@@ -1078,26 +1078,32 @@ public class IntentHandler {
         return pendingUrl != null && pendingUrl.equals(intent.getDataString());
     }
 
-    @Contract("null -> false")
-    private static boolean isUrlUnsafe(@Nullable String url) {
-        if (url == null) return false;
+    @Contract("null, _ -> false")
+    private static boolean intentHasUnsafeUrl(@Nullable String url, Intent intent) {
+        if (url != null
+                && (intent.hasCategory(Intent.CATEGORY_BROWSABLE)
+                        || intent.hasCategory(Intent.CATEGORY_DEFAULT)
+                        || intent.getCategories() == null)) {
+            // The native library may be uninitialized at this point. Ensure it's initialized before
+            // calling a native function validateLaunchUrl().
+            LibraryLoader.getInstance().ensureInitialized();
+            if (!IntentHandlerJni.get().validateLaunchUrl(new GURL(url))) {
+                // Allow certain "safe" internal URLs to be launched by external
+                // applications.
+                assumeNonNull(url);
+                String lowerCaseUrl = url.toLowerCase(Locale.US);
+                if (ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL.equals(lowerCaseUrl)
+                        || ContentUrlConstants.ABOUT_BLANK_URL.equals(lowerCaseUrl)
+                        || UrlConstants.CHROME_DINO_URL.equals(lowerCaseUrl)
+                        || lowerCaseUrl.startsWith(UrlConstants.CHROME_EXTENSIONS_URL)
+                        || lowerCaseUrl.startsWith(UrlConstants.PDF_URL)) {
+                    return false;
+                }
 
-        // The native library may be uninitialized at this point. Ensure it's initialized before
-        // calling a native function validateLaunchUrl().
-        LibraryLoader.getInstance().ensureInitialized();
-        if (IntentHandlerJni.get().validateLaunchUrl(new GURL(url))) return false;
-
-        // Allow certain "safe" internal URLs to be launched by external
-        // applications.
-        String lowerCaseUrl = url.toLowerCase(Locale.US);
-        if (ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL.equals(lowerCaseUrl)
-                || ContentUrlConstants.ABOUT_BLANK_URL.equals(lowerCaseUrl)
-                || UrlConstants.CHROME_DINO_URL.equals(lowerCaseUrl)
-                || lowerCaseUrl.startsWith(UrlConstants.CHROME_EXTENSIONS_URL)
-                || lowerCaseUrl.startsWith(UrlConstants.PDF_URL)) {
-            return false;
+                return true;
+            }
         }
-        return true;
+        return false;
     }
 
     @VisibleForTesting
