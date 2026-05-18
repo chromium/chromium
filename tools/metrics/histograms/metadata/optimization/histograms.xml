@@ -2295,23 +2295,19 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="OptimizationGuide.PageContentExtraction.NavigationToReadyLatency.{NavigationType}.{StabilizationMethod}"
+    name="OptimizationGuide.PageContentExtraction.NavigationToReadyLatency.{NavigationType}"
     units="ms" expires_after="2026-11-07">
   <owner>linnan@chromium.org</owner>
   <owner>chrome-intelligence-core@google.com</owner>
   <summary>
     Records the duration from when a main frame {NavigationType} navigation
-    commits until the page is considered stable and ready for extraction using
-    the {StabilizationMethod} stabilization method. Recorded once per committed
-    primary main frame navigation when the page first becomes stable.
+    commits until the page is considered stable and ready for extraction.
+    Recorded once per committed primary main frame navigation when the page
+    first becomes stable.
   </summary>
   <token key="NavigationType">
     <variant name="CrossDocument" summary="cross-document navigation"/>
     <variant name="SameDocument" summary="same-document navigation"/>
-  </token>
-  <token key="StabilizationMethod">
-    <variant name="Legacy" summary="the legacy load completion and FCP"/>
-    <variant name="PageSettledMonitor" summary="the PageSettledMonitor"/>
   </token>
 </histogram>
 

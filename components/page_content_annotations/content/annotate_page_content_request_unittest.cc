@@ -1306,11 +1306,8 @@ TEST_P(AnnotatePageContentRequestTest, NavigationToReadyLatency) {
   SimulatePageLoad();
 
   histogram_tester.ExpectTotalCount(
-      IsPageSettledMonitorEnabled()
-          ? "OptimizationGuide.PageContentExtraction.NavigationToReadyLatency."
-            "CrossDocument.PageSettledMonitor"
-          : "OptimizationGuide.PageContentExtraction.NavigationToReadyLatency."
-            "CrossDocument.Legacy",
+      "OptimizationGuide.PageContentExtraction.NavigationToReadyLatency."
+      "CrossDocument",
       1);
 }
 
@@ -1322,22 +1319,16 @@ TEST_P(AnnotatePageContentRequestTest, NavigationToReadyLatency_OnHidden) {
 
   // Metric should be recorded even if extraction is not yet scheduled.
   histogram_tester.ExpectTotalCount(
-      IsPageSettledMonitorEnabled()
-          ? "OptimizationGuide.PageContentExtraction.NavigationToReadyLatency."
-            "CrossDocument.PageSettledMonitor"
-          : "OptimizationGuide.PageContentExtraction.NavigationToReadyLatency."
-            "CrossDocument.Legacy",
+      "OptimizationGuide.PageContentExtraction.NavigationToReadyLatency."
+      "CrossDocument",
       1);
 
   // Hiding should trigger extraction, but not record the metric again.
   web_contents()->WasHidden();
 
   histogram_tester.ExpectTotalCount(
-      IsPageSettledMonitorEnabled()
-          ? "OptimizationGuide.PageContentExtraction.NavigationToReadyLatency."
-            "CrossDocument.PageSettledMonitor"
-          : "OptimizationGuide.PageContentExtraction.NavigationToReadyLatency."
-            "CrossDocument.Legacy",
+      "OptimizationGuide.PageContentExtraction.NavigationToReadyLatency."
+      "CrossDocument",
       1);
 }
 
@@ -1347,11 +1338,8 @@ TEST_P(AnnotatePageContentRequestTest, NavigationToReadyLatency_SameDocument) {
 
   SimulatePageLoad();
   histogram_tester.ExpectTotalCount(
-      IsPageSettledMonitorEnabled()
-          ? "OptimizationGuide.PageContentExtraction.NavigationToReadyLatency."
-            "CrossDocument.PageSettledMonitor"
-          : "OptimizationGuide.PageContentExtraction.NavigationToReadyLatency."
-            "CrossDocument.Legacy",
+      "OptimizationGuide.PageContentExtraction.NavigationToReadyLatency."
+      "CrossDocument",
       1);
 
   // Perform same-document navigation.
@@ -1361,11 +1349,8 @@ TEST_P(AnnotatePageContentRequestTest, NavigationToReadyLatency_SameDocument) {
   SimulatePageStablization();
 
   histogram_tester.ExpectTotalCount(
-      IsPageSettledMonitorEnabled()
-          ? "OptimizationGuide.PageContentExtraction.NavigationToReadyLatency."
-            "SameDocument.PageSettledMonitor"
-          : "OptimizationGuide.PageContentExtraction.NavigationToReadyLatency."
-            "SameDocument.Legacy",
+      "OptimizationGuide.PageContentExtraction.NavigationToReadyLatency."
+      "SameDocument",
       1);
 }
 

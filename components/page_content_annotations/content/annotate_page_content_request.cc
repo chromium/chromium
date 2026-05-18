@@ -932,8 +932,7 @@ void AnnotatedPageContentRequest::MaybeRecordReadyToExtractMetrics() {
   base::UmaHistogramTimes(
       base::StrCat(
           {"OptimizationGuide.PageContentExtraction.NavigationToReadyLatency.",
-           is_same_document_navigation_ ? "SameDocument." : "CrossDocument.",
-           use_page_settled_monitor_ ? "PageSettledMonitor" : "Legacy"}),
+           is_same_document_navigation_ ? "SameDocument" : "CrossDocument"}),
       navigation_commit_timer_->Elapsed());
   navigation_commit_timer_.reset();
 }
