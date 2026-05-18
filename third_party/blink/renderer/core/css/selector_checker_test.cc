@@ -1161,6 +1161,7 @@ TEST_F(EasySelectorCheckerTest, IsEasy) {
   EXPECT_FALSE(IsEasy(".a ~ .b"));
   EXPECT_FALSE(IsEasy("&"));
   EXPECT_FALSE(IsEasy(":not(.a)"));
+  EXPECT_TRUE(IsEasy(":not(div)"));
 }
 
 #endif  // DCHECK_IS_ON()

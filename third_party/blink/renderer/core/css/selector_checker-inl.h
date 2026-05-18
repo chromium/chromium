@@ -63,7 +63,7 @@ bool EasySelectorChecker::IsEasy(const CSSSelector* selector) {
         }
         const CSSSelector* sub_selector = sublist->First();
         if (!sub_selector->IsLastInComplexSelector() ||
-            selector->Match() != CSSSelector::kTag) {
+            sub_selector->Match() != CSSSelector::kTag) {
           return false;
         }
         break;
