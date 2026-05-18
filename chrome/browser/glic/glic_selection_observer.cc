@@ -308,7 +308,8 @@ void GlicSelectionObserver::OnInputEvent(
         is_selecting_ = true;
         ResetPendingSelection();
         if (has_sent_selection_context_) {
-          UpdateSelectionState(std::u16string());
+          UpdateSelectionState(std::u16string(),
+                               /*is_pending_selection=*/false);
         }
       }
       break;
@@ -356,7 +357,7 @@ void GlicSelectionObserver::OnTextSelectionChanged(
 
   if (is_key_selection_) {
     pending_selection_text_ = std::u16string();
-    UpdateSelectionState(std::u16string());
+    UpdateSelectionState(std::u16string(), /*is_pending_selection=*/false);
     return;
   }
 
@@ -415,7 +416,7 @@ void GlicSelectionObserver::ProcessPendingSelection() {
   std::u16string selected_text = std::move(*pending_selection_text_);
   ResetPendingSelection();
 
-  UpdateSelectionState(selected_text);
+  UpdateSelectionState(selected_text, /*is_pending_selection=*/true);
 }
 
 void GlicSelectionObserver::ResetPendingSelection() {
@@ -476,7 +477,8 @@ void GlicSelectionObserver::InvokeGlicFromSelectionAffordance(
 }
 
 void GlicSelectionObserver::UpdateSelectionState(
-    const std::u16string& selected_text) {
+    const std::u16string& selected_text,
+    bool is_pending_selection) {
   last_selected_text_ = selected_text;
   auto* tab_interface =
       tabs::TabInterface::MaybeGetFromContents(web_contents());
@@ -498,13 +500,8 @@ void GlicSelectionObserver::UpdateSelectionState(
                            base::DoNothing());
     }
 
-    if (has_sent_selection_context_ && glic_keyed_service_) {
-      if (glic_keyed_service_->GetInstanceForTab(tab_interface)) {
-        // TODO(b/508916357): Use the invoke API.
-        glic_keyed_service_->SendAdditionalContext(
-            tab_interface->GetHandle(),
-            CreateAdditionalContext(web_contents(), u""));
-      }
+    if (has_sent_selection_context_) {
+      SendAdditionalContextToPanel(tab_interface, u"");
       has_sent_selection_context_ = false;
     }
 
@@ -515,25 +512,25 @@ void GlicSelectionObserver::UpdateSelectionState(
     return;
   }
 
-  bool panel_showing = false;
-  if (glic_keyed_service_ &&
-      glic_keyed_service_->GetInstanceForTab(tab_interface)) {
-    panel_showing = glic_keyed_service_->IsPanelShowingForBrowser(*bwi);
-  }
+  bool panel_showing = IsPanelShowing(tab_interface, bwi);
 
   if (panel_showing) {
-    if (selection_widget_) {
+    if (is_pending_selection && features::kGlicSelectionPromptUseWidget.Get()) {
+      if (!features::kGlicSelectionPromptUpdatesOnly.Get()) {
+        ShowSelectionAffordance(selected_text, bwi);
+      }
+    } else if (selection_widget_) {
       selection_widget_->CloseWithReason(
           views::Widget::ClosedReason::kLostFocus);
     }
 
     // TODO(b/508916357): Use the invoke API.
-    glic_keyed_service_->SendAdditionalContext(
-        tab_interface->GetHandle(),
-        CreateAdditionalContext(web_contents(), selected_text));
+    SendAdditionalContextToPanel(tab_interface, selected_text);
     has_sent_selection_context_ = true;
   } else {
-    if (!features::kGlicSelectionPromptUpdatesOnly.Get()) {
+    if ((!features::kGlicSelectionPromptUseWidget.Get() ||
+         is_pending_selection) &&
+        !features::kGlicSelectionPromptUpdatesOnly.Get()) {
       ShowSelectionAffordance(selected_text, bwi);
     }
     has_sent_selection_context_ = false;
@@ -758,6 +755,25 @@ void GlicSelectionObserver::OnLinkGenerated(
   }
 }
 
+bool GlicSelectionObserver::IsPanelShowing(tabs::TabInterface* tab_interface,
+                                           BrowserWindowInterface* bwi) {
+  if (glic_keyed_service_ &&
+      glic_keyed_service_->GetInstanceForTab(tab_interface)) {
+    return glic_keyed_service_->IsPanelShowingForBrowser(*bwi);
+  }
+  return false;
+}
+
+void GlicSelectionObserver::SendAdditionalContextToPanel(
+    tabs::TabInterface* tab_interface,
+    const std::u16string& selected_text) {
+  if (!glic_keyed_service_) {
+    return;
+  }
+  glic_keyed_service_->SendAdditionalContext(tab_interface->GetHandle(),
+      CreateAdditionalContext(web_contents(), selected_text));
+}
+
 void GlicSelectionObserver::CopyLinkToHighlight(
     content::WeakDocumentPtr weak_document_ptr) {
   if (generated_link_.has_value() && generated_link_->is_valid()) {
@@ -786,13 +802,13 @@ void GlicSelectionObserver::OnPanelStateChanged() {
   auto* instance = glic_keyed_service_->GetInstanceForTab(tab_interface);
   if (!instance || !panel_showing) {
     host_observation_.Reset();
-    UpdateSelectionState(last_selected_text_);
+    UpdateSelectionState(last_selected_text_, /*is_pending_selection=*/false);
     return;
   }
 
   if (instance->host().IsWebClientConnected()) {
     host_observation_.Reset();
-    UpdateSelectionState(last_selected_text_);
+    UpdateSelectionState(last_selected_text_, /*is_pending_selection=*/false);
   } else {
     if (!host_observation_.IsObservingSource(&instance->host())) {
       host_observation_.Reset();
@@ -806,7 +822,7 @@ void GlicSelectionObserver::WebClientConnected() {
   if (last_selected_text_.empty()) {
     return;
   }
-  UpdateSelectionState(last_selected_text_);
+  UpdateSelectionState(last_selected_text_, /*is_pending_selection=*/false);
 }
 
 }  // namespace glic
