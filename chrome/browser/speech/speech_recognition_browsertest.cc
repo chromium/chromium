@@ -209,9 +209,10 @@ IN_PROC_BROWSER_TEST_F(ChromeSpeechRecognitionTest,
                          future.GetCallback()),
       content::GlobalRenderFrameHostId(process_id, IPC::mojom::kRoutingIdNone));
 
-  // For extensions, ask_user should be false (manifest checks apply instead)
-  // and is_allowed should be true.
-  EXPECT_FALSE(future.Get<0>());
+  // For extensions, check_permission (ask_user) must be true so that
+  // MakeMediaAccessRequest is called to enforce manifest permissions and UI
+  // indicators, while is_allowed should be true.
+  EXPECT_TRUE(future.Get<0>());
   EXPECT_TRUE(future.Get<1>());
 }
 #endif

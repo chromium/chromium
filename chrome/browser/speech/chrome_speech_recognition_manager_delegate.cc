@@ -189,6 +189,9 @@ void ChromeSpeechRecognitionManagerDelegate::CheckRenderFrameType(
 #endif
       // Allow if it's a valid extension; otherwise deny (frame destroyed/invalid).
       allowed = is_extension;
+      if (allowed) {
+        check_permission = true;
+      }
     }
     content::GetIOThreadTaskRunner({})->PostTask(
         FROM_HERE,
