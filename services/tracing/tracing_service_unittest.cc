@@ -133,6 +133,7 @@ class TestTracingClient : public mojom::TracingSessionClient {
  public:
   void StartTracing(mojom::TracingService* service,
                     base::OnceClosure on_tracing_enabled) {
+    on_tracing_enabled_callback_ = std::move(on_tracing_enabled);
     service->BindConsumerHost(consumer_host_.BindNewPipeAndPassReceiver());
 
     perfetto::TraceConfig perfetto_config =
@@ -143,11 +144,6 @@ class TestTracingClient : public mojom::TracingSessionClient {
         tracing_session_host_.BindNewPipeAndPassReceiver(),
         receiver_.BindNewPipeAndPassRemote(), std::move(perfetto_config),
         base::File());
-
-    tracing_session_host_->RequestBufferUsage(
-        base::BindOnce([](base::OnceClosure on_response, bool, float,
-                          bool) { std::move(on_response).Run(); },
-                       std::move(on_tracing_enabled)));
   }
 
   void StopTracing(base::OnceClosure on_tracing_stopped) {
@@ -156,12 +152,20 @@ class TestTracingClient : public mojom::TracingSessionClient {
   }
 
   // tracing::mojom::TracingSessionClient implementation:
-  void OnTracingEnabled() override {}
-  void OnTracingDisabled(bool) override {
-    std::move(tracing_disabled_callback_).Run();
+  void OnTracingEnabled() override {
+    if (on_tracing_enabled_callback_) {
+      std::move(on_tracing_enabled_callback_).Run();
+    }
+  }
+
+  void OnTracingDisabled(bool success) override {
+    if (tracing_disabled_callback_) {
+      std::move(tracing_disabled_callback_).Run();
+    }
   }
 
  private:
+  base::OnceClosure on_tracing_enabled_callback_;
   base::OnceClosure tracing_disabled_callback_;
 
   mojo::Remote<mojom::ConsumerHost> consumer_host_;
