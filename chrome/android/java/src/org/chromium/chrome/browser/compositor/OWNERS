@@ -1,4 +1,5 @@
 dtrainor@chromium.org
 mdjones@chromium.org
 
+per-file CompositorViewHolder.java=clhager@google.com
 per-file LayerTitleCache.java=file://chrome/android/java/src/org/chromium/chrome/browser/compositor/overlays/strip/OWNERS
