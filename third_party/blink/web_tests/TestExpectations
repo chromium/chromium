@@ -9802,3 +9802,6 @@ crbug.com/512358723 [ Mac ] external/wpt/css/css-overscroll-behavior/overscroll-
 crbug.com/491563468 [ Mac15 ] virtual/web-bluetooth-new-permissions-backend/external/wpt/bluetooth/bidi/requestDevice/reject_opaque_origin.https.html [ Failure Pass ]
 crbug.com/491563468 virtual/web-bluetooth-new-permissions-backend/external/wpt/bluetooth/bidi/getDevices/granted-devices-with-services.https.window.html [ Failure Pass Timeout ]
 crbug.com/491563468 virtual/web-bluetooth-new-permissions-backend/external/wpt/bluetooth/bidi/requestDevice/acceptAllDevices/optional-services-missing.https.window.html [ Failure Pass ]
+
+# Gardener 2026-05-18
+crbug.com/514075904 [ Win11-arm64 ] virtual/text-antialias/emphasis-complex.html [ Failure Pass ]
