@@ -530,6 +530,7 @@ GetCSSPropertiesToWebDXFeatureMap() {
           {CSSSampleId::kTextBox, WebDXFeature::kTextBox},
           {CSSSampleId::kTextBoxEdge, WebDXFeature::kTextBox},
           {CSSSampleId::kTextBoxTrim, WebDXFeature::kTextBox},
+          {CSSSampleId::kTextFit, WebDXFeature::kTextFit},
           {CSSSampleId::kTextIndent, WebDXFeature::kTextIndent},
           {CSSSampleId::kTextSpacingTrim, WebDXFeature::kTextSpacingTrim},
           {CSSSampleId::kTextUnderlineOffset,
