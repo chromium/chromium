@@ -19072,6 +19072,25 @@
             ]
         }
     ],
+    "PreloadingEligibilityCheckOnRenderer": [
+        {
+            "platforms": [
+                "windows",
+                "linux",
+                "chromeos",
+                "mac",
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "PreloadingEligibilityCheckOnRenderer"
+                    ]
+                }
+            ]
+        }
+    ],
     "PreloadingRespectUserAgentOverride": [
         {
             "platforms": [
