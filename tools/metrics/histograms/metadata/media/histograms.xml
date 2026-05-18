@@ -1430,18 +1430,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Media.Audio.Capture.Win.InitError" enum="Hresult"
-    expires_after="2026-10-04">
-  <owner>olka@chromium.org</owner>
-  <owner>tommi@chromium.org</owner>
-  <owner>guidou@chromium.org</owner>
-  <owner>webrtc-audio-uma@google.com</owner>
-  <summary>
-    Error codes from IAudioClient::Initialize() in
-    WASAPIAudioInputStream::InitializeAudioEngine on Windows.
-  </summary>
-</histogram>
-
 <histogram name="Media.Audio.Capture.Win.InitError.FormatRelated"
     enum="AudioStreamFormatRelatedInitError" expires_after="2026-09-13">
   <owner>fhernqvist@google.com</owner>
@@ -1456,6 +1444,34 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Media.Audio.Capture.Win.InitError.SystemPermissionDenied"
+    enum="Boolean" expires_after="2027-05-15">
+  <owner>henrika@chromium.org</owner>
+  <owner>olka@chromium.org</owner>
+  <owner>webrtc-audio-uma@google.com</owner>
+  <summary>
+    Logs true if IAudioClient::Initialize() failed with E_ACCESSDENIED in
+    WASAPIAudioInputStream::InitializeAudioEngine on Windows, indicating that
+    audio capture was blocked by system permissions. Logged once per
+    initialization attempt.
+  </summary>
+</histogram>
+
+<histogram name="Media.Audio.Capture.Win.InitError2" enum="Hresult"
+    expires_after="2027-05-15">
+  <owner>henrika@chromium.org</owner>
+  <owner>olka@chromium.org</owner>
+  <owner>tommi@chromium.org</owner>
+  <owner>guidou@chromium.org</owner>
+  <owner>webrtc-audio-uma@google.com</owner>
+  <summary>
+    Error codes from IAudioClient::Initialize() in
+    WASAPIAudioInputStream::InitializeAudioEngine on Windows. E_ACCESSDENIED is
+    intentionally excluded and is tracked by
+    Media.Audio.Capture.Win.SystemPermissionDenied instead.
+  </summary>
+</histogram>
+
 <histogram name="Media.Audio.Capture.Win.Open" enum="AudioStreamOpenResult"
     expires_after="2026-10-11">
   <owner>gudiou@chromium.org</owner>
@@ -1467,15 +1483,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Media.Audio.Capture.Win.ProcessLoopbackInitError"
-    enum="Hresult" expires_after="2026-10-28">
+<histogram name="Media.Audio.Capture.Win.ProcessLoopbackInitError2"
+    enum="Hresult" expires_after="2027-05-15">
   <owner>lowkey@google.com</owner>
   <owner>tguilbert@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
     The HRESULT code for an error when initializing for process loopback
     capture. This is recorded only when initialization fails and the device is a
-    process loopback device.
+    process loopback device. E_ACCESSDENIED is intentionally excluded and is
+    tracked by Media.Audio.Capture.Win.SystemPermissionDenied instead.
   </summary>
 </histogram>
 

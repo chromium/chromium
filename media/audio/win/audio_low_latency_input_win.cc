@@ -2048,15 +2048,21 @@ HRESULT WASAPIAudioInputStream::InitializeAudioEngine() {
           ? &kCommunicationsSessionId
           : nullptr);
 
+  base::UmaHistogramBoolean(
+      "Media.Audio.Capture.Win.InitError.SystemPermissionDenied",
+      hr == E_ACCESSDENIED);
+
   if (FAILED(hr)) {
     SendLogMessage(
         base::StrCat({__func__, " => (ERROR: IAudioClient::Initialize=[",
                       ErrorToString(hr), "])"}));
     open_result_ = OPEN_RESULT_AUDIO_CLIENT_INIT_FAILED;
-    base::UmaHistogramSparse("Media.Audio.Capture.Win.InitError", hr);
-    if (is_process_loopback_capture_) {
-      base::UmaHistogramSparse(
-          "Media.Audio.Capture.Win.ProcessLoopbackInitError", hr);
+    if (hr != E_ACCESSDENIED) {
+      base::UmaHistogramSparse("Media.Audio.Capture.Win.InitError2", hr);
+      if (is_process_loopback_capture_) {
+        base::UmaHistogramSparse(
+            "Media.Audio.Capture.Win.ProcessLoopbackInitError2", hr);
+      }
     }
     MaybeReportFormatRelatedInitError(hr);
     return hr;
