@@ -11,6 +11,8 @@ import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/cr_progress/cr_progress.js';
 
+import {loadTimeData} from '//resources/js/load_time_data.js';
+
 import {AppRouter} from './app_router.js';
 
 declare global {
@@ -60,6 +62,9 @@ function setupListeners(controller: AppRouter) {
 
 
 window.addEventListener('DOMContentLoaded', () => {
+  if (loadTimeData.getBoolean('isAndroidMobile')) {
+    document.body.classList.add('androidMobile');
+  }
   const appRouter = new AppRouter();
   window.appRouter = appRouter;
   setupListeners(appRouter);

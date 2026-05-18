@@ -6,6 +6,8 @@
 #define CHROME_BROWSER_GLIC_HOST_GUEST_UTIL_H_
 
 #include "base/feature_list.h"
+#include "chrome/browser/glic/host/glic.mojom.h"
+#include "ui/base/device_form_factor.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -61,6 +63,9 @@ void MarkProcessAsGlic(content::RenderProcessHost* rph);
 
 // Instantiates Glic WebUI metadata on a WebContents.
 void CreateGlicWebUiData(content::WebContents* webui_contents);
+
+// Returns Glic form factor mapping for the given device form factor.
+mojom::FormFactor GetGlicFormFactor(ui::DeviceFormFactor form_factor);
 }  // namespace glic
 
 #endif  // CHROME_BROWSER_GLIC_HOST_GUEST_UTIL_H_

@@ -13,6 +13,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/trace_event.h"
 #include "base/version_info/version_info.h"
+#include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/glic/fre/fre_util.h"
 #include "chrome/browser/glic/fre/glic_fre_page_handler.h"
@@ -250,6 +251,13 @@ GlicUI::GlicUI(content::WebUI* web_ui)
   source->AddBoolean("showErrorAllowed", is_internal_google_account ||
                                              profile->GetPrefs()->GetBoolean(
                                                  prefs::kGlicShowErrorAllowed));
+#if BUILDFLAG(IS_ANDROID)
+  const bool is_android_mobile =
+      GetGlicFormFactor(ui::GetDeviceFormFactor()) == mojom::FormFactor::kPhone;
+  source->AddBoolean("isAndroidMobile", is_android_mobile);
+#else
+  source->AddBoolean("isAndroidMobile", false);
+#endif
   source->AddInteger("maxInFlightRequests",
                      base::FeatureList::IsEnabled(kGlicMaxInFlightRequests)
                          ? kGlicMaxInFlightRequestLimit.Get()

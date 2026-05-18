@@ -650,3 +650,46 @@ cr-progress {
   background-color: var(--cr-fallback-color-surface1);
   color: var(--cr-fallback-color-on-surface-variant);
 }
+
+/* Scoped styles for Android platforms */
+.androidMobile .dialog .headline {
+  font-size: 20px;
+  line-height: 24px;
+  font-weight: 500;
+  margin: 16px 0 8px 0;
+  color: var(--cr-fallback-color-on-surface);
+}
+
+.androidMobile .dialog p {
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: 400;
+  color: var(--cr-fallback-color-on-surface-variant);
+  margin: 0 0 24px 0;
+}
+
+.androidMobile .dialog .icon cr-icon {
+  width: 36px;
+  height: 36px;
+}
+
+/* Primary Button styling for Android */
+.androidMobile .tonal-button {
+  background-color: var(--cr-fallback-color-primary);
+  color: var(--cr-fallback-color-on-primary);
+  font-size: 14px;
+  font-weight: 500;
+  height: 40px;
+  border-radius: 20px; /* Pill shape */
+  padding: 0 24px;
+  box-shadow: none;
+  text-transform: none;
+  border: none;
+}
+
+.androidMobile .tonal-button:hover,
+.androidMobile .tonal-button:focus {
+  background-color: var(--cr-fallback-color-primary);
+  opacity: 0.9;
+}
+
