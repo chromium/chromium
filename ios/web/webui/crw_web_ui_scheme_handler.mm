@@ -64,9 +64,10 @@ NSInteger GetErrorCodeForUrl(const GURL& URL) {
   // The "Access-Control-Allow-Origin" header is required below to allow
   // requests from any WebUI page to load chrome://resources URLs. However,
   // requests between different WebUI pages are blocked directly instead.
-  if (!URL.DomainIs(web::kWebUIResourcesHost) && webView.URL &&
-      url::SchemeHostPort(URL) !=
-          url::SchemeHostPort(net::GURLWithNSURL(webView.URL))) {
+  if (!webView.URL ||
+      (!URL.DomainIs(web::kWebUIResourcesHost) &&
+       url::SchemeHostPort(URL) !=
+           url::SchemeHostPort(net::GURLWithNSURL(webView.URL)))) {
     NSError* error = [NSError
         errorWithDomain:NSURLErrorDomain
                    code:NSURLErrorNoPermissionsToReadFile

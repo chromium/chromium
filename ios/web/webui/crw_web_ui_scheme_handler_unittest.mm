@@ -145,6 +145,8 @@ TEST_F(CRWWebUISchemeManagerTest, StartTaskWithCorrectURL) {
   NSMutableURLRequest* request =
       [NSMutableURLRequest requestWithURL:GetWebUIURL()];
   request.mainDocumentURL = GetWebUIURL();
+  OCMStub([web_view URL]).andReturn(request.mainDocumentURL);
+
   url_scheme_task.request = request;
 
   [scheme_handler webView:web_view startURLSchemeTask:url_scheme_task];
@@ -166,6 +168,7 @@ TEST_F(CRWWebUISchemeManagerTest, ErrorReceived) {
       [NSMutableURLRequest requestWithURL:components_url.URL];
   request.mainDocumentURL = request.URL;
   url_scheme_task.request = request;
+  OCMStub([web_view URL]).andReturn(request.URL);
 
   [scheme_handler webView:web_view startURLSchemeTask:url_scheme_task];
 
@@ -176,6 +179,7 @@ TEST_F(CRWWebUISchemeManagerTest, ErrorReceived) {
 
   // Check with a different URL.
   request.mainDocumentURL = [NSURL URLWithString:@"invalidScheme://page"];
+  OCMStub([web_view URL]).andReturn(request.mainDocumentURL);
   url_scheme_task.request = request;
   [scheme_handler webView:web_view startURLSchemeTask:url_scheme_task];
 
@@ -183,24 +187,6 @@ TEST_F(CRWWebUISchemeManagerTest, ErrorReceived) {
   EXPECT_FALSE(url_scheme_task.receivedData);
   EXPECT_TRUE(url_scheme_task.receivedError);
   EXPECT_EQ(NSURLErrorUnsupportedURL, url_scheme_task.error.code);
-}
-
-// Tests that calling start on the scheme handler returns some data when the URL
-// is *not* a WebUI URL but the main document URL is.
-TEST_F(CRWWebUISchemeManagerTest, StartTaskWithCorrectMainURL) {
-  CRWWebUISchemeHandler* scheme_handler = CreateSchemeHandler();
-  id web_view = OCMClassMock([WKWebView class]);
-  FakeSchemeTask* url_scheme_task = [[FakeSchemeTask alloc] init];
-  NSMutableURLRequest* request = [NSMutableURLRequest
-      requestWithURL:[NSURL URLWithString:@"https://notAWebUIURL"]];
-  request.mainDocumentURL = GetWebUIURL();
-  url_scheme_task.request = request;
-
-  [scheme_handler webView:web_view startURLSchemeTask:url_scheme_task];
-
-  RespondWithData(net::GURLWithNSURL(request.URL), "{}");
-  EXPECT_TRUE(url_scheme_task.receivedData);
-  EXPECT_FALSE(url_scheme_task.receivedError);
 }
 
 // Tests that calling start on the scheme handler returns an error when the URL
@@ -212,6 +198,7 @@ TEST_F(CRWWebUISchemeManagerTest, StartTaskWithWrongMainDocumentURL) {
   NSMutableURLRequest* request =
       [NSMutableURLRequest requestWithURL:GetWebUIURL()];
   request.mainDocumentURL = [NSURL URLWithString:@"https://notAWebUIURL"];
+  OCMStub([web_view URL]).andReturn(request.mainDocumentURL);
   url_scheme_task.request = request;
 
   [scheme_handler webView:web_view startURLSchemeTask:url_scheme_task];
@@ -230,6 +217,7 @@ TEST_F(CRWWebUISchemeManagerTest, StopTask) {
   NSMutableURLRequest* request =
       [NSMutableURLRequest requestWithURL:GetWebUIURL()];
   request.mainDocumentURL = GetWebUIURL();
+  OCMStub([web_view URL]).andReturn(request.mainDocumentURL);
   url_scheme_task.request = request;
 
   [scheme_handler webView:web_view startURLSchemeTask:url_scheme_task];
@@ -250,6 +238,7 @@ TEST_F(CRWWebUISchemeManagerTest, CheckMimetypeOfChromeScheme) {
   NSMutableURLRequest* request = [NSMutableURLRequest
       requestWithURL:[NSURL URLWithString:@"chrome://clown/res/clown.js"]];
   request.mainDocumentURL = [NSURL URLWithString:@"chrome://clown/"];
+  OCMStub([web_view URL]).andReturn(request.mainDocumentURL);
   url_scheme_task.request = request;
   [scheme_handler webView:web_view startURLSchemeTask:url_scheme_task];
   RespondWithData(net::GURLWithNSURL(request.URL), "{}");
@@ -262,6 +251,7 @@ TEST_F(CRWWebUISchemeManagerTest, CheckMimetypeOfChromeScheme) {
   request = [NSMutableURLRequest
       requestWithURL:[NSURL URLWithString:@"chrome://clown/res/clown.css"]];
   request.mainDocumentURL = [NSURL URLWithString:@"chrome://clown/"];
+  OCMStub([web_view URL]).andReturn(request.mainDocumentURL);
   url_scheme_task.request = request;
   [scheme_handler webView:web_view startURLSchemeTask:url_scheme_task];
   RespondWithData(net::GURLWithNSURL(request.URL), "{}");
@@ -274,6 +264,7 @@ TEST_F(CRWWebUISchemeManagerTest, CheckMimetypeOfChromeScheme) {
   request = [NSMutableURLRequest
       requestWithURL:[NSURL URLWithString:@"chrome://clown/res/clown.svg"]];
   request.mainDocumentURL = [NSURL URLWithString:@"chrome://clown/"];
+  OCMStub([web_view URL]).andReturn(request.mainDocumentURL);
   url_scheme_task.request = request;
   [scheme_handler webView:web_view startURLSchemeTask:url_scheme_task];
   RespondWithData(net::GURLWithNSURL(request.URL), "{}");
@@ -287,6 +278,7 @@ TEST_F(CRWWebUISchemeManagerTest, CheckMimetypeOfChromeScheme) {
       requestWithURL:[NSURL
                          URLWithString:@"chrome://clown/res/clown.anything"]];
   request.mainDocumentURL = [NSURL URLWithString:@"chrome://clown/"];
+  OCMStub([web_view URL]).andReturn(request.mainDocumentURL);
   url_scheme_task.request = request;
   [scheme_handler webView:web_view startURLSchemeTask:url_scheme_task];
   RespondWithData(net::GURLWithNSURL(request.URL), "{}");
