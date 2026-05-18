@@ -65,7 +65,7 @@ class BASE_I18N_EXPORT LanguageCode {
 
   // This constructor is intended for internal use by `LanguageCodeBuilder`.
   // Do not call this directly.
-  explicit LanguageCode(std::string_view code);
+  explicit LanguageCode(ImmutableStringType code);
 
   // The BCP47 language code, e.g. "pt-BR".
   // Supports language, script, region, variants and extensions.

@@ -4,6 +4,9 @@
 
 #include "base/i18n/language_code_builder.h"
 
+#include <vector>
+
+#include "base/compiler_specific.h"
 #include "base/i18n/internal/icu_bridge.rs.h"
 #include "base/i18n/language_code.h"
 #include "base/logging.h"
@@ -11,30 +14,78 @@
 
 namespace base {
 
+namespace {
+
+constexpr std::string_view kBcp47SubtagSeparator = "-";
+
+// Reconstructs the BCP47 language tag from the locale components.
+// This is the C++ implementation of the locale string reconstruction that
+// avoids extra allocations by allowing ImmutableString to join the parts
+// directly into its storage.
+i18n::internal::ImmutableString Icu4xLocaleToImmutableString(
+    const i18n::internal::Icu4xLocale& locale) {
+  std::vector<std::string_view> parts;
+
+  // We must keep the temporary strings alive until ImmutableString has copied
+  // them.
+  rust::Vec<rust::String> variants = locale.variants();
+  rust::Vec<rust::String> extensions = locale.extensions_as_strings();
+  rust::Str script = locale.script();
+  rust::Str region = locale.region();
+
+  parts.emplace_back(locale.language());
+
+  if (!script.empty()) {
+    parts.push_back(kBcp47SubtagSeparator);
+    parts.push_back(std::string_view(script.data(), script.size()));
+  }
+
+  if (!region.empty()) {
+    parts.push_back(kBcp47SubtagSeparator);
+    parts.push_back(std::string_view(region.data(), region.size()));
+  }
+
+  for (const rust::String& variant : variants) {
+    parts.push_back(kBcp47SubtagSeparator);
+    parts.push_back(std::string_view(variant.data(), variant.size()));
+  }
+
+  for (const rust::String& ext : extensions) {
+    parts.push_back(kBcp47SubtagSeparator);
+    parts.push_back(std::string_view(ext.data(), ext.size()));
+  }
+
+  return i18n::internal::ImmutableString(parts);
+}
+
+}  // namespace
+
 class LanguageCodeBuilder::Impl {
  public:
   explicit Impl()
       : canonicalizer_(base::i18n::internal::create_icu_canonicalizer()) {}
   ~Impl() = default;
 
-  std::optional<std::string> Canonicalize(std::string_view code) const;
+  std::optional<LanguageCode> FromString(std::string_view code) const;
 
  private:
   rust::Box<base::i18n::internal::IcuCanonicalizer> canonicalizer_;
 };
 
-std::optional<std::string> LanguageCodeBuilder::Impl::Canonicalize(
+std::optional<LanguageCode> LanguageCodeBuilder::Impl::FromString(
     std::string_view code) const {
-  std::string canonicalized;
   rust::Slice<const uint8_t> locale_bytes(
       reinterpret_cast<const uint8_t*>(code.data()), code.size());
 
-  canonicalizer_->create_canonical(locale_bytes, canonicalized);
-  if (canonicalized.empty()) {
+  // Use the new OptionalIcu4xLocale return type.
+  i18n::internal::OptionalIcu4xLocale opt_locale =
+      canonicalizer_->canonicalize(locale_bytes);
+
+  if (!opt_locale.has_value) {
     return std::nullopt;
   }
 
-  return canonicalized;
+  return LanguageCode(Icu4xLocaleToImmutableString(*opt_locale.value));
 }
 
 LanguageCodeBuilder::~LanguageCodeBuilder() = default;
@@ -52,12 +103,7 @@ std::optional<LanguageCode> LanguageCodeBuilder::FromString(
     return std::nullopt;
   }
 
-  std::optional<std::string> canonicalized = impl_->Canonicalize(code);
-  if (!canonicalized.has_value()) {
-    return std::nullopt;
-  }
-
-  return LanguageCode(*canonicalized);
+  return impl_->FromString(code);
 }
 
 }  // namespace base

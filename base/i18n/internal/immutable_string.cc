@@ -8,6 +8,7 @@
 #include <array>
 #include <cstdint>
 #include <limits>
+#include <numeric>
 #include <string_view>
 #include <type_traits>
 #include <utility>
@@ -18,6 +19,27 @@
 #include "base/containers/span.h"
 
 namespace base::i18n::internal {
+
+namespace {
+
+size_t TotalSize(base::span<const std::string_view> parts) {
+  size_t total = 0;
+  for (const std::string_view& part : parts) {
+    total += part.size();
+  }
+  return total;
+}
+
+void CopyParts(base::span<const std::string_view> parts,
+               base::span<char> dest) {
+  size_t offset = 0;
+  for (const auto& part : parts) {
+    std::copy(part.begin(), part.end(), dest.begin() + offset);
+    offset += part.size();
+  }
+}
+
+}  // namespace
 
 ImmutableString::HeapString::HeapString(const HeapString& other)
     : storage_(base::HeapArray<char>::CopiedFrom(other.storage_.as_span())) {}
@@ -30,34 +52,39 @@ ImmutableString::HeapString::HeapString(HeapString&&) = default;
 ImmutableString::HeapString& ImmutableString::HeapString::operator=(
     HeapString&&) = default;
 
-ImmutableString::HeapString::HeapString(std::string_view input)
-    : storage_(
-          base::HeapArray<char>::CopiedFrom(base::span<const char>(input))) {}
+ImmutableString::HeapString::HeapString(
+    base::span<const std::string_view> parts)
+    : storage_(base::HeapArray<char>::Uninit(TotalSize(parts))) {
+  CopyParts(parts, storage_.as_span());
+}
 ImmutableString::HeapString::~HeapString() = default;
 
 std::string_view ImmutableString::HeapString::AsString() const {
   return std::string_view(storage_.data(), storage_.size());
 }
 
-ImmutableString::SmallStackString::SmallStackString(std::string_view input)
-    : size_(input.size()) {
-  CHECK(input.size() <= kSmallBufferSize)
+ImmutableString::SmallStackString::SmallStackString(
+    base::span<const std::string_view> parts) {
+  size_t total_size = TotalSize(parts);
+  CHECK(total_size <= kSmallBufferSize)
       << "Input string is too long to be a SmallStackString.";
-  std::copy(input.begin(), input.end(), storage_.begin());
+  size_ = static_cast<uint8_t>(total_size);
+  CopyParts(parts, base::span<char>(storage_));
 }
 
 std::string_view ImmutableString::SmallStackString::AsString() const {
   return std::string_view(storage_.data(), size_);
 }
 
-ImmutableString::ImmutableString() : storage_(SmallStackString("")) {}
+ImmutableString::ImmutableString()
+    : storage_(SmallStackString(base::span<const std::string_view>())) {}
 
 ImmutableString::~ImmutableString() = default;
 
-ImmutableString::ImmutableString(std::string_view input)
-    : storage_((input.size() <= ImmutableString::kSmallBufferSize)
-                   ? StorageVariantType(SmallStackString(input))
-                   : StorageVariantType(HeapString(input))) {}
+ImmutableString::ImmutableString(base::span<const std::string_view> parts)
+    : storage_((TotalSize(parts) <= ImmutableString::kSmallBufferSize)
+                   ? StorageVariantType(SmallStackString(parts))
+                   : StorageVariantType(HeapString(parts))) {}
 
 ImmutableString::ImmutableString(const ImmutableString& other) = default;
 ImmutableString& ImmutableString::operator=(const ImmutableString& other) =

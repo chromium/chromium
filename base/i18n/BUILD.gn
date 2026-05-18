@@ -14,6 +14,7 @@ rust_static_library("i18n_icu_bridge_ffi") {
   crate_root = "internal/icu_bridge.rs"
   sources = [ "internal/icu_bridge.rs" ]
   cxx_bindings = [ "internal/icu_bridge.rs" ]
+  build_native_rust_unit_tests = true
   visibility = [
     ":*",
     "//base:i18n",

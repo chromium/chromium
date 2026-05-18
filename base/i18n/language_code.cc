@@ -4,6 +4,8 @@
 
 #include "base/i18n/language_code.h"
 
+#include <utility>
+
 #include "base/strings/string_util.h"
 
 namespace base {
@@ -22,8 +24,8 @@ std::string_view LanguageCode::ToString() const {
   return code_.AsString();
 }
 
-LanguageCode::LanguageCode(std::string_view code) : code_(code) {
-  CHECK(code.size() >= 2);
+LanguageCode::LanguageCode(ImmutableStringType code) : code_(std::move(code)) {
+  CHECK(code_.AsString().size() >= 2);
 }
 
 }  // namespace base

@@ -12,6 +12,7 @@
 #include <variant>
 
 #include "base/containers/heap_array.h"
+#include "base/containers/span.h"
 #include "base/i18n/base_i18n_export.h"
 
 namespace base::i18n::internal {
@@ -29,7 +30,7 @@ class BASE_I18N_EXPORT ImmutableString {
   // implementation of `ImmutableString`.
   class BASE_I18N_EXPORT SmallStackString {
    public:
-    explicit SmallStackString(std::string_view input);
+    explicit SmallStackString(base::span<const std::string_view> parts);
     ~SmallStackString() = default;
     SmallStackString(const SmallStackString& other) = default;
     SmallStackString& operator=(const SmallStackString& other) = default;
@@ -41,7 +42,7 @@ class BASE_I18N_EXPORT ImmutableString {
    private:
     std::array<char, kSmallBufferSize> storage_;
     // We only need one byte for keeping the size of a small string.
-    uint8_t size_;
+    uint8_t size_ = 0;
   };
 
   // This class stores a fixed-size, immutable string that is always stored in
@@ -49,7 +50,7 @@ class BASE_I18N_EXPORT ImmutableString {
   // copyable / movable class for convenience.
   class BASE_I18N_EXPORT HeapString {
    public:
-    explicit HeapString(std::string_view input);
+    explicit HeapString(base::span<const std::string_view> parts);
     HeapString(const HeapString& other);
     HeapString& operator=(const HeapString& other);
     HeapString(HeapString&&);
@@ -66,8 +67,8 @@ class BASE_I18N_EXPORT ImmutableString {
   ImmutableString();
   ~ImmutableString();
 
-  // Constructs the string from a string_view.
-  explicit ImmutableString(std::string_view input);
+  // Constructs the string by joining multiple string_views.
+  explicit ImmutableString(base::span<const std::string_view> parts);
 
   // Copy constructor and assignment operator are required because
   // base::HeapArray is move-only.
