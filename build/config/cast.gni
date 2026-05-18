@@ -15,8 +15,6 @@ declare_args() {
   # If empty, default value is used.
   target_rpath = ""
 
-  # Set true to enable modular_updater.
-  enable_modular_updater = false
 
 
   # Set this to true to build for Nest hardware running Linux (aka "CastOS").
