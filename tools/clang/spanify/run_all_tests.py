@@ -184,6 +184,11 @@ def RunTestsForProject(spanify_dir, scripts_dir, src_dir, project):
 
 
 def main():
+    parser = argparse.ArgumentParser(description='Run spanify tests.')
+    parser.add_argument('--project',
+                        help='If specified, only run tests for this project.')
+    args = parser.parse_args()
+
     spanify_dir = os.path.dirname(os.path.realpath(__file__))
     clang_dir = os.path.dirname(spanify_dir)
     scripts_dir = os.path.join(clang_dir, 'scripts')
@@ -192,9 +197,14 @@ def main():
     total_passed = 0
     total_failed = 0
 
-    for project in [
-            'chrome', 'partition_alloc', 'skia', 'dawn', 'webrtc', 'angle'
-    ]:
+    projects = ['chrome', 'partition_alloc', 'skia', 'dawn', 'webrtc', 'angle']
+    if args.project:
+        if args.project not in projects:
+            print(f'Error: Unknown project {args.project}')
+            return 1
+        projects = [args.project]
+
+    for project in projects:
         passed, failed = RunTestsForProject(spanify_dir, scripts_dir, src_dir,
                                             project)
         total_passed += passed
