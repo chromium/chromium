@@ -9,8 +9,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ScrollView;
 
+import androidx.annotation.IntDef;
 import androidx.annotation.StringRes;
 
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
@@ -23,14 +25,33 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 import org.chromium.ui.widget.ButtonCompat;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+
 /** Coordinator for the Glic bottom sheet promo. */
 @NullMarked
 public class GlicPromoCoordinator {
+    // LINT.IfChange(GlicPromoBottomSheetDismissReason)
+    @IntDef({
+        DismissReason.ACCEPT,
+        DismissReason.REJECT,
+        DismissReason.DISMISS,
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface DismissReason {
+        int ACCEPT = 0;
+        int REJECT = 1;
+        int DISMISS = 2;
+        int NUM_ENTRIES = 3;
+    }
+
+    // LINT.ThenChange(//tools/metrics/histograms/metadata/android/enums.xml:GlicPromoBottomSheetDismissReason)
 
     private final Context mContext;
     private final BottomSheetController mBottomSheetController;
     private final GlicPromoSheetContent mSheetContent;
     private final View mContentView;
+    private boolean mDecisionRecorded;
 
     /**
      * Constructor.
@@ -56,6 +77,7 @@ public class GlicPromoCoordinator {
                 mContentView.findViewById(R.id.glic_promo_positive_button);
         positiveButtonView.setOnClickListener(
                 (view) -> {
+                    recordDismissReason(DismissReason.ACCEPT);
                     onPositiveButtonClicked.run();
                     mBottomSheetController.hideContent(mSheetContent, /* animate= */ true);
                 });
@@ -64,8 +86,18 @@ public class GlicPromoCoordinator {
                 mContentView.findViewById(R.id.glic_promo_negative_button);
         negativeButtonView.setOnClickListener(
                 (view) -> {
+                    recordDismissReason(DismissReason.REJECT);
                     mBottomSheetController.hideContent(mSheetContent, /* animate= */ true);
                 });
+    }
+
+    private void recordDismissReason(@DismissReason int reason) {
+        if (mDecisionRecorded) {
+            return;
+        }
+        mDecisionRecorded = true;
+        RecordHistogram.recordEnumeratedHistogram(
+                "Android.GlicPromoBottomSheet.DismissReason", reason, DismissReason.NUM_ENTRIES);
     }
 
     /** Shows the promo. The caller is responsible for all eligibility checks. */
@@ -105,6 +137,7 @@ public class GlicPromoCoordinator {
                         public void onSheetClosed(@StateChangeReason int reason) {
                             super.onSheetClosed(reason);
                             mBackPressStateChangedSupplier.set(false);
+                            recordDismissReason(DismissReason.DISMISS);
                             onDismissed.run();
                             mBottomSheetController.removeObserver(mBottomSheetOpenedObserver);
                         }

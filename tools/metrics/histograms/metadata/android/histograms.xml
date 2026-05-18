@@ -2429,6 +2429,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.GlicPromoBottomSheet.DismissReason"
+    enum="GlicPromoBottomSheetDismissReason" expires_after="2027-05-15">
+  <owner>ssid@google.com</owner>
+  <owner>haileywang@google.com</owner>
+  <summary>
+    Records the user's action taken on the Glic promo bottom sheet. Emitted once
+    each time the bottom sheet is closed, documenting whether the user accepted
+    the promo, rejected it, or dismissed it (via swipe, back press, etc.).
+  </summary>
+</histogram>
+
 <histogram
     name="Android.GridTabSwitcher.Animation.FirstFrameLatency.{GridTabSwitcherAnimationType}"
     units="ms" expires_after="2026-08-30">

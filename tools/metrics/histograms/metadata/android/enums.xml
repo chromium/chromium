@@ -1177,6 +1177,12 @@ chromium-metrics-reviews@google.com.
   <int value="8" label="Undefined"/>
 </enum>
 
+<enum name="GlicPromoBottomSheetDismissReason">
+  <int value="0" label="Accept"/>
+  <int value="1" label="Reject"/>
+  <int value="2" label="Dismiss"/>
+</enum>
+
 <enum name="GmsShortVersionCode">
   <summary>
     Special buckets for the cases when GMS Core version can't be obtained or is

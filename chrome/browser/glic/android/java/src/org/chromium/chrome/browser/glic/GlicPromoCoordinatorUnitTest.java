@@ -26,6 +26,8 @@ import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.HistogramWatcher;
+import org.chromium.chrome.browser.glic.GlicPromoCoordinator.DismissReason;
 import org.chromium.chrome.browser.glic.GlicPromoCoordinator.GlicPromoSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
@@ -92,10 +94,57 @@ public class GlicPromoCoordinatorUnitTest {
 
     @Test
     public void testPositiveButtonClicked() {
+        var histogram =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Android.GlicPromoBottomSheet.DismissReason", DismissReason.ACCEPT);
         View button = mView.findViewById(R.id.glic_promo_positive_button);
         button.performClick();
         verify(mOnPositiveButtonClicked).run();
         verify(mBottomSheetController).hideContent(any(), eq(true));
+        histogram.assertExpected();
+    }
+
+    @Test
+    public void testNegativeButtonClicked() {
+        var histogram =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Android.GlicPromoBottomSheet.DismissReason", DismissReason.REJECT);
+        View button = mView.findViewById(R.id.glic_promo_negative_button);
+        button.performClick();
+        verify(mBottomSheetController).hideContent(any(), eq(true));
+        histogram.assertExpected();
+    }
+
+    @Test
+    public void testDismissed() {
+        var histogram =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Android.GlicPromoBottomSheet.DismissReason", DismissReason.DISMISS);
+        BottomSheetObserver observer = mBottomSheetObserverCaptor.getValue();
+        observer.onSheetOpened(StateChangeReason.NONE);
+        observer.onSheetClosed(StateChangeReason.TAP_SCRIM);
+        verify(mOnDismissed).run();
+        verify(mBottomSheetController).removeObserver(eq(observer));
+        histogram.assertExpected();
+    }
+
+    @Test
+    public void testMultipleActions_recordsOnlyFirst() {
+        var histogram =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Android.GlicPromoBottomSheet.DismissReason", DismissReason.ACCEPT);
+        // Perform accept click
+        View button = mView.findViewById(R.id.glic_promo_positive_button);
+        button.performClick();
+        verify(mOnPositiveButtonClicked).run();
+        verify(mBottomSheetController).hideContent(any(), eq(true));
+
+        // Now trigger sheet closure (which would usually be a dismiss)
+        BottomSheetObserver observer = mBottomSheetObserverCaptor.getValue();
+        observer.onSheetClosed(StateChangeReason.TAP_SCRIM);
+
+        // The expected record should still be ACCEPT, and no other value is recorded
+        histogram.assertExpected();
     }
 
     @Test
