@@ -134,9 +134,11 @@ class CryptographerImpl : public Cryptographer {
       const uint32_t recipient_key_version) const override;
 
  private:
-  CryptographerImpl(NigoriKeyBag key_bag,
-                    std::string default_encryption_key_name,
-                    CrossUserSharingKeys cross_user_sharing_keys);
+  CryptographerImpl(
+      NigoriKeyBag key_bag,
+      std::string default_encryption_key_name,
+      CrossUserSharingKeys cross_user_sharing_keys,
+      std::optional<uint32_t> default_cross_user_sharing_key_version);
 
   // The actual keys we know about.
   NigoriKeyBag key_bag_;

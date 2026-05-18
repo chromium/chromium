@@ -432,4 +432,24 @@ TEST(CryptographerImplTest, ShouldEmplaceAllNigoriKeysFrom) {
   EXPECT_TRUE(cryptographer->HasKey(key_name_other));
 }
 
+TEST(CryptographerImplTest, ShouldCloneDefaultCrossUserSharingKeyVersion) {
+  std::unique_ptr<CryptographerImpl> cryptographer =
+      CryptographerImpl::CreateEmpty();
+  cryptographer->SetKeyPair(
+      CrossUserSharingPublicPrivateKeyPair::GenerateNewKeyPair(), 4);
+  cryptographer->SelectDefaultCrossUserSharingKey(4);
+
+  std::unique_ptr<CryptographerImpl> cloned = cryptographer->Clone();
+  ASSERT_THAT(cloned, NotNull());
+
+  const std::string plaintext = "Sharing is caring";
+  std::optional<std::vector<uint8_t>> encrypted_message =
+      cloned->AuthEncryptForCrossUserSharing(
+          base::as_byte_span(plaintext),
+          CrossUserSharingPublicPrivateKeyPair::GenerateNewKeyPair()
+              .GetRawPublicKey());
+
+  EXPECT_TRUE(encrypted_message.has_value());
+}
+
 }  // namespace syncer

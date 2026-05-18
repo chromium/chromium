@@ -18,10 +18,11 @@ namespace syncer {
 
 // static
 std::unique_ptr<CryptographerImpl> CryptographerImpl::CreateEmpty() {
-  return base::WrapUnique(
-      new CryptographerImpl(NigoriKeyBag::CreateEmpty(),
-                            /*default_encryption_key_name=*/std::string(),
-                            CrossUserSharingKeys::CreateEmpty()));
+  return base::WrapUnique(new CryptographerImpl(
+      NigoriKeyBag::CreateEmpty(),
+      /*default_encryption_key_name=*/std::string(),
+      CrossUserSharingKeys::CreateEmpty(),
+      /*default_cross_user_sharing_key_version=*/std::nullopt));
 }
 
 // static
@@ -47,17 +48,21 @@ std::unique_ptr<CryptographerImpl> CryptographerImpl::FromProto(
   CrossUserSharingKeys cross_user_sharing_keys =
       CrossUserSharingKeys::CreateFromProto(proto.cross_user_sharing_keys());
 
-  return base::WrapUnique(
-      new CryptographerImpl(std::move(key_bag), proto.default_key_name(),
-                            std::move(cross_user_sharing_keys)));
+  return base::WrapUnique(new CryptographerImpl(
+      std::move(key_bag), proto.default_key_name(),
+      std::move(cross_user_sharing_keys),
+      /*default_cross_user_sharing_key_version=*/std::nullopt));
 }
 
 CryptographerImpl::CryptographerImpl(
     NigoriKeyBag key_bag,
     std::string default_encryption_key_name,
-    CrossUserSharingKeys cross_user_sharing_keys)
+    CrossUserSharingKeys cross_user_sharing_keys,
+    std::optional<uint32_t> default_cross_user_sharing_key_version)
     : key_bag_(std::move(key_bag)),
       default_encryption_key_name_(std::move(default_encryption_key_name)),
+      default_cross_user_sharing_key_version_(
+          default_cross_user_sharing_key_version),
       cross_user_sharing_keys_(std::move(cross_user_sharing_keys)) {
   DCHECK(default_encryption_key_name_.empty() ||
          key_bag_.HasKey(default_encryption_key_name_));
@@ -142,7 +147,8 @@ sync_pb::NigoriKey CryptographerImpl::ExportDefaultKey() const {
 std::unique_ptr<CryptographerImpl> CryptographerImpl::Clone() const {
   return base::WrapUnique(
       new CryptographerImpl(key_bag_.Clone(), default_encryption_key_name_,
-                            cross_user_sharing_keys_.Clone()));
+                            cross_user_sharing_keys_.Clone(),
+                            default_cross_user_sharing_key_version_));
 }
 
 size_t CryptographerImpl::KeyBagSizeForTesting() const {
