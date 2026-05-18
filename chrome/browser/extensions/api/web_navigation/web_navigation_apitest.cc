@@ -570,7 +570,8 @@ IN_PROC_BROWSER_TEST_F(WebNavigationApiTest, ServerRedirectSingleProcess) {
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 // TODO(crbug.com/511975946): Fix flaky test.
-#if BUILDFLAG(IS_LINUX)
+// TODO(crbug.com/510034821): Fix flaky test.
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_ForwardBack DISABLED_ForwardBack
 #else
 #define MAYBE_ForwardBack ForwardBack
