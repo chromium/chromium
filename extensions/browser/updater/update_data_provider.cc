@@ -88,9 +88,12 @@ update_client::CrxComponent FromPendingExtensionInfo(
     const PendingExtensionInfo& pending_info,
     bool allow_dev) {
   update_client::CrxComponent crx_component;
-  crx_component.version = pending_info.version().IsValid()
-                              ? pending_info.version()
-                              : base::Version("0.0.0.0");
+  // For pending extensions (which are not yet installed), we always report
+  // "0.0.0.0" to Omaha. This forces Omaha to return update instructions (such
+  // as download URLs) as no extension should use version "0.0.0.0" on the Omaha
+  // server. This matches what was used for ExtensionDownloaderTask under the
+  // legacy ExtensionDownloader system.
+  crx_component.version = base::Version("0.0.0.0");
   crx_component.install_location =
       ManifestFetchData::GetSimpleLocationString(pending_info.install_source());
   const bool from_webstore =
