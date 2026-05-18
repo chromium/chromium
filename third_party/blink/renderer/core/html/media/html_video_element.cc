@@ -481,7 +481,6 @@ void HTMLVideoElement::OnVisibilityRatioReport(double ratio) {
 void HTMLVideoElement::ResetCache(TimerBase*) {
   snapshot_provider_.reset();
   cached_draw_info_.reset();
-  sw_draw_surface_.reset();
 }
 
 bool HTMLVideoElement::IsPersistent() const {
@@ -703,11 +702,6 @@ bool HTMLVideoElement::IsDefaultPosterImageURL() const {
   return ImageSourceURL() == default_poster_url_;
 }
 
-// Killswitch guarding HTMLVideoElement not caching the SkSurface used for
-// VideoFrame->StaticBitmapImage software draws.
-BASE_FEATURE(kHTMLVideoElementCacheSkSurface,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 scoped_refptr<StaticBitmapImage> HTMLVideoElement::CreateStaticBitmapImage(
     std::optional<gfx::Size> size,
     bool reinterpret_as_srgb) {
@@ -735,7 +729,6 @@ scoped_refptr<StaticBitmapImage> HTMLVideoElement::CreateStaticBitmapImage(
           wrapper->ContextProvider().RasterContextProvider();
     }
     snapshot_provider_.reset();
-    sw_draw_surface_.reset();
 
     if (ShouldCreateAcceleratedImages(raster_context_provider)) {
       snapshot_provider_ = CanvasNon2DResourceProviderSharedImage::Create(
@@ -744,12 +737,6 @@ scoped_refptr<StaticBitmapImage> HTMLVideoElement::CreateStaticBitmapImage(
           SharedGpuContext::ContextProviderWrapper(),
           gpu::SHARED_IMAGE_USAGE_DISPLAY_READ);
       if (!snapshot_provider_) {
-        return nullptr;
-      }
-    } else if (base::FeatureList::IsEnabled(kHTMLVideoElementCacheSkSurface)) {
-      sw_draw_surface_ = CanvasNon2DSnapshotProviderBitmap::CreateSurface(
-          required_provider_info);
-      if (!sw_draw_surface_) {
         return nullptr;
       }
     }
@@ -768,8 +755,8 @@ scoped_refptr<StaticBitmapImage> HTMLVideoElement::CreateStaticBitmapImage(
   } else {
     image = CreateUnacceleratedImageFromVideoFrame(
         std::move(media_video_frame), cached_draw_info_.value(),
-        sw_draw_surface_, video_renderer, kPreferTaggedOrientation,
-        reinterpret_as_srgb);
+        /*cached_draw_surface=*/nullptr, video_renderer,
+        kPreferTaggedOrientation, reinterpret_as_srgb);
   }
   if (image)
     image->SetOriginClean(!WouldTaintOrigin());
