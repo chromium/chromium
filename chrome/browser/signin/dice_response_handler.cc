@@ -233,7 +233,14 @@ void DiceResponseHandler::DiceTokenFetcher::OnRegistrationTokenGenerated(
   StartTokenFetch();
 }
 
-// DiceSigninSession
+// DiceSigninSession manages the token fetching process for a multi-account
+// sign-in event.
+// It supports two modes:
+// - `kAll`: All accounts are fetched in parallel. Used when accounts are
+//   connected to the primary account (no interception expected).
+// - `kInitiatorFirst`: The initiator is fetched first to unblock interception
+//   UI. If it succeeds, the rest are fetched. If it fails, the session is
+//   aborted and secondary accounts are NOT fetched.
 
 DiceResponseHandler::DiceSigninSession::DiceSigninSession(
     DiceResponseHandler* handler,
@@ -248,6 +255,20 @@ DiceResponseHandler::DiceSigninSession::DiceSigninSession(
 
 DiceResponseHandler::DiceSigninSession::~DiceSigninSession() = default;
 
+DiceResponseHandler::DiceSigninSession::FetchMode
+DiceResponseHandler::DiceSigninSession::GetFetchMode() const {
+  // If the accounts are connected to the primary account, they belong to the
+  // same connected set and will be added to the same profile without
+  // interception. We can fetch all in parallel to minimize latency.
+  // Otherwise, we may need to show an interception prompt (profile switch or
+  // creation) which requires the initiator account to be ready. We fetch the
+  // initiator first to unblock the UI quickly.
+  return signin_info_.linked_accounts_metadata().primary_is_connected ==
+                 signin::Tribool::kTrue
+             ? FetchMode::kAll
+             : FetchMode::kInitiatorFirst;
+}
+
 void DiceResponseHandler::DiceSigninSession::StartTokenFetches() {
   CHECK(signin_info_.GetInitiator());
 
@@ -259,10 +280,13 @@ void DiceResponseHandler::DiceSigninSession::StartTokenFetches() {
   // access token requests (instead of waiting for these to complete).
   handler_->identity_manager_->PrepareForAddingNewAccount();
 
-  // TODO(crbug.com/475435113): Add complex handling/priority for initiator vs
-  // secondary accounts.
-  for (const auto& account : signin_info_.accounts()) {
-    FetchTokenForAccount(account);
+  if (GetFetchMode() == FetchMode::kAll) {
+    for (const auto& account : signin_info_.accounts()) {
+      FetchTokenForAccount(account);
+    }
+  } else {
+    // Fetch only the initiator first.
+    FetchTokenForAccount(*signin_info_.GetInitiator());
   }
 
   if (token_fetchers_.empty()) {
@@ -342,6 +366,15 @@ void DiceResponseHandler::DiceSigninSession::OnTokenExchangeSuccess(
       delegate_->CompleteChromeSignInAfterGaiaSignin(
           handler_->identity_manager_->FindExtendedAccountInfoByAccountId(
               account_id));
+    }
+
+    if (GetFetchMode() == FetchMode::kInitiatorFirst) {
+      // Initiator succeeded in initiator-first mode. Now fetch secondaries.
+      for (const auto& account : signin_info_.accounts()) {
+        if (account.account_info.gaia_id != fetcher->gaia_id()) {
+          FetchTokenForAccount(account);
+        }
+      }
     }
   }
 

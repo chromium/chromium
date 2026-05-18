@@ -249,6 +249,9 @@ class DiceResponseHandler : public KeyedService {
         const signin::DiceResponseParams::SigninInfo::SigninAccount& account);
     void DeleteFetcher(DiceTokenFetcher* fetcher);
 
+    enum class FetchMode { kAll, kInitiatorFirst };
+    FetchMode GetFetchMode() const;
+
     const raw_ptr<DiceResponseHandler> handler_;
     std::unique_ptr<ProcessDiceHeaderDelegate> delegate_;
     signin::DiceResponseParams::SigninInfo signin_info_;
