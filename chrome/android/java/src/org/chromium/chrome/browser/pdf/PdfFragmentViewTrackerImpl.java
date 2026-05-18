@@ -40,13 +40,14 @@ public class PdfFragmentViewTrackerImpl implements PdfFragmentViewTracker {
     private final List<String> mHandledViews = new ArrayList<>();
 
     /** Provides the PdfFragment Views from the framework. */
-    private @Nullable Supplier<List<View>> mPdfFragmentSupplier;
+    private Supplier<List<View>> mPdfFragmentSupplier;
 
     public PdfFragmentViewTrackerImpl(
             @Nullable TabModelSelector tabModelSelector, @Nullable Activity activity) {
         // CustomTab comes with a null selector/activity since it doesn't need to observe tabs.
         if (tabModelSelector == null && activity == null) {
             mTabModelSelectorTabObserver = null;
+            mPdfFragmentSupplier = () -> List.of();
             return;
         }
 
