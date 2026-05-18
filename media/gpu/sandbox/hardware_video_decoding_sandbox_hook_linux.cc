@@ -47,9 +47,12 @@ void AllowAccessToRenderNodes(std::vector<BrokerFilePermission>& permissions,
         uint32_t major = (static_cast<uint32_t>(st.st_rdev) >> 8) & 0xff;
         uint32_t minor = static_cast<uint32_t>(st.st_rdev) & 0xff;
         std::string char_device_path =
-            base::StringPrintf("/sys/dev/char/%u:%u/", major, minor);
+            base::StringPrintf("/sys/dev/char/%u:%u", major, minor);
+        permissions.push_back(BrokerFilePermission::ReadOnly(char_device_path));
         permissions.push_back(
-            BrokerFilePermission::ReadOnlyRecursive(char_device_path));
+            BrokerFilePermission::ReadOnly(char_device_path + "/uevent"));
+        permissions.push_back(
+            BrokerFilePermission::ReadOnly(char_device_path + "/dev"));
       }
     }
   }
