@@ -3280,6 +3280,20 @@ useful for Chirp alerts (go/crca-alerts). -->
   </summary>
 </histogram>
 
+<histogram
+    name="SafeBrowsing.SiteFamiliarity.DeferNavigationToComputeSiteFamiliarity.DeferDuration"
+    units="ms" expires_after="2026-11-06">
+  <owner>jacastro@chromium.org</owner>
+  <owner>tiffanysong@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Recorded during process selection when a navigation is deferred to compute
+    site familiarity. Records the time elapsed between when the navigation is
+    deferred and when the site familiarity verdict is reached and the navigation
+    proceeds.
+  </summary>
+</histogram>
+
 <histogram name="SafeBrowsing.SiteProtection.FamiliarityHeuristic"
     enum="SiteFamiliarityHeuristicName" expires_after="2026-08-01">
   <owner>jacastro@chromium.org</owner>
