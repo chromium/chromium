@@ -64,15 +64,19 @@ void SiteFamiliarityFetcher::Start(const GURL& url,
   CRSBLOG << "SiteFamiliarityFetcher::Start [URL]: " << url;
   fetch_url_ = url;
   callback_ = std::move(callback);
-  // Clear state in case there are in-progress requests.
-  fetched_history_ = false;
-  fetched_sb_list_ = false;
+  // Clear state and cancel in-progress requests.
+  task_tracker_.TryCancelAll();
   weak_factory_.InvalidateWeakPtrs();
+  fetched_history_ = false;
+  has_record_older_than_threshold_ = false;
+  fetched_sb_list_ = false;
+  is_on_sb_list_ = false;
+  has_engagement_score_higher_than_threshold_ = false;
 
   if (IsUrlFamiliarForTesting(fetch_url_)) {
     CRSBLOG << "SiteFamiliarityFetcher::Start [URL]: " << fetch_url_
             << " is familiar for testing";
-    OnComputedVerdictWithoutFetches(/*is_site_familiar=*/true);
+    OnComputedVerdict(Verdict::kFamiliar);
     return;
   }
 
@@ -83,7 +87,7 @@ void SiteFamiliarityFetcher::Start(const GURL& url,
     // cases, such as browser-initiated top-level navigations to data: URLs.
     CRSBLOG << "SiteFamiliarityFetcher::Start [URL]: " << fetch_url_
             << " is data scheme";
-    OnComputedVerdictWithoutFetches(/*is_site_familiar=*/false);
+    OnComputedVerdict(Verdict::kUnfamiliar);
     return;
   }
 
@@ -94,7 +98,7 @@ void SiteFamiliarityFetcher::Start(const GURL& url,
     // familiar.
     CRSBLOG << "SiteFamiliarityFetcher::Start [URL]: " << fetch_url_
             << " is extension scheme";
-    OnComputedVerdictWithoutFetches(/*is_site_familiar=*/true);
+    OnComputedVerdict(Verdict::kFamiliar);
     return;
   }
 
@@ -106,7 +110,7 @@ void SiteFamiliarityFetcher::Start(const GURL& url,
     // chrome://history. See CanAddURLToHistory().
     CRSBLOG << "SiteFamiliarityFetcher::Start [URL]: " << fetch_url_
             << " is not HTTP/HTTPS";
-    OnComputedVerdictWithoutFetches(/*is_site_familiar=*/false);
+    OnComputedVerdict(Verdict::kUnfamiliar);
     return;
   }
 
@@ -116,7 +120,22 @@ void SiteFamiliarityFetcher::Start(const GURL& url,
     // Assume the default search engine search results are familiar to the user.
     CRSBLOG << "SiteFamiliarityFetcher::Start [URL]: " << fetch_url_
             << " is default search engine";
-    OnComputedVerdictWithoutFetches(/*is_site_familiar=*/true);
+    OnComputedVerdict(Verdict::kFamiliar);
+    return;
+  }
+
+  // The SiteEngagementService provides a synchronous API, so just compute that
+  // familiarity component now.
+  site_engagement::SiteEngagementService* site_engagement_service =
+      site_engagement::SiteEngagementService::Get(profile_);
+  has_engagement_score_higher_than_threshold_ =
+      site_engagement_service->GetScore(fetch_url_) >=
+      kMinSiteEngagementScoreForFamiliarity;
+
+  if (has_engagement_score_higher_than_threshold_) {
+    CRSBLOG << "SiteFamiliarityFetcher::Start [URL]: " << fetch_url_
+            << " has high engagement score";
+    OnComputedVerdict(Verdict::kFamiliar);
     return;
   }
 
@@ -131,14 +150,6 @@ void SiteFamiliarityFetcher::Start(const GURL& url,
                      weak_factory_.GetWeakPtr()),
       &task_tracker_);
   StartFetchingSafeBrowsingHighConfidenceAllowlist();
-
-  // The SiteEngagementService provides a synchronous API, so just compute that
-  // familiarity component now.
-  site_engagement::SiteEngagementService* site_engagement_service =
-      site_engagement::SiteEngagementService::Get(profile_);
-  has_engagement_score_higher_than_threshold_ =
-      site_engagement_service->GetScore(fetch_url_) >=
-      kMinSiteEngagementScoreForFamiliarity;
 }
 
 void SiteFamiliarityFetcher::
@@ -159,15 +170,6 @@ void SiteFamiliarityFetcher::
 
   OnGotHighConfidenceAllowlistResult(
       /*url_on_safe_browsing_high_confidence_allowlist=*/true,
-      /*logging_details=*/std::nullopt);
-}
-
-void SiteFamiliarityFetcher::OnComputedVerdictWithoutFetches(
-    bool is_site_familiar) {
-  OnFetchedHistory(history::HistoryLastVisitResult());
-  OnGotHighConfidenceAllowlistResult(
-      /*url_on_safe_browsing_high_confidence_allowlist=*/
-      is_site_familiar,
       /*logging_details=*/std::nullopt);
 }
 
@@ -192,28 +194,51 @@ void SiteFamiliarityFetcher::OnGotHighConfidenceAllowlistResult(
 }
 
 void SiteFamiliarityFetcher::RunCallbackIfFinished() {
-  if (!fetched_history_ || !fetched_sb_list_) {
-    // Not finished.
-    return;
-  }
-
   if (!callback_) {
     // Callback was already run.
     return;
   }
 
-  Verdict verdict = (has_engagement_score_higher_than_threshold_ ||
-                     has_record_older_than_threshold_ || is_on_sb_list_)
-                        ? Verdict::kFamiliar
-                        : Verdict::kUnfamiliar;
-  CRSBLOG << "SiteFamiliarityFetcher decision [URL]: " << fetch_url_
-          << " [Verdict]: "
-          << (verdict == Verdict::kFamiliar ? "Familiar" : "Unfamiliar")
-          << " [Engagement>Threshold]: "
-          << has_engagement_score_higher_than_threshold_
-          << " [History>Threshold]: " << has_record_older_than_threshold_
-          << " [OnSBAllowlist]: " << is_on_sb_list_;
-  std::move(callback_).Run(verdict);
+  // If any component of the familiarity heuristic is done and the result was
+  // true, we can set the verdict to familiar and stop all additional
+  // processing.
+  if (has_engagement_score_higher_than_threshold_ ||
+      has_record_older_than_threshold_ || is_on_sb_list_) {
+    OnComputedVerdict(Verdict::kFamiliar, /*log_verdict=*/true);
+    return;
+  }
+
+  if (!fetched_history_ || !fetched_sb_list_) {
+    // Still waiting for some fetches to complete.
+    return;
+  }
+
+  // All fetches completed but none of them confirmed familiarity.
+  OnComputedVerdict(Verdict::kUnfamiliar, /*log_verdict=*/true);
+}
+
+void SiteFamiliarityFetcher::OnComputedVerdict(Verdict verdict,
+                                               bool log_verdict) {
+  if (!callback_) {
+    return;
+  }
+
+  if (log_verdict) {
+    CRSBLOG << "SiteFamiliarityFetcher decision [URL]: " << fetch_url_
+            << " [Verdict]: "
+            << (verdict == Verdict::kFamiliar ? "Familiar" : "Unfamiliar")
+            << " [Engagement>Threshold]: "
+            << has_engagement_score_higher_than_threshold_
+            << " [History>Threshold]: " << has_record_older_than_threshold_
+            << " [OnSBAllowlist]: " << is_on_sb_list_;
+  }
+
+  // Safely copy and clear the callback before cleanup to prevent UAF if the
+  // callback destroys `this`.
+  Callback callback = std::move(callback_);
+  task_tracker_.TryCancelAll();
+  weak_factory_.InvalidateWeakPtrs();
+  std::move(callback).Run(verdict);
 }
 
 }  //  namespace site_protection
