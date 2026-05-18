@@ -35,7 +35,7 @@ namespace blink {
 
 LayoutSVGViewportContainer::LayoutSVGViewportContainer(
     SVGViewportContainerElement* node)
-    : LayoutSVGContainer(node) {}
+    : LayoutSVGTransformableContainer(node) {}
 
 SVGLayoutResult LayoutSVGViewportContainer::UpdateSVGLayout(
     const SVGLayoutInfo& layout_info) {
@@ -59,7 +59,7 @@ SVGLayoutResult LayoutSVGViewportContainer::UpdateSVGLayout(
     }
   }
 
-  return LayoutSVGContainer::UpdateSVGLayout(child_layout_info);
+  return LayoutSVGTransformableContainer::UpdateSVGLayout(child_layout_info);
 }
 
 SVGTransformChange LayoutSVGViewportContainer::UpdateLocalTransform(
@@ -104,8 +104,8 @@ bool LayoutSVGViewportContainer::NodeAtPoint(
       return false;
     }
   }
-  return LayoutSVGContainer::NodeAtPoint(result, hit_test_location,
-                                         accumulated_offset, phase);
+  return LayoutSVGTransformableContainer::NodeAtPoint(
+      result, hit_test_location, accumulated_offset, phase);
 }
 
 void LayoutSVGViewportContainer::IntersectChildren(
@@ -127,19 +127,14 @@ void LayoutSVGViewportContainer::StyleDidChange(
     const ComputedStyle* old_style,
     const StyleChangeContext& style_change_context) {
   NOT_DESTROYED();
-  LayoutSVGContainer::StyleDidChange(diff, old_style, style_change_context);
-  const ComputedStyle& style = StyleRef();
+  LayoutSVGTransformableContainer::StyleDidChange(diff, old_style,
+                                                  style_change_context);
 
   if (old_style && (SVGLayoutSupport::IsOverflowHidden(*old_style) !=
-                    SVGLayoutSupport::IsOverflowHidden(style))) {
+                    SVGLayoutSupport::IsOverflowHidden(StyleRef()))) {
     // See NeedsOverflowClip() in PaintPropertyTreeBuilder for the reason.
     SetNeedsPaintPropertyUpdate();
   }
-
-  // TODO: Inherit `LayoutSVGViewportContainer` from
-  // `LayoutSVGTransformableContainer` so below bits of code can be shared.
-  TransformHelper::UpdateOffsetPath(*GetElement(), old_style);
-  SetTransformUsesReferenceBox(TransformHelper::DependsOnReferenceBox(style));
 }
 
 }  // namespace blink

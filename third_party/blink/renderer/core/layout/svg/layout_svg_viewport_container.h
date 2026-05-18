@@ -23,16 +23,19 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_SVG_LAYOUT_SVG_VIEWPORT_CONTAINER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_SVG_LAYOUT_SVG_VIEWPORT_CONTAINER_H_
 
-#include "third_party/blink/renderer/core/layout/svg/layout_svg_container.h"
+#include "third_party/blink/renderer/core/layout/svg/layout_svg_transformable_container.h"
 
 namespace blink {
 
 class SVGViewportContainerElement;
 
-// This is used for non-root <svg> elements which are SVGTransformable thus we
-// inherit from LayoutSVGContainer instead of LayoutSVGTransformableContainer.
-// Also used for root <symbol> instances in <use> shadow trees.
-class LayoutSVGViewportContainer final : public LayoutSVGContainer {
+// Used for non-root <svg> elements and for root <symbol> instances in <use>
+// shadow trees. These elements support the `transform` property in addition to
+// establishing a viewport via `viewBox`, so they share the transform handling
+// with `LayoutSVGTransformableContainer` and layer the viewBox transform on
+// top of the element's local transform.
+class LayoutSVGViewportContainer final
+    : public LayoutSVGTransformableContainer {
  public:
   explicit LayoutSVGViewportContainer(SVGViewportContainerElement*);
   gfx::RectF Viewport() const {
@@ -48,11 +51,6 @@ class LayoutSVGViewportContainer final : public LayoutSVGContainer {
   AffineTransform LocalToSVGParentTransform() const override {
     NOT_DESTROYED();
     return local_to_parent_transform_;
-  }
-
-  AffineTransform LocalSVGTransform() const override {
-    NOT_DESTROYED();
-    return local_transform_;
   }
 
   gfx::RectF ViewBoxRect() const;
@@ -83,9 +81,6 @@ class LayoutSVGViewportContainer final : public LayoutSVGContainer {
 
   gfx::RectF viewport_;
   mutable AffineTransform local_to_parent_transform_;
-  // TODO: Inherit `LayoutSVGViewportContainer` from
-  // `LayoutSVGTransformableContainer so we can remove this member.
-  mutable AffineTransform local_transform_;
 };
 
 template <>
