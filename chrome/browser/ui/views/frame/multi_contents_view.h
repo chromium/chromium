@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/contents_container_view.h"
 #include "components/prefs/pref_change_registrar.h"
+#include "components/split_tabs/split_tab_visual_data.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/resize_area_delegate.h"
@@ -56,10 +57,10 @@ class MultiContentsView
  public:
   using FocusableViewMap = base::flat_map<std::string, views::View*>;
 
-  struct ViewWidths {
-    double start_width = 0;
-    double resize_width = 0;
-    double end_width = 0;
+  struct ViewSizes {
+    int start = 0;
+    int resize = 0;
+    int end = 0;
   };
 
   static constexpr int kSplitViewContentInset = 8;
@@ -87,10 +88,10 @@ class MultiContentsView
   // Returns true if more than one WebContents is displayed.
   bool IsInSplitView() const;
 
-  // Show the split view without set any WebContents and update the size of
-  // contents views based on `ratio`, this is used to prepare the layout and
-  // prevent a re-layout of WebContents.
-  void ShowSplitView(double ratio);
+  // Show the split view without set any WebContents and update the size and
+  // layout of contents views based on `visual_data`, this is used to prepare
+  // the layout and prevent a re-layout of WebContents.
+  void ShowSplitView(split_tabs::SplitTabVisualData visual_data);
 
   // Preserves the active WebContents and hides the second ContentsContainerView
   // and resize handle.
@@ -106,9 +107,13 @@ class MultiContentsView
   void SetActiveIndex(int index);
   int GetActiveIndex() const { return active_index_; }
 
-  // Updates the size of the contents views based on |ratio|.
-  void UpdateSplitRatio(double ratio);
-  double GetSplitRatio() const { return start_ratio_; }
+  // Updates the size and layout of the contents views based on |visual_data|.
+  void UpdateSplitVisualData(const split_tabs::SplitTabVisualData& visual_data);
+
+  split_tabs::SplitTabLayout GetSplitLayout() const {
+    return visual_data_.split_layout();
+  }
+  double GetSplitRatio() const { return visual_data_.split_ratio(); }
 
   // SplitTabHighlightController::Delegate:
   void SetHighlightActiveContentsView(bool needs_attention) override;
@@ -175,8 +180,8 @@ class MultiContentsView
   void SetSplitViewInsets(gfx::Insets start_contents_view_inset,
                           gfx::Insets end_contents_view_inset);
 
-  void set_min_contents_width_for_testing(int width) {
-    min_contents_width_for_testing_ = std::make_optional(width);
+  void set_min_contents_size_for_testing(int size) {
+    min_contents_size_for_testing_ = std::make_optional(size);
   }
 
   ContentsWebView* start_contents_view_for_testing() const {
@@ -223,9 +228,9 @@ class MultiContentsView
     bool should_show_top = false;
   };
 
-  static constexpr int kMinWebContentsWidth = 200;
-  static constexpr int kConstrainedMinWebContentsWidth = 50;
-  static constexpr double kMinWebContentsWidthPercentage = 0.1;
+  static constexpr int kMinWebContentsSize = 200;
+  static constexpr int kConstrainedMinWebContentsSize = 50;
+  static constexpr double kMinWebContentsSizePercentage = 0.1;
 
   // LayoutDelegate:
   views::ProposedLayout CalculateProposedLayout(
@@ -252,17 +257,16 @@ class MultiContentsView
   void OnReadAnythingOverlayFocused(ContentsContainerView* container,
                                     views::WebView* web_view);
 
-  ViewWidths GetViewWidths(gfx::Rect available_space) const;
+  ViewSizes GetViewSizes(gfx::Rect available_space) const;
 
-  // Clamps to the minimum of kMinWebContentsWidth or
-  // kMinWebContentsWidthPercentage multiplied by the available width. This
+  // Clamps to the minimum of kMinWebContentsSize or
+  // kMinWebContentsSizePercentage multiplied by the available width. This
   // allows for some flexibility when it comes to particularly narrow windows.
-  ViewWidths ClampToMinWidth(gfx::Rect available_space,
-                             ViewWidths widths) const;
+  ViewSizes ClampToMinSize(gfx::Rect available_space, ViewSizes sizes) const;
 
   // Returns the minimum width for a single view within the `MultiContentsView`.
   // Returns 0 if not in a split view.
-  int GetMinViewWidth(gfx::Rect available_space) const;
+  int GetMinViewSize(gfx::Rect available_space) const;
 
   void UpdateContentsBorderAndOverlay();
 
@@ -301,7 +305,7 @@ class MultiContentsView
 
   // Current ratio of |contents_views_|'s first ContentsContainerView's width /
   // overall contents view width.
-  double start_ratio_ = 0.5;
+  split_tabs::SplitTabVisualData visual_data_;
 
   // See `SetTargetContentBounds()`.
   std::optional<TargetContentBounds> target_content_bounds_;
@@ -316,7 +320,7 @@ class MultiContentsView
 
   bool active_contents_view_highlighted_ = false;
 
-  std::optional<int> min_contents_width_for_testing_ = std::nullopt;
+  std::optional<int> min_contents_size_for_testing_ = std::nullopt;
 
   // Width ratios that a split view will snap to when resize is within a
   // snap distance (kSnapDistance).

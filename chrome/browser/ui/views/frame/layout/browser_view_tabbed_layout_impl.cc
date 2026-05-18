@@ -36,6 +36,7 @@
 #include "chrome/browser/ui/views/tabs/projects/layout_constants.h"
 #include "chrome/browser/ui/views/tabs/projects/projects_panel_utils.h"
 #include "chrome/browser/ui/views/tabs/projects/projects_panel_view.h"
+#include "components/split_tabs/split_tab_visual_data.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/gfx/geometry/outsets.h"
 #include "ui/gfx/geometry/size.h"
@@ -967,23 +968,23 @@ BrowserViewTabbedLayoutImpl::CalculateProposedLayout(
         !(is_split_outline_replacing_shadow_or_separator &&
           horizontal_layout.has_side_panel() && !side_panel_leading);
 
-    gfx::Insets start_contents_view_inset;
-    start_contents_view_inset
-        .set_top(include_top_inset ? MultiContentsView::kSplitViewContentInset
-                                   : 0)
-        .set_bottom(MultiContentsView::kSplitViewContentInset)
-        .set_left(include_leading_inset
-                      ? MultiContentsView::kSplitViewContentInset
-                      : 0);
+    gfx::Insets start_contents_view_inset = gfx::Insets::TLBR(
+        include_top_inset ? MultiContentsView::kSplitViewContentInset : 0,
+        include_leading_inset ? MultiContentsView::kSplitViewContentInset : 0,
+        MultiContentsView::kSplitViewContentInset,
+        include_trailing_inset ? MultiContentsView::kSplitViewContentInset : 0);
+    gfx::Insets end_contents_view_inset = start_contents_view_inset;
 
-    gfx::Insets end_contents_view_inset;
-    end_contents_view_inset
-        .set_top(include_top_inset ? MultiContentsView::kSplitViewContentInset
-                                   : 0)
-        .set_bottom(MultiContentsView::kSplitViewContentInset)
-        .set_right(include_trailing_inset
-                       ? MultiContentsView::kSplitViewContentInset
-                       : 0);
+    // Remove the insets on the shared edge between the start and end contents
+    // views.
+    if (views().multi_contents_view->GetSplitLayout() ==
+        split_tabs::SplitTabLayout::kVertical) {
+      start_contents_view_inset.set_right(0);
+      end_contents_view_inset.set_left(0);
+    } else {
+      start_contents_view_inset.set_bottom(0);
+      end_contents_view_inset.set_top(0);
+    }
 
     views().multi_contents_view->SetSplitViewInsets(start_contents_view_inset,
                                                     end_contents_view_inset);

@@ -31,9 +31,11 @@ class SplitViewInteractiveTestMixin : public SplitViewBrowserTestMixin<T> {
   explicit SplitViewInteractiveTestMixin(Args&&... args)
       : SplitViewBrowserTestMixin<T>(std::forward<Args>(args)...) {}
 
-  auto EnterSplitView(int active_tab,
-                      std::optional<int> other_tab = std::nullopt,
-                      double ratio = 0.5) {
+  auto EnterSplitView(
+      int active_tab,
+      std::optional<int> other_tab = std::nullopt,
+      split_tabs::SplitTabLayout layout = split_tabs::SplitTabLayout::kVertical,
+      double ratio = 0.5) {
     // MultiContentsView overrides Layout, causing an edge case where the
     // resize area gets set to visible but doesn't gain nonzero size until the
     // next layout pass. Use PollView and WaitForState to wait for a nonzero
@@ -45,19 +47,17 @@ class SplitViewInteractiveTestMixin : public SplitViewBrowserTestMixin<T> {
 
     auto result = SplitViewBrowserTestMixin<T>::Steps(
         SplitViewBrowserTestMixin<T>::SelectTab(kTabStripElementId, active_tab),
-        SplitViewBrowserTestMixin<T>::Do([&, other_tab, ratio]() {
+        SplitViewBrowserTestMixin<T>::Do([&, other_tab, layout, ratio]() {
           if (other_tab.has_value()) {
-            split_tabs::SplitTabVisualData visual_data;
-            visual_data.set_split_ratio(ratio);
             SplitViewBrowserTestMixin<T>::browser()
                 ->tab_strip_model()
                 ->AddToNewSplit(
-                    {other_tab.value()}, visual_data,
+                    {other_tab.value()},
+                    split_tabs::SplitTabVisualData(layout, ratio),
                     split_tabs::SplitTabCreatedSource::kToolbarButton);
           } else {
             chrome::NewSplitTab(
-                SplitViewBrowserTestMixin<T>::browser(),
-                split_tabs::SplitTabLayout::kVertical,
+                SplitViewBrowserTestMixin<T>::browser(), layout,
                 split_tabs::SplitTabCreatedSource::kToolbarButton);
           }
         }),
