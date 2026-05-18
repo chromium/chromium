@@ -5033,6 +5033,12 @@ const views::View* BrowserView::GetViewByElementId(
 // BrowserView, ui::AcceleratorTarget overrides:
 
 bool BrowserView::AcceleratorPressed(const ui::Accelerator& accelerator) {
+  NativeWebKeyboardEvent native_event(accelerator.ToKeyEvent());
+  if (browser_->GetFeatures().exclusive_access_manager()->HandleUserKeyEvent(
+          native_event)) {
+    return true;
+  }
+
   int command_id;
   // Though AcceleratorManager should not send unknown |accelerator| to us, it's
   // still possible the command cannot be executed now.
@@ -5443,6 +5449,22 @@ void BrowserView::LoadAccelerators() {
     // Also register with the focus manager.
     focus_manager->RegisterAccelerator(
         accelerator, ui::AcceleratorManager::kNormalPriority, this);
+  }
+
+  // Register the Esc accelerators (both press and release) to ensure they are
+  // sent to the ExclusiveAccessManager for press-and-hold fullscreen exit.
+  ui::Accelerator escape_pressed(ui::VKEY_ESCAPE, ui::EF_NONE,
+                                 ui::Accelerator::KeyState::PRESSED);
+  if (accelerator_table_.find(escape_pressed) == accelerator_table_.end()) {
+    focus_manager->RegisterAccelerator(
+        escape_pressed, ui::AcceleratorManager::kNormalPriority, this);
+  }
+
+  ui::Accelerator escape_released(ui::VKEY_ESCAPE, ui::EF_NONE,
+                                  ui::Accelerator::KeyState::RELEASED);
+  if (accelerator_table_.find(escape_released) == accelerator_table_.end()) {
+    focus_manager->RegisterAccelerator(
+        escape_released, ui::AcceleratorManager::kNormalPriority, this);
   }
 }
 

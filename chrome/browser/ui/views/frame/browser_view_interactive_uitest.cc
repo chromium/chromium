@@ -137,6 +137,70 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest, ImmersiveFullscreenViewTreeOrder) {
 }
 #endif
 
+// Test that holding Esc correctly exits fullscreen when focus is on the native
+// browser UI.
+IN_PROC_BROWSER_TEST_F(BrowserViewTest,
+                       PressAndHoldEscExitsFullscreenWithNativeFocus) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
+  ui_test_utils::ToggleFullscreenModeAndWait(browser());
+  ASSERT_TRUE(browser_view()->IsFullscreen());
+  ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(browser()));
+
+  // When fullscreening a window that is displaying the NTP, focus can remain on
+  // the native window container (the RootView) rather than the
+  // RenderWidgetHostView. This prevents the 'Esc' keypress from being handled
+  // by the WebContents delegate and instead causes it to be routed through the
+  // FocusManager's accelerator system (as IDC_CLOSE_FIND_OR_STOP). We use
+  // ProcessAccelerator here to specifically verify that our fix in the native
+  // accelerator path correctly catches this event and triggers the
+  // ExclusiveAccessManager.
+  ui::Accelerator escape_accelerator(ui::VKEY_ESCAPE, ui::EF_NONE);
+  browser_view()->GetFocusManager()->ProcessAccelerator(escape_accelerator);
+
+  // Hold for kHoldEscapeTime plus a buffer to ensure the timer fires, and then
+  // release.
+  base::RunLoop run_loop;
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE, run_loop.QuitClosure(), base::Milliseconds(2000));
+  run_loop.Run();
+  ui::Accelerator escape_released(ui::VKEY_ESCAPE, ui::EF_NONE);
+  escape_released.set_key_state(ui::Accelerator::KeyState::RELEASED);
+  browser_view()->GetFocusManager()->ProcessAccelerator(escape_released);
+
+  ui_test_utils::FullscreenWaiter(
+      browser(), ui_test_utils::FullscreenWaiter::kNoFullscreen)
+      .Wait();
+
+  EXPECT_FALSE(browser_view()->IsFullscreen());
+}
+
+// Test that a quick tap of Esc does NOT exit fullscreen when focus is on the
+// native browser UI. This verifies that the release accelerator correctly
+// stops the fullscreen exit timer.
+IN_PROC_BROWSER_TEST_F(BrowserViewTest,
+                       QuickTapEscDoesNotExitFullscreenWithNativeFocus) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
+  ui_test_utils::ToggleFullscreenModeAndWait(browser());
+  ASSERT_TRUE(browser_view()->IsFullscreen());
+  ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(browser()));
+
+  // Simulate a quick press and release of 'Esc'.
+  ui::Accelerator escape_accelerator(ui::VKEY_ESCAPE, ui::EF_NONE);
+  browser_view()->GetFocusManager()->ProcessAccelerator(escape_accelerator);
+
+  ui::Accelerator escape_released(ui::VKEY_ESCAPE, ui::EF_NONE);
+  escape_released.set_key_state(ui::Accelerator::KeyState::RELEASED);
+  browser_view()->GetFocusManager()->ProcessAccelerator(escape_released);
+
+  // Wait for longer than kHoldEscapeTime (1500ms) to ensure it doesn't exit.
+  base::RunLoop run_loop;
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE, run_loop.QuitClosure(), base::Milliseconds(2000));
+  run_loop.Run();
+
+  EXPECT_TRUE(browser_view()->IsFullscreen());
+}
+
 // Test whether the top view including toolbar and tab strip shows up or hides
 // correctly in browser fullscreen mode.
 IN_PROC_BROWSER_TEST_F(BrowserViewTest, BrowserFullscreenShowTopView) {
