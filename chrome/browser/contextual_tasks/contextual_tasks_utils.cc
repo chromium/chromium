@@ -225,23 +225,28 @@ void SendInjectedInputRemovedUpdate(
   web_ui_interface->PostMessageToWebview(client_to_aim_message);
 }
 
-// static
-std::unique_ptr<ContextualTasksPanelHost> ContextualTasksPanelHost::Create(
-    BrowserWindowInterface* browser_window) {
+bool ShouldShowSidePanel() {
 #if BUILDFLAG(IS_ANDROID)
   bool is_tablet_or_desktop =
       (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET ||
        ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_DESKTOP);
-  bool should_show_bottom_sheet =
-      !is_tablet_or_desktop ||
-      base::FeatureList::IsEnabled(
-          kContextualTasksOverrideShowBottomSheetOnLargeScreen);
+  return is_tablet_or_desktop &&
+         !base::FeatureList::IsEnabled(
+             kContextualTasksOverrideShowBottomSheetOnLargeScreen);
+#else
+  return true;
+#endif
+}
 
-  if (should_show_bottom_sheet) {
-    return std::make_unique<ContextualTasksPanelHostAndroid>(browser_window);
-  } else {
+// static
+std::unique_ptr<ContextualTasksPanelHost> ContextualTasksPanelHost::Create(
+    BrowserWindowInterface* browser_window) {
+#if BUILDFLAG(IS_ANDROID)
+  if (ShouldShowSidePanel()) {
     return std::make_unique<ContextualTasksPanelHostDesktopAndroid>(
         browser_window);
+  } else {
+    return std::make_unique<ContextualTasksPanelHostAndroid>(browser_window);
   }
 #else
   return std::make_unique<ContextualTasksPanelHostDesktop>(

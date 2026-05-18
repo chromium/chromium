@@ -88,6 +88,9 @@ void SendInjectedInputRemovedUpdate(
     ContextualTasksUIInterface* web_ui_interface,
     const std::string& id);
 
+// Returns true if the side panel should be used instead of the bottom sheet.
+bool ShouldShowSidePanel();
+
 }  // namespace contextual_tasks
 
 #endif  // CHROME_BROWSER_CONTEXTUAL_TASKS_CONTEXTUAL_TASKS_UTILS_H_
