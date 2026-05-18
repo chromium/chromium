@@ -685,6 +685,7 @@ WebAppInstallFlowDialogDelegate::Show(
   auto intro_view = WebAppInstallIntroView::Create(
       install_type, icon_image_32, title, start_url,
       dialog_image_info.is_maskable, description, screenshot_fetcher,
+      web_contents,
       base::BindRepeating(
           &WebAppInstallFlowDialogDelegate::OnTextFieldChangedMaybeUpdateButton,
           delegate_weak_ptr));
@@ -724,6 +725,11 @@ WebAppInstallFlowDialogDelegate::Show(
 
   delegate->SetProgressView(progress_view_weak_ptr);
 
+  // For DIY apps, the OK button must be initially disabled if the title
+  // textfield is empty, as the dialog model has not been built yet.
+  bool init_ok_button_enabled = (install_type != InstallDialogType::kDiy) ||
+                                !delegate->text_field_contents_.empty();
+
   auto dialog_model_builder = ui::DialogModel::Builder(std::move(delegate));
   dialog_model_builder.SetInternalName("WebAppInstallFlowDialog")
       .SetAccessibleTitle(
@@ -761,7 +767,8 @@ WebAppInstallFlowDialogDelegate::Show(
                             ? l10n_util::GetStringUTF16(IDS_INSTALL)
                             : l10n_util::GetStringUTF16(
                                   IDS_WEB_APP_INSTALL_FLOW_NEXT))
-              .SetId(WebAppInstallFlowDialogDelegate::kInstallButton))
+              .SetId(WebAppInstallFlowDialogDelegate::kInstallButton)
+              .SetEnabled(init_ok_button_enabled))
       .AddCancelButton(
           base::BindOnce(
               &WebAppInstallFlowDialogDelegate::OnCancelOrCloseClicked,

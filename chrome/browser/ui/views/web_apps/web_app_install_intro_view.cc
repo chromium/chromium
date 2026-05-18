@@ -16,6 +16,7 @@
 #include "chrome/browser/web_applications/web_app_screenshot_fetcher.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/webapps/common/constants.h"
+#include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/display/screen.h"
@@ -336,12 +337,12 @@ std::unique_ptr<WebAppInstallIntroView> WebAppInstallIntroView::Create(
     bool is_maskable,
     const std::u16string& description,
     base::WeakPtr<WebAppScreenshotFetcher> fetcher,
-
+    content::WebContents* web_contents,
     base::RepeatingCallback<void(const std::u16string&)>
         text_tracker_callback) {
   return base::WrapUnique(new WebAppInstallIntroView(
       install_type, icon_image, app_name, start_url, is_maskable, description,
-      fetcher, std::move(text_tracker_callback)));
+      fetcher, web_contents, std::move(text_tracker_callback)));
 }
 
 WebAppInstallIntroView::WebAppInstallIntroView(
@@ -352,6 +353,7 @@ WebAppInstallIntroView::WebAppInstallIntroView(
     bool is_maskable,
     const std::u16string& description,
     base::WeakPtr<WebAppScreenshotFetcher> fetcher,
+    content::WebContents* web_contents,
     base::RepeatingCallback<void(const std::u16string&)>
         text_tracker_callback) {
   int vertical_spacing = views::LayoutProvider::Get()->GetDistanceMetric(
@@ -365,7 +367,7 @@ WebAppInstallIntroView::WebAppInstallIntroView(
       auto site_icon_view = std::make_unique<SiteIconTextAndOriginView>(
           icon_image, app_name,
           l10n_util::GetStringUTF16(IDS_DIY_APP_AX_BUBBLE_NAME_LABEL),
-          start_url, nullptr, std::move(text_tracker_callback));
+          start_url, web_contents, std::move(text_tracker_callback));
       textfield_ = site_icon_view->title_field();
       AddChildView(std::move(site_icon_view));
       break;

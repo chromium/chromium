@@ -15,6 +15,10 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
+namespace content {
+class WebContents;
+}  // namespace content
+
 namespace gfx {
 class ImageSkia;
 }  // namespace gfx
@@ -42,6 +46,7 @@ class WebAppInstallIntroView : public views::View {
       bool is_maskable,
       const std::u16string& description,
       base::WeakPtr<WebAppScreenshotFetcher> fetcher,
+      content::WebContents* web_contents,
       base::RepeatingCallback<void(const std::u16string&)>
           text_tracker_callback);
   ~WebAppInstallIntroView() override;
@@ -56,6 +61,7 @@ class WebAppInstallIntroView : public views::View {
                          bool is_maskable,
                          const std::u16string& description,
                          base::WeakPtr<WebAppScreenshotFetcher> fetcher,
+                         content::WebContents* web_contents,
                          base::RepeatingCallback<void(const std::u16string&)>
                              text_tracker_callback);
 
