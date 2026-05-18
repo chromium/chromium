@@ -696,8 +696,8 @@ class PaymentRequestIframeFeatureParamTest
       const PaymentRequestIframeFeatureParamTest&) = delete;
 
  protected:
-  void PreRunTestOnMainThread() override {
-    InProcessBrowserTest::PreRunTestOnMainThread();
+  void SetUpOnMainThread() override {
+    PaymentRequestBrowserTestBase::SetUpOnMainThread();
 
     test_ukm_recorder_ = std::make_unique<ukm::TestAutoSetUkmRecorder>();
   }
