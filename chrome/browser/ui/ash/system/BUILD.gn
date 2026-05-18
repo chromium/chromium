@@ -93,6 +93,7 @@ source_set("browser_tests") {
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
   sources = [
+    "screen_security_controller_browsertest.cc",
     "system_tray_client_impl_browsertest.cc",
     "system_tray_tray_cast_browsertest_media_router_chromeos.cc",
   ]
@@ -122,6 +123,7 @@ source_set("browser_tests") {
     "//chrome/browser/ui",
     "//chrome/browser/ui/ash/cast_config",
     "//chrome/browser/ui/ash/login",
+    "//chrome/browser/ui/ash/session",
     "//chrome/browser/web_applications",
     "//chrome/common",
     "//chrome/test/media_router/access_code_cast:access_code_cast_integration_base",

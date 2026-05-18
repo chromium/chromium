@@ -44,12 +44,6 @@ class CancelCastingDialog : public views::DialogDelegateView {
   void OnDialogCancelled() { std::move(callback_).Run(false); }
 
   void OnDialogAccepted() {
-    // Stop all screen access and sharing. When notified, all screen access and
-    // sharing sessions will be stopped. Currently, the logic is in
-    // ScreenSecurityNotificationController.
-    Shell::Get()->system_tray_notifier()->NotifyScreenAccessStop();
-    Shell::Get()->system_tray_notifier()->NotifyRemotingScreenShareStop();
-
     std::move(callback_).Run(true);
   }
 
@@ -74,8 +68,26 @@ void ScreenSwitchCheckController::CanSwitchAwayFromActiveUser(
     return;
   }
 
+  auto stop_and_run_callback = base::BindOnce(
+      [](base::OnceCallback<void(bool)> callback, bool accept) {
+        if (accept) {
+          // Stop all screen access and sharing. When notified, all screen
+          // access and sharing sessions will be stopped. Currently, the logic
+          // is in ScreenSecurityNotificationController.
+          Shell::Get()->system_tray_notifier()->NotifyScreenAccessStop();
+          Shell::Get()->system_tray_notifier()->NotifyRemotingScreenShareStop();
+        }
+        std::move(callback).Run(accept);
+      },
+      std::move(callback));
+
+  if (skip_cancel_dialog_for_testing_) {
+    std::move(stop_and_run_callback).Run(true);
+    return;
+  }
+
   views::DialogDelegate::CreateDialogWidget(
-      new CancelCastingDialog(std::move(callback)),
+      new CancelCastingDialog(std::move(stop_and_run_callback)),
       Shell::GetPrimaryRootWindow(), nullptr)
       ->Show();
 }

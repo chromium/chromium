@@ -21,6 +21,10 @@ class ScreenSwitchCheckController : public ScreenSecurityObserver {
 
   ~ScreenSwitchCheckController() override;
 
+  void set_skip_cancel_dialog_for_testing(bool skip) {
+    skip_cancel_dialog_for_testing_ = skip;
+  }
+
   // Determines if it's ok to switch away from the currently active user. Screen
   // casting may block this (or at least throw up a confirmation dialog). Calls
   // |callback| with the result.
@@ -37,6 +41,7 @@ class ScreenSwitchCheckController : public ScreenSecurityObserver {
 
   bool is_screen_accessed_ = false;
   bool is_remoting_share_ = false;
+  bool skip_cancel_dialog_for_testing_ = false;
 };
 
 }  // namespace ash
