@@ -225,7 +225,7 @@ cargo_crate("alloc") {
   cpp_api_from_rust = {
     target_name = "alloc_bindings"
     cpp_namespace = "rs::alloc"
-    deps = []
+    deps = [ ":core_bindings" ]
   }
 
   # Unit tests skipped. Generate with --with-tests to include them.
@@ -549,7 +549,8 @@ cargo_crate("compiler_builtins") {
   build_sources = [ "//third_party/rust-toolchain/lib/rustlib/src/rust/library/compiler-builtins/compiler-builtins/build.rs" ]
   build_script_inputs = [ "//third_party/rust-toolchain/lib/rustlib/src/rust/library/compiler-builtins/compiler-builtins/src/../configure.rs" ]
 
-  # TODO(crbug.com/507831026): Remove this and always use the new path next time we roll rust.
+  # TODO(crbug.com/507831026): Remove this and always use the new path next time
+  # we roll rust.
   if (rust_force_head_revision) {
     build_script_inputs -= [ "//third_party/rust-toolchain/lib/rustlib/src/rust/library/compiler-builtins/compiler-builtins/src/../configure.rs" ]
     build_script_inputs += [ "//third_party/rust-toolchain/lib/rustlib/src/rust/library/compiler-builtins/compiler-builtins/src/../../libm/configure.rs" ]
@@ -1051,7 +1052,7 @@ cargo_crate("core") {
   cpp_api_from_rust = {
     target_name = "core_bindings"
     cpp_namespace = "rs::core"
-    deps = [ ":alloc_bindings" ]
+    deps = []
   }
 
   # Unit tests skipped. Generate with --with-tests to include them.

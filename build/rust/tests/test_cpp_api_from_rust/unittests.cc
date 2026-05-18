@@ -2,10 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// TODO(b/478033303): Remove `#include <string.h>` when Crubit-generated code
-// is fixed to include all the internally-required includes.
-#include <string.h>
-
+#include "build/rust/std/rules/alloc.h"
 #include "build/rust/tests/test_cpp_api_from_rust/rust_lib.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/rust-toolchain/lib/crubit/support/rs_std/char.h"
@@ -26,6 +23,12 @@ TEST(RustCcBindingsFromRs, TestChar) {
 TEST(RustCcBindingsFromRs, TransitiveDep) {
   auto multiplier = rust_lib::create_multiplier(5);
   EXPECT_EQ(30, multiplier.mul(6));
+}
+
+TEST(RustCcBindingsFromRs, DirectOnAlloc) {
+  // Silly test to just check if the type is present in the generated bindings.
+  rs::alloc::alloc::Layout* layout_ptr = nullptr;
+  std::ignore = layout_ptr;
 }
 
 TEST(RustCcBindingsFromRs, TransitiveOnStandardLibrary) {
