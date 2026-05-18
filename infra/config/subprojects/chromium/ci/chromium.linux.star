@@ -763,7 +763,7 @@ ci.thin_tester(
                 # crbug.com/1508286
                 # crbug.com/404871436
                 swarming = targets.swarming(
-                    shards = 60,
+                    shards = 70,
                 ),
             ),
             "content_browsertests": targets.mixin(
@@ -809,7 +809,7 @@ ci.thin_tester(
             ),
             "sync_integration_tests": targets.mixin(
                 swarming = targets.swarming(
-                    shards = 6,
+                    shards = 8,
                 ),
             ),
             "telemetry_perf_unittests": targets.mixin(
