@@ -16,6 +16,7 @@
 #import "ios/chrome/browser/omnibox/model/fake_omnibox_client.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_autocomplete_controller.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_text_model.h"
+#import "ios/chrome/browser/omnibox/ui/omnibox_text_input.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/model/prefs/browser_prefs.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
@@ -26,6 +27,8 @@
 #import "testing/gmock/include/gmock/gmock.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
+#import "third_party/ocmock/OCMock/OCMock.h"
+#import "third_party/ocmock/gtest_support.h"
 
 // Mocking the text controller to not rely on the textfield view.
 @interface TestOmniboxTextController : OmniboxTextController
@@ -123,9 +126,9 @@ class OmniboxTextControllerTest : public PlatformTest {
     omnibox_text_controller_ = nil;
     [omnibox_autocomplete_controller_ disconnect];
     omnibox_autocomplete_controller_ = nil;
+    omnibox_text_model_.reset();
     autocomplete_classifier_override_->Shutdown();
     autocomplete_controller_.reset();
-    omnibox_text_model_.reset();
     omnibox_client_.reset();
     profile_.reset();
     TestingApplicationContext::GetGlobal()->SetLocalState(nullptr);
@@ -295,4 +298,33 @@ TEST_F(OmniboxTextControllerTest, OnCopyAfterDisconnect) {
   [omnibox_text_controller_ disconnect];
   [omnibox_text_controller_ onCopy];
   // The test passes if it doesn't crash.
+}
+
+TEST_F(OmniboxTextControllerTest, RefineWithTextSanitizesJavaScript) {
+  id textInputMock = OCMProtocolMock(@protocol(OmniboxTextInput));
+  OCMStub([textInputMock exitPreEditState]);
+  OCMStub([textInputMock view]).andReturn([[UIView alloc] init]);
+  OCMStub([textInputMock omniboxTextInputDelegate]).andReturn(nil);
+
+  __block NSString* textValue = @"";
+  OCMStub([textInputMock setText:[OCMArg any]])
+      .andDo(^(NSInvocation* invocation) {
+        void* arg;
+        [invocation getArgument:&arg atIndex:2];
+        textValue = (__bridge NSString*)arg;
+      });
+  OCMStub([textInputMock text]).andDo(^(NSInvocation* invocation) {
+    [invocation setReturnValue:&textValue];
+  });
+
+  omnibox_text_controller_.textInput = textInputMock;
+
+  [omnibox_text_controller_ refineWithText:u"https://example.com"];
+  EXPECT_EQ(u"https://example.com", [omnibox_text_controller_ displayedText]);
+
+  [omnibox_text_controller_ refineWithText:u"javascript:alert(1)"];
+  EXPECT_EQ(u"alert(1)", [omnibox_text_controller_ displayedText]);
+
+  [omnibox_text_controller_ refineWithText:u"java\x0d\x0ascript:alert(2)"];
+  EXPECT_EQ(u"alert(2)", [omnibox_text_controller_ displayedText]);
 }

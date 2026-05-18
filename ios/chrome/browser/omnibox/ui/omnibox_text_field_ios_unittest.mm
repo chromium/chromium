@@ -12,6 +12,7 @@
 #import "base/test/allow_check_is_test_for_testing.h"
 #import "base/test/task_environment.h"
 #import "ios/chrome/browser/omnibox/public/omnibox_presentation_context.h"
+#import "ios/chrome/browser/omnibox/ui/omnibox_text_field_paste_delegate.h"
 #import "ios/chrome/browser/omnibox/ui/omnibox_text_input_delegate.h"
 #import "ios/chrome/browser/shared/model/paths/paths.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
@@ -239,3 +240,51 @@ TEST_F(OmniboxTextFieldIOSTest, TextValueForTestingWithBoth) {
 }
 
 }  // namespace
+
+@interface OmniboxTextFieldPasteDelegate (Testing)
+@property(nonatomic, strong) NSURL* URL;
+@end
+
+TEST_F(OmniboxTextFieldIOSTest, PasteDelegateSanitizesDragAndDrop) {
+  OmniboxTextFieldPasteDelegate* delegate =
+      [[OmniboxTextFieldPasteDelegate alloc] init];
+  delegate.textInput = textfield_;
+
+  UITextRange* range = OCMClassMock([UITextRange class]);
+
+  // 1. Test standard string drop (without javascript scheme)
+  NSAttributedString* item1 =
+      [[NSAttributedString alloc] initWithString:@"https://example.com"];
+  NSAttributedString* result1 =
+      [delegate textPasteConfigurationSupporting:textfield_
+                    combineItemAttributedStrings:@[ item1 ]
+                                        forRange:range];
+  EXPECT_NSEQ(@"https://example.com", result1.string);
+
+  // 2. Test malicious javascript scheme drop
+  NSAttributedString* item2 =
+      [[NSAttributedString alloc] initWithString:@"javascript:alert(1)"];
+  NSAttributedString* result2 =
+      [delegate textPasteConfigurationSupporting:textfield_
+                    combineItemAttributedStrings:@[ item2 ]
+                                        forRange:range];
+  EXPECT_NSEQ(@"alert(1)", result2.string);
+
+  // 3. Test nested/broken javascript scheme drops
+  NSAttributedString* item3 = [[NSAttributedString alloc]
+      initWithString:@"java\x0d\x0ascript:alert(0)"];
+  NSAttributedString* result3 =
+      [delegate textPasteConfigurationSupporting:textfield_
+                    combineItemAttributedStrings:@[ item3 ]
+                                        forRange:range];
+  EXPECT_NSEQ(@"alert(0)", result3.string);
+
+  // 4. Test cached URL sanitization
+  delegate.URL = [NSURL URLWithString:@"javascript:alert(2)"];
+  NSAttributedString* result4 =
+      [delegate textPasteConfigurationSupporting:textfield_
+                    combineItemAttributedStrings:@[]
+                                        forRange:range];
+  EXPECT_NSEQ(@"alert(2)", result4.string);
+  EXPECT_EQ(nil, delegate.URL);
+}

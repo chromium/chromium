@@ -5,6 +5,8 @@
 #import "ios/chrome/browser/omnibox/ui/omnibox_text_field_paste_delegate.h"
 
 #import "base/apple/foundation_util.h"
+#import "base/strings/sys_string_conversions.h"
+#import "components/omnibox/browser/omnibox_text_util.h"
 #import "ios/chrome/browser/omnibox/ui/omnibox_text_input.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 
@@ -55,14 +57,20 @@
   if (self.URL) {
     NSString* URLString = [self.URL absoluteString];
     self.URL = nil;
-    return [[NSAttributedString alloc] initWithString:URLString
-                                           attributes:attributes];
+    std::u16string sanitized =
+        omnibox::SanitizeTextForPaste(base::SysNSStringToUTF16(URLString));
+    return [[NSAttributedString alloc]
+        initWithString:base::SysUTF16ToNSString(sanitized)
+            attributes:attributes];
   } else {
     // Return only one item string to avoid repetition, for example when there
     // are both a URL and a string in the pasteboard.
     NSString* string = [itemStrings firstObject].string ?: @"";
-    return [[NSAttributedString alloc] initWithString:string
-                                           attributes:attributes];
+    std::u16string sanitized =
+        omnibox::SanitizeTextForPaste(base::SysNSStringToUTF16(string));
+    return [[NSAttributedString alloc]
+        initWithString:base::SysUTF16ToNSString(sanitized)
+            attributes:attributes];
   }
 }
 
