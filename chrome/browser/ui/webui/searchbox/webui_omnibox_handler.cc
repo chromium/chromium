@@ -150,7 +150,10 @@ WebuiOmniboxHandler::WebuiOmniboxHandler(
   // This handles the case where results are generated before the remote is
   // bound and the handler is created and starts observing the
   // AutocompleteController.
-  OnResultChanged(controller_->autocomplete_controller(), false);
+  if (base::FeatureList::IsEnabled(
+          omnibox::kOmniboxWebUIPopupStabilizeStartupShow)) {
+    OnResultChanged(controller_->autocomplete_controller(), false);
+  }
 }
 
 WebuiOmniboxHandler::~WebuiOmniboxHandler() = default;

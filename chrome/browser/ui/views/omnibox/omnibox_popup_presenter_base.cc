@@ -132,6 +132,11 @@ void OmniboxPopupPresenterBase::OnVisualStateReady(
 
 void OmniboxPopupPresenterBase::ShowWidget(base::TimeTicks show_request_time) {
   widget_->ShowInactive();
+  // If the derived class requests hiding for the initial layout pass, make the
+  // widget transparent until we receive a valid content height.
+  if (ShouldHideForInitialLayout() && content_height_ == 1) {
+    widget_->SetOpacity(0.0f);
+  }
   widget_->GetCompositor()->RequestPresentationTimeForNextFrame(base::BindOnce(
       [](std::string uma_metric, base::TimeTicks show_request_time,
          const gfx::PresentationFeedback& feedback) {
@@ -222,6 +227,10 @@ bool OmniboxPopupPresenterBase::IsShown() const {
 
 void OmniboxPopupPresenterBase::OnContentHeightChanged(int content_height) {
   content_height_ = content_height;
+  // Restore opacity once we receive a valid content height.
+  if (ShouldHideForInitialLayout() && content_height_ > 1 && widget_) {
+    widget_->SetOpacity(1.0f);
+  }
   SynchronizePopupBounds();
 }
 
@@ -332,6 +341,10 @@ bool OmniboxPopupPresenterBase::ShouldShowLocationBarCutout() const {
 
 bool OmniboxPopupPresenterBase::ShouldReceiveFocus() const {
   return true;
+}
+
+bool OmniboxPopupPresenterBase::ShouldHideForInitialLayout() const {
+  return false;
 }
 
 void OmniboxPopupPresenterBase::OnWidgetClosed(

@@ -69,6 +69,7 @@ inline constexpr base::FeatureParam<int>
     kOmniboxWebUIDeferShowUntilVisualStateReadyTimeoutMs{
         &kOmniboxWebUIDeferShowUntilVisualStateReady,
         "omnibox_webui_defer_show_until_visual_state_ready_timeout_ms", 250};
+BASE_DECLARE_FEATURE(kOmniboxWebUIPopupStabilizeStartupShow);
 BASE_DECLARE_FEATURE(kOmniboxAimDetachWebContentsOnHide);
 BASE_DECLARE_FEATURE(kOmniboxWebUIDetachWebContentsOnHide);
 BASE_DECLARE_FEATURE(kOmniboxWebUIPopupMarkAsHidden);

@@ -131,6 +131,10 @@ class OmniboxPopupPresenterBase : public content::WebContentsObserver,
   // Returns whether the WebUI content view receive focus.
   virtual bool ShouldReceiveFocus() const;
 
+  // Returns true if the popup widget should start transparent to allow the
+  // initial layout pass to complete without visual artifacts.
+  virtual bool ShouldHideForInitialLayout() const;
+
   LocationBar* location_bar() const { return location_bar_.get(); }
 
   views::Widget* GetWidget() const { return widget_.get(); }
