@@ -23375,6 +23375,10 @@ Called by update_net_error_codes.py.-->
   <int value="55" label="Prefetch Evicted: BrowsingData Removed">
     The prefetch was evicted because a user removed browsing data.
   </int>
+  <int value="56" label="PrefetchCancelledOnUserNavigation">
+    The prefetch canceled to prevent network congestion with user-initiated
+    navigation.
+  </int>
 </enum>
 
 <enum name="PrefetchRedirectNetworkContextTransition">

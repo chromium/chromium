@@ -2709,6 +2709,21 @@
     "expires": "Jan 1, 2027"
   },
   {
+    "prefix": "prefetch-cancel-unrelated-prefetch",
+    "platforms": [
+      "Linux"
+    ],
+    "bases": ["external/wpt/speculation-rules", "http/tests/inspector-protocol"],
+    "exclusive_tests": [],
+    "args": [
+      "--enable-features=PrefetchCancelUnrelatedPrefetch"
+    ],
+    "owners": [
+      "kenoss@chromium.org"
+    ],
+    "expires": "Jan 1, 2027"
+  },
+  {
     "prefix": "presentation",
     "owners": [
       "mfoltz@chromium.org",

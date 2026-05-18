@@ -2,15 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/location.h"
 #include "base/memory/weak_ptr.h"
+#include "base/run_loop.h"
 #include "base/synchronization/lock.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/thread_annotations.h"
+#include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
 #include "content/browser/back_forward_cache_test_util.h"
+#include "content/browser/browser_context_impl.h"
 #include "content/browser/preloading/prefetch/pre_prefetch_service_impl.h"
 #include "content/browser/preloading/prefetch/prefetch_document_manager.h"
+#include "content/browser/preloading/prefetch/prefetch_features.h"
 #include "content/browser/preloading/prefetch/prefetch_service.h"
 #include "content/browser/preloading/preloading.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
@@ -19,6 +25,7 @@
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/pre_prefetch_handle.h"
 #include "content/public/browser/pre_prefetch_service.h"
+#include "content/public/browser/prerender_handle.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/common/content_features.h"
@@ -28,6 +35,7 @@
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/prefetch_test_util.h"
 #include "content/public/test/preloading_test_util.h"
+#include "content/public/test/prerender_test_util.h"
 #include "content/public/test/test_frame_navigation_observer.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/shell/browser/shell.h"
@@ -46,7 +54,12 @@ using net::test_server::ControllableHttpResponse;
 class NavPrefetchBrowserTest : public ContentBrowserTest,
                                public BackForwardCacheMetricsTestMatcher {
  public:
-  NavPrefetchBrowserTest() {
+  NavPrefetchBrowserTest()
+      : prerender_helper_(test::PrerenderTestHelper(base::BindRepeating(
+            [](NavPrefetchBrowserTest* that) {
+              return that->shell()->web_contents();
+            },
+            base::Unretained(this)))) {
     feature_list_.InitAndEnableFeature(
         features::kPreloadingRespectUserAgentOverride);
   }
@@ -152,12 +165,33 @@ class NavPrefetchBrowserTest : public ContentBrowserTest,
     return *attempt_ukm_entry_builder_;
   }
 
+  WebContentsImpl& web_contents() {
+    return static_cast<WebContentsImpl&>(*shell()->web_contents());
+  }
+
+  BrowserContextImpl& browser_context() {
+    return *BrowserContextImpl::From(web_contents().GetBrowserContext());
+  }
+
+  RenderFrameHostImpl& render_frame_host_impl() {
+    RenderFrameHost& rfh = *web_contents().GetPrimaryMainFrame();
+    return static_cast<RenderFrameHostImpl&>(rfh);
+  }
+
+  PrefetchService& prefetch_service() {
+    return *browser_context().GetPrefetchService();
+  }
+
+  test::PrerenderTestHelper& prerender_helper() { return prerender_helper_; }
+
  protected:
   GURL GetUrl(const std::string& host, const std::string& path) const {
     return ssl_server_.GetURL(host, path);
   }
 
  private:
+  test::PrerenderTestHelper prerender_helper_;
+
   base::test::ScopedFeatureList feature_list_;
   base::ScopedMockElapsedTimersForTest test_timer_;
 
@@ -773,6 +807,339 @@ IN_PROC_BROWSER_TEST_F(PrePrefetchBrowserTest, PrePrefetchConsumption) {
   // is still equal to 1, which means that the PrePrefetch request was served.
   EXPECT_TRUE(test_prefetch_watcher.PrefetchUsedInLastNavigation());
   EXPECT_EQ(GetRequestCount(prefetch_url), 1);
+}
+
+// `StartPrefetch()` triggers prefetch by calling
+// `PrefetchDocumentManager::ProcessCandidates()` directly, and allows
+// triggering only one prefetch. So, we can't write a test of the following
+// scenario:
+//
+// ```
+// Tests that a navigation cancels unrelated not servable prefetch among
+// multiple prefetches.
+//
+// Scenario:
+//
+// - Start prefetches for URL `url_navigated`, `url_unrelated_servable`,
+//   `url_unrelated_not_servable`.
+// - Start navigation for URL `url_navigated`.
+//   - It only cancels prefetch for `url_unrelated_not_servable`.
+// ```
+//
+// TODO(crbug.com/502629255): Resolve the limitation and add it.
+class NavPrefetchBrowserTest_CancelUnrelatedPrefetchEnabled
+    : public NavPrefetchBrowserTest {
+ public:
+  NavPrefetchBrowserTest_CancelUnrelatedPrefetchEnabled() {
+    feature_list_.InitAndEnableFeature(
+        features::kPrefetchCancelUnrelatedPrefetch);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Tests that a navigation cancels unrelated not servable prefetch.
+//
+// Scenario:
+//
+// - Start prefetch A for URL `url_cancelled`.
+// - Start navigation for URL `url_navigated`.
+//   - It cancels A as it is not servable yet.
+IN_PROC_BROWSER_TEST_F(NavPrefetchBrowserTest_CancelUnrelatedPrefetchEnabled,
+                       NavigationCancellsUnrelatedNotServablePrefetch) {
+  ControllableHttpResponse response_cancelled(embedded_test_server(),
+                                              "/title1.html?cancelled=1");
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  GURL url_navigated =
+      embedded_test_server()->GetURL("/title1.html?navigated=1");
+  GURL url_cancelled =
+      embedded_test_server()->GetURL("/title1.html?cancelled=1");
+
+  auto& rfhi = render_frame_host_impl();
+
+  ASSERT_TRUE(
+      NavigateToURL(shell(), embedded_test_server()->GetURL("/empty.html")));
+
+  StartPrefetch(url_cancelled);
+
+  TestFrameNavigationObserver nav_observer(&rfhi);
+  ASSERT_TRUE(BeginNavigateToURLFromRenderer(&rfhi, url_navigated));
+  nav_observer.Wait();
+  ASSERT_EQ(nav_observer.last_committed_url(), url_navigated);
+  ASSERT_TRUE(nav_observer.last_navigation_succeeded());
+
+  // The navigation cancelled A.
+  PrefetchKey key(rfhi.GetDocumentToken(), url_cancelled);
+  const auto* prefetch_container =
+      prefetch_service().GetPrefetchContainerForTesting(key);
+  ASSERT_FALSE(prefetch_container);
+  histogram_tester().ExpectUniqueSample(
+      "Preloading.Prefetch.PrefetchStatus",
+      PrefetchStatus::kPrefetchCancelledOnUserNavigation, 1);
+}
+
+// Tests that a navigation doesn't cancel unrelated servable prefetch.
+//
+// Scenario:
+//
+// - Start prefetch A for URL `url_not_cancelled`.
+// - Response for A completed. A is servable now.
+// - Start navigation for URL `url_navigated`.
+//   - It doesn't cancel A as it is servable.
+IN_PROC_BROWSER_TEST_F(NavPrefetchBrowserTest_CancelUnrelatedPrefetchEnabled,
+                       NavigationDoesntCancelUnrelatedServablePrefetch) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  GURL url_navigated =
+      embedded_test_server()->GetURL("/title1.html?navigated=1");
+  GURL url_not_cancelled =
+      embedded_test_server()->GetURL("/title1.html?notCancelled=1");
+
+  auto& rfhi = render_frame_host_impl();
+
+  ASSERT_TRUE(
+      NavigateToURL(shell(), embedded_test_server()->GetURL("/empty.html")));
+
+  {
+    test::TestPrefetchWatcher watcher;
+    StartPrefetch(url_not_cancelled);
+    watcher.WaitUntilPrefetchResponseCompleted(rfhi.GetDocumentToken(),
+                                               url_not_cancelled);
+  }
+
+  TestFrameNavigationObserver nav_observer(&rfhi);
+  ASSERT_TRUE(BeginNavigateToURLFromRenderer(&rfhi, url_navigated));
+  nav_observer.Wait();
+  ASSERT_EQ(nav_observer.last_committed_url(), url_navigated);
+  ASSERT_TRUE(nav_observer.last_navigation_succeeded());
+
+  // The navigation didn't cancel A.
+  PrefetchKey key(rfhi.GetDocumentToken(), url_not_cancelled);
+  const auto* prefetch_container =
+      prefetch_service().GetPrefetchContainerForTesting(key);
+  ASSERT_TRUE(prefetch_container);
+  ASSERT_EQ(prefetch_container->GetMatchResolverAction().ToServableState(),
+            PrefetchServableState::kServable);
+}
+
+// Tests that a navigation doesn't cancel related prefetch.
+//
+// Scenario:
+//
+// - Start prefetch A for URL `url_navigated`.
+// - Start navigation for URL `url_navigated`.
+//   - It doesn't cancel A as it is related.
+IN_PROC_BROWSER_TEST_F(NavPrefetchBrowserTest_CancelUnrelatedPrefetchEnabled,
+                       NavigationDoesntCancelRelatedPrefetch) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  GURL url_navigated =
+      embedded_test_server()->GetURL("/title1.html?navigated=1");
+
+  auto& rfhi = render_frame_host_impl();
+
+  ASSERT_TRUE(
+      NavigateToURL(shell(), embedded_test_server()->GetURL("/empty.html")));
+
+  StartPrefetch(url_navigated);
+
+  TestFrameNavigationObserver nav_observer(&rfhi);
+  ASSERT_TRUE(BeginNavigateToURLFromRenderer(&rfhi, url_navigated));
+  nav_observer.Wait();
+  ASSERT_EQ(nav_observer.last_committed_url(), url_navigated);
+  ASSERT_TRUE(nav_observer.last_navigation_succeeded());
+
+  // The navigation didn't cancel A.
+  PrefetchKey key(rfhi.GetDocumentToken(), url_navigated);
+  const auto* prefetch_container =
+      prefetch_service().GetPrefetchContainerForTesting(key);
+  ASSERT_TRUE(prefetch_container);
+  ASSERT_EQ(prefetch_container->GetMatchResolverAction().ToServableState(),
+            PrefetchServableState::kServable);
+
+  // The navigation used A.
+  histogram_tester().ExpectTotalCount(
+      "Prefetch.BlockUntilHeadDuration.PerMatchingCandidate.NonPrerender."
+      "Served.SpeculationRule_Immediate2",
+      1);
+}
+
+// Tests that a prerender doesn't cancel prefetch.
+//
+// Scenario:
+//
+// - Start prefetch A for URL `url_not_cancelled`.
+// - Start prerender for URL `url_navigated`.
+//   - It doesn't cancel A as it is prerender.
+IN_PROC_BROWSER_TEST_F(NavPrefetchBrowserTest_CancelUnrelatedPrefetchEnabled,
+                       PrerenderDoesntCancelPrefetch) {
+  ControllableHttpResponse response_not_cancelled(
+      embedded_test_server(), "/title1.html?notCancelled=1");
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  GURL url_prerendered =
+      embedded_test_server()->GetURL("/title1.html?prerendered=1");
+  GURL url_not_cancelled =
+      embedded_test_server()->GetURL("/title1.html?notCancelled=1");
+
+  auto& rfhi = render_frame_host_impl();
+
+  ASSERT_TRUE(
+      NavigateToURL(shell(), embedded_test_server()->GetURL("/empty.html")));
+
+  test::TestPrefetchWatcher watcher;
+  StartPrefetch(url_not_cancelled);
+
+  // Note that
+  //
+  // - `StartPrefetch()` triggers prefetch by calling
+  //   `PrefetchDocumentManager::ProcessCandidates()` directly.
+  // - `PrerenderTestHelper::AddPrerender()` triggers prerender by
+  //   adding SpeculationRules via JS.
+  //
+  // So, `PrerenderTestHelper::AddPrerender()` cancels prefetch and we can't use
+  // it. So, we use an embedder trigger instead.
+  //
+  // TODO(crbug.com/502629255): Use SpeculationRules trigger.
+  std::unique_ptr<PrerenderHandle> handle =
+      prerender_helper().AddEmbedderTriggeredPrerenderAsync(
+          url_prerendered, PreloadingTriggerType::kEmbedder, "TestTrigger",
+          ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
+                                    ui::PAGE_TRANSITION_FROM_ADDRESS_BAR));
+  ASSERT_TRUE(handle);
+  prerender_helper().WaitForPrerenderLoadCompletion(url_prerendered);
+
+  response_not_cancelled.WaitForRequest();
+  response_not_cancelled.Send(net::HTTP_OK);
+  response_not_cancelled.Done();
+  watcher.WaitUntilPrefetchResponseCompleted(rfhi.GetDocumentToken(),
+                                             url_not_cancelled);
+
+  // The navigation didn't cancel A.
+  PrefetchKey key(rfhi.GetDocumentToken(), url_not_cancelled);
+  const auto* prefetch_container =
+      prefetch_service().GetPrefetchContainerForTesting(key);
+  ASSERT_TRUE(prefetch_container);
+  ASSERT_EQ(prefetch_container->GetMatchResolverAction().ToServableState(),
+            PrefetchServableState::kServable);
+}
+
+// Tests that a navigation with redirect cancels prefetch for the redirected URL
+// not servable yet.
+//
+// Unfortunately, it is unavoidable as there is no way to tell `url_redirect_to`
+// will be used by `url_redirect_from`.
+//
+// Scenario:
+//
+// - Start prefetch A for URL `url_redirect_to`.
+// - Start navigation for URL `url_redirect_from`, which redirects to
+//   `url_redirect_to`.
+//   - It cancels A as it is not servable yet.
+IN_PROC_BROWSER_TEST_F(NavPrefetchBrowserTest_CancelUnrelatedPrefetchEnabled,
+                       NavigationWithRedirectCancelPrefetchForRedirect) {
+  ControllableHttpResponse response_cancelled(embedded_test_server(),
+                                              "/title1.html?cancelled=1");
+  embedded_test_server()->RegisterRequestHandler(base::BindRepeating(
+      [](const net::test_server::HttpRequest& request)
+          -> std::unique_ptr<net::test_server::HttpResponse> {
+        if (request.relative_url == "/redirect.html") {
+          auto response =
+              std::make_unique<net::test_server::BasicHttpResponse>();
+          response->set_code(net::HTTP_MOVED_PERMANENTLY);
+          response->AddCustomHeader("Location", "/title1.html?cancelled=1");
+          return response;
+        }
+        return nullptr;
+      }));
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  GURL url_redirect_from = embedded_test_server()->GetURL("/redirect.html");
+  GURL url_redirect_to =
+      embedded_test_server()->GetURL("/title1.html?cancelled=1");
+
+  auto& rfhi = render_frame_host_impl();
+
+  ASSERT_TRUE(
+      NavigateToURL(shell(), embedded_test_server()->GetURL("/empty.html")));
+
+  {
+    StartPrefetch(url_redirect_to);
+
+    // Wait a sec to ensure the `PrefetchContainer` is started, to prevent
+    // flakiness due to the navigation below hits the controlled response.
+    base::RunLoop run_loop;
+    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE, run_loop.QuitClosure(), base::Seconds(1));
+    run_loop.Run();
+  }
+
+  TestFrameNavigationObserver nav_observer(&rfhi);
+  ASSERT_TRUE(BeginNavigateToURLFromRenderer(&rfhi, url_redirect_from));
+  nav_observer.Wait();
+  ASSERT_EQ(nav_observer.last_committed_url(), url_redirect_to);
+  ASSERT_TRUE(nav_observer.last_navigation_succeeded());
+
+  // The navigation cancelled A.
+  PrefetchKey key(rfhi.GetDocumentToken(), url_redirect_to);
+  const auto* prefetch_container =
+      prefetch_service().GetPrefetchContainerForTesting(key);
+  ASSERT_FALSE(prefetch_container);
+  histogram_tester().ExpectUniqueSample(
+      "Preloading.Prefetch.PrefetchStatus",
+      PrefetchStatus::kPrefetchCancelledOnUserNavigation, 1);
+}
+
+// Tests that a subframe navigation doesn't cancel prefetch.
+//
+// Scenario:
+//
+// - Start prefetch A for URL `url_not_cancelled`.
+// - Start subframe navigation for URL `url_subframe`.
+//   - It doesn't cancel A as it is subframe loading.
+IN_PROC_BROWSER_TEST_F(NavPrefetchBrowserTest_CancelUnrelatedPrefetchEnabled,
+                       SubframeNavigationDoesntCancelPrefetch) {
+  ControllableHttpResponse response_not_cancelled(
+      embedded_test_server(), "/title1.html?notCancelled=1");
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  GURL url_subframe = embedded_test_server()->GetURL("/title1.html?subframe=1");
+  GURL url_not_cancelled =
+      embedded_test_server()->GetURL("/title1.html?notCancelled=1");
+
+  auto& rfhi = render_frame_host_impl();
+
+  GURL main_document_url =
+      embedded_test_server()->GetURL("/page_with_blank_iframe.html");
+  ASSERT_TRUE(NavigateToURL(shell(), main_document_url));
+
+  test::TestPrefetchWatcher watcher;
+  StartPrefetch(url_not_cancelled);
+
+  RenderFrameHost* subframe =
+      ChildFrameAt(shell()->web_contents()->GetPrimaryMainFrame(), 0);
+  ASSERT_TRUE(subframe);
+  TestFrameNavigationObserver nav_observer(subframe);
+  ASSERT_TRUE(BeginNavigateToURLFromRenderer(subframe, url_subframe));
+  nav_observer.Wait();
+  ASSERT_EQ(nav_observer.last_committed_url(), url_subframe);
+  ASSERT_TRUE(nav_observer.last_navigation_succeeded());
+
+  response_not_cancelled.WaitForRequest();
+  response_not_cancelled.Send(net::HTTP_OK);
+  response_not_cancelled.Done();
+  watcher.WaitUntilPrefetchResponseCompleted(rfhi.GetDocumentToken(),
+                                             url_not_cancelled);
+
+  // The navigation didn't cancel A.
+  PrefetchKey key(rfhi.GetDocumentToken(), url_not_cancelled);
+  const auto* prefetch_container =
+      prefetch_service().GetPrefetchContainerForTesting(key);
+  ASSERT_TRUE(prefetch_container);
+  ASSERT_EQ(prefetch_container->GetMatchResolverAction().ToServableState(),
+            PrefetchServableState::kServable);
 }
 
 }  // namespace
