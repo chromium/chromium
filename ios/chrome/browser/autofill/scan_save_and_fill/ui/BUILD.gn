@@ -73,6 +73,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/ui/table_view:test_support",
     "//ios/chrome/browser/shared/ui/table_view/cells",
+    "//ios/chrome/common/ui/util",
     "//testing/gtest",
     "//third_party/ocmock",
   ]

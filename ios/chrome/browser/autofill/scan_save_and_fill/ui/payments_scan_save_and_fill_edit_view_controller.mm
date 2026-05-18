@@ -36,8 +36,6 @@ namespace {
 // Constant for section 0.
 const NSInteger kSectionIdentifierEnumZero = 0;
 
-// Point size for the lock symbol in confirmation state.
-const CGFloat kLockSymbolPointSize = 18.0;
 
 // Identifiers for sections in the table view.
 typedef NS_ENUM(NSInteger, SectionIdentifier) {
@@ -388,10 +386,7 @@ NSString* const kDateSeparator = @"/";
 - (void)showConfirmationState {
   _saveButton.enabled = NO;
   _saveButton.title = nil;
-  UIButtonConfiguration* config = _saveButton.configuration;
-  config.image = DefaultSymbolWithPointSize(kLockSymbol, kLockSymbolPointSize);
-  _saveButton.configuration = config;
-  _saveButton.primaryButtonImage = PrimaryButtonImageCustom;
+  _saveButton.primaryButtonImage = PrimaryButtonImageCheckmark;
 }
 
 - (void)setField:(AutofillCreditCardUIType)type
@@ -458,6 +453,12 @@ NSString* const kDateSeparator = @"/";
 }
 
 - (void)showLoadingStateWithAccessibilityLabel:(NSString*)accessibilityLabel {
+  _saveButton.enabled = NO;
+  _saveButton.title = nil;
+  _saveButton.primaryButtonImage = PrimaryButtonImageSpinner;
+  if (accessibilityLabel.length > 0) {
+    _saveButton.accessibilityLabel = accessibilityLabel;
+  }
 }
 
 - (void)setLegalMessages:(NSArray<SaveCardMessageWithLinks*>*)legalMessages {

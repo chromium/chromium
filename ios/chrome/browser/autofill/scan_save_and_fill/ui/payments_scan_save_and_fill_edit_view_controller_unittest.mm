@@ -18,6 +18,7 @@
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_edit_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_edit_item_delegate.h"
+#import "ios/chrome/common/ui/util/chrome_button.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
@@ -365,6 +366,19 @@ TEST_F(PaymentsScanSaveAndFillEditViewControllerTest, TestDidTapSave) {
   EXPECT_EQ(u"My Card", fake_mutator_.savedDetails.nickname.value());
 }
 
+// Tests the behavior of showLoadingStateWithAccessibilityLabel.
+TEST_F(PaymentsScanSaveAndFillEditViewControllerTest, TestShowLoadingState) {
+  CreateController();
+
+  [view_controller_ showLoadingStateWithAccessibilityLabel:@"Loading"];
+
+  UIButton* saveButton = [view_controller_ valueForKey:@"_saveButton"];
+  EXPECT_FALSE(saveButton.enabled);
+  EXPECT_NSEQ(nil, [saveButton valueForKey:@"title"]);
+  EXPECT_TRUE(saveButton.configuration.showsActivityIndicator);
+  EXPECT_NSEQ(@"Loading", saveButton.accessibilityLabel);
+}
+
 // Tests the behavior of showConfirmationState.
 TEST_F(PaymentsScanSaveAndFillEditViewControllerTest,
        TestShowConfirmationState) {
@@ -375,10 +389,12 @@ TEST_F(PaymentsScanSaveAndFillEditViewControllerTest,
   UIButton* saveButton = [view_controller_ valueForKey:@"_saveButton"];
   EXPECT_FALSE(saveButton.enabled);
   EXPECT_NSEQ(nil, [saveButton valueForKey:@"title"]);
+  EXPECT_FALSE(saveButton.configuration.showsActivityIndicator);
 
-  // 3 corresponds to PrimaryButtonImageCustom
+  // PrimaryButtonImageCheckmark corresponds to confirmation state
   NSNumber* imageValue = [saveButton valueForKey:@"primaryButtonImage"];
-  EXPECT_EQ(3, [imageValue intValue]);
+  EXPECT_EQ(static_cast<int>(PrimaryButtonImageCheckmark),
+            [imageValue intValue]);
 }
 
 // Tests if the expiration date properly validates.
