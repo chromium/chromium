@@ -1790,7 +1790,8 @@ config("tot_warnings") {
   # Entries should generally require both is_clang and llvm_force_head_revision,
   # but may have additional constraints as well (e.g. only some OSes)
   if (is_clang && llvm_force_head_revision) {
-    cflags += []
+    # TODO(crbug.com/514039556): Figure out what to do about this.
+    cflags += [ "-Wno-fenv-access" ]
   }
 }
 
