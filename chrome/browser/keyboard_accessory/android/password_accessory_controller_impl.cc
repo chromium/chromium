@@ -981,8 +981,7 @@ void PasswordAccessoryControllerImpl::EnsureAcknowledgementBeforeFilling(
     const autofill::AccessorySheetField& selection) {
   url::Origin origin = GetFocusedFrameOrigin();
   if (!AppearsInSuggestions(selection, origin)) {
-    DUMP_WILL_BE_NOTREACHED()
-        << "Tried to fill '" << selection.display_text() << "' into " << origin;
+    DUMP_WILL_BE_NOTREACHED() << "Tried to fill a suggestion into " << origin;
     return;  // Never fill anything, that was not listed in suggestions.
   }
   // Show acknowledgement warning before filling password, which has grouped
