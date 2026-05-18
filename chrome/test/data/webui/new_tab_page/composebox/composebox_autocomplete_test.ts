@@ -1091,7 +1091,8 @@ suite('NewTabPageComposeboxAutocompleteContextTest', () => {
           },
           maxTotalInputs: 3,
         };
-        loadTimeData.overrideValues({composeboxShowZps: true});
+        loadTimeData.overrideValues(
+            {composeboxShowZps: true, tabFaviconChipsToCoinsEnabled: false});
         createComposeboxElement(testProxy);
         testProxy.searchboxCallbackRouterRemote.onInputStateChanged(
             testInputState);
@@ -1217,6 +1218,8 @@ suite('NewTabPageComposeboxAutocompleteContextTest', () => {
   test(
       'multiple auto active tab updates only adds one chip with latest title',
       async () => {
+        loadTimeData.overrideValues(
+            {composeboxShowZps: true, tabFaviconChipsToCoinsEnabled: false});
         createComposeboxElement(testProxy);
         await microtasksFinished();
 

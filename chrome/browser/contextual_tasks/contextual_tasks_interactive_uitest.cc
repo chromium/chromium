@@ -47,7 +47,6 @@ using testing::_;
 
 namespace {
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kPrimaryTab);
-DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kGenericTab);
 DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kElementExistsEvent);
 DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kElementDoesNotExistEvent);
 
@@ -372,58 +371,6 @@ class ContextualTasksInteractiveUiTest : public InteractiveBrowserTest {
   base::test::ScopedFeatureList scoped_feature_list_;
   std::optional<ui::UserDataFactory::ScopedOverride> tab_context_override_;
 };
-
-IN_PROC_BROWSER_TEST_F(ContextualTasksInteractiveUiTest,
-                       AddAndRemoveTabChipFromComposebox) {
-  const GURL kInterceptionUrl("https://www.google.com/search?udm=50");
-  const GURL kGenericPageUrl = embedded_test_server()->GetURL("/title1.html");
-
-  const DeepQuery kTabChip = {
-      "contextual-tasks-app",         "#composebox", "#composebox", "#carousel",
-      "cr-composebox-file-thumbnail", "#tabChip"};
-
-  const DeepQuery kRemoveTabButton = {"contextual-tasks-app",
-                                      "#composebox",
-                                      "#composebox",
-                                      "#carousel",
-                                      "cr-composebox-file-thumbnail",
-                                      "#removeTabButton"};
-
-  const DeepQuery kTabChipTitle = {"contextual-tasks-app",
-                                   "#composebox",
-                                   "#composebox",
-                                   "#carousel",
-                                   "cr-composebox-file-thumbnail",
-                                   ".tabInfo .title"};
-
-  RunTestSequence(
-      // Add the initial contextual tasks tab and another generic tab.
-      InstrumentTab(kPrimaryTab, 0),
-      AddInstrumentedTab(kGenericTab, kGenericPageUrl),
-
-      // Make sure the first tab is selected.
-      SelectTab(kTabStripElementId, 0),
-
-      OpenContextualTasksInCurrentTab(kInterceptionUrl),
-
-      // Force user action of clicking the entry point and then the tab chip.
-      ForceClickAddContextEntrypoint(kPrimaryTab),
-      ForceClickMenuButton(kPrimaryTab, 0),
-
-      // Verify tab chip existence and title.
-      WaitForElementExists(kPrimaryTab, kTabChip),
-      CheckJsResultAt(kPrimaryTab, kTabChipTitle, "el => el.textContent.trim()",
-                      testing::HasSubstr("title1.html")),
-      // Wait for composebox to update files state.
-      WaitForComposeboxFilesCount(1),
-
-      // Remove Chip.
-      ClickButton(kPrimaryTab, kRemoveTabButton),
-      WaitForElementDoesNotExist(kPrimaryTab, kTabChip),
-
-      // Verify composebox updated files state to empty.
-      WaitForComposeboxFilesCount(0));
-}
 
 IN_PROC_BROWSER_TEST_F(ContextualTasksInteractiveUiTest,
                        AddAndRemovePdfChipFromComposebox) {
