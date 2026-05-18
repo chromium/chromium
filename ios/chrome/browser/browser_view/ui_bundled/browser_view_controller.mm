@@ -492,6 +492,9 @@ bool IsFullscreenNextIAEnabled() {
 
 - (void)setBroadcasting:(BOOL)broadcasting {
   if (IsFullscreenRefactoringEnabled()) {
+    if (broadcasting && _fullscreenBrowserAgent) {
+      _fullscreenBrowserAgent->InvalidateInsetRange();
+    }
     // Broadcasting is not needed for FullscreenRefactoring.
     return;
   }

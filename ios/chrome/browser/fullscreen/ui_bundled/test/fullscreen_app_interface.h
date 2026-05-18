@@ -18,6 +18,9 @@
 // Returns the safe area insets of the key window.
 + (UIEdgeInsets)currentWindowSafeArea;
 
+// Returns whether FullscreenRefactoring is enabled.
++ (BOOL)isFullscreenRefactoringEnabled;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_FULLSCREEN_UI_BUNDLED_TEST_FULLSCREEN_APP_INTERFACE_H_

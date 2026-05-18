@@ -142,6 +142,7 @@ std::unique_ptr<net::test_server::HttpResponse> NotFoundResponse() {
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
   config.features_disabled.push_back(web::features::kSmoothScrollingDefault);
+  config.features_disabled.push_back(kFullscreenRefactoring);
   config.features_enabled.push_back(kHideToolbarsInOverflowMenu);
   return config;
 }
@@ -712,7 +713,10 @@ std::unique_ptr<net::test_server::HttpResponse> NotFoundResponse() {
   UIEdgeInsets safeArea = [FullscreenAppInterface currentWindowSafeArea];
 
   int screenBottom = insets.top + elementBottom;
-  int expectedScreenBottom = screenHeight - MAX(insets.bottom, safeArea.bottom);
+  int expectedScreenBottom =
+      screenHeight - ([FullscreenAppInterface isFullscreenRefactoringEnabled]
+                          ? insets.bottom
+                          : MAX(insets.bottom, safeArea.bottom));
 
   GREYAssertEqual(screenBottom, expectedScreenBottom,
                   @"Fixed element bottom should be on top of the bottom "
@@ -735,6 +739,7 @@ std::unique_ptr<net::test_server::HttpResponse> NotFoundResponse() {
   config.features_enabled.push_back(kHideToolbarsInOverflowMenu);
   config.features_disabled.push_back(
       web::features::kSmoothScrollingUseDelegate);
+  config.features_disabled.push_back(kFullscreenRefactoring);
   return config;
 }
 
@@ -801,6 +806,7 @@ std::unique_ptr<net::test_server::HttpResponse> NotFoundResponse() {
   config.features_enabled.push_back(web::features::kSmoothScrollingDefault);
   config.features_enabled.push_back(web::features::kSmoothScrollingUseDelegate);
   config.features_enabled.push_back(kHideToolbarsInOverflowMenu);
+  config.features_disabled.push_back(kFullscreenRefactoring);
   return config;
 }
 
@@ -825,6 +831,50 @@ std::unique_ptr<net::test_server::HttpResponse> NotFoundResponse() {
   [[EarlGrey selectElementWithMatcher:WebStateScrollViewMatcher()]
       assertWithMatcher:grey_scrollViewContentOffset(
                             CGPointMake(0, expectedYOffset))];
+}
+
+@end
+
+#pragma mark - FullscreenRefactoring tests
+
+// Fullscreens tests for FullscreenRefactoring implementation.
+@interface FullscreenRefactoringTestCase : ZZZFullscreenTestCase
+@end
+
+@implementation FullscreenRefactoringTestCase
+
+- (AppLaunchConfiguration)appConfigurationForTestCase {
+  AppLaunchConfiguration config;
+  config.features_enabled.push_back(kFullscreenRefactoring);
+  config.features_enabled.push_back(kHideToolbarsInOverflowMenu);
+  config.features_disabled.push_back(web::features::kSmoothScrollingDefault);
+  return config;
+}
+
+// This is currently needed to prevent this test case from being ignored.
+- (void)testEmpty {
+}
+
+// TODO(crbug.com/499969010): Ensure PDFs display properly with new Fullscreen
+// implementation.
+- (void)testLongPDFInitialState {
+  EARL_GREY_TEST_SKIPPED(@"Skipped for FullscreenRefactoringTestCase.");
+}
+
+// TODO(crbug.com/499969010): Ensure PDFs display properly with new Fullscreen
+// implementation.
+- (void)testLongPDFScroll {
+  EARL_GREY_TEST_SKIPPED(@"Skipped for FullscreenRefactoringTestCase.");
+}
+
+// TODO(crbug.com/500414020): Implement force fullscreen in refactored code.
+- (void)testTapOnCollapsedToolbarExitsForceFullscreenMode {
+  EARL_GREY_TEST_SKIPPED(@"Skipped for FullscreenRefactoringTestCase.");
+}
+
+// Viewport-fit=cover is not supported for FullscreenRefactoring.
+- (void)testViewportFitCover {
+  EARL_GREY_TEST_SKIPPED(@"Skipped for FullscreenRefactoringTestCase.");
 }
 
 @end

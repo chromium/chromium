@@ -36,9 +36,11 @@ source_set("eg_app_support+eg2") {
     "fullscreen_app_interface.mm",
   ]
   deps = [
+    "//ios/chrome/browser/fullscreen/model",
     "//ios/chrome/browser/fullscreen/ui_bundled",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/test/app:test_support",
     "//ios/web/common:uikit",
     "//ios/web/public",
