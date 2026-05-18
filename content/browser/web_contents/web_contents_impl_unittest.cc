@@ -933,11 +933,8 @@ TEST_F(WebContentsImplTest, NavigateFromSitelessUrl) {
 
   EXPECT_EQ(orig_instance, contents()->GetSiteInstance());
   if (AreStrictSiteInstancesEnabled()) {
-    EXPECT_TRUE(contents()
-                    ->GetSiteInstance()
-                    ->GetSecurityPrincipal()
-                    .GetDeprecatedSiteURL()
-                    .DomainIs("google.com"));
+    EXPECT_EQ("google.com",
+              contents()->GetSiteInstance()->GetSecurityPrincipal().GetHost());
   } else {
     // Verify that the empty SiteInstance gets converted into a default
     // SiteInstance because |url| does not require a dedicated process.

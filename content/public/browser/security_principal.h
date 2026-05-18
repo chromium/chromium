@@ -67,6 +67,14 @@ class CONTENT_EXPORT SecurityPrincipal {
   // returns true and SchemeIs("https") returns false.
   virtual bool SchemeIs(std::string_view scheme) const = 0;
 
+  // Returns the host portion of this SecurityPrincipal's associated site URL.
+  // For example, for a chrome-extension:// principal this returns the extension
+  // ID. For an https:// principal this typically returns the eTLD+1.
+  // Note that when a principal uses an effective URL, the host will correspond
+  // to that effective URL rather than the original (see SchemeIs() for an
+  // example with hosted apps).
+  virtual std::string GetHost() const = 0;
+
   // Returns the site URL associated with all of the documents and workers in
   // this principal, as described above.
   //

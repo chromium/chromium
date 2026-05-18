@@ -10723,7 +10723,6 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   EXPECT_EQ(bar_url.GetHost(), child->current_frame_host()
                                    ->GetSiteInstance()
                                    ->GetSecurityPrincipal()
-                                   .GetDeprecatedSiteURL()
                                    .GetHost());
 
   // The subframe's SiteInstance should still be different from second_shell's

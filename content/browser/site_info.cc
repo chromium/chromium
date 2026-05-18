@@ -460,6 +460,10 @@ bool SiteInfo::SchemeIs(std::string_view scheme) const {
   return site_url_.SchemeIs(scheme);
 }
 
+std::string SiteInfo::GetHost() const {
+  return site_url_.GetHost();
+}
+
 const GURL& SiteInfo::GetDeprecatedSiteURL() const {
   return site_url();
 }

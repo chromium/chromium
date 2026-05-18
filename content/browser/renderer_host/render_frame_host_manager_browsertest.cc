@@ -4817,16 +4817,16 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
                             .root();
   FrameTreeNode* child1 = root->child_at(0);
   FrameTreeNode* child2 = root->child_at(1);
-  GURL a_site_url = root->current_frame_host()
-                        ->GetSiteInstance()
-                        ->GetSecurityPrincipal()
-                        .GetDeprecatedSiteURL();
-  EXPECT_EQ("a.com", a_site_url.GetHost());
-  GURL b_site_url = child2->current_frame_host()
-                        ->GetSiteInstance()
-                        ->GetSecurityPrincipal()
-                        .GetDeprecatedSiteURL();
-  EXPECT_EQ("b.com", b_site_url.GetHost());
+  std::string a_site_host = root->current_frame_host()
+                                ->GetSiteInstance()
+                                ->GetSecurityPrincipal()
+                                .GetHost();
+  EXPECT_EQ("a.com", a_site_host);
+  std::string b_site_host = child2->current_frame_host()
+                                ->GetSiteInstance()
+                                ->GetSecurityPrincipal()
+                                .GetHost();
+  EXPECT_EQ("b.com", b_site_host);
 
   // Navigate the subframe to a cross-site URL, while blocking the request with
   // ERR_BLOCKED_BY_CLIENT.
@@ -4888,11 +4888,11 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
     SiteInstanceImpl* child1_site_instance =
         child1->current_frame_host()->GetSiteInstance();
 
-    GURL c_site_url =
-        child1_site_instance->GetSecurityPrincipal().GetDeprecatedSiteURL();
+    std::string c_site_host =
+        child1_site_instance->GetSecurityPrincipal().GetHost();
     if (AreAllSitesIsolatedForTesting()) {
-      EXPECT_EQ("c.com", c_site_url.GetHost());
-      EXPECT_EQ(test_url.GetHost(), c_site_url.GetHost());
+      EXPECT_EQ("c.com", c_site_host);
+      EXPECT_EQ(test_url.GetHost(), c_site_host);
     } else if (ShouldUseDefaultSiteInstanceGroup()) {
       EXPECT_EQ(
           child1_site_instance->group(),
@@ -4900,8 +4900,8 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
     } else {
       EXPECT_TRUE(child1_site_instance->IsDefaultSiteInstance());
     }
-    EXPECT_NE(a_site_url, c_site_url);
-    EXPECT_NE(b_site_url, c_site_url);
+    EXPECT_NE(a_site_host, c_site_host);
+    EXPECT_NE(b_site_host, c_site_host);
   }
 }
 

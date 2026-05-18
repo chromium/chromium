@@ -1337,7 +1337,6 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest,
 
   EXPECT_EQ(web_url.GetHost(), web_frame_rfh->GetSiteInstance()
                                    ->GetSecurityPrincipal()
-                                   .GetDeprecatedSiteURL()
                                    .GetHost());
   EXPECT_NE(devtools_instance, web_frame_rfh->GetSiteInstance());
   EXPECT_NE(extensions_instance, web_frame_rfh->GetSiteInstance());
@@ -1358,7 +1357,6 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest,
   EXPECT_EQ(about_blank_url, web_frame_rfh->GetLastCommittedURL());
   EXPECT_EQ(web_url.GetHost(), web_frame_rfh->GetSiteInstance()
                                    ->GetSecurityPrincipal()
-                                   .GetDeprecatedSiteURL()
                                    .GetHost());
   EXPECT_NE(devtools_instance, web_frame_rfh->GetSiteInstance());
   EXPECT_NE(extensions_instance, web_frame_rfh->GetSiteInstance());
@@ -1458,7 +1456,6 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest,
             devtools_sidebar_pane_extension_rfh->GetSiteInstance());
   EXPECT_EQ(web_url.GetHost(), http_iframe_rfh->GetSiteInstance()
                                    ->GetSecurityPrincipal()
-                                   .GetDeprecatedSiteURL()
                                    .GetHost());
   EXPECT_NE(devtools_instance, http_iframe_rfh->GetSiteInstance());
   EXPECT_NE(extensions_instance, http_iframe_rfh->GetSiteInstance());
@@ -1535,7 +1532,6 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest,
   EXPECT_NE(devtools_instance, extensions_instance);
   EXPECT_EQ(web_url.GetHost(), http_iframe_rfh->GetSiteInstance()
                                    ->GetSecurityPrincipal()
-                                   .GetDeprecatedSiteURL()
                                    .GetHost());
   EXPECT_NE(devtools_instance, http_iframe_rfh->GetSiteInstance());
   EXPECT_NE(extensions_instance, http_iframe_rfh->GetSiteInstance());

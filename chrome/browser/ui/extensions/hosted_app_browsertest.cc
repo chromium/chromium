@@ -1545,7 +1545,6 @@ IN_PROC_BROWSER_TEST_P(HostedAppProcessModelTest,
       extensions::kExtensionScheme));
   EXPECT_EQ(main_frame->GetSiteInstance()
                 ->GetSecurityPrincipal()
-                .GetDeprecatedSiteURL()
                 .GetHost(),
             app_id_);
 }

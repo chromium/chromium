@@ -56,12 +56,13 @@ void BrowserInstantController::OnSearchEngineBaseURLChanged(
       continue;
     }
 
-    GURL site_url = contents->GetPrimaryMainFrame()
-                        ->GetSiteInstance()
-                        ->GetSecurityPrincipal()
-                        .GetDeprecatedSiteURL();
-    bool is_ntp = site_url == chrome::ChromeUINewTabPageURLAsGURL() ||
-                  site_url == GURL(chrome::kChromeUINewTabPageThirdPartyURL);
+    const auto& principal = contents->GetPrimaryMainFrame()
+                                ->GetSiteInstance()
+                                ->GetSecurityPrincipal();
+    bool is_ntp =
+        principal.SchemeIs(content::kChromeUIScheme) &&
+        (principal.GetHost() == chrome::kChromeUINewTabPageHost ||
+         principal.GetHost() == chrome::kChromeUINewTabPageThirdPartyHost);
 
     if (!is_ntp) {
       InstantService* instant_service =

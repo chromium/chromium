@@ -538,14 +538,10 @@ void SlimWebViewGuest::CreateInnerPage(
   bool persist_storage = false;
   ParsePartitionParam(create_params, &storage_partition_id, &persist_storage);
   content::StoragePartitionConfig partition_config =
-      content::StoragePartitionConfig::Create(browser_context(),
-                                              owner_rfh()
-                                                  ->GetSiteInstance()
-                                                  ->GetSecurityPrincipal()
-                                                  .GetDeprecatedSiteURL()
-                                                  .GetHost(),
-                                              storage_partition_id,
-                                              !persist_storage);
+      content::StoragePartitionConfig::Create(
+          browser_context(),
+          owner_rfh()->GetSiteInstance()->GetSecurityPrincipal().GetHost(),
+          storage_partition_id, !persist_storage);
 
   scoped_refptr<content::SiteInstance> guest_site_instance =
       content::SiteInstance::CreateForGuest(browser_context(),

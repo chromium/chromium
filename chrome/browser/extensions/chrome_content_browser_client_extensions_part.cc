@@ -840,7 +840,7 @@ bool ChromeContentBrowserClientExtensionsPart::
 #endif  // BUILDFLAG(ENABLE_GUEST_VIEW)
 
   const Extension* extension = registry->enabled_extensions().GetByID(
-      main_frame_site.GetSecurityPrincipal().GetDeprecatedSiteURL().GetHost());
+      main_frame_site.GetSecurityPrincipal().GetHost());
   extension_webkit_preferences::SetPreferences(extension, web_prefs);
   return true;
 }
