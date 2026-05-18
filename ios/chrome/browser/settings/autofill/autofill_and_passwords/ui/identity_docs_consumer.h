@@ -12,8 +12,11 @@
 // Consumer protocol for the Identity Docs settings page.
 @protocol IdentityDocsConsumer <NSObject>
 
-// Sets the list of identity docs items.
-- (void)setIdentityDocsItems:(NSArray<TableViewItem*>*)identityDocsItems;
+// Sets the lists of identity documents.
+- (void)
+    setIdentityDocsWithDriversLicenses:(NSArray<TableViewItem*>*)driversLicenses
+                       nationalIdCards:(NSArray<TableViewItem*>*)nationalIdCards
+                             passports:(NSArray<TableViewItem*>*)passports;
 
 @end
 

@@ -32,8 +32,6 @@
 // Mutator for actions in the view.
 @property(nonatomic, weak) id<AutofillAIBaseMutator> mutator;
 
-- (instancetype)initWithStyle:(UITableViewStyle)style NS_DESIGNATED_INITIALIZER;
-
 @end
 
 #endif  // IOS_CHROME_BROWSER_SETTINGS_AUTOFILL_AUTOFILL_AND_PASSWORDS_UI_IDENTITY_DOCS_TABLE_VIEW_CONTROLLER_H_

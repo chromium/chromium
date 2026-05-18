@@ -4,6 +4,9 @@
 
 #import "ios/chrome/browser/settings/autofill/autofill_and_passwords/coordinator/identity_docs_mediator.h"
 
+#import "base/apple/foundation_util.h"
+#import "base/notreached.h"
+#import "ios/chrome/browser/settings/autofill/autofill_ai/ui/autofill_ai_entity_item.h"
 #import "ios/chrome/browser/settings/autofill/autofill_and_passwords/coordinator/autofill_ai_base_mediator_protected.h"
 #import "ios/chrome/browser/settings/autofill/autofill_and_passwords/ui/identity_docs_consumer.h"
 
@@ -17,6 +20,7 @@ static constexpr autofill::DenseSet<autofill::EntityTypeName> kIdentityDocs = {
 
 }  // namespace
 
+// Mediator implementation for Identity Docs.
 @implementation IdentityDocsMediator
 
 - (void)setConsumer:(id<IdentityDocsConsumer>)consumer {
@@ -42,7 +46,39 @@ static constexpr autofill::DenseSet<autofill::EntityTypeName> kIdentityDocs = {
 }
 
 - (void)pushItemsToConsumer:(NSArray<TableViewItem*>*)items {
-  [self.consumer setIdentityDocsItems:items];
+  NSMutableArray<TableViewItem*>* driversLicenses = [NSMutableArray array];
+  NSMutableArray<TableViewItem*>* nationalIdCards = [NSMutableArray array];
+  NSMutableArray<TableViewItem*>* passports = [NSMutableArray array];
+
+  for (TableViewItem* item in items) {
+    AutofillAIEntityItem* aiItem =
+        base::apple::ObjCCast<AutofillAIEntityItem>(item);
+    if (!aiItem) {
+      continue;
+    }
+    switch (aiItem.entityTypeName) {
+      case autofill::EntityTypeName::kDriversLicense:
+        [driversLicenses addObject:item];
+        break;
+      case autofill::EntityTypeName::kNationalIdCard:
+        [nationalIdCards addObject:item];
+        break;
+      case autofill::EntityTypeName::kPassport:
+        [passports addObject:item];
+        break;
+      case autofill::EntityTypeName::kFlightReservation:
+      case autofill::EntityTypeName::kKnownTravelerNumber:
+      case autofill::EntityTypeName::kRedressNumber:
+      case autofill::EntityTypeName::kVehicle:
+      case autofill::EntityTypeName::kOrder:
+      case autofill::EntityTypeName::kShipment:
+        NOTREACHED();
+    }
+  }
+
+  [self.consumer setIdentityDocsWithDriversLicenses:driversLicenses
+                                    nationalIdCards:nationalIdCards
+                                          passports:passports];
 }
 
 @end

@@ -6,7 +6,6 @@
 
 #import <UIKit/UIKit.h>
 
-#import "base/memory/raw_ptr.h"
 #import "base/test/ios/wait_util.h"
 #import "base/test/scoped_feature_list.h"
 #import "components/autofill/core/browser/data_manager/autofill_ai/entity_data_manager.h"
@@ -14,14 +13,13 @@
 #import "components/autofill/core/browser/test_utils/entity_data_test_utils.h"
 #import "components/autofill/core/common/autofill_features.h"
 #import "ios/chrome/browser/autofill/model/ios_autofill_entity_data_manager_factory.h"
-#import "ios/chrome/browser/settings/autofill/autofill_and_passwords/coordinator/identity_docs_mediator.h"
+#import "ios/chrome/browser/settings/autofill/autofill_and_passwords/coordinator/autofill_ai_base_mediator.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/webdata_services/model/web_data_service_factory.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
-#import "third_party/ocmock/OCMock/OCMock.h"
 
 class IdentityDocsCoordinatorTest : public PlatformTest {
  protected:
@@ -82,15 +80,11 @@ TEST_F(IdentityDocsCoordinatorTest, StartsEntityEditCoordinator) {
         return entity_data_manager->GetEntityInstance(entity_id).has_value();
       }));
 
-  IdentityDocsMediator* mediator = [[IdentityDocsMediator alloc]
-      initWithEntityDataManager:entity_data_manager];
-
   NSUInteger initialCount = navigation_controller_.viewControllers.count;
 
   id<AutofillAIBaseMediatorDelegate> delegate =
       static_cast<id<AutofillAIBaseMediatorDelegate>>(coordinator_);
-  [delegate autofillAIBaseMediator:mediator
-      didRequestToOpenEntityWithID:entity_id];
+  [delegate autofillAIBaseMediator:nil didRequestToOpenEntityWithID:entity_id];
   EXPECT_GT(navigation_controller_.viewControllers.count, initialCount);
 
   [coordinator_ stop];

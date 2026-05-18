@@ -5,14 +5,19 @@
 #import "ios/chrome/browser/settings/autofill/autofill_and_passwords/ui/identity_docs_table_view_controller.h"
 
 #import "base/apple/foundation_util.h"
+#import "base/check.h"
 #import "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/settings/autofill/autofill_and_passwords/ui/autofill_ai_base_item_type.h"
 #import "ios/chrome/browser/settings/autofill/autofill_and_passwords/ui/autofill_ai_base_mutator.h"
+#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_header_footer_item.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
 namespace {
 enum SectionIdentifier {
-  SectionIdentifierIdentityDocs = kSectionIdentifierEnumZero,
+  SectionIdentifierDriversLicenses = kSectionIdentifierEnumZero,
+  SectionIdentifierNationalIdCards,
+  SectionIdentifierPassports,
 };
 
 }  // namespace
@@ -20,14 +25,12 @@ enum SectionIdentifier {
 @interface IdentityDocsTableViewController ()
 @end
 
+// View controller implementation for Identity Docs.
 @implementation IdentityDocsTableViewController {
-  NSArray<TableViewItem*>* _identityDocsItems;
+  NSArray<TableViewItem*>* _driversLicenses;
+  NSArray<TableViewItem*>* _nationalIdCards;
+  NSArray<TableViewItem*>* _passports;
   BOOL _settingsAreDismissed;
-}
-
-- (instancetype)initWithStyle:(UITableViewStyle)style {
-  self = [super initWithStyle:style];
-  return self;
 }
 
 - (void)viewDidLoad {
@@ -47,19 +50,59 @@ enum SectionIdentifier {
   [super loadModel];
 
   TableViewModel* model = self.tableViewModel;
-  if (_identityDocsItems.count > 0) {
-    [model addSectionWithIdentifier:SectionIdentifierIdentityDocs];
-    for (TableViewItem* item in _identityDocsItems) {
+
+  if (_driversLicenses.count > 0) {
+    [model addSectionWithIdentifier:SectionIdentifierDriversLicenses];
+    TableViewTextHeaderFooterItem* header =
+        [[TableViewTextHeaderFooterItem alloc]
+            initWithType:kAutofillAIBaseItemTypeHeader];
+    header.text =
+        l10n_util::GetNSString(IDS_AUTOFILL_AI_DRIVERS_LICENSES_TITLE);
+    [model setHeader:header
+        forSectionWithIdentifier:SectionIdentifierDriversLicenses];
+    for (TableViewItem* item in _driversLicenses) {
       [model addItem:item
-          toSectionWithIdentifier:SectionIdentifierIdentityDocs];
+          toSectionWithIdentifier:SectionIdentifierDriversLicenses];
+    }
+  }
+
+  if (_nationalIdCards.count > 0) {
+    [model addSectionWithIdentifier:SectionIdentifierNationalIdCards];
+    TableViewTextHeaderFooterItem* header =
+        [[TableViewTextHeaderFooterItem alloc]
+            initWithType:kAutofillAIBaseItemTypeHeader];
+    header.text = l10n_util::GetNSString(IDS_AUTOFILL_AI_NATIONAL_IDS_TITLE);
+    [model setHeader:header
+        forSectionWithIdentifier:SectionIdentifierNationalIdCards];
+    for (TableViewItem* item in _nationalIdCards) {
+      [model addItem:item
+          toSectionWithIdentifier:SectionIdentifierNationalIdCards];
+    }
+  }
+
+  if (_passports.count > 0) {
+    [model addSectionWithIdentifier:SectionIdentifierPassports];
+    TableViewTextHeaderFooterItem* header =
+        [[TableViewTextHeaderFooterItem alloc]
+            initWithType:kAutofillAIBaseItemTypeHeader];
+    header.text = l10n_util::GetNSString(IDS_AUTOFILL_AI_PASSPORTS_TITLE);
+    [model setHeader:header
+        forSectionWithIdentifier:SectionIdentifierPassports];
+    for (TableViewItem* item in _passports) {
+      [model addItem:item toSectionWithIdentifier:SectionIdentifierPassports];
     }
   }
 }
 
 #pragma mark - IdentityDocsConsumer
 
-- (void)setIdentityDocsItems:(NSArray<TableViewItem*>*)identityDocsItems {
-  _identityDocsItems = identityDocsItems;
+- (void)
+    setIdentityDocsWithDriversLicenses:(NSArray<TableViewItem*>*)driversLicenses
+                       nationalIdCards:(NSArray<TableViewItem*>*)nationalIdCards
+                             passports:(NSArray<TableViewItem*>*)passports {
+  _driversLicenses = driversLicenses;
+  _nationalIdCards = nationalIdCards;
+  _passports = passports;
   if (self.isViewLoaded) {
     [self reloadData];
   }
