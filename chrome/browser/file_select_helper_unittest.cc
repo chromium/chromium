@@ -6,7 +6,9 @@
 
 #include <stddef.h>
 
+#include <array>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -170,12 +172,12 @@ TEST_F(FileSelectHelperTest, ZipPackage) {
   EXPECT_TRUE(base::GetAppOutput(cl, &output));
 
   // Verify that several key files haven't changed.
-  const char* files_to_verify[] = {"Contents/Info.plist",
-                                   "Contents/MacOS/Calculator",
-                                   "Contents/_CodeSignature/CodeResources"};
-  size_t file_count = std::size(files_to_verify);
-  for (size_t i = 0; i < file_count; i++) {
-    const char* relative_path = UNSAFE_TODO(files_to_verify[i]);
+  const auto files_to_verify = std::to_array<std::string_view>({
+      "Contents/Info.plist",
+      "Contents/MacOS/Calculator",
+      "Contents/_CodeSignature/CodeResources",
+  });
+  for (std::string_view relative_path : files_to_verify) {
     base::FilePath orig_file = src.Append(relative_path);
     base::FilePath final_file =
         temp_dir.GetPath().Append(app_name).Append(relative_path);
