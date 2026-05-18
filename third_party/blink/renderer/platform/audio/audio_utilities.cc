@@ -205,7 +205,7 @@ const std::string GetDeviceEnumerationForTracing(
     const Vector<WebMediaDeviceInfo>& device_infos) {
   std::ostringstream s;
 
-  for (auto device_info : device_infos) {
+  for (const auto& device_info : device_infos) {
     s << "{ label: " << device_info.label
       << ", device_id: " << device_info.device_id
       << ", group_id: " << device_info.group_id << " }";

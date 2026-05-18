@@ -63,7 +63,7 @@ void DeferredTaskHandler::BreakConnections() {
   // connection.
   wtf_size_t size = finished_source_handlers_.size();
   if (size > 0) {
-    for (auto finished : finished_source_handlers_) {
+    for (const auto& finished : finished_source_handlers_) {
       finished->BreakConnectionWithLock();
       active_source_handlers_.erase(finished);
     }
@@ -441,7 +441,7 @@ void DeferredTaskHandler::DisableOutputsForTailProcessing() {
   // disable their outputs to indicate to downstream nodes that they're done.
   // This has to be done in the main thread because DisableOutputs() can cause
   // summing juctions to go away, which must be done on the main thread.
-  for (auto handler : finished_tail_processing_handlers_) {
+  for (const auto& handler : finished_tail_processing_handlers_) {
 #if DEBUG_AUDIONODE_REFERENCES > 1
     fprintf(stderr, "[%16p]: %16p: %2d: DisableOutputsForTailProcessing @%g\n",
             handler->Context(), handler.get(), handler->GetNodeType(),

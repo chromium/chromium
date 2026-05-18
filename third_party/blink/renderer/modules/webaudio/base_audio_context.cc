@@ -788,7 +788,7 @@ void BaseAudioContext::ReleaseActiveSourceNodes() {
 
   DeferredTaskHandler::GraphAutoLocker locker(GetDeferredTaskHandler());
 
-  for (auto source_handler :
+  for (const auto& source_handler :
        *GetDeferredTaskHandler().GetActiveSourceHandlers()) {
     source_handler->BreakConnectionWithLock();
   }
@@ -806,7 +806,7 @@ void BaseAudioContext::HandleStoppableSourceNodes() {
     // check doesn't have to be done every render quantum, if this checking
     // becomes to expensive.  It's ok to do this on a less frequency basis as
     // long as the active nodes eventually get stopped if they're done.
-    for (auto handler : *active_source_handlers) {
+    for (const auto& handler : *active_source_handlers) {
       switch (handler->GetNodeType()) {
         case AudioHandler::NodeType::kNodeTypeAudioBufferSource:
         case AudioHandler::NodeType::kNodeTypeOscillator:

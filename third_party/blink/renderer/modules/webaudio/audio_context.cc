@@ -1783,7 +1783,7 @@ void AudioContext::OnDevicesChanged(mojom::blink::MediaDeviceType device_type,
 
   if (device_type == mojom::blink::MediaDeviceType::kMediaAudioOutput) {
     output_device_ids_.clear();
-    for (auto device : devices) {
+    for (const auto& device : devices) {
       if (device.device_id == media::AudioDeviceDescription::kDefaultDeviceId) {
         // Use the empty string to represent the default audio sink.
         output_device_ids_.insert(g_empty_string);

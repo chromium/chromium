@@ -261,7 +261,7 @@ std::unique_ptr<Vector<CrossThreadAudioWorkletProcessorInfo>>
 AudioWorkletGlobalScope::WorkletProcessorInfoListForSynchronization() {
   auto processor_info_list =
       std::make_unique<Vector<CrossThreadAudioWorkletProcessorInfo>>();
-  for (auto definition : processor_definition_map_.Values()) {
+  for (const auto& definition : processor_definition_map_.Values()) {
     if (!definition->IsSynchronized()) {
       definition->MarkAsSynchronized();
       processor_info_list->emplace_back(*definition);
