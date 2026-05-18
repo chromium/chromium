@@ -19,6 +19,9 @@ __KNOWN_CONFIG_OPTIONS = [
     # Indicate that it runs on Cog (automatically set on Cog).
     "cog",
 
+    # Enable remote as default rule.
+    "default-remote",
+
     # Force disable additional remote on cog.
     # TODO: b/333033551 - check performance with/without remote on cog.
     "disable-remote-on-cog",

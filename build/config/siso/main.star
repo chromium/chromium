@@ -11,6 +11,7 @@ load("@builtin//struct.star", "module")
 load("./backend_config/backend.star", "backend")
 load("./blink_all.star", "blink_all")
 load("./config.star", "config")
+load("./denylist.star", "denylist")
 load("./gn_logs.star", "gn_logs")
 load("./grit.star", "grit")
 load("./linux.star", chromium_linux = "chromium")
@@ -84,6 +85,8 @@ def init(ctx):
     step_config = typescript_all.step_config(ctx, step_config)
     if reproxy.enabled(ctx):
         step_config = reproxy.step_config(ctx, step_config)
+
+    step_config = denylist.step_config(ctx, step_config)
 
     step_config = __disable_remote(ctx, step_config)
     step_config = __unset_timeout(ctx, step_config)
