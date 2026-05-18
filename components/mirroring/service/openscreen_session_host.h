@@ -20,6 +20,7 @@
 #include "components/mirroring/mojom/resource_provider.mojom.h"
 #include "components/mirroring/mojom/session_observer.mojom.h"
 #include "components/mirroring/mojom/session_parameters.mojom.h"
+#include "components/mirroring/service/audio_capturing_callback.h"
 #include "components/mirroring/service/media_remoter.h"
 #include "components/mirroring/service/mirror_settings.h"
 #include "components/mirroring/service/mirroring_gpu_factories_factory.h"
@@ -153,7 +154,7 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) OpenscreenSessionHost final
   friend class OpenscreenSessionHostTest;
   FRIEND_TEST_ALL_PREFIXES(OpenscreenSessionHostTest, ChangeTargetPlayoutDelay);
   FRIEND_TEST_ALL_PREFIXES(OpenscreenSessionHostTest, UpdateBandwidthEstimate);
-  class AudioCapturingCallback;
+
   using SupportedProfiles = media::VideoEncodeAccelerator::SupportedProfiles;
 
   // Called when the GPU is either set up or determined to be unavailable due

@@ -6,6 +6,8 @@ import("//testing/test.gni")
 
 component("mirroring_service") {
   sources = [
+    "audio_capturing_callback.cc",
+    "audio_capturing_callback.h",
     "captured_audio_input.cc",
     "captured_audio_input.h",
     "media_remoter.cc",
@@ -81,6 +83,7 @@ component("mirroring_service") {
 source_set("unittests") {
   testonly = true
   sources = [
+    "audio_capturing_callback_unittest.cc",
     "captured_audio_input_unittest.cc",
     "fake_network_service.cc",
     "fake_network_service.h",

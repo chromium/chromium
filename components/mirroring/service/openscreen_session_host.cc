@@ -32,6 +32,7 @@
 #include "base/timer/timer.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "components/mirroring/service/audio_capturing_callback.h"
 #include "components/mirroring/service/captured_audio_input.h"
 #include "components/mirroring/service/mirroring_features.h"
 #include "components/mirroring/service/remoting_sender.h"
@@ -170,76 +171,6 @@ const char* AsErrorMessage(OperationalStatus status) {
   }
 }
 }  // namespace
-
-// Receives data from the audio capturer source, and calls `audio_data_callback`
-// when new data is available. If `error_callback_` is called, the consumer
-// should tear down this instance.
-class OpenscreenSessionHost::AudioCapturingCallback final
-    : public media::AudioCapturerSource::CaptureCallback {
- public:
-  using AudioDataCallback =
-      base::RepeatingCallback<void(std::unique_ptr<media::AudioBus> audio_bus,
-                                   base::TimeTicks recorded_time)>;
-
-  // NOTE: the caller is expected to take ownership of the error message, since
-  // we cannot otherwise make any guarantees about its lifetime.
-  using ErrorCallback = base::OnceCallback<void(std::string)>;
-  AudioCapturingCallback(AudioDataCallback audio_data_callback,
-                         ErrorCallback error_callback,
-                         mojo::Remote<mojom::SessionObserver>& observer)
-      : audio_data_callback_(std::move(audio_data_callback)),
-        error_callback_(std::move(error_callback)),
-        logger_("AudioCapturingCallback", observer) {
-    CHECK(!audio_data_callback_.is_null());
-  }
-
-  AudioCapturingCallback(const AudioCapturingCallback&) = delete;
-  AudioCapturingCallback& operator=(const AudioCapturingCallback&) = delete;
-
-  ~AudioCapturingCallback() override = default;
-
- private:
-  // media::AudioCapturerSource::CaptureCallback implementation.
-  void OnCaptureStarted() override { logger_.LogInfo("OnCaptureStarted"); }
-
-  // Called on audio thread.
-  void Capture(const media::AudioBus* audio_bus,
-               base::TimeTicks audio_capture_time,
-               const media::AudioGlitchInfo& glitch_info,
-               double volume) override {
-    if (!has_captured_) {
-      logger_.LogInfo(
-          base::StringPrintf("first Capture(): volume = %f", volume));
-      has_captured_ = true;
-    }
-    // TODO(crbug.com/40103719): Don't copy the audio data. Instead, send
-    // |audio_bus| directly to the encoder.
-    std::unique_ptr<media::AudioBus> captured_audio =
-        media::AudioBus::Create(audio_bus->channels(), audio_bus->frames());
-    audio_bus->CopyTo(captured_audio.get());
-    audio_data_callback_.Run(std::move(captured_audio), audio_capture_time);
-  }
-
-  void OnCaptureError(media::AudioCapturerSource::ErrorCode code,
-                      const std::string& message) override {
-    if (error_callback_) {
-      std::move(error_callback_)
-          .Run(base::StrCat({"AudioCaptureError occurred, code: ",
-                             base::NumberToString(static_cast<int>(code)),
-                             ", message: ", message}));
-    }
-  }
-
-  void OnCaptureMuted(bool is_muted) override {
-    logger_.LogInfo(base::StrCat(
-        {"OnCaptureMuted, is_muted = ", base::NumberToString(is_muted)}));
-  }
-
-  const AudioDataCallback audio_data_callback_;
-  ErrorCallback error_callback_;
-  MirroringLogger logger_;
-  bool has_captured_ = false;
-};
 
 OpenscreenSessionHost::RemotingStreamData::RemotingStreamData(
     std::unique_ptr<openscreen::cast::Sender> audio_sender,
