@@ -276,7 +276,8 @@ void PasswordAutofillManager::DidSelectSuggestion(
       return;
     }
     password_manager_driver_->PreviewSuggestion(
-        payload.username, payload.backup_password.value());
+        payload.username,
+        std::u16string(payload.backup_password.value().length(), '*'));
     return;
   }
   PreviewSuggestion(GetUsernameFromSuggestion(suggestion.main_text.value),
@@ -786,7 +787,8 @@ bool PasswordAutofillManager::PreviewSuggestion(const std::u16string& username,
   if (const autofill::PasswordAndMetadata* password_and_metadata =
           GetPasswordAndMetadataForUsername(username, type)) {
     password_manager_driver_->PreviewSuggestion(
-        username, password_and_metadata->password_value);
+        username,
+        std::u16string(password_and_metadata->password_value.length(), '*'));
     return true;
   }
   return false;

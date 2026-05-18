@@ -461,7 +461,8 @@ TEST_F(PasswordAutofillManagerTest, PreviewSuggestion) {
   InitializePasswordAutofillManager(&client, nullptr);
 
   EXPECT_CALL(*client.mock_driver(),
-              PreviewSuggestion(test_username_, test_password_));
+              PreviewSuggestion(test_username_,
+                                std::u16string(test_password_.length(), '*')));
   EXPECT_TRUE(
       password_autofill_manager_->PreviewSuggestionForTest(test_username_));
   testing::Mock::VerifyAndClearExpectations(client.mock_driver());
@@ -846,7 +847,8 @@ TEST_F(PasswordAutofillManagerTest, PreviewAndFillEmptyUsernameSuggestion) {
 
   // Check that preview of the empty username works.
   EXPECT_CALL(*client.mock_driver(),
-              PreviewSuggestion(std::u16string(), test_password_));
+              PreviewSuggestion(std::u16string(),
+                                std::u16string(test_password_.length(), '*')));
   const Suggestion suggestion = autofill::test::CreateAutofillSuggestion(
       autofill::SuggestionType::kPasswordEntry, no_username_string);
   password_autofill_manager_->DidSelectSuggestion(suggestion);
@@ -2299,8 +2301,10 @@ TEST_F(PasswordAutofillManagerTest,
   const Suggestion suggestion = autofill::test::CreateAutofillSuggestion(
       autofill::SuggestionType::kBackupPasswordEntry, test_username_, payload);
 
-  EXPECT_CALL(*client.mock_driver(),
-              PreviewSuggestion(test_username_, backup_password_));
+  EXPECT_CALL(
+      *client.mock_driver(),
+      PreviewSuggestion(test_username_,
+                        std::u16string(backup_password_.length(), '*')));
   password_autofill_manager_->DidSelectSuggestion(suggestion);
   testing::Mock::VerifyAndClearExpectations(client.mock_driver());
 
