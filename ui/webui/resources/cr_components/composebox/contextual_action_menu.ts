@@ -180,9 +180,10 @@ export class ContextualActionMenuElement extends
   override updated(changedProperties: PropertyValues<this>) {
     super.updated(changedProperties);
 
-    if (changedProperties.has('disabledTabIds') &&
-        this.contextManagementInComposeboxEnabled_) {
-      this.updateSharingTabsText_();
+    if (this.contextManagementInComposeboxEnabled_) {
+      if (changedProperties.has('disabledTabIds')) {
+        this.updateSharingTabsText_();
+      }
       this.manageShareTabsInitialFocus_(changedProperties);
     }
   }
