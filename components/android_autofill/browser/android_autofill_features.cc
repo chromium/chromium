@@ -18,18 +18,11 @@ namespace {
 
 const base::Feature* const kFeaturesExposedToJava[] = {
     &kAndroidAutofillLazyFrameworkWrapper,
-    &kAutofillVirtualViewStructureAndroidPasskeyLongPress,
     &kAndroidAutofillImprovedVisibilityDetection,
     &kAndroidAutofillFieldsUpdatedOnSelect,
     &kAndroidAutofillSupportForHttpAuthOrigin};
 
 }  // namespace
-
-// If enabled, at least one passkey must be present to forward passkey requests
-// to the Android Credential Manager. Users can then always (re-)trigger the
-// passkey request with a long-press action on webauthn-annotated fields.
-BASE_FEATURE(kAutofillVirtualViewStructureAndroidPasskeyLongPress,
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If enabled, the AutofillManagerWrapper class will not be initialized when the
 // AutofillProvider Java class is initialized. Some apps do not use Autofill at

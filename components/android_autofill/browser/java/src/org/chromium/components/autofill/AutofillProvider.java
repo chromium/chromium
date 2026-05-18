@@ -258,10 +258,6 @@ public class AutofillProvider {
     }
 
     public boolean shouldOfferPasskeyEntry() {
-        if (!AndroidAutofillFeatures.ANDROID_AUTOFILL_VIRTUAL_VIEW_STRUCTURE_PASSKEY_LONG_PRESS
-                .isEnabled()) {
-            return false;
-        }
         return AutofillProviderJni.get().hasPasskeyRequest(mNativeAutofillProvider);
     }
 

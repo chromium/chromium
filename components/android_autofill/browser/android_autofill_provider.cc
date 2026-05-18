@@ -699,10 +699,6 @@ bool MayOfferUsefulPasskeyOptions(WebAuthnCredManDelegate* delegate) {
   if (!delegate) {
     return false;  // Needs delegate to trigger CredMan:
   }
-  if (!base::FeatureList::IsEnabled(
-          features::kAutofillVirtualViewStructureAndroidPasskeyLongPress)) {
-    return true;  // Assume that hybrid entry point is enough reason to show.
-  }
   // Needs *more* than the hybrid option for passkeys. With a request in flux,
   // the remaining chance is hope enough. This needs to be checked on focus.
   return delegate->HasPasskeys() != WebAuthnCredManDelegate::State::kNoPasskeys;

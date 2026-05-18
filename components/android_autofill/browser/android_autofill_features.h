@@ -9,8 +9,6 @@
 
 namespace autofill::features {
 
-BASE_DECLARE_FEATURE(kAutofillVirtualViewStructureAndroidPasskeyLongPress);
-
 BASE_DECLARE_FEATURE(kAndroidAutofillLazyFrameworkWrapper);
 
 BASE_DECLARE_FEATURE(kAndroidAutofillImprovedVisibilityDetection);
