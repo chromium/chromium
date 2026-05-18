@@ -226,8 +226,11 @@ void ExtensionsMenuEntryView::Update(
   site_permissions_button_->SetState(is_permissions_enabled
                                          ? views::Button::STATE_NORMAL
                                          : views::Button::STATE_DISABLED);
-  site_permissions_button_->GetViewAccessibility().SetIsEnabled(
-      is_permissions_enabled);
+  // The site permissions text is not intended to be focusable as it is not
+  // clickable in this view. Ignore the button in accessibility so screen
+  // readers read the label inside it without treating it as a button.
+  site_permissions_button_->GetViewAccessibility().SetIsIgnored(true);
+  site_permissions_button_->SetFocusBehavior(views::View::FocusBehavior::NEVER);
   site_permissions_button_->SetText(entry_state.site_permissions_button.text);
   site_permissions_button_->SetTooltipText(
       entry_state.site_permissions_button.tooltip_text);
@@ -254,7 +257,17 @@ void ExtensionsMenuEntryView::UpdateActionButton(
   action_button_->SetEnabled(true);
   action_button_->SetState(is_action_enabled ? views::Button::STATE_NORMAL
                                              : views::Button::STATE_DISABLED);
-  action_button_->GetViewAccessibility().SetIsEnabled(is_action_enabled);
+  // Keep the view accessibility enabled so it remains focusable for screen
+  // readers, even when logically disabled.
+  if (!is_action_enabled) {
+    action_button_->GetViewAccessibility().SetDescription(
+        l10n_util::GetStringFUTF16(IDS_EXTENSION_DISABLED_ERROR_TITLE,
+                                   button_state.text));
+  } else {
+    action_button_->GetViewAccessibility().SetDescription(
+        std::u16string(),
+        ax::mojom::DescriptionFrom::kAttributeExplicitlyEmpty);
+  }
 }
 
 void ExtensionsMenuEntryView::UpdateContextMenuButton(
