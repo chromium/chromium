@@ -1274,6 +1274,9 @@ class OmniboxPopupPermissionBrowserTest : public InProcessBrowserTest {
       return nullptr;
     }
     popup_view->presenter()->Show();
+    location_bar_view->GetOmniboxController()
+        ->popup_state_manager()
+        ->SetPopupState(OmniboxPopupState::kClassic);
     return popup_view->presenter()->get_widget_for_testing();
   }
 
