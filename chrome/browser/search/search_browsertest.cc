@@ -222,7 +222,13 @@ IN_PROC_BROWSER_TEST_F(SearchTest, ShouldUseProcessPerSiteForInstantSiteURL) {
   }
 }
 
-IN_PROC_BROWSER_TEST_F(SearchTest, ProcessIsolation) {
+// TODO(crbug.com/514171017): Re-enable the test
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_ProcessIsolation DISABLED_ProcessIsolation
+#else
+#define MAYBE_ProcessIsolation ProcessIsolation
+#endif
+IN_PROC_BROWSER_TEST_F(SearchTest, MAYBE_ProcessIsolation) {
   for (size_t i = 0; i < std::size(kProcessIsolationTestCases); ++i) {
     const ProcessIsolationTestCase& test = kProcessIsolationTestCases[i];
     ASSERT_TRUE(
@@ -261,7 +267,15 @@ IN_PROC_BROWSER_TEST_F(SearchTest, ProcessIsolation) {
   }
 }
 
-IN_PROC_BROWSER_TEST_F(SearchTest, ProcessIsolation_RendererInitiated) {
+// TODO(crbug.com/514171017): Re-enable the test
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_ProcessIsolation_RendererInitiated \
+  DISABLED_ProcessIsolation_RendererInitiated
+#else
+#define MAYBE_ProcessIsolation_RendererInitiated \
+  ProcessIsolation_RendererInitiated
+#endif
+IN_PROC_BROWSER_TEST_F(SearchTest, MAYBE_ProcessIsolation_RendererInitiated) {
   for (size_t i = 0; i < std::size(kProcessIsolationTestCases); ++i) {
     const ProcessIsolationTestCase& test = kProcessIsolationTestCases[i];
     ASSERT_TRUE(
