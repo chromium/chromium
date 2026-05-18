@@ -247,8 +247,7 @@ bool IsSafeToApplyDefaultPinLayout(Profile* profile) {
   // If App sync is not yet started, don't apply default pin apps once synced
   // apps is likely override it. There is a case when App sync is disabled and
   // in last case local cache is available immediately.
-  if (sync_service->IsSyncFeatureEnabled() &&
-      settings->GetSelectedOsTypes().Has(
+  if (settings->GetSelectedOsTypes().Has(
           syncer::UserSelectableOsType::kOsApps) &&
       !app_list::AppListSyncableServiceFactory::GetForProfile(profile)
            ->IsSyncing()) {
@@ -257,8 +256,7 @@ bool IsSafeToApplyDefaultPinLayout(Profile* profile) {
 
   // If shelf pin layout rolls preference is not started yet then we cannot say
   // if we rolled layout or not.
-  if (sync_service->IsSyncFeatureEnabled() &&
-      settings->GetSelectedOsTypes().Has(
+  if (settings->GetSelectedOsTypes().Has(
           syncer::UserSelectableOsType::kOsPreferences) &&
       !PrefServiceSyncableFromProfile(profile)->AreOsPrefsSyncing()) {
     return false;

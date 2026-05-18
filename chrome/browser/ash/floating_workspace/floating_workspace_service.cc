@@ -137,8 +137,9 @@ void FloatingWorkspaceService::Init(
 void FloatingWorkspaceService::OnStateChanged(syncer::SyncService* sync) {
   MaybeStartOrStopCaptureBasedOnTabSyncSetting();
   UpdateUiStateIfNeeded();
-  // Prematurely return when sync feature is not active.
-  if (!sync_service_->IsSyncFeatureActive()) {
+  // Prematurely return when `WORKSPACE_DESK` is not syncing.
+  if (!sync_service_->GetActiveDataTypes().Has(
+          syncer::DataType::WORKSPACE_DESK)) {
     return;
   }
   if (!should_run_restore_) {
@@ -284,7 +285,8 @@ void FloatingWorkspaceService::UpdateUiStateIfNeeded() {
     FloatingWorkspaceDialog::ShowErrorScreen();
     return;
   }
-  if (!sync_service_->IsSyncFeatureActive()) {
+  if (!sync_service_->GetActiveDataTypes().Has(
+          syncer::DataType::WORKSPACE_DESK)) {
     FloatingWorkspaceDialog::ShowErrorScreen();
     return;
   }

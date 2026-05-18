@@ -228,6 +228,11 @@ bool SyncUserSettingsImpl::IsSyncAllOsTypesEnabled() const {
 }
 
 UserSelectableOsTypeSet SyncUserSettingsImpl::GetSelectedOsTypes() const {
+  if (delegate_->GetSyncAccountStateForPrefs() ==
+      SyncPrefs::SyncAccountState::kNotSignedIn) {
+    return UserSelectableOsTypeSet();
+  }
+
   UserSelectableOsTypeSet types = prefs_->GetSelectedOsTypes();
   types.RetainAll(GetRegisteredSelectableOsTypes());
   return types;
