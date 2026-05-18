@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] If a popover=auto is shown, it should hide any open popover=hint, including if the popover=hint is an ancestral popover of the popover=auto. (You can't nest a popover=auto inside a popover=hint)
+  assert_throws_dom: function "() => {\n      auto.showPopover();\n    }" did not throw
+Harness: the test ran to completion.
+
