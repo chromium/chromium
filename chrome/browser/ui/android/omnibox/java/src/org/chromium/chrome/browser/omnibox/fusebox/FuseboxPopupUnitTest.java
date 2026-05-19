@@ -15,6 +15,8 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
+import android.content.pm.ApplicationInfo;
+import android.content.res.Configuration;
 import android.os.Looper;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -38,16 +40,21 @@ import org.robolectric.Robolectric;
 import org.robolectric.Shadows;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.ContextUtils;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.PopupState;
 import org.chromium.components.omnibox.OmniboxCapabilities;
 import org.chromium.components.omnibox.OmniboxFeatures;
+import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.insets.InsetObserver;
 import org.chromium.ui.widget.AnchoredPopupWindow;
 import org.chromium.ui.widget.RectProvider;
+
+import java.util.Locale;
 
 /** Unit tests for FuseboxPopup. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -343,5 +350,62 @@ public class FuseboxPopupUnitTest {
         // Verify that updateLayout was called (which calls updateDesiredContentSize)
         verify(mPopupWindow, atLeastOnce())
                 .updateDesiredContentSize(any(Integer.class), eq(0), eq(true));
+    }
+
+    @Test
+    public void testLayoutDirection_Rtl() {
+        LocalizationUtils.setRtlForTesting(true);
+        mActivity.getApplicationInfo().flags |= ApplicationInfo.FLAG_SUPPORTS_RTL;
+        ContextUtils.getApplicationContext().getApplicationInfo().flags |=
+                ApplicationInfo.FLAG_SUPPORTS_RTL;
+
+        Configuration config = new Configuration(mActivity.getResources().getConfiguration());
+        config.setLayoutDirection(new Locale("ar"));
+        mActivity.getResources().updateConfiguration(config, null);
+        ResettersForTesting.register(
+                () -> {
+                    config.setLayoutDirection(Locale.getDefault());
+                    mActivity.getResources().updateConfiguration(config, null);
+                });
+
+        mContentView = LayoutInflater.from(mActivity).inflate(R.layout.fusebox_context_popup, null);
+        mActivity.setContentView(mContentView);
+        mFuseboxPopup =
+                new FuseboxPopup(
+                        mActivity,
+                        mWindowAndroid,
+                        mPopupWindow,
+                        mContentView,
+                        mDynamicRectProvider,
+                        /* isBottomSheet= */ false);
+
+        Shadows.shadowOf(Looper.getMainLooper()).idle();
+        assertEquals(View.LAYOUT_DIRECTION_RTL, mFuseboxPopup.mScrollView.getLayoutDirection());
+    }
+
+    @Test
+    public void testLayoutDirection_Ltr() {
+        LocalizationUtils.setRtlForTesting(false);
+        mActivity.getApplicationInfo().flags |= ApplicationInfo.FLAG_SUPPORTS_RTL;
+        ContextUtils.getApplicationContext().getApplicationInfo().flags |=
+                ApplicationInfo.FLAG_SUPPORTS_RTL;
+
+        Configuration config = new Configuration(mActivity.getResources().getConfiguration());
+        config.setLayoutDirection(Locale.getDefault());
+        mActivity.getResources().updateConfiguration(config, null);
+
+        mContentView = LayoutInflater.from(mActivity).inflate(R.layout.fusebox_context_popup, null);
+        mActivity.setContentView(mContentView);
+        mFuseboxPopup =
+                new FuseboxPopup(
+                        mActivity,
+                        mWindowAndroid,
+                        mPopupWindow,
+                        mContentView,
+                        mDynamicRectProvider,
+                        /* isBottomSheet= */ false);
+
+        Shadows.shadowOf(Looper.getMainLooper()).idle();
+        assertEquals(View.LAYOUT_DIRECTION_LTR, mFuseboxPopup.mScrollView.getLayoutDirection());
     }
 }
