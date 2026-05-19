@@ -426,6 +426,10 @@ TEST_P(SessionStorageImplTest, ShutdownDroppedChanges) {
                                true, 1);
   histograms.ExpectTotalCount("Storage.SessionStorage.ShutdownDroppedChanges",
                               2);
+
+  // Re-open the database, which allows test tear down to wait for shutdown to
+  // complete.
+  EnsureDatabaseOpen();
 }
 
 TEST_P(SessionStorageImplTest, CloneBeforeBrowserClone) {
