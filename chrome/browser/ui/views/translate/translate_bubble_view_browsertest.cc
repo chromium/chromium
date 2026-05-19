@@ -10,6 +10,7 @@
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
 #include "chrome/browser/translate/translate_test_utils.h"
@@ -20,12 +21,14 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/translate/translate_bubble_model.h"
+#include "chrome/browser/ui/translate/translate_bubble_test_utils.h"
 #include "chrome/browser/ui/views/translate/translate_bubble_controller.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/translate/core/browser/translate_manager.h"
+#include "components/translate/core/common/translate_features.h"
 #include "components/translate/core/common/translate_switches.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_switches.h"
@@ -90,6 +93,11 @@ class TranslateBubbleViewBrowserTest : public InProcessBrowserTest {
           TranslateWaiter::WaitEvent::kLanguageDetermined)
           ->Wait();
     }
+  }
+
+  void SwitchViewForTesting(TranslateBubbleView* bubble,
+                            TranslateBubbleModel::ViewState state) {
+    bubble->SwitchView(state);
   }
 };
 
@@ -244,6 +252,70 @@ IN_PROC_BROWSER_TEST_F(TranslateBubbleViewBrowserTest,
 
   bubble = TranslateBubbleController::From(browser())->GetTranslateBubble();
   EXPECT_FALSE(bubble);
+}
+
+class TranslateBubbleViewBrowserTest_SearchUIDisabled
+    : public TranslateBubbleViewBrowserTest {
+ public:
+  TranslateBubbleViewBrowserTest_SearchUIDisabled() {
+    feature_list_.InitAndDisableFeature(translate::kTranslateLanguageSearchUI);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(TranslateBubbleViewBrowserTest_SearchUIDisabled,
+                       SelectTargetLanguageByDisplayName) {
+  GURL french_url = GURL(embedded_test_server()->GetURL("/french_page.html"));
+  NavigateAndWaitForLanguageDetection(french_url, "fr");
+
+  TranslateBubbleView* bubble =
+      TranslateBubbleController::From(browser())->GetTranslateBubble();
+  ASSERT_TRUE(bubble);
+
+  // Switch to advanced target view
+  SwitchViewForTesting(bubble,
+                       TranslateBubbleModel::VIEW_STATE_TARGET_LANGUAGE);
+
+  // Select Spanish by display name
+  translate::test_utils::SelectTargetLanguageByDisplayName(browser(),
+                                                           u"Spanish");
+
+  EXPECT_EQ(bubble->model()->GetTargetLanguageIndex(),
+            bubble->model()->GetTargetLanguageIndexForCode("es").value());
+}
+
+class TranslateBubbleViewBrowserTest_SearchUIEnabled
+    : public TranslateBubbleViewBrowserTest {
+ public:
+  TranslateBubbleViewBrowserTest_SearchUIEnabled() {
+    feature_list_.InitAndEnableFeature(translate::kTranslateLanguageSearchUI);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(TranslateBubbleViewBrowserTest_SearchUIEnabled,
+                       SelectTargetLanguageByDisplayName) {
+  GURL french_url = GURL(embedded_test_server()->GetURL("/french_page.html"));
+  NavigateAndWaitForLanguageDetection(french_url, "fr");
+
+  TranslateBubbleView* bubble =
+      TranslateBubbleController::From(browser())->GetTranslateBubble();
+  ASSERT_TRUE(bubble);
+
+  // Switch to advanced target view
+  SwitchViewForTesting(bubble,
+                       TranslateBubbleModel::VIEW_STATE_TARGET_LANGUAGE);
+
+  // Select Spanish by display name
+  translate::test_utils::SelectTargetLanguageByDisplayName(browser(),
+                                                           u"Spanish");
+
+  EXPECT_EQ(bubble->model()->GetTargetLanguageIndex(),
+            bubble->model()->GetTargetLanguageIndexForCode("es").value());
 }
 
 }  // namespace translate

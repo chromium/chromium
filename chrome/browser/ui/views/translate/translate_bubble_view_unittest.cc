@@ -12,10 +12,16 @@
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/translate/translate_bubble_model.h"
+#include "chrome/browser/ui/views/controls/hover_button.h"
+#include "chrome/browser/ui/views/translate/translate_language_search_view.h"
 #include "chrome/grit/generated_resources.h"
+#include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "components/translate/core/browser/translate_prefs.h"
 #include "components/translate/core/common/translate_features.h"
+#include "content/public/test/test_renderer_host.h"
+#include "content/public/test/web_contents_tester.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/events/event_constants.h"
@@ -29,6 +35,7 @@
 #include "ui/views/controls/combobox/combobox.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/test/button_test_api.h"
+#include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
 
 namespace {
@@ -63,11 +70,23 @@ class MockTranslateBubbleModel : public TranslateBubbleModel {
   }
 
   std::u16string GetTargetLanguageNameAt(int index) const override {
+    if (index == 10) {
+      return u"Spanish";
+    }
+    if (index == 20) {
+      return u"French";
+    }
     return u"English";
   }
 
   std::optional<size_t> GetTargetLanguageIndexForCode(
       const std::string& language_code) const override {
+    if (language_code == "es") {
+      return 10;
+    }
+    if (language_code == "fr") {
+      return 20;
+    }
     return 1;
   }
 
@@ -187,6 +206,8 @@ class TranslateBubbleViewTest : public ChromeViewsTestBase {
         CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET,
                          views::Widget::InitParams::TYPE_WINDOW);
     anchor_widget_->Show();
+    web_contents_ =
+        content::WebContentsTester::CreateTestWebContents(&profile_, nullptr);
 
     mock_model_ = new MockTranslateBubbleModel(
         TranslateBubbleModel::VIEW_STATE_BEFORE_TRANSLATE);
@@ -196,7 +217,7 @@ class TranslateBubbleViewTest : public ChromeViewsTestBase {
     std::unique_ptr<TranslateBubbleModel> model(mock_model_);
     bubble_ = new TranslateBubbleView(
         views::BubbleAnchor(anchor_widget_->GetContentsView()),
-        std::move(model), translate::TranslateErrors::NONE, nullptr,
+        std::move(model), translate::TranslateErrors::NONE, web_contents_.get(),
         base::DoNothing());
     views::BubbleDialogDelegateView::CreateBubble(bubble_)->Show();
   }
@@ -229,6 +250,17 @@ class TranslateBubbleViewTest : public ChromeViewsTestBase {
     return bubble_->options_menu_model_.get();
   }
 
+  void SwitchView(TranslateBubbleModel::ViewState view_state) {
+    bubble_->SwitchView(view_state);
+  }
+
+  TranslateLanguageSearchView* translate_language_search_view() {
+    return bubble_->translate_language_search_view_;
+  }
+
+  TestingProfile profile_;
+  content::RenderViewHostTestEnabler test_render_host_factories_;
+  std::unique_ptr<content::WebContents> web_contents_;
   std::unique_ptr<views::Widget> anchor_widget_;
   raw_ptr<MockTranslateBubbleModel> mock_model_ = nullptr;
   raw_ptr<TranslateBubbleView> bubble_ = nullptr;
@@ -393,6 +425,7 @@ TEST_F(TranslateBubbleViewTest, TargetResetButton) {
   // Press the reset button. Language should change back to initial selection.
   PressButton(TranslateBubbleView::BUTTON_ID_RESET);
   EXPECT_EQ(2u, bubble_->target_language_combobox_->GetSelectedIndex());
+  EXPECT_FALSE(bubble_->advanced_reset_button_target_->GetEnabled());
 }
 
 TEST_F(TranslateBubbleViewTest, SourceDoneButton) {
@@ -641,4 +674,32 @@ TEST_F(TranslateBubbleViewTest,
           ->GetIndexOfCommandId(static_cast<int>(
               TranslateBubbleView::OptionsMenuItem::kChangeTargetLanguage))
           .has_value());
+}
+
+TEST_F(TranslateBubbleViewTest, RecentLanguagesShowUpInSearchView) {
+  base::test::ScopedFeatureList features(translate::kTranslateLanguageSearchUI);
+  // Mock some recent languages in prefs.
+  std::unique_ptr<translate::TranslatePrefs> translate_prefs =
+      std::make_unique<translate::TranslatePrefs>(profile_.GetPrefs());
+  translate_prefs->SetRecentTargetLanguage("es");
+  translate_prefs->SetRecentTargetLanguage("fr");
+
+  CreateAndShowBubble();
+  // Switch to target language view (which creates the search view).
+  SwitchView(TranslateBubbleModel::VIEW_STATE_TARGET_LANGUAGE);
+
+  TranslateLanguageSearchView* search_view = translate_language_search_view();
+  ASSERT_TRUE(search_view);
+
+  views::BoxLayoutView* list_view = search_view->get_list_view_for_testing();
+  ASSERT_TRUE(list_view);
+  // Verify that the list view contains the recent languages.
+  std::vector<std::u16string> button_texts;
+  for (views::View* child : list_view->children()) {
+    if (views::IsViewClass<HoverButton>(child)) {
+      button_texts.emplace_back(static_cast<HoverButton*>(child)->GetText());
+    }
+  }
+
+  EXPECT_THAT(button_texts, testing::IsSupersetOf({u"French", u"Spanish"}));
 }

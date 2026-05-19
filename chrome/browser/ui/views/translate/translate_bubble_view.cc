@@ -33,6 +33,7 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/controls/hover_button.h"
+#include "chrome/browser/ui/views/translate/translate_language_search_view.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
@@ -171,6 +172,7 @@ TranslateBubbleView::~TranslateBubbleView() {
   advanced_view_target_ = nullptr;
   source_language_combobox_ = nullptr;
   target_language_combobox_ = nullptr;
+  translate_language_search_view_ = nullptr;
   always_translate_checkbox_ = nullptr;
   advanced_always_translate_checkbox_ = nullptr;
   tabbed_pane_ = nullptr;
@@ -255,7 +257,7 @@ bool TranslateBubbleView::DidLanguageSelectionChange(
     return source_language_combobox_->GetSelectedIndex() !=
            previous_source_language_index_;
   } else {
-    return target_language_combobox_->GetSelectedIndex() !=
+    return static_cast<size_t>(model_->GetTargetLanguageIndex()) !=
            previous_target_language_index_;
   }
 }
@@ -267,10 +269,14 @@ void TranslateBubbleView::ResetLanguage() {
     model_->UpdateSourceLanguageIndex(
         source_language_combobox_->GetSelectedIndex().value());
   } else {
-    target_language_combobox_->SetSelectedIndex(
-        previous_target_language_index_);
-    model_->UpdateTargetLanguageIndex(
-        target_language_combobox_->GetSelectedIndex().value());
+    if (base::FeatureList::IsEnabled(translate::kTranslateLanguageSearchUI)) {
+      translate_language_search_view_->ResetLanguageIndex(
+          previous_target_language_index_);
+    } else {
+      target_language_combobox_->SetSelectedIndex(
+          previous_target_language_index_);
+    }
+    model_->UpdateTargetLanguageIndex(previous_target_language_index_);
   }
   UpdateAdvancedView();
 }
@@ -557,9 +563,13 @@ void TranslateBubbleView::SourceLanguageChanged() {
 }
 
 void TranslateBubbleView::TargetLanguageChanged() {
-  model_->ReportUIInteraction(translate::UIInteraction::kChangeTargetLanguage);
-  model_->UpdateTargetLanguageIndex(
+  TargetLanguageChangedWithIndex(
       target_language_combobox_->GetSelectedIndex().value());
+}
+
+void TranslateBubbleView::TargetLanguageChangedWithIndex(int language_index) {
+  model_->ReportUIInteraction(translate::UIInteraction::kChangeTargetLanguage);
+  model_->UpdateTargetLanguageIndex(language_index);
   UpdateAdvancedView();
 }
 
@@ -846,13 +856,31 @@ std::unique_ptr<views::View> TranslateBubbleView::CreateViewAdvancedSource() {
                             std::move(advanced_always_translate_checkbox));
 }
 
-std::unique_ptr<views::View> TranslateBubbleView::CreateViewAdvancedTarget() {
-  // Bubble title
-  std::unique_ptr<views::Label> target_language_title_label =
-      std::make_unique<views::Label>(
-          l10n_util::GetStringUTF16(IDS_TRANSLATE_BUBBLE_ADVANCED_TARGET),
-          views::style::CONTEXT_DIALOG_TITLE);
+std::unique_ptr<views::View>
+TranslateBubbleView::CreateSearchTargetLanguageView() {
+  // Get the list of recent target languages from translate prefs.
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents()->GetBrowserContext());
+  auto translate_prefs =
+      std::make_unique<translate::TranslatePrefs>(profile->GetPrefs());
+  std::vector<std::string> recent_target_codes =
+      translate_prefs->GetRecentTargetLanguages();
 
+  // Create the translate language search view.
+  auto translate_language_search_view =
+      std::make_unique<TranslateLanguageSearchView>(
+          model_.get(), recent_target_codes,
+          base::BindRepeating(
+              &TranslateBubbleView::TargetLanguageChangedWithIndex,
+              base::Unretained(this)));
+  translate_language_search_view->SetProperty(views::kElementIdentifierKey,
+                                              kTargetLanguageCombobox);
+  translate_language_search_view_ = translate_language_search_view.get();
+  return translate_language_search_view;
+}
+
+std::unique_ptr<views::View>
+TranslateBubbleView::CreateTargetLanguageComboboxView() {
   int target_default_index = model_->GetTargetLanguageIndex();
   auto target_language_combobox_model =
       std::make_unique<TargetLanguageComboboxModel>(target_default_index,
@@ -868,6 +896,18 @@ std::unique_ptr<views::View> TranslateBubbleView::CreateViewAdvancedTarget() {
       l10n_util::GetStringUTF16(
           IDS_TRANSLATE_BUBBLE_TARGET_LANG_COMBOBOX_ACCNAME));
   target_language_combobox_ = target_language_combobox.get();
+  return target_language_combobox;
+}
+
+std::unique_ptr<views::View> TranslateBubbleView::CreateViewAdvancedTarget() {
+  std::unique_ptr<views::View> child_view;
+
+  // Create the searchable target language view if the feature flag is enabled,
+  // otherwise create the target language combobox view.
+  child_view =
+      base::FeatureList::IsEnabled(translate::kTranslateLanguageSearchUI)
+          ? CreateSearchTargetLanguageView()
+          : CreateTargetLanguageComboboxView();
 
   auto advanced_reset_button = std::make_unique<views::MdTextButton>(
       base::BindRepeating(&TranslateBubbleView::ResetLanguage,
@@ -885,15 +925,19 @@ std::unique_ptr<views::View> TranslateBubbleView::CreateViewAdvancedTarget() {
   advanced_done_button_target_ = advanced_done_button.get();
   advanced_done_button_target_->SetProperty(views::kElementIdentifierKey,
                                             kTargetLanguageDoneButton);
+  std::unique_ptr<views::Label> target_language_title_label =
+      std::make_unique<views::Label>(
+          l10n_util::GetStringUTF16(IDS_TRANSLATE_BUBBLE_ADVANCED_TARGET),
+          views::style::CONTEXT_DIALOG_TITLE);
 
-  return CreateViewAdvanced(std::move(target_language_combobox),
+  return CreateViewAdvanced(std::move(child_view),
                             std::move(target_language_title_label),
                             std::move(advanced_reset_button),
                             std::move(advanced_done_button), nullptr);
 }
 
 std::unique_ptr<views::View> TranslateBubbleView::CreateViewAdvanced(
-    std::unique_ptr<views::Combobox> combobox,
+    std::unique_ptr<views::View> child_view,
     std::unique_ptr<views::Label> language_title_label,
     std::unique_ptr<views::Button> advanced_reset_button,
     std::unique_ptr<views::Button> advanced_done_button,
@@ -956,7 +1000,7 @@ std::unique_ptr<views::View> TranslateBubbleView::CreateViewAdvanced(
                                views::MaximumFlexSizeRule::kUnbounded)
           .WithOrder(2));
 
-  form_view->AddChildView(std::move(combobox));
+  form_view->AddChildView(std::move(child_view));
 
   auto button_row = std::make_unique<views::BoxLayoutView>();
   if (advanced_always_translate_checkbox) {

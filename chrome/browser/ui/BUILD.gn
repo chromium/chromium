@@ -4635,6 +4635,8 @@ static_library("ui") {
       "views/translate/translate_bubble_controller.h",
       "views/translate/translate_bubble_view.cc",
       "views/translate/translate_bubble_view.h",
+      "views/translate/translate_language_search_view.cc",
+      "views/translate/translate_language_search_view.h",
       "views/translate/translate_page_action_controller.cc",
       "views/translate/translate_page_action_controller.h",
       "views/update_recommended_message_box.cc",
