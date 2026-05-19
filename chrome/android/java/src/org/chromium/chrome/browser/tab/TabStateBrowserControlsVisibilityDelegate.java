@@ -275,44 +275,36 @@ public class TabStateBrowserControlsVisibilityDelegate extends BrowserControlsVi
         if (url.getScheme().equals(UrlConstants.CHROME_SCHEME)
                 || url.getScheme().equals(UrlConstants.CHROME_NATIVE_SCHEME)) {
             enableHidingBrowserControls = false;
-            recordBrowserControlsLockReason(LockReason.CHROME_URL);
             flags |= (1 << (int) LockReason.CHROME_URL);
         }
         if (SecurityStateModel.isContentDangerous(mTab.getWebContents())) {
             enableHidingBrowserControls = false;
-            recordBrowserControlsLockReason(LockReason.TAB_CONTENT_DANGEROUS);
             flags |= (1 << (int) LockReason.TAB_CONTENT_DANGEROUS);
         }
         if (mIsFocusedNodeEditable) {
             enableHidingBrowserControls = false;
-            recordBrowserControlsLockReason(LockReason.EDITABLE_NODE_FOCUS);
             flags |= (1 << (int) LockReason.EDITABLE_NODE_FOCUS);
         }
         if (mTab.isShowingErrorPage() || mTab.isRendererUnresponsive()) {
             enableHidingBrowserControls = false;
-            recordBrowserControlsLockReason(LockReason.TAB_ERROR);
             flags |= (1 << (int) LockReason.TAB_ERROR);
         }
         if (mTab.isHidden()) {
             enableHidingBrowserControls = false;
-            recordBrowserControlsLockReason(LockReason.TAB_HIDDEN);
             flags |= (1 << (int) LockReason.TAB_HIDDEN);
         }
         if (mIsFullscreenWaitingForLoad) {
             enableHidingBrowserControls = false;
-            recordBrowserControlsLockReason(LockReason.FULLSCREEN_LOADING);
             flags |= (1 << (int) LockReason.FULLSCREEN_LOADING);
         }
         // TODO(tedchoc): AccessibilityUtil and DeviceClassManager checks do not belong in Tab
         //                logic.  They should be moved to application level checks.
         if (ChromeAccessibilityUtil.get().isAccessibilityEnabled()) {
             enableHidingBrowserControls = false;
-            recordBrowserControlsLockReason(LockReason.A11Y_ENABLED);
             flags |= (1 << (int) LockReason.A11Y_ENABLED);
         }
         if (!DeviceClassManager.enableFullscreen()) {
             enableHidingBrowserControls = false;
-            recordBrowserControlsLockReason(LockReason.FULLSCREEN_DISABLED);
             flags |= (1 << (int) LockReason.FULLSCREEN_DISABLED);
         }
 
@@ -352,10 +344,5 @@ public class TabStateBrowserControlsVisibilityDelegate extends BrowserControlsVi
     public void onNodeAttributeUpdated(boolean editable, boolean password) {
         mIsFocusedNodeEditable = editable;
         updateVisibilityConstraints();
-    }
-
-    private static void recordBrowserControlsLockReason(@LockReason int reason) {
-        RecordHistogram.recordEnumeratedHistogram(
-                "Android.BrowserControls.LockedByTabState.Reason", reason, LockReason.NUM_TOTAL);
     }
 }

@@ -26,7 +26,6 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.cc.input.BrowserControlsState;
-import org.chromium.chrome.browser.tab.TabStateBrowserControlsVisibilityDelegate.LockReason;
 import org.chromium.components.security_state.ConnectionSecurityLevel;
 import org.chromium.components.security_state.SecurityStateModel;
 import org.chromium.components.security_state.SecurityStateModelJni;
@@ -200,19 +199,19 @@ public class TabStateBrowserControlsVisibilityDelegateTest {
     }
 
     @Test
-    public void testLockReasonHistogram_ChromeUrl() {
+    public void testLockedByTabState_ChromeUrl() {
         TabStateBrowserControlsVisibilityDelegate controlsVisibilityDelegate =
                 new TabStateBrowserControlsVisibilityDelegate(mTabImpl);
         doReturn(JUnitTestGURLs.NTP_URL).when(mTabImpl).getUrl();
         doReturn(mWebContents).when(mTabImpl).getWebContents();
 
-        try (var ignored = expectBrowserControlLocked(LockReason.CHROME_URL)) {
+        try (var ignored = expectBrowserControlLocked()) {
             controlsVisibilityDelegate.calculateVisibilityConstraints();
         }
     }
 
     @Test
-    public void testLockReasonHistogram_TabContentDagerous() {
+    public void testLockedByTabState_TabContentDagerous() {
         TabStateBrowserControlsVisibilityDelegate controlsVisibilityDelegate =
                 new TabStateBrowserControlsVisibilityDelegate(mTabImpl);
         doReturn(JUnitTestGURLs.BLUE_1).when(mTabImpl).getUrl();
@@ -221,52 +220,52 @@ public class TabStateBrowserControlsVisibilityDelegateTest {
                 .when(mSecurityStateModelNatives)
                 .getSecurityLevelForWebContents(mWebContents);
 
-        try (var ignored = expectBrowserControlLocked(LockReason.TAB_CONTENT_DANGEROUS)) {
+        try (var ignored = expectBrowserControlLocked()) {
             controlsVisibilityDelegate.calculateVisibilityConstraints();
         }
     }
 
     @Test
-    public void testLockReasonHistogram_EditableNodeFocus() {
+    public void testLockedByTabState_EditableNodeFocus() {
         TabStateBrowserControlsVisibilityDelegate controlsVisibilityDelegate =
                 new TabStateBrowserControlsVisibilityDelegate(mTabImpl);
         doReturn(JUnitTestGURLs.BLUE_1).when(mTabImpl).getUrl();
         doReturn(mWebContents).when(mTabImpl).getWebContents();
         controlsVisibilityDelegate.onNodeAttributeUpdated(true, true);
 
-        try (var ignored = expectBrowserControlLocked(LockReason.EDITABLE_NODE_FOCUS)) {
+        try (var ignored = expectBrowserControlLocked()) {
             controlsVisibilityDelegate.calculateVisibilityConstraints();
         }
     }
 
     @Test
-    public void testLockReasonHistogram_TabError() {
+    public void testLockedByTabState_TabError() {
         TabStateBrowserControlsVisibilityDelegate controlsVisibilityDelegate =
                 new TabStateBrowserControlsVisibilityDelegate(mTabImpl);
         doReturn(JUnitTestGURLs.BLUE_1).when(mTabImpl).getUrl();
         doReturn(mWebContents).when(mTabImpl).getWebContents();
         doReturn(true).when(mTabImpl).isShowingErrorPage();
 
-        try (var ignored = expectBrowserControlLocked(LockReason.TAB_ERROR)) {
+        try (var ignored = expectBrowserControlLocked()) {
             controlsVisibilityDelegate.calculateVisibilityConstraints();
         }
     }
 
     @Test
-    public void testLockReasonHistogram_TabHidden() {
+    public void testLockedByTabState_TabHidden() {
         TabStateBrowserControlsVisibilityDelegate controlsVisibilityDelegate =
                 new TabStateBrowserControlsVisibilityDelegate(mTabImpl);
         doReturn(JUnitTestGURLs.BLUE_1).when(mTabImpl).getUrl();
         doReturn(mWebContents).when(mTabImpl).getWebContents();
         doReturn(true).when(mTabImpl).isHidden();
 
-        try (var ignored = expectBrowserControlLocked(LockReason.TAB_HIDDEN)) {
+        try (var ignored = expectBrowserControlLocked()) {
             controlsVisibilityDelegate.calculateVisibilityConstraints();
         }
     }
 
     @Test
-    public void testLockReasonHistogram_IsLoadingFullscreen() {
+    public void testLockedByTabState_IsLoadingFullscreen() {
         when(mTabImpl.getUrl()).thenReturn(JUnitTestGURLs.BLUE_1);
         when(mNavigationHandle1.getNavigationId()).thenReturn(1L);
         when(mNavigationHandle1.getUrl()).thenReturn(JUnitTestGURLs.BLUE_1);
@@ -279,15 +278,14 @@ public class TabStateBrowserControlsVisibilityDelegateTest {
         // Set this after constructor to dodge the ImeAdapter#fromWebContents().
         when(mTabImpl.getWebContents()).thenReturn(mWebContents);
 
-        try (var ignored = expectBrowserControlLocked(LockReason.FULLSCREEN_LOADING)) {
+        try (var ignored = expectBrowserControlLocked()) {
             tabObserver.onDidStartNavigationInPrimaryMainFrame(mTabImpl, mNavigationHandle1);
         }
     }
 
-    HistogramWatcher expectBrowserControlLocked(@LockReason int reason) {
+    HistogramWatcher expectBrowserControlLocked() {
         return HistogramWatcher.newBuilder()
                 .expectBooleanRecord("Android.BrowserControls.LockedByTabState", true)
-                .expectIntRecord("Android.BrowserControls.LockedByTabState.Reason", reason)
                 .allowExtraRecordsForHistogramsAbove()
                 .build();
     }

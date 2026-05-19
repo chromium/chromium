@@ -908,18 +908,6 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/android/java/src/org/chromium/chrome/browser/document/ChromeLauncherActivity.java:BringTabToFrontResult) -->
 
-<enum name="BrowserControlsLockReason">
-  <summary>The reason why browser controls were locked.</summary>
-  <int value="0" label="CHROME_URL"/>
-  <int value="1" label="TAB_CONTENT_DANGEROUS"/>
-  <int value="2" label="EDITABLE_NODE_FOCUS"/>
-  <int value="3" label="TAB_ERROR"/>
-  <int value="4" label="TAB_HIDDEN"/>
-  <int value="5" label="FULLSCREEN_LOADING"/>
-  <int value="6" label="A11Y_ENABLED"/>
-  <int value="7" label="FULLSCREEN_DISABLED"/>
-</enum>
-
 <enum name="CacheQuotaFreshness">
   <int value="0" label="Value returned from memory"/>
   <int value="1" label="Value returned from prefs"/>
