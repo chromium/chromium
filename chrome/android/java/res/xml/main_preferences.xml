@@ -98,11 +98,6 @@ found in the LICENSE file.
         android:order="20"
         android:title="@string/options_homepage_title"/>
     <Preference
-        android:fragment="org.chromium.chrome.browser.toolbar.adaptive.settings.AdaptiveToolbarSettingsFragment"
-        android:key="toolbar_shortcut"
-        android:order="21"
-        android:title="@string/toolbar_shortcut"/>
-    <Preference
         android:key="notifications"
         android:order="22"
         android:title="@string/prefs_notifications"/>
@@ -111,11 +106,6 @@ found in the LICENSE file.
         android:key="appearance"
         android:order="23"
         android:title="@string/appearance_settings" />
-    <Preference
-        android:fragment="org.chromium.chrome.browser.night_mode.settings.ThemeSettingsFragment"
-        android:key="ui_theme"
-        android:order="24"
-        android:title="@string/theme_settings" />
     <Preference
         android:fragment="org.chromium.chrome.browser.glic.GlicSettings"
         android:key="glic"

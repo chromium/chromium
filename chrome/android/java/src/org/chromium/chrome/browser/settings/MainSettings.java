@@ -49,8 +49,6 @@ import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.glic.GlicEnabling;
 import org.chromium.chrome.browser.homepage.HomepageManager;
-import org.chromium.chrome.browser.night_mode.NightModeMetrics.ThemeSettingsEntry;
-import org.chromium.chrome.browser.night_mode.settings.ThemeSettingsFragment;
 import org.chromium.chrome.browser.password_manager.ManagePasswordsReferrer;
 import org.chromium.chrome.browser.password_manager.PasswordExportLauncher;
 import org.chromium.chrome.browser.password_manager.PasswordManagerHelper;
@@ -127,8 +125,6 @@ public class MainSettings extends ChromeBaseSettingsFragment
     public static final String PREF_PASSWORDS = "passwords";
     public static final String PREF_TABS = "tabs";
     public static final String PREF_HOMEPAGE = "homepage";
-    public static final String PREF_TOOLBAR_SHORTCUT = "toolbar_shortcut";
-    public static final String PREF_UI_THEME = "ui_theme";
     public static final String PREF_AUTOFILL_AND_PASSWORDS = "autofill_and_passwords";
     public static final String PREF_AUTOFILL_SECTION = "autofill_section";
     public static final String PREF_PRIVACY = "privacy";
@@ -426,28 +422,6 @@ public class MainSettings extends ChromeBaseSettingsFragment
             templateUrlService.load();
         }
 
-        if (!shouldShowAppearancePref()) {
-            removePreferenceIfPresent(PREF_APPEARANCE);
-            AppearanceSettingsFragment.shouldShowToolbarShortcutPrefAsync(
-                    getContext(),
-                    getProfile(),
-                    (shouldShow) -> {
-                        if (!shouldShow) removePreferenceIfPresent(PREF_TOOLBAR_SHORTCUT);
-                    });
-
-            // LINT.IfChange(InitPrefUiTheme)
-            findPreference(PREF_UI_THEME)
-                    .getExtras()
-                    .putInt(
-                            ThemeSettingsFragment.KEY_THEME_SETTINGS_ENTRY,
-                            ThemeSettingsEntry.SETTINGS);
-            // LINT.ThenChange(//chrome/android/java/src/org/chromium/chrome/browser/appearance/settings/AppearanceSettingsFragment.java:InitPrefUiTheme)
-        } else {
-            // NOTE: "Theme" and "Toolbar shortcut" move to "Appearance" settings when enabled.
-            removePreferenceIfPresent(PREF_TOOLBAR_SHORTCUT);
-            removePreferenceIfPresent(PREF_UI_THEME);
-        }
-
         if (!shouldShowSafetyHubPref()) {
             getPreferenceScreen().removePreference(findPreference(PREF_SAFETY_HUB));
         } else {
@@ -460,10 +434,6 @@ public class MainSettings extends ChromeBaseSettingsFragment
                                 return false;
                             });
         }
-    }
-
-    private static boolean shouldShowAppearancePref() {
-        return ChromeFeatureList.sAndroidAppearanceSettings.isEnabled();
     }
 
     private static boolean shouldShowSafetyHubPref() {
@@ -829,13 +799,11 @@ public class MainSettings extends ChromeBaseSettingsFragment
     }
 
     private void updateAppearancePreference() {
-        if (ChromeFeatureList.sAndroidAppearanceSettings.isEnabled()) {
-            updateNewPreferenceAndIncrementViewCount(
-                    findPreference(PREF_APPEARANCE),
-                    AppearanceSettingsFragment.getTitle(getContext()),
-                    ChromePreferenceKeys.APPEARANCE_SETTINGS_CLICKED,
-                    ChromePreferenceKeys.APPEARANCE_SETTINGS_VIEW_COUNT);
-        }
+        updateNewPreferenceAndIncrementViewCount(
+                findPreference(PREF_APPEARANCE),
+                AppearanceSettingsFragment.getTitle(getContext()),
+                ChromePreferenceKeys.APPEARANCE_SETTINGS_CLICKED,
+                ChromePreferenceKeys.APPEARANCE_SETTINGS_VIEW_COUNT);
     }
 
     private void updateNewPreferenceAndIncrementViewCount(
@@ -1015,23 +983,7 @@ public class MainSettings extends ChromeBaseSettingsFragment
                     if (!shouldShowNotificationPref(context, new Intent())) {
                         indexData.removeEntry(getUniqueId(PREF_NOTIFICATIONS));
                     }
-                    if (!shouldShowAppearancePref()) {
-                        indexData.removeEntry(getUniqueId(PREF_APPEARANCE));
-                        AppearanceSettingsFragment.shouldShowToolbarShortcutPrefAsync(
-                                context,
-                                profile,
-                                (shouldShow) -> {
-                                    if (!shouldShow) {
-                                        String prefFragment = MainSettings.class.getName();
-                                        indexData.removeEntryForKey(
-                                                prefFragment, PREF_TOOLBAR_SHORTCUT);
-                                    }
-                                });
 
-                    } else {
-                        indexData.removeEntry(getUniqueId(PREF_TOOLBAR_SHORTCUT));
-                        indexData.removeEntry(getUniqueId(PREF_UI_THEME));
-                    }
                     if (!shouldShowSafetyHubPref()) {
                         indexData.removeEntry(getUniqueId(PREF_SAFETY_HUB));
                     }

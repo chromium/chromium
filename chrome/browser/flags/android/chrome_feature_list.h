@@ -32,7 +32,6 @@ BASE_DECLARE_FEATURE(kAlwaysDrawCompositedToolbarHairline);
 BASE_DECLARE_FEATURE(kAndroidAnimatedProgressBarInViz);
 BASE_DECLARE_FEATURE(kAndroidAppIntegrationMultiDataSource);
 BASE_DECLARE_FEATURE(kAndroidAppRatingPrompt);
-BASE_DECLARE_FEATURE(kAndroidAppearanceSettings);
 BASE_DECLARE_FEATURE(kAndroidBookmarkBar);
 BASE_DECLARE_FEATURE(kAndroidBookmarkBarFastFollow);
 BASE_DECLARE_FEATURE(kAndroidBottomBar);
