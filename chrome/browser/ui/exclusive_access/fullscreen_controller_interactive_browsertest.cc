@@ -39,6 +39,7 @@
 #include "components/permissions/fake_usb_chooser_controller.h"
 #include "components/permissions/permission_request_manager.h"
 #include "components/permissions/test/mock_permission_request.h"
+#include "components/permissions/test/permission_request_observer.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/render_widget_host_view.h"
@@ -797,6 +798,45 @@ IN_PROC_BROWSER_TEST_F(FullscreenControllerInteractiveTest,
 
   ui_test_utils::FullscreenWaiter(browser(), {.tab_fullscreen = false}).Wait();
   ASSERT_FALSE(fullscreen_controller->IsTabFullscreen());
+
+  // While bubble is showing, tab fullscreen cannot be entered.
+  EXPECT_FALSE(content::ExecJs(web_contents,
+                               "document.documentElement.requestFullscreen()"));
+  ASSERT_FALSE(fullscreen_controller->IsTabFullscreen());
+
+  // Accept the permission request to close the bubble.
+  permission_request_manager->Accept(/*prompt_options=*/std::monostate());
+
+  // Now we should be able to enter tab fullscreen again.
+  EXPECT_TRUE(content::ExecJs(web_contents,
+                              "document.documentElement.requestFullscreen()"));
+  ASSERT_TRUE(fullscreen_controller->IsTabFullscreen());
+}
+
+// Tests that fullscreen cannot be entered while a permission prompt bubble
+// exits.
+IN_PROC_BROWSER_TEST_F(FullscreenControllerInteractiveTest,
+                       PermissionPromptPreventsTabFullscreen) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  FullscreenController* fullscreen_controller = browser()
+                                                    ->GetFeatures()
+                                                    .exclusive_access_manager()
+                                                    ->fullscreen_controller();
+
+  permissions::PermissionRequestObserver observer(web_contents);
+
+  // Request a permission to show the bubble.
+  permissions::PermissionRequestManager* permission_request_manager =
+      permissions::PermissionRequestManager::FromWebContents(web_contents);
+  permission_request_manager->AddRequest(
+      web_contents->GetPrimaryMainFrame(),
+      std::make_unique<permissions::MockPermissionRequest>(
+          permissions::RequestType::kGeolocation));
+
+  observer.Wait();
+  ASSERT_TRUE(observer.request_shown());
 
   // While bubble is showing, tab fullscreen cannot be entered.
   EXPECT_FALSE(content::ExecJs(web_contents,
