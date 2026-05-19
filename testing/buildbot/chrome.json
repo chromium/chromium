@@ -133,7 +133,6 @@
           "chromeos/tast_control_cq_tests.txt"
         ],
         "cros_test_tags": [
-          "group:mainline",
           "dep:chrome"
         ],
         "cros_test_tags_exclude": [
