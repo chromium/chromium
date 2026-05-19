@@ -28,6 +28,8 @@ constexpr char kDetachLogicPlaceholder[] =
     "window.gCrWebPlaceholderPageContextShouldDetach";
 constexpr char kOptimizeIPCPlaceholder[] =
     "window.gCrWebPlaceholderPageContextIPCOptimization";
+constexpr char kActionableOptimizationPlaceholder[] =
+    "window.gCrWebPlaceholderPageContextActionableOptimization";
 
 // Parses the JSON string into a base::Value.
 std::optional<base::Value> ParseJSONExtractionResult(
@@ -95,6 +97,9 @@ PageContextExtractorJavaScriptFeature::GetReplacements() {
         base::SysUTF16ToNSString(detach_script_block),
     base::SysUTF8ToNSString(kOptimizeIPCPlaceholder) :
             IsPageContextIPCOptimizationEnabled() ? @"true" : @"false",
+    base::SysUTF8ToNSString(kActionableOptimizationPlaceholder) :
+            IsPageContextIPCOptimizationActionableEnabled() ? @"true"
+                                                            : @"false",
   };
 }
 

@@ -6063,6 +6063,78 @@ TEST_P(PageContextWrapperTest,
   }
 }
 
+// Tests that the getClientRects heuristic correctly skips calls for single-line
+// elements and includes them for multi-line elements.
+TEST_P(PageContextWrapperTest,
+       PopulatePageContext_ApcV2_Geometry_Fragmentation_LineHeuristic) {
+  if (!IsRefactored()) {
+    GTEST_SKIP() << "ApcV2 not supported for the non-refactored APC wrapper";
+  }
+
+  // Div is 50px to force the width of the inner elements so that we can
+  // reliably determine if they are single or multiple lines.
+  // Heuristic is multiple line if height >= font_size * 1.5.
+  // 1. Single: Height will be ~20px (1 line), font-size=20px.
+  //    Heuristic: 20 < (20 * 1.5) -> No fragments.
+  // 2. Multi: Height will be at least ~24px (2 lines), font-size=12px.
+  //    Heuristic: 24 >= (12 * 1.5) -> Has fragments.
+  auto page_structure =
+      HtmlPage("Heuristic Test",
+               RawHtml("<div role='button' style='width: 50px;'>"
+                       "<a href='#' id='single' style='display: inline; "
+                       "font-size: 20px; line-height: 1.0;'>tiny</a>"
+                       "<br>"
+                       "<a href='#' id='multi' style='display: inline; "
+                       "font-size: 12px; line-height: 1.0; word-break: "
+                       "break-all;'>This is a longer text that wraps</a>"
+                       "</div>"));
+
+  std::string main_html = page_helper_->Build(page_structure);
+  web::test::LoadHtml(base::SysUTF8ToNSString(main_html),
+                      test_server_.GetURL(kMainPagePath), web_state());
+
+  PageContextWrapperConfig config =
+      PageContextWrapperConfigBuilder()
+          .SetUseRichExtraction(true)
+          .SetUseRichExtractionWithActionable(true)
+          .Build();
+
+  PageContextWrapperCallbackResponse response = RunPageContextWrapperWithConfig(
+      web_state(), config, ^(PageContextWrapper* wrapper) {
+        wrapper.shouldGetAnnotatedPageContent = YES;
+      });
+  ASSERT_TRUE(response.has_value());
+
+  std::unique_ptr<optimization_guide::proto::PageContext> page_context =
+      std::move(response.value());
+  ASSERT_TRUE(page_context);
+
+  const auto& actual_apc = page_context->annotated_page_content();
+  const auto& root = actual_apc.root_node();
+
+  // Find the nodes by the structure.
+  // The structure should be: Root -> Container Div -> [Anchor 'single', BR,
+  // Anchor 'multi']
+  ASSERT_GE(root.children_nodes_size(), 1);
+  const auto& container = root.children_nodes(0);
+  ASSERT_GE(container.children_nodes_size(), 2);
+
+  const auto& single_node = container.children_nodes(0);
+  const auto& multi_node = container.children_nodes(1);
+
+  // Verify 'single' has no fragments.
+  EXPECT_EQ(single_node.content_attributes()
+                .geometry()
+                .fragment_visible_bounding_boxes_size(),
+            0);
+
+  // Verify 'multi' has fragments.
+  EXPECT_GT(multi_node.content_attributes()
+                .geometry()
+                .fragment_visible_bounding_boxes_size(),
+            1);
+}
+
 // Tests extraction of geometry for inline-block, inline-grid and inline-flex
 // elements that have no fragment.
 TEST_P(PageContextWrapperTest,
@@ -6144,10 +6216,14 @@ TEST_P(PageContextWrapperTest,
 
   // Override `getClientRects()` with deterministic values to test
   // `addNodeGeometry` fragmentation filtering logic: only the non zero-width
-  // and non-zero-height rects should be accepted.
+  // and non-zero-height rects should be accepted. The bounding client rect
+  // need to be override so that the line heuristic consider it multi-line.
   CallJavascript(R"(
     (function() {
       const span = document.getElementById('target');
+      span.getBoundingClientRect = function() {
+        return { x: 10, y: 10, width: 100, height: 100 };
+      };
       span.getClientRects = function() {
         return [
           { x: 10, y: 10, width: 100, height: 20 }, // Valid
@@ -6220,10 +6296,14 @@ TEST_P(PageContextWrapperTest,
 
   // Override `getClientRects()` with deterministic values to test
   // `addNodeGeometry` fragmentation filtering logic: with the div's height
-  // defined earlier, the third row should be clipped.
+  // defined earlier, the third row should be clipped. The bounding client rect
+  // need to be override so that the line heuristic consider it multi-line.
   CallJavascript(R"(
     (function() {
       const span = document.getElementById('target');
+      span.getBoundingClientRect = function() {
+        return { x: 10, y: 10, width: 100, height: 100 };
+      };
       span.getClientRects = function() {
         return [
           { x: 10, y: 10, width: 50, height: 20 }, // Visible (within Y 0-50)

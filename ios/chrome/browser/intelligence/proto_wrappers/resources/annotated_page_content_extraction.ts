@@ -53,7 +53,6 @@ interface StyleCache {
   window?: Window;
 }
 
-// The last known pointer position.
 // Tags that we fundamentally do not support or that contain non-content data.
 const TAG_STYLE = 'STYLE';
 const TAG_SCRIPT = 'SCRIPT';
@@ -66,6 +65,11 @@ const TAG_OBJECT = 'OBJECT';
 const TAG_DATALIST = 'DATALIST';
 const TAG_HEAD = 'HEAD';
 const TAG_CAPTION = 'CAPTION';
+
+// The ratio of element height to font size above which an inline element is
+// likely to be multi-line. The HEURISTIC_HEIGHT_RATIO accounts for
+// typical line-height and minor padding/borders.
+const HEURISTIC_HEIGHT_RATIO = 1.5;
 
 // Media tags.
 const TAG_SVG = 'SVG';
@@ -307,6 +311,14 @@ const SPACE_SEPARATOR = /\s+/;
  */
 function isPageContextIPCOptimizationEnabled() {
   return (window as any).gCrWebPlaceholderPageContextIPCOptimization ?? false;
+}
+
+/**
+ * Returns true if page context actionable optimization is enabled.
+ */
+function isPageContextActionableOptimizationEnabled() {
+  return (window as any).gCrWebPlaceholderPageContextActionableOptimization ??
+      false;
 }
 
 /**
@@ -2468,6 +2480,75 @@ function toEnclosingRect(rect: Rect): Rect {
 }
 
 /**
+ * Populates fragmentVisibleBoundingBoxes in geometry if the element is found
+ * to be fragmented.
+ *
+ * @param element The HTML element to check and extract client rects from.
+ * @param style The element's computed style.
+ * @param elementRect The element's bounding box.
+ * @param clipToUse The clip rect to use, if any.
+ * @param geometry The geometry object to populate.
+ */
+function populateFragmentsIfNeeded(
+    element: HTMLElement, style: CSSStyleDeclaration|undefined,
+    elementRect: Rect, clipToUse: Rect|null, geometry: PageContentGeometry) {
+  if (isPageContextActionableOptimizationEnabled()) {
+    // Handle fragmentation (e.g., text wrapping across multiple lines).
+    // We only need to check for inline as inline-block, inline-flex,
+    // inline-grid are not fragmented: they return 1 client rect.
+    if (style?.display !== ATTR_DISPLAY_INLINE) {
+      return;
+    }
+
+    // To limit the number of calls to getClientRects, we apply a heuristic
+    // that checks if the element is likely single-line based on its bounding
+    // box height and font size: two lines of text require at least 2x the font
+    // size in height.
+    //
+    // False negatives occurs when a multi-line inline element has a very small
+    // CSS line-height (e.g., < 1.0) that causes lines to overlap. This makes
+    // the total height fail the threshold, but it is extremely rare as it
+    // renders the content unreadable.
+    //
+    // False positives occur when a single-line element has large vertical
+    // padding, large borders, or a very high CSS line-height, causing its
+    // bounding box height to exceed the threshold. This is safe because we
+    // subsequently evaluate `getClientRects()` and will correctly find that
+    // there is only 1 client rect, causing the function to return early with no
+    // side effects.
+    const fontSize = parseFloat(style.fontSize);
+
+    // Evaluate whether it is likely multiple lines. The HEURISTIC_HEIGHT_RATIO
+    // accounts for typical line-height and minor padding/borders. Note that
+    // margin are not included. If fontSize is NaN, it falls back to
+    // getClientRects.
+    if (elementRect.height < fontSize * HEURISTIC_HEIGHT_RATIO) {
+      return;
+    }
+  }
+
+  const clientRects = element.getClientRects();
+  // Fragmentation only happens if there is more than 1 rectangles.
+  if (clientRects.length <= 1) {
+    return;
+  }
+
+  const fragmentVisibleBoundingBoxes: Rect[] = [];
+  for (let i = 0; i < clientRects.length; i++) {
+    const rect = clientRects[i]!;
+    const fragmentRect = createRect(rect.x, rect.y, rect.width, rect.height);
+    const visibleFragmentRect =
+        clipToUse ? intersection(fragmentRect, clipToUse) : fragmentRect;
+    if (visibleFragmentRect.width > 0 && visibleFragmentRect.height > 0) {
+      fragmentVisibleBoundingBoxes.push(toEnclosingRect(visibleFragmentRect));
+    }
+  }
+  if (fragmentVisibleBoundingBoxes.length > 0) {
+    geometry.fragmentVisibleBoundingBoxes = fragmentVisibleBoundingBoxes;
+  }
+}
+
+/**
  * Calculates and adds geometry information to a node's content attributes.
  * This includes the element's bounding box and visible bounding box, adjusted
  * for any clipping from parent elements.
@@ -2532,30 +2613,7 @@ function addNodeGeometry(
       geometry.visibleBoundingBox = toEnclosingRect(visibleRect);
     }
 
-    // Handle fragmentation (e.g., text wrapping across multiple lines).
-    // We only need to check for inline as inline-block, inline-flex,
-    // inline-grid are not fragmented: they return 1 client rect.
-    if (style?.display === ATTR_DISPLAY_INLINE) {
-      const clientRects = element.getClientRects();
-      if (clientRects.length > 1) {
-        const fragmentVisibleBoundingBoxes: Rect[] = [];
-
-        for (let i = 0; i < clientRects.length; i++) {
-          const rect = clientRects[i]!;
-          const fragmentRect =
-              createRect(rect.x, rect.y, rect.width, rect.height);
-          const visibleFragmentRect = intersection(fragmentRect, clipToUse);
-          if (visibleFragmentRect.width > 0 && visibleFragmentRect.height > 0) {
-            fragmentVisibleBoundingBoxes.push(
-                toEnclosingRect(visibleFragmentRect));
-          }
-        }
-
-        if (fragmentVisibleBoundingBoxes.length > 0) {
-          geometry.fragmentVisibleBoundingBoxes = fragmentVisibleBoundingBoxes;
-        }
-      }
-    }
+    populateFragmentsIfNeeded(element, style, elementRect, clipToUse, geometry);
   }
 
   attributes.geometry = geometry;

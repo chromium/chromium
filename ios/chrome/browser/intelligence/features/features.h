@@ -365,6 +365,10 @@ BASE_DECLARE_FEATURE(kPageContextIPCOptimization);
 // Returns true if the PageContextIPCOptimization feature is enabled.
 bool IsPageContextIPCOptimizationEnabled();
 
+// Returns true if the actionable optimization is enabled within the IPC
+// optimization.
+bool IsPageContextIPCOptimizationActionableEnabled();
+
 // Enables the GeminiClientMigration feature.
 BASE_DECLARE_FEATURE(kGeminiClientMigration);
 

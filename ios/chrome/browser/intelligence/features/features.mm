@@ -749,8 +749,21 @@ bool IsPersistTabContextRichExtractionEnabled() {
 
 BASE_FEATURE(kPageContextIPCOptimization, base::FEATURE_DISABLED_BY_DEFAULT);
 
+const char kPageContextIPCOptimizationActionableParam[] = "enable_actionable";
+
+BASE_FEATURE_PARAM(bool,
+                   kPageContextIPCOptimizationActionable,
+                   &kPageContextIPCOptimization,
+                   kPageContextIPCOptimizationActionableParam,
+                   false);
+
 bool IsPageContextIPCOptimizationEnabled() {
   return base::FeatureList::IsEnabled(kPageContextIPCOptimization);
+}
+
+bool IsPageContextIPCOptimizationActionableEnabled() {
+  return IsPageContextIPCOptimizationEnabled() &&
+         kPageContextIPCOptimizationActionable.Get();
 }
 
 BASE_FEATURE(kGeminiClientMigration, base::FEATURE_DISABLED_BY_DEFAULT);
