@@ -378,14 +378,17 @@ BrowserProcessPlatformPart::browser_policy_connector_ash() {
       g_browser_process->browser_policy_connector());
 }
 
+void BrowserProcessPlatformPart::InitializeTimezoneResolverManager() {
+  CHECK(!timezone_resolver_manager_);
+  timezone_resolver_manager_ =
+      std::make_unique<ash::system::TimeZoneResolverManager>(
+          ash::SystemLocationProvider::GetInstance(),
+          session_manager::SessionManager::Get());
+}
+
 ash::system::TimeZoneResolverManager*
 BrowserProcessPlatformPart::GetTimezoneResolverManager() {
-  if (!timezone_resolver_manager_.get()) {
-    timezone_resolver_manager_ =
-        std::make_unique<ash::system::TimeZoneResolverManager>(
-            ash::SystemLocationProvider::GetInstance(),
-            session_manager::SessionManager::Get());
-  }
+  CHECK(timezone_resolver_manager_);
   return timezone_resolver_manager_.get();
 }
 

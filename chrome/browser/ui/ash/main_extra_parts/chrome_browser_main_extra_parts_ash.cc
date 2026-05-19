@@ -389,10 +389,6 @@ void ChromeBrowserMainExtraPartsAsh::PreProfileInit() {
         std::make_unique<ExoAppTypeResolver>());
   }
 
-  // Result is unused, but `TimezoneResolverManager` must be created here for
-  // its internal initialization to succeed.
-  g_browser_process->platform_part()->GetTimezoneResolverManager();
-
   annotator_client_ = std::make_unique<AnnotatorClientImpl>();
 
   boca_client_ = std::make_unique<ash::boca::BocaAppClientImpl>();

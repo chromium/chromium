@@ -279,6 +279,12 @@ class WizardControllerTestBase : public ::testing::Test {
         test_context_factories_->GetContextFactory());
     ash_test_helper_->SetUp(std::move(params));
 
+    // Initialize TimezoneResolverManager here because it depends on
+    // SystemLocationProvider, which is initialized in AshTestHelper::SetUp.
+    TestingBrowserProcess::GetGlobal()
+        ->platform_part()
+        ->InitializeTimezoneResolverManager();
+
     wallpaper_controller_client_ = std::make_unique<
         WallpaperControllerClientImpl>(
         CHECK_DEREF(TestingBrowserProcess::GetGlobal()->local_state()),

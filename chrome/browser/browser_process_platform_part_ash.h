@@ -107,6 +107,8 @@ class BrowserProcessPlatformPart : public BrowserProcessPlatformPartBase {
   // primary profile.
   void InitializePrimaryProfileServices(Profile* primary_profile);
 
+  void InitializeTimezoneResolverManager();
+
   // Used to register a KeepAlive when Ash is initialized, and release it
   // when until Chrome starts exiting. Ensure we stay running the whole time.
   void RegisterKeepAlive();
