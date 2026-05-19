@@ -244,15 +244,15 @@ class FormFieldParser {
 
   // Initial values assigned to FieldCandidates by their corresponding parsers.
   // There's an implicit precedence determined by the values assigned here.
-  // Email is currently the most important followed by OneTimeCode, Phone,
-  // Travel, Address, Credit Card, IBAN, Price, Loyalty Card, Name, Merchant
-  // promo code, and Search.
+  // Email is currently the most important followed by Phone,
+  // Travel, Address, Credit Card, OneTimeCode, IBAN, Price, Loyalty Card, Name,
+  // Merchant promo code, and Search.
   static constexpr float kBaseEmailParserScore = 1.4f;
-  static constexpr float kBaseOneTimeCodeParserScore = 1.35f;
   static constexpr float kBasePhoneParserScore = 1.3f;
   static constexpr float kBaseTravelParserScore = 1.2f;
   static constexpr float kBaseAddressParserScore = 1.1f;
   static constexpr float kBaseCreditCardParserScore = 1.0f;
+  static constexpr float kBaseOneTimeCodeParserScore = 0.99f;
   static constexpr float kBaseIbanParserScore = 0.975f;
   static constexpr float kBasePriceParserScore = 0.95f;
   static constexpr float kBaseLoyaltyCardParserScore = 0.95f;
