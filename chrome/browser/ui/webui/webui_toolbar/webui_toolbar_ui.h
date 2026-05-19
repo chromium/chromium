@@ -17,7 +17,6 @@
 #include "chrome/browser/ui/webui/webui_toolbar/toolbar_ui_service.h"
 #include "components/browser_apis/browser_controls/browser_controls_api.mojom-forward.h"
 #include "components/browser_apis/browser_controls/browser_controls_api_data_model.mojom.h"
-#include "components/browser_apis/ui_controllers/toolbar/extensions_bar.mojom.h"
 #include "components/browser_apis/ui_controllers/toolbar/toolbar_ui_api.mojom.h"
 #include "content/public/browser/webui_config.h"
 #include "content/public/common/url_constants.h"
@@ -35,8 +34,7 @@ class CommandUpdater;
 // initialization. The controller is not ready to use until after
 // Init() is called.
 class WebUIToolbarUI : public TopChromeWebUIController,
-                       public help_bubble::mojom::HelpBubbleHandlerFactory,
-                       public extensions_bar::mojom::PageHandlerFactory {
+                       public help_bubble::mojom::HelpBubbleHandlerFactory {
  public:
   // Provides dependencies to this controller during init.
   class DependencyProvider {
@@ -76,10 +74,6 @@ class WebUIToolbarUI : public TopChromeWebUIController,
       mojo::PendingReceiver<tracked_element::mojom::TrackedElementHandler>
           receiver);
 
-  void BindInterface(
-      mojo::PendingReceiver<extensions_bar::mojom::PageHandlerFactory>
-          receiver);
-
   // Implements support for help bubbles (IPH, tutorials, etc.) in settings
   // pages.
   void BindInterface(
@@ -110,12 +104,6 @@ class WebUIToolbarUI : public TopChromeWebUIController,
   void CreateHelpBubbleHandler(
       mojo::PendingRemote<help_bubble::mojom::HelpBubbleClient> client,
       mojo::PendingReceiver<help_bubble::mojom::HelpBubbleHandler> handler)
-      override;
-
-  // extensions_bar::mojom::PageHandlerFactory:
-  void CreatePageHandler(
-      mojo::PendingRemote<extensions_bar::mojom::Page> page,
-      mojo::PendingReceiver<extensions_bar::mojom::PageHandler> receiver)
       override;
 
   content::WebUIController::DisplayDisposition GetDisplayDisposition()
@@ -172,9 +160,6 @@ class WebUIToolbarUI : public TopChromeWebUIController,
   std::unique_ptr<user_education::HelpBubbleHandler> help_bubble_handler_;
   mojo::Receiver<help_bubble::mojom::HelpBubbleHandlerFactory>
       help_bubble_service_{this};
-
-  mojo::Receiver<extensions_bar::mojom::PageHandlerFactory>
-      extensions_bar_page_factory_receiver_{this};
 
   /////////////////////////////////////////////////////////////////////////////
 
