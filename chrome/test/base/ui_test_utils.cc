@@ -588,7 +588,9 @@ FullscreenWaiter::FullscreenWaiter(BrowserWindowInterface* browser,
       // sequence in nested RunLoop.
       run_loop_(base::RunLoop::Type::kNestableTasksAllowed),
       satisfied_(IsSatisfied()) {
-  observation_.Observe(controller_);
+  subscription_ = controller_->RegisterOnFullscreenStateChanged(
+      base::BindRepeating(&FullscreenWaiter::OnFullscreenStateChanged,
+                          base::Unretained(this)));
 }
 
 FullscreenWaiter::~FullscreenWaiter() = default;

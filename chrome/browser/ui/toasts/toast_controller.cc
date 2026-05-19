@@ -25,6 +25,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/desktop_browser_window_capabilities.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
+#include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
 #include "chrome/browser/ui/fullscreen/browser_window_fullscreen_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_tab_helper.h"
 #include "chrome/browser/ui/toasts/api/toast_id.h"
@@ -160,7 +161,7 @@ void ToastController::OnWidgetDestroyed(views::Widget* widget) {
   toast_view_ = nullptr;
   toast_widget_ = nullptr;
   toast_observer_.Reset();
-  fullscreen_observation_.Reset();
+  fullscreen_subscription_ = {};
   toast_close_timer_.Stop();
 
   if (browser_window_interface_ &&
@@ -342,9 +343,12 @@ void ToastController::CreateToast(ToastParams params,
   toast_view_->GetBubbleFrameView()->bubble_border()->set_draw_border_stroke(
       false);
   toast_observer_.Observe(toast_widget_);
-  fullscreen_observation_.Observe(
+  fullscreen_subscription_ =
       browser_window_interface_->GetExclusiveAccessManager()
-          ->fullscreen_controller());
+          ->fullscreen_controller()
+          ->RegisterOnFullscreenStateChanged(
+              base::BindRepeating(&ToastController::OnFullscreenStateChanged,
+                                  base::Unretained(this)));
   toast_widget_->SetVisibilityChangedAnimationsEnabled(false);
   // Set the the focus traversable parent of the toast widget to be the parent
   // of the anchor view, so that when focus leaves the toast, the search for the

@@ -41,6 +41,7 @@
 #include "chrome/browser/ui/desktop_to_mobile_promos/ios_promo_trigger_service.h"
 #include "chrome/browser/ui/desktop_to_mobile_promos/ios_promo_trigger_service_factory.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
+#include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
 #include "chrome/browser/ui/hats/hats_service.h"
 #include "chrome/browser/ui/hats/hats_service_factory.h"
 #include "chrome/browser/ui/lens/lens_help_menu_utils.h"
@@ -240,7 +241,7 @@ void LensOverlayController::CloseUI() {
   page_.reset();
   languages_controller_.reset();
   pending_region_.reset();
-  fullscreen_observation_.Reset();
+  fullscreen_subscription_ = {};
   use_aim_for_visual_search_ = false;
   lens_selection_type_ = lens::UNKNOWN_SELECTION_TYPE;
 
@@ -727,9 +728,13 @@ void LensOverlayController::ShowUI(
     }
   }
   ShowModalUI();
-  fullscreen_observation_.Observe(tab_->GetBrowserWindowInterface()
-                                      ->GetExclusiveAccessManager()
-                                      ->fullscreen_controller());
+  fullscreen_subscription_ =
+      tab_->GetBrowserWindowInterface()
+          ->GetExclusiveAccessManager()
+          ->fullscreen_controller()
+          ->RegisterOnFullscreenStateChanged(base::BindRepeating(
+              &LensOverlayController::OnFullscreenStateChanged,
+              base::Unretained(this)));
 
   NotifyUserEducationAboutOverlayUsed();
 

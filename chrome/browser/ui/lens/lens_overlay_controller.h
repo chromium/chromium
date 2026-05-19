@@ -24,8 +24,7 @@
 #include "chrome/browser/lens/core/mojom/page_content_type.mojom.h"
 #include "chrome/browser/lens/core/mojom/text.mojom.h"
 #include "chrome/browser/themes/theme_service.h"
-#include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
-#include "chrome/browser/ui/exclusive_access/fullscreen_observer.h"
+#include "base/callback_list.h"
 #include "chrome/browser/ui/lens/lens_overlay_blur_layer_delegate.h"
 #include "chrome/browser/ui/lens/lens_overlay_colors.h"
 #include "chrome/browser/ui/lens/lens_overlay_gen204_controller.h"
@@ -99,7 +98,6 @@ enum class SidePanelEntryHideReason;
 // thread.
 class LensOverlayController : public OverlayBaseController,
                               public lens::mojom::LensPageHandler,
-                              public FullscreenObserver,
                               public OmniboxTabHelper::Observer,
                               public find_in_page::FindResultObserver {
  public:
@@ -621,8 +619,8 @@ class LensOverlayController : public OverlayBaseController,
   bool HandleKeyboardEvent(content::WebContents* source,
                            const input::NativeWebKeyboardEvent& event) override;
 
-  // FullscreenObserver:
-  void OnFullscreenStateChanged() override;
+  // Called when the browser window's fullscreen state changes.
+  void OnFullscreenStateChanged();
 
   // OmniboxTabHelper::Observer:
   void OnOmniboxInputStateChanged() override {}
@@ -916,9 +914,8 @@ class LensOverlayController : public OverlayBaseController,
   // State that is scoped to the browser window must be reset when the tab is
   // backgrounded, since the tab may move between browser windows.
 
-  // Observer to check for browser window entering fullscreen.
-  base::ScopedObservation<FullscreenController, FullscreenObserver>
-      fullscreen_observation_{this};
+  // Subscription to be notified when the browser window enters fullscreen.
+  base::CallbackListSubscription fullscreen_subscription_;
 
   // Observer to check if the user is using CTRL/CMD+F while the overlay is
   // open.

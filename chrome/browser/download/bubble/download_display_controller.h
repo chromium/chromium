@@ -5,8 +5,7 @@
 #ifndef CHROME_BROWSER_DOWNLOAD_BUBBLE_DOWNLOAD_DISPLAY_CONTROLLER_H_
 #define CHROME_BROWSER_DOWNLOAD_BUBBLE_DOWNLOAD_DISPLAY_CONTROLLER_H_
 
-#include <memory>
-
+#include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/power_monitor/power_observer.h"
 #include "base/timer/timer.h"
@@ -79,8 +78,8 @@ class DownloadDisplayController : public base::PowerSuspendObserver {
   // BrowserWindow.
   void ListenToFullScreenChanges();
 
-  // Called by FullscreenObservationHelper when the browser's fullscreen
-  // state changes. Also invoked directly from tests.
+  // Called when the browser's fullscreen state changes. Also invoked
+  // directly from tests.
   void OnFullscreenStateChanged();
 
   // PowerSuspendObserver
@@ -95,9 +94,6 @@ class DownloadDisplayController : public base::PowerSuspendObserver {
       scoped_refptr<base::SequencedTaskRunner> task_runner);
 
  private:
-  // Observes FullscreenController and forwards events to the parent.
-  class FullscreenObservationHelper;
-
   friend class DownloadDisplayControllerTest;
 
   // Gets info about all models to display and progress ring info from the
@@ -133,7 +129,7 @@ class DownloadDisplayController : public base::PowerSuspendObserver {
   // The pointer is created in ToolbarView and owned by ToolbarView.
   raw_ptr<DownloadDisplay> const display_;
   raw_ptr<BrowserWindowInterface> browser_;
-  std::unique_ptr<FullscreenObservationHelper> fullscreen_observation_helper_;
+  base::CallbackListSubscription fullscreen_subscription_;
   base::OneShotTimer icon_disappearance_timer_;
   base::OneShotTimer icon_inactive_timer_;
   bool fullscreen_notification_shown_ = false;

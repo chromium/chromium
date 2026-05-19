@@ -7,14 +7,13 @@
 
 #include <optional>
 
+#include "base/callback_list.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/observer_list.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_controller_base.h"
-#include "chrome/browser/ui/exclusive_access/fullscreen_observer.h"
 #include "chrome/browser/ui/exclusive_access/fullscreen_tab_params.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "content/public/browser/fullscreen_types.h"
@@ -66,8 +65,9 @@ class FullscreenController : public ExclusiveAccessControllerBase {
 
   ~FullscreenController() override;
 
-  void AddObserver(FullscreenObserver* observer);
-  void RemoveObserver(FullscreenObserver* observer);
+  // Subscribe to be notified whenever the fullscreen state changes.
+  base::CallbackListSubscription RegisterOnFullscreenStateChanged(
+      base::RepeatingClosure callback);
 
   static int64_t GetDisplayId(const content::WebContents& web_contents);
 
@@ -274,7 +274,7 @@ class FullscreenController : public ExclusiveAccessControllerBase {
   std::unique_ptr<PopunderPreventer> popunder_preventer_;
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-  base::ObserverList<FullscreenObserver> observer_list_;
+  base::RepeatingClosureList fullscreen_state_changed_callbacks_;
 
   // Recorded when the controller switches to fullscreen or when the fullscreen
   // window state changes, which ever comes first.

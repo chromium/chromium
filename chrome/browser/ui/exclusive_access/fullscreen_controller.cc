@@ -13,7 +13,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/notimplemented.h"
-#include "base/observer_list.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "chrome/browser/app_mode/app_mode_utils.h"
@@ -75,12 +74,10 @@ FullscreenController::FullscreenController(ExclusiveAccessManager* manager)
 
 FullscreenController::~FullscreenController() = default;
 
-void FullscreenController::AddObserver(FullscreenObserver* observer) {
-  observer_list_.AddObserver(observer);
-}
-
-void FullscreenController::RemoveObserver(FullscreenObserver* observer) {
-  observer_list_.RemoveObserver(observer);
+base::CallbackListSubscription
+FullscreenController::RegisterOnFullscreenStateChanged(
+    base::RepeatingClosure callback) {
+  return fullscreen_state_changed_callbacks_.Add(std::move(callback));
 }
 
 int64_t FullscreenController::GetDisplayId(const WebContents& web_contents) {
@@ -506,9 +503,7 @@ void FullscreenController::PostFullscreenChangeNotification() {
 }
 
 void FullscreenController::NotifyFullscreenChange() {
-  for (auto& observer : observer_list_) {
-    observer.OnFullscreenStateChanged();
-  }
+  fullscreen_state_changed_callbacks_.Notify();
 }
 
 void FullscreenController::NotifyTabExclusiveAccessLost() {

@@ -24,7 +24,6 @@ source_set("exclusive_access") {
     "exclusive_access_permission_manager.h",
     "fullscreen_controller.cc",
     "fullscreen_controller.h",
-    "fullscreen_observer.h",
     "fullscreen_tab_params.h",
     "fullscreen_within_tab_helper.cc",
     "fullscreen_within_tab_helper.h",

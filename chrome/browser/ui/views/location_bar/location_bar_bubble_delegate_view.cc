@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/location_bar/location_bar_bubble_delegate_view.h"
 
 #include "base/check_is_test.h"
+#include "base/functional/bind.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -102,13 +103,16 @@ LocationBarBubbleDelegateView::LocationBarBubbleDelegateView(
     if (tab) {
       BrowserWindowInterface* const browser = tab->GetBrowserWindowInterface();
       if (browser) {
-        fullscreen_observation_.Observe(browser->GetFeatures()
-                                            .exclusive_access_manager()
-                                            ->fullscreen_controller());
-        fullscreen_controller_ = browser->GetFeatures()
-                                     .exclusive_access_manager()
-                                     ->fullscreen_controller()
-                                     ->GetWeakPtr();
+        FullscreenController* const fullscreen_controller =
+            browser->GetFeatures()
+                .exclusive_access_manager()
+                ->fullscreen_controller();
+        fullscreen_subscription_ =
+            fullscreen_controller->RegisterOnFullscreenStateChanged(
+                base::BindRepeating(
+                    &LocationBarBubbleDelegateView::OnFullscreenStateChanged,
+                    base::Unretained(this)));
+        fullscreen_controller_ = fullscreen_controller->GetWeakPtr();
       }
     }
   }

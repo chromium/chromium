@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_context.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
+#include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
 #include "chrome/browser/ui/lens/lens_overlay_controller.h"
 #include "chrome/browser/ui/lens/lens_overlay_side_panel_coordinator.h"
 #include "chrome/browser/ui/lens/lens_search_controller.h"
@@ -109,9 +110,12 @@ void LensOverlayEntryPointController::Initialize(
   command_updater_ = command_updater;
 
   // Observe changes to fullscreen state.
-  fullscreen_observation_.Observe(
+  fullscreen_subscription_ =
       browser_window_interface_->GetExclusiveAccessManager()
-          ->fullscreen_controller());
+          ->fullscreen_controller()
+          ->RegisterOnFullscreenStateChanged(base::BindRepeating(
+              &LensOverlayEntryPointController::OnFullscreenStateChanged,
+              base::Unretained(this)));
 
   // Observe changes to user's DSE.
   if (auto* const template_url_service =
@@ -153,8 +157,8 @@ LensOverlayEntryPointController::~LensOverlayEntryPointController() {
 }
 
 bool LensOverlayEntryPointController::IsEnabled() const {
-  // This class is initialized if and only if it is observing.
-  if (!fullscreen_observation_.IsObserving()) {
+  // This class is initialized if and only if it is subscribed.
+  if (!fullscreen_subscription_) {
     return false;
   }
 

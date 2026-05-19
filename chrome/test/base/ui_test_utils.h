@@ -10,11 +10,11 @@
 #include <string_view>
 #include <vector>
 
+#include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
-#include "chrome/browser/ui/exclusive_access/fullscreen_observer.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/view_ids.h"
@@ -243,7 +243,7 @@ bool MaximizeAndWaitUntilUIUpdateDone(BrowserWindowInterface& browser);
 // OnFullscreenStateChanged invocation to deal with the situation.
 // Once the condition is met, this class remembers the state, so following
 // Wait() will do nothing, even if the condition is changed once again.
-class FullscreenWaiter : public FullscreenObserver {
+class FullscreenWaiter {
  public:
   // The conditions to be satisfied. std::nullopt means to ignore the
   // value.
@@ -265,7 +265,7 @@ class FullscreenWaiter : public FullscreenObserver {
 
   FullscreenWaiter(const FullscreenWaiter&) = delete;
   FullscreenWaiter& operator=(const FullscreenWaiter&) = delete;
-  ~FullscreenWaiter() override;
+  ~FullscreenWaiter();
 
   // Waits for the fullscreen state(s) to be satisfied.
   // Once it is satisfied after creation, this will do nothing,
@@ -273,17 +273,16 @@ class FullscreenWaiter : public FullscreenObserver {
   // the condition on calling Wait().
   void Wait();
 
-  // FullscreenObserver:
-  void OnFullscreenStateChanged() override;
-
  private:
+  // Invoked when FullscreenController notifies of a state change.
+  void OnFullscreenStateChanged();
+
   // Checks whether the condition is satisfied now.
   bool IsSatisfied() const;
 
   const Expectation expectation_;
   const raw_ptr<FullscreenController> controller_;
-  base::ScopedObservation<FullscreenController, FullscreenObserver>
-      observation_{this};
+  base::CallbackListSubscription subscription_;
   base::RunLoop run_loop_{base::RunLoop::Type::kNestableTasksAllowed};
 
   // Caches if the condition is satisfied even once.
