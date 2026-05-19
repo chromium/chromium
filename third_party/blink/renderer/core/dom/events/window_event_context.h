@@ -36,6 +36,7 @@ class EventTarget;
 class Event;
 class LocalDOMWindow;
 class NodeEventContext;
+class TouchEventContext;
 
 class WindowEventContext : public GarbageCollected<WindowEventContext> {
  public:
@@ -54,6 +55,7 @@ class WindowEventContext : public GarbageCollected<WindowEventContext> {
   Member<LocalDOMWindow> window_;
   Member<EventTarget> target_;
   Member<EventTarget> related_target_;
+  Member<TouchEventContext> touch_event_context_;
 };
 
 inline LocalDOMWindow* WindowEventContext::Window() const {
