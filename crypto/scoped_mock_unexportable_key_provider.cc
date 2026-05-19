@@ -43,6 +43,17 @@ class ForwardingUnexportableKeyProvider : public UnexportableKeyProvider {
     return provider_->FromWrappedSigningKeySlowly(wrapped_key);
   }
 
+  std::unique_ptr<UnexportableAttestationKey> GenerateAttestationKeySlowly(
+      base::span<const SignatureVerifier::SignatureAlgorithm>
+          acceptable_algorithms) override {
+    return provider_->GenerateAttestationKeySlowly(acceptable_algorithms);
+  }
+
+  std::unique_ptr<UnexportableAttestationKey> FromWrappedAttestationKeySlowly(
+      base::span<const uint8_t> wrapped_key) override {
+    return provider_->FromWrappedAttestationKeySlowly(wrapped_key);
+  }
+
   StatefulUnexportableKeyProvider* AsStatefulUnexportableKeyProvider()
       override {
     return provider_->AsStatefulUnexportableKeyProvider();
@@ -57,14 +68,16 @@ std::unique_ptr<UnexportableKeyProvider> GetMockKeyProvider() {
       g_mock_provider->mock());
 }
 
-std::unique_ptr<UnexportableSigningKey> GetNextGeneratedKey(
-    base::queue<std::unique_ptr<UnexportableSigningKey>>& next_generated_keys) {
-  std::unique_ptr<UnexportableSigningKey> next_generated_key;
-  if (!next_generated_keys.empty()) {
-    next_generated_key = std::move(next_generated_keys.front());
-    next_generated_keys.pop();
+// Tries to pop the next key from the queue. Returns `nullptr` if the queue
+// is empty.
+template <typename KeyT>
+std::unique_ptr<KeyT> TryPopNextKey(base::queue<std::unique_ptr<KeyT>>& keys) {
+  std::unique_ptr<KeyT> key;
+  if (!keys.empty()) {
+    key = std::move(keys.front());
+    keys.pop();
   }
-  return next_generated_key;
+  return key;
 }
 
 }  // namespace
@@ -82,11 +95,19 @@ ScopedMockUnexportableKeyProvider::ScopedMockUnexportableKeyProvider() {
         return algorithms.empty() ? std::nullopt : std::optional(algorithms[0]);
       });
   ON_CALL(mock_provider_, GenerateSigningKeySlowly).WillByDefault([this](auto) {
-    return GetNextGeneratedKey(next_generated_keys_);
+    return TryPopNextKey(next_generated_keys_);
   });
   ON_CALL(mock_provider_, FromWrappedSigningKeySlowly)
       .WillByDefault(
-          [this](auto) { return GetNextGeneratedKey(next_generated_keys_); });
+          [this](auto) { return TryPopNextKey(next_generated_keys_); });
+  ON_CALL(mock_provider_, GenerateAttestationKeySlowly)
+      .WillByDefault([this](auto) {
+        return TryPopNextKey(next_generated_attestation_keys_);
+      });
+  ON_CALL(mock_provider_, FromWrappedAttestationKeySlowly)
+      .WillByDefault([this](auto) {
+        return TryPopNextKey(next_generated_attestation_keys_);
+      });
 }
 
 ScopedMockUnexportableKeyProvider::~ScopedMockUnexportableKeyProvider() {
@@ -97,6 +118,12 @@ ScopedMockUnexportableKeyProvider::~ScopedMockUnexportableKeyProvider() {
 UnexportableSigningKey* ScopedMockUnexportableKeyProvider::AddNextGeneratedKey(
     std::unique_ptr<UnexportableSigningKey> key) {
   return next_generated_keys_.emplace(std::move(key)).get();
+}
+
+UnexportableAttestationKey*
+ScopedMockUnexportableKeyProvider::AddNextGeneratedAttestationKey(
+    std::unique_ptr<UnexportableAttestationKey> key) {
+  return next_generated_attestation_keys_.emplace(std::move(key)).get();
 }
 
 }  // namespace crypto

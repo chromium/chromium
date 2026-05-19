@@ -97,6 +97,25 @@ class CRYPTO_EXPORT UnexportableSigningKey : public UnexportableKey {
 #endif  // BUILDFLAG(IS_WIN)
 };
 
+struct CRYPTO_EXPORT AttestationStatement {
+  enum Format {
+    kTpm,
+    kSecureEnclave,
+  };
+  Format format = kTpm;
+  std::vector<uint8_t> statement;
+  std::vector<uint8_t> signature;
+};
+
+class CRYPTO_EXPORT UnexportableAttestationKey : public UnexportableKey {
+ public:
+  // Performs an attestation/certification over the given signing key using
+  // the attestation key (e.g., an AIK certifying a generated RSA binding key).
+  virtual std::optional<AttestationStatement> CertifySlowly(
+      const UnexportableSigningKey& signing_key,
+      base::span<const uint8_t> challenge) = 0;
+};
+
 // StatefulKey is an interface for keys that are backed by some permanent state,
 // such as the keychain on macOS.
 class CRYPTO_EXPORT StatefulKey {
@@ -181,6 +200,16 @@ class CRYPTO_EXPORT UnexportableKeyProvider {
   // interfaces to the secure hardware may not be robust. See |GetWrappedKey|.
   virtual std::unique_ptr<UnexportableSigningKey> FromWrappedSigningKeySlowly(
       base::span<const uint8_t> wrapped_key) = 0;
+
+  // Generates a new hardware-backed attestation key (e.g., an AIK).
+  virtual std::unique_ptr<UnexportableAttestationKey>
+  GenerateAttestationKeySlowly(
+      base::span<const SignatureVerifier::SignatureAlgorithm>
+          acceptable_algorithms);
+
+  // Reconstructs an attestation key from a previously wrapped key.
+  virtual std::unique_ptr<UnexportableAttestationKey>
+  FromWrappedAttestationKeySlowly(base::span<const uint8_t> wrapped_key);
 
   // Typesafe downcast to `StatefulUnexportableKeyProvider`. Returns nullptr if
   // the provider is not stateful.

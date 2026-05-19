@@ -11,4 +11,9 @@ MockUnexportableKey::MockUnexportableKey() {
 }
 MockUnexportableKey::~MockUnexportableKey() = default;
 
+MockUnexportableAttestationKey::MockUnexportableAttestationKey() {
+  ON_CALL(*this, AsStatefulKey()).WillByDefault(testing::Return(this));
+}
+MockUnexportableAttestationKey::~MockUnexportableAttestationKey() = default;
+
 }  // namespace crypto

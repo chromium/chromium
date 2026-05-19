@@ -38,6 +38,15 @@ class MockUnexportableKeyProvider : public StatefulUnexportableKeyProvider {
               FromWrappedSigningKeySlowly,
               (base::span<const uint8_t> wrapped_key),
               (override));
+  MOCK_METHOD(std::unique_ptr<UnexportableAttestationKey>,
+              GenerateAttestationKeySlowly,
+              (base::span<const SignatureVerifier::SignatureAlgorithm>
+                   acceptable_algorithms),
+              (override));
+  MOCK_METHOD(std::unique_ptr<UnexportableAttestationKey>,
+              FromWrappedAttestationKeySlowly,
+              (base::span<const uint8_t> wrapped_key),
+              (override));
   MOCK_METHOD(StatefulUnexportableKeyProvider*,
               AsStatefulUnexportableKeyProvider,
               (),

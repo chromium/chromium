@@ -19,6 +19,20 @@ std::unique_ptr<UnexportableKeyProvider> (*g_mock_provider)() = nullptr;
 }  // namespace
 
 UnexportableKeyProvider::~UnexportableKeyProvider() = default;
+
+std::unique_ptr<UnexportableAttestationKey>
+UnexportableKeyProvider::GenerateAttestationKeySlowly(
+    base::span<const SignatureVerifier::SignatureAlgorithm>
+        acceptable_algorithms) {
+  return nullptr;
+}
+
+std::unique_ptr<UnexportableAttestationKey>
+UnexportableKeyProvider::FromWrappedAttestationKeySlowly(
+    base::span<const uint8_t> wrapped_key) {
+  return nullptr;
+}
+
 VirtualUnexportableSigningKey::~VirtualUnexportableSigningKey() = default;
 VirtualUnexportableKeyProvider::~VirtualUnexportableKeyProvider() = default;
 

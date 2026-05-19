@@ -10,7 +10,9 @@
 #include "base/logging.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "crypto/mock_unexportable_key.h"
 #include "crypto/scoped_fake_unexportable_key_provider.h"
+#include "crypto/scoped_mock_unexportable_key_provider.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_MAC)
@@ -23,6 +25,9 @@
 #endif  // BUILDFLAG(IS_WIN)
 
 namespace {
+
+using ::testing::ElementsAre;
+using ::testing::Return;
 
 enum class Provider {
   kTPM,
@@ -56,7 +61,7 @@ std::string ToString(Provider provider) {
   }
 }
 
-class UnexportableKeySigningTest
+class UnexportableKeyTest
     : public testing::TestWithParam<
           std::tuple<crypto::SignatureVerifier::SignatureAlgorithm, Provider>> {
  protected:
@@ -87,11 +92,11 @@ class UnexportableKeySigningTest
 };
 
 INSTANTIATE_TEST_SUITE_P(All,
-                         UnexportableKeySigningTest,
+                         UnexportableKeyTest,
                          testing::Combine(testing::ValuesIn(kAllAlgorithms),
                                           testing::ValuesIn(kAllProviders)));
 
-TEST_P(UnexportableKeySigningTest, RoundTrip) {
+TEST_P(UnexportableKeyTest, RoundTrip) {
   const bool expected_is_hardware_backed =
       provider_type() == Provider::kFake ? false
                                          : provider_type() == Provider::kTPM;
@@ -182,7 +187,7 @@ TEST_P(UnexportableKeySigningTest, RoundTrip) {
 }
 
 #if BUILDFLAG(IS_WIN)
-TEST_P(UnexportableKeySigningTest, DuplicatePlatformKeyHandleSucceeds) {
+TEST_P(UnexportableKeyTest, DuplicatePlatformKeyHandleSucceeds) {
   if (provider_type() == Provider::kFake) {
     GTEST_SKIP() << "Test only works with real platform keys.";
   }
@@ -209,5 +214,42 @@ TEST_P(UnexportableKeySigningTest, DuplicatePlatformKeyHandleSucceeds) {
   EXPECT_TRUE(ncrypt_key.is_valid());
 }
 #endif
+
+TEST_P(UnexportableKeyTest, AttestationKeyMock) {
+  crypto::ScopedMockUnexportableKeyProvider mock_provider;
+
+  auto mock_attestation_key =
+      std::make_unique<crypto::MockUnexportableAttestationKey>();
+
+  EXPECT_CALL(*mock_attestation_key, CertifySlowly)
+      .WillOnce(testing::Return(crypto::AttestationStatement{
+          .format = crypto::AttestationStatement::kTpm,
+          .statement = {1, 2, 3},
+          .signature = {4, 5, 6},
+      }));
+
+  EXPECT_CALL(mock_provider.mock(), GenerateAttestationKeySlowly)
+      .WillOnce(Return(std::move(mock_attestation_key)));
+
+  auto provider = CreateProvider();
+  ASSERT_TRUE(provider);
+
+  const crypto::SignatureVerifier::SignatureAlgorithm algorithms[] = {
+      algorithm()};
+
+  auto attestation_key = provider->GenerateAttestationKeySlowly(algorithms);
+  ASSERT_TRUE(attestation_key);
+
+  auto software_provider = crypto::GetSoftwareUnsecureUnexportableKeyProvider();
+  auto signing_key = software_provider->GenerateSigningKeySlowly(algorithms);
+  ASSERT_TRUE(signing_key);
+
+  auto statement = attestation_key->CertifySlowly(
+      *signing_key, std::vector<uint8_t>{7, 8, 9});
+  ASSERT_TRUE(statement);
+  EXPECT_EQ(statement->format, crypto::AttestationStatement::kTpm);
+  EXPECT_THAT(statement->statement, ElementsAre(1, 2, 3));
+  EXPECT_THAT(statement->signature, ElementsAre(4, 5, 6));
+}
 
 }  // namespace
