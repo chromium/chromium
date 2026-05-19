@@ -496,7 +496,8 @@ using base::UserMetricsAction;
   // Download the favicon.
   // The code below mimics that in OmniboxPopupMediator.
   self.faviconLoader->FaviconForPageUrl(
-      pageURL, self.faviconSize, self.faviconSize,
+      pageURL, /*desired_size=*/self.faviconSize,
+      /*min_size=*/kMinFaviconSizePt,
       /*fallback_to_google_server=*/false, handleFaviconResult);
 }
 
