@@ -6,6 +6,7 @@
 
 #import <memory>
 
+#import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "base/test/scoped_feature_list.h"
 #import "components/search_engines/template_url_service.h"
@@ -71,7 +72,7 @@ class TestFakeWebState : public web::FakeWebState {
 }
 
 - (BOOL)canHandleURL:(NSURL*)url {
-  return [url.query isEqualToString:kValidQuery];
+  return [url.query containsString:kValidQuery];
 }
 
 @end
@@ -232,8 +233,8 @@ TEST_F(MiniMapTabHelperTest, TestNavigations) {
   }
 }
 
-// Test that a URL with google.com/maps is intercepted when all conditions are
-// met.
+// Test that a URL with google.com/maps/... is intercepted when all conditions
+// are met.
 TEST_F(MiniMapTabHelperTest, TestGoogleMapsURL) {
   NSString* const kGoogleMapsLink =
       @"https://www.google.com/maps/foo?valid=true";
@@ -250,6 +251,54 @@ TEST_F(MiniMapTabHelperTest, TestGoogleMapsURL) {
   // Navigation should be blocked (returns false).
   EXPECT_FALSE(res);
   EXPECT_OCMOCK_VERIFY(mini_map_commands_handler_);
+}
+
+// Test that a URL with google.com/maps?... is intercepted when all conditions
+// are met.
+TEST_F(MiniMapTabHelperTest, TestGoogleMapsURLWithoutTrailingSlash) {
+  NSString* const kGoogleMapsLink =
+      @"https://www.google.com/"
+      @"maps?sca_esv=189c82b39954af99&output=search&q=restaurants&valid=true";
+  NSString* const kExpectedLink =
+      @"https://www.google.com/"
+      @"maps?sca_esv=189c82b39954af99&output=search&q=restaurants&valid=true"
+      @"&utm_campaign=as-npt-bling";
+
+  OCMExpect([mini_map_commands_handler_
+      presentMiniMapNativePreviewForURL:[NSURL URLWithString:kExpectedLink]]);
+  bool res = TestShouldAllowRequest(kGoogleSRPPage, kGoogleMapsLink,
+                                    /*feature_enabled=*/true,
+                                    /*google_maps_installed=*/false,
+                                    ui::PageTransition::PAGE_TRANSITION_LINK);
+
+  // Navigation should be blocked (returns false).
+  EXPECT_FALSE(res);
+  EXPECT_OCMOCK_VERIFY(mini_map_commands_handler_);
+}
+
+// Test that URLs not meeting all interception criteria are not intercepted.
+TEST_F(MiniMapTabHelperTest, TestURLsNotIntercepted) {
+  // A list of URLs that should not be intercepted.
+  NSArray<NSString*>* non_intercepted_urls = @[
+    // Not handleable by MiniMapController (does not contain kValidQuery).
+    @"https://www.google.com/maps",
+    // Path does not start with /maps/ or equal to /maps.
+    @"https://www.google.com/mapsbutnotreallymaps?valid=true",
+    // Path is completely different.
+    @"https://www.google.com/search?q=maps&valid=true",
+    // Host is not google.com or maps.google.*.
+    @"https://www.example.com/maps?valid=true",
+  ];
+
+  for (NSString* url in non_intercepted_urls) {
+    bool res = TestShouldAllowRequest(kGoogleSRPPage, url,
+                                      /*feature_enabled=*/true,
+                                      /*google_maps_installed=*/false,
+                                      ui::PageTransition::PAGE_TRANSITION_LINK);
+    // Navigation should be allowed (returns true).
+    EXPECT_TRUE(res) << "URL should not be intercepted: "
+                     << base::SysNSStringToUTF8(url);
+  }
 }
 
 // Test that if the Native Preview fails to show, navigation is allowed.

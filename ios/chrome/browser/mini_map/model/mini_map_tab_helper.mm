@@ -153,7 +153,8 @@ bool MiniMapTabHelper::ShouldInterceptRequest(
     return false;
   }
 
-  if (!base::StartsWith(target_url.path(), "/maps/")) {
+  if (target_url.path() != "/maps" &&
+      !base::StartsWith(target_url.path(), "/maps/")) {
     return false;
   }
 
