@@ -222,7 +222,7 @@ class CORE_EXPORT FrameFetchContext final : public BaseFetchContext,
       const HashMap<HashAlgorithm, String>& integrity_hashes) override;
   String GetSVGCacheIdentifier() const override;
 
-  const ClientHintsPreferences GetClientHintsPreferences() const;
+  const ClientHintsPreferences& GetClientHintsPreferences() const;
   float GetDevicePixelRatio() const;
   String GetReducedAcceptLanguage() const;
 
@@ -245,6 +245,14 @@ class CORE_EXPORT FrameFetchContext final : public BaseFetchContext,
   // Serializing the brand major version list is expensive, so it's cached.
   std::optional<UserAgentMetadata> last_ua_;
   std::optional<AtomicString> last_ua_serialized_brand_major_version_list_;
+  std::optional<AtomicString> last_ua_serialized_platform_;
+
+  // Killswitch for a feature that disables the logic that would upgrade
+  // requests with "RequiresUpgradeForLoader" when DevTools is attached
+  // just for devtools to show full request headers (that aren't used) for
+  // resources that are served from memory cache.
+  // https://crbug.com/512514655
+  bool is_fast_memory_cache_with_devtools_enabled_ = false;
 };
 
 }  // namespace blink
