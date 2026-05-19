@@ -428,8 +428,9 @@ public class AutocompleteInput implements UserData {
 
     /** Returns whether the current context includes user-typed text. */
     public boolean isInZeroPrefixContext() {
-        return TextUtils.isEmpty(mUserText.get())
-                || TextUtils.equals(mUserText.get(), mInitialUserText);
+        return getSiteSearchData() == null
+                && (TextUtils.isEmpty(mUserText.get())
+                        || TextUtils.equals(mUserText.get(), mInitialUserText));
     }
 
     /** Returns whether current context enables suggestions caching. */

@@ -706,6 +706,24 @@ public class AutocompleteMediatorUnitTest {
 
     @Test
     @SmallTest
+    public void onTextChanged_noZeroSuggestInKeywordMode() {
+        GURL url = JUnitTestGURLs.BLUE_1;
+        String title = "Title";
+        int pageClassification = PageClassification.BLANK_VALUE;
+        var session = createSession(url, title, pageClassification);
+        SiteSearchData data = new SiteSearchData("keyword", "Full Name");
+        session.getAutocompleteInput().setSiteSearchData(data);
+
+        mMediator.beginInput(session);
+
+        RobolectricUtil.runAllBackgroundAndUi();
+        var captor = ArgumentCaptor.forClass(AutocompleteInput.class);
+        verify(mAutocompleteController, never()).startZeroSuggest(any(), captor.capture());
+        clearInvocations(mAutocompleteController);
+    }
+
+    @Test
+    @SmallTest
     public void onInputChanged_userTextDiffersFromInitialText_triggersPrefixedSuggest() {
         GURL url = JUnitTestGURLs.BLUE_1;
         String title = "Title";
