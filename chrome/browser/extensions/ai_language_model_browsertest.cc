@@ -19,6 +19,10 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features_generated.h"
 
+// The AI Prompt API is not yet available on Android. Track status here:
+// https://developer.chrome.com/docs/ai/prompt-api
+static_assert(!BUILDFLAG(IS_ANDROID));
+
 namespace extensions {
 
 namespace {
