@@ -5897,7 +5897,12 @@ TEST_F(EnterpriseDownloadScanOnClankTest,
       static_cast<TestBinaryUploadService*>(
           CloudBinaryUploadServiceFactory::GetForProfile(profile()));
 
-  download_service_->MaybeCheckClientDownload(&item, base::DoNothing());
+  RunLoop run_loop;
+  download_service_->MaybeCheckClientDownload(
+      &item,
+      base::BindRepeating(&DownloadProtectionServiceTest::CheckDoneCallback,
+                          base::Unretained(this), run_loop.QuitClosure()));
+  run_loop.Run();
 
   EXPECT_FALSE(test_upload_service->was_called());
 }
