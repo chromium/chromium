@@ -26,15 +26,15 @@ void WinNetworkFetcherImpl::Fetch(FetchCompletedCallback callback) {
   // TODO(b/202321214): need to pass in winhttp::ProxyInfo somehow.
   // If specified use it to create an winhttp::ProxyConfiguration instance.
   // Otherwise create an winhttp::AutoProxyConfiguration instance.
-  if (!winhttp_network_fetcher_) {
-    auto proxy_config = base::MakeRefCounted<winhttp::ProxyConfiguration>();
+  auto proxy_config = base::MakeRefCounted<winhttp::ProxyConfiguration>();
+  if (!winhttp_session_) {
     winhttp_session_ = base::MakeRefCounted<winhttp::SharedHInternet>(
         winhttp::CreateSessionHandle(
             L"DeviceTrustKeyManagement", proxy_config->access_type(),
             proxy_config->proxy(), proxy_config->proxy_bypass()));
-    winhttp_network_fetcher_ = base::MakeRefCounted<winhttp::NetworkFetcher>(
-        winhttp_session_, std::move(proxy_config));
   }
+  winhttp_network_fetcher_ = base::MakeRefCounted<winhttp::NetworkFetcher>(
+      winhttp_session_, std::move(proxy_config));
 
   winhttp_network_fetcher_->PostRequest(
       url_, body_, std::string(), headers_,

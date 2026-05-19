@@ -12,6 +12,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "base/test/gtest_util.h"
 #include "base/test/task_environment.h"
 #include "components/winhttp/scoped_hinternet.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -134,6 +135,75 @@ TEST(WinHttpNetworkFetcher, GZip) {
   run_loop.Run();
   ASSERT_HRESULT_SUCCEEDED(network_fetcher->GetNetError());
   ASSERT_EQ(network_fetcher->GetResponseBody(), kResponse);
+}
+
+TEST(WinHttpNetworkFetcher, CancelledFetcherDestruction) {
+  net::EmbeddedTestServer test_server;
+  test_server.RegisterRequestHandler(base::BindRepeating(
+      [](const net::test_server::HttpRequest& request)
+          -> std::unique_ptr<net::test_server::HttpResponse> {
+        auto response = std::make_unique<net::test_server::BasicHttpResponse>();
+        response->set_content("stub response");
+        return response;
+      }));
+  ASSERT_TRUE(test_server.Start());
+
+  base::test::TaskEnvironment environment;
+  {
+    auto network_fetcher = base::MakeRefCounted<NetworkFetcher>(
+        base::MakeRefCounted<SharedHInternet>(CreateSessionHandle(
+            L"WinHttpNetworkFetcherTest.CancelledFetcherDestruction",
+            WINHTTP_ACCESS_TYPE_NO_PROXY)),
+        base::MakeRefCounted<ProxyConfiguration>());
+
+    // Initiate a request.
+    network_fetcher->PostRequest(
+        /*url=*/test_server.GetURL("/"),
+        /*content_type=*/"text/plain",
+        /*post_data=*/"request data",
+        /*post_additional_headers=*/{},
+        /*fetch_started_callback=*/base::DoNothing(),
+        /*fetch_progress_callback=*/base::DoNothing(),
+        /*fetch_complete_callback=*/base::DoNothing());
+
+    // Drop the only reference to network_fetcher while the request is
+    // in-flight. This invokes the destructor and tears down the ScopedHInternet
+    // request handle.
+  }
+
+  base::RunLoop run_loop;
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE, run_loop.QuitClosure(), base::Milliseconds(100));
+  run_loop.Run();
+}
+
+TEST(WinHttpNetworkFetcher, PostRequestTwiceCHECK) {
+  base::test::TaskEnvironment environment;
+  auto network_fetcher = base::MakeRefCounted<NetworkFetcher>(
+      base::MakeRefCounted<SharedHInternet>(CreateSessionHandle(
+          L"WinHttpNetworkFetcherTest.PostRequestTwiceCHECK",
+          WINHTTP_ACCESS_TYPE_NO_PROXY)),
+      base::MakeRefCounted<ProxyConfiguration>());
+
+  network_fetcher->PostRequest(
+      /*url=*/GURL("http://aurl"),
+      /*content_type=*/"text/plain",
+      /*post_data=*/"request data",
+      /*post_additional_headers=*/{},
+      /*fetch_started_callback=*/base::DoNothing(),
+      /*fetch_progress_callback=*/base::DoNothing(),
+      /*fetch_complete_callback=*/base::DoNothing());
+
+  // The second PostRequest call on the same instance must crash the process via
+  // CHECK!
+  EXPECT_CHECK_DEATH(network_fetcher->PostRequest(
+      /*url=*/GURL("http://aurl"),
+      /*content_type=*/"text/plain",
+      /*post_data=*/"request data",
+      /*post_additional_headers=*/{},
+      /*fetch_started_callback=*/base::DoNothing(),
+      /*fetch_progress_callback=*/base::DoNothing(),
+      /*fetch_complete_callback=*/base::DoNothing()));
 }
 
 }  // namespace winhttp
