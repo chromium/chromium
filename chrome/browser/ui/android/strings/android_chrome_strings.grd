@@ -4214,6 +4214,9 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_MENU_PASSWORDS_AND_AUTOFILL" desc="Menu item for showing menus related to passwords and autofill. [CHAR_LIMIT=27]">
         Passwords and autofill
       </message>
+      <message name="IDS_MENU_PAYMENT_METHODS" desc="Menu item for showing the payments page. [CHAR_LIMIT=27]">
+        Payment methods
+      </message>
       <message name="IDS_MENU_GOOGLE_PASSWORD_MANAGER" desc="Menu item for opening the password manager. [CHAR_LIMIT=27]">
         Google Password Manager
       </message>

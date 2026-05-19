@@ -650,7 +650,8 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                                 item(R.id.divider_line_id),
                                 item(
                                         R.id.passwords_and_autofill_parent_menu_id,
-                                        item(R.id.google_password_manager_menu_id)),
+                                        item(R.id.google_password_manager_menu_id),
+                                        item(R.id.payment_methods_menu_id)),
                                 item(
                                         R.id.history_parent_menu_id,
                                         item(R.id.open_history_menu_id),
@@ -728,7 +729,8 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                                 item(R.id.divider_line_id),
                                 item(
                                         R.id.passwords_and_autofill_parent_menu_id,
-                                        item(R.id.google_password_manager_menu_id)),
+                                        item(R.id.google_password_manager_menu_id),
+                                        item(R.id.payment_methods_menu_id)),
                                 item(
                                         R.id.history_parent_menu_id,
                                         item(R.id.open_history_menu_id),
@@ -818,11 +820,13 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         expectedItems.add(
                 item(
                         R.id.passwords_and_autofill_parent_menu_id,
-                        item(R.id.google_password_manager_menu_id)));
+                        item(R.id.google_password_manager_menu_id),
+                        item(R.id.payment_methods_menu_id)));
         expectedTitles.add(
                 item(
                         R.string.menu_passwords_and_autofill,
-                        item(R.string.menu_google_password_manager)));
+                        item(R.string.menu_google_password_manager),
+                        item(R.string.menu_payment_methods)));
         expectedItems.add(
                 item(
                         R.id.history_parent_menu_id,
@@ -1015,11 +1019,13 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         expectedItems.add(
                 item(
                         R.id.passwords_and_autofill_parent_menu_id,
-                        item(R.id.google_password_manager_menu_id)));
+                        item(R.id.google_password_manager_menu_id),
+                        item(R.id.payment_methods_menu_id)));
         expectedTitles.add(
                 item(
                         R.string.menu_passwords_and_autofill,
-                        item(R.string.menu_google_password_manager)));
+                        item(R.string.menu_google_password_manager),
+                        item(R.string.menu_payment_methods)));
         if (!IncognitoUtils.shouldOpenIncognitoAsWindow()) {
             expectedItems.add(item(R.id.history_parent_menu_id, item(R.id.open_history_menu_id)));
             expectedTitles.add(item(R.string.menu_history, item(R.string.menu_history)));
@@ -1202,11 +1208,13 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         expectedItems.add(
                 item(
                         R.id.passwords_and_autofill_parent_menu_id,
-                        item(R.id.google_password_manager_menu_id)));
+                        item(R.id.google_password_manager_menu_id),
+                        item(R.id.payment_methods_menu_id)));
         expectedTitles.add(
                 item(
                         R.string.menu_passwords_and_autofill,
-                        item(R.string.menu_google_password_manager)));
+                        item(R.string.menu_google_password_manager),
+                        item(R.string.menu_payment_methods)));
         expectedItems.add(
                 item(
                         R.id.history_parent_menu_id,
@@ -1379,7 +1387,8 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                                 item(R.id.divider_line_id),
                                 item(
                                         R.id.passwords_and_autofill_parent_menu_id,
-                                        item(R.id.google_password_manager_menu_id)),
+                                        item(R.id.google_password_manager_menu_id),
+                                        item(R.id.payment_methods_menu_id)),
                                 item(
                                         R.id.history_parent_menu_id,
                                         item(R.id.open_history_menu_id),
@@ -1466,7 +1475,8 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                                 item(R.id.divider_line_id),
                                 item(
                                         R.id.passwords_and_autofill_parent_menu_id,
-                                        item(R.id.google_password_manager_menu_id)),
+                                        item(R.id.google_password_manager_menu_id),
+                                        item(R.id.payment_methods_menu_id)),
                                 item(
                                         R.id.history_parent_menu_id,
                                         item(R.id.open_history_menu_id),
@@ -1801,7 +1811,8 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                                 item(R.id.divider_line_id),
                                 item(
                                         R.id.passwords_and_autofill_parent_menu_id,
-                                        item(R.id.google_password_manager_menu_id)),
+                                        item(R.id.google_password_manager_menu_id),
+                                        item(R.id.payment_methods_menu_id)),
                                 item(
                                         R.id.history_parent_menu_id,
                                         item(R.id.open_history_menu_id),
@@ -1921,7 +1932,8 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                                 item(R.id.divider_line_id),
                                 item(
                                         R.id.passwords_and_autofill_parent_menu_id,
-                                        item(R.id.google_password_manager_menu_id)),
+                                        item(R.id.google_password_manager_menu_id),
+                                        item(R.id.payment_methods_menu_id)),
                                 item(
                                         R.id.history_parent_menu_id,
                                         item(R.id.open_history_menu_id),
@@ -2015,7 +2027,8 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                                 item(R.id.divider_line_id),
                                 item(
                                         R.id.passwords_and_autofill_parent_menu_id,
-                                        item(R.id.google_password_manager_menu_id)),
+                                        item(R.id.google_password_manager_menu_id),
+                                        item(R.id.payment_methods_menu_id)),
                                 item(
                                         R.id.history_parent_menu_id,
                                         item(R.id.open_history_menu_id),

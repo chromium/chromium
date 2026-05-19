@@ -96,6 +96,7 @@ import org.chromium.chrome.browser.app.tabmodel.ChromeNextTabPolicySupplier;
 import org.chromium.chrome.browser.app.tabmodel.TabModelOrchestrator;
 import org.chromium.chrome.browser.app.tabmodel.TabbedModeTabModelOrchestrator;
 import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
+import org.chromium.chrome.browser.autofill.settings.SettingsNavigationHelper;
 import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchController;
 import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchController.AuxiliarySearchHostType;
 import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchControllerFactory;
@@ -4167,6 +4168,10 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                     getModalDialogManager(),
                     /* managePasskeys= */ false);
             RecordUserAction.record("MobileMenuGooglePasswordManager");
+            return true;
+        } else if (id == R.id.payment_methods_menu_id) {
+            SettingsNavigationHelper.showAutofillCreditCardSettings(this);
+            RecordUserAction.record("MobileMenuPaymentMethods");
             return true;
         } else if (id == R.id.add_to_group_menu_id
                 || id == R.id.add_tab_to_group_menu_id

@@ -28957,6 +28957,11 @@ should be able to be added at any place in this file.
   <description>User pressed 'Paste and Go' in the app menu.</description>
 </action>
 
+<action name="MobileMenuPaymentMethods">
+  <owner>massan@google.com</owner>
+  <description>User pressed 'Payment methods' in the app menu.</description>
+</action>
+
 <action name="MobileMenuPinTab">
   <obsolete>Deprecated as of 2023-08</obsolete>
   <owner>ewannpv@chromium.org</owner>

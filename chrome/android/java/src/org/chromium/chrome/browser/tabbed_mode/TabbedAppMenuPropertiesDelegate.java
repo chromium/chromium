@@ -825,11 +825,21 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
                         shouldShowIconBeforeItem() ? R.drawable.ic_password_manager_24dp : 0));
     }
 
+    private ListItem buildPaymentsItem() {
+        return new ListItem(
+                AppMenuHandler.AppMenuItemType.STANDARD,
+                buildModelForStandardMenuItem(
+                        R.id.payment_methods_menu_id,
+                        R.string.menu_payment_methods,
+                        shouldShowIconBeforeItem() ? R.drawable.ic_credit_card_24dp : 0));
+    }
+
     private ListItem buildPasswordsAndAutofillParentItem() {
         assert shouldShowPasswordsAndAutofillParentItem();
 
         List<ListItem> submenuItems = new ArrayList<>();
         submenuItems.add(buildGooglePasswordManagerItem());
+        submenuItems.add(buildPaymentsItem());
 
         return new ListItem(
                 AppMenuHandler.AppMenuItemType.MENU_ITEM_WITH_SUBMENU,
