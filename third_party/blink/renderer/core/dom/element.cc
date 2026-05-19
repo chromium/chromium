@@ -1153,14 +1153,15 @@ Node* Element::Clone(Document& factory,
       // 6.4 Run attach a shadow root with copy, node's shadow root's mode,
       // true, node’s shadow root’s delegates focus, and node’s shadow root’s
       // slot assignment.
-      // TODO(crbug.com/1523816): it seems like the `registry` parameter should
-      // not always be nullptr.
+      const bool waiting_for_scoped_registry =
+          RuntimeEnabledFeatures::ScopedCustomElementRegistryEnabled() &&
+          !shadow_root_registry && shadow_root->IsWaitingForScopedRegistry();
       ShadowRoot& cloned_shadow_root = copy->AttachShadowRootInternal(
           shadow_root->GetMode(),
           shadow_root->delegatesFocus() ? FocusDelegation::kDelegateFocus
                                         : FocusDelegation::kNone,
           shadow_root->GetSlotAssignmentMode(), shadow_root_registry,
-          shadow_root->serializable(),
+          waiting_for_scoped_registry, shadow_root->serializable(),
           /*clonable=*/true, shadow_root->referenceTarget());
 
       // 6.5 Set copy’s shadow root’s declarative to node’s shadow root’s
@@ -7555,9 +7556,13 @@ ShadowRoot* Element::attachShadow(const ShadowRootInit* shadow_root_init_dict,
     }
   }
 
+  // If the user explicitly passed customElementRegistry: null in the
+  // ShadowRootInit dictionary, the shadow root is intentionally waiting for a
+  // scoped registry to be assigned later.
+  const bool waiting_for_scoped_registry = scoped_registry && !registry;
   ShadowRoot& shadow_root = AttachShadowRootInternal(
-      mode, focus_delegation, slot_assignment, registry, serializable, clonable,
-      reference_target);
+      mode, focus_delegation, slot_assignment, registry,
+      waiting_for_scoped_registry, serializable, clonable, reference_target);
 
   // Ensure that the returned shadow root is not marked as declarative so that
   // attachShadow() calls after the first one do not succeed for a shadow host
@@ -7604,8 +7609,8 @@ bool Element::AttachDeclarativeShadowRoot(
   }
 
   ShadowRoot& shadow_root = AttachShadowRootInternal(
-      mode, focus_delegation, slot_assignment, registry, serializable, clonable,
-      reference_target);
+      mode, focus_delegation, slot_assignment, registry,
+      waiting_for_scoped_registry, serializable, clonable, reference_target);
   // 10.8.5. Set declarative shadow host element's shadow host's "is declarative
   // shadow root" property to true.
   shadow_root.SetIsDeclarativeShadowRoot(true);
@@ -7638,6 +7643,7 @@ ShadowRoot& Element::AttachShadowRootInternal(
     FocusDelegation focus_delegation,
     SlotAssignmentMode slot_assignment_mode,
     CustomElementRegistry* registry,
+    bool waiting_for_scoped_registry,
     bool serializable,
     bool clonable,
     const AtomicString& reference_target) {
@@ -7650,6 +7656,11 @@ ShadowRoot& Element::AttachShadowRootInternal(
   DCHECK(reference_target.IsNull() ||
          RuntimeEnabledFeatures::ShadowRootReferenceTargetEnabled(
              GetExecutionContext()));
+  // A null registry combined with `waiting_for_scoped_registry == true`
+  // explicitly marks the shadow root as waiting for a scoped registry. A null
+  // registry combined with `waiting_for_scoped_registry == false` means
+  // "inherit the tree scope's registry" (the default fall-through).
+  DCHECK(!waiting_for_scoped_registry || !registry);
 
   GetDocument().SetContainsShadowRoot();
 
@@ -7672,8 +7683,16 @@ ShadowRoot& Element::AttachShadowRootInternal(
   // 9. Set shadow’s declarative to false.
   shadow_root.SetIsDeclarativeShadowRoot(false);
 
-  // 12. Set shadow's custom element registry to registry
-  if (RuntimeEnabledFeatures::ScopedCustomElementRegistryEnabled()) {
+  // 12. Set shadow's custom element registry to registry.
+  // Note: Only set when the caller has an actual registry or has explicitly
+  // indicated that the shadow root should wait for a scoped registry. A bare
+  // null registry (e.g., when a declarative shadow root is parsed inside a
+  // template document that has no associated window) must NOT mark the tree
+  // scope as waiting; otherwise `customElementRegistry()` would keep returning
+  // null even after the shadow root is adopted into a real document, blocking
+  // custom element upgrades.
+  if (RuntimeEnabledFeatures::ScopedCustomElementRegistryEnabled() &&
+      (registry || waiting_for_scoped_registry)) {
     shadow_root.SetCustomElementRegistry(registry);
   }
   // 11. Set shadow’s serializable to serializable.
@@ -7698,6 +7717,7 @@ ShadowRoot& Element::AttachShadowRootForTesting(ShadowRootMode type) {
   return AttachShadowRootInternal(type, FocusDelegation::kNone,
                                   SlotAssignmentMode::kNamed,
                                   /*registry*/ nullptr,
+                                  /*waiting_for_scoped_registry*/ false,
                                   /*serializable*/ false,
                                   /*clonable*/ false,
                                   /*reference_target*/ g_null_atom);
