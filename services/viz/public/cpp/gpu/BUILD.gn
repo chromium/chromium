@@ -52,6 +52,7 @@ source_set("tests") {
   deps = [
     "//base",
     "//base/test:test_support",
+    "//gpu/ipc/common:test_support",
     "//mojo/core/embedder",
     "//mojo/public/cpp/system",
     "//services/service_manager/public/cpp",

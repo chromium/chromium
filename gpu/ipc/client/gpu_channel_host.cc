@@ -22,6 +22,7 @@
 #include "gpu/ipc/common/command_buffer_trace_utils.h"
 #include "gpu/ipc/common/gpu_watchdog_timeout.h"
 #include "ipc/ipc_channel.h"
+#include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "mojo/public/cpp/bindings/sync_call_restrictions.h"
 #include "third_party/perfetto/include/perfetto/tracing/track_event_args.h"
 #include "url/gurl.h"
@@ -29,23 +30,6 @@
 using base::AutoLock;
 
 namespace gpu {
-
-scoped_refptr<GpuChannelHost> GpuChannelHost::Create(
-    int channel_id,
-    mojo::ScopedMessagePipeHandle handle,
-    scoped_refptr<base::SingleThreadTaskRunner> io_task_runner) {
-  auto host = base::WrapRefCounted(new GpuChannelHost(
-      channel_id, std::move(handle), std::move(io_task_runner)));
-  gpu::GPUInfo gpu_info;
-  gpu::GpuFeatureInfo gpu_feature_info;
-  gpu::SharedImageCapabilities shared_image_capabilities;
-  if (!host->GetGpuChannel().GetGPUInfo(&gpu_info, &gpu_feature_info,
-                                        &shared_image_capabilities)) {
-    return nullptr;
-  }
-  host->SetInfo(gpu_info, gpu_feature_info, shared_image_capabilities);
-  return host;
-}
 
 scoped_refptr<GpuChannelHost> GpuChannelHost::Create(
     int channel_id,
@@ -58,6 +42,73 @@ scoped_refptr<GpuChannelHost> GpuChannelHost::Create(
       channel_id, std::move(handle), std::move(io_task_runner)));
   host->SetInfo(gpu_info, gpu_feature_info, shared_image_capabilities);
   return host;
+}
+
+// static
+GpuChannelHost::Builder GpuChannelHost::Builder::CreateAndGetGPUInfo(
+    base::PassKey<viz::Gpu> pass_key,
+    int channel_id,
+    mojo::ScopedMessagePipeHandle handle,
+    scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
+    base::OnceCallback<void(const gpu::GPUInfo&,
+                            const gpu::GpuFeatureInfo&,
+                            const gpu::SharedImageCapabilities&)> callback) {
+  Builder builder(channel_id, std::move(handle), io_task_runner);
+  builder.GetGPUInfo(std::move(callback));
+  return builder;
+}
+
+GpuChannelHost::Builder::Builder(
+    int channel_id,
+    mojo::ScopedMessagePipeHandle handle,
+    scoped_refptr<base::SingleThreadTaskRunner> io_task_runner) {
+  host_ = base::WrapRefCounted(new GpuChannelHost(
+      channel_id, std::move(handle),
+      io_task_runner ? io_task_runner
+                     : base::SingleThreadTaskRunner::GetCurrentDefault()));
+}
+
+GpuChannelHost::Builder::~Builder() = default;
+
+GpuChannelHost::Builder::Builder(Builder&& other) = default;
+GpuChannelHost::Builder& GpuChannelHost::Builder::operator=(Builder&& other) =
+    default;
+
+scoped_refptr<GpuChannelHost> GpuChannelHost::Builder::SetInfo(
+    const gpu::GPUInfo& gpu_info,
+    const gpu::GpuFeatureInfo& gpu_feature_info,
+    const gpu::SharedImageCapabilities& shared_image_capabilities) {
+  CHECK(host_);
+  host_->SetInfo(gpu_info, gpu_feature_info, shared_image_capabilities);
+  return std::move(host_);
+}
+
+void GpuChannelHost::Builder::GetGPUInfo(
+    base::OnceCallback<void(const gpu::GPUInfo&,
+                            const gpu::GpuFeatureInfo&,
+                            const gpu::SharedImageCapabilities&)> callback) {
+  CHECK(host_);
+  // If the GPU process crashes, the Mojo connection is dropped and this
+  // callback would normally be deleted without running. Wrap it to ensure
+  // we return empty info, which allows `viz::Gpu` to detect the failure
+  // and fall back to the standard initialization path.
+  host_->GetGpuChannel().GetGPUInfo(mojo::WrapCallbackWithDefaultInvokeIfNotRun(
+      std::move(callback), gpu::GPUInfo(), gpu::GpuFeatureInfo(),
+      gpu::SharedImageCapabilities()));
+}
+
+bool GpuChannelHost::Builder::GetGPUInfoSync(
+    gpu::GPUInfo* gpu_info,
+    gpu::GpuFeatureInfo* gpu_feature_info,
+    gpu::SharedImageCapabilities* shared_image_capabilities) {
+  CHECK(host_);
+  return host_->GetGpuChannel().GetGPUInfo(gpu_info, gpu_feature_info,
+                                           shared_image_capabilities);
+}
+
+bool GpuChannelHost::Builder::IsLost() const {
+  CHECK(host_);
+  return host_->IsLost();
 }
 
 GpuChannelHost::GpuChannelHost(
@@ -77,6 +128,11 @@ GpuChannelHost::GpuChannelHost(
         mojo::PendingRemote<mojom::GpuChannel>(std::move(handle), 0),
         io_thread_);
   } else {
+    // NOTE: The Legacy IPC channel is bound immediately to the IO thread. It is
+    // used purely as a transport to bootstrap the `mojom::GpuChannel`
+    // associated interface. The Listener only handles channel errors and does
+    // not process any legacy IPC messages, so this does not introduce any race
+    // conditions before `SetInfo()` is called with valid metadata.
     listener_ = std::unique_ptr<Listener, base::OnTaskRunnerDeleter>(
         new Listener(), base::OnTaskRunnerDeleter(io_thread_));
     mojo::PendingAssociatedRemote<mojom::GpuChannel> channel;

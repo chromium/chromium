@@ -20,6 +20,7 @@
 #include "base/rand_util.h"
 #include "base/synchronization/lock.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/types/pass_key.h"
 #include "gpu/config/gpu_feature_info.h"
 #include "gpu/config/gpu_info.h"
 #include "gpu/ipc/client/gpu_channel_observer.h"
@@ -35,6 +36,10 @@
 
 namespace IPC {
 class Channel;
+}
+
+namespace viz {
+class Gpu;
 }
 
 namespace gpu {
@@ -60,14 +65,6 @@ class GPU_IPC_CLIENT_EXPORT GpuChannelEstablishFactory {
 class GPU_IPC_CLIENT_EXPORT GpuChannelHost
     : public base::RefCountedThreadSafe<GpuChannelHost> {
  public:
-  // Factory for the early GPU channel path, with the GPUInfo etc fetched
-  // synchronously from the GPU process. If the info request fails, this will
-  // return nullptr.
-  static scoped_refptr<GpuChannelHost> Create(
-      int channel_id,
-      mojo::ScopedMessagePipeHandle handle,
-      scoped_refptr<base::SingleThreadTaskRunner> io_task_runner = nullptr);
-
   // Factory for the standard GPU channel path (info provided upfront). This
   // will never return nullptr.
   static scoped_refptr<GpuChannelHost> Create(
@@ -77,6 +74,58 @@ class GPU_IPC_CLIENT_EXPORT GpuChannelHost
       const gpu::SharedImageCapabilities& shared_image_capabilities,
       mojo::ScopedMessagePipeHandle handle,
       scoped_refptr<base::SingleThreadTaskRunner> io_task_runner = nullptr);
+
+  // A builder for GpuChannelHost used during asynchronous initialization.
+  // The underlying Mojo remote / IPC channel communicates on the IO thread,
+  // while this builder is used on the main thread. This prevents access to the
+  // channel handle or a partially initialized GpuChannelHost until SetInfo() is
+  // called, guaranteeing that consumers cannot access the channel in an
+  // incomplete state.
+  class GPU_IPC_CLIENT_EXPORT Builder final {
+   public:
+    static Builder CreateAndGetGPUInfo(
+        base::PassKey<viz::Gpu> pass_key,
+        int channel_id,
+        mojo::ScopedMessagePipeHandle handle,
+        scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
+        base::OnceCallback<void(const gpu::GPUInfo&,
+                                const gpu::GpuFeatureInfo&,
+                                const gpu::SharedImageCapabilities&)> callback);
+
+    ~Builder();
+    Builder(const Builder&) = delete;
+    Builder& operator=(const Builder&) = delete;
+    Builder(Builder&&);
+    Builder& operator=(Builder&&);
+
+    // Sets the info and returns the completed GpuChannelHost.
+    scoped_refptr<GpuChannelHost> SetInfo(
+        const gpu::GPUInfo& gpu_info,
+        const gpu::GpuFeatureInfo& gpu_feature_info,
+        const gpu::SharedImageCapabilities& shared_image_capabilities);
+
+    bool GetGPUInfoSync(
+        gpu::GPUInfo* gpu_info,
+        gpu::GpuFeatureInfo* gpu_feature_info,
+        gpu::SharedImageCapabilities* shared_image_capabilities);
+
+    // Checks if the channel is lost.
+    bool IsLost() const;
+
+   private:
+    friend class GpuChannelHost;
+
+    Builder(int channel_id,
+            mojo::ScopedMessagePipeHandle handle,
+            scoped_refptr<base::SingleThreadTaskRunner> io_task_runner);
+
+    void GetGPUInfo(
+        base::OnceCallback<void(const gpu::GPUInfo&,
+                                const gpu::GpuFeatureInfo&,
+                                const gpu::SharedImageCapabilities&)> callback);
+
+    scoped_refptr<GpuChannelHost> host_;
+  };
 
   GpuChannelHost(const GpuChannelHost&) = delete;
   GpuChannelHost& operator=(const GpuChannelHost&) = delete;

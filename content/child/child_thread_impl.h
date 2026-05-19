@@ -152,6 +152,10 @@ class ChildThreadImpl : public IPC::Listener, virtual public ChildThread {
   virtual void OnMemoryPressureFromBrowserReceived(
       base::MemoryPressureLevel level);
 
+  mojo::ScopedMessagePipeHandle TakeInitialGPUChannel() {
+    return std::move(initial_gpu_channel_);
+  }
+
  private:
   class IOThreadState;
 
@@ -207,6 +211,8 @@ class ChildThreadImpl : public IPC::Listener, virtual public ChildThread {
   scoped_refptr<IOThreadState> io_thread_state_;
 
   std::unique_ptr<ChildPerformanceCoordinator> performance_coordinator_;
+
+  mojo::ScopedMessagePipeHandle initial_gpu_channel_;
 
   base::WeakPtrFactory<ChildThreadImpl> weak_factory_{this};
 };

@@ -641,6 +641,11 @@ void ChildThreadImpl::Init(const Options& options) {
       legacy_ipc_bootstrap_pipe =
           invitation.ExtractMessagePipe(kLegacyIpcBootstrapAttachmentName);
     }
+
+    // TODO(crbug.com/496408117): Consider handling this for the in-process case
+    // below as well.
+    initial_gpu_channel_ =
+        invitation.ExtractMessagePipe(kGPUChannelAttachmentName);
   } else {
     child_process_pipe_for_receiver =
         options.mojo_invitation->ExtractMessagePipe(
