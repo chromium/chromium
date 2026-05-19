@@ -67,6 +67,7 @@ const char kTipsNotificationsPromoShownCount[] =
     "tips_notifications_promo_shown_count";
 const char kNtpThemePromoShownCount[] = "ntp_theme_promo_shown_count";
 const char kSupportCustomizedNtpTheme[] = "support_customized_ntp_theme";
+const char kHasCustomizedNtpBackground[] = "has_customized_ntp_background";
 
 const char kAuxiliarySearchAvailable[] = "auxiliary_search_available";
 

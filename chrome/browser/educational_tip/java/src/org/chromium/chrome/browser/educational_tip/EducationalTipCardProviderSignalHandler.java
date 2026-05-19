@@ -12,6 +12,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
+import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -68,6 +69,11 @@ public class EducationalTipCardProviderSignalHandler {
             case ModuleType.QUICK_DELETE_PROMO:
                 return inputContext;
             case ModuleType.NTP_THEME_PROMO:
+                inputContext.addEntry(
+                        "has_customized_ntp_background",
+                        ProcessedValue.fromBoolean(
+                                NtpCustomizationUtils.getNtpBackgroundType()
+                                        != NtpCustomizationUtils.NtpBackgroundType.DEFAULT));
                 inputContext.addEntry(
                         "support_customized_ntp_theme",
                         ProcessedValue.fromBoolean(actionDelegate.supportCustomizedNtpTheme()));
