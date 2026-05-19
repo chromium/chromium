@@ -710,6 +710,7 @@ source_set("core") {
     "//chrome/browser/gpu",
     "//chrome/browser/headless",
     "//chrome/browser/history",
+    "//chrome/browser/infobars",
     "//chrome/browser/interstitials",
     "//chrome/browser/language",
     "//chrome/browser/language_detection",

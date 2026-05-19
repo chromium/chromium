@@ -17,6 +17,7 @@
 #include "chrome/browser/glic/glic_profile_manager.h"               // nogncheck
 #include "chrome/browser/glic/host/glic_synthetic_trial_manager.h"  // nogncheck
 #include "chrome/browser/glic/public/glic_enabling.h"               // nogncheck
+#include "chrome/browser/infobars/browser_infobar_manager.h"
 #include "chrome/browser/local_network_access/ip_address_space_overrides_prefs_observer.h"
 #include "chrome/browser/media/audio_process_ml_model_forwarder.h"
 #include "chrome/browser/optimization_guide/model_execution/optimization_guide_global_state.h"
@@ -163,6 +164,9 @@ void GlobalFeatures::PostBrowserProcessInit() {
 }
 
 void GlobalFeatures::PostBrowserProcessInitCore() {
+  browser_infobar_manager_ =
+      GetUserDataFactory().CreateInstance<infobars::BrowserInfoBarManager>(
+          *g_browser_process, g_browser_process);
   system_permissions_platform_handle_ = CreateSystemPermissionsPlatformHandle();
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   // TODO(crbug.com/463742800): Migrate WhatsNewRegistry (and other non-core

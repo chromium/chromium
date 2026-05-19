@@ -6,12 +6,14 @@ import("//build/config/ui.gni")
 
 source_set("infobars") {
   public = [
+    "browser_infobar_manager.h",
     "confirm_infobar_creator.h",
     "infobar_responder.h",
     "simple_alert_infobar_creator.h",
   ]
 
   sources = [
+    "browser_infobar_manager.cc",
     "confirm_infobar_creator.cc",
     "infobar_responder.cc",
     "simple_alert_infobar_creator.cc",
@@ -19,11 +21,21 @@ source_set("infobars") {
 
   public_deps = [
     "//base",
+    "//chrome/browser:global_features",
+    "//chrome/browser/ui/browser_window",
     "//components/infobars/content",
+    "//components/infobars/core",
+    "//components/tabs:public",
+  ]
+
+  deps = [
+    "//chrome/app:generated_resources_grit",
+    "//chrome/browser/ui:ui_features",
+    "//ui/base",
   ]
 
   if (toolkit_views) {
-    public_deps += [ "//chrome/browser/ui/views/infobars" ]
+    deps += [ "//chrome/browser/ui/views/infobars" ]
   }
 
   if (is_android) {
