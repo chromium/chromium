@@ -623,7 +623,6 @@ targets.legacy_basic_suite(
         ),
         "perfetto_unittests": targets.legacy_test_config(),
         "puffin_unittests": targets.legacy_test_config(
-            ci_only = True,
             experiment_percentage = 100,
         ),
         # TODO(crbug.com/40274401): Enable this.

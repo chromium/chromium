@@ -1789,7 +1789,6 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "ci_only": true,
         "experiment_percentage": 100,
         "merge": {
           "args": [

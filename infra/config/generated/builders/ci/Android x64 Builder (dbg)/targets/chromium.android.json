@@ -2612,7 +2612,6 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "ci_only": true,
         "description": "Run with android_32_google_apis_x64_foldable",
         "experiment_percentage": 100,
         "merge": {
@@ -6232,7 +6231,6 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "ci_only": true,
         "description": "Run with android_36_google_apis_x64",
         "experiment_percentage": 100,
         "merge": {

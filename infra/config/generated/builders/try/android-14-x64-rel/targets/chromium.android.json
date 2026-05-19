@@ -2500,7 +2500,6 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "ci_only": true,
         "description": "Run with android_34_google_apis_x64",
         "experiment_percentage": 100,
         "merge": {
