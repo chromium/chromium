@@ -327,7 +327,7 @@ void PermissionsAiUiSelector::SelectUiToUse(
       GetPredictionTypeToUse(request->request_type());
 
   PermissionUmaUtil::RecordPermissionPredictionSource(prediction_source,
-                                                      request->request_type());
+                                                      *request);
 
   if (prediction_source == PredictionSource::kNoCpssModel) {
     VLOG(1) << "[CPSS] Configuration does not allow CPSS requests";

@@ -2271,7 +2271,9 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestManagerApproximateLocationBrowserTest,
               approx_only_permission_result);
     histograms.ExpectUniqueSample(
         permissions::PermissionUmaUtil::kPermissionsPromptShown,
-        permissions::RequestTypeForUma::PERMISSION_GEOLOCATION, 1);
+        permissions::RequestTypeForUma::
+            PERMISSION_GEOLOCATION_APPROXIMATE_OR_PRECISE,
+        1);
   }
 
   // Now request the permission again. This should not trigger another prompt
@@ -2335,7 +2337,7 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestManagerApproximateLocationBrowserTest,
               approx_only_permission_result);
     histograms.ExpectUniqueSample(
         permissions::PermissionUmaUtil::kPermissionsPromptShown,
-        permissions::RequestTypeForUma::PERMISSION_GEOLOCATION, 1);
+        permissions::RequestTypeForUma::PERMISSION_GEOLOCATION_APPROXIMATE, 1);
   }
 
   EXPECT_EQ(permission_controller->GetPermissionResultForCurrentDocument(
@@ -2382,7 +2384,7 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestManagerApproximateLocationBrowserTest,
               precise_permission_result);
     histograms.ExpectUniqueSample(
         permissions::PermissionUmaUtil::kPermissionsPromptShown,
-        permissions::RequestTypeForUma::PERMISSION_GEOLOCATION, 1);
+        permissions::RequestTypeForUma::PERMISSION_GEOLOCATION_UPGRADE, 1);
   }
 
   // Now request approximate permission. This should not trigger another prompt.
@@ -2427,7 +2429,7 @@ IN_PROC_BROWSER_TEST_F(
             approx_only_permission_result);
   histograms.ExpectUniqueSample(
       permissions::PermissionUmaUtil::kPermissionsPromptShown,
-      permissions::RequestTypeForUma::PERMISSION_GEOLOCATION, 1);
+      permissions::RequestTypeForUma::PERMISSION_GEOLOCATION_APPROXIMATE, 1);
 
   // Verify that precise location is not granted.
   EXPECT_EQ(permission_controller->GetPermissionResultForCurrentDocument(

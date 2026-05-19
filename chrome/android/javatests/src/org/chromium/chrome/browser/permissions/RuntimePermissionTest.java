@@ -42,7 +42,7 @@ public class RuntimePermissionTest {
     private static final String DOWNLOAD_TEST = "/chrome/test/data/android/download/get.html";
 
     private static final String DISMISS_TYPE_HISTOGRAM =
-            "Permissions.Prompt.Geolocation.ModalDialog.Dismissed.Method";
+            "Permissions.Prompt.GeolocationApproximateOrPrecise.ModalDialog.Dismissed.Method";
 
     private TestAndroidPermissionDelegate mTestAndroidPermissionDelegate;
 

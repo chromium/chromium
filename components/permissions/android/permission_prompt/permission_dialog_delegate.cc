@@ -200,21 +200,10 @@ void PermissionDialogDelegate::SystemPermissionResolved(JNIEnv* env,
 
 void PermissionDialogDelegate::Dismissed(JNIEnv* env, int dismissalType) {
   CHECK(permission_prompt_);
-  std::vector<ContentSettingsType> content_settings_types;
-  for (size_t i = 0; i < permission_prompt_->PermissionCount(); ++i) {
-    ContentSettingsType type = permission_prompt_->GetContentSettingType(i);
-    // Not all request types have an associated ContentSettingsType.
-    if (type == ContentSettingsType::DEFAULT) {
-      break;
-    }
-    content_settings_types.push_back(type);
-  }
-
-  if (content_settings_types.size() == permission_prompt_->PermissionCount()) {
-    PermissionUmaUtil::RecordDismissalType(
-        content_settings_types, permission_prompt_->GetPromptDisposition(),
-        static_cast<DismissalType>(dismissalType));
-  }
+  PermissionUmaUtil::RecordDismissalType(
+      permission_prompt_->Requests(),
+      permission_prompt_->GetPromptDisposition(),
+      static_cast<DismissalType>(dismissalType));
 
   if (!permission_prompt_->IsShowing()) {
     // This probably happens synchronously when creating the

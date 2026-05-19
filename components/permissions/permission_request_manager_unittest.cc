@@ -13,6 +13,7 @@
 #include <variant>
 
 #include "base/command_line.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
@@ -1003,29 +1004,37 @@ TEST_F(PermissionRequestManagerTest, UMAForSimpleDeniedBubbleAlternatePath) {
   // UMAForSimpleAcceptedBubble.
 
   Deny();
-  histograms.ExpectUniqueSample(PermissionUmaUtil::kPermissionsPromptDenied,
-                                static_cast<base::HistogramBase::Sample32>(
-                                    RequestTypeForUma::PERMISSION_GEOLOCATION),
-                                1);
+  histograms.ExpectUniqueSample(
+      PermissionUmaUtil::kPermissionsPromptDenied,
+      static_cast<base::HistogramBase::Sample32>(
+          base::FeatureList::IsEnabled(
+              content_settings::features::kApproximateGeolocationPermission)
+              ? RequestTypeForUma::PERMISSION_GEOLOCATION_APPROXIMATE_OR_PRECISE
+              : RequestTypeForUma::PERMISSION_GEOLOCATION),
+      1);
 }
 
 TEST_F(PermissionRequestManagerTest, UMAForTabSwitching) {
   base::HistogramTester histograms;
 
+  RequestTypeForUma geolocation_request_type =
+      base::FeatureList::IsEnabled(
+          content_settings::features::kApproximateGeolocationPermission)
+          ? RequestTypeForUma::PERMISSION_GEOLOCATION_APPROXIMATE_OR_PRECISE
+          : RequestTypeForUma::PERMISSION_GEOLOCATION;
+
   manager_->AddRequest(web_contents()->GetPrimaryMainFrame(),
                        CreateRequest(request1_));
   WaitForBubbleToBeShown();
-  histograms.ExpectUniqueSample(PermissionUmaUtil::kPermissionsPromptShown,
-                                static_cast<base::HistogramBase::Sample32>(
-                                    RequestTypeForUma::PERMISSION_GEOLOCATION),
-                                1);
+  histograms.ExpectUniqueSample(
+      PermissionUmaUtil::kPermissionsPromptShown,
+      static_cast<base::HistogramBase::Sample32>(geolocation_request_type), 1);
 
   MockTabSwitchAway();
   MockTabSwitchBack();
-  histograms.ExpectUniqueSample(PermissionUmaUtil::kPermissionsPromptShown,
-                                static_cast<base::HistogramBase::Sample32>(
-                                    RequestTypeForUma::PERMISSION_GEOLOCATION),
-                                1);
+  histograms.ExpectUniqueSample(
+      PermissionUmaUtil::kPermissionsPromptShown,
+      static_cast<base::HistogramBase::Sample32>(geolocation_request_type), 1);
 }
 
 ////////////////////////////////////////////////////////////////////////////////

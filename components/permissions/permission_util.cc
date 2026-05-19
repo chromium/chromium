@@ -20,8 +20,10 @@
 #include "components/content_settings/core/common/features.h"
 #include "components/permissions/features.h"
 #include "components/permissions/permission_request.h"
+#include "components/permissions/permission_request_data.h"
 #include "components/permissions/permission_uma_util.h"
 #include "components/permissions/permissions_client.h"
+#include "components/permissions/request_type.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/permission_result.h"
 #include "content/public/browser/render_frame_host.h"
@@ -78,7 +80,10 @@ constexpr const char* kIsFileURLHistogram =
     "Permissions.GetLastCommittedOriginAsURL.IsFileURL";
 #endif
 
-RequestTypeForUma GetUmaValueForRequests(const RequestType first_request) {
+}  // namespace
+
+RequestTypeForUma PermissionUtil::GetUmaValueForMultipleRequests(
+    const RequestType first_request) {
   if (
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
       first_request == RequestType::kCameraPanTiltZoom ||
@@ -96,8 +101,6 @@ RequestTypeForUma GetUmaValueForRequests(const RequestType first_request) {
   return RequestTypeForUma::UNKNOWN;
 }
 
-}  // namespace
-
 // The returned strings must match any Field Trial configs for the Permissions
 // kill switch e.g. Permissions.Action.Geolocation etc..
 std::string PermissionUtil::GetPermissionString(
@@ -109,28 +112,15 @@ std::string PermissionUtil::GetPermissionString(
   return blink::GetPermissionString(permission);
 }
 
-RequestTypeForUma PermissionUtil::GetUmaValueForRequests(
-    const std::vector<std::unique_ptr<PermissionRequest>>& requests) {
-  CHECK(!requests.empty());
-  const RequestType request_type = requests[0]->request_type();
-  if (requests.size() == 1) {
-    return GetUmaValueForRequestType(request_type);
-  }
-  return permissions::GetUmaValueForRequests(request_type);
-}
-
-RequestTypeForUma PermissionUtil::GetUmaValueForRequests(
-    const std::vector<base::WeakPtr<PermissionRequest>>& requests) {
-  CHECK(!requests.empty());
-  const RequestType request_type = requests[0]->request_type();
-  if (requests.size() == 1) {
-    return GetUmaValueForRequestType(request_type);
-  }
-  return permissions::GetUmaValueForRequests(request_type);
+RequestTypeForUma PermissionUtil::GetUmaValueForRequest(
+    const PermissionRequest& request) {
+  return GetUmaValueForRequestType(request.request_type(),
+                                   request.GetGeolocationPromptType());
 }
 
 RequestTypeForUma PermissionUtil::GetUmaValueForRequestType(
-    RequestType request_type) {
+    RequestType request_type,
+    std::optional<GeolocationPromptType> geolocation_prompt_type) {
   switch (request_type) {
     case RequestType::kArSession:
       return RequestTypeForUma::PERMISSION_AR;
@@ -154,7 +144,18 @@ RequestTypeForUma PermissionUtil::GetUmaValueForRequestType(
     case RequestType::kLoopbackNetwork:
       return RequestTypeForUma::PERMISSION_LOOPBACK_NETWORK;
     case RequestType::kGeolocation:
-      return RequestTypeForUma::PERMISSION_GEOLOCATION;
+      if (!geolocation_prompt_type.has_value()) {
+        return RequestTypeForUma::PERMISSION_GEOLOCATION;
+      }
+      switch (geolocation_prompt_type.value()) {
+        case GeolocationPromptType::kApproximateOnly:
+          return RequestTypeForUma::PERMISSION_GEOLOCATION_APPROXIMATE;
+        case GeolocationPromptType::kApproximateOrPrecise:
+          return RequestTypeForUma::
+              PERMISSION_GEOLOCATION_APPROXIMATE_OR_PRECISE;
+        case GeolocationPromptType::kUpgradeToPrecise:
+          return RequestTypeForUma::PERMISSION_GEOLOCATION_UPGRADE;
+      }
     case RequestType::kHandTracking:
       return RequestTypeForUma::PERMISSION_HAND_TRACKING;
     case RequestType::kIdleDetection:

@@ -10,6 +10,7 @@
 #include <variant>
 
 #include "base/command_line.h"
+#include "base/functional/callback.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/test/bind.h"
@@ -25,6 +26,7 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/content_settings/core/common/features.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/permissions/features.h"
 #include "components/permissions/permission_request_data.h"
@@ -538,6 +540,15 @@ TEST_P(PredictionBasedPermissionUiExpectedHoldbackChanceTest,
   CheckHistogramsAreEmptyExcept(GetParam().updated_histograms);
 }
 
+namespace {
+std::string GeolocationNameForUma() {
+  return base::FeatureList::IsEnabled(
+             content_settings::features::kApproximateGeolocationPermission)
+             ? "GeolocationApproximateOrPrecise"
+             : "Geolocation";
+}
+}  // namespace
+
 struct PermissionsLikelihoodTestConfig {
   std::string test_name;
   bool is_msbb_enabled;
@@ -547,7 +558,7 @@ struct PermissionsLikelihoodTestConfig {
   std::optional<permissions::PermissionUiSelector::PredictionGrantLikelihood>
       predicted_likelihood;
   std::optional<bool> prediction_decision_held_back;
-  std::string histogram_name;
+  base::RepeatingCallback<std::string()> histogram_name;
   int expected_count;
   std::optional<permissions::PermissionRequestLikelihood> expected_bucket;
 };
@@ -583,11 +594,11 @@ TEST_P(PermissionsLikelihoodTest, RecordedLikelihood) {
       /*initial_geolocation_accuracy_selection=*/std::nullopt);
 
   if (GetParam().expected_bucket.has_value()) {
-    histogram_tester.ExpectUniqueSample(GetParam().histogram_name,
+    histogram_tester.ExpectUniqueSample(GetParam().histogram_name.Run(),
                                         GetParam().expected_bucket.value(),
                                         GetParam().expected_count);
   } else {
-    histogram_tester.ExpectTotalCount(GetParam().histogram_name,
+    histogram_tester.ExpectTotalCount(GetParam().histogram_name.Run(),
                                       GetParam().expected_count);
   }
 }
@@ -605,8 +616,10 @@ INSTANTIATE_TEST_SUITE_P(
             permissions::PermissionUiSelector::PredictionGrantLikelihood::
                 PermissionPrediction_Likelihood_DiscretizedLikelihood_VERY_UNLIKELY,
             /*prediction_decision_held_back=*/std::nullopt,
-            "Permissions.PredictionService.Action.Notifications.VeryUnlikely."
-            "Quiet",
+            base::BindLambdaForTesting([]() -> std::string {
+              return "Permissions.PredictionService.Action.Notifications."
+                     "VeryUnlikely.Quiet";
+            }),
             /*expected_count=*/1, /*expected_bucket=*/std::nullopt},
         PermissionsLikelihoodTestConfig{
             "PredictionAction_Notifications_Unlikely_Quiet",
@@ -617,7 +630,10 @@ INSTANTIATE_TEST_SUITE_P(
             permissions::PermissionUiSelector::PredictionGrantLikelihood::
                 PermissionPrediction_Likelihood_DiscretizedLikelihood_UNLIKELY,
             /*prediction_decision_held_back=*/std::nullopt,
-            "Permissions.PredictionService.Action.Notifications.Unlikely.Quiet",
+            base::BindLambdaForTesting([]() -> std::string {
+              return "Permissions.PredictionService.Action.Notifications."
+                     "Unlikely.Quiet";
+            }),
             /*expected_count=*/1, /*expected_bucket=*/std::nullopt},
         PermissionsLikelihoodTestConfig{
             "PredictionAction_Notifications_VeryUnlikely_Loud",
@@ -627,8 +643,10 @@ INSTANTIATE_TEST_SUITE_P(
             permissions::PermissionUiSelector::PredictionGrantLikelihood::
                 PermissionPrediction_Likelihood_DiscretizedLikelihood_VERY_UNLIKELY,
             /*prediction_decision_held_back=*/std::nullopt,
-            "Permissions.PredictionService.Action.Notifications.VeryUnlikely."
-            "Loud",
+            base::BindLambdaForTesting([]() -> std::string {
+              return "Permissions.PredictionService.Action.Notifications."
+                     "VeryUnlikely.Loud";
+            }),
             /*expected_count=*/1, /*expected_bucket=*/std::nullopt},
         PermissionsLikelihoodTestConfig{
             "PredictionAction_Notifications_Unlikely_Loud",
@@ -638,7 +656,10 @@ INSTANTIATE_TEST_SUITE_P(
             permissions::PermissionUiSelector::PredictionGrantLikelihood::
                 PermissionPrediction_Likelihood_DiscretizedLikelihood_UNLIKELY,
             /*prediction_decision_held_back=*/std::nullopt,
-            "Permissions.PredictionService.Action.Notifications.Unlikely.Loud",
+            base::BindLambdaForTesting([]() -> std::string {
+              return "Permissions.PredictionService.Action.Notifications."
+                     "Unlikely.Loud";
+            }),
             /*expected_count=*/1, /*expected_bucket=*/std::nullopt},
         PermissionsLikelihoodTestConfig{
             "PredictionAction_Geolocation_VeryUnlikely_Quiet",
@@ -649,8 +670,11 @@ INSTANTIATE_TEST_SUITE_P(
             permissions::PermissionUiSelector::PredictionGrantLikelihood::
                 PermissionPrediction_Likelihood_DiscretizedLikelihood_VERY_UNLIKELY,
             /*prediction_decision_held_back=*/std::nullopt,
-            "Permissions.PredictionService.Action.Geolocation.VeryUnlikely."
-            "Quiet",
+            base::BindLambdaForTesting([]() {
+              return base::StrCat({"Permissions.PredictionService.Action.",
+                                   GeolocationNameForUma(),
+                                   ".VeryUnlikely.Quiet"});
+            }),
             /*expected_count=*/1, /*expected_bucket=*/std::nullopt},
         PermissionsLikelihoodTestConfig{
             "PredictionAction_Geolocation_Likely_Quiet_NotRecorded",
@@ -660,7 +684,10 @@ INSTANTIATE_TEST_SUITE_P(
             permissions::PermissionUiSelector::PredictionGrantLikelihood::
                 PermissionPrediction_Likelihood_DiscretizedLikelihood_VERY_UNLIKELY,
             /*prediction_decision_held_back=*/std::nullopt,
-            "Permissions.PredictionService.Action.Geolocation.Likely.Loud",
+            base::BindLambdaForTesting([]() {
+              return base::StrCat({"Permissions.PredictionService.Action.",
+                                   GeolocationNameForUma(), ".Likely.Loud"});
+            }),
             /*expected_count=*/0,
             /*expected_bucket=*/std::nullopt},
         PermissionsLikelihoodTestConfig{
@@ -671,7 +698,9 @@ INSTANTIATE_TEST_SUITE_P(
             permissions::PermissionUiSelector::PredictionGrantLikelihood::
                 PermissionPrediction_Likelihood_DiscretizedLikelihood_VERY_UNLIKELY,
             /*prediction_decision_held_back=*/false,
-            "Permissions.PredictionService.Notifications.Gesture",
+            base::BindLambdaForTesting([]() -> std::string {
+              return "Permissions.PredictionService.Notifications.Gesture";
+            }),
             /*expected_count=*/1,
             permissions::PermissionRequestLikelihood::kVeryUnlikely},
         PermissionsLikelihoodTestConfig{
@@ -682,7 +711,9 @@ INSTANTIATE_TEST_SUITE_P(
             permissions::PermissionUiSelector::PredictionGrantLikelihood::
                 PermissionPrediction_Likelihood_DiscretizedLikelihood_VERY_UNLIKELY,
             /*prediction_decision_held_back=*/false,
-            "Permissions.PredictionService.Notifications.NoGesture",
+            base::BindLambdaForTesting([]() -> std::string {
+              return "Permissions.PredictionService.Notifications.NoGesture";
+            }),
             /*expected_count=*/1,
             permissions::PermissionRequestLikelihood::kVeryUnlikely},
         PermissionsLikelihoodTestConfig{
@@ -693,7 +724,9 @@ INSTANTIATE_TEST_SUITE_P(
             permissions::PermissionUiSelector::PredictionGrantLikelihood::
                 PermissionPrediction_Likelihood_DiscretizedLikelihood_VERY_LIKELY,
             /*prediction_decision_held_back=*/false,
-            "Permissions.PredictionService.Notifications.NoGesture",
+            base::BindLambdaForTesting([]() -> std::string {
+              return "Permissions.PredictionService.Notifications.NoGesture";
+            }),
             /*expected_count=*/1,
             permissions::PermissionRequestLikelihood::kVeryLikely},
         PermissionsLikelihoodTestConfig{
@@ -704,7 +737,10 @@ INSTANTIATE_TEST_SUITE_P(
             permissions::PermissionUiSelector::PredictionGrantLikelihood::
                 PermissionPrediction_Likelihood_DiscretizedLikelihood_VERY_LIKELY,
             /*prediction_decision_held_back=*/false,
-            "Permissions.PredictionService.Geolocation.Gesture",
+            base::BindLambdaForTesting([]() {
+              return base::StrCat({"Permissions.PredictionService.",
+                                   GeolocationNameForUma(), ".Gesture"});
+            }),
             /*expected_count=*/1,
             permissions::PermissionRequestLikelihood::kVeryLikely},
         PermissionsLikelihoodTestConfig{
@@ -714,7 +750,10 @@ INSTANTIATE_TEST_SUITE_P(
             permissions::PermissionPromptDisposition::ANCHORED_BUBBLE,
             /*predicted_likelihood=*/std::nullopt,
             /*prediction_decision_held_back=*/false,
-            "Permissions.PredictionService.Geolocation.Gesture",
+            base::BindLambdaForTesting([]() {
+              return base::StrCat({"Permissions.PredictionService.",
+                                   GeolocationNameForUma(), ".Gesture"});
+            }),
             /*expected_count=*/0,
             /*expected_bucket=*/std::nullopt},
         PermissionsLikelihoodTestConfig{
@@ -725,7 +764,10 @@ INSTANTIATE_TEST_SUITE_P(
             permissions::PermissionUiSelector::PredictionGrantLikelihood::
                 PermissionPrediction_Likelihood_DiscretizedLikelihood_VERY_UNLIKELY,
             /*prediction_decision_held_back=*/false,
-            "Permissions.PredictionService.NoMSBB.Notifications.Gesture",
+            base::BindLambdaForTesting([]() -> std::string {
+              return "Permissions.PredictionService.NoMSBB.Notifications."
+                     "Gesture";
+            }),
             /*expected_count=*/1,
             permissions::PermissionRequestLikelihood::kVeryUnlikely},
         PermissionsLikelihoodTestConfig{
@@ -736,7 +778,10 @@ INSTANTIATE_TEST_SUITE_P(
             permissions::PermissionUiSelector::PredictionGrantLikelihood::
                 PermissionPrediction_Likelihood_DiscretizedLikelihood_VERY_UNLIKELY,
             /*prediction_decision_held_back=*/false,
-            "Permissions.PredictionService.NoMSBB.Notifications.Gesture",
+            base::BindLambdaForTesting([]() -> std::string {
+              return "Permissions.PredictionService.NoMSBB.Notifications."
+                     "Gesture";
+            }),
             /*expected_count=*/0,
             /*expected_bucket=*/std::nullopt}),
     [](const testing::TestParamInfo<PermissionsLikelihoodTestConfig>& info) {

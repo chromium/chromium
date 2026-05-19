@@ -132,6 +132,14 @@ chromium-metrics-reviews@google.com.
   <variant name=".ClipboardReadWrite" summary="Clipboard permission"/>
   <variant name=".FileSystemAccess" summary="File System Access permission"/>
   <variant name=".Geolocation" summary="Geolocation permission"/>
+  <variant name=".GeolocationApproximate"
+      summary="Geolocation permission (approximate only permission prompt)"/>
+  <variant name=".GeolocationApproximateOrPrecise"
+      summary="Geolocation permission (permission prompt with
+               approximate/precise option)"/>
+  <variant name=".GeolocationUpgrade"
+      summary="Geolocation permission (upgrade permission prompt from
+               approximate to precise)"/>
   <variant name=".HandTracking" summary="Hand tracking permission"/>
   <variant name=".IdentityProvider" summary="Identity Provider permission"/>
   <variant name=".IdleDetection" summary="Idle detection permission"/>

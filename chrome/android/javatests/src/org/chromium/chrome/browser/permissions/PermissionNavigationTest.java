@@ -38,7 +38,7 @@ public class PermissionNavigationTest {
     private static final String TEST_FILE = "/content/test/data/android/permission_navigation.html";
 
     private static final String DISMISS_TYPE_HISTOGRAM =
-            "Permissions.Prompt.Geolocation.ModalDialog.Dismissed.Method";
+            "Permissions.Prompt.GeolocationApproximateOrPrecise.ModalDialog.Dismissed.Method";
 
     private TestAndroidPermissionDelegate mTestAndroidPermissionDelegate;
 

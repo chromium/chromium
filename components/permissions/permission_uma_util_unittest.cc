@@ -5,12 +5,17 @@
 #include "components/permissions/permission_uma_util.h"
 
 #include <memory>
+#include <tuple>
+#include <utility>
 
 #include "base/feature_list.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/functional/callback.h"
+#include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/strcat.h"
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
@@ -108,15 +113,16 @@ ContentSettingsForOneType GetRevokedUnusedPermissions(
 
 std::unique_ptr<permissions::PermissionRequest> CreateRequest(
     permissions::RequestType type,
-    const char* url) {
+    const char* url,
+    GeolocationPromptType geolocation_prompt_type =
+        GeolocationPromptType::kApproximateOrPrecise) {
   std::unique_ptr<PermissionRequestData> permission_request_data =
       std::make_unique<PermissionRequestData>(type, /*user_gesture=*/true,
                                               GURL(url));
   if (type == permissions::RequestType::kGeolocation &&
       base::FeatureList::IsEnabled(
           content_settings::features::kApproximateGeolocationPermission)) {
-    permission_request_data->WithGeolocationPromptType(
-        GeolocationPromptType::kApproximateOrPrecise);
+    permission_request_data->WithGeolocationPromptType(geolocation_prompt_type);
   }
   return std::make_unique<permissions::PermissionRequest>(
       std::move(permission_request_data),
@@ -330,6 +336,56 @@ TEST_F(PermissionUmaUtilTest, CrowdDenyVersionTest) {
   PermissionUmaUtil::RecordCrowdDenyVersionAtAbuseCheckTime(valid_version);
   histograms.ExpectBucketCount(
       "Permissions.CrowdDeny.PreloadData.VersionAtAbuseCheckTime", 1, 1);
+}
+
+TEST_F(PermissionUmaUtilTest, GeolocationPermissionPromptResolved) {
+  base::test::ScopedFeatureList enable_approximate_location{
+      content_settings::features::kApproximateGeolocationPermission};
+  content::TestBrowserContext browser_context;
+
+  for (auto&& [prompt_type, request_type, prompt_type_str] : {
+           std::make_tuple(
+               GeolocationPromptType::kApproximateOrPrecise,
+               RequestTypeForUma::PERMISSION_GEOLOCATION_APPROXIMATE_OR_PRECISE,
+               "GeolocationApproximateOrPrecise"),
+           std::make_tuple(
+               GeolocationPromptType::kApproximateOnly,
+               RequestTypeForUma::PERMISSION_GEOLOCATION_APPROXIMATE,
+               "GeolocationApproximate"),
+           std::make_tuple(GeolocationPromptType::kUpgradeToPrecise,
+                           RequestTypeForUma::PERMISSION_GEOLOCATION_UPGRADE,
+                           "GeolocationUpgrade"),
+       }) {
+    base::HistogramTester histograms;
+
+    std::vector<std::unique_ptr<PermissionRequest>> requests;
+    requests.push_back(
+        CreateRequest(RequestType::kGeolocation, kTopLevelUrl, prompt_type));
+
+    PermissionUmaUtil::PermissionPromptResolved(
+        requests, &browser_context, PermissionAction::GRANTED,
+        /*prompt_options=*/std::monostate(),
+        /*time_to_decision*/ base::TimeDelta(),
+        PermissionPromptDisposition::ANCHORED_BUBBLE,
+        /*ui_reason=*/std::nullopt,
+        /*variants=*/{},
+        /*predicted_grant_likelihood=*/std::nullopt,
+        /*permission_request_relevance=*/std::nullopt,
+        /*permission_ai_relevance_model=*/std::nullopt,
+        /*prediction_decision_held_back=*/std::nullopt,
+        /*ignored_reason=*/std::nullopt, /*did_show_prompt=*/false,
+        /*did_click_manage=*/false,
+        /*did_click_learn_more=*/false,
+        /*initial_geolocation_accuracy_selection=*/std::nullopt);
+    histograms.ExpectUniqueSample(
+        base::StrCat(
+            {"Permissions.Prompt.", prompt_type_str, ".AnchoredBubble.Action"}),
+        PermissionAction::GRANTED, 1);
+    histograms.ExpectUniqueSample("Permissions.Prompt.Accepted", request_type,
+                                  1);
+    histograms.ExpectTotalCount(
+        base::StrCat({"Permissions.Engagement.Accepted.", prompt_type_str}), 1);
+  }
 }
 
 TEST_F(PermissionsDelegationUmaUtilTest, UsageAndPromptInTopLevelFrame) {
@@ -1208,7 +1264,7 @@ struct PredictionServiceActionTestConfig {
   PermissionRequestGestureType gesture_type;
   PermissionAction action;
   PermissionPromptDisposition disposition;
-  std::string histogram_name;
+  base::RepeatingCallback<std::string()> histogram_name;
 };
 
 class PredictionServiceActionTest
@@ -1237,9 +1293,18 @@ TEST_P(PredictionServiceActionTest, PredictionServiceAction) {
       /*did_click_learn_more=*/false,
       /*initial_geolocation_accuracy_selection=*/std::nullopt);
 
-  histogram_tester.ExpectUniqueSample(GetParam().histogram_name,
+  histogram_tester.ExpectUniqueSample(GetParam().histogram_name.Run(),
                                       GetParam().action, 1);
 }
+
+namespace {
+std::string GeolocationNameForUma() {
+  return base::FeatureList::IsEnabled(
+             content_settings::features::kApproximateGeolocationPermission)
+             ? "GeolocationApproximateOrPrecise"
+             : "Geolocation";
+}
+}  // namespace
 
 INSTANTIATE_TEST_SUITE_P(
     PredictionServiceAction,
@@ -1249,43 +1314,65 @@ INSTANTIATE_TEST_SUITE_P(
             RequestType::kNotifications, PermissionRequestGestureType::GESTURE,
             PermissionAction::GRANTED,
             PermissionPromptDisposition::ANCHORED_BUBBLE,
-            "Permissions.PredictionService.Action.Notifications.Gesture.Loud"},
+            base::BindLambdaForTesting([]() -> std::string {
+              return "Permissions.PredictionService.Action.Notifications."
+                     "Gesture.Loud";
+            })},
         PredictionServiceActionTestConfig{
             RequestType::kNotifications,
             PermissionRequestGestureType::NO_GESTURE, PermissionAction::DENIED,
             PermissionPromptDisposition::ANCHORED_BUBBLE,
-            "Permissions.PredictionService.Action.Notifications.NoGesture."
-            "Loud"},
+            base::BindLambdaForTesting([]() -> std::string {
+              return "Permissions.PredictionService.Action.Notifications."
+                     "NoGesture.Loud";
+            })},
         PredictionServiceActionTestConfig{
             RequestType::kNotifications, PermissionRequestGestureType::GESTURE,
             PermissionAction::DISMISSED,
             PermissionPromptDisposition::LOCATION_BAR_LEFT_QUIET_CHIP,
-            "Permissions.PredictionService.Action.Notifications.Gesture.Quiet"},
+            base::BindLambdaForTesting([]() -> std::string {
+              return "Permissions.PredictionService.Action.Notifications."
+                     "Gesture.Quiet";
+            })},
         PredictionServiceActionTestConfig{
             RequestType::kNotifications,
             PermissionRequestGestureType::NO_GESTURE, PermissionAction::IGNORED,
             PermissionPromptDisposition::LOCATION_BAR_LEFT_QUIET_CHIP,
-            "Permissions.PredictionService.Action.Notifications.NoGesture."
-            "Quiet"},
+            base::BindLambdaForTesting([]() -> std::string {
+              return "Permissions.PredictionService.Action.Notifications."
+                     "NoGesture.Quiet";
+            })},
         PredictionServiceActionTestConfig{
             RequestType::kGeolocation, PermissionRequestGestureType::GESTURE,
             PermissionAction::GRANTED_ONCE,
             PermissionPromptDisposition::ANCHORED_BUBBLE,
-            "Permissions.PredictionService.Action.Geolocation.Gesture.Loud"},
+            base::BindLambdaForTesting([]() {
+              return base::StrCat({"Permissions.PredictionService.Action.",
+                                   GeolocationNameForUma(), ".Gesture.Loud"});
+            })},
         PredictionServiceActionTestConfig{
             RequestType::kGeolocation, PermissionRequestGestureType::NO_GESTURE,
             PermissionAction::GRANTED,
             PermissionPromptDisposition::ANCHORED_BUBBLE,
-            "Permissions.PredictionService.Action.Geolocation.NoGesture.Loud"},
+            base::BindLambdaForTesting([]() {
+              return base::StrCat({"Permissions.PredictionService.Action.",
+                                   GeolocationNameForUma(), ".NoGesture.Loud"});
+            })},
         PredictionServiceActionTestConfig{
             RequestType::kGeolocation, PermissionRequestGestureType::GESTURE,
             PermissionAction::DENIED,
             PermissionPromptDisposition::LOCATION_BAR_LEFT_QUIET_CHIP,
-            "Permissions.PredictionService.Action.Geolocation.Gesture.Quiet"},
+            base::BindLambdaForTesting([]() {
+              return base::StrCat({"Permissions.PredictionService.Action.",
+                                   GeolocationNameForUma(), ".Gesture.Quiet"});
+            })},
         PredictionServiceActionTestConfig{
             RequestType::kGeolocation, PermissionRequestGestureType::NO_GESTURE,
             PermissionAction::DISMISSED,
             PermissionPromptDisposition::LOCATION_BAR_LEFT_QUIET_CHIP,
-            "Permissions.PredictionService.Action.Geolocation.NoGesture."
-            "Quiet"}));
+            base::BindLambdaForTesting([]() {
+              return base::StrCat({"Permissions.PredictionService.Action.",
+                                   GeolocationNameForUma(),
+                                   ".NoGesture.Quiet"});
+            })}));
 }  // namespace permissions
