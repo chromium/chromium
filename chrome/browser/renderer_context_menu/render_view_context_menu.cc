@@ -2136,8 +2136,10 @@ void RenderViewContextMenu::AppendSearchWebForImageItems() {
 }
 
 void RenderViewContextMenu::AppendGlicShareImageItem() {
+  const Browser* browser = GetBrowser();
+  const bool is_normal_browser = browser && browser->is_type_normal();
   if (glic::GlicEnabling::IsShareImageEnabledForProfile(GetProfile()) &&
-      !IsGlicWindow(this, browser_context_)) {
+      !IsGlicWindow(this, browser_context_) && is_normal_browser) {
     tabs::TabInterface* tab =
         tabs::TabInterface::MaybeGetFromContents(source_web_contents_);
     // Ensure we're in a tab for these items.

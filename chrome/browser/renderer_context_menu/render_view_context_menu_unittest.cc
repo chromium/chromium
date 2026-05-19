@@ -24,6 +24,7 @@
 #include "chrome/browser/extensions/menu_manager.h"
 #include "chrome/browser/extensions/menu_manager_factory.h"
 #include "chrome/browser/extensions/test_extension_environment.h"
+#include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/navigation_predictor/navigation_predictor_keyed_service.h"
 #include "chrome/browser/navigation_predictor/navigation_predictor_keyed_service_factory.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
@@ -44,6 +45,7 @@
 #include "chrome/browser/ui/passwords/ui_utils.h"
 #include "chrome/browser/user_education/user_education_service.h"
 #include "chrome/browser/user_education/user_education_service_factory.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
@@ -1340,6 +1342,25 @@ TEST_F(RenderViewContextMenuPrefsTest, LensImageSearchForProgressiveWebApp) {
 
   EXPECT_FALSE(menu.IsItemPresent(IDC_CONTENT_CONTEXT_SEARCHWEBFORIMAGE));
   EXPECT_TRUE(menu.IsItemPresent(IDC_CONTENT_CONTEXT_SEARCHLENSFORIMAGE));
+}
+
+TEST_F(RenderViewContextMenuPrefsTest,
+       GlicShareImageHiddenForProgressiveWebApp) {
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeature(features::kGlicShareImage);
+
+  glic::GlicEnabling::SetBypassEnablementChecksForTesting(true);
+
+  content::ContextMenuParams params = CreateParams(MenuItem::IMAGE);
+  params.has_image_contents = true;
+  TestRenderViewContextMenu menu(*web_contents()->GetPrimaryMainFrame(),
+                                 params);
+  menu.SetBrowser(GetPwaBrowser());
+  menu.Init();
+
+  EXPECT_FALSE(menu.IsItemPresent(IDC_CONTENT_CONTEXT_GLICSHAREIMAGE));
+
+  glic::GlicEnabling::SetBypassEnablementChecksForTesting(false);
 }
 
 // Verify that the Lens Image Search menu item is enabled for third-party
