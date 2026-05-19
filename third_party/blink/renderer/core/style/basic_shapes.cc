@@ -110,6 +110,22 @@ float GetRoundedPolygonRadius(const RoundedPolygonEdge& incoming,
   return ClampTo<float>(radius);
 }
 
+// Compute the distance from |center| to the closest or farthest corner of a
+// box of size |box_size|. Named similarly to RadiusToCorner in
+// css_gradient_value.cc for discoverability.
+float RadiusToCorner(const gfx::PointF& center,
+                     const gfx::SizeF& box_size,
+                     bool closest) {
+  float dx0 = center.x();
+  float dx1 = box_size.width() - center.x();
+  float dy0 = center.y();
+  float dy1 = box_size.height() - center.y();
+
+  float dx = closest ? std::min(dx0, dx1) : std::max(dx0, dx1);
+  float dy = closest ? std::min(dy0, dy1) : std::max(dy0, dy1);
+  return hypotf(dx, dy);
+}
+
 }  // namespace
 
 gfx::PointF PointForCenterCoordinate(const BasicShapeCenterCoordinate& center_x,
@@ -133,6 +149,13 @@ float BasicShapeCircle::FloatValueForRadiusInBox(
     return FloatValueForLength(
         radius_.Value(),
         hypotf(box_size.width(), box_size.height()) / sqrtf(2));
+  }
+
+  if (radius_.GetType() == BasicShapeRadius::kClosestCorner) {
+    return RadiusToCorner(center, box_size, /*closest=*/true);
+  }
+  if (radius_.GetType() == BasicShapeRadius::kFarthestCorner) {
+    return RadiusToCorner(center, box_size, /*closest=*/false);
   }
 
   float width_delta = std::abs(box_size.width() - center.x());
@@ -184,9 +207,30 @@ float BasicShapeEllipse::FloatValueForRadiusInBox(
   if (radius.GetType() == BasicShapeRadius::kClosestSide) {
     return std::min(std::abs(center), width_or_height_delta);
   }
+  if (radius.GetType() == BasicShapeRadius::kFarthestSide) {
+    return std::max(center, width_or_height_delta);
+  }
 
-  DCHECK_EQ(radius.GetType(), BasicShapeRadius::kFarthestSide);
-  return std::max(center, width_or_height_delta);
+  // closest-corner/farthest-corner require both axes for Euclidean distance.
+  // Use ResolveRadii() for those values.
+  NOTREACHED();
+}
+
+gfx::SizeF BasicShapeEllipse::ResolveRadii(const gfx::PointF& center,
+                                           const gfx::SizeF& box_size) const {
+  auto resolve_radius = [&](const BasicShapeRadius& radius, float center_coord,
+                            float box_dim) -> float {
+    if (radius.GetType() == BasicShapeRadius::kClosestCorner) {
+      return RadiusToCorner(center, box_size, /*closest=*/true);
+    }
+    if (radius.GetType() == BasicShapeRadius::kFarthestCorner) {
+      return RadiusToCorner(center, box_size, /*closest=*/false);
+    }
+    return FloatValueForRadiusInBox(radius, center_coord, box_dim);
+  };
+
+  return gfx::SizeF(resolve_radius(radius_x_, center.x(), box_size.width()),
+                    resolve_radius(radius_y_, center.y(), box_size.height()));
 }
 
 Path BasicShapeEllipse::GetPath(const gfx::RectF& bounding_box,
@@ -202,14 +246,11 @@ Path BasicShapeEllipse::GetPathFromCenter(const gfx::PointF& center,
                                           float path_scale) const {
   const gfx::PointF scaled_center =
       gfx::ScalePoint(center + bounding_box.OffsetFromOrigin(), path_scale);
-  const gfx::Vector2dF scaled_radius = gfx::ScaleVector2d(
-      gfx::Vector2dF(
-          FloatValueForRadiusInBox(radius_x_, center.x(), bounding_box.width()),
-          FloatValueForRadiusInBox(radius_y_, center.y(),
-                                   bounding_box.height())),
-      path_scale);
+  const gfx::SizeF radii = ResolveRadii(center, bounding_box.size());
+  const gfx::SizeF scaled_radii = gfx::ScaleSize(radii, path_scale);
 
-  return Path::MakeEllipse(scaled_center, scaled_radius.x(), scaled_radius.y());
+  return Path::MakeEllipse(scaled_center, scaled_radii.width(),
+                           scaled_radii.height());
 }
 
 Path BasicShapePolygon::GetPath(const gfx::RectF& bounding_box,

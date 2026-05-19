@@ -477,7 +477,10 @@ CSSValue* ConsumeShapeRadius(CSSParserTokenStream& args,
                              const CSSParserContext& context,
                              CSSParserLocalContext& local_context) {
   if (IdentMatches<CSSValueID::kClosestSide, CSSValueID::kFarthestSide>(
-          args.Peek().Id())) {
+          args.Peek().Id()) ||
+      (RuntimeEnabledFeatures::BasicShapeCornerRadiusEnabled() &&
+       IdentMatches<CSSValueID::kClosestCorner, CSSValueID::kFarthestCorner>(
+           args.Peek().Id()))) {
     return ConsumeIdent(args);
   }
   return ConsumeLengthOrPercent(args, context, local_context,

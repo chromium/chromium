@@ -130,7 +130,13 @@ class BasicShapeRadius {
   DISALLOW_NEW();
 
  public:
-  enum RadiusType { kValue, kClosestSide, kFarthestSide };
+  enum RadiusType {
+    kValue,
+    kClosestSide,
+    kFarthestSide,
+    kClosestCorner,
+    kFarthestCorner
+  };
   BasicShapeRadius() : type_(kClosestSide) {}
   explicit BasicShapeRadius(const Length& v) : value_(v), type_(kValue) {}
   explicit BasicShapeRadius(RadiusType t) : type_(t) {}
@@ -218,9 +224,8 @@ class BasicShapeEllipse final : public BasicShapeWithCenterAndRadii {
 
   const BasicShapeRadius& RadiusX() const { return radius_x_; }
   const BasicShapeRadius& RadiusY() const { return radius_y_; }
-  float FloatValueForRadiusInBox(const BasicShapeRadius&,
-                                 float center,
-                                 float box_width_or_height) const;
+  gfx::SizeF ResolveRadii(const gfx::PointF& center,
+                          const gfx::SizeF& box_size) const;
 
   void SetRadiusX(BasicShapeRadius radius_x) { radius_x_ = radius_x; }
   void SetRadiusY(BasicShapeRadius radius_y) { radius_y_ = radius_y; }
@@ -236,6 +241,9 @@ class BasicShapeEllipse final : public BasicShapeWithCenterAndRadii {
   bool IsEqualAssumingSameType(const BasicShape&) const override;
 
  private:
+  float FloatValueForRadiusInBox(const BasicShapeRadius&,
+                                 float center,
+                                 float box_width_or_height) const;
 
   BasicShapeRadius radius_x_;
   BasicShapeRadius radius_y_;

@@ -175,14 +175,12 @@ std::unique_ptr<Shape> Shape::CreateShape(const BasicShape& basic_shape,
       gfx::PointF center =
           PointForCenterCoordinate(ellipse.CenterX(), ellipse.CenterY(),
                                    gfx::SizeF(box_width, box_height));
-      float radius_x = ellipse.FloatValueForRadiusInBox(ellipse.RadiusX(),
-                                                        center.x(), box_width);
-      float radius_y = ellipse.FloatValueForRadiusInBox(ellipse.RadiusY(),
-                                                        center.y(), box_height);
+      gfx::SizeF radii =
+          ellipse.ResolveRadii(center, gfx::SizeF(box_width, box_height));
       gfx::PointF logical_center = converter.ToLogical(center);
 
-      float inline_radius = radius_x;
-      float block_radius = radius_y;
+      float inline_radius = radii.width();
+      float block_radius = radii.height();
       if (!IsHorizontalWritingMode(writing_mode)) {
         std::swap(inline_radius, block_radius);
       }

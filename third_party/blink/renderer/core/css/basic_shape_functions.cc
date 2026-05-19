@@ -418,6 +418,10 @@ static CSSValue* BasicShapeRadiusToCSSValue(const ComputedStyle& style,
       return CSSIdentifierValue::Create(CSSValueID::kClosestSide);
     case BasicShapeRadius::kFarthestSide:
       return CSSIdentifierValue::Create(CSSValueID::kFarthestSide);
+    case BasicShapeRadius::kClosestCorner:
+      return CSSIdentifierValue::Create(CSSValueID::kClosestCorner);
+    case BasicShapeRadius::kFarthestCorner:
+      return CSSIdentifierValue::Create(CSSValueID::kFarthestCorner);
   }
 
   NOTREACHED();
@@ -646,6 +650,10 @@ static BasicShapeRadius CssValueToBasicShapeRadius(
         return BasicShapeRadius(BasicShapeRadius::kClosestSide);
       case CSSValueID::kFarthestSide:
         return BasicShapeRadius(BasicShapeRadius::kFarthestSide);
+      case CSSValueID::kClosestCorner:
+        return BasicShapeRadius(BasicShapeRadius::kClosestCorner);
+      case CSSValueID::kFarthestCorner:
+        return BasicShapeRadius(BasicShapeRadius::kFarthestCorner);
       default:
         NOTREACHED();
     }

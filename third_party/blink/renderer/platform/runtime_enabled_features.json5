@@ -865,6 +865,12 @@
       status: "stable",
     },
     {
+      // closest-corner/farthest-corner in circle()/ellipse().
+      // crbug.com/361617757
+      name: "BasicShapeCornerRadius",
+      status: "experimental",
+    },
+    {
       name: "BidiCaretAffinity",
     },
     {
