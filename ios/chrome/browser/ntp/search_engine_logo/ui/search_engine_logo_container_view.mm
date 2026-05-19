@@ -41,6 +41,13 @@ constexpr base::TimeDelta kFadeDuration = base::Milliseconds(500);
     // Create logo view.
     _shrunkLogoView = [[UIImageView alloc] init];
     _shrunkLogoView.translatesAutoresizingMaskIntoConstraints = NO;
+    [_shrunkLogoView
+        setContentCompressionResistancePriority:UILayoutPriorityDefaultLow
+                                        forAxis:UILayoutConstraintAxisVertical];
+    [_shrunkLogoView
+        setContentCompressionResistancePriority:UILayoutPriorityDefaultLow
+                                        forAxis:
+                                            UILayoutConstraintAxisHorizontal];
     [self addSubview:_shrunkLogoView];
     // TODO(crbug.com/1170491): Ideally the width anchor added so the
     // imageview frame matches the intrinsic size.
@@ -53,6 +60,13 @@ constexpr base::TimeDelta kFadeDuration = base::Milliseconds(500);
 
     // Create doodle view and add it to hierarchy.
     _doodleLogo = ios::provider::CreateAnimatedImageView();
+    [_doodleLogo
+        setContentCompressionResistancePriority:UILayoutPriorityDefaultLow
+                                        forAxis:UILayoutConstraintAxisVertical];
+    [_doodleLogo
+        setContentCompressionResistancePriority:UILayoutPriorityDefaultLow
+                                        forAxis:
+                                            UILayoutConstraintAxisHorizontal];
     [self addSubview:_doodleLogo];
     [_doodleLogo setTranslatesAutoresizingMaskIntoConstraints:NO];
     AddSameConstraints(_doodleLogo, self);

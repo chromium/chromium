@@ -217,18 +217,27 @@ const CGFloat kAlphaValueWhenImageBackround = 0.6;
   [contentView setCustomSpacing:kMagicStackTopMargin afterView:_omniboxView];
   [contentView setCustomSpacing:kFeedsTopMargin afterView:_magicStackView];
 
+  NSLayoutConstraint* omniboxHeight =
+      [_omniboxView.heightAnchor constraintEqualToConstant:kOmniboxHeight];
+  omniboxHeight.priority = UILayoutPriorityDefaultHigh;
+  NSLayoutConstraint* magicStackHeight = [_magicStackView.heightAnchor
+      constraintEqualToConstant:kMagicStackHeight];
+  magicStackHeight.priority = UILayoutPriorityDefaultHigh - 1;
+  NSLayoutConstraint* feedsHeight =
+      [_feedsView.heightAnchor constraintEqualToConstant:kFeedsHeight];
+  feedsHeight.priority = UILayoutPriorityDefaultHigh - 2;
+
   [NSLayoutConstraint activateConstraints:@[
     [spacerView.heightAnchor constraintEqualToAnchor:contentView.heightAnchor
                                           multiplier:kLogoTopMultiplier],
 
     [_omniboxView.widthAnchor constraintEqualToConstant:kOmniboxWidth],
-    [_omniboxView.heightAnchor constraintEqualToConstant:kOmniboxHeight],
+    omniboxHeight,
 
     [_magicStackView.widthAnchor constraintEqualToConstant:kMagicStackWidth],
-    [_magicStackView.heightAnchor constraintEqualToConstant:kMagicStackHeight],
+    magicStackHeight,
 
-    [_feedsView.widthAnchor constraintEqualToConstant:kFeedsWidth],
-    [_feedsView.heightAnchor constraintEqualToConstant:kFeedsHeight]
+    [_feedsView.widthAnchor constraintEqualToConstant:kFeedsWidth], feedsHeight
   ]];
 }
 
@@ -248,9 +257,12 @@ const CGFloat kAlphaValueWhenImageBackround = 0.6;
     // Insert the logo view right after the spacer.
     [self.innerContentView insertArrangedSubview:_logoView atIndex:1];
 
+    NSLayoutConstraint* logoHeight =
+        [_logoView.heightAnchor constraintEqualToConstant:kLogoHeight];
+    logoHeight.priority = UILayoutPriorityDefaultHigh;
     [NSLayoutConstraint activateConstraints:@[
       [_logoView.widthAnchor constraintEqualToConstant:kLogoWidth],
-      [_logoView.heightAnchor constraintEqualToConstant:kLogoHeight],
+      logoHeight,
     ]];
 
     [self.innerContentView setCustomSpacing:kOmniboxTopMargin

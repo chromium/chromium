@@ -142,7 +142,11 @@ const CGFloat kNavigationIconImageViewWidth = 16;
 
     _navigationSeparator = [[UIView alloc] init];
     _navigationSeparator.translatesAutoresizingMaskIntoConstraints = NO;
-    _navigationSeparator.backgroundColor = [UIColor colorNamed:kGrey200Color];
+
+    UIView* separatorLine = [[UIView alloc] init];
+    separatorLine.translatesAutoresizingMaskIntoConstraints = NO;
+    separatorLine.backgroundColor = [UIColor colorNamed:kGrey200Color];
+    [_navigationSeparator addSubview:separatorLine];
 
     _navigableStackView = [[UIStackView alloc] initWithArrangedSubviews:@[
       _iconContainer,
@@ -155,15 +159,6 @@ const CGFloat kNavigationIconImageViewWidth = 16;
     _navigableStackView.alignment = UIStackViewAlignmentCenter;
     _navigableStackView.spacing = UIStackViewSpacingUseSystem;
 
-    // Anchor separator to the full height of the cell, which includes the
-    // margin.
-    [NSLayoutConstraint activateConstraints:@[
-      [_navigationSeparator.widthAnchor constraintEqualToConstant:1],
-      [_navigationSeparator.heightAnchor
-          constraintEqualToAnchor:_navigableStackView.heightAnchor
-                         constant:kVerticalMargin * 2],
-    ]];
-
     _contentStackView = [[UIStackView alloc]
         initWithArrangedSubviews:@[ _navigableStackView, _switch ]];
     _contentStackView.translatesAutoresizingMaskIntoConstraints = NO;
@@ -174,6 +169,20 @@ const CGFloat kNavigationIconImageViewWidth = 16;
     [self.contentView addSubview:_contentStackView];
 
     AddSameConstraints(_contentStackView, self.contentView.layoutMarginsGuide);
+
+    [NSLayoutConstraint activateConstraints:@[
+      [_navigationSeparator.widthAnchor constraintEqualToConstant:1],
+      [_navigationSeparator.heightAnchor
+          constraintEqualToAnchor:_navigableStackView.heightAnchor],
+      [separatorLine.widthAnchor constraintEqualToConstant:1],
+      [separatorLine.centerXAnchor
+          constraintEqualToAnchor:_navigationSeparator.centerXAnchor],
+      [separatorLine.centerYAnchor
+          constraintEqualToAnchor:_navigationSeparator.centerYAnchor],
+      [separatorLine.heightAnchor
+          constraintEqualToAnchor:_navigationSeparator.heightAnchor
+                         constant:kVerticalMargin * 2],
+    ]];
   }
   return self;
 }
