@@ -40,7 +40,7 @@ export function getHtml(this: ContextualActionMenuElement) {
             <span class="tab-title">
               ${this.sharingTabsText_}
             </span>
-            <composebox-favicon-group .tabs="${this.getSelectedTabs_()}">
+            <composebox-favicon-group .tabs="${this.getSelectedTabs_()}" title="${this.i18n('sharingTabsWithGoogle')}">
             </composebox-favicon-group>
             <cr-icon class="share-tabs-arrow" icon="cr:chevron-right"></cr-icon>
           </button>

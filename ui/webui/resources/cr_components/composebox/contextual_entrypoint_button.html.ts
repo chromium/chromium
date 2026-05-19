@@ -25,7 +25,7 @@ export function getHtml(this: ContextualEntrypointButtonElement) {
              this.i18n('searchBoxHintMultimodal') : this.i18n('addContext')}
         </span>
         ${this.tabFaviconChipsToCoinsEnabled_ && this.sharedTabs && this.sharedTabs.length > 0 ? html`
-          <composebox-favicon-group .tabs="${this.sharedTabs}"></composebox-favicon-group>
+          <composebox-favicon-group .tabs="${this.sharedTabs}" title="${this.i18n('sharingTabsWithGoogle')}"></composebox-favicon-group>
         ` : ''}
       </cr-button>
     ` : (this.tabFaviconChipsToCoinsEnabled_ && this.sharedTabs && this.sharedTabs.length > 0) ? html`
@@ -35,7 +35,7 @@ export function getHtml(this: ContextualEntrypointButtonElement) {
           ?disabled="${this.uploadButtonDisabled}" noink
           aria-label="${this.i18n('addContextTitle')}">
         <cr-icon id="entrypointIcon" icon="cr:add" slot="prefix-icon"></cr-icon>
-        <composebox-favicon-group .tabs="${this.sharedTabs}"></composebox-favicon-group>
+        <composebox-favicon-group .tabs="${this.sharedTabs}" title="${this.i18n('sharingTabsWithGoogle')}"></composebox-favicon-group>
       </cr-button>
     ` : html`
       <cr-icon-button id="entrypoint" class="ai-mode-button"
