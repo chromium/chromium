@@ -9555,6 +9555,16 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kToolbarGlowUpDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kToolbarGlowUp)},
 
+    {"toolbar-profile-chip-resizing",
+     flag_descriptions::kToolbarProfileChipResizingName,
+     flag_descriptions::kToolbarProfileChipResizingDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(features::kToolbarProfileChipResizing)},
+
+    {"toolbar-app-menu-label-resizing",
+     flag_descriptions::kToolbarAppMenuLabelResizingName,
+     flag_descriptions::kToolbarAppMenuLabelResizingDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(features::kToolbarAppMenuLabelResizing)},
+
     {"rounded-icons", flag_descriptions::kRoundedIconsName,
      flag_descriptions::kRoundedIconsDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kRoundedIcons)},

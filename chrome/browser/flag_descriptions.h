@@ -4434,6 +4434,16 @@ inline constexpr char kToolbarGlowUpName[] = "Toolbar Glow Up";
 inline constexpr char kToolbarGlowUpDescription[] =
     "Enables the Toolbar Glow Up feature.";
 
+inline constexpr char kToolbarProfileChipResizingName[] =
+    "Toolbar Profile Chip Resizing";
+inline constexpr char kToolbarProfileChipResizingDescription[] =
+    "Enables resizing of the profile chip in the toolbar.";
+
+inline constexpr char kToolbarAppMenuLabelResizingName[] =
+    "Toolbar App Menu Label Resizing";
+inline constexpr char kToolbarAppMenuLabelResizingDescription[] =
+    "Enables resizing of the app menu label in the toolbar.";
+
 inline constexpr char kRoundedIconsName[] = "Rounded Icons";
 inline constexpr char kRoundedIconsDescription[] = "Enables rounded icons.";
 
