@@ -277,7 +277,7 @@ class AutofillClient {
   // is passed otherwise.
   using EntityImportPromptResultCallback =
       base::OnceCallback<void(AutofillAiBubbleResult result,
-                              base::optional_ref<const EntityInstance> entity,
+                              std::optional<EntityInstance> edited_entity,
                               const EntityImportUIContext& ui_context)>;
 
   // The types of prompts that AutofillAi can show to the user after a form

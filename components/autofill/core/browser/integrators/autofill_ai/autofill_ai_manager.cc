@@ -400,10 +400,10 @@ void AutofillAiManager::HandlePromptResult(
     ukm::SourceId ukm_source_id,
     AutofillClient::AutofillAiImportPromptType prompt_type,
     AutofillClient::AutofillAiBubbleResult result,
-    base::optional_ref<const EntityInstance> edited_entity,
+    std::optional<EntityInstance> edited_entity,
     const AutofillClient::EntityImportUIContext& ui_context) {
   if (edited_entity) {
-    entity = *edited_entity;
+    entity = std::exchange(edited_entity, std::nullopt).value();
   }
   logger_.OnImportPromptResult(form, prompt_type, entity.type(),
                                entity.record_type(), result, ukm_source_id);
