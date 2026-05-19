@@ -472,6 +472,7 @@ crbug.com/40935289 [ angle-vulkan arm fuchsia no-clang-coverage web-engine-shell
 
 # Flaky on Mac ASAN
 crbug.com/372055518 [ angle-metal asan mac ] Pixel_WebGLReadPixelsTabSwitch_SoftwareCompositing [ Failure ]
+crbug.com/514645136 [ angle-metal asan mac ] Pixel_Video_MP4_Rounded_Corner [ Failure ]
 
 # Flaky hang on Mac GL ASAN
 crbug.com/40277254 [ mac angle-opengl asan ] Pixel_WebGPUDisplayP3 [ Failure ]
