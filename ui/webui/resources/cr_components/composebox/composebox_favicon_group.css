@@ -15,7 +15,7 @@
 
 .favicon-item {
   aspect-ratio: 1/1;
-  background-color: var(--cr-menu-background-color, #fff);
+  background-color: #fff;
   background-position: center;
   background-repeat: no-repeat;
   background-size: 16px;
