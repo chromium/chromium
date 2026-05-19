@@ -190,7 +190,6 @@ std::vector<std::string> getIdsForWebViewApkType(const ApkType& apk_type) {
       gws_experiment_ids.push_back("3393840");
     }
   } else if (apk_type == ApkType::STANDALONE) {
-    gws_experiment_ids.push_back("3397229");
     gws_experiment_ids.push_back("3393823");
     if (channel == version_info::Channel::STABLE) {
       gws_experiment_ids.push_back("3393825");
