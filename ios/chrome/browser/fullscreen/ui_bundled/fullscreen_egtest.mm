@@ -698,6 +698,11 @@ std::unique_ptr<net::test_server::HttpResponse> NotFoundResponse() {
 }
 
 - (void)testFixedElementBottom {
+  // TODO(crbug.com/514648248): Re-enable this test on iPad.
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"Disabled for iPad (crbug.com/514648248).");
+  }
+
   _responses["/fixed-bottom"] = GetFixedBottomHtml();
 
   GURL URL = self.testServer->GetURL("/fixed-bottom");
