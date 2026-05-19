@@ -191,6 +191,48 @@ TEST_F(ChooseFileTabHelperTest, LastChooseFileEvent) {
   EXPECT_FALSE(tab_helper_->HasLastChooseFileEvent());
 }
 
+// Tests that starting navigation to a different document resets the last
+// ChooseFileEvent.
+TEST_F(ChooseFileTabHelperTest, DidStartNavigationResetsLastChooseFileEvent) {
+  EXPECT_FALSE(tab_helper_->HasLastChooseFileEvent());
+
+  ChooseFileEvent event = ChooseFileEvent::Builder()
+                              .SetAllowMultipleFiles(false)
+                              .SetHasSelectedFile(false)
+                              .SetWebState(web_state_.get())
+                              .Build();
+  tab_helper_->SetLastChooseFileEvent(event);
+  EXPECT_TRUE(tab_helper_->HasLastChooseFileEvent());
+
+  auto navigation_context = std::make_unique<web::FakeNavigationContext>();
+
+  // Same document navigation should NOT reset last_choose_file_event_.
+  navigation_context->SetIsSameDocument(true);
+  tab_helper_->DidStartNavigation(web_state_.get(), navigation_context.get());
+  EXPECT_TRUE(tab_helper_->HasLastChooseFileEvent());
+
+  // Cross-document navigation should reset last_choose_file_event_.
+  navigation_context->SetIsSameDocument(false);
+  tab_helper_->DidStartNavigation(web_state_.get(), navigation_context.get());
+  EXPECT_FALSE(tab_helper_->HasLastChooseFileEvent());
+}
+
+// Tests that hiding the tab resets the last ChooseFileEvent.
+TEST_F(ChooseFileTabHelperTest, WasHiddenResetsLastChooseFileEvent) {
+  EXPECT_FALSE(tab_helper_->HasLastChooseFileEvent());
+
+  ChooseFileEvent event = ChooseFileEvent::Builder()
+                              .SetAllowMultipleFiles(false)
+                              .SetHasSelectedFile(false)
+                              .SetWebState(web_state_.get())
+                              .Build();
+  tab_helper_->SetLastChooseFileEvent(event);
+  EXPECT_TRUE(tab_helper_->HasLastChooseFileEvent());
+
+  tab_helper_->WasHidden(web_state_.get());
+  EXPECT_FALSE(tab_helper_->HasLastChooseFileEvent());
+}
+
 // Tests that `RunOpenPanel()` starts file selection in the tab and shows the
 // file upload panel.
 TEST_F(ChooseFileTabHelperTest, RunOpenPanel) {

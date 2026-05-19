@@ -231,11 +231,13 @@ void ChooseFileTabHelper::DidStartNavigation(
     web::NavigationContext* navigation_context) {
   if (!navigation_context->IsSameDocument()) {
     AbortSelection();
+    ResetLastChooseFileEvent();
   }
 }
 
 void ChooseFileTabHelper::WasHidden(web::WebState* web_state) {
   AbortSelection();
+  ResetLastChooseFileEvent();
 }
 
 void ChooseFileTabHelper::WebStateDestroyed(web::WebState* web_state) {
