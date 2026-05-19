@@ -1,0 +1,3 @@
+Test hidden targets synchronous close
+Crashed 20 targets
+PASSED

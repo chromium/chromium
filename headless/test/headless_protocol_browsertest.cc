@@ -21,6 +21,7 @@
 #include "build/config/linux/dbus/buildflags.h"
 #include "components/headless/test/shared_test_util.h"
 #include "content/public/common/content_switches.h"
+#include "content/public/test/no_renderer_crashes_assertion.h"
 #include "headless/lib/browser/headless_web_contents_impl.h"
 #include "headless/public/switches.h"
 #include "headless/test/headless_browser_test_utils.h"
@@ -360,6 +361,30 @@ HEADLESS_PROTOCOL_TEST(WindowResizeTo, "sanity/window-resize-to.js")
 
 HEADLESS_PROTOCOL_TEST(HiddenTargetCreate, "shared/hidden-target-create.js")
 HEADLESS_PROTOCOL_TEST(HiddenTargetClose, "shared/hidden-target-close.js")
+class HeadlessProtocolBrowserTestWithAllowedCrashes
+    : public HeadlessProtocolBrowserTest {
+ public:
+  HeadlessProtocolBrowserTestWithAllowedCrashes() = default;
+
+ protected:
+  void SetUpOnMainThread() override {
+    allow_renderer_crashes_ =
+        std::make_unique<content::ScopedAllowRendererCrashes>();
+    HeadlessProtocolBrowserTest::SetUpOnMainThread();
+  }
+
+  void TearDownOnMainThread() override {
+    allow_renderer_crashes_.reset();
+    HeadlessProtocolBrowserTest::TearDownOnMainThread();
+  }
+
+ private:
+  std::unique_ptr<content::ScopedAllowRendererCrashes> allow_renderer_crashes_;
+};
+
+HEADLESS_PROTOCOL_TEST_F(HeadlessProtocolBrowserTestWithAllowedCrashes,
+                         HiddenTargetSyncClose,
+                         "shared/hidden-target-sync-close.js")
 HEADLESS_PROTOCOL_TEST(HiddenTargetCreateInvalidParams,
                        "shared/hidden-target-create-invalid-params.js")
 HEADLESS_PROTOCOL_TEST(HiddenTargetPageEnable,
