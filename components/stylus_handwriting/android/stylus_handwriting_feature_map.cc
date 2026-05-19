@@ -15,7 +15,6 @@ namespace {
 
 const base::Feature* const kFeaturesExposedToJava[] = {
     &kCacheStylusSettings,
-    &kProbeStylusWritingInBackground,
 };
 
 // static
@@ -35,8 +34,6 @@ static int64_t JNI_StylusHandwritingFeatureMap_GetNativeMap(JNIEnv* env) {
 
 // Cache Stylus related settings
 BASE_FEATURE(kCacheStylusSettings, base::FEATURE_ENABLED_BY_DEFAULT);
-BASE_FEATURE(kProbeStylusWritingInBackground,
-             base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace stylus_handwriting::android
 

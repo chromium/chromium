@@ -214,13 +214,10 @@ public class StylusWritingController {
      */
     @MainThread
     private void probeSupportThenRunOrPost(boolean refresh, Runnable task) {
-        boolean background =
-                StylusHandwritingFeatureMap.isEnabledOrDefault(
-                        StylusHandwritingFeatureMap.PROBE_STYLUS_WRITING_IN_BACKGROUND, false);
         boolean cache =
                 StylusHandwritingFeatureMap.isEnabledOrDefault(
                         StylusHandwritingFeatureMap.CACHE_STYLUS_SETTINGS, false);
-        if (background && cache) {
+        if (cache) {
             // Note that multiple precache tasks could be posted in a race, but the underlying work
             // is guarded by locks and the caching will avoid any expensive duplicate work.
             PostTask.postTask(
