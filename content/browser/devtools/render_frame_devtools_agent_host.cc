@@ -579,8 +579,9 @@ void RenderFrameDevToolsAgentHost::UpdateFrameHost(
 
   RenderFrameHostImpl* old_host = frame_host_;
   ChangeFrameHostAndObservedProcess(frame_host);
-  if (IsAttached())
+  if (IsAttached()) {
     UpdateRawHeadersAccess(old_host, nullptr);
+  }
 
   UpdateFrameAlive();
 }

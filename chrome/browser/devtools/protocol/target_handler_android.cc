@@ -8,12 +8,16 @@
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/url_constants.h"
+#include "content/public/common/url_utils.h"
+#include "url/url_constants.h"
 
 using content::WebContents;
 
 TargetHandlerAndroid::TargetHandlerAndroid(protocol::UberDispatcher* dispatcher,
                                            bool is_trusted,
-                                           bool may_read_local_files) {
+                                           bool may_read_local_files)
+    : is_trusted_(is_trusted), may_read_local_files_(may_read_local_files) {
   protocol::Target::Dispatcher::wire(dispatcher, this);
 }
 
@@ -58,8 +62,29 @@ protocol::Response TargetHandlerAndroid::CreateTarget(
   TabModel* tab_model = models[0];
   CHECK(tab_model);
 
+  GURL gurl(url);
+  if (gurl.is_empty()) {
+    gurl = GURL(url::kAboutBlankURL);
+  }
+
+  GURL inner_url = gurl;
+  if (gurl.SchemeIs(content::kViewSourceScheme)) {
+    inner_url = GURL(gurl.GetContent());
+  }
+
+  if (!is_trusted_ && (inner_url.SchemeIs(content::kChromeUIUntrustedScheme) ||
+                       inner_url.SchemeIs(content::kChromeDevToolsScheme))) {
+    return protocol::Response::ServerError(
+        "Navigating to a URL with a privileged scheme is not allowed");
+  }
+
+  if (!may_read_local_files_ && inner_url.SchemeIsFile()) {
+    return protocol::Response::ServerError(
+        "Creating a target with a local URL is not allowed");
+  }
+
   WebContents* web_contents =
-      tab_model->CreateNewTabForDevTools(GURL(url), new_window.value_or(false));
+      tab_model->CreateNewTabForDevTools(gurl, new_window.value_or(false));
   if (!web_contents) {
     return protocol::Response::ServerError("Could not create a Tab");
   }

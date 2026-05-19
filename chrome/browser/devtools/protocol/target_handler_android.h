@@ -46,6 +46,8 @@ class TargetHandlerAndroid : public protocol::Target::Backend {
       std::string* out_target_id) override;
 
  private:
+  bool is_trusted_ = false;
+  bool may_read_local_files_ = false;
   RemoteLocations remote_locations_;
 };
 
