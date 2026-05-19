@@ -358,6 +358,8 @@ BASE_DECLARE_FEATURE_PARAM(bool, kTabGroupsFocusingDefaultToFocused);
 BASE_DECLARE_FEATURE(kVerticalTabsGrabHandleRemoval);
 BASE_DECLARE_FEATURE_PARAM(bool, kVerticalTabsGrabHandleRemovalAlways);
 
+BASE_DECLARE_FEATURE(kOmniboxResizingPrioritization);
+
 }  // namespace features
 
 #endif  // CHROME_BROWSER_UI_UI_FEATURES_H_
