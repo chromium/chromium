@@ -470,6 +470,10 @@ error-page {
   visibility: hidden;
 }
 
+:host([composebox-hovered_]) #threadFrame {
+  pointer-events: none;
+}
+
 #composebox {
   display: block;
   height: auto;

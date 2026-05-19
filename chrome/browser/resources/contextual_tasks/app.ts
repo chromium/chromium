@@ -267,6 +267,10 @@ export class ContextualTasksAppElement extends ContextualTasksAppElementBase {
       },
       showSmartTabSharingTryItIph_: {type: Boolean},
       showSmartTabSharingDefaultOnIph_: {type: Boolean},
+      composeboxHovered_: {
+        type: Boolean,
+        reflect: true,
+      },
     };
   }
 
@@ -331,6 +335,7 @@ export class ContextualTasksAppElement extends ContextualTasksAppElementBase {
   // embedded page, which allows the client to keep track and know which parts
   // of the composebox are not visible to the user, and therefore not clickable.
   protected accessor occluders_: Rect[]|null = null;
+  protected accessor composeboxHovered_: boolean = false;
 
   protected accessor friendlyZeroStateSubtitle: string =
       loadTimeData.getString('friendlyZeroStateSubtitle');
@@ -688,6 +693,13 @@ export class ContextualTasksAppElement extends ContextualTasksAppElementBase {
         composebox, 'context-menu-opened',
         () => this.onComposeboxContextMenuOpened_());
 
+    this.eventTracker_.add(composebox, 'mouseenter', () => {
+      this.composeboxHovered_ = true;
+    });
+
+    this.eventTracker_.add(composebox, 'mouseleave', () => {
+      this.composeboxHovered_ = false;
+    });
     this.eventTracker_.add(
         composebox, 'composebox-height-update',
         (e: CustomEvent<{height: number}>) => {
