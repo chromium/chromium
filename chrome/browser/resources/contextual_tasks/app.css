@@ -10,6 +10,7 @@
 
 :host {
   --color-composebox-cancel-button: rgba(10,10,10, 1);
+  --color-composebox-context-entrypoint-text-disabled: rgba(31, 31, 31, 0.38);
   --color-composebox-context-menu-checkbox-override: rgba(11, 87, 208, 1);
   --color-composebox-context-menu-text: rgba(31, 31, 31, 1);
   --color-composebox-document-chip-icon: rgba(86, 89, 94, 1);
