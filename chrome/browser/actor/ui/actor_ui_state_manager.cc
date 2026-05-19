@@ -135,6 +135,17 @@ ActorTask::TaskDuration ActorUiStateManager::GetDuration(TaskId task_id) {
   return ActorTask::TaskDuration::kDefault;
 }
 
+glic::mojom::FeatureMode ActorUiStateManager::GetFeatureMode(TaskId task_id) {
+  if (ActorTask* task = actor_service_->GetTask(task_id)) {
+    return task->feature_mode();
+  }
+  if (auto stopped_task = stopped_task_info_.find(task_id);
+      stopped_task != stopped_task_info_.end()) {
+    return stopped_task->second.feature_mode;
+  }
+  return glic::mojom::FeatureMode::kUnspecified;
+}
+
 ActorTask::TaskDuration ActorUiStateManager::GetDuration(
     const tabs::TabInterface* tab) {
   if (tab) {
@@ -282,6 +293,7 @@ void ActorUiStateManager::OnUiEvent(SyncUiEvent event) {
                     .title = e.title,
                     .last_acted_on_tab_handle = e.last_acted_on_tab_handle,
                     .duration = e.duration,
+                    .feature_mode = e.feature_mode,
                 });
             NotifyActorTaskStopped(e.task_id);
 

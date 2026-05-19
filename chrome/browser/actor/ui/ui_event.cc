@@ -16,12 +16,14 @@ StopTask::StopTask(actor::TaskId id,
                    ActorTask::State final_state,
                    const std::string& title,
                    tabs::TabInterface::Handle last_acted_on_tab_handle,
-                   ActorTask::TaskDuration duration)
+                   ActorTask::TaskDuration duration,
+                   glic::mojom::FeatureMode feature_mode)
     : task_id(id),
       final_state(final_state),
       title(title),
       last_acted_on_tab_handle(last_acted_on_tab_handle),
-      duration(duration) {
+      duration(duration),
+      feature_mode(feature_mode) {
   DCHECK(ActorTask::IsCompletedState(final_state));
 }
 StopTask::~StopTask() = default;

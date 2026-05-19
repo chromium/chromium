@@ -46,6 +46,7 @@ class UiEventDispatcher {
     std::string title;
     tabs::TabInterface::Handle last_acted_on_tab_handle;
     ActorTask::TaskDuration duration;
+    glic::mojom::FeatureMode feature_mode;
   };
 
   struct RemoveTab {

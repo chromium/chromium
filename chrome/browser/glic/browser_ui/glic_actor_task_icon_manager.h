@@ -41,7 +41,8 @@ class GlicActorTaskIconManager : public KeyedService {
 
   // Returns true if the task requires attention, was recently completed, or
   // failed.
-  static bool RequiresTaskProcessing(actor::ActorTask::State state);
+  static bool RequiresTaskProcessing(actor::ActorTask::State state,
+                                     glic::mojom::FeatureMode feature_mode);
 
   // Returns true if the task list bubble should be shown for the task state.
   static bool ShouldShowBubble(actor::ActorTask::State state,
@@ -84,10 +85,6 @@ class GlicActorTaskIconManager : public KeyedService {
 
   // Determines the state of a task to show in the task list bubble.
   void UpdateTaskListBubble(actor::TaskId task_id);
-
-  // Returns the feature mode for a given task, or kUnspecified if the task
-  // doesn't exist.
-  glic::mojom::FeatureMode GetFeatureMode(actor::TaskId task_id) const;
 
   std::vector<base::CallbackListSubscription> callback_subscriptions_;
 

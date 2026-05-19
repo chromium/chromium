@@ -90,7 +90,7 @@ void GlicActorTaskIconManager::UpdateTaskNudge() {
     }
 
     auto duration = manager->GetDuration(task_id);
-    glic::mojom::FeatureMode feature_mode = GetFeatureMode(task_id);
+    glic::mojom::FeatureMode feature_mode = manager->GetFeatureMode(task_id);
     if (ShouldShowBubble(*state, duration, feature_mode)) {
       show_bubble = true;
     }
@@ -154,10 +154,9 @@ void GlicActorTaskIconManager::UpdateTaskListBubble(actor::TaskId task_id) {
     actor_task_list_bubble_rows_.erase(task_id);
   } else {
     const auto duration = manager->GetDuration(task_id);
+    glic::mojom::FeatureMode feature_mode = manager->GetFeatureMode(task_id);
     actor_task_list_bubble_rows_[task_id] =
-        RequiresTaskProcessing(state.value());
-
-    glic::mojom::FeatureMode feature_mode = GetFeatureMode(task_id);
+        RequiresTaskProcessing(state.value(), feature_mode);
 
     if (ShouldShowBubble(state.value(), duration, feature_mode)) {
       // Notify the bubble only if a task now requires processing. This callback
@@ -198,7 +197,13 @@ bool GlicActorTaskIconManager::RequiresAttention(TaskState state) {
 }
 
 // static
-bool GlicActorTaskIconManager::RequiresTaskProcessing(TaskState state) {
+bool GlicActorTaskIconManager::RequiresTaskProcessing(
+    TaskState state,
+    glic::mojom::FeatureMode feature_mode) {
+  if (feature_mode == glic::mojom::FeatureMode::kExperimentalTriggering &&
+      (state == TaskState::kFinished || state == TaskState::kFailed)) {
+    return false;
+  }
   return GlicActorTaskIconManager::RequiresAttention(state) ||
          state == TaskState::kFinished || state == TaskState::kFailed;
 }
@@ -216,13 +221,8 @@ bool GlicActorTaskIconManager::ShouldShowBubble(
     return true;
   }
   return (state == TaskState::kFinished || state == TaskState::kFailed) &&
-         duration != ActorTask::TaskDuration::kTransient;
-}
-
-glic::mojom::FeatureMode GlicActorTaskIconManager::GetFeatureMode(
-    actor::TaskId task_id) const {
-  actor::ActorTask* task = actor_service_->GetTask(task_id);
-  return task ? task->feature_mode() : glic::mojom::FeatureMode::kUnspecified;
+         duration != ActorTask::TaskDuration::kTransient &&
+         feature_mode != glic::mojom::FeatureMode::kExperimentalTriggering;
 }
 
 }  // namespace glic

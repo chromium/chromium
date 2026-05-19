@@ -11,6 +11,7 @@
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/common/actor.mojom-forward.h"
 #include "chrome/common/actor/task_id.h"
+#include "chrome/common/glic_enums.mojom.h"
 #include "components/tabs/public/tab_interface.h"
 #include "ui/gfx/geometry/point.h"
 
@@ -50,12 +51,14 @@ struct StopTask {
   std::string title;
   tabs::TabInterface::Handle last_acted_on_tab_handle;
   ActorTask::TaskDuration duration;
+  glic::mojom::FeatureMode feature_mode;
 
   StopTask(actor::TaskId,
            ActorTask::State,
            const std::string& title,
            tabs::TabInterface::Handle,
-           ActorTask::TaskDuration);
+           ActorTask::TaskDuration,
+           glic::mojom::FeatureMode = glic::mojom::FeatureMode::kUnspecified);
   StopTask(const StopTask&);
   ~StopTask();
 };

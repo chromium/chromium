@@ -380,6 +380,35 @@ TEST_F(GlicActorTaskIconManagerTest, ShouldShowBubble_FeatureModeRules) {
       actor::ActorTask::State::kWaitingOnUser,
       actor::ActorTask::TaskDuration::kDefault,
       glic::mojom::FeatureMode::kUnspecified));
+
+  // 5. Experimental Triggering task in kFinished state should NOT show the
+  // bubble.
+  EXPECT_FALSE(GlicActorTaskIconManager::ShouldShowBubble(
+      actor::ActorTask::State::kFinished,
+      actor::ActorTask::TaskDuration::kDefault,
+      glic::mojom::FeatureMode::kExperimentalTriggering));
+
+  // 6. Experimental Triggering task in kFailed state should NOT show the
+  // bubble.
+  EXPECT_FALSE(GlicActorTaskIconManager::ShouldShowBubble(
+      actor::ActorTask::State::kFailed,
+      actor::ActorTask::TaskDuration::kDefault,
+      glic::mojom::FeatureMode::kExperimentalTriggering));
+}
+
+TEST_F(GlicActorTaskIconManagerTest,
+       ExperimentalTriggeringTaskDoesNotShowDoneNotification) {
+  TaskId task_id =
+      actor_service()->CreateExperimentalTriggeringTaskForTesting();
+
+  EXPECT_CALL(mock_nudge_subscriber_,
+              OnStateChanged(/*show_bubble=*/false,
+                             Field(&ActorTaskNudgeState::text,
+                                   ActorTaskNudgeState::Text::kDefault)));
+  EXPECT_CALL(mock_bubble_subscriber_, OnStateChanged()).Times(0);
+  actor_service()->StopTaskForTesting(
+      task_id, actor::ActorTask::StoppedReason::kTaskComplete);
+  manager()->UpdateTaskIconComponents(task_id);
 }
 
 }  // namespace glic

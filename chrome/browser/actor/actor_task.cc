@@ -465,7 +465,8 @@ void ActorTask::Stop(StoppedReason stop_reason) {
       .final_state = final_state,
       .title = title_,
       .last_acted_on_tab_handle = last_tab_handle,
-      .duration = duration_});
+      .duration = duration_,
+      .feature_mode = feature_mode_});
 }
 
 void ActorTask::Pause(bool from_actor, bool cancel_existing_action) {

@@ -54,6 +54,10 @@ class MockActorUiStateManager : public ActorUiStateManagerInterface {
               GetDuration,
               (TaskId),
               (override));
+  MOCK_METHOD(glic::mojom::FeatureMode,
+              GetFeatureMode,
+              (TaskId task_id),
+              (override));
   MOCK_METHOD(size_t, GetInactiveTaskCount, (), (override));
 };
 

@@ -151,7 +151,7 @@ constexpr absl::Overload ActorTaskSyncChangeFn{
     [](const UiEventDispatcher::StopTask& c) {
       return EventSequence<SyncUiEvent>{
           StopTask(c.task_id, c.final_state, c.title,
-                   c.last_acted_on_tab_handle, c.duration)};
+                   c.last_acted_on_tab_handle, c.duration, c.feature_mode)};
     },
     [](const UiEventDispatcher::RemoveTab& c) {
       return EventSequence<SyncUiEvent>{StoppedActingOnTab(c.handle)};

@@ -33,6 +33,7 @@ class ActorUiStateManager : public ActorUiStateManagerInterface {
       TaskId id) override;
   std::optional<actor::ActorTask::State> GetActorTaskState(TaskId id) override;
   ActorTask::TaskDuration GetDuration(TaskId task_id) override;
+  glic::mojom::FeatureMode GetFeatureMode(TaskId task_id) override;
   size_t GetInactiveTaskCount() override;
 
   base::CallbackListSubscription RegisterActorTaskStateChange(
