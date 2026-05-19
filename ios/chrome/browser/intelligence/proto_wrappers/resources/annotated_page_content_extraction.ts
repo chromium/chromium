@@ -978,7 +978,8 @@ function getNodeInteractionInfo(
   // Check 'disabled' property for form elements.
   // Note: we cast to any because the 'disabled' property is not on HTMLElement
   // but specific subclasses like HTMLInputElement, HTMLButtonElement, etc.
-  if ('disabled' in element && (element as HtmlElementWithDisabled).disabled) {
+  if ('disabled' in element &&
+      (element as HtmlElementWithDisabled).disabled === true) {
     interactionDisabledReasons.push(
         PageContentInteractionDisabledReason.DISABLED);
     isDisabled = true;

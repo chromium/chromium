@@ -1757,6 +1757,64 @@ TEST_P(PageContextExtractorJavaScriptFeatureTest,
                interaction_info3->FindDouble("documentScopedZOrder"));
 }
 
+TEST_P(PageContextExtractorJavaScriptFeatureTest,
+       ExtractPageContext_FormDisabledWithPollution) {
+  // A form element containing an input with name="disabled".
+  // Since HTMLFormElement has [LegacyOverrideBuiltIns], accessing form.disabled
+  // returns the input element rather than undefined. Strictly checking
+  // form.disabled === true prevents the form from being incorrectly marked as
+  // disabled.
+  const std::string html = R"(
+    <html>
+      <body>
+        <form id="myForm">
+          <input name="disabled" type="text" value="Not really disabled">
+        </form>
+      </body>
+    </html>
+  )";
+  web::test::LoadHtml(base::SysUTF8ToNSString(html),
+                      test_server_.GetURL(kMainPagePath), web_state());
+
+  std::optional<base::Value> result_value = RunExtraction(
+      web_state()->GetPageWorldWebFramesManager()->GetMainWebFrame(),
+      /*include_cross_origin_frame_content=*/false,
+      /*use_rich_extraction=*/true,
+      /*use_rich_extraction_with_actionable=*/true,
+      /*extract_paid_content=*/false,
+      /*attempt_paid_content_json_fixing=*/false, "nonce", base::Seconds(1));
+
+  ASSERT_TRUE(result_value);
+  ASSERT_TRUE(result_value->is_dict());
+
+  const base::DictValue& dict = result_value->GetDict();
+  const base::DictValue* root_node = dict.FindDict("rootNode");
+  ASSERT_TRUE(root_node);
+  const base::ListValue* children = root_node->FindList("childrenNodes");
+  ASSERT_TRUE(children);
+  ASSERT_GE(children->size(), 1u);
+
+  // The form element should be the first node in this hierarchy.
+  const base::DictValue& form_node = (*children)[0].GetDict();
+  std::optional<double> attribute_type =
+      form_node.FindDoubleByDottedPath("contentAttributes.attributeType");
+  ASSERT_TRUE(attribute_type.has_value());
+  ASSERT_EQ(
+      static_cast<int>(attribute_type.value()),
+      static_cast<int>(optimization_guide::proto::CONTENT_ATTRIBUTE_FORM));
+
+  // Verify the form itself does NOT have isDisabled set to true.
+  // Note: If the pollution bug occurred, `nodeInteractionInfo` would be
+  // incorrectly populated with `isDisabled = true`. In the correct/fixed case,
+  // `nodeInteractionInfo` is either not populated (null) or has `isDisabled =
+  // false`.
+  const base::DictValue* interaction_info =
+      form_node.FindDictByDottedPath("contentAttributes.nodeInteractionInfo");
+  if (interaction_info) {
+    EXPECT_FALSE(interaction_info->FindBool("isDisabled").value_or(false));
+  }
+}
+
 INSTANTIATE_TEST_SUITE_P(All,
                          PageContextExtractorJavaScriptFeatureTest,
                          ::testing::Values(IPCExtractionMethod::kNative,
