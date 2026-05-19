@@ -1372,6 +1372,7 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
             }
             submenuItems.add(buildShareListItem(shouldShowIconBeforeItem()));
             submenuItems.add(buildCopyLinkItem());
+            submenuItems.add(buildSendToDevicesItem());
         }
 
         return new ListItem(
@@ -1392,6 +1393,15 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
                         R.id.copy_link_menu_id,
                         R.string.menu_copy_link,
                         shouldShowIconBeforeItem() ? R.drawable.ic_copy_link_24dp : 0));
+    }
+
+    private ListItem buildSendToDevicesItem() {
+        return new ListItem(
+                AppMenuHandler.AppMenuItemType.STANDARD,
+                buildModelForStandardMenuItem(
+                        R.id.send_to_devices_menu_id,
+                        R.string.menu_send_to_devices,
+                        shouldShowIconBeforeItem() ? R.drawable.send_tab : 0));
     }
 
     private ListItem buildDownloadPageItem(Tab currentTab) {

@@ -29103,6 +29103,11 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="MobileMenuSendToDevices">
+  <owner>massan@google.com</owner>
+  <description>User pressed 'Send to devices' in the app menu.</description>
+</action>
+
 <action name="MobileMenuSettings">
   <owner>aurimas@chromium.org</owner>
   <description>User pressed 'Settings' in the app menu.</description>

@@ -4187,6 +4187,15 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                             /* notifyOnSuccess= */ true);
             RecordUserAction.record("MobileMenuCopyLink");
             return true;
+        } else if (id == R.id.send_to_devices_menu_id) {
+            assert currentTab != null;
+            ShareDelegate shareDelegate = getShareDelegateSupplier().get();
+            if (shareDelegate != null) {
+                shareDelegate.sendTabToSelf(currentTab);
+                RecordUserAction.record("MobileMenuSendToDevices");
+                return true;
+            }
+            return false;
         } else if (id == R.id.add_to_group_menu_id
                 || id == R.id.add_tab_to_group_menu_id
                 || id == R.id.add_tab_to_new_group_menu_id) {
