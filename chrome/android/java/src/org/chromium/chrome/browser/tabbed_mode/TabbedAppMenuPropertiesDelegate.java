@@ -520,7 +520,11 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
         }
 
         // Help
-        modelList.add(buildHelpItem());
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.SUBMENUS_IN_APP_MENU)) {
+            modelList.add(buildHelpParentItem());
+        } else {
+            modelList.add(buildHelpItem());
+        }
 
         // Managed by
         if (shouldShowManagedByMenuItem(currentTab)) {
@@ -1751,6 +1755,28 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
                 buildModelForStandardMenuItem(
                         R.id.help_id,
                         R.string.menu_help,
+                        shouldShowIconBeforeItem() ? R.drawable.ic_help_24dp : 0));
+    }
+
+    private ListItem buildHelpParentItem() {
+        List<ListItem> submenuItems = new ArrayList<>();
+        submenuItems.add(buildHelpCenterItem());
+
+        return new ListItem(
+                AppMenuHandler.AppMenuItemType.MENU_ITEM_WITH_SUBMENU,
+                buildModelForMenuItemWithSubmenu(
+                        R.id.help_parent_menu_id,
+                        R.string.menu_help,
+                        shouldShowIconBeforeItem() ? R.drawable.ic_help_24dp : Resources.ID_NULL,
+                        () -> submenuItems));
+    }
+
+    private ListItem buildHelpCenterItem() {
+        return new ListItem(
+                AppMenuHandler.AppMenuItemType.STANDARD,
+                buildModelForStandardMenuItem(
+                        R.id.help_id,
+                        R.string.menu_help_center,
                         shouldShowIconBeforeItem() ? R.drawable.ic_help_24dp : 0));
     }
 
