@@ -47,8 +47,8 @@ std::unique_ptr<views::Widget> ReplayRecordingBubbleView::Show(
   auto bubble = std::make_unique<ReplayRecordingBubbleView>(
       anchor, web_contents, std::move(recordings), std::move(manager));
   auto* bubble_ptr = bubble.get();
-  auto widget = base::WrapUnique(views::BubbleDialogDelegateView::CreateBubble(
-      std::move(bubble), views::Widget::InitParams::CLIENT_OWNS_WIDGET));
+  auto widget =
+      views::BubbleDialogDelegate::CreateBubble(std::move(bubble).release());
   bubble_ptr->ShowForReason(LocationBarBubbleDelegateView::USER_GESTURE);
   return widget;
 }

@@ -532,8 +532,7 @@ class WebBubbleView : public views::BubbleDialogDelegateView {
     auto bubble_ptr = base::WrapUnique(
         new WebBubbleView(browser_view->toolbar(), browser->profile(), url));
     auto* const bubble = bubble_ptr.get();
-    views::BubbleDialogDelegateView::CreateBubble(std::move(bubble_ptr))
-        ->Show();
+    views::BubbleDialogDelegateView::CreateBubble(bubble_ptr.release())->Show();
     return bubble;
   }
 
@@ -744,10 +743,8 @@ class InteractiveBrowserTestHoverUiTest : public InteractiveBrowserTestUiTest {
     CHECK(anchor_view);
     auto bubble_view = std::make_unique<HoverDetectionBubbleView>(anchor_view);
     bubble_view_ = bubble_view.get();
-    bubble_widget_ =
-        base::WrapUnique(views::BubbleDialogDelegate::CreateBubbleDeprecated(
-            std::move(bubble_view),
-            views::Widget::InitParams::CLIENT_OWNS_WIDGET));
+    bubble_widget_ = views::BubbleDialogDelegate::CreateBubble(
+        std::move(bubble_view).release());
     bubble_widget_->Show();
     bubble_view_->SizeToContents();
   }

@@ -12,6 +12,8 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/functional/callback_forward.h"
+#include "base/functional/callback_helpers.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_span.h"
@@ -250,13 +252,29 @@ class VIEWS_EXPORT BubbleDialogDelegate : public DialogDelegate {
   // unique_ptr using base::WrapUnique().
   //
   //  If you encounter problems with this ownership mode, please file a bug.
+  //
+  // STRONGLY DISCOURAGED - USE CreateBubble() BELOW.
   static Widget* CreateBubbleDeprecated(
       std::unique_ptr<BubbleDialogDelegate> bubble_delegate,
       Widget::InitParams::Ownership ownership);
 
+  // STRONGLY DISCOURAGED - USE CreateBubble() BELOW.
   static Widget* CreateBubbleDeprecated(
       BubbleDialogDelegate* bubble_delegate,
       Widget::InitParams::Ownership ownership);
+
+  // Preferred alternative; defaults to CLIENT_OWNS_WIDGET. `on_close` is
+  // invoked synchronously when the bubble is closed; note that the callback is
+  // responsible for deleting the widget. When `on_close` is not provided, the
+  // caller is responsible to call MakeCloseSynchronous(..) and set the callback
+  // to handle the close event.
+  //
+  // `delegate` MUST outlive the returned `Widget`.
+  // TODO(https://crbug.com/510617577): Explore the possibility that the Widget
+  // should own the delegate.
+  static std::unique_ptr<Widget> CreateBubble(
+      BubbleDialogDelegate* delegate,
+      Widget::ClosedCallback on_close = base::NullCallback());
 
   //////////////////////////////////////////////////////////////////////////////
   // The anchor view and rectangle:
@@ -592,6 +610,12 @@ class VIEWS_EXPORT BubbleDialogDelegate : public DialogDelegate {
   virtual void OnWidgetVisibilityChanged(Widget* widget, bool visible) {}
 
  private:
+  static Widget* CreateBubbleInternal(
+      BubbleDialogDelegate* delegate,
+      Widget::InitParams::Ownership ownership,
+      base::OnceCallback<void(Widget::ClosedReason)> on_close =
+          base::NullCallback());
+
   class AnchorViewObserver;
   class AnchorWidgetObserver;
   class BubbleWidgetObserver;
