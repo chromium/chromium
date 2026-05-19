@@ -2047,7 +2047,8 @@ PictureLayerImpl::TileUpdateSet PictureLayerImpl::TakeAllTiles() {
     PictureLayerTiling::TileIterator iter(tilings_->tiling_at(ii));
     for (; !iter.AtEnd(); iter.Next()) {
       Tile* tile = iter.GetCurrent();
-      // TODO(zmo): Should |update_damage| be faise here?
+      // During a full tree sync (e.g. context lost), layer-level update_rect is
+      // used for damage tracking, so tile-level damage tracking is not needed.
       updates[tile->contents_scale_key()].emplace(tile->tiling_i_index(),
                                                   tile->tiling_j_index(),
                                                   /*update_damage=*/false);
