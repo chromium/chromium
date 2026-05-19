@@ -817,14 +817,8 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppPermissionsPolicyBrowserTest,
               testing::EndsWith("permissions policy."));
 }
 
-// TODO(crbug.com/398292721): Flaky on Mac and Linux builds.
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-#define MAYBE_PermissionsPolicy_Iframe_Src DISABLED_PermissionsPolicy_Iframe_Src
-#else
-#define MAYBE_PermissionsPolicy_Iframe_Src PermissionsPolicy_Iframe_Src
-#endif
 IN_PROC_BROWSER_TEST_F(IsolatedWebAppPermissionsPolicyBrowserTest,
-                       MAYBE_PermissionsPolicy_Iframe_Src) {
+                       PermissionsPolicy_Iframe_Src) {
   // Install an Isolated Web App that has usb turned on for all origins in its
   // manifest. Create a cross-origin iframe on the page that specifies an allow
   // attribute allowing usb for 'src', and expect that usb is accessible on the
@@ -1345,13 +1339,7 @@ class WebUsbExtensionBrowserTest : public InProcessBrowserTestMixinHostSupport<
 #endif  // BUILDFLAG(IS_CHROMEOS)
 };
 
-// TODO(crbug.com/41494522): Flaky on non-Mac release builds.
-#if !BUILDFLAG(IS_MAC) && defined(NDEBUG)
-#define MAYBE_GetDevices DISABLED_GetDevices
-#else
-#define MAYBE_GetDevices GetDevices
-#endif
-IN_PROC_BROWSER_TEST_F(WebUsbExtensionBrowserTest, MAYBE_GetDevices) {
+IN_PROC_BROWSER_TEST_F(WebUsbExtensionBrowserTest, GetDevices) {
   constexpr std::string_view kBackgroundJs = R"(
     chrome.test.sendMessage("ready", async () => {
       try {
@@ -1367,13 +1355,7 @@ IN_PROC_BROWSER_TEST_F(WebUsbExtensionBrowserTest, MAYBE_GetDevices) {
   LoadExtensionAndRunTest(kBackgroundJs);
 }
 
-// TODO(crbug.com/41494522): Flaky on non-Mac release builds.
-#if !BUILDFLAG(IS_MAC) && defined(NDEBUG)
-#define MAYBE_RequestDevice DISABLED_RequestDevice
-#else
-#define MAYBE_RequestDevice RequestDevice
-#endif
-IN_PROC_BROWSER_TEST_F(WebUsbExtensionBrowserTest, MAYBE_RequestDevice) {
+IN_PROC_BROWSER_TEST_F(WebUsbExtensionBrowserTest, RequestDevice) {
   constexpr std::string_view kBackgroundJs = R"(
     chrome.test.sendMessage("ready", async () => {
       try {
@@ -1387,13 +1369,7 @@ IN_PROC_BROWSER_TEST_F(WebUsbExtensionBrowserTest, MAYBE_RequestDevice) {
   LoadExtensionAndRunTest(kBackgroundJs);
 }
 
-// TODO(crbug.com/41494522): Flaky on non-Mac release builds.
-#if !BUILDFLAG(IS_MAC) && defined(NDEBUG)
-#define MAYBE_UsbConnectionTracker DISABLED_UsbConnectionTracker
-#else
-#define MAYBE_UsbConnectionTracker UsbConnectionTracker
-#endif
-IN_PROC_BROWSER_TEST_F(WebUsbExtensionBrowserTest, MAYBE_UsbConnectionTracker) {
+IN_PROC_BROWSER_TEST_F(WebUsbExtensionBrowserTest, UsbConnectionTracker) {
   constexpr char kBackgroundJs[] = R"(
     // |device| is a global variable to store UsbDevice object being tested in
     // case the local one is garbage collected, which can close the connection.
@@ -1422,18 +1398,8 @@ IN_PROC_BROWSER_TEST_F(WebUsbExtensionBrowserTest, MAYBE_UsbConnectionTracker) {
 
 // Test the scenario of waking up the service worker upon device events and
 // the service worker being kept alive with active device session.
-// TODO(crbug.com/41494522): Flaky on non-Mac release builds and ChromeOS
-// builds.
-#if (!BUILDFLAG(IS_MAC) && defined(NDEBUG)) || BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_DeviceConnectAndOpenDeviceWhenServiceWorkerStopped \
-  DISABLED_DeviceConnectAndOpenDeviceWhenServiceWorkerStopped
-#else
-#define MAYBE_DeviceConnectAndOpenDeviceWhenServiceWorkerStopped \
-  DeviceConnectAndOpenDeviceWhenServiceWorkerStopped
-#endif
-IN_PROC_BROWSER_TEST_F(
-    WebUsbExtensionBrowserTest,
-    MAYBE_DeviceConnectAndOpenDeviceWhenServiceWorkerStopped) {
+IN_PROC_BROWSER_TEST_F(WebUsbExtensionBrowserTest,
+                       DeviceConnectAndOpenDeviceWhenServiceWorkerStopped) {
   content::ServiceWorkerContext* context =
       GetProfile()->GetDefaultStoragePartition()->GetServiceWorkerContext();
   // Set up an observer for service worker events.
@@ -1533,16 +1499,8 @@ IN_PROC_BROWSER_TEST_F(
   SimulateClickOnSystemTrayIconButton(extension);
 }
 
-// TODO(crbug.com/41494522): Flaky on non-Mac release builds.
-#if !BUILDFLAG(IS_MAC) && defined(NDEBUG)
-#define MAYBE_EventListenerAddedAfterServiceWorkerIsActivated \
-  DISABLED_EventListenerAddedAfterServiceWorkerIsActivated
-#else
-#define MAYBE_EventListenerAddedAfterServiceWorkerIsActivated \
-  EventListenerAddedAfterServiceWorkerIsActivated
-#endif
 IN_PROC_BROWSER_TEST_F(WebUsbExtensionBrowserTest,
-                       MAYBE_EventListenerAddedAfterServiceWorkerIsActivated) {
+                       EventListenerAddedAfterServiceWorkerIsActivated) {
   const char kWarningMessage[] =
       "Event handler of '%s' event must be added on the initial evaluation "
       "of worker script. More info: "

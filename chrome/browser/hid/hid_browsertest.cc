@@ -385,13 +385,7 @@ class WebHidExtensionBrowserTest : public InProcessBrowserTestMixinHostSupport<
   device::FakeHidManager hid_manager_;
 };
 
-// TODO(crbug.com/41494522): Re-enable on ChromeOS.
-#if BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_GetDevices DISABLED_GetDevices
-#else
-#define MAYBE_GetDevices GetDevices
-#endif
-IN_PROC_BROWSER_TEST_F(WebHidExtensionBrowserTest, MAYBE_GetDevices) {
+IN_PROC_BROWSER_TEST_F(WebHidExtensionBrowserTest, GetDevices) {
   extensions::TestExtensionDir test_dir;
 
   auto device = CreateTestDeviceWithInputAndOutputReports();
@@ -412,13 +406,7 @@ IN_PROC_BROWSER_TEST_F(WebHidExtensionBrowserTest, MAYBE_GetDevices) {
   LoadExtensionAndRunTest(kBackgroundJs);
 }
 
-// TODO(crbug.com/41494522): Re-enable on ChromeOS.
-#if BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_RequestDevice DISABLED_RequestDevice
-#else
-#define MAYBE_RequestDevice RequestDevice
-#endif
-IN_PROC_BROWSER_TEST_F(WebHidExtensionBrowserTest, MAYBE_RequestDevice) {
+IN_PROC_BROWSER_TEST_F(WebHidExtensionBrowserTest, RequestDevice) {
   extensions::TestExtensionDir test_dir;
 
   constexpr char kBackgroundJs[] = R"(
@@ -437,18 +425,8 @@ IN_PROC_BROWSER_TEST_F(WebHidExtensionBrowserTest, MAYBE_RequestDevice) {
 
 // Test the scenario of waking up the service worker upon device events and
 // the service worker being kept alive with active device session.
-// TODO(crbug.com/41493373): enable the flaky test.
-#if (BUILDFLAG(IS_LINUX) && defined(LEAK_SANITIZER)) || \
-    (BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_CHROMEOS_DEVICE))
-#define MAYBE_DeviceConnectAndOpenDeviceWhenServiceWorkerStopped \
-  DISABLED_DeviceConnectAndOpenDeviceWhenServiceWorkerStopped
-#else
-#define MAYBE_DeviceConnectAndOpenDeviceWhenServiceWorkerStopped \
-  DeviceConnectAndOpenDeviceWhenServiceWorkerStopped
-#endif
-IN_PROC_BROWSER_TEST_F(
-    WebHidExtensionBrowserTest,
-    MAYBE_DeviceConnectAndOpenDeviceWhenServiceWorkerStopped) {
+IN_PROC_BROWSER_TEST_F(WebHidExtensionBrowserTest,
+                       DeviceConnectAndOpenDeviceWhenServiceWorkerStopped) {
   content::ServiceWorkerContext* context = browser()
                                                ->profile()
                                                ->GetDefaultStoragePartition()
@@ -551,16 +529,8 @@ IN_PROC_BROWSER_TEST_F(
   SimulateClickOnSystemTrayIconButton(browser(), extension);
 }
 
-// TODO(crbug.com/41494522): Flaky on non-Mac release builds.
-#if !BUILDFLAG(IS_MAC) && defined(NDEBUG)
-#define MAYBE_EventListenerAddedAfterServiceWorkerIsActivated \
-  DISABLED_EventListenerAddedAfterServiceWorkerIsActivated
-#else
-#define MAYBE_EventListenerAddedAfterServiceWorkerIsActivated \
-  EventListenerAddedAfterServiceWorkerIsActivated
-#endif
 IN_PROC_BROWSER_TEST_F(WebHidExtensionBrowserTest,
-                       MAYBE_EventListenerAddedAfterServiceWorkerIsActivated) {
+                       EventListenerAddedAfterServiceWorkerIsActivated) {
   const char kWarningMessage[] =
       "Event handler of '%s' event must be added on the initial evaluation "
       "of worker script. More info: "

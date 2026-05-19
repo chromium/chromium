@@ -15,6 +15,9 @@ namespace ash {
 // static
 desks_storage::AdminTemplateService* AdminTemplateServiceFactory::GetForProfile(
     Profile* profile) {
+  if (!profile) {
+    return nullptr;
+  }
   return static_cast<desks_storage::AdminTemplateService*>(
       GetInstance()->GetServiceForBrowserContext(profile, /*create=*/true));
 }
