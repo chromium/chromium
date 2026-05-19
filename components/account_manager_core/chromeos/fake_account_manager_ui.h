@@ -38,6 +38,11 @@ class FakeAccountManagerUI : public account_manager::AccountManagerUI {
     return show_account_addition_dialog_calls_;
   }
 
+  const std::optional<account_manager::AccountAdditionOptions>&
+  last_add_account_options() const {
+    return last_add_account_options_;
+  }
+
   int show_account_reauthentication_dialog_calls() const {
     return show_account_reauthentication_dialog_calls_;
   }
@@ -65,6 +70,8 @@ class FakeAccountManagerUI : public account_manager::AccountManagerUI {
   int show_account_addition_dialog_calls_ = 0;
   int show_account_reauthentication_dialog_calls_ = 0;
   int show_manage_accounts_settings_calls_ = 0;
+  std::optional<account_manager::AccountAdditionOptions>
+      last_add_account_options_;
   std::optional<std::string> last_reauth_email_;
 
   base::ObserverList<Observer> observers_;

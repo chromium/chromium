@@ -32,6 +32,7 @@ void FakeAccountManagerUI::ShowAddAccountDialog(
     const account_manager::AccountAdditionOptions& options,
     base::OnceClosure close_dialog_closure) {
   close_dialog_closure_ = std::move(close_dialog_closure);
+  last_add_account_options_ = options;
   show_account_addition_dialog_calls_++;
   is_dialog_shown_ = true;
 

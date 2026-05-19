@@ -98,17 +98,48 @@ void RecordAccountUpsertionResultStatus(
     crosapi::mojom::AccountUpsertionResultPtr mojo_result) {
   const auto result =
       account_manager::FromMojoAccountUpsertionResult(mojo_result);
+  base::UmaHistogramEnumeration(kAccountUpsertionResultStatus,
+                                result.has_value()
+                                    ? result->status()
+                                    : account_manager::AccountUpsertionResult::
+                                          Status::kUnexpectedResponse);
+}
+
+crosapi::AccountManagerMojoService& GetAccountManagerMojoServiceForSettings(
+    content::BrowserContext* browser_context) {
+  CHECK(browser_context);
+
+  crosapi::AccountManagerMojoService* account_manager_mojo_service =
+      AccountManagerFactory::Get()->GetAccountManagerMojoService(
+          browser_context->GetPath().value());
+  CHECK(account_manager_mojo_service);
+  return *account_manager_mojo_service;
+}
+
+void ShowSettingsAddAccountDialog(content::BrowserContext* browser_context) {
+  crosapi::AccountManagerMojoService& account_manager_mojo_service =
+      GetAccountManagerMojoServiceForSettings(browser_context);
+
   base::UmaHistogramEnumeration(
-      kAccountUpsertionResultStatus,
-      result.has_value()
-          ? result->status()
-          : account_manager::AccountUpsertionResult::Status::
-                kUnexpectedResponse);
+      account_manager::AccountManagerFacade::kAccountAdditionSource,
+      account_manager::AccountManagerFacade::AccountAdditionSource::
+          kSettingsAddAccountButton);
+
+  crosapi::mojom::AccountAdditionOptionsPtr options =
+      crosapi::mojom::AccountAdditionOptions::New();
+  options->is_available_in_arc = true;
+  options->show_arc_availability_picker = false;
+
+  // TODO(b/365741912, b/365902693): Route Settings add-account through the
+  // replacement Account Manager dialog path once it exists.
+  account_manager_mojo_service.ShowAddAccountDialog(
+      std::move(options), base::BindOnce(&RecordAccountUpsertionResultStatus));
 }
 
 void ShowSettingsAccountReauthDialog(content::BrowserContext* browser_context,
                                      const std::string& email) {
-  CHECK(browser_context);
+  crosapi::AccountManagerMojoService& account_manager_mojo_service =
+      GetAccountManagerMojoServiceForSettings(browser_context);
 
   base::UmaHistogramEnumeration(
       account_manager::AccountManagerFacade::kAccountAdditionSource,
@@ -117,12 +148,7 @@ void ShowSettingsAccountReauthDialog(content::BrowserContext* browser_context,
 
   // TODO(b/365741912, b/365902693): Route Settings reauth through the
   // replacement Account Manager dialog path once it exists.
-  crosapi::AccountManagerMojoService* account_manager_mojo_service =
-      AccountManagerFactory::Get()->GetAccountManagerMojoService(
-          browser_context->GetPath().value());
-  CHECK(account_manager_mojo_service);
-
-  account_manager_mojo_service->ShowReauthAccountDialog(
+  account_manager_mojo_service.ShowReauthAccountDialog(
       email, base::BindOnce(&RecordAccountUpsertionResultStatus));
 }
 
@@ -396,11 +422,7 @@ base::ListValue AccountManagerUIHandler::GetSecondaryGaiaAccounts(
 
 void AccountManagerUIHandler::HandleAddAccount(const base::ListValue& args) {
   AllowJavascript();
-  AccountManagerFactory::Get()
-      ->GetAccountManagerFacade(profile_->GetPath().value())
-      ->ShowAddAccountDialog(
-          account_manager::AccountManagerFacade::AccountAdditionSource::
-              kSettingsAddAccountButton);
+  ShowSettingsAddAccountDialog(profile_);
 }
 
 void AccountManagerUIHandler::HandleReauthenticateAccount(

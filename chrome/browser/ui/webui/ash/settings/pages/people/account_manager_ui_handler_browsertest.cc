@@ -56,6 +56,7 @@ constexpr char kGetAccountsMessage[] = "getAccounts";
 constexpr char kHandleFunctionName[] = "handleFunctionName";
 constexpr char kAccountUpsertionResultStatus[] =
     "AccountManager.AccountUpsertionResultStatus";
+constexpr char kAddAccountMessage[] = "addAccount";
 constexpr char kReauthAccountEmail[] = "settings-reauth@example.com";
 constexpr char kReauthenticateAccountMessage[] = "reauthenticateAccount";
 
@@ -429,6 +430,49 @@ IN_PROC_BROWSER_TEST_P(AccountManagerUIHandlerTest,
       account_manager::AccountManagerFacade::kAccountAdditionSource,
       account_manager::AccountManagerFacade::AccountAdditionSource::
           kSettingsReauthAccountButton,
+      /*expected_count=*/1);
+  histogram_tester.ExpectTotalCount(kAccountUpsertionResultStatus, 0);
+
+  fake_account_manager_ui_ptr->CloseDialog();
+  histogram_tester.ExpectUniqueSample(
+      kAccountUpsertionResultStatus,
+      account_manager::AccountUpsertionResult::Status::kCancelledByUser,
+      /*expected_count=*/1);
+}
+
+IN_PROC_BROWSER_TEST_P(AccountManagerUIHandlerTest,
+                       AddAccountOpensAddAccountDialog) {
+  base::HistogramTester histogram_tester;
+  crosapi::AccountManagerMojoService* account_manager_mojo_service =
+      AccountManagerFactory::Get()->GetAccountManagerMojoService(
+          profile()->GetPath().value());
+  ASSERT_TRUE(account_manager_mojo_service);
+
+  auto fake_account_manager_ui = std::make_unique<FakeAccountManagerUI>();
+  FakeAccountManagerUI* fake_account_manager_ui_ptr =
+      fake_account_manager_ui.get();
+  account_manager_mojo_service->SetAccountManagerUI(
+      std::move(fake_account_manager_ui));
+
+  base::ListValue args;
+  web_ui()->HandleReceivedMessage(kAddAccountMessage, args);
+
+  EXPECT_EQ(1,
+            fake_account_manager_ui_ptr->show_account_addition_dialog_calls());
+  EXPECT_EQ(0, fake_account_manager_ui_ptr
+                   ->show_account_reauthentication_dialog_calls());
+  EXPECT_EQ(0,
+            fake_account_manager_ui_ptr->show_manage_accounts_settings_calls());
+  ASSERT_TRUE(
+      fake_account_manager_ui_ptr->last_add_account_options().has_value());
+  EXPECT_TRUE(fake_account_manager_ui_ptr->last_add_account_options()
+                  ->is_available_in_arc);
+  EXPECT_FALSE(fake_account_manager_ui_ptr->last_add_account_options()
+                   ->show_arc_availability_picker);
+  histogram_tester.ExpectUniqueSample(
+      account_manager::AccountManagerFacade::kAccountAdditionSource,
+      account_manager::AccountManagerFacade::AccountAdditionSource::
+          kSettingsAddAccountButton,
       /*expected_count=*/1);
   histogram_tester.ExpectTotalCount(kAccountUpsertionResultStatus, 0);
 
