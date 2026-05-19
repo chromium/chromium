@@ -123,6 +123,8 @@ enum class ExpandButtonOption {
 
 // Whether to only consider titles for similarity.
 extern const base::FeatureParam<bool> kOnlyUseTitlesForSimilarity;
+// Whether to deduplicate relevant tabs by URL.
+extern const base::FeatureParam<bool> kDeduplicateRelevantTabsByUrl;
 // Minimum score to consider a tab relevant.
 extern const base::FeatureParam<double> kTabSelectionScoreThreshold;
 // Minimum score required for a tab to be considered visible.

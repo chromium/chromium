@@ -203,6 +203,7 @@ class ContextualTasksContextServiceTest : public InProcessBrowserTest {
         {
             {kContextualTasksContext,
              {{{"ContextualTasksContextOnlyUseTitles", "false"},
+               {"ContextualTasksContextDeduplicateByUrl", "false"},
                {"ContextualTasksContextTabSelectionScoreThreshold", "0.8"},
                {"ContextualTasksContextContentVisibilityThreshold", "0.8"}}}},
             {kContextualTasksContextLogging, {}},
@@ -1643,11 +1644,30 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest, SuccessWithMlModel) {
                                      /*explicit_urls=*/{},
                                      future.GetCallback());
 
-  // Expect 1 tab because both tabs have the same URL and are deduped.
-  EXPECT_EQ(1u, future.Get().size());
+  // Expect 2 tabs because both tabs have the same URL and deduplication is
+  // disabled.
+  EXPECT_EQ(2u, future.Get().size());
 }
 
-IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest, DeduplicateTabs) {
+class ContextualTasksContextServiceDeduplicateTest
+    : public ContextualTasksContextServiceTest {
+ protected:
+  void InitializeFeatureList() override {
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {
+            {kContextualTasksContext,
+             {{"ContextualTasksContextDeduplicateByUrl", "true"},
+              {"ContextualTasksContextOnlyUseTitles", "false"},
+              {"ContextualTasksContextTabSelectionScoreThreshold", "0.8"},
+              {"ContextualTasksContextContentVisibilityThreshold", "0.8"}}},
+            {kContextualTasksContextLogging, {}},
+        },
+        /*disabled_features=*/{});
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceDeduplicateTest,
+                       DeduplicateTabs) {
   base::HistogramTester histogram_tester;
 
   NavigateToValidURL();

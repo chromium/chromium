@@ -174,6 +174,11 @@ const base::FeatureParam<bool> kOnlyUseTitlesForSimilarity(
     "ContextualTasksContextOnlyUseTitles",
     false);
 
+const base::FeatureParam<bool> kDeduplicateRelevantTabsByUrl(
+    &kContextualTasksContext,
+    "ContextualTasksContextDeduplicateByUrl",
+    false);
+
 const base::FeatureParam<double> kTabSelectionScoreThreshold{
     &kContextualTasksContext,
     "ContextualTasksContextTabSelectionScoreThreshold", 0.4};

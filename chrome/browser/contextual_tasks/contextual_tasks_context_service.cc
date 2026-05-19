@@ -889,14 +889,16 @@ void ContextualTasksContextService::OnAllTabsScored(
 
   std::vector<base::WeakPtr<content::WebContents>> relevant_tabs;
   base::flat_set<GURL> seen_urls;
-  std::ranges::for_each(
-      scored_relevant_tabs, [&](const auto& score_and_contents) {
-        if (score_and_contents.second &&
-            seen_urls.insert(score_and_contents.second->GetLastCommittedURL())
-                .second) {
-          relevant_tabs.push_back(score_and_contents.second);
-        }
-      });
+  for (const auto& [score, web_contents] : scored_relevant_tabs) {
+    if (!web_contents) {
+      continue;
+    }
+    if (kDeduplicateRelevantTabsByUrl.Get() &&
+        !seen_urls.insert(web_contents->GetLastCommittedURL()).second) {
+      continue;
+    }
+    relevant_tabs.push_back(web_contents);
+  }
 
   std::move(on_tab_selection_complete).Run(std::move(relevant_tabs));
 }
