@@ -28,7 +28,7 @@ class CastAudioManagerAndroid : public ::media::AudioManagerAndroid {
   CastAudioManagerAndroid& operator=(const CastAudioManagerAndroid&) = delete;
 
   // AudioManager implementation.
-  void GetAudioOutputDeviceNames(
+  bool GetAudioOutputDeviceNames(
       ::media::AudioDeviceNames* device_names) override;
   ::media::AudioOutputStream* MakeAudioOutputStreamProxy(
       const ::media::AudioParameters& params,
@@ -46,7 +46,7 @@ class CastAudioManagerAndroid : public ::media::AudioManagerAndroid {
       const ::media::AudioManager::LogCallback& log_callback) override;
 
   bool HasAudioInputDevices() override;
-  void GetAudioInputDeviceNames(
+  bool GetAudioInputDeviceNames(
       ::media::AudioDeviceNames* device_names) override;
   ::media::AudioParameters GetInputStreamParameters(
       const std::string& device_id) override;

@@ -44,15 +44,17 @@ bool AudioManagerIOS::HasAudioInputDevices() {
       /*is_input=*/true);
 }
 
-void AudioManagerIOS::GetAudioInputDeviceNames(AudioDeviceNames* device_names) {
+bool AudioManagerIOS::GetAudioInputDeviceNames(AudioDeviceNames* device_names) {
   DCHECK(device_names->empty());
   AudioSessionManagerIOS::GetInstance().GetAudioDeviceInfo(true, device_names);
+  return true;
 }
 
-void AudioManagerIOS::GetAudioOutputDeviceNames(
+bool AudioManagerIOS::GetAudioOutputDeviceNames(
     AudioDeviceNames* device_names) {
   DCHECK(device_names->empty());
   AudioSessionManagerIOS::GetInstance().GetAudioDeviceInfo(false, device_names);
+  return true;
 }
 
 AudioParameters AudioManagerIOS::GetInputStreamParameters(

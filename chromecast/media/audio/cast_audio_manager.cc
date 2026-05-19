@@ -81,23 +81,25 @@ bool CastAudioManager::HasAudioOutputDevices() {
   return true;
 }
 
-void CastAudioManager::GetAudioOutputDeviceNames(
+bool CastAudioManager::GetAudioOutputDeviceNames(
     ::media::AudioDeviceNames* device_names) {
   DCHECK(device_names->empty());
   if (HasAudioOutputDevices()) {
     device_names->push_front(::media::AudioDeviceName::CreateCommunications());
     device_names->push_front(::media::AudioDeviceName::CreateDefault());
   }
+  return true;
 }
 
 bool CastAudioManager::HasAudioInputDevices() {
   return false;
 }
 
-void CastAudioManager::GetAudioInputDeviceNames(
+bool CastAudioManager::GetAudioInputDeviceNames(
     ::media::AudioDeviceNames* device_names) {
   DCHECK(device_names->empty());
   LOG(WARNING) << "No support for input audio devices";
+  return true;
 }
 
 ::media::AudioParameters CastAudioManager::GetInputStreamParameters(

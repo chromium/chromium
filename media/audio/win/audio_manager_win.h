@@ -31,8 +31,8 @@ class MEDIA_EXPORT AudioManagerWin : public AudioManagerBase {
   // Implementation of AudioManager.
   bool HasAudioOutputDevices() override;
   bool HasAudioInputDevices() override;
-  void GetAudioInputDeviceNames(AudioDeviceNames* device_names) override;
-  void GetAudioOutputDeviceNames(AudioDeviceNames* device_names) override;
+  bool GetAudioInputDeviceNames(AudioDeviceNames* device_names) override;
+  bool GetAudioOutputDeviceNames(AudioDeviceNames* device_names) override;
   AudioParameters GetInputStreamParameters(
       const std::string& device_id) override;
   std::string GetAssociatedOutputDeviceID(
@@ -80,7 +80,7 @@ class MEDIA_EXPORT AudioManagerWin : public AudioManagerBase {
   // thread instead of on the UI thread which AudioManager is constructed on.
   void InitializeOnAudioThread();
 
-  void GetAudioDeviceNamesImpl(bool input, AudioDeviceNames* device_names);
+  bool GetAudioDeviceNamesImpl(bool input, AudioDeviceNames* device_names);
 
   AudioOutputStream* MakeOutputStream(const AudioParameters& params,
                                       const std::string& device_id,

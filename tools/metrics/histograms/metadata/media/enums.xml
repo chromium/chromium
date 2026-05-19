@@ -211,6 +211,13 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Disconnecting"/>
 </enum>
 
+<enum name="AudioDeviceEnumerationOutcome">
+  <int value="0" label="Success (Empty Result)"/>
+  <int value="1" label="Success (Non-Empty Result)"/>
+  <int value="2" label="Failed (Empty Result)"/>
+  <int value="3" label="Failed (Non-Empty Result)"/>
+</enum>
+
 <enum name="AudioFocusRequestResult">
   <int value="0" label="Failed"/>
   <int value="1" label="Granted"/>

@@ -385,7 +385,7 @@ AudioDeviceListenerMac::CreatePropertyListener(
 }
 
 std::vector<AudioObjectID> AudioDeviceListenerMac::GetAllAudioDeviceIDs() {
-  return CoreAudioUtilMac().GetAllAudioDeviceIDs();
+  return CoreAudioUtilMac().GetAllAudioDeviceIDs().value_or({});
 }
 
 bool AudioDeviceListenerMac::IsOutputDevice(AudioObjectID id) {

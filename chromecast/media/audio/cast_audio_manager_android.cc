@@ -54,10 +54,11 @@ bool CastAudioManagerAndroid::HasAudioInputDevices() {
   return false;
 }
 
-void CastAudioManagerAndroid::GetAudioInputDeviceNames(
+bool CastAudioManagerAndroid::GetAudioInputDeviceNames(
     ::media::AudioDeviceNames* device_names) {
   DCHECK(device_names->empty());
   LOG(WARNING) << "No support for input audio devices";
+  return true;
 }
 
 ::media::AudioParameters CastAudioManagerAndroid::GetInputStreamParameters(
@@ -89,15 +90,16 @@ void CastAudioManagerAndroid::GetAudioInputDeviceNames(
   return nullptr;
 }
 
-void CastAudioManagerAndroid::GetAudioOutputDeviceNames(
+bool CastAudioManagerAndroid::GetAudioOutputDeviceNames(
     ::media::AudioDeviceNames* device_names) {
   DCHECK(device_names->empty());
   DCHECK(HasAudioOutputDevices());
 
   // Default device name is added inside AudioManagerAndroid.
-  ::media::AudioManagerAndroid::GetAudioOutputDeviceNames(device_names);
-
+  bool success =
+      ::media::AudioManagerAndroid::GetAudioOutputDeviceNames(device_names);
   device_names->push_back(::media::AudioDeviceName::CreateCommunications());
+  return success;
 }
 
 ::media::AudioOutputStream* CastAudioManagerAndroid::MakeLinearOutputStream(

@@ -23,7 +23,8 @@ class AudioManagerMacUnderTest final : public AudioManagerMac {
                            AudioLogFactory* audio_log_factory)
       : AudioManagerMac(std::move(audio_thread), audio_log_factory) {}
 
-  MOCK_METHOD0(GetAllAudioDeviceIDs, std::vector<AudioObjectID>());
+  MOCK_METHOD0(GetAllAudioDeviceIDs,
+               std::optional<std::vector<AudioObjectID>>());
   MOCK_METHOD1(GetDeviceTransportType, std::optional<uint32_t>(AudioObjectID));
   MOCK_METHOD1(GetDeviceUniqueID, std::optional<std::string>(AudioObjectID));
   MOCK_METHOD1(GetRelatedNonBluetoothDeviceIDs,

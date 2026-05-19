@@ -59,10 +59,10 @@ class CastAudioManager : public ::media::AudioManagerBase {
 
   // AudioManagerBase implementation.
   bool HasAudioOutputDevices() override;
-  void GetAudioOutputDeviceNames(
+  bool GetAudioOutputDeviceNames(
       ::media::AudioDeviceNames* device_names) override;
   bool HasAudioInputDevices() override;
-  void GetAudioInputDeviceNames(
+  bool GetAudioInputDeviceNames(
       ::media::AudioDeviceNames* device_names) override;
   ::media::AudioParameters GetInputStreamParameters(
       const std::string& device_id) override;

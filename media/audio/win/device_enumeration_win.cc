@@ -277,6 +277,7 @@ static bool GetDeviceNamesWinImpl(
     return true;
   }
 
+  bool had_error = false;
   // We lazily fetch the opposite collection only if a device lacks a native
   // suffix.
   Microsoft::WRL::ComPtr<IMMDeviceCollection> opposite_collection;
@@ -294,6 +295,7 @@ static bool GetDeviceNamesWinImpl(
     if (FAILED(hr)) {
       send_log(base::StrCat({" => (ERROR: IMMDeviceCollection::Item=[",
                              ErrorToString(hr), "])"}));
+      had_error = true;
       continue;
     }
 
@@ -303,6 +305,7 @@ static bool GetDeviceNamesWinImpl(
     if (FAILED(hr)) {
       send_log(base::StrCat(
           {" => (ERROR: IMMDevice::GetId=[", ErrorToString(hr), "])"}));
+      had_error = true;
       continue;
     }
     device.unique_id =
@@ -315,6 +318,7 @@ static bool GetDeviceNamesWinImpl(
     if (FAILED(hr)) {
       send_log(base::StrCat({" => (ERROR: IMMDevice::OpenPropertyStore=[",
                              ErrorToString(hr), "])"}));
+      had_error = true;
       continue;
     }
 
@@ -324,6 +328,7 @@ static bool GetDeviceNamesWinImpl(
     if (FAILED(hr)) {
       send_log(base::StrCat(
           {" => (ERROR: IPropertyStore::GetValue=[", ErrorToString(hr), "])"}));
+      had_error = true;
       continue;
     }
 
@@ -332,6 +337,7 @@ static bool GetDeviceNamesWinImpl(
       device.device_name = base::WideToUTF8(friendly_name.get().pwszVal);
     } else {
       send_log(" => (WARNING: friendly name is not a valid string)");
+      had_error = true;
       continue;
     }
 
@@ -360,7 +366,7 @@ static bool GetDeviceNamesWinImpl(
                            base::NumberToString(device_names->size()), "])"}));
   }
 
-  return true;
+  return !had_error;
 }
 
 bool GetInputDeviceNamesWin(

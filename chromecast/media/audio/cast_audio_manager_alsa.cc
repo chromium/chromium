@@ -103,7 +103,7 @@ bool CastAudioManagerAlsa::HasAudioInputDevices() {
   return true;
 }
 
-void CastAudioManagerAlsa::GetAudioInputDeviceNames(
+bool CastAudioManagerAlsa::GetAudioInputDeviceNames(
     ::media::AudioDeviceNames* device_names) {
   DCHECK(device_names->empty());
 
@@ -112,8 +112,7 @@ void CastAudioManagerAlsa::GetAudioInputDeviceNames(
   // device, so we must open the device via the "default" moniker.
   device_names->push_front(::media::AudioDeviceName::CreateDefault());
 
-
-  GetAlsaAudioDevices(kStreamCapture, device_names);
+  return GetAlsaAudioDevices(kStreamCapture, device_names);
 }
 
 ::media::AudioParameters CastAudioManagerAlsa::GetInputStreamParameters(
@@ -162,25 +161,36 @@ void CastAudioManagerAlsa::GetAudioInputDeviceNames(
                                          wrapper_.get());
 }
 
-void CastAudioManagerAlsa::GetAlsaAudioDevices(
+bool CastAudioManagerAlsa::GetAlsaAudioDevices(
     StreamType type,
     ::media::AudioDeviceNames* device_names) {
   int card = -1;
 
   // Loop through the sound cards to get ALSA device hints.
-  while (!wrapper_->CardNext(&card) && card >= 0) {
+  bool had_error = false;
+  int card_next_result = 0;
+  while ((card_next_result = wrapper_->CardNext(&card)) == 0 && card >= 0) {
     void** hints = NULL;
-    int error = wrapper_->DeviceNameHint(card, kPcmInterfaceName, &hints);
-    if (!error) {
+    int hint_result = wrapper_->DeviceNameHint(card, kPcmInterfaceName, &hints);
+    if (!hint_result) {
       GetAlsaDevicesInfo(type, hints, device_names);
 
       // Destroy the hints now that we're done with it.
       wrapper_->DeviceNameFreeHint(hints);
     } else {
+      had_error = true;
       DLOG(WARNING) << "GetAlsaAudioDevices: unable to get device hints: "
-                    << wrapper_->StrError(error);
+                    << wrapper_->StrError(hint_result);
     }
   }
+
+  if (card_next_result != 0) {
+    had_error = true;
+    DLOG(WARNING) << "GetAlsaAudioDevices: unable to get next card: "
+                  << wrapper_->StrError(card_next_result);
+  }
+
+  return !had_error;
 }
 
 void CastAudioManagerAlsa::GetAlsaDevicesInfo(

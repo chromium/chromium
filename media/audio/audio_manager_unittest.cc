@@ -468,20 +468,22 @@ class TestAudioManager : public FakeAudioManager {
   }
 
  private:
-  void GetAudioInputDeviceNames(AudioDeviceNames* device_names) override {
+  bool GetAudioInputDeviceNames(AudioDeviceNames* device_names) override {
     DCHECK(device_names->empty());
     device_names->emplace_back(AudioDeviceName::CreateDefault());
     device_names->emplace_back("Input 1", "input1");
     device_names->emplace_back("Input 2", "input2");
     device_names->emplace_back("Input 3", "input3");
+    return true;
   }
 
-  void GetAudioOutputDeviceNames(AudioDeviceNames* device_names) override {
+  bool GetAudioOutputDeviceNames(AudioDeviceNames* device_names) override {
     DCHECK(device_names->empty());
     device_names->emplace_back(AudioDeviceName::CreateDefault());
     device_names->emplace_back("Output 1", "output1");
     device_names->emplace_back("Output 2", "output2");
     device_names->emplace_back("Output 3", "output3");
+    return true;
   }
 };
 

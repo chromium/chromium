@@ -29,8 +29,8 @@ class MEDIA_EXPORT AudioManagerAlsa : public AudioManagerBase {
   // Implementation of AudioManager.
   bool HasAudioOutputDevices() override;
   bool HasAudioInputDevices() override;
-  void GetAudioInputDeviceNames(AudioDeviceNames* device_names) override;
-  void GetAudioOutputDeviceNames(AudioDeviceNames* device_names) override;
+  bool GetAudioInputDeviceNames(AudioDeviceNames* device_names) override;
+  bool GetAudioOutputDeviceNames(AudioDeviceNames* device_names) override;
   AudioParameters GetInputStreamParameters(
       const std::string& device_id) override;
   const std::string_view GetName() override;
@@ -64,7 +64,7 @@ class MEDIA_EXPORT AudioManagerAlsa : public AudioManagerBase {
   };
 
   // Gets a list of available ALSA devices.
-  void GetAlsaAudioDevices(StreamType type, AudioDeviceNames* device_names);
+  bool GetAlsaAudioDevices(StreamType type, AudioDeviceNames* device_names);
 
   // Gets the ALSA devices' names and ids that support streams of the
   // given type.
