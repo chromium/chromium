@@ -4105,7 +4105,6 @@ interface HTMLElement : Element
     getter overscrollarea
     getter overscrollcontainer
     getter popover
-    getter scrollParent
     getter spellcheck
     getter style
     getter tabIndex
@@ -4120,6 +4119,7 @@ interface HTMLElement : Element
     method constructor
     method focus
     method hidePopover
+    method scrollParent
     method showPopover
     method showUnboundedElement
     method togglePopover
