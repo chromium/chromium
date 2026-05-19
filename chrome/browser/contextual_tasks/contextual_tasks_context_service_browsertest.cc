@@ -4,6 +4,7 @@
 
 #include "chrome/browser/contextual_tasks/contextual_tasks_context_service.h"
 
+#include "base/command_line.h"
 #include "base/files/file_util.h"
 #include "base/path_service.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -190,6 +191,11 @@ class ContextualTasksContextServiceTest : public InProcessBrowserTest {
 
   void TearDown() override {
     InProcessBrowserTest::TearDown();
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    InProcessBrowserTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitch("ignore-google-port-numbers");
   }
 
   virtual void InitializeFeatureList() {
@@ -499,6 +505,50 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest, Success) {
       "ContextualTasks.Context.TabOverlapPercentage", 100, 1);
   histogram_tester.ExpectUniqueSample("ContextualTasks.Context.TabExcessCount",
                                       0, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest,
+                       FiltersGoogleSearchAndHome) {
+  // 1. Navigate to a valid URL (a.test).
+  NavigateToValidURL();
+
+  // 2. Open a new tab and navigate to Google Search.
+  GURL search_url =
+      embedded_test_server()->GetURL("www.google.com", "/search?q=test");
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), search_url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+
+  // 3. Open another new tab and navigate to Google Home Page.
+  GURL home_url = embedded_test_server()->GetURL("www.google.com", "/");
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), home_url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+
+  NotifyEmbedderMetadata();
+
+  // Set up embeddings for the valid tab.
+  std::vector<page_content_annotations::PassageEmbedding> fake_page_embeddings =
+      {{std::make_pair(
+            "passage 1",
+            page_content_annotations::EmbeddingPassageType::kPageContent),
+        passage_embeddings::Embedding({1.0f, 0.0f, 0.0f})}};
+  EXPECT_CALL(*page_embeddings_service(), GetEmbeddings(_))
+      .WillRepeatedly(Return(fake_page_embeddings));
+
+  base::test::TestFuture<std::vector<base::WeakPtr<content::WebContents>>>
+      future;
+  TabSelectionOptions options;
+  options.tab_selection_mode = mojom::TabSelectionMode::kEmbeddingsMatch;
+  service()->GetRelevantTabsForQuery(options, "some text",
+                                     /*explicit_urls=*/{},
+                                     future.GetCallback());
+
+  std::vector<base::WeakPtr<content::WebContents>> result = future.Get();
+  EXPECT_EQ(1u, result.size());
+  if (!result.empty()) {
+    EXPECT_EQ(result[0]->GetLastCommittedURL(), valid_url());
+  }
 }
 
 IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest,

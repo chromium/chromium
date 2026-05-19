@@ -42,6 +42,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "components/contextual_tasks/public/features.h"
 #include "components/contextual_tasks/public/prefs.h"
+#include "components/google/core/common/google_util.h"
 #include "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/proto/features/contextual_tasks_context.pb.h"
@@ -594,12 +595,22 @@ ContextualTasksContextService::GetAllEligibleTabs(
             AUTO_CONTEXT_LOG("Tab contents is null.");
             continue;
           }
-          if (!IsValidUrlForSuggestedTab(web_contents->GetLastCommittedURL(),
-                                         profile_, site_exclusion_detail)) {
+          GURL url = web_contents->GetLastCommittedURL();
+          if (!IsValidUrlForSuggestedTab(url, profile_,
+                                         site_exclusion_detail)) {
             AUTO_CONTEXT_LOG(
                 base::StringPrintf("Removing %s from relevant set as it is not "
                                    "valid e.g. it is NTP, internal page, etc.",
-                                   web_contents->GetLastCommittedURL().spec()));
+                                   url.spec()));
+            continue;
+          }
+
+          if (google_util::IsGoogleSearchUrl(url) ||
+              google_util::IsGoogleHomePageUrl(url)) {
+            AUTO_CONTEXT_LOG(
+                base::StringPrintf("Removing %s from relevant set as it is a "
+                                   "Google Search URL.",
+                                   url.spec()));
             continue;
           }
           if (!ShouldAddTabToSelection(web_contents)) {
