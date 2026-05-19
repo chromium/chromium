@@ -163,6 +163,9 @@ class TouchBarNotificationBridge : public CommandObserver,
 
   ~TouchBarNotificationBridge() override {
     UpdateWebContents(nullptr);
+    if (browser_) {
+      browser_->command_controller()->RemoveCommandObserver(this);
+    }
   }
 
   void UpdateTouchBar() { [[owner_ controller] invalidateTouchBar]; }
@@ -194,11 +197,12 @@ class TouchBarNotificationBridge : public CommandObserver,
 
   // BrowserCollectionObserver:
   void OnBrowserClosed(BrowserWindowInterface* browser) override {
+    if (browser == browser_) {
+      browser_->command_controller()->RemoveCommandObserver(this);
+      browser_ = nullptr;
+    }
     if (browser == owner_.browser) {
       owner_.browser = nullptr;
-    }
-    if (browser == browser_) {
-      browser_ = nullptr;
     }
   }
 
