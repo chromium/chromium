@@ -3684,6 +3684,15 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Tabs.WindowWidth2" units="DIPs" expires_after="2026-11-12">
+  <owner>agale@chromium.org</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <summary>
+    The width of each open browser window, in DIPs, reported once per UMA log.
+    Desktop only.
+  </summary>
+</histogram>
+
 <histogram name="Tabs.{DuplicateType}.{MetricType}.{WindowType}" units="tabs"
     expires_after="2026-12-01">
   <owner>emshack@chromium.org</owner>

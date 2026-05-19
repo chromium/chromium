@@ -349,6 +349,7 @@ source_set("impl") {
     ]
     deps += [
       "//chrome/browser/performance_manager/public/user_tuning",
+      "//chrome/browser/ui/location_bar",
       "//chrome/browser/ui/performance_controls",
       "//chrome/browser/ui/tabs",
       "//chrome/browser/ui/tabs:features",

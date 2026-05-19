@@ -4916,6 +4916,27 @@ Keep consistent with active providers. Doesn't need to include every provider in
   </summary>
 </histogram>
 
+<histogram name="Omnibox.Width" units="DIPs" expires_after="2026-11-12">
+  <owner>agale@chromium.org</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <summary>
+    The width of the omnibox view in each open browser window, in DIPs, reported
+    once per UMA log. Desktop only.
+  </summary>
+</histogram>
+
+<histogram name="Omnibox.WidthRatioToWindow" units="% of window"
+    expires_after="2026-11-12">
+  <owner>agale@chromium.org</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <summary>
+    The ratio of the width of the omnibox view relative to the window width in
+    each open browser window. Reported once per UMA log. Desktop only.
+  </summary>
+</histogram>
+
 <histogram name="Omnibox.ZeroSuggest.AllResults" units="units"
     expires_after="2026-11-12">
   <owner>pnoland@chromium.org</owner>
