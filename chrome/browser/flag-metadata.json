@@ -203,7 +203,7 @@
   {
     "name": "android-app-integration-module",
     "owners": ["hanxi@chromium.org", "gangwu@chromium.org", "clank-start@google.com" ],
-    "expiry_milestone": 150
+    "expiry_milestone": 160
   },
   {
     "name": "android-app-integration-multi-data-source",
@@ -3280,7 +3280,7 @@
   {
     "name": "enable-educational-tip-default-browser-promo-card",
     "owners": [ "hanxi@chromium.org", "xinyiji@chromium.org", "clank-start@chromium.org" ],
-    "expiry_milestone": 150
+    "expiry_milestone": 160
   },
   {
     "name": "enable-eol-notification-reset-dismissed-prefs",
@@ -4005,12 +4005,12 @@
   {
     "name": "enable-segmentation-platform-android-home-module-ranker-v2",
     "owners": ["ritikagup@google.com",  "hanxi@chromium.org", "clank-start@chromium.org" ],
-    "expiry_milestone": 150
+    "expiry_milestone": 160
   },
   {
     "name": "enable-segmentation-platform-ephemeral_card_ranker",
     "owners": ["ritikagup@google.com",  "hanxi@chromium.org", "ssid@chromium.org","xinyiji@chromium.org","clank-start@chromium.org" ],
-    "expiry_milestone": 150
+    "expiry_milestone": 160
   },
   {
     "name": "enable-share-custom-actions-in-cct",
@@ -4082,7 +4082,7 @@
   {
     "name": "enable-start-surface-return-time",
     "owners": [ "hanxi@chromium.org", "clank-start@chromium.org" ],
-    "expiry_milestone": 150
+    "expiry_milestone": 170
   },
   {
     "name": "enable-static-qr-code-for-pix",
@@ -6663,7 +6663,7 @@
   {
     "name": "new-tab-page-customization-v2",
     "owners": ["hanxi@chromium.org", "clank-start@google.com"],
-    "expiry_milestone": 150
+    "expiry_milestone": 160
   },
   {
     "name": "no-accounts-web-signin",
