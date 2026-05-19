@@ -13,6 +13,11 @@
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "net/test/embedded_test_server/default_handlers.h"
 
+namespace {
+using ::chrome_test_util::PrimaryToolbar;
+using ::chrome_test_util::SecondaryToolbar;
+}  // namespace
+
 // Integration tests for side swipe.
 @interface SideSwipeTestCase : ChromeTestCase
 @end
@@ -35,19 +40,18 @@
         @"present");
   }
 
-  [self checkSideSwipeOnToolbarClassName:@"SecondaryToolbarView"];
+  [self checkSideSwipeOnToolbarMatcher:SecondaryToolbar()];
 }
 
 // Tests that swiping horizontally on the top toolbar is changing tab.
 - (void)testSideSwipeTopToolbar {
-  [self checkSideSwipeOnToolbarClassName:@"PrimaryToolbarView"];
+  [self checkSideSwipeOnToolbarMatcher:PrimaryToolbar()];
 }
 
 #pragma mark - Helpers
 
-// Checks that side swipe on an element of `className` is working to change
-// tab.
-- (void)checkSideSwipeOnToolbarClassName:(NSString*)className {
+// Checks that side swipe on `matcher` is working to change tab.
+- (void)checkSideSwipeOnToolbarMatcher:(id<GREYMatcher>)matcher {
   // Setup the server.
   net::test_server::RegisterDefaultHandlers(self.testServer);
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
@@ -64,7 +68,7 @@
   [ChromeEarlGrey waitForWebStateContainingText:"Default response"];
 
   // Side swipe on the toolbar.
-  [[EarlGrey selectElementWithMatcher:grey_kindOfClassName(className)]
+  [[EarlGrey selectElementWithMatcher:matcher]
       performAction:grey_swipeSlowInDirection(kGREYDirectionRight)];
 
   // Check that we swiped back to our web page.

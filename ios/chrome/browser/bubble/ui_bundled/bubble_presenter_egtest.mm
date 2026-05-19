@@ -28,11 +28,7 @@ namespace {
 
 using ::chrome_test_util::BackButton;
 using ::chrome_test_util::ForwardButton;
-
-// Bottom toolbar of of the tab view.
-id<GREYMatcher> BottomToolbar() {
-  return grey_kindOfClassName(@"SecondaryToolbarView");
-}
+using ::chrome_test_util::SecondaryToolbar;
 
 // Open split screen. Should only be invoked for iPad.
 void OpenSplitScreen() {
@@ -162,7 +158,7 @@ void ReloadFromOmnibox() {
       @"Pull to refresh IPH did not appear after reloading from context menu.",
       ^{
         // Side swipe on the toolbar.
-        [[EarlGrey selectElementWithMatcher:BottomToolbar()]
+        [[EarlGrey selectElementWithMatcher:SecondaryToolbar()]
             performAction:grey_swipeSlowInDirection(kGREYDirectionRight)];
       });
   AssertGestureIPHInvisible(
@@ -519,10 +515,10 @@ void ReloadFromOmnibox() {
       ^{
         // Swipe the toolbar in the wrong direction after it appears.
         [ChromeEarlGrey
-            waitForUIElementToAppearWithMatcher:grey_allOf(BottomToolbar(),
+            waitForUIElementToAppearWithMatcher:grey_allOf(SecondaryToolbar(),
                                                            grey_interactable(),
                                                            nil)];
-        [[EarlGrey selectElementWithMatcher:BottomToolbar()]
+        [[EarlGrey selectElementWithMatcher:SecondaryToolbar()]
             performAction:grey_swipeSlowInDirection(kGREYDirectionRight)];
       });
   AssertGestureIPHVisibleWithDismissAction(
@@ -530,11 +526,11 @@ void ReloadFromOmnibox() {
       @"direction.",
       ^{
         [ChromeEarlGrey
-            waitForUIElementToAppearWithMatcher:grey_allOf(BottomToolbar(),
+            waitForUIElementToAppearWithMatcher:grey_allOf(SecondaryToolbar(),
                                                            grey_interactable(),
                                                            nil)];
         // Swipe the toolbar in the right direction.
-        [[EarlGrey selectElementWithMatcher:BottomToolbar()]
+        [[EarlGrey selectElementWithMatcher:SecondaryToolbar()]
             performAction:grey_swipeSlowInDirection(kGREYDirectionLeft)];
       });
   AssertGestureIPHInvisible(@"Toolbar swipe IPH should be dismissed after "

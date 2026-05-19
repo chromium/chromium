@@ -560,15 +560,14 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
 }
 
 + (id<GREYMatcher>)omniboxAtBottom {
-  return grey_allOf(
-      [ChromeMatchersAppInterface defocusedLocationView],
-      grey_ancestor(grey_kindOfClassName(@"SecondaryToolbarView")),
-      grey_sufficientlyVisible(), nil);
+  return grey_allOf([ChromeMatchersAppInterface defocusedLocationView],
+                    grey_ancestor([self secondaryToolbar]),
+                    grey_sufficientlyVisible(), nil);
 }
 
 + (id<GREYMatcher>)omniboxOnTop {
   return grey_allOf([ChromeMatchersAppInterface defocusedLocationView],
-                    grey_ancestor(grey_kindOfClassName(@"PrimaryToolbarView")),
+                    grey_ancestor([self primaryToolbar]),
                     grey_sufficientlyVisible(), nil);
 }
 

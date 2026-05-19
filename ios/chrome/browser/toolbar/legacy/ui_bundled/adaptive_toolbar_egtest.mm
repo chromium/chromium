@@ -34,6 +34,8 @@ namespace {
 
 using chrome_test_util::BackButton;
 using chrome_test_util::ForwardButton;
+using chrome_test_util::PrimaryToolbar;
+using chrome_test_util::SecondaryToolbar;
 using chrome_test_util::TapWebElementWithId;
 using chrome_test_util::WebStateScrollViewMatcher;
 using chrome_test_util::WebViewMatcher;
@@ -119,16 +121,15 @@ id<GREYMatcher> firstResponder() {
 // Returns a matcher for elements being subviews of the PrimaryToolbarView and
 // sufficientlyVisible.
 id<GREYMatcher> VisibleInPrimaryToolbar() {
-  return grey_allOf(grey_ancestor(grey_kindOfClassName(@"PrimaryToolbarView")),
-                    grey_sufficientlyVisible(), nil);
+  return grey_allOf(grey_ancestor(PrimaryToolbar()), grey_sufficientlyVisible(),
+                    nil);
 }
 
 // Returns a matcher for elements being subviews of the SecondaryToolbarView and
 // sufficientlyVisible.
 id<GREYMatcher> VisibleInSecondaryToolbar() {
-  return grey_allOf(
-      grey_ancestor(grey_kindOfClassName(@"SecondaryToolbarView")),
-      grey_sufficientlyVisible(), nil);
+  return grey_allOf(grey_ancestor(SecondaryToolbar()),
+                    grey_sufficientlyVisible(), nil);
 }
 
 // Checks that the element designated by `matcher` is `visible` in the primary
@@ -254,8 +255,7 @@ void CheckButtonsVisibilityIPhoneLandscape(BOOL omniboxFocused) {
     CheckVisibilityInToolbar(ToolsMenuButton(), ButtonVisibilityPrimary);
   }
   // The secondary toolbar is not visible.
-  [[EarlGrey
-      selectElementWithMatcher:grey_kindOfClassName(@"SecondaryToolbarView")]
+  [[EarlGrey selectElementWithMatcher:SecondaryToolbar()]
       assertWithMatcher:grey_not(grey_sufficientlyVisible())];
 }
 
@@ -274,8 +274,7 @@ void CheckButtonsVisibilityIPad() {
   CheckVisibilityInToolbar(ToolsMenuButton(), ButtonVisibilityPrimary);
 
   // The secondary toolbar is not visible.
-  [[EarlGrey
-      selectElementWithMatcher:grey_kindOfClassName(@"SecondaryToolbarView")]
+  [[EarlGrey selectElementWithMatcher:SecondaryToolbar()]
       assertWithMatcher:grey_not(grey_sufficientlyVisible())];
 }
 

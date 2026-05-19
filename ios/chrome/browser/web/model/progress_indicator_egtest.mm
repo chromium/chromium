@@ -15,6 +15,7 @@
 #import "ios/chrome/browser/web/model/progress_indicator_app_interface.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
+#import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
 #import "ios/chrome/test/scoped_eg_synchronization_disabler.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
@@ -24,6 +25,9 @@
 #import "url/gurl.h"
 
 namespace {
+
+using ::chrome_test_util::PrimaryToolbar;
+using ::chrome_test_util::SecondaryToolbar;
 
 // Text to display in form page.
 const char kFormPageText[] = "Form testing page";
@@ -47,15 +51,14 @@ const char kSimplePageURL[] = "/simplepage";
 
 // ProgressView from primary toolbar.
 id<GREYMatcher> ProgressViewInPrimaryToolbar() {
-  return grey_allOf(grey_ancestor(grey_kindOfClassName(@"PrimaryToolbarView")),
+  return grey_allOf(grey_ancestor(PrimaryToolbar()),
                     grey_kindOfClassName(@"UIProgressView"), nil);
 }
 
 // ProgresView from secondary toolbar.
 id<GREYMatcher> ProgressViewInSecondaryToolbar() {
-  return grey_allOf(
-      grey_ancestor(grey_kindOfClassName(@"SecondaryToolbarView")),
-      grey_kindOfClassName(@"UIProgressView"), nil);
+  return grey_allOf(grey_ancestor(SecondaryToolbar()),
+                    grey_kindOfClassName(@"UIProgressView"), nil);
 }
 
 // Matcher for `progressView` that should be visible at `progress`.

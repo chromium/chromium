@@ -46,6 +46,8 @@ using testing::HasSubstr;
 
 namespace {
 
+using ::chrome_test_util::PrimaryToolbar;
+
 // Returns the badge used to open Reader Mode customization UI.
 id<GREYMatcher> ReaderModeCustomizationBadge() {
   NSString* const badgeIdentifier =
@@ -448,8 +450,7 @@ id<GREYMatcher> ContextualPanelEntrypointImageViewMatcher() {
   [ChromeEarlGrey loadURL:nonReaderModeURL];
 
   // Side swipe on the toolbar.
-  [[EarlGrey
-      selectElementWithMatcher:grey_kindOfClassName(@"PrimaryToolbarView")]
+  [[EarlGrey selectElementWithMatcher:PrimaryToolbar()]
       performAction:grey_swipeSlowInDirection(kGREYDirectionRight)];
 
   // Reader Mode view is visible.
@@ -460,8 +461,7 @@ id<GREYMatcher> ContextualPanelEntrypointImageViewMatcher() {
                   @"Did not navigate to Reader Mode url.");
 
   // Side swipe back to the non-Reader mode page on the toolbar.
-  [[EarlGrey
-      selectElementWithMatcher:grey_kindOfClassName(@"PrimaryToolbarView")]
+  [[EarlGrey selectElementWithMatcher:PrimaryToolbar()]
       performAction:grey_swipeSlowInDirection(kGREYDirectionLeft)];
 
   // Non-Reader Mode view is visible.
