@@ -36,7 +36,6 @@
   self.shouldHideBanner = YES;
   self.preferToCompressContent = NO;
   self.titleTopMarginWhenNoHeaderImage = 100;
-  self.subtitleBottomMargin = 20;
 
   self.titleText = _bestFeaturesItem.title;
   self.subtitleText = _bestFeaturesItem.subtitle;
@@ -52,6 +51,7 @@
 
 - (void)viewWillAppear:(BOOL)animated {
   [super viewWillAppear:animated];
+  [self updateAnimation];
   [_animationViewWrapper play];
 }
 
@@ -73,10 +73,13 @@
     [_animationViewWrapper.animationView.bottomAnchor
         constraintEqualToAnchor:self.specificContentView.bottomAnchor],
     [_animationViewWrapper.animationView.centerXAnchor
-        constraintEqualToAnchor:self.specificContentView.centerXAnchor],
+        constraintEqualToAnchor:self.specificContentView.centerXAnchor
+                       constant:-10],
     [_animationViewWrapper.animationView.heightAnchor
         constraintEqualToAnchor:_animationViewWrapper.animationView.widthAnchor
-                     multiplier:1.33],
+                     multiplier:2.0],
+    [_animationViewWrapper.animationView.widthAnchor
+        constraintEqualToAnchor:self.specificContentView.widthAnchor],
   ]];
 
   [_animationViewWrapper.animationView
@@ -103,6 +106,7 @@
   for (NSString* key in _bestFeaturesItem.lightModeColorProvider.allKeys) {
     UIColor* lightColor = _bestFeaturesItem.lightModeColorProvider[key];
     UIColor* darkColor = _bestFeaturesItem.darkModeColorProvider[key];
+
     ConfigureAnimationCustomColor(_animationViewWrapper, key, lightColor,
                                   darkColor);
   }
