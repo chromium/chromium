@@ -400,7 +400,8 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
         }
 
         // Share
-        if (ShareUtils.shouldEnableShare(currentTab)) {
+        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.SUBMENUS_IN_APP_MENU)
+                && ShareUtils.shouldEnableShare(currentTab)) {
             modelList.add(buildShareListItem(shouldShowIconBeforeItem()));
         }
 
@@ -419,8 +420,7 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
         }
 
         // Print
-        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.SUBMENUS_IN_APP_MENU)
-                && shouldShowPrintItem(currentTab)) {
+        if (shouldShowPrintItem(currentTab)) {
             modelList.add(buildPrintItem(currentTab));
         }
 
@@ -1318,16 +1318,16 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
             return false;
         }
 
+        if (ShareUtils.shouldEnableShare(currentTab)) {
+            return true;
+        }
+
         if (shouldShowDownloadPageMenuItem(currentTab)) {
             return true;
         }
 
         if (shouldShowHomeScreenMenuItem(
                 isNativePage, isFileScheme, isContentScheme, isIncognitoShowing(), url)) {
-            return true;
-        }
-
-        if (shouldShowPrintItem(currentTab)) {
             return true;
         }
 
@@ -1359,19 +1359,25 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
             submenuItems.add(buildAddToHomescreenListItem(currentTab, shouldShowIconBeforeItem()));
         }
 
-        if (shouldShowPrintItem(currentTab)) {
-            submenuItems.add(buildPrintItem(currentTab));
-        }
-
         if (shouldShowPaintPreview(isNativePage, currentTab)) {
             submenuItems.add(buildPaintPreviewItem(isNativePage, currentTab));
+        }
+
+        if (ShareUtils.shouldEnableShare(currentTab)) {
+            if (!submenuItems.isEmpty()) {
+                submenuItems.add(
+                        new ListItem(
+                                AppMenuHandler.AppMenuItemType.DIVIDER,
+                                buildModelForDivider(R.id.divider_line_id)));
+            }
+            submenuItems.add(buildShareListItem(shouldShowIconBeforeItem()));
         }
 
         return new ListItem(
                 AppMenuHandler.AppMenuItemType.MENU_ITEM_WITH_SUBMENU,
                 buildModelForMenuItemWithSubmenu(
-                        R.id.save_and_print_parent_menu_id,
-                        R.string.menu_save_and_print,
+                        R.id.save_and_share_parent_menu_id,
+                        R.string.menu_save_and_share,
                         shouldShowIconBeforeItem()
                                 ? R.drawable.ic_file_save_24dp
                                 : Resources.ID_NULL,
