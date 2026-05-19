@@ -1110,6 +1110,9 @@ void NavigationControllerImpl::SetPendingEntry(
   DiscardNonCommittedEntries();
   pending_entry_ = entry.release();
   DCHECK_EQ(-1, pending_entry_index_);
+  if (delegate_ && pending_entry_->is_renderer_initiated()) {
+    delegate_->NotifyNavigationStateChangedFromController(INVALIDATE_TYPE_URL);
+  }
 }
 
 NavigationEntryImpl* NavigationControllerImpl::GetActiveEntry() {
@@ -4229,7 +4232,6 @@ base::WeakPtr<NavigationHandle> NavigationControllerImpl::NavigateWithoutEntry(
         CreateNavigationEntryFromLoadParams(node, params, override_user_agent,
                                             should_replace_current_entry,
                                             params.has_user_gesture);
-    DiscardPendingEntry(false);
     SetPendingEntry(std::move(entry));
   }
 

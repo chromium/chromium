@@ -2401,6 +2401,53 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest, NavigateWithCallback) {
   EXPECT_EQ(1, browser()->tab_strip_model()->count());
 }
 
+// Verifies the omnibox shows the pending URL when a new tab is opened via
+// target="_blank" and the navigation is slow, until the opener accesses the
+// new tab's document. See: https://crbug.com/487556346
+IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest, VisibleUrlInNewTab) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL opener_url(embedded_test_server()->GetURL("/title1.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), opener_url));
+
+  GURL slow_url(embedded_test_server()->GetURL("/hung"));
+
+  content::WebContentsAddedObserver new_contents_observer;
+  ASSERT_TRUE(
+      content::ExecJs(browser()->tab_strip_model()->GetActiveWebContents(),
+                      content::JsReplace("var a = document.createElement('a');"
+                                         "a.href = $1;"
+                                         "a.target = 'my_tab';"
+                                         "a.rel = 'opener';"
+                                         "document.body.appendChild(a);"
+                                         "a.click();",
+                                         slow_url)));
+
+  content::WebContents* new_contents = new_contents_observer.GetWebContents();
+
+  EXPECT_EQ(2, browser()->tab_strip_model()->count());
+  EXPECT_EQ(new_contents, browser()->tab_strip_model()->GetActiveWebContents());
+
+  EXPECT_EQ(slow_url, new_contents->GetVisibleURL());
+
+  {
+    std::u16string omnibox_text =
+        browser()->window()->GetLocationBar()->GetOmniboxView()->GetText();
+    EXPECT_NE(url::kAboutBlankURL16, omnibox_text);
+    EXPECT_TRUE(omnibox_text.find(base::UTF8ToUTF16(slow_url.host())) !=
+                std::u16string::npos);
+  }
+
+  // Have the opener access the new tab's document.
+  ASSERT_TRUE(content::ExecJs(browser()->tab_strip_model()->GetWebContentsAt(0),
+                              "var other_tab = window.open('', 'my_tab');"
+                              "var dummy = other_tab.document.body;"));
+
+  // The visible URL and omnibox should now revert to `about:blank`.
+  EXPECT_EQ(GURL(), new_contents->GetVisibleURL());
+  EXPECT_EQ(url::kAboutBlankURL16,
+            browser()->window()->GetLocationBar()->GetOmniboxView()->GetText());
+}
+
 IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest, Disposition_NewSplitView) {
   WebContents* old_contents =
       browser()->tab_strip_model()->GetActiveWebContents();

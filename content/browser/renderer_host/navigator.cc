@@ -1714,9 +1714,7 @@ Navigator::GetNavigationEntryForRendererInitiatedNavigation(
   entry->set_reload_type(NavigationRequest::NavigationTypeToReloadType(
       common_params.navigation_type));
   entry->SetIsOverridingUserAgent(override_user_agent);
-
   controller_.SetPendingEntry(std::move(entry));
-  delegate_->NotifyChangedNavigationState(content::INVALIDATE_TYPE_URL);
 
   return controller_.GetPendingEntry();
 }
