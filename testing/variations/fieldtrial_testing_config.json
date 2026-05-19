@@ -22999,6 +22999,25 @@
             ]
         }
     ],
+    "SyncFixWebSigninSessionDurationForShortLivedSession": [
+        {
+            "platforms": [
+                "android",
+                "ios",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20260518",
+                    "enable_features": [
+                        "SyncFixWebSigninSessionDurationForShortLivedSessions"
+                    ]
+                }
+            ]
+        }
+    ],
     "SyncIncreaseNudgeDelayForSingleClient": [
         {
             "platforms": [
