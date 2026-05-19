@@ -1740,6 +1740,8 @@ android_library("chrome_test_java_various") {
     "//third_party/androidx:androidx_test_ext_junit_java",
     "//third_party/blink/public/mojom:authenticator_mojo_bindings_java",
     "//third_party/blink/public/mojom:credentialmanagement_mojo_bindings_java",
+    "//ui/accessibility:accessibility_features_java",
+    "//ui/accessibility:ax_base_java",
     "//ui/android:ui_java",
     "//ui/android:ui_java_test_support",
   ]
@@ -2021,5 +2023,6 @@ android_library("chrome_unit_test_java_various") {
     "//chrome/browser/ui/android/actions:java",
     "//chrome/browser/ui/android/pdf:pdf_utils_java",
     "//components/omnibox/common:features_java",
+    "//ui/accessibility:ax_base_java",
   ]
 }

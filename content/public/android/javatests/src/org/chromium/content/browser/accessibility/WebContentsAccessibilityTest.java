@@ -2915,9 +2915,9 @@ public class WebContentsAccessibilityTest {
                             partialOcclusionRect, minorOccluderViewId);
                 });
 
-        // Button 1 should not be visible despite partial occlusion.
+        // Button 1 should still be visible.
         button1NodeInfo = createAccessibilityNodeInfo(button1VvId);
-        Assert.assertFalse(VISIBLE_TO_USER_ERROR, button1NodeInfo.isVisibleToUser());
+        Assert.assertTrue(VISIBLE_TO_USER_ERROR, button1NodeInfo.isVisibleToUser());
 
         // Now occlude 80% of the button.
         Rect largeOcclusionRect = new Rect(button1Bounds);
@@ -2933,7 +2933,7 @@ public class WebContentsAccessibilityTest {
                             largeOcclusionRect, majorOccluderViewId);
                 });
 
-        // Button 1 should still be invisible.
+        // Button 1 should now be invisible.
         button1NodeInfo = createAccessibilityNodeInfo(button1VvId);
         Assert.assertFalse(VISIBLE_TO_USER_ERROR, button1NodeInfo.isVisibleToUser());
     }
