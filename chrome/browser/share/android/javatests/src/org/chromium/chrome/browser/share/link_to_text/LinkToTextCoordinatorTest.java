@@ -381,6 +381,31 @@ public class LinkToTextCoordinatorTest {
 
     @Test
     @SmallTest
+    public void shareLinkToTextTest_LinkNavigation_BeforeRemoteRequestComplete() {
+        mLinkToTextCoordinator.initLinkToTextCoordinator(
+                mTab, mShareCallback, mChromeShareExtras, SHARE_START_TIME, VISIBLE_URL, "", false);
+        mLinkToTextCoordinator.shareLinkToText();
+        mLinkToTextCoordinator.onDidStartNavigationInPrimaryMainFrame(
+                mTab,
+                NavigationHandle.createForTesting(
+                        new GURL(VISIBLE_URL),
+                        /* isInPrimaryMainFrame= */ true,
+                        /* isSameDocument= */ false,
+                        /* isRendererInitiated= */ true,
+                        PageTransition.LINK,
+                        /* hasUserGesture= */ false,
+                        /* isReload= */ false));
+
+        // check doesn't show share sheet
+        verify(mShareCallback, times(0)).showShareSheet(any(), any(), anyLong());
+
+        // Check that histogram will be recorded correctly.
+        verify(mLinkToTextBridge, times(1))
+                .logFailureMetrics(any(), eq(LinkGenerationError.OMNIBOX_NAVIGATION));
+    }
+
+    @Test
+    @SmallTest
     public void shareLinkToTextTest_Reshare_Success() {
         mLinkToTextCoordinator.initLinkToTextCoordinator(
                 mTab,
@@ -493,5 +518,36 @@ public class LinkToTextCoordinatorTest {
 
         // No new histogram is recorded.
         verify(mLinkToTextBridge, times(1)).logLinkToTextReshareStatus(anyInt());
+    }
+
+    @Test
+    @SmallTest
+    public void shareLinkToTextTest_Reshare_LinkNavigation_BeforeRemoteRequestComplete() {
+        mLinkToTextCoordinator.initLinkToTextCoordinator(
+                mTab,
+                mShareCallback,
+                mReshareChromeShareExtras,
+                SHARE_START_TIME,
+                VISIBLE_URL,
+                "",
+                false);
+        mLinkToTextCoordinator.shareLinkToText();
+        mLinkToTextCoordinator.onDidStartNavigationInPrimaryMainFrame(
+                mTab,
+                NavigationHandle.createForTesting(
+                        new GURL(VISIBLE_URL),
+                        /* isInPrimaryMainFrame= */ true,
+                        /* isSameDocument= */ false,
+                        /* isRendererInitiated= */ true,
+                        PageTransition.LINK,
+                        /* hasUserGesture= */ false,
+                        /* isReload= */ false));
+
+        // check doesn't show share sheet
+        verify(mShareCallback, times(0)).showShareSheet(any(), any(), anyLong());
+
+        // Check that histogram will be recorded correctly.
+        verify(mLinkToTextBridge, times(1))
+                .logLinkToTextReshareStatus(LinkToTextReshareStatus.OMNIBOX_NAVIGATION);
     }
 }

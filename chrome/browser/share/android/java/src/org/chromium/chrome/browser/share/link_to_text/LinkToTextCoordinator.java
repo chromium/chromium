@@ -28,7 +28,6 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabHidingType;
 import org.chromium.components.browser_ui.share.ShareParams;
 import org.chromium.content_public.browser.NavigationHandle;
-import org.chromium.ui.base.PageTransition;
 import org.chromium.url.GURL;
 
 /** Handles the Link To Text action in the Sharing Hub. */
@@ -254,14 +253,9 @@ public class LinkToTextCoordinator extends EmptyTabObserver {
         }
     }
 
-    // Discard results if tab content is changed by typing new URL in omnibox.
+    // Discard results if tab content is changed by a cross-document navigation.
     @Override
     public void onDidStartNavigationInPrimaryMainFrame(Tab tab, NavigationHandle navigationHandle) {
-        // Only cancel if the navigation was user-initiated from the omnibox.
-        if ((navigationHandle.pageTransition() & PageTransition.CORE_MASK)
-                != PageTransition.TYPED) {
-            return;
-        }
         if (navigationHandle.isSameDocument()) return;
 
         if (mChromeShareExtras.isReshareHighlightedText()) {
