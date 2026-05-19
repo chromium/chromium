@@ -119,6 +119,8 @@ class Host : public GlicSharingManagerProvider {
     virtual GlicInstanceMetricsBackwardsCompatibility&
     instance_metrics_backwards_compatibility() = 0;
 
+    virtual GlicSkillsManager& skills_manager() = 0;
+
     virtual bool IsActive() = 0;
 
     virtual std::unique_ptr<WebUIContentsContainer>
@@ -471,9 +473,6 @@ class Host : public GlicSharingManagerProvider {
   std::optional<PageHandlerInfo> handler_info_;
 
   raw_ptr<GlicSharingManagerProvider> sharing_manager_provider_;
-
-  // Responsible for skill update logic.
-  std::unique_ptr<GlicSkillsManager> skills_manager_;
 
   mojom::MicrophoneStatus microphone_status_ =
       mojom::MicrophoneStatus::kUnknown;

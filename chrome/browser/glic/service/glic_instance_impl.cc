@@ -35,6 +35,7 @@
 #include "chrome/browser/glic/host/context/glic_sharing_manager_coordinator.h"
 #include "chrome/browser/glic/host/context/glic_sharing_manager_impl.h"
 #include "chrome/browser/glic/host/glic.mojom-shared.h"
+#include "chrome/browser/glic/host/glic_skills_manager_impl.h"
 #include "chrome/browser/glic/host/host.h"
 #include "chrome/browser/glic/host/webui_contents_container.h"
 #include "chrome/browser/glic/public/context/glic_sharing_manager.h"
@@ -338,6 +339,13 @@ glic::GlicInstanceMetrics& GlicInstanceImpl::instance_metrics() {
 glic::GlicInstanceMetricsBackwardsCompatibility&
 GlicInstanceImpl::instance_metrics_backwards_compatibility() {
   return instance_metrics_;
+}
+
+GlicSkillsManager& GlicInstanceImpl::skills_manager() {
+  if (!skills_manager_) {
+    skills_manager_ = std::make_unique<GlicSkillsManagerImpl>(this, profile_);
+  }
+  return *skills_manager_;
 }
 
 void GlicInstanceImpl::OnSelectionAreasChanged(int count) {

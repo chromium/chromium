@@ -6,6 +6,7 @@
 
 #include "base/functional/bind.h"
 #include "chrome/browser/glic/host/context/glic_tab_data.h"
+#include "chrome/browser/glic/public/glic_instance.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/skills/skills_dialog_launcher.h"
 #include "chrome/browser/skills/skills_service_factory.h"
@@ -25,24 +26,27 @@
 
 namespace glic {
 
-GlicSkillsManagerImpl::GlicSkillsManagerImpl(Host* host) : host_(*host) {
+GlicSkillsManagerImpl::GlicSkillsManagerImpl(GlicInstance* instance,
+                                             Profile* profile)
+    : instance_(*instance), profile_(*profile) {
   focused_tab_changed_subscription_ =
-      host->sharing_manager().AddFocusedTabChangedCallback(
+      instance->host().sharing_manager().AddFocusedTabChangedCallback(
           base::BindRepeating(&GlicSkillsManagerImpl::OnFocusedTabChanged,
                               weak_ptr_factory_.GetWeakPtr()));
-  host_observation_.Observe(host);
+  host_observation_.Observe(&instance->host());
 }
 
 GlicSkillsManagerImpl::~GlicSkillsManagerImpl() = default;
 
 void GlicSkillsManagerImpl::UpdateSkillPreviews(
     std::optional<tabs::TabInterface*> updated_tab) {
-  if (!host_->IsWebClientConnected()) {
+  if (!instance_->host().IsWebClientConnected()) {
     return;
   }
-  auto* focused_tab = host_->sharing_manager().GetFocusedTabData().focus();
+  auto* focused_tab =
+      instance_->host().sharing_manager().GetFocusedTabData().focus();
   if (!focused_tab) {
-    host_->NotifyContextualSkillsChanged({});
+    instance_->host().NotifyContextualSkillsChanged({});
     contextual_skill_previews_.clear();
     return;
   }
@@ -65,29 +69,29 @@ void GlicSkillsManagerImpl::UpdateSkillPreviews(
   for (const auto& preview : contextual_skill_previews_) {
     skill_previews.push_back(preview.Clone());
   }
-  host_->NotifyContextualSkillsChanged(std::move(skill_previews));
+  instance_->host().NotifyContextualSkillsChanged(std::move(skill_previews));
 }
 
 tabs::TabInterface* GlicSkillsManagerImpl::EnsureTabForSkills() {
-  const FocusedTabData& ftd = host_->sharing_manager().GetFocusedTabData();
+  const FocusedTabData& ftd =
+      instance_->host().sharing_manager().GetFocusedTabData();
   tabs::TabInterface* tab = ftd.focus() ? ftd.focus() : ftd.unfocused_tab();
 
   if (tab) {
     return tab;
   }
 
-  content::WebContents* guest_contents = host_->web_client_contents();
+  content::WebContents* guest_contents =
+      instance_->host().web_client_contents();
   if (!guest_contents) {
     return nullptr;
   }
 
-  Profile* profile = host_->profile();
-
   BrowserWindowInterface* active_browser = nullptr;
   ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
-      [&active_browser, profile](BrowserWindowInterface* browser) {
+      [&active_browser, this](BrowserWindowInterface* browser) {
         if (browser->GetType() == BrowserWindowInterface::Type::TYPE_NORMAL &&
-            browser->GetProfile() == profile) {
+            browser->GetProfile() == &*profile_) {
           active_browser = browser;
           return false;
         }
@@ -131,14 +135,13 @@ void GlicSkillsManagerImpl::ShowSkillsUiAtRelativePath(
   const GURL skills_url = GURL(chrome::kChromeUISkillsURL).Resolve(path);
   bool existing_skills_tab_found = false;
 
-  Profile* host_profile = host_->profile();
   BrowserWindowInterface* most_recent_browser = nullptr;
 
   ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
       [&skills_url, &existing_skills_tab_found, &most_recent_browser,
-       host_profile](BrowserWindowInterface* browser) {
+       this](BrowserWindowInterface* browser) {
         if (browser->GetType() != BrowserWindowInterface::Type::TYPE_NORMAL ||
-            browser->GetProfile() != host_profile) {
+            browser->GetProfile() != &*profile_) {
           return true;
         }
 
@@ -172,7 +175,7 @@ void GlicSkillsManagerImpl::ShowSkillsUiAtRelativePath(
     }
 
     BrowserWindowCreateParams create_params(
-        BrowserWindowInterface::Type::TYPE_NORMAL, *host_->profile(),
+        BrowserWindowInterface::Type::TYPE_NORMAL, *profile_,
         /*from_user_gesture=*/true);
 
     CreateBrowserWindow(
@@ -205,7 +208,7 @@ void GlicSkillsManagerImpl::NotifyPanelOpenedOrActivated() {
   // restrictions from Skills backend.
 #if !BUILDFLAG(IS_ANDROID)  // NEEDS_ANDROID_IMPL
   if (base::FeatureList::IsEnabled(features::kSkillsEnabled)) {
-    skills::SkillsServiceFactory::GetForProfile(host_->profile())
+    skills::SkillsServiceFactory::GetForProfile(&*profile_)
         ->RefreshDiscoverySkills();
   }
 #endif  // !BUILDFLAG(IS_ANDROID)

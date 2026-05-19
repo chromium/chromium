@@ -23,15 +23,19 @@ class TabInterface;
 namespace skills {
 struct Skill;
 }  // namespace skills
+
+class Profile;
+
 namespace glic {
 
 class FocusedTabData;
+class GlicInstance;
 
 // This is a host-scoped object that is responsible for sending skills to the
 // web client.
 class GlicSkillsManagerImpl : public GlicSkillsManager, public Host::Observer {
  public:
-  explicit GlicSkillsManagerImpl(Host* host);
+  GlicSkillsManagerImpl(GlicInstance* instance, Profile* profile);
   ~GlicSkillsManagerImpl() override;
   explicit GlicSkillsManagerImpl(const GlicSkillsManager&) = delete;
   GlicSkillsManagerImpl& operator=(const GlicSkillsManager&) = delete;
@@ -63,8 +67,9 @@ class GlicSkillsManagerImpl : public GlicSkillsManager, public Host::Observer {
   // We update the set of skills on focused tab changes.
   base::CallbackListSubscription focused_tab_changed_subscription_;
 
-  // Owns |this|.
-  const raw_ref<Host> host_;
+  // The instance that owns this skills manager.
+  const raw_ref<GlicInstance> instance_;
+  const raw_ref<Profile> profile_;
 
   // Used for observer WebUI state changes; this can also trigger updates.
   base::ScopedObservation<Host, Host::Observer> host_observation_{this};
