@@ -195,7 +195,6 @@
   </translations>
   <release seq="1">
     <messages fallback_to_english="true">
-      <part file="accessibility_annotator/core/resources/strings/accessibility_annotator_strings.grdp" />
     </messages>
   </release>
 </grit>

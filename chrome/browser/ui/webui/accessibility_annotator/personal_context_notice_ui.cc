@@ -12,7 +12,7 @@
 #include "chrome/grit/accessibility_annotator_info_resources_map.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/accessibility_annotator/core/url_constants.h"
-#include "components/strings/grit/components_variant_strings.h"
+#include "components/strings/grit/components_strings.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui_data_source.h"

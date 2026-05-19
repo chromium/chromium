@@ -282,6 +282,7 @@
   <release seq="1">
     <!-- IMPORTANT: .grdp files must be in the same directory as this file -->
     <messages fallback_to_english="true">
+      <part file="accessibility_annotator_strings.grdp" />
       <part file="arc_strings.grdp" />
       <part file="autofill_payments_strings.grdp" />
       <part file="autofill_strings.grdp" />
