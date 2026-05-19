@@ -47,6 +47,8 @@ import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.UrlUtils;
 import org.chromium.blink_public.common.BlinkFeatures;
 import org.chromium.content_public.browser.Visibility;
+import org.chromium.content_public.browser.test.util.NavigationControllerUtil;
+import org.chromium.content_public.browser.test.util.NavigationEntrySimple;
 import org.chromium.content_public.browser.test.util.TestCallbackHelperContainer.OnPageStartedHelper;
 import org.chromium.content_public.common.ContentSwitches;
 import org.chromium.net.test.ServerCertificate;
@@ -854,6 +856,128 @@ public class AwPrerenderTest extends AwParameterizedTest {
         Assert.assertNull(scriptHeaders.get("Test-Header1"));
         Assert.assertNull(scriptHeaders.get("Test-Header2"));
         Assert.assertEquals("prefetch;prerender", scriptHeaders.get("Sec-Purpose"));
+    }
+
+    @Test
+    @LargeTest
+    @Feature({"AndroidWebView"})
+    @Features.DisableFeatures({BlinkFeatures.PRERENDER2_MEMORY_CONTROLS})
+    @CommandLineFlags.Add({
+        ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1",
+        "enable-features=WebViewSaveStateIncludeHeaders"
+    })
+    public void testPrerenderAndSaveState() throws Throwable {
+        loadInitialPage();
+
+        var histogramWatcher = createFinalStatusHistogramWatcher(/*kActivated*/ 0);
+
+        // --- 1. Prepare Prerender Parameters ---
+        Map<String, String> prerenderExtraHeaders =
+                Map.of("Test-Header1", "1", "Test-Header2", "2");
+        AwPrefetchParameters prerenderParameters =
+                new AwPrefetchParameters(prerenderExtraHeaders, null, false);
+
+        // --- 2. Start Prerendering ---
+        startPrerendering(
+                mPrerenderingUrl,
+                prerenderParameters,
+                /* cancellationSignal= */ null,
+                mActivationCallbackHelper.getCallback(),
+                mPrerenderErrorCallbackHelper.getCallback());
+
+        // --- 3. FIRST CHECK: State before activation ---
+        // Verify that while prerendering is ongoing, the navigation history only
+        // contains the initial page load and NOT the prerendering URL.
+        TestAwContentsClient restoredStateClientBefore = new TestAwContentsClient();
+        AwTestContainerView restoredStateViewBefore =
+                mActivityTestRule.createAwTestContainerViewOnMainSync(restoredStateClientBefore);
+
+        InstrumentationRegistry.getInstrumentation()
+                .runOnMainSync(
+                        () -> {
+                            Bundle bundle = new Bundle();
+                            boolean saved = mAwContents.saveState(bundle);
+                            Assert.assertTrue("Expected state to be saved", saved);
+
+                            boolean restored =
+                                    restoredStateViewBefore.getAwContents().restoreState(bundle);
+                            Assert.assertTrue("Expected state to be restored", restored);
+
+                            NavigationEntrySimple[] navHistory =
+                                    NavigationControllerUtil.getNavigationHistorySimple(
+                                            restoredStateViewBefore
+                                                    .getAwContents()
+                                                    .getWebContents());
+                            // Should only contain the initial page load (mPageUrl)
+                            Assert.assertEquals(
+                                    "History should only have 1 entry before activation",
+                                    1,
+                                    navHistory.length);
+                            Assert.assertEquals(
+                                    "The entry should be the initial page",
+                                    mPageUrl,
+                                    navHistory[0].getUrl());
+                        });
+
+        // --- 4. Activate the Prerendered Page ---
+        activatePage(
+                mPrerenderingUrl, mPrerenderingUrl, ActivationBy.LOAD_URL, prerenderExtraHeaders);
+        histogramWatcher.pollInstrumentationThreadUntilSatisfied();
+
+        // --- 5. Verify Server only received one request from the prerender and that request
+        // headers are present ---
+        Assert.assertEquals(1, mTestServer.getRequestCountForUrl(PRERENDER_URL));
+        Map<String, String> receivedHeaders = mTestServer.getRequestHeadersForUrl(PRERENDER_URL);
+        Assert.assertFalse(receivedHeaders.isEmpty());
+        Assert.assertEquals("1", receivedHeaders.get("Test-Header1"));
+        Assert.assertEquals("2", receivedHeaders.get("Test-Header2"));
+        Assert.assertEquals("prefetch;prerender", receivedHeaders.get("Sec-Purpose"));
+
+        // --- 6. SECOND CHECK: State after activation ---
+        // Verify that after activation, the navigation history is correctly updated.
+        TestAwContentsClient restoredStateClientAfter = new TestAwContentsClient();
+        AwTestContainerView restoredStateViewAfter =
+                mActivityTestRule.createAwTestContainerViewOnMainSync(restoredStateClientAfter);
+
+        InstrumentationRegistry.getInstrumentation()
+                .runOnMainSync(
+                        () -> {
+                            Bundle bundle = new Bundle();
+                            boolean saved = mAwContents.saveState(bundle);
+                            Assert.assertTrue("Expected state to be saved after activation", saved);
+
+                            boolean restored =
+                                    restoredStateViewAfter.getAwContents().restoreState(bundle);
+                            Assert.assertTrue(
+                                    "Expected state to be restored after activation", restored);
+
+                            NavigationEntrySimple[] navHistory =
+                                    NavigationControllerUtil.getNavigationHistorySimple(
+                                            restoredStateViewAfter
+                                                    .getAwContents()
+                                                    .getWebContents());
+
+                            // Should now contain both the initial page load AND the newly activated
+                            // page
+                            Assert.assertEquals(
+                                    "History should have 2 entries after activation",
+                                    2,
+                                    navHistory.length);
+                            Assert.assertEquals(
+                                    "The first entry should be the initial page",
+                                    mPageUrl,
+                                    navHistory[0].getUrl());
+
+                            NavigationEntrySimple restoredEntry = navHistory[1];
+                            Assert.assertEquals(
+                                    "The second entry should be the activated prerendered page",
+                                    mPrerenderingUrl,
+                                    restoredEntry.getUrl());
+                            Assert.assertEquals(
+                                    "Prerender should have preserved headers",
+                                    prerenderExtraHeaders,
+                                    restoredEntry.getExtraHeaders());
+                        });
     }
 
     // Tests additional request headers that contain an invalid key or value on WebView prerendering

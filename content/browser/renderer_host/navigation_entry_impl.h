@@ -614,7 +614,9 @@ class CONTENT_EXPORT NavigationEntryImpl : public NavigationEntry {
   // compiler provided copy constructor.  Cleared in |ResetForCommit|.
   scoped_refptr<network::ResourceRequestBody> post_data_;
 
-  // This member is not persisted with session restore.
+  // Additional HTTP headers to be passed as part of the request.
+  // This member is not persisted with session restore, except in Android
+  // WebView when the kWebViewSaveStateIncludeHeaders feature is enabled.
   std::string extra_headers_;
 
   // If true, any extra headers provided will be removed on a cross-origin
