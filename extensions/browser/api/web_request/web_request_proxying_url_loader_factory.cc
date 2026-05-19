@@ -388,9 +388,10 @@ void WebRequestProxyingURLLoaderFactory::InProgressRequest::FollowRedirect(
                                      modified_cors_exempt_headers, new_url);
     } else {
       auto params = std::make_unique<FollowRedirectParams>();
-      params->removed_headers = removed_headers;
-      params->modified_headers = modified_headers;
-      params->modified_cors_exempt_headers = modified_cors_exempt_headers;
+      params->headers_update_params.removed_headers = removed_headers;
+      params->headers_update_params.modified_headers = modified_headers;
+      params->headers_update_params.modified_cors_exempt_headers =
+          modified_cors_exempt_headers;
       params->new_url = new_url;
       pending_follow_redirect_params_ = std::move(params);
     }
@@ -900,16 +901,17 @@ void WebRequestProxyingURLLoaderFactory::InProgressRequest::
     std::move(on_before_send_headers_callback_)
         .Run(error_code, request_.headers);
   } else if (pending_follow_redirect_params_) {
-    pending_follow_redirect_params_->removed_headers.insert(
-        pending_follow_redirect_params_->removed_headers.end(),
-        removed_headers.begin(), removed_headers.end());
+    pending_follow_redirect_params_->headers_update_params.removed_headers
+        .insert(pending_follow_redirect_params_->headers_update_params
+                    .removed_headers.end(),
+                removed_headers.begin(), removed_headers.end());
 
     for (auto& set_header : set_headers) {
       std::optional<std::string> header_value =
           request_.headers.GetHeader(set_header);
       if (header_value) {
-        pending_follow_redirect_params_->modified_headers.SetHeader(
-            set_header, *header_value);
+        pending_follow_redirect_params_->headers_update_params.modified_headers
+            .SetHeader(set_header, *header_value);
       } else {
         NOTREACHED();
       }
@@ -917,9 +919,12 @@ void WebRequestProxyingURLLoaderFactory::InProgressRequest::
 
     if (target_loader_.is_bound()) {
       target_loader_->FollowRedirect(
-          pending_follow_redirect_params_->removed_headers,
-          pending_follow_redirect_params_->modified_headers,
-          pending_follow_redirect_params_->modified_cors_exempt_headers,
+          pending_follow_redirect_params_->headers_update_params
+              .removed_headers,
+          pending_follow_redirect_params_->headers_update_params
+              .modified_headers,
+          pending_follow_redirect_params_->headers_update_params
+              .modified_cors_exempt_headers,
           pending_follow_redirect_params_->new_url);
     }
 
