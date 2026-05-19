@@ -558,7 +558,8 @@ BookmarkStorageType kindOfTestToStorageType(KindOfTest kind) {
   [self util_testEditFunctionalityOnSingleFolder:KindOfTest::kLocal];
 }
 
-- (void)testEditFunctionalityOnSingleFolderAccount {
+// TODO(crbug.com/514455596): Flaky. Reenable it.
+- (void)DISABLED_testEditFunctionalityOnSingleFolderAccount {
   [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [self util_testEditFunctionalityOnSingleFolder:KindOfTest::kAccount];
 }
