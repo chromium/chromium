@@ -38,6 +38,13 @@ class BrowserWindowInterface;
 class WebUILocationBar;
 class WebUIToolbarUI;
 class WebUIToolbarInternalWebView;
+class ExtensionsContainer;
+class WebUIToolbarExtensionsContainer;
+
+namespace ui {
+template <typename T>
+class ScopedUnownedUserData;
+}
 
 namespace views {
 class WebView;
@@ -282,6 +289,7 @@ class WebUIToolbarWebView
   WebUIToolbarUI* GetWebUIToolbarUI();
 
   void OnTouchUiChanged();
+  void OnActiveTabChanged(BrowserWindowInterface* browser_interface);
   void PostPushNavigationState();
   void PushNavigationState();
   toolbar_ui_api::mojom::BackForwardControlStatePtr GetBackForwardState() const;
@@ -313,6 +321,10 @@ class WebUIToolbarWebView
   WebUIHomeControl home_control_;
   WebUIAvatarToolbarButton avatar_control_;
   std::unique_ptr<WebUILocationBar> location_bar_;
+  std::unique_ptr<WebUIToolbarExtensionsContainer> extensions_container_;
+  std::unique_ptr<ui::ScopedUnownedUserData<ExtensionsContainer>>
+      scoped_extensions_container_user_data_;
+  base::CallbackListSubscription active_tab_subscription_;
   WebUIBackForwardControl back_control_;
   WebUIBackForwardControl forward_control_;
   WebUIPinnedToolbarActions pinned_toolbar_actions_;
