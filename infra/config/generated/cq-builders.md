@@ -964,10 +964,10 @@ as required builders.
   * Experiment percentage: 5.0
 
 * [chromeos-betty-chrome-gtest](https://ci.chromium.org/p/chrome/builders/try/chromeos-betty-chrome-gtest) ([definition](https://source.corp.google.com/search?q=+file:/try/.*\.star$+""chromeos-betty-chrome-gtest""))
-  * Experiment percentage: 5.0
+  * Experiment percentage: 50.0
 
 * [chromeos-betty-chrome-gtest-and-cqtast](https://ci.chromium.org/p/chrome/builders/try/chromeos-betty-chrome-gtest-and-cqtast) ([definition](https://source.corp.google.com/search?q=+file:/try/.*\.star$+""chromeos-betty-chrome-gtest-and-cqtast""))
-  * Experiment percentage: 100.0
+  * Experiment percentage: 50.0
 
   This builder is only run when the CL owner is in the group:
   * [`google/chromeos-pa@google.com`](https://chrome-infra-auth.appspot.com/auth/lookup?p=google/chromeos-pa@google.com)
