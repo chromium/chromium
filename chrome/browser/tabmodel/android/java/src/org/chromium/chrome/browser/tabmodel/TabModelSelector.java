@@ -216,22 +216,51 @@ public interface TabModelSelector {
     @Nullable TabModel getTabModelForTabStripCollection(TabStripCollection tabStripCollection);
 
     /**
-     * This method adds {@link TabModelObserver} to both {@link TabModel}s. Caches the observer
-     * until {@link TabModel}s are created.
+     * This method returns a specific {@link TabGroupModelFilter}.
+     *
+     * @param isIncognito Use to indicate which {@link TabGroupModelFilter} to return.
+     * @return A {@link TabGroupModelFilter}. This returns null, if this called before native
+     *     library is initialized.
+     * @deprecated Use {@link #getModel(boolean)} instead. TabModel now extends TabGroupModelFilter.
+     */
+    @Deprecated
+    @Nullable TabGroupModelFilter getTabGroupModelFilter(boolean isIncognito);
+
+    /**
+     * This method adds {@link TabModelObserver} to both {@link TabGroupModelFilter}s. Caches the
+     * observer until {@link TabGroupModelFilter}s are created.
      *
      * @param observer {@link TabModelObserver} to add.
      */
     void addTabGroupModelFilterObserver(TabModelObserver observer);
 
     /**
-     * This method removes {@link TabModelObserver} from both {@link TabModel}s.
+     * This method removes {@link TabModelObserver} from both {@link TabGroupModelFilter}s.
      *
      * @param observer {@link TabModelObserver} to remove.
      */
     void removeTabGroupModelFilterObserver(TabModelObserver observer);
 
-    /** Reset the internal tab model list to allow initialization again. */
-    void resetTabModelListForTesting(); // IN-TEST
+    /**
+     * This method returns the current {@link TabGroupModelFilter}.
+     *
+     * @return The current {@link TabGroupModelFilter}. This returns null, if this called before
+     *     native library is initialized.
+     * @deprecated Use {@link #getCurrentModel()} instead.
+     */
+    @Deprecated
+    @Nullable TabGroupModelFilter getCurrentTabGroupModelFilter();
+
+    /**
+     * Returns an observable supplier for the current tab model filter.
+     *
+     * @deprecated Use {@link #getCurrentTabModelSupplier()} instead.
+     */
+    @Deprecated
+    NullableObservableSupplier<TabGroupModelFilter> getCurrentTabGroupModelFilterSupplier();
+
+    /** Reset the internal filter list to allow initialization again. */
+    void resetTabGroupModelFilterListForTesting(); // IN-TEST
 
     /** Destroy all owned {@link TabModel}s and {@link Tab}s referenced by this selector. */
     void destroy();
