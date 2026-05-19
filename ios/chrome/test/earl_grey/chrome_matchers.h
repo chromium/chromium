@@ -134,6 +134,9 @@ id<GREYMatcher> IconViewForCellWithLabelId(int message_id, NSString* icon_type);
 // Returns a matcher for the primary toolbar.
 id<GREYMatcher> PrimaryToolbar();
 
+// Returns a matcher for the secondary toolbar.
+id<GREYMatcher> SecondaryToolbar();
+
 // Returns a matcher for a cancel button.
 id<GREYMatcher> CancelButton();
 

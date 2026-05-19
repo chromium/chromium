@@ -165,6 +165,10 @@ id<GREYMatcher> PrimaryToolbar() {
   return [ChromeMatchersAppInterface primaryToolbar];
 }
 
+id<GREYMatcher> SecondaryToolbar() {
+  return [ChromeMatchersAppInterface secondaryToolbar];
+}
+
 id<GREYMatcher> CancelButton() {
   return [ChromeMatchersAppInterface cancelButton];
 }

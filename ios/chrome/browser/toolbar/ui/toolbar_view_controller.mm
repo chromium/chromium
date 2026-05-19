@@ -332,7 +332,9 @@ constexpr CGFloat kOuterSeparatorVerticalOffset = 4;
   [super viewDidLoad];
   self.view.translatesAutoresizingMaskIntoConstraints = NO;
   self.view.backgroundColor = [UIColor colorNamed:kBackgroundColor];
-  self.view.accessibilityIdentifier = kToolbarViewIdentifier;
+  self.view.accessibilityIdentifier = _topPosition
+                                          ? kPrimaryToolbarViewIdentifier
+                                          : kSecondaryToolbarViewIdentifier;
 
   [self createView];
   [self setUpHierarchy];

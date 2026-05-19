@@ -4,7 +4,10 @@
 
 #import "ios/chrome/browser/toolbar/ui/toolbar_constants.h"
 
-NSString* const kToolbarViewIdentifier = @"kToolbarViewIdentifier";
+NSString* const kPrimaryToolbarViewIdentifier =
+    @"kPrimaryToolbarViewIdentifier";
+NSString* const kSecondaryToolbarViewIdentifier =
+    @"kSecondaryToolbarViewIdentifier";
 NSString* const kToolbarBackButtonIdentifier = @"kToolbarBackButtonIdentifier";
 NSString* const kToolbarForwardButtonIdentifier =
     @"kToolbarForwardButtonIdentifier";

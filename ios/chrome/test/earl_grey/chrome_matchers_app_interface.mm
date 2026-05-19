@@ -475,7 +475,17 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
 }
 
 + (id<GREYMatcher>)primaryToolbar {
-  return grey_kindOfClass([PrimaryToolbarView class]);
+  if (IsChromeNextIaEnabled()) {
+    return grey_accessibilityID(kPrimaryToolbarViewIdentifier);
+  }
+  return grey_kindOfClassName(@"PrimaryToolbarView");
+}
+
++ (id<GREYMatcher>)secondaryToolbar {
+  if (IsChromeNextIaEnabled()) {
+    return grey_accessibilityID(kSecondaryToolbarViewIdentifier);
+  }
+  return grey_kindOfClassName(@"SecondaryToolbarView");
 }
 
 + (id<GREYMatcher>)cancelButton {

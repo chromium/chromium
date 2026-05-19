@@ -7,8 +7,9 @@
 
 #import <UIKit/UIKit.h>
 
-// Accessibility identifier for the toolbar view.
-extern NSString* const kToolbarViewIdentifier;
+// Accessibility identifiers for the toolbar views.
+extern NSString* const kPrimaryToolbarViewIdentifier;
+extern NSString* const kSecondaryToolbarViewIdentifier;
 
 // Accessibility identifiers for toolbar buttons.
 extern NSString* const kToolbarBackButtonIdentifier;

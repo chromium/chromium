@@ -125,6 +125,9 @@
 // Returns matcher for the primary toolbar.
 + (id<GREYMatcher>)primaryToolbar;
 
+// Returns matcher for the secondary toolbar.
++ (id<GREYMatcher>)secondaryToolbar;
+
 // Returns matcher for a cancel button.
 + (id<GREYMatcher>)cancelButton;
 
