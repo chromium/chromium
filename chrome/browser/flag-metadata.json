@@ -6515,7 +6515,7 @@
   {
     "name": "migrate-ios-keychain-accessibility",
     "owners": [ "marq@chromium.org", "fedegermi@google.com" ],
-    "expiry_milestone": 150
+    "expiry_milestone": 156
   },
   {
     "name": "migrate-syncing-user-to-signed-in",
