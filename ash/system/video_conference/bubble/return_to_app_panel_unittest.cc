@@ -21,6 +21,7 @@
 #include "base/functional/bind.h"
 #include "base/strings/string_util.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
@@ -145,9 +146,8 @@ class ReturnToAppPanelTest : public AshTestBase {
 
   // Wait until the bounds change animation is completed.
   void WaitForAnimation() {
-    do {
-      base::RunLoop().RunUntilIdle();
-    } while (GetBoundsChangeAnimation()->is_animating());
+    ASSERT_TRUE(base::test::RunUntil(
+        [&] { return !GetBoundsChangeAnimation()->is_animating(); }));
   }
 
  private:
