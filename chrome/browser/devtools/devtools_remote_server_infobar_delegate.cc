@@ -16,6 +16,8 @@
 #include "base/time/time.h"
 #include "chrome/browser/devtools/global_confirm_info_bar.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/navigator/browser_navigator.h"
 #include "chrome/browser/ui/navigator/browser_navigator_params.h"
 #include "chrome/grit/generated_resources.h"
@@ -25,9 +27,8 @@
 #include "ui/gfx/text_constants.h"
 #include "ui/strings/grit/ui_strings.h"
 
-DevToolsRemoteServerInfobarDelegate::DevToolsRemoteServerInfobarDelegate(
-    Browser* browser)
-    : browser_(browser) {}
+DevToolsRemoteServerInfobarDelegate::DevToolsRemoteServerInfobarDelegate() =
+    default;
 
 DevToolsRemoteServerInfobarDelegate::~DevToolsRemoteServerInfobarDelegate() =
     default;
@@ -64,9 +65,14 @@ std::u16string DevToolsRemoteServerInfobarDelegate::GetButtonLabel(
 
 bool DevToolsRemoteServerInfobarDelegate::Accept() {
   // See comment in GetButtons() above.
-  CHECK(browser_);
+  BrowserWindowInterface* active =
+      GlobalBrowserCollection::GetInstance()->GetLastActiveBrowser();
+  Browser* browser = active ? active->GetBrowserForMigrationOnly() : nullptr;
+  if (!browser) {
+    return ConfirmInfoBarDelegate::Accept();
+  }
   GURL internal_url("chrome://inspect#remote-debugging");
-  NavigateParams params(browser_, internal_url, ui::PAGE_TRANSITION_LINK);
+  NavigateParams params(browser, internal_url, ui::PAGE_TRANSITION_LINK);
   params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
   Navigate(&params);
   return ConfirmInfoBarDelegate::Accept();

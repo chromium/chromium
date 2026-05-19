@@ -1989,6 +1989,11 @@ source_set("platform_browser_tests") {
     if (enable_guest_view) {
       deps += [ "//components/guest_view/browser" ]
     }
+    if (!is_android) {
+      sources += [
+        "../browser/devtools/devtools_remote_server_infobar_browsertest.cc",
+      ]
+    }
     if (!is_android || enable_desktop_android_extensions) {
       sources +=
           [ "../browser/devtools/global_confirm_info_bar_browsertest.cc" ]

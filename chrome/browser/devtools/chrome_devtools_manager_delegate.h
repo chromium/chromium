@@ -10,6 +10,7 @@
 #include <set>
 #include <string>
 
+#include "base/gtest_prod_util.h"
 #include "chrome/browser/devtools/device/devtools_device_discovery.h"
 #include "chrome/browser/devtools/global_confirm_info_bar.h"
 #include "chrome/browser/devtools/protocol/protocol.h"
@@ -56,6 +57,10 @@ class ChromeDevToolsManagerDelegate : public content::DevToolsManagerDelegate,
 
  private:
   friend class DevToolsManagerDelegateTest;
+  FRIEND_TEST_ALL_PREFIXES(DevToolsRemoteServerInfobarBrowserTest,
+                           NoCrashWhenAllBrowsersClosedBeforeDisconnect);
+  FRIEND_TEST_ALL_PREFIXES(DevToolsRemoteServerInfobarBrowserTest,
+                           AcceptAfterBrowserClosedUsesActiveBrowser);
 
   // content::DevToolsManagerDelegate implementation.
   void Inspect(content::DevToolsAgentHost* agent_host) override;

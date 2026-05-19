@@ -505,10 +505,7 @@ void ChromeDevToolsManagerDelegate::SetActiveWebSocketConnections(
     infobar_ = nullptr;
     infobar->Close();
   } else if (count > 0 && !infobar_) {
-    BrowserWindowInterface* active =
-        GlobalBrowserCollection::GetInstance()->GetLastActiveBrowser();
-    auto delegate = std::make_unique<DevToolsRemoteServerInfobarDelegate>(
-        active ? active->GetBrowserForMigrationOnly() : nullptr);
+    auto delegate = std::make_unique<DevToolsRemoteServerInfobarDelegate>();
     delegate->AddObserver(this);
     infobar_ = GlobalConfirmInfoBar::Show(std::move(delegate));
   }
