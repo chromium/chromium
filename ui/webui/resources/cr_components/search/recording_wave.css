@@ -25,7 +25,7 @@
   mask-image: linear-gradient(to right,
                               transparent 0%,
                               black 20%,
-                              black 70%,
+                              black 90%,
                               transparent 100%);
   overflow: visible;
   padding-block-start: 10px;
@@ -75,7 +75,7 @@
  * that major layout recalculation does not occur. */
 .bar-pill.is-unspawned {
   background: transparent;
-  block-size: 6px;
+  block-size: 8px;  /* Minimum height as a bar. */
   box-shadow: none;
   min-block-size: 0;
   transform: none;
@@ -89,9 +89,9 @@
 .bar-pill.is-unspawned::before {
   border-radius: 50%;
   background: var(--color-recording-wave);
-  block-size: 6px;
+  block-size: 6px;  /* Initial minimum height as a ball. */
   content: '';
-  inline-size: 6px;
+  inline-size: 6px;  /* Initial minimum width as a ball. */
   inset-block-start: 50%;
   inset-inline-start: 50%;
   transform: translate(-50%, -50%);
