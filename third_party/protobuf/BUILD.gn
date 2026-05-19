@@ -12,6 +12,14 @@ if (enable_js_protobuf) {
   import("//third_party/closure_compiler/compile_js.gni")
 }
 
+# This group allows `gn suggest` to suggest `:absl` instead of
+# `//third_party/abseil-cpp:absl`
+group("absl") {
+  public_deps = [ "${protobuf_abseil_dir}:absl" ]
+  visibility = [ ":*" ]
+}
+
+
 config("protobuf_config") {
   include_dirs = [ "src" ]
   defines = [
@@ -53,13 +61,13 @@ config("using_proto") {
   include_dirs = [ "src" ]
 }
 
-# On Android, we must use a static library to avoid symbol conflicts with
-# the system's version of protobuf.
-# Exclude Android fuzzing builds since having targets that include a proto_library
-# and a fuzzable_proto_library leads to symbol conflicts due to the inclusion of
-# the protobuf lite_runtime and full_runtime.
-# TODO(448809154): Investigate whether symbol conflicts with the system's protobuf
-# version appear on our android fuzzing devices.
+# On Android, we must use a static library to avoid symbol conflicts with the
+# system's version of protobuf. Exclude Android fuzzing builds since having
+# targets that include a proto_library and a fuzzable_proto_library leads to
+# symbol conflicts due to the inclusion of the protobuf lite_runtime and
+# full_runtime.
+# TODO(448809154): Investigate whether symbol conflicts with the system's
+# protobuf version appear on our android fuzzing devices.
 if (is_android && !use_fuzzing_engine_with_lpm) {
   _protobuf_lite_target_type = "static_library"
 } else {
@@ -96,7 +104,7 @@ target(_protobuf_lite_target_type, "protobuf_lite") {
 
   deps = [ ":utf8_range" ]
 
-  public_deps = [ "${protobuf_abseil_dir}:absl" ]
+  public_deps = [ ":absl" ]
 
   # Required for component builds. See http://crbug.com/172800.
   if (is_component_build && _protobuf_lite_target_type == "component") {
@@ -140,8 +148,8 @@ static_library("protobuf_full") {
       "//gpu:gl_lpm_shader_to_string_unittest",
       "//third_party/sqlite:sqlite3_lpm_corpus_gen",
 
-      # The protobuf-based Mojo LPM fuzzer needs protobuf_full and is not included
-      # in Chrome.
+      # The protobuf-based Mojo LPM fuzzer needs protobuf_full and is not
+      # included in Chrome.
       "//mojo/public/tools/fuzzers:mojolpm",
 
       # The root store tool is not part of Chrome itself, and needs to parse
@@ -199,7 +207,7 @@ static_library("protobuf_full") {
 
   public = protobuf_headers
 
-  public_deps = [ "${protobuf_abseil_dir}:absl" ]
+  public_deps = [ ":absl" ]
 
   configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [ "//build/config/compiler:no_chromium_code" ]
@@ -358,7 +366,7 @@ source_set("utf8_range") {
   configs += [ "//build/config/compiler:no_chromium_code" ]
   configs += [ ":protobuf_config_internal" ]
 
-  deps = [ "${protobuf_abseil_dir}:absl" ]
+  deps = [ ":absl" ]
 }
 
 copy("copy_google_protobuf") {
@@ -383,8 +391,9 @@ group("py_proto") {
   ]
 }
 
-# Note: This exists for Cronet in AOSP where we can't import prebuilts. We import
-# the raw sources and compile them using a specialized pipeline. See crbug.com/419480317.
+# Note: This exists for Cronet in AOSP where we can't import prebuilts. We
+# import the raw sources and compile them using a specialized pipeline. See
+# crbug.com/419480317.
 if (is_android && is_cronet_for_aosp_build) {
   android_library("proto_runtime_lite_java") {
     sources = javaproto_sources
