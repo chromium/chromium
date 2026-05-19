@@ -151,3 +151,27 @@ TEST_F(ChromeAppListItemManagerTest, AddItemsWithInvalidPosition) {
   EXPECT_TRUE(children[0]->position().LessThan(children[1]->position()));
   EXPECT_TRUE(children[1]->position().LessThan(children[2]->position()));
 }
+
+// Verifies that `ChromeAppListItemManager` handles cases where a folder is
+// missing when an item is added to it or removed from it.
+TEST_F(ChromeAppListItemManagerTest, FolderMissingSafetyChecks) {
+  // Create an item that claims to be in a non-existent folder.
+  const std::string kChildId = GenerateId("child_id");
+  const std::string kNonExistentFolderId = GenerateId("non_existent_folder");
+  auto child = std::make_unique<ChromeAppListItem>(nullptr, kChildId,
+                                                   model_updater_.get());
+  child->SetFolderId(kNonExistentFolderId);
+
+  // Adding the item should not crash even if the folder is missing.
+  item_manager_.AddChromeItem(std::move(child));
+
+  // The item should still be findable.
+  EXPECT_TRUE(item_manager_.FindItem(kChildId));
+
+  // FindLastChildInFolder for a non-existent folder should return nullptr.
+  EXPECT_EQ(nullptr, item_manager_.FindLastChildInFolder(kNonExistentFolderId));
+
+  // Removing the item should not crash.
+  item_manager_.RemoveChromeItem(kChildId);
+  EXPECT_EQ(nullptr, item_manager_.FindItem(kChildId));
+}
