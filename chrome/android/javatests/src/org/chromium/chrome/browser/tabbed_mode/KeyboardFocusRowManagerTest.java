@@ -110,15 +110,41 @@ public class KeyboardFocusRowManagerTest {
     @SmallTest
     @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
     @Feature("KeyboardShortcuts")
+    public void testSwitchKeyboardFocusRow_onOmnibox() {
+        // Put something in the content view so we can focus on it.
+        ChromeTabUtils.newTabFromMenu(
+                InstrumentationRegistry.getInstrumentation(), mActivity, false, true);
+
+        // Set the focus to content view
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    setKeyboardFocusToContentView();
+                });
+
+        // Switch the first time.
+        switchRow();
+        assertOnOmnibox();
+    }
+
+    @Test
+    @SmallTest
+    @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
+    @Feature("KeyboardShortcuts")
     @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/511288498
     public void testSwitchKeyboardFocusRow_withTabletTabStrip() {
         // Put something in the content view so we can focus on it.
         ChromeTabUtils.newTabFromMenu(
                 InstrumentationRegistry.getInstrumentation(), mActivity, false, true);
 
+        // Set the focus to content view
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    setKeyboardFocusToContentView();
+                });
+
         // Switch the first time.
         switchRow();
-        assertOnToolbar();
+        assertOnOmnibox();
 
         // Switch a 2nd time.
         switchRow();
@@ -140,7 +166,7 @@ public class KeyboardFocusRowManagerTest {
 
         // Switch the first time.
         switchRow();
-        assertOnToolbar();
+        assertOnOmnibox();
 
         // Switch a 2nd time.
         switchRow();
@@ -161,9 +187,15 @@ public class KeyboardFocusRowManagerTest {
         ChromeTabUtils.newTabFromMenu(
                 InstrumentationRegistry.getInstrumentation(), mActivity, false, true);
 
+        // Set the focus to content view
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    setKeyboardFocusToContentView();
+                });
+
         // Switch the first time.
         switchRow();
-        assertOnToolbar();
+        assertOnOmnibox();
 
         // Switch a 2nd time.
         switchRow();
@@ -224,9 +256,15 @@ public class KeyboardFocusRowManagerTest {
         ChromeTabUtils.newTabFromMenu(
                 InstrumentationRegistry.getInstrumentation(), mActivity, false, true);
 
+        // Set the focus to content view
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    setKeyboardFocusToContentView();
+                });
+
         // Switch the first time.
         switchRow();
-        assertOnToolbar();
+        assertOnOmnibox();
 
         // Switch a 2nd time.
         switchRow();
@@ -305,16 +343,15 @@ public class KeyboardFocusRowManagerTest {
     }
 
     // Helper methods for readability
-
     private void switchRow() {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> mActivity.onMenuOrKeyboardAction(R.id.switch_keyboard_focus_row, false));
     }
 
-    private void assertOnToolbar() {
+    private void assertOnOmnibox() {
         assertEquals(
-                "Expected focus to be on toolbar after invocation of keyboard focus row switch",
-                KeyboardFocusRow.TOOLBAR,
+                "Expected focus to be on omnibox after invocation of keyboard focus row switch",
+                KeyboardFocusRow.OMNIBOX,
                 mKeyboardFocusRowManager.getKeyboardFocusRowForTesting());
     }
 
@@ -354,5 +391,12 @@ public class KeyboardFocusRowManagerTest {
         overrides =
                 overrides.param(ChromeFeatureList.ANDROID_BOOKMARK_BAR, "show_bookmark_bar", param);
         overrides.apply();
+    }
+
+    private void setKeyboardFocusToContentView() {
+        var compositorViewHolder = mActivity.getCompositorViewHolderSupplier().get();
+        if (compositorViewHolder != null) {
+            compositorViewHolder.setFocusOnFirstContentViewItem();
+        }
     }
 }
