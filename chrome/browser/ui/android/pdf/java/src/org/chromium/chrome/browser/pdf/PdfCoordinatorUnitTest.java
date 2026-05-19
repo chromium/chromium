@@ -287,6 +287,42 @@ public class PdfCoordinatorUnitTest {
         assertEquals(null, uri);
     }
 
+    @Test
+    @EnableFeatures(ChromeFeatureList.INLINE_PDF_V2)
+    public void testCalculateFitToPageZoom() {
+        createPdfCoordinator();
+
+        // Use real PageInfo since it is a final class (cannot mock). Pass empty list for
+        // FormWidgetInfo.
+        androidx.pdf.PdfDocument.PageInfo realPageInfo =
+                new androidx.pdf.PdfDocument.PageInfo(
+                        0, 400, 200, java.util.Collections.emptyList());
+
+        // mPdfView width = 500, height = 1000
+        // Fit to page height
+        float zoomHeight =
+                mPdfCoordinator.mChromePdfViewerFragment.calculateFitToPageZoom(
+                        realPageInfo, true, mPdfView);
+        // viewportSize = 1000, contentSize = 400. zoom = 1000 / 400 = 2.5f
+        assertEquals(2.5f, zoomHeight, 0.001f);
+
+        // Fit to page width
+        float zoomWidth =
+                mPdfCoordinator.mChromePdfViewerFragment.calculateFitToPageZoom(
+                        realPageInfo, false, mPdfView);
+        // viewportSize = 500, contentSize = 200. zoom = 500 / 200 = 2.5f
+        assertEquals(2.5f, zoomWidth, 0.001f);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.INLINE_PDF_V2)
+    public void testToggleFitToPage_PdfViewNull() {
+        createPdfCoordinator();
+        mPdfCoordinator.mChromePdfViewerFragment.setPdfViewForTesting(null);
+        // Should return gracefully without NullPointerException.
+        mPdfCoordinator.toggleFitToPage(true, 0);
+    }
+
     @Implements(PdfView.class)
     public static class ShadowPdfView extends ShadowView {
         public PdfPoint mPdfPoint;

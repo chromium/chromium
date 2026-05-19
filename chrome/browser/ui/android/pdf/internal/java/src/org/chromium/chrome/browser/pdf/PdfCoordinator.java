@@ -22,6 +22,8 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.pdf.PdfDocument;
+import androidx.pdf.PdfDocument.PageInfo;
 import androidx.pdf.PdfPoint;
 import androidx.pdf.PdfSandboxHandle;
 import androidx.pdf.SandboxedPdfLoader;
@@ -29,6 +31,11 @@ import androidx.pdf.content.ExternalLink;
 import androidx.pdf.view.PdfView;
 import androidx.pdf.viewer.fragment.PdfViewerFragment;
 
+import kotlin.coroutines.Continuation;
+import kotlin.coroutines.CoroutineContext;
+import kotlin.coroutines.EmptyCoroutineContext;
+
+import org.jetbrains.annotations.NotNull;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -362,6 +369,62 @@ public class PdfCoordinator
                 mPdfView.setZoom(zoomLevel);
             }
         }
+
+        @VisibleForTesting
+        float calculateFitToPageZoom(PageInfo info, boolean fitToPageHeight, PdfView pdfView) {
+            int contentSize = fitToPageHeight ? info.getHeight() : info.getWidth();
+            if (contentSize <= 0) return 0f;
+
+            int viewportSize =
+                    fitToPageHeight
+                            ? pdfView.getHeight()
+                                    - pdfView.getPaddingTop()
+                                    - pdfView.getPaddingBottom()
+                            : pdfView.getWidth()
+                                    - pdfView.getPaddingLeft()
+                                    - pdfView.getPaddingRight();
+            if (viewportSize <= 0) return 0f;
+
+            float newZoom = (float) viewportSize / contentSize;
+            return Math.max(pdfView.getMinZoom(), Math.min(newZoom, pdfView.getMaxZoom()));
+        }
+
+        void fitToPage(boolean fitToPageHeight, int pageIndex) {
+            PdfView pdfView = mPdfView;
+            if (pdfView == null) return;
+
+            PdfDocument pdfDocument = pdfView.getPdfDocument();
+            assert pdfDocument != null;
+
+            pdfDocument.getPageInfo(
+                    pageIndex,
+                    new Continuation<PageInfo>() {
+                        @NotNull
+                        @Override
+                        public CoroutineContext getContext() {
+                            return EmptyCoroutineContext.INSTANCE;
+                        }
+
+                        @Override
+                        public void resumeWith(@NotNull Object result) {
+                            PageInfo pageInfo =
+                                    result instanceof PageInfo ? (PageInfo) result : null;
+                            if (pageInfo == null) {
+                                Log.e(TAG, "Failed to get PageInfo for fitToPage.");
+                                return;
+                            }
+                            float newZoom =
+                                    calculateFitToPageZoom(pageInfo, fitToPageHeight, pdfView);
+                            // We use  post() to ensure UI updates happen on the Main thread.
+                            pdfView.post(
+                                    () -> {
+                                        pdfView.setZoom(newZoom);
+                                        // Scroll to the top of the page after zooming.
+                                        if (fitToPageHeight) scrollToPage(pageIndex);
+                                    });
+                        }
+                    });
+        }
     }
 
     /** Returns the intended view for PdfPage tab. */
@@ -599,6 +662,17 @@ public class PdfCoordinator
     @Override
     public void changeZoomLevel(float zoomLevel) {
         mChromePdfViewerFragment.zoomTo(zoomLevel);
+    }
+
+    /**
+     * Toggles between "fit to page height" and "fit to page width" modes.
+     *
+     * @param fitToPageHeight Whether to fit to page height or fit to page width.
+     * @param pageIndex The 0-based index of page to update scaling.
+     */
+    @Override
+    public void toggleFitToPage(boolean fitToPageHeight, int pageIndex) {
+        mChromePdfViewerFragment.fitToPage(fitToPageHeight, pageIndex);
     }
 
     // Implementation of PdfActionsDelegate

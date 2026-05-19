@@ -187,7 +187,6 @@ android_resources("java_resources") {
     "java/res/drawable/ic_fast_rewind_white_24dp.xml",
     "java/res/drawable/ic_file_download_24dp.xml",
     "java/res/drawable/ic_file_download_36dp.xml",
-    "java/res/drawable/ic_fit_page_height_24dp.xml",
     "java/res/drawable/ic_flash_on_24dp.xml",
     "java/res/drawable/ic_folder_blue_24dp.xml",
     "java/res/drawable/ic_gavel_24dp.xml",

@@ -4,7 +4,10 @@
 package org.chromium.chrome.browser.pdf;
 
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
+
+import java.util.Locale;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
@@ -32,7 +35,7 @@ class PdfToolbarViewBinder {
             TextView zoomValue = view.findViewById(R.id.zoom_value);
             zoomValue.setText(
                     String.format(
-                            java.util.Locale.ENGLISH,
+                            Locale.ENGLISH,
                             "%.0f%%",
                             model.get(PdfToolbarProperties.ZOOM_LEVEL) * 100));
         } else if (PdfToolbarProperties.ON_CLICK_LISTENER == key) {
@@ -41,6 +44,7 @@ class PdfToolbarViewBinder {
             view.findViewById(R.id.page_decrease_button).setOnClickListener(listener);
             view.findViewById(R.id.zoom_increase_button).setOnClickListener(listener);
             view.findViewById(R.id.zoom_decrease_button).setOnClickListener(listener);
+            view.findViewById(R.id.fit_to_page_button).setOnClickListener(listener);
         } else if (PdfToolbarProperties.TITLE == key) {
             TextView title = view.findViewById(R.id.pdf_title);
             title.setText(model.get(PdfToolbarProperties.TITLE));
@@ -50,6 +54,13 @@ class PdfToolbarViewBinder {
         } else if (PdfToolbarProperties.ZOOM_INCREASE_BUTTON_ENABLED == key) {
             view.findViewById(R.id.zoom_increase_button)
                     .setEnabled(model.get(PdfToolbarProperties.ZOOM_INCREASE_BUTTON_ENABLED));
+        } else if (PdfToolbarProperties.SHOW_FIT_TO_HEIGHT_ICON == key) {
+            ImageView fitToPageButton = view.findViewById(R.id.fit_to_page_button);
+            if (model.get(PdfToolbarProperties.SHOW_FIT_TO_HEIGHT_ICON)) {
+                fitToPageButton.setImageResource(R.drawable.ic_fit_page_height_24dp);
+            } else {
+                fitToPageButton.setImageResource(R.drawable.ic_fit_page_width_24dp);
+            }
         }
     }
 }

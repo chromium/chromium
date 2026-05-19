@@ -84,6 +84,8 @@ android_library("java") {
 
 android_resources("java_resources") {
   sources = [
+    "java/res/drawable/ic_fit_page_height_24dp.xml",
+    "java/res/drawable/ic_fit_page_width_24dp.xml",
     "java/res/drawable/toolbar_no_divider.xml",
     "java/res/layout/pdf_page.xml",
     "java/res/layout/pdf_toolbar.xml",

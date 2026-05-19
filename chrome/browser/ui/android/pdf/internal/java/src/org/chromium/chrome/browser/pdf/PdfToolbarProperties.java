@@ -36,17 +36,17 @@ class PdfToolbarProperties {
     static final WritableBooleanPropertyKey ZOOM_INCREASE_BUTTON_ENABLED =
             new WritableBooleanPropertyKey();
 
+    /** Whether to show the fit to page height icon. */
+    static final WritableBooleanPropertyKey SHOW_FIT_TO_HEIGHT_ICON =
+            new WritableBooleanPropertyKey();
+
     /** The callback for toolbar actions. */
     static final WritableObjectPropertyKey<View.OnClickListener> ON_CLICK_LISTENER =
             new WritableObjectPropertyKey<>();
 
     static final PropertyKey[] ALL_KEYS = {
-        CURRENT_PAGE_NUMBER,
-        TITLE,
-        TOTAL_PAGE_COUNT,
-        ZOOM_LEVEL,
-        ON_CLICK_LISTENER,
-        ZOOM_DECREASE_BUTTON_ENABLED,
-        ZOOM_INCREASE_BUTTON_ENABLED
+        CURRENT_PAGE_NUMBER, TITLE, TOTAL_PAGE_COUNT, ZOOM_LEVEL, ON_CLICK_LISTENER,
+        ZOOM_DECREASE_BUTTON_ENABLED, ZOOM_INCREASE_BUTTON_ENABLED,
+        SHOW_FIT_TO_HEIGHT_ICON
     };
 }
