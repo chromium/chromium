@@ -10,7 +10,6 @@ source_set("contextual_tasks") {
     "contextual_tasks_close_button_controller.h",
     "contextual_tasks_close_tab_button.h",
     "contextual_tasks_ephemeral_button_controller.h",
-    "contextual_tasks_page_action_controller.h",
   ]
 
   public_deps = [
@@ -30,7 +29,6 @@ source_set("impl") {
     "contextual_tasks_close_button_controller.cc",
     "contextual_tasks_close_tab_button.cc",
     "contextual_tasks_ephemeral_button_controller.cc",
-    "contextual_tasks_page_action_controller.cc",
   ]
 
   deps = [
@@ -46,10 +44,7 @@ source_set("impl") {
 source_set("interactive_ui_tests") {
   testonly = true
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
-  sources = [
-    "contextual_tasks_button_interactive_ui_test.cc",
-    "contextual_tasks_page_action_controller_interactive_ui_test.cc",
-  ]
+  sources = [ "contextual_tasks_button_interactive_ui_test.cc" ]
   deps = [
     ":contextual_tasks",
     "//chrome/browser/autocomplete:aim_eligibility_service",
