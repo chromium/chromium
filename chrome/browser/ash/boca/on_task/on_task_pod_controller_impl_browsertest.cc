@@ -673,6 +673,7 @@ IN_PROC_BROWSER_TEST_F(OnTaskPodControllerImplBrowserTest, HidePodWhenPaused) {
                                                                window_id);
   ASSERT_THAT(on_task_pod_controller(), NotNull());
   EXPECT_FALSE(on_task_pod_controller()->GetPodWidgetForTesting()->IsVisible());
+  EXPECT_FALSE(on_task_pod_controller()->CanToggleTabStripVisibility());
 }
 
 IN_PROC_BROWSER_TEST_F(OnTaskPodControllerImplBrowserTest,
@@ -701,12 +702,22 @@ IN_PROC_BROWSER_TEST_F(OnTaskPodControllerImplBrowserTest,
                                                                window_id);
   ASSERT_THAT(on_task_pod_controller(), NotNull());
   EXPECT_FALSE(on_task_pod_controller()->GetPodWidgetForTesting()->IsVisible());
+  EXPECT_FALSE(on_task_pod_controller()->CanToggleTabStripVisibility());
 
-  // Unpause the app and verify the pod widget also gets shown.
+  // Unpin and unpause the app and verify the pod widget is shown.
+  system_web_app_manager()->SetPinStateForSystemWebAppWindow(/*pinned=*/false,
+                                                             window_id);
   system_web_app_manager()->SetPauseStateForSystemWebAppWindow(/*paused=*/false,
                                                                window_id);
   ASSERT_THAT(on_task_pod_controller(), NotNull());
   EXPECT_TRUE(on_task_pod_controller()->GetPodWidgetForTesting()->IsVisible());
+  EXPECT_FALSE(on_task_pod_controller()->CanToggleTabStripVisibility());
+
+  // Pin the app and verify that the pin tab strip button is now visible.
+  system_web_app_manager()->SetPinStateForSystemWebAppWindow(/*pinned=*/true,
+                                                             window_id);
+  EXPECT_TRUE(on_task_pod_controller()->GetPodWidgetForTesting()->IsVisible());
+  EXPECT_TRUE(on_task_pod_controller()->CanToggleTabStripVisibility());
 }
 
 IN_PROC_BROWSER_TEST_F(OnTaskPodControllerImplBrowserTest,
