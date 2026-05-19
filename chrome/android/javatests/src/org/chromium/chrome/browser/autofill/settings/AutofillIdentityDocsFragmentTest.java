@@ -9,6 +9,10 @@ import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.action.ViewActions.scrollTo;
 import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.intent.Intents.intended;
+import static androidx.test.espresso.intent.Intents.intending;
+import static androidx.test.espresso.intent.matcher.IntentMatchers.hasAction;
+import static androidx.test.espresso.intent.matcher.IntentMatchers.hasData;
 import static androidx.test.espresso.matcher.RootMatchers.isDialog;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
@@ -16,6 +20,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static com.google.common.truth.Truth.assertThat;
 
+import static org.hamcrest.Matchers.allOf;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
@@ -31,7 +36,14 @@ import static org.chromium.components.autofill.autofill_ai.utils.TestUtils.build
 import static org.chromium.components.autofill.autofill_ai.utils.TestUtils.getPassportEntityType;
 import static org.chromium.components.autofill.autofill_ai.utils.TestUtils.getVehicleEntityType;
 
+import android.app.Activity;
+import android.app.Instrumentation;
+import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
+
 import androidx.preference.Preference;
+import androidx.preference.PreferenceCategory;
 import androidx.preference.PreferenceGroup;
 import androidx.test.espresso.intent.Intents;
 import androidx.test.filters.MediumTest;
@@ -59,6 +71,7 @@ import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.autofill.AndroidAutofillAvailabilityStatus;
 import org.chromium.chrome.browser.autofill.AutofillClientProviderUtils;
+import org.chromium.chrome.browser.autofill.GoogleWalletLauncher;
 import org.chromium.chrome.browser.autofill.autofill_ai.EntityDataManager;
 import org.chromium.chrome.browser.autofill.autofill_ai.EntityDataManager.EntityDataManagerObserver;
 import org.chromium.chrome.browser.autofill.autofill_ai.EntityDataManagerFactory;
@@ -70,6 +83,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.settings.SettingsActivity;
 import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
+import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.autofill.autofill_ai.EntityInstance;
 import org.chromium.components.autofill.autofill_ai.EntityInstanceWithLabels;
@@ -78,6 +92,8 @@ import org.chromium.components.autofill.autofill_ai.EntityTypeName;
 import org.chromium.components.autofill.autofill_ai.RecordType;
 import org.chromium.components.autofill.autofill_ai.utils.TestUtils;
 import org.chromium.components.browser_ui.settings.search.SettingsIndexData;
+import org.chromium.components.signin.identitymanager.IdentityManager;
+import org.chromium.components.signin.test.util.TestAccounts;
 import org.chromium.ui.test.util.MockitoHelper;
 
 import java.util.Arrays;
@@ -102,6 +118,7 @@ public class AutofillIdentityDocsFragmentTest {
 
     @Mock private HelpAndFeedbackLauncher mHelpAndFeedbackLauncher;
     @Mock private SettingsIndexData mSearchIndexDataMock;
+    @Mock private IdentityManager mIdentityManagerMock;
     @Mock private ReauthenticatorBridge mMockReauthenticatorBridge;
 
     @Mock private EntityDataManager mEntityDataManager;
@@ -730,6 +747,200 @@ public class AutofillIdentityDocsFragmentTest {
                         any(Integer.class));
     }
 
-    // TODO(crbug.com/482994257): Wallet tests
+    @Test
+    @MediumTest
+    public void testAutofillAiEntities_opensEditorOnAddClick_eligibleForWalletFalse()
+            throws Exception {
+        EntityType passportType =
+                TestUtils.getPassportEntityType(
+                        /* isReadOnly= */ false,
+                        /* isEnabled= */ true,
+                        /* isEligibleForWalletStorage= */ false);
 
+        LinkedHashMap<EntityType, List<EntityInstanceWithLabels>> instancesMap =
+                new LinkedHashMap<>();
+        instancesMap.put(passportType, Collections.emptyList());
+
+        when(mEntityDataManager.getInstancesToList()).thenReturn(instancesMap);
+        when(mEntityDataManager.isEligibleToAutofillAi()).thenReturn(true);
+
+        mSettingsActivityTestRule.startSettingsActivity();
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    PreferenceCategory category =
+                            mSettingsActivityTestRule.getFragment().findPreference("Passport");
+                    Preference addPassport = category.findPreference("Passport" + " Add");
+                    assertNotNull(addPassport);
+                    addPassport.performClick();
+                });
+
+        onView(withText("Add passport")).inRoot(isDialog()).check(matches(isDisplayed()));
+
+        Context context = mSettingsActivityTestRule.getFragment().getContext();
+        String expectedNoticeText =
+                context.getString(R.string.autofill_ai_save_or_update_local_entity_source_notice);
+        onView(withText(expectedNoticeText)).check(matches(isDisplayed()));
+    }
+
+    @Test
+    @MediumTest
+    public void testAutofillAiEntities_opensEditorOnAddClick_eligibleForWalletTrue()
+            throws Exception {
+        IdentityServicesProvider.setIdentityManagerForTesting(mIdentityManagerMock);
+        when(mIdentityManagerMock.getPrimaryAccountInfo()).thenReturn(TestAccounts.ACCOUNT1);
+        when(mIdentityManagerMock.hasPrimaryAccount()).thenReturn(true);
+        EntityType passportType =
+                TestUtils.getPassportEntityType(
+                        /* isReadOnly= */ false,
+                        /* isEnabled= */ true,
+                        /* isEligibleForWalletStorage= */ true);
+
+        LinkedHashMap<EntityType, List<EntityInstanceWithLabels>> instancesMap =
+                new LinkedHashMap<>();
+        instancesMap.put(passportType, Collections.emptyList());
+
+        when(mEntityDataManager.getInstancesToList()).thenReturn(instancesMap);
+        when(mEntityDataManager.isEligibleToAutofillAi()).thenReturn(true);
+
+        mSettingsActivityTestRule.startSettingsActivity();
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    PreferenceCategory category =
+                            mSettingsActivityTestRule.getFragment().findPreference("Passport");
+                    Preference addPassport = category.findPreference("Passport" + " Add");
+                    assertNotNull(addPassport);
+                    addPassport.performClick();
+                });
+
+        onView(withText("Add passport")).inRoot(isDialog()).check(matches(isDisplayed()));
+
+        Context context = mSettingsActivityTestRule.getFragment().getContext();
+        String walletTitle = context.getString(R.string.autofill_google_wallet_title);
+        String expectedNoticeText =
+                context.getString(
+                                R.string.autofill_ai_save_or_update_entity_in_wallet_source_notice)
+                        .replace("$1", walletTitle)
+                        .replace("$2", walletTitle)
+                        .replace("$3", TestAccounts.ACCOUNT1.getEmail())
+                        .replace("<link>", "")
+                        .replace("</link>", "");
+        onView(withText(expectedNoticeText)).check(matches(isDisplayed()));
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures(ChromeFeatureList.AUTOFILL_AI_WALLET_PRIVATE_PASSES_DEEP_LINK)
+    public void testAutofillAiEntities_opensWalletDefaultPage_whenUrlIsNull() throws Exception {
+        EntityType passportType = TestUtils.getPassportEntityType();
+
+        EntityInstanceWithLabels entity1 =
+                TestUtils.buildGermanyPassportWithLabels(
+                        "guid1", /* storedInWallet= */ true, /* walletEntityUrl= */ null);
+
+        LinkedHashMap<EntityType, List<EntityInstanceWithLabels>> instancesMap =
+                new LinkedHashMap<>();
+        instancesMap.put(passportType, Arrays.asList(entity1));
+
+        when(mEntityDataManager.getInstancesToList()).thenReturn(instancesMap);
+
+        mSettingsActivityTestRule.startSettingsActivity();
+
+        Preference passportEntity =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> mSettingsActivityTestRule.getFragment().findPreference("guid1"));
+        assertNotNull(passportEntity);
+
+        // Mock the intent that should be fired.
+        Instrumentation.ActivityResult result =
+                new Instrumentation.ActivityResult(Activity.RESULT_OK, null);
+        // Since the walletEntityUrl is null, it should fallback to the general passes page.
+        var intentMatcher =
+                allOf(
+                        hasAction(Intent.ACTION_VIEW),
+                        hasData(Uri.parse(GoogleWalletLauncher.GOOGLE_WALLET_PASSES_URL)));
+        intending(intentMatcher).respondWith(result);
+
+        ThreadUtils.runOnUiThreadBlocking(passportEntity::performClick);
+
+        intended(intentMatcher);
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures(ChromeFeatureList.AUTOFILL_AI_WALLET_PRIVATE_PASSES_DEEP_LINK)
+    public void testAutofillAiEntities_opensWalletPrivatePassPageOnClick() throws Exception {
+        EntityType passportType = TestUtils.getPassportEntityType();
+
+        String expectedUrl = "https://wallet.com/private";
+
+        EntityInstanceWithLabels entity1 =
+                TestUtils.buildGermanyPassportWithLabels(
+                        "guid1", /* storedInWallet= */ true, expectedUrl);
+
+        LinkedHashMap<EntityType, List<EntityInstanceWithLabels>> instancesMap =
+                new LinkedHashMap<>();
+        instancesMap.put(passportType, Arrays.asList(entity1));
+
+        when(mEntityDataManager.getInstancesToList()).thenReturn(instancesMap);
+
+        mSettingsActivityTestRule.startSettingsActivity();
+
+        Preference passportEntity =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> mSettingsActivityTestRule.getFragment().findPreference("guid1"));
+        assertNotNull(passportEntity);
+
+        // Mock the intent that should be fired.
+        Instrumentation.ActivityResult result =
+                new Instrumentation.ActivityResult(Activity.RESULT_OK, null);
+        var intentMatcher = allOf(hasAction(Intent.ACTION_VIEW), hasData(Uri.parse(expectedUrl)));
+        intending(intentMatcher).respondWith(result);
+
+        ThreadUtils.runOnUiThreadBlocking(passportEntity::performClick);
+
+        intended(intentMatcher);
+    }
+
+    @Test
+    @MediumTest
+    @DisableFeatures(ChromeFeatureList.AUTOFILL_AI_WALLET_PRIVATE_PASSES_DEEP_LINK)
+    public void testAutofillAiEntities_opensWalletPrivatePassPageOnClick_featureDisabled()
+            throws Exception {
+        EntityType passportType = TestUtils.getPassportEntityType();
+
+        EntityInstanceWithLabels entity1 =
+                TestUtils.buildGermanyPassportWithLabels(
+                        "guid1",
+                        /* storedInWallet= */ true,
+                        /* walletEntityUrl= */ "https://wallet.com/private");
+
+        LinkedHashMap<EntityType, List<EntityInstanceWithLabels>> instancesMap =
+                new LinkedHashMap<>();
+        instancesMap.put(passportType, Arrays.asList(entity1));
+
+        when(mEntityDataManager.getInstancesToList()).thenReturn(instancesMap);
+
+        mSettingsActivityTestRule.startSettingsActivity();
+
+        Preference passportEntity =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> mSettingsActivityTestRule.getFragment().findPreference("guid1"));
+        assertNotNull(passportEntity);
+
+        // Mock the intent that should be fired.
+        Instrumentation.ActivityResult result =
+                new Instrumentation.ActivityResult(Activity.RESULT_OK, null);
+        // Since the deep link feature is disabled, it should fallback to the general passes page.
+        var intentMatcher =
+                allOf(
+                        hasAction(Intent.ACTION_VIEW),
+                        hasData(Uri.parse(GoogleWalletLauncher.GOOGLE_WALLET_PASSES_URL)));
+        intending(intentMatcher).respondWith(result);
+
+        ThreadUtils.runOnUiThreadBlocking(passportEntity::performClick);
+
+        intended(intentMatcher);
+    }
 }
