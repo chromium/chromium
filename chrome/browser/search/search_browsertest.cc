@@ -160,10 +160,10 @@ class SearchTest : public MixinBasedInProcessBrowserTest {
        true},
       {"SRP -> Regular", "https://foo.com/url", false, "https://foo.com/other",
        false, !content::CanSameSiteMainFrameNavigationsChangeSiteInstances(),
-       !content::CanSameSiteMainFrameNavigationsChangeSiteInstances(), true},
+       !content::CanSameSiteMainFrameNavigationsChangeRenderFrameHosts(), true},
       {"Regular -> SRP", "https://foo.com/other", false, "https://foo.com/url",
        false, !content::CanSameSiteMainFrameNavigationsChangeSiteInstances(),
-       !content::CanSameSiteMainFrameNavigationsChangeSiteInstances(), true},
+       !content::CanSameSiteMainFrameNavigationsChangeRenderFrameHosts(), true},
   }};
 
  private:
@@ -222,13 +222,7 @@ IN_PROC_BROWSER_TEST_F(SearchTest, ShouldUseProcessPerSiteForInstantSiteURL) {
   }
 }
 
-// TODO(crbug.com/514171017): Re-enable the test
-#if BUILDFLAG(IS_LINUX)
-#define MAYBE_ProcessIsolation DISABLED_ProcessIsolation
-#else
-#define MAYBE_ProcessIsolation ProcessIsolation
-#endif
-IN_PROC_BROWSER_TEST_F(SearchTest, MAYBE_ProcessIsolation) {
+IN_PROC_BROWSER_TEST_F(SearchTest, ProcessIsolation) {
   for (size_t i = 0; i < std::size(kProcessIsolationTestCases); ++i) {
     const ProcessIsolationTestCase& test = kProcessIsolationTestCases[i];
     ASSERT_TRUE(
@@ -267,15 +261,7 @@ IN_PROC_BROWSER_TEST_F(SearchTest, MAYBE_ProcessIsolation) {
   }
 }
 
-// TODO(crbug.com/514171017): Re-enable the test
-#if BUILDFLAG(IS_LINUX)
-#define MAYBE_ProcessIsolation_RendererInitiated \
-  DISABLED_ProcessIsolation_RendererInitiated
-#else
-#define MAYBE_ProcessIsolation_RendererInitiated \
-  ProcessIsolation_RendererInitiated
-#endif
-IN_PROC_BROWSER_TEST_F(SearchTest, MAYBE_ProcessIsolation_RendererInitiated) {
+IN_PROC_BROWSER_TEST_F(SearchTest, ProcessIsolation_RendererInitiated) {
   for (size_t i = 0; i < std::size(kProcessIsolationTestCases); ++i) {
     const ProcessIsolationTestCase& test = kProcessIsolationTestCases[i];
     ASSERT_TRUE(
