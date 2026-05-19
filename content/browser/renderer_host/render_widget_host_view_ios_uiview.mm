@@ -1271,6 +1271,10 @@ NSString* const kDoneAccessoryImageName = @"checkmark";
   _nextAccessoryButton.enabled =
       (state.flags & ui::TEXT_INPUT_FLAG_HAVE_NEXT_FOCUSABLE_ELEMENT) != 0;
 
+  bool editable = state.type != ui::TextInputType::TEXT_INPUT_TYPE_NONE &&
+                  state.mode != ui::TextInputMode::TEXT_INPUT_MODE_NONE;
+  [self setIsEditable:editable];
+
   // Check for the visibility request and policy if VK APIs are enabled.
   if (state.vk_policy == ui::mojom::VirtualKeyboardPolicy::MANUAL) {
     // policy is manual.
@@ -1282,16 +1286,11 @@ NSString* const kDoneAccessoryImageName = @"checkmark";
                ui::mojom::VirtualKeyboardVisibilityRequest::HIDE) {
       [self hideKeyboard];
     }
-  } else {
-    bool hide = state.always_hide_ime ||
-                state.mode == ui::TextInputMode::TEXT_INPUT_MODE_NONE ||
-                state.type == ui::TextInputType::TEXT_INPUT_TYPE_NONE;
-    if (hide) {
-      [self hideKeyboard];
-    } else if (state.show_ime_if_needed) {
-      [self showKeyboard:(state.value && !state.value->empty())
-              withBounds:bounds];
-    }
+  } else if (state.always_hide_ime || !editable) {
+    [self hideKeyboard];
+  } else if (state.show_ime_if_needed) {
+    [self showKeyboard:(state.value && !state.value->empty())
+            withBounds:bounds];
   }
 }
 
@@ -1307,15 +1306,13 @@ NSString* const kDoneAccessoryImageName = @"checkmark";
 
 - (void)showKeyboard:(bool)has_text withBounds:(CGRect)bounds {
   self.frame = bounds;
-  BOOL result = [self becomeFirstResponder];
+  [self becomeFirstResponder];
   [self reloadInputViews];
-  [self setIsEditable:result];
 }
 
 - (void)hideKeyboard {
   [self resignFirstResponder];
   [self reloadInputViews];
-  [self setIsEditable:NO];
 }
 
 @end

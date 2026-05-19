@@ -12,6 +12,7 @@
 
 @interface RenderWidgetUIView (Testing)
 - (BOOL)shouldInsertCharacter:(const blink::WebKeyboardEvent&)webKeyboardEvent;
+- (BOOL)isEditable;
 - (std::string)moveSelectionCommand:(UITextLayoutDirection)direction;
 - (std::string)extendSelectionCommand:(UITextLayoutDirection)direction;
 - (std::vector<std::string>)
@@ -393,6 +394,40 @@ TEST_F(RenderWidgetHostViewIOSUIViewTest,
   [uiview_ onUpdateTextInputState:state withBounds:CGRectZero];
   EXPECT_TRUE(previousButton.enabled);
   EXPECT_TRUE(nextButton.enabled);
+}
+
+TEST_F(RenderWidgetHostViewIOSUIViewTest,
+       OnUpdateTextInputStateSetsEditableBeforeKeyboard) {
+  EXPECT_FALSE([uiview_ isEditable]);
+
+  // Editable text input type sets isEditable to YES.
+  ui::mojom::TextInputState state;
+  state.type = ui::TextInputType::TEXT_INPUT_TYPE_TEXT;
+  state.mode = ui::TextInputMode::TEXT_INPUT_MODE_TEXT;
+  [uiview_ onUpdateTextInputState:state withBounds:CGRectZero];
+  EXPECT_TRUE([uiview_ isEditable]);
+
+  // TEXT_INPUT_TYPE_NONE sets isEditable to NO.
+  state.type = ui::TextInputType::TEXT_INPUT_TYPE_NONE;
+  [uiview_ onUpdateTextInputState:state withBounds:CGRectZero];
+  EXPECT_FALSE([uiview_ isEditable]);
+
+  // TEXT_INPUT_MODE_NONE sets isEditable to NO.
+  state.type = ui::TextInputType::TEXT_INPUT_TYPE_TEXT;
+  state.mode = ui::TextInputMode::TEXT_INPUT_MODE_NONE;
+  [uiview_ onUpdateTextInputState:state withBounds:CGRectZero];
+  EXPECT_FALSE([uiview_ isEditable]);
+
+  // TEXT_AREA type sets isEditable to YES.
+  state.type = ui::TextInputType::TEXT_INPUT_TYPE_TEXT_AREA;
+  state.mode = ui::TextInputMode::TEXT_INPUT_MODE_TEXT;
+  [uiview_ onUpdateTextInputState:state withBounds:CGRectZero];
+  EXPECT_TRUE([uiview_ isEditable]);
+
+  // always_hide_ime does not affect isEditable (only keyboard visibility).
+  state.always_hide_ime = true;
+  [uiview_ onUpdateTextInputState:state withBounds:CGRectZero];
+  EXPECT_TRUE([uiview_ isEditable]);
 }
 
 }  // namespace content
