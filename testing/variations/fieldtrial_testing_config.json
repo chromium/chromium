@@ -26056,8 +26056,7 @@
         {
             "platforms": [
                 "linux",
-                "mac",
-                "windows"
+                "mac"
             ],
             "experiments": [
                 {
