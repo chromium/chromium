@@ -133,6 +133,60 @@ void ExpectInvalidComponent(const Component& component) {
   EXPECT_EQ(-1, component.len);
 }
 
+TEST(URLParser, ComponentPredicates) {
+  const Component invalid;
+  EXPECT_FALSE(invalid.is_valid());
+  EXPECT_TRUE(invalid.is_empty());
+  EXPECT_FALSE(invalid.is_nonempty());
+
+  const Component empty(3, 0);
+  EXPECT_TRUE(empty.is_valid());
+  EXPECT_TRUE(empty.is_empty());
+  EXPECT_FALSE(empty.is_nonempty());
+
+  const Component nonempty(3, 1);
+  EXPECT_TRUE(nonempty.is_valid());
+  EXPECT_FALSE(nonempty.is_empty());
+  EXPECT_TRUE(nonempty.is_nonempty());
+}
+
+TEST(URLParser, UsernameOnlyUserInfoUTF16) {
+  const std::u16string_view url = u"http://a@c:29/d";
+  const Parsed parsed = ParseStandardUrl(url);
+  EXPECT_EQ(Component(7, 1), parsed.username);
+  ExpectInvalidComponent(parsed.password);
+  EXPECT_EQ(Component(9, 1), parsed.host);
+  EXPECT_EQ(29, ParsePort(url, parsed.port));
+  EXPECT_EQ(Component(13, 2), parsed.path);
+}
+
+TEST(URLParser, EmptyUsernameUserInfoUTF16) {
+  const std::u16string_view url = u"http://@c:29/d";
+  const Parsed parsed = ParseStandardUrl(url);
+  EXPECT_EQ(Component(7, 0), parsed.username);
+  ExpectInvalidComponent(parsed.password);
+  EXPECT_EQ(Component(8, 1), parsed.host);
+  EXPECT_EQ(29, ParsePort(url, parsed.port));
+  EXPECT_EQ(Component(12, 2), parsed.path);
+}
+
+TEST(URLParser, ParseAuthorityDoesNotInspectBeforeComponent) {
+  const std::string_view spec = "@host:29";
+  Component username;
+  Component password;
+  Component hostname;
+  Component port_num;
+
+  ParseAuthority(spec, Component(1, 7), ParserMode::kSpecialURL, &username,
+                 &password, &hostname, &port_num);
+
+  ExpectInvalidComponent(username);
+  ExpectInvalidComponent(password);
+  EXPECT_EQ(Component(1, 4), hostname);
+  EXPECT_EQ(Component(6, 2), port_num);
+  EXPECT_EQ(29, ParsePort(spec, port_num));
+}
+
 void URLParseCaseMatches(const URLParseCase& expected, const Parsed& parsed) {
   const std::string_view url(expected.input);
   SCOPED_TRACE(testing::Message()
@@ -293,6 +347,8 @@ static URLParseCase cases[] = {
 
   // Username/passwords and things that look like them
 {"http://a:b@c:29/d",                   "http", "a",    "b",       "c",           29, "/d",      nullptr,     nullptr},
+{"http://a@c:29/d",                     "http", "a",    nullptr,   "c",           29, "/d",      nullptr,     nullptr},
+{"http://@c:29/d",                      "http", "",     nullptr,   "c",           29, "/d",      nullptr,     nullptr},
 {"http::@c:29",                         "http", "",     "",        "c",           29, nullptr,   nullptr,     nullptr},
   // ... "]" in the password field isn't allowed, but we tolerate it here...
 {"http://&a:foo(b]c@d:2/",              "http", "&a",   "foo(b]c", "d",            2, "/",       nullptr,     nullptr},
