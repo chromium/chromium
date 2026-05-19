@@ -366,6 +366,13 @@ public class TabWebContentsObserver extends TabWebContentsUserData {
         }
 
         @Override
+        public void didChangeVisibleSecurityState() {
+            if (!mTab.isThemingAllowed()) {
+                mTab.updateThemeColor(assumeNonNull(mTab.getWebContents()).getThemeColor());
+            }
+        }
+
+        @Override
         public void onBackgroundColorChanged() {
             mTab.changeWebContentBackgroundColor(
                     assumeNonNull(mTab.getWebContents()).getBackgroundColor());

@@ -19,11 +19,13 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Color;
 import android.util.SparseArray;
 import android.view.View;
 import android.view.ViewStructure;
@@ -53,9 +55,13 @@ import org.chromium.chrome.browser.tabmodel.SettableLookAheadObservableSupplier;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.components.autofill.AutofillProvider;
 import org.chromium.components.prefs.PrefService;
+import org.chromium.components.security_state.ConnectionSecurityLevel;
+import org.chromium.components.security_state.SecurityStateModel;
+import org.chromium.components.security_state.SecurityStateModelJni;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.components.user_prefs.UserPrefsJni;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.content_public.browser.WebContentsObserver;
 import org.chromium.ui.base.WindowAndroid;
 
 import java.lang.ref.WeakReference;
@@ -79,12 +85,16 @@ public class TabUnitTest {
     @Mock private NativePage mNativePage;
     @Mock private TabDelegateFactory mDelegateFactory;
     @Mock private TabWebContentsDelegateAndroid mTabWebContentsDelegateAndroid;
-    @Mock private WebContents mWebContents;
+
+    @Mock(extraInterfaces = {WebContentsObserver.Observable.class})
+    private WebContents mWebContents;
+
     @Mock private View mNativePageView;
     @Mock private ChromeActivity mChromeActivity;
     @Mock private UserPrefs.Natives mUserPrefsNatives;
     @Mock private PrefService mPrefs;
     @Mock TabImpl.Natives mNativeMock;
+    @Mock private SecurityStateModel.Natives mSecurityStateModelNatives;
     @Captor private ArgumentCaptor<Callback<Tab>> mCallbackCaptor;
 
     private final SettableLookAheadObservableSupplier<Tab> mTabSupplier =
@@ -101,6 +111,7 @@ public class TabUnitTest {
         doReturn(mContext).when(mWeakReferenceContext).get();
         doReturn(mContext).when(mContext).getApplicationContext();
         UserPrefsJni.setInstanceForTesting(mUserPrefsNatives);
+        SecurityStateModelJni.setInstanceForTesting(mSecurityStateModelNatives);
         when(mUserPrefsNatives.get(mProfile)).thenReturn(mPrefs);
 
         mTab =
@@ -409,5 +420,109 @@ public class TabUnitTest {
     public void testDefaultInvalidTimestamp() {
         Tab tab = new TabImpl(1, mProfile, TabLaunchType.FROM_LINK, /* isArchived= */ false);
         assertThat(tab.getTimestampMillis(), equalTo(TabImpl.INVALID_TIMESTAMP));
+    }
+
+    @Test
+    @SmallTest
+    public void testUpdateThemeColor_themingAllowed() {
+        when(mSecurityStateModelNatives.getSecurityLevelForWebContents(mWebContents))
+                .thenReturn(ConnectionSecurityLevel.NONE);
+        TabImpl tab =
+                new TabImpl(
+                        TAB1_ID, mProfile, TabLaunchType.FROM_CHROME_UI, /* isArchived= */ false) {
+                    @Override
+                    public boolean isInitialized() {
+                        return true;
+                    }
+
+                    @Override
+                    public WebContents getWebContents() {
+                        return mWebContents;
+                    }
+                };
+        tab.addObserver(mObserver);
+
+        tab.updateThemeColor(Color.RED);
+        verify(mObserver).onDidChangeThemeColor(tab, Color.RED);
+
+        tab.updateThemeColor(Color.RED);
+        // Not called a second time.
+        verify(mObserver).onDidChangeThemeColor(tab, Color.RED);
+    }
+
+    @Test
+    @SmallTest
+    public void testUpdateThemeColor_themingNotAllowed() {
+        when(mSecurityStateModelNatives.getSecurityLevelForWebContents(mWebContents))
+                .thenReturn(ConnectionSecurityLevel.NONE);
+        TabImpl tab =
+                new TabImpl(
+                        TAB1_ID, mProfile, TabLaunchType.FROM_CHROME_UI, /* isArchived= */ false) {
+                    @Override
+                    public boolean isInitialized() {
+                        return true;
+                    }
+
+                    @Override
+                    public WebContents getWebContents() {
+                        return mWebContents;
+                    }
+                };
+        tab.addObserver(mObserver);
+
+        // Set initial theme color while theming is allowed.
+        tab.updateThemeColor(Color.RED);
+        verify(mObserver).onDidChangeThemeColor(tab, Color.RED);
+
+        // Disallow theming.
+        when(mSecurityStateModelNatives.getSecurityLevelForWebContents(mWebContents))
+                .thenReturn(ConnectionSecurityLevel.DANGEROUS);
+
+        tab.updateThemeColor(Color.BLUE);
+        verify(mObserver).onDidChangeThemeColor(tab, TabState.UNSPECIFIED_THEME_COLOR);
+
+        // Calling again when already unspecified should not emit.
+        tab.updateThemeColor(Color.GREEN);
+        verify(mObserver, times(1)).onDidChangeThemeColor(tab, TabState.UNSPECIFIED_THEME_COLOR);
+    }
+
+    @Test
+    @SmallTest
+    public void testDidChangeVisibleSecurityState_themingNotAllowed() {
+        when(mSecurityStateModelNatives.getSecurityLevelForWebContents(mWebContents))
+                .thenReturn(ConnectionSecurityLevel.NONE);
+        when(mWebContents.getThemeColor()).thenReturn(Color.RED);
+        TabImpl tab =
+                new TabImpl(
+                        TAB1_ID, mProfile, TabLaunchType.FROM_CHROME_UI, /* isArchived= */ false) {
+                    @Override
+                    public boolean isInitialized() {
+                        return true;
+                    }
+
+                    @Override
+                    public WebContents getWebContents() {
+                        return mWebContents;
+                    }
+                };
+        tab.addObserver(mObserver);
+
+        TabWebContentsObserver tabWebContentsObserver = TabWebContentsObserver.from(tab);
+        tabWebContentsObserver.initWebContents(mWebContents);
+
+        // Set initial theme color while theming is allowed.
+        tab.updateThemeColor(Color.RED);
+        verify(mObserver).onDidChangeThemeColor(tab, Color.RED);
+
+        // Disallow theming and trigger security state change.
+        when(mSecurityStateModelNatives.getSecurityLevelForWebContents(mWebContents))
+                .thenReturn(ConnectionSecurityLevel.DANGEROUS);
+        tabWebContentsObserver.getWebContentsObserverForTesting().didChangeVisibleSecurityState();
+
+        verify(mObserver).onDidChangeThemeColor(tab, TabState.UNSPECIFIED_THEME_COLOR);
+
+        // Triggering again should not emit another theme color change.
+        tabWebContentsObserver.getWebContentsObserverForTesting().didChangeVisibleSecurityState();
+        verify(mObserver, times(1)).onDidChangeThemeColor(tab, TabState.UNSPECIFIED_THEME_COLOR);
     }
 }

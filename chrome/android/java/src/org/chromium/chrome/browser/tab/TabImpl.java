@@ -1955,7 +1955,12 @@ class TabImpl implements Tab {
     }
 
     void updateThemeColor(int themeColor) {
-        if (mThemeColor == themeColor) return;
+        if (!isThemingAllowed()) {
+            themeColor = TabState.UNSPECIFIED_THEME_COLOR;
+        }
+        if (mThemeColor == themeColor) {
+            return;
+        }
         mThemeColor = themeColor;
         RewindableIterator<TabObserver> observers = getTabObservers();
         while (observers.hasNext()) observers.next().onDidChangeThemeColor(this, themeColor);
