@@ -458,7 +458,11 @@ public class ActorPictureInPictureController
             mActorService.removeObserver(this);
             mActorService = null;
         }
-        mPipDelegate.setEnabled(false);
+        // If the activity is finishing/destroyed, the OS will sweep up PiP parameters
+        // automatically.
+        if (!mActivity.isFinishing() && !mActivity.isDestroyed()) {
+            mPipDelegate.setEnabled(false);
+        }
         OffscreenRenderingManager.getInstance().destroy();
     }
 
