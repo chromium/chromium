@@ -2508,8 +2508,11 @@
     {
       name: "EmailVerificationProtocol",
       public: true,
-      status: "test",
+      origin_trial_feature_name: "EmailVerificationProtocol",
+      origin_trial_allows_third_party: true,
+      status: "experimental",
       base_feature: "none",
+      browser_process_read_access: true,
     },
     {
       // crbug.com/420857717

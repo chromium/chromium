@@ -22,6 +22,7 @@
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_test_utils.h"
+#include "content/public/browser/runtime_feature_state/runtime_feature_state_document_data.h"
 #include "content/public/browser/webid/email_verifier.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
@@ -31,6 +32,7 @@
 #include "net/test/embedded_test_server/http_response.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/runtime_feature_state/runtime_feature_state_context.h"
 
 namespace autofill {
 
@@ -46,6 +48,15 @@ class MockEmailVerifier : public content::webid::EmailVerifier {
               Verify,
               (const std::string&, const std::string&, OnEmailVerifiedCallback),
               (override));
+};
+
+class TestRuntimeFeatureStateContext
+    : public blink::RuntimeFeatureStateContext {
+ public:
+  TestRuntimeFeatureStateContext() {
+    feature_overrides_
+        [blink::mojom::RuntimeFeature::kEmailVerificationProtocol] = true;
+  }
 };
 
 class EmailVerificationBrowserTest : public InProcessBrowserTest {
@@ -129,6 +140,14 @@ IN_PROC_BROWSER_TEST_F(EmailVerificationBrowserTest, FullFlowRendererStorage) {
   GURL url =
       embedded_test_server()->GetURL("/autofill/email_verification.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  if (content::RuntimeFeatureStateDocumentData::GetForCurrentDocument(
+          web_contents()->GetPrimaryMainFrame())) {
+    content::RuntimeFeatureStateDocumentData::DeleteForCurrentDocument(
+        web_contents()->GetPrimaryMainFrame());
+  }
+  content::RuntimeFeatureStateDocumentData::CreateForCurrentDocument(
+      web_contents()->GetPrimaryMainFrame(), TestRuntimeFeatureStateContext());
 
   // 1. Setup the EmailVerifierDelegate with our mock.
   email_verifier_ = std::make_unique<NiceMock<MockEmailVerifier>>();

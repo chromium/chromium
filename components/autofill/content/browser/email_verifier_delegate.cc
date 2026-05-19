@@ -7,6 +7,7 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
+#include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/content/browser/renderer_forms_from_browser_form.h"
 #include "components/autofill/core/browser/autofill_field.h"
@@ -15,6 +16,7 @@
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/foundations/browser_autofill_manager.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/runtime_feature_state/runtime_feature_state_document_data.h"
 #include "content/public/browser/webid/email_verifier.h"
 #include "content/public/common/content_features.h"
 
@@ -27,8 +29,20 @@ content::webid::EmailVerifier* GetOrCreateEmailVerifier(
     const LocalFrameToken& frame_token) {
   content::RenderFrameHost* rfh = FindRenderFrameHostByToken(
       *static_cast<ContentAutofillClient&>(client).web_contents(), frame_token);
-  return rfh ? content::webid::EmailVerifier::GetOrCreateForFrame(rfh)
-             : nullptr;
+  if (!rfh) {
+    return nullptr;
+  }
+
+  // EmailVerificationProtocol is enabled by default in the browser process,
+  // but must also be enabled on the blink side (e.g. via Origin Trial token).
+  content::RuntimeFeatureStateDocumentData* document_data =
+      content::RuntimeFeatureStateDocumentData::GetForCurrentDocument(rfh);
+  if (!document_data || !document_data->runtime_feature_state_read_context()
+                             .IsEmailVerificationProtocolEnabled()) {
+    return nullptr;
+  }
+
+  return content::webid::EmailVerifier::GetOrCreateForFrame(rfh);
 }
 
 }  // namespace
@@ -79,15 +93,16 @@ void EmailVerifierDelegate::OnFillOrPreviewForm(
 
   const AutofillField& email_field = *it->get();
 
-  // TODO(crbug.com/446288895): Use email_field->value() when we fix the
-  // OnFillOrPreviewForm callback.
-  std::u16string email = (*profile)->GetRawInfo(EMAIL_ADDRESS);
-
   content::webid::EmailVerifier* verifier =
       GetOrCreateEmailVerifier(manager.client(), email_field.host_frame());
   if (!verifier) {
     return;
   }
+
+  // TODO(crbug.com/446288895): Use email_field->value() when we fix the
+  // OnFillOrPreviewForm callback.
+  std::u16string email = (*profile)->GetRawInfo(EMAIL_ADDRESS);
+
   verifier->Verify(
       base::UTF16ToUTF8(email), base::UTF16ToUTF8(email_field.challenge()),
       base::BindOnce(

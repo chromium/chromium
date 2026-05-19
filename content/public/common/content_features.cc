@@ -406,8 +406,12 @@ BASE_FEATURE(kFedCmAmbientUI, base::FEATURE_DISABLED_BY_DEFAULT);
 // Enables usage of the FedCM Delegation API.
 BASE_FEATURE(kFedCmDelegation, base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables the FedCM email verification protocol.
-BASE_FEATURE(kEmailVerificationProtocol, base::FEATURE_DISABLED_BY_DEFAULT);
+// Enables the Email Verification Protocol (EVP).
+// Note that actual exposure of the EVP API to web content is controlled by the
+// flag in RuntimeEnabledFeatures on the blink side. See also the use of
+// kSetOnlyIfOverridden in content/child/runtime_features.cc. We enable it here
+// by default to support use in origin trials.
+BASE_FEATURE(kEmailVerificationProtocol, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enforce same-origin check for dedicated worker script URLs.
 // See https://crbug.com/496253755.

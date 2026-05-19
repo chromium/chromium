@@ -181,7 +181,7 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
           {wf::EnableDocumentPolicyNegotiation,
            raw_ref(features::kDocumentPolicyNegotiation)},
           {wf::EnableEmailVerificationProtocol,
-           raw_ref(features::kEmailVerificationProtocol), kDefault},
+           raw_ref(features::kEmailVerificationProtocol), kSetOnlyIfOverridden},
           {wf::EnableEyeDropperAPI, raw_ref(features::kEyeDropper),
            kSetOnlyIfOverridden},
           {wf::EnableFedCm, raw_ref(features::kFedCm), kSetOnlyIfOverridden},
