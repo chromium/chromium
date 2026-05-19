@@ -5246,6 +5246,15 @@ You can manage this account’s settings by installing the Family Link app on yo
   <message name="IDS_SETTINGS_PEOPLE_CONFIGURE_PIN_COMPLEXITY_ERROR_HIGH" desc="Message shown below the title that tells the user the PIN requirements when the complexity policy is set to High.">
     Must be at least 8 digits and can't contain repeating or ordered sequences
   </message>
+  <message name="IDS_SETTINGS_PEOPLE_CONFIGURE_PIN_REPEATING_DIGITS" desc="Error message shown when the user enters a PIN that contains repeating digits.">
+    Can't contain repeating digits
+  </message>
+  <message name="IDS_SETTINGS_PEOPLE_CONFIGURE_PIN_ORDERED_SEQUENCE" desc="Error message shown when the user enters a PIN that contains an ordered sequence of digits.">
+    Can't contain ordered sequences
+  </message>
+  <message name="IDS_SETTINGS_PEOPLE_CONFIGURE_PIN_COMPLEXITY_TOO_SHORT" desc="Requirement message shown to the user telling them the minimum number of characters required for their PIN.">
+    Must be at least <ph name="MINIMUM">$1<ex>4</ex></ph> characters
+  </message>
 
   <message name="IDS_SETTINGS_ACCOUNT_MANAGER_ACCOUNT_REMOVED_MESSAGE" desc="Notification message after account removal.">
     <ph name="EMAIL">$1<ex>abcd@google.com</ex></ph> was removed from this device

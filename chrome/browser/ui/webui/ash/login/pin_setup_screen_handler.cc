@@ -99,6 +99,12 @@ void PinSetupScreenHandler::DeclareLocalizedValues(
                IDS_SETTINGS_PEOPLE_CONFIGURE_PIN_COMPLEXITY_ERROR_MEDIUM);
   builder->Add("configurePinComplexityErrorHigh",
                IDS_SETTINGS_PEOPLE_CONFIGURE_PIN_COMPLEXITY_ERROR_HIGH);
+  builder->Add("configurePinComplexityRepeating",
+               IDS_SETTINGS_PEOPLE_CONFIGURE_PIN_REPEATING_DIGITS);
+  builder->Add("configurePinComplexityOrdered",
+               IDS_SETTINGS_PEOPLE_CONFIGURE_PIN_ORDERED_SEQUENCE);
+  builder->Add("configurePinComplexityTooShort",
+               IDS_SETTINGS_PEOPLE_CONFIGURE_PIN_COMPLEXITY_TOO_SHORT);
 }
 
 void PinSetupScreenHandler::Show(const std::string& token,
