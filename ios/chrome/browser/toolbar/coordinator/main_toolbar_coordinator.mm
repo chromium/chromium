@@ -1094,6 +1094,9 @@ constexpr CGFloat kBannerPromoVerticalSpacing = 8;
 }
 
 - (CGFloat)keyboardAttachedBottomOmniboxHeight {
+  if (IsChromeNextIaEnabled()) {
+    return kKeyboardAttachedOmniboxBottomPadding;
+  }
   return 0;
 }
 

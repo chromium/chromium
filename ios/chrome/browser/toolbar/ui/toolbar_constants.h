@@ -47,5 +47,8 @@ extern const CGFloat kTopToolbarIPhonePortraitHeightFullscreen;
 extern const CGFloat kLocationBarHeightFullscreen;
 // The padding in the toolbar when in fullscreen.
 extern const CGFloat kToolbarPaddingFullscreen;
+// Additional height added to the bottom omnibox when attached above the
+// keyboard.
+extern const CGFloat kKeyboardAttachedOmniboxBottomPadding;
 
 #endif  // IOS_CHROME_BROWSER_TOOLBAR_UI_TOOLBAR_CONSTANTS_H_
