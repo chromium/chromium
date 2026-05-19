@@ -825,6 +825,22 @@ public class AutocompleteMediatorUnitTest {
 
     @Test
     @SmallTest
+    public void onSuggestionClicked_aimIsSentSuggestionText() {
+        String suggestionText = "test suggestion";
+        AutocompleteMatch match =
+                new AutocompleteMatchBuilder().setDisplayText(suggestionText).build();
+        var session = createSession(PAGE_URL, PAGE_TITLE, PageClassification.OTHER_VALUE);
+        session.getAutocompleteInput().setRequestType(AutocompleteRequestType.AI_MODE);
+        mMediator.beginInput(session);
+
+        mMediator.onSuggestionClicked(match, /* matchIndex= */ 0, JUnitTestGURLs.RED_1);
+
+        verify(mComposeboxQueryControllerBridge).getAimUrl(any(), eq(suggestionText), any());
+        verifyNoMoreInteractions(mAutocompleteDelegate);
+    }
+
+    @Test
+    @SmallTest
     public void setLayoutDirection_beforeInitialization() {
         mMediator.beginInput(createEmptySession());
         mMediator.setLayoutDirection(View.LAYOUT_DIRECTION_RTL);
