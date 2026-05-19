@@ -13212,6 +13212,12 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          enterprise_connectors::kEnableCancelUploadOnContentAnalysis)},
 
+    {"payment-request-reject-too-small-windows",
+     flag_descriptions::kPaymentRequestRejectTooSmallWindowsName,
+     flag_descriptions::kPaymentRequestRejectTooSmallWindowsDescription, kOsAll,
+     FEATURE_VALUE_TYPE(
+         payments::features::kPaymentRequestRejectTooSmallWindows)},
+
     // Add new entries above this line.
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
