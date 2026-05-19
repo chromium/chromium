@@ -22,7 +22,6 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.Rect;
@@ -30,6 +29,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.window.layout.WindowMetricsCalculator;
 
 import org.junit.After;
 import org.junit.Before;
@@ -296,14 +296,16 @@ public class FuseboxCoordinatorUnitTest {
     @Test
     @Config(qualifiers = "sw400dp")
     public void viewportRectProvider() {
-        Context context = mActivityController.get();
-        ViewportRectProvider viewportRectProvider = new ViewportRectProvider(context);
+        Activity activity = mActivityController.get();
+        ViewportRectProvider viewportRectProvider = new ViewportRectProvider(activity);
         viewportRectProvider.startObserving(mRectProviderObserver);
 
         viewportRectProvider.onConfigurationChanged(new Configuration());
-        int width = context.getResources().getDisplayMetrics().widthPixels;
-        int height = context.getResources().getDisplayMetrics().heightPixels;
-        assertEquals(new Rect(0, 0, width, height), viewportRectProvider.getRect());
+        var windowMetrics =
+                WindowMetricsCalculator.getOrCreate().computeCurrentWindowMetrics(activity);
+        var bounds = windowMetrics.getBounds();
+        assertEquals(
+                new Rect(0, 0, bounds.width(), bounds.height()), viewportRectProvider.getRect());
         verify(mRectProviderObserver).onRectChanged();
     }
 

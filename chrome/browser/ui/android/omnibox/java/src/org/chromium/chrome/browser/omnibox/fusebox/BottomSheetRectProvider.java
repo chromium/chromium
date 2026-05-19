@@ -37,19 +37,29 @@ class BottomSheetRectProvider extends RectProvider implements View.OnLayoutChang
         mAnchorView.removeOnLayoutChangeListener(this);
     }
 
+    /**
+     * Calculates the target coordinates for the bottom sheet popup.
+     *
+     * <p>This method calculates bounds in window-relative coordinates (where the origin (0, 0) is
+     * the top-left of the Activity's window, not the physical screen). This ensures that popups are
+     * positioned correctly inside split-screen or multi-window layouts.
+     */
     private void updateRect() {
         var windowMetrics =
                 WindowMetricsCalculator.getOrCreate().computeCurrentWindowMetrics(mActivity);
-        var bounds = new Rect(windowMetrics.getBounds());
-        bounds.top = bounds.bottom; // Anchor to the bottom
+        var windowBounds = windowMetrics.getBounds();
+        int width = windowBounds.width();
+        int height = windowBounds.height();
+
+        var bounds = new Rect(0, height, width, height);
 
         // Apply maximum width constraint and center horizontally
         int maxWidth =
                 mActivity
                         .getResources()
                         .getDimensionPixelSize(R.dimen.fusebox_bottom_sheet_max_width);
-        if (bounds.width() > maxWidth) {
-            int centerX = bounds.centerX();
+        if (width > maxWidth) {
+            int centerX = width / 2;
             int halfWidth = maxWidth / 2;
             bounds.left = centerX - halfWidth;
             bounds.right = centerX + halfWidth;

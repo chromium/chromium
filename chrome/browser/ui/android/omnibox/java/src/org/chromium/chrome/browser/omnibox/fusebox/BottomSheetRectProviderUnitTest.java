@@ -50,9 +50,13 @@ public class BottomSheetRectProviderUnitTest {
 
     @Test
     public void testUpdateRect_anchorsToBottom() {
-        // The rect should be anchored to the bottom, meaning top == bottom.
+        // The rect should be anchored to the bottom, meaning top == bottom == height.
         Rect r = mProvider.getRect();
         assertEquals("Rect top should equal bottom", r.top, r.bottom);
+        var windowMetrics =
+                WindowMetricsCalculator.getOrCreate().computeCurrentWindowMetrics(mActivity);
+        int expectedHeight = windowMetrics.getBounds().height();
+        assertEquals("Rect top should equal window height", expectedHeight, r.top);
     }
 
     @Test
@@ -60,6 +64,10 @@ public class BottomSheetRectProviderUnitTest {
         mProvider.onLayoutChange(mAnchorView, 0, 0, 100, 100, 0, 0, 0, 0);
         Rect r = mProvider.getRect();
         assertEquals("Rect top should equal bottom", r.top, r.bottom);
+        var windowMetrics =
+                WindowMetricsCalculator.getOrCreate().computeCurrentWindowMetrics(mActivity);
+        int expectedHeight = windowMetrics.getBounds().height();
+        assertEquals("Rect top should equal window height", expectedHeight, r.top);
     }
 
     @Test
@@ -85,7 +93,7 @@ public class BottomSheetRectProviderUnitTest {
         var bounds = windowMetrics.getBounds();
 
         assertEquals("Width should be constrained to max width", expectedMaxWidthPx, r.width());
-        int centerX = bounds.centerX();
+        int centerX = bounds.width() / 2;
         int halfWidth = expectedMaxWidthPx / 2;
         assertEquals("Left should be centered", centerX - halfWidth, r.left);
         assertEquals("Right should be centered", centerX + halfWidth, r.right);
