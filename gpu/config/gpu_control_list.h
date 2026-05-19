@@ -295,7 +295,8 @@ class GPU_CONFIG_EXPORT GpuControlList {
   std::set<int32_t> MakeDecision(OsType os,
                                  std::string_view os_version,
                                  const GPUInfo& gpu_info,
-                                 uint32_t target_test_group);
+                                 uint32_t target_test_group,
+                                 const std::vector<uint32_t>& ignored_entries);
 
   // Return the active entry indices from the last MakeDecision() call.
   const std::vector<uint32_t>& GetActiveEntries() const;
@@ -360,13 +361,6 @@ class GPU_CONFIG_EXPORT GpuControlList {
 
   // Gets the current OS type.
   static OsType GetOsType();
-
-  std::set<int32_t> MakeDecisionImpl(
-      OsType os,
-      std::string_view os_version,
-      const GPUInfo& gpu_info,
-      uint32_t target_test_group,
-      const std::vector<uint32_t>& ignored_entries);
 
   // These always point to built-in arrays of constants, so raw_ptr doesn't
   // add any protection but costs some overhead.

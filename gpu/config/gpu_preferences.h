@@ -224,8 +224,12 @@ struct GPU_CONFIG_EXPORT GpuPreferences {
   // ===================================
   // Settings from //gpu/config/gpu_switches.h
 
-  // Ignores GPU blocklist.
+  // Ignores the entire GPU blocklist.
   bool ignore_gpu_blocklist = false;
+
+  // GPU blocklist entries to be ignored. If this is non-empty then
+  // ignore_gpu_blocklist will be false.
+  std::vector<uint32_t> ignored_gpu_blocklist_entries;
 
   // Start the watchdog suspended, as the app is already backgrounded and won't
   // send a background/suspend signal.

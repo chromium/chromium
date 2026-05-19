@@ -258,22 +258,22 @@ TEST_P(GpuControlListTest, TestGroup) {
 
   // Default test group.
   std::set<int> features = control_list->MakeDecision(
-      GpuControlList::kOsLinux, "3.13.2-1-generic", gpu_info, 0);
+      GpuControlList::kOsLinux, "3.13.2-1-generic", gpu_info, 0, {});
   EXPECT_EMPTY_SET(features);
 
   // Test group 0, the default test group
   features = control_list->MakeDecision(GpuControlList::kOsLinux,
-                                        "3.13.2-1-generic", gpu_info, 0);
+                                        "3.13.2-1-generic", gpu_info, 0, {});
   EXPECT_EMPTY_SET(features);
 
   // Test group 1.
   features = control_list->MakeDecision(GpuControlList::kOsLinux,
-                                        "3.13.2-1-generic", gpu_info, 1);
+                                        "3.13.2-1-generic", gpu_info, 1, {});
   EXPECT_SINGLE_FEATURE(features, TEST_FEATURE_0);
 
   // Test group 2.
   features = control_list->MakeDecision(GpuControlList::kOsLinux,
-                                        "3.13.2-1-generic", gpu_info, 2);
+                                        "3.13.2-1-generic", gpu_info, 2, {});
   EXPECT_SINGLE_FEATURE(features, TEST_FEATURE_1);
 }
 

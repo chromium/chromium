@@ -9,6 +9,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "gpu/config/gpu_finch_features.h"
+#include "gpu/config/gpu_switches.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace gpu {
@@ -82,6 +83,50 @@ TEST(ServiceUtilsTest, UpdateShaderCacheSizeOnMemoryPressure) {
   EXPECT_EQ(UpdateShaderCacheSizeOnMemoryPressure(
                 kMaxCacheSize, base::MEMORY_PRESSURE_LEVEL_CRITICAL),
             0u);
+}
+
+TEST(ServiceUtilsTest, ParseGpuPreferencesIgnoreGpuBlocklist) {
+  {  // No switch.
+    base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
+    GpuPreferences prefs = gles2::ParseGpuPreferences(&command_line);
+    EXPECT_FALSE(prefs.ignore_gpu_blocklist);
+    EXPECT_TRUE(prefs.ignored_gpu_blocklist_entries.empty());
+  }
+
+  {  // Switch without parameters.
+    base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
+    command_line.AppendSwitch(switches::kIgnoreGpuBlocklist);
+    GpuPreferences prefs = gles2::ParseGpuPreferences(&command_line);
+    EXPECT_TRUE(prefs.ignore_gpu_blocklist);
+    EXPECT_TRUE(prefs.ignored_gpu_blocklist_entries.empty());
+  }
+
+  {  // Switch with valid parameters.
+    base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
+    command_line.AppendSwitchASCII(switches::kIgnoreGpuBlocklist, "1,2,3");
+    GpuPreferences prefs = gles2::ParseGpuPreferences(&command_line);
+    EXPECT_FALSE(prefs.ignore_gpu_blocklist);
+    EXPECT_EQ(3u, prefs.ignored_gpu_blocklist_entries.size());
+    EXPECT_EQ(1u, prefs.ignored_gpu_blocklist_entries[0]);
+    EXPECT_EQ(2u, prefs.ignored_gpu_blocklist_entries[1]);
+    EXPECT_EQ(3u, prefs.ignored_gpu_blocklist_entries[2]);
+  }
+
+  {  // Switch with invalid parameters.
+    base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
+    command_line.AppendSwitchASCII(switches::kIgnoreGpuBlocklist, "1,a,3");
+    GpuPreferences prefs = gles2::ParseGpuPreferences(&command_line);
+    EXPECT_FALSE(prefs.ignore_gpu_blocklist);
+    EXPECT_TRUE(prefs.ignored_gpu_blocklist_entries.empty());
+  }
+
+  {  // Switch with empty string (same as no parameters).
+    base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
+    command_line.AppendSwitchASCII(switches::kIgnoreGpuBlocklist, "");
+    GpuPreferences prefs = gles2::ParseGpuPreferences(&command_line);
+    EXPECT_TRUE(prefs.ignore_gpu_blocklist);
+    EXPECT_TRUE(prefs.ignored_gpu_blocklist_entries.empty());
+  }
 }
 
 }  // namespace

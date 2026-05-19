@@ -89,6 +89,8 @@ struct GpuPreferences {
   bool use_passthrough_cmd_decoder;
 
   bool ignore_gpu_blocklist;
+  // Entry ids to be ignored from gpu/config/software_rendering_list.json.
+  array<uint32> ignored_gpu_blocklist_entries;
   bool watchdog_starts_backgrounded;
   GrContextType gr_context_type;
   VulkanImplementationName use_vulkan;

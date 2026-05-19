@@ -245,8 +245,30 @@ GpuPreferences ParseGpuPreferences(const base::CommandLine* command_line) {
       command_line->HasSwitch(switches::kEnableGPUServiceTracing);
   gpu_preferences.use_passthrough_cmd_decoder =
       gpu::gles2::UsePassthroughCommandDecoder(command_line);
-  gpu_preferences.ignore_gpu_blocklist =
-      command_line->HasSwitch(switches::kIgnoreGpuBlocklist);
+  if (command_line->HasSwitch(switches::kIgnoreGpuBlocklist)) {
+    std::string value =
+        command_line->GetSwitchValueASCII(switches::kIgnoreGpuBlocklist);
+    if (value.empty()) {
+      gpu_preferences.ignore_gpu_blocklist = true;
+    } else {
+      auto pieces = base::SplitStringPiece(value, ",", base::TRIM_WHITESPACE,
+                                           base::SPLIT_WANT_NONEMPTY);
+      std::vector<uint32_t> ignored_entries;
+      bool success = true;
+      for (const auto& piece : pieces) {
+        uint32_t entry_id;
+        if (!base::StringToUint(piece, &entry_id)) {
+          success = false;
+          break;
+        }
+        ignored_entries.push_back(entry_id);
+      }
+      if (success) {
+        gpu_preferences.ignored_gpu_blocklist_entries =
+            std::move(ignored_entries);
+      }
+    }
+  }
   gpu_preferences.enable_webgpu =
       command_line->HasSwitch(switches::kEnableUnsafeWebGPU) ||
       base::FeatureList::IsEnabled(features::kWebGPUService);

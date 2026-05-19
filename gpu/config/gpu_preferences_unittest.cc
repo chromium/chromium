@@ -63,6 +63,8 @@ void CheckGpuPreferencesEqual(GpuPreferences left, GpuPreferences right) {
   EXPECT_EQ(left.use_passthrough_cmd_decoder,
             right.use_passthrough_cmd_decoder);
   EXPECT_EQ(left.ignore_gpu_blocklist, right.ignore_gpu_blocklist);
+  EXPECT_EQ(left.ignored_gpu_blocklist_entries,
+            right.ignored_gpu_blocklist_entries);
   EXPECT_EQ(left.watchdog_starts_backgrounded,
             right.watchdog_starts_backgrounded);
   EXPECT_EQ(left.gr_context_type, right.gr_context_type);
@@ -154,6 +156,8 @@ TEST(GpuPreferencesTest, EncodeDecode) {
     GPU_PREFERENCES_FIELD(enable_gpu_service_tracing, true)
     GPU_PREFERENCES_FIELD(use_passthrough_cmd_decoder, true)
     GPU_PREFERENCES_FIELD(ignore_gpu_blocklist, true)
+    input_prefs.ignored_gpu_blocklist_entries = {1, 2, 3};
+    prefs_mojom.ignored_gpu_blocklist_entries = {1, 2, 3};
     GPU_PREFERENCES_FIELD(watchdog_starts_backgrounded, true)
     GPU_PREFERENCES_FIELD_ENUM(gr_context_type, GrContextType::kVulkan,
                                mojom::GrContextType::kVulkan)

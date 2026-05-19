@@ -606,7 +606,8 @@ GpuFeatureInfo ComputeGpuFeatureInfo(const GPUInfo& gpu_info,
       target_test_group = ::features::kGPUBlockListTestGroupId.Get();
     }
     blocklisted_features = list->MakeDecision(
-        GpuControlList::kOsAny, std::string(), gpu_info, target_test_group);
+        GpuControlList::kOsAny, std::string(), gpu_info, target_test_group,
+        gpu_preferences.ignored_gpu_blocklist_entries);
     gpu_feature_info.applied_gpu_blocklist_entries = list->GetActiveEntries();
     blocklist_needs_more_info = list->needs_more_info();
   }
@@ -692,7 +693,8 @@ GpuFeatureInfo ComputeGpuFeatureInfo(const GPUInfo& gpu_info,
       target_test_group = ::features::kGPUDriverBugListTestGroupId.Get();
     }
     enabled_driver_bug_workarounds = list->MakeDecision(
-        GpuControlList::kOsAny, std::string(), gpu_info, target_test_group);
+        GpuControlList::kOsAny, std::string(), gpu_info, target_test_group,
+        gpu_preferences.ignored_gpu_blocklist_entries);
     gpu_feature_info.applied_gpu_driver_bug_list_entries =
         list->GetActiveEntries();
 

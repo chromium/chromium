@@ -228,6 +228,10 @@ struct GPU_IPC_COMMON_EXPORT StructTraits<gpu::mojom::GpuPreferencesDataView,
     out->use_passthrough_cmd_decoder = prefs.use_passthrough_cmd_decoder();
 
     out->ignore_gpu_blocklist = prefs.ignore_gpu_blocklist();
+    if (!prefs.ReadIgnoredGpuBlocklistEntries(
+            &out->ignored_gpu_blocklist_entries)) {
+      return false;
+    }
     out->watchdog_starts_backgrounded = prefs.watchdog_starts_backgrounded();
     if (!prefs.ReadGrContextType(&out->gr_context_type)) {
       return false;
@@ -379,6 +383,10 @@ struct GPU_IPC_COMMON_EXPORT StructTraits<gpu::mojom::GpuPreferencesDataView,
   }
   static bool ignore_gpu_blocklist(const gpu::GpuPreferences& prefs) {
     return prefs.ignore_gpu_blocklist;
+  }
+  static const std::vector<uint32_t>& ignored_gpu_blocklist_entries(
+      const gpu::GpuPreferences& prefs) {
+    return prefs.ignored_gpu_blocklist_entries;
   }
   static bool watchdog_starts_backgrounded(const gpu::GpuPreferences& prefs) {
     return prefs.watchdog_starts_backgrounded;
