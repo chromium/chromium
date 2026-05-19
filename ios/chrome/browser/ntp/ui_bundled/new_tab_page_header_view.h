@@ -8,6 +8,7 @@
 #import <UIKit/UIKit.h>
 
 @class GradientView;
+@class LayoutGuideCenter;
 @class NewTabPageColorPalette;
 @protocol NewTabPageShortcutsHandler;
 @protocol NewTabPageHeaderCommands;
@@ -39,6 +40,10 @@ enum class SearchEngineLogoState;
 
 // The button that opens Lens. May be nil if Lens is not enabled.
 @property(nonatomic, strong, readonly) UIButton* lensButton;
+
+// The layout guide center for the current scene. Owned by this view's owning
+// view controller.
+@property(nonatomic, weak) LayoutGuideCenter* layoutGuideCenter;
 
 // Fake cancel button, used for animations. Hidden by default.
 @property(nonatomic, strong) UIView* cancelButton;
@@ -159,6 +164,10 @@ enum class SearchEngineLogoState;
 
 // Whether to show the plus button.
 - (BOOL)shouldShowPlusButton;
+
+// Resets the resizing of this view for scroll progress in split toolbar mode.
+// Should be called on rotations.
+- (void)resetSplitToolbarResizing;
 
 @end
 

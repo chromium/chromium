@@ -5,10 +5,10 @@
 #ifndef IOS_CHROME_BROWSER_NTP_UI_BUNDLED_NEW_TAB_PAGE_CONTROLLER_DELEGATE_H_
 #define IOS_CHROME_BROWSER_NTP_UI_BUNDLED_NEW_TAB_PAGE_CONTROLLER_DELEGATE_H_
 
-// Delete for NTP and it's subclasses to communicate with the toolbar.
+// Delegate for NTP and it's subclasses to communicate with the toolbar.
 @protocol NewTabPageControllerDelegate
 
-/// TODO(crbug.com/508170459): Rename this method to reflect that it is used for
+/// TODO(crbug.com/512844934): Rename this method to reflect that it is used for
 /// both iPhone and iPad.
 // Sets the toolbar location bar alpha and vertical offset based on `progress`.
 - (void)setScrollProgressForTabletOmnibox:(CGFloat)progress;

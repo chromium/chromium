@@ -40,7 +40,9 @@
 #import "ios/chrome/browser/shared/ui/elements/gradient/gradient_view.h"
 #import "ios/chrome/browser/shared/ui/elements/new_feature_badge_view.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
+#import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
+#import "ios/chrome/browser/shared/ui/util/util_swift.h"
 #import "ios/chrome/browser/start_surface/ui_bundled/start_surface_features.h"
 #import "ios/chrome/browser/toolbar/legacy/ui_bundled/buttons/legacy_toolbar_button_factory.h"
 #import "ios/chrome/browser/toolbar/legacy/ui_bundled/buttons/toolbar_configuration.h"
@@ -68,55 +70,62 @@ namespace {
 NSString* const kScribbleFakeboxElementId = @"kScribbleFakeboxElementId";
 
 // Fakebox highlight animation duration.
-const CGFloat kFakeboxHighlightDuration = 0.4;
+constexpr CGFloat kFakeboxHighlightDuration = 0.4;
 
 // Fakebox highlight background alpha.
-const CGFloat kFakeboxHighlightAlpha = 0.06;
+constexpr CGFloat kFakeboxHighlightAlpha = 0.06;
+
+// The percentage the fakebox's height that should be allowed to overlap the top
+// toolbar area in split toolbar mode before the fakebox begins to resize and
+// toolbar begins to fade in. The toolbar begins to fade in at 25% of the
+// fakebox height to help the appearance of the fakebox being sucked into the
+// toolbar as the omnibox.
+constexpr CGFloat kFakeboxResizingStartOffsetFactor = 0.25;
 
 // Height margin of the fake location bar.
-const CGFloat kFakeLocationBarHeightMargin = 2;
+constexpr CGFloat kFakeLocationBarHeightMargin = 2;
 
 // When the placeholder text in the fakebox doesn't fit, the font shrinks to fit
 // the string. This is the minimum allowed factor by which it shrinks.
-const CGFloat kFakeboxMinimumFontScaleFactor = 0.57;
+constexpr CGFloat kFakeboxMinimumFontScaleFactor = 0.57;
 
 // The constants for the constraints affecting the end button; either Lens or
 // Voice Search, depending on if Lens is enabled.
-const CGFloat kEndButtonFakeboxTrailingSpace = 13.0;
-const CGFloat kEndButtonNormalSizeFakeboxWithBadgeTrailingSpace = 7.0;
-const CGFloat kEndButtonOmniboxTrailingSpace = 7.0;
+constexpr CGFloat kEndButtonFakeboxTrailingSpace = 13.0;
+constexpr CGFloat kEndButtonNormalSizeFakeboxWithBadgeTrailingSpace = 7.0;
+constexpr CGFloat kEndButtonOmniboxTrailingSpace = 7.0;
 
 // Distance between the trailing fakebox icon and the placeholder text.
-const CGFloat kHintLabelFakeboxTrailingSpace = 12.0f;
+constexpr CGFloat kHintLabelFakeboxTrailingSpace = 12.0f;
 
 // The constants for the constraints the leading-edge aligned UI elements.
-const CGFloat kHintLabelFakeboxLeadingSpaceWithIcon = 42.0;
-const CGFloat kHintLabelFakeboxLeadingSpaceWithPlus = 46.0;
-const CGFloat kHintLabelOmniboxLeadingSpaceWithIcon = 42.0;
-const CGFloat kHintLabelOmniboxLeadingSpaceWithWithPlus = 52.0;
+constexpr CGFloat kHintLabelFakeboxLeadingSpaceWithIcon = 42.0;
+constexpr CGFloat kHintLabelFakeboxLeadingSpaceWithPlus = 46.0;
+constexpr CGFloat kHintLabelOmniboxLeadingSpaceWithIcon = 42.0;
+constexpr CGFloat kHintLabelOmniboxLeadingSpaceWithWithPlus = 52.0;
 
 // The constants for the search engine image.
-const CGFloat kFakeboxImageLeadingSpace = 13.0;
-const CGFloat kFakeboxPlusLeadingSpace = 18.0;
-const CGFloat kOmniboxImageLeadingSpace = 22.0;
-const CGFloat kOmniboxPlusLeadingSpace = 26.0;
-const CGFloat kFakeboxImageSize = 20.0;
+constexpr CGFloat kFakeboxImageLeadingSpace = 13.0;
+constexpr CGFloat kFakeboxPlusLeadingSpace = 18.0;
+constexpr CGFloat kOmniboxImageLeadingSpace = 22.0;
+constexpr CGFloat kOmniboxPlusLeadingSpace = 26.0;
+constexpr CGFloat kFakeboxImageSize = 20.0;
 
 // The spacing between the items in the button stack.
-const CGFloat kButtonSpacing = 9.0;
+constexpr CGFloat kButtonSpacing = 9.0;
 
 // The height of the divider between the mic and lens icons.
-const CGFloat kIconDividerHeight = 13.0;
+constexpr CGFloat kIconDividerHeight = 13.0;
 
 // The offset of the account error badge from the ADP center.
-const CGFloat kAccountBadgeOffsetFromDiscCenter = 10.0;
+constexpr CGFloat kAccountBadgeOffsetFromDiscCenter = 10.0;
 
 // The size of the account error badge that is on top the ADP.
-const CGFloat kErrorSymbolPointSize = 16.0;
+constexpr CGFloat kErrorSymbolPointSize = 16.0;
 
 // The offset from the center of the customization button for where to show the
 // new feature badge.
-const CGFloat kCustomizationNewBadgeOffset = 14.0;
+constexpr CGFloat kCustomizationNewBadgeOffset = 14.0;
 
 // The name of the animation for the MIA button.
 NSString* const kMIACircleAnimationLightMode = @"mia_circle_animation_no_glow";
@@ -353,8 +362,13 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
 }
 
 - (void)setOmniboxPositionIsBottom:(BOOL)isBottomOmnibox {
+  CHECK(IsBottomOmniboxAvailable());
   CHECK(IsChromeNextIaEnabled());
   _isBottomOmnibox = isBottomOmnibox;
+
+  if (IsSplitToolbarMode(self)) {
+    [self resetSplitToolbarResizing];
+  }
 }
 
 - (void)setIsGoogleDefaultSearchEngine:(BOOL)isGoogleDefaultSearchEngine {
@@ -638,12 +652,11 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
   if ([self shouldShowPlusButton]) {
     [self createPlusButton];
     leadingView = self.plusButton;
-    leadingViewYOffset = -3;
   } else {
     _logoView = [[UIImageView alloc] init];
     _logoView.contentMode = UIViewContentModeScaleAspectFit;
     leadingView = _logoView;
-    leadingViewYOffset = -2;
+    leadingViewYOffset = 1.0;
   }
 
   if (!leadingView) {
@@ -654,15 +667,22 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
   [searchField addSubview:leadingView];
   AddSquareConstraints(leadingView, kFakeboxImageSize);
 
+  CGFloat leadingViewConstraintConstant;
+  if (IsChromeNextIaEnabled()) {
+    leadingViewConstraintConstant = [self fakeboxLeadingSpace];
+  } else {
+    leadingViewConstraintConstant = [self omniboxLeadingSpace];
+  }
+
   self.leadingViewConstraint = [leadingView.leadingAnchor
       constraintEqualToAnchor:searchField.leadingAnchor
-                     constant:[self omniboxLeadingSpace]];
+                     constant:leadingViewConstraintConstant];
 
   [NSLayoutConstraint activateConstraints:@[
     self.leadingViewConstraint,
-    [leadingView.centerYAnchor constraintEqualToAnchor:searchField.centerYAnchor
-                                              constant:leadingViewYOffset],
-
+    [leadingView.centerYAnchor
+        constraintEqualToAnchor:self.searchHintLabel.centerYAnchor
+                       constant:leadingViewYOffset]
   ]];
 }
 
@@ -720,7 +740,7 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
 
 - (CGFloat)searchFieldProgressForOffset:(CGFloat)offset {
   // The scroll offset at which point searchField's frame should stop growing.
-  CGFloat maxScaleOffset = [self offsetToBeginFakeOmniboxExpansion];
+  CGFloat maxScaleOffset = [self offsetToBeginFakeOmniboxResizing];
 
   // The scroll offset at which point searchField's frame should start
   // growing.
@@ -743,6 +763,10 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
 // position linearly. When percent is 0, the fakebox is displayed in the
 // middle of the screen; when it's 1, the fakebox is fully scrolled up.
 - (void)updateLogoAnimationWithProgress:(CGFloat)progress {
+  if (IsChromeNextIaEnabled() && !CanShowTabStrip(self)) {
+    return;
+  }
+
   if (IsNTPHeaderTransformsForAnimationsEnabled()) {
     self.leadingViewConstraint.constant = kFakeboxImageLeadingSpace;
     CGFloat translationX =
@@ -759,8 +783,10 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
   // Update the opacity of the header background color as the user scrolls so
   // that content does not appear beneath it. Since the NTP background might be
   // a gradient, the opacity must be 0 by default.
-  self.backgroundColor =
-      [HeaderBackgroundColor(self) colorWithAlphaComponent:progress];
+  if (!IsChromeNextIaEnabled()) {
+    self.backgroundColor =
+        [HeaderBackgroundColor(self) colorWithAlphaComponent:progress];
+  }
 
   [self setFakeboxColorsWithProgress:progress];
 }
@@ -768,6 +794,10 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
 // Animates the hint label position and scale between fakebox and omnibox based
 // on progress.
 - (void)updateHintLabelAnimationWithProgress:(CGFloat)progress {
+  if (IsChromeNextIaEnabled() && !CanShowTabStrip(self)) {
+    return;
+  }
+
   [self scaleHintLabelForPercent:progress];
   CGFloat hintLabelScalingExtraOffset =
       (_currentHintLabelScale - 1) *
@@ -811,6 +841,7 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
 - (void)updatePinnedLayoutWithProgress:(CGFloat)progress
                 searchFieldNormalWidth:(CGFloat)searchFieldNormalWidth
                        widthConstraint:(NSLayoutConstraint*)widthConstraint {
+  CHECK(CanShowTabStrip(self) || !IsSplitToolbarMode(self));
   CGFloat fakeOmniboxHeight = content_suggestions::FakeOmniboxHeight();
 
   // When Voiceover is running, if the header's alpha is set to 0, voiceover
@@ -818,7 +849,9 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
   // prevent that, set the alpha to non-zero when the header is fully
   // offscreen. It will still not be seen, but it will be accessible to
   // Voiceover.
-  self.alpha = std::max(1 - progress, 0.01);
+  if (!IsChromeNextIaEnabled() || CanShowTabStrip(self)) {
+    self.alpha = std::max(1 - progress, 0.01);
+  }
 
   widthConstraint.constant = searchFieldNormalWidth;
   self.fakeLocationBarHeightConstraint.constant =
@@ -897,6 +930,55 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
   }
 }
 
+// Updates the fakebox layout in split toolbar mode (portrait iPhone) based on
+// NTP scroll progress. Progress goes from 0.0 (fully unscrolled) to 1.0 (fully
+// scrolled).
+- (void)updateSplitToolbarLayoutWithProgress:(CGFloat)progress
+                      searchFieldNormalWidth:(CGFloat)searchFieldNormalWidth
+                             widthConstraint:
+                                 (NSLayoutConstraint*)widthConstraint {
+  CHECK(IsChromeNextIaEnabled());
+  CHECK(IsSplitToolbarMode(self));
+  CHECK(self.layoutGuideCenter);
+
+  UIView* topOmniboxView =
+      [self.layoutGuideCenter referencedViewUnderName:kTopOmniboxGuide];
+
+  if (!topOmniboxView) {
+    return;
+  }
+
+  // Automatically recalculate and apply correct masks.
+  [self updateFakeboxMask];
+
+  if (!_isBottomOmnibox) {
+    CGFloat currentWidth = self.fakeOmniboxContainer.bounds.size.width;
+    CGFloat currentHeight = self.fakeOmniboxContainer.bounds.size.height;
+
+    if (currentWidth <= 0 || currentHeight <= 0) {
+      return;
+    }
+
+    CGFloat targetWidth = topOmniboxView.frame.size.width;
+    CGFloat targetHeight = topOmniboxView.frame.size.height;
+
+    CGFloat scaleX = Interpolate(1.0, (targetWidth / currentWidth),
+                                 (progress * (2.0 - progress)));
+    CGFloat scaleY = Interpolate(1.0, (targetHeight / currentHeight),
+                                 (progress * (2.0 - progress)));
+
+    self.fakeOmniboxContainer.transform =
+        CGAffineTransformMakeScale(scaleX, scaleY);
+  } else {
+    // Bottom omnibox.
+    // No transform for the fakebox transition when the omnibox is pinned to the
+    // bottom.
+    self.fakeOmniboxContainer.transform = CGAffineTransformIdentity;
+  }
+  widthConstraint.constant = searchFieldNormalWidth;
+  self.alpha = std::max<CGFloat>(1.0 - progress, 0.01);
+}
+
 // Calculates progress and calls appropriate helper methods to update the header
 // layout based on scroll offset.
 - (void)updateSearchFieldWidth:(NSLayoutConstraint*)widthConstraint
@@ -924,7 +1006,11 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
 
   [self updateLogoAnimationWithProgress:percent];
 
-  if (CanShowTabStrip(self) || !IsSplitToolbarMode(self)) {
+  if (IsChromeNextIaEnabled() && IsSplitToolbarMode(self)) {
+    [self updateSplitToolbarLayoutWithProgress:percent
+                        searchFieldNormalWidth:searchFieldNormalWidth
+                               widthConstraint:widthConstraint];
+  } else if (CanShowTabStrip(self) || !IsSplitToolbarMode(self)) {
     [self updatePinnedLayoutWithProgress:percent
                   searchFieldNormalWidth:searchFieldNormalWidth
                          widthConstraint:widthConstraint];
@@ -1172,6 +1258,15 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
   return IsPlusButtonInFakeboxEnabled() && _isAIMAllowed && _fuseboxEligible;
 }
 
+- (void)resetSplitToolbarResizing {
+  CHECK(IsChromeNextIaEnabled());
+  [self updateFakeboxBackgroundWithProgress:0.0];
+  self.alpha = 1.0;
+  _lastAnimationPercent = 0.0;
+  [self updateFakeboxMask];
+  self.fakeOmniboxContainer.transform = CGAffineTransformIdentity;
+}
+
 #pragma mark - Property accessors
 
 - (UIView*)fakeLocationBar {
@@ -1252,6 +1347,7 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
 
 // Handles the creation of the plus button.
 - (void)createPlusButton {
+  CHECK([self shouldShowPlusButton]);
   self.plusButton =
       [ExtendedTouchTargetButton buttonWithType:UIButtonTypeSystem];
   self.plusButton.accessibilityLabel = l10n_util::GetNSString(
@@ -1410,24 +1506,69 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
       _currentHintLabelScale, _currentHintLabelScale);
 }
 
-// The positive offset value to begin the fake omnibox expansion animation.
-- (CGFloat)offsetToBeginFakeOmniboxExpansion {
-  CGFloat offset =
-      self.frame.size.height - content_suggestions::FakeToolbarHeight();
+// The positive offset value to begin the fake omnibox resizing animation.
+- (CGFloat)offsetToBeginFakeOmniboxResizing {
+  CGFloat offset = self.frame.size.height;
+  BOOL canShowTabStrip = CanShowTabStrip(self);
+  BOOL isSplitToolbarMode = IsSplitToolbarMode(self);
 
-  // For non-split toolbar, the fake omnibox goes beneath the toolbar.
-  if (CanShowTabStrip(self) || !IsSplitToolbarMode(self)) {
-    // The animation should start when the primary toolbar is met.
-    offset += content_suggestions::FakeOmniboxHeight();
-
-    // iPads pin slightly earlier than landscape iPhones.
-    if (CanShowTabStrip(self)) {
-      offset -= content_suggestions::SearchFieldTopMargin(self.logoState);
-    } else if (IsChromeNextIaEnabled() && !_isBottomOmnibox) {
-      offset -= kToolbarHeight + self.safeAreaInsets.top;
+  if (!IsChromeNextIaEnabled()) {
+    offset -= content_suggestions::FakeToolbarHeight();
+    if (canShowTabStrip || !isSplitToolbarMode) {
+      offset += content_suggestions::FakeOmniboxHeight();
+      if (canShowTabStrip) {
+        offset -= content_suggestions::SearchFieldTopMargin(self.logoState);
+      }
     }
+    return offset;
+  }
+
+  CGFloat topToolbarHeight = (_isBottomOmnibox || canShowTabStrip)
+                                 ? 0.0
+                                 : kTopToolbarIPhonePortraitHeight;
+
+  if (isSplitToolbarMode) {
+    // Top toolbar is taller in split toolbar mode when there is a tab group
+    // indicator.
+    BOOL tabGroupIndicatorVisible =
+        _tabGroupIndicatorView && !_tabGroupIndicatorView.isHidden;
+    topToolbarHeight +=
+        (tabGroupIndicatorVisible ? kTabGroupIndicatorHeight : 0.0);
+    offset -= self.safeAreaInsets.top + topToolbarHeight;
+    offset -= content_suggestions::FakeOmniboxHeight() *
+              kFakeboxResizingStartOffsetFactor;
+    return offset;
+  }
+
+  // Non-split toolbar mode (iPad or landscape iPhone).
+  offset -= content_suggestions::FakeToolbarHeight() -
+            content_suggestions::FakeOmniboxHeight();
+
+  if (canShowTabStrip) {
+    offset -= content_suggestions::SearchFieldTopMargin(self.logoState);
+  } else {
+    offset -= self.safeAreaInsets.top + topToolbarHeight;
   }
   return offset;
+}
+
+// Returns the view that should mask the fake omnibox if the fake omnibox is
+// overlapping with it.
+- (UIView*)blockingViewForFakeOmnibox {
+  CHECK(IsChromeNextIaEnabled());
+
+  if (!self.layoutGuideCenter) {
+    return nil;
+  }
+
+  if (_isBottomOmnibox) {
+    // Top toolbar.
+    return
+        [self.layoutGuideCenter referencedViewUnderName:kPrimaryToolbarGuide];
+  } else {
+    // Omnibox from the toolbar.
+    return [self.layoutGuideCenter referencedViewUnderName:kTopOmniboxGuide];
+  }
 }
 
 // Sets the fakebox's colors, based on the current customization settings and
@@ -1550,6 +1691,93 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
   } else {
     return kHintLabelOmniboxLeadingSpaceWithIcon;
   }
+}
+
+// Applies an inverted mask so that `viewToMask` is not visible where it is
+// being overlapped by `blockingView`. Helper for when the fakebox is being
+// scrolled behind the top toolbar which fades in.
+- (void)applyInvertedMaskToView:(UIView*)viewToMask
+                  blockedByView:(UIView*)blockingView {
+  CHECK(IsChromeNextIaEnabled());
+  if (!viewToMask) {
+    return;
+  }
+
+  // If there is no blocking view, clear any existing mask so the view renders
+  // fully.
+  if (!blockingView) {
+    viewToMask.layer.mask = nil;
+    return;
+  }
+
+  CGRect blockingFrameInLocalSpace = [viewToMask convertRect:blockingView.bounds
+                                                    fromView:blockingView];
+
+  UIBezierPath* maskPath = [UIBezierPath bezierPathWithRect:viewToMask.bounds];
+
+  CGFloat targetRadius = blockingView.layer.cornerRadius;
+  if (targetRadius <= 0.0) {
+    targetRadius = blockingFrameInLocalSpace.size.height / 2.0;
+  }
+
+  UIBezierPath* cutoutPath =
+      [UIBezierPath bezierPathWithRoundedRect:blockingFrameInLocalSpace
+                                 cornerRadius:targetRadius];
+  [maskPath appendPath:cutoutPath];
+
+  CAShapeLayer* maskLayer = (CAShapeLayer*)viewToMask.layer.mask;
+  if (!maskLayer || ![maskLayer isKindOfClass:[CAShapeLayer class]]) {
+    maskLayer = [CAShapeLayer layer];
+    viewToMask.layer.mask = maskLayer;
+  }
+
+  maskLayer.fillRule = kCAFillRuleEvenOdd;
+  maskLayer.path = maskPath.CGPath;
+}
+
+// Updates the mask over the fakebox or its elements based on omnibox position.
+- (void)updateFakeboxMask {
+  CHECK(IsChromeNextIaEnabled());
+  if (!IsBottomOmniboxAvailable()) {
+    // On iPad (bottom omnibox unavailable), the fakebox does not need to be
+    // masked because it slides under the fully opaque top toolbar which is
+    // always shown.
+    return;
+  }
+
+  // Only apply masks when in split toolbar mode and the page has scrolled. If
+  // `shouldMask` is NO, all existing masks will be cleared.
+  BOOL shouldMask = IsSplitToolbarMode(self) && (_lastAnimationPercent > 0.0);
+
+  UIView* innerElementBlockingView = nil;
+  UIView* containerBlockingView = nil;
+
+  if (shouldMask) {
+    UIView* blockingView = [self blockingViewForFakeOmnibox];
+    innerElementBlockingView = _isBottomOmnibox ? nil : blockingView;
+    containerBlockingView = _isBottomOmnibox ? blockingView : nil;
+  }
+
+  // When the omnibox is pinned to the top, the search hint text in the fakebox
+  // can overlap with the search hint in the top toolbar during scrolling.
+  // Because the top toolbar fades in with the omnibox as the fakebox scrolls
+  // into its area, this inverted mask clips the fakebox's search hint text at
+  // the top omnibox's boundary to prevent the text fields from visually
+  // overlapping or cross-fading.
+  [self applyInvertedMaskToView:_buttonStack
+                  blockedByView:innerElementBlockingView];
+  [self applyInvertedMaskToView:self.searchHintLabel
+                  blockedByView:innerElementBlockingView];
+  [self applyInvertedMaskToView:(self.plusButton ? self.plusButton : _logoView)
+                  blockedByView:innerElementBlockingView];
+
+  // When the omnibox is pinned to the bottom, the full fakebox can overlap with
+  // the top toolbar area during scrolling. Because the top toolbar fades in as
+  // the fakebox scrolls off-screen, this inverted mask clips the fakebox at the
+  // toolbar's boundary to prevent them from visually overlapping or
+  // cross-fading.
+  [self applyInvertedMaskToView:self.fakeOmniboxContainer
+                  blockedByView:containerBlockingView];
 }
 
 #pragma mark - Action handling

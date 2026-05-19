@@ -161,6 +161,7 @@ const CGFloat kIdentityDiscMaxFontSize = 24;
 }
 
 - (void)setOmniboxInBottomPosition:(BOOL)isBottomOmnibox {
+  CHECK(IsBottomOmniboxAvailable());
   CHECK(IsChromeNextIaEnabled());
   _isBottomOmnibox = isBottomOmnibox;
   [self.headerView setOmniboxPositionIsBottom:isBottomOmnibox];
@@ -250,9 +251,11 @@ const CGFloat kIdentityDiscMaxFontSize = 24;
             : 1;
     [self updateLogoForOffset:offset];
 
-    if (!CanShowTabStrip(self) && IsSplitToolbarMode(self)) {
-      // Ensure omnibox is reset when not a regular tablet.
-      progress = 1.0;
+    if (!IsChromeNextIaEnabled()) {
+      if (!CanShowTabStrip(self) && IsSplitToolbarMode(self)) {
+        // Ensure omnibox is reset when not a regular tablet.
+        progress = 1.0;
+      }
     }
 
     [self.toolbarDelegate setScrollProgressForTabletOmnibox:progress];
@@ -309,6 +312,11 @@ const CGFloat kIdentityDiscMaxFontSize = 24;
   self.headerView.NTPShortcutsHandler = NTPShortcutsHandler;
 }
 
+- (void)setLayoutGuideCenter:(LayoutGuideCenter*)layoutGuideCenter {
+  _layoutGuideCenter = layoutGuideCenter;
+  self.headerView.layoutGuideCenter = layoutGuideCenter;
+}
+
 - (UIButton*)customizationMenuButton {
   return [self.headerView customizationMenuButton];
 }
@@ -329,12 +337,13 @@ const CGFloat kIdentityDiscMaxFontSize = 24;
 
     self.headerView = [[NewTabPageHeaderView alloc]
         initWithUseNewBadgeForLensButton:_useNewBadgeForLensButton];
+    self.headerView.layoutGuideCenter = self.layoutGuideCenter;
     self.headerView.commandHandler = self.commandHandler;
     self.headerView.toolbarDelegate = self.toolbarDelegate;
     [self.headerView setAIMAllowed:_isAIMAllowed];
     [self.headerView setFuseboxEligible:_fuseboxEligible];
 
-    if (IsChromeNextIaEnabled()) {
+    if (IsChromeNextIaEnabled() && IsBottomOmniboxAvailable()) {
       [self.headerView setOmniboxPositionIsBottom:_isBottomOmnibox];
     }
 
@@ -475,27 +484,10 @@ const CGFloat kIdentityDiscMaxFontSize = 24;
                withTransitionCoordinator:coordinator];
 
   __weak __typeof(self) weakSelf = self;
-  const BOOL isSplitToolbarMode = IsSplitToolbarMode(newCollection);
 
   void (^transitionBlock)(id<UIViewControllerTransitionCoordinatorContext>) =
       ^(id<UIViewControllerTransitionCoordinatorContext>) {
-        __strong __typeof(self) strongSelf = weakSelf;
-        if (!strongSelf) {
-          return;
-        }
-
-        // Ensure omnibox is reset when not a regular tablet.
-        if (isSplitToolbarMode && !CanShowTabStrip(newCollection)) {
-          [strongSelf.toolbarDelegate setScrollProgressForTabletOmnibox:1];
-        }
-
-        if (!IsChromeNextIaEnabled()) {
-          // Fake Tap button only needs to work in portrait. Disable the button
-          // in landscape because in landscape the button covers logoView (which
-          // need to handle taps).
-          strongSelf.headerView.fakeTapButton.userInteractionEnabled =
-              isSplitToolbarMode;
-        }
+        [weakSelf updateLayoutForTraitCollection:newCollection];
       };
 
   [coordinator animateAlongsideTransition:transitionBlock completion:nil];
@@ -698,6 +690,27 @@ const CGFloat kIdentityDiscMaxFontSize = 24;
             forControlEvents:UIControlEventTouchUpInside];
 
   self.headerView.toolsMenuButton = toolsMenuButton;
+}
+
+// Helper for `-willTransitionToTraitCollection:withTransitionCoordinator:`.
+// Updates the layout of the header according to the `traitCollection`.
+- (void)updateLayoutForTraitCollection:(UITraitCollection*)traitCollection {
+  if (IsChromeNextIaEnabled()) {
+    [self.headerView resetSplitToolbarResizing];
+    return;
+  }
+
+  BOOL isSplitToolbarMode = IsSplitToolbarMode(traitCollection);
+
+  // Ensure omnibox is reset when not a regular tablet.
+  if (isSplitToolbarMode && !CanShowTabStrip(traitCollection)) {
+    [self.toolbarDelegate setScrollProgressForTabletOmnibox:1];
+  }
+
+  // Fake Tap button only needs to work in portrait. Disable the button
+  // in landscape because in landscape the button covers logoView (which
+  // need to handle taps).
+  self.headerView.fakeTapButton.userInteractionEnabled = isSplitToolbarMode;
 }
 
 // Configures `identityDiscButton` with the current state of

@@ -471,8 +471,6 @@ constexpr CGFloat kOuterSeparatorVerticalOffset = 4;
   }
   _NTPVisible = NTPVisible;
   [self updateToolbarVisibility];
-  /// TODO(crbug.com/508170459): The location bar should be initially hidden on
-  /// the NTP, until the fakebox is swiped up out of view.
 }
 
 - (void)updateTabCount:(NSUInteger)tabCount {
@@ -1395,8 +1393,6 @@ constexpr CGFloat kOuterSeparatorVerticalOffset = 4;
 
 // Updates the visibility of the toolbar.
 - (void)updateToolbarVisibility {
-  /// TODO(crbug.com/508170459): Allow the toolbar to be unhidden in split
-  /// toolbar mode.
   BOOL hideToolbar;
   BOOL alwaysShowToolbar = CanShowTabStrip(self) && _topPosition;
   if (alwaysShowToolbar) {
@@ -1404,7 +1400,7 @@ constexpr CGFloat kOuterSeparatorVerticalOffset = 4;
     hideToolbar = NO;
   } else {
     hideToolbar = _NTPVisible && !_incognito && !CanShowTabStrip(self) &&
-                  (_NTPScrollProgress == 0.0 || IsSplitToolbarMode(self));
+                  _NTPScrollProgress == 0.0;
   }
 
   BOOL visibilityChanged = hideToolbar != self.view.isHidden;
