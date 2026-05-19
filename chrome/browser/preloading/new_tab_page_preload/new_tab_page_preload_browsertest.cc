@@ -34,8 +34,8 @@
 #include "net/base/url_util.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/http/http_status_code.h"
-#include "net/test/embedded_test_server/controllable_http_response.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "net/test/embedded_test_server/expectation_handler.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
 
@@ -157,8 +157,9 @@ IN_PROC_BROWSER_TEST_F(NewTabPagePreloadBrowserTest,
 IN_PROC_BROWSER_TEST_F(NewTabPagePreloadBrowserTest,
                        PrefetchResponseFailureAndPrerenderFailure) {
   base::HistogramTester histogram_tester;
-  net::test_server::ControllableHttpResponse prefetch_response(
-      &embedded_https_test_server(), "/simple.html");
+  net::test_server::ExpectationHandler handler(&embedded_https_test_server());
+  handler.OnRequest("/simple.html")
+      .RespondWith(net::HTTP_INTERNAL_SERVER_ERROR, "text/html", "");
 
   StartServer();
   // Navigate to an initial page.
@@ -167,9 +168,6 @@ IN_PROC_BROWSER_TEST_F(NewTabPagePreloadBrowserTest,
       content::NavigateToURL(GetActiveWebContents(), GetUrl("/empty.html")));
 
   GetNewTabPagePreloadPipelineManager()->StartPrefetch(preload_url);
-  prefetch_response.WaitForRequest();
-  prefetch_response.Send(net::HTTP_INTERNAL_SERVER_ERROR);
-  prefetch_response.Done();
 
   GetNewTabPagePreloadPipelineManager()->StartPrerender(
       preload_url, chrome_preloading_predictor::kPointerDownOnNewTabPage);
