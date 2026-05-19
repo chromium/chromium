@@ -101,9 +101,6 @@ void AddSetMsiMarkerWorkItem(const InstallerState& installer_state,
                              bool set,
                              WorkItemList* work_item_list);
 
-// Adds work items to cleanup deprecated per-user registrations.
-void AddCleanupDeprecatedPerUserRegistrationsWorkItems(WorkItemList* list);
-
 // Adds Active Setup registration for sytem-level setup to be called by Windows
 // on user-login post-install/update. This method should be called for
 // installation only.

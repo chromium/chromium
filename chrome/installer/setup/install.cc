@@ -583,13 +583,6 @@ void HandleOsUpgradeForBrowser(const InstallerState& installer_state,
 void HandleActiveSetupForBrowser(const InstallerState& installer_state,
                                  const base::FilePath& setup_path,
                                  bool force) {
-  std::unique_ptr<WorkItemList> cleanup_list(WorkItem::CreateWorkItemList());
-  cleanup_list->set_log_message("Cleanup deprecated per-user registrations");
-  cleanup_list->set_rollback_enabled(false);
-  cleanup_list->set_best_effort(true);
-  AddCleanupDeprecatedPerUserRegistrationsWorkItems(cleanup_list.get());
-  cleanup_list->Do();
-
   // Only create shortcuts on Active Setup if the first run sentinel is not
   // present for this user (as some shortcuts used to be installed on first
   // run and this could otherwise re-install shortcuts for users that have

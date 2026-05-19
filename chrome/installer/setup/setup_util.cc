@@ -6,8 +6,6 @@
 
 #include "chrome/installer/setup/setup_util.h"
 
-#include <objbase.h>
-
 #include <windows.h>
 
 #include <stddef.h>
@@ -66,26 +64,6 @@ namespace {
 // Event log providers registry location.
 constexpr wchar_t kEventLogProvidersRegPath[] =
     L"SYSTEM\\CurrentControlSet\\Services\\EventLog\\Application\\";
-
-// Remove the registration of the browser's DelegateExecute verb handler class.
-// This was once registered in support of "metro" mode on Windows 8.
-void RemoveLegacyIExecuteCommandKey(const InstallerState& installer_state) {
-  const std::wstring handler_class_uuid =
-      install_static::GetLegacyCommandExecuteImplClsid();
-
-  // No work to do if this mode of install never registered a DelegateExecute
-  // verb handler.
-  if (handler_class_uuid.empty())
-    return;
-
-  const HKEY root = installer_state.root_key();
-  std::wstring delegate_execute_path(L"Software\\Classes\\CLSID\\");
-  delegate_execute_path.append(handler_class_uuid);
-
-  // Delete both 64 and 32 keys to handle 32->64 or 64->32 migration.
-  for (REGSAM bitness : {KEY_WOW64_32KEY, KEY_WOW64_64KEY})
-    installer::DeleteRegistryKey(root, delegate_execute_path, bitness);
-}
 
 // "The binaries" once referred to the on-disk footprint of Chrome and/or Chrome
 // Frame when the products were configured to share such on-disk bits. Support
@@ -517,9 +495,6 @@ void DoLegacyCleanups(const InstallerState& installer_state,
   // Do no harm if the install didn't succeed.
   if (InstallUtil::GetInstallReturnCode(install_status))
     return;
-
-  // Cleanups that apply to any install mode.
-  RemoveLegacyIExecuteCommandKey(installer_state);
 
   // The cleanups below only apply to normal Chrome, not side-by-side (canary).
   if (!install_static::InstallDetails::Get().is_primary_mode())

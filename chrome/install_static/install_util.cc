@@ -424,10 +424,6 @@ std::wstring GetActiveSetupPath() {
       .append(InstallDetails::Get().mode().active_setup_guid);
 }
 
-std::wstring GetLegacyCommandExecuteImplClsid() {
-  return InstallDetails::Get().mode().legacy_command_execute_clsid;
-}
-
 bool SupportsSetAsDefaultBrowser() {
   return InstallDetails::Get().mode().supports_set_as_default_browser;
 }

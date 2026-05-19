@@ -984,14 +984,12 @@ void AddInstallWorkItems(const InstallParams& install_params,
 
   AddChromeWorkItems(install_params, install_list);
 
-  // Copy installer in install directory
+  // Copy installer in install directory.
   AddInstallerCopyTasks(install_params, install_list);
 
   AddUninstallShortcutWorkItems(install_params, install_list);
 
   AddVersionKeyWorkItems(install_params, install_list);
-
-  AddCleanupDeprecatedPerUserRegistrationsWorkItems(install_list);
 
   AddActiveSetupWorkItems(installer_state, new_version, install_list);
 
@@ -1142,19 +1140,6 @@ void AddSetMsiMarkerWorkItem(const InstallerState& installer_state,
   DCHECK(set_msi_work_item);
   set_msi_work_item->set_best_effort(true);
   set_msi_work_item->set_log_message("Could not write MSI marker!");
-}
-
-void AddCleanupDeprecatedPerUserRegistrationsWorkItems(WorkItemList* list) {
-  // This cleanup was added in M49. There are still enough active users on M48
-  // and earlier today (M55 timeframe) to justify keeping this cleanup in-place.
-  // Remove this when that population stops shrinking.
-  VLOG(1) << "Adding unregistration items for per-user Metro keys.";
-  list->AddDeleteRegKeyWorkItem(HKEY_CURRENT_USER,
-                                install_static::GetRegistryPath() + L"\\Metro",
-                                KEY_WOW64_32KEY);
-  list->AddDeleteRegKeyWorkItem(HKEY_CURRENT_USER,
-                                install_static::GetRegistryPath() + L"\\Metro",
-                                KEY_WOW64_64KEY);
 }
 
 void AddActiveSetupWorkItems(const InstallerState& installer_state,

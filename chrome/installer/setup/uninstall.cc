@@ -96,17 +96,11 @@ void DeleteInstallTempDir(const base::FilePath& target_path) {
 // Processes uninstall WorkItems from install_worker in no-rollback-list.
 void ProcessChromeWorkItems(const InstallerState& installer_state) {
   std::unique_ptr<WorkItemList> work_item_list(WorkItem::CreateWorkItemList());
-  work_item_list->set_log_message(
-      "Cleanup OS upgrade command and deprecated per-user registrations");
+  work_item_list->set_log_message("Cleanup OS upgrade command");
   work_item_list->set_best_effort(true);
   work_item_list->set_rollback_enabled(false);
   AddOsUpgradeWorkItems(installer_state, base::FilePath(), base::Version(),
                         work_item_list.get());
-  // Perform a best-effort cleanup of per-user keys. On system-level installs
-  // this will only cleanup keys for the user running the uninstall but it was
-  // considered that this was good enough (better than triggering Active Setup
-  // for all users solely for this cleanup).
-  AddCleanupDeprecatedPerUserRegistrationsWorkItems(work_item_list.get());
   work_item_list->Do();
 }
 

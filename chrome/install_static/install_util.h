@@ -159,10 +159,6 @@ const wchar_t* GetPDFProgIdDescription();
 // (e.g., Software\Microsoft\Active Setup\Installed Components\[guid]).
 std::wstring GetActiveSetupPath();
 
-// Returns the legacy CommandExecuteImpl CLSID, or an empty string if the
-// install mode never included a DelegateExecute verb handler.
-std::wstring GetLegacyCommandExecuteImplClsid();
-
 // Returns true if this mode supports in-product mechanisms to make the browser
 // the user's chosen default browser.
 bool SupportsSetAsDefaultBrowser();

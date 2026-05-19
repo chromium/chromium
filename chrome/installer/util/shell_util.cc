@@ -18,7 +18,6 @@
 #include <wrl/client.h>
 
 #include <algorithm>
-#include <iterator>
 #include <limits>
 #include <memory>
 #include <string>
@@ -60,8 +59,6 @@
 #include "chrome/installer/util/initial_preferences.h"
 #include "chrome/installer/util/initial_preferences_constants.h"
 #include "chrome/installer/util/install_util.h"
-#include "chrome/installer/util/installer_util_strings.h"
-#include "chrome/installer/util/l10n_string_util.h"
 #include "chrome/installer/util/registry_entry.h"
 #include "chrome/installer/util/registry_util.h"
 #include "chrome/installer/util/taskbar_util.h"
@@ -221,66 +218,6 @@ std::wstring GetCapabilitiesKey(const std::wstring& suffix) {
   return base::StrCat({GetBrowserClientKey(suffix), L"\\Capabilities"});
 }
 
-// DelegateExecute ProgId. Needed for Chrome Metro in Windows 8. This is only
-// needed for registering a web browser, not for general associations.
-std::vector<std::unique_ptr<RegistryEntry>> GetChromeDelegateExecuteEntries(
-    const base::FilePath& chrome_exe,
-    const ShellUtil::ApplicationInfo& app_info) {
-  std::vector<std::unique_ptr<RegistryEntry>> entries;
-
-  std::wstring app_id_shell_key =
-      base::StrCat({ShellUtil::kRegClasses, kFilePathSeparator, app_info.app_id,
-                    ShellUtil::kRegExePath, ShellUtil::kRegShellPath});
-
-  // <root hkey>\Software\Classes\<app_id>\.exe\shell @=open
-  entries.push_back(std::make_unique<RegistryEntry>(app_id_shell_key,
-                                                    ShellUtil::kRegVerbOpen));
-
-  // The command to execute when opening this application via the Metro UI.
-  const std::wstring delegate_command(
-      ShellUtil::GetChromeDelegateCommand(chrome_exe));
-
-  // Each of Chrome's shortcuts has an appid; which, as of Windows 8, is
-  // registered to handle some verbs. This registration has the side-effect
-  // that these verbs now show up in the shortcut's context menu. We
-  // mitigate this side-effect by making the context menu entries
-  // user readable/localized strings. See relevant MSDN article:
-  // http://msdn.microsoft.com/en-US/library/windows/desktop/cc144171.aspx
-  static const struct {
-    const wchar_t* verb;
-    int name_id;
-  } verbs[] = {
-      {ShellUtil::kRegVerbOpen, -1},
-      {ShellUtil::kRegVerbOpenNewWindow, IDS_SHORTCUT_NEW_WINDOW_BASE},
-  };
-  for (const auto& verb_and_id : verbs) {
-    std::wstring sub_path =
-        base::StrCat({app_id_shell_key, kFilePathSeparator, verb_and_id.verb});
-
-    // <root hkey>\Software\Classes\<app_id>\.exe\shell\<verb>
-    if (verb_and_id.name_id != -1) {
-      // TODO(grt): http://crbug.com/41337274 Write a reference to a localized
-      // resource.
-      const std::wstring verb_name(
-          installer::GetLocalizedString(verb_and_id.name_id));
-      entries.push_back(
-          std::make_unique<RegistryEntry>(sub_path, verb_name.c_str()));
-    }
-    entries.push_back(std::make_unique<RegistryEntry>(sub_path, L"CommandId",
-                                                      L"Browser.Launch"));
-
-    base::StrAppend(&sub_path, {kFilePathSeparator, ShellUtil::kRegCommand});
-
-    // <root hkey>\Software\Classes\<app_id>\.exe\shell\<verb>\command
-    entries.push_back(
-        std::make_unique<RegistryEntry>(sub_path, delegate_command));
-    entries.push_back(std::make_unique<RegistryEntry>(
-        sub_path, ShellUtil::kRegDelegateExecute, app_info.delegate_clsid));
-  }
-
-  return entries;
-}
-
 // Gets the registry entries to register an application in the Windows registry.
 // |app_info| provides all of the information needed.
 void GetProgIdEntries(const ShellUtil::ApplicationInfo& app_info,
@@ -289,7 +226,7 @@ void GetProgIdEntries(const ShellUtil::ApplicationInfo& app_info,
   DCHECK(!app_info.prog_id.empty());
   DCHECK_NE(L'.', app_info.prog_id[0]);
 
-  // File association ProgId
+  // File association ProgId.
   std::wstring prog_id_path = base::StrCat(
       {ShellUtil::kRegClasses, kFilePathSeparator, app_info.prog_id});
   entries->push_back(
@@ -300,22 +237,14 @@ void GetProgIdEntries(const ShellUtil::ApplicationInfo& app_info,
                                     app_info.file_type_icon_index)));
   entries->push_back(std::make_unique<RegistryEntry>(
       prog_id_path + ShellUtil::kRegShellOpen, app_info.command_line));
-  if (!app_info.delegate_clsid.empty()) {
-    entries->push_back(std::make_unique<RegistryEntry>(
-        prog_id_path + ShellUtil::kRegShellOpen, ShellUtil::kRegDelegateExecute,
-        app_info.delegate_clsid));
-    // TODO(scottmg): Simplify after Metro removal. https://crbug.com/40445378.
-    entries->back()->set_removal_flag(RegistryEntry::RemovalFlag::VALUE);
-  }
 
-  // The following entries are required but do not depend on the DelegateExecute
-  // verb handler being set.
+  // Associate the ProgId with the app's AppUserModelId.
   if (!app_info.app_id.empty()) {
     entries->push_back(std::make_unique<RegistryEntry>(
         prog_id_path, ShellUtil::kRegAppUserModelId, app_info.app_id));
   }
 
-  // Add \Software\Classes\<prog_id>\Application entries
+  // Add \Software\Classes\<prog_id>\Application entries.
   std::wstring application_path(prog_id_path + ShellUtil::kRegApplication);
   if (!app_info.app_id.empty()) {
     entries->push_back(std::make_unique<RegistryEntry>(
@@ -372,7 +301,6 @@ void GetChromeProgIdEntries(
   app_info.application_icon_index = chrome_icon_index;
   app_info.application_description = InstallUtil::GetAppDescription();
   app_info.publisher_name = InstallUtil::GetPublisherName();
-  app_info.delegate_clsid = install_static::GetLegacyCommandExecuteImplClsid();
 
   GetProgIdEntries(app_info, entries);
 
@@ -382,19 +310,6 @@ void GetChromeProgIdEntries(
   app_info.file_type_icon_index = install_static ::GetPDFIconResourceIndex();
   app_info.application_icon_index = chrome_icon_index;
   GetProgIdEntries(app_info, entries);
-
-  if (!app_info.delegate_clsid.empty()) {
-    auto delegate_execute_entries =
-        GetChromeDelegateExecuteEntries(chrome_exe, app_info);
-    // Remove the keys (not only their values) so that Windows will continue
-    // to launch Chrome without a pesky association error.
-    // TODO(scottmg): Simplify after Metro removal. https://crbug.com/40445378.
-    for (const auto& entry : delegate_execute_entries)
-      entry->set_removal_flag(RegistryEntry::RemovalFlag::KEY);
-    // Move |delegate_execute_entries| to |entries|.
-    std::move(delegate_execute_entries.begin(), delegate_execute_entries.end(),
-              std::back_inserter(*entries));
-  }
 }
 
 // This method returns a list of the registry entries needed to declare a
@@ -1015,21 +930,6 @@ base::win::ShortcutProperties TranslateShortcutProperties(
   return shortcut_properties;
 }
 
-// Cleans up an old verb (run) we used to register in
-// <root>\Software\Classes\Chrome<.suffix>\.exe\shell\run on Windows 8.
-void RemoveRunVerbOnWindows8() {
-  bool is_per_user_install = InstallUtil::IsPerUserInstall();
-  HKEY root_key = DetermineRegistrationRoot(is_per_user_install);
-  // There's no need to rollback, so forgo the usual work item lists and just
-  // remove the key from the registry.
-  std::wstring run_verb_key =
-      base::StrCat({ShellUtil::kRegClasses, kFilePathSeparator,
-                    ShellUtil::GetBrowserModelId(is_per_user_install),
-                    ShellUtil::kRegExePath, ShellUtil::kRegShellPath,
-                    kFilePathSeparator, ShellUtil::kRegVerbRun});
-  installer::DeleteRegistryKey(root_key, run_verb_key, WorkItem::kWow64Default);
-}
-
 // Probes default handler registration (in a manner appropriate for the current
 // version of Windows) to determine if Chrome is the default handler for
 // `identifiers`. `identifiers` can be either protocols or file extensions, and
@@ -1425,8 +1325,6 @@ bool RegisterChromeBrowserImpl(const base::FilePath& chrome_exe,
     return false;
   }
 
-  RemoveRunVerbOnWindows8();
-
   bool user_level = InstallUtil::IsPerUserInstall();
   HKEY root = DetermineRegistrationRoot(user_level);
 
@@ -1601,7 +1499,6 @@ const wchar_t* ShellUtil::kRegAppProtocolHandlers = L"\\AppProtocolHandlers";
 const wchar_t* ShellUtil::kRegDefaultIcon = L"\\DefaultIcon";
 const wchar_t* ShellUtil::kRegShellPath = L"\\shell";
 const wchar_t* ShellUtil::kRegShellOpen = L"\\shell\\open\\command";
-const wchar_t* ShellUtil::kRegSoftware = L"Software\\";
 const wchar_t* ShellUtil::kRegStartMenuInternet =
     L"Software\\Clients\\StartMenuInternet";
 const wchar_t* ShellUtil::kRegClasses = L"Software\\Classes";
@@ -1629,12 +1526,6 @@ const wchar_t* ShellUtil::kRegApplicationDescription =
 const wchar_t* ShellUtil::kRegApplicationName = L"ApplicationName";
 const wchar_t* ShellUtil::kRegApplicationIcon = L"ApplicationIcon";
 const wchar_t* ShellUtil::kRegApplicationCompany = L"ApplicationCompany";
-const wchar_t* ShellUtil::kRegExePath = L"\\.exe";
-const wchar_t* ShellUtil::kRegVerbOpen = L"open";
-const wchar_t* ShellUtil::kRegVerbOpenNewWindow = L"opennewwindow";
-const wchar_t* ShellUtil::kRegVerbRun = L"run";
-const wchar_t* ShellUtil::kRegCommand = L"command";
-const wchar_t* ShellUtil::kRegDelegateExecute = L"DelegateExecute";
 const wchar_t* ShellUtil::kRegOpenWithProgids = L"OpenWithProgids";
 
 ShellUtil::ShortcutProperties::ShortcutProperties(ShellChange level_in)
@@ -1872,11 +1763,6 @@ std::optional<std::pair<base::FilePath, int>> ShellUtil::ParseIconLocation(
 std::wstring ShellUtil::GetChromeShellOpenCmd(
     const base::FilePath& chrome_exe) {
   return base::CommandLine(chrome_exe).GetCommandLineStringForShell();
-}
-
-std::wstring ShellUtil::GetChromeDelegateCommand(
-    const base::FilePath& chrome_exe) {
-  return L"\"" + chrome_exe.value() + L"\" -- %*";
 }
 
 std::wstring ShellUtil::GetCurrentInstallationSuffix(

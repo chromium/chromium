@@ -267,13 +267,7 @@ class ShellUtil {
     int application_icon_index = 0;
     std::wstring application_description;
     std::wstring publisher_name;
-
-    // The CLSID for the application's DelegateExecute handler. May be empty.
-    std::wstring delegate_clsid;
   };
-
-  // Relative path of the URL Protocol registry entry (prefixed with '\').
-  static const wchar_t* kRegURLProtocol;
 
   // Registry key under which web app protocol handler prog_ids are stored.
   static const wchar_t* kRegAppProtocolHandlers;
@@ -287,9 +281,6 @@ class ShellUtil {
   // Relative path of shell open command in Windows registry
   // (i.e. \\shell\\open\\command).
   static const wchar_t* kRegShellOpen;
-
-  // Relative path of registry key under which applications need to register.
-  static const wchar_t* kRegSoftware;
 
   // Relative path of registry key under which applications need to register
   // to control Windows Start menu links.
@@ -349,24 +340,6 @@ class ShellUtil {
 
   // Registry value name for an application's company.
   static const wchar_t* kRegApplicationCompany;
-
-  // Relative path of ".exe" registry key.
-  static const wchar_t* kRegExePath;
-
-  // Registry value name of the open verb.
-  static const wchar_t* kRegVerbOpen;
-
-  // Registry value name of the opennewwindow verb.
-  static const wchar_t* kRegVerbOpenNewWindow;
-
-  // Registry value name of the run verb.
-  static const wchar_t* kRegVerbRun;
-
-  // Registry value name for command entries.
-  static const wchar_t* kRegCommand;
-
-  // Registry value name for the DelegateExecute verb handler.
-  static const wchar_t* kRegDelegateExecute;
 
   // Registry value name for the OpenWithProgids entry for file associations.
   static const wchar_t* kRegOpenWithProgids;
@@ -444,13 +417,6 @@ class ShellUtil {
   // this command is written to the registry under shell\open\command key.
   // |chrome_exe|: the full path to chrome.exe
   static std::wstring GetChromeShellOpenCmd(const base::FilePath& chrome_exe);
-
-  // This method returns the command to be called by the DelegateExecute verb
-  // handler to launch chrome on Windows 8. Typically this command is written to
-  // the registry under the HKCR\Chrome\.exe\shell\(open|run)\command key.
-  // |chrome_exe|: the full path to chrome.exe
-  static std::wstring GetChromeDelegateCommand(
-      const base::FilePath& chrome_exe);
 
   // Returns the suffix this user's Chrome install is registered with.
   // Always returns the empty string on system-level installs.

@@ -60,7 +60,6 @@ inline constexpr auto kInstallModes = std::to_array<InstallConstants>({
         .active_setup_guid =
             L"{E25CFD4E-D9D4-4123-936A-286FBB19BA5B}",  // Active Setup
                                                         // GUID.
-        .legacy_command_execute_clsid = L"",  // CommandExecuteImpl CLSID.
         .toast_activator_clsid = {0x77ED8F9B,
                                   0xE27A,
                                   0x499F,
