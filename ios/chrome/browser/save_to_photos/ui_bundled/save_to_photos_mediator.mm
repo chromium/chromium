@@ -39,6 +39,7 @@
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
 #import "ios/chrome/browser/signin/model/system_identity.h"
 #import "ios/chrome/browser/web/model/image_fetch/image_fetch_tab_helper.h"
+#import "ios/chrome/common/string_util.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
@@ -355,9 +356,10 @@ NSString* const kGooglePhotosAppURLScheme = @"googlephotos";
       l10n_util::GetNSString(IDS_IOS_SETTINGS_DOWNLOADS_SAVE_TO_PHOTOS_HEADER);
 #endif
   NSString* imageSize = GetSizeString(_imageData.length);
+  NSString* sanitizedImageName = RemoveFormattingTags(_imageName);
   configuration.bodyText =
       l10n_util::GetNSStringF(IDS_IOS_SAVE_TO_PHOTOS_ACCOUNT_PICKER_BODY,
-                              base::SysNSStringToUTF16(_imageName),
+                              base::SysNSStringToUTF16(sanitizedImageName),
                               base::SysNSStringToUTF16(imageSize));
   configuration.submitButtonTitle =
       l10n_util::GetNSString(IDS_IOS_SAVE_TO_PHOTOS_ACCOUNT_PICKER_SUBMIT);

@@ -186,3 +186,27 @@ NSAttributedString* PutBoldPartInString(NSString* string,
 
   return attributed_string;
 }
+
+NSString* RemoveFormattingTags(NSString* string) {
+  if (!string) {
+    return nil;
+  }
+  NSMutableString* sanitized = [string mutableCopy];
+  [sanitized replaceOccurrencesOfString:@"BEGIN_BOLD"
+                             withString:@"BEGIN BOLD"
+                                options:NSLiteralSearch
+                                  range:NSMakeRange(0, sanitized.length)];
+  [sanitized replaceOccurrencesOfString:@"END_BOLD"
+                             withString:@"END BOLD"
+                                options:NSLiteralSearch
+                                  range:NSMakeRange(0, sanitized.length)];
+  [sanitized replaceOccurrencesOfString:@"BEGIN_LINK"
+                             withString:@"BEGIN LINK"
+                                options:NSLiteralSearch
+                                  range:NSMakeRange(0, sanitized.length)];
+  [sanitized replaceOccurrencesOfString:@"END_LINK"
+                             withString:@"END LINK"
+                                options:NSLiteralSearch
+                                  range:NSMakeRange(0, sanitized.length)];
+  return sanitized;
+}

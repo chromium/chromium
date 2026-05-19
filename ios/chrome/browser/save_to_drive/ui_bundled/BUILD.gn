@@ -83,6 +83,7 @@ source_set("util") {
     "//base",
     "//ios/chrome/app/strings:ios_strings_grit",
     "//ios/chrome/browser/account_picker/ui_bundled:account_picker_configuration",
+    "//ios/chrome/common:string_util",
     "//ios/web/public/download",
     "//ui/base",
   ]

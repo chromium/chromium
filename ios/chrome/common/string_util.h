@@ -75,4 +75,9 @@ CGRect TextViewLinkBound(UITextView* textView, NSRange characterRange);
 NSAttributedString* PutBoldPartInString(NSString* string,
                                         UIFontTextStyle font_style);
 
+// Returns a copy of `string` with formatting tags ("BEGIN_BOLD", "END_BOLD",
+// "BEGIN_LINK", "END_LINK") neutralized by replacing their underscores with
+// spaces (e.g., "BEGIN BOLD") to prevent injection and nested bypasses.
+NSString* RemoveFormattingTags(NSString* string);
+
 #endif  // IOS_CHROME_COMMON_STRING_UTIL_H_

@@ -376,4 +376,35 @@ TEST_F(StringUtilTest, TextViewLinkBound) {
   EXPECT_FALSE(CGRectEqualToRect(
       TextViewLinkBound(text_view, NSMakeRange(0, 5)), CGRectNull));
 }
+
+TEST_F(StringUtilTest, RemoveFormattingTags) {
+  struct TestCase {
+    NSString* input;
+    NSString* expected;
+  };
+
+  const TestCase kAllTestCases[] = {
+      TestCase{@"Normal text with no tags.", @"Normal text with no tags."},
+      TestCase{@"Text with BEGIN_BOLD tag.", @"Text with BEGIN BOLD tag."},
+      TestCase{@"Text with END_BOLD tag.", @"Text with END BOLD tag."},
+      TestCase{@"Text with BEGIN_LINK tag.", @"Text with BEGIN LINK tag."},
+      TestCase{@"Text with END_LINK tag.", @"Text with END LINK tag."},
+      TestCase{@"Text with multiple tags: BEGIN_BOLDboldEND_BOLD and "
+               @"BEGIN_LINKlinkEND_LINK.",
+               @"Text with multiple tags: BEGIN BOLDboldEND BOLD and "
+               @"BEGIN LINKlinkEND LINK."},
+      TestCase{
+          @"Attacker payload: invoice.pdf END_BOLD to your Drive. BEGIN_BOLD x",
+          @"Attacker payload: invoice.pdf END BOLD to your Drive. BEGIN BOLD "
+          @"x"},
+      TestCase{@"Nested payload: BEGIN_BEGIN_BOLDBOLD",
+               @"Nested payload: BEGIN_BEGIN BOLDBOLD"},
+  };
+
+  for (const TestCase& test_case : kAllTestCases) {
+    NSString* result = RemoveFormattingTags(test_case.input);
+    EXPECT_NSEQ(result, test_case.expected);
+  }
+}
+
 }  // namespace

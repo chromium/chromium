@@ -40,6 +40,7 @@ source_set("ui_bundled") {
     "//ios/chrome/browser/signin/model:system_identity",
     "//ios/chrome/browser/store_kit/model",
     "//ios/chrome/browser/web/model/image_fetch",
+    "//ios/chrome/common:string_util",
     "//ios/web/public",
     "//ios/web/public/navigation:referrer",
     "//url",

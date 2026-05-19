@@ -8,6 +8,7 @@
 #import "base/files/file_path.h"
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/account_picker/ui_bundled/account_picker_configuration.h"
+#import "ios/chrome/common/string_util.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/web/public/download/download_task.h"
 #import "ui/base/l10n/l10n_util_mac.h"
@@ -26,7 +27,9 @@ NSString* GetSizeString(int64_t size_in_bytes) {
 }
 
 NSString* GetAccountPickerBodyText(NSString* file_name, int64_t file_size) {
-  const auto file_name_u16string = base::SysNSStringToUTF16(file_name);
+  NSString* sanitized_file_name = RemoveFormattingTags(file_name);
+  const auto file_name_u16string =
+      base::SysNSStringToUTF16(sanitized_file_name);
   if (file_size > -1) {
     const auto file_size_u16string =
         base::SysNSStringToUTF16(GetSizeString(file_size));
