@@ -84,30 +84,6 @@ extern const char kPageActionMenuDirectEntryPointParam[];
 const base::TimeDelta BWGSessionValidityDuration();
 extern const char kBWGSessionValidityDurationParam[];
 
-// Holds the variations of the BWG Promo Consent flow.
-enum class BWGPromoConsentVariations {
-  kDisabled = 0,
-  kSinglePage = 1,
-  kDoublePage = 2,
-  kSkipConsent = 3,
-  kForceFRE = 4,
-  kSkipNewUserDelay = 5,
-};
-extern const char kBWGPromoConsentParams[];
-
-// Returns the variation of the BWG Promo Consent flow.
-BWGPromoConsentVariations BWGPromoConsentVariationsParam();
-
-// Returns YES if the promo should be forced.
-bool ShouldForceBWGPromo();
-
-// Returns YES if the Chrome FRE recency check should be skipped when evaluating
-// whether to show the Gemini on-navigation promo.
-bool ShouldSkipBWGPromoNewUserDelay();
-
-// Feature flag to enable BWG Promo Consent.
-BASE_DECLARE_FEATURE(kBWGPromoConsent);
-
 // Feature flag to enable Explain Gemini in Edit Menu.
 BASE_DECLARE_FEATURE(kExplainGeminiEditMenu);
 
@@ -421,5 +397,35 @@ BASE_DECLARE_FEATURE(kGeneralizedGeminiEntryFlow);
 
 // Returns true if the generalized Gemini entry flow is enabled.
 bool IsGeneralizedGeminiEntryFlowEnabled();
+
+#pragma mark - Debugging Features
+
+// Holds the variations of the BWG Promo Consent flow for debugging.
+enum class BWGPromoConsentVariations {
+  kDisabled = 0,
+  kSinglePage = 1,
+  kDoublePage = 2,
+  kSkipConsent = 3,
+  kForceFRE = 4,
+  kSkipNewUserDelay = 5,
+};
+extern const char kBWGPromoConsentParams[];
+
+// Returns the variation of the BWG Promo Consent flow.
+BWGPromoConsentVariations BWGPromoConsentVariationsParam();
+
+// Returns YES if the promo should be forced.
+bool ShouldForceBWGPromo();
+
+// Returns YES if the Chrome FRE recency check should be skipped when evaluating
+// whether to show the Gemini on-navigation promo.
+bool ShouldSkipBWGPromoNewUserDelay();
+
+// Feature flag to enable BWG Promo Consent for debugging.
+BASE_DECLARE_FEATURE(kBWGPromoConsent);
+
+// Feature flag to enable the ActorServiceLogging feature for debugging.
+BASE_DECLARE_FEATURE(kActorServiceLogging);
+bool IsActorServiceLoggingEnabled();
 
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_FEATURES_FEATURES_H_

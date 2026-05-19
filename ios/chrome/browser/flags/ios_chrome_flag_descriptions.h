@@ -49,6 +49,10 @@ inline constexpr char kAIOmniboxAskPlaceholderDescription[] =
     "Enables the placeholder text to be 'Ask...' instead of 'Search...' when "
     "AI Omnibox is available.";
 
+inline constexpr char kActorServiceLoggingName[] = "ActorServiceLogging";
+inline constexpr char kActorServiceLoggingDescription[] =
+    "Enables Actor logging, which is for debugging only.";
+
 inline constexpr char kAimCobrowseHeaderName[] = "AimCobrowseHeader";
 inline constexpr char kAimCobrowseHeaderDescription[] =
     "Changes the design of the AIM cobrowse header.";

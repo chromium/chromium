@@ -586,8 +586,6 @@ const FeatureEntry::FeatureParam kPriceTrackingPromoForceHideArm[] = {
      segmentation_platform::kPriceTrackingNotificationPromo},
 };
 
-
-
 // Address Bar Position
 const FeatureEntry::FeatureParam kTipsAddressBarPositionForceShowArm[] = {
     {segmentation_platform::features::kEphemeralCardRankerForceShowCardParam,
@@ -687,8 +685,6 @@ const FeatureEntry::FeatureParam kDefaultBrowserPromoForceHideArm[] = {
     {segmentation_platform::features::kEphemeralCardRankerForceHideCardParam,
      segmentation_platform::kDefaultBrowserPromoEphemeralModule},
 };
-
-
 
 const FeatureEntry::FeatureVariation kEphemeralCardRankerCardOverrideOptions[] =
     {
@@ -2900,6 +2896,9 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
      FEATURE_WITH_PARAMS_VALUE_TYPE(kPageStabilityMetrics,
                                     kPageStabilityMetricsVariations,
                                     "PageStabilityMetrics")},
+    {"actor-service-logging", flag_descriptions::kActorServiceLoggingName,
+     flag_descriptions::kActorServiceLoggingDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kActorServiceLogging)},
 });
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

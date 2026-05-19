@@ -188,52 +188,6 @@ const base::TimeDelta BWGSessionValidityDuration() {
   return base::Minutes(kBWGSessionValidityDurationFeatureParam.Get());
 }
 
-const char kBWGPromoConsentParams[] = "BWGPromoConsentVariations";
-
-BASE_FEATURE_PARAM(int,
-                   kBWGPromoConsentFeatureParam,
-                   &kBWGPromoConsent,
-                   kBWGPromoConsentParams,
-                   0);
-
-BWGPromoConsentVariations BWGPromoConsentVariationsParam() {
-  int param = kBWGPromoConsentFeatureParam.Get();
-  if (!IsPageActionMenuEnabled()) {
-    return BWGPromoConsentVariations::kDisabled;
-  }
-  if (param == 1) {
-    return BWGPromoConsentVariations::kSinglePage;
-  }
-  if (param == 2) {
-    return BWGPromoConsentVariations::kDoublePage;
-  }
-  if (param == 3) {
-    return BWGPromoConsentVariations::kSkipConsent;
-  }
-  if (param == 4) {
-    return BWGPromoConsentVariations::kForceFRE;
-  }
-  if (param == 5) {
-    return BWGPromoConsentVariations::kSkipNewUserDelay;
-  }
-  return BWGPromoConsentVariations::kDisabled;
-}
-
-bool ShouldForceBWGPromo() {
-  if (!IsPageActionMenuEnabled()) {
-    return false;
-  }
-  return BWGPromoConsentVariationsParam() ==
-         BWGPromoConsentVariations::kForceFRE;
-}
-
-bool ShouldSkipBWGPromoNewUserDelay() {
-  return BWGPromoConsentVariationsParam() ==
-         BWGPromoConsentVariations::kSkipNewUserDelay;
-}
-
-BASE_FEATURE(kBWGPromoConsent, base::FEATURE_DISABLED_BY_DEFAULT);
-
 const char kExplainGeminiEditMenuParams[] = "PositionForExplainGeminiEditMenu";
 
 BASE_FEATURE_PARAM(int,
@@ -837,4 +791,57 @@ bool IsGeneralizedGeminiEntryFlowEnabled() {
     return false;
   }
   return base::FeatureList::IsEnabled(kGeneralizedGeminiEntryFlow);
+}
+
+#pragma mark - Debugging Features
+
+const char kBWGPromoConsentParams[] = "BWGPromoConsentVariations";
+
+BASE_FEATURE_PARAM(int,
+                   kBWGPromoConsentFeatureParam,
+                   &kBWGPromoConsent,
+                   kBWGPromoConsentParams,
+                   0);
+
+BWGPromoConsentVariations BWGPromoConsentVariationsParam() {
+  int param = kBWGPromoConsentFeatureParam.Get();
+  if (!IsPageActionMenuEnabled()) {
+    return BWGPromoConsentVariations::kDisabled;
+  }
+  if (param == 1) {
+    return BWGPromoConsentVariations::kSinglePage;
+  }
+  if (param == 2) {
+    return BWGPromoConsentVariations::kDoublePage;
+  }
+  if (param == 3) {
+    return BWGPromoConsentVariations::kSkipConsent;
+  }
+  if (param == 4) {
+    return BWGPromoConsentVariations::kForceFRE;
+  }
+  if (param == 5) {
+    return BWGPromoConsentVariations::kSkipNewUserDelay;
+  }
+  return BWGPromoConsentVariations::kDisabled;
+}
+
+bool ShouldForceBWGPromo() {
+  if (!IsPageActionMenuEnabled()) {
+    return false;
+  }
+  return BWGPromoConsentVariationsParam() ==
+         BWGPromoConsentVariations::kForceFRE;
+}
+
+bool ShouldSkipBWGPromoNewUserDelay() {
+  return BWGPromoConsentVariationsParam() ==
+         BWGPromoConsentVariations::kSkipNewUserDelay;
+}
+
+BASE_FEATURE(kBWGPromoConsent, base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kActorServiceLogging, base::FEATURE_DISABLED_BY_DEFAULT);
+bool IsActorServiceLoggingEnabled() {
+  return base::FeatureList::IsEnabled(kActorServiceLogging);
 }

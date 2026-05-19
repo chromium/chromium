@@ -38,6 +38,11 @@
     "expiry_milestone": 110
   },
   {
+    "name": "actor-service-logging",
+    "owners": [ "nicolasmacbeth@google.com", "bling-alchemy-eng@google.com" ],
+    "expiry_milestone": 160
+  },
+  {
     "name": "ai-hub-new-badge",
     "owners": [
       "joemerramos@google.com",

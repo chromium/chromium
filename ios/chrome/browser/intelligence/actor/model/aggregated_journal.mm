@@ -8,13 +8,54 @@
 #import <vector>
 
 #import "base/json/json_writer.h"
+#import "base/logging.h"
 #import "base/memory/ptr_util.h"
 #import "base/memory/safe_ref.h"
 #import "base/memory/weak_ptr.h"
 #import "base/strings/string_number_conversions.h"
 #import "base/time/time.h"
 #import "base/values.h"
+#import "ios/chrome/browser/intelligence/features/features.h"
 #import "url/gurl.h"
+
+namespace {
+
+// Logs a journal entry to the console.
+void LogJournalEntry(const actor::AggregatedJournal::Entry* entry) {
+  CHECK(IsActorServiceLoggingEnabled());
+
+  if (!entry || !entry->data) {
+    return;
+  }
+
+  std::string type_str;
+  switch (entry->data->type) {
+    case actor::JournalEntryType::kBegin:
+      type_str = "Begin";
+      break;
+    case actor::JournalEntryType::kEnd:
+      type_str = "End";
+      break;
+    case actor::JournalEntryType::kInstant:
+      type_str = "Instant";
+      break;
+  }
+
+  std::string details_str;
+  for (const auto& detail : entry->data->details) {
+    details_str += detail.key + ": " + detail.value + ", ";
+  }
+
+  if (!details_str.empty()) {
+    details_str = " [" + details_str.substr(0, details_str.length() - 2) + "]";
+  }
+
+  LOG(INFO) << "ActorService::AggregatedJournal: [" << type_str << "] Task "
+            << entry->data->task_id.value() << " - " << entry->data->event
+            << details_str;
+}
+
+}  // namespace
 
 namespace actor {
 
@@ -214,6 +255,11 @@ void AggregatedJournal::AddEndEvent(base::PassKey<AggregatedJournal>,
 
 void AggregatedJournal::AddEntry(std::unique_ptr<Entry> entry) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (IsActorServiceLoggingEnabled()) {
+    LogJournalEntry(entry.get());
+  }
+
   entries_.SaveToBuffer(std::move(entry));
 }
 

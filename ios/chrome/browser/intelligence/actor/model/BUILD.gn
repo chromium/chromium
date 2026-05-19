@@ -62,6 +62,7 @@ source_set("aggregated_journal") {
   deps = [
     "//base",
     "//ios/chrome/browser/intelligence/actor/public:actor_types",
+    "//ios/chrome/browser/intelligence/features",
     "//url",
   ]
 }
