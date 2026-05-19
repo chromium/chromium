@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_SEARCH_PROMOTION_SEARCH_PROMOTION_MANAGER_H_
 
 #include "base/memory/raw_ref.h"
-#include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -36,8 +35,14 @@ class SearchPromotionManager : public KeyedService {
   // Returns true if the promo is allowed by feature flags.
   bool IsPromoAllowedForTesting();
 
+  // Returns true if the profile meets the required low engagement level.
+  bool IsEngagementLowEnoughForTesting();
+
  private:
-  bool CheckEngagementLevel();
+  // Checks whether the current user profile belongs to the low engagement tier
+  // (defined as being active fewer than 9 days out of the last 28 days).
+  // Uses cached results from SegmentationPlatformService.
+  bool IsEngagementLowEnough();
 
   void PerformArmA();
   void PerformArmB();

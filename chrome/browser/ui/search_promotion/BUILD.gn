@@ -30,8 +30,10 @@ source_set("search_promotion") {
 
   deps = [
     "//chrome/browser/feature_engagement",
+    "//chrome/browser/segmentation_platform",
     "//components/feature_engagement/public",
     "//components/google/core/common",
+    "//components/segmentation_platform/public",
     "//components/tabs:public",
   ]
 }
@@ -41,9 +43,12 @@ source_set("unit_tests") {
   sources = [ "search_promotion_manager_unittest.cc" ]
   deps = [
     ":search_promotion",
+    "//chrome/browser/segmentation_platform",
     "//chrome/test:test_support",
     "//components/feature_engagement/public",
     "//components/feature_engagement/test:test_support",
+    "//components/segmentation_platform/public",
+    "//components/segmentation_platform/public:test_support",
     "//components/tabs:test_support",
     "//testing/gmock",
     "//testing/gtest",

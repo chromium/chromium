@@ -5,12 +5,30 @@
 #include "chrome/browser/ui/search_promotion/search_promotion_manager.h"
 
 #include <string>
+#include <utility>
 
 #include "base/notimplemented.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/segmentation_platform/segmentation_platform_service_factory.h"
 #include "components/feature_engagement/public/feature_constants.h"
+#include "components/segmentation_platform/public/constants.h"
+#include "components/segmentation_platform/public/segment_selection_result.h"
+#include "components/segmentation_platform/public/segmentation_platform_service.h"
 #include "url/gurl.h"
+
+namespace {
+
+// Target group: 0 -> 8 days out of 28.
+//
+// We query SegmentationPlatformService using
+// kChromeLowUserEngagementSegmentationKey, which tracks Session.TotalDuration
+// over 28 days and classifies users into low user engagement if active fewer
+// than 9 days out of the last 28 days. This model auto-executes and caches its
+// results on browser startup, ensuring lookups during navigation are extremely
+// fast and non-blocking.
+
+}  // namespace
 
 SearchPromotionManager::SearchPromotionManager(Profile& profile)
     : profile_(profile) {
@@ -38,6 +56,10 @@ void SearchPromotionManager::OnTargetURLVisited(const GURL& url) {
     return;
   }
 
+  if (!IsEngagementLowEnough()) {
+    return;
+  }
+
   if (arm_ == feature_engagement::kSearchPromotionArmA) {
     PerformArmA();
   } else if (arm_ == feature_engagement::kSearchPromotionArmB) {
@@ -53,9 +75,37 @@ bool SearchPromotionManager::IsPromoAllowedForTesting() {
   return is_promo_allowed_;
 }
 
-bool SearchPromotionManager::CheckEngagementLevel() {
-  NOTIMPLEMENTED();
-  return false;
+bool SearchPromotionManager::IsEngagementLowEnoughForTesting() {
+  return IsEngagementLowEnough();
+}
+
+bool SearchPromotionManager::IsEngagementLowEnough() {
+  // Ensure we only target standard, persistent user profiles.
+  // IsRegularProfile() filters out stuff like incognito, off the record
+  // profiles, etc.
+  if (!profile_->IsRegularProfile()) {
+    return false;
+  }
+
+  auto* service =
+      segmentation_platform::SegmentationPlatformServiceFactory::GetForProfile(
+          &profile_.get());
+  if (!service) {
+    return false;
+  }
+
+  // Use cached startup results.
+  segmentation_platform::SegmentSelectionResult result =
+      service->GetCachedSegmentResult(
+          segmentation_platform::kChromeLowUserEngagementSegmentationKey);
+
+  if (!result.is_ready || !result.segment.has_value()) {
+    return false;
+  }
+
+  return result.segment.value() ==
+         segmentation_platform::proto::SegmentId::
+             OPTIMIZATION_TARGET_SEGMENTATION_CHROME_LOW_USER_ENGAGEMENT;
 }
 
 void SearchPromotionManager::PerformArmA() {

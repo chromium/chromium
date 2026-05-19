@@ -5,14 +5,21 @@
 #include "chrome/browser/ui/search_promotion/search_promotion_manager.h"
 
 #include <memory>
+#include <string>
+#include <utility>
 
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/segmentation_platform/segmentation_platform_service_factory.h"
 #include "chrome/browser/ui/search_promotion/search_promotion_manager_factory.h"
 #include "chrome/browser/ui/search_promotion/search_promotion_navigation_observer.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/feature_engagement/public/feature_constants.h"
+#include "components/segmentation_platform/public/constants.h"
+#include "components/segmentation_platform/public/proto/segmentation_platform.pb.h"
+#include "components/segmentation_platform/public/segment_selection_result.h"
+#include "components/segmentation_platform/public/testing/mock_segmentation_platform_service.h"
 #include "components/tabs/public/mock_tab_interface.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/browser_context.h"
@@ -35,6 +42,12 @@ std::unique_ptr<KeyedService> BuildMockSearchPromotionManager(
     content::BrowserContext* context) {
   return std::make_unique<MockSearchPromotionManager>(
       *Profile::FromBrowserContext(context));
+}
+
+std::unique_ptr<KeyedService> BuildMockSegmentationPlatformService(
+    content::BrowserContext* context) {
+  return std::make_unique<testing::NiceMock<
+      segmentation_platform::MockSegmentationPlatformService>>();
 }
 
 }  // namespace
@@ -66,6 +79,75 @@ TEST_F(SearchPromotionManagerTest, IsPromoAllowedGuardedByFeature) {
     SearchPromotionManager manager(*profile());
     EXPECT_TRUE(IsPromoAllowed(manager));
   }
+}
+
+TEST_F(SearchPromotionManagerTest, EngagementThresholdGating) {
+  feature_list_.InitAndEnableFeature(
+      feature_engagement::kIPHSearchPromotionFeature);
+
+  segmentation_platform::MockSegmentationPlatformService* mock_service =
+      static_cast<segmentation_platform::MockSegmentationPlatformService*>(
+          segmentation_platform::SegmentationPlatformServiceFactory::
+              GetInstance()
+                  ->SetTestingFactoryAndUse(
+                      profile(), base::BindRepeating(
+                                     &BuildMockSegmentationPlatformService)));
+
+  SearchPromotionManager* manager =
+      SearchPromotionManagerFactory::GetForProfile(profile());
+  ASSERT_TRUE(manager);
+
+  // Case 1: Backend is not ready in cache, returns false (skips promo).
+  segmentation_platform::SegmentSelectionResult not_ready_result;
+  not_ready_result.is_ready = false;
+  EXPECT_CALL(
+      *mock_service,
+      GetCachedSegmentResult(
+          segmentation_platform::kChromeLowUserEngagementSegmentationKey))
+      .WillOnce(testing::Return(not_ready_result));
+
+  EXPECT_FALSE(manager->IsEngagementLowEnoughForTesting());
+
+  segmentation_platform::SegmentSelectionResult low_engagement_result;
+  low_engagement_result.is_ready = true;
+  low_engagement_result.segment = segmentation_platform::proto::SegmentId::
+      OPTIMIZATION_TARGET_SEGMENTATION_CHROME_LOW_USER_ENGAGEMENT;
+
+  // Case 2: Backend is ready in cache, but no segment selected (e.g.
+  // insufficient data).
+  segmentation_platform::SegmentSelectionResult no_segment_result;
+  no_segment_result.is_ready = true;
+  no_segment_result.segment = std::nullopt;
+  EXPECT_CALL(
+      *mock_service,
+      GetCachedSegmentResult(
+          segmentation_platform::kChromeLowUserEngagementSegmentationKey))
+      .WillOnce(testing::Return(no_segment_result));
+
+  EXPECT_FALSE(manager->IsEngagementLowEnoughForTesting());
+
+  // Case 3: Backend is ready in cache, but user is in a different segment (high
+  // engagement).
+  segmentation_platform::SegmentSelectionResult high_engagement_result;
+  high_engagement_result.is_ready = true;
+  high_engagement_result.segment = segmentation_platform::proto::SegmentId::
+      OPTIMIZATION_TARGET_SEGMENTATION_DUMMY;
+  EXPECT_CALL(
+      *mock_service,
+      GetCachedSegmentResult(
+          segmentation_platform::kChromeLowUserEngagementSegmentationKey))
+      .WillOnce(testing::Return(high_engagement_result));
+
+  EXPECT_FALSE(manager->IsEngagementLowEnoughForTesting());
+
+  // Case 4: Backend is ready in cache, and user is in low engagement segment.
+  EXPECT_CALL(
+      *mock_service,
+      GetCachedSegmentResult(
+          segmentation_platform::kChromeLowUserEngagementSegmentationKey))
+      .WillOnce(testing::Return(low_engagement_result));
+
+  EXPECT_TRUE(manager->IsEngagementLowEnoughForTesting());
 }
 
 TEST_F(SearchPromotionManagerTest, ObserverCallsManagerOnGoogleSearch) {

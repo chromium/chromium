@@ -6,6 +6,7 @@
 
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/segmentation_platform/segmentation_platform_service_factory.h"
 #include "chrome/browser/ui/search_promotion/search_promotion_manager.h"
 
 // static
@@ -25,16 +26,16 @@ SearchPromotionManagerFactory::SearchPromotionManagerFactory()
     : ProfileKeyedServiceFactory(
           "SearchPromotionManager",
           ProfileSelections::Builder()
-              .WithRegular(ProfileSelection::kOwnInstance)
-              // Search promotions are enabled for regular and guest profiles.
-              // They are disabled in Incognito profiles to avoid tracking or
-              // promotion display in private browsing contexts.
+              .WithRegular(ProfileSelection::kOriginalOnly)
+              // Search promotions are enabled for regular profiles.
+              // They are disabled in incognito and guest profiles.
               //
               // Note: Even though the factory is created for all platforms, the
               // underlying manager is only functional on Windows.
-              .WithGuest(ProfileSelection::kOwnInstance)
               .Build()) {
   DependsOn(feature_engagement::TrackerFactory::GetInstance());
+  DependsOn(
+      segmentation_platform::SegmentationPlatformServiceFactory::GetInstance());
 }
 
 SearchPromotionManagerFactory::~SearchPromotionManagerFactory() = default;
