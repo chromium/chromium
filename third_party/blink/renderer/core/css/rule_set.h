@@ -269,7 +269,7 @@ class RuleMap {
 
  public:
   // Returns false on failure (which should be very rare).
-  bool Add(const AtomicString& key, const RuleData& rule_data);
+  [[nodiscard]] bool Add(const AtomicString& key, const RuleData& rule_data);
   void AddFilteredRulesFromOtherSet(
       const RuleMap& other,
       const HeapHashSet<Member<StyleRule>>& only_include,
