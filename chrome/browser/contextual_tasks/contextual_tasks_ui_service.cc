@@ -33,6 +33,7 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_interface.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_utils.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_window_tracker.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/sessions/session_tab_helper_factory.h"
@@ -970,7 +971,6 @@ bool ContextualTasksUiService::HandleNavigationImpl(
       << ", from_can_create_window=" << from_can_create_window
       << ", is_to_new_tab=" << is_to_new_tab
       << ", has_tab=" << (tab != nullptr);
-
   // Make sure the user is eligible to use the feature before attempting to
   // intercept.
   if (!contextual_tasks_service_ ||
@@ -1244,22 +1244,24 @@ bool ContextualTasksUiService::HandleNavigationImpl(
       }
     }
 
-    // TODO(crbug.com/500717050): `is_to_new_tab` is not a correct naming. This
-    // variable i passed as true from CanCreateWindow, but it doesn't accurately
-    // reflect if the given navigation will open in a new tab or not. We should
-    // instead find way to better approximate target=_blank
+    // If this is a navigation CanCreateWindow, check to see if this
+    // navigation should open in a new tab, or needs to be cancelled. If the
+    // former, return true to allow the window to be created. Afterwards, the
+    // new tab will be created and the navigation throttle will be called
+    // again, which will then handle the `OnThreadLinkClick` via the call
+    // below. Allowing the window to open is a requirement to allow
+    // `window.open` calls to receive a Window object.
     if (from_can_create_window &&
         ShouldAllowNewTabOpen(url_params.url, browser, task_id)) {
-      // If this is a navigation CanCreateWindow, check to see if this
-      // navigation should open in a new tab, or needs to be cancelled. If the
-      // former, return true to allow the window to be created. Afterwards, the
-      // new tab will be created and the navigation throttle will be called
-      // again, which will then handle the `OnThreadLinkClick` via the call
-      // below. Allowing the window to open is a requirement to allow
-      // `window.open` calls to receive a Window object.
       OMNIBOX_LOG("nav_trace")
           << "ContextualTasks navigation trace: HandleNavigationImpl "
              "allowing natural opening for new tab";
+      auto tracker = std::make_unique<ContextualTasksWindowTracker>(
+          browser ? TabListInterface::From(browser) : nullptr, task_id,
+          url_params.url,
+          base::BindOnce(&ContextualTasksUiService::RemoveWindowTracker,
+                         weak_ptr_factory_.GetWeakPtr()));
+      window_trackers_.push_back(std::move(tracker));
       return false;
     }
 
@@ -1975,6 +1977,12 @@ void ContextualTasksUiService::AssociateWebContentsToTask(
   if (session_id.is_valid()) {
     contextual_tasks_service_->AssociateTabWithTask(task_id, session_id);
   }
+}
+
+void ContextualTasksUiService::RemoveWindowTracker(
+    ContextualTasksWindowTracker* tracker) {
+  std::erase_if(window_trackers_,
+                [tracker](const auto& ptr) { return ptr.get() == tracker; });
 }
 
 void ContextualTasksUiService::OnTabClickedFromSourcesMenu(
