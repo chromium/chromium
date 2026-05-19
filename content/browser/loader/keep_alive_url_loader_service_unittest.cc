@@ -870,10 +870,11 @@ TEST_F(KeepAliveURLLoaderServiceTest,
       GetLastPendingRequest()->test_url_loader->follow_redirect_params();
   EXPECT_THAT(params, SizeIs(1));
   EXPECT_EQ(params[0].new_url, std::nullopt);
-  EXPECT_THAT(params[0].removed_headers,
+  EXPECT_THAT(params[0].headers_update_params.removed_headers,
               ElementsAre(net::HttpRequestHeaders::kAuthorization));
-  EXPECT_TRUE(params[0].modified_headers.IsEmpty());
-  EXPECT_TRUE(params[0].modified_cors_exempt_headers.IsEmpty());
+  EXPECT_TRUE(params[0].headers_update_params.modified_headers.IsEmpty());
+  EXPECT_TRUE(
+      params[0].headers_update_params.modified_cors_exempt_headers.IsEmpty());
 }
 
 TEST_F(KeepAliveURLLoaderServiceTest,

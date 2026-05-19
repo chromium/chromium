@@ -658,12 +658,15 @@ TEST_F(AdAuctionURLLoaderInterceptorTest,
   const std::vector<FollowRedirectParams>& follow_redirect_params =
       pending_request->test_url_loader->follow_redirect_params();
   EXPECT_EQ(follow_redirect_params.size(), 1u);
-  EXPECT_EQ(follow_redirect_params[0].removed_headers.size(), 1u);
-  EXPECT_EQ(follow_redirect_params[0].removed_headers[0],
+  EXPECT_EQ(
+      follow_redirect_params[0].headers_update_params.removed_headers.size(),
+      1u);
+  EXPECT_EQ(follow_redirect_params[0].headers_update_params.removed_headers[0],
             "Sec-Ad-Auction-Fetch");
 
-  EXPECT_EQ(follow_redirect_params[0].modified_headers.GetHeader(
-                "Sec-Ad-Auction-Fetch"),
+  EXPECT_EQ(follow_redirect_params[0]
+                .headers_update_params.modified_headers.GetHeader(
+                    "Sec-Ad-Auction-Fetch"),
             std::nullopt);
 
   pending_request->client->OnReceiveResponse(
@@ -787,12 +790,15 @@ TEST_F(AdAuctionURLLoaderInterceptorTest,
   const std::vector<FollowRedirectParams>& follow_redirect_params =
       pending_request->test_url_loader->follow_redirect_params();
   EXPECT_EQ(follow_redirect_params.size(), 1u);
-  EXPECT_EQ(follow_redirect_params[0].removed_headers.size(), 1u);
-  EXPECT_EQ(follow_redirect_params[0].removed_headers[0],
+  EXPECT_EQ(
+      follow_redirect_params[0].headers_update_params.removed_headers.size(),
+      1u);
+  EXPECT_EQ(follow_redirect_params[0].headers_update_params.removed_headers[0],
             "Sec-Ad-Auction-Fetch");
 
-  EXPECT_EQ(follow_redirect_params[0].modified_headers.GetHeader(
-                "Sec-Ad-Auction-Fetch"),
+  EXPECT_EQ(follow_redirect_params[0]
+                .headers_update_params.modified_headers.GetHeader(
+                    "Sec-Ad-Auction-Fetch"),
             std::nullopt);
 
   pending_request->client->OnReceiveResponse(
@@ -988,12 +994,15 @@ TEST_F(AdAuctionURLLoaderInterceptorTest,
   const std::vector<FollowRedirectParams>& follow_redirect_params =
       pending_request->test_url_loader->follow_redirect_params();
   EXPECT_EQ(follow_redirect_params.size(), 1u);
-  EXPECT_EQ(follow_redirect_params[0].removed_headers.size(), 1u);
-  EXPECT_EQ(follow_redirect_params[0].removed_headers[0],
+  EXPECT_EQ(
+      follow_redirect_params[0].headers_update_params.removed_headers.size(),
+      1u);
+  EXPECT_EQ(follow_redirect_params[0].headers_update_params.removed_headers[0],
             "Sec-Ad-Auction-Fetch");
 
-  EXPECT_EQ(follow_redirect_params[0].modified_headers.GetHeader(
-                "Sec-Ad-Auction-Fetch"),
+  EXPECT_EQ(follow_redirect_params[0]
+                .headers_update_params.modified_headers.GetHeader(
+                    "Sec-Ad-Auction-Fetch"),
             std::nullopt);
 
   pending_request->client->OnReceiveResponse(

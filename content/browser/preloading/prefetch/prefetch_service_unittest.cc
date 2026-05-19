@@ -710,8 +710,10 @@ class PrefetchServiceTestBase : public PrefetchingMetricsTestBase {
               expected_follow_redirect_params_size);
 
     for (const auto& follow_redirect_param : follow_redirect_params) {
-      EXPECT_FALSE(follow_redirect_param.modified_headers.IsEmpty());
-      EXPECT_TRUE(follow_redirect_param.modified_cors_exempt_headers.IsEmpty());
+      EXPECT_FALSE(follow_redirect_param.headers_update_params.modified_headers
+                       .IsEmpty());
+      EXPECT_TRUE(follow_redirect_param.headers_update_params
+                      .modified_cors_exempt_headers.IsEmpty());
       EXPECT_FALSE(follow_redirect_param.new_url);
     }
   }

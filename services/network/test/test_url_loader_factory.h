@@ -17,6 +17,7 @@
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/http/http_status_code.h"
+#include "services/network/public/cpp/http_request_headers_update_params.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
@@ -39,9 +40,7 @@ class TestURLLoaderFactory : public mojom::URLLoaderFactory {
       FollowRedirectParams(FollowRedirectParams&& other);
       FollowRedirectParams& operator=(FollowRedirectParams&& other);
 
-      std::vector<std::string> removed_headers;
-      net::HttpRequestHeaders modified_headers;
-      net::HttpRequestHeaders modified_cors_exempt_headers;
+      network::HttpRequestHeadersUpdateParams headers_update_params;
       std::optional<GURL> new_url;
     };
 

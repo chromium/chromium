@@ -46,9 +46,10 @@ void TestURLLoaderFactory::TestURLLoader::FollowRedirect(
     const net::HttpRequestHeaders& modified_cors_exempt_headers,
     const std::optional<GURL>& new_url) {
   FollowRedirectParams params;
-  params.removed_headers = removed_headers;
-  params.modified_headers = modified_headers;
-  params.modified_cors_exempt_headers = modified_cors_exempt_headers;
+  params.headers_update_params.removed_headers = removed_headers;
+  params.headers_update_params.modified_headers = modified_headers;
+  params.headers_update_params.modified_cors_exempt_headers =
+      modified_cors_exempt_headers;
   params.new_url = new_url;
 
   follow_redirect_params_.emplace_back(std::move(params));

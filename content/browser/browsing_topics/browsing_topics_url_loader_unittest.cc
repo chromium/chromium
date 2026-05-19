@@ -768,13 +768,17 @@ TEST_F(BrowsingTopicsURLLoaderTest, RedirectTopicsUpdated) {
 
   const std::vector<FollowRedirectParams>& follow_redirect_params =
       pending_request->test_url_loader->follow_redirect_params();
+
   EXPECT_EQ(follow_redirect_params.size(), 1u);
-  EXPECT_EQ(follow_redirect_params[0].removed_headers.size(), 1u);
-  EXPECT_EQ(follow_redirect_params[0].removed_headers[0],
+  EXPECT_EQ(
+      follow_redirect_params[0].headers_update_params.removed_headers.size(),
+      1u);
+  EXPECT_EQ(follow_redirect_params[0].headers_update_params.removed_headers[0],
             "Sec-Browsing-Topics");
 
-  EXPECT_THAT(follow_redirect_params[0].modified_headers.GetHeader(
-                  "Sec-Browsing-Topics"),
+  EXPECT_THAT(follow_redirect_params[0]
+                  .headers_update_params.modified_headers.GetHeader(
+                      "Sec-Browsing-Topics"),
               testing::Optional(std::string(kExpectedHeaderForOrigin2)));
 
   EXPECT_EQ(browser_client().handle_topics_web_api_count(), 3u);
@@ -847,12 +851,15 @@ TEST_F(BrowsingTopicsURLLoaderTest, RedirectNotEligibleForTopics) {
   const std::vector<FollowRedirectParams>& follow_redirect_params =
       pending_request->test_url_loader->follow_redirect_params();
   EXPECT_EQ(follow_redirect_params.size(), 1u);
-  EXPECT_EQ(follow_redirect_params[0].removed_headers.size(), 1u);
-  EXPECT_EQ(follow_redirect_params[0].removed_headers[0],
+  EXPECT_EQ(
+      follow_redirect_params[0].headers_update_params.removed_headers.size(),
+      1u);
+  EXPECT_EQ(follow_redirect_params[0].headers_update_params.removed_headers[0],
             "Sec-Browsing-Topics");
 
-  EXPECT_EQ(follow_redirect_params[0].modified_headers.GetHeader(
-                "Sec-Browsing-Topics"),
+  EXPECT_EQ(follow_redirect_params[0]
+                .headers_update_params.modified_headers.GetHeader(
+                    "Sec-Browsing-Topics"),
             std::nullopt);
 
   pending_request->client->OnReceiveResponse(CreateResponseHead(true),
