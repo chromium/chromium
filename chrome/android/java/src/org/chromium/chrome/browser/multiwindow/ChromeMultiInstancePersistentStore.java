@@ -442,9 +442,12 @@ class ChromeMultiInstancePersistentStore extends MultiInstancePersistentStore {
 
         List<InstanceDataWithId> crashedInstances = new ArrayList<>();
         for (Map.Entry<Integer, InstanceData> entry : sData.getInstancesMap().entrySet()) {
+            int instanceId = entry.getKey();
             InstanceData data = entry.getValue();
-            if (data.getIsRecoverable() && !data.getMarkedForDeletion()) {
-                crashedInstances.add(new InstanceDataWithId(entry.getKey(), data));
+            if (data.getIsRecoverable()
+                    && !data.getMarkedForDeletion()
+                    && readNormalTabCount(instanceId) > 0) {
+                crashedInstances.add(new InstanceDataWithId(instanceId, data));
             }
         }
 
