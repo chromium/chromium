@@ -4,6 +4,8 @@
 
 package org.chromium.content.browser.accessibility;
 
+import static androidx.core.view.accessibility.AccessibilityEventCompat.CONTENT_CHANGE_TYPE_SORT_DIRECTION;
+
 import android.os.Bundle;
 import android.view.View;
 import android.view.accessibility.AccessibilityEvent;
@@ -400,6 +402,9 @@ public class AccessibilityActionAndEventTracker {
         }
         if ((contentChangeTypes & AccessibilityEvent.CONTENT_CHANGE_TYPE_ENABLED) != 0) {
             types.add("ENABLED");
+        }
+        if ((contentChangeTypes & CONTENT_CHANGE_TYPE_SORT_DIRECTION) != 0) {
+            types.add("SORT_DIRECTION");
         }
 
         return String.join(" | ", types);
