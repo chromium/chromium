@@ -9,6 +9,7 @@
 #include "ash/root_window_controller.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shelf/shelf.h"
+#include "ash/shelf/shelf_observer.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/icon_button.h"
@@ -26,6 +27,7 @@
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
+#include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -89,6 +91,38 @@ class DelayVideoConferenceTrayController
   base::OneShotTimer timer_;
 
   int getting_media_apps_called_ = 0;
+};
+
+class ShelfAutoHideStateWaiter : public ShelfObserver {
+ public:
+  ShelfAutoHideStateWaiter(Shelf* shelf, ShelfAutoHideState target_state)
+      : shelf_(shelf), target_state_(target_state) {
+    shelf_->AddObserver(this);
+  }
+
+  ShelfAutoHideStateWaiter(const ShelfAutoHideStateWaiter&) = delete;
+  ShelfAutoHideStateWaiter& operator=(const ShelfAutoHideStateWaiter&) = delete;
+
+  ~ShelfAutoHideStateWaiter() override { shelf_->RemoveObserver(this); }
+
+  void Wait() {
+    if (shelf_->GetAutoHideState() == target_state_) {
+      return;
+    }
+    run_loop_.Run();
+  }
+
+ private:
+  // ShelfObserver:
+  void OnAutoHideStateChanged(ShelfAutoHideState new_state) override {
+    if (new_state == target_state_) {
+      run_loop_.Quit();
+    }
+  }
+
+  const raw_ptr<Shelf> shelf_;
+  const ShelfAutoHideState target_state_;
+  base::RunLoop run_loop_;
 };
 
 }  // namespace
@@ -692,13 +726,10 @@ TEST_F(VideoConferenceTrayTest, AppCountFromOneToZero) {
 
   // Simulate that no more apps are capturing. The shelf should hide.
   ModifyAppsCapturing(/*add=*/false);
+  ShelfAutoHideStateWaiter waiter(shelf, SHELF_AUTO_HIDE_HIDDEN);
   controller()->UpdateWithMediaState(VideoConferenceMediaState());
 
-  // To prevent flakiness, wait for the async call to fetch media apps to
-  // finish, and the shelf to update states.
-  do {
-    task_environment()->RunUntilIdle();
-  } while (shelf->GetAutoHideState() != SHELF_AUTO_HIDE_HIDDEN);
+  waiter.Wait();
 
   EXPECT_EQ(SHELF_AUTO_HIDE_HIDDEN, shelf->GetAutoHideState());
   EXPECT_FALSE(controller()->GetShelfAutoHideTimerForTest().IsRunning());
