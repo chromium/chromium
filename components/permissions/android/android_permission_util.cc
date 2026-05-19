@@ -341,7 +341,7 @@ static void JNI_PermissionUtil_NotifyQuietIconDismissed(
     auto* prompt = permission_request_manager->GetCurrentPrompt();
     if (prompt && prompt->GetPromptDisposition() ==
                       permissions::PermissionPromptDisposition::
-                          LOCATION_BAR_LEFT_CLAPPER_QUIET_ICON) {
+                          LOCATION_BAR_LEFT_QUIET_ICON) {
       permission_request_manager->Ignore(/*prompt_options=*/std::monostate());
     }
   }

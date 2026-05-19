@@ -1970,8 +1970,8 @@ std::string PermissionUmaUtil::GetPromptDispositionString(
       return "MacOsPrompt";
     case PermissionPromptDisposition::MESSAGE_UI_LOUD:
       return "MessageUILoud";
-    case PermissionPromptDisposition::LOCATION_BAR_LEFT_CLAPPER_QUIET_ICON:
-      return "LocationBarLeftClapperQuietIcon";
+    case PermissionPromptDisposition::LOCATION_BAR_LEFT_QUIET_ICON:
+      return "LocationBarLeftQuietIcon";
   }
 
   NOTREACHED();
@@ -2014,7 +2014,7 @@ bool PermissionUmaUtil::IsPromptDispositionQuiet(
     case PermissionPromptDisposition::LOCATION_BAR_LEFT_QUIET_ABUSIVE_CHIP:
     case PermissionPromptDisposition::MINI_INFOBAR:
     case PermissionPromptDisposition::MESSAGE_UI:
-    case PermissionPromptDisposition::LOCATION_BAR_LEFT_CLAPPER_QUIET_ICON:
+    case PermissionPromptDisposition::LOCATION_BAR_LEFT_QUIET_ICON:
       return true;
     case PermissionPromptDisposition::ANCHORED_BUBBLE:
     case PermissionPromptDisposition::ELEMENT_ANCHORED_BUBBLE:
@@ -2049,7 +2049,7 @@ bool PermissionUmaUtil::IsPromptDispositionLoud(
     case PermissionPromptDisposition::MESSAGE_UI:
     case PermissionPromptDisposition::NONE_VISIBLE:
     case PermissionPromptDisposition::NOT_APPLICABLE:
-    case PermissionPromptDisposition::LOCATION_BAR_LEFT_CLAPPER_QUIET_ICON:
+    case PermissionPromptDisposition::LOCATION_BAR_LEFT_QUIET_ICON:
       return false;
   }
 }

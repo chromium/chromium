@@ -72,11 +72,11 @@ public class PermissionClapperQuietTest {
             @PermissionTestRule.PromptAction int action, int times) {
         return HistogramWatcher.newBuilder()
                 .expectIntRecordTimes(
-                        "Permissions.Prompt.Notifications.LocationBarLeftClapperQuietIcon.Action",
+                        "Permissions.Prompt.Notifications.LocationBarLeftQuietIcon.Action",
                         action,
                         times)
                 .expectIntRecordTimes(
-                        "Permissions.Action.WithDisposition.LocationBarLeftClapperQuietIcon",
+                        "Permissions.Action.WithDisposition.LocationBarLeftQuietIcon",
                         action,
                         times)
                 .build();
@@ -88,10 +88,8 @@ public class PermissionClapperQuietTest {
 
     private HistogramWatcher expectNoClapperQuietRecords() {
         return HistogramWatcher.newBuilder()
-                .expectNoRecords(
-                        "Permissions.Prompt.Notifications.LocationBarLeftClapperQuietIcon.Action")
-                .expectNoRecords(
-                        "Permissions.Action.WithDisposition.LocationBarLeftClapperQuietIcon")
+                .expectNoRecords("Permissions.Prompt.Notifications.LocationBarLeftQuietIcon.Action")
+                .expectNoRecords("Permissions.Action.WithDisposition.LocationBarLeftQuietIcon")
                 .build();
     }
 

@@ -39,7 +39,7 @@ PermissionClapperQuietIcon::GetTabSwitchingBehavior() {
 
 PermissionPromptDisposition PermissionClapperQuietIcon::GetPromptDisposition()
     const {
-  return PermissionPromptDisposition::LOCATION_BAR_LEFT_CLAPPER_QUIET_ICON;
+  return PermissionPromptDisposition::LOCATION_BAR_LEFT_QUIET_ICON;
 }
 
 }  // namespace permissions
