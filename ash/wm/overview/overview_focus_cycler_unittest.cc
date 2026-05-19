@@ -24,6 +24,7 @@
 #include "ash/wm/splitview/split_view_setup_view.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
 #include "ash/wm/window_util.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/test/display_manager_test_api.h"
@@ -282,8 +283,7 @@ TEST_P(OverviewFocusCyclerTest, ThreeMonitors) {
   // If the selected window is closed, then something should be selected.
   // Closing a window is done on a post task.
   window3.reset();
-  base::RunLoop().RunUntilIdle();
-  EXPECT_TRUE(GetFocusedView());
+  ASSERT_TRUE(base::test::RunUntil([&]() { return GetFocusedView(); }));
   ToggleOverview();
 
   window3 =
