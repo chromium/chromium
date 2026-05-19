@@ -317,6 +317,11 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
         // Divider
         maybeAddDividerLine(modelList, R.id.divider_line_id);
 
+        // Passwords and autofill parent
+        if (shouldShowPasswordsAndAutofillParentItem()) {
+            modelList.add(buildPasswordsAndAutofillParentItem());
+        }
+
         // History parent
         if (shouldShowHistoryParentItem()) {
             modelList.add(buildHistoryParentItem());
@@ -805,6 +810,36 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
                         R.id.manage_all_windows_menu_id,
                         R.string.menu_manage_all_windows,
                         shouldShowIconBeforeItem() ? R.drawable.ic_select_window : 0));
+    }
+
+    private boolean shouldShowPasswordsAndAutofillParentItem() {
+        return ChromeFeatureList.isEnabled(ChromeFeatureList.SUBMENUS_IN_APP_MENU);
+    }
+
+    private ListItem buildGooglePasswordManagerItem() {
+        return new ListItem(
+                AppMenuHandler.AppMenuItemType.STANDARD,
+                buildModelForStandardMenuItem(
+                        R.id.google_password_manager_menu_id,
+                        R.string.menu_google_password_manager,
+                        shouldShowIconBeforeItem() ? R.drawable.ic_password_manager_24dp : 0));
+    }
+
+    private ListItem buildPasswordsAndAutofillParentItem() {
+        assert shouldShowPasswordsAndAutofillParentItem();
+
+        List<ListItem> submenuItems = new ArrayList<>();
+        submenuItems.add(buildGooglePasswordManagerItem());
+
+        return new ListItem(
+                AppMenuHandler.AppMenuItemType.MENU_ITEM_WITH_SUBMENU,
+                buildModelForMenuItemWithSubmenu(
+                        R.id.passwords_and_autofill_parent_menu_id,
+                        R.string.menu_passwords_and_autofill,
+                        shouldShowIconBeforeItem()
+                                ? R.drawable.ic_password_manager_24dp
+                                : Resources.ID_NULL,
+                        () -> submenuItems));
     }
 
     private boolean shouldShowHistoryParentItem() {

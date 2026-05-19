@@ -28742,6 +28742,13 @@ should be able to be added at any place in this file.
   <description>User pressed 'Fullscreen' in the app menu.</description>
 </action>
 
+<action name="MobileMenuGooglePasswordManager">
+  <owner>massan@google.com</owner>
+  <description>
+    User pressed 'Google password manager' in the app menu.
+  </description>
+</action>
+
 <action name="MobileMenuGroupTabs">
   <owner>yusufo@chromium.org</owner>
   <owner>wychen@chromium.org</owner>

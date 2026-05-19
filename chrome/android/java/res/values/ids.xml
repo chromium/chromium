@@ -157,6 +157,8 @@ found in the LICENSE file.
     <item type="id" name="manage_all_windows_menu_id" />
     <item type="id" name="divider_line_id" />
     <item type="id" name="open_history_menu_id" />
+    <item type="id" name="passwords_and_autofill_parent_menu_id" />
+    <item type="id" name="google_password_manager_menu_id" />
     <item type="id" name="history_parent_menu_id" />
     <item type="id" name="bookmark_menu_id" />
     <item type="id" name="bookmark_folder_menu_id" />
