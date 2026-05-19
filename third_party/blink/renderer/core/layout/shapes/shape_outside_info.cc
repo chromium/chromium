@@ -278,7 +278,10 @@ bool ShapeOutsideInfo::IsEnabledFor(const LayoutBox& box) {
       const StyleImage* image = shape_value->GetImage();
       CHECK(image);
       const bool image_is_usable = image->IsLoaded() && image->CanRender();
-      CHECK(!image_is_usable || image->IsCorsSameOrigin());
+      // If the image is cross-origin, we must not use it for shape-outside.
+      if (image_is_usable && !image->IsCorsSameOrigin()) {
+        return false;
+      }
       return image_is_usable;
     }
     case ShapeValue::kShape:
