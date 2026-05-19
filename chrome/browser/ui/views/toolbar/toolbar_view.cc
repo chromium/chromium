@@ -1541,6 +1541,14 @@ void ToolbarView::InitLayout() {
             0, GetLayoutConstant(LayoutConstant::kToolbarDividerSpacing)));
   }
 
+  if (app_menu_button_ &&
+      base::FeatureList::IsEnabled(features::kToolbarAppMenuLabelResizing)) {
+    app_menu_button_->SetProperty(
+        views::kFlexBehaviorKey,
+        views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToMinimum,
+                                 views::MaximumFlexSizeRule::kPreferred));
+  }
+
   // Order 1 is reserved for the location bar if kOmniboxResizingPrioritization
   // is enabled.
   constexpr int kToolbarFlexOrderStart = 2;

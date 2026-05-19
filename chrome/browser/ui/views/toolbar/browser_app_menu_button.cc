@@ -56,6 +56,7 @@ namespace {
 constexpr int kChromeRefreshImageLabelPadding = 2;
 constexpr int kGlowUpImageLabelPadding = 4;
 constexpr base::TimeDelta kAnimationDuration = base::Milliseconds(300);
+constexpr int kHideTextForFlexPadding = 4;
 }  // namespace
 
 // static
@@ -195,6 +196,11 @@ void BrowserAppMenuButton::UpdateIcon() {
   }
 }
 
+void BrowserAppMenuButton::OnBoundsChanged(const gfx::Rect& previous_bounds) {
+  ToolbarButton::OnBoundsChanged(previous_bounds);
+  UpdateLayoutInsets();
+}
+
 void BrowserAppMenuButton::AnimationProgressed(
     const gfx::Animation* animation) {
   if (features::IsToolbarGlowUpEnabled() &&
@@ -215,10 +221,18 @@ void BrowserAppMenuButton::UpdateInkdrop() {
 }
 
 bool BrowserAppMenuButton::IsLabelPresentAndVisible() const {
-  if (!label()) {
+  if (!label() || !label()->GetVisible() || label()->GetText().empty()) {
     return false;
   }
-  return label()->GetVisible() && !label()->GetText().empty();
+  if (!base::FeatureList::IsEnabled(features::kToolbarAppMenuLabelResizing)) {
+    return true;
+  }
+  // If the chip is narrow enough that text doesn't fit, return false. The min
+  // width is the height of the button but add padding because at slightly
+  // larger widths, text isn't visible due to eliding and this simplifies
+  // ToolbarView layout.
+  const int icon_width = GetTargetSize().height() + kHideTextForFlexPadding;
+  return GetLocalBounds().width() > icon_width;
 }
 
 SkColor BrowserAppMenuButton::GetForegroundColor(ButtonState state) const {
@@ -314,6 +328,11 @@ bool BrowserAppMenuButton::HandleAccessibleAction(
     return true;
   }
   return AppMenuButton::HandleAccessibleAction(action_data);
+}
+
+gfx::Size BrowserAppMenuButton::GetMinimumSize() const {
+  const int size = GetTargetSize().height();
+  return gfx::Size(size, size);
 }
 
 BEGIN_METADATA(BrowserAppMenuButton)

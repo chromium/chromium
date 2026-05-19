@@ -369,6 +369,8 @@ BASE_DECLARE_FEATURE_PARAM(bool, kVerticalTabsGrabHandleRemovalAlways);
 
 BASE_DECLARE_FEATURE(kOmniboxResizingPrioritization);
 
+BASE_DECLARE_FEATURE(kToolbarAppMenuLabelResizing);
+
 // Whether or not OSCryptAsyncAvailabilityInfoBarDelegate is enabled.
 BASE_DECLARE_FEATURE(kOSCryptAsyncAvailabilityInfoBar);
 
