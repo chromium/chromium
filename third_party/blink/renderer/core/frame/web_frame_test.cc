@@ -14049,7 +14049,8 @@ TEST_F(WebFrameTest, RemoteViewportAndMainframeIntersections) {
   static_cast<WebFrameWidgetImpl*>(widget)->ApplyViewportIntersectionForTesting(
       blink::mojom::blink::ViewportIntersectionState::New(
           viewport_intersection, mainframe_intersection, viewport_intersection,
-          occlusion_state, gfx::Size(), gfx::Point(), viewport_transform));
+          occlusion_state, gfx::Size(), gfx::Point(), viewport_transform,
+          /*is_hidden_for_media_playback=*/false));
 
   local_frame->FrameWidgetImpl()->UpdateAllLifecyclePhases(
       DocumentUpdateReason::kTest);

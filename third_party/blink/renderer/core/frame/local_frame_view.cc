@@ -4650,6 +4650,9 @@ void LocalFrameView::SetViewportIntersection(
       frame_scheduler->SetVisibleAreaLarge(ratio > ratio_threshold);
     }
   }
+
+  frame_->OnFrameVisibilityChangedForMediaPlayback(
+      intersection_state.is_hidden_for_media_playback);
 }
 
 void LocalFrameView::VisibilityForThrottlingChanged() {
@@ -4663,7 +4666,7 @@ void LocalFrameView::VisibilityForThrottlingChanged() {
 void LocalFrameView::VisibilityChanged(
     blink::mojom::FrameVisibility visibility) {
   frame_->GetLocalFrameHostRemote().VisibilityChanged(visibility);
-
+  // TODO(crbug.com/351354996): Remove this after the refactor is completed.
   // LocalFrameClient member may not be valid in some tests.
   if (frame_->Client() && frame_->Client()->GetWebFrame() &&
       frame_->Client()->GetWebFrame()->Client()) {
@@ -4671,6 +4674,7 @@ void LocalFrameView::VisibilityChanged(
         visibility);
   }
 
+  // TODO(crbug.com/351354996): Remove this after the refactor is completed.
   frame_->NotifyFrameVisibilityChanged(visibility);
 }
 

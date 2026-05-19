@@ -192,6 +192,7 @@
 #include "third_party/blink/renderer/core/layout/anchor_position_scroll_data.h"
 #include "third_party/blink/renderer/core/layout/anchor_position_visibility_observer.h"
 #include "third_party/blink/renderer/core/layout/hit_test_result.h"
+#include "third_party/blink/renderer/core/layout/layout_embedded_content.h"
 #include "third_party/blink/renderer/core/layout/layout_object_inlines.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/lcp_critical_path_predictor/lcp_critical_path_predictor.h"
@@ -2535,18 +2536,37 @@ void LocalFrame::SetViewportIntersectionFromParent(
     GetFrameScheduler()->SetVisibleAreaLarge(ratio > ratio_threshold);
   }
 
-  // We only schedule an update if the viewport intersection or occlusion state
-  // has changed; neither the viewport offset nor the compositing bounds will
-  // affect IntersectionObserver.
-  bool needs_update =
-      intersection_state_.viewport_intersection !=
-          intersection_state.viewport_intersection ||
-      intersection_state_.occlusion_state != intersection_state.occlusion_state;
+  // We only schedule an update if the viewport intersection, occlusion state,
+  // or media playback visibility has changed; neither the viewport offset nor
+  // the compositing bounds will affect IntersectionObserver.
+  bool needs_update = intersection_state_.viewport_intersection !=
+                          intersection_state.viewport_intersection ||
+                      intersection_state_.occlusion_state !=
+                          intersection_state.occlusion_state ||
+                      intersection_state_.is_hidden_for_media_playback !=
+                          intersection_state.is_hidden_for_media_playback;
+  const bool media_playback_visibility_changed =
+      intersection_state_.is_hidden_for_media_playback !=
+      intersection_state.is_hidden_for_media_playback;
   intersection_state_ = intersection_state;
+  OnFrameVisibilityChangedForMediaPlayback(
+      intersection_state.is_hidden_for_media_playback);
   if (needs_update) {
     if (LocalFrameView* frame_view = View()) {
       frame_view->SetIntersectionObservationState(LocalFrameView::kRequired);
       frame_view->ScheduleAnimation();
+      // When this frame becomes hidden by the embedding parent (e.g.
+      // display:none on the iframe element), its renderer's lifecycle may not
+      // run promptly, so ScheduleAnimation() alone is not enough to propagate
+      // the new visibility state to in-process descendants. Force the
+      // intersection observer pass synchronously to push the updated
+      // is_hidden_for_media_playback bit down the same-process subtree. We do
+      // this only when the visibility bit actually changed so that scroll- or
+      // occlusion-only updates don't pay this cost.
+      if (media_playback_visibility_changed &&
+          intersection_state_.is_hidden_for_media_playback) {
+        frame_view->ForceUpdateViewportIntersections();
+      }
     }
   }
 }
@@ -4207,6 +4227,30 @@ void LocalFrame::NotifyFrameVisibilityChanged(
       frame_visibility_observers_as_vector(frame_visibility_observers_);
   for (auto observer : frame_visibility_observers_as_vector) {
     observer->FrameVisibilityChanged(visibility);
+  }
+}
+
+void LocalFrame::OnFrameVisibilityChangedForMediaPlayback(bool is_hidden) {
+  if (is_hidden_for_media_playback_.has_value() &&
+      *is_hidden_for_media_playback_ == is_hidden) {
+    return;
+  }
+
+  is_hidden_for_media_playback_ = is_hidden;
+
+  // Iterate on a copy of the vector to avoid invalidating the iterator if
+  // `FrameVisibilityChanged` happens to remove the observer from
+  // `frame_visibility_observers_`.
+  HeapVector<Member<FrameVisibilityObserver>>
+      frame_visibility_observers_as_vector(frame_visibility_observers_);
+  if (*is_hidden_for_media_playback_) {
+    for (auto observer : frame_visibility_observers_as_vector) {
+      observer->OnFrameHidden();
+    }
+  } else {
+    for (auto observer : frame_visibility_observers_as_vector) {
+      observer->OnFrameShown();
+    }
   }
 }
 

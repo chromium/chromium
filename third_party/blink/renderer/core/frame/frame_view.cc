@@ -265,10 +265,27 @@ void FrameView::UpdateViewportIntersection(unsigned flags,
   gfx::Transform pixel_snapped_transform = main_frame_transform_matrix;
   pixel_snapped_transform.Round2dTranslationComponents();
 
+  // Check if the parent frame is hidden for media playback first, since that
+  // makes all child frames hidden regardless of their own properties.
+  bool is_hidden_for_media_playback = false;
+  if (auto* parent_frame = DynamicTo<LocalFrame>(frame.Tree().Parent())) {
+    is_hidden_for_media_playback =
+        parent_frame->IsHiddenForMediaPlayback().value_or(false);
+  }
+
+  if (!is_hidden_for_media_playback) {
+    is_hidden_for_media_playback =
+        (!owner_layout_object  // display:none
+         || owner_layout_object->Style()->Visibility() ==
+                EVisibility::kHidden  // visibility:hidden
+         || owner_layout_object->ReplacedContentRect()
+                .IsEmpty());  // zero-area layout
+  }
   SetViewportIntersection(mojom::blink::ViewportIntersectionState(
       viewport_intersection, mainframe_intersection, gfx::Rect(),
       occlusion_state, frame.GetOutermostMainFrameSize(),
-      frame.GetOutermostMainFrameScrollPosition(), pixel_snapped_transform));
+      frame.GetOutermostMainFrameScrollPosition(), pixel_snapped_transform,
+      is_hidden_for_media_playback));
 
   UpdateFrameVisibility(!viewport_intersection.IsEmpty());
 
