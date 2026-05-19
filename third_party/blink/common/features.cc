@@ -757,14 +757,28 @@ BASE_FEATURE_PARAM(int,
                    "changed_enough",
                    512);
 
+// Fade in scrollbar at may-begin wheel event. This only works on macOS.
 BASE_FEATURE(kFadeInScrollbarWhenMouseWheelMayBegin,
-// Do not forward may-begin/began/cancelled wheel event to main thread
-// to avoid unnecessary performance impact on android. See crbug.com/479549167.
-#if BUILDFLAG(IS_ANDROID)
-             base::FEATURE_DISABLED_BY_DEFAULT);
-#else
+#if BUILDFLAG(IS_MAC)
              base::FEATURE_ENABLED_BY_DEFAULT);
+#else
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
+
+// TODO(blee) Disabled deferring scrollbar fade out.
+// Similar to kFadeInScrollbarWhenMouseWheelMayBegin, this should work
+// only on macOS. (So the parameter would not needed)
+// Currently, the began and cancelled wheel events are forwarded from
+// compositor thread to main thread, so that the deferred scrollbar
+// fade-out are triggered on the main thread.
+// But this extra wheel events forwarded to the main thread generate an
+// unintended DOM event dispatch, which introduce a regression on mouse
+// wheel event over a focused spin button element. See crbug.com/508306805
+BASE_FEATURE_PARAM(bool,
+                   kDeferFadeOutScrollbarUntilMouseWheelEnded,
+                   &kFadeInScrollbarWhenMouseWheelMayBegin,
+                   "defer_fade_out",
+                   false);
 
 // Enable the <fencedframe> element; see crbug.com/1123606. Note that enabling
 // this feature does not automatically expose this element to the web, it only

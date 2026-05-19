@@ -78,7 +78,7 @@ class COMPONENT_EXPORT(NATIVE_THEME) OverlayScrollbarAnimatorMac {
   // Called in response to a scroll in the direction of this scrollbar.
   void DidScroll();
 
-  void FadeInScrollbar();
+  void FadeInScrollbar(bool defer_fade_out);
   void FadeOutScrollbarIfNeeded();
 
   // Retrieve the rendering properties of the scrollbar.

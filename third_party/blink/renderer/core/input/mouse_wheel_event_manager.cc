@@ -235,7 +235,8 @@ void MouseWheelEventManager::FadeInChainedScrollbarsAndDeferFadeOut() {
       continue;
     }
 
-    if (scrollable.FadeInScrollbarIfExists(horizontal, vertical)) {
+    if (scrollable.FadeInScrollbarIfExists(horizontal, vertical) &&
+        blink::features::kDeferFadeOutScrollbarUntilMouseWheelEnded.Get()) {
       fade_out_deferred_scrollables_.insert(&scrollable);
     }
   }

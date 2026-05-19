@@ -1153,7 +1153,9 @@ InputHandlerProxy::EventDisposition InputHandlerProxy::HandleMouseWheel(
     }
   }
 
-  if (is_scrollbar_fade_in_at_may_begin_phase_enabled && result == DROP_EVENT) {
+  if (is_scrollbar_fade_in_at_may_begin_phase_enabled &&
+      blink::features::kDeferFadeOutScrollbarUntilMouseWheelEnded.Get() &&
+      result == DROP_EVENT) {
     // Do not drop began and cancelled events to ensure that the events are
     // forwarded to the main thread to start fading out scrollbars after a
     // MayBegin event.
