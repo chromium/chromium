@@ -889,10 +889,9 @@ DownloadToolbarUIController::BubbleCloser::~BubbleCloser() = default;
 
 void DownloadToolbarUIController::BubbleCloser::OnEvent(
     const ui::Event& event) {
-  // If the bubble widget has become active in the meantime (since starting as
-  // inactive), we should do nothing and defer to the close-on-deactivate
-  // behavior from BubbleDialogDelegate which is in effect when the bubble is
-  // active.
+  // If the bubble widget is active, we should do nothing and defer to the
+  // close-on-deactivate behavior from BubbleDialogDelegate which is in effect
+  // when the bubble is active.
   if (bubble_widget_observation_.IsObserving() &&
       bubble_widget_observation_.GetSource()->IsActive()) {
     return;
@@ -996,13 +995,13 @@ void DownloadToolbarUIController::CreateBubbleDialogDelegate() {
   if (ShouldShowBubbleAsInactive()) {
     CHECK(button);
     bubble_widget->ShowInactive();
-    bubble_closer_ = std::make_unique<BubbleCloser>(button, bubble_widget,
-                                                    weak_factory_.GetWeakPtr());
     bubble_widget->GetRootView()->GetViewAccessibility().AnnounceText(
         l10n_util::GetStringUTF16(IDS_SHOW_BUBBLE_INACTIVE_DESCRIPTION));
   } else {
     bubble_widget->Show();
   }
+  bubble_closer_ = std::make_unique<BubbleCloser>(button, bubble_widget,
+                                                  weak_factory_.GetWeakPtr());
 
   action_item_->SetIsShowingBubble(true);
 
