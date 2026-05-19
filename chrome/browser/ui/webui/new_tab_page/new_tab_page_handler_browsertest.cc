@@ -177,6 +177,20 @@ class NewTabPageHandlerWithCustomizeChromePromoBrowserTest
   }
 };
 
+class NewTabPageHandlerWithCustomizeChromePromoMaxTimesBrowserTest
+    : public NewTabPageHandlerWithCustomizeChromePromoBrowserTest {
+ protected:
+  NewTabPageHandlerWithCustomizeChromePromoMaxTimesBrowserTest() {
+    scoped_feature_list_max_times_.InitAndEnableFeatureWithParameters(
+        ntp_features::kNtpCustomizeChromeAutoOpen,
+        {{"max_customize_chrome_auto_shown_count", "5"},
+         {"max_customize_chrome_auto_shown_session_count", "5"}});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_max_times_;
+};
+
 IN_PROC_BROWSER_TEST_F(NewTabPageHandlerWithCustomizeChromePromoBrowserTest,
                        DontOpenPanelWhenUserCustomizedChromeAlready) {
   auto* theme_service = ThemeServiceFactory::GetForProfile(profile());
@@ -211,8 +225,9 @@ IN_PROC_BROWSER_TEST_F(NewTabPageHandlerWithCustomizeChromePromoBrowserTest,
       SidePanelOpenTrigger::kNewTabPageAutomaticCustomizeChrome, 0);
 }
 
-IN_PROC_BROWSER_TEST_F(NewTabPageHandlerWithCustomizeChromePromoBrowserTest,
-                       DontOpenPanelWhenPanelWasShowedMaxTimesBefore) {
+IN_PROC_BROWSER_TEST_F(
+    NewTabPageHandlerWithCustomizeChromePromoMaxTimesBrowserTest,
+    DontOpenPanelWhenPanelWasShowedMaxTimesBefore) {
   for (size_t i = 0;
        i < ntp_features::kNtpCustomizeChromeAutoShownMaxCount.Get(); ++i) {
     OpenNewTabPageInForegroundAndWaitForLoad();
