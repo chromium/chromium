@@ -73,6 +73,10 @@ def headers(os):
       # If this is textual it complains that pid_types isn't accessible from
       # sched.h
       Header('bits/timespec.h', textual=False, lazy=True),
+      # We need to re-export std::mbstate_t in std.std_mbstate_t.
+      Header('corecrt.h', exists=is_win, module_name='corecrt'),
+      # We need to re-export wcsstr in a few places.
+      Header('corecrt_wstring.h', exists=is_win, module_name='corecrt_wstring'),
       Header('ctype.h'),
       Header('endian.h'),
       Header('features.h'),
@@ -88,13 +92,15 @@ def headers(os):
       Header('linux/types.h'),
       Header('locale.h'),
       Header('malloc.h', exists=is_win),
-      # This needs to be exported on windows.
+      # We need to re-export std::nothrow in std.new
       Header('new.h', exists=is_win, module_name='new_h'),
       Header('pthread.h'),
       Header('sal.h', exists=is_win),
       Header('sched.h'),
       Header('setjmp.h'),
       Header('signal.h'),
+      # corecrt_wstring needs to be exported since it provides wcscmp
+      Header('string.h', exists=is_win, exports=['*', 'corecrt_wstring']),
       Header('strings.h'),
       # In an include loop with features.h, but not on android
       Header('sys/cdefs.h', textual=not is_android),
@@ -107,9 +113,23 @@ def headers(os):
       Header('sys/user.h'),
       Header('time.h'),
       Header('unistd.h'),
+      # We need to re-export std::exception in std.exception.exception and type
+      # info.
+      Header('vcruntime_exception.h',
+             exists=is_win,
+             module_name='vcruntime_exception'),
+      # We need to re-export std::align_val_t in std.new.align_val_t.
+      Header('vcruntime_new.h', exists=is_win, module_name='vcruntime_new'),
+      # We need to re-export RTTI types (std::type_info, std::bad_cast, etc.)
+      # in std.typeinfo.
+      Header('vcruntime_typeinfo.h',
+             exists=is_win,
+             module_name='vcruntime_typeinfo',
+             exports=['*', 'vcruntime_exception']),
       # include_next works differently with modules. This makes wchar.h and
       # mbstate_t.h an include loop.
       # This needs to be nontextual on windows, since otherwise it appears under
       # cwchar.
       Header('wchar.h', textual=not is_win),
+      Header('winapifamily.h', exists=is_win),
   ]

@@ -35,6 +35,16 @@ if (use_unified_system_module) {
 
   modulemap = "${target_gen_dir}/module.modulemap"
 
+  extra_cflags = []
+  if (is_win) {
+    extra_cflags += [
+      # We need to enable all optional features when precompiling headers.
+      # Otherwise, when you include the header with precompiled modules, you
+      # won't have toggled that feature on.
+      "-D_USE_MATH_DEFINES",
+    ]
+  }
+
   action("system_modulemap") {
     clang_dir = "${clang_base_path}/lib/clang/${clang_version}/include"
     if (is_win) {
@@ -127,18 +137,39 @@ if (use_unified_system_module) {
         ]
       }
     } else if (is_win) {
-      args +=
-          [
-            # wchar.h includes __mbstate_t.h, which in turn, on windows, calls
-            # #include_next <wchar.h>. Include_next, when modules are enabled,
-            # has slightly different behaviour - it is equivalent to #include
-            # unless it specifically resolves to the current file. Thus, on
-            # windows, this forms an import loop, so it needs to be textual.
-            "--exclude-module",
-            "std_private_mbstate_t",
-            "--",
-          ] + cpu_abi_cflags + current_win_toolchain_data.include_flags_I_list +
-          current_win_toolchain_data.include_flags_imsvc_list
+      args += [
+                # wchar.h includes __mbstate_t.h, which in turn, on windows,
+                # calls #include_next <wchar.h>. Include_next, when modules are
+                # enabled, has slightly different behaviour - it is equivalent
+                # to #include unless it specifically resolves to the current
+                # file. Thus, on windows, this forms an import loop, so it needs
+                # to be textual.
+                "--exclude-module=std_private_mbstate_t",
+
+                # Otherwise this all gets put under cwchar instead of wchar.
+                "--exclude-module=std_wchar_h",
+
+                # Many of the definitions which would normally come from libc++
+                # on other platforms come from the Windows SDK instead.
+                # We need to modify the libc++ modules so that including them
+                # gives access to the underlying things in the windows SDK.
+                # For example, the align_val_t header looks like, roughly:
+                # #ifdef LIBCPP_ABI_VCRUNTIME
+                # #  include <vcruntime_new.h>
+                # #else
+                # enum align_val_t { ... }
+                # #endif
+                "--append-module=std.new.align_val_t:export vcruntime_new",
+                "--append-module=std.std_mbstate_t:export corecrt",
+                "--append-module=std.exception.exception:export vcruntime_exception",
+
+                # Yes, this is a literal backslash, ninja won't play nice
+                # otherwise.
+                "--append-module=std.new:export new_h\\nexport vcruntime_exception",
+                "--",
+              ] + cpu_abi_cflags +
+              current_win_toolchain_data.include_flags_I_list +
+              current_win_toolchain_data.include_flags_imsvc_list
     } else {
       # We need to pass the sysroot in so that it can scan it to generate a
       # modulemap for the sysroot headers.
@@ -151,6 +182,7 @@ if (use_unified_system_module) {
         args += cros_cpu_abi_cflags
       }
     }
+    args += extra_cflags
   }
 
   source_set("system") {
@@ -179,5 +211,6 @@ if (use_unified_system_module) {
       # This should *not* propagate to dependencies so it should be safe.
       defines += [ "__building_module(x)=1" ]
     }
+    cflags_cc = extra_cflags
   }
 }
