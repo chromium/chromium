@@ -73,8 +73,6 @@ struct PassthroughResources {
   void SuspendSharedImageAccessIfNeeded();
   bool ResumeSharedImageAccessIfNeeded(gl::GLApi* api);
 
-  bool IsSharedImage(GLuint texture_client_id);
-
   // Mappings from client side IDs to service side IDs.
   ClientServiceMap<GLuint, GLuint> texture_id_map;
   ClientServiceMap<GLuint, GLuint> buffer_id_map;
@@ -123,24 +121,11 @@ struct PassthroughResources {
     bool ResumeAccessIfNeeded(gl::GLApi* api);
     void SuspendAccessIfNeeded();
 
-    void WasAttachedToFramebuffer(GLuint framebuffer, GLenum attachment);
-    // Returns true if it it was the last attachment to the specific
-    // framebuffer.
-    bool WasDetachedFromFramebuffer(GLuint framebuffer, GLenum attachment);
-    void FramebufferDeleted(GLuint framebuffer);
-    void DetachFromFramebuffers(gl::GLApi* api,
-                                bool supports_separate_fbo_bindings);
-
    private:
     std::unique_ptr<GLTexturePassthroughImageRepresentation> representation_;
     std::unique_ptr<GLTexturePassthroughImageRepresentation::ScopedAccess>
         scoped_access_;
     std::optional<GLenum> access_mode_;
-
-    // Map from framebuffer service_id to the attachments, which stores all
-    // framebuffers / attachments this shared image is attached to.
-    base::flat_map<GLuint, base::flat_set<GLenum>>
-        framebuffer_to_attachments_map_;
   };
   // Mapping of client texture IDs to GLTexturePassthroughImageRepresentations.
   // TODO(ericrk): Remove this once TexturePassthrough holds a reference to
@@ -491,10 +476,6 @@ class GPU_GLES2_EXPORT GLES2DecoderPassthroughImpl
   void UpdateTextureSizeFromTarget(GLenum target);
   void UpdateTextureSizeFromClientID(GLuint client_id);
 
-  void UpdateFramebufferSharedImageBindings(GLenum framebuffer_target,
-                                            GLenum attachment,
-                                            GLuint texture);
-
   // Some operations like binding a VAO will update the element array buffer
   // binding without an explicit glBindBuffer. This function is extremely
   // expensive, and it is crucial that it be called only when the command
@@ -569,12 +550,6 @@ class GPU_GLES2_EXPORT GLES2DecoderPassthroughImpl
   ClientServiceMap<GLuint, GLuint> transform_feedback_id_map_;
   ClientServiceMap<GLuint, GLuint> query_id_map_;
   ClientServiceMap<GLuint, GLuint> vertex_array_id_map_;
-
-  // Map from the framebuffer's client_id to a set of client texture id that are
-  // shared image and are attached to this framebuffer.
-  base::flat_map<GLuint, base::flat_set<GLuint>>
-      framebuffer_to_shared_image_texture_map_;
-  bool track_framebuffer_attachments_ = false;
 
   std::unique_ptr<GpuFenceManager> gpu_fence_manager_;
 
