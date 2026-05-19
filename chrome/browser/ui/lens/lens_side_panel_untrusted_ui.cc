@@ -196,6 +196,11 @@ LensSidePanelUntrustedUI::LensSidePanelUntrustedUI(content::WebUI* web_ui)
           ContextualSearchSourceToString(
               contextual_search::ContextualSearchSource::kLens));
 
+  // Pass the feature flag state to the WebUI to determine if context
+  // management should be handled within the composebox.
+  // Hardcoded to false because the old side panel composebox lacks a context menu.
+  html_source->AddBoolean("contextManagementInComposeboxEnabled", false);
+
   // Add strings for post message communication with the remote UI.
   lens::ClientToAimMessage handshake_ping;
   handshake_ping.mutable_handshake_ping()->add_capabilities(

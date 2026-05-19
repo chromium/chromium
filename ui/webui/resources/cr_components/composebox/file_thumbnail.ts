@@ -44,6 +44,7 @@ export class ComposeboxFileThumbnailElement extends CrLitElement {
         type: Boolean,
         reflect: true,
       },
+      contextManagementInComposeboxEnabled_: {type: Boolean},
     };
   }
 
@@ -69,6 +70,9 @@ export class ComposeboxFileThumbnailElement extends CrLitElement {
 
   protected lensSendRawFileMediaTypesEnabled_: boolean =
       loadTimeData.getBoolean('lensSendRawFileMediaTypesEnabled');
+
+  protected accessor contextManagementInComposeboxEnabled_: boolean =
+      loadTimeData.getBoolean('contextManagementInComposeboxEnabled');
 
   protected accessor isUploading_: boolean = false;
 

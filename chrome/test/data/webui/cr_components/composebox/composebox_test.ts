@@ -339,6 +339,69 @@ suite('ComposeboxTest', () => {
 
     assertEquals('', composebox.smartComposeInlineHint);
   });
+
+  test(
+      'filters tabs from carousel when context management flag is enabled',
+      async () => {
+        // Override the feature flag to true before creating the component.
+        loadTimeData.overrideValues({
+          contextManagementInComposeboxEnabled: true,
+        });
+
+        document.body.innerHTML = window.trustedTypes!.emptyHTML;
+        const freshComposebox = document.createElement('cr-composebox');
+        document.body.appendChild(freshComposebox);
+
+        // Prepare mock files: one regular file, one tab (identified by having a
+        // 'url').
+        const regularFile = {name: 'image.png', type: 'image/png'} as any;
+        const tabFile = {name: 'Google', url: 'https://www.google.com/'} as any;
+        freshComposebox.files =
+            new Map([['uuid-1', regularFile], ['uuid-2', tabFile]]);
+
+        freshComposebox.requestUpdate();
+        await freshComposebox.updateComplete;
+
+        // Retrieve the carousel component for assertions.
+        const carousel = freshComposebox.shadowRoot.querySelector(
+            'cr-composebox-file-carousel');
+        assertTrue(!!carousel);
+
+        // Assert: The carousel should only receive 1 file (the regular image).
+        // The tab file should be successfully filtered out.
+        assertEquals(1, carousel.files.length);
+        assertEquals('image.png', carousel.files[0]!.name);
+      });
+
+  test('does not filter tabs from carousel when flag is disabled', async () => {
+    // Override the feature flag to false.
+    loadTimeData.overrideValues({
+      contextManagementInComposeboxEnabled: false,
+    });
+
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    const freshComposebox = document.createElement('cr-composebox');
+    document.body.appendChild(freshComposebox);
+
+    // Prepare mock files: one regular file, one tab (identified by having a
+    // 'url').
+    const regularFile = {name: 'image.png', type: 'image/png'} as any;
+    const tabFile = {name: 'Google', url: 'https://www.google.com/'} as any;
+    freshComposebox.files =
+        new Map([['uuid-1', regularFile], ['uuid-2', tabFile]]);
+
+    freshComposebox.requestUpdate();
+    await freshComposebox.updateComplete;
+
+    // Retrieve the carousel component for assertions.
+    const carousel =
+        freshComposebox.shadowRoot.querySelector('cr-composebox-file-carousel');
+    assertTrue(!!carousel);
+
+    // Assert: When the flag is disabled, no filtering occurs.
+    // The carousel should receive both files exactly as they were added.
+    assertEquals(2, carousel.files.length);
+  });
 });
 
 suite('composeboxSharedMountAutoRepostionDefault', () => {
