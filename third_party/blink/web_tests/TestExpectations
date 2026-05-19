@@ -2701,7 +2701,6 @@ crbug.com/488071544 external/wpt/webrtc/RTCDtlsTransport-state.html?rest [ Failu
 crbug.com/488071544 external/wpt/webrtc/RTCIceTransport.html?rest [ Failure Skip Timeout ]
 crbug.com/488071544 external/wpt/webrtc/RTCPeerConnection-createDataChannel.html?interop-2026 [ Failure Skip Timeout ]
 crbug.com/488071544 external/wpt/webrtc/RTCPeerConnection-createDataChannel.html?rest [ Failure Skip Timeout ]
-crbug.com/488071544 external/wpt/webrtc/RTCPeerConnection-setLocalDescription-offer.html?rest [ Pass Timeout ]
 crbug.com/488071544 external/wpt/webrtc/RTCPeerConnection-setRemoteDescription-offer.html?interop-2026 [ Failure Timeout ]
 crbug.com/488071544 external/wpt/webrtc/RTCPeerConnection-setRemoteDescription-offer.html?rest [ Failure Timeout ]
 crbug.com/488071544 external/wpt/webrtc/RTCRtpReceiver-getStats.https.html?interop-2026 [ Failure Skip Timeout ]
@@ -2717,6 +2716,9 @@ crbug.com/488071544 external/wpt/webrtc/protocol/candidate-exchange.https.html?r
 crbug.com/488071544 external/wpt/webrtc/simulcast/negotiation-encodings.https.html?interop-2026 [ Pass Timeout ]
 crbug.com/488071544 external/wpt/webrtc/RTCPeerConnection-getStats.https.html?interop-2026 [ Failure Timeout ]
 crbug.com/488071544 external/wpt/webrtc/RTCPeerConnection-getStats.https.html?rest [ Failure Timeout ]
+
+# TODO(crbug.com/512953564): Remove expectation after WebRTC roll.
+crbug.com/488071544 crbug.com/512953564 external/wpt/webrtc/RTCPeerConnection-setLocalDescription-offer.html?rest [ Failure Pass Timeout ]
 
 # Unstable memory addresses dumped into test output.
 crbug.com/476344902 virtual/webui-browser/external/wpt/html/browsers/windows/nested-browsing-contexts/window-top.html [ Failure ]
