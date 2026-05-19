@@ -15,6 +15,7 @@
 #include "base/test/bind.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "chromeos/ash/components/dbus/chromebox_for_meetings/fake_cfm_hotline_client.h"
 #include "chromeos/ash/components/mojo_service_manager/fake_mojo_service_manager.h"
 #include "chromeos/ash/services/cros_healthd/public/cpp/fake_cros_healthd.h"
@@ -135,33 +136,23 @@ TEST_F(CfmDiagnosticsServiceTest, GetDeviceInfoService) {
 // This test ensure that the diagnostics service can retrieve telemetry
 // information from cros_healthd.
 TEST_F(CfmDiagnosticsServiceTest, GetCrosHealthdTelemetry) {
-  auto response = cros_healthd::mojom::TelemetryInfo::New();
   cros_healthd::FakeCrosHealthd::Get()->SetProbeTelemetryInfoResponseForTesting(
-      response);
-  base::RunLoop run_loop;
-  DiagnosticsService::Get()->GetCrosHealthdTelemetry(base::BindLambdaForTesting(
-      [&](cros_healthd::mojom::TelemetryInfoPtr info) {
-        EXPECT_EQ(info, response);
-        run_loop.Quit();
-      }));
-  run_loop.Run();
+      cros_healthd::mojom::TelemetryInfo::New());
+  base::test::TestFuture<cros_healthd::mojom::TelemetryInfoPtr> future;
+  DiagnosticsService::Get()->GetCrosHealthdTelemetry(future.GetCallback());
+  EXPECT_EQ(cros_healthd::mojom::TelemetryInfo::New(), future.Get());
 }
 
 // This test ensure that the diagnostics service can retrieve process-specific
 // information from cros_healthd.
 TEST_F(CfmDiagnosticsServiceTest, GetCrosHealthdProcessInfo) {
-  auto response = cros_healthd::mojom::ProcessResult::NewProcessInfo(
-      cros_healthd::mojom::ProcessInfo::New());
   cros_healthd::FakeCrosHealthd::Get()->SetProbeProcessInfoResponseForTesting(
-      response);
-  base::RunLoop run_loop;
-  DiagnosticsService::Get()->GetCrosHealthdProcessInfo(
-      /*pid=*/10, base::BindLambdaForTesting(
-                      [&](cros_healthd::mojom::ProcessResultPtr info) {
-                        EXPECT_EQ(info, response);
-                        run_loop.Quit();
-                      }));
-  run_loop.Run();
+      cros_healthd::mojom::ProcessResult::NewProcessInfo(
+          cros_healthd::mojom::ProcessInfo::New()));
+  base::test::TestFuture<cros_healthd::mojom::ProcessResultPtr> future;
+  DiagnosticsService::Get()->GetCrosHealthdProcessInfo(/*pid=*/10,
+                                                       future.GetCallback());
+  EXPECT_TRUE(future.Get()->is_process_info());
 }
 
 }  // namespace

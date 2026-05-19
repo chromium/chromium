@@ -24,9 +24,8 @@ namespace {
 void SetRunRoutineResponse(
     int id,
     ash::cros_healthd::mojom::DiagnosticRoutineStatusEnum status) {
-  auto response = ash::cros_healthd::mojom::RunRoutineResponse::New(id, status);
   ash::cros_healthd::FakeCrosHealthd::Get()->SetRunRoutineResponseForTesting(
-      response);
+      ash::cros_healthd::mojom::RunRoutineResponse::New(id, status));
 }
 
 void SetExpectedLastPassedParameters(base::DictValue dict) {
@@ -148,7 +147,7 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
     response->routine_update_union = std::move(routineUpdateUnion);
 
     ash::cros_healthd::FakeCrosHealthd::Get()
-        ->SetGetRoutineUpdateResponseForTesting(response);
+        ->SetGetRoutineUpdateResponseForTesting(std::move(response));
   }
 
   CreateExtensionAndRunServiceWorker(R"(
@@ -203,7 +202,7 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
     response->routine_update_union = std::move(routineUpdateUnion);
 
     ash::cros_healthd::FakeCrosHealthd::Get()
-        ->SetGetRoutineUpdateResponseForTesting(response);
+        ->SetGetRoutineUpdateResponseForTesting(std::move(response));
   }
 
   CreateExtensionAndRunServiceWorker(R"(
