@@ -6140,6 +6140,7 @@ group("browser_generated_files") {
       "//chrome/browser/support_tool:support_tool_proto",
       "//chrome/browser/sync_file_system/drive_backend:sync_file_system_drive_proto",
       "//chrome/browser/ui:webui_name_variants",
+      "//chrome/browser/ui/views/drive_picker_host:mojo_bindings",
       "//chrome/browser/ui/webui/access_code_cast:mojo_bindings",
       "//chrome/browser/ui/webui/accessibility_annotator:mojo_bindings",
       "//chrome/browser/ui/webui/app_service_internals:mojo_bindings",
