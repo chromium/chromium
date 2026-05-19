@@ -57,7 +57,11 @@ GURL UrlFromValue(const GURL& visible_url, const base::Value* value) {
             : ui_metrics::SUCCESS_CANONICAL_URL_DIFFERENT_FROM_VISIBLE);
   }
 
-  return canonical_url.is_valid() ? canonical_url : GURL();
+  // TODO(crbug.com/514070067): Update the metric, to consider an non HTTP/HTTPS
+  // canonical_url as failure.
+  return canonical_url.is_valid() && canonical_url.SchemeIsHTTPOrHTTPS()
+             ? canonical_url
+             : GURL();
 }
 
 }  // namespace

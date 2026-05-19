@@ -176,3 +176,17 @@ TEST_F(CanonicalURLRetrieverTest, TestCanonicalLinkHTTPSDowngrade) {
       ui_metrics::kCanonicalURLResultHistogram,
       ui_metrics::SUCCESS_CANONICAL_URL_NOT_HTTPS, 1);
 }
+
+// Validates that if the canonical URL has a non-HTTP/HTTPS scheme, an empty
+// GURL is returned.
+TEST_F(CanonicalURLRetrieverTest, TestCanonicalLinkNonHTTPOrHTTPS) {
+  web::test::LoadHtml(
+      @"<link rel=\"canonical\" href=\"favapp://chromium.test\">",
+      GURL("https://m.chromium.test/"), web_state());
+
+  GURL url = RetrieveCanonicalUrl();
+  EXPECT_TRUE(url.is_empty());
+  histogram_tester_.ExpectUniqueSample(
+      ui_metrics::kCanonicalURLResultHistogram,
+      ui_metrics::SUCCESS_CANONICAL_URL_NOT_HTTPS, 1);
+}
