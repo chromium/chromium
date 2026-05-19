@@ -2337,7 +2337,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Sync.SyncableService.MaybeClearDataIfMetadataEmptyOrInvalid{SyncDataType}"
-    enum="Boolean" expires_after="2026-06-01">
+    enum="Boolean" expires_after="2027-05-19">
   <owner>ankushkush@google.com</owner>
   <owner>src/components/sync/OWNERS</owner>
   <summary>
