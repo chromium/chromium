@@ -9,6 +9,7 @@
 #include "base/check.h"
 #include "base/task/thread_pool.h"
 #include "services/webnn/error.h"
+#include "services/webnn/public/cpp/context_properties.h"
 #include "services/webnn/public/mojom/webnn_context_provider.mojom.h"
 #include "services/webnn/public/mojom/webnn_error.mojom.h"
 #include "services/webnn/tflite/context_impl_tflite.h"
@@ -31,12 +32,13 @@ ContextProviderTflite::~ContextProviderTflite() = default;
 void ContextProviderTflite::CreateWebNNContext(
     mojom::CreateContextOptionsPtr options,
     CreateWebNNContextCallback callback) {
-  if (options->device != mojom::Device::kCpu) {
-    std::move(callback).Run(ToError<mojom::CreateContextResult>(
-        mojom::Error::Code::kNotSupportedError,
-        "Only CPU device is supported for TFLite backend in this process."));
-    return;
-  }
+  // This provider is the renderer-process fallback that
+  // `WebNNContextProviderImpl` routes to after the GPU process has either
+  // declined the request or failed to create a context.
+  //
+  // Force the device to CPU so the TFLite backend doesn't attempt to load the
+  // GPU delegate (which lives in the GPU process) again from the renderer.
+  options->device = mojom::Device::kCpu;
 
   mojo::PendingRemote<mojom::WebNNContext> remote;
   auto receiver = remote.InitWithNewPipeAndPassReceiver();

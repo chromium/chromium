@@ -28,6 +28,12 @@ config("cpuinfo_config") {
     "-Wno-unused-function",
   ]
 
+  if (is_linux && is_component_build) {
+    # Export all symbols when building as a shared library so that the
+    # cpuinfo C API is reachable from other components.
+    cflags += [ "-fvisibility=default" ]
+  }
+
   defines = [
     "_GNU_SOURCE=1",  # Required for CPU_SETSIZE to be available.
     "CPUINFO_INTERNAL=",
@@ -36,7 +42,21 @@ config("cpuinfo_config") {
   ]
 }
 
-source_set("cpuinfo") {
+# Build cpuinfo as a component on Linux to avoid the renderer-sandbox
+# initialization issue for the WebNN TFLite XNNPACK backend because cpuinfo
+# needs to access `/proc/cpuinfo` on that platform, and this must happen before
+# sandbox initialization. The `//content` and `//services/webnn` components are
+# separate shared libraries in a component build; if cpuinfo is statically
+# linked into each, they end up with independent copies of cpuinfo's static
+# state. By building cpuinfo as a single shared library, the initialization
+# performed pre-sandbox in `//content` is visible to `//services/webnn`.
+if (is_linux) {
+  _cpuinfo_target_type = "component"
+} else {
+  _cpuinfo_target_type = "source_set"
+}
+
+target(_cpuinfo_target_type, "cpuinfo") {
   public = [ "src/include/cpuinfo.h" ]
 
   sources = [

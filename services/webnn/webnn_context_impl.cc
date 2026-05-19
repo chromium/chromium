@@ -11,6 +11,7 @@
 #include "base/atomic_sequence_num.h"
 #include "base/files/file_util.h"
 #include "base/functional/callback_helpers.h"
+#include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/sequence_checker.h"
 #include "base/strings/stringprintf.h"
@@ -158,7 +159,13 @@ void WebNNContextImpl::InitializeContext(ContextBackendUma backend_uma) {
   RecordContextBackendUma(backend_uma);
 #if BUILDFLAG(BUILD_TFLITE_WITH_XNNPACK)
   const xnn_status status = xnn_initialize(/*allocator=*/nullptr);
-  CHECK_EQ(status, xnn_status_success);
+  if (status == xnn_status_success) {
+    is_xnnpack_initialized_ = true;
+  } else {
+    LOG(WARNING) << "Failed to initialize XNNPACK (status=" << status
+                 << "); falling back to built-in TFLite kernels for CPU "
+                    "inference.";
+  }
 #endif  // BUILDFLAG(BUILD_TFLITE_WITH_XNNPACK)
   base::trace_event::MemoryDumpManager::GetInstance()->RegisterDumpProvider(
       this, "WebNN", owning_task_runner_);
@@ -178,9 +185,12 @@ WebNNContextImpl::~WebNNContextImpl() {
       this);
 
 #if BUILDFLAG(BUILD_TFLITE_WITH_XNNPACK)
-  // Deinitialize XNNPACK
-  const xnn_status status = xnn_deinitialize();
-  CHECK_EQ(status, xnn_status_success);
+  // Deinitialize XNNPACK only if it was successfully initialized; otherwise
+  // calling other XNNPACK APIs is unsafe.
+  if (is_xnnpack_initialized_) {
+    const xnn_status status = xnn_deinitialize();
+    CHECK_EQ(status, xnn_status_success);
+  }
 #endif  // BUILDFLAG(BUILD_TFLITE_WITH_XNNPACK)
 }
 

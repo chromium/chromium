@@ -52,10 +52,16 @@
 
 #if BUILDFLAG(WEBNN_USE_TFLITE)
 #include "services/webnn/tflite/context_impl_tflite.h"  // nogncheck
+#include "services/webnn/tflite/context_provider_tflite.h"  // nogncheck
 #endif
 
 #if BUILDFLAG(WEBNN_USE_LITERT)
 #include "services/webnn/tflite/context_impl_litert.h"  // nogncheck
+#endif
+
+#if BUILDFLAG(WEBNN_USE_CHROME_ML_API)
+#include "services/on_device_model/ml/chrome_ml.h"      // nogncheck
+#include "services/on_device_model/ml/chrome_ml_api.h"  // nogncheck
 #endif
 
 #if defined(ADDRESS_SANITIZER)
@@ -105,6 +111,26 @@ void RecordDeviceType(const mojom::Device device) {
   }
   base::UmaHistogramEnumeration("WebNN.DeviceType", uma_value);
 }
+
+#if BUILDFLAG(WEBNN_USE_TFLITE) || BUILDFLAG(WEBNN_USE_LITERT)
+// Returns true if the request described by `options` should be served by the
+// renderer-process (in-process) TFLite backend instead of the GPU-process
+// TFLite/LiteRT backend. The GPU process attempts GPU device requests first
+// when the ChromeML GPU delegate is available there, and falls back to the
+// renderer-process TFLite backend otherwise (including for CPU and NPU).
+bool ShouldUseInProcessTflite(const mojom::CreateContextOptions& options) {
+#if BUILDFLAG(WEBNN_USE_CHROME_ML_API)
+  if (options.device == mojom::Device::kGpu) {
+    auto* chrome_ml = ml::ChromeML::Get();
+    if (chrome_ml && chrome_ml->HasCreateGpuDelegate() &&
+        chrome_ml->HasDestroyGpuDelegate()) {
+      return false;
+    }
+  }
+#endif
+  return true;
+}
+#endif  // BUILDFLAG(WEBNN_USE_TFLITE) || BUILDFLAG(WEBNN_USE_LITERT)
 
 #if defined(ADDRESS_SANITIZER)
 NO_SANITIZE("address")
@@ -241,6 +267,11 @@ void WebNNContextProviderImpl::SetBackendForTesting(
   g_backend_for_testing = backend_for_testing;
 }
 
+// static
+bool WebNNContextProviderImpl::HasBackendForTesting() {
+  return g_backend_for_testing != nullptr;
+}
+
 void WebNNContextProviderImpl::CreateWebNNContext(
     CreateContextOptionsPtr options,
     WebNNContextProvider::CreateWebNNContextCallback callback) {
@@ -340,6 +371,12 @@ void WebNNContextProviderImpl::CreateWebNNContext(
     }
   }
 
+#if BUILDFLAG(WEBNN_USE_TFLITE) || BUILDFLAG(WEBNN_USE_LITERT)
+  // Cache this before any backend (e.g. CoreML) moves `options` and
+  // `context_impl` is still nullptr.
+  const bool should_use_in_process_tflite = ShouldUseInProcessTflite(*options);
+#endif  // BUILDFLAG(WEBNN_USE_TFLITE) || BUILDFLAG(WEBNN_USE_LITERT)
+
 #if BUILDFLAG(IS_WIN)
   if (ort::ShouldTryCreateOrtContext()) {
     const base::CommandLine* command_line =
@@ -391,7 +428,10 @@ void WebNNContextProviderImpl::CreateWebNNContext(
 #endif  // BUILDFLAG(IS_APPLE)
 
 #if BUILDFLAG(WEBNN_USE_LITERT)
-  if (!context_impl &&
+  // Returning a `kNotSupportedError` from `OnCreateWebNNContextImpl` lets the
+  // renderer's `ML::createContext` fallback path create the in-process TFLite
+  // context instead.
+  if (!context_impl && !should_use_in_process_tflite &&
       base::FeatureList::IsEnabled(mojom::features::kWebNNLiteRT)) {
     CreateLiteRtContext(
         std::move(scoped_trace), std::move(options),
@@ -405,7 +445,7 @@ void WebNNContextProviderImpl::CreateWebNNContext(
 #endif  // BUILDFLAG(WEBNN_USE_LITERT)
 
 #if BUILDFLAG(WEBNN_USE_TFLITE)
-  if (!context_impl) {
+  if (!context_impl && !should_use_in_process_tflite) {
     CreateTFLiteContext(
         std::move(scoped_trace), std::move(options),
         std::move(write_tensor_producer), std::move(write_tensor_consumer),
@@ -565,6 +605,21 @@ void WebNNContextProviderImpl::OnOrtEnvCreated(
 
   LOG(ERROR) << "[WebNN] Failed to create ONNX Runtime environment: "
              << env_creation_results.error();
+
+#if BUILDFLAG(WEBNN_USE_TFLITE)
+  // If the request would be served by the renderer-process TFLite backend,
+  // skip the GPU-process TFLite/LiteRT fallbacks and return a
+  // `kNotSupportedError` so the renderer's `ML::createContext` fallback path
+  // creates the in-process TFLite context instead.
+  if (ShouldUseInProcessTflite(*options)) {
+    WebNNContextImplPtr context_impl(nullptr, OnTaskRunnerDeleter(task_runner));
+    OnCreateWebNNContextImpl(std::move(callback), std::move(remote),
+                             std::move(write_tensor_producer),
+                             std::move(read_tensor_consumer),
+                             std::move(context_impl));
+    return;
+  }
+#endif  // BUILDFLAG(WEBNN_USE_TFLITE)
 
 #if BUILDFLAG(WEBNN_USE_LITERT)
   if (base::FeatureList::IsEnabled(mojom::features::kWebNNLiteRT)) {

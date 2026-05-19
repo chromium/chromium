@@ -44,6 +44,7 @@
 #include "services/webnn/webnn_object_impl.h"
 #include "services/webnn/webnn_tensor_impl.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
+#include "third_party/tflite/buildflags.h"
 
 namespace webnn {
 
@@ -406,6 +407,12 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextImpl
   // A process-unique ID used for disambiguating memory dumps from different
   // WebNN contexts.
   const int tracing_id_;
+
+#if BUILDFLAG(BUILD_TFLITE_WITH_XNNPACK)
+  // Whether `xnn_initialize()` succeeded. Other XNNPACK APIs (including
+  // `xnn_deinitialize()`) must not be called when initialization failed.
+  bool is_xnnpack_initialized_ = false;
+#endif  // BUILDFLAG(BUILD_TFLITE_WITH_XNNPACK)
 };
 
 }  // namespace webnn
