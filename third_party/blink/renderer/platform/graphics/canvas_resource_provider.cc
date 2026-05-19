@@ -144,7 +144,7 @@ Canvas2DResourceProviderBitmap::Canvas2DResourceProviderBitmap(
     viz::SharedImageFormat format,
     SkAlphaType alpha_type,
     const gfx::ColorSpace& color_space,
-    Delegate* delegate)
+    CanvasResourceProvider::Delegate* delegate)
     : CanvasResourceProvider(kBitmap,
                              size,
                              format,
@@ -1235,7 +1235,7 @@ Canvas2DResourceProviderBitmap::CreateWithClear(
     viz::SharedImageFormat format,
     SkAlphaType alpha_type,
     const gfx::ColorSpace& color_space,
-    Delegate* delegate) {
+    CanvasResourceProvider::Delegate* delegate) {
   auto provider = base::WrapUnique<Canvas2DResourceProviderBitmap>(
       new Canvas2DResourceProviderBitmap(size, format, alpha_type, color_space,
                                          delegate));
@@ -1257,7 +1257,7 @@ Canvas2DResourceProviderSharedImage::CreateWithClear(
     base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper,
     RasterMode raster_mode,
     gpu::SharedImageUsageSet shared_image_usage_flags,
-    Delegate* delegate) {
+    CanvasResourceProvider::Delegate* delegate) {
   // IsGpuCompositingEnabled can re-create the context if it has been lost, do
   // this up front so that we can fail early and not expose ourselves to
   // use after free bugs (crbug.com/1126424)
@@ -1384,7 +1384,7 @@ Canvas2DResourceProviderSharedImage::CreateWithClearForSoftwareCompositor(
     SkAlphaType alpha_type,
     const gfx::ColorSpace& color_space,
     WebGraphicsSharedImageInterfaceProvider* shared_image_interface_provider,
-    Delegate* delegate) {
+    CanvasResourceProvider::Delegate* delegate) {
   if (SharedGpuContext::IsGpuCompositingEnabled()) {
     return nullptr;
   }
@@ -1413,7 +1413,7 @@ CanvasNon2DResourceProviderSharedImage::Create(
     const gfx::ColorSpace& color_space,
     base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper,
     gpu::SharedImageUsageSet shared_image_usage_flags,
-    Delegate* delegate) {
+    CanvasResourceProvider::Delegate* delegate) {
   // IsGpuCompositingEnabled can re-create the context if it has been lost, do
   // this up front so that we can fail early and not expose ourselves to
   // use after free bugs (crbug.com/1126424)
@@ -1525,7 +1525,7 @@ CanvasNon2DResourceProviderSharedImage::CreateForWebGPU(
     SkAlphaType alpha_type,
     const gfx::ColorSpace& color_space,
     gpu::SharedImageUsageSet shared_image_usage_flags,
-    Delegate* delegate) {
+    CanvasResourceProvider::Delegate* delegate) {
   auto context_provider_wrapper = SharedGpuContext::ContextProviderWrapper();
   // The SharedImages created by this provider serve as a means of import/export
   // between VideoFrames/canvas and WebGPU, e.g.:
@@ -1550,7 +1550,7 @@ CanvasNon2DResourceProviderSharedImage::CreateForSoftwareCompositor(
     SkAlphaType alpha_type,
     const gfx::ColorSpace& color_space,
     WebGraphicsSharedImageInterfaceProvider* shared_image_interface_provider,
-    Delegate* delegate) {
+    CanvasResourceProvider::Delegate* delegate) {
   if (SharedGpuContext::IsGpuCompositingEnabled()) {
     return nullptr;
   }
@@ -1688,7 +1688,7 @@ CanvasResourceProvider::CanvasResourceProvider(
     viz::SharedImageFormat format,
     SkAlphaType alpha_type,
     const gfx::ColorSpace& color_space,
-    Delegate* delegate)
+    CanvasResourceProvider::Delegate* delegate)
     : type_(type),
       size_(size),
       format_(format),
@@ -2018,7 +2018,7 @@ Canvas2DResourceProviderSharedImage::Canvas2DResourceProviderSharedImage(
     base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper,
     bool is_accelerated,
     gpu::SharedImageUsageSet shared_image_usage_flags,
-    Delegate* delegate)
+    CanvasResourceProvider::Delegate* delegate)
     : CanvasResourceProvider(kSharedImage,
                              size,
                              format,
@@ -2089,7 +2089,8 @@ Canvas2DResourceProviderSharedImage::Canvas2DResourceProviderSharedImage(
 
       std::optional<base::TimeDelta> expiration_time =
           (base::FeatureList::IsEnabled(kCanvas2DReclaimUnusedResources))
-              ? std::make_optional(kUnusedResourceExpirationTime)
+              ? std::make_optional(
+                    CanvasResourceProvider::kUnusedResourceExpirationTime)
               : std::nullopt;
       bool is_single_buffered = shared_image_usage_flags.Has(
           gpu::SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE);
@@ -2116,7 +2117,7 @@ Canvas2DResourceProviderSharedImage::Canvas2DResourceProviderSharedImage(
     SkAlphaType alpha_type,
     const gfx::ColorSpace& color_space,
     WebGraphicsSharedImageInterfaceProvider* shared_image_interface_provider,
-    Delegate* delegate)
+    CanvasResourceProvider::Delegate* delegate)
     : CanvasResourceProvider(kSharedImage,
                              size,
                              format,
@@ -2237,7 +2238,7 @@ CanvasNon2DResourceProviderSharedImage::CanvasNon2DResourceProviderSharedImage(
     base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper,
     bool is_accelerated,
     gpu::SharedImageUsageSet shared_image_usage_flags,
-    Delegate* delegate)
+    CanvasResourceProvider::Delegate* delegate)
     : CanvasResourceProvider(kSharedImage,
                              size,
                              format,
@@ -2307,7 +2308,8 @@ CanvasNon2DResourceProviderSharedImage::CanvasNon2DResourceProviderSharedImage(
 
       std::optional<base::TimeDelta> expiration_time =
           (base::FeatureList::IsEnabled(kCanvas2DReclaimUnusedResources))
-              ? std::make_optional(kUnusedResourceExpirationTime)
+              ? std::make_optional(
+                    CanvasResourceProvider::kUnusedResourceExpirationTime)
               : std::nullopt;
       bool is_single_buffered = shared_image_usage_flags.Has(
           gpu::SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE);
@@ -2334,7 +2336,7 @@ CanvasNon2DResourceProviderSharedImage::CanvasNon2DResourceProviderSharedImage(
     SkAlphaType alpha_type,
     const gfx::ColorSpace& color_space,
     WebGraphicsSharedImageInterfaceProvider* shared_image_interface_provider,
-    Delegate* delegate)
+    CanvasResourceProvider::Delegate* delegate)
     : CanvasResourceProvider(kSharedImage,
                              size,
                              format,
