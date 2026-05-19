@@ -8197,6 +8197,25 @@
             ]
         }
     ],
+    "DefaultPassthroughCommandDecoder": [
+        {
+            "platforms": [
+                "android_webview"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "BlockListByDevice": "",
+                        "BlockListByModel": ""
+                    },
+                    "enable_features": [
+                        "DefaultPassthroughCommandDecoder"
+                    ]
+                }
+            ]
+        }
+    ],
     "DeferSpeculativeRFHCreation": [
         {
             "platforms": [
