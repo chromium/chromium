@@ -78,25 +78,27 @@ void InterstitialHTMLSource::StartDataRequest(
   std::unique_ptr<security_interstitials::IOSSecurityInterstitialPage>
       interstitial_page;
   std::string html;
-  // Using this form of the path so we can do exact matching, while ignoring the
-  // query (everything after the ? character).
-  GURL url = GURL(kChromeUIInterstitialsURL).GetWithEmptyPath().Resolve(path);
-  std::string path_without_query = url.GetPath();
-  if (path_without_query == kChromeInterstitialSslPath) {
-    interstitial_page = CreateSslBlockingPage(web_state.get(), url);
-  } else if (path_without_query == kChromeInterstitialCaptivePortalPath) {
-    interstitial_page = CreateCaptivePortalBlockingPage(web_state.get());
-  } else if (path_without_query == kChromeInterstitialSafeBrowsingPath) {
-    interstitial_page = CreateSafeBrowsingBlockingPage(web_state.get(), url);
-  } else if (path_without_query == kChromeInterstitialEnterpriseBlock) {
-    interstitial_page = CreateEnterpriseBlockPage(web_state.get(), url);
-  } else if (path_without_query == kChromeInterstitialEnterpriseWarn) {
-    interstitial_page = CreateEnterpriseWarnPage(web_state.get(), url);
-  } else {
-    // This page is not implemented. It should either be implemented or hidden
-    // from the HTML on iOS as was done in crrev.com/c/3722515.
-    SCOPED_CRASH_KEY_STRING256("Interstitials", "path", path_without_query);
-    base::debug::DumpWithoutCrashing();
+  if (!path.empty()) {
+    // Using this form of the path so we can do exact matching, while ignoring
+    // the query (everything after the ? character).
+    GURL url = GURL(kChromeUIInterstitialsURL).GetWithEmptyPath().Resolve(path);
+    std::string path_without_query = url.GetPath();
+    if (path_without_query == kChromeInterstitialSslPath) {
+      interstitial_page = CreateSslBlockingPage(web_state.get(), url);
+    } else if (path_without_query == kChromeInterstitialCaptivePortalPath) {
+      interstitial_page = CreateCaptivePortalBlockingPage(web_state.get());
+    } else if (path_without_query == kChromeInterstitialSafeBrowsingPath) {
+      interstitial_page = CreateSafeBrowsingBlockingPage(web_state.get(), url);
+    } else if (path_without_query == kChromeInterstitialEnterpriseBlock) {
+      interstitial_page = CreateEnterpriseBlockPage(web_state.get(), url);
+    } else if (path_without_query == kChromeInterstitialEnterpriseWarn) {
+      interstitial_page = CreateEnterpriseWarnPage(web_state.get(), url);
+    } else {
+      // This page is not implemented. It should either be implemented or hidden
+      // from the HTML on iOS as was done in crrev.com/c/3722515.
+      SCOPED_CRASH_KEY_STRING256("Interstitials", "path", path_without_query);
+      base::debug::DumpWithoutCrashing();
+    }
   }
 
   // Use the HTML generated from the interstitial page if created
