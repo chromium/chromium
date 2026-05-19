@@ -369,8 +369,6 @@ BASE_DECLARE_FEATURE_PARAM(bool, kVerticalTabsGrabHandleRemovalAlways);
 
 BASE_DECLARE_FEATURE(kOmniboxResizingPrioritization);
 
-BASE_DECLARE_FEATURE(kToolbarProfileChipResizing);
-
 BASE_DECLARE_FEATURE(kToolbarAppMenuLabelResizing);
 
 BASE_DECLARE_FEATURE(kToolbarProfileChipResizing);

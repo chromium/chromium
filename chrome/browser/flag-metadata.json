@@ -9064,11 +9064,6 @@
     "expiry_milestone": 150
   },
   {
-    "name": "toolbar-app-menu-label-resizing",
-    "owners": [ "agale@chromium.org", "top-chrome-desktop-ui@google.com" ],
-    "expiry_milestone": 160
-  },
-  {
     "name": "toolbar-capture-fix-for-spas",
     "owners": [ "peilinwang@google.com" ],
     "expiry_milestone": 160
@@ -9082,11 +9077,6 @@
     "name" : "toolbar-phone-animation-refactor",
     "owners": [ "skavuluru@google.com", "nemco@google.com", "clank-large-form-factors@google.com" ],
     "expiry_milestone" : 160
-  },
-  {
-    "name": "toolbar-profile-chip-resizing",
-    "owners": [ "agale@chromium.org", "top-chrome-desktop-ui@google.com" ],
-    "expiry_milestone": 160
   },
   {
     "name": "toolbar-snapshot-refactor",
