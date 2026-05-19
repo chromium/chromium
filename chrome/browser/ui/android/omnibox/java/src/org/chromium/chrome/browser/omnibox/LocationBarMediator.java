@@ -1044,6 +1044,10 @@ class LocationBarMediator
         RecordUserAction.record("MobileOmniboxDeleteUrl");
         if (mCurrentInput == null) return; // session not started yet.
 
+        if (TextUtils.isEmpty(mCurrentInput.getUserText())) {
+            mCurrentInput.setRequestType(mLocationBarDataProvider.getDefaultRequestType());
+        }
+
         mCurrentInput.setUserText(null);
         mUrlCoordinator.setUrlBarData(
                 UrlBarData.forNonUrlText(mCurrentInput.getUserText()),
@@ -1349,6 +1353,8 @@ class LocationBarMediator
                 mDropdown.getId(), ConstraintSet.END, ConstraintSet.PARENT_ID, ConstraintSet.END);
         set.connect(
                 R.id.navigate_button, ConstraintSet.TOP, mDropdown.getId(), ConstraintSet.BOTTOM);
+        set.connect(R.id.delete_button, ConstraintSet.TOP, R.id.url_bar, ConstraintSet.TOP);
+        set.connect(R.id.delete_button, ConstraintSet.BOTTOM, R.id.url_bar, ConstraintSet.BOTTOM);
         set.constrainWidth(mDropdown.getId(), ConstraintSet.MATCH_CONSTRAINT);
         set.constrainHeight(mDropdown.getId(), ConstraintSet.WRAP_CONTENT);
         set.constrainedHeight(mDropdown.getId(), true);
@@ -1854,6 +1860,10 @@ class LocationBarMediator
     // embedder does not need to be updated after its visibility changes.
     private void updateDeleteButtonVisibility() {
         boolean showDeleteButton = isUrlBarFocusedWithUserInput();
+        if (isParentedToSuggestionsContainer()) {
+            showDeleteButton |=
+                    (mCurrentInput != null && !mCurrentInput.isConventionalRequestType());
+        }
 
         if (mPreviousDeleteButtonVisible == null
                 || showDeleteButton != mPreviousDeleteButtonVisible) {
@@ -2079,12 +2089,9 @@ class LocationBarMediator
         return mShouldShowButtonsWhenUnfocused && shouldShowPageActionButtons();
     }
 
-    /**
-     * @return Whether the delete button should be shown.
-     */
+    /** Returns Whether the url bar is focused and has non-empty input. */
     @VisibleForTesting
     boolean isUrlBarFocusedWithUserInput() {
-        // Show the delete button at the end when the bar has focus and has some text.
         boolean hasText =
                 mUrlCoordinator != null
                         && !TextUtils.isEmpty(mUrlCoordinator.getTextWithAutocomplete());
