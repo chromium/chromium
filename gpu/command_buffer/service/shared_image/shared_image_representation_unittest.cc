@@ -4,6 +4,9 @@
 
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
 
+#include <algorithm>
+#include <iterator>
+
 #include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
@@ -191,6 +194,8 @@ TEST_F(SharedImageRepresentationTest, DawnClearing) {
   // wgpu::Texture(reinterpret_cast<WGPUTexture>(203)), so we have to override
   // the texture reference/release procs to avoid crashing.
   DawnProcTable procs = {};
+  std::ranges::copy_n(dawnProcGetVersion(), std::size(procs.version),
+                      procs.version);
   procs.textureAddRef = [](WGPUTexture) {};
   procs.textureRelease = [](WGPUTexture) {};
   dawnProcSetProcs(&procs);
