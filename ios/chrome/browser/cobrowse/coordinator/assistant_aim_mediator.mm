@@ -212,8 +212,8 @@ namespace {
   }
 
   // Execute the script in the page via the JavaScriptFeature.
-  AimCobrowseJavaScriptFeature::GetInstance()->PostMessage(_webState.get(),
-                                                           message);
+  AimCobrowseJavaScriptFeature::GetInstance()->SendNativeToWeb(_webState.get(),
+                                                               message);
 
   [self.delegate assistantAIMMediatorDidLoadQuery:self];
 }

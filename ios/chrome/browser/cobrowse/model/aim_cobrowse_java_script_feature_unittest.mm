@@ -36,9 +36,9 @@ class AimCobrowseJavaScriptFeatureTest : public PlatformTest {
   raw_ptr<web::FakeWebFramesManager> manager_;
 };
 
-// Tests that PostMessage correctly serializes the message and calls the
+// Tests that SendNativeToWeb correctly serializes the message and calls the
 // JavaScript function on the main frame.
-TEST_F(AimCobrowseJavaScriptFeatureTest, PostMessage) {
+TEST_F(AimCobrowseJavaScriptFeatureTest, SendNativeToWeb) {
   auto main_frame = web::FakeWebFrame::CreateMainWebFrame(
       url::Origin::Create(GURL("https://www.google.com")));
   auto* main_frame_ptr = main_frame.get();
@@ -48,34 +48,34 @@ TEST_F(AimCobrowseJavaScriptFeatureTest, PostMessage) {
   lens::ClientToAimMessage message;
   message.mutable_open_threads_view()->mutable_payload();
 
-  AimCobrowseJavaScriptFeature::GetInstance()->PostMessage(&web_state_,
-                                                           message);
+  AimCobrowseJavaScriptFeature::GetInstance()->SendNativeToWeb(&web_state_,
+                                                               message);
 
   std::u16string last_call = main_frame_ptr->GetLastJavaScriptCall();
 
-  // Verify that the call was made to aimCobrowse.postMessage.
+  // Verify that the call was made to aimCobrowse.sendNativeToWeb.
   EXPECT_TRUE(
       last_call.find(
-          u"__gCrWeb.callFunctionInGcrWeb('aimCobrowse', 'postMessage',") !=
+          u"__gCrWeb.callFunctionInGcrWeb('aimCobrowse', 'sendNativeToWeb',") !=
       std::u16string::npos);
 }
 
-// Tests that PostMessage handles the case where there is no main frame
+// Tests that SendNativeToWeb handles the case where there is no main frame
 // gracefully without crashing.
-TEST_F(AimCobrowseJavaScriptFeatureTest, PostMessageNoMainFrame) {
+TEST_F(AimCobrowseJavaScriptFeatureTest, SendNativeToWebNoMainFrame) {
   // Do not add a web frame to the manager.
 
   lens::ClientToAimMessage message;
   message.mutable_open_threads_view()->mutable_payload();
 
   // Should not crash if there is no main frame.
-  AimCobrowseJavaScriptFeature::GetInstance()->PostMessage(&web_state_,
-                                                           message);
+  AimCobrowseJavaScriptFeature::GetInstance()->SendNativeToWeb(&web_state_,
+                                                               message);
 }
 
-// Tests that PostMessage does not call JavaScript if the main frame has no
+// Tests that SendNativeToWeb does not call JavaScript if the main frame has no
 // allowed origin.
-TEST_F(AimCobrowseJavaScriptFeatureTest, PostMessageNoOrigin) {
+TEST_F(AimCobrowseJavaScriptFeatureTest, SendNativeToWebNoOrigin) {
   auto main_frame = web::FakeWebFrame::CreateMainWebFrame();
   auto* main_frame_ptr = main_frame.get();
   main_frame_ptr->set_browser_state(&browser_state_);
@@ -84,15 +84,15 @@ TEST_F(AimCobrowseJavaScriptFeatureTest, PostMessageNoOrigin) {
   lens::ClientToAimMessage message;
   message.mutable_open_threads_view()->mutable_payload();
 
-  AimCobrowseJavaScriptFeature::GetInstance()->PostMessage(&web_state_,
-                                                           message);
+  AimCobrowseJavaScriptFeature::GetInstance()->SendNativeToWeb(&web_state_,
+                                                               message);
 
   EXPECT_TRUE(main_frame_ptr->GetJavaScriptCallHistory().empty());
 }
 
-// Tests that PostMessage does not call JavaScript if the main frame has an
+// Tests that SendNativeToWeb does not call JavaScript if the main frame has an
 // origin not in the origin filter.
-TEST_F(AimCobrowseJavaScriptFeatureTest, PostMessageDisallowedOrigin) {
+TEST_F(AimCobrowseJavaScriptFeatureTest, SendNativeToWebDisallowedOrigin) {
   auto main_frame = web::FakeWebFrame::CreateMainWebFrame(
       url::Origin::Create(GURL("https://example.com")));
   auto* main_frame_ptr = main_frame.get();
@@ -102,8 +102,8 @@ TEST_F(AimCobrowseJavaScriptFeatureTest, PostMessageDisallowedOrigin) {
   lens::ClientToAimMessage message;
   message.mutable_open_threads_view()->mutable_payload();
 
-  AimCobrowseJavaScriptFeature::GetInstance()->PostMessage(&web_state_,
-                                                           message);
+  AimCobrowseJavaScriptFeature::GetInstance()->SendNativeToWeb(&web_state_,
+                                                               message);
 
   EXPECT_TRUE(main_frame_ptr->GetJavaScriptCallHistory().empty());
 }

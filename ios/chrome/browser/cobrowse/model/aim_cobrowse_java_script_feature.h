@@ -27,9 +27,9 @@ class AimCobrowseJavaScriptFeature : public web::JavaScriptFeature {
   AimCobrowseJavaScriptFeature& operator=(const AimCobrowseJavaScriptFeature&) =
       delete;
 
-  // Posts a message to the AIM Cobrowse page.
-  void PostMessage(web::WebState* web_state,
-                   const lens::ClientToAimMessage& message);
+  // Sends a message to the AIM Cobrowse page from the native app.
+  void SendNativeToWeb(web::WebState* web_state,
+                       const lens::ClientToAimMessage& message);
 
  private:
   friend class base::NoDestructor<AimCobrowseJavaScriptFeature>;

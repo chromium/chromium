@@ -37,7 +37,7 @@ AimCobrowseJavaScriptFeature::AimCobrowseJavaScriptFeature()
 
 AimCobrowseJavaScriptFeature::~AimCobrowseJavaScriptFeature() = default;
 
-void AimCobrowseJavaScriptFeature::PostMessage(
+void AimCobrowseJavaScriptFeature::SendNativeToWeb(
     web::WebState* web_state,
     const lens::ClientToAimMessage& message) {
   if (!web_state) {
@@ -55,5 +55,5 @@ void AimCobrowseJavaScriptFeature::PostMessage(
   base::ListValue parameters;
   parameters.Append(base64_message);
 
-  CallJavaScriptFunction(main_frame, "aimCobrowse.postMessage", parameters);
+  CallJavaScriptFunction(main_frame, "aimCobrowse.sendNativeToWeb", parameters);
 }

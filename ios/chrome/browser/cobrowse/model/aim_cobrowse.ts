@@ -12,7 +12,7 @@ import {CrWebApi, gCrWeb} from '//ios/web/public/js_messaging/resources/gcrweb.j
  * Posts a message to the window.
  * @param {string} base64Message The base64 encoded message.
  */
-function postMessage(base64Message: string): void {
+function sendNativeToWeb(base64Message: string): void {
   const binary = atob(base64Message);
   const queryMsg = Uint8Array.from(binary, c => c.charCodeAt(0));
   window.postMessage(queryMsg, window.location.origin);
@@ -20,6 +20,6 @@ function postMessage(base64Message: string): void {
 
 const aimCobrowseApi = new CrWebApi('aimCobrowse');
 
-aimCobrowseApi.addFunction('postMessage', postMessage);
+aimCobrowseApi.addFunction('sendNativeToWeb', sendNativeToWeb);
 
 gCrWeb.registerApi(aimCobrowseApi);
