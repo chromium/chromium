@@ -20,7 +20,7 @@
 #include "chromecast/media/api/decoder_buffer_base.h"
 #include "chromecast/media/api/test/mock_cma_backend_factory.h"
 #include "chromecast/media/audio/cast_audio_manager.h"
-#include "chromecast/media/audio/cast_audio_mixer.h"
+
 #include "chromecast/media/audio/mock_cast_audio_manager_helper_delegate.h"
 #include "chromecast/media/base/default_monotonic_clock.h"
 #include "chromecast/public/task_runner.h"
@@ -240,7 +240,7 @@ class CastAudioOutputStreamTest : public ::testing::Test {
     return mock_backend_factory_.get();
   }
 
-  void CreateAudioManagerForTesting(bool use_mixer = false) {
+  void CreateAudioManagerForTesting() {
     // Only one AudioManager may exist at a time, so destroy the one we're
     // currently holding before creating a new one.
     // Flush the message loop to run any shutdown tasks posted by AudioManager.
@@ -258,7 +258,7 @@ class CastAudioOutputStreamTest : public ::testing::Test {
         base::BindRepeating(&CastAudioOutputStreamTest::GetCmaBackendFactory,
                             base::Unretained(this)),
         task_environment_.GetMainThreadTaskRunner(),
-        audio_thread_.task_runner(), use_mixer,
+        audio_thread_.task_runner(),
         true /* force_use_cma_backend_for_output*/));
     // A few AudioManager implementations post initialization tasks to
     // audio thread. Flush the thread to ensure that |audio_manager_| is

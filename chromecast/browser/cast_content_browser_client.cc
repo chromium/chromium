@@ -283,8 +283,7 @@ CastContentBrowserClient::CreateAudioManager(
       std::move(audio_thread), audio_log_factory, cast_session_id_map,
       base::BindRepeating(&CastContentBrowserClient::GetCmaBackendFactory,
                           base::Unretained(this)),
-      content::GetUIThreadTaskRunner({}), GetMediaTaskRunner(),
-      /* use_mixer= */ false);
+      content::GetUIThreadTaskRunner({}), GetMediaTaskRunner());
 #elif BUILDFLAG(IS_ANDROID)
   if (base::FeatureList::IsEnabled(kEnableChromeAudioManagerAndroid)) {
     LOG(INFO) << "Use AudioManagerAndroid instead of CastAudioManagerAndroid.";
@@ -302,8 +301,7 @@ CastContentBrowserClient::CreateAudioManager(
       std::move(audio_thread), audio_log_factory, cast_session_id_map,
       base::BindRepeating(&CastContentBrowserClient::GetCmaBackendFactory,
                           base::Unretained(this)),
-      content::GetUIThreadTaskRunner({}), GetMediaTaskRunner(),
-      /* use_mixer= */ false);
+      content::GetUIThreadTaskRunner({}), GetMediaTaskRunner());
 #endif
 }
 

@@ -46,7 +46,6 @@ group("libcast_media") {
 test("cast_media_unittests") {
   sources = [
     "audio/cast_audio_manager_unittest.cc",
-    "audio/cast_audio_mixer_unittest.cc",
     "audio/cast_audio_output_stream_unittest.cc",
     "base/slew_volume_unittest.cc",
     "base/supported_codec_profile_levels_memo_unittest.cc",
@@ -73,7 +72,7 @@ test("cast_media_unittests") {
     "//chromecast/media/api:test_support",
     "//chromecast/media/audio:test_support",
     "//chromecast/media/audio:unittests",
-    "//chromecast/media/audio/mixer_service:unittests",
+
     "//chromecast/media/base:monotonic_clock",
     "//chromecast/media/base:slew_volume",
     "//chromecast/media/cma:test_support",

@@ -73,7 +73,7 @@ MediaPipelineBackendManager::MediaPipelineBackendManager(
     UNSAFE_TODO(decoder_count_[i]) = 0;
   }
 
-  RUN_ON_MEDIA_THREAD(CreateMixerConnection);
+
 }
 
 MediaPipelineBackendManager::~MediaPipelineBackendManager() {
@@ -158,19 +158,7 @@ void MediaPipelineBackendManager::UpdatePlayingAudioCount(
                                   had_playing_primary_streams);
 }
 
-void MediaPipelineBackendManager::OnMixerStreamCountChange(int primary_streams,
-                                                           int sfx_streams) {
-  DCHECK(media_task_runner_->BelongsToCurrentThread());
-  bool had_playing_audio_streams = (TotalPlayingAudioStreamsCount() > 0);
-  bool had_playing_primary_streams =
-      (TotalPlayingNoneffectsAudioStreamsCount() > 0);
 
-  mixer_primary_stream_count_ = primary_streams;
-  mixer_sfx_stream_count_ = sfx_streams;
-
-  HandlePlayingAudioStreamsChange(had_playing_audio_streams,
-                                  had_playing_primary_streams);
-}
 
 void MediaPipelineBackendManager::HandlePlayingAudioStreamsChange(
     bool had_playing_audio_streams,
@@ -207,7 +195,7 @@ int MediaPipelineBackendManager::TotalPlayingAudioStreamsCount() {
   for (auto entry : playing_audio_streams_count_) {
     total += entry.second;
   }
-  return std::max(total, mixer_primary_stream_count_ + mixer_sfx_stream_count_);
+  return total;
 }
 
 int MediaPipelineBackendManager::TotalPlayingNoneffectsAudioStreamsCount() {
@@ -215,7 +203,7 @@ int MediaPipelineBackendManager::TotalPlayingNoneffectsAudioStreamsCount() {
   for (auto entry : playing_noneffects_audio_streams_count_) {
     total += entry.second;
   }
-  return std::max(total, mixer_primary_stream_count_);
+  return total;
 }
 
 void MediaPipelineBackendManager::EnterPowerSaveMode() {

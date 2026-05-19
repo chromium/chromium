@@ -38,12 +38,7 @@ cast_source_set("backend") {
     deps += [ "//chromecast/media/cma/backend/proxy" ]
   }
 
-  if (have_full_mixer) {
-    sources += [ "media_pipeline_backend_manager_mixer.cc" ]
-    deps += [ "//chromecast/media/audio/mixer_service:control_connection" ]
-  } else {
-    sources += [ "media_pipeline_backend_manager_no_mixer.cc" ]
-  }
+
 }
 
 # Target for OEM partners to override media shared library, i.e.
@@ -142,44 +137,6 @@ cast_source_set("saved_volumes") {
   ]
 }
 
-cast_source_set("for_mixer_audio") {
-  sources = [
-    "audio_decoder_for_mixer.cc",
-    "audio_decoder_for_mixer.h",
-    "media_pipeline_backend_for_mixer.cc",
-    "media_pipeline_backend_for_mixer.h",
-    "volume_control.cc",
-  ]
-
-  deps = [
-    ":audio_buildflags",
-    ":cast_audio_json",
-    ":public",
-    ":saved_volumes",
-    ":volume_map",
-    "//base",
-    "//chromecast/base",
-    "//chromecast/media/api",
-    "//chromecast/media/audio:processing",
-    "//chromecast/media/audio/mixer_service:common",
-    "//chromecast/media/audio/mixer_service:control_connection",
-    "//chromecast/media/audio/mixer_service:output_stream_connection",
-    "//chromecast/media/audio/mixer_service:proto",
-    "//chromecast/media/audio/net:common",
-    "//chromecast/media/audio/net:proto",
-    "//chromecast/media/base:monotonic_clock",
-    "//chromecast/media/cma/base",
-    "//chromecast/media/cma/decoder",
-    "//chromecast/net:io_buffer_pool",
-    "//chromecast/public",
-    "//chromecast/public/media",
-    "//media",
-  ]
-
-  if (mixer_in_cast_shell) {
-    deps += [ "//chromecast/media/cma/backend/mixer" ]
-  }
-}
 
 test("cast_audio_backend_unittests") {
   testonly = true
@@ -191,7 +148,7 @@ test("cast_audio_backend_unittests") {
     "//base",
     "//base/test:run_all_unittests",
     "//base/test:test_support",
-    "//chromecast/media/cma/backend/mixer:unittests",
+
     "//media",
     "//testing/gmock",
     "//testing/gtest",

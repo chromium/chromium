@@ -33,8 +33,7 @@ class CastAudioManagerAlsa : public CastAudioManager {
       CastAudioManagerHelper::Delegate* delegate,
       base::RepeatingCallback<CmaBackendFactory*()> backend_factory_getter,
       scoped_refptr<base::SingleThreadTaskRunner> browser_task_runner,
-      scoped_refptr<base::SingleThreadTaskRunner> media_task_runner,
-      bool use_mixer);
+      scoped_refptr<base::SingleThreadTaskRunner> media_task_runner);
 
   CastAudioManagerAlsa(const CastAudioManagerAlsa&) = delete;
   CastAudioManagerAlsa& operator=(const CastAudioManagerAlsa&) = delete;

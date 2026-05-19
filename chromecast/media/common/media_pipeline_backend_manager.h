@@ -145,12 +145,7 @@ class MediaPipelineBackendManager : public media::CmaBackendFactory {
  private:
   friend class ActiveMediaPipelineBackendWrapper;
 
-  class MixerConnection {
-   public:
-    virtual ~MixerConnection() = default;
-  };
 
-  void CreateMixerConnection();
 
   // Backend wrapper instances must use these APIs when allocating and releasing
   // decoder objects, so we can enforce global limit on #concurrent decoders.
@@ -161,7 +156,7 @@ class MediaPipelineBackendManager : public media::CmaBackendFactory {
   void UpdatePlayingAudioCount(bool sfx,
                                const AudioContentType type,
                                int change);
-  void OnMixerStreamCountChange(int primary_streams, int sfx_streams);
+
   void HandlePlayingAudioStreamsChange(bool had_playing_audio_streams,
                                        bool had_playing_primary_streams);
   int TotalPlayingAudioStreamsCount();
@@ -193,9 +188,7 @@ class MediaPipelineBackendManager : public media::CmaBackendFactory {
 
   base::OneShotTimer power_save_timer_;
 
-  std::unique_ptr<MixerConnection> mixer_connection_;
-  int mixer_primary_stream_count_ = 0;
-  int mixer_sfx_stream_count_ = 0;
+
 
   base::WeakPtrFactory<MediaPipelineBackendManager> weak_factory_;
 };

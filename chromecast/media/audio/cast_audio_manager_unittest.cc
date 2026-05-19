@@ -84,7 +84,7 @@ class CastAudioManagerTest : public testing::Test {
     return mock_backend_factory_.get();
   }
 
-  void CreateAudioManagerForTesting(bool use_mixer = false) {
+  void CreateAudioManagerForTesting() {
     // Only one AudioManager may exist at a time, so destroy the one we're
     // currently holding before creating a new one.
     // Flush the message loop to run any shutdown tasks posted by AudioManager.
@@ -112,7 +112,7 @@ class CastAudioManagerTest : public testing::Test {
         base::BindRepeating(&CastAudioManagerTest::GetCmaBackendFactory,
                             base::Unretained(this)),
         task_environment_.GetMainThreadTaskRunner(),
-        audio_thread_.task_runner(), use_mixer,
+        audio_thread_.task_runner(),
         true /* force_use_cma_backend_for_output*/
         ));
 #endif  // BUILDFLAG(IS_ANDROID)
@@ -275,29 +275,7 @@ TEST_F(CastAudioManagerTest, DISABLED_CanMakeStreamProxy) {
   // audio_manager_
 }
 
-TEST_F(CastAudioManagerTest, CanMakeMixerStream) {
-  CreateAudioManagerForTesting(true /* use_mixer */);
-  SetUpBackendAndDecoder();
-  ::media::AudioOutputStream* stream = audio_manager_->MakeAudioOutputStream(
-      kDefaultAudioParams, "", ::media::AudioManager::LogCallback());
-  ASSERT_TRUE(stream);
-  EXPECT_TRUE(stream->Open());
 
-  if (mock_cma_backend_) {
-    EXPECT_CALL(*mock_cma_backend_, Start(_)).WillOnce(Return(true));
-  }
-  EXPECT_CALL(mock_source_callback_, OnMoreData(_, _, _, _))
-      .WillRepeatedly(OnMoreData);
-  EXPECT_CALL(mock_source_callback_, OnError(_)).Times(0);
-
-  stream->Start(&mock_source_callback_);
-  RunThreadsUntilIdle();
-
-  stream->Stop();
-  RunThreadsUntilIdle();
-
-  stream->Close();
-}
 
 TEST_F(CastAudioManagerTest, CanMakeCommunicationsStream) {
   CreateAudioManagerForTesting();

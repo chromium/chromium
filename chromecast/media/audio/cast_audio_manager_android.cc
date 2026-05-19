@@ -113,8 +113,7 @@ bool CastAudioManagerAndroid::GetAudioOutputDeviceNames(
                                      false /* is_group */, params)) {
     LOG(WARNING) << __func__ << ": Cannot get valid session_id.";
     return new CastAudioOutputStream(
-        &helper_, params, ::media::AudioDeviceDescription::kDefaultDeviceId,
-        false /* use_mixer_service */);
+        &helper_, params, ::media::AudioDeviceDescription::kDefaultDeviceId);
   }
 
   return ::media::AudioManagerAndroid::MakeLinearOutputStream(params,
@@ -135,8 +134,7 @@ bool CastAudioManagerAndroid::GetAudioOutputDeviceNames(
         &helper_, params,
         device_id_or_group_id.empty()
             ? ::media::AudioDeviceDescription::kDefaultDeviceId
-            : device_id_or_group_id,
-        false /* use_mixer_service */);
+            : device_id_or_group_id);
   }
 
   return ::media::AudioManagerAndroid::MakeLowLatencyOutputStream(

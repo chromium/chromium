@@ -34,7 +34,7 @@ class IOBufferPool;
 namespace media {
 
 // Base class for sending and receiving messages to/from audio services (e.g.
-// mixer service, audio output service).
+// audio output service).
 // Not thread-safe; all usage of a given instance must be on the same IO
 // sequence.
 class AudioSocket : public SmallMessageSocket::Delegate {

@@ -15,9 +15,9 @@
 #include "build/build_config.h"
 #include "chromecast/media/api/cma_backend_factory.h"
 #include "chromecast/media/audio/audio_buildflags.h"
-#include "chromecast/media/audio/cast_audio_mixer.h"
+
 #include "chromecast/media/audio/cast_audio_output_stream.h"
-#include "chromecast/media/audio/mixer_service/constants.h"
+
 #include "chromecast/public/cast_media_shlib.h"
 #include "chromecast/public/media/media_pipeline_backend.h"
 #include "media/audio/audio_device_description.h"
@@ -39,15 +39,13 @@ CastAudioManager::CastAudioManager(
     CastAudioManagerHelper::Delegate* delegate,
     base::RepeatingCallback<CmaBackendFactory*()> backend_factory_getter,
     scoped_refptr<base::SingleThreadTaskRunner> browser_task_runner,
-    scoped_refptr<base::SingleThreadTaskRunner> media_task_runner,
-    bool use_mixer)
+    scoped_refptr<base::SingleThreadTaskRunner> media_task_runner)
     : CastAudioManager(std::move(audio_thread),
                        audio_log_factory,
                        delegate,
                        std::move(backend_factory_getter),
                        std::move(browser_task_runner),
                        std::move(media_task_runner),
-                       use_mixer,
                        false) {}
 
 CastAudioManager::CastAudioManager(
@@ -57,7 +55,6 @@ CastAudioManager::CastAudioManager(
     base::RepeatingCallback<CmaBackendFactory*()> backend_factory_getter,
     scoped_refptr<base::SingleThreadTaskRunner> browser_task_runner,
     scoped_refptr<base::SingleThreadTaskRunner> media_task_runner,
-    bool use_mixer,
     bool force_use_cma_backend_for_output)
     : AudioManagerBase(std::move(audio_thread), audio_log_factory),
       helper_(this,
@@ -69,8 +66,6 @@ CastAudioManager::CastAudioManager(
       weak_factory_(this) {
   DCHECK(browser_task_runner_->BelongsToCurrentThread());
   weak_this_ = weak_factory_.GetWeakPtr();
-  if (use_mixer)
-    mixer_ = std::make_unique<CastAudioMixer>(this);
 }
 
 CastAudioManager::~CastAudioManager() {
@@ -116,34 +111,15 @@ const std::string_view CastAudioManager::GetName() {
   return "Cast";
 }
 
-void CastAudioManager::ReleaseOutputStream(::media::AudioOutputStream* stream) {
-  // If |stream| is |mixer_output_stream_|, we should not use
-  // AudioManagerBase::ReleaseOutputStream as we do not want the release
-  // function to decrement |AudioManagerBase::num_output_streams_|. This is
-  // because the stream generated from MakeMixerOutputStream was not created
-  // using AudioManagerBase::MakeAudioOutputStream, which appropriately
-  // increments this variable.
-  if (mixer_output_stream_.get() == stream) {
-    DCHECK(mixer_);  // Should only occur if |mixer_| exists
-    mixer_output_stream_.reset();
-  } else {
-    AudioManagerBase::ReleaseOutputStream(stream);
-  }
-}
+
 
 ::media::AudioOutputStream* CastAudioManager::MakeLinearOutputStream(
     const ::media::AudioParameters& params,
     const ::media::AudioManager::LogCallback& log_callback) {
   DCHECK_EQ(::media::AudioParameters::AUDIO_PCM_LINEAR, params.format());
 
-  // If |mixer_| exists, return a mixing stream.
-  if (mixer_) {
-    return mixer_->MakeStream(params);
-  } else {
-    return new CastAudioOutputStream(
-        &helper_, params, ::media::AudioDeviceDescription::kDefaultDeviceId,
-        UseMixerOutputStream(params));
-  }
+  return new CastAudioOutputStream(
+      &helper_, params, ::media::AudioDeviceDescription::kDefaultDeviceId);
 }
 
 ::media::AudioOutputStream* CastAudioManager::MakeLowLatencyOutputStream(
@@ -152,21 +128,11 @@ void CastAudioManager::ReleaseOutputStream(::media::AudioOutputStream* stream) {
     const ::media::AudioManager::LogCallback& log_callback) {
   DCHECK_EQ(::media::AudioParameters::AUDIO_PCM_LOW_LATENCY, params.format());
 
-  // For non-default device IDs, we always want to use CastAudioOutputStream
-  // to allow features like redirection. For default device ID, if |mixer_|
-  // exists, return a mixing stream. If used, the mixing stream will always use
-  // the default device_id.
-  if (::media::AudioDeviceDescription::IsDefaultDevice(device_id_or_group_id) &&
-      mixer_) {
-    return mixer_->MakeStream(params);
-  } else {
-    return new CastAudioOutputStream(
-        &helper_, params,
-        device_id_or_group_id.empty()
-            ? ::media::AudioDeviceDescription::kDefaultDeviceId
-            : device_id_or_group_id,
-        UseMixerOutputStream(params));
-  }
+  return new CastAudioOutputStream(
+      &helper_, params,
+      device_id_or_group_id.empty()
+          ? ::media::AudioDeviceDescription::kDefaultDeviceId
+          : device_id_or_group_id);
 }
 
 ::media::AudioInputStream* CastAudioManager::MakeLinearInputStream(
@@ -197,27 +163,7 @@ void CastAudioManager::ReleaseOutputStream(::media::AudioOutputStream* stream) {
   return output_params;
 }
 
-::media::AudioOutputStream* CastAudioManager::MakeMixerOutputStream(
-    const ::media::AudioParameters& params) {
-  DCHECK(mixer_);
-  DCHECK(!mixer_output_stream_);  // Only allow 1 |mixer_output_stream_|.
 
-  // Keep a reference to this stream for proper behavior on
-  // CastAudioManager::ReleaseOutputStream.
-  mixer_output_stream_.reset(new CastAudioOutputStream(
-      &helper_, params, ::media::AudioDeviceDescription::kDefaultDeviceId,
-      UseMixerOutputStream(params)));
-  return mixer_output_stream_.get();
-}
-
-bool CastAudioManager::UseMixerOutputStream(
-    const ::media::AudioParameters& params) {
-  bool use_cma_backend =
-      (params.effects() & ::media::AudioParameters::MULTIZONE) ||
-      !mixer_service::HaveFullMixer() || force_use_cma_backend_for_output_;
-
-  return !use_cma_backend;
-}
 
 }  // namespace media
 }  // namespace chromecast

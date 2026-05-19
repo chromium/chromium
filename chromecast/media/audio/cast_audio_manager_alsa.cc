@@ -86,15 +86,13 @@ CastAudioManagerAlsa::CastAudioManagerAlsa(
     CastAudioManagerHelper::Delegate* delegate,
     base::RepeatingCallback<CmaBackendFactory*()> backend_factory_getter,
     scoped_refptr<base::SingleThreadTaskRunner> browser_task_runner,
-    scoped_refptr<base::SingleThreadTaskRunner> media_task_runner,
-    bool use_mixer)
+    scoped_refptr<base::SingleThreadTaskRunner> media_task_runner)
     : CastAudioManager(std::move(audio_thread),
                        audio_log_factory,
                        delegate,
                        std::move(backend_factory_getter),
                        browser_task_runner,
-                       media_task_runner,
-                       use_mixer),
+                       media_task_runner),
       wrapper_(new ::media::AlsaWrapper()) {}
 
 CastAudioManagerAlsa::~CastAudioManagerAlsa() {}

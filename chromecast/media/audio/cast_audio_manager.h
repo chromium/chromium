@@ -36,7 +36,7 @@ namespace chromecast {
 
 namespace media {
 
-class CastAudioMixer;
+
 class CastAudioManagerTest;
 class CastAudioOutputStreamTest;
 class CmaBackendFactory;
@@ -49,8 +49,7 @@ class CastAudioManager : public ::media::AudioManagerBase {
       CastAudioManagerHelper::Delegate* delegate,
       base::RepeatingCallback<CmaBackendFactory*()> backend_factory_getter,
       scoped_refptr<base::SingleThreadTaskRunner> browser_task_runner,
-      scoped_refptr<base::SingleThreadTaskRunner> media_task_runner,
-      bool use_mixer);
+      scoped_refptr<base::SingleThreadTaskRunner> media_task_runner);
 
   CastAudioManager(const CastAudioManager&) = delete;
   CastAudioManager& operator=(const CastAudioManager&) = delete;
@@ -67,7 +66,7 @@ class CastAudioManager : public ::media::AudioManagerBase {
   ::media::AudioParameters GetInputStreamParameters(
       const std::string& device_id) override;
   const std::string_view GetName() override;
-  void ReleaseOutputStream(::media::AudioOutputStream* stream) override;
+
 
   // Make this public for testing.
   using ::media::AudioManagerBase::GetOutputStreamParameters;
@@ -93,13 +92,11 @@ class CastAudioManager : public ::media::AudioManagerBase {
       const std::string& output_device_id,
       const ::media::AudioParameters& input_params) override;
 
-  // Generates a CastAudioOutputStream for |mixer_|.
-  virtual ::media::AudioOutputStream* MakeMixerOutputStream(
-      const ::media::AudioParameters& params);
+
 
  private:
   FRIEND_TEST_ALL_PREFIXES(CastAudioManagerTest, CanMakeStreamProxy);
-  friend class CastAudioMixer;
+
   friend class CastAudioManagerTest;
   friend class CastAudioOutputStreamTest;
 
@@ -110,18 +107,14 @@ class CastAudioManager : public ::media::AudioManagerBase {
       base::RepeatingCallback<CmaBackendFactory*()> backend_factory_getter,
       scoped_refptr<base::SingleThreadTaskRunner> browser_task_runner,
       scoped_refptr<base::SingleThreadTaskRunner> media_task_runner,
-      bool use_mixer,
       bool force_use_cma_backend_for_output);
 
-  // Returns false if it is not appropriate to use the mixer service for output
-  // stream audio playback.
-  bool UseMixerOutputStream(const ::media::AudioParameters& params);
+
 
   CastAudioManagerHelper helper_;
 
   scoped_refptr<base::SingleThreadTaskRunner> browser_task_runner_;
-  std::unique_ptr<::media::AudioOutputStream> mixer_output_stream_;
-  std::unique_ptr<CastAudioMixer> mixer_;
+
 
   // Let unit test force the CastOutputStream to uses
   // CmaBackend implementation.
