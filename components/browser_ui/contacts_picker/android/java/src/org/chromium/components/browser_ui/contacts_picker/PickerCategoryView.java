@@ -423,13 +423,16 @@ public class PickerCategoryView extends OptimizedFrameLayout
         }
 
         String action = delegate.getSystemContactsPickerAction();
+        String extraUseSystemContactsPicker =
+                delegate.getSystemContactsPickerExtraUseSystemContactsPicker();
         String extraFields = delegate.getSystemContactsPickerExtraRequestedDataFields();
-        if (action == null || extraFields == null) {
+        if (action == null || extraUseSystemContactsPicker == null || extraFields == null) {
             executeAction(ContactsPickerListener.ContactsPickerAction.CANCEL, null, ACTION_CANCEL);
             return;
         }
 
         Intent intent = new Intent(action);
+        intent.putExtra(extraUseSystemContactsPicker, true);
         ArrayList<String> requestedFields = new ArrayList<>();
         if (mSiteWantsNames) {
             requestedFields.add(ContactsContract.CommonDataKinds.StructuredName.CONTENT_ITEM_TYPE);

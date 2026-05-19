@@ -518,6 +518,11 @@ public interface AconfigFlaggedApiDelegate {
         return null;
     }
 
+    /** Returns the EXTRA_USE_SYSTEM_CONTACTS_PICKER intent extra string if supported. */
+    default @Nullable String getSystemContactsPickerExtraUseSystemContactsPicker() {
+        return null;
+    }
+
     /** Returns the EXTRA_PICK_CONTACTS_REQUESTED_DATA_FIELDS intent extra string if supported. */
     default @Nullable String getSystemContactsPickerExtraRequestedDataFields() {
         return null;

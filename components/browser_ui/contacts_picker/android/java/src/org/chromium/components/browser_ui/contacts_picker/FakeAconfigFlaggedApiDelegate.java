@@ -16,6 +16,8 @@ public class FakeAconfigFlaggedApiDelegate implements AconfigFlaggedApiDelegate 
     private boolean mSystemContactsPickerEnabled;
 
     public static final String ACTION_PICK_CONTACTS = "org.chromium.test.ACTION_PICK_CONTACTS";
+    private static final String EXTRA_USE_SYSTEM_CONTACTS_PICKER =
+            "android.intent.extra.USE_SYSTEM_CONTACTS_PICKER";
     private static final String EXTRA_FIELDS = "org.chromium.test.EXTRA_FIELDS";
 
     public void setSystemContactsPickerEnabled(boolean enabled) {
@@ -30,6 +32,11 @@ public class FakeAconfigFlaggedApiDelegate implements AconfigFlaggedApiDelegate 
     @Override
     public @Nullable String getSystemContactsPickerAction() {
         return mSystemContactsPickerEnabled ? ACTION_PICK_CONTACTS : null;
+    }
+
+    @Override
+    public @Nullable String getSystemContactsPickerExtraUseSystemContactsPicker() {
+        return mSystemContactsPickerEnabled ? EXTRA_USE_SYSTEM_CONTACTS_PICKER : null;
     }
 
     @Override
