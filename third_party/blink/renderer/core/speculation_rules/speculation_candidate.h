@@ -60,9 +60,8 @@ class CORE_EXPORT SpeculationCandidate
   // Returns true if the two candidates are similar from the author's
   // perspective. This means that the two candidates are for the same URL and
   // have the same action, and the other properties are similar enough that
-  // the author would consider them to be the same candidate, except for tags.
-  bool IsSimilarFromAuthorPerspectiveExceptForTags(
-      const SpeculationCandidate& other) const;
+  // the author would consider them to be the same candidate.
+  bool IsSimilarFromAuthorPerspective(const SpeculationCandidate& other) const;
 
  private:
   const KURL url_;

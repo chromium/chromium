@@ -71,7 +71,8 @@ class CORE_EXPORT DocumentSpeculationRules
 
   const HeapVector<Member<StyleRule>>& selectors() { return selectors_; }
 
-  // Returns the speculation candidates last sent to the browser process.
+  // Returns all speculation candidates ever sent to the browser process.
+  // Candidates are accumulated and never removed.
   // Used by performance.getSpeculations() to expose navigation data.
   const HeapVector<Member<SpeculationCandidate>>& sent_candidates() const {
     return sent_candidates_;

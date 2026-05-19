@@ -748,8 +748,17 @@ void DocumentSpeculationRules::UpdateSpeculationCandidates() {
 
   probe::SpeculationCandidatesUpdated(document, candidates);
 
-  // Store candidates for the SpeculationMeasurement API.
-  sent_candidates_ = candidates;
+  // Accumulate candidates for the SpeculationMeasurement API.
+  // Candidates are never removed.
+  for (SpeculationCandidate* candidate : candidates) {
+    bool already_tracked =
+        std::ranges::any_of(sent_candidates_, [&](const auto& existing) {
+          return existing->IsSimilarFromAuthorPerspective(*candidate);
+        });
+    if (!already_tracked) {
+      sent_candidates_.push_back(candidate);
+    }
+  }
 
   using SpeculationEagerness = blink::mojom::SpeculationEagerness;
   base::EnumSet<SpeculationEagerness, SpeculationEagerness::kMinValue,

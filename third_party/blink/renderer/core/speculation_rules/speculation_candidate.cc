@@ -55,13 +55,14 @@ mojom::blink::SpeculationCandidatePtr SpeculationCandidate::ToMojom() const {
       no_vary_search_.Clone(), injection_type_, tags_, form_submission_);
 }
 
-bool SpeculationCandidate::IsSimilarFromAuthorPerspectiveExceptForTags(
+bool SpeculationCandidate::IsSimilarFromAuthorPerspective(
     const SpeculationCandidate& other) const {
   auto as_tie = [](const SpeculationCandidate& candidate) {
     return std::tie(candidate.url_, candidate.action_, candidate.referrer_,
                     candidate.requires_anonymous_client_ip_when_cross_origin_,
                     candidate.target_hint_, candidate.eagerness_,
-                    candidate.no_vary_search_, candidate.injection_type_);
+                    candidate.no_vary_search_, candidate.injection_type_,
+                    candidate.tags_, candidate.form_submission_);
   };
   return as_tie(*this) == as_tie(other);
 }
