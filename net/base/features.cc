@@ -411,14 +411,6 @@ BASE_FEATURE(kDeviceBoundSessionSigningQuotaAndCaching,
 BASE_FEATURE(kDeviceBoundSessionsForRestrictedSites,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kDeviceBoundSessionsForRestrictedSitesExperimentId,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-BASE_FEATURE_PARAM(std::string,
-                   kDeviceBoundSessionsForRestrictedSitesExperimentIdParam,
-                   &kDeviceBoundSessionsForRestrictedSitesExperimentId,
-                   "Value",
-                   "");
-
 BASE_FEATURE(kDeviceBoundSessionsForSingleSignOn,
              base::FEATURE_DISABLED_BY_DEFAULT);
 

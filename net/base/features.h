@@ -485,14 +485,6 @@ NET_EXPORT BASE_DECLARE_FEATURE(kDeviceBoundSessionSigningQuotaAndCaching);
 // `NetworkContextParams`.
 NET_EXPORT BASE_DECLARE_FEATURE(kDeviceBoundSessionsForRestrictedSites);
 
-// This feature controls whether we add a query param to registration on
-// restricted sites.
-NET_EXPORT BASE_DECLARE_FEATURE(
-    kDeviceBoundSessionsForRestrictedSitesExperimentId);
-NET_EXPORT BASE_DECLARE_FEATURE_PARAM(
-    std::string,
-    kDeviceBoundSessionsForRestrictedSitesExperimentIdParam);
-
 // This feature will enable the browser to use Device Bound Session Credentials
 // for Single Sign On. This feature is only valid if `kDeviceBoundSessions` is
 // enabled.

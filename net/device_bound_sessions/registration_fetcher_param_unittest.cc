@@ -8,14 +8,10 @@
 #include <vector>
 
 #include "base/strings/strcat.h"
-#include "base/strings/stringprintf.h"
-#include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
-#include "base/test/task_environment.h"
 #include "crypto/signature_verifier.h"
 #include "net/base/features.h"
 #include "net/http/http_response_headers.h"
-#include "net/http/structured_headers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -793,22 +789,14 @@ TEST(RegistrationFetcherParamTest, RestrictedRegistration) {
   EXPECT_EQ(params.size(), 0U);
 
   base::test::ScopedFeatureList feature_list;
-  feature_list
-      .InitWithFeaturesAndParameters(/*enabled_features=*/
-                                     {{features::
-                                           kDeviceBoundSessionsForRestrictedSites,
-                                       {}},
-                                      {features::
-                                           kDeviceBoundSessionsForRestrictedSitesExperimentId,
-                                       {{"Value", "1"}}}},
-                                     /*disabled_features=*/{});
+  feature_list.InitAndEnableFeature(
+      features::kDeviceBoundSessionsForRestrictedSites);
   params = RegistrationFetcherParam::CreateIfValid(
       registration_request, response_headers.get(), restricted_sites);
   ASSERT_EQ(params.size(), 1U);
   const auto& param = params[0];
-  EXPECT_EQ(
-      param.registration_endpoint(),
-      GURL("https://restricted.example.test/startsession?experiment_id=1"));
+  EXPECT_EQ(param.registration_endpoint(),
+            GURL("https://restricted.example.test/startsession"));
 }
 
 TEST(RegistrationFetcherParamTest, AikRequired) {

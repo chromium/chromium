@@ -8,15 +8,10 @@
 #include <optional>
 #include <vector>
 
-#include "base/base64url.h"
 #include "base/feature_list.h"
-#include "base/logging.h"
 #include "base/strings/escape.h"
-#include "base/strings/string_split.h"
-#include "base/strings/string_util.h"
 #include "net/base/features.h"
 #include "net/base/schemeful_site.h"
-#include "net/base/url_util.h"
 #include "net/device_bound_sessions/session.h"
 #include "net/device_bound_sessions/session_binding_utils.h"
 #include "net/http/structured_headers.h"
@@ -219,17 +214,6 @@ std::vector<RegistrationFetcherParam> RegistrationFetcherParam::CreateIfValid(
       std::optional<RegistrationFetcherParam> fetcher_param =
           ParseItem(request_url, item);
       if (fetcher_param) {
-        if (std::ranges::contains(restricted_sites, site) &&
-            !net::features::
-                 kDeviceBoundSessionsForRestrictedSitesExperimentIdParam.Get()
-                     .empty()) {
-          fetcher_param->registration_endpoint_ = net::AppendQueryParameter(
-              fetcher_param->registration_endpoint_, "experiment_id",
-              net::features::
-                  kDeviceBoundSessionsForRestrictedSitesExperimentIdParam
-                      .Get());
-        }
-
         params.push_back(std::move(*fetcher_param));
       }
     }
