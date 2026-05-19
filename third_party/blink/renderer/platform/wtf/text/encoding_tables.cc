@@ -26,6 +26,7 @@
 #include "third_party/blink/renderer/platform/wtf/text/encoding_tables.h"
 
 #include <unicode/ucnv.h>
+#include <unicode/utf16.h>
 
 #include <algorithm>
 #include <memory>
@@ -393,6 +394,160 @@ const Gb18030EncodeIndex& EnsureGb18030EncodeIndexForEncode() {
     std::ranges::stable_sort(*table, CompareFirst{});
   });
   return *table;
+}
+
+const Big5EncodeTable& EnsureBig5EncodeTable() {
+  // Allocate this at runtime because building it at compile time would make the
+  // binary much larger and this is often not used.
+  static const Big5EncodeTable array = [] {
+    Big5EncodeTable table;
+    table.fill(0);
+    UErrorCode error = U_ZERO_ERROR;
+    IcuConverterWrapper icu_converter;
+    // Try "big5-html" first as it's the spec-compliant one in Chromium's ICU.
+    icu_converter.converter = ucnv_open("big5-html", &error);
+    if (U_FAILURE(error)) {
+      error = U_ZERO_ERROR;
+      icu_converter.converter = ucnv_open("Big5-HKSCS", &error);
+    }
+    if (U_FAILURE(error)) {
+      error = U_ZERO_ERROR;
+      icu_converter.converter = ucnv_open("ibm-1375", &error);
+    }
+    if (U_FAILURE(error)) {
+      error = U_ZERO_ERROR;
+      icu_converter.converter = ucnv_open("Big5", &error);
+    }
+    DCHECK(U_SUCCESS(error));
+
+    for (uint8_t lead = 0x81; lead <= 0xFE; ++lead) {
+      for (uint16_t byte_val = 0x40; byte_val <= 0xFE; ++byte_val) {
+        if (byte_val == 0x7F || (byte_val > 0x7E && byte_val < 0xA1)) {
+          continue;
+        }
+        uint8_t byte = static_cast<uint8_t>(byte_val);
+
+        std::array<uint8_t, 2> icu_input = {lead, byte};
+        std::array<UChar, 4> icu_output;
+        base::span<UChar> output_span = icu_output;
+        UChar* output = output_span.data();
+        UChar* output_end = base::to_address(output_span.end());
+        base::span<const uint8_t> input_span = icu_input;
+        const char* input = reinterpret_cast<const char*>(input_span.data());
+        const char* input_end =
+            reinterpret_cast<const char*>(base::to_address(input_span.end()));
+
+        error = U_ZERO_ERROR;
+        ucnv_reset(icu_converter.converter);
+        ucnv_toUnicode(icu_converter.converter, &output, output_end, &input,
+                       input_end, nullptr, true, &error);
+
+        if (U_SUCCESS(error) && output != output_span.data() &&
+            icu_output[0] != uchar::kReplacementCharacter) {
+          uint16_t pointer =
+              (lead - 0x81) * 157 + (byte - (byte < 0x7F ? 0x40 : 0x62));
+          UChar32 code_point;
+          int32_t output_len = output - output_span.data();
+          if (output_len == 1) {
+            code_point = icu_output[0];
+          } else {
+            DCHECK_EQ(output_len, 2);
+            code_point = U16_GET_SUPPLEMENTARY(icu_output[0], icu_output[1]);
+          }
+          table[pointer] = code_point;
+        }
+      }
+    }
+    return table;
+  }();
+  return array;
+}
+
+const Big5EncodeIndex& EnsureBig5EncodeIndexForEncode() {
+  static const Big5EncodeIndex table = [] {
+    Big5EncodeIndex index_table;
+    auto& index = EnsureBig5EncodeTable();
+    UErrorCode error = U_ZERO_ERROR;
+    IcuConverterWrapper icu_converter;
+    // We must use the same converter as EnsureBig5EncodeTable.
+    icu_converter.converter = ucnv_open("big5-html", &error);
+    if (U_FAILURE(error)) {
+      error = U_ZERO_ERROR;
+      icu_converter.converter = ucnv_open("Big5-HKSCS", &error);
+    }
+    if (U_FAILURE(error)) {
+      error = U_ZERO_ERROR;
+      icu_converter.converter = ucnv_open("ibm-1375", &error);
+    }
+    if (U_FAILURE(error)) {
+      error = U_ZERO_ERROR;
+      icu_converter.converter = ucnv_open("Big5", &error);
+    }
+    DCHECK(U_SUCCESS(error));
+
+    size_t count = 0;
+    for (uint16_t i = 0; i < index.size(); ++i) {
+      UChar32 code_point = index[i];
+      if (code_point == 0) {
+        continue;
+      }
+
+      // Use ucnv_fromUnicode to find the primary mapping for this code point.
+      // Unlike other CJK encodings, Big5 has many duplicate mappings where
+      // multiple byte sequences map to the same code point. Simple reversal
+      // of the decode table might pick the wrong (secondary) sequence.
+      // ucnv_fromUnicode correctly returns the primary mapping defined in the
+      // encoding standard.
+      std::array<UChar, 2> u_input;
+      int32_t u_input_len = 0;
+      if (U_IS_BMP(code_point)) {
+        u_input[u_input_len++] = static_cast<UChar>(code_point);
+      } else {
+        u_input[u_input_len++] = U16_LEAD(code_point);
+        u_input[u_input_len++] = U16_TRAIL(code_point);
+      }
+
+      std::array<char, 4> target;
+      base::span<char> target_span = target;
+      char* target_ptr = target_span.data();
+      char* target_end = base::to_address(target_span.end());
+
+      base::span<UChar> u_input_span = u_input;
+      const UChar* u_input_ptr = u_input_span.data();
+      const UChar* u_input_limit =
+          base::to_address(u_input_span.begin() + u_input_len);
+
+      error = U_ZERO_ERROR;
+      ucnv_resetFromUnicode(icu_converter.converter);
+      ucnv_fromUnicode(icu_converter.converter, &target_ptr, target_end,
+                       &u_input_ptr, u_input_limit, nullptr, true, &error);
+
+      if (U_SUCCESS(error) && (target_ptr - target_span.data()) == 2) {
+        uint8_t lead = static_cast<uint8_t>(target[0]);
+        uint8_t byte = static_cast<uint8_t>(target[1]);
+        if (lead >= 0x81 && lead <= 0xFE &&
+            ((byte >= 0x40 && byte <= 0x7E) ||
+             (byte >= 0xA1 && byte <= 0xFE))) {
+          uint16_t pointer =
+              (lead - 0x81) * 157 + (byte - (byte < 0x7F ? 0x40 : 0x62));
+          // Only add the entry if this pointer is the one we are currently
+          // processing in the outer loop. This avoids duplicates.
+          if (pointer == i) {
+            index_table[count++] = {code_point, pointer};
+          }
+        }
+      }
+    }
+
+    // Fill the rest with sentinels.
+    for (size_t i = count; i < kBig5IndexSize; ++i) {
+      index_table[i] = {0xFFFFFFFF, 0xFFFF};
+    }
+
+    std::ranges::stable_sort(index_table, CompareFirst{});
+    return index_table;
+  }();
+  return table;
 }
 
 }  // namespace blink

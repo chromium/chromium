@@ -68,6 +68,13 @@ using Gb18030EncodeTable = std::array<UChar, kGb18030EncodeIndexSize>;
 const WTF_EXPORT Gb18030EncodeIndex& EnsureGb18030EncodeIndexForEncode();
 const WTF_EXPORT Gb18030EncodeTable& EnsureGb18030EncodeTable();
 
+inline constexpr size_t kBig5IndexSize = 19782;
+using Big5EncodeTable = std::array<UChar32, kBig5IndexSize>;
+using Big5EncodeIndex =
+    std::array<std::pair<UChar32, uint16_t>, kBig5IndexSize>;
+const WTF_EXPORT Big5EncodeIndex& EnsureBig5EncodeIndexForEncode();
+const WTF_EXPORT Big5EncodeTable& EnsureBig5EncodeTable();
+
 // Functions for using sorted arrays of pairs as a map.
 // FIXME: Consider moving these functions to std_lib_extras.h for uses other
 // than encoding tables.
