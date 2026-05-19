@@ -61,6 +61,26 @@ std::string UploadStatusToString(ContextUploadStatus status) {
       return "Unknown";
   }
 }
+
+std::string AttachmentButtonTypeToString(
+    ContextualSearchAttachmentButtonType button_type) {
+  switch (button_type) {
+    case ContextualSearchAttachmentButtonType::kCurrentTab:
+      return "CurrentTab";
+    case ContextualSearchAttachmentButtonType::kTabPicker:
+      return "TabPicker";
+    case ContextualSearchAttachmentButtonType::kCamera:
+      return "Camera";
+    case ContextualSearchAttachmentButtonType::kGallery:
+      return "Gallery";
+    case ContextualSearchAttachmentButtonType::kFiles:
+      return "Files";
+    case ContextualSearchAttachmentButtonType::kClipboard:
+      return "Clipboard";
+    case ContextualSearchAttachmentButtonType::kSuggestedTab:
+      return "SuggestedTab";
+  }
+}
 }  // namespace
 
 SessionMetrics::SessionMetrics() = default;
@@ -622,6 +642,67 @@ void ContextualSearchMetricsRecorder::RecordModelModeShown(
   base::UmaHistogramEnumeration(
       base::StrCat({"ContextualSearch.Models.Shown", ".", metrics_suffix_}),
       model_mode, static_cast<omnibox::ModelMode>(omnibox::ModelMode_MAX + 1));
+}
+
+void ContextualSearchMetricsRecorder::RecordFilePickedCount(
+    ContextualSearchAttachmentButtonType button_type,
+    int count) {
+  base::UmaHistogramCounts100(
+      base::StrCat({"ContextualSearch.File.PickedCount.",
+                    AttachmentButtonTypeToString(button_type), ".",
+                    metrics_suffix_}),
+      count);
+}
+
+void ContextualSearchMetricsRecorder::RecordAttachmentCountAtSubmission(
+    lens::MimeType mime_type,
+    int count) {
+  base::UmaHistogramCounts100(
+      base::StrCat({"ContextualSearch.Query.AttachmentCount.",
+                    MimeTypeToString(mime_type), ".", metrics_suffix_}),
+      count);
+}
+
+void ContextualSearchMetricsRecorder::RecordToolSelected(
+    omnibox::ToolMode tool_mode) {
+  base::UmaHistogramEnumeration(
+      base::StrCat({"ContextualSearch.Tools.Selected.", metrics_suffix_}),
+      tool_mode, static_cast<omnibox::ToolMode>(omnibox::ToolMode_MAX + 1));
+}
+
+void ContextualSearchMetricsRecorder::RecordModelSelected(
+    omnibox::ModelMode model_mode) {
+  base::UmaHistogramEnumeration(
+      base::StrCat({"ContextualSearch.Models.Selected.", metrics_suffix_}),
+      model_mode, static_cast<omnibox::ModelMode>(omnibox::ModelMode_MAX + 1));
+}
+
+void ContextualSearchMetricsRecorder::RecordAttachmentButtonShown(
+    ContextualSearchAttachmentButtonType button_type) {
+  base::UmaHistogramEnumeration(
+      base::StrCat(
+          {"ContextualSearch.AttachmentButtonShown.", metrics_suffix_}),
+      button_type,
+      static_cast<ContextualSearchAttachmentButtonType>(
+          static_cast<int>(ContextualSearchAttachmentButtonType::kMaxValue) +
+          1));
+}
+
+void ContextualSearchMetricsRecorder::RecordAttachmentButtonUsed(
+    ContextualSearchAttachmentButtonType button_type) {
+  base::UmaHistogramEnumeration(
+      base::StrCat({"ContextualSearch.AttachmentButtonUsed.", metrics_suffix_}),
+      button_type,
+      static_cast<ContextualSearchAttachmentButtonType>(
+          static_cast<int>(ContextualSearchAttachmentButtonType::kMaxValue) +
+          1));
+}
+
+void ContextualSearchMetricsRecorder::RecordAttachmentsMenuToggled(bool open) {
+  base::UmaHistogramBoolean(
+      base::StrCat(
+          {"ContextualSearch.AttachmentsMenuToggled.", metrics_suffix_}),
+      open);
 }
 
 void ContextualSearchMetricsRecorder::RecordFileTypesOnSessionEnd(

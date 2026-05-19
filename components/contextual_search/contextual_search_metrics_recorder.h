@@ -52,6 +52,19 @@ enum class ContextualSearchMultimodalState {
   kMaxValue = kTextAndFile,
 };
 
+// LINT.IfChange(ContextualSearchAttachmentButtonType)
+enum class ContextualSearchAttachmentButtonType {
+  kCurrentTab = 0,
+  kTabPicker = 1,
+  kCamera = 2,
+  kGallery = 3,
+  kFiles = 4,
+  kClipboard = 5,
+  kSuggestedTab = 6,
+  kMaxValue = kSuggestedTab
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/contextual_search/histograms.xml:ContextualSearchAttachmentButtonType)
+
 // LINT.IfChange(ContextualSearchContextState)
 enum class ContextualSearchContextState {
   kWithoutContext = 0,
@@ -173,6 +186,33 @@ class ContextualSearchMetricsRecorder {
 
   // Records the model mode (i.e. Gemini Pro, Gemini Pro Autoroute, etc.).
   virtual void RecordModelMode(omnibox::ModelMode model_mode);
+
+  // Records the count of attachments of a specific button type when picked.
+  virtual void RecordFilePickedCount(
+      ContextualSearchAttachmentButtonType button_type,
+      int count);
+
+  // Records the count of attachments of a specific type at query submission.
+  virtual void RecordAttachmentCountAtSubmission(lens::MimeType mime_type,
+                                                 int count);
+
+  // Records when a tool is explicitly selected by the user in the menu.
+  virtual void RecordToolSelected(omnibox::ToolMode tool_mode);
+
+  // Records when a model is explicitly selected by the user in the menu.
+  virtual void RecordModelSelected(omnibox::ModelMode model_mode);
+
+  // Records when an attachment button is shown.
+  virtual void RecordAttachmentButtonShown(
+      ContextualSearchAttachmentButtonType button_type);
+
+  // Records when an attachment button is used.
+  virtual void RecordAttachmentButtonUsed(
+      ContextualSearchAttachmentButtonType button_type);
+
+  // Records true when the attachments menu is opened, and false when the menu
+  // is closed without user action.
+  virtual void RecordAttachmentsMenuToggled(bool open);
 
   // Records that a specific tool mode is available for use.
   virtual void RecordToolModeShown(omnibox::ToolMode tool_mode);

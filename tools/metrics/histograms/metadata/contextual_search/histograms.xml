@@ -30,6 +30,20 @@ chromium-metrics-reviews@google.com.
   <variant name="WebOmnibox" summary="Web Omnibox"/>
 </variants>
 
+<!-- LINT.IfChange(ContextualSearchAttachmentButtonType) -->
+
+<variants name="ContextualSearchAttachmentButtonType">
+  <variant name="Camera" summary="Camera"/>
+  <variant name="Clipboard" summary="Clipboard"/>
+  <variant name="CurrentTab" summary="Current Tab button"/>
+  <variant name="Files" summary="File picker"/>
+  <variant name="Gallery" summary="Image picker"/>
+  <variant name="SuggestedTab" summary="Suggested Tab"/>
+  <variant name="TabPicker" summary="Tab picker"/>
+</variants>
+
+<!-- LINT.ThenChange(//components/contextual_search/contextual_search_metrics_recorder.h:ContextualSearchAttachmentButtonType) -->
+
 <variants name="ContextualSearchFileTypes">
   <variant name="Image"/>
   <variant name="Other"/>
@@ -106,6 +120,40 @@ chromium-metrics-reviews@google.com.
   </summary>
   <token key="ContextualSearchAiModeButtonSurface"
       variants="ContextualSearchAiModeButtonSurface"/>
+</histogram>
+
+<histogram
+    name="ContextualSearch.AttachmentButtonShown.{ContextualSearchSource}"
+    enum="FuseboxAttachmentButtonType" expires_after="2027-05-13">
+  <owner>ameurhosni@google.com</owner>
+  <owner>chrome-mobile-search@google.com</owner>
+  <summary>
+    Records when an attachment button is shown in the composebox.
+  </summary>
+  <token key="ContextualSearchSource" variants="ContextualSearchSource"/>
+</histogram>
+
+<histogram
+    name="ContextualSearch.AttachmentButtonUsed.{ContextualSearchSource}"
+    enum="FuseboxAttachmentButtonType" expires_after="2027-05-13">
+  <owner>ameurhosni@google.com</owner>
+  <owner>chrome-mobile-search@google.com</owner>
+  <summary>
+    Records when an attachment button is used in the composebox.
+  </summary>
+  <token key="ContextualSearchSource" variants="ContextualSearchSource"/>
+</histogram>
+
+<histogram
+    name="ContextualSearch.AttachmentsMenuToggled.{ContextualSearchSource}"
+    enum="Boolean" expires_after="2027-05-13">
+  <owner>ameurhosni@google.com</owner>
+  <owner>chrome-mobile-search@google.com</owner>
+  <summary>
+    Records true when the menu is opened. Records false when the menu is closed
+    without user action.
+  </summary>
+  <token key="ContextualSearchSource" variants="ContextualSearchSource"/>
 </histogram>
 
 <histogram name="ContextualSearch.ConfigParseSuccess.{ContextualSearchSource}"
@@ -185,6 +233,20 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="ContextualSearch.File.PickedCount.{ContextualSearchAttachmentButtonType}.{ContextualSearchSource}"
+    units="count" expires_after="2027-05-13">
+  <owner>ameurhosni@google.com</owner>
+  <owner>chrome-mobile-search@google.com</owner>
+  <summary>
+    Records the count of attachments picked via a specific button. Recorded when
+    the user picks an attachment (image, file, tab).
+  </summary>
+  <token key="ContextualSearchAttachmentButtonType"
+      variants="ContextualSearchAttachmentButtonType"/>
+  <token key="ContextualSearchSource" variants="ContextualSearchSource"/>
+</histogram>
+
+<histogram
     name="ContextualSearch.File.Size.{ContextualSearchFileTypes}.{ContextualSearchSource}"
     units="bytes" expires_after="2027-01-20">
   <owner>hujasonx@google.com</owner>
@@ -251,6 +313,16 @@ chromium-metrics-reviews@google.com.
   <token key="ContextualSearchSource" variants="ContextualSearchSource"/>
 </histogram>
 
+<histogram name="ContextualSearch.Models.Selected.{ContextualSearchSource}"
+    enum="OmniboxModelMode" expires_after="2027-05-13">
+  <owner>ameurhosni@google.com</owner>
+  <owner>chrome-mobile-search@google.com</owner>
+  <summary>
+    Records when a model is explicitly selected by the user in the menu.
+  </summary>
+  <token key="ContextualSearchSource" variants="ContextualSearchSource"/>
+</histogram>
+
 <histogram name="ContextualSearch.Models.Shown.{ContextualSearchSource}"
     enum="ContextualSearchAimModel" expires_after="2027-04-01">
   <owner>christianxu@google.com</owner>
@@ -267,6 +339,19 @@ chromium-metrics-reviews@google.com.
     Tracks the active model selected in the composebox. Recorded when the user
     switches to a model.
   </summary>
+  <token key="ContextualSearchSource" variants="ContextualSearchSource"/>
+</histogram>
+
+<histogram
+    name="ContextualSearch.Query.AttachmentCount.{ContextualSearchFileTypes}.{ContextualSearchSource}"
+    units="count" expires_after="2027-05-13">
+  <owner>ameurhosni@google.com</owner>
+  <owner>chrome-mobile-search@google.com</owner>
+  <summary>
+    Records the count of attachments of a specific type at query submission.
+    Recorded when the user submits a query with attachments.
+  </summary>
+  <token key="ContextualSearchFileTypes" variants="ContextualSearchFileTypes"/>
   <token key="ContextualSearchSource" variants="ContextualSearchSource"/>
 </histogram>
 
@@ -811,6 +896,16 @@ chromium-metrics-reviews@google.com.
     Tracks what tool mode the user was in when they submitted the query. This
     metric is recorded only once the user has submitted the query and navigated
     to AIM.
+  </summary>
+  <token key="ContextualSearchSource" variants="ContextualSearchSource"/>
+</histogram>
+
+<histogram name="ContextualSearch.Tools.Selected.{ContextualSearchSource}"
+    enum="OmniboxToolMode" expires_after="2027-05-13">
+  <owner>ameurhosni@google.com</owner>
+  <owner>chrome-mobile-search@google.com</owner>
+  <summary>
+    Records when a tool is explicitly selected by the user in the menu.
   </summary>
   <token key="ContextualSearchSource" variants="ContextualSearchSource"/>
 </histogram>
