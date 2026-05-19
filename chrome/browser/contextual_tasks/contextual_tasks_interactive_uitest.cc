@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 #include <optional>
 
+#include "base/base64.h"
 #include "base/check_deref.h"
 #include "base/path_service.h"
 #include "base/strings/stringprintf.h"
@@ -13,15 +14,16 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_cookie_synchronizer.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_eligibility_manager.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_service_factory.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_ui_interface.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_factory.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/contextual_search/tab_contextualization_controller.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
-#include "chrome/browser/ui/webui/searchbox/contextual_searchbox_test_utils.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
@@ -30,6 +32,7 @@
 #include "components/contextual_tasks/public/contextual_tasks_service.h"
 #include "components/contextual_tasks/public/features.h"
 #include "components/lens/contextual_input.h"
+#include "components/lens/lens_features.h"
 #include "components/omnibox/browser/mock_aim_eligibility_service.h"
 #include "components/prefs/pref_service.h"
 #include "components/sessions/content/session_tab_helper.h"
@@ -38,7 +41,12 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/file_system_chooser_test_helpers.h"
+#include "content/public/test/url_loader_interceptor.h"
 #include "net/dns/mock_host_resolver.h"
+#include "third_party/lens_server_proto/aim_communication.pb.h"
+#include "third_party/lens_server_proto/aim_query.pb.h"
+#include "third_party/lens_server_proto/lens_overlay_cluster_info.pb.h"
+#include "third_party/lens_server_proto/lens_overlay_server.pb.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/unowned_user_data/user_data_factory.h"
@@ -46,7 +54,12 @@
 using testing::_;
 
 namespace {
+constexpr char kMockAimPagePath[] = "chrome/test/data/mock_aim_page.html";
+constexpr char kMockAimPageHost[] = "www.google.com";
+
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kPrimaryTab);
+DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kGenericTab);
+DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kInnerWebContentsId);
 DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kElementExistsEvent);
 DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kElementDoesNotExistEvent);
 
@@ -113,6 +126,11 @@ class MockContextualTasksUiService
 
   bool IsSignedInToBrowserWithValidCredentials() override { return true; }
   bool IsUrlForPrimaryAccount(const GURL& url) override { return true; }
+  void GetAccessToken(
+      GetAccessTokenCallback callback,
+      base::WeakPtr<content::WebContents> web_contents) override {
+    std::move(callback).Run("fake_access_token");
+  }
 };
 
 }  // namespace
@@ -122,7 +140,9 @@ namespace contextual_tasks {
 class ContextualTasksInteractiveUiTest : public InteractiveBrowserTest {
  public:
   ContextualTasksInteractiveUiTest() {
-    scoped_feature_list_.InitAndEnableFeature(kContextualTasks);
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{kContextualTasks},
+        /*disabled_features=*/{lens::features::kLensSendRawFileMediaTypes});
   }
   ~ContextualTasksInteractiveUiTest() override = default;
 
@@ -143,9 +163,6 @@ class ContextualTasksInteractiveUiTest : public InteractiveBrowserTest {
                                     BuildMockContextualTasksUiServiceInstance,
                                 base::Unretained(this)));
 
-    ContextualSearchServiceFactory::GetInstance()->SetTestingFactory(
-        context,
-        base::BindRepeating(&BuildMockContextualSearchServiceInstance));
   }
 
   std::unique_ptr<KeyedService> BuildMockAimServiceInstance(
@@ -175,12 +192,44 @@ class ContextualTasksInteractiveUiTest : public InteractiveBrowserTest {
   void SetUpOnMainThread() override {
     InteractiveBrowserTest::SetUpOnMainThread();
 
-    signin::MakePrimaryAccountAvailable(
-        IdentityManagerFactory::GetForProfile(browser()->profile()),
-        "test_user@gmail.com", signin::ConsentLevel::kSignin);
-
     host_resolver()->AddRule("*", "127.0.0.1");
     ASSERT_TRUE(embedded_test_server()->Start());
+
+    url_loader_interceptor_ = std::make_unique<
+        content::URLLoaderInterceptor>(base::BindLambdaForTesting(
+        [&](content::URLLoaderInterceptor::RequestParams* params) {
+          const GURL& url = params->url_request.url;
+          if (url.host() == kMockAimPageHost) {
+            content::URLLoaderInterceptor::WriteResponse(kMockAimPagePath,
+                                                         params->client.get());
+            return true;
+          }
+          GURL cluster_info_url{
+              lens::features::GetLensOverlayClusterInfoEndpointUrl()};
+          GURL upload_url{lens::features::GetLensOverlayEndpointURL()};
+          if (url.host() == cluster_info_url.host()) {
+            if (url.path() == cluster_info_url.path()) {
+              lens::LensOverlayServerClusterInfoResponse response;
+              response.set_search_session_id("test_search_session_id");
+              std::string response_string;
+              CHECK(response.SerializeToString(&response_string));
+              content::URLLoaderInterceptor::WriteResponse(
+                  "HTTP/1.1 200 OK\nContent-Type: application/x-protobuf\n\n",
+                  response_string, params->client.get());
+              return true;
+            }
+            if (url.path() == upload_url.path()) {
+              lens::LensOverlayServerResponse response;
+              std::string response_string;
+              CHECK(response.SerializeToString(&response_string));
+              content::URLLoaderInterceptor::WriteResponse(
+                  "HTTP/1.1 200 OK\nContent-Type: application/x-protobuf\n\n",
+                  response_string, params->client.get());
+              return true;
+            }
+          }
+          return false;
+        }));
 
     auto* mock_aim = GetMockAimEligibilityService(browser()->profile());
     auto* config = &mock_aim->config();
@@ -223,6 +272,7 @@ class ContextualTasksInteractiveUiTest : public InteractiveBrowserTest {
   }
 
   void TearDownOnMainThread() override {
+    url_loader_interceptor_.reset();
     ui::SelectFileDialog::SetFactory(nullptr);
     InteractiveBrowserTest::TearDownOnMainThread();
   }
@@ -367,9 +417,87 @@ class ContextualTasksInteractiveUiTest : public InteractiveBrowserTest {
                  WaitForInterceptionAndLoad());
   }
 
+  // Verifies the structure and content of the SubmitQuery protobuf message sent
+  // from the browser to the inner WebContents.
+  auto VerifySubmitQueryMessage(
+      lens::LensOverlayRequestId::MediaType expected_media_type,
+      std::optional<std::string> expected_added_input_name = std::nullopt) {
+    return Steps(
+        // Wait until the inner WebContents receives a message starting with the
+        // SubmitQuery protobuf tag byte (18 / 0x12).
+        WaitForJsResult(kInnerWebContentsId,
+                        "() => window.receivedMessages.some(buf => new "
+                        "Uint8Array(buf)[0] === 18)"),
+        WithElement(kInnerWebContentsId, [expected_media_type,
+                                          expected_added_input_name](
+                                             ui::TrackedElement* el) {
+          auto* web_contents = AsInstrumentedWebContents(el)->web_contents();
+          // Extract the binary protobuf message from JavaScript by converting
+          // the matching ArrayBuffer into a base64 encoded string.
+          std::string base64_msg =
+              content::EvalJs(web_contents,
+                              "btoa(Array.from(new "
+                              "Uint8Array(window.receivedMessages.find(buf => "
+                              "new Uint8Array(buf)[0] === 18))).map(b => "
+                              "String.fromCharCode(b)).join(''))")
+                  .ExtractString();
+          std::string decoded_msg;
+          ASSERT_TRUE(base::Base64Decode(base64_msg, &decoded_msg));
+          lens::ClientToAimMessage message;
+          ASSERT_TRUE(message.ParseFromString(decoded_msg));
+
+          // Verify core query payload requirements.
+          EXPECT_TRUE(message.has_submit_query());
+          EXPECT_EQ(
+              message.submit_query().payload().lens_image_query_data_size(), 1);
+          EXPECT_EQ(message.submit_query()
+                        .payload()
+                        .lens_image_query_data(0)
+                        .request_id()
+                        .media_type(),
+                    expected_media_type);
+
+          // Verify additional context inputs if expected by the test case.
+          if (expected_added_input_name.has_value()) {
+            EXPECT_TRUE(message.submit_query().payload().has_added_inputs());
+            EXPECT_EQ(message.submit_query()
+                          .payload()
+                          .added_inputs()
+                          .added_inputs_size(),
+                      1);
+            EXPECT_TRUE(message.submit_query()
+                            .payload()
+                            .added_inputs()
+                            .added_inputs(0)
+                            .has_lens_file());
+            if (expected_media_type ==
+                lens::LensOverlayRequestId::MEDIA_TYPE_PDF) {
+              EXPECT_THAT(message.submit_query()
+                              .payload()
+                              .added_inputs()
+                              .added_inputs(0)
+                              .lens_file()
+                              .file_name(),
+                          testing::HasSubstr(*expected_added_input_name));
+            } else {
+              EXPECT_THAT(message.submit_query()
+                              .payload()
+                              .added_inputs()
+                              .added_inputs(0)
+                              .lens_file()
+                              .page_url(),
+                          testing::HasSubstr(*expected_added_input_name));
+            }
+          } else {
+            EXPECT_FALSE(message.submit_query().payload().has_added_inputs());
+          }
+        }));
+  }
+
  protected:
   base::test::ScopedFeatureList scoped_feature_list_;
   std::optional<ui::UserDataFactory::ScopedOverride> tab_context_override_;
+  std::unique_ptr<content::URLLoaderInterceptor> url_loader_interceptor_;
 };
 
 IN_PROC_BROWSER_TEST_F(ContextualTasksInteractiveUiTest,
@@ -459,6 +587,146 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksInteractiveUiTest,
                   ClickButton(kPrimaryTab, kRemoveImgButton),
                   WaitForElementDoesNotExist(kPrimaryTab, kImgChip),
                   WaitForComposeboxFilesCount(0));
+}
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksInteractiveUiTest,
+                       AddAndRemoveTabFromComposebox) {
+  const GURL kInterceptionUrl("https://www.google.com/search?udm=50");
+  const GURL kGenericPageUrl = embedded_test_server()->GetURL("/title1.html");
+
+  const DeepQuery kFaviconGroup = {
+      "contextual-tasks-app", "#composebox",       "#composebox",
+      "#contextEntrypoint",   "#entrypointButton", "composebox-favicon-group"};
+
+  RunTestSequence(InstrumentTab(kPrimaryTab, 0),
+                  AddInstrumentedTab(kGenericTab, kGenericPageUrl),
+                  SelectTab(kTabStripElementId, 0),
+                  OpenContextualTasksInCurrentTab(kInterceptionUrl),
+
+                  ForceClickAddContextEntrypoint(kPrimaryTab),
+                  ForceClickMenuButton(kPrimaryTab, 0),
+
+                  WaitForElementExists(kPrimaryTab, kFaviconGroup),
+                  CheckJsResultAt(kPrimaryTab, kFaviconGroup,
+                                  "el => el.tabs && el.tabs.length === 1 && "
+                                  "el.tabs[0].title.includes('title1.html')",
+                                  true),
+                  WaitForComposeboxFilesCount(1),
+
+                  ForceClickAddContextEntrypoint(kPrimaryTab),
+                  ForceClickMenuButton(kPrimaryTab, 0),
+
+                  WaitForElementDoesNotExist(kPrimaryTab, kFaviconGroup),
+                  WaitForComposeboxFilesCount(0));
+}
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksInteractiveUiTest,
+                       AddAndSubmitTabFromComposebox) {
+  const GURL kInterceptionUrl("https://www.google.com/search?udm=50");
+  const GURL kGenericPageUrl = embedded_test_server()->GetURL("/title1.html");
+
+  const DeepQuery kFaviconGroup = {
+      "contextual-tasks-app", "#composebox",       "#composebox",
+      "#contextEntrypoint",   "#entrypointButton", "composebox-favicon-group"};
+
+  const DeepQuery kSubmitButton = {"contextual-tasks-app", "#composebox",
+                                   "#composebox", "cr-composebox-submit",
+                                   "#submitContainer"};
+
+  RunTestSequence(
+      InstrumentTab(kPrimaryTab, 0),
+      AddInstrumentedTab(kGenericTab, kGenericPageUrl),
+      SelectTab(kTabStripElementId, 0),
+      OpenContextualTasksInCurrentTab(kInterceptionUrl),
+      InstrumentInnerWebContents(kInnerWebContentsId, kPrimaryTab, 0),
+      ForceClickAddContextEntrypoint(kPrimaryTab),
+      ForceClickMenuButton(kPrimaryTab, 0),
+      WaitForElementExists(kPrimaryTab, kFaviconGroup),
+      CheckJsResultAt(kPrimaryTab, kFaviconGroup,
+                      "el => el.tabs && el.tabs.length === 1 && "
+                      "el.tabs[0].title.includes('title1.html')",
+                      true),
+      WaitForComposeboxFilesCount(1), ClickButton(kPrimaryTab, kSubmitButton),
+      VerifySubmitQueryMessage(
+          lens::LensOverlayRequestId::MEDIA_TYPE_WEBPAGE_AND_IMAGE,
+          "title1.html"));
+}
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksInteractiveUiTest,
+                       AddAndSubmitPdfChipFromComposebox) {
+  const GURL kInterceptionUrl("https://www.google.com/search?udm=50");
+
+  base::FilePath test_data_dir;
+  base::PathService::Get(chrome::DIR_TEST_DATA, &test_data_dir);
+  base::FilePath file_path = test_data_dir.AppendASCII("download.pdf");
+
+  ui::SelectFileDialog::SetFactory(
+      std::make_unique<content::FakeSelectFileDialogFactory>(
+          std::vector<base::FilePath>{file_path}));
+
+  const DeepQuery kDocumentChip = {"contextual-tasks-app",
+                                   "#composebox",
+                                   "#composebox",
+                                   "#carousel",
+                                   "cr-composebox-file-thumbnail",
+                                   "#documentChip"};
+
+  const DeepQuery kSubmitButton = {"contextual-tasks-app", "#composebox",
+                                   "#composebox", "cr-composebox-submit",
+                                   "#submitContainer"};
+
+  const DeepQuery kDocumentChipTitle = {"contextual-tasks-app",
+                                        "#composebox",
+                                        "#composebox",
+                                        "#carousel",
+                                        "cr-composebox-file-thumbnail",
+                                        "#documentTitle"};
+
+  RunTestSequence(
+      InstrumentTab(kPrimaryTab, 0), SelectTab(kTabStripElementId, 0),
+      OpenContextualTasksInCurrentTab(kInterceptionUrl),
+      InstrumentInnerWebContents(kInnerWebContentsId, kPrimaryTab, 0),
+      ForceClickAddContextEntrypoint(kPrimaryTab),
+      ForceClickMenuButton(kPrimaryTab, "fileUpload"),
+      WaitForElementExists(kPrimaryTab, kDocumentChip),
+      CheckJsResultAt(kPrimaryTab, kDocumentChipTitle,
+                      "el => el.textContent.trim()",
+                      testing::HasSubstr("download.pdf")),
+      WaitForComposeboxFilesCount(1), ClickButton(kPrimaryTab, kSubmitButton),
+      VerifySubmitQueryMessage(lens::LensOverlayRequestId::MEDIA_TYPE_PDF,
+                               "download.pdf"));
+}
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksInteractiveUiTest,
+                       AddAndSubmitImageChipFromComposebox) {
+  const GURL kInterceptionUrl("https://www.google.com/search?udm=50");
+
+  base::FilePath test_data_dir;
+  base::PathService::Get(chrome::DIR_TEST_DATA, &test_data_dir);
+  base::FilePath file_path = test_data_dir.AppendASCII("handbag.png");
+
+  ui::SelectFileDialog::SetFactory(
+      std::make_unique<content::FakeSelectFileDialogFactory>(
+          std::vector<base::FilePath>{file_path}));
+
+  const DeepQuery kImgChip = {
+      "contextual-tasks-app",         "#composebox", "#composebox", "#carousel",
+      "cr-composebox-file-thumbnail", "#imgChip"};
+
+  const DeepQuery kSubmitButton = {"contextual-tasks-app", "#composebox",
+                                   "#composebox", "cr-composebox-submit",
+                                   "#submitContainer"};
+
+  RunTestSequence(
+      InstrumentTab(kPrimaryTab, 0), SelectTab(kTabStripElementId, 0),
+      OpenContextualTasksInCurrentTab(kInterceptionUrl),
+      InstrumentInnerWebContents(kInnerWebContentsId, kPrimaryTab, 0),
+      ForceClickAddContextEntrypoint(kPrimaryTab),
+      ForceClickMenuButton(kPrimaryTab, "imageUpload"),
+      WaitForElementExists(kPrimaryTab, kImgChip),
+      WaitForComposeboxFilesCount(1), ClickButton(kPrimaryTab, kSubmitButton),
+      VerifySubmitQueryMessage(
+          lens::LensOverlayRequestId::MEDIA_TYPE_DEFAULT_IMAGE));
 }
 
 }  // namespace contextual_tasks
