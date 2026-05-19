@@ -350,11 +350,6 @@ void AnnotatedPageContentRequest::DidFinishNavigationWithPageSettledMonitor(
 }
 
 void AnnotatedPageContentRequest::DidStopLoading() {
-  if (use_page_settled_monitor_) {
-    // PageSettledMonitor handles its own load signal.
-    return;
-  }
-
   // Ensure that the main frame's Document has finished loading.
   if (!web_contents()->IsDocumentOnLoadCompletedInPrimaryMainFrame()) {
     return;
@@ -363,6 +358,21 @@ void AnnotatedPageContentRequest::DidStopLoading() {
   // Once the main Document has fired the `load` event, wait for all subframes
   // currently in the FrameTree to also finish loading.
   if (web_contents()->IsLoading()) {
+    return;
+  }
+
+  // TODO(b/490161242): Investigate if we should return early here if we are not
+  // waiting for load to avoid duplicate extractions for same-document
+  // navigations.
+  if (waiting_for_load_) {
+    // Only set the timer for cross-document navigations.
+    stop_loading_timer_ = base::ElapsedTimer();
+  }
+
+  waiting_for_load_ = false;
+
+  if (use_page_settled_monitor_) {
+    // PageSettledMonitor handles its own load signal.
     return;
   }
 
@@ -375,15 +385,6 @@ void AnnotatedPageContentRequest::DidStopLoading() {
     waiting_for_fcp_ = false;
   }
 
-  // TODO(b/490161242): Investigate if we should return early here if we are not
-  // waiting for load to avoid duplicate extractions for same-document
-  // navigations.
-  if (waiting_for_load_) {
-    // Only set the timer for cross-document navigations.
-    stop_loading_timer_ = base::ElapsedTimer();
-  }
-
-  waiting_for_load_ = false;
   MaybeScheduleExtraction();
 }
 

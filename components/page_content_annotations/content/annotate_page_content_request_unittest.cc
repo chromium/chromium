@@ -947,14 +947,14 @@ TEST_P(AnnotatePageContentRequestTest, Metrics_OnLoadTrigger) {
   histogram_tester.ExpectTotalCount(
       "OptimizationGuide.PageContentExtraction.AutomaticOnLoad."
       "ExtractionLatency",
-      IsPageSettledMonitorEnabled() ? 0 : 1);
+      1);
   histogram_tester.ExpectTotalCount(
       "OptimizationGuide.PageContentExtraction.AutomaticOnLoad."
       "StabilityLatency",
-      IsPageSettledMonitorEnabled() ? 0 : 1);
+      1);
   histogram_tester.ExpectTotalCount(
       "OptimizationGuide.PageContentExtraction.AutomaticOnLoad.OverallLatency",
-      IsPageSettledMonitorEnabled() ? 0 : 1);
+      1);
   histogram_tester.ExpectUniqueSample(
       "OptimizationGuide.PageContentExtraction.TriggerSource",
       AnnotatedPageContentRequest::TriggerSource::kOnLoad, 1);
@@ -1127,14 +1127,14 @@ TEST_P(AnnotatePageContentRequestTest,
   histogram_tester.ExpectTotalCount(
       "OptimizationGuide.PageContentExtraction.AutomaticOnLoad."
       "StabilityLatency",
-      IsPageSettledMonitorEnabled() ? 0 : 1);
+      1);
   histogram_tester.ExpectTotalCount(
       "OptimizationGuide.PageContentExtraction.AutomaticOnLoad."
       "ExtractionLatency",
-      IsPageSettledMonitorEnabled() ? 0 : 1);
+      1);
   histogram_tester.ExpectTotalCount(
       "OptimizationGuide.PageContentExtraction.AutomaticOnLoad.OverallLatency",
-      IsPageSettledMonitorEnabled() ? 0 : 1);
+      1);
 
   // Simulate a same-document navigation.
   auto same_doc_nav = content::NavigationSimulator::CreateRendererInitiated(
@@ -1156,14 +1156,14 @@ TEST_P(AnnotatePageContentRequestTest,
   histogram_tester.ExpectTotalCount(
       "OptimizationGuide.PageContentExtraction.AutomaticOnLoad."
       "StabilityLatency",
-      IsPageSettledMonitorEnabled() ? 0 : 1);
+      1);
   histogram_tester.ExpectTotalCount(
       "OptimizationGuide.PageContentExtraction.AutomaticOnLoad."
       "ExtractionLatency",
-      IsPageSettledMonitorEnabled() ? 0 : 1);
+      1);
   histogram_tester.ExpectTotalCount(
       "OptimizationGuide.PageContentExtraction.AutomaticOnLoad.OverallLatency",
-      IsPageSettledMonitorEnabled() ? 0 : 1);
+      1);
 }
 
 TEST_P(AnnotatePageContentRequestTest, OnLoadTriggerPDFExtraction) {
