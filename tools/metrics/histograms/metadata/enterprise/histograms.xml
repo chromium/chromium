@@ -715,6 +715,23 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Enterprise.CloudReportingPolicyStatus.Profile.{SecuritySignalsMode}"
+    enum="EnterpriseCloudReportingPolicyStatus" expires_after="2027-05-15">
+  <owner>zmin@chromium.org</owner>
+  <owner>cec-eng@google.com</owner>
+  <summary>
+    Records the policy status of the profile being reported in an enterprise
+    profile report. Recorded when a profile report is going to be uploaded with
+    security signals mode {SecuritySignalsMode}.
+  </summary>
+  <token key="SecuritySignalsMode">
+    <variant name="NoSignals" summary="No security signals attached"/>
+    <variant name="SignalsAttached" summary="Security signals attached"/>
+    <variant name="SignalsOnly" summary="Security signals only"/>
+  </token>
+</histogram>
+
 <histogram name="Enterprise.CloudReportingReportGenerationError"
     enum="EnterpriseCloudReportingReportGenerationError"
     expires_after="2027-03-13">

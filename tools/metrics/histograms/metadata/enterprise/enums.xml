@@ -502,6 +502,13 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Load token from file"/>
 </enum>
 
+<enum name="EnterpriseCloudReportingPolicyStatus">
+  <int value="0" label="No policy set"/>
+  <int value="1" label="User cloud policy set only"/>
+  <int value="2" label="Other policy set only"/>
+  <int value="3" label="Both user cloud policy and other policy set"/>
+</enum>
+
 <enum name="EnterpriseCloudReportingReportGenerationError">
   <int value="0" label="kProfileEmptyReport">
     Profile report generation failed.

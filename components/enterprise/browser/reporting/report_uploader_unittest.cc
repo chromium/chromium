@@ -54,7 +54,7 @@ auto ScheduleProfileResponse(policy::CloudPolicyClient::Result result) {
 }  // namespace
 
 class ReportUploaderTest : public ::testing::Test {
- protected:
+ public:
   // Different CloudPolicyClient functions will be used in test cases based
   // on the current operation system. They share same retry and error handling
   // behaviors provided by ReportUploader.
@@ -413,5 +413,187 @@ INSTANTIATE_TEST_SUITE_P(All,
                          ::testing::Values(ReportType::kFull,
                                            ReportType::kBrowserVersion,
                                            ReportType::kProfileReport));
+
+class ReportUploaderPolicyStatusTest
+    : public ReportUploaderTest,
+      public ::testing::WithParamInterface<SecuritySignalsMode> {
+ public:
+  ReportType GetReportType() override { return ReportType::kProfileReport; }
+
+  void SetUpProfileInfoWithPolicies(ReportRequestQueue& requests,
+                                    int num_user_cloud,
+                                    int num_other,
+                                    bool merged_user_cloud,
+                                    bool merged_other) {
+    auto request = std::make_unique<ReportRequest>(GetReportType());
+    em::BrowserReport* browser_report =
+        request->GetChromeProfileReportRequest().mutable_browser_report();
+    browser_report->set_browser_version("name1");
+    em::ChromeUserProfileInfo* profile_info =
+        browser_report->add_chrome_user_profile_infos();
+
+    for (int i = 0; i < num_user_cloud; ++i) {
+      em::Policy* policy = profile_info->add_chrome_policies();
+      policy->set_source(em::Policy_PolicySource_SOURCE_CLOUD);
+      policy->set_scope(em::Policy_PolicyScope_SCOPE_USER);
+    }
+
+    for (int i = 0; i < num_other; ++i) {
+      em::Policy* policy = profile_info->add_chrome_policies();
+      policy->set_source(em::Policy_PolicySource_SOURCE_PLATFORM);
+      policy->set_scope(em::Policy_PolicyScope_SCOPE_MACHINE);
+    }
+
+    if (merged_user_cloud) {
+      em::Policy* policy = profile_info->add_chrome_policies();
+      policy->set_source(em::Policy_PolicySource_SOURCE_MERGED);
+      em::Policy* conflict1 = policy->add_conflicts();
+      conflict1->set_source(em::Policy_PolicySource_SOURCE_CLOUD);
+      conflict1->set_scope(em::Policy_PolicyScope_SCOPE_USER);
+      em::Policy* conflict2 = policy->add_conflicts();
+      conflict2->set_source(em::Policy_PolicySource_SOURCE_PLATFORM);
+      conflict2->set_scope(em::Policy_PolicyScope_SCOPE_MACHINE);
+    }
+
+    if (merged_other) {
+      em::Policy* policy = profile_info->add_chrome_policies();
+      policy->set_source(em::Policy_PolicySource_SOURCE_MERGED);
+      em::Policy* conflict1 = policy->add_conflicts();
+      conflict1->set_source(em::Policy_PolicySource_SOURCE_PLATFORM);
+      conflict1->set_scope(em::Policy_PolicyScope_SCOPE_MACHINE);
+      em::Policy* conflict2 = policy->add_conflicts();
+      conflict2->set_source(em::Policy_PolicySource_SOURCE_PLATFORM);
+      conflict2->set_scope(em::Policy_PolicyScope_SCOPE_USER);
+    }
+
+    requests.push(std::move(request));
+  }
+
+  std::string GetHistogramName() {
+    switch (GetParam()) {
+      case SecuritySignalsMode::kNoSignals:
+        return "Enterprise.CloudReportingPolicyStatus.Profile.NoSignals";
+      case SecuritySignalsMode::kSignalsAttached:
+        return "Enterprise.CloudReportingPolicyStatus.Profile.SignalsAttached";
+      case SecuritySignalsMode::kSignalsOnly:
+        return "Enterprise.CloudReportingPolicyStatus.Profile.SignalsOnly";
+    }
+  }
+};
+
+TEST_P(ReportUploaderPolicyStatusTest, NoPolicySet) {
+  EXPECT_CALL(client_, UploadChromeProfileReport(use_cookies_, _, _))
+      .WillOnce(ScheduleProfileResponse(
+          policy::CloudPolicyClient::Result(policy::DM_STATUS_SUCCESS)));
+  ReportRequestQueue requests;
+  SetUpProfileInfoWithPolicies(requests, 0, 0, false, false);
+  uploader_->SetRequestAndUpload(
+      ReportGenerationConfig(ReportTrigger::kTriggerNone, GetReportType(),
+                             GetParam(), use_cookies_),
+      std::move(requests),
+      base::BindOnce(&ReportUploaderTest::OnReportUploaded,
+                     base::Unretained(this), ReportUploader::kSuccess));
+  RunNextTask();
+  EXPECT_TRUE(has_responded_);
+  histogram_tester_.ExpectUniqueSample(GetHistogramName(), 0 /* kNoPolicySet */,
+                                       1);
+}
+
+TEST_P(ReportUploaderPolicyStatusTest, UserCloudPolicySetOnly) {
+  EXPECT_CALL(client_, UploadChromeProfileReport(use_cookies_, _, _))
+      .WillOnce(ScheduleProfileResponse(
+          policy::CloudPolicyClient::Result(policy::DM_STATUS_SUCCESS)));
+  ReportRequestQueue requests;
+  SetUpProfileInfoWithPolicies(requests, 1, 0, false, false);
+  uploader_->SetRequestAndUpload(
+      ReportGenerationConfig(ReportTrigger::kTriggerNone, GetReportType(),
+                             GetParam(), use_cookies_),
+      std::move(requests),
+      base::BindOnce(&ReportUploaderTest::OnReportUploaded,
+                     base::Unretained(this), ReportUploader::kSuccess));
+  RunNextTask();
+  EXPECT_TRUE(has_responded_);
+  histogram_tester_.ExpectUniqueSample(GetHistogramName(),
+                                       1 /* kUserCloudPolicySetOnly */, 1);
+}
+
+TEST_P(ReportUploaderPolicyStatusTest, OtherPolicySetOnly) {
+  EXPECT_CALL(client_, UploadChromeProfileReport(use_cookies_, _, _))
+      .WillOnce(ScheduleProfileResponse(
+          policy::CloudPolicyClient::Result(policy::DM_STATUS_SUCCESS)));
+  ReportRequestQueue requests;
+  SetUpProfileInfoWithPolicies(requests, 0, 1, false, false);
+  uploader_->SetRequestAndUpload(
+      ReportGenerationConfig(ReportTrigger::kTriggerNone, GetReportType(),
+                             GetParam(), use_cookies_),
+      std::move(requests),
+      base::BindOnce(&ReportUploaderTest::OnReportUploaded,
+                     base::Unretained(this), ReportUploader::kSuccess));
+  RunNextTask();
+  EXPECT_TRUE(has_responded_);
+  histogram_tester_.ExpectUniqueSample(GetHistogramName(),
+                                       2 /* kOtherPolicySetOnly */, 1);
+}
+
+TEST_P(ReportUploaderPolicyStatusTest, BothPolicySet) {
+  EXPECT_CALL(client_, UploadChromeProfileReport(use_cookies_, _, _))
+      .WillOnce(ScheduleProfileResponse(
+          policy::CloudPolicyClient::Result(policy::DM_STATUS_SUCCESS)));
+  ReportRequestQueue requests;
+  SetUpProfileInfoWithPolicies(requests, 1, 1, false, false);
+  uploader_->SetRequestAndUpload(
+      ReportGenerationConfig(ReportTrigger::kTriggerNone, GetReportType(),
+                             GetParam(), use_cookies_),
+      std::move(requests),
+      base::BindOnce(&ReportUploaderTest::OnReportUploaded,
+                     base::Unretained(this), ReportUploader::kSuccess));
+  RunNextTask();
+  EXPECT_TRUE(has_responded_);
+  histogram_tester_.ExpectUniqueSample(GetHistogramName(),
+                                       3 /* kBothPolicySet */, 1);
+}
+
+TEST_P(ReportUploaderPolicyStatusTest, MergedUserCloudPolicy) {
+  EXPECT_CALL(client_, UploadChromeProfileReport(use_cookies_, _, _))
+      .WillOnce(ScheduleProfileResponse(
+          policy::CloudPolicyClient::Result(policy::DM_STATUS_SUCCESS)));
+  ReportRequestQueue requests;
+  SetUpProfileInfoWithPolicies(requests, 0, 0, true, false);
+  uploader_->SetRequestAndUpload(
+      ReportGenerationConfig(ReportTrigger::kTriggerNone, GetReportType(),
+                             GetParam(), use_cookies_),
+      std::move(requests),
+      base::BindOnce(&ReportUploaderTest::OnReportUploaded,
+                     base::Unretained(this), ReportUploader::kSuccess));
+  RunNextTask();
+  EXPECT_TRUE(has_responded_);
+  histogram_tester_.ExpectUniqueSample(GetHistogramName(),
+                                       3 /* kBothPolicySet */, 1);
+}
+
+TEST_P(ReportUploaderPolicyStatusTest, MergedOtherPolicy) {
+  EXPECT_CALL(client_, UploadChromeProfileReport(use_cookies_, _, _))
+      .WillOnce(ScheduleProfileResponse(
+          policy::CloudPolicyClient::Result(policy::DM_STATUS_SUCCESS)));
+  ReportRequestQueue requests;
+  SetUpProfileInfoWithPolicies(requests, 0, 0, false, true);
+  uploader_->SetRequestAndUpload(
+      ReportGenerationConfig(ReportTrigger::kTriggerNone, GetReportType(),
+                             GetParam(), use_cookies_),
+      std::move(requests),
+      base::BindOnce(&ReportUploaderTest::OnReportUploaded,
+                     base::Unretained(this), ReportUploader::kSuccess));
+  RunNextTask();
+  EXPECT_TRUE(has_responded_);
+  histogram_tester_.ExpectUniqueSample(GetHistogramName(),
+                                       2 /* kOtherPolicySetOnly */, 1);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    ReportUploaderPolicyStatusTest,
+    ::testing::Values(SecuritySignalsMode::kNoSignals,
+                      SecuritySignalsMode::kSignalsAttached,
+                      SecuritySignalsMode::kSignalsOnly));
 
 }  // namespace enterprise_reporting

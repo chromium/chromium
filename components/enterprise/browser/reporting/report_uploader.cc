@@ -33,6 +33,78 @@ void RecordReportResponseMetrics(ReportResponseMetricsStatus status) {
   base::UmaHistogramEnumeration("Enterprise.CloudReportingResponse", status);
 }
 
+enum class EnterpriseCloudReportingPolicyStatus {
+  kNoPolicySet = 0,
+  kUserCloudPolicySetOnly = 1,
+  kOtherPolicySetOnly = 2,
+  kBothPolicySet = 3,
+  kMaxValue = kBothPolicySet
+};
+
+void RecordProfilePolicyStatus(const em::ChromeProfileReportRequest& request,
+                               SecuritySignalsMode security_signals_mode) {
+  if (!request.has_browser_report() ||
+      request.browser_report().chrome_user_profile_infos_size() == 0) {
+    return;
+  }
+  DCHECK_EQ(request.browser_report().chrome_user_profile_infos_size(), 1);
+
+  bool has_user_cloud_policy = false;
+  bool has_other_policy = false;
+
+  const auto& profile_info =
+      request.browser_report().chrome_user_profile_infos(0);
+  for (const auto& policy : profile_info.chrome_policies()) {
+    if (policy.source() == em::Policy_PolicySource_SOURCE_MERGED) {
+      for (const auto& conflict : policy.conflicts()) {
+        if (conflict.source() == em::Policy_PolicySource_SOURCE_CLOUD &&
+            conflict.scope() == em::Policy_PolicyScope_SCOPE_USER) {
+          has_user_cloud_policy = true;
+        } else {
+          has_other_policy = true;
+        }
+      }
+    } else {
+      if (policy.source() == em::Policy_PolicySource_SOURCE_CLOUD &&
+          policy.scope() == em::Policy_PolicyScope_SCOPE_USER) {
+        has_user_cloud_policy = true;
+      } else {
+        has_other_policy = true;
+      }
+    }
+    if (has_user_cloud_policy && has_other_policy) {
+      break;
+    }
+  }
+
+  EnterpriseCloudReportingPolicyStatus status;
+  if (has_user_cloud_policy && has_other_policy) {
+    status = EnterpriseCloudReportingPolicyStatus::kBothPolicySet;
+  } else if (has_user_cloud_policy) {
+    status = EnterpriseCloudReportingPolicyStatus::kUserCloudPolicySetOnly;
+  } else if (has_other_policy) {
+    status = EnterpriseCloudReportingPolicyStatus::kOtherPolicySetOnly;
+  } else {
+    status = EnterpriseCloudReportingPolicyStatus::kNoPolicySet;
+  }
+
+  std::string mode_str;
+  switch (security_signals_mode) {
+    case SecuritySignalsMode::kNoSignals:
+      mode_str = "NoSignals";
+      break;
+    case SecuritySignalsMode::kSignalsAttached:
+      mode_str = "SignalsAttached";
+      break;
+    case SecuritySignalsMode::kSignalsOnly:
+      mode_str = "SignalsOnly";
+      break;
+  }
+
+  base::UmaHistogramEnumeration(
+      "Enterprise.CloudReportingPolicyStatus.Profile." + mode_str, status);
+}
+
 }  // namespace
 
 ReportUploader::ReportUploader(policy::CloudPolicyClient* client,
@@ -84,6 +156,8 @@ void ReportUploader::Upload() {
             << "Uploading profile report with signals mode "
             << static_cast<int>(config_.security_signals_mode);
       }
+
+      RecordProfilePolicyStatus(*request, config_.security_signals_mode);
 
       client_->UploadChromeProfileReport(
           config_.use_cookies, std::move(request), std::move(callback));
