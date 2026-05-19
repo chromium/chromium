@@ -10,8 +10,6 @@ found in the LICENSE file.
     android:layout_height="wrap_content"
     android:orientation="horizontal"
     android:baselineAligned="false"
-    android:divider="@drawable/fusebox_attachment_divider"
-    android:showDividers="middle"
     android:paddingHorizontal="@dimen/fusebox_carousel_padding_horizontal"
     android:paddingTop="@dimen/fusebox_carousel_padding_top"
     android:paddingBottom="@dimen/fusebox_carousel_padding_bottom"
@@ -22,40 +20,46 @@ found in the LICENSE file.
         android:id="@+id/fusebox_add_current_tab"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_weight="1"/>
+        android:layout_weight="1"
+        android:layout_marginHorizontal="@dimen/fusebox_carousel_padding_horizontal"/>
 
     <include
         layout="@layout/fusebox_horizontal_attachment_item"
         android:id="@+id/fusebox_pick_tabs_button"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_weight="1"/>
+        android:layout_weight="1"
+        android:layout_marginHorizontal="@dimen/fusebox_carousel_padding_horizontal"/>
 
     <include
         layout="@layout/fusebox_horizontal_attachment_item"
         android:id="@+id/fusebox_paste_from_clipboard_button"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_weight="1"/>
+        android:layout_weight="1"
+        android:layout_marginHorizontal="@dimen/fusebox_carousel_padding_horizontal"/>
 
     <include
         layout="@layout/fusebox_horizontal_attachment_item"
         android:id="@+id/fusebox_camera_button"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_weight="1"/>
+        android:layout_weight="1"
+        android:layout_marginHorizontal="@dimen/fusebox_carousel_padding_horizontal"/>
 
     <include
         layout="@layout/fusebox_horizontal_attachment_item"
         android:id="@+id/fusebox_pick_picture_button"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_weight="1"/>
+        android:layout_weight="1"
+        android:layout_marginHorizontal="@dimen/fusebox_carousel_padding_horizontal"/>
 
     <include
         layout="@layout/fusebox_horizontal_attachment_item"
         android:id="@+id/fusebox_pick_file_button"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_weight="1"/>
+        android:layout_weight="1"
+        android:layout_marginHorizontal="@dimen/fusebox_carousel_padding_horizontal"/>
 </LinearLayout>
