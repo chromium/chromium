@@ -49,11 +49,7 @@ public class SettingsNavigationHelper {
             return false;
         }
         SettingsNavigationFactory.createSettingsNavigation()
-                .startSettings(
-                        context,
-                        AutofillIdentityDocsFragment.class,
-                        /* fragmentArgs= */ null,
-                        /* addToBackStack= */ true);
+                .startSettings(context, AutofillIdentityDocsFragment.class);
         return true;
     }
 
@@ -68,11 +64,7 @@ public class SettingsNavigationHelper {
             return false;
         }
         SettingsNavigationFactory.createSettingsNavigation()
-                .startSettings(
-                        context,
-                        AutofillTravelFragment.class,
-                        /* fragmentArgs= */ null,
-                        /* addToBackStack= */ true);
+                .startSettings(context, AutofillTravelFragment.class);
         return true;
     }
 

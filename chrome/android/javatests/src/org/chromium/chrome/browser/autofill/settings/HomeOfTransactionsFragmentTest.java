@@ -472,7 +472,6 @@ public class HomeOfTransactionsFragmentTest {
 
         onView(withText(R.string.autofill_identity_docs_opt_in_toggle_label))
                 .check(matches(isDisplayed()));
-        assertHasBackstack();
     }
 
     @Test
@@ -498,7 +497,6 @@ public class HomeOfTransactionsFragmentTest {
 
         onView(withText(R.string.autofill_travel_opt_in_toggle_label))
                 .check(matches(isDisplayed()));
-        assertHasBackstack();
     }
 
     @Test
@@ -514,16 +512,5 @@ public class HomeOfTransactionsFragmentTest {
         ChromeSharedPreferences.getInstance()
                 .writeBoolean(
                         ChromePreferenceKeys.SIGNIN_PROMO_AUTOFILL_AND_PASSWORDS_DISMISSED, value);
-    }
-
-    private void assertHasBackstack() {
-        // TODO (crbug.com/514579728): These tests fail in some cases.
-        // Assert.assertEquals(
-        //         1,
-        //         mSettingsActivityTestRule
-        //                 .getActivity()
-        //                 .getMainFragment()
-        //                 .getParentFragmentManager()
-        //                 .getBackStackEntryCount());
     }
 }
