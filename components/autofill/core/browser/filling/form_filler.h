@@ -35,6 +35,7 @@
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #include "components/autofill/core/common/unique_ids.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 namespace autofill {
 
@@ -235,8 +236,10 @@ class FormFiller {
 
   struct AugmentedFillingPayload;
 
-  void SetRefillContext(FormGlobalId form_id,
-                        std::unique_ptr<RefillContext> context);
+  // Stores a refill `context` for `form_id` and returns a raw pointer to the
+  // stored context.
+  RefillContext* SetRefillContext(FormGlobalId form_id,
+                                  std::unique_ptr<RefillContext> context);
 
   RefillContext* GetRefillContext(FormGlobalId form_id);
   RefillContext* GetRefillContext(const FillId& fill_id);
@@ -251,6 +254,20 @@ class FormFiller {
   void TriggerRefill(const FormData& form,
                      AutofillTriggerSource trigger_source,
                      RefillTriggerReason refill_trigger_reason);
+
+  // Initializes the `RefillContext` for `form` if applicable, and no-op
+  // otherwise. Returns true if a new refill context was successfully
+  // initialized, indicating a possibility for a refill to happen eventually.
+  bool MaybeInitializeRefillContext(
+      mojom::ActionPersistence action_persistence,
+      const FormData& form,
+      const AutofillField& autofill_trigger_field,
+      const AugmentedFillingPayload& augmented_filling_payload,
+      const base::flat_set<FieldGlobalId>& blocked_fields,
+      FillId fill_id,
+      const std::vector<FormFieldData>& result_fields,
+      const absl::flat_hash_map<FieldGlobalId, FieldType>& filled_field_types,
+      RefillOptions refill_options);
 
   struct ValueAndTypeAndOverride : public FillingValueAndType {
     bool value_is_an_override = false;
@@ -282,6 +299,15 @@ class FormFiller {
       AutofillTriggerSource trigger_source,
       bool allow_suggestion_swapping,
       std::string* failure_to_fill);
+
+  // Updates the cached `AutofillField`s in `form` with the information
+  // resulting from a filling operation.
+  void UpdateCacheOnFill(
+      FormStructure& form,
+      base::span<const FormFieldData> browser_filled_fields,
+      const base::flat_set<FieldGlobalId>& safe_filled_field_ids,
+      const absl::flat_hash_map<FieldGlobalId, FieldType>& filled_field_types,
+      const AugmentedFillingPayload& augmented_filling_payload) const;
 
   // Appends TriggerFillFieldLogEvent and FillFieldLogEvents to the relevant
   // fields in the `form_structure` if there was a filling operation.
