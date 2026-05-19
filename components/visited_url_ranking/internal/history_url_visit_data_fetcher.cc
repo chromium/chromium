@@ -86,20 +86,16 @@ visited_url_ranking::URLVisit::Source GetVisitSource(
                    std::pair<std::string, syncer::DeviceInfo::FormFactor>>&
         sync_device_info,
     const history::AnnotatedVisit& annotated_visit,
-    raw_ptr<syncer::DeviceInfoSyncService> device_info_sync_service) {
+    const syncer::DeviceInfo* local_device_info) {
   // The `originator_cache_guid` field is only set for foreign session visits
   // but some foreign visits are actually local as they can come from different
   // browsers/channels on the same device.
   auto it =
       sync_device_info.find(annotated_visit.visit_row.originator_cache_guid);
-  const syncer::LocalDeviceInfoProvider* local_device_info_provider =
-      device_info_sync_service->GetLocalDeviceInfoProvider();
   if (annotated_visit.visit_row.originator_cache_guid.empty() ||
       (it != sync_device_info.end() &&
-       (local_device_info_provider &&
-        local_device_info_provider->GetLocalDeviceInfo() &&
-        it->second.first ==
-            local_device_info_provider->GetLocalDeviceInfo()->client_name()))) {
+       (local_device_info &&
+        it->second.first == local_device_info->client_name()))) {
     return visited_url_ranking::URLVisit::Source::kLocal;
   } else {
     return visited_url_ranking::URLVisit::Source::kForeign;
@@ -203,9 +199,15 @@ void HistoryURLVisitDataFetcher::OnGotAnnotatedVisits(
   syncer::DeviceInfo::FormFactor local_device_form_factor =
       syncer::GetLocalDeviceFormFactor();
   std::map<std::string, URLVisitAggregate::HistoryData> url_annotations;
+  const syncer::DeviceInfo* local_device_info =
+      device_info_sync_service_ &&
+              device_info_sync_service_->GetLocalDeviceInfoProvider()
+          ? device_info_sync_service_->GetLocalDeviceInfoProvider()
+                ->GetLocalDeviceInfo()
+          : nullptr;
   for (auto& annotated_visit : annotated_visits) {
-    Source current_visit_source = GetVisitSource(
-        sync_device_info, annotated_visit, device_info_sync_service_);
+    Source current_visit_source =
+        GetVisitSource(sync_device_info, annotated_visit, local_device_info);
     if (!std::ranges::contains(requested_fetch_sources, current_visit_source)) {
       continue;
     }
