@@ -4173,6 +4173,10 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
             SettingsNavigationHelper.showAutofillCreditCardSettings(this);
             RecordUserAction.record("MobileMenuPaymentMethods");
             return true;
+        } else if (id == R.id.addresses_and_more_menu_id) {
+            SettingsNavigationHelper.showAutofillProfileSettings(this);
+            RecordUserAction.record("MobileMenuAddressesAndMore");
+            return true;
         } else if (id == R.id.add_to_group_menu_id
                 || id == R.id.add_tab_to_group_menu_id
                 || id == R.id.add_tab_to_new_group_menu_id) {

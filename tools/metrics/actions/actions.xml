@@ -28506,6 +28506,11 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="MobileMenuAddressesAndMore">
+  <owner>massan@google.com</owner>
+  <description>User pressed 'Addresses and more' in the app menu.</description>
+</action>
+
 <action name="MobileMenuAddToBookmarks">
   <owner>aurimas@chromium.org</owner>
   <description>
