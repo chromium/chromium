@@ -3169,7 +3169,7 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Navigation.Unload" units="ms" expires_after="2026-09-13">
+<histogram name="Navigation.Unload" units="ms" expires_after="2026-11-15">
   <owner>rakina@chromium.org</owner>
   <owner>chrome-security-architecture@google.com</owner>
   <summary>
