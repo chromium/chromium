@@ -551,9 +551,11 @@ void DevToolsSession::DispatchProtocolResponseOrNotification(
     DevToolsAgentHostClient* client,
     DevToolsAgentHostImpl* agent_host,
     blink::mojom::DevToolsMessagePtr message,
-    const std::string& session_id) {
+    const std::string& session_id,
+    const bool& is_notification) {
   base::span<const uint8_t> message_span = message->data;
-  if (!ValidateSessionId(session_id, message_span)) {
+  if (!ValidateMessage(session_id, /*expected_has_id=*/!is_notification,
+                       message_span)) {
     if (RenderProcessHost* process_host = agent_host->GetProcessHost()) {
       bad_message::ReceivedBadMessage(
           process_host, bad_message::RFH_INCONSISTENT_DEVTOOLS_MESSAGE);
@@ -579,7 +581,8 @@ void DevToolsSession::DispatchProtocolResponse(
   pending_messages_.erase(it->second);
   waiting_for_response_.erase(it);
   DispatchProtocolResponseOrNotification(client_, agent_host_,
-                                         std::move(message), session_id_);
+                                         std::move(message), session_id_,
+                                         /*is_notification=*/false);
   // |this| may be deleted at this point.
 }
 
@@ -588,7 +591,8 @@ void DevToolsSession::DispatchProtocolNotification(
     blink::mojom::RendererOriginatingSessionStatePtr updates) {
   ApplySessionStateUpdates(std::move(updates));
   DispatchProtocolResponseOrNotification(client_, agent_host_,
-                                         std::move(message), session_id_);
+                                         std::move(message), session_id_,
+                                         /*is_notification=*/true);
   // |this| may be deleted at this point.
 }
 
@@ -744,8 +748,9 @@ DevToolsSession* DevToolsSession::GetSessionById(const std::string& session_id) 
 }
 
 // static
-bool DevToolsSession::ValidateSessionId(const std::string& expected_session_id,
-                                        base::span<const uint8_t> message) {
+bool DevToolsSession::ValidateMessage(const std::string& expected_session_id,
+                                      const bool expected_has_id,
+                                      base::span<const uint8_t> message) {
   std::vector<uint8_t> cbor_message;
   crdtp::span<uint8_t> span_message = crdtp::SpanFrom(message);
 
@@ -761,6 +766,12 @@ bool DevToolsSession::ValidateSessionId(const std::string& expected_session_id,
   crdtp::span<uint8_t> extracted_session_id =
       crdtp::cbor::GetString8ValueFromMap(span_message,
                                           crdtp::SpanFrom("sessionId"));
+
+  if (!expected_has_id &&
+      crdtp::cbor::HasKeyInMap(span_message, crdtp::SpanFrom("id"))) {
+    DLOG(ERROR) << "Expected no id in the message but received one";
+    return false;
+  }
 
   if (expected_session_id.empty()) {
     if (!extracted_session_id.empty()) {

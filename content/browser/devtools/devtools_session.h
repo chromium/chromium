@@ -17,6 +17,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "content/browser/devtools/protocol/protocol.h"
+#include "content/common/content_export.h"
 #include "content/public/browser/devtools_agent_host_client_channel.h"
 #include "content/public/browser/devtools_external_agent_proxy.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
@@ -60,6 +61,10 @@ class DevToolsSession : public protocol::FrontendChannel,
                         public content::DevToolsAgentHostClientChannel {
  public:
   static int GetRootSessionCount();
+  static CONTENT_EXPORT bool ValidateMessage(
+      const std::string& expected_session_id,
+      const bool expected_has_id,
+      base::span<const uint8_t> message);
 
   // For sessions attached to the Tab target, the mode is set to TabTarget.
   // For other sessions, the mode is inherited from the parent.
@@ -130,8 +135,6 @@ class DevToolsSession : public protocol::FrontendChannel,
                                       base::OnceClosure resume_callback);
   void DetachChildSession(const std::string& session_id);
   bool HasChildSession(const std::string& session_id);
-  static bool ValidateSessionId(const std::string& expected_session_id,
-                                base::span<const uint8_t> message);
   DevToolsSession* GetSessionById(const std::string& session_id);
   Mode session_mode() const { return mode_; }
 
@@ -227,7 +230,8 @@ class DevToolsSession : public protocol::FrontendChannel,
       DevToolsAgentHostClient* client,
       DevToolsAgentHostImpl* agent_host,
       blink::mojom::DevToolsMessagePtr message,
-      const std::string& session_id);
+      const std::string& session_id,
+      const bool& is_notification);
 
   // Merges the |updates| received from the renderer into session_state_cookie_.
   void ApplySessionStateUpdates(
