@@ -143,10 +143,6 @@ HeadlessBrowserContextImpl::GetAllWebContents() {
 }
 
 void HeadlessBrowserContextImpl::Close() {
-  while (!web_contents_map_.empty()) {
-    auto it = web_contents_map_.begin();
-    it->second->Close();
-  }
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   browser_->DestroyBrowserContext(this);
 }
