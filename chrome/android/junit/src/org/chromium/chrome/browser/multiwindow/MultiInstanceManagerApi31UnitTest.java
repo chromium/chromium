@@ -455,6 +455,23 @@ public class MultiInstanceManagerApi31UnitTest {
     }
 
     @Test
+    @EnableFeatures(ChromeFeatureList.ON_STARTUP_WINDOW_POLICY)
+    public void testAllocInstanceId_onStartupWindowPolicy_refrainsFromUsingExistingInstanceState() {
+        DeviceInfo.setIsDesktopForTesting(true);
+        // Allocate instance 0 and 1.
+        assertEquals(0, allocInstanceIndex(PASSED_ID_INVALID, mActivityPool[0]));
+        assertEquals(1, allocInstanceIndex(PASSED_ID_INVALID, mActivityPool[1]));
+
+        // Simulate closing a window from Android Recents.
+        removeTaskOnRecentsScreen(mActivityPool[1]);
+
+        // Normally, without ON_STARTUP_WINDOW_POLICY, allocating a new window here would reuse
+        // instance 1 because it has persistent state. With ON_STARTUP_WINDOW_POLICY enabled, it
+        // refrains from reusing instance 1 and allocates a brand-new unused index (2).
+        assertEquals(2, allocInstanceIndex(PASSED_ID_INVALID, mActivityPool[1]));
+    }
+
+    @Test
     @SuppressWarnings("DirectInvocationOnMock")
     public void testAllocInstanceId_removeTaskOnRecentScreen() {
         assertEquals(0, allocInstanceIndex(PASSED_ID_INVALID, mActivityTask56));

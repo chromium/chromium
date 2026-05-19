@@ -17301,6 +17301,21 @@
             ]
         }
     ],
+    "OnStartupWindowPolicy": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "OnStartupWindowPolicy"
+                    ]
+                }
+            ]
+        }
+    ],
     "OnTaskStatusCheck": [
         {
             "platforms": [

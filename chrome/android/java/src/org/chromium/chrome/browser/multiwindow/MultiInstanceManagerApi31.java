@@ -25,6 +25,7 @@ import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ApplicationStatus.ActivityStateListener;
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.Log;
 import org.chromium.base.TimeUtils;
 import org.chromium.base.metrics.RecordHistogram;
@@ -43,6 +44,7 @@ import org.chromium.chrome.browser.RecentlyClosedEntriesManagerTrackerFactory;
 import org.chromium.chrome.browser.app.tabmodel.TabModelOrchestrator;
 import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceState.MultiInstanceStateObserver;
@@ -438,6 +440,17 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
             if (ChromeMultiInstancePersistentStore.readMarkedForDeletion(i)) {
                 continue;
             }
+
+            boolean instanceExists = ChromeMultiInstancePersistentStore.hasInstance(i);
+            if (instanceExists
+                    && (DeviceInfo.isDesktop()
+                            && ChromeFeatureList.sOnStartupWindowPolicy.isEnabled())) {
+                // This supports updated default id allocation / startup behavior where a newly
+                // created activity will refrain from using existing instance state and will be
+                // created as a brand-new window instead.
+                continue;
+            }
+
             if (id == INVALID_WINDOW_ID
                     || ChromeMultiInstancePersistentStore.readLastAccessedTime(i)
                             > ChromeMultiInstancePersistentStore.readLastAccessedTime(id)) {
@@ -458,7 +471,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
                     continue;
                 }
                 id = i;
-                newInstanceIdAllocated = !ChromeMultiInstancePersistentStore.hasInstance(i);
+                newInstanceIdAllocated = !instanceExists;
                 allocationType =
                         newInstanceIdAllocated
                                 ? InstanceAllocationType.NEW_INSTANCE_NEW_TASK
