@@ -530,8 +530,10 @@ export const ComposeboxEmbedderMixin =
           this.inputState = inputState;
 
           const allowedTypes = this.inputState.allowedInputTypes;
+          const disabledTypes = this.inputState.disabledInputTypes || [];
           this.files.forEach((file, uuid) => {
-            if (!allowedTypes.includes(file.inputType)) {
+            if (!allowedTypes.includes(file.inputType) ||
+                disabledTypes.includes(file.inputType)) {
               this.deleteFile(uuid);
             }
           });
