@@ -255,6 +255,8 @@ class Generator(generator.Generator):
         "typemapped_structs": self._TypeMappedStructs(),
         "typemap_imports": self._TypeMapImports(),
         "converter_imports": self._ConverterImports(),
+        "webui_factory": self._FindWebUiFactory(),
+        "mojo_browser_proxy_import": self._GetMojoBrowserProxyImportPath(),
     }
 
   @staticmethod
@@ -479,17 +481,33 @@ class Generator(generator.Generator):
         imports += [make_import(kind.name)]
       return imports
     if mojom.IsInterfaceKind(kind):
-      # Typescript will output an error if types are included
-      # that are not used or are double included. Only include
-      # what is needed!
+      # TypeScript will output an error if types are included that are not used
+      # or are double included. Only include what is needed! For WebUI browser
+      # proxies, when a factory is present we know we explicitly need the core
+      # interface, remote, and receiver or callback router classes.
       imports = []
-      (imported_remote,
-       imported_receiver) = find_interface_imports(kind, self.module.interfaces)
+      webui_factory = self._FindWebUiFactory()
+      is_handler_for_factory = (webui_factory
+                                and webui_factory['handler_name'] == kind.name)
+      is_router_for_factory = (webui_factory
+                               and webui_factory['router_name'] == kind.name)
 
-      if imported_receiver:
-        imports.append(make_import(kind.name, 'PendingReceiver'))
-      if imported_remote:
+      if is_handler_for_factory:
+        imports.append(make_import(kind.name, 'Interface'))
         imports.append(make_import(kind.name, 'Remote'))
+        imports.append(make_import(kind.name, 'PendingReceiver'))
+      elif is_router_for_factory:
+        imports.append(make_import(kind.name, 'CallbackRouter'))
+        imports.append(make_import(kind.name, 'Remote'))
+        imports.append(make_import(kind.name, 'PendingReceiver'))
+      else:
+        (imported_remote,
+         imported_receiver) = find_interface_imports(kind,
+                                                     self.module.interfaces)
+        if imported_receiver:
+          imports.append(make_import(kind.name, 'PendingReceiver'))
+        if imported_remote:
+          imports.append(make_import(kind.name, 'Remote'))
       return imports
 
     assert False, kind.name
@@ -627,69 +645,119 @@ class Generator(generator.Generator):
       return "BigInt('{}')".format(int(text, 0))
     return text
 
-  def _GetJsModuleImports(self):
+  def _ResolveImportPath(self, import_full_path):
     this_module_path = _GetWebUiModulePath(self.module)
     this_module_is_shared = bool(this_module_path
                                  and _IsSharedModulePath(this_module_path))
-    imports = dict()
+    assert this_module_path is not None
 
     def strip_prefix(s, prefix):
       if s.startswith(prefix):
         return s[len(prefix):]
       return s
 
+    import_module_is_shared = _IsSharedModulePath(import_full_path)
+
+    # Some Mojo JS files are served from chrome://resources/, but not from
+    # chrome://resources/mojo/, for example from
+    # chrome://resources/cr_components/. Need to use absolute paths when
+    # referring to such files from other modules, so that TypeScript can
+    # correctly resolve them since they belong to a different ts_library()
+    # target compared to |this_module_path|.
+    import_module_is_in_chrome_resources = _IsAbsoluteChromeResourcesPath(
+        import_full_path)
+    use_absolute_path = import_module_is_in_chrome_resources and not \
+        import_module_is_shared
+
+    # Either we're a non-shared resource importing another non-shared
+    # resource, or we're a shared resource importing another shared
+    # resource. In both cases, we assume a relative import path will
+    # suffice.
+    use_relative_path = not use_absolute_path and \
+        import_module_is_shared == this_module_is_shared
+
+    if use_relative_path:
+      rel_path = urllib.request.pathname2url(
+          os.path.relpath(
+              strip_prefix(
+                  strip_prefix(import_full_path, _CHROME_SCHEME_PREFIX),
+                  _SHARED_MODULE_PREFIX),
+              strip_prefix(
+                  strip_prefix(this_module_path, _CHROME_SCHEME_PREFIX),
+                  _SHARED_MODULE_PREFIX)))
+      if not rel_path.startswith('.') and not rel_path.startswith('/'):
+        rel_path = './' + rel_path
+      return rel_path
+    else:
+      return strip_prefix(import_full_path, _CHROME_SCHEME_PREFIX)
+
+  def _GetJsModuleImports(self):
+    imports = dict()
+
     for spec, kind in self.module.imported_kinds.items():
-      assert this_module_path is not None
       base_path = _GetWebUiModulePath(kind.module)
       assert base_path is not None, \
           "No WebUI bindings found for dependency {0!r} imported by " \
               "{1!r}".format(kind.module, self.module)
-      import_path = '{}{}-webui.js'.format(base_path,
-                                           os.path.basename(kind.module.path))
-
-      import_module_is_shared = _IsSharedModulePath(import_path)
-      if this_module_is_shared:
-        assert import_module_is_shared, \
-            'Shared WebUI module "{}" cannot depend on non-shared WebUI ' \
-                'module "{}"'.format(self.module.path, kind.module.path)
-
-      # Some Mojo JS files are served from chrome://resources/, but not from
-      # chrome://resources/mojo/, for example from
-      # chrome://resources/cr_components/. Need to use absolute paths when
-      # referring to such files from other modules, so that TypeScript can
-      # correctly resolve them since they belong to a different ts_library()
-      # target compared to |this_module_path|.
-      import_module_is_in_chrome_resources = _IsAbsoluteChromeResourcesPath(
-          import_path)
-      use_absolute_path = import_module_is_in_chrome_resources and not \
-              import_module_is_shared
-
-      # Either we're a non-shared resource importing another non-shared
-      # resource, or we're a shared resource importing another shared
-      # resource. In both cases, we assume a relative import path will
-      # suffice.
-      use_relative_path = not use_absolute_path and \
-              import_module_is_shared == this_module_is_shared
-
-      if use_relative_path:
-        import_path = urllib.request.pathname2url(
-            os.path.relpath(
-                strip_prefix(strip_prefix(import_path, _CHROME_SCHEME_PREFIX),
-                             _SHARED_MODULE_PREFIX),
-                strip_prefix(
-                    strip_prefix(this_module_path, _CHROME_SCHEME_PREFIX),
-                    _SHARED_MODULE_PREFIX)))
-        if (not import_path.startswith('.')
-            and not import_path.startswith('/')):
-          import_path = './' + import_path
-      else:
-        # Import absolute imports from scheme-relative paths.
-        import_path = strip_prefix(import_path, _CHROME_SCHEME_PREFIX)
-
+      import_full_path = '{}{}-webui.js'.format(
+          base_path, os.path.basename(kind.module.path))
+      import_path = self._ResolveImportPath(import_full_path)
       if import_path not in imports:
         imports[import_path] = []
       imports[import_path].append(kind)
     return imports
+
+  def _GetMojoBrowserProxyImportPath(self):
+    return self._ResolveImportPath('//resources/mojo/mojo_browser_proxy.js')
+
+  def _FindWebUiFactory(self):
+
+    def get_ts_identifier(kind, suffix=''):
+      name = kind.name
+      if (kind.module != self.module):
+        name = self._GetNameInJsModule(kind)
+      return name + suffix
+
+    for interface in self.module.interfaces:
+      if not (interface.name.endswith('Factory')
+              or 'PageHandlerFactory' in interface.name):
+        continue
+
+      for method in interface.methods:
+        if len(method.parameters) != 2:
+          continue
+
+        p1 = method.parameters[0]
+        p2 = method.parameters[1]
+        if mojom.IsPendingRemoteKind(p1.kind) and mojom.IsPendingReceiverKind(
+            p2.kind):
+          router_kind = p1.kind.kind
+          handler_kind = p2.kind.kind
+          return {
+              'factory_interface':
+              get_ts_identifier(interface),
+              'factory_method':
+              generator.ToCamel(method.name, lower_initial=True),
+              'router_name':
+              router_kind.name,
+              'handler_name':
+              handler_kind.name,
+              'router_interface':
+              get_ts_identifier(router_kind, 'Interface'),
+              'router_remote':
+              get_ts_identifier(router_kind, 'Remote'),
+              'router_receiver':
+              get_ts_identifier(router_kind, 'PendingReceiver'),
+              'router_router':
+              get_ts_identifier(router_kind, 'CallbackRouter'),
+              'handler_interface':
+              get_ts_identifier(handler_kind, 'Interface'),
+              'handler_remote':
+              get_ts_identifier(handler_kind, 'Remote'),
+              'handler_receiver':
+              get_ts_identifier(handler_kind, 'PendingReceiver'),
+          }
+    return None
 
   def _GetStructsFromMethods(self):
     result = []

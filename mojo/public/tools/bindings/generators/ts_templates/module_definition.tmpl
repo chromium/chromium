@@ -7,6 +7,10 @@
     or enums|length > 0) -%}
 import {mojo} from '{{bindings_library_path}}';
 {%- endif %}
+{%- if webui_factory %}
+import {MojoBrowserProxyFactory} from '{{mojo_browser_proxy_import}}';
+import type {MojoBrowserProxy} from '{{mojo_browser_proxy_import}}';
+{%- endif %}
 
 {% for path, kinds in js_module_imports.items()|sort -%}
 import {
@@ -78,3 +82,8 @@ export const {{union.name}}Spec: { $: mojo.internal.MojomType } =
 {%  for union in unions %}
 {%-   include "union_definition.tmpl" %}
 {% endfor %}
+
+{%- if webui_factory %}
+{#--- WebUI Browser Proxy definition #}
+{%- include "webui_browser_proxy_definition.tmpl" %}
+{%- endif %}
