@@ -3038,7 +3038,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.OidcEnrollment.Interception.Funnel"
-    enum="OidcInterceptionFunnelStep" expires_after="2026-07-01">
+    enum="OidcInterceptionFunnelStep" expires_after="2027-05-01">
   <owner>xzonghan@chromium.org</owner>
   <owner>zmin@chromium.org</owner>
   <summary>
@@ -3048,7 +3048,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.OidcEnrollment.Interception.Result"
-    enum="OidcInterceptionResult" expires_after="2026-07-01">
+    enum="OidcInterceptionResult" expires_after="2027-05-01">
   <owner>xzonghan@chromium.org</owner>
   <owner>zmin@chromium.org</owner>
   <summary>
@@ -3059,7 +3059,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Enterprise.OidcEnrollment.ProfileCreation.Funnel.{IdentityType}"
-    enum="OidcProfileCreationFunnelStep" expires_after="2026-07-01">
+    enum="OidcProfileCreationFunnelStep" expires_after="2027-05-01">
   <owner>xzonghan@chromium.org</owner>
   <owner>zmin@chromium.org</owner>
   <summary>
@@ -3071,7 +3071,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Enterprise.OidcEnrollment.ProfileCreation.Result.{IdentityType}"
-    enum="OidcProfileCreationResult" expires_after="2026-07-01">
+    enum="OidcProfileCreationResult" expires_after="2027-05-01">
   <owner>xzonghan@chromium.org</owner>
   <owner>zmin@chromium.org</owner>
   <summary>
@@ -3083,7 +3083,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Enterprise.OidcEnrollment.{IdentityType}.PolicyFetchLatency.{Result}"
-    units="ms" expires_after="2026-07-01">
+    units="ms" expires_after="2027-05-01">
   <owner>xzonghan@chromium.org</owner>
   <owner>zmin@chromium.org</owner>
   <summary>
@@ -3100,7 +3100,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Enterprise.OidcEnrollment.{IdentityType}.RegistrationLatency.{Result}"
-    units="ms" expires_after="2026-07-01">
+    units="ms" expires_after="2027-05-01">
   <owner>xzonghan@chromium.org</owner>
   <owner>zmin@chromium.org</owner>
   <summary>
