@@ -264,13 +264,18 @@ bool AudioBufferSourceHandler::RenderFromBuffer(
   uint32_t buffer_length = shared_buffer_->length();
   double buffer_sample_rate = shared_buffer_->sampleRate();
 
-  // Avoid converting from time to sample-frames twice by computing
-  // the grain end time first before computing the sample frame.
-  unsigned end_frame =
-      is_grain_
-          ? base::saturated_cast<uint32_t>(audio_utilities::TimeToSampleFrame(
-                grain_offset_ + grain_duration_, buffer_sample_rate))
-          : buffer_length;
+  // Calculate the end_frame, the physical read boundary within the buffer.
+  // We only restrict the read boundary if a specific duration was requested
+  // and we are NOT looping. (In the looping case, the duration acts only
+  // as a stopwatch for when to stop playing, not a boundary for reading).
+  unsigned end_frame;
+  if (is_grain_ && is_duration_given_ && !Loop()) {
+    end_frame =
+        base::saturated_cast<uint32_t>(audio_utilities::TimeToSampleFrame(
+            grain_offset_ + grain_duration_, buffer_sample_rate));
+  } else {
+    end_frame = buffer_length;
+  }
 
   // Do some sanity checking.
   if (end_frame > buffer_length) {
