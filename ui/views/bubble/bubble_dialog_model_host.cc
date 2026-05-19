@@ -1016,6 +1016,12 @@ bool BubbleDialogModelHost::OnCloseRequested(
   return BubbleDialogDelegate::OnCloseRequested(close_reason);
 }
 
+bool BubbleDialogModelHost::ShouldAllowKeyEventsDuringInputProtection() const {
+  return model_
+             ? !model_->enable_input_protection(DialogModelHost::GetPassKey())
+             : true;
+}
+
 BubbleDialogModelHost::~BubbleDialogModelHost() {
   // Detach ContentsView as it's referring to state that's about to be
   // destroyed.

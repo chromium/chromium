@@ -480,4 +480,27 @@ TEST_F(BubbleDialogModelHostTest, DisableCloseOnEscape) {
   EXPECT_TRUE(bubble_widget->IsClosed());
 }
 
+TEST_F(BubbleDialogModelHostTest, ShouldAllowKeyEventsDuringInputProtection) {
+  std::unique_ptr<Widget> anchor_widget = CreateTestWidget(
+      Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_WINDOW);
+  anchor_widget->Show();
+
+  std::unique_ptr<ui::DialogModel> dialog_model_default =
+      ui::DialogModel::Builder().AddOkButton(base::DoNothing()).Build();
+  auto host_default = std::make_unique<BubbleDialogModelHost>(
+      std::move(dialog_model_default), anchor_widget->GetContentsView(),
+      BubbleBorder::Arrow::TOP_RIGHT);
+  EXPECT_TRUE(host_default->ShouldAllowKeyEventsDuringInputProtection());
+
+  std::unique_ptr<ui::DialogModel> dialog_model_false =
+      ui::DialogModel::Builder()
+          .AddOkButton(base::DoNothing())
+          .SetEnableInputProtection(true)
+          .Build();
+  auto host_false = std::make_unique<BubbleDialogModelHost>(
+      std::move(dialog_model_false), anchor_widget->GetContentsView(),
+      BubbleBorder::Arrow::TOP_RIGHT);
+  EXPECT_FALSE(host_false->ShouldAllowKeyEventsDuringInputProtection());
+}
+
 }  // namespace views

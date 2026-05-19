@@ -159,7 +159,8 @@ void DigitalIdentitySafetyInterstitialControllerDesktop::ShowInterstitialImpl(
       .SetTitle(l10n_util::GetStringUTF16(
           IDS_WEB_DIGITAL_CREDENTIALS_INTERSTITIAL_DIALOG_TITLE))
       .AddParagraph(ui::DialogModelLabel(body_text))
-      .SetInitiallyFocusedField(kContinueButtonId);
+      .SetInitiallyFocusedField(kContinueButtonId)
+      .SetEnableInputProtection(true);
 
   if (was_request_aborted) {
     dialog_model_builder.AddParagraph(

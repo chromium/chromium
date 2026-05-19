@@ -117,6 +117,7 @@ class VIEWS_EXPORT BubbleDialogModelHost : public BubbleDialogDelegate,
   View* GetInitiallyFocusedView() override;
   void OnWidgetInitialized() override;
   bool OnCloseRequested(views::Widget::ClosedReason close_reason) override;
+  bool ShouldAllowKeyEventsDuringInputProtection() const override;
 
   // ui::DialogModelHost:
   void Close() override;

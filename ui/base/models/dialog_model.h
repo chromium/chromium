@@ -262,6 +262,11 @@ class COMPONENT_EXPORT(UI_BASE) DialogModel final {
       return *this;
     }
 
+    Builder& SetEnableInputProtection(bool enable) {
+      model_->enable_input_protection_ = enable;
+      return *this;
+    }
+
     // Disables the default behavior that the dialog closes when Escape is
     // pressed.
     // Only certain dialogs are allowed to change this properly, as it has
@@ -652,6 +657,10 @@ class COMPONENT_EXPORT(UI_BASE) DialogModel final {
     return close_on_escape_;
   }
 
+  bool enable_input_protection(base::PassKey<DialogModelHost>) const {
+    return enable_input_protection_;
+  }
+
   DialogModelSection* contents() { return &contents_; }
 
   DialogModelDelegate* delegate() { return delegate_.get(); }
@@ -675,6 +684,7 @@ class COMPONENT_EXPORT(UI_BASE) DialogModel final {
   std::optional<bool> override_show_close_button_;
   bool close_on_deactivate_ = true;
   bool close_on_escape_ = true;
+  bool enable_input_protection_ = false;
   std::string internal_name_;
   std::u16string title_;
   std::u16string accessible_title_;
