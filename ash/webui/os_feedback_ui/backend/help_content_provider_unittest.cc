@@ -9,7 +9,6 @@
 
 #include "ash/webui/os_feedback_ui/mojom/os_feedback_ui.mojom.h"
 #include "base/json/json_reader.h"
-#include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
@@ -223,7 +222,7 @@ TEST_F(HelpContentProviderTest, ResetReceiverOnBindInterface) {
   InitializeProvider(/*is_child_account=*/false);
   provider_remote_.reset();  // reset the binding done in Setup.
   provider_->BindInterface(provider_remote_.BindNewPipeAndPassReceiver());
-  base::RunLoop().RunUntilIdle();
+  provider_remote_.FlushForTesting();
 }
 
 }  // namespace feedback
