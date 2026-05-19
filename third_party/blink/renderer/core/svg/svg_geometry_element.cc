@@ -87,13 +87,25 @@ const CSSValue* SVGAnimatedPathLength::CssValue() const {
 SVGGeometryElement::SVGGeometryElement(const QualifiedName& tag_name,
                                        Document& document,
                                        ConstructionType construction_type)
-    : SVGGraphicsElement(tag_name, document, construction_type),
-      path_length_(MakeGarbageCollected<SVGAnimatedPathLength>(this)) {}
+    : SVGGraphicsElement(tag_name, document, construction_type) {}
+
+SVGAnimatedNumber& SVGGeometryElement::EnsurePathLength() const {
+  if (!path_length_) {
+    path_length_ = MakeGarbageCollected<SVGAnimatedPathLength>(
+        const_cast<SVGGeometryElement*>(this));
+  }
+  return *path_length_;
+}
+
+SVGAnimatedNumber* SVGGeometryElement::pathLength() const {
+  return &EnsurePathLength();
+}
 
 void SVGGeometryElement::SvgAttributeChanged(
     const SvgAttributeChangedParams& params) {
   const QualifiedName& attr_name = params.name;
   if (attr_name == svg_names::kPathLengthAttr) {
+    CHECK(path_length_);
     if (RuntimeEnabledFeatures::SvgPathLengthCssPropertyEnabled()) {
       UpdatePresentationAttributeStyle(*path_length_);
       return;
@@ -261,7 +273,7 @@ float SVGGeometryElement::AuthorPathLength() const {
     author_path_length = style->PathLength();
   } else {
     // Read from the animated SVG attribute directly.
-    if (!path_length_->IsSpecified()) {
+    if (!path_length_ || !path_length_->IsSpecified()) {
       return std::numeric_limits<float>::quiet_NaN();
     }
     author_path_length = path_length_->CurrentValue()->Value();
@@ -327,21 +339,24 @@ LayoutObject* SVGGeometryElement::CreateLayoutObject(const ComputedStyle&) {
 SVGAnimatedPropertyBase* SVGGeometryElement::PropertyFromAttribute(
     const QualifiedName& attribute_name) const {
   if (attribute_name == svg_names::kPathLengthAttr) {
-    return path_length_.Get();
+    return &EnsurePathLength();
   } else {
     return SVGGraphicsElement::PropertyFromAttribute(attribute_name);
   }
 }
 
 void SVGGeometryElement::SynchronizeAllSVGAttributes() const {
-  SVGAnimatedPropertyBase* attrs[]{path_length_.Get()};
-  SynchronizeListOfSVGAttributes(attrs);
+  if (path_length_) {
+    SVGAnimatedPropertyBase* attrs[]{path_length_.Get()};
+    SynchronizeListOfSVGAttributes(attrs);
+  }
   SVGGraphicsElement::SynchronizeAllSVGAttributes();
 }
 
 void SVGGeometryElement::CollectExtraStyleForPresentationAttribute(
     HeapVector<CSSPropertyValue, 8>& style) {
-  if (RuntimeEnabledFeatures::SvgPathLengthCssPropertyEnabled()) {
+  if (RuntimeEnabledFeatures::SvgPathLengthCssPropertyEnabled() &&
+      path_length_) {
     AddAnimatedPropertyToPresentationAttributeStyle(*path_length_, style);
   }
   SVGGraphicsElement::CollectExtraStyleForPresentationAttribute(style);
