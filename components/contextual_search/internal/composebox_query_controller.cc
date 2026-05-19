@@ -1173,6 +1173,13 @@ void ComposeboxQueryController::
         std::optional<std::string> page_title,
         std::optional<std::string> file_name,
         lens::ImageData image_data) {
+  // Validate that client-side image compression/encoding succeeded.
+  if (image_data.payload().image_bytes().empty()) {
+    std::move(callback).Run(
+        lens::LensOverlayServerRequest(),
+        contextual_search::ContextUploadErrorType::kImageProcessingError);
+    return;
+  }
   lens::LensOverlayServerRequest request;
   auto* objects_request = request.mutable_objects_request();
   objects_request->mutable_request_context()->mutable_request_id()->CopyFrom(

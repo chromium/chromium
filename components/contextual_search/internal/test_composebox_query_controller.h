@@ -77,6 +77,8 @@ class TestComposeboxQueryController : public ComposeboxQueryController {
   ~TestComposeboxQueryController() override;
 
   using ComposeboxQueryController::ClearClusterInfo;
+  using ComposeboxQueryController::
+      CreateFileUploadRequestProtoWithImageDataAndContinue;
 
   // Mutators.
   void set_fake_cluster_info_response(
