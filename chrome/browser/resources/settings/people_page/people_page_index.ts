@@ -57,7 +57,7 @@ export class SettingsPeoplePageIndexElement extends
     };
   }
 
-  declare prefs: {[key: string]: any};
+  declare prefs: Record<string, unknown>;
   declare private routes_: SettingsRoutes;
 
   declare private replaceSyncPromosWithSignInPromos_: boolean;

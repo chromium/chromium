@@ -54,6 +54,12 @@ suite('SyncSettings', function() {
       },
       safebrowsing:
           {enabled: {value: true}, scout_reporting_enabled: {value: true}},
+      spellcheck: {
+        dictionaries: {
+          type: chrome.settingsPrivate.PrefType.LIST,
+          value: [],
+        },
+      },
     };
 
     document.body.appendChild(syncPage);

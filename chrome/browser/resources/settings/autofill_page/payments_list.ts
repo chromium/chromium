@@ -156,7 +156,7 @@ export class SettingsPaymentsListElement extends PolymerElement {
   /**
    * @return Whether the list exists and has items.
    */
-  private hasSome_(list: any[]): boolean {
+  private hasSome_(list: unknown[]): boolean {
     return !!(list && list.length);
   }
 

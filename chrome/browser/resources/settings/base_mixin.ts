@@ -16,7 +16,7 @@ type Constructor<T> = new (...args: any[]) => T;
 
 export interface BaseMixinInterface {
   $$<E extends Element = Element>(query: string): E|null;
-  fire(eventName: string, detail?: any): void;
+  fire(eventName: string, detail?: unknown): void;
 }
 
 export const BaseMixin = dedupingMixin(
@@ -27,7 +27,7 @@ export const BaseMixin = dedupingMixin(
           return this.shadowRoot!.querySelector<E>(query);
         }
 
-        fire(eventName: string, detail?: any) {
+        fire(eventName: string, detail?: unknown) {
           this.dispatchEvent(new CustomEvent(
               eventName, {bubbles: true, composed: true, detail}));
         }

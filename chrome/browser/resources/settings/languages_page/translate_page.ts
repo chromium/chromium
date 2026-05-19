@@ -219,14 +219,14 @@ export class SettingsTranslatePageElement extends
   /**
    * @return Whether the list has any items.
    */
-  private hasSome_(list: any[]): boolean {
+  private hasSome_(list: unknown[]): boolean {
     return !!list.length;
   }
 
   /**
    * @return Whether the list is has the given length.
    */
-  private hasLength_(list: any[], length: number): boolean {
+  private hasLength_(list: unknown[], length: number): boolean {
     return list.length === length;
   }
 

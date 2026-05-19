@@ -142,7 +142,7 @@ class SettingsLanguagesElement extends SettingsLanguagesElementBase implements
     assert(!instance);
     instance = this;
 
-    const promises: Array<Promise<any>> = [];
+    const promises: Array<Promise<void>> = [];
 
     /**
      * An object passed into createModel to keep track of platform-specific

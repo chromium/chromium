@@ -160,7 +160,7 @@ export class SettingsAddressEditDialogElement extends
     // updated.
   }
 
-  private fire_(eventName: string, detail?: any): void {
+  private fire_(eventName: string, detail?: unknown): void {
     this.dispatchEvent(
         new CustomEvent(eventName, {bubbles: true, composed: true, detail}));
   }

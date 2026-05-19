@@ -47,7 +47,7 @@ export enum PermissionsRevocationType {
 
 export interface UnusedSitePermission {
   type: ContentSettingsTypes;
-  settingValue: any;
+  settingValue: unknown;
 }
 
 // The unused site permission information passed from safety_hub_handler.cc.

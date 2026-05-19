@@ -53,7 +53,7 @@ export class SettingsA11yPageIndexElement extends
     };
   }
 
-  declare prefs: {[key: string]: any};
+  declare prefs: Record<string, unknown>;
   declare private routes_: SettingsRoutes;
 
   override currentRouteChanged(newRoute: Route, oldRoute?: Route) {
