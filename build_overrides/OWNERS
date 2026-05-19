@@ -3,5 +3,6 @@ file://build/OWNERS
 machenbach@chromium.org
 mbonadei@chromium.org
 
+per-file crubit.gni=file://build/rust/OWNERS
 per-file partition_alloc.*=file://base/allocator/partition_allocator/OWNERS
 per-file pdfium.gni=file://pdf/OWNERS
