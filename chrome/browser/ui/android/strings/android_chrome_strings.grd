@@ -4309,10 +4309,10 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_MENU_STOP_IMAGE_DESCRIPTIONS" desc="Menu item to stop getting alt text accessibility image labels/descriptions [CHAR_LIMIT=27]">
         Stop image descriptions
       </message>
-      <message name="IDS_MENU_ADD_TAB_TO_GROUP" desc="Menu item for adding a tab to a tab group.">
+      <message name="IDS_MENU_ADD_TAB_TO_GROUP" desc="Menu item for adding a tab to a tab group. [CHAR_LIMIT=27]">
         Add tab to group
       </message>
-      <message name="IDS_MENU_ADD_TAB_TO_NEW_GROUP" desc="Menu item for adding a tab to a new tab group.">
+      <message name="IDS_MENU_ADD_TAB_TO_NEW_GROUP" desc="Menu item for adding a tab to a new tab group. [CHAR_LIMIT=27]">
         Add tab to new group
       </message>
       <message name="IDS_MENU_MOVE_TAB_TO_GROUP" desc="Menu item for moving a tab to another group.">
