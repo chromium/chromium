@@ -1210,19 +1210,6 @@ public class LocationBarMediatorTest {
     }
 
     @Test
-    public void testBackKeyPressed_fuseboxPopupShowing() {
-        mMediator.onFinishNativeInitialization();
-        mProfileSupplier.set(mProfile);
-        mMediator.onUrlFocusChange(true);
-
-        when(mFuseboxCoordinator.handleHidePopup()).thenReturn(true);
-
-        mMediator.backKeyPressed();
-        verify(mFuseboxCoordinator).handleHidePopup();
-        verify(mOverrideBackKeyBehaviorDelegate, never()).handleBackKeyPressed();
-    }
-
-    @Test
     @SuppressWarnings("DirectInvocationOnMock")
     public void testOnKey_right() {
         doReturn(KeyEvent.KEYCODE_DPAD_RIGHT).when(mKeyEvent).getKeyCode();

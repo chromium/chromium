@@ -33,6 +33,7 @@ import org.chromium.build.annotations.EnsuresNonNull;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.omnibox.FuseboxSessionState;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
@@ -118,6 +119,7 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
     private @Nullable BottomSheetRectProvider mBottomSheetRectProvider;
     private final Supplier<@Nullable View> mScrimAnchorViewSupplier;
     private final ScrimManager mScrimManager;
+    private final @Nullable BackPressManager mBackPressManager;
     private boolean mHasContextualTasksFocus;
 
     // Mediator is scoped to a particular profile. Can reuse as long as the profile does not change.
@@ -136,6 +138,7 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
      * @param templateUrlServiceSupplier The supplier of the template URL service.
      * @param snackbarManager The snackbar manager to show messages.
      * @param scrimAnchorViewSupplier Supplier for the view to anchor the scrim to.
+     * @param backPressManager The back press manager to register the back press handler.
      */
     public FuseboxCoordinator(
             Context context,
@@ -144,7 +147,8 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
             MonotonicObservableSupplier<TabModelSelector> tabModelSelectorSupplier,
             OneshotSupplier<TemplateUrlService> templateUrlServiceSupplier,
             SnackbarManager snackbarManager,
-            Supplier<@Nullable View> scrimAnchorViewSupplier) {
+            Supplier<@Nullable View> scrimAnchorViewSupplier,
+            @Nullable BackPressManager backPressManager) {
         mContext = context;
         mWindowAndroid = windowAndroid;
         mParent = parent;
@@ -156,6 +160,7 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
         mSnackbarManager = snackbarManager;
         mScrimAnchorViewSupplier = scrimAnchorViewSupplier;
         mFuseboxLayoutModeSupplier.set(getFuseboxLayoutMode());
+        mBackPressManager = backPressManager;
 
         if (!OmniboxFeatures.isMultimodalInputEnabled(context)
                 || parent.findViewById(R.id.fusebox_request_type) == null) {
@@ -267,7 +272,8 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
                         mSnackbarManager,
                         Clipboard.getInstance(),
                         mScrimManager,
-                        mScrimAnchorViewSupplier);
+                        mScrimAnchorViewSupplier,
+                        mBackPressManager);
         mMediator.onContextualTaskFocusChanged(mHasContextualTasksFocus);
         if (mLastBrandedColorScheme != null) {
             mMediator.updateVisualsForState(mLastBrandedColorScheme);

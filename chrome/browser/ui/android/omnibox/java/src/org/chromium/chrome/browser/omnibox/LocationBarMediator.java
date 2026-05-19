@@ -2505,10 +2505,6 @@ class LocationBarMediator
     // Traditional way to intercept keycode_back, which is deprecated from T.
     @Override
     public void backKeyPressed() {
-        if (mFuseboxCoordinator.handleHidePopup()) {
-            return;
-        }
-
         if (mBackKeyBehavior.handleBackKeyPressed()) {
             return;
         }

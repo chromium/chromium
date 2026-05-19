@@ -139,7 +139,8 @@ public class FuseboxCoordinatorUnitTest {
                         mTabModelSelectorSupplier,
                         mTemplateUrlServiceSupplier,
                         mSnackbarManager,
-                        /* scrimAnchorViewSupplier= */ () -> null);
+                        /* scrimAnchorViewSupplier= */ () -> null,
+                        /* backPressManager= */ null);
     }
 
     private FuseboxSessionState createSession() {

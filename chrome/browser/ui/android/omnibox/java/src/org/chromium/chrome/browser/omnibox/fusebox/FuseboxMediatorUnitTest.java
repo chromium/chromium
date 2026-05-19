@@ -65,6 +65,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.RobolectricUtil;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.FuseboxSessionState;
@@ -85,6 +86,8 @@ import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.browser_ui.util.ChromeItemPickerExtras;
 import org.chromium.components.browser_ui.util.ChromeItemPickerUtils;
+import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
+import org.chromium.components.browser_ui.widget.gesture.BackPressHandler.BackPressResult;
 import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
 import org.chromium.components.contextual_search.InputState;
 import org.chromium.components.feature_engagement.Tracker;
@@ -143,6 +146,7 @@ public class FuseboxMediatorUnitTest {
     @Mock private Tracker mTracker;
     @Mock private ScrimManager mScrimManager;
     @Mock private KeyboardVisibilityDelegate mKeyboardVisibilityDelegate;
+    @Mock private BackPressManager mBackPressManager;
 
     @Captor private ArgumentCaptor<Intent> mIntentCaptor;
 
@@ -229,7 +233,8 @@ public class FuseboxMediatorUnitTest {
                         mSnackbarManager,
                         mClipboard,
                         mScrimManager,
-                        () -> null);
+                        () -> null,
+                        mBackPressManager);
         mMediator.beginInput(createSession());
     }
 
@@ -667,6 +672,34 @@ public class FuseboxMediatorUnitTest {
 
         assertFalse(mMediator.handleHidePopup());
         assertEquals(PopupState.HIDDEN, (int) mModel.get(FuseboxProperties.POPUP_STATE));
+    }
+
+    @Test
+    public void testBackPressHandler() {
+        OmniboxFeatures.setShowBottomSheetPopupForTesting(true);
+        recreateMediator();
+        verify(mBackPressManager).addHandler(mMediator, BackPressHandler.Type.FUSEBOX_POPUP);
+
+        assertFalse(mMediator.getHandleBackPressChangedSupplier().get());
+
+        // Show popup toggles supplier to true.
+        mModel.get(FuseboxProperties.BUTTON_ADD_CLICKED).run();
+        assertTrue(mMediator.getHandleBackPressChangedSupplier().get());
+
+        // Handle back press hides popup and returns SUCCESS.
+        assertEquals(BackPressResult.SUCCESS, mMediator.handleBackPress());
+        assertFalse(mMediator.getHandleBackPressChangedSupplier().get());
+        assertEquals(PopupState.HIDDEN, (int) mModel.get(FuseboxProperties.POPUP_STATE));
+
+        mMediator.destroy();
+        verify(mBackPressManager).removeHandler(mMediator);
+    }
+
+    @Test
+    public void testBackPressHandler_inactive_returnsFailure() {
+        recreateMediator();
+        assertFalse(mMediator.getHandleBackPressChangedSupplier().get());
+        assertEquals(BackPressResult.FAILURE, mMediator.handleBackPress());
     }
 
     @Test

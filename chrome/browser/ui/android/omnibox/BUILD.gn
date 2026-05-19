@@ -598,6 +598,7 @@ robolectric_library("junit") {
     "//chrome/android:base_module_java",
     "//chrome/android:chrome_app_java_resources",
     "//chrome/browser/android/lifecycle:java",
+    "//chrome/browser/back_press/android:java",
     "//chrome/browser/browser_controls/android:java",
     "//chrome/browser/commerce/merchant_viewer/android:java",
     "//chrome/browser/composeplate/android:java",

@@ -27,11 +27,14 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
+import org.chromium.base.supplier.NonNullObservableSupplier;
+import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.build.annotations.EnsuresNonNullIf;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.FuseboxSessionState;
@@ -55,6 +58,7 @@ import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.util.ChromeItemPickerExtras;
 import org.chromium.components.browser_ui.util.ChromeItemPickerUtils;
+import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
 import org.chromium.components.browser_ui.widget.scrim.ScrimProperties;
 import org.chromium.components.contextual_search.InputState;
@@ -89,7 +93,7 @@ import java.util.function.Supplier;
 
 /** Mediator for the Fusebox component. */
 @NullMarked
-/* package */ class FuseboxMediator implements FuseboxAttachmentChangeListener {
+/* package */ class FuseboxMediator implements FuseboxAttachmentChangeListener, BackPressHandler {
     private final Context mContext;
     private final WindowAndroid mWindowAndroid;
     private final AndroidPermissionDelegate mPermissionDelegate;
@@ -108,6 +112,9 @@ import java.util.function.Supplier;
     private final ScrimManager mScrimManager;
     private final Supplier<@Nullable View> mScrimAnchorViewSupplier;
     private final SettableNonNullObservableSupplier<@PopupState Integer> mPopupStateSupplier;
+    private final @Nullable BackPressManager mBackPressManager;
+    private final SettableNonNullObservableSupplier<Boolean> mBackPressStateSupplier =
+            ObservableSuppliers.createNonNull(false);
 
     private boolean mIsTextWrapping;
     private boolean mHasContextualTasksFocus;
@@ -144,7 +151,8 @@ import java.util.function.Supplier;
             SnackbarManager snackbarManager,
             Clipboard clipboard,
             ScrimManager scrimManager,
-            Supplier<@Nullable View> scrimAnchorViewSupplier) {
+            Supplier<@Nullable View> scrimAnchorViewSupplier,
+            @Nullable BackPressManager backPressManager) {
         mContext = context;
         mWindowAndroid = windowAndroid;
         mPermissionDelegate = windowAndroid;
@@ -158,6 +166,7 @@ import java.util.function.Supplier;
         mClipboard = clipboard;
         mScrimManager = scrimManager;
         mScrimAnchorViewSupplier = scrimAnchorViewSupplier;
+        mBackPressManager = backPressManager;
 
         // Create the upload failed snackbar.
         mAttachmentUploadFailedSnackbar =
@@ -192,10 +201,16 @@ import java.util.function.Supplier;
 
         mModel.set(FuseboxProperties.POPUP_MODEL_DIVIDER_VISIBLE, false);
         mModel.set(FuseboxProperties.POPUP_MODEL_HEADER_VISIBLE, false);
+        if (mBackPressManager != null) {
+            mBackPressManager.addHandler(this, BackPressHandler.Type.FUSEBOX_POPUP);
+        }
     }
 
     /* package */ void destroy() {
         endInput();
+        if (mBackPressManager != null) {
+            mBackPressManager.removeHandler(this);
+        }
     }
 
     public boolean wasActionTaken() {
@@ -526,6 +541,7 @@ import java.util.function.Supplier;
                             .build();
             mScrimManager.showScrim(mScrimModel);
         }
+        mBackPressStateSupplier.set(true);
     }
 
     /** Hides the popup if currently shown */
@@ -552,7 +568,25 @@ import java.util.function.Supplier;
                 mWindowAndroid.getKeyboardDelegate().showKeyboard(focusedView);
             }
         }
+        mBackPressStateSupplier.set(false);
     }
+
+    // BackpressHandler implementation.
+
+    @Override
+    public @BackPressResult int handleBackPress() {
+        if (handleHidePopup()) {
+            return BackPressResult.SUCCESS;
+        }
+        return BackPressResult.FAILURE;
+    }
+
+    @Override
+    public NonNullObservableSupplier<Boolean> getHandleBackPressChangedSupplier() {
+        return mBackPressStateSupplier;
+    }
+
+    // end BackpressHandler implementation.
 
     private void updateModelForCurrentTab() {
         if (!isInInputSession()) return;

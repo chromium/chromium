@@ -51,7 +51,8 @@ public interface BackPressHandler {
         Type.ARCHIVED_TABS_DIALOG,
         Type.NATIVE_PAGE,
         Type.CANCEL_TAB_STRIP_DRAG,
-        Type.CANCEL_TAB_SWITCHER_DRAG
+        Type.CANCEL_TAB_SWITCHER_DRAG,
+        Type.FUSEBOX_POPUP
     })
     @Retention(RetentionPolicy.SOURCE)
     @interface Type {
@@ -59,27 +60,28 @@ public interface BackPressHandler {
         int XR_DELEGATE = 1;
         int SCENE_OVERLAY = 2;
         int BOTTOM_SHEET = 3;
-        int CANCEL_TAB_SWITCHER_DRAG = 4;
-        int ACTOR_OVERLAY = 5;
+        int FUSEBOX_POPUP = 4;
+        int CANCEL_TAB_SWITCHER_DRAG = 5;
+        int ACTOR_OVERLAY = 6;
         // Deprecated: int START_SURFACE = 5;
         // The archived tabs dialog is shown on top of the hub, so it must take priority.
-        int ARCHIVED_TABS_DIALOG = 6;
-        int HUB = 7;
+        int ARCHIVED_TABS_DIALOG = 7;
+        int HUB = 9;
         // Deprecated: int TAB_SWITCHER = 8;
         // Fullscreen must be before selection popup. crbug.com/1454817.
-        int FULLSCREEN = 9;
-        int SELECTION_POPUP = 10;
-        int MANUAL_FILLING = 11;
-        int CANCEL_TAB_STRIP_DRAG = 12;
-        int LOCATION_BAR = 14;
-        int TAB_MODAL_HANDLER = 15;
-        int CLOSE_WATCHER = 16;
-        int FIND_TOOLBAR = 17;
-        int BOTTOM_CONTROLS = 18;
-        int TAB_HISTORY = 19;
-        int NATIVE_PAGE = 20;
-        int SHOW_READING_LIST = 21;
-        int MINIMIZE_APP_AND_CLOSE_TAB = 22;
+        int FULLSCREEN = 10;
+        int SELECTION_POPUP = 11;
+        int MANUAL_FILLING = 12;
+        int CANCEL_TAB_STRIP_DRAG = 13;
+        int LOCATION_BAR = 15;
+        int TAB_MODAL_HANDLER = 16;
+        int CLOSE_WATCHER = 17;
+        int FIND_TOOLBAR = 18;
+        int BOTTOM_CONTROLS = 19;
+        int TAB_HISTORY = 20;
+        int NATIVE_PAGE = 21;
+        int SHOW_READING_LIST = 22;
+        int MINIMIZE_APP_AND_CLOSE_TAB = 23;
         int NUM_TYPES = MINIMIZE_APP_AND_CLOSE_TAB + 1;
     }
 
