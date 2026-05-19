@@ -11,6 +11,15 @@ load("./platform.star", "platform")
 def __step_config(ctx, step_config):
     # Denylist of tools that shouldn't run remotely.
     # TODO(http://b/513105742): Remove these scripts from list when missing inputs are fixed.
+    #
+    # How to remove a script from this list and enable remote execution:
+    # 1. Remove the script path from `python_scripts` (or other lists below).
+    # 2. Run a remote build for the target using strict remote mode to check for missing inputs:
+    #    autoninja -C out/Default -strict_remote -config=default-remote <target>
+    # 3. If the build fails due to missing inputs on RBE (e.g., helper scripts or assets):
+    #    - Fix this in the corresponding `BUILD.gn` (not in Siso star files) by adding the
+    #      missing files to the `inputs` list of the action target.
+    # 4. Re-build and verify the action succeeds remotely.
     python_scripts = [
         "base/win/embedded_i18n/create_string_rc.py",
         "build/modules/unified/generate_system_modulemap.py",
