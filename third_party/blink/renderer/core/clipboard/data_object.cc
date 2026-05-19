@@ -567,6 +567,11 @@ WebDragData DataObject::ToWebDragData(ExecutionContext* context) {
                     StrCat({"https://local/",
                             EncodeWithUrlEscapeSequences(file->name())});
                 binary_item.source_url = KURL(source_url);
+                String escaped_name = file->name();
+                escaped_name = escaped_name.Replace("\\", "\\\\");
+                escaped_name = escaped_name.Replace("\"", "\\\"");
+                binary_item.content_disposition =
+                    "attachment; filename=\"" + escaped_name + "\"";
               }
 
               const String& name = file->name();

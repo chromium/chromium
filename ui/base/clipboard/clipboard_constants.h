@@ -146,6 +146,11 @@ extern NSString* const kUTTypeWebKitWebUrlsWithTitles;
 COMPONENT_EXPORT(UI_BASE_CLIPBOARD_TYPES)
 extern NSString* const kUTTypeChromiumSourceUrl;
 
+// A type used to carry the Content-Disposition value (which encodes the
+// original filename) for file contents on the pasteboard during drag-and-drop.
+COMPONENT_EXPORT(UI_BASE_CLIPBOARD_TYPES)
+extern NSString* const kUTTypeChromiumContentDisposition;
+
 // UTI for dictionary containing bookmark structure consisting of individual
 // bookmark nodes and/or bookmark folders.
 COMPONENT_EXPORT(UI_BASE_CLIPBOARD_TYPES)

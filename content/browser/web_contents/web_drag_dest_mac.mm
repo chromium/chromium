@@ -7,12 +7,15 @@
 
 #include <AppKit/AppKit.h>
 #import <Carbon/Carbon.h>
+#include <UniformTypeIdentifiers/UniformTypeIdentifiers.h>
 
 #include <algorithm>
 #include <optional>
 
+#include "base/apple/bridging.h"
 #include "base/apple/foundation_util.h"
 #include "base/containers/span.h"
+#include "base/files/file_path.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/sys_string_conversions.h"
@@ -28,6 +31,8 @@
 #include "content/public/browser/web_contents_view_delegate.h"
 #include "content/public/browser/web_drag_dest_delegate.h"
 #include "content/public/common/drop_data.h"
+#include "net/base/filename_util.h"
+#include "net/base/mime_util.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "ui/base/clipboard/clipboard_constants.h"
 #include "ui/base/clipboard/clipboard_util_mac.h"
@@ -788,8 +793,68 @@ DropData PopulateDropDataFromPasteboard(NSPasteboard* pboard) {
     drop_data.html = base::SysNSStringToUTF16(html);
   }
 
-  // Get files.
+  // Get real files already on disk (e.g. files dragged from Finder). These are
+  // backed by actual file paths.
   drop_data.filenames = ui::clipboard_util::FilesFromPasteboard(pboard);
+
+  // Get promised file contents from pasteboard (e.g. JS File objects or images
+  // dragged from web content).
+  NSString* promiseContentType =
+      base::apple::CFToNSPtrCast(kPasteboardTypeFilePromiseContent);
+  NSData* fileData = nil;
+  NSString* contentTypeId = nil;
+  if ([types containsObject:promiseContentType]) {
+    contentTypeId = [pboard stringForType:promiseContentType];
+    if (contentTypeId && [types containsObject:contentTypeId]) {
+      fileData = [pboard dataForType:contentTypeId];
+    }
+  }
+  constexpr NSUInteger kMaxDragBinarySize = 256 * 1024 * 1024;  // 256 MB
+  if (fileData.length > 0 && fileData.length <= kMaxDragBinarySize) {
+    auto file_span = base::apple::NSDataToSpan(fileData);
+    drop_data.file_contents.assign(
+        base::as_string_view(base::as_chars(file_span)));
+
+    if (contentTypeId) {
+      UTType* utType = [UTType typeWithIdentifier:contentTypeId];
+      if (utType && utType.preferredFilenameExtension) {
+        drop_data.file_contents_filename_extension =
+            base::SysNSStringToUTF8(utType.preferredFilenameExtension);
+      }
+    }
+
+    // Mark as image-accessible for renderer-initiated drags so the
+    // renderer can expose the data to the drop target page.
+    drop_data.file_contents_image_accessible = true;
+
+    // Read content_disposition from pasteboard to recover the original
+    // filename for web-to-web drops.
+    NSString* disposition = nil;
+    if ([types containsObject:ui::kUTTypeChromiumContentDisposition]) {
+      disposition =
+          [pboard stringForType:ui::kUTTypeChromiumContentDisposition];
+    }
+    constexpr NSUInteger kMaxContentDispositionLength = 4096;
+    if (disposition.length > 0 &&
+        disposition.length <= kMaxContentDispositionLength) {
+      drop_data.file_contents_content_disposition =
+          base::SysNSStringToUTF8(disposition);
+      // Synthesize a file:// source URL from the content_disposition
+      // filename so the renderer can derive File.name from it.
+      // This matches what Windows does natively via
+      // CFSTR_FILEDESCRIPTORW.cFileName.
+      base::FilePath filename = net::GenerateFileName(
+          GURL(), drop_data.file_contents_content_disposition,
+          /*referrer_charset=*/std::string(),
+          /*suggested_name=*/std::string(),
+          /*mime_type=*/std::string(),
+          /*default_name=*/std::string());
+      if (!filename.empty()) {
+        drop_data.file_contents_source_url =
+            net::FilePathToFileURL(filename.BaseName());
+      }
+    }
+  }
 
   // Get custom MIME data.
   if ([types containsObject:ui::kUTTypeChromiumDataTransferCustomData]) {

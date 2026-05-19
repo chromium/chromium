@@ -162,6 +162,9 @@
           addObject:base::apple::CFToNSPtrCast(kPasteboardTypeFileURLPromise)];
       [writableTypes addObject:base::apple::CFToNSPtrCast(
                                    kPasteboardTypeFilePromiseContent)];
+      if (!_dropData.file_contents_content_disposition.empty()) {
+        [writableTypes addObject:ui::kUTTypeChromiumContentDisposition];
+      }
     }
   }
 
@@ -172,8 +175,9 @@
   // if there is an image flavor, don't put the HTML data on as HTML, but rather
   // put it on as this Chrome-only flavor.
   //
-  // (The only time that Blink fills in the DropData::file_contents is with
-  // an image drop, but the MIME time is tested anyway for paranoia's sake.)
+  // (Blink fills in DropData::file_contents for image drags from the page
+  // and for JS-constructed File objects. The MIME type is tested to avoid
+  // sending non-image data through the image-specific HTML pasteboard type.)
   bool hasImageData = !_dropData.file_contents.empty() && _fileType &&
                       [_fileType conformsToType:UTTypeImage];
   if (hasHTMLData) {
@@ -231,6 +235,11 @@
   if ([type isEqualToString:ui::kUTTypeUrlName]) {
     DCHECK(!_dropData.url_infos.empty());
     return base::SysUTF16ToNSString(_dropData.url_infos.front().title);
+  }
+
+  // Content-Disposition (carries the original filename for file contents).
+  if ([type isEqualToString:ui::kUTTypeChromiumContentDisposition]) {
+    return base::SysUTF8ToNSString(_dropData.file_contents_content_disposition);
   }
 
   // File contents.
