@@ -16,7 +16,6 @@ def __step_config(ctx, step_config):
         "build/modules/unified/generate_system_modulemap.py",
         "build/rust/gni_impl/rustc_print_cfg.py",
         "build/rust/gni_impl/write_rustflags.py",
-        "chrome/browser/resources/accessibility/tools/generate_manifest.py",
         "chrome/test/chromedriver/embed_mobile_devices_in_cpp.py",
         "components/autofill/core/browser/data_model/autofill_ai/transpile_entity_schema.py",
         "components/autofill/core/browser/form_parsing/transpile_regex_patterns.py",
