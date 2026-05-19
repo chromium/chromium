@@ -9,6 +9,7 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
+#include "base/check_op.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
@@ -244,6 +245,14 @@ void ProfileOAuth2TokenServiceDelegateAndroid::
     SeedAccountsThenReloadAllAccountsWithPrimaryAccount(
         const std::vector<AccountInfo>& accounts,
         const std::optional<CoreAccountId>& primary_account_id) {
+  // `LoadCredentials` should be invoked before SigninManagerImpl is created.
+  // Otherwise, it might create a weird situation when a sign-out needs to be
+  // triggered before `LoadCredentials` is invoked. In reality, this invariant
+  // should always be true, as `SigninManagerImpl depends on IdentityManager,
+  // which in turn triggers loading tokens in its creation process. This check
+  // ensures that this invariant doesn't change in the future.
+  CHECK_NE(fire_refresh_token_loaded_, RT_LOAD_NOT_START);
+
   // Seeds the accounts but doesn't remove the stale accounts from the
   // AccountTrackerService yet. We first need to send OnRefreshTokenRevoked
   // notifications for accounts being removed. Therefore we keep the accounts
@@ -301,17 +310,6 @@ void ProfileOAuth2TokenServiceDelegateAndroid::UpdateAccountList(
   if (fire_refresh_token_loaded_ == RT_WAIT_FOR_VALIDATION) {
     fire_refresh_token_loaded_ = RT_LOADED;
     FireRefreshTokensLoaded();
-  } else if (fire_refresh_token_loaded_ == RT_LOAD_NOT_START) {
-    // `LoadCredentials` should be invoked before SigninManagerImpl is created.
-    // Otherwise, it might create a weird situation when a sign-out needs to be
-    // triggered before `LoadCredentials` is invoked. In reality, this invariant
-    // should always be true, as `SigninManagerImpl depends on IdentityManager,
-    // which in turn triggers loading tokens in its creation process. This check
-    // ensures that this invariant doesn't change in the future.
-    //
-    // TODO(crbug.com/455610913): Remove `RT_HAS_BEEN_VALIDATED` after M147.
-    NOTREACHED(base::NotFatalUntil::M147);
-    fire_refresh_token_loaded_ = RT_HAS_BEEN_VALIDATED;
   }
 }
 
@@ -389,10 +387,7 @@ void ProfileOAuth2TokenServiceDelegateAndroid::LoadCredentialsInternal(
             load_credentials_state());
   set_load_credentials_state(
       signin::LoadCredentialsState::LOAD_CREDENTIALS_IN_PROGRESS);
-  if (fire_refresh_token_loaded_ == RT_HAS_BEEN_VALIDATED) {
-    fire_refresh_token_loaded_ = RT_LOADED;
-    FireRefreshTokensLoaded();
-  } else if (fire_refresh_token_loaded_ == RT_LOAD_NOT_START) {
+  if (fire_refresh_token_loaded_ == RT_LOAD_NOT_START) {
     fire_refresh_token_loaded_ = RT_WAIT_FOR_VALIDATION;
   }
 }

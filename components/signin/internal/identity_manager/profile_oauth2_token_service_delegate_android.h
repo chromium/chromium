@@ -96,7 +96,6 @@ class ProfileOAuth2TokenServiceDelegateAndroid
   enum RefreshTokenLoadStatus {
     RT_LOAD_NOT_START,
     RT_WAIT_FOR_VALIDATION,
-    RT_HAS_BEEN_VALIDATED,
     RT_LOADED
   };
 
