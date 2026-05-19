@@ -657,8 +657,8 @@ void ActorFormFillingServiceImpl::GetSuggestions(
       requests.emplace_back();
       requests.back().requested_data = sub_request.requested_data;
       requests.back().request_origin = origin;
-      // TODO(crbug.com/502157873): Forward section_label from FillRequest to
-      // ActorFormFillingRequest.
+      // TODO(crbug.com/502158215): Integrate form-splitting with section label.
+      requests.back().section_label = fill_request.section_label;
       requests.back().suggestions.reserve(
           suggestion_data.suggestions_with_fill_data.size());
       suggestion_trigger_field_id_.emplace_back(

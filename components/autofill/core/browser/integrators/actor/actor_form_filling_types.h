@@ -124,6 +124,7 @@ struct ActorFormFillingRequest {
   using RequestedData = ActorFormFillingRequestedData;
   RequestedData requested_data = RequestedData::kUnknown;
   url::Origin request_origin;
+  std::string section_label;
   std::vector<ActorSuggestion> suggestions;
 };
 

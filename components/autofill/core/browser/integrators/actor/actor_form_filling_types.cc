@@ -79,7 +79,7 @@ ActorFormFillingRequest::~ActorFormFillingRequest() = default;
 std::ostream& operator<<(std::ostream& os,
                          const ActorFormFillingRequest& request) {
   os << "ActorFormFillingRequest(requested_data=" << request.requested_data
-     << ", suggestions=[";
+     << ", section_label=" << request.section_label << ", suggestions=[";
   for (const auto& suggestion : request.suggestions) {
     os << suggestion << ", ";
   }

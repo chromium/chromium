@@ -109,30 +109,39 @@ IsActorFormFillingRequestWithOrigin(const url::Origin request_origin) {
                request_origin);
 }
 
+[[nodiscard]] Matcher<ActorFormFillingRequest>
+IsActorFormFillingRequestWithSectionLabel(const std::string& section_label) {
+  return Field("section_label", &ActorFormFillingRequest::section_label,
+               section_label);
+}
+
 // Returns a fill-request with a non-sensical (because null) field id.
 FillRequest UnfindableFillRequest() {
   return {ActorFormFillingRequest::RequestedData::kAddress, {FieldGlobalId()}};
 }
 
-FillRequest AddressFillRequest(std::vector<FieldGlobalId> field_ids) {
+FillRequest AddressFillRequest(std::vector<FieldGlobalId> field_ids,
+                               std::string section_label = "") {
   return {ActorFormFillingRequest::RequestedData::kAddress,
-          std::move(field_ids)};
+          std::move(field_ids), std::move(section_label)};
 }
 
-FillRequest CreditCardFillRequest(std::vector<FieldGlobalId> field_ids) {
+FillRequest CreditCardFillRequest(std::vector<FieldGlobalId> field_ids,
+                                  std::string section_label = "") {
   return {ActorFormFillingRequest::RequestedData::kCreditCard,
-          std::move(field_ids)};
+          std::move(field_ids), std::move(section_label)};
 }
 
-FillRequest ContactInformationFillRequest(
-    std::vector<FieldGlobalId> field_ids) {
+FillRequest ContactInformationFillRequest(std::vector<FieldGlobalId> field_ids,
+                                          std::string section_label = "") {
   return {ActorFormFillingRequest::RequestedData::kContactInformation,
-          std::move(field_ids)};
+          std::move(field_ids), std::move(section_label)};
 }
 
-FillRequest BillingAddressFillRequest(std::vector<FieldGlobalId> field_ids) {
+FillRequest BillingAddressFillRequest(std::vector<FieldGlobalId> field_ids,
+                                      std::string section_label = "") {
   return {ActorFormFillingRequest::RequestedData::kBillingAddress,
-          std::move(field_ids)};
+          std::move(field_ids), std::move(section_label)};
 }
 
 // Returns the value that `group` would fill into a field with a certain `type`.
@@ -281,6 +290,22 @@ TEST_F(ActorFormFillingServiceTest, SpecificOriginAddressForm) {
   EXPECT_THAT(future.Get(),
               ValueIs(ElementsAre(IsActorFormFillingRequestWithOrigin(
                   url::Origin::Create(url)))));
+}
+
+// Tests that the section label is returned in the form filling request.
+TEST_F(ActorFormFillingServiceTest, SpecificSectionLabelAddressForm) {
+  FormData form = SeeForm({.fields = {{.server_type = NAME_FULL},
+                                      {.server_type = ADDRESS_HOME_LINE1}}});
+
+  GetSuggestionsFuture future;
+  service().GetSuggestions(tab(),
+                           {{ActorFormFillingRequest::RequestedData::kAddress,
+                             {form.fields()[0].global_id()},
+                             "My Section Label"}},
+                           future.GetCallback());
+  EXPECT_THAT(future.Get(),
+              ValueIs(ElementsAre(IsActorFormFillingRequestWithSectionLabel(
+                  "My Section Label"))));
 }
 
 // Tests that a suggestion is returned when invoking on a contact form and
@@ -494,6 +519,35 @@ TEST_F(ActorFormFillingServiceTest, MixedForm_SectionSplitting_Retargeting) {
   EXPECT_THAT(requests[1].suggestions[0].title,
               HasSubstr(base::UTF16ToUTF8(
                   GetFillValue(GetProfile1(), ADDRESS_HOME_LINE1))));
+}
+
+// Tests that the section label is propagated to both split requests.
+TEST_F(ActorFormFillingServiceTest,
+       MixedForm_SectionSplitting_SectionLabelPropagated) {
+  feature_list_.InitAndEnableFeature(
+      features::kAutofillActorFormFillingSplitOutContactInfo);
+
+  FormData split_form =
+      SeeForm({.fields = {{.server_type = NAME_FULL},
+                          {.server_type = EMAIL_ADDRESS},
+                          {.server_type = ADDRESS_HOME_LINE1},
+                          {.server_type = ADDRESS_HOME_CITY}}});
+
+  GetSuggestionsFuture split_future;
+  const std::string kSectionLabel = "My Test Section";
+  service().GetSuggestions(tab(),
+                           {{ActorFormFillingRequest::RequestedData::kAddress,
+                             {split_form.fields()[0].global_id()},
+                             kSectionLabel}},
+                           split_future.GetCallback());
+  // Should return two requests: CONTACT_INFORMATION and ADDRESS, both with
+  // label.
+  std::vector<ActorFormFillingRequest> split_requests =
+      split_future.Take().value();
+  EXPECT_THAT(
+      split_requests,
+      ElementsAre(IsActorFormFillingRequestWithSectionLabel(kSectionLabel),
+                  IsActorFormFillingRequestWithSectionLabel(kSectionLabel)));
 }
 
 // Tests that filling an "actor form" that is split across two Autofill forms

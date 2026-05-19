@@ -51,8 +51,6 @@ class ActorFormFillingService {
 
     ActorFormFillingRequest::RequestedData requested_data;
     std::vector<FieldGlobalId> trigger_fields;
-    // TODO(crbug.com/502157873): Forward section_label from FillRequest to
-    // ActorFormFillingRequest.
     std::string section_label;
   };
 
