@@ -414,7 +414,6 @@ TEST_F(BocaReceiverUntrustedPageHandlerTest, StartRequestedNoCodeThenWithCode) {
   url_loader_factory_.WaitForRequest(get_connection_url_);
   url_loader_factory_.SimulateResponseForPendingRequest(
       get_connection_url_.spec(), connection_info_no_code);
-  task_environment_.RunUntilIdle();
 
   url_loader_factory_.AddResponse(get_connection_url_.spec(),
                                   CreateConnectionInfo(kConnectionId));
