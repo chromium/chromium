@@ -26037,7 +26037,8 @@
         {
             "platforms": [
                 "linux",
-                "mac"
+                "mac",
+                "windows"
             ],
             "experiments": [
                 {
