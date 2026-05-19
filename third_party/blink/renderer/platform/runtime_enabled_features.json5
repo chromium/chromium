@@ -4843,6 +4843,12 @@
       name: "RenderPriorityAttribute",
     },
     {
+      // Kill switch for painting non-SVG replaced normal-flow stacking
+      // contexts inline with their siblings.
+      name: "ReplacedNormalFlowStackingInlinePaint",
+      status: "stable",
+    },
+    {
       name: "ReportFirstFrameTimeAsRenderTime",
       status: "test",
     },

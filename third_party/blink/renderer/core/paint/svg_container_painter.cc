@@ -13,8 +13,9 @@
 #include "third_party/blink/renderer/core/layout/svg/svg_layout_support.h"
 #include "third_party/blink/renderer/core/paint/object_painter.h"
 #include "third_party/blink/renderer/core/paint/paint_info.h"
+#include "third_party/blink/renderer/core/paint/paint_layer.h"
+#include "third_party/blink/renderer/core/paint/paint_layer_painter.h"
 #include "third_party/blink/renderer/core/paint/scoped_svg_paint_state.h"
-#include "third_party/blink/renderer/core/paint/svg_foreign_object_painter.h"
 #include "third_party/blink/renderer/core/paint/svg_model_object_painter.h"
 #include "third_party/blink/renderer/core/paint/svg_object_painter.h"
 #include "third_party/blink/renderer/core/svg/svg_svg_element.h"
@@ -134,8 +135,9 @@ void SVGContainerPainter::Paint(const PaintInfo& paint_info) {
       for (LayoutObject* child = layout_svg_container_.FirstChild(); child;
            child = child->NextSibling()) {
         if (auto* foreign_object = DynamicTo<LayoutSVGForeignObject>(child)) {
-          SVGForeignObjectPainter(*foreign_object)
-              .PaintLayer(paint_info_before_filtering);
+          PaintLayerPainter(*foreign_object->Layer())
+              .PaintLayerForReplacedNormalFlowStackingContext(
+                  paint_info_before_filtering);
         } else {
           child->Paint(child_paint_info);
         }

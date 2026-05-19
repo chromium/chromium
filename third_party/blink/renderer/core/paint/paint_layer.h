@@ -262,6 +262,7 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
   bool HitTest(const HitTestLocation& location,
                HitTestResult&,
                const PhysicalRect& hit_test_area);
+  bool HitTestReplacedNormalFlowInline(HitTestResult&, const HitTestLocation&);
 
   using InlineEdge = LogicalStaticPosition::InlineEdge;
   using BlockEdge = LogicalStaticPosition::BlockEdge;
@@ -522,6 +523,14 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
   // https://chromium.googlesource.com/chromium/src.git/+/main/third_party/blink/renderer/core/paint/README.md
   // for the definition of a replaced normal-flow stacking element.
   bool IsReplacedNormalFlowStackingContext() const;
+
+  // Returns true if this replaced normal-flow stacking context should be
+  // painted inline by its parent's content painter via
+  // PaintLayerForReplacedNormalFlowStackingContext rather than in
+  // PaintChildren. Floated and fragmented elements are excluded because
+  // they have their own paint phases or require PaintChildren's full
+  // fragment context.
+  bool ShouldPaintReplacedNormalFlowInline() const;
 
 #if DCHECK_IS_ON()
   bool LayerListMutationAllowed() const { return layer_list_mutation_allowed_; }

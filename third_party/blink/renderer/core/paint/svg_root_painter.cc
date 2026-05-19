@@ -7,7 +7,8 @@
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_foreign_object.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_root.h"
 #include "third_party/blink/renderer/core/paint/paint_info.h"
-#include "third_party/blink/renderer/core/paint/svg_foreign_object_painter.h"
+#include "third_party/blink/renderer/core/paint/paint_layer.h"
+#include "third_party/blink/renderer/core/paint/paint_layer_painter.h"
 #include "third_party/blink/renderer/core/svg/svg_svg_element.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
@@ -80,7 +81,8 @@ void SVGRootPainter::PaintReplaced(const PaintInfo& paint_info,
   for (LayoutObject* child = layout_svg_root_.FirstChild(); child;
        child = child->NextSibling()) {
     if (auto* foreign_object = DynamicTo<LayoutSVGForeignObject>(child)) {
-      SVGForeignObjectPainter(*foreign_object).PaintLayer(paint_info);
+      PaintLayerPainter(*foreign_object->Layer())
+          .PaintLayerForReplacedNormalFlowStackingContext(paint_info);
     } else {
       child->Paint(paint_info);
     }

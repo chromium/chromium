@@ -157,8 +157,6 @@ blink_core_sources_paint = [
   "svg_background_paint_context.h",
   "svg_container_painter.cc",
   "svg_container_painter.h",
-  "svg_foreign_object_painter.cc",
-  "svg_foreign_object_painter.h",
   "svg_image_painter.cc",
   "svg_image_painter.h",
   "svg_mask_painter.cc",

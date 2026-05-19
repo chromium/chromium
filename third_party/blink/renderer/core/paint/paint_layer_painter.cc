@@ -143,6 +143,25 @@ scoped_refptr<cc::ViewTransitionContentLayer> GetTransitionScopeSnapshotLayer(
 
 }  // namespace
 
+void PaintLayerPainter::PaintLayerForReplacedNormalFlowStackingContext(
+    const PaintInfo& paint_info) {
+  DCHECK(paint_layer_.ShouldPaintReplacedNormalFlowInline());
+
+  if (paint_info.phase != PaintPhase::kForeground &&
+      paint_info.phase != PaintPhase::kSelectionDragImage) {
+    return;
+  }
+
+  // Early out if pre-paint has not finished.
+  if (!paint_layer_.GetLayoutObject()
+           .FirstFragment()
+           .HasLocalBorderBoxProperties()) {
+    return;
+  }
+
+  Paint(paint_info.context, paint_info.GetPaintFlags());
+}
+
 bool PaintLayerPainter::PaintedOutputInvisible(const ComputedStyle& style) {
   if (style.HasNonInitialBackdropFilter())
     return false;
@@ -620,10 +639,12 @@ PaintResult PaintLayerPainter::PaintChildren(
 
   PaintLayerPaintOrderIterator iterator(&paint_layer_, children_to_visit);
   while (PaintLayer* child = iterator.Next()) {
-    // Painting of the whole subtree of an SVG foreignObject, including
-    // stacked children, is handled by SVGForeignObjectPainter, so don't
-    // paint stacked children here.
-    if (child->GetLayoutObject().IsSVGForeignObject()) {
+    // Replaced normal flow stacking contexts (like <video> and SVG
+    // <foreignObject>) are painted inline by their respective painters
+    // (BoxFragmentPainter or SVGRootPainter/SVGContainerPainter) to maintain
+    // correct paint order with siblings. Skip them here to avoid
+    // double-painting.
+    if (child->ShouldPaintReplacedNormalFlowInline()) {
       continue;
     }
 

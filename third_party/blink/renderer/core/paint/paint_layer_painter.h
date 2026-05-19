@@ -33,6 +33,11 @@ class CORE_EXPORT PaintLayerPainter {
   // clip to the bounds of damage rect if necessary.
   PaintResult Paint(GraphicsContext&, PaintFlags = PaintFlag::kNoFlag);
 
+  // Paints a replaced normal-flow stacking context (like <video> or SVG
+  // <foreignObject>) via its PaintLayer. Called inline by the parent's
+  // content painter to maintain correct paint order with siblings.
+  void PaintLayerForReplacedNormalFlowStackingContext(const PaintInfo&);
+
   // Returns true if the painted output of this PaintLayer and its children is
   // invisible and therefore can't impact painted output.
   static bool PaintedOutputInvisible(const ComputedStyle&);

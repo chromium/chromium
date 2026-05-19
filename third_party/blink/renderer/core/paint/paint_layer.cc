@@ -1046,7 +1046,7 @@ bool PaintLayer::HitTest(const HitTestLocation& hit_test_location,
 
   HitTestRecursionData recursion_data(hit_test_area, hit_test_location,
                                       hit_test_location);
-  PaintLayer* inside_layer = HitTestLayer(*this, /*container_fragment*/ nullptr,
+  PaintLayer* inside_layer = HitTestLayer(*this, /*container_fragment=*/nullptr,
                                           result, recursion_data);
   if (!inside_layer && IsRootLayer()) {
     bool fallback = false;
@@ -1086,6 +1086,28 @@ bool PaintLayer::HitTest(const HitTestLocation& hit_test_location,
   // Now return whether we were inside this layer (this will always be true for
   // the root layer).
   return inside_layer;
+}
+
+bool PaintLayer::HitTestReplacedNormalFlowInline(
+    HitTestResult& result,
+    const HitTestLocation& hit_test_location) {
+  DCHECK(ShouldPaintReplacedNormalFlowInline());
+
+  PaintLayer* transform_container = Parent();
+  while (transform_container && (!transform_container->GetLayoutObject()
+                                      .CanContainFixedPositionObjects() ||
+                                 !transform_container->GetLayoutObject()
+                                      .CanContainAbsolutePositionObjects())) {
+    transform_container = transform_container->Parent();
+  }
+  if (!transform_container) {
+    return false;
+  }
+
+  HitTestRecursionData recursion_data(hit_test_location.BoundingBox(),
+                                      hit_test_location, hit_test_location);
+  return HitTestLayer(*transform_container, /*container_fragment=*/nullptr,
+                      result, recursion_data) != nullptr;
 }
 
 Node* PaintLayer::EnclosingNode() const {
@@ -1861,6 +1883,16 @@ bool PaintLayer::IsReplacedNormalFlowStackingContext() const {
       GetLayoutObject().StyleRef());
 }
 
+bool PaintLayer::ShouldPaintReplacedNormalFlowInline() const {
+  if (!GetLayoutObject().IsSVGForeignObject() &&
+      !RuntimeEnabledFeatures::ReplacedNormalFlowStackingInlinePaintEnabled()) {
+    return false;
+  }
+
+  return IsReplacedNormalFlowStackingContext() &&
+         !GetLayoutObject().IsFloating() && !GetLayoutObject().IsFragmented();
+}
+
 PaintLayer* PaintLayer::HitTestChildren(
     PaintLayerIteration children_to_visit,
     const PaintLayer& transform_container,
@@ -1901,10 +1933,9 @@ PaintLayer* PaintLayer::HitTestChildren(
   auto hit_test_child =
       [&](PaintLayer* child_layer, bool overflow_controls_only,
           const HitTestRecursionData& recursion_data) -> bool {
-    // Hit-testing of the whole subtree of an SVG foreignObject, including
-    // stacked children, is handled by LayoutSVGForeignObject, so don't hit
-    // test stacked children here.
-    if (child_layer->GetLayoutObject().IsSVGForeignObject()) {
+    // Replaced normal flow stacking contexts are hit-tested inline by their
+    // respective layout painters to keep hit testing in sync with paint order.
+    if (child_layer->ShouldPaintReplacedNormalFlowInline()) {
       return false;
     }
 

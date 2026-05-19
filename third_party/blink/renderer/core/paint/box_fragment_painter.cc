@@ -50,6 +50,7 @@
 #include "third_party/blink/renderer/core/paint/paint_auto_dark_mode.h"
 #include "third_party/blink/renderer/core/paint/paint_info.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
+#include "third_party/blink/renderer/core/paint/paint_layer_painter.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/core/paint/paint_phase.h"
 #include "third_party/blink/renderer/core/paint/scoped_paint_state.h"
@@ -75,6 +76,21 @@
 namespace blink {
 
 namespace {
+
+// If |child_fragment| is a replaced normal-flow stacking context that should
+// be painted inline, paint it via its PaintLayer now.
+void MaybePaintReplacedNormalFlowInline(const PhysicalFragment& child_fragment,
+                                        const PaintInfo& paint_info) {
+  auto* layout_object = child_fragment.GetLayoutObject();
+  if (!layout_object || !layout_object->HasLayer()) {
+    return;
+  }
+  auto* layer = To<LayoutBoxModelObject>(layout_object)->Layer();
+  if (layer->ShouldPaintReplacedNormalFlowInline()) {
+    PaintLayerPainter(*layer).PaintLayerForReplacedNormalFlowStackingContext(
+        paint_info);
+  }
+}
 
 inline bool HasSelection(const LayoutObject* layout_object) {
   return layout_object->GetSelectionState() != SelectionState::kNone;
@@ -316,6 +332,33 @@ bool HitTestAllPhasesInFragment(const PhysicalBoxFragment& fragment,
 
   return BoxFragmentPainter(To<PhysicalBoxFragment>(fragment))
       .HitTestAllPhases(*result, hit_test_location, accumulated_offset);
+}
+
+bool HitTestReplacedNormalFlowInline(const PhysicalBoxFragment& child_fragment,
+                                     HitTestResult& result,
+                                     const HitTestLocation& hit_test_location,
+                                     PhysicalOffset accumulated_offset,
+                                     HitTestPhase phase) {
+  if (phase != HitTestPhase::kForeground) {
+    return false;
+  }
+
+  auto* layout_object = child_fragment.GetLayoutObject();
+  if (!layout_object || !layout_object->HasLayer()) {
+    return false;
+  }
+
+  auto* layer = To<LayoutBoxModelObject>(layout_object)->Layer();
+  if (!layer->ShouldPaintReplacedNormalFlowInline()) {
+    return false;
+  }
+
+  if (!child_fragment.MayIntersect(result, hit_test_location,
+                                   accumulated_offset)) {
+    return false;
+  }
+
+  return layer->HitTestReplacedNormalFlowInline(result, hit_test_location);
 }
 
 bool NodeAtPointInFragment(const PhysicalBoxFragment& fragment,
@@ -1068,8 +1111,13 @@ void BoxFragmentPainter::PaintBlockChildren(const PaintInfo& paint_info,
   for (const PhysicalFragmentLink& child : box_fragment_.Children()) {
     const PhysicalFragment& child_fragment = *child;
     DCHECK(child_fragment.IsBox());
-    if (child_fragment.HasSelfPaintingLayer() || child_fragment.IsFloating())
+    if (child_fragment.HasSelfPaintingLayer()) {
+      MaybePaintReplacedNormalFlowInline(child_fragment, paint_info);
       continue;
+    }
+    if (child_fragment.IsFloating()) {
+      continue;
+    }
     PaintBlockChild(child, paint_info, paint_info_for_descendants,
                     paint_offset);
   }
@@ -2081,8 +2129,16 @@ void BoxFragmentPainter::PaintBoxItem(const FragmentItem& item,
   DCHECK_EQ(&item, cursor.Current().Item());
   DCHECK_EQ(item.PostLayoutBoxFragment(), &child_fragment);
   DCHECK(!child_fragment.IsHiddenForPaint());
-  if (child_fragment.HasSelfPaintingLayer() || child_fragment.IsFloating())
+  if (child_fragment.HasSelfPaintingLayer()) {
+    // Replaced normal flow stacking contexts (like <video>) need to be painted
+    // inline to maintain correct paint order with siblings.
+    // They will be skipped in PaintLayerPainter::PaintChildren.
+    MaybePaintReplacedNormalFlowInline(child_fragment, paint_info);
     return;
+  }
+  if (child_fragment.IsFloating()) {
+    return;
+  }
 
   // Skip if this child does not intersect with CullRect.
   if (!paint_info.IntersectsCullRect(
@@ -2737,10 +2793,18 @@ bool BoxFragmentPainter::HitTestBlockChildren(
     if (block_child.IsLayoutObjectDestroyedOrMoved()) [[unlikely]] {
       continue;
     }
-    if (block_child.HasSelfPaintingLayer() || block_child.IsFloating())
-      continue;
-
     const PhysicalOffset child_offset = accumulated_offset + child.offset;
+
+    if (block_child.HasSelfPaintingLayer()) {
+      if (HitTestReplacedNormalFlowInline(
+              block_child, result, hit_test_location, child_offset, phase)) {
+        return true;
+      }
+      continue;
+    }
+    if (block_child.IsFloating()) {
+      continue;
+    }
 
     if (block_child.IsPaintedAtomically()) {
       if (phase != HitTestPhase::kForeground)
@@ -2824,6 +2888,15 @@ bool BoxFragmentPainter::HitTestItemsChildren(
     }
 
     if (item->HasSelfPaintingLayer()) {
+      if (const PhysicalBoxFragment* child_fragment = item->BoxFragment()) {
+        const PhysicalOffset child_offset =
+            hit_test.inline_root_offset + item->OffsetInContainerFragment();
+        if (HitTestReplacedNormalFlowInline(*child_fragment, *hit_test.result,
+                                            hit_test.location, child_offset,
+                                            hit_test.phase)) {
+          return true;
+        }
+      }
       cursor.MoveToPreviousSibling();
       continue;
     }
