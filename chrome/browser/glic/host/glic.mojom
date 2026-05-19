@@ -1869,6 +1869,8 @@ enum ExperimentalTriggeringUpdateType {
   kTerminalStopped = 4,
   // The interaction failed.
   kTerminalFailed = 5,
+  // The interaction yielded to the user.
+  [MinVersion=1] kYieldToUser = 6,
 };
 
 // Types of subscriber observations that may be observed.

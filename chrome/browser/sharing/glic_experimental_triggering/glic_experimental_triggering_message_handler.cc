@@ -7,6 +7,7 @@
 #include <memory>
 #include <optional>
 
+#include "base/containers/flat_map.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
@@ -289,6 +290,10 @@ class ExperimentalTriggeringUpdatesHandler
             break;
           case glic::mojom::ExperimentalTriggeringUpdateType::kTerminalFailed:
             SendTaskUpdateMessage(TaskUpdate::FAILED, TaskUpdate::ERROR_MESSAGE,
+                                  std::move(update->data));
+            break;
+          case glic::mojom::ExperimentalTriggeringUpdateType::kYieldToUser:
+            SendTaskUpdateMessage(TaskUpdate::YIELD, std::nullopt,
                                   std::move(update->data));
             break;
           case glic::mojom::ExperimentalTriggeringUpdateType::kUnknown:

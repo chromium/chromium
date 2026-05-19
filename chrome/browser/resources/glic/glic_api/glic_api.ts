@@ -3097,6 +3097,8 @@ export enum ExperimentalTriggeringUpdateType {
   TERMINAL_STOPPED = 4,
   // The interaction failed.
   TERMINAL_FAILED = 5,
+  // The interaction yielded to the user.
+  YIELD_TO_USER = 6,
 }
 
 ///////////////////////////////////////////////
