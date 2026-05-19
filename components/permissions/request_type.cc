@@ -371,8 +371,14 @@ std::optional<ContentSettingsType> RequestTypeToContentSettingsType(
     case RequestType::kWebAppInstallation:
       return ContentSettingsType::WEB_APP_INSTALLATION;
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-    default:
       // Not associated with a ContentSettingsType.
+    case RequestType::kDiskQuota:
+    case RequestType::kFileSystemAccess:
+    case RequestType::kIdentityProvider:
+    case RequestType::kMultipleDownloads:
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+    case RequestType::kRegisterProtocolHandler:
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
       return std::nullopt;
   }
 }
