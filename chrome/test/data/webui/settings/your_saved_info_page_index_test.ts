@@ -9,7 +9,7 @@ import {AiEnterpriseFeaturePrefName} from 'chrome://settings/lazy_load.js';
 import {CrSettingsPrefs, ModelExecutionEnterprisePolicyValue} from 'chrome://settings/settings.js';
 import type {SettingsPrefsElement, SettingsYourSavedInfoPageIndexElement} from 'chrome://settings/settings.js';
 import {loadTimeData, resetRouterForTesting, Router, routes} from 'chrome://settings/settings.js';
-import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertGT, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
@@ -94,6 +94,15 @@ suite('YourSavedInfoPageIndex', function() {
     const result = await index.searchContents('Payments');
     assertFalse(result.canceled);
     assertEquals(2, result.matchCount);
+    assertFalse(result.wasClearSearch);
+  });
+
+  // Test that no errors happen during search.
+  test('SearchNoErrors', async function() {
+    // Searching for 'a' is expected to return results in all sections.
+    const result = await index.searchContents('a');
+    assertGT(result.matchCount, 0);
+    assertFalse(result.canceled);
     assertFalse(result.wasClearSearch);
   });
 });
