@@ -9783,3 +9783,6 @@ crbug.com/502311300 webaudio/MediaStreamAudioSource/mediastreamaudiosourcenode-r
 
 # Gardener 2026-05-18
 crbug.com/514075904 [ Win11-arm64 ] virtual/text-antialias/emphasis-complex.html [ Failure Pass ]
+
+# TODO(crbug.com/475867727): Flaky. Reenable it.
+crbug.com/475867727 [ Mac15-arm64 ] http/tests/devtools/network/font-face.js [ Failure Pass ]
