@@ -615,6 +615,8 @@ class PLATFORM_EXPORT CanvasNon2DResourceProviderSharedImage
   bool IsSoftware() const { return is_software_; }
   bool IsGpuContextLost() const override;
 
+  SkSurface* GetSkSurface() const;
+
   // CanvasSnapshotProvider implementation:
   gfx::Size Size() const override { return size_; }
   viz::SharedImageFormat GetSharedImageFormat() const override {

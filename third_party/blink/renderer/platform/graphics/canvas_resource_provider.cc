@@ -2461,6 +2461,13 @@ size_t CanvasNon2DResourceProviderSharedImage::GetSize() const {
   return info.computeByteSize(info.minRowBytes());
 }
 
+SkSurface* CanvasNon2DResourceProviderSharedImage::GetSkSurface() const {
+  if (!surface_) {
+    surface_ = CreateSkSurface();
+  }
+  return surface_.get();
+}
+
 void CanvasNon2DResourceProviderSharedImage::RecordingCleared() {}
 
 void CanvasNon2DResourceProviderSharedImage::InitializeForRecording(
