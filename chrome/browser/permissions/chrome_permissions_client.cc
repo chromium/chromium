@@ -134,7 +134,14 @@ using permissions::PermissionRequestGestureType;
 
 #if BUILDFLAG(IS_ANDROID)
 bool ShouldUseQuietUI(content::WebContents* web_contents,
-                      ContentSettingsType type) {
+                      const permissions::PermissionRequest& request) {
+  if (request.GetGeolocationPromptType() ==
+      permissions::GeolocationPromptType::kUpgradeToPrecise) {
+    // We don't support quiet UI for upgrade prompts from approximate location
+    // to precise location.
+    return false;
+  }
+  ContentSettingsType type = request.GetContentSettingsType();
   auto* manager =
       permissions::PermissionRequestManager::FromWebContents(web_contents);
   if (type != ContentSettingsType::NOTIFICATIONS &&
@@ -883,9 +890,10 @@ bool ChromePermissionsClient::IsDseOrigin(
 std::unique_ptr<ChromePermissionsClient::PermissionMessageDelegate>
 ChromePermissionsClient::MaybeCreateMessageUI(
     content::WebContents* web_contents,
-    ContentSettingsType type,
+    const permissions::PermissionRequest& request,
     base::WeakPtr<permissions::PermissionPromptAndroid> prompt) {
-  if (ShouldUseQuietUI(web_contents, type) ||
+  ContentSettingsType type = request.GetContentSettingsType();
+  if (ShouldUseQuietUI(web_contents, request) ||
       // The quiet UI is enabled for both Notifications and Geolocation but the
       // Loud Clapper supports only Notifications.
       (type == ContentSettingsType::NOTIFICATIONS &&

@@ -198,7 +198,7 @@ bool PermissionsClient::IsDseOrigin(content::BrowserContext* browser_context,
 std::unique_ptr<PermissionsClient::PermissionMessageDelegate>
 PermissionsClient::MaybeCreateMessageUI(
     content::WebContents* web_contents,
-    ContentSettingsType type,
+    const PermissionRequest& request,
     base::WeakPtr<PermissionPromptAndroid> prompt) {
   return nullptr;
 }

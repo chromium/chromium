@@ -282,10 +282,10 @@ class PermissionsClient {
   // Allows the embedder to create a message UI to use as the
   // permission prompt. Returns the pointer to the message UI if the
   // message UI is successfully created, nullptr otherwise, e.g. if
-  // the messages-prompt is not supported for `type`.
+  // the messages-prompt is not supported for `request`.
   virtual std::unique_ptr<PermissionMessageDelegate> MaybeCreateMessageUI(
       content::WebContents* web_contents,
-      ContentSettingsType type,
+      const PermissionRequest& request,
       base::WeakPtr<PermissionPromptAndroid> prompt);
 
   using PermissionsUpdatedCallback = base::OnceCallback<void(bool)>;

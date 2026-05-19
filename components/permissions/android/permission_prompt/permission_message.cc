@@ -5,6 +5,7 @@
 #include "components/permissions/android/permission_prompt/permission_message.h"
 
 #include "base/memory/ptr_util.h"
+#include "components/permissions/permission_request.h"
 
 namespace {
 permissions::PermissionPromptDisposition permission_prompt_disposition =
@@ -18,8 +19,7 @@ PermissionMessage::PermissionMessage(content::WebContents* web_contents,
     : PermissionPromptAndroid(web_contents, delegate) {
   auto* permission_client = PermissionsClient::Get();
   message_delegate_ = permission_client->MaybeCreateMessageUI(
-      web_contents, GetContentSettingType(0u /* position */),
-      weak_factory_.GetWeakPtr());
+      web_contents, *delegate->Requests()[0], weak_factory_.GetWeakPtr());
 }
 
 PermissionMessage::~PermissionMessage() = default;

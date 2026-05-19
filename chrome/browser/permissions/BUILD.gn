@@ -282,6 +282,7 @@ source_set("unit_tests") {
 
   if (is_android) {
     sources += [
+      "chrome_permissions_client_unittest.cc",
       "permission_blocked_message_delegate_android_unittest.cc",
       "permission_update_message_controller_android_unittest.cc",
     ]
