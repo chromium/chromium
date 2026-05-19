@@ -57,8 +57,6 @@ struct AX_BASE_EXPORT AXActionData {
   // The request id of this action tracked by the client.
   int request_id = -1;
 
-  // Use enums from ax::mojom::ActionFlags
-  int flags = 0;
 
   // For an action that creates a selection, the selection anchor and focus
   // (see ax_tree_data.h for definitions).

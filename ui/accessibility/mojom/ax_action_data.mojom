@@ -18,7 +18,6 @@ struct AXActionData {
   // vice versa.
   int32 target_node_id;
   int32 request_id;
-  int32 flags;
   int32 anchor_node_id;
   int32 anchor_offset;
   int32 focus_node_id;

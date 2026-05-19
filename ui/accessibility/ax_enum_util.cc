@@ -1192,18 +1192,6 @@ const char* ToString(ax::mojom::Action action) {
   return "";
 }
 
-const char* ToString(ax::mojom::ActionFlags action_flags) {
-  switch (action_flags) {
-    case ax::mojom::ActionFlags::kNone:
-      return "none";
-    case ax::mojom::ActionFlags::kRequestImages:
-      return "requestImages";
-    case ax::mojom::ActionFlags::kRequestInlineTextBoxes:
-      return "requestInlineTextBoxes";
-  }
-
-  return "";
-}
 
 const char* ToString(ax::mojom::ScrollAlignment scroll_alignment) {
   switch (scroll_alignment) {

@@ -526,11 +526,6 @@ enum Action {
   [MinVersion=1] kSuspendMedia = 37,
 };
 
-enum ActionFlags {
-  kNone,
-  kRequestImages,
-  kRequestInlineTextBoxes,
-};
 
 // A list of valid values for the horizontal and vertical scroll alignment
 // arguments in |AXActionData|. These values control where a node is scrolled

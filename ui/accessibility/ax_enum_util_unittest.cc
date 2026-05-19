@@ -89,9 +89,6 @@ TEST(AXEnumUtilTest, Action) {
   TestEnumStringConversion<ax::mojom::Action>();
 }
 
-TEST(AXEnumUtilTest, ActionFlags) {
-  TestEnumStringConversion<ax::mojom::ActionFlags>();
-}
 
 TEST(AXEnumUtilTest, DefaultActionVerb) {
   TestEnumStringConversion<ax::mojom::DefaultActionVerb>();

@@ -32,8 +32,6 @@ AX_BASE_EXPORT ax::mojom::State StringToState(const std::string& state);
 // ax::mojom::Action
 AX_BASE_EXPORT const char* ToString(ax::mojom::Action action);
 
-// ax::mojom::ActionFlags
-AX_BASE_EXPORT const char* ToString(ax::mojom::ActionFlags action_flags);
 
 // ax::mojom::DefaultActionVerb
 AX_BASE_EXPORT const char* ToString(
