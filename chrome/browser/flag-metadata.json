@@ -927,6 +927,11 @@
     "expiry_milestone": 155
   },
   {
+    "name": "autofill-enable-ewallet-new-account-linking",
+    "owners": [ "nicluo@google.com", "hfizt@google.com" ],
+    "expiry_milestone": 160
+  },
+  {
     "name": "autofill-enable-fpan-risk-based-authentication",
     "owners": [ "junhuihe@google.com" ],
     "expiry_milestone": 152

@@ -1014,6 +1014,12 @@ inline constexpr char kAutofillEnableDownstreamCardAwarenessIphDescription[] =
     "When enabled, in-product help UI will be shown the first time a card "
     "added outside of Chrome appears in Autofill card suggestions.";
 
+inline constexpr char kAutofillEnableEwalletNewAccountLinkingName[] =
+    "Enable eWallet New Account Linking";
+inline constexpr char kAutofillEnableEwalletNewAccountLinkingDescription[] =
+    "When enabled, Chrome will sync eWallet creation options for unlinked "
+    "ewallets.";
+
 inline constexpr char kAutofillEnableNewAmexNetworkArtName[] =
     "Enable new American Express network art";
 inline constexpr char kAutofillEnableNewAmexNetworkArtDescription[] =

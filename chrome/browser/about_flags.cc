@@ -12947,6 +12947,12 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(chrome::android::kHomeButtonRemoval,
                                     kHomeButtonRemovalVariations,
                                     "HomeButtonRemoval")},
+    {"autofill-enable-ewallet-new-account-linking",
+     flag_descriptions::kAutofillEnableEwalletNewAccountLinkingName,
+     flag_descriptions::kAutofillEnableEwalletNewAccountLinkingDescription,
+     kOsAndroid,
+     FEATURE_VALUE_TYPE(
+         payments::facilitated::kEnableEwalletNewAccountLinking)},
 #endif
     // Add new entries above this line.
     // NOTE: Adding a new flag requires adding a corresponding entry to enum

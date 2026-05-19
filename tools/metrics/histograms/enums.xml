@@ -7684,6 +7684,7 @@ from previous Chrome versions.
   <int value="-2101337189" label="AutofillOffNoServerData:disabled"/>
   <int value="-2101101589" label="DynamicAimSubmit:disabled"/>
   <int value="-2101091929" label="MessagesForAndroidAdsBlocked:disabled"/>
+  <int value="-2100187755" label="EnableEwalletNewAccountLinking:disabled"/>
   <int value="-2100134911" label="SystemColorChooser:disabled"/>
   <int value="-2099608999" label="CrOSEnforceSystemAecNs:enabled"/>
   <int value="-2099486626" label="DownloadLater:enabled"/>
@@ -11735,6 +11736,7 @@ from previous Chrome versions.
   <int value="-783093620" label="WebViewHitTestInBlinkOnTouchStart:enabled"/>
   <int value="-782689039"
       label="FencedFramesCrossOriginAutomaticBeacons:enabled"/>
+  <int value="-782433986" label="EnableEwalletNewAccountLinking:enabled"/>
   <int value="-782193212"
       label="AutofillEnablePaymentsMandatoryReauth:enabled"/>
   <int value="-781625651"

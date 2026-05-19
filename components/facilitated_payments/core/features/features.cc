@@ -61,6 +61,11 @@ BASE_FEATURE(kEwalletPayments, base::FEATURE_ENABLED_BY_DEFAULT);
 // use and be redirected to the chosen app to complete the payment flow.
 BASE_FEATURE(kFacilitatedPaymentsEnableA2APayment,
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+// When enabled, Chrome will receive and cache eWallet creation options from
+// Chrome Sync.
+BASE_FEATURE(kEnableEwalletNewAccountLinking,
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace payments::facilitated
