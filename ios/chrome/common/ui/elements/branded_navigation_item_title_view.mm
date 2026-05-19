@@ -122,7 +122,12 @@
 - (UIImageView*)createLogoImageView {
   UIImageView* imageView = [[UIImageView alloc] init];
   imageView.translatesAutoresizingMaskIntoConstraints = NO;
-
+  [imageView
+      setContentCompressionResistancePriority:UILayoutPriorityRequired
+                                      forAxis:UILayoutConstraintAxisHorizontal];
+  [imageView
+      setContentCompressionResistancePriority:UILayoutPriorityRequired
+                                      forAxis:UILayoutConstraintAxisVertical];
   return imageView;
 }
 
