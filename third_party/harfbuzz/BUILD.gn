@@ -24,6 +24,42 @@ if (use_system_harfbuzz) {
     public_configs = [ ":harfbuzz_from_pkgconfig" ]
   }
 } else {
+  import("//build/rust/rust_bindgen_generator.gni")
+  import("//build/rust/rust_static_library.gni")
+
+  rust_bindgen_generator("hb_rs_generator") {
+    header = "src/src/hb.h"
+    output_name = "hb"
+    bindgen_flags = [
+      "allowlist-function=hb_.*",
+      "allowlist-type=hb_.*",
+      "no-copy=hb_.*",
+      "no-doc-comments",
+    ]
+    configs = [ ":harfbuzz_config" ]
+  }
+
+  rust_static_library("harfbuzz_rust") {
+    crate_name = "harfbuzz_rust"
+    crate_root = "src/src/rust/lib.rs"
+    sources = [
+      "src/src/rust/font.rs",
+      "src/src/rust/hb.rs",
+      "src/src/rust/lib.rs",
+      "src/src/rust/shape.rs",
+    ]
+    allow_unsafe = true
+    no_allocator_crate = true
+    edition = "2021"
+    features = [ "font" ]
+    bindgen_deps = [ ":hb_rs_generator" ]
+    deps = [
+      "//third_party/rust/font_types/v0_11:lib",
+      "//third_party/rust/read_fonts/v0_39:lib",
+      "//third_party/rust/skrifa/v0_42:lib",
+    ]
+  }
+
   config("harfbuzz_config") {
     include_dirs = [
       "src/src",
@@ -424,6 +460,7 @@ if (use_system_harfbuzz) {
       "HAVE_OT",
       "HAVE_ICU",
       "HAVE_ICU_BUILTIN",
+      "HAVE_FONTATIONS",
       "HB_NO_MMAP",
       "HB_NO_RESOURCE_FORK",
 
@@ -520,7 +557,10 @@ if (use_system_harfbuzz) {
 
     public_configs = [ ":harfbuzz_config" ]
 
-    deps = [ "//third_party/icu:icuuc" ]
+    deps = [
+      ":harfbuzz_rust",
+      "//third_party/icu:icuuc",
+    ]
 
     if (use_glib) {
       configs += [ "//build/config/linux:glib" ]
