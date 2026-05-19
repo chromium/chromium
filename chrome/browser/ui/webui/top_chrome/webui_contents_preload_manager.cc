@@ -469,9 +469,7 @@ RequestResult WebUIContentsPreloadManager::Request(
   preload_state->pending_request = false;
   // Non-preloaded WebUIs are logged by WebUIMainFrameObserver.
   if (preload_state->preloaded) {
-    webui::LogWebUIShown(web_contents_ret->GetSiteInstance()
-                             ->GetSecurityPrincipal()
-                             .GetDeprecatedSiteURL());
+    webui::LogWebUIShown(webui_url);
   }
 
   RequestResult result;
