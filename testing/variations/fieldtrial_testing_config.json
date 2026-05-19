@@ -4891,6 +4891,21 @@
             ]
         }
     ],
+    "ChromeEnableDnsPlatform": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ChromeEnableDnsPlatform"
+                    ]
+                }
+            ]
+        }
+    ],
     "ChromeOSARCVMLmkPerceptibleMinState": [
         {
             "platforms": [
