@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>
+      Test performance of ConvolverNode.
+    </title>
+    <script src="../resources/runner.js"></script>
+    <script src="resources/webaudio-perf-utils.js"></script>
+  </head>
+  <body>
+    <script>
+      function graphBuilder() {
+        const sampleRate = 48000;
+        const renderDuration = 1; // 1 second of audio
+        const context = new OfflineAudioContext(
+            2, sampleRate * renderDuration, sampleRate);
+
+        // 0.5 second impulse response
+        const irDuration = 0.5;
+        const irLength = sampleRate * irDuration;
+        const impulseResponse = context.createBuffer(2, irLength, sampleRate);
+
+
+        // Fill IR with white noise
+        for (let channel = 0;
+             channel < impulseResponse.numberOfChannels;
+             channel++) {
+          const data = impulseResponse.getChannelData(channel);
+          for (let i = 0; i < irLength; i++) {
+            data[i] = Math.random() * 2 - 1;
+          }
+        }
+
+        const source = new OscillatorNode(context);
+        const convolver = new ConvolverNode(context, {
+          buffer: impulseResponse,
+          disableNormalization: true
+        });
+
+        source.connect(convolver);
+        convolver.connect(context.destination);
+
+        source.start();
+        return context;
+      }
+
+      RunWebAudioPerfTest({
+        description:
+            'Test performance of ConvolverNode with 0.5s impulse ' +
+            'response (1s render)',
+        graphBuilder: graphBuilder,
+        tracingOptions: {
+          targetCategory: 'disabled-by-default-webaudio.audionode',
+          targetEvents: ['ConvolverHandler::Process'],
+        }
+      });
+    </script>
+  </body>
+</html>
