@@ -15,6 +15,7 @@
 #include "chrome/test/base/search_test_utils.h"
 #include "components/search_engines/template_url_service.h"
 #include "extensions/browser/extension_registrar.h"
+#include "extensions/browser/permissions/permissions_updater.h"
 #include "extensions/browser/ui_util.h"
 #include "extensions/common/extension_builder.h"
 
@@ -54,6 +55,8 @@ class SettingsOverriddenParamsProvidersUnitTest
                             std::move(chrome_url_overrides))
             .Build();
 
+    extensions::PermissionsUpdater(profile()).GrantActivePermissions(
+        extension.get());
     registrar()->AddExtension(extension);
     EXPECT_EQ(extension, ExtensionUrlOverrides::GetExtensionControllingURL(
                              chrome::ChromeUINewTabURLAsGURL(), profile()));

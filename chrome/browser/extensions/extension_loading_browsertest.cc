@@ -23,8 +23,10 @@
 #include "content/public/browser/devtools_agent_host.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "extensions/browser/disable_reason.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_host.h"
+#include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/process_manager.h"
 #include "extensions/common/manifest_handlers/background_info.h"
@@ -73,8 +75,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionLoadingTest,
   extension_dir.WriteFile(FILE_PATH_LITERAL("newtab.html"),
                           "<h1>Overridden New Tab Page</h1>");
 
-  const Extension* new_tab_extension =
-      InstallExtension(extension_dir.Pack(), 1 /*new install*/);
+  const Extension* new_tab_extension = InstallExtensionWithPermissionsGranted(
+      extension_dir.Pack(), 1 /*new install*/);
   ASSERT_TRUE(new_tab_extension);
 
   // Visit the New Tab Page to get a renderer using the extension into history.
@@ -109,7 +111,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionLoadingTest,
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionLoadingTest,
-                       UpgradeAddingNewTabPagePermissionNoPrompt) {
+                       UpgradeAddingNewTabPagePermissionDisablesExtension) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   TestExtensionDir extension_dir;
@@ -149,19 +151,22 @@ IN_PROC_BROWSER_TEST_F(ExtensionLoadingTest,
   extension_dir.WriteManifest(
       base::StringPrintf(kManifestTemplate, 2, kNtpOverrideString));
 
-  // Upgrade the extension, ensure that the upgrade 'worked' in the sense that
-  // the extension is still present and not disabled and that it now has the
-  // new API permission.
-  // TODO(robertshield): Update this once most of the population is on M62+
-  // and adding NTP permissions implies a permission upgrade.
-  new_tab_extension = UpdateExtension(
-      new_tab_extension->id(), extension_dir.Pack(), 0 /*expected upgrade*/);
+  std::string extension_id = new_tab_extension->id();
+
+  // Upgrade the extension, and ensure that adding NTP permissions implies a
+  // permission upgrade, so the extension is disabled.
+  UpdateExtension(extension_id, extension_dir.Pack(), -1 /*expected upgrade*/);
+
+  ExtensionRegistry* registry = ExtensionRegistry::Get(profile());
+  new_tab_extension = registry->disabled_extensions().GetByID(extension_id);
   ASSERT_NE(nullptr, new_tab_extension);
 
   EXPECT_TRUE(new_tab_extension->permissions_data()->HasAPIPermission(
       mojom::APIPermissionID::kNewTabPageOverride));
   EXPECT_THAT(new_tab_extension->version().components(),
               testing::ElementsAre(2));
+  EXPECT_TRUE(ExtensionPrefs::Get(profile())->HasDisableReason(
+      extension_id, disable_reason::DISABLE_PERMISSIONS_INCREASE));
 }
 
 // Tests the behavior described in http://crbug.com/41201916.

@@ -470,7 +470,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerRegistrationApiTest,
   const Extension* extension = nullptr;
   {
     ExtensionTestMessageListener listener("v1 ready");
-    extension = InstallExtension(crx_v1, 1);
+    extension = InstallExtensionWithPermissionsGranted(crx_v1, 1);
     ASSERT_TRUE(listener.WaitUntilSatisfied());
   }
 
@@ -1011,7 +1011,8 @@ IN_PROC_BROWSER_TEST_F(
   const Extension* extension_v1 = nullptr;
   {
     ExtensionTestMessageListener v1_install_listener_("v1 installed");
-    extension_v1 = InstallExtension(crx_v1_path, /*expected_change=*/1);
+    extension_v1 = InstallExtensionWithPermissionsGranted(
+        crx_v1_path, /*expected_change=*/1);
     SCOPED_TRACE("waiting for version 1 of the extension to install");
     ASSERT_TRUE(v1_install_listener_.WaitUntilSatisfied());
     ASSERT_EQ("1", extension_v1->version().GetString());

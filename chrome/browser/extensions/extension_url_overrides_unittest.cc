@@ -26,6 +26,7 @@
 #include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/mock_external_provider.h"
+#include "extensions/browser/permissions/permissions_updater.h"
 #include "extensions/browser/test_extension_registry_observer.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/api/chrome_url_overrides.h"
@@ -365,6 +366,7 @@ TEST_F(ExtensionWebUITest, TestNumExtensionsOverridingURL) {
                             std::move(chrome_url_overrides))
             .Build();
 
+    PermissionsUpdater(profile_.get()).GrantActivePermissions(extension.get());
     registrar()->AddExtension(extension.get());
     EXPECT_EQ(extension,
               ExtensionUrlOverrides::GetExtensionControllingURL(
