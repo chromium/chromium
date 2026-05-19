@@ -4,8 +4,14 @@
 
 #include "net/test/embedded_test_server/controllable_http_response.h"
 
+#include <memory>
+#include <string>
+#include <string_view>
+#include <utility>
+
 #include "base/check_op.h"
 #include "base/functional/bind.h"
+#include "base/strings/cstring_view.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
@@ -53,7 +59,7 @@ class Interceptor : public HttpResponse {
 };
 
 bool DoesRequestMatchURL(const HttpRequest& request,
-                         const std::string& relative_url,
+                         std::string_view relative_url,
                          bool relative_url_is_prefix) {
   return request.relative_url == relative_url ||
          (relative_url_is_prefix &&
@@ -95,26 +101,27 @@ void ControllableHttpResponse::WaitForRequest() {
 
 void ControllableHttpResponse::Send(
     net::HttpStatusCode http_status,
-    const std::string& content_type,
-    const std::string& content,
-    const std::vector<std::string>& cookies,
-    const std::vector<std::string>& extra_headers) {
+    base::cstring_view content_type,
+    std::string_view content,
+    base::span<const std::string> cookies,
+    base::span<const std::string> extra_headers) {
   TRACE_EVENT("test", "ControllableHttpResponse::Send", "http_status",
               http_status, "content_type", content_type, "content", content,
               "cookies", cookies);
   std::string content_data(base::StringPrintf(
       "HTTP/1.1 %d %s\nContent-type: %s\n", static_cast<int>(http_status),
       net::GetHttpReasonPhrase(http_status), content_type.c_str()));
-  for (auto& cookie : cookies)
+  for (const auto& cookie : cookies) {
     base::StrAppend(&content_data, {"Set-Cookie: ", cookie, "\n"});
-  for (auto& header : extra_headers)
-    content_data += header + "\n";
-  content_data += "\n";
-  content_data += content;
+  }
+  for (const auto& header : extra_headers) {
+    base::StrAppend(&content_data, {header, "\n"});
+  }
+  base::StrAppend(&content_data, {"\n", content});
   Send(content_data);
 }
 
-void ControllableHttpResponse::Send(const std::string& bytes) {
+void ControllableHttpResponse::Send(std::string_view bytes) {
   TRACE_EVENT("test", "ControllableHttpResponse::Send", "bytes", bytes);
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK_EQ(State::READY_TO_SEND_DATA, state_) << "Send() called without any "
@@ -163,7 +170,7 @@ std::unique_ptr<HttpResponse> ControllableHttpResponse::RequestHandler(
     base::WeakPtr<ControllableHttpResponse> controller,
     scoped_refptr<base::SingleThreadTaskRunner> controller_task_runner,
     bool* available,
-    const std::string& relative_url,
+    std::string_view relative_url,
     bool relative_url_is_prefix,
     const HttpRequest& request) {
   if (!*available)
@@ -197,7 +204,7 @@ ControllableHttpResponseManager::~ControllableHttpResponseManager() = default;
 std::unique_ptr<HttpResponse> ControllableHttpResponseManager::RequestHandler(
     base::WeakPtr<ControllableHttpResponseManager> controller,
     scoped_refptr<base::SingleThreadTaskRunner> controller_task_runner,
-    const std::string& relative_url,
+    std::string_view relative_url,
     bool relative_url_is_prefix,
     const HttpRequest& request) {
   if (DoesRequestMatchURL(request, relative_url, relative_url_is_prefix)) {

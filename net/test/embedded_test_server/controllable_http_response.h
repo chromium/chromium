@@ -7,12 +7,14 @@
 
 #include <memory>
 #include <string>
-#include <vector>
+#include <string_view>
 
+#include "base/containers/span.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "base/sequence_checker.h"
+#include "base/strings/cstring_view.h"
 #include "base/task/single_thread_task_runner.h"
 #include "net/http/http_status_code.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -47,14 +49,14 @@ class ControllableHttpResponse {
 
   // 2) Send raw response data in response to a request.
   //    May be called several time.
-  void Send(const std::string& bytes);
+  void Send(std::string_view bytes);
 
   // Same as 2) but with more specific parameters.
   void Send(net::HttpStatusCode http_status,
-            const std::string& content_type = std::string("text/html"),
-            const std::string& content = std::string(),
-            const std::vector<std::string>& cookies = {},
-            const std::vector<std::string>& extra_headers = {});
+            base::cstring_view content_type = "text/html",
+            std::string_view content = std::string_view(),
+            base::span<const std::string> cookies = {},
+            base::span<const std::string> extra_headers = {});
 
   // 3) Notify there are no more data to be sent and close the socket.
   void Done();
@@ -84,7 +86,7 @@ class ControllableHttpResponse {
       base::WeakPtr<ControllableHttpResponse> controller,
       scoped_refptr<base::SingleThreadTaskRunner> controller_task_runner,
       bool* available,
-      const std::string& relative_url,
+      std::string_view relative_url,
       bool relative_url_is_prefix,
       const HttpRequest& request);
 
@@ -133,7 +135,7 @@ class ControllableHttpResponseManager {
   static std::unique_ptr<HttpResponse> RequestHandler(
       base::WeakPtr<ControllableHttpResponseManager> controller,
       scoped_refptr<base::SingleThreadTaskRunner> controller_task_runner,
-      const std::string& relative_url,
+      std::string_view relative_url,
       bool relative_url_is_prefix,
       const HttpRequest& request);
 
@@ -152,4 +154,4 @@ class ControllableHttpResponseManager {
 
 }  // namespace net::test_server
 
-#endif  //  NET_TEST_EMBEDDED_TEST_SERVER_CONTROLLABLE_HTTP_RESPONSE_H_
+#endif  // NET_TEST_EMBEDDED_TEST_SERVER_CONTROLLABLE_HTTP_RESPONSE_H_
