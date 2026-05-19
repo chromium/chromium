@@ -12,6 +12,7 @@
 #include "base/check_op.h"
 #include "base/hash/hash.h"
 #include "base/logging.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/strings/string_number_conversions.h"
 #include "remoting/base/logging.h"
 #include "third_party/webrtc/modules/portal/scoped_glib.h"
@@ -418,8 +419,9 @@ int GnomeDisplayConfig::GetLayoutSize(
     LOG(WARNING) << "Cannot find current mode for monitor";
     return 0;
   }
-  return current_mode->*width_or_height /
-         (layout_mode == LayoutMode::kLogical ? monitor.scale : 1.0);
+  return base::ClampRound(
+      current_mode->*width_or_height /
+      (layout_mode == LayoutMode::kLogical ? monitor.scale : 1.0));
 }
 
 }  // namespace remoting
