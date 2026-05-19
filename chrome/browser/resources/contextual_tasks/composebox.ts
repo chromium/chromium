@@ -369,6 +369,9 @@ export class ContextualTasksComposeboxElement extends I18nMixinLit
         this.$.composebox.queryAutocomplete(/*clearMatches=*/ false);
       }
     }
+    if (changedProperties.has('isSidePanel')) {
+      this.toggleAttribute('show-lens-button', this.shouldShowLensButton_());
+    }
   }
 
   protected startVoiceSearch() {
@@ -388,7 +391,8 @@ export class ContextualTasksComposeboxElement extends I18nMixinLit
   }
 
   protected shouldShowLensButton_() {
-    return this.isSidePanel;
+    return this.isSidePanel &&
+        loadTimeData.getBoolean('supportsLensButtonInComposebox');
   }
 
   get inputState() {
