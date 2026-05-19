@@ -1107,7 +1107,10 @@ bool EasySelectorCheckerTest::Matches(const String& selector_text,
   StyleRule* rule = To<StyleRule>(
       css_test_helpers::ParseRule(GetDocument(), selector_text + " {}"));
   CHECK(EasySelectorChecker::IsEasy(rule->FirstSelector()));
-  return EasySelectorChecker::Match(rule->FirstSelector(), GetElementById(id));
+  PseudoId dynamic_pseudo_ignored;
+  return EasySelectorChecker::Match(rule->FirstSelector(), GetElementById(id),
+                                    /*pseudo_element=*/nullptr, kPseudoIdNone,
+                                    dynamic_pseudo_ignored);
 }
 
 #if DCHECK_IS_ON()  // Requires all_rules_, to find back the rules we add.
@@ -1143,8 +1146,10 @@ TEST_F(EasySelectorCheckerTest, IsEasy) {
   EXPECT_FALSE(IsEasy(":visited"));
   EXPECT_FALSE(IsEasy("a:visited"));
   EXPECT_FALSE(IsEasy("a:link"));
-  EXPECT_FALSE(IsEasy("::before"));
-  EXPECT_FALSE(IsEasy("div::before"));
+  EXPECT_TRUE(IsEasy("::before"));
+  EXPECT_TRUE(IsEasy("div::before"));
+  EXPECT_FALSE(IsEasy("::before::marker"));
+  EXPECT_FALSE(IsEasy("::view-transition"));
   EXPECT_TRUE(IsEasy("* .a"));
   EXPECT_TRUE(IsEasy(".a *"));
   EXPECT_TRUE(IsEasy("[attr]"));

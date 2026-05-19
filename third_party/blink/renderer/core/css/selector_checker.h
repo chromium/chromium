@@ -542,6 +542,8 @@ class CORE_EXPORT SelectorChecker {
 //  - Class matches (e.g. .c).
 //  - Case-sensitive attribute is-set and exact matches ([foo] and [foo="bar"]).
 //  - Subselector and descendant combinators.
+//  - Certain non-nested pseudo-element selectors (::before, ::after, ::marker,
+//    etc.) that don't have special handling.
 //  - Anything that does not need further checking
 //    (CSSSelector::IsCoveredByBucketing()).
 //
@@ -571,11 +573,17 @@ class CORE_EXPORT EasySelectorChecker {
   // Unlike SelectorChecker, does not check style_scope; the caller
   // will need to do that if desired.
   ALWAYS_INLINE static bool Match(const CSSSelector* selector,
-                                  const Element* element);
+                                  const Element* element,
+                                  const Element* pseudo_element,
+                                  PseudoId pseudo_id,
+                                  PseudoId& dynamic_pseudo);
 
  private:
   ALWAYS_INLINE static bool MatchOne(const CSSSelector* selector,
-                                     const Element* element);
+                                     const Element* element,
+                                     const Element* pseudo_element,
+                                     PseudoId pseudo_id,
+                                     PseudoId& dynamic_pseudo);
   ALWAYS_INLINE static bool MatchesTagName(const QualifiedName& tag_q_name,
                                            const Element* element);
   ALWAYS_INLINE static bool AttributeIsSet(const Element& element,

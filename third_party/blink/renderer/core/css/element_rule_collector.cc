@@ -146,6 +146,12 @@ struct ContextWithStyleScopeFrame {
     // It is also not prepared to deal with the featurelessness
     // of the host (see comment in SelectorChecker::CheckOne()).
     //
+    // It cannot deal with the highly unusual combination of having
+    // _both_ pseudo_element and pseudo_id set; this generally only
+    // happens from an inspector path that should probably be fixed,
+    // and it's not even clear that the non-easy selector checker
+    // does the right thing here.
+    //
     // Finally, easy selector matching does not check @scope;
     // it doesn't necessarily need to be deep in SelectorChecker
     // (so we could have pulled it out into common code),
@@ -153,7 +159,9 @@ struct ContextWithStyleScopeFrame {
     // actually know what context.style_scope is.)
     can_use_easy_selector_matching =
         context.vtt_originating_element == nullptr &&
-        !(context.scope && context.scope->OwnerShadowHost() == context.element);
+        !(context.scope &&
+          context.scope->OwnerShadowHost() == context.element) &&
+        !(context.pseudo_element && context.pseudo_id != kPseudoIdNone);
   }
 
   // This StyleScopeFrame is effectively ignored if the StyleRecalcContext
@@ -530,6 +538,8 @@ bool SlowMatchWithNoResultFlags(
     const RuleData& rule_data,
     EInsideLink inside_link,
     bool suppress_visited,
+    bool is_pseudo_element,
+    PseudoId expected_dynamic_pseudo,
     unsigned expected_proximity = std::numeric_limits<unsigned>::max()) {
   SelectorChecker::MatchResult result;
   context.selector = &selector;
@@ -537,8 +547,12 @@ bool SlowMatchWithNoResultFlags(
                                                    CSSSelector::kMatchVisited;
   bool match = checker.Match(context, result);
   DCHECK_EQ(0, result.flags);
-  DCHECK_EQ(kPseudoIdNone, result.dynamic_pseudo);
+
   if (match) {
+    if (!is_pseudo_element) {
+      DCHECK_EQ(static_cast<int>(expected_dynamic_pseudo),
+                static_cast<int>(result.dynamic_pseudo));
+    }
     DCHECK_EQ(expected_proximity, result.proximity);
   }
   return match;
@@ -607,20 +621,23 @@ bool ElementRuleCollector::CollectMatchingRulesForListInternal(
 #if DCHECK_IS_ON()
       DCHECK(!selector.MatchesPseudoElement())
           << "This path doesn't check dynamic pseudo or similar.";
-      DCHECK(SlowMatchWithNoResultFlags(checker, context.context, selector,
-                                        rule_data, inside_link_,
-                                        suppress_visited_, result.proximity));
+      DCHECK(SlowMatchWithNoResultFlags(
+          checker, context.context, selector, rule_data, inside_link_,
+          suppress_visited_, /*is_pseudo_element=*/false, kPseudoIdNone,
+          result.proximity));
 #endif
     } else if (can_use_easy_selector_matching && rule_data.SelectorIsEasy()) {
-      bool easy_match =
-          EasySelectorChecker::Match(&selector, context.context.element);
+      bool easy_match = EasySelectorChecker::Match(
+          &selector, context.context.element, context.context.pseudo_element,
+          pseudo_style_request_.pseudo_id, result.dynamic_pseudo);
 #if DCHECK_IS_ON()
-      DCHECK(!selector.MatchesPseudoElement())
-          << "This path doesn't check dynamic pseudo or similar.";
       DCHECK_EQ(easy_match,
-                SlowMatchWithNoResultFlags(checker, context.context, selector,
-                                           rule_data, inside_link_,
-                                           suppress_visited_, result.proximity))
+                SlowMatchWithNoResultFlags(
+                    checker, context.context, selector, rule_data, inside_link_,
+                    suppress_visited_,
+                    context.context.pseudo_element ||
+                        pseudo_style_request_.pseudo_id != kPseudoIdNone,
+                    result.dynamic_pseudo, result.proximity))
           << "Mismatch for selector " << selector.SelectorText()
           << " on element " << context.context.element;
 #endif
