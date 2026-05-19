@@ -10,10 +10,11 @@
 
 namespace crypto {
 
-class MockUnexportableKey : public UnexportableSigningKey, public StatefulKey {
+class MockUnexportableSigningKey : public UnexportableSigningKey,
+                                   public StatefulKey {
  public:
-  MockUnexportableKey();
-  ~MockUnexportableKey() override;
+  MockUnexportableSigningKey();
+  ~MockUnexportableSigningKey() override;
 
   // UnexportableKey:
   MOCK_METHOD(SignatureVerifier::SignatureAlgorithm,

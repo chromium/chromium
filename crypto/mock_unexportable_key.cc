@@ -6,10 +6,10 @@
 
 namespace crypto {
 
-MockUnexportableKey::MockUnexportableKey() {
+MockUnexportableSigningKey::MockUnexportableSigningKey() {
   ON_CALL(*this, AsStatefulKey()).WillByDefault(testing::Return(this));
 }
-MockUnexportableKey::~MockUnexportableKey() = default;
+MockUnexportableSigningKey::~MockUnexportableSigningKey() = default;
 
 MockUnexportableAttestationKey::MockUnexportableAttestationKey() {
   ON_CALL(*this, AsStatefulKey()).WillByDefault(testing::Return(this));

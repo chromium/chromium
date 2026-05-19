@@ -246,7 +246,7 @@ TEST_F(BindingKeyRegistrationTokenHelperTest, FailureEmptyAlgorithms) {
 
 TEST_F(BindingKeyRegistrationTokenHelperTest, SignatureFailure) {
   auto key_to_generate =
-      std::make_unique<testing::NiceMock<crypto::MockUnexportableKey>>();
+      std::make_unique<testing::NiceMock<crypto::MockUnexportableSigningKey>>();
   ON_CALL(*key_to_generate, Algorithm)
       .WillByDefault(Return(crypto::SignatureVerifier::ECDSA_SHA256));
   ON_CALL(*key_to_generate, GetWrappedKey)
@@ -255,7 +255,8 @@ TEST_F(BindingKeyRegistrationTokenHelperTest, SignatureFailure) {
       .Times(AtLeast(1))
       .WillRepeatedly(Return(std::nullopt));
   crypto::ScopedMockUnexportableKeyProvider scoped_mock_key_provider;
-  scoped_mock_key_provider.AddNextGeneratedKey(std::move(key_to_generate));
+  scoped_mock_key_provider.AddNextGeneratedSigningKey(
+      std::move(key_to_generate));
 
   base::test::TestFuture<
       std::optional<BindingKeyRegistrationTokenHelper::Result>>

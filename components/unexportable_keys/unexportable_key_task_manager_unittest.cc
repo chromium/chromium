@@ -60,7 +60,7 @@ constexpr std::string_view kDeleteAllKeysTaskType = "DeleteAllKeys";
 
 scoped_refptr<RefCountedUnexportableSigningKey> MakeRefCountedKey(
     base::span<const uint8_t> wrapped_key) {
-  auto mock_key = std::make_unique<crypto::MockUnexportableKey>();
+  auto mock_key = std::make_unique<crypto::MockUnexportableSigningKey>();
   ON_CALL(*mock_key, GetWrappedKey)
       .WillByDefault(Return(base::ToVector(wrapped_key)));
   return base::MakeRefCounted<RefCountedUnexportableSigningKey>(
@@ -375,7 +375,7 @@ TEST_P(UnexportableKeyTaskManagerTest, RetrySignAsyncWithSuccess) {
   RunBackgroundTasks();
   ASSERT_OK_AND_ASSIGN(auto key, generate_key_future.Get());
 
-  auto mocked_key = std::make_unique<crypto::MockUnexportableKey>();
+  auto mocked_key = std::make_unique<crypto::MockUnexportableSigningKey>();
   ON_CALL(*mocked_key, Algorithm())
       .WillByDefault(
           Invoke(&key->key(), &crypto::UnexportableSigningKey::Algorithm));
@@ -408,7 +408,7 @@ TEST_P(UnexportableKeyTaskManagerTest, RetrySignAsyncWithSuccess) {
 }
 
 TEST_P(UnexportableKeyTaskManagerTest, RetrySignAsyncWithFailure) {
-  auto key = std::make_unique<crypto::MockUnexportableKey>();
+  auto key = std::make_unique<crypto::MockUnexportableSigningKey>();
   std::vector<uint8_t> data = {0, 1, 1, 2, 3, 5, 8};
   EXPECT_CALL(*key, SignSlowly(ElementsAreArray(data)))
       .Times(4)
@@ -442,7 +442,7 @@ TEST_P(UnexportableKeyTaskManagerTest,
   RunBackgroundTasks();
   ASSERT_OK_AND_ASSIGN(auto key, generate_key_future.Get());
 
-  auto mocked_key = std::make_unique<crypto::MockUnexportableKey>();
+  auto mocked_key = std::make_unique<crypto::MockUnexportableSigningKey>();
   ON_CALL(*mocked_key, Algorithm())
       .WillByDefault(
           Invoke(&key->key(), &crypto::UnexportableSigningKey::Algorithm));
@@ -477,7 +477,7 @@ TEST_P(UnexportableKeyTaskManagerTest,
 
 TEST_P(UnexportableKeyTaskManagerTest,
        RetrySignAsyncIfSignatureVerificationFailsWithFailure) {
-  auto mocked_key = std::make_unique<crypto::MockUnexportableKey>();
+  auto mocked_key = std::make_unique<crypto::MockUnexportableSigningKey>();
   ON_CALL(*mocked_key, Algorithm())
       .WillByDefault(Return(crypto::SignatureVerifier::ECDSA_SHA256));
   ON_CALL(*mocked_key, GetSubjectPublicKeyInfo())
@@ -510,10 +510,10 @@ TEST_P(UnexportableKeyTaskManagerTest, DeleteKeysAsync) {
       SwitchToMockKeyProvider();
 
   // First, generate two new signing keys.
-  scoped_provider.AddNextGeneratedKey(
-      std::make_unique<crypto::MockUnexportableKey>());
-  scoped_provider.AddNextGeneratedKey(
-      std::make_unique<crypto::MockUnexportableKey>());
+  scoped_provider.AddNextGeneratedSigningKey(
+      std::make_unique<crypto::MockUnexportableSigningKey>());
+  scoped_provider.AddNextGeneratedSigningKey(
+      std::make_unique<crypto::MockUnexportableSigningKey>());
 
   base::test::TestFuture<
       ServiceErrorOr<scoped_refptr<RefCountedUnexportableSigningKey>>>
@@ -565,10 +565,10 @@ TEST_P(UnexportableKeyTaskManagerTest, DeleteKeysAsyncPartialSuccess) {
       SwitchToMockKeyProvider();
 
   // First, generate two new signing keys.
-  scoped_provider.AddNextGeneratedKey(
-      std::make_unique<crypto::MockUnexportableKey>());
-  scoped_provider.AddNextGeneratedKey(
-      std::make_unique<crypto::MockUnexportableKey>());
+  scoped_provider.AddNextGeneratedSigningKey(
+      std::make_unique<crypto::MockUnexportableSigningKey>());
+  scoped_provider.AddNextGeneratedSigningKey(
+      std::make_unique<crypto::MockUnexportableSigningKey>());
 
   base::test::TestFuture<
       ServiceErrorOr<scoped_refptr<RefCountedUnexportableSigningKey>>>
@@ -784,7 +784,7 @@ TEST_P(UnexportableKeyTaskManagerTest,
   EXPECT_CALL(SwitchToMockKeyProvider().mock(), GetAllKeysSlowly())
       .WillOnce(Return(
           base::ToVector<std::unique_ptr<crypto::UnexportableSigningKey>>({
-              std::make_unique<crypto::MockUnexportableKey>(),
+              std::make_unique<crypto::MockUnexportableSigningKey>(),
           })));
 
   task_manager().GetAllKeysForGarbageCollectionSlowlyAsync(

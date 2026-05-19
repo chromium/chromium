@@ -95,11 +95,11 @@ ScopedMockUnexportableKeyProvider::ScopedMockUnexportableKeyProvider() {
         return algorithms.empty() ? std::nullopt : std::optional(algorithms[0]);
       });
   ON_CALL(mock_provider_, GenerateSigningKeySlowly).WillByDefault([this](auto) {
-    return TryPopNextKey(next_generated_keys_);
+    return TryPopNextKey(next_generated_signing_keys_);
   });
   ON_CALL(mock_provider_, FromWrappedSigningKeySlowly)
       .WillByDefault(
-          [this](auto) { return TryPopNextKey(next_generated_keys_); });
+          [this](auto) { return TryPopNextKey(next_generated_signing_keys_); });
   ON_CALL(mock_provider_, GenerateAttestationKeySlowly)
       .WillByDefault([this](auto) {
         return TryPopNextKey(next_generated_attestation_keys_);
@@ -115,9 +115,10 @@ ScopedMockUnexportableKeyProvider::~ScopedMockUnexportableKeyProvider() {
   g_mock_provider = nullptr;
 }
 
-UnexportableSigningKey* ScopedMockUnexportableKeyProvider::AddNextGeneratedKey(
+UnexportableSigningKey*
+ScopedMockUnexportableKeyProvider::AddNextGeneratedSigningKey(
     std::unique_ptr<UnexportableSigningKey> key) {
-  return next_generated_keys_.emplace(std::move(key)).get();
+  return next_generated_signing_keys_.emplace(std::move(key)).get();
 }
 
 UnexportableAttestationKey*

@@ -18,8 +18,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
-using crypto::MockUnexportableKey;
 using crypto::MockUnexportableKeyProvider;
+using crypto::MockUnexportableSigningKey;
 using crypto::SignatureVerifier;
 using device::CoseAlgorithmIdentifier;
 using device::PublicKeyCredentialParams;
@@ -70,12 +70,12 @@ class BrowserBoundKeyStoreDesktopTest : public ::testing::Test {
 
 TEST_F(BrowserBoundKeyStoreDesktopTest,
        GetOrCreateBrowserBoundKeyForCredentialId_Get) {
-  std::unique_ptr<MockUnexportableKey> key =
-      std::make_unique<MockUnexportableKey>();
+  std::unique_ptr<MockUnexportableSigningKey> key =
+      std::make_unique<MockUnexportableSigningKey>();
   EXPECT_CALL(*key, Algorithm())
       .WillRepeatedly(
           Return(SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256));
-  MockUnexportableKey* key_ptr = key.get();
+  MockUnexportableSigningKey* key_ptr = key.get();
 
   EXPECT_CALL(*key_provider(), FromWrappedSigningKeySlowly(
                                    base::span<const uint8_t>(kCredentialId)))
@@ -92,15 +92,15 @@ TEST_F(BrowserBoundKeyStoreDesktopTest,
 
 TEST_F(BrowserBoundKeyStoreDesktopTest,
        GetOrCreateBrowserBoundKeyForCredentialId_Create) {
-  std::unique_ptr<MockUnexportableKey> key =
-      std::make_unique<MockUnexportableKey>();
+  std::unique_ptr<MockUnexportableSigningKey> key =
+      std::make_unique<MockUnexportableSigningKey>();
   EXPECT_CALL(*key, Algorithm())
       .WillRepeatedly(
           Return(SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256));
   const std::vector<crypto::SignatureVerifier::SignatureAlgorithm> algorithms =
       {SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256,
        SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA256};
-  MockUnexportableKey* key_ptr = key.get();
+  MockUnexportableSigningKey* key_ptr = key.get();
 
   EXPECT_CALL(*key_provider(), FromWrappedSigningKeySlowly(
                                    base::span<const uint8_t>(kCredentialId)))
@@ -187,8 +187,8 @@ TEST_F(BrowserBoundKeyStoreDesktopTest,
   base::HistogramTester histogram_tester;
   base::TimeDelta get_key_latency = base::Microseconds(10);
 
-  std::unique_ptr<MockUnexportableKey> key =
-      std::make_unique<MockUnexportableKey>();
+  std::unique_ptr<MockUnexportableSigningKey> key =
+      std::make_unique<MockUnexportableSigningKey>();
 
   EXPECT_CALL(*key, Algorithm())
       .WillRepeatedly(
@@ -228,8 +228,8 @@ TEST_F(BrowserBoundKeyStoreDesktopTest,
   const std::vector<crypto::SignatureVerifier::SignatureAlgorithm> algorithms =
       {SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256,
        SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA256};
-  std::unique_ptr<MockUnexportableKey> key =
-      std::make_unique<MockUnexportableKey>();
+  std::unique_ptr<MockUnexportableSigningKey> key =
+      std::make_unique<MockUnexportableSigningKey>();
 
   EXPECT_CALL(*key, Algorithm())
       .WillRepeatedly(

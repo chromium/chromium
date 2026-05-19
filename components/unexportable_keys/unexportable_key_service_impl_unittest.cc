@@ -361,7 +361,7 @@ TEST_F(
     FromWrappedSigningKeySlowlyAsyncCallbackIsCancelledOnServiceDestruction) {
   const std::vector<uint8_t> kWrappedKey = {1, 2, 3};
   auto key_for_from_wrapped =
-      std::make_unique<NiceMock<crypto::MockUnexportableKey>>();
+      std::make_unique<NiceMock<crypto::MockUnexportableSigningKey>>();
   ON_CALL(*key_for_from_wrapped, GetWrappedKey)
       .WillByDefault(Return(kWrappedKey));
 
@@ -398,7 +398,8 @@ TEST_F(UnexportableKeyServiceImplTest,
 TEST_F(UnexportableKeyServiceImplTest,
        GetAllKeysForGarbageCollectionSlowlyAsyncAddsKeysToService) {
   const std::vector<uint8_t> kWrappedKey = {1, 2, 3};
-  auto provider_key = std::make_unique<NiceMock<crypto::MockUnexportableKey>>();
+  auto provider_key =
+      std::make_unique<NiceMock<crypto::MockUnexportableSigningKey>>();
   ON_CALL(*provider_key, GetWrappedKey).WillByDefault(Return(kWrappedKey));
 
   EXPECT_CALL(SwitchToMockKeyProvider().mock(), GetAllKeysSlowly())
@@ -427,7 +428,7 @@ TEST_F(UnexportableKeyServiceImplTest,
       from_wrapped_future;
 
   auto key_for_from_wrapped =
-      std::make_unique<NiceMock<crypto::MockUnexportableKey>>();
+      std::make_unique<NiceMock<crypto::MockUnexportableSigningKey>>();
   ON_CALL(*key_for_from_wrapped, GetWrappedKey)
       .WillByDefault(Return(kWrappedKey));
   EXPECT_CALL(SwitchToMockKeyProvider().mock(),
@@ -451,7 +452,7 @@ TEST_F(UnexportableKeyServiceImplTest, FromWrappedSigningKeyBeforeGetAllKeys) {
 
   // First, `FromWrappedSigningKeySlowly` will be called.
   auto key_for_from_wrapped =
-      std::make_unique<NiceMock<crypto::MockUnexportableKey>>();
+      std::make_unique<NiceMock<crypto::MockUnexportableSigningKey>>();
   ON_CALL(*key_for_from_wrapped, GetWrappedKey)
       .WillByDefault(Return(kWrappedKey));
   EXPECT_CALL(mock_provider, FromWrappedSigningKeySlowly(Eq(kWrappedKey)))
@@ -463,7 +464,7 @@ TEST_F(UnexportableKeyServiceImplTest, FromWrappedSigningKeyBeforeGetAllKeys) {
 
   // Then, `GetAllKeysSlowly` will be called.
   auto key_for_get_all =
-      std::make_unique<NiceMock<crypto::MockUnexportableKey>>();
+      std::make_unique<NiceMock<crypto::MockUnexportableSigningKey>>();
   ON_CALL(*key_for_get_all, GetWrappedKey).WillByDefault(Return(kWrappedKey));
   EXPECT_CALL(mock_provider, GetAllKeysSlowly())
       .WillOnce(Return(
@@ -492,7 +493,7 @@ TEST_F(UnexportableKeyServiceImplTest, GetAllKeysBeforeFromWrappedSigningKey) {
 
   // First, `GetAllKeysSlowly` will be called.
   auto key_for_get_all =
-      std::make_unique<NiceMock<crypto::MockUnexportableKey>>();
+      std::make_unique<NiceMock<crypto::MockUnexportableSigningKey>>();
   ON_CALL(*key_for_get_all, GetWrappedKey).WillByDefault(Return(kWrappedKey));
   EXPECT_CALL(mock_provider, GetAllKeysSlowly())
       .WillOnce(Return(
@@ -506,7 +507,7 @@ TEST_F(UnexportableKeyServiceImplTest, GetAllKeysBeforeFromWrappedSigningKey) {
 
   // Then, `FromWrappedSigningKeySlowlyAsync` will be called.
   auto key_for_from_wrapped =
-      std::make_unique<NiceMock<crypto::MockUnexportableKey>>();
+      std::make_unique<NiceMock<crypto::MockUnexportableSigningKey>>();
   ON_CALL(*key_for_from_wrapped, GetWrappedKey)
       .WillByDefault(Return(kWrappedKey));
   EXPECT_CALL(mock_provider, FromWrappedSigningKeySlowly(Eq(kWrappedKey)))
@@ -534,7 +535,7 @@ TEST_F(UnexportableKeyServiceImplTest,
 
   // First, `GetAllKeysSlowly` will be called.
   auto key_for_get_all =
-      std::make_unique<NiceMock<crypto::MockUnexportableKey>>();
+      std::make_unique<NiceMock<crypto::MockUnexportableSigningKey>>();
   ON_CALL(*key_for_get_all, GetWrappedKey).WillByDefault(Return(kWrappedKey));
   EXPECT_CALL(mock_provider, GetAllKeysSlowly())
       .WillOnce(Return(
@@ -560,7 +561,7 @@ TEST_F(UnexportableKeyServiceImplTest,
 
   // Then, `FromWrappedSigningKeySlowlyAsync` will be called.
   auto key_for_from_wrapped =
-      std::make_unique<NiceMock<crypto::MockUnexportableKey>>();
+      std::make_unique<NiceMock<crypto::MockUnexportableSigningKey>>();
   ON_CALL(*key_for_from_wrapped, GetWrappedKey)
       .WillByDefault(Return(kWrappedKey));
   EXPECT_CALL(mock_provider, FromWrappedSigningKeySlowly(Eq(kWrappedKey)))
@@ -586,7 +587,8 @@ TEST_F(UnexportableKeyServiceImplTest,
 TEST_F(UnexportableKeyServiceImplTest,
        GetAllKeysForGarbageCollectionSlowlyAsyncPopulatesGCMap) {
   const std::vector<uint8_t> kWrappedKey = {1, 2, 3};
-  auto provider_key = std::make_unique<NiceMock<crypto::MockUnexportableKey>>();
+  auto provider_key =
+      std::make_unique<NiceMock<crypto::MockUnexportableSigningKey>>();
   ON_CALL(*provider_key, GetWrappedKey).WillByDefault(Return(kWrappedKey));
 
   EXPECT_CALL(SwitchToMockKeyProvider().mock(), GetAllKeysSlowly())
@@ -636,7 +638,8 @@ TEST_F(UnexportableKeyServiceImplTest,
                        service().GetWrappedKey(existing_key_id));
 
   // Mock the provider to return the same key.
-  auto provider_key = std::make_unique<NiceMock<crypto::MockUnexportableKey>>();
+  auto provider_key =
+      std::make_unique<NiceMock<crypto::MockUnexportableSigningKey>>();
   ON_CALL(*provider_key, GetWrappedKey).WillByDefault(Return(wrapped_key));
 
   EXPECT_CALL(SwitchToMockKeyProvider().mock(), GetAllKeysSlowly())
@@ -675,7 +678,8 @@ TEST_F(UnexportableKeyServiceImplTest,
 TEST_F(
     UnexportableKeyServiceImplTest,
     GetAllKeysForGarbageCollectionSlowlyAsyncCallbackIsCancelledOnServiceDestruction) {
-  auto provider_key = std::make_unique<NiceMock<crypto::MockUnexportableKey>>();
+  auto provider_key =
+      std::make_unique<NiceMock<crypto::MockUnexportableSigningKey>>();
   ON_CALL(*provider_key, GetWrappedKey)
       .WillByDefault(Return(std::vector<uint8_t>{1, 2, 3}));
 
@@ -753,7 +757,7 @@ TEST_F(UnexportableKeyServiceImplTest, NonExistingKeyId) {
 
 TEST_F(UnexportableKeyServiceImplTest, SignFailed) {
   auto key_to_generate =
-      std::make_unique<NiceMock<crypto::MockUnexportableKey>>();
+      std::make_unique<NiceMock<crypto::MockUnexportableSigningKey>>();
   ON_CALL(*key_to_generate, Algorithm)
       .WillByDefault(Return(crypto::SignatureVerifier::ECDSA_SHA256));
   ON_CALL(*key_to_generate, GetWrappedKey)
@@ -762,7 +766,8 @@ TEST_F(UnexportableKeyServiceImplTest, SignFailed) {
   EXPECT_CALL(*key_to_generate, SignSlowly(ElementsAreArray(data)))
       .Times(AtLeast(1))
       .WillRepeatedly(Return(std::nullopt));
-  SwitchToMockKeyProvider().AddNextGeneratedKey(std::move(key_to_generate));
+  SwitchToMockKeyProvider().AddNextGeneratedSigningKey(
+      std::move(key_to_generate));
 
   base::test::TestFuture<ServiceErrorOr<UnexportableSigningKeyId>>
       generate_future;
@@ -783,7 +788,7 @@ TEST_F(UnexportableKeyServiceImplTest, SignWithRetry) {
   scoped_refptr<RefCountedUnexportableSigningKey> key = GenerateSigningKey();
 
   auto key_to_generate =
-      std::make_unique<NiceMock<crypto::MockUnexportableKey>>();
+      std::make_unique<NiceMock<crypto::MockUnexportableSigningKey>>();
   ON_CALL(*key_to_generate, Algorithm)
       .WillByDefault(
           Invoke(&key->key(), &crypto::UnexportableSigningKey::Algorithm));
@@ -799,7 +804,8 @@ TEST_F(UnexportableKeyServiceImplTest, SignWithRetry) {
       .WillOnce(Return(std::nullopt))
       .WillOnce(
           Invoke(&key->key(), &crypto::UnexportableSigningKey::SignSlowly));
-  SwitchToMockKeyProvider().AddNextGeneratedKey(std::move(key_to_generate));
+  SwitchToMockKeyProvider().AddNextGeneratedSigningKey(
+      std::move(key_to_generate));
 
   base::test::TestFuture<ServiceErrorOr<UnexportableSigningKeyId>>
       generate_future;
@@ -825,11 +831,11 @@ TEST_F(UnexportableKeyServiceImplTest, DeleteKeys) {
   std::vector<UnexportableKeyId> key_ids;
   for (uint8_t i = 0; i < kKeysToGenerate; ++i) {
     // Provide a unique wrapped key, so that the keys get unique key ids.
-    auto mock_key = std::make_unique<crypto::MockUnexportableKey>();
+    auto mock_key = std::make_unique<crypto::MockUnexportableSigningKey>();
     ON_CALL(*mock_key, GetWrappedKey).WillByDefault(Return(std::vector{i}));
 
     raw_keys.push_back(
-        scoped_provider.AddNextGeneratedKey(std::move(mock_key)));
+        scoped_provider.AddNextGeneratedSigningKey(std::move(mock_key)));
     base::test::TestFuture<ServiceErrorOr<UnexportableSigningKeyId>>
         generate_future;
     service().GenerateSigningKeySlowlyAsync(
@@ -868,8 +874,8 @@ TEST_F(UnexportableKeyServiceImplTest, DeleteKeysWithNonExistingKey) {
       SwitchToMockKeyProvider();
 
   // Generate a key.
-  auto* raw_key = scoped_provider.AddNextGeneratedKey(
-      std::make_unique<crypto::MockUnexportableKey>());
+  auto* raw_key = scoped_provider.AddNextGeneratedSigningKey(
+      std::make_unique<crypto::MockUnexportableSigningKey>());
   base::test::TestFuture<ServiceErrorOr<UnexportableSigningKeyId>>
       generate_future;
   service().GenerateSigningKeySlowlyAsync(kAcceptableAlgorithms, kTaskPriority,
@@ -918,8 +924,8 @@ TEST_F(UnexportableKeyServiceImplTest, DeleteKeysProviderFails) {
       SwitchToMockKeyProvider();
 
   // Generate a key.
-  auto* raw_key = scoped_provider.AddNextGeneratedKey(
-      std::make_unique<crypto::MockUnexportableKey>());
+  auto* raw_key = scoped_provider.AddNextGeneratedSigningKey(
+      std::make_unique<crypto::MockUnexportableSigningKey>());
   base::test::TestFuture<ServiceErrorOr<UnexportableSigningKeyId>>
       generate_future;
   service().GenerateSigningKeySlowlyAsync(kAcceptableAlgorithms, kTaskPriority,
@@ -952,8 +958,8 @@ TEST_F(UnexportableKeyServiceImplTest,
       SwitchToMockKeyProvider();
 
   // Generate a key.
-  auto* raw_key = scoped_provider.AddNextGeneratedKey(
-      std::make_unique<crypto::MockUnexportableKey>());
+  auto* raw_key = scoped_provider.AddNextGeneratedSigningKey(
+      std::make_unique<crypto::MockUnexportableSigningKey>());
 
   base::test::TestFuture<ServiceErrorOr<UnexportableSigningKeyId>>
       generate_future;
@@ -1177,10 +1183,11 @@ TEST_F(UnexportableKeyServiceImplTest, DeleteAllKeysWithPendingSign) {
 
 TEST_F(UnexportableKeyServiceImplTest, GetCreationTimeWithStatefulKey) {
   auto key_to_generate =
-      std::make_unique<NiceMock<crypto::MockUnexportableKey>>();
+      std::make_unique<NiceMock<crypto::MockUnexportableSigningKey>>();
   ON_CALL(*key_to_generate, GetCreationTime)
       .WillByDefault(Return(base::Time::Now()));
-  SwitchToMockKeyProvider().AddNextGeneratedKey(std::move(key_to_generate));
+  SwitchToMockKeyProvider().AddNextGeneratedSigningKey(
+      std::move(key_to_generate));
 
   base::test::TestFuture<ServiceErrorOr<UnexportableSigningKeyId>>
       generate_future;

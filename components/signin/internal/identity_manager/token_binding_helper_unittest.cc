@@ -284,7 +284,7 @@ TEST_F(TokenBindingHelperTest, StartGarbageCollectionDeletesUnusedKeys) {
   std::vector<uint8_t> unused_wrapped_key_new = {13, 14, 15};
 
   auto create_mock_key = [](const std::vector<uint8_t>& wrapped_key) {
-    auto mock_key = std::make_unique<crypto::MockUnexportableKey>();
+    auto mock_key = std::make_unique<crypto::MockUnexportableSigningKey>();
     ON_CALL(*mock_key, GetWrappedKey).WillByDefault(Return(wrapped_key));
     return mock_key;
   };

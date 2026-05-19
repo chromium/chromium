@@ -651,9 +651,9 @@ TEST_F(SessionStoreImplTest, GarbageCollectsStaleKeys) {
   const std::vector<uint8_t> kStaleWrappedKey = {7, 8, 9};
 
   EXPECT_CALL(mock_key_provider, GetAllKeysSlowly).WillRepeatedly([=] {
-    auto key1 = std::make_unique<crypto::MockUnexportableKey>();
-    auto key2 = std::make_unique<crypto::MockUnexportableKey>();
-    auto stale_key = std::make_unique<crypto::MockUnexportableKey>();
+    auto key1 = std::make_unique<crypto::MockUnexportableSigningKey>();
+    auto key2 = std::make_unique<crypto::MockUnexportableSigningKey>();
+    auto stale_key = std::make_unique<crypto::MockUnexportableSigningKey>();
 
     ON_CALL(*key1, GetWrappedKey).WillByDefault(Return(kWrappedKey1));
     ON_CALL(*key2, GetWrappedKey).WillByDefault(Return(kWrappedKey2));
