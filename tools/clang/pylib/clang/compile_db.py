@@ -18,8 +18,20 @@ _CLANG_WRAPPER_CMD_LINE_RE = re.compile(
       # Assume the args do not contain spaces.
       (?P<rewrapper_arg>\-\S+\s+)*
     )?
+    # Optional wrapper(s) that should be skipped.
+    (?P<wrapper>.*?\s+)?
     # Assume the path to clang does not contain spaces.
-    (?P<clang>\S*clang\S*)
+    # Identifying the compiler binary name specifically to avoid wrappers.
+    # e.g. clang, clang++, clang-cl, clang-18, clang-cl.exe, clang++-15
+    (?P<clang>
+      "?                          # Optional leading quote.
+      \S*?\bclang                 # Base name of the compiler.
+      (?:\+\+)?                   # C++ mode suffix.
+      (?:-(?:cl|[\d.]+)|[\d.]+)?  # Optional version or MSVC drop-in suffix.
+      (?:\.exe)?                  # Optional .exe suffix for Windows.
+      "?                          # Optional trailing quote.
+    )
+    (?!\w)                        # Boundary to reject unexpected trailing text (like '_wrapper').
     \s+
     (?P<args>.*)
     ''', re.VERBOSE)

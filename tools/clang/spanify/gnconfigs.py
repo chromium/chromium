@@ -44,7 +44,7 @@ class GnConfigsImpl:
             'symbol_level=0',
             'target_cpu="x64"',
             'target_os="linux"',
-            'use_clang_coverage=true',
+            'use_clang_coverage=false',
         ] + current_exec
         self.linux_configs["linux-chromium-asan"] = [
             'dcheck_always_on=true',
@@ -117,7 +117,7 @@ class GnConfigsImpl:
             'symbol_level=0',
             'target_cpu="x64"',
             'target_os="mac"',
-            'use_clang_coverage=true',
+            'use_clang_coverage=false',
             # Below are args needed by mac-official
             # 'is_chrome_branded=true', Doesn't build locally.
             # 'is_official_build=true', Only needed for optimizations
@@ -146,7 +146,7 @@ class GnConfigsImpl:
             'symbol_level=0',
             'target_cpu="x64"',
             'target_os="win"',
-            'use_clang_coverage=true',
+            'use_clang_coverage=false',
         ] + current_exec
         self.win_configs['win_chromium_compile_dbg_ng'] = [
             'ffmpeg_branding="Chrome"',
@@ -180,7 +180,7 @@ class GnConfigsImpl:
             'symbol_level=0',
             'system_webview_package_name="com.google.android.chrome"',
             'target_cpu="arm64"',
-            'use_clang_coverage=true',
+            'use_clang_coverage=false',
         ] + current_exec
         self.android_configs['android-binary-size'] = [
             'android_channel="stable"',
@@ -220,7 +220,7 @@ class GnConfigsImpl:
             'system_webview_shell_package_name="org.chromium.my_webview_shell"',
             'target_cpu="x86"',
             'target_os="android"',
-            'use_clang_coverage=true',
+            'use_clang_coverage=false',
             'use_jacoco_coverage=true',
         ] + current_exec
         # Finally official build (arm64 in this case)
