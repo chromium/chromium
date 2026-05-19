@@ -108,6 +108,16 @@ void ShowSimpleInstallDialogForWebApps(
   auto app_name = web_app_info->title;
   GURL start_url = web_app_info->start_url();
 
+  url::Origin initiating_origin;
+  if (show_initiating_origin) {
+    if (web_app_info && web_app_info->installed_by.has_value()) {
+      initiating_origin = url::Origin::Create(*web_app_info->installed_by);
+    } else {
+      initiating_origin =
+          web_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin();
+    }
+  }
+
   auto delegate = std::make_unique<web_app::WebAppInstallDialogDelegate>(
       web_contents, std::move(web_app_info), std::move(install_tracker),
       std::move(callback), std::move(iph_state), prefs, tracker,
@@ -137,8 +147,6 @@ void ShowSimpleInstallDialogForWebApps(
   // Only show the initiating origin subtitle label for background document
   // installs from the Web Install API.
   if (show_initiating_origin) {
-    url::Origin initiating_origin =
-        web_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin();
     std::u16string origin_url = url_formatter::FormatOriginForSecurityDisplay(
         initiating_origin, url_formatter::SchemeDisplay::OMIT_HTTP_AND_HTTPS);
     dialog_model_builder.SetSubtitle(l10n_util::GetStringFUTF16(

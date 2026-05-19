@@ -55,6 +55,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_renderer_host.h"
 #include "net/base/url_util.h"
+#include "net/test/embedded_test_server/controllable_http_response.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "skia/ext/image_operations.h"
@@ -2099,4 +2100,79 @@ IN_PROC_BROWSER_TEST_F(WebInstallFromUrlCommandDialogTest,
       url_formatter::FormatUrlForDisplayOmitSchemePathAndTrivialSubdomains(
           install_url));
 }
+
+IN_PROC_BROWSER_TEST_F(WebInstallFromUrlCommandBrowserTest,
+                       InstallApp_CrossOrigin_NavigatedDuringInstall) {
+  net::EmbeddedTestServer third_server{net::EmbeddedTestServer::TYPE_HTTPS};
+  third_server.AddDefaultHandlers(GetChromeTestDataDir());
+  net::test_server::ControllableHttpResponse manifest_response(
+      &third_server, "/web_apps/install_url/manifest.json");
+  ASSERT_TRUE(third_server.Start());
+
+  // Navigate to attacker.com (primary server)
+  NavigateToValidUrl();
+
+  GURL install_url =
+      third_server.GetURL("/web_apps/install_url/install_url.html");
+
+  SetPermissionResponse(/*permission_granted=*/true);
+
+  // Call navigator.install asynchronously.
+  ExecuteScriptAsync(web_contents(),
+                     "navigator.install('" + install_url.spec() + "');");
+
+  // Wait for manifest request.
+  manifest_response.WaitForRequest();
+
+  // Navigate the initiating tab to trusted.com (third_server)
+  GURL trusted_url = third_server.GetURL("/simple.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), trusted_url));
+
+  // Send the manifest.
+  std::string manifest_content = R"({
+    "name": "Simple web app",
+    "id": "some_id",
+    "icons": [
+      {
+        "src": "basic-48.png",
+        "sizes": "48x48",
+        "type": "image/png"
+      },
+      {
+        "src": "basic-192.png",
+        "sizes": "192x192",
+        "type": "image/png"
+      }
+    ],
+    "start_url": "index.html",
+    "display": "standalone",
+    "scope": "."
+  })";
+  manifest_response.Send(net::HTTP_OK, "application/manifest+json",
+                         manifest_content);
+  manifest_response.Done();
+
+  // Wait for the install dialog to show.
+  views::NamedWidgetShownWaiter widget_waiter(
+      views::test::AnyWidgetTestPasskey{}, "WebAppSimpleInstallDialog");
+  views::Widget* widget = widget_waiter.WaitIfNeededAndGet();
+  ASSERT_NE(widget, nullptr);
+
+  // Verify the initiating origin subtitle label is attacker.com (primary
+  // server), NOT trusted.com (third_server) even though we navigated there.
+  std::u16string expected_initiating_origin = base::ReplaceStringPlaceholders(
+      u"from: 127.0.0.1:$1",
+      base::span<const std::u16string>(
+          {base::NumberToString16(embedded_https_test_server().port())}),
+      nullptr);
+  views::BubbleDialogDelegate* const bubble_delegate =
+      widget->widget_delegate()->AsBubbleDialogDelegate();
+  EXPECT_EQ(bubble_delegate->GetSubtitle(), expected_initiating_origin);
+
+  // Clean up.
+  views::test::WidgetDestroyedWaiter destroyed(widget);
+  views::test::CancelDialog(widget);
+  destroyed.Wait();
+}
+
 }  // namespace web_app

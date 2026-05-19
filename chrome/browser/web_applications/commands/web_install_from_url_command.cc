@@ -228,6 +228,7 @@ void WebInstallFromUrlCommand::OnWebAppInstallInfoCreatedShowDialog(
     std::unique_ptr<WebAppInstallInfo> install_info) {
   CHECK(install_info);
   web_app_info_ = std::move(install_info);
+  web_app_info_->installed_by = installed_by_;
 
   // If navigator.install was invoked with both `install_url` and `manifest_id`
   // (2 param version), the given `manifest_id` must match the computed id of

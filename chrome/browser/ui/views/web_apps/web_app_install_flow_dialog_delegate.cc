@@ -675,6 +675,17 @@ WebAppInstallFlowDialogDelegate::Show(
   std::u16string title = install_info->title.value();
   GURL start_url = install_info->start_url();
   std::u16string description = install_info->description.value();
+
+  url::Origin initiating_origin;
+  if (show_initiating_origin) {
+    if (install_info && install_info->installed_by.has_value()) {
+      initiating_origin = url::Origin::Create(*install_info->installed_by);
+    } else {
+      initiating_origin =
+          web_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin();
+    }
+  }
+
   auto delegate = std::make_unique<WebAppInstallFlowDialogDelegate>(
       web_contents, std::move(install_info), std::move(install_tracker),
       std::move(callback), std::move(iph_state), prefs, tracker, install_type,
@@ -811,8 +822,6 @@ WebAppInstallFlowDialogDelegate::Show(
   }
 
   if (show_initiating_origin) {
-    url::Origin initiating_origin =
-        web_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin();
     std::u16string origin_url = url_formatter::FormatOriginForSecurityDisplay(
         initiating_origin, url_formatter::SchemeDisplay::OMIT_HTTP_AND_HTTPS);
     dialog_model_builder.SetSubtitle(l10n_util::GetStringFUTF16(
