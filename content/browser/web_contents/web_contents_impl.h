@@ -1644,6 +1644,10 @@ class CONTENT_EXPORT WebContentsImpl
   // WebContents is being detached from a SurfaceEmbed plugin.
   void ClearSurfaceEmbedConnector();
 
+  // Called when the number of active capturers for this WebContents has
+  // changed.
+  void OnCapturerCountChanged();
+
  private:
   using FrameTreeIterationCallback = base::FunctionRef<void(FrameTree&)>;
   using RenderViewHostIterationCallback =

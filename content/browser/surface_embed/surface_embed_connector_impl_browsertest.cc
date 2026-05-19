@@ -8,8 +8,11 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/test/run_until.h"
+#include "base/test/test_future.h"
+#include "base/time/time.h"
 #include "cc/input/touch_action.h"
 #include "cc/trees/render_frame_metadata.h"
+#include "content/browser/compositor/surface_utils.h"
 #include "content/browser/renderer_host/render_widget_host_view_child_frame.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/visibility.h"
@@ -79,22 +82,67 @@ class SurfaceEmbedConnectorImplBrowserTest : public ContentBrowserTest {
   }
 
   struct ConnectorTestContext {
-    std::unique_ptr<WebContents> parent_web_contents;
+    ConnectorTestContext() = default;
+    ConnectorTestContext(ConnectorTestContext&& other) {
+      parent_shell = other.parent_shell;
+      other.parent_shell = nullptr;
+      parent_web_contents = other.parent_web_contents;
+      other.parent_web_contents = nullptr;
+      child_web_contents = std::move(other.child_web_contents);
+      rwhvcf = other.rwhvcf;
+      other.rwhvcf = nullptr;
+      connector = other.connector;
+      other.connector = nullptr;
+    }
+    ConnectorTestContext& operator=(ConnectorTestContext&& other) {
+      if (this != &other) {
+        parent_web_contents = nullptr;
+        if (parent_shell) {
+          Shell* shell = parent_shell;
+          parent_shell = nullptr;
+          shell->Close();
+        }
+        parent_shell = other.parent_shell;
+        other.parent_shell = nullptr;
+        parent_web_contents = other.parent_web_contents;
+        other.parent_web_contents = nullptr;
+        child_web_contents = std::move(other.child_web_contents);
+        rwhvcf = other.rwhvcf;
+        other.rwhvcf = nullptr;
+        connector = other.connector;
+        other.connector = nullptr;
+      }
+      return *this;
+    }
+    ~ConnectorTestContext() {
+      parent_web_contents = nullptr;
+      if (parent_shell) {
+        Shell* shell = parent_shell;
+        parent_shell = nullptr;
+        shell->Close();
+      }
+    }
+
+    raw_ptr<Shell> parent_shell = nullptr;
+    raw_ptr<WebContents> parent_web_contents = nullptr;
     std::unique_ptr<WebContents> child_web_contents;
-    raw_ptr<RenderWidgetHostViewChildFrame> rwhvcf;
-    raw_ptr<SurfaceEmbedConnectorImpl> connector;
+    raw_ptr<RenderWidgetHostViewChildFrame> rwhvcf = nullptr;
+    raw_ptr<SurfaceEmbedConnectorImpl> connector = nullptr;
   };
 
   ConnectorTestContext SetupConnectorTest(
       MockSurfaceEmbedConnectorDelegate* delegate) {
     ConnectorTestContext context;
 
+    context.parent_shell =
+        Shell::CreateNewWindow(GetParentWebContents()->GetBrowserContext(),
+                               GURL(), nullptr, Shell::GetShellDefaultSize());
+    WebContentsImpl* parent_web_contents_impl =
+        static_cast<WebContentsImpl*>(context.parent_shell->web_contents());
+    context.parent_web_contents = parent_web_contents_impl;
+
     WebContents::CreateParams create_params(
         GetParentWebContents()->GetBrowserContext());
-    context.parent_web_contents = WebContents::Create(create_params);
-    WebContentsImpl* parent_web_contents_impl =
-        static_cast<WebContentsImpl*>(context.parent_web_contents.get());
-
     context.child_web_contents = WebContents::Create(create_params);
     WebContentsImpl* child_web_contents_impl =
         static_cast<WebContentsImpl*>(context.child_web_contents.get());
@@ -118,6 +166,10 @@ class SurfaceEmbedConnectorImplBrowserTest : public ContentBrowserTest {
       SurfaceEmbedConnectorImpl* connector,
       const blink::mojom::ViewportIntersectionState& intersection_state) {
     connector->intersection_state_ = intersection_state;
+  }
+
+  bool HasKeepSurfaceAlive(SurfaceEmbedConnectorImpl* connector) const {
+    return !!connector->keep_surface_alive_;
   }
 };
 
@@ -153,8 +205,10 @@ IN_PROC_BROWSER_TEST_F(SurfaceEmbedConnectorImplBrowserTest,
 
   EXPECT_EQ(connector->GetParentWebContentsView(), parent_impl->GetView());
 
-  // Destroy the parent.
-  context.parent_web_contents.reset();
+  context.parent_web_contents = nullptr;
+  Shell* shell = context.parent_shell;
+  context.parent_shell = nullptr;
+  shell->Close();
 
   // Verify connector handles missing parent gracefully where checks exist.
   EXPECT_EQ(connector->GetParentWebContentsView(), nullptr);
@@ -503,6 +557,141 @@ IN_PROC_BROWSER_TEST_F(SurfaceEmbedConnectorImplBrowserTest,
             grandparent_impl->GetRenderWidgetHostView());
   EXPECT_EQ(child_connector->GetParentRenderWidgetHostView(),
             parent_impl->GetRenderWidgetHostView());
+}
+
+IN_PROC_BROWSER_TEST_F(SurfaceEmbedConnectorImplBrowserTest,
+                       HiddenPluginCanBeCaptured) {
+  MockSurfaceEmbedConnectorDelegate delegate;
+
+  // Use shell()->web_contents() as parent since it is attached to a window and
+  // has a compositor.
+  auto* parent_impl = GetParentWebContents();
+  EXPECT_TRUE(NavigateToURL(parent_impl, GURL("about:blank")));
+
+  WebContents::CreateParams create_params(parent_impl->GetBrowserContext());
+  auto child_web_contents = WebContents::Create(create_params);
+  auto* child_impl = static_cast<WebContentsImpl*>(child_web_contents.get());
+
+  SurfaceEmbedConnector::Attach(child_impl, parent_impl->GetPrimaryMainFrame(),
+                                &delegate);
+  auto* connector = static_cast<SurfaceEmbedConnectorImpl*>(
+      child_impl->GetSurfaceEmbedConnector());
+  auto* rwhvcf = static_cast<RenderWidgetHostViewChildFrame*>(
+      child_impl->GetRenderWidgetHostView());
+
+  connector->SetView(rwhvcf, false);
+
+  // We need to wait for the surface ID to be valid.
+  blink::FrameVisualProperties visual_properties;
+  display::ScreenInfo screen_info;
+  screen_info.device_scale_factor = 2.0f;
+  visual_properties.screen_infos = display::ScreenInfos(screen_info);
+  visual_properties.local_surface_id =
+      viz::LocalSurfaceId(1, base::UnguessableToken::CreateForTesting(2, 3));
+  connector->SynchronizeVisualProperties(visual_properties, false);
+
+  // Ensure the plugin is hidden.
+  connector->OnVisibilityChanged(blink::mojom::FrameVisibility::kNotRendered);
+
+  // Increment the capturer count, which should keep the surface alive.
+  auto capturer = child_impl->IncrementCapturerCount(
+      gfx::Size(), /*stay_hidden=*/true, /*stay_awake=*/true,
+      /*is_activity=*/true);
+
+  // Attempt to take a screenshot. It should not fail with kNotImplemented.
+  // It may still fail for other reasons depending on test harness
+  // initialization, but it will have bypassed the IsSurfaceAvailableForCopy
+  // check.
+  base::test::TestFuture<const content::CopyFromSurfaceResult&> future;
+  child_impl->GetRenderWidgetHostView()->CopyFromSurface(
+      gfx::Rect(), gfx::Size(), base::Milliseconds(1), future.GetCallback());
+
+  // We expect it either to succeed, or fail with a different error (like
+  // kTimeout or kFrameGone), but definitely NOT kNotImplemented which is
+  // returned when IsSurfaceAvailableForCopy is false.
+  if (!future.Get().has_value()) {
+    EXPECT_NE(future.Get().error(), CopyFromSurfaceError::kNotImplemented);
+  }
+}
+
+IN_PROC_BROWSER_TEST_F(SurfaceEmbedConnectorImplBrowserTest,
+                       HideSetsKeepSurfaceAliveFalse) {
+  MockSurfaceEmbedConnectorDelegate delegate;
+  auto context = SetupConnectorTest(&delegate);
+
+  context.rwhvcf->Hide();
+  EXPECT_FALSE(HasKeepSurfaceAlive(context.connector.get()));
+}
+
+IN_PROC_BROWSER_TEST_F(SurfaceEmbedConnectorImplBrowserTest,
+                       ResizeIgnoredForEmbedded) {
+  MockSurfaceEmbedConnectorDelegate delegate;
+  auto context = SetupConnectorTest(&delegate);
+  auto* child_impl =
+      static_cast<WebContentsImpl*>(context.child_web_contents.get());
+
+  // Navigate the child to ensure it has a RenderFrame and a view.
+  EXPECT_TRUE(
+      NavigateToURL(context.child_web_contents.get(), GURL("about:blank")));
+  // Re-fetch rwhvcf after navigation as it might have changed.
+  context.rwhvcf = static_cast<RenderWidgetHostViewChildFrame*>(
+      child_impl->GetRenderWidgetHostView());
+  ASSERT_TRUE(context.rwhvcf);
+  ASSERT_EQ(context.rwhvcf->FrameConnectorForTesting(),
+            context.connector.get());
+
+  // Initialize screen_infos_ to ensure a valid device scale factor.
+  display::ScreenInfo screen_info;
+  screen_info.device_scale_factor = 1.0f;
+  SetScreenInfos(context.connector, display::ScreenInfos(screen_info));
+
+  // Set an initial size via the connector (the "correct" way for embedded).
+  gfx::Rect initial_bounds(0, 0, 100, 100);
+  context.connector->SetRectInParentView(initial_bounds);
+  context.connector->SetLocalFrameSize(initial_bounds.size());
+  EXPECT_EQ(initial_bounds, context.connector->GetRectInParentViewInDip());
+  EXPECT_EQ(initial_bounds.size(), context.rwhvcf->GetViewBounds().size());
+
+  // Attempt to resize via WebContents::Resize (the "ignored" way for embedded).
+  gfx::Rect ignored_bounds(10, 10, 200, 200);
+  child_impl->Resize(ignored_bounds);
+
+  // The size should remain unchanged.
+  EXPECT_EQ(initial_bounds.size(), context.rwhvcf->GetViewBounds().size());
+}
+
+IN_PROC_BROWSER_TEST_F(SurfaceEmbedConnectorImplBrowserTest,
+                       KeepSurfaceAlivePersistsAcrossInvalidSurfaceState) {
+  MockSurfaceEmbedConnectorDelegate delegate;
+  auto context = SetupConnectorTest(&delegate);
+  auto* connector = context.connector.get();
+
+  // Ensure we start with an invalid surface ID.
+  ASSERT_FALSE(context.rwhvcf->GetCurrentSurfaceId().is_valid());
+
+  // Request to keep surface alive.
+  connector->SetKeepSurfaceAlive(true);
+
+  // The intent should be saved, but we cannot actually keep it alive yet
+  // because the surface ID is invalid.
+  EXPECT_TRUE(connector->IsKeepingAlive());
+  EXPECT_FALSE(HasKeepSurfaceAlive(connector));
+
+  // Now make the surface ID valid by synchronizing visual properties.
+  blink::FrameVisualProperties visual_properties;
+  display::ScreenInfo screen_info;
+  screen_info.device_scale_factor = 1.0f;
+  visual_properties.screen_infos = display::ScreenInfos(screen_info);
+  visual_properties.local_surface_id =
+      viz::LocalSurfaceId(1, base::UnguessableToken::CreateForTesting(2, 3));
+  connector->SynchronizeVisualProperties(visual_properties, false);
+
+  // The surface ID should now be valid.
+  ASSERT_TRUE(context.rwhvcf->GetCurrentSurfaceId().is_valid());
+
+  // The keep-alive should have been automatically refreshed and now be active.
+  EXPECT_TRUE(connector->IsKeepingAlive());
+  EXPECT_TRUE(HasKeepSurfaceAlive(connector));
 }
 
 }  // namespace content

@@ -232,6 +232,15 @@ class FrameConnector : public input::ChildFrameInputHelper::Delegate {
 
   // Returns the embedder's visibility.
   virtual Visibility EmbedderVisibility() = 0;
+
+  // Instructs the frame connector to keep its surface alive (or release it).
+  // This is typically used to ensure the surface is not discarded when the
+  // frame is hidden, for example, to allow it to be captured during tab
+  // capture.
+  virtual void SetKeepSurfaceAlive(bool keep_alive) = 0;
+
+  // Returns true if the frame connector is currently keeping the surface alive.
+  virtual bool IsKeepingAlive() const = 0;
 };
 
 }  // namespace content

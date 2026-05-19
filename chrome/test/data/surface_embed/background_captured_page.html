@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+<head><title>Background Captured Page</title></head>
+<body>
+<script>
+  window.tickCount = 0;
+  function tick() {
+    window.tickCount++;
+    requestAnimationFrame(tick);
+  }
+  requestAnimationFrame(tick);
+</script>
+</body>
+</html>

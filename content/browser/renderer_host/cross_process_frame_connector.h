@@ -179,6 +179,8 @@ class CONTENT_EXPORT CrossProcessFrameConnector : public FrameConnector {
       const blink::FrameVisualProperties& visual_properties) override;
 
   Visibility EmbedderVisibility() override;
+  void SetKeepSurfaceAlive(bool keep_alive) override;
+  bool IsKeepingAlive() const override;
 
   // ChildFrameInputHelper::Delegate implementation.
   input::RenderWidgetHostViewInput* GetParentViewInput() override;

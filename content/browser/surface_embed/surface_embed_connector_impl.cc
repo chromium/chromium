@@ -4,9 +4,11 @@
 
 #include "content/browser/surface_embed/surface_embed_connector_impl.h"
 
+#include "build/build_config.h"
 #include "components/input/cursor_manager.h"
 #include "components/input/render_widget_host_input_event_router.h"
 #include "content/browser/renderer_host/render_frame_host_delegate.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/renderer_host/render_frame_host_manager.h"
 #include "content/browser/renderer_host/render_view_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_delegate.h"
@@ -23,6 +25,12 @@
 #include "third_party/blink/public/mojom/input/pointer_lock_result.mojom.h"
 #include "ui/base/cursor/cursor.h"
 #include "ui/compositor/compositor.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "ui/android/view_android.h"
+#include "ui/android/window_android.h"
+#include "ui/android/window_android_compositor.h"
+#endif
 
 namespace content {
 
@@ -61,7 +69,7 @@ void SurfaceEmbedConnector::Attach(WebContents* child_web_contents,
   // Must Detach the child before re-Attaching.
   CHECK(!child_web_contents->GetSurfaceEmbedConnector());
   auto connector = base::WrapUnique(new SurfaceEmbedConnectorImpl(
-      child_web_contents, parent_web_contents, delegate));
+      child_web_contents, parent_web_contents, outer_document_rfh, delegate));
   static_cast<WebContentsImpl*>(child_web_contents)
       ->SetSurfaceEmbedConnector(std::move(connector));
 
@@ -95,6 +103,7 @@ void SurfaceEmbedConnector::Detach(WebContents* child_web_contents) {
 SurfaceEmbedConnectorImpl::SurfaceEmbedConnectorImpl(
     WebContents* child_web_contents,
     WebContents* parent_web_contents,
+    RenderFrameHost* embedder_rfh,
     SurfaceEmbedConnector::Delegate* delegate)
     : delegate_(delegate),
       child_web_contents_(static_cast<WebContentsImpl*>(child_web_contents)),
@@ -219,6 +228,8 @@ void SurfaceEmbedConnectorImpl::SetView(RenderWidgetHostViewChildFrame* view,
     if (delegate_) {
       delegate_->SetFrameSinkId(frame_sink_id_);
     }
+
+    MaybeRefreshKeepSurfaceAlive();
   }
 }
 
@@ -259,7 +270,9 @@ void SurfaceEmbedConnectorImpl::RenderProcessGone() {
 }
 
 void SurfaceEmbedConnectorImpl::FirstSurfaceActivation(
-    const viz::SurfaceInfo& surface_info) {}
+    const viz::SurfaceInfo& surface_info) {
+  MaybeRefreshKeepSurfaceAlive();
+}
 
 void SurfaceEmbedConnectorImpl::SendIntrinsicSizingInfoToParent(
     blink::mojom::IntrinsicSizingInfoPtr) {}
@@ -271,6 +284,8 @@ void SurfaceEmbedConnectorImpl::SynchronizeVisualProperties(
   last_received_css_zoom_factor_ = visual_properties.css_zoom_factor;
   last_received_local_frame_size_ = visual_properties.local_frame_size;
   screen_infos_ = visual_properties.screen_infos;
+  bool local_surface_id_changed =
+      (local_surface_id_ != visual_properties.local_surface_id);
   local_surface_id_ = visual_properties.local_surface_id;
   capture_sequence_number_ = visual_properties.capture_sequence_number;
 
@@ -298,6 +313,10 @@ void SurfaceEmbedConnectorImpl::SynchronizeVisualProperties(
       visual_properties.root_widget_viewport_segments);
 
   render_widget_host->UpdateVisualProperties(propagate);
+
+  if (local_surface_id_changed) {
+    MaybeRefreshKeepSurfaceAlive();
+  }
 }
 
 void SurfaceEmbedConnectorImpl::UpdateCursor(const ui::Cursor& cursor) {}
@@ -410,6 +429,46 @@ void SurfaceEmbedConnectorImpl::DidUpdateVisualProperties(
 void SurfaceEmbedConnectorImpl::SetVisibilityForChildViews(bool visible) {
   if (current_child_frame_host()) {
     current_child_frame_host()->SetVisibilityForChildViews(visible);
+  }
+}
+
+void SurfaceEmbedConnectorImpl::SetKeepSurfaceAlive(bool keep_alive) {
+  should_keep_alive_ = keep_alive;
+  // We may be force-shown by WebContents to enable tab capture, even if we're
+  // in background. To enable that, we want to create a reference to the
+  // surface, to help the compositor notice its capture; this won't be created
+  // by the parent renderer unless it gets actually painted.
+  if (!view_) {
+    keep_surface_alive_.RunAndReset();
+    return;
+  }
+
+  auto surface_id = view_->GetCurrentSurfaceId();
+#if BUILDFLAG(IS_ANDROID)
+  ui::WindowAndroidCompositor* compositor = nullptr;
+  if (view_->GetNativeView() && view_->GetNativeView()->GetWindowAndroid()) {
+    compositor = view_->GetNativeView()->GetWindowAndroid()->GetCompositor();
+  }
+  if (should_keep_alive_ && compositor && surface_id.is_valid()) {
+    keep_surface_alive_ = base::ScopedClosureRunner(
+        compositor->TakeScopedKeepSurfaceAliveCallback(surface_id));
+#else
+  if (should_keep_alive_ && view_->GetCompositor() && surface_id.is_valid()) {
+    keep_surface_alive_ =
+        view_->GetCompositor()->TakeScopedKeepSurfaceAliveCallback(surface_id);
+#endif
+  } else {
+    keep_surface_alive_.RunAndReset();
+  }
+}
+
+bool SurfaceEmbedConnectorImpl::IsKeepingAlive() const {
+  return should_keep_alive_;
+}
+
+void SurfaceEmbedConnectorImpl::MaybeRefreshKeepSurfaceAlive() {
+  if (should_keep_alive_) {
+    SetKeepSurfaceAlive(true);
   }
 }
 

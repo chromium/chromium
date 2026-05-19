@@ -672,6 +672,15 @@ Visibility CrossProcessFrameConnector::EmbedderVisibility() {
   return current_child_frame_host()->delegate()->GetVisibility();
 }
 
+void CrossProcessFrameConnector::SetKeepSurfaceAlive(bool keep_alive) {
+  // Not needed here; since the necessary work will be done on the parent
+  // view (unless people start capturing frames or such).
+}
+
+bool CrossProcessFrameConnector::IsKeepingAlive() const {
+  return false;
+}
+
 RenderFrameHostImpl* CrossProcessFrameConnector::current_child_frame_host()
     const {
   return frame_proxy_in_parent_renderer_

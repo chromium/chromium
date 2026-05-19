@@ -21,10 +21,10 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
-#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "content/public/test/test_utils.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
+#include "ui/views/widget/widget.h"
 #endif
 
 namespace ui_test_utils {
@@ -58,8 +58,12 @@ BrowserActivationWaiter::BrowserActivationWaiter(
     return;
   }
 
-  observation_.Observe(
-      BrowserView::GetBrowserViewForBrowser(browser)->GetWidget());
+  gfx::NativeWindow native_window = gfx::NativeWindow();
+  CHECK(GetNativeWindow(browser, &native_window));
+  views::Widget* widget =
+      views::Widget::GetWidgetForNativeWindow(native_window);
+  CHECK(widget);
+  observation_.Observe(widget);
 }
 
 BrowserActivationWaiter::~BrowserActivationWaiter() = default;

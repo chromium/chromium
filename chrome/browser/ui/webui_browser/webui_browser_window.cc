@@ -290,16 +290,15 @@ void WebUIBrowserWindow::Close() {
 }
 
 void WebUIBrowserWindow::Activate() {
-  NOTIMPLEMENTED_LOG_ONCE();
+  widget_->Activate();
 }
 
 void WebUIBrowserWindow::Deactivate() {
-  NOTIMPLEMENTED_LOG_ONCE();
+  widget_->Deactivate();
 }
 
 bool WebUIBrowserWindow::IsActive() const {
-  NOTIMPLEMENTED_LOG_ONCE();
-  return false;
+  return widget_->IsActive();
 }
 
 void WebUIBrowserWindow::FlashFrame(bool flash) {

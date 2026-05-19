@@ -42,6 +42,10 @@
 #include "third_party/blink/public/mojom/webshare/webshare.mojom.h"
 #endif  // BUILDFLAG(IS_MAC)
 
+namespace ui {
+class Compositor;
+}
+
 namespace content {
 class FrameConnector;
 class RenderWidgetHost;
@@ -104,6 +108,7 @@ class CONTENT_EXPORT RenderWidgetHostViewChildFrame
   gfx::NativeViewAccessible GetNativeViewAccessible() override;
   bool IsPointerLocked() override;
   void TakeFallbackContentFrom(RenderWidgetHostView* view) override;
+  ui::Compositor* GetCompositor() override;
 
   // RenderWidgetHostViewBase implementation.
 #if BUILDFLAG(IS_ANDROID)
@@ -300,8 +305,6 @@ class CONTENT_EXPORT RenderWidgetHostViewChildFrame
   base::WeakPtr<RenderWidgetHostViewChildFrame> AsWeakPtr() {
     return weak_factory_.GetWeakPtr();
   }
-
-  ui::Compositor* GetCompositor() override;
 
   void SetInputHelperForTesting(
       std::unique_ptr<input::ChildFrameInputHelper> input_helper) {

@@ -5625,9 +5625,10 @@ class SurfaceEmbedConnectorWebContentsBrowserTest
   std::unique_ptr<SurfaceEmbedConnectorImpl> CreateConnector(
       WebContents* child_web_contents,
       WebContents* parent_web_contents) {
-    return base::WrapUnique(
-        new SurfaceEmbedConnectorImpl(child_web_contents, parent_web_contents,
-                                      &surface_embed_connector_delegate_));
+    return base::WrapUnique(new SurfaceEmbedConnectorImpl(
+        child_web_contents, parent_web_contents,
+        parent_web_contents->GetPrimaryMainFrame(),
+        &surface_embed_connector_delegate_));
   }
 
  private:
