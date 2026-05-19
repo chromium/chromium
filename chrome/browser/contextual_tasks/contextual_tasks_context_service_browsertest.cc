@@ -365,6 +365,23 @@ class ContextualTasksContextServiceTest : public InProcessBrowserTest {
   page_content_annotations::TestPageContentAnnotator page_content_annotator_;
 };
 
+IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest, EmptyQuery) {
+  base::HistogramTester histogram_tester;
+
+  base::test::TestFuture<std::vector<base::WeakPtr<content::WebContents>>>
+      future;
+  service()->GetRelevantTabsForQuery(
+      /*options=*/{}, "", /*explicit_urls=*/{}, future.GetCallback());
+  EXPECT_TRUE(future.Get().empty());
+
+  histogram_tester.ExpectTotalCount("ContextualTasks.Context.RelevantTabsCount",
+                                    0);
+  histogram_tester.ExpectTotalCount(
+      "ContextualTasks.Context.ContextCalculationLatency", 0);
+  histogram_tester.ExpectTotalCount(
+      "ContextualTasks.Context.ContextDeterminationStatus", 0);
+}
+
 IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest, NoEmbedder) {
   base::HistogramTester histogram_tester;
 

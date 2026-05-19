@@ -353,6 +353,15 @@ void ContextualTasksContextService::GetRelevantTabsForQuery(
   AUTO_CONTEXT_LOG(base::StringPrintf("Processing query %s in mode %d", query,
                                       options.tab_selection_mode));
 
+  if (query.empty()) {
+    AUTO_CONTEXT_LOG("Query is empty");
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(std::move(callback),
+                       std::vector<base::WeakPtr<content::WebContents>>()));
+    return;
+  }
+
   if (!embedder_model_version_) {
     AUTO_CONTEXT_LOG("Embedder not available");
     RecordContextDeterminationStatus(
