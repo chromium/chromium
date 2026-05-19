@@ -88,6 +88,9 @@ class AllowList:
   def private(self, path: str) -> bool:
     return path not in self.hdrs
 
+  def forced(self) -> list[modulemap_config.Header]:
+    return [h for h in self.hdrs.values() if h.force]
+
 
 # Disabled headers are present in modulemaps, but we should assume that they are
 # unable to be used (note that this inherently means they must be textual).
@@ -389,7 +392,7 @@ def calculate_transitive_headers(clang_args: list[str],
 
     deps = parse_depfile(dep_file.read_text())
 
-    headers = []
+    headers = {}
     for dep in deps:
       full = _absolute(dep)
       if full in input_headers:
@@ -409,16 +412,29 @@ def calculate_transitive_headers(clang_args: list[str],
         # Non-sysroot headers are treated as textual by default to match
         # existing behaviour.
         textual = not found
-      headers.append(
-          Header(
-              path=full,
-              private=allowlist.private(rel),
-              textual=textual,
-              module_name=allowlist.module_name(rel),
-              exports=allowlist.exports(rel),
-          ))
+      headers[full] = Header(
+          path=full,
+          private=allowlist.private(rel),
+          textual=textual,
+          module_name=allowlist.module_name(rel),
+          exports=allowlist.exports(rel),
+      )
 
-    return headers
+    for h in allowlist.forced():
+      for d in sysroot_dirs:
+        full = d / h.path
+        if full.exists():
+          if full not in headers:
+            headers[full] = Header(
+                path=full,
+                private=False,
+                textual=True,
+            )
+          else:
+            headers[full].private = False
+          break
+
+    return list(headers.values())
 
 
 def combine_modulemaps(out: pathlib.Path, modulemaps: list[pathlib.Path],

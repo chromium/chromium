@@ -40,12 +40,16 @@ module root {
   private header "../../libc++/private.h"
 }
 
+module "never_referenced.h" {
+  textual header "../../sysroot/usr/include/never_referenced.h"
+  export *
+}
 module "public_root.h" {
   header "../../sysroot/usr/include/public_root.h"
   export *
 }
 module "sysroot.h" {
-  private header "../../sysroot/usr/include/sysroot.h"
+  header "../../sysroot/usr/include/sysroot.h"
   export *
 }
 module "public_subdir.h" {
@@ -144,6 +148,8 @@ class GenerateSysrootModulemapTest(unittest.TestCase):
         allowlist=AllowList([
             modulemap_config.Header('bits/public_subdir.h'),
             modulemap_config.Header('public_root.h'),
+            modulemap_config.AllowedHeader('sysroot.h'),
+            modulemap_config.AllowedHeader('never_referenced.h'),
         ]),
         target_os='linux',
         target_cpu='x64',
@@ -153,11 +159,14 @@ class GenerateSysrootModulemapTest(unittest.TestCase):
         Header(
             path=_LIBCXX / 'subdir/bits/missing.h', private=True, textual=True),
         Header(path=_LIBCXX / 'subdir/missing.h', private=True, textual=True),
+        Header(path=_SYSROOT / 'usr/include/never_referenced.h',
+               private=False,
+               textual=True),
         Header(path=_SYSROOT / 'usr/include/public_root.h',
                private=False,
                textual=False),
         Header(path=_SYSROOT / 'usr/include/sysroot.h',
-               private=True,
+               private=False,
                textual=False),
         Header(
             path=_SYSROOT / 'usr/include/x86_64-linux-gnu/bits/public_subdir.h',

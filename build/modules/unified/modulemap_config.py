@@ -43,6 +43,18 @@ class Header:
   # dependencies.
   exports: list[str] = dataclasses.field(default_factory=lambda: ['*'])
 
+  # If true, will force the header to create itself even if it wasn't in the
+  # depfile.
+  force: bool = False
+
+
+# An allowed header is one that is here purely to add it to the allowlist of
+# files to #include. It is not precompiled.
+class AllowedHeader(Header):
+
+  def __init__(self, path: str):
+    super().__init__(path, force=True, lazy=True)
+
 
 def headers(os):
   is_linux = os == 'linux'
@@ -60,6 +72,7 @@ def headers(os):
       Header('alloca.h'),
       # Include loop with sys/cdefs.h
       Header('android/api-level.h', textual=True),
+      AllowedHeader('arpa/inet.h'),
       # We need posix_types_32.h to define __kernel_mode_t in the same TU.
       # This way it appears as an override rather than a second definition.
       Header('asm-generic/posix_types.h', textual=True, lazy=True),
@@ -78,40 +91,71 @@ def headers(os):
       # We need to re-export wcsstr in a few places.
       Header('corecrt_wstring.h', exists=is_win, module_name='corecrt_wstring'),
       Header('ctype.h'),
+      Header('cxxabi.h'),
+      AllowedHeader('dirent.h'),
+      AllowedHeader('dlfcn.h'),
+      AllowedHeader('elf.h'),
       Header('endian.h'),
+      AllowedHeader('fcntl.h'),
       Header('features.h'),
       Header('fenv.h'),
+      AllowedHeader('grp.h'),
+      AllowedHeader('libgen.h'),
       # See https://codebrowser.dev/glibc/glibc/sysdeps/unix/sysv/linux/bits/local_lim.h.html#56
       # if linux/limits.h is non-textual, then limits.h undefs the limits.h
       # defined in the linux/limits.h module.
       # Thus, limits.h exports an undef.
       # if it's textual, limits.h undefs something it defined itself.
       Header('limits.h', textual=True),
+      AllowedHeader('link.h'),
+      AllowedHeader('linux/futex.h'),
       # See above comment about limits.h
       Header('linux/limits.h', textual=True),
+      AllowedHeader('linux/random.h'),
       Header('linux/types.h'),
       Header('locale.h'),
-      Header('malloc.h', exists=is_win),
+      Header('malloc.h'),
+      AllowedHeader('netdb.h'),
+      AllowedHeader('netinet/in.h'),
+      AllowedHeader('netinet/tcp.h'),
       # We need to re-export std::nothrow in std.new
       Header('new.h', exists=is_win, module_name='new_h'),
+      AllowedHeader('poll.h'),
       Header('pthread.h'),
       Header('sal.h', exists=is_win),
       Header('sched.h'),
+      AllowedHeader('semaphore.h'),
       Header('setjmp.h'),
       Header('signal.h'),
       # corecrt_wstring needs to be exported since it provides wcscmp
       Header('string.h', exists=is_win, exports=['*', 'corecrt_wstring']),
       Header('strings.h'),
       # In an include loop with features.h, but not on android
+      AllowedHeader('sys/auxv.h'),
       Header('sys/cdefs.h', textual=not is_android),
+      AllowedHeader('sys/eventfd.h'),
+      AllowedHeader('sys/inotify.h'),
+      AllowedHeader('sys/mman.h'),
+      AllowedHeader('sys/prctl.h'),
       Header('sys/procfs.h'),
+      AllowedHeader('sys/resource.h'),
       Header('sys/select.h'),
+      AllowedHeader('sys/socket.h'),
       Header('sys/stat.h', exists=is_win),
       Header('sys/time.h'),
+      AllowedHeader('sys/syscall.h'),
+      AllowedHeader('sys/sysinfo.h'),
+      AllowedHeader('sys/time.h'),
+      AllowedHeader('sys/timerfd.h'),
       Header('sys/types.h'),
       Header('sys/ucontext.h'),
+      AllowedHeader('sys/un.h'),
       Header('sys/user.h'),
+      AllowedHeader('sys/utsname.h'),
+      AllowedHeader('sys/wait.h'),
+      AllowedHeader('syscall.h'),
       Header('time.h'),
+      AllowedHeader('ucontext.h'),
       Header('unistd.h'),
       # We need to re-export std::exception in std.exception.exception and type
       # info.
