@@ -407,14 +407,18 @@ TEST_F(BirchBarTest, RecordsHistogramWhenChipsShown) {
                      std::string(), /*all_day_event=*/false);
   birch_client_->SetCalendarItems(items);
 
-  // Entering overview shows the birch bar.
+  base::RunLoop data_fetch_run_loop;
+  Shell::Get()->birch_model()->SetDataFetchCallbackForTest(
+      data_fetch_run_loop.QuitClosure());
+
+  // Entering overview shows the birch bar and starts the data fetch.
   EnterOverview();
-  base::RunLoop().RunUntilIdle();  // Wait for data fetch callback.
+  data_fetch_run_loop.Run();
 
   // One impression was recorded for the birch bar.
   histograms.ExpectBucketCount("Ash.Birch.Bar.Impression", true, 1);
 
-  // Four chips were shown.
+  // Two chips were shown.
   histograms.ExpectBucketCount("Ash.Birch.ChipCount", 2, 1);
 
   // One impression was recorded for each chip type.
