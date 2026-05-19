@@ -862,6 +862,8 @@ size_t V4L2StatefulVideoDecoder::GetNumberOfReferenceFrames() {
 void V4L2StatefulVideoDecoder::RearmCAPTUREQueueMonitoring() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  cancelable_task_tracker_.TryCancelAll();
+
   auto dequeue_callback = base::BindPostTaskToCurrentDefault(base::BindOnce(
       &V4L2StatefulVideoDecoder::TryAndDequeueCAPTUREQueueBuffers,
       weak_ptr_factory_for_events_.GetWeakPtr()));
