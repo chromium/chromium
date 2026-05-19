@@ -152,35 +152,40 @@ public final class ViewUtils {
     }
 
     /**
-     *  Converts density-independent pixels (dp) to pixels on the screen (px).
-     *
-     *  @param dp Density-independent pixels are based on the physical density of the screen.
-     *  @return   The physical pixels on the screen which correspond to this many
-     *            density-independent pixels for this screen.
+     * @see #dpToPx(DisplayMetrics, float)
      */
     public static int dpToPx(Context context, float dp) {
         return dpToPx(context.getResources().getDisplayMetrics(), dp);
     }
 
     /**
-     *  Converts density-independent pixels (dp) to pixels on the screen (px).
+     * Converts density-independent pixels (dp) to pixels on the screen (px).
      *
-     *  @param dp Density-independent pixels are based on the physical density of the screen.
-     *  @return   The physical pixels on the screen which correspond to this many
-     *            density-independent pixels for this screen.
+     * @param metrics The {@link DisplayMetrics} for checking the current display pixel density.
+     * @param dp Density-independent pixels are based on the physical density of the screen.
+     * @return The physical pixels on the screen which correspond to this many density-independent
+     *     pixels for this screen.
      */
     public static int dpToPx(DisplayMetrics metrics, float dp) {
         return Math.round(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, metrics));
     }
 
     /**
+     * @see #pxToDp(DisplayMetrics, int)
+     */
+    public static int pxToDp(Context context, int px) {
+        return pxToDp(context.getResources().getDisplayMetrics(), px);
+    }
+
+    /**
      * Converts pixels on the screen (px) to density-independent pixels (dp).
      *
+     * @param metrics The {@link DisplayMetrics} for checking the current display pixel density.
      * @param px The physical pixels on the screen.
      * @return The density-independent pixels that correspond to this many physical pixels.
      */
-    public static int pxToDp(Context context, int px) {
-        return Math.round(px / context.getResources().getDisplayMetrics().density);
+    public static int pxToDp(DisplayMetrics displayMetrics, int px) {
+        return Math.round(px / displayMetrics.density);
     }
 
     /**
