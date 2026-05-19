@@ -5,6 +5,7 @@
 #include <array>
 #include <cmath>
 #include <cstdint>
+#include <cstdlib>
 #include <limits>
 #include <memory>
 #include <numeric>
@@ -1281,8 +1282,11 @@ class GlobalFuzzEnvironment {
     // an inference failure, crash the process so the fuzzer can catch the
     // error.
     auto lose_all_contexts_callback = base::BindOnce([]() {
-      LOG(FATAL)
+      LOG(ERROR)
           << "Lose all WebNN contexts, likely due to an inference failure.";
+      // Use abort() instead of LOG(FATAL) because on Windows LOG(FATAL)
+      // triggers int3 (SIGTRAP), which the fuzzer cannot catch.
+      abort();
     });
     webnn_test_environment_ = std::make_unique<WebNNTestEnvironment>(
         WebNNContextProviderImpl::WebNNStatus::kWebNNEnabled,
