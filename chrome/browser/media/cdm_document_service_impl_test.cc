@@ -377,29 +377,17 @@ TEST_F(CdmDocumentServiceImplTest, ClearCdmPreferenceDataNullFilter) {
 }
 
 #if BUILDFLAG(IS_WIN)
-TEST_F(CdmDocumentServiceImplTest, VerifyCdmStorePathRootAcl) {
-  NavigateToUrlAndCreateCdmDocumentService(GURL(kTestOrigin));
-  auto data = GetMediaFoundationCdmData();
-
-  auto sids = base::win::Sid::FromNamedCapabilityVector(
-      {sandbox::policy::kMediaFoundationCdmData});
-  ASSERT_FALSE(sids.empty());
-
-  // The root path should have traverse permissions.
-  EXPECT_TRUE(base::win::HasAccessToPath(data->cdm_store_path_root, sids,
-                                         FILE_TRAVERSE, NO_INHERITANCE));
-
-  // The root path should NOT have list directory permissions to prevent
-  // cross-origin enumeration. base::win::HasAccessToPath cannot be used here
-  // because it matches inherit-only ACEs when querying with NO_INHERITANCE.
+bool HasListDirectoryPermission(const base::FilePath& path,
+                                const std::vector<base::win::Sid>& sids) {
   PACL dacl = nullptr;
   PSECURITY_DESCRIPTOR sd = nullptr;
   // Manually retrieve the Discretionary Access Control List (DACL) to inspect
   // its entries directly.
-  ASSERT_EQ(ERROR_SUCCESS,
-            ::GetNamedSecurityInfo(data->cdm_store_path_root.value().c_str(),
-                                   SE_FILE_OBJECT, DACL_SECURITY_INFORMATION,
-                                   nullptr, nullptr, &dacl, nullptr, &sd));
+  if (::GetNamedSecurityInfo(path.value().c_str(), SE_FILE_OBJECT,
+                             DACL_SECURITY_INFORMATION, nullptr, nullptr, &dacl,
+                             nullptr, &sd) != ERROR_SUCCESS) {
+    return false;
+  }
   bool has_list_directory = false;
   if (dacl) {
     // Iterate over each Access Control Entry (ACE) in the DACL.
@@ -432,16 +420,64 @@ TEST_F(CdmDocumentServiceImplTest, VerifyCdmStorePathRootAcl) {
       }
     }
   }
-  // A compromised MF utility process can't enumerate other origin-specific
-  // subdirectories anymore, which is the main goal of this test.
-  EXPECT_FALSE(has_list_directory);
   ::LocalFree(sd);
+  return has_list_directory;
+}
+
+TEST_F(CdmDocumentServiceImplTest, VerifyCdmStorePathRootAcl) {
+  NavigateToUrlAndCreateCdmDocumentService(GURL(kTestOrigin));
+  auto data = GetMediaFoundationCdmData();
+
+  auto sids = base::win::Sid::FromNamedCapabilityVector(
+      {sandbox::policy::kMediaFoundationCdmData});
+  ASSERT_FALSE(sids.empty());
+
+  // The root path should have traverse permissions.
+  EXPECT_TRUE(base::win::HasAccessToPath(data->cdm_store_path_root, sids,
+                                         FILE_TRAVERSE, NO_INHERITANCE));
+
+  // The root path should NOT have list directory permissions to prevent
+  // cross-origin enumeration. base::win::HasAccessToPath cannot be used here
+  // because it matches inherit-only ACEs when querying with NO_INHERITANCE.
+  EXPECT_FALSE(HasListDirectoryPermission(data->cdm_store_path_root, sids));
 
   // And the inherited permissions should grant full access to subdirectories.
   // (Note: HasAccessToPath requires the exact inheritance flags to match the
   // ACE).
   EXPECT_TRUE(base::win::HasAccessToPath(
       data->cdm_store_path_root, sids,
+      FILE_GENERIC_READ | FILE_GENERIC_WRITE | DELETE,
+      CONTAINER_INHERIT_ACE | OBJECT_INHERIT_ACE | INHERIT_ONLY_ACE));
+}
+
+TEST_F(CdmDocumentServiceImplTest, MigrateCdmStorePathRootAcl) {
+  NavigateToUrlAndCreateCdmDocumentService(GURL(kTestOrigin));
+  auto data = GetMediaFoundationCdmData();
+
+  auto sids = base::win::Sid::FromNamedCapabilityVector(
+      {sandbox::policy::kMediaFoundationCdmData});
+  ASSERT_FALSE(sids.empty());
+
+  // Manually apply the old vulnerable ACL to simulate a pre-existing root.
+  ASSERT_TRUE(base::win::GrantAccessToPath(
+      data->cdm_store_path_root, sids,
+      FILE_GENERIC_READ | FILE_GENERIC_WRITE | GENERIC_EXECUTE | DELETE,
+      CONTAINER_INHERIT_ACE | OBJECT_INHERIT_ACE));
+
+  // Verify the vulnerable ACL is actually applied.
+  EXPECT_TRUE(HasListDirectoryPermission(data->cdm_store_path_root, sids));
+
+  // Trigger the creation/migration logic again.
+  auto data2 = GetMediaFoundationCdmData();
+
+  // Verify the vulnerable ACL is removed.
+  EXPECT_FALSE(HasListDirectoryPermission(data2->cdm_store_path_root, sids));
+
+  // And the intended ACLs are restored.
+  EXPECT_TRUE(base::win::HasAccessToPath(data2->cdm_store_path_root, sids,
+                                         FILE_TRAVERSE, NO_INHERITANCE));
+  EXPECT_TRUE(base::win::HasAccessToPath(
+      data2->cdm_store_path_root, sids,
       FILE_GENERIC_READ | FILE_GENERIC_WRITE | DELETE,
       CONTAINER_INHERIT_ACE | OBJECT_INHERIT_ACE | INHERIT_ONLY_ACE));
 }

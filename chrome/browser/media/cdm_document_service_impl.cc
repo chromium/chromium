@@ -84,6 +84,49 @@ base::FilePath GetCdmStorePathRootForProfile(
 }  // namespace
 
 #if BUILDFLAG(IS_WIN)
+bool RevokeAccess(const base::FilePath& path,
+                  const std::vector<base::win::Sid>& sids) {
+  if (sids.empty()) {
+    return true;
+  }
+
+  PACL old_dacl = nullptr;
+  PSECURITY_DESCRIPTOR sd = nullptr;
+
+  if (GetNamedSecurityInfoW(path.value().c_str(), SE_FILE_OBJECT,
+                            DACL_SECURITY_INFORMATION, nullptr, nullptr,
+                            &old_dacl, nullptr, &sd) != ERROR_SUCCESS) {
+    return false;
+  }
+
+  std::vector<EXPLICIT_ACCESS_W> explicit_access(sids.size());
+  for (size_t i = 0; i < sids.size(); ++i) {
+    explicit_access[i].grfAccessPermissions = 0;
+    explicit_access[i].grfAccessMode = REVOKE_ACCESS;
+    explicit_access[i].grfInheritance = NO_INHERITANCE;
+    explicit_access[i].Trustee.TrusteeForm = TRUSTEE_IS_SID;
+    explicit_access[i].Trustee.TrusteeType = TRUSTEE_IS_UNKNOWN;
+    explicit_access[i].Trustee.ptstrName =
+        reinterpret_cast<LPWSTR>(const_cast<void*>(sids[i].GetPSID()));
+  }
+
+  PACL new_dacl = nullptr;
+  if (SetEntriesInAclW(static_cast<ULONG>(sids.size()), explicit_access.data(),
+                       old_dacl, &new_dacl) != ERROR_SUCCESS) {
+    LocalFree(sd);
+    return false;
+  }
+
+  bool success =
+      SetNamedSecurityInfoW(const_cast<LPWSTR>(path.value().c_str()),
+                            SE_FILE_OBJECT, DACL_SECURITY_INFORMATION, nullptr,
+                            nullptr, new_dacl, nullptr) == ERROR_SUCCESS;
+
+  LocalFree(new_dacl);
+  LocalFree(sd);
+  return success;
+}
+
 bool CreateCdmStorePathRootAndGrantAccessIfNeeded(
     const base::FilePath& cdm_store_path_root) {
   if (!media::MediaFoundationCdm::IsAvailable()) {
@@ -91,19 +134,20 @@ bool CreateCdmStorePathRootAndGrantAccessIfNeeded(
                    "Windows 10.";
     return false;
   }
-  // If the path exist, we can assume the right permission are already
-  // set on it.
-  if (base::PathExists(cdm_store_path_root))
-    return true;
-
-  base::File::Error file_error;
-  if (!base::CreateDirectoryAndGetError(cdm_store_path_root, &file_error)) {
-    DLOG(ERROR) << "Create CDM store path failed with " << file_error;
-    return false;
-  }
-
   auto sids = base::win::Sid::FromNamedCapabilityVector(
       {sandbox::policy::kMediaFoundationCdmData});
+
+  // Revoke the vulnerable `FILE_LIST_DIRECTORY` ACL on pre-existing folders
+  if (!base::PathExists(cdm_store_path_root)) {
+    base::File::Error file_error;
+    if (!base::CreateDirectoryAndGetError(cdm_store_path_root, &file_error)) {
+      DLOG(ERROR) << "Create CDM store path failed with " << file_error;
+      return false;
+    }
+  } else if (!RevokeAccess(cdm_store_path_root, sids)) {
+    DLOG(ERROR) << "Failed to revoke existing access to the root directory.";
+    return false;
+  }
 
   // Grant traverse access to the root directory itself to allow processes to
   // access known subdirectories but prevent directory listing.
