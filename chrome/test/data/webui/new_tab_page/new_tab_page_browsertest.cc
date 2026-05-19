@@ -98,14 +98,26 @@ IN_PROC_BROWSER_TEST_F(NewTabPageTest, Transparency) {
   RunTest("new_tab_page/transparency_test.js", "mocha.run()");
 }
 
-// TODO(https://crbug.com/483519387): flaky on linux-chromeos-dbg.
-#if BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_Composebox DISABLED_Composebox
-#else
-#define MAYBE_Composebox Composebox
-#endif
-IN_PROC_BROWSER_TEST_F(NewTabPageTest, MAYBE_Composebox) {
-  RunTest("new_tab_page/composebox/composebox_test.js", "mocha.run()");
+IN_PROC_BROWSER_TEST_F(NewTabPageTest, ComposeboxBase) {
+  RunTest("new_tab_page/composebox/composebox_test.js",
+          "runMochaSuite('NewTabPageComposeboxTest')");
+}
+
+IN_PROC_BROWSER_TEST_F(NewTabPageTest, ComposeboxV2ForkTrue) {
+  RunTest("new_tab_page/composebox/composebox_test.js",
+          "runMochaSuite('NewTabPageComposeboxTestV2 \\\\(useNtpComposeboxFork = "
+          "true\\\\)')");
+}
+
+IN_PROC_BROWSER_TEST_F(NewTabPageTest, ComposeboxV2ForkFalse) {
+  RunTest("new_tab_page/composebox/composebox_test.js",
+          "runMochaSuite('NewTabPageComposeboxTestV2 \\\\(useNtpComposeboxFork = "
+          "false\\\\)')");
+}
+
+IN_PROC_BROWSER_TEST_F(NewTabPageTest, ComposeboxResizeObserver) {
+  RunTest("new_tab_page/composebox/composebox_test.js",
+          "runMochaSuite('NewTabPageComposeboxResizeObserverTest')");
 }
 
 IN_PROC_BROWSER_TEST_F(NewTabPageTest, ComposeboxSubmit) {
