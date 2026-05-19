@@ -151,7 +151,8 @@ public class TabbedAdaptiveToolbarBehavior implements AdaptiveToolbarBehavior {
                             trackerSupplier,
                             mChromeAndroidTaskSupplier,
                             mBrowserControlsVisibilityManager,
-                            mTabModelSelectorSupplier);
+                            mTabModelSelectorSupplier,
+                            controller::recomputeUiState);
             controller.addButtonVariant(AdaptiveToolbarButtonVariant.GLIC, mGlicButtonController);
         }
 

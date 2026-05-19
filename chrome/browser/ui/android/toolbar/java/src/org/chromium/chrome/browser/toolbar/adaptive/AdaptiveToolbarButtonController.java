@@ -489,6 +489,13 @@ public class AdaptiveToolbarButtonController
         }
     }
 
+    /** Recomputes the UI state of the toolbar button. */
+    public void recomputeUiState() {
+        if (mAdaptiveToolbarStatePredictor != null) {
+            mAdaptiveToolbarStatePredictor.recomputeUiState(mUiStateCallback);
+        }
+    }
+
     public Set<Integer> getAllSupportedTypesForTesting() {
         return mButtonDataProviderMap.keySet();
     }

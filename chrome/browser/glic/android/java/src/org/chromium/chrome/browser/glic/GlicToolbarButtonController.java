@@ -48,6 +48,7 @@ public class GlicToolbarButtonController extends BaseButtonDataProvider {
     private final GlicButtonDelegate mToggleGlicCallback;
     private final Supplier<@Nullable Tracker> mTrackerSupplier;
     private final Supplier<@Nullable TabModelSelector> mTabModelSelectorSupplier;
+    private final @Nullable Runnable mRecomputeUiStateCallback;
     private final ButtonSpec mDefaultSpec;
     private final ButtonSpec mWorkingSpec;
     private final ButtonSpec mReviewSpec;
@@ -64,6 +65,7 @@ public class GlicToolbarButtonController extends BaseButtonDataProvider {
      * @param taskSupplier Supplier for the ChromeAndroidTask.
      * @param browserControlsVisibilityManager Manager for browser controls.
      * @param tabModelSelectorSupplier Supplier for the TabModelSelector.
+     * @param recomputeUiStateCallback Callback to trigger recomputation of adaptive toolbar button.
      */
     public GlicToolbarButtonController(
             Activity activity,
@@ -72,7 +74,8 @@ public class GlicToolbarButtonController extends BaseButtonDataProvider {
             Supplier<@Nullable Tracker> trackerSupplier,
             Supplier<@Nullable ChromeAndroidTask> taskSupplier,
             BrowserControlsVisibilityManager browserControlsVisibilityManager,
-            Supplier<@Nullable TabModelSelector> tabModelSelectorSupplier) {
+            Supplier<@Nullable TabModelSelector> tabModelSelectorSupplier,
+            @Nullable Runnable recomputeUiStateCallback) {
         super(
                 activeTabSupplier,
                 /* modalDialogManager= */ null,
@@ -87,6 +90,7 @@ public class GlicToolbarButtonController extends BaseButtonDataProvider {
         mToggleGlicCallback = toggleGlicCallback;
         mTrackerSupplier = trackerSupplier;
         mTabModelSelectorSupplier = tabModelSelectorSupplier;
+        mRecomputeUiStateCallback = recomputeUiStateCallback;
         mDefaultSpec = mButtonData.getButtonSpec();
         Drawable collapsedDrawable =
                 AppCompatResources.getDrawable(activity, R.drawable.glic_dirty_dot_spark);
@@ -94,7 +98,13 @@ public class GlicToolbarButtonController extends BaseButtonDataProvider {
         mStateController =
                 new GlicButtonStateController(
                         activity,
-                        (state, isPanelOpen) -> notifyObservers(true),
+                        (state, isPanelOpen) -> {
+                            if (mRecomputeUiStateCallback != null) {
+                                mRecomputeUiStateCallback.run();
+                            } else {
+                                notifyObservers(true);
+                            }
+                        },
                         taskSupplier,
                         browserControlsVisibilityManager);
 

@@ -109,9 +109,9 @@ public class GlicToolbarButtonControllerTest {
                         () -> mTracker,
                         () -> mTask,
                         mBrowserControlsVisibilityManager,
-                        () -> mTabModelSelector);
+                        () -> mTabModelSelector,
+                        null);
     }
-
 
     @Test
     public void testButtonData() {
@@ -347,7 +347,8 @@ public class GlicToolbarButtonControllerTest {
                         () -> mTracker,
                         () -> task,
                         mBrowserControlsVisibilityManager,
-                        () -> mTabModelSelector);
+                        () -> mTabModelSelector,
+                        null);
 
         ButtonData buttonData = controller.get(mTab);
 
@@ -368,7 +369,8 @@ public class GlicToolbarButtonControllerTest {
                         () -> mTracker,
                         () -> task,
                         mBrowserControlsVisibilityManager,
-                        () -> mTabModelSelector);
+                        () -> mTabModelSelector,
+                        null);
 
         controller.get(mTab); // Initialize observations
 
@@ -511,11 +513,37 @@ public class GlicToolbarButtonControllerTest {
                         () -> mTracker,
                         () -> task,
                         mBrowserControlsVisibilityManager,
-                        () -> mTabModelSelector);
+                        () -> mTabModelSelector,
+                        null);
 
         when(mActorService.getActiveTasks()).thenReturn(null);
         Assert.assertTrue(controller.shouldForciblyShowGlicButton(mProfile));
         verify(mActorService).addObserver(any());
         verify(mGlicKeyedService).addGlobalShowHideObserver(any());
+    }
+
+    @Test
+    public void testTaskState_TriggersRecomputeCallback() {
+        Runnable recomputeCallback = mock(Runnable.class);
+        GlicToolbarButtonController controller =
+                new GlicToolbarButtonController(
+                        mActivity,
+                        () -> mTab,
+                        mToggleGlicCallback,
+                        () -> mTracker,
+                        () -> null,
+                        mBrowserControlsVisibilityManager,
+                        () -> mTabModelSelector,
+                        recomputeCallback);
+
+        controller.get(mTab); // initialize observations
+        verify(mActorService).addObserver(mActorObserverCaptor.capture());
+        ActorKeyedService.Observer actorObserver = mActorObserverCaptor.getValue();
+
+        // Trigger state change
+        actorObserver.onTaskStateChanged(1, ActorTaskState.ACTING);
+
+        // Verify callback was invoked!
+        verify(recomputeCallback).run();
     }
 }
