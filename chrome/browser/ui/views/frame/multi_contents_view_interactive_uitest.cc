@@ -584,9 +584,8 @@ IN_PROC_BROWSER_TEST_P(MultiContentsViewUiTest,
           })));
 }
 
-// TODO(crbug.com/399212996): Flaky on Linux, ChromeOS and Win-ASAN.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || \
-    (BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER))
+// TODO(crbug.com/399212996): Flaky on Linux, ChromeOS and Windows.
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
 #define MAYBE_ResizesViaKeyboard DISABLED_ResizesViaKeyboard
 #else
 #define MAYBE_ResizesViaKeyboard ResizesViaKeyboard
