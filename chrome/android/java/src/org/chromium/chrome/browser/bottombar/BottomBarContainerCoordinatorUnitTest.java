@@ -14,6 +14,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
+import android.content.res.Configuration;
 import android.view.View;
 import android.widget.FrameLayout;
 
@@ -33,6 +34,7 @@ import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.RobolectricUtil;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker.LayerScrollBehavior;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
@@ -171,5 +173,64 @@ public class BottomBarContainerCoordinatorUnitTest {
         assertEquals(childView, mBottomBarContainer.getChildAt(0));
         verify(mRequestLayerUpdateCallback).onResult(true);
         verify(mOnModelTokenChange, times(2)).onResult(any());
+    }
+
+    @Test
+    public void testOnConfigurationChanged() {
+        mCoordinator.initializeWithNative(mVisibilityController, mOnModelTokenChange);
+        verify(mOnModelTokenChange, times(1)).onResult(any());
+
+        Configuration newConfig = new Configuration();
+        newConfig.orientation = Configuration.ORIENTATION_LANDSCAPE;
+
+        mCoordinator.getComponentCallbacksForTesting().onConfigurationChanged(newConfig);
+
+        // Runnable is posted, verify it hasn't run yet.
+        verify(mOnModelTokenChange, times(1)).onResult(any());
+
+        // Run posted tasks.
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        // Verify runnable executed.
+        verify(mOnModelTokenChange, times(2)).onResult(any());
+    }
+
+    @Test
+    public void testOnConfigurationChanged_debounce() {
+        mCoordinator.initializeWithNative(mVisibilityController, mOnModelTokenChange);
+        verify(mOnModelTokenChange, times(1)).onResult(any());
+
+        Configuration newConfig1 = new Configuration();
+        newConfig1.orientation = Configuration.ORIENTATION_LANDSCAPE;
+
+        Configuration newConfig2 = new Configuration();
+        newConfig2.orientation = Configuration.ORIENTATION_PORTRAIT;
+
+        mCoordinator.getComponentCallbacksForTesting().onConfigurationChanged(newConfig1);
+        mCoordinator.getComponentCallbacksForTesting().onConfigurationChanged(newConfig2);
+
+        // Run posted tasks.
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        // Verify runnable executed only once more (total 2).
+        verify(mOnModelTokenChange, times(2)).onResult(any());
+    }
+
+    @Test
+    public void testOnConfigurationChanged_sameOrientation() {
+        mCoordinator.initializeWithNative(mVisibilityController, mOnModelTokenChange);
+        verify(mOnModelTokenChange, times(1)).onResult(any());
+
+        Configuration newConfig = new Configuration();
+        int currentOrientation = mActivity.getResources().getConfiguration().orientation;
+        newConfig.orientation = currentOrientation;
+
+        mCoordinator.getComponentCallbacksForTesting().onConfigurationChanged(newConfig);
+
+        // Run posted tasks.
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        // Verify runnable NOT executed.
+        verify(mOnModelTokenChange, times(1)).onResult(any());
     }
 }
