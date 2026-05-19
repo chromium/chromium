@@ -89,7 +89,6 @@ IN_PROC_BROWSER_TEST_F(CastMediaBlockerBrowserTest,
   BlockAndTestPlayerState("audio", false);
 }
 
-#if !BUILDFLAG(IS_CAST_AUDIO_ONLY)
 // TODO(b/341792190): Re-enable tests.
 IN_PROC_BROWSER_TEST_F(CastMediaBlockerBrowserTest,
                        DISABLED_Video_BlockUnblock) {
@@ -98,7 +97,6 @@ IN_PROC_BROWSER_TEST_F(CastMediaBlockerBrowserTest,
   BlockAndTestPlayerState("video", true);
   BlockAndTestPlayerState("video", false);
 }
-#endif
 
 }  // namespace shell
 }  // namespace chromecast

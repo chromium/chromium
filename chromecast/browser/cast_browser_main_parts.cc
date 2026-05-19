@@ -310,25 +310,14 @@ const DefaultCommandLineSwitch kDefaultSwitches[] = {
     // GPU shader disk cache disabling is largely to conserve disk space.
     {switches::kDisableGpuShaderDiskCache, ""},
 #endif
-#if BUILDFLAG(IS_CAST_AUDIO_ONLY)
-    {switches::kDisableGpu, ""},
-    {switches::kDisableSoftwareRasterizer, ""},
-    {switches::kDisableGpuCompositing, ""},
-#if BUILDFLAG(IS_ANDROID)
-    {switches::kDisableFrameRateLimit, ""},
-    {switches::kDisableGLDrawingForTests, ""},
-    {switches::kDisableThreadedAnimation, ""},
-#endif  // BUILDFLAG(IS_ANDROID)
-#endif  // BUILDFLAG(IS_CAST_AUDIO_ONLY)
+
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #if defined(ARCH_CPU_X86_FAMILY)
     // This is needed for now to enable the x11 Ozone platform to work with
     // current Linux/NVidia OpenGL drivers.
     {switches::kIgnoreGpuBlocklist, ""},
 #elif defined(ARCH_CPU_ARM_FAMILY)
-#if !BUILDFLAG(IS_CAST_AUDIO_ONLY)
     {switches::kEnableHardwareOverlays, "cast"},
-#endif
 #endif
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
     // It's better to start GPU process on demand. For example, for TV platforms

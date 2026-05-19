@@ -35,9 +35,6 @@ constexpr char kCastGraphicsHeight[] = "cast-graphics-height";
 constexpr char kCastGraphicsWidth[] = "cast-graphics-width";
 
 gfx::Size GetDefaultScreenResolution() {
-#if BUILDFLAG(IS_CAST_AUDIO_ONLY)
-  return gfx::Size(1, 1);
-#else
   const base::CommandLine* cmd_line = base::CommandLine::ForCurrentProcess();
   if (!chromecast::IsFeatureEnabled(kTripleBuffer720) &&
       GraphicsPropertiesShlib::IsSupported(GraphicsPropertiesShlib::k1080p,
@@ -46,7 +43,6 @@ gfx::Size GetDefaultScreenResolution() {
   }
 
   return gfx::Size(1280, 720);
-#endif
 }
 
 // Helper to return the screen resolution (device pixels)
@@ -98,7 +94,7 @@ gfx::Rect GetScreenBounds(const gfx::Size& size_in_pixels,
 
 CastDisplayConfigurator::CastDisplayConfigurator(CastScreen* screen)
     : delegate_(
-#if BUILDFLAG(IS_OZONE) && !BUILDFLAG(IS_CAST_AUDIO_ONLY)
+#if BUILDFLAG(IS_OZONE)
           ui::OzonePlatform::GetInstance()->CreateNativeDisplayDelegate()
 #else
           nullptr

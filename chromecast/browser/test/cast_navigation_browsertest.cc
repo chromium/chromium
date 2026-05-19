@@ -100,12 +100,10 @@ IN_PROC_BROWSER_TEST_F(CastNavigationBrowserTest,
   PlayAudio("bear_pcm.wav");
 }
 
-#if !BUILDFLAG(IS_CAST_AUDIO_ONLY)
 // TODO: reenable test; crashes occasionally: http://crbug.com/754269
 IN_PROC_BROWSER_TEST_F(CastNavigationBrowserTest, DISABLED_VideoPlaybackMp4) {
   PlayVideo("bear.mp4");
 }
-#endif
 
 IN_PROC_BROWSER_TEST_F(CastNavigationBrowserTest, ClearKeySupport) {
   PlayEncryptedMedia(media::kClearKeyKeySystem, kWebMAudioOnly,

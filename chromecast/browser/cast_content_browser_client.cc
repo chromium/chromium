@@ -494,10 +494,6 @@ void CastContentBrowserClient::OverrideWebPreferences(
 
   prefs->hide_scrollbars = true;
 
-  // Disable images rendering in Cast for Audio configuration
-#if BUILDFLAG(IS_CAST_AUDIO_ONLY)
-  prefs->images_enabled = false;
-#endif
 
 #if BUILDFLAG(IS_ANDROID)
   // Enable the television style for viewport so that all cast apps have a
