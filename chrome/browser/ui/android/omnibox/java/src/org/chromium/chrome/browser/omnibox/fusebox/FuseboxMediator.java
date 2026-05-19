@@ -513,6 +513,9 @@ import java.util.function.Supplier;
 
     private void showPopup() {
         if (!isInInputSession()) return;
+        // Prevent rapid clicks from "showing" the popup more than once.
+        if (mModel.get(FuseboxProperties.POPUP_STATE) != PopupState.HIDDEN) return;
+
         boolean shouldShowBottomSheetPopup = OmniboxFeatures.shouldShowBottomSheetPopup();
         if (shouldShowBottomSheetPopup) {
             mWindowAndroid.getKeyboardDelegate().hideKeyboard(mViewHolder.parentView);

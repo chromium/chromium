@@ -23,6 +23,7 @@ import android.view.View;
 import android.view.ViewConfiguration;
 import android.view.ViewGroup;
 import android.view.accessibility.AccessibilityEvent;
+import android.widget.PopupWindow.OnDismissListener;
 
 import androidx.core.graphics.Insets;
 import androidx.core.view.WindowInsetsCompat;
@@ -70,6 +71,7 @@ public class FuseboxPopupUnitTest {
     private @Mock WindowInsetsCompat mWindowInsets;
 
     private @Captor ArgumentCaptor<RectProvider.Observer> mRectProviderObserverCaptor;
+    private @Captor ArgumentCaptor<OnDismissListener> mDismissListenerCaptor;
 
     private Activity mActivity;
     private FuseboxPopup mFuseboxPopup;
@@ -80,6 +82,7 @@ public class FuseboxPopupUnitTest {
     public void setUp() {
         mActivity = Robolectric.setupActivity(TestActivity.class);
         mContentView = LayoutInflater.from(mActivity).inflate(R.layout.fusebox_context_popup, null);
+        mActivity.setContentView(mContentView);
         mViewGroup = mContentView.findViewById(R.id.fusebox_view_group);
 
         when(mWindowAndroid.getInsetObserver()).thenReturn(mInsetObserver);
@@ -190,6 +193,46 @@ public class FuseboxPopupUnitTest {
     public void testSetPopupState_Floating_clearsAnimation() {
         mFuseboxPopup.setPopupState(PopupState.FLOATING);
         verify(mPopupWindow).setAnimationStyle(0);
+    }
+
+    @Test
+    public void testSetPopupState_Bottom_blocksBackgroundAccessibility() {
+        View contentView = mActivity.findViewById(android.R.id.content);
+        assertNotNull(contentView);
+        contentView.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_AUTO);
+        mFuseboxPopup.setPopupState(PopupState.BOTTOM);
+
+        assertEquals(
+                View.IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS,
+                contentView.getImportantForAccessibility());
+    }
+
+    @Test
+    public void testSetPopupState_Floating_doesNotBlockBackgroundAccessibility() {
+        View contentView = mActivity.findViewById(android.R.id.content);
+        assertNotNull(contentView);
+        contentView.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_AUTO);
+        mFuseboxPopup.setPopupState(PopupState.FLOATING);
+
+        assertEquals(
+                View.IMPORTANT_FOR_ACCESSIBILITY_AUTO, contentView.getImportantForAccessibility());
+    }
+
+    @Test
+    public void testDismiss_restoresBackgroundAccessibility() {
+        View contentView = mActivity.findViewById(android.R.id.content);
+        assertNotNull(contentView);
+        contentView.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_AUTO);
+
+        // Capture dismiss listener during layout.
+        mFuseboxPopup.setPopupState(PopupState.BOTTOM);
+        verify(mPopupWindow).addOnDismissListener(mDismissListenerCaptor.capture());
+
+        // Simulate dismiss.
+        mDismissListenerCaptor.getValue().onDismiss();
+
+        assertEquals(
+                View.IMPORTANT_FOR_ACCESSIBILITY_AUTO, contentView.getImportantForAccessibility());
     }
 
     @Test

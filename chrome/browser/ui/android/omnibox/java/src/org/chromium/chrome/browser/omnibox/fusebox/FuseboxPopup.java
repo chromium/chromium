@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.omnibox.fusebox;
 
+import android.app.Activity;
 import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,6 +18,7 @@ import android.widget.TextView;
 import androidx.core.graphics.Insets;
 import androidx.core.view.WindowInsetsCompat;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.NullMarked;
@@ -66,6 +68,8 @@ class FuseboxPopup {
     private final @Nullable InsetObserver mInsetObserver;
     private final int mInitialScrollPaddingBottom;
     private @PopupState int mCurrentState = PopupState.HIDDEN;
+    private @Nullable Integer mPreviousAccessibilityImportance;
+    private @Nullable View mCachedContentView;
 
     private final RectProvider.Observer mDynamicRectObserver =
             new RectProvider.Observer() {
@@ -100,6 +104,7 @@ class FuseboxPopup {
             boolean isBottomSheet) {
         mPopupWindow = popupWindow;
         mPopupWindow.setClippingEnabled(false);
+        mPopupWindow.addOnDismissListener(this::restoreBackgroundAccessibility);
         mDynamicRectProvider = dynamicRectProvider;
         mDynamicRectProvider.startObserving(mDynamicRectObserver);
         mInsetObserver = windowAndroid.getInsetObserver();
@@ -221,8 +226,10 @@ class FuseboxPopup {
         mCurrentState = state;
         if (state == PopupState.BOTTOM) {
             mPopupWindow.setAnimationStyle(R.style.FuseboxBottomSheetAnimation);
+            hideBackgroundAccessibility();
         } else {
             mPopupWindow.setAnimationStyle(0);
+            restoreBackgroundAccessibility();
         }
 
         // ALWAYS update the DynamicRectProvider state first.
@@ -236,6 +243,29 @@ class FuseboxPopup {
 
         updateLayout();
         show();
+    }
+
+    private void hideBackgroundAccessibility() {
+        if (mPreviousAccessibilityImportance != null) return;
+        Activity activity = ContextUtils.activityFromContext(mViewGroup.getContext());
+        if (activity != null) {
+            mCachedContentView = activity.findViewById(android.R.id.content);
+            if (mCachedContentView != null) {
+                mPreviousAccessibilityImportance =
+                        mCachedContentView.getImportantForAccessibility();
+                mCachedContentView.setImportantForAccessibility(
+                        View.IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS);
+            }
+        }
+    }
+
+    private void restoreBackgroundAccessibility() {
+        if (mPreviousAccessibilityImportance == null) return;
+        if (mCachedContentView != null) {
+            mCachedContentView.setImportantForAccessibility(mPreviousAccessibilityImportance);
+            mCachedContentView = null;
+        }
+        mPreviousAccessibilityImportance = null;
     }
 
     /**

@@ -609,7 +609,7 @@ public class FuseboxMediatorUnitTest {
     }
 
     @Test
-    public void testDoubleBeginInput_hidesPreviousScrim() {
+    public void testDoubleBeginInput_doesNotRecreateScrim() {
         OmniboxFeatures.setShowBottomSheetPopupForTesting(true);
         mInput.setFocusReason(OmniboxFocusReason.FAKE_BOX_PLUS_BUTTON_TAP);
         recreateMediator();
@@ -620,8 +620,25 @@ public class FuseboxMediatorUnitTest {
         // Trigger second beginInput on the same mediator (simulating double tap from ntp fakebox).
         mMediator.beginInput(createSession());
 
-        verify(mScrimManager).hideScrim(any(), eq(false));
-        verify(mScrimManager).showScrim(any());
+        verify(mScrimManager, never()).hideScrim(any(), anyBoolean());
+        verify(mScrimManager, never()).showScrim(any());
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void testDoubleBeginInput_doesNotReapplyPopupState() {
+        mInput.setFocusReason(OmniboxFocusReason.FAKE_BOX_PLUS_BUTTON_TAP);
+        recreateMediator();
+
+        org.chromium.base.Callback<Integer> observer = mock(org.chromium.base.Callback.class);
+        mPopupStateSupplier.addSyncObserverAndCallIfNonNull(observer);
+        verify(observer).onResult(PopupState.FLOATING);
+        clearInvocations(observer);
+
+        // Trigger second beginInput on the same mediator.
+        mMediator.beginInput(createSession());
+
+        verify(observer, never()).onResult(any());
     }
 
     @Test
