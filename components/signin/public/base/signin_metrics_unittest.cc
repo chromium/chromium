@@ -249,6 +249,8 @@ class SigninMetricsTest : public ::testing::Test {
         return "SettingsAutofillAndPasswords";
       case AccessPoint::kDeepLinkDefault:
         return "DeepLinkDefault";
+      case AccessPoint::kAgeMismatchSignout:
+        return "AgeMismatchSignout";
     }
   }
 };

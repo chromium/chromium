@@ -161,8 +161,13 @@ TEST_F(SigninAccountCapabilitiesSceneAgentTest, TestWantsToSignIn) {
   [agent_ setValue:coordinator_mock forKey:@"ageMismatchSignoutCoordinator"];
 
   // Expect the sign-in command to be shown.
-  OCMExpect([scene_commands_mock showSignin:[OCMArg any]
-                         baseViewController:[OCMArg any]]);
+  OCMExpect([scene_commands_mock
+              showSignin:[OCMArg checkWithBlock:^BOOL(
+                                     ShowSigninCommand* command) {
+                return command.accessPoint ==
+                       signin_metrics::AccessPoint::kAgeMismatchSignout;
+              }]
+      baseViewController:[OCMArg any]]);
 
   // Call the delegate method.
   id<AgeMismatchSignoutCoordinatorDelegate> delegate =

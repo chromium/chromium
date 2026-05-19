@@ -119,7 +119,7 @@ void SignOutDoneForSceneState(id<SystemIdentity> identity,
   signin::IdentityManager* identityManager =
       IdentityManagerFactory::GetForProfile(
           self.sceneState.profileState.profile);
-  if (identityManager) {
+  if (identityManager && !_identityManagerObserver) {
     _identityManagerObserver =
         std::make_unique<signin::IdentityManagerObserverBridge>(identityManager,
                                                                 self);
@@ -253,10 +253,9 @@ void SignOutDoneForSceneState(id<SystemIdentity> identity,
 // Stops `_ageMismatchSignoutCoordinator` and start the sign-in commands.
 - (void)closeAgeMismatchSignoutCoordinatorAndSignin {
   [self stopAgeMismatchSignoutCoordinator];
-  // TODO(crbug.com/481654850): update the access point.
   ShowSigninCommand* command = [[ShowSigninCommand alloc]
       initWithOperation:AuthenticationOperation::kSigninOnly
-            accessPoint:signin_metrics::AccessPoint::kSettings];
+            accessPoint:signin_metrics::AccessPoint::kAgeMismatchSignout];
   [command addSigninCompletion:^(SigninCoordinator*, SigninCoordinatorResult,
                                  id<SystemIdentity>){
       // The completion is required by the API, this is a rare case where there

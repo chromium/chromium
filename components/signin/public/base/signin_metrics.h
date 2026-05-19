@@ -344,10 +344,13 @@ enum class AccessPoint : int {
   kSettingsAutofillAndPasswords = 101,
   // Deep link to the sign-in flow (e.g. from cross-device QR code sharing).
   kDeepLinkDefault = 102,
+  // From the AgeMismatchSignout screen after the user is forced sign-out. iOS
+  // only.
+  kAgeMismatchSignout = 103,
   // Add values above this line with a corresponding label to the
   // "SigninAccessPoint" enum in
   // tools/metrics/histograms/metadata/signin/enums.xml.
-  kMaxValue = kDeepLinkDefault,  // This must be last.
+  kMaxValue = kAgeMismatchSignout,  // This must be last.
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/signin/enums.xml)
 
