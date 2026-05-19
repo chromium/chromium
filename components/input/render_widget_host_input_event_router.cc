@@ -189,18 +189,20 @@ void TouchEventAckQueue::ProcessAckedTouchEvents() {
       client_->GetTouchEmulator(/*create_if_necessary=*/false);
   while (!ack_queue_.empty() && ack_queue_.front().touch_event_ack_status ==
                                     TouchEventAckStatus::TouchEventAcked) {
-    TouchEventAckQueue::AckData ack_data = ack_queue_.front();
+    // Extract values and bare pointers to avoid holding raw_ptrs on the stack
+    // across synchronous view destruction boundaries.
+    TouchEventWithLatencyInfo touch_event = ack_queue_.front().touch_event;
+    blink::mojom::InputEventResultState ack_result =
+        ack_queue_.front().ack_result;
+    RenderWidgetHostViewInput* root_view = ack_queue_.front().root_view;
     ack_queue_.pop_front();
 
     if ((!touch_emulator ||
-         !touch_emulator->HandleTouchEventAck(ack_data.touch_event.event,
-                                              ack_data.ack_result)) &&
-        (client_->IsViewInMap(ack_data.root_view) ||
-         client_->ViewMapIsEmpty())) {
+         !touch_emulator->HandleTouchEventAck(touch_event.event, ack_result)) &&
+        (client_->IsViewInMap(root_view) || client_->ViewMapIsEmpty())) {
       // Forward acked event and result to the root view associated with the
       // event. The view map is only empty for AndroidWebView.
-      ack_data.root_view->ProcessAckedTouchEvent(ack_data.touch_event,
-                                                 ack_data.ack_result);
+      root_view->ProcessAckedTouchEvent(touch_event, ack_result);
     }
   }
 }
@@ -212,9 +214,11 @@ void TouchEventAckQueue::UpdateQueueAfterTargetDestroyed(
     return data.root_view == target_view;
   });
 
-  // Otherwise, mark its status accordingly.
+  // Otherwise, mark its status accordingly and clear target_view to prevent
+  // dangling raw pointers.
   for_each(ack_queue_.begin(), ack_queue_.end(), [target_view](AckData& data) {
     if (data.target_view == target_view) {
+      data.target_view = nullptr;
       data.touch_event_ack_status = TouchEventAckStatus::TouchEventAcked;
       data.ack_result = blink::mojom::InputEventResultState::kNoConsumerExists;
     }
