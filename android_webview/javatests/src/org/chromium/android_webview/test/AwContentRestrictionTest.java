@@ -38,6 +38,9 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.net.test.util.TestWebServer;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.concurrent.Executor;
 
 /** Test integration with content restriction on WebViews. */
@@ -55,6 +58,8 @@ public class AwContentRestrictionTest extends AwParameterizedTest {
     private static final String BLOCKED_SITE_PATH = "/blocked.html";
     private static final String GO_BACK_LINK_ID = "back-link";
     private static final String LEARN_MORE_LINK_ID = "learn-more-link";
+    private static final String ALLOWED_PAYLOAD = "allowed";
+    private static final String BLOCKED_PAYLOAD = "blocked";
 
     private AwContents mAwContents;
     private TestWebServer mWebServer;
@@ -76,6 +81,27 @@ public class AwContentRestrictionTest extends AwParameterizedTest {
             boolean allow = true;
             if (uri.getPath().contains(BLOCKED_SITE_PATH)) {
                 allow = false;
+            }
+            if (requestBody != null) {
+                try (ParcelFileDescriptor.AutoCloseInputStream inputStream =
+                                new ParcelFileDescriptor.AutoCloseInputStream(requestBody);
+                        BufferedReader reader =
+                                new BufferedReader(
+                                        new InputStreamReader(
+                                                inputStream, StandardCharsets.UTF_8))) {
+                    StringBuilder bodyBuilder = new StringBuilder();
+                    String line = reader.readLine();
+                    while (line != null) {
+                        bodyBuilder.append(line);
+                        line = reader.readLine();
+                    }
+                    String requestPayload = bodyBuilder.toString();
+                    if (requestPayload.equals(BLOCKED_PAYLOAD)) {
+                        allow = false;
+                    }
+                } catch (Exception e) {
+                    throw new RuntimeException("Failed to read request body", e);
+                }
             }
             return Promise.fulfilled(allow);
         }
@@ -244,5 +270,40 @@ public class AwContentRestrictionTest extends AwParameterizedTest {
                 "History index should return to initial after clicking go back",
                 AwActivityTestRule.WAIT_TIMEOUT_MS,
                 AwActivityTestRule.CHECK_INTERVAL);
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"AndroidWebView"})
+    @EnableFeatures({AwFeatures.WEBVIEW_CONTENT_RESTRICTION_SUPPORT})
+    public void testAllowedRequestPayloadClassification() throws Throwable {
+        int initialHistoryCount = getNavigationHistoryEntryCount();
+        mActivityTestRule.loadUrlSync(
+                mAwContents,
+                mContentsClient.getOnPageFinishedHelper(),
+                mWebServer.getResponseUrl(ALLOWED_SITE_1_PATH));
+
+        // The first load replaces the initial empty entry, so the count does not increase.
+        Assert.assertEquals(initialHistoryCount, getNavigationHistoryEntryCount());
+        mActivityTestRule.postUrlSync(
+                mAwContents,
+                mContentsClient.getOnPageFinishedHelper(),
+                mWebServer.getResponseUrl(ALLOWED_SITE_2_PATH),
+                ALLOWED_PAYLOAD.getBytes(java.nio.charset.StandardCharsets.UTF_8));
+
+        // The second load adds a new entry, so the count increases by 1.
+        Assert.assertEquals(initialHistoryCount + 1, getNavigationHistoryEntryCount());
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"AndroidWebView"})
+    @EnableFeatures({AwFeatures.WEBVIEW_CONTENT_RESTRICTION_SUPPORT})
+    public void testBlockedRequestPayloadClassification() throws Throwable {
+        mActivityTestRule.postUrlAsync(
+                mAwContents,
+                mWebServer.getResponseUrl(ALLOWED_SITE_1_PATH),
+                BLOCKED_PAYLOAD.getBytes(java.nio.charset.StandardCharsets.UTF_8));
+        waitForInterstitialPageLoad();
     }
 }
