@@ -817,6 +817,10 @@ export const ComposeboxEmbedderMixin =
             return;
           }
 
+          if (e.isComposing) {
+            return;
+          }
+
           const handlers: Record<string, (e: KeyboardEvent) => void> = {
             'ArrowDown': (e) => this.handleArrowKey_(e),
             'ArrowUp': (e) => this.handleArrowKey_(e),
