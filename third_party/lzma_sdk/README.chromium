@@ -5,7 +5,7 @@ Version: 26.00
 Date: 2026-04-29
 Update Mechanism: Manual
 License: LZMA-SDK-9.22
-License File: src/DOC/lzma-sdk.txt
+License File: LICENSE
 Security Critical: yes
 Shipped: yes
 CPEPrefix: cpe:2.3:a:7-zip:7-zip:26.00:*:*:*:*:*:*:*
