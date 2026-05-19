@@ -16,7 +16,9 @@ config("flatbuffers_config") {
   # Required to prevent static initialization of locale
   # in util.cpp
   defines = [ "FLATBUFFERS_LOCALE_INDEPENDENT=0" ]
+}
 
+config("flatbuffers_warnings") {
   if (is_clang) {
     cflags = [
       "-Wno-constant-conversion",
@@ -131,13 +133,17 @@ source_set("compiler_files") {
     "src/src/util.cpp",
   ]
   configs -= [ "//build/config/compiler:chromium_code" ]
-  configs += [ "//build/config/compiler:no_chromium_code" ]
+  configs += [
+    "//build/config/compiler:no_chromium_code",
+    ":flatbuffers_warnings",
+  ]
   visibility = [ ":*" ]
   deps = [ ":flatbuffers" ]
 }
 
 executable("flatc") {
   sources = [ "src/src/flatc_main.cpp" ]
+  configs += [ ":flatbuffers_warnings" ]
   deps = [
     ":compiler_files",
     ":flatbuffers",
@@ -196,7 +202,10 @@ source_set("flatbuffers_test_files") {
   ]
 
   configs -= [ "//build/config/compiler:chromium_code" ]
-  configs += [ "//build/config/compiler:no_chromium_code" ]
+  configs += [
+    "//build/config/compiler:no_chromium_code",
+    ":flatbuffers_warnings",
+  ]
   deps = [ ":flatbuffers" ]
 }
 
@@ -264,7 +273,10 @@ test("flatbuffers_unittests") {
     defines += [ "DEBUG_NEW=new" ]
   }
   configs -= [ "//build/config/compiler:chromium_code" ]
-  configs += [ "//build/config/compiler:no_chromium_code" ]
+  configs += [
+    "//build/config/compiler:no_chromium_code",
+    ":flatbuffers_warnings",
+  ]
 }
 
 if (is_android) {

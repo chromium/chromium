@@ -866,7 +866,7 @@ TEST_F(CreditCardSuggestionGeneratorTest,
   const base::Time kNow = AutofillClock::Now();
   const base::Time kDisuseTime =
       kNow - kDisusedDataModelTimeDelta - base::Days(1);
-  size_t card_number = 4111111111111111ul;
+  uint64_t card_number = 4111111111111111ULL;
 
   std::vector<CreditCard> credit_cards;
   for (bool is_local : {false, true}) {

@@ -128,8 +128,6 @@ template("flatbuffer") {
       testonly = invoker.testonly
     }
 
-    public_configs = [ "//third_party/flatbuffers:flatbuffers_config" ]
-
     public_deps = [
       # The generated headers reference headers within FlatBuffers, so
       # dependencies must be able to find those headers too.
