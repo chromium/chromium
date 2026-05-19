@@ -279,6 +279,10 @@ const ui::ListSelectionModel& VerticalTabStripController::GetSelectionModel()
 void VerticalTabStripController::ToggleTabGroupCollapsedState(
     const TabGroup* group,
     ToggleTabGroupCollapsedStateOrigin origin) {
+  if (model_->closing_all()) {
+    return;
+  }
+
   bool is_currently_collapsed = group->visual_data()->is_collapsed();
   bool should_toggle_group = true;
 
