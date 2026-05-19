@@ -9711,6 +9711,8 @@ from previous Chrome versions.
   <int value="-1452568300" label="ContextualTasksSuggestionsEnabled:enabled"/>
   <int value="-1452178473" label="EnablePixDetection:enabled"/>
   <int value="-1452010225" label="WindowNaming:disabled"/>
+  <int value="-1451732864"
+      label="EnableChromeRefreshTokenBindingUpgrade:enabled"/>
   <int value="-1451644187" label="OverviewSwipeToClose:enabled"/>
   <int value="-1450657485" label="EnableHardwareMirrorMode:enabled"/>
   <int value="-1450576851" label="OmniboxUIExperimentVerticalLayout:enabled"/>
@@ -12225,6 +12227,8 @@ from previous Chrome versions.
   <int value="-629041881" label="MuteNotificationsDuringScreenShare:disabled"/>
   <int value="-628535358"
       label="AutofillPreventOverridingPrefilledValues:enabled"/>
+  <int value="-627028731"
+      label="EnableChromeRefreshTokenBindingUpgrade:disabled"/>
   <int value="-626329144" label="SyncSupportTrustedVaultPassphrase:enabled"/>
   <int value="-626211146" label="DesktopMinimalUI:disabled"/>
   <int value="-625858826" label="EnableDuplicateDownloadDialog:disabled"/>

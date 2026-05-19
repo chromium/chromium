@@ -8290,6 +8290,13 @@ inline constexpr char kEnableChromeRefreshTokenBindingName[] =
 inline constexpr char kEnableChromeRefreshTokenBindingDescription[] =
     "Enables binding of Chrome refresh tokens to cryptographic keys.";
 
+inline constexpr char kEnableChromeRefreshTokenBindingUpgradeName[] =
+    "Chrome Refresh Token Binding Upgrade";
+inline constexpr char kEnableChromeRefreshTokenBindingUpgradeDescription[] =
+    "Enables opportunistic binding of existing unbound Chrome refresh tokens "
+    "and session cookies to cryptographic keys. Requires Chrome Refresh Token "
+    "Binding to be enabled.";
+
 inline constexpr char kEnableOAuthMultiloginCookiesBindingName[] =
     "Enable OAuthMultilogin Cookies Binding";
 inline constexpr char kEnableOAuthMultiloginCookiesBindingDescription[] =

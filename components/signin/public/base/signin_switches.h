@@ -270,6 +270,20 @@ COMPONENT_EXPORT(SIGNIN_SWITCHES)
 bool IsChromeRefreshTokenBindingEnabled(const PrefService* profile_prefs);
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+COMPONENT_EXPORT(SIGNIN_SWITCHES)
+BASE_DECLARE_FEATURE(kEnableChromeRefreshTokenBindingUpgrade);
+enum class RefreshTokenBindingUpgradeType {
+  kDarkLaunch,
+  kLiveLaunch,
+};
+COMPONENT_EXPORT(SIGNIN_SWITCHES)
+BASE_DECLARE_FEATURE_PARAM(bool, kOamlCookieUpgradeEnabled);
+COMPONENT_EXPORT(SIGNIN_SWITCHES)
+BASE_DECLARE_FEATURE_PARAM(RefreshTokenBindingUpgradeType,
+                           kRefreshTokenBindingUpgradeType);
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
+
 #if !defined(NDEBUG)
 // A fake feature corresponding to the kFakeCapabilityForTestingName account
 // capability. This is only used in unit tests (and must be left disabled to

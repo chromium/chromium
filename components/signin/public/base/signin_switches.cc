@@ -317,6 +317,30 @@ bool IsChromeRefreshTokenBindingEnabled(const PrefService* profile_prefs) {
 }
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+// Enables opportunistically upgrading unbound refresh tokens and session
+// cookies to be hardware-bound on supported device platforms. Requires
+// kEnableChromeRefreshTokenBinding to be enabled as a prerequisite.
+BASE_FEATURE(kEnableChromeRefreshTokenBindingUpgrade,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE_PARAM(bool,
+                   kOamlCookieUpgradeEnabled,
+                   &kEnableChromeRefreshTokenBindingUpgrade,
+                   "oaml-cookie-upgrade-enabled",
+                   true);
+constexpr base::FeatureParam<RefreshTokenBindingUpgradeType>::Option
+    kRefreshTokenBindingUpgradeTypeOptions[] = {
+        {RefreshTokenBindingUpgradeType::kDarkLaunch, "dark-launch"},
+        {RefreshTokenBindingUpgradeType::kLiveLaunch, "live-launch"},
+};
+BASE_FEATURE_ENUM_PARAM(RefreshTokenBindingUpgradeType,
+                        kRefreshTokenBindingUpgradeType,
+                        &kEnableChromeRefreshTokenBindingUpgrade,
+                        "upgrade-type",
+                        RefreshTokenBindingUpgradeType::kLiveLaunch,
+                        &kRefreshTokenBindingUpgradeTypeOptions);
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
+
 #if !defined(NDEBUG)
 BASE_FEATURE(kEnableFakeCapabilityForTesting,
              base::FEATURE_DISABLED_BY_DEFAULT);

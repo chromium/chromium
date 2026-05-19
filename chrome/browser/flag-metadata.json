@@ -3075,6 +3075,11 @@
     "expiry_milestone": 153
   },
   {
+    "name": "enable-chrome-refresh-token-binding-upgrade",
+    "owners": ["alexilin@chromium.org", "chrome-signin-team@google.com"],
+    "expiry_milestone": 156
+  },
+  {
     "name": "enable-chromeos-isolated-web-app-set-shape",
     "owners": [ "edmanp@google.com", "iwa-team@google.com" ],
     "expiry_milestone": 170

@@ -4204,6 +4204,16 @@ const FeatureEntry::FeatureVariation
         {"with enforcement", kOAuthMultiloginCookieBindingWithEnforcement,
          nullptr},
 };
+
+const FeatureEntry::FeatureParam kRefreshTokenBindingUpgradeDarkLaunch[] = {
+    {"upgrade-type", "dark-launch"}};
+const FeatureEntry::FeatureParam kRefreshTokenBindingUpgradeLiveLaunch[] = {
+    {"upgrade-type", "live-launch"}};
+
+const FeatureEntry::FeatureVariation kRefreshTokenBindingUpgradeVariations[] = {
+    {"(Dark Launch)", kRefreshTokenBindingUpgradeDarkLaunch, nullptr},
+    {"(Live Launch)", kRefreshTokenBindingUpgradeLiveLaunch, nullptr},
+};
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || \
@@ -10726,6 +10736,15 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableChromeRefreshTokenBindingDescription,
      kOsMac | kOsLinux,
      FEATURE_VALUE_TYPE(switches::kEnableChromeRefreshTokenBinding)},
+
+    {"enable-chrome-refresh-token-binding-upgrade",
+     flag_descriptions::kEnableChromeRefreshTokenBindingUpgradeName,
+     flag_descriptions::kEnableChromeRefreshTokenBindingUpgradeDescription,
+     kOsMac | kOsWin | kOsLinux,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         switches::kEnableChromeRefreshTokenBindingUpgrade,
+         kRefreshTokenBindingUpgradeVariations,
+         "RefreshTokenBindingUpgrade")},
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 #if !BUILDFLAG(IS_ANDROID)
