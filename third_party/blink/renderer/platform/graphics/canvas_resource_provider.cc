@@ -2463,6 +2463,19 @@ size_t CanvasNon2DResourceProviderSharedImage::GetSize() const {
 
 void CanvasNon2DResourceProviderSharedImage::RecordingCleared() {}
 
+void CanvasNon2DResourceProviderSharedImage::InitializeForRecording(
+    cc::PaintCanvas* canvas) const {
+  if (delegate_) {
+    delegate_->InitializeForRecording(canvas);
+  }
+}
+
+SkSurfaceProps CanvasNon2DResourceProviderSharedImage::GetSkSurfaceProps()
+    const {
+  const bool can_use_lcd_text = GetAlphaType() == kOpaque_SkAlphaType;
+  return skia::LegacyDisplayGlobals::ComputeSurfaceProps(can_use_lcd_text);
+}
+
 gpu::raster::RasterInterface*
 CanvasNon2DResourceProviderSharedImage::RasterInterface() const {
   if (!ContextProviderWrapper()) {

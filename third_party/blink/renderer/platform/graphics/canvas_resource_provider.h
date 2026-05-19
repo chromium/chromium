@@ -635,6 +635,9 @@ class PLATFORM_EXPORT CanvasNon2DResourceProviderSharedImage
 
   // MemoryManagedPaintRecorder::Client implementation.
   void RecordingCleared() override;
+  void InitializeForRecording(cc::PaintCanvas* canvas) const override;
+
+  SkSurfaceProps GetSkSurfaceProps() const;
 
   void EnsureWriteAccess();
   void EndWriteAccess();
