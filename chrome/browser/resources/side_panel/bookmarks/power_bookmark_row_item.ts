@@ -137,7 +137,7 @@ export class PowerBookmarkRowItemElement extends CrLitElement {
   }
 
   protected isRenamingItem_(): boolean {
-    return this.bookmark.id === this.renamingId;
+    return !!this.renamingId && this.bookmark.id === this.renamingId;
   }
 
   protected isCheckboxChecked_(): boolean {
