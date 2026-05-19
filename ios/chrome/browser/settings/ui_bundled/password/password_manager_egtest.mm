@@ -1886,9 +1886,7 @@ void OpenPasswordManagerWidgetPromoInstructions() {
 // Test export flow
 - (void)testExportFlow {
   if (@available(iOS 26, *)) {
-    // TODO(crbug.com/463313017): Move this test to credential_export_egtest.mm.
-    EARL_GREY_TEST_SKIPPED(
-        @"This feature is moved elsewhere with credential exchange enabled");
+    EARL_GREY_TEST_SKIPPED(@"This is a part of credential exchange on iOS 26.");
   }
 
   // Saving a form is needed for exporting passwords.
@@ -1918,7 +1916,9 @@ void OpenPasswordManagerWidgetPromoInstructions() {
           exportButtonAccessibilityId)) performAction:grey_tap()];
 
   // Wait until the alerts are dismissed.
-  [ChromeEarlGreyUI waitForAppToIdle];
+  [ChromeEarlGrey waitForUIElementToDisappearWithMatcher:
+                      chrome_test_util::AlertItemWithAccessibilityLabelId(
+                          exportButtonAccessibilityId)];
 
   id<GREYMatcher> exportButtonStatusMatcher =
       grey_accessibilityTrait(UIAccessibilityTraitNotEnabled);
@@ -1931,7 +1931,7 @@ void OpenPasswordManagerWidgetPromoInstructions() {
   [ChromeEarlGrey closeActivitySheet];
 
   // Wait until the activity view is dismissed.
-  [ChromeEarlGreyUI waitForAppToIdle];
+  [ChromeEarlGrey verifyActivitySheetNotVisible];
 
   // Check that export button is re-enabled.
   [[EarlGrey selectElementWithMatcher:

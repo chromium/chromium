@@ -3,6 +3,7 @@ source_set("eg2_tests") {
   testonly = true
   sources = [ "credential_export_egtest.mm" ]
   deps = [
+    "//base/test:test_support",
     "//components/strings",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/authentication/test:eg_test_support+eg2",

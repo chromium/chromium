@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #import "base/strings/sys_string_conversions.h"
+#import "base/test/ios/wait_util.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/authentication/test/signin_earl_grey.h"
 #import "ios/chrome/browser/credential_exchange/public/metrics.h"
@@ -355,6 +356,43 @@ void CheckCredentialExportScreenActionMetric(
   [[EarlGrey selectElementWithMatcher:grey_accessibilityLabel(
                                           expectedLabelForTwoSelected)]
       assertWithMatcher:grey_sufficientlyVisible()];
+}
+
+// Tests the export flow to CSV, verifying that the activity sheet is shown and
+// can be closed.
+- (void)testExportFlow {
+  if (!@available(iOS 26, *)) {
+    EARL_GREY_TEST_SKIPPED(@"This feature works only for iOS 26 and higher.");
+  }
+  SavePasswordFormToAccountStore(@"password1", @"user1",
+                                 @"https://example1.com");
+  OpenExportCredentialsPage();
+
+  [[EarlGrey selectElementWithMatcher:ExportOptionsButton()]
+      performAction:grey_tap()];
+
+  [[EarlGrey selectElementWithMatcher:DownloadCsvMenuAction()]
+      performAction:grey_tap()];
+
+  // Wait until the alerts are dismissed.
+  [ChromeEarlGrey waitForUIElementToDisappearWithMatcher:
+                      grey_accessibilityLabel(l10n_util::GetNSString(
+                          IDS_IOS_EXPORT_PASSWORDS_PREPARING_ALERT_TITLE))];
+
+  // Wait for the activity sheet to be visible.
+  bool activitySheetVisible = base::test::ios::WaitUntilConditionOrTimeout(
+      base::test::ios::kWaitForUIElementTimeout, ^{
+        NSError* error = nil;
+        return [EarlGrey activitySheetPresentWithError:&error];
+      });
+  GREYAssertTrue(activitySheetVisible,
+                 @"Activity sheet did not become visible.");
+
+  [ChromeEarlGrey verifyActivitySheetVisible];
+  [ChromeEarlGrey closeActivitySheet];
+
+  // Wait until the activity view is dismissed.
+  [ChromeEarlGrey verifyActivitySheetNotVisible];
 }
 
 @end
