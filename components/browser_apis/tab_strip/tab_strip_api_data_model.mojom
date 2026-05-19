@@ -7,7 +7,6 @@ module tabs_api.mojom;
 import "components/browser_apis/tab_strip/tab_strip_api_types.mojom";
 import "components/tab_groups/public/mojom/tab_group_types.mojom";
 import "components/tabs/public/mojom/tabs.mojom";
-import "mojo/public/mojom/base/time.mojom";
 import "url/mojom/url.mojom";
 
 // Holds a data URL representation of an image, ie: favicon.
@@ -31,10 +30,6 @@ struct Tab {
   bool is_selected;
   // The current tab is blocked (by a modal).
   bool is_blocked;
-  // Time ticks when the tab is last active.
-  mojo_base.mojom.TimeTicks last_active_time_ticks;
-  // String representing the elapsed time since the tab was last active.
-  string last_active_elapsed_text;
 };
 
 // Window represents a browser window.

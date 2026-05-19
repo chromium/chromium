@@ -12,7 +12,6 @@
 #include "components/tabs/public/tab_network_state.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
-#include "ui/base/l10n/time_format.h"
 #include "ui/base/models/image_model.h"
 
 namespace tabs_api {
@@ -61,12 +60,6 @@ AndroidTranslationAdapter::ToMojoTab(tabs::TabHandle handle) {
   result->is_selected = states.is_selected;
   result->is_blocked = tab->IsBlocked();
 
-  result->last_active_time_ticks =
-      std::max(contents->GetLastInteractionTimeTicks(),
-               contents->GetLastActiveTimeTicks());
-  result->last_active_elapsed_text = base::UTF16ToUTF8(ui::TimeFormat::Simple(
-      ui::TimeFormat::FORMAT_ELAPSED, ui::TimeFormat::LENGTH_SHORT,
-      base::TimeTicks::Now() - result->last_active_time_ticks));
   return result;
 }
 

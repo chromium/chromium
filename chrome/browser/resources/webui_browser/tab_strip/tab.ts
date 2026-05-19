@@ -52,8 +52,6 @@ export class TabElement extends CrLitElement {
     networkState: TabNetworkState.kNone,
     title: '',
     url: '',
-    lastActiveTimeTicks: {internalValue: 0n},
-    lastActiveElapsedText: '',
   };
 
   protected accessor dragInProgress = false;

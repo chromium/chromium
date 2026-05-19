@@ -8,7 +8,6 @@
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/time/time.h"
 #include "chrome/browser/ui/tab_ui_helper.h"
 #include "chrome/browser/ui/tabs/alert/tab_alert_controller.h"
 #include "components/split_tabs/split_tab_visual_data.h"
@@ -21,7 +20,6 @@
 #include "components/tabs/public/tab_interface.h"
 #include "components/tabs/public/tab_network_state.h"
 #include "content/public/browser/web_contents.h"
-#include "ui/base/l10n/time_format.h"
 
 namespace tabs_api::converters {
 
@@ -82,13 +80,6 @@ tabs_api::mojom::TabPtr BuildMojoTab(tabs::TabInterface* tab,
   result->is_active = states.is_active;
   result->is_selected = states.is_selected;
   result->is_blocked = tab->IsBlocked();
-  content::WebContents* contents = tab->GetContents();
-  result->last_active_time_ticks =
-      std::max(contents->GetLastInteractionTimeTicks(),
-               contents->GetLastActiveTimeTicks());
-  result->last_active_elapsed_text = base::UTF16ToUTF8(ui::TimeFormat::Simple(
-      ui::TimeFormat::FORMAT_ELAPSED, ui::TimeFormat::LENGTH_SHORT,
-      base::TimeTicks::Now() - result->last_active_time_ticks));
   return result;
 }
 
