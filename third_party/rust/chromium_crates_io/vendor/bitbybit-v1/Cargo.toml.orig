@@ -1,0 +1,29 @@
+[package]
+name = "bitbybit"
+version = "1.4.0"
+authors = ["Daniel Lehmann <danlehmannmuc@gmail.com>"]
+edition = "2021"
+description = "Efficient implementation of bit-fields where several numbers are packed within a larger number and bit-enums. Useful for drivers, so it works in no_std environments"
+license = "MIT"
+repository = "https://github.com/danlehmann/bitfield"
+readme = "README.md"
+keywords = ["integer", "unaligned", "misaligned", "bitfield"]
+categories = ["embedded", "no-std", "data-structures"]
+
+[lib]
+proc-macro = true
+
+[features]
+introspect = []
+extra-traits = ["syn/extra-traits"]
+# Required for the field example to work.
+examples = ["arbitrary-int/defmt"]
+
+[dependencies]
+syn = { version = "2.0", features = ["full"] }
+quote = "1.0"
+proc-macro2 = "1.0"
+arbitrary-int = "1.3.0"
+
+[dev-dependencies]
+defmt = "1"

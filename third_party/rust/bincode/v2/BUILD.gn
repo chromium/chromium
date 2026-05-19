@@ -55,10 +55,11 @@ cargo_crate("lib") {
   cargo_pkg_repository = "https://github.com/bincode-org/bincode"
   cargo_pkg_version = "2.0.1"
 
-  allow_unsafe = false
+  allow_unsafe = true
 
   deps = [
     "//third_party/rust/bincode_derive/v2:lib",
+    "//third_party/rust/serde/v1:lib",
     "//third_party/rust/unty/v0_0_4:lib",
   ]
   features = [
@@ -66,9 +67,14 @@ cargo_crate("lib") {
     "bincode_derive",
     "default",
     "derive",
+    "serde",
     "std",
   ]
 
+  # Only for usage from third-party crates. Add the crate to
+  # //third_party/rust/chromium_crates_io/Cargo.toml to use
+  # it from first-party code.
+  visibility = [ "//third_party/rust/*" ]
   testonly = true
 
   #####################################################################

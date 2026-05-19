@@ -1,0 +1,294 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# @generated from third_party/rust/chromium_crates_io/BUILD.gn.hbs by
+# tools/crates/gnrt.
+# Do not edit!
+
+import("//build/rust/cargo_crate.gni")
+
+cargo_crate("lib") {
+  crate_name = "libafl"
+  epoch = "0.15"
+  crate_type = "rlib"
+  crate_root =
+      "//third_party/rust/chromium_crates_io/vendor/libafl-v0_15/src/lib.rs"
+  sources = [
+    "//third_party/rust/chromium_crates_io/vendor/libafl-v0_15/src/common/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libafl-v0_15/src/common/nautilus/grammartec/chunkstore.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libafl-v0_15/src/common/nautilus/grammartec/context.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libafl-v0_15/src/common/nautilus/grammartec/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libafl-v0_15/src/common/nautilus/grammartec/mutator.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libafl-v0_15/src/common/nautilus/grammartec/newtypes.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libafl-v0_15/src/common/nautilus/grammartec/python_grammar_loader.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libafl-v0_15/src/common/nautilus/grammartec/recursion_info.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libafl-v0_15/src/common/nautilus/grammartec/rule.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libafl-v0_15/src/common/nautilus/grammartec/tree.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libafl-v0_15/src/common/nautilus/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libafl-v0_15/src/common/nautilus/regex_mutator/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libafl-v0_15/src/corpus/cached.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libafl-v0_15/src/corpus/dynamic.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libafl-v0_15/src/corpus/inmemory.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libafl-v0_15/src/corpus/inmemory_ondisk.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libafl-v0_15/src/corpus/minimizer.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libafl-v0_15/src/corpus/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libafl-v0_15/src/corpus/nop.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libafl-v0_15/src/corpus/ondisk.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libafl-v0_15/src/corpus/testcase.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libafl-v0_15/src/events/broker_hooks/centralized.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libafl-v0_15/src/events/broker_hooks/centralized_multi_machine.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libafl-v0_15/src/events/broker_hooks/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libafl-v0_15/src/events/centralized.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libafl-v0_15/src/events/events_hooks/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libafl-v0_15/src/events/launcher.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libafl-v0_15/src/events/llmp/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libafl-v0_15/src/events/llmp/restarting.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libafl-v0_15/src/events/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libafl-v0_15/src/events/multi_machine.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libafl-v0_15/src/events/simple.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libafl-v0_15/src/events/tcp.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libafl-v0_15/src/executors/combined.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libafl-v0_15/src/executors/command.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libafl-v0_15/src/executors/differential.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libafl-v0_15/src/executors/forkserver.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libafl-v0_15/src/executors/hooks/inprocess.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libafl-v0_15/src/executors/hooks/inprocess_fork.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libafl-v0_15/src/executors/hooks/intel_pt.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libafl-v0_15/src/executors/hooks/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libafl-v0_15/src/executors/hooks/timer.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libafl-v0_15/src/executors/hooks/unix.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libafl-v0_15/src/executors/hooks/windows.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libafl-v0_15/src/executors/inprocess/inner.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libafl-v0_15/src/executors/inprocess/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libafl-v0_15/src/executors/inprocess/stateful.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libafl-v0_15/src/executors/inprocess_fork/inner.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libafl-v0_15/src/executors/inprocess_fork/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libafl-v0_15/src/executors/inprocess_fork/stateful.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libafl-v0_15/src/executors/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libafl-v0_15/src/executors/nop.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libafl-v0_15/src/executors/sand.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libafl-v0_15/src/executors/shadow.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libafl-v0_15/src/executors/with_observers.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libafl-v0_15/src/feedbacks/bool.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libafl-v0_15/src/feedbacks/capture_feedback.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libafl-v0_15/src/feedbacks/concolic.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libafl-v0_15/src/feedbacks/custom_filename.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libafl-v0_15/src/feedbacks/differential.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libafl-v0_15/src/feedbacks/list.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libafl-v0_15/src/feedbacks/map.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libafl-v0_15/src/feedbacks/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libafl-v0_15/src/feedbacks/nautilus.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libafl-v0_15/src/feedbacks/new_hash_feedback.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libafl-v0_15/src/feedbacks/simd.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libafl-v0_15/src/feedbacks/stdio.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libafl-v0_15/src/feedbacks/transferred.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libafl-v0_15/src/feedbacks/value_bloom.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libafl-v0_15/src/fuzzer/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libafl-v0_15/src/generators/gramatron.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libafl-v0_15/src/generators/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libafl-v0_15/src/generators/nautilus.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libafl-v0_15/src/inputs/bytes.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libafl-v0_15/src/inputs/bytessub.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libafl-v0_15/src/inputs/encoded.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libafl-v0_15/src/inputs/generalized.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libafl-v0_15/src/inputs/gramatron.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libafl-v0_15/src/inputs/list.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libafl-v0_15/src/inputs/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libafl-v0_15/src/inputs/multi.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libafl-v0_15/src/inputs/nautilus.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libafl-v0_15/src/inputs/value.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libafl-v0_15/src/lib.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libafl-v0_15/src/monitors/disk.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libafl-v0_15/src/monitors/disk_aggregate.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libafl-v0_15/src/monitors/logics.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libafl-v0_15/src/monitors/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libafl-v0_15/src/monitors/multi.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libafl-v0_15/src/monitors/prometheus.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libafl-v0_15/src/monitors/stats/manager.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libafl-v0_15/src/monitors/stats/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libafl-v0_15/src/monitors/stats/perf_stats.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libafl-v0_15/src/monitors/stats/user_stats/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libafl-v0_15/src/monitors/stats/user_stats/user_stats_value.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libafl-v0_15/src/monitors/statsd.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libafl-v0_15/src/monitors/tui/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libafl-v0_15/src/monitors/tui/ui.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libafl-v0_15/src/mutators/encoded_mutations.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libafl-v0_15/src/mutators/gramatron.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libafl-v0_15/src/mutators/grimoire.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libafl-v0_15/src/mutators/hash.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libafl-v0_15/src/mutators/havoc_mutations.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libafl-v0_15/src/mutators/list.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libafl-v0_15/src/mutators/lua.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libafl-v0_15/src/mutators/mapping.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libafl-v0_15/src/mutators/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libafl-v0_15/src/mutators/mopt_mutator.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libafl-v0_15/src/mutators/multi.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libafl-v0_15/src/mutators/mutations.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libafl-v0_15/src/mutators/nautilus.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libafl-v0_15/src/mutators/numeric.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libafl-v0_15/src/mutators/scheduled.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libafl-v0_15/src/mutators/token_mutations.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libafl-v0_15/src/mutators/tuneable.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libafl-v0_15/src/mutators/unicode/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libafl-v0_15/src/mutators/unicode/unicode_categories.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libafl-v0_15/src/observers/cmp.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libafl-v0_15/src/observers/concolic/metadata.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libafl-v0_15/src/observers/concolic/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libafl-v0_15/src/observers/concolic/observer.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libafl-v0_15/src/observers/concolic/serialization_format.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libafl-v0_15/src/observers/list.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libafl-v0_15/src/observers/map/const_map.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libafl-v0_15/src/observers/map/hitcount_map.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libafl-v0_15/src/observers/map/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libafl-v0_15/src/observers/map/multi_map.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libafl-v0_15/src/observers/map/owned_map.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libafl-v0_15/src/observers/map/variable_map.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libafl-v0_15/src/observers/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libafl-v0_15/src/observers/stacktrace.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libafl-v0_15/src/observers/stdio.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libafl-v0_15/src/observers/value.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libafl-v0_15/src/schedulers/accounting.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libafl-v0_15/src/schedulers/minimizer.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libafl-v0_15/src/schedulers/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libafl-v0_15/src/schedulers/powersched.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libafl-v0_15/src/schedulers/probabilistic_sampling.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libafl-v0_15/src/schedulers/queue.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libafl-v0_15/src/schedulers/testcase_score.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libafl-v0_15/src/schedulers/tuneable.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libafl-v0_15/src/schedulers/weighted.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libafl-v0_15/src/stages/afl_stats.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libafl-v0_15/src/stages/calibrate.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libafl-v0_15/src/stages/colorization.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libafl-v0_15/src/stages/concolic.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libafl-v0_15/src/stages/dump.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libafl-v0_15/src/stages/dynamic.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libafl-v0_15/src/stages/generalization.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libafl-v0_15/src/stages/generation.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libafl-v0_15/src/stages/logics.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libafl-v0_15/src/stages/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libafl-v0_15/src/stages/mutational.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libafl-v0_15/src/stages/nop.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libafl-v0_15/src/stages/power.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libafl-v0_15/src/stages/push/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libafl-v0_15/src/stages/push/mutational.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libafl-v0_15/src/stages/replay.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libafl-v0_15/src/stages/shadow.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libafl-v0_15/src/stages/sync.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libafl-v0_15/src/stages/time_tracker.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libafl-v0_15/src/stages/tmin.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libafl-v0_15/src/stages/tracing.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libafl-v0_15/src/stages/tuneable.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libafl-v0_15/src/stages/unicode.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libafl-v0_15/src/stages/verify_timeouts.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libafl-v0_15/src/state/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libafl-v0_15/src/state/stack.rs",
+  ]
+  inputs = [ "//third_party/rust/chromium_crates_io/vendor/libafl-v0_15/src/../README.md" ]
+
+  build_native_rust_unit_tests = false
+  edition = "2024"
+  cargo_pkg_authors = "Andrea Fioraldi <andreafioraldi@gmail.com>, Dominik Maier <domenukk@gmail.com>"
+  cargo_pkg_name = "libafl"
+  cargo_pkg_description =
+      "Slot your own fuzzers together and extend their features using Rust"
+  cargo_pkg_repository = "https://github.com/AFLplusplus/LibAFL/"
+  cargo_pkg_version = "0.15.4"
+
+  allow_unsafe = true
+
+  deps = [
+    "//third_party/rust/ahash/v0_8:lib",
+    "//third_party/rust/arbitrary_int/v2:lib",
+    "//third_party/rust/backtrace/v0_3:lib",
+    "//third_party/rust/bincode/v2:lib",
+    "//third_party/rust/bitbybit/v1:lib",
+    "//third_party/rust/const_format/v0_2:lib",
+    "//third_party/rust/const_panic/v0_2:lib",
+    "//third_party/rust/fastbloom/v0_14:lib",
+    "//third_party/rust/fs2/v0_4:lib",
+    "//third_party/rust/hashbrown/v0_16:lib",
+    "//third_party/rust/libafl_bolts/v0_15:lib",
+    "//third_party/rust/libafl_derive/v0_15:lib",
+    "//third_party/rust/libm/v0_2:lib",
+    "//third_party/rust/log/v0_4:lib",
+    "//third_party/rust/meminterval/v0_4:lib",
+    "//third_party/rust/nix/v0_30:lib",
+    "//third_party/rust/num_traits/v0_2:lib",
+    "//third_party/rust/postcard/v1:lib",
+    "//third_party/rust/regex/v1:lib",
+    "//third_party/rust/rustversion/v1:lib",
+    "//third_party/rust/serde/v1:lib",
+    "//third_party/rust/serde_json/v1:lib",
+    "//third_party/rust/serial_test/v3:lib",
+    "//third_party/rust/tuple_list/v0_1:lib",
+    "//third_party/rust/typed_builder/v0_22:lib",
+    "//third_party/rust/uuid/v1:lib",
+    "//third_party/rust/wait_timeout/v0_2:lib",
+  ]
+  if (!is_win) {
+    deps += [ "//third_party/rust/libc/v0_2:lib" ]
+  }
+  build_deps = [ "//third_party/rust/rustversion/v1:buildrs_support" ]
+  features = [
+    "backtrace",
+    "bincode",
+    "default",
+    "derive",
+    "errors_backtrace",
+    "fastbloom",
+    "fork",
+    "fs2",
+    "gzip",
+    "libafl_derive",
+    "llmp_broker_timeouts",
+    "llmp_compression",
+    "llmp_small_maps",
+    "rand_trait",
+    "regex",
+    "serde_json",
+    "serdeany_autoreg",
+    "serial_test",
+    "simd",
+    "std",
+    "typed-builder",
+    "uuid",
+    "wait-timeout",
+  ]
+  build_root =
+      "//third_party/rust/chromium_crates_io/vendor/libafl-v0_15/build.rs"
+  build_sources =
+      [ "//third_party/rust/chromium_crates_io/vendor/libafl-v0_15/build.rs" ]
+
+  testonly = true
+
+  #####################################################################
+  # Tweaking which GN `config`s apply to this target.
+
+  # Config changes that apply to all `//third_party/rust` crates.
+  _configs_to_remove = [
+    # We don't need code coverage data for any `chromium_crates_io` crates.
+    "//build/config/coverage:default_coverage",
+
+    # This is third-party code, so remove `chromium_code` config.  We are not
+    # at the same time adding `//build/config/compiler:no_chromium_code`,
+    # because 1) we don't want to pull how warnings are handled by that config
+    # and 2) that config doesn't have any non-warnings-related stuff.
+    "//build/config/compiler:chromium_code",
+  ]
+  _configs_to_add = []
+
+  # Changing (if needed) which configs apply to this specific crate (based on
+  # `extra_kv.configs_to_remove` and `extra_kv.configs_to_add` from
+  # `gnrt_config.toml`).
+  _configs_to_remove += []
+  _configs_to_add += []
+
+  # Applying config changes.
+  library_configs -= _configs_to_remove
+  library_configs += _configs_to_add
+  executable_configs -= _configs_to_remove
+  executable_configs += _configs_to_add
+  proc_macro_configs -= _configs_to_remove
+  proc_macro_configs += _configs_to_add
+}

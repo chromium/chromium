@@ -1,0 +1,11 @@
+Name: meminterval
+URL: https://crates.io/crates/meminterval
+Version: 0.4.2
+Revision: 6b4def1d56ca09ea1db4b0081f72a3720fb688ef
+Update Mechanism: Manual (https://crbug.com/449898466)
+License: Apache-2.0
+License File: //third_party/rust/chromium_crates_io/vendor/meminterval-v0_4/LICENSE-APACHE
+Shipped: no
+Security Critical: no
+
+Description: A simple interval-tree in Rust made to store memory mappings

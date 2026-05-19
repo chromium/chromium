@@ -36,6 +36,10 @@ cargo_crate("lib") {
     deps += [ "//third_party/rust/libc/v0_2:lib" ]
   }
 
+  # Only for usage from third-party crates. Add the crate to
+  # //third_party/rust/chromium_crates_io/Cargo.toml to use
+  # it from first-party code.
+  visibility = [ "//third_party/rust/*" ]
   testonly = true
 
   #####################################################################

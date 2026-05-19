@@ -1,0 +1,11 @@
+Name: typed-builder
+URL: https://crates.io/crates/typed-builder
+Version: 0.22.0
+Revision: 1a3663780d6b24d358170c9ce377fbd21a401c9a
+Update Mechanism: Manual (https://crbug.com/449898466)
+License: Apache-2.0
+License File: //third_party/rust/chromium_crates_io/vendor/typed-builder-v0_22/LICENSE-APACHE
+Shipped: no
+Security Critical: no
+
+Description: Compile-time type-checked builder derive

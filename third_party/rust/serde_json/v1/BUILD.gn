@@ -73,6 +73,7 @@ cargo_crate("lib") {
     "//third_party/rust/zmij/v1:lib",
   ]
   features = [
+    "alloc",
     "default",
     "indexmap",
     "preserve_order",

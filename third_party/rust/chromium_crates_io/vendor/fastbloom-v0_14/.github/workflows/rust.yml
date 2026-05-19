@@ -1,0 +1,43 @@
+name: Rust
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Install cargo-hack
+      run: cargo install cargo-hack
+    - name: Build
+      run: cargo hack build --verbose --feature-powerset --exclude-features loom
+    - name: Tests
+      run: cargo hack test --verbose --feature-powerset --exclude-features loom
+    - name: Loom build
+      run: cargo hack build --lib --bins --tests --feature-powerset --exclude-features serde,rand,default
+    - name: Loom tests
+      run: cargo hack test loom --lib --bins --tests --feature-powerset --exclude-features serde,rand,default
+
+  msrv:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions-rs/toolchain@v1
+        with:
+          toolchain: "1.70"
+          override: true
+      - name: Install cargo-hack
+        run: cargo install cargo-hack --version 0.6.37 --force --locked
+      - name: Build
+        run: cargo hack build --verbose --feature-powerset --exclude-features loom
+      - name: Tests
+        run: cargo hack test --verbose --feature-powerset --exclude-features loom

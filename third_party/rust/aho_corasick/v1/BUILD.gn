@@ -62,11 +62,14 @@ cargo_crate("lib") {
 
   deps = [ "//third_party/rust/memchr/v2:lib" ]
   features = [
-    "default",
     "perf-literal",
     "std",
   ]
 
+  # Only for usage from third-party crates. Add the crate to
+  # //third_party/rust/chromium_crates_io/Cargo.toml to use
+  # it from first-party code.
+  visibility = [ "//third_party/rust/*" ]
   testonly = true
 
   #####################################################################

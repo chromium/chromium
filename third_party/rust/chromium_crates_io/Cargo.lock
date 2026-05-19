@@ -21,7 +21,6 @@ version = "0.8.12"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "cfg-if",
- "getrandom 0.3.4",
  "once_cell",
  "version_check",
  "zerocopy",
@@ -67,6 +66,11 @@ dependencies = [
 [[package]]
 name = "anyhow"
 version = "1.0.102"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+
+[[package]]
+name = "arbitrary-int"
+version = "1.3.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
@@ -138,6 +142,17 @@ dependencies = [
 name = "bit-vec"
 version = "0.8.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
+
+[[package]]
+name = "bitbybit"
+version = "1.4.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+dependencies = [
+ "arbitrary-int 1.3.0",
+ "proc-macro2",
+ "quote",
+ "syn",
+]
 
 [[package]]
 name = "bitflags"
@@ -215,31 +230,20 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 name = "chromium"
 version = "0.1.0"
 dependencies = [
- "ahash",
- "aho-corasick",
  "antlr4rust",
  "anyhow",
- "arbitrary-int",
- "backtrace",
  "base64",
- "bincode",
  "bitflags",
  "bytemuck",
  "bytes",
  "chrono",
- "const_format",
- "const_panic",
  "crc32fast",
  "cxx",
  "cxxbridge-cmd",
- "erased-serde",
  "fend-core",
  "font-types",
- "fs2",
- "getrandom 0.4.2",
  "hex",
  "hmac-sha256",
- "hostname",
  "icu_casemap",
  "icu_experimental",
  "icu_locale",
@@ -252,33 +256,26 @@ dependencies = [
  "itertools",
  "jxl",
  "lazy_static",
- "libafl_bolts",
+ "libafl",
  "libc",
  "llguidance",
  "log",
  "minijinja",
  "moxcms",
- "nix",
  "num-traits",
- "num_enum",
  "ordered-float",
  "png",
- "postcard",
  "proc-macro2",
  "prost",
  "qr_code",
  "quote",
  "read-fonts",
- "regex",
  "rustc-demangle-capi",
  "rustfft",
- "safe_arch",
- "scc",
  "serde",
  "serde_json",
  "serde_json_lenient",
  "shared-brotli-patch-decoder",
- "siphasher",
  "skrifa",
  "small_ctor",
  "static_assertions",
@@ -288,11 +285,7 @@ dependencies = [
  "syn",
  "temporal_capi",
  "temporal_rs",
- "uds",
- "wait-timeout",
- "wide",
  "xml",
- "xxhash-rust",
  "zip",
 ]
 
@@ -561,6 +554,16 @@ dependencies = [
  "serde",
  "serde_core",
  "typeid",
+]
+
+[[package]]
+name = "fastbloom"
+version = "0.14.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+dependencies = [
+ "getrandom 0.3.4",
+ "libm",
+ "siphasher",
 ]
 
 [[package]]
@@ -1091,6 +1094,43 @@ version = "1.5.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
+name = "libafl"
+version = "0.15.4"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+dependencies = [
+ "ahash",
+ "arbitrary-int 2.1.1",
+ "backtrace",
+ "bincode",
+ "bitbybit",
+ "const_format",
+ "const_panic",
+ "fastbloom",
+ "fs2",
+ "hashbrown 0.16.1",
+ "libafl_bolts",
+ "libafl_derive",
+ "libc",
+ "libm",
+ "log",
+ "meminterval",
+ "nix",
+ "num-traits",
+ "postcard",
+ "regex",
+ "rustversion",
+ "serde",
+ "serde_json",
+ "serial_test",
+ "tuple_list",
+ "typed-builder",
+ "uuid",
+ "wait-timeout",
+ "winapi",
+ "windows",
+]
+
+[[package]]
 name = "libafl_bolts"
 version = "0.15.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1199,6 +1239,15 @@ dependencies = [
 name = "memchr"
 version = "2.8.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
+
+[[package]]
+name = "meminterval"
+version = "0.4.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+dependencies = [
+ "num-traits",
+ "serde",
+]
 
 [[package]]
 name = "memo-map"
@@ -1327,7 +1376,6 @@ name = "num_enum_derive"
 version = "0.7.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
- "proc-macro-crate",
  "proc-macro2",
  "quote",
  "syn",
@@ -1419,14 +1467,6 @@ version = "0.3.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "num-integer",
-]
-
-[[package]]
-name = "proc-macro-crate"
-version = "3.5.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-dependencies = [
- "toml_edit",
 ]
 
 [[package]]
@@ -2029,33 +2069,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "toml_datetime"
-version = "1.1.1+spec-1.1.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-dependencies = [
- "serde_core",
-]
-
-[[package]]
-name = "toml_edit"
-version = "0.25.11+spec-1.1.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-dependencies = [
- "indexmap",
- "toml_datetime",
- "toml_parser",
- "winnow",
-]
-
-[[package]]
-name = "toml_parser"
-version = "1.1.2+spec-1.1.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-dependencies = [
- "winnow",
-]
-
-[[package]]
 name = "transpose"
 version = "0.2.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2073,6 +2086,24 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 name = "typed-arena"
 version = "2.0.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
+
+[[package]]
+name = "typed-builder"
+version = "0.22.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+dependencies = [
+ "typed-builder-macro",
+]
+
+[[package]]
+name = "typed-builder-macro"
+version = "0.22.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn",
+]
 
 [[package]]
 name = "typed-path"
@@ -2405,14 +2436,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 name = "windows_x86_64_msvc"
 version = "0.52.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-
-[[package]]
-name = "winnow"
-version = "1.0.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-dependencies = [
- "memchr",
-]
 
 [[package]]
 name = "wit-bindgen"

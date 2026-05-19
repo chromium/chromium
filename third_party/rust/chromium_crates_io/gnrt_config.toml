@@ -140,7 +140,14 @@ allow_unsafe = true
 [crate.arbitrary-int]
 group = 'test'
 allow_first_party_usage = false
-extra_kv = { allow_unsafe = false }
+
+# TODO: Remove multiple versions of the `arbitrary-int` crate:
+# arbitrary-int@1.3.0, arbitrary-int@2.1.0
+# LibAFL makes use of arbitrary-int@2.1.0 as a dependency, but arbitrary-int@1.3.0
+# was already preexisting in the codebase.
+[crate.arbitrary-int.extra_kv]
+allow_unsafe = true
+multiversion_cleanup_bug = "https://crbug.com/493648954"
 
 [crate.array-init]
 extra_kv = { allow_unsafe = true }
@@ -162,7 +169,7 @@ extra_kv = { allow_unsafe = true }
 [crate.bincode]
 group = 'test'
 allow_first_party_usage = false
-extra_kv = { allow_unsafe = false }
+extra_kv = { allow_unsafe = true }
 
 [crate.bincode_derive]
 allow_first_party_usage = false
@@ -173,6 +180,9 @@ extra_kv = { allow_unsafe = true }
 
 [crate.bit-vec]
 extra_kv = { allow_unsafe = true }
+
+[crate.bitbybit]
+extra_kv = { allow_unsafe = false }
 
 [crate.bitflags.extra_kv]
 allow_unsafe = false
@@ -310,6 +320,10 @@ allow_unsafe = false
 group = 'test'
 allow_first_party_usage = false
 extra_kv = { allow_unsafe = true }
+
+[crate.fastbloom]
+extra_input_roots = ["../README.md"]
+extra_kv = { allow_unsafe = false }
 
 [crate.fdeflate.extra_kv]
 allow_unsafe = false
@@ -529,6 +543,15 @@ extra_kv = { allow_unsafe = true }
 [crate.lazy_static.extra_kv]
 allow_unsafe = true
 
+[crate.libafl]
+group = 'test'
+extra_input_roots = ["../README.md"]
+# TODO(crbug.com/484072401): Removing windows support due to huge size of import, but plan on adding later.
+remove_deps = ['winapi', 'windows']
+
+[crate.libafl.extra_kv]
+allow_unsafe = true
+
 [crate.libafl_bolts]
 group = 'test'
 extra_input_roots = ["../README.md"]
@@ -537,7 +560,8 @@ extra_kv = {allow_unsafe = true}
 remove_deps = ['once_cell', 'windows', 'winapi', 'windows-core', 'windows-result']
 
 [crate.libafl_derive]
-extra_kv = { allow_unsafe = false }
+group = 'test'
+extra_kv = {allow_unsafe = false}
 
 [crate.libc.extra_kv]
 # `libc` crate is implicitly trusted because it comes from
@@ -570,6 +594,9 @@ extra_kv = { allow_unsafe = false }
 
 [crate.memchr.extra_kv]
 allow_unsafe = true
+
+[crate.meminterval]
+extra_kv = { allow_unsafe = false }
 
 [crate.memo-map]
 extra_kv = { allow_unsafe = true }
@@ -622,7 +649,7 @@ extra_kv = { allow_unsafe = true }
 [crate.num_enum]
 group = 'test'
 allow_first_party_usage = false
-extra_kv = { allow_unsafe = false }
+extra_kv = { allow_unsafe = true }
 
 [crate.num_enum_derive]
 allow_first_party_usage = false
@@ -656,6 +683,7 @@ configs_to_add = ['//build/config/compiler:optimize']
 [crate.postcard]
 group = 'test'
 allow_first_party_usage = false
+extra_input_roots = ["../README.md"]
 extra_kv = { allow_unsafe = true }
 
 [crate.potential_utf.extra_kv]
@@ -741,6 +769,7 @@ extra_kv = { allow_unsafe = true }
 [crate.scc]
 group = 'test'
 allow_first_party_usage = false
+extra_input_roots = ["../README.md"]
 extra_kv = { allow_unsafe = true }
 
 [crate.scopeguard]
@@ -748,6 +777,7 @@ extra_kv = { allow_unsafe = true }
 
 [crate.sdd]
 allow_first_party_usage = false
+extra_input_roots = ["../README.md"]
 extra_kv = { allow_unsafe = true }
 
 [crate.serde]
@@ -785,6 +815,7 @@ allow_unstable_features = ["stdarch_arm_neon_intrinsics"]
 [crate.siphasher]
 group = 'test'
 allow_first_party_usage = false
+extra_input_roots = ["../README.md"]
 extra_kv = { allow_unsafe = true }
 
 [crate.skrifa]
@@ -890,6 +921,12 @@ extra_kv = { allow_unsafe = false }
 [crate.typed-arena]
 extra_kv = { allow_unsafe = true }
 
+[crate.typed-builder]
+extra_kv = { allow_unsafe = false }
+
+[crate.typed-builder-macro]
+extra_kv = { allow_unsafe = false }
+
 [crate.typed-path]
 extra_input_roots = ['../README.md']
 extra_kv = { allow_unsafe = true }
@@ -904,6 +941,7 @@ extra_kv = { allow_unsafe = true }
 
 [crate.uds]
 group = 'test'
+extra_input_roots = ["../README.md"]
 allow_first_party_usage = false
 extra_kv = { allow_unsafe = true }
 
@@ -996,6 +1034,7 @@ allow_unsafe = false
 
 [crate.zerocopy]
 allow_first_party_usage = false
+extra_input_roots = ["../benches"]
 extra_kv = { allow_unsafe = true }
 
 [crate.zerofrom.extra_kv]

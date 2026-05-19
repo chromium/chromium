@@ -27,17 +27,17 @@ cargo_crate("lib") {
   cargo_pkg_repository = "https://github.com/illicitonion/num_enum"
   cargo_pkg_version = "0.7.6"
 
-  allow_unsafe = false
+  allow_unsafe = true
 
   deps = [
     "//third_party/rust/num_enum_derive/v0_7:lib",
     "//third_party/rust/rustversion/v1:lib",
   ]
-  features = [
-    "default",
-    "std",
-  ]
 
+  # Only for usage from third-party crates. Add the crate to
+  # //third_party/rust/chromium_crates_io/Cargo.toml to use
+  # it from first-party code.
+  visibility = [ "//third_party/rust/*" ]
   testonly = true
 
   #####################################################################

@@ -1,0 +1,30 @@
+[workspace]
+members = [".", "./typed-builder-macro"]
+
+[workspace.package]
+description = "Compile-time type-checked builder derive"
+version = "0.22.0"
+authors = ["IdanArye <idanarye@gmail.com>", "Chris Morgan <me@chrismorgan.info>"]
+edition = "2021"
+license = "MIT OR Apache-2.0"
+repository = "https://github.com/idanarye/rust-typed-builder"
+documentation = "https://idanarye.github.io/rust-typed-builder/"
+readme = "README.md"
+keywords = ["builder"]
+categories = ["rust-patterns"]
+
+[package]
+name = "typed-builder"
+description.workspace = true
+version.workspace = true
+authors.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+documentation.workspace = true
+readme.workspace = true
+keywords.workspace = true
+categories.workspace = true
+
+[dependencies]
+typed-builder-macro = { path = "typed-builder-macro", version = "=0.22.0" }

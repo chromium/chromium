@@ -37,10 +37,6 @@ cargo_crate("lib") {
     "//third_party/rust/quote/v1:lib",
     "//third_party/rust/syn/v2:lib",
   ]
-  features = [
-    "proc-macro-crate",
-    "std",
-  ]
 
   # Only for usage from third-party crates. Add the crate to
   # //third_party/rust/chromium_crates_io/Cargo.toml to use

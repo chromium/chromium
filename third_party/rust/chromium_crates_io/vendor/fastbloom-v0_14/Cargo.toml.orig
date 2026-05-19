@@ -1,0 +1,36 @@
+[package]
+name = "fastbloom"
+version = "0.14.1"
+edition = "2021"
+rust-version = "1.70"
+authors = ["tomtomwombat"]
+description = "The fastest Bloom filter in Rust. No accuracy compromises. Full concurrency support and compatible with any hasher."
+license = "MIT OR Apache-2.0"
+homepage = "https://github.com/tomtomwombat/fastbloom/"
+repository = "https://github.com/tomtomwombat/fastbloom/"
+keywords = ["data-structures", "bloom-filter", "bloomfilter", "no_std"]
+categories = ["data-structures", "caching", "algorithms"]
+readme = "README.md"
+
+[badges]
+maintenance = { status = "actively-developed" }
+
+[features]
+default = ["std", "rand"]
+std = []
+loom = ["dep:loom"]
+rand = ["dep:rand"]
+serde = ["dep:serde", "siphasher/serde_std"]
+
+[dependencies]
+getrandom = "0.3"
+loom = { version = "0.7.2", optional = true }
+rand = { version = "0.9.0", optional = true }
+serde = { version = "1.0.203", features = ["derive"], optional = true }
+siphasher = "1.0.0"
+libm = "0.2"
+
+[dev-dependencies]
+ahash = "0.8.12"
+rand = "0.9"
+serde_cbor = "0.11.2"

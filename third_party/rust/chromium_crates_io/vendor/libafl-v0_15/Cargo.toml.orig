@@ -1,0 +1,338 @@
+[package]
+name = "libafl"
+version.workspace = true
+authors = [
+  "Andrea Fioraldi <andreafioraldi@gmail.com>",
+  "Dominik Maier <domenukk@gmail.com>",
+]
+description = "Slot your own fuzzers together and extend their features using Rust"
+documentation = "https://docs.rs/libafl"
+repository = "https://github.com/AFLplusplus/LibAFL/"
+readme = "../../README.md"
+license = "MIT OR Apache-2.0"
+keywords = ["fuzzing", "testing", "security"]
+edition = "2024"
+rust-version = "1.87"
+categories = [
+  "development-tools::testing",
+  "emulators",
+  "embedded",
+  "os",
+  "no-std",
+]
+
+[package.metadata.docs.rs]
+features = ["document-features"]
+all-features = true
+rustc-args = ["--cfg", "docsrs"]
+
+[lints]
+workspace = true
+
+[features]
+default = [
+  "std",
+  "derive",
+  "llmp_compression",
+  "llmp_small_maps",
+  "llmp_broker_timeouts",
+  "rand_trait",
+  "fork",
+  "gzip",
+  "regex",
+  "serdeany_autoreg",
+  "libafl_bolts/xxh3",
+  "simd",
+  "errors_backtrace",
+]
+document-features = ["dep:document-features"]
+
+#! # Feature Flags
+#! ### General Features
+
+## Enables features that need rust's `std` lib to work, like print, env, ... support
+std = [
+  "serde_json",
+  "serde_json/std",
+  "dep:nix",
+  "serde/std",
+  "bincode",
+  "wait-timeout",
+  "uuid",
+  "backtrace",
+  "serial_test",
+  "libafl_bolts/std",
+  "typed-builder",
+  "fastbloom",
+  "fs2",
+]
+
+## Tracks the Feedbacks and the Objectives that were interesting for a Testcase
+track_hit_feedbacks = ["std"]
+
+## `ValueBloomFeedback` checks if an observed value has already been observed, and returns `is_interesting=true` otherwise.
+value_bloom_feedback = ["fastbloom", "fastbloom/serde"]
+
+## Collects performance statistics of the fuzzing pipeline and displays it on `Monitor` components
+introspection = []
+
+## Expose `libafl::prelude` for access without additional using directives
+prelude = ["libafl_bolts/prelude"]
+
+## Calculate exec/sec like AFL, using 5 second time windows
+afl_exec_sec = []
+
+## Stores the backtraces of all generated `Error`s. Good for debugging, but may come with a slight performance hit.
+errors_backtrace = ["libafl_bolts/errors_backtrace"]
+
+## Switches from `HashMap` to `BTreeMap` for `CorpusId`
+corpus_btreemap = []
+
+## Enables gzip compression in certain parts of the lib
+gzip = ["libafl_bolts/gzip"]
+
+## If set, will use the `fork()` syscall to spawn children, instead of launching a new command, if supported by the OS (has no effect on `Windows`).
+fork = ["libafl_bolts/derive"]
+
+## If this feature is set, `LibAFL` targets (and the fuzzer) will crash on `SIGPIPE` on unix systems.
+handle_sigpipe = []
+
+#! ## Additional Components
+
+## Enables `TcpEventManager`, a simple EventManager proxying everything via TCP. This uses `tokio`.
+tcp_manager = ["tokio", "std"]
+
+## Enables compression for the TCP manager
+tcp_compression = ["tcp_manager", "libafl_bolts/gzip"]
+
+## Enable multi-machine support
+multi_machine = ["tokio", "std", "enumflags2", "ahash/std", "send_wrapper"]
+
+## Enables the `NaiveTokenizer` and `StacktraceObserver`
+regex = ["std", "dep:regex"]
+
+## Enables deduplication based on `libcasr` for `StacktraceObserver`
+casr = ["libcasr", "std", "regex"]
+
+## Intel Processor Trace
+intel_pt = ["std", "dep:libafl_intelpt", "dep:nix", "dep:num_enum"]
+## Save all the Intel PT raw traces to files, use only for debug
+intel_pt_export_raw = ["intel_pt", "libafl_intelpt/export_raw"]
+
+## Enables features for corpus minimization
+cmin = ["z3"]
+
+## Enables the `PrometheusMonitor` which will monitor stats via UDP, for `Grafana` and others.
+prometheus_monitor = [
+  "std",
+  "async-std",
+  "prometheus-client",
+  "tide",
+  "futures",
+]
+
+## Enables the `StatsdMonitor`.
+statsd_monitor = ["std", "cadence"]
+
+## Include a simple concolic mutator based on z3
+concolic_mutation = ["z3"]
+
+## Enable the fancy TuiMonitor for a termanal UI using crossterm
+tui_monitor = ["ratatui", "crossterm"]
+
+## Enables `UnicodeClassificationStage` and associated mutators, which allow for mutations which preserve the Unicode property data
+unicode = ["libafl_bolts/alloc", "ahash/std", "serde/rc", "bitvec"]
+
+## Enable multi-part input formats and mutators
+multipart_inputs = ["arrayvec", "rand_trait"]
+
+#! ## LibAFL-Bolts Features
+
+## Provide the `#[derive(SerdeAny)]` macro.
+derive = [
+  "libafl_derive",
+  "libafl_bolts/derive",
+] # provide `derive(SerdeAny) macro.
+
+## Expose `libafl_bolts::cli` for easy commandline parsing of common fuzzer settings
+cli = ["libafl_bolts/cli"]
+
+## Enables extra commandline flags for qemu-based fuzzers in `cli`
+qemu_cli = ["cli", "libafl_bolts/qemu_cli"]
+
+## Enables extra commandline flags for frida-based fuzzers in `cli`
+frida_cli = ["cli", "libafl_bolts/frida_cli"]
+
+## If set, libafl_bolt's `rand` implementations will implement `rand::Rng`
+rand_trait = ["libafl_bolts/rand_trait"]
+
+#! ### SerdeAny features
+
+## Automatically register all `#[derive(SerdeAny)]` types at startup.
+serdeany_autoreg = ["libafl_bolts/serdeany_autoreg"]
+
+#! ### LLMP features
+
+## The broker loop will yield occasionally, even without status messages from client nodes
+llmp_broker_timeouts = ["std"]
+
+## If set, llmp will bind to 0.0.0.0, allowing cross-device communication. Binds to localhost by default.
+llmp_bind_public = ["libafl_bolts/llmp_bind_public"]
+
+## Enables llmp compression using GZip
+llmp_compression = ["libafl_bolts/llmp_compression"]
+
+## Enables debug output for LLMP (also needs a `logger` installed)
+llmp_debug = ["std", "libafl_bolts/llmp_debug"]
+
+## Reduces the initial map size for llmp
+llmp_small_maps = [
+  "libafl_bolts/llmp_small_maps",
+] # reduces initial map size for llmp
+
+## Grammar mutator.
+nautilus = ["std", "serde_json/std", "rand_trait", "regex-syntax", "regex"]
+
+## Python grammar support for nautilus
+nautilus_py = ["nautilus", "dep:pyo3"]
+
+## Lua Mutator support (mutators implemented in Lua)
+lua_mutator = ["mlua"]
+
+## Use the best SIMD implementation by our benchmark
+simd = ["libafl_bolts/simd"]
+
+[[example]]
+name = "tui_mock"
+path = "./examples/tui_mock/main.rs"
+required-features = ["std", "tui_monitor"]
+
+[build-dependencies]
+rustversion = "1.0.22"
+
+[dev-dependencies]
+serde_json = { workspace = true, default-features = false, features = [
+  "alloc",
+] }
+# clippy-suggested optimised byte counter
+bytecount = "0.6.8"
+static_assertions = { workspace = true }
+
+[dependencies]
+libafl_bolts = { workspace = true, features = ["alloc"] }
+libafl_derive = { workspace = true, default-features = true, optional = true }
+libafl_intelpt = { workspace = true, default-features = true, optional = true }
+
+rustversion = { workspace = true }
+tuple_list = { version = "0.1.3" }
+hashbrown = { workspace = true, features = [
+  "serde",
+  "default-hasher",
+], default-features = false } # A faster hashmap, nostd compatible
+num-traits = { workspace = true, default-features = false }
+serde = { workspace = true, features = ["alloc"] } # serialization lib
+postcard = { workspace = true } # no_std compatible serde serialization format
+bincode = { version = "2.0.1", optional = true, features = ["serde"] }
+bitbybit = { workspace = true }
+arbitrary-int = { workspace = true }
+ahash = { workspace = true } # The hash function already used in hashbrown
+meminterval = { workspace = true, features = ["serde"] }
+backtrace = { workspace = true, optional = true } # Used to get the stacktrace in StacktraceObserver
+typed-builder = { workspace = true, optional = true } # Implement the builder pattern at compiletime
+send_wrapper = { version = "0.6.0", optional = true } # To move data between threads
+
+serde_json = { workspace = true, optional = true, default-features = false, features = [
+  "alloc",
+] }
+nix = { workspace = true, optional = true, features = [
+  "signal",
+  "ptrace",
+  "personality",
+  "fs",
+] }
+regex = { workspace = true, optional = true }
+uuid = { workspace = true, optional = true, features = ["serde", "v4"] }
+libm = "0.2.8"
+ratatui = { version = "0.29.0", default-features = false, features = [
+  'crossterm',
+], optional = true } # Commandline rendering, for TUI Monitor
+crossterm = { version = "0.29.0", optional = true }
+
+cadence = { version = "1.5.0", optional = true } # For the statsd monitor
+prometheus-client = { version = "0.24.0", optional = true } # For the prometheus monitor
+tide = { version = "0.16.0", optional = true }
+async-std = { version = "1.13.0", features = ["attributes"], optional = true }
+futures = { version = "0.3.30", optional = true }
+log = { workspace = true }
+tokio = { version = "1.40.0", optional = true, features = [
+  "sync",
+  "net",
+  "rt",
+  "io-util",
+  "macros",
+  "rt-multi-thread",
+  "time",
+] } # used for TCP Event Manager and multi-machine
+enumflags2 = { version = "0.7.10", optional = true }
+
+wait-timeout = { version = "0.2.0", optional = true } # used by CommandExecutor to wait for child process
+
+libcasr = { version = "2.12.1", optional = true }
+
+bitvec = { version = "1.0.1", optional = true, features = [
+  "serde",
+] } # used for string range storage
+
+arrayvec = { version = "0.7.6", optional = true, default-features = false } # used for fixed-len collects
+
+const_format = "0.2.33"                                       # used for providing helpful compiler output
+const_panic = { version = "0.2.9", default-features = false } # similarly, for formatting const panic output
+
+pyo3 = { workspace = true, optional = true }
+regex-syntax = { version = "0.8.4", optional = true } # For nautilus
+
+fs2 = { workspace = true, optional = true } # used by OnDisk Corpus for file locking
+
+z3 = { workspace = true, optional = true } # for concolic mutation
+
+# optional-dev deps (change when target.'cfg(accessible(::std))'.test-dependencies will be stable)
+serial_test = { workspace = true, optional = true, default-features = false, features = [
+  "logging",
+] }
+
+# Document all features of this crate (for `cargo doc`)
+document-features = { workspace = true, optional = true }
+# Optional
+clap = { workspace = true, optional = true }
+num_enum = { workspace = true, optional = true }
+fastbloom = { workspace = true, optional = true }
+# For Lua Mutators
+# TODO: macros is not needed/ a temporary fix for docsrs, see <https://github.com/mlua-rs/mlua/issues/579>
+mlua = { version = "0.11.4", features = [
+  "lua54",
+  "vendored",
+  "macros",
+], optional = true }
+
+[target.'cfg(unix)'.dependencies]
+libc = { workspace = true } # For (*nix) libc
+
+[target.'cfg(windows)'.dependencies]
+windows = { workspace = true, features = [
+  "Win32_Foundation",
+  "Win32_System_Threading",
+  "Win32_System_Diagnostics_Debug",
+  "Win32_System_Kernel",
+  "Win32_System_Memory",
+  "Win32_Security",
+  "Win32_System_SystemInformation",
+] }
+winapi = { version = "0.3", features = [
+  "dbghelp",
+  "minwindef",
+  "winnt",
+  "errhandlingapi",
+  "processthreadsapi",
+] }
+[target.'cfg(windows)'.build-dependencies]
+windows = { workspace = true }

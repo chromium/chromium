@@ -1,0 +1,19 @@
+name: test const
+run-name: ${{ github.actor }}'s patch
+on: [push]
+jobs:
+  build-and-test:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '14'
+      - uses: actions-rs/toolchain@v1
+        with:
+          toolchain: nightly-2023-04-01
+          override: true
+      - uses: actions-rs/cargo@v1
+        with:
+          command: test
+          args: --no-default-features --features const_convert_and_const_trait_impl

@@ -1,0 +1,18 @@
+name: test debug
+run-name: ${{ github.actor }}'s patch
+on: [push]
+jobs:
+  build-and-test:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '14'
+      - uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+      - uses: actions-rs/cargo@v1
+        with:
+          command: test
+          args: --no-default-features

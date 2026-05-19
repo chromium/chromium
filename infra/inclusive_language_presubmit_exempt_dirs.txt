@@ -675,6 +675,10 @@ third_party/rust/chromium_crates_io/vendor/itoa-v1/src
 third_party/rust/chromium_crates_io/vendor/jxl-v0_4/src/util
 third_party/rust/chromium_crates_io/vendor/libafl_bolts-v0_15/src
 third_party/rust/chromium_crates_io/vendor/libafl_bolts-v0_15/src/os
+third_party/rust/chromium_crates_io/vendor/libafl-v0_15/src/common/nautilus
+third_party/rust/chromium_crates_io/vendor/libafl-v0_15/src/executors
+third_party/rust/chromium_crates_io/vendor/libafl-v0_15/src/mutators
+third_party/rust/chromium_crates_io/vendor/libafl-v0_15/src/schedulers
 third_party/rust/chromium_crates_io/vendor/libc-v0_2
 third_party/rust/chromium_crates_io/vendor/libc-v0_2/src/new/glibc
 third_party/rust/chromium_crates_io/vendor/libc-v0_2/src/new/glibc/posix
@@ -775,6 +779,7 @@ third_party/rust/chromium_crates_io/vendor/termcolor-v1/.github/workflows
 third_party/rust/chromium_crates_io/vendor/thiserror-v2
 third_party/rust/chromium_crates_io/vendor/thiserror-v2/.github/workflows
 third_party/rust/chromium_crates_io/vendor/typed-arena-v2/.github/workflows
+third_party/rust/chromium_crates_io/vendor/typed-builder-v0_22/.github/workflows
 third_party/rust/chromium_crates_io/vendor/typeid-v1
 third_party/rust/chromium_crates_io/vendor/typeid-v1/.github/workflows
 third_party/rust/chromium_crates_io/vendor/unicode-ident-v1

@@ -42,17 +42,17 @@ cargo_crate("lib") {
     "//third_party/rust/serde_core/v1:lib",
     "//third_party/rust/typeid/v1:lib",
   ]
-  features = [
-    "alloc",
-    "default",
-    "std",
-  ]
+  features = [ "alloc" ]
   build_root =
       "//third_party/rust/chromium_crates_io/vendor/erased-serde-v0_4/build.rs"
   build_sources = [
     "//third_party/rust/chromium_crates_io/vendor/erased-serde-v0_4/build.rs",
   ]
 
+  # Only for usage from third-party crates. Add the crate to
+  # //third_party/rust/chromium_crates_io/Cargo.toml to use
+  # it from first-party code.
+  visibility = [ "//third_party/rust/*" ]
   testonly = true
 
   #####################################################################

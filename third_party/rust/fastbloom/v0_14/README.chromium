@@ -1,0 +1,11 @@
+Name: fastbloom
+URL: https://crates.io/crates/fastbloom
+Version: 0.14.1
+Revision: c64cdcc11f4ba656b348c6aa8570c87910c30523
+Update Mechanism: Manual (https://crbug.com/449898466)
+License: Apache-2.0
+License File: //third_party/rust/chromium_crates_io/vendor/fastbloom-v0_14/LICENSE-APACHE
+Shipped: no
+Security Critical: no
+
+Description: The fastest Bloom filter in Rust. No accuracy compromises. Full concurrency support and compatible with any hasher.

@@ -1,0 +1,19 @@
+[package]
+name = "meminterval"
+version = "0.4.2"
+edition = "2021"
+authors = ["Andrea Fioraldi <andreafioraldi@gmail.com>"]
+description = "A simple interval-tree in Rust made to store memory mappings"
+documentation = "https://docs.rs/meminterval"
+repository = "https://github.com/andreafioraldi/meminterval"
+readme = "README.md"
+license = "MIT OR Apache-2.0"
+keywords = ["tree", "data-structure", "algorithm"]
+categories = ["data-structures", "algorithms", "no-std"]
+
+[features]
+serde = ["dep:serde"]
+
+[dependencies]
+num-traits = { version = "0.2", default-features = false }
+serde = { version = "1.0", default-features = false, features = ["alloc", "derive"], optional = true }
