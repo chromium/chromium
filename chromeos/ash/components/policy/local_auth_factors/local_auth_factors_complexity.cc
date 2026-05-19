@@ -89,6 +89,11 @@ CharClass GetCharClass(base_icu::UChar32 c) {
   if (u_isupper(c)) {
     return CharClass::kUpper;
   }
+  // Handle uncased alphabetic characters (e.g. Arabic, CJK) which should be
+  // treated as "letters" for complexity requirements.
+  if (u_isalpha(c)) {
+    return CharClass::kLower;
+  }
   if (u_isgraph(c) && !u_isalnum(c)) {
     return CharClass::kSymbol;
   }

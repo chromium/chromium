@@ -112,6 +112,11 @@ TEST(LocalAuthFactorsComplexityCheckerTest, PasswordComplexity) {
       {"UnicodeMediumSequence", "👋👋👋👋👋aa1", Complexity::kMedium, Result::kContainsTrivialSequence},
       {"UnicodeNonLatin", "čćšđža1!abcd", Complexity::kHigh, Result::kMissesCharacters},
       {"UnicodeNonLatinPass", "čćšđžaaAA11!!", Complexity::kHigh, Result::kOk},
+
+      // Uncased scripts and multi-byte sequences should be correctly
+      // classified to meet complexity requirements.
+      {"ArabicUncasedLow", "العربية", Complexity::kLow, Result::kOk},
+      {"JapaneseUncasedLow", "あいうえおか", Complexity::kLow, Result::kOk},
   };
   // clang-format on
 
