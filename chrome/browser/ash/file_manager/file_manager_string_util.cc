@@ -1360,9 +1360,6 @@ void AddFileManagerFeatureStrings(
       "FILES_SINGLE_PARTITION_FORMAT_ENABLED",
       base::FeatureList::IsEnabled(ash::features::kFilesSinglePartitionFormat));
 
-  dict->Set("FUSEBOX_DEBUG",
-            base::FeatureList::IsEnabled(ash::features::kFuseBoxDebug));
-
   dict->Set("DRIVEFS_MIRRORING", ash::features::IsDriveFsMirroringEnabled());
 
   dict->Set("GUEST_OS", true);

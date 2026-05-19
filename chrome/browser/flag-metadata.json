@@ -4963,11 +4963,6 @@
     "expiry_milestone": -1
   },
   {
-    "name": "fuse-box-debug",
-    "owners": [ "nigeltao@chromium.org", "simmonsjosh@google.com" ],
-    "expiry_milestone": 138
-  },
-  {
     "name": "fwupd-developer-mode",
     "owners": [ "rishabhagr@chromium.org" ],
     "expiry_milestone": 145

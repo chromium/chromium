@@ -16,12 +16,6 @@ export function isDlpEnabled() {
   return isFlagEnabled('DLP_ENABLED');
 }
 
-/**
- * Returns true if FuseBoxDebug flag is enabled.
- */
-export function isFuseBoxDebugEnabled() {
-  return isFlagEnabled('FUSEBOX_DEBUG');
-}
 
 /**
  * Returns true if GuestOsFiles flag is enabled.

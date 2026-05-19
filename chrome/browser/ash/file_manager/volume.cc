@@ -238,9 +238,6 @@ std::unique_ptr<Volume> Volume::CreateForProvidedFileSystem(
 
   if (!optional_fusebox_path.empty()) {
     volume->file_system_type_ = util::kFuseBox;
-    if (ash::features::IsFileManagerFuseBoxDebugEnabled()) {
-      volume->volume_label_.insert(0, "fusebox ");
-    }
     volume->mount_path_ = std::move(optional_fusebox_path);
     // Even though the underlying FSP may support watchers, fusebox needs
     // to implement watchers in order to match the capability of the FSP.
@@ -278,9 +275,6 @@ std::unique_ptr<Volume> Volume::CreateForMTP(base::FilePath mount_path,
     volume->file_system_type_ = util::kFuseBox;
     volume->volume_id_ =
         base::StrCat({util::kFuseBox, std::move(volume->volume_id_)});
-    if (ash::features::IsFileManagerFuseBoxDebugEnabled()) {
-      volume->volume_label_.insert(0, "fusebox ");
-    }
   }
 
   return volume;
@@ -382,9 +376,6 @@ std::unique_ptr<Volume> Volume::CreateForDocumentsProvider(
     volume->volume_id_.insert(0, util::kFuseBox);
     volume->mount_path_ =
         base::FilePath(util::kFuseBoxMediaPath).Append(optional_fusebox_subdir);
-    if (ash::features::IsFileManagerFuseBoxDebugEnabled()) {
-      volume->volume_label_.insert(0, "fusebox ");
-    }
   }
 
   return volume;

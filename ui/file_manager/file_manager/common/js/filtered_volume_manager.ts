@@ -15,7 +15,6 @@ import {getEntry, getStore, type Store} from '../../state/store.js';
 
 import {type SpliceEvent} from './array_data_model.js';
 import {isOneDrive} from './entry_utils.js';
-import {isFuseBoxDebugEnabled} from './flags.js';
 import {AllowedPaths, ARCHIVE_OPENED_EVENT_TYPE, isNative, VolumeType} from './volume_manager_types.js';
 
 /**
@@ -69,12 +68,6 @@ export class FilteredVolumeManager extends VolumeManager {
    * Android (ARC) file picker sets this filter.
    */
   private readonly isMediaStoreOnly_: boolean;
-
-  /**
-   * True if chrome://flags#fuse-box-debug is enabled. This shows additional
-   * UI elements, for manual fusebox testing.
-   */
-  private readonly isFuseBoxDebugEnabled_ = isFuseBoxDebugEnabled();
 
   /**
    * Tracks async initialization of volume manager.
@@ -174,11 +167,6 @@ export class FilteredVolumeManager extends VolumeManager {
     // feasible (i.e. when in ash-chrome) but FWF-MTP when FSF-MTP won't work
     // at all.
     //
-    // There's also the isFuseBoxDebugEnabled_ field, corresponding to
-    // chrome://flags#fuse-box-debug. When true, we should show both FSF and
-    // FWF volumes, for manual testing. But normally, we should show only one
-    // of the FSF and FWF categories.
-    //
     // FuseBox (and its FWF volumes) was invented in 2021. Before then, there
     // were only NAT and FSF volumes: native and non-native. There was also the
     // AllowedPaths.NATIVE_PATH enum value, which originally meant 'only
@@ -210,14 +198,9 @@ export class FilteredVolumeManager extends VolumeManager {
     switch (this.allowedPaths_) {
       case AllowedPaths.ANY_PATH:
       case AllowedPaths.ANY_PATH_OR_URL:
-        if (this.isFuseBoxDebugEnabled_) {
-          // chrome://flags#fuse-box-debug is enabled. Show everything.
-          return true;  // Equivalent to (nat || fsf || fwf).
-        } else {
-          // If not nat (native), prefer fsf (foreign-sans-fusebox) over fwf
-          // (foreign-with-fusebox).
-          return nat || fsf;  // Equivalent to (!fwf).
-        }
+        // If not nat (native), prefer fsf (foreign-sans-fusebox) over fwf
+        // (foreign-with-fusebox).
+        return nat || fsf;  // Equivalent to (!fwf).
       case AllowedPaths.NATIVE_PATH:
         // 'Kernel-visible' means native (nat) or fusebox (fwf) volumes.
         return !fsf;  // Equivalent to (nat || fwf).

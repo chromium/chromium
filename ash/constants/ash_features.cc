@@ -814,9 +814,6 @@ BASE_FEATURE(kFullscreenAlertBubble,
              "EnableFullscreenBubble",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Debugging UI for ChromeOS FuseBox service.
-BASE_FEATURE(kFuseBoxDebug, base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Controls whether the fwupd dbus client should be active. This is used only
 // for testing to prevent the fwupd service from spooling and re-activating
 // powerd service.
@@ -2608,10 +2605,6 @@ bool IsFastPairSavedDevicesEnabled() {
 
 bool IsFastPairSavedDevicesStrictOptInEnabled() {
   return base::FeatureList::IsEnabled(kFastPairSavedDevicesStrictOptIn);
-}
-
-bool IsFileManagerFuseBoxDebugEnabled() {
-  return base::FeatureList::IsEnabled(kFuseBoxDebug);
 }
 
 bool IsFilesLocalImageSearchEnabled() {
