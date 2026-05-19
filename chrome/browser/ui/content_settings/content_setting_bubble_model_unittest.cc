@@ -51,6 +51,7 @@
 #include "components/permissions/permission_decision_auto_blocker.h"
 #include "components/permissions/permission_recovery_success_rate_tracker.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/subresource_filter/content/browser/content_subresource_filter_throttle_manager.h"
 #include "components/url_formatter/elide_url.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
@@ -1111,6 +1112,43 @@ TEST_F(ContentSettingBubbleModelTest, SubresourceFilter) {
   EXPECT_FALSE(bubble_content.custom_link_enabled);
   EXPECT_EQ(bubble_content.manage_text,
             l10n_util::GetStringUTF16(IDS_ALWAYS_ALLOW_ADS));
+}
+
+TEST_F(ContentSettingBubbleModelTest, SubresourceFilterNavigated) {
+  base::HistogramTester histogram_tester;
+  GURL page_url("https://www.example.com");
+  HostContentSettingsMap* settings_map =
+      HostContentSettingsMapFactory::GetForProfile(profile());
+  EXPECT_EQ(CONTENT_SETTING_BLOCK,
+            settings_map->GetContentSetting(page_url, GURL(),
+                                            ContentSettingsType::ADS));
+  WebContentsTester::For(web_contents())->NavigateAndCommit(page_url);
+
+  std::unique_ptr<ContentSettingBubbleModel> content_setting_bubble_model(
+      new ContentSettingSubresourceFilterBubbleModel(nullptr, web_contents()));
+
+  content_setting_bubble_model->OnManageCheckboxChecked(true);
+
+  // Simulate navigation.
+  GURL new_page_url("https://new.example.com");
+  WebContentsTester::For(web_contents())->NavigateAndCommit(new_page_url);
+
+  // This should not crash or apply settings to the new page.
+  content_setting_bubble_model->CommitChanges();
+
+  EXPECT_EQ(CONTENT_SETTING_ALLOW,
+            settings_map->GetContentSetting(page_url, GURL(),
+                                            ContentSettingsType::ADS));
+  EXPECT_EQ(CONTENT_SETTING_BLOCK,
+            settings_map->GetContentSetting(new_page_url, GURL(),
+                                            ContentSettingsType::ADS));
+
+  histogram_tester.ExpectBucketCount(
+      "SubresourceFilter.Actions2",
+      subresource_filter::SubresourceFilterAction::kDetailsShown, 1);
+  histogram_tester.ExpectBucketCount(
+      "SubresourceFilter.Actions2",
+      subresource_filter::SubresourceFilterAction::kAllowlistedSite, 1);
 }
 
 class GenericSensorContentSettingBubbleModelTest

@@ -15,6 +15,7 @@
 #include "base/auto_reset.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "build/build_config.h"
 #include "chrome/app/vector_icons/vector_icons.h"
@@ -495,6 +496,8 @@ class ContentSettingSubresourceFilterBubbleModel
   void OnLearnMoreClicked() override;
   void CommitChanges() override;
 
+  base::WeakPtr<content::Page> page_;
+  GURL page_url_;
   bool is_checked_ = false;
 };
 

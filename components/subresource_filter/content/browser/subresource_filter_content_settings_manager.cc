@@ -20,6 +20,7 @@
 #include "components/content_settings/core/common/content_settings_metadata.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/content_settings/core/common/content_settings_utils.h"
+#include "components/subresource_filter/content/browser/content_subresource_filter_throttle_manager.h"
 #include "url/gurl.h"
 
 namespace subresource_filter {
@@ -67,6 +68,8 @@ ContentSetting SubresourceFilterContentSettingsManager::GetSitePermission(
 }
 
 void SubresourceFilterContentSettingsManager::AllowlistSite(const GURL& url) {
+  ContentSubresourceFilterThrottleManager::LogAction(
+      SubresourceFilterAction::kAllowlistedSite);
   settings_map_->SetContentSettingDefaultScope(
       url, GURL(), ContentSettingsType::ADS, CONTENT_SETTING_ALLOW);
 }

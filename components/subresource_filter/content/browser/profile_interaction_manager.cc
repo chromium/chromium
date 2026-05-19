@@ -46,8 +46,6 @@ void ProfileInteractionManager::OnReloadRequested() {
   CHECK(page_);
   CHECK(page_->IsPrimary());
 
-  ContentSubresourceFilterThrottleManager::LogAction(
-      SubresourceFilterAction::kAllowlistedSite);
   profile_context_->settings_manager()->AllowlistSite(
       page_->GetMainDocument().GetLastCommittedURL());
 

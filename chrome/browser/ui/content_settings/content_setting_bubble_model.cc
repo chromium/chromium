@@ -65,6 +65,8 @@
 #include "components/permissions/permissions_client.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/subresource_filter/content/browser/content_subresource_filter_throttle_manager.h"
+#include "components/subresource_filter/content/browser/content_subresource_filter_web_contents_helper.h"
+#include "components/subresource_filter/content/browser/subresource_filter_content_settings_manager.h"
 #include "components/subresource_filter/core/browser/subresource_filter_constants.h"
 #include "components/subresource_filter/core/browser/subresource_filter_features.h"
 #include "components/url_formatter/elide_url.h"
@@ -1508,7 +1510,11 @@ void ContentSettingNotificationsBubbleModel::OnDoneButtonClicked() {
 ContentSettingSubresourceFilterBubbleModel::
     ContentSettingSubresourceFilterBubbleModel(Delegate* delegate,
                                                WebContents* web_contents)
-    : ContentSettingBubbleModel(delegate, web_contents) {
+    : ContentSettingBubbleModel(delegate, web_contents),
+      page_(web_contents->GetPrimaryPage().GetWeakPtr()),
+      page_url_(web_contents->GetPrimaryPage()
+                    .GetMainDocument()
+                    .GetLastCommittedURL()) {
   SetTitle();
   SetMessage();
   SetManageText();
@@ -1550,9 +1556,15 @@ void ContentSettingSubresourceFilterBubbleModel::OnLearnMoreClicked() {
 
 void ContentSettingSubresourceFilterBubbleModel::CommitChanges() {
   if (is_checked_) {
-    subresource_filter::ContentSubresourceFilterThrottleManager::FromPage(
-        web_contents()->GetPrimaryPage())
-        ->OnReloadRequested();
+    if (page_ && page_->IsPrimary()) {
+      subresource_filter::ContentSubresourceFilterThrottleManager::FromPage(
+          *page_)
+          ->OnReloadRequested();
+    } else {
+      subresource_filter::SubresourceFilterContentSettingsManager(
+          HostContentSettingsMapFactory::GetForProfile(GetProfile()))
+          .AllowlistSite(page_url_);
+    }
   }
 }
 
