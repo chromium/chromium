@@ -44,16 +44,6 @@ void LogSuggestionSuppressed(MultistepFilterLogRouter* const log_router,
       << LogDetail{"reason", std::string(suppression_reason)};
 }
 
-void LogSuggestionGenerated(MultistepFilterLogRouter* const log_router,
-                            const int64_t navigation_id,
-                            const std::string_view triggering_domain,
-                            const size_t filters_count) {
-  MULTISTEP_FILTER_LOG(log_router, navigation_id,
-                       LogEventType::kSuggestionGenerated, triggering_domain)
-      << LogDetail{"valid", true}
-      << LogDetail{"filters_count", static_cast<int>(filters_count)};
-}
-
 void LogUiAccepted(MultistepFilterLogRouter* const log_router,
                    const int64_t navigation_id,
                    const std::string_view triggering_domain) {
@@ -139,24 +129,6 @@ void FilterUiController::OnSuggestionGenerated(
                             domain, "delegate_suppressed");
     return;
   }
-
-  if (IsUrlSubsumedBy(suggestion->navigation_url, current_url)) {
-    LogSuggestionSuppressed(log_router_, suggestion->triggering_navigation_id,
-                            domain, "subsumed");
-    return;
-  }
-
-  // TODO (crbug.com/498897135): Confirm with stakeholders if this check should
-  // be removed.
-  // Don't show suggestions if there are less than two attributes.
-  if (suggestion->attribute_ui_labels.size() <= 1) {
-    LogSuggestionSuppressed(log_router_, suggestion->triggering_navigation_id,
-                            domain, "too_few_attributes");
-    return;
-  }
-
-  LogSuggestionGenerated(log_router_, suggestion->triggering_navigation_id,
-                         domain, suggestion->attribute_ui_labels.size());
 
   // Clear any existing suggestion state before showing the new one.
   ClearSuggestion();

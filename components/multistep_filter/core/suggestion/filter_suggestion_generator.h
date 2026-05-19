@@ -81,6 +81,7 @@ class FilterSuggestionGenerator {
       std::string_view domain,
       std::vector<std::vector<FilterAnnotation>> filter_annotations);
   void OnFilterSuggestionCandidatesFetched(
+      const GURL& url,
       base::OnceCallback<void(std::optional<UrlFilterSuggestion>)>
           success_callback,
       base::ScopedClosureRunner failure_callback,

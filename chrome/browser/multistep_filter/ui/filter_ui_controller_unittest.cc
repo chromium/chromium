@@ -352,46 +352,6 @@ TEST_F(FilterUiControllerTest, NavigateToWithWebContents) {
   controller->NavigateTo(url);
 }
 
-TEST_F(FilterUiControllerTest, ShouldSuppressSubsumedSuggestions) {
-  GURL current_url("https://example.com/search?q=foo&filter=bar");
-  content::WebContentsTester::For(web_contents())
-      ->NavigateAndCommit(current_url);
-
-  // 1. Identical URL should be suppressed.
-  EXPECT_CALL(*controller_, ShowSuggestionUi(testing::_)).Times(0);
-  controller_->OnSuggestionGenerated(
-      CreateDummySuggestion(current_url, DefaultAttributes()));
-
-  // 2. Subset of parameters should be suppressed.
-  GURL redundant_url("https://example.com/search?q=foo");
-  controller_->OnSuggestionGenerated(
-      CreateDummySuggestion(redundant_url, DefaultAttributes()));
-
-  // 3. Different base URL should NOT be suppressed even if parameters match.
-  GURL different_base_url("https://example.com/other?q=foo&filter=bar");
-  UrlFilterSuggestion different_base_suggestion =
-      CreateDummySuggestion(different_base_url, DefaultAttributes());
-  EXPECT_CALL(*controller_,
-              ShowSuggestionUi(testing::Eq(different_base_suggestion)));
-  controller_->OnSuggestionGenerated(different_base_suggestion);
-
-  // 4. Additional parameters should NOT be suppressed.
-  GURL new_filter_url("https://example.com/search?q=foo&filter=bar&sort=new");
-  UrlFilterSuggestion new_filter_suggestion =
-      CreateDummySuggestion(new_filter_url, DefaultAttributes());
-  EXPECT_CALL(*controller_,
-              ShowSuggestionUi(testing::Eq(new_filter_suggestion)));
-  controller_->OnSuggestionGenerated(new_filter_suggestion);
-
-  // 5. Different parameter values should NOT be suppressed.
-  GURL different_value_url("https://example.com/search?q=baz&filter=bar");
-  UrlFilterSuggestion different_value_suggestion =
-      CreateDummySuggestion(different_value_url, DefaultAttributes());
-  EXPECT_CALL(*controller_,
-              ShowSuggestionUi(testing::Eq(different_value_suggestion)));
-  controller_->OnSuggestionGenerated(different_value_suggestion);
-}
-
 TEST_F(FilterUiControllerTest, GetSuggestionUiData_Recent) {
   base::Time now = base::Time::Now();
   UrlFilterSuggestion suggestion =

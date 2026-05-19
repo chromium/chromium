@@ -64,6 +64,9 @@ void LogSuggestionGenerated(MultistepFilterLogRouter* log_router,
                             const UrlFilterSuggestion& suggestion) {
   MULTISTEP_FILTER_LOG(log_router, navigation_id,
                        LogEventType::kSuggestionGenerated, domain)
+      << LogDetail{"valid", true}
+      << LogDetail{"filters_count",
+                   static_cast<int>(suggestion.attribute_ui_labels.size())}
       << LogDetail{"suggestion", suggestion.ToString()};
 }
 
@@ -190,13 +193,14 @@ void FilterSuggestionGenerator::OnAllAnnotationsFetched(
       url, all_annotations_span,
       base::BindOnce(
           &FilterSuggestionGenerator::OnFilterSuggestionCandidatesFetched,
-          weak_ptr_factory_.GetWeakPtr(), std::move(success_callback),
+          weak_ptr_factory_.GetWeakPtr(), url, std::move(success_callback),
           std::move(failure_callback), std::move(all_annotations),
           navigation_id, std::string(domain)),
       navigation_id);
 }
 
 void FilterSuggestionGenerator::OnFilterSuggestionCandidatesFetched(
+    const GURL& url,
     base::OnceCallback<void(std::optional<UrlFilterSuggestion>)>
         success_callback,
     base::ScopedClosureRunner failure_callback,
@@ -216,6 +220,11 @@ void FilterSuggestionGenerator::OnFilterSuggestionCandidatesFetched(
   // chosen by default. Implement the logic to select the best execution
   // candidate.
   FilterSuggestionCandidate& candidate = candidates->front();
+
+  if (IsUrlSubsumedBy(candidate.navigation_url, url)) {
+    LogSuggestionSuppressed(log_router_, navigation_id, domain, "subsumed");
+    return;
+  }
 
   auto matching_annotation_it = std::ranges::find(
       annotations, candidate.filter_annotation_id, &FilterAnnotation::id);
@@ -237,6 +246,12 @@ void FilterSuggestionGenerator::OnFilterSuggestionCandidatesFetched(
       attribute_ui_labels.emplace_back(std::move(candidate_attribute),
                                        std::move(*it));
     }
+  }
+
+  if (attribute_ui_labels.size() <= 1) {
+    LogSuggestionSuppressed(log_router_, navigation_id, domain,
+                            "too_few_attributes");
+    return;
   }
 
   // Suggestion generation succeeded, reset `failure_callback` as to not notify
