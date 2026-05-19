@@ -92,7 +92,7 @@ export class TextChunk {
 // each end.
 export class TextExtractor implements TextNodeVisitor {
   constructor(
-      private consumer: TextChunkConsumer,
+      private consumer: TextChunkConsumer, private maxTextLength: number,
       private extraCharactersAtEnd = EXTRA_CHARACTERS_AT_END,
       private sectionBreak = SECTION_BREAK) {}
 
@@ -120,10 +120,19 @@ export class TextExtractor implements TextNodeVisitor {
   }
 
   visibleTextNode(textNode: Text): void {
-    if (textNode.textContent!.trim()) {
-      this.parts.push(textNode.textContent!);
+    const limit = this.extractionLimit;
+    if (this.index >= limit) {
+      return;
+    }
+    let text = textNode.textContent!;
+    if (text.trim()) {
+      const remaining = limit - this.index;
+      if (text.length > remaining) {
+        text = text.substring(0, remaining);
+      }
+      this.parts.push(text);
       this.sections.push(new TextSection(textNode, this.index));
-      this.index += textNode.textContent!.length;
+      this.index += text.length;
       this.broken = false;
       this.spaced = false;
     } else {
@@ -144,6 +153,7 @@ export class TextExtractor implements TextNodeVisitor {
   }
 
   invisibleNode(node: Node): void {
+    const limit = this.extractionLimit;
     if (node.nodeType === Node.COMMENT_NODE) {
       // Completely ignore comments.
     } else if (
@@ -152,6 +162,9 @@ export class TextExtractor implements TextNodeVisitor {
       // Skip empty text nodes. They are not real breaks.
       this.addSpaceIfNeeded();
     } else if (!this.broken) {
+      if (this.index + this.sectionBreak.length > limit) {
+        return;
+      }
       // Text section break, no section registered.
       this.parts.push(this.sectionBreak);
       this.index += this.sectionBreak.length;
@@ -189,9 +202,21 @@ export class TextExtractor implements TextNodeVisitor {
 
   // Mark: Private API
 
+  // Returns the maximum length allowed for the main body text.
+  // Space is reserved for prefix and postfix context strings (each up to
+  // `extraCharactersAtEnd`) so that the final assembled string will never
+  // exceed `maxTextLength`.
+  private get extractionLimit(): number {
+    return this.maxTextLength - this.extraCharactersAtEnd * 2;
+  }
+
   // Adds a single space between parts if there was none.
   private addSpaceIfNeeded() {
+    const limit = this.extractionLimit;
     if (!this.spaced) {
+      if (this.index >= limit) {
+        return;
+      }
       // Spacer, no section registered.
       this.parts.push(' ');
       this.index++;

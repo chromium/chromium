@@ -14,6 +14,9 @@
 
 namespace web {
 
+extern const int kMaxAnnotationsTextLength;
+extern const int kMaxAnnotationsMetadataLength;
+
 /**
  * Handles JS communication for the annotations feature.
  */

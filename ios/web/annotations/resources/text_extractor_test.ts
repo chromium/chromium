@@ -41,7 +41,7 @@ export class TestTextExtractor extends TestSuite {
         '<div>345678</div>';
     load(html);
 
-    const extractor = new TextExtractor(this.chunkConsumer, 5, '|');
+    const extractor = new TextExtractor(this.chunkConsumer, 65535, 5, '|');
     const root = document.body;
 
     // Simulates the visit.

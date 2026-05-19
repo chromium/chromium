@@ -119,7 +119,7 @@ function decorationNodeRemovedConsumer(node: NodeWithSymbolIndex): void {
 // Mark: Public API
 
 // Starts the annotation observer.
-function start(): void {
+function start(maxTextLength: number): void {
   // Check for already started or for a page request to not detect intent.
   if (hasNoIntentDetection() || intersectionObserver) {
     return;
@@ -127,7 +127,7 @@ function start(): void {
   const root = document.documentElement;
   idleTaskTracker = new IdleTaskTracker();
   click = new TextClick(root, tapConsumer, () => decorator?.decorations);
-  extractor = new TextExtractor(textChunkConsumer);
+  extractor = new TextExtractor(textChunkConsumer, maxTextLength);
   styler = new TextStyler();
   decorator = new TextDecorator(styler);
   intersectionObserver =

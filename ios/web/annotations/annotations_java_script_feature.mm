@@ -24,6 +24,9 @@ const char kScriptHandlerName[] = "annotations";
 
 namespace web {
 
+const int kMaxAnnotationsTextLength = 65535;
+const int kMaxAnnotationsMetadataLength = 256;
+
 AnnotationsJavaScriptFeature::AnnotationsJavaScriptFeature()
     : JavaScriptFeature(
           ContentWorld::kIsolatedWorld,
@@ -51,6 +54,7 @@ void AnnotationsJavaScriptFeature::ExtractText(WebState* web_state,
   }
 
   base::ListValue parameters;
+  parameters.Append(maximum_text_length);
   CallJavaScriptFunction(frame, "annotations.start", parameters);
 }
 
@@ -129,15 +133,50 @@ void AnnotationsJavaScriptFeature::ScriptMessageReceived(
   }
 
   if (*command == "annotations.extractedText") {
+    for (const auto pair : dict) {
+      const std::string& key = pair.first;
+      if (key != "command" && key != "text" && key != "seqId" &&
+          key != "metadata") {
+        return;
+      }
+    }
     const std::string* text = dict.FindString("text");
     std::optional<double> seq_id = dict.FindDouble("seqId");
     const base::DictValue* metadata = dict.FindDict("metadata");
     if (!text || !seq_id || !metadata) {
       return;
     }
+    for (const auto pair : *metadata) {
+      const std::string& key = pair.first;
+      if (key != "htmlLang" && key != "httpContentLanguage" &&
+          key != "wkNoTelephone" && key != "wkNoEmail" &&
+          key != "wkNoAddress" && key != "wkNoDate" && key != "wkNoUnit") {
+        return;
+      }
+    }
+    if (text->size() > kMaxAnnotationsTextLength) {
+      return;
+    }
+    const std::string* html_lang = metadata->FindString("htmlLang");
+    if (html_lang && html_lang->size() > kMaxAnnotationsMetadataLength) {
+      return;
+    }
+    const std::string* http_content_language =
+        metadata->FindString("httpContentLanguage");
+    if (http_content_language &&
+        http_content_language->size() > kMaxAnnotationsMetadataLength) {
+      return;
+    }
     manager->OnTextExtracted(web_state, *text, static_cast<int>(seq_id.value()),
                              *metadata);
   } else if (*command == "annotations.decoratingComplete") {
+    for (const auto pair : dict) {
+      const std::string& key = pair.first;
+      if (key != "command" && key != "annotations" && key != "successes" &&
+          key != "failures" && key != "cancelled") {
+        return;
+      }
+    }
     std::optional<double> optional_annotations = dict.FindDouble("annotations");
     std::optional<double> optional_successes = dict.FindDouble("successes");
     std::optional<double> optional_failures = dict.FindDouble("failures");
@@ -152,6 +191,13 @@ void AnnotationsJavaScriptFeature::ScriptMessageReceived(
     manager->OnDecorated(web_state, annotations, successes, failures,
                          *cancelled);
   } else if (*command == "annotations.onClick") {
+    for (const auto pair : dict) {
+      const std::string& key = pair.first;
+      if (key != "command" && key != "data" && key != "rect" && key != "text" &&
+          key != "cancel") {
+        return;
+      }
+    }
     const std::string* data = dict.FindString("data");
     std::optional<CGRect> rect =
         shared_highlighting::ParseRect(dict.FindDict("rect"));

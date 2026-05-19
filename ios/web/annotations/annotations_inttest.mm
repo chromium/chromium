@@ -20,6 +20,7 @@
 #import "ios/web/public/annotations/annotations_text_observer.h"
 #import "ios/web/public/js_messaging/web_frame.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
+#import "ios/web/public/test/js_test_util.h"
 #import "ios/web/public/test/web_test_with_web_state.h"
 #import "ios/web/public/web_state.h"
 #import "ios/web/public/web_state_observer.h"
@@ -65,7 +66,11 @@ class AnnotationsTestJavaScriptFeature : public JavaScriptFeature {
 class TestAnnotationTextObserver : public AnnotationsTextObserver {
  public:
   TestAnnotationTextObserver()
-      : successes_(0), annotations_(0), clicks_(0), decoration_calls_(0) {}
+      : successes_(0),
+        annotations_(0),
+        clicks_(0),
+        decoration_calls_(0),
+        text_extracted_calls_(0) {}
 
   TestAnnotationTextObserver(const TestAnnotationTextObserver&) = delete;
   TestAnnotationTextObserver& operator=(const TestAnnotationTextObserver&) =
@@ -75,6 +80,7 @@ class TestAnnotationTextObserver : public AnnotationsTextObserver {
                        const std::string& text,
                        int seq_id,
                        const base::DictValue& metadata) override {
+    text_extracted_calls_++;
     extracted_text_ = text;
     EXPECT_GE(seq_id, 1);
     seq_id_ = seq_id;
@@ -100,7 +106,10 @@ class TestAnnotationTextObserver : public AnnotationsTextObserver {
     click_data_ = data;
   }
 
-  void Reset() { seq_id_ = 0; }
+  void Reset() {
+    seq_id_ = 0;
+    text_extracted_calls_ = 0;
+  }
 
   const std::string& extracted_text() const { return extracted_text_; }
   int successes() const { return successes_; }
@@ -112,10 +121,18 @@ class TestAnnotationTextObserver : public AnnotationsTextObserver {
   const std::string& click_data() const { return click_data_; }
   void SetAnnotations(int count) { annotations_ = count; }
   int decoration_calls() const { return decoration_calls_; }
+  int text_extracted_calls() const { return text_extracted_calls_; }
 
  private:
-  std::string extracted_text_, click_data_;
-  int successes_, failures_, annotations_, clicks_, seq_id_, decoration_calls_;
+  std::string extracted_text_;
+  std::string click_data_;
+  int successes_;
+  int failures_;
+  int annotations_;
+  int clicks_;
+  int seq_id_;
+  int decoration_calls_;
+  int text_extracted_calls_;
   base::DictValue metadata_;
 };
 
@@ -753,6 +770,265 @@ TEST_F(AnnotationTextManagerViewportTest, NavigationClearsAnnotation) {
     return observer()->clicks() == 3;
   }));
   ASSERT_TRUE(observer()->click_data() == "type1-annotation");
+}
+
+TEST_F(AnnotationTextManagerViewportTest, AcceptValidMessage) {
+  ASSERT_TRUE(LoadHtml("<html><body></body></html>"));
+  ASSERT_TRUE(WaitForWebFramesCount(1));
+
+  observer()->Reset();
+
+  web::test::ExecuteJavaScriptForFeature(
+      web_state(),
+      @"window.webkit.messageHandlers.annotations.postMessage({"
+       "  command: 'annotations.extractedText',"
+       "  text: 'valid_text',"
+       "  seqId: 42,"
+       "  metadata: { htmlLang: 'en', httpContentLanguage: 'en' }"
+       "});",
+      AnnotationsJavaScriptFeature::GetInstance());
+
+  // Wait and check that it was received.
+  EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForActionTimeout, ^{
+    return observer()->seq_id() == 42;
+  }));
+  EXPECT_EQ("valid_text", observer()->extracted_text());
+}
+
+TEST_F(AnnotationTextManagerViewportTest, RejectOversizedText) {
+  ASSERT_TRUE(LoadHtml("<html><body></body></html>"));
+  ASSERT_TRUE(WaitForWebFramesCount(1));
+
+  observer()->Reset();
+
+  // Create a string of size kMaxAnnotationsTextLength + 1
+  std::string huge_text(kMaxAnnotationsTextLength + 1, 'a');
+  NSString* js =
+      [NSString stringWithFormat:
+                    @"window.webkit.messageHandlers.annotations.postMessage({"
+                     "  command: 'annotations.extractedText',"
+                     "  text: '%s',"
+                     "  seqId: 43,"
+                     "  metadata: { htmlLang: 'en', httpContentLanguage: 'en' }"
+                     "});"
+                     "window.webkit.messageHandlers.annotations.postMessage({"
+                     "  command: 'annotations.extractedText',"
+                     "  text: 'sync_text',"
+                     "  seqId: 999,"
+                     "  metadata: { htmlLang: 'en', httpContentLanguage: 'en' }"
+                     "});",
+                    huge_text.c_str()];
+
+  web::test::ExecuteJavaScriptForFeature(
+      web_state(), js, AnnotationsJavaScriptFeature::GetInstance());
+
+  // Once the second (valid) message is processed, we are guaranteed that the
+  // first (invalid) message was already processed and discarded.
+  EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForActionTimeout, ^{
+    return observer()->seq_id() == 999;
+  }));
+  EXPECT_EQ("sync_text", observer()->extracted_text());
+  EXPECT_EQ(1, observer()->text_extracted_calls());
+}
+
+TEST_F(AnnotationTextManagerViewportTest, RejectOversizedHtmlLang) {
+  ASSERT_TRUE(LoadHtml("<html><body></body></html>"));
+  ASSERT_TRUE(WaitForWebFramesCount(1));
+
+  observer()->Reset();
+
+  // Create a string of size kMaxAnnotationsMetadataLength + 1
+  std::string huge_lang(kMaxAnnotationsMetadataLength + 1, 'a');
+  NSString* js =
+      [NSString stringWithFormat:
+                    @"window.webkit.messageHandlers.annotations.postMessage({"
+                     "  command: 'annotations.extractedText',"
+                     "  text: 'valid_text',"
+                     "  seqId: 44,"
+                     "  metadata: { htmlLang: '%s', httpContentLanguage: 'en' }"
+                     "});"
+                     "window.webkit.messageHandlers.annotations.postMessage({"
+                     "  command: 'annotations.extractedText',"
+                     "  text: 'sync_text',"
+                     "  seqId: 999,"
+                     "  metadata: { htmlLang: 'en', httpContentLanguage: 'en' }"
+                     "});",
+                    huge_lang.c_str()];
+
+  web::test::ExecuteJavaScriptForFeature(
+      web_state(), js, AnnotationsJavaScriptFeature::GetInstance());
+
+  // Once the second (valid) message is processed, we are guaranteed that the
+  // first (invalid) message was already processed and discarded.
+  EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForActionTimeout, ^{
+    return observer()->seq_id() == 999;
+  }));
+  EXPECT_EQ("sync_text", observer()->extracted_text());
+  EXPECT_EQ(1, observer()->text_extracted_calls());
+}
+
+TEST_F(AnnotationTextManagerViewportTest, RejectOversizedHttpContentLanguage) {
+  ASSERT_TRUE(LoadHtml("<html><body></body></html>"));
+  ASSERT_TRUE(WaitForWebFramesCount(1));
+
+  observer()->Reset();
+
+  // Create a string of size kMaxAnnotationsMetadataLength + 1
+  std::string huge_lang(kMaxAnnotationsMetadataLength + 1, 'a');
+  NSString* js =
+      [NSString stringWithFormat:
+                    @"window.webkit.messageHandlers.annotations.postMessage({"
+                     "  command: 'annotations.extractedText',"
+                     "  text: 'valid_text',"
+                     "  seqId: 45,"
+                     "  metadata: { htmlLang: 'en', httpContentLanguage: '%s' }"
+                     "});"
+                     "window.webkit.messageHandlers.annotations.postMessage({"
+                     "  command: 'annotations.extractedText',"
+                     "  text: 'sync_text',"
+                     "  seqId: 999,"
+                     "  metadata: { htmlLang: 'en', httpContentLanguage: 'en' }"
+                     "});",
+                    huge_lang.c_str()];
+
+  web::test::ExecuteJavaScriptForFeature(
+      web_state(), js, AnnotationsJavaScriptFeature::GetInstance());
+
+  // Once the second (valid) message is processed, we are guaranteed that the
+  // first (invalid) message was already processed and discarded.
+  EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForActionTimeout, ^{
+    return observer()->seq_id() == 999;
+  }));
+  EXPECT_EQ("sync_text", observer()->extracted_text());
+  EXPECT_EQ(1, observer()->text_extracted_calls());
+}
+
+TEST_F(AnnotationTextManagerViewportTest,
+       RejectMessageWithUnexpectedKeyInExtractedText) {
+  ASSERT_TRUE(LoadHtml("<html><body></body></html>"));
+  ASSERT_TRUE(WaitForWebFramesCount(1));
+
+  observer()->Reset();
+
+  NSString* js = @"window.webkit.messageHandlers.annotations.postMessage({"
+                  "  command: 'annotations.extractedText',"
+                  "  text: 'invalid_text',"
+                  "  seqId: 46,"
+                  "  metadata: { htmlLang: 'en', httpContentLanguage: 'en' },"
+                  "  unexpectedKey: 'malicious'"
+                  "});"
+                  "window.webkit.messageHandlers.annotations.postMessage({"
+                  "  command: 'annotations.extractedText',"
+                  "  text: 'sync_text',"
+                  "  seqId: 999,"
+                  "  metadata: { htmlLang: 'en', httpContentLanguage: 'en' }"
+                  "});";
+
+  web::test::ExecuteJavaScriptForFeature(
+      web_state(), js, AnnotationsJavaScriptFeature::GetInstance());
+
+  EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForActionTimeout, ^{
+    return observer()->seq_id() == 999;
+  }));
+  EXPECT_EQ("sync_text", observer()->extracted_text());
+  EXPECT_EQ(1, observer()->text_extracted_calls());
+}
+
+TEST_F(AnnotationTextManagerViewportTest,
+       RejectMessageWithUnexpectedKeyInMetadata) {
+  ASSERT_TRUE(LoadHtml("<html><body></body></html>"));
+  ASSERT_TRUE(WaitForWebFramesCount(1));
+
+  observer()->Reset();
+
+  NSString* js = @"window.webkit.messageHandlers.annotations.postMessage({"
+                  "  command: 'annotations.extractedText',"
+                  "  text: 'invalid_text',"
+                  "  seqId: 47,"
+                  "  metadata: { htmlLang: 'en', httpContentLanguage: 'en', "
+                  "unexpectedKey: 'malicious' }"
+                  "});"
+                  "window.webkit.messageHandlers.annotations.postMessage({"
+                  "  command: 'annotations.extractedText',"
+                  "  text: 'sync_text',"
+                  "  seqId: 999,"
+                  "  metadata: { htmlLang: 'en', httpContentLanguage: 'en' }"
+                  "});";
+
+  web::test::ExecuteJavaScriptForFeature(
+      web_state(), js, AnnotationsJavaScriptFeature::GetInstance());
+
+  EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForActionTimeout, ^{
+    return observer()->seq_id() == 999;
+  }));
+  EXPECT_EQ("sync_text", observer()->extracted_text());
+  EXPECT_EQ(1, observer()->text_extracted_calls());
+}
+
+TEST_F(AnnotationTextManagerViewportTest,
+       RejectMessageWithUnexpectedKeyInDecoratingComplete) {
+  ASSERT_TRUE(LoadHtml("<html><body></body></html>"));
+  ASSERT_TRUE(WaitForWebFramesCount(1));
+
+  observer()->Reset();
+  int decoration_calls = observer()->decoration_calls();
+
+  NSString* js = @"window.webkit.messageHandlers.annotations.postMessage({"
+                  "  command: 'annotations.decoratingComplete',"
+                  "  annotations: 1,"
+                  "  successes: 1,"
+                  "  failures: 0,"
+                  "  cancelled: [],"
+                  "  unexpectedKey: 'malicious'"
+                  "});"
+                  "window.webkit.messageHandlers.annotations.postMessage({"
+                  "  command: 'annotations.decoratingComplete',"
+                  "  annotations: 1,"
+                  "  successes: 1,"
+                  "  failures: 0,"
+                  "  cancelled: []"
+                  "});";
+
+  web::test::ExecuteJavaScriptForFeature(
+      web_state(), js, AnnotationsJavaScriptFeature::GetInstance());
+
+  EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForActionTimeout, ^{
+    return observer()->decoration_calls() > decoration_calls;
+  }));
+  EXPECT_EQ(1, observer()->decoration_calls() - decoration_calls);
+}
+
+TEST_F(AnnotationTextManagerViewportTest,
+       RejectMessageWithUnexpectedKeyInOnClick) {
+  ASSERT_TRUE(LoadHtml("<html><body></body></html>"));
+  ASSERT_TRUE(WaitForWebFramesCount(1));
+
+  observer()->Reset();
+  int clicks = observer()->clicks();
+
+  NSString* js = @"window.webkit.messageHandlers.annotations.postMessage({"
+                  "  command: 'annotations.onClick',"
+                  "  data: 'some_data',"
+                  "  rect: { x: 0, y: 0, width: 10, height: 10 },"
+                  "  text: 'some_text',"
+                  "  cancel: false,"
+                  "  unexpectedKey: 'malicious'"
+                  "});"
+                  "window.webkit.messageHandlers.annotations.postMessage({"
+                  "  command: 'annotations.onClick',"
+                  "  data: 'some_data',"
+                  "  rect: { x: 0, y: 0, width: 10, height: 10 },"
+                  "  text: 'some_text',"
+                  "  cancel: false"
+                  "});";
+
+  web::test::ExecuteJavaScriptForFeature(
+      web_state(), js, AnnotationsJavaScriptFeature::GetInstance());
+
+  EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForActionTimeout, ^{
+    return observer()->clicks() > clicks;
+  }));
+  EXPECT_EQ(1, observer()->clicks() - clicks);
 }
 
 }  // namespace web
