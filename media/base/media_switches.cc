@@ -1114,7 +1114,7 @@ BASE_FEATURE(kEnableAudioMonitoringOnAndroid, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables Picture-in-Picture menu item on the video context menu on Android.
 BASE_FEATURE(kContextMenuPictureInPictureAndroid,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables fullscreen video Picture-in-Picture on Android.
 BASE_FEATURE(kFullscreenVideoPictureInPicture,
