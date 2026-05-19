@@ -47,6 +47,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
+import org.chromium.chrome.browser.tab.utilities.LoadIfNeededService;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorImpl;
@@ -86,6 +87,7 @@ public class TabItemPickerCoordinatorNavigationUnitTest {
 
     @Before
     public void setUp() {
+        LoadIfNeededService.getInstance().clearForTesting();
         OneshotSupplierImpl<Profile> profileSupplierImpl = new OneshotSupplierImpl<>();
         ViewGroup rootView = Mockito.mock(ViewGroup.class);
         ViewGroup containerView = Mockito.mock(ViewGroup.class);
@@ -391,7 +393,7 @@ public class TabItemPickerCoordinatorNavigationUnitTest {
         mNavigationProvider.onSelectionStateChange(selection);
         mNavigationProvider.onSelectionStateChange(selection);
 
-        verify(tab, times(2)).loadIfNeeded(anyBoolean());
+        verify(tab, times(1)).loadIfNeeded(anyBoolean());
     }
 
     @Test
@@ -454,7 +456,7 @@ public class TabItemPickerCoordinatorNavigationUnitTest {
         mNavigationProvider.onSelectionStateChange(selection);
         mNavigationProvider.onSelectionStateChange(selection);
 
-        verify(tab, times(2)).loadIfNeeded(anyBoolean());
+        verify(tab, times(1)).loadIfNeeded(anyBoolean());
         // cacheTabThumbnailWithCallback is not called yet because the tab is still loading.
         verify(mTabContentManager, never())
                 .cacheTabThumbnailWithCallback(any(), anyBoolean(), any());

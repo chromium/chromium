@@ -12,7 +12,6 @@ import android.view.ViewGroup;
 
 import androidx.activity.ComponentActivity;
 import androidx.activity.OnBackPressedCallback;
-import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
@@ -36,9 +35,10 @@ import org.chromium.chrome.browser.omnibox.fusebox.FuseboxTabUtils;
 import org.chromium.chrome.browser.page_content_annotations.PageContentExtractionService;
 import org.chromium.chrome.browser.page_content_annotations.PageContentExtractionServiceFactory;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tab.TabObserver;
+import org.chromium.chrome.browser.tab.utilities.LoadIfNeededService;
+import org.chromium.chrome.browser.tab.utilities.LoadIfNeededService.LoadIfNeededCallback;
+import org.chromium.chrome.browser.tab.utilities.LoadIfNeededService.LoadResult;
 import org.chromium.chrome.browser.tab_ui.RecyclerViewPosition;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.IncognitoTabModel;
@@ -60,10 +60,7 @@ import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
-import org.chromium.url.GURL;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -372,22 +369,6 @@ public class TabItemPickerCoordinator {
     public static class ItemPickerNavigationProvider
             implements TabListEditorCoordinator.NavigationProvider, ItemPickerSelectionHandler {
 
-        @IntDef({
-            LoadResult.SUCCESS,
-            LoadResult.FAILURE,
-            LoadResult.CRASH,
-            LoadResult.DESTROYED,
-            LoadResult.ABANDONED
-        })
-        @Retention(RetentionPolicy.SOURCE)
-        private @interface LoadResult {
-            int SUCCESS = 0;
-            int FAILURE = 1;
-            int CRASH = 2;
-            int DESTROYED = 3;
-            int ABANDONED = 4;
-        }
-
         private final SettableNonNullObservableSupplier<Boolean> mEnableDoneButtonSupplier =
                 ObservableSuppliers.createNonNull(false);
         private final Activity mActivity;
@@ -397,30 +378,7 @@ public class TabItemPickerCoordinator {
         private final Set<Integer> mCachedTabIds;
         private final Set<TabListEditorItemSelectionId> mInitialSelectedTabIds;
         private final Map<Tab, Long> mLoadingTabsToStartTimes = new HashMap<>();
-        private final TabObserver mLoadObserver =
-                new EmptyTabObserver() {
-                    @Override
-                    public void onPageLoadFinished(Tab tab, GURL url) {
-                        // TODO(crbug.com/488046553): Consider adding a delay here for the page to
-                        // load more completely.
-                        onTabLoadFinished(tab, LoadResult.SUCCESS);
-                    }
-
-                    @Override
-                    public void onPageLoadFailed(Tab tab, int errorCode) {
-                        onTabLoadFinished(tab, LoadResult.FAILURE);
-                    }
-
-                    @Override
-                    public void onCrash(Tab tab) {
-                        onTabLoadFinished(tab, LoadResult.CRASH);
-                    }
-
-                    @Override
-                    public void onDestroyed(Tab tab) {
-                        onTabLoadFinished(tab, LoadResult.DESTROYED);
-                    }
-                };
+        private final LoadIfNeededCallback mLoadIfNeededCallback = this::onTabLoadFinished;
 
         private boolean mIsDestroyed;
 
@@ -472,23 +430,17 @@ public class TabItemPickerCoordinator {
                 return;
             }
 
-            // If everything is working as expected the current tab should always be active
-            // and therefore not loaded on demand, but just in case we still allow it to be
-            // loaded here.
-            if (!tab.loadIfNeeded(/* forceBackingSize= */ true)) return;
-
-            // If the tab finished loading immediately (e.g. it was already in memory),
-            // exit immediately.
-            if (!tab.isLoading()) return;
-
             // Avoid double-observing the same tab if it's already being loaded.
             if (mLoadingTabsToStartTimes.containsKey(tab)) return;
+
+            LoadIfNeededService loadIfNeededService = LoadIfNeededService.getInstance();
+            if (!loadIfNeededService.queueLoadIfNeeded(tab)) return;
 
             // Clear the thumbnail to avoid showing a stale thumbnail immediately after selection.
             mTabContentManager.removeTabThumbnail(tab.getId(), /* forceRemoval= */ true);
 
             mLoadingTabsToStartTimes.put(tab, SystemClock.elapsedRealtime());
-            tab.addObserver(mLoadObserver);
+            loadIfNeededService.addLoadIfNeededCallback(tab, mLoadIfNeededCallback);
 
             // Show a spinner while the thumbnail is being fetched/generated.
             var controller = mControllerSupplier.get();
@@ -507,8 +459,6 @@ public class TabItemPickerCoordinator {
                     return "Crash";
                 case LoadResult.DESTROYED:
                     return "Destroyed";
-                case LoadResult.ABANDONED:
-                    return "Abandoned";
                 default:
                     return "Unknown";
             }
@@ -517,7 +467,6 @@ public class TabItemPickerCoordinator {
         private void onTabLoadFinished(Tab tab, @LoadResult int result) {
             if (mIsDestroyed) return;
 
-            tab.removeObserver(mLoadObserver);
             long startTime = assumeNonNull(mLoadingTabsToStartTimes.remove(tab));
 
             long duration = SystemClock.elapsedRealtime() - startTime;
@@ -555,9 +504,12 @@ public class TabItemPickerCoordinator {
         /** Cleans up observers and state. */
         public void destroy() {
             long currentTime = SystemClock.elapsedRealtime();
+            LoadIfNeededService loadIfNeededService = LoadIfNeededService.getInstance();
             for (var entry : mLoadingTabsToStartTimes.entrySet()) {
                 Tab tab = entry.getKey();
-                if (tab != null) tab.removeObserver(mLoadObserver);
+                if (tab != null) {
+                    loadIfNeededService.removeLoadIfNeededCallback(tab, mLoadIfNeededCallback);
+                }
 
                 long duration = currentTime - entry.getValue();
                 RecordHistogram.recordMediumTimesHistogram(

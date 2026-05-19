@@ -10,6 +10,7 @@ include_rules = [
   "+chrome/browser/browser_controls/android/java",
   '+chrome/browser/commerce/android/java',
   '+chrome/browser/commerce/price_tracking/android/java',
+  "+chrome/browser/tab/java/src/org/chromium/chrome/browser/tab",
   "+chrome/browser/optimization_guide/android/java/src/org/chromium/chrome/browser/optimization_guide",
   "+chrome/browser/preferences/android/java",
   "+chrome/browser/profiles/android/java",
