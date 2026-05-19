@@ -2,14 +2,10 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/buildflag_header.gni")
 import("//build/config/cast.gni")
 import("//chromecast/chromecast.gni")
 
-declare_args() {
-  # Set true to use accurate but more expensive method for GetMediaTime().
-  cma_use_accurate_media_time = is_cast_audio_only
-}
+
 
 cast_source_set("pipeline") {
   sources = [
@@ -46,7 +42,6 @@ cast_source_set("pipeline") {
   ]
 
   deps = [
-    ":cma_pipeline_buildflags",
     "//base",
     "//chromecast/base",
     "//chromecast/base/metrics",
@@ -64,8 +59,4 @@ cast_source_set("pipeline") {
   configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
-buildflag_header("cma_pipeline_buildflags") {
-  header = "cma_pipeline_buildflags.h"
 
-  flags = [ "CMA_USE_ACCURATE_MEDIA_TIME=$cma_use_accurate_media_time" ]
-}

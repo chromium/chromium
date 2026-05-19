@@ -126,7 +126,7 @@ cast_shared_library("libcast_graphics_1.0") {
   # copies of //base in the same address space leads to hard-to-debug crashes.
 }
 
-if (use_aura && !is_cast_audio_only && !is_fuchsia) {
+if (use_aura && !is_fuchsia) {
   test("cast_graphics_unittests") {
     sources = [
       "cast_display_util_unittest.cc",

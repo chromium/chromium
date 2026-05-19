@@ -215,8 +215,7 @@ declare_args() {
   # TODO(crbug.com/1336055): Remove legacy target_cpu hack used for targeting
   # desktop Chromecast builds.
   if (is_posix && !is_android && !is_apple &&
-      (!is_castos || (target_cpu == "x86" || target_cpu == "x64") ||
-       is_cast_audio_only)) {
+      (!is_castos || (target_cpu == "x86" || target_cpu == "x64"))) {
     use_alsa = true
 
     # Pulse is not supported on Chromecast platforms.

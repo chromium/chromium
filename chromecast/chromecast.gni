@@ -37,7 +37,7 @@ declare_args() {
 
   # Set to true if there is a full mixer implementation; if not, we create a
   # shim mixer service receiver that pushes audio to the CMA backend.
-  have_full_mixer = is_cast_audio_only
+  have_full_mixer = false
 
   # If true, the mixer will be instantiated inside cast_shell. When false, the
   # mixer is expected to be running in another process.

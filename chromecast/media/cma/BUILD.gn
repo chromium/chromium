@@ -39,9 +39,6 @@ cast_source_set("test_support") {
     "//ui/gfx/geometry",
   ]
 
-  if (is_cast_audio_only) {
-    deps += [ "//chromecast/media/cma/backend:null_video" ]
-  }
 }
 
 cast_source_set("unittests") {

@@ -61,9 +61,7 @@ declare_args() {
     ozone_platform = "headless"
     ozone_platform_headless = true
 
-    if (is_cast_audio_only) {
-      # Just use headless for audio-only Cast platforms.
-    } else if (is_castos) {
+    if (is_castos) {
       # Enable the Cast ozone platform on all video CastOS builds.
       ozone_platform_cast = true
 

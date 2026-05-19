@@ -106,12 +106,10 @@ cast_test_group("cast_tests") {
     ]
   }
 
-  if (!is_cast_audio_only) {
-    tests += [ "//gpu:gpu_unittests" ]
+  tests += [ "//gpu:gpu_unittests" ]
 
-    if (use_aura && !is_fuchsia) {
-      tests += [ "//chromecast/graphics:cast_graphics_unittests" ]
-    }
+  if (use_aura && !is_fuchsia) {
+    tests += [ "//chromecast/graphics:cast_graphics_unittests" ]
   }
 
   if (use_v4l2_codec) {
@@ -220,8 +218,7 @@ cast_test_group("cast_tests") {
           ]
         }
 
-        if (!is_cast_desktop_build && !is_cast_audio_only &&
-            !enable_assistant) {
+        if (!is_cast_desktop_build && !enable_assistant) {
           # TODO(mbjorge): The VideoPlaybackMp4 test is failing on v1 devices.
           # Temporarily disable it as part of an effort to re-green the unittests.
           # Re-enable once the tests have been fixed. Limitations in the filter
@@ -284,11 +281,6 @@ cast_test_group("cast_tests") {
         ]
       }
 
-      if (is_cast_audio_only) {
-        # Also disable TimeFormattingTest on audio-only builds, since we don't
-        # include the necessary info in icudtl.dat.
-        gtest_excludes += [ "TimeFormattingTest.*" ]
-      }
     }
   }
   filters += [ base_unittests_filter ]
@@ -351,10 +343,6 @@ cast_test_group("cast_tests") {
           "PepperGamepadHostTest.WaitForReply",
           "RenderWidgetHostTest.Background",
         ]
-      }
-      if (is_cast_audio_only) {
-        # No way to display URL's on audio only cast devices.
-        gtest_excludes += [ "NavigationEntryTest.NavigationEntryURLs" ]
       }
       if (enable_assistant && !is_cast_desktop_build) {
         # Temporarily disable DefaultConstructor on assistant device builds. Cause
@@ -614,7 +602,7 @@ buildflag_header("chromecast_buildflags") {
     "DISABLE_SECURE_FLAC_OPUS_DECODING=$disable_secure_flac_and_opus_decoding",
     "ENABLE_ASSISTANT=$enable_assistant",
     "ENABLE_EXTERNAL_MOJO_SERVICES=$enable_external_mojo_services",
-    "IS_CAST_AUDIO_ONLY=$is_cast_audio_only",
+    "IS_CAST_AUDIO_ONLY=0",
     "IS_CAST_DESKTOP_BUILD=$is_cast_desktop_build",
     "USE_ANDROID_USER_AGENT=$use_android_user_agent",
     "USE_CHROMECAST_CDMS=$use_chromecast_cdms",

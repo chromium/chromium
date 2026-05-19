@@ -6,10 +6,6 @@
 # //chromecast. Args needed only in //chromecast should be declared in
 # //chromecast/chromecast.gni.
 declare_args() {
-  # Set this true for an audio-only Chromecast build.
-  # TODO(crbug.com/41489655): Remove this arg as CastOS builds are no
-  # longer supported.
-  is_cast_audio_only = false
 
   # If non empty, rpath of executables is set to this.
   # If empty, default value is used.
@@ -42,8 +38,7 @@ declare_args() {
   #
   # TODO(crbug.com/1293520):  Remove this buildflag.
   enable_cast_renderer =
-      enable_cast_receiver &&
-      (is_linux || is_chromeos || (is_cast_audio_only && is_android))
+      enable_cast_receiver && (is_linux || is_chromeos)
 }
 
 # Configures media options for cast.  See media/media_options.gni
@@ -57,10 +52,8 @@ if (enable_cast_renderer) {
   cast_mojo_media_services = [
     "cdm",
     "renderer",
+    "video_decoder",
   ]
-  if (!is_cast_audio_only) {
-    cast_mojo_media_services += [ "video_decoder" ]
-  }
 
   cast_mojo_media_host = "gpu"
 } else if (is_android) {
@@ -69,15 +62,9 @@ if (enable_cast_renderer) {
   cast_mojo_media_services = [
     "cdm",
     "audio_decoder",
+    "video_decoder",
   ]
-  if (!is_cast_audio_only) {
-    # These are Cast/Android devices with Video capabilities (and GPU)
-    cast_mojo_media_services += [ "video_decoder" ]
-    cast_mojo_media_host = "gpu"
-  } else {
-    # These are Cast/Android devices with only Audio capabilities (no GPU)
-    cast_mojo_media_host = "browser"
-  }
+  cast_mojo_media_host = "gpu"
 }
 
 # Assert that Chromecast is being built for a supported platform.
@@ -85,8 +72,6 @@ assert(is_linux || is_chromeos || is_android || is_fuchsia ||
            !enable_cast_receiver,
        "Cast receiver builds are not supported on $current_os")
 
-assert(enable_cast_receiver || !is_cast_audio_only,
-       "is_cast_audio_only = true requires enable_cast_receiver = true.")
 
 assert(enable_cast_receiver || !is_castos,
        "is_castos = true requires enable_cast_receiver = true.")
