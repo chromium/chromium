@@ -23,6 +23,7 @@ import "services/network/public/mojom/url_loader_factory.mojom";
 import "services/network/public/mojom/url_request.mojom";
 import "services/network/public/mojom/url_response_head.mojom";
 import "services/service_manager/public/mojom/interface_provider.mojom";
+import "services/viz/public/mojom/compositing/compositor_frame_sink.mojom";
 import "services/viz/public/mojom/compositing/surface_id.mojom";
 import "third_party/blink/public/mojom/associated_interfaces/associated_interfaces.mojom";
 import "third_party/blink/public/mojom/blob/blob_url_store.mojom";
@@ -55,6 +56,7 @@ import "third_party/blink/public/mojom/service_worker/controller_service_worker.
 import "third_party/blink/public/mojom/service_worker/service_worker_container.mojom";
 import "third_party/blink/public/mojom/tokens/tokens.mojom";
 import "third_party/blink/public/mojom/webpreferences/web_preferences.mojom";
+import "third_party/blink/public/mojom/widget/platform_widget.mojom";
 import "third_party/blink/public/mojom/widget/visual_properties.mojom";
 import "third_party/blink/public/mojom/window_features/window_features.mojom";
 import "ui/accessibility/mojom/ax_tree_update.mojom";
@@ -262,6 +264,11 @@ struct CreateFrameWidgetParams {
   pending_associated_receiver<blink.mojom.FrameWidget> frame_widget;
   pending_associated_remote<blink.mojom.WidgetHost> widget_host;
   pending_associated_receiver<blink.mojom.Widget> widget;
+
+  // The pipes needed for initial frame sink creation. This allows the renderer
+  // to communicate with the frame sink in the GPU process earlier, without
+  // having to request the browser process for it first.
+  blink.mojom.InitialFrameSinkParams? initial_frame_sink_params;
 
   // The initial visual properties of the widget.
   blink.mojom.VisualProperties visual_properties;

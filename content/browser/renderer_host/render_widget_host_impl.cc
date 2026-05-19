@@ -111,6 +111,7 @@
 #include "content/public/common/result_codes.h"
 #include "gpu/GLES2/gl2extchromium.h"
 #include "gpu/command_buffer/service/gpu_switches.h"
+#include "gpu/config/gpu_finch_features.h"
 #include "ipc/constants.mojom.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -384,6 +385,14 @@ RenderWidgetHostImpl* RenderWidgetHostImpl::CreateSelfOwned(
                                   std::move(site_instance_group), routing_id,
                                   hidden, /*renderer_initiated_creation=*/true);
 }
+
+RenderWidgetHostImpl::InitialFrameSinkPipes::InitialFrameSinkPipes() = default;
+RenderWidgetHostImpl::InitialFrameSinkPipes::~InitialFrameSinkPipes() = default;
+RenderWidgetHostImpl::InitialFrameSinkPipes::InitialFrameSinkPipes(
+    InitialFrameSinkPipes&&) = default;
+RenderWidgetHostImpl::InitialFrameSinkPipes&
+RenderWidgetHostImpl::InitialFrameSinkPipes::operator=(
+    InitialFrameSinkPipes&&) = default;
 
 RenderWidgetHostImpl::RenderWidgetHostImpl(
     FrameTree* frame_tree,
@@ -887,6 +896,14 @@ void RenderWidgetHostImpl::WasShown(
   // running isn't ideal for seeing if the tab navigated in the background.
   ForceFirstFrameAfterNavigationTimeout();
   RestartRenderInputRouterInputEventAckTimeout();
+
+  // If we created the frame sink pipes early but the widget was hidden,
+  // we deferred the actual creation until it becomes visible.
+  if (initial_frame_sink_pipes_.has_value()) {
+    CreateFrameSink(std::move(initial_frame_sink_pipes_->receiver),
+                    std::move(initial_frame_sink_pipes_->client),
+                    std::move(initial_frame_sink_pipes_->viz_rir_client));
+  }
 
   // This methods avoids running when the widget is hidden, so we run it here
   // once it is no longer hidden.
@@ -3538,6 +3555,44 @@ RenderWidgetHostImpl::BindAndGenerateCreateFrameWidgetParams() {
       params->frame_widget_host.InitWithNewEndpointAndPassReceiver(),
       std::move(frame_widget_remote));
 
+  // Reset any previously created initial pipes to ensure we don't reuse stale
+  // pipes if this method is called again.
+  initial_frame_sink_pipes_.reset();
+
+  // We currently skip the early frame sink creation optimization on ChromeOS
+  // due to issues with tab-dragging on tablet mode.
+  // TODO(crbug.com/496408117): Make this work on ChromeOS too.
+#if !BUILDFLAG(IS_CHROMEOS)
+  // We can't do early frame sink creation if synchronous compositor is used.
+  const bool using_sync_compositing =
+#if BUILDFLAG(IS_ANDROID)
+      GetContentClient()->UsingSynchronousCompositing();
+#else
+      false;
+#endif  // !BUILDFLAG(IS_ANDROID)
+  if (!using_sync_compositing &&
+      base::FeatureList::IsEnabled(features::kSendGPUChannelEarly)) {
+    auto initial_frame_sink_params =
+        blink::mojom::InitialFrameSinkParams::New();
+    initial_frame_sink_pipes_.emplace();
+    initial_frame_sink_params->initial_frame_sink =
+        initial_frame_sink_pipes_->receiver.InitWithNewPipeAndPassRemote();
+    initial_frame_sink_params->initial_frame_sink_client =
+        initial_frame_sink_pipes_->client.InitWithNewPipeAndPassReceiver();
+    initial_frame_sink_params->initial_viz_rir_client =
+        initial_frame_sink_pipes_->viz_rir_client
+            .InitWithNewPipeAndPassReceiver();
+    params->initial_frame_sink_params = std::move(initial_frame_sink_params);
+
+    if (!is_hidden_) {
+      // If the widget is already shown, trigger frame sink creation.
+      CreateFrameSink(std::move(initial_frame_sink_pipes_->receiver),
+                      std::move(initial_frame_sink_pipes_->client),
+                      std::move(initial_frame_sink_pipes_->viz_rir_client));
+    }
+  }
+#endif  // !BUILDFLAG(IS_CHROMEOS)
+
   params->visual_properties = GetInitialVisualProperties();
 
   return params;
@@ -3754,6 +3809,9 @@ void RenderWidgetHostImpl::CreateFrameSink(
         compositor_frame_sink_client,
     mojo::PendingRemote<blink::mojom::RenderInputRouterClient>
         viz_rir_client_remote) {
+  // If we are creating a new frame sink (e.g. after context loss), discard
+  // any pending initial pipes that were not used.
+  initial_frame_sink_pipes_.reset();
   // Connects the viz process end of CompositorFrameSink message pipes. The
   // renderer compositor may request a new CompositorFrameSink on context
   // loss, which will destroy the existing CompositorFrameSink.

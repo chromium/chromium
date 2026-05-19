@@ -2528,8 +2528,18 @@ void WebFrameWidgetImpl::ResetMeaningfulLayoutStateForMainFrame() {
 
 void WebFrameWidgetImpl::InitializeCompositing(
     const display::ScreenInfos& screen_infos,
-    const cc::LayerTreeSettings* settings) {
+    const cc::LayerTreeSettings* settings,
+    CrossVariantMojoRemote<viz::mojom::blink::CompositorFrameSinkInterfaceBase>
+        initial_frame_sink,
+    CrossVariantMojoReceiver<
+        viz::mojom::blink::CompositorFrameSinkClientInterfaceBase>
+        initial_frame_sink_client,
+    CrossVariantMojoReceiver<mojom::blink::RenderInputRouterClientInterfaceBase>
+        initial_viz_rir_client) {
   InitializeCompositingInternal(screen_infos, settings, nullptr);
+  widget_base_->SetInitialFrameSink(std::move(initial_frame_sink),
+                                    std::move(initial_frame_sink_client),
+                                    std::move(initial_viz_rir_client));
 }
 
 void WebFrameWidgetImpl::InitializeCompositingFromPreviousWidget(

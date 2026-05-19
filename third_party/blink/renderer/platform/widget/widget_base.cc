@@ -11,6 +11,7 @@
 #include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/task/common/task_annotator.h"
 #include "base/trace_event/trace_event.h"
@@ -178,6 +179,22 @@ WidgetBase::WidgetBase(
 WidgetBase::~WidgetBase() {
   // Ensure Shutdown was called.
   DCHECK(!layer_tree_view_);
+}
+
+void WidgetBase::SetInitialFrameSink(
+    CrossVariantMojoRemote<viz::mojom::blink::CompositorFrameSinkInterfaceBase>
+        initial_frame_sink,
+    CrossVariantMojoReceiver<
+        viz::mojom::blink::CompositorFrameSinkClientInterfaceBase>
+        initial_frame_sink_client,
+    CrossVariantMojoReceiver<mojom::blink::RenderInputRouterClientInterfaceBase>
+        initial_viz_rir_client) {
+  initial_frame_sink_pipes_.emplace();
+  initial_frame_sink_pipes_->initial_frame_sink = std::move(initial_frame_sink);
+  initial_frame_sink_pipes_->initial_frame_sink_client =
+      std::move(initial_frame_sink_client);
+  initial_frame_sink_pipes_->initial_viz_rir_client =
+      std::move(initial_viz_rir_client);
 }
 
 void WidgetBase::InitializeCompositing(
@@ -832,11 +849,44 @@ void WidgetBase::FinishRequestNewLayerTreeFrameSink(
 
   viz_input_receiver_.reset();
 
+  // If there are initial frame sink pipes already sent by the browser, use
+  // those instead of requesting creation with new pipes.
+  const bool has_initial_sink =
+      initial_frame_sink_pipes_ &&
+      initial_frame_sink_pipes_->initial_frame_sink.is_valid();
+  CHECK_EQ(has_initial_sink,
+           initial_frame_sink_pipes_ &&
+               initial_frame_sink_pipes_->initial_frame_sink_client.is_valid());
+  CHECK_EQ(has_initial_sink,
+           initial_frame_sink_pipes_ &&
+               initial_frame_sink_pipes_->initial_viz_rir_client.is_valid());
+  base::UmaHistogramBoolean("GPU.EarlyInitialFrameSinkUsed", has_initial_sink);
+  // Record the start time to measure wait time until the first BeginFrame.
+  frame_sink_bind_time_ = base::TimeTicks::Now();
+  waiting_for_first_begin_frame_ = true;
+  is_using_early_frame_sink_ = has_initial_sink;
+
+  if (has_initial_sink) {
+    viz_input_receiver_.Bind(
+        std::move(initial_frame_sink_pipes_->initial_viz_rir_client),
+        task_runner_);
+    params.compositor_frame_sink_receiver.reset();
+    params.compositor_frame_sink_client.reset();
+    params.embedder_params->pipes.compositor_frame_sink_remote =
+        ToCrossVariantMojoType(
+            std::move(initial_frame_sink_pipes_->initial_frame_sink));
+    params.embedder_params->pipes.client_receiver = ToCrossVariantMojoType(
+        std::move(initial_frame_sink_pipes_->initial_frame_sink_client));
+    initial_frame_sink_pipes_.reset();
+  }
+
   if (Platform::Current()->IsGpuCompositingDisabled()) {
-    widget_host_->CreateFrameSink(
-        std::move(params.compositor_frame_sink_receiver),
-        std::move(params.compositor_frame_sink_client),
-        viz_input_receiver_.BindNewPipeAndPassRemote(task_runner_));
+    if (!has_initial_sink) {
+      widget_host_->CreateFrameSink(
+          std::move(params.compositor_frame_sink_receiver),
+          std::move(params.compositor_frame_sink_client),
+          viz_input_receiver_.BindNewPipeAndPassRemote(task_runner_));
+    }
     widget_host_->RegisterRenderFrameMetadataObserver(
         std::move(params.render_frame_metadata_observer_client_receiver),
         std::move(params.render_frame_metadata_observer_remote));
@@ -883,7 +933,8 @@ void WidgetBase::FinishRequestNewLayerTreeFrameSink(
   if (Platform::Current()->IsSynchronousCompositingEnabledForAndroidWebView() &&
       !is_embedded_) {
     // TODO(ericrk): Collapse with non-webview registration below.
-    if (::features::IsUsingVizFrameSubmissionForWebView()) {
+    if (::features::IsUsingVizFrameSubmissionForWebView() &&
+        !has_initial_sink) {
       widget_host_->CreateFrameSink(
           std::move(params.compositor_frame_sink_receiver),
           std::move(params.compositor_frame_sink_client),
@@ -913,10 +964,12 @@ void WidgetBase::FinishRequestNewLayerTreeFrameSink(
     return;
   }
 #endif
-  widget_host_->CreateFrameSink(
-      std::move(params.compositor_frame_sink_receiver),
-      std::move(params.compositor_frame_sink_client),
-      viz_input_receiver_.BindNewPipeAndPassRemote(task_runner_));
+  if (!has_initial_sink) {
+    widget_host_->CreateFrameSink(
+        std::move(params.compositor_frame_sink_receiver),
+        std::move(params.compositor_frame_sink_client),
+        viz_input_receiver_.BindNewPipeAndPassRemote(task_runner_));
+  }
   widget_host_->RegisterRenderFrameMetadataObserver(
       std::move(params.render_frame_metadata_observer_client_receiver),
       std::move(params.render_frame_metadata_observer_remote));
@@ -1041,6 +1094,15 @@ void WidgetBase::UpdateVisualState() {
 }
 
 void WidgetBase::BeginMainFrame(const viz::BeginFrameArgs& args) {
+  // Log the wait time from frame sink bind to the first BeginFrame.
+  if (waiting_for_first_begin_frame_) {
+    base::TimeDelta latency = base::TimeTicks::Now() - frame_sink_bind_time_;
+    const char* path_type = is_using_early_frame_sink_ ? "Early" : "Standard";
+    base::UmaHistogramTimes(
+        base::StrCat({"GPU.FrameSink.BindToFirstFrameLatency.", path_type}),
+        latency);
+    waiting_for_first_begin_frame_ = false;
+  }
   base::TimeTicks raf_aligned_input_start_time;
   if (ShouldRecordBeginMainFrameMetrics()) {
     raf_aligned_input_start_time = base::TimeTicks::Now();

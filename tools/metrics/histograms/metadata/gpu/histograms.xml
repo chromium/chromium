@@ -931,6 +931,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="GPU.EarlyInitialFrameSinkUsed" enum="Boolean"
+    expires_after="2027-04-24">
+  <owner>rakina@chromium.org</owner>
+  <owner>chrome-webium-product-eng@google.com</owner>
+  <summary>
+    Records whether the renderer's WidgetBase successfully used the initial
+    CompositorFrameSink pipes provided by the browser instead of requesting
+    creation of new pipes. Logged when WidgetBase initializes its
+    LayerTreeFrameSink.
+  </summary>
+</histogram>
+
 <histogram name="GPU.EGLDisplayType" enum="EGLDisplayType"
     expires_after="2026-09-06">
   <owner>zmo@chromium.org</owner>
@@ -1087,6 +1099,21 @@ chromium-metrics-reviews@google.com.
     for releasing fence sync. This histogram is ~1/100 sub-sampled.
   </summary>
   <token key="TaskGraphValidationType" variants="TaskGraphValidationType"/>
+</histogram>
+
+<histogram name="GPU.FrameSink.BindToFirstFrameLatency.{PathType}" units="ms"
+    expires_after="2027-04-24">
+  <owner>rakina@chromium.org</owner>
+  <owner>chrome-webium-product-eng@google.com</owner>
+  <summary>
+    Measures the wait time from when the renderer is ready to establish the
+    frame sink (in FinishRequestNewLayerTreeFrameSink) until it receives the
+    first BeginMainFrame. Logged when the first frame arrives on the frame sink.
+  </summary>
+  <token key="PathType">
+    <variant name="Early" summary="Wait time for the early path"/>
+    <variant name="Standard" summary="Wait time for the standard path"/>
+  </token>
 </histogram>
 
 <histogram name="GPU.GLImplementation" enum="GLImplementation"

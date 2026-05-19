@@ -3105,6 +3105,17 @@ _CONFIG = [
         ],
         'allowed': ['viz::FrameSinkId'],
     },
+    {
+        'paths': [
+            'third_party/blink/public/web/web_widget.h',
+        ],
+        'allowed': [
+            'cc::LayerTreeSettings',
+            'display::ScreenInfos',
+            'viz::mojom::CompositorFrameSink.*',
+            'viz::mojom::CompositorFrameSinkClient.*',
+        ],
+    },
 ]
 
 

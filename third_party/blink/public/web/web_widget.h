@@ -31,7 +31,10 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_WIDGET_H_
 #define THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_WIDGET_H_
 
+#include "services/viz/public/mojom/compositing/compositor_frame_sink.mojom-shared.h"
 #include "third_party/blink/public/common/metrics/document_update_reason.h"
+#include "third_party/blink/public/mojom/widget/platform_widget.mojom-shared.h"
+#include "third_party/blink/public/platform/cross_variant_mojo_util.h"
 #include "third_party/blink/public/platform/web_input_event_result.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/web/web_lifecycle_update.h"
@@ -69,8 +72,19 @@ class WebWidget {
   // is called. |settings| is typically null. When |settings| is null
   // the default settings will be used, tests may provide a |settings| object to
   // override the defaults.
-  virtual void InitializeCompositing(const display::ScreenInfos& screen_info,
-                                     const cc::LayerTreeSettings* settings) = 0;
+  // The optional initial frame sink parameters allow the renderer to
+  // communicate with the frame sink in the GPU process earlier, without having
+  // to request the browser process for it first.
+  virtual void InitializeCompositing(
+      const display::ScreenInfos& screen_info,
+      const cc::LayerTreeSettings* settings,
+      CrossVariantMojoRemote<viz::mojom::CompositorFrameSinkInterfaceBase>
+          initial_frame_sink,
+      CrossVariantMojoReceiver<
+          viz::mojom::CompositorFrameSinkClientInterfaceBase>
+          initial_frame_sink_client,
+      CrossVariantMojoReceiver<mojom::RenderInputRouterClientInterfaceBase>
+          initial_viz_rir_client) = 0;
 
   // Set the compositor as visible. If |visible| is true, then the compositor
   // will request a new layer frame sink and begin producing frames from the

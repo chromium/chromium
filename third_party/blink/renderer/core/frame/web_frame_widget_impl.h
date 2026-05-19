@@ -45,6 +45,7 @@
 #include "cc/trees/layer_tree_host.h"
 #include "cc/trees/paint_holding_reason.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "services/viz/public/mojom/compositing/compositor_frame_sink.mojom-blink.h"
 #include "services/viz/public/mojom/hit_test/input_target_client.mojom-blink.h"
 #include "third_party/blink/public/common/input/web_coalesced_input_event.h"
 #include "third_party/blink/public/common/input/web_gesture_device.h"
@@ -416,8 +417,18 @@ class CORE_EXPORT WebFrameWidgetImpl
   void ResetMeaningfulLayoutStateForMainFrame();
 
   // WebWidget overrides.
-  void InitializeCompositing(const display::ScreenInfos& screen_infos,
-                             const cc::LayerTreeSettings* settings) override;
+  void InitializeCompositing(
+      const display::ScreenInfos& screen_infos,
+      const cc::LayerTreeSettings* settings,
+      CrossVariantMojoRemote<
+          viz::mojom::blink::CompositorFrameSinkInterfaceBase>
+          initial_frame_sink,
+      CrossVariantMojoReceiver<
+          viz::mojom::blink::CompositorFrameSinkClientInterfaceBase>
+          initial_frame_sink_client,
+      CrossVariantMojoReceiver<
+          mojom::blink::RenderInputRouterClientInterfaceBase>
+          initial_viz_rir_client) override;
   void InitializeCompositingFromPreviousWidget(
       const display::ScreenInfos& screen_infos,
       const cc::LayerTreeSettings* settings,

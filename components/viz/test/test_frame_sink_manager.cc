@@ -27,4 +27,10 @@ void TestFrameSinkManagerImpl::InvalidateFrameSinkId(
   }
 }
 
+void TestFrameSinkManagerImpl::DestroyCompositorFrameSink(
+    const FrameSinkId& frame_sink_id,
+    DestroyCompositorFrameSinkCallback callback) {
+  std::move(callback).Run();
+}
+
 }  // namespace viz

@@ -952,6 +952,13 @@ class CONTENT_EXPORT RenderWidgetHostImpl
     return blink_widget_host_receiver_;
   }
 
+  bool has_initial_frame_sink_for_testing() const {
+    return initial_frame_sink_pipes_ &&
+           initial_frame_sink_pipes_->receiver.is_valid();
+  }
+
+  bool is_hidden_for_testing() const { return is_hidden_; }
+
   std::optional<blink::VisualProperties> LastComputedVisualProperties() const;
 
   // Generates widget creation params that will be passed to the renderer to
@@ -1145,6 +1152,16 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   friend class OverscrollNavigationOverlayTest;
   friend class RenderViewHostTester;
   friend class TestRenderViewHost;
+
+  struct InitialFrameSinkPipes {
+    InitialFrameSinkPipes();
+    ~InitialFrameSinkPipes();
+    InitialFrameSinkPipes(InitialFrameSinkPipes&&);
+    InitialFrameSinkPipes& operator=(InitialFrameSinkPipes&&);
+    mojo::PendingReceiver<viz::mojom::CompositorFrameSink> receiver;
+    mojo::PendingRemote<viz::mojom::CompositorFrameSinkClient> client;
+    mojo::PendingRemote<blink::mojom::RenderInputRouterClient> viz_rir_client;
+  };
 
   // Tell this object to destroy itself. If |also_delete| is specified, the
   // destructor is called as well.
@@ -1624,6 +1641,8 @@ class CONTENT_EXPORT RenderWidgetHostImpl
 
   std::unique_ptr<CompositorMetricRecorder> compositor_metric_recorder_;
   base::OnceClosure ready_for_input_callback_for_testing_;
+
+  std::optional<InitialFrameSinkPipes> initial_frame_sink_pipes_;
 
   base::WeakPtrFactory<RenderWidgetHostImpl> weak_factory_{this};
 };
