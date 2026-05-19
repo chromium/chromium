@@ -268,9 +268,8 @@ TEST_F(DownloadServiceControllerImplTest, SuccessfulInitModelFirst) {
   EXPECT_CALL(*client_, OnServiceInitialized(false, _)).Times(1);
 
   driver_->MakeReady();
-  EXPECT_EQ(controller_->GetState(), Controller::State::READY);
-
   task_runner_->RunUntilIdle();
+  EXPECT_EQ(controller_->GetState(), Controller::State::READY);
 
   histogram_tester.ExpectBucketCount(
       "Download.Service.StartUpStatus.Initialization",
@@ -295,9 +294,8 @@ TEST_F(DownloadServiceControllerImplTest, SuccessfulInitDriverFirst) {
 
   store_->TriggerInit(true, std::make_unique<std::vector<Entry>>());
   file_monitor_->TriggerInit(true);
-  EXPECT_EQ(controller_->GetState(), Controller::State::READY);
-
   task_runner_->RunUntilIdle();
+  EXPECT_EQ(controller_->GetState(), Controller::State::READY);
   EXPECT_TRUE(init_callback_called_);
 
   histogram_tester.ExpectBucketCount(
@@ -474,6 +472,7 @@ TEST_F(DownloadServiceControllerImplTest,
   driver_->MakeReady();
   store_->TriggerInit(true, std::make_unique<std::vector<Entry>>(entries));
   file_monitor_->TriggerInit(true);
+  task_runner_->RunUntilIdle();
   controller_->OnStartScheduledTask(
       DownloadTaskType::CLEANUP_TASK,
       base::BindOnce(&DownloadServiceControllerImplTest::NotifyTaskFinished,
@@ -738,6 +737,7 @@ TEST_F(DownloadServiceControllerImplTest, Pause) {
   store_->TriggerInit(true, std::make_unique<std::vector<Entry>>(entries));
   file_monitor_->TriggerInit(true);
   driver_->MakeReady();
+  task_runner_->RunUntilIdle();
 
   // Pause in progress available entry.
   EXPECT_EQ(Entry::State::AVAILABLE, model_->Get(entry1.guid)->state);
@@ -781,6 +781,7 @@ TEST_F(DownloadServiceControllerImplTest, Resume) {
   store_->TriggerInit(true, std::make_unique<std::vector<Entry>>(entries));
   file_monitor_->TriggerInit(true);
   driver_->MakeReady();
+  task_runner_->RunUntilIdle();
 
   // Resume the paused download.
   EXPECT_EQ(Entry::State::PAUSED, model_->Get(entry1.guid)->state);
@@ -816,6 +817,7 @@ TEST_F(DownloadServiceControllerImplTest, Cancel) {
   store_->TriggerInit(true, std::make_unique<std::vector<Entry>>(entries));
   file_monitor_->TriggerInit(true);
   driver_->MakeReady();
+  task_runner_->RunUntilIdle();
 
   controller_->CancelDownload(entry.guid);
   EXPECT_EQ(nullptr, model_->Get(entry.guid));
@@ -845,6 +847,7 @@ TEST_F(DownloadServiceControllerImplTest, OnDownloadFailed) {
   store_->TriggerInit(true, std::make_unique<std::vector<Entry>>(entries));
   file_monitor_->TriggerInit(true);
   driver_->MakeReady();
+  task_runner_->RunUntilIdle();
 
   driver_->NotifyDownloadFailed(dentry, FailureType::NOT_RECOVERABLE);
   EXPECT_EQ(nullptr, model_->Get(entry.guid));
@@ -880,6 +883,7 @@ TEST_F(DownloadServiceControllerImplTest, OnDownloadFailedFromDriverCancel) {
   store_->TriggerInit(true, std::make_unique<std::vector<Entry>>(entries));
   file_monitor_->TriggerInit(true);
   driver_->MakeReady();
+  task_runner_->RunUntilIdle();
 
   DriverEntry done_dentry1 =
       BuildDriverEntry(entry1, DriverEntry::State::CANCELLED);
@@ -924,6 +928,7 @@ TEST_F(DownloadServiceControllerImplTest, NoopResumeDoesNotHitAttemptCounts) {
   store_->TriggerInit(true, std::make_unique<std::vector<Entry>>(entries));
   file_monitor_->TriggerInit(true);
   driver_->MakeReady();
+  task_runner_->RunUntilIdle();
 
   config_->max_retry_count = 1;
   config_->max_resumption_count = 1;
@@ -1037,6 +1042,7 @@ TEST_F(DownloadServiceControllerImplTest, OnDownloadSucceeded) {
   store_->TriggerInit(true, std::make_unique<std::vector<Entry>>(entries));
   file_monitor_->TriggerInit(true);
   driver_->MakeReady();
+  task_runner_->RunUntilIdle();
 
   DriverEntry done_dentry =
       BuildDriverEntry(entry, DriverEntry::State::COMPLETE);
@@ -1105,6 +1111,7 @@ TEST_F(DownloadServiceControllerImplTest, CompletionInfoPropagated) {
   store_->TriggerInit(true, std::make_unique<std::vector<Entry>>(entries));
   file_monitor_->TriggerInit(true);
   driver_->MakeReady();
+  task_runner_->RunUntilIdle();
 
   DriverEntry succeeded_done_dentry =
       BuildDriverEntry(succeeded_entry, DriverEntry::State::COMPLETE);
@@ -1182,6 +1189,7 @@ TEST_F(DownloadServiceControllerImplTest, CleanupTaskScheduledAtEarliestTime) {
   store_->TriggerInit(true, std::make_unique<std::vector<Entry>>(entries));
   file_monitor_->TriggerInit(true);
   driver_->MakeReady();
+  task_runner_->RunUntilIdle();
 
   DriverEntry done_dentry1 =
       BuildDriverEntry(entry1, DriverEntry::State::COMPLETE);
@@ -1221,6 +1229,7 @@ TEST_F(DownloadServiceControllerImplTest, OnDownloadUpdated) {
   dentry_update.guid = entry.guid;
   dentry_update.bytes_downloaded = 1024;
   driver_->MakeReady();
+  task_runner_->RunUntilIdle();
 
   EXPECT_CALL(*client_, OnDownloadUpdated(entry.guid, /* bytes_uploaded= */ 0u,
                                           dentry_update.bytes_downloaded));
@@ -1676,6 +1685,7 @@ TEST_F(DownloadServiceControllerImplTest, StartupRecoveryNoResponseHeaders) {
   store_->AutomaticallyTriggerAllFutureCallbacks(true);
   store_->TriggerInit(true, std::make_unique<std::vector<Entry>>(entries));
   file_monitor_->TriggerInit(true);
+  task_runner_->ProcessNextNTasks(1);
 
   // Verify that the driver entry will be removed without response headers.
   EXPECT_FALSE(driver_->Find(entries[0].guid).has_value());
@@ -2080,6 +2090,7 @@ TEST_F(DownloadServiceControllerImplTest, CleanupTaskQueuesAfterFinish) {
   file_monitor_->TriggerInit(true);
   store_->AutomaticallyTriggerAllFutureCallbacks(true);
   driver_->MakeReady();
+  task_runner_->RunUntilIdle();
 
   // No cleanup tasks expected until we stop the job.
   EXPECT_CALL(*task_scheduler_,
