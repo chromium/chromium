@@ -32,14 +32,16 @@
   outline: none;
 }
 
-@media (prefers-color-scheme: dark) {
-  :host {
-    --cr-radio-button-checked-color: var(--google-blue-300);
-    --cr-radio-button-checked-ripple-color:
-        rgba(var(--google-blue-300-rgb), .4);
-    --cr-radio-button-unchecked-color: var(--google-grey-500);
-    --cr-radio-button-unchecked-ripple-color:
-        rgba(var(--google-grey-300-rgb), .4);
+:host-context(html:not([webui-refresh-2026])) {
+  @media (prefers-color-scheme: dark) {
+    :host {
+      --cr-radio-button-checked-color: var(--google-blue-300);
+      --cr-radio-button-checked-ripple-color:
+          rgba(var(--google-blue-300-rgb), .4);
+      --cr-radio-button-unchecked-color: var(--google-grey-500);
+      --cr-radio-button-unchecked-ripple-color:
+          rgba(var(--google-grey-300-rgb), .4);
+    }
   }
 }
 
