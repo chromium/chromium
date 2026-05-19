@@ -229,7 +229,6 @@ import org.chromium.chrome.browser.ui.side_panel.AndroidSidePanelEnabledFn;
 import org.chromium.chrome.browser.ui.side_panel.SidePanelCoordinatorAndroid;
 import org.chromium.chrome.browser.ui.side_panel.SidePanelCoordinatorAndroidFactory;
 import org.chromium.chrome.browser.ui.side_panel.SidePanelRegistryBridgeFactory;
-import org.chromium.chrome.browser.ui.side_panel.SidePanelType;
 import org.chromium.chrome.browser.ui.side_panel.WindowScopedSidePanelRegistryBridge;
 import org.chromium.chrome.browser.ui.side_panel_container.SidePanelContainerCoordinator;
 import org.chromium.chrome.browser.ui.side_panel_container.SidePanelContainerCoordinatorFactory;
@@ -2092,11 +2091,8 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             return;
         }
 
-        // On Desktop platforms, there are two different Side Panel UI objects, one with each type.
-        // On Android, we currently only have one object and only support toolbar height panels.
         mSidePanelContainerCoordinator =
-                SidePanelContainerCoordinatorFactory.create(
-                        mActivity, mSideUiCoordinator, SidePanelType.TOOLBAR);
+                SidePanelContainerCoordinatorFactory.create(mActivity, mSideUiCoordinator);
         if (mSidePanelContainerCoordinator != null) {
             // Initialize SidePanelCoordinatorAndroid and a window-scoped SidePanelRegistry, and
             // associate them with a ChromeAndroidTask.

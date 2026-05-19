@@ -26,7 +26,6 @@ import org.robolectric.Robolectric;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.ui.side_panel.SidePanelCoordinatorAndroid;
-import org.chromium.chrome.browser.ui.side_panel.SidePanelType;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator;
 
 /** Unit tests for {@link SidePanelContainerCoordinatorImpl}. */
@@ -89,7 +88,6 @@ public class SidePanelContainerCoordinatorImplUnitTest {
     }
 
     private SidePanelContainerCoordinatorImpl createSidePanelContainerCoordinator() {
-        return new SidePanelContainerCoordinatorImpl(
-                mTestActivity, mMockSideUiCoordinator, SidePanelType.TOOLBAR);
+        return new SidePanelContainerCoordinatorImpl(mTestActivity, mMockSideUiCoordinator);
     }
 }

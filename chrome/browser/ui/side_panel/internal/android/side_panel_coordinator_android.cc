@@ -71,10 +71,8 @@ void SidePanelCoordinatorAndroid::Destroy(JNIEnv* env) {
   delete this;
 }
 
-void SidePanelCoordinatorAndroid::NotifyOpenAnimationFinished(
-    JNIEnv* env,
-    SidePanelType panel_type) {
-  SPLOG("NotifyOpenAnimationFinished - panel_type: " << ToString(panel_type));
+void SidePanelCoordinatorAndroid::NotifyOpenAnimationFinished(JNIEnv* env) {
+  SPLOG("NotifyOpenAnimationFinished");
 
   // We need to make the round trip to Java even when animations are suppressed,
   // which can happen when the panel is already shown and being replaced.
@@ -101,10 +99,8 @@ void SidePanelCoordinatorAndroid::NotifyOpenAnimationFinished(
   state_ = SidePanelState::kShown;
 }
 
-void SidePanelCoordinatorAndroid::NotifyCloseAnimationFinished(
-    JNIEnv* env,
-    SidePanelType panel_type) {
-  SPLOG("NotifyCloseAnimationFinished - panel_type: " << ToString(panel_type));
+void SidePanelCoordinatorAndroid::NotifyCloseAnimationFinished(JNIEnv* env) {
+  SPLOG("NotifyCloseAnimationFinished");
 
   CHECK(IsClosing())
       << "Should only receive close animation finished callback when side "
@@ -310,6 +306,9 @@ void SidePanelCoordinatorAndroid::Show(
     return;
   }
 
+  CHECK(entry->type() == SidePanelType::kToolbar)
+      << "Android Side Panel only supports kToolbar entries.";
+
   if (!IsSidePanelShowing()) {
     SetOpenedTimestamp(base::TimeTicks::Now());
     SidePanelMetrics::RecordSidePanelOpen(open_trigger);
@@ -435,8 +434,6 @@ void SidePanelCoordinatorAndroid::PopulateSidePanel(
   pending_replaced_entry_->OnEntryWillHide(pending_hide_reason_);
 
   // Now same as above, we set key before populate.
-  CHECK(entry->type() == SidePanelType::kToolbar)
-      << "Android Side Panel only supports kToolbar entries.";
   SetCurrentKey(unique_key);
   entry->OnEntryShown();
 

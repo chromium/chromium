@@ -22,7 +22,6 @@ import org.chromium.build.BuildConfig;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ui.side_panel.SidePanelCoordinatorAndroid;
-import org.chromium.chrome.browser.ui.side_panel.SidePanelType;
 import org.chromium.chrome.browser.ui.side_ui.SideUiContainer;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.AnchorSide;
@@ -40,7 +39,6 @@ final class SidePanelContainerCoordinatorImpl
     private final Activity mParentActivity;
     private final FrameLayout mContainerView;
     private final SideUiCoordinator mSideUiCoordinator;
-    private final @SidePanelType int mPanelType;
 
     // TODO(crbug.com/496407828): Use this to notify native side of events like "animation ended".
     private @Nullable SidePanelCoordinatorAndroid mSidePanelCoordinatorAndroid;
@@ -52,16 +50,12 @@ final class SidePanelContainerCoordinatorImpl
      *
      * @param parentActivity Parent Activity that will own this instance.
      * @param sideUiCoordinator Coordinator for the Side Panel UI anchoring view.
-     * @param panelType The type of panel that this coordinator is associated with.
      */
     SidePanelContainerCoordinatorImpl(
-            Activity parentActivity,
-            SideUiCoordinator sideUiCoordinator,
-            @SidePanelType int panelType) {
-        log(TAG, "constructor", parentActivity, sideUiCoordinator, panelType);
+            Activity parentActivity, SideUiCoordinator sideUiCoordinator) {
+        log(TAG, "constructor", parentActivity, sideUiCoordinator);
         mParentActivity = parentActivity;
         mSideUiCoordinator = sideUiCoordinator;
-        mPanelType = panelType;
         mContainerView =
                 (FrameLayout)
                         LayoutInflater.from(mParentActivity)
@@ -103,7 +97,7 @@ final class SidePanelContainerCoordinatorImpl
     @Override
     public void removeContentAndClose(
             Callback<@Nullable Void> onAnimationFinishedCallback, boolean suppressAnimations) {
-        log(TAG, "removeContentAndClose", mPanelType, suppressAnimations);
+        log(TAG, "removeContentAndClose", suppressAnimations);
         ThreadUtils.assertOnUiThread();
         mSideUiCoordinator.requestUpdateContainer(
                 new SideUiContainerProperties(SIDE_PANEL_DEFAULT_ANCHOR_SIDE, /* width= */ 0),
@@ -118,11 +112,6 @@ final class SidePanelContainerCoordinatorImpl
         log(TAG, "isShowing", sidePanelContent);
         ThreadUtils.assertOnUiThread();
         return sidePanelContent == mCurrentContent;
-    }
-
-    @Override
-    public @SidePanelType int getPanelType() {
-        return mPanelType;
     }
 
     @Override
