@@ -50,7 +50,7 @@ public class DisplayAndroidManager {
     @VisibleForTesting
     class DisplayListenerBackend implements DisplayListener {
         public void startListening() {
-            getDisplayManager().registerDisplayListener(this, null);
+            getDisplayManager().registerDisplayListener(this, ThreadUtils.getUiThreadHandler());
         }
 
         // DisplayListener implementation:
