@@ -113,6 +113,16 @@ public class GlicSettings extends ChromeBaseSettingsFragment {
                         GlicUtils.setButtonPinnedToTabStrip(getProfile(), enabled);
                         return true;
                     });
+            if (mPrefChangeRegistrar != null) {
+                mPrefChangeRegistrar.addObserver(
+                        GlicPrefNames.GLIC_PINNED_TO_TABSTRIP,
+                        () -> {
+                            boolean newValue = GlicUtils.isButtonPinnedToTabStrip(getProfile());
+                            if (buttonTogglePref.isChecked() != newValue) {
+                                buttonTogglePref.setChecked(newValue);
+                            }
+                        });
+            }
         } else {
             buttonTogglePref.setVisible(false); // Hide the toggle.
 
@@ -311,6 +321,9 @@ public class GlicSettings extends ChromeBaseSettingsFragment {
     @Override
     public void onDestroy() {
         if (mPrefChangeRegistrar != null) {
+            mPrefChangeRegistrar.removeObserver(GlicPrefNames.GLIC_PINNED_TO_TABSTRIP);
+            mPrefChangeRegistrar.removeObserver(GlicPrefNames.GLIC_GEOLOCATION_ENABLED);
+            mPrefChangeRegistrar.removeObserver(GlicPrefNames.GLIC_DEFAULT_TAB_CONTEXT_ENABLED);
             mPrefChangeRegistrar.destroy();
             mPrefChangeRegistrar = null;
         }
