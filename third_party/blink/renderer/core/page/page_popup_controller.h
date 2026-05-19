@@ -95,7 +95,7 @@ class PagePopupController : public ScriptWrappable, public Supplement<Page> {
   Vector<gfx::Rect> options_bounds_;
 
  protected:
-  PagePopupClient* popup_client_;
+  Member<PagePopupClient> popup_client_;
 };
 
 }  // namespace blink

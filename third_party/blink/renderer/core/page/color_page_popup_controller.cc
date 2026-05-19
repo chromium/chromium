@@ -19,7 +19,7 @@ ColorPagePopupController::ColorPagePopupController(
 
 void ColorPagePopupController::openEyeDropper() {
   if (popup_client_) {
-    static_cast<ColorChooserPopupUIController*>(popup_client_)
+    static_cast<ColorChooserPopupUIController*>(popup_client_.Get())
         ->OpenEyeDropper();
   }
 }

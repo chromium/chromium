@@ -315,6 +315,7 @@ void InternalPopupMenu::Trace(Visitor* visitor) const {
   visitor->Trace(chrome_client_);
   visitor->Trace(owner_element_);
   PopupMenu::Trace(visitor);
+  PagePopupClient::Trace(visitor);
 }
 
 void InternalPopupMenu::WriteDocument(SegmentedBuffer& data) {

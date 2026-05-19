@@ -127,6 +127,7 @@ void PagePopupController::setWindowRect(int x, int y, int width, int height) {
 void PagePopupController::Trace(Visitor* visitor) const {
   ScriptWrappable::Trace(visitor);
   Supplement<Page>::Trace(visitor);
+  visitor->Trace(popup_client_);
 }
 
 void PagePopupController::setMenuListOptionsBoundsInAXTree(

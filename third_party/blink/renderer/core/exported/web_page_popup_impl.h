@@ -282,7 +282,7 @@ class CORE_EXPORT WebPagePopupImpl final : public WebPagePopup,
   // main LocalFrame with a corresponding non-null LocalFrameView and non-null
   // Document.
   Persistent<Page> page_;
-  PagePopupClient* popup_client_;
+  Persistent<PagePopupClient> popup_client_;
   bool closing_ = false;
 
   scoped_refptr<cc::Layer> root_layer_;

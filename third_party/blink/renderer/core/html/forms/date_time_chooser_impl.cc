@@ -74,6 +74,7 @@ void DateTimeChooserImpl::Trace(Visitor* visitor) const {
   visitor->Trace(chrome_client_);
   visitor->Trace(client_);
   DateTimeChooser::Trace(visitor);
+  PagePopupClient::Trace(visitor);
 }
 
 void DateTimeChooserImpl::EndChooser() {

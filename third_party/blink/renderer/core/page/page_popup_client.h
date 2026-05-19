@@ -34,6 +34,7 @@
 #include <string_view>
 
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_utf8_adaptor.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -52,8 +53,10 @@ class PagePopup;
 class PagePopupController;
 class Settings;
 
-class CORE_EXPORT PagePopupClient {
+class CORE_EXPORT PagePopupClient : public GarbageCollectedMixin {
  public:
+  void Trace(Visitor* visitor) const override {}
+
   // Provide an HTML source to the specified buffer. The HTML
   // source is rendered in a PagePopup.
   // The content HTML supports:
