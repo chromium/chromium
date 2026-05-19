@@ -1,0 +1,51 @@
+diff --git a/lib/lib.dom.d.ts b/lib/lib.dom.d.ts
+index 9e127c3..88c6398 100644
+--- a/lib/lib.dom.d.ts
++++ b/lib/lib.dom.d.ts
+@@ -13567,7 +13567,10 @@ interface Element extends Node, ARIAMixin, Animatable, ChildNode, NonDocumentTyp
+      *
+      * [MDN Reference](https://developer.mozilla.org/docs/Web/API/Element/innerHTML)
+      */
+-    innerHTML: string;
++    // Chromium modification to work around
++    // https://github.com/microsoft/TypeScript/issues/30024.
++    get innerHTML(): string;
++    set innerHTML(html: string|TrustedHTML);
+     /**
+      * The **`Element.localName`** read-only property returns the local part of the qualified name of an element.
+      *
+@@ -17768,7 +17771,8 @@ interface HTMLElement extends Element, ElementCSSInlineStyle, ElementContentEdit
+      *
+      * [MDN Reference](https://developer.mozilla.org/docs/Web/API/HTMLElement/hidden)
+      */
+-    hidden: boolean | "until-found";
++    // Chromium modification since a lot of errors are thrown when `hidden` is boolean|"until-found"
++    hidden: boolean;
+     /**
+      * The HTMLElement property **`inert`** reflects the value of the element's inert attribute. It is a boolean value that, when present, makes the browser "ignore" user input events for the element, including focus events and events from assistive technologies. The browser may also ignore page search and text selection in the element. This can be useful when building UIs such as modals where you would want to "trap" the focus inside the modal when it's visible.
+      *
+@@ -20440,7 +20444,10 @@ interface HTMLScriptElement extends HTMLElement {
+      *
+      * [MDN Reference](https://developer.mozilla.org/docs/Web/API/HTMLScriptElement/src)
+      */
+-    src: string;
++    // Chromium modification to work around
++    // https://github.com/microsoft/TypeScript/issues/30024.
++    get src(): string;
++    set src(url: string|TrustedScriptURL);
+     /**
+      * The **`text`** property of the HTMLScriptElement interface represents the inline text content of the <script> element. It behaves in the same way as the textContent and innerText property.
+      *
+@@ -35294,7 +35301,10 @@ interface ShadowRoot extends DocumentFragment, DocumentOrShadowRoot {
+      *
+      * [MDN Reference](https://developer.mozilla.org/docs/Web/API/ShadowRoot/innerHTML)
+      */
+-    innerHTML: string;
++    // Chromium modification to work around
++    // https://github.com/microsoft/TypeScript/issues/30024.
++    get innerHTML(): string;
++    set innerHTML(html: string|TrustedHTML);
+     /**
+      * The **`mode`** read-only property of the ShadowRoot specifies its mode — either open or closed. This defines whether or not the shadow root's internal features are accessible from JavaScript.
+      *
+
