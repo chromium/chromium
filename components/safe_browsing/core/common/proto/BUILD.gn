@@ -77,6 +77,10 @@ proto_extras("safebrowsingv5_proto_extras") {
   deps = [ ":safebrowsingv5_proto" ]
 }
 
+proto_library("v5_store_proto") {
+  sources = [ "v5_store.proto" ]
+}
+
 fuzzable_proto_library("realtimeallowlist_proto") {
   proto_in_dir = "//"
   sources = [ "realtimeallowlist.proto" ]

@@ -1,0 +1,41 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+syntax = "proto3";
+
+option optimize_for = LITE_RUNTIME;
+
+message V5HashFile {
+  // The file extension of this file. This extension should be added to the end
+  // of the store path.
+  optional string extension = 1;
+  // The total size of the file.
+  optional uint64 file_size = 2;
+}
+
+message Checksum {
+  // The sorted list of all hashes, hashed again with SHA256.
+  optional bytes sha256 = 1;
+}
+
+message ListDetails {
+  // The version of the hash list. This comes from the server. The client MUST
+  // NOT manipulate those bytes.
+  optional bytes version = 1;
+  // Represents the expected state of a client's local database.
+  Checksum checksum = 2;
+  // The list's hashes.
+  V5HashFile hash_file = 3;
+}
+
+// The message that's serialized to disk when a store update is processed.
+message V5StoreFileFormat {
+  // The magic number to identify this file as a SafeBrowsing hash-prefix file.
+  // https://en.wikipedia.org/wiki/Magic_number_(programming)
+  // Its value is 0x600D71FE
+  optional uint32 magic_number = 1;
+  // Identifies the version of the file format. This starts at 10 for v5.
+  optional uint32 file_version = 2;
+  // The list's hashes and metadata.
+  ListDetails list_details = 3;
+}
