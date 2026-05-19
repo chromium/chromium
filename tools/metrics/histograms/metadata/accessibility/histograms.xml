@@ -3041,6 +3041,11 @@ even if they fit the naming pattern. -->
   <token key="CountMetric">
     <variant name="NumberParagraphs"
         summary="the number of paragraphs distilled on the page"/>
+    <variant name="TotalHeaderCount"
+        summary="the sum of all headers on the distilled page"/>
+    <variant name="UniqueHeaderTags"
+        summary="the number of unique types of header elements used on the
+                 distilled page"/>
   </token>
 </histogram>
 

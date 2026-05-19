@@ -343,22 +343,53 @@ suite('Logger', () => {
       assertEquals(0, metrics.getCallCount('recordCount'));
     });
 
-    test('logs number of paragraphs', () => {
-      const p1 = document.createElement('p');
-      p1.textContent = 'P1';
-      const p2 = document.createElement('p');
-      p2.textContent = 'P2';
-      const p3 = document.createElement('p');
-      p3.textContent = 'P3';
-      container.replaceChildren(p1, p2, p3);
+    test('logs structure count metrics', () => {
+      const titleHeader = document.createElement('h1');
+      titleHeader.textContent = 'Title';
+
+      const h2Elements = Array.from({length: 2}, (_, i) => {
+        const h2 = document.createElement('h2');
+        h2.textContent = `Header 2.${i + 1}`;
+        return h2;
+      });
+
+      const h4Elements = Array.from({length: 5}, (_, i) => {
+        const h4 = document.createElement('h4');
+        h4.textContent = `Header 4.${i + 1}`;
+        return h4;
+      });
+
+      const firstParagraph = document.createElement('p');
+      firstParagraph.textContent = 'P1';
+      const secondParagraph = document.createElement('p');
+      secondParagraph.textContent = 'P2';
+
+      container.replaceChildren(
+          titleHeader, ...h2Elements, ...h4Elements, firstParagraph,
+          secondParagraph);
       logger.logDistilledPageStructure(container);
 
-      assertEquals(1, metrics.getCallCount('recordCount'));
+      // TotalHeaderCount: 1 + 2 + 5 = 8
+      // UniqueHeaderTags: h1, h2, h4 = 3
+      // NumberParagraphs: 2
+
+      assertEquals(3, metrics.getCallCount('recordCount'));
+
       const countCalls = metrics.getArgs('recordCount');
       assertEquals(
           'Accessibility.ReadAnything.DistilledPageStructure.NumberParagraphs',
           countCalls[0][0]);
-      assertEquals(3, countCalls[0][1]);
+      assertEquals(2, countCalls[0][1]);
+
+      assertEquals(
+          'Accessibility.ReadAnything.DistilledPageStructure.TotalHeaderCount',
+          countCalls[1][0]);
+      assertEquals(8, countCalls[1][1]);
+
+      assertEquals(
+          'Accessibility.ReadAnything.DistilledPageStructure.UniqueHeaderTags',
+          countCalls[2][0]);
+      assertEquals(3, countCalls[2][1]);
     });
   });
 });

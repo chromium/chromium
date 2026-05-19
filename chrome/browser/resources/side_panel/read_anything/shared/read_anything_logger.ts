@@ -216,10 +216,38 @@ export class ReadAnythingLogger {
       return;
     }
 
+    // Log the number of paragraphs.
     const paragraphs = wordCountContainer.querySelectorAll('p');
     this.metrics.recordCount(
         'Accessibility.ReadAnything.DistilledPageStructure.NumberParagraphs',
         paragraphs.length);
+
+    const headerCounts = ReadAnythingLogger.getHeaderCounts(wordCountContainer);
+
+    // The total number of distilled headers.
+    const totalHeaderCount =
+        headerCounts.reduce((sum, item) => sum + item.count, 0);
+    this.metrics.recordCount(
+        'Accessibility.ReadAnything.DistilledPageStructure.TotalHeaderCount',
+        totalHeaderCount);
+
+    // The number of unique header tags present.
+    const uniqueHeaderTags = headerCounts.filter(item => item.count > 0).length;
+    this.metrics.recordCount(
+        'Accessibility.ReadAnything.DistilledPageStructure.UniqueHeaderTags',
+        uniqueHeaderTags);
+  }
+
+  static getHeaderCounts(wordCountContainer: Element):
+      Array<{tag: string, count: number}> {
+    return [
+      {tag: 'h1', count: wordCountContainer.querySelectorAll('h1').length},
+      {tag: 'h2', count: wordCountContainer.querySelectorAll('h2').length},
+      {tag: 'h3', count: wordCountContainer.querySelectorAll('h3').length},
+      {tag: 'h4', count: wordCountContainer.querySelectorAll('h4').length},
+      {tag: 'h5', count: wordCountContainer.querySelectorAll('h5').length},
+      {tag: 'h6', count: wordCountContainer.querySelectorAll('h6').length},
+    ];
   }
 
   static getInstance(): ReadAnythingLogger {
