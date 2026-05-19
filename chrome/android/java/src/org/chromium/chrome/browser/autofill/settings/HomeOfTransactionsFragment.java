@@ -99,13 +99,13 @@ public class HomeOfTransactionsFragment extends ChromeBaseSettingsFragment {
                 .setOnPreferenceClickListener(
                         preference ->
                                 SettingsNavigationHelper.showAutofillCreditCardSettings(
-                                        getActivity(), /* addToBackStack= */ true));
+                                        getActivity()));
 
         findPreference(PREF_AUTOFILL_ADDRESSES)
                 .setOnPreferenceClickListener(
                         preference ->
                                 SettingsNavigationHelper.showAutofillProfileSettings(
-                                        getActivity(), /* addToBackStack= */ true));
+                                        getActivity()));
 
         Preference identityDocsPref = findPreference(PREF_AUTOFILL_IDENTITY_DOCS);
         identityDocsPref.setVisible(shouldShowIdentityDocs(getProfile()));
@@ -127,8 +127,7 @@ public class HomeOfTransactionsFragment extends ChromeBaseSettingsFragment {
                                             AutofillOptionsFragment.class,
                                             AutofillOptionsFragment.createRequiredArgs(
                                                     AutofillOptionsReferrer
-                                                            .AUTOFILL_AND_PASSWORDS_FRAGMENT),
-                                            /* addToBackStack= */ true);
+                                                            .AUTOFILL_AND_PASSWORDS_FRAGMENT));
                             return true;
                         });
     }

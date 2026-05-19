@@ -56,7 +56,7 @@ public class SettingsNavigationHelper {
      * Tries showing the settings page for Travel.
      *
      * @param context The {@link Context} required to start the settings page. Noop without it.
-     * @return True if the context is valid and `startSettings` was called.
+     * @return True iff the context is valid and `startSettings` was called.
      */
     public static boolean showAutofillTravelSettings(@Nullable Context context) {
         if (context == null) {
@@ -71,38 +71,15 @@ public class SettingsNavigationHelper {
      * Tries showing the settings page for Addresses.
      *
      * @param context The {@link Context} required to start the settings page. Noop without it.
-     * @return True if the context is valid and `startSettings` was called.
+     * @return True iff the context is valid and `startSettings` was called.
      */
     public static boolean showAutofillProfileSettings(@Nullable Context context) {
-        return showAutofillProfileSettings(context, /* addToBackStack= */ false);
-    }
-
-    /**
-     * Tries showing the settings page for Addresses.
-     *
-     * @param context The {@link Context} required to start the settings page. Noop without it.
-     * @param addToBackStack Whether to call startSettings method with adding to backstack.
-     * @return True if the context is valid and `startSettings` was called.
-     */
-    public static boolean showAutofillProfileSettings(
-            @Nullable Context context, boolean addToBackStack) {
         if (context == null) {
             return false;
         }
         RecordUserAction.record("AutofillAddressesViewed");
-
-        if (addToBackStack) {
-            SettingsNavigationFactory.createSettingsNavigation()
-                    .startSettings(
-                            context,
-                            AutofillProfilesFragment.class,
-                            /* fragmentArgs= */ null,
-                            /* addToBackStack= */ true);
-
-        } else {
-            SettingsNavigationFactory.createSettingsNavigation()
-                    .startSettings(context, AutofillProfilesFragment.class);
-        }
+        SettingsNavigationFactory.createSettingsNavigation()
+                .startSettings(context, AutofillProfilesFragment.class);
         return true;
     }
 
@@ -110,37 +87,15 @@ public class SettingsNavigationHelper {
      * Tries showing the settings page for Payments.
      *
      * @param context The {@link Context} required to start the settings page. Noop without it.
-     * @return True if the context is valid and `startSettings` was called.
+     * @return True iff the context is valid and `startSettings` was called.
      */
     public static boolean showAutofillCreditCardSettings(@Nullable Context context) {
-        return showAutofillCreditCardSettings(context, /* addToBackStack= */ false);
-    }
-
-    /**
-     * Tries showing the settings page for Payments.
-     *
-     * @param context The {@link Context} required to start the settings page. Noop without it.
-     * @param addToBackStack Whether to call startSettings method with adding to backstack.
-     * @return True if the context is valid and `startSettings` was called.
-     */
-    public static boolean showAutofillCreditCardSettings(
-            @Nullable Context context, boolean addToBackStack) {
         if (context == null) {
             return false;
         }
         RecordUserAction.record("AutofillCreditCardsViewed");
-
-        if (addToBackStack) {
-            SettingsNavigationFactory.createSettingsNavigation()
-                    .startSettings(
-                            context,
-                            AutofillPaymentMethodsFragment.class,
-                            /* fragmentArgs= */ null,
-                            /* addToBackStack= */ true);
-        } else {
-            SettingsNavigationFactory.createSettingsNavigation()
-                    .startSettings(context, AutofillPaymentMethodsFragment.class);
-        }
+        SettingsNavigationFactory.createSettingsNavigation()
+                .startSettings(context, AutofillPaymentMethodsFragment.class);
         return true;
     }
 

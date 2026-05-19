@@ -432,7 +432,6 @@ public class HomeOfTransactionsFragmentTest {
 
         onView(withText(R.string.autofill_enable_credit_cards_toggle_label))
                 .check(matches(isDisplayed()));
-        assertHasBackstack();
     }
 
     @Test
@@ -445,7 +444,6 @@ public class HomeOfTransactionsFragmentTest {
 
         onView(withText(R.string.autofill_enable_profiles_toggle_label))
                 .check(matches(isDisplayed()));
-        assertHasBackstack();
     }
 
     @Test
@@ -458,7 +456,6 @@ public class HomeOfTransactionsFragmentTest {
 
         onView(withText(R.string.autofill_third_party_filling_default))
                 .check(matches(isDisplayed()));
-        assertHasBackstack();
     }
 
     @Test
