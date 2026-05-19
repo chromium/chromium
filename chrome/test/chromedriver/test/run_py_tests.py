@@ -7141,10 +7141,7 @@ class ChromeExtensionsCapabilityTest(ChromeDriverBaseTestWithWebServer):
     # the extension's content script's one.
     extension_path = os.path.join(_TEST_DATA_DIR, 'all_frames')
     driver = self.CreateDriver(
-        chrome_switches=[
-            'load-extension=%s' % extension_path,
-            _DISABLE_MV2_EXPERIMENTS_SWITCH
-        ])
+        chrome_switches=['load-extension=%s' % extension_path])
     driver.Load(
         ChromeDriverTest._http_server.GetUrl() + '/chromedriver/container.html')
     driver.SwitchToMainFrame()
