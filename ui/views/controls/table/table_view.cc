@@ -280,6 +280,8 @@ void TableView::Init(ui::TableModel* model,
                      TableType table_type,
                      bool single_selection) {
   hover_layer_.SetBounds(gfx::Rect(0, 0, 1, 1));
+  hover_layer_.SetName("TableView/Hover");
+
   SetColumns(columns);
   SetTableType(table_type);
   SetSingleSelection(single_selection);
