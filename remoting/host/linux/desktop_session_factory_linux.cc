@@ -224,9 +224,6 @@ void DesktopSessionFactoryLinux::DesktopSessionLinux::
       std::make_unique<LinuxWorkerProcessLauncherDelegate>(std::move(options),
                                                            io_task_runner_),
       this);
-  desktop_process_control_.reset();
-  launcher_->GetRemoteAssociatedInterface(
-      desktop_process_control_.BindNewEndpointAndPassReceiver());
 }
 
 void DesktopSessionFactoryLinux::DesktopSessionLinux::TerminateSession() {
@@ -273,6 +270,10 @@ void DesktopSessionFactoryLinux::DesktopSessionLinux::OnChannelConnected(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   VLOG(1) << "IPC: daemon <- desktop (" << peer_pid << ")";
+
+  desktop_process_control_.reset();
+  launcher_->GetRemoteAssociatedInterface(
+      desktop_process_control_.BindNewEndpointAndPassReceiver());
 }
 
 void DesktopSessionFactoryLinux::DesktopSessionLinux::OnPermanentError(
@@ -286,6 +287,7 @@ void DesktopSessionFactoryLinux::DesktopSessionLinux::OnWorkerProcessStopped() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   desktop_process_control_.reset();
+  desktop_session_request_handler_.reset();
 }
 
 void DesktopSessionFactoryLinux::DesktopSessionLinux::
