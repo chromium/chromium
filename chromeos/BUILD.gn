@@ -7,10 +7,10 @@ import("//build/config/ui.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 import("//testing/test.gni")
 import("./features.gni")
-import("./tast_control.gni")
 
 if (is_chromeos_device) {
   import("//build/config/chromeos/rules.gni")
+  import("./tast_control.gni")
 }
 
 assert(is_chromeos, "Non-Chrome-OS builds must not depend on //chromeos")
