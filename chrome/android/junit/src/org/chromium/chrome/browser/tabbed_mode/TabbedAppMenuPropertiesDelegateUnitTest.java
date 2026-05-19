@@ -702,6 +702,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                         item(R.id.ntp_customization_id),
                         item(
                                 R.id.help_parent_menu_id,
+                                item(R.id.about_chrome_menu_id),
                                 item(R.id.help_id),
                                 item(R.id.report_issue_menu_id))));
 
@@ -795,6 +796,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                         item(R.id.preferences_id),
                         item(
                                 R.id.help_parent_menu_id,
+                                item(R.id.about_chrome_menu_id),
                                 item(R.id.help_id),
                                 item(R.id.report_issue_menu_id))));
 
@@ -982,11 +984,13 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         expectedItems.add(
                 item(
                         R.id.help_parent_menu_id,
+                        item(R.id.about_chrome_menu_id),
                         item(R.id.help_id),
                         item(R.id.report_issue_menu_id)));
         expectedTitles.add(
                 item(
                         R.string.menu_help,
+                        item(R.string.menu_about_chrome),
                         item(R.string.menu_help_center),
                         item(R.string.menu_report_issue)));
 
@@ -1191,11 +1195,13 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         expectedItems.add(
                 item(
                         R.id.help_parent_menu_id,
+                        item(R.id.about_chrome_menu_id),
                         item(R.id.help_id),
                         item(R.id.report_issue_menu_id)));
         expectedTitles.add(
                 item(
                         R.string.menu_help,
+                        item(R.string.menu_about_chrome),
                         item(R.string.menu_help_center),
                         item(R.string.menu_report_issue)));
 
@@ -1412,11 +1418,13 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         expectedItems.add(
                 item(
                         R.id.help_parent_menu_id,
+                        item(R.id.about_chrome_menu_id),
                         item(R.id.help_id),
                         item(R.id.report_issue_menu_id)));
         expectedTitles.add(
                 item(
                         R.string.menu_help,
+                        item(R.string.menu_about_chrome),
                         item(R.string.menu_help_center),
                         item(R.string.menu_report_issue)));
 
@@ -1532,6 +1540,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                         item(R.id.preferences_id),
                         item(
                                 R.id.help_parent_menu_id,
+                                item(R.id.about_chrome_menu_id),
                                 item(R.id.help_id),
                                 item(R.id.report_issue_menu_id))));
 
@@ -1632,6 +1641,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                         item(R.id.preferences_id),
                         item(
                                 R.id.help_parent_menu_id,
+                                item(R.id.about_chrome_menu_id),
                                 item(R.id.help_id),
                                 item(R.id.report_issue_menu_id))));
 
@@ -1982,6 +1992,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                         item(R.id.preferences_id),
                         item(
                                 R.id.help_parent_menu_id,
+                                item(R.id.about_chrome_menu_id),
                                 item(R.id.help_id),
                                 item(R.id.report_issue_menu_id))));
 
@@ -2112,6 +2123,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                         item(R.id.preferences_id),
                         item(
                                 R.id.help_parent_menu_id,
+                                item(R.id.about_chrome_menu_id),
                                 item(R.id.help_id),
                                 item(R.id.report_issue_menu_id)),
                         item(R.id.managed_by_divider_line_id),
@@ -2217,6 +2229,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                         item(R.id.preferences_id),
                         item(
                                 R.id.help_parent_menu_id,
+                                item(R.id.about_chrome_menu_id),
                                 item(R.id.help_id),
                                 item(R.id.report_issue_menu_id)),
                         item(R.id.menu_item_content_filter_divider_line_id),

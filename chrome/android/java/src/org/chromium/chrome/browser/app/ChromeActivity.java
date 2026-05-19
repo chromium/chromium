@@ -82,6 +82,7 @@ import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.PlayServicesVersionInfo;
 import org.chromium.chrome.browser.TabStateThemeResourceProvider;
 import org.chromium.chrome.browser.WarmupManager;
+import org.chromium.chrome.browser.about_settings.AboutChromeSettings;
 import org.chromium.chrome.browser.actor.ActorPictureInPictureController;
 import org.chromium.chrome.browser.app.appmenu.AppMenuPropertiesDelegateImpl;
 import org.chromium.chrome.browser.app.download.DownloadMessageUiDelegate;
@@ -2830,6 +2831,12 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
             HelpAndFeedbackLauncherImpl.getForProfile(
                             getTabModelSelector().getCurrentModel().getProfile())
                     .showFeedback(this, url, helpContextId);
+            return true;
+        }
+
+        if (id == R.id.about_chrome_menu_id) {
+            SettingsNavigationFactory.createSettingsNavigation()
+                    .startSettings(this, AboutChromeSettings.class);
             return true;
         }
 
