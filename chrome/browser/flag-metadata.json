@@ -4232,7 +4232,7 @@
   {
     "name": "enable-web-bluetooth",
     "owners": [ "web-bluetooth@google.com" ],
-    "expiry_milestone": 150
+    "expiry_milestone": 163
   },
   {
     "name": "enable-web-bluetooth-confirm-pairing-support",
