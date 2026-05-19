@@ -82,16 +82,7 @@ ExternalBeginFrameSourceMac::ExternalBeginFrameSourceMac(
     base::PowerMonitor::GetInstance()->AddPowerSuspendObserver(this);
   }
 
-  // Record the status and do early exit here. All negative numbers are internal
-  // ids such as display::kInvalidDisplayId (-1).
-  if (display_id < 0) {
-    RecordDisplayLinkCreateStatus(DisplayLinkResult::kFailedInvalidDisplayId);
-    DLOG(ERROR)
-        << "DisplayLinkMac ID is not available. "
-           "Switch to DelayBasedTimeSource(Timer) for BeginFrameSource.";
-  } else {
-    SetVSyncDisplayID(display_id, /*force_update=*/false);
-  }
+  SetVSyncDisplayID(display_id, /*force_update=*/true);
 }
 
 ExternalBeginFrameSourceMac::~ExternalBeginFrameSourceMac() {
@@ -191,6 +182,13 @@ void ExternalBeginFrameSourceMac::SetVSyncDisplayID(int64_t display_id,
                    ? DisplayLinkResult::kFailedForcedUpdateCreateDisplayLink
                    : DisplayLinkResult::kFailedCreateDisplayLink);
     RecordDisplayLinkCreateStatus(display_link_result);
+
+    preferred_interval_ = min_refresh_interval_ = max_refresh_interval_ =
+        GetMinimumFrameInterval();
+    if (update_vsync_params_callback_) {
+      update_vsync_params_callback_.Run(base::TimeTicks::Now(),
+                                        min_refresh_interval_);
+    }
 
     DLOG(ERROR) << "Fail to create DisplayLinkMac with DisplayID: "
                 << display_id_ << ". Switch to DelayBasedTimeSource.";
@@ -448,6 +446,10 @@ void ExternalBeginFrameSourceMac::OnTimerTick() {
 
 void ExternalBeginFrameSourceMac::SetPreferredInterval(
     base::TimeDelta interval) {
+  if (interval.is_zero()) {
+    interval = display_link_mac_ ? min_refresh_interval_
+                                 : BeginFrameArgs::DefaultInterval();
+  }
   preferred_interval_ = interval;
 
   VLOG(kOutputLevel) << "ExternalBeginFrameSourceMac(" << this << ")"
