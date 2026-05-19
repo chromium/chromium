@@ -358,9 +358,17 @@ class LinkerDriver(object):
             tools_paths.append(os.environ['PATH'])
         dsymutil_env = os.environ.copy()
         dsymutil_env['PATH'] = ':'.join(tools_paths)
-        subprocess.check_call(self._dsymutil_cmd +
-                              ['-o', dsym_out, linker_output],
-                              env=dsymutil_env)
+        subprocess.check_call(
+            self._dsymutil_cmd + [
+                # TODO(crbug.com/513203450): Until we figure out what to do
+                # with > 4GB DWARF data, pass this flag to suppress the
+                # warning
+                '--allow-section-header-offset-overflow',
+                '-o',
+                dsym_out,
+                linker_output,
+            ],
+            env=dsymutil_env)
         return [dsym_out]
 
     def set_dsymutil_path(self, dsymutil_path):
