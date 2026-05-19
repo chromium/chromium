@@ -224,6 +224,10 @@ class BLINK_COMMON_EXPORT ThrottlingURLLoader
 
   void Resume();
   void SetPriority(net::RequestPriority priority);
+  void MergeRequestHeaders(
+      const std::vector<std::string>& removed_headers,
+      const net::HttpRequestHeaders& modified_headers,
+      const net::HttpRequestHeaders& modified_cors_exempt_headers);
   void UpdateRequestHeaders(network::ResourceRequest& resource_request);
   void UpdateDeferredResponseHead(
       network::mojom::URLResponseHeadPtr new_response_head,

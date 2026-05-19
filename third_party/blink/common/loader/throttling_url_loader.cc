@@ -33,21 +33,6 @@ namespace blink {
 
 namespace {
 
-void RemoveModifiedHeadersBeforeMerge(
-    net::HttpRequestHeaders* modified_headers) {
-  DCHECK(modified_headers);
-  modified_headers->RemoveHeader(net::HttpRequestHeaders::kAcceptLanguage);
-}
-
-// Merges |removed_headers_B| into |removed_headers_A|.
-void MergeRemovedHeaders(std::vector<std::string>* removed_headers_A,
-                         const std::vector<std::string>& removed_headers_B) {
-  for (auto& header : removed_headers_B) {
-    if (!std::ranges::contains(*removed_headers_A, header))
-      removed_headers_A->emplace_back(std::move(header));
-  }
-}
-
 #if DCHECK_IS_ON()
 void CheckThrottleWillNotCauseCorsPreflight(
     const std::set<std::string>& initial_headers,
@@ -329,10 +314,9 @@ void ThrottlingURLLoader::ResetForFollowRedirect(
     const std::vector<std::string>& removed_headers,
     const net::HttpRequestHeaders& modified_headers,
     const net::HttpRequestHeaders& modified_cors_exempt_headers) {
-  MergeRemovedHeaders(&removed_headers_, removed_headers);
-  RemoveModifiedHeadersBeforeMerge(&modified_headers_);
-  modified_headers_.MergeFrom(modified_headers);
-  modified_cors_exempt_headers_.MergeFrom(modified_cors_exempt_headers);
+  MergeRequestHeaders(removed_headers, modified_headers,
+                      modified_cors_exempt_headers);
+
   // Call UpdateRequestHeaders() after headers are merged.
   UpdateRequestHeaders(resource_request);
 
@@ -345,10 +329,8 @@ void ThrottlingURLLoader::FollowRedirect(
     const std::vector<std::string>& removed_headers,
     const net::HttpRequestHeaders& modified_headers,
     const net::HttpRequestHeaders& modified_cors_exempt_headers) {
-  MergeRemovedHeaders(&removed_headers_, removed_headers);
-  RemoveModifiedHeadersBeforeMerge(&modified_headers_);
-  modified_headers_.MergeFrom(modified_headers);
-  modified_cors_exempt_headers_.MergeFrom(modified_cors_exempt_headers);
+  MergeRequestHeaders(removed_headers, modified_headers,
+                      modified_cors_exempt_headers);
 
   if (!throttle_will_start_redirect_url_.is_empty()) {
     throttle_will_start_redirect_url_ = GURL();
@@ -768,10 +750,8 @@ void ThrottlingURLLoader::OnReceiveRedirect(
       if (!HandleThrottleResult(throttle, throttle_deferred, &deferred))
         return;
 
-      MergeRemovedHeaders(&removed_headers_, removed_headers);
-      RemoveModifiedHeadersBeforeMerge(&modified_headers_);
-      modified_headers_.MergeFrom(modified_headers);
-      modified_cors_exempt_headers_.MergeFrom(modified_cors_exempt_headers);
+      MergeRequestHeaders(removed_headers, modified_headers,
+                          modified_cors_exempt_headers);
     }
 
     if (deferred) {
@@ -929,6 +909,20 @@ void ThrottlingURLLoader::Resume() {
 void ThrottlingURLLoader::SetPriority(net::RequestPriority priority) {
   if (url_loader_)
     url_loader_->SetPriority(priority, -1);
+}
+
+void ThrottlingURLLoader::MergeRequestHeaders(
+    const std::vector<std::string>& removed_headers,
+    const net::HttpRequestHeaders& modified_headers,
+    const net::HttpRequestHeaders& modified_cors_exempt_headers) {
+  for (const auto& header : removed_headers) {
+    if (!std::ranges::contains(removed_headers_, header)) {
+      removed_headers_.emplace_back(header);
+    }
+  }
+  modified_headers_.RemoveHeader(net::HttpRequestHeaders::kAcceptLanguage);
+  modified_headers_.MergeFrom(modified_headers);
+  modified_cors_exempt_headers_.MergeFrom(modified_cors_exempt_headers);
 }
 
 void ThrottlingURLLoader::UpdateRequestHeaders(
