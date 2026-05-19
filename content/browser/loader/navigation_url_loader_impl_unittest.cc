@@ -238,7 +238,7 @@ class NavigationURLLoaderImplTest : public testing::Test {
         request_method, &delegate);
     loader->Start();
     delegate.WaitForRequestRedirected();
-    loader->FollowRedirect({}, {}, {});
+    loader->FollowRedirect({});
 
     EXPECT_EQ(expected_redirect_method, delegate.redirect_info().new_method);
 
@@ -280,7 +280,7 @@ class NavigationURLLoaderImplTest : public testing::Test {
         true /*is_main_frame*/, upgrade_if_insecure);
     loader->Start();
     delegate.WaitForRequestRedirected();
-    loader->FollowRedirect({}, {}, {});
+    loader->FollowRedirect({});
 
     if (expect_request_fail) {
       delegate.WaitForRequestFailed();
@@ -447,7 +447,7 @@ TEST_F(NavigationURLLoaderImplTest, EnsureEnabledClientHintsOnRedirect) {
       CreateTestLoader(url, /*headers=*/"", /*method=*/"GET", &delegate);
   loader->Start();
   delegate.WaitForRequestRedirected();
-  loader->FollowRedirect({}, {}, {});
+  loader->FollowRedirect({});
   delegate.WaitForResponseStarted();
 
   const auto& resource_request = loader->GetResourceRequestForTesting();
@@ -489,7 +489,7 @@ TEST_F(NavigationURLLoaderImplTest,
       CreateTestLoader(url, /*headers=*/"", /*method=*/"GET", &delegate);
   loader->Start();
   delegate.WaitForRequestRedirected();
-  loader->FollowRedirect({}, {}, {});
+  loader->FollowRedirect({});
   delegate.WaitForResponseStarted();
 
   const auto& resource_request_after_redirect =
@@ -825,7 +825,7 @@ TEST_F(NavigationURLLoaderImplTest, TimeoutDuringFollowRedirect) {
   EXPECT_EQ(delegate.on_request_handled_counter(), 1);
 
   // Finish the async operation.
-  loader->FollowRedirect({}, {}, {});
+  loader->FollowRedirect({});
 
   // Check that no further loading should occur.
   task_environment_->RunUntilIdle();
@@ -880,7 +880,7 @@ TEST_F(NavigationURLLoaderImplTest, RedirectDuringFollowRedirect) {
   EXPECT_EQ(delegate.on_request_handled_counter(), 1);
 
   // Finish the async operation.
-  loader->FollowRedirect({}, {}, {});
+  loader->FollowRedirect({});
 
   // Check that no further loading should occur.
   task_environment_->RunUntilIdle();
@@ -914,7 +914,7 @@ TEST_F(NavigationURLLoaderImplTest, ForceAsyncParseHeaders) {
   EXPECT_EQ(delegate.on_redirect_handled_counter(), 1);
   EXPECT_EQ(delegate.on_request_handled_counter(), 0);
 
-  loader->FollowRedirect({}, {}, {});
+  loader->FollowRedirect({});
   delegate.WaitForResponseStarted();
   EXPECT_EQ(net::OK, delegate.net_error());
   EXPECT_EQ(delegate.on_redirect_handled_counter(), 1);
@@ -1179,7 +1179,7 @@ TEST_F(NavigationURLLoaderImplTest, ForceAsyncInterceptorForRedirect) {
   async_interceptor_ptr->WaitUntilMaybeCreateLoader();
   async_interceptor_ptr->Unblock();
   delegate.WaitForRequestRedirected();
-  loader->FollowRedirect({}, {}, {});
+  loader->FollowRedirect({});
   EXPECT_EQ(delegate.on_redirect_handled_counter(), 1);
   EXPECT_EQ(delegate.on_request_handled_counter(), 0);
 
@@ -1224,7 +1224,7 @@ TEST_F(NavigationURLLoaderImplTest, TimeoutDuringAsyncInterceptorForRedirect) {
   async_interceptor_ptr->WaitUntilMaybeCreateLoader();
   async_interceptor_ptr->Unblock();
   delegate.WaitForRequestRedirected();
-  loader->FollowRedirect({}, {}, {});
+  loader->FollowRedirect({});
   EXPECT_EQ(delegate.on_redirect_handled_counter(), 1);
   EXPECT_EQ(delegate.on_request_handled_counter(), 0);
 
@@ -1287,7 +1287,7 @@ TEST_F(NavigationURLLoaderImplTest, RedirectDuringAsyncInterceptorForRedirect) {
   async_interceptor_ptr->WaitUntilMaybeCreateLoader();
   async_interceptor_ptr->Unblock();
   delegate.WaitForRequestRedirected();
-  loader->FollowRedirect({}, {}, {});
+  loader->FollowRedirect({});
   EXPECT_EQ(delegate.on_redirect_handled_counter(), 1);
   EXPECT_EQ(delegate.on_request_handled_counter(), 0);
 
@@ -1351,10 +1351,10 @@ TEST_F(NavigationURLLoaderImplTest, RedirectModifiedHeaders) {
       loader->GetResourceRequestForTesting().headers.HasHeader("Header3"));
 
   // Overwrite Header2 and add Header3.
-  net::HttpRequestHeaders redirect_headers;
-  redirect_headers.SetHeader("Header2", "");
-  redirect_headers.SetHeader("Header3", "Value3");
-  loader->FollowRedirect({}, redirect_headers, {});
+  network::HttpRequestHeadersUpdateParams headers_update_params;
+  headers_update_params.modified_headers.SetHeader("Header2", "");
+  headers_update_params.modified_headers.SetHeader("Header3", "Value3");
+  loader->FollowRedirect(std::move(headers_update_params));
   delegate.WaitForResponseStarted();
 
   // Redirected request should also have modified headers.

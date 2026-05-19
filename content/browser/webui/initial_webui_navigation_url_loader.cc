@@ -17,6 +17,7 @@
 #include "content/public/browser/url_data_source.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
+#include "services/network/public/cpp/http_request_headers_update_params.h"
 #include "services/network/public/cpp/parsed_headers.h"
 #include "third_party/blink/public/mojom/navigation/navigation_params.mojom.h"
 
@@ -55,9 +56,7 @@ void InitialWebUINavigationURLLoader::Start() {
 }
 
 void InitialWebUINavigationURLLoader::FollowRedirect(
-    std::vector<std::string> removed_headers,
-    net::HttpRequestHeaders modified_headers,
-    net::HttpRequestHeaders modified_cors_exempt_headers) {
+    network::HttpRequestHeadersUpdateParams headers_update_params) {
   NOTREACHED();
 }
 

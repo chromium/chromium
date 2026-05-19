@@ -18,9 +18,9 @@
 #include "services/network/public/mojom/trust_token_access_observer.mojom-forward.h"
 #include "services/network/public/mojom/url_loader_network_service_observer.mojom.h"
 
-namespace net {
-class HttpRequestHeaders;
-}
+namespace network {
+struct HttpRequestHeadersUpdateParams;
+}  // namespace network
 
 namespace content {
 
@@ -109,9 +109,7 @@ class CONTENT_EXPORT NavigationURLLoader {
   // Called in response to OnRequestRedirected to continue processing the
   // request.
   virtual void FollowRedirect(
-      std::vector<std::string> removed_headers,
-      net::HttpRequestHeaders modified_headers,
-      net::HttpRequestHeaders modified_cors_exempt_headers) = 0;
+      network::HttpRequestHeadersUpdateParams headers_update_params) = 0;
 
   // Sets an overall request timeout for this navigation, which will cause the
   // navigation to fail if it expires before the navigation commits. This is

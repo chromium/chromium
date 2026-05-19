@@ -17,6 +17,7 @@
 #include "content/public/browser/web_contents.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/url_request/redirect_info.h"
+#include "services/network/public/cpp/http_request_headers_update_params.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/blink/public/common/navigation/navigation_policy.h"
@@ -37,9 +38,7 @@ void TestNavigationURLLoader::Start() {
 }
 
 void TestNavigationURLLoader::FollowRedirect(
-    std::vector<std::string> removed_headers,
-    net::HttpRequestHeaders modified_headers,
-    net::HttpRequestHeaders modified_cors_exempt_headers) {
+    network::HttpRequestHeadersUpdateParams headers_update_params) {
   DCHECK_EQ(loader_type_, NavigationURLLoader::LoaderType::kRegular);
   redirect_count_++;
 }

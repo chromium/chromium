@@ -6153,9 +6153,7 @@ void NavigationRequest::OnRedirectChecksComplete(
     }
   }
 
-  loader_->FollowRedirect(std::move(headers_update_params.removed_headers),
-                          std::move(headers_update_params.modified_headers),
-                          /*modified_cors_exempt_headers=*/{});
+  loader_->FollowRedirect(std::move(headers_update_params));
 }
 
 void NavigationRequest::OnFailureChecksComplete(

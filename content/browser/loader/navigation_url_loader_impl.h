@@ -116,9 +116,7 @@ class CONTENT_EXPORT NavigationURLLoaderImpl
   // Sets `started_` true.
   void Start() override;
   void FollowRedirect(
-      std::vector<std::string> removed_headers,
-      net::HttpRequestHeaders modified_headers,
-      net::HttpRequestHeaders modified_cors_exempt_headers) override;
+      network::HttpRequestHeadersUpdateParams headers_update_params) override;
   bool SetNavigationTimeout(base::TimeDelta timeout) override;
   void CancelNavigationTimeout() override;
 

@@ -2306,9 +2306,7 @@ NavigationURLLoaderImpl::CreateNetworkLoaderFactory(
 }
 
 void NavigationURLLoaderImpl::FollowRedirect(
-    std::vector<std::string> removed_headers,
-    net::HttpRequestHeaders modified_headers,
-    net::HttpRequestHeaders modified_cors_exempt_headers) {
+    network::HttpRequestHeadersUpdateParams headers_update_params) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(!redirect_info_.new_url.is_empty());
 
@@ -2318,12 +2316,6 @@ void NavigationURLLoaderImpl::FollowRedirect(
   }
   loader_holder_.OnExclusiveTaskCompleted(
       LoaderHolder::ExclusiveTaskType::kRedirect);
-
-  network::HttpRequestHeadersUpdateParams headers_update_params;
-  headers_update_params.removed_headers = std::move(removed_headers);
-  headers_update_params.modified_headers = std::move(modified_headers);
-  headers_update_params.modified_cors_exempt_headers =
-      std::move(modified_cors_exempt_headers);
 
   // Don't send Accept: application/signed-exchange for fallback redirects.
   // This is also applied to `resource_request().headers` via
