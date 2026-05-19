@@ -18,6 +18,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/download/home/empty/EmptyProperties.java",
     "java/src/org/chromium/chrome/browser/download/home/empty/EmptyView.java",
     "java/src/org/chromium/chrome/browser/download/home/empty/EmptyViewBinder.java",
+    "java/src/org/chromium/chrome/browser/download/home/filter/BlockedSensitiveOfflineItemFilter.java",
     "java/src/org/chromium/chrome/browser/download/home/filter/DangerousOfflineItemFilter.java",
     "java/src/org/chromium/chrome/browser/download/home/filter/DeleteUndoOfflineItemFilter.java",
     "java/src/org/chromium/chrome/browser/download/home/filter/FilterChipsProvider.java",

@@ -24,6 +24,7 @@ import org.chromium.chrome.browser.download.home.DownloadManagerUiConfig;
 import org.chromium.chrome.browser.download.home.FaviconProvider;
 import org.chromium.chrome.browser.download.home.JustNowProvider;
 import org.chromium.chrome.browser.download.home.OfflineItemSource;
+import org.chromium.chrome.browser.download.home.filter.BlockedSensitiveOfflineItemFilter;
 import org.chromium.chrome.browser.download.home.filter.DangerousOfflineItemFilter;
 import org.chromium.chrome.browser.download.home.filter.DeleteUndoOfflineItemFilter;
 import org.chromium.chrome.browser.download.home.filter.Filters.FilterType;
@@ -132,6 +133,7 @@ class DateOrderedListMediator implements BackPressHandler {
     private final SelectionDelegate<ListItem> mSelectionDelegate;
     private final DownloadManagerUiConfig mUiConfig;
 
+    private final BlockedSensitiveOfflineItemFilter mBlockedSensitiveFilter;
     private final DangerousOfflineItemFilter mDangerousFilter;
     private final OffTheRecordOfflineItemFilter mOffTheRecordFilter;
     private final InvalidStateOfflineItemFilter mInvalidStateFilter;
@@ -202,11 +204,12 @@ class DateOrderedListMediator implements BackPressHandler {
         // Build a chain from the data source to the model.  The chain will look like:
         // [OfflineContentProvider] ->
         //     [OfflineItemSource] ->
-        //         [DangerousOfflineItemFilter] ->
-        //             [OffTheRecordOfflineItemFilter] ->
-        //                 [InvalidStateOfflineItemFilter] ->
-        //                     [DeleteUndoOfflineItemFilter] ->
-        //                         [SearchOfflineItemFilter] ->
+        //         [BlockedSensitiveOfflineItemFilter] ->
+        //             [DangerousOfflineItemFilter] ->
+        //                 [OffTheRecordOfflineItemFilter] ->
+        //                     [InvalidStateOfflineItemFilter] ->
+        //                         [DeleteUndoOfflineItemFilter] ->
+        //                             [SearchOfflineItemFilter] ->
         //                             [TypeOfflineItemFilter] ->
         //                                 [DateOrderedListMutator] ->
         //                                     [ListItemModel]
@@ -224,7 +227,8 @@ class DateOrderedListMediator implements BackPressHandler {
         mUiConfig = config;
 
         mSource = new OfflineItemSource(mProvider);
-        mDangerousFilter = new DangerousOfflineItemFilter(config, mSource);
+        mBlockedSensitiveFilter = new BlockedSensitiveOfflineItemFilter(config, mSource);
+        mDangerousFilter = new DangerousOfflineItemFilter(config, mBlockedSensitiveFilter);
         mOffTheRecordFilter =
                 new OffTheRecordOfflineItemFilter(
                         OtrProfileId.isOffTheRecord(config.otrProfileId), mDangerousFilter);

@@ -1,4 +1,4 @@
-// Copyright 2025 The Chromium Authors
+// Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,27 +10,25 @@ import org.chromium.components.browser_ui.util.DownloadUtils;
 import org.chromium.components.offline_items_collection.OfflineItem;
 
 /**
- * A {@link OfflineItemFilter} responsible for pruning out items that are dangerous, when such items
- * should not be shown in the UI for this instance of the download manager.
+ * A {@link OfflineItemFilter} responsible for pruning out items that are blocked sensitive
+ * downloads, when such items should not be shown in the UI for this instance of the download
+ * manager.
  */
 @NullMarked
-public class DangerousOfflineItemFilter extends OfflineItemFilter {
-    private final boolean mIncludeDangerousItems;
+public class BlockedSensitiveOfflineItemFilter extends OfflineItemFilter {
+    private final boolean mIncludeBlockedSensitiveItems;
 
     /** Creates an instance of this filter and wraps {@code source}. */
-    public DangerousOfflineItemFilter(
+    public BlockedSensitiveOfflineItemFilter(
             DownloadManagerUiConfig config, OfflineItemFilterSource source) {
         super(source);
-        mIncludeDangerousItems = config.showDangerousItems;
+        mIncludeBlockedSensitiveItems = config.showBlockedSensitiveItems;
         onFilterChanged();
     }
 
     // OfflineItemFilter implementation.
     @Override
     protected boolean isFilteredOut(OfflineItem item) {
-        if (DownloadUtils.isBlockedSensitiveDownload(item)) {
-            return false; // Handled independently by BlockedSensitiveOfflineItemFilter
-        }
-        return !mIncludeDangerousItems && item.isDangerous;
+        return !mIncludeBlockedSensitiveItems && DownloadUtils.isBlockedSensitiveDownload(item);
     }
 }
