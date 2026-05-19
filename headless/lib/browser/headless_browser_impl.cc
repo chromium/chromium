@@ -54,12 +54,6 @@
 #include "components/prefs/pref_service_factory.h"            // nogncheck
 #endif
 
-#if defined(HEADLESS_USE_POLICY)
-#include "components/headless/policy/headless_mode_policy.h"  // nogncheck
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
-#include "headless/lib/browser/policy/headless_policies.h"
-#endif
-
 #if defined(HEADLESS_SUPPORT_FIELD_TRIALS)
 #include "components/metrics/metrics_service.h"                // nogncheck
 #include "components/variations/service/variations_service.h"  // nogncheck
@@ -253,18 +247,6 @@ bool HeadlessBrowserImpl::ShouldStartDevToolsServer() {
     return false;
   }
 
-#if defined(HEADLESS_USE_POLICY)
-  CHECK(local_state_);
-  if (!IsRemoteDebuggingAllowed(local_state_.get())) {
-    // Follow content/browser/devtools/devtools_http_handler.cc that reports its
-    // remote debugging port on stderr for symmetry.
-    UNSAFE_TODO(fputs(
-        "\nDevTools remote debugging is disallowed by the system admin.\n",
-        stderr));
-    fflush(stderr);
-    return false;
-  }
-#endif
   return true;
 }
 
@@ -294,12 +276,6 @@ void HeadlessBrowserImpl::PostMainMessageLoopRun() {
     local_state_.reset(nullptr);
   }
 #endif
-#if defined(HEADLESS_USE_POLICY)
-  if (policy_connector_) {
-    policy_connector_->Shutdown();
-    policy_connector_.reset(nullptr);
-  }
-#endif
 }
 
 void HeadlessBrowserImpl::InitializeWebContents(
@@ -317,12 +293,6 @@ ui::Compositor* HeadlessBrowserImpl::GetCompositor(
     HeadlessWebContentsImpl* web_contents) {
   return platform_delegate_->GetCompositor(web_contents);
 }
-
-#if defined(HEADLESS_USE_POLICY)
-policy::PolicyService* HeadlessBrowserImpl::GetPolicyService() {
-  return policy_connector_ ? policy_connector_->GetPolicyService() : nullptr;
-}
-#endif
 
 #if defined(HEADLESS_USE_PREFS)
 void HeadlessBrowserImpl::CreatePrefService() {
@@ -366,19 +336,6 @@ void HeadlessBrowserImpl::CreatePrefService() {
 #endif
 
   PrefServiceFactory factory;
-
-#if defined(HEADLESS_USE_POLICY)
-  RegisterHeadlessPrefs(pref_registry.get());
-
-  policy_connector_ =
-      std::make_unique<policy::HeadlessBrowserPolicyConnector>();
-
-  factory.set_managed_prefs(
-      policy_connector_->CreatePrefStore(policy::POLICY_LEVEL_MANDATORY));
-
-  BrowserContextDependencyManager::GetInstance()
-      ->RegisterProfilePrefsForServices(pref_registry.get());
-#endif  // defined(HEADLESS_USE_POLICY)
 
   factory.set_user_prefs(pref_store);
   local_state_ = factory.Create(std::move(pref_registry));

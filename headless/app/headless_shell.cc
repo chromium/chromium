@@ -37,10 +37,6 @@
 #include "sandbox/win/src/sandbox_types.h"
 #endif
 
-#if defined(HEADLESS_USE_POLICY)
-#include "components/headless/policy/headless_mode_policy.h"  // nogncheck
-#endif
-
 #if defined(HEADLESS_ENABLE_COMMANDS)
 #include "components/headless/command_handler/headless_command_handler.h"  // nogncheck
 #endif
@@ -92,15 +88,6 @@ class HeadlessShell {
 
 void HeadlessShell::OnBrowserStart(HeadlessBrowser* browser) {
   browser_ = browser;
-
-#if defined(HEADLESS_USE_POLICY)
-  if (HeadlessModePolicy::IsHeadlessModeDisabled(
-          static_cast<HeadlessBrowserImpl*>(browser)->GetPrefs())) {
-    LOG(ERROR) << "Headless mode is disallowed by the system admin.";
-    ShutdownSoon();
-    return;
-  }
-#endif
 
   HeadlessBrowserContext::Builder context_builder =
       browser_->CreateBrowserContextBuilder();

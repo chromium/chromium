@@ -1,6 +1,0 @@
-include_rules = [
-  "+components/keyed_service/content",
-  "+components/policy",
-  "+components/prefs",
-  "+components/pref_registry",
-]

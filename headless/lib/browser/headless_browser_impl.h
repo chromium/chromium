@@ -19,14 +19,6 @@
 #include "headless/public/headless_export.h"
 #include "ui/gfx/geometry/rect.h"
 
-#if defined(HEADLESS_USE_POLICY)
-#include "headless/lib/browser/policy/headless_browser_policy_connector.h"
-
-namespace policy {
-class PolicyService;
-}
-#endif
-
 #if defined(HEADLESS_USE_PREFS)
 class PrefService;
 #endif
@@ -108,10 +100,6 @@ class HEADLESS_EXPORT HeadlessBrowserImpl : public HeadlessBrowser {
   PrefService* GetPrefs();
 #endif
 
-#if defined(HEADLESS_USE_POLICY)
-  policy::PolicyService* GetPolicyService();
-#endif
-
  private:
   void CreateOSCryptAsync();
 
@@ -134,10 +122,6 @@ class HEADLESS_EXPORT HeadlessBrowserImpl : public HeadlessBrowser {
 
 #if defined(HEADLESS_USE_PREFS)
   std::unique_ptr<PrefService> local_state_;
-#endif
-
-#if defined(HEADLESS_USE_POLICY)
-  std::unique_ptr<policy::HeadlessBrowserPolicyConnector> policy_connector_;
 #endif
 
   base::WeakPtrFactory<HeadlessBrowserImpl> weak_ptr_factory_{this};

@@ -19,11 +19,6 @@ import("//tools/v8_context_snapshot/v8_context_snapshot.gni")
 
 assert(!is_ios && !is_android)
 
-if (headless_use_policy) {
-  assert(headless_use_prefs,
-         "'headless_use_policy' requires 'headless_use_prefs'.")
-}
-
 if (headless_enable_commands) {
   assert(
       !headless_use_embedded_resources,
@@ -37,7 +32,8 @@ if (should_strip_binary) {
   import("//build/linux/strip_binary.gni")
 }
 
-# If supported, field trials need to be enabled by --enable-field-trial-config switch.
+# If supported, field trials need to be enabled by --enable-field-trial-config
+# switch.
 headless_support_field_trials = headless_use_prefs
 
 # Headless defines config applied to every target below.
@@ -50,10 +46,6 @@ config("headless_defines_config") {
 
   if (headless_use_prefs) {
     defines += [ "HEADLESS_USE_PREFS" ]
-  }
-
-  if (headless_use_policy) {
-    defines += [ "HEADLESS_USE_POLICY" ]
   }
 
   if (headless_support_field_trials) {
@@ -444,28 +436,6 @@ source_set("headless_browser") {
     ]
   }
 
-  if (headless_use_policy) {
-    sources += [
-      "lib/browser/policy/headless_browser_policy_connector.cc",
-      "lib/browser/policy/headless_browser_policy_connector.h",
-      "lib/browser/policy/headless_policies.cc",
-      "lib/browser/policy/headless_policies.h",
-      "lib/browser/policy/headless_policy_blocklist_service_factory.cc",
-      "lib/browser/policy/headless_policy_blocklist_service_factory.h",
-      "lib/browser/policy/headless_prefs.cc",
-      "lib/browser/policy/headless_prefs.h",
-    ]
-    deps += [
-      "//components/headless/policy",
-      "//components/policy:generated",
-      "//components/policy/content",
-      "//components/policy/content:safe_sites_navigation_throttle",
-      "//components/policy/core/browser",
-      "//components/policy/core/common:common_constants",
-      "//components/policy/core/common:policy_path_constants",
-    ]
-  }
-
   if (headless_support_field_trials) {
     sources += [
       "lib/browser/headless_field_trials.cc",
@@ -674,10 +644,6 @@ test("headless_browsertests") {
     ]
   }
 
-  if (headless_use_policy) {
-    sources += [ "test/headless_policy_browsertest.cc" ]
-  }
-
   if (headless_enable_commands) {
     sources += [ "test/headless_command_browsertest.cc" ]
   }
@@ -788,13 +754,6 @@ test("headless_browsertests") {
     if (enable_pdf) {
       deps += [ "//pdf" ]
     }
-  }
-
-  if (headless_use_policy) {
-    deps += [
-      "//components/headless/policy",
-      "//components/policy/core/common:test_support",
-    ]
   }
 
   if (headless_enable_commands) {
@@ -973,10 +932,6 @@ executable("headless_shell") {
       "//components/headless/command_handler",
       "//components/headless/command_handler:switches",
     ]
-  }
-
-  if (headless_use_policy) {
-    deps += [ "//components/headless/policy" ]
   }
 
   if (!is_fuchsia) {

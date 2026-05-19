@@ -68,15 +68,6 @@
 #include "services/device/public/cpp/geolocation/geolocation_system_permission_manager.h"
 #endif
 
-#if defined(HEADLESS_USE_POLICY)
-#include "components/policy/content/policy_blocklist_navigation_throttle.h"  // nogncheck
-#include "components/policy/content/safe_search_service.h"  // nogncheck
-#include "components/user_prefs/user_prefs.h"               // nogncheck
-#include "content/public/browser/navigation_handle.h"
-#include "content/public/browser/navigation_throttle.h"
-#include "headless/lib/browser/policy/headless_policy_blocklist_service_factory.h"  // nogncheck
-#endif  // defined(HEADLESS_USE_POLICY)
-
 #if BUILDFLAG(ENABLE_PRINTING)
 #include "components/printing/browser/headless/headless_print_manager.h"
 #endif  // defined(ENABLE_PRINTING)
@@ -483,23 +474,6 @@ void HeadlessContentBrowserClient::SessionEnding(
   browser_->ShutdownWithExitCode(control_type.value_or(0) + 0x80u);
 }
 #endif
-
-#if defined(HEADLESS_USE_POLICY)
-void HeadlessContentBrowserClient::CreateThrottlesForNavigation(
-    content::NavigationThrottleRegistry& registry) {
-  // Avoid creating naviagtion throttle if preferences are not available
-  // (happens in tests).
-  content::NavigationHandle& handle = registry.GetNavigationHandle();
-  if (browser_->GetPrefs()) {
-    content::BrowserContext* context =
-        handle.GetWebContents()->GetBrowserContext();
-    registry.AddThrottle(std::make_unique<PolicyBlocklistNavigationThrottle>(
-        registry, user_prefs::UserPrefs::Get(context),
-        HeadlessPolicyBlocklistServiceFactory::GetForBrowserContext(context),
-        SafeSearchFactory::GetForBrowserContext(context)));
-  }
-}
-#endif  // defined(HEADLESS_USE_POLICY)
 
 void HeadlessContentBrowserClient::OnNetworkServiceCreated(
     ::network::mojom::NetworkService* network_service) {
