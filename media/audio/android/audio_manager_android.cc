@@ -70,6 +70,7 @@ namespace {
 
 // Maximum number of output streams that can be open simultaneously.
 constexpr int kMaxOutputStreams = 10;
+constexpr int kDesktopMaxOutputStreams = 50;
 
 constexpr int kDefaultInputBufferSize = 1024;
 constexpr int kDefaultOutputBufferSize = 2048;
@@ -398,7 +399,10 @@ AudioManagerAndroid::AudioManagerAndroid(
       communication_mode_is_on_(false),
       output_volume_override_set_(false),
       output_volume_override_(0) {
-  SetMaxOutputStreamsAllowed(kMaxOutputStreams);
+  const int max_output_streams = base::android::device_info::is_desktop()
+                                     ? kDesktopMaxOutputStreams
+                                     : kMaxOutputStreams;
+  SetMaxOutputStreamsAllowed(max_output_streams);
 }
 
 AudioManagerAndroid::~AudioManagerAndroid() = default;
