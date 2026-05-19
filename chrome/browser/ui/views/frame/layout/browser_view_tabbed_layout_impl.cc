@@ -36,7 +36,7 @@
 #include "chrome/browser/ui/views/tabs/projects/layout_constants.h"
 #include "chrome/browser/ui/views/tabs/projects/projects_panel_utils.h"
 #include "chrome/browser/ui/views/tabs/projects/projects_panel_view.h"
-#include "components/split_tabs/split_tab_visual_data.h"
+#include "ui/base/pointer/touch_ui_controller.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/gfx/geometry/outsets.h"
 #include "ui/gfx/geometry/size.h"
@@ -1210,8 +1210,17 @@ void BrowserViewTabbedLayoutImpl::ConfigureTopContainerBackground(
   // The top container always draws an opaque background in tabbed browser mode
   // to avoid cracking between visual elements.
   background->SetVisible(true);
-  if (is_fullscreen(delegate().GetBrowserWindowState()) &&
-      GetTabStripType() == TabStripType::kHorizontal) {
+
+  // In immersive mode and ChromeOS touch UI mode, the top Chrome UI is
+  // parented to the `top_container()` and the frame header is not visible.
+  // In these cases, the top container's background color should match the
+  // frame color to ensure visual consistency.
+  bool in_immersive_mode =
+      ImmersiveModeController::From(browser()) &&
+      ImmersiveModeController::From(browser())->IsEnabled();
+  bool is_touch_ui = ui::TouchUiController::Get()->touch_ui();
+  if (GetTabStripType() == TabStripType::kHorizontal &&
+      (is_touch_ui || in_immersive_mode)) {
     background->SetPrimaryColor(ui::kColorFrameActive);
   } else {
     background->SetPrimaryColor(CustomCornersBackground::ToolbarTheme());

@@ -82,6 +82,7 @@ class CustomCornersBackground : public views::Background, public CustomCorners {
 
   // Sets the color to paint the primary area of the view.
   void SetPrimaryColor(ColorChoice primary_color);
+  ColorChoice primary_color() const { return primary_color_; }
 
   // Sets the color to paint behind corners of type `kRoundedWithBackground`;
   // default is `FrameColor`.
