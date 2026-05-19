@@ -14,6 +14,7 @@
 #include "build/build_config.h"
 #include "components/crash/content/browser/error_reporting/javascript_error_report.h"  // nogncheck
 #include "components/crash/content/browser/error_reporting/js_error_report_processor.h"  // nogncheck
+#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/site_instance.h"
 #include "content/public/browser/web_ui_controller.h"
 #include "content/public/test/browser_task_environment.h"
@@ -342,6 +343,23 @@ TEST_F(WebUIMainFrameObserverTest, ErrorsNotReportedForNonChromeURLs) {
     task_environment()->RunUntilIdle();
     EXPECT_EQ(processor_->error_report_count(), 0) << url;
   }
+}
+
+TEST_F(WebUIMainFrameObserverTest, SuppressedDuringTeardown) {
+  NavigateToPage();
+
+  // Set the lifecycle state to kRunningUnloadHandlers, which maps to
+  // LifecycleState::kPendingDeletion.
+  static_cast<RenderFrameHostImpl*>(web_ui_->GetRenderFrameHost())
+      ->SetLifecycleState(
+          RenderFrameHostImpl::LifecycleStateImpl::kRunningUnloadHandlers);
+
+  CallOnDidAddMessageToConsole(web_ui_->GetRenderFrameHost(),
+                               blink::mojom::ConsoleMessageLevel::kError,
+                               kMessage16, 5, kSourceURL16, kStackTrace16);
+
+  // The error should be suppressed because the frame is in kPendingDeletion.
+  EXPECT_EQ(processor_->error_report_count(), 0);
 }
 
 }  // namespace content

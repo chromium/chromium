@@ -120,6 +120,12 @@ void WebUIMainFrameObserver::OnDidAddMessageToConsole(
     return;
   }
 
+  if (source_frame->GetLifecycleState() ==
+      RenderFrameHost::LifecycleState::kPendingDeletion) {
+    DVLOG(3) << "Message not reported, frame is being deleted";
+    return;
+  }
+
   JavaScriptErrorReport report;
   report.message = base::UTF16ToUTF8(message);
   report.line_number = line_no;
