@@ -403,7 +403,7 @@ TEST_F(HTMLIFrameElementSimTest,
 }
 
 TEST_F(HTMLIFrameElementSimTest, SetTrackedElement) {
-  ScopedAIPageContentTrackedElementsForTest scoped_feature(true);
+  ScopedAIPageContentTrackedElementsIframeForTest scoped_feature(true);
   SimRequest main_resource("https://example.com", "text/html");
   LoadURL("https://example.com");
   main_resource.Complete(R"(

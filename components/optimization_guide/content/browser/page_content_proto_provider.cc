@@ -311,16 +311,9 @@ std::optional<optimization_guide::proto::MediaData> ComputeMediaData(
 std::optional<optimization_guide::RenderFrameInfo> GetRenderFrameInfo(
     int child_process_id,
     blink::FrameToken frame_token) {
-  content::RenderFrameHost* render_frame_host = nullptr;
-
-  if (frame_token.Is<blink::RemoteFrameToken>()) {
-    render_frame_host = content::RenderFrameHost::FromPlaceholderToken(
-        child_process_id, frame_token.GetAs<blink::RemoteFrameToken>());
-  } else {
-    render_frame_host = content::RenderFrameHost::FromFrameToken(
-        content::GlobalRenderFrameHostToken(
-            child_process_id, frame_token.GetAs<blink::LocalFrameToken>()));
-  }
+  content::RenderFrameHost* render_frame_host =
+      optimization_guide::GetRenderFrameHostForToken(child_process_id,
+                                                     frame_token);
 
   if (!render_frame_host) {
     return std::nullopt;

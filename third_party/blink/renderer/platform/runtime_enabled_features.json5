@@ -378,10 +378,10 @@
       name: "AIPageContentPaidContentAnnotation",
       status: "stable"
     },
-    // When enabled, certian element coordinates will be tracked using the
+    // When enabled, iframe element coordinates will be tracked using the
     // Element::SetTrackedElementSubRect() method.
     {
-      name: "AIPageContentTrackedElements",
+      name: "AIPageContentTrackedElementsIframe",
       status: "test"
     },
     // Clamp AIPageContent visible bounding boxes to the local-root viewport

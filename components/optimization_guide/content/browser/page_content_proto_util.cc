@@ -1785,6 +1785,19 @@ content::RenderFrameHost* GetRenderFrameForDocumentIdentifier(
   return render_frame;
 }
 
+content::RenderFrameHost* GetRenderFrameHostForToken(
+    int renderer_process_id,
+    blink::FrameToken frame_token) {
+  if (frame_token.Is<blink::RemoteFrameToken>()) {
+    return content::RenderFrameHost::FromPlaceholderToken(
+        renderer_process_id, frame_token.GetAs<blink::RemoteFrameToken>());
+  } else {
+    return content::RenderFrameHost::FromFrameToken(
+        content::GlobalRenderFrameHostToken(
+            renderer_process_id, frame_token.GetAs<blink::LocalFrameToken>()));
+  }
+}
+
 RenderFrameInfo::RenderFrameInfo() = default;
 RenderFrameInfo::RenderFrameInfo(const RenderFrameInfo& other) = default;
 RenderFrameInfo::~RenderFrameInfo() = default;

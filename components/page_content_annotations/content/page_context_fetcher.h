@@ -26,6 +26,7 @@
 #include "components/content_extraction/content/browser/inner_text.h"
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
 #include "components/page_content_annotations/core/page_content_annotations_enums.h"
+#include "components/viz/common/surfaces/tracked_element_rects.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "pdf/buildflags.h"
@@ -380,6 +381,7 @@ class PageContextFetcher : public content::WebContentsObserver {
   void RedactAndEncodeScreenshotIfNeeded();
 
   void ReceivedViewportBitmapOrError(
+      const viz::TrackedElementRects& tracked_element_rects,
       base::expected<const SkBitmap*, std::string> bitmap_result);
 
   // content::WebContentsObserver impl.
@@ -399,6 +401,13 @@ class PageContextFetcher : public content::WebContentsObserver {
 
   void RunCallbackIfComplete();
 
+  // Returns true on success, false if we are unable to get the URL or origin
+  // for any of the tracked iframe elements.
+  bool CollectTrackedElementRectsForIframes(
+      const viz::TrackedElementRects& tracked_element_rects);
+
+  void MaybeAddIframeInfoToAPC();
+
   base::WeakPtr<PageContextFetcher> GetWeakPtr();
 
   const GetScreenshotServiceCallback get_screenshot_service_callback_;
@@ -409,6 +418,8 @@ class PageContextFetcher : public content::WebContentsObserver {
   // screenshot processing dependencies.
   std::optional<SkBitmap> screenshot_bitmap_;
   bool screenshot_needs_redaction_ = false;
+
+  std::vector<optimization_guide::proto::IframeInfo> iframe_info_;
 
   // Intermediate results:
 

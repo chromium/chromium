@@ -5,6 +5,7 @@
 #include "chrome/browser/page_content_annotations/multi_source_page_context_fetcher.h"
 
 #include <optional>
+#include <vector>
 
 #include "base/path_service.h"
 #include "base/strings/strcat.h"
@@ -37,6 +38,8 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/codec/jpeg_codec.h"
 #include "ui/gfx/codec/png_codec.h"
+#include "url/gurl.h"
+#include "url/origin.h"
 
 namespace page_content_annotations {
 
@@ -1026,6 +1029,104 @@ IN_PROC_BROWSER_TEST_F(
               IsColorWithinTolerance(SK_ColorRED, 0x20));
   histograms.ExpectUniqueSample("Glic.PageContextFetcher.ScreenshotRedacted",
                                 true, 1);
+}
+
+class IframeInfoMultiSourcePageContextFetcherBrowserTest
+    : public MultiSourcePageContextFetcherBrowserTest {
+ public:
+  IframeInfoMultiSourcePageContextFetcherBrowserTest() {
+    std::vector<base::test::FeatureRefAndParams> enabled_features{
+        // Effectively disables timeouts.
+        {kGlicTabScreenshotExperiment,
+         {
+             {"screenshot_timeout_ms", "30s"},
+         }},
+        {optimization_guide::features::kGetAIPageContentMainFrameTimeoutEnabled,
+         {{"timeout", "30s"}}},
+        // Enable blink element tracking and APC iframe info.
+        {blink::features::kAIPageContentTrackedElementsIframe, {}}};
+    features_.InitWithFeaturesAndParameters(enabled_features,
+                                            /*disabled_features=*/{});
+  }
+
+  ~IframeInfoMultiSourcePageContextFetcherBrowserTest() override = default;
+
+  void SetUp() override {
+    EnablePixelOutput();
+    MultiSourcePageContextFetcherBrowserTest::SetUp();
+  }
+
+ private:
+  base::test::ScopedFeatureList features_;
+};
+
+IN_PROC_BROWSER_TEST_F(IframeInfoMultiSourcePageContextFetcherBrowserTest,
+                       TakesScreenshot_AddsIframeInfoToAPC) {
+  GURL top_frame_url = GetURL(kHostA, "/iframe.html");
+  GURL iframe_url = GetURL(kHostB);
+  url::Origin iframe_origin = url::Origin::Create(iframe_url);
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), top_frame_url));
+  ASSERT_TRUE(content::NavigateIframeToURL(web_contents(), "test", iframe_url));
+
+  // Set the iframe's size and position.
+  ASSERT_TRUE(content::ExecJs(web_contents(),
+                              "const iframe = document.getElementById('test');"
+                              "iframe.style.position = 'absolute';"
+                              "iframe.style.left = '20px';"
+                              "iframe.style.top = '10px';"
+                              "iframe.style.width = '300px';"
+                              "iframe.style.height = '200px';"));
+
+  // Wait for main frame layout/render.
+  {
+    base::test::TestFuture<bool> future;
+    web_contents()
+        ->GetPrimaryMainFrame()
+        ->GetRenderWidgetHost()
+        ->InsertVisualStateCallback(future.GetCallback());
+    ASSERT_TRUE(future.Wait()) << "Timeout waiting for syncing with renderer";
+  }
+
+  // Wait for cross-site subframe layout/render.
+  {
+    base::test::TestFuture<bool> sub_future;
+    GetSubframe()->GetRenderWidgetHost()->InsertVisualStateCallback(
+        sub_future.GetCallback());
+    ASSERT_TRUE(sub_future.Wait());
+  }
+
+  FetchPageContextOptions options;
+  options.screenshot_options = ScreenshotOptions::ViewportOnly(
+      /*paint_preview_options=*/std::nullopt,
+      /*screenshot_collection_options=*/std::nullopt);
+  options.annotated_page_content_options =
+      optimization_guide::ActionableAIPageContentOptions(true);
+
+  base::test::TestFuture<FetchPageContextResultCallbackArg> future;
+  FetchPageContext(*web_contents(), options, nullptr, future.GetCallback());
+
+  ASSERT_OK_AND_ASSIGN(std::unique_ptr<FetchPageContextResult> result,
+                       future.Take());
+
+  ASSERT_TRUE(result);
+  ASSERT_TRUE(result->annotated_page_content_result.has_value());
+
+  const auto& iframe_info = result->annotated_page_content_result->proto
+                                .gemini_in_chrome_page_metadata()
+                                .screenshot_info()
+                                .iframe_info();
+
+  // Verify that the iframe info has url, origin, and bounding box data.
+  ASSERT_EQ(iframe_info.size(), 1);
+  EXPECT_EQ(iframe_info[0].url(), iframe_url.spec());
+  EXPECT_EQ(iframe_info[0].security_origin().value(),
+            iframe_origin.Serialize());
+  EXPECT_EQ(iframe_info[0].bounding_box().x(), 20);
+  EXPECT_EQ(iframe_info[0].bounding_box().y(), 10);
+  // The iframe is 300x200, but the bounding box is 304x204 due to the border.
+  EXPECT_EQ(iframe_info[0].bounding_box().width(), 304);
+  EXPECT_EQ(iframe_info[0].bounding_box().height(), 204);
 }
 
 }  // namespace page_content_annotations

@@ -9,10 +9,12 @@
 #include <optional>
 #include <string>
 #include <string_view>
+#include <utility>
 #include <vector>
 
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/containers/flat_map.h"
 #include "base/feature_list.h"
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
@@ -32,12 +34,15 @@
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
 #include "components/optimization_guide/content/browser/page_content_proto_util.h"
 #include "components/optimization_guide/content/browser/page_context_eligibility.h"
+#include "components/optimization_guide/core/page_content_proto_serializer.h"
 #include "components/page_content_annotations/content/page_content_screenshot_service.h"
 #include "components/page_content_annotations/content/page_context_fetcher_metrics.h"
 #include "components/paint_preview/common/mojom/paint_preview_types.mojom.h"
 #include "components/paint_preview/common/redaction_params.h"
 #include "components/pdf/common/constants.h"
 #include "components/viz/common/frame_sinks/copy_output_result.h"
+#include "components/viz/common/surfaces/tracked_element_rects.h"
+#include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -45,6 +50,7 @@
 #include "net/base/schemeful_site.h"
 #include "pdf/buildflags.h"
 #include "third_party/abseil-cpp/absl/strings/str_format.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/content_extraction/ai_page_content.mojom.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkCanvas.h"
@@ -643,7 +649,7 @@ void PageContextFetcher::GetTabScreenshot(
     service->RequestScreenshot(
         &web_contents, std::move(request_params),
         base::BindOnce(&PageContextFetcher::ReceivedViewportBitmapOrError,
-                       GetWeakPtr()));
+                       GetWeakPtr(), viz::TrackedElementRects()));
   } else {
     SetCaptureCountLock(web_contents);
     ScheduleScreenshotTimeout();
@@ -679,14 +685,17 @@ void PageContextFetcher::ReceivedViewportBitmap(
     base::UmaHistogramEnumeration("Glic.PageContextFetcher.GetScreenshotError",
                                   result.error());
     ReceivedViewportBitmapOrError(
+        viz::TrackedElementRects(),
         base::unexpected<std::string>(ToString(result.error())));
     return;
   }
 
-  ReceivedViewportBitmapOrError(base::ok(&result->bitmap));
+  ReceivedViewportBitmapOrError(result->tracked_element_rects,
+                                base::ok(&result->bitmap));
 }
 
 void PageContextFetcher::ReceivedViewportBitmapOrError(
+    const viz::TrackedElementRects& tracked_element_rects,
     base::expected<const SkBitmap*, std::string> bitmap_result) {
   // Early exit if the timeout has fired.
   if (screenshot_done_) {
@@ -703,6 +712,13 @@ void PageContextFetcher::ReceivedViewportBitmapOrError(
     if (progress_listener_) {
       progress_listener_->ScreenshotCaptured(*bitmap);
     }
+
+    if (!CollectTrackedElementRectsForIframes(tracked_element_rects)) {
+      ReceivedEncodedScreenshot(
+          base::unexpected("Failed to collect iframe info from screenshot."));
+      return;
+    }
+    MaybeAddIframeInfoToAPC();
     RedactAndEncodeScreenshotIfNeeded();
   } else {
     ReceivedEncodedScreenshot(base::unexpected(bitmap_result.error()));
@@ -890,6 +906,7 @@ void PageContextFetcher::ReceivedAnnotatedPageContent(
     }
   }
 
+  MaybeAddIframeInfoToAPC();
   RedactAndEncodeScreenshotIfNeeded();
 
   RunCallbackIfComplete();
@@ -924,6 +941,101 @@ void PageContextFetcher::RunCallbackIfComplete() {
   }
 
   std::move(callback_).Run(base::ok(std::move(pending_result_)));
+}
+
+bool PageContextFetcher::CollectTrackedElementRectsForIframes(
+    const viz::TrackedElementRects& tracked_element_rects) {
+  if (!base::FeatureList::IsEnabled(
+          blink::features::kAIPageContentTrackedElementsIframe)) {
+    return true;
+  }
+
+  iframe_info_.clear();
+  const auto iframe_tracking_feature =
+      viz::TrackedElementFeature::kIframeTracking;
+  if (!tracked_element_rects.contains(iframe_tracking_feature)) {
+    return true;
+  }
+
+  // Build a map from local frame token to RFH. We can use this to get the
+  // RFH associated with a tracked element's parent_frame_token.
+  base::flat_map<blink::LocalFrameToken, content::RenderFrameHost*>
+      frame_token_to_rfh;
+  if (web_contents()) {
+    web_contents()->ForEachRenderFrameHost(
+        [&frame_token_to_rfh](content::RenderFrameHost* rfh) {
+          frame_token_to_rfh[rfh->GetFrameToken()] = rfh;
+        });
+  }
+
+  // For each tracked iframe element, we get the parent RFH from the map above
+  // and use it to get the renderer process id. Then we can get the iframe
+  // RFH using the element's frame_token and the parent renderer process id.
+  // We then use the iframe RFH to get the URL and origin.
+  for (const viz::TrackedElementRect& element :
+       tracked_element_rects.at(iframe_tracking_feature)) {
+    optimization_guide::proto::IframeInfo iframe_info;
+    const gfx::Rect& bounds = element.visible_bounds;
+    iframe_info.mutable_bounding_box()->set_x(bounds.origin().x());
+    iframe_info.mutable_bounding_box()->set_y(bounds.origin().y());
+    iframe_info.mutable_bounding_box()->set_width(bounds.width());
+    iframe_info.mutable_bounding_box()->set_height(bounds.height());
+
+    // Iframe tracked elements should always have a parent frame token and a
+    // frame token.
+    if (!element.frame_token.has_value() ||
+        !element.parent_frame_token.has_value()) {
+      return false;
+    }
+
+    // If we can't find the RFH associated with the iframe, we cannot determine
+    // the iframe's url/origin. This could happen if the screenshot is
+    // displaying stale content. We should fail in this case.
+    auto it = frame_token_to_rfh.find(element.parent_frame_token.value());
+    if (it == frame_token_to_rfh.end()) {
+      return false;
+    }
+    content::RenderFrameHost* parent_rfh = it->second;
+    int renderer_process_id = parent_rfh->GetProcess()->GetID().value();
+    content::RenderFrameHost* iframe_rfh =
+        optimization_guide::GetRenderFrameHostForToken(
+            renderer_process_id, element.frame_token.value());
+    if (!iframe_rfh) {
+      return false;
+    }
+
+    iframe_info.set_url(iframe_rfh->GetLastCommittedURL().spec());
+    optimization_guide::SecurityOriginSerializer::Serialize(
+        iframe_rfh->GetLastCommittedOrigin(),
+        iframe_info.mutable_security_origin());
+    iframe_info_.push_back(std::move(iframe_info));
+  }
+  return true;
+}
+
+void PageContextFetcher::MaybeAddIframeInfoToAPC() {
+  // We need to wait for both the screenshot capture to be done and the APC to
+  // be done before adding the iframe info to the APC.
+  if (!screenshot_capture_done_ || !annotated_page_content_done_) {
+    return;
+  }
+
+  // If we don't have an APC result or iframe info, there's nothing to do.
+  // TODO(b/441532128): If we don't have an APC result, we should create one and
+  // populate the screenshot iframe info.
+  if (!pending_result_->annotated_page_content_result.has_value() ||
+      iframe_info_.empty()) {
+    return;
+  }
+
+  // Add the iframe bounding boxes and url/origin data to the screenshot info.
+  optimization_guide::proto::ScreenshotInfo* screenshot_info =
+      pending_result_->annotated_page_content_result->proto
+          .mutable_gemini_in_chrome_page_metadata()
+          ->mutable_screenshot_info();
+  for (const auto& iframe_info : iframe_info_) {
+    *screenshot_info->add_iframe_info() = iframe_info;
+  }
 }
 
 base::WeakPtr<PageContextFetcher> PageContextFetcher::GetWeakPtr() {

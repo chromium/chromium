@@ -677,7 +677,7 @@ void HTMLIFrameElement::DidChangeAttributes() {
   GetDocument().GetFrame()->GetLocalFrameHostRemote().DidChangeSrcDoc(
       ContentFrame()->GetFrameToken(), srcdoc_value);
 
-  if (RuntimeEnabledFeatures::AIPageContentTrackedElementsEnabled()) {
+  if (RuntimeEnabledFeatures::AIPageContentTrackedElementsIframeEnabled()) {
     viz::TrackedElementFeature tracking_feature =
         viz::TrackedElementFeature::kIframeTracking;
     const TrackedElementSubRect* tracked_element =
