@@ -38,6 +38,7 @@ source_set("coordinator") {
   deps = [
     ":ui_bundled",
     "//components/ui_metrics",
+    "//components/ukm/ios:ukm_url_recorder",
     "//ios/chrome/browser/context_menu/ui_bundled:coordinator",
     "//ios/chrome/browser/fullscreen/ui_bundled",
     "//ios/chrome/browser/overscroll_actions/ui_bundled",
@@ -54,6 +55,7 @@ source_set("coordinator") {
     "//ios/chrome/common/ui/util",
     "//ios/web",
     "//ios/web/public/ui",
+    "//services/metrics/public/cpp:ukm_builders",
   ]
 }
 

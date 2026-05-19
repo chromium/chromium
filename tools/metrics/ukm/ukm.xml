@@ -23731,6 +23731,43 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="Tabs.SadTab">
+  <owner>olivierrobin@chromium.org</owner>
+  <owner>sonnyrao@chromium.org</owner>
+  <owner>jamescook@chromium.org</owner>
+  <summary>
+    Recorded when a Sad Tab is displayed or interacted with. This allows
+    correlating specific URLs and page contexts with renderer crashes that lead
+    to Sad Tabs and user feedback.
+  </summary>
+  <metric name="Event" enum="SadTabEvent">
+    <summary>
+      The SadTabEvent that occurred (e.g. Displayed, Button clicked, Learn more
+      clicked).
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="IsFeedbackMode" enum="Boolean">
+    <summary>
+      True if the Sad Tab is in feedback mode (typically due to a repeated
+      failure). False if it is in reload mode.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+</event>
+
 <event name="ThirdPartyCookies.CookieControlsActivated">
   <owner>sauski@google.com</owner>
   <owner>kmg@google.com</owner>

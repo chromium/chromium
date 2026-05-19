@@ -6,6 +6,7 @@
 
 #import "base/metrics/histogram_macros.h"
 #import "components/ui_metrics/sadtab_metrics_types.h"
+#import "components/ukm/ios/ukm_url_recorder.h"
 #import "ios/chrome/browser/context_menu/ui_bundled/context_menu_configuration_provider.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/scoped_fullscreen_disabler.h"
 #import "ios/chrome/browser/overscroll_actions/ui_bundled/overscroll_actions_controller.h"
@@ -26,6 +27,7 @@
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/web/public/ui/context_menu_params.h"
 #import "ios/web/public/web_state.h"
+#import "services/metrics/public/cpp/ukm_builders.h"
 
 @interface SadTabCoordinator () <SadTabViewControllerDelegate,
                                  TabsDependencyInstalling>
@@ -63,6 +65,7 @@
                               ui_metrics::SadTabEvent::DISPLAYED,
                               ui_metrics::SadTabEvent::MAX_SAD_TAB_EVENT);
   }
+  [self recordSadTabUKMWithEvent:ui_metrics::SadTabEvent::DISPLAYED];
 
   if (IsFullscreenRefactoringEnabled()) {
     id<FullscreenCommands> handler = HandlerForProtocol(
@@ -120,6 +123,7 @@
 
 - (void)sadTabViewControllerShowReportAnIssue:
     (SadTabViewController*)sadTabViewController {
+  [self recordSadTabUKMWithEvent:ui_metrics::SadTabEvent::BUTTON_CLICKED];
   // TODO(crbug.com/40670043): Use HandlerForProtocol after commands protocol
   // clean up.
   [static_cast<id<SceneCommands>>(self.browser->GetCommandDispatcher())
@@ -129,6 +133,7 @@
 
 - (void)sadTabViewController:(SadTabViewController*)sadTabViewController
     showSuggestionsPageWithURL:(const GURL&)URL {
+  [self recordSadTabUKMWithEvent:ui_metrics::SadTabEvent::HELP_LINK_CLICKED];
   OpenNewTabCommand* command =
       [OpenNewTabCommand commandWithURLFromChrome:URL
                                       inIncognito:self.isOffTheRecord];
@@ -162,7 +167,25 @@
 }
 
 - (void)sadTabViewControllerReload:(SadTabViewController*)sadTabViewController {
+  [self recordSadTabUKMWithEvent:ui_metrics::SadTabEvent::BUTTON_CLICKED];
   WebNavigationBrowserAgent::FromBrowser(self.browser)->Reload();
+}
+
+#pragma mark - Private
+
+- (void)recordSadTabUKMWithEvent:(ui_metrics::SadTabEvent)event {
+  web::WebState* webState =
+      self.browser->GetWebStateList()->GetActiveWebState();
+  if (!webState) {
+    return;
+  }
+  ukm::SourceId sourceId = ukm::GetSourceIdForWebStateDocument(webState);
+  if (sourceId != ukm::kInvalidSourceId) {
+    ukm::builders::Tabs_SadTab(sourceId)
+        .SetEvent(static_cast<int>(event))
+        .SetIsFeedbackMode(self.repeatedFailure)
+        .Record(ukm::UkmRecorder::Get());
+  }
 }
 
 #pragma mark - SadTabTabHelperDelegate
