@@ -10,7 +10,6 @@
 #include "ash/webui/os_feedback_ui/backend/histogram_util.h"
 #include "ash/webui/os_feedback_ui/backend/os_feedback_delegate.h"
 #include "ash/webui/os_feedback_ui/mojom/os_feedback_ui.mojom.h"
-#include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -204,7 +203,7 @@ TEST_F(FeedbackServiceProviderTest, ResetReceiverOnBindInterface) {
   // DCHECK error from mojo::Receiver
   provider_remote_.reset();  // reset the binding done in Setup.
   provider_.BindInterface(provider_remote_.BindNewPipeAndPassReceiver());
-  base::RunLoop().RunUntilIdle();
+  provider_remote_.FlushForTesting();
 }
 
 }  // namespace feedback
