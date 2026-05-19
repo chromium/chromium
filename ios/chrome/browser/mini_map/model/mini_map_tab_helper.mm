@@ -63,10 +63,15 @@ void MiniMapTabHelper::ShouldAllowRequest(NSURLRequest* request,
     return;
   }
 
-  if (base::FeatureList::IsEnabled(kIOSMiniMapUniversalLinkCounterfactual)) {
+  if (base::FeatureList::IsEnabled(kIOSMiniMapUniversalLinkCounterfactual) ||
+      !mini_map_service_->IsMiniMapEnabled()) {
     GURL target_url = net::GURLWithNSURL(request.URL);
+    std::string utm_campaign =
+        base::FeatureList::IsEnabled(kIOSMiniMapUniversalLinkCounterfactual)
+            ? "as-npc-bling"
+            : "as-npt-bling";
     GURL modified_url =
-        net::AppendQueryParameter(target_url, "utm_campaign", "as-npc-bling");
+        net::AppendQueryParameter(target_url, "utm_campaign", utm_campaign);
 
     std::move(callback).Run(PolicyDecision::Cancel());
 
@@ -118,12 +123,12 @@ void MiniMapTabHelper::WebStateDestroyed() {
 bool MiniMapTabHelper::ShouldInterceptRequest(
     NSURL* url,
     ui::PageTransition page_transition) {
-  GURL target_url = net::GURLWithNSURL(url);
-  if (!mini_map_service_->IsMiniMapEnabled() &&
+  if (!base::FeatureList::IsEnabled(kIOSMiniMapUniversalLink) &&
       !base::FeatureList::IsEnabled(kIOSMiniMapUniversalLinkCounterfactual)) {
-    // Only intercept request when the feature or counterfactual is enabled.
     return false;
   }
+
+  GURL target_url = net::GURLWithNSURL(url);
   if (!is_on_google_srp_) {
     // Only consider links from Google Search results page.
     return false;
@@ -168,7 +173,8 @@ bool MiniMapTabHelper::ShouldInterceptRequest(
     return false;
   }
 
-  if (base::FeatureList::IsEnabled(kIOSMiniMapUniversalLinkCounterfactual)) {
+  if (base::FeatureList::IsEnabled(kIOSMiniMapUniversalLinkCounterfactual) ||
+      !mini_map_service_->IsMiniMapEnabled()) {
     // Intercept the request to add the UTM campaign parameter.
     // Early return to prevent mini map from opening.
     return true;
