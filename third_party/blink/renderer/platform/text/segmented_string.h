@@ -280,12 +280,34 @@ class PLATFORM_EXPORT SegmentedString {
     return Advance();
   }
 
-  // Check the current character is `expected_character` case insensitively with
-  // DCHECK(), then Advance().
-  ALWAYS_INLINE UChar AdvanceExpectingIgnoringCase(UChar expected_character) {
-    DCHECK_EQ(unicode::FoldCase(CurrentChar()),
-              unicode::FoldCase(expected_character));
-    return Advance();
+  // Check the current characters are `expected_string` with DCHECK(), then
+  // advance by the length of `expected_string`.
+  template <size_t length>
+  inline void AdvanceExpecting(const char (&expected_string)[length])
+      ENABLE_IF_ATTR(expected_string[length - 1u] == 0,
+                     "requires string literal as input") {
+    for (size_t i = 0; i < length - 1u; ++i) {
+      // SAFETY: `i` is always less than `length - 1`, which is less than the
+      // actual length of the array.
+      DCHECK_EQ(CurrentChar(), UNSAFE_BUFFERS(expected_string[i]));
+      Advance();
+    }
+  }
+
+  // Check the current characters are `expected_string` ASCII case insensitively
+  // with DCHECK(), then advance by the length of `expected_string`.
+  template <size_t length>
+  inline void AdvanceExpectingIgnoringAsciiCase(
+      const char (&expected_string)[length])
+      ENABLE_IF_ATTR(expected_string[length - 1u] == 0,
+                     "requires string literal as input") {
+    for (size_t i = 0; i < length - 1u; ++i) {
+      // SAFETY: `i` is always less than `length - 1`, which is less than the
+      // actual length of the array.
+      DCHECK_EQ(ToAsciiLower(CurrentChar()),
+                ToAsciiLower(UNSAFE_BUFFERS(expected_string[i])));
+      Advance();
+    }
   }
 
   ALWAYS_INLINE UChar AdvancePastNonNewline() {
