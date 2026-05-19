@@ -7082,15 +7082,12 @@ class ChromeExtensionsCapabilityTest(ChromeDriverBaseTestWithWebServer):
         chrome_switches=[_DISABLE_MV2_EXPERIMENTS_SWITCH])
 
   def testCanInspectExtensionWindows(self):
-    crx_unpacked = os.path.join(_TEST_DATA_DIR, 'extv2_new_window')
+    crx_unpacked = os.path.join(_TEST_DATA_DIR, 'extv3_new_window')
     # This test exercises inspection of extension created new window.
     # Extension created regular windows/tabs, unlike background_page, is not
     # considered an extension target.
     driver = self.CreateDriver(
-        chrome_switches=[
-          _DISABLE_MV2_EXPERIMENTS_SWITCH,
-          'load-extension=' + crx_unpacked
-        ])
+        chrome_switches=['load-extension=' + crx_unpacked])
 
     # Wait for extension window to be open.
     self.WaitForCondition(lambda: len(driver.GetWindowHandles()) > 1)
