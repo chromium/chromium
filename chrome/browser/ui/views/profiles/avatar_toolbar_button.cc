@@ -358,6 +358,11 @@ gfx::Size AvatarToolbarButton::CalculatePreferredSize(
   return size;
 }
 
+gfx::Size AvatarToolbarButton::GetMinimumSize() const {
+  const int size = GetTargetInsets().width() + GetIconSize();
+  return gfx::Size(size, size);
+}
+
 void AvatarToolbarButton::AnimationProgressed(const gfx::Animation* animation) {
   CHECK_EQ(animation, &slide_animation_);
   PreferredSizeChanged();
@@ -531,10 +536,18 @@ SkColor AvatarToolbarButton::GetForegroundColor(ButtonState state) const {
 }
 
 bool AvatarToolbarButton::IsLabelPresentAndVisible() const {
-  if (!label()) {
+  if (!label() || !label()->GetVisible() || label()->GetText().empty()) {
     return false;
   }
-  return label()->GetVisible() && !label()->GetText().empty();
+  if (!base::FeatureList::IsEnabled(features::kToolbarProfileChipResizing)) {
+    return true;
+  }
+  // If the chip is narrow enough that text doesn't fit, return false. The left
+  // padding is wider than the right padding so the label will disappear when
+  // the right padding is equal to the left.
+  const int icon_width =
+      ::GetLayoutInsets(AVATAR_CHIP_PADDING).left() * 2 + GetIconSize();
+  return GetLocalBounds().width() > icon_width;
 }
 
 bool AvatarToolbarButton::IsMouseHovered() const {

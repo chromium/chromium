@@ -371,6 +371,8 @@ BASE_DECLARE_FEATURE(kOmniboxResizingPrioritization);
 
 BASE_DECLARE_FEATURE(kToolbarAppMenuLabelResizing);
 
+BASE_DECLARE_FEATURE(kToolbarProfileChipResizing);
+
 // Whether or not OSCryptAsyncAvailabilityInfoBarDelegate is enabled.
 BASE_DECLARE_FEATURE(kOSCryptAsyncAvailabilityInfoBar);
 

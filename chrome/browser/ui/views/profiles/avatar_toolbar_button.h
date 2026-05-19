@@ -119,9 +119,10 @@ class AvatarToolbarButton : public ToolbarButton,
   void UpdateAccessibilityLabel();
   void AnnounceInternal(std::u16string text);
 
-  // LabelButton:
+  // views::View:
   gfx::Size CalculatePreferredSize(
       const views::SizeBounds& available_size) const override;
+  gfx::Size GetMinimumSize() const override;
 
   // gfx::AnimationDelegate:
   void AnimationProgressed(const gfx::Animation* animation) override;

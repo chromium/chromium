@@ -1549,6 +1549,17 @@ void ToolbarView::InitLayout() {
                                  views::MaximumFlexSizeRule::kPreferred));
   }
 
+  if (avatar_ &&
+      base::FeatureList::IsEnabled(features::kToolbarProfileChipResizing)) {
+    // Flex order for the profile avatar button is determined by the
+    // `toolbar_controller`.
+    avatar_->SetProperty(
+        views::kFlexBehaviorKey,
+        views::FlexSpecification(
+            views::MinimumFlexSizeRule::kScaleToMinimumSnapToZero,
+            views::MaximumFlexSizeRule::kPreferred));
+  }
+
   // Order 1 is reserved for the location bar if kOmniboxResizingPrioritization
   // is enabled.
   constexpr int kToolbarFlexOrderStart = 2;

@@ -26,6 +26,7 @@
 #include "chrome/browser/ui/side_panel/side_panel_enums.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
 #include "chrome/browser/ui/toolbar_controller_util.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/contextual_tasks/contextual_tasks_button.h"
 #include "chrome/browser/ui/views/toolbar/overflow_button.h"
 #include "chrome/browser/ui/views/toolbar/pinned_toolbar_button_status_indicator.h"
@@ -399,7 +400,20 @@ bool ToolbarController::PopOut(ui::ElementIdentifier identifier) {
   auto& original = it->second->original_spec;
 
   if (original.has_value()) {
-    element->SetProperty(views::kFlexBehaviorKey, original.value());
+    if (base::FeatureList::IsEnabled(features::kToolbarProfileChipResizing)) {
+      // Some elements (e.g. profile chip) use flex rules that allow
+      // snapping/scaling to zero. When popping out, elements should never be
+      // below the mininmum size.
+      element->SetProperty(
+          views::kFlexBehaviorKey,
+          views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToMinimum,
+                                   views::MaximumFlexSizeRule::kPreferred)
+              .WithOrder((*original).order())
+              .WithWeight((*original).weight())
+              .WithAlignment((*original).alignment()));
+    } else {
+      element->SetProperty(views::kFlexBehaviorKey, original.value());
+    }
   } else {
     element->ClearProperty(views::kFlexBehaviorKey);
   }
