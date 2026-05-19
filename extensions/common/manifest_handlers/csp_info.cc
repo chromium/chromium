@@ -464,11 +464,10 @@ void CSPHandler::ValidateExtensionPagesCSP(
 }
 
 bool CSPHandler::AlwaysParseForType(Manifest::Type type) const {
-  // TODO(crbug.com/40099692): Check if Type::kUserScript needs to be included
-  // here.
   return type == Manifest::Type::kPlatformApp ||
          type == Manifest::Type::kExtension ||
-         type == Manifest::Type::kLegacyPackagedApp;
+         type == Manifest::Type::kLegacyPackagedApp ||
+         type == Manifest::Type::kUserScript;
 }
 
 base::span<const char* const> CSPHandler::Keys() const {

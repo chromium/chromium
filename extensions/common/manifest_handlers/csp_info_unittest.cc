@@ -503,4 +503,29 @@ TEST_F(CSPInfoUnitTest, ServiceWorkerSandboxIgnoredWithCustomCSP) {
                                             /*is_service_worker=*/true));
 }
 
+// Tests that extensions of the "user script" type also have CSP enforced for
+// Manifest V3+.
+TEST_F(CSPInfoUnitTest, UserScriptStrictCSP) {
+  ManifestData manifest_data(base::test::ParseJsonDict(R"({
+    "name": "User Script Strict",
+    "manifest_version": 3,
+    "version": "1.0",
+    "converted_from_user_script": true
+  })"));
+  scoped_refptr<const Extension> extension =
+      LoadAndExpectSuccess(manifest_data);
+  ASSERT_TRUE(extension);
+  ASSERT_EQ(Manifest::TYPE_USER_SCRIPT, extension->GetType());
+
+  // Should receive default secure manifest CSP.
+  EXPECT_EQ("script-src 'self';",
+            CSPInfo::GetExtensionPagesCSP(extension.get()));
+  // Like items with Manifest::TYPE_EXTENSION, TYPE_USER_SCRIPT items should
+  // also get a "minimum CSP" to append to the list of CSPs. This ensures every
+  // item has at least a minimally-strict CSP that rejects remotely-hosted
+  // code.
+  EXPECT_NE(nullptr,
+            CSPInfo::GetMinimumCSPToAppend(*extension, "page.html", false));
+}
+
 }  // namespace extensions

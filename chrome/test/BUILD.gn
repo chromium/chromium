@@ -1802,6 +1802,7 @@ source_set("platform_browser_tests") {
       "../browser/extensions/test_resources_browsertest.cc",
       "../browser/extensions/unpacked_installer_browsertest.cc",
       "../browser/extensions/user_host_restrictions_browsertest.cc",
+      "../browser/extensions/user_script_csp_browsertest.cc",
       "../browser/extensions/user_script_extension_browsertest.cc",
       "../browser/extensions/wasm_mv3_browsertest.cc",
       "../browser/extensions/web_accessible_resources_browsertest.cc",
