@@ -100,6 +100,8 @@ static_library("test_support") {
   sources = [
     "fake_lorgnette_scanner_manager.cc",
     "fake_lorgnette_scanner_manager.h",
+    "scan_test_util.cc",
+    "scan_test_util.h",
   ]
 
   public_deps = [

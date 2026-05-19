@@ -16,6 +16,7 @@
 #include "chrome/browser/ash/scanning/lorgnette_scanner_manager_factory.h"
 #include "chrome/browser/ash/scanning/scan_service.h"
 #include "chrome/browser/ash/scanning/scan_service_factory.h"
+#include "chrome/browser/ash/scanning/scan_test_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/chromeos/crosier/ash_integration_test.h"
@@ -67,6 +68,7 @@ std::unique_ptr<KeyedService> BuildLorgnetteScannerManager(
   info.set_name(kFirstTestScannerName);
   manager->AddScanner(std::move(info), lorgnette::ScannerConfig(),
                       CreateLorgnetteScannerCapabilities());
+  manager->SetDataForFutureScanJobs({CreateJpeg()});
   return manager;
 }
 

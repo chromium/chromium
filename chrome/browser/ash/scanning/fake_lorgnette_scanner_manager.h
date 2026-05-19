@@ -84,13 +84,6 @@ class FakeLorgnetteScannerManager final : public LorgnetteScannerManager {
                   std::optional<lorgnette::ScannerCapabilities> capabilities =
                       std::nullopt);
 
-  // Sets the response returned by Scan().
-  void SetScanResponse(
-      const std::optional<std::vector<std::string>>& scan_data);
-
-  // Optionally sets `scan_data` if a matching set of scan settings is found.
-  void MaybeSetScanDataBasedOnSettings(const lorgnette::ScanSettings& settings);
-
   // Feeds data to be produced by all future scan jobs.
   // In the case of StartPreparedScan, associated ReadScanData invocations will
   // produce the given chunks in order (with result OPERATION_RESULT_SUCCESS),
@@ -100,6 +93,11 @@ class FakeLorgnetteScannerManager final : public LorgnetteScannerManager {
   // callback invocation.
   // Note: Behavior can be overridden by Simulate{DBus,Scanner}Failure.
   void SetDataForFutureScanJobs(std::vector<std::string> data_chunks);
+
+  // Returns the settings passed to the most recent call to Scan().
+  const std::optional<lorgnette::ScanSettings>& last_scan_settings() const {
+    return last_scan_settings_;
+  }
 
  private:
   struct ScannerSession {
@@ -145,7 +143,8 @@ class FakeLorgnetteScannerManager final : public LorgnetteScannerManager {
   size_t handle_count_ = 0;
   std::vector<ScannerState> scanners_;
   absl::flat_hash_map<std::string, JobState> scan_jobs_;
-  std::optional<std::vector<std::string>> scan_data_;
+  std::vector<std::string> scan_data_;
+  std::optional<lorgnette::ScanSettings> last_scan_settings_;
 };
 
 }  // namespace ash
