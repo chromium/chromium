@@ -3586,10 +3586,6 @@
       name: "LayoutIgnoreMarginsForSticky",
     },
     {
-      name: "LayoutImageEmptyNaturalSizeBeforeSizeAvailable",
-      status: "stable",
-    },
-    {
       name: "LayoutTableCellAlignmentSafe",
       status: "stable",
     },

@@ -202,24 +202,12 @@ void LayoutImage::ImageChanged(WrappedImagePtr new_image,
   }
 }
 
-namespace {
-
-bool CanQueryNaturalSize(const LayoutImageResource& image_resource) {
-  if (RuntimeEnabledFeatures::
-          LayoutImageEmptyNaturalSizeBeforeSizeAvailableEnabled()) {
-    return image_resource.IsSizeAvailable();
-  }
-  return image_resource.HasImage();
-}
-
-}  // namespace
-
 bool LayoutImage::UpdateNaturalSizeIfNeeded() {
   NOT_DESTROYED();
   PhysicalNaturalSizingInfo new_natural_dimensions;
-  // If the image resource is not associated with an image then we set natural
+  // If the image resource has no image or image dimensions then we set natural
   // dimensions of 0x0 ("represents nothing" per HTML spec).
-  if (CanQueryNaturalSize(*image_resource_)) {
+  if (image_resource_->IsSizeAvailable()) {
     new_natural_dimensions = PhysicalNaturalSizingInfo::FromSizingInfo(
         image_resource_->GetNaturalDimensions(StyleRef().EffectiveZoom()));
   }
