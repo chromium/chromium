@@ -92,8 +92,7 @@ std::pair<CookieSameSite, CookieSameSiteString> StringToCookieSameSite(
 }
 
 void RecordCookieSameSiteAttributeValueHistogram(CookieSameSiteString value) {
-  static base::MetricsSubSampler metrics_subsampler;
-  if (metrics_subsampler.ShouldSample(kHistogramSampleProbability)) {
+  if (base::ShouldRecordSubsampledMetric(kHistogramSampleProbability)) {
     UMA_HISTOGRAM_ENUMERATION("Cookie.SameSiteAttributeValue.Subsampled",
                               value);
   }

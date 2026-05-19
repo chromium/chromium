@@ -320,9 +320,8 @@ std::unique_ptr<CanonicalCookie> CanonicalCookie::Create(
 
   ParsedCookie parsed_cookie(cookie_line, status);
 
-  static base::MetricsSubSampler metrics_subsampler;
   bool collect_metrics =
-      metrics_subsampler.ShouldSample(kHistogramSampleProbability);
+      base::ShouldRecordSubsampledMetric(kHistogramSampleProbability);
 
   if (collect_metrics) {
     // We record this metric before checking validity because the presence of an

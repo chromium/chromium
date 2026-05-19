@@ -783,7 +783,7 @@ void CookieMonster::GetCookieListWithOptions(
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   std::optional<base::ElapsedTimer> timer;
-  if (metrics_subsampler_.ShouldSample(kHistogramSampleProbability)) {
+  if (base::ShouldRecordSubsampledMetric(kHistogramSampleProbability)) {
     timer.emplace();
   }
 
@@ -1417,7 +1417,7 @@ void CookieMonster::FilterCookiesWithOptions(
     // without considering shadowing domain cookies. Recording them on every
     // resource sequest results in unnecessarily large amounts of samples
     // and has a non-zero runtime cost, so only collect 1/1000 times.
-    if (metrics_subsampler_.ShouldSample(kHistogramSampleProbability) &&
+    if (base::ShouldRecordSubsampledMetric(kHistogramSampleProbability) &&
         access_result.status.IsInclude()) {
       int destination_port = url.EffectiveIntPort();
 
@@ -1705,7 +1705,7 @@ CookieMonster::InternalInsertCookie(const std::string& key,
     inserted = cookie_it;
   }
 
-  if (metrics_subsampler_.ShouldSample(kHistogramSampleProbability)) {
+  if (base::ShouldRecordSubsampledMetric(kHistogramSampleProbability)) {
     LogStoredCookieToUMA(*cc_ptr, access_result);
   }
 
@@ -1732,7 +1732,7 @@ void CookieMonster::SetCanonicalCookie(
     std::optional<CookieAccessResult> cookie_access_result) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   bool collect_metrics =
-      metrics_subsampler_.ShouldSample(kHistogramSampleProbability);
+      base::ShouldRecordSubsampledMetric(kHistogramSampleProbability);
 
   bool delegate_treats_url_as_trustworthy =
       cookie_access_delegate() &&
@@ -1890,7 +1890,7 @@ void CookieMonster::SetAllCookies(CookieList list,
     if (cookie.IsExpired(creation_time))
       continue;
 
-    if (metrics_subsampler_.ShouldSample(kHistogramSampleProbability)) {
+    if (base::ShouldRecordSubsampledMetric(kHistogramSampleProbability)) {
       RecordPersistanceHistograms(cookie, creation_time);
     }
 

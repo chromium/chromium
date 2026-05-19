@@ -12,17 +12,13 @@
 namespace net {
 
 namespace {
-base::MetricsSubSampler& GetMetricsSubSampler() {
-  static base::MetricsSubSampler sampler;
-  return sampler;
-}
 
 }  // namespace
 
 const scoped_refptr<base::SingleThreadTaskRunner>& GetTaskRunner(
     RequestPriority priority) {
   // Sample with a 0.001 probability to reduce metrics overhead.
-  if (GetMetricsSubSampler().ShouldSample(0.001)) {
+  if (base::ShouldRecordSubsampledMetric(0.001)) {
     base::UmaHistogramEnumeration("Net.TaskRunner.RequestPriority", priority);
   }
 

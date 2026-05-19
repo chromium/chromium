@@ -366,7 +366,7 @@ class NetworkErrorLoggingServiceImpl : public NetworkErrorLoggingService {
       task_backlog_.push_back(std::move(task));
       // TODO(crbug.com/450428442): Remove this UMA after we investigate OOM.
       // Sample with a 0.001 probability to reduce metrics overhead.
-      if (sampler_.ShouldSample(0.001)) {
+      if (base::ShouldRecordSubsampledMetric(0.001)) {
         base::UmaHistogramCounts1000(
             "Net.NetworkErrorLoggingService.TaskBacklogSize",
             task_backlog_.size());
