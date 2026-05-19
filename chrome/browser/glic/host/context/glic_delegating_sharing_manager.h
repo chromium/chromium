@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_GLIC_HOST_CONTEXT_GLIC_DELEGATING_SHARING_MANAGER_H_
 #define CHROME_BROWSER_GLIC_HOST_CONTEXT_GLIC_DELEGATING_SHARING_MANAGER_H_
 
+#include "chrome/browser/glic/host/context/glic_pin_candidate_provider.h"
 #include "chrome/browser/glic/public/context/glic_sharing_manager.h"
 
 namespace glic {
@@ -88,9 +89,7 @@ class GlicDelegatingSharingManagerBase : public GlicSharingManager {
       tabs::TabHandle tab_handle,
       const mojom::GetTabContextOptions& options,
       base::OnceCallback<void(GlicGetContextResult)> callback) override;
-  void SubscribeToPinCandidates(
-      mojom::GetPinCandidatesOptionsPtr options,
-      mojo::PendingRemote<mojom::PinCandidatesObserver> observer) override;
+
   void OnConversationTurnSubmitted() override;
   base::WeakPtr<GlicSharingManager> GetWeakPtr() override;
 
@@ -180,7 +179,8 @@ class GlicDelegatingSharingManager : public GlicDelegatingSharingManagerBase {
 // TODO(crbug.com/444463509): Enforce invariant at compile time and move
 // GlicPinnedTabManager out of WeakPtr.
 class GlicStablePinningDelegatingSharingManager
-    : public GlicDelegatingSharingManagerBase {
+    : public GlicDelegatingSharingManagerBase,
+      public GlicPinCandidateProvider {
  public:
   explicit GlicStablePinningDelegatingSharingManager(
       GlicSharingManagerImpl* sharing_manager_delegate);

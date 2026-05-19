@@ -126,6 +126,7 @@ class GlicInstanceImpl : public GlicInstance,
 
   // GlicSharingManagerProvider implementation.
   GlicSharingManager& sharing_manager() override;
+  GlicPinCandidateProvider& pin_candidate_provider() override;
 
   void NotifyInstanceActivationChanged(bool is_active);
   base::Time GetLastActivationTimestamp() const override;

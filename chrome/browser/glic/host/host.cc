@@ -10,9 +10,11 @@
 
 #include "base/containers/to_vector.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/no_destructor.h"
 #include "base/notimplemented.h"
 #include "chrome/browser/glic/fre/glic_fre_controller.h"
 #include "chrome/browser/glic/glic_profile_manager.h"
+#include "chrome/browser/glic/host/context/glic_pin_candidate_provider.h"
 #include "chrome/browser/glic/host/context/glic_screenshot_capturer.h"
 #include "chrome/browser/glic/host/context/glic_sharing_manager_provider.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
@@ -332,6 +334,10 @@ GlicKeyedService& Host::glic_service() {
 
 GlicSharingManager& Host::sharing_manager() {
   return sharing_manager_provider_->sharing_manager();
+}
+
+GlicPinCandidateProvider& Host::pin_candidate_provider() {
+  return sharing_manager_provider_->pin_candidate_provider();
 }
 
 GlicSkillsManager& Host::skills_manager() {

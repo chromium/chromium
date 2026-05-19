@@ -29,6 +29,7 @@
 #include "chrome/browser/glic/host/context/glic_active_pinned_focused_tab_manager.h"
 #include "chrome/browser/glic/host/context/glic_empty_focused_browser_manager.h"
 #include "chrome/browser/glic/host/context/glic_empty_focused_tab_manager.h"
+#include "chrome/browser/glic/host/context/glic_pin_candidate_provider.h"
 #include "chrome/browser/glic/host/context/glic_pinned_tab_manager_impl.h"
 #include "chrome/browser/glic/host/context/glic_screenshot_capturer.h"
 #include "chrome/browser/glic/host/context/glic_sharing_manager_coordinator.h"
@@ -611,6 +612,10 @@ GlicInstanceImpl::EmbedderEntry* GlicInstanceImpl::GetEmbedderEntry(
 
 GlicSharingManager& GlicInstanceImpl::sharing_manager() {
   return sharing_manager_coordinator_.GetActiveSharingManager();
+}
+
+GlicPinCandidateProvider& GlicInstanceImpl::pin_candidate_provider() {
+  return sharing_manager_coordinator_.pin_candidate_provider();
 }
 
 void GlicInstanceImpl::CloseInstanceAndShutdown() {

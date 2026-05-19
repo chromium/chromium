@@ -9,6 +9,8 @@
 
 namespace glic {
 
+class GlicPinCandidateProvider;
+
 // Interface for classes that provide a sharing manager. Sharing managers can be
 // instance-bound, or cross-instance (to retain subscriptions), but this is an
 // implementation detail hidden from the consumer via this provider interface.
@@ -21,6 +23,8 @@ class GlicSharingManagerProvider {
       delete;
 
   virtual GlicSharingManager& sharing_manager() = 0;
+
+  virtual GlicPinCandidateProvider& pin_candidate_provider() = 0;
 };
 
 }  // namespace glic

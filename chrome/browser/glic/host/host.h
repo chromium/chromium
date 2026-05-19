@@ -35,6 +35,7 @@ class WebUIContentsContainer;
 class GlicInstanceMetrics;
 class GlicInstanceMetricsBackwardsCompatibility;
 
+class GlicPinCandidateProvider;
 class GlicSkillsManager;
 
 // The host owns the WebUI that contains the main glic UI and the web client.
@@ -226,6 +227,8 @@ class Host : public GlicSharingManagerProvider {
 
   // GlicSharingManagerProvider Implementation.
   GlicSharingManager& sharing_manager() override;
+
+  GlicPinCandidateProvider& pin_candidate_provider() override;
 
   GlicSkillsManager& skills_manager();
 

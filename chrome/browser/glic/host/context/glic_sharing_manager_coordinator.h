@@ -37,6 +37,10 @@ class GlicSharingManagerCoordinator {
   // internal manager based on current state.
   GlicSharingManager& GetActiveSharingManager();
 
+  GlicPinCandidateProvider& pin_candidate_provider() {
+    return sharing_manager_;
+  }
+
   // Called to update the internal delegate based on state changes.
   void UpdateState(mojom::PanelStateKind panel_state_kind,
                    mojom::WebClientMode interaction_mode);

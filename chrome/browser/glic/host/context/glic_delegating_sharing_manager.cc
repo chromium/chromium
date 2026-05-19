@@ -179,14 +179,6 @@ GlicDelegatingSharingManagerBase::GetPinnedTabs() const {
                                    : std::vector<content::WebContents*>{};
 }
 
-void GlicDelegatingSharingManagerBase::SubscribeToPinCandidates(
-    mojom::GetPinCandidatesOptionsPtr options,
-    mojo::PendingRemote<mojom::PinCandidatesObserver> observer) {
-  // TODO(b:444463509): support dynamic subscription streaming for handling
-  // per-instance sharing manager delegation (e.g. attach/detach).
-  NOTREACHED();
-}
-
 void GlicDelegatingSharingManagerBase::OnConversationTurnSubmitted() {
   if (sharing_manager_delegate_) {
     sharing_manager_delegate_->OnConversationTurnSubmitted();
@@ -364,8 +356,8 @@ void GlicStablePinningDelegatingSharingManager::SubscribeToPinCandidates(
     mojom::GetPinCandidatesOptionsPtr options,
     mojo::PendingRemote<mojom::PinCandidatesObserver> observer) {
   if (GetDelegate()) {
-    GetDelegate()->SubscribeToPinCandidates(std::move(options),
-                                            std::move(observer));
+    static_cast<GlicSharingManagerImpl*>(GetDelegate())
+        ->SubscribeToPinCandidates(std::move(options), std::move(observer));
   }
 }
 

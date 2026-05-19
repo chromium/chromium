@@ -48,6 +48,7 @@
 #include "chrome/browser/glic/glic_profile_manager.h"
 #include "chrome/browser/glic/glic_settings_util.h"
 #include "chrome/browser/glic/host/auth_controller.h"
+#include "chrome/browser/glic/host/context/glic_pin_candidate_provider.h"
 #include "chrome/browser/glic/host/context/glic_tab_data.h"
 #include "chrome/browser/glic/host/context/glic_tab_data_observer.h"
 #include "chrome/browser/glic/host/context/glic_tab_favicon_observer.h"
@@ -1358,8 +1359,8 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
   void SubscribeToPinCandidates(
       mojom::GetPinCandidatesOptionsPtr options,
       mojo::PendingRemote<mojom::PinCandidatesObserver> observer) override {
-    sharing_manager().SubscribeToPinCandidates(std::move(options),
-                                               std::move(observer));
+    host().pin_candidate_provider().SubscribeToPinCandidates(
+        std::move(options), std::move(observer));
   }
 
   void SetOnboardingCompleted() override {

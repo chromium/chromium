@@ -268,11 +268,6 @@ class GlicSharingManager {
       const mojom::GetTabContextOptions& options,
       base::OnceCallback<void(GlicGetContextResult)> callback) = 0;
 
-  // Subscribes to changes in pin candidates.
-  virtual void SubscribeToPinCandidates(
-      mojom::GetPinCandidatesOptionsPtr options,
-      mojo::PendingRemote<mojom::PinCandidatesObserver> observer) = 0;
-
   // Callback for conversation turn submission.
   virtual void OnConversationTurnSubmitted() = 0;
 
