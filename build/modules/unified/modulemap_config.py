@@ -85,6 +85,7 @@ def headers(os):
       Header('limits.h', textual=True),
       # See above comment about limits.h
       Header('linux/limits.h', textual=True),
+      Header('linux/types.h'),
       Header('locale.h'),
       Header('malloc.h', exists=is_win),
       # This needs to be exported on windows.
@@ -97,11 +98,13 @@ def headers(os):
       Header('strings.h'),
       # In an include loop with features.h, but not on android
       Header('sys/cdefs.h', textual=not is_android),
+      Header('sys/procfs.h'),
       Header('sys/select.h'),
       Header('sys/stat.h', exists=is_win),
       Header('sys/time.h'),
       Header('sys/types.h'),
       Header('sys/ucontext.h'),
+      Header('sys/user.h'),
       Header('time.h'),
       Header('unistd.h'),
       # include_next works differently with modules. This makes wchar.h and
