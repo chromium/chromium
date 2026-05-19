@@ -15,6 +15,7 @@ build_webui_tests("build") {
   files = [
     "composebox_audio_animation_test.ts",
     "composebox_drag_drop_test.ts",
+    "composebox_favicon_group_test.ts",
     "composebox_input_placeholder_test.ts",
     "composebox_input_test.ts",
     "composebox_lens_search_test.ts",

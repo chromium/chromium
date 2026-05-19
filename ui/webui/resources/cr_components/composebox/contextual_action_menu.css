@@ -77,6 +77,11 @@
   width: 100%;
 }
 
+composebox-favicon-group {
+  margin-inline-end: 10px;
+  margin-inline-start: auto;
+}
+
 :host([enable-multi-tab-selection_]) .dropdown-item {
   width: 320px;
 }
@@ -167,7 +172,6 @@
   --iron-icon-height: 16px;
   --iron-icon-width: 16px;
   flex-shrink: 0;
-  margin-left: auto;
 }
 
 .share-tabs-flyout {
