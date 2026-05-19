@@ -340,7 +340,7 @@ class InternalStandardStatsObserver : public webrtc::RTCStatsCollectorCallback {
     // We're on the signaling thread.
     DCHECK(!main_thread_->BelongsToCurrentThread());
     PostCrossThreadTask(
-        *main_thread_.get(), FROM_HERE,
+        *main_thread_, FROM_HERE,
         CrossThreadBindOnce(
             &InternalStandardStatsObserver::OnStatsDeliveredOnMainThread,
             scoped_refptr<InternalStandardStatsObserver>(this), report));

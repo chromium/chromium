@@ -314,7 +314,7 @@ RTCDataChannel::RTCDataChannel(
     RegisterObserver();
   }
 
-  IncrementCounters(*channel().get());
+  IncrementCounters(*channel());
 }
 
 RTCDataChannel::~RTCDataChannel() {
@@ -497,7 +497,7 @@ void RTCDataChannel::send(const String& data, ExceptionState& exception_state) {
 
   // Increase the value of the [[BufferedAmount]] slot by the byte size of data.
   buffered_amount_ += data_buffer.size();
-  RecordMessageSent(*channel().get(), data_buffer.size());
+  RecordMessageSent(*channel(), data_buffer.size());
   SendDataBuffer(std::move(data_buffer));
 }
 
@@ -778,7 +778,7 @@ void RTCDataChannel::OnMessage(webrtc::DataBuffer buffer) {
     NOTREACHED();
   } else {
     String text =
-        buffer.data.size() > 0 ? String::FromUtf8(buffer.data) : g_empty_string;
+        !buffer.data.empty() ? String::FromUtf8(buffer.data) : g_empty_string;
     if (!text) {
       LOG(ERROR) << "Failed convert received data to UTF16";
       return;
@@ -809,7 +809,7 @@ void RTCDataChannel::SendRawData(const char* data, size_t length) {
   CHECK(!was_transferred_);
   webrtc::CopyOnWriteBuffer buffer(data, length);
   webrtc::DataBuffer data_buffer(buffer, true);
-  RecordMessageSent(*channel().get(), data_buffer.size());
+  RecordMessageSent(*channel(), data_buffer.size());
 
   if (pending_messages_.empty()) {
     SendDataBuffer(std::move(data_buffer));

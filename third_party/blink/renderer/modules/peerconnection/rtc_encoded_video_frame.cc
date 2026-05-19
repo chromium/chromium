@@ -27,7 +27,7 @@ BASE_FEATURE(kAllowRTCEncodedVideoFrameSetMetadataAllFields,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 namespace {
-static constexpr size_t kMaxNumDependencies = 8;
+constexpr size_t kMaxNumDependencies = 8;
 
 bool IsAllowedSetMetadataChange(
     const RTCEncodedVideoFrameMetadata* original_metadata,

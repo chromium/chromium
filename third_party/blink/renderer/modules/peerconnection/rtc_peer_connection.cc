@@ -2256,7 +2256,7 @@ RTCRtpTransceiver* RTCPeerConnection::CreateOrUpdateTransceiver(
 RTCDtlsTransport* RTCPeerConnection::CreateOrUpdateDtlsTransport(
     webrtc::scoped_refptr<webrtc::DtlsTransportInterface> native_transport,
     const webrtc::DtlsTransportInformation& information) {
-  if (!native_transport.get()) {
+  if (!native_transport) {
     return nullptr;
   }
   auto& transport = dtls_transports_by_native_transport_
@@ -2274,7 +2274,7 @@ RTCDtlsTransport* RTCPeerConnection::CreateOrUpdateDtlsTransport(
 
 RTCIceTransport* RTCPeerConnection::CreateOrUpdateIceTransport(
     webrtc::scoped_refptr<webrtc::IceTransportInterface> ice_transport) {
-  if (!ice_transport.get()) {
+  if (!ice_transport) {
     return nullptr;
   }
   auto& transport =

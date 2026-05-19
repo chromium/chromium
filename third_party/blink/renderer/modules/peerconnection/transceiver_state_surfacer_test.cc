@@ -94,7 +94,7 @@ class TransceiverStateSurfacerTest : public ::testing::Test {
             CreateWebRtcReceiver(remote_track_id, remote_stream_id),
             std::nullopt, false, webrtc::RtpTransceiverDirection::kSendRecv,
             std::nullopt));
-    if (transport.get()) {
+    if (transport) {
       transceiver->SetTransport(transport);
     }
     return transceiver;

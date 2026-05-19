@@ -101,7 +101,7 @@ void WebRtcMediaStreamTrackAdapterTraits::Destruct(
     const WebRtcMediaStreamTrackAdapter* adapter) {
   if (!adapter->main_thread_->BelongsToCurrentThread()) {
     PostCrossThreadTask(
-        *adapter->main_thread_.get(), FROM_HERE,
+        *adapter->main_thread_, FROM_HERE,
         CrossThreadBindOnce(&WebRtcMediaStreamTrackAdapterTraits::Destruct,
                             CrossThreadUnretained(adapter)));
     return;
@@ -245,7 +245,7 @@ void WebRtcMediaStreamTrackAdapter::InitializeRemoteAudioTrack(
   webrtc_audio_track->GetSource()->SetVolume(0);
   remote_track_can_complete_initialization_.Signal();
   PostCrossThreadTask(
-      *main_thread_.get(), FROM_HERE,
+      *main_thread_, FROM_HERE,
       CrossThreadBindOnce(&WebRtcMediaStreamTrackAdapter::
                               FinalizeRemoteTrackInitializationOnMainThread,
                           WrapRefCounted(this)));
@@ -264,7 +264,7 @@ void WebRtcMediaStreamTrackAdapter::InitializeRemoteVideoTrack(
   webrtc_track_ = webrtc_video_track;
   remote_track_can_complete_initialization_.Signal();
   PostCrossThreadTask(
-      *main_thread_.get(), FROM_HERE,
+      *main_thread_, FROM_HERE,
       CrossThreadBindOnce(&WebRtcMediaStreamTrackAdapter::
                               FinalizeRemoteTrackInitializationOnMainThread,
                           WrapRefCounted(this)));
@@ -353,7 +353,7 @@ void WebRtcMediaStreamTrackAdapter::
   DCHECK(remote_audio_track_adapter_);
   remote_audio_track_adapter_->Unregister();
   PostCrossThreadTask(
-      *main_thread_.get(), FROM_HERE,
+      *main_thread_, FROM_HERE,
       CrossThreadBindOnce(&WebRtcMediaStreamTrackAdapter::
                               FinalizeRemoteTrackDisposingOnMainThread,
                           WrapRefCounted(this)));

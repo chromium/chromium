@@ -503,7 +503,7 @@ class RTCPeerConnectionHandler::Observer
   void OnWebRtcEventLogWrite(const Vector<uint8_t>& output) override {
     if (!main_thread_->BelongsToCurrentThread()) {
       PostCrossThreadTask(
-          *main_thread_.get(), FROM_HERE,
+          *main_thread_, FROM_HERE,
           CrossThreadBindOnce(
               &RTCPeerConnectionHandler::Observer::OnWebRtcEventLogWrite,
               WrapCrossThreadPersistent(this), output));
@@ -515,7 +515,7 @@ class RTCPeerConnectionHandler::Observer
   void OnWebRtcDataChannelLogWrite(const Vector<uint8_t>& output) override {
     if (!main_thread_->BelongsToCurrentThread()) {
       PostCrossThreadTask(
-          *main_thread_.get(), FROM_HERE,
+          *main_thread_, FROM_HERE,
           CrossThreadBindOnce(
               &RTCPeerConnectionHandler::Observer::OnWebRtcDataChannelLogWrite,
               WrapCrossThreadPersistent(this), output));
@@ -535,7 +535,7 @@ class RTCPeerConnectionHandler::Observer
   void OnDataChannel(
       webrtc::scoped_refptr<DataChannelInterface> data_channel) override {
     PostCrossThreadTask(
-        *main_thread_.get(), FROM_HERE,
+        *main_thread_, FROM_HERE,
         CrossThreadBindOnce(
             &RTCPeerConnectionHandler::Observer::OnDataChannelImpl,
             WrapCrossThreadPersistent(this), data_channel));
@@ -544,7 +544,7 @@ class RTCPeerConnectionHandler::Observer
   void OnNegotiationNeededEvent(uint32_t event_id) override {
     if (!main_thread_->BelongsToCurrentThread()) {
       PostCrossThreadTask(
-          *main_thread_.get(), FROM_HERE,
+          *main_thread_, FROM_HERE,
           CrossThreadBindOnce(
               &RTCPeerConnectionHandler::Observer::OnNegotiationNeededEvent,
               WrapCrossThreadPersistent(this), event_id));
@@ -559,7 +559,7 @@ class RTCPeerConnectionHandler::Observer
       PeerConnectionInterface::IceConnectionState new_state) override {
     if (!main_thread_->BelongsToCurrentThread()) {
       PostCrossThreadTask(
-          *main_thread_.get(), FROM_HERE,
+          *main_thread_, FROM_HERE,
           CrossThreadBindOnce(&RTCPeerConnectionHandler::Observer::
                                   OnStandardizedIceConnectionChange,
                               WrapCrossThreadPersistent(this), new_state));
@@ -572,7 +572,7 @@ class RTCPeerConnectionHandler::Observer
       PeerConnectionInterface::PeerConnectionState new_state) override {
     if (!main_thread_->BelongsToCurrentThread()) {
       PostCrossThreadTask(
-          *main_thread_.get(), FROM_HERE,
+          *main_thread_, FROM_HERE,
           CrossThreadBindOnce(
               &RTCPeerConnectionHandler::Observer::OnConnectionChange,
               WrapCrossThreadPersistent(this), new_state));
@@ -585,7 +585,7 @@ class RTCPeerConnectionHandler::Observer
       PeerConnectionInterface::IceGatheringState new_state) override {
     if (!main_thread_->BelongsToCurrentThread()) {
       PostCrossThreadTask(
-          *main_thread_.get(), FROM_HERE,
+          *main_thread_, FROM_HERE,
           CrossThreadBindOnce(
               &RTCPeerConnectionHandler::Observer::OnIceGatheringChange,
               WrapCrossThreadPersistent(this), new_state));
@@ -616,7 +616,7 @@ class RTCPeerConnectionHandler::Observer
             native_peer_connection_->current_remote_description());
 
     PostCrossThreadTask(
-        *main_thread_.get(), FROM_HERE,
+        *main_thread_, FROM_HERE,
         CrossThreadBindOnce(
             &RTCPeerConnectionHandler::Observer::OnIceCandidateImpl,
             WrapCrossThreadPersistent(this), String::FromUtf8(sdp),
@@ -637,7 +637,7 @@ class RTCPeerConnectionHandler::Observer
                            int error_code,
                            const std::string& error_text) override {
     PostCrossThreadTask(
-        *main_thread_.get(), FROM_HERE,
+        *main_thread_, FROM_HERE,
         CrossThreadBindOnce(
             &RTCPeerConnectionHandler::Observer::OnIceCandidateErrorImpl,
             WrapCrossThreadPersistent(this),
@@ -703,7 +703,7 @@ class RTCPeerConnectionHandler::Observer
 
   void OnInterestingUsage(int usage_pattern) override {
     PostCrossThreadTask(
-        *main_thread_.get(), FROM_HERE,
+        *main_thread_, FROM_HERE,
         CrossThreadBindOnce(
             &RTCPeerConnectionHandler::Observer::OnInterestingUsageImpl,
             WrapCrossThreadPersistent(this), usage_pattern));
@@ -895,7 +895,7 @@ bool RTCPeerConnectionHandler::Initialize(
       MakeGarbageCollected<Observer>(weak_factory_.GetWeakPtr(), task_runner_);
   native_peer_connection_ = dependency_factory_->CreatePeerConnection(
       configuration_, frame_, peer_connection_observer_, exception_state);
-  if (!native_peer_connection_.get()) {
+  if (!native_peer_connection_) {
     LOG(ERROR) << "Failed to initialize native PeerConnection.";
     return false;
   }
@@ -929,7 +929,7 @@ bool RTCPeerConnectionHandler::InitializeForTest(
 
   native_peer_connection_ = dependency_factory_->CreatePeerConnection(
       configuration_, nullptr, peer_connection_observer_, exception_state);
-  if (!native_peer_connection_.get()) {
+  if (!native_peer_connection_) {
     LOG(ERROR) << "Failed to initialize native PeerConnection.";
     return false;
   }
@@ -1048,7 +1048,7 @@ void RTCPeerConnectionHandler::SetLocalDescription(
                           .get());
 
   PostCrossThreadTask(
-      *signaling_thread().get(), FROM_HERE,
+      *signaling_thread(), FROM_HERE,
       CrossThreadBindOnce(
           &RunClosureWithTrace,
           CrossThreadBindOnce(
@@ -1123,7 +1123,7 @@ void RTCPeerConnectionHandler::SetLocalDescription(
                           .get());
 
   PostCrossThreadTask(
-      *signaling_thread().get(), FROM_HERE,
+      *signaling_thread(), FROM_HERE,
       CrossThreadBindOnce(
           &RunClosureWithTrace,
           CrossThreadBindOnce(
@@ -1200,7 +1200,7 @@ void RTCPeerConnectionHandler::SetRemoteDescription(
                           .get());
 
   PostCrossThreadTask(
-      *signaling_thread().get(), FROM_HERE,
+      *signaling_thread(), FROM_HERE,
       CrossThreadBindOnce(
           &RunClosureWithTrace,
           CrossThreadBindOnce(
@@ -1403,7 +1403,7 @@ void RTCPeerConnectionHandler::EmitCurrentStateForTracker() {
 void RTCPeerConnectionHandler::GetStats(RTCStatsReportCallback callback) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
   PostCrossThreadTask(
-      *signaling_thread().get(), FROM_HERE,
+      *signaling_thread(), FROM_HERE,
       CrossThreadBindOnce(&GetRTCStatsOnSignalingThread, task_runner_,
                           native_peer_connection_,
                           CrossThreadBindOnce(std::move(callback))));
@@ -1441,10 +1441,10 @@ RTCPeerConnectionHandler::AddTransceiverWithTrack(
   std::unique_ptr<RTCRtpTransceiverPlatform> platform_transceiver =
       std::move(transceiver);
   if (peer_connection_tracker_) {
-    size_t transceiver_index = GetTransceiverIndex(*platform_transceiver.get());
+    size_t transceiver_index = GetTransceiverIndex(*platform_transceiver);
     peer_connection_tracker_->TrackAddTransceiver(
         this, PeerConnectionTracker::TransceiverUpdatedReason::kAddTransceiver,
-        *platform_transceiver.get(), transceiver_index);
+        *platform_transceiver, transceiver_index);
   }
   return platform_transceiver;
 }
@@ -1504,10 +1504,10 @@ RTCPeerConnectionHandler::AddTransceiverWithKind(
   std::unique_ptr<RTCRtpTransceiverPlatform> platform_transceiver =
       std::move(transceiver);
   if (peer_connection_tracker_) {
-    size_t transceiver_index = GetTransceiverIndex(*platform_transceiver.get());
+    size_t transceiver_index = GetTransceiverIndex(*platform_transceiver);
     peer_connection_tracker_->TrackAddTransceiver(
         this, PeerConnectionTracker::TransceiverUpdatedReason::kAddTransceiver,
-        *platform_transceiver.get(), transceiver_index);
+        *platform_transceiver, transceiver_index);
   }
   return std::move(platform_transceiver);
 }
@@ -1578,10 +1578,10 @@ RTCPeerConnectionHandler::AddTrack(
       std::move(transceiver_state), blink::TransceiverStateUpdateMode::kAll);
   platform_transceiver = std::move(transceiver);
   if (peer_connection_tracker_) {
-    size_t transceiver_index = GetTransceiverIndex(*platform_transceiver.get());
+    size_t transceiver_index = GetTransceiverIndex(*platform_transceiver);
     peer_connection_tracker_->TrackAddTransceiver(
         this, PeerConnectionTracker::TransceiverUpdatedReason::kAddTrack,
-        *platform_transceiver.get(), transceiver_index);
+        *platform_transceiver, transceiver_index);
   }
   for (const auto& stream_id : rtp_senders_.back()->state().stream_ids()) {
     if (GetLocalStreamUsageCount(rtp_senders_, stream_id) == 1u) {
@@ -1665,7 +1665,7 @@ RTCPeerConnectionHandler::RemoveTrack(blink::RTCRtpSenderPlatform* web_sender) {
     size_t transceiver_index = GetTransceiverIndex(*transceiver);
     peer_connection_tracker_->TrackModifyTransceiver(
         this, PeerConnectionTracker::TransceiverUpdatedReason::kRemoveTrack,
-        *transceiver.get(), transceiver_index);
+        *transceiver, transceiver_index);
   }
   std::unique_ptr<RTCRtpTransceiverPlatform> platform_transceiver =
       std::move(transceiver);
@@ -1806,7 +1806,7 @@ void RTCPeerConnectionHandler::Close() {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
   DVLOG(1) << "RTCPeerConnectionHandler::stop";
 
-  if (is_closed_ || !native_peer_connection_.get()) {
+  if (is_closed_ || !native_peer_connection_) {
     return;  // Already stopped.
   }
 
@@ -1831,7 +1831,7 @@ void RTCPeerConnectionHandler::RunSynchronousOnceClosureOnSignalingThread(
     const char* trace_event_name) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
   scoped_refptr<base::SingleThreadTaskRunner> thread(signaling_thread());
-  if (!thread.get() || thread->BelongsToCurrentThread()) {
+  if (!thread || thread->BelongsToCurrentThread()) {
     TRACE_EVENT0("webrtc", trace_event_name);
     std::move(closure).Run();
   } else {
@@ -2014,12 +2014,10 @@ void RTCPeerConnectionHandler::OnModifyTransceivers(
       size_t transceiver_index = GetTransceiverIndex(*platform_transceivers[i]);
       if (transceiver_is_new) {
         peer_connection_tracker_->TrackAddTransceiver(
-            this, update_reason, *platform_transceivers[i].get(),
-            transceiver_index);
+            this, update_reason, *platform_transceivers[i], transceiver_index);
       } else if (transceiver_was_modified) {
         peer_connection_tracker_->TrackModifyTransceiver(
-            this, update_reason, *platform_transceivers[i].get(),
-            transceiver_index);
+            this, update_reason, *platform_transceivers[i], transceiver_index);
       }
     }
   }

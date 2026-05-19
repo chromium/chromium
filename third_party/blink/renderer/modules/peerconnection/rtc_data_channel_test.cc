@@ -169,7 +169,7 @@ class MockDataChannel : public webrtc::DataChannelInterface {
         std::move(on_complete));
 
     PostCrossThreadTask(
-        *signaling_thread_.get(), FROM_HERE,
+        *signaling_thread_, FROM_HERE,
         CrossThreadBindOnce(
             [](MockDataChannel* channel, uint64_t buffer_size,
                absl::AnyInvocable<void(webrtc::RTCError) &&>* adapter) {

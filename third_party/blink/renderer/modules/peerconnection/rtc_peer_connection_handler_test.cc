@@ -548,12 +548,12 @@ class RTCPeerConnectionHandlerTest : public SimTest {
       const webrtc::scoped_refptr<webrtc::MediaStreamInterface>& remote_stream,
       const std::vector<std::unique_ptr<RTCRtpReceiverPlatform>>& receivers) {
     for (const auto& audio_track : remote_stream->GetAudioTracks()) {
-      if (!HasReceiverForTrack(*audio_track.get(), receivers)) {
+      if (!HasReceiverForTrack(*audio_track, receivers)) {
         return false;
       }
     }
     for (const auto& video_track : remote_stream->GetAudioTracks()) {
-      if (!HasReceiverForTrack(*video_track.get(), receivers)) {
+      if (!HasReceiverForTrack(*video_track, receivers)) {
         return false;
       }
     }

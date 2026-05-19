@@ -168,7 +168,7 @@ void MediaStreamVideoWebRtcSink::WebRtcVideoSourceAdapter::OnVideoFrameOnIO(
     base::TimeTicks estimated_capture_time) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(io_sequence_checker_);
   PostCrossThreadTask(
-      *libjingle_network_task_runner_.get(), FROM_HERE,
+      *libjingle_network_task_runner_, FROM_HERE,
       CrossThreadBindOnce(
           &WebRtcVideoSourceAdapter::OnVideoFrameOnNetworkThread,
           WrapRefCounted(this), std::move(frame)));
@@ -179,7 +179,7 @@ void MediaStreamVideoWebRtcSink::WebRtcVideoSourceAdapter::
   DCHECK_CALLED_ON_VALID_SEQUENCE(io_sequence_checker_);
   DVLOG(1) << __func__;
   PostCrossThreadTask(
-      *libjingle_network_task_runner_.get(), FROM_HERE,
+      *libjingle_network_task_runner_, FROM_HERE,
       CrossThreadBindOnce(
           &WebRtcVideoSourceAdapter::OnNotifyVideoFrameDroppedOnNetworkThread,
           WrapRefCounted(this)));
