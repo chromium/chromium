@@ -51,6 +51,31 @@ TEST_F(AutofillDataExtractionUtilsTest, GetRedactionReason_CreditCardFields) {
             AutofillFieldRedactionReason::kShouldRedactForPayments);
 }
 
+// Tests that OTP fields are correctly identified as needing redaction.
+TEST_F(AutofillDataExtractionUtilsTest, GetRedactionReason_OtpFields) {
+  autofill::FieldTypeSet field_types;
+  field_types.insert(autofill::ONE_TIME_CODE);
+
+  EXPECT_EQ(GetRedactionReason(field_types),
+            AutofillFieldRedactionReason::kShouldRedactForOtp);
+
+  // Redaction should apply even if mixed with a safe field like name.
+  field_types.clear();
+  field_types.insert(autofill::NAME_FIRST);
+  field_types.insert(autofill::ONE_TIME_CODE);
+
+  EXPECT_EQ(GetRedactionReason(field_types),
+            AutofillFieldRedactionReason::kShouldRedactForOtp);
+
+  // Payments wins over OTP.
+  field_types.clear();
+  field_types.insert(autofill::ONE_TIME_CODE);
+  field_types.insert(autofill::CREDIT_CARD_NUMBER);
+
+  EXPECT_EQ(GetRedactionReason(field_types),
+            AutofillFieldRedactionReason::kShouldRedactForPayments);
+}
+
 // Tests that normal fields don't require redaction.
 TEST_F(AutofillDataExtractionUtilsTest, GetRedactionReason_NormalFields) {
   autofill::FieldTypeSet field_types;
@@ -89,6 +114,18 @@ TEST_F(AutofillDataExtractionUtilsTest, ConvertAutofillFieldRedactionReason) {
                 AutofillFieldRedactionReason::kShouldRedactForPayments),
             optimization_guide::proto::
                 REDACTION_DECISION_REDACTED_IS_SENSITIVE_PAYMENT_FIELD);
+
+  // OTP Redaction on an empty field.
+  EXPECT_EQ(
+      ConvertAutofillFieldRedactionReason(
+          empty_form_data, AutofillFieldRedactionReason::kShouldRedactForOtp),
+      optimization_guide::proto::REDACTION_DECISION_UNREDACTED_EMPTY_OTP_FIELD);
+
+  // OTP Redaction on a filled field.
+  EXPECT_EQ(ConvertAutofillFieldRedactionReason(
+                populated_form_data,
+                AutofillFieldRedactionReason::kShouldRedactForOtp),
+            optimization_guide::proto::REDACTION_DECISION_REDACTED_IS_OTP);
 }
 
 // Tests that ShouldRedactContent matches the expected conditions.
@@ -108,6 +145,9 @@ TEST_F(AutofillDataExtractionUtilsTest, ShouldRedactContent) {
       ShouldRedactContent(optimization_guide::proto::
                               REDACTION_DECISION_UNREDACTED_EMPTY_PAYMENT_FIELD,
                           context));
+  EXPECT_FALSE(ShouldRedactContent(
+      optimization_guide::proto::REDACTION_DECISION_UNREDACTED_EMPTY_OTP_FIELD,
+      context));
   // Where redaction is needed.
   EXPECT_TRUE(ShouldRedactContent(
       optimization_guide::proto::REDACTION_DECISION_REDACTED_HAS_BEEN_PASSWORD,
@@ -116,6 +156,8 @@ TEST_F(AutofillDataExtractionUtilsTest, ShouldRedactContent) {
       optimization_guide::proto::
           REDACTION_DECISION_REDACTED_IS_SENSITIVE_PAYMENT_FIELD,
       context));
+  EXPECT_TRUE(ShouldRedactContent(
+      optimization_guide::proto::REDACTION_DECISION_REDACTED_IS_OTP, context));
 
   // Test that redaction is not applied when disabled.
   context.extract_autofill_credit_card_redactions = false;

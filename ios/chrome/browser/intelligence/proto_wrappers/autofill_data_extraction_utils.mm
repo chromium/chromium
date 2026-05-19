@@ -137,7 +137,6 @@ AutofillFieldRedactionReason GetRedactionReason(
     case autofill::NOT_USERNAME:
     case autofill::IBAN_VALUE:
     case autofill::NUMERIC_QUANTITY:
-    case autofill::ONE_TIME_CODE:
     case autofill::DELIVERY_INSTRUCTIONS:
     case autofill::LOYALTY_MEMBERSHIP_ID:
     case autofill::PASSPORT_NUMBER:
@@ -173,6 +172,10 @@ AutofillFieldRedactionReason GetRedactionReason(
     case autofill::ORDER_MERCHANT_NAME:
     case autofill::SHIPMENT_TRACKING_NUMBER:
       return AutofillFieldRedactionReason::kNoRedactionNeeded;
+
+    // OTPs are sensitive short-lived secrets and should be redacted.
+    case autofill::ONE_TIME_CODE:
+      return AutofillFieldRedactionReason::kShouldRedactForOtp;
 
     // These cases are not produced by field classification, but have to be
     // handled so that the switch is complete.
@@ -218,6 +221,7 @@ AutofillFieldRedactionReason GetRedactionReason(
         GetRedactionReason(field_type);
     switch (redaction_reason) {
       case AutofillFieldRedactionReason::kShouldRedactForPayments:
+      case AutofillFieldRedactionReason::kShouldRedactForOtp:
         return redaction_reason;
       case AutofillFieldRedactionReason::kNoRedactionNeeded:
         continue;
@@ -241,6 +245,12 @@ ConvertAutofillFieldRedactionReason(
                        REDACTION_DECISION_UNREDACTED_EMPTY_PAYMENT_FIELD
                  : optimization_guide::proto::
                        REDACTION_DECISION_REDACTED_IS_SENSITIVE_PAYMENT_FIELD;
+    case AutofillFieldRedactionReason::kShouldRedactForOtp:
+      return form_control_data.field_value().empty()
+                 ? optimization_guide::proto::
+                       REDACTION_DECISION_UNREDACTED_EMPTY_OTP_FIELD
+                 : optimization_guide::proto::
+                       REDACTION_DECISION_REDACTED_IS_OTP;
   }
 }
 
@@ -253,10 +263,13 @@ bool ShouldRedactContent(
         REDACTION_DECISION_UNREDACTED_EMPTY_PASSWORD:
     case optimization_guide::proto::
         REDACTION_DECISION_UNREDACTED_EMPTY_PAYMENT_FIELD:
+    case optimization_guide::proto::
+        REDACTION_DECISION_UNREDACTED_EMPTY_OTP_FIELD:
       return false;
 
     case optimization_guide::proto::
         REDACTION_DECISION_REDACTED_HAS_BEEN_PASSWORD:
+    case optimization_guide::proto::REDACTION_DECISION_REDACTED_IS_OTP:
       return true;
 
     case optimization_guide::proto::

@@ -28,6 +28,7 @@ class WebState;
 enum class AutofillFieldRedactionReason {
   kNoRedactionNeeded,
   kShouldRedactForPayments,
+  kShouldRedactForOtp,
 };
 
 // Context passed to APC extraction functions containing information required to
