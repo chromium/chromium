@@ -124,13 +124,17 @@
   border-radius: var(--expanded-border-radius);
 }
 
+:host([energy-effect-enabled]) {
+  --box-shadow-energy-effect: 0 4px 18px -2px rgba(60, 64, 67, 0.12);
+  box-shadow: none;
+}
+
 :host([energy-effect-animation-enabled]) {
   /* Energy Effect Motion Curves */
   --emphasized-accelerate-curve: cubic-bezier(0.3, 0, 0.8, 0.15);
   --standard-decelerate-curve: cubic-bezier(0, 0, 0, 1);
 
   /* Energy Effect Box Shadow */
-  --box-shadow-energy-effect: 0 4px 18px -2px rgba(60, 64, 67, 0.12);
   --box-shadow-energy-effect-no-alpha: 0 4px 18px -2px rgba(60, 64, 67, 0);
   --box-shadow-animation-duration: 650ms;
 
@@ -233,7 +237,7 @@ search-animated-glow {
   min-height: calc(136px + 52px);
 }
 
-:host([energy-effect-animation-enabled]) #composebox {
+:host([energy-effect-enabled]) #composebox {
   box-shadow: var(--box-shadow-energy-effect);
 }
 
