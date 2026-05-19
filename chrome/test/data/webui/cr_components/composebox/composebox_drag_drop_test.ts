@@ -201,17 +201,20 @@ suite('DragAndDropHandler', () => {
 // --- SUITE 2: Integration Tests for the Element ---
 suite('ComposeboxDragAndDrop', () => {
   let composeboxElement: ComposeboxElement;
+  let pageHandler: TestMock<PageHandlerRemote>;
   let searchboxHandler: TestMock<SearchboxPageHandlerRemote>;
   let windowProxy: TestMock<WindowProxy>;
 
   setup(() => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     // Set up ComposeboxProxyImpl
-    installMock(
+    pageHandler = installMock(
         PageHandlerRemote,
         mock => ComposeboxProxyImpl.setInstance(new ComposeboxProxyImpl(
             mock, new PageCallbackRouter(), new SearchboxPageHandlerRemote(),
             new SearchboxPageCallbackRouter())));
+    pageHandler.setResultFor(
+        'getSmartTabSharingActive', Promise.resolve({active: false}));
     searchboxHandler = installMock(
         SearchboxPageHandlerRemote,
         mock => ComposeboxProxyImpl.getInstance().searchboxHandler = mock);
@@ -255,6 +258,7 @@ suite('ComposeboxDragAndDrop', () => {
     });
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     searchboxHandler.reset();
+    pageHandler.reset();
   });
 
   async function createComposeboxElement() {
