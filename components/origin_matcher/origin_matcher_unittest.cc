@@ -5,7 +5,6 @@
 #include "components/origin_matcher/origin_matcher.h"
 
 #include "base/test/scoped_feature_list.h"
-#include "components/origin_matcher/features.h"
 #include "components/origin_matcher/origin_matcher_internal.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -407,8 +406,6 @@ TEST_F(OriginMatcherTest, SerializeAndDeserializeValidWildcard) {
 }
 
 TEST_F(OriginMatcherTest, CopyAndAssign) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(kOriginMatcherNewCopyAssignment);
 
   OriginMatcher matcher;
   EXPECT_TRUE(matcher.AddRuleFromString("*"));
