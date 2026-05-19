@@ -22,6 +22,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
+import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.omnibox.R;
@@ -62,6 +63,7 @@ public class BottomSheetRectProviderUnitTest {
     @Test
     public void testOnLayoutChange_updatesRect() {
         mProvider.onLayoutChange(mAnchorView, 0, 0, 100, 100, 0, 0, 0, 0);
+        ShadowLooper.idleMainLooper();
         Rect r = mProvider.getRect();
         assertEquals("Rect top should equal bottom", r.top, r.bottom);
         var windowMetrics =
@@ -82,6 +84,7 @@ public class BottomSheetRectProviderUnitTest {
         // The window width is 800dp. Max width is 600dp.
         // Trigger updateRect via layout change.
         mProvider.onLayoutChange(mAnchorView, 0, 0, 800, 1000, 0, 0, 0, 0);
+        ShadowLooper.idleMainLooper();
         Rect r = mProvider.getRect();
 
         int expectedMaxWidthPx =

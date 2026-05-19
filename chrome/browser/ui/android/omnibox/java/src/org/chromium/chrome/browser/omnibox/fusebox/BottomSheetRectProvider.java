@@ -10,6 +10,8 @@ import android.view.View;
 
 import androidx.window.layout.WindowMetricsCalculator;
 
+import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.ui.widget.RectProvider;
@@ -84,6 +86,6 @@ class BottomSheetRectProvider extends RectProvider implements View.OnLayoutChang
             int oldTop,
             int oldRight,
             int oldBottom) {
-        updateRect();
+        PostTask.postTask(TaskTraits.UI_DEFAULT, this::updateRect);
     }
 }
