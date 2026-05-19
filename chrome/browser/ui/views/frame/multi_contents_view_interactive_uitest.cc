@@ -627,7 +627,7 @@ IN_PROC_BROWSER_TEST_P(MultiContentsViewUiTest, MAYBE_ResizesViaKeyboard) {
       CheckResizeKey(
           decrease_start_size_key,
           base::BindRepeating([](double start_size, double end_size) {
-            return start_size > end_size;
+            return start_size < end_size;
           })));
 }
 
