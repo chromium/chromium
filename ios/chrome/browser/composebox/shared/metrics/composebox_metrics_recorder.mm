@@ -9,6 +9,7 @@
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/user_metrics.h"
 #import "base/notreached.h"
+#import "components/contextual_search/contextual_search_metrics_recorder.h"
 
 namespace {
 
@@ -64,6 +65,45 @@ std::string GetStringForInputItemType(ComposeboxMetricsAttachmentType type) {
   }
 }
 
+/// Converts FuseboxAttachmentButtonType to ContextualSearchAttachmentButtonType
+contextual_search::ContextualSearchAttachmentButtonType
+ContextualSearchAttachmentButtonTypeFromFuseboxButtonType(
+    FuseboxAttachmentButtonType buttonType) {
+  switch (buttonType) {
+    case FuseboxAttachmentButtonType::kCurrentTab:
+      return contextual_search::ContextualSearchAttachmentButtonType::
+          kCurrentTab;
+    case FuseboxAttachmentButtonType::kTabPicker:
+      return contextual_search::ContextualSearchAttachmentButtonType::
+          kTabPicker;
+    case FuseboxAttachmentButtonType::kCamera:
+      return contextual_search::ContextualSearchAttachmentButtonType::kCamera;
+    case FuseboxAttachmentButtonType::kGallery:
+      return contextual_search::ContextualSearchAttachmentButtonType::kGallery;
+    case FuseboxAttachmentButtonType::kFiles:
+      return contextual_search::ContextualSearchAttachmentButtonType::kFiles;
+    case FuseboxAttachmentButtonType::kClipboard:
+      return contextual_search::ContextualSearchAttachmentButtonType::
+          kClipboard;
+    case FuseboxAttachmentButtonType::kSuggestedTab:
+      return contextual_search::ContextualSearchAttachmentButtonType::
+          kSuggestedTab;
+  }
+}
+
+/// Converts ComposeboxMetricsAttachmentType to lens::MimeType.
+lens::MimeType MimeTypeFromMetricsAttachmentType(
+    ComposeboxMetricsAttachmentType type) {
+  switch (type) {
+    case ComposeboxMetricsAttachmentType::kTab:
+      return lens::MimeType::kAnnotatedPageContent;
+    case ComposeboxMetricsAttachmentType::kImage:
+      return lens::MimeType::kImage;
+    case ComposeboxMetricsAttachmentType::kRawFile:
+      return lens::MimeType::kPdf;
+  }
+}
+
 }  // namespace
 
 @implementation ComposeboxMetricsRecorder {
@@ -79,6 +119,10 @@ std::string GetStringForInputItemType(ComposeboxMetricsAttachmentType type) {
 - (void)recordAttachmentButtonShown:(FuseboxAttachmentButtonType)buttonType {
   base::UmaHistogramEnumeration("Omnibox.MobileFusebox.AttachmentButtonShown",
                                 buttonType);
+  if (_contextualSearchMetricsRecorder) {
+    _contextualSearchMetricsRecorder->RecordAttachmentButtonShown(
+        ContextualSearchAttachmentButtonTypeFromFuseboxButtonType(buttonType));
+  }
 }
 
 - (void)recordAttachmentButtonsUsageInSession {
@@ -96,6 +140,10 @@ std::string GetStringForInputItemType(ComposeboxMetricsAttachmentType type) {
   base::UmaHistogramEnumeration("Omnibox.MobileFusebox.AttachmentButtonUsed",
                                 buttonType);
   _usedAttachmentButtonTypes.insert(static_cast<int>(buttonType));
+  if (_contextualSearchMetricsRecorder) {
+    _contextualSearchMetricsRecorder->RecordAttachmentButtonUsed(
+        ContextualSearchAttachmentButtonTypeFromFuseboxButtonType(buttonType));
+  }
 }
 
 - (void)recordDragAndDropAttempt:(ComposeboxDragAndDropType)type {
@@ -107,6 +155,9 @@ std::string GetStringForInputItemType(ComposeboxMetricsAttachmentType type) {
 - (void)recordAttachmentsMenuShown:(BOOL)shown {
   base::UmaHistogramBoolean("Omnibox.MobileFusebox.AttachmentsPopupToggled",
                             shown);
+  if (_contextualSearchMetricsRecorder) {
+    _contextualSearchMetricsRecorder->RecordAttachmentsMenuToggled(shown);
+  }
 }
 
 - (void)recordAutocompleteRequestTypeAtAbandon:
@@ -124,6 +175,11 @@ std::string GetStringForInputItemType(ComposeboxMetricsAttachmentType type) {
 - (void)recordTabPickerTabsAttached:(NSUInteger)count {
   base::UmaHistogramCounts100("Omnibox.MobileFusebox.TabPickerTabsAttached",
                               count);
+  if (_contextualSearchMetricsRecorder) {
+    _contextualSearchMetricsRecorder->RecordFilePickedCount(
+        contextual_search::ContextualSearchAttachmentButtonType::kTabPicker,
+        count);
+  }
 }
 
 - (void)recordAttachCountAtSubmission:(NSUInteger)count
@@ -132,14 +188,27 @@ std::string GetStringForInputItemType(ComposeboxMetricsAttachmentType type) {
       "Omnibox.MobileFusebox.AttachmentCountAtSubmission.";
   histogram_name += GetStringForInputItemType(type);
   base::UmaHistogramCounts100(histogram_name, count);
+  if (_contextualSearchMetricsRecorder) {
+    _contextualSearchMetricsRecorder->RecordAttachmentCountAtSubmission(
+        MimeTypeFromMetricsAttachmentType(type), count);
+  }
 }
 
 - (void)recordImagesAttached:(NSUInteger)count {
   base::UmaHistogramCounts100("Omnibox.MobileFusebox.ImagesAttached", count);
+  if (_contextualSearchMetricsRecorder) {
+    _contextualSearchMetricsRecorder->RecordFilePickedCount(
+        contextual_search::ContextualSearchAttachmentButtonType::kGallery,
+        count);
+  }
 }
 
 - (void)recordFilesAttached:(NSUInteger)count {
   base::UmaHistogramCounts100("Omnibox.MobileFusebox.FilesAttached", count);
+  if (_contextualSearchMetricsRecorder) {
+    _contextualSearchMetricsRecorder->RecordFilePickedCount(
+        contextual_search::ContextualSearchAttachmentButtonType::kFiles, count);
+  }
 }
 
 - (void)recordComposeboxFocusResultedInNavigation:(BOOL)navigation

@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/composebox/shared/metrics/composebox_metrics_recorder.h"
 
 #import "base/test/metrics/histogram_tester.h"
+#import "components/contextual_search/contextual_search_metrics_recorder.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
@@ -13,9 +14,15 @@ class ComposeboxMetricsRecorderTest : public PlatformTest {
  protected:
   ComposeboxMetricsRecorderTest() {
     recorder_ = [[ComposeboxMetricsRecorder alloc] init];
+    cxx_recorder_ =
+        std::make_unique<contextual_search::ContextualSearchMetricsRecorder>(
+            contextual_search::ContextualSearchSource::kUnknown);
+    recorder_.contextualSearchMetricsRecorder = cxx_recorder_.get();
   }
 
   ComposeboxMetricsRecorder* recorder_;
+  std::unique_ptr<contextual_search::ContextualSearchMetricsRecorder>
+      cxx_recorder_;
   base::HistogramTester histogram_tester_;
 };
 
@@ -31,6 +38,11 @@ TEST_F(ComposeboxMetricsRecorderTest, AttachmentButtonShown) {
   histogram_tester_.ExpectBucketCount(
       "Omnibox.MobileFusebox.AttachmentButtonShown",
       static_cast<int>(FuseboxAttachmentButtonType::kCamera), 1);
+  histogram_tester_.ExpectBucketCount(
+      "ContextualSearch.AttachmentButtonShown.Unknown",
+      static_cast<int>(
+          contextual_search::ContextualSearchAttachmentButtonType::kCamera),
+      1);
 }
 
 TEST_F(ComposeboxMetricsRecorderTest, AttachmentButtonUsed) {
@@ -38,6 +50,11 @@ TEST_F(ComposeboxMetricsRecorderTest, AttachmentButtonUsed) {
   histogram_tester_.ExpectBucketCount(
       "Omnibox.MobileFusebox.AttachmentButtonUsed",
       static_cast<int>(FuseboxAttachmentButtonType::kGallery), 1);
+  histogram_tester_.ExpectBucketCount(
+      "ContextualSearch.AttachmentButtonUsed.Unknown",
+      static_cast<int>(
+          contextual_search::ContextualSearchAttachmentButtonType::kGallery),
+      1);
 }
 
 TEST_F(ComposeboxMetricsRecorderTest, AttachmentButtonsUsageInSession) {
@@ -63,15 +80,21 @@ TEST_F(ComposeboxMetricsRecorderTest, AttachmentsMenuShown) {
   [recorder_ recordAttachmentsMenuShown:YES];
   histogram_tester_.ExpectBucketCount(
       "Omnibox.MobileFusebox.AttachmentsPopupToggled", true, 1);
+  histogram_tester_.ExpectBucketCount(
+      "ContextualSearch.AttachmentsMenuToggled.Unknown", true, 1);
   [recorder_ recordAttachmentsMenuShown:NO];
   histogram_tester_.ExpectBucketCount(
       "Omnibox.MobileFusebox.AttachmentsPopupToggled", false, 1);
+  histogram_tester_.ExpectBucketCount(
+      "ContextualSearch.AttachmentsMenuToggled.Unknown", false, 1);
 }
 
 TEST_F(ComposeboxMetricsRecorderTest, TabPickerTabsAttached) {
   [recorder_ recordTabPickerTabsAttached:3];
   histogram_tester_.ExpectBucketCount(
       "Omnibox.MobileFusebox.TabPickerTabsAttached", 3, 1);
+  histogram_tester_.ExpectBucketCount(
+      "ContextualSearch.File.PickedCount.TabPicker.Unknown", 3, 1);
 }
 
 TEST_F(ComposeboxMetricsRecorderTest, AutocompleteRequestTypeAtAbandon) {
@@ -176,12 +199,16 @@ TEST_F(ComposeboxMetricsRecorderTest, ImagesAttached) {
   [recorder_ recordImagesAttached:1];
   histogram_tester_.ExpectBucketCount("Omnibox.MobileFusebox.ImagesAttached", 1,
                                       1);
+  histogram_tester_.ExpectBucketCount(
+      "ContextualSearch.File.PickedCount.Gallery.Unknown", 1, 1);
 }
 
 TEST_F(ComposeboxMetricsRecorderTest, FilesAttached) {
   [recorder_ recordFilesAttached:1];
   histogram_tester_.ExpectBucketCount("Omnibox.MobileFusebox.FilesAttached", 1,
                                       1);
+  histogram_tester_.ExpectBucketCount(
+      "ContextualSearch.File.PickedCount.Files.Unknown", 1, 1);
 }
 
 TEST_F(ComposeboxMetricsRecorderTest, AttachmentCountAtSubmission) {
@@ -190,12 +217,16 @@ TEST_F(ComposeboxMetricsRecorderTest, AttachmentCountAtSubmission) {
                             forType:ComposeboxMetricsAttachmentType::kTab];
   histogram_tester_.ExpectBucketCount(
       "Omnibox.MobileFusebox.AttachmentCountAtSubmission.Tab", 2, 1);
+  histogram_tester_.ExpectBucketCount(
+      "ContextualSearch.Query.AttachmentCount.Tab.Unknown", 2, 1);
 
   [recorder_
       recordAttachCountAtSubmission:1
                             forType:ComposeboxMetricsAttachmentType::kImage];
   histogram_tester_.ExpectBucketCount(
       "Omnibox.MobileFusebox.AttachmentCountAtSubmission.Image", 1, 1);
+  histogram_tester_.ExpectBucketCount(
+      "ContextualSearch.Query.AttachmentCount.Image.Unknown", 1, 1);
 
   [recorder_
       recordAttachCountAtSubmission:3
@@ -207,4 +238,6 @@ TEST_F(ComposeboxMetricsRecorderTest, AttachmentCountAtSubmission) {
   // bucket. 3 of each.
   histogram_tester_.ExpectBucketCount(
       "Omnibox.MobileFusebox.AttachmentCountAtSubmission.File", 3, 2);
+  histogram_tester_.ExpectBucketCount(
+      "ContextualSearch.Query.AttachmentCount.Pdf.Unknown", 3, 2);
 }

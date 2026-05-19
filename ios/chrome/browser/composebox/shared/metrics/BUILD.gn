@@ -10,6 +10,8 @@ source_set("metrics") {
   deps = [
     "//base",
     "//base:i18n",
+    "//components/contextual_search:public",
+    "//skia",
   ]
 }
 
@@ -19,6 +21,8 @@ source_set("unit_tests") {
   deps = [
     ":metrics",
     "//base/test:test_support",
+    "//components/contextual_search:public",
+    "//skia",
     "//testing/gtest",
     "//ui/base",
   ]

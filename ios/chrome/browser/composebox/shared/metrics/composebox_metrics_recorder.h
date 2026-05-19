@@ -73,8 +73,16 @@ enum class ComposeboxMetricsAttachmentType {
   kRawFile,
 };
 
+namespace contextual_search {
+class ContextualSearchMetricsRecorder;
+}
+
 // A metrics recorder object for the composebox.
 @interface ComposeboxMetricsRecorder : NSObject
+
+// The C++ metrics recorder to delegate to.
+@property(nonatomic, assign) contextual_search::ContextualSearchMetricsRecorder*
+    contextualSearchMetricsRecorder;
 // Records the AI mode activation source.
 - (void)recordAiModeActivationSource:(AiModeActivationSource)source;
 

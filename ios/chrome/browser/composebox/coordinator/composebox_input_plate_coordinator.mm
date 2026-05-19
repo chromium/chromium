@@ -207,6 +207,8 @@ contextual_search::ContextualSearchSource ContextualSearchSourceFromEntrypoint(
         std::move(query_controller_config_params),
         ContextualSearchSourceFromEntrypoint(_entrypoint),
         lens::LensOverlayInvocationSource::kOmniboxContextualQuery);
+    _metricsRecorder.contextualSearchMetricsRecorder =
+        contextualSearchSession->GetMetricsRecorder();
   }
 
   FaviconLoader* faviconLoader =
@@ -308,6 +310,8 @@ contextual_search::ContextualSearchSource ContextualSearchSourceFromEntrypoint(
   [_snackbarPresenter stop];
   _snackbarPresenter = nil;
   [_metricsRecorder recordAttachmentButtonsUsageInSession];
+
+  _metricsRecorder.contextualSearchMetricsRecorder = nullptr;
 
   _viewController.mutator = nil;
   _viewController = nil;

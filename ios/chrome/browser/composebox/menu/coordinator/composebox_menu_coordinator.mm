@@ -67,6 +67,8 @@ CGFloat const kSheetTopPadding = 40.0f;
 
   // Metrics recorder
   ComposeboxMetricsRecorder* _metricsRecorder;
+  // Tracks if the user performed a successful action in the menu.
+  BOOL _successfulActionPerformed;
 }
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
@@ -116,6 +118,8 @@ CGFloat const kSheetTopPadding = 40.0f;
         std::move(configParams),
         contextual_search::ContextualSearchSource::kNewTabPage,
         lens::LensOverlayInvocationSource::kNtpContextualQuery);
+    _metricsRecorder.contextualSearchMetricsRecorder =
+        _sessionHandle->GetMetricsRecorder();
 
     ComposeboxModeHolder* modeHolder = [[ComposeboxModeHolder alloc] init];
 
@@ -191,6 +195,14 @@ CGFloat const kSheetTopPadding = 40.0f;
 }
 
 - (void)stop {
+  if (!_successfulActionPerformed) {
+    [_metricsRecorder recordAttachmentsMenuShown:NO];
+  }
+  if (_isStandaloneMenu) {
+    // Disconnect the metrics recorder when its constructed by the menu.
+    _metricsRecorder.contextualSearchMetricsRecorder = nullptr;
+  }
+  _metricsRecorder = nil;
   [_viewController.presentingViewController dismissViewControllerAnimated:YES
                                                                completion:nil];
   _viewController = nil;
@@ -212,6 +224,7 @@ CGFloat const kSheetTopPadding = 40.0f;
 
 - (void)composeboxMenuMediator:(ComposeboxMenuMediator*)mediator
                     didTapTool:(ComposeboxMode)toolMode {
+  _successfulActionPerformed = YES;
   if (_isStandaloneMenu) {
     ComposeboxFocusParams* focusParams = [[ComposeboxFocusParams alloc]
         initWithEntrypoint:_entrypoint
@@ -234,6 +247,7 @@ CGFloat const kSheetTopPadding = 40.0f;
 
 - (void)composeboxMenuMediator:(ComposeboxMenuMediator*)mediator
                    didTapModel:(ComposeboxModelOption)modelMode {
+  _successfulActionPerformed = YES;
   if (_isStandaloneMenu) {
     ComposeboxFocusParams* focusParams = [[ComposeboxFocusParams alloc]
         initWithEntrypoint:_entrypoint
@@ -256,6 +270,7 @@ CGFloat const kSheetTopPadding = 40.0f;
 
 - (void)composeboxMenuMediator:(ComposeboxMenuMediator*)mediator
           didUpdateAttachments:(ComposeboxAttachmentSelection*)attachments {
+  _successfulActionPerformed = YES;
   if (_isStandaloneMenu) {
     ComposeboxFocusParams* focusParams = [[ComposeboxFocusParams alloc]
         initWithEntrypoint:_entrypoint
