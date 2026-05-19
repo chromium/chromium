@@ -197,6 +197,7 @@
 #include "third_party/blink/public/mojom/storage_access/storage_access_handle.mojom.h"
 #include "third_party/blink/public/mojom/usb/web_usb_service.mojom.h"
 #include "third_party/blink/public/mojom/wake_lock/wake_lock.mojom.h"
+#include "third_party/blink/public/mojom/web_install/web_install.mojom.h"
 #include "third_party/blink/public/mojom/webaudio/audio_context_manager.mojom.h"
 #include "third_party/blink/public/mojom/webauthn/authenticator.mojom.h"
 #include "third_party/blink/public/mojom/webid/digital_identity_request.mojom.h"
@@ -784,6 +785,8 @@ void PopulateBinderMapWithContext(
       &EmptyBinderForFrame<blink::mojom::LCPCriticalPathPredictorHost>);
   map->Add<blink::mojom::ScriptToolHost>(
       &EmptyBinderForFrame<blink::mojom::ScriptToolHost>);
+  map->Add<blink::mojom::WebInstallService>(
+      &EmptyBinderForFrame<blink::mojom::WebInstallService>);
 
   // Currently defined in content/shell/common/shell_switches.h which we cannot
   // have a DEPS on.

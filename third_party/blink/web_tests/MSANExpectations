@@ -192,8 +192,5 @@ crbug.com/446167772 [ Linux ] external/wpt/webcodecs/audio-encoder-codec-specifi
 crbug.com/487895128 [ Linux ] external/wpt/storage/estimate-indexeddb.https.any.html [ Pass Timeout ]
 crbug.com/487895128 [ Linux ] external/wpt/storage/estimate-indexeddb.https.any.worker.html [ Pass Timeout ]
 
-crbug.com/499535771 [ Linux ] external/wpt/html/semantics/permission-element/install/no-focus.tentative.html [ Skip ]
-crbug.com/499535771 [ Linux ] virtual/permission-element/external/wpt/html/semantics/permission-element/install/no-focus.tentative.html [ Skip ]
-
 # Reliably timing out on MSAN
 crbug.com/508089939 [ Linux ] external/wpt/navigation-api/navigate-event/intercept-cross-origin-focus-without-user-activation.html [ Timeout ]
