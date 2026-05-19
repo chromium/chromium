@@ -1812,6 +1812,29 @@
             ]
         }
     ],
+    "AnnotatedPageContentPDFTextExtraction": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "MaxPassagesFromPDF": "10",
+                        "max_text_byte_size": "1048576"
+                    },
+                    "enable_features": [
+                        "AnnotatedPageContentPDFTextExtraction",
+                        "PDFEmbeddingsGeneration"
+                    ]
+                }
+            ]
+        }
+    ],
     "AnnotatedPageContentsVirtualStructure": [
         {
             "platforms": [
