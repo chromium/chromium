@@ -17,6 +17,8 @@ def GenerateField(field_info):
   type = field_info['type']
   if type == 'int':
     return f'const int {field}'.strip()
+  elif type == 'bool':
+    return f'const bool {field}'.strip()
   elif type == 'string':
     return f'const char* const {field}'.strip()
   elif type == 'string16':

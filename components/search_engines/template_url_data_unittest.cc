@@ -11,6 +11,7 @@
 #include "base/values.h"
 #include "components/search_engines/regulatory_extension_type.h"
 #include "components/search_engines/search_engines_switches.h"
+#include "components/search_engines/template_url_data_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/search_engines_data/resources/definitions/prepopulated_engines.h"
 
@@ -30,9 +31,38 @@ TemplateURLData BuildTestTemplateURLData(
       /*search_intent_params=*/{}, /*favicon_url=*/{}, /*encoding=*/{},
       /*image_search_branding_label=*/{}, /*alternate_urls_list=*/{},
       /*preconnect_to_search_url=*/false, /*prefetch_likely_navigations=*/false,
+      /*send_x_geo_header=*/false,
       /*id=*/id, /*regulatory_extensions=*/extensions);
 }
 }  // namespace
+
+TEST(TemplateURLDataTest, SendXGeoHeaderDefault) {
+  TemplateURLData data;
+  // Default value is false.
+  EXPECT_FALSE(data.send_x_geo_header);
+}
+
+TEST(TemplateURLDataTest, DictionaryConversion) {
+  TemplateURLData data;
+  data.send_x_geo_header = true;
+  data.SetKeyword(u"keyword");
+  data.SetURL("https://search.url/search?q={searchTerms}");
+  data.SetShortName(u"shortname");
+
+  base::DictValue dict = TemplateURLDataToDictionary(data);
+  std::unique_ptr<TemplateURLData> parsed_data =
+      TemplateURLDataFromDictionary(dict);
+
+  ASSERT_TRUE(parsed_data);
+  EXPECT_TRUE(parsed_data->send_x_geo_header);
+
+  data.send_x_geo_header = false;
+  dict = TemplateURLDataToDictionary(data);
+  parsed_data = TemplateURLDataFromDictionary(dict);
+
+  ASSERT_TRUE(parsed_data);
+  EXPECT_FALSE(parsed_data->send_x_geo_header);
+}
 
 TEST(TemplateURLDataTest, Trim) {
   TemplateURLData data(BuildTestTemplateURLData(0, {}));

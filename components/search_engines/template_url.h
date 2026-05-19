@@ -841,6 +841,8 @@ class TemplateURL {
 
   int prepopulate_id() const { return data().prepopulate_id; }
 
+  bool send_x_geo_header() const { return data().send_x_geo_header; }
+
   const std::string& sync_guid() const { return data().sync_guid; }
   void GenerateSyncGUID();
 

@@ -91,14 +91,11 @@ TEST_F(ExtensionSearchEngineDataUpdaterTest, AddUnsupportedSearchEngine) {
 TEST_F(ExtensionSearchEngineDataUpdaterTest, AddGoogleSearchEngine) {
   ASSERT_FALSE(StoredSupportsSearchByImage());
 
-  TemplateURLData google_template_url_data(
-      u" shortname ", u" keyword ", "https://google.com", std::string_view(),
-      std::string_view(), std::string_view(), std::string_view(),
-      std::string_view(), std::string_view(), std::string_view(),
-      std::string_view(), std::string_view(), std::string_view(),
-      std::string_view(), std::string_view(), {}, std::string_view(),
-      std::string_view(), std::u16string_view(), base::ListValue(), false,
-      false, 0, base::span<TemplateURLData::RegulatoryExtension>());
+  TemplateURLData google_template_url_data;
+  google_template_url_data.SetShortName(u" shortname ");
+  google_template_url_data.SetKeyword(u" keyword ");
+  google_template_url_data.SetURL("https://google.com");
+  google_template_url_data.safe_for_autoreplace = true;
   TemplateURL google_template_url(google_template_url_data);
 
   template_url_service()->SetUserSelectedDefaultSearchProvider(

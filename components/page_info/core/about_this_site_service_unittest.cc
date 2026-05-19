@@ -235,7 +235,8 @@ TEST_F(AboutThisSiteServiceTest, NotShownWhenNoGoogleDSE) {
           std::string_view(), std::string_view(), std::string_view(),
           std::string_view(), std::string_view(), std::string_view(),
           std::vector<std::string>(), std::string_view(), std::string_view(),
-          std::u16string_view(), base::ListValue(), false, false, 0,
+          std::u16string_view(), base::ListValue(), false, false,
+          /*send_x_geo_header=*/false, 0,
           base::span<TemplateURLData::RegulatoryExtension>())));
   templateService()->SetUserSelectedDefaultSearchProvider(template_url);
 

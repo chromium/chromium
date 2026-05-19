@@ -63,6 +63,7 @@ struct TemplateURLData {
                   const base::ListValue& alternate_urls_list,
                   bool preconnect_to_search_url,
                   bool prefetch_likely_navigations,
+                  bool send_x_geo_header,
                   int prepopulate_id,
                   const base::span<const RegulatoryExtension>& extensions);
 
@@ -255,6 +256,11 @@ struct TemplateURLData {
   // (in addition to queries that are recommended via suggestion server). This
   // is experimental.
   bool prefetch_likely_navigations = false;
+
+  // Whether this search engine should receive the X-Geo geolocation header.
+  // This is a privacy-sensitive opt-in and should only be enabled for trusted
+  // partners.
+  bool send_x_geo_header = false;
 
   enum class ActiveStatus {
     kUnspecified = 0,  // The default value when a search engine is auto-added.

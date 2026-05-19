@@ -83,6 +83,7 @@ class GeolocationHeaderBrowserTest : public InProcessBrowserTest {
     data.SetShortName(u"Test DSE");
     data.SetKeyword(u"testdse");
     data.SetURL(test_server_.GetURL("/search?q={searchTerms}").spec());
+    data.send_x_geo_header = true;
     TemplateURL* template_url =
         template_url_service->Add(std::make_unique<TemplateURL>(data));
     template_url_service->SetUserSelectedDefaultSearchProvider(template_url);

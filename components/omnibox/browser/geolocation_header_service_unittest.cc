@@ -8,6 +8,7 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/run_loop.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
@@ -110,7 +111,8 @@ class GeolocationHeaderServiceTest : public testing::Test {
         url, url, content_settings::GeolocationContentSettingsType(), setting);
   }
 
-  void SetDefaultSearchProviderUrl(std::string_view url) {
+  void SetDefaultSearchProviderUrl(std::string_view url,
+                                   bool send_x_geo_header = true) {
     TemplateURLData data;
     // Append {searchTerms} if not present so IsSearchURL() returns true.
     std::string template_url(url);
@@ -121,6 +123,7 @@ class GeolocationHeaderServiceTest : public testing::Test {
       template_url += "search?q={searchTerms}";
     }
     data.SetURL(template_url);
+    data.send_x_geo_header = send_x_geo_header;
     if (url.find("google.com") != std::string::npos) {
       data.SetKeyword(u"google.com");
     }
@@ -723,5 +726,147 @@ TEST_F(GeolocationHeaderServiceTest, PrimeLocationFlagDisabled) {
       [&]() { return !service->is_geolocation_bound_for_testing(); }));
 
   EXPECT_EQ(geolocation_overrider_.GetQueryNextPositionCount(), 1u);
-  EXPECT_TRUE(service->HasCachedLocation());
+  EXPECT_TRUE(
+      base::test::RunUntil([&]() { return service->HasCachedLocation(); }));
+}
+
+// Verifies that if send_x_geo_header is omitted, it defaults to opted-out.
+// This tests a DuckDuckGo URL as a 3rd-party engine case.
+TEST_F(GeolocationHeaderServiceTest, SearchEngineOptInOmitted) {
+  UpdateLocation(kTestLat, kTestLong, kTestAccuracy, base::Time::Now(),
+                 /*is_precise=*/true);
+
+  TemplateURLData data;
+  data.SetURL("https://duckduckgo.com/?q={searchTerms}");
+  auto* t_url =
+      template_url_service()->Add(std::make_unique<TemplateURL>(data));
+  template_url_service()->SetUserSelectedDefaultSearchProvider(t_url);
+
+  GURL url("https://duckduckgo.com/?q=test");
+  SetSitePermissionWithOptions(
+      url, {PermissionOption::kAllowed, PermissionOption::kAllowed});
+
+  auto service = CreateService();
+  service->PrimeLocation();
+  EXPECT_FALSE(service->HasCachedLocation());
+  EXPECT_FALSE(service->GetLocationHeader(url).has_value());
+  EXPECT_FALSE(service->is_geolocation_bound_for_testing());
+}
+
+// Verifies that if send_x_geo_header is explicitly set to false, it is
+// opted-out. This tests a Google URL case.
+TEST_F(GeolocationHeaderServiceTest, SearchEngineOptInExplicitFalse) {
+  UpdateLocation(kTestLat, kTestLong, kTestAccuracy, base::Time::Now(),
+                 /*is_precise=*/true);
+
+  TemplateURLData data;
+  data.SetURL("https://www.google.com/search?q={searchTerms}");
+  data.send_x_geo_header = false;
+  auto* t_url =
+      template_url_service()->Add(std::make_unique<TemplateURL>(data));
+  template_url_service()->SetUserSelectedDefaultSearchProvider(t_url);
+
+  GURL url("https://www.google.com/search?q=test");
+  SetSitePermissionWithOptions(
+      url, {PermissionOption::kAllowed, PermissionOption::kAllowed});
+
+  auto service = CreateService();
+  service->PrimeLocation();
+  EXPECT_FALSE(service->HasCachedLocation());
+  EXPECT_FALSE(service->GetLocationHeader(url).has_value());
+  EXPECT_FALSE(service->is_geolocation_bound_for_testing());
+}
+
+// Verifies that if send_x_geo_header is explicitly set to true, it is opted-in.
+// This tests a Bing URL case.
+TEST_F(GeolocationHeaderServiceTest, SearchEngineOptInExplicitTrue) {
+  UpdateLocation(kTestLat, kTestLong, kTestAccuracy, base::Time::Now(),
+                 /*is_precise=*/true);
+
+  TemplateURLData data;
+  data.SetURL("https://www.bing.com/search?q={searchTerms}");
+  data.send_x_geo_header = true;
+  auto* t_url =
+      template_url_service()->Add(std::make_unique<TemplateURL>(data));
+  template_url_service()->SetUserSelectedDefaultSearchProvider(t_url);
+
+  GURL url("https://www.bing.com/search?q=test");
+  SetSitePermissionWithOptions(
+      url, {PermissionOption::kAllowed, PermissionOption::kAllowed});
+
+  auto service = CreateService();
+  service->PrimeLocation();
+  EXPECT_TRUE(
+      base::test::RunUntil([&]() { return service->HasCachedLocation(); }));
+  EXPECT_TRUE(service->GetLocationHeader(url).has_value());
+}
+
+// Verifies that a change in DSE updates the opt-in value at runtime.
+TEST_F(GeolocationHeaderServiceTest, SearchEngineOptInRuntimeChange) {
+  UpdateLocation(kTestLat, kTestLong, kTestAccuracy, base::Time::Now(),
+                 /*is_precise=*/true);
+
+  auto service = CreateService();
+  GURL url(kGoogleUrl);
+  SetSitePermissionWithOptions(
+      url, {PermissionOption::kAllowed, PermissionOption::kAllowed});
+
+  // 1. DSE opted in.
+  SetDefaultSearchProviderUrl(url.spec(), /*send_x_geo_header=*/true);
+  service->PrimeLocation();
+  EXPECT_TRUE(
+      base::test::RunUntil([&]() { return service->HasCachedLocation(); }));
+  EXPECT_TRUE(service->GetLocationHeader(url).has_value());
+
+  // 2. Change DSE to opted out at runtime.
+  SetDefaultSearchProviderUrl(url.spec(), /*send_x_geo_header=*/false);
+  EXPECT_FALSE(service->GetLocationHeader(url).has_value());
+}
+
+// Verifies that the header is NOT sent if the URL is not same-origin with DSE,
+// even if it's a valid search URL for another engine.
+TEST_F(GeolocationHeaderServiceTest, NonDseOriginRedirect) {
+  UpdateLocation(kTestLat, kTestLong, kTestAccuracy, base::Time::Now(),
+                 /*is_precise=*/true);
+
+  auto service = CreateService();
+  GURL dse_url(kGoogleUrl);
+  SetDefaultSearchProviderUrl(dse_url.spec(), /*send_x_geo_header=*/true);
+  SetSitePermissionWithOptions(
+      dse_url, {PermissionOption::kAllowed, PermissionOption::kAllowed});
+
+  service->PrimeLocation();
+  EXPECT_TRUE(
+      base::test::RunUntil([&]() { return service->HasCachedLocation(); }));
+
+  // URL with different origin (even if it's a valid search URL template for
+  // another engine).
+  GURL non_dse_url("https://www.bing.com/search?q=test");
+  SetSitePermissionWithOptions(
+      non_dse_url, {PermissionOption::kAllowed, PermissionOption::kAllowed});
+
+  EXPECT_FALSE(service->GetLocationHeader(non_dse_url).has_value());
+}
+
+// Verifies that the Google fallback path respects the opt-in flag.
+TEST_F(GeolocationHeaderServiceTest, GoogleFallbackOptIn) {
+  UpdateLocation(kTestLat, kTestLong, kTestAccuracy, base::Time::Now(),
+                 /*is_precise=*/true);
+
+  auto service = CreateService();
+  GURL dse_url(kGoogleUrl);
+  SetDefaultSearchProviderUrl(dse_url.spec(), /*send_x_geo_header=*/false);
+  SetSitePermissionWithOptions(
+      dse_url, {PermissionOption::kAllowed, PermissionOption::kAllowed});
+
+  service->PrimeLocation();
+  EXPECT_FALSE(service->HasCachedLocation());
+  EXPECT_FALSE(service->is_geolocation_bound_for_testing());
+
+  // Google fallback URL (e.g. /webhp)
+  GURL fallback_url("https://www.google.com/webhp?#q=dinosaurs");
+  SetSitePermissionWithOptions(
+      fallback_url, {PermissionOption::kAllowed, PermissionOption::kAllowed});
+
+  EXPECT_FALSE(service->GetLocationHeader(fallback_url).has_value());
 }

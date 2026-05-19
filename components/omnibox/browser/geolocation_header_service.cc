@@ -109,7 +109,7 @@ void GeolocationHeaderService::PrimeLocation() {
 
   const TemplateURL* default_provider =
       template_url_service_->GetDefaultSearchProvider();
-  if (!default_provider) {
+  if (!default_provider || !default_provider->send_x_geo_header()) {
     return;
   }
 
@@ -164,8 +164,7 @@ bool GeolocationHeaderService::HasCachedLocation() const {
 
 std::optional<std::string> GeolocationHeaderService::GetLocationHeader(
     const GURL& url) {
-  if (!url.SchemeIs(url::kHttpsScheme) || !HasCachedLocation() ||
-      !IsUrlEligibleForLocationHeader(url)) {
+  if (!HasCachedLocation() || !IsUrlEligibleForLocationHeader(url)) {
     return std::nullopt;
   }
 
@@ -229,12 +228,16 @@ bool GeolocationHeaderService::HasDeviceLocationPermission(
 
 bool GeolocationHeaderService::IsUrlEligibleForLocationHeader(
     const GURL& url) const {
+  if (!url.SchemeIs(url::kHttpsScheme)) {
+    return false;
+  }
+
   if (!template_url_service_) {
     return false;
   }
   const TemplateURL* default_provider =
       template_url_service_->GetDefaultSearchProvider();
-  if (!default_provider) {
+  if (!default_provider || !default_provider->send_x_geo_header()) {
     return false;
   }
 

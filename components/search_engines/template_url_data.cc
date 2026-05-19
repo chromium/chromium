@@ -91,6 +91,7 @@ TemplateURLData::TemplateURLData(
     const base::ListValue& alternate_urls_list,
     bool preconnect_to_search_url,
     bool prefetch_likely_navigations,
+    bool send_x_geo_header,
     int prepopulate_id,
     const base::span<const TemplateURLData::RegulatoryExtension>&
         reg_extensions)
@@ -120,7 +121,8 @@ TemplateURLData::TemplateURLData(
       prepopulate_id(prepopulate_id),
       sync_guid(GenerateGUID(prepopulate_id, 0)),
       preconnect_to_search_url(preconnect_to_search_url),
-      prefetch_likely_navigations(prefetch_likely_navigations) {
+      prefetch_likely_navigations(prefetch_likely_navigations),
+      send_x_geo_header(send_x_geo_header) {
   SetShortName(name);
   SetKeyword(keyword);
   SetURL(std::string(search_url));

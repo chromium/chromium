@@ -702,6 +702,16 @@ TEST_F(TemplateURLPrepopulateDataTest,
   }
 }
 
+TEST_F(TemplateURLPrepopulateDataTest, PrepopulatedEnginesOptInLoaded) {
+  using PrepopulatedEngine = TemplateURLPrepopulateData::PrepopulatedEngine;
+  const auto all_engines = regional_capabilities::GetAllPrepopulatedEngines();
+  for (const PrepopulatedEngine* engine : all_engines) {
+    std::unique_ptr<TemplateURLData> data =
+        TemplateURLDataFromPrepopulatedEngine(*engine);
+    EXPECT_EQ(engine->send_x_geo_header, data->send_x_geo_header);
+  }
+}
+
 TEST_F(TemplateURLPrepopulateDataTest, CheckSearchURLDetection) {
   using PrepopulatedEngine = TemplateURLPrepopulateData::PrepopulatedEngine;
   const auto all_engines = regional_capabilities::GetAllPrepopulatedEngines();

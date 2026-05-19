@@ -42,6 +42,7 @@ class GeolocationNavigationThrottleTest
     data.SetShortName(u"Test");
     data.SetKeyword(u"test");
     data.SetURL("https://www.google.com/search?q={searchTerms}");
+    data.send_x_geo_header = true;
     TemplateURL* template_url =
         template_url_service->Add(std::make_unique<TemplateURL>(data));
     template_url_service->SetUserSelectedDefaultSearchProvider(template_url);

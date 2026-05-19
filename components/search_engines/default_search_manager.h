@@ -84,6 +84,7 @@ class DefaultSearchManager
   static const char kRequireShortcut[];
   static const char kPreconnectToSearchUrl[];
   static const char kPrefetchLikelyNavigations[];
+  static const char kSendXGeoHeader[];
   static const char kIsActive[];
   static const char kStarterPackId[];
   static const char kEnforcedByPolicy[];

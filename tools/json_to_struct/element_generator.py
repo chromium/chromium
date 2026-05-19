@@ -109,7 +109,7 @@ def GenerateFieldContent(element_name, field_info, content, lines, indent,
   if content is None:
     content = field_info.get('default', None)
   type = field_info['type']
-  if type in ('int', 'enum', 'class'):
+  if type in ('bool', 'int', 'enum', 'class'):
     if isinstance(content, bool):
       # Re-format Python `True` and `False` as C++ `true` and `false`.
       lines.append('%s%s,' % (indent, str(content).lower()))

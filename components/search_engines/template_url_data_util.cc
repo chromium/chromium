@@ -228,6 +228,9 @@ std::unique_ptr<TemplateURLData> TemplateURLDataFromDictionary(
   result->prefetch_likely_navigations =
       dict.FindBool(DefaultSearchManager::kPrefetchLikelyNavigations)
           .value_or(result->prefetch_likely_navigations);
+  result->send_x_geo_header =
+      dict.FindBool(DefaultSearchManager::kSendXGeoHeader)
+          .value_or(result->send_x_geo_header);
   result->is_active = static_cast<TemplateURLData::ActiveStatus>(
       dict.FindInt(DefaultSearchManager::kIsActive)
           .value_or(static_cast<int>(result->is_active)));
@@ -315,6 +318,7 @@ base::DictValue TemplateURLDataToDictionary(const TemplateURLData& data) {
                data.preconnect_to_search_url);
   url_dict.Set(DefaultSearchManager::kPrefetchLikelyNavigations,
                data.prefetch_likely_navigations);
+  url_dict.Set(DefaultSearchManager::kSendXGeoHeader, data.send_x_geo_header);
   url_dict.Set(DefaultSearchManager::kIsActive,
                static_cast<int>(data.is_active));
   url_dict.Set(DefaultSearchManager::kEnforcedByPolicy,
@@ -354,8 +358,8 @@ std::unique_ptr<TemplateURLData> TemplateURLDataFromPrepopulatedEngine(
       ToStringView(engine.encoding), image_search_branding_label,
       alternate_urls,
       ToStringView(engine.preconnect_to_search_url) == "ALLOWED",
-      ToStringView(engine.prefetch_likely_navigations) == "ALLOWED", engine.id,
-      engine.regulatory_extensions);
+      ToStringView(engine.prefetch_likely_navigations) == "ALLOWED",
+      engine.send_x_geo_header, engine.id, engine.regulatory_extensions);
   data->migrate_to_id = engine.migrate_to_id;
   return data;
 }
@@ -502,8 +506,10 @@ std::unique_ptr<TemplateURLData> TemplateURLDataFromOverrideDictionary(
         std::move(search_intent_params), favicon_url, encoding,
         image_search_branding_label, *alternate_urls,
         preconnect_to_search_url.compare("ALLOWED") == 0,
-        prefetch_likely_navigations.compare("ALLOWED") == 0, *id,
-        base::span<const TemplateURLData::RegulatoryExtension>());
+        prefetch_likely_navigations.compare("ALLOWED") == 0,
+        engine_dict.FindBool(DefaultSearchManager::kSendXGeoHeader)
+            .value_or(false),
+        *id, base::span<const TemplateURLData::RegulatoryExtension>());
   }
   return nullptr;
 }

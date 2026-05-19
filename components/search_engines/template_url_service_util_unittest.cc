@@ -63,7 +63,8 @@ std::unique_ptr<TemplateURLData> CreatePrepopulateTemplateURLData(
       "" /* favicon_url */, "UTF-8", u"" /* image_search_branding_label */,
       base::ListValue() /* alternate_urls_list */,
       false /* preconnect_to_search_url */,
-      false /* prefetch_likely_navigations */, prepopulate_id,
+      false /* prefetch_likely_navigations */, /*send_x_geo_header=*/false,
+      prepopulate_id,
       /* regulatory extensions */
       base::span<TemplateURLData::RegulatoryExtension>());
 }

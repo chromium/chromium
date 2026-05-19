@@ -105,8 +105,9 @@
     // value that will enable the pre-connections.
     { "field": "preconnect_to_search_url", "type": "string", "optional": true },
     // Whether the client is allowed to prefetch Search queries that are likely
-    // (in addition to queries that are recommended via suggestion server). This
-    // is experimental.
+    // (in addition to queries that are recommended via suggestion server).
+    // "ALLOWED" is the only value that will enable the prefetch.
+    // This is experimental.
     { "field": "prefetch_likely_navigations", "type": "string", "optional": true },
     // Unique id for this prepopulate engine (corresponds to
     // TemplateURL::prepopulate_id). This ID must be greater than zero and must
@@ -134,6 +135,12 @@
     //
     // The same restrictions apply here as for the `id` field.
     { "field": "migrate_to_id", "type": "int", "optional": true, "default": 0 },
+
+    // Whether this search engine can receive the X-Geo geolocation header. The
+    // X-Geo header is used by Chrome to send the user's location when the DSE
+    // origin already has geolocation permission. However it's only sent if the
+    // DSE actually opts-in to handling this header.
+    { "field": "send_x_geo_header", "type": "bool", "optional": true, "default": false },
 
     // Regulatory specific extensions associated with this search engine.
     // Used to expand the {regulatory_extensions} keyword with parameters
