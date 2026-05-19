@@ -2,9 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {ComposeboxElement, ComposeboxProxyImpl} from 'chrome://new-tab-page/lazy_load.js';
+import {ComposeboxElement, ComposeboxProxyImpl, NtpComposeboxElement} from 'chrome://new-tab-page/lazy_load.js';
 import {$$} from 'chrome://new-tab-page/new_tab_page.js';
 import type {ComposeboxFile} from 'chrome://resources/cr_components/composebox/common.js';
+
+export type ComposeboxUnionElement = ComposeboxElement|NtpComposeboxElement;
 import {PageCallbackRouter, PageHandlerRemote} from 'chrome://resources/cr_components/composebox/composebox.mojom-webui.js';
 import {ContextUploadStatus, InputType} from 'chrome://resources/cr_components/composebox/composebox_query.mojom-webui.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
@@ -55,8 +57,9 @@ export function createComposeboxFile(
       override);
 }
 
-export interface ComposeboxTestElement {
-  element: ComposeboxElement;
+export interface ComposeboxTestElement<T extends ComposeboxUnionElement =
+                                                     ComposeboxElement> {
+  element: T;
   handler: TestMock<PageHandlerRemote>;
   searchboxHandler: TestMock<SearchboxPageHandlerRemote>;
   searchboxCallbackRouterRemote: SearchboxPageRemote;
@@ -64,10 +67,12 @@ export interface ComposeboxTestElement {
 }
 
 
-export function setupComposeboxTest(): ComposeboxTestElement {
+export function
+setupComposeboxTest<T extends ComposeboxUnionElement = ComposeboxElement>():
+    ComposeboxTestElement<T> {
   // We can't return the variables initialized in setup() directly because
   // setup() runs later. We can return an object that will be populated.
-  const testProxy = {} as ComposeboxTestElement;
+  const testProxy = {} as ComposeboxTestElement<T>;
 
   setup(() => {
     loadTimeData.overrideValues({
@@ -113,10 +118,12 @@ export function setupComposeboxTest(): ComposeboxTestElement {
   return testProxy;
 }
 
-export function createComposeboxElement(
-    testProxy: ComposeboxTestElement,
-    properties: Partial<ComposeboxElement> = {}) {
-  testProxy.element = new ComposeboxElement();
+export function
+createComposeboxElement<T extends ComposeboxUnionElement = ComposeboxElement>(
+    testProxy: ComposeboxTestElement<T>, properties: Partial<T> = {}) {
+  const useForked = loadTimeData.getBoolean('useNtpComposeboxFork');
+  testProxy.element = (useForked ? new NtpComposeboxElement() :
+                                   new ComposeboxElement()) as unknown as T;
   Object.assign(testProxy.element, {
     usePecApi: loadTimeData.getBoolean('contextualMenuUsePecApi'),
     ...properties,
@@ -249,8 +256,9 @@ export async function addTab(testProxy: ComposeboxTestElement): Promise<string> 
   return FAKE_TOKEN_STRING;
 }
 
-export function getSubmitContainer(testProxy: ComposeboxTestElement):
-    HTMLElement {
+export function
+getSubmitContainer<T extends ComposeboxUnionElement = ComposeboxElement>(
+    testProxy: ComposeboxTestElement<T>): HTMLElement {
   const button = testProxy.element.shadowRoot.querySelector(
       'cr-composebox-submit');
   assertTrue(!!button);
@@ -259,7 +267,9 @@ export function getSubmitContainer(testProxy: ComposeboxTestElement):
   return container;
 }
 
-export function getSubmitIcon(testProxy: ComposeboxTestElement): HTMLElement {
+export function
+getSubmitIcon<T extends ComposeboxUnionElement = ComposeboxElement>(
+    testProxy: ComposeboxTestElement<T>): HTMLElement {
   const button = testProxy.element.shadowRoot.querySelector(
       'cr-composebox-submit');
   assertTrue(!!button);

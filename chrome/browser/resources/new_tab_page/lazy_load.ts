@@ -73,6 +73,7 @@ export {MostRelevantTabResumptionProxyImpl} from './modules/most_relevant_tab_re
 export {IconContainerElement} from './modules/tab_groups/icon_container.js';
 export {COLOR_NEW_TAB_PAGE_MODULE_TAB_GROUPS_DOT_PREFIX, COLOR_NEW_TAB_PAGE_MODULE_TAB_GROUPS_PREFIX, colorIdToString, tabGroupsDescriptor, TabGroupsModuleElement} from './modules/tab_groups/module.js';
 export {TabGroupsProxyImpl} from './modules/tab_groups/tab_groups_proxy.js';
+export {NtpComposeboxElement} from './ntp_composebox.js';
 export {IndividualPromosElement} from './ntp_promo/individual_promos.js';
 export {NtpPromoProxyImpl} from './ntp_promo/ntp_promo_proxy.js';
 export type {NtpPromoProxy} from './ntp_promo/ntp_promo_proxy.js';
