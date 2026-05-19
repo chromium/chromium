@@ -12,6 +12,7 @@
 #include <unordered_map>
 #include <vector>
 
+#include "base/containers/heap_array.h"
 #include "base/containers/small_map.h"
 #include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
@@ -301,13 +302,13 @@ class GPU_GLES2_EXPORT Framebuffer : public base::RefCounted<Framebuffer> {
   AttachmentMap attachments_;
 
   // User's draw buffers setting through DrawBuffers() call.
-  std::unique_ptr<GLenum[]> draw_buffers_;
+  base::HeapArray<GLenum> draw_buffers_;
 
   // If a draw buffer does not have an image, or it has no corresponding
   // fragment shader output variable, it might be filtered out as NONE.
   // Note that the actually draw buffers setting sent to the driver is always
   // consistent with |adjusted_draw_buffers_|, not |draw_buffers_|.
-  std::unique_ptr<GLenum[]> adjusted_draw_buffers_;
+  base::HeapArray<GLenum> adjusted_draw_buffers_;
 
   // Draw buffer base types: FLOAT, INT, or UINT.
   // We have up to 16 draw buffers, each is encoded into 2 bits, total 32 bits:

@@ -7,11 +7,14 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <algorithm>
+
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
 #include "base/containers/heap_array.h"
 #include "base/containers/span.h"
 #include "base/notreached.h"
+#include "base/numerics/safe_conversions.h"
 #include "gpu/command_buffer/common/gles2_cmd_utils.h"
 #include "gpu/command_buffer/service/framebuffer_completeness_cache.h"
 #include "gpu/command_buffer/service/renderbuffer_manager.h"
@@ -385,14 +388,13 @@ Framebuffer::Framebuffer(FramebufferManager* manager, GLuint service_id)
       read_buffer_(GL_COLOR_ATTACHMENT0) {
   manager->StartTracking(this);
   DCHECK_GT(manager->max_draw_buffers_, 0u);
-  draw_buffers_.reset(new GLenum[manager->max_draw_buffers_]);
-  adjusted_draw_buffers_.reset(new GLenum[manager->max_draw_buffers_]);
+  draw_buffers_ = base::HeapArray<GLenum>::Uninit(manager->max_draw_buffers_);
+  adjusted_draw_buffers_ =
+      base::HeapArray<GLenum>::Uninit(manager->max_draw_buffers_);
   draw_buffers_[0] = GL_COLOR_ATTACHMENT0;
   adjusted_draw_buffers_[0] = GL_COLOR_ATTACHMENT0;
-  for (uint32_t ii = 1; ii < manager->max_draw_buffers_; ++ii) {
-    UNSAFE_TODO(draw_buffers_[ii]) = GL_NONE;
-    UNSAFE_TODO(adjusted_draw_buffers_[ii]) = GL_NONE;
-  }
+  std::ranges::fill(draw_buffers_.subspan(1), GL_NONE);
+  std::ranges::fill(adjusted_draw_buffers_.subspan(1), GL_NONE);
 }
 
 Framebuffer::~Framebuffer() {
@@ -519,7 +521,7 @@ bool Framebuffer::PrepareDrawBuffersForClearingUninitializedAttachments(
   }
   bool different = false;
   for (uint32_t i = 0; i < manager_->max_draw_buffers_; ++i) {
-    if (buffers[i] != UNSAFE_TODO(adjusted_draw_buffers_[i])) {
+    if (buffers[i] != adjusted_draw_buffers_[i]) {
       different = true;
       break;
     }
@@ -530,7 +532,7 @@ bool Framebuffer::PrepareDrawBuffersForClearingUninitializedAttachments(
 }
 
 void Framebuffer::RestoreDrawBuffers() const {
-  glDrawBuffersARB(manager_->max_draw_buffers_, adjusted_draw_buffers_.get());
+  glDrawBuffersARB(manager_->max_draw_buffers_, adjusted_draw_buffers_.data());
 }
 
 bool Framebuffer::ValidateAndAdjustDrawBuffers(
@@ -555,18 +557,18 @@ void Framebuffer::AdjustDrawBuffersImpl(uint32_t desired_mask) {
   // This won't be reached in every clear call - only when framebuffer has
   // changed.
   for (uint32_t ii = 0; ii < manager_->max_draw_buffers_; ++ii) {
-    UNSAFE_TODO(adjusted_draw_buffers_[ii] = draw_buffers_[ii]);
-    if (UNSAFE_TODO(adjusted_draw_buffers_[ii]) == GL_NONE) {
+    adjusted_draw_buffers_[ii] = draw_buffers_[ii];
+    if (adjusted_draw_buffers_[ii] == GL_NONE) {
       continue;
     }
     uint32_t shift_bits = ii * 2;
     uint32_t buffer_mask = 0x3 << shift_bits;
     if ((buffer_mask & desired_mask) == 0u) {
-      UNSAFE_TODO(adjusted_draw_buffers_[ii]) = GL_NONE;
+      adjusted_draw_buffers_[ii] = GL_NONE;
     }
   }
   adjusted_draw_buffer_bound_mask_ = desired_mask;
-  glDrawBuffersARB(manager_->max_draw_buffers_, adjusted_draw_buffers_.get());
+  glDrawBuffersARB(manager_->max_draw_buffers_, adjusted_draw_buffers_.data());
 }
 
 bool Framebuffer::ContainsActiveIntegerAttachments() const {
@@ -867,29 +869,24 @@ GLenum Framebuffer::GetDrawBuffer(GLenum draw_buffer) const {
   GLsizei index = static_cast<GLsizei>(draw_buffer - GL_DRAW_BUFFER0);
   CHECK(index >= 0 &&
         index < static_cast<GLsizei>(manager_->max_draw_buffers_));
-  return UNSAFE_TODO(draw_buffers_[index]);
+  return draw_buffers_[index];
 }
 
 void Framebuffer::SetDrawBuffers(base::span<const GLenum> bufs) {
   DCHECK(static_cast<GLsizei>(bufs.size()) <=
          static_cast<GLsizei>(manager_->max_draw_buffers_));
-  for (size_t ii = 0; ii < bufs.size(); ++ii) {
-    UNSAFE_TODO(draw_buffers_[ii]) = bufs[ii];
-    UNSAFE_TODO(adjusted_draw_buffers_[ii]) = bufs[ii];
-  }
-  for (uint32_t ii = bufs.size(); ii < manager_->max_draw_buffers_; ++ii) {
-    UNSAFE_TODO(draw_buffers_[ii]) = GL_NONE;
-    UNSAFE_TODO(adjusted_draw_buffers_[ii]) = GL_NONE;
-  }
+  std::ranges::fill(draw_buffers_, GL_NONE);
+  std::ranges::fill(adjusted_draw_buffers_, GL_NONE);
+  draw_buffers_.copy_prefix_from(bufs);
+  adjusted_draw_buffers_.copy_prefix_from(bufs);
   UpdateDrawBufferMasks();
   adjusted_draw_buffer_bound_mask_ = draw_buffer_bound_mask_;
 }
 
 bool Framebuffer::HasAlphaMRT() const {
   for (uint32_t i = 0; i < manager_->max_draw_buffers_; ++i) {
-    if (UNSAFE_TODO(draw_buffers_[i]) != GL_NONE) {
-      const Attachment* attachment =
-          GetAttachment(UNSAFE_TODO(draw_buffers_[i]));
+    if (draw_buffers_[i] != GL_NONE) {
+      const Attachment* attachment = GetAttachment(draw_buffers_[i]);
       if (!attachment)
         continue;
       if ((GLES2Util::GetChannelsForFormat(attachment->internal_format()) &
@@ -903,9 +900,8 @@ bool Framebuffer::HasAlphaMRT() const {
 bool Framebuffer::HasSameInternalFormatsMRT() const {
   GLenum internal_format = 0;
   for (uint32_t i = 0; i < manager_->max_draw_buffers_; ++i) {
-    if (UNSAFE_TODO(draw_buffers_[i]) != GL_NONE) {
-      const Attachment* attachment =
-          GetAttachment(UNSAFE_TODO(draw_buffers_[i]));
+    if (draw_buffers_[i] != GL_NONE) {
+      const Attachment* attachment = GetAttachment(draw_buffers_[i]);
       if (!attachment)
         continue;
       if (!internal_format) {
@@ -961,7 +957,7 @@ void Framebuffer::UpdateDrawBufferMasks() {
   draw_buffer_float32_mask_ = 0u;
   draw_buffer_bound_mask_ = 0u;
   for (uint32_t index = 0; index < manager_->max_draw_buffers_; ++index) {
-    GLenum draw_buffer = UNSAFE_TODO(draw_buffers_[index]);
+    GLenum draw_buffer = draw_buffers_[index];
     if (draw_buffer == GL_NONE)
       continue;
     auto iter = attachments_.find(draw_buffer);
