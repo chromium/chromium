@@ -86,7 +86,7 @@ export class SettingsEditDictionaryPageElement extends
     };
   }
 
-  declare prefs: Record<string, unknown>;
+  declare prefs: {[key: string]: any};
   declare private newWordValue_: string;
   declare subpageRoute: Route;
   declare private words_: string[];

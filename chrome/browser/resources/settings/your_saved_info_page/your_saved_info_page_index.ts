@@ -59,7 +59,7 @@ export class SettingsYourSavedInfoPageIndexElement extends
     };
   }
 
-  declare prefs: Record<string, unknown>;
+  declare prefs: {[key: string]: any};
   declare private enableYourSavedInfoShoppingPage_: boolean;
 
   override currentRouteChanged(newRoute: Route, oldRoute?: Route) {

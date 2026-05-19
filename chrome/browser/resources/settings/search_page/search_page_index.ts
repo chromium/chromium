@@ -59,7 +59,7 @@ export class SettingsSearchPageIndexElement extends
     };
   }
 
-  declare prefs: Record<string, unknown>;
+  declare prefs: {[key: string]: any};
   declare private routes_: SettingsRoutes;
   declare private searchSettingsUpdateEnabled_: boolean;
 

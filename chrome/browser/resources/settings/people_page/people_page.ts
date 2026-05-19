@@ -198,7 +198,7 @@ export class SettingsPeoplePageElement extends SettingsPeoplePageElementBase {
     };
   }
 
-  declare prefs: Record<string, unknown>;
+  declare prefs: any;
   declare private signinAllowed_: boolean;
   declare private isDasherlessProfile_: boolean;
   declare syncStatus: SyncStatus|null;

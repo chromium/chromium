@@ -151,7 +151,7 @@ export class SettingsSecurityKeysBioEnrollDialogElement extends
     this.dialogPage_ = page;
   }
 
-  private fire_(eventName: string, detail?: unknown) {
+  private fire_(eventName: string, detail?: any) {
     this.dispatchEvent(
         new CustomEvent(eventName, {bubbles: true, composed: true, detail}));
   }

@@ -303,13 +303,17 @@ export class SettingsPersonalizationOptionsElement extends
 
   // <if expr="not is_chromeos">
   private showSpellCheckControlToggle_(): boolean {
-    return this.getPref<string[]>('spellcheck.dictionaries').value.length > 0;
+    return (
+        !!(this.prefs as {spellcheck?: any}).spellcheck &&
+        this.getPref<string[]>('spellcheck.dictionaries').value.length > 0);
   }
   // </if><!-- not chromeos -->
 
   // <if expr="is_chromeos">
   private showSpellCheckControlLink_(): boolean {
-    return this.getPref<string[]>('spellcheck.dictionaries').value.length > 0;
+    return (
+        !!(this.prefs as {spellcheck?: any}).spellcheck &&
+        this.getPref<string[]>('spellcheck.dictionaries').value.length > 0);
   }
 
   private onUseSpellingServiceLinkClick_() {

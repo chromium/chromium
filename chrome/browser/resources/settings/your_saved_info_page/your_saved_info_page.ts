@@ -111,7 +111,7 @@ export class SettingsYourSavedInfoPageElement extends
     };
   }
 
-  declare prefs: Record<string, unknown>;
+  declare prefs: {[key: string]: any};
   declare private hierarchy_: DataTypeHierarchy;
   declare private enableYourSavedInfoShoppingPage_: boolean;
 

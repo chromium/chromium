@@ -130,7 +130,7 @@ export class SettingsToggleButtonElement extends
     }
   }
 
-  private fire_(eventName: string, detail?: unknown) {
+  private fire_(eventName: string, detail?: any) {
     this.dispatchEvent(
         new CustomEvent(eventName, {detail, bubbles: true, composed: true}));
   }

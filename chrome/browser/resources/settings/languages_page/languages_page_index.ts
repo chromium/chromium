@@ -57,7 +57,7 @@ export class SettingsLanguagesPageIndexElement extends
     };
   }
 
-  declare prefs: Record<string, unknown>;
+  declare prefs: {[key: string]: any};
   declare languages?: LanguagesModel;
   declare private routes_: SettingsRoutes;
 

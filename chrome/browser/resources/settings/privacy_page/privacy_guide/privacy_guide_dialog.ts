@@ -44,7 +44,7 @@ export class SettingsPrivacyGuideDialogElement extends PolymerElement {
     };
   }
 
-  declare prefs: Record<string, unknown>;
+  declare prefs: {[key: string]: any};
 
   override connectedCallback() {
     super.connectedCallback();

@@ -136,7 +136,7 @@ export class SettingsAutofillSectionElement extends
     };
   }
 
-  declare prefs: Record<string, unknown>;
+  declare prefs: {[key: string]: any};
   declare addresses: chrome.autofillPrivate.AddressEntry[];
   declare activeAddress: chrome.autofillPrivate.AddressEntry|null;
   declare private accountInfo_: chrome.autofillPrivate.AccountInfo|null;

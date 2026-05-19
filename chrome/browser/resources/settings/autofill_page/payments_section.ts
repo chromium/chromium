@@ -243,7 +243,7 @@ export class SettingsPaymentsSectionElement extends
     };
   }
 
-  declare prefs: Record<string, unknown>;
+  declare prefs: {[key: string]: any};
   declare creditCards: chrome.autofillPrivate.CreditCardEntry[];
   declare ibans: chrome.autofillPrivate.IbanEntry[];
   declare payOverTimeIssuers: chrome.autofillPrivate.PayOverTimeIssuerEntry[];
