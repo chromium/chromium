@@ -98,6 +98,22 @@ final class GlobalBrowserCollectionPlatformDelegate
         }
     }
 
+    @Override
+    public void onBrowserWindowActivated(long androidBrowserWindowPtr) {
+        if (mNativePointer != 0) {
+            GlobalBrowserCollectionPlatformDelegateJni.get()
+                    .onBrowserActivated(mNativePointer, androidBrowserWindowPtr);
+        }
+    }
+
+    @Override
+    public void onBrowserWindowDeactivated(long androidBrowserWindowPtr) {
+        if (mNativePointer != 0) {
+            GlobalBrowserCollectionPlatformDelegateJni.get()
+                    .onBrowserDeactivated(mNativePointer, androidBrowserWindowPtr);
+        }
+    }
+
     @NativeMethods
     interface Natives {
         void onBrowserCreated(
@@ -105,6 +121,14 @@ final class GlobalBrowserCollectionPlatformDelegate
                 long nativeAndroidBrowserWindow);
 
         void onBrowserClosed(
+                long nativeGlobalBrowserCollectionPlatformDelegate,
+                long nativeAndroidBrowserWindow);
+
+        void onBrowserActivated(
+                long nativeGlobalBrowserCollectionPlatformDelegate,
+                long nativeAndroidBrowserWindow);
+
+        void onBrowserDeactivated(
                 long nativeGlobalBrowserCollectionPlatformDelegate,
                 long nativeAndroidBrowserWindow);
     }

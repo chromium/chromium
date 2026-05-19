@@ -38,7 +38,6 @@ void GlobalBrowserCollectionPlatformDelegate::OnBrowserClosed(
   parent_->OnBrowserClosed(browser_window);
 }
 
-// TODO(crbug.com/474120522): Call this from Java.
 void GlobalBrowserCollectionPlatformDelegate::OnBrowserActivated(
     JNIEnv* env,
     int64_t j_browser_window_ptr) {
@@ -47,7 +46,6 @@ void GlobalBrowserCollectionPlatformDelegate::OnBrowserActivated(
   parent_->OnBrowserActivated(browser_window);
 }
 
-// TODO(crbug.com/474120522): Call this from Java.
 void GlobalBrowserCollectionPlatformDelegate::OnBrowserDeactivated(
     JNIEnv* env,
     int64_t j_browser_window_ptr) {

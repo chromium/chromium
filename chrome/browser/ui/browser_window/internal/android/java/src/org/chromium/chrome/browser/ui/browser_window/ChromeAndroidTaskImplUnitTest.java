@@ -3872,6 +3872,275 @@ public class ChromeAndroidTaskImplUnitTest {
         verify(observer, never()).onBrowserWindowRemoved(any(Long.class));
     }
 
+    @Test
+    public void
+            androidBrowserWindowObserver_switchBetweenRegularAndIncognitoProfiles_notifiedOnActivationAndDeactivation() {
+        assumeFalse(BuildConfig.IS_DESKTOP_ANDROID);
+
+        // Arrange
+        var chromeAndroidTaskWithMockDeps =
+                ChromeAndroidTaskUnitTestSupport.createChromeAndroidTaskWithMockDeps(
+                        /* taskId= */ 1,
+                        /* isPendingTask= */ false,
+                        /* isDesktopMode= */ true,
+                        SupportedProfileType.MIXED);
+        var chromeAndroidTask =
+                (ChromeAndroidTaskImpl) chromeAndroidTaskWithMockDeps.mChromeAndroidTask;
+        var activityWindowAndroidMocks = chromeAndroidTaskWithMockDeps.mActivityWindowAndroidMocks;
+
+        shadowOf(getMainLooper()).idle();
+
+        var observer = mock(AndroidBrowserWindowObserver.class);
+        chromeAndroidTask.addAndroidBrowserWindowObserver(observer);
+
+        when(activityWindowAndroidMocks.mMockActivityWindowAndroid.isTopResumedActivity())
+                .thenReturn(true);
+        chromeAndroidTask.onTopResumedActivityChangedWithNative(true);
+
+        var tabModelSelector =
+                chromeAndroidTaskWithMockDeps.mActivityScopedObjects.mTabModelSelector;
+        var incognitoTabModel = (IncognitoTabModel) tabModelSelector.getModel(true);
+        var incognitoProfile = mock(Profile.class, "IncognitoProfile");
+        when(incognitoProfile.isOffTheRecord()).thenReturn(true);
+
+        ArgumentCaptor<IncognitoTabModelObserver> incognitoObserverCaptor =
+                ArgumentCaptor.forClass(IncognitoTabModelObserver.class);
+        verify(incognitoTabModel).addIncognitoObserver(incognitoObserverCaptor.capture());
+
+        when(incognitoTabModel.getProfile()).thenReturn(incognitoProfile);
+        // Simulate creating incognito model while it is selected.
+        when(tabModelSelector.getCurrentModel()).thenReturn(incognitoTabModel);
+        incognitoObserverCaptor.getValue().onIncognitoModelCreated();
+
+        // Assert activated incognito window
+        verify(observer, times(1))
+                .onBrowserWindowActivated(
+                        ChromeAndroidTaskUnitTestSupport
+                                .FAKE_INCOGNITO_NATIVE_ANDROID_BROWSER_WINDOW_PTR);
+
+        // Act: Switch back to normal tab model
+        var normalTabModel = mock(TabModel.class);
+        when(normalTabModel.getProfile()).thenReturn(chromeAndroidTaskWithMockDeps.mMockProfile);
+        when(tabModelSelector.getCurrentModel()).thenReturn(normalTabModel);
+        ((SettableMonotonicObservableSupplier<TabModel>)
+                        tabModelSelector.getCurrentTabModelSupplier())
+                .set(normalTabModel);
+
+        // Assert deactivated incognito window and activated normal window
+        verify(observer, times(1))
+                .onBrowserWindowDeactivated(
+                        ChromeAndroidTaskUnitTestSupport
+                                .FAKE_INCOGNITO_NATIVE_ANDROID_BROWSER_WINDOW_PTR);
+        verify(observer, times(2)).onBrowserWindowActivated(FAKE_NATIVE_ANDROID_BROWSER_WINDOW_PTR);
+    }
+
+    @Test
+    public void androidBrowserWindowObserver_notifiedOnProfileDestroyed_updatesActiveWindow() {
+        assumeFalse(BuildConfig.IS_DESKTOP_ANDROID);
+
+        // Arrange
+        var chromeAndroidTaskWithMockDeps =
+                ChromeAndroidTaskUnitTestSupport.createChromeAndroidTaskWithMockDeps(
+                        /* taskId= */ 1,
+                        /* isPendingTask= */ false,
+                        /* isDesktopMode= */ true,
+                        SupportedProfileType.MIXED);
+        var chromeAndroidTask =
+                (ChromeAndroidTaskImpl) chromeAndroidTaskWithMockDeps.mChromeAndroidTask;
+        var activityWindowAndroidMocks = chromeAndroidTaskWithMockDeps.mActivityWindowAndroidMocks;
+        when(activityWindowAndroidMocks.mMockActivityWindowAndroid.isTopResumedActivity())
+                .thenReturn(true);
+        chromeAndroidTask.onTopResumedActivityChangedWithNative(true);
+        var observer = mock(AndroidBrowserWindowObserver.class);
+        chromeAndroidTask.addAndroidBrowserWindowObserver(observer);
+
+        var tabModelSelector =
+                chromeAndroidTaskWithMockDeps.mActivityScopedObjects.mTabModelSelector;
+        var incognitoTabModel = (IncognitoTabModel) tabModelSelector.getModel(true);
+        var incognitoProfile = mock(Profile.class, "IncognitoProfile");
+        when(incognitoProfile.isOffTheRecord()).thenReturn(true);
+
+        ArgumentCaptor<IncognitoTabModelObserver> incognitoObserverCaptor =
+                ArgumentCaptor.forClass(IncognitoTabModelObserver.class);
+        verify(incognitoTabModel).addIncognitoObserver(incognitoObserverCaptor.capture());
+
+        when(incognitoTabModel.getProfile()).thenReturn(incognitoProfile);
+        // Simulate creating incognito model while it is selected.
+        when(tabModelSelector.getCurrentModel()).thenReturn(incognitoTabModel);
+        incognitoObserverCaptor.getValue().onIncognitoModelCreated();
+
+        verify(observer, times(1))
+                .onBrowserWindowActivated(
+                        ChromeAndroidTaskUnitTestSupport
+                                .FAKE_INCOGNITO_NATIVE_ANDROID_BROWSER_WINDOW_PTR);
+
+        // Simulate switching getCurrentModel back to normal tab model when incognito profile is
+        // destroyed.
+        var normalTabModel = tabModelSelector.getModel(false);
+        when(tabModelSelector.getCurrentModel()).thenReturn(normalTabModel);
+
+        // Act: Destroy the Incognito profile
+        ProfileManager.onProfileDestroyed(incognitoProfile);
+
+        // Assert: incognito window removed (no deactivation event), normal window activated
+        InOrder inOrder = inOrder(observer);
+        inOrder.verify(observer)
+                .onBrowserWindowRemoved(
+                        ChromeAndroidTaskUnitTestSupport
+                                .FAKE_INCOGNITO_NATIVE_ANDROID_BROWSER_WINDOW_PTR);
+        inOrder.verify(observer).onBrowserWindowActivated(FAKE_NATIVE_ANDROID_BROWSER_WINDOW_PTR);
+    }
+
+    @Test
+    public void
+            androidBrowserWindowObserver_notifiedOnIncognitoModelDidBecomeEmpty_updatesActiveWindow() {
+        assumeFalse(BuildConfig.IS_DESKTOP_ANDROID);
+
+        // Arrange
+        var chromeAndroidTaskWithMockDeps =
+                ChromeAndroidTaskUnitTestSupport.createChromeAndroidTaskWithMockDeps(
+                        /* taskId= */ 1,
+                        /* isPendingTask= */ false,
+                        /* isDesktopMode= */ true,
+                        SupportedProfileType.MIXED);
+        var chromeAndroidTask =
+                (ChromeAndroidTaskImpl) chromeAndroidTaskWithMockDeps.mChromeAndroidTask;
+        var activityWindowAndroidMocks = chromeAndroidTaskWithMockDeps.mActivityWindowAndroidMocks;
+        when(activityWindowAndroidMocks.mMockActivityWindowAndroid.isTopResumedActivity())
+                .thenReturn(true);
+        chromeAndroidTask.onTopResumedActivityChangedWithNative(true);
+        var observer = mock(AndroidBrowserWindowObserver.class);
+        chromeAndroidTask.addAndroidBrowserWindowObserver(observer);
+
+        var tabModelSelector =
+                chromeAndroidTaskWithMockDeps.mActivityScopedObjects.mTabModelSelector;
+        var incognitoTabModel = (IncognitoTabModel) tabModelSelector.getModel(true);
+        var incognitoProfile = mock(Profile.class, "IncognitoProfile");
+        when(incognitoProfile.isOffTheRecord()).thenReturn(true);
+
+        ArgumentCaptor<IncognitoTabModelObserver> incognitoObserverCaptor =
+                ArgumentCaptor.forClass(IncognitoTabModelObserver.class);
+        verify(incognitoTabModel).addIncognitoObserver(incognitoObserverCaptor.capture());
+
+        when(incognitoTabModel.getProfile()).thenReturn(incognitoProfile);
+        // Simulate creating incognito model while it is selected.
+        when(tabModelSelector.getCurrentModel()).thenReturn(incognitoTabModel);
+        incognitoObserverCaptor.getValue().onIncognitoModelCreated();
+
+        verify(observer, times(1))
+                .onBrowserWindowActivated(
+                        ChromeAndroidTaskUnitTestSupport
+                                .FAKE_INCOGNITO_NATIVE_ANDROID_BROWSER_WINDOW_PTR);
+
+        // Simulate switching getCurrentModel back to normal tab model when incognito tabs become
+        // empty.
+        var normalTabModel = tabModelSelector.getModel(false);
+        when(tabModelSelector.getCurrentModel()).thenReturn(normalTabModel);
+
+        // Act: incognito model becomes empty
+        incognitoObserverCaptor.getValue().didBecomeEmpty();
+
+        // Assert: incognito window removed (no deactivation event), normal window activated
+        InOrder inOrder = inOrder(observer);
+        inOrder.verify(observer)
+                .onBrowserWindowRemoved(
+                        ChromeAndroidTaskUnitTestSupport
+                                .FAKE_INCOGNITO_NATIVE_ANDROID_BROWSER_WINDOW_PTR);
+        inOrder.verify(observer).onBrowserWindowActivated(FAKE_NATIVE_ANDROID_BROWSER_WINDOW_PTR);
+    }
+
+    @Test
+    public void androidBrowserWindowObserver_notifyBrowserWindowAdded_doesNotActivateIfInactive() {
+        assumeFalse(BuildConfig.IS_DESKTOP_ANDROID);
+
+        // Arrange
+        var chromeAndroidTaskWithMockDeps =
+                ChromeAndroidTaskUnitTestSupport.createChromeAndroidTaskWithMockDeps(
+                        /* taskId= */ 1,
+                        /* isPendingTask= */ false,
+                        /* isDesktopMode= */ true,
+                        SupportedProfileType.MIXED);
+        var chromeAndroidTask =
+                (ChromeAndroidTaskImpl) chromeAndroidTaskWithMockDeps.mChromeAndroidTask;
+        var activityWindowAndroidMocks = chromeAndroidTaskWithMockDeps.mActivityWindowAndroidMocks;
+        when(activityWindowAndroidMocks.mMockActivityWindowAndroid.isTopResumedActivity())
+                .thenReturn(true);
+        chromeAndroidTask.onTopResumedActivityChangedWithNative(true);
+        var observer = mock(AndroidBrowserWindowObserver.class);
+        chromeAndroidTask.addAndroidBrowserWindowObserver(observer);
+
+        var tabModelSelector =
+                chromeAndroidTaskWithMockDeps.mActivityScopedObjects.mTabModelSelector;
+        var incognitoTabModel = (IncognitoTabModel) tabModelSelector.getModel(true);
+        var incognitoProfile = mock(Profile.class, "IncognitoProfile");
+        when(incognitoProfile.isOffTheRecord()).thenReturn(true);
+
+        ArgumentCaptor<IncognitoTabModelObserver> incognitoObserverCaptor =
+                ArgumentCaptor.forClass(IncognitoTabModelObserver.class);
+        verify(incognitoTabModel).addIncognitoObserver(incognitoObserverCaptor.capture());
+
+        when(incognitoTabModel.getProfile()).thenReturn(incognitoProfile);
+        // Simulate creating incognito model while normal tab model remains selected.
+        var normalTabModel = tabModelSelector.getModel(false);
+        when(tabModelSelector.getCurrentModel()).thenReturn(normalTabModel);
+
+        // Act
+        incognitoObserverCaptor.getValue().onIncognitoModelCreated();
+
+        // Assert: incognito window added but NOT activated
+        verify(observer, times(1))
+                .onBrowserWindowAdded(
+                        ChromeAndroidTaskUnitTestSupport
+                                .FAKE_INCOGNITO_NATIVE_ANDROID_BROWSER_WINDOW_PTR);
+        verify(observer, never())
+                .onBrowserWindowActivated(
+                        ChromeAndroidTaskUnitTestSupport
+                                .FAKE_INCOGNITO_NATIVE_ANDROID_BROWSER_WINDOW_PTR);
+    }
+
+    @Test
+    public void
+            androidBrowserWindowObserver_taskForegroundAndBackground_notifiedOnActivationAndDeactivation() {
+        // Arrange
+        var chromeAndroidTaskWithMockDeps =
+                ChromeAndroidTaskUnitTestSupport.createChromeAndroidTaskWithMockDeps(
+                        /* taskId= */ 1, /* isPendingTask= */ false, /* isDesktopMode= */ true);
+        var chromeAndroidTask =
+                (ChromeAndroidTaskImpl) chromeAndroidTaskWithMockDeps.mChromeAndroidTask;
+        var activityWindowAndroidMocks = chromeAndroidTaskWithMockDeps.mActivityWindowAndroidMocks;
+
+        shadowOf(getMainLooper()).idle();
+
+        // Register observer.
+        var observer = mock(AndroidBrowserWindowObserver.class);
+        chromeAndroidTask.addAndroidBrowserWindowObserver(observer);
+
+        // 1. Start in foreground/active state.
+        when(activityWindowAndroidMocks.mMockActivityWindowAndroid.isTopResumedActivity())
+                .thenReturn(true);
+        chromeAndroidTask.onTopResumedActivityChangedWithNative(true);
+
+        // Verify normal window is immediately activated since it's in the foreground.
+        verify(observer, times(1)).onBrowserWindowActivated(FAKE_NATIVE_ANDROID_BROWSER_WINDOW_PTR);
+
+        // 2. Act: Move task to background.
+        when(activityWindowAndroidMocks.mMockActivityWindowAndroid.isTopResumedActivity())
+                .thenReturn(false);
+        chromeAndroidTask.onTopResumedActivityChangedWithNative(false);
+
+        // Assert: normal window is deactivated.
+        verify(observer, times(1))
+                .onBrowserWindowDeactivated(FAKE_NATIVE_ANDROID_BROWSER_WINDOW_PTR);
+
+        // 3. Act: Move task back to foreground.
+        when(activityWindowAndroidMocks.mMockActivityWindowAndroid.isTopResumedActivity())
+                .thenReturn(true);
+        chromeAndroidTask.onTopResumedActivityChangedWithNative(true);
+
+        // Assert: normal window is activated again.
+        verify(observer, times(2)).onBrowserWindowActivated(FAKE_NATIVE_ANDROID_BROWSER_WINDOW_PTR);
+    }
+
     private static final class TestChromeAndroidTaskFeature implements ChromeAndroidTaskFeature {
 
         final CallbackHelper mOnFeatureRemovedHelper = new CallbackHelper();

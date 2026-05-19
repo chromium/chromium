@@ -29,7 +29,6 @@ import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.JniOnceCallback;
 import org.chromium.base.Log;
-import org.chromium.base.ObserverList;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.TimeUtils;
 import org.chromium.build.BuildConfig;
@@ -278,9 +277,6 @@ final class ChromeAndroidTaskImpl
     // TabModelSelector to determine the profile.
     private final Profile mInitialProfile;
 
-    private final ObserverList<AndroidBrowserWindowObserver> mAndroidBrowserWindowObservers =
-            new ObserverList<>();
-
     private final WindowStateManager mWindowStateManager = new WindowStateManager();
 
     /**
@@ -334,7 +330,9 @@ final class ChromeAndroidTaskImpl
                             assert mActivityScopedObjectsDeque.isEmpty();
 
                             destroyBrowserWindow(
-                                    mPendingBrowserWindow, null, mAndroidBrowserWindowObservers);
+                                    mPendingBrowserWindow,
+                                    null,
+                                    mAndroidBrowserWindowObserverNotifier);
                             mPendingBrowserWindow = null;
                             return;
                         }
@@ -349,14 +347,19 @@ final class ChromeAndroidTaskImpl
                                 destroyBrowserWindow(
                                         browserWindow,
                                         internalActivityScopedObjects,
-                                        mAndroidBrowserWindowObservers);
+                                        mAndroidBrowserWindowObserverNotifier);
                             }
                         }
+                        mAndroidBrowserWindowObserverNotifier.updateActiveBrowserWindow(
+                                getActiveBrowserWindow());
                     }
                 }
             };
 
     private final Callback<TabModel> mOnTabModelSelectedCallback = this::onTabModelSelected;
+
+    private final AndroidBrowserWindowObserverNotifier mAndroidBrowserWindowObserverNotifier =
+            new AndroidBrowserWindowObserverNotifier();
 
     private static final class IncognitoTabModelObserverImpl implements IncognitoTabModelObserver {
         private final ChromeAndroidTaskImpl mChromeAndroidTaskImpl;
@@ -395,9 +398,10 @@ final class ChromeAndroidTaskImpl
             mInternalActivityScopedObjects.addBrowserWindow(browserWindow);
             long ptr = browserWindow.getOrCreateNativePtr();
             incognitoModel.associateWithBrowserWindow(ptr);
-            for (var observer : mChromeAndroidTaskImpl.mAndroidBrowserWindowObservers) {
-                observer.onBrowserWindowAdded(ptr);
-            }
+            mChromeAndroidTaskImpl.mAndroidBrowserWindowObserverNotifier.notifyBrowserWindowAdded(
+                    browserWindow);
+            mChromeAndroidTaskImpl.mAndroidBrowserWindowObserverNotifier.updateActiveBrowserWindow(
+                    mChromeAndroidTaskImpl.getActiveBrowserWindow());
         }
 
         @Override
@@ -420,9 +424,11 @@ final class ChromeAndroidTaskImpl
                     destroyBrowserWindow(
                             browserWindow,
                             mInternalActivityScopedObjects,
-                            mChromeAndroidTaskImpl.mAndroidBrowserWindowObservers);
+                            mChromeAndroidTaskImpl.mAndroidBrowserWindowObserverNotifier);
                 }
             }
+            mChromeAndroidTaskImpl.mAndroidBrowserWindowObserverNotifier.updateActiveBrowserWindow(
+                    mChromeAndroidTaskImpl.getActiveBrowserWindow());
         }
     }
 
@@ -689,6 +695,8 @@ final class ChromeAndroidTaskImpl
         // Activity.
         if (isActivityToRemoveAtTop) {
             registerListenersForTopActivity();
+            mAndroidBrowserWindowObserverNotifier.updateActiveBrowserWindow(
+                    getActiveBrowserWindow());
         }
     }
 
@@ -817,8 +825,7 @@ final class ChromeAndroidTaskImpl
     private static void destroyBrowserWindow(
             AndroidBrowserWindow browserWindow,
             @Nullable InternalActivityScopedObjects internalActivityScopedObjects,
-            ObserverList<AndroidBrowserWindowObserver> browserWindowObservers) {
-
+            AndroidBrowserWindowObserverNotifier browserWindowObserverNotifier) {
         // Check if the given browserWindow matches internalActivityScopedObjects.
         if (internalActivityScopedObjects == null) {
             assert browserWindow.getActivityWindowAndroid() == null;
@@ -841,10 +848,7 @@ final class ChromeAndroidTaskImpl
 
         // Note: Notify observers immediately before browserWindow.destroy(), and after everything
         // else.
-        for (var observer : browserWindowObservers) {
-            observer.onBrowserWindowRemoved(ptr);
-        }
-
+        browserWindowObserverNotifier.notifyBrowserWindowDestroyed(browserWindow);
         browserWindow.destroy();
     }
 
@@ -1220,6 +1224,8 @@ final class ChromeAndroidTaskImpl
         for (var feature : mFeatures.values()) {
             feature.onTaskFocusChanged(isTopResumedActivity);
         }
+
+        mAndroidBrowserWindowObserverNotifier.updateActiveBrowserWindow(getActiveBrowserWindow());
     }
 
     @Override
@@ -1294,17 +1300,17 @@ final class ChromeAndroidTaskImpl
 
     @Override
     public void addAndroidBrowserWindowObserver(AndroidBrowserWindowObserver observer) {
-        mAndroidBrowserWindowObservers.addObserver(observer);
+        mAndroidBrowserWindowObserverNotifier.addObserver(observer);
     }
 
     @Override
     public void removeAndroidBrowserWindowObserver(AndroidBrowserWindowObserver observer) {
-        mAndroidBrowserWindowObservers.removeObserver(observer);
+        mAndroidBrowserWindowObserverNotifier.removeObserver(observer);
     }
 
     @Override
     public boolean hasAndroidBrowserWindowObserver(AndroidBrowserWindowObserver observer) {
-        return mAndroidBrowserWindowObservers.hasObserver(observer);
+        return mAndroidBrowserWindowObserverNotifier.hasObserver(observer);
     }
 
     @VisibleForTesting
@@ -1410,10 +1416,9 @@ final class ChromeAndroidTaskImpl
             }
 
             // Notify observers of new window creation.
-            long ptr = newBrowserWindow.getOrCreateNativePtr();
-            for (var observer : mAndroidBrowserWindowObservers) {
-                observer.onBrowserWindowAdded(ptr);
-            }
+            mAndroidBrowserWindowObserverNotifier.notifyBrowserWindowAdded(newBrowserWindow);
+            mAndroidBrowserWindowObserverNotifier.updateActiveBrowserWindow(
+                    getActiveBrowserWindow());
         }
 
         // By this point, mActivityScopedObjectsDeque has been correctly
@@ -1608,7 +1613,7 @@ final class ChromeAndroidTaskImpl
                 new ArrayList<>(activityScopedObjectsToRemove.mAndroidBrowserWindows.values());
         for (var window : windows) {
             destroyBrowserWindow(
-                    window, activityScopedObjectsToRemove, mAndroidBrowserWindowObservers);
+                    window, activityScopedObjectsToRemove, mAndroidBrowserWindowObserverNotifier);
         }
     }
 
@@ -1650,13 +1655,17 @@ final class ChromeAndroidTaskImpl
                     new ArrayList<>(internalActivityScopedObjects.mAndroidBrowserWindows.values());
             for (var window : windows) {
                 destroyBrowserWindow(
-                        window, internalActivityScopedObjects, mAndroidBrowserWindowObservers);
+                        window,
+                        internalActivityScopedObjects,
+                        mAndroidBrowserWindowObserverNotifier);
             }
         }
         if (mPendingBrowserWindow != null) {
-            destroyBrowserWindow(mPendingBrowserWindow, null, mAndroidBrowserWindowObservers);
+            destroyBrowserWindow(
+                    mPendingBrowserWindow, null, mAndroidBrowserWindowObserverNotifier);
             mPendingBrowserWindow = null;
         }
+        mAndroidBrowserWindowObserverNotifier.updateActiveBrowserWindow(getActiveBrowserWindow());
     }
 
     private void useActivity(ActivityUpdater updater) {
@@ -1886,6 +1895,28 @@ final class ChromeAndroidTaskImpl
         for (var feature : mFeatures.values()) {
             feature.onTabModelSelected(tabModel);
         }
+        mAndroidBrowserWindowObserverNotifier.updateActiveBrowserWindow(getActiveBrowserWindow());
+    }
+
+    private @Nullable AndroidBrowserWindow getActiveBrowserWindow() {
+        var internalActivityScopedObjects = mActivityScopedObjectsDeque.peekFirst();
+        if (internalActivityScopedObjects != null) {
+            var windowAndroid =
+                    internalActivityScopedObjects.mActivityScopedObjects.mActivityWindowAndroid;
+            if (!windowAndroid.isTopResumedActivity()) {
+                return null;
+            }
+            var tabModel =
+                    internalActivityScopedObjects.mActivityScopedObjects.mTabModelSelector
+                            .getCurrentModel();
+            if (tabModel != null) {
+                var profile = tabModel.getProfile();
+                if (profile != null) {
+                    return internalActivityScopedObjects.mAndroidBrowserWindows.get(profile);
+                }
+            }
+        }
+        return null;
     }
 
     private InitInfo createInitInfo(ChromeAndroidTaskFeatureKey featureKey) {

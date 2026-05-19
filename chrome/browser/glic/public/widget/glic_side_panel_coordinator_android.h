@@ -9,15 +9,21 @@
 #include "base/callback_list.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/context_sharing/tab_bottom_sheet/android/tab_bottom_sheet_bridge.h"
 #include "chrome/browser/glic/public/glic_side_panel_coordinator.h"
+#include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "components/tabs/public/tab_interface.h"
+
+class BrowserWindowInterface;
 
 namespace glic {
 
 class GlicSidePanelCoordinatorAndroid
     : public GlicSidePanelCoordinator,
-      public context_sharing::TabBottomSheetBridge::Observer {
+      public context_sharing::TabBottomSheetBridge::Observer,
+      public BrowserCollectionObserver {
  public:
   explicit GlicSidePanelCoordinatorAndroid(tabs::TabInterface* tab);
   ~GlicSidePanelCoordinatorAndroid() override;
@@ -40,6 +46,10 @@ class GlicSidePanelCoordinatorAndroid
   void OnSuppressed() override;
   void OnOpened(bool is_expanded) override;
 
+  // BrowserCollectionObserver:
+  void OnBrowserActivated(BrowserWindowInterface* browser) override;
+  void OnBrowserDeactivated(BrowserWindowInterface* browser) override;
+
  private:
   void SetState(State state);
   void OnTabDidActivate(tabs::TabInterface* tab);
@@ -55,6 +65,8 @@ class GlicSidePanelCoordinatorAndroid
   base::CallbackListSubscription will_deactivate_subscription_;
   base::CallbackListSubscription will_detach_subscription_;
   std::unique_ptr<context_sharing::TabBottomSheetBridge> bridge_;
+  base::ScopedObservation<GlobalBrowserCollection, BrowserCollectionObserver>
+      browser_observation_{this};
 };
 
 }  // namespace glic

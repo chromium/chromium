@@ -11,6 +11,8 @@
 #include "base/rand_util.h"
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/context_sharing/tab_bottom_sheet/android/tab_bottom_sheet_bridge.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
 
@@ -28,6 +30,8 @@ GlicSidePanelCoordinatorAndroid::GlicSidePanelCoordinatorAndroid(
   will_detach_subscription_ = tab_->RegisterWillDetach(
       base::BindRepeating(&GlicSidePanelCoordinatorAndroid::OnTabWillDetach,
                           base::Unretained(this)));
+
+  browser_observation_.Observe(GlobalBrowserCollection::GetInstance());
 
   bridge_ = std::make_unique<context_sharing::TabBottomSheetBridge>(
       this, tab, context_sharing::TabBottomSheetClientType::kGlic);
@@ -156,6 +160,30 @@ void GlicSidePanelCoordinatorAndroid::OnTabWillDetach(
       SetState(State::kBackgrounded);
       bridge_->Close(/* animate= */ false);
     }
+  }
+}
+
+void GlicSidePanelCoordinatorAndroid::OnBrowserActivated(
+    BrowserWindowInterface* browser) {
+  if (state_ == State::kClosed) {
+    return;
+  }
+  if (tab_->GetBrowserWindowInterface() == browser) {
+    ShowOptions options;
+    options.suppress_animations = true;
+    options.initial_state = ShowOptions::InitialState::kPeeked;
+    Show(options);
+  }
+}
+
+void GlicSidePanelCoordinatorAndroid::OnBrowserDeactivated(
+    BrowserWindowInterface* browser) {
+  if (state_ == State::kClosed) {
+    return;
+  }
+  if (tab_->GetBrowserWindowInterface() == browser) {
+    SetState(State::kBackgrounded);
+    bridge_->Close(/*animate=*/false);
   }
 }
 

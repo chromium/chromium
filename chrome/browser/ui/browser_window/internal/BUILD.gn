@@ -223,6 +223,7 @@ if (is_android) {
       "android/java/src/org/chromium/chrome/browser/ui/browser_window/AndroidBaseWindow.java",
       "android/java/src/org/chromium/chrome/browser/ui/browser_window/AndroidBrowserWindow.java",
       "android/java/src/org/chromium/chrome/browser/ui/browser_window/AndroidBrowserWindowCreateParamsImpl.java",
+      "android/java/src/org/chromium/chrome/browser/ui/browser_window/AndroidBrowserWindowObserverNotifier.java",
       "android/java/src/org/chromium/chrome/browser/ui/browser_window/BrowserWindowCreatorBridge.java",
       "android/java/src/org/chromium/chrome/browser/ui/browser_window/BrowserWindowInterfaceIteratorAndroid.java",
       "android/java/src/org/chromium/chrome/browser/ui/browser_window/ChromeAndroidTaskBoundsConstraints.java",

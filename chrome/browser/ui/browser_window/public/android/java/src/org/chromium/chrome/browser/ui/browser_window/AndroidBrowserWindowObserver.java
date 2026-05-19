@@ -22,4 +22,20 @@ public interface AndroidBrowserWindowObserver {
      * @param androidBrowserWindowPtr The pointer to the native {@code AndroidBrowserWindow}.
      */
     void onBrowserWindowRemoved(long androidBrowserWindowPtr);
+
+    /**
+     * Called when an {@code AndroidBrowserWindow} becomes the active window (e.g., when switching
+     * to incognito, or resuming from background).
+     *
+     * @param androidBrowserWindowPtr The pointer to the native {@code AndroidBrowserWindow}.
+     */
+    default void onBrowserWindowActivated(long androidBrowserWindowPtr) {}
+
+    /**
+     * Called when an {@code AndroidBrowserWindow} is no longer the active window (e.g., when
+     * switching away from incognito or backgrounding the app).
+     *
+     * @param androidBrowserWindowPtr The pointer to the native {@code AndroidBrowserWindow}.
+     */
+    default void onBrowserWindowDeactivated(long androidBrowserWindowPtr) {}
 }
