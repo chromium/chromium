@@ -26,6 +26,7 @@
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/mock_media_session.h"
+#include "net/dns/mock_host_resolver.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace contextual_tasks {
@@ -241,8 +242,9 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksVideoCitationsBrowserTest,
         return std::make_unique<TestLensMediaLinkHandler>(wc);
       });
 
+  GURL youtube_url("https://www.youtube.com/watch?v=123");
   // Fake a thread link click.
-  test_ui_service->OnThreadLinkClicked(url, task.GetTaskId(), nullptr,
+  test_ui_service->OnThreadLinkClicked(youtube_url, task.GetTaskId(), nullptr,
                                        browser()->GetWeakPtr());
 
   // Ensure the tab count hasn't changed.

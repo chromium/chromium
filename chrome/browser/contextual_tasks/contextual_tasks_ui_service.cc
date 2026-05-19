@@ -436,30 +436,97 @@ void ContextualTasksUiService::OnAimEligibilityChanged() {
   is_cobrowse_eligible_ = is_cobrowse_eligible;
 }
 
-tabs::TabInterface* ContextualTasksUiService::MaybeFocusExistingOpenTab(
-    const GURL& url,
-    TabListInterface* tab_list,
-    const base::Uuid& task_id) {
+#if BUILDFLAG(ENABLE_PDF)
+// Checks if the current URL is a scroll citation on the active tab. Returns
+// true if this is a scroll citation and should be scrolled using the
+// PDFDocumentHelper rather than opening normally.
+static bool IsPdfCitation(const GURL& url,
+                          tabs::TabInterface* active_tab,
+                          const base::Uuid& task_id,
+                          ContextualTasksService* service) {
+  if (!GetIsContextualTasksPdfCitationsEnabled() || !active_tab) {
+    return false;
+  }
+  content::WebContents* web_contents = active_tab->GetContents();
+  std::optional<ContextualTask> task = service->GetContextualTaskForTab(
+      SessionTabHelper::IdForTab(web_contents));
+  if (!task || task->GetTaskId() != task_id) {
+    return false;
+  }
+  const GURL& page_url = web_contents->GetLastCommittedURL();
+  if (page_url.GetScheme() != url.GetScheme() ||
+      page_url.GetHost() != url.GetHost() ||
+      page_url.GetPath() != url.GetPath() ||
+      page_url.GetQuery() != url.GetQuery() || url.GetRef().empty()) {
+    return false;
+  }
+  return pdf::PDFDocumentHelper::MaybeGetForWebContents(web_contents) !=
+         nullptr;
+}
+#endif
+
+#if !BUILDFLAG(IS_ANDROID)
+// Checks if the current URL is a video citation on the active tab. Returns
+// true if this is a video citation and should be handled by scrolling the
+// video to the timestamp in the URL.
+static bool IsVideoCitation(const GURL& url,
+                            tabs::TabInterface* active_tab,
+                            const base::Uuid& task_id,
+                            ContextualTasksService* service) {
+  if (!base::FeatureList::IsEnabled(kContextualTasksVideoCitations) ||
+      !active_tab) {
+    return false;
+  }
+  content::WebContents* web_contents = active_tab->GetContents();
+  std::optional<ContextualTask> task = service->GetContextualTaskForTab(
+      SessionTabHelper::IdForTab(web_contents));
+  if (task && task->GetTaskId() == task_id) {
+    return url.GetHost() == "www.youtube.com";
+  }
+  return false;
+}
+#endif
+
+// Checks if the current URL is already open in the tab list. If so, returns a
+// pointer to that tab. If there is not existing tab with the given url, returns
+// nullptr.
+static tabs::TabInterface* GetExistingTab(const GURL& url,
+                                          TabListInterface* tab_list,
+                                          const base::Uuid& task_id,
+                                          ContextualTasksService* service) {
+  if (!tab_list) {
+    return nullptr;
+  }
   GURL url_no_fragments =
       shared_highlighting::RemoveFragmentSelectorDirectives(url);
   for (int i = 0; i < tab_list->GetTabCount(); ++i) {
     content::WebContents* web_contents = tab_list->GetTab(i)->GetContents();
-    std::optional<ContextualTask> task =
-        contextual_tasks_service_->GetContextualTaskForTab(
-            SessionTabHelper::IdForTab(web_contents));
-    // Remove any text selection directives when trying to match an existing
-    // URL. The directives don't meaningfully change the page content, so it's
-    // ok to match them.
+    std::optional<ContextualTask> task = service->GetContextualTaskForTab(
+        SessionTabHelper::IdForTab(web_contents));
     GURL tab_url_no_fragments =
         shared_highlighting::RemoveFragmentSelectorDirectives(
             web_contents->GetLastCommittedURL());
     if (tab_url_no_fragments == url_no_fragments && task &&
         task->GetTaskId() == task_id) {
-      tab_list->ActivateTab(tab_list->GetTab(i)->GetHandle());
       return tab_list->GetTab(i);
     }
   }
   return nullptr;
+}
+
+// Moves the tab focus to the tab with `url` already open. If a tab is focused,
+// returns a pointer to that tab. If no such tab exists and no focus was
+// changed, this method returns nullptr.
+tabs::TabInterface* ContextualTasksUiService::MaybeFocusExistingOpenTab(
+    const GURL& url,
+    TabListInterface* tab_list,
+    const base::Uuid& task_id) {
+  tabs::TabInterface* existing_tab =
+      GetExistingTab(url, tab_list, task_id, contextual_tasks_service_);
+  if (existing_tab) {
+    tab_list->ActivateTab(existing_tab->GetHandle());
+  }
+  return existing_tab;
 }
 
 bool ContextualTasksUiService::MaybeHandleVideoCitation(
@@ -467,21 +534,14 @@ bool ContextualTasksUiService::MaybeHandleVideoCitation(
     tabs::TabInterface* tab,
     const base::Uuid& task_id) {
 #if !BUILDFLAG(IS_ANDROID)
-  if (!base::FeatureList::IsEnabled(kContextualTasksVideoCitations)) {
+  if (!IsVideoCitation(url, tab, task_id, contextual_tasks_service_)) {
     return false;
   }
 
-  if (tab) {
-    content::WebContents* web_contents = tab->GetContents();
-    std::optional<ContextualTask> task =
-        contextual_tasks_service_->GetContextualTaskForTab(
-            SessionTabHelper::IdForTab(web_contents));
-    if (task && task->GetTaskId() == task_id) {
-      auto handler = CreateMediaLinkHandler(web_contents);
-      if (handler && handler->MaybeReplaceNavigation(url)) {
-        return true;
-      }
-    }
+  content::WebContents* web_contents = tab->GetContents();
+  auto handler = CreateMediaLinkHandler(web_contents);
+  if (handler && handler->MaybeReplaceNavigation(url)) {
+    return true;
   }
 #endif
   return false;
@@ -492,45 +552,11 @@ bool ContextualTasksUiService::MaybeHandlePdfCitation(
     tabs::TabInterface* tab,
     const base::Uuid& task_id) {
 #if BUILDFLAG(ENABLE_PDF)
-  if (!GetIsContextualTasksPdfCitationsEnabled()) {
-    return false;
-  }
-
-  if (!tab) {
+  if (!IsPdfCitation(url, tab, task_id, contextual_tasks_service_)) {
     return false;
   }
 
   content::WebContents* web_contents = tab->GetContents();
-  std::optional<ContextualTask> task =
-      contextual_tasks_service_->GetContextualTaskForTab(
-          SessionTabHelper::IdForTab(web_contents));
-
-  if (!task || task->GetTaskId() != task_id) {
-    return false;
-  }
-
-  const GURL& page_url = web_contents->GetLastCommittedURL();
-  // The citation URL must match the current page URL (ignoring the fragment).
-  if (page_url.GetScheme() != url.GetScheme() ||
-      page_url.GetHost() != url.GetHost() ||
-      page_url.GetPath() != url.GetPath() ||
-      page_url.GetQuery() != url.GetQuery()) {
-    return false;
-  }
-
-  // The citation URL must have a fragment. The fragment is not parsed here
-  // because the PDF viewer supports various open parameters (page, zoom, view,
-  // etc.).
-  if (url.GetRef().empty()) {
-    return false;
-  }
-
-  auto* pdf_helper =
-      pdf::PDFDocumentHelper::MaybeGetForWebContents(web_contents);
-  if (!pdf_helper) {
-    return false;
-  }
-
   // Dispatch an event to the PDF viewer to update the viewport.
   pdf_extension_util::DispatchShouldUpdateViewportEvent(
       web_contents->GetPrimaryMainFrame(), url);
@@ -777,6 +803,36 @@ void ContextualTasksUiService::OnTextFinderLookupComplete(
       text_directives);
 }
 
+bool ContextualTasksUiService::ShouldAllowNewTabOpen(
+    const GURL& url,
+    BrowserWindowInterface* browser,
+    const base::Uuid& task_id) {
+  TabListInterface* tab_list =
+      browser ? TabListInterface::From(browser) : nullptr;
+#if BUILDFLAG(ENABLE_PDF) || !BUILDFLAG(IS_ANDROID)
+  tabs::TabInterface* active_tab =
+      tab_list ? tab_list->GetActiveTab() : nullptr;
+#endif
+
+#if BUILDFLAG(ENABLE_PDF)
+  if (IsPdfCitation(url, active_tab, task_id, contextual_tasks_service_)) {
+    return false;
+  }
+#endif
+
+#if !BUILDFLAG(IS_ANDROID)
+  if (IsVideoCitation(url, active_tab, task_id, contextual_tasks_service_)) {
+    return false;
+  }
+#endif
+
+  if (GetExistingTab(url, tab_list, task_id, contextual_tasks_service_)) {
+    return false;
+  }
+
+  return true;
+}
+
 void ContextualTasksUiService::InitializeTaskInSidePanel(
     content::WebContents* web_contents,
     const base::Uuid& task_id,
@@ -823,13 +879,13 @@ bool ContextualTasksUiService::HandleNavigation(
     content::OpenURLParams url_params,
     content::WebContents* source_contents,
     bool is_from_embedded_page,
-    bool is_to_new_tab,
+    bool from_can_create_window,
     bool is_same_site_or_from_ui,
     bool is_mobile_ua) {
   return HandleNavigationImpl(
       std::move(url_params), source_contents,
       tabs::TabInterface::MaybeGetFromContents(source_contents),
-      is_from_embedded_page, is_to_new_tab, is_same_site_or_from_ui,
+      is_from_embedded_page, from_can_create_window, is_same_site_or_from_ui,
       is_mobile_ua);
 }
 
@@ -898,13 +954,23 @@ bool ContextualTasksUiService::HandleNavigationImpl(
     content::WebContents* source_contents,
     tabs::TabInterface* tab,
     bool is_from_embedded_page,
-    bool is_to_new_tab,
+    bool from_can_create_window,
     bool is_same_site_or_from_ui,
     bool is_mobile_ua) {
+  bool is_to_new_tab =
+      source_contents->GetOpener() != nullptr ||
+      url_params.disposition == WindowOpenDisposition::NEW_FOREGROUND_TAB ||
+      url_params.disposition == WindowOpenDisposition::NEW_BACKGROUND_TAB ||
+      url_params.disposition == WindowOpenDisposition::NEW_WINDOW;
+
   OMNIBOX_LOG("nav_trace")
       << "ContextualTasks navigation trace: HandleNavigationImpl called "
          "for URL: "
-      << url_params.url;
+      << url_params.url << ", is_from_embedded_page=" << is_from_embedded_page
+      << ", from_can_create_window=" << from_can_create_window
+      << ", is_to_new_tab=" << is_to_new_tab
+      << ", has_tab=" << (tab != nullptr);
+
   // Make sure the user is eligible to use the feature before attempting to
   // intercept.
   if (!contextual_tasks_service_ ||
@@ -1176,6 +1242,25 @@ bool ContextualTasksUiService::HandleNavigationImpl(
                "returning false, valid SRP with params";
         return false;
       }
+    }
+
+    // TODO(crbug.com/500717050): `is_to_new_tab` is not a correct naming. This
+    // variable i passed as true from CanCreateWindow, but it doesn't accurately
+    // reflect if the given navigation will open in a new tab or not. We should
+    // instead find way to better approximate target=_blank
+    if (from_can_create_window &&
+        ShouldAllowNewTabOpen(url_params.url, browser, task_id)) {
+      // If this is a navigation CanCreateWindow, check to see if this
+      // navigation should open in a new tab, or needs to be cancelled. If the
+      // former, return true to allow the window to be created. Afterwards, the
+      // new tab will be created and the navigation throttle will be called
+      // again, which will then handle the `OnThreadLinkClick` via the call
+      // below. Allowing the window to open is a requirement to allow
+      // `window.open` calls to receive a Window object.
+      OMNIBOX_LOG("nav_trace")
+          << "ContextualTasks navigation trace: HandleNavigationImpl "
+             "allowing natural opening for new tab";
+      return false;
     }
 
     OMNIBOX_LOG("nav_trace")
