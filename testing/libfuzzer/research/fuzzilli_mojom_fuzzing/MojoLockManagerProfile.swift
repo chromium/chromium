@@ -382,7 +382,7 @@ private let mojoDisabledGenerators: [String] = CodeGenerators.map { $0.name }
         !keepGenerators.contains($0)
     }
 
-let chromiumMojoProfile = Profile(
+let mojoLockManagerProfile = Profile(
     processArgs: { _ in return [] },
     processArgsReference: nil,
     processEnv: [

@@ -8,7 +8,7 @@
                    --build-out-dir ~/chromium/src/out/Fuzzilli
                    --fuzzilli-dir ~/fuzzilli
                    --report-out-dir ~/chromium/src/out/report
-                   --profile chromiumMojo
+                   --profile mojoLockManager
                    --minutes 20
 
     Optionally, use --ignore-filename-regex to provide a regular
