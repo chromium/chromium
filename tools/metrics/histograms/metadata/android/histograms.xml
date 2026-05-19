@@ -8325,20 +8325,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Android.WebView.OnPageStarted.FaviconIsNull" enum="Boolean"
-    expires_after="2026-06-19">
-  <owner>isaacmadgwick@chromium.org</owner>
-  <owner>src/android_webview/OWNERS</owner>
-  <summary>
-    Records if the favicon that would be passed into onPageStarted is null or
-    not. The actual favicon passed to onPageStarted may still be null regardless
-    of the value of this histogram, depending on experiment configurations.
-
-    This histogram is emitted when onPageStarted is called in
-    WebViewContentsClientAdapter.
-  </summary>
-</histogram>
-
 <histogram name="Android.WebView.OnRenderProcessGoneResult2"
     enum="AndroidWebViewRenderProcessGoneResult" expires_after="2026-06-21">
   <owner>ntfschr@chromium.org</owner>

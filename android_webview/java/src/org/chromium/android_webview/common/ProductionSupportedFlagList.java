@@ -1360,9 +1360,6 @@ public final class ProductionSupportedFlagList {
                 "WebViewSkipFaviconJavaCopyUntilNeeded",
                 "Skips copying the favicon to Java if not needed by onReceivedIcon"
                         + " being overriden."),
-        Flag.baseFeature(
-                AwFeatures.WEBVIEW_PASS_NULL_FAVICON_TO_ON_PAGE_STARTED,
-                "Passes a null favicon to the onPageStarted method."),
         Flag.baseFeature("PrefetchPrerenderIntegration"),
         Flag.baseFeature(
                 GpuFeatures.AAPM_BLOCKS_WEB_GPU,

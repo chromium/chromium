@@ -48,8 +48,6 @@ import org.chromium.android_webview.AwWebResourceRequest;
 import org.chromium.android_webview.JsPromptResultReceiver;
 import org.chromium.android_webview.JsResultReceiver;
 import org.chromium.android_webview.R;
-import org.chromium.android_webview.common.AwFeatureMap;
-import org.chromium.android_webview.common.AwFeatures;
 import org.chromium.android_webview.common.Lifetime;
 import org.chromium.android_webview.permission.AwPermissionRequest;
 import org.chromium.android_webview.permission.Resource;
@@ -57,7 +55,6 @@ import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.TraceEvent;
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.ScopedSysTraceEvent;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
@@ -392,16 +389,7 @@ class WebViewContentsClientAdapter extends SharedWebViewContentsClientAdapter {
         try (TraceEvent event =
                 TraceEvent.scoped("WebView.APICallback.WebViewClient.onPageStarted")) {
             if (TRACE) Log.i(TAG, "onPageStarted=" + url);
-
-            Bitmap favicon = mWebView.getFavicon();
-            RecordHistogram.recordBooleanHistogram(
-                    "Android.WebView.OnPageStarted.FaviconIsNull", favicon == null);
-
-            if (AwFeatureMap.isEnabled(AwFeatures.WEBVIEW_PASS_NULL_FAVICON_TO_ON_PAGE_STARTED)) {
-                mWebViewClient.onPageStarted(mWebView, url, null);
-            } else {
-                mWebViewClient.onPageStarted(mWebView, url, favicon);
-            }
+            mWebViewClient.onPageStarted(mWebView, url, mWebView.getFavicon());
 
             // Record UMA for onPageStarted.
             AwHistogramRecorder.recordCallbackInvocation(
