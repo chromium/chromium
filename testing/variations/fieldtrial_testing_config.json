@@ -20365,6 +20365,21 @@
             ]
         }
     ],
+    "ReportEmptyAVMetricsOnFailure": [
+        {
+            "platforms": [
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20260519",
+                    "enable_features": [
+                        "ReportEmptyAVMetricsOnFailure"
+                    ]
+                }
+            ]
+        }
+    ],
     "ReportUnsafeSite": [
         {
             "platforms": [
