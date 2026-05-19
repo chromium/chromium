@@ -22,12 +22,12 @@ public_tab_management_java_sources = [
   "//chrome/android/features/tab_ui/java/src/org/chromium/chrome/browser/tasks/tab_management/color_picker/ColorPickerType.java",
 ]
 
-# TODO(crbug.com/40259582): Modularize tab_ui/ or figure out a mechanism to enforce
-# the rule below.
-# TabManagementDelegateProvider should be the only class inside this block that
-# is used externally as it is intended to mimic an android_library_factory for
-# accessing the elements of this module. However, it is not possible to
-# modularize this code at present due to a reliance on chrome_java.
+# TODO(crbug.com/40259582): Modularize tab_ui/ or figure out a mechanism to
+# enforce the rule below. TabManagementDelegateProvider should be the only class
+# inside this block that is used externally as it is intended to mimic an
+# android_library_factory for accessing the elements of this module. However, it
+# is not possible to modularize this code at present due to a reliance on
+# chrome_java.
 internal_tab_management_java_sources = [
   "//chrome/android/features/tab_ui/java/src/org/chromium/chrome/browser/tasks/tab_management/ArchivedTabsCardView.java",
   "//chrome/android/features/tab_ui/java/src/org/chromium/chrome/browser/tasks/tab_management/ArchivedTabsCardViewBinder.java",
@@ -229,4 +229,7 @@ internal_tab_management_java_sources = [
   "//chrome/android/features/tab_ui/java/src/org/chromium/chrome/browser/tasks/tab_management/pinned_tabs_strip/PinnedTabStripProperties.java",
   "//chrome/android/features/tab_ui/java/src/org/chromium/chrome/browser/tasks/tab_management/pinned_tabs_strip/PinnedTabStripUtils.java",
   "//chrome/android/features/tab_ui/java/src/org/chromium/chrome/browser/tasks/tab_management/pinned_tabs_strip/PinnedTabStripViewBinder.java",
+  "//chrome/android/features/tab_ui/java/src/org/chromium/chrome/browser/tasks/tab_management/vertical_tabs/VerticalTabListCoordinator.java",
+  "//chrome/android/features/tab_ui/java/src/org/chromium/chrome/browser/tasks/tab_management/vertical_tabs/VerticalTabUtils.java",
+  "//chrome/android/features/tab_ui/java/src/org/chromium/chrome/browser/tasks/tab_management/vertical_tabs/VerticalTabsSideUiCoordinator.java",
 ]
