@@ -38,7 +38,16 @@ class CORE_EXPORT ByteSpanWithInlineStorage {
   }
 
   void Assign(base::span<const uint8_t> span) { span_ = span; }
-  void Assign(v8::MemorySpan<const uint8_t> span) { span_ = span; }
+
+  // TODO(361372981): This variant of `Assign` will be removed when
+  // https://crrev.com/c/7853420 lands in V8 and rolls in Chromium.
+  template <typename Dummy = void>
+    requires(!std::same_as<std::span<const uint8_t>,  // nocheck
+                           v8::MemorySpan<const uint8_t>>)
+  void Assign(v8::MemorySpan<const uint8_t> span) {
+    span_ = span;
+  }
+
   void MaybeSetArrayBuffer(v8::Local<v8::ArrayBuffer> array_buffer) {
     if constexpr (kPerformDetachCheck) {
       orig_buffer_for_detach_check_ = array_buffer;
