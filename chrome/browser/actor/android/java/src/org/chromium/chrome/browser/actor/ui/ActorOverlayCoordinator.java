@@ -23,6 +23,7 @@ import org.chromium.chrome.browser.tab.TabObscuringHandler;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandlerRegistry;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -54,6 +55,7 @@ public class ActorOverlayCoordinator {
      * @param backPressHandlerRegistry The BackPressHandlerRegistry to handle back press.
      * @param layoutManagerSupplier The LayoutManager supplier to observe layout changes.
      * @param profileSupplier The Profile supplier to observe profile changes.
+     * @param bottomSheetController The BottomSheetController to observe bottom sheet states.
      */
     public ActorOverlayCoordinator(
             ViewStub viewStub,
@@ -63,7 +65,8 @@ public class ActorOverlayCoordinator {
             SnackbarManager snackbarManager,
             BackPressHandlerRegistry backPressHandlerRegistry,
             MonotonicObservableSupplier<LayoutManager> layoutManagerSupplier,
-            MonotonicObservableSupplier<Profile> profileSupplier) {
+            MonotonicObservableSupplier<Profile> profileSupplier,
+            BottomSheetController bottomSheetController) {
         mView = (ActorOverlayView) viewStub.inflate();
         mSnackbarManager = snackbarManager;
         mBackPressHandlerRegistry = backPressHandlerRegistry;
@@ -93,6 +96,7 @@ public class ActorOverlayCoordinator {
                         browserControlsVisibilityManager,
                         tabObscuringHandler,
                         layoutManagerSupplier,
+                        bottomSheetController,
                         this::showInteractionLimitedSnackbar,
                         this::dismissInteractionLimitedSnackbar);
         mBackPressHandlerRegistry.addHandler(mMediator, BackPressHandler.Type.ACTOR_OVERLAY);

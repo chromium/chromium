@@ -11,6 +11,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
@@ -55,6 +56,8 @@ import org.chromium.chrome.browser.tab.TabObscuringHandler;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandlerRegistry;
 
@@ -73,6 +76,7 @@ public class ActorOverlayCoordinatorTest {
     @Mock private LayoutManager mLayoutManager;
     @Mock private Profile mProfile;
     @Mock private ActorKeyedService mActorKeyedService;
+    @Mock private BottomSheetController mBottomSheetController;
     @Captor private ArgumentCaptor<TabObserver> mTabObserverCaptor;
     @Captor private ArgumentCaptor<ActorKeyedService.Observer> mActorObserverCaptor;
 
@@ -92,14 +96,14 @@ public class ActorOverlayCoordinatorTest {
     @Before
     public void setUp() {
         Activity activity = Robolectric.buildActivity(Activity.class).get();
-        mView = Mockito.spy(new ActorOverlayView(activity, null));
-        View takeOverButton = new View(activity);
-        takeOverButton.setId(R.id.take_over_task_button);
-        mView.addView(takeOverButton);
-        Mockito.doReturn(takeOverButton).when(mView).getTakeOverButton();
-        mView.setLayoutParams(
+        activity.setTheme(R.style.Theme_BrowserUI_DayNight);
+        ActorOverlayView realView =
+                (ActorOverlayView)
+                        LayoutInflater.from(activity).inflate(R.layout.actor_overlay, null);
+        realView.setLayoutParams(
                 new FrameLayout.LayoutParams(
                         ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+        mView = Mockito.spy(realView);
         Mockito.when(mViewStub.inflate()).thenReturn(mView);
 
         mTabObscuringHandler = new TabObscuringHandler();
@@ -121,6 +125,7 @@ public class ActorOverlayCoordinatorTest {
         mProfileSupplier = ObservableSuppliers.createMonotonic();
         mProfileSupplier.set(mProfile);
         ActorKeyedServiceFactory.setForTesting(mActorKeyedService);
+        Mockito.when(mBottomSheetController.getSheetState()).thenReturn(SheetState.HIDDEN);
 
         mCoordinator =
                 new ActorOverlayCoordinator(
@@ -131,7 +136,8 @@ public class ActorOverlayCoordinatorTest {
                         mSnackbarManager,
                         mBackPressHandlerRegistry,
                         mLayoutManagerSupplier,
-                        mProfileSupplier);
+                        mProfileSupplier,
+                        mBottomSheetController);
         mLayoutManagerSupplier.set(mLayoutManager);
     }
 
@@ -143,7 +149,9 @@ public class ActorOverlayCoordinatorTest {
         Assert.assertTrue(mCurrentTabSupplier.hasObservers());
         verify(mBrowserControlsVisibilityManager).addObserver(any());
         verify(mLayoutManager).addObserver(any());
-        verify(mBackPressHandlerRegistry).addHandler(any(), eq(BackPressHandler.Type.ACTOR_OVERLAY));
+        verify(mBackPressHandlerRegistry)
+                .addHandler(any(), eq(BackPressHandler.Type.ACTOR_OVERLAY));
+        verify(mBottomSheetController).addObserver(any());
     }
 
     @Test
@@ -634,7 +642,75 @@ public class ActorOverlayCoordinatorTest {
     }
 
     @Test
-    public void testTakeOverButtonOnClicked() {
+    public void testTakeOverTaskButtonVisibility() {
+        View button = mView.findViewById(R.id.take_over_task_button);
+        Assert.assertNotNull(button);
+        Assert.assertEquals(View.GONE, button.getVisibility());
+
+        ActorOverlayMediator mediator = mCoordinator.getMediator();
+        mCurrentTabSupplier.set(mTab);
+
+        // State 1: bottom sheet is hidden, handoff button is active
+        when(mBottomSheetController.getSheetState()).thenReturn(SheetState.HIDDEN);
+
+        UiTabState stateWithActiveHandoff =
+                new UiTabState(
+                        TAB_ID,
+                        new ActorOverlayState(true, false, false),
+                        new HandoffButtonState(true, 0),
+                        0,
+                        false);
+        mTabController.onUiTabStateChange(stateWithActiveHandoff);
+
+        // The button should be visible
+        Assert.assertTrue(
+                mCoordinator
+                        .getModelForTesting()
+                        .get(ActorOverlayProperties.TAKE_OVER_TASK_BUTTON_VISIBLE));
+        Assert.assertEquals(View.VISIBLE, button.getVisibility());
+
+        // State 2: bottom sheet becomes peek, handoff button is active
+        when(mBottomSheetController.getSheetState()).thenReturn(SheetState.PEEK);
+        mediator.onSheetStateChanged(SheetState.PEEK, 0);
+
+        // The button should be hidden
+        Assert.assertFalse(
+                mCoordinator
+                        .getModelForTesting()
+                        .get(ActorOverlayProperties.TAKE_OVER_TASK_BUTTON_VISIBLE));
+        Assert.assertEquals(View.GONE, button.getVisibility());
+
+        // State 3: bottom sheet becomes hidden again, handoff button is active
+        when(mBottomSheetController.getSheetState()).thenReturn(SheetState.HIDDEN);
+        mediator.onSheetStateChanged(SheetState.HIDDEN, 0);
+
+        // The button should be visible again
+        Assert.assertTrue(
+                mCoordinator
+                        .getModelForTesting()
+                        .get(ActorOverlayProperties.TAKE_OVER_TASK_BUTTON_VISIBLE));
+        Assert.assertEquals(View.VISIBLE, button.getVisibility());
+
+        // State 4: bottom sheet is hidden, but handoff button becomes inactive
+        UiTabState stateWithInactiveHandoff =
+                new UiTabState(
+                        TAB_ID,
+                        new ActorOverlayState(true, false, false),
+                        new HandoffButtonState(false, 0),
+                        0,
+                        false);
+        mTabController.onUiTabStateChange(stateWithInactiveHandoff);
+
+        // The button should be hidden
+        Assert.assertFalse(
+                mCoordinator
+                        .getModelForTesting()
+                        .get(ActorOverlayProperties.TAKE_OVER_TASK_BUTTON_VISIBLE));
+        Assert.assertEquals(View.GONE, button.getVisibility());
+    }
+
+    @Test
+    public void testTakeOverTaskButtonClicked() {
         OnClickListener clickListener =
                 mCoordinator
                         .getModelForTesting()
@@ -654,6 +730,7 @@ public class ActorOverlayCoordinatorTest {
         verify(mBackPressHandlerRegistry).removeHandler(any());
         verify(mTab).removeObserver(any(TabObserver.class));
         verify(mBrowserControlsVisibilityManager).removeObserver(any());
+        verify(mBottomSheetController).removeObserver(any());
         Assert.assertFalse(mCurrentTabSupplier.hasObservers());
     }
 }

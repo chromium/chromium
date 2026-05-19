@@ -1245,7 +1245,8 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                             assumeNonNull(mSnackbarManagerSupplier.get()),
                             mBackPressManager,
                             mLayoutManagerSupplier,
-                            mProfileSupplier);
+                            mProfileSupplier,
+                            assertNonNull(getBottomSheetController()));
         }
 
         mForcedSigninController =

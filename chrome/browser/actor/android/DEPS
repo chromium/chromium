@@ -1,5 +1,6 @@
 include_rules = [
   "+cc/slim/layer.h",
+  "+components/browser_ui/bottomsheet",
   "+components/browser_ui/notifications",
   "+components/browser_ui/modaldialog/android",
   "+components/browser_ui/widget",
