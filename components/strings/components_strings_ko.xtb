@@ -1820,6 +1820,7 @@
 <translation id="380865868633614173">카드 정보 저장 중</translation>
 <translation id="3810770279996899697">비밀번호 관리자에 MacOS 키체인 액세스 권한 필요</translation>
 <translation id="3810973564298564668">관리</translation>
+<translation id="3811328723651698330"><ph name="STRING_1" />, <ph name="STRING_2" /></translation>
 <translation id="3812398568375898177">이번 업데이트는 ChromeOS에서 Android 앱의 성능을 개선하는 중요한 업데이트입니다.</translation>
 <translation id="3814865536373139791">조직의 정책 관리 방식을 간소화하세요</translation>
 <translation id="3815434930383843058">8x12인치</translation>
@@ -2399,6 +2400,7 @@
 <translation id="4736934858538408121">가상 카드</translation>
 <translation id="473775607612524610">업데이트</translation>
 <translation id="4738601419177586157"><ph name="TEXT" /> 추천 검색어</translation>
+<translation id="473866660302034629"><ph name="TAB_TITLE" />, 선택된 탭, <ph name="TOTAL" />개 중 <ph name="INDEX" />번째, 왼쪽 또는 오른쪽 화살표를 사용하여 탭 간에 전환</translation>
 <translation id="4742407542027196863">비밀번호 관리...</translation>
 <translation id="474270528725216349">동기화된 기기의 사이트 1개 이상에서</translation>
 <translation id="4743275772928623722">시스템이 업데이트되었지만 일부 앱과 파일은 복구되지 않았습니다. 앱이 자동으로 다시 다운로드됩니다.</translation>
@@ -2466,6 +2468,7 @@
 <translation id="4832961164064927107">BBQ 및 그릴</translation>
 <translation id="4835568975547260025">질문에 대한 맞춤 답변을 얻을 수 있도록 Chrome에서 기본적으로 관련성 있는 열린 탭을 공유합니다.</translation>
 <translation id="4840250757394056958">Chrome 방문 기록 보기</translation>
+<translation id="4842365697443353018">후불 결제 옵션을 사용하려면 양식을 지우세요</translation>
 <translation id="484462545196658690">자동</translation>
 <translation id="4844937814014739139">공유 탭 스크롤 및 확대/축소</translation>
 <translation id="484671803914931257"><ph name="MERCHANT_NAME" /> 등에서 할인을 받으세요</translation>

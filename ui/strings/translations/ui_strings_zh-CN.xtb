@@ -200,6 +200,7 @@
 <translation id="7410957453383678442">{MINUTES,plural, =1{还剩 1 分钟}other{还剩 # 分钟}}</translation>
 <translation id="7437971918971306061">“<ph name="COLUMN_NAME" />”列已取消排序。</translation>
 <translation id="7460907917090416791"><ph name="QUANTITY" /> TB</translation>
+<translation id="7485236722522518129">F4</translation>
 <translation id="7507604095951736240">表情符号</translation>
 <translation id="7620655452534002301">已移除。</translation>
 <translation id="7658239707568436148">取消</translation>

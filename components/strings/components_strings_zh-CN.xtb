@@ -1816,6 +1816,7 @@
 <translation id="380865868633614173">正在保存卡信息</translation>
 <translation id="3810770279996899697">密码管理工具需要访问 MacOS 钥匙串</translation>
 <translation id="3810973564298564668">管理</translation>
+<translation id="3811328723651698330"><ph name="STRING_1" />，<ph name="STRING_2" /></translation>
 <translation id="3812398568375898177">这是一项重要更新，旨在提升 ChromeOS 中的 Android 应用的性能。</translation>
 <translation id="3814865536373139791">简化组织的政策管理方式</translation>
 <translation id="3815434930383843058">8 x 12 英寸</translation>
@@ -2395,6 +2396,7 @@
 <translation id="4736934858538408121">虚拟卡</translation>
 <translation id="473775607612524610">更新</translation>
 <translation id="4738601419177586157"><ph name="TEXT" />搜索建议</translation>
+<translation id="473866660302034629"><ph name="TAB_TITLE" />，已选中的标签页，第 <ph name="INDEX" /> 个/共 <ph name="TOTAL" /> 个，使用向左键或向右键可在标签页之间切换</translation>
 <translation id="4742407542027196863">管理密码…</translation>
 <translation id="474270528725216349">来自已同步设备上的至少 1 个网站</translation>
 <translation id="4743275772928623722">您的系统已更新，但某些应用和文件无法恢复。系统会自动重新下载您的应用。</translation>
@@ -2462,6 +2464,7 @@
 <translation id="4832961164064927107">烧烤</translation>
 <translation id="4835568975547260025">Chrome 默认会分享已打开的相关标签页，以便为您提供更具针对性的回答。</translation>
 <translation id="4840250757394056958">查看您的 Chrome 历史记录</translation>
+<translation id="4842365697443353018">清空表单才能使用“先买后付”选项</translation>
 <translation id="484462545196658690">自动</translation>
 <translation id="4844937814014739139">滚动和缩放分享的标签页</translation>
 <translation id="484671803914931257">获取<ph name="MERCHANT_NAME" />及其他商家的折扣信息</translation>

@@ -200,6 +200,7 @@
 <translation id="7410957453383678442">{MINUTES,plural, =1{Zostáva 1 minúta}few{Zostávajú # minúty}many{Zostáva # minúty}other{Zostáva # minút}}</translation>
 <translation id="7437971918971306061">Stĺpec <ph name="COLUMN_NAME" /> nie je zoradený.</translation>
 <translation id="7460907917090416791"><ph name="QUANTITY" /> TB</translation>
+<translation id="7485236722522518129">F4</translation>
 <translation id="7507604095951736240">Emodži</translation>
 <translation id="7620655452534002301">Odstránené.</translation>
 <translation id="7658239707568436148">Zrušiť</translation>

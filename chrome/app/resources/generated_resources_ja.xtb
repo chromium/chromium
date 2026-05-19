@@ -785,6 +785,7 @@
 <translation id="1529769834253316556">行の高さ</translation>
 <translation id="1529891865407786369">電源</translation>
 <translation id="1530376661400379364">Chrome で設定をリセットしました</translation>
+<translation id="1530466164747090379"><ph name="FILE_NAME" /> には機密データまたは危険なデータが含まれています</translation>
 <translation id="1531275250079031713">[新しい Wi-Fi を追加] ダイアログを表示</translation>
 <translation id="1531734061664070992"><ph name="FIRST_SWITCH" />、<ph name="SECOND_SWITCH" />、<ph name="THIRD_SWITCH" /></translation>
 <translation id="1533948060140843887">このダウンロードがパソコンに損害を与える可能性があることを理解しました</translation>
@@ -2174,6 +2175,7 @@
 <translation id="2469141124738294431">VM ステータス</translation>
 <translation id="2469259292033957819">保存済みのプリンタはありません。</translation>
 <translation id="2469375675106140201">スペルチェックをカスタマイズ</translation>
+<translation id="2469406914567390938">チャンネルの更新</translation>
 <translation id="247051149076336810">ファイル共有 URL</translation>
 <translation id="2471469610750100598">黒（デフォルト）</translation>
 <translation id="2471506181342525583">位置情報へのアクセスが許可されています</translation>
@@ -2504,6 +2506,7 @@
 <translation id="2695943520968279338">拡張機能を見る</translation>
 <translation id="2696675923413008404">このサイトのコンテンツ（URL を含む）は Google に送信され、この機能を改善する目的で人間のレビュアーによる確認が行われる場合があります</translation>
 <translation id="2698147581454716013">これはバンドルされたデバイスです。Kiosk &amp; Signage Upgrade に登録することはできません。</translation>
+<translation id="269941332914175387">プロファイル データを読み込み、暗号化された状態を維持するには、ブラウザを再起動してください</translation>
 <translation id="2699911226086014512">PIN の操作に失敗しました。コード: <ph name="RETRIES" /></translation>
 <translation id="2701330563083355633"><ph name="DEVICE_NAME" /> から共有されました</translation>
 <translation id="2701737434167469065">ログイン（<ph name="EMAIL" />）</translation>
@@ -2732,6 +2735,7 @@
 <translation id="2844154481025280030">ポリシーが設定されました。</translation>
 <translation id="2844169650293029770">USB-C デバイス（左手前のポート）</translation>
 <translation id="2844809857160214557">印刷ジョブの表示と管理</translation>
+<translation id="284491292807422921">サイトを削除しますか？</translation>
 <translation id="2845276301195220700">Google カレンダーのその他の操作</translation>
 <translation id="2845382757467349449">ブックマーク バーを常に表示</translation>
 <translation id="284581348330507117">新たなパスワードを作成してください</translation>
@@ -3319,6 +3323,7 @@
 <translation id="3262986719682892278">ファイルが大きすぎます</translation>
 <translation id="3264544094376351444">Sans Serif フォント</translation>
 <translation id="3264582393905923483">コンテキスト</translation>
+<translation id="3265303262625691029"><ph name="VERDICT_MESSAGE" />。管理者からのメッセージ:「<ph name="CUSTOM_MESSAGE" />」</translation>
 <translation id="3265459715026181080">ウインドウを閉じる</translation>
 <translation id="3266022278425892773">Linux 開発環境</translation>
 <translation id="3266030505377585301">このデバイスからのみ閲覧履歴データを削除して Google アカウントにはデータを残しておく場合は、<ph name="BEGIN_LINK" />ログアウト<ph name="END_LINK" />してください。</translation>
@@ -4435,6 +4440,7 @@
 <translation id="4010746393007464819">Debian 12（Bookworm）へのアップグレードが利用可能です</translation>
 <translation id="4010917659463429001">ブックマークをモバイル デバイスで使用できるようにするには、<ph name="GET_IOS_APP_LINK" />してください。</translation>
 <translation id="4011073493055408531">市街の上空で紫色と緑色の模様を成すオーロラ。</translation>
+<translation id="4011897773956589748">次回 Gemini がこのアカウントにアクセスする際は、再度アクセスの許可が必要になります。</translation>
 <translation id="4012509903424054869">PDF が自動変換され、テキストの検索や選択が可能になります</translation>
 <translation id="4014432863917027322">「<ph name="EXTENSION_NAME" />」を修復しますか？</translation>
 <translation id="4015163439792426608">拡張機能はご利用ですか？<ph name="BEGIN_LINK" />拡張機能の管理<ph name="END_LINK" />は 1 か所で簡単に行うことができます。</translation>
@@ -6208,6 +6214,7 @@
 <translation id="5275084684151588738">ユーザー辞書</translation>
 <translation id="5275338516105640560">保存されたタブグループのボタン</translation>
 <translation id="5275352920323889391">犬</translation>
+<translation id="5275946508817197540">セキュリティ設定により、独立したウェブアプリのインストールは許可されていません。<ph name="CHANGE_PREFERENCE" />。</translation>
 <translation id="527605719918376753">タブをミュート</translation>
 <translation id="527605982717517565"><ph name="HOST" /> の JavaScript を常に許可する</translation>
 <translation id="5276357196618041410">ログインしてからでないと設定を保存できません</translation>
@@ -8651,6 +8658,7 @@
 <translation id="6997553674029032185">サイトに移動</translation>
 <translation id="6997642619627518301"><ph name="NAME_PH" /> - アクティビティ ログ</translation>
 <translation id="6997707937646349884">デバイスで次の操作を行います。</translation>
+<translation id="6998036632333022623">Google とタブを共有しています</translation>
 <translation id="6998793565256476099">デバイスをビデオ会議用に登録</translation>
 <translation id="6999956497249459195">新しいグループ</translation>
 <translation id="7000206553895739324"><ph name="PRINTER_NAME" /> は接続していますが設定が必要です</translation>

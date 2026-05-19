@@ -200,6 +200,7 @@
 <translation id="7410957453383678442">{MINUTES,plural, =1{1분 남음}other{#분 남음}}</translation>
 <translation id="7437971918971306061"><ph name="COLUMN_NAME" /> 열은 정렬되어 있지 않습니다.</translation>
 <translation id="7460907917090416791"><ph name="QUANTITY" />TB</translation>
+<translation id="7485236722522518129">F4</translation>
 <translation id="7507604095951736240">그림 이모티콘</translation>
 <translation id="7620655452534002301">삭제되었습니다.</translation>
 <translation id="7658239707568436148">취소</translation>

@@ -200,6 +200,7 @@
 <translation id="7410957453383678442">{MINUTES,plural, =1{يتبقى دقيقة واحدة}zero{يتبقى # من الدقائق}two{يتبقى دقيقتان (#)}few{يتبقى # دقائق}many{يتبقى # دقيقة}other{يتبقى # من الدقائق}}</translation>
 <translation id="7437971918971306061">العمود <ph name="COLUMN_NAME" /> غير مرتَّب.</translation>
 <translation id="7460907917090416791"><ph name="QUANTITY" /> تيرابايت</translation>
+<translation id="7485236722522518129">F4</translation>
 <translation id="7507604095951736240">رموز الإيموجي</translation>
 <translation id="7620655452534002301">تمت الإزالة.</translation>
 <translation id="7658239707568436148">إلغاء</translation>

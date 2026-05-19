@@ -200,6 +200,7 @@
 <translation id="7410957453383678442">{MINUTES,plural, =1{ १ मिनेट बाँकी}other{ # मिनेट बाँकी}}</translation>
 <translation id="7437971918971306061"><ph name="COLUMN_NAME" /> नामक कोलम कुनै पनि क्रममा क्रमबद्ध गरिएको छैन।</translation>
 <translation id="7460907917090416791"><ph name="QUANTITY" /> टीबी</translation>
+<translation id="7485236722522518129">F4</translation>
 <translation id="7507604095951736240">इमोजी</translation>
 <translation id="7620655452534002301">हटाइयो।</translation>
 <translation id="7658239707568436148">रद्द गर्नुहोस्</translation>

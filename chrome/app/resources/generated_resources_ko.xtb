@@ -786,6 +786,7 @@
 <translation id="1529769834253316556">행간</translation>
 <translation id="1529891865407786369">전원</translation>
 <translation id="1530376661400379364">Chrome에서 이러한 설정을 재설정했습니다</translation>
+<translation id="1530466164747090379"><ph name="FILE_NAME" /> 파일에 민감하거나 위험한 데이터가 포함되어 있습니다.</translation>
 <translation id="1531275250079031713">'새 Wi-Fi 추가' 대화상자 표시</translation>
 <translation id="1531734061664070992"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /></translation>
 <translation id="1533948060140843887">컴퓨터에 유해한 다운로드임을 이해합니다.</translation>
@@ -2194,6 +2195,7 @@
 <translation id="2469141124738294431">VM 상태</translation>
 <translation id="2469259292033957819">저장된 프린터가 없습니다.</translation>
 <translation id="2469375675106140201">맞춤법 검사 맞춤설정</translation>
+<translation id="2469406914567390938">채널 업데이트</translation>
 <translation id="247051149076336810">파일 공유 URL</translation>
 <translation id="2471469610750100598">검정(기본)</translation>
 <translation id="2471506181342525583">위치 액세스 허용됨</translation>
@@ -2525,6 +2527,7 @@
 <translation id="2695943520968279338">확장 프로그램 찾아보기</translation>
 <translation id="2696675923413008404">이 사이트의 콘텐츠(URL 포함)가 Google로 전송되며 기능을 개선하기 위해 인적 검토자가 이를 확인할 수 있습니다</translation>
 <translation id="2698147581454716013">번들 기기이며 Kiosk &amp; Signage 업그레이드에 등록할 수 없습니다.</translation>
+<translation id="269941332914175387">브라우저를 다시 실행하여 프로필 데이터를 로드하고 암호화된 상태로 유지하세요.</translation>
 <translation id="2699911226086014512">PIN 작업에 실패했습니다. 오류 코드는 <ph name="RETRIES" />입니다.</translation>
 <translation id="2701330563083355633"><ph name="DEVICE_NAME" />에서 공유함</translation>
 <translation id="2701737434167469065">로그인, <ph name="EMAIL" /></translation>
@@ -2753,6 +2756,7 @@
 <translation id="2844154481025280030">정책이 구성되었습니다.</translation>
 <translation id="2844169650293029770">USB-C 기기(좌측 전면 포트)</translation>
 <translation id="2844809857160214557">인쇄 작업 보기 및 관리</translation>
+<translation id="284491292807422921">사이트를 삭제하시겠습니까?</translation>
 <translation id="2845276301195220700">Google Calendar 관련 작업 더보기</translation>
 <translation id="2845382757467349449">북마크바 항상 표시</translation>
 <translation id="284581348330507117">사용한 적이 없는 비밀번호를 만드세요.</translation>
@@ -3342,6 +3346,7 @@
 <translation id="3262986719682892278">너무 큼</translation>
 <translation id="3264544094376351444">Sans-serif</translation>
 <translation id="3264582393905923483">컨텍스트</translation>
+<translation id="3265303262625691029"><ph name="VERDICT_MESSAGE" />. 관리자가 전달한 메시지는: "<ph name="CUSTOM_MESSAGE" />"입니다.</translation>
 <translation id="3265459715026181080">창 닫기</translation>
 <translation id="3266022278425892773">Linux 개발 환경</translation>
 <translation id="3266030505377585301">이 기기에서만 인터넷 사용 기록을 삭제하고 Google 계정에서는 유지하려면 <ph name="BEGIN_LINK" />로그아웃<ph name="END_LINK" />하세요.</translation>
@@ -4459,6 +4464,7 @@
 <translation id="4010746393007464819">Debian 12(Bookworm)로 업그레이드할 수 있습니다.</translation>
 <translation id="4010917659463429001">휴대기기에서 내 북마크를 사용하려면 <ph name="GET_IOS_APP_LINK" />.</translation>
 <translation id="4011073493055408531">도시 위에 보라색과 녹색 오로라가 펼쳐져 있습니다.</translation>
+<translation id="4011897773956589748">다음에 Gemini에서 이 계정에 액세스해야 할 때 다시 요청합니다.</translation>
 <translation id="4012509903424054869">PDF가 자동으로 변환되므로 텍스트를 검색하고 선택할 수 있습니다.</translation>
 <translation id="4014432863917027322">'<ph name="EXTENSION_NAME" />'을(를) 복구하시겠습니까?</translation>
 <translation id="4015163439792426608">확장 프로그램이 있나요? 한곳에서 편리하게 <ph name="BEGIN_LINK" />확장 프로그램을 관리<ph name="END_LINK" />하세요.</translation>
@@ -6235,6 +6241,7 @@
 <translation id="5275084684151588738">사용자 사전</translation>
 <translation id="5275338516105640560">저장된 탭 그룹 버튼</translation>
 <translation id="5275352920323889391">개</translation>
+<translation id="5275946508817197540">보안 환경설정에서 분리형 웹 앱의 설치를 허용하지 않습니다. <ph name="CHANGE_PREFERENCE" /></translation>
 <translation id="527605719918376753">탭 음소거</translation>
 <translation id="527605982717517565"><ph name="HOST" />에서 자바스크립트 항상 허용</translation>
 <translation id="5276357196618041410">먼저 로그인하지 않으면 구성을 저장할 수 없습니다.</translation>
@@ -8682,6 +8689,7 @@
 <translation id="6997553674029032185">사이트로 이동</translation>
 <translation id="6997642619627518301"><ph name="NAME_PH" /> - 활동 로그</translation>
 <translation id="6997707937646349884">기기에서 다음과 같이 설정하세요.</translation>
+<translation id="6998036632333022623">Google과 탭 공유 중</translation>
 <translation id="6998793565256476099">화상회의용 기기 등록</translation>
 <translation id="6999956497249459195">새 그룹</translation>
 <translation id="7000206553895739324"><ph name="PRINTER_NAME" />이(가) 연결되어 있으나 구성이 필요함</translation>
