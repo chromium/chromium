@@ -106,6 +106,13 @@ found in the LICENSE file.
             android:inflatedId="@+id/omnibox_results_container"
             app:layout="@layout/omnibox_results_container" />
 
+        <ViewStub
+            android:id="@+id/actor_overlay_stub"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:inflatedId="@+id/actor_overlay"
+            android:layout="@layout/actor_overlay" />
+
       <org.chromium.chrome.browser.ui.BottomContainer
           android:id="@+id/bottom_container"
           android:layout_width="match_parent"
@@ -219,13 +226,6 @@ found in the LICENSE file.
             android:layout_height="wrap_content"
             android:layout_gravity="bottom|start"
             android:layout="@layout/link_hover_status_bar" />
-
-        <ViewStub
-            android:id="@+id/actor_overlay_stub"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:inflatedId="@+id/actor_overlay"
-            android:layout="@layout/actor_overlay" />
 
         <FrameLayout
             android:id="@+id/sheet_container"
