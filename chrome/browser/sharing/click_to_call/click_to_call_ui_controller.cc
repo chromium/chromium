@@ -22,6 +22,7 @@
 #include "content/public/browser/weak_document_ptr.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/strings/grit/ui_strings.h"
 
@@ -118,8 +119,9 @@ void ClickToCallUiController::DoUpdateApps(UpdateAppsCallback callback) {
   }
 
   if (!default_program_name_.empty()) {
-    apps.emplace_back(&kOpenInNewOldIcon, gfx::Image(), default_program_name_,
-                      std::string());
+    apps.emplace_back(&(features::IsRoundedIconsEnabled() ? kOpenInNewIcon
+                                                          : kOpenInNewOldIcon),
+                      gfx::Image(), default_program_name_, std::string());
   }
   std::move(callback).Run(std::move(apps));
 }

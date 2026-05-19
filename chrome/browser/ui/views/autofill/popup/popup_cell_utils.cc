@@ -385,22 +385,35 @@ std::optional<ui::ImageModel> GetIconImageModelFromIcon(Suggestion::Icon icon) {
     case Suggestion::Icon::kWork:
       return ImageModelFromVectorIcon(vector_icons::kWorkOldIcon, kIconSize);
     case Suggestion::Icon::kAccount:
-      return ImageModelFromVectorIcon(kAccountCircleOldIcon, kIconSize);
+      return ImageModelFromVectorIcon(::features::IsRoundedIconsEnabled()
+                                          ? kAccountCircleFilledIcon
+                                          : kAccountCircleOldIcon,
+                                      kIconSize);
     case Suggestion::Icon::kClear:
-      return ImageModelFromVectorIcon(kBackspaceOldIcon, kIconSize);
+      return ImageModelFromVectorIcon(::features::IsRoundedIconsEnabled()
+                                          ? kBackspaceFilledIcon
+                                          : kBackspaceOldIcon,
+                                      kIconSize);
     case Suggestion::Icon::kCode:
       return ImageModelFromVectorIcon(vector_icons::kCodeOldIcon, kIconSize);
     case Suggestion::Icon::kDelete:
-      return ImageModelFromVectorIcon(kTrashCanRefreshOldIcon,
+      return ImageModelFromVectorIcon(::features::IsRoundedIconsEnabled()
+                                          ? kDeleteIcon
+                                          : kTrashCanRefreshOldIcon,
                                       kChromeRefreshIconSize);
     case Suggestion::Icon::kDevice:
-      return ImageModelFromVectorIcon(kDevicesOldIcon, kIconSize);
+      return ImageModelFromVectorIcon(
+          ::features::IsRoundedIconsEnabled() ? kDevicesIcon : kDevicesOldIcon,
+          kIconSize);
     case Suggestion::Icon::kVehicle:
       return ImageModelFromVectorIcon(vector_icons::kDirectionsCarOldIcon,
                                       kChromeRefreshIconSize);
     case Suggestion::Icon::kEdit:
-      return ImageModelFromVectorIcon(vector_icons::kEditChromeRefreshOldIcon,
-                                      kChromeRefreshIconSize);
+      return ImageModelFromVectorIcon(
+          ::features::IsRoundedIconsEnabled()
+              ? kEditIcon
+              : vector_icons::kEditChromeRefreshOldIcon,
+          kChromeRefreshIconSize);
     case Suggestion::Icon::kEmail:
       return ImageModelFromVectorIcon(vector_icons::kEmailOutlineOldIcon,
                                       kIconSize);
@@ -431,7 +444,9 @@ std::optional<ui::ImageModel> GetIconImageModelFromIcon(Suggestion::Icon icon) {
       return ImageModelFromVectorIcon(vector_icons::kFlightOldIcon,
                                       kChromeRefreshIconSize);
     case Suggestion::Icon::kGlobe:
-      return ImageModelFromVectorIcon(kGlobeOldIcon, kIconSize);
+      return ImageModelFromVectorIcon(
+          ::features::IsRoundedIconsEnabled() ? kGlobeIcon : kGlobeOldIcon,
+          kIconSize);
     case Suggestion::Icon::kGoogle:
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
       return ImageModelFromImageSkia(gfx::CreateVectorIcon(
@@ -450,7 +465,9 @@ std::optional<ui::ImageModel> GetIconImageModelFromIcon(Suggestion::Icon icon) {
       return ImageModelFromVectorIcon(vector_icons::kIdCardOldIcon,
                                       kChromeRefreshIconSize);
     case Suggestion::Icon::kKey:
-      return ImageModelFromVectorIcon(kKeyOldIcon, kIconSize);
+      return ImageModelFromVectorIcon(
+          ::features::IsRoundedIconsEnabled() ? kVpnKeyFilledIcon : kKeyOldIcon,
+          kIconSize);
     case Suggestion::Icon::kLocation:
       return ImageModelFromVectorIcon(
           vector_icons::kLocationOnChromeRefreshOldIcon,
@@ -481,7 +498,10 @@ std::optional<ui::ImageModel> GetIconImageModelFromIcon(Suggestion::Icon icon) {
           vector_icons::kHistoryChromeRefreshOldIcon,
           kRecoveryPasswordIconSize);
     case Suggestion::Icon::kSaveAndFill:
-      return ImageModelFromVectorIcon(kCreditCardOldIcon, kIconSize);
+      return ImageModelFromVectorIcon(::features::IsRoundedIconsEnabled()
+                                          ? kCreditCardIcon
+                                          : kCreditCardOldIcon,
+                                      kIconSize);
     case Suggestion::Icon::kSettings:
       return ImageModelFromVectorIcon(::features::IsRoundedIconsEnabled()
                                           ? omnibox::kChromeProductIcon
@@ -499,7 +519,10 @@ std::optional<ui::ImageModel> GetIconImageModelFromIcon(Suggestion::Icon icon) {
                               kIconSize),
           gfx::Size(kGooglePayLogoWidth, kIconSize));
 #else
-      return ImageModelFromVectorIcon(kCreditCardOldIcon, kIconSize);
+      return ImageModelFromVectorIcon(::features::IsRoundedIconsEnabled()
+                                          ? kCreditCardIcon
+                                          : kCreditCardOldIcon,
+                                      kIconSize);
 #endif
     case Suggestion::Icon::kGoogleWallet:
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -787,7 +810,9 @@ const gfx::VectorIcon& GetExpandableMenuIcon(SuggestionType type) {
   CHECK(IsExpandableSuggestionType(type));
   // Only compose suggestions have a different expandable icon.
   return GetFillingProductFromSuggestionType(type) == FillingProduct::kCompose
-             ? kBrowserToolsChromeRefreshOldIcon
+             ? ::features::IsRoundedIconsEnabled()
+                   ? kMoreVertIcon
+                   : kBrowserToolsChromeRefreshOldIcon
              : vector_icons::kSubmenuArrowChromeRefreshOldIcon;
 }
 

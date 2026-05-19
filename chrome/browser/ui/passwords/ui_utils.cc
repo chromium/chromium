@@ -41,6 +41,7 @@
 #include "content/public/browser/web_contents.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image_skia.h"
@@ -273,7 +274,7 @@ const gfx::VectorIcon& GooglePasswordManagerVectorIcon() {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   return vector_icons::kGooglePasswordManagerIcon;
 #else
-  return kKeyOldIcon;
+  return features::IsRoundedIconsEnabled() ? kVpnKeyFilledIcon : kKeyOldIcon;
 #endif
 }
 

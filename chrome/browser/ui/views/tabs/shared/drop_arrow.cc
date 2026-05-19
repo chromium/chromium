@@ -11,6 +11,7 @@
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -30,13 +31,17 @@ gfx::ShadowValues GetShadowValues() {
 const gfx::VectorIcon& GetDropArrowIcon(DropArrow::Direction direction) {
   switch (direction) {
     case DropArrow::Direction::kUp:
-      return kArrowUpwardOldIcon;
+      return features::IsRoundedIconsEnabled() ? kArrowUpwardIcon
+                                               : kArrowUpwardOldIcon;
     case DropArrow::Direction::kDown:
-      return kArrowDownwardOldIcon;
+      return features::IsRoundedIconsEnabled() ? kArrowDownwardIcon
+                                               : kArrowDownwardOldIcon;
     case DropArrow::Direction::kLeft:
-      return kArrowBackOldIcon;
+      return features::IsRoundedIconsEnabled() ? kArrowBackIcon
+                                               : kArrowBackOldIcon;
     case DropArrow::Direction::kRight:
-      return kArrowForwardOldIcon;
+      return features::IsRoundedIconsEnabled() ? kArrowForwardIcon
+                                               : kArrowForwardOldIcon;
     default:
       NOTREACHED();
   }

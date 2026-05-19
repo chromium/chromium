@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/views/tab_search_bubble_host.h"
 #include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
+#include "ui/base/ui_base_features.h"
 
 DEFINE_USER_DATA(TabSearchToolbarButtonController);
 
@@ -77,8 +78,9 @@ void TabSearchToolbarButtonController::UpdateBubbleHost(
   auto scoped_update = action_item->BeginUpdate();
   if (new_tab_search_bubble_host) {
     action_item->SetVisible(true);
-    action_item->SetImage(
-        ui::ImageModel::FromVectorIcon(kTabSearchToolbarOldIcon));
+    action_item->SetImage(ui::ImageModel::FromVectorIcon(
+        features::IsRoundedIconsEnabled() ? kTabSearchIcon
+                                          : kTabSearchToolbarOldIcon));
     action_item->SetProperty(
         actions::kActionItemPinnableKey,
         static_cast<int>(actions::ActionPinnableState::kPinnable));

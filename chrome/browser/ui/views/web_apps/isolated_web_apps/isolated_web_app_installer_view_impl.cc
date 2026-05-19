@@ -41,6 +41,7 @@
 #include "ui/base/models/image_model.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/color/color_id.h"
 #include "ui/compositor/layer.h"
@@ -300,11 +301,15 @@ class UpdateSettingsPane : public views::BoxLayoutView {
         l10n_util::GetStringUTF16(IDS_IWA_INSTALLER_UPDATE_SETTINGS));
 
     views::SetImageFromVectorIconWithColor(
-        button.get(), kKeyboardArrowDownOldIcon, 16,
-        {ui::kColorIcon, ui::kColorIconDisabled});
+        button.get(),
+        features::IsRoundedIconsEnabled() ? kKeyboardArrowDownIcon
+                                          : kKeyboardArrowDownOldIcon,
+        16, {ui::kColorIcon, ui::kColorIconDisabled});
     views::SetToggledImageFromVectorIconWithColor(
-        button.get(), kKeyboardArrowUpOldIcon, 16,
-        {ui::kColorIcon, ui::kColorIconDisabled});
+        button.get(),
+        features::IsRoundedIconsEnabled() ? kKeyboardControlKeyIcon
+                                          : kKeyboardArrowUpOldIcon,
+        16, {ui::kColorIcon, ui::kColorIconDisabled});
 
     return button;
   }
@@ -512,7 +517,10 @@ class GetMetadataView : public InstallerDialogView {
  public:
   GetMetadataView()
       : InstallerDialogView(
-            CreateImageModelFromVector(kFingerprintOldIcon, ui::kColorAccent),
+            CreateImageModelFromVector(features::IsRoundedIconsEnabled()
+                                           ? kFingerprintIcon
+                                           : kFingerprintOldIcon,
+                                       ui::kColorAccent),
             IDS_IWA_INSTALLER_VERIFICATION_TITLE,
             IDS_IWA_INSTALLER_VERIFICATION_SUBTITLE) {
     auto progress_bar =
@@ -539,7 +547,10 @@ class ShowMetadataView : public InstallerDialogView {
  public:
   explicit ShowMetadataView(IsolatedWebAppInstallerView::Delegate* delegate)
       : InstallerDialogView(
-            CreateImageModelFromVector(kFingerprintOldIcon, ui::kColorAccent),
+            CreateImageModelFromVector(features::IsRoundedIconsEnabled()
+                                           ? kFingerprintIcon
+                                           : kFingerprintOldIcon,
+                                       ui::kColorAccent),
             // The title will be updated to the app name when available.
             IDS_IWA_INSTALLER_VERIFICATION_TITLE,
             IDS_IWA_INSTALLER_SHOW_METADATA_SUBTITLE) {
@@ -595,7 +606,10 @@ class InstallView : public InstallerDialogView {
  public:
   InstallView()
       : InstallerDialogView(
-            CreateImageModelFromVector(kFingerprintOldIcon, ui::kColorAccent),
+            CreateImageModelFromVector(features::IsRoundedIconsEnabled()
+                                           ? kFingerprintIcon
+                                           : kFingerprintOldIcon,
+                                       ui::kColorAccent),
             // The title will be updated to the app name when available.
             IDS_IWA_INSTALLER_VERIFICATION_TITLE,
             IDS_IWA_INSTALLER_INSTALL_SUBTITLE) {
@@ -622,7 +636,10 @@ class InstallSuccessView : public InstallerDialogView {
  public:
   InstallSuccessView()
       : InstallerDialogView(
-            CreateImageModelFromVector(kFingerprintOldIcon, ui::kColorAccent),
+            CreateImageModelFromVector(features::IsRoundedIconsEnabled()
+                                           ? kFingerprintIcon
+                                           : kFingerprintOldIcon,
+                                       ui::kColorAccent),
             // The title will be updated to the app name when available.
             IDS_IWA_INSTALLER_VERIFICATION_TITLE,
             IDS_IWA_INSTALLER_SUCCESS_SUBTITLE) {
@@ -847,10 +864,13 @@ views::Widget* IsolatedWebAppInstallerViewImpl::ShowDialog(
             // user-facing articles are released.
             auto subtitle =
                 ui::DialogModelLabel(IDS_IWA_INSTALLER_CONFIRM_SUBTITLE);
-            return ShowChildDialog(IDS_IWA_INSTALLER_CONFIRM_TITLE, subtitle,
-                                   CreateImageModelFromVector(
-                                       kPrivacyTipOldIcon, ui::kColorAccent),
-                                   IDS_IWA_INSTALLER_CONFIRM_CONTINUE);
+            return ShowChildDialog(
+                IDS_IWA_INSTALLER_CONFIRM_TITLE, subtitle,
+                CreateImageModelFromVector(features::IsRoundedIconsEnabled()
+                                               ? kPrivacyTipIcon
+                                               : kPrivacyTipOldIcon,
+                                           ui::kColorAccent),
+                IDS_IWA_INSTALLER_CONFIRM_CONTINUE);
           },
           [this](
               const IsolatedWebAppInstallerModel::InstallationFailedDialog&) {

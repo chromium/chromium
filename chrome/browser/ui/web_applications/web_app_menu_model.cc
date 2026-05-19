@@ -139,7 +139,9 @@ void WebAppMenuModel::Build() {
     }
     if (update_icon.IsEmpty()) {
       update_icon = ui::ImageModel::FromVectorIcon(
-          kBrowserToolsUpdateChromeRefreshOldIcon,
+          features::IsRoundedIconsEnabled()
+              ? kRocketLaunchIcon
+              : kBrowserToolsUpdateChromeRefreshOldIcon,
           ui::kColorMenuIconOnEmphasizedBackground, kDefaultIconSize);
     }
     AddItemWithStringIdAndIcon(IDC_WEB_APP_UPGRADE_DIALOG,
@@ -195,15 +197,20 @@ void WebAppMenuModel::Build() {
   if (browser()->app_controller() &&
       browser()->app_controller()->has_tab_strip() &&
       !browser()->app_controller()->ShouldHideNewTabButton()) {
-    AddItemWithStringIdAndVectorIcon(this, IDC_NEW_TAB, IDS_NEW_TAB,
-                                     kNewTabRefreshOldIcon);
+    AddItemWithStringIdAndVectorIcon(
+        this, IDC_NEW_TAB, IDS_NEW_TAB,
+        features::IsRoundedIconsEnabled() ? kTabIcon : kNewTabRefreshOldIcon);
   }
   AddItemWithStringIdAndVectorIcon(this, IDC_COPY_URL, IDS_COPY_URL,
-                                   kLinkChromeRefreshOldIcon);
+                                   features::IsRoundedIconsEnabled()
+                                       ? kLinkIcon
+                                       : kLinkChromeRefreshOldIcon);
 
   if (ShouldAllowOpenInChrome(browser())) {
-    AddItemWithStringIdAndVectorIcon(this, IDC_OPEN_IN_CHROME,
-                                     IDS_OPEN_IN_CHROME, kBrowserLogoOldIcon);
+    AddItemWithStringIdAndVectorIcon(
+        this, IDC_OPEN_IN_CHROME, IDS_OPEN_IN_CHROME,
+        features::IsRoundedIconsEnabled() ? kChromeProductIcon
+                                          : kBrowserLogoOldIcon);
   }
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -225,24 +232,29 @@ void WebAppMenuModel::Build() {
   DCHECK(browser()->app_controller());
   if (browser()->app_controller()->IsInstalled()) {
     AddSeparator(ui::NORMAL_SEPARATOR);
-    AddItemWithIcon(kUninstallAppCommandId,
-                    l10n_util::GetStringFUTF16(
-                        IDS_UNINSTALL_FROM_OS_LAUNCH_SURFACE,
-                        ui::EscapeMenuLabelAmpersands(
-                            browser()->app_controller()->GetAppShortName())),
-                    ui::ImageModel::FromVectorIcon(kTrashCanRefreshOldIcon));
+    AddItemWithIcon(
+        kUninstallAppCommandId,
+        l10n_util::GetStringFUTF16(
+            IDS_UNINSTALL_FROM_OS_LAUNCH_SURFACE,
+            ui::EscapeMenuLabelAmpersands(
+                browser()->app_controller()->GetAppShortName())),
+        ui::ImageModel::FromVectorIcon(features::IsRoundedIconsEnabled()
+                                           ? kDeleteIcon
+                                           : kTrashCanRefreshOldIcon));
   }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
   AddSeparator(ui::NORMAL_SEPARATOR);
   CreateZoomMenu();
   AddSeparator(ui::NORMAL_SEPARATOR);
-  AddItemWithStringIdAndVectorIcon(this, IDC_PRINT, IDS_PRINT,
-                                   kPrintMenuOldIcon);
+  AddItemWithStringIdAndVectorIcon(
+      this, IDC_PRINT, IDS_PRINT,
+      features::IsRoundedIconsEnabled() ? kPrintIcon : kPrintMenuOldIcon);
   CreateFindAndEditSubMenu();
 
   if (media_router::MediaRouterEnabled(browser()->profile())) {
-    AddItemWithStringIdAndVectorIcon(this, IDC_ROUTE_MEDIA,
-                                     IDS_MEDIA_ROUTER_MENU_ITEM_TITLE,
-                                     kCastChromeRefreshOldIcon);
+    AddItemWithStringIdAndVectorIcon(
+        this, IDC_ROUTE_MEDIA, IDS_MEDIA_ROUTER_MENU_ITEM_TITLE,
+        features::IsRoundedIconsEnabled() ? kCastIcon
+                                          : kCastChromeRefreshOldIcon);
   }
 }

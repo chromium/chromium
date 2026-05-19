@@ -18,6 +18,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "components/url_formatter/elide_url.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/layout/layout_provider.h"
 
@@ -200,7 +201,8 @@ std::u16string PermissionPromptBubbleTwoOriginsView::CreateWindowTitle() {
 void PermissionPromptBubbleTwoOriginsView::CreateFaviconRow() {
   // Getting default favicon.
   ui::ImageModel default_favicon_ = ui::ImageModel::FromVectorIcon(
-      kGlobeOldIcon, ui::kColorIcon, kDesiredFaviconSizeInPixel);
+      features::IsRoundedIconsEnabled() ? kGlobeIcon : kGlobeOldIcon,
+      ui::kColorIcon, kDesiredFaviconSizeInPixel);
 
   const int favicon_margin = views::LayoutProvider::Get()->GetDistanceMetric(
       views::DISTANCE_VECTOR_ICON_PADDING);

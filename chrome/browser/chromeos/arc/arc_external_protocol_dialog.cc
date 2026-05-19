@@ -33,6 +33,7 @@
 #include "content/public/common/referrer.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/color/color_id.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -68,8 +69,10 @@ ui::ImageModel CreateDeviceIcon(
     const syncer::DeviceInfo::FormFactor device_form_factor) {
   const gfx::VectorIcon& icon =
       device_form_factor == syncer::DeviceInfo::FormFactor::kTablet
-          ? kTabletOldIcon
-          : kHardwareSmartphoneOldIcon;
+          ? features::IsRoundedIconsEnabled() ? kTabletFilledIcon
+                                              : kTabletOldIcon
+      : features::IsRoundedIconsEnabled() ? kMobileIcon
+                                          : kHardwareSmartphoneOldIcon;
   return ui::ImageModel::FromVectorIcon(icon, ui::kColorIcon, kDeviceIconSize);
 }
 

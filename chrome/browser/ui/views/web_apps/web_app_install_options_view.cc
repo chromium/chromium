@@ -20,6 +20,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image.h"
@@ -159,7 +160,10 @@ WebAppInstallOptionsView::WebAppInstallOptionsView(OptionsData options_data) {
                       /*corner_radius=*/0, &icon_view_),
                   views::Builder<views::ImageView>()
                       .SetImage(ui::ImageModel::FromVectorIcon(
-                          kArrowForwardOldIcon, ui::kColorIcon))
+                          features::IsRoundedIconsEnabled()
+                              ? kArrowForwardIcon
+                              : kArrowForwardOldIcon,
+                          ui::kColorIcon))
                       .SetPreferredSize(
                           gfx::Size(kIconArrowSize, kIconArrowSize)),
                   CreateIconWithLabelView(

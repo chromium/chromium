@@ -19,6 +19,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/controls/button/image_button.h"
@@ -42,7 +43,8 @@ base::optional_ref<const gfx::VectorIcon> GetVectorIconForType(FieldType type) {
     case AddressUIComponentIconType::kNoIcon:
       return std::nullopt;
     case AddressUIComponentIconType::kName:
-      return kAccountCircleOldIcon;
+      return ::features::IsRoundedIconsEnabled() ? kAccountCircleFilledIcon
+                                                 : kAccountCircleOldIcon;
     case AddressUIComponentIconType::kAddress:
       return vector_icons::kLocationOnOldIcon;
     case AddressUIComponentIconType::kEmail:

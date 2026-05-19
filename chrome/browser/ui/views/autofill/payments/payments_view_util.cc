@@ -23,6 +23,7 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/gfx/color_palette.h"
@@ -159,7 +160,9 @@ std::unique_ptr<views::ImageView> CreateIconView(
     case TitleWithIconAfterLabelView::Icon::AFTERPAY:
     case TitleWithIconAfterLabelView::Icon::KLARNA:
     case TitleWithIconAfterLabelView::Icon::ZIP: {
-      const gfx::VectorIcon& icon = kCreditCardOldIcon;
+      const gfx::VectorIcon& icon = ::features::IsRoundedIconsEnabled()
+                                        ? kCreditCardIcon
+                                        : kCreditCardOldIcon;
 #endif
       model = ui::ImageModel::FromVectorIcon(icon, ui::kColorIcon, kIconHeight);
       break;

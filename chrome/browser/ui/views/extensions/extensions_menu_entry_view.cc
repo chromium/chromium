@@ -18,6 +18,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/mojom/menu_source_type.mojom.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/menu_button_controller.h"
@@ -275,15 +276,19 @@ void ExtensionsMenuEntryView::UpdateContextMenuButton(
   const int icon_size = ChromeLayoutProvider::Get()->GetDistanceMetric(
       DISTANCE_EXTENSIONS_MENU_BUTTON_ICON_SIZE);
   auto three_dot_icon = ui::ImageModel::FromVectorIcon(
-      kBrowserToolsChromeRefreshOldIcon, kColorExtensionMenuIcon, icon_size);
+      features::IsRoundedIconsEnabled() ? kMoreVertIcon
+                                        : kBrowserToolsChromeRefreshOldIcon,
+      kColorExtensionMenuIcon, icon_size);
 
   // Show a pin button for the context menu normal state icon when the action is
   // pinned in the toolbar. All other states should look, and behave, the same.
   context_menu_button_->SetImageModel(
       views::Button::STATE_NORMAL,
-      button_state.is_on ? ui::ImageModel::FromVectorIcon(
-                               kKeepOldIcon, kColorExtensionMenuIcon, icon_size)
-                         : three_dot_icon);
+      button_state.is_on
+          ? ui::ImageModel::FromVectorIcon(
+                features::IsRoundedIconsEnabled() ? kKeepIcon : kKeepOldIcon,
+                kColorExtensionMenuIcon, icon_size)
+          : three_dot_icon);
   context_menu_button_->SetImageModel(views::Button::STATE_HOVERED,
                                       three_dot_icon);
   context_menu_button_->SetImageModel(views::Button::STATE_PRESSED,

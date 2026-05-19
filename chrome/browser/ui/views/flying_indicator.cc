@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "ui/accessibility/ax_enums.mojom-shared.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/color/color_provider.h"
 #include "ui/gfx/geometry/cubic_bezier.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
@@ -77,7 +78,8 @@ FlyingIndicator::FlyingIndicator(const gfx::VectorIcon& icon,
   auto* const link_image =
       bubble_view->AddChildView(std::make_unique<views::ImageView>());
   link_image->SetImage(ui::ImageModel::FromVectorIcon(
-      kWebOldIcon, kColorFlyingIndicatorForeground, kIconSize));
+      features::IsRoundedIconsEnabled() ? kWebIcon : kWebOldIcon,
+      kColorFlyingIndicatorForeground, kIconSize));
   link_image->SetPreferredSize(gfx::Size(kBubbleSize, kBubbleSize));
 
   // Use the default fill layout because there's only one child view.

@@ -38,6 +38,7 @@
 #include "ui/base/clipboard/clipboard_buffer.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/gfx/image/image.h"
@@ -231,7 +232,8 @@ void RemoteCopyMessageHandler::ShowNotification(const std::u16string& title,
   TRACE_EVENT0("sharing", "RemoteCopyMessageHandler::ShowNotification");
 
   message_center::RichNotificationData rich_notification_data;
-  rich_notification_data.vector_small_image = &kDevicesOldIcon;
+  rich_notification_data.vector_small_image =
+      &(features::IsRoundedIconsEnabled() ? kDevicesIcon : kDevicesOldIcon);
   rich_notification_data.renotify = true;
 
   ui::Accelerator paste_accelerator(ui::VKEY_V, ui::EF_PLATFORM_ACCELERATOR);

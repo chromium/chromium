@@ -1344,8 +1344,9 @@ void BookmarkMenuDelegate::BuildOtherNodeMenuHeader(MenuItemView* menu) {
     menu->RemoveAllMenuItems();
   }
   ui::ImageModel bookmarks_side_panel_icon = ui::ImageModel::FromVectorIcon(
-      kBookmarksSidePanelOldIcon, ui::kColorMenuIcon,
-      ui::SimpleMenuModel::kDefaultIconSize);
+      features::IsRoundedIconsEnabled() ? kHotelClassIcon
+                                        : kBookmarksSidePanelOldIcon,
+      ui::kColorMenuIcon, ui::SimpleMenuModel::kDefaultIconSize);
   menu->AppendMenuItem(
       IDC_SHOW_BOOKMARK_SIDE_PANEL,
       l10n_util::GetStringUTF16(IDS_BOOKMARKS_ALL_BOOKMARKS_OPEN_SIDE_PANEL),

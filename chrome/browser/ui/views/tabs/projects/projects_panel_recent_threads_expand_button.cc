@@ -12,6 +12,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/controls/image_view.h"
@@ -59,7 +60,11 @@ void ProjectsPanelRecentThreadsExpandButton::SetExpanded(bool expanded) {
   const int string_id =
       expanded ? IDS_THREADS_SHOW_LESS : IDS_THREADS_SHOW_MORE;
   const gfx::VectorIcon& icon = expanded
-                                    ? kKeyboardArrowUpChromeRefreshOldIcon
+                                    ? features::IsRoundedIconsEnabled()
+                                          ? kKeyboardControlKeyIcon
+                                          : kKeyboardArrowUpChromeRefreshOldIcon
+                                : features::IsRoundedIconsEnabled()
+                                    ? kKeyboardArrowDownIcon
                                     : kKeyboardArrowDownChromeRefreshOldIcon;
 
   icon_->SetImage(ui::ImageModel::FromVectorIcon(

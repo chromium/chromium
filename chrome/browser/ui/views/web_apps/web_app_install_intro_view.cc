@@ -19,6 +19,7 @@
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -92,12 +93,17 @@ class ScrollButton : public views::ImageButton {
             ? IDS_ACCNAME_WEB_APP_DETAILED_INSTALL_DIALOG_LEADING_SCROLL_BUTTON
             : IDS_ACCNAME_WEB_APP_DETAILED_INSTALL_DIALOG_TRAILING_SCROLL_BUTTON));
 
-    SetImageModel(views::Button::ButtonState::STATE_NORMAL,
-                  button_type == ButtonType::kLeading
-                      ? ui::ImageModel::FromVectorIcon(kLeadingScrollOldIcon,
-                                                       ui::kColorIcon)
-                      : ui::ImageModel::FromVectorIcon(kTrailingScrollOldIcon,
-                                                       ui::kColorIcon));
+    SetImageModel(
+        views::Button::ButtonState::STATE_NORMAL,
+        button_type == ButtonType::kLeading
+            ? ui::ImageModel::FromVectorIcon(features::IsRoundedIconsEnabled()
+                                                 ? kKeyboardArrowLeftIcon
+                                                 : kLeadingScrollOldIcon,
+                                             ui::kColorIcon)
+            : ui::ImageModel::FromVectorIcon(features::IsRoundedIconsEnabled()
+                                                 ? kKeyboardArrowRightIcon
+                                                 : kTrailingScrollOldIcon,
+                                             ui::kColorIcon));
 
     views::InkDrop::Get(this)->SetBaseColor(
         views::TypographyProvider::Get().GetColorId(

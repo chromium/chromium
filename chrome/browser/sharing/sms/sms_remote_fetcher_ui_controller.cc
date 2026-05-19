@@ -21,6 +21,7 @@
 #include "content/public/browser/web_contents.h"
 #include "third_party/blink/public/common/sms/webotp_constants.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/strings/grit/ui_strings.h"
 
@@ -61,7 +62,8 @@ std::u16string SmsRemoteFetcherUiController::GetContentType() const {
 }
 
 const gfx::VectorIcon& SmsRemoteFetcherUiController::GetVectorIcon() const {
-  return kSmartphoneRefreshOldIcon;
+  return features::IsRoundedIconsEnabled() ? kMobileIcon
+                                           : kSmartphoneRefreshOldIcon;
 }
 
 bool SmsRemoteFetcherUiController::ShouldShowLoadingIcon() const {

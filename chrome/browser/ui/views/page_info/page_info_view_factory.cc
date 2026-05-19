@@ -315,7 +315,9 @@ const ui::ImageModel PageInfoViewFactory::GetPermissionIcon(
     case ContentSettingsType::FEDERATED_IDENTITY_API:
       icon = show_blocked_badge
                  ? &vector_icons::kAccountCircleOffChromeRefreshOldIcon
-                 : &vector_icons::kAccountCircleChromeRefreshOldIcon;
+                 : &(features::IsRoundedIconsEnabled()
+                         ? kAccountCircleIcon
+                         : vector_icons::kAccountCircleChromeRefreshOldIcon);
       break;
     case ContentSettingsType::IMAGES:
       icon = show_blocked_badge ? &vector_icons::kPhotoOffChromeRefreshOldIcon
@@ -365,8 +367,11 @@ const ui::ImageModel PageInfoViewFactory::GetPermissionIcon(
                                 : &vector_icons::kMidiChromeRefreshOldIcon;
       break;
     case ContentSettingsType::BACKGROUND_SYNC:
-      icon = show_blocked_badge ? &vector_icons::kSyncOffChromeRefreshOldIcon
-                                : &vector_icons::kSyncChromeRefreshOldIcon;
+      icon = show_blocked_badge
+                 ? &vector_icons::kSyncOffChromeRefreshOldIcon
+                 : &(features::IsRoundedIconsEnabled()
+                         ? kSyncIcon
+                         : vector_icons::kSyncChromeRefreshOldIcon);
       break;
     case ContentSettingsType::ADS:
       icon = show_blocked_badge ? &vector_icons::kAdsOffChromeRefreshOldIcon
@@ -404,8 +409,12 @@ const ui::ImageModel PageInfoViewFactory::GetPermissionIcon(
                  : &vector_icons::kBluetoothScanningChromeRefreshOldIcon;
       break;
     case ContentSettingsType::FILE_SYSTEM_WRITE_GUARD:
-      icon = show_blocked_badge ? &kFileSaveOffChromeRefreshOldIcon
-                                : &kFileSaveChromeRefreshOldIcon;
+      icon = show_blocked_badge ? &(features::IsRoundedIconsEnabled()
+                                        ? kFileSaveOffIcon
+                                        : kFileSaveOffChromeRefreshOldIcon)
+                                : &(features::IsRoundedIconsEnabled()
+                                        ? kFileSaveIcon
+                                        : kFileSaveChromeRefreshOldIcon);
       break;
     case ContentSettingsType::VR:
       icon = show_blocked_badge
@@ -438,7 +447,9 @@ const ui::ImageModel PageInfoViewFactory::GetPermissionIcon(
       break;
     case ContentSettingsType::IDLE_DETECTION:
       icon = show_blocked_badge ? &vector_icons::kDevicesOffOldIcon
-                                : &vector_icons::kDevicesOldIcon;
+                                : &(features::IsRoundedIconsEnabled()
+                                        ? kDevicesIcon
+                                        : vector_icons::kDevicesOldIcon);
       break;
     case ContentSettingsType::STORAGE_ACCESS:
       icon = show_blocked_badge ? &vector_icons::kStorageAccessOffOldIcon
@@ -494,7 +505,9 @@ const ui::ImageModel PageInfoViewFactory::GetPermissionIcon(
       icon = &vector_icons::kDatabaseOldIcon;
       break;
     case ContentSettingsType::FEDERATED_IDENTITY_API:
-      icon = &vector_icons::kAccountCircleOldIcon;
+      icon = &(features::IsRoundedIconsEnabled()
+                   ? kAccountCircleFilledIcon
+                   : vector_icons::kAccountCircleOldIcon);
       break;
     case ContentSettingsType::IMAGES:
       icon = &vector_icons::kPhotoOldIcon;
@@ -559,7 +572,8 @@ const ui::ImageModel PageInfoViewFactory::GetPermissionIcon(
       icon = &vector_icons::kBluetoothScanningOldIcon;
       break;
     case ContentSettingsType::FILE_SYSTEM_WRITE_GUARD:
-      icon = &kFileSaveOldIcon;
+      icon = &(features::IsRoundedIconsEnabled() ? kFileSaveIcon
+                                                 : kFileSaveOldIcon);
       break;
     case ContentSettingsType::VR:
     case ContentSettingsType::AR:
@@ -578,7 +592,9 @@ const ui::ImageModel PageInfoViewFactory::GetPermissionIcon(
       icon = &vector_icons::kVideogameAssetOldIcon;
       break;
     case ContentSettingsType::IDLE_DETECTION:
-      icon = &vector_icons::kDevicesOldIcon;
+      icon =
+          &(features::IsRoundedIconsEnabled() ? kDevicesIcon
+                                              : vector_icons::kDevicesOldIcon);
       break;
     case ContentSettingsType::STORAGE_ACCESS:
       icon = &vector_icons::kStorageAccessOldIcon;
@@ -587,7 +603,8 @@ const ui::ImageModel PageInfoViewFactory::GetPermissionIcon(
       icon = &vector_icons::kPictureInPictureOldIcon;
       break;
     case ContentSettingsType::AUTOMATIC_FULLSCREEN:
-      icon = &kFullscreenOldIcon;
+      icon = &(features::IsRoundedIconsEnabled() ? kFullscreenIcon
+                                                 : kFullscreenOldIcon);
       break;
     case ContentSettingsType::CAPTURED_SURFACE_CONTROL:
       icon = &vector_icons::kTouchpadMouseOldIcon;

@@ -17,6 +17,7 @@
 #include "components/sync_device_info/device_info.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/image_view.h"
@@ -33,11 +34,14 @@ const gfx::VectorIcon& GetIconType(
     const syncer::DeviceInfo::FormFactor& device_form_factor) {
   switch (device_form_factor) {
     case syncer::DeviceInfo::FormFactor::kPhone:
-      return kHardwareSmartphoneOldIcon;
+      return features::IsRoundedIconsEnabled() ? kMobileIcon
+                                               : kHardwareSmartphoneOldIcon;
     case syncer::DeviceInfo::FormFactor::kTablet:
-      return kTabletOldIcon;
+      return features::IsRoundedIconsEnabled() ? kTabletFilledIcon
+                                               : kTabletOldIcon;
     default:
-      return kHardwareComputerOldIcon;
+      return features::IsRoundedIconsEnabled() ? kComputerCustomIcon
+                                               : kHardwareComputerOldIcon;
   }
 }
 
@@ -71,7 +75,8 @@ std::unique_ptr<views::ImageView> CreateCheckmarkIcon() {
     return nullptr;
   }
   return std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
-      kCheckOldIcon, ui::kColorAccent, kCheckmarkIconSize));
+      features::IsRoundedIconsEnabled() ? kCheckIcon : kCheckOldIcon,
+      ui::kColorAccent, kCheckmarkIconSize));
 }
 
 }  // namespace

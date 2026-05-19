@@ -31,6 +31,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/gfx/favicon_size.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/layout/fill_layout.h"
@@ -367,8 +368,10 @@ void ManagePasswordsView::OnFaviconReady(const gfx::Image& favicon) {
 ui::ImageModel ManagePasswordsView::GetFaviconImageModel() const {
   // Use a globe fallback icon until the actual favicon is loaded.
   return favicon_.IsEmpty()
-             ? ui::ImageModel::FromVectorIcon(kGlobeOldIcon, ui::kColorIcon,
-                                              gfx::kFaviconSize)
+             ? ui::ImageModel::FromVectorIcon(features::IsRoundedIconsEnabled()
+                                                  ? kGlobeIcon
+                                                  : kGlobeOldIcon,
+                                              ui::kColorIcon, gfx::kFaviconSize)
              : ui::ImageModel::FromImage(favicon_);
 }
 

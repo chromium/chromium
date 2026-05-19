@@ -27,6 +27,7 @@
 #include "content/public/common/referrer.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/page_transition_types.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/color/color_provider.h"
 #include "ui/message_center/public/cpp/message_center_constants.h"
@@ -115,8 +116,10 @@ ui::ImageModel GetNotificationIcon() {
   return ui::ImageModel::FromResourceId(
       IDR_TAILORED_SECURITY_UNCONSENTED_NOTIFICATION);
 #else
-  return ui::ImageModel::FromVectorIcon(kSafetyCheckOldIcon, ui::kColorAccent,
-                                        message_center::kNotificationIconSize);
+  return ui::ImageModel::FromVectorIcon(
+      features::IsRoundedIconsEnabled() ? kAndroidSecurityPrivacySafeFilledIcon
+                                        : kSafetyCheckOldIcon,
+      ui::kColorAccent, message_center::kNotificationIconSize);
 #endif
 }
 

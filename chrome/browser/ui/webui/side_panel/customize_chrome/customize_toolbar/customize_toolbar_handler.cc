@@ -33,6 +33,7 @@
 #include "ui/actions/actions.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/vector_icon_types.h"
 
@@ -227,8 +228,11 @@ void CustomizeToolbarHandler::ListActions(ListActionsCallback callback) {
       prefs()->GetBoolean(prefs::kShowHomeButton), false,
       side_panel::customize_chrome::mojom::CategoryId::kNavigation,
       GURL(webui::EncodePNGAndMakeDataURI(
-          ui::ImageModel::FromVectorIcon(kNavigateHomeChromeRefreshOldIcon,
-                                         icon_color_id)
+          ui::ImageModel::FromVectorIcon(
+              features::IsRoundedIconsEnabled()
+                  ? kHomeIcon
+                  : kNavigateHomeChromeRefreshOldIcon,
+              icon_color_id)
               .Rasterize(&provider),
           scale_factor)));
 
@@ -252,7 +256,10 @@ void CustomizeToolbarHandler::ListActions(ListActionsCallback callback) {
       prefs()->GetBoolean(prefs::kPinSplitTabButton), false,
       side_panel::customize_chrome::mojom::CategoryId::kNavigation,
       GURL(webui::EncodePNGAndMakeDataURI(
-          ui::ImageModel::FromVectorIcon(kSplitSceneOldIcon, icon_color_id)
+          ui::ImageModel::FromVectorIcon(features::IsRoundedIconsEnabled()
+                                             ? kSplitSceneIcon
+                                             : kSplitSceneOldIcon,
+                                         icon_color_id)
               .Rasterize(&provider),
           scale_factor)));
 

@@ -25,6 +25,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/base/ui_base_features.h"
 
 namespace feature_first_run {
 
@@ -66,7 +67,9 @@ std::unique_ptr<views::View> CreateDialogContentView(
   container_view->AddChildView(CreateInfoBoxContainer(
       l10n_util::GetStringUTF16(IDS_AUTOFILL_AI_FFR_WHEN_ON_TITLE),
       l10n_util::GetStringUTF16(IDS_AUTOFILL_AI_FFR_WHEN_ON_DESCRIPTION),
-      kTextAnalysisOldIcon, InfoBoxPosition::kStart));
+      features::IsRoundedIconsEnabled() ? kTextAnalysisIcon
+                                        : kTextAnalysisOldIcon,
+      InfoBoxPosition::kStart));
 
   container_view->AddChildView(CreateInfoBoxContainerWithLearnMore(
       l10n_util::GetStringUTF16(IDS_SETTINGS_COLUMN_HEADING_CONSIDER),

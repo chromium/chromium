@@ -50,6 +50,7 @@
 #include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/text_constants.h"
@@ -878,7 +879,9 @@ PartialTranslateBubbleView::CreateOptionsMenuButton() {
   // Three dots options menu button
   auto tab_translate_options_button =
       views::CreateVectorImageButtonWithNativeTheme(
-          views::Button::PressedCallback(), kBrowserToolsOldIcon);
+          views::Button::PressedCallback(), features::IsRoundedIconsEnabled()
+                                                ? kMoreVertIcon
+                                                : kBrowserToolsOldIcon);
   tab_translate_options_button->SetCallback(base::BindRepeating(
       &PartialTranslateBubbleView::ShowOptionsMenu, base::Unretained(this),
       base::Unretained(tab_translate_options_button.get())));

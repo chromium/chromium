@@ -40,6 +40,7 @@
 #include "ui/base/models/table_model_observer.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/mojom/menu_source_type.mojom-forward.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_type.h"
 #include "ui/gfx/native_ui_types.h"
@@ -83,30 +84,40 @@ namespace {
 
 TaskManagerView* g_task_manager_view = nullptr;
 
-}  // namespace
-
-const auto kTabDefinitions = std::to_array<TaskManagerView::FilterTab>({
-    {
-        .associated_category = DisplayCategory::kTabsAndExtensions,
-        .title_id = IDS_TASK_MANAGER_CATEGORY_TABS_AND_EXTENSIONS_NAME,
-        .icon = &kNewTabRefreshOldIcon,
-    },
-    {
-        .associated_category = DisplayCategory::kSystem,
+base::span<const TaskManagerView::FilterTab> GetTabDefinitions() {
+  static const auto kTabDefinitions =
+      std::to_array<TaskManagerView::FilterTab>({
+          {
+              .associated_category = DisplayCategory::kTabsAndExtensions,
+              .title_id = IDS_TASK_MANAGER_CATEGORY_TABS_AND_EXTENSIONS_NAME,
+              .icon =
+                  &(features::IsRoundedIconsEnabled() ? kTabIcon
+                                                      : kNewTabRefreshOldIcon),
+          },
+          {
+              .associated_category = DisplayCategory::kSystem,
 #if BUILDFLAG(IS_CHROMEOS)
-        .title_id = IDS_TASK_MANAGER_CATEGORY_SYSTEM_NAME,
-        .icon = &kLaptopOldIcon,
+              .title_id = IDS_TASK_MANAGER_CATEGORY_SYSTEM_NAME,
+              .icon = &(features::IsRoundedIconsEnabled() ? kLaptopWindowsIcon
+                                                          : kLaptopOldIcon),
 #else
-        .title_id = IDS_TASK_MANAGER_CATEGORY_BROWSER_NAME,
-        .icon = &kBrowserLogoOldIcon,
+              .title_id = IDS_TASK_MANAGER_CATEGORY_BROWSER_NAME,
+              .icon =
+                  &(features::IsRoundedIconsEnabled() ? kChromeProductIcon
+                                                      : kBrowserLogoOldIcon),
 #endif
-    },
-    {
-        .associated_category = DisplayCategory::kAll,
-        .title_id = IDS_TASK_MANAGER_CATEGORY_ALL_NAME,
-        .icon = &kViewListOldIcon,
-    },
-});
+          },
+          {
+              .associated_category = DisplayCategory::kAll,
+              .title_id = IDS_TASK_MANAGER_CATEGORY_ALL_NAME,
+              .icon = &(features::IsRoundedIconsEnabled() ? kViewListIcon
+                                                          : kViewListOldIcon),
+          },
+      });
+  return kTabDefinitions;
+}
+
+}  // namespace
 
 TaskManagerView::~TaskManagerView() {
   // Delete child views now, while our table model still exists.
@@ -365,7 +376,7 @@ void TaskManagerView::MenuClosed(ui::SimpleMenuModel* source) {
 void TaskManagerView::SearchBarOnInputChanged(std::u16string_view query) {
   search_terms_ = query;
   PerformFilter(
-      kTabDefinitions[tabs_->GetSelectedTabIndex()].associated_category);
+      GetTabDefinitions()[tabs_->GetSelectedTabIndex()].associated_category);
 }
 
 TaskManagerView::TaskManagerView(StartAction start_action)
@@ -409,7 +420,7 @@ TaskManagerView::TableConfigs TaskManagerView::GetTableConfigs() {
 }
 
 void TaskManagerView::TabSelectedAt(int index) {
-  PerformFilter(kTabDefinitions[index].associated_category);
+  PerformFilter(GetTabDefinitions()[index].associated_category);
 }
 
 void TaskManagerView::CreateHeader(const ChromeLayoutProvider* provider) {
@@ -527,7 +538,7 @@ std::unique_ptr<views::TabbedPaneTabStrip> TaskManagerView::CreateTabbedPane(
   tabs->SetDefaultFlex(0);
   tabs->SetDrawTabDivider(false);
 
-  for (const auto& tab_definition : kTabDefinitions) {
+  for (const auto& tab_definition : GetTabDefinitions()) {
     auto* tab = tabs->AddTab(l10n_util::GetStringUTF16(tab_definition.title_id),
                              tab_definition.icon);
     tab->SetTitleMargin(title_insets);
@@ -768,8 +779,8 @@ void TaskManagerView::RestoreSavedCategory() {
 
   // Finds the tab index of the category to restore, or does nothing if the
   // category no longer exists as a tab.
-  for (size_t i = 0; i < kTabDefinitions.size(); ++i) {
-    if (kTabDefinitions[i].associated_category == parsed_category) {
+  for (size_t i = 0; i < GetTabDefinitions().size(); ++i) {
+    if (GetTabDefinitions()[i].associated_category == parsed_category) {
       tabs_->SelectTab(tabs_->GetTabAtIndex(i), /*animate=*/false);
       break;
     }

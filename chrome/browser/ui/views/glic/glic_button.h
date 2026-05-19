@@ -39,6 +39,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/color/color_variant.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/vector_icon_types.h"
@@ -650,7 +651,9 @@ class GlicButton : public GlicBaseShim<T>,
         std::make_unique<ui::SimpleMenuModel>(this);
     model->AddItemWithStringIdAndIcon(
         IDC_GLIC_TOGGLE_PIN, IDS_GLIC_BUTTON_CXMENU_UNPIN,
-        ui::ImageModel::FromVectorIcon(kKeepOffOldIcon, ui::kColorIcon, 16));
+        ui::ImageModel::FromVectorIcon(
+            features::IsRoundedIconsEnabled() ? kKeepOffIcon : kKeepOffOldIcon,
+            ui::kColorIcon, 16));
     return model;
   }
 

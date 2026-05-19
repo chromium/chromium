@@ -9,6 +9,7 @@
 #include "chrome/browser/sharesheet/sharesheet_controller.h"
 #include "chrome/browser/sharesheet/sharesheet_types.h"
 #include "chromeos/components/sharesheet/constants.h"
+#include "ui/base/ui_base_features.h"
 
 namespace sharesheet {
 
@@ -25,7 +26,7 @@ const std::u16string ExampleAction::GetActionName() {
 }
 
 const gfx::VectorIcon& ExampleAction::GetActionIcon() {
-  return kAddOldIcon;
+  return features::IsRoundedIconsEnabled() ? kAddIcon : kAddOldIcon;
 }
 
 void ExampleAction::LaunchAction(SharesheetController* controller,

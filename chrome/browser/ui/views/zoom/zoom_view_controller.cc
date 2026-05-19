@@ -26,6 +26,7 @@
 #include "content/public/browser/web_contents.h"
 #include "ui/actions/actions.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/ui_base_features.h"
 
 namespace zoom {
 
@@ -75,13 +76,17 @@ void ZoomViewController::UpdatePageActionIconProperties() {
     case ZoomController::ZOOM_BELOW_DEFAULT_ZOOM:
       page_action_controller_->OverrideImage(
           kActionZoomNormal,
-          ui::ImageModel::FromVectorIcon(kZoomMinusChromeRefreshOldIcon));
+          ui::ImageModel::FromVectorIcon(features::IsRoundedIconsEnabled()
+                                             ? kZoomOutIcon
+                                             : kZoomMinusChromeRefreshOldIcon));
       break;
     case ZoomController::ZOOM_AT_DEFAULT_ZOOM:
     case ZoomController::ZOOM_ABOVE_DEFAULT_ZOOM:
       page_action_controller_->OverrideImage(
           kActionZoomNormal,
-          ui::ImageModel::FromVectorIcon(kZoomPlusChromeRefreshOldIcon));
+          ui::ImageModel::FromVectorIcon(features::IsRoundedIconsEnabled()
+                                             ? kZoomInIcon
+                                             : kZoomPlusChromeRefreshOldIcon));
       break;
     default:
       NOTREACHED();

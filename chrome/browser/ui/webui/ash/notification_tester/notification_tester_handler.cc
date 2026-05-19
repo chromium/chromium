@@ -16,6 +16,7 @@
 #include "chrome/grit/theme_resources.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/vector_icon_types.h"
@@ -167,10 +168,16 @@ NotificationTesterHandler::GetRichDataSmallImageFromString(
     const std::string& small_image_name) {
   if (small_image_name == "ash::kTerminalSshIcon") {
     return ash::kTerminalSshIcon;
-  } else if (small_image_name == "kCreditCardOldIcon") {
-    return kCreditCardOldIcon;
-  } else if (small_image_name == "kSmartphoneOldIcon") {
-    return kSmartphoneOldIcon;
+  } else if (small_image_name ==
+             "::features::IsRoundedIconsEnabled() ? kCreditCardIcon : "
+             "kCreditCardOldIcon") {
+    return ::features::IsRoundedIconsEnabled() ? kCreditCardIcon
+                                               : kCreditCardOldIcon;
+  } else if (small_image_name ==
+             "::features::IsRoundedIconsEnabled() ? kMobileIcon : "
+             "kSmartphoneOldIcon") {
+    return ::features::IsRoundedIconsEnabled() ? kMobileIcon
+                                               : kSmartphoneOldIcon;
   }
 
   return gfx::VectorIcon::EmptyIcon();

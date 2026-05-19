@@ -17,6 +17,7 @@
 #include "ui/base/models/dialog_model.h"
 #include "ui/base/models/dialog_model_menu_model_adapter.h"
 #include "ui/base/mojom/menu_source_type.mojom.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/button/image_button_factory.h"
 #include "ui/views/controls/highlight_path_generator.h"
@@ -144,8 +145,9 @@ SiteDataRowView::SiteDataRowView(
 
   views::TableLayout* layout = SetLayoutManager(SetupTableLayout());
   favicon_image_ = AddChildView(std::make_unique<NonAccessibleImageView>());
-  favicon_image_->SetImage(
-      ui::ImageModel::FromVectorIcon(kGlobeOldIcon, ui::kColorIcon, kIconSize));
+  favicon_image_->SetImage(ui::ImageModel::FromVectorIcon(
+      features::IsRoundedIconsEnabled() ? kGlobeIcon : kGlobeOldIcon,
+      ui::kColorIcon, kIconSize));
 
   // It's safe to bind to this here because both the row view and the favicon
   // service have the same lifetime and all be destroyed when the dialog is
@@ -172,7 +174,8 @@ SiteDataRowView::SiteDataRowView(
       views::CreateVectorImageButtonWithNativeTheme(
           base::BindRepeating(&SiteDataRowView::OnDeleteIconClicked,
                               base::Unretained(this)),
-          kTrashCanOldIcon, kIconSize));
+          features::IsRoundedIconsEnabled() ? kDeleteIcon : kTrashCanOldIcon,
+          kIconSize));
   views::InstallCircleHighlightPathGenerator(delete_button_);
   delete_button_->SetTooltipText(l10n_util::GetStringFUTF16(
       IDS_PAGE_SPECIFIC_SITE_DATA_DIALOG_DELETE_BUTTON_TOOLTIP,
@@ -184,7 +187,8 @@ SiteDataRowView::SiteDataRowView(
   menu_button_ = AddChildView(views::CreateVectorImageButtonWithNativeTheme(
       base::BindRepeating(&SiteDataRowView::OnMenuIconClicked,
                           base::Unretained(this)),
-      kBrowserToolsOldIcon, kIconSize));
+      features::IsRoundedIconsEnabled() ? kMoreVertIcon : kBrowserToolsOldIcon,
+      kIconSize));
   menu_button_->SetTooltipText(l10n_util::GetStringFUTF16(
       IDS_PAGE_SPECIFIC_SITE_DATA_DIALOG_CONTEXT_MENU_TOOLTIP,
       origin_display_name));

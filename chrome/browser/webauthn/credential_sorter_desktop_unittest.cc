@@ -11,6 +11,7 @@
 #include "chrome/browser/webauthn/authenticator_request_dialog_model.h"
 #include "device/fido/public/fido_types.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/ui_base_features.h"
 
 using Mechanism = AuthenticatorRequestDialogModel::Mechanism;
 using CredentialInfo = Mechanism::CredentialInfo;
@@ -27,8 +28,10 @@ Mechanism CreateGpmPasskey(const std::u16string& user_name,
                            std::optional<base::Time> last_used_time) {
   Mechanism::Credential cred_info(
       {device::AuthenticatorType::kEnclave, kUserId, last_used_time});
-  return Mechanism(std::move(cred_info), user_name, kSmartphoneOldIcon,
-                   base::DoNothing());
+  return Mechanism(
+      std::move(cred_info), user_name,
+      features::IsRoundedIconsEnabled() ? kMobileIcon : kSmartphoneOldIcon,
+      base::DoNothing());
 }
 
 // Helper to create a Platform Passkey mechanism.
@@ -36,8 +39,10 @@ Mechanism CreatePlatformPasskey(const std::u16string& user_name,
                                 std::optional<base::Time> last_used_time) {
   Mechanism::Credential cred_info(
       {device::AuthenticatorType::kICloudKeychain, kUserId, last_used_time});
-  return Mechanism(std::move(cred_info), user_name, kSmartphoneOldIcon,
-                   base::DoNothing());
+  return Mechanism(
+      std::move(cred_info), user_name,
+      features::IsRoundedIconsEnabled() ? kMobileIcon : kSmartphoneOldIcon,
+      base::DoNothing());
 }
 
 // Helper to create a Password mechanism.
@@ -45,8 +50,10 @@ Mechanism CreatePassword(const std::u16string& user_name,
                          base::Time last_used_time) {
   Mechanism::Type password_data =
       Mechanism::Password(Mechanism::PasswordInfo(last_used_time));
-  return Mechanism(std::move(password_data), user_name, kSmartphoneOldIcon,
-                   base::DoNothing());
+  return Mechanism(
+      std::move(password_data), user_name,
+      features::IsRoundedIconsEnabled() ? kMobileIcon : kSmartphoneOldIcon,
+      base::DoNothing());
 }
 
 }  // namespace

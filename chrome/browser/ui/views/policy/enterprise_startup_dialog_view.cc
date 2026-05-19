@@ -25,6 +25,7 @@
 #include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/native_ui_types.h"
@@ -208,7 +209,9 @@ void EnterpriseStartupDialogView::DisplayErrorMessage(
   std::unique_ptr<views::Label> text = CreateText(error_message);
   auto error_icon =
       std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
-          kBrowserToolsErrorOldIcon, ui::kColorAlertHighSeverity, kIconSize));
+          features::IsRoundedIconsEnabled() ? kErrorFilledIcon
+                                            : kBrowserToolsErrorOldIcon,
+          ui::kColorAlertHighSeverity, kIconSize));
 
   AddContent(std::move(error_icon), std::move(text));
 }

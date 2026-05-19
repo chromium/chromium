@@ -26,6 +26,7 @@
 #include "ui/base/models/image_model.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -265,7 +266,9 @@ void SecurePaymentConfirmationDialogView::OnModelUpdated() {
     }
     if (model_->instrument_icon()->drawsNothing()) {
       image_view->SetImage(ui::ImageModel::FromVectorIcon(
-          kCreditCardOldIcon, ui::kColorSysOnSurfaceSubtle,
+          features::IsRoundedIconsEnabled() ? kCreditCardIcon
+                                            : kCreditCardOldIcon,
+          ui::kColorSysOnSurfaceSubtle,
           kSecurePaymentConfirmationIconDefaultWidthPx));
     }
   }
@@ -412,7 +415,9 @@ void SecurePaymentConfirmationDialogView::InitViews() {
   ui::ImageModel instrument_icon;
   if (model_->instrument_icon()->drawsNothing()) {
     instrument_icon = ui::ImageModel::FromVectorIcon(
-        kCreditCardOldIcon, ui::kColorSysOnSurfaceSubtle,
+        features::IsRoundedIconsEnabled() ? kCreditCardIcon
+                                          : kCreditCardOldIcon,
+        ui::kColorSysOnSurfaceSubtle,
         kSecurePaymentConfirmationIconDefaultWidthPx);
   } else {
     instrument_icon = ui::ImageModel::FromImageSkia(

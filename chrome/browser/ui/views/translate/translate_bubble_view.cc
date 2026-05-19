@@ -55,6 +55,7 @@
 #include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/strings/grit/ui_strings.h"
@@ -672,7 +673,9 @@ std::unique_ptr<views::View> TranslateBubbleView::CreateView() {
         /*subtitle=*/std::u16string(),
         /*secondary_view=*/
         std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
-            kChevronRightOldIcon, ui::kColorIcon, 16)));
+            features::IsRoundedIconsEnabled() ? kChevronRightIcon
+                                              : kChevronRightOldIcon,
+            ui::kColorIcon, 16)));
     choose_language_button->SetProperty(views::kElementIdentifierKey,
                                         kChangeTargetLanguage);
     view->AddChildView(std::move(choose_language_button));
@@ -990,7 +993,9 @@ std::unique_ptr<views::Button> TranslateBubbleView::CreateOptionsMenuButton() {
   // Three dots options menu button
   auto tab_translate_options_button =
       views::CreateVectorImageButtonWithNativeTheme(
-          views::Button::PressedCallback(), kBrowserToolsOldIcon);
+          views::Button::PressedCallback(), features::IsRoundedIconsEnabled()
+                                                ? kMoreVertIcon
+                                                : kBrowserToolsOldIcon);
   tab_translate_options_button->SetCallback(base::BindRepeating(
       &TranslateBubbleView::ShowOptionsMenu, base::Unretained(this),
       base::Unretained(tab_translate_options_button.get())));

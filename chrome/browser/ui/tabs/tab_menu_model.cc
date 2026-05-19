@@ -156,8 +156,9 @@ void TabMenuModel::BuildSendTabToSelfSubmenu(int index) {
   AddSubMenuWithStringIdAndIcon(
       TabStripModel::CommandSendTabToSelf, IDS_MENU_SEND_TAB_TO_SELF,
       send_tab_to_self_submenu_.get(),
-      ui::ImageModel::FromVectorIcon(kDevicesOldIcon, ui::kColorMenuIcon,
-                                     kTabMenuIconSize));
+      ui::ImageModel::FromVectorIcon(
+          features::IsRoundedIconsEnabled() ? kDevicesIcon : kDevicesOldIcon,
+          ui::kColorMenuIcon, kTabMenuIconSize));
 #endif
 }
 
@@ -166,9 +167,11 @@ void TabMenuModel::BuildLegacySendTabToSelfItem() {
   AddItem(TabStripModel::CommandSendTabToSelf,
           l10n_util::GetStringUTF16(IDS_MENU_SEND_TAB_TO_SELF));
 #else
-  AddItemWithIcon(TabStripModel::CommandSendTabToSelf,
-                  l10n_util::GetStringUTF16(IDS_MENU_SEND_TAB_TO_SELF),
-                  ui::ImageModel::FromVectorIcon(kDevicesOldIcon));
+  AddItemWithIcon(
+      TabStripModel::CommandSendTabToSelf,
+      l10n_util::GetStringUTF16(IDS_MENU_SEND_TAB_TO_SELF),
+      ui::ImageModel::FromVectorIcon(
+          features::IsRoundedIconsEnabled() ? kDevicesIcon : kDevicesOldIcon));
 #endif
 }
 
@@ -241,8 +244,10 @@ void TabMenuModel::Build(int index) {
       AddSubMenuWithStringIdAndIcon(
           TabStripModel::CommandSwapWithActiveSplit,
           IDS_TAB_CXMENU_SWAP_WITH_ACTIVE_SPLIT, swap_with_split_submenu_.get(),
-          ui::ImageModel::FromVectorIcon(kSplitSceneOldIcon, ui::kColorMenuIcon,
-                                         kTabMenuIconSize));
+          ui::ImageModel::FromVectorIcon(features::IsRoundedIconsEnabled()
+                                             ? kSplitSceneIcon
+                                             : kSplitSceneOldIcon,
+                                         ui::kColorMenuIcon, kTabMenuIconSize));
       const int swap_with_split_index = GetItemCount() - 1;
       SetEnabledAt(swap_with_split_index, num_tabs == 1);
       SetElementIdentifierAt(swap_with_split_index, kSwapSplitTabsMenuItem);
@@ -257,7 +262,9 @@ void TabMenuModel::Build(int index) {
                 : IDS_TAB_CXMENU_NEW_SPLIT_WITH_CURRENT,
             split_orientation_submenu_.get(),
             ui::ImageModel::FromVectorIcon(
-                kSplitSceneOldIcon, ui::kColorMenuIcon, kTabMenuIconSize));
+                features::IsRoundedIconsEnabled() ? kSplitSceneIcon
+                                                  : kSplitSceneOldIcon,
+                ui::kColorMenuIcon, kTabMenuIconSize));
       } else {
         AddItemWithStringIdAndIcon(
             TabStripModel::CommandAddToSplit,
@@ -265,7 +272,9 @@ void TabMenuModel::Build(int index) {
                 ? IDS_TAB_CXMENU_ADD_TAB_TO_NEW_SPLIT
                 : IDS_TAB_CXMENU_NEW_SPLIT_WITH_CURRENT,
             ui::ImageModel::FromVectorIcon(
-                kSplitSceneOldIcon, ui::kColorMenuIcon, kTabMenuIconSize));
+                features::IsRoundedIconsEnabled() ? kSplitSceneIcon
+                                                  : kSplitSceneOldIcon,
+                ui::kColorMenuIcon, kTabMenuIconSize));
       }
       const int add_to_split_index = GetItemCount() - 1;
       SetEnabledAt(add_to_split_index, num_tabs == 1 || num_tabs == 2);
@@ -277,8 +286,10 @@ void TabMenuModel::Build(int index) {
     AddSubMenuWithStringIdAndIcon(
         TabStripModel::CommandArrangeSplit, IDS_TAB_CXMENU_ARRANGE_SPLIT,
         arrange_split_view_submenu_.get(),
-        ui::ImageModel::FromVectorIcon(kSplitSceneOldIcon, ui::kColorMenuIcon,
-                                       kTabMenuIconSize));
+        ui::ImageModel::FromVectorIcon(features::IsRoundedIconsEnabled()
+                                           ? kSplitSceneIcon
+                                           : kSplitSceneOldIcon,
+                                       ui::kColorMenuIcon, kTabMenuIconSize));
     SetElementIdentifierAt(GetItemCount() - 1, kArrangeSplitTabsMenuItem);
   }
 
@@ -296,8 +307,10 @@ void TabMenuModel::Build(int index) {
       SetIconForCommandId(
           TabStripModel::CommandAddToExistingGroup,
           ui::ImageModel::FromVectorIcon(
-              kSavedTabGroupBarEverythingOldIcon, ui::kColorMenuIcon,
-              ui::SimpleMenuModel::kDefaultIconSize));
+              features::IsRoundedIconsEnabled()
+                  ? kGridViewIcon
+                  : kSavedTabGroupBarEverythingOldIcon,
+              ui::kColorMenuIcon, ui::SimpleMenuModel::kDefaultIconSize));
     }
   } else {
     AddItem(TabStripModel::CommandAddToNewGroup,
@@ -308,8 +321,10 @@ void TabMenuModel::Build(int index) {
       SetIconForCommandId(
           TabStripModel::CommandAddToNewGroup,
           ui::ImageModel::FromVectorIcon(
-              kSavedTabGroupBarEverythingOldIcon, ui::kColorMenuIcon,
-              ui::SimpleMenuModel::kDefaultIconSize));
+              features::IsRoundedIconsEnabled()
+                  ? kGridViewIcon
+                  : kSavedTabGroupBarEverythingOldIcon,
+              ui::kColorMenuIcon, ui::SimpleMenuModel::kDefaultIconSize));
     }
   }
 
@@ -330,20 +345,24 @@ void TabMenuModel::Build(int index) {
                    IDS_TAB_CXMENU_MOVETOANOTHERWINDOW, num_tabs),
                add_to_existing_window_submenu_.get());
     if (features::IsMenuSimplificationEnabled()) {
-      SetIconForCommandId(TabStripModel::CommandMoveToExistingWindow,
-                          ui::ImageModel::FromVectorIcon(
-                              kOpenInNewOldIcon, ui::kColorMenuIcon,
-                              ui::SimpleMenuModel::kDefaultIconSize));
+      SetIconForCommandId(
+          TabStripModel::CommandMoveToExistingWindow,
+          ui::ImageModel::FromVectorIcon(
+              features::IsRoundedIconsEnabled() ? kOpenInNewIcon
+                                                : kOpenInNewOldIcon,
+              ui::kColorMenuIcon, ui::SimpleMenuModel::kDefaultIconSize));
     }
   } else {
     AddItem(TabStripModel::CommandMoveTabsToNewWindow,
             l10n_util::GetPluralStringFUTF16(
                 IDS_TAB_CXMENU_MOVE_TABS_TO_NEW_WINDOW, num_tabs));
     if (features::IsMenuSimplificationEnabled()) {
-      SetIconForCommandId(TabStripModel::CommandMoveTabsToNewWindow,
-                          ui::ImageModel::FromVectorIcon(
-                              kOpenInNewOldIcon, ui::kColorMenuIcon,
-                              ui::SimpleMenuModel::kDefaultIconSize));
+      SetIconForCommandId(
+          TabStripModel::CommandMoveTabsToNewWindow,
+          ui::ImageModel::FromVectorIcon(
+              features::IsRoundedIconsEnabled() ? kOpenInNewIcon
+                                                : kOpenInNewOldIcon,
+              ui::kColorMenuIcon, ui::SimpleMenuModel::kDefaultIconSize));
     }
   }
 
@@ -411,7 +430,9 @@ void TabMenuModel::Build(int index) {
     AddItemWithIcon(
         TabStripModel::CommandAddToReadLater,
         l10n_util::GetPluralStringFUTF16(IDS_TAB_CXMENU_READ_LATER, num_tabs),
-        ui::ImageModel::FromVectorIcon(kMenuBookChromeRefreshOldIcon,
+        ui::ImageModel::FromVectorIcon(features::IsRoundedIconsEnabled()
+                                           ? kMenuBookIcon
+                                           : kMenuBookChromeRefreshOldIcon,
                                        ui::kColorMenuIcon, kTabMenuIconSize));
     SetEnabledAt(GetItemCount() - 1,
                  tab_strip_->IsReadLaterSupportedForAny(indices));

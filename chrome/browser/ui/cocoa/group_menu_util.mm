@@ -8,6 +8,7 @@
 #include "chrome/browser/app_controller_mac.h"
 #include "chrome/browser/ui/tabs/tab_group_theme.h"
 #include "components/tabs/public/tab_group.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/color/color_provider.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_util_mac.h"
@@ -29,9 +30,9 @@ void UpdateGroupIndicatorForMenuItem(
       [AppController.sharedController lastActiveColorProvider];
   const ui::ColorId color_id =
       GetTabGroupContextMenuColorId(tab_group_color_id.value());
-  gfx::ImageSkia group_icon =
-      gfx::CreateVectorIcon(kTabGroupOldIcon, kTabGroupIndicatorSize,
-                            color_provider.GetColor(color_id));
+  gfx::ImageSkia group_icon = gfx::CreateVectorIcon(
+      features::IsRoundedIconsEnabled() ? kCircleFilledIcon : kTabGroupOldIcon,
+      kTabGroupIndicatorSize, color_provider.GetColor(color_id));
   NSImage* image = NSImageFromImageSkia(group_icon);
 
   // Create text attachment to hold the group indicator image.

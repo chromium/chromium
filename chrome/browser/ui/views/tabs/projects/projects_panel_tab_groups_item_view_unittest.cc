@@ -11,6 +11,7 @@
 #include "components/saved_tab_groups/public/saved_tab_group_tab.h"
 #include "components/sync/base/collaboration_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/views/controls/button/menu_button.h"
 #include "ui/views/controls/image_view.h"
@@ -52,7 +53,8 @@ TEST_F(ProjectsPanelTabGroupsItemViewTest, TestDisplay) {
 TEST_F(ProjectsPanelTabGroupsItemViewTest, TestTabGroupClosed) {
   auto tab_groups_closed_item =
       std::make_unique<ProjectsPanelTabGroupsItemView>(GetTestSavedTabGroup());
-  EXPECT_EQ(&kTabGroupClosedOldIcon,
+  EXPECT_EQ(&(features::IsRoundedIconsEnabled() ? kCircleCircleFilledIcon
+                                                : kTabGroupClosedOldIcon),
             &tab_groups_closed_item->tab_group_vector_icon_for_testing());
 }
 
@@ -64,7 +66,8 @@ TEST_F(ProjectsPanelTabGroupsItemViewTest, TestTabGroupOpen) {
           base::Token{0x12345678, 0x9ABCDEF0}));
   auto tab_groups_open_item =
       std::make_unique<ProjectsPanelTabGroupsItemView>(open_group);
-  EXPECT_EQ(&kTabGroupOldIcon,
+  EXPECT_EQ(&(features::IsRoundedIconsEnabled() ? kCircleFilledIcon
+                                                : kTabGroupOldIcon),
             &tab_groups_open_item->tab_group_vector_icon_for_testing());
 }
 
@@ -89,7 +92,8 @@ TEST_F(ProjectsPanelTabGroupsItemViewTest, TestChildrenSharedTabGroup) {
       collaboration_group_view->shared_icon_for_testing();
   EXPECT_NE(nullptr, collaboration_view);
   EXPECT_TRUE(collaboration_view->GetImageModel().IsVectorIcon());
-  EXPECT_EQ(&kPeopleGroupOldIcon,
+  EXPECT_EQ(&(features::IsRoundedIconsEnabled() ? kGroupCustomIcon
+                                                : kPeopleGroupOldIcon),
             collaboration_view->GetImageModel().GetVectorIcon().vector_icon());
 }
 

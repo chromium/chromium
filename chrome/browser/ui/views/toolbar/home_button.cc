@@ -34,6 +34,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/menu_model.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/controls/styled_label.h"
@@ -152,7 +153,11 @@ HomeButton::HomeButton(BrowserWindowInterface* browser_window_interface,
   SetProperty(views::kElementIdentifierKey, kToolbarHomeButtonElementId);
   SetTriggerableEventFlags(ui::EF_LEFT_MOUSE_BUTTON |
                            ui::EF_MIDDLE_MOUSE_BUTTON);
-  SetVectorIcons(kNavigateHomeChromeRefreshOldIcon, kNavigateHomeTouchOldIcon);
+  SetVectorIcons(features::IsRoundedIconsEnabled()
+                     ? kHomeIcon
+                     : kNavigateHomeChromeRefreshOldIcon,
+                 features::IsRoundedIconsEnabled() ? kHomeIcon
+                                                   : kNavigateHomeTouchOldIcon);
   SetTooltipText(l10n_util::GetStringUTF16(IDS_TOOLTIP_HOME));
   GetViewAccessibility().SetName(l10n_util::GetStringUTF16(IDS_ACCNAME_HOME));
   SetID(VIEW_ID_HOME_BUTTON);

@@ -16,6 +16,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/toggle_button.h"
 #include "ui/views/controls/image_view.h"
@@ -87,8 +88,8 @@ void ContentSettingSiteRowView::OnFaviconLoaded(
         gfx::Image::CreateFrom1xPNGBytes(favicon_result.bitmap_data)));
   } else {
     favicon_->SetImage(ui::ImageModel::FromVectorIcon(
-        kGlobeOldIcon, ui::kColorIcon,
-        GetLayoutConstant(LayoutConstant::kPageInfoIconSize)));
+        features::IsRoundedIconsEnabled() ? kGlobeIcon : kGlobeOldIcon,
+        ui::kColorIcon, GetLayoutConstant(LayoutConstant::kPageInfoIconSize)));
   }
 }
 

@@ -42,6 +42,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/mojom/menu_source_type.mojom-forward.h"
 #include "ui/base/text/bytes_formatting.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
 #include "ui/compositor/layer.h"
 #include "ui/display/screen.h"
@@ -271,24 +272,33 @@ void DownloadBubbleRowView::SetIcon() {
   // For downloads in incognito mode.
   if (info_->model()->profile() &&
       info_->model()->profile()->IsIncognitoProfile()) {
-    if (last_overridden_icon_ == &kIncognitoOldIcon) {
+    if (last_overridden_icon_ == &(features::IsRoundedIconsEnabled()
+                                       ? kIncognitoCircleFilledIcon
+                                       : kIncognitoOldIcon)) {
       return;
     }
-    last_overridden_icon_ = &kIncognitoOldIcon;
+    last_overridden_icon_ =
+        &(features::IsRoundedIconsEnabled() ? kIncognitoCircleFilledIcon
+                                            : kIncognitoOldIcon);
     has_default_icon_ = false;
     SetIconFromImageModel(ui::ImageModel::FromVectorIcon(
-        kIncognitoOldIcon, ui::kColorIcon,
-        GetLayoutConstant(LayoutConstant::kDownloadIconSize)));
+        features::IsRoundedIconsEnabled() ? kIncognitoCircleFilledIcon
+                                          : kIncognitoOldIcon,
+        ui::kColorIcon, GetLayoutConstant(LayoutConstant::kDownloadIconSize)));
     return;
   }
 
   // For downloads in guest sessions.
   if (info_->model()->profile() &&
       info_->model()->profile()->IsGuestSession()) {
-    if (last_overridden_icon_ == &kUserAccountAvatarOldIcon) {
+    if (last_overridden_icon_ == &(features::IsRoundedIconsEnabled()
+                                       ? kAccountCircleIcon
+                                       : kUserAccountAvatarOldIcon)) {
       return;
     }
-    last_overridden_icon_ = &kUserAccountAvatarOldIcon;
+    last_overridden_icon_ =
+        &(features::IsRoundedIconsEnabled() ? kAccountCircleIcon
+                                            : kUserAccountAvatarOldIcon);
     has_default_icon_ = false;
     SetIconFromImageModel(profiles::GetGuestAvatar(
         GetLayoutConstant(LayoutConstant::kDownloadIconSize)));
@@ -456,8 +466,9 @@ DownloadBubbleRowView::DownloadBubbleRowView(
       gfx::Insets(kDownloadSubpageIconMargin) + kRowInterElementPadding);
   subpage_icon_->SetVisible(false);
   subpage_icon_->SetImage(ui::ImageModel::FromVectorIcon(
-      kChevronRightChromeRefreshOldIcon, ui::kColorIcon,
-      GetLayoutConstant(LayoutConstant::kDownloadIconSize)));
+      features::IsRoundedIconsEnabled() ? kChevronRightIcon
+                                        : kChevronRightChromeRefreshOldIcon,
+      ui::kColorIcon, GetLayoutConstant(LayoutConstant::kDownloadIconSize)));
 
   // The content of the label will be populated in the `UpdateRow` function.
   secondary_label_ = AddChildView(std::make_unique<views::Label>(

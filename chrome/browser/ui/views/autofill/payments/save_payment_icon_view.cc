@@ -25,6 +25,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/view_class_properties.h"
@@ -109,7 +110,8 @@ void SavePaymentIconView::OnExecuting(
     PageActionIconView::ExecuteSource execute_source) {}
 
 const gfx::VectorIcon& SavePaymentIconView::GetVectorIcon() const {
-  return kCreditCardChromeRefreshOldIcon;
+  return ::features::IsRoundedIconsEnabled() ? kCreditCardIcon
+                                             : kCreditCardChromeRefreshOldIcon;
 }
 
 std::u16string SavePaymentIconView::GetTextForTooltipAndAccessibleName() const {

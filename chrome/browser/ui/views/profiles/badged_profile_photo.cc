@@ -8,6 +8,7 @@
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/gfx/canvas.h"
@@ -75,11 +76,15 @@ class BadgeView : public views::ImageView {
     switch (badge_type_) {
       case BadgedProfilePhoto::BadgeType::kSupervisor:
         SetImage(ui::ImageModel::FromVectorIcon(
-            kSupervisorAccountCircleOldIcon, ui::kColorIcon, kBadgeIconSize));
+            features::IsRoundedIconsEnabled() ? kSupervisedUserCircleFilledIcon
+                                              : kSupervisorAccountCircleOldIcon,
+            ui::kColorIcon, kBadgeIconSize));
         break;
       case BadgedProfilePhoto::BadgeType::kChild:
         SetImage(ui::ImageModel::FromVectorIcon(
-            kAccountChildCircleOldIcon, ui::kColorIcon, kBadgeIconSize));
+            features::IsRoundedIconsEnabled() ? kAccountChildFilledIcon
+                                              : kAccountChildCircleOldIcon,
+            ui::kColorIcon, kBadgeIconSize));
         break;
       case BadgedProfilePhoto::BadgeType::kSyncComplete:
         SetImage(ui::ImageModel::FromVectorIcon(

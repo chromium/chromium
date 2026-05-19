@@ -13,6 +13,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/chromeos/devicetype_utils.h"
 #include "ui/color/color_id.h"
 #include "ui/views/window/dialog_delegate.h"
@@ -57,9 +58,10 @@ void apps::AppServiceProxy::CreateLocalBlockDialog(
 }
 
 AppLocalBlockDialogView::AppLocalBlockDialogView(const std::string& app_name)
-    : AppDialogView(ui::ImageModel::FromVectorIcon(kGuardianOldIcon,
-                                                   ui::kColorIcon,
-                                                   kIconSize)) {
+    : AppDialogView(ui::ImageModel::FromVectorIcon(
+          features::IsRoundedIconsEnabled() ? kGuardianIcon : kGuardianOldIcon,
+          ui::kColorIcon,
+          kIconSize)) {
   InitializeView();
   AddTitle(/*title_text=*/std::u16string());
 

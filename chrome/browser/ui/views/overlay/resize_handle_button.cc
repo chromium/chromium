@@ -11,6 +11,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/skbitmap_operations.h"
@@ -106,7 +107,9 @@ void ResizeHandleButton::UpdateImageForQuadrant() {
   const SkColor color =
       SkColorSetA(GetColorProvider()->GetColor(kColorPipWindowForeground),
                   kResizeHandleOpacity);
-  gfx::ImageSkia icon = gfx::CreateVectorIcon(kResizeHandleOldIcon,
+  gfx::ImageSkia icon = gfx::CreateVectorIcon(features::IsRoundedIconsEnabled()
+                                                  ? kResizeWindowIcon
+                                                  : kResizeHandleOldIcon,
                                               kResizeHandleButtonSize, color);
   switch (current_quadrant_) {
     case VideoOverlayWindowViews::WindowQuadrant::kBottomLeft:

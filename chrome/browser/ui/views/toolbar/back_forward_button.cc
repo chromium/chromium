@@ -41,7 +41,8 @@ BackForwardButton::BackForwardButton(Direction direction,
                            ui::EF_MIDDLE_MOUSE_BUTTON);
   if (direction == Direction::kBack) {
     SetVectorIcons(vector_icons::kBackArrowChromeRefreshOldIcon,
-                   kBackArrowTouchOldIcon);
+                   features::IsRoundedIconsEnabled() ? kArrowBackIcon
+                                                     : kBackArrowTouchOldIcon);
     SetTooltipText(l10n_util::GetStringUTF16(IDS_TOOLTIP_BACK));
     GetViewAccessibility().SetName(l10n_util::GetStringUTF16(IDS_ACCNAME_BACK));
     GetViewAccessibility().SetDescription(
@@ -51,7 +52,9 @@ BackForwardButton::BackForwardButton(Direction direction,
     set_menu_identifier(kToolbarBackButtonMenuElementId);
   } else {
     SetVectorIcons(vector_icons::kForwardArrowChromeRefreshOldIcon,
-                   kForwardArrowTouchOldIcon);
+                   features::IsRoundedIconsEnabled()
+                       ? kArrowForwardIcon
+                       : kForwardArrowTouchOldIcon);
     SetTooltipText(l10n_util::GetStringUTF16(IDS_TOOLTIP_FORWARD));
     GetViewAccessibility().SetName(
         l10n_util::GetStringUTF16(IDS_ACCNAME_FORWARD));

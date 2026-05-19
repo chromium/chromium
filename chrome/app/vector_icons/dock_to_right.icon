@@ -1,0 +1,32 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+CANVAS_DIMENSIONS, 16,
+FILL_RULE_NONZERO,
+MOVE_TO, 3.57f, 13.73f,
+R_ARC_TO, 1.25f, 1.25f, 0, 0, 1, -0.92f, -0.38f,
+R_ARC_TO, 1.25f, 1.25f, 0, 0, 1, -0.38f, -0.92f,
+V_LINE_TO, 3.57f,
+R_CUBIC_TO, 0, -0.36f, 0.13f, -0.67f, 0.38f, -0.92f,
+R_ARC_TO, 1.25f, 1.25f, 0, 0, 1, 0.92f, -0.38f,
+R_H_LINE_TO, 8.87f,
+R_CUBIC_TO, 0.36f, 0, 0.67f, 0.13f, 0.92f, 0.38f,
+R_CUBIC_TO, 0.25f, 0.25f, 0.38f, 0.56f, 0.38f, 0.92f,
+R_V_LINE_TO, 8.87f,
+R_CUBIC_TO, 0, 0.36f, -0.13f, 0.67f, -0.38f, 0.92f,
+R_ARC_TO, 1.25f, 1.25f, 0, 0, 1, -0.92f, 0.38f,
+CLOSE,
+R_MOVE_TO, 2, -1.38f,
+V_LINE_TO, 3.65f,
+H_LINE_TO, 3.65f,
+R_V_LINE_TO, 8.7f,
+CLOSE,
+R_MOVE_TO, 1.39f, 0,
+R_H_LINE_TO, 5.4f,
+V_LINE_TO, 3.65f,
+H_LINE_TO, 6.95f,
+CLOSE,
+R_MOVE_TO, -1.39f, 0,
+H_LINE_TO, 3.65f,
+CLOSE

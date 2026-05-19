@@ -24,6 +24,7 @@
 #include "ui/base/models/image_model.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/gfx/canvas.h"
@@ -157,7 +158,9 @@ gfx::ImageSkia ImageWithBadge::GetBadge() const {
   }
   // If there is no badge set, fallback to the default globe icon.
   const SkColor color = GetColorProvider()->GetColor(ui::kColorIcon);
-  return gfx::CreateVectorIcon(kGlobeOldIcon, gfx::kFaviconSize, color);
+  return gfx::CreateVectorIcon(
+      features::IsRoundedIconsEnabled() ? kGlobeIcon : kGlobeOldIcon,
+      gfx::kFaviconSize, color);
 }
 
 void ImageWithBadge::Render() {
@@ -238,7 +241,9 @@ MoveToAccountStoreBubbleView::MovingBannerView::MovingBannerView(
 
   auto arrow_view =
       std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
-          kChevronRightOldIcon, ui::kColorIcon, gfx::kFaviconSize));
+          features::IsRoundedIconsEnabled() ? kChevronRightIcon
+                                            : kChevronRightOldIcon,
+          ui::kColorIcon, gfx::kFaviconSize));
   arrow_view->SetFlipCanvasOnPaintForRTLUI(true);
   AddChildView(std::move(arrow_view));
 
@@ -279,8 +284,9 @@ MoveToAccountStoreBubbleView::MoveToAccountStoreBubbleView(
 
   AddChildView(CreateDescription(controller_.GetProfileEmail()));
 
-  auto computer_view =
-      std::make_unique<ImageWithBadge>(kHardwareComputerSmallOldIcon);
+  auto computer_view = std::make_unique<ImageWithBadge>(
+      features::IsRoundedIconsEnabled() ? kComputerCustomIcon
+                                        : kHardwareComputerSmallOldIcon);
   auto avatar_view = std::make_unique<ImageWithBadge>(
       *controller_.GetProfileIcon(kImageSize).ToImageSkia());
 

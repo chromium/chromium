@@ -16,6 +16,7 @@
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/view_utils.h"
@@ -120,7 +121,9 @@ ActionTypeButton* ActionTypeButtonGroup::AddActionTypeButton(
 ActionTypeButton* ActionTypeButtonGroup::AddButton(
     ActionTypeButton::PressedCallback callback,
     const std::u16string& label) {
-  return AddActionTypeButton(std::move(callback), label, kGlobeOldIcon);
+  return AddActionTypeButton(
+      std::move(callback), label,
+      features::IsRoundedIconsEnabled() ? kGlobeIcon : kGlobeOldIcon);
 }
 
 void ActionTypeButtonGroup::OnButtonSelected(ash::OptionButtonBase* button) {

@@ -48,6 +48,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/mojom/menu_source_type.mojom.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor_extra/shadow.h"
 #include "ui/gfx/text_constants.h"
@@ -137,9 +138,10 @@ class ProjectsPanelNewTabGroupButton : public views::Button {
     auto* icon = AddChildView(std::make_unique<views::ImageView>());
     icon->SetCanProcessEventsWithinSubtree(false);
     icon->SetProperty(views::kMarginsKey, kCreateNewTabGroupIconMargins);
-    icon->SetImage(ui::ImageModel::FromVectorIcon(kCreateNewTabGroupOldIcon,
-                                                  kColorProjectsPanelButtonIcon,
-                                                  kCreateNewTabGroupIconSize));
+    icon->SetImage(ui::ImageModel::FromVectorIcon(
+        features::IsRoundedIconsEnabled() ? kLibraryAddIcon
+                                          : kCreateNewTabGroupOldIcon,
+        kColorProjectsPanelButtonIcon, kCreateNewTabGroupIconSize));
 
     auto* title = AddChildView(std::make_unique<views::Label>(
         l10n_util::GetStringUTF16(IDS_CREATE_NEW_TAB_GROUP)));
@@ -350,7 +352,9 @@ ProjectsPanelView::ProjectsPanelView(
             base::Unretained(this))));
     threads_activity_menu_button_->SetImageModel(
         views::Button::STATE_NORMAL,
-        ui::ImageModel::FromVectorIcon(kBrowserToolsChromeRefreshOldIcon,
+        ui::ImageModel::FromVectorIcon(features::IsRoundedIconsEnabled()
+                                           ? kMoreVertIcon
+                                           : kBrowserToolsChromeRefreshOldIcon,
                                        kColorProjectsPanelButtonIcon,
                                        kThreadsActivityMenuButtonIconSize));
     threads_activity_menu_button_->SetPreferredSize(

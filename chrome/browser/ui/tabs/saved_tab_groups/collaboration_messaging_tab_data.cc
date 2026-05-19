@@ -19,6 +19,7 @@
 #include "components/signin/public/base/avatar_icon_util.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 #include "ui/compositor/compositor.h"
 #include "ui/gfx/canvas.h"
@@ -96,7 +97,10 @@ ui::ImageModel CreateSizedFallback(float scale_factor,
   // Paint fallback icon. This will be the width of the icon container
   // minus the padding from both sides.
   canvas.Translate({icon_padding, icon_padding});
-  gfx::PaintVectorIcon(&canvas, kPersonFilledPaddedSmallOldIcon,
+  gfx::PaintVectorIcon(&canvas,
+                       features::IsRoundedIconsEnabled()
+                           ? kPersonFilledIcon
+                           : kPersonFilledPaddedSmallOldIcon,
                        icon_width - (icon_padding * 2),
                        color_provider->GetColor(ui::kColorSysOnTonalContainer));
 

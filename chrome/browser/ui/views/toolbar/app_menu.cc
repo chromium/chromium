@@ -719,7 +719,9 @@ class AppMenu::ZoomView : public AppMenuView, public views::WidgetObserver {
         decrement_index, IDS_ACCNAME_ZOOM_MINUS2,
         /*add_accelerator_text=*/false,
         /*use_accessible_name_as_tooltip_text=*/true,
-        /*vector_icon=*/kZoomMinusMenuRefreshOldIcon);
+        /*vector_icon=*/
+        features::IsRoundedIconsEnabled() ? kRemoveIcon
+                                          : kZoomMinusMenuRefreshOldIcon);
 
     auto zoom_label = std::make_unique<Label>(base::FormatPercent(100));
     zoom_label->SetAutoColorReadabilityEnabled(false);
@@ -753,7 +755,9 @@ class AppMenu::ZoomView : public AppMenuView, public views::WidgetObserver {
         IDS_ZOOM_PLUS2, InMenuButtonBackground::ButtonType::kNoBorder,
         increment_index, IDS_ACCNAME_ZOOM_PLUS2, /*add_accelerator_text=*/false,
         /*use_accessible_name_as_tooltip_text=*/true,
-        /*vector_icon=*/kZoomPlusMenuRefreshOldIcon);
+        /*vector_icon=*/
+        features::IsRoundedIconsEnabled() ? kAddIcon
+                                          : kZoomPlusMenuRefreshOldIcon);
 
     auto fullscreen_button = std::make_unique<FullscreenButton>(
         base::BindRepeating(
@@ -762,7 +766,9 @@ class AppMenu::ZoomView : public AppMenuView, public views::WidgetObserver {
             },
             menu, menu_model, fullscreen_index),
         CHECK_DEREF(menu_model), fullscreen_index);
-    const auto& fullscreen_icon = kFullscreenRefreshOldIcon;
+    const auto& fullscreen_icon = features::IsRoundedIconsEnabled()
+                                      ? kFullscreenIcon
+                                      : kFullscreenRefreshOldIcon;
     fullscreen_button->SetImageModel(
         ImageButton::STATE_NORMAL,
         ui::ImageModel::FromVectorIcon(fullscreen_icon,

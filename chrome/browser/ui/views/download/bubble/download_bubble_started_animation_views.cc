@@ -9,6 +9,7 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_operations.h"
@@ -26,7 +27,9 @@ constexpr int kIconBackgroundRadius = 32;
 ui::ImageModel GetDownloadIconImageModel(SkColor image_foreground_color,
                                          SkColor image_background_color) {
   gfx::ImageSkia icon = gfx::CreateVectorIcon(gfx::IconDescription(
-      kDownloadToolbarButtonOldIcon, kIconSize, image_foreground_color));
+      features::IsRoundedIconsEnabled() ? kDownloadIcon
+                                        : kDownloadToolbarButtonOldIcon,
+      kIconSize, image_foreground_color));
   gfx::ImageSkia image =
       gfx::ImageSkiaOperations::CreateImageWithCircleBackground(
           kIconBackgroundRadius, image_background_color, icon);

@@ -85,6 +85,7 @@
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/text_elider.h"
@@ -326,7 +327,9 @@ class IncognitoStateProvider : public PrivateBaseStateProvider {
       int icon_size,
       SkColor icon_color,
       const ui::ColorProvider& /*color_provider*/) const override {
-    return {ui::ImageModel::FromVectorIcon(kIncognitoRefreshMenuOldIcon,
+    return {ui::ImageModel::FromVectorIcon(features::IsRoundedIconsEnabled()
+                                               ? kIncognitoIcon
+                                               : kIncognitoRefreshMenuOldIcon,
                                            icon_color, icon_size),
             AvatarIconType::kNonPlaceholder};
   }

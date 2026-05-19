@@ -16,6 +16,7 @@
 #include "ui/actions/actions.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -42,7 +43,9 @@ ProjectsPanelControlsView::ProjectsPanelControlsView(
   projects_button_->SetHorizontalAlignment(gfx::ALIGN_RIGHT);
   projects_button_->SetImageModel(
       views::Button::ButtonState::STATE_NORMAL,
-      ui::ImageModel::FromVectorIcon(kCloseChromeRefreshOldIcon,
+      ui::ImageModel::FromVectorIcon(features::IsRoundedIconsEnabled()
+                                         ? kCloseSmallIcon
+                                         : kCloseChromeRefreshOldIcon,
                                      ui::kColorIcon));
   projects_button_->SetProperty(views::kElementIdentifierKey,
                                 kProjectsPanelButtonElementId);

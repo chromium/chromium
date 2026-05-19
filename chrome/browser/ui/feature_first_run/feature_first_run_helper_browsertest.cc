@@ -22,6 +22,7 @@
 #include "content/public/test/browser_test.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/color/color_provider.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/image/image_unittest_util.h"
@@ -121,7 +122,9 @@ IN_PROC_BROWSER_TEST_F(FeatureFirstRunDialogHelperBrowserTest,
   // RichControlsContainerView currently doesn't expose secondary labels or
   // store a pointer to them.
   const std::u16string description = u"Test Description";
-  const gfx::VectorIcon& icon = kTextAnalysisOldIcon;
+  const gfx::VectorIcon& icon = features::IsRoundedIconsEnabled()
+                                    ? kTextAnalysisIcon
+                                    : kTextAnalysisOldIcon;
   const int radius = ChromeLayoutProvider::Get()->GetDistanceMetric(
       DISTANCE_FEATURE_FIRST_RUN_INFO_BOX_ROUNDED_BORDER_RADIUS);
 

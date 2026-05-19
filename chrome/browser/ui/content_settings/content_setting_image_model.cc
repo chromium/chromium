@@ -624,7 +624,9 @@ void ContentSettingImageModel::SetIcon(ContentSettingsType type, bool blocked) {
 }
 
 void ContentSettingImageModel::SetFramebustBlockedIcon() {
-  icon_ = &kOpenInNewOffChromeRefreshOldIcon;
+  icon_ =
+      &(features::IsRoundedIconsEnabled() ? kOpenInNewOffIcon
+                                          : kOpenInNewOffChromeRefreshOldIcon);
   icon_badge_ = &gfx::VectorIcon::EmptyIcon();
 }
 

@@ -33,6 +33,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/mojom/menu_source_type.mojom.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/vector_icon_types.h"
@@ -148,12 +149,16 @@ ExtensionMenuItemView::ExtensionMenuItemView(
                       view_model_->GetActionName()))
                   .SetImageModel(views::Button::STATE_NORMAL,
                                  ui::ImageModel::FromVectorIcon(
-                                     kBrowserToolsChromeRefreshOldIcon,
+                                     features::IsRoundedIconsEnabled()
+                                         ? kMoreVertIcon
+                                         : kBrowserToolsChromeRefreshOldIcon,
                                      kColorExtensionMenuIcon, icon_size))
                   .SetImageModel(
                       views::Button::STATE_DISABLED,
                       ui::ImageModel::FromVectorIcon(
-                          kBrowserToolsChromeRefreshOldIcon,
+                          features::IsRoundedIconsEnabled()
+                              ? kMoreVertIcon
+                              : kBrowserToolsChromeRefreshOldIcon,
                           kColorExtensionMenuIconDisabled, icon_size)));
 
   if (allow_pinning) {
@@ -209,7 +214,11 @@ void ExtensionMenuItemView::UpdatePinButton(bool is_force_pinned,
                           !browser_->GetProfile()->IsOffTheRecord());
 
   // Update the icon based on whether the extension is pinned.
-  const gfx::VectorIcon& icon = is_pinned ? kKeepOffOldIcon : kKeepOldIcon;
+  const gfx::VectorIcon& icon =
+      is_pinned
+          ? features::IsRoundedIconsEnabled() ? kKeepOffIcon : kKeepOffOldIcon
+      : features::IsRoundedIconsEnabled() ? kKeepIcon
+                                          : kKeepOldIcon;
   const ui::ColorId icon_color_id =
       is_pinned ? kColorExtensionMenuPinButtonIcon : kColorExtensionMenuIcon;
   const ui::ColorId disabled_icon_color_id =

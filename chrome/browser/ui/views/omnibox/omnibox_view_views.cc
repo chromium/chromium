@@ -119,6 +119,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/compositor/layer.h"
 #include "ui/events/event.h"
 #include "ui/gfx/canvas.h"
@@ -2669,8 +2670,10 @@ void OmniboxViewViews::MaybeAddSendTabToSelfItem(
       index, IDC_SEND_TAB_TO_SELF,
       l10n_util::GetStringUTF16(IDS_MENU_SEND_TAB_TO_SELF));
 #if !BUILDFLAG(IS_MAC)
-  menu_contents->SetIcon(index,
-                         ui::ImageModel::FromVectorIcon(kDevicesOldIcon));
+  menu_contents->SetIcon(
+      index, ui::ImageModel::FromVectorIcon(features::IsRoundedIconsEnabled()
+                                                ? kDevicesIcon
+                                                : kDevicesOldIcon));
 #endif
   menu_contents->InsertSeparatorAt(++index, ui::NORMAL_SEPARATOR);
 }

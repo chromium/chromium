@@ -72,6 +72,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/models/menu_model.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/gfx/image/image.h"
 
 namespace {
@@ -335,14 +336,16 @@ void OmniboxContextMenuController::AddContextualInputItems() {
     min_tools_and_models_command_id_ = next_command_id_;
   } else {
     auto add_image_icon = ui::ImageModel::FromVectorIcon(
-        kAddPhotoAlternateOldIcon, ui::kColorMenuIcon,
-        ui::SimpleMenuModel::kDefaultIconSize);
+        features::IsRoundedIconsEnabled() ? kAddPhotoAlternateIcon
+                                          : kAddPhotoAlternateOldIcon,
+        ui::kColorMenuIcon, ui::SimpleMenuModel::kDefaultIconSize);
     AddItemWithStringIdAndIcon(IDC_OMNIBOX_CONTEXT_ADD_IMAGE,
                                IDS_NTP_COMPOSE_ADD_IMAGE, add_image_icon);
 
-    auto add_file_icon =
-        ui::ImageModel::FromVectorIcon(kAttachFileOldIcon, ui::kColorMenuIcon,
-                                       ui::SimpleMenuModel::kDefaultIconSize);
+    auto add_file_icon = ui::ImageModel::FromVectorIcon(
+        features::IsRoundedIconsEnabled() ? kAttachFileIcon
+                                          : kAttachFileOldIcon,
+        ui::kColorMenuIcon, ui::SimpleMenuModel::kDefaultIconSize);
     AddItemWithStringIdAndIcon(IDC_OMNIBOX_CONTEXT_ADD_FILE,
                                IDS_NTP_COMPOSE_ADD_FILE, add_file_icon);
   }
@@ -361,9 +364,10 @@ void OmniboxContextMenuController::AddToolItems() {
 
   auto create_images_icon = ui::ImageModel::FromResourceId(
       IDR_OMNIBOX_POPUP_IMAGES_CREATE_IMAGES_PNG);
-  auto deep_search_icon =
-      ui::ImageModel::FromVectorIcon(kTravelExploreOldIcon, ui::kColorMenuIcon,
-                                     ui::SimpleMenuModel::kDefaultIconSize);
+  auto deep_search_icon = ui::ImageModel::FromVectorIcon(
+      features::IsRoundedIconsEnabled() ? kTravelExploreIcon
+                                        : kTravelExploreOldIcon,
+      ui::kColorMenuIcon, ui::SimpleMenuModel::kDefaultIconSize);
 
   if (use_pec_api) {
     auto tool_section_config = GetToolSectionConfig();
@@ -421,11 +425,16 @@ void OmniboxContextMenuController::AddModelPickerItems() {
                                      has_thinking_model &&
                                      has_pro_no_gen_ui_model;
   auto thinking_model_icon = ui::ImageModel::FromVectorIcon(
-      use_new_thinking_icon ? kAstrophotographyModeOldIcon : kTimerOldIcon,
+      use_new_thinking_icon               ? features::IsRoundedIconsEnabled()
+                                                ? kAstrophotographyModeIcon
+                                                : kAstrophotographyModeOldIcon
+      : features::IsRoundedIconsEnabled() ? kTimerIcon
+                                          : kTimerOldIcon,
       ui::kColorMenuIcon, ui::SimpleMenuModel::kDefaultIconSize);
 
   auto check_icon = ui::ImageModel::FromVectorIcon(
-      kCheckOldIcon, ui::kColorMenuIcon, ui::SimpleMenuModel::kDefaultIconSize);
+      features::IsRoundedIconsEnabled() ? kCheckIcon : kCheckOldIcon,
+      ui::kColorMenuIcon, ui::SimpleMenuModel::kDefaultIconSize);
 
   next_command_id_ = min_tools_and_models_command_id_;
   for (const auto model : input_state_.allowed_models) {
@@ -766,12 +775,14 @@ ui::ImageModel OmniboxContextMenuController::GetIconForInputType(
   switch (input_type) {
     case omnibox::InputType::INPUT_TYPE_LENS_IMAGE:
       return ui::ImageModel::FromVectorIcon(
-          kAddPhotoAlternateOldIcon, ui::kColorMenuIcon,
-          ui::SimpleMenuModel::kDefaultIconSize);
+          features::IsRoundedIconsEnabled() ? kAddPhotoAlternateIcon
+                                            : kAddPhotoAlternateOldIcon,
+          ui::kColorMenuIcon, ui::SimpleMenuModel::kDefaultIconSize);
     case omnibox::InputType::INPUT_TYPE_LENS_FILE:
       return ui::ImageModel::FromVectorIcon(
-          kAttachFileOldIcon, ui::kColorMenuIcon,
-          ui::SimpleMenuModel::kDefaultIconSize);
+          features::IsRoundedIconsEnabled() ? kAttachFileIcon
+                                            : kAttachFileOldIcon,
+          ui::kColorMenuIcon, ui::SimpleMenuModel::kDefaultIconSize);
     // The Google Drive icon is only available in Google Chrome branded builds.
     // This guard is necessary to prevent compilation errors in Chromium.
     case omnibox::InputType::INPUT_TYPE_DRIVE:
@@ -834,12 +845,14 @@ ui::ImageModel OmniboxContextMenuController::GetIconForTool(
           IDR_OMNIBOX_POPUP_IMAGES_CREATE_IMAGES_PNG);
     case omnibox::ToolMode::TOOL_MODE_DEEP_SEARCH:
       return ui::ImageModel::FromVectorIcon(
-          kTravelExploreOldIcon, ui::kColorMenuIcon,
-          ui::SimpleMenuModel::kDefaultIconSize);
+          features::IsRoundedIconsEnabled() ? kTravelExploreIcon
+                                            : kTravelExploreOldIcon,
+          ui::kColorMenuIcon, ui::SimpleMenuModel::kDefaultIconSize);
     case omnibox::ToolMode::TOOL_MODE_CANVAS:
       return ui::ImageModel::FromVectorIcon(
-          kDraftSparkOldIcon, ui::kColorMenuIcon,
-          ui::SimpleMenuModel::kDefaultIconSize);
+          features::IsRoundedIconsEnabled() ? kDraftSparkIcon
+                                            : kDraftSparkOldIcon,
+          ui::kColorMenuIcon, ui::SimpleMenuModel::kDefaultIconSize);
     default:
       return ui::ImageModel();
   }
@@ -892,17 +905,18 @@ ui::ImageModel OmniboxContextMenuController::GetIconForModel(
   switch (model) {
     case omnibox::ModelMode::MODEL_MODE_GEMINI_PRO_AUTOROUTE:
       return ui::ImageModel::FromVectorIcon(
-          kAutorenewOldIcon, ui::kColorMenuIcon,
-          ui::SimpleMenuModel::kDefaultIconSize);
+          features::IsRoundedIconsEnabled() ? kAutorenewIcon
+                                            : kAutorenewOldIcon,
+          ui::kColorMenuIcon, ui::SimpleMenuModel::kDefaultIconSize);
     case omnibox::ModelMode::MODEL_MODE_GEMINI_REGULAR:
       return ui::ImageModel::FromVectorIcon(
-          kBoltOldIcon, ui::kColorMenuIcon,
-          ui::SimpleMenuModel::kDefaultIconSize);
+          features::IsRoundedIconsEnabled() ? kBoltIcon : kBoltOldIcon,
+          ui::kColorMenuIcon, ui::SimpleMenuModel::kDefaultIconSize);
     case omnibox::ModelMode::MODEL_MODE_GEMINI_PRO:
     case omnibox::ModelMode::MODEL_MODE_GEMINI_PRO_NO_GEN_UI:
       return ui::ImageModel::FromVectorIcon(
-          kTimerOldIcon, ui::kColorMenuIcon,
-          ui::SimpleMenuModel::kDefaultIconSize);
+          features::IsRoundedIconsEnabled() ? kTimerIcon : kTimerOldIcon,
+          ui::kColorMenuIcon, ui::SimpleMenuModel::kDefaultIconSize);
     default:
       return ui::ImageModel();
   }

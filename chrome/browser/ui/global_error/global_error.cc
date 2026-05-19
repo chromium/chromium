@@ -6,6 +6,7 @@
 
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/global_error/global_error_bubble_view_base.h"
+#include "ui/base/ui_base_features.h"
 
 // GlobalError ---------------------------------------------------------------
 
@@ -18,7 +19,9 @@ GlobalError::Severity GlobalError::GetSeverity() {
 }
 
 ui::ImageModel GlobalError::MenuItemIcon() {
-  return ui::ImageModel::FromVectorIcon(kBrowserToolsErrorOldIcon,
+  return ui::ImageModel::FromVectorIcon(features::IsRoundedIconsEnabled()
+                                            ? kErrorFilledIcon
+                                            : kBrowserToolsErrorOldIcon,
                                         ui::kColorAlertMediumSeverityIcon);
 }
 

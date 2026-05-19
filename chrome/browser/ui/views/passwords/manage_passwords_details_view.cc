@@ -396,7 +396,9 @@ std::unique_ptr<views::View> CreateEditUsernameRow(
       gfx::Insets::VH(0, layout_provider->GetDistanceMetric(
                              views::DISTANCE_RELATED_CONTROL_HORIZONTAL)));
   row->SetCrossAxisAlignment(views::LayoutAlignment::kStart);
-  row->AddChildView(CreateWrappedView(CreateIconView(kAccountCircleOldIcon)));
+  row->AddChildView(CreateWrappedView(CreateIconView(
+      features::IsRoundedIconsEnabled() ? kAccountCircleFilledIcon
+                                        : kAccountCircleOldIcon)));
   auto* username_with_error_label_view =
       row->AddChildView(std::make_unique<views::BoxLayoutView>());
   username_with_error_label_view->SetOrientation(
@@ -441,7 +443,8 @@ std::unique_ptr<views::View> CreateEditNoteRow(
                              views::DISTANCE_RELATED_CONTROL_HORIZONTAL)));
   row->SetCrossAxisAlignment(views::LayoutAlignment::kStart);
 
-  row->AddChildView(CreateWrappedView(CreateIconView(kNotesOldIcon)));
+  row->AddChildView(CreateWrappedView(CreateIconView(
+      features::IsRoundedIconsEnabled() ? kNotesIcon : kNotesOldIcon)));
   auto* note_with_error_label_view =
       row->AddChildView(std::make_unique<views::BoxLayoutView>());
   note_with_error_label_view->SetOrientation(
@@ -524,7 +527,9 @@ std::unique_ptr<views::View> ManagePasswordsDetailsView::CreateTitleView(
 
   if (on_back_clicked_callback) {
     auto back_button = views::CreateVectorImageButtonWithNativeTheme(
-        *on_back_clicked_callback, vector_icons::kArrowBackOldIcon);
+        *on_back_clicked_callback, features::IsRoundedIconsEnabled()
+                                       ? kArrowBackIcon
+                                       : vector_icons::kArrowBackOldIcon);
     back_button->SetTooltipText(l10n_util::GetStringUTF16(IDS_ACCNAME_BACK));
     views::InstallCircleHighlightPathGenerator(back_button.get());
     back_button->SetProperty(views::kElementIdentifierKey, kBackButton);
@@ -574,14 +579,18 @@ ManagePasswordsDetailsView::ManagePasswordsDetailsView(
                 PasswordManagementBubbleInteractions::
                     kUsernameCopyButtonClicked));
     AddChildView(CreateDetailsRowWithActionButton(
-        kAccountCircleOldIcon, std::move(username_label), kCopyOldIcon,
+        features::IsRoundedIconsEnabled() ? kAccountCircleFilledIcon
+                                          : kAccountCircleOldIcon,
+        std::move(username_label),
+        features::IsRoundedIconsEnabled() ? kContentCopyIcon : kCopyOldIcon,
         l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_UI_COPY_USERNAME),
         std::move(copy_username_button_callback),
         ManagePasswordsViewIDs::kCopyUsernameButton));
   } else if (allow_empty_username_edit) {
     read_username_row_ = AddChildView(CreateDetailsRowWithActionButton(
-        kAccountCircleOldIcon, std::move(username_label),
-        vector_icons::kEditOldIcon,
+        features::IsRoundedIconsEnabled() ? kAccountCircleFilledIcon
+                                          : kAccountCircleOldIcon,
+        std::move(username_label), vector_icons::kEditOldIcon,
         l10n_util::GetStringUTF16(IDS_MANAGE_PASSWORDS_EDIT_USERNAME_TOOLTIP),
         base::BindRepeating(
             &ManagePasswordsDetailsView::SwitchToEditUsernameMode,
@@ -595,8 +604,10 @@ ManagePasswordsDetailsView::ManagePasswordsDetailsView(
                                 base::Unretained(this))));
     edit_username_row_->SetVisible(false);
   } else {
-    AddChildView(
-        CreateDetailsRow(kAccountCircleOldIcon, std::move(username_label)));
+    AddChildView(CreateDetailsRow(features::IsRoundedIconsEnabled()
+                                      ? kAccountCircleFilledIcon
+                                      : kAccountCircleOldIcon,
+                                  std::move(username_label)));
   }
 
   std::unique_ptr<views::Label> password_label =
@@ -622,7 +633,7 @@ ManagePasswordsDetailsView::ManagePasswordsDetailsView(
       vector_icons::kPasswordManagerOldIcon,
       CreatePasswordLabelWithEyeIconView(std::move(password_label),
                                          on_activity_callback_),
-      kCopyOldIcon,
+      features::IsRoundedIconsEnabled() ? kContentCopyIcon : kCopyOldIcon,
       l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_UI_COPY_PASSWORD),
       std::move(copy_password_button_callback),
       ManagePasswordsViewIDs::kCopyPasswordButton));
@@ -631,7 +642,8 @@ ManagePasswordsDetailsView::ManagePasswordsDetailsView(
   // another to edit the note, which is hidden by default. Clicking the Edit
   // icon next to the note row will hide the read row, and show the edit row.
   read_note_row_ = AddChildView(CreateDetailsRowWithActionButton(
-      kNotesOldIcon, CreateNoteLabel(password_form), vector_icons::kEditOldIcon,
+      features::IsRoundedIconsEnabled() ? kNotesIcon : kNotesOldIcon,
+      CreateNoteLabel(password_form), vector_icons::kEditOldIcon,
       l10n_util::GetStringUTF16(IDS_MANAGE_PASSWORDS_EDIT_NOTE_TOOLTIP),
       base::BindRepeating(&ManagePasswordsDetailsView::SwitchToEditNoteMode,
                           base::Unretained(this)),

@@ -24,6 +24,7 @@
 #include "ui/base/models/image_model.h"
 #include "ui/base/models/image_model_utils.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_variant.h"
 #include "ui/compositor/layer.h"
@@ -153,7 +154,9 @@ void BnplIssuerView::PopulateIssuers() {
     issuer_button->AddChildView(
         views::Builder<views::ImageView>()
             .SetImage(ui::ImageModel::FromVectorIcon(
-                kChevronRightChromeRefreshOldIcon,
+                ::features::IsRoundedIconsEnabled()
+                    ? kChevronRightIcon
+                    : kChevronRightChromeRefreshOldIcon,
                 issuer_eligible ? kColorBnplIssuerLabelForeground
                                 : kColorBnplIssuerLabelForegroundDisabled))
             .SetProperty(views::kMarginsKey,

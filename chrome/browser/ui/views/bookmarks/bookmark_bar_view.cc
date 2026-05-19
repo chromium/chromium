@@ -2220,7 +2220,9 @@ void BookmarkBarView::UpdateAppearanceForTheme() {
   const SkColor overflow_color =
       color_provider->GetColor(kColorBookmarkButtonIcon);
   ui::ImageModel overflow_button_icon = ui::ImageModel::FromVectorIcon(
-      kBookmarkbarOverflowRefreshOldIcon, overflow_color);
+      features::IsRoundedIconsEnabled() ? kKeyboardDoubleArrowRightIcon
+                                        : kBookmarkbarOverflowRefreshOldIcon,
+      overflow_color);
 
   overflow_button_->SetImageModel(views::Button::STATE_NORMAL,
                                   overflow_button_icon);

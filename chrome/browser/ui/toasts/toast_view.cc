@@ -23,6 +23,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/menu_model.h"
 #include "ui/base/mojom/menu_source_type.mojom.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/compositor/layer.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/animation_builder.h"
@@ -226,7 +227,9 @@ void ToastView::Init() {
         close_button_callback_.Then(
             base::BindRepeating(&ToastView::Close, base::Unretained(this),
                                 ToastCloseReason::kCloseButton)),
-        vector_icons::kCloseChromeRefreshOldIcon,
+        features::IsRoundedIconsEnabled()
+            ? kCloseSmallIcon
+            : vector_icons::kCloseChromeRefreshOldIcon,
         lp->GetDistanceMetric(DISTANCE_TOAST_BUBBLE_ICON_SIZE),
         ui::kColorToastForeground, ui::kColorIconDisabled,
         ui::kColorToastForeground));
@@ -253,7 +256,9 @@ void ToastView::Init() {
 
   if (menu_model_) {
     menu_button_ = AddChildView(views::CreateVectorImageButtonWithNativeTheme(
-        base::RepeatingClosure(), kBrowserToolsChromeRefreshOldIcon,
+        base::RepeatingClosure(),
+        features::IsRoundedIconsEnabled() ? kMoreVertIcon
+                                          : kBrowserToolsChromeRefreshOldIcon,
         /*dip_size=*/
         lp->GetDistanceMetric(DISTANCE_TOAST_BUBBLE_MENU_ICON_SIZE),
         ui::kColorToastForeground, ui::kColorIconDisabled,

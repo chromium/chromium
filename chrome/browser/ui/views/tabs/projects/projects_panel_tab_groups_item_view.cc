@@ -17,6 +17,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/color/color_provider.h"
 #include "ui/compositor/canvas_painter.h"
 #include "ui/compositor/layer.h"
@@ -60,9 +61,12 @@ ProjectsPanelTabGroupsItemView::ProjectsPanelTabGroupsItemView(
     : group_guid_(group.saved_guid()),
       more_button_callback_(std::move(more_button_callback)),
       tab_group_color_id_(group.color()),
-      tab_group_vector_icon_(group.local_group_id().has_value()
-                                 ? kTabGroupOldIcon
-                                 : kTabGroupClosedOldIcon) {
+      tab_group_vector_icon_(
+          group.local_group_id().has_value() ? features::IsRoundedIconsEnabled()
+                                                   ? kCircleFilledIcon
+                                                   : kTabGroupOldIcon
+          : features::IsRoundedIconsEnabled() ? kCircleCircleFilledIcon
+                                              : kTabGroupClosedOldIcon) {
   SetLayoutManager(std::make_unique<views::FlexLayout>())
       ->SetInteriorMargin(projects_panel::kListItemMargins)
       .SetOrientation(views::LayoutOrientation::kHorizontal)
@@ -95,8 +99,9 @@ ProjectsPanelTabGroupsItemView::ProjectsPanelTabGroupsItemView(
     shared_icon_->SetProperty(views::kMarginsKey,
                               projects_panel::kTrailingIconMargins);
     ui::ImageModel shared_group_image_model = ui::ImageModel::FromVectorIcon(
-        kPeopleGroupOldIcon, kColorProjectsPanelButtonIcon,
-        projects_panel::kTrailingIconSize);
+        features::IsRoundedIconsEnabled() ? kGroupCustomIcon
+                                          : kPeopleGroupOldIcon,
+        kColorProjectsPanelButtonIcon, projects_panel::kTrailingIconSize);
     shared_icon_->SetImage(shared_group_image_model);
     shared_icon_->SetProperty(
         views::kElementIdentifierKey,
@@ -118,8 +123,9 @@ ProjectsPanelTabGroupsItemView::ProjectsPanelTabGroupsItemView(
           },
           weak_ptr_factory_.GetWeakPtr())));
   ui::ImageModel menu_icon_image_model = ui::ImageModel::FromVectorIcon(
-      kBrowserToolsChromeRefreshOldIcon, kColorProjectsPanelButtonIcon,
-      projects_panel::kTrailingIconSize);
+      features::IsRoundedIconsEnabled() ? kMoreVertIcon
+                                        : kBrowserToolsChromeRefreshOldIcon,
+      kColorProjectsPanelButtonIcon, projects_panel::kTrailingIconSize);
   more_button_->SetPreferredSize(kMoreButtonSize);
   more_button_->SetImageModel(ButtonState::STATE_NORMAL, menu_icon_image_model);
   auto more_button_accessibility_label =

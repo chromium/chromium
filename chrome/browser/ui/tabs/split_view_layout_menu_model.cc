@@ -11,6 +11,7 @@
 #include "components/tabs/public/tab_interface.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/ui_base_features.h"
 
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(SplitViewLayoutMenuModel,
                                       kVerticalMenuItem);
@@ -60,7 +61,8 @@ ui::ImageModel SplitViewLayoutMenuModel::GetIconForCommandId(
   const gfx::VectorIcon* icon = nullptr;
   switch (id) {
     case CommandId::kVertical:
-      icon = &kSplitSceneOldIcon;
+      icon = &(features::IsRoundedIconsEnabled() ? kSplitSceneIcon
+                                                 : kSplitSceneOldIcon);
       break;
     case CommandId::kHorizontal:
       icon = &kSplitSceneHorizontalIcon;

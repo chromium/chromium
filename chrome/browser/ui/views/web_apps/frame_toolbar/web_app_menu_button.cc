@@ -26,6 +26,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/text_constants.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -41,7 +42,10 @@ WebAppMenuButton::WebAppMenuButton(BrowserView* browser_view)
       browser_view_(browser_view) {
   views::SetHitTestComponent(this, static_cast<int>(HTCLIENT));
 
-  SetVectorIcons(kBrowserToolsOldIcon, kBrowserToolsTouchOldIcon);
+  SetVectorIcons(
+      features::IsRoundedIconsEnabled() ? kMoreVertIcon : kBrowserToolsOldIcon,
+      features::IsRoundedIconsEnabled() ? kMoreVertIcon
+                                        : kBrowserToolsTouchOldIcon);
 
   views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::ON);
 

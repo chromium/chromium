@@ -112,6 +112,7 @@
 #include "ui/actions/actions.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/pointer/touch_ui_controller.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/base/ui_base_switches.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/rect_f.h"
@@ -3223,7 +3224,7 @@ IN_PROC_BROWSER_TEST_F(WebUIPinnedToolbarActionsBrowserTest, RouteMediaIcons) {
     std::string_view expected_icon;
   };
 
-  constexpr auto kRouteMediaIcons = std::to_array<Test>({
+  const auto kRouteMediaIcons = std::to_array<Test>({
       {base::raw_ref(vector_icons::kMediaRouterIdleChromeRefreshOldIcon),
        toolbar_ui_api::mojom::PinnedToolbarAction::kRouteMediaIdle,
        std::string_view("pinned-toolbar-action:RouteMediaIdle")},
@@ -3236,7 +3237,9 @@ IN_PROC_BROWSER_TEST_F(WebUIPinnedToolbarActionsBrowserTest, RouteMediaIcons) {
       {base::raw_ref(vector_icons::kMediaRouterActiveChromeRefreshOldIcon),
        toolbar_ui_api::mojom::PinnedToolbarAction::kRouteMediaActive,
        std::string_view("pinned-toolbar-action:RouteMediaActive")},
-      {base::raw_ref(kCastChromeRefreshOldIcon),
+      {base::raw_ref(features::IsRoundedIconsEnabled()
+                         ? kCastIcon
+                         : kCastChromeRefreshOldIcon),
        toolbar_ui_api::mojom::PinnedToolbarAction::kRouteMedia,
        std::string_view("pinned-toolbar-action:RouteMedia")},
   });

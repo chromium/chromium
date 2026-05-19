@@ -26,6 +26,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/mojom/menu_source_type.mojom-shared.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/color/color_provider.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
@@ -98,15 +99,21 @@ void UpdateEditorButtonColors(views::LabelButton* button,
       color_utils::GetColorWithMaxContrast(foreground_color));
   button->SetImageModel(
       views::Button::STATE_NORMAL,
-      ui::ImageModel::FromVectorIcon(kBrowserToolsChromeRefreshOldIcon,
+      ui::ImageModel::FromVectorIcon(features::IsRoundedIconsEnabled()
+                                         ? kMoreVertIcon
+                                         : kBrowserToolsChromeRefreshOldIcon,
                                      foreground_color, kIconSize));
   button->SetImageModel(
       views::Button::STATE_HOVERED,
-      ui::ImageModel::FromVectorIcon(kBrowserToolsChromeRefreshOldIcon,
+      ui::ImageModel::FromVectorIcon(features::IsRoundedIconsEnabled()
+                                         ? kMoreVertIcon
+                                         : kBrowserToolsChromeRefreshOldIcon,
                                      foreground_color, kIconSize));
   button->SetImageModel(
       views::Button::STATE_PRESSED,
-      ui::ImageModel::FromVectorIcon(kBrowserToolsChromeRefreshOldIcon,
+      ui::ImageModel::FromVectorIcon(features::IsRoundedIconsEnabled()
+                                         ? kMoreVertIcon
+                                         : kBrowserToolsChromeRefreshOldIcon,
                                      foreground_color, kIconSize));
 }
 
@@ -464,7 +471,9 @@ void VerticalTabGroupHeaderView::OnDataChanged(
     sync_icon_->SetVisible(is_shared_);
     if (is_shared_) {
       sync_icon_->SetImage(ui::ImageModel::FromVectorIcon(
-          kPeopleGroupOldIcon, foreground_color, kIconSize));
+          features::IsRoundedIconsEnabled() ? kGroupCustomIcon
+                                            : kPeopleGroupOldIcon,
+          foreground_color, kIconSize));
     }
     if (tab_group_visual_data_.is_collapsed() && needs_attention_) {
       attention_indicator_->SetVisible(true);
@@ -481,7 +490,11 @@ void VerticalTabGroupHeaderView::OnDataChanged(
     // Update collapse icon.
     collapse_icon_->SetImage(ui::ImageModel::FromVectorIcon(
         tab_group_visual_data_.is_collapsed()
-            ? kKeyboardArrowDownChromeRefreshOldIcon
+            ? features::IsRoundedIconsEnabled()
+                  ? kKeyboardArrowDownIcon
+                  : kKeyboardArrowDownChromeRefreshOldIcon
+        : features::IsRoundedIconsEnabled()
+            ? kKeyboardControlKeyIcon
             : kKeyboardArrowUpChromeRefreshOldIcon,
         foreground_color, kIconSize));
 

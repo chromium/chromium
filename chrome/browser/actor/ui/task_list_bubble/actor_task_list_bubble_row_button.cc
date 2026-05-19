@@ -13,6 +13,7 @@
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -38,9 +39,11 @@ const int kLayoutInteriorMarginRight = 8;
 
 const gfx::VectorIcon& GetRowIcon(actor::ActorTask::State state) {
   if (glic::GlicActorTaskIconManager::RequiresAttention(state)) {
-    return kHourglassOldIcon;
+    return features::IsRoundedIconsEnabled() ? kHourglassIcon
+                                             : kHourglassOldIcon;
   } else if (state == actor::ActorTask::State::kFinished) {
-    return kTaskSparkOldIcon;
+    return features::IsRoundedIconsEnabled() ? kTaskSparkIcon
+                                             : kTaskSparkOldIcon;
   }
   return glic::GlicVectorIconManager::GetVectorIcon(IDR_ACTOR_AUTO_BROWSE_ICON);
 }

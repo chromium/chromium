@@ -25,6 +25,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/event_utils.h"
 #include "ui/strings/grit/ui_strings.h"
@@ -79,9 +80,11 @@ class SharingDialogViewTest : public TestWithBrowserView {
   std::vector<SharingApp> CreateApps(int count) {
     std::vector<SharingApp> apps;
     for (int i = 0; i < count; ++i) {
-      apps.emplace_back(&kOpenInNewOldIcon, gfx::Image(),
-                        base::UTF8ToUTF16("app" + base::NumberToString(i)),
-                        "app_id_" + base::NumberToString(i));
+      apps.emplace_back(
+          &(features::IsRoundedIconsEnabled() ? kOpenInNewIcon
+                                              : kOpenInNewOldIcon),
+          gfx::Image(), base::UTF8ToUTF16("app" + base::NumberToString(i)),
+          "app_id_" + base::NumberToString(i));
     }
     return apps;
   }
@@ -157,7 +160,9 @@ TEST_F(SharingDialogViewTest, DevicePressed) {
 }
 
 TEST_F(SharingDialogViewTest, AppPressed) {
-  SharingApp app(&kOpenInNewOldIcon, gfx::Image(), u"app0", std::string());
+  SharingApp app(
+      &(features::IsRoundedIconsEnabled() ? kOpenInNewIcon : kOpenInNewOldIcon),
+      gfx::Image(), u"app0", std::string());
   EXPECT_CALL(app_callback_, Call(AppEquals(&app)));
 
   auto dialog_data = CreateDialogData(/*devices=*/3, /*apps=*/2);

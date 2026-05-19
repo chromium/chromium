@@ -9,6 +9,7 @@
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_unittest_util.h"
@@ -61,7 +62,9 @@ TEST_F(LazyLoadingImageViewTest, ImageLoaderProvidesContent) {
           });
 
   auto* view = widget().SetContentsView(std::make_unique<LazyLoadingImageView>(
-      image.Size(), ui::ImageModel::FromVectorIcon(kGlobeOldIcon),
+      image.Size(),
+      ui::ImageModel::FromVectorIcon(
+          ::features::IsRoundedIconsEnabled() ? kGlobeIcon : kGlobeOldIcon),
       mock_loader.Get()));
 
   ASSERT_FALSE(gfx::test::AreImagesEqual(image, view->GetImageForTesting()));
@@ -100,7 +103,9 @@ TEST_F(LazyLoadingImageViewTest, ImageLoaderIsTriggerredForVisibleViewsOnly) {
                                   .SetPreferredSize(visible_area_size)
                                   .Build());
   container->AddChildView(std::make_unique<LazyLoadingImageView>(
-      gfx::Size(10, 10), ui::ImageModel::FromVectorIcon(kGlobeOldIcon),
+      gfx::Size(10, 10),
+      ui::ImageModel::FromVectorIcon(
+          ::features::IsRoundedIconsEnabled() ? kGlobeIcon : kGlobeOldIcon),
       mock_loader.Get()));
 
   Paint();

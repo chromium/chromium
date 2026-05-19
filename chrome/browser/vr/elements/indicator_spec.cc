@@ -8,6 +8,7 @@
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/vector_icons/vector_icons.h"
+#include "ui/base/ui_base_features.h"
 
 namespace vr {
 
@@ -42,7 +43,7 @@ std::vector<IndicatorSpec> GetIndicatorSpecs() {
 
   std::vector<IndicatorSpec> specs = {
       {kLocationAccessIndicator, kWebVrLocationAccessIndicator,
-       kMyLocationOldIcon,
+       features::IsRoundedIconsEnabled() ? kMyLocationFilledIcon : kMyLocationOldIcon,
        IDS_VR_SHELL_SITE_IS_TRACKING_LOCATION,
        // Background tabs cannot track high accuracy location.
        0,

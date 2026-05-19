@@ -13,6 +13,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/menu_source_utils.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/view_utils.h"
 
@@ -25,7 +26,11 @@ OverflowButton::OverflowButton() {
   SetProperty(views::kElementIdentifierKey, kToolbarOverflowButtonElementId);
   SetButtonController(std::move(menu_button_controller));
   SetTooltipText(l10n_util::GetStringUTF16(IDS_TOOLTIP_OVERFLOW_BUTTON));
-  SetVectorIcons(kOverflowButtonOldIcon, kOverflowButtonTouchOldIcon);
+  SetVectorIcons(
+      features::IsRoundedIconsEnabled() ? kKeyboardDoubleArrowRightIcon
+                                        : kOverflowButtonOldIcon,
+      features::IsRoundedIconsEnabled() ? kKeyboardDoubleArrowRightIcon
+                                        : kOverflowButtonTouchOldIcon);
 
   if (menu_model()) {
     GetViewAccessibility().SetHasPopup(ax::mojom::HasPopup::kMenu);

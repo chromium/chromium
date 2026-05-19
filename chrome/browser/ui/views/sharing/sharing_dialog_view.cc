@@ -26,6 +26,7 @@
 #include "ui/base/models/image_model.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -96,11 +97,14 @@ const gfx::VectorIcon& GetIconType(
     const syncer::DeviceInfo::FormFactor& device_form_factor) {
   switch (device_form_factor) {
     case syncer::DeviceInfo::FormFactor::kPhone:
-      return kHardwareSmartphoneOldIcon;
+      return features::IsRoundedIconsEnabled() ? kMobileIcon
+                                               : kHardwareSmartphoneOldIcon;
     case syncer::DeviceInfo::FormFactor::kTablet:
-      return kTabletOldIcon;
+      return features::IsRoundedIconsEnabled() ? kTabletFilledIcon
+                                               : kTabletOldIcon;
     default:
-      return kHardwareComputerOldIcon;
+      return features::IsRoundedIconsEnabled() ? kComputerCustomIcon
+                                               : kHardwareComputerOldIcon;
   }
 }
 

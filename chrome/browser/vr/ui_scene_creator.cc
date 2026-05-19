@@ -41,6 +41,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "device/base/features.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/gfx/animation/keyframe/animation_curve.h"
 #include "ui/gfx/animation/keyframe/keyframed_animation_curve.h"
 #include "ui/gfx/geometry/transform_util.h"
@@ -434,7 +435,9 @@ void UiSceneCreator::CreateExternalPromptNotifcationOverlay() {
             switch (prompt) {
               case ExternalPromptNotificationType::kPromptGenericPermission:
                 message_id = IDS_VR_DESKTOP_GENERIC_PERMISSION_PROMPT;
-                icon = &kOpenInBrowserOldIcon;
+                icon = &(features::IsRoundedIconsEnabled()
+                             ? kOpenInBrowserIcon
+                             : kOpenInBrowserOldIcon);
                 break;
               case ExternalPromptNotificationType::kPromptNone:
                 NOTREACHED();
@@ -533,7 +536,8 @@ void UiSceneCreator::CreateWebVrTimeoutScreen() {
 
   auto timeout_icon =
       Create<VectorIcon>(kWebVrTimeoutMessageIcon, kPhaseForeground, 512);
-  timeout_icon->SetIcon(kSadTabOldIcon);
+  timeout_icon->SetIcon(features::IsRoundedIconsEnabled() ? kSadTabFilledIcon
+                                                          : kSadTabOldIcon);
   timeout_icon->SetSize(kTimeoutMessageIconWidthDMM,
                         kTimeoutMessageIconHeightDMM);
 

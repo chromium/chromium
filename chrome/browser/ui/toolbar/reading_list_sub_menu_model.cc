@@ -17,10 +17,14 @@ ReadingListSubMenuModel::ReadingListSubMenuModel(
     : SimpleMenuModel(delegate) {
   AddItemWithStringIdAndIcon(
       IDC_READING_LIST_MENU_ADD_TAB, IDS_READING_LIST_MENU_ADD_TAB,
-      ui::ImageModel::FromVectorIcon(kReadLaterAddOldIcon));
+      ui::ImageModel::FromVectorIcon(features::IsRoundedIconsEnabled()
+                                         ? kListAltAddIcon
+                                         : kReadLaterAddOldIcon));
   AddItemWithStringIdAndIcon(
       IDC_READING_LIST_MENU_SHOW_UI, IDS_READING_LIST_MENU_SHOW_UI,
-      ui::ImageModel::FromVectorIcon(kReadingListOldIcon));
+      ui::ImageModel::FromVectorIcon(features::IsRoundedIconsEnabled()
+                                         ? kListAltIcon
+                                         : kReadingListOldIcon));
   SetElementIdentifierAt(
       GetIndexOfCommandId(IDC_READING_LIST_MENU_SHOW_UI).value(),
       kReadingListMenuShowUI);

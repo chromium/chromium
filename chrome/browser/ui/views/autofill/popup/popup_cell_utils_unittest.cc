@@ -17,6 +17,7 @@
 #include "components/vector_icons/vector_icons.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/throbber.h"
@@ -57,7 +58,9 @@ TEST(PopupCellUtilsTest,
      GetExpandableMenuIcon_ComposeSuggestions_ReturnThreeDotsMenuIcon) {
   EXPECT_EQ(GetExpandableMenuIconNameFromSuggestionType(
                 SuggestionType::kComposeProactiveNudge),
-            kBrowserToolsChromeRefreshOldIcon.name);
+            ::features::IsRoundedIconsEnabled()
+                ? kMoreVertIcon.name
+                : kBrowserToolsChromeRefreshOldIcon.name);
   // No other Compose type should allow an expandable menu.
   EXPECT_FALSE(IsExpandableSuggestionType(SuggestionType::kComposeResumeNudge));
   EXPECT_FALSE(IsExpandableSuggestionType(

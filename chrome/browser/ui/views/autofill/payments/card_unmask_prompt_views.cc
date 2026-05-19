@@ -25,6 +25,7 @@
 #include "ui/base/models/image_model.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -140,7 +141,9 @@ void CardUnmaskPromptViews::GotVerificationResult(
       // Create and add the error icon.
       overlay_->AddChildView(
           std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
-              kBrowserToolsErrorOldIcon, ui::kColorAlertHighSeverity)));
+              ::features::IsRoundedIconsEnabled() ? kErrorFilledIcon
+                                                  : kBrowserToolsErrorOldIcon,
+              ui::kColorAlertHighSeverity)));
 
       // Create and add the label of the overlay, and show the error in gray.
       auto* error_label = overlay_->AddChildView(std::make_unique<views::Label>(

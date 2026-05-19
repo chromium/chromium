@@ -22,6 +22,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/bubble/bubble_dialog_model_host.h"
 #include "ui/views/controls/button/button_controller.h"
@@ -137,7 +138,9 @@ void PerformanceInterventionButton::UpdateIconColor() {
 
   SetImageModel(
       ButtonState::STATE_NORMAL,
-      ui::ImageModel::FromVectorIcon(kPerformanceSpeedometerOldIcon,
+      ui::ImageModel::FromVectorIcon(features::IsRoundedIconsEnabled()
+                                         ? kSpeedIcon
+                                         : kPerformanceSpeedometerOldIcon,
                                      GetColorProvider()->GetColor(icon_color)));
 }
 

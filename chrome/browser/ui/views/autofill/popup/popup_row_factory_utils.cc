@@ -467,9 +467,12 @@ std::unique_ptr<views::View> GetPasswordIconView(
   std::optional<ui::ImageModel> suggestion_icon_model =
       popup_cell_utils::GetIconImageModelFromIcon(suggestion.icon);
   ui::ImageModel placeholder_icon =
-      suggestion_icon_model ? std::move(*suggestion_icon_model)
-                            : popup_cell_utils::ImageModelFromVectorIcon(
-                                  kGlobeOldIcon, kCustomIconSize);
+      suggestion_icon_model
+          ? std::move(*suggestion_icon_model)
+          : popup_cell_utils::ImageModelFromVectorIcon(
+                ::features::IsRoundedIconsEnabled() ? kGlobeIcon
+                                                    : kGlobeOldIcon,
+                kCustomIconSize);
 
   return std::make_unique<LazyLoadingImageView>(
       gfx::Size(kCustomIconSize, kCustomIconSize), std::move(placeholder_icon),

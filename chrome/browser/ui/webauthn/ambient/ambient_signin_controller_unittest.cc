@@ -28,6 +28,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/actions/action_id.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/menus/simple_menu_model.h"
 
 namespace ambient_signin {
@@ -124,7 +125,9 @@ TEST_F(AmbientSigninControllerTest, ShowSinglePassword) {
       AuthenticatorRequestDialogModel::Mechanism::Password(
           AuthenticatorRequestDialogModel::Mechanism::PasswordInfo(
               std::nullopt)),
-      u"username", kPasswordFieldOldIcon, base::DoNothing());
+      u"username",
+      features::IsRoundedIconsEnabled() ? kPasswordIcon : kPasswordFieldOldIcon,
+      base::DoNothing());
 
   EXPECT_CALL(*page_action_controller(), Show(kActionWebAuthnAmbientSignin));
   EXPECT_CALL(*page_action_controller(),
@@ -167,7 +170,9 @@ TEST_F(AmbientSigninControllerTest, TriggerPageActionSignInPassword) {
       AuthenticatorRequestDialogModel::Mechanism::Password(
           AuthenticatorRequestDialogModel::Mechanism::PasswordInfo(
               std::nullopt)),
-      u"username", kPasswordFieldOldIcon, password_callback.Get());
+      u"username",
+      features::IsRoundedIconsEnabled() ? kPasswordIcon : kPasswordFieldOldIcon,
+      password_callback.Get());
 
   EXPECT_CALL(password_callback, Run());
 
@@ -226,7 +231,9 @@ TEST_F(AmbientSigninControllerTest, GetSignInCallbackPassword) {
       AuthenticatorRequestDialogModel::Mechanism::Password(
           AuthenticatorRequestDialogModel::Mechanism::PasswordInfo(
               std::nullopt)),
-      u"username", kPasswordFieldOldIcon, password_callback.Get());
+      u"username",
+      features::IsRoundedIconsEnabled() ? kPasswordIcon : kPasswordFieldOldIcon,
+      password_callback.Get());
 
   EXPECT_CALL(password_callback, Run());
 

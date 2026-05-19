@@ -26,6 +26,7 @@
 #include "components/infobars/core/infobar.h"
 #include "extensions/browser/extension_system.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/ui_base_features.h"
 
 // static
 void ThemeInstalledInfoBarDelegate::CreateForLastActiveTab(
@@ -106,7 +107,8 @@ ThemeInstalledInfoBarDelegate::GetIdentifier() const {
 }
 
 const gfx::VectorIcon& ThemeInstalledInfoBarDelegate::GetVectorIcon() const {
-  return kPaintbrushOldIcon;
+  return features::IsRoundedIconsEnabled() ? kBrushFilledIcon
+                                           : kPaintbrushOldIcon;
 }
 
 ThemeInstalledInfoBarDelegate*

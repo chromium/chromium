@@ -179,7 +179,8 @@ void FadeAlertFooterRow::SetData(const AlertFooterRowData& data) {
     }
     SetContent(
         ui::ImageModel::FromVectorIcon(
-            kPerformanceSpeedometerOldIcon,
+            features::IsRoundedIconsEnabled() ? kSpeedIcon
+                                              : kPerformanceSpeedometerOldIcon,
             kColorHoverCardTabAlertAudioPlayingIcon,
             GetLayoutConstant(LayoutConstant::kTabAlertIndicatorIconWidth)),
         row_text);
@@ -209,7 +210,9 @@ void FadePerformanceFooterRow::SetData(const PerformanceRowData& data) {
         formatted_memory_usage);
 
     const ui::ImageModel icon_image_model = ui::ImageModel::FromVectorIcon(
-        kPerformanceSpeedometerOldIcon, kColorHoverCardTabAlertAudioPlayingIcon,
+        features::IsRoundedIconsEnabled() ? kSpeedIcon
+                                          : kPerformanceSpeedometerOldIcon,
+        kColorHoverCardTabAlertAudioPlayingIcon,
         GetLayoutConstant(LayoutConstant::kTabAlertIndicatorIconWidth));
     SetContent(icon_image_model, row_text);
   } else {

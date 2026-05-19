@@ -26,6 +26,7 @@
 #include "ui/base/models/image_model.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/mojom/menu_source_type.mojom.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/color/color_provider.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/geometry/insets.h"
@@ -125,8 +126,10 @@ void LensPreselectionBubble::Init() {
   if (lens::IsLensOverlayContextualSearchboxEnabled(
           tab_handle_.Get()->GetBrowserWindowInterface()->GetProfile())) {
     auto button = views::CreateVectorImageButtonWithNativeTheme(
-        base::RepeatingClosure(), kHelpMenuOldIcon, 20,
-        kColorLensOverlayToastForeground, kColorLensOverlayToastForeground,
+        base::RepeatingClosure(),
+        ::features::IsRoundedIconsEnabled() ? kHelpCustomIcon
+                                            : kHelpMenuOldIcon,
+        20, kColorLensOverlayToastForeground, kColorLensOverlayToastForeground,
         kColorLensOverlayToastForeground);
     views::HighlightPathGenerator::Install(
         button.get(),

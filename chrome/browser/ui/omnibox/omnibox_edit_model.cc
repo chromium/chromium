@@ -104,6 +104,7 @@
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/image/image.h"
@@ -562,8 +563,9 @@ ui::ImageModel OmniboxEditModel::GetSuperGIcon(int image_size,
 }
 
 ui::ImageModel OmniboxEditModel::GetAddContextIcon(int image_size) const {
-  return ui::ImageModel::FromVectorIcon(kAddChromeRefreshOldIcon,
-                                        ui::kColorSysPrimary, image_size);
+  return ui::ImageModel::FromVectorIcon(
+      features::IsRoundedIconsEnabled() ? kAddIcon : kAddChromeRefreshOldIcon,
+      ui::kColorSysPrimary, image_size);
 }
 
 gfx::Image OmniboxEditModel::GetAgentspaceIcon(bool dark_mode) const {

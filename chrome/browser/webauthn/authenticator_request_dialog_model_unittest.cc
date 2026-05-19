@@ -2775,7 +2775,9 @@ TEST_F(AuthenticatorRequestDialogControllerTest,
       switch (test_case.expected_button) {
         case kHelloOrSk:
         case kHello:
-          EXPECT_EQ(win_button_it->icon, kLaptopOldIcon);
+          EXPECT_EQ(win_button_it->icon, features::IsRoundedIconsEnabled()
+                                             ? kLaptopWindowsIcon
+                                             : kLaptopOldIcon);
           break;
         case kSk:
           EXPECT_EQ(win_button_it->icon, features::IsRoundedIconsEnabled()
@@ -2784,7 +2786,9 @@ TEST_F(AuthenticatorRequestDialogControllerTest,
           break;
         case kPhoneOrSk:
         case kPhone:
-          EXPECT_EQ(win_button_it->icon, kSmartphoneOldIcon);
+          EXPECT_EQ(win_button_it->icon, features::IsRoundedIconsEnabled()
+                                             ? kMobileIcon
+                                             : kSmartphoneOldIcon);
           break;
         default:
           NOTREACHED();
@@ -2840,7 +2844,9 @@ TEST_F(AuthenticatorRequestDialogControllerTest,
     switch (test_case.expected_button) {
       case kHelloOrSk:
       case kHello:
-        EXPECT_EQ(win_button_it->icon, kLaptopOldIcon);
+        EXPECT_EQ(win_button_it->icon, features::IsRoundedIconsEnabled()
+                                           ? kLaptopWindowsIcon
+                                           : kLaptopOldIcon);
         break;
       case kSk:
         EXPECT_EQ(win_button_it->icon, features::IsRoundedIconsEnabled()

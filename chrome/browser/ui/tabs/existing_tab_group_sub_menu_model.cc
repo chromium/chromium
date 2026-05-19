@@ -37,6 +37,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/models/list_selection_model.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/color/color_provider.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/image/canvas_image_source.h"
@@ -258,8 +259,8 @@ ExistingTabGroupSubMenuModel::CreateMenuItemInfo(
   const ui::ColorProvider& color_provider =
       model()->GetWebContentsAt(GetContextIndex())->GetColorProvider();
   ui::ImageModel image_model = ui::ImageModel::FromVectorIcon(
-      kTabGroupOldIcon, color_provider.GetColor(context_menu_color_id),
-      kIconSize);
+      features::IsRoundedIconsEnabled() ? kCircleFilledIcon : kTabGroupOldIcon,
+      color_provider.GetColor(context_menu_color_id), kIconSize);
 
   return {displayed_title, image_model};
 }

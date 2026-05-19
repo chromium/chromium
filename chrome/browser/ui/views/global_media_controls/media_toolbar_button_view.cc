@@ -56,8 +56,12 @@ MediaToolbarButtonView::MediaToolbarButtonView(
   button_controller()->set_notify_action(
       views::ButtonController::NotifyAction::kOnPress);
   SetFlipCanvasOnPaintForRTLUI(false);
-  SetVectorIcons(kMediaToolbarButtonChromeRefreshOldIcon,
-                 kMediaToolbarButtonTouchOldIcon);
+  SetVectorIcons(features::IsRoundedIconsEnabled()
+                     ? kQueueMusicIcon
+                     : kMediaToolbarButtonChromeRefreshOldIcon,
+                 features::IsRoundedIconsEnabled()
+                     ? kQueueMusicIcon
+                     : kMediaToolbarButtonTouchOldIcon);
   SetTooltipText(
       l10n_util::GetStringUTF16(IDS_GLOBAL_MEDIA_CONTROLS_ICON_TOOLTIP_TEXT));
   GetViewAccessibility().SetHasPopup(ax::mojom::HasPopup::kDialog);

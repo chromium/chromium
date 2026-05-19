@@ -13,6 +13,7 @@
 #include "components/tabs/public/tab_interface.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/ui_base_features.h"
 
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(SplitTabSwapMenuModel,
                                       kSwapStartTabMenuItem);
@@ -68,12 +69,16 @@ ui::ImageModel SplitTabSwapMenuModel::GetIconForCommandId(
   const gfx::VectorIcon* icon = nullptr;
   if (id == CommandId::kSwapStartTab) {
     icon = GetSplitLayout() == split_tabs::SplitTabLayout::kVertical
-               ? &kSplitSceneLeftOldIcon
-               : &kSplitSceneUpOldIcon;
+               ? &(features::IsRoundedIconsEnabled() ? kSplitSceneLeftIcon
+                                                     : kSplitSceneLeftOldIcon)
+               : &(features::IsRoundedIconsEnabled() ? kSplitSceneUpIcon
+                                                     : kSplitSceneUpOldIcon);
   } else if (id == CommandId::kSwapEndTab) {
     icon = GetSplitLayout() == split_tabs::SplitTabLayout::kVertical
-               ? &kSplitSceneRightOldIcon
-               : &kSplitSceneDownOldIcon;
+               ? &(features::IsRoundedIconsEnabled() ? kSplitSceneRightIcon
+                                                     : kSplitSceneRightOldIcon)
+               : &(features::IsRoundedIconsEnabled() ? kSplitSceneDownIcon
+                                                     : kSplitSceneDownOldIcon);
   }
   CHECK(icon);
   return ui::ImageModel::FromVectorIcon(*icon, ui::kColorMenuIcon,

@@ -16,6 +16,7 @@
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -191,7 +192,9 @@ void CompletionSuggestionView::SetHighlighted(bool highlighted) {
 
 void CompletionSuggestionView::OnThemeChanged() {
   down_icon_->SetImage(ui::ImageModel::FromVectorIcon(
-      kKeyboardArrowDownOldIcon, ui::kColorIcon, kDownIconSize));
+      features::IsRoundedIconsEnabled() ? kKeyboardArrowDownIcon
+                                        : kKeyboardArrowDownOldIcon,
+      ui::kColorIcon, kDownIconSize));
   arrow_icon_->SetImage(ui::ImageModel::FromVectorIcon(
       ash::kKeyboardArrowRightIcon, ui::kColorIcon, kArrowIconSize));
   views::View::OnThemeChanged();

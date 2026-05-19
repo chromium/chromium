@@ -25,6 +25,7 @@
 #include "ui/base/models/image_model.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/mojom/menu_source_type.mojom.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/events/event.h"
@@ -212,8 +213,11 @@ AnchoredMessageBubbleView::AnchoredMessageBubbleView(
           base::Unretained(delegate_))));
   close_button_->SetImageModel(
       views::Button::STATE_NORMAL,
-      ui::ImageModel::FromVectorIcon(vector_icons::kCloseChromeRefreshOldIcon,
-                                     ui::kColorIcon, kAnchoredMessageIconSize));
+      ui::ImageModel::FromVectorIcon(
+          features::IsRoundedIconsEnabled()
+              ? kCloseSmallIcon
+              : vector_icons::kCloseChromeRefreshOldIcon,
+          ui::kColorIcon, kAnchoredMessageIconSize));
   close_button_->SetTooltipText(l10n_util::GetStringUTF16(IDS_CLOSE));
   close_button_->SetProperty(views::kMarginsKey,
                              kAnchoreMessageActionIconMarginsInset);
@@ -227,7 +231,9 @@ AnchoredMessageBubbleView::AnchoredMessageBubbleView(
   menu_button_->SetTooltipText(l10n_util::GetStringUTF16(IDS_APPMENU_TOOLTIP));
   menu_button_->SetImageModel(
       views::Button::STATE_NORMAL,
-      ui::ImageModel::FromVectorIcon(kBrowserToolsChromeRefreshOldIcon,
+      ui::ImageModel::FromVectorIcon(features::IsRoundedIconsEnabled()
+                                         ? kMoreVertIcon
+                                         : kBrowserToolsChromeRefreshOldIcon,
                                      ui::kColorIcon, kAnchoredMessageIconSize));
   menu_button_->SetProperty(views::kMarginsKey,
                             kAnchoreMessageActionIconMarginsInset);
@@ -309,7 +315,9 @@ void AnchoredMessageBubbleView::OnThemeChanged() {
     close_button_->SetImageModel(
         views::Button::STATE_NORMAL,
         ui::ImageModel::FromVectorIcon(
-            vector_icons::kCloseChromeRefreshOldIcon,
+            features::IsRoundedIconsEnabled()
+                ? kCloseSmallIcon
+                : vector_icons::kCloseChromeRefreshOldIcon,
             color_provider->GetColor(ui::kColorSysOnSurfaceVariant),
             kAnchoredMessageIconSize));
   }
@@ -317,7 +325,9 @@ void AnchoredMessageBubbleView::OnThemeChanged() {
     menu_button_->SetImageModel(
         views::Button::STATE_NORMAL,
         ui::ImageModel::FromVectorIcon(
-            ::kBrowserToolsChromeRefreshOldIcon,
+            ::features::IsRoundedIconsEnabled()
+                ? kMoreVertIcon
+                : kBrowserToolsChromeRefreshOldIcon,
             color_provider->GetColor(ui::kColorSysOnSurfaceVariant),
             kAnchoredMessageIconSize));
   }

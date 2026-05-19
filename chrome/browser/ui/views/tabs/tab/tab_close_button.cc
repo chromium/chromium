@@ -17,6 +17,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/pointer/touch_ui_controller.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_utils.h"
@@ -212,7 +213,9 @@ bool TabCloseButton::GetHitTestMask(SkPath* mask) const {
   return true;
 }
 void TabCloseButton::UpdateIcon() {
-  const auto& icon = kCloseTabChromeRefreshOldIcon;
+  const auto& icon = features::IsRoundedIconsEnabled()
+                         ? kCloseSmallIcon
+                         : kCloseTabChromeRefreshOldIcon;
 
   SetImageModel(views::Button::STATE_NORMAL,
                 ui::ImageModel::FromVectorIcon(

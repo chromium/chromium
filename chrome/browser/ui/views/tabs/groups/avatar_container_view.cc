@@ -21,6 +21,7 @@
 #include "components/signin/public/base/avatar_icon_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/compositor/compositor.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/image/image.h"
@@ -71,7 +72,11 @@ void DrawFallbackIcon(gfx::Canvas& canvas, int diameter, SkColor icon_color) {
   int icon_offset = (diameter - kIconSize) / 2;
   canvas.Save();
   canvas.Translate({icon_offset, icon_offset});
-  gfx::PaintVectorIcon(&canvas, kTabGroupSharingOldIcon, kIconSize, icon_color);
+  gfx::PaintVectorIcon(&canvas,
+                       features::IsRoundedIconsEnabled()
+                           ? kGroupCustomIcon
+                           : kTabGroupSharingOldIcon,
+                       kIconSize, icon_color);
   canvas.Restore();
 }
 

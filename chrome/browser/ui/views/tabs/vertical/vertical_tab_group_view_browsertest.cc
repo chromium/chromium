@@ -22,6 +22,7 @@
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/test/browser_test.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event_constants.h"
 #include "ui/views/controls/button/label_button.h"
@@ -172,7 +173,9 @@ IN_PROC_BROWSER_TEST_F(VerticalTabGroupViewTest,
                 .GetVectorIcon()
                 .vector_icon()
                 ->name,
-            kKeyboardArrowUpChromeRefreshOldIcon.name);
+            features::IsRoundedIconsEnabled()
+                ? kKeyboardControlKeyIcon.name
+                : kKeyboardArrowUpChromeRefreshOldIcon.name);
 
   // Collapse the tab group and verify the collapse icon is correctly updated.
   ClickTabGroupHeaderToToggleCollapse();
@@ -181,7 +184,9 @@ IN_PROC_BROWSER_TEST_F(VerticalTabGroupViewTest,
                ->GetImageModel()
                .GetVectorIcon()
                .vector_icon()
-               ->name == kKeyboardArrowDownChromeRefreshOldIcon.name;
+               ->name == (features::IsRoundedIconsEnabled()
+                              ? kKeyboardArrowDownIcon.name
+                              : kKeyboardArrowDownChromeRefreshOldIcon.name);
   }));
 }
 

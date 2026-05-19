@@ -29,6 +29,7 @@
 #include "components/saved_tab_groups/public/features.h"
 #include "components/saved_tab_groups/public/saved_tab_group.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/color/color_provider.h"
 #include "ui/gfx/favicon_size.h"
 #include "ui/gfx/image/image_skia.h"
@@ -140,7 +141,9 @@ void TabGroupMenuBridge::BuildMenu() {
         [AppController.sharedController lastActiveColorProvider];
     const ui::ColorId color_id = GetTabGroupContextMenuColorId(group->color());
     gfx::ImageSkia group_icon = gfx::CreateVectorIcon(
-        kTabGroupOldIcon, gfx::kFaviconSize, color_provider.GetColor(color_id));
+        features::IsRoundedIconsEnabled() ? kCircleFilledIcon
+                                          : kTabGroupOldIcon,
+        gfx::kFaviconSize, color_provider.GetColor(color_id));
     item.image = NSImageFromImageSkia(group_icon);
 
     NSMenu* submenu = [[NSMenu alloc] init];

@@ -154,9 +154,11 @@ constexpr const gfx::VectorIcon& GetTransportIcon(
       return features::IsRoundedIconsEnabled() ? kSecurityKeyIcon
                                                : kUsbSecurityKeyOldIcon;
     case AuthenticatorTransport::kInternal:
-      return kLaptopOldIcon;
+      return features::IsRoundedIconsEnabled() ? kLaptopWindowsIcon
+                                               : kLaptopOldIcon;
     case AuthenticatorTransport::kHybrid:
-      return kSmartphoneOldIcon;
+      return features::IsRoundedIconsEnabled() ? kMobileIcon
+                                               : kSmartphoneOldIcon;
     case AuthenticatorTransport::kDeprecatedAoa:
     case AuthenticatorTransport::kBluetoothLowEnergy:
     case AuthenticatorTransport::kNearFieldCommunication:
@@ -202,7 +204,7 @@ bool WebAuthnApiSupportsHybrid() {
 
 const gfx::VectorIcon& GetCredentialIcon(AuthenticatorType type) {
   if (type == AuthenticatorType::kPhone) {
-    return kSmartphoneOldIcon;
+    return features::IsRoundedIconsEnabled() ? kMobileIcon : kSmartphoneOldIcon;
   }
   return vector_icons::kPasskeyOldIcon;
 }

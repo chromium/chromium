@@ -55,6 +55,7 @@ DEFINE_USER_DATA(DownloadToolbarUIController);
 #include "content/public/browser/browser_thread.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/compositor/compositor.h"
@@ -678,11 +679,20 @@ void DownloadToolbarUIController::UpdateIcon() {
   bool is_touch_mode = ui::TouchUiController::Get()->touch_ui();
   if (state_ == IconState::kProgress || state_ == IconState::kDeepScanning ||
       state_ == IconState::kContentCheckPending) {
-    new_icon = is_touch_mode ? &kDownloadInProgressTouchOldIcon
-                             : &kDownloadInProgressChromeRefreshOldIcon;
+    new_icon = is_touch_mode ? &(features::IsRoundedIconsEnabled()
+                                     ? kArrowDownwardAltIcon
+                                     : kDownloadInProgressTouchOldIcon)
+                             : &(features::IsRoundedIconsEnabled()
+                                     ? kArrowDownwardAltIcon
+                                     : kDownloadInProgressChromeRefreshOldIcon);
   } else {
-    new_icon = is_touch_mode ? &kDownloadToolbarButtonTouchOldIcon
-                             : &kDownloadToolbarButtonChromeRefreshOldIcon;
+    new_icon = is_touch_mode
+                   ? &(features::IsRoundedIconsEnabled()
+                           ? kDownloadIcon
+                           : kDownloadToolbarButtonTouchOldIcon)
+                   : &(features::IsRoundedIconsEnabled()
+                           ? kDownloadIcon
+                           : kDownloadToolbarButtonChromeRefreshOldIcon);
   }
   action_item_->SetProperty(kActionItemUnderlineIndicatorKey, is_icon_active);
 

@@ -38,6 +38,7 @@
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/scoped_canvas.h"
@@ -344,7 +345,8 @@ void ContextualTasksButton::UpdateColorsAndInsets() {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
       vector_icons::kGoogleGLogoIcon;
 #else
-      kBrowserLogoOldIcon;
+      features::IsRoundedIconsEnabled() ? kChromeProductIcon
+                                        : kBrowserLogoOldIcon;
 #endif
 
   SetImageModel(

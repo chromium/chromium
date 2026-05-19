@@ -26,6 +26,7 @@
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/bubble/bubble_anchor.h"
@@ -55,7 +56,8 @@ void IncognitoMenuView::BuildMenu() {
   // Padded icon.
   params.profile_image_padding = std::nearbyint(kIdentityInfoImageSize * 0.25f);
   params.profile_image = ui::ImageModel::FromVectorIcon(
-      kIncognitoRefreshMenuOldIcon,
+      features::IsRoundedIconsEnabled() ? kIncognitoIcon
+                                        : kIncognitoRefreshMenuOldIcon,
       kColorAvatarButtonHighlightIncognitoForeground,
       kIdentityInfoImageSize - 2 * params.profile_image_padding);
   SetProfileIdentityWithCallToAction(std::move(params));

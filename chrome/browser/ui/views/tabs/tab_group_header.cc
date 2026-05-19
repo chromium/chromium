@@ -55,6 +55,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/mojom/menu_source_type.mojom-shared.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_palette.h"
@@ -637,7 +638,10 @@ void TabGroupHeader::UpdateSyncIconView() {
   if (should_show_header_icon_) {
     bool use_share_icon = SupportsDataSharing();
     sync_icon_->SetImage(ui::ImageModel::FromVectorIcon(
-        use_share_icon ? kPeopleGroupOldIcon : kTabGroupsSyncOldIcon,
+        use_share_icon ? features::IsRoundedIconsEnabled() ? kGroupCustomIcon
+                                                           : kPeopleGroupOldIcon
+        : features::IsRoundedIconsEnabled() ? kSyncIcon
+                                            : kTabGroupsSyncOldIcon,
         color_utils::GetColorWithMaxContrast(color_),
         group_style_->GetSyncIconWidth()));
   }

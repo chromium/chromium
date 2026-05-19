@@ -13,6 +13,7 @@
 #include "components/contextual_tasks/public/contextual_task.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/compositor/layer.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/ink_drop.h"
@@ -88,8 +89,8 @@ ProjectsPanelThreadItemView::ProjectsPanelThreadItemView(
   trailing_icon_->SetProperty(views::kMarginsKey,
                               projects_panel::kTrailingIconMargins);
   ui::ImageModel open_in_new_image_model = ui::ImageModel::FromVectorIcon(
-      kOpenInNewOldIcon, kColorProjectsPanelButtonDisabledIcon,
-      projects_panel::kTrailingIconSize);
+      features::IsRoundedIconsEnabled() ? kOpenInNewIcon : kOpenInNewOldIcon,
+      kColorProjectsPanelButtonDisabledIcon, projects_panel::kTrailingIconSize);
   trailing_icon_->SetImage(open_in_new_image_model);
 
   // Paint the trailing icon to a layer so we can adjust its opacity during the

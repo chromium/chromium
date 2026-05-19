@@ -256,6 +256,7 @@
 #include "ui/base/models/image_model.h"
 #include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/base/window_open_disposition_utils.h"
 #include "ui/color/color_provider.h"
 #include "ui/gfx/favicon_size.h"
@@ -1825,7 +1826,9 @@ void RenderViewContextMenu::AppendLinkItems() {
         menu_model_.AddItemWithStringIdAndIcon(
             IDC_CONTENT_CONTEXT_OPENLINKSPLITVIEW, string_id,
             ui::ImageModel::FromVectorIcon(
-                kSplitSceneOldIcon, ui::kColorMenuIcon, kTabMenuIconSize));
+                features::IsRoundedIconsEnabled() ? kSplitSceneIcon
+                                                  : kSplitSceneOldIcon,
+                ui::kColorMenuIcon, kTabMenuIconSize));
         const int command_index =
             menu_model_
                 .GetIndexOfCommandId(IDC_CONTENT_CONTEXT_OPENLINKSPLITVIEW)
@@ -4221,7 +4224,9 @@ void RenderViewContextMenu::AppendSendTabToSelfItem(bool add_separator) {
     menu_model_.AddSubMenuWithStringIdAndIcon(
         IDC_SEND_TAB_TO_SELF, IDS_MENU_SEND_TAB_TO_SELF,
         send_tab_to_self_submenu_.get(),
-        ui::ImageModel::FromVectorIcon(kDevicesOldIcon));
+        ui::ImageModel::FromVectorIcon(features::IsRoundedIconsEnabled()
+                                           ? kDevicesIcon
+                                           : kDevicesOldIcon));
 #endif
     return;
   }
@@ -4233,7 +4238,8 @@ void RenderViewContextMenu::AppendSendTabToSelfItem(bool add_separator) {
   menu_model_.AddItemWithIcon(
       IDC_SEND_TAB_TO_SELF,
       l10n_util::GetStringUTF16(IDS_MENU_SEND_TAB_TO_SELF),
-      ui::ImageModel::FromVectorIcon(kDevicesOldIcon));
+      ui::ImageModel::FromVectorIcon(
+          features::IsRoundedIconsEnabled() ? kDevicesIcon : kDevicesOldIcon));
 #endif
 }
 

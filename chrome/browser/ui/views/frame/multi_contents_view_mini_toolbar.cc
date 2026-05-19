@@ -35,6 +35,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/color/color_provider.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/geometry/insets.h"
@@ -115,8 +116,9 @@ MultiContentsViewMiniToolbar::MultiContentsViewMiniToolbar(
   close_button_ = AddChildView(views::CreateVectorImageButtonWithNativeTheme(
       base::BindRepeating(&MultiContentsViewMiniToolbar::CloseCurrentView,
                           base::Unretained(this)),
-      kCloseTabChromeRefreshOldIcon, 16,
-      kColorMultiContentsViewMiniToolbarForeground));
+      features::IsRoundedIconsEnabled() ? kCloseSmallIcon
+                                        : kCloseTabChromeRefreshOldIcon,
+      16, kColorMultiContentsViewMiniToolbarForeground));
   SetAccessibleNameAndTooltip(close_button_, IDS_SPLIT_TAB_CLOSE);
   close_button_->SetProperty(
       views::kFlexBehaviorKey,

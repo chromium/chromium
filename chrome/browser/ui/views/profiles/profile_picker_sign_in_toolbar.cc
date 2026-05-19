@@ -17,6 +17,7 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/compositor/layer.h"
@@ -47,7 +48,9 @@ class SimpleBackButton : public ToolbarButton {
       : ToolbarButton(std::move(callback)) {
     SetTriggerableEventFlags(ui::EF_LEFT_MOUSE_BUTTON |
                              ui::EF_MIDDLE_MOUSE_BUTTON);
-    SetVectorIcons(vector_icons::kBackArrowOldIcon, kBackArrowTouchOldIcon);
+    SetVectorIcons(vector_icons::kBackArrowOldIcon,
+                   features::IsRoundedIconsEnabled() ? kArrowBackIcon
+                                                     : kBackArrowTouchOldIcon);
     SetTooltipText(l10n_util::GetStringUTF16(
         IDS_PROFILE_PICKER_BACK_BUTTON_SIGN_IN_LABEL));
     // Unlike toolbar buttons, this one should be focusable to make it

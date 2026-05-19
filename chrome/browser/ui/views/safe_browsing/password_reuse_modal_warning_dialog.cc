@@ -24,6 +24,7 @@
 #include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_skia.h"
@@ -268,7 +269,9 @@ ui::ImageModel PasswordReuseModalWarningDialog::GetWindowIcon() {
                  ReusedPasswordAccountType::SAVED_PASSWORD
              ? ui::ImageModel()
              : ui::ImageModel::FromVectorIcon(
-                   kSecurityOldIcon, ui::kColorIcon,
+                   features::IsRoundedIconsEnabled() ? kSecurityIcon
+                                                     : kSecurityOldIcon,
+                   ui::kColorIcon,
                    ChromeLayoutProvider::Get()->GetDistanceMetric(
                        views::DISTANCE_BUBBLE_HEADER_VECTOR_ICON_SIZE));
 }

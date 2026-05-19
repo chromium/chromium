@@ -13,6 +13,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/color/color_provider.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_tree_owner.h"
@@ -90,7 +91,8 @@ MultiContentsDropTargetView::MultiContentsDropTargetView()
   icon_view_->SetPaintToLayer(ui::LAYER_TEXTURED);
   icon_view_->layer()->SetFillsBoundsOpaquely(false);
   icon_view_->SetImage(ui::ImageModel::FromVectorIcon(
-      kAddCircleOldIcon, ui::kColorSysPrimary, kIconSize));
+      features::IsRoundedIconsEnabled() ? kAddCircleIcon : kAddCircleOldIcon,
+      ui::kColorSysPrimary, kIconSize));
 
   label_ = inner_container->AddChildView(std::make_unique<views::Label>(
       l10n_util::GetStringUTF16(IDS_SPLIT_VIEW_DRAG_ENTRYPOINT_LABEL)));

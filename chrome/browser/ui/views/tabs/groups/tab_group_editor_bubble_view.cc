@@ -96,6 +96,7 @@
 #include "ui/base/mojom/menu_source_type.mojom-forward.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/pointer/touch_ui_controller.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/compositor/layer.h"
 #include "ui/events/types/event_type.h"
 #include "ui/gfx/color_palette.h"
@@ -693,7 +694,9 @@ TabGroupEditorBubbleView::BuildNewTabInGroupButton() {
       l10n_util::GetStringUTF16(IDS_TAB_GROUP_HEADER_CXMENU_NEW_TAB_IN_GROUP),
       base::BindRepeating(&TabGroupEditorBubbleView::NewTabInGroupPressed,
                           base::Unretained(this)),
-      ui::ImageModel::FromVectorIcon(kNewTabInGroupRefreshOldIcon,
+      ui::ImageModel::FromVectorIcon(features::IsRoundedIconsEnabled()
+                                         ? kLibraryAddIcon
+                                         : kNewTabInGroupRefreshOldIcon,
                                      ui::kColorMenuIcon, kDefaultIconSize),
       GetAcceleratorText(IDC_ADD_NEW_TAB_TO_GROUP, browser_));
 
@@ -709,7 +712,9 @@ TabGroupEditorBubbleView::BuildUngroupButton() {
       l10n_util::GetStringUTF16(IDS_TAB_GROUP_HEADER_CXMENU_UNGROUP),
       base::BindRepeating(&TabGroupEditorBubbleView::UngroupPressed,
                           base::Unretained(this)),
-      ui::ImageModel::FromVectorIcon(kUngroupRefreshOldIcon));
+      ui::ImageModel::FromVectorIcon(features::IsRoundedIconsEnabled()
+                                         ? kUngroupIcon
+                                         : kUngroupRefreshOldIcon));
 }
 
 std::unique_ptr<views::LabelButton>
@@ -718,7 +723,9 @@ TabGroupEditorBubbleView::BuildCloseGroupButton() {
       TAB_GROUP_HEADER_CXMENU_CLOSE_GROUP, GetTextForCloseButton(),
       base::BindRepeating(&TabGroupEditorBubbleView::CloseGroupPressed,
                           base::Unretained(this)),
-      ui::ImageModel::FromVectorIcon(kCloseGroupRefreshOldIcon,
+      ui::ImageModel::FromVectorIcon(features::IsRoundedIconsEnabled()
+                                         ? kTabCloseIcon
+                                         : kCloseGroupRefreshOldIcon,
                                      ui::kColorMenuIcon, kDefaultIconSize),
       GetAcceleratorText(IDC_CLOSE_TAB_GROUP, browser_));
 
@@ -735,7 +742,9 @@ TabGroupEditorBubbleView::BuildConvertToBookmarkButton() {
           IDS_TAB_GROUP_HEADER_CXMENU_CONVERT_GROUP_TO_BOOKMARK_FOLDER),
       base::BindRepeating(&TabGroupEditorBubbleView::ConvertToBookmarkPressed,
                           base::Unretained(this)),
-      ui::ImageModel::FromVectorIcon(kBookmarkAllTabsChromeRefreshOldIcon,
+      ui::ImageModel::FromVectorIcon(features::IsRoundedIconsEnabled()
+                                         ? kHotelClassIcon
+                                         : kBookmarkAllTabsChromeRefreshOldIcon,
                                      ui::kColorMenuIcon, kDefaultIconSize));
 
   bookmark_group_menu_item->SetProperty(
@@ -751,7 +760,9 @@ TabGroupEditorBubbleView::BuildDeleteGroupButton() {
       l10n_util::GetStringUTF16(IDS_TAB_GROUP_HEADER_CXMENU_DELETE_GROUP),
       base::BindRepeating(&TabGroupEditorBubbleView::DeleteGroupPressed,
                           base::Unretained(this)),
-      ui::ImageModel::FromVectorIcon(kTrashCanRefreshOldIcon,
+      ui::ImageModel::FromVectorIcon(features::IsRoundedIconsEnabled()
+                                         ? kDeleteIcon
+                                         : kTrashCanRefreshOldIcon,
                                      ui::kColorMenuIcon, kDefaultIconSize));
 
   delete_group_menu_item->SetProperty(views::kElementIdentifierKey,
@@ -771,7 +782,9 @@ TabGroupEditorBubbleView::BuildLeaveGroupButton() {
       l10n_util::GetStringUTF16(IDS_DATA_SHARING_LEAVE_GROUP),
       base::BindRepeating(&TabGroupEditorBubbleView::LeaveGroupPressed,
                           base::Unretained(this)),
-      ui::ImageModel::FromVectorIcon(kTrashCanRefreshOldIcon,
+      ui::ImageModel::FromVectorIcon(features::IsRoundedIconsEnabled()
+                                         ? kDeleteIcon
+                                         : kTrashCanRefreshOldIcon,
                                      ui::kColorMenuIcon, kDefaultIconSize));
 
   leave_group_menu_item->SetProperty(views::kElementIdentifierKey,
@@ -793,7 +806,9 @@ TabGroupEditorBubbleView::BuildMoveGroupToNewWindowButton() {
       base::BindRepeating(
           &TabGroupEditorBubbleView::MoveGroupToNewWindowPressed,
           base::Unretained(this)),
-      ui::ImageModel::FromVectorIcon(kMoveGroupToNewWindowRefreshOldIcon,
+      ui::ImageModel::FromVectorIcon(features::IsRoundedIconsEnabled()
+                                         ? kMoveGroupIcon
+                                         : kMoveGroupToNewWindowRefreshOldIcon,
                                      ui::kColorMenuIcon, kDefaultIconSize));
 
   menu_item->SetProperty(views::kElementIdentifierKey,
@@ -809,8 +824,10 @@ TabGroupEditorBubbleView::BuildFocusGroupButton() {
       l10n_util::GetStringUTF16(IDS_TAB_GROUP_HEADER_CXMENU_FOCUS_GROUP),
       base::BindRepeating(&TabGroupEditorBubbleView::FocusGroupPressed,
                           base::Unretained(this)),
-      ui::ImageModel::FromVectorIcon(kZoomInMapOldIcon, ui::kColorMenuIcon,
-                                     kDefaultIconSize));
+      ui::ImageModel::FromVectorIcon(features::IsRoundedIconsEnabled()
+                                         ? kZoomInMapIcon
+                                         : kZoomInMapOldIcon,
+                                     ui::kColorMenuIcon, kDefaultIconSize));
 
   menu_item->SetProperty(views::kElementIdentifierKey,
                          kTabGroupEditorBubbleFocusGroupButtonId);
@@ -855,7 +872,9 @@ TabGroupEditorBubbleView::BuildShareGroupButton() {
       l10n_util::GetStringUTF16(IDS_TAB_GROUP_HEADER_CXMENU_SHARE_GROUP),
       base::BindRepeating(&TabGroupEditorBubbleView::ShareOrManagePressed,
                           base::Unretained(this)),
-      ui::ImageModel::FromVectorIcon(kTabGroupSharingOldIcon));
+      ui::ImageModel::FromVectorIcon(features::IsRoundedIconsEnabled()
+                                         ? kGroupCustomIcon
+                                         : kTabGroupSharingOldIcon));
   menu_item->SetProperty(views::kElementIdentifierKey,
                          kTabGroupEditorBubbleShareGroupButtonId);
   return menu_item;
@@ -868,8 +887,9 @@ TabGroupEditorBubbleView::BuildRecentActivityButton() {
       l10n_util::GetStringUTF16(IDS_TAB_GROUP_HEADER_CXMENU_RECENT_ACTIVITY),
       base::BindRepeating(&TabGroupEditorBubbleView::RecentActivityPressed,
                           base::Unretained(this)),
-      ui::ImageModel::FromVectorIcon(kHistoryOldIcon, ui::kColorMenuIcon,
-                                     kDefaultIconSize));
+      ui::ImageModel::FromVectorIcon(
+          features::IsRoundedIconsEnabled() ? kHistoryIcon : kHistoryOldIcon,
+          ui::kColorMenuIcon, kDefaultIconSize));
   menu_item->SetProperty(views::kElementIdentifierKey,
                          kTabGroupEditorBubbleRecentActivityButtonId);
   return menu_item;

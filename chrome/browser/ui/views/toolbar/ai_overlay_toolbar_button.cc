@@ -19,6 +19,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/pointer/touch_ui_controller.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/border.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
@@ -117,7 +118,10 @@ void AiOverlayToolbarButton::UpdateIcon() {
   if (GetWidget()) {
     const bool touch_ui = ui::TouchUiController::Get()->touch_ui();
     const gfx::VectorIcon& icon =
-        touch_ui ? kBrowserToolsTouchOldIcon : kBrowserToolsOldIcon;
+        touch_ui ? features::IsRoundedIconsEnabled() ? kMoreVertIcon
+                                                     : kBrowserToolsTouchOldIcon
+        : features::IsRoundedIconsEnabled() ? kMoreVertIcon
+                                            : kBrowserToolsOldIcon;
     int icon_size = touch_ui ? kOptionsIconSizeTouch : kOptionsIconSize;
     views::SetImageFromVectorIconWithColor(
         options_button_, icon, icon_size,

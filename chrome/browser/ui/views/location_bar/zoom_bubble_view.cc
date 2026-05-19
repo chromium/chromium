@@ -43,6 +43,7 @@
 #include "ui/base/models/image_model.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/gfx/favicon_size.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/text_utils.h"
@@ -289,16 +290,18 @@ void ZoomBubbleView::Init() {
   };
 
   // Add Zoom Out ("-") button.
-  zoom_out_button_ =
-      AddChildView(CreateZoomButton(zoom_callback(content::PAGE_ZOOM_OUT),
-                                    kRemoveOldIcon, IDS_ACCNAME_ZOOM_MINUS2));
+  zoom_out_button_ = AddChildView(CreateZoomButton(
+      zoom_callback(content::PAGE_ZOOM_OUT),
+      features::IsRoundedIconsEnabled() ? kRemoveIcon : kRemoveOldIcon,
+      IDS_ACCNAME_ZOOM_MINUS2));
   zoom_out_button_->SetProperty(views::kMarginsKey,
                                 gfx::Insets(vector_button_margin));
 
   // Add Zoom In ("+") button.
-  zoom_in_button_ =
-      AddChildView(CreateZoomButton(zoom_callback(content::PAGE_ZOOM_IN),
-                                    kAddOldIcon, IDS_ACCNAME_ZOOM_PLUS2));
+  zoom_in_button_ = AddChildView(CreateZoomButton(
+      zoom_callback(content::PAGE_ZOOM_IN),
+      features::IsRoundedIconsEnabled() ? kAddIcon : kAddOldIcon,
+      IDS_ACCNAME_ZOOM_PLUS2));
   zoom_in_button_->SetProperty(views::kMarginsKey,
                                gfx::Insets(vector_button_margin));
 

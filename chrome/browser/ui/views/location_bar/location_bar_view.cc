@@ -1740,7 +1740,9 @@ void LocationBarView::RefreshClearAllButtonIcon() {
   const gfx::VectorIcon& icon = touch_ui ? features::IsRoundedIconsEnabled()
                                                ? omnibox::kBackspaceFilledIcon
                                                : omnibox::kClearOldIcon
-                                         : kTabCloseNormalOldIcon;
+                                : features::IsRoundedIconsEnabled()
+                                    ? kCloseSmallIcon
+                                    : kTabCloseNormalOldIcon;
   SetImageFromVectorIconWithColor(
       clear_all_button_, icon,
       {kColorLocationBarClearAllButtonIcon,

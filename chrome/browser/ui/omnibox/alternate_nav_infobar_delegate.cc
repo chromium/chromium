@@ -18,6 +18,7 @@
 #include "components/omnibox/browser/shortcuts_backend.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/ui_base_features.h"
 
 AlternateNavInfoBarDelegate::~AlternateNavInfoBarDelegate() = default;
 
@@ -49,7 +50,7 @@ AlternateNavInfoBarDelegate::GetIdentifier() const {
 }
 
 const gfx::VectorIcon& AlternateNavInfoBarDelegate::GetVectorIcon() const {
-  return kGlobeOldIcon;
+  return features::IsRoundedIconsEnabled() ? kGlobeIcon : kGlobeOldIcon;
 }
 
 std::u16string AlternateNavInfoBarDelegate::GetLinkText() const {

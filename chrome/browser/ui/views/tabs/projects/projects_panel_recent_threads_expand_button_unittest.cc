@@ -9,6 +9,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
@@ -31,7 +32,9 @@ TEST_F(ProjectsPanelRecentThreadsExpandButtonTest, ShowsCorrectTextAndIcon) {
   ui::ImageModel icon_model = button->icon_view_for_testing()->GetImageModel();
   EXPECT_TRUE(icon_model.IsVectorIcon());
   EXPECT_EQ(icon_model.GetVectorIcon().vector_icon()->name,
-            kKeyboardArrowDownChromeRefreshOldIcon.name);
+            features::IsRoundedIconsEnabled()
+                ? kKeyboardArrowDownIcon.name
+                : kKeyboardArrowDownChromeRefreshOldIcon.name);
 
   // Switch to expanded.
   button->SetExpanded(true);
@@ -41,7 +44,9 @@ TEST_F(ProjectsPanelRecentThreadsExpandButtonTest, ShowsCorrectTextAndIcon) {
   icon_model = button->icon_view_for_testing()->GetImageModel();
   EXPECT_TRUE(icon_model.IsVectorIcon());
   EXPECT_EQ(icon_model.GetVectorIcon().vector_icon()->name,
-            kKeyboardArrowUpChromeRefreshOldIcon.name);
+            features::IsRoundedIconsEnabled()
+                ? kKeyboardControlKeyIcon.name
+                : kKeyboardArrowUpChromeRefreshOldIcon.name);
 
   // Switch back to collapsed.
   button->SetExpanded(false);
@@ -51,5 +56,7 @@ TEST_F(ProjectsPanelRecentThreadsExpandButtonTest, ShowsCorrectTextAndIcon) {
   icon_model = button->icon_view_for_testing()->GetImageModel();
   EXPECT_TRUE(icon_model.IsVectorIcon());
   EXPECT_EQ(icon_model.GetVectorIcon().vector_icon()->name,
-            kKeyboardArrowDownChromeRefreshOldIcon.name);
+            features::IsRoundedIconsEnabled()
+                ? kKeyboardArrowDownIcon.name
+                : kKeyboardArrowDownChromeRefreshOldIcon.name);
 }

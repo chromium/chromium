@@ -46,6 +46,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/mojom/menu_source_type.mojom.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/favicon_size.h"
@@ -386,7 +387,8 @@ RecentActivityBubbleDialogView::CreateCloseButton() {
 std::unique_ptr<views::Button>
 RecentActivityBubbleDialogView::CreateOptionsMenuButton() {
   auto menu_button = views::CreateVectorImageButtonWithNativeTheme(
-      views::Button::PressedCallback(), kBrowserToolsOldIcon);
+      views::Button::PressedCallback(),
+      features::IsRoundedIconsEnabled() ? kMoreVertIcon : kBrowserToolsOldIcon);
   menu_button->SetCallback(base::BindRepeating(
       &RecentActivityBubbleDialogView::ShowOptionsMenu, base::Unretained(this),
       base::Unretained(menu_button.get())));
@@ -904,8 +906,10 @@ void RecentActivityRowImageView::PaintFallbackIcon(gfx::Canvas* canvas,
   int icon_offset = (bounds.width() - icon_size) / 2.0;
   canvas->Translate({icon_offset, icon_offset});
   gfx::PaintVectorIcon(
-      canvas, kPersonFilledPaddedSmallOldIcon, icon_size,
-      GetColorProvider()->GetColor(ui::kColorSysOnTonalContainer));
+      canvas,
+      features::IsRoundedIconsEnabled() ? kPersonFilledIcon
+                                        : kPersonFilledPaddedSmallOldIcon,
+      icon_size, GetColorProvider()->GetColor(ui::kColorSysOnTonalContainer));
 }
 
 BEGIN_METADATA(RecentActivityRowImageView)

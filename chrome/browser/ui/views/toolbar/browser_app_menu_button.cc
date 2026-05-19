@@ -160,9 +160,12 @@ void BrowserAppMenuButton::UpdateThemeBasedState() {
 }
 
 void BrowserAppMenuButton::UpdateIcon() {
-  const gfx::VectorIcon& icon = ui::TouchUiController::Get()->touch_ui()
-                                    ? kBrowserToolsTouchOldIcon
-                                    : kBrowserToolsChromeRefreshOldIcon;
+  const gfx::VectorIcon& icon =
+      ui::TouchUiController::Get()->touch_ui()
+          ? features::IsRoundedIconsEnabled() ? kMoreVertIcon
+                                              : kBrowserToolsTouchOldIcon
+      : features::IsRoundedIconsEnabled() ? kMoreVertIcon
+                                          : kBrowserToolsChromeRefreshOldIcon;
 
   const double click_animation_value = features::IsToolbarGlowUpEnabled()
                                            ? click_animation_->GetCurrentValue()
