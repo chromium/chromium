@@ -989,13 +989,16 @@ public class TabPersistentStoreImpl implements TabPersistentStore {
         }
         mPersistencePolicy.destroy();
         if (mTabBatchLoader != null) {
-            mTabBatchLoader.cancel(true);
+            // Avoid cancel(true): interrupting a FileChannel read causes the main thread to block
+            // in NativeThreadSet.signalAndWait (ANR). mDestroyed/isCancelled() guards drop results.
+            mTabBatchLoader.cancel(false);
             mTabBatchLoader = null;
         }
         mTabsToSave.clear();
         mTabsToRestore.clear();
         if (mSaveTabTask != null) mSaveTabTask.cancel(false);
-        if (mSaveListTask != null) mSaveListTask.cancel(true);
+        // Same reason as mTabBatchLoader: SaveListTask writes via FileChannel.
+        if (mSaveListTask != null) mSaveListTask.cancel(false);
     }
 
     private void cleanupPersistentData(int id, boolean incognito) {
