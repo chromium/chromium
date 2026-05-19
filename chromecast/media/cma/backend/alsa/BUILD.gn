@@ -10,22 +10,6 @@ import("//testing/test.gni")
 # Alsa must be used for these targets to build.
 assert(use_alsa)
 
-cast_source_set("libcast_media_1.0_audio") {
-  sources = [ "cast_media_shlib.cc" ]
-
-  deps = [
-    ":volume_control",
-    "//base",
-    "//chromecast/base",
-    "//chromecast/media/cma/backend:audio_codec_support",
-    "//chromecast/media/cma/backend:av_sync_dummy",
-    "//chromecast/media/cma/backend:for_mixer_audio",
-    "//chromecast/media/cma/backend:null_video",
-    "//chromecast/public",
-    "//chromecast/public/media",
-    "//media",
-  ]
-}
 
 cast_source_set("alsa_wrapper") {
   sources = [
