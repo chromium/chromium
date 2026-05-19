@@ -925,9 +925,6 @@
   },
   'tfc-cq-tast': {
     'skylab': {
-      'cros_test_tags': [
-        'dep:chrome',
-      ],
       'cros_test_names_from_file': [
         'chromeos/tast_control_cq_tests.txt',
       ],

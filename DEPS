@@ -4614,6 +4614,7 @@ hooks = [
       '--use-external-config',
       '--boards={cros_boards_with_qemu_images}',
       '--download-vm',
+      '--download-test-metadata',
     ],
   },
   {
@@ -4632,7 +4633,6 @@ hooks = [
       '--cache-dir=src/build/cros_cache/',
       '--use-external-config',
       '--boards={cros_boards}',
-      '--download-test-metadata',
     ],
   },
   {
@@ -4650,7 +4650,6 @@ hooks = [
       '--log-level=warning',
       '--cache-dir=src/build/cros_cache/',
       '--boards={cros_boards}',
-      '--download-test-metadata',
     ],
   },
   {
@@ -4894,24 +4893,12 @@ hooks = [
     # Update chromeos/tast_control.gni
     'name': 'tast_control',
     'pattern': '.',
-    'condition': 'checkout_simplechrome',
     'action': ['python3', 'src/build/util/tast_control.py',
                '-o', 'src/chromeos/tast_control.gni',
                '-t', 'src/chromeos/tast_control.gni.template',
                '-i', 'src/chromeos/tast_control_disabled_tests.txt',
                '--input-public',
                'src/chromeos/tast_control_disabled_tests_public_builders.txt'],
-  },
-  {
-    # Update chromeos/tast_control_cq_tests.txt
-    'name': 'tast_control_cq_tests',
-    'pattern': '.',
-    'condition': 'checkout_simplechrome',
-    'action': ['python3', 'src/build/util/generate_tast_control_cq_tests.py',
-               '-o', 'src/chromeos/tast_control_cq_tests.txt',
-               '-a', 'src/chromeos/tast_control_additional_cq_tests.txt',
-               '-m', 'src/build/cros_cache/chrome-sdk/misc/test_metadata.jsonpb',
-               '-b', '{cros_boards}'],
   },
 
 ]
