@@ -6,6 +6,7 @@ found in the LICENSE file.
 -->
 <PreferenceScreen
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:title="@string/settings_glic_actor_login_permissions_section_title">
 
     <PreferenceCategory
@@ -15,6 +16,22 @@ found in the LICENSE file.
             android:key="actor_login_permissions_description"
             android:summary=
                 "@string/settings_glic_login_permissions_page_description" />
+
+        <org.chromium.components.browser_ui.settings.CardPreference
+            android:key="actor_login_permissions_empty"
+            app:allowDividerAbove="false"
+            app:allowDividerBelow="false"
+            app:backgroundStyle="card"
+            app:backgroundColor="?attr/colorSurfaceContainerHighest"
+            app:isPreferenceVisible="false" />
+
+        <org.chromium.components.browser_ui.settings.CardPreference
+            android:key="actor_login_permissions_managed"
+            app:allowDividerAbove="false"
+            app:allowDividerBelow="false"
+            app:backgroundStyle="card"
+            app:backgroundColor="?attr/colorSurfaceContainerHighest"
+            app:isPreferenceVisible="false" />
     </PreferenceCategory>
 
 </PreferenceScreen>

@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.glic;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
@@ -15,6 +16,7 @@ import static org.mockito.Mockito.when;
 
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.Lifecycle.State;
+import androidx.preference.Preference;
 import androidx.preference.PreferenceCategory;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 
@@ -33,6 +35,9 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.components.favicon.LargeIconBridgeJni;
+import org.chromium.components.prefs.PrefService;
+import org.chromium.components.user_prefs.UserPrefs;
+import org.chromium.net.NetworkChangeNotifier;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -58,6 +63,7 @@ public class GlicActorLoginPermissionsFragmentUnitTest {
     @Mock private Profile mProfileMock;
     @Mock private GlicActorLoginBridge.Natives mGlicActorLoginBridgeJniMock;
     @Mock private LargeIconBridge.Natives mLargeIconBridgeNatives;
+    @Mock private PrefService mPrefServiceMock;
     @Captor private ArgumentCaptor<Callback<Boolean>> mCallbackCaptor;
 
     private List<ActorLoginPermission> mTestPermissions;
@@ -68,6 +74,11 @@ public class GlicActorLoginPermissionsFragmentUnitTest {
         when(mGlicActorLoginBridgeJniMock.init(any(), any())).thenReturn(1L);
         LargeIconBridgeJni.setInstanceForTesting(mLargeIconBridgeNatives);
         when(mLargeIconBridgeNatives.init()).thenReturn(1L);
+        UserPrefs.setPrefServiceForTesting(mPrefServiceMock);
+
+        if (!NetworkChangeNotifier.isInitialized()) {
+            NetworkChangeNotifier.init();
+        }
 
         mTestPermissions = getTestPermissions();
 
@@ -146,6 +157,58 @@ public class GlicActorLoginPermissionsFragmentUnitTest {
 
         // Verify preference was removed
         assertEquals("Should have 2 preferences after removal", 2, category.getPreferenceCount());
+    }
+
+    @Test
+    public void testPopulatePermissions_Empty() {
+        // Mock getAllPermissions to return empty list
+        doAnswer(
+                        invocation -> {
+                            Callback<List<ActorLoginPermission>> callback =
+                                    invocation.getArgument(1);
+                            callback.onResult(new ArrayList<>());
+                            return null;
+                        })
+                .when(mGlicActorLoginBridgeJniMock)
+                .getAllPermissions(anyLong(), any());
+
+        GlicActorLoginPermissionsFragment fragment = launchFragment();
+
+        PreferenceCategory category = fragment.findPreference("actor_login_permissions_category");
+        assertNotNull("Category should exist", category);
+
+        // Index 0 is description, index 1 is the empty state card
+        assertEquals(
+                "Should have 2 preferences (description + empty card)",
+                2,
+                category.getPreferenceCount());
+
+        Preference emptyCard = category.findPreference("actor_login_permissions_empty");
+        assertNotNull("Empty card should exist", emptyCard);
+        assertTrue("Empty card should be visible", emptyCard.isVisible());
+    }
+
+    @Test
+    public void testPopulatePermissions_Managed() {
+        // Mock kGlicActuationOnWeb to be managed
+        when(mPrefServiceMock.isManagedPreference(GlicPrefNames.GLIC_ACTUATION_ON_WEB))
+                .thenReturn(true);
+
+        GlicActorLoginPermissionsFragment fragment = launchFragment();
+
+        PreferenceCategory category = fragment.findPreference("actor_login_permissions_category");
+        assertNotNull("Category should exist", category);
+
+        // Test permissions list has 2 items.
+        // Index 0 is description, index 1,2 are permissions, index 3 is managed card.
+        assertEquals(
+                "Should have 4 preferences (description + 2 permissions + managed card)",
+                4,
+                category.getPreferenceCount());
+
+        Preference managedCard = category.findPreference("actor_login_permissions_managed");
+        assertNotNull("Managed card should exist", managedCard);
+        assertTrue("Managed card should be visible", managedCard.isVisible());
     }
 
     private List<ActorLoginPermission> getTestPermissions() {
