@@ -1084,6 +1084,30 @@ TEST_F(ExecutionEngineNavigationGatingTest,
                                  /*sample=*/false, /*expected_bucket_count=*/1);
 }
 
+TEST_F(ExecutionEngineNavigationGatingTest,
+       ShouldDeferNavigation_OpaqueSourceWithPrecursor) {
+  const GURL kPrecursorUrl("https://example.com/");
+  const GURL kDestinationUrl("https://example.com/other");
+
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(web_contents(),
+                                                             kPrecursorUrl);
+
+  // Navigate to a data URL to get an opaque origin with the precursor.
+  content::NavigationSimulator::NavigateAndCommitFromDocument(
+      GURL("data:text/html,foo"), main_rfh());
+
+  content::MockNavigationHandle navigation_handle(kDestinationUrl, main_rfh());
+
+  EXPECT_EQ(task_->GetExecutionEngine().ShouldDeferNavigation(
+                navigation_handle, base::NullCallback()),
+            content::NavigationThrottle::PROCEED);
+
+  // Verify that SameOriginSource is true, indicating it used the precursor
+  // origin.
+  histograms_.ExpectUniqueSample("Actor.NavigationGating.SameOriginSource",
+                                 /*sample=*/true, /*expected_bucket_count=*/1);
+}
+
 }  // namespace
 
 }  // namespace actor

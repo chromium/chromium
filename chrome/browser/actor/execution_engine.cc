@@ -111,8 +111,8 @@ void PostTaskForActCallback(
 
 // When operating on an opaque site, we choose to use the precursor's origin
 // when judging whether a user confirmation should be triggered or not. We are
-// effictively, using `rfh.GetLastCommittedUrl()` vs
-// `rfh.GetLastCommittedOrigin()` for this "security" purpose contrary to the
+// effectively using `url::Origin::Create(rfh.GetLastCommittedUrl())` in lieu of
+// `rfh.GetLastCommittedOrigin()` for this "security" purpose, contrary to the
 // guidance here (docs/security/origin-vs-url.md).
 //
 // This is an intentional decision since it relates to user confirmations and it
@@ -298,17 +298,15 @@ ExecutionEngine::ShouldDeferNavigation(
   base::ScopedUmaHistogramTimer timer(
       "Actor.NavigationGating.TimeElapsedForGating2");
 
-  // Note: `DetermineGatingDecision` operates on GURLs, but `origin_checker_`
-  // operates on Origins only.
-  const GURL& source_url =
-      GetPrimaryMainFrame(navigation_handle)->GetLastCommittedURL();
-  const url::Origin source_origin = url::Origin::Create(source_url);
-
-  const GatingDecision decision =
-      DetermineGatingDecision(source_url,
-                              /*destination_url=*/navigation_handle.GetURL());
+  // Note: `DetermineGatingDecision` and `CheckNavigationSensitiveUrlList`
+  // operate on GURLs, but metrics and `origin_checker_` operate on Origins.
+  const GatingDecision decision = DetermineGatingDecision(
+      GetPrimaryMainFrame(navigation_handle)->GetLastCommittedURL(),
+      /*destination_url=*/navigation_handle.GetURL());
   RecordNavigationGatingDecision(decision);
 
+  const url::Origin source_origin = OriginOrPrecursorIfOpaque(
+      GetPrimaryMainFrame(navigation_handle)->GetLastCommittedOrigin());
   switch (decision) {
     case GatingDecision::kAllowSameOrigin:
     case GatingDecision::kAllowByContainerConfig:
