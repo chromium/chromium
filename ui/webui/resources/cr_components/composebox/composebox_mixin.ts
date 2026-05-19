@@ -132,6 +132,7 @@ export const ComposeboxEmbedderMixin =
               reflect: true,
             },
             isOblongShape: {type: Boolean},
+            webuiOmniboxSimplificationEnabled: {type: Boolean},
             smartComposeInlineHint: {type: String},
             smartComposeStats: {type: Object},
             state: {type: Object},
@@ -228,6 +229,7 @@ export const ComposeboxEmbedderMixin =
         accessor showTypedSuggestWithContext: boolean = false;
         accessor usePecApi: boolean = false;
         accessor isOblongShape: boolean = false;
+        accessor webuiOmniboxSimplificationEnabled: boolean = false;
         searchboxListenerIds: number[] = [];
         showZps: boolean = loadTimeData.getBoolean('composeboxShowZps');
         // Attribute that can be set by parent to enable/disable voice search
@@ -2092,6 +2094,7 @@ export interface ComposeboxEmbedderMixinInterface extends
   result: AutocompleteResult|null;
   searchboxLayoutMode: string;
   isOblongShape: boolean;
+  webuiOmniboxSimplificationEnabled: boolean;
   searchboxNextEnabled: boolean;
   selectedMatch: AutocompleteMatch|null;
   selectedMatchIndex: number;

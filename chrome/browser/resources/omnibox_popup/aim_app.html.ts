@@ -18,6 +18,7 @@ export function getHtml(this: OmniboxAimAppElement) {
   <cr-omnibox-composebox searchbox-next-enabled id="composebox"
       searchbox-layout-mode="${this.getSearchboxLayoutMode_()}"
       .isOblongShape="${this.isOblongShape_}"
+      .webuiOmniboxSimplificationEnabled="${this.webuiOmniboxSimplificationEnabled_}"
       @context-menu-entrypoint-click="${this.onContextMenuEntrypointClick_}">
   </cr-omnibox-composebox>` : html`
   <cr-composebox id="composebox" searchbox-next-enabled
@@ -34,6 +35,7 @@ export function getHtml(this: OmniboxAimAppElement) {
       .showVoiceSearch="${true}"
       .usePecApi="${this.usePecApi_}"
       .isOblongShape="${this.isOblongShape_}"
+      .webuiOmniboxSimplificationEnabled="${this.webuiOmniboxSimplificationEnabled_}"
       entrypoint-name="Omnibox">
   </cr-composebox>`}
 </div>

@@ -198,8 +198,6 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
   // Retains the latest version of the pending automatic active tab's title.
   protected pendingAutomaticActiveTabTitle_: string = '';
   protected dragAndDropHandler_: DragAndDropHandler;
-  private webuiOmniboxSimplificationEnabled_: boolean =
-      getLoadTimeBoolean('webuiOmniboxSimplificationEnabled', false);
   private pageHandler_: PageHandlerRemote;
   private searchboxHandler_: SearchboxPageHandlerRemote;
   private resizeObservers_: ResizeObserver[] = [];
@@ -342,10 +340,11 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
     }
 
     if (changedProperties.has('inputState') ||
-        changedProperties.has('entrypointName')) {
+        changedProperties.has('entrypointName') ||
+        changedProperties.has('webuiOmniboxSimplificationEnabled')) {
       const inToolMode = this.inputState?.activeTool !== ToolMode.kUnspecified;
       const hasBackground = this.entrypointName === 'Omnibox' ?
-          this.webuiOmniboxSimplificationEnabled_ :
+          this.webuiOmniboxSimplificationEnabled :
           false;
       this.applyContextButtonBackground = hasBackground && !inToolMode;
     }

@@ -58,6 +58,7 @@ export class OmniboxAimAppElement extends CrLitElement {
       disableVoiceSearchAnimation_: {type: Boolean},
       usePecApi_: {type: Boolean},
       isOblongShape_: {type: Boolean},
+      webuiOmniboxSimplificationEnabled_: {type: Boolean},
     };
   }
 
@@ -85,6 +86,8 @@ export class OmniboxAimAppElement extends CrLitElement {
       loadTimeData.getBoolean('contextualMenuUsePecApi');
   protected accessor isOblongShape_: boolean =
       loadTimeData.getBoolean('contextButtonShapeIsOblong');
+  protected accessor webuiOmniboxSimplificationEnabled_: boolean =
+      loadTimeData.getBoolean('webuiOmniboxSimplificationEnabled');
 
   private eventTracker_ = new EventTracker();
   private pageHandler_: PageHandlerInterface;

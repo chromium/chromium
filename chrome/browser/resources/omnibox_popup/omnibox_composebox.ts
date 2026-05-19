@@ -9,7 +9,6 @@ import '//resources/cr_components/composebox/composebox_tool_chip.js';
 import '//resources/cr_components/composebox/contextual_entrypoint_button.js';
 
 import type {TabUpload} from '//resources/cr_components/composebox/common.js';
-import {getLoadTimeBoolean} from '//resources/cr_components/composebox/common.js';
 import type {PageHandlerRemote} from '//resources/cr_components/composebox/composebox.mojom-webui.js';
 import type {ComposeboxDropdownElement} from '//resources/cr_components/composebox/composebox_dropdown.js';
 import type {ComposeboxInputElement} from '//resources/cr_components/composebox/composebox_input.js';
@@ -57,8 +56,6 @@ export class OmniboxComposeboxElement extends ComposeboxEmbedderMixin
 
   accessor entrypointName: string = 'Omnibox';
   accessor applyContextButtonBackground: boolean = false;
-  private webuiOmniboxSimplificationEnabled_: boolean =
-      getLoadTimeBoolean('webuiOmniboxSimplificationEnabled', false);
   private pageHandler_: PageHandlerRemote;
   private searchboxCallbackRouter_: SearchboxPageCallbackRouter;
   private searchboxHandler_: SearchboxPageHandlerRemote;
@@ -74,10 +71,11 @@ export class OmniboxComposeboxElement extends ComposeboxEmbedderMixin
   override willUpdate(changedProperties: PropertyValues<this>) {
     super.willUpdate(changedProperties);
 
-    if (changedProperties.has('inputState')) {
+    if (changedProperties.has('inputState') ||
+        changedProperties.has('webuiOmniboxSimplificationEnabled')) {
       const inToolMode = this.inputState?.activeTool !== ToolMode.kUnspecified;
       this.applyContextButtonBackground =
-          this.webuiOmniboxSimplificationEnabled_ && !inToolMode;
+          this.webuiOmniboxSimplificationEnabled && !inToolMode;
     }
   }
 

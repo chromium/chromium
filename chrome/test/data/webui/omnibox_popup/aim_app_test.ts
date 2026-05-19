@@ -58,6 +58,7 @@ suite('AimAppTest', function() {
       voiceSearchCoherenceComposeboxesEnabled: false,
       voiceSearchCoherenceCobrowsingComposeboxEnabled: false,
       contextButtonShapeIsOblong: false,
+      webuiOmniboxSimplificationEnabled: false,
     });
   });
 
