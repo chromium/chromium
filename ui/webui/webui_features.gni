@@ -2,9 +2,11 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/cast.gni")
 import("//build/config/chrome_build.gni")
 import("//build/config/coverage/coverage.gni")
 import("//build/config/sanitizers/sanitizers.gni")
+import("//extensions/buildflags/buildflags.gni")
 
 declare_args() {
   # Optimize parts of Chrome's UI written with web technologies (HTML/CSS/JS)
@@ -28,13 +30,26 @@ declare_args() {
   # compatible build configurations (see comment for the
   # `enable_webui_generate_code_cache` update below).
   enable_webui_generate_code_cache = true
+}
 
-  # Enable the WebUI version of the New Tab Page.
-  enable_webui_ntp = !is_android && !is_ios
-
-  # Enable WebUI Contextual Tasks Composebox (Desktop and Desktop Android).
-  enable_webui_contextual_tasks_composebox =
-      (!is_android && !is_ios) || is_desktop_android
+if (enable_cast_receiver || is_cast_android || is_castos) {
+  enable_webui_ntp = false
+  enable_webui_contextual_tasks_composebox = false
+} else {
+  declare_args() {
+    # Enable the WebUI version of the New Tab Page.
+    enable_webui_ntp = target_os == "win" || target_os == "mac" ||
+        target_os == "linux" || target_os == "chromeos"
+  }
+  declare_args() {
+    # Enable WebUI Contextual Tasks Composebox.
+    enable_webui_contextual_tasks_composebox =
+        enable_webui_ntp || is_desktop_android
+  }
+  if (enable_webui_ntp) {
+    # NTP relies on chrome.metricsPrivate, which is an extensions API.
+    assert(enable_extensions_core)
+  }
 }
 
 # Build-time WebUI code caching is only used in optimize_webui builds. When the

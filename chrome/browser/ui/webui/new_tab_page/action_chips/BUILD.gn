@@ -17,40 +17,46 @@ mojom("mojo_bindings") {
 }
 
 # TODO(b/502297163): Enable for Android.
-if (!is_android) {
-  source_set("action_chips") {
-    sources = [
-      "action_chips_generator.cc",
-      "action_chips_generator.h",
-      "action_chips_metrics.cc",
-      "action_chips_metrics.h",
-      "remote_suggestions_service_simple.cc",
-      "remote_suggestions_service_simple.h",
-      "tab_id_generator.cc",
-      "tab_id_generator.h",
-    ]
-    public_deps = [ ":mojo_bindings" ]
-    deps = [
-      "//base",
-      "//chrome/browser:browser_process",
-      "//chrome/browser/autocomplete",
-      "//chrome/browser/autocomplete:aim_eligibility_service",
-      "//chrome/browser/contextual_search",
-      "//chrome/browser/profiles",
-      "//chrome/browser/search_engines",
-      "//chrome/browser/ui/browser_window",
-      "//chrome/browser/ui/tabs:tab_strip",
-      "//chrome/browser/ui/webui:webui_util",
-      "//components/sessions",
-      "//content/public/browser",
-      "//content/public/common",
-      "//mojo/public/cpp/bindings",
-      "//third_party/abseil-cpp:absl",
-      "//third_party/omnibox_proto",
-      "//url",
-    ]
+source_set("action_chips") {
+  sources = [
+    "action_chips_generator.cc",
+    "action_chips_generator.h",
+    "action_chips_metrics.cc",
+    "action_chips_metrics.h",
+    "remote_suggestions_service_simple.cc",
+    "remote_suggestions_service_simple.h",
+    "tab_id_generator.cc",
+    "tab_id_generator.h",
+  ]
+  public_deps = [ ":mojo_bindings" ]
+  deps = [
+    "//base",
+    "//chrome/app:generated_resources",
+    "//chrome/app:generated_resources_grit",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/autocomplete",
+    "//chrome/browser/autocomplete:aim_eligibility_service",
+    "//chrome/browser/contextual_search",
+    "//chrome/browser/profiles",
+    "//chrome/browser/search_engines",
+    "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/webui:webui_util",
+    "//components/search",
+    "//components/sessions",
+    "//components/tabs:public",
+    "//content/public/browser",
+    "//content/public/common",
+    "//mojo/public/cpp/bindings",
+    "//third_party/abseil-cpp:absl",
+    "//third_party/omnibox_proto",
+    "//url",
+  ]
+  if (!is_android) {
+    deps += [ "//chrome/browser/ui/tabs:tab_strip" ]
   }
+}
 
+if (!is_android) {
   source_set("unit_tests") {
     testonly = true
     sources = [

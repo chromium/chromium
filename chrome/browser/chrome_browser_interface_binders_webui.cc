@@ -63,6 +63,7 @@
 #if BUILDFLAG(ENABLE_WEBUI_NTP)
 #include "chrome/browser/ui/webui/new_tab_page/action_chips/action_chips.mojom.h"
 #include "chrome/browser/ui/webui/new_tab_page/new_tab_page_ui.h"
+#include "components/search/ntp_features.h"
 #include "ui/webui/resources/cr_components/help_bubble/help_bubble.mojom.h"
 #endif  // BUILDFLAG(ENABLE_WEBUI_NTP)
 
@@ -207,6 +208,10 @@ void PopulateChromeWebUIFrameBindersPartsAllPlatforms(
   content::RegisterWebUIControllerInterfaceBinder<
       customize_buttons::mojom::CustomizeButtonsHandlerFactory, NewTabPageUI>(
       map);
+  if (base::FeatureList::IsEnabled(ntp_features::kNtpNextFeatures)) {
+    content::RegisterWebUIControllerInterfaceBinder<
+        action_chips::mojom::ActionChipsHandlerFactory, NewTabPageUI>(map);
+  }
 #endif  // BUILDFLAG(ENABLE_WEBUI_NTP)
 
 #if BUILDFLAG(ENABLE_WEBUI_NTP) || BUILDFLAG(ENABLE_EXTENSIONS_CORE)
