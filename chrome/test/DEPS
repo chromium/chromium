@@ -25,6 +25,7 @@ include_rules = [
   "+components/compose",
   "+components/constrained_window",
   "+components/content_settings/core/browser",
+  "+components/contextual_tasks/public",
   "+components/custom_handlers",
   "+components/crash/core/app",
   "+components/data_sharing",

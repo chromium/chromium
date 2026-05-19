@@ -7,6 +7,7 @@
 #include "chrome/browser/ui/webui/new_tab_page/composebox/variations/composebox_fieldtrial.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/web_ui_mocha_browser_test.h"
+#include "components/contextual_tasks/public/features.h"
 #include "components/history_clusters/core/features.h"
 #include "components/omnibox/browser/aim_eligibility_service.h"
 #include "components/search/ntp_features.h"
@@ -21,7 +22,8 @@ class NewTabPageBrowserTest : public WebUIMochaBrowserTest {
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{},
         /*disabled_features=*/{omnibox::kAimServerEligibilityEnabled,
-                               ntp_realbox::kNtpRealboxNext});
+                               ntp_realbox::kNtpRealboxNext,
+                               contextual_tasks::kContextualTasksContext});
   }
 
  private:
