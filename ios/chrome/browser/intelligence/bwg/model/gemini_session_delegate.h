@@ -141,6 +141,9 @@ typedef NS_ENUM(NSInteger, GeminiCancelType) {
 // Called when the user barges in during Gemini Live session.
 - (void)geminiLiveUserDidBargeIn;
 
+// Called when the user taps the Live button in Gemini UI.
+- (void)geminiLiveUserDidTapLiveButton;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_BWG_MODEL_GEMINI_SESSION_DELEGATE_H_
