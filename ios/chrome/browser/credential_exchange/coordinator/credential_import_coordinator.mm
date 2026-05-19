@@ -54,6 +54,7 @@
 #import "ios/chrome/common/ui/elements/branded_navigation_item_title_view.h"
 #import "ios/chrome/common/ui/promo_style/promo_style_view_controller_delegate.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_protocol.h"
+#import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 
@@ -95,6 +96,9 @@
 
   // Provides status of password manager as iOS AutoFill credential provider.
   PasswordAutoFillStatusManager* _passwordAutoFillStatusManager;
+
+  // Module handling reauthentication before accessing sensitive data.
+  id<ReauthenticationProtocol> _reauthModule;
 
   // Whether there is currently an ongoing action triggered by the primary
   // button tap, that should not be handled twice.
@@ -146,6 +150,8 @@
       initWithRootViewController:_viewController];
   _navigationController.navigationBarHidden = NO;
   _navigationController.toolbarHidden = NO;
+  _reauthModule =
+      ReauthenticationServiceFactory::GetForProfile(profile)->GetReauthModule();
 }
 
 - (void)stop {
@@ -348,8 +354,27 @@
 #pragma mark - PasskeyKeychainProviderBridgeDelegate
 
 - (void)performUserVerificationIfNeeded:(ProceduralBlock)completion {
-  // TODO(crbug.com/450982128): Perform user verification.
-  completion();
+  if (![_reauthModule canAttemptReauth]) {
+    // This should not happen, as credential import starts after opening
+    // password manager, which requires to have a passcode / biometrics set up.
+    NSString* title =
+        l10n_util::GetNSString(IDS_IOS_CREDENTIAL_EXCHANGE_GENERIC_ERROR_TITLE);
+    [self showAlertWithTitle:title
+                     message:nil
+          baseViewController:_viewController];
+    return;
+  }
+
+  [_reauthModule
+      attemptReauthWithLocalizedReason:
+          l10n_util::GetNSString(IDS_IOS_CREDENTIAL_EXCHANGE_IMPORT_TITLE)
+                  canReusePreviousAuth:YES
+                               handler:^(ReauthenticationResult result) {
+                                 if (result !=
+                                     ReauthenticationResult::kFailure) {
+                                   completion();
+                                 }
+                               }];
 }
 
 - (void)showWelcomeScreenWithPurpose:
