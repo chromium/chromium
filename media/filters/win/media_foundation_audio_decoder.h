@@ -10,6 +10,7 @@
 
 #include <memory>
 
+#include "base/containers/circular_deque.h"
 #include "base/functional/callback.h"
 #include "base/sequence_checker.h"
 #include "media/base/audio_buffer.h"
@@ -99,7 +100,7 @@ class MEDIA_EXPORT MediaFoundationAudioDecoder : public AudioDecoder {
   // Callback that delivers output frames.
   OutputCB output_cb_;
 
-  AudioDiscardHelper::TimeInfo current_buffer_time_info_;
+  base::circular_deque<AudioDiscardHelper::TimeInfo> time_info_;
   std::unique_ptr<AudioDiscardHelper> discard_helper_;
 
   // Pool which helps avoid thrashing memory when returning audio buffers.

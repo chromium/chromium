@@ -287,9 +287,8 @@ void MediaFoundationAudioDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
     return;
   }
 
-  current_buffer_time_info_ = AudioDiscardHelper::TimeInfo::FromBuffer(*buffer);
+  time_info_.push_back(AudioDiscardHelper::TimeInfo::FromBuffer(*buffer));
 
-  bool decoded_frame_this_loop = false;
   OutputStatus rc;
   do {
     rc = PumpOutput(PumpState::kNormal);
@@ -299,16 +298,7 @@ void MediaFoundationAudioDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
       std::move(decode_cb_bound).Run(DecoderStatus::Codes::kFailed);
       return;
     }
-    decoded_frame_this_loop = true;
   } while (rc == OutputStatus::kSuccess);
-
-  // Even if we didn't decode a frame this loop, we should still send the packet
-  // to the discard helper for caching.
-  if (!decoded_frame_this_loop && !buffer->end_of_stream()) {
-    const bool result =
-        discard_helper_->ProcessBuffers(current_buffer_time_info_, nullptr);
-    DCHECK(!result);
-  }
 
   std::move(decode_cb_bound).Run(OkStatus());
 }
@@ -596,19 +586,20 @@ MediaFoundationAudioDecoder::PumpOutput(PumpState pump_state) {
   output_buffer->SetCurrentLength(0);
   output_buffer->Unlock();
 
-  if (discard_helper_->ProcessBuffers(current_buffer_time_info_,
-                                      audio_buffer.get())) {
+  CHECK(!time_info_.empty());
+  if (discard_helper_->ProcessBuffers(time_info_.front(), audio_buffer.get())) {
     base::BindPostTaskToCurrentDefault(output_cb_).Run(std::move(audio_buffer));
   }
-
+  time_info_.pop_front();
   return OutputStatus::kSuccess;
 }
 
 void MediaFoundationAudioDecoder::ResetTimestampState() {
   discard_helper_ =
       std::make_unique<AudioDiscardHelper>(sample_rate_, config_.codec_delay(),
-                                           /*delayed_discard=*/true);
+                                           /*delayed_discard=*/false);
   discard_helper_->Reset(config_.codec_delay());
+  time_info_.clear();
 }
 
 }  // namespace media
