@@ -29,7 +29,7 @@ import org.chromium.chrome.browser.download.home.list.holder.ListItemViewHolder;
 import org.chromium.chrome.browser.download.internal.R;
 import org.chromium.components.browser_ui.widget.displaystyle.HorizontalDisplayStyle;
 import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
-import org.chromium.ui.display.DisplayUtil;
+import org.chromium.components.browser_ui.widget.displaystyle.ViewResizerUtil;
 import org.chromium.ui.edge_to_edge.EdgeToEdgePadAdjuster;
 import org.chromium.ui.modelutil.ForwardingListObservable;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -161,32 +161,21 @@ class DateOrderedListView {
     }
 
     /**
+     * @param displayStyle The current display style.
+     * @param view The {@link View} whose measured width will be used if layout depends on the
+     *     container width.
+     * @param resources The {@link Resources} used to retrieve configuration and display metrics.
      * @return The start and end padding of the recycler view for the given display style.
      */
     private static int getPaddingForDisplayStyle(
             UiConfig.DisplayStyle displayStyle, View view, Resources resources) {
-        int padding = 0;
-        if (displayStyle.horizontal == HorizontalDisplayStyle.WIDE) {
-            float dpToPx = resources.getDisplayMetrics().density;
-            int screenWidthDp = 0;
-            if (DisplayUtil.isUiScaled() && view != null) {
-                screenWidthDp = (int) (view.getMeasuredWidth() / dpToPx);
-            } else {
-                screenWidthDp = resources.getConfiguration().screenWidthDp;
-            }
-            padding =
-                    (int)
-                            (((screenWidthDp - UiConfig.WIDE_DISPLAY_STYLE_MIN_WIDTH_DP) / 2.f)
-                                    * resources.getDisplayMetrics().density);
-            padding =
-                    (int)
-                            Math.max(
-                                    resources.getDimensionPixelSize(
-                                            R.dimen
-                                                    .download_manager_recycler_view_min_padding_wide_screen),
-                                    padding);
-        }
-        return padding;
+        if (displayStyle.horizontal != HorizontalDisplayStyle.WIDE) return 0;
+
+        int wideWindowMinPaddingPx =
+                resources.getDimensionPixelSize(
+                        R.dimen.download_manager_recycler_view_min_padding_wide_screen);
+        return ViewResizerUtil.computePaddingForWideDisplay(
+                resources, view, wideWindowMinPaddingPx);
     }
 
     /** @return The view width available after start and end padding. */
