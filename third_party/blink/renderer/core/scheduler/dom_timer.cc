@@ -360,6 +360,7 @@ void DOMTimer::Dispose() {
 }
 
 void DOMTimer::Stop() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // TimerBase::Stop() must run even when action_ is null. During cppgc lazy
   // sweeping the pre-finalizer (Dispose) may call Stop() after action_ has
   // already been cleared by a previous Stop(). Skipping TimerBase::Stop() in
@@ -368,14 +369,18 @@ void DOMTimer::Stop() {
   if (action_) {
     async_task_context_.Cancel();
     const bool is_interval = RepeatInterval().has_value();
+
+    // Release the action before invoking the probe to ensure that any
+    // re-entrant Stop() calls will safely and silently no-op.
+    ScheduledAction* action = action_.Release();
+
     probe::BreakableLocation(GetExecutionContext(),
                              is_interval ? "clearInterval" : "clearTimeout");
 
     // Need to release JS objects potentially protected by ScheduledAction
     // because they can form circular references back to the ExecutionContext
     // which will cause a memory leak.
-    action_->Dispose();
-    action_ = nullptr;
+    action->Dispose();
   }
 
   TimerBase::Stop();
@@ -386,6 +391,7 @@ void DOMTimer::ContextDestroyed() {
 }
 
 void DOMTimer::Fired() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   ExecutionContext* context = GetExecutionContext();
   DCHECK(context);
   DOMTimerCoordinator::From(*context).SetTimerNestingLevel(nesting_level_);

@@ -27,6 +27,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_SCHEDULER_DOM_TIMER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_SCHEDULER_DOM_TIMER_H_
 
+#include "base/sequence_checker.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/core/probe/async_task_context.h"
@@ -113,6 +114,7 @@ class CORE_EXPORT DOMTimer final : public GarbageCollected<DOMTimer>,
   int nesting_level_;
   probe::AsyncTaskContext async_task_context_;
   Member<ScheduledAction> action_;
+  SEQUENCE_CHECKER(sequence_checker_);
 };
 
 }  // namespace blink

@@ -1,0 +1,4 @@
+Test that re-entrant clearing of a DOMTimer during DevTools pause does not crash.
+Paused on: instrumentation:clearTimeout
+Test completed without crashing.
+
