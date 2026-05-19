@@ -188,7 +188,7 @@ class ExecutionEngine : public ToolDelegate,
            ActCallback callback);
 
   // Invalidated anytime `action_sequence_` is reset.
-  base::WeakPtr<ExecutionEngine> GetWeakPtr();
+  base::WeakPtr<ExecutionEngine> GetActionSequenceWeakPtr();
 
   bool HasActionSequence() const;
 
@@ -300,6 +300,9 @@ class ExecutionEngine : public ToolDelegate,
   ActorContainerConfig& actor_container_config() {
     return actor_container_config_;
   }
+
+  // Invalidated when `this` is destroyed.
+  base::WeakPtr<ExecutionEngine> GetWeakPtr();
 
  protected:
   // Allow derived classes to use the natural constructors.
@@ -496,9 +499,14 @@ class ExecutionEngine : public ToolDelegate,
   SEQUENCE_CHECKER(sequence_checker_);
 
   // Normally, a WeakPtrFactory only invalidates its WeakPtrs when the object is
-  // destroyed. However, this class invalidates WeakPtrs anytime a new set of
-  // actions is passed in. This effectively cancels any ongoing async actions.
+  // destroyed. However, this class can invalidate WeakPtrs any time a new set
+  // of actions is passed in. This effectively cancels any ongoing async
+  // actions.
   base::WeakPtrFactory<ExecutionEngine> actions_weak_ptr_factory_{this};
+
+  // WeakPtrFactory for consumers that care about the lifetime of this instance,
+  // rather than of a particular action sequence.
+  base::WeakPtrFactory<ExecutionEngine> weak_ptr_factory_{this};
 };
 
 std::ostream& operator<<(std::ostream& o, const ExecutionEngine::State& s);
