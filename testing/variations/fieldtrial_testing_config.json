@@ -7029,25 +7029,6 @@
             ]
         }
     ],
-    "ContextualTasksContext": [
-        {
-            "platforms": [
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "ContextualTasksContext",
-                        "ContextualTasksContextLogging",
-                        "ContextualTasksContextMqlsLogging"
-                    ]
-                }
-            ]
-        }
-    ],
     "ContextualTasksDesktop": [
         {
             "platforms": [
@@ -22441,6 +22422,27 @@
                     },
                     "enable_features": [
                         "SmartRestartLockScreen"
+                    ]
+                }
+            ]
+        }
+    ],
+    "SmartTabSharing_Desktop": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "ContextualTasksContextSmartTabSharing": "true"
+                    },
+                    "enable_features": [
+                        "ContextualTasksContext"
                     ]
                 }
             ]
