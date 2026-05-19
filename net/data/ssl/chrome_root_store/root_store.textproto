@@ -8,14 +8,14 @@
 
 # Version # should always be incremented up whenever this (or any pem file that
 # it references) is changed.
-version_major: 32
+version_major: 33
 
-# When allocating new crs_root_id values, always start from this value, and
-# update the comment with the new "next unused value". When adding trusted
+# When allocating new crs_root_id values, always start from the value in
+# NEXT_UNUSED_CRS_ROOT_ID.txt (which may not exist in the Chromium repository),
+# and update it with the new "next unused value". When adding trusted
 # intermediate CA certificates for the purposes of intermediate elision, give
 # the intermediates the same ID as the root CA certificate that issued them.
 # Do not change existing IDs and do not reuse old IDs.
-# NEXT_UNUSED_CRS_ROOT_ID: 108
 
 # CN=Actalis Authentication Root CA, O=Actalis S.p.A./03358520967, L=Milan, C=IT
 # https://ssltest-a.actalis.it:8443
