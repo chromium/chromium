@@ -85,10 +85,9 @@ class EmailOneTimeTokenFetcherTest : public testing::Test {
     base::Base64UrlEncode(kEncryptedMessageReference,
                           base::Base64UrlEncodePolicy::INCLUDE_PADDING,
                           &encoded_reference);
-    return net::AppendQueryParameter(GURL(kServiceUrl),
-                                     "encryptedMessageReference",
-                                     encoded_reference)
-        .spec();
+    GURL url = net::AppendQueryParameter(
+        GURL(kServiceUrl), "encryptedMessageReference", encoded_reference);
+    return net::AppendQueryParameter(url, "alt", "proto").spec();
   }
 
   base::test::TaskEnvironment task_environment_{
@@ -112,17 +111,22 @@ TEST_F(EmailOneTimeTokenFetcherTest, Success) {
   const network::ResourceRequest* pending_request =
       &test_url_loader_factory_->GetPendingRequest(0)->request;
   EXPECT_EQ(pending_request->method, "GET");
-  const std::optional<std::string> header_value =
+  const std::optional<std::string> auth_header =
       pending_request->headers.GetHeader(
           net::HttpRequestHeaders::kAuthorization);
-  ASSERT_TRUE(header_value.has_value());
-  EXPECT_EQ(*header_value, "Bearer access_token");
+  ASSERT_TRUE(auth_header.has_value());
+  EXPECT_EQ(*auth_header, "Bearer access_token");
 
   const std::optional<std::string> qos_header =
       pending_request->headers.GetHeader(
           kOneTimeTokenServiceCriticalityHeaderName);
   ASSERT_TRUE(qos_header.has_value());
   EXPECT_EQ(*qos_header, kOneTimeTokenServiceCriticalityHeaderValue);
+
+  const std::optional<std::string> accept_header =
+      pending_request->headers.GetHeader(net::HttpRequestHeaders::kAccept);
+  ASSERT_TRUE(accept_header.has_value());
+  EXPECT_EQ(*accept_header, "application/x-protobuf");
 
   EXPECT_EQ(pending_request->url.spec(), GetExpectedUrl());
 

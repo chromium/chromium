@@ -79,12 +79,16 @@ void EmailOneTimeTokenFetcher::StartOneTimeTokenServiceCall(
   base::Base64UrlEncode(encrypted_message_reference_,
                         base::Base64UrlEncodePolicy::INCLUDE_PADDING,
                         &encoded_reference);
-  resource_request->url = net::AppendQueryParameter(
-      url, "encryptedMessageReference", encoded_reference);
+  url = net::AppendQueryParameter(url, "encryptedMessageReference",
+                                  encoded_reference);
+  url = net::AppendQueryParameter(url, "alt", "proto");
+  resource_request->url = url;
   resource_request->method = "GET";
   resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
   resource_request->headers.SetHeader(net::HttpRequestHeaders::kAuthorization,
                                       "Bearer " + info.token);
+  resource_request->headers.SetHeader(net::HttpRequestHeaders::kAccept,
+                                      "application/x-protobuf");
   // Set user-facing criticality header.
   resource_request->headers.SetHeader(
       kOneTimeTokenServiceCriticalityHeaderName,
