@@ -26,7 +26,6 @@ WebviewProgressWnd::~WebviewProgressWnd() {
 
 HRESULT WebviewProgressWnd::Initialize() {
   wv_.Initialize(nullptr);
-  m_hWnd = wv_.hwnd();
   return S_OK;
 }
 

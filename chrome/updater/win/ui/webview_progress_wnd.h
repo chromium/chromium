@@ -58,8 +58,8 @@ class WebviewProgressWnd : public AppInstallProgress {
   void OnPause() override;
   void OnComplete(const ObserverCompletionInfo& observer_info) override;
 
-  // Mirrors the corresponding member in `ProgressWnd`.
-  HWND m_hWnd;
+  // Mirrors `hwnd()` in `ProgressWnd`.
+  HWND hwnd() const { return wv_.hwnd(); }
 
  private:
   // Helper to execute JS in the webview.

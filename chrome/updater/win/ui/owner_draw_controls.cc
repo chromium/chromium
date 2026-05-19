@@ -4,22 +4,55 @@
 
 #include "chrome/updater/win/ui/owner_draw_controls.h"
 
+#include <windows.h>
+
+#include <commctrl.h>
+
 #include <algorithm>
 #include <cstdint>
 #include <limits>
+#include <string>
 #include <vector>
 
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/win/current_module.h"
+#include "base/win/scoped_gdi_object.h"
 #include "chrome/updater/util/util.h"
 #include "chrome/updater/win/ui/l10n_util.h"
 #include "chrome/updater/win/ui/resources/updater_installer_strings.h"
 #include "chrome/updater/win/ui/ui_util.h"
+#include "ui/gfx/geometry/rect.h"
 
 namespace updater::ui {
 
 namespace {
+
+int Width(const RECT& rect) {
+  return rect.right - rect.left;
+}
+
+int Height(const RECT& rect) {
+  return rect.bottom - rect.top;
+}
+
+bool IsRectEmpty(const RECT& rect) {
+  return Width(rect) <= 0 || Height(rect) <= 0;
+}
+
+void DeflateRect(RECT* rect, int dx, int dy) {
+  rect->left += dx;
+  rect->top += dy;
+  rect->right -= dx;
+  rect->bottom -= dy;
+}
+
+void FillSolidRect(HDC dc, const RECT& rect, COLORREF color) {
+  const COLORREF old_bk = ::SetBkColor(dc, color);
+  ::ExtTextOutW(dc, 0, 0, ETO_OPAQUE, &rect, L"", 0, nullptr);
+  ::SetBkColor(dc, old_bk);
+}
 
 // Draws the parent's background (the gradient) onto a child's DC.
 void DrawParentBackground(HWND hwnd, HDC hdc, const RECT& rect) {
@@ -28,7 +61,7 @@ void DrawParentBackground(HWND hwnd, HDC hdc, const RECT& rect) {
     return;
   }
 
-  CPoint pt(0, 0);
+  POINT pt = {0, 0};
   if (!::MapWindowPoints(hwnd, parent_hwnd, &pt, 1) &&
       ::GetLastError() != ERROR_SUCCESS) {
     return;
@@ -54,120 +87,152 @@ COLORREF GetColor(COLORREF normal_color, int high_contrast_color_index) {
 
 // Returns the system color brush corresponding to `high_contrast_color_index`
 // if the system is in high contrast mode. Otherwise, it returns `normal_brush`.
-HBRUSH GetColorBrush(const WTL::CBrush& normal_brush,
-                     int high_contrast_color_index) {
+HBRUSH GetColorBrush(HBRUSH normal_brush, int high_contrast_color_index) {
   return IsHighContrastOn() ? ::GetSysColorBrush(high_contrast_color_index)
-                            : HBRUSH{normal_brush};
+                            : normal_brush;
+}
+
+gfx::Rect RectToGfx(const RECT& rc) {
+  return gfx::Rect(rc.left, rc.top, rc.right - rc.left, rc.bottom - rc.top);
 }
 
 }  // namespace
 
-CaptionButton::CaptionButton() = default;
-CaptionButton::~CaptionButton() = default;
+CaptionButton::CaptionButton()
+    : foreground_brush_(::CreateSolidBrush(kCaptionForegroundColor)) {}
 
-LRESULT CaptionButton::OnCreate(UINT, WPARAM, LPARAM, BOOL& handled) {
-  handled = false;
-
-  tool_tip_window_.Create(m_hWnd);
-  CHECK(tool_tip_window_.IsWindow());
-  CHECK(!tool_tip_text_.IsEmpty());
-
-  tool_tip_window_.SetDelayTime(TTDT_AUTOMATIC, 2000);
-  tool_tip_window_.Activate(TRUE);
-  tool_tip_window_.AddTool(m_hWnd, tool_tip_text_.GetString());
-
-  return 0;
-}
-
-LRESULT CaptionButton::OnMouseMessage(UINT msg,
-                                      WPARAM wparam,
-                                      LPARAM lparam,
-                                      BOOL& handled) {
-  handled = false;
-
-  if (tool_tip_window_.IsWindow()) {
-    MSG relay_msg = {m_hWnd, msg, wparam, lparam};
-    tool_tip_window_.RelayEvent(&relay_msg);
+CaptionButton::~CaptionButton() {
+  if (tool_tip_window_ && ::IsWindow(tool_tip_window_)) {
+    ::DestroyWindow(tool_tip_window_);
+    tool_tip_window_ = nullptr;
   }
+}
 
+HWND CaptionButton::Create(HWND parent, const RECT& bounds, int control_id) {
+  // Use the system `BUTTON` class so the control participates in MSAA/UIA
+  // (announced as a push button) and natively handles keyboard activation
+  // and `BN_CLICKED` dispatch. The localized tool-tip string also serves as
+  // the accessible name (window text). `BS_OWNERDRAW` suppresses the default
+  // `BUTTON` paint (including the focus rectangle and any default-button
+  // frame); the parent dispatches `WM_DRAWITEM` back to `DrawItem` so the
+  // custom icon is rendered.
+  HWND control_hwnd = ::CreateWindowExW(
+      0, L"BUTTON", tool_tip_text_.c_str(),
+      WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_OWNERDRAW, bounds.left,
+      bounds.top, Width(bounds), Height(bounds), parent,
+      reinterpret_cast<HMENU>(static_cast<INT_PTR>(control_id)),
+      CURRENT_MODULE(), nullptr);
+  CHECK(control_hwnd && ::IsWindow(control_hwnd));
+  CHECK(SubclassWindow(control_hwnd));
+
+  // The `BUTTON`'s `WM_CREATE` has already fired by the time the subclass is
+  // installed, so set the tool tip up here rather than from a `WM_CREATE`
+  // handler.
+  CHECK(!tool_tip_text_.empty());
+  tool_tip_window_ = ::CreateWindowExW(
+      0, TOOLTIPS_CLASSW, nullptr, WS_POPUP | TTS_ALWAYSTIP, CW_USEDEFAULT,
+      CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, hwnd(), nullptr,
+      CURRENT_MODULE(), nullptr);
+  CHECK(tool_tip_window_ && ::IsWindow(tool_tip_window_));
+
+  ::SendMessageW(tool_tip_window_, TTM_SETDELAYTIME, TTDT_AUTOMATIC,
+                 MAKELONG(2000, 0));
+  ::SendMessageW(tool_tip_window_, TTM_ACTIVATE, TRUE, 0);
+
+  TOOLINFOW ti = {
+      .cbSize = sizeof(TOOLINFOW),
+      .uFlags = TTF_IDISHWND | TTF_SUBCLASS,
+      .hwnd = hwnd(),
+      .uId = reinterpret_cast<UINT_PTR>(hwnd()),
+      .lpszText = const_cast<LPWSTR>(tool_tip_text_.c_str()),
+  };
+  ::SendMessageW(tool_tip_window_, TTM_ADDTOOLW, 0,
+                 reinterpret_cast<LPARAM>(&ti));
+
+  return hwnd();
+}
+
+LRESULT CaptionButton::OnMouseMessage(UINT msg, WPARAM wparam, LPARAM lparam) {
+  if (tool_tip_window_ && ::IsWindow(tool_tip_window_)) {
+    MSG relay_msg = {hwnd(), msg, wparam, lparam};
+    ::SendMessageW(tool_tip_window_, TTM_RELAYEVENT, 0,
+                   reinterpret_cast<LPARAM>(&relay_msg));
+  }
+  // Mouse messages must continue to the default `BUTTON` procedure so that
+  // it can track pressed state, capture the mouse, and fire `BN_CLICKED`.
+  SetMsgHandled(FALSE);
   return 1;
 }
 
-LRESULT CaptionButton::OnEraseBkgnd(UINT, WPARAM, LPARAM, BOOL& handled) {
-  // The background and foreground are both rendered in DrawItem().
-  handled = true;
-  return 1;
-}
-
-LRESULT CaptionButton::OnMouseMove(UINT, WPARAM, LPARAM, BOOL& handled) {
+LRESULT CaptionButton::OnMouseMove(UINT, WPARAM, LPARAM) {
   if (!is_tracking_mouse_events_) {
     TRACKMOUSEEVENT tme = {};
     tme.cbSize = sizeof(TRACKMOUSEEVENT);
     tme.dwFlags = TME_HOVER | TME_LEAVE;
-    tme.hwndTrack = m_hWnd;
+    tme.hwndTrack = hwnd();
     tme.dwHoverTime = 1;
     is_tracking_mouse_events_ = _TrackMouseEvent(&tme);
   }
 
+  // Let `BUTTON`'s default procedure see the move so it can update pressed
+  // state and capture state correctly when the user drags out of the button.
+  SetMsgHandled(FALSE);
   return 0;
 }
 
-LRESULT CaptionButton::OnMouseHover(UINT, WPARAM, LPARAM, BOOL& handled) {
-  handled = false;
-
+LRESULT CaptionButton::OnMouseHover(UINT, WPARAM, LPARAM) {
   if (!is_mouse_hovering_) {
     is_mouse_hovering_ = true;
-    Invalidate(false);
-    UpdateWindow();
+    ::InvalidateRect(hwnd(), nullptr, FALSE);
+    ::UpdateWindow(hwnd());
   }
-
+  SetMsgHandled(FALSE);
   return 0;
 }
 
-LRESULT CaptionButton::OnMouseLeave(UINT, WPARAM, LPARAM, BOOL& handled) {
-  handled = false;
-
+LRESULT CaptionButton::OnMouseLeave(UINT, WPARAM, LPARAM) {
   TRACKMOUSEEVENT tme = {};
   tme.cbSize = sizeof(TRACKMOUSEEVENT);
   tme.dwFlags = TME_CANCEL | TME_HOVER | TME_LEAVE;
-  tme.hwndTrack = m_hWnd;
-
+  tme.hwndTrack = hwnd();
   _TrackMouseEvent(&tme);
 
   is_tracking_mouse_events_ = false;
   is_mouse_hovering_ = false;
 
-  Invalidate(false);
-  UpdateWindow();
+  ::InvalidateRect(hwnd(), nullptr, FALSE);
+  ::UpdateWindow(hwnd());
 
+  SetMsgHandled(FALSE);
   return 0;
 }
 
 void CaptionButton::DrawItem(LPDRAWITEMSTRUCT draw_item_struct) {
-  WTL::CDCHandle dc(draw_item_struct->hDC);
+  HDC dc = draw_item_struct->hDC;
 
-  CRect button_rect;
-  GetClientRect(&button_rect);
+  RECT button_rect = {};
+  ::GetClientRect(hwnd(), &button_rect);
 
   if (is_mouse_hovering_) {
     // Keep the hover highlight solid.
-    dc.FillSolidRect(&button_rect, GetColor(kCaptionBkHover, COLOR_HIGHLIGHT));
+    FillSolidRect(dc, button_rect, GetColor(kCaptionBkHover, COLOR_HIGHLIGHT));
   } else {
     // Draw the parent's gradient background.
-    DrawParentBackground(m_hWnd, dc, button_rect);
+    DrawParentBackground(hwnd(), dc, button_rect);
   }
 
-  int rgn_width = button_rect.Width() * 12 / 31;
-  int rgn_height = button_rect.Height() * 12 / 31;
-  WTL::CRgn rgn(GetButtonRgn(rgn_width, rgn_height));
+  int rgn_width = Width(button_rect) * 12 / 31;
+  int rgn_height = Height(button_rect) * 12 / 31;
+  base::win::ScopedGDIObject<HRGN> rgn(GetButtonRgn(rgn_width, rgn_height));
 
   // Center the button in the outer button rect.
-  rgn.OffsetRgn((button_rect.Width() - rgn_width) / 2,
-                (button_rect.Height() - rgn_height) / 2);
+  ::OffsetRgn(rgn.get(), (Width(button_rect) - rgn_width) / 2,
+              (Height(button_rect) - rgn_height) / 2);
 
-  dc.FillRgn(rgn, GetColorBrush(foreground_brush_, is_mouse_hovering_
-                                                       ? COLOR_HIGHLIGHTTEXT
-                                                       : COLOR_BTNTEXT));
+  ::FillRgn(
+      dc, rgn.get(),
+      GetColorBrush(foreground_brush_.get(),
+                    is_mouse_hovering_ ? COLOR_HIGHLIGHTTEXT : COLOR_BTNTEXT));
 
   const UINT button_state = draw_item_struct->itemState;
   if (!(button_state & ODS_FOCUS) || !(button_state & ODS_SELECTED)) {
@@ -175,18 +240,21 @@ void CaptionButton::DrawItem(LPDRAWITEMSTRUCT draw_item_struct) {
   }
 
   // Draw a scaled frame for the active/focused state.
-  WTL::CPen pen;
-  pen.CreatePen(PS_INSIDEFRAME, /*thickness=*/
-                std::max(1, ::MulDiv(1, /*dpi=*/::GetDpiForWindow(m_hWnd),
-                                     USER_DEFAULT_SCREEN_DPI)),
-                GetColor(kCaptionFrameColor, COLOR_WINDOWFRAME));
-  const HPEN old_pen = dc.SelectPen(pen);
-  const HBRUSH old_brush = dc.SelectBrush((HBRUSH)GetStockObject(NULL_BRUSH));
+  base::win::ScopedGDIObject<HPEN> pen(
+      ::CreatePen(PS_INSIDEFRAME,
+                  /*thickness=*/
+                  std::max(1, ::MulDiv(1, /*dpi=*/::GetDpiForWindow(hwnd()),
+                                       USER_DEFAULT_SCREEN_DPI)),
+                  GetColor(kCaptionFrameColor, COLOR_WINDOWFRAME)));
+  const HPEN old_pen = static_cast<HPEN>(::SelectObject(dc, pen.get()));
+  const HBRUSH old_brush =
+      static_cast<HBRUSH>(::SelectObject(dc, ::GetStockObject(NULL_BRUSH)));
 
-  dc.Rectangle(&button_rect);
+  ::Rectangle(dc, button_rect.left, button_rect.top, button_rect.right,
+              button_rect.bottom);
 
-  dc.SelectBrush(old_brush);
-  dc.SelectPen(old_pen);
+  ::SelectObject(dc, old_brush);
+  ::SelectObject(dc, old_pen);
 }
 
 COLORREF CaptionButton::bk_color() const {
@@ -197,18 +265,17 @@ void CaptionButton::set_bk_color(COLORREF bk_color) {
   bk_color_ = bk_color;
 }
 
-CString CaptionButton::tool_tip_text() const {
+const std::wstring& CaptionButton::tool_tip_text() const {
   return tool_tip_text_;
 }
 
-void CaptionButton::set_tool_tip_text(const CString& tool_tip_text) {
+void CaptionButton::set_tool_tip_text(const std::wstring& tool_tip_text) {
   tool_tip_text_ = tool_tip_text;
 }
 
 CloseButton::CloseButton() {
   set_tool_tip_text(GetLocalizedString(IDS_CLOSE_BUTTON_BASE,
-                                       base::UTF8ToWide(GetTagLanguage()))
-                        .c_str());
+                                       base::UTF8ToWide(GetTagLanguage())));
 }
 
 HRGN CloseButton::GetButtonRgn(int rgn_width, int rgn_height) {
@@ -224,16 +291,17 @@ HRGN CloseButton::GetButtonRgn(int rgn_width, int rgn_height) {
   // (192 DPI).
   const int thickness = std::max(
       1,
-      ::MulDiv(2, /*dpi=*/::GetDpiForWindow(m_hWnd), USER_DEFAULT_SCREEN_DPI));
+      ::MulDiv(2, /*dpi=*/::GetDpiForWindow(hwnd()), USER_DEFAULT_SCREEN_DPI));
   const int center_size = thickness * 2;
 
   const int square_side = std::min(rgn_width, rgn_height) / 2 * 2;
   const int center_point = square_side / 2;
 
   // Create the single rectangular center square using the scaled size.
-  CRect center_rect(0, 0, center_size, center_size);
-  center_rect.OffsetRect(center_point - thickness, center_point - thickness);
-  WTL::CRgnHandle rgn(::CreateRectRgnIndirect(&center_rect));
+  RECT center_rect = {0, 0, center_size, center_size};
+  ::OffsetRect(&center_rect, center_point - thickness,
+               center_point - thickness);
+  HRGN rgn = ::CreateRectRgnIndirect(&center_rect);
 
   // Criss-crossing overlapping rectangles form the close button.
   const int loop_limit = square_side - thickness;
@@ -244,49 +312,46 @@ HRGN CloseButton::GetButtonRgn(int rgn_width, int rgn_height) {
 
   for (int i = 0; i <= loop_limit; ++i) {
     // Top-left to bottom-right.
-    WTL::CRgn rgn_nw_to_se(::CreateRectRgn(i, i, i + thickness, i + thickness));
-    rgn.CombineRgn(rgn_nw_to_se, RGN_OR);
+    base::win::ScopedGDIObject<HRGN> rgn_nw_to_se(
+        ::CreateRectRgn(i, i, i + thickness, i + thickness));
+    ::CombineRgn(rgn, rgn, rgn_nw_to_se.get(), RGN_OR);
 
     // Bottom-left to top-right.
-    WTL::CRgn rgn_sw_to_ne(::CreateRectRgn(i, square_side - i - thickness,
-                                           i + thickness, square_side - i));
-    rgn.CombineRgn(rgn_sw_to_ne, RGN_OR);
+    base::win::ScopedGDIObject<HRGN> rgn_sw_to_ne(::CreateRectRgn(
+        i, square_side - i - thickness, i + thickness, square_side - i));
+    ::CombineRgn(rgn, rgn, rgn_sw_to_ne.get(), RGN_OR);
   }
 
-  rgn.OffsetRgn((rgn_width - square_side) / 2, (rgn_height - square_side) / 2);
+  ::OffsetRgn(rgn, (rgn_width - square_side) / 2,
+              (rgn_height - square_side) / 2);
   return rgn;
 }
 
 MinimizeButton::MinimizeButton() {
   set_tool_tip_text(GetLocalizedString(IDS_MINIMIZE_BUTTON_BASE,
-                                       base::UTF8ToWide(GetTagLanguage()))
-                        .c_str());
+                                       base::UTF8ToWide(GetTagLanguage())));
 }
 
 HRGN MinimizeButton::GetButtonRgn(int rgn_width, int rgn_height) {
-  // Ensure we have a valid, drawable area. `std::numeric_limits<short>::max()`
-  // is a safe UI upper bound.
   if (rgn_width <= 0 || rgn_height <= 0 ||
       rgn_width > std::numeric_limits<short>::max() ||
       rgn_height > std::numeric_limits<short>::max()) {
     return nullptr;
   }
 
-  // Scale the bar thickness. 2px at 100% becomes 4px at 200%.
   const int thickness = std::max(
       1,
-      ::MulDiv(2, /*dpi=*/::GetDpiForWindow(m_hWnd), USER_DEFAULT_SCREEN_DPI));
+      ::MulDiv(2, /*dpi=*/::GetDpiForWindow(hwnd()), USER_DEFAULT_SCREEN_DPI));
 
-  // Prevent thickness from exceeding total height. If the bar is thicker than
-  // the area, we cap it to the area height.
+  // Prevent thickness from exceeding total height.
   const int safe_thickness = std::min(thickness, rgn_height);
 
   // Calculate the vertical center.
   const int y_offset = (rgn_height - safe_thickness) / 2;
 
   // The Minimize button is a single rectangle. Center it vertically.
-  CRect minimize_button_rect(0, 0, rgn_width, safe_thickness);
-  minimize_button_rect.OffsetRect(0, y_offset);
+  RECT minimize_button_rect = {0, 0, rgn_width, safe_thickness};
+  ::OffsetRect(&minimize_button_rect, 0, y_offset);
 
   return ::CreateRectRgnIndirect(&minimize_button_rect);
 }
@@ -297,164 +362,158 @@ MaximizeButton::MaximizeButton() {
 }
 
 HRGN MaximizeButton::GetButtonRgn(int rgn_width, int rgn_height) {
-  // Overlapping outer and inner rectangles form the maximize button.
   const RECT maximize_button_rects[] = {{0, 0, rgn_width, rgn_height},
                                         {1, 2, rgn_width - 1, rgn_height - 1}};
 
-  WTL::CRgnHandle rgn(::CreateRectRgnIndirect(&maximize_button_rects[0]));
-  WTL::CRgn rgn_temp(::CreateRectRgnIndirect(&maximize_button_rects[1]));
-  rgn.CombineRgn(rgn_temp, RGN_DIFF);
+  HRGN rgn = ::CreateRectRgnIndirect(&maximize_button_rects[0]);
+  base::win::ScopedGDIObject<HRGN> rgn_temp(
+      ::CreateRectRgnIndirect(&maximize_button_rects[1]));
+  ::CombineRgn(rgn, rgn, rgn_temp.get(), RGN_DIFF);
   return rgn;
 }
 
-OwnerDrawTitleBarWindow::OwnerDrawTitleBarWindow() = default;
+OwnerDrawTitleBarWindow::OwnerDrawTitleBarWindow() {
+  set_window_style(WS_VISIBLE | WS_CHILD | WS_CLIPSIBLINGS | WS_CLIPCHILDREN);
+  // `WS_EX_CONTROLPARENT` lets the dialog manager descend through this
+  // intermediate child window when walking the tab order, so the caption
+  // buttons it owns become reachable via the Tab key.
+  set_window_ex_style(WS_EX_CONTROLPARENT);
+  set_initial_class_style(CS_HREDRAW | CS_VREDRAW);
+}
+
 OwnerDrawTitleBarWindow::~OwnerDrawTitleBarWindow() = default;
 
-LRESULT OwnerDrawTitleBarWindow::OnCreate(UINT, WPARAM, LPARAM, BOOL& handled) {
-  handled = false;
+HWND OwnerDrawTitleBarWindow::Create(HWND parent, const RECT& bounds) {
+  Init(parent, RectToGfx(bounds));
+  return hwnd();
+}
 
+LRESULT OwnerDrawTitleBarWindow::OnCreate(UINT, WPARAM, LPARAM) {
   CreateCaptionButtons();
+  SetMsgHandled(FALSE);
   return 0;
 }
 
-LRESULT OwnerDrawTitleBarWindow::OnDestroy(UINT,
-                                           WPARAM,
-                                           LPARAM,
-                                           BOOL& handled) {
-  handled = false;
-
+LRESULT OwnerDrawTitleBarWindow::OnDestroy(UINT, WPARAM, LPARAM) {
   if (close_button_.IsWindow()) {
-    close_button_.DestroyWindow();
+    ::DestroyWindow(close_button_.hwnd());
   }
 
   if (minimize_button_.IsWindow()) {
-    minimize_button_.DestroyWindow();
+    ::DestroyWindow(minimize_button_.hwnd());
   }
 
+  SetMsgHandled(FALSE);
   return 0;
 }
 
-LRESULT OwnerDrawTitleBarWindow::OnMouseMove(UINT,
-                                             WPARAM wparam,
-                                             LPARAM,
-                                             BOOL& handled) {
-  handled = false;
+LRESULT OwnerDrawTitleBarWindow::OnMouseMove(UINT, WPARAM wparam, LPARAM) {
+  SetMsgHandled(FALSE);
   if (current_drag_position_.x == -1 || wparam != MK_LBUTTON) {
     return 0;
   }
 
-  CPoint pt;
+  POINT pt = {};
   ::GetCursorPos(&pt);
   int dx = pt.x - current_drag_position_.x;
   int dy = pt.y - current_drag_position_.y;
   current_drag_position_ = pt;
 
-  MoveWindowToDragPosition(GetParent(), dx, dy);
+  MoveWindowToDragPosition(::GetParent(hwnd()), dx, dy);
 
   return 0;
 }
 
-LRESULT OwnerDrawTitleBarWindow::OnLButtonDown(UINT,
-                                               WPARAM,
-                                               LPARAM,
-                                               BOOL& handled) {
-  handled = false;
+LRESULT OwnerDrawTitleBarWindow::OnLButtonDown(UINT, WPARAM, LPARAM) {
   ::GetCursorPos(&current_drag_position_);
-  SetCapture();
+  ::SetCapture(hwnd());
+  SetMsgHandled(FALSE);
   return 0;
 }
 
-LRESULT OwnerDrawTitleBarWindow::OnLButtonUp(UINT,
-                                             WPARAM,
-                                             LPARAM,
-                                             BOOL& handled) {
-  handled = false;
-
+LRESULT OwnerDrawTitleBarWindow::OnLButtonUp(UINT, WPARAM, LPARAM) {
   current_drag_position_.x = -1;
   current_drag_position_.y = -1;
-  ReleaseCapture();
+  ::ReleaseCapture();
 
   // Reset the parent to be the active window.
-  ::SetActiveWindow(GetParent());
+  ::SetActiveWindow(::GetParent(hwnd()));
+  SetMsgHandled(FALSE);
   return 0;
 }
 
-LRESULT OwnerDrawTitleBarWindow::OnEraseBkgnd(UINT,
-                                              WPARAM wparam,
-                                              LPARAM,
-                                              BOOL& handled) {
-  handled = true;
-
-  CRect rect;
-  GetClientRect(&rect);
+LRESULT OwnerDrawTitleBarWindow::OnEraseBkgnd(UINT, WPARAM wparam, LPARAM) {
+  RECT rect = {};
+  ::GetClientRect(hwnd(), &rect);
 
   // Draw the parent's gradient background.
-  DrawParentBackground(m_hWnd, reinterpret_cast<HDC>(wparam), rect);
+  DrawParentBackground(hwnd(), reinterpret_cast<HDC>(wparam), rect);
   return 1;
 }
 
-LRESULT OwnerDrawTitleBarWindow::OnSize(UINT, WPARAM, LPARAM, BOOL& handled) {
+LRESULT OwnerDrawTitleBarWindow::OnSize(UINT, WPARAM, LPARAM) {
   // Recalculate button positions based on new height/width.
   RecalcLayout();
 
   // Force a redraw to clear artifacts.
-  Invalidate();
+  ::InvalidateRect(hwnd(), nullptr, TRUE);
 
-  handled = false;
+  SetMsgHandled(FALSE);
   return 0;
 }
 
-LRESULT OwnerDrawTitleBarWindow::OnClose(WORD, WORD, HWND, BOOL& handled) {
-  handled = false;
-
-  ::PostMessage(GetParent(), WM_SYSCOMMAND, MAKEWPARAM(SC_CLOSE, 0), 0);
+LRESULT OwnerDrawTitleBarWindow::OnDrawItem(UINT, WPARAM, LPARAM lparam) {
+  LPDRAWITEMSTRUCT dis = reinterpret_cast<LPDRAWITEMSTRUCT>(lparam);
+  if (!dis) {
+    SetMsgHandled(FALSE);
+    return 0;
+  }
+  if (dis->hwndItem == close_button_.hwnd() && close_button_.IsWindow()) {
+    close_button_.DrawItem(dis);
+    return TRUE;
+  }
+  if (dis->hwndItem == minimize_button_.hwnd() && minimize_button_.IsWindow()) {
+    minimize_button_.DrawItem(dis);
+    return TRUE;
+  }
+  SetMsgHandled(FALSE);
   return 0;
 }
 
-LRESULT OwnerDrawTitleBarWindow::OnMaximize(WORD, WORD, HWND, BOOL& handled) {
-  handled = false;
-
-  ::PostMessage(GetParent(), WM_SYSCOMMAND, MAKEWPARAM(SC_CLOSE, 0), 0);
-  return 0;
+void OwnerDrawTitleBarWindow::OnClose(UINT, int, HWND) {
+  ::PostMessage(::GetParent(hwnd()), WM_SYSCOMMAND, MAKEWPARAM(SC_CLOSE, 0), 0);
 }
 
-LRESULT OwnerDrawTitleBarWindow::OnMinimize(WORD, WORD, HWND, BOOL& handled) {
-  handled = false;
+void OwnerDrawTitleBarWindow::OnMaximize(UINT, int, HWND) {
+  ::PostMessage(::GetParent(hwnd()), WM_SYSCOMMAND, MAKEWPARAM(SC_CLOSE, 0), 0);
+}
 
-  ::PostMessage(GetParent(), WM_SYSCOMMAND, MAKEWPARAM(SC_MINIMIZE, 0), 0);
-  return 0;
+void OwnerDrawTitleBarWindow::OnMinimize(UINT, int, HWND) {
+  ::PostMessage(::GetParent(hwnd()), WM_SYSCOMMAND, MAKEWPARAM(SC_MINIMIZE, 0),
+                0);
 }
 
 void OwnerDrawTitleBarWindow::CreateCaptionButtons() {
   close_button_.set_bk_color(bk_color_);
   minimize_button_.set_bk_color(bk_color_);
 
-  // Get the DPI for this specific window
-  const int dpi = ::GetDpiForWindow(m_hWnd);
+  // Get the DPI for this specific window.
+  const int dpi = ::GetDpiForWindow(hwnd());
 
   // Use the DPI-aware version of system metrics.
-  CRect button_rect(0, 0, ::GetSystemMetricsForDpi(SM_CXSIZE, dpi),
-                    ::GetSystemMetricsForDpi(SM_CYSIZE, dpi));
+  RECT button_rect = {0, 0, ::GetSystemMetricsForDpi(SM_CXSIZE, dpi),
+                      ::GetSystemMetricsForDpi(SM_CYSIZE, dpi)};
 
-  minimize_button_.Create(m_hWnd, button_rect, nullptr,
-                          WS_CHILD | WS_VISIBLE | BS_OWNERDRAW, 0,
-                          kButtonMinimize);
-
-  close_button_.Create(m_hWnd, button_rect, nullptr,
-                       WS_CHILD | WS_VISIBLE | BS_OWNERDRAW, 0, kButtonClose);
+  minimize_button_.Create(hwnd(), button_rect, kButtonMinimize);
+  close_button_.Create(hwnd(), button_rect, kButtonClose);
   RecalcLayout();
 }
 
-// This function handles four button states:
-// - Button window does not exist. Nothing to do in this case.
-// - Corresponding menu item)does not exist. Hide button.
-// - Corresponding menu item disabled. Disable and Show button.
-// - Corresponding menu item enabled. Enable and Show button.
-void OwnerDrawTitleBarWindow::UpdateButtonState(const WTL::CMenuHandle& menu,
+void OwnerDrawTitleBarWindow::UpdateButtonState(HMENU menu,
                                                 UINT button_sc_id,
                                                 const int button_margin,
                                                 CaptionButton* button,
-                                                CRect* button_rect) {
+                                                RECT* button_rect) {
   CHECK(button);
   CHECK(button_rect);
 
@@ -463,35 +522,37 @@ void OwnerDrawTitleBarWindow::UpdateButtonState(const WTL::CMenuHandle& menu,
   }
 
   int state = -1;
-  if (!menu.IsNull() && menu.IsMenu()) {
-    state = menu.GetMenuState(button_sc_id, MF_BYCOMMAND);
+  if (menu != nullptr && ::IsMenu(menu)) {
+    state = static_cast<int>(::GetMenuState(menu, button_sc_id, MF_BYCOMMAND));
   }
 
   if (state == -1) {
-    button->ShowWindow(SW_HIDE);
+    ::ShowWindow(button->hwnd(), SW_HIDE);
     return;
   }
 
-  button->EnableWindow(!(state & (MF_GRAYED | MF_DISABLED)));
-  button->SetWindowPos(nullptr, button_rect, SWP_NOZORDER | SWP_SHOWWINDOW);
-  button_rect->OffsetRect(-button_rect->Width() - button_margin, 0);
+  ::EnableWindow(button->hwnd(), !(state & (MF_GRAYED | MF_DISABLED)));
+  ::SetWindowPos(button->hwnd(), nullptr, button_rect->left, button_rect->top,
+                 Width(*button_rect), Height(*button_rect),
+                 SWP_NOZORDER | SWP_SHOWWINDOW);
+  ::OffsetRect(button_rect, -Width(*button_rect) - button_margin, 0);
 }
 
 void OwnerDrawTitleBarWindow::RecalcLayout() {
-  CRect title_bar_rect;
-  GetClientRect(&title_bar_rect);
+  RECT title_bar_rect = {};
+  ::GetClientRect(hwnd(), &title_bar_rect);
 
-  const int button_margin = title_bar_rect.Height() / 5;
-  title_bar_rect.DeflateRect(button_margin, button_margin);
+  const int button_margin = Height(title_bar_rect) / 5;
+  DeflateRect(&title_bar_rect, button_margin, button_margin);
 
-  const int button_height = title_bar_rect.Height();
+  const int button_height = Height(title_bar_rect);
   const int button_width = button_height;
 
   // Position controls from the Close button to the Minimize button.
-  CRect button_rect(title_bar_rect.right - button_width, title_bar_rect.top,
-                    title_bar_rect.right, title_bar_rect.bottom);
+  RECT button_rect = {title_bar_rect.right - button_width, title_bar_rect.top,
+                      title_bar_rect.right, title_bar_rect.bottom};
 
-  WTL::CMenuHandle menu(::GetSystemMenu(GetParent(), false));
+  HMENU menu = ::GetSystemMenu(::GetParent(hwnd()), FALSE);
   UpdateButtonState(menu, SC_CLOSE, button_margin, &close_button_,
                     &button_rect);
   UpdateButtonState(menu, SC_MINIMIZE, button_margin, &minimize_button_,
@@ -501,10 +562,10 @@ void OwnerDrawTitleBarWindow::RecalcLayout() {
 void OwnerDrawTitleBarWindow::MoveWindowToDragPosition(HWND hwnd,
                                                        int dx,
                                                        int dy) {
-  CRect rect;
+  RECT rect = {};
   ::GetWindowRect(hwnd, &rect);
 
-  rect.OffsetRect(dx, dy);
+  ::OffsetRect(&rect, dx, dy);
   ::SetWindowPos(hwnd, nullptr, rect.left, rect.top, 0, 0,
                  SWP_NOZORDER | SWP_NOSIZE | SWP_NOACTIVATE);
 }
@@ -526,7 +587,7 @@ void OwnerDrawTitleBar::CreateOwnerDrawTitleBar(HWND parent_hwnd,
                                                 COLORREF bk_color) {
   CHECK(parent_hwnd);
 
-  CRect title_bar_client_rect =
+  RECT title_bar_client_rect =
       ComputeTitleBarClientRect(parent_hwnd, title_bar_spacer_hwnd);
 
   // This title bar is a child window and occupies the top portion of the parent
@@ -538,9 +599,7 @@ void OwnerDrawTitleBar::CreateOwnerDrawTitleBar(HWND parent_hwnd,
   CHECK(parent_style & WS_DLGFRAME);
 
   title_bar_window_.set_bk_color(bk_color);
-  title_bar_window_.Create(
-      parent_hwnd, title_bar_client_rect, nullptr,
-      WS_VISIBLE | WS_CHILD | WS_CLIPSIBLINGS | WS_CLIPCHILDREN);
+  title_bar_window_.Create(parent_hwnd, title_bar_client_rect);
 }
 
 void OwnerDrawTitleBar::RecalcLayout(HWND parent_hwnd,
@@ -549,30 +608,29 @@ void OwnerDrawTitleBar::RecalcLayout(HWND parent_hwnd,
     return;
   }
 
-  // Re-compute where the title bar window should be based on the spacer. The
-  // spacer was already resized by the OS Dialog Manager.
-  CRect new_rect =
-      ComputeTitleBarClientRect(parent_hwnd, title_bar_spacer_hwnd);
+  // Re-compute where the title bar window should be based on the spacer.
+  RECT new_rect = ComputeTitleBarClientRect(parent_hwnd, title_bar_spacer_hwnd);
 
   // Resize the title bar window itself.
-  title_bar_window_.SetWindowPos(nullptr, &new_rect,
-                                 SWP_NOZORDER | SWP_NOACTIVATE);
+  ::SetWindowPos(title_bar_window_.hwnd(), nullptr, new_rect.left, new_rect.top,
+                 new_rect.right - new_rect.left, new_rect.bottom - new_rect.top,
+                 SWP_NOZORDER | SWP_NOACTIVATE);
 
   // Now tell the window to reposition its internal buttons.
   title_bar_window_.RecalcLayout();
 }
 
-CRect OwnerDrawTitleBar::ComputeTitleBarClientRect(HWND parent_hwnd,
-                                                   HWND title_bar_spacer_hwnd) {
+RECT OwnerDrawTitleBar::ComputeTitleBarClientRect(HWND parent_hwnd,
+                                                  HWND title_bar_spacer_hwnd) {
   CHECK(parent_hwnd);
 
-  CRect parent_client_rect;
+  RECT parent_client_rect = {};
   ::GetClientRect(parent_hwnd, &parent_client_rect);
-  CRect title_bar_client_rect(parent_client_rect);
+  RECT title_bar_client_rect = parent_client_rect;
 
-  CRect title_bar_spacer_client_rect;
+  RECT title_bar_spacer_client_rect = {};
   ::GetClientRect(title_bar_spacer_hwnd, &title_bar_spacer_client_rect);
-  const int title_bar_height(title_bar_spacer_client_rect.Height());
+  const int title_bar_height = Height(title_bar_spacer_client_rect);
 
   title_bar_client_rect.bottom = title_bar_client_rect.top + title_bar_height;
 
@@ -586,34 +644,32 @@ void CustomDlgColors::SetCustomDlgColors(COLORREF text_color,
                                          COLORREF bk_color) {
   text_color_ = text_color;
   bk_color_ = bk_color;
-
-  CHECK(bk_brush_.IsNull());
-  bk_brush_.CreateSolidBrush(bk_color_);
+  bk_brush_.reset(::CreateSolidBrush(bk_color_));
 }
 
-LRESULT CustomDlgColors::OnCtrlColor(UINT,
-                                     WPARAM wparam,
-                                     LPARAM,
-                                     BOOL& handled) {
-  handled = true;
-
-  WTL::CDCHandle dc(reinterpret_cast<HDC>(wparam));
-  SetBkColor(dc, GetColor(bk_color_, COLOR_WINDOW));
-  SetTextColor(dc, GetColor(text_color_, COLOR_WINDOWTEXT));
-
-  return reinterpret_cast<LRESULT>(GetColorBrush(bk_brush_, COLOR_WINDOW));
+BOOL CustomDlgColors::ProcessWindowMessage(HWND,
+                                           UINT msg,
+                                           WPARAM wparam,
+                                           LPARAM,
+                                           LRESULT& result,
+                                           DWORD) {
+  if (msg != WM_CTLCOLORDLG && msg != WM_CTLCOLORSTATIC) {
+    return FALSE;
+  }
+  HDC dc = reinterpret_cast<HDC>(wparam);
+  ::SetBkColor(dc, GetColor(bk_color_, COLOR_WINDOW));
+  ::SetTextColor(dc, GetColor(text_color_, COLOR_WINDOWTEXT));
+  result =
+      reinterpret_cast<LRESULT>(GetColorBrush(bk_brush_.get(), COLOR_WINDOW));
+  return TRUE;
 }
 
 CustomProgressBarCtrl::CustomProgressBarCtrl() = default;
 
 CustomProgressBarCtrl::~CustomProgressBarCtrl() = default;
 
-LRESULT CustomProgressBarCtrl::OnEraseBkgnd(UINT,
-                                            WPARAM,
-                                            LPARAM,
-                                            BOOL& handled) {
+LRESULT CustomProgressBarCtrl::OnEraseBkgnd(UINT, WPARAM, LPARAM) {
   // The background and foreground are both rendered in OnPaint().
-  handled = true;
   return 1;
 }
 
@@ -636,16 +692,15 @@ void CustomProgressBarCtrl::GradientFill(HDC dc,
   ::GradientFill(dc, tri_vertex, 2, &gradient_rect, 1, GRADIENT_FILL_RECT_V);
 }
 
-LRESULT CustomProgressBarCtrl::OnPaint(UINT, WPARAM, LPARAM, BOOL& handled) {
-  handled = true;
-
-  WTL::CPaintDC dc_paint(m_hWnd);
-  CRect window_rect;
-  GetClientRect(&window_rect);
+LRESULT CustomProgressBarCtrl::OnPaint(UINT, WPARAM, LPARAM) {
+  PAINTSTRUCT ps = {};
+  HDC dc_paint = ::BeginPaint(hwnd(), &ps);
+  RECT window_rect = {};
+  ::GetClientRect(hwnd(), &window_rect);
 
   // Calculate a half-width rectangle.
-  CRect client_rect = window_rect;
-  const int original_height = window_rect.Height();
+  RECT client_rect = window_rect;
+  const int original_height = Height(window_rect);
   const int slim_height = original_height / 2;
   const int vertical_padding = (original_height - slim_height) / 2;
 
@@ -653,127 +708,169 @@ LRESULT CustomProgressBarCtrl::OnPaint(UINT, WPARAM, LPARAM, BOOL& handled) {
   client_rect.top += vertical_padding;
   client_rect.bottom -= vertical_padding;
 
-  // Using a memory device context eliminates flicker.
-  WTL::CMemoryDC dc(dc_paint, window_rect);
+  // Using an offscreen memory DC eliminates flicker.
+  HDC dc_mem = ::CreateCompatibleDC(dc_paint);
+  base::win::ScopedGDIObject<HBITMAP> bmp_mem(::CreateCompatibleBitmap(
+      dc_paint, Width(window_rect), Height(window_rect)));
+  HGDIOBJ old_mem_bmp = ::SelectObject(dc_mem, bmp_mem.get());
 
-  // Draw the parent's gradient background into the memory DC first. This
-  // ensures the empty areas of the progress bar show the gradient.
-  DrawParentBackground(m_hWnd, dc.m_hDC, window_rect);
+  // Draw the parent's gradient background into the memory DC first.
+  DrawParentBackground(hwnd(), dc_mem, window_rect);
 
   // Draw at 4x scale to get smooth edges when scaling back down.
   constexpr int kScale = 4;
-  CRect high_res_rect(0, 0, client_rect.Width() * kScale,
-                      client_rect.Height() * kScale);
+  RECT high_res_rect = {0, 0, Width(client_rect) * kScale,
+                        Height(client_rect) * kScale};
 
-  WTL::CDC dc_hi_res;
-  dc_hi_res.CreateCompatibleDC(dc.m_hDC);
+  HDC dc_hi_res = ::CreateCompatibleDC(dc_mem);
 
-  WTL::CBitmap bmp_hi_res;
-  bmp_hi_res.CreateCompatibleBitmap(dc.m_hDC, high_res_rect.Width(),
-                                    high_res_rect.Height());
-  const HBITMAP old_bmp = dc_hi_res.SelectBitmap(bmp_hi_res);
+  base::win::ScopedGDIObject<HBITMAP> bmp_hi_res(::CreateCompatibleBitmap(
+      dc_mem, Width(high_res_rect), Height(high_res_rect)));
+  HGDIOBJ old_bmp = ::SelectObject(dc_hi_res, bmp_hi_res.get());
 
-  // Fill the high-res background with the fill color to avoid bleeding at the
-  // edges.
+  // The track is the rounded "pill" that holds the progress fill. In light
+  // mode it is `empty_fill_color_` (defaulting to `kProgressEmptyFillColor`,
+  // i.e. white) so the pill stands out as a slightly brighter shape over the
+  // off-white frame drawn at the corners. In high-contrast mode it tracks
+  // `COLOR_WINDOW`. In dark mode it is a darker gray that matches the intent
+  // of the dark-mode commit `514423a7eb35a` while remaining distinct from the
+  // even darker dialog background. (The original dark-mode override never
+  // took visual effect in the legacy WTL build because the brush was
+  // selected into the wrong DC; now that the selection is correct, the
+  // intended dark track color renders.)
   COLORREF track_color = GetColor(empty_fill_color_, COLOR_WINDOW);
   if (!IsHighContrastOn() && IsDarkModeOn()) {
     track_color = RGB(0x3F, 0x3F, 0x3F);
   }
 
-  dc_hi_res.FillSolidRect(&high_res_rect, track_color);
+  // `outside_pill_color` fills the area of the high-res bitmap that falls
+  // outside the rounded pill. Because the pill is rounded, only the four
+  // corners expose this color, and it becomes the pill's visible frame
+  // against the dialog background.
+  COLORREF outside_pill_color = kProgressEmptyFrameColor;
+  if (IsHighContrastOn()) {
+    outside_pill_color = ::GetSysColor(COLOR_WINDOW);
+  } else if (IsDarkModeOn()) {
+    outside_pill_color = RGB(0x20, 0x20, 0x20);
+  }
 
-  // Setup GDI objects for rounded drawing. `NULL_PEN` prevents the thin black
-  // border around the shapes.
-  const HPEN old_pen =
-      dc.SelectPen(static_cast<HPEN>(::GetStockObject(NULL_PEN)));
-  const int corner_size = high_res_rect.Height();
+  FillSolidRect(dc_hi_res, high_res_rect, outside_pill_color);
+
+  // Setup GDI objects for rounded drawing. In dark mode, suppress the pen
+  // entirely (`NULL_PEN`) so the pill is purely a colored fill against the
+  // dark background. In high-contrast mode, stroke the perimeter with
+  // `COLOR_WINDOWTEXT` (the always-opposite-of-`COLOR_WINDOW` system color)
+  // so the pill outline is visible regardless of which HC theme is active,
+  // including themes where `COLOR_WINDOW` resolves to the same color as the
+  // dialog background. In light mode, leave `dc_hi_res`'s default
+  // `BLACK_PEN` selected: it strokes a 1-unit-wide line on the 4x
+  // high-resolution bitmap which, after the `HALFTONE` downscale, becomes
+  // an anti-aliased soft gray edge along the pill perimeter. This matches
+  // the look the WTL build shipped (the legacy code only selected
+  // `NULL_PEN` into the offscreen compositing DC, so the high-res
+  // `RoundRect` ran with `dc_hi_res`'s default `BLACK_PEN`).
+  base::win::ScopedGDIObject<HPEN> hc_pen;
+  HGDIOBJ old_pen = nullptr;
+  if (IsHighContrastOn()) {
+    hc_pen.reset(
+        ::CreatePen(PS_SOLID, kScale, ::GetSysColor(COLOR_WINDOWTEXT)));
+    old_pen = ::SelectObject(dc_hi_res, hc_pen.get());
+  } else if (IsDarkModeOn()) {
+    old_pen = ::SelectObject(dc_hi_res, ::GetStockObject(NULL_PEN));
+  }
+  const int corner_size = Height(high_res_rect);
 
   // Draw the Background Track.
-  WTL::CBrush bg_brush = ::CreateSolidBrush(track_color);
-  const HBRUSH old_brush = dc.SelectBrush(bg_brush);
-  dc_hi_res.RoundRect(&high_res_rect, {corner_size, corner_size});
+  base::win::ScopedGDIObject<HBRUSH> bg_brush(::CreateSolidBrush(track_color));
+  HGDIOBJ old_brush = ::SelectObject(dc_hi_res, bg_brush.get());
+  ::RoundRect(dc_hi_res, high_res_rect.left, high_res_rect.top,
+              high_res_rect.right, high_res_rect.bottom, corner_size,
+              corner_size);
 
   // Calculate Progress Width.
   const int kBarWidth = kMaxPosition - kMinPosition;
   if (kBarWidth > 0) {
     const LONG bar_rect_right =
         high_res_rect.left +
-        high_res_rect.Width() * (current_position_ - kMinPosition) / kBarWidth;
+        Width(high_res_rect) * (current_position_ - kMinPosition) / kBarWidth;
 
-    CRect progress_rect = high_res_rect;
+    RECT progress_rect = high_res_rect;
     progress_rect.right = std::min(bar_rect_right, high_res_rect.right);
 
     // Handle Marquee Style animation.
-    if (GetStyle() & PBS_MARQUEE) {
+    if (::GetWindowLong(hwnd(), GWL_STYLE) & PBS_MARQUEE) {
       const LONG bar_rect_left =
-          bar_rect_right - (high_res_rect.Width() * kMarqueeWidth / kBarWidth);
+          bar_rect_right - (Width(high_res_rect) * kMarqueeWidth / kBarWidth);
       progress_rect.left = std::max(bar_rect_left, high_res_rect.left);
     }
 
     // Draw the fill.
-    if (!progress_rect.IsRectEmpty() &&
-        progress_rect.Width() > (corner_size / 2)) {
-      WTL::CBrush fill_brush =
-          ::CreateSolidBrush(GetColor(bar_color_, COLOR_HIGHLIGHT));
-      dc_hi_res.SelectBrush(fill_brush);
-      dc_hi_res.RoundRect(&progress_rect, {corner_size, corner_size});
+    if (!IsRectEmpty(progress_rect) &&
+        Width(progress_rect) > (corner_size / 2)) {
+      base::win::ScopedGDIObject<HBRUSH> fill_brush(
+          ::CreateSolidBrush(GetColor(bar_color_, COLOR_HIGHLIGHT)));
+      ::SelectObject(dc_hi_res, fill_brush.get());
+      ::RoundRect(dc_hi_res, progress_rect.left, progress_rect.top,
+                  progress_rect.right, progress_rect.bottom, corner_size,
+                  corner_size);
+      ::SelectObject(dc_hi_res, bg_brush.get());
     }
   }
 
   // `HALFTONE` creates a smooth anti-aliased look.
-  ::SetStretchBltMode(dc.m_hDC, HALFTONE);
+  ::SetStretchBltMode(dc_mem, HALFTONE);
 
   // Required for HALFTONE to work correctly.
-  ::SetBrushOrgEx(dc.m_hDC, 0, 0, NULL);
+  ::SetBrushOrgEx(dc_mem, 0, 0, nullptr);
 
   // Scale the high-res bar back down to the screen.
-  dc.StretchBlt(client_rect.left, client_rect.top, client_rect.Width(),
-                client_rect.Height(), dc_hi_res.m_hDC, 0, 0,
-                high_res_rect.Width(), high_res_rect.Height(), SRCCOPY);
+  ::StretchBlt(dc_mem, client_rect.left, client_rect.top, Width(client_rect),
+               Height(client_rect), dc_hi_res, 0, 0, Width(high_res_rect),
+               Height(high_res_rect), SRCCOPY);
+
+  // Blit the offscreen DC to the paint DC.
+  ::BitBlt(dc_paint, window_rect.left, window_rect.top, Width(window_rect),
+           Height(window_rect), dc_mem, 0, 0, SRCCOPY);
 
   // Cleanup.
-  dc_hi_res.SelectBrush(old_brush);
-  dc_hi_res.SelectPen(old_pen);
-  dc_hi_res.SelectBitmap(old_bmp);
+  ::SelectObject(dc_hi_res, old_brush);
+  if (old_pen) {
+    ::SelectObject(dc_hi_res, old_pen);
+  }
+  ::SelectObject(dc_hi_res, old_bmp);
+  ::DeleteDC(dc_hi_res);
 
+  ::SelectObject(dc_mem, old_mem_bmp);
+  ::DeleteDC(dc_mem);
+
+  ::EndPaint(hwnd(), &ps);
   return 0;
 }
 
-LRESULT CustomProgressBarCtrl::OnTimer(UINT,
-                                       WPARAM event_id,
-                                       LPARAM,
-                                       BOOL& handled) {
-  handled = true;
-
+LRESULT CustomProgressBarCtrl::OnTimer(UINT, WPARAM event_id, LPARAM) {
   if (event_id != kMarqueeTimerId) {
-    handled = false;
+    SetMsgHandled(FALSE);
     return 0;
   }
-
-  ::SendMessage(m_hWnd, PBM_SETPOS, 0, 0L);
+  ::SendMessage(hwnd(), PBM_SETPOS, 0, 0L);
   return 0;
 }
 
-LRESULT CustomProgressBarCtrl::OnSysColorChange(UINT msg,
-                                                WPARAM wparam,
-                                                LPARAM lparam,
-                                                BOOL& handled) {
-  handled = FALSE;
-  RedrawWindow();
+LRESULT CustomProgressBarCtrl::OnSysColorChange(UINT, WPARAM, LPARAM) {
+  ::RedrawWindow(hwnd(), nullptr, nullptr,
+                 RDW_INVALIDATE | RDW_UPDATENOW | RDW_ERASE);
+  SetMsgHandled(FALSE);
   return 0;
 }
 
-LRESULT CustomProgressBarCtrl::OnSetPos(UINT,
-                                        WPARAM new_position,
-                                        LPARAM,
-                                        BOOL& handled) {
-  // To allow accessibility to show the correct progress values, we pass
-  // PBM_SETPOS to the underlying Win32 control.
-  handled = false;
+LRESULT CustomProgressBarCtrl::OnSetPos(UINT, WPARAM new_position, LPARAM) {
+  // To allow accessibility to show the correct progress values, pass
+  // `PBM_SETPOS` through to the underlying Win32 progress bar.
+  SetMsgHandled(FALSE);
 
   int old_position = current_position_;
 
-  if (GetStyle() & PBS_MARQUEE) {
+  if (::GetWindowLong(hwnd(), GWL_STYLE) & PBS_MARQUEE) {
     current_position_++;
     if (current_position_ >= (kMaxPosition + kMarqueeWidth)) {
       current_position_ = kMinPosition;
@@ -786,61 +883,57 @@ LRESULT CustomProgressBarCtrl::OnSetPos(UINT,
     current_position_ = kMinPosition;
   }
 
-  RedrawWindow();
+  ::RedrawWindow(hwnd(), nullptr, nullptr,
+                 RDW_INVALIDATE | RDW_UPDATENOW | RDW_ERASE);
 
   return old_position;
 }
 
-// Calling WM_SETBARCOLOR will convert the progress bar into a solid colored
-// bar. i.e., no gradient.
-LRESULT CustomProgressBarCtrl::OnSetBarColor(UINT,
-                                             WPARAM,
-                                             LPARAM bar_color,
-                                             BOOL& handled) {
-  handled = true;
+LRESULT CustomProgressBarCtrl::OnSetMarquee(UINT,
+                                            WPARAM is_set_marquee,
+                                            LPARAM update_msec) {
+  // To allow accessibility to show the correct progress values, pass
+  // `PBM_SETMARQUEE` through to the underlying Win32 progress bar.
+  SetMsgHandled(FALSE);
 
+  if (is_set_marquee && !is_marquee_mode_) {
+    current_position_ = kMinPosition;
+    ::SetTimer(hwnd(), kMarqueeTimerId, static_cast<UINT>(update_msec),
+               nullptr);
+    is_marquee_mode_ = true;
+  } else if (!is_set_marquee && is_marquee_mode_) {
+    ::KillTimer(hwnd(), kMarqueeTimerId);
+    is_marquee_mode_ = false;
+  }
+
+  ::RedrawWindow(hwnd(), nullptr, nullptr,
+                 RDW_INVALIDATE | RDW_UPDATENOW | RDW_ERASE);
+
+  return is_set_marquee;
+}
+
+// Calling `PBM_SETBARCOLOR` converts the progress bar into a solid colored bar
+// (no gradient).
+LRESULT CustomProgressBarCtrl::OnSetBarColor(UINT, WPARAM, LPARAM bar_color) {
   COLORREF old_bar_color = bar_color_;
   bar_color_ = static_cast<COLORREF>(bar_color);
 
-  RedrawWindow();
+  ::RedrawWindow(hwnd(), nullptr, nullptr,
+                 RDW_INVALIDATE | RDW_UPDATENOW | RDW_ERASE);
 
   return old_bar_color;
 }
 
 LRESULT CustomProgressBarCtrl::OnSetBkColor(UINT,
                                             WPARAM,
-                                            LPARAM empty_fill_color,
-                                            BOOL& handled) {
-  handled = true;
-
+                                            LPARAM empty_fill_color) {
   COLORREF old_empty_fill_color = empty_fill_color_;
   empty_fill_color_ = static_cast<COLORREF>(empty_fill_color);
 
-  RedrawWindow();
+  ::RedrawWindow(hwnd(), nullptr, nullptr,
+                 RDW_INVALIDATE | RDW_UPDATENOW | RDW_ERASE);
 
   return old_empty_fill_color;
-}
-
-LRESULT CustomProgressBarCtrl::OnSetMarquee(UINT,
-                                            WPARAM is_set_marquee,
-                                            LPARAM update_msec,
-                                            BOOL& handled) {
-  // To allow accessibility to show the correct progress values, we pass
-  // PBM_SETMARQUEE to the underlying Win32 control.
-  handled = false;
-
-  if (is_set_marquee && !is_marquee_mode_) {
-    current_position_ = kMinPosition;
-    SetTimer(kMarqueeTimerId, static_cast<UINT>(update_msec));
-    is_marquee_mode_ = true;
-  } else if (!is_set_marquee && is_marquee_mode_) {
-    KillTimer(kMarqueeTimerId);
-    is_marquee_mode_ = false;
-  }
-
-  RedrawWindow();
-
-  return is_set_marquee;
 }
 
 }  // namespace updater::ui

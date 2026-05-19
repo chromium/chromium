@@ -68,6 +68,7 @@
 #include "chrome/updater/win/manifest_util.h"
 #include "chrome/updater/win/protocol_parser_xml.h"
 #include "chrome/updater/win/ui/l10n_util.h"
+#include "chrome/updater/win/ui/message_loop.h"
 #include "chrome/updater/win/ui/progress_wnd.h"
 #include "chrome/updater/win/ui/resources/resources.grh"
 #include "chrome/updater/win/ui/resources/updater_installer_strings.h"
@@ -338,12 +339,11 @@ void SetUsageStats(UpdaterScope scope,
 //
 // The UI code can't run in a thread where the message loop is an instance of
 // |base::MessageLoop|. |base::MessageLoop| does not handle all the messages
-// needed by the UI, since the UI is written in terms of WTL, and it requires
-// a |WTL::MessageLoop| to work, for example, accelerators, dialog messages,
-// TAB key, etc are all handled by WTL. Therefore, the UI code runs on its own
-// thread. This thread owns all the UI objects, which must be created and
-// destroyed on this thread. The rest of the code in this class runs on
-// the updater main thread.
+// needed by the UI, since the UI uses custom |ui::MessageLoop| with filters
+// for accelerators, dialog messages, TAB key, etc. Therefore, the UI code
+// runs on its own thread. This thread owns all the UI objects, which must be
+// created and destroyed on this thread. The rest of the code in this class
+// runs on the updater main thread.
 //
 // This class controls the lifetime of the UI thread. Once the UI thread is
 // created, it is going to run a message loop until the main thread initiates
@@ -355,7 +355,7 @@ void SetUsageStats(UpdaterScope scope,
 // and destructs its class members.
 class AppInstallControllerImpl : public AppInstallController,
                                  public ui::ProgressWndEvents,
-                                 public WTL::CMessageFilter {
+                                 public ui::MessageFilter {
  public:
   explicit AppInstallControllerImpl(bool is_silent_install);
   AppInstallControllerImpl();
@@ -397,7 +397,7 @@ class AppInstallControllerImpl : public AppInstallController,
   bool DoReboot() override;
   void DoCancel() override;
 
-  // Overrides for WTL::CMessageFilter.
+  // Overrides for ui::MessageFilter.
   BOOL PreTranslateMessage(MSG* msg) override;
 
   // This function is called on a dedicated COM STA thread.
@@ -444,7 +444,7 @@ class AppInstallControllerImpl : public AppInstallController,
   scoped_refptr<UpdateService> update_service_;
 
   // The message loop associated with the UI.
-  std::unique_ptr<WTL::CMessageLoop> ui_message_loop_;
+  std::unique_ptr<ui::MessageLoop> ui_message_loop_;
 
   std::unique_ptr<AppInstallProgress> observer_;
   HWND observer_hwnd_ = nullptr;
@@ -877,7 +877,7 @@ void AppInstallControllerImpl::InitializeUI() {
 
   base::ScopedDisallowBlocking no_blocking_allowed_on_ui_thread;
 
-  ui_message_loop_ = std::make_unique<WTL::CMessageLoop>();
+  ui_message_loop_ = std::make_unique<ui::MessageLoop>();
   ui_message_loop_->AddMessageFilter(this);
   ui_thread_id_ = ::GetCurrentThreadId();
 
@@ -893,7 +893,7 @@ void AppInstallControllerImpl::InitializeUI() {
   progress_wnd->Initialize();                                                \
   progress_wnd->Show();                                                      \
                                                                              \
-  observer_hwnd_ = progress_wnd->m_hWnd;                                     \
+  observer_hwnd_ = progress_wnd->hwnd();                                     \
   observer_.reset(progress_wnd.release());
 
     if (base::CommandLine::ForCurrentProcess()->HasSwitch(kWebViewUISwitch)) {

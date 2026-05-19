@@ -42,7 +42,6 @@
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
 #include "base/types/expected_macros.h"
-#include "base/win/atl.h"
 #include "base/win/elevation_util.h"
 #include "base/win/scoped_com_initializer.h"
 #include "base/win/scoped_localalloc.h"
@@ -63,11 +62,11 @@
 #include "chrome/updater/win/installer/pe_resource.h"
 #include "chrome/updater/win/installer/splash_wnd.h"
 #include "chrome/updater/win/ui/l10n_util.h"
+#include "chrome/updater/win/ui/message_loop.h"
 #include "chrome/updater/win/ui/ui_util.h"
 #include "chrome/updater/win/win_constants.h"
 #include "components/update_client/protocol_definition.h"
 #include "components/update_client/update_client.h"
-#include "third_party/wtl/include/atlapp.h"
 
 namespace updater {
 
@@ -103,12 +102,12 @@ base::ScopedClosureRunner CreateSplashScreen() {
                      [](base::WaitableEvent& event, HWND& splash_hwnd) {
                        ui::SplashWnd splash;
                        splash.Create(nullptr);
-                       splash.ShowWindow(SW_SHOW);
-                       splash.UpdateWindow();
-                       splash_hwnd = splash.m_hWnd;
+                       ::ShowWindow(splash.hwnd(), SW_SHOW);
+                       ::UpdateWindow(splash.hwnd());
+                       splash_hwnd = splash.hwnd();
                        event.Signal();
 
-                       WTL::CMessageLoop().Run();
+                       ui::MessageLoop().Run();
                      },
                      std::ref(ui_initialized_event), std::ref(splash_hwnd)));
 

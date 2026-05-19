@@ -362,6 +362,8 @@ if (is_win || is_mac || is_linux) {
         "win/ui/complete_wnd.h",
         "win/ui/l10n_util.cc",
         "win/ui/l10n_util.h",
+        "win/ui/message_loop.cc",
+        "win/ui/message_loop.h",
         "win/ui/owner_draw_controls.cc",
         "win/ui/owner_draw_controls.h",
         "win/ui/progress_wnd.cc",
@@ -380,6 +382,8 @@ if (is_win || is_mac || is_linux) {
         "win/ui/webview2ui.h",
         "win/ui/webview_progress_wnd.cc",
         "win/ui/webview_progress_wnd.h",
+        "win/ui/window_impl.cc",
+        "win/ui/window_impl.h",
       ]
       deps += [
         "//build:branding_buildflags",
@@ -401,7 +405,7 @@ if (is_win || is_mac || is_linux) {
         "//chrome/windows_services/service_program:lib",
         "//components/winhttp",
         "//third_party/webview2:webview2_static",
-        "//third_party/wtl",
+        "//ui/gfx",
       ]
 
       configs -= [ "//build/config/win:winver" ]
@@ -411,7 +415,9 @@ if (is_win || is_mac || is_linux) {
       ]
 
       libs = [
+        "comctl32.lib",
         "msxml2.lib",
+        "uxtheme.lib",
         "wtsapi32.lib",
       ]
     }
@@ -1068,7 +1074,6 @@ if (is_win || is_mac || is_linux) {
         "win/test:test_executables",
         "win/test:test_strings",
         "win/ui/resources",
-        "//third_party/wtl",
       ]
 
       data_deps += [

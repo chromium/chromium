@@ -21,13 +21,18 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/version.h"
-#include "base/win/atl.h"
 #include "chrome/updater/win/ui/progress_wnd.h"
 #include "chrome/updater/win/ui/webview2ui.h"
+#include "ui/gfx/geometry/rect.h"
 
 namespace updater::ui {
 
-WebView2ProgressWnd::WebView2ProgressWnd() = default;
+WebView2ProgressWnd::WebView2ProgressWnd() {
+  set_window_style(WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX |
+                   WS_CLIPCHILDREN | WS_CLIPSIBLINGS);
+  set_initial_class_style(CS_HREDRAW | CS_VREDRAW);
+  set_window_class_name(L"WebView2ProgressWnd");
+}
 
 WebView2ProgressWnd::~WebView2ProgressWnd() = default;
 
@@ -39,12 +44,7 @@ void WebView2ProgressWnd::Initialize() {}
 
 void WebView2ProgressWnd::Show() {
   RECT rc = {0, 0, 500, 400};
-  constexpr DWORD window_styles = WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU |
-                                  WS_MINIMIZEBOX | WS_CLIPCHILDREN |
-                                  WS_CLIPSIBLINGS;
-
-  // Adjust to add space for the title bar.
-  ::AdjustWindowRect(&rc, window_styles, FALSE);
+  ::AdjustWindowRect(&rc, window_style(), FALSE);
 
   // Center the window on the screen.
   const int screen_w = ::GetSystemMetrics(SM_CXSCREEN);
@@ -52,21 +52,21 @@ void WebView2ProgressWnd::Show() {
   const int width = rc.right - rc.left;
   const int height = rc.bottom - rc.top;
 
-  RECT center_rc = {(screen_w - width) / 2, (screen_h - height) / 2,
-                    ((screen_w - width) / 2) + width,
-                    ((screen_h - height) / 2) + height};
+  const gfx::Rect bounds((screen_w - width) / 2, (screen_h - height) / 2, width,
+                         height);
 
-  const HWND hwnd =
-      Create(nullptr, center_rc, L"Google Installer", window_styles);
+  Init(nullptr, bounds);
 
-  if (!hwnd) {
+  if (!hwnd()) {
     // TODO(crbug.com/409590312): Handle UI creation error.
     return;
   }
 
+  ::SetWindowTextW(hwnd(), L"Google Installer");
+
   // Show and paint the window.
-  ShowWindow(SW_SHOW);
-  UpdateWindow();
+  ::ShowWindow(hwnd(), SW_SHOW);
+  ::UpdateWindow(hwnd());
 }
 
 void WebView2ProgressWnd::UpdateUI(const std::string& status_text,
@@ -121,33 +121,28 @@ void WebView2ProgressWnd::OnWaitingToInstall(const std::string&,
                                              const std::u16string&) {}
 void WebView2ProgressWnd::OnPause() {}
 
-LRESULT WebView2ProgressWnd::OnCreate(UINT msg,
-                                      WPARAM wparam,
-                                      LPARAM lparam,
-                                      BOOL& handled) {
+LRESULT WebView2ProgressWnd::OnCreate(UINT, WPARAM, LPARAM) {
   // WebView2 requires COM to be initialized on the calling thread.
   // Initialize COM as single-threaded apartment (STA).
   if (!com_initializer_.Succeeded()) {
     LOG(ERROR) << "Thread apartment failed to initialize as STA. "
                << "WebView2 may fail to display.";
-    handled = TRUE;
     return -1;
   }
 
   RECT client_rect = {0};
-  ::GetClientRect(m_hWnd, &client_rect);
+  ::GetClientRect(hwnd(), &client_rect);
 
   browser_ = std::make_unique<WebView2UI>();
   const HRESULT hr =
-      browser_->Create(m_hWnd, client_rect,
+      browser_->Create(hwnd(), client_rect,
                        base::BindOnce(&WebView2ProgressWnd::OnWebViewCreated,
-                                      weak_ptr_factory_.GetWeakPtr()));
+                                      msg_handler_weak_factory_.GetWeakPtr()));
   if (FAILED(hr)) {
     LOG(ERROR) << "Failed to create WebView2: " << std::hex << hr;
     // TODO(crbug.com/409590312): Handle UI creation error.
   }
 
-  handled = TRUE;
   return 0;
 }
 
@@ -160,7 +155,7 @@ void WebView2ProgressWnd::OnWebViewCreated(bool success) {
 
   browser_->SetWebMessageHandler(
       base::BindRepeating(&WebView2ProgressWnd::OnWebMessageReceived,
-                          weak_ptr_factory_.GetWeakPtr()));
+                          msg_handler_weak_factory_.GetWeakPtr()));
 
   browser_->NavigateToString(std::wstring(LR"DDDD(
 <!DOCTYPE html>
@@ -281,55 +276,45 @@ void WebView2ProgressWnd::OnWebMessageReceived(const std::wstring& message) {
     if (events_) {
       events_->DoCancel();
     }
-    ::PostMessage(m_hWnd, WM_CLOSE, 0, 0);
+    ::PostMessage(hwnd(), WM_CLOSE, 0, 0);
   } else if (message == L"ui_ready") {
     VLOG(2) << "HTML UI DOM is loaded and ready.";
     UpdateUI("Initializing...", 0, true);
   }
 }
 
-LRESULT WebView2ProgressWnd::OnSize(UINT msg,
-                                    WPARAM wparam,
-                                    LPARAM lparam,
-                                    BOOL& handled) {
+LRESULT WebView2ProgressWnd::OnSize(UINT, WPARAM, LPARAM) {
   // Resize WebView2.
   if (browser_) {
     RECT client_rect = {0};
-    ::GetClientRect(m_hWnd, &client_rect);
+    ::GetClientRect(hwnd(), &client_rect);
     browser_->Resize(client_rect);
   }
-  handled = FALSE;  // Let other handlers process `WM_SIZE` if needed.
+  SetMsgHandled(FALSE);  // Let other handlers process `WM_SIZE` if needed.
   return 0;
 }
 
-LRESULT WebView2ProgressWnd::OnDpiChanged(UINT msg,
-                                          WPARAM wparam,
-                                          LPARAM lparam,
-                                          BOOL& handled) {
+LRESULT WebView2ProgressWnd::OnDpiChanged(UINT, WPARAM, LPARAM lparam) {
   // `lparam` is a pointer to a RECT containing the suggested new window bounds.
   RECT* const suggested_rect = reinterpret_cast<RECT*>(lparam);
 
   // Apply the suggested bounds.
-  ::SetWindowPos(m_hWnd, nullptr, suggested_rect->left, suggested_rect->top,
+  ::SetWindowPos(hwnd(), nullptr, suggested_rect->left, suggested_rect->top,
                  suggested_rect->right - suggested_rect->left,
                  suggested_rect->bottom - suggested_rect->top,
                  SWP_NOZORDER | SWP_NOACTIVATE);
 
-  handled = TRUE;
   return 0;
 }
 
-LRESULT WebView2ProgressWnd::OnDestroy(UINT msg,
-                                       WPARAM wparam,
-                                       LPARAM lparam,
-                                       BOOL& handled) {
+LRESULT WebView2ProgressWnd::OnDestroy(UINT, WPARAM, LPARAM) {
   // Explicitly destroy the browser to release COM references and close the
   // underlying WebView2 processes.
   browser_.reset();
 
   ::PostQuitMessage(0);
 
-  handled = FALSE;
+  SetMsgHandled(FALSE);
   return 0;
 }
 

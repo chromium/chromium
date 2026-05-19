@@ -14,10 +14,12 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
-#include "base/win/atl.h"
 #include "base/win/scoped_com_initializer.h"
 #include "chrome/updater/win/ui/progress_wnd.h"
 #include "chrome/updater/win/ui/webview2ui.h"
+#include "chrome/updater/win/ui/window_impl.h"
+#include "ui/gfx/win/msg_util.h"
+#include "ui/gfx/win/window_impl.h"
 
 namespace base {
 class Version;
@@ -25,19 +27,8 @@ class Version;
 
 namespace updater::ui {
 
-class WebView2ProgressWnd : public CWindowImpl<WebView2ProgressWnd>,
-                            public AppInstallProgress {
+class WebView2ProgressWnd : public gfx::WindowImpl, public AppInstallProgress {
  public:
-  // This macro declares a static local variable that would get duplicated in
-  // component builds. However, the updater is only meaningful in non-component
-  // builds (docs/updater/dev_manual.md), so silence clang's warning.
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wunique-object-duplication"
-  DECLARE_WND_CLASS_EX(L"WebView2ProgressWnd",
-                       CS_HREDRAW | CS_VREDRAW,
-                       COLOR_WINDOW)
-#pragma clang diagnostic pop
-
   WebView2ProgressWnd();
   ~WebView2ProgressWnd() override;
 
@@ -71,19 +62,19 @@ class WebView2ProgressWnd : public CWindowImpl<WebView2ProgressWnd>,
   void OnPause() override;
   void OnComplete(const ObserverCompletionInfo& observer_info) override;
 
-  BEGIN_MSG_MAP(WebView2ProgressWnd)
-    MESSAGE_HANDLER(WM_CREATE, OnCreate)
-    MESSAGE_HANDLER(WM_SIZE, OnSize)
-    MESSAGE_HANDLER(WM_DPICHANGED, OnDpiChanged)
-    MESSAGE_HANDLER(WM_DESTROY, OnDestroy)
-  END_MSG_MAP()
+  CR_BEGIN_MSG_MAP_EX(WebView2ProgressWnd)
+    CR_MESSAGE_HANDLER_EX(WM_CREATE, OnCreate)
+    CR_MESSAGE_HANDLER_EX(WM_SIZE, OnSize)
+    CR_MESSAGE_HANDLER_EX(WM_DPICHANGED, OnDpiChanged)
+    CR_MESSAGE_HANDLER_EX(WM_DESTROY, OnDestroy)
+  CR_END_MSG_MAP()
 
  private:
   // Window message handlers.
-  LRESULT OnCreate(UINT msg, WPARAM wparam, LPARAM lparam, BOOL& handled);
-  LRESULT OnSize(UINT msg, WPARAM wparam, LPARAM lparam, BOOL& handled);
-  LRESULT OnDpiChanged(UINT msg, WPARAM wparam, LPARAM lparam, BOOL& handled);
-  LRESULT OnDestroy(UINT msg, WPARAM wparam, LPARAM lparam, BOOL& handled);
+  LRESULT OnCreate(UINT msg, WPARAM wparam, LPARAM lparam);
+  LRESULT OnSize(UINT msg, WPARAM wparam, LPARAM lparam);
+  LRESULT OnDpiChanged(UINT msg, WPARAM wparam, LPARAM lparam);
+  LRESULT OnDestroy(UINT msg, WPARAM wparam, LPARAM lparam);
 
   // WebView2 asynchronous completion callback.
   void OnWebViewCreated(bool success);
@@ -103,7 +94,7 @@ class WebView2ProgressWnd : public CWindowImpl<WebView2ProgressWnd>,
   bool is_webview_ready_ = false;
   base::win::ScopedCOMInitializer com_initializer_;
 
-  base::WeakPtrFactory<WebView2ProgressWnd> weak_ptr_factory_{this};
+  CR_MSG_MAP_CLASS_DECLARATIONS(WebView2ProgressWnd)
 };
 
 }  // namespace updater::ui

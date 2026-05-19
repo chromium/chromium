@@ -17,6 +17,12 @@ inline constexpr COLORREF kCaptionForegroundColor = RGB(0x01, 0x57, 0xDE);
 inline constexpr COLORREF kCaptionFrameColor = RGB(0xC1, 0xC1, 0xC1);
 
 inline constexpr COLORREF kProgressBarFillColor = RGB(0x01, 0x57, 0xDE);
+// Color of the rounded pill that holds the empty (unfilled) portion of the
+// progress bar in light mode.
+inline constexpr COLORREF kProgressEmptyFillColor = RGB(0xFF, 0xFF, 0xFF);
+// Color drawn outside the rounded pill in light mode. Because the pill is
+// rounded, the four corners expose this color and it becomes the pill's
+// visible frame against the dialog background.
 inline constexpr COLORREF kProgressEmptyFrameColor = RGB(0xF2, 0xF2, 0xEF);
 
 // Time-related constants for defining durations.

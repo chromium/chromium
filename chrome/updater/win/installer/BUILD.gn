@@ -75,6 +75,7 @@ source_set("lib") {
     "//chrome/updater:tagging",
     "//components/update_client",
     "//third_party/abseil-cpp:absl",
+    "//ui/gfx",
   ]
 }
 

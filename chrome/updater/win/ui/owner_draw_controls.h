@@ -7,90 +7,66 @@
 
 #include <windows.h>
 
-#include "base/win/atl.h"
+#include <commctrl.h>
+
+#include <string>
+
+#include "base/win/scoped_gdi_object.h"
 #include "chrome/updater/win/ui/ui_constants.h"
-#include "third_party/wtl/include/atlapp.h"
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wunused-but-set-variable"
-#pragma clang diagnostic ignored "-Wmissing-braces"
-#include "third_party/wtl/include/atlctrls.h"
-#include "third_party/wtl/include/atlframe.h"
-#pragma clang diagnostic pop
+#include "chrome/updater/win/ui/window_impl.h"
+#include "ui/gfx/win/msg_util.h"
+#include "ui/gfx/win/window_impl.h"
 
 namespace updater::ui {
 
-class CaptionButton : public CWindowImpl<CaptionButton, WTL::CButton>,
-                      public WTL::COwnerDraw<CaptionButton> {
+// Owner-drawn caption button used by the custom title bar. The control is a
+// real `BUTTON`-class window so it participates in MSAA/UIA as
+// `ROLE_SYSTEM_PUSHBUTTON`, receives keyboard activation (Space) when
+// focused, and dispatches `WM_COMMAND`/`BN_CLICKED` to its parent natively.
+// The `BS_OWNERDRAW` style suppresses the default `BUTTON` paint (including
+// the focus rectangle and default-button frame); the parent's `WM_DRAWITEM`
+// handler routes back to `DrawItem` to paint the custom icon.
+class CaptionButton : public SubclassedWindow {
  public:
-// This macro declares a static local variable that would get duplicated in
-// component builds. However, the updater is only meaningful in non-component
-// builds (docs/updater/dev_manual.md), so silence clang's warning.
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wunique-object-duplication"
-  DECLARE_WND_CLASS_EX(_T("CaptionButton"),
-                       CS_HREDRAW | CS_VREDRAW,
-                       COLOR_WINDOW)
-#pragma clang diagnostic pop
-
   CaptionButton();
   CaptionButton(const CaptionButton&) = delete;
   CaptionButton& operator=(const CaptionButton&) = delete;
   ~CaptionButton() override;
+
+  HWND Create(HWND parent, const RECT& bounds, int control_id);
 
   void DrawItem(LPDRAWITEMSTRUCT draw_item_struct);
 
   COLORREF bk_color() const;
   void set_bk_color(COLORREF bk_color);
 
-  CString tool_tip_text() const;
-  void set_tool_tip_text(const CString& tool_tip_text);
+  const std::wstring& tool_tip_text() const;
+  void set_tool_tip_text(const std::wstring& tool_tip_text);
 
-  BEGIN_MSG_MAP(CaptionButton)
-    MESSAGE_HANDLER(WM_CREATE, OnCreate)
-    MESSAGE_RANGE_HANDLER(WM_MOUSEFIRST, WM_MOUSELAST, OnMouseMessage)
-    MESSAGE_HANDLER(WM_MOUSEMOVE, OnMouseMove)
-    MESSAGE_HANDLER(WM_MOUSEHOVER, OnMouseHover)
-    MESSAGE_HANDLER(WM_MOUSELEAVE, OnMouseLeave)
-    MESSAGE_HANDLER(WM_ERASEBKGND, OnEraseBkgnd)
-    CHAIN_MSG_MAP_ALT(COwnerDraw<CaptionButton>, 1)
-    DEFAULT_REFLECTION_HANDLER()
-  END_MSG_MAP()
+  CR_BEGIN_MSG_MAP_EX(CaptionButton)
+    CR_MESSAGE_RANGE_HANDLER_EX(WM_MOUSEFIRST, WM_MOUSELAST, OnMouseMessage)
+    CR_MESSAGE_HANDLER_EX(WM_MOUSEMOVE, OnMouseMove)
+    CR_MESSAGE_HANDLER_EX(WM_MOUSEHOVER, OnMouseHover)
+    CR_MESSAGE_HANDLER_EX(WM_MOUSELEAVE, OnMouseLeave)
+  CR_END_MSG_MAP()
 
  private:
   virtual HRGN GetButtonRgn(int rgn_width, int rgn_height) = 0;
 
-  LRESULT OnCreate(UINT msg,
-                   WPARAM wparam,
-                   LPARAM lparam,
-                   BOOL& handled);  // NOLINT
-  LRESULT OnMouseMessage(UINT msg,
-                         WPARAM wparam,
-                         LPARAM lparam,
-                         BOOL& handled);  // NOLINT
-  LRESULT OnEraseBkgnd(UINT msg,
-                       WPARAM wparam,
-                       LPARAM lparam,
-                       BOOL& handled);  // NOLINT
-  LRESULT OnMouseMove(UINT msg,
-                      WPARAM wparam,
-                      LPARAM lparam,
-                      BOOL& handled);  // NOLINT
-  LRESULT OnMouseHover(UINT msg,
-                       WPARAM wparam,
-                       LPARAM lparam,
-                       BOOL& handled);  // NOLINT
-  LRESULT OnMouseLeave(UINT msg,
-                       WPARAM wparam,
-                       LPARAM lparam,
-                       BOOL& handled);  // NOLINT
+  LRESULT OnMouseMessage(UINT msg, WPARAM wparam, LPARAM lparam);
+  LRESULT OnMouseMove(UINT msg, WPARAM wparam, LPARAM lparam);
+  LRESULT OnMouseHover(UINT msg, WPARAM wparam, LPARAM lparam);
+  LRESULT OnMouseLeave(UINT msg, WPARAM wparam, LPARAM lparam);
 
   COLORREF bk_color_ = RGB(0, 0, 0);
-  WTL::CBrush foreground_brush_ = ::CreateSolidBrush(kCaptionForegroundColor);
+  base::win::ScopedGDIObject<HBRUSH> foreground_brush_;
 
-  WTL::CToolTipCtrl tool_tip_window_;
-  CString tool_tip_text_;
+  HWND tool_tip_window_ = nullptr;
+  std::wstring tool_tip_text_;
   bool is_tracking_mouse_events_ = false;
   bool is_mouse_hovering_ = false;
+
+  CR_MSG_MAP_CLASS_DECLARATIONS(CaptionButton)
 };
 
 class CloseButton : public CaptionButton {
@@ -123,7 +99,9 @@ class MaximizeButton : public CaptionButton {
   HRGN GetButtonRgn(int rgn_width, int rgn_height) override;
 };
 
-class OwnerDrawTitleBarWindow : public CWindowImpl<OwnerDrawTitleBarWindow> {
+// Owner-drawn custom title bar. A child of the host dialog; positions and
+// paints its caption buttons.
+class OwnerDrawTitleBarWindow : public gfx::WindowImpl {
  public:
   enum ButtonIds {
     kButtonClose = 1,
@@ -131,94 +109,67 @@ class OwnerDrawTitleBarWindow : public CWindowImpl<OwnerDrawTitleBarWindow> {
     kButtonMinimize,
   };
 
-// This macro declares a static local variable that would get duplicated in
-// component builds. However, the updater is only meaningful in non-component
-// builds (docs/updater/dev_manual.md), so silence clang's warning.
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wunique-object-duplication"
-  DECLARE_WND_CLASS_EX(_T("OwnerDrawTitleBarWindow"),
-                       CS_HREDRAW | CS_VREDRAW,
-                       COLOR_WINDOW)
-#pragma clang diagnostic pop
-
-  BEGIN_MSG_MAP(OwnerDrawTitleBarWindow)
-    MESSAGE_HANDLER(WM_CREATE, OnCreate)
-    MESSAGE_HANDLER(WM_DESTROY, OnDestroy)
-    MESSAGE_HANDLER(WM_MOUSEMOVE, OnMouseMove)
-    MESSAGE_HANDLER(WM_LBUTTONDOWN, OnLButtonDown)
-    MESSAGE_HANDLER(WM_LBUTTONUP, OnLButtonUp)
-    MESSAGE_HANDLER(WM_ERASEBKGND, OnEraseBkgnd)
-    MESSAGE_HANDLER(WM_SIZE, OnSize)
-    COMMAND_ID_HANDLER(kButtonClose, OnClose)
-    COMMAND_ID_HANDLER(kButtonMaximize, OnMaximize)
-    COMMAND_ID_HANDLER(kButtonMinimize, OnMinimize)
-    REFLECT_NOTIFICATIONS()
-  END_MSG_MAP()
-
   OwnerDrawTitleBarWindow();
   OwnerDrawTitleBarWindow(const OwnerDrawTitleBarWindow&) = delete;
   OwnerDrawTitleBarWindow& operator=(const OwnerDrawTitleBarWindow&) = delete;
   ~OwnerDrawTitleBarWindow() override;
+
+  HWND Create(HWND parent, const RECT& bounds);
+
+  BOOL IsWindow() const { return hwnd() && ::IsWindow(hwnd()); }
 
   void RecalcLayout();
 
   COLORREF bk_color() const;
   void set_bk_color(COLORREF bk_color);
 
+  CR_BEGIN_MSG_MAP_EX(OwnerDrawTitleBarWindow)
+    CR_MESSAGE_HANDLER_EX(WM_CREATE, OnCreate)
+    CR_MESSAGE_HANDLER_EX(WM_DESTROY, OnDestroy)
+    CR_MESSAGE_HANDLER_EX(WM_MOUSEMOVE, OnMouseMove)
+    CR_MESSAGE_HANDLER_EX(WM_LBUTTONDOWN, OnLButtonDown)
+    CR_MESSAGE_HANDLER_EX(WM_LBUTTONUP, OnLButtonUp)
+    CR_MESSAGE_HANDLER_EX(WM_ERASEBKGND, OnEraseBkgnd)
+    CR_MESSAGE_HANDLER_EX(WM_SIZE, OnSize)
+    CR_MESSAGE_HANDLER_EX(WM_DRAWITEM, OnDrawItem)
+    CR_COMMAND_ID_HANDLER_EX(kButtonClose, OnClose)
+    CR_COMMAND_ID_HANDLER_EX(kButtonMaximize, OnMaximize)
+    CR_COMMAND_ID_HANDLER_EX(kButtonMinimize, OnMinimize)
+  CR_END_MSG_MAP()
+
  private:
   void CreateCaptionButtons();
-  void UpdateButtonState(const WTL::CMenuHandle& menu,
+  void UpdateButtonState(HMENU menu,
                          UINT button_sc_id,
                          const int button_margin,
                          CaptionButton* button,
-                         CRect* button_rect);
+                         RECT* button_rect);
   void MoveWindowToDragPosition(HWND hwnd, int dx, int dy);
 
-  LRESULT OnCreate(UINT msg,
-                   WPARAM wparam,
-                   LPARAM lparam,
-                   BOOL& handled);  // NOLINT
-  LRESULT OnDestroy(UINT msg,
-                    WPARAM wparam,
-                    LPARAM lparam,
-                    BOOL& handled);  // NOLINT
-  LRESULT OnMouseMove(UINT msg,
-                      WPARAM wparam,
-                      LPARAM lparam,
-                      BOOL& handled);  // NOLINT
-  LRESULT OnLButtonDown(UINT msg,
-                        WPARAM wparam,
-                        LPARAM lparam,
-                        BOOL& handled);  // NOLINT
-  LRESULT OnLButtonUp(UINT msg,
-                      WPARAM wparam,
-                      LPARAM lparam,
-                      BOOL& handled);  // NOLINT
-  LRESULT OnEraseBkgnd(UINT msg,
-                       WPARAM wparam,
-                       LPARAM lparam,
-                       BOOL& handled);  // NOLINT
-  LRESULT OnSize(UINT, WPARAM, LPARAM, BOOL& handled);  // NOLINT
-  LRESULT OnClose(WORD notify_code,
-                  WORD id,
-                  HWND hwnd_ctrl,
-                  BOOL& handled);  // NOLINT
-  LRESULT OnMaximize(WORD notify_code,
-                     WORD id,
-                     HWND hwnd_ctrl,
-                     BOOL& handled);  // NOLINT
-  LRESULT OnMinimize(WORD notify_code,
-                     WORD id,
-                     HWND hwnd_ctrl,
-                     BOOL& handled);  // NOLINT
+  LRESULT OnCreate(UINT msg, WPARAM wparam, LPARAM lparam);
+  LRESULT OnDestroy(UINT msg, WPARAM wparam, LPARAM lparam);
+  LRESULT OnMouseMove(UINT msg, WPARAM wparam, LPARAM lparam);
+  LRESULT OnLButtonDown(UINT msg, WPARAM wparam, LPARAM lparam);
+  LRESULT OnLButtonUp(UINT msg, WPARAM wparam, LPARAM lparam);
+  LRESULT OnEraseBkgnd(UINT msg, WPARAM wparam, LPARAM lparam);
+  LRESULT OnSize(UINT msg, WPARAM wparam, LPARAM lparam);
+  LRESULT OnDrawItem(UINT msg, WPARAM wparam, LPARAM lparam);
+  void OnClose(UINT notify_code, int id, HWND ctl);
+  void OnMaximize(UINT notify_code, int id, HWND ctl);
+  void OnMinimize(UINT notify_code, int id, HWND ctl);
 
-  CPoint current_drag_position_ = {-1, -1};
+  POINT current_drag_position_ = {-1, -1};
   COLORREF bk_color_ = RGB(0, 0, 0);
 
   CloseButton close_button_;
   MinimizeButton minimize_button_;
+
+  CR_MSG_MAP_CLASS_DECLARATIONS(OwnerDrawTitleBarWindow)
 };
 
+// Mixin attaching a custom title bar to a host dialog. Owns the
+// `OwnerDrawTitleBarWindow` child. Provides a no-op `ProcessWindowMessage` so
+// callers can chain into it with `CR_CHAIN_MSG_MAP`.
 class OwnerDrawTitleBar {
  public:
   OwnerDrawTitleBar();
@@ -232,22 +183,20 @@ class OwnerDrawTitleBar {
 
   void RecalcLayout(HWND parent_hwnd, HWND title_bar_spacer_hwnd);
 
-  BEGIN_MSG_MAP(OwnerDrawTitleBar)
-  END_MSG_MAP()
+  // No messages of its own; provided so callers can chain unconditionally.
+  BOOL ProcessWindowMessage(HWND, UINT, WPARAM, LPARAM, LRESULT&, DWORD = 0) {
+    return FALSE;
+  }
 
  private:
-  CRect ComputeTitleBarClientRect(HWND parent_hwnd, HWND title_bar_spacer_hwnd);
+  RECT ComputeTitleBarClientRect(HWND parent_hwnd, HWND title_bar_spacer_hwnd);
 
   OwnerDrawTitleBarWindow title_bar_window_;
 };
 
-// Customizes the text color and the background color for dialog elements.
-//
-// Steps:
-// - Derive your ATL dialog class from CustomDlgColors.
-// - Add a CHAIN_MSG_MAP in your ATL message map to CustomDlgColors.
-//   CustomDlgColors will handle WM_CTLCOLOR{XXX} in the chained message map.
-// - Call SetCustomDlgColors() from OnInitDialog.
+// Mixin that customizes the text/background colors for dialog elements. Hosts
+// chain into this via `CR_CHAIN_MSG_MAP(CustomDlgColors)` and call
+// `SetCustomDlgColors()` from `WM_INITDIALOG`.
 class CustomDlgColors {
  public:
   CustomDlgColors();
@@ -257,39 +206,39 @@ class CustomDlgColors {
 
   void SetCustomDlgColors(COLORREF text_color, COLORREF bk_color);
 
-  BEGIN_MSG_MAP(CustomDlgColors)
-    MESSAGE_HANDLER(WM_CTLCOLORDLG, OnCtrlColor)
-    MESSAGE_HANDLER(WM_CTLCOLORSTATIC, OnCtrlColor)
-  END_MSG_MAP()
+  BOOL ProcessWindowMessage(HWND hwnd,
+                            UINT msg,
+                            WPARAM wparam,
+                            LPARAM lparam,
+                            LRESULT& result,
+                            DWORD msg_map_id = 0);
 
  private:
-  LRESULT OnCtrlColor(UINT msg,
-                      WPARAM wparam,
-                      LPARAM lparam,
-                      BOOL& handled);  // NOLINT
-
   COLORREF text_color_ = RGB(0xFF, 0xFF, 0xFF);
   COLORREF bk_color_ = RGB(0, 0, 0);
-  WTL::CBrush bk_brush_;
+  base::win::ScopedGDIObject<HBRUSH> bk_brush_;
 };
 
-class CustomProgressBarCtrl : public CWindowImpl<CustomProgressBarCtrl> {
+// Subclassed (via `SetWindowSubclass`) progress bar control providing a
+// custom look while preserving accessibility behavior of the underlying
+// Win32 progress bar.
+class CustomProgressBarCtrl : public SubclassedWindow {
  public:
   CustomProgressBarCtrl();
   CustomProgressBarCtrl(const CustomProgressBarCtrl&) = delete;
   CustomProgressBarCtrl& operator=(const CustomProgressBarCtrl&) = delete;
   ~CustomProgressBarCtrl() override;
 
-  BEGIN_MSG_MAP(CustomProgressBarCtrl)
-    MESSAGE_HANDLER(WM_ERASEBKGND, OnEraseBkgnd)
-    MESSAGE_HANDLER(WM_PAINT, OnPaint)
-    MESSAGE_HANDLER(WM_TIMER, OnTimer)
-    MESSAGE_HANDLER(WM_SYSCOLORCHANGE, OnSysColorChange)
-    MESSAGE_HANDLER(PBM_SETPOS, OnSetPos)
-    MESSAGE_HANDLER(PBM_SETMARQUEE, OnSetMarquee)
-    MESSAGE_HANDLER(PBM_SETBARCOLOR, OnSetBarColor)
-    MESSAGE_HANDLER(PBM_SETBKCOLOR, OnSetBkColor)
-  END_MSG_MAP()
+  CR_BEGIN_MSG_MAP_EX(CustomProgressBarCtrl)
+    CR_MESSAGE_HANDLER_EX(WM_ERASEBKGND, OnEraseBkgnd)
+    CR_MESSAGE_HANDLER_EX(WM_PAINT, OnPaint)
+    CR_MESSAGE_HANDLER_EX(WM_TIMER, OnTimer)
+    CR_MESSAGE_HANDLER_EX(WM_SYSCOLORCHANGE, OnSysColorChange)
+    CR_MESSAGE_HANDLER_EX(PBM_SETPOS, OnSetPos)
+    CR_MESSAGE_HANDLER_EX(PBM_SETMARQUEE, OnSetMarquee)
+    CR_MESSAGE_HANDLER_EX(PBM_SETBARCOLOR, OnSetBarColor)
+    CR_MESSAGE_HANDLER_EX(PBM_SETBKCOLOR, OnSetBkColor)
+  CR_END_MSG_MAP()
 
  private:
   void GradientFill(HDC dc,
@@ -297,39 +246,15 @@ class CustomProgressBarCtrl : public CWindowImpl<CustomProgressBarCtrl> {
                     COLORREF top_color,
                     COLORREF bottom_color);
 
-  LRESULT OnEraseBkgnd(UINT msg,
-                       WPARAM wparam,
-                       LPARAM lparam,
-                       BOOL& handled);  // NOLINT
-  LRESULT OnPaint(UINT msg,
-                  WPARAM wparam,
-                  LPARAM lparam,
-                  BOOL& handled);  // NOLINT
-  LRESULT OnTimer(UINT msg,
-                  WPARAM wparam,
-                  LPARAM lparam,
-                  BOOL& handled);  // NOLINT
-  LRESULT OnSysColorChange(UINT msg,
-                           WPARAM wparam,
-                           LPARAM lparam,
-                           BOOL& handled);  // NOLINT
+  LRESULT OnEraseBkgnd(UINT msg, WPARAM wparam, LPARAM lparam);
+  LRESULT OnPaint(UINT msg, WPARAM wparam, LPARAM lparam);
+  LRESULT OnTimer(UINT msg, WPARAM wparam, LPARAM lparam);
+  LRESULT OnSysColorChange(UINT msg, WPARAM wparam, LPARAM lparam);
 
-  LRESULT OnSetPos(UINT msg,
-                   WPARAM wparam,
-                   LPARAM lparam,
-                   BOOL& handled);  // NOLINT
-  LRESULT OnSetMarquee(UINT msg,
-                       WPARAM wparam,
-                       LPARAM lparam,
-                       BOOL& handled);  // NOLINT
-  LRESULT OnSetBarColor(UINT msg,
-                        WPARAM wparam,
-                        LPARAM lparam,
-                        BOOL& handled);  // NOLINT
-  LRESULT OnSetBkColor(UINT msg,
-                       WPARAM wparam,
-                       LPARAM lparam,
-                       BOOL& handled);  // NOLINT
+  LRESULT OnSetPos(UINT msg, WPARAM wparam, LPARAM lparam);
+  LRESULT OnSetMarquee(UINT msg, WPARAM wparam, LPARAM lparam);
+  LRESULT OnSetBarColor(UINT msg, WPARAM wparam, LPARAM lparam);
+  LRESULT OnSetBkColor(UINT msg, WPARAM wparam, LPARAM lparam);
 
   static constexpr int kMinPosition = 0;
   static constexpr int kMaxPosition = 100;
@@ -340,7 +265,9 @@ class CustomProgressBarCtrl : public CWindowImpl<CustomProgressBarCtrl> {
   int current_position_ = kMinPosition;
 
   COLORREF bar_color_ = kProgressBarFillColor;
-  COLORREF empty_fill_color_ = kProgressEmptyFrameColor;
+  COLORREF empty_fill_color_ = kProgressEmptyFillColor;
+
+  CR_MSG_MAP_CLASS_DECLARATIONS(CustomProgressBarCtrl)
 };
 
 }  // namespace updater::ui

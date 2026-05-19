@@ -4,6 +4,10 @@
 
 #include "chrome/updater/win/ui/progress_wnd.h"
 
+#include <windows.h>
+
+#include <commctrl.h>
+
 #include <algorithm>
 #include <array>
 #include <memory>
@@ -45,9 +49,67 @@ bool AreAllAppsCanceled(const std::vector<AppCompletionInfo>& apps_info) {
   });
 }
 
+// Subclass procedure used for `SS_BITMAP` statics (`IDC_APP_BITMAP` and
+// `IDC_ERROR_ILLUSTRATION`). Win32 does NOT send `WM_CTLCOLORSTATIC` for
+// `SS_BITMAP` controls, so the dialog's dark-mode background brush cannot
+// reach them through the usual mechanism. The defaults from the `STATIC`
+// window class paint `COLOR_3DFACE` for both `WM_ERASEBKGND` and the
+// no-image case in `WM_PAINT`, which shows up as a small light-gray
+// rectangle on dark / high-contrast backgrounds.
+//
+// In dark / high-contrast mode this subclass:
+//   * Returns 1 from `WM_ERASEBKGND` so the parent's already-painted
+//     themed background stays visible.
+//   * If `WM_PAINT` arrives for a control that has no image set
+//     (`STM_GETIMAGE` returns null), validates the paint rect without
+//     drawing anything so the parent's themed background remains.
+//
+// When a bitmap IS set, `WM_PAINT` is forwarded to the default static
+// proc so the bitmap is drawn normally. In light mode the entire
+// default behavior (`COLOR_3DFACE` fill, then bitmap drawn on top) is
+// preserved so the rainbow gradient design continues to look correct.
+constexpr UINT_PTR kBitmapStaticSubclassId = 1;
+
+LRESULT CALLBACK BitmapStaticSubclassProc(HWND hwnd,
+                                          UINT msg,
+                                          WPARAM wparam,
+                                          LPARAM lparam,
+                                          UINT_PTR id,
+                                          DWORD_PTR /*ref_data*/) {
+  const bool themed_bg = IsHighContrastOn() || IsDarkModeOn();
+  if (msg == WM_ERASEBKGND && themed_bg) {
+    return 1;
+  }
+  if (msg == WM_PAINT && themed_bg) {
+    HBITMAP image = reinterpret_cast<HBITMAP>(
+        ::SendMessageW(hwnd, STM_GETIMAGE, IMAGE_BITMAP, 0));
+    if (!image) {
+      // No image to draw. Validate the update region so Windows does not
+      // re-issue `WM_PAINT`, and leave the parent's painted background
+      // visible.
+      PAINTSTRUCT ps = {};
+      ::BeginPaint(hwnd, &ps);
+      ::EndPaint(hwnd, &ps);
+      return 0;
+    }
+  }
+  if (msg == WM_NCDESTROY) {
+    ::RemoveWindowSubclass(hwnd, BitmapStaticSubclassProc, id);
+  }
+  return ::DefSubclassProc(hwnd, msg, wparam, lparam);
+}
+
+void InstallBitmapStaticSubclass(HWND parent, int control_id) {
+  HWND child = ::GetDlgItem(parent, control_id);
+  if (child && ::IsWindow(child)) {
+    ::SetWindowSubclass(child, BitmapStaticSubclassProc,
+                        kBitmapStaticSubclassId, 0);
+  }
+}
+
 }  // namespace
 
-ProgressWnd::ProgressWnd(WTL::CMessageLoop* message_loop, HWND parent)
+ProgressWnd::ProgressWnd(MessageLoop* message_loop, HWND parent)
     : CompleteWnd(IDD_PROGRESS,
                   ICC_STANDARD_CLASSES | ICC_PROGRESS_CLASS,
                   message_loop,
@@ -68,11 +130,8 @@ void ProgressWnd::SetEventSink(ProgressWndEvents* events) {
   CompleteWnd::SetEventSink(events_sink_);
 }
 
-LRESULT ProgressWnd::OnInitDialog(UINT message,
-                                  WPARAM w_param,
-                                  LPARAM l_param,
-                                  BOOL& handled) {
-  HideWindowChildren(*this);
+LRESULT ProgressWnd::OnInitDialog(UINT, WPARAM, LPARAM) {
+  HideWindowChildren(hwnd());
 
   InitializeDialog();
 
@@ -80,30 +139,39 @@ LRESULT ProgressWnd::OnInitDialog(UINT message,
 
   SetControlText(IDC_INSTALLER_STATE_TEXT,
                  GetLocalizedString(IDS_INITIALIZING_BASE, lang()).c_str());
+
+  // Suppress the default `WM_ERASEBKGND` handling for `SS_BITMAP` statics
+  // so the dialog's themed background (dark / high contrast / rainbow)
+  // shows through behind any bitmap content.
+  InstallBitmapStaticSubclass(hwnd(), IDC_APP_BITMAP);
+  InstallBitmapStaticSubclass(hwnd(), IDC_ERROR_ILLUSTRATION);
+
   ChangeControlState();
 
-  handled = true;
+  // Force a full redraw of the dialog and all its children so the static
+  // controls re-erase through the dark/gradient background painted by
+  // `OnEraseBkgnd` instead of keeping their initial system-default
+  // (BTNFACE) pixels.
+  ::RedrawWindow(hwnd(), nullptr, nullptr,
+                 RDW_INVALIDATE | RDW_ERASE | RDW_ALLCHILDREN | RDW_UPDATENOW);
+
   return 1;  // Let the system set the focus.
 }
 
-LRESULT ProgressWnd::OnEraseBkgnd(UINT msg,
-                                  WPARAM wparam,
-                                  LPARAM lparam,
-                                  BOOL& handled) {
+LRESULT ProgressWnd::OnEraseBkgnd(UINT, WPARAM wparam, LPARAM) {
   const HDC hdc = reinterpret_cast<HDC>(wparam);
-  CRect rect;
-  GetClientRect(&rect);
+  RECT rect = {};
+  ::GetClientRect(hwnd(), &rect);
 
   if (IsHighContrastOn()) {
     ::FillRect(hdc, &rect, ::GetSysColorBrush(COLOR_WINDOW));
-    handled = TRUE;
     return 1;
   }
 
   if (IsDarkModeOn()) {
-    WTL::CBrush fill_brush = ::CreateSolidBrush(RGB(0x20, 0x20, 0x20));
-    ::FillRect(hdc, &rect, fill_brush);
-    handled = TRUE;
+    base::win::ScopedGDIObject<HBRUSH> fill_brush(
+        ::CreateSolidBrush(RGB(0x20, 0x20, 0x20)));
+    ::FillRect(hdc, &rect, fill_brush.get());
     return 1;
   }
 
@@ -111,8 +179,8 @@ LRESULT ProgressWnd::OnEraseBkgnd(UINT msg,
   // artifacts.
   ::FillRect(hdc, &rect, static_cast<HBRUSH>(::GetStockObject(WHITE_BRUSH)));
 
-  const int width = rect.Width();
-  const int height = rect.Height();
+  const int width = rect.right - rect.left;
+  const int height = rect.bottom - rect.top;
 
   // Configuration for the rainbow geometry.
   static constexpr size_t kNumStops = 7;
@@ -199,70 +267,77 @@ LRESULT ProgressWnd::OnEraseBkgnd(UINT msg,
                  mesh.data(), static_cast<ULONG>(mesh.size()),
                  GRADIENT_FILL_TRIANGLE);
 
-  handled = TRUE;
   return 1;
 }
 
-LRESULT ProgressWnd::OnSysColorChange(UINT msg,
-                                      WPARAM wparam,
-                                      LPARAM lparam,
-                                      BOOL& handled) {
-  handled = FALSE;
-  RedrawWindow(nullptr, nullptr,
-               RDW_INVALIDATE | RDW_ERASE | RDW_ALLCHILDREN | RDW_UPDATENOW);
+LRESULT ProgressWnd::OnSysColorChange(UINT, WPARAM, LPARAM) {
+  SetMsgHandled(FALSE);
+  dark_static_brush_.reset();
+  ::RedrawWindow(hwnd(), nullptr, nullptr,
+                 RDW_INVALIDATE | RDW_ERASE | RDW_ALLCHILDREN | RDW_UPDATENOW);
   return 0;
 }
 
-LRESULT ProgressWnd::OnSettingChange(UINT msg,
-                                     WPARAM wparam,
-                                     LPARAM lparam,
-                                     BOOL& handled) {
-  handled = FALSE;
+LRESULT ProgressWnd::OnSettingChange(UINT, WPARAM, LPARAM lparam) {
+  SetMsgHandled(FALSE);
   if (lparam && std::wstring_view(reinterpret_cast<LPCWSTR>(lparam)) ==
                     L"ImmersiveColorSet") {
-    RedrawWindow(nullptr, nullptr,
-                 RDW_INVALIDATE | RDW_ERASE | RDW_ALLCHILDREN | RDW_UPDATENOW);
+    dark_static_brush_.reset();
+    ::RedrawWindow(
+        hwnd(), nullptr, nullptr,
+        RDW_INVALIDATE | RDW_ERASE | RDW_ALLCHILDREN | RDW_UPDATENOW);
   }
   return 0;
 }
 
-HBRUSH ProgressWnd::OnCtlColorStatic(WTL::CDCHandle dc,
-                                     WTL::CStatic wndStatic) {
+HBRUSH ProgressWnd::OnCtlColorStatic(HDC dc, HWND ctl_hwnd) {
   if (IsHighContrastOn()) {
-    dc.SetTextColor(::GetSysColor(COLOR_WINDOWTEXT));
-    dc.SetBkColor(::GetSysColor(COLOR_WINDOW));
-  } else if (IsDarkModeOn()) {
-    dc.SetTextColor(RGB(0xFF, 0xFF, 0xFF));
-    dc.SetBkColor(RGB(0x20, 0x20, 0x20));
+    ::SetTextColor(dc, ::GetSysColor(COLOR_WINDOWTEXT));
+    ::SetBkColor(dc, ::GetSysColor(COLOR_WINDOW));
+    ::SetBkMode(dc, TRANSPARENT);
+    return ::GetSysColorBrush(COLOR_WINDOW);
   }
-  dc.SetBkMode(TRANSPARENT);
+  if (IsDarkModeOn()) {
+    ::SetTextColor(dc, RGB(0xFF, 0xFF, 0xFF));
+    ::SetBkColor(dc, RGB(0x20, 0x20, 0x20));
+    ::SetBkMode(dc, TRANSPARENT);
+    if (!dark_static_brush_.is_valid()) {
+      dark_static_brush_.reset(::CreateSolidBrush(RGB(0x20, 0x20, 0x20)));
+    }
+    return dark_static_brush_.get();
+  }
+  ::SetBkMode(dc, TRANSPARENT);
   return static_cast<HBRUSH>(::GetStockObject(NULL_BRUSH));
 }
 
 void ProgressWnd::SetControlText(int id, const std::wstring& text) {
-  const HWND hwnd_control = GetDlgItem(id);
+  const HWND hwnd_control = ::GetDlgItem(hwnd(), id);
   if (!hwnd_control || !::IsWindow(hwnd_control)) {
     return;
   }
 
   // Reduces flicker by only updating the control if the text has changed.
   std::wstring current_text;
-  ui::GetDlgItemText(*this, id, &current_text);
+  ui::GetDlgItemText(hwnd(), id, &current_text);
   if (text == current_text) {
     return;
   }
 
   // Get the control's rectangle relative to the dialog.
-  CRect rect;
+  RECT rect = {};
   ::GetWindowRect(hwnd_control, &rect);
-  ScreenToClient(&rect);
+  POINT top_left = {rect.left, rect.top};
+  POINT bottom_right = {rect.right, rect.bottom};
+  ::ScreenToClient(hwnd(), &top_left);
+  ::ScreenToClient(hwnd(), &bottom_right);
+  rect = {top_left.x, top_left.y, bottom_right.x, bottom_right.y};
 
   // Invalidate the area on the parent. This forces the parent to redraw the
   // gradient in this specific spot.
-  InvalidateRect(&rect, TRUE);
+  ::InvalidateRect(hwnd(), &rect, TRUE);
 
   // Update the text.
-  ::SetWindowText(hwnd_control, text.c_str());
+  ::SetWindowTextW(hwnd_control, text.c_str());
 }
 
 // If closing is disabled, then it does not close the window.
@@ -289,10 +364,7 @@ bool ProgressWnd::MaybeCloseWindow() {
   return true;
 }
 
-LRESULT ProgressWnd::OnClickedButton(WORD notify_code,
-                                     WORD id,
-                                     HWND wnd_ctl,
-                                     BOOL& handled) {
+void ProgressWnd::OnClickedButton(UINT notify_code, int id, HWND wnd_ctl) {
   CHECK(id == IDC_BUTTON1 || id == IDC_BUTTON2 || id == IDC_CLOSE);
   CHECK(events_sink_);
 
@@ -332,17 +404,14 @@ LRESULT ProgressWnd::OnClickedButton(WORD notify_code,
         case States::STATE_PAUSED:
         case States::STATE_COMPLETE_SUCCESS:
         case States::STATE_COMPLETE_ERROR:
-          return CompleteWnd::OnClickedButton(notify_code, id, wnd_ctl,
-                                              handled);
+          CompleteWnd::OnClickedButton(notify_code, id, wnd_ctl);
+          return;
         default:
           NOTREACHED();
       }
   }
 
-  handled = true;
   CloseWindow();
-
-  return 0;
 }
 
 void ProgressWnd::HandleCancelRequest() {
@@ -434,7 +503,7 @@ void ProgressWnd::OnDownloading(
 
   SetMarqueeMode(pos == 0);
   if (pos > 0) {
-    SendDlgItemMessage(IDC_PROGRESS, PBM_SETPOS, pos, 0);
+    ::SendDlgItemMessageW(hwnd(), IDC_PROGRESS, PBM_SETPOS, pos, 0);
   }
 
   ChangeControlState();
@@ -491,7 +560,7 @@ void ProgressWnd::OnInstalling(
 
   SetMarqueeMode(pos <= 0);
   if (pos > 0) {
-    SendDlgItemMessage(IDC_PROGRESS, PBM_SETPOS, pos, 0);
+    ::SendDlgItemMessageW(hwnd(), IDC_PROGRESS, PBM_SETPOS, pos, 0);
   }
 }
 
@@ -685,15 +754,15 @@ HRESULT ProgressWnd::ChangeControlState() {
 }
 
 HRESULT ProgressWnd::SetMarqueeMode(bool is_marquee) {
-  CWindow progress_bar = GetDlgItem(IDC_PROGRESS);
-  LONG_PTR style = progress_bar.GetWindowLongPtr(GWL_STYLE);
+  HWND progress_bar = ::GetDlgItem(hwnd(), IDC_PROGRESS);
+  LONG_PTR style = ::GetWindowLongPtrW(progress_bar, GWL_STYLE);
   if (is_marquee) {
     style |= PBS_MARQUEE;
   } else {
     style &= ~PBS_MARQUEE;
   }
-  progress_bar.SetWindowLongPtr(GWL_STYLE, style);
-  progress_bar.SendMessage(PBM_SETMARQUEE, is_marquee, 0);
+  ::SetWindowLongPtrW(progress_bar, GWL_STYLE, style);
+  ::SendMessageW(progress_bar, PBM_SETMARQUEE, is_marquee, 0);
 
   return S_OK;
 }
