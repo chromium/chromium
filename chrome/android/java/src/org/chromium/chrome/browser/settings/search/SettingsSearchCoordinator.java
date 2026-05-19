@@ -1192,6 +1192,7 @@ public class SettingsSearchCoordinator
                 var lp = (Toolbar.LayoutParams) searchBox.getLayoutParams();
                 lp.gravity = Gravity.END;
                 searchBox.setLayoutParams(lp);
+                showTitleTextView(true);
             }
             adjustTalkbackTraversalOrder(isVisible(query) ? query : searchBox);
         } else {
