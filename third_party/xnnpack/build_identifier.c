@@ -11,7 +11,9 @@
 // The following inputs were used to generate this file.
 // - external/xnnpack+/src/bf16-f32-gemm/gen/bf16-f32-gemm-11x32c2-minmax-asm-amd64-avx512bf16-broadcast.S
 // - external/xnnpack+/src/bf16-f32-gemm/gen/bf16-f32-gemm-1x32c2-minmax-asm-amd64-avx512bf16-broadcast.S
+// - external/xnnpack+/src/bf16-f32-vcvt/gen/bf16-f32-vcvt-avx512skx-u16.c
 // - external/xnnpack+/src/bf16-f32-vcvt/gen/bf16-f32-vcvt-scalar-u2.c
+// - external/xnnpack+/src/bf16-qs8-vcvt/gen/bf16-qs8-vcvt-scalar-imagic-u4.c
 // - external/xnnpack+/src/bf16-rminmax/gen/bf16-rmax-scalar-u2-acc2.c
 // - external/xnnpack+/src/bf16-rminmax/gen/bf16-rmin-scalar-u2-acc2.c
 // - external/xnnpack+/src/bf16-rminmax/gen/bf16-rminmax-scalar-u2-acc2.c
@@ -107,6 +109,8 @@
 // - external/xnnpack+/src/f16-vexp/gen/f16-vexp-scalar-poly-3.c
 // - external/xnnpack+/src/f16-vgelu/gen/f16-vgelu-scalar-rational-6-4-div.c
 // - external/xnnpack+/src/f16-vhswish/gen/f16-vhswish-f16c-u16.c
+// - external/xnnpack+/src/f16-vlog/gen/f16-vlog-avx512fp16-rational-3-3-div.c
+// - external/xnnpack+/src/f16-vlog/gen/f16-vlog-scalar-rational-3-3-div.c
 // - external/xnnpack+/src/f16-vlrelu/gen/f16-vlrelu-f16c-u16.c
 // - external/xnnpack+/src/f16-vmulcaddc/gen/f16-vmulcaddc-c8-minmax-fma3-2x.c
 // - external/xnnpack+/src/f16-vrnd/gen/f16-vrndd-f16c-u16.c
@@ -117,8 +121,11 @@
 // - external/xnnpack+/src/f16-vsigmoid/gen/f16-vsigmoid-avx2-rr1-p2-rcp-u32.c
 // - external/xnnpack+/src/f16-vsin/gen/f16-vsin-scalar-rational-3-2-div.c
 // - external/xnnpack+/src/f16-vsqrt/gen/f16-vsqrt-f16c-rsqrt-u32.c
+// - external/xnnpack+/src/f16-vsqrt/gen/f16-vsqrt-scalar-sqrt.c
+// - external/xnnpack+/src/f16-vtanh/gen/f16-vtanh-avx512fp16-expm1minus-rr1-p3h2ts-div.c
 // - external/xnnpack+/src/f16-vtanh/gen/f16-vtanh-f16c-expm1minus-rr1-p3h2ts-rcp-u24.c
 // - external/xnnpack+/src/f16-vtanh/gen/f16-vtanh-fma3-polynomial-p19h9t2-u32.c
+// - external/xnnpack+/src/f16-vtanh/gen/f16-vtanh-scalar-expm1minus-rr1-p3h2ts-div.c
 // - external/xnnpack+/src/f16-vunary/gen/f16-vabs-sse2-u16.c
 // - external/xnnpack+/src/f16-vunary/gen/f16-vneg-sse2-u16.c
 // - external/xnnpack+/src/f16-vunary/gen/f16-vsqr-f16c-u16.c
@@ -128,6 +135,8 @@
 // - external/xnnpack+/src/f32-avgpool/gen/f32-avgpool-9p-minmax-avx512f-u16.c
 // - external/xnnpack+/src/f32-avgpool/gen/f32-avgpool-9p-minmax-scalar-u1.c
 // - external/xnnpack+/src/f32-avgpool/gen/f32-avgpool-9p-minmax-sse2-u4.c
+// - external/xnnpack+/src/f32-bf16-vcvt/gen/f32-bf16-vcvt-avx512bf16-u16.c
+// - external/xnnpack+/src/f32-bf16-vcvt/gen/f32-bf16-vcvt-avx512skx-u16.c
 // - external/xnnpack+/src/f32-bf16-vcvt/gen/f32-bf16-vcvt-scalar-u2.c
 // - external/xnnpack+/src/f32-conv-hwc2chw/f32-conv-hwc2chw-3x3s2p1c3x4-scalar-1x1.c
 // - external/xnnpack+/src/f32-conv-hwc2chw/f32-conv-hwc2chw-3x3s2p1c3x4-sse-2x2.c
@@ -1028,10 +1037,10 @@
 #include <string.h>
 
 static const uint8_t xnn_build_identifier[] = {
-   30, 143,  22,  80, 130,  38, 207, 157,
-  220, 120, 121,  62, 169, 118,  65, 208,
-  136, 100,  51,  43, 192, 245, 228, 119,
-   92, 207, 254, 216, 153, 115, 152, 115
+   86, 219, 205,  90, 137,  71, 237, 167,
+  109,  80, 123, 170, 164,  25, 139,  97,
+  183, 183,  87, 222, 196,   0,  53,  54,
+  235, 210,  32,  46,  35, 187,  71, 176
 };
 
 size_t xnn_experimental_get_build_identifier_size() {
