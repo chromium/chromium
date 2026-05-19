@@ -1,0 +1,9 @@
+{
+  "name": "Tab Context Multiple Items Test",
+  "version": "0.1",
+  "manifest_version": 3,
+  "permissions": ["contextMenus"],
+  "background": {
+    "service_worker": "background.js"
+  }
+}

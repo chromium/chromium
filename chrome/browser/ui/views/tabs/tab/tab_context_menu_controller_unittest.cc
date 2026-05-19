@@ -127,3 +127,21 @@ TEST_F(TabContextMenuControllerTest, VerifyingGetAcceleratorCallback) {
       static_cast<int>(kCommand), &result_accelerator));
   EXPECT_EQ(result_accelerator, kAccelerator);
 }
+
+// Verifies that custom extension command IDs are intercepted and do not
+// delegate to mock_delegate_ (which would fail because no expectations are set
+// on it).
+TEST_F(TabContextMenuControllerTest, ExtensionCommandInterception) {
+  const int kExtensionCommandId =
+      49000;  // Matches custom extension command range
+
+  // Since no model is loaded, these should safely return false/default values
+  // and should NOT call mock_delegate_.
+  EXPECT_FALSE(controller_->IsCommandIdEnabled(kExtensionCommandId));
+  EXPECT_FALSE(controller_->IsCommandIdChecked(kExtensionCommandId));
+  EXPECT_FALSE(controller_->IsCommandIdVisible(kExtensionCommandId));
+
+  // ExecuteCommand should return without calling mock_delegate_'s
+  // ExecuteContextMenuCommand.
+  controller_->ExecuteCommand(kExtensionCommandId, kEventFlags);
+}

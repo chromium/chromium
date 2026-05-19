@@ -40,7 +40,9 @@
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/renderer_context_menu/render_view_context_menu.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu_test_util.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/tabs/tab_menu_model.h"
+#include "chrome/browser/ui/views/tabs/tab/tab_context_menu_controller.h"
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
@@ -148,6 +150,109 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabContextMenuApiTest, ContextMenusTabContext) {
 
   // Wait for the extension to verify it received the onClicked event, which it
   // indicates via success in the test.
+  ASSERT_TRUE(catcher.GetNextResult());
+}
+
+class FakeTabContextMenuControllerDelegate
+    : public TabContextMenuController::Delegate {
+ public:
+  bool IsContextMenuCommandChecked(
+      TabStripModel::ContextMenuCommand command_id) override {
+    return false;
+  }
+
+  bool IsContextMenuCommandEnabled(
+      tabs::TabInterface* tab,
+      TabStripModel::ContextMenuCommand command_id) override {
+    return true;
+  }
+
+  bool IsContextMenuCommandAlerted(
+      TabStripModel::ContextMenuCommand command_id) override {
+    return false;
+  }
+
+  void ExecuteContextMenuCommand(tabs::TabInterface* tab,
+                                 TabStripModel::ContextMenuCommand command_id,
+                                 int event_flags) override {}
+  bool GetContextMenuAccelerator(int command_id,
+                                 ui::Accelerator* accelerator) override {
+    return false;
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(ExtensionTabContextMenuApiTest,
+                       ContextMenusTabContextMultipleItems) {
+  // Wait for the extension to signal that it has created the menu items.
+  ExtensionTestMessageListener listener("created");
+
+  ResultCatcher catcher;
+
+  // Load the extension which calls chrome.contextMenus.create multiple times.
+  const Extension* extension = LoadExtension(
+      test_data_dir_.AppendASCII("context_menus/tab_context_multiple"));
+  ASSERT_TRUE(extension);
+
+  // Wait until the extension has completed the menu item creation calls.
+  ASSERT_TRUE(listener.WaitUntilSatisfied());
+
+  // Verify the menu model. We create a TabMenuModel for the active tab
+  // to inspect its contents.
+  TabStripModel* tab_strip = browser()->tab_strip_model();
+  int index = tab_strip->active_index();
+  TabMenuModel menu(nullptr, nullptr, tab_strip, index);
+
+  // Because there are multiple items, ContextMenuMatcher must group them inside
+  // a submenu. Find the index of the extension-named submenu item.
+  size_t submenu_index = menu.GetItemCount();
+  for (size_t i = 0; i < menu.GetItemCount(); ++i) {
+    if (menu.GetLabelAt(i) == base::UTF8ToUTF16(extension->name())) {
+      submenu_index = i;
+      break;
+    }
+  }
+  ASSERT_LT(submenu_index, menu.GetItemCount());
+  ASSERT_EQ(menu.GetTypeAt(submenu_index), ui::MenuModel::TYPE_SUBMENU);
+
+  // Verify that both items are present.
+  ui::MenuModel* submenu = menu.GetSubmenuModelAt(submenu_index);
+  ASSERT_TRUE(submenu);
+  ASSERT_EQ(2u, submenu->GetItemCount());
+
+  FakeTabContextMenuControllerDelegate fake_delegate;
+
+  // Instantiate the TabContextMenuController to wrap the model, matching the
+  // real UI delegate.
+  auto context_menu_controller = std::make_unique<TabContextMenuController>(
+      tab_strip->GetTabAtIndex(index)->GetHandle(), &fake_delegate);
+
+  context_menu_controller->LoadModel(std::make_unique<TabMenuModel>(
+      context_menu_controller.get(), nullptr, tab_strip, index));
+
+  TabMenuModel* loaded_model = context_menu_controller->GetTabMenuModel();
+  size_t loaded_submenu_index = loaded_model->GetItemCount();
+  for (size_t i = 0; i < loaded_model->GetItemCount(); ++i) {
+    if (loaded_model->GetLabelAt(i) == base::UTF8ToUTF16(extension->name())) {
+      loaded_submenu_index = i;
+      break;
+    }
+  }
+  ASSERT_LT(loaded_submenu_index, loaded_model->GetItemCount());
+  ui::MenuModel* loaded_submenu =
+      loaded_model->GetSubmenuModelAt(loaded_submenu_index);
+  ASSERT_TRUE(loaded_submenu);
+
+  // Verify that querying the submenu item states routes successfully without
+  // crashes.
+  EXPECT_TRUE(loaded_submenu->IsVisibleAt(0));
+  EXPECT_TRUE(loaded_submenu->IsEnabledAt(0));
+  EXPECT_FALSE(loaded_submenu->IsItemCheckedAt(0));
+
+  // Simulate user clicking the first submenu item.
+  loaded_submenu->ActivatedAt(0);
+
+  // Wait for the extension background script to receive the click event and
+  // succeed.
   ASSERT_TRUE(catcher.GetNextResult());
 }
 #endif

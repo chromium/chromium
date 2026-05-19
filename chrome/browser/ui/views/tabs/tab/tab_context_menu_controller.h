@@ -7,9 +7,12 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/menus/simple_menu_model.h"
+
+class TabMenuModel;
 
 namespace gfx {
 class Point;
@@ -56,6 +59,8 @@ class TabContextMenuController : public ui::SimpleMenuModel::Delegate {
 
   // Loads the menu model and initializes the menu runner. This must be called
   // before RunMenuAt.
+  void LoadModel(std::unique_ptr<TabMenuModel> model,
+                 base::RepeatingClosure on_menu_closed = base::DoNothing());
   void LoadModel(std::unique_ptr<ui::SimpleMenuModel> model,
                  base::RepeatingClosure on_menu_closed = base::DoNothing());
 
@@ -70,18 +75,21 @@ class TabContextMenuController : public ui::SimpleMenuModel::Delegate {
   // ui::SimpleMenuModel::Delegate:
   bool IsCommandIdChecked(int command_id) const override;
   bool IsCommandIdEnabled(int command_id) const override;
+  bool IsCommandIdVisible(int command_id) const override;
   bool IsCommandIdAlerted(int command_id) const override;
   void ExecuteCommand(int command_id, int event_flags) override;
   bool GetAcceleratorForCommandId(int command_id,
                                   ui::Accelerator* accelerator) const override;
 
   ui::SimpleMenuModel* GetMenuModel() { return model_.get(); }
+  TabMenuModel* GetTabMenuModel() { return tab_menu_model_; }
 
  private:
   std::unique_ptr<ui::SimpleMenuModel> model_;
   std::unique_ptr<views::MenuRunner> menu_runner_;
   tabs::TabHandle tab_handle_;
   raw_ptr<Delegate> delegate_;
+  raw_ptr<TabMenuModel> tab_menu_model_ = nullptr;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TABS_TAB_TAB_CONTEXT_MENU_CONTROLLER_H_
