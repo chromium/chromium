@@ -97,14 +97,6 @@ PA_ALWAYS_INLINE bool PartitionAddressSpace::IsInitialized() {
   return false;
 }
 
-PA_ALWAYS_INLINE size_t PartitionAddressSpace::GetZeroSegmentSize() {
-#if PA_CONFIG(ENABLE_USER_SPACE_ZERO_SEGMENT)
-  return zero_segment_size_;
-#else
-  return 0;
-#endif
-}
-
 PA_ALWAYS_INLINE bool PartitionAddressSpace::IsConfigurablePoolInitialized() {
   return setup_.configurable_pool_base_address_ !=
          kUninitializedPoolBaseAddress;

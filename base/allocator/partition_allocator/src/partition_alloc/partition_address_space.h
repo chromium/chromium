@@ -128,7 +128,13 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAddressSpace {
 
   PA_ALWAYS_INLINE static bool IsInitialized();
 
-  PA_ALWAYS_INLINE static size_t GetZeroSegmentSize();
+  PA_ALWAYS_INLINE static size_t GetZeroSegmentSize() {
+#if PA_CONFIG(ENABLE_USER_SPACE_ZERO_SEGMENT)
+    return zero_segment_size_;
+#else
+    return 0;
+#endif
+  }
 
   PA_ALWAYS_INLINE static bool IsConfigurablePoolInitialized();
 
