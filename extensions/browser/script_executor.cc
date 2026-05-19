@@ -123,9 +123,9 @@ class Handler : public content::WebContentsObserver {
       // as the for loop will mutate `pending_render_frames_`.
       const size_t requested_frame_count = pending_render_frames_.size();
       for (size_t i = 0; i < requested_frame_count; ++i) {
-        pending_render_frames_.at(i)->ForEachRenderFrameHost(
+        pending_render_frames_.at(i)->ForEachRenderFrameHostWithAction(
             [this, extension, tab_id](content::RenderFrameHost* frame) {
-              MaybeAddSubFrame(frame, extension, tab_id);
+              return MaybeAddSubFrame(frame, extension, tab_id);
             });
       }
     }
