@@ -1554,5 +1554,59 @@ TEST_F(IncrementalMarkingTest, NestedVectorsWithInlineCapacityOnStack) {
   driver.FinishGC();
 }
 
+TEST_F(IncrementalMarkingTest, HeapVectorCopyMemberNullFirstSlotUAF) {
+  // Regression test: https://crbug.com/513737952
+  using Vec = GCedHeapVector<Member<LinkedObject>>;
+  Persistent<Vec> dst = MakeGarbageCollected<Vec>();
+  dst->reserve(4);
+  Vec* src = MakeGarbageCollected<Vec>();
+  src->push_back(nullptr);
+  src->push_back(MakeGarbageCollected<LinkedObject>());
+  WeakPersistent<LinkedObject> victim_observer = src->at(1).Get();
+  IncrementalMarkingTestDriver driver(ThreadState::Current());
+  driver.StartGC();
+  driver.TriggerMarkingSteps();
+  // No reallocation. This should just trigger a write barrier.
+  *dst = *src;
+  driver.FinishGC();
+  EXPECT_TRUE(victim_observer);
+}
+
+TEST_F(IncrementalMarkingTest, HeapVectorCopyMemberNonNullFirstSlotControl) {
+  // Regression test: https://crbug.com/513737952
+  using Vec = GCedHeapVector<Member<LinkedObject>>;
+  Persistent<Vec> dst = MakeGarbageCollected<Vec>();
+  dst->reserve(4);
+  Vec* src = MakeGarbageCollected<Vec>();
+  src->push_back(MakeGarbageCollected<LinkedObject>());
+  src->push_back(nullptr);
+  WeakPersistent<LinkedObject> victim_observer = src->at(0).Get();
+  IncrementalMarkingTestDriver driver(ThreadState::Current());
+  driver.StartGC();
+  driver.TriggerMarkingSteps();
+  *dst = *src;
+  driver.FinishGC();
+  EXPECT_TRUE(victim_observer);
+}
+
+TEST_F(IncrementalMarkingTest, HeapVectorAppendRangeNullFirstSlotUAF) {
+  // Regression test: https://crbug.com/513737952
+  using Vec = GCedHeapVector<Member<LinkedObject>>;
+  Persistent<Vec> dst = MakeGarbageCollected<Vec>();
+  dst->reserve(4);
+  Vec* src = MakeGarbageCollected<Vec>();
+  src->push_back(nullptr);
+  src->push_back(MakeGarbageCollected<LinkedObject>());
+  WeakPersistent<LinkedObject> victim_observer = src->at(1).Get();
+  IncrementalMarkingTestDriver driver(ThreadState::Current());
+  driver.StartGC();
+  driver.TriggerMarkingSteps();
+  // The following call performs no reallocation. Appending the range must
+  // trigger write barriers.
+  dst->append_range(*src);
+  driver.FinishGC();
+  EXPECT_TRUE(victim_observer);
+}
+
 }  // namespace incremental_marking_test
 }  // namespace blink

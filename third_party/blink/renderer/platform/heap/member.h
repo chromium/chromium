@@ -230,14 +230,27 @@ class MemberConstructTraits {
   }
 
   static void NotifyNewElements(base::span<T> members) {
-    // Checking the first element is sufficient for determining whether a
-    // marking or generational barrier is required.
-    if (members.empty() ||
-        !WriteBarrier::IsWriteBarrierNeeded(&members.front())) [[likely]] {
+    // TODO(mlippautz): We can expose whether the write barrier is enabled at
+    // all and get away with a single global variable check here.
+
+    // We need a non-null pointer to check if the write barrier is needed.
+    // nullptr will just always bail out.
+    auto current = members.begin();
+    for (; current != members.end(); ++current) {
+      if (static_cast<bool>(*current)) {
+        break;
+      }
+    }
+    if (current == members.end()) {
       return;
     }
-    for (auto& member : members) {
-      WriteBarrier::DispatchForObject(&member);
+    // Checking one pointer is sufficient for determining whether a
+    // marking or generational barrier is required.
+    if (!WriteBarrier::IsWriteBarrierNeeded(&*current)) {
+      return;
+    }
+    for (; current != members.end(); ++current) {
+      WriteBarrier::DispatchForObject(&*current);
     }
   }
 };
