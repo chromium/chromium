@@ -216,6 +216,11 @@ class VIEWS_EXPORT Textfield : public View,
   std::optional<ui::ColorId> text_color_id() const { return text_color_id_; }
   void SetTextColorId(std::optional<ui::ColorId> color_id);
 
+  std::optional<ui::ColorId> disabled_text_color_id() const {
+    return disabled_text_color_id_;
+  }
+  void SetDisabledTextColorId(std::optional<ui::ColorId> color_id);
+
   // Gets/sets the background color to be used when painting the Textfield.
   SkColor GetBackgroundColor() const;
   std::optional<ui::ColorVariant> background_color() const {
@@ -821,6 +826,7 @@ class VIEWS_EXPORT Textfield : public View,
 
   // Colors which override default system colors.
   std::optional<ui::ColorId> text_color_id_;
+  std::optional<ui::ColorId> disabled_text_color_id_;
   std::optional<ui::ColorVariant> background_color_;
   std::optional<ui::ColorId> selection_text_color_id_;
   std::optional<ui::ColorId> selection_background_color_id_;

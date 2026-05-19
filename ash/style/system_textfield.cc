@@ -150,7 +150,13 @@ SystemTextfield::SystemTextfield(Type type)
     : type_(type),
       event_handler_(std::make_unique<EventHandler>(this)),
       corner_radius_(kCornerRadius) {
+  SetTextColorId(cros_tokens::kCrosSysOnSurface);
+  SetDisabledTextColorId(cros_tokens::kCrosSysDisabled);
+  SetSelectionTextColorId(cros_tokens::kCrosSysOnSurface);
+  SetSelectionBackgroundColorId(cros_tokens::kCrosSysHighlightText);
+  SetPlaceholderTextColorId(cros_tokens::kCrosSysDisabled);
   SetFontList(GetFontListFromType(type_));
+
   SetBorder(views::CreateEmptyBorder(kBorderInsets));
   // Remove the default hover effect, since the hover effect of system textfield
   // appears not only on hover but also on focus.
@@ -179,27 +185,15 @@ SystemTextfield::SystemTextfield(Type type)
 
 SystemTextfield::~SystemTextfield() = default;
 
-void SystemTextfield::SetTextColorId(ui::ColorId color_id) {
-  UpdateColorId(text_color_id_, color_id, /*is_background_color=*/false);
-}
-
-void SystemTextfield::SetSelectedTextColorId(ui::ColorId color_id) {
-  UpdateColorId(selected_text_color_id_, color_id,
-                /*is_background_color=*/false);
-}
-
-void SystemTextfield::SetSelectionBackgroundColorId(ui::ColorId color_id) {
-  UpdateColorId(selection_background_color_id_, color_id,
-                /*is_background_color=*/false);
-}
-
 void SystemTextfield::SetBackgroundColorId(ui::ColorId color_id) {
-  UpdateColorId(background_color_id_, color_id, /*is_background_color=*/true);
-}
+  if (background_color_id_ == color_id) {
+    return;
+  }
 
-void SystemTextfield::SetPlaceholderTextColorId(ui::ColorId color_id) {
-  UpdateColorId(placeholder_text_color_id_, color_id,
-                /*is_background_color=*/false);
+  background_color_id_ = color_id;
+  if (GetWidget()) {
+    UpdateBackground();
+  }
 }
 
 void SystemTextfield::SetActiveStateChangedCallback(
@@ -308,14 +302,6 @@ void SystemTextfield::OnMouseExited(const ui::MouseEvent& event) {
   UpdateBackground();
 }
 
-void SystemTextfield::OnThemeChanged() {
-  views::View::OnThemeChanged();
-
-  // Only update the text color since the background color will be handled by
-  // themed background.
-  UpdateTextColor();
-}
-
 void SystemTextfield::OnFocus() {
   SetActive(true);
 }
@@ -331,50 +317,7 @@ void SystemTextfield::OnBlur() {
 
 void SystemTextfield::OnEnabledStateChanged() {
   UpdateBackground();
-  UpdateTextColor();
   SchedulePaint();
-}
-
-void SystemTextfield::UpdateColorId(std::optional<ui::ColorId>& src,
-                                    ui::ColorId dst,
-                                    bool is_background_color) {
-  if (src && *src == dst) {
-    return;
-  }
-
-  src = dst;
-  if (is_background_color) {
-    UpdateBackground();
-  } else {
-    UpdateTextColor();
-  }
-}
-
-void SystemTextfield::UpdateTextColor() {
-  if (!GetWidget()) {
-    return;
-  }
-
-  // Set text color.
-  auto* color_provider = GetColorProvider();
-  gfx::RenderText* render_text = GetRenderText();
-  if (!GetEnabled()) {
-    SetColor(color_provider->GetColor(cros_tokens::kCrosSysDisabled));
-    return;
-  }
-
-  // Set text color and selection text and background (highlight part) colors.
-  SetColor(color_provider->GetColor(
-      text_color_id_.value_or(cros_tokens::kCrosSysOnSurface)));
-  render_text->set_selection_color(color_provider->GetColor(
-      selected_text_color_id_.value_or(cros_tokens::kCrosSysOnSurface)));
-  render_text->set_selection_background_focused_color(
-      color_provider->GetColor(selection_background_color_id_.value_or(
-          cros_tokens::kCrosSysHighlightText)));
-
-  // Set placeholder text color
-  views::Textfield::SetPlaceholderTextColorId(
-      placeholder_text_color_id_.value_or(cros_tokens::kCrosSysDisabled));
 }
 
 BEGIN_METADATA(SystemTextfield)
