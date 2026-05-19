@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/css/css_position_try_rule.h"
 
+#include "third_party/blink/renderer/core/css/css_markup.h"
 #include "third_party/blink/renderer/core/css/css_position_try_descriptors.h"
 #include "third_party/blink/renderer/core/css/css_property_value_set.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
@@ -27,10 +28,16 @@ CSSPositionTryRule::CSSPositionTryRule(StyleRulePositionTry* position_try_rule,
 
 CSSPositionTryRule::~CSSPositionTryRule() = default;
 
+String CSSPositionTryRule::name() const {
+  StringBuilder result;
+  SerializeIdentifier(position_try_rule_->Name(), result);
+  return result.ReleaseString();
+}
+
 String CSSPositionTryRule::cssText() const {
   StringBuilder result;
   result.Append("@position-try ");
-  result.Append(name());
+  SerializeIdentifier(position_try_rule_->Name(), result);
   result.Append(" { ");
   if (!position_try_rule_->Properties().IsEmpty()) {
     result.Append(position_try_rule_->Properties().AsText());
