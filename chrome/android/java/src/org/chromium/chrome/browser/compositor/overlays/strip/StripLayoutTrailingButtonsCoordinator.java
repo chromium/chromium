@@ -166,6 +166,8 @@ public class StripLayoutTrailingButtonsCoordinator {
     private @Nullable CompositorAnimator mGlicActorButtonWidthAnimator;
     private @Nullable CompositorAnimator mGlicButtonOpacityAnimator;
     private @Nullable CompositorAnimator mGlicActorButtonOpacityAnimator;
+    private @Nullable CompositorAnimator mGlicDismissButtonSlideAnimator;
+    private float mDismissButtonXOffset;
 
     /** Property for width animations on the Glic button. */
     public static final FloatProperty<StripLayoutTrailingButtonsCoordinator> GLIC_BUTTON_WIDTH =
@@ -202,6 +204,23 @@ public class StripLayoutTrailingButtonsCoordinator {
                             return object.mGlicActorButton != null
                                     ? object.mGlicActorButton.getWidth()
                                     : 0.f;
+                        }
+                    };
+
+    /** Property for slide animations on the Glic dismiss nudge button. */
+    public static final FloatProperty<StripLayoutTrailingButtonsCoordinator>
+            GLIC_DISMISS_BUTTON_X_OFFSET =
+                    new FloatProperty<>("glicDismissButtonXOffset") {
+                        @Override
+                        public void setValue(
+                                StripLayoutTrailingButtonsCoordinator object, float value) {
+                            object.mDismissButtonXOffset = value;
+                            object.updateGlicButtonPosition();
+                        }
+
+                        @Override
+                        public Float get(StripLayoutTrailingButtonsCoordinator object) {
+                            return object.mDismissButtonXOffset;
                         }
                     };
 
@@ -738,8 +757,32 @@ public class StripLayoutTrailingButtonsCoordinator {
             opacityAnimator.setStartDelay(opacityDelay);
         }
 
+        if (mGlicDismissButtonSlideAnimator != null
+                && mGlicDismissButtonSlideAnimator.isRunning()) {
+            mGlicDismissButtonSlideAnimator.cancel();
+        }
+
+        CompositorAnimator slideAnimator = null;
+        if (!isActor && isGlicDismissNudgeButtonVisible()) {
+            // When expanding to show a nudge, snap the dismiss button rightward to hide
+            // off-canvas, then slide in to sync with pill expansion.
+            mDismissButtonXOffset = Math.abs(targetWidth - button.getWidth());
+            slideAnimator =
+                    CompositorAnimator.ofFloatProperty(
+                            mUpdateHost.getAnimationHandler(),
+                            this,
+                            GLIC_DISMISS_BUTTON_X_OFFSET,
+                            mDismissButtonXOffset,
+                            0.f,
+                            duration);
+            slideAnimator.setInterpolator(Interpolators.FAST_OUT_SLOW_IN_INTERPOLATOR);
+        } else {
+            mDismissButtonXOffset = 0.f;
+        }
+
         final CompositorAnimator finalWidthAnimator = widthAnimator;
         final CompositorAnimator finalOpacityAnimator = opacityAnimator;
+        final CompositorAnimator finalSlideAnimator = slideAnimator;
 
         AnimatorListenerAdapter listener =
                 new AnimatorListenerAdapter() {
@@ -757,6 +800,9 @@ public class StripLayoutTrailingButtonsCoordinator {
                         if (mGlicButtonOpacityAnimator == finalOpacityAnimator) {
                             mGlicButtonOpacityAnimator = null;
                         }
+                        if (mGlicDismissButtonSlideAnimator == finalSlideAnimator) {
+                            mGlicDismissButtonSlideAnimator = null;
+                        }
 
                         mObserver.onTrailingButtonsLayoutStateChanged();
                     }
@@ -768,11 +814,15 @@ public class StripLayoutTrailingButtonsCoordinator {
         } else {
             mGlicButtonWidthAnimator = widthAnimator;
             mGlicButtonOpacityAnimator = opacityAnimator;
+            mGlicDismissButtonSlideAnimator = slideAnimator;
         }
 
         List<Animator> animators = new ArrayList<>();
         animators.add(widthAnimator);
         animators.add(opacityAnimator);
+        if (slideAnimator != null) {
+            animators.add(slideAnimator);
+        }
 
         startAnimations(animators, listener);
     }
@@ -827,7 +877,8 @@ public class StripLayoutTrailingButtonsCoordinator {
                 mGlicDismissNudgeButton.setDrawX(
                         rightSideAnchor
                                 - GLIC_BUTTON_SHORTENED_END_PADDING_DP
-                                - GLIC_DISMISS_ICON_WIDTH_DP);
+                                - GLIC_DISMISS_ICON_WIDTH_DP
+                                + mDismissButtonXOffset);
             }
         } else {
             float leftSideAnchor = mLeftPadding + mStripEndPadding;
@@ -841,7 +892,9 @@ public class StripLayoutTrailingButtonsCoordinator {
             mGlicButton.setDrawX(leftSideAnchor);
             if (mGlicDismissNudgeButton.isVisible()) {
                 mGlicDismissNudgeButton.setDrawX(
-                        leftSideAnchor + GLIC_BUTTON_SHORTENED_END_PADDING_DP);
+                        leftSideAnchor
+                                + GLIC_BUTTON_SHORTENED_END_PADDING_DP
+                                - mDismissButtonXOffset);
             }
         }
 

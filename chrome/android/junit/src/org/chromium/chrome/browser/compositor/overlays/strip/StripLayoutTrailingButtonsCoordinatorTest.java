@@ -526,34 +526,40 @@ public class StripLayoutTrailingButtonsCoordinatorTest {
         // Create a unified spy of the coordinator for sequential transition verification
         StripLayoutTrailingButtonsCoordinator coordinatorSpy = Mockito.spy(mCoordinator);
 
-        // 1. Test Glic Button Expansion Transition (Text addition)
+        // 1. Test Glic Button Expansion Transition (Simulating contextual cueing nudge)
+        coordinatorSpy.setGlicDismissNudgeButtonVisible(true);
         coordinatorSpy.setGlicButtonText("Glic Nudge", /* isActor= */ false);
-        Mockito.verify(coordinatorSpy)
+        Mockito.verify(coordinatorSpy, Mockito.atLeastOnce())
                 .startAnimations(mAnimatorsListCaptor.capture(), Mockito.any());
         assertEquals(
-                "Glic button expansion should queue 2 animators concurrently.",
-                2,
+                "Glic button expansion should queue 3 animators concurrently (width, opacity,"
+                        + " dismiss slide).",
+                3,
                 mAnimatorsListCaptor.getValue().size());
 
         Mockito.clearInvocations(coordinatorSpy);
 
-        // 2. Test Glic Actor Button Expansion Transition (Text addition)
-        coordinatorSpy.setGlicButtonText("Actor Nudge", /* isActor= */ true);
-        Mockito.verify(coordinatorSpy)
-                .startAnimations(mAnimatorsListCaptor.capture(), Mockito.any());
-        assertEquals(
-                "Glic Actor button expansion should queue 2 animators concurrently.",
-                2,
-                mAnimatorsListCaptor.getValue().size());
-
-        Mockito.clearInvocations(coordinatorSpy);
-
-        // 3. Test Glic Button Shrink/Collapse Transition (Text removal)
+        // 2. Test Glic Button Shrink/Collapse Transition (Simulating contextual cueing nudge
+        // dismissal)
+        coordinatorSpy.setGlicDismissNudgeButtonVisible(false);
         coordinatorSpy.setGlicButtonText(null, /* isActor= */ false);
-        Mockito.verify(coordinatorSpy)
+        Mockito.verify(coordinatorSpy, Mockito.atLeastOnce())
                 .startAnimations(mAnimatorsListCaptor.capture(), Mockito.any());
         assertEquals(
-                "Glic button shrink transition should queue 2 animators concurrently.",
+                "Glic button shrink transition should queue 2 animators concurrently (width,"
+                        + " opacity).",
+                2,
+                mAnimatorsListCaptor.getValue().size());
+
+        Mockito.clearInvocations(coordinatorSpy);
+
+        // 3. Test Glic Actor Button Expansion Transition (Simulating actor task nudge)
+        coordinatorSpy.setGlicButtonText("Actor Nudge", /* isActor= */ true);
+        Mockito.verify(coordinatorSpy, Mockito.atLeastOnce())
+                .startAnimations(mAnimatorsListCaptor.capture(), Mockito.any());
+        assertEquals(
+                "Glic Actor button expansion should queue 2 animators concurrently (width,"
+                        + " opacity).",
                 2,
                 mAnimatorsListCaptor.getValue().size());
     }
