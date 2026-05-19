@@ -20,15 +20,14 @@ import org.chromium.ui.base.WindowAndroid;
 @NullMarked
 public class SettingsNavigationHelper {
     /**
-     * Tries showing the Autofill and passwords settings page.
-     *
-     * @param context The {@link Context} required to start the settings page. Noop without it.
-     * @return True if the context is valid, feature enabled and `startSettings` was called.
-     */
+      * Tries showing the Autofill and passwords settings page.
+      *
+      * @param context The {@link Context} required to start the settings page. Noop without it.
+      * @return True if the context is valid, feature enabled and `startSettings` was called.
+      */
     public static boolean showAutofillAndPasswordsSettings(@Nullable Context context) {
-        if (context == null
-                || !ChromeFeatureList.isEnabled(
-                        ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID)) {
+        if (context == null || !ChromeFeatureList.isEnabled(
+            ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID)) {
             return false;
         }
 
@@ -49,11 +48,7 @@ public class SettingsNavigationHelper {
             return false;
         }
         SettingsNavigationFactory.createSettingsNavigation()
-                .startSettings(
-                        context,
-                        AutofillIdentityDocsFragment.class,
-                        /* fragmentArgs= */ null,
-                        /* addToBackStack= */ true);
+                .startSettings(context, AutofillIdentityDocsFragment.class);
         return true;
     }
 
@@ -68,11 +63,7 @@ public class SettingsNavigationHelper {
             return false;
         }
         SettingsNavigationFactory.createSettingsNavigation()
-                .startSettings(
-                        context,
-                        AutofillTravelFragment.class,
-                        /* fragmentArgs= */ null,
-                        /* addToBackStack= */ true);
+                .startSettings(context, AutofillTravelFragment.class);
         return true;
     }
 
