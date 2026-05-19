@@ -3417,6 +3417,38 @@ class DevToolsProtocolDeviceEmulationPrerenderTest
 #define MAYBE_DeviceSize DeviceSize
 #endif
 IN_PROC_BROWSER_TEST_F(DevToolsProtocolDeviceEmulationPrerenderTest,
+                       DevicePostureOverrideDuringPrerenderActivation) {
+  content::SetupCrossSiteRedirector(embedded_test_server());
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  GURL test_url = embedded_test_server()->GetURL("/devtools/navigation.html");
+  NavigateToURLBlockUntilNavigationsComplete(shell(), test_url, 1);
+  std::string session_id = AttachToTabTargetAndGetSessionId();
+
+  // Set device posture override.
+  {
+    base::DictValue posture;
+    posture.Set("type", "folded");
+    base::DictValue params;
+    params.Set("devicePosture", std::move(posture));
+    SendSessionCommand("Emulation.setDevicePostureOverride", std::move(params),
+                       session_id, true);
+  }
+
+  // Start a prerender.
+  GURL prerender_url =
+      embedded_test_server()->GetURL("/devtools/navigation.html?prerender");
+  prerender_helper_.AddPrerender(prerender_url);
+
+  // Activate the prerendered page. This should not crash when detaching the
+  // previous session's handlers.
+  prerender_helper_.NavigatePrimaryPage(prerender_url);
+
+  SendSessionCommand("Emulation.clearDevicePostureOverride", base::DictValue(),
+                     session_id, true);
+}
+
+IN_PROC_BROWSER_TEST_F(DevToolsProtocolDeviceEmulationPrerenderTest,
                        MAYBE_DeviceSize) {
   SetupCrossSiteRedirector(embedded_test_server());
   ASSERT_TRUE(embedded_test_server()->Start());

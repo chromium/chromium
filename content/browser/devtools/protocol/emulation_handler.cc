@@ -1105,7 +1105,9 @@ void EmulationHandler::UpdateTouchEventEmulationState() {
       touch_emulator->Disable();
     }
   }
-  GetWebContents()->SetForceDisableOverscrollContent(touch_emulation_enabled_);
+  if (WebContentsImpl* web_contents = GetWebContents()) {
+    web_contents->SetForceDisableOverscrollContent(touch_emulation_enabled_);
+  }
 }
 
 void EmulationHandler::UpdateDeviceEmulationState(
@@ -1161,9 +1163,10 @@ Response EmulationHandler::SetDevicePostureOverride(
 Response EmulationHandler::ClearDevicePostureOverride() {
   if (device_posture_emulation_enabled_) {
     device_posture_emulation_enabled_ = false;
-    GetWebContents()
-        ->GetDevicePostureProvider()
-        ->DisableDevicePostureOverrideForEmulation();
+    if (WebContentsImpl* web_contents = GetWebContents()) {
+      web_contents->GetDevicePostureProvider()
+          ->DisableDevicePostureOverrideForEmulation();
+    }
   }
   return Response::Success();
 }
