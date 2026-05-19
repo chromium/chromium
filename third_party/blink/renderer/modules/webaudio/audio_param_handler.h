@@ -10,6 +10,7 @@
 #include <atomic>
 #include <tuple>
 
+#include "base/gtest_prod_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/synchronization/lock.h"
 #include "third_party/blink/renderer/core/typed_arrays/array_buffer_view_helpers.h"
@@ -185,7 +186,7 @@ class MODULES_EXPORT AudioParamHandler final
   base::Lock& RateLock() const { return rate_lock_; }
 
  private:
-  class ParamEvent {
+  class MODULES_EXPORT ParamEvent {
    public:
     enum class Type {
       kSetValue,
@@ -349,6 +350,9 @@ class MODULES_EXPORT AudioParamHandler final
   };
 
   friend class AudioNodeWiring;
+
+  FRIEND_TEST_ALL_PREFIXES(AudioParamHandlerTest,
+                           TimelinePruningOnDisconnectedNode);
 
   AudioParamHandler(BaseAudioContext&,
                     AudioParamType,

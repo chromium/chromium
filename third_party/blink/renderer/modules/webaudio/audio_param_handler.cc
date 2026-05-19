@@ -859,6 +859,31 @@ bool AudioParamHandler::InsertEvent(std::unique_ptr<ParamEvent> event,
 
   double insert_time = event->Time();
 
+  // Prune old events to prevent memory leaks in disconnected nodes
+  // where the audio thread is not running to trigger normal pruning.
+  const size_t number_of_events = events_.size();
+  if (number_of_events > 0) {
+    const auto& destination_handler = DestinationHandler();
+    const size_t current_sample_frame =
+        destination_handler.CurrentSampleFrame();
+    const double sample_rate = destination_handler.SampleRate();
+    wtf_size_t skipped_event_count = 0;
+    ParamEvent* next_event = events_[0].get();
+    for (size_t i = 0; i < number_of_events; ++i) {
+      const ParamEvent* this_event = next_event;
+      next_event = i < number_of_events - 1 ? events_[i + 1].get() : nullptr;
+      if (IsEventCurrent(this_event, next_event, current_sample_frame,
+                         sample_rate)) {
+        break;
+      } else {
+        skipped_event_count++;
+      }
+    }
+    if (skipped_event_count > 0) {
+      RemoveOldEvents(skipped_event_count);
+    }
+  }
+
   if (events_.empty() &&
       (event->GetType() == ParamEvent::Type::kLinearRampToValue ||
        event->GetType() == ParamEvent::Type::kExponentialRampToValue)) {
@@ -1343,7 +1368,7 @@ float AudioParamHandler::ValuesForFrameRangeImpl(
 
   // Go through each event and render the value buffer where the times overlap,
   // stopping when we've rendered all the requested values.
-  int last_skipped_event_index = 0;
+  wtf_size_t skipped_event_count = 0;
   for (int i = 0; i < number_of_events && write_index < values.size(); ++i) {
     ParamEvent* event = events_[i].get();
     ParamEvent* next_event =
@@ -1355,7 +1380,7 @@ float AudioParamHandler::ValuesForFrameRangeImpl(
       // in the past. We can skip processing of this event since it's
       // in past. We keep track of this event in lastSkippedEventIndex
       // to note what events we've skipped.
-      last_skipped_event_index = i;
+      skipped_event_count++;
       continue;
     }
 
@@ -1476,12 +1501,12 @@ float AudioParamHandler::ValuesForFrameRangeImpl(
   // remove them so we don't have to check them ever again.  (This MUST be
   // running with the m_events lock so we can safely modify the m_events
   // array.)
-  if (last_skipped_event_index > 0) {
+  if (skipped_event_count > 0) {
     // `new_events_` should be empty here so we don't have to
     // do any updates due to this mutation of `events_`.
     DCHECK_EQ(new_events_.size(), 0u);
 
-    RemoveOldEvents(last_skipped_event_index - 1);
+    RemoveOldEvents(skipped_event_count);
   }
 
   // If there's any time left after processing the last event then just
@@ -2303,12 +2328,20 @@ void AudioParamHandler::RemoveCancelledEvents(
 }
 
 void AudioParamHandler::RemoveOldEvents(wtf_size_t event_count) {
-  wtf_size_t n_events = events_.size();
+  const wtf_size_t n_events = events_.size();
   DCHECK_LE(event_count, n_events);
 
   // Always leave at least one event in the event list!
   if (n_events > 1) {
-    events_.EraseAt(0, std::min(event_count, n_events - 1));
+    const wtf_size_t to_remove = std::min(event_count, n_events - 1);
+    // Clean up `new_events_` to prevent dangling pointers and memory leaks
+    // when pruning disconnected nodes from the main thread.
+    if (new_events_.size() > 0) {
+      for (wtf_size_t k = 0; k < to_remove; ++k) {
+        new_events_.erase(events_[k].get());
+      }
+    }
+    events_.EraseAt(0, to_remove);
   }
 }
 

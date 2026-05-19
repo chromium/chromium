@@ -6,6 +6,8 @@
 
 #include <memory>
 
+#include "base/synchronization/lock.h"
+#include "base/synchronization/waitable_event.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
@@ -15,11 +17,10 @@
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/thread_state.h"
-#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/scheduler/public/non_main_thread.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
-#include "base/synchronization/waitable_event.h"
 
 namespace blink {
 
@@ -82,6 +83,56 @@ TEST(AudioParamHandlerTest, UAFOnGCDerivedFromSummingBus) {
   // Clear the AudioParam and GC again. This destroys the AudioParamHandler.
   frequency_param = nullptr;
   ThreadState::Current()->CollectAllGarbageForTesting();
+}
+
+TEST(AudioParamHandlerTest, TimelinePruningOnDisconnectedNode) {
+  test::TaskEnvironment task_environment;
+  auto page = std::make_unique<DummyPageHolder>();
+
+  DummyExceptionStateForTesting exception_state;
+  OfflineAudioContext* context = OfflineAudioContext::Create(
+      page->GetFrame().DomWindow(), 1, 128, 48000, exception_state);
+  ASSERT_FALSE(exception_state.HadException());
+
+  OscillatorNode* osc = context->createOscillator(exception_state);
+  ASSERT_FALSE(exception_state.HadException());
+
+  AudioParamHandler& param_handler = osc->frequency()->Handler();
+
+  // We need to acquire the lock to inspect and mutate the timeline events
+  // directly.
+  {
+    base::AutoLock locker(param_handler.events_lock_);
+    EXPECT_EQ(param_handler.events_.size(), 0u);
+    EXPECT_EQ(param_handler.new_events_.size(), 0u);
+
+    // Insert E0 (past)
+    param_handler.InsertEvent(
+        AudioParamHandler::ParamEvent::CreateSetValueEvent(1.0, -2.0),
+        exception_state);
+    ASSERT_FALSE(exception_state.HadException());
+    EXPECT_EQ(param_handler.events_.size(), 1u);
+    EXPECT_EQ(param_handler.new_events_.size(), 1u);
+
+    // Insert E1 (past)
+    param_handler.InsertEvent(
+        AudioParamHandler::ParamEvent::CreateSetValueEvent(2.0, -1.0),
+        exception_state);
+    ASSERT_FALSE(exception_state.HadException());
+    EXPECT_EQ(param_handler.events_.size(), 2u);
+    EXPECT_EQ(param_handler.new_events_.size(), 2u);
+
+    // Insert E2 (future) -> triggers pruning of E0, keeps E1 (preceding) and
+    // E2.
+    param_handler.InsertEvent(
+        AudioParamHandler::ParamEvent::CreateSetValueEvent(3.0, 1.0),
+        exception_state);
+    ASSERT_FALSE(exception_state.HadException());
+
+    // E0 should be pruned.
+    EXPECT_EQ(param_handler.events_.size(), 2u);
+    EXPECT_EQ(param_handler.new_events_.size(), 2u);
+  }
 }
 
 }  // namespace blink
