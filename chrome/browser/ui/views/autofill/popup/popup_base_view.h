@@ -93,6 +93,10 @@ class PopupBaseView : public PopupRowView::AccessibilitySelectionDelegate,
   // testing).
   [[nodiscard]] virtual bool DoUpdateBoundsAndRedrawPopup();
 
+  // Checks whether the popup at `popup_bounds` overlaps with any open prompts,
+  // permission bubbles, or HTML form popups.
+  bool OverlapsWithAnotherPrompt(const gfx::Rect& popup_bounds) const;
+
   // Returns the optimal bounds to place the popup with `preferred_size` and
   // places an arrow on the popup border to point towards `element_bounds`
   // within `max_bounds_for_popup`. The `preferred_popup_sides` are tried

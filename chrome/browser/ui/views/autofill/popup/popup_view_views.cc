@@ -1518,27 +1518,9 @@ bool PopupViewViews::DoUpdateBoundsAndRedrawPopup(bool prefer_prev_arrow_side) {
       element_bounds, visible_content_area_bounds, preferred_size,
       preferred_popup_sides);
 
-  if (BoundsOverlapWithAnyOpenPrompt(popup_bounds,
-                                     controller_->GetWebContents())) {
+  if (OverlapsWithAnotherPrompt(popup_bounds)) {
     controller_->Hide(SuggestionHidingReason::kOverlappingWithAnotherPrompt);
     return false;
-  }
-  // On Windows, due to platform-specific implementation details, the previous
-  // check isn't reliable, and fails to detect open prompts. Since the most
-  // critical bubble is the permission bubble, we check for that specifically.
-  if (BoundsOverlapWithOpenPermissionsPrompt(popup_bounds,
-                                             controller_->GetWebContents())) {
-    controller_->Hide(SuggestionHidingReason::kOverlappingWithAnotherPrompt);
-    return false;
-  }
-
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillPopupCheckHtmlFormPopupOverlap)) {
-    if (BoundsOverlapWithHtmlFormPopup(popup_bounds,
-                                       controller_->GetWebContents())) {
-      controller_->Hide(SuggestionHidingReason::kOverlappingWithAnotherPrompt);
-      return false;
-    }
   }
 
   // The pip surface is given the most preference while rendering. So, the
