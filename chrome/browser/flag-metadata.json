@@ -9050,6 +9050,11 @@
     "expiry_milestone": 150
   },
   {
+    "name": "tab-favicon-chips-to-coins",
+    "owners": [ "ananyaseelam@google.com", "chrome-desktop-search@google.com" ],
+    "expiry_milestone": 160
+  },
+  {
     "name": "tab-grid-new-transitions",
     "owners": [ "gambard@chromium.org", "bling-flags@google.com" ],
     "expiry_milestone": 150

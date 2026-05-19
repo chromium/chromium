@@ -590,6 +590,12 @@ inline constexpr char kDesktopUAOnConnectedDisplayDescription[] =
     "When enabled, this feature will request a desktop user agent on external "
     "displays.";
 
+inline constexpr char kTabFaviconChipsToCoinsName[] =
+    "Tab favicon chips to coins";
+inline constexpr char kTabFaviconChipsToCoinsDescription[] =
+    "Removes existing tab chips from the composebox and instead adds favicon "
+    "coins next to the \"+\" button.";
+
 inline constexpr char kTabsFromOtherDevicesSidePanelName[] =
     "Tabs from other devices side panel";
 inline constexpr char kTabsFromOtherDevicesSidePanelDescription[] =

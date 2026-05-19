@@ -7068,9 +7068,13 @@ const FeatureEntry kFeatureEntries[] = {
 
     {"context-management-in-composebox",
      flag_descriptions::kContextManagementInComposeboxName,
-     flag_descriptions::kContextManagementInComposeboxDescription,
-     kOsDesktop | kOsAndroid,
+     flag_descriptions::kContextManagementInComposeboxDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(omnibox::kContextManagementInComposebox)},
+
+    {"tab-favicon-chips-to-coins",
+     flag_descriptions::kTabFaviconChipsToCoinsName,
+     flag_descriptions::kTabFaviconChipsToCoinsDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(omnibox::kTabFaviconChipsToCoins)},
 
 #if !BUILDFLAG(IS_ANDROID)
     {"ntp-alpha-background-collections",
