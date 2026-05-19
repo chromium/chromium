@@ -434,8 +434,12 @@ const NSTimeInterval kAnimationIntervalSeconds = 0.5;
   }
 
   __weak __typeof(self) weakSelf = self;
-  [image prepareForDisplayWithCompletionHandler:^(UIImage*) {
-    [weakSelf imagePreparedForDisplay:image itemIdentifier:itemIdentifier];
+  [image prepareForDisplayWithCompletionHandler:^(UIImage* preparedImage) {
+    dispatch_async(dispatch_get_main_queue(), ^{
+      UIImage* finalImage = preparedImage ? preparedImage : image;
+      [weakSelf imagePreparedForDisplay:finalImage
+                         itemIdentifier:itemIdentifier];
+    });
   }];
 }
 
@@ -449,10 +453,7 @@ const NSTimeInterval kAnimationIntervalSeconds = 0.5;
 
   [_preparedImageCache setObject:image forKey:itemIdentifier];
 
-  __weak __typeof(self) weakSelf = self;
-  dispatch_async(dispatch_get_main_queue(), ^{
-    [weakSelf setImage:image forCellWithItemIdentifier:itemIdentifier];
-  });
+  [self setImage:image forCellWithItemIdentifier:itemIdentifier];
 }
 
 // Updates the cell for the given identifier to the provided image.
