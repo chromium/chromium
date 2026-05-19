@@ -1,0 +1,44 @@
+# Copyright 2026 The WebRTC project authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license
+# that can be found in the LICENSE file in the root of the source
+# tree.
+
+config("sframe_config") {
+  include_dirs = [
+    ".",
+    "src/include",
+  ]
+}
+
+config("sframe_internal_config") {
+  defines = [ "BORINGSSL" ]
+}
+
+source_set("sframe") {
+  sources = [
+    "src/src/crypto.cpp",
+    "src/src/crypto.h",
+    "src/src/crypto_boringssl.cpp",
+    "src/src/header.cpp",
+    "src/src/header.h",
+    "src/src/result.cpp",
+    "src/src/sframe.cpp",
+  ]
+
+  public = [
+    "src/include/sframe/map.h",
+    "src/include/sframe/result.h",
+    "src/include/sframe/sframe.h",
+    "src/include/sframe/vector.h",
+  ]
+
+  public_configs = [ ":sframe_config" ]
+
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [
+    "//build/config/compiler:no_chromium_code",
+    ":sframe_internal_config",
+  ]
+
+  deps = [ "//third_party/boringssl" ]
+}

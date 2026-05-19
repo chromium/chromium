@@ -498,6 +498,9 @@
 	path = third_party/search_engines_data/resources_internal
 	url = https://chrome-internal.googlesource.com/external/search_engines_data_internal
 	gclient-condition = checkout_src_internal
+[submodule "third_party/sframe/src"]
+	path = third_party/sframe/src
+	url = https://chromium.googlesource.com/external/github.com/cisco/sframe
 [submodule "third_party/skia"]
 	path = third_party/skia
 	url = https://skia.googlesource.com/skia

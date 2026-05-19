@@ -272,6 +272,7 @@ per-file third_party/ruy/src=*
 per-file third_party/search_engines_data/resources=*
 per-file third_party/search_engines_data/resources_internal=*
 per-file third_party/securemessage/src=*
+per-file third_party/sframe/src=*
 per-file third_party/skia=*
 per-file third_party/smhasher/src=*
 per-file third_party/snappy/src=*
