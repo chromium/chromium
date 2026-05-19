@@ -107,7 +107,10 @@ source_set("messaging") {
   }
 
   if (is_win) {
-    deps += [ "//components/app_launch_prefetch" ]
+    deps += [
+      "//components/app_launch_prefetch",
+      "//ui/views",
+    ]
   }
 }
 
