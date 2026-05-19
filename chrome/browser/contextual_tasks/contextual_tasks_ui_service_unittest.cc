@@ -1876,14 +1876,20 @@ TEST_F(ContextualTasksUiServiceTest, HandleNavigation_DisplayUrlRewritten) {
   run_loop.Run();
 }
 
-// Enter cobrowse if it's forward back navibation and is originally from link
+// Enter cobrowse if it's forward navigation and is originally from link
 // click.
 TEST_F(ContextualTasksUiServiceTest,
        HandleNavigation_ForwardButtonEnterCobrowseOnLink) {
   auto web_contents = content::WebContentsTester::CreateTestWebContents(
       profile_.get(), content::SiteInstance::Create(profile_.get()));
   content::WebContentsTester::For(web_contents.get())
-      ->SetLastCommittedURL(GURL("chrome://contextual-tasks"));
+      ->NavigateAndCommit(GURL("chrome://contextual-tasks"));
+  content::WebContentsTester::For(web_contents.get())
+      ->NavigateAndCommit(GURL("https://example.com"));
+  web_contents->GetController().GoBack();
+  content::WebContentsTester::For(web_contents.get())
+      ->CommitPendingNavigation();
+  web_contents->GetController().GoForward();
 
   base::RunLoop run_loop;
   GURL navigated_url("https://example.com");
@@ -1903,14 +1909,20 @@ TEST_F(ContextualTasksUiServiceTest,
   run_loop.Run();
 }
 
-// Do not enter cobrowse if it's forward back navibation and is originally from
+// Do not enter cobrowse if it's forward navigation and is originally from
 // typed.
 TEST_F(ContextualTasksUiServiceTest,
        HandleNavigation_ForwardButtonNotEnterCobrowseOnType) {
   auto web_contents = content::WebContentsTester::CreateTestWebContents(
       profile_.get(), content::SiteInstance::Create(profile_.get()));
   content::WebContentsTester::For(web_contents.get())
-      ->SetLastCommittedURL(GURL("chrome://contextual-tasks"));
+      ->NavigateAndCommit(GURL("chrome://contextual-tasks"));
+  content::WebContentsTester::For(web_contents.get())
+      ->NavigateAndCommit(GURL("https://example.com"));
+  web_contents->GetController().GoBack();
+  content::WebContentsTester::For(web_contents.get())
+      ->CommitPendingNavigation();
+  web_contents->GetController().GoForward();
 
   GURL navigated_url("https://example.com");
   EXPECT_FALSE(service_for_nav_->HandleNavigation(
@@ -1918,6 +1930,30 @@ TEST_F(ContextualTasksUiServiceTest,
           navigated_url, false,
           ui::PageTransitionFromInt(
               ui::PageTransition::PAGE_TRANSITION_TYPED |
+              ui::PageTransition::PAGE_TRANSITION_FORWARD_BACK)),
+      web_contents.get(),
+      /*is_from_embedded_page=*/false, /*from_can_create_window=*/false,
+      /*is_same_site_or_from_ui=*/true));
+}
+
+// Do not enter cobrowse if it's back navigation, even if originally from link
+// click.
+TEST_F(ContextualTasksUiServiceTest,
+       HandleNavigation_BackButtonNotEnterCobrowseOnLink) {
+  auto web_contents = content::WebContentsTester::CreateTestWebContents(
+      profile_.get(), content::SiteInstance::Create(profile_.get()));
+  content::WebContentsTester::For(web_contents.get())
+      ->NavigateAndCommit(GURL("https://example.com"));
+  content::WebContentsTester::For(web_contents.get())
+      ->NavigateAndCommit(GURL("chrome://contextual-tasks"));
+  web_contents->GetController().GoBack();
+
+  GURL navigated_url("https://example.com");
+  EXPECT_FALSE(service_for_nav_->HandleNavigation(
+      CreateOpenUrlParams(
+          navigated_url, false,
+          ui::PageTransitionFromInt(
+              ui::PageTransition::PAGE_TRANSITION_LINK |
               ui::PageTransition::PAGE_TRANSITION_FORWARD_BACK)),
       web_contents.get(),
       /*is_from_embedded_page=*/false, /*from_can_create_window=*/false,

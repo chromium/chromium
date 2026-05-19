@@ -1131,13 +1131,15 @@ bool ContextualTasksUiService::HandleNavigationImpl(
       tab ? tab->GetBrowserWindowInterface()
           : webui::GetBrowserWindowInterface(source_contents);
 
-  // Whether the navigation is from forward back navigation and originally from
+  // Whether the navigation is from forward navigation and originally from
   // a link click. `page_transition` can contain both the original navigation
   // information (from link click or typed, etc) and the modified one(from
   // forward/back).
   ui::PageTransition page_transition = url_params.transition;
-  bool is_forward_back_link_navigation =
+  bool is_forward_link_navigation =
       (page_transition & ui::PAGE_TRANSITION_FORWARD_BACK) &&
+      (source_contents->GetController().GetPendingEntryIndex() >
+       source_contents->GetController().GetLastCommittedEntryIndex()) &&
       (ui::PageTransitionCoreTypeIs(page_transition,
                                     ui::PAGE_TRANSITION_LINK) ||
        ui::PageTransitionCoreTypeIs(page_transition,
@@ -1145,7 +1147,7 @@ bool ContextualTasksUiService::HandleNavigationImpl(
 
   // Intercept any navigation where the wrapping WebContents is the WebUI host
   // unless it is the embedded page.
-  if ((is_from_embedded_page || is_forward_back_link_navigation) &&
+  if ((is_from_embedded_page || is_forward_link_navigation) &&
       IsContextualTasksUrl(source_contents->GetLastCommittedURL())) {
     if (IsShareUrl(url_params.url)) {
       OMNIBOX_LOG("nav_trace")
@@ -1161,9 +1163,8 @@ bool ContextualTasksUiService::HandleNavigationImpl(
       return true;
     }
 
-    // Ignore navigation triggered by UI except forward back link navigation.
-    if (!(url_params.is_renderer_initiated ||
-          is_forward_back_link_navigation)) {
+    // Ignore navigation triggered by UI except forward link navigation.
+    if (!(url_params.is_renderer_initiated || is_forward_link_navigation)) {
       OMNIBOX_LOG("nav_trace")
           << "ContextualTasks navigation trace: HandleNavigationImpl "
              "returning false, not renderer initiated";
