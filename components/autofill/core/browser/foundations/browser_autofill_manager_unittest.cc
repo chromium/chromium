@@ -1702,20 +1702,11 @@ TEST_F(BrowserAutofillManagerTest, OnFormsSeen_SendTypePredictionsToRenderer) {
 TEST_F(BrowserAutofillManagerTest,
        GetProfileSuggestions_UnrecognizedAttribute) {
   // Set up our form data.
-  FormData form;
-  form.set_name(u"MyForm");
-  form.set_url(GURL("https://myform.com/form.html"));
-  form.set_action(GURL("https://myform.com/submit.html"));
-  form.set_fields(
-      {// Set a valid autocomplete attribute for the first name.
-       CreateTestFormField("First name", "firstname", "",
-                           FormControlType::kInputText, "given-name"),
-       // Set no autocomplete attribute for the middle name.
-       CreateTestFormField("Middle name", "middle", "",
-                           FormControlType::kInputText, ""),
-       // Set an unrecognized autocomplete attribute for the last name.
-       CreateTestFormField("Last Name", "lastname", "",
-                           FormControlType::kInputText, "unrecognized")});
+  FormData form = test::GetFormData(
+      {.fields = {
+           {.role = NAME_FIRST, .autocomplete_attribute = "given-name"},
+           {.role = NAME_MIDDLE},
+           {.role = NAME_LAST, .autocomplete_attribute = "unrecognized"}}});
   FormsSeen({form});
 
   // Ensure that the single field suggestions are not considered for any
@@ -1841,15 +1832,8 @@ TEST_F(BrowserAutofillManagerTest,
 TEST_F(BrowserAutofillManagerTest,
        GetProfileSuggestions_MinFieldsEnforced_NoAutocomplete) {
   // Set up our form data.
-  FormData form;
-  form.set_name(u"MyForm");
-  form.set_url(GURL("https://myform.com/form.html"));
-  form.set_action(GURL("https://myform.com/submit.html"));
-  form.set_fields({CreateTestFormField("First Name", "firstname", "",
-                                       FormControlType::kInputText),
-                   CreateTestFormField("Last Name", "lastname", "",
-                                       FormControlType::kInputText)});
-
+  FormData form = test::GetFormData(
+      {.fields = {{.role = NAME_FIRST}, {.role = NAME_LAST}}});
   FormsSeen({form});
 
   // Ensure that the single field suggestions are considered for both fields.
@@ -1869,16 +1853,9 @@ TEST_F(BrowserAutofillManagerTest,
 TEST_F(BrowserAutofillManagerTest,
        GetProfileSuggestions_MinFieldsEnforced_WithOneAutocomplete) {
   // Set up our form data.
-  FormData form;
-  form.set_name(u"MyForm");
-  form.set_url(GURL("https://myform.com/form.html"));
-  form.set_action(GURL("https://myform.com/submit.html"));
-  form.set_fields(
-      {CreateTestFormField("First Name", "firstname", "",
-                           FormControlType::kInputText, "given-name"),
-       CreateTestFormField("Last Name", "lastname", "",
-                           FormControlType::kInputText, "")});
-
+  FormData form = test::GetFormData(
+      {.fields = {{.role = NAME_FIRST, .autocomplete_attribute = "given-name"},
+                  {.role = NAME_LAST}}});
   FormsSeen({form});
 
   // Check that suggestions are made for the field that has the autocomplete
@@ -1905,16 +1882,10 @@ TEST_F(BrowserAutofillManagerTest,
 TEST_F(BrowserAutofillManagerTest,
        GetProfileSuggestions_SmallFormWithTwoAutocomplete) {
   // Set up our form data.
-  FormData form;
-  form.set_name(u"MyForm");
-  form.set_url(GURL("https://myform.com/form.html"));
-  form.set_action(GURL("https://myform.com/submit.html"));
-  form.set_fields(
-      {CreateTestFormField("First Name", "firstname", "",
-                           FormControlType::kInputText, "given-name"),
-       CreateTestFormField("Last Name", "lastname", "",
-                           FormControlType::kInputText, "family-name")});
-
+  FormData form = test::GetFormData(
+      {.fields = {
+           {.role = NAME_FIRST, .autocomplete_attribute = "given-name"},
+           {.role = NAME_LAST, .autocomplete_attribute = "family-name"}}});
   FormsSeen({form});
 
   OnAskForValuesToFill(form, form.fields()[0]);
@@ -2194,18 +2165,13 @@ TEST_F(BrowserAutofillManagerTest,
 // Test that we return no suggestions when the form has no relevant fields.
 TEST_F(BrowserAutofillManagerTest, GetProfileSuggestions_UnknownFields) {
   // Set up our form data.
-  FormData form;
-  form.set_name(u"MyForm");
-  form.set_url(GURL("https://myform.com/form.html"));
-  form.set_action(GURL("https://myform.com/submit.html"));
-  form.set_fields(
-      {CreateTestFormField("Username", "username", "",
-                           FormControlType::kInputText),
-       CreateTestFormField("Password", "password", "",
-                           FormControlType::kInputPassword),
-       CreateTestFormField("Quest", "quest", "", FormControlType::kInputText),
-       CreateTestFormField("Color", "color", "", FormControlType::kInputText)});
-
+  FormData form = test::GetFormData(
+      {.fields = {{.label = u"Username", .name = u"username"},
+                  {.label = u"Password",
+                   .name = u"password",
+                   .form_control_type = FormControlType::kInputPassword},
+                  {.label = u"Quest", .name = u"quest"},
+                  {.label = u"Color", .name = u"color"}}});
   FormsSeen({form});
 
   OnAskForValuesToFill(form, form.fields().back());
