@@ -376,6 +376,7 @@
 #include "chrome/browser/private_ai/private_ai_service_factory.h"
 #include "chrome/browser/profile_resetter/reset_report_uploader_factory.h"
 #include "chrome/browser/record_replay/recording_data_manager_factory.h"
+#include "chrome/browser/record_replay/task_service_factory.h"
 #include "chrome/browser/screen_ai/screen_ai_service_router_factory.h"
 #include "chrome/browser/search/instant_service_factory.h"
 #include "chrome/browser/search_engine_choice/search_engine_choice_dialog_service_factory.h"
@@ -1328,6 +1329,7 @@ void ChromeBrowserMainExtraPartsProfiles::
   ReadingListModelFactory::GetInstance();
 #if !BUILDFLAG(IS_ANDROID)
   record_replay::RecordingDataManagerFactory::GetInstance();
+  record_replay::TaskServiceFactory::GetInstance();
 #endif
   ReduceAcceptLanguageFactory::GetInstance();
   RendererUpdaterFactory::GetInstance();

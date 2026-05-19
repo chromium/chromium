@@ -18,6 +18,8 @@ static_library("impl") {
     "recording_data_manager_factory.h",
     "task_parameters_extractor_factory.cc",
     "task_parameters_extractor_factory.h",
+    "task_service_factory.cc",
+    "task_service_factory.h",
   ]
 
   deps = [
@@ -40,7 +42,10 @@ static_library("impl") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "chrome_record_replay_client_unittest.cc" ]
+  sources = [
+    "chrome_record_replay_client_unittest.cc",
+    "task_service_factory_unittest.cc",
+  ]
   deps = [
     ":impl",
     ":record_replay",
