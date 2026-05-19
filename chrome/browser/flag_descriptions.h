@@ -3295,6 +3295,12 @@ inline constexpr char kOmniboxNumWebZpsMostVisitedUrlsDescription[] =
     "Controls presence/volume of Most Visited URLs shown in zero-prefix "
     "context on the Web";
 
+inline constexpr char kOmniboxResizingPrioritizationName[] =
+    "Omnibox Resizing Prioritization";
+inline constexpr char kOmniboxResizingPrioritizationDescription[] =
+    "Prioritizes providing space for the Omnibox during browser window "
+    "resizing.";
+
 inline constexpr char kOmniboxToolbeltName[] = "Omnibox toolbelt";
 inline constexpr char kOmniboxToolbeltDescription[] =
     "Adds a row of buttons at the bottom of the omnibox.";

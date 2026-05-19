@@ -6519,6 +6519,11 @@ const FeatureEntry kFeatureEntries[] = {
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) ||
         // BUILDFLAG(IS_WIN)
 
+    {"omnibox-resizing-prioritization",
+     flag_descriptions::kOmniboxResizingPrioritizationName,
+     flag_descriptions::kOmniboxResizingPrioritizationDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(features::kOmniboxResizingPrioritization)},
+
     {"omnibox-contextual-suggestions",
      flag_descriptions::kOmniboxContextualSuggestionsName,
      flag_descriptions::kOmniboxContextualSuggestionsDescription,

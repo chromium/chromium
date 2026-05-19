@@ -7172,6 +7172,11 @@
     "expiry_milestone": 159
   },
   {
+    "name": "omnibox-resizing-prioritization",
+    "owners": [ "corising@chromium.org", "top-chrome-desktop-ui@google.com" ],
+    "expiry_milestone": 155
+  },
+  {
     "name": "omnibox-rich-autocompletion-promising",
     "owners": [ "manukh@chromium.org", "chrome-omnibox-team@google.com" ],
     "expiry_milestone": 140
