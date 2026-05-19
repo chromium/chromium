@@ -1206,6 +1206,7 @@ public class MultiInstanceManagerApi31UnitTest {
     public void testRenameInstanceUpdatesCustomTitle() {
         final String newTitle = "My Renamed Window";
         final int instanceId = 2;
+        ChromeMultiInstancePersistentStore.writeLastAccessedTime(instanceId);
         mMultiInstanceManager.renameInstance(instanceId, newTitle);
 
         assertEquals(
@@ -1387,6 +1388,7 @@ public class MultiInstanceManagerApi31UnitTest {
     @Test
     public void testRemoveInstanceInfo() {
         int index = 1;
+        ChromeMultiInstancePersistentStore.writeLastAccessedTime(index);
         ChromeMultiInstancePersistentStore.writeActiveTabUrl(index, /* url= */ "url");
         ChromeMultiInstancePersistentStore.writeActiveTabTitle(index, /* title= */ "title");
         ChromeMultiInstancePersistentStore.writeCustomTitle(index, /* title= */ "title");
@@ -1395,7 +1397,6 @@ public class MultiInstanceManagerApi31UnitTest {
         ChromeMultiInstancePersistentStore.writeTabCountForRelaunchSync(index, /* tabCount= */ 2);
         ChromeMultiInstancePersistentStore.writeIncognitoSelected(
                 index, /* incognitoSelected= */ true);
-        ChromeMultiInstancePersistentStore.writeLastAccessedTime(index);
         ChromeMultiInstancePersistentStore.writeClosureTime(index);
         ChromeMultiInstancePersistentStore.writeProfileType(
                 index, /* profileType= */ SupportedProfileType.MIXED);

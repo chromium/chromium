@@ -1375,6 +1375,8 @@ public class MultiWindowUtilsUnitTest {
     public void testGetTabCountForRelaunchFromSharedPrefs() {
         int windowId1 = 0;
         int windowId2 = 1;
+        ChromeMultiInstancePersistentStore.writeLastAccessedTime(windowId1);
+        ChromeMultiInstancePersistentStore.writeLastAccessedTime(windowId2);
         ChromeMultiInstancePersistentStore.writeTabCountForRelaunchSync(
                 windowId1, /* tabCount= */ 10);
         ChromeMultiInstancePersistentStore.writeTabCountForRelaunchSync(
@@ -1531,6 +1533,7 @@ public class MultiWindowUtilsUnitTest {
     @Test
     public void testVerifyLatestPersistentStateId_MissingPersistentState() {
         int windowId = INSTANCE_ID_0;
+        ChromeMultiInstancePersistentStore.writeLastAccessedTime(windowId);
         ChromeMultiInstancePersistentStore.writeLatestPersistentStateId(windowId, 123);
 
         var watcher =
@@ -1557,6 +1560,7 @@ public class MultiWindowUtilsUnitTest {
     @Test
     public void testVerifyLatestPersistentStateId_Match() {
         int windowId = INSTANCE_ID_0;
+        ChromeMultiInstancePersistentStore.writeLastAccessedTime(windowId);
         PersistableBundle bundle = new PersistableBundle();
         int persistentStateId = bundle.hashCode();
         bundle.putInt(PERSISTENT_STATE_ID, persistentStateId);
@@ -1574,6 +1578,7 @@ public class MultiWindowUtilsUnitTest {
     @Test
     public void testVerifyLatestPersistentStateId_Mismatch() {
         int windowId = INSTANCE_ID_0;
+        ChromeMultiInstancePersistentStore.writeLastAccessedTime(windowId);
         PersistableBundle bundle = new PersistableBundle();
         int persistentStateId = bundle.hashCode();
         bundle.putInt(PERSISTENT_STATE_ID, persistentStateId + 1);
@@ -1613,6 +1618,8 @@ public class MultiWindowUtilsUnitTest {
         when(mTabModelSelector.getModels()).thenReturn(models);
         when(mIncognitoTabModel.getCount()).thenReturn(0);
         when(mIncognitoTabModel.iterator()).thenAnswer(inv -> Collections.emptyList().iterator());
+
+        ChromeMultiInstancePersistentStore.writeLastAccessedTime(windowId);
 
         // Test if recordTabCountForRelaunchWhenActivityPaused() returns the correct value for
         // standard tabs.
@@ -1672,8 +1679,8 @@ public class MultiWindowUtilsUnitTest {
         // list is in chronological order.
         mFakeTimeTestRule.advanceMillis(1);
 
-        ChromeMultiInstancePersistentStore.writeActiveTabUrl(instanceId, url);
         ChromeMultiInstancePersistentStore.writeLastAccessedTime(instanceId);
+        ChromeMultiInstancePersistentStore.writeActiveTabUrl(instanceId, url);
         ChromeMultiInstancePersistentStore.writeTabCount(instanceId, tabCount, incognitoTabCount);
         ChromeMultiInstancePersistentStore.writeTaskId(instanceId, taskId);
         if (taskId != -1) MultiWindowUtils.addAppTaskIdForTesting(taskId);

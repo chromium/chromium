@@ -395,6 +395,7 @@ public class TabbedCrashRecoveryDelegateUnitTest {
         int start = 1;
         int end = numNonVisibleWindows + 1;
         for (int i = start; i < end; i++) {
+            ChromeMultiInstancePersistentStore.writeLastAccessedTime(i);
             ChromeMultiInstancePersistentStore.writeIsRecoverable(i, true);
             mCrashedWindows.add(
                     new CrashRecoveryWindowInfo(i, /* bounds= */ null, /* isVisible= */ false));
@@ -402,6 +403,7 @@ public class TabbedCrashRecoveryDelegateUnitTest {
         start = end;
         end = start + numDefaultDisplayWindows;
         for (int i = start; i < end; i++) {
+            ChromeMultiInstancePersistentStore.writeLastAccessedTime(i);
             ChromeMultiInstancePersistentStore.writeIsRecoverable(i, true);
             mCrashedWindows.add(
                     new CrashRecoveryWindowInfo(
@@ -416,6 +418,7 @@ public class TabbedCrashRecoveryDelegateUnitTest {
         start = end;
         end = end + numNonDefaultDisplayWindows;
         for (int i = start; i < end; i++) {
+            ChromeMultiInstancePersistentStore.writeLastAccessedTime(i);
             ChromeMultiInstancePersistentStore.writeIsRecoverable(i, true);
             // Non-default display windows are visible pre-crash but lack tracked bounds.
             mCrashedWindows.add(
@@ -431,6 +434,7 @@ public class TabbedCrashRecoveryDelegateUnitTest {
             appTaskInfo.taskId = windowId;
             when(appTask.getTaskInfo()).thenReturn(appTaskInfo);
             mPreRecoveryAppTasks.add(appTask);
+            ChromeMultiInstancePersistentStore.writeLastAccessedTime(windowId);
             ChromeMultiInstancePersistentStore.writeTaskId(windowId, windowId);
         }
         when(mActivityManager.getAppTasks()).thenReturn(mPreRecoveryAppTasks);

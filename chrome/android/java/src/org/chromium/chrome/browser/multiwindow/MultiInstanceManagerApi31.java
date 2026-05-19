@@ -585,6 +585,10 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
     public void initialize(int instanceId, int taskId, @SupportedProfileType int profileType) {
         super.initialize(instanceId, taskId, profileType);
         mInstanceId = instanceId;
+
+        // Ensure we have instance info entry for the current one before writing other fields.
+        ChromeMultiInstancePersistentStore.writeLastAccessedTime(mInstanceId);
+
         ChromeMultiInstancePersistentStore.writeTaskId(instanceId, taskId);
         ChromeMultiInstancePersistentStore.writeProfileType(instanceId, profileType);
         ChromeMultiInstancePersistentStore.writeMarkedForDeletion(
@@ -805,9 +809,6 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
     }
 
     private void recordInstanceCountHistogram() {
-        // Ensure we have instance info entry for the current one.
-        ChromeMultiInstancePersistentStore.writeLastAccessedTime(mInstanceId);
-
         RecordHistogram.recordExactLinearHistogram(
                 "Android.MultiInstance.NumInstances",
                 MultiWindowUtils.getInstanceCount(PersistedInstanceType.ANY),
@@ -1045,9 +1046,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
             ChromeMultiInstancePersistentStore.writeClosureTime(mInstanceId);
         }
         if (mActivity.isFinishing()) {
-            if (ChromeMultiInstancePersistentStore.hasInstance(mInstanceId)) {
-                ChromeMultiInstancePersistentStore.writeIsRecoverable(mInstanceId, false);
-            }
+            ChromeMultiInstancePersistentStore.writeIsRecoverable(mInstanceId, false);
             // Notify Recent Tabs page that the instance is closing.
             notifyInstancesClosed(Collections.singletonList(mInstanceId), isPermanentDeletion);
         }
@@ -1091,13 +1090,9 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
         super.onStopWithNative();
         // We persist last closed time when the activity is stopped as a fallback for when
         // #onDestroy() is not called for a finishing activity.
-        // TODO: remove the hasInstance check here and instead guard in the
-        // ChromeMultiInstancePersistentStore's write methods.
-        if (ChromeMultiInstancePersistentStore.hasInstance(mInstanceId)) {
-            ChromeMultiInstancePersistentStore.writeClosureTime(mInstanceId);
-            if (mActivity.isFinishing()) {
-                ChromeMultiInstancePersistentStore.writeIsRecoverable(mInstanceId, false);
-            }
+        ChromeMultiInstancePersistentStore.writeClosureTime(mInstanceId);
+        if (mActivity.isFinishing()) {
+            ChromeMultiInstancePersistentStore.writeIsRecoverable(mInstanceId, false);
         }
     }
 

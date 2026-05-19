@@ -39,6 +39,7 @@ public class TabbedWindowStateTrackerUnitTest {
     public void setUp() {
         ChromeMultiInstancePersistentStore.ensureInitialized();
         MultiWindowUtils.setMultiInstanceApi31EnabledForTesting(true);
+        ChromeMultiInstancePersistentStore.writeLastAccessedTime(WINDOW_ID_0);
         mTracker = TabbedWindowStateTracker.create(WINDOW_ID_0);
     }
 
