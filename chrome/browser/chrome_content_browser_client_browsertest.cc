@@ -12,6 +12,7 @@
 #include "base/containers/fixed_flat_map.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "base/metrics/field_trial.h"
 #include "base/path_service.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
@@ -34,6 +35,7 @@
 #include "chrome/browser/search/instant_service.h"
 #include "chrome/browser/search/instant_service_factory.h"
 #include "chrome/browser/search/search.h"
+#include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/browser.h"
@@ -66,6 +68,7 @@
 #include "components/privacy_sandbox/privacy_sandbox_attestations/scoped_privacy_sandbox_attestations.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/safe_browsing/buildflags.h"
+#include "components/search_engines/template_url_service.h"
 #include "components/site_isolation/site_isolation_policy.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/navigation_controller.h"
@@ -74,6 +77,7 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/security_principal.h"
+#include "content/public/browser/site_instance.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
@@ -95,6 +99,7 @@
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
 #include "services/network/public/cpp/url_loader_factory_builder.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/mojom/webpreferences/web_preferences.mojom.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/clipboard/clipboard_buffer.h"
@@ -2147,4 +2152,82 @@ IN_PROC_BROWSER_TEST_F(DevToolsOverridesThirdPartyCookiesBrowserTest,
   EXPECT_EQ(content::GetCookies(browser()->profile(), GetURL(kHostB)),
             "thirdparty=1");
 }
+
+// This test opens two URLs using ContentBrowserClient::OpenURL. It expects the
+// URLs to be opened in new tabs and activated, changing the active tabs after
+// each call and increasing the tab count by 2.
+IN_PROC_BROWSER_TEST_F(ChromeContentBrowserClientBrowserTest, OpenURL) {
+  ChromeContentBrowserClient client;
+
+  int previous_count = browser()->tab_strip_model()->count();
+
+  GURL urls[] = {GURL("https://www.google.com"),
+                 GURL("https://www.chromium.org")};
+
+  for (const GURL& url : urls) {
+    content::OpenURLParams params(url, content::Referrer(),
+                                  WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                                  ui::PAGE_TRANSITION_AUTO_TOPLEVEL, false);
+    // TODO(peter): We should have more in-depth browser tests for the window
+    // opening functionality, which also covers Android. This test can currently
+    // only be ran on platforms where OpenURL is implemented synchronously.
+    // See https://crbug.com/41156995.
+    base::test::TestFuture<content::WebContents*> opened_contents;
+    scoped_refptr<content::SiteInstance> site_instance =
+        content::SiteInstance::Create(browser()->profile());
+    client.OpenURL(site_instance.get(), params, opened_contents.GetCallback());
+
+    content::WebContents* web_contents = opened_contents.Get();
+    EXPECT_TRUE(web_contents);
+
+    content::WebContents* active_contents =
+        browser()->tab_strip_model()->GetActiveWebContents();
+    EXPECT_EQ(web_contents, active_contents);
+    EXPECT_EQ(url, active_contents->GetVisibleURL());
+  }
+
+  EXPECT_EQ(previous_count + 2, browser()->tab_strip_model()->count());
+}
+
+class InstantNTPURLRewriteBrowserTest : public InProcessBrowserTest,
+                                        public InstantTestBase {
+ protected:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    InProcessBrowserTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitch("ignore-certificate-errors");
+  }
+
+  void SetUpOnMainThread() override {
+    InProcessBrowserTest::SetUpOnMainThread();
+    host_resolver()->AddRule("*", "127.0.0.1");
+    ASSERT_TRUE(https_test_server().Start());
+  }
+
+  void InstallTemplateURLWithNewTabPage(GURL new_tab_page_url) {
+    SetupInstant(browser()->profile(), GURL("http://foo.com/url"),
+                 new_tab_page_url);
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(InstantNTPURLRewriteBrowserTest,
+                       UberURLHandler_InstantExtendedNewTabPage) {
+  const GURL& url_original = chrome::ChromeUINewTabURLAsGURL();
+  const GURL url_rewritten =
+      https_test_server().GetURL("localhost", "/title1.html");
+  InstallTemplateURLWithNewTabPage(url_rewritten);
+  ASSERT_TRUE(base::FieldTrialList::CreateFieldTrial(
+      "InstantExtended", "Group1 use_cacheable_ntp:1"));
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url_original));
+
+  content::NavigationEntry* entry = browser()
+                                        ->tab_strip_model()
+                                        ->GetActiveWebContents()
+                                        ->GetController()
+                                        .GetLastCommittedEntry();
+  ASSERT_NE(nullptr, entry);
+  EXPECT_EQ(url_rewritten, entry->GetURL());
+  EXPECT_EQ(url_original, entry->GetVirtualURL());
+}
+
 }  // namespace
