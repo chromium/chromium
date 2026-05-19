@@ -9,7 +9,6 @@ found in the LICENSE file.
     <dimen name="tab_bottom_sheet_resizing_view_icon_size">32dp</dimen>
     <dimen name="tab_bottom_sheet_resizing_view_text_margin_top">20dp</dimen>
 
-
     <!-- The total visible height requested by TabBottomSheet at peek state, counting the
          contents of the peek view plus the space consumed by the drag handle bar frame.
          (12dp handle area + 48dp control min size + 4dp bottom padding) -->
@@ -20,4 +19,5 @@ found in the LICENSE file.
          the floating drag handle. 8dp top margin + 4dp intrinsic handle) -->
     <dimen name="tab_bottom_sheet_handle_area_height">12dp</dimen>
     <dimen name="tab_bottom_sheet_peek_container_bottom_padding">4dp</dimen>
+    <dimen name="tab_bottom_sheet_peek_corner_radius">@dimen/bottom_sheet_corner_radius</dimen>
 </resources>

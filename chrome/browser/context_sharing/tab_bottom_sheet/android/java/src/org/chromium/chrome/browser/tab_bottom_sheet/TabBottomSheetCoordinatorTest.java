@@ -61,6 +61,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
+import org.chromium.components.browser_ui.widget.RoundedCornerOutlineProvider;
 import org.chromium.components.browser_ui.widget.TouchEventObserver;
 import org.chromium.components.browser_ui.widget.TouchEventProvider;
 import org.chromium.ui.KeyboardVisibilityDelegate;
@@ -867,6 +868,28 @@ public class TabBottomSheetCoordinatorTest {
         observer.onSheetContentChanged(null);
         stateWatcher.assertExpected();
         reasonWatcher.assertExpected();
+    }
+
+    @Test
+    public void testUpdateRoundingEdges_FullWidth() {
+        BottomSheetObserver observer = simulateShowSuccessAndGetObserver();
+        RoundedCornerOutlineProvider outlineProvider = mCoordinator.getOutlineProviderForTesting();
+
+        when(mMockBottomSheetController.isFullWidth()).thenReturn(true);
+        observer.onSheetStateChanged(SheetState.PEEK, StateChangeReason.NONE);
+
+        assertFalse(outlineProvider.isTopEdgeRounded());
+    }
+
+    @Test
+    public void testUpdateRoundingEdges_NotFullWidth() {
+        BottomSheetObserver observer = simulateShowSuccessAndGetObserver();
+        RoundedCornerOutlineProvider outlineProvider = mCoordinator.getOutlineProviderForTesting();
+
+        when(mMockBottomSheetController.isFullWidth()).thenReturn(false);
+        observer.onSheetStateChanged(SheetState.PEEK, StateChangeReason.NONE);
+
+        assertTrue(outlineProvider.isTopEdgeRounded());
     }
 
     @Test

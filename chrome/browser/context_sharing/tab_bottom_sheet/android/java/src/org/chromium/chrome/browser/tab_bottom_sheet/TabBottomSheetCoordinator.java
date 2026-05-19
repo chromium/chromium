@@ -20,6 +20,7 @@ import org.chromium.base.Log;
 import org.chromium.build.annotations.EnsuresNonNullIf;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.context_sharing.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -27,6 +28,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.Shee
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
+import org.chromium.components.browser_ui.widget.RoundedCornerOutlineProvider;
 import org.chromium.components.browser_ui.widget.TouchEventObserver;
 import org.chromium.components.browser_ui.widget.TouchEventProvider;
 import org.chromium.ui.KeyboardVisibilityDelegate;
@@ -138,6 +140,7 @@ public class TabBottomSheetCoordinator {
     private final CoBrowseViews mCoBrowseViews;
     private final TabBottomSheetMediator mMediator;
     private final WindowAndroid mWindowAndroid;
+    private final RoundedCornerOutlineProvider mOutlineProvider;
 
     private @Nullable SheetEventsCallback mSheetEventsCallback;
     private @Nullable TabBottomSheetContent mSheetContent;
@@ -192,6 +195,10 @@ public class TabBottomSheetCoordinator {
                         SMALL_SCREEN_HEIGHT_RATIO);
 
         coBrowseViews.setWebUiTouchHandler(mMediator.getWebUiTouchHandler());
+        int radius =
+                mContext.getResources()
+                        .getDimensionPixelSize(R.dimen.tab_bottom_sheet_peek_corner_radius);
+        mOutlineProvider = new RoundedCornerOutlineProvider(radius);
     }
 
     /** Tries to show the bottom sheet. */
@@ -203,6 +210,8 @@ public class TabBottomSheetCoordinator {
             mMediator.onSheetStateChanged(startsExpanded ? SheetState.FULL : SheetState.PEEK);
         }
         mContentView = mCoBrowseViews.getView();
+        mContentView.setOutlineProvider(mOutlineProvider);
+        mContentView.setClipToOutline(true);
         mSheetContent =
                 new TabBottomSheetContent(
                         mContentView,
@@ -230,6 +239,7 @@ public class TabBottomSheetCoordinator {
                         if (mSheetEventsCallback == null) {
                             return;
                         }
+                        updateRoundingEdges();
                         setToFixedHeightOrFallback();
 
                         boolean isSheetHeightSufficient =
@@ -413,6 +423,7 @@ public class TabBottomSheetCoordinator {
                     boolean isExpanded = state != SheetState.PEEK;
                     mSheetEventsCallback.onBottomSheetOpened(isExpanded);
                 }
+                updateRoundingEdges();
 
                 if (state == SheetState.HALF || state == SheetState.FULL) {
                     observeCompositorViewInteractions();
@@ -608,7 +619,30 @@ public class TabBottomSheetCoordinator {
         return isKeyboardShowing() ? SMALL_SCREEN_HEIGHT_RATIO : FULL_HEIGHT_RATIO;
     }
 
+    private void updateRoundingEdges() {
+        if (mOutlineProvider == null) return;
+
+        boolean shouldRound = !mBottomSheetController.isFullWidth();
+        if (mOutlineProvider.isTopEdgeRounded() == shouldRound) {
+            return;
+        }
+
+        if (shouldRound) {
+            mOutlineProvider.setRoundingEdges(true, true, true, false);
+        } else {
+            mOutlineProvider.setRoundingEdges(false, false, false, false);
+        }
+
+        if (mContentView != null) {
+            mContentView.invalidateOutline();
+        }
+    }
+
     // Testing methods.
+    RoundedCornerOutlineProvider getOutlineProviderForTesting() {
+        return mOutlineProvider;
+    }
+
     PropertyModel getModelForTesting() {
         return mModel;
     }
