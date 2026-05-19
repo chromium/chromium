@@ -692,6 +692,22 @@ const LayoutResult* BlockLayoutAlgorithm::LayoutInlineChild(
       BlockLayoutAlgorithm cloned_algorithm(cloned_param);
       const LayoutResult* result =
           cloned_algorithm.LayoutInlineChild(node, nullptr);
+      // The layout might abort with non-success status. For example, it may
+      // abort with kBfcBlockOffsetResolved when the BFC block offset is
+      // resolved, or kOutOfFragmentainerSpace when running out of space in a
+      // fragmentation context.
+      if (result->Status() != LayoutResult::kSuccess) {
+        if (result->Status() == LayoutResult::kBfcBlockOffsetResolved) {
+          // The parent layout expects the resolved BFC block offset to be
+          // present on the LayoutResult when the status is
+          // kBfcBlockOffsetResolved. Since we are aborting the current layout
+          // before we resolved it ourselves, we copy it from the result which
+          // triggered the abort.
+          DCHECK(result->BfcBlockOffset());
+          container_builder_.SetBfcBlockOffset(*result->BfcBlockOffset());
+        }
+        return container_builder_.Abort(result->Status());
+      }
       paragraph_scale = MeasurePerBlockScale(
           InlineNode(To<LayoutBlockFlow>(Node().GetLayoutBox())),
           result->GetPhysicalFragment(), ChildAvailableSize().inline_size);
