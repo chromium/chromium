@@ -18,6 +18,7 @@ import androidx.test.filters.MediumTest;
 import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.runner.lifecycle.Stage;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -35,6 +36,7 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.content.WebContentsFactory;
+import org.chromium.chrome.browser.customtabs.PopupCreatorFactory;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
@@ -217,5 +219,25 @@ public class DocumentPictureInPictureActivityTest {
                     return null;
                 },
                 10000);
+    }
+
+    @Test
+    @MediumTest
+    public void testPopupCreatorFactoryInitialized() throws Exception {
+        // Clear the instance to simulate a fresh process where ChromeActivity hasn't run.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    PopupCreatorFactory.setInstanceForTesting(null);
+                });
+
+        // Launch the activity. It should initialize the factory.
+        DocumentPictureInPictureActivity activity = launchActivity();
+        CriteriaHelper.pollUiThread(() -> !activity.isFinishing());
+
+        // Verify it is initialized.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    Assert.assertNotNull(PopupCreatorFactory.getInstance());
+                });
     }
 }
