@@ -9,9 +9,11 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/queue.h"
 #include "chrome/browser/ash/scanning/lorgnette_scanner_manager.h"
 #include "chromeos/ash/components/dbus/lorgnette/lorgnette_service.pb.h"
 #include "chromeos/ash/components/dbus/lorgnette_manager/lorgnette_manager_client.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 namespace ash {
 
@@ -82,24 +84,22 @@ class FakeLorgnetteScannerManager final : public LorgnetteScannerManager {
                   std::optional<lorgnette::ScannerCapabilities> capabilities =
                       std::nullopt);
 
-  // Configures the response returned by ReadScanData().
-  // - If `result` has no value, the response will be nullopt (that's the
-  //   default).
-  // - Otherwise, each response will contain a chunk of `chunks` with
-  //   OPERATION_RESULT_SUCCESS, and the given `result` is used for the final
-  //   response after all chunks have been returned.
-  //   Note: After cancelling a job, ReadScanData will always respond with
-  //   OPERATION_RESULT_CANCELLED for that job.
-  void ConfigureReadScanDataResponse(
-      std::optional<lorgnette::OperationResult> result,
-      std::vector<std::string> data_chunks = {});
-
   // Sets the response returned by Scan().
   void SetScanResponse(
       const std::optional<std::vector<std::string>>& scan_data);
 
   // Optionally sets `scan_data` if a matching set of scan settings is found.
   void MaybeSetScanDataBasedOnSettings(const lorgnette::ScanSettings& settings);
+
+  // Feeds data to be produced by all future scan jobs.
+  // In the case of StartPreparedScan, associated ReadScanData invocations will
+  // produce the given chunks in order (with result OPERATION_RESULT_SUCCESS),
+  // followed by OPERATTION_RESULT_EOF.
+  // In the case of Scan, the chunks represent pages and are returned in order
+  // via repeated invocations of Scan's page callback, followed by a completion
+  // callback invocation.
+  // Note: Behavior can be overridden by Simulate{DBus,Scanner}Failure.
+  void SetDataForFutureScanJobs(std::vector<std::string> data_chunks);
 
  private:
   struct ScannerSession {
@@ -126,16 +126,26 @@ class FakeLorgnetteScannerManager final : public LorgnetteScannerManager {
     std::optional<ScannerSession> active_session;
   };
 
+  struct JobState {
+    JobState();
+    JobState(const JobState&);
+    JobState(JobState&&) noexcept;
+    JobState& operator=(const JobState&);
+    JobState& operator=(JobState&&) noexcept;
+    ~JobState();
+
+    bool cancelled = false;
+    base::queue<std::string> remaining_chunks;
+  };
+
   std::string CreateFreshHandle();
 
   bool simulate_dbus_failure_ = false;
   bool simulate_scanner_failure_ = false;
-  std::vector<ScannerState> scanners_;
-  std::optional<lorgnette::OperationResult> read_scan_data_result_;
-  std::vector<std::string> read_scan_data_chunks_;
   size_t handle_count_ = 0;
+  std::vector<ScannerState> scanners_;
+  absl::flat_hash_map<std::string, JobState> scan_jobs_;
   std::optional<std::vector<std::string>> scan_data_;
-  std::vector<std::string> cancelled_jobs_;
 };
 
 }  // namespace ash

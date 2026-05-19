@@ -209,6 +209,15 @@ FakeLorgnetteScannerManager::ScannerState::operator=(
     ScannerState&& other) noexcept = default;
 FakeLorgnetteScannerManager::ScannerState::~ScannerState() = default;
 
+FakeLorgnetteScannerManager::JobState::JobState() = default;
+FakeLorgnetteScannerManager::JobState::JobState(const JobState&) = default;
+FakeLorgnetteScannerManager::JobState::JobState(JobState&&) noexcept = default;
+FakeLorgnetteScannerManager::JobState&
+FakeLorgnetteScannerManager::JobState::operator=(const JobState&) = default;
+FakeLorgnetteScannerManager::JobState&
+FakeLorgnetteScannerManager::JobState::operator=(JobState&&) noexcept = default;
+FakeLorgnetteScannerManager::JobState::~JobState() = default;
+
 void FakeLorgnetteScannerManager::GetScannerNames(
     GetScannerNamesCallback callback) {
   std::vector<std::string> names = base::ToVector(
@@ -280,8 +289,8 @@ void FakeLorgnetteScannerManager::OpenScanner(
   } else {
     response.set_result(lorgnette::OPERATION_RESULT_SUCCESS);
     response.mutable_config()->CopyFrom(it->template_config);
-    std::string scanner_handle = CreateFreshHandle();
-    response.mutable_config()->mutable_scanner()->set_token(scanner_handle);
+    response.mutable_config()->mutable_scanner()->set_token(
+        CreateFreshHandle());
     it->active_session.emplace();
     it->active_session->client_id = request.client_id();
     it->active_session->config = response.config();
@@ -451,21 +460,26 @@ void FakeLorgnetteScannerManager::StartPreparedScan(
   lorgnette::StartPreparedScanResponse response;
   *response.mutable_scanner() = request.scanner();
 
-  const std::string& handle = request.scanner().token();
-  auto it = std::ranges::find_if(scanners_, [&handle](const auto& s) {
+  const std::string& scanner_handle = request.scanner().token();
+  auto it = std::ranges::find_if(scanners_, [&scanner_handle](const auto& s) {
     return s.active_session.has_value() &&
-           s.active_session->config.scanner().token() == handle;
+           s.active_session->config.scanner().token() == scanner_handle;
   });
 
   if (it == scanners_.end()) {
     response.set_result(lorgnette::OPERATION_RESULT_INVALID);
   } else if (request.has_max_read_size() && request.max_read_size() < 32768) {
     response.set_result(lorgnette::OPERATION_RESULT_INVALID);
-  } else if (simulate_scanner_failure_) {
-    response.set_result(lorgnette::OPERATION_RESULT_IO_ERROR);
   } else {
     response.set_result(lorgnette::OPERATION_RESULT_SUCCESS);
-    response.mutable_job_handle()->set_token(CreateFreshHandle());
+    std::string job_handle = CreateFreshHandle();
+    response.mutable_job_handle()->set_token(job_handle);
+    JobState job_state;
+    if (scan_data_.has_value()) {
+      job_state.remaining_chunks =
+          base::queue<std::string>(scan_data_->begin(), scan_data_->end());
+    }
+    scan_jobs_[std::move(job_handle)] = std::move(job_state);
   }
 
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
@@ -476,23 +490,38 @@ void FakeLorgnetteScannerManager::ReadScanData(
     const lorgnette::ReadScanDataRequest& request,
     ReadScanDataCallback callback) {
   CHECK(request.has_job_handle());
-  std::optional<lorgnette::ReadScanDataResponse> response;
-  if (read_scan_data_result_.has_value()) {
-    response.emplace();
-    response->mutable_job_handle()->set_token(request.job_handle().token());
-    if (std::find(cancelled_jobs_.begin(), cancelled_jobs_.end(),
-                  request.job_handle().token()) != cancelled_jobs_.end()) {
-      response->set_result(lorgnette::OPERATION_RESULT_CANCELLED);
-    } else if (!read_scan_data_chunks_.empty()) {
-      response->set_result(lorgnette::OPERATION_RESULT_SUCCESS);
-      response->set_data(read_scan_data_chunks_[0]);
-      read_scan_data_chunks_.erase(read_scan_data_chunks_.begin());
-      response->set_estimated_completion(
-          read_scan_data_chunks_.empty()
-              ? 100
-              : 100 / (read_scan_data_chunks_.size() + 1));
+
+  if (simulate_dbus_failure_) {
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), std::nullopt));
+    return;
+  }
+
+  lorgnette::ReadScanDataResponse response;
+  *response.mutable_job_handle() = request.job_handle();
+
+  if (simulate_scanner_failure_) {
+    response.set_result(lorgnette::OPERATION_RESULT_IO_ERROR);
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), std::move(response)));
+    return;
+  }
+
+  auto job_it = scan_jobs_.find(request.job_handle().token());
+  if (job_it == scan_jobs_.end()) {
+    response.set_result(lorgnette::OPERATION_RESULT_INVALID);
+  } else {
+    JobState& job = job_it->second;
+    if (job.cancelled) {
+      response.set_result(lorgnette::OPERATION_RESULT_CANCELLED);
+    } else if (job.remaining_chunks.empty()) {
+      response.set_result(lorgnette::OPERATION_RESULT_EOF);
+      response.set_estimated_completion(100);
     } else {
-      response->set_result(*read_scan_data_result_);
+      response.set_result(lorgnette::OPERATION_RESULT_SUCCESS);
+      response.set_estimated_completion(100 / job.remaining_chunks.size());
+      response.set_data(job.remaining_chunks.front());
+      job.remaining_chunks.pop();
     }
   }
 
@@ -566,19 +595,24 @@ void FakeLorgnetteScannerManager::CancelScan(
   lorgnette::CancelScanResponse response;
   response.set_success(false);
 
-  if (request.has_job_handle()) {
-    *response.mutable_job_handle() = request.job_handle();
-    const std::string& job_handle = request.job_handle().token();
-    if (std::find(cancelled_jobs_.begin(), cancelled_jobs_.end(), job_handle) ==
-        cancelled_jobs_.end()) {
-      response.set_success(true);
-      response.set_result(lorgnette::OPERATION_RESULT_SUCCESS);
-      cancelled_jobs_.push_back(job_handle);
-    } else {
-      response.set_result(lorgnette::OPERATION_RESULT_UNKNOWN);
-    }
-  } else {
+  if (!request.has_job_handle()) {
     response.set_result(lorgnette::OPERATION_RESULT_INVALID);
+  } else {
+    *response.mutable_job_handle() = request.job_handle();
+    auto job_it = scan_jobs_.find(request.job_handle().token());
+    if (job_it == scan_jobs_.end()) {
+      response.set_result(lorgnette::OPERATION_RESULT_INVALID);
+    } else {
+      JobState& job = job_it->second;
+      if (job.cancelled) {
+        response.set_result(lorgnette::OPERATION_RESULT_CANCELLED);
+      } else {
+        response.set_success(true);
+        response.set_result(lorgnette::OPERATION_RESULT_SUCCESS);
+        job.cancelled = true;
+        job.remaining_chunks = base::queue<std::string>();
+      }
+    }
   }
 
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
@@ -606,13 +640,6 @@ void FakeLorgnetteScannerManager::AddScanner(
                              : CreateDefaultCapabilities());
 }
 
-void FakeLorgnetteScannerManager::ConfigureReadScanDataResponse(
-    std::optional<lorgnette::OperationResult> result,
-    std::vector<std::string> data_chunks) {
-  read_scan_data_result_ = std::move(result);
-  read_scan_data_chunks_ = std::move(data_chunks);
-}
-
 void FakeLorgnetteScannerManager::SetScanResponse(
     const std::optional<std::vector<std::string>>& scan_data) {
   scan_data_ = scan_data;
@@ -626,6 +653,11 @@ void FakeLorgnetteScannerManager::MaybeSetScanDataBasedOnSettings(
     SetScanResponse(
         std::initializer_list<std::string>{CreateJpeg(match->second)});
   }
+}
+
+void FakeLorgnetteScannerManager::SetDataForFutureScanJobs(
+    std::vector<std::string> data_chunks) {
+  scan_data_ = std::move(data_chunks);
 }
 
 std::string FakeLorgnetteScannerManager::CreateFreshHandle() {
