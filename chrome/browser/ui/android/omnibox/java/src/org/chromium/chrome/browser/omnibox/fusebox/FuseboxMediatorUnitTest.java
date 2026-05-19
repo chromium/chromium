@@ -56,6 +56,7 @@ import org.robolectric.Robolectric;
 import org.robolectric.android.controller.ActivityController;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.FeatureOverrides;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
@@ -64,6 +65,7 @@ import org.chromium.base.test.RobolectricUtil;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.FuseboxSessionState;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxAttachmentRecyclerViewAdapter.FuseboxAttachmentType;
@@ -852,7 +854,7 @@ public class FuseboxMediatorUnitTest {
 
     @Test
     public void onFilePickerClicked_allFilesOff_setsCorrectMimeType() {
-        OmniboxFeatures.sEnableAllFileTypes.setForTesting(false);
+        FeatureOverrides.overrideFlag(ChromeFeatureList.LENS_SEND_RAW_FILE_MEDIA_TYPES, false);
         mModel.get(FuseboxProperties.POPUP_ATTACH_FILE_CLICKED).run();
         verify(mWindowAndroid).showCancelableIntent(mIntentCaptor.capture(), any(), any());
         assertEquals(MimeTypeUtils.PDF_MIME_TYPE, mIntentCaptor.getValue().getType());
@@ -860,7 +862,7 @@ public class FuseboxMediatorUnitTest {
 
     @Test
     public void onFilePickerClicked_allFilesOn_setsCorrectMimeType() {
-        OmniboxFeatures.sEnableAllFileTypes.setForTesting(true);
+        FeatureOverrides.overrideFlag(ChromeFeatureList.LENS_SEND_RAW_FILE_MEDIA_TYPES, true);
         mModel.get(FuseboxProperties.POPUP_ATTACH_FILE_CLICKED).run();
         verify(mWindowAndroid).showCancelableIntent(mIntentCaptor.capture(), any(), any());
         assertEquals(MimeTypeUtils.ALL_FILE_TYPES_MIME_TYPE, mIntentCaptor.getValue().getType());

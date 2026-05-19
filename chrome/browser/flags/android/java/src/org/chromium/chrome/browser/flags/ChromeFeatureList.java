@@ -496,6 +496,7 @@ public abstract class ChromeFeatureList {
     public static final String LAUNCH_CAUSE_SCREEN_OFF_FIX = "LaunchCauseScreenOffFix";
     public static final String LENS_ON_QUICK_ACTION_SEARCH_WIDGET = "LensOnQuickActionSearchWidget";
     public static final String LENS_OVERLAY_ANDROID = "LensOverlayAndroid";
+    public static final String LENS_SEND_RAW_FILE_MEDIA_TYPES = "LensSendRawFileMediaTypes";
     public static final String LINK_HOVER_STATUS_BAR = "LinkHoverStatusBar";
     public static final String LOADING_PREDICTOR_LIMIT_PRECONNECT_SOCKET_COUNT =
             "LoadingPredictorLimitPreconnectSocketCount";
@@ -1026,6 +1027,11 @@ public abstract class ChromeFeatureList {
                     LAUNCH_CAUSE_SCREEN_OFF_FIX,
                     /* defaultValue= */ false,
                     /* defaultValueInTests= */ true);
+    public static final CachedFlag sLensSendRawFileMediaTypes =
+            newCachedFlag(
+                    LENS_SEND_RAW_FILE_MEDIA_TYPES,
+                    /* defaultValue= */ false,
+                    /* defaultValueInTests= */ true);
     public static final CachedFlag sLoadAllTabsAtStartup =
             newCachedFlag(
                     LOAD_ALL_TABS_AT_STARTUP,
@@ -1344,6 +1350,7 @@ public abstract class ChromeFeatureList {
                     sIncognitoThemeOverlayTesting,
                     sKeyboardEscBackNavigation,
                     sLaunchCauseScreenOffFix,
+                    sLensSendRawFileMediaTypes,
                     sLoadAllTabsAtStartup,
                     sLoadNativeEarly,
                     sLockBackPressHandlerAtStart,

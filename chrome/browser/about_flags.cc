@@ -1993,8 +1993,6 @@ const FeatureEntry::FeatureParam kOmniboxAimModelPickerCompactBottomSheet[] = {
     {"show_bottom_sheet_popup", "true"},
     {"show_ntp_plus_button", "true"},
     {"use_ask_hint_for_ntp", "true"}};
-const FeatureEntry::FeatureParam kOmniboxAimEnableAllFileTypes[] = {
-    {"all_file_types", "true"}};
 
 const FeatureEntry::FeatureVariation kOmniboxMultimodalInputVariants[] = {
     {"Dedicated Button", kOmniboxAimDedicatedModeButton, nullptr},
@@ -2003,7 +2001,6 @@ const FeatureEntry::FeatureVariation kOmniboxMultimodalInputVariants[] = {
     {"Model Picker & Tools", kOmniboxAimModelPickerAndCanvas, nullptr},
     {"Model Picker Compact", kOmniboxAimModelPickerCompact, nullptr},
     {"^ + Bottom Sheet", kOmniboxAimModelPickerCompactBottomSheet, nullptr},
-    {"All File Types", kOmniboxAimEnableAllFileTypes, nullptr},
 };
 
 const FeatureEntry::FeatureParam kOmniboxMultilineEditFieldForAutocomplete[] = {

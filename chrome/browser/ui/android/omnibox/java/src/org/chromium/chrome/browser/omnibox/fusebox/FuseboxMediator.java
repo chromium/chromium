@@ -888,7 +888,7 @@ import java.util.function.Supplier;
         if (isMaxAttachmentCountReached(FuseboxAttachmentType.ATTACHMENT_FILE)) return;
 
         String mimeType =
-                OmniboxFeatures.sEnableAllFileTypes.getValue()
+                ChromeFeatureList.sLensSendRawFileMediaTypes.isEnabled()
                         ? MimeTypeUtils.ALL_FILE_TYPES_MIME_TYPE
                         : MimeTypeUtils.PDF_MIME_TYPE;
         var i =
