@@ -2804,6 +2804,9 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_MENU_SHARE_PAGE" desc="Menu item for sharing the current page. [CHAR_LIMIT=27]">
         Share…
       </message>
+      <message name="IDS_MENU_COPY_LINK" desc="Menu item for copying the link to the current page. [CHAR_LIMIT=27]">
+        Copy link
+      </message>
       <message name="IDS_MENU_BACK_BUTTON_IPH_TEXT" desc="Message on the generic text buble to educate users on the menu back button">
         Open the menu to go back
       </message>

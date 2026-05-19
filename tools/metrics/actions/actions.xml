@@ -28636,6 +28636,11 @@ should be able to be added at any place in this file.
   </token>
 </action>
 
+<action name="MobileMenuCopyLink">
+  <owner>massan@google.com</owner>
+  <description>User pressed 'Copy link' in the app menu.</description>
+</action>
+
 <action name="MobileMenuCreateTabGroup">
   <owner>massan@google.com</owner>
   <description>

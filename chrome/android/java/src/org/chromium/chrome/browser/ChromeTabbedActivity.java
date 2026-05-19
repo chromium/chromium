@@ -385,6 +385,7 @@ import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.common.ContentSwitches;
 import org.chromium.ui.base.AcceleratorManager;
 import org.chromium.ui.base.ActivityWindowAndroid;
+import org.chromium.ui.base.Clipboard;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.base.WindowAndroid;
@@ -4176,6 +4177,15 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
         } else if (id == R.id.addresses_and_more_menu_id) {
             SettingsNavigationHelper.showAutofillProfileSettings(this);
             RecordUserAction.record("MobileMenuAddressesAndMore");
+            return true;
+        } else if (id == R.id.copy_link_menu_id) {
+            assert currentTab != null;
+            Clipboard.getInstance()
+                    .setText(
+                            currentTab.getTitle(),
+                            currentTab.getUrl().getSpec(),
+                            /* notifyOnSuccess= */ true);
+            RecordUserAction.record("MobileMenuCopyLink");
             return true;
         } else if (id == R.id.add_to_group_menu_id
                 || id == R.id.add_tab_to_group_menu_id

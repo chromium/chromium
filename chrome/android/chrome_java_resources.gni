@@ -302,6 +302,7 @@ chrome_java_resources = [
   "java/res/drawable/ic_cloud_off_24dp.xml",
   "java/res/drawable/ic_cloud_offline_24dp.xml",
   "java/res/drawable/ic_colorize_24dp.xml",
+  "java/res/drawable/ic_copy_link_24dp.xml",
   "java/res/drawable/ic_credit_card_24dp.xml",
   "java/res/drawable/ic_dev_tools_24dp.xml",
   "java/res/drawable/ic_drag_handle_24dp.xml",

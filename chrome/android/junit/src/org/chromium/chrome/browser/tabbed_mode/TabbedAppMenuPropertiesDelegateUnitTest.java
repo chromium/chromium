@@ -780,7 +780,10 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         expectedItems.addAll(
                 Arrays.asList(
                         item(R.id.divider_line_id),
-                        item(R.id.save_and_share_parent_menu_id, item(R.id.share_menu_id)),
+                        item(
+                                R.id.save_and_share_parent_menu_id,
+                                item(R.id.share_menu_id),
+                                item(R.id.copy_link_menu_id)),
                         item(R.id.find_in_page_id),
                         item(R.id.open_with_id),
                         item(R.id.divider_line_id),
@@ -934,13 +937,15 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                         R.id.save_and_share_parent_menu_id,
                         item(R.id.universal_install),
                         item(R.id.divider_line_id),
-                        item(R.id.share_menu_id)));
+                        item(R.id.share_menu_id),
+                        item(R.id.copy_link_menu_id)));
         expectedTitles.add(
                 item(
                         R.string.menu_save_and_share,
                         item(R.string.menu_add_to_homescreen),
                         item(0),
-                        item(R.string.menu_share_page)));
+                        item(R.string.menu_share_page),
+                        item(R.string.menu_copy_link)));
 
         expectedItems.add(item(R.id.find_in_page_id));
         expectedTitles.add(item(R.string.menu_find_in_page));
@@ -1128,8 +1133,16 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         expectedItems.add(item(R.id.divider_line_id));
         expectedTitles.add(item(0));
 
-        expectedItems.add(item(R.id.save_and_share_parent_menu_id, item(R.id.share_menu_id)));
-        expectedTitles.add(item(R.string.menu_save_and_share, item(R.string.menu_share_page)));
+        expectedItems.add(
+                item(
+                        R.id.save_and_share_parent_menu_id,
+                        item(R.id.share_menu_id),
+                        item(R.id.copy_link_menu_id)));
+        expectedTitles.add(
+                item(
+                        R.string.menu_save_and_share,
+                        item(R.string.menu_share_page),
+                        item(R.string.menu_copy_link)));
 
         expectedItems.add(item(R.id.find_in_page_id));
         expectedTitles.add(item(R.string.menu_find_in_page));
@@ -1330,13 +1343,15 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                         R.id.save_and_share_parent_menu_id,
                         item(R.id.universal_install),
                         item(R.id.divider_line_id),
-                        item(R.id.share_menu_id)));
+                        item(R.id.share_menu_id),
+                        item(R.id.copy_link_menu_id)));
         expectedTitles.add(
                 item(
                         R.string.menu_save_and_share,
                         item(R.string.menu_add_to_homescreen),
                         item(0),
-                        item(R.string.menu_share_page)));
+                        item(R.string.menu_share_page),
+                        item(R.string.menu_copy_link)));
 
         expectedItems.add(item(R.id.find_in_page_id));
         expectedTitles.add(item(R.string.menu_find_in_page));
@@ -1461,7 +1476,8 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                                 R.id.save_and_share_parent_menu_id,
                                 item(R.id.universal_install),
                                 item(R.id.divider_line_id),
-                                item(R.id.share_menu_id)),
+                                item(R.id.share_menu_id),
+                                item(R.id.copy_link_menu_id)),
                         item(R.id.find_in_page_id),
                         item(R.id.translate_id),
                         // Request desktop site is hidden.
@@ -1555,7 +1571,8 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                                 R.id.save_and_share_parent_menu_id,
                                 item(R.id.universal_install),
                                 item(R.id.divider_line_id),
-                                item(R.id.share_menu_id)),
+                                item(R.id.share_menu_id),
+                                item(R.id.copy_link_menu_id)),
                         item(R.id.find_in_page_id),
                         item(R.id.translate_id),
                         item(R.id.auto_dark_web_contents_id),
@@ -1893,7 +1910,8 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                                 R.id.save_and_share_parent_menu_id,
                                 item(R.id.universal_install),
                                 item(R.id.divider_line_id),
-                                item(R.id.share_menu_id)),
+                                item(R.id.share_menu_id),
+                                item(R.id.copy_link_menu_id)),
                         item(R.id.find_in_page_id)));
 
         if (!DeviceInfo.isDesktop()) {
@@ -2018,7 +2036,8 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                                 R.id.save_and_share_parent_menu_id,
                                 item(R.id.universal_install),
                                 item(R.id.divider_line_id),
-                                item(R.id.share_menu_id)),
+                                item(R.id.share_menu_id),
+                                item(R.id.copy_link_menu_id)),
                         item(R.id.find_in_page_id)));
 
         if (!DeviceInfo.isDesktop()) {
@@ -2117,7 +2136,8 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                                 R.id.save_and_share_parent_menu_id,
                                 item(R.id.universal_install),
                                 item(R.id.divider_line_id),
-                                item(R.id.share_menu_id)),
+                                item(R.id.share_menu_id),
+                                item(R.id.copy_link_menu_id)),
                         item(R.id.find_in_page_id)));
 
         if (!DeviceInfo.isDesktop()) {
