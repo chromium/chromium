@@ -52,7 +52,6 @@ class GPU_GLES2_EXPORT Logger {
   // Uses the current marker to add information to logs.
   raw_ptr<const DebugMarkerManager> debug_marker_manager_;
   const LogMessageCallback log_message_callback_;
-  std::string this_in_hex_;
 
   int log_message_count_;
   bool log_synthesized_gl_errors_;

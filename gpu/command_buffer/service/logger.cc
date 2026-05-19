@@ -23,9 +23,6 @@ Logger::Logger(const DebugMarkerManager* debug_marker_manager,
       log_message_count_(0),
       log_synthesized_gl_errors_(true),
       disable_gl_error_limit_(disable_gl_error_limit) {
-  this_in_hex_ =
-      base::StringPrintf("GroupMarkerNotSet(crbug.com/242999)!:%" PRIXPTR,
-                         reinterpret_cast<uintptr_t>(this));
   suppress_performance_logs_ =
       base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kSuppressPerformanceLogs);
@@ -56,8 +53,7 @@ void Logger::LogMessage(
 }
 
 const std::string& Logger::GetLogPrefix() const {
-  const std::string& prefix(debug_marker_manager_->GetMarker());
-  return prefix.empty() ? this_in_hex_ : prefix;
+  return debug_marker_manager_->GetMarker();
 }
 
 bool Logger::SuppressPerformanceLogs() const {
