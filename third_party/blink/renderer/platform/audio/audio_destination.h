@@ -169,6 +169,10 @@ class PLATFORM_EXPORT AudioDestination final
                             std::optional<float> context_sample_rate,
                             unsigned render_quantum_frames);
 
+  bool IsBusAllocationFailed() const {
+    return !fifo_ || !render_bus_ || !output_bus_;
+  }
+
   void SetDeviceState(DeviceState);
 
   // The actual render request to the WebAudio destination node. This method

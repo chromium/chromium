@@ -175,6 +175,11 @@ void OfflineAudioDestinationHandler::DoOfflineRendering() {
               "OfflineAudioDestinationHandler::DoOfflineRendering", "this",
               reinterpret_cast<void*>(this));
 
+  if (Context()->HasAllocationFailed()) {
+    FinishOfflineRendering();
+    return;
+  }
+
   unsigned number_of_channels = shared_render_target_->numberOfChannels();
 
   // If there is more to process and there is no suspension at the moment,

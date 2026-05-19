@@ -5,6 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_AUDIO_PUSH_PULL_FIFO_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_AUDIO_PUSH_PULL_FIFO_H_
 
+#include <memory>
+
 #include "base/synchronization/lock.h"
 #include "third_party/blink/renderer/platform/audio/audio_bus.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
@@ -46,10 +48,11 @@ class PLATFORM_EXPORT PushPullFIFO final {
     size_t frames_to_render = 0;
   };
 
-  // `render_quantum_frames` is the render size used by the audio graph.
-  explicit PushPullFIFO(unsigned number_of_channels,
-                        uint32_t fifo_length,
-                        unsigned render_quantum_frames);
+  static std::unique_ptr<PushPullFIFO> TryCreate(
+      unsigned number_of_channels,
+      uint32_t fifo_length,
+      unsigned render_quantum_frames);
+
   PushPullFIFO(const PushPullFIFO&) = delete;
   PushPullFIFO& operator=(const PushPullFIFO&) = delete;
   ~PushPullFIFO();
@@ -114,6 +117,12 @@ class PLATFORM_EXPORT PushPullFIFO final {
   const PushPullFIFOStateForTest StateForTest();
 
  private:
+  // The constructor is private to prevent direct construction. This ensures
+  // that the class can only be instantiated via TryCreate(), which safely
+  // handles memory allocation failures of the underlying AudioBus.
+  PushPullFIFO(scoped_refptr<AudioBus> fifo_bus,
+               unsigned render_quantum_frames);
+
   // The size of the FIFO.
   const uint32_t fifo_length_ = 0;
 

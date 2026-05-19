@@ -167,7 +167,7 @@ TEST_P(PushPullFIFOSmokeTest, SmokeTests) {
   const double push_interval_ms =
       param.push_buffer_size / sample_rate * 1000;
 
-  std::unique_ptr<PushPullFIFO> test_fifo = std::make_unique<PushPullFIFO>(
+  std::unique_ptr<PushPullFIFO> test_fifo = PushPullFIFO::TryCreate(
       param.number_of_channels, param.fifo_length, param.render_quantum_frames);
   std::unique_ptr<PullClient> pull_client = std::make_unique<PullClient>(
       test_fifo.get(), param.pull_buffer_size, param.pull_jitter_range_ms);

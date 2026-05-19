@@ -32,7 +32,7 @@ TEST(PushPullFIFOBasicTest, BasicTests) {
   constexpr unsigned kRenderQuantumFrames = 128;
 
   std::unique_ptr<PushPullFIFO> test_fifo =
-      std::make_unique<PushPullFIFO>(2, 1024, kRenderQuantumFrames);
+      PushPullFIFO::TryCreate(2, 1024, kRenderQuantumFrames);
 
   // The input bus length must be |audio_utilities::kRenderQuantumFrames|.
   // i.e.) input_bus->length() == kRenderQuantumFrames
@@ -143,7 +143,7 @@ TEST_P(PushPullFIFOFeatureTest, FeatureTests) {
   const FIFOTestExpectedState expected_state = GetParam().expected_state;
 
   // Create a FIFO with a specified configuration.
-  std::unique_ptr<PushPullFIFO> fifo = std::make_unique<PushPullFIFO>(
+  std::unique_ptr<PushPullFIFO> fifo = PushPullFIFO::TryCreate(
       setup.number_of_channels, setup.fifo_length, setup.render_quantum_frames);
 
   scoped_refptr<AudioBus> output_bus;
@@ -390,7 +390,7 @@ TEST_P(PushPullFIFOEarmarkFramesTest, FeatureTests) {
   const size_t expected_earmarked_frames = GetParam().expected_earmarked_frames;
 
   // Create a FIFO with a specified configuration.
-  std::unique_ptr<PushPullFIFO> fifo = std::make_unique<PushPullFIFO>(
+  std::unique_ptr<PushPullFIFO> fifo = PushPullFIFO::TryCreate(
       setup.number_of_channels, setup.fifo_length, setup.render_quantum_frames);
   fifo->SetEarmarkedFrames(callback_buffer_size);
 
@@ -479,6 +479,16 @@ FIFOEarmarkTestParam g_earmark_test_params[] = {
 INSTANTIATE_TEST_SUITE_P(PushPullFIFOEarmarkFramesTest,
                          PushPullFIFOEarmarkFramesTest,
                          testing::ValuesIn(g_earmark_test_params));
+
+TEST(PushPullFIFOAllocationTest, FailAllocationWithTooManyChannels) {
+  constexpr unsigned kRenderQuantumFrames = 128;
+  // TryCreate should return nullptr instead of crashing when the channel count
+  // exceeds the Chromium-specific implementation limit (kMaxBusChannels = 32).
+  // Note: The W3C Web Audio API standard allows supporting >32 channels.
+  std::unique_ptr<PushPullFIFO> fifo =
+      PushPullFIFO::TryCreate(33, 1024, kRenderQuantumFrames);
+  EXPECT_EQ(fifo, nullptr);
+}
 
 }  // namespace
 

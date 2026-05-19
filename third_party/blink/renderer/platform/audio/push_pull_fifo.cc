@@ -9,6 +9,7 @@
 #include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/memory/ptr_util.h"
 #include "base/synchronization/lock.h"
 #include "build/build_config.h"
 #include "media/base/audio_bus.h"
@@ -23,12 +24,24 @@ namespace {
 constexpr unsigned kMaxMessagesToLog = 100;
 }
 
-PushPullFIFO::PushPullFIFO(unsigned number_of_channels,
-                           uint32_t fifo_length,
-                           unsigned render_quantum_frames)
-    : fifo_length_(fifo_length), render_quantum_frames_(render_quantum_frames) {
-  fifo_bus_ = AudioBus::Create(number_of_channels, fifo_length_);
+std::unique_ptr<PushPullFIFO> PushPullFIFO::TryCreate(
+    unsigned number_of_channels,
+    uint32_t fifo_length,
+    unsigned render_quantum_frames) {
+  scoped_refptr<AudioBus> fifo_bus =
+      AudioBus::TryCreate(number_of_channels, fifo_length);
+  if (!fifo_bus) {
+    return nullptr;
+  }
+  return base::WrapUnique(
+      new PushPullFIFO(std::move(fifo_bus), render_quantum_frames));
 }
+
+PushPullFIFO::PushPullFIFO(scoped_refptr<AudioBus> fifo_bus,
+                           unsigned render_quantum_frames)
+    : fifo_length_(fifo_bus->length()),
+      render_quantum_frames_(render_quantum_frames),
+      fifo_bus_(std::move(fifo_bus)) {}
 
 PushPullFIFO::~PushPullFIFO() {
   // Capture metrics only after the FIFO is actually pulled.

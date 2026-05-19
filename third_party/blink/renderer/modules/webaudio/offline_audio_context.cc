@@ -258,14 +258,21 @@ ScriptPromise<AudioBuffer> OfflineAudioContext::startOfflineRendering(
     return EmptyPromise();
   }
 
+  DestinationHandler().InitializeOfflineRenderThread(render_target);
+  if (HasAllocationFailed()) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kNotSupportedError,
+        "The offline audio context could not be initialized due to memory "
+        "limitations.");
+    return EmptyPromise();
+  }
+
   // Start rendering and return the promise.
   is_rendering_started_ = true;
   SetContextState(V8AudioContextState::Enum::kRunning);
   static_cast<OfflineAudioDestinationNode*>(destination())
       ->SetDestinationBuffer(render_target);
-  DestinationHandler().InitializeOfflineRenderThread(render_target);
   DestinationHandler().StartRendering();
-
   return complete_resolver_->Promise();
 }
 

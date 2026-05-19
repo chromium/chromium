@@ -97,9 +97,13 @@ scoped_refptr<AudioDestination> AudioDestination::Create(
     std::optional<float> context_sample_rate,
     unsigned render_quantum_frames) {
   TRACE_EVENT0("webaudio", "AudioDestination::Create");
-  return base::AdoptRef(new AudioDestination(
+  auto destination = base::AdoptRef(new AudioDestination(
       callback, sink_descriptor, number_of_output_channels, latency_hint,
       context_sample_rate, render_quantum_frames));
+  if (destination->IsBusAllocationFailed()) {
+    return nullptr;
+  }
+  return destination;
 }
 
 AudioDestination::~AudioDestination() {
@@ -437,7 +441,7 @@ AudioDestination::AudioDestination(
           context_sample_rate.has_value()
               ? context_sample_rate.value()
               : (web_audio_device_ ? web_audio_device_->SampleRate() : 0)),
-      fifo_(std::make_unique<PushPullFIFO>(
+      fifo_(PushPullFIFO::TryCreate(
           number_of_output_channels,
           std::max(kFIFOSize, callback_buffer_size_ + render_quantum_frames),
           render_quantum_frames)),
@@ -445,7 +449,8 @@ AudioDestination::AudioDestination(
                                    render_quantum_frames,
                                    false)),
       render_bus_(
-          AudioBus::Create(number_of_output_channels, render_quantum_frames)),
+          AudioBus::TryCreate(number_of_output_channels,
+                              render_quantum_frames)),
       callback_(callback),
       uma_reporter_(
           AudioDestinationUmaReporter(latency_hint,
@@ -453,6 +458,14 @@ AudioDestination::AudioDestination(
                                       web_audio_device_->SampleRate())),
       is_output_buffer_bypassed_(BypassOutputBuffer()) {
   CHECK(web_audio_device_);
+
+  // If any of the critical audio buses or FIFOs failed to allocate, exit early.
+  // Exiting a C++ constructor early via a bare return is standard; the
+  // factory method AudioDestination::Create() will detect this via
+  // IsBusAllocationFailed() and return nullptr, freeing this instance.
+  if (IsBusAllocationFailed()) {
+    return;
+  }
 
   SendLogMessage(__func__,
                  StrCat({"({output_channels=",
