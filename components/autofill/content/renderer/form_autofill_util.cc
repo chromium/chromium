@@ -741,7 +741,7 @@ std::optional<InferredLabel> InferLabelFromAriaLabel(
 // input element (they need to overlap a bit). We want to disregard elements
 // that are primarily below the input element (even if they overlap) because
 // that place is often used to indicate incorrect inputs.
-std::optional<InferredLabel> InferLabelFromOverlayingSuccessor(
+std::optional<InferredLabel> InferPlaceholderFromOverlayingSuccessor(
     const WebFormControlElement& element) {
   WebNode next = element.NextSibling();
   while (next && !next.IsElementNode()) {
@@ -1078,9 +1078,9 @@ std::optional<InferredLabel> InferLabelForElement(
     if (auto r = InferLabelFromPlaceholder(element)) {
       return r;
     }
-  }
-  if (auto r = InferLabelFromOverlayingSuccessor(element)) {
-    return r;
+    if (auto r = InferPlaceholderFromOverlayingSuccessor(element)) {
+      return r;
+    }
   }
   // If we didn't find a placeholder, check for aria-label text.
   if (auto r = InferLabelFromAriaLabel(element)) {
@@ -1937,7 +1937,7 @@ std::vector<WebFormControlElement> GetOwnedFormControls(
   return form_controls;
 }
 
-// Populates out a FormField object from a given autofillable
+// Populates out a FormFieldData object from a given autofillable
 // WebFormControlElement. Field properties are copied from |field_data_manager|,
 // if the argument is not null and has entry for |element| (see properties in
 // FieldPropertiesFlags).
@@ -1978,6 +1978,24 @@ void WebFormControlElementToFormField(
   }
 
   field->set_placeholder(GetAttribute<kPlaceholder>(element).Utf16());
+
+  // With `AutofillBetterLocalHeuristicPlaceholderSupport` enabled, field
+  // placeholder (and "poor man's placeholder") gets promoted to become
+  // a first class citizen for local heuristics. Since "poor man's placeholder"
+  // (extracted through `InferPlaceholderFromOverlayingSuccessor`) is a kind of
+  // placeholder, it is treated as a fallback for the placeholder rather
+  // than for the label.
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillBetterLocalHeuristicPlaceholderSupport) &&
+      !InferredLabel::BuildIfValid(field->placeholder(),
+                                   LabelSource::kPlaceHolder)) {
+    std::optional<InferredLabel> inferred_placeholder =
+        InferPlaceholderFromOverlayingSuccessor(element);
+    if (inferred_placeholder) {
+      field->set_placeholder(inferred_placeholder->label);
+    }
+  }
+
   if (HasAttribute<kClass>(element)) {
     field->set_css_classes(GetAttribute<kClass>(element).Utf16());
   }
@@ -2346,7 +2364,7 @@ std::optional<FormControlType> ToAutofillFormControlType(
   // two browser tests (form_autofill_util_browsertest.cc and
   // form_structure_browsertest.cc) whose renderer processes are hopefully never
   // shared with other tests.
-  const static bool g_autofill_ignore_checkable_elements_enabled =
+  static const bool g_autofill_ignore_checkable_elements_enabled =
       base::FeatureList::IsEnabled(features::kAutofillIgnoreCheckableElements);
 
   // Note that adding a new field type here automatically makes

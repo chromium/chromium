@@ -601,7 +601,7 @@ bool FormFieldParser::ParseInAnyOrder(
   // scanners fields. While this has a terrible runtime for general n, the only
   // planned use cases are dates (2 or 3 components).
   // If necessary, bipartite matching could be used for general n.
-  DCHECK(fields_and_parsers.size() <= 3);
+  DCHECK_LE(fields_and_parsers.size(), 3UL);
   std::vector<int> p(fields_and_parsers.size());
   std::iota(p.begin(), p.end(), 0);
   do {

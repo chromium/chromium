@@ -484,4 +484,88 @@ TEST_F(AddressFieldParserTest, ParseOnlyLandmarkIN) {
                     LanguageCode("IN"));
 }
 
+// The label originates from kLabelTag, which represents the high quality label.
+// When there is no match with such a label, the parsing logic should fall back
+// to the placeholder.
+TEST_F(AddressFieldParserTest,
+       ParseBasedOnPlaceholderWhenHighQualityLabelDoesntMatch) {
+  base::test::ScopedFeatureList feature{
+      features::kAutofillBetterLocalHeuristicPlaceholderSupport};
+
+  AddFormFieldData(FormControlType::kInputText, /*name=*/"",
+                   /*label=*/"Non-matching label",
+                   /*placeholder=*/"Country", /*max_length=*/0,
+                   /*expected_type=*/FieldType::ADDRESS_HOME_COUNTRY);
+  fields_.back().set_label_source(FormFieldData::LabelSource::kLabelTag);
+  ClassifyAndVerify();
+}
+
+// There is no match with the high-quality label. The classification is based on
+// the name and placeholder matches.
+TEST_F(AddressFieldParserTest, ParseBasedOnNameAndPlaceholder) {
+  base::test::ScopedFeatureList feature{
+      features::kAutofillBetterLocalHeuristicPlaceholderSupport};
+
+  AddFormFieldData(FormControlType::kInputText, /*name=*/"Country",
+                   /*label=*/"Non-matching label",
+                   /*placeholder=*/"Country", /*max_length=*/0,
+                   /*expected_type=*/FieldType::ADDRESS_HOME_COUNTRY);
+  fields_.back().set_label_source(FormFieldData::LabelSource::kLabelTag);
+  ClassifyAndVerify();
+}
+
+TEST_F(AddressFieldParserTest, ParseBasedOnHighQualityLabel) {
+  base::test::ScopedFeatureList feature{
+      features::kAutofillBetterLocalHeuristicPlaceholderSupport};
+
+  AddFormFieldData(FormControlType::kInputText, /*name=*/"",
+                   /*label=*/"Country",
+                   /*placeholder=*/"Non-matching placeholder", /*max_length=*/0,
+                   /*expected_type=*/FieldType::ADDRESS_HOME_COUNTRY);
+  fields_.back().set_label_source(FormFieldData::LabelSource::kLabelTag);
+  ClassifyAndVerify();
+}
+
+TEST_F(AddressFieldParserTest, ParseBasedOnLowQualityLabel) {
+  base::test::ScopedFeatureList feature{
+      features::kAutofillBetterLocalHeuristicPlaceholderSupport};
+
+  AddFormFieldData(FormControlType::kInputText, /*name=*/"",
+                   /*label=*/"Country",
+                   /*placeholder=*/"Non-matching placeholder", /*max_length=*/0,
+                   /*expected_type=*/FieldType::ADDRESS_HOME_COUNTRY);
+  fields_.back().set_label_source(FormFieldData::LabelSource::kAriaLabel);
+  ClassifyAndVerify();
+}
+
+// Both high quality label and placeholder are available and provide conflicting
+// information. High quality label is preferred over the placeholder.
+TEST_F(AddressFieldParserTest,
+       ParseBasedOnHighQualityLabelWhenPlaceholderAlsoMatches) {
+  base::test::ScopedFeatureList feature{
+      features::kAutofillBetterLocalHeuristicPlaceholderSupport};
+
+  AddFormFieldData(FormControlType::kInputText, /*name=*/"",
+                   /*label=*/"Country", /*placeholder=*/"City",
+                   /*max_length=*/0,
+                   /*expected_type=*/FieldType::ADDRESS_HOME_COUNTRY);
+  fields_.back().set_label_source(FormFieldData::LabelSource::kLabelTag);
+  ClassifyAndVerify();
+}
+
+// Both low quality label and placeholder are available and provide conflicting
+// information. Placeholder is preferred over low quality label.
+TEST_F(AddressFieldParserTest,
+       ParseBasedOnPlaceholderWhenLowQualityLabelAlsoMatches) {
+  base::test::ScopedFeatureList feature{
+      features::kAutofillBetterLocalHeuristicPlaceholderSupport};
+
+  AddFormFieldData(FormControlType::kInputText, /*name=*/"",
+                   /*label=*/"Country", /*placeholder=*/"City",
+                   /*max_length=*/0,
+                   /*expected_type=*/FieldType::ADDRESS_HOME_CITY);
+  fields_.back().set_label_source(FormFieldData::LabelSource::kAriaLabel);
+  ClassifyAndVerify();
+}
+
 }  // namespace autofill
