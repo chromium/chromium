@@ -31,6 +31,10 @@
 #include "gin/v8_platform_thread_isolated_allocator.h"
 #include "partition_alloc/buildflags.h"
 
+#if PA_BUILDFLAG(USE_PARTITION_ALLOC) && PA_BUILDFLAG(HAS_64_BIT_POINTERS)
+#include "partition_alloc/partition_address_space.h"
+#endif
+
 namespace gin {
 
 namespace {
@@ -227,6 +231,14 @@ void V8Platform::OnCriticalMemoryPressure() {
 // TODO(bbudge) Make the #if's in BlinkInitializer match.
 #if BUILDFLAG(IS_WIN) && defined(ARCH_CPU_32_BITS)
   partition_alloc::ReleaseReservation();
+#endif
+}
+
+size_t V8Platform::GetZeroSegmentSize() {
+#if PA_BUILDFLAG(HAS_64_BIT_POINTERS)
+  return partition_alloc::internal::PartitionAddressSpace::GetZeroSegmentSize();
+#else
+  return 0;
 #endif
 }
 #endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC)

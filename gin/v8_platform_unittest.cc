@@ -12,8 +12,12 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_waitable_event.h"
 #include "base/trace_event/trace_event.h"
+#include "partition_alloc/buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+#if PA_BUILDFLAG(USE_PARTITION_ALLOC) && PA_BUILDFLAG(HAS_64_BIT_POINTERS)
+#include "partition_alloc/partition_address_space.h"
+#endif
 
 namespace gin {
 
@@ -95,6 +99,16 @@ TEST(V8PlatformTest, PostJobLifetime) {
 
   // Release workers and let the job get destroyed.
   threads_continue.Signal();
+}
+
+TEST(V8PlatformTest, GetZeroSegmentSize) {
+#if PA_BUILDFLAG(USE_PARTITION_ALLOC) && PA_BUILDFLAG(HAS_64_BIT_POINTERS)
+  EXPECT_EQ(
+      V8Platform::Get()->GetZeroSegmentSize(),
+      partition_alloc::internal::PartitionAddressSpace::GetZeroSegmentSize());
+#else
+  EXPECT_EQ(V8Platform::Get()->GetZeroSegmentSize(), 0u);
+#endif
 }
 
 }  // namespace gin
