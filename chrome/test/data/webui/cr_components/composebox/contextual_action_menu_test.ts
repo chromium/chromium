@@ -6,7 +6,10 @@ import 'chrome://contextual-tasks/strings.m.js';
 import 'chrome://resources/cr_components/composebox/contextual_action_menu.js';
 
 import type {ContextualActionMenuElement} from 'chrome://resources/cr_components/composebox/contextual_action_menu.js';
+import 'chrome://resources/cr_components/composebox/composebox_favicon_group.js';
+import type {ComposeboxFaviconGroupElement} from 'chrome://resources/cr_components/composebox/composebox_favicon_group.js';
 import type {CrToggleElement} from 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
+import type {TabInfo} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
 import {InputType, ModelMode, ToolMode} from 'chrome://resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
@@ -983,5 +986,32 @@ suite('ContextualActionMenu', () => {
     assertEquals('bottom', flyout.getAttribute('data-position'));
     // The expected maxLeft.
     assertEquals('32px', flyout.style.left);
+  });
+
+  test('Favicon group rendered in action menu', async () => {
+    loadTimeData.overrideValues({ contextManagementInComposeboxEnabled: true });
+    actionMenu.remove();
+    actionMenu = document.createElement('cr-composebox-contextual-action-menu');
+    const tabInfo: TabInfo = {
+      tabId: 1,
+      title: 'Tab 1',
+      url: 'https://google.com',
+      showInCurrentTabChip: false,
+      showInPreviousTabChip: false,
+      lastActive: { internalValue: 0n },
+    };
+    actionMenu.tabSuggestions = [tabInfo];
+    actionMenu.inputState = new MockInputState({
+      allowedInputTypes: [InputType.kBrowserTab],
+    });
+    actionMenu.disabledTabIds = new Map([[1, '1']]);
+    document.body.appendChild(actionMenu);
+    actionMenu.showAt(actionMenu);
+    await microtasksFinished();
+
+    const faviconGroup =
+        $$(actionMenu, 'composebox-favicon-group') as ComposeboxFaviconGroupElement;
+    assertTrue(!!faviconGroup);
+    assertEquals(1, faviconGroup.tabs.length);
   });
 });

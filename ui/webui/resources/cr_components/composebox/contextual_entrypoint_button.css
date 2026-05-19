@@ -228,6 +228,7 @@ cr-icon-button {
 }
 
 #entrypoint {
+  --composebox-favicon-border-color: #f2f2f2;
   --cr-button-disabled-text-color:
       var(--color-composebox-context-entrypoint-text-disabled);
   --cr-button-text-color: var(--color-composebox-file-chip-text);
@@ -245,6 +246,12 @@ cr-icon-button {
   gap: 4px;
   position: relative;
   z-index: 5;
+}
+
+@media (prefers-color-scheme: dark) {
+  :host([apply-context-button-background]) #entrypoint {
+    --composebox-favicon-border-color: #4e5059;
+  }
 }
 
 #entrypoint:not(:hover) {

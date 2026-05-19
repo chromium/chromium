@@ -79,6 +79,7 @@
 }
 
 composebox-favicon-group {
+  --composebox-favicon-border-color: var(--color-sys-surface-container, #f2f2f2);
   margin-inline-end: 10px;
   margin-inline-start: auto;
 }
