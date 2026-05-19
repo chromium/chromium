@@ -9,6 +9,7 @@
 
 #include <utility>
 
+#include "base/allocator/partition_alloc_support.h"
 #include "base/apple/bundle_locations.h"
 #include "base/apple/foundation_util.h"
 #include "base/apple/mach_logging.h"
@@ -691,7 +692,17 @@ void AppShimController::OnShimConnectedResponse(
   // Finalize feature state and finish up initialization that was deferred for
   // feature state to be fully setup.
   FinalizeFeatureState(feature_state, params_.io_thread_runner);
+
+  // Reconfigure PartitionAlloc with the finalized feature list.
+  base::allocator::PartitionAllocSupport::Get()
+      ->ReconfigureAfterFeatureListInit(switches::kAppShim);
+
   base::ThreadPoolInstance::Get()->StartWithDefaultParams();
+
+  // Reconfigure PartitionAlloc after task runner / ThreadPool initialization.
+  base::allocator::PartitionAllocSupport::Get()->ReconfigureAfterTaskRunnerInit(
+      switches::kAppShim);
+
   SetUpMenu();
 
   if (result != chrome::mojom::AppShimLaunchResult::kSuccess) {

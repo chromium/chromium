@@ -41,6 +41,8 @@
 #include "components/webapps/common/web_app_id.h"
 #include "content/public/test/browser_test.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "partition_alloc/buildflags.h"
+#include "partition_alloc/partition_address_space.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/multiprocess_func_list.h"
 #include "url/gurl.h"
@@ -159,6 +161,12 @@ class AppShimControllerBrowserTest : public InProcessBrowserTest {
     base::ReadFileToString(log_file, &log_string);
     std::vector<std::string> log = base::SplitString(
         log_string, "\n", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+    const char* expected_brp_log =
+#if PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
+        "BRP Enabled: 1";
+#else
+        "BRP Enabled: N/A (BRP not supported)";
+#endif
     EXPECT_THAT(log, testing::ElementsAre(
                          "Shim Started",
                          base::StringPrintf(
@@ -168,6 +176,7 @@ class AppShimControllerBrowserTest : public InProcessBrowserTest {
                          base::StringPrintf(
                              "Final Trial Group: %s",
                              variations::HashNameAsHexString(kTrialGroup2Name)),
+                         expected_brp_log,
                          "Window Created: NativeWidgetMacOverlayNSWindow"));
 
     // If the test failed, it can be hard to debug why without getting output
@@ -269,6 +278,15 @@ MULTIPROCESS_TEST_MAIN(AppShimControllerBrowserTestAppShimMain) {
         if ([window isKindOfClass:[BrowserNativeWidgetWindow class]]) {
           log(base::StringPrintf("Final Trial Group: %s",
                                  GetActiveGroupForTestTrial()));
+#if PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
+          void* p = malloc(64);
+          bool in_brp = partition_alloc::IsManagedByPartitionAllocBRPPool(
+              reinterpret_cast<uintptr_t>(p));
+          free(p);
+          log(base::StringPrintf("BRP Enabled: %d", in_brp));
+#else
+          log("BRP Enabled: N/A (BRP not supported)");
+#endif
           [window performClose:nil];
         }
       }));
