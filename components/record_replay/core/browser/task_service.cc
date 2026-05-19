@@ -5,11 +5,13 @@
 #include "components/record_replay/core/browser/task_service.h"
 
 #include "components/record_replay/core/browser/recording.pb.h"
+#include "components/record_replay/core/browser/recording_data_manager.h"
 #include "url/gurl.h"
 
 namespace record_replay {
 
-TaskService::TaskService() = default;
+TaskService::TaskService(RecordingDataManager* recording_data_manager)
+    : recording_data_manager_(recording_data_manager) {}
 
 TaskService::~TaskService() = default;
 

@@ -16,7 +16,7 @@ class TaskServiceTest : public testing::Test {
 };
 
 TEST_F(TaskServiceTest, CanInstantiate) {
-  TaskService task_service;
+  TaskService task_service(nullptr);
   // The service is currently concrete and has placeholder methods. Check that
   // we can instantiate it successfully.
   EXPECT_TRUE(true);

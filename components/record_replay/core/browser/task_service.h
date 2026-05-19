@@ -5,12 +5,14 @@
 #ifndef COMPONENTS_RECORD_REPLAY_CORE_BROWSER_TASK_SERVICE_H_
 #define COMPONENTS_RECORD_REPLAY_CORE_BROWSER_TASK_SERVICE_H_
 
+#include "base/memory/raw_ptr.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 class GURL;
 
 namespace record_replay {
 
+class RecordingDataManager;
 class TaskData;
 class TaskDefinition;
 
@@ -21,7 +23,7 @@ using TaskParameterValues = TaskData;
 // Service responsible for coordinating the lifecycle of automation tasks.
 class TaskService : public KeyedService {
  public:
-  TaskService();
+  explicit TaskService(RecordingDataManager* recording_data_manager);
   TaskService(const TaskService&) = delete;
   TaskService& operator=(const TaskService&) = delete;
   TaskService(TaskService&&) = delete;
@@ -40,6 +42,9 @@ class TaskService : public KeyedService {
   // This will be given as a callback to the UI that offers task execution.
   void OnExecutionAccepted(const TaskDefinition& definition,
                            const TaskParameterValues& values);
+
+ private:
+  raw_ptr<RecordingDataManager> recording_data_manager_;
 };
 
 }  // namespace record_replay
