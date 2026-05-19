@@ -295,7 +295,8 @@ public class AccessibilityContentShellActivityTestRule extends ContentShellActiv
      * @return The virtual view ID of the child at the specified index.
      */
     protected int getChildId(int nodeId, int index) {
-        int[] childIds = mWcax.getChildIdsForTesting(nodeId);
+        int[] childIds =
+                ThreadUtils.runOnUiThreadBlocking(() -> mWcax.getChildIdsForTesting(nodeId));
         Assert.assertNotNull("Unable to find the parent node with ID: " + nodeId, childIds);
         Assert.assertTrue(index < childIds.length);
         return childIds[index];
@@ -308,7 +309,9 @@ public class AccessibilityContentShellActivityTestRule extends ContentShellActiv
      * @return The virtual view IDs of the nodes that label the specified node.
      */
     protected int[] getLabeledByNodeIds(int nodeId) {
-        int[] labeledByNodeIds = mWcax.getLabeledByNodeIdsForTesting(nodeId);
+        int[] labeledByNodeIds =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> mWcax.getLabeledByNodeIdsForTesting(nodeId));
         Assert.assertNotNull("Unable to find the labeledByNodeIds for nodeId: " + nodeId);
         return labeledByNodeIds;
     }

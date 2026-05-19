@@ -677,12 +677,16 @@ ScopedJavaLocalRef<jobject> WebContentsAccessibilityAndroid::GetJavaObject(
 
 ui::AXPlatformNodeId WebContentsAccessibilityAndroid::GetOrCreateAXNodeUniqueId(
     ui::AXNodeID ax_node_id) {
-  // Per-tab uniqueness is not necessary in snapshots, so return the blink node
-  // id.
-  return ui::AXPlatformNodeId(MakePassKey(), ax_node_id);
+  auto [iter, inserted] =
+      ax_unique_ids_.try_emplace(ax_node_id, ui::AXUniqueId::CreateInvalid());
+  if (inserted) {
+    iter->second = ui::AXUniqueId::Create();
+  }
+  return iter->second;
 }
 
 void WebContentsAccessibilityAndroid::OnAXNodeDeleted(ui::AXNodeID ax_node_id) {
+  ax_unique_ids_.erase(ax_node_id);
 }
 
 void WebContentsAccessibilityAndroid::ConnectInstanceToRootManager(
@@ -2824,7 +2828,18 @@ WebContentsAccessibilityAndroid::GetRootBrowserAccessibilityManager() const {
 
 BrowserAccessibilityAndroid* WebContentsAccessibilityAndroid::GetAXFromUniqueID(
     int32_t unique_id) const {
-  return BrowserAccessibilityAndroid::GetFromUniqueId(unique_id);
+  BrowserAccessibilityAndroid* node =
+      BrowserAccessibilityAndroid::GetFromUniqueId(unique_id);
+  if (!node) {
+    return nullptr;
+  }
+
+  if (node->manager()->GetManagerForRootFrame() ==
+      GetRootBrowserAccessibilityManager()) {
+    return node;
+  }
+
+  return nullptr;
 }
 
 bool WebContentsAccessibilityAndroid::IsAccessibilityFocused(

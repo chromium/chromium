@@ -17,6 +17,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/ax_enums.mojom-shared.h"
+#include "ui/accessibility/platform/ax_unique_id.h"
 #include "ui/accessibility/platform/browser_accessibility_manager.h"
 #include "ui/accessibility/platform/test_ax_node_id_delegate.h"
 #include "ui/accessibility/platform/test_ax_platform_tree_manager_delegate.h"
@@ -29,6 +30,26 @@ BrowserAccessibilityManagerAndroid* ToBrowserAccessibilityManagerAndroid(
     ui::BrowserAccessibilityManager* manager) {
   return static_cast<BrowserAccessibilityManagerAndroid*>(manager);
 }
+
+// A trivial AXNodeIdDelegate that maintains unique AXNodeIDs in a container.
+class UniqueAXNodeIdDelegate : public ui::AXNodeIdDelegate {
+ public:
+  ui::AXPlatformNodeId GetOrCreateAXNodeUniqueId(
+      ui::AXNodeID ax_node_id) override {
+    auto [iter, inserted] =
+        unique_ids_.try_emplace(ax_node_id, ui::AXUniqueId::CreateInvalid());
+    if (inserted) {
+      iter->second = ui::AXUniqueId::Create();
+    }
+    return iter->second;
+  }
+  void OnAXNodeDeleted(ui::AXNodeID ax_node_id) override {
+    unique_ids_.erase(ax_node_id);
+  }
+
+ private:
+  absl::flat_hash_map<ui::AXNodeID, ui::AXUniqueId> unique_ids_;
+};
 }  // namespace
 
 using RetargetEventType = ui::AXTreeManager::RetargetEventType;
@@ -63,6 +84,13 @@ class MockWebContentsAccessibilityAndroid
     : public WebContentsAccessibilityAndroid {
  public:
   MockWebContentsAccessibilityAndroid() {}
+  explicit MockWebContentsAccessibilityAndroid(int64_t ax_tree_update_ptr)
+      : WebContentsAccessibilityAndroid(ax_tree_update_ptr) {}
+
+  BrowserAccessibilityAndroid* GetAXFromUniqueIDForTesting(
+      int32_t unique_id) const {
+    return GetAXFromUniqueID(unique_id);
+  }
 };
 
 class BrowserAccessibilityAndroidTest : public ::testing::Test {
@@ -1740,4 +1768,88 @@ TEST_F(BrowserAccessibilityAndroidTest,
 
   EXPECT_FALSE(container_node->IsFocusable());
 }
+
+TEST_F(BrowserAccessibilityAndroidTest, SnapshotIdsDoNotCollideWithLiveTree) {
+  UniqueAXNodeIdDelegate live_node_id_delegate;
+  ui::AXNodeData live_root;
+  live_root.id = 1;
+  live_root.role = ax::mojom::Role::kRootWebArea;
+
+  std::unique_ptr<ui::BrowserAccessibilityManager> live_manager(
+      BrowserAccessibilityManagerAndroid::Create(
+          MakeAXTreeUpdateForTesting(live_root), live_node_id_delegate,
+          test_browser_accessibility_delegate_.get()));
+
+  BrowserAccessibilityAndroid* live_node =
+      static_cast<BrowserAccessibilityAndroid*>(
+          live_manager->GetBrowserAccessibilityRoot());
+  int32_t live_unique_id = live_node->GetUniqueId();
+
+  // Now create snapshot tree using MockWebContentsAccessibilityAndroid as
+  // delegate.
+  ui::AXNodeData snapshot_root;
+  snapshot_root.id = 1;  // Same Blink ID
+  snapshot_root.role = ax::mojom::Role::kRootWebArea;
+
+  auto* update =
+      new ui::AXTreeUpdate(MakeAXTreeUpdateForTesting(snapshot_root));
+  MockWebContentsAccessibilityAndroid snapshot_wcaa(
+      reinterpret_cast<intptr_t>(update));
+
+  int32_t snapshot_unique_id = snapshot_wcaa.GetRootId(nullptr);
+
+  // If the fix is active, snapshot_unique_id should be different from
+  // live_unique_id.
+  EXPECT_NE(live_unique_id, snapshot_unique_id);
+
+  // Also test that lookup works for both, and they don't interfere.
+  EXPECT_EQ(live_node,
+            BrowserAccessibilityAndroid::GetFromUniqueId(live_unique_id));
+
+  BrowserAccessibilityAndroid* snapshot_node =
+      BrowserAccessibilityAndroid::GetFromUniqueId(snapshot_unique_id);
+  EXPECT_NE(nullptr, snapshot_node);
+
+  EXPECT_EQ(snapshot_node,
+            snapshot_wcaa.GetAXFromUniqueIDForTesting(snapshot_unique_id));
+  EXPECT_EQ(nullptr, snapshot_wcaa.GetAXFromUniqueIDForTesting(live_unique_id));
+}
+
+TEST_F(BrowserAccessibilityAndroidTest, TwoSnapshotsDoNotCollide) {
+  ui::AXNodeData root1;
+  root1.id = 1;
+  root1.role = ax::mojom::Role::kRootWebArea;
+
+  auto* update1 = new ui::AXTreeUpdate(MakeAXTreeUpdateForTesting(root1));
+  MockWebContentsAccessibilityAndroid wcaa1(
+      reinterpret_cast<intptr_t>(update1));
+  int32_t unique_id1 = wcaa1.GetRootId(nullptr);
+
+  ui::AXNodeData root2;
+  root2.id = 1;  // Same Blink ID
+  root2.role = ax::mojom::Role::kRootWebArea;
+
+  auto* update2 = new ui::AXTreeUpdate(MakeAXTreeUpdateForTesting(root2));
+  MockWebContentsAccessibilityAndroid wcaa2(
+      reinterpret_cast<intptr_t>(update2));
+  int32_t unique_id2 = wcaa2.GetRootId(nullptr);
+
+  // They should have different unique IDs.
+  EXPECT_NE(unique_id1, unique_id2);
+
+  // Each should only find its own node.
+  BrowserAccessibilityAndroid* node1 =
+      BrowserAccessibilityAndroid::GetFromUniqueId(unique_id1);
+  BrowserAccessibilityAndroid* node2 =
+      BrowserAccessibilityAndroid::GetFromUniqueId(unique_id2);
+  ASSERT_NE(nullptr, node1);
+  ASSERT_NE(nullptr, node2);
+
+  EXPECT_EQ(node1, wcaa1.GetAXFromUniqueIDForTesting(unique_id1));
+  EXPECT_EQ(nullptr, wcaa1.GetAXFromUniqueIDForTesting(unique_id2));
+
+  EXPECT_EQ(node2, wcaa2.GetAXFromUniqueIDForTesting(unique_id2));
+  EXPECT_EQ(nullptr, wcaa2.GetAXFromUniqueIDForTesting(unique_id1));
+}
+
 }  // namespace content
