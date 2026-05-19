@@ -2046,4 +2046,27 @@ public class BottomControlsStackerUnitTest {
         assertTrue(mBottomControlsStacker.isTopmostVisibleLayer(TOP_LAYER));
         assertFalse(mBottomControlsStacker.isTopmostVisibleLayer(BOTTOM_LAYER));
     }
+
+    @Test
+    public void testHasNonScrollableLayersOtherThan() {
+        TestLayer top =
+                new TestLayer(
+                        TOP_LAYER,
+                        100,
+                        LayerScrollBehavior.DEFAULT_SCROLL_OFF,
+                        LayerVisibility.VISIBLE);
+        TestLayer bottom =
+                new TestLayer(
+                        BOTTOM_LAYER,
+                        50,
+                        LayerScrollBehavior.NEVER_SCROLL_OFF,
+                        LayerVisibility.VISIBLE);
+
+        mBottomControlsStacker.addLayer(top);
+        mBottomControlsStacker.addLayer(bottom);
+        mBottomControlsStacker.requestLayerUpdate(false);
+
+        assertTrue(mBottomControlsStacker.hasNonScrollableLayersOtherThan(TOP_LAYER));
+        assertFalse(mBottomControlsStacker.hasNonScrollableLayersOtherThan(BOTTOM_LAYER));
+    }
 }

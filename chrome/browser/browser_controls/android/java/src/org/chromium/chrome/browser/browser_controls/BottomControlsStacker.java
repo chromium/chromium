@@ -265,6 +265,19 @@ public class BottomControlsStacker implements BrowserControlsStateProvider.Obser
         return mHasMoreThanOneNonScrollableLayer;
     }
 
+    /**
+     * Checks whether there are any layers that are currently non-scrollable besides the specified
+     * type.
+     */
+    public boolean hasNonScrollableLayersOtherThan(@LayerType int typeToExclude) {
+        for (int layerType : STACK_ORDER) {
+            if (layerType == typeToExclude) continue;
+
+            if (isLayerNonScrollable(layerType)) return true;
+        }
+        return false;
+    }
+
     private boolean isVisibilityForced() {
         return mBrowserControlsState == BrowserControlsState.HIDDEN
                 || mBrowserControlsState == BrowserControlsState.SHOWN;

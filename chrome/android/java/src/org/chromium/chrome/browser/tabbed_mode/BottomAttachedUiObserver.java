@@ -87,6 +87,7 @@ public class BottomAttachedUiObserver
     private final BottomSheetController mBottomSheetController;
     private boolean mBottomSheetVisible;
     private @Nullable @ColorInt Integer mBottomSheetColor;
+    private @SheetState int mBottomSheetState;
 
     private final BrowserControlsStateProvider mBrowserControlsStateProvider;
     private int mBottomControlsHeight;
@@ -296,19 +297,14 @@ public class BottomAttachedUiObserver
             return mOmniboxSuggestionsColor;
         }
 
-        // A visible bottom bar (of any type) should dictate the color even if there is a bottom
-        // sheet or unexpanded overlay panel.
-        boolean isBottomControlsVisible = areNonBottomChinBottomControlsVisible();
-        boolean isOverlayPanelUnexpanded =
-                mOverlayPanelState != PanelState.EXPANDED
-                        && mOverlayPanelState != PanelState.MAXIMIZED;
-        if (isBottomControlsVisible && mUseBottomControlsColor && isOverlayPanelUnexpanded) {
-            return mBottomControlsColor;
-        }
         if (shouldMatchBottomSheetColor()) {
             // This can cause a null return intentionally to indicate that a bottom sheet is showing
             // a page preview / web content.
             return mBottomSheetColor;
+        }
+        // If this check returns false, the overlay panel logic below could be applicable.
+        if (shouldMatchBottomControlsColor()) {
+            return mBottomControlsColor;
         }
         if (mOverlayPanelVisible
                 && assumeNonNull(mOverlayPanelStateProvider).isFullWidthSizePanel()) {
@@ -394,6 +390,12 @@ public class BottomAttachedUiObserver
             return false;
         }
 
+        if (isFullWidthBottomSheetExpanded()) {
+            // When the bottom sheet is expanded (HALF or FULL), it covers the bottom controls
+            // and bottom chin, so the bottom sheet color should always be matched.
+            return true;
+        }
+
         if (mIsSheetAnchoredToBottomControls) {
             // As long as the bottom sheet is anchored to the browser controls, match the sheet's
             // color when there's no other browser controls layer other than the bottom chin.
@@ -408,6 +410,29 @@ public class BottomAttachedUiObserver
             // sheet color should be used.
             return !mBottomControlsStacker.isLayerVisible(LayerType.BOTTOM_CHIN);
         }
+    }
+
+    private boolean shouldMatchBottomControlsColor() {
+        boolean isBottomControlsVisible = areNonBottomChinBottomControlsVisible();
+        if (!isBottomControlsVisible) return false;
+
+        boolean isPeekedSheetAnchoredToBottomControls =
+                mBottomSheetVisible
+                        && mBottomSheetController.getSheetState() == SheetState.PEEK
+                        && mBottomSheetController.isAnchoredToBottomControls();
+        boolean isOverlayPanelUnexpanded =
+                mOverlayPanelState != PanelState.EXPANDED
+                        && mOverlayPanelState != PanelState.MAXIMIZED;
+
+        return isPeekedSheetAnchoredToBottomControls
+                || (mUseBottomControlsColor && isOverlayPanelUnexpanded);
+    }
+
+    private boolean isFullWidthBottomSheetExpanded() {
+        @SheetState int sheetState = mBottomSheetController.getSheetState();
+        return mBottomSheetVisible
+                && (sheetState == SheetState.HALF || sheetState == SheetState.FULL)
+                && mBottomSheetController.isFullWidth();
     }
 
     private boolean isSheetAnchoredToBottomControls() {
@@ -436,10 +461,8 @@ public class BottomAttachedUiObserver
 
         boolean hasScrollablePortion =
                 bottomOffset < mBottomControlsHeight - mBottomControlsMinHeight;
-        boolean chinNotScrollable =
-                mBottomControlsStacker.isLayerNonScrollable(LayerType.BOTTOM_CHIN);
-        boolean hasOtherNonScrollableLayer = mBottomControlsStacker.hasMultipleNonScrollableLayer();
-        boolean hasFixedBrowserControlsAttached = chinNotScrollable && hasOtherNonScrollableLayer;
+        boolean hasFixedBrowserControlsAttached =
+                mBottomControlsStacker.hasNonScrollableLayersOtherThan(LayerType.BOTTOM_CHIN);
         boolean useBrowserControlsColor = hasScrollablePortion || hasFixedBrowserControlsAttached;
 
         updateUseBottomControlsColor(useBrowserControlsColor);
@@ -526,13 +549,15 @@ public class BottomAttachedUiObserver
 
         if (Objects.equals(newColor, mBottomSheetColor)
                 && isSheetVisible == mBottomSheetVisible
-                && mIsSheetAnchoredToBottomControls == isSheetBottomAnchored) {
+                && mIsSheetAnchoredToBottomControls == isSheetBottomAnchored
+                && currentState == mBottomSheetState) {
             return;
         }
 
         mBottomSheetVisible = isSheetVisible;
         mIsSheetAnchoredToBottomControls = isSheetBottomAnchored;
         mBottomSheetColor = newColor;
+        mBottomSheetState = currentState;
         updateBottomAttachedColor();
     }
 
