@@ -1,0 +1,11 @@
+Name: tuple_list
+URL: https://crates.io/crates/tuple_list
+Version: 0.1.3
+Revision: 1c6361491da1fed8c39d0ff45d1d76c1072b2da4
+Update Mechanism: Manual (https://crbug.com/449898466)
+License: MIT
+License File: //third_party/rust/chromium_crates_io/vendor/tuple_list-v0_1/LICENSE
+Shipped: no
+Security Critical: no
+
+Description: Crate for macro-free variadic tuple metaprogramming

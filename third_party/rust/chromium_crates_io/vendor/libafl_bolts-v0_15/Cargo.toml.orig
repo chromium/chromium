@@ -1,0 +1,240 @@
+[package]
+name = "libafl_bolts"
+version.workspace = true
+authors = [
+  "Andrea Fioraldi <andreafioraldi@gmail.com>",
+  "Dominik Maier <domenukk@gmail.com>",
+]
+description = "Low-level bolts to create fuzzers and so much more"
+documentation = "https://docs.rs/libafl"
+repository = "https://github.com/AFLplusplus/LibAFL/"
+readme = "./README.md"
+license = "MIT OR Apache-2.0"
+keywords = ["fuzzing", "testing", "security"]
+edition = "2024"
+rust-version = "1.87"
+categories = [
+  "development-tools::testing",
+  "emulators",
+  "embedded",
+  "os",
+  "no-std",
+]
+
+[package.metadata.docs.rs]
+features = ["document-features"]
+all-features = true
+
+[features]
+default = [
+  "std",
+  "derive",
+  "llmp_compression",
+  "llmp_small_maps",
+  "rand_trait",
+  "gzip",
+  "serdeany_autoreg",
+  "alloc",
+  "xxh3",
+]
+document-features = ["dep:document-features"]
+
+#! # Feature Flags
+#! ### General Features
+
+## Enables features that need rust's `std` lib to work, like print, env, ... support
+std = [
+  "hostname",
+  "nix",
+  "serde/std",
+  "uuid",
+  "backtrace",
+  "uds",
+  "serial_test",
+  "alloc",
+  "simd",
+]
+
+## Enables all features that allocate in `no_std`
+alloc = ["serde/alloc", "hashbrown", "postcard", "erased-serde/alloc", "ahash"]
+
+## Provide the `#[derive(SerdeAny)]` macro.
+derive = ["libafl_derive"]
+
+## If set, libafl_bolt's `rand` implementations will implement `rand_core::CoreRng`
+## and, inversely, all seedable `rand_core::RngCore` types can be used as Rng for LibAFL.
+rand_trait = ["rand_core"]
+
+## Will build the `pyo3` bindings
+python = ["pyo3", "std"]
+
+## Expose `libafl::prelude` for direct access to all types without additional `use` directives
+prelude = []
+
+## Expose `libafl_bolts::cli` for easy commandline parsing of common fuzzer settings
+cli = ["clap"]
+
+## Enables extra commandline flags for qemu-based fuzzers in `cli`
+qemu_cli = ["cli"]
+
+## Enables extra commandline flags for frida-based fuzzers in `cli`
+frida_cli = ["cli"]
+
+## Stores the backtraces of all generated `Error`s. Good for debugging, but may come with a slight performance hit.
+errors_backtrace = ["backtrace"]
+
+## Enables gzip compression in certain parts of the lib
+gzip = ["miniz_oxide", "alloc"]
+
+## Replaces `ahash` with the potentially faster [`xxh3`](https://github.com/Cyan4973/xxHash) in some parts of the lib.
+## This yields a stable and fast hash, but may increase the resulting binary size slightly
+## This also enables certain hashing and rand features in `no_std` no-alloc.
+xxh3 = ["xxhash-rust"]
+
+#! ### SerdeAny features
+
+## With this feature, the AnyMap uses [`type_name`](https://doc.rust-lang.org/std/any/fn.type_name.html)
+## instead of [`TypeId::of`](https://doc.rust-lang.org/std/any/struct.TypeId.html#method.of) for deserialization.
+## With this feature, stored state remains deserializable across multiple compilations of LibAFL.
+## The rust doc specifically states that "multiple types may map to the same type name", so it could potentially lead to bugs.
+## However, we make sure that no two types with the same name ever exist.
+stable_anymap = []
+
+## Automatically register all `#[derive(SerdeAny)]` types at startup.
+serdeany_autoreg = ["ctor"]
+
+
+#! ### LLMP features
+
+## If set, llmp will bind to 0.0.0.0, allowing cross-device communication. Binds to localhost by default.
+llmp_bind_public = ["alloc"]
+
+## Enables llmp compression using GZip
+llmp_compression = ["alloc", "gzip"]
+
+## Enables debug output for LLMP (also needs a `logger` installed)
+llmp_debug = ["alloc", "std"]
+
+## Reduces the initial map size for llmp
+llmp_small_maps = ["alloc"]
+
+#! ### Stable SIMD features
+
+## Use the best SIMD implementation by our benchmark.
+simd = ["alloc", "wide"]
+
+[build-dependencies]
+rustversion = { workspace = true }
+
+[dev-dependencies]
+clap = { version = "4.5", features = ["derive", "env"] }
+rand = "0.9.0"
+chrono = "0.4.42"
+itertools = "0.14.0"
+
+[dependencies]
+libafl_derive = { workspace = true, default-features = true, optional = true }
+static_assertions = { workspace = true }
+typeid = { workspace = true }
+
+tuple_list = { version = "0.1.3" }
+hashbrown = { workspace = true, features = [
+  "serde",
+  "default-hasher",
+  "raw-entry",
+], default-features = false, optional = true } # A faster hashmap, nostd compatible
+xxhash-rust = { version = "0.8.12", features = [
+  "xxh3",
+], optional = true } # xxh3 hashing for rust
+serde = { workspace = true, default-features = false, features = [
+  "derive",
+] } # serialization lib
+erased-serde = { version = "0.4.5", default-features = false, optional = true } # erased serde
+postcard = { workspace = true, optional = true } # no_std compatible serde serialization format
+num_enum = { workspace = true, default-features = false }
+ahash = { workspace = true, optional = true } # The hash function already used in hashbrown
+backtrace = { workspace = true, default-features = true, optional = true } # Used to get the stacktrace in StacktraceObserver
+
+ctor = { optional = true, version = "0.6.1" }
+miniz_oxide = { version = "0.8.0", optional = true }
+hostname = { version = "0.4.0", optional = true } # Is there really no gethostname in the stdlib?
+rand_core = { version = "0.9.0", optional = true }
+nix = { workspace = true, optional = true, default-features = false, features = [
+  "fs",
+  "signal",
+  "socket",
+  "poll",
+] }
+uuid = { workspace = true, optional = true, features = ["serde", "v4"] }
+clap = { workspace = true, features = [
+  "derive",
+  "wrap_help",
+], optional = true } # CLI parsing, for libafl_bolts::cli / the `cli` feature
+log = { workspace = true }
+pyo3 = { workspace = true, optional = true, features = ["serde", "macros"] }
+
+# optional-dev deps (change when target.'cfg(accessible(::std))'.test-dependencies will be stable)
+serial_test = { workspace = true, optional = true, default-features = false, features = [
+  "logging",
+] }
+
+# optional stable simd
+wide = { version = "0.7.33", optional = true }
+rustversion = { workspace = true }
+
+# Document all features of this crate (for `cargo doc`)
+document-features = { workspace = true, optional = true }
+
+[lints]
+workspace = true
+
+[target.'cfg(unix)'.dependencies]
+libc = { workspace = true }                                            # For (*nix) libc
+uds = { version = "0.4.2", optional = true, default-features = false }
+
+[target.'cfg(windows)'.dependencies]
+windows = { workspace = true, features = [
+  "Win32_Foundation",
+  "Win32_System_Threading",
+  "Win32_System_Diagnostics_Debug",
+  "Win32_System_Kernel",
+  "Win32_System_Memory",
+  "Win32_Security",
+  "Win32_System_SystemInformation",
+  "Win32_System_Console",
+] }
+windows-core = { workspace = true }
+once_cell = "1.10.0"
+winapi = { version = "0.3", features = [
+  "fileapi",
+  "handleapi",
+  "processenv",
+  "processthreadsapi",
+  "winbase",
+  "winnt",
+] }
+windows-result = "0.4.1"
+
+[target.'cfg(windows)'.build-dependencies]
+windows = { workspace = true }
+
+[target.'cfg(target_vendor = "apple")'.dependencies]
+mach2 = "0.5.0"
+
+#[profile.release]
+#lto = true
+#opt-level = 3
+#debug = true
+
+[[example]]
+name = "llmp_test"
+path = "./examples/llmp_test/main.rs"
+required-features = ["std"]
+
+
+[[example]]
+name = "simd"
+path = "./examples/simd/simd.rs"
+bench = true
+harness = false
+required-features = ["std", "simd"]

@@ -39,6 +39,8 @@ cargo_crate("lib") {
 
   allow_unsafe = true
 
+  features = [ "xxh3" ]
+
   testonly = true
 
   #####################################################################

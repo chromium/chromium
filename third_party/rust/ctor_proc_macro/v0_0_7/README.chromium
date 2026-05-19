@@ -1,0 +1,11 @@
+Name: ctor-proc-macro
+URL: https://crates.io/crates/ctor-proc-macro
+Version: 0.0.7
+Revision: 350d397394f91332517cf2924737b79edf9581ab
+Update Mechanism: Manual (https://crbug.com/449898466)
+License: Apache-2.0
+License File: //third_party/rust/chromium_crates_io/vendor/ctor-proc-macro-v0_0_7/LICENSE-APACHE
+Shipped: no
+Security Critical: no
+
+Description: proc-macro support for the ctor crate

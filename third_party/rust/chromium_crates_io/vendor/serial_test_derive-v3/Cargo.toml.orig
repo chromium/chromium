@@ -1,0 +1,29 @@
+[package]
+name = "serial_test_derive"
+description = "Helper crate for serial_test"
+license = "MIT"
+version = "3.4.0"
+authors = ["Tom Parker-Shemilt <palfrey@tevp.net>"]
+edition = "2018"
+rust-version.workspace = true
+readme = "README.md"
+repository = "https://github.com/palfrey/serial_test/"
+categories = ["development-tools::testing"]
+
+[lib]
+proc-macro = true
+
+[dependencies]
+quote = { version="1", default-features = false}
+syn = { version="2", features=["full", "printing", "parsing", "clone-impls"], default-features = false}
+proc-macro2 = { version="1.0.60", features = ["proc-macro"], default-features = false} # Because of https://github.com/dtolnay/proc-macro2/issues/356
+
+[dev-dependencies]
+env_logger = {version=">=0.6.1", default-features = false}
+prettyplease = {version="0.2", default-features = false}
+
+[features]
+default = []
+async = []
+test_logging = []
+file_locks = []

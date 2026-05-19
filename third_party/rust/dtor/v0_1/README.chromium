@@ -1,0 +1,11 @@
+Name: dtor
+URL: https://crates.io/crates/dtor
+Version: 0.1.1
+Revision: d843ae06ae2ade663f45e82600df151620973193
+Update Mechanism: Manual (https://crbug.com/449898466)
+License: Apache-2.0
+License File: //third_party/rust/chromium_crates_io/vendor/dtor-v0_1/LICENSE-APACHE
+Shipped: no
+Security Critical: no
+
+Description: __attribute__((destructor)) for Rust

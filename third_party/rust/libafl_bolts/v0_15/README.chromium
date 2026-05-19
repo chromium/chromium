@@ -1,0 +1,11 @@
+Name: libafl_bolts
+URL: https://crates.io/crates/libafl_bolts
+Version: 0.15.4
+Revision: bd49bdf4f64a50349d803646fb2afa9b8b104fa5
+Update Mechanism: Manual (https://crbug.com/449898466)
+License: Apache-2.0
+License File: //third_party/rust/chromium_crates_io/vendor/libafl_bolts-v0_15/LICENSE-APACHE
+Shipped: no
+Security Critical: no
+
+Description: Low-level bolts to create fuzzers and so much more

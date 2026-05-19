@@ -51,7 +51,7 @@ cargo_crate("lib") {
     "//third_party/rust/chromium_crates_io/vendor/getrandom-v0_4/src/utils/sanitizer.rs",
     "//third_party/rust/chromium_crates_io/vendor/getrandom-v0_4/src/utils/sys_fill_exact.rs",
   ]
-  inputs = []
+  inputs = [ "//third_party/rust/chromium_crates_io/vendor/getrandom-v0_4/src/../README.md" ]
 
   build_native_rust_unit_tests = false
   edition = "2024"
@@ -71,8 +71,6 @@ cargo_crate("lib") {
       "//third_party/rust/chromium_crates_io/vendor/getrandom-v0_4/build.rs"
   build_sources =
       [ "//third_party/rust/chromium_crates_io/vendor/getrandom-v0_4/build.rs" ]
-
-  testonly = true
 
   #####################################################################
   # Tweaking which GN `config`s apply to this target.

@@ -1,0 +1,11 @@
+Name: memoffset
+URL: https://crates.io/crates/memoffset
+Version: 0.9.1
+Revision: 153fc3d50f03755be53148bc3eb97390f9011e45
+Update Mechanism: Manual (https://crbug.com/449898466)
+License: MIT
+License File: //third_party/rust/chromium_crates_io/vendor/memoffset-v0_9/LICENSE
+Shipped: no
+Security Critical: no
+
+Description: offset_of functionality for Rust structs.

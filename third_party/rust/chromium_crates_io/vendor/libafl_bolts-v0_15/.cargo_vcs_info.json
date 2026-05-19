@@ -1,0 +1,6 @@
+{
+  "git": {
+    "sha1": "bd49bdf4f64a50349d803646fb2afa9b8b104fa5"
+  },
+  "path_in_vcs": "crates/libafl_bolts"
+}

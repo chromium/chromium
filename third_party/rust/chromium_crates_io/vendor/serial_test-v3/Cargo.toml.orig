@@ -1,0 +1,58 @@
+[package]
+name = "serial_test"
+description = "Allows for the creation of serialised Rust tests"
+license = "MIT"
+version = "3.4.0"
+authors = ["Tom Parker-Shemilt <palfrey@tevp.net>"]
+edition = "2018"
+rust-version.workspace = true
+repository = "https://github.com/palfrey/serial_test/"
+readme = "README.md"
+categories = ["development-tools::testing"]
+keywords = ["sequential", "testing", "parallel"]
+
+[dependencies]
+once_cell = {version="^1.19", features = ["std"], default-features = false}
+parking_lot = {version="^0.12", default-features = false}
+serial_test_derive = { version = "~3.4.0", path = "../serial_test_derive" }
+fslock = { version = "0.2", optional = true, default-features = false, features = ["std"]}
+document-features = { version = "0.2", optional = true }
+log = { version = ">=0.4.4", optional = true }
+futures-executor = { version = "^0.3", optional = true, default-features = false, features = ["std"] }
+futures-util = { version = "^0.3", optional = true, default-features = false, features = ["std"] }
+
+scc = { version = "2", default-features = false}
+env_logger = {version=">=0.6.1", optional=true, default-features = false}
+
+[dev-dependencies]
+itertools = {version=">=0.4", default-features = false, features = ["use_std"]}
+
+[features]
+default = ["logging", "async"]
+
+## Switches on debug logging
+logging = ["dep:log"]
+
+## Enables async features using `futures`
+async = ["dep:futures-executor", "dep:futures-util", "serial_test_derive/async"]
+
+## The file_locks feature unlocks the `file_serial`/`file_parallel` macros
+file_locks = ["dep:fslock"]
+
+#! ### Internal-only features
+
+## Switches on debug with `env_logger`. Generally only needed by internal `serial_test` work.
+test_logging = ["logging", "dep:env_logger", "serial_test_derive/test_logging"]
+
+docsrs = ["dep:document-features"]
+
+# docs.rs-specific configuration
+[package.metadata.docs.rs]
+all-features = true
+# defines the configuration attribute `docsrs`
+rustdoc-args = ["--cfg", "docsrs"]
+
+[package.metadata.cargo-all-features]
+skip_optional_dependencies = true
+denylist = ["docsrs"]
+always_include_features = ["test_logging"]

@@ -1,0 +1,15 @@
+[package]
+name = "tuple_list"
+version = "0.1.3"
+authors = ["Valerii Lashmanov <vflashm@gmail.com>"]
+edition = "2018"
+description = "Crate for macro-free variadic tuple metaprogramming"
+documentation = "https://docs.rs/tuple_list"
+readme = "README.md"
+repository = "https://github.com/VFLashM/tuple_list/"
+license = "MIT"
+keywords = ["tuple", "variadic", "generic", "meta", "metaprogramming"]
+categories = ["data-structures", "rust-patterns"]
+
+[features]
+std = []

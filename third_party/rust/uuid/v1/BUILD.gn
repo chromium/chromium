@@ -50,9 +50,16 @@ cargo_crate("lib") {
 
   allow_unsafe = true
 
+  deps = [
+    "//third_party/rust/getrandom/v0_4:lib",
+    "//third_party/rust/serde_core/v1:lib",
+  ]
   features = [
     "default",
+    "rng",
+    "serde",
     "std",
+    "v4",
   ]
 
   # Only for usage from third-party crates. Add the crate to

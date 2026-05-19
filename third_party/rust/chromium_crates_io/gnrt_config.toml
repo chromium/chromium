@@ -251,6 +251,13 @@ allow_unsafe = false
 [crate.crc32fast.extra_kv]
 allow_unsafe = true
 
+[crate.ctor]
+extra_kv = { allow_unsafe = false }
+
+[crate.ctor-proc-macro]
+extra_input_roots = ["../README.md"]
+extra_kv = { allow_unsafe = false }
+
 [crate.cxx]
 extra_kv = { allow_unsafe = true }
 remove_deps = ['cc', 'link-cplusplus']
@@ -284,6 +291,14 @@ allow_unsafe = false
 
 [crate.displaydoc.extra_kv]
 allow_unsafe = false
+
+[crate.dtor]
+extra_input_roots = ["../README.md"]
+extra_kv = { allow_unsafe = false }
+
+[crate.dtor-proc-macro]
+extra_input_roots = ["../README.md"]
+extra_kv = { allow_unsafe = false }
 
 [crate.either.extra_kv]
 allow_unsafe = true
@@ -338,8 +353,9 @@ remove_deps = ['winapi']
 extra_kv = { allow_unsafe = true }
 
 [crate.getrandom]
-group = 'test'
+group = 'safe'
 allow_first_party_usage = false
+extra_input_roots = ["../README.md"]
 
 # TODO: Remove multiple versions of the `getrandom` crate:
 # getrandom@0.3.4, getrandom@0.4.1
@@ -513,6 +529,16 @@ extra_kv = { allow_unsafe = true }
 [crate.lazy_static.extra_kv]
 allow_unsafe = true
 
+[crate.libafl_bolts]
+group = 'test'
+extra_input_roots = ["../README.md"]
+extra_kv = {allow_unsafe = true}
+# TODO(crbug.com/484072401): Removing windows support due to huge size of import, but plan on adding later.
+remove_deps = ['once_cell', 'windows', 'winapi', 'windows-core', 'windows-result']
+
+[crate.libafl_derive]
+extra_kv = { allow_unsafe = false }
+
 [crate.libc.extra_kv]
 # `libc` crate is implicitly trusted because it comes from
 # https://github.com/rust-lang/ (and we already implicitly trust maintainers of
@@ -539,11 +565,17 @@ extra_kv = { allow_unsafe = true }
 [crate.log.extra_kv]
 allow_unsafe = true
 
+[crate.mach2]
+extra_kv = { allow_unsafe = false }
+
 [crate.memchr.extra_kv]
 allow_unsafe = true
 
 [crate.memo-map]
 extra_kv = { allow_unsafe = true }
+
+[crate.memoffset]
+extra_kv = { allow_unsafe = false }
 
 [crate.minijinja]
 extra_kv = { allow_unsafe = true }
@@ -659,6 +691,9 @@ allow_unsafe = false
 [crate.quote.extra_kv]
 allow_unsafe = false
 
+[crate.rand_core]
+extra_kv = { allow_unsafe = false }
+
 [crate.read-fonts]
 extra_input_roots = ['../generated', '../data/generated']
 extra_kv = { allow_unsafe = false }
@@ -731,6 +766,12 @@ allow_unsafe = true
 
 [crate.serde_json_lenient.extra_kv]
 allow_unsafe = true
+
+[crate.serial_test]
+extra_kv = { allow_unsafe = false }
+
+[crate.serial_test_derive]
+extra_kv = { allow_unsafe = false }
 
 [crate.shared-brotli-patch-decoder]
 extra_kv = { allow_unsafe = true, extra_deps = ["//third_party/brotli:dec"] }
@@ -842,6 +883,9 @@ allow_unsafe = true
 
 [crate.transpose]
 extra_kv = { allow_unsafe = true }
+
+[crate.tuple_list]
+extra_kv = { allow_unsafe = false }
 
 [crate.typed-arena]
 extra_kv = { allow_unsafe = true }

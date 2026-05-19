@@ -1,0 +1,11 @@
+Name: dtor-proc-macro
+URL: https://crates.io/crates/dtor-proc-macro
+Version: 0.0.6
+Revision: a28906f635093f9cb6ee90068a3a6e16872ae903
+Update Mechanism: Manual (https://crbug.com/449898466)
+License: Apache-2.0
+License File: //third_party/rust/chromium_crates_io/vendor/dtor-proc-macro-v0_0_6/LICENSE-APACHE
+Shipped: no
+Security Critical: no
+
+Description: proc-macro support for the dtor crate

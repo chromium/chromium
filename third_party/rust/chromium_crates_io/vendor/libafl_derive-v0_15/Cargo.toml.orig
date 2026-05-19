@@ -1,0 +1,30 @@
+[package]
+name = "libafl_derive"
+version.workspace = true
+authors = ["Andrea Fioraldi <andreafioraldi@gmail.com>"]
+description = "Derive proc-macro crate for LibAFL"
+documentation = "https://docs.rs/libafl_derive"
+repository = "https://github.com/AFLplusplus/LibAFL/"
+readme = "../../README.md"
+license = "MIT OR Apache-2.0"
+keywords = ["fuzzing", "testing"]
+edition = "2024"
+rust-version = "1.87"
+categories = [
+  "development-tools::testing",
+  "emulators",
+  "embedded",
+  "os",
+  "no-std",
+]
+
+[lib]
+proc-macro = true
+
+[dependencies]
+syn = { version = "2.0.77", features = ["full", "extra-traits"] }
+quote = "1.0.37"
+proc-macro2 = "1.0.86"
+
+[lints]
+workspace = true

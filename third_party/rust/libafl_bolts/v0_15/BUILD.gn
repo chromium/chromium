@@ -1,0 +1,157 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# @generated from third_party/rust/chromium_crates_io/BUILD.gn.hbs by
+# tools/crates/gnrt.
+# Do not edit!
+
+import("//build/rust/cargo_crate.gni")
+
+cargo_crate("lib") {
+  crate_name = "libafl_bolts"
+  epoch = "0.15"
+  crate_type = "rlib"
+  crate_root = "//third_party/rust/chromium_crates_io/vendor/libafl_bolts-v0_15/src/lib.rs"
+  sources = [
+    "//third_party/rust/chromium_crates_io/vendor/libafl_bolts-v0_15/src/anymap.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libafl_bolts-v0_15/src/argparse.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libafl_bolts-v0_15/src/build_id.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libafl_bolts-v0_15/src/cli.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libafl_bolts-v0_15/src/compress.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libafl_bolts-v0_15/src/core_affinity.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libafl_bolts-v0_15/src/cpu.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libafl_bolts-v0_15/src/fs.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libafl_bolts-v0_15/src/lib.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libafl_bolts-v0_15/src/llmp.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libafl_bolts-v0_15/src/math.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libafl_bolts-v0_15/src/minibsod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libafl_bolts-v0_15/src/os/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libafl_bolts-v0_15/src/os/pipes.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libafl_bolts-v0_15/src/os/unix_shmem_server.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libafl_bolts-v0_15/src/os/unix_signals.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libafl_bolts-v0_15/src/os/windows_exceptions.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libafl_bolts-v0_15/src/ownedref.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libafl_bolts-v0_15/src/rands/loaded_dice.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libafl_bolts-v0_15/src/rands/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libafl_bolts-v0_15/src/serdeany.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libafl_bolts-v0_15/src/shmem.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libafl_bolts-v0_15/src/simd.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libafl_bolts-v0_15/src/staterestore.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libafl_bolts-v0_15/src/subrange.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libafl_bolts-v0_15/src/target_args.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libafl_bolts-v0_15/src/tuples.rs",
+  ]
+  inputs = [ "//third_party/rust/chromium_crates_io/vendor/libafl_bolts-v0_15/src/../README.md" ]
+
+  build_native_rust_unit_tests = false
+  edition = "2024"
+  cargo_pkg_authors = "Andrea Fioraldi <andreafioraldi@gmail.com>, Dominik Maier <domenukk@gmail.com>"
+  cargo_pkg_name = "libafl_bolts"
+  cargo_pkg_description = "Low-level bolts to create fuzzers and so much more"
+  cargo_pkg_repository = "https://github.com/AFLplusplus/LibAFL/"
+  cargo_pkg_version = "0.15.4"
+
+  allow_unsafe = true
+
+  deps = [
+    "//third_party/rust/ahash/v0_8:lib",
+    "//third_party/rust/backtrace/v0_3:lib",
+    "//third_party/rust/ctor/v0_6:lib",
+    "//third_party/rust/erased_serde/v0_4:lib",
+    "//third_party/rust/hashbrown/v0_16:lib",
+    "//third_party/rust/hostname/v0_4:lib",
+    "//third_party/rust/libafl_derive/v0_15:lib",
+    "//third_party/rust/log/v0_4:lib",
+    "//third_party/rust/miniz_oxide/v0_8:lib",
+    "//third_party/rust/nix/v0_30:lib",
+    "//third_party/rust/num_enum/v0_7:lib",
+    "//third_party/rust/postcard/v1:lib",
+    "//third_party/rust/rand_core/v0_9:lib",
+    "//third_party/rust/rustversion/v1:lib",
+    "//third_party/rust/serde/v1:lib",
+    "//third_party/rust/serial_test/v3:lib",
+    "//third_party/rust/static_assertions/v1:lib",
+    "//third_party/rust/tuple_list/v0_1:lib",
+    "//third_party/rust/typeid/v1:lib",
+    "//third_party/rust/uuid/v1:lib",
+    "//third_party/rust/wide/v0_7:lib",
+    "//third_party/rust/xxhash_rust/v0_8:lib",
+  ]
+  if (!is_win) {
+    deps += [
+      "//third_party/rust/libc/v0_2:lib",
+      "//third_party/rust/uds/v0_4:lib",
+    ]
+  }
+  if (is_ios || is_mac) {
+    deps += [ "//third_party/rust/mach2/v0_5:lib" ]
+  }
+  build_deps = [ "//third_party/rust/rustversion/v1:buildrs_support" ]
+  features = [
+    "ahash",
+    "alloc",
+    "backtrace",
+    "ctor",
+    "default",
+    "derive",
+    "erased-serde",
+    "gzip",
+    "hashbrown",
+    "hostname",
+    "libafl_derive",
+    "llmp_compression",
+    "llmp_small_maps",
+    "miniz_oxide",
+    "nix",
+    "postcard",
+    "rand_core",
+    "rand_trait",
+    "serdeany_autoreg",
+    "serial_test",
+    "simd",
+    "std",
+    "uds",
+    "uuid",
+    "wide",
+    "xxh3",
+    "xxhash-rust",
+  ]
+  build_root =
+      "//third_party/rust/chromium_crates_io/vendor/libafl_bolts-v0_15/build.rs"
+  build_sources = [
+    "//third_party/rust/chromium_crates_io/vendor/libafl_bolts-v0_15/build.rs",
+  ]
+
+  testonly = true
+
+  #####################################################################
+  # Tweaking which GN `config`s apply to this target.
+
+  # Config changes that apply to all `//third_party/rust` crates.
+  _configs_to_remove = [
+    # We don't need code coverage data for any `chromium_crates_io` crates.
+    "//build/config/coverage:default_coverage",
+
+    # This is third-party code, so remove `chromium_code` config.  We are not
+    # at the same time adding `//build/config/compiler:no_chromium_code`,
+    # because 1) we don't want to pull how warnings are handled by that config
+    # and 2) that config doesn't have any non-warnings-related stuff.
+    "//build/config/compiler:chromium_code",
+  ]
+  _configs_to_add = []
+
+  # Changing (if needed) which configs apply to this specific crate (based on
+  # `extra_kv.configs_to_remove` and `extra_kv.configs_to_add` from
+  # `gnrt_config.toml`).
+  _configs_to_remove += []
+  _configs_to_add += []
+
+  # Applying config changes.
+  library_configs -= _configs_to_remove
+  library_configs += _configs_to_add
+  executable_configs -= _configs_to_remove
+  executable_configs += _configs_to_add
+  proc_macro_configs -= _configs_to_remove
+  proc_macro_configs += _configs_to_add
+}
