@@ -10,6 +10,9 @@ source_set("model") {
     "level_up_service.mm",
     "level_up_service_factory.h",
     "level_up_service_factory.mm",
+    "task_info.h",
+    "task_info.mm",
+    "task_types.h",
   ]
   deps = [
     "//base",
