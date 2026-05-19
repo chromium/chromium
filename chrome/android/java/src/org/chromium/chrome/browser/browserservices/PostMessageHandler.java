@@ -109,17 +109,14 @@ public class PostMessageHandler implements OriginVerificationListener {
         // Can't reset with the same web contents twice.
         if (webContents.equals(mWebContents)) return;
         mWebContents = webContents;
-        if (mPostMessageSourceUri == null) return;
         new WebContentsObserver(webContents) {
             private boolean mNavigatedOnce;
 
             @Override
             public void didFinishNavigationInPrimaryMainFrame(NavigationHandle navigation) {
-                if (mNavigatedOnce
-                        && navigation.hasCommitted()
-                        && !navigation.isSameDocument()
-                        && mChannel != null) {
+                if (mNavigatedOnce && navigation.hasCommitted() && !navigation.isSameDocument()) {
                     observe(null);
+                    mPostMessageSourceUri = null;
                     disconnectChannel();
                     return;
                 }
@@ -137,7 +134,7 @@ public class PostMessageHandler implements OriginVerificationListener {
                     Page page,
                     GlobalRenderFrameHostId rfhId,
                     @LifecycleState int rfhLifecycleState) {
-                if (mChannel != null) {
+                if (mChannel != null || mPostMessageSourceUri == null) {
                     return;
                 }
                 initializeWithWebContents(webContents);
