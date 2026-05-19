@@ -9,6 +9,7 @@
 
 #include "components/named_mojo_ipc_server/connection_info.h"
 #include "components/named_mojo_ipc_server/endpoint_options.h"
+#include "mojo/public/c/system/invitation.h"
 #include "mojo/public/cpp/platform/named_platform_channel.h"
 
 namespace updater {
@@ -25,6 +26,8 @@ named_mojo_ipc_server::EndpointOptions CreateServerEndpointOptions(
   options.message_pipe_id =
       named_mojo_ipc_server::EndpointOptions::kUseIsolatedConnection;
   options.require_same_peer_user = false;
+  options.extra_send_invitation_flags =
+      MOJO_SEND_INVITATION_FLAG_UNTRUSTED_PROCESS;
   return options;
 }
 
