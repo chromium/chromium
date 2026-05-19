@@ -571,9 +571,11 @@ FormFiller::RefillOptions FormFiller::RefillOptions::NotRefill() {
 }
 
 FormFiller::RefillOptions FormFiller::RefillOptions::Refill(
-    FieldTypeSet originally_filled) {
+    FieldTypeSet originally_filled,
+    RefillTriggerReason reason) {
   RefillOptions r;
-  r.originally_filled_ = originally_filled;
+  r.originally_filled_ = std::move(originally_filled);
+  r.reason_ = reason;
   return r;
 }
 
@@ -931,8 +933,10 @@ void FormFiller::FillOrPreviewForm(
     FormStructure& form_structure,
     AutofillField& autofill_trigger_field,
     AutofillTriggerSource trigger_source,
-    std::optional<RefillTriggerReason> refill_trigger_reason,
-    const base::flat_set<FieldGlobalId>& blocked_fields) {
+    const base::flat_set<FieldGlobalId>& blocked_fields,
+    FillId fill_id,
+    const std::map<FieldGlobalId, FillingValueAndType>& forced_fill_values,
+    RefillOptions refill_options) {
   const AugmentedFillingPayload augmented_filling_payload =
       AugmentedFillingPayload(filling_payload, form_structure,
                               autofill_trigger_field);
@@ -944,12 +948,10 @@ void FormFiller::FillOrPreviewForm(
                  << FillingProductToString(
                         augmented_filling_payload.filling_product())
                  << Br{};
-  LOG_AF(buffer) << "is refill: " << refill_trigger_reason.has_value() << Br{};
+  LOG_AF(buffer) << "is refill: " << refill_options.is_refill() << Br{};
   LOG_AF(buffer) << form_structure << Br{};
   LOG_AF(buffer) << Tag{"table"};
 
-  // TODO(crbug/1203667#c9): Skip if the form has changed in the meantime, which
-  // may happen with refills.
   if (action_persistence == mojom::ActionPersistence::kFill) {
     base::UmaHistogramBoolean(
         "Autofill.SkippingFormFillDueToChangedFieldCount",
@@ -966,32 +968,6 @@ void FormFiller::FillOrPreviewForm(
                           << LogMessage::kSendFillingData << Br{}
                           << std::move(buffer);
     return;
-  }
-
-  FillId fill_id = FillId::Create();
-  if (action_persistence == mojom::ActionPersistence::kFill &&
-      !refill_trigger_reason) {
-    form_structure.set_last_filling_timestamp(base::TimeTicks::Now());
-    if (augmented_filling_payload.supports_refills()) {
-      SetRefillContext(form_structure.global_id(),
-                       std::make_unique<RefillContext>(
-                           fill_id, autofill_trigger_field,
-                           augmented_filling_payload, blocked_fields));
-    }
-  }
-
-  RefillContext* refill_context = GetRefillContext(form_structure.global_id());
-  const bool may_refill_in_future =
-      action_persistence == mojom::ActionPersistence::kFill &&
-      augmented_filling_payload.supports_refills() &&
-      refill_context != nullptr && !refill_context->attempted_refill &&
-      !refill_trigger_reason;
-  RefillOptions refill_options =
-      refill_trigger_reason.has_value() && refill_context
-          ? RefillOptions::Refill(refill_context->types_originally_filled)
-          : RefillOptions::NotRefill();
-  if (refill_trigger_reason.has_value() && refill_context) {
-    fill_id = refill_context->fill_id;
   }
 
   std::vector<FormFieldData> result_fields = form.fields();
@@ -1035,17 +1011,14 @@ void FormFiller::FillOrPreviewForm(
     }
 
     std::string failure_to_fill;  // Reason for failing to fill.
-    const std::map<FieldGlobalId, FillingValueAndType>& forced_fill_values =
-        refill_context ? refill_context->forced_fill_values
-                       : std::map<FieldGlobalId, FillingValueAndType>();
 
-    bool allow_suggestion_swapping =
+    const bool allow_suggestion_swapping =
         // TODO(crbug.com/393114125): Change to use
         // `AutofillField::field_modifiers_` after launching
         // `kAutofillFixIsAutofilled`.
         form.fields()[i].is_autofilled_according_to_renderer() &&
         AllowPaymentSwapping(autofill_trigger_field, autofill_field,
-                             refill_trigger_reason.has_value());
+                             refill_options.is_refill());
 
     // Fill the data from `augmented_filling_payload` into `result_form`, which
     // will be sent to the renderer. When `allow_suggestion_swapping` is true,
@@ -1071,9 +1044,6 @@ void FormFiller::FillOrPreviewForm(
       CHECK(filled_field_type);
       filled_field_types.emplace(result_fields[i].global_id(),
                                  *filled_field_type);
-      if (may_refill_in_future) {
-        refill_context->types_originally_filled.insert(*filled_field_type);
-      }
     }
 
     const bool has_value_before = !form.fields()[i].value().empty();
@@ -1089,10 +1059,31 @@ void FormFiller::FillOrPreviewForm(
                i, has_value_before, has_value_after, is_autofilled_before,
                is_autofilled_after, failure_to_fill);
   }
+
+  if (action_persistence == mojom::ActionPersistence::kFill &&
+      !refill_options.is_refill()) {
+    form_structure.set_last_filling_timestamp(base::TimeTicks::Now());
+    if (augmented_filling_payload.supports_refills()) {
+      SetRefillContext(form_structure.global_id(),
+                       std::make_unique<RefillContext>(
+                           fill_id, autofill_trigger_field,
+                           augmented_filling_payload, blocked_fields));
+    }
+  }
+
+  RefillContext* refill_context = GetRefillContext(form_structure.global_id());
+
+  const bool may_refill_in_future =
+      augmented_filling_payload.supports_refills() &&
+      refill_context != nullptr && !refill_context->attempted_refill &&
+      !refill_options.is_refill();
   if (may_refill_in_future) {
+    refill_context->types_originally_filled = FieldTypeSet(
+        filled_field_types, &std::pair<const FieldGlobalId, FieldType>::second);
     refill_context->filled_form = form;
     refill_context->filled_form->set_fields(result_fields);
   }
+
   // Remove fields that won't be filled. This includes:
   // - Fields that have a skip reason.
   // - Fields that don't have a cached equivalent, because those fields don't
@@ -1142,14 +1133,14 @@ void FormFiller::FillOrPreviewForm(
   if (action_persistence == mojom::ActionPersistence::kFill) {
     AppendFillLogEvents(form, form_structure, autofill_trigger_field,
                         safe_filled_field_ids, skip_reasons, filling_payload,
-                        refill_trigger_reason.has_value());
+                        refill_options.is_refill());
     // Save filling history to support undoing it later if needed.
     if (ShouldRecordFillingHistory(
             augmented_filling_payload.filling_product())) {
       form_autofill_history_.AddFormFillingEntry(
           safe_filled_fields.old_values, safe_filled_fields.cached,
           augmented_filling_payload.filling_product(),
-          refill_trigger_reason.has_value());
+          refill_options.is_refill());
     }
   }
 
@@ -1157,12 +1148,6 @@ void FormFiller::FillOrPreviewForm(
   LOG_AF(log_manager()) << LoggingScope::kFilling
                         << LogMessage::kSendFillingData << Br{}
                         << std::move(buffer);
-
-  if (refill_context) {
-    // When a new preview/fill starts, previously-set forced_fill_values should
-    // be ignored, since the operation could be for a different card or address.
-    refill_context->forced_fill_values.clear();
-  }
 
   // If the operation was a persistent filling and not a preview, update the
   // cache with the information changed during the filling operation.
@@ -1205,7 +1190,7 @@ void FormFiller::FillOrPreviewForm(
       safe_filled_fields.cached,
       base::MakeFlatSet<FieldGlobalId>(result_fields, {},
                                        &FormFieldData::global_id),
-      filling_payload, trigger_source, refill_trigger_reason);
+      filling_payload, trigger_source, refill_options.reason());
 }
 
 void FormFiller::SuppressAutomaticRefills(const FillId& fill_id) {
@@ -1402,12 +1387,19 @@ void FormFiller::TriggerRefill(const FormData& form,
   }
 
   autofill_metrics::LogRefillTriggerReason(refill_trigger_reason);
+  std::map<FieldGlobalId, FillingValueAndType> forced_fill_values =
+      std::move(refill_context->forced_fill_values);
+  refill_context->forced_fill_values.clear();
+
   std::visit(
       [&](const auto& profile_or_credit_card) {
         FillOrPreviewForm(
             mojom::ActionPersistence::kFill, form, &profile_or_credit_card,
             *form_structure, *autofill_field, trigger_source,
-            refill_trigger_reason, refill_context->blocked_fields);
+            refill_context->blocked_fields, refill_context->fill_id,
+            forced_fill_values,
+            RefillOptions::Refill(refill_context->types_originally_filled,
+                                  refill_trigger_reason));
       },
       refill_context->profile_or_credit_card);
 }

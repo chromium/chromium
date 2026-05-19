@@ -16,6 +16,7 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/span.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
@@ -97,15 +98,19 @@ class FormFiller {
   class RefillOptions {
    public:
     static RefillOptions NotRefill();
-    static RefillOptions Refill(FieldTypeSet originally_filled);
+    static RefillOptions Refill(FieldTypeSet originally_filled,
+                                RefillTriggerReason reason);
 
     bool is_refill() const;
     bool may_refill(const FieldTypeSet& field_type) const;
+    std::optional<RefillTriggerReason> reason() const { return reason_; }
 
    private:
     RefillOptions();
 
+    // Both are `std::nullopt` if and only if `is_refill()` is false.
     std::optional<FieldTypeSet> originally_filled_;
+    std::optional<RefillTriggerReason> reason_;
   };
 
   // Given `field`, the corresponding `autofill_field` to fill, and the
@@ -178,6 +183,8 @@ class FormFiller {
   // Fills or previews the data from `filling_payload` into `form`.
   // `blocked_fields` are fields which must not be filled because another
   // filling operation or product of higher priority claims them.
+  // `forced_fill_values` contains values for fields to be filled directly,
+  // regardless of `filling_payload`.
   // TODO(crbug.com/40227071): Clean up the API.
   void FillOrPreviewForm(
       mojom::ActionPersistence action_persistence,
@@ -186,8 +193,10 @@ class FormFiller {
       FormStructure& form_structure,
       AutofillField& autofill_field,
       AutofillTriggerSource trigger_source,
-      std::optional<RefillTriggerReason> refill_trigger_reason = std::nullopt,
-      const base::flat_set<FieldGlobalId>& blocked_fields = {});
+      const base::flat_set<FieldGlobalId>& blocked_fields,
+      FillId fill_id,
+      const std::map<FieldGlobalId, FillingValueAndType>& forced_fill_values,
+      RefillOptions refill_options);
 
   // Prevents any automatic refill of the operation `fill_id`. A renderer may
   // call this when a JavaScript observes the `autofill` event and may therefore

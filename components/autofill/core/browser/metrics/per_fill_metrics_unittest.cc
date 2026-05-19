@@ -43,9 +43,11 @@ class PerFillMetricsTest : public AutofillMetricsBaseTest,
         form_structure.GetFieldById(form.fields().front().global_id()));
     test_api(autofill_manager())
         .form_filler()
-        .FillOrPreviewForm(mojom::ActionPersistence::kFill, form,
-                           filling_payload, form_structure, autofill_field,
-                           AutofillTriggerSource::kPopup);
+        .FillOrPreviewForm(
+            mojom::ActionPersistence::kFill, form, filling_payload,
+            form_structure, autofill_field, AutofillTriggerSource::kPopup,
+            /*blocked_fields=*/{}, FillId::Create(),
+            /*forced_fill_values=*/{}, FormFiller::RefillOptions::NotRefill());
   }
 
   // Lets `BrowserAutofillManager` fill `form` with `filling_payload` and

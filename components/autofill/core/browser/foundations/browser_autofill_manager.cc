@@ -1778,8 +1778,9 @@ void BrowserAutofillManager::FillOrPreviewForm(
                    form_filler_->FillOrPreviewForm(
                        action_persistence, form, filling_payload,
                        CHECK_DEREF(form_structure), CHECK_DEREF(autofill_field),
-                       trigger_source,
-                       /*refill_trigger_reason=*/std::nullopt, blocked_fields);
+                       trigger_source, blocked_fields, FillId::Create(),
+                       /*forced_fill_values=*/{},
+                       FormFiller::RefillOptions::NotRefill());
                  },
                  [&](const CreditCard* credit_card) {
                    // We still need to take care of authentication
@@ -1794,22 +1795,25 @@ void BrowserAutofillManager::FillOrPreviewForm(
                    form_filler_->FillOrPreviewForm(
                        action_persistence, form, filling_payload,
                        CHECK_DEREF(form_structure), CHECK_DEREF(autofill_field),
-                       trigger_source, /*refill_trigger_reason=*/std::nullopt,
-                       blocked_fields);
+                       trigger_source, blocked_fields, FillId::Create(),
+                       /*forced_fill_values=*/{},
+                       FormFiller::RefillOptions::NotRefill());
                  },
                  [&](const VerifiedProfile*) {
                    form_filler_->FillOrPreviewForm(
                        action_persistence, form, filling_payload,
                        CHECK_DEREF(form_structure), CHECK_DEREF(autofill_field),
-                       trigger_source, /*refill_trigger_reason=*/std::nullopt,
-                       blocked_fields);
+                       trigger_source, blocked_fields, FillId::Create(),
+                       /*forced_fill_values=*/{},
+                       FormFiller::RefillOptions::NotRefill());
                  },
                  [&](const OtpFillData*) {
                    form_filler_->FillOrPreviewForm(
                        action_persistence, form, filling_payload,
                        CHECK_DEREF(form_structure), CHECK_DEREF(autofill_field),
-                       trigger_source, /*refill_trigger_reason=*/std::nullopt,
-                       blocked_fields);
+                       trigger_source, blocked_fields, FillId::Create(),
+                       /*forced_fill_values=*/{},
+                       FormFiller::RefillOptions::NotRefill());
                  }},
              filling_payload);
 }
@@ -1979,8 +1983,9 @@ void BrowserAutofillManager::FillOrPreviewCreditCardForm(
         }
         self.form_filler_->FillOrPreviewForm(
             action_persistence, form, &credit_card, CHECK_DEREF(form_structure),
-            CHECK_DEREF(autofill_field), trigger_source,
-            /*refill_trigger_reason=*/std::nullopt, blocked_fields);
+            CHECK_DEREF(autofill_field), trigger_source, blocked_fields,
+            FillId::Create(), /*forced_fill_values=*/{},
+            FormFiller::RefillOptions::NotRefill());
       };
 
   // Called when fetching the credit card was successful.
