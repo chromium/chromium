@@ -333,7 +333,6 @@ source_set("impl") {
 
   if (is_win) {
     deps += [
-      "//chrome/browser:font_prewarmer_tab_helper",
       "//chrome/browser/os_crypt",
       "//chrome/browser/webnn",
       "//chrome/browser/win",
@@ -359,7 +358,6 @@ source_set("impl") {
     }
   } else {
     deps += [
-      "//chrome/browser:intranet_redirect_detector",
       "//chrome/browser/actor/ui",
       "//chrome/browser/desktop_to_mobile_promos:utils",
       "//chrome/browser/device_identity",

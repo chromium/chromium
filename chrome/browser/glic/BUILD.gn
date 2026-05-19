@@ -542,9 +542,6 @@ source_set("impl") {
   if (is_mac) {
     deps += [ "//ui/accelerated_widget_mac" ]
   }
-  if (is_linux) {
-    deps += [ "//chrome/browser:shell_integration_linux" ]
-  }
   if (is_chromeos) {
     deps += [
       "//ash",

@@ -52,7 +52,6 @@ source_set("metrics") {
     "//base",
     "//chrome/browser:chrome_browser_field_trials",
     "//chrome/browser:main_extra_parts",
-    "//chrome/browser:memory_details",
     "//chrome/browser/policy",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/resource_coordinator:mojo_bindings",
@@ -267,7 +266,6 @@ source_set("impl") {
   deps = [
     "//build/config/compiler:compiler_buildflags",
     "//chrome/browser:browser_process_platform_part",
-    "//chrome/browser:chrome_browser_main",
     "//chrome/browser:flags",
     "//chrome/browser/content_settings:content_settings_factory",
     "//chrome/browser/devtools",
@@ -414,7 +412,6 @@ source_set("impl") {
       "usertype_by_devicetype_metrics_provider.cc",
     ]
     deps += [
-      "//chrome/browser:chrome_shelf_metrics_provider",
       "//chrome/browser/ash/arc",
       "//chrome/browser/ash/arc/vmm",
       "//chrome/browser/ash/login",

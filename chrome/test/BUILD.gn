@@ -149,17 +149,13 @@ static_library("chrome_test_launcher") {
 
   deps = [
     ":test_support",
-    "//chrome/browser:chrome_browser_main",
     "//chrome/browser:chrome_content_browser_client",
     "//chrome/browser:main_extra_parts",
     "//testing/libfuzzer:fuzztest_init_support",
   ]
 
   if (is_mac) {
-    deps += [
-      "//chrome/app_shim",
-      "//chrome/browser:chrome_browser_application_mac",
-    ]
+    deps += [ "//chrome/app_shim" ]
   }
 
   if (is_chromeos) {
@@ -182,7 +178,6 @@ static_library("test_support") {
     "//chrome/browser:browser_features",
     "//chrome/browser:browser_process_impl",
     "//chrome/browser:browser_process_platform_part",
-    "//chrome/browser:chrome_browser_main",
     "//chrome/browser:chrome_content_browser_client",
     "//chrome/browser:global_features",
     "//chrome/browser/background",
@@ -986,8 +981,6 @@ static_library("test_support") {
     deps += [
       "//build:branding_buildflags",
       "//chrome/app_shim",
-      "//chrome/browser:app_controller_mac",
-      "//chrome/browser:chrome_browser_application_mac",
       "//components/upload_list",
     ]
     public_deps += [ "//components/crash/core/app" ]
@@ -1447,7 +1440,6 @@ source_set("platform_browser_tests") {
     "//chrome/browser",
     "//chrome/browser:browser_features",
     "//chrome/browser:browser_process",
-    "//chrome/browser:chrome_browser_main",
     "//chrome/browser:chrome_content_browser_client",
     "//chrome/browser/autocomplete",
     "//chrome/browser/bookmarks",
@@ -1589,10 +1581,6 @@ source_set("platform_browser_tests") {
     if (is_posix && !is_mac) {
       deps += [ "//chrome/app:chrome_crash_reporter_client" ]
     }
-  }
-
-  if (!is_android && !is_chromeos) {
-    deps += [ "//chrome/browser/download/bubble" ]
   }
 
   if (is_win || is_linux || is_mac || is_android || is_chromeos) {
@@ -1771,10 +1759,12 @@ source_set("platform_browser_tests") {
       "../browser/extensions/extension_override_apitest.cc",
       "../browser/extensions/extension_tab_util_browsertest.cc",
       "../browser/extensions/extension_unload_browsertest.cc",
+      "../browser/extensions/extension_url_loader_throttle_browsertest.cc",
       "../browser/extensions/extension_user_activation_service_browsertest.cc",
       "../browser/extensions/extension_user_script_loader_browsertest.cc",
       "../browser/extensions/extension_view_host_factory_browsertest.cc",
       "../browser/extensions/extensions_disabled_browsertest.cc",
+      "../browser/extensions/feature_provider_browsertest.cc",
       "../browser/extensions/gpu_browsertest.cc",
       "../browser/extensions/manifest_v3_browsertest.cc",
       "../browser/extensions/mutation_observers_apitest.cc",
@@ -1830,6 +1820,7 @@ source_set("platform_browser_tests") {
       "//chrome/browser/prefetch",
       "//chrome/browser/prefs",
       "//chrome/browser/prefs:util",
+      "//chrome/browser/profiles:profile_io_data",
       "//chrome/browser/profiles/keep_alive",
       "//chrome/browser/push_messaging",
       "//chrome/browser/push_messaging:service_impl_public",
@@ -1913,7 +1904,10 @@ source_set("platform_browser_tests") {
 
     # ChromeOS and Android don't use the download bubble UI.
     if (is_win || is_mac || is_linux) {
-      deps += [ "//chrome/browser/ui/download" ]
+      deps += [
+        "//chrome/browser/download/bubble",
+        "//chrome/browser/ui/download",
+      ]
     }
 
     if (enable_service_discovery) {
@@ -2674,7 +2668,6 @@ if (!is_android) {
       "//chrome/browser:browser_process_platform_part",
       "//chrome/browser:buildflags",
       "//chrome/browser:chained_back_navigation_tracker",
-      "//chrome/browser:chrome_browser_main",
       "//chrome/browser:chrome_content_browser_client",
       "//chrome/browser:global_features",
       "//chrome/browser:icon_loader",
@@ -3468,13 +3461,9 @@ if (!is_android) {
     }
 
     if (is_mac) {
-      deps += [
-        "//chrome/app_shim:browser_tests",
-        "//chrome/browser:app_controller_mac",
-        "//chrome/browser:chrome_browser_application_mac",
-        "//chrome/browser/ui/cocoa",
-        "//device/fido:icloud_keychain_test_support",
-      ]
+      deps += [ "//device/fido:icloud_keychain_test_support" ]
+      deps += [ "//chrome/app_shim:browser_tests" ]
+      deps += [ "//chrome/browser/ui/cocoa" ]
     }
 
     if (enable_background_mode) {
@@ -4233,6 +4222,7 @@ if (!is_android) {
       "//chrome/browser/collaboration/messaging",
       "//chrome/browser/contextual_tasks:browser_tests",
       "//chrome/browser/data_sharing",
+      "//chrome/browser/glic/browser_ui",
       "//chrome/browser/glic/suggestions",
       "//chrome/browser/glic/suggestions:impl",
       "//chrome/browser/history",
@@ -4495,7 +4485,6 @@ if (!is_android) {
         "//chrome:other_version",
         "//chrome/app:chrome_dll_resources",
         "//chrome/app:command_ids",
-        "//chrome/browser:font_prewarmer_tab_helper",
         "//chrome/browser/ui/startup:buildflags",
         "//chrome/credential_provider/common:common_constants",
         "//components/onc",
@@ -4887,13 +4876,11 @@ if (!is_android) {
         "../browser/extensions/extension_shared_array_buffer_browsertest.cc",
         "../browser/extensions/extension_startup_browsertest.cc",
         "../browser/extensions/extension_untrusted_webui_apitest.cc",
-        "../browser/extensions/extension_url_loader_throttle_browsertest.cc",
         "../browser/extensions/extension_url_rewrite_browsertest.cc",
         "../browser/extensions/extension_websocket_apitest.cc",
         "../browser/extensions/extension_webui_apitest.cc",
         "../browser/extensions/external_extension_install_browsertest.cc",
         "../browser/extensions/external_install_error_browsertest.cc",
-        "../browser/extensions/feature_provider_browsertest.cc",
         "../browser/extensions/fetch_apitest.cc",
         "../browser/extensions/file_iframe_apitest.cc",
         "../browser/extensions/google_docs_offline_ukm_browsertest.cc",
@@ -5536,8 +5523,8 @@ if (!is_android) {
         "../browser/file_system_access/cloud_identifier/cloud_identifier_util_ash_browsertest.cc",
         "../browser/lifetime/application_lifetime_chromeos_browsertest.cc",
 
-        # TODO(crbug.com/510716187): Enable for other platforms once macOS
-        # native window ID translation is implemented.
+        # TODO(crbug.com/510716187): Enable for other platforms once macOS native
+        # window ID translation is implemented.
         "../browser/media/webrtc/capture_handle_app_window_browsertest.cc",
         "../browser/media/webrtc/get_all_screens_media_browsertest.cc",
         "../browser/media/webrtc/multi_capture/multi_capture_data_service_browsertest.cc",
@@ -5706,7 +5693,6 @@ if (!is_android) {
         "//ash/webui/shortcut_customization_ui/backend/search:mojo_bindings",
         "//ash/webui/system_apps/public:system_web_app_type",
         "//ash/webui/web_applications/test:test_support",
-        "//chrome/browser:cloud_identifier_util_ash",
         "//chrome/browser/accessibility/media_app:browser_tests",
         "//chrome/browser/accessibility/media_app/test:test_support",
         "//chrome/browser/apps/almanac_api_client:browser_tests",
@@ -6876,6 +6862,7 @@ test("unit_tests") {
     "../browser/search_engines/template_url_parser_unittest.cc",
     "../browser/search_engines/template_url_service_sync_unittest.cc",
     "../browser/search_engines/template_url_service_unittest.cc",
+    "../browser/serial/chrome_serial_delegate_unittest.cc",
     "../browser/services_unittest.cc",
     "../browser/sessions/chrome_serialized_navigation_driver_unittest.cc",
     "../browser/sessions/session_common_utils_unittest.cc",
@@ -7119,11 +7106,7 @@ test("unit_tests") {
     "//chrome/browser:flags",
     "//chrome/browser:font_pref",
     "//chrome/browser:global_features",
-    "//chrome/browser:icon_manager",
     "//chrome/browser:primitives",
-    "//chrome/browser:process_singleton",
-    "//chrome/browser:renderer_preferences_util",
-    "//chrome/browser:resources_util",
     "//chrome/browser/accessibility:unit_tests",
     "//chrome/browser/accessibility_annotator:unit_tests",
     "//chrome/browser/actor",
@@ -7883,7 +7866,6 @@ test("unit_tests") {
       "//chrome//services/util_win:unit_tests",
       "//chrome/app:chrome_dll_resources",
       "//chrome/app:win_unit_tests",
-      "//chrome/browser:chrome_process_singleton",
       "//chrome/browser/accessibility/live_caption:unit_tests",
       "//chrome/browser/install_verification:unit_tests",
       "//chrome/browser/os_crypt",
@@ -8729,6 +8711,7 @@ test("unit_tests") {
       "//components/webapps/isolated_web_apps",
       "//components/webapps/isolated_web_apps/test_support",
       "//components/webauthn/content/browser",
+      "//services/tracing/public/cpp/background_tracing",
     ]
 
     # TODO(crbug.com/437811373): Remove this dependency when
@@ -8956,6 +8939,7 @@ test("unit_tests") {
       "//chrome/browser/ui/webui/signin",
       "//chrome/browser/ui/webui/top_chrome",
       "//chrome/browser/ui/webui/top_chrome:test_support",
+      "//chrome/browser/ui/window_feature_controller:unit_tests",
       "//chrome/browser/ui/window_sizer:unit_tests",
       "//chrome/browser/ui/zoom",
       "//chrome/browser/ui/zoom:unit_tests",
@@ -9069,7 +9053,6 @@ test("unit_tests") {
 
   if (!is_android) {
     deps += [
-      "//chrome/browser:intent_chip_display_prefs",
       "//chrome/browser/accessibility_annotator/content_annotator:unit_tests",
       "//chrome/browser/ui/contextual_search:unit_tests",
       "//chrome/browser/ui/passwords/settings:unit_tests",
@@ -9077,10 +9060,6 @@ test("unit_tests") {
       "//chrome/browser/ui/views/location_bar",
       "//chrome/browser/ui/webui/accessibility_annotator:unit_tests",
     ]
-  }
-
-  if (is_linux) {
-    deps += [ "//chrome/browser:shell_integration_linux" ]
   }
 
   if (is_chromeos) {
@@ -10208,11 +10187,7 @@ test("unit_tests") {
   }
 
   if (is_mac) {
-    deps += [
-      "//chrome/browser:app_controller_mac",
-      "//chrome/browser:global_keyboard_shortcuts_mac",
-      "//chrome/browser/enterprise/connectors/device_trust/key_management/core/mac:unit_tests",
-    ]
+    deps += [ "../browser/enterprise/connectors/device_trust/key_management/core/mac:unit_tests" ]
   }
 
   if (is_win || is_mac || is_linux) {
@@ -10627,6 +10602,7 @@ test("unit_tests") {
         [ "../browser/ui/views/tabs/tab_strip_action_container_unittest.cc" ]
 
     deps += [
+      "//chrome/browser/glic/browser_ui",
       "//chrome/browser/ui/call_to_action",
       "//chrome/browser/ui/tabs:tab_list_bridge",
     ]
@@ -10974,7 +10950,6 @@ if (!is_android) {
       "//chrome/browser:after_startup_task_utils",
       "//chrome/browser:browser_features",
       "//chrome/browser:browser_process",
-      "//chrome/browser:chrome_browser_main",
       "//chrome/browser:chrome_content_browser_client",
       "//chrome/browser:main_extra_parts",
       "//chrome/browser:shell_integration",
@@ -11124,7 +11099,6 @@ if (!is_android) {
         "base/interactive_test_utils_mac.mm",
       ]
       deps += [
-        "//chrome/browser:chrome_browser_application_mac",
         "//chrome/browser/apps/app_shim",
         "//ui/base/interaction:test_support",
       ]
@@ -11435,7 +11409,6 @@ if (!is_android && !is_chromeos_device) {
       "//chrome/browser",
       "//chrome/browser:browser_features",
       "//chrome/browser:buildflags",
-      "//chrome/browser:chrome_browser_main",
       "//chrome/browser:chrome_content_browser_client",
       "//chrome/browser:main_extra_parts",
       "//chrome/browser:unexpire_flags",
@@ -11820,13 +11793,8 @@ if (!is_android && !is_chromeos_device) {
 
     if (is_mac) {
       sources += [ "../installer/mac/keystone_install_unittest.cc" ]
-      deps += [
-        "//chrome/browser:app_controller_mac",
-        "//chrome/browser:chrome_browser_application_mac",
-        "//chrome/browser:global_keyboard_shortcuts_mac",
-        "//chrome/browser/ui/cocoa",
-        "//chrome/installer/mac:install_test_util",
-      ]
+      deps += [ "../installer/mac:install_test_util" ]
+      deps += [ "//chrome/browser/ui/cocoa" ]
       data += [
         "//chrome/installer/mac/keystone_install.sh",
         "//chrome/installer/mac/keystone_install_test.sh",
@@ -12376,6 +12344,7 @@ if (!is_android && !is_chromeos_device) {
       "//chrome/browser/contextual_tasks:ui",
       "//chrome/browser/glic",
       "//chrome/browser/glic:interactive_ui_tests",
+      "//chrome/browser/glic/browser_ui",
       "//chrome/browser/glic/test_support",
       "//chrome/browser/skills:interactive_ui_tests",
       "//chrome/browser/ui/views/glic",
@@ -12647,7 +12616,7 @@ if (!is_android) {
       "//chrome/test/data/password/captured_sites/",
       "//chrome/test/data/web_page_replay_go_helper_scripts/automation_helper.js",
       "//components/test/data/autofill/web_page_replay_support_files/",
-      "//third_party/catapult/telemetry/telemetry/bin/",
+      "//third_party/webpagereplay/",
     ]
 
     if (is_linux || is_chromeos || is_win) {

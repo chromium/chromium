@@ -108,11 +108,7 @@ source_set("impl") {
 
   if (is_mac) {
     sources += [ "application_lifetime_mac.mm" ]
-    deps += [
-      "//chrome/browser:app_controller_mac",
-      "//chrome/browser:chrome_browser_application_mac",
-      "//ui/views",
-    ]
+    deps += [ "//ui/views" ]
   }
 
   if (use_aura) {

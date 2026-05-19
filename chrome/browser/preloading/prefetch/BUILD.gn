@@ -134,7 +134,6 @@ if (!is_android) {
       ":test_support",
       "//base/test:test_support",
       "//chrome/browser:chrome_content_browser_client",
-      "//chrome/browser:zero_suggest_prefetch_tab_helper",
       "//chrome/browser/browsing_data:constants",
       "//chrome/browser/content_settings:content_settings_factory",
       "//chrome/browser/devtools",

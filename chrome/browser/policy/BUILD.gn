@@ -424,7 +424,6 @@ source_set("browser_tests") {
     "//base",
     "//build:branding_buildflags",
     "//chrome/browser:browser_features",
-    "//chrome/browser:chrome_browser_main",
     "//chrome/browser:chrome_content_browser_client",
     "//chrome/browser:main_extra_parts",
     "//chrome/browser/background",
@@ -1152,7 +1151,6 @@ source_set("impl") {
 
   if (is_mac) {
     sources += [ "browser_dm_token_storage_mac.mm" ]
-    deps += [ "//chrome/browser:app_controller_mac" ]
   }
 
   if (is_linux || is_win || is_mac || is_chromeos) {

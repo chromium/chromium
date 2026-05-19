@@ -47,7 +47,6 @@ source_set("app_shim") {
 
   deps = [
     "//apps",
-    "//chrome/browser:app_controller_mac",
     "//chrome/browser:browser_process",
     "//chrome/browser:browser_process_platform_part",
     "//chrome/browser/apps/app_service",

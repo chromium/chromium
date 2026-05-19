@@ -5,10 +5,6 @@
 # Download bubble UI is not used on ChromeOS.
 assert(is_win || is_mac || is_linux)
 
-source_set("download_display") {
-  public = [ "download_display.h" ]
-}
-
 source_set("download") {
   sources = [
     "download_bubble_contents_view_info.h",
@@ -17,11 +13,11 @@ source_set("download") {
     "download_bubble_row_list_view_info.h",
     "download_bubble_row_view_info.h",
     "download_bubble_security_view_info.h",
+    "download_display.h",
     "download_item_mode.h",
   ]
 
   public_deps = [
-    ":download_display",
     "//base",
     "//chrome/browser/download",
     "//components/download/public/common:public",

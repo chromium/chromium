@@ -146,10 +146,6 @@ source_set("impl") {
       "//components/tab_groups",
     ]
 
-    if (is_mac) {
-      deps += [ "//chrome/browser:app_controller_mac" ]
-    }
-
     if (use_ozone) {
       deps += [ "//ui/ozone" ]
     }

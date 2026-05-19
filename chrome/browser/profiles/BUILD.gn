@@ -606,7 +606,6 @@ source_set("profiles_extra_parts_impl") {
     ":profiles_extra_parts",
     "//base",
     "//chrome/browser:browser_process",
-    "//chrome/browser:chrome_browser_main",
     "//chrome/browser:font_pref",
     "//chrome/browser/accessibility",
     "//chrome/browser/accessibility_annotator",
@@ -827,9 +826,6 @@ source_set("profiles_extra_parts_impl") {
       "//chrome/browser/user_education",
       "//chrome/browser/web_applications/isolated_web_apps/window_management",
     ]
-  }
-  if (!is_android && !is_chromeos) {
-    deps += [ "//chrome/browser/download/bubble" ]
   }
   if (is_chromeos) {
     deps += [

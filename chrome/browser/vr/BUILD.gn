@@ -24,17 +24,6 @@ source_set("vr") {
   }
 }
 
-# Header-only target so non-:browser targets can include this header
-# without depending on :browser. The .cc file remains in
-# //chrome/browser:browser.
-source_set("chrome_xr_integration_client") {
-  public = [ "chrome_xr_integration_client.h" ]
-  public_deps = [
-    "//base",
-    "//content/public/browser",
-  ]
-}
-
 source_set("impl") {
   sources = [ "vr_tab_helper.cc" ]
   deps = [

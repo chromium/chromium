@@ -228,9 +228,6 @@ static_library("devtools") {
       "//components/viz/host",
       "//ui/shell_dialogs",
     ]
-    if (!is_android) {
-      deps += [ "//chrome/browser:certificate_viewer" ]
-    }
   }
 
   if (is_mac || is_win || is_linux || is_chromeos) {

@@ -498,7 +498,6 @@ source_set("extensions") {
     "//chrome/browser:file_select_helper",
     "//chrome/browser:file_util_service",
     "//chrome/browser:icon_loader",
-    "//chrome/browser:icon_manager",
     "//chrome/browser:shell_integration",
     "//chrome/browser/app_mode",
     "//chrome/browser/apps:user_type_filter",
@@ -705,9 +704,6 @@ source_set("extensions") {
 
   if (!is_chromeos) {
     sources += [ "chrome_kiosk_delegate_non_chromeos.cc" ]
-    if (!is_android) {
-      deps += [ "//chrome/browser/download/bubble" ]
-    }
   }
 
   if (!is_chromeos && !is_android) {

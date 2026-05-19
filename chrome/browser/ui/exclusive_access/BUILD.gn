@@ -95,9 +95,6 @@ if (!is_android) {
       "//chrome/test:test_support_ui",
       "//content/test:test_support",
     ]
-    if (!is_chromeos) {
-      public_deps += [ "//chrome/browser:fullscreen" ]
-    }
   }
 
   source_set("unit_tests") {

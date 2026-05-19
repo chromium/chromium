@@ -151,7 +151,6 @@ static_library("test_support") {
     "//chrome/browser:buildflags",
     "//chrome/browser:chrome_content_browser_client",
     "//chrome/browser:defaults",
-    "//chrome/browser:process_singleton",
     "//chrome/browser:shell_integration",
     "//chrome/browser:startup_data",
     "//chrome/browser/diagnostics",
@@ -196,7 +195,6 @@ static_library("test_support") {
 
     deps += [
       "//chrome:chrome_framework",
-      "//chrome/browser:chrome_browser_application_mac",
       "//chrome/browser/mac",
     ]
   }
@@ -225,10 +223,6 @@ static_library("test_support") {
 
   if (is_posix && !is_mac) {
     deps += [ ":chrome_crash_reporter_client" ]
-  }
-
-  if (!is_android) {
-    deps += [ "//chrome/browser:chrome_process_singleton" ]
   }
 
   if (use_ozone) {

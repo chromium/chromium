@@ -94,7 +94,6 @@ source_set("impl") {
         "upgrade_util_win.cc",
       ]
       deps += [
-        "//chrome/browser:chrome_process_singleton",
         "//chrome/browser/win",
         "//chrome/updater/app/server/win:updater_legacy_idl",
       ]

@@ -177,7 +177,6 @@ source_set("impl") {
     "//chrome/app/theme:theme_resources",
     "//chrome/app/theme:theme_resources_grit",
     "//chrome/browser:browser_process",
-    "//chrome/browser:process_resource_usage",
     "//chrome/browser/favicon",
     "//chrome/browser/glic",
     "//chrome/browser/profiles:profile",

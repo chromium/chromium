@@ -12,7 +12,7 @@
 #endif
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-#include "chrome/browser/internal/google_chrome_cdm_storage_id_key.h"  // nogncheck crbug.com/40147906
+#include "chrome/browser/internal/google_chrome_cdm_storage_id_key.h"
 #endif
 
 std::string GetCdmStorageIdKey() {

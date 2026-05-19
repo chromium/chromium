@@ -73,7 +73,6 @@ source_set("feedback_impl") {
     ":feedback",
     "//chrome/browser:browser_features",
     "//chrome/browser:browser_process",
-    "//chrome/browser:memory_details",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/signin",
     "//chrome/common:constants",

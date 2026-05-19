@@ -160,8 +160,6 @@ source_set("internal") {
         "//chrome/browser/ash/boca/on_task",
         "//components/session_manager/core",
       ]
-    } else {
-      deps += [ "//chrome/browser/download/bubble" ]
     }
 
     if (use_aura) {

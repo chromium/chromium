@@ -216,7 +216,6 @@ static_library("browser_test_support") {
     "//base",
     "//base/test:test_support",
     "//chrome/browser",
-    "//chrome/browser:chrome_browser_main",
     "//chrome/browser:main_extra_parts",
     "//chrome/browser/ash/guest_os/public",
     "//chrome/browser/ui",
