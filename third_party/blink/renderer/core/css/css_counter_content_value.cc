@@ -19,7 +19,7 @@ String CSSCounterContentValue::CustomCSSText() const {
     result.Append("counters(");
   }
 
-  result.Append(Identifier());
+  SerializeIdentifier(Identifier(), result);
   if (!Separator().empty()) {
     result.Append(", ");
     result.Append(separator_->CssText());
