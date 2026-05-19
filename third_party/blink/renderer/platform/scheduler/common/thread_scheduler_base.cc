@@ -18,7 +18,9 @@ void ThreadSchedulerBase::ExecuteAfterCurrentTask(
 
 void ThreadSchedulerBase::Shutdown() {
   GetHelper().ResetTimeDomain();
-  virtual_time_domain_.reset();
+  if (virtual_time_domain_) {
+    virtual_time_domain_->ShutDown();
+  }
 }
 
 base::TimeTicks ThreadSchedulerBase::EnableVirtualTime(

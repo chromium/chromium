@@ -45,6 +45,9 @@ class PLATFORM_EXPORT AutoAdvancingVirtualTimeDomain
       const AutoAdvancingVirtualTimeDomain&) = delete;
   ~AutoAdvancingVirtualTimeDomain() override;
 
+  // Detach from the helper safely while it is still alive.
+  void ShutDown();
+
   // Controls whether or not virtual time is allowed to advance, when the
   // SequenceManager runs out of immediate work to do.
   void SetCanAdvanceVirtualTime(bool can_advance_virtual_time);

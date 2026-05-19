@@ -32,7 +32,16 @@ AutoAdvancingVirtualTimeDomain::AutoAdvancingVirtualTimeDomain(
 }
 
 AutoAdvancingVirtualTimeDomain::~AutoAdvancingVirtualTimeDomain() {
-  helper_->RemoveTaskObserver(this);
+  if (helper_) {
+    helper_->RemoveTaskObserver(this);
+  }
+}
+
+void AutoAdvancingVirtualTimeDomain::ShutDown() {
+  if (helper_) {
+    helper_->RemoveTaskObserver(this);
+    helper_ = nullptr;
+  }
 }
 
 base::TimeTicks AutoAdvancingVirtualTimeDomain::NowTicks() const {

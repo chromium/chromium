@@ -4,10 +4,16 @@
 
 #include "third_party/blink/renderer/platform/scheduler/worker/non_main_thread_impl.h"
 
+#include <atomic>
+#include <vector>
+
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/threading/platform_thread.h"
+#include "base/threading/thread.h"
 #include "build/build_config.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -163,6 +169,107 @@ TEST_F(NonMainThreadImplTest, TestShutdown) {
       CrossThreadBindOnce(&MockTask::Run, CrossThreadUnretained(&delayed_task)),
       base::Milliseconds(50));
   thread_.reset();
+}
+
+// Regression test for crbug.com/513544566.
+// SequenceManagerImpl::any_thread_clock() requires that the installed
+// TimeDomain outlives SequenceManagerImpl (even if it is reset).
+//
+// Previously, ThreadSchedulerBase::Shutdown() destroyed the
+// AutoAdvancingVirtualTimeDomain before the default task queue's
+// GuardedTaskPoster was fully shut down. A concurrent cross-thread
+// PostDelayedTask() from another thread could load a stale clock pointer
+// and dereference it, causing a Use-After-Free (UAF) under ASAN inside
+// LazyNow::Now().
+//
+// This test ensures that we safely sequence the shutdown of the virtual
+// time domain. It models a DevTools client enabling virtual time on a
+// worker target followed by worker termination, while another renderer
+// thread is concurrently posting delayed tasks to the worker's task runner.
+TEST(NonMainThreadImplVirtualTimeShutdownRace,
+     CrossThreadPostDelayedTaskDuringShutdown) {
+  // Oversubscribe the CPU so hammer threads are preempted between the
+  // any_thread_clock() load and the LazyNow::Now() dereference.
+  const int kHammerThreads = 16;
+
+  std::unique_ptr<NonMainThread> thread = NonMainThread::CreateThread(
+      ThreadCreationParams(ThreadType::kTestThread));
+  scoped_refptr<base::SingleThreadTaskRunner> task_runner =
+      thread->GetTaskRunner();
+
+  // Enable virtual time on the worker thread, mimicking what
+  // InspectorEmulationAgent::setVirtualTimePolicy does on a worker target.
+  // The policy is paused so that the worker doesn't fast-forward through
+  // the incoming delayed tasks.
+  {
+    base::WaitableEvent done;
+    task_runner->PostTask(
+        FROM_HERE, base::BindOnce(
+                       [](Thread* thread, base::WaitableEvent* done) {
+                         auto* sched = static_cast<WorkerThreadScheduler*>(
+                             thread->Scheduler());
+                         sched->EnableVirtualTime(base::Time());
+                         sched->SetVirtualTimePolicy(
+                             VirtualTimeController::VirtualTimePolicy::kPause);
+                         done->Signal();
+                       },
+                       thread.get(), &done));
+    done.Wait();
+  }
+
+  // Spawns threads to hammer the worker's default task queue with cross-thread
+  // PostDelayedTask() calls. This exercises the code path that accesses the
+  // time domain's clock concurrently.
+  std::atomic<bool> stop{false};
+  base::WaitableEvent go_event(base::WaitableEvent::ResetPolicy::MANUAL,
+                               base::WaitableEvent::InitialState::NOT_SIGNALED);
+  std::vector<std::unique_ptr<base::Thread>> hammers;
+  hammers.reserve(kHammerThreads);
+  for (int i = 0; i < kHammerThreads; ++i) {
+    auto hammer = std::make_unique<base::Thread>("HammerThread");
+    hammer->Start();
+
+    hammer->task_runner()->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            [](base::WaitableEvent* go_event, std::atomic<bool>* stop,
+               scoped_refptr<base::SingleThreadTaskRunner> target_runner) {
+              go_event->Wait();
+              while (!stop->load(std::memory_order_relaxed)) {
+                target_runner->PostDelayedTask(FROM_HERE, base::DoNothing(),
+                                               base::Hours(1));
+              }
+            },
+            &go_event, &stop, task_runner));
+
+    hammers.push_back(std::move(hammer));
+  }
+  go_event.Signal();
+  // Let the hammers warm up so they're mid-PostDelayedTask when the worker
+  // tears the time domain down.
+  base::PlatformThread::Sleep(base::Microseconds(200));
+
+  // Shut down the scheduler on the worker thread, mimicking what
+  // WorkerThread::PerformShutdownOnWorkerThread does. This triggers
+  // ThreadSchedulerBase::Shutdown(), which safely detaches the virtual
+  // time domain observer while the helper is still alive.
+  {
+    base::WaitableEvent done;
+    task_runner->PostTask(FROM_HERE,
+                          base::BindOnce(
+                              [](Thread* thread, base::WaitableEvent* done) {
+                                thread->Scheduler()->Shutdown();
+                                done->Signal();
+                              },
+                              thread.get(), &done));
+    done.Wait();
+  }
+
+  stop.store(true, std::memory_order_relaxed);
+  // base::Thread destructor automatically stops and Joins the thread,
+  // so simply clearing the vector joins all hammer threads safely.
+  hammers.clear();
+  thread.reset();
 }
 
 }  // namespace worker_thread_unittest
