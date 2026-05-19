@@ -924,23 +924,84 @@ TEST_F(USBDeviceImplTest, SetInterfaceAlternateSetting) {
                     .AddInterface(2, 0, 1, 2, 3)
                     .Build());
 
+  // The device must be configured because SetInterfaceAlternateSetting now
+  // retrieves the active configuration to validate the interface class code.
+  EXPECT_CALL(mock_handle(), SetConfigurationInternal(1, _));
+
+  {
+    base::test::TestFuture<bool> future;
+    device->SetConfiguration(1, future.GetCallback());
+    EXPECT_TRUE(future.Get());
+  }
+
   EXPECT_CALL(mock_handle(), SetInterfaceAlternateSettingInternal(1, 42, _));
 
   {
-    base::RunLoop loop;
-    device->SetInterfaceAlternateSetting(
-        1, 42, base::BindOnce(&ExpectResultAndThen, true, loop.QuitClosure()));
-    loop.Run();
+    base::test::TestFuture<bool> future;
+    device->SetInterfaceAlternateSetting(1, 42, future.GetCallback());
+    EXPECT_TRUE(future.Get());
   }
 
-  EXPECT_CALL(mock_handle(), SetInterfaceAlternateSettingInternal(1, 100, _));
+  EXPECT_CALL(mock_handle(), SetInterfaceAlternateSettingInternal(1, 100, _))
+      .Times(0);
 
   {
-    base::RunLoop loop;
-    device->SetInterfaceAlternateSetting(
-        1, 100,
-        base::BindOnce(&ExpectResultAndThen, false, loop.QuitClosure()));
-    loop.Run();
+    base::test::TestFuture<bool> future;
+    device->SetInterfaceAlternateSetting(1, 100, future.GetCallback());
+    EXPECT_FALSE(future.Get());
+  }
+
+  EXPECT_CALL(mock_handle(), Close());
+}
+
+TEST_F(USBDeviceImplTest, SetInterfaceAlternateSettingProtectedClassBypass) {
+  mojo::Remote<mojom::UsbDevice> device =
+      GetMockDeviceProxyWithBlockedInterfaces(base::span_from_ref(uint8_t{3}));
+
+  EXPECT_CALL(mock_device(), OpenInternal(_));
+
+  {
+    base::test::TestFuture<mojom::UsbOpenDeviceResultPtr> future;
+    device->Open(future.GetCallback());
+    EXPECT_TRUE(future.Get()->is_success());
+  }
+
+  AddMockConfig(
+      ConfigBuilder(/*configuration_value=*/1)
+          .AddInterface(/*interface_number=*/0, /*alternate_setting=*/0,
+                        /*class_code=*/0xFF, /*subclass_code=*/0,
+                        /*protocol_code=*/0)
+          .AddInterface(/*interface_number=*/1, /*alternate_setting=*/0,
+                        /*class_code=*/3, /*subclass_code=*/0,
+                        /*protocol_code=*/0)
+          .AddInterface(/*interface_number=*/1, /*alternate_setting=*/1,
+                        /*class_code=*/3, /*subclass_code=*/0,
+                        /*protocol_code=*/0)
+          .Build());
+
+  EXPECT_CALL(mock_handle(), SetConfigurationInternal(1, _));
+
+  {
+    base::test::TestFuture<bool> future;
+    device->SetConfiguration(1, future.GetCallback());
+    EXPECT_TRUE(future.Get());
+  }
+
+  EXPECT_CALL(mock_handle(), ClaimInterfaceInternal(1, _)).Times(0);
+
+  {
+    base::test::TestFuture<mojom::UsbClaimInterfaceResult> future;
+    device->ClaimInterface(1, future.GetCallback());
+    EXPECT_EQ(future.Get(), mojom::UsbClaimInterfaceResult::kProtectedClass);
+  }
+
+  EXPECT_CALL(mock_handle(), SetInterfaceAlternateSettingInternal(1, 1, _))
+      .Times(0);
+
+  {
+    base::test::TestFuture<bool> future;
+    device->SetInterfaceAlternateSetting(1, 1, future.GetCallback());
+    EXPECT_FALSE(future.Get());
   }
 
   EXPECT_CALL(mock_handle(), Close());

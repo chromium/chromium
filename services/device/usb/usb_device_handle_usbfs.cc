@@ -689,6 +689,13 @@ void UsbDeviceHandleUsbfs::SetInterfaceAlternateSetting(
     return;
   }
 
+  if (!IsInterfaceClaimedByThis(interface_number)) {
+    USB_LOG(DEBUG) << "Interface " << interface_number << " not claimed.";
+    task_runner_->PostTask(FROM_HERE,
+                           base::BindOnce(std::move(callback), false));
+    return;
+  }
+
   // USBDEVFS_SETINTERFACE is synchronous because it issues a SET_INTERFACE
   // request to the device so it must be performed on a thread where it is okay
   // to block.

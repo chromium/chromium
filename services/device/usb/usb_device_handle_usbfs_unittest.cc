@@ -28,6 +28,7 @@ class MockBlockingTaskRunnerHelper
   MockBlockingTaskRunnerHelper() {
     ON_CALL(*this, ClaimInterface).WillByDefault(testing::Return(true));
     ON_CALL(*this, ReleaseInterface).WillByDefault(testing::Return(true));
+    ON_CALL(*this, SetInterface).WillByDefault(testing::Return(true));
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX)
     ON_CALL(*this, DetachInterface).WillByDefault(testing::Return(true));
     ON_CALL(*this, ReattachInterface).WillByDefault(testing::Return(true));
@@ -44,6 +45,7 @@ class MockBlockingTaskRunnerHelper
               (override));
   MOCK_METHOD(bool, ClaimInterface, (int), (override));
   MOCK_METHOD(bool, ReleaseInterface, (int), (override));
+  MOCK_METHOD(bool, SetInterface, (int, int), (override));
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX)
   MOCK_METHOD(bool,
               DetachInterface,
@@ -185,6 +187,22 @@ TEST_F(UsbDeviceHandleUsbfsTest, ClaimSameInterfaceSequentially) {
   TestFuture<bool> release_interface_future2;
   handle2_->ReleaseInterface(1, release_interface_future2.GetCallback());
   ASSERT_TRUE(release_interface_future2.Get());
+}
+
+TEST_F(UsbDeviceHandleUsbfsTest, SetInterfaceAlternateSettingUnclaimed) {
+  TestFuture<bool> set_interface_future;
+  handle1_->SetInterfaceAlternateSetting(1, 0,
+                                         set_interface_future.GetCallback());
+  ASSERT_FALSE(set_interface_future.Get());
+
+  TestFuture<bool> claim_interface_future;
+  handle1_->ClaimInterface(1, claim_interface_future.GetCallback());
+  ASSERT_TRUE(claim_interface_future.Get());
+
+  TestFuture<bool> set_interface_future2;
+  handle1_->SetInterfaceAlternateSetting(1, 0,
+                                         set_interface_future2.GetCallback());
+  ASSERT_TRUE(set_interface_future2.Get());
 }
 
 }  // namespace

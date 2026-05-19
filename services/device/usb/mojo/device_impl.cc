@@ -24,6 +24,7 @@
 #include "base/strings/stringprintf.h"
 #include "services/device/public/cpp/device_features.h"
 #include "services/device/public/cpp/usb/usb_utils.h"
+#include "services/device/usb/usb_descriptors.h"
 #include "services/device/usb/usb_device.h"
 #include "third_party/blink/public/common/features.h"
 
@@ -460,6 +461,24 @@ void DeviceImpl::SetInterfaceAlternateSetting(
     return;
   }
   if (!device_handle_) {
+    std::move(callback).Run(false);
+    return;
+  }
+
+  const mojom::UsbConfigurationInfo* config = device_->GetActiveConfiguration();
+  if (!config) {
+    std::move(callback).Run(false);
+    return;
+  }
+
+  CombinedInterfaceInfo interface =
+      FindInterfaceInfoFromConfig(config, interface_number, alternate_setting);
+  if (!interface.IsValid()) {
+    std::move(callback).Run(false);
+    return;
+  }
+
+  if (blocked_interface_classes_.contains(interface.alternate->class_code)) {
     std::move(callback).Run(false);
     return;
   }

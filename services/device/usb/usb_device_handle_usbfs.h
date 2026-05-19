@@ -211,7 +211,7 @@ class UsbDeviceHandleUsbfs::BlockingTaskRunnerHelper {
   bool SetConfiguration(int configuration_value);
   virtual bool ClaimInterface(int interface_number);
   virtual bool ReleaseInterface(int interface_number);
-  bool SetInterface(int interface_number, int alternate_setting);
+  virtual bool SetInterface(int interface_number, int alternate_setting);
   bool ResetDevice();
   bool ClearHalt(uint8_t endpoint_address);
   void DiscardUrb(Transfer* transfer);
