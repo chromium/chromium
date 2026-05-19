@@ -21,6 +21,7 @@
 #include "services/webnn/error.h"
 #include "services/webnn/public/cpp/data_type_limits.h"
 #include "services/webnn/public/cpp/graph_validation_utils.h"
+#include "services/webnn/public/cpp/ml_tensor_usage.h"
 #include "services/webnn/public/cpp/operand_descriptor.h"
 #include "services/webnn/public/cpp/supported_data_types.h"
 #include "services/webnn/public/cpp/supported_tensors.h"
@@ -335,7 +336,8 @@ void WebNNContextImpl::CreateTensor(
     return;
   }
 
-  if (tensor_info->usage.Has(MLTensorUsageFlags::kGraphConstant)) {
+  MLTensorUsage usage = tensor_info->usage;
+  if (usage.Has(MLTensorUsageFlags::kGraphConstant)) {
     const base::expected<OperandDescriptor, std::string> validated_descriptor =
         webnn::OperandDescriptor::Create(
             properties_, tensor_info->descriptor.data_type(),
@@ -355,6 +357,12 @@ void WebNNContextImpl::CreateTensor(
       GetMojoReceiver().ReportBadMessage(kBadMessageInvalidTensor);
       return;
     }
+  } else {
+    // The renderer doesn't provide an initial value for non-constant tensors.
+    if (tensor_data.size() != 0) {
+      GetMojoReceiver().ReportBadMessage(kBadMessageInvalidTensor);
+      return;
+    }
   }
 
   mojo::PendingAssociatedRemote<mojom::WebNNTensor> remote;
@@ -367,10 +375,8 @@ void WebNNContextImpl::CreateTensor(
     return;
   }
 
-  // Write the specified values into the tensor. If `tensor_data` is empty,
-  // the tensor should be left initialized to zero. The `tensor_data` size
-  // should of been already validated in CreateTensor().
-  if (tensor_data.size() > 0) {
+  if (usage.Has(MLTensorUsageFlags::kGraphConstant)) {
+    // The size of `tensor_data` was checked above.
     result.value()->WriteTensorImpl(std::move(tensor_data));
   }
 
