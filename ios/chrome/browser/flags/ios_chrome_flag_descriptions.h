@@ -563,6 +563,12 @@ inline constexpr char kDisableComposeboxFromAIMNTPDescription[] =
     "When enabled, the NTP entrypoint will always lead to the AIM webpage even "
     "when composebox is enabled.";
 
+inline constexpr char kDisableFeedbackForIneligibleUsersName[] =
+    "Disable Feedback For Ineligible Users";
+inline constexpr char kDisableFeedbackForIneligibleUsersDescription[] =
+    "When enabled, feedback is disabled for ineligible users based on "
+    "can_submit_feedback capability.";
+
 inline constexpr char kDisableKeyboardAccessoryName[] =
     "Disable Omnibox Keyboard Accessory";
 inline constexpr char kDisableKeyboardAccessoryDescription[] =
@@ -579,13 +585,6 @@ inline constexpr char kDisableShareButtonName[] =
     "Disable Share Button in Toolbar";
 inline constexpr char kDisableShareButtonDescription[] =
     "Hides the share button in toolbar.";
-
-inline constexpr char kDisableU18FeedbackIosName[] = "DisableU18FeedbackIos";
-inline constexpr char kDisableU18FeedbackIosDescription[] =
-    "When enabled, the primary identity is set to the feedback UI when opened. "
-    "The user is free add it to the feedback or not. Also the feedback cannot "
-    "be sent if the primary user is under 18. When disabled, the feedback is "
-    "anoymous";
 
 inline constexpr char kDownloadAutoDeletionClearFilesOnEveryStartupName[] =
     "Enable Download Auto-Deletion Testing Mode";

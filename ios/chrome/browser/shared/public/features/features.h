@@ -945,6 +945,8 @@ BASE_DECLARE_FEATURE(kFeedbackEntryPointsRequireCanSubmitFeedbackCapability);
 // feature is enabled.
 bool IsFeedbackEntryPointsRequireCanSubmitFeedbackCapabilityEnabled();
 
+// When enabled, the feedback is disabled for ineligible users based on
+// can_submit_feedback capability.
 // Provides the primary identity of the user to FeedbackKit and enables the
 // check for `can_submit_feedback` capability for the account.
 // The identity is not included in feedback reports.
@@ -952,9 +954,13 @@ bool IsFeedbackEntryPointsRequireCanSubmitFeedbackCapabilityEnabled();
 // enables this functionality.
 // This feature is irrelevant if
 // kFeedbackEntryPointsRequireCanSubmitFeedbackCapability feature is enabled.
-BASE_DECLARE_FEATURE(kDisableU18FeedbackIos);
+BASE_DECLARE_FEATURE(kDisableFeedbackForIneligibleUsers);
 
-// Returns true if the DisableU18FeedbackIos feature is enabled.
+// Returns true if the DisableFeedbackForIneligibleUsers feature is enabled.
+bool IsDisableFeedbackForIneligibleUsersEnabled();
+
+// Returns true if the DisableFeedbackForIneligibleUsers feature is enabled.
+// DEPRECATED.
 bool IsDisableU18FeedbackIosEnabled();
 
 // Enables the FullscreenRefactoring feature.

@@ -1866,7 +1866,7 @@ void OnListFamilyMembersResponse(
   configuration.sceneHandler = self;
   configuration.singleSignOnService =
       GetApplicationContext()->GetSingleSignOnService();
-  if (IsDisableU18FeedbackIosEnabled()) {
+  if (IsDisableFeedbackForIneligibleUsersEnabled()) {
     AuthenticationService* authenticationService =
         AuthenticationServiceFactory::GetForProfile(self.profile);
     configuration.primaryIdentity = authenticationService->GetPrimaryIdentity();

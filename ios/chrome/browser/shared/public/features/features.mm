@@ -1173,10 +1173,15 @@ bool IsFeedbackEntryPointsRequireCanSubmitFeedbackCapabilityEnabled() {
       kFeedbackEntryPointsRequireCanSubmitFeedbackCapability);
 }
 
-BASE_FEATURE(kDisableU18FeedbackIos, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kDisableFeedbackForIneligibleUsers,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsDisableFeedbackForIneligibleUsersEnabled() {
+  return base::FeatureList::IsEnabled(kDisableFeedbackForIneligibleUsers);
+}
 
 bool IsDisableU18FeedbackIosEnabled() {
-  return base::FeatureList::IsEnabled(kDisableU18FeedbackIos);
+  return IsDisableFeedbackForIneligibleUsersEnabled();
 }
 
 BASE_FEATURE(kFullscreenRefactoring, base::FEATURE_DISABLED_BY_DEFAULT);

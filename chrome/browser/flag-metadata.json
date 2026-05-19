@@ -2426,6 +2426,11 @@
     "expiry_milestone": -1
   },
   {
+    "name": "disable-feedback-for-ineligible-users",
+    "owners": [ "jlebel@google.com", "chrome-signin-team@google.com" ],
+    "expiry_milestone": 160
+  },
+  {
     "name": "disable-javascript-harmony-shipping",
     "owners": [ "adamk@chromium.org", "syg@chromium.org" ],
     // This flag is used for field debugging along with
@@ -2457,11 +2462,6 @@
     "name": "disable-u18-feedback-desktop",
     "owners": [ "chrome-signin-team@google.com" ],
     "expiry_milestone": 160
-  },
-  {
-    "name": "disable-u18-feedback-ios",
-    "owners": [ "jlebel@google.com", "chrome-signin-team@google.com" ],
-    "expiry_milestone": 152
   },
   {
     "name": "disable-virtual-keyboard",

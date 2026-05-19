@@ -228,7 +228,7 @@ extern const base::FeatureParam<std::string> kCrossDeviceSigninUrl;
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 // If enabled, disables feedback for U18 users on desktop platforms.
-// The iOS version is kDisableU18FeedbackIos flag.
+// The iOS version is kDisableFeedbackForIneligibleUsers flag.
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kDisableU18FeedbackDesktop);
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
@@ -472,7 +472,6 @@ BASE_DECLARE_FEATURE(kGlicEligibilitySeparateAccountCapability);
 // Feature to handle mdm errors on Enterprise and EDU accounts
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kHandleMdmErrorsForDasherAccounts);
-
 
 #if BUILDFLAG(IS_IOS)
 // Killswitch for ignoring X-Chrome-Manage-Accounts header in subframes.
