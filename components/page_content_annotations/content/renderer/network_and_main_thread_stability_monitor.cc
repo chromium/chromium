@@ -48,9 +48,12 @@ void NetworkAndMainThreadStabilityMonitor::WaitForStable(
   }
 
   if (after_request_count > starting_request_count_) {
-    render_frame_->GetWebFrame()->RequestNetworkIdleCallback(
-        base::BindOnce(&NetworkAndMainThreadStabilityMonitor::OnNetworkIdle,
-                       weak_ptr_factory_.GetWeakPtr()));
+    // Unretained(this) is safe here since
+    // `network_idle_callback_subscription_` is a member of `this`.
+    network_idle_callback_subscription_ =
+        render_frame_->GetWebFrame()->RequestNetworkIdleCallback(
+            base::BindOnce(&NetworkAndMainThreadStabilityMonitor::OnNetworkIdle,
+                           base::Unretained(this)));
   } else {
     WaitForMainThreadIdle();
   }

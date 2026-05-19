@@ -4,6 +4,11 @@
 
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 
+#include <vector>
+
+#include "base/callback_list.h"
+#include "base/functional/bind.h"
+#include "base/test/bind.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/css/properties/longhands.h"
@@ -138,4 +143,19 @@ TEST_F(LocalFrameTest, CharacterIndexAtPointWithPinchZoom) {
   EXPECT_EQ(index, 5ul);
 }
 #endif
+
+TEST_F(LocalFrameTest, RequestNetworkIdleCallbackMultiple) {
+  auto page_holder = std::make_unique<DummyPageHolder>(gfx::Size(800, 600));
+  int count = 0;
+  std::vector<base::CallbackListSubscription> subscriptions;
+  subscriptions.push_back(page_holder->GetFrame().RequestNetworkIdleCallback(
+      base::BindLambdaForTesting([&] { count++; })));
+  subscriptions.push_back(page_holder->GetFrame().RequestNetworkIdleCallback(
+      base::BindLambdaForTesting([&] { count++; })));
+
+  EXPECT_EQ(count, 0);
+  page_holder->GetFrame().NetworkBecameIdle(base::TimeDelta());
+  EXPECT_EQ(count, 2);
+}
+
 }  // namespace blink

@@ -10,6 +10,7 @@
 #include <set>
 #include <string>
 
+#include "base/callback_list.h"
 #include "base/containers/span.h"
 #include "base/functional/callback.h"
 #include "base/i18n/rtl.h"
@@ -782,9 +783,9 @@ class BLINK_EXPORT WebLocalFrame : public WebFrame {
   virtual void DeprecatedStopLoading() = 0;
 
   // Invokes the given callback when the Blink determines it is in an idle
-  // period of network resource requests. Only one callback is currently
-  // supported at a time.
-  virtual void RequestNetworkIdleCallback(base::OnceClosure callback) = 0;
+  // period of network resource requests.
+  [[nodiscard]] virtual base::CallbackListSubscription
+  RequestNetworkIdleCallback(base::OnceClosure callback) = 0;
 
   // Geometry -----------------------------------------------------------------
 

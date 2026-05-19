@@ -7,6 +7,7 @@
 
 #include <stddef.h>
 
+#include "base/callback_list.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
@@ -48,6 +49,7 @@ class NetworkAndMainThreadStabilityMonitor {
   size_t starting_request_count_;
 
   base::OnceClosure is_stable_callback_;
+  base::CallbackListSubscription network_idle_callback_subscription_;
 
   raw_ref<content::RenderFrame> render_frame_;
 

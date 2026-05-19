@@ -1344,19 +1344,15 @@ void LocalFrame::NetworkBecameIdle(base::TimeDelta idle_start_time) {
     notified_initial_network_idle_ = true;
   }
 
-  if (network_idle_callback_) {
-    std::move(network_idle_callback_).Run();
-  }
+  network_idle_callbacks_.Notify();
 }
 
-void LocalFrame::RequestNetworkIdleCallback(base::OnceClosure callback) {
-  // RequestNetworkIdleCallback only supports a single callback at this time
-  // because of how it's used. If there are multiple clients this should change
-  // to a base::CallbackList.
-  CHECK(network_idle_callback_.is_null() ||
-        network_idle_callback_.IsCancelled());
-  network_idle_callback_ = std::move(callback);
+base::CallbackListSubscription LocalFrame::RequestNetworkIdleCallback(
+    base::OnceClosure callback) {
+  base::CallbackListSubscription subscription =
+      network_idle_callbacks_.Add(std::move(callback));
   idleness_detector_->StartIfNeeded();
+  return subscription;
 }
 
 mojom::blink::SuddenTerminationDisablerType

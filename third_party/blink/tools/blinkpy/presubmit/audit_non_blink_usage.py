@@ -2576,6 +2576,26 @@ _CONFIG = [
         ],
     },
     {
+        'paths': [
+            'third_party/blink/renderer/core/frame/local_frame.h',
+        ],
+        'allowed': [
+            'base::OnceClosureList',
+        ],
+    },
+    {
+        'paths': [
+            'third_party/blink/public/web/web_local_frame.h',
+            'third_party/blink/renderer/core/frame/local_frame.cc',
+            'third_party/blink/renderer/core/frame/local_frame.h',
+            'third_party/blink/renderer/core/frame/web_local_frame_impl.cc',
+            'third_party/blink/renderer/core/frame/web_local_frame_impl.h',
+        ],
+        'allowed': [
+            'base::CallbackListSubscription',
+        ],
+    },
+    {
         'paths': ['third_party/blink/renderer/core/frame/local_frame_view.cc'],
         'allowed': [
             'base::LapTimer',

@@ -46,11 +46,15 @@ specific_include_rules = {
     "+base/run_loop.h",
   ],
   "local_frame\.h": [
+    "+base/callback_list.h",
     "+ui/gfx/image/image_skia.h",
     "+ui/gfx/transform.h"
   ],
   "local_frame\.cc": [
     "+ui/gfx/transform.h"
+  ],
+  "local_frame_test\.cc": [
+    "+base/callback_list.h",
   ],
   "local_frame_ukm_aggregator\.cc": [
     "+base/cpu_reduction_experiment.h",

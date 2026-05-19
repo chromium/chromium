@@ -32,6 +32,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/callback_list.h"
 #include "base/gtest_prod_util.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/time.h"
@@ -398,7 +399,8 @@ class CORE_EXPORT LocalFrame final
 
   void NetworkBecameAlmostIdle(base::TimeDelta almost_idle_start_time);
   void NetworkBecameIdle(base::TimeDelta idle_start_time);
-  void RequestNetworkIdleCallback(base::OnceClosure callback);
+  [[nodiscard]] base::CallbackListSubscription RequestNetworkIdleCallback(
+      base::OnceClosure callback);
 
   // =========================================================================
   // All public functions below this point are candidates to move out of
@@ -1114,7 +1116,7 @@ class CORE_EXPORT LocalFrame final
 
   Member<AdTracker> ad_tracker_;
   Member<IdlenessDetector> idleness_detector_;
-  base::OnceClosure network_idle_callback_;
+  base::OnceClosureList network_idle_callbacks_;
   Member<AttributionSrcLoader> attribution_src_loader_;
   Member<InspectorIssueReporter> inspector_issue_reporter_;
   Member<InspectorTraceEvents> inspector_trace_events_;

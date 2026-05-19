@@ -1262,8 +1262,9 @@ void WebLocalFrameImpl::DeprecatedStopLoading() {
   GetFrame()->Loader().StopAllLoaders(/*abort_client=*/true);
 }
 
-void WebLocalFrameImpl::RequestNetworkIdleCallback(base::OnceClosure callback) {
-  GetFrame()->RequestNetworkIdleCallback(std::move(callback));
+base::CallbackListSubscription WebLocalFrameImpl::RequestNetworkIdleCallback(
+    base::OnceClosure callback) {
+  return GetFrame()->RequestNetworkIdleCallback(std::move(callback));
 }
 
 void WebLocalFrameImpl::PostIdleTask(
