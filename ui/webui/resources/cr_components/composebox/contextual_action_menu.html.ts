@@ -31,7 +31,7 @@ export function getHtml(this: ContextualActionMenuElement) {
         <div class="share-tabs-container">
           <button id="shareTabsTrigger" class="dropdown-item"
               role="menuitem"
-              aria-popup="menu"
+              aria-haspopup="menu"
               aria-expanded="${this.shareTabsFlyoutOpen_}"
               @pointerenter="${this.onShareTabsRowPointerenter_}"
               @pointerleave="${this.onShareTabsRowPointerleave_}"
