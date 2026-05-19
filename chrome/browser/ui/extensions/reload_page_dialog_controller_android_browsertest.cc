@@ -162,3 +162,52 @@ IN_PROC_BROWSER_TEST_F(ReloadPageDialogControllerAndroidBrowserTest,
                                                                GetProfile());
   reload_page_dialog_->TriggerShow(extensions);
 }
+
+IN_PROC_BROWSER_TEST_F(ReloadPageDialogControllerAndroidBrowserTest,
+                       DismissMessageOnDestruction) {
+  content::WebContents* web_contents = GetActiveWebContents();
+  ASSERT_NE(nullptr, web_contents);
+  ASSERT_TRUE(NavigateToURL(web_contents, GURL("about:blank")));
+
+  const extensions::Extension* extension = InstallExtensionAndroid("Extension");
+  ASSERT_NE(nullptr, extension);
+  std::vector<const extensions::Extension*> extensions = {extension};
+
+  using testing::_;
+  messages::MessageDispatcherBridge::SetInstanceForTesting(
+      message_dispatcher_bridge());
+
+  messages::MessageWrapper* captured_message = nullptr;
+  EXPECT_CALL(*message_dispatcher_bridge(),
+              EnqueueMessage(_, _, messages::MessageScopeType::NAVIGATION,
+                             messages::MessagePriority::kNormal))
+      .WillOnce(testing::Invoke(
+          [&captured_message](messages::MessageWrapper* message,
+                              content::WebContents* web_contents,
+                              messages::MessageScopeType scope_type,
+                              messages::MessagePriority priority) {
+            captured_message = message;
+            message->SetMessageEnqueued(
+                web_contents->GetTopLevelNativeWindow()->GetJavaObject());
+            return true;
+          }));
+
+  reload_page_dialog_ =
+      std::make_unique<extensions::ReloadPageDialogController>(web_contents,
+                                                               GetProfile());
+  reload_page_dialog_->TriggerShow(extensions);
+
+  ASSERT_NE(nullptr, captured_message);
+  EXPECT_TRUE(captured_message->is_in_queue());
+
+  EXPECT_CALL(*message_dispatcher_bridge(),
+              DismissMessage(captured_message,
+                             messages::DismissReason::DISMISSED_BY_FEATURE))
+      .WillOnce(testing::Invoke([](messages::MessageWrapper* message,
+                                   messages::DismissReason dismiss_reason) {
+        JNIEnv* env = base::android::AttachCurrentThread();
+        message->HandleDismissCallback(env, static_cast<int>(dismiss_reason));
+      }));
+
+  reload_page_dialog_.reset();
+}
