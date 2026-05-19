@@ -125,3 +125,19 @@ source_set("private_verification_tokens_store_unittest") {
     "//testing/gtest",
   ]
 }
+
+source_set("private_verification_tokens_parameters") {
+  sources = [
+    "private_verification_tokens_parameters.cc",
+    "private_verification_tokens_parameters.h",
+  ]
+}
+
+source_set("private_verification_tokens_parameters_unittest") {
+  testonly = true
+  sources = [ "private_verification_tokens_parameters_unittest.cc" ]
+  deps = [
+    ":private_verification_tokens_parameters",
+    "//testing/gtest",
+  ]
+}
