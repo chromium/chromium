@@ -114,6 +114,7 @@ def BuildCrubit(rust_sysroot, out_dir, skip_checkout):
 
     print(f'Building cc_bindings_from_rs ...')
     cargo_args = ['build', '--release', '--verbose']
+    cargo_args += ['--locked']  # `Cargo.lock` added to Crubit in b/510364826
     cargo_args += ['--bin', 'cc_bindings_from_rs']
     cargo_args += ['--target-dir', target_dir]
     cargo_args += ['--manifest-path', CC_BINDINGS_FROM_RS_CARGO_TOML_PATH]
@@ -135,13 +136,15 @@ def BuildCrubit(rust_sysroot, out_dir, skip_checkout):
                     os.path.join(RUST_TOOLCHAIN_OUT_DIR, 'bin', bin))
 
     print(f'Installing `crubit/support` to {RUST_TOOLCHAIN_OUT_DIR} ...')
-    crubit_support_install_dir = os.path.join(RUST_TOOLCHAIN_OUT_DIR, 'lib',
-                                              'crubit', 'support')
-    os.makedirs(crubit_support_install_dir, exist_ok=True)
-    crubit_support_src_dir = os.path.join(CRUBIT_SRC_DIR, 'support')
-    shutil.copytree(crubit_support_src_dir,
-                    crubit_support_install_dir,
-                    dirs_exist_ok=True)
+    crubit_target_dir = os.path.join(RUST_TOOLCHAIN_OUT_DIR, 'lib', 'crubit')
+    for item in ["BUILD.gn", "crubit.gni", "support"]:
+        source_path = os.path.join(CRUBIT_SRC_DIR, item)
+        target_path = os.path.join(crubit_target_dir, item)
+        os.makedirs(os.path.dirname(target_path), exist_ok=True)
+        if os.path.isdir(source_path):
+            shutil.copytree(source_path, target_path, dirs_exist_ok=True)
+        else:
+            shutil.copy2(source_path, target_path)
 
     return 0
 
