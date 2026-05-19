@@ -31,6 +31,9 @@
 #include "third_party/blink/renderer/core/css/css_container_rule.h"
 #include "third_party/blink/renderer/core/css/css_counter_style_rule.h"
 #include "third_party/blink/renderer/core/css/css_font_palette_values_rule.h"
+#include "third_party/blink/renderer/core/css/css_function_declarations_rule.h"
+#include "third_party/blink/renderer/core/css/css_function_descriptors.h"
+#include "third_party/blink/renderer/core/css/css_function_rule.h"
 #include "third_party/blink/renderer/core/css/css_grouping_rule.h"
 #include "third_party/blink/renderer/core/css/css_import_rule.h"
 #include "third_party/blink/renderer/core/css/css_keyframe_rule.h"
@@ -248,11 +251,40 @@ bool VerifyNestedDeclarations(Document* document, const String& rule_text) {
   }
   // It is not allowed to create a CSSNestedDeclarations rule without
   // any valid properties.
-  // TODO(crbug.com/363985597): List this restriction.
+  // TODO(crbug.com/363985597): Lift this restriction.
   auto is_valid = [](const CSSPropertySourceData& data) {
     return data.parsed_ok && !data.disabled;
   };
   if (!std::ranges::any_of(rule_data.child_rules[1]->property_data, is_valid)) {
+    return false;
+  }
+  return true;
+}
+
+bool VerifyFunctionDeclarations(Document* document, const String& rule_text) {
+  auto* style_sheet = MakeGarbageCollected<StyleSheetContents>(
+      ParserContextForDocument(document));
+  CSSRuleSourceDataList source_data;
+  String text = StrCat({"@function --func() { ", rule_text, " }"});
+  InspectorCSSParserObserver observer(text, document, &source_data);
+  CSSParser::ParseSheetForInspector(ParserContextForDocument(document),
+                                    style_sheet, text, observer);
+
+  unsigned rule_count = source_data.size();
+  if (rule_count != 1 || source_data.at(0)->type != StyleRule::kFunction) {
+    return false;
+  }
+  const CSSRuleSourceData& rule_data = *source_data.front();
+  if (rule_data.child_rules.size() != 1) {
+    return false;
+  }
+  // It is not allowed to create a CSSFunctionDeclarations rule without
+  // any valid properties.
+  // TODO(crbug.com/363985597): Lift this restriction.
+  auto is_valid = [](const CSSPropertySourceData& data) {
+    return data.parsed_ok && !data.disabled;
+  };
+  if (!std::ranges::any_of(rule_data.child_rules[0]->property_data, is_valid)) {
     return false;
   }
   return true;
@@ -565,6 +597,7 @@ void FlattenSourceData(const CSSRuleSourceDataList& data_list,
       case StyleRule::kFontPaletteValues:
       case StyleRule::kFontFeatureValues:
       case StyleRule::kCounterStyle:
+      case StyleRule::kFunctionDeclarations:
         result->push_back(data);
         break;
       case StyleRule::kStyle:
@@ -577,6 +610,7 @@ void FlattenSourceData(const CSSRuleSourceDataList& data_list,
       case StyleRule::kProperty:
       case StyleRule::kStartingStyle:
       case StyleRule::kNavigation:
+      case StyleRule::kFunction:
         result->push_back(data);
         FlattenSourceData(data->child_rules, result);
         break;
@@ -645,6 +679,10 @@ CSSRuleList* AsCSSRuleList(CSSRule* rule) {
     return counter_style_rule->cssRules();
   }
 
+  if (auto* function_rule = DynamicTo<CSSFunctionRule>(rule)) {
+    return function_rule->cssRules();
+  }
+
   return nullptr;
 }
 
@@ -669,6 +707,7 @@ void CollectFlatRules(RuleList rule_list, CSSRuleVector* result) {
       case CSSRule::kFontPaletteValuesRule:
       case CSSRule::kFontFeatureValuesRule:
       case CSSRule::kCounterStyleRule:
+      case CSSRule::kFunctionDeclarationsRule:
         result->push_back(rule);
         break;
       case CSSRule::kStyleRule:
@@ -681,6 +720,7 @@ void CollectFlatRules(RuleList rule_list, CSSRuleVector* result) {
       case CSSRule::kPropertyRule:
       case CSSRule::kStartingStyleRule:
       case CSSRule::kNavigationRule:
+      case CSSRule::kFunctionRule:
         result->push_back(rule);
         CollectFlatRules(AsCSSRuleList(rule), result);
         break;
@@ -1344,9 +1384,14 @@ CSSRule* InspectorStyleSheet::SetStyleText(
     return nullptr;
   }
 
+  CSSRule* rule = RuleForSourceData(source_data);
   if (source_data->type == StyleRule::RuleType::kStyle &&
       source_data->rule_header_range.length() == 0u &&
-      !VerifyNestedDeclarations(page_style_sheet_->OwnerDocument(), text)) {
+      !(IsA<CSSFunctionDeclarationsRule>(rule)
+            ? VerifyFunctionDeclarations(page_style_sheet_->OwnerDocument(),
+                                         text)
+            : VerifyNestedDeclarations(page_style_sheet_->OwnerDocument(),
+                                       text))) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kSyntaxError,
         "Style text would cause rule to disappear");
@@ -1355,12 +1400,12 @@ CSSRule* InspectorStyleSheet::SetStyleText(
     return nullptr;
   }
 
-  CSSRule* rule = RuleForSourceData(source_data);
   if (!rule || !rule->parentStyleSheet() ||
       (!IsA<CSSStyleRule>(rule) && !IsA<CSSKeyframeRule>(rule) &&
        !IsA<CSSPropertyRule>(rule) && !IsA<CSSFontPaletteValuesRule>(rule) &&
        !IsA<CSSPositionTryRule>(rule) && !IsA<CSSFontFeatureValuesRule>(rule) &&
-       !IsA<CSSFontFaceRule>(rule) && !IsA<CSSCounterStyleRule>(rule))) {
+       !IsA<CSSFontFaceRule>(rule) && !IsA<CSSCounterStyleRule>(rule) &&
+       !IsA<CSSFunctionDeclarationsRule>(rule))) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotFoundError,
         "Source range didn't match existing style source range");
@@ -1447,6 +1492,9 @@ CSSRule* InspectorStyleSheet::SetStyleText(
     } else if (auto* counter_style_rule =
                    DynamicTo<CSSCounterStyleRule>(rule)) {
       style = counter_style_rule->MutableStyleForInspector();
+    } else if (auto* function_declarations_rule =
+                   DynamicTo<CSSFunctionDeclarationsRule>(rule)) {
+      style = function_declarations_rule->style();
     } else {
       style = To<CSSKeyframeRule>(rule)->style();
     }

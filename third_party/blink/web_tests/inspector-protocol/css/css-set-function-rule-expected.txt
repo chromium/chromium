@@ -1,0 +1,290 @@
+Test that properties of function rules are editable
+Function:
+{
+    children : [
+        [0] : {
+            style : {
+                cssProperties : [
+                    [0] : {
+                        disabled : false
+                        implicit : false
+                        name : --col
+                        range : {
+                            endColumn : 16
+                            endLine : 6
+                            startColumn : 4
+                            startLine : 6
+                        }
+                        text : --col: gray;
+                        value : gray
+                    }
+                    [1] : {
+                        name : --col
+                        value : gray
+                    }
+                ]
+                cssText : --col: gray;
+                range : {
+                    endColumn : 16
+                    endLine : 6
+                    startColumn : 4
+                    startLine : 6
+                }
+                shorthandEntries : [
+                ]
+                styleSheetId : <string>
+            }
+        }
+        [1] : {
+            condition : {
+                children : [
+                    [0] : {
+                        style : {
+                            cssProperties : [
+                                [0] : {
+                                    disabled : false
+                                    implicit : false
+                                    name : --col
+                                    range : {
+                                        endColumn : 17
+                                        endLine : 8
+                                        startColumn : 6
+                                        startLine : 8
+                                    }
+                                    text : --col: rod;
+                                    value : rod
+                                }
+                                [1] : {
+                                    name : --col
+                                    value : rod
+                                }
+                            ]
+                            cssText : --col: rod;
+                            range : {
+                                endColumn : 17
+                                endLine : 8
+                                startColumn : 6
+                                startLine : 8
+                            }
+                            shorthandEntries : [
+                            ]
+                            styleSheetId : <string>
+                        }
+                    }
+                ]
+                conditionText : (color: rod)
+                supports : {
+                    active : false
+                    range : {
+                        endColumn : 26
+                        endLine : 7
+                        startColumn : 14
+                        startLine : 7
+                    }
+                    styleSheetId : <string>
+                    text : (color: rod)
+                }
+            }
+        }
+        [2] : {
+            style : {
+                cssProperties : [
+                    [0] : {
+                        disabled : false
+                        implicit : false
+                        name : result
+                        range : {
+                            endColumn : 23
+                            endLine : 10
+                            startColumn : 4
+                            startLine : 10
+                        }
+                        text : result: var(--cal);
+                        value : var(--cal)
+                    }
+                    [1] : {
+                        name : result
+                        value : var(--cal)
+                    }
+                ]
+                cssText : result: var(--cal);
+                range : {
+                    endColumn : 23
+                    endLine : 10
+                    startColumn : 4
+                    startLine : 10
+                }
+                shorthandEntries : [
+                ]
+                styleSheetId : <string>
+            }
+        }
+    ]
+    name : {
+        range : {
+            endColumn : 25
+            endLine : 5
+            startColumn : 12
+            startLine : 5
+        }
+        text : --get-color
+    }
+    origin : regular
+    originTreeScopeNodeId : 5
+    parameters : [
+    ]
+    styleSheetId : <string>
+}
+Edit result:
+{
+    id : <number>
+    result : {
+        styles : [
+            [0] : {
+                cssProperties : [
+                    [0] : {
+                        disabled : false
+                        implicit : false
+                        name : --col
+                        range : {
+                            endColumn : 16
+                            endLine : 6
+                            startColumn : 4
+                            startLine : 6
+                        }
+                        text : --col: grey;
+                        value : grey
+                    }
+                    [1] : {
+                        name : --col
+                        value : grey
+                    }
+                ]
+                cssText : --col: grey;
+                range : {
+                    endColumn : 16
+                    endLine : 6
+                    startColumn : 4
+                    startLine : 6
+                }
+                shorthandEntries : [
+                ]
+                styleSheetId : <string>
+            }
+        ]
+    }
+    sessionId : <string>
+}
+Edit result:
+{
+    id : <number>
+    result : {
+        supports : {
+            active : true
+            range : {
+                endColumn : 26
+                endLine : 7
+                startColumn : 14
+                startLine : 7
+            }
+            styleSheetId : <string>
+            text : (color: red)
+        }
+    }
+    sessionId : <string>
+}
+Edit result:
+{
+    id : <number>
+    result : {
+        styles : [
+            [0] : {
+                cssProperties : [
+                    [0] : {
+                        disabled : false
+                        implicit : false
+                        name : --col
+                        range : {
+                            endColumn : 17
+                            endLine : 8
+                            startColumn : 6
+                            startLine : 8
+                        }
+                        text : --col: red;
+                        value : red
+                    }
+                    [1] : {
+                        name : --col
+                        value : red
+                    }
+                ]
+                cssText : --col: red;
+                range : {
+                    endColumn : 17
+                    endLine : 8
+                    startColumn : 6
+                    startLine : 8
+                }
+                shorthandEntries : [
+                ]
+                styleSheetId : <string>
+            }
+        ]
+    }
+    sessionId : <string>
+}
+Edit result:
+{
+    id : <number>
+    result : {
+        styles : [
+            [0] : {
+                cssProperties : [
+                    [0] : {
+                        disabled : false
+                        implicit : false
+                        name : result
+                        range : {
+                            endColumn : 23
+                            endLine : 10
+                            startColumn : 4
+                            startLine : 10
+                        }
+                        text : result: var(--col);
+                        value : var(--col)
+                    }
+                    [1] : {
+                        name : result
+                        value : var(--col)
+                    }
+                ]
+                cssText : result: var(--col);
+                range : {
+                    endColumn : 23
+                    endLine : 10
+                    startColumn : 4
+                    startLine : 10
+                }
+                shorthandEntries : [
+                ]
+                styleSheetId : <string>
+            }
+        ]
+    }
+    sessionId : <string>
+}
+Final style sheet text:
+
+  div {
+    color: --get-color();
+  }
+
+  @function --get-color() {
+    --col: grey;
+    @supports (color: red) {
+      --col: red;
+    }
+    result: var(--col);
+  }
+  
+

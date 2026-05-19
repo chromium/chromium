@@ -682,6 +682,11 @@ class InspectorCSSAgent::ModifyRuleAction final
       return style_sheet_->BuildObjectForStyle(counter_style_rule->Style(),
                                                nullptr);
     }
+    if (auto* function_declarations_rule =
+            DynamicTo<CSSFunctionDeclarationsRule>(rule)) {
+      return style_sheet_->BuildObjectForStyle(
+          function_declarations_rule->style(), nullptr);
+    }
     return nullptr;
   }
 

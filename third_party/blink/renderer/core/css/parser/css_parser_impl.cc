@@ -3405,7 +3405,7 @@ bool CSSParserImpl::ConsumeDeclaration(CSSParserTokenStream& stream,
       (rule_type == StyleRule::kStyle || rule_type == StyleRule::kScope ||
        rule_type == StyleRule::kKeyframe || rule_type == StyleRule::kProperty ||
        rule_type == StyleRule::kPositionTry ||
-       rule_type == StyleRule::kFontFace ||
+       rule_type == StyleRule::kFontFace || rule_type == StyleRule::kFunction ||
        rule_type == StyleRule::kCounterStyle ||
        rule_type == StyleRule::kFontPaletteValues)) {
     if (!id) {

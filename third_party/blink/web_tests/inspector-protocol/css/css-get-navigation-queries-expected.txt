@@ -165,12 +165,33 @@ function rule: {
             style : {
                 cssProperties : [
                     [0] : {
+                        disabled : false
+                        implicit : false
+                        name : --color
+                        range : {
+                            endColumn : 21
+                            endLine : 10
+                            startColumn : 8
+                            startLine : 10
+                        }
+                        text : --color: red;
+                        value : red
+                    }
+                    [1] : {
                         name : --color
                         value : red
                     }
                 ]
+                cssText : --color: red;
+                range : {
+                    endColumn : 21
+                    endLine : 10
+                    startColumn : 8
+                    startLine : 10
+                }
                 shorthandEntries : [
                 ]
+                styleSheetId : <string 0>
             }
         }
         [1] : {
@@ -180,18 +201,45 @@ function rule: {
                         style : {
                             cssProperties : [
                                 [0] : {
+                                    disabled : false
+                                    implicit : false
+                                    name : --color
+                                    range : {
+                                        endColumn : 24
+                                        endLine : 12
+                                        startColumn : 10
+                                        startLine : 12
+                                    }
+                                    text : --color: blue;
+                                    value : blue
+                                }
+                                [1] : {
                                     name : --color
                                     value : blue
                                 }
                             ]
+                            cssText : --color: blue;
+                            range : {
+                                endColumn : 24
+                                endLine : 12
+                                startColumn : 10
+                                startLine : 12
+                            }
                             shorthandEntries : [
                             ]
+                            styleSheetId : <string 0>
                         }
                     }
                 ]
                 conditionText : (at: --this-page)
                 navigation : {
                     active : true
+                    range : {
+                        endColumn : 37
+                        endLine : 11
+                        startColumn : 20
+                        startLine : 11
+                    }
                     styleSheetId : <string 0>
                     text : (at: --this-page)
                 }
@@ -204,18 +252,45 @@ function rule: {
                         style : {
                             cssProperties : [
                                 [0] : {
+                                    disabled : false
+                                    implicit : false
+                                    name : --color
+                                    range : {
+                                        endColumn : 25
+                                        endLine : 15
+                                        startColumn : 10
+                                        startLine : 15
+                                    }
+                                    text : --color: green;
+                                    value : green
+                                }
+                                [1] : {
                                     name : --color
                                     value : green
                                 }
                             ]
+                            cssText : --color: green;
+                            range : {
+                                endColumn : 25
+                                endLine : 15
+                                startColumn : 10
+                                startLine : 15
+                            }
                             shorthandEntries : [
                             ]
+                            styleSheetId : <string 0>
                         }
                     }
                 ]
                 conditionText : (at: --not-this-page)
                 navigation : {
                     active : false
+                    range : {
+                        endColumn : 41
+                        endLine : 14
+                        startColumn : 20
+                        startLine : 14
+                    }
                     styleSheetId : <string 0>
                     text : (at: --not-this-page)
                 }
@@ -225,16 +300,43 @@ function rule: {
             style : {
                 cssProperties : [
                     [0] : {
+                        disabled : false
+                        implicit : false
+                        name : result
+                        range : {
+                            endColumn : 29
+                            endLine : 17
+                            startColumn : 8
+                            startLine : 17
+                        }
+                        text : result: var(--color);
+                        value : var(--color)
+                    }
+                    [1] : {
                         name : result
                         value : var(--color)
                     }
                 ]
+                cssText : result: var(--color);
+                range : {
+                    endColumn : 29
+                    endLine : 17
+                    startColumn : 8
+                    startLine : 17
+                }
                 shorthandEntries : [
                 ]
+                styleSheetId : <string 0>
             }
         }
     ]
     name : {
+        range : {
+            endColumn : 29
+            endLine : 9
+            startColumn : 16
+            startLine : 9
+        }
         text : --get-color
     }
     origin : regular

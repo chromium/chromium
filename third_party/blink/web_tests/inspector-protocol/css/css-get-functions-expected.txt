@@ -6,12 +6,33 @@ function rule: {
             style : {
                 cssProperties : [
                     [0] : {
+                        disabled : false
+                        implicit : false
+                        name : --y
+                        range : {
+                            endColumn : 20
+                            endLine : 2
+                            startColumn : 6
+                            startLine : 2
+                        }
+                        text : --y: var(--x);
+                        value : var(--x)
+                    }
+                    [1] : {
                         name : --y
                         value : var(--x)
                     }
                 ]
+                cssText : --y: var(--x);
+                range : {
+                    endColumn : 20
+                    endLine : 2
+                    startColumn : 6
+                    startLine : 2
+                }
                 shorthandEntries : [
                 ]
+                styleSheetId : <string 0>
             }
         }
         [1] : {
@@ -24,12 +45,33 @@ function rule: {
                                     style : {
                                         cssProperties : [
                                             [0] : {
+                                                disabled : false
+                                                implicit : false
+                                                name : --y
+                                                range : {
+                                                    endColumn : 21
+                                                    endLine : 5
+                                                    startColumn : 10
+                                                    startLine : 5
+                                                }
+                                                text : --y: green;
+                                                value : green
+                                            }
+                                            [1] : {
                                                 name : --y
                                                 value : green
                                             }
                                         ]
+                                        cssText : --y: green;
+                                        range : {
+                                            endColumn : 21
+                                            endLine : 5
+                                            startColumn : 10
+                                            startLine : 5
+                                        }
                                         shorthandEntries : [
                                         ]
+                                        styleSheetId : <string 0>
                                     }
                                 }
                             ]
@@ -48,9 +90,15 @@ function rule: {
                                         ]
                                     }
                                 ]
+                                range : {
+                                    endColumn : 30
+                                    endLine : 4
+                                    startColumn : 15
+                                    startLine : 4
+                                }
                                 source : mediaRule
-                                sourceURL : <string 0>
-                                styleSheetId : <string 1>
+                                sourceURL : <string 1>
+                                styleSheetId : <string 0>
                                 text : (width > 300px)
                             }
                         }
@@ -59,7 +107,13 @@ function rule: {
                 conditionText : (color: green)
                 supports : {
                     active : true
-                    styleSheetId : <string 1>
+                    range : {
+                        endColumn : 30
+                        endLine : 3
+                        startColumn : 16
+                        startLine : 3
+                    }
+                    styleSheetId : <string 0>
                     text : (color: green)
                 }
             }
@@ -68,16 +122,43 @@ function rule: {
             style : {
                 cssProperties : [
                     [0] : {
+                        disabled : false
+                        implicit : false
+                        name : result
+                        range : {
+                            endColumn : 23
+                            endLine : 8
+                            startColumn : 6
+                            startLine : 8
+                        }
+                        text : result: var(--y);
+                        value : var(--y)
+                    }
+                    [1] : {
                         name : result
                         value : var(--y)
                     }
                 ]
+                cssText : result: var(--y);
+                range : {
+                    endColumn : 23
+                    endLine : 8
+                    startColumn : 6
+                    startLine : 8
+                }
                 shorthandEntries : [
                 ]
+                styleSheetId : <string 0>
             }
         }
     ]
     name : {
+        range : {
+            endColumn : 22
+            endLine : 1
+            startColumn : 14
+            startLine : 1
+        }
         text : --f
     }
     origin : regular
@@ -88,7 +169,7 @@ function rule: {
             type : *
         }
     ]
-    styleSheetId : <string 1>
+    styleSheetId : <string 0>
 }
 Functions for #test2
 function rule: {
@@ -97,16 +178,43 @@ function rule: {
             style : {
                 cssProperties : [
                     [0] : {
+                        disabled : false
+                        implicit : false
+                        name : result
+                        range : {
+                            endColumn : 28
+                            endLine : 2
+                            startColumn : 8
+                            startLine : 2
+                        }
+                        text : result: var(--used);
+                        value : var(--used)
+                    }
+                    [1] : {
                         name : result
                         value : var(--used)
                     }
                 ]
+                cssText : result: var(--used);
+                range : {
+                    endColumn : 28
+                    endLine : 2
+                    startColumn : 8
+                    startLine : 2
+                }
                 shorthandEntries : [
                 ]
+                styleSheetId : <string 3>
             }
         }
     ]
     name : {
+        range : {
+            endColumn : 39
+            endLine : 1
+            startColumn : 16
+            startLine : 1
+        }
         text : --f2
     }
     origin : regular
@@ -130,16 +238,43 @@ function rule: {
             style : {
                 cssProperties : [
                     [0] : {
+                        disabled : false
+                        implicit : false
+                        name : result
+                        range : {
+                            endColumn : 23
+                            endLine : 14
+                            startColumn : 6
+                            startLine : 14
+                        }
+                        text : result: var(--x);
+                        value : var(--x)
+                    }
+                    [1] : {
                         name : result
                         value : var(--x)
                     }
                 ]
+                cssText : result: var(--x);
+                range : {
+                    endColumn : 23
+                    endLine : 14
+                    startColumn : 6
+                    startLine : 14
+                }
                 shorthandEntries : [
                 ]
+                styleSheetId : <string 0>
             }
         }
     ]
     name : {
+        range : {
+            endColumn : 26
+            endLine : 13
+            startColumn : 14
+            startLine : 13
+        }
         text : --inner
     }
     origin : regular
@@ -150,7 +285,7 @@ function rule: {
             type : *
         }
     ]
-    styleSheetId : <string 1>
+    styleSheetId : <string 0>
 }
 function rule: {
     children : [
@@ -158,12 +293,33 @@ function rule: {
             style : {
                 cssProperties : [
                     [0] : {
+                        disabled : false
+                        implicit : false
+                        name : result
+                        range : {
+                            endColumn : 21
+                            endLine : 17
+                            startColumn : 6
+                            startLine : 17
+                        }
+                        text : result: orange;
+                        value : orange
+                    }
+                    [1] : {
                         name : result
                         value : orange
                     }
                 ]
+                cssText : result: orange;
+                range : {
+                    endColumn : 21
+                    endLine : 17
+                    startColumn : 6
+                    startLine : 17
+                }
                 shorthandEntries : [
                 ]
+                styleSheetId : <string 0>
             }
         }
         [1] : {
@@ -173,12 +329,33 @@ function rule: {
                         style : {
                             cssProperties : [
                                 [0] : {
+                                    disabled : false
+                                    implicit : false
+                                    name : result
+                                    range : {
+                                        endColumn : 34
+                                        endLine : 19
+                                        startColumn : 8
+                                        startLine : 19
+                                    }
+                                    text : result: --inner(var(--x));
+                                    value : --inner(var(--x))
+                                }
+                                [1] : {
                                     name : result
                                     value : --inner(var(--x))
                                 }
                             ]
+                            cssText : result: --inner(var(--x));
+                            range : {
+                                endColumn : 34
+                                endLine : 19
+                                startColumn : 8
+                                startLine : 19
+                            }
                             shorthandEntries : [
                             ]
+                            styleSheetId : <string 0>
                         }
                     }
                 ]
@@ -186,13 +363,25 @@ function rule: {
                 containerQueries : {
                     conditionText : (width > 300px)
                     physicalAxes : Horizontal
-                    styleSheetId : <string 1>
+                    range : {
+                        endColumn : 32
+                        endLine : 18
+                        startColumn : 17
+                        startLine : 18
+                    }
+                    styleSheetId : <string 0>
                     text : (width > 300px)
                 }
             }
         }
     ]
     name : {
+        range : {
+            endColumn : 26
+            endLine : 16
+            startColumn : 14
+            startLine : 16
+        }
         text : --outer
     }
     origin : regular
@@ -203,6 +392,6 @@ function rule: {
             type : *
         }
     ]
-    styleSheetId : <string 1>
+    styleSheetId : <string 0>
 }
 
