@@ -17,6 +17,15 @@
   flex-wrap: nowrap;
 }
 
+#contextEntrypoint {
+  padding-inline-start:
+      var(--contextual-entrypoint-and-carousel-context-entrypoint-padding-inline-start,
+          8px);
+  padding-inline-end:
+      var(--contextual-entrypoint-and-carousel-context-entrypoint-padding-inline-end,
+          8px);
+}
+
 .context-menu-container > * {
   flex-shrink: 0;
 }
