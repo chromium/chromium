@@ -67,8 +67,8 @@ class DownloadTestHelper {
                     mDownloadManagerServiceObserver = new TestDownloadManagerServiceObserver();
                     DownloadManagerService.getDownloadManagerService()
                             .addDownloadObserver(mDownloadManagerServiceObserver);
-                    OfflineContentAggregatorFactory.get()
-                            .addObserver(new TestDownloadBackendObserver());
+                    mDownloadBackendObserver = new TestDownloadBackendObserver();
+                    OfflineContentAggregatorFactory.get().addObserver(mDownloadBackendObserver);
                 });
     }
 
@@ -78,6 +78,7 @@ class DownloadTestHelper {
                 () -> {
                     DownloadManagerService.getDownloadManagerService()
                             .removeDownloadObserver(mDownloadManagerServiceObserver);
+                    OfflineContentAggregatorFactory.get().removeObserver(mDownloadBackendObserver);
                 });
     }
 
@@ -199,6 +200,7 @@ class DownloadTestHelper {
     private String mLastDownloadFilePath;
     private CallbackHelper mHttpDownloadFinished = new CallbackHelper();
     private TestDownloadManagerServiceObserver mDownloadManagerServiceObserver;
+    private TestDownloadBackendObserver mDownloadBackendObserver;
 
     int getChromeDownloadCallCount() {
         return mHttpDownloadFinished.getCallCount();
