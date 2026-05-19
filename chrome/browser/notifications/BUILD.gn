@@ -350,6 +350,7 @@ source_set("impl") {
     ]
 
     deps += [
+      "//chrome/browser:fullscreen",
       "//chrome/browser/extensions",
       "//chrome/browser/themes",
     ]

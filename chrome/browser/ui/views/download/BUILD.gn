@@ -70,6 +70,7 @@ source_set("download") {
     deps += [
       "//chrome/app:command_ids",
       "//chrome/browser:browser_process",
+      "//chrome/browser:icon_manager",
       "//chrome/browser:primitives",
       "//chrome/browser/download/bubble",
       "//chrome/browser/picture_in_picture",

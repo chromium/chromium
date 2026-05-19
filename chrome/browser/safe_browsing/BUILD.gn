@@ -305,6 +305,8 @@ static_library("safe_browsing") {
       "//chrome/browser/permissions:permissions_proto",
       "//chrome/browser/profiles",
       "//chrome/browser/profiles:profile",
+    ]
+    deps += [
       "//chrome/browser/search_engines",
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/safety_hub",

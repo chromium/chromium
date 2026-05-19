@@ -45,6 +45,7 @@ static_library("browser_test_support") {
     "//base",
     "//chrome/browser",
     "//chrome/browser:browser_process",
+    "//chrome/browser:chrome_browser_main",
     "//chrome/browser/ash/crostini",
     "//chrome/browser/ash/crostini:browser_test_support",
     "//chrome/browser/ash/crostini:test_support",

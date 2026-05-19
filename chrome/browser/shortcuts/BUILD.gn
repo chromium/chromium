@@ -84,6 +84,7 @@ source_set("shortcuts") {
       "shortcut_creator_linux.cc",
       "shortcut_creator_linux.h",
     ]
+    deps += [ "//chrome/browser:shell_integration_linux" ]
   }
 }
 
@@ -113,14 +114,21 @@ source_set("test_support") {
       "fake_linux_xdg_wrapper.cc",
       "shortcut_creation_test_support_linux.cc",
     ]
-    deps += [ "//chrome/browser" ]
+    deps += [
+      "//chrome/browser",
+      "//chrome/browser:chrome_browser_main",
+      "//chrome/browser:shell_integration_linux",
+    ]
   }
   if (is_mac) {
     sources += [ "shortcut_creation_test_support_mac.mm" ]
   }
   if (is_win) {
     sources += [ "shortcut_creation_test_support_win.cc" ]
-    deps += [ "//chrome/browser" ]
+    deps += [
+      "//chrome/browser",
+      "//chrome/browser:chrome_browser_main",
+    ]
   }
 }
 

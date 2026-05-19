@@ -169,6 +169,7 @@ source_set("impl") {
       "ssl_client_auth_observer.cc",
     ]
     deps += [
+      "//chrome/browser:certificate_viewer",
       "//chrome/browser/extensions",
       "//chrome/browser/ui/tabs:tab_strip",
       "//chrome/browser/ui/web_applications",

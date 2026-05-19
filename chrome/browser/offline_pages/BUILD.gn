@@ -70,6 +70,7 @@ source_set("impl") {
   public_deps = [ ":offline_pages" ]
   deps = [
     "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser:renderer_preferences_util",
     "//chrome/browser/content_settings",
     "//chrome/browser/content_settings:content_settings_factory",
     "//chrome/browser/net",

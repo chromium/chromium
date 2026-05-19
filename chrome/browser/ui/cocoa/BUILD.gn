@@ -130,9 +130,12 @@ source_set("cocoa") {
   deps += [
     "//chrome/app:command_ids",
     "//chrome/app/theme:chrome_unscaled_resources_grit",
+    "//chrome/browser:app_controller_mac",
     "//chrome/browser:browser_features",
     "//chrome/browser:browser_process",
+    "//chrome/browser:chrome_browser_application_mac",
     "//chrome/browser:command_updater_impl",
+    "//chrome/browser:global_keyboard_shortcuts_mac",
     "//chrome/browser:primitives",
     "//chrome/browser/apps/platform_apps",
     "//chrome/browser/bookmarks",

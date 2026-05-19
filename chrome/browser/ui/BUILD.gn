@@ -318,6 +318,9 @@ static_library("ui") {
     "//chrome/browser:flags",
     "//chrome/browser:font_pref",
     "//chrome/browser:global_features",
+    "//chrome/browser:icon_manager",
+    "//chrome/browser:renderer_preferences_util",
+    "//chrome/browser:resources_util",
     "//chrome/browser/affiliations",
     "//chrome/browser/ai",
     "//chrome/browser/autocomplete",
@@ -1004,6 +1007,10 @@ static_library("ui") {
 
   if (!is_android) {
     deps += [
+      "//chrome/browser:certificate_viewer",
+      "//chrome/browser:intent_chip_display_prefs",
+      "//chrome/browser:repost_form_warning_controller",
+      "//chrome/browser:zero_suggest_prefetch_tab_helper",
       "//chrome/browser/accessibility/phrase_segmentation",
       "//chrome/browser/profile_resetter",
       "//chrome/browser/ui/views/drive_picker_host",
@@ -3349,6 +3356,9 @@ static_library("ui") {
     ]
 
     deps += [
+      "//chrome/browser:app_controller_mac",
+      "//chrome/browser:chrome_browser_application_mac",
+      "//chrome/browser:global_keyboard_shortcuts_mac",
       "//chrome/browser/apps/app_shim",
       "//chrome/browser/enterprise/connectors/device_trust/key_management/core/mac",
       "//chrome/browser/mac",
@@ -3457,6 +3467,7 @@ static_library("ui") {
     allow_circular_includes_from += [ "//chrome/browser/win:impl" ]
 
     deps += [
+      "//chrome/browser:font_prewarmer_tab_helper",
       "//chrome/browser:titlebar_config",
       "//chrome/browser/taskbar",
       "//chrome/browser/win:impl",
@@ -3526,6 +3537,7 @@ static_library("ui") {
     public_deps += [ "//ui/base/mojom:ui_base_types" ]
 
     deps += [
+      "//chrome/browser:shell_integration_linux",
       "//ui/base:wm_role_names",
       "//ui/base/ime",
       "//ui/events:dom_keycode_converter",

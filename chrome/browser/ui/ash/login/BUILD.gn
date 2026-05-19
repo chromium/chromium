@@ -95,6 +95,7 @@ static_library("login") {
     "//chrome/browser:browser_process_platform_part",
     "//chrome/browser:browser_public_dependencies",
     "//chrome/browser:global_features",
+    "//chrome/browser:renderer_preferences_util",
     "//chrome/browser:resources",
     "//chrome/browser/ash/accessibility",
     "//chrome/browser/ash/app_mode",
