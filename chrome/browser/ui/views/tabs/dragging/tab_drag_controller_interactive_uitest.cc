@@ -6569,6 +6569,11 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
 #endif
 IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
                        MAYBE_SelectTabDuringDragAndDetach) {
+  if (base::FeatureList::IsEnabled(features::kInitialWebUI)) {
+    GTEST_SKIP() << "Test crashes on Win with InitialWebUI enabled. "
+                    "See crbug.com/477426026.";
+  }
+
   TabStripModel* model = browser()->tab_strip_model();
   TabStrip* tab_strip = GetTabStripForBrowser(browser());
 
