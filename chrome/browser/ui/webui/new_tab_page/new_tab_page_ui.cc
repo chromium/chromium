@@ -769,8 +769,6 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(
 
   source->AddBoolean("composeboxSmartComposeEnabled",
                      ntp_composebox::kShowSmartCompose.Get());
-  source->AddBoolean("composeboxShowDeepSearchButton",
-                     ntp_composebox::IsDeepSearchEnabled(profile));
   source->AddBoolean("composeboxShowCreateImageButton",
                      ntp_composebox::IsCreateImagesEnabled(profile));
 

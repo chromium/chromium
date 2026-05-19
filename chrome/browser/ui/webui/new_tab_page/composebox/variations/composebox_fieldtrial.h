@@ -57,8 +57,6 @@ extern const base::FeatureParam<bool> kUseNtpComposeboxFork;
 
 bool IsNtpComposeboxEnabled(Profile* profile);
 
-bool IsDeepSearchEnabled(Profile* profile);
-
 bool IsCreateImagesEnabled(Profile* profile);
 
 // Helper to create a QueryControllerConfigParams object from the feature

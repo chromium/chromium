@@ -160,21 +160,6 @@ bool IsNtpComposeboxEnabled(Profile* profile) {
 #endif
 }
 
-bool IsDeepSearchEnabled(Profile* profile) {
-  if (!profile) {
-    return false;
-  }
-
-  if (!IsNtpComposeboxEnabled(profile)) {
-    return false;
-  }
-
-  AimEligibilityService* aim_eligibility_service =
-      AimEligibilityServiceFactory::GetForProfile(profile);
-  return aim_eligibility_service &&
-         aim_eligibility_service->IsDeepSearchEligible();
-}
-
 bool IsCreateImagesEnabled(Profile* profile) {
   if (!profile) {
     return false;
