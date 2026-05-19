@@ -32,6 +32,7 @@ source_set("test_cpp_api_from_rust") {
     ":rust_lib_bindings",
     "//base",
     "//build/rust/crubit:rs_std",
+    "//build/rust/std:std_bindings",
     "//testing/gmock",
     "//testing/gtest",
   ]
