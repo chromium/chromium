@@ -360,9 +360,6 @@ BASE_FEATURE(kIPHAutoDarkUserEducationMessageFeature,
 BASE_FEATURE(kIPHAutoDarkUserEducationMessageOptInFeature,
              "IPH_AutoDarkUserEducationMessageOptIn",
              base::FEATURE_ENABLED_BY_DEFAULT);
-BASE_FEATURE(kIPHBookmarksBarFeature,
-             "IPH_BookmarksBar",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kIPHCCTHistory,
              "IPH_CCTHistory",
              base::FEATURE_ENABLED_BY_DEFAULT);

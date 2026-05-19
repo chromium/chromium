@@ -222,9 +222,6 @@ public final class EventConstants {
 
     public static final String RESTORE_TABS_PROMO_USED = "restore_tabs_promo_used";
 
-    /** Appearance in Settings was opened by the user. */
-    public static final String SETTINGS_APPEARANCE_OPENED = "settings_appearance_opened";
-
     /** Screenshot events */
     public static final String SHARE_SCREENSHOT_SELECTED = "share_screenshot_clicked";
 

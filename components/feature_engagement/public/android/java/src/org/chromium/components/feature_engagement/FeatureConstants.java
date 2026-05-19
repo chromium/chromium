@@ -33,7 +33,6 @@ import java.lang.annotation.RetentionPolicy;
     FeatureConstants.AUTO_DARK_OPT_OUT_FEATURE,
     FeatureConstants.AUTO_DARK_USER_EDUCATION_MESSAGE_FEATURE,
     FeatureConstants.AUTO_DARK_USER_EDUCATION_MESSAGE_OPT_IN_FEATURE,
-    FeatureConstants.BOOKMARKS_BAR_FEATURE,
     FeatureConstants.BOTTOM_TOOLBAR_FEATURE,
     FeatureConstants.CCT_HISTORY_FEATURE,
     FeatureConstants.CCT_MINIMIZED_FEATURE,
@@ -184,8 +183,6 @@ public @interface FeatureConstants {
 
     String AUTO_DARK_USER_EDUCATION_MESSAGE_OPT_IN_FEATURE =
             "IPH_AutoDarkUserEducationMessageOptIn";
-
-    String BOOKMARKS_BAR_FEATURE = "IPH_BookmarksBar";
 
     String BOTTOM_TOOLBAR_FEATURE = "IPH_BottomToolbarTip";
 

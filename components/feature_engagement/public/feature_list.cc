@@ -37,7 +37,6 @@ const base::Feature* const kAllFeatures[] = {
     &kIPHAutoDarkOptOutFeature,
     &kIPHAutoDarkUserEducationMessageFeature,
     &kIPHAutoDarkUserEducationMessageOptInFeature,
-    &kIPHBookmarksBarFeature,
     &kIPHCCTHistory,
     &kIPHCCTMinimized,
     &kIPHChromeHomeExpandFeature,

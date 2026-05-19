@@ -279,7 +279,8 @@ should be able to be added at any place in this file.
       summary="For BadgedTranslateManualTrigger feature."/>
   <variant name="_BatterySaverMode" summary="For BatterySaverMode feature."/>
   <variant name="_Bookmark" summary="For Bookmark feature."/>
-  <variant name="_BookmarksBar" summary="For Bookmarks Bar feature."/>
+  <variant name="_BookmarksBar"
+      summary="For Bookmarks Bar feature. (obsolete)"/>
   <variant name="_BottomToolbarTip" summary="For BottomToolbarTip feature."/>
   <variant name="_CCTHistory" summary="For CCT History feature."/>
   <variant name="_CCTMinimized" summary="For Minimized CCT feature."/>
