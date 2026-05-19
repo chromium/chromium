@@ -4,11 +4,14 @@
 
 package org.chromium.chrome.browser.omnibox.fusebox;
 
+import static com.google.common.truth.Truth.assertThat;
+
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNotNull;
 import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -38,6 +41,7 @@ import org.chromium.base.task.AsyncTask;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.RobolectricUtil;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.device.DeviceConditions;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxAttachmentRecyclerViewAdapter.FuseboxAttachmentType;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxMetrics.FuseboxAttachmentButtonType;
 
@@ -60,6 +64,18 @@ public class FuseboxAttachmentDetailsFetcherUnitTest {
     @Before
     public void setUp() {
         mContext = ApplicationProvider.getApplicationContext();
+        setActiveNetworkMetered(false);
+    }
+
+    private void setActiveNetworkMetered(boolean isMetered) {
+        DeviceConditions.setForTesting(
+                new DeviceConditions(
+                        /* powerConnected= */ true,
+                        /* batteryPercentage= */ 100,
+                        /* netConnectionType= */ 0,
+                        /* powerSaveOn= */ false,
+                        isMetered,
+                        /* screenOnAndUnlocked= */ true));
     }
 
     @Test
@@ -255,5 +271,85 @@ public class FuseboxAttachmentDetailsFetcherUnitTest {
         RobolectricUtil.runAllBackgroundAndUi();
 
         verify(mCallback).onResult(null);
+    }
+
+    @Test
+    public void testFetchAttachmentDetails_fileTooLargeOnMeteredNetwork()
+            throws FileNotFoundException {
+        setActiveNetworkMetered(true);
+
+        Uri attachmentUri = Uri.parse("content://media/external/1");
+        String attachmentTitle = "large_file.txt";
+        String attachmentMimeType = "text/plain";
+
+        when(mContentResolver.getType(attachmentUri)).thenReturn(attachmentMimeType);
+
+        MatrixCursor cursor =
+                new MatrixCursor(new String[] {OpenableColumns.DISPLAY_NAME, OpenableColumns.SIZE});
+        cursor.addRow(
+                new Object[] {
+                    attachmentTitle,
+                    FuseboxAttachmentDetailsFetcher.MAX_ATTACHMENT_SIZE_BYTES_ON_METERED_NETWORK + 1
+                });
+        when(mContentResolver.query(eq(attachmentUri), isNull(), isNull(), isNull(), isNull()))
+                .thenReturn(cursor);
+
+        FuseboxAttachmentDetailsFetcher fetcher =
+                new FuseboxAttachmentDetailsFetcher(
+                        mContext,
+                        mContentResolver,
+                        attachmentUri,
+                        mCallback,
+                        FuseboxAttachmentButtonType.FILES);
+
+        fetcher.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        verify(mCallback).onResult(null);
+    }
+
+    @Test
+    public void testFetchAttachmentDetails_maxSizeAllowedOnUnmeteredNetwork()
+            throws FileNotFoundException {
+        setActiveNetworkMetered(false);
+
+        Uri attachmentUri = Uri.parse("content://media/external/1");
+        byte[] attachmentData = new byte[] {1, 2, 3};
+        String attachmentTitle = "large_file.txt";
+        String attachmentMimeType = "text/plain";
+
+        when(mContentResolver.getType(attachmentUri)).thenReturn(attachmentMimeType);
+        when(mContentResolver.openInputStream(attachmentUri))
+                .thenReturn(new ByteArrayInputStream(attachmentData));
+
+        MatrixCursor cursor =
+                new MatrixCursor(new String[] {OpenableColumns.DISPLAY_NAME, OpenableColumns.SIZE});
+        cursor.addRow(
+                new Object[] {
+                    attachmentTitle, FuseboxAttachmentDetailsFetcher.MAX_ATTACHMENT_SIZE_BYTES
+                });
+        when(mContentResolver.query(eq(attachmentUri), isNull(), isNull(), isNull(), isNull()))
+                .thenReturn(cursor);
+
+        FuseboxAttachmentDetailsFetcher fetcher =
+                new FuseboxAttachmentDetailsFetcher(
+                        mContext,
+                        mContentResolver,
+                        attachmentUri,
+                        mCallback,
+                        FuseboxAttachmentButtonType.FILES);
+
+        fetcher.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        verify(mCallback).onResult(isNotNull());
+    }
+
+    @Test
+    public void testRegularLimitAtLeastAsLargeAsMeteredLimit() {
+        assertThat(FuseboxAttachmentDetailsFetcher.MAX_ATTACHMENT_SIZE_BYTES)
+                .isAtLeast(
+                        FuseboxAttachmentDetailsFetcher
+                                .MAX_ATTACHMENT_SIZE_BYTES_ON_METERED_NETWORK);
     }
 }

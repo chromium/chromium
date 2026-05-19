@@ -22,6 +22,7 @@ import org.chromium.base.FileUtils;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.device.DeviceConditions;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxMetrics.FuseboxAttachmentButtonType;
 import org.chromium.ui.base.MimeTypeUtils;
 
@@ -42,6 +43,9 @@ class FuseboxAttachmentDetailsFetcher extends AsyncTask<Boolean> {
 
     @VisibleForTesting
     static final long MAX_ATTACHMENT_SIZE_BYTES = 100 * 1000 * 1000L; /* 100 MB */
+
+    @VisibleForTesting
+    static final long MAX_ATTACHMENT_SIZE_BYTES_ON_METERED_NETWORK = 20 * 1000 * 1000L; /* 20 MB */
 
     private final Context mContext;
     private final ContentResolver mContentResolver;
@@ -116,9 +120,14 @@ class FuseboxAttachmentDetailsFetcher extends AsyncTask<Boolean> {
         assert !TextUtils.isEmpty(mimeType);
         if (title == null || mimeType == null) return false;
 
+        long maxSize =
+                DeviceConditions.isCurrentActiveNetworkMetered(mContext)
+                        ? MAX_ATTACHMENT_SIZE_BYTES_ON_METERED_NETWORK
+                        : MAX_ATTACHMENT_SIZE_BYTES;
+
         /* Only exempt images from size limits, as they should be downscaled */
         if (MimeTypeUtils.getTypeFromMimeType(mimeType) != MimeTypeUtils.Type.IMAGE
-                && (size == null || size > MAX_ATTACHMENT_SIZE_BYTES)) return false;
+                && (size == null || size > maxSize)) return false;
 
         byte[] data;
 
