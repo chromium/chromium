@@ -27,6 +27,7 @@ from devil.android.sdk import version_codes
 from devil.android import logcat_monitor
 from devil.android.tools import system_app
 from devil.android.tools import webview_app
+from devil.android import device_utils
 from devil.utils import reraiser_thread
 from incremental_install import installer
 from lib.proto import exception_recorder
@@ -633,6 +634,24 @@ class LocalDeviceInstrumentationTestRun(
         if '--webview-verbose-logging' not in webview_flags:
           webview_flags.append('--webview-verbose-logging')
 
+        # Treat as desktop if the flag is present.
+        is_desktop = dev.is_desktop or any('--force-desktop-android' in f
+                                           for f in flags)
+
+        if is_desktop:
+          logging.info('Disabling Gboard for desktop environment')
+          dev.SetAppEnabled(device_utils.GBOARD_PKG, False)
+        elif dev.build_version_sdk >= version_codes.BAKLAVA:
+          logging.info(
+              'Enabling Gboard and setting preferences for non-desktop Baklava+'
+          )
+          dev.SetAppEnabled(device_utils.GBOARD_PKG, True)
+          with dev.GboardPreferences() as gboard_prefs:
+            # Disable the stylus.
+            gboard_prefs.SetBoolean('enable_scribe', False)
+            # Always show the soft keyboard.
+            gboard_prefs.SetBoolean('pk_always_show_vk', True)
+
         def _get_variations_seed_path_arg(seed_path):
           seed_path_components = device_dependencies.DevicePathComponentsFor(
               seed_path)
@@ -771,8 +790,9 @@ class LocalDeviceInstrumentationTestRun(
     if dev.build_version_sdk < version_codes.TIRAMISU:
       return
 
-    browser_activity_names = self._test_instance.test_apk.GetActivityNamesWithCategory(
-        'android.intent.category.APP_BROWSER')
+    browser_activity_names = (
+        self._test_instance.test_apk.GetActivityNamesWithCategory(
+            'android.intent.category.APP_BROWSER'))
     if browser_activity_names:
       # By default, the add-role-holder command targets the system user
       # (User 0).
@@ -805,8 +825,9 @@ class LocalDeviceInstrumentationTestRun(
     if dev.build_version_sdk < version_codes.TIRAMISU:
       return
 
-    browser_activity_names = self._test_instance.test_apk.GetActivityNamesWithCategory(
-        'android.intent.category.APP_BROWSER')
+    browser_activity_names = (
+        self._test_instance.test_apk.GetActivityNamesWithCategory(
+            'android.intent.category.APP_BROWSER'))
     if browser_activity_names:
       user_id = dev.GetCurrentUser()
       dev.RunShellCommand([

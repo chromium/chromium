@@ -1369,12 +1369,14 @@ def _EnsureSystemSettings(device):
   # There is a change in soft keyboard behavior since Android 16.
   # See https://crbug.com/443782461 for more details.
   if device.build_version_sdk >= version_codes.BAKLAVA:
-    logging.info('Update Gboard preferences.')
-    with device.GboardPreferences() as gboard_prefs:
-      # Disable the stylus.
-      gboard_prefs.SetBoolean('enable_scribe', False)
-      # Always show the soft keyboards.
-      gboard_prefs.SetBoolean('pk_always_show_vk', True)
+    # On desktop, we do not want to force the soft keyboard.
+    if not device.is_desktop:
+      logging.info('Update Gboard preferences.')
+      with device.GboardPreferences() as gboard_prefs:
+        # Disable the stylus.
+        gboard_prefs.SetBoolean('enable_scribe', False)
+        # Always show the soft keyboards.
+        gboard_prefs.SetBoolean('pk_always_show_vk', True)
 
 
 def _EnableNetwork(device):

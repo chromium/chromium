@@ -10,6 +10,7 @@ import android.os.Build;
 import android.provider.Settings;
 import android.view.View;
 
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.test.transit.ConditionStatusWithResult;
 import org.chromium.base.test.transit.ConditionWithResult;
 import org.chromium.base.ui.KeyboardUtils;
@@ -66,28 +67,34 @@ public class SoftKeyboardCondition extends ConditionWithResult<Boolean> {
             mShouldSoftKeyboardShow = true;
             mShouldSoftKeyboardShowReason = "no hard keyboard";
             return;
-        } else {
-            mShouldSoftKeyboardShowReason = "hard keyboard connected";
         }
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.BAKLAVA) {
-            // In Android 16+, |show_ime_with_hard_keyboard| does not exist anymore. Whether the
-            // soft keyboard shows up depends on gboard settings which we cannot access, therefore
-            // we need to assume.
-            //
-            // In both devices and emulators, we force the soft keyboard to show up by
-            // changing Gboard settings.
-            mShouldSoftKeyboardShow = true;
-            mShouldSoftKeyboardShowReason += " and soft keyboard was forced to show";
+        mShouldSoftKeyboardShowReason = "hard keyboard connected";
+
+        // In desktop environments, we do not expect the soft keyboard to show up.
+        if (DeviceInfo.isDesktop()) {
+            mShouldSoftKeyboardShow = false;
+            mShouldSoftKeyboardShowReason += " and is desktop";
         } else {
-            // In Android 15-, |show_ime_with_hard_keyboard| determines whether the soft
-            // keyboard shows up when there is a hardware keyboard connected.
-            int showImeWithHardKeyboard =
-                    Settings.Secure.getInt(
-                            context.getContentResolver(), "show_ime_with_hard_keyboard", 0);
-            mShouldSoftKeyboardShow = showImeWithHardKeyboard != 0;
-            mShouldSoftKeyboardShowReason +=
-                    " and show_ime_with_hard_keyboard is " + showImeWithHardKeyboard;
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.BAKLAVA) {
+                // In Android 16+, |show_ime_with_hard_keyboard| does not exist anymore. Whether
+                // the soft keyboard shows up depends on Gboard settings which we cannot access,
+                // therefore we need to assume.
+                //
+                // In non-desktop environments (phones, tablets), we force the soft keyboard to
+                // show up by changing Gboard settings.
+                mShouldSoftKeyboardShow = true;
+                mShouldSoftKeyboardShowReason += " and soft keyboard was forced to show";
+            } else {
+                // In Android 15-, |show_ime_with_hard_keyboard| determines whether the soft
+                // keyboard shows up when there is a hardware keyboard connected.
+                int showImeWithHardKeyboard =
+                        Settings.Secure.getInt(
+                                context.getContentResolver(), "show_ime_with_hard_keyboard", 0);
+                mShouldSoftKeyboardShow = showImeWithHardKeyboard != 0;
+                mShouldSoftKeyboardShowReason +=
+                        " and show_ime_with_hard_keyboard is " + showImeWithHardKeyboard;
+            }
         }
     }
 

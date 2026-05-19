@@ -494,6 +494,7 @@ public class AppHeaderCoordinatorBrowserTest {
 
     @Test
     @MediumTest
+    @Restriction(DeviceFormFactor.ONLY_TABLET)
     public void testKeyboardInDesktopWindow_RootViewNotPaddedOnOmniboxFocus() {
         ChromeTabbedActivity activity = mActivityTestRule.getActivity();
         triggerDesktopWindowingModeChange(activity, true);
