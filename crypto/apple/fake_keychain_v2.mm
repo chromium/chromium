@@ -404,9 +404,8 @@ FakeKeychainV2::TaskCopyValueForEntitlement(SecTaskRef task,
   base::apple::ScopedCFTypeRef<CFMutableArrayRef> keychain_access_groups(
       CFArrayCreateMutable(kCFAllocatorDefault, /*capacity=*/1,
                            &kCFTypeArrayCallBacks));
-  CFArrayAppendValue(
-      keychain_access_groups.get(),
-      CFStringCreateCopy(kCFAllocatorDefault, keychain_access_group_.get()));
+  CFArrayAppendValue(keychain_access_groups.get(),
+                     keychain_access_group_.get());
   return keychain_access_groups;
 }
 #endif  // !BUILDFLAG(IS_IOS)
