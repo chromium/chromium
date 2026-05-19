@@ -279,6 +279,10 @@ template("webapk_tmpl") {
       proguard_enabled = true
       proguard_configs = [ "//chrome/android/webapk/shell_apk/proguard.flags" ]
     }
+    if (optimize_android_resources) {
+      resources_config_paths =
+          [ "//chrome/android/webapk/shell_apk/aapt2.config" ]
+    }
   }
 }
 
