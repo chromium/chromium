@@ -300,88 +300,6 @@ TEST_F(DnsClientTest, FallbackFromSecureTransactionPreferred_Failures) {
   EXPECT_FALSE(client_->FallbackFromInsecureTransactionPreferred());
 }
 
-TEST_F(DnsClientTest,
-       FallbackFromSecureTransactionPreferred_CanaryDomainCheck) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeaturesAndParameters(
-      {{net::features::kProbeSecureDnsCanaryDomain,
-        {{net::features::kSecureDnsCanaryDomainHost.name, "canary.com"}}},
-       {net::features::kForceSecureDnsDohFallback, {}},
-       {net::features::kAddAutomaticWithDohFallbackMode, {}}},
-      {});
-  // 1. Set a config that has DoH fallback servers.
-  DnsConfig config = BasicValidConfig();
-  config.secure_dns_mode = SecureDnsMode::kAutomatic;
-  config.allow_dns_over_https_upgrade = true;
-  config.fallback_doh_nameservers = {IPEndPoint(GooglePublicDnsIp(), 53)};
-  client_->SetSystemConfig(config);
-
-  resolve_context_->InvalidateCachesAndPerSessionData(
-      client_->GetCurrentSession(), /*network_change=*/false);
-  resolve_context_->set_doh_fallback_upgrade_allowed(true);
-
-  // Manually set status to kNotStarted, as it defaults to kInactive.
-  resolve_context_->set_doh_fallback_canary_domain_check_status(
-      CanaryDomainCheckStatus::kNotStarted);
-
-  // Canary domain check status is kNotStarted.
-  // Should prefer fallback since it's not kPositive or kInactive.
-  EXPECT_TRUE(
-      client_->FallbackFromSecureTransactionPreferred(resolve_context_.get()));
-
-  // Now record a positive canary domain check.
-  resolve_context_->set_doh_fallback_canary_domain_check_status(
-      CanaryDomainCheckStatus::kPositive);
-
-  // Still prefers fallback because no DoH servers are available (successful).
-  EXPECT_TRUE(
-      client_->FallbackFromSecureTransactionPreferred(resolve_context_.get()));
-
-  // Record DoH probe success to make it "available".
-  resolve_context_->RecordServerSuccess(/*server_index=*/0u,
-                                        /*is_doh_server=*/true,
-                                        client_->GetCurrentSession());
-
-  // Now that it's positive AND available, it should NOT prefer fallback.
-  EXPECT_FALSE(
-      client_->FallbackFromSecureTransactionPreferred(resolve_context_.get()));
-
-  // If status becomes negative, it should prefer fallback again even if DoH is
-  // available.
-  resolve_context_->set_doh_fallback_canary_domain_check_status(
-      CanaryDomainCheckStatus::kNegative);
-  EXPECT_TRUE(
-      client_->FallbackFromSecureTransactionPreferred(resolve_context_.get()));
-}
-
-TEST_F(DnsClientTest, FallbackFromSecureTransactionPreferred_FeatureDisabled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      /*enabled_features=*/{net::features::kAddAutomaticWithDohFallbackMode},
-      /*disabled_features=*/{net::features::kForceSecureDnsDohFallback});
-
-  // 1. Set a config that has DoH fallback servers.
-  DnsConfig config = BasicValidConfig();
-  config.secure_dns_mode = SecureDnsMode::kAutomatic;
-  config.allow_dns_over_https_upgrade = true;
-  config.fallback_doh_nameservers = {IPEndPoint(GooglePublicDnsIp(), 53)};
-  client_->SetSystemConfig(config);
-
-  resolve_context_->InvalidateCachesAndPerSessionData(
-      client_->GetCurrentSession(), /*network_change=*/false);
-  resolve_context_->set_doh_fallback_upgrade_allowed(true);
-
-  // Feature is disabled, so SHOULD prefer fallback.
-  base::HistogramTester histogram_tester;
-  EXPECT_TRUE(
-      client_->FallbackFromSecureTransactionPreferred(resolve_context_.get()));
-  histogram_tester.ExpectUniqueSample(
-      "Net.DNS.FallbackFromSecureTransactionPreferred",
-      FallbackFromSecureTransactionPreferredReason::
-          kFallbackPreferredDohFallbackExperimentDisabled,
-      1);
-}
-
 TEST_F(DnsClientTest, GetPresetAddrs) {
   DnsConfig config;
   config.doh_config = *net::DnsOverHttpsConfig::FromString(R"(
@@ -823,8 +741,7 @@ TEST_F(DnsClientTest,
        FallbackFromSecureTransactionPreferred_DohFallbackAllowed_Eligible) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
-      /*enabled_features=*/{net::features::kAddAutomaticWithDohFallbackMode,
-                            net::features::kForceSecureDnsDohFallback},
+      /*enabled_features=*/{net::features::kAddAutomaticWithDohFallbackMode},
       /*disabled_features=*/{net::features::kProbeSecureDnsCanaryDomain});
 
   DnsConfig config = BasicValidConfig();
@@ -846,15 +763,7 @@ TEST_F(DnsClientTest,
                                         /*is_doh_server=*/true,
                                         client_->GetCurrentSession());
 
-  // If fallback to the default DoH provider is not allowed, should prefer
-  // fallback to insecure DNS (the "fallback" term is overloaded here).
-  resolve_context_->set_doh_fallback_upgrade_allowed(false);
-  EXPECT_TRUE(
-      client_->FallbackFromSecureTransactionPreferred(resolve_context_.get()));
-
-  // If fallback to the default DoH provider is allowed, should NOT prefer
-  // fallback to insecure DNS.
-  resolve_context_->set_doh_fallback_upgrade_allowed(true);
+  // If DoH is available, should NOT prefer fallback to insecure DNS.
   EXPECT_FALSE(
       client_->FallbackFromSecureTransactionPreferred(resolve_context_.get()));
 }
@@ -878,9 +787,8 @@ TEST_F(
                                         /*is_doh_server=*/true,
                                         client_->GetCurrentSession());
 
-  // If `should_perform_doh_fallback_upgrade` is false,
-  // `doh_fallback_upgrade_allowed` should be ignored.
-  resolve_context_->set_doh_fallback_upgrade_allowed(false);
+  // If `should_perform_doh_fallback_upgrade` is false, it should NOT prefer
+  // fallback if DoH is available.
   EXPECT_FALSE(
       client_->FallbackFromSecureTransactionPreferred(resolve_context_.get()));
 }
@@ -904,13 +812,10 @@ TEST_F(
                                         /*is_doh_server=*/true,
                                         client_->GetCurrentSession());
 
-  // If secure_dns_mode is kSecure, `doh_fallback_upgrade_allowed` should
-  // be ignored.
-  resolve_context_->set_doh_fallback_upgrade_allowed(false);
+  // In SECURE mode, it should NOT prefer fallback if DoH is available.
   EXPECT_FALSE(
       client_->FallbackFromSecureTransactionPreferred(resolve_context_.get()));
 }
 
 }  // namespace
-
 }  // namespace net

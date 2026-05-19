@@ -130,10 +130,6 @@ base::DictValue MappedHostResolver::GetDnsConfigAsValue() const {
   return impl_->GetDnsConfigAsValue();
 }
 
-void MappedHostResolver::SetDohFallbackUpgradeAllowed(bool allowed) {
-  impl_->SetDohFallbackUpgradeAllowed(allowed);
-}
-
 void MappedHostResolver::SetRequestContext(URLRequestContext* request_context) {
   impl_->SetRequestContext(request_context);
 }

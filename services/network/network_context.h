@@ -534,7 +534,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
       const net::AuthCredentials& credentials,
       AddAuthCacheEntryCallback callback) override;
   void SetCorsNonWildcardRequestHeadersSupport(bool value) override;
-  void SetDohFallbackUpgradeAllowed(bool allowed) override;
 
 #if BUILDFLAG(IS_CHROMEOS)
   void LookupProxyAuthCredentials(

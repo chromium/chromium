@@ -574,10 +574,6 @@ struct NetworkContextParams {
   // Is true, Trust Token operations should be blocked.
   bool block_trust_tokens;
 
-  // Sets whether DoH to the fallback provider is allowed for this
-  // NetworkContext.
-  bool doh_fallback_upgrade_allowed = false;
-
   // Whether "Compression dictionary transport" feature should be enabled.
   bool shared_dictionary_enabled = false;
 
@@ -1078,10 +1074,6 @@ interface NetworkContext {
 
   // Set Trust Token blocking to |block|.
   SetBlockTrustTokens(bool block);
-
-  // Sets whether DoH to the fallback provider is allowed for this
-  // NetworkContext.
-  SetDohFallbackUpgradeAllowed(bool allowed);
 
   // Clears network objects with implicit URL history information. Data related
   // to events that happened prior to |start_time| and after |end_time| may be

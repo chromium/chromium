@@ -722,19 +722,7 @@ void ResolveContext::EmitDohAutoupgradeSuccessMetrics() {
 }
 
 bool ResolveContext::IsDohFallbackProbeEnabled() const {
-  // It's important to check the feature flag after the DohConfig and
-  // `doh_fallback_upgrade_allowed()` checks for when we conduct an experiment
-  // enabling the functionality.
-  // TODO(crbug.com/490045356): Remove the `doh_fallback_upgrade_allowed()`
-  // check and the kForceSecureDnsDohFallback feature flag check once the
-  // experiment has concluded and kBundledSecuritySettingsSecureDnsV2 has been
-  // enabled by default.
-  return IsDohConfigFromFallbackDohNameservers() &&
-         doh_fallback_upgrade_allowed() &&
-         base::FeatureList::IsEnabled(
-             net::features::kForceSecureDnsDohFallback) &&
-         doh_fallback_canary_domain_check_status_ !=
-             CanaryDomainCheckStatus::kInactive;
+  return false;
 }
 
 bool ResolveContext::IsDohConfigFromFallbackDohNameservers() const {

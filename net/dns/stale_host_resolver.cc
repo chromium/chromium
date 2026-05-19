@@ -401,10 +401,6 @@ base::DictValue StaleHostResolver::GetDnsConfigAsValue() const {
   return inner_resolver_->GetDnsConfigAsValue();
 }
 
-void StaleHostResolver::SetDohFallbackUpgradeAllowed(bool allowed) {
-  inner_resolver_->SetDohFallbackUpgradeAllowed(allowed);
-}
-
 std::unique_ptr<HostResolver::ProbeRequest>
 StaleHostResolver::CreateDohProbeRequest() {
   return inner_resolver_->CreateDohProbeRequest();

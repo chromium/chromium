@@ -789,11 +789,6 @@ NET_EXPORT BASE_DECLARE_FEATURE(kDohFallbackAllowedWithLocalNameservers);
 // well-known DoH provider before using insecure DNS.
 NET_EXPORT BASE_DECLARE_FEATURE(kAddAutomaticWithDohFallbackMode);
 
-// When enabled, and when the configured secure_dns_mode is AUTOMATIC, the DoH
-// fallback setting (dns_over_https.automatic_mode_fallback_to_doh) should be
-// forced to be interpreted as enabled.
-NET_EXPORT BASE_DECLARE_FEATURE(kForceSecureDnsDohFallback);
-
 // If true, a CONNECT-UDP response is not needed to start sending datagrams.
 NET_EXPORT BASE_DECLARE_FEATURE(
     kUseQuicProxiesWithoutWaitingForConnectResponse);

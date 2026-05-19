@@ -3495,75 +3495,6 @@ TEST_F(DnsTransactionTestWithMockTime, ProbeUntilSuccess) {
   EXPECT_EQ(doh_itr->GetNextAttemptIndex(), 0u);
 }
 
-TEST_F(DnsTransactionTestWithMockTime, ProbeSuppressedByContext) {
-  config_.secure_dns_mode = SecureDnsMode::kAutomatic;
-  ConfigureDohServers(/*use_post=*/false, /*num_doh_servers=*/1,
-                      /*make_available=*/false,
-                      /*use_doh_fallback_upgrade=*/true);
-  ASSERT_FALSE(config_.doh_config.servers().empty());
-
-  resolve_context_->set_doh_fallback_upgrade_allowed(false);
-
-  size_t url_requests_started = 0;
-  SetUrlRequestStartedCallback(
-      base::BindLambdaForTesting([&] { url_requests_started++; }));
-
-  std::unique_ptr<DnsProbeRunner> runner =
-      transaction_factory_->CreateDohProbeRunner(resolve_context_.get());
-  runner->Start(/*network_change=*/false);
-
-  // Even after backoff delay, next attempts are suppressed.
-  FastForwardBy(runner->GetDelayUntilNextProbeForTest(0));
-  EXPECT_EQ(url_requests_started, 0u);
-  CheckServerOrder({});
-}
-
-TEST_F(DnsTransactionTestWithMockTime, ProbeSuppressionChange) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kForceSecureDnsDohFallback);
-
-  config_.secure_dns_mode = SecureDnsMode::kAutomatic;
-  ConfigureDohServers(/*use_post=*/false, /*num_doh_servers=*/1,
-                      /*make_available=*/false,
-                      /*use_doh_fallback_upgrade=*/true);
-  ASSERT_FALSE(config_.doh_config.servers().empty());
-
-  // Initially suppressed.
-  resolve_context_->set_doh_fallback_upgrade_allowed(false);
-
-  size_t url_requests_started = 0;
-  SetUrlRequestStartedCallback(
-      base::BindLambdaForTesting([&] { url_requests_started++; }));
-
-  std::unique_ptr<DnsProbeRunner> runner =
-      transaction_factory_->CreateDohProbeRunner(resolve_context_.get());
-  runner->Start(/*network_change=*/false);
-
-  FastForwardBy(runner->GetDelayUntilNextProbeForTest(0));
-  EXPECT_EQ(url_requests_started, 0u);
-
-  // Change allowance.
-  resolve_context_->set_doh_fallback_upgrade_allowed(true);
-
-  // Still 0 even after backoff, because probes were not rescheduled while
-  // suppressed.
-  FastForwardBy(runner->GetDelayUntilNextProbeForTest(0));
-  EXPECT_EQ(url_requests_started, 0u);
-
-  // After a simulated network change (re-starting), the probe should finally go
-  // out.
-  AddQueryAndResponse(/*id=*/0, kT4HostName, kT4Qtype, kT4ResponseDatagram,
-                      ASYNC, Transport::HTTPS, /*opt_rdata=*/nullptr,
-                      DnsQuery::PaddingStrategy::BLOCK_LENGTH_128,
-                      /*enqueue_transaction_id=*/false);
-
-  runner->Start(/*network_change=*/true);
-  EXPECT_TRUE(base::test::RunUntil([&] { return url_requests_started == 1u; }));
-
-  EXPECT_TRUE(resolve_context_->GetDohServerAvailability(0, session_.get()));
-  CheckServerOrder({session_->config().nameservers.size()});
-}
-
 TEST_F(DnsTransactionTestWithMockTime,
        ProbeNotSuppressedWithoutFallbackConfig) {
   config_.secure_dns_mode = SecureDnsMode::kAutomatic;
@@ -3572,9 +3503,6 @@ TEST_F(DnsTransactionTestWithMockTime,
                       /*use_doh_fallback_upgrade=*/false);
   ASSERT_FALSE(config_.doh_config.servers().empty());
 
-  // Even if false, standard DoH probes should NOT be suppressed.
-  resolve_context_->set_doh_fallback_upgrade_allowed(false);
-
   AddQueryAndResponse(/*id=*/0, kT4HostName, kT4Qtype, kT4ResponseDatagram,
                       ASYNC, Transport::HTTPS, /*opt_rdata=*/nullptr,
                       DnsQuery::PaddingStrategy::BLOCK_LENGTH_128,
@@ -3591,65 +3519,6 @@ TEST_F(DnsTransactionTestWithMockTime,
   // The first probe attempt should NOT be suppressed.
   EXPECT_TRUE(base::test::RunUntil([&] { return url_requests_started == 1u; }));
   CheckServerOrder({session_->config().nameservers.size()});
-}
-
-TEST_F(DnsTransactionTestWithMockTime,
-       ProbeAllowedInitiallyWithFallbackConfig) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kForceSecureDnsDohFallback);
-
-  config_.secure_dns_mode = SecureDnsMode::kAutomatic;
-  ConfigureDohServers(/*use_post=*/false, /*num_doh_servers=*/1,
-                      /*make_available=*/false,
-                      /*use_doh_fallback_upgrade=*/true);
-  ASSERT_FALSE(config_.doh_config.servers().empty());
-
-  // Initially allowed.
-  resolve_context_->set_doh_fallback_upgrade_allowed(true);
-
-  AddQueryAndResponse(/*id=*/0, kT4HostName, kT4Qtype, kT4ResponseDatagram,
-                      ASYNC, Transport::HTTPS, /*opt_rdata=*/nullptr,
-                      DnsQuery::PaddingStrategy::BLOCK_LENGTH_128,
-                      /*enqueue_transaction_id=*/false);
-
-  size_t url_requests_started = 0;
-  SetUrlRequestStartedCallback(
-      base::BindLambdaForTesting([&] { url_requests_started++; }));
-
-  std::unique_ptr<DnsProbeRunner> runner =
-      transaction_factory_->CreateDohProbeRunner(resolve_context_.get());
-  runner->Start(/*network_change=*/false);
-
-  // The first probe attempt should NOT be suppressed.
-  EXPECT_TRUE(base::test::RunUntil([&] { return url_requests_started == 1u; }));
-  CheckServerOrder({session_->config().nameservers.size()});
-}
-
-TEST_F(DnsTransactionTestWithMockTime,
-       ProbeSuppressedWithFallbackConfigAndFeatureDisabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(features::kForceSecureDnsDohFallback);
-
-  config_.secure_dns_mode = SecureDnsMode::kAutomatic;
-  ConfigureDohServers(/*use_post=*/false, /*num_doh_servers=*/1,
-                      /*make_available=*/false,
-                      /*use_doh_fallback_upgrade=*/true);
-  ASSERT_FALSE(config_.doh_config.servers().empty());
-
-  // Probes should be suppressed if the feature flag is DISABLED,
-  // even if fallback upgrade is ALLOWED.
-  resolve_context_->set_doh_fallback_upgrade_allowed(true);
-
-  size_t url_requests_started = 0;
-  SetUrlRequestStartedCallback(
-      base::BindLambdaForTesting([&] { url_requests_started++; }));
-
-  std::unique_ptr<DnsProbeRunner> runner =
-      transaction_factory_->CreateDohProbeRunner(resolve_context_.get());
-  runner->Start(/*network_change=*/false);
-
-  FastForwardBy(runner->GetDelayUntilNextProbeForTest(0));
-  EXPECT_EQ(url_requests_started, 0u);
 }
 
 TEST_F(DnsTransactionTestWithMockTime, ProbeCreationTriggersSuccessMetric) {

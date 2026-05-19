@@ -982,43 +982,4 @@ IN_PROC_BROWSER_TEST_F(CacheEncryptionDisabledByPolicyTest,
       prefs->HasPrefPath(enterprise_connectors::kEncryptedCachePrimaryKey));
 }
 
-using ProfileNetworkContextServiceDohBrowsertest = InProcessBrowserTest;
 
-IN_PROC_BROWSER_TEST_F(ProfileNetworkContextServiceDohBrowsertest,
-                       DohFallbackAllowedForContext) {
-  Profile* profile = browser()->profile();
-  PrefService* profile_prefs = profile->GetPrefs();
-  ProfileNetworkContextService* service =
-      ProfileNetworkContextServiceFactory::GetForContext(profile);
-
-  // 1. Enhanced Protection disabled -> doh_fallback_upgrade_allowed should
-  // be false.
-  safe_browsing::SetSafeBrowsingState(
-      profile_prefs, safe_browsing::SafeBrowsingState::STANDARD_PROTECTION);
-
-  network::mojom::NetworkContextParamsPtr params =
-      network::mojom::NetworkContextParams::New();
-  cert_verifier::mojom::CertVerifierCreationParamsPtr cv_params =
-      cert_verifier::mojom::CertVerifierCreationParams::New();
-  service->ConfigureNetworkContextParams(false, base::FilePath(), params.get(),
-                                         cv_params.get());
-  EXPECT_FALSE(params->doh_fallback_upgrade_allowed);
-
-  // 2. Enhanced Protection enabled -> doh_fallback_upgrade_allowed should
-  // be true.
-  safe_browsing::SetSafeBrowsingState(
-      profile_prefs, safe_browsing::SafeBrowsingState::ENHANCED_PROTECTION);
-  params = network::mojom::NetworkContextParams::New();
-  service->ConfigureNetworkContextParams(false, base::FilePath(), params.get(),
-                                         cv_params.get());
-  EXPECT_TRUE(params->doh_fallback_upgrade_allowed);
-
-  // 3. Enhanced Protection true but Safe Browsing disabled ->
-  // doh_fallback_upgrade_allowed should be false.
-  profile_prefs->SetBoolean(prefs::kSafeBrowsingEnhanced, true);
-  profile_prefs->SetBoolean(prefs::kSafeBrowsingEnabled, false);
-  params = network::mojom::NetworkContextParams::New();
-  service->ConfigureNetworkContextParams(false, base::FilePath(), params.get(),
-                                         cv_params.get());
-  EXPECT_FALSE(params->doh_fallback_upgrade_allowed);
-}

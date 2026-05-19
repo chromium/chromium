@@ -832,8 +832,10 @@ historical analysis. -->
   <int value="3" label="Fallback preferred: canary domain check negative"/>
   <int value="4" label="Fallback preferred: no available Doh servers"/>
   <int value="5"
-      label="Fallback preferred: DoH to the fallback provider not allowed"/>
-  <int value="6" label="Fallback preferred: DoH fallback experiment disabled"/>
+      label="(Obsolete) Fallback preferred: DoH to the fallback provider not
+             allowed"/>
+  <int value="6"
+      label="(Obsolete) Fallback preferred: DoH fallback experiment disabled"/>
 </enum>
 
 <!-- LINT.ThenChange(//net/dns/dns_client.h:FallbackFromSecureTransactionPreferredReason) -->
@@ -3297,8 +3299,10 @@ Called by update_net_trust_anchors.py.-->
   <int value="7" label="Secure, by enterprise policy"/>
   <int value="8" label="Automatic with DoH fallback, by user choice"/>
   <int value="9"
-      label="Deprecated: Automatic with DoH fallback, by enterprise policy"/>
-  <int value="10" label="Automatic with DoH fallback, for experimentation"/>
+      label="(Obsolete) Deprecated: Automatic with DoH fallback, by
+             enterprise policy"/>
+  <int value="10"
+      label="(Obsolete) Automatic with DoH fallback, for experimentation"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/net/stub_resolver_config_reader.h:SecureDnsModeDetailsForHistogram) -->

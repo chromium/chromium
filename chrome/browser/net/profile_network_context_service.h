@@ -173,12 +173,6 @@ class ProfileNetworkContextService
 
   void UpdateReferrersEnabled();
 
-  // Updates state in the network service corresponding to whether the DoH
-  // fallback-to-default-provider functionality should be enabled based on
-  // profile prefs (currently whether the profile has Enhanced Safe Browsing
-  // enabled).
-  void UpdateDohFallbackUpgradeAllowed();
-
   // Gets the current CTPolicy from preferences.
   network::mojom::CTPolicyPtr GetCTPolicy();
 

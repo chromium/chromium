@@ -862,8 +862,6 @@ NetworkContext::NetworkContext(
 
   SetBlockTrustTokens(params_->block_trust_tokens);
 
-  SetDohFallbackUpgradeAllowed(params_->doh_fallback_upgrade_allowed);
-
   if (params_ && params_->http_cache_file_operations_factory) {
     http_cache_file_operations_factory_ =
         base::MakeRefCounted<MojoBackendFileOperationsFactory>(
@@ -1286,13 +1284,6 @@ void NetworkContext::DeleteStoredTrustTokens(
 
 void NetworkContext::SetBlockTrustTokens(bool block) {
   block_trust_tokens_ = block;
-}
-
-void NetworkContext::SetDohFallbackUpgradeAllowed(bool allowed) {
-  if (url_request_context_->host_resolver()) {
-    url_request_context_->host_resolver()->SetDohFallbackUpgradeAllowed(
-        allowed);
-  }
 }
 
 void NetworkContext::OnProxyLookupComplete(

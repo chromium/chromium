@@ -780,8 +780,6 @@ BASE_FEATURE(kDohFallbackAllowedWithLocalNameservers,
 BASE_FEATURE(kAddAutomaticWithDohFallbackMode,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kForceSecureDnsDohFallback, base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kUseQuicProxiesWithoutWaitingForConnectResponse,
              base::FEATURE_DISABLED_BY_DEFAULT);
 

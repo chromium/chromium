@@ -301,7 +301,6 @@ class MockHostResolverBase : public HostResolver {
       const HostPortPair& host,
       DnsQueryType query_type) override;
   HostCache* GetHostCache() override;
-  void SetDohFallbackUpgradeAllowed(bool allowed) override;
   void SetRequestContext(URLRequestContext* request_context) override {}
   bool IsHappyEyeballsV3Enabled() const override;
   std::unique_ptr<CanaryDomainService> CreateCanaryDomainService() override;
@@ -753,8 +752,6 @@ class HangingHostResolver : public HostResolver {
   std::unique_ptr<ProbeRequest> CreateDohProbeRequest() override;
 
   void SetRequestContext(URLRequestContext* url_request_context) override;
-
-  void SetDohFallbackUpgradeAllowed(bool allowed) override;
 
   bool IsHappyEyeballsV3Enabled() const override;
 

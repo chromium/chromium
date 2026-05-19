@@ -371,11 +371,6 @@ HostCache* HostResolver::GetHostCache() {
 base::DictValue HostResolver::GetDnsConfigAsValue() const {
   return base::DictValue();
 }
-void HostResolver::SetDohFallbackUpgradeAllowed(bool allowed) {
-  // Should be overridden in any HostResolver implementation where this method
-  // may be called.
-  NOTREACHED();
-}
 
 void HostResolver::SetRequestContext(URLRequestContext* request_context) {
   // Should be overridden in any HostResolver implementation where this method

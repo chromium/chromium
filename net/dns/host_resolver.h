@@ -578,9 +578,6 @@ class NET_EXPORT HostResolver {
   // Returns the current DNS configuration |this| is using, as a Value.
   virtual base::DictValue GetDnsConfigAsValue() const;
 
-  // Set whether DoH fallback-to-default-provider functionality is allowed.
-  virtual void SetDohFallbackUpgradeAllowed(bool allowed);
-
   // Set the associated URLRequestContext, generally expected to be called by
   // URLRequestContextBuilder on passing ownership of |this| to a context. May
   // only be called once.

@@ -74,7 +74,6 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/privacy_sandbox/privacy_sandbox_prefs.h"
-#include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/first_party_sets_handler.h"
@@ -577,20 +576,6 @@ ProfileNetworkContextService::ProfileNetworkContextService(Profile* profile)
       base::BindRepeating(&ProfileNetworkContextService::
                               UpdateCorsNonWildcardRequestHeadersSupport,
                           base::Unretained(this)));
-
-  // Register a callback for both kSafeBrowsingEnabled and kSafeBrowsingEnhanced
-  // since `safe_browsing::IsEnhancedProtectionEnabled` returns an answer based
-  // on both prefs.
-  pref_change_registrar_.Add(
-      prefs::kSafeBrowsingEnabled,
-      base::BindRepeating(
-          &ProfileNetworkContextService::UpdateDohFallbackUpgradeAllowed,
-          base::Unretained(this)));
-  pref_change_registrar_.Add(
-      prefs::kSafeBrowsingEnhanced,
-      base::BindRepeating(
-          &ProfileNetworkContextService::UpdateDohFallbackUpgradeAllowed,
-          base::Unretained(this)));
 }
 
 ProfileNetworkContextService::~ProfileNetworkContextService() = default;
@@ -715,17 +700,6 @@ void ProfileNetworkContextService::UpdateReferrersEnabled() {
       [&](content::StoragePartition* storage_partition) {
         storage_partition->GetNetworkContext()->SetEnableReferrers(
             enable_referrers);
-      });
-}
-
-void ProfileNetworkContextService::UpdateDohFallbackUpgradeAllowed() {
-  const bool allowed =
-      safe_browsing::IsEnhancedProtectionEnabled(*profile_->GetPrefs());
-
-  profile_->ForEachLoadedStoragePartition(
-      [allowed](content::StoragePartition* storage_partition) {
-        storage_partition->GetNetworkContext()->SetDohFallbackUpgradeAllowed(
-            allowed);
       });
 }
 
@@ -1349,9 +1323,6 @@ void ProfileNetworkContextService::ConfigureNetworkContextParamsInternal(
 
   network_context_params->accept_language = ComputeAcceptLanguage();
   network_context_params->enable_referrers = enable_referrers_.GetValue();
-
-  network_context_params->doh_fallback_upgrade_allowed =
-      safe_browsing::IsEnhancedProtectionEnabled(*profile_->GetPrefs());
 
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   if (command_line->HasSwitch(embedder_support::kShortReportingDelay)) {

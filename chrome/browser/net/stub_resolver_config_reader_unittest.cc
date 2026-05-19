@@ -186,7 +186,7 @@ TEST_F(StubResolverConfigReaderTest,
 }
 
 TEST_F(StubResolverConfigReaderTest,
-       Doh_Automatic_FallbackUpgradePrefUseDisabled_ConfigSetByDefault) {
+       Doh_Automatic_FallbackUpgradePrefUseDisabled_FallbackDohNameserversEmpty) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
       {}, {safe_browsing::kBundledSecuritySettingsSecureDnsV2});
@@ -202,14 +202,13 @@ TEST_F(StubResolverConfigReaderTest,
   SecureDnsConfig secure_dns_config = config_reader_->GetSecureDnsConfiguration(
       /*force_check_parental_controls_for_automatic_mode=*/false);
   EXPECT_EQ(net::SecureDnsMode::kAutomatic, secure_dns_config.mode());
-  EXPECT_EQ(expected_fallback_doh_nameservers_,
-            secure_dns_config.fallback_doh_nameservers());
+  EXPECT_THAT(secure_dns_config.fallback_doh_nameservers(), testing::IsEmpty());
   EXPECT_THAT(secure_dns_config.doh_servers().servers(), testing::IsEmpty());
 
   histogram_tester_.ExpectUniqueSample(
       "Net.DNS.DnsConfig.SecureDnsMode",
       StubResolverConfigReader::SecureDnsModeDetailsForHistogram::
-          kAutomaticWithDohFallbackForExperiment,
+          kAutomaticByUser,
       1);
 }
 

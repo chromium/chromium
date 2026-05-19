@@ -50,9 +50,9 @@ enum class FallbackFromSecureTransactionPreferredReason {
   kFallbackPreferredCanaryDomainCheckPending = 2,
   kFallbackPreferredCanaryDomainCheckNegative = 3,
   kFallbackPreferredNoAvailableDohServers = 4,
-  kFallbackPreferredDohFallbackUpgradeNotAllowed = 5,
-  kFallbackPreferredDohFallbackExperimentDisabled = 6,
-  kMaxValue = kFallbackPreferredDohFallbackExperimentDisabled,
+  // kFallbackPreferredDohFallbackUpgradeNotAllowed = 5,
+  // kFallbackPreferredDohFallbackExperimentDisabled = 6,
+  kMaxValue = kFallbackPreferredNoAvailableDohServers,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/net/enums.xml:FallbackFromSecureTransactionPreferredReason)
 

@@ -37,6 +37,7 @@ enum class CanaryDomainResult {
 // LINT.ThenChange(//tools/metrics/histograms/metadata/net/enums.xml:CanaryDomainResult)
 
 // Service for probing canary domains.  It is owned by a HostResolverManager.
+// TODO - b/490045356: Remove this class now that it is no longer used.
 class NET_EXPORT_PRIVATE CanaryDomainService
     : public ResolveContext::DohStatusObserver {
  public:

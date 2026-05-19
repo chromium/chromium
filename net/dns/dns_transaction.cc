@@ -257,26 +257,6 @@ class DnsOverHttpsProbeRunner : public DnsProbeRunner {
       return;
     }
 
-    // Also cancel the probe sequence if the DoH config corresponds to DoH
-    // fallback upgrade mode but the functionality is disabled. Note that this
-    // means that if the value of `context_->doh_fallback_upgrade_allowed()`
-    // changes the user will have to wait for a network change event or restart
-    // to have DoH auto-upgrade enabled, but this is acceptable since this
-    // approach to disabling is only intended to be used for a brief duration
-    // experiment. It's important to check the feature flag last because of how
-    // we plan to conduct an experiment enabling the functionality.
-    // TODO(crbug.com/490045356): Remove the `doh_fallback_upgrade_allowed()`
-    // check and the kForceSecureDnsDohFallback feature flag check once the
-    // experiment has concluded and kBundledSecuritySettingsSecureDnsV2 has been
-    // enabled by default.
-    if (context_->IsDohConfigFromFallbackDohNameservers() &&
-        (!context_->doh_fallback_upgrade_allowed() ||
-         !base::FeatureList::IsEnabled(
-             net::features::kForceSecureDnsDohFallback))) {
-      probe_stats_list_[doh_server_index] = nullptr;
-      return;
-    }
-
     // Schedule a new probe assuming this one will fail. The newly scheduled
     // probe will not run if an earlier probe has already succeeded. Probes may
     // take awhile to fail, which is why we schedule the next one here rather
