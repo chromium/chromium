@@ -225,10 +225,6 @@ void CastWindowManagerAura::Setup() {
   side_swipe_detector_ = std::make_unique<SideSwipeDetector>(
       system_gesture_dispatcher_.get(), root_window);
 
-#if BUILDFLAG(IS_CAST_AUDIO_ONLY)
-  window_tree_host_->compositor()->SetDisplayVSyncParameters(
-      base::TimeTicks(), base::Milliseconds(250));
-#endif
 
   // Chromecast devices do not support cut/copy/paste.
   DCHECK(!ui::TouchSelectionMenuRunner::GetInstance());
