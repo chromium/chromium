@@ -57,7 +57,23 @@ import java.util.Set;
     private final TabReparentingDelegate mTabReparentingDelegate;
     private final Map<Activity, MultiInstanceManager> mActivityMultiInstanceManagerAssignments =
             new HashMap<>();
+
+    /**
+     * List of crashed windows pending recovery. This is used during deferred recovery, when a crash
+     * is detected during browser process initialization but before any eligible {@link
+     * ChromeTabbedActivity} has registered. Once a tabbed activity is initialized, it consumes this
+     * list to trigger the recovery flow.
+     */
     private List<CrashRecoveryWindowInfo> mWindowsPendingCrashRecovery = new ArrayList<>();
+
+    /**
+     * List of crashed windows captured at the very beginning of the process lifetime, during the
+     * registration of the first activity. Storing this initial snapshot avoids a race condition
+     * where the newly launched activity marks itself as recoverable during its early
+     * initialization, which would otherwise corrupt the crash recovery data before the
+     * process-level exit reason is processed.
+     */
+    private @Nullable List<CrashRecoveryWindowInfo> mInitialCrashedWindows;
 
     /** Returns the singleton instance for {@link MultiInstanceOrchestrator}. */
     public static MultiInstanceOrchestrator getInstance() {
@@ -81,6 +97,9 @@ import java.util.Set;
     public void onInitialize(Activity activity, MultiInstanceManager multiInstanceManager) {
         assert !mActivityMultiInstanceManagerAssignments.containsKey(activity)
                 : "A MultiInstanceManager for this Activity already exists.";
+        if (mActivityMultiInstanceManagerAssignments.isEmpty()) {
+            mInitialCrashedWindows = ChromeMultiInstancePersistentStore.readCrashRecoveryData();
+        }
         mActivityMultiInstanceManagerAssignments.put(activity, multiInstanceManager);
         if (ChromeMultiInstancePersistentStore.readIsCrashRecoveryPending()) {
             // Initiate any pending crash recovery tasks.
@@ -112,7 +131,10 @@ import java.util.Set;
         if (!crashRecoveryNeeded) return;
 
         List<CrashRecoveryWindowInfo> crashedWindows =
-                ChromeMultiInstancePersistentStore.readCrashRecoveryData();
+                mInitialCrashedWindows != null
+                        ? mInitialCrashedWindows
+                        : ChromeMultiInstancePersistentStore.readCrashRecoveryData();
+        mInitialCrashedWindows = null;
 
         // If there are no crash-recoverable instances (for example, there were no
         // active ChromeTabbedActivity's when the previous process crashed), there is
@@ -654,5 +676,6 @@ import java.util.Set;
     /* package */ void clearAssignmentsForTesting() {
         mActivityMultiInstanceManagerAssignments.clear();
         mWindowsPendingCrashRecovery = new ArrayList<>();
+        mInitialCrashedWindows = null;
     }
 }
