@@ -379,13 +379,17 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
           : kOmniboxMinHeight;
   _editView.accessibilityIdentifier = kComposeboxAccessibilityIdentifier;
   [_omniboxContainer addSubview:_editView];
+  NSLayoutConstraint* leadingConstraint = [_editView.leadingAnchor
+      constraintEqualToAnchor:_omniboxContainer.layoutMarginsGuide
+                                  .leadingAnchor];
+  leadingConstraint.priority = UILayoutPriorityDefaultHigh;
+  NSLayoutConstraint* trailingConstraint = [_editView.trailingAnchor
+      constraintEqualToAnchor:_omniboxContainer.layoutMarginsGuide
+                                  .trailingAnchor];
+  trailingConstraint.priority = UILayoutPriorityDefaultHigh;
   [NSLayoutConstraint activateConstraints:@[
-    [_editView.leadingAnchor
-        constraintEqualToAnchor:_omniboxContainer.layoutMarginsGuide
-                                    .leadingAnchor],
-    [_editView.trailingAnchor
-        constraintEqualToAnchor:_omniboxContainer.layoutMarginsGuide
-                                    .trailingAnchor],
+    leadingConstraint,
+    trailingConstraint,
   ]];
   AddSameConstraintsToSides(_editView, _omniboxContainer,
                             LayoutSides::kTop | LayoutSides::kBottom);
