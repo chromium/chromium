@@ -567,11 +567,7 @@ bool SurfaceControl::IsSupported() {
     min_sdk_version = base::android::android_info::SDK_VERSION_R;
   }
 
-  if (base::android::android_info::sdk_int() < min_sdk_version) {
-    return false;
-  }
-
-  return true;
+  return base::android::android_info::sdk_int() >= min_sdk_version;
 }
 
 bool SurfaceControl::SupportsColorSpace(const gfx::ColorSpace& color_space) {
