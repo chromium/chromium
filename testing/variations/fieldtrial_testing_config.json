@@ -24046,6 +24046,7 @@
     "UpdateTabGroupColors": [
         {
             "platforms": [
+                "android",
                 "ios"
             ],
             "experiments": [
