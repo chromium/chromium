@@ -16,7 +16,7 @@ namespace crypto {
 // Attempts to reload a CNG key's handle from the given `key`. Returns the key
 // on success or an invalid handle on error.
 CRYPTO_EXPORT ScopedNCryptKey
-DuplicatePlatformKeyHandle(const UnexportableSigningKey& key);
+DuplicatePlatformKeyHandle(const UnexportableKey& key);
 
 // Returns an `UnexportableKeyProvider` that is backed by the Windows TPM.
 std::unique_ptr<UnexportableKeyProvider> GetUnexportableKeyProviderWin();

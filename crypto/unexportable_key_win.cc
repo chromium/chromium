@@ -5,12 +5,14 @@
 #include "crypto/unexportable_key_win.h"
 
 #include <string>
+#include <string_view>
 #include <tuple>
 #include <vector>
 
 #include "base/base64.h"
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
+#include "base/containers/to_vector.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/checked_math.h"
@@ -23,6 +25,7 @@
 #include "base/threading/scoped_blocking_call.h"
 #include "base/threading/scoped_thread_priority.h"
 #include "base/types/expected.h"
+#include "base/types/expected_macros.h"
 #include "base/types/optional_util.h"
 #include "crypto/hash.h"
 #include "crypto/keypair.h"
@@ -56,6 +59,60 @@ enum class ProviderType {
 
   // Keys will be backed by software. Widely available.
   kSoftware
+};
+
+// Identifies the purpose of the key to be generated.
+enum class KeyUsage {
+  // The key will be used for signing data (e.g. a session binding key).
+  kSigning,
+  // The key will be used as an attestation key (e.g. an AIK).
+  kAttestation
+};
+
+// Holds the results of a successful key generation or loading.
+struct KeyDetails {
+  // The handle to the key.
+  ScopedNCryptKey key;
+  // The wrapped key blob that can be used to restore the key later.
+  std::vector<uint8_t> wrapped_key;
+  // The SubjectPublicKeyInfo for the public key.
+  std::vector<uint8_t> spki;
+  // The algorithm used for the key.
+  SignatureVerifier::SignatureAlgorithm algo =
+      SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256;
+};
+
+// WinKeyImpl shares common implementation for unexportable keys on Windows.
+template <typename BaseInterface>
+class WinKeyImpl : public BaseInterface {
+ public:
+  WinKeyImpl(ProviderType provider_type, KeyDetails details)
+      : provider_type_(provider_type),
+        key_(std::move(details.key)),
+        wrapped_key_(std::move(details.wrapped_key)),
+        spki_(std::move(details.spki)),
+        algo_(details.algo) {}
+
+  SignatureVerifier::SignatureAlgorithm Algorithm() const override {
+    return algo_;
+  }
+
+  std::vector<uint8_t> GetSubjectPublicKeyInfo() const override {
+    return spki_;
+  }
+
+  std::vector<uint8_t> GetWrappedKey() const override { return wrapped_key_; }
+
+  bool IsHardwareBacked() const override {
+    return provider_type_ == ProviderType::kTPM;
+  }
+
+ protected:
+  const ProviderType provider_type_;
+  ScopedNCryptKey key_;
+  const std::vector<uint8_t> wrapped_key_;
+  const std::vector<uint8_t> spki_;
+  const SignatureVerifier::SignatureAlgorithm algo_;
 };
 
 LPCWSTR GetWindowsIdentifierForProvider(ProviderType type) {
@@ -170,6 +227,47 @@ std::optional<std::vector<uint8_t>> GetKeyProperty(NCRYPT_KEY_HANDLE key,
   return ret;
 }
 
+// GetKeyStringProperty returns the given NCrypt key property of `key` as a
+// string, removing the trailing null character if present.
+std::optional<std::wstring> GetKeyStringProperty(NCRYPT_KEY_HANDLE key,
+                                                 LPCWSTR property) {
+  return GetKeyProperty(key, property)
+      .transform([](base::span<const uint8_t> bytes) {
+        auto chars = base::subtle::reinterpret_span<const wchar_t>(bytes);
+        std::wstring_view str = {chars.data(), chars.size()};
+        if (str.ends_with(L'\0')) {
+          str.remove_suffix(1);
+        }
+        return std::wstring(str);
+      });
+}
+
+// Returns true if the key has the NCRYPT_PCP_IDENTITY_KEY flag set in its
+// usage policy. This flag indicates that the key is an Attestation Identity
+// Key (AIK) restricted by the TPM, meaning it cannot be used to sign arbitrary
+// data.
+bool IsIdentityKey(NCRYPT_KEY_HANDLE key) {
+  DWORD usage_policy = 0;
+  DWORD cb_usage_policy = 0;
+  SECURITY_STATUS status =
+      NCryptGetProperty(key, NCRYPT_PCP_KEY_USAGE_POLICY_PROPERTY,
+                        reinterpret_cast<PBYTE>(&usage_policy),
+                        sizeof(usage_policy), &cb_usage_policy, 0);
+  return SUCCEEDED(status) && ((usage_policy & NCRYPT_PCP_IDENTITY_KEY) != 0);
+}
+
+// Sets the NCRYPT_PCP_IDENTITY_KEY flag in the key's usage policy.
+// This marks the key as an Attestation Identity Key (AIK). This property
+// is specific to the Platform Crypto Provider (TPM) and restricts the key
+// from being used to sign arbitrary data.
+bool SetIdentityKeyPolicy(NCRYPT_KEY_HANDLE key) {
+  DWORD usage_policy = NCRYPT_PCP_IDENTITY_KEY;
+  SECURITY_STATUS status = NCryptSetProperty(
+      key, NCRYPT_PCP_KEY_USAGE_POLICY_PROPERTY,
+      reinterpret_cast<PBYTE>(&usage_policy), sizeof(usage_policy), 0);
+  return SUCCEEDED(status);
+}
+
 // ExportKey returns |key| exported in the given format or nullopt on error.
 base::expected<std::vector<uint8_t>, SECURITY_STATUS> ExportKey(
     NCRYPT_KEY_HANDLE key,
@@ -221,15 +319,8 @@ std::optional<std::vector<uint8_t>> GetP256ECDSASPKI(NCRYPT_KEY_HANDLE key) {
   // key. In that case, do extra validation to make sure that `key` is in fact
   // a P-256 key.
   if (header.dwMagic == BCRYPT_ECDSA_PUBLIC_GENERIC_MAGIC) {
-    const std::optional<std::vector<uint8_t>> curve_name =
-        GetKeyProperty(key, NCRYPT_ECC_CURVE_NAME_PROPERTY);
-    if (!curve_name) {
-      return std::nullopt;
-    }
-
-    if (curve_name->size() != sizeof(BCRYPT_ECC_CURVE_NISTP256) ||
-        UNSAFE_TODO(memcmp(curve_name->data(), BCRYPT_ECC_CURVE_NISTP256,
-                           sizeof(BCRYPT_ECC_CURVE_NISTP256))) != 0) {
+    if (GetKeyStringProperty(key, NCRYPT_ECC_CURVE_NAME_PROPERTY) !=
+        BCRYPT_ECC_CURVE_NISTP256) {
       return std::nullopt;
     }
   }
@@ -411,89 +502,40 @@ ScopedNCryptKey LoadWrappedKey(base::span<const uint8_t> wrapped,
   return key;
 }
 
-// ECDSAKey wraps a P-256 ECDSA key stored in the given provider.
-class ECDSAKey : public UnexportableSigningKey {
+// ECDSASigningKey wraps a P-256 ECDSA key stored in the given provider.
+class ECDSASigningKey : public WinKeyImpl<UnexportableSigningKey> {
  public:
-  ECDSAKey(ProviderType provider_type,
-           ScopedNCryptKey key,
-           std::vector<uint8_t> key_id,
-           std::vector<uint8_t> spki)
-      : provider_type_(provider_type),
-        key_(std::move(key)),
-        key_id_(std::move(key_id)),
-        spki_(std::move(spki)) {}
-
-  SignatureVerifier::SignatureAlgorithm Algorithm() const override {
-    return SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256;
-  }
-
-  std::vector<uint8_t> GetSubjectPublicKeyInfo() const override {
-    return spki_;
-  }
-
-  std::vector<uint8_t> GetWrappedKey() const override { return key_id_; }
+  ECDSASigningKey(ProviderType provider_type, KeyDetails details)
+      : WinKeyImpl(provider_type, std::move(details)) {}
 
   std::optional<std::vector<uint8_t>> SignSlowly(
       base::span<const uint8_t> data) override {
-    base::expected<std::vector<uint8_t>, SECURITY_STATUS> signature =
-        SignECDSA(key_.get(), data);
-    if (!signature.has_value()) {
-      LogTPMOperationError(TPMOperation::kMessageSigning, signature.error(),
-                           Algorithm());
-    }
-
-    return base::OptionalFromExpected(signature);
-  }
-
-  bool IsHardwareBacked() const override {
-    return provider_type_ == ProviderType::kTPM;
+    return base::OptionalFromExpected(
+        SignECDSA(key_.get(), data)
+            .transform_error([&](SECURITY_STATUS status) {
+              LogTPMOperationError(TPMOperation::kMessageSigning, status,
+                                   Algorithm());
+              return status;
+            }));
   }
 
   bool SupportsTls13() override { return true; }
-
- private:
-  const ProviderType provider_type_;
-  ScopedNCryptKey key_;
-  const std::vector<uint8_t> key_id_;
-  const std::vector<uint8_t> spki_;
 };
 
-// RSAKey wraps a RSA key stored in the given provider.
-class RSAKey : public UnexportableSigningKey {
+// RSASigningKey wraps a RSA key stored in the given provider.
+class RSASigningKey : public WinKeyImpl<UnexportableSigningKey> {
  public:
-  RSAKey(ProviderType provider_type,
-         ScopedNCryptKey key,
-         std::vector<uint8_t> wrapped,
-         std::vector<uint8_t> spki)
-      : provider_type_(provider_type),
-        key_(std::move(key)),
-        wrapped_(std::move(wrapped)),
-        spki_(std::move(spki)) {}
-
-  SignatureVerifier::SignatureAlgorithm Algorithm() const override {
-    return SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA256;
-  }
-
-  std::vector<uint8_t> GetSubjectPublicKeyInfo() const override {
-    return spki_;
-  }
-
-  std::vector<uint8_t> GetWrappedKey() const override { return wrapped_; }
+  RSASigningKey(ProviderType provider_type, KeyDetails details)
+      : WinKeyImpl(provider_type, std::move(details)) {}
 
   std::optional<std::vector<uint8_t>> SignSlowly(
       base::span<const uint8_t> data) override {
-    base::expected<std::vector<uint8_t>, SECURITY_STATUS> signature =
-        SignRSA(key_.get(), data);
-    if (!signature.has_value()) {
-      LogTPMOperationError(TPMOperation::kMessageSigning, signature.error(),
-                           Algorithm());
-    }
-
-    return base::OptionalFromExpected(signature);
-  }
-
-  bool IsHardwareBacked() const override {
-    return provider_type_ == ProviderType::kTPM;
+    return base::OptionalFromExpected(
+        SignRSA(key_.get(), data).transform_error([&](SECURITY_STATUS status) {
+          LogTPMOperationError(TPMOperation::kMessageSigning, status,
+                               Algorithm());
+          return status;
+        }));
   }
 
   bool SupportsTls13() override {
@@ -544,11 +586,21 @@ class RSAKey : public UnexportableSigningKey {
                         dummy_data, signature);
   }
 
-  const ProviderType provider_type_;
-  ScopedNCryptKey key_;
-  const std::vector<uint8_t> wrapped_;
-  const std::vector<uint8_t> spki_;
   std::optional<bool> is_compatible_with_tls13;
+};
+
+// AttestationKeyWin wraps an AIK stored in the given provider.
+class AttestationKeyWin : public WinKeyImpl<UnexportableAttestationKey> {
+ public:
+  AttestationKeyWin(ProviderType provider_type, KeyDetails details)
+      : WinKeyImpl(provider_type, std::move(details)) {}
+
+  std::optional<AttestationStatement> CertifySlowly(
+      const UnexportableSigningKey& signing_key,
+      base::span<const uint8_t> challenge) override {
+    // TPM certification execution not yet implemented.
+    return std::nullopt;
+  }
 };
 
 // UnexportableKeyProviderWin uses NCrypt and the Platform Crypto
@@ -579,9 +631,10 @@ class UnexportableKeyProviderWin : public UnexportableKeyProvider {
     return GetBestSupported(provider.get(), acceptable_algorithms);
   }
 
-  std::unique_ptr<UnexportableSigningKey> GenerateSigningKeySlowly(
+  std::optional<KeyDetails> GenerateKeyImpl(
       base::span<const SignatureVerifier::SignatureAlgorithm>
-          acceptable_algorithms) override {
+          acceptable_algorithms,
+      KeyUsage usage) {
     base::ScopedBlockingCall scoped_blocking_call(
         FROM_HERE, base::BlockingType::WILL_BLOCK);
 
@@ -595,15 +648,12 @@ class UnexportableKeyProviderWin : public UnexportableKeyProvider {
         LogTPMOperationError(TPMOperation::kNewKeyCreation, status,
                              std::nullopt,
                              /*open_storage_provider_error=*/true);
-        return nullptr;
+        return std::nullopt;
       }
     }
 
-    std::optional<SignatureVerifier::SignatureAlgorithm> algo =
-        GetBestSupported(provider.get(), acceptable_algorithms);
-    if (!algo) {
-      return nullptr;
-    }
+    ASSIGN_OR_RETURN(SignatureVerifier::SignatureAlgorithm algo,
+                     GetBestSupported(provider.get(), acceptable_algorithms));
 
     std::vector<uint8_t> key_id;
     ScopedNCryptKey key;
@@ -619,113 +669,149 @@ class UnexportableKeyProviderWin : public UnexportableKeyProvider {
         std::u16string key_label = KeyIdToWindowsLabel(key_id);
         creation_status = NCryptCreatePersistedKey(
             provider.get(), ScopedNCryptKey::Receiver(key).get(),
-            BCryptAlgorithmFor(*algo).value(), base::as_wcstr(key_label),
+            BCryptAlgorithmFor(algo).value(), base::as_wcstr(key_label),
             /*dwLegacyKeySpec=*/0, /*dwFlags=*/0);
       } else {
         // An empty key name stops the key being persisted to disk.
         // TODO(crbug.com/398125799): assign labels to these keys instead.
         creation_status = NCryptCreatePersistedKey(
             provider.get(), ScopedNCryptKey::Receiver(key).get(),
-            BCryptAlgorithmFor(*algo).value(),
+            BCryptAlgorithmFor(algo).value(),
             /*pszKeyName=*/nullptr,
             /*dwLegacyKeySpec=*/0, /*dwFlags=*/0);
       }
       if (FAILED(creation_status)) {
         LogTPMOperationError(TPMOperation::kNewKeyCreation, creation_status,
                              algo);
-        return nullptr;
+        return std::nullopt;
+      }
+
+      if (usage == KeyUsage::kAttestation && !SetIdentityKeyPolicy(key.get())) {
+        return std::nullopt;
       }
 
       if (FAILED(NCryptFinalizeKey(key.get(), NCRYPT_SILENT_FLAG))) {
-        return nullptr;
+        return std::nullopt;
       }
     }
     if (provider_type_ == ProviderType::kTPM) {
-      base::expected<std::vector<uint8_t>, SECURITY_STATUS> wrapped_key =
-          ExportKey(key.get(), BCRYPT_OPAQUE_KEY_BLOB);
-      if (!wrapped_key.has_value()) {
-        LogTPMOperationError(TPMOperation::kWrappedKeyExport,
-                             wrapped_key.error(), algo);
-        return nullptr;
-      }
-      key_id = std::move(wrapped_key.value());
+      ASSIGN_OR_RETURN(key_id, ExportKey(key.get(), BCRYPT_OPAQUE_KEY_BLOB),
+                       [&](SECURITY_STATUS status) {
+                         LogTPMOperationError(TPMOperation::kWrappedKeyExport,
+                                              status, algo);
+                         return std::nullopt;
+                       });
     }
 
-    std::optional<std::vector<uint8_t>> spki;
-    switch (*algo) {
-      case SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256:
-        spki = GetP256ECDSASPKI(key.get());
-        if (!spki) {
-          return nullptr;
-        }
-        return std::make_unique<ECDSAKey>(provider_type_, std::move(key),
-                                          std::move(key_id),
-                                          std::move(spki.value()));
-      case SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA256:
-        spki = GetRSASPKI(key.get());
-        if (!spki) {
-          return nullptr;
-        }
-        return std::make_unique<RSAKey>(provider_type_, std::move(key),
-                                        std::move(key_id),
-                                        std::move(spki.value()));
-      default:
-        return nullptr;
-    }
+    ASSIGN_OR_RETURN(
+        std::vector<uint8_t> spki,
+        [&]() -> std::optional<std::vector<uint8_t>> {
+          switch (algo) {
+            case SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256:
+              return GetP256ECDSASPKI(key.get());
+            case SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA256:
+              return GetRSASPKI(key.get());
+            default:
+              return std::nullopt;
+          }
+        }());
+
+    return KeyDetails{std::move(key), std::move(key_id), std::move(spki), algo};
   }
 
-  std::unique_ptr<UnexportableSigningKey> FromWrappedSigningKeySlowly(
-      base::span<const uint8_t> wrapped) override {
+  std::optional<KeyDetails> FromWrappedKeyImpl(
+      base::span<const uint8_t> wrapped,
+      KeyUsage usage) {
     base::ScopedBlockingCall scoped_blocking_call(
         FROM_HERE, base::BlockingType::WILL_BLOCK);
 
     ScopedNCryptKey key = LoadWrappedKey(wrapped, provider_type_);
     if (!key.is_valid()) {
-      return nullptr;
+      return std::nullopt;
     }
 
-    const std::optional<std::vector<uint8_t>> algo_bytes =
-        GetKeyProperty(key.get(), NCRYPT_ALGORITHM_PROPERTY);
-    if (!algo_bytes) {
-      return nullptr;
+    if ((usage == KeyUsage::kAttestation) != IsIdentityKey(key.get())) {
+      return std::nullopt;
     }
 
     // The documentation suggests that |NCRYPT_ALGORITHM_PROPERTY| should return
     // the original algorithm, i.e. |BCRYPT_ECDSA_P256_ALGORITHM| for ECDSA. But
     // it actually returns just "ECDSA" for keys backed by the TPM.
-    // Note that these intentionally include the NUL terminator, since they're
-    // comparing against a c-style string that happens to be represented as an
-    // std::vector.
-    static constexpr wchar_t kECDSA[] = L"ECDSA";
-    static const base::span<const uint8_t> kECDSA_TPM =
-        base::as_byte_span(kECDSA);
-    static const base::span<const uint8_t> kECDSA_Software =
-        base::as_byte_span(BCRYPT_ECDSA_P256_ALGORITHM);
-    static const base::span<const uint8_t> kRSA =
-        base::as_byte_span(BCRYPT_RSA_ALGORITHM);
+    ASSIGN_OR_RETURN(
+        std::wstring algorithm,
+        GetKeyStringProperty(key.get(), NCRYPT_ALGORITHM_PROPERTY));
 
-    std::optional<std::vector<uint8_t>> spki;
-    if (algo_bytes == kECDSA_Software || algo_bytes == kECDSA_TPM) {
-      spki = GetP256ECDSASPKI(key.get());
-      if (!spki) {
-        return nullptr;
-      }
-      return std::make_unique<ECDSAKey>(
-          provider_type_, std::move(key),
-          std::vector<uint8_t>(wrapped.begin(), wrapped.end()),
-          std::move(spki.value()));
-    } else if (algo_bytes == kRSA) {
-      spki = GetRSASPKI(key.get());
-      if (!spki) {
-        return nullptr;
-      }
-      return std::make_unique<RSAKey>(
-          provider_type_, std::move(key),
-          std::vector<uint8_t>(wrapped.begin(), wrapped.end()),
-          std::move(spki.value()));
+    if (algorithm == BCRYPT_ECDSA_P256_ALGORITHM ||
+        algorithm == BCRYPT_ECDSA_ALGORITHM) {
+      ASSIGN_OR_RETURN(std::vector<uint8_t> spki, GetP256ECDSASPKI(key.get()));
+      return KeyDetails{std::move(key), base::ToVector(wrapped),
+                        std::move(spki),
+                        SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256};
     }
 
-    return nullptr;
+    if (algorithm == BCRYPT_RSA_ALGORITHM) {
+      ASSIGN_OR_RETURN(std::vector<uint8_t> spki, GetRSASPKI(key.get()));
+      return KeyDetails{
+          std::move(key), base::ToVector(wrapped), std::move(spki),
+          SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA256};
+    }
+
+    return std::nullopt;
+  }
+
+  std::unique_ptr<UnexportableSigningKey> GenerateSigningKeySlowly(
+      base::span<const SignatureVerifier::SignatureAlgorithm>
+          acceptable_algorithms) override {
+    ASSIGN_OR_RETURN(KeyDetails key,
+                     GenerateKeyImpl(acceptable_algorithms, KeyUsage::kSigning),
+                     [] { return nullptr; });
+
+    switch (key.algo) {
+      case SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256:
+        return std::make_unique<ECDSASigningKey>(provider_type_,
+                                                 std::move(key));
+      case SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA256:
+        return std::make_unique<RSASigningKey>(provider_type_, std::move(key));
+      default:
+        return nullptr;
+    }
+  }
+
+  std::unique_ptr<UnexportableAttestationKey> GenerateAttestationKeySlowly(
+      base::span<const SignatureVerifier::SignatureAlgorithm>
+          acceptable_algorithms) override {
+    ASSIGN_OR_RETURN(
+        KeyDetails key,
+        GenerateKeyImpl(acceptable_algorithms, KeyUsage::kAttestation),
+        [] { return nullptr; });
+
+    return std::make_unique<AttestationKeyWin>(provider_type_, std::move(key));
+  }
+
+  std::unique_ptr<UnexportableSigningKey> FromWrappedSigningKeySlowly(
+      base::span<const uint8_t> wrapped) override {
+    ASSIGN_OR_RETURN(KeyDetails key,
+                     FromWrappedKeyImpl(wrapped, KeyUsage::kSigning),
+                     [] { return nullptr; });
+
+    switch (key.algo) {
+      case SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256:
+        return std::make_unique<ECDSASigningKey>(provider_type_,
+                                                 std::move(key));
+      case SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA256:
+        return std::make_unique<RSASigningKey>(provider_type_, std::move(key));
+      default:
+        return nullptr;
+    }
+  }
+
+  std::unique_ptr<UnexportableAttestationKey> FromWrappedAttestationKeySlowly(
+      base::span<const uint8_t> wrapped) override {
+    ASSIGN_OR_RETURN(KeyDetails key,
+                     FromWrappedKeyImpl(wrapped, KeyUsage::kAttestation),
+                     [] { return nullptr; });
+
+    return std::make_unique<AttestationKeyWin>(provider_type_, std::move(key));
   }
 
   StatefulUnexportableKeyProvider* AsStatefulUnexportableKeyProvider()
@@ -954,34 +1040,22 @@ class VirtualUnexportableKeyProviderWin
       }
     }
 
-    const std::optional<std::vector<uint8_t>> algo_bytes =
-        GetKeyProperty(key.get(), NCRYPT_ALGORITHM_PROPERTY);
+    ASSIGN_OR_RETURN(std::wstring algorithm,
+                     GetKeyStringProperty(key.get(), NCRYPT_ALGORITHM_PROPERTY),
+                     [] { return nullptr; });
 
     // This is the expected behavior, but note it is different from TPM backed
     // keys.
-    // Note that these intentionally include the NUL terminator, since they're
-    // comparing against a c-style string that happens to be represented as an
-    // std::vector.
-    static const base::span<const uint8_t> kECDSA_Software =
-        base::as_byte_span(BCRYPT_ECDSA_P256_ALGORITHM);
-    static const base::span<const uint8_t> kRSA =
-        base::as_byte_span(BCRYPT_RSA_ALGORITHM);
-
-    std::optional<std::vector<uint8_t>> spki;
-    if (algo_bytes == kECDSA_Software) {
-      spki = GetP256ECDSASPKI(key.get());
-      if (!spki) {
-        return nullptr;
-      }
+    if (algorithm == BCRYPT_ECDSA_P256_ALGORITHM) {
+      ASSIGN_OR_RETURN(std::vector<uint8_t> spki, GetP256ECDSASPKI(key.get()),
+                       [] { return nullptr; });
       return std::make_unique<ECDSASoftwareKey>(std::move(key), name,
-                                                std::move(spki.value()));
-    } else if (algo_bytes == kRSA) {
-      spki = GetRSASPKI(key.get());
-      if (!spki) {
-        return nullptr;
-      }
+                                                std::move(spki));
+    } else if (algorithm == BCRYPT_RSA_ALGORITHM) {
+      ASSIGN_OR_RETURN(std::vector<uint8_t> spki, GetRSASPKI(key.get()),
+                       [] { return nullptr; });
       return std::make_unique<RSASoftwareKey>(std::move(key), name,
-                                              std::move(spki.value()));
+                                              std::move(spki));
     }
 
     return nullptr;
@@ -990,7 +1064,7 @@ class VirtualUnexportableKeyProviderWin
 
 }  // namespace
 
-ScopedNCryptKey DuplicatePlatformKeyHandle(const UnexportableSigningKey& key) {
+ScopedNCryptKey DuplicatePlatformKeyHandle(const UnexportableKey& key) {
   return LoadWrappedKey(key.GetWrappedKey(), key.IsHardwareBacked()
                                                  ? ProviderType::kTPM
                                                  : ProviderType::kSoftware);

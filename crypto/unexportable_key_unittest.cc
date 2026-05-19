@@ -213,6 +213,131 @@ TEST_P(UnexportableKeyTest, DuplicatePlatformKeyHandleSucceeds) {
   auto ncrypt_key = crypto::DuplicatePlatformKeyHandle(*key);
   EXPECT_TRUE(ncrypt_key.is_valid());
 }
+
+TEST_P(UnexportableKeyTest, AttestationKeyCannotSign) {
+  if (provider_type() != Provider::kTPM) {
+    GTEST_SKIP() << "Attestation keys are only supported on TPM.";
+  }
+
+  std::unique_ptr<crypto::UnexportableKeyProvider> provider = CreateProvider();
+  if (!provider) {
+    GTEST_SKIP() << "Skipping test because of lack of hardware support.";
+  }
+
+  const crypto::SignatureVerifier::SignatureAlgorithm algorithms[] = {
+      algorithm()};
+  auto key = provider->GenerateAttestationKeySlowly(algorithms);
+  if (!key) {
+    // Software providers or missing TPM support.
+    GTEST_SKIP() << "Skipping test because of lack of hardware support for "
+                    "attestation keys.";
+  }
+
+  auto ncrypt_key = crypto::DuplicatePlatformKeyHandle(*key);
+  ASSERT_TRUE(ncrypt_key.is_valid());
+
+  std::vector<uint8_t> dummy_hash(32, 0x01);
+  DWORD cb_signature = 0;
+
+  BCRYPT_PKCS1_PADDING_INFO pkcs1_padding_info = {0};
+  pkcs1_padding_info.pszAlgId = BCRYPT_SHA256_ALGORITHM;
+  void* padding_info = nullptr;
+  DWORD flags = NCRYPT_SILENT_FLAG;
+
+  if (algorithm() ==
+      crypto::SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA256) {
+    padding_info = &pkcs1_padding_info;
+    flags |= BCRYPT_PAD_PKCS1;
+  }
+
+  SECURITY_STATUS status =
+      NCryptSignHash(ncrypt_key.get(), padding_info, dummy_hash.data(),
+                     dummy_hash.size(), nullptr, 0, &cb_signature, flags);
+  // For AIKs, signing arbitrary data should fail because of
+  // NCRYPT_PCP_IDENTITY_KEY.
+  EXPECT_NE(status, 0);
+}
+
+TEST_P(UnexportableKeyTest, FromWrappedAttestationKeyFailsForSigningKey) {
+  if (provider_type() != Provider::kTPM) {
+    GTEST_SKIP() << "Attestation keys are only supported on TPM.";
+  }
+
+  std::unique_ptr<crypto::UnexportableKeyProvider> provider = CreateProvider();
+  if (!provider) {
+    GTEST_SKIP() << "Skipping test because of lack of hardware support.";
+  }
+
+  const crypto::SignatureVerifier::SignatureAlgorithm algorithms[] = {
+      algorithm()};
+
+  // 1. Generate a signing key.
+  auto signing_key = provider->GenerateSigningKeySlowly(algorithms);
+  if (algorithm() ==
+          crypto::SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256 &&
+      !signing_key) {
+    GTEST_SKIP()
+        << "Workaround for https://issues.chromium.org/issues/41494935";
+  }
+  ASSERT_TRUE(signing_key);
+  std::vector<uint8_t> signing_wrapped = signing_key->GetWrappedKey();
+
+  // 2. Try to load it as an attestation key. It should fail.
+  auto loaded_attestation_key =
+      provider->FromWrappedAttestationKeySlowly(signing_wrapped);
+  EXPECT_FALSE(loaded_attestation_key);
+}
+
+TEST_P(UnexportableKeyTest,
+       FromWrappedAttestationKeySucceedsForAttestationKey) {
+  std::unique_ptr<crypto::UnexportableKeyProvider> provider = CreateProvider();
+  if (!provider) {
+    GTEST_SKIP() << "Skipping test because of lack of hardware support.";
+  }
+
+  const crypto::SignatureVerifier::SignatureAlgorithm algorithms[] = {
+      algorithm()};
+
+  // 1. Generate an attestation key.
+  auto attestation_key = provider->GenerateAttestationKeySlowly(algorithms);
+  if (!attestation_key) {
+    GTEST_SKIP() << "Skipping test because of lack of hardware support for "
+                    "attestation keys.";
+  }
+  std::vector<uint8_t> attestation_wrapped = attestation_key->GetWrappedKey();
+
+  // 2. Load it as an attestation key. It should succeed.
+  auto loaded_attestation_key =
+      provider->FromWrappedAttestationKeySlowly(attestation_wrapped);
+  EXPECT_TRUE(loaded_attestation_key);
+}
+
+TEST_P(UnexportableKeyTest, FromWrappedSigningKeyFailsForAttestationKey) {
+  if (provider_type() != Provider::kTPM) {
+    GTEST_SKIP() << "Attestation keys are only supported on TPM.";
+  }
+
+  std::unique_ptr<crypto::UnexportableKeyProvider> provider = CreateProvider();
+  if (!provider) {
+    GTEST_SKIP() << "Skipping test because of lack of hardware support.";
+  }
+
+  const crypto::SignatureVerifier::SignatureAlgorithm algorithms[] = {
+      algorithm()};
+
+  // 1. Generate an attestation key.
+  auto attestation_key = provider->GenerateAttestationKeySlowly(algorithms);
+  if (!attestation_key) {
+    GTEST_SKIP() << "Skipping test because of lack of hardware support for "
+                    "attestation keys.";
+  }
+  std::vector<uint8_t> attestation_wrapped = attestation_key->GetWrappedKey();
+
+  // 2. Try to load it as a signing key. It should fail.
+  auto loaded_signing_key =
+      provider->FromWrappedSigningKeySlowly(attestation_wrapped);
+  EXPECT_FALSE(loaded_signing_key);
+}
 #endif
 
 TEST_P(UnexportableKeyTest, AttestationKeyMock) {
