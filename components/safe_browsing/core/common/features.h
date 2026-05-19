@@ -443,6 +443,9 @@ BASE_DECLARE_FEATURE(kSkipImageClassificationScoringForNonPageLoadTriggers);
 // Controls the daily quota for the suspicious site trigger.
 BASE_DECLARE_FEATURE(kSuspiciousSiteTriggerQuotaFeature);
 
+// Enables warnings on sites that Safe Browsing deems suspicious.
+BASE_DECLARE_FEATURE(kSuspiciousSiteWarnings);
+
 // Controls whether the integration of tailored security settings is enabled.
 BASE_DECLARE_FEATURE(kTailoredSecurityIntegration);
 
