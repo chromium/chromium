@@ -28,8 +28,7 @@ class BitstreamFileWriter::FrameFileWriter {
 
   bool WriteFrame(uint64_t timestamp, base::span<const uint8_t> data) {
     if (ivf_writer_) {
-      return ivf_writer_->WriteFrame(base::checked_cast<uint32_t>(data.size()),
-                                     timestamp, data.data());
+      return ivf_writer_->WriteFrame(timestamp, data);
     }
     // For H.264.
     LOG_ASSERT(output_file_.IsValid());

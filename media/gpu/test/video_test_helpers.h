@@ -102,7 +102,7 @@ class IvfWriter {
                        const gfx::Size& resolution,
                        uint32_t frame_rate,
                        uint32_t num_frames);
-  bool WriteFrame(uint32_t data_size, uint64_t timestamp, const uint8_t* data);
+  bool WriteFrame(uint64_t timestamp, base::span<const uint8_t> data);
 
  private:
   base::File output_file_;

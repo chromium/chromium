@@ -133,18 +133,18 @@ bool IvfWriter::WriteFileHeader(VideoCodec codec,
   return output_file_.WriteAtCurrentPosAndCheck(base::as_byte_span(ivf_header));
 }
 
-bool IvfWriter::WriteFrame(uint32_t data_size,
-                           uint64_t timestamp,
-                           const uint8_t* data) {
-  std::array<char, kIvfFrameHeaderSize> ivf_frame_header = {};
-  UNSAFE_TODO(memcpy(&ivf_frame_header[0], &data_size, sizeof(data_size)));
-  UNSAFE_TODO(memcpy(&ivf_frame_header[4], &timestamp, sizeof(timestamp)));
-  if (!output_file_.WriteAtCurrentPosAndCheck(
-          base::as_byte_span(ivf_frame_header))) {
+bool IvfWriter::WriteFrame(uint64_t timestamp,
+                           base::span<const uint8_t> data) {
+  std::array<uint8_t, kIvfFrameHeaderSize> ivf_frame_header = {};
+  auto writer = base::SpanWriter(base::span(ivf_frame_header));
+  writer.WriteU32LittleEndian(base::checked_cast<uint32_t>(data.size()));
+  writer.WriteU64LittleEndian(timestamp);
+  CHECK_EQ(writer.remaining(), 0u);
+
+  if (!output_file_.WriteAtCurrentPosAndCheck(ivf_frame_header)) {
     return false;
   }
-  auto data_span = UNSAFE_TODO(base::span(data, data_size));
-  return output_file_.WriteAtCurrentPosAndCheck(data_span);
+  return output_file_.WriteAtCurrentPosAndCheck(data);
 }
 
 // static
@@ -470,10 +470,9 @@ scoped_refptr<DecoderBuffer> EncodedDataHelperIVF::GetNextBuffer() {
       LOG(ERROR) << "data is too small";
       return nullptr;
     }
-    auto ivf_header = GetIvfFileHeader(UNSAFE_TODO(base::span<const uint8_t>(
-        reinterpret_cast<const uint8_t*>(&data_[0]), kIvfFileHeaderSize)));
-    if (UNSAFE_TODO(strncmp(ivf_header.signature, "DKIF", kNALUHeaderSize)) !=
-        0) {
+    auto ivf_header = GetIvfFileHeader(
+        base::as_byte_span(data_).first<kIvfFileHeaderSize>());
+    if (std::string_view(ivf_header.signature, kNALUHeaderSize) != "DKIF") {
       LOG(ERROR) << "Unexpected data encountered while parsing IVF header";
       return nullptr;
     }
@@ -518,9 +517,11 @@ scoped_refptr<DecoderBuffer> EncodedDataHelperIVF::GetNextBuffer() {
   // Standard stream case.
   if (ivf_frames.size() == 1) {
     return DecoderBuffer::CopyFrom(
+        // SAFETY: IvfFrame currently uses raw_ptr and size. We safely create a
+        // span from it.
         // TODO(crbug.com/40284755): spanify `IvfFrame`.
-        UNSAFE_TODO(base::span(ivf_frames[0].data.get(),
-                               ivf_frames[0].header.frame_size)));
+        UNSAFE_BUFFERS(base::span(ivf_frames[0].data.get(),
+                                  ivf_frames[0].header.frame_size)));
   }
 
   if (ivf_frames.size() > 3) {
@@ -551,8 +552,8 @@ std::optional<IvfFrameHeader> EncodedDataHelperIVF::GetNextIvfFrameHeader()
     LOG(ERROR) << "Unexpected data encountered while parsing IVF frame header";
     return std::nullopt;
   }
-  return GetIvfFrameHeader(UNSAFE_TODO(base::span<const uint8_t>(
-      reinterpret_cast<const uint8_t*>(&data_[pos]), kIvfFrameHeaderSize)));
+  return GetIvfFrameHeader(
+      base::as_byte_span(data_).subspan(pos, kIvfFrameHeaderSize));
 }
 
 std::optional<IvfFrame> EncodedDataHelperIVF::ReadNextIvfFrame() {
@@ -736,10 +737,13 @@ scoped_refptr<VideoFrame> AlignedDataHelper::CreateVideoFrameFromVideoFrameData(
     base::ReadOnlySharedMemoryMapping mapping = shmem_region.Map();
     uint8_t* buf = const_cast<uint8_t*>(mapping.GetMemoryAs<uint8_t>());
     std::array<base::span<uint8_t>, VideoFrame::kMaxPlanes> data = {};
+    // SAFETY: buf points to the start of the shared memory mapping of size
+    // mapping.size(). We create a safe span covering the whole mapping first.
+    auto buf_span = UNSAFE_BUFFERS(base::span(buf, mapping.size()));
     for (size_t i = 0; i < layout_->planes().size(); i++) {
       // TODO(crbug.com/40285824): spanify this usage.
-      data[i] = UNSAFE_TODO(base::span(buf + layout_->planes()[i].offset,
-                                       layout_->planes()[i].size));
+      data[i] = buf_span.subspan(layout_->planes()[i].offset,
+                                 layout_->planes()[i].size);
     }
     auto frame = media::VideoFrame::WrapExternalYuvDataWithLayout(
         *layout_, visible_rect_, natural_size_, data[0], data[1], data[2],
