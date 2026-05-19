@@ -163,9 +163,6 @@ class CORE_EXPORT ChromeClientImpl final : public ChromeClient {
                          cc::BeginMainFrameReason,
                          base::TimeDelta delay,
                          bool urgent) override;
-  void ScheduleAnimation(const LocalFrameView*,
-                         base::TimeDelta delay,
-                         bool urgent) override;
   gfx::Rect LocalRootToScreenDIPs(const gfx::Rect&,
                                   const LocalFrameView*) const override;
   float WindowToViewportScalar(LocalFrame*, const float) const override;

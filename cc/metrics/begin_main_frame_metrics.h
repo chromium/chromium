@@ -17,7 +17,8 @@ enum class BeginMainFrameReason {
   kRAF = 1,
   kIntersectionObserver = 2,
   kCSSAnimation = 3,
-  kMaxValue = kCSSAnimation
+  kStyleInvalidation = 4,
+  kMaxValue = kStyleInvalidation,
 };
 
 inline constexpr size_t BeginMainFrameReasonSize =

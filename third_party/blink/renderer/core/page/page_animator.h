@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_PAGE_PAGE_ANIMATOR_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_PAGE_PAGE_ANIMATOR_H_
 
+#include "cc/metrics/begin_main_frame_metrics.h"
 #include "third_party/blink/public/common/metrics/document_update_reason.h"
 #include "third_party/blink/renderer/core/animation/animation.h"
 #include "third_party/blink/renderer/core/animation/animation_clock.h"
@@ -32,7 +33,9 @@ class CORE_EXPORT PageAnimator final : public GarbageCollected<PageAnimator> {
   explicit PageAnimator(Page&);
 
   void Trace(Visitor*) const;
-  void ScheduleVisualUpdate(LocalFrame*);
+  void ScheduleVisualUpdate(
+      LocalFrame*,
+      cc::BeginMainFrameReason reason = cc::BeginMainFrameReason::kOther);
   void ServiceScriptedAnimations(
       base::TimeTicks monotonic_animation_start_time);
   // Invokes callbacks, dispatches events, etc. The order is defined by HTML:

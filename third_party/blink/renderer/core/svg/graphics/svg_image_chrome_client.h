@@ -77,6 +77,7 @@ class CORE_EXPORT SVGImageChromeClient final : public IsolatedSVGChromeClient {
   void ChromeDestroyed() override;
   void InvalidateContainer() override;
   void ScheduleAnimation(const LocalFrameView*,
+                         cc::BeginMainFrameReason,
                          base::TimeDelta,
                          bool urgent) override;
 

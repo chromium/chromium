@@ -378,12 +378,13 @@ void PageAnimator::SetHasViewTransition(bool has_view_transition) {
 }
 
 DISABLE_CFI_PERF
-void PageAnimator::ScheduleVisualUpdate(LocalFrame* frame) {
+void PageAnimator::ScheduleVisualUpdate(LocalFrame* frame,
+                                        cc::BeginMainFrameReason reason) {
   if (servicing_animations_ || updating_layout_and_style_for_painting_ ||
       suppress_frame_requests_workaround_for704763_only_) {
     return;
   }
-  page_->GetChromeClient().ScheduleAnimation(frame->View());
+  page_->GetChromeClient().ScheduleAnimation(frame->View(), reason);
 }
 
 void PageAnimator::UpdateAllLifecyclePhases(LocalFrame& root_frame,

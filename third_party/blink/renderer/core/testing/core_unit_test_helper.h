@@ -99,6 +99,7 @@ class RenderingTestChromeClient : public EmptyChromeClient {
       WebInputEvent::Type injected_type) override;
 
   void ScheduleAnimation(const LocalFrameView*,
+                         cc::BeginMainFrameReason,
                          base::TimeDelta,
                          bool) override {
     animation_scheduled_ = true;

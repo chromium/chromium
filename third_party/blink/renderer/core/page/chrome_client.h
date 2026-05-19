@@ -163,23 +163,20 @@ class CORE_EXPORT ChromeClient : public GarbageCollected<ChromeClient> {
   virtual gfx::Rect LocalRootToScreenDIPs(const gfx::Rect&,
                                           const LocalFrameView*) const = 0;
 
-  void ScheduleAnimation(const LocalFrameView* view) {
-    ScheduleAnimation(view, base::TimeDelta(), /*urgent=*/false);
+  void ScheduleAnimation(const LocalFrameView* view,
+                         cc::BeginMainFrameReason reason) {
+    ScheduleAnimation(view, reason, base::TimeDelta(), /*urgent=*/false);
   }
-  void ScheduleAnimation(const LocalFrameView* view, base::TimeDelta delay) {
-    ScheduleAnimation(view, delay, /*urgent=*/false);
+  void ScheduleAnimation(const LocalFrameView* view,
+                         base::TimeDelta delay = base::TimeDelta(),
+                         bool urgent = false) {
+    ScheduleAnimation(view, cc::BeginMainFrameReason::kOther, delay, urgent);
   }
-
-  virtual void ScheduleAnimation(const LocalFrameView* view,
-                                 base::TimeDelta delay,
-                                 bool urgent) = 0;
 
   virtual void ScheduleAnimation(const LocalFrameView* view,
                                  cc::BeginMainFrameReason reason,
                                  base::TimeDelta delay,
-                                 bool urgent) {
-    ScheduleAnimation(view, delay, urgent);
-  }
+                                 bool urgent) = 0;
 
   // Tells the browser that another page has accessed the DOM of the initial
   // empty document of a main frame.

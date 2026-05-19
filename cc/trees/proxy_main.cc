@@ -158,7 +158,7 @@ void ProxyMain::BeginMainFrame(
       UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
           "Compositing.BeginMainFrame.TimeUs", timer->Elapsed(),
           base::Microseconds(1), base::Seconds(10), 50);
-      UMA_HISTOGRAM_ENUMERATION("Compositing.BeginMainFrame.BMFReason1",
+      UMA_HISTOGRAM_ENUMERATION("Compositing.BeginMainFrame.BMFReason2",
                                 begin_main_frame_reason.to_ulong(),
                                 num_buckets);
       if (reason == CommitEarlyOutReason::kFinishedNoUpdates) {
@@ -166,7 +166,7 @@ void ProxyMain::BeginMainFrame(
             "Compositing.BeginMainFrame.TimeUs.NoUpdate", timer->Elapsed(),
             base::Microseconds(1), base::Seconds(10), 50);
         UMA_HISTOGRAM_ENUMERATION(
-            "Compositing.BeginMainFrame.BMFReason1.NoUpdate",
+            "Compositing.BeginMainFrame.BMFReason2.NoUpdate",
             begin_main_frame_reason.to_ulong(), num_buckets);
       }
     }

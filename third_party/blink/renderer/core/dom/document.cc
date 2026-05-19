@@ -2431,7 +2431,8 @@ void Document::ScheduleLayoutTreeUpdate() {
   DCHECK(NeedsLayoutTreeUpdate());
 
   if (!View()->CanThrottleRendering() && ShouldScheduleLayout()) {
-    GetPage()->Animator().ScheduleVisualUpdate(GetFrame());
+    GetPage()->Animator().ScheduleVisualUpdate(
+        GetFrame(), cc::BeginMainFrameReason::kStyleInvalidation);
   }
 
   // FrameSelection caches visual selection information, which must be

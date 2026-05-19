@@ -193,6 +193,7 @@ class CORE_EXPORT EmptyChromeClient : public ChromeClient {
 
   void InvalidateContainer() override {}
   void ScheduleAnimation(const LocalFrameView*,
+                         cc::BeginMainFrameReason reason,
                          base::TimeDelta delay,
                          bool urgent) override {}
   gfx::Rect LocalRootToScreenDIPs(const gfx::Rect& r,

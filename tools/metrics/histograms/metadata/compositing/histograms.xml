@@ -103,7 +103,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Compositing.BeginMainFrame.BMFReason1" units="reasons"
+<histogram name="Compositing.BeginMainFrame.BMFReason2" units="reasons"
     expires_after="2026-08-30">
   <owner>thiabaud@google.com</owner>
   <owner>jonross@chromium.org</owner>
@@ -115,12 +115,12 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Compositing.BeginMainFrame.BMFReason1.NoUpdate"
+<histogram name="Compositing.BeginMainFrame.BMFReason2.NoUpdate"
     units="reasons" expires_after="2026-08-30">
   <owner>thiabaud@google.com</owner>
   <owner>jonross@chromium.org</owner>
   <summary>
-    Same as &quot;Compositing.BeginMainFrame.BMFReason1&quot;, but only recorded
+    Same as &quot;Compositing.BeginMainFrame.BMFReason2&quot;, but only recorded
     if the BeginMainFrame finishes with no updates.
   </summary>
 </histogram>

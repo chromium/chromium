@@ -563,13 +563,6 @@ void ChromeClientImpl::InvalidateContainer() {
 }
 
 void ChromeClientImpl::ScheduleAnimation(const LocalFrameView* frame_view,
-                                         base::TimeDelta delay,
-                                         bool urgent) {
-  ScheduleAnimation(frame_view, cc::BeginMainFrameReason::kOther, delay,
-                    urgent);
-}
-
-void ChromeClientImpl::ScheduleAnimation(const LocalFrameView* frame_view,
                                          cc::BeginMainFrameReason reason,
                                          base::TimeDelta delay,
                                          bool urgent) {
