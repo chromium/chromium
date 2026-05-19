@@ -5,6 +5,8 @@
 package org.chromium.chrome.browser.ui.autofill;
 
 import android.content.Context;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
@@ -20,6 +22,28 @@ public class AtMemoryBottomSheetView {
 
     public AtMemoryBottomSheetView(Context context) {
         mContentView = LayoutInflater.from(context).inflate(R.layout.at_memory_bottom_sheet, null);
+        initializeSearchQueryInput();
+    }
+
+    private void initializeSearchQueryInput() {
+        EditText searchInput = mContentView.findViewById(R.id.search_query_input);
+        View clearButton = mContentView.findViewById(R.id.clear_search_button);
+
+        clearButton.setOnClickListener(v -> clearSearchText());
+        searchInput.addTextChangedListener(
+                new TextWatcher() {
+                    @Override
+                    public void beforeTextChanged(
+                            CharSequence s, int start, int count, int after) {}
+
+                    @Override
+                    public void onTextChanged(CharSequence s, int start, int before, int count) {
+                        clearButton.setVisibility(s.length() > 0 ? View.VISIBLE : View.GONE);
+                    }
+
+                    @Override
+                    public void afterTextChanged(Editable s) {}
+                });
     }
 
     public View getContentView() {

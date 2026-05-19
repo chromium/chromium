@@ -9,6 +9,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import android.content.Context;
+import android.view.ContextThemeWrapper;
 import android.view.View;
 import android.widget.EditText;
 
@@ -33,7 +34,10 @@ public class AtMemoryBottomSheetViewTest {
 
     @Before
     public void setUp() {
-        mContext = ApplicationProvider.getApplicationContext();
+        mContext =
+                new ContextThemeWrapper(
+                        ApplicationProvider.getApplicationContext(),
+                        R.style.Theme_BrowserUI_DayNight);
         mView = new AtMemoryBottomSheetView(mContext);
     }
 
@@ -65,5 +69,52 @@ public class AtMemoryBottomSheetViewTest {
         AtMemoryBottomSheetViewBinder.bind(model, mView, AtMemoryBottomSheetProperties.VISIBLE);
 
         assertEquals("", searchInput.getText().toString());
+    }
+
+    @Test
+    public void testClearButtonVisibleWhenTextNonEmpty() {
+        View contentView = mView.getContentView();
+        EditText searchInput = contentView.findViewById(R.id.search_query_input);
+        View clearButton = contentView.findViewById(R.id.clear_search_button);
+        assertNotNull(searchInput);
+        assertNotNull(clearButton);
+
+        assertEquals(View.GONE, clearButton.getVisibility());
+
+        searchInput.setText("some text");
+
+        assertEquals(View.VISIBLE, clearButton.getVisibility());
+    }
+
+    @Test
+    public void testClearButtonHiddenWhenTextEmpty() {
+        View contentView = mView.getContentView();
+        EditText searchInput = contentView.findViewById(R.id.search_query_input);
+        View clearButton = contentView.findViewById(R.id.clear_search_button);
+        assertNotNull(searchInput);
+        assertNotNull(clearButton);
+
+        searchInput.setText("some text");
+        assertEquals(View.VISIBLE, clearButton.getVisibility());
+
+        searchInput.setText("");
+        assertEquals(View.GONE, clearButton.getVisibility());
+    }
+
+    @Test
+    public void testClearButtonClickClearsText() {
+        View contentView = mView.getContentView();
+        EditText searchInput = contentView.findViewById(R.id.search_query_input);
+        View clearButton = contentView.findViewById(R.id.clear_search_button);
+        assertNotNull(searchInput);
+        assertNotNull(clearButton);
+
+        searchInput.setText("some text");
+        assertEquals(View.VISIBLE, clearButton.getVisibility());
+
+        clearButton.performClick();
+
+        assertEquals("", searchInput.getText().toString());
+        assertEquals(View.GONE, clearButton.getVisibility());
     }
 }

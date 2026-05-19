@@ -6,29 +6,48 @@ found in the LICENSE file.
 -->
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    tools:ignore="UselessParent">
 
-    <EditText
-        android:id="@+id/search_query_input"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="48dp"
-        android:hint="@string/at_memory_search_hint"
-        android:drawableStart="@drawable/search_spark"
-        android:drawablePadding="16dp"
-        android:paddingStart="16dp"
-        android:paddingEnd="12dp"
-        android:paddingTop="12dp"
-        android:paddingBottom="12dp"
+        android:orientation="horizontal"
         android:layout_marginStart="24dp"
         android:layout_marginEnd="24dp"
         android:layout_marginTop="20dp"
         android:layout_marginBottom="18dp"
-        android:textAppearance="@style/TextAppearance.TextLarge.Primary"
-        android:importantForAutofill="no"
-        android:inputType="text"
         android:background="@drawable/at_memory_search_bar_background">
-    </EditText>
 
+        <EditText
+            android:id="@+id/search_query_input"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:hint="@string/at_memory_search_hint"
+            android:drawableStart="@drawable/search_spark"
+            android:drawablePadding="16dp"
+            android:paddingStart="16dp"
+            android:paddingEnd="4dp"
+            android:paddingTop="12dp"
+            android:paddingBottom="12dp"
+            android:textAppearance="@style/TextAppearance.TextLarge.Primary"
+            android:importantForAutofill="no"
+            android:inputType="text"
+            android:background="@null" />
+
+        <org.chromium.ui.widget.ChromeImageButton
+            android:id="@+id/clear_search_button"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_gravity="center_vertical"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:src="@drawable/btn_delete_24dp"
+            android:scaleType="centerInside"
+            android:visibility="gone"
+            android:contentDescription="@string/accessibility_toolbar_btn_delete_url" />
+    </LinearLayout>
 </LinearLayout>
