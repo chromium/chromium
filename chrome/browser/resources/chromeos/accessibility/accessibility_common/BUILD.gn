@@ -81,7 +81,8 @@ ts_modules = [
   "offscreen_command_type.ts",
 ]
 
-# The relative path in the staging directory of TS modules that need to be copied from another directory.
+# The relative path in the staging directory of TS modules that need to be
+# copied from another directory.
 copied_ts_modules = [ "facegaze/facial_gestures.ts" ]
 
 ts_definitions = [

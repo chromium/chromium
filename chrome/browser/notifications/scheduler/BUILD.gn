@@ -15,7 +15,8 @@ source_set("factory") {
     "schedule_service_factory_helper.h",
   ]
 
-  # This target should not depend on anything in //chrome/* except the proto library.
+  # This target should not depend on anything in //chrome/* except the proto
+  # library.
   deps = [
     "//base",
     "//chrome/browser/notifications/proto",

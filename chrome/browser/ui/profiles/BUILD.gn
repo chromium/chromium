@@ -38,9 +38,10 @@ source_set("profiles") {
     if (enable_dice_support) {
       sources += [
         "batch_upload_ui_delegate.h",
-        # TODO(crbug.com/430804948): signin_intercept_first_run_experience_dialog.h
-        # isn't listed here at the moment, and added to "impl" target instead, because it
-        # causes the following circular dependency:
+        # TODO(crbug.com/430804948):
+        # signin_intercept_first_run_experience_dialog.h isn't listed here at
+        # the moment, and added to "impl" target instead, because it causes the
+        # following circular dependency:
         # ERROR Dependency cycle:
         #  //chrome/browser/extensions:extensions ->
         #  //chrome/browser/ui/views/side_panel:side_panel ->
@@ -116,8 +117,8 @@ source_set("impl") {
         "//chrome/browser/ui/webui/signin:login_ui_service",
 
         # TODO(crbug.com/430804948): This dependency is here because of
-        # signin_intercept_first_run_experience_dialog.h listed above - see comment in
-        # :profiles above.
+        # signin_intercept_first_run_experience_dialog.h listed above - see
+        # comment in :profiles above.
         "//chrome/browser/ui/signin",
         "//chrome/browser/ui/webui/signin:profile",
       ]
@@ -207,8 +208,9 @@ source_set("browser_tests") {
       sources +=
           [ "signin_intercept_first_run_experience_dialog_browsertest.cc" ]
       deps += [
-        # TODO(crbug.com/430804948): Not depend on it when `signin_intercept_first_run_experience_dialog.h`
-        # gets built off of :profiles.
+        # TODO(crbug.com/430804948): Not depend on it when
+        # `signin_intercept_first_run_experience_dialog.h` gets built off of
+        # :profiles.
         ":impl",
         "//chrome/browser/policy:test_support",
         "//chrome/browser/sync",

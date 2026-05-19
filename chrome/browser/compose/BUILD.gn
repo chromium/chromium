@@ -79,9 +79,10 @@ source_set("impl") {
     "//ui/gfx/geometry",
     "//url",
 
-    # TODO(crbug.com/353332589): The following headers are included and cause
-    # a dependency against //c/b/ui:ui. Because of them, the `:impl` target is needed.
-    # Unify `:compose` and `:impl` targets and these inclusions are gone.
+    # TODO(crbug.com/353332589): The following headers are included and cause a
+    # dependency against //c/b/ui:ui. Because of them, the `:impl` target is
+    # needed. Unify `:compose` and `:impl` targets and these inclusions are
+    # gone.
     # - c/b/ui/browser.h"
     # - c/b/ui/browser_dialogs.h"
     # - c/b/ui/browser_finder.h"

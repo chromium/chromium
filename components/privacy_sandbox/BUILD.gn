@@ -52,10 +52,10 @@ source_set("tracking_protection_settings") {
   public_deps = [ "//base" ]
 }
 
-# These sources depend on targets from "//content/browser", which means they can only
-# be loaded on Blink builds.
-# NOTE: If/when targets used on iOS are refactored into a separate BUILD file, this
-# check can be removed.
+# These sources depend on targets from "//content/browser", which means they can
+# only be loaded on Blink builds.
+# NOTE: If/when targets used on iOS are refactored into a separate BUILD file,
+# this check can be removed.
 if (use_blink) {
   source_set("privacy_sandbox_settings_headers") {
     sources = [

@@ -84,7 +84,8 @@ android_library("java") {
     "java/src/org/chromium/on_device_model/SessionResponder.java",
   ]
 
-  # MLKit-based implementations for AICore backend for non-Chrome branded builds.
+  # MLKit-based implementations for AICore backend for non-Chrome branded
+  # builds.
   if (use_mlkit_for_aicore) {
     sources += [
       "java/src/org/chromium/on_device_model/MlKitAiCoreFactoryImpl.java",

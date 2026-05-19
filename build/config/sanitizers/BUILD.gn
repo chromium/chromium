@@ -177,9 +177,10 @@ if (is_asan && is_linux) {
   }
 }
 
-# TODO(crbug.com/447520906): Because of `build/android/android_only_explicit_jni_exports.lst`,
-# `sanitizer_shared_hooks` shared library doesn't export any
-# functions. It will cause undefined symbols when linking binaries.
+# TODO(crbug.com/447520906): Because of
+# `build/android/android_only_explicit_jni_exports.lst`,
+# `sanitizer_shared_hooks` shared library doesn't export any functions. It will
+# cause undefined symbols when linking binaries.
 if (is_asan && is_linux) {
   source_set("hooks_sources") {
     sources = [ "//build/sanitizers/sanitizer_hooks.cc" ]
@@ -273,8 +274,9 @@ config("default_sanitizer_ldflags") {
       if (use_libfuzzer) {
         ldflags += [ "-fsanitize=fuzzer-no-link" ]
         if (is_mac) {
-          # TODO(crbug.com/40611636): on macOS, dead code stripping does not work
-          # well with `pc-table` instrumentation enabled by `fuzzer-no-link`.
+          # TODO(crbug.com/40611636): on macOS, dead code stripping does not
+          # work well with `pc-table` instrumentation enabled by
+          # `fuzzer-no-link`.
           ldflags += [ "-fno-sanitize-coverage=pc-table" ]
         }
       } else {
@@ -363,7 +365,8 @@ config("common_sanitizer_flags") {
       "-gcolumn-info",
     ]
 
-    # Frame pointers are controlled in //build/config/compiler:default_stack_frames
+    # Frame pointers are controlled in
+    # //build/config/compiler:default_stack_frames
   }
 }
 
@@ -712,8 +715,8 @@ config("not_fuzzed") {
     # Since we aren't instrumenting with coverage, code size is less of a
     # concern, so use a more aggressive optimization level than
     # optimize_for_fuzzing (-O1). When given multiple optimization flags, clang
-    # obeys the last one, so as long as this flag comes after -O1, it should work.
-    # Since this config will always be depended on after
+    # obeys the last one, so as long as this flag comes after -O1, it should
+    # work. Since this config will always be depended on after
     # "//build/config/compiler:default_optimization" (which adds -O1 when
     # optimize_for_fuzzing is true), -O2 should always be the second flag. Even
     # though this sounds fragile, it isn't a big deal if it breaks, since proto

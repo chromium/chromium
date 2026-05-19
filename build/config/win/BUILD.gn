@@ -164,8 +164,8 @@ config("compiler") {
     ldflags += [ "/prefetch-inputs" ]
   }
 
-  # Some binaries create PDBs larger than 4 GiB. Increasing the PDB page size
-  # to 8 KiB allows 8 GiB PDBs. The larger page size also allows larger block maps
+  # Some binaries create PDBs larger than 4 GiB. Increasing the PDB page size to
+  # 8 KiB allows 8 GiB PDBs. The larger page size also allows larger block maps
   # which is a PDB limit that was hit in https://crbug.com/1406510. The page size
   # can easily be increased in the future to allow even larger PDBs or larger
   # block maps.
@@ -488,7 +488,8 @@ config("delayloads_not_for_child_dll") {
 # ACLs are placed on the filesystem in order to allow chrome to launch
 # sandboxed processes in an app container when run from the out directory.
 group("maybe_set_appcontainer_acls") {
-  # Exclude setting ACLs when build is not happening on chromium, or with a different toolchain.
+  # Exclude setting ACLs when build is not happening on chromium, or with a
+  # different toolchain.
   if (build_with_chromium && current_cpu == target_cpu && host_os == "win") {
     deps = [ ":set_appcontainer_acls" ]
   }

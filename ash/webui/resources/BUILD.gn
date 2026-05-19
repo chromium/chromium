@@ -99,7 +99,8 @@ grit("help_app_resources") {
   ]
 }
 
-# Resources automatically served by the chrome://help-app bundle, obtained via DEPS.
+# Resources automatically served by the chrome://help-app bundle, obtained via
+# DEPS.
 grit("help_app_bundle_resources") {
   if (enable_cros_help_app) {
     # Obtained via an internal CIPD package in src/DEPS.
@@ -160,7 +161,8 @@ grit("media_app_resources") {
   ]
 }
 
-# Resources automatically served by the chrome://media-app bundle, obtained via DEPS.
+# Resources automatically served by the chrome://media-app bundle, obtained via
+# DEPS.
 grit("media_app_bundle_resources") {
   if (enable_cros_media_app) {
     # Obtained via an internal CIPD package in src/DEPS.
@@ -182,7 +184,8 @@ grit("media_app_bundle_resources") {
   output_dir = "$root_gen_dir/chromeos"
 }
 
-# Resources automatically served by the chrome-untrusted://projector bundle, obtained via DEPS.
+# Resources automatically served by the chrome-untrusted://projector bundle,
+# obtained via DEPS.
 grit("projector_app_bundle_resources") {
   if (enable_cros_projector_app) {
     # Obtained via an internal CIPD package in src/DEPS.
@@ -214,7 +217,8 @@ ash_generated_grit("eche_app_resources") {
   deps = [ "//ash/webui/eche_app_ui:build_grd" ]
 }
 
-# Resources automatically served by the chrome://eche-app bundle, obtained via DEPS.
+# Resources automatically served by the chrome://eche-app bundle, obtained via
+# DEPS.
 grit("eche_bundle_resources") {
   # Obtained via an internal CIPD package in src/DEPS.
   if (enable_cros_eche_app) {

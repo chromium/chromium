@@ -165,7 +165,8 @@ source_set("tests") {
 
   if (is_posix) {
     if (!is_android && !is_ios) {
-      # TODO(crbug.com/40270670): Failed on iOS by '(errno: 63, File name too long)'.
+      # TODO(crbug.com/40270670): Failed on iOS by '(errno: 63, File name too
+      # long)'.
       sources += [ "public/cpp/system_tracing_service_unittest.cc" ]
     }
   }

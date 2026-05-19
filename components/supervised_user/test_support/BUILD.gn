@@ -49,7 +49,8 @@ source_set("test_support") {
   configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
-# Repository of test accounts is only supported for platforms that utilize end-to-end tests
+# Repository of test accounts is only supported for platforms that utilize
+# end-to-end tests
 source_set("account_repository") {
   testonly = true
   sources = [

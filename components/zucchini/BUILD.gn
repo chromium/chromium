@@ -14,7 +14,8 @@ buildflag_header("buildflags") {
   _enable_elf = true
   _enable_win = true
 
-  # Disable ZTF (Zucchini Text Format) on official builds it is for testing only.
+  # Disable ZTF (Zucchini Text Format) on official builds it is for testing
+  # only.
   _enable_ztf = !is_official_build
   flags = [
     "ENABLE_DEX=$_enable_dex",

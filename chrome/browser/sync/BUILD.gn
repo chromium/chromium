@@ -167,8 +167,9 @@ source_set("sync") {
     "//components/variations/service",
     "//components/webauthn/core/browser:passkey_model",
 
-    # TODO(crbug.com/352700220): Extract target for //chrome/browser/android/webapk from
-    # //chrome/browser and use that instead here.
+    # TODO(crbug.com/352700220): Extract target for
+    # //chrome/browser/android/webapk from //chrome/browser and use that instead
+    # here.
     "//chrome/browser/android/webapk/proto",
     "//components/webapps/browser",
   ]

@@ -420,9 +420,9 @@ mojom("native_handle_types") {
           {
             # TODO(crbug.com/40584691): Note that this is typemapped to the same
             # type as the gfx.mojom.GpuMemoryBufferHandle *struct*. This is
-            # intentional since the C++ GpuMemoryBufferHandle type is is a hybrid
-            # union+struct today. This can be cleaned up once the associated bug is
-            # fixed.
+            # intentional since the C++ GpuMemoryBufferHandle type is is a
+            # hybrid union+struct today. This can be cleaned up once the
+            # associated bug is fixed.
             mojom = "gfx.mojom.GpuMemoryBufferPlatformHandle"
             cpp = "::gfx::GpuMemoryBufferHandle"
             move_only = true

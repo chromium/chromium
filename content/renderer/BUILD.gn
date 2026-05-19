@@ -379,7 +379,6 @@ target(link_target_type, "renderer") {
     }
 
     if (is_castos || is_cast_android) {
-
       deps += [ "//media/remoting:remoting_renderer" ]
     }
   }

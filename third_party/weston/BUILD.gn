@@ -295,8 +295,9 @@ shared_library("gl_renderer") {
   visibility = [ ":weston" ]
 
   # gl_renderer currently requires files under src/libweston and src/shared to
-  # include at runtime, if we remove these files some of the components(functions)
-  # are undefined and lead to failure in build due to undefined symbols/functions
+  # include at runtime, if we remove these files some of the
+  # components(functions) are undefined and lead to failure in build due to
+  # undefined symbols/functions
   include_dirs = [
     "$target_gen_dir/src/libweston/renderer-gl",
     "src/libweston",

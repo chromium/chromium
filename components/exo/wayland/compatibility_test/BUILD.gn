@@ -5,7 +5,8 @@
 import(
     "//components/exo/wayland/compatibility_test/wayland_protocol_codegen.gni")
 
-# This is the canonical list of all protocols which are potentially exposed by the server
+# This is the canonical list of all protocols which are potentially exposed by
+# the server
 server_wayland_protocols = [
   "//components/exo/wayland/protocol/aura-shell.xml",
   "//third_party/wayland/src/protocol/wayland.xml",

@@ -265,8 +265,8 @@ if (crashpad_is_win) {
     sources = [ "main.cc" ]
 
     # Avoid .exp, .ilk, and .lib file collisions with crashpad_handler.exe by
-    # having this target produce crashpad_handler_com.com. Don’t use this target
-    # directly. Instead, use crashpad_handler_console.
+    # having this target produce crashpad_handler_com.com. Don’t use this
+    # target directly. Instead, use crashpad_handler_console.
     output_extension = "com"
 
     deps = [

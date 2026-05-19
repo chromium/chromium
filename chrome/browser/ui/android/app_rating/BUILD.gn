@@ -10,7 +10,8 @@ if (enable_chrome_android_internal) {
     aar_path = "//third_party/android_deps/autorolled/cipd/libs/com_google_android_play_review/review.aar"
     info_path = "//third_party/android_deps/autorolled/committed/libs/com_google_android_play_review/com_google_android_play_review.info"
 
-    # Skip core_common_java to avoid resource collisions with clank's internal playcore.
+    # Skip core_common_java to avoid resource collisions with clank's internal
+    # playcore.
     deps = [
       "$google_play_services_package:google_play_services_basement_java",
       "$google_play_services_package:google_play_services_tasks_java",

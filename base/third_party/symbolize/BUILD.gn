@@ -31,7 +31,8 @@ static_library("symbolize") {
     defines += [ "PRINT_UNSYMBOLIZED_STACK_TRACES" ]
   }
 
-  # Symbolization is quite slow when not built in optimized, so always optimize it.
+  # Symbolization is quite slow when not built in optimized, so always optimize
+  # it.
   configs -= [
     "//build/config/compiler:chromium_code",
     "//build/config/compiler:default_optimization",

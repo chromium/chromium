@@ -20,7 +20,8 @@ source_set("api") {
   ]
   deps = [ "//third_party/dawn/src/dawn/native:headers" ]
 
-  # Any target that pulls in this source set needs to specify its own skia_config.
+  # Any target that pulls in this source set needs to specify its own
+  # skia_config.
 }
 
 if (use_blink || (is_ios && build_with_internal_optimization_guide)) {

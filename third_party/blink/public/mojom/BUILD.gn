@@ -1155,7 +1155,8 @@ mojom("mojom_platform") {
     {
       # Note: This Locale typemap is intentionally duplicated in both
       # cpp_typemaps and blink_cpp_typemaps. The Blink variant includes
-      # icu_locale_hash_traits.h to enable using icu::Locale as a WTF::HashMap key.
+      # icu_locale_hash_traits.h to enable using icu::Locale as a WTF::HashMap
+      # key.
       types = [
         {
           mojom = "blink.mojom.Locale"
@@ -1245,7 +1246,8 @@ mojom("android_mojo_bindings") {
   # from) for the case of generating the v8 context snapshot for android. When
   # generating the snapshot for android, blink is compiled with
   # current_os="linux" and target_os="android". Using target_os is necessary as
-  # we need to compile in the same way as would happen when current_os="android".
+  # we need to compile in the same way as would happen when
+  # current_os="android".
   if (target_os_is_android) {
     sources += [ "remote_objects/remote_objects.mojom" ]
 

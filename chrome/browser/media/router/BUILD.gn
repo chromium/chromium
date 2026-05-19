@@ -447,8 +447,9 @@ if (!is_win) {
   }
 }
 
-# This fuzzer targets DialInternalMessage defined in "providers/dial/dial_internal_message_util.h."
-# This api is excluded from ":router" on android.
+# This fuzzer targets DialInternalMessage defined in
+# "providers/dial/dial_internal_message_util.h." This api is excluded from
+# ":router" on android.
 if (!is_android) {
   fuzzer_test("dial_internal_message_fuzzer") {
     sources = [ "providers/dial/dial_internal_message_fuzzer.cc" ]

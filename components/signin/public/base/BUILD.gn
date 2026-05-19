@@ -64,7 +64,8 @@ static_library("base") {
     "//components/metrics",
     "//components/prefs",
 
-    # TODO(crbug.com/478783796): Remove once kWalletApiPrivatePassesEnabled launches.
+    # TODO(crbug.com/478783796): Remove once kWalletApiPrivatePassesEnabled
+    # launches.
     "//components/wallet/core/common:features",
     "//crypto",
     "//third_party/boringssl",
@@ -115,7 +116,8 @@ static_library("test_support") {
   deps = [
     "//base/test:test_support",
 
-    # TODO(crbug.com/478783796): Remove once kWalletApiPrivatePassesEnabled launches.
+    # TODO(crbug.com/478783796): Remove once kWalletApiPrivatePassesEnabled
+    # launches.
     "//components/plus_addresses/core/common:features",
     "//components/prefs",
     "//components/wallet/core/common:features",

@@ -530,10 +530,10 @@ mojom("mojo_bindings") {
       ]
 
       traits_public_deps = [
-        # Although the mojo bindings target is configured to allow direct circular
-        # includes from //content/common and //content/public/common, this isn't a
-        # transitive allowance, so those targets' own public_deps aren't included in
-        # the set of implied dependencies.
+        # Although the mojo bindings target is configured to allow direct
+        # circular includes from //content/common and //content/public/common,
+        # this isn't a transitive allowance, so those targets' own public_deps
+        # aren't included in the set of implied dependencies.
         "//content/common:buildflags",
         "//ui/events/blink",
       ]

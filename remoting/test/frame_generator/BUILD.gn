@@ -21,9 +21,10 @@ if (!is_component_build && (is_win || is_linux)) {
       "//base/test:test_support",
       "//skia",
 
-      # Note: We do not explicitly depend on //third_party/webrtc/modules/desktop_capture
-      # because it restricts visibility to webrtc and webrtc_overrides. We get the
-      # required headers and static linkage via webrtc_component.
+      # Note: We do not explicitly depend on
+      # //third_party/webrtc/modules/desktop_capture because it restricts
+      # visibility to webrtc and webrtc_overrides. We get the required headers
+      # and static linkage via webrtc_component.
       "//third_party/webrtc_overrides:webrtc_component",
       "//ui/gfx/codec",
     ]

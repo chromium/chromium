@@ -112,9 +112,10 @@ source_set("metrics_pref_names") {
 
 if (!is_cronet_build || is_ios) {
   # These files contain singletons. If they were be part of a static library
-  # linked into multiple components (such as //content and //chrome), each component would get
-  # their own copy of these singletons, causing issues. For that reason make sure they are part of
-  # a component that can be linked to by multiple other components.
+  # linked into multiple components (such as //content and //chrome), each
+  # component would get their own copy of these singletons, causing issues. For
+  # that reason make sure they are part of a component that can be linked to by
+  # multiple other components.
   component("metrics_component") {
     sources = [
       "android_metrics_helper.cc",
@@ -555,8 +556,8 @@ if (!is_cronet_build) {
       "//third_party/metrics_proto",
     ]
 
-    # This target must not depend on :metrics because that code is intended solely
-    # for use in the browser process.
+    # This target must not depend on :metrics because that code is intended
+    # solely for use in the browser process.
     assert_no_deps = [ ":metrics" ]
   }
 

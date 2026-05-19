@@ -15,7 +15,8 @@ build_webui("build") {
 
   static_files = [ "print_preview.html" ]
 
-  # Files holding a Polymer element definition and have an equivalent .html file.
+  # Files holding a Polymer element definition and have an equivalent .html
+  # file.
   web_component_files = [
     "ui/advanced_options_settings.ts",
     "ui/advanced_settings_dialog.ts",

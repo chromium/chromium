@@ -71,7 +71,8 @@ action("remoting_me2me_host_archive") {
            "Config/Firefox/com.google.chrome.remote_assistance.json",
            "--removed-files",
 
-           # These icudtl.dat files will be symlinked to the one in the parent bundle by remoting_postflight.sh.
+           # These icudtl.dat files will be symlinked to the one in the parent
+           # bundle by remoting_postflight.sh.
            "PrivilegedHelperTools/$me2me_host_bundle_name/Contents/MacOS/$native_messaging_host_bundle_name/Contents/Resources/icudtl.dat",
            "PrivilegedHelperTools/$me2me_host_bundle_name/Contents/MacOS/$remote_assistance_host_bundle_name/Contents/Resources/icudtl.dat",
            "--defs",

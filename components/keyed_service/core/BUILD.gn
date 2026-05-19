@@ -70,11 +70,12 @@ buildflag_header("features") {
   # initialized).
   #
   # TODO(crbug.com/342112724): remove this flag when set to `true` for all
-  # embedders. This will requires correctly calling the method `MarkContextLive`,
-  # `CreateContextServices`, but also `ContextShutdown` and `ContextDestroyed`
-  # in the correct order. Additionally, this requires changing the factories of
-  # services created before CreateContextServices to override the method
-  # `ServiceIsRequiredForContextInitializatio`n to return true.
+  # embedders. This will requires correctly calling the method
+  # `MarkContextLive`, `CreateContextServices`, but also `ContextShutdown` and
+  # `ContextDestroyed` in the correct order. Additionally, this requires
+  # changing the factories of services created before CreateContextServices to
+  # override the method `ServiceIsRequiredForContextInitializatio`n to return
+  # true.
   has_tight_context_initialization = !use_blink
 
   # If this flag is set to `true`, then `KeyedServiceTemplatedFactory` will

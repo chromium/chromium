@@ -64,7 +64,8 @@ source_set("lib") {
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
-  # This target should not depend on anything in //chrome/* except the proto library.
+  # This target should not depend on anything in //chrome/* except the proto
+  # library.
   deps = [
     "//base",
     "//chrome/app:generated_resources",

@@ -165,8 +165,8 @@ static_library("autofill") {
       "//third_party/libaddressinput",
       "//ui/android",
 
-      # TODO(crbug.com/352191610): Use //chrome/browser instead after fixing cyclic
-      # dependency.
+      # TODO(crbug.com/352191610): Use //chrome/browser instead after fixing
+      # cyclic dependency.
       "//chrome/browser/page_info:page_info_buildflags",
     ]
   } else {

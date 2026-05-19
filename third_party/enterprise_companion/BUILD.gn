@@ -7,8 +7,8 @@ import("//chrome/enterprise_companion/buildflags.gni")
 
 if (enable_enterprise_companion) {
   if (is_mac) {
-    # Copies a macOS application bundle fetched from CIPD to the output directory,
-    # renaming the bundle to remove the "_test" suffix.
+    # Copies a macOS application bundle fetched from CIPD to the output
+    # directory, renaming the bundle to remove the "_test" suffix.
     #
     # Parameters
     #

@@ -24,7 +24,8 @@ config("temporal_capi_versioning_defines") {
 #   right target
 # * We set `include_dirs` by depending on the right config via `public_configs`
 #
-# We also opportunistically have a public dependency on the `defines` `config` above.
+# We also opportunistically have a public dependency on the `defines` `config`
+# above.
 group("temporal_capi") {
   public_configs = [
     ":temporal_capi_include_dirs",

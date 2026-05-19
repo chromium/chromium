@@ -42,7 +42,8 @@ if (crashpad_is_apple && !crashpad_is_tvos) {
       ]
     } else if (crashpad_is_ios) {
       sources = [
-        # The iOS SDK doesn’t have any .defs files. Get them directly from xnu.
+        # The iOS SDK doesn’t have any .defs files. Get them directly from
+        # xnu.
         "../third_party/xnu/osfmk/mach/exc.defs",
         "../third_party/xnu/osfmk/mach/mach_exc.defs",
       ]
@@ -95,9 +96,9 @@ if (crashpad_is_apple && !crashpad_is_tvos) {
           rebase_path(sysroot, root_build_dir),
         ]
       } else {
-        # …but that’s not an option in the standalone Crashpad build, where the
-        # SDK is installed on the system and is absolute. (But use rebase_path
-        # just to be sure.)
+        # …but that’s not an option in the standalone Crashpad build, where
+        # the SDK is installed on the system and is absolute. (But use
+        # rebase_path just to be sure.)
         args += [
           "--sdk",
           rebase_path(sysroot, ""),
@@ -556,8 +557,8 @@ crashpad_static_library("util") {
     } else {
       # When building with clang, clang-cl is used as the assembler. Since
       # clang-cl recognizes a different assembly dialect than Microsoft’s
-      # armasm64 macro assembler, the same .asm file can’t be used for each. As
-      # a workaround, use a prebuilt .obj file when the Microsoft-dialect
+      # armasm64 macro assembler, the same .asm file can’t be used for each.
+      # As a workaround, use a prebuilt .obj file when the Microsoft-dialect
       # assembler isn’t available.
       if (crashpad_is_clang) {
         sources += [ "misc/capture_context_win_arm64.obj" ]

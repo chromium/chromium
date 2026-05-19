@@ -54,8 +54,8 @@ group("for_content_tests") {
     public_deps = [ ":mojom" ]
   } else {
     public_deps = [
-      # Normally this won't happen for component builds, but mojo shared gets its
-      # own component, so the usual "it's all content/" logic doesn't apply.
+      # Normally this won't happen for component builds, but mojo shared gets
+      # its own component, so the usual "it's all content/" logic doesn't apply.
       ":mojom_shared",
 
       # Ensure //content/common:mojo_bindings is built without depending on

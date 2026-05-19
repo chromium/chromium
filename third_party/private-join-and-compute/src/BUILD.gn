@@ -1,8 +1,8 @@
 config("library_impl_config") {
   # Build targets that contain private-join-and-compute implementation need this
-  # macro to be defined in order to correctly export symbols when is_component_build
-  # is true.
-  # For more info see: base/private_join_and_compute_export.h.
+  # macro to be defined in order to correctly export symbols when
+  # is_component_build is true. For more info see:
+  # base/private_join_and_compute_export.h.
   defines = [ "IS_PRIVATE_COMPUTE_LIBRARY_IMPL" ]
 }
 

@@ -107,8 +107,9 @@ source_set("impl") {
     "//net",
 
     # `hats` includes some headers not componentized from //c/b/ui:ui, including
-    # performance_controls_hats_service.h, performance_controls_hats_service_factory.h,
-    # and site_settings_helper.h ... but without a circular dependency.
+    # performance_controls_hats_service.h,
+    # performance_controls_hats_service_factory.h, and site_settings_helper.h
+    # ... but without a circular dependency.
     "//chrome/browser/ui",
   ]
   if (is_android) {

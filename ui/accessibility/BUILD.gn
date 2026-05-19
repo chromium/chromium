@@ -39,10 +39,10 @@ mojom_component("ax_features_mojo") {
   output_prefix = "ui_accessibility_ax_features_mojom"
 }
 
-# A tiny subset of accessibility code that's allowed to be
-# included by Blink. The rule of thumb (for now) is that it's
-# anything platform-neutral (no platform/ directory) that
-# relates to data structs (actions, nodes, trees, etc) and interfaces. No heavy weight logic yet.
+# A tiny subset of accessibility code that's allowed to be included by Blink.
+# The rule of thumb (for now) is that it's anything platform-neutral (no
+# platform/ directory) that relates to data structs (actions, nodes, trees, etc)
+# and interfaces. No heavy weight logic yet.
 component("ax_base") {
   defines = [ "AX_BASE_IMPLEMENTATION" ]
 

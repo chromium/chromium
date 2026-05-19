@@ -21,7 +21,8 @@ generate_jni("jni_headers") {
       [ "java/src/org/chromium/components/browser_ui/share/IntentHelper.java" ]
 }
 
-# Constants only target without dependencies to allow embedders to only include relevant code.
+# Constants only target without dependencies to allow embedders to only include
+# relevant code.
 android_library("constants_java") {
   sources = [
     "java/src/org/chromium/components/browser_ui/share/ClipboardConstants.java",

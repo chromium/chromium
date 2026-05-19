@@ -432,11 +432,13 @@ if (use_system_harfbuzz) {
 
       # Size reductions by disabling parts that we do not currently require:
 
-      # SkPDF needs subsetting but does not require subsetting of layout or CFF tables.
+      # SkPDF needs subsetting but does not require subsetting of layout or CFF
+      # tables.
       "HB_NO_SUBSET_LAYOUT",
       "HB_NO_SUBSET_CFF",
 
-      # Fallback shaper not required, we only use the HarfBuzz internal OT shaper.
+      # Fallback shaper not required, we only use the HarfBuzz internal OT
+      # shaper.
       "HB_NO_FALLBACK_SHAPE",
 
       # Tells HarfBuzz to use ICU instead of the own mini UCDN implementation
@@ -453,11 +455,14 @@ if (use_system_harfbuzz) {
       # Buffer verification not used in production build.
       "HB_NO_BUFFER_VERIFY",
 
-      # We're not using HarfBuzz' drawing functions or debug tools in this build.
+      # We're not using HarfBuzz' drawing functions or debug tools in this
+      # build.
       "HB_NO_DRAW",
 
-      # Workaround: We want HB_NO_DRAW but we still need CFF support for subsetting.
-      # TODO(crbug.com/507839557): Need to remove config override workaround after
+      # Workaround: We want HB_NO_DRAW but we still need CFF support for
+      # subsetting.
+      # TODO(crbug.com/507839557): Need to remove config override workaround
+      # after
       # https://github.com/harfbuzz/harfbuzz/issues/5955 is resolved.
       "HB_CONFIG_OVERRIDE_LAST_H=\"chromium-config-override.h\"",
 

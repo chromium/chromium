@@ -89,7 +89,8 @@ static_library("fileapi") {
     "//ui/shell_dialogs",
     "//url",
 
-    # TODO(crbug.com/353449539): Use //chrome/browser/ui instead after cyclic dependency from
+    # TODO(crbug.com/353449539): Use //chrome/browser/ui instead after cyclic
+    # dependency from
     # obj/chrome/browser/ash/arc/fileapi/fileapi/arc_select_files_handler.o.
     "//chrome/browser/apps/app_preload_service/proto",
   ]

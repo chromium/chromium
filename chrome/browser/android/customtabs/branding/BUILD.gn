@@ -53,7 +53,8 @@ android_library("java") {
   resources_package = "org.chromium.chrome"
 }
 
-# Low-level branding target that doesn't depend on chrome_java to avoid dependency cycles.
+# Low-level branding target that doesn't depend on chrome_java to avoid
+# dependency cycles.
 android_library("branding_common_java") {
   sources = [
     "java/src/org/chromium/chrome/browser/customtabs/features/branding/MismatchNotificationData.java",

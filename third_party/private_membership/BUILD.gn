@@ -16,15 +16,15 @@ import("//testing/test.gni")
 import("//third_party/protobuf/proto_library.gni")
 
 config("library_impl_config") {
-  # Build targets that contain private_membership implementation need this
-  # macro to be defined in order to correctly export symbols when is_component_build
-  # is true.
-  # For more info see: base/private_membership_export.h.
+  # Build targets that contain private_membership implementation need this macro
+  # to be defined in order to correctly export symbols when is_component_build
+  # is true. For more info see: base/private_membership_export.h.
   defines = [ "IS_PRIVATE_MEMBERSHIP_LIBRARY_IMPL" ]
 }
 
 config("private_membership_internal_config") {
-  # TODO(crbug.com/1072732) Reenable the deprecated warning, after updating the upstream.
+  # TODO(crbug.com/1072732) Reenable the deprecated warning, after updating the
+  # upstream.
   cflags = [
     "-Wno-deprecated-declarations",
     "-Wno-defaulted-function-deleted",
@@ -47,14 +47,15 @@ config("private_membership_config") {
     ]
   }
   include_dirs = [
-    # Allow includes to be prefixed with private_membership/src/ in case it is not an
-    # immediate subdirectory of the top-level.
+    # Allow includes to be prefixed with private_membership/src/ in case it is
+    # not an immediate subdirectory of the top-level.
     "src",
 
-    # Just like the directory of private_membership/src has been added to include path, the
-    # corresponding directory tree with generated files needs to be added too.
-    # Note: this path does not change depending on the current target, e.g.
-    # it is always "//gen/third_party/private_membership/src" when building with Chromium.
+    # Just like the directory of private_membership/src has been added to
+    # include path, the corresponding directory tree with generated files needs
+    # to be added too. Note: this path does not change depending on the current
+    # target, e.g. it is always "//gen/third_party/private_membership/src" when
+    # building with Chromium.
     # See also: http://cs.chromium.org/?q=%5C"default_include_dirs
     # https://gn.googlesource.com/gn/+/master/docs/reference.md#target_gen_dir"
     target_gen_dir,

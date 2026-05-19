@@ -296,8 +296,8 @@ if (enable_swift_cxx_interop) {
     ]
 
     # TODO(crbug.com/451945291): Move the following compiler flags to
-    # build/config/compiler/BUILD.gn when Swift/C++ interop is enabled by default.
-    # The '-std=c++' flag is not allowed with 'Objective-C'.
+    # build/config/compiler/BUILD.gn when Swift/C++ interop is enabled by
+    # default. The '-std=c++' flag is not allowed with 'Objective-C'.
     if (use_cxx23) {
       swiftflags += [ "-Xcc=-std=c++23" ]
     } else {

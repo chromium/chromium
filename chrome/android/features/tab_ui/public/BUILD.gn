@@ -4,7 +4,8 @@
 
 import("//build/config/android/rules.gni")
 
-# This should ideally hold all the files in public_tab_management_java_sources, which is defined in the tab_management_java_sources.gni module.
+# This should ideally hold all the files in public_tab_management_java_sources,
+# which is defined in the tab_management_java_sources.gni module.
 android_resources("ui_java_resources") {
   sources = [
     "android/java/res/color/bg_tabstrip_tab_folio_startup_tint.xml",

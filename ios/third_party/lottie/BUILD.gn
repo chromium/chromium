@@ -6,8 +6,8 @@ import("//build/config/ios/ios_sdk.gni")
 import("//build/config/ios/rules.gni")
 
 _lottie_public_headers = [
-  # $ cd src/ios/third_party/lottie
-  # $ find src -path 'src/lottie-ios/Classes/PublicHeaders/*.h'  -a \! -path '*Test*'|\sed -e
+  # $ cd src/ios/third_party/lottie $ find src -path
+  # 'src/lottie-ios/Classes/PublicHeaders/*.h' -a \! -path '*Test*'|\sed -e
   #   's:\(.*\):  "\1",:'|sort -u
 
   "src/lottie-ios/Classes/PublicHeaders/LOTAnimatedControl.h",

@@ -22,7 +22,8 @@ group("android_nocompile_tests") {
 
 if (!disable_android_lint) {
   android_nocompile_test_suite("android_lint_tests") {
-    # Depend on lint script so that the action is re-run whenever the script is  modified.
+    # Depend on lint script so that the action is re-run whenever the script is
+    # modified.
     pydeps = [ "//build/android/gyp/lint.pydeps" ]
 
     tests = [

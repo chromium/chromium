@@ -87,7 +87,8 @@ source_set("api") {
       "//ui/events:event_constants",
     ]
 
-    # TODO(crbug.com/40251081): Remove these deps. Needed only to allow circular includes.
+    # TODO(crbug.com/40251081): Remove these deps. Needed only to allow circular
+    # includes.
     deps += [ "//chrome/browser/ash/extensions/file_manager" ]
 
     # TODO(crbug.com/40251079): Remove circular dependencies.

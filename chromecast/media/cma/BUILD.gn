@@ -38,7 +38,6 @@ cast_source_set("test_support") {
     "//testing/gtest",
     "//ui/gfx/geometry",
   ]
-
 }
 
 cast_source_set("unittests") {
@@ -77,8 +76,9 @@ cast_source_set("unittests") {
   # Android because both protobuf_full and protobuf_lite get included.
   if (!is_android) {
     sources += [
-      # For whatever reason the MZ backend tests take ~20sec to run in CI as opposed to
-      # 200ms when ran locally. So enable them only on non-Android envs.
+      # For whatever reason the MZ backend tests take ~20sec to run in CI as
+      # opposed to 200ms when ran locally. So enable them only on non-Android
+      # envs.
       "backend/multizone_backend_unittest.cc",
       "backend/proxy/audio_decoder_pipeline_node_unittest.cc",
       "backend/proxy/buffer_id_manager_unittest.cc",
@@ -96,7 +96,6 @@ cast_source_set("unittests") {
       "//third_party/grpc:grpc++",
     ]
   }
-
 
   data = [ "//media/test/data/" ]
 }

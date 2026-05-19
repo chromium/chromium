@@ -30,7 +30,8 @@ if (is_android) {
     ]
   }
 
-  # TODO(crbug.com/380154734): Move this to collaboration/ directory near messages factory.
+  # TODO(crbug.com/380154734): Move this to collaboration/ directory near
+  # messages factory.
   android_library("instant_message_delegate_factory_java") {
     sources = [ "android/java/src/org/chromium/chrome/browser/data_sharing/InstantMessageDelegateFactory.java" ]
 
@@ -503,7 +504,8 @@ source_set("data_sharing") {
 # - c/b/ui/browser_finder.h
 #
 # Hence, depending on //c/b/ui:ui isn't itself a problem. However, in this case,
-# if `data_sharing` depends on it, there will be non-trivial circular dependency errors.
+# if `data_sharing` depends on it, there will be non-trivial circular dependency
+# errors.
 source_set("impl") {
   sources = [
     "data_sharing_navigation_throttle.cc",

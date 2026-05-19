@@ -42,9 +42,7 @@ absl_source_set("bind_back") {
 }
 
 absl_test("bind_back_test") {
-  sources = [
-    "bind_back_test.cc",
-  ]
+  sources = [ "bind_back_test.cc" ]
   deps = [
     ":bind_back",
     "//third_party/abseil-cpp/absl/memory",

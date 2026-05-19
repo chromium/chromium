@@ -2,7 +2,9 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-# TODO(b/225069285): This entire build file should be combined back with the ui/base BUILD file. Currently (Nov 2022), this is not possible due to circular build dependencies.
+# TODO(b/225069285): This entire build file should be combined back with the
+# ui/base BUILD file. Currently (Nov 2022), this is not possible due to circular
+# build dependencies.
 import("//build/config/compiler/compiler.gni")
 if (is_mac) {
   import("//build/config/mac/rules.gni")

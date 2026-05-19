@@ -21,8 +21,8 @@ if (!disable_android_lint) {
     }
 
     android_apk(target_name) {
-      # This cannot be marked testonly since lint has special ignores for testonly
-      # targets. We need to test linting a normal apk target.
+      # This cannot be marked testonly since lint has special ignores for
+      # testonly targets. We need to test linting a normal apk target.
       apk_name = target_name
       deps = [ ":$_library_target_name" ]
       android_manifest = "//build/android/AndroidManifest.xml"

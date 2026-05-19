@@ -5,8 +5,8 @@
 visibility = [ "//components/cast_streaming/renderer/*" ]
 
 source_set("web_codecs") {
-  # TODO(crbug.com/1357085): Move public headers here when they are used and move
-  # associated `deps` to `public_deps`.
+  # TODO(crbug.com/1357085): Move public headers here when they are used and
+  # move associated `deps` to `public_deps`.
   public = []
   sources = [
     "delegating_decoder_buffer_provider.h",

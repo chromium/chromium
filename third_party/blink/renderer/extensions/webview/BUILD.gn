@@ -69,7 +69,8 @@ component("webview") {
   ]
 
   public_deps = [
-    # Allow third_party/blink/renderer/controller to depend on the :webview target
+    # Allow third_party/blink/renderer/controller to depend on the :webview
+    # target
     ":webview_extension",
     "//third_party/blink/renderer/bindings/extensions/v8:v8_webview",
   ]

@@ -34,7 +34,8 @@ template("generate_dummy_android_library") {
   }
 }
 
-# Check that "implementation" takes precedence in classpath over "factory java" regardless of
+# Check that "implementation" takes precedence in classpath over "factory java"
+# regardless of
 # the lexographic order of the target names.
 
 generate_dummy_java("factory1") {

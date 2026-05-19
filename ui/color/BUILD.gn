@@ -30,7 +30,8 @@ source_set("color_headers") {
   ]
 }
 
-# Keep the deps on this target to a minimum so that chromeos/crosapi can depend on it.
+# Keep the deps on this target to a minimum so that chromeos/crosapi can depend
+# on it.
 component("color_provider_key") {
   sources = [
     "color_provider_key.cc",

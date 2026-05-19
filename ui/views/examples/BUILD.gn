@@ -355,9 +355,10 @@ if (is_mac) {
           [ "-Wl,-install_name,@rpath/$output_name.framework/$output_name" ]
 
       # Set up the rpath for the framework so that it can find dylibs in the
-      # root output directory. The framework is at
-      # Views Examples.app/Contents/Frameworks/Views Examples Framework.framework/Versions/[views_examples_version]/Views Examples Framework
-      # so use loader_path to go back to the root output directory.
+      # root output directory. The framework is at Views
+      # Examples.app/Contents/Frameworks/Views Examples
+      # Framework.framework/Versions/[views_examples_version]/Views Examples
+      # Framework so use loader_path to go back to the root output directory.
       ldflags += [ "-Wl,-rpath,@loader_path/../../../../../.." ]
     } else {
       # Specify a sensible install_name for static builds. The library is

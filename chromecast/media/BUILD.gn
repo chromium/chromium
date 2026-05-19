@@ -41,7 +41,6 @@ group("libcast_media") {
   if (enable_chromium_runtime_cast_renderer) {
     deps += [ "//chromecast/media/cma/backend/proxy" ]
   }
-
 }
 
 test("cast_media_unittests") {

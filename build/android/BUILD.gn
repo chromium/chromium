@@ -33,7 +33,8 @@ if (enable_java_templates) {
     # Caused odd errors: https://crbug.com/404877460
     jacoco_never_instrument = true
 
-    # Required to prevent circular dependency from //tools/android/errorprone_plugin.
+    # Required to prevent circular dependency from
+    # //tools/android/errorprone_plugin.
     enable_errorprone = false
 
     srcjar_deps = [
@@ -74,7 +75,8 @@ if (enable_java_templates) {
     proguard_configs = [ "chromium_annotations.flags" ]
   }
 
-  # Not all //build embedders pull in junit_binary deps that live in //third_party.
+  # Not all //build embedders pull in junit_binary deps that live in
+  # //third_party.
   if (build_with_chromium) {
     android_assets("junit_test_assets") {
       testonly = true

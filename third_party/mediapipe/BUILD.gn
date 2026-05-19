@@ -263,7 +263,9 @@ tflite_source_set("mediapipe_tasks_always_link") {
     "src/mediapipe/util/time_series_util.h",
   ]
 
-  # TODO(b/283522287): Enable XNNPACK in MediaPipe on Windows. XNNPACK in TFLite is exposed through a C API and something is not working correctly in linking on Windows.
+  # TODO(b/283522287): Enable XNNPACK in MediaPipe on Windows. XNNPACK in TFLite
+  # is exposed through a C API and something is not working correctly in linking
+  # on Windows.
   if (build_tflite_with_xnnpack && !is_win) {
     sources +=
         [ "src/mediapipe/calculators/tensor/inference_calculator_xnnpack.cc" ]

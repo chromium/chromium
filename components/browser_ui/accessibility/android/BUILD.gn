@@ -29,7 +29,8 @@ source_set("android") {
   ]
 }
 
-# Constants only target without dependencies to allow embedders to only include relevant code.
+# Constants only target without dependencies to allow embedders to only include
+# relevant code.
 android_library("constants_java") {
   sources = [ "java/src/org/chromium/components/browser_ui/accessibility/AccessibilityConstants.java" ]
 }

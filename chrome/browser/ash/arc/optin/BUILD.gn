@@ -37,9 +37,7 @@ static_library("optin") {
 
   # b/512185168: Transitive Dep and Circular Dependency Workaround for
   # //chrome/browser/ash/login
-  deps += [
-    "//chrome/browser/ash/login/fjord_oobe/proto",
-  ]
+  deps += [ "//chrome/browser/ash/login/fjord_oobe/proto" ]
 }
 
 source_set("unit_tests") {

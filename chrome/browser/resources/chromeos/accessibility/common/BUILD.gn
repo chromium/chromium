@@ -98,7 +98,8 @@ ts_modules = [
   "word_utils.ts",
 ]
 
-# The relative path in the staging directory of TS modules that need to be copied from another directory.
+# The relative path in the staging directory of TS modules that need to be
+# copied from another directory.
 copied_ts_modules = [ "action_fulfillment/macros/macro_names.ts" ]
 
 ts_definitions = [
@@ -200,7 +201,8 @@ js2gtest("accessibility_tests") {
     "tree_walker_test.js",
   ]
 
-  # These are unit tests run under an extension environment to get ES6 module support.
+  # These are unit tests run under an extension environment to get ES6 module
+  # support.
   sources += [
     "node_navigation_utils_unittest.js",
     "node_utils_unittest.js",

@@ -21,8 +21,8 @@ config("shell_encryption_internal_config") {
 
 config("shell_encryption_config") {
   include_dirs = [
-    # Allow includes to be prefixed with shell-encryption/src/ in case it is not an
-    # immediate subdirectory of the top-level.
+    # Allow includes to be prefixed with shell-encryption/src/ in case it is not
+    # an immediate subdirectory of the top-level.
     "src",
 
     # Allow includes to be prefixed with shell-encryption/ in case it is not an
@@ -30,10 +30,11 @@ config("shell_encryption_config") {
     # glog/logging.h includes.
     ".",
 
-    # Just like the root shell-encryption directory is added to include path, the
-    # corresponding directory tree with generated files needs to be added too.
-    # Note: this path does not change depending on the current target, e.g.
-    # it is always "//gen/third_party/shell-encryption/src" when building with Chromium.
+    # Just like the root shell-encryption directory is added to include path,
+    # the corresponding directory tree with generated files needs to be added
+    # too. Note: this path does not change depending on the current target, e.g.
+    # it is always "//gen/third_party/shell-encryption/src" when building with
+    # Chromium.
     # See also: http://cs.chromium.org/?q=%5C"default_include_dirs
     # https://gn.googlesource.com/gn/+/master/docs/reference.md#target_gen_dir"
     target_gen_dir,

@@ -42,7 +42,8 @@ source_set("wrapper_functions") {
   public_deps = [ ":common" ]
 }
 
-# Glue bits that need to be shared between the Rust implementation/bindings and the C++ entry points.
+# Glue bits that need to be shared between the Rust implementation/bindings and
+# the C++ entry points.
 source_set("common") {
   visibility = [ ":*" ]
 

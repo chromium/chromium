@@ -70,7 +70,6 @@ source_set("process_setup") {
   }
 }
 
-
 source_set("service_process") {
   sources = [ "service_process.h" ]
 }

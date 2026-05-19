@@ -19,7 +19,8 @@ android_library("test_runner_java") {
   ]
 }
 
-# Split into its own target because it is also needed by any APK that is an "apk_under_test".
+# Split into its own target because it is also needed by any APK that is an
+# "apk_under_test".
 java_group("test_runner_permissions_java") {
   mergeable_android_manifests = [ "java/AndroidManifest_permissions.xml" ]
 }

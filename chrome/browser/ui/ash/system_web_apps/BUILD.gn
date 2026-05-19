@@ -22,7 +22,8 @@ source_set("system_web_apps") {
     "//components/webapps/common",
   ]
 
-  # TODO(crbug.com/40251081): Remove these deps. Needed only to allow circular includes.
+  # TODO(crbug.com/40251081): Remove these deps. Needed only to allow circular
+  # includes.
   deps += [
     "//chrome/browser/ash/app_list/search",
     "//chrome/browser/ash/boca",

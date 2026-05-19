@@ -42,7 +42,8 @@ component("private_metrics_recorders") {
   ]
 }
 
-# TODO(crbug.com/433729993): Build dwa static library under private_metrics static library.
+# TODO(crbug.com/433729993): Build dwa static library under private_metrics
+# static library.
 static_library("private_metrics") {
   sources = [
     "//components/metrics/dwa/dwa_entry_builder.cc",

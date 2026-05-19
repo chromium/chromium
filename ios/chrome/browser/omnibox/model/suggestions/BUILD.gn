@@ -6,7 +6,8 @@ import("//build/config/apple/swift_source_set.gni")
 
 # Build target allowed while moving files from ui_bundled to other folders.
 # Model dependencies should be moved to the model folder.
-# TODO(crbug.com/394567614): Remove this target once model files have been moved.
+# TODO(crbug.com/394567614): Remove this target once model files have been
+# moved.
 source_set("ui_interface") {
   sources = [
     "autocomplete_suggestion.h",

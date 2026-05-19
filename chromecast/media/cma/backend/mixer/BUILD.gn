@@ -6,7 +6,6 @@ import("//build/config/cast.gni")
 import("//chromecast/chromecast.gni")
 import("//media/media_options.gni")
 
-
 cast_source_set("post_processor_paths") {
   sources = [
     "post_processor_paths.cc",

@@ -52,8 +52,8 @@ source_set("win") {
   ]
 }
 
-# Jumplist headers depend on //chrome/browser/prefs which creates a cycle
-# if included in the main :win target (prefs -> sync -> web_applications -> win).
+# Jumplist headers depend on //chrome/browser/prefs which creates a cycle if
+# included in the main :win target (prefs -> sync -> web_applications -> win).
 source_set("jumplist") {
   public = [
     "jumplist.h",

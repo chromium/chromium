@@ -91,7 +91,8 @@ if (defined(android_app_secondary_abi)) {
           [ "//chrome/test:telemetry_perf_tests_android_webview_bundle" ]
     }
 
-    # This avoids generate_profile_webview.py attempting to download it on demand.
+    # This avoids generate_profile_webview.py attempting to download it on
+    # demand.
     data = [ "${clang_base_path}/bin/llvm-profdata" ]
   }
 }

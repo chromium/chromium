@@ -82,7 +82,8 @@ build_webui("build") {
     "//ui/webui/resources/mojo:build_ts",
   ]
 
-  mojo_files_deps = [ "//chrome/browser/ui/webui/intro:mojo_bindings_ts__generator" ]
+  mojo_files_deps =
+      [ "//chrome/browser/ui/webui/intro:mojo_bindings_ts__generator" ]
   mojo_files = [ "$root_gen_dir/chrome/browser/ui/webui/intro/sign_in_celebration.mojom-webui.ts" ]
 
   ts_path_mappings = [ "chrome://intro/tangible_sync_style_shared.css.js|" + rebase_path(

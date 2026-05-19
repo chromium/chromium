@@ -124,7 +124,8 @@ if (is_chromeos_device) {
   tast_test("chrome_all_tast_tests") {
     tast_attr_expr = "\"group:mainline\" && \"dep:chrome\" && !informational"
     if (is_skylab) {
-      # TODO(b/284405976): Add a !no_chrome_dcheck condition automatically by reading the build configuration.
+      # TODO(b/284405976): Add a !no_chrome_dcheck condition automatically by
+      # reading the build configuration.
       tast_attr_expr = "($tast_attr_expr && !\"dep:no_chrome_dcheck\")"
     }
 
@@ -141,8 +142,10 @@ if (is_chromeos_device) {
   tast_test("chrome_criticalstaging_tast_tests") {
     tast_attr_expr = "\"group:mainline\" && \"dep:chrome\" && !\"dep:lacros\" && \"informational\" && \"group:criticalstaging\""
     if (is_skylab) {
-      # TODO(b/284405976): Add a !no_chrome_dcheck condition automatically by reading the build configuration.
-      # TODO(b/294489383): Re-enable lacros tests once lacros chrome is deployed to ash skylab builders.
+      # TODO(b/284405976): Add a !no_chrome_dcheck condition automatically by
+      # reading the build configuration.
+      # TODO(b/294489383): Re-enable lacros tests once lacros chrome is deployed
+      # to ash skylab builders.
       tast_attr_expr = "($tast_attr_expr && !\"dep:no_chrome_dcheck\")"
     }
 
@@ -161,7 +164,8 @@ if (is_chromeos_device) {
   tast_test("cq_medium_tast_tests") {
     tast_attr_expr = "\"group:cq-medium\" && \"dep:chrome\" && \"group:mainline\" && !informational"
     if (is_skylab) {
-      # TODO(b/284405976): Add a !no_chrome_dcheck condition automatically by reading the build configuration.
+      # TODO(b/284405976): Add a !no_chrome_dcheck condition automatically by
+      # reading the build configuration.
       tast_attr_expr = "($tast_attr_expr && !\"dep:no_chrome_dcheck\")"
     }
 

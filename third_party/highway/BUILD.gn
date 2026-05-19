@@ -17,8 +17,8 @@ config("libhwy_external_config") {
   }
   if (current_cpu == "arm" || current_cpu == "arm64") {
     # There are Chrome targets that use HWY_ALIGN on absl::uint128. This breaks
-    # with SVE, since HWY_ALIGN == 8 for it and the minimal alignment requirement
-    # for absl::uint128 is 16.
+    # with SVE, since HWY_ALIGN == 8 for it and the minimal alignment
+    # requirement for absl::uint128 is 16.
     defines += [ "HWY_BROKEN_TARGETS=HWY_ALL_SVE" ]
   }
 }

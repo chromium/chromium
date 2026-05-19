@@ -5,8 +5,6 @@
 import("//build/config/cast.gni")
 import("//chromecast/chromecast.gni")
 
-
-
 cast_source_set("pipeline") {
   sources = [
     "audio_pipeline_impl.cc",
@@ -58,5 +56,3 @@ cast_source_set("pipeline") {
   # enable the diagnostic by removing this line.
   configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
-
-

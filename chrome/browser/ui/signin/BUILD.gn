@@ -75,8 +75,9 @@ source_set("impl") {
     "//chrome/browser/ui/profiles",
 
     # TODO(crubug.com/430804948): This dependency is needed because
-    # `signin_view_controller.cc` includes `signin_intercept_first_run_experience_dialog.h`,
-    # temporarily built from profiles:impl, due to a circular dependency.
+    # `signin_view_controller.cc` includes
+    # `signin_intercept_first_run_experience_dialog.h`, temporarily built from
+    # profiles:impl, due to a circular dependency.
     "//chrome/browser/signin:signin_promo",
     "//chrome/browser/ui/profiles:impl",
     "//chrome/browser/ui/signin",

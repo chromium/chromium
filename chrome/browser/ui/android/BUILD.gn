@@ -84,7 +84,8 @@ if (is_android) {
   }
 }
 
-# TODO(crbug.com/473636857): Include once all Android builds correctly use BrowserWindowInterface.
+# TODO(crbug.com/473636857): Include once all Android builds correctly use
+# BrowserWindowInterface.
 if (is_desktop_android) {
   source_set("browser_tests") {
     testonly = true

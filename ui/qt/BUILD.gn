@@ -73,9 +73,10 @@ template("qt_shim") {
       "//chrome/installer/linux:*",
     ]
 
-    # Since qt_shim is a shared library even in non-component builds, it shouldn't
-    # depend on any other targets since that would duplicate code between binaries
-    # leading to increased size and potential issues from duplicated global state.
+    # Since qt_shim is a shared library even in non-component builds, it
+    # shouldn't depend on any other targets since that would duplicate code
+    # between binaries leading to increased size and potential issues from
+    # duplicated global state.
     no_default_deps = true
     assert_no_deps = [
       "//base",

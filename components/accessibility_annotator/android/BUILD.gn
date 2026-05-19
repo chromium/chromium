@@ -20,12 +20,16 @@ copy("personal_context_first_run_animation_resource") {
 if (is_internal_chrome_branded) {
   copy("personal_context_first_run_card_1_resource") {
     sources = [ "../core/resources/internal/android/java/res/drawable/accessibility_annotator_first_run_card_1.xml" ]
-    outputs = [ "$target_gen_dir/icon_res/drawable/personal_context_first_run_card_1.xml" ]
+    outputs = [
+      "$target_gen_dir/icon_res/drawable/personal_context_first_run_card_1.xml",
+    ]
   }
 
   copy("personal_context_first_run_card_2_resource") {
     sources = [ "../core/resources/internal/android/java/res/drawable/accessibility_annotator_first_run_card_2.xml" ]
-    outputs = [ "$target_gen_dir/icon_res/drawable/personal_context_first_run_card_2.xml" ]
+    outputs = [
+      "$target_gen_dir/icon_res/drawable/personal_context_first_run_card_2.xml",
+    ]
   }
 }
 

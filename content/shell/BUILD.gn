@@ -42,8 +42,8 @@ if (is_android) {
   }
 }
 
-# TODO(crbug.com/1336055, spang): Investigate using shell_views with cast builds as
-# true.
+# TODO(crbug.com/1336055, spang): Investigate using shell_views with cast builds
+# as true.
 shell_use_toolkit_views = toolkit_views && !is_castos
 
 declare_args() {
@@ -662,8 +662,8 @@ if (is_android) {
   }
 } else if (is_ios) {
   declare_args() {
-    # The bundle identifier. Overriding this will affect the provisioning profile
-    # used, and hence will affect the app's capabilities.
+    # The bundle identifier. Overriding this will affect the provisioning
+    # profile used, and hence will affect the app's capabilities.
     ios_content_shell_bundle_identifier = shared_bundle_id_for_test_apps
 
     # Path to an entitlements file used in ios_content_shell. Can be overridden
@@ -950,9 +950,10 @@ if (is_mac) {
           [ "-Wl,-install_name,@rpath/$output_name.framework/$output_name" ]
 
       # Set up the rpath for the framework so that it can find dylibs in the
-      # root output directory. The framework is at
-      # Content Shell.app/Contents/Frameworks/Content Shell Framework.framework/Versions/C/Content Shell Framework
-      # so use loader_path to go back to the root output directory.
+      # root output directory. The framework is at Content
+      # Shell.app/Contents/Frameworks/Content Shell
+      # Framework.framework/Versions/C/Content Shell Framework so use
+      # loader_path to go back to the root output directory.
       ldflags += [ "-Wl,-rpath,@loader_path/../../../../../.." ]
     }
 
@@ -998,7 +999,9 @@ if (is_mac) {
 
       if (is_component_build) {
         ldflags = [
-          # The helper is in Content Shell.app/Contents/Frameworks/Content Shell Framework.framework/Versions/C/Helpers/Content Shell Helper.app/Contents/MacOS
+          # The helper is in Content Shell.app/Contents/Frameworks/Content Shell
+          # Framework.framework/Versions/C/Helpers/Content Shell
+          # Helper.app/Contents/MacOS
 
           # Set up an rpath to the Contents/Frameworks/ directory so that
           # Content Shell Framework.framework will be found there. This matches

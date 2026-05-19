@@ -53,8 +53,8 @@ if (_build_ios_webkit || _build_mac_webkit) {
       inputs = [
         # Because it's difficult to list every webkit source file as an input
         # here, use the top-50 most frequently-changed files (excluding
-        # ChangeLogs, which are now deprecated) as a proxy to determine whether or
-        # not source files have changed.
+        # ChangeLogs, which are now deprecated) as a proxy to determine whether
+        # or not source files have changed.
         # TODO(crbug.com/40614900): This will not pick up local edits to source
         # files, so find a way to properly rebuild when those change.
         "src/LayoutTests/TestExpectations",
@@ -112,11 +112,11 @@ if (_build_ios_webkit || _build_mac_webkit) {
 
       args = invoker.args
 
-      # TODO(crbug.com/40842823): "-j 8" restricts xcodebuild to eight simultaneous
-      # jobs. This is intended to prevent overloading the machine, because ninja
-      # will already be spawning a large number of jobs in parallel with
-      # xcodebuild, but it causes the webkit build to run very slowly. Find a way
-      # to increase the parallelism here.
+      # TODO(crbug.com/40842823): "-j 8" restricts xcodebuild to eight
+      # simultaneous jobs. This is intended to prevent overloading the machine,
+      # because ninja will already be spawning a large number of jobs in
+      # parallel with xcodebuild, but it causes the webkit build to run very
+      # slowly. Find a way to increase the parallelism here.
       args += [
         "-j",
         "8",

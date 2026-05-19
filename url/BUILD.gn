@@ -212,7 +212,8 @@ test("url_unittests") {
   ]
 
   if (use_platform_icu_alternatives) {
-    # Unit tests that are not supported by the current ICU alternatives on Android.
+    # Unit tests that are not supported by the current ICU alternatives on
+    # Android.
     if (is_android) {
       sources -= [
         "url_canon_icu_unittest.cc",
@@ -319,8 +320,8 @@ if (is_android && !is_cronet_build) {
       ]
     }
 
-    # Targets depending on gurl_junit_test_support do not need to bypass platform
-    # checks.
+    # Targets depending on gurl_junit_test_support do not need to bypass
+    # platform checks.
     android_library("gurl_junit_test_support") {
       testonly = true
       sources = [ "android/test/java/src/org/chromium/url/JUnitTestGURLs.java" ]

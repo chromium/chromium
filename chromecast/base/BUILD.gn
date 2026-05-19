@@ -43,7 +43,6 @@ cast_source_set("base") {
     "cast_features_internal.cc",
     "cast_paths.cc",
     "cast_paths.h",
-
     "error_codes.cc",
     "error_codes.h",
     "hash_util.cc",

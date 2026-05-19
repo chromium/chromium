@@ -42,7 +42,8 @@ source_set("app_preload_service") {
     "//services/network/public/cpp",
   ]
 
-  # TODO(crbug.com/40251081): Remove these deps. Needed only to allow circular includes.
+  # TODO(crbug.com/40251081): Remove these deps. Needed only to allow circular
+  # includes.
   deps += [
     "//chrome/browser/ash/app_list",
     "//chrome/browser/ash/extensions",

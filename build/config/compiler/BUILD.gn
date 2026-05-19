@@ -430,12 +430,14 @@ config("compiler") {
     cflags += [ "-fno-strict-aliasing" ]  # See http://crbug.com/32204
 
     # Stack protection. ShadowCallStack and Stack protector address the same
-    # problems. Therefore, we only enable one or the other. Clang advertises SCS as
-    # a stronger alternative to StackProtector, so we give SCS precedence over SP.
+    # problems. Therefore, we only enable one or the other. Clang advertises SCS
+    # as a stronger alternative to StackProtector, so we give SCS precedence
+    # over SP.
     if (enable_shadow_call_stack) {
-      # On Aarch64, SCS requires the x18 register to be unused because it will hold
-      # a pointer to the shadow stack. For Android we know that Clang doesn't use
-      # x18 by default. On other OSs adding "-ffixed-x18" might be required.
+      # On Aarch64, SCS requires the x18 register to be unused because it will
+      # hold a pointer to the shadow stack. For Android we know that Clang
+      # doesn't use x18 by default. On other OSs adding "-ffixed-x18" might be
+      # required.
       assert(is_android)
 
       scs_parameters = [
@@ -793,12 +795,12 @@ config("compiler") {
     # TODO(gbiv): We ideally shouldn't need to specify this; ThinLTO
     # should be able to better manage binary size increases on its own.
     #
-    # For high-end Android, 30 seems to be the right trade-off between performance
-    # and binary size, at least based on Speedometer. For example, increasing
-    # `import_instr_limit`to 50 improves Speedometer 2.1 score by 0.7% [0], while
-    # Speedometer 3.0 score remains roughly the same (-0.1%) [1]. The binary size
-    # increases by about 2MB [2] (or 1.1%: the arm64 native code size in M124 is
-    # 178MB).
+    # For high-end Android, 30 seems to be the right trade-off between
+    # performance and binary size, at least based on Speedometer. For example,
+    # increasing `import_instr_limit`to 50 improves Speedometer 2.1 score by
+    # 0.7% [0], while Speedometer 3.0 score remains roughly the same (-0.1%)
+    # [1]. The binary size increases by about 2MB [2] (or 1.1%: the arm64 native
+    # code size in M124 is 178MB).
     # [0]: https://pinpoint-dot-chromeperf.appspot.com/job/16984a18be0000
     # [1]: https://pinpoint-dot-chromeperf.appspot.com/job/11984a18be0000
     # [2]: https://ci.chromium.org/ui/p/chromium/builders/try/android-binary-size/1848442
@@ -866,9 +868,9 @@ config("compiler") {
       cflags += [ "-fwhole-program-vtables" ]
 
       if (toolchain_supports_rust_thin_lto) {
-        # whole-program-vtables implies -fsplit-lto-unit, and Rust needs to match
-        # behaviour. Rust needs to know the linker will be doing LTO in this case
-        # or it rejects the Zsplit-lto-unit flag.
+        # whole-program-vtables implies -fsplit-lto-unit, and Rust needs to
+        # match behaviour. Rust needs to know the linker will be doing LTO in
+        # this case or it rejects the Zsplit-lto-unit flag.
         rustflags += [
           "-Zsplit-lto-unit",
           "-Clinker-plugin-lto=yes",
@@ -1274,9 +1276,10 @@ config("thinlto_optimize_default") {
     }
 
     if (toolchain_supports_rust_thin_lto) {
-      # We always point Rust to a linker that performs LTO, so we don't want Rust
-      # to preemptively do so during compilation too or they conflict. But we do
-      # want Rust to generate LTO metadata in order for the linker to do its job.
+      # We always point Rust to a linker that performs LTO, so we don't want
+      # Rust to preemptively do so during compilation too or they conflict. But
+      # we do want Rust to generate LTO metadata in order for the linker to do
+      # its job.
       rustflags = [ "-Clinker-plugin-lto=yes" ]
     } else {
       # Don't include bitcode if it won't be used.
@@ -1308,9 +1311,10 @@ config("thinlto_optimize_max") {
     }
 
     if (toolchain_supports_rust_thin_lto) {
-      # We always point Rust to a linker that performs LTO, so we don't want Rust
-      # to preemptively do so during compilation too or they conflict. But we do
-      # want Rust to generate LTO metadata in order for the linker to do its job.
+      # We always point Rust to a linker that performs LTO, so we don't want
+      # Rust to preemptively do so during compilation too or they conflict. But
+      # we do want Rust to generate LTO metadata in order for the linker to do
+      # its job.
       rustflags = [ "-Clinker-plugin-lto=yes" ]
     } else {
       # Don't include bitcode if it won't be used.
@@ -1681,12 +1685,12 @@ config("runtime_library") {
     configs += [ "//build/config/c++:runtime_library" ]
   }
 
-  # Rust and C++ both provide intrinsics for LLVM to call for math operations. We
-  # want to use the C++ intrinsics, not the ones in the Rust compiler_builtins
-  # library. The Rust symbols are marked as weak, so that they can be replaced by
-  # the C++ symbols. This config ensures the C++ symbols exist and are strong in
-  # order to cause that replacement to occur by explicitly linking in clang's
-  # compiler-rt library.
+  # Rust and C++ both provide intrinsics for LLVM to call for math operations.
+  # We want to use the C++ intrinsics, not the ones in the Rust
+  # compiler_builtins library. The Rust symbols are marked as weak, so that they
+  # can be replaced by the C++ symbols. This config ensures the C++ symbols
+  # exist and are strong in order to cause that replacement to occur by
+  # explicitly linking in clang's compiler-rt library.
   if (is_clang && !(is_a_target_toolchain && is_cronet_build)) {
     configs += [ "//build/config/clang:compiler_builtins" ]
   }
@@ -1962,10 +1966,11 @@ config("default_warnings") {
       # into different components, due to hidden visibility. Only applicable
       # to component builds.
 
-      # For details about the warning and now to fix it, see the official docs at
+      # For details about the warning and now to fix it, see the official docs
+      # at
       # https://clang.llvm.org/docs/DiagnosticsReference.html#wunique-object-duplication
-      # If you still have trouble resolving it, file a bug asking for advice in the
-      # Chromium > Tools > LLVM component, and cc dloehr and thakis.
+      # If you still have trouble resolving it, file a bug asking for advice in
+      # the Chromium > Tools > LLVM component, and cc dloehr and thakis.
       cflags_cc += [ "-Wunique-object-duplication" ]
     }
 
@@ -2114,9 +2119,9 @@ config("chromium_code") {
       }
 
       # _FORTIFY_SOURCE=3 is available in glibc 2.34+. Enable it when building
-      # with the sysroot where support is guaranteed. Clang is also required since
-      # the system gcc is often patched to add _FORTIFY_SOURCE=2 which would conflict
-      # with our definition.
+      # with the sysroot where support is guaranteed. Clang is also required
+      # since the system gcc is often patched to add _FORTIFY_SOURCE=2 which
+      # would conflict with our definition.
       if (use_sysroot && is_clang && !is_android) {
         fortify_level = "3"
       }

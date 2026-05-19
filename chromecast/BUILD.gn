@@ -131,9 +131,9 @@ cast_test_group("cast_tests") {
     filters += [ sandbox_linux_unittests_filter ]
   }
 
-  # TODO(crbug.com/40835751): `media_use_ffmpeg` should not largely affect top-level
-  # test list. Better create another flag to do this or handle the ffmpeg flag
-  # in //chromecast/media/cma/decoder.
+  # TODO(crbug.com/40835751): `media_use_ffmpeg` should not largely affect
+  # top-level test list. Better create another flag to do this or handle the
+  # ffmpeg flag in //chromecast/media/cma/decoder.
   if (media_use_ffmpeg && !is_fuchsia) {
     tests += [
       "//chromecast/cast_core:cast_cast_core_unittests",
@@ -220,11 +220,11 @@ cast_test_group("cast_tests") {
 
         if (!is_cast_desktop_build && !enable_assistant) {
           # TODO(mbjorge): The VideoPlaybackMp4 test is failing on v1 devices.
-          # Temporarily disable it as part of an effort to re-green the unittests.
-          # Re-enable once the tests have been fixed. Limitations in the filter
-          # system mean this is getting temporarily disabled on all video devices,
-          # though it is only failing on v1.
-          # b/36723698, hotlist/461351
+          # Temporarily disable it as part of an effort to re-green the
+          # unittests. Re-enable once the tests have been fixed. Limitations in
+          # the filter system mean this is getting temporarily disabled on all
+          # video devices, though it is only failing on v1. b/36723698,
+          # hotlist/461351
           gtest_excludes += [ "CastNavigationBrowserTest.VideoPlaybackMp4" ]
         }
 
@@ -252,7 +252,8 @@ cast_test_group("cast_tests") {
       test_name = "url_unittests"
 
       if (target_os == "linux" && !is_cast_desktop_build) {
-        # DoAppendUTF8Invalid fails because of dcheck_always_on flag in Eng builds
+        # DoAppendUTF8Invalid fails because of dcheck_always_on flag in Eng
+        # builds
         gtest_excludes = [ "URLCanonTest.DoAppendUTF8Invalid" ]
       }
     }
@@ -267,9 +268,9 @@ cast_test_group("cast_tests") {
         # Disable PartitionAllocDeathTest.* (b/67975693)
         gtest_excludes += [ "PartitionAllocDeathTest.*" ]
       } else {
-        # Disable ProcessMetricsTest.GetNumberOfThreads (b/15610509)
-        # Disable ProcessUtilTest.* (need to define OS_ANDROID)
-        # Disable SystemMetrics2Test.GetSystemMemoryInfo (buffers>0 can't be guaranteed)
+        # Disable ProcessMetricsTest.GetNumberOfThreads (b/15610509) Disable
+        # ProcessUtilTest.* (need to define OS_ANDROID) Disable
+        # SystemMetrics2Test.GetSystemMemoryInfo (buffers>0 can't be guaranteed)
         # Disable PostTasksViaTaskRunner/* to green up devices (b/62246873)
         # Disable WorkerDetaches to green up devices (b/62246873)
         gtest_excludes += [
@@ -280,7 +281,6 @@ cast_test_group("cast_tests") {
           "TaskSchedulerWorkerTest.WorkerDetaches",
         ]
       }
-
     }
   }
   filters += [ base_unittests_filter ]
@@ -327,13 +327,14 @@ cast_test_group("cast_tests") {
     content_unittests_filter = {
       test_name = "content_unittests"
 
-      # IsSupportedVideoConfig_VP9TransferFunctions fails on all cast builds since
-      # the cast IsSupportedVideoConfigs ignore the transfer function parameter.
+      # IsSupportedVideoConfig_VP9TransferFunctions fails on all cast builds
+      # since the cast IsSupportedVideoConfigs ignore the transfer function
+      # parameter.
       # (b/36984215).
       gtest_excludes = [ "*.IsSupportedVideoConfig_VP9TransferFunctions" ]
       if (target_os == "linux" && !is_cast_desktop_build) {
-        # DesktopCaptureDeviceTest.*: No capture device on Eureka
-        # Disable PepperGamepadHostTest.WaitForReply (pepper not supported on Eureka)
+        # DesktopCaptureDeviceTest.*: No capture device on Eureka Disable
+        # PepperGamepadHostTest.WaitForReply (pepper not supported on Eureka)
         # Disable RenderWidgetHostTest.Background because we disable the
         # blacklist to enable WebGL (b/16142554)
         gtest_excludes += [
@@ -345,10 +346,11 @@ cast_test_group("cast_tests") {
         ]
       }
       if (enable_assistant && !is_cast_desktop_build) {
-        # Temporarily disable DefaultConstructor on assistant device builds. Cause
-        # of failure is unclear, but it's highly likely it's related to them being
-        # DEATH tests. These were passing until the is_official_build flag was
-        # enabled. These tests are considered non-critical in this context.
+        # Temporarily disable DefaultConstructor on assistant device builds.
+        # Cause of failure is unclear, but it's highly likely it's related to
+        # them being DEATH tests. These were passing until the is_official_build
+        # flag was enabled. These tests are considered non-critical in this
+        # context.
         # (b/62469368)
         gtest_excludes += [ "WebBluetoothDeviceIdTest.DefaultConstructor" ]
       }
@@ -366,9 +368,9 @@ cast_test_group("cast_tests") {
       #   PipelineIntegrationTest.P444_VP9_WebM
       # Disable VP8A tests (b/18593324)
       #   PipelineIntegrationTest.BasicPlayback_VP8A*
-      # Disable OpusAudioDecoderTest/AudioDecoderTest.ProduceAudioSamples/0 (unit
-      # test fails when Opus decoder uses fixed-point)
-      # Due to b/16456550, disable the following four test cases:
+      # Disable OpusAudioDecoderTest/AudioDecoderTest.ProduceAudioSamples/0
+      # (unit test fails when Opus decoder uses fixed-point) Due to b/16456550,
+      # disable the following four test cases:
       #   AudioOutputControllerTest.PlayDivertSwitchDeviceRevertClose
       #   AudioOutputControllerTest.PlaySwitchDeviceClose
       #   AudioStreamHandlerTest.Play
@@ -388,7 +390,8 @@ cast_test_group("cast_tests") {
         "SoundsManagerTest.Play",
       ]
     } else if (target_os == "android" || is_cast_desktop_build) {
-      # Disable PipelineIntegrationTest.BasicPlayback_MediaSource_VP9_WebM (not supported)
+      # Disable PipelineIntegrationTest.BasicPlayback_MediaSource_VP9_WebM (not
+      # supported)
       gtest_excludes =
           [ "PipelineIntegrationTest.BasicPlayback_MediaSource_VP9_WebM" ]
     }
@@ -399,14 +402,15 @@ cast_test_group("cast_tests") {
     test_name = "net_unittests"
     if (using_sanitizer) {
       # TODO(mbjorge): net_unittests do not complete when run with sanitizers,
-      # (in particular, TSAN and UBSAN), resulting in build machines getting stuck
-      # for many hours. Disable them for now, since these are getting run on
-      # Chromium bots anyway. (internal b/31279943)
+      # (in particular, TSAN and UBSAN), resulting in build machines getting
+      # stuck for many hours. Disable them for now, since these are getting run
+      # on Chromium bots anyway. (internal b/31279943)
       gtest_excludes = [ "*" ]
     } else if (target_os == "linux" && !is_cast_desktop_build) {
-      # Run net_unittests first to avoid random failures due to slow python startup
-      # PacFileFetcherImplTest.HttpMimeType is flaking (b/19848784)
-      # Running a batch of net_unittests has high overhead. Run tests in batches of 50 to reduce number of batches (b/23156294).
+      # Run net_unittests first to avoid random failures due to slow python
+      # startup PacFileFetcherImplTest.HttpMimeType is flaking (b/19848784)
+      # Running a batch of net_unittests has high overhead. Run tests in batches
+      # of 50 to reduce number of batches (b/23156294).
       gtest_excludes = [ "PacFileFetcherImplTest.HttpMimeType" ]
       args = [ "--test-launcher-batch-limit=50" ]
     } else if (is_cast_desktop_build || target_os == "android") {

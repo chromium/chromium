@@ -375,7 +375,8 @@ if (!is_android) {
       "//url",
 
       # TODO(crbug.com/437811373): Remove this dependency when
-      # c/b/ui/passwords/password_change_ui_controller.h gets built from `//c/b/ui/passwords:passwords`.
+      # c/b/ui/passwords/password_change_ui_controller.h gets built from
+      # `//c/b/ui/passwords:passwords`.
       ":impl",
     ]
   }

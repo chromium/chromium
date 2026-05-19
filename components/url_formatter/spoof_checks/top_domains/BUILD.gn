@@ -144,8 +144,8 @@ compiled_action("generate_test_top_domain_list_variables_file") {
          rebase_path(outputs, root_build_dir)
 }
 
-# top_bucket_domains and top_bucket_domains_header are intentionally separated to remove
-# serialized build dependency from some targets to
+# top_bucket_domains and top_bucket_domains_header are intentionally separated
+# to remove serialized build dependency from some targets to
 # generate_top_domain_list_variables action target.
 source_set("top_bucket_domains") {
   # This empty public is intentional to remove unnecessary build dependency.

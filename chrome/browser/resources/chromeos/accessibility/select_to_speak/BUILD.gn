@@ -173,7 +173,8 @@ js2gtest("select_to_speak_extjs_tests") {
     "select_to_speak_prefs_test.js",
   ]
 
-  # These are unit tests run under an extension environment to get ES6 module support.
+  # These are unit tests run under an extension environment to get ES6 module
+  # support.
   sources += [
     "select_to_speak_unittest.js",
     "tts_manager_unittest.js",

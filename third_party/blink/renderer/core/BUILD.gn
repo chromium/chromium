@@ -1470,9 +1470,9 @@ fuzzer_test("text_resource_decoder_fuzzer") {
 source_set("unit_tests") {
   testonly = true
 
-  # If you create a new subdirectory 'foo' that contains unit tests, list them in
-  # 'foo/build.gni' to define blink_core_tests_foo, and add any dependencies in
-  # the deps section below.
+  # If you create a new subdirectory 'foo' that contains unit tests, list them
+  # in 'foo/build.gni' to define blink_core_tests_foo, and add any dependencies
+  # in the deps section below.
   sources = rebase_path(blink_core_tests_accessibility, "", "accessibility")
   sources += rebase_path(blink_core_tests_animation, "", "animation")
   sources += rebase_path(blink_core_tests_annotation, "", "annotation")

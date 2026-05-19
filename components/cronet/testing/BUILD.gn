@@ -5,11 +5,12 @@
 import("//testing/test.gni")
 
 # Aggregates all Cronet Python unit tests into a single isolate for CI bots.
-# Executes files ending in `_test.py` or `_unittest.py`, excluding those explicitly skipped.
+# Executes files ending in `_test.py` or `_unittest.py`, excluding those
+# explicitly skipped.
 #
-# Note: Test discovery relies on the standard `unittest` loader. Subdirectories are
-# recursively explored only if they contain an `__init__.py` file or are explicitly
-# listed in the `top_level_dirs` of `run_all_python_unittests.py`.
+# Note: Test discovery relies on the standard `unittest` loader. Subdirectories
+# are recursively explored only if they contain an `__init__.py` file or are
+# explicitly listed in the `top_level_dirs` of `run_all_python_unittests.py`.
 script_test("cronet_python_unittests") {
   testonly = true
   script = "//testing/scripts/run_isolated_script_test.py"

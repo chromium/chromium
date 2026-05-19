@@ -384,8 +384,8 @@ if (enable_vr) {
   }
 } else {
   source_set("vr") {
-    # We need to include an empty .cc file so that mac and windows don't fall over when trying to
-    # compile this when webvr is disabled.
+    # We need to include an empty .cc file so that mac and windows don't fall
+    # over when trying to compile this when webvr is disabled.
     sources = [ "empty.cc" ]
   }
 }
